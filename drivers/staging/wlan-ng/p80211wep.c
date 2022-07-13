@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* src/p80211/p80211wep.c
 *
 * WEP encode/decode for P80211.
@@ -44,17 +45,52 @@
 *
 * --------------------------------------------------------------------
 */
+=======
+// SPDX-License-Identifier: (GPL-2.0 OR MPL-1.1)
+/*
+ *
+ * WEP encode/decode for P80211.
+ *
+ * Copyright (C) 2002 AbsoluteValue Systems, Inc.  All Rights Reserved.
+ * --------------------------------------------------------------------
+ *
+ * linux-wlan
+ *
+ * --------------------------------------------------------------------
+ *
+ * Inquiries regarding the linux-wlan Open Source project can be
+ * made directly to:
+ *
+ * AbsoluteValue Systems Inc.
+ * info@linux-wlan.com
+ * http://www.linux-wlan.com
+ *
+ * --------------------------------------------------------------------
+ *
+ * Portions of the development of this software were funded by
+ * Intersil Corporation as part of PRISM(R) chipset product development.
+ *
+ * --------------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*================================================================*/
 /* System Includes */
 
+<<<<<<< HEAD
+=======
+#include <linux/crc32.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/wireless.h>
 #include <linux/random.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 
 /* #define WEP_DEBUG	*/
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "p80211hdr.h"
 #include "p80211types.h"
 #include "p80211msg.h"
@@ -63,6 +99,7 @@
 
 #define WEP_KEY(x)       (((x) & 0xC0) >> 6)
 
+<<<<<<< HEAD
 static const u32 wep_crc32_table[256] = {
 	0x00000000L, 0x77073096L, 0xee0e612cL, 0x990951baL, 0x076dc419L,
 	0x706af48fL, 0xe963a535L, 0x9e6495a3L, 0x0edb8832L, 0x79dcb8a4L,
@@ -121,18 +158,28 @@ static const u32 wep_crc32_table[256] = {
 /* keylen in bytes! */
 
 int wep_change_key(wlandevice_t *wlandev, int keynum, u8 *key, int keylen)
+=======
+/* keylen in bytes! */
+
+int wep_change_key(struct wlandevice *wlandev, int keynum, u8 *key, int keylen)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (keylen < 0)
 		return -1;
 	if (keylen >= MAX_KEYLEN)
 		return -1;
+<<<<<<< HEAD
 	if (key == NULL)
+=======
+	if (!key)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	if (keynum < 0)
 		return -1;
 	if (keynum >= NUM_WEPKEYS)
 		return -1;
 
+<<<<<<< HEAD
 #ifdef WEP_DEBUG
 	printk(KERN_DEBUG
 	       "WEP key %d len %d = %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n",
@@ -140,6 +187,8 @@ int wep_change_key(wlandevice_t *wlandev, int keynum, u8 *key, int keylen)
 	       key[6], key[7]);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wlandev->wep_keylens[keynum] = keylen;
 	memcpy(wlandev->wep_keys[keynum], key, keylen);
 
@@ -147,10 +196,17 @@ int wep_change_key(wlandevice_t *wlandev, int keynum, u8 *key, int keylen)
 }
 
 /*
+<<<<<<< HEAD
   4-byte IV at start of buffer, 4-byte ICV at end of buffer.
   if successful, buf start is payload begin, length -= 8;
  */
 int wep_decrypt(wlandevice_t *wlandev, u8 *buf, u32 len, int key_override,
+=======
+ * 4-byte IV at start of buffer, 4-byte ICV at end of buffer.
+ * if successful, buf start is payload begin, length -= 8;
+ */
+int wep_decrypt(struct wlandevice *wlandev, u8 *buf, u32 len, int key_override,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u8 *iv, u8 *icv)
 {
 	u32 i, j, k, crc, keylen;
@@ -183,6 +239,7 @@ int wep_decrypt(wlandevice_t *wlandev, u8 *buf, u32 len, int key_override,
 
 	keylen += 3;		/* add in IV bytes */
 
+<<<<<<< HEAD
 #ifdef WEP_DEBUG
 	printk(KERN_DEBUG
 	       "D %d: %02x %02x %02x (%d %d) %02x:%02x:%02x:%02x:%02x\n", len,
@@ -190,6 +247,8 @@ int wep_decrypt(wlandevice_t *wlandev, u8 *buf, u32 len, int key_override,
 	       key[6], key[7]);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set up the RC4 state */
 	for (i = 0; i < 256; i++)
 		s[i] = i;
@@ -200,16 +259,26 @@ int wep_decrypt(wlandevice_t *wlandev, u8 *buf, u32 len, int key_override,
 	}
 
 	/* Apply the RC4 to the data, update the CRC32 */
+<<<<<<< HEAD
 	crc = ~0;
 	i = j = 0;
+=======
+	i = 0;
+	j = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (k = 0; k < len; k++) {
 		i = (i + 1) & 0xff;
 		j = (j + s[i]) & 0xff;
 		swap(i, j);
 		buf[k] ^= s[(s[i] + s[j]) & 0xff];
+<<<<<<< HEAD
 		crc = wep_crc32_table[(crc ^ buf[k]) & 0xff] ^ (crc >> 8);
 	}
 	crc = ~crc;
+=======
+	}
+	crc = ~crc32_le(~0, buf, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* now let's check the crc */
 	c_crc[0] = crc;
@@ -229,8 +298,13 @@ int wep_decrypt(wlandevice_t *wlandev, u8 *buf, u32 len, int key_override,
 }
 
 /* encrypts in-place. */
+<<<<<<< HEAD
 int wep_encrypt(wlandevice_t *wlandev, u8 *buf, u8 *dst, u32 len, int keynum,
 		u8 *iv, u8 *icv)
+=======
+int wep_encrypt(struct wlandevice *wlandev, u8 *buf,
+		u8 *dst, u32 len, int keynum, u8 *iv, u8 *icv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 i, j, k, crc, keylen;
 	u8 s[256], key[64];
@@ -262,6 +336,7 @@ int wep_encrypt(wlandevice_t *wlandev, u8 *buf, u8 *dst, u32 len, int keynum,
 
 	keylen += 3;		/* add in IV bytes */
 
+<<<<<<< HEAD
 #ifdef WEP_DEBUG
 	printk(KERN_DEBUG
 	       "E %d (%d/%d %d) %02x %02x %02x %02x:%02x:%02x:%02x:%02x\n", len,
@@ -269,6 +344,8 @@ int wep_encrypt(wlandevice_t *wlandev, u8 *buf, u8 *dst, u32 len, int keynum,
 	       key[5], key[6], key[7]);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set up the RC4 state */
 	for (i = 0; i < 256; i++)
 		s[i] = i;
@@ -279,16 +356,26 @@ int wep_encrypt(wlandevice_t *wlandev, u8 *buf, u8 *dst, u32 len, int keynum,
 	}
 
 	/* Update CRC32 then apply RC4 to the data */
+<<<<<<< HEAD
 	crc = ~0;
 	i = j = 0;
 	for (k = 0; k < len; k++) {
 		crc = wep_crc32_table[(crc ^ buf[k]) & 0xff] ^ (crc >> 8);
+=======
+	i = 0;
+	j = 0;
+	for (k = 0; k < len; k++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i = (i + 1) & 0xff;
 		j = (j + s[i]) & 0xff;
 		swap(i, j);
 		dst[k] = buf[k] ^ s[(s[i] + s[j]) & 0xff];
 	}
+<<<<<<< HEAD
 	crc = ~crc;
+=======
+	crc = ~crc32_le(~0, buf, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* now let's encrypt the crc */
 	icv[0] = crc;

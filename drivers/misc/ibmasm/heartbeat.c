@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IBM ASM Service Processor Device Driver
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -23,6 +28,15 @@
  */
 
 #include <linux/notifier.h>
+=======
+ * Copyright (C) IBM Corporation, 2004
+ *
+ * Author: Max Asböck <amax@us.ibm.com>
+ */
+
+#include <linux/notifier.h>
+#include <linux/panic_notifier.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ibmasm.h"
 #include "dot_command.h"
 #include "lowlevel.h"

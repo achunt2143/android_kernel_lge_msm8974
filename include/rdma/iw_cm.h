@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2005 Network Appliance, Inc. All rights reserved.
  * Copyright (c) 2005 Open Grid Computing, Inc. All rights reserved.
@@ -30,6 +31,14 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+=======
+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
+/*
+ * Copyright (c) 2005 Network Appliance, Inc. All rights reserved.
+ * Copyright (c) 2005 Open Grid Computing, Inc. All rights reserved.
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef IW_CM_H
 #define IW_CM_H
 
@@ -49,8 +58,13 @@ enum iw_cm_event_type {
 struct iw_cm_event {
 	enum iw_cm_event_type event;
 	int			 status;
+<<<<<<< HEAD
 	struct sockaddr_in local_addr;
 	struct sockaddr_in remote_addr;
+=======
+	struct sockaddr_storage local_addr;
+	struct sockaddr_storage remote_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *private_data;
 	void *provider_data;
 	u8 private_data_len;
@@ -83,14 +97,28 @@ struct iw_cm_id {
 	iw_cm_handler		cm_handler;      /* client callback function */
 	void		        *context;	 /* client cb context */
 	struct ib_device	*device;
+<<<<<<< HEAD
 	struct sockaddr_in      local_addr;
 	struct sockaddr_in	remote_addr;
+=======
+	struct sockaddr_storage local_addr;      /* local addr */
+	struct sockaddr_storage	remote_addr;
+	struct sockaddr_storage m_local_addr;	 /* nmapped local addr */
+	struct sockaddr_storage	m_remote_addr;	 /* nmapped rem addr */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void			*provider_data;	 /* provider private data */
 	iw_event_handler        event_handler;   /* cb for provider
 						    events */
 	/* Used by provider to add and remove refs on IW cm_id */
 	void (*add_ref)(struct iw_cm_id *);
 	void (*rem_ref)(struct iw_cm_id *);
+<<<<<<< HEAD
+=======
+	u8  tos;
+	bool tos_set:1;
+	bool mapped:1;
+	bool afonly:1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct iw_cm_conn_param {
@@ -101,6 +129,7 @@ struct iw_cm_conn_param {
 	u32 qpn;
 };
 
+<<<<<<< HEAD
 struct iw_cm_verbs {
 	void		(*add_ref)(struct ib_qp *qp);
 
@@ -122,6 +151,18 @@ struct iw_cm_verbs {
 					 int backlog);
 
 	int		(*destroy_listen)(struct iw_cm_id *cm_id);
+=======
+enum iw_flags {
+
+	/*
+	 * This flag allows the iwcm and iwpmd to still advertise
+	 * mappings but the real and mapped port numbers are the
+	 * same.  Further, iwpmd will not bind any user socket to
+	 * reserve the port.  This is required for soft iwarp
+	 * to play in the port mapped iwarp space.
+	 */
+	IW_F_NO_PORT_MAP = (1 << 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -146,6 +187,7 @@ struct iw_cm_id *iw_create_cm_id(struct ib_device *device,
 void iw_destroy_cm_id(struct iw_cm_id *cm_id);
 
 /**
+<<<<<<< HEAD
  * iw_cm_bind_qp - Unbind the specified IW CM identifier and QP
  *
  * @cm_id: The IW CM idenfier to unbind from the QP.
@@ -167,6 +209,8 @@ void iw_cm_unbind_qp(struct iw_cm_id *cm_id, struct ib_qp *qp);
 struct ib_qp *iw_cm_get_qp(struct ib_device *device, int qpn);
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * iw_cm_listen - Listen for incoming connection requests on the
  * specified IW CM id.
  *
@@ -248,4 +292,13 @@ int iw_cm_disconnect(struct iw_cm_id *cm_id, int abrupt);
 int iw_cm_init_qp_attr(struct iw_cm_id *cm_id, struct ib_qp_attr *qp_attr,
 		       int *qp_attr_mask);
 
+<<<<<<< HEAD
+=======
+/**
+ * iwcm_reject_msg - return a pointer to a reject message string.
+ * @reason: Value returned in the REJECT event status field.
+ */
+const char *__attribute_const__ iwcm_reject_msg(int reason);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* IW_CM_H */

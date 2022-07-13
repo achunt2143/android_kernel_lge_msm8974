@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Header file for:
  * Cypress TrueTouch(TM) Standard Product (TTSP) touchscreen drivers.
@@ -9,6 +13,7 @@
  * Copyright (C) 2009, 2010, 2011 Cypress Semiconductor, Inc.
  * Copyright (C) 2012 Javier Martinez Canillas <javier@dowhile0.org>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * version 2, and only version 2, as published by the
@@ -25,6 +30,9 @@
  *
  * Contact Cypress Semiconductor at www.cypress.com <kev@cypress.com>
  *
+=======
+ * Contact Cypress Semiconductor at www.cypress.com <kev@cypress.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -36,7 +44,11 @@
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/input/cyttsp.h>
+=======
+#include <linux/regulator/consumer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CY_NUM_RETRY		16 /* max number of retries for read ops */
 
@@ -67,8 +79,13 @@ struct cyttsp_xydata {
 /* TTSP System Information interface definition */
 struct cyttsp_sysinfo_data {
 	u8 hst_mode;
+<<<<<<< HEAD
 	u8 mfg_cmd;
 	u8 mfg_stat;
+=======
+	u8 mfg_stat;
+	u8 mfg_cmd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 cid[3];
 	u8 tt_undef1;
 	u8 uid[8];
@@ -112,9 +129,16 @@ struct cyttsp;
 
 struct cyttsp_bus_ops {
 	u16 bustype;
+<<<<<<< HEAD
 	int (*write)(struct cyttsp *ts,
 		     u8 addr, u8 length, const void *values);
 	int (*read)(struct cyttsp *ts, u8 addr, u8 length, void *values);
+=======
+	int (*write)(struct device *dev, u8 *xfer_buf, u16 addr, u8 length,
+			const void *values);
+	int (*read)(struct device *dev, u8 *xfer_buf, u16 addr, u8 length,
+			void *values);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum cyttsp_state {
@@ -127,8 +151,11 @@ struct cyttsp {
 	struct device *dev;
 	int irq;
 	struct input_dev *input;
+<<<<<<< HEAD
 	char phys[32];
 	const struct cyttsp_platform_data *pdata;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct cyttsp_bus_ops *bus_ops;
 	struct cyttsp_bootloader_data bl_data;
 	struct cyttsp_sysinfo_data sysinfo_data;
@@ -137,13 +164,33 @@ struct cyttsp {
 	enum cyttsp_state state;
 	bool suspended;
 
+<<<<<<< HEAD
+=======
+	struct regulator_bulk_data regulators[2];
+	struct gpio_desc *reset_gpio;
+	bool use_hndshk;
+	u8 act_dist;
+	u8 act_intrvl;
+	u8 tch_tmout;
+	u8 lp_intrvl;
+	u8 *bl_keys;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 xfer_buf[] ____cacheline_aligned;
 };
 
 struct cyttsp *cyttsp_probe(const struct cyttsp_bus_ops *bus_ops,
 			    struct device *dev, int irq, size_t xfer_buf_size);
+<<<<<<< HEAD
 void cyttsp_remove(struct cyttsp *ts);
 
+=======
+
+int cyttsp_i2c_write_block_data(struct device *dev, u8 *xfer_buf, u16 addr,
+		u8 length, const void *values);
+int cyttsp_i2c_read_block_data(struct device *dev, u8 *xfer_buf, u16 addr,
+		u8 length, void *values);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct dev_pm_ops cyttsp_pm_ops;
 
 #endif /* __CYTTSP_CORE_H__ */

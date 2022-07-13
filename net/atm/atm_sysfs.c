@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ATM driver model support. */
 
 #include <linux/kernel.h>
@@ -10,6 +14,7 @@
 
 #define to_atm_dev(cldev) container_of(cldev, struct atm_dev, class_dev)
 
+<<<<<<< HEAD
 static ssize_t show_type(struct device *cdev,
 			 struct device_attribute *attr, char *buf)
 {
@@ -60,10 +65,53 @@ static ssize_t show_atmaddress(struct device *cdev,
 }
 
 static ssize_t show_atmindex(struct device *cdev,
+=======
+static ssize_t type_show(struct device *cdev,
+			 struct device_attribute *attr, char *buf)
+{
+	struct atm_dev *adev = to_atm_dev(cdev);
+
+	return scnprintf(buf, PAGE_SIZE, "%s\n", adev->type);
+}
+
+static ssize_t address_show(struct device *cdev,
+			    struct device_attribute *attr, char *buf)
+{
+	struct atm_dev *adev = to_atm_dev(cdev);
+
+	return scnprintf(buf, PAGE_SIZE, "%pM\n", adev->esi);
+}
+
+static ssize_t atmaddress_show(struct device *cdev,
+			       struct device_attribute *attr, char *buf)
+{
+	unsigned long flags;
+	struct atm_dev *adev = to_atm_dev(cdev);
+	struct atm_dev_addr *aaddr;
+	int count = 0;
+
+	spin_lock_irqsave(&adev->lock, flags);
+	list_for_each_entry(aaddr, &adev->local, entry) {
+		count += scnprintf(buf + count, PAGE_SIZE - count,
+				   "%1phN.%2phN.%10phN.%6phN.%1phN\n",
+				   &aaddr->addr.sas_addr.prv[0],
+				   &aaddr->addr.sas_addr.prv[1],
+				   &aaddr->addr.sas_addr.prv[3],
+				   &aaddr->addr.sas_addr.prv[13],
+				   &aaddr->addr.sas_addr.prv[19]);
+	}
+	spin_unlock_irqrestore(&adev->lock, flags);
+
+	return count;
+}
+
+static ssize_t atmindex_show(struct device *cdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct device_attribute *attr, char *buf)
 {
 	struct atm_dev *adev = to_atm_dev(cdev);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", adev->number);
 }
 
@@ -83,6 +131,23 @@ static ssize_t show_link_rate(struct device *cdev,
 			      struct device_attribute *attr, char *buf)
 {
 	char *pos = buf;
+=======
+	return scnprintf(buf, PAGE_SIZE, "%d\n", adev->number);
+}
+
+static ssize_t carrier_show(struct device *cdev,
+			    struct device_attribute *attr, char *buf)
+{
+	struct atm_dev *adev = to_atm_dev(cdev);
+
+	return scnprintf(buf, PAGE_SIZE, "%d\n",
+			 adev->signal == ATM_PHY_SIG_LOST ? 0 : 1);
+}
+
+static ssize_t link_rate_show(struct device *cdev,
+			      struct device_attribute *attr, char *buf)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct atm_dev *adev = to_atm_dev(cdev);
 	int link_rate;
 
@@ -100,6 +165,7 @@ static ssize_t show_link_rate(struct device *cdev,
 	default:
 		link_rate = adev->link_rate * 8 * 53;
 	}
+<<<<<<< HEAD
 	pos += sprintf(pos, "%d\n", link_rate);
 
 	return pos - buf;
@@ -111,6 +177,17 @@ static DEVICE_ATTR(atmindex, S_IRUGO, show_atmindex, NULL);
 static DEVICE_ATTR(carrier, S_IRUGO, show_carrier, NULL);
 static DEVICE_ATTR(type, S_IRUGO, show_type, NULL);
 static DEVICE_ATTR(link_rate, S_IRUGO, show_link_rate, NULL);
+=======
+	return scnprintf(buf, PAGE_SIZE, "%d\n", link_rate);
+}
+
+static DEVICE_ATTR_RO(address);
+static DEVICE_ATTR_RO(atmaddress);
+static DEVICE_ATTR_RO(atmindex);
+static DEVICE_ATTR_RO(carrier);
+static DEVICE_ATTR_RO(type);
+static DEVICE_ATTR_RO(link_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct device_attribute *atm_attrs[] = {
 	&dev_attr_atmaddress,
@@ -123,16 +200,25 @@ static struct device_attribute *atm_attrs[] = {
 };
 
 
+<<<<<<< HEAD
 static int atm_uevent(struct device *cdev, struct kobj_uevent_env *env)
 {
 	struct atm_dev *adev;
+=======
+static int atm_uevent(const struct device *cdev, struct kobj_uevent_env *env)
+{
+	const struct atm_dev *adev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!cdev)
 		return -ENODEV;
 
 	adev = to_atm_dev(cdev);
+<<<<<<< HEAD
 	if (!adev)
 		return -ENODEV;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (add_uevent_var(env, "NAME=%s%d", adev->type, adev->number))
 		return -ENOMEM;

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _M68K_STRING_H_
 #define _M68K_STRING_H_
 
 #include <linux/types.h>
 #include <linux/compiler.h>
 
+<<<<<<< HEAD
 static inline size_t __kernel_strlen(const char *s)
 {
 	const char *sc;
@@ -32,6 +37,8 @@ static inline char *__kernel_strcpy(char *dest, const char *src)
 			 __builtin_strlen(s) :		\
 			 __kernel_strlen(s))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __HAVE_ARCH_STRNLEN
 static inline size_t strnlen(const char *s, size_t count)
 {
@@ -48,6 +55,7 @@ static inline size_t strnlen(const char *s, size_t count)
 	return sc - s;
 }
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_STRCPY
 #if __GNUC__ >= 4
 #define strcpy(d, s)	(__builtin_constant_p(s) &&	\
@@ -58,6 +66,8 @@ static inline size_t strnlen(const char *s, size_t count)
 #define strcpy(d, s)	__kernel_strcpy(d, s)
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __HAVE_ARCH_STRNCPY
 static inline char *strncpy(char *dest, const char *src, size_t n)
 {
@@ -75,6 +85,7 @@ static inline char *strncpy(char *dest, const char *src, size_t n)
 	return xdest;
 }
 
+<<<<<<< HEAD
 #define __HAVE_ARCH_STRCAT
 #define strcat(d, s)	({			\
 	char *__d = (d);			\
@@ -104,6 +115,12 @@ static inline int strcmp(const char *cs, const char *ct)
 #define __HAVE_ARCH_MEMMOVE
 extern void *memmove(void *, const void *, __kernel_size_t);
 
+=======
+#define __HAVE_ARCH_MEMMOVE
+extern void *memmove(void *, const void *, __kernel_size_t);
+
+extern int memcmp(const void *, const void *, __kernel_size_t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define memcmp(d, s, n) __builtin_memcmp(d, s, n)
 
 #define __HAVE_ARCH_MEMSET
@@ -114,6 +131,9 @@ extern void *memset(void *, int, __kernel_size_t);
 extern void *memcpy(void *, const void *, __kernel_size_t);
 #define memcpy(d, s, n) __builtin_memcpy(d, s, n)
 
+<<<<<<< HEAD
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _M68K_STRING_H_ */

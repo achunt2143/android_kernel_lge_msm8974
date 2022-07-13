@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* rc-dvb0700-big.c - Keytable for devices in dvb0700
  *
  * Copyright (c) 2010 by Mauro Carvalho Chehab <mchehab@redhat.com>
@@ -14,6 +15,19 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+// rc-dvb0700-big.c - Keytable for devices in dvb0700
+//
+// Copyright (c) 2010 by Mauro Carvalho Chehab
+//
+// TODO: This table is a real mess, as it merges RC codes from several
+// devices into a big table. It also has both RC-5 and NEC codes inside.
+// It should be broken into small tables, and the protocols should properly
+// be identificated.
+//
+// The table were imported from dib0700_devices.c.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -27,6 +41,7 @@ static struct rc_map_table dib0700_rc5_table[] = {
 	{ 0x0709, KEY_VOLUMEDOWN },
 	{ 0x0706, KEY_CHANNELUP },
 	{ 0x070c, KEY_CHANNELDOWN },
+<<<<<<< HEAD
 	{ 0x070f, KEY_1 },
 	{ 0x0715, KEY_2 },
 	{ 0x0710, KEY_3 },
@@ -37,6 +52,18 @@ static struct rc_map_table dib0700_rc5_table[] = {
 	{ 0x0721, KEY_8 },
 	{ 0x0712, KEY_9 },
 	{ 0x0727, KEY_0 },
+=======
+	{ 0x070f, KEY_NUMERIC_1 },
+	{ 0x0715, KEY_NUMERIC_2 },
+	{ 0x0710, KEY_NUMERIC_3 },
+	{ 0x0718, KEY_NUMERIC_4 },
+	{ 0x071b, KEY_NUMERIC_5 },
+	{ 0x071e, KEY_NUMERIC_6 },
+	{ 0x0711, KEY_NUMERIC_7 },
+	{ 0x0721, KEY_NUMERIC_8 },
+	{ 0x0712, KEY_NUMERIC_9 },
+	{ 0x0727, KEY_NUMERIC_0 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0724, KEY_SCREEN }, /* 'Square' key */
 	{ 0x072a, KEY_TEXT },   /* 'T' key */
 	{ 0x072d, KEY_REWIND },
@@ -48,6 +75,7 @@ static struct rc_map_table dib0700_rc5_table[] = {
 
 	/* Key codes for the Terratec Cinergy DT XS Diversity, similar to cinergyT2.c */
 	{ 0xeb01, KEY_POWER },
+<<<<<<< HEAD
 	{ 0xeb02, KEY_1 },
 	{ 0xeb03, KEY_2 },
 	{ 0xeb04, KEY_3 },
@@ -59,6 +87,19 @@ static struct rc_map_table dib0700_rc5_table[] = {
 	{ 0xeb0a, KEY_9 },
 	{ 0xeb0b, KEY_VIDEO },
 	{ 0xeb0c, KEY_0 },
+=======
+	{ 0xeb02, KEY_NUMERIC_1 },
+	{ 0xeb03, KEY_NUMERIC_2 },
+	{ 0xeb04, KEY_NUMERIC_3 },
+	{ 0xeb05, KEY_NUMERIC_4 },
+	{ 0xeb06, KEY_NUMERIC_5 },
+	{ 0xeb07, KEY_NUMERIC_6 },
+	{ 0xeb08, KEY_NUMERIC_7 },
+	{ 0xeb09, KEY_NUMERIC_8 },
+	{ 0xeb0a, KEY_NUMERIC_9 },
+	{ 0xeb0b, KEY_VIDEO },
+	{ 0xeb0c, KEY_NUMERIC_0 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0xeb0d, KEY_REFRESH },
 	{ 0xeb0f, KEY_EPG },
 	{ 0xeb10, KEY_UP },
@@ -97,6 +138,7 @@ static struct rc_map_table dib0700_rc5_table[] = {
 	{ 0xeb5c, KEY_NEXT },
 
 	/* Key codes for the Haupauge WinTV Nova-TD, copied from nova-t-usb2.c (Nova-T USB2) */
+<<<<<<< HEAD
 	{ 0x1e00, KEY_0 },
 	{ 0x1e01, KEY_1 },
 	{ 0x1e02, KEY_2 },
@@ -107,6 +149,18 @@ static struct rc_map_table dib0700_rc5_table[] = {
 	{ 0x1e07, KEY_7 },
 	{ 0x1e08, KEY_8 },
 	{ 0x1e09, KEY_9 },
+=======
+	{ 0x1e00, KEY_NUMERIC_0 },
+	{ 0x1e01, KEY_NUMERIC_1 },
+	{ 0x1e02, KEY_NUMERIC_2 },
+	{ 0x1e03, KEY_NUMERIC_3 },
+	{ 0x1e04, KEY_NUMERIC_4 },
+	{ 0x1e05, KEY_NUMERIC_5 },
+	{ 0x1e06, KEY_NUMERIC_6 },
+	{ 0x1e07, KEY_NUMERIC_7 },
+	{ 0x1e08, KEY_NUMERIC_8 },
+	{ 0x1e09, KEY_NUMERIC_9 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x1e0a, KEY_KPASTERISK },
 	{ 0x1e0b, KEY_RED },
 	{ 0x1e0c, KEY_RADIO },
@@ -149,6 +203,7 @@ static struct rc_map_table dib0700_rc5_table[] = {
 	{ 0x0f4e, KEY_PRINT }, /* PREVIEW */
 	{ 0x0840, KEY_SCREEN }, /* full screen toggle*/
 	{ 0x0f71, KEY_DOT }, /* frequency */
+<<<<<<< HEAD
 	{ 0x0743, KEY_0 },
 	{ 0x0c41, KEY_1 },
 	{ 0x0443, KEY_2 },
@@ -159,6 +214,18 @@ static struct rc_map_table dib0700_rc5_table[] = {
 	{ 0x0d7e, KEY_7 },
 	{ 0x057c, KEY_8 },
 	{ 0x0a40, KEY_9 },
+=======
+	{ 0x0743, KEY_NUMERIC_0 },
+	{ 0x0c41, KEY_NUMERIC_1 },
+	{ 0x0443, KEY_NUMERIC_2 },
+	{ 0x0b7f, KEY_NUMERIC_3 },
+	{ 0x0e41, KEY_NUMERIC_4 },
+	{ 0x0643, KEY_NUMERIC_5 },
+	{ 0x097f, KEY_NUMERIC_6 },
+	{ 0x0d7e, KEY_NUMERIC_7 },
+	{ 0x057c, KEY_NUMERIC_8 },
+	{ 0x0a40, KEY_NUMERIC_9 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0e4e, KEY_CLEAR },
 	{ 0x047c, KEY_CHANNEL }, /* show channel number */
 	{ 0x0f41, KEY_LAST }, /* recall */
@@ -173,6 +240,7 @@ static struct rc_map_table dib0700_rc5_table[] = {
 	{ 0x007d, KEY_CHANNELDOWN },
 
 	/* Key codes for Nova-TD "credit card" remote control. */
+<<<<<<< HEAD
 	{ 0x1d00, KEY_0 },
 	{ 0x1d01, KEY_1 },
 	{ 0x1d02, KEY_2 },
@@ -183,6 +251,18 @@ static struct rc_map_table dib0700_rc5_table[] = {
 	{ 0x1d07, KEY_7 },
 	{ 0x1d08, KEY_8 },
 	{ 0x1d09, KEY_9 },
+=======
+	{ 0x1d00, KEY_NUMERIC_0 },
+	{ 0x1d01, KEY_NUMERIC_1 },
+	{ 0x1d02, KEY_NUMERIC_2 },
+	{ 0x1d03, KEY_NUMERIC_3 },
+	{ 0x1d04, KEY_NUMERIC_4 },
+	{ 0x1d05, KEY_NUMERIC_5 },
+	{ 0x1d06, KEY_NUMERIC_6 },
+	{ 0x1d07, KEY_NUMERIC_7 },
+	{ 0x1d08, KEY_NUMERIC_8 },
+	{ 0x1d09, KEY_NUMERIC_9 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x1d0a, KEY_TEXT },
 	{ 0x1d0d, KEY_MENU },
 	{ 0x1d0f, KEY_MUTE },
@@ -212,10 +292,17 @@ static struct rc_map_table dib0700_rc5_table[] = {
 
 static struct rc_map_list dib0700_rc5_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = dib0700_rc5_table,
 		.size    = ARRAY_SIZE(dib0700_rc5_table),
 		.rc_type = RC_TYPE_RC5,
 		.name    = RC_MAP_DIB0700_RC5_TABLE,
+=======
+		.scan     = dib0700_rc5_table,
+		.size     = ARRAY_SIZE(dib0700_rc5_table),
+		.rc_proto = RC_PROTO_RC5,
+		.name     = RC_MAP_DIB0700_RC5_TABLE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -233,4 +320,9 @@ module_init(init_rc_map)
 module_exit(exit_rc_map)
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+MODULE_DESCRIPTION("dib0700-rc5 remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

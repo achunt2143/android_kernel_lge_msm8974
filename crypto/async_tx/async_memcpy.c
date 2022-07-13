@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * copy offload engine support
  *
@@ -8,6 +12,7 @@
  *      with architecture considerations by:
  *      Neil Brown <neilb@suse.de>
  *      Jeff Garzik <jeff@garzik.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -22,6 +27,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/highmem.h>
@@ -50,15 +57,25 @@ async_memcpy(struct page *dest, struct page *src, unsigned int dest_offset,
 						      &dest, 1, &src, 1, len);
 	struct dma_device *device = chan ? chan->device : NULL;
 	struct dma_async_tx_descriptor *tx = NULL;
+<<<<<<< HEAD
 
 	if (device && is_dma_copy_aligned(device, src_offset, dest_offset, len)) {
 		dma_addr_t dma_dest, dma_src;
+=======
+	struct dmaengine_unmap_data *unmap = NULL;
+
+	if (device)
+		unmap = dmaengine_get_unmap_data(device->dev, 2, GFP_NOWAIT);
+
+	if (unmap && is_dma_copy_aligned(device, src_offset, dest_offset, len)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long dma_prep_flags = 0;
 
 		if (submit->cb_fn)
 			dma_prep_flags |= DMA_PREP_INTERRUPT;
 		if (submit->flags & ASYNC_TX_FENCE)
 			dma_prep_flags |= DMA_PREP_FENCE;
+<<<<<<< HEAD
 		dma_dest = dma_map_page(device->dev, dest, dest_offset, len,
 					DMA_FROM_DEVICE);
 
@@ -67,10 +84,29 @@ async_memcpy(struct page *dest, struct page *src, unsigned int dest_offset,
 
 		tx = device->device_prep_dma_memcpy(chan, dma_dest, dma_src,
 						    len, dma_prep_flags);
+=======
+
+		unmap->to_cnt = 1;
+		unmap->addr[0] = dma_map_page(device->dev, src, src_offset, len,
+					      DMA_TO_DEVICE);
+		unmap->from_cnt = 1;
+		unmap->addr[1] = dma_map_page(device->dev, dest, dest_offset, len,
+					      DMA_FROM_DEVICE);
+		unmap->len = len;
+
+		tx = device->device_prep_dma_memcpy(chan, unmap->addr[1],
+						    unmap->addr[0], len,
+						    dma_prep_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (tx) {
 		pr_debug("%s: (async) len: %zu\n", __func__, len);
+<<<<<<< HEAD
+=======
+
+		dma_set_unmap(tx, unmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		async_tx_submit(chan, tx, submit);
 	} else {
 		void *dest_buf, *src_buf;
@@ -90,6 +126,11 @@ async_memcpy(struct page *dest, struct page *src, unsigned int dest_offset,
 		async_tx_sync_epilog(submit);
 	}
 
+<<<<<<< HEAD
+=======
+	dmaengine_unmap_put(unmap);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return tx;
 }
 EXPORT_SYMBOL_GPL(async_memcpy);

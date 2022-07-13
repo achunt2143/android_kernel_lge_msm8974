@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Id: plip.c,v 1.3.6.2 1997/04/16 15:07:56 phil Exp $ */
 /* PLIP: A parallel port "network" driver for Linux. */
 /* This driver is for parallel port with 5-bit cable (LapLink (R) cable). */
@@ -29,11 +33,14 @@
  *		Al Viro
  *		  - Changed {enable,disable}_irq handling to make it work
  *		    with new ("stack") semantics.
+<<<<<<< HEAD
  *
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -88,6 +95,10 @@ static const char version[] = "NET3 PLIP version 2.4-parport gniibe@mri.co.jp\n"
     extra grounds are 18,19,20,21,22,23,24
 */
 
+<<<<<<< HEAD
+=======
+#include <linux/compat.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -146,7 +157,11 @@ static void plip_timer_bh(struct work_struct *work);
 static void plip_interrupt(void *dev_id);
 
 /* Functions for DEV methods */
+<<<<<<< HEAD
 static int plip_tx_packet(struct sk_buff *skb, struct net_device *dev);
+=======
+static netdev_tx_t plip_tx_packet(struct sk_buff *skb, struct net_device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int plip_hard_header(struct sk_buff *skb, struct net_device *dev,
                             unsigned short type, const void *daddr,
 			    const void *saddr, unsigned len);
@@ -154,7 +169,12 @@ static int plip_hard_header_cache(const struct neighbour *neigh,
                                   struct hh_cache *hh, __be16 type);
 static int plip_open(struct net_device *dev);
 static int plip_close(struct net_device *dev);
+<<<<<<< HEAD
 static int plip_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd);
+=======
+static int plip_siocdevprivate(struct net_device *dev, struct ifreq *ifr,
+			       void __user *data, int cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int plip_preempt(void *handle);
 static void plip_wakeup(void *handle);
 
@@ -269,8 +289,12 @@ static const struct net_device_ops plip_netdev_ops = {
 	.ndo_open		 = plip_open,
 	.ndo_stop		 = plip_close,
 	.ndo_start_xmit		 = plip_tx_packet,
+<<<<<<< HEAD
 	.ndo_do_ioctl		 = plip_ioctl,
 	.ndo_change_mtu		 = eth_change_mtu,
+=======
+	.ndo_siocdevprivate	 = plip_siocdevprivate,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address	 = eth_mac_addr,
 	.ndo_validate_addr	 = eth_validate_addr,
 };
@@ -287,12 +311,23 @@ static const struct net_device_ops plip_netdev_ops = {
 static void
 plip_init_netdev(struct net_device *dev)
 {
+<<<<<<< HEAD
+=======
+	static const u8 addr_init[ETH_ALEN] = {
+		0xfc, 0xfc, 0xfc,
+		0xfc, 0xfc, 0xfc,
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_local *nl = netdev_priv(dev);
 
 	/* Then, override parts of it */
 	dev->tx_queue_len 	 = 10;
 	dev->flags	         = IFF_POINTOPOINT|IFF_NOARP;
+<<<<<<< HEAD
 	memset(dev->dev_addr, 0xfc, ETH_ALEN);
+=======
+	eth_hw_addr_set(dev, addr_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->netdev_ops		 = &plip_netdev_ops;
 	dev->header_ops          = &plip_header_ops;
@@ -449,12 +484,20 @@ plip_bh_timeout_error(struct net_device *dev, struct net_local *nl,
 	}
 	rcv->state = PLIP_PK_DONE;
 	if (rcv->skb) {
+<<<<<<< HEAD
 		kfree_skb(rcv->skb);
+=======
+		dev_kfree_skb_irq(rcv->skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcv->skb = NULL;
 	}
 	snd->state = PLIP_PK_DONE;
 	if (snd->skb) {
+<<<<<<< HEAD
 		dev_kfree_skb(snd->skb);
+=======
+		dev_consume_skb_irq(snd->skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd->skb = NULL;
 	}
 	spin_unlock_irq(&nl->lock);
@@ -503,6 +546,10 @@ plip_receive(unsigned short nibble_timeout, struct net_device *dev,
 		*data_p = (c0 >> 3) & 0x0f;
 		write_data (dev, 0x10); /* send ACK */
 		*ns_p = PLIP_NB_1;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PLIP_NB_1:
 		cx = nibble_timeout;
@@ -520,6 +567,10 @@ plip_receive(unsigned short nibble_timeout, struct net_device *dev,
 		*data_p |= (c0 << 1) & 0xf0;
 		write_data (dev, 0x00); /* send ACK */
 		*ns_p = PLIP_NB_BEGIN;
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PLIP_NB_2:
 		break;
 	}
@@ -547,9 +598,15 @@ static __be16 plip_type_trans(struct sk_buff *skb, struct net_device *dev)
 	skb_pull(skb,dev->hard_header_len);
 	eth = eth_hdr(skb);
 
+<<<<<<< HEAD
 	if(*eth->h_dest&1)
 	{
 		if(memcmp(eth->h_dest,dev->broadcast, ETH_ALEN)==0)
+=======
+	if(is_multicast_ether_addr(eth->h_dest))
+	{
+		if(ether_addr_equal_64bits(eth->h_dest, dev->broadcast))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb->pkt_type=PACKET_BROADCAST;
 		else
 			skb->pkt_type=PACKET_MULTICAST;
@@ -560,7 +617,11 @@ static __be16 plip_type_trans(struct sk_buff *skb, struct net_device *dev)
 	 *	so don't forget to remove it.
 	 */
 
+<<<<<<< HEAD
 	if (ntohs(eth->h_proto) >= 1536)
+=======
+	if (ntohs(eth->h_proto) >= ETH_P_802_3_MIN)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return eth->h_proto;
 
 	rawp = skb->data;
@@ -598,6 +659,10 @@ plip_receive_packet(struct net_device *dev, struct net_local *nl,
 			printk(KERN_DEBUG "%s: receive start\n", dev->name);
 		rcv->state = PLIP_PK_LENGTH_LSB;
 		rcv->nibble = PLIP_NB_BEGIN;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PLIP_PK_LENGTH_LSB:
 		if (snd->state != PLIP_PK_DONE) {
@@ -618,6 +683,10 @@ plip_receive_packet(struct net_device *dev, struct net_local *nl,
 				return TIMEOUT;
 		}
 		rcv->state = PLIP_PK_LENGTH_MSB;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PLIP_PK_LENGTH_MSB:
 		if (plip_receive(nibble_timeout, dev,
@@ -640,6 +709,10 @@ plip_receive_packet(struct net_device *dev, struct net_local *nl,
 		rcv->state = PLIP_PK_DATA;
 		rcv->byte = 0;
 		rcv->checksum = 0;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PLIP_PK_DATA:
 		lbuf = rcv->skb->data;
@@ -652,6 +725,10 @@ plip_receive_packet(struct net_device *dev, struct net_local *nl,
 			rcv->checksum += lbuf[--rcv->byte];
 		} while (rcv->byte);
 		rcv->state = PLIP_PK_CHECKSUM;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PLIP_PK_CHECKSUM:
 		if (plip_receive(nibble_timeout, dev,
@@ -664,11 +741,19 @@ plip_receive_packet(struct net_device *dev, struct net_local *nl,
 			return ERROR;
 		}
 		rcv->state = PLIP_PK_DONE;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PLIP_PK_DONE:
 		/* Inform the upper layer for the arrival of a packet. */
 		rcv->skb->protocol=plip_type_trans(rcv->skb, dev);
+<<<<<<< HEAD
 		netif_rx_ni(rcv->skb);
+=======
+		netif_rx(rcv->skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->stats.rx_bytes += rcv->length.h;
 		dev->stats.rx_packets++;
 		rcv->skb = NULL;
@@ -709,6 +794,10 @@ plip_send(unsigned short nibble_timeout, struct net_device *dev,
 	case PLIP_NB_BEGIN:
 		write_data (dev, data & 0x0f);
 		*ns_p = PLIP_NB_1;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PLIP_NB_1:
 		write_data (dev, 0x10 | (data & 0x0f));
@@ -723,6 +812,10 @@ plip_send(unsigned short nibble_timeout, struct net_device *dev,
 		}
 		write_data (dev, 0x10 | (data >> 4));
 		*ns_p = PLIP_NB_2;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PLIP_NB_2:
 		write_data (dev, (data >> 4));
@@ -805,12 +898,20 @@ plip_send_packet(struct net_device *dev, struct net_local *nl,
 				return HS_TIMEOUT;
 			}
 		}
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PLIP_PK_LENGTH_LSB:
 		if (plip_send(nibble_timeout, dev,
 			      &snd->nibble, snd->length.b.lsb))
 			return TIMEOUT;
 		snd->state = PLIP_PK_LENGTH_MSB;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PLIP_PK_LENGTH_MSB:
 		if (plip_send(nibble_timeout, dev,
@@ -819,6 +920,10 @@ plip_send_packet(struct net_device *dev, struct net_local *nl,
 		snd->state = PLIP_PK_DATA;
 		snd->byte = 0;
 		snd->checksum = 0;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PLIP_PK_DATA:
 		do {
@@ -830,6 +935,10 @@ plip_send_packet(struct net_device *dev, struct net_local *nl,
 			snd->checksum += lbuf[--snd->byte];
 		} while (snd->byte);
 		snd->state = PLIP_PK_CHECKSUM;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PLIP_PK_CHECKSUM:
 		if (plip_send(nibble_timeout, dev,
@@ -840,6 +949,10 @@ plip_send_packet(struct net_device *dev, struct net_local *nl,
 		dev_kfree_skb(snd->skb);
 		dev->stats.tx_packets++;
 		snd->state = PLIP_PK_DONE;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case PLIP_PK_DONE:
 		/* Close the connection */
@@ -928,6 +1041,10 @@ plip_interrupt(void *dev_id)
 	switch (nl->connection) {
 	case PLIP_CN_CLOSING:
 		netif_wake_queue (dev);
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PLIP_CN_NONE:
 	case PLIP_CN_SEND:
 		rcv->state = PLIP_PK_TRIGGER;
@@ -950,7 +1067,11 @@ plip_interrupt(void *dev_id)
 	spin_unlock_irqrestore(&nl->lock, flags);
 }
 
+<<<<<<< HEAD
 static int
+=======
+static netdev_tx_t
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 plip_tx_packet(struct sk_buff *skb, struct net_device *dev)
 {
 	struct net_local *nl = netdev_priv(dev);
@@ -1000,9 +1121,15 @@ plip_rewrite_address(const struct net_device *dev, struct ethhdr *eth)
 	in_dev = __in_dev_get_rcu(dev);
 	if (in_dev) {
 		/* Any address will do - we take the first */
+<<<<<<< HEAD
 		const struct in_ifaddr *ifa = in_dev->ifa_list;
 		if (ifa) {
 			memcpy(eth->h_source, dev->dev_addr, 6);
+=======
+		const struct in_ifaddr *ifa = rcu_dereference(in_dev->ifa_list);
+		if (ifa) {
+			memcpy(eth->h_source, dev->dev_addr, ETH_ALEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memset(eth->h_dest, 0xfc, 2);
 			memcpy(eth->h_dest+2, &ifa->ifa_address, 4);
 		}
@@ -1095,9 +1222,15 @@ plip_open(struct net_device *dev)
 		/* Any address will do - we take the first. We already
 		   have the first two bytes filled with 0xfc, from
 		   plip_init_dev(). */
+<<<<<<< HEAD
 		struct in_ifaddr *ifa=in_dev->ifa_list;
 		if (ifa != NULL) {
 			memcpy(dev->dev_addr+2, &ifa->ifa_local, 4);
+=======
+		const struct in_ifaddr *ifa = rtnl_dereference(in_dev->ifa_list);
+		if (ifa != NULL) {
+			dev_addr_mod(dev, 2, &ifa->ifa_local, 4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1197,7 +1330,12 @@ plip_wakeup(void *handle)
 }
 
 static int
+<<<<<<< HEAD
 plip_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+=======
+plip_siocdevprivate(struct net_device *dev, struct ifreq *rq,
+		    void __user *data, int cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_local *nl = netdev_priv(dev);
 	struct plipconf *pc = (struct plipconf *) &rq->ifr_ifru;
@@ -1205,6 +1343,12 @@ plip_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 	if (cmd != SIOCDEVPLIP)
 		return -EOPNOTSUPP;
 
+<<<<<<< HEAD
+=======
+	if (in_compat_syscall())
+		return -EOPNOTSUPP;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch(pc->pcmd) {
 	case PLIP_GET_TIMEOUT:
 		pc->trigger = nl->trigger;
@@ -1249,6 +1393,10 @@ static void plip_attach (struct parport *port)
 	struct net_device *dev;
 	struct net_local *nl;
 	char name[IFNAMSIZ];
+<<<<<<< HEAD
+=======
+	struct pardev_cb plip_cb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((parport[0] == -1 && (!timid || !port->devices)) ||
 	    plip_searchfor(parport, port->number)) {
@@ -1273,9 +1421,21 @@ static void plip_attach (struct parport *port)
 
 		nl = netdev_priv(dev);
 		nl->dev = dev;
+<<<<<<< HEAD
 		nl->pardev = parport_register_device(port, dev->name, plip_preempt,
 						 plip_wakeup, plip_interrupt,
 						 0, dev);
+=======
+
+		memset(&plip_cb, 0, sizeof(plip_cb));
+		plip_cb.private = dev;
+		plip_cb.preempt = plip_preempt;
+		plip_cb.wakeup = plip_wakeup;
+		plip_cb.irq_func = plip_interrupt;
+
+		nl->pardev = parport_register_dev_model(port, dev->name,
+							&plip_cb, unit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!nl->pardev) {
 			printk(KERN_ERR "%s: parport_register failed\n", name);
@@ -1315,10 +1475,30 @@ static void plip_detach (struct parport *port)
 	/* Nothing to do */
 }
 
+<<<<<<< HEAD
 static struct parport_driver plip_driver = {
 	.name	= "plip",
 	.attach = plip_attach,
 	.detach = plip_detach
+=======
+static int plip_probe(struct pardevice *par_dev)
+{
+	struct device_driver *drv = par_dev->dev.driver;
+	int len = strlen(drv->name);
+
+	if (strncmp(par_dev->name, drv->name, len))
+		return -ENODEV;
+
+	return 0;
+}
+
+static struct parport_driver plip_driver = {
+	.name		= "plip",
+	.probe		= plip_probe,
+	.match_port	= plip_attach,
+	.detach		= plip_detach,
+	.devmodel	= true,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __exit plip_cleanup_module (void)
@@ -1326,8 +1506,11 @@ static void __exit plip_cleanup_module (void)
 	struct net_device *dev;
 	int i;
 
+<<<<<<< HEAD
 	parport_unregister_driver (&plip_driver);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i=0; i < PLIP_MAX; i++) {
 		if ((dev = dev_plip[i])) {
 			struct net_local *nl = netdev_priv(dev);
@@ -1339,6 +1522,11 @@ static void __exit plip_cleanup_module (void)
 			dev_plip[i] = NULL;
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	parport_unregister_driver(&plip_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifndef MODULE
@@ -1397,4 +1585,8 @@ static int __init plip_init (void)
 
 module_init(plip_init);
 module_exit(plip_cleanup_module);
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("PLIP (parallel port) network module");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

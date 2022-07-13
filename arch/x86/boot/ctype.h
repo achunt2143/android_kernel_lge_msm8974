@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 #ifndef BOOT_ISDIGIT_H
 
 #define BOOT_ISDIGIT_H
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef BOOT_CTYPE_H
+#define BOOT_CTYPE_H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int isdigit(int ch)
 {

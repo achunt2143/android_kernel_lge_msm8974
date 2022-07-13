@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson SA 2010
  *
  * License Terms: GNU General Public License v2
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) ST-Ericsson SA 2010
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Sundar Iyer <sundar.iyer@stericsson.com> for ST-Ericsson
  *          Bengt Jonsson <bengt.g.jonsson@stericsson.com> for ST-Ericsson
  *
@@ -17,6 +24,11 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
 #include <linux/regulator/db8500-prcmu.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/of_regulator.h>
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include "dbx500-prcmu.h"
 
@@ -73,7 +85,11 @@ static int db8500_regulator_is_enabled(struct regulator_dev *rdev)
 }
 
 /* db8500 regulator operations */
+<<<<<<< HEAD
 static struct regulator_ops db8500_regulator_ops = {
+=======
+static const struct regulator_ops db8500_regulator_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable			= db8500_regulator_enable,
 	.disable		= db8500_regulator_disable,
 	.is_enabled		= db8500_regulator_is_enabled,
@@ -179,7 +195,11 @@ static int db8500_regulator_switch_disable(struct regulator_dev *rdev)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	info->is_enabled = 0;
+=======
+	info->is_enabled = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
@@ -198,7 +218,11 @@ static int db8500_regulator_switch_is_enabled(struct regulator_dev *rdev)
 	return info->is_enabled;
 }
 
+<<<<<<< HEAD
 static struct regulator_ops db8500_regulator_switch_ops = {
+=======
+static const struct regulator_ops db8500_regulator_switch_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable			= db8500_regulator_switch_enable,
 	.disable		= db8500_regulator_switch_disable,
 	.is_enabled		= db8500_regulator_switch_is_enabled,
@@ -212,6 +236,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_VAPE] = {
 		.desc = {
 			.name	= "db8500-vape",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_vape"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_VAPE,
 			.ops	= &db8500_regulator_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -221,6 +249,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_VARM] = {
 		.desc = {
 			.name	= "db8500-varm",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_varm"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_VARM,
 			.ops	= &db8500_regulator_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -230,6 +262,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_VMODEM] = {
 		.desc = {
 			.name	= "db8500-vmodem",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_vmodem"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_VMODEM,
 			.ops	= &db8500_regulator_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -239,6 +275,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_VPLL] = {
 		.desc = {
 			.name	= "db8500-vpll",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_vpll"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_VPLL,
 			.ops	= &db8500_regulator_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -248,6 +288,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_VSMPS1] = {
 		.desc = {
 			.name	= "db8500-vsmps1",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_vsmps1"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_VSMPS1,
 			.ops	= &db8500_regulator_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -257,16 +301,29 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_VSMPS2] = {
 		.desc = {
 			.name	= "db8500-vsmps2",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_vsmps2"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_VSMPS2,
 			.ops	= &db8500_regulator_ops,
 			.type	= REGULATOR_VOLTAGE,
 			.owner	= THIS_MODULE,
+<<<<<<< HEAD
+=======
+			.fixed_uV = 1800000,
+			.n_voltages = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 		.exclude_from_power_state = true,
 	},
 	[DB8500_REGULATOR_VSMPS3] = {
 		.desc = {
 			.name	= "db8500-vsmps3",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_vsmps3"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_VSMPS3,
 			.ops	= &db8500_regulator_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -276,6 +333,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_VRF1] = {
 		.desc = {
 			.name	= "db8500-vrf1",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_vrf1"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_VRF1,
 			.ops	= &db8500_regulator_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -285,6 +346,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_SWITCH_SVAMMDSP] = {
 		.desc = {
 			.name	= "db8500-sva-mmdsp",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_sva_mmdsp"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_SWITCH_SVAMMDSP,
 			.ops	= &db8500_regulator_switch_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -295,6 +360,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_SWITCH_SVAMMDSPRET] = {
 		.desc = {
 			.name	= "db8500-sva-mmdsp-ret",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_sva_mmdsp_ret"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_SWITCH_SVAMMDSPRET,
 			.ops	= &db8500_regulator_switch_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -306,6 +375,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_SWITCH_SVAPIPE] = {
 		.desc = {
 			.name	= "db8500-sva-pipe",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_sva_pipe"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_SWITCH_SVAPIPE,
 			.ops	= &db8500_regulator_switch_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -316,6 +389,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_SWITCH_SIAMMDSP] = {
 		.desc = {
 			.name	= "db8500-sia-mmdsp",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_sia_mmdsp"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_SWITCH_SIAMMDSP,
 			.ops	= &db8500_regulator_switch_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -326,6 +403,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_SWITCH_SIAMMDSPRET] = {
 		.desc = {
 			.name	= "db8500-sia-mmdsp-ret",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_sia_mmdsp_ret"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_SWITCH_SIAMMDSPRET,
 			.ops	= &db8500_regulator_switch_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -337,6 +418,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_SWITCH_SIAPIPE] = {
 		.desc = {
 			.name	= "db8500-sia-pipe",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_sia_pipe"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_SWITCH_SIAPIPE,
 			.ops	= &db8500_regulator_switch_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -347,6 +432,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_SWITCH_SGA] = {
 		.desc = {
 			.name	= "db8500-sga",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_sga"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_SWITCH_SGA,
 			.ops	= &db8500_regulator_switch_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -357,6 +446,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_SWITCH_B2R2_MCDE] = {
 		.desc = {
 			.name	= "db8500-b2r2-mcde",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_b2r2_mcde"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_SWITCH_B2R2_MCDE,
 			.ops	= &db8500_regulator_switch_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -367,6 +460,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_SWITCH_ESRAM12] = {
 		.desc = {
 			.name	= "db8500-esram12",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_esram12"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_SWITCH_ESRAM12,
 			.ops	= &db8500_regulator_switch_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -378,6 +475,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_SWITCH_ESRAM12RET] = {
 		.desc = {
 			.name	= "db8500-esram12-ret",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_esram12_ret"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_SWITCH_ESRAM12RET,
 			.ops	= &db8500_regulator_switch_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -389,6 +490,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_SWITCH_ESRAM34] = {
 		.desc = {
 			.name	= "db8500-esram34",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_esram34"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_SWITCH_ESRAM34,
 			.ops	= &db8500_regulator_switch_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -400,6 +505,10 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_SWITCH_ESRAM34RET] = {
 		.desc = {
 			.name	= "db8500-esram34-ret",
+<<<<<<< HEAD
+=======
+			.of_match = of_match_ptr("db8500_esram34_ret"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.id	= DB8500_REGULATOR_SWITCH_ESRAM34RET,
 			.ops	= &db8500_regulator_switch_ops,
 			.type	= REGULATOR_VOLTAGE,
@@ -410,6 +519,7 @@ dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	},
 };
 
+<<<<<<< HEAD
 static int __devinit db8500_regulator_probe(struct platform_device *pdev)
 {
 	struct regulator_init_data *db8500_init_data =
@@ -468,15 +578,62 @@ static int __exit db8500_regulator_remove(struct platform_device *pdev)
 	}
 
 	return 0;
+=======
+static int db8500_regulator_probe(struct platform_device *pdev)
+{
+	struct regulator_init_data *db8500_init_data;
+	struct dbx500_regulator_info *info;
+	struct regulator_config config = { };
+	struct regulator_dev *rdev;
+	int err, i;
+
+	db8500_init_data = dev_get_platdata(&pdev->dev);
+
+	for (i = 0; i < ARRAY_SIZE(dbx500_regulator_info); i++) {
+		/* assign per-regulator data */
+		info = &dbx500_regulator_info[i];
+
+		config.driver_data = info;
+		config.dev = &pdev->dev;
+		if (db8500_init_data)
+			config.init_data = &db8500_init_data[i];
+
+		rdev = devm_regulator_register(&pdev->dev, &info->desc,
+					       &config);
+		if (IS_ERR(rdev)) {
+			err = PTR_ERR(rdev);
+			dev_err(&pdev->dev, "failed to register %s: err %i\n",
+				info->desc.name, err);
+			return err;
+		}
+		dev_dbg(&pdev->dev, "regulator-%s-probed\n", info->desc.name);
+	}
+
+	ux500_regulator_debug_init(pdev, dbx500_regulator_info,
+				   ARRAY_SIZE(dbx500_regulator_info));
+	return 0;
+}
+
+static void db8500_regulator_remove(struct platform_device *pdev)
+{
+	ux500_regulator_debug_exit();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver db8500_regulator_driver = {
 	.driver = {
 		.name = "db8500-prcmu-regulators",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe = db8500_regulator_probe,
 	.remove = __exit_p(db8500_regulator_remove),
+=======
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+	},
+	.probe = db8500_regulator_probe,
+	.remove_new = db8500_regulator_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init db8500_regulator_init(void)

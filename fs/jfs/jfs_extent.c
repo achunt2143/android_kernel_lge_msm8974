@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2004
  *
@@ -14,6 +15,11 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *   Copyright (C) International Business Machines Corp., 2000-2004
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -29,9 +35,12 @@
  * forward references
  */
 static int extBalloc(struct inode *, s64, s64 *, s64 *);
+<<<<<<< HEAD
 #ifdef _NOTYET
 static int extBrealloc(struct inode *, s64, s64, s64 *, s64 *);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static s64 extRoundDown(s64 nb);
 
 #define DPD(a)		(printk("(a): %d\n",(a)))
@@ -182,7 +191,11 @@ extAlloc(struct inode *ip, s64 xlen, s64 pno, xad_t * xp, bool abnr)
 	/*
 	 * COMMIT_SyncList flags an anonymous tlock on page that is on
 	 * sync list.
+<<<<<<< HEAD
 	 * We need to commit the inode to get the page written disk.
+=======
+	 * We need to commit the inode to get the page written to the disk.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (test_and_clear_cflag(COMMIT_Synclist,ip))
 		jfs_commit_inode(ip, 0);
@@ -190,6 +203,7 @@ extAlloc(struct inode *ip, s64 xlen, s64 pno, xad_t * xp, bool abnr)
 	return (0);
 }
 
+<<<<<<< HEAD
 
 #ifdef _NOTYET
 /*
@@ -346,6 +360,8 @@ exit:
 #endif			/* _NOTYET */
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NAME:	extHint()
  *
@@ -388,7 +404,11 @@ int extHint(struct inode *ip, s64 offset, xad_t * xp)
 
 	if ((rc == 0) && xlen) {
 		if (xlen != nbperpage) {
+<<<<<<< HEAD
 			jfs_error(ip->i_sb, "extHint: corrupt xtree");
+=======
+			jfs_error(ip->i_sb, "corrupt xtree\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -EIO;
 		}
 		XADaddress(xp, xaddr);
@@ -436,6 +456,7 @@ int extRecord(struct inode *ip, xad_t * xp)
 	return rc;
 }
 
+<<<<<<< HEAD
 
 #ifdef _NOTYET
 /*
@@ -474,6 +495,8 @@ int extFill(struct inode *ip, xad_t * xp)
 #endif			/* _NOTYET */
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NAME:	extBalloc()
  *
@@ -521,6 +544,14 @@ extBalloc(struct inode *ip, s64 hint, s64 * nblocks, s64 * blkno)
 	 * blocks in the map. in that case, we'll start off with the
 	 * maximum free.
 	 */
+<<<<<<< HEAD
+=======
+
+	/* give up if no space left */
+	if (bmp->db_maxfreebud == -1)
+		return -ENOSPC;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max = (s64) 1 << bmp->db_maxfreebud;
 	if (*nblocks >= max && *nblocks > nbperpage)
 		nb = nblks = (max > nbperpage) ? max : nbperpage;
@@ -563,6 +594,7 @@ extBalloc(struct inode *ip, s64 hint, s64 * nblocks, s64 * blkno)
 	return (0);
 }
 
+<<<<<<< HEAD
 
 #ifdef _NOTYET
 /*
@@ -621,6 +653,8 @@ extBrealloc(struct inode *ip,
 #endif			/* _NOTYET */
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NAME:	extRoundDown()
  *

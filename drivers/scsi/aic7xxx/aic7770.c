@@ -42,6 +42,7 @@
  * $FreeBSD$
  */
 
+<<<<<<< HEAD
 #ifdef __linux__
 #include "aic7xxx_osm.h"
 #include "aic7xxx_inline.h"
@@ -51,6 +52,11 @@
 #include <dev/aic7xxx/aic7xxx_inline.h>
 #include <dev/aic7xxx/aic7xxx_93cx6.h>
 #endif
+=======
+#include "aic7xxx_osm.h"
+#include "aic7xxx_inline.h"
+#include "aic7xxx_93cx6.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ID_AIC7770	0x04907770
 #define ID_AHA_274x	0x04907771

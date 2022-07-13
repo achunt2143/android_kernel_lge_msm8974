@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Save/restore floating point context for signal handlers.
  *
  * Copyright (C) 1999, 2000  Kaz Kojima & Niibe Yutaka
  *
+<<<<<<< HEAD
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
@@ -10,6 +15,11 @@
  * FIXME! These routines can be optimized in big endian case.
  */
 #include <linux/sched.h>
+=======
+ * FIXME! These routines can be optimized in big endian case.
+ */
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/signal.h>
 #include <asm/processor.h>
 #include <asm/io.h>
@@ -571,5 +581,9 @@ BUILD_TRAP_HANDLER(fpu_error)
 		return;
 	}
 
+<<<<<<< HEAD
 	force_sig(SIGFPE, tsk);
+=======
+	force_sig(SIGFPE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

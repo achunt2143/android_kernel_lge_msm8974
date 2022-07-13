@@ -8,6 +8,7 @@
 #ifndef __ASM_SN_INTR_H
 #define __ASM_SN_INTR_H
 
+<<<<<<< HEAD
 /* Number of interrupt levels associated with each interrupt register. */
 #define N_INTPEND_BITS		64
 
@@ -17,6 +18,8 @@
 #define	N_INTPENDJUNK_BITS	8
 #define	INTPENDJUNK_CLRBIT	0x80
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Macros to manipulate the interrupt register on the calling hub chip.
  */
@@ -32,7 +35,11 @@
  * We do an uncached load of the int_pend0 register to ensure this.
  */
 
+<<<<<<< HEAD
 #define LOCAL_HUB_CLR_INTR(level)	  			\
+=======
+#define LOCAL_HUB_CLR_INTR(level)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 do {								\
 	LOCAL_HUB_S(PI_INT_PEND_MOD, (level));			\
 	LOCAL_HUB_L(PI_INT_PEND0);				\
@@ -40,7 +47,11 @@ do {								\
 
 #define REMOTE_HUB_CLR_INTR(hub, level)				\
 do {								\
+<<<<<<< HEAD
 	nasid_t  __hub = (hub);					\
+=======
+	nasid_t	 __hub = (hub);					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 								\
 	REMOTE_HUB_S(__hub, PI_INT_PEND_MOD, (level));		\
 	REMOTE_HUB_L(__hub, PI_INT_PEND0);			\
@@ -84,6 +95,7 @@ do {								\
 #define CPU_RESCHED_B_IRQ	 8
 #define CPU_CALL_A_IRQ		 9
 #define CPU_CALL_B_IRQ		10
+<<<<<<< HEAD
 #define MSC_MESG_INTR		11
 #define BASE_PCI_IRQ		12
 
@@ -92,6 +104,8 @@ do {								\
  */
 #define SDISK_INTR		63	/* SABLE name */
 #define IP_PEND0_6_63		63	/* What is this bit? */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * INT_PEND1 hard-coded bits:
@@ -102,8 +116,13 @@ do {								\
 #define LLP_PFAIL_INTR_A	41	/* see ml/SN/SN0/sysctlr.c */
 #define LLP_PFAIL_INTR_B	42
 
+<<<<<<< HEAD
 #define	TLB_INTR_A		43	/* used for tlb flush random */
 #define	TLB_INTR_B		44
+=======
+#define TLB_INTR_A		43	/* used for tlb flush random */
+#define TLB_INTR_B		44
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IP27_INTR_0		45	/* Reserved for PROM use */
 #define IP27_INTR_1		46	/* do not use in Kernel */
@@ -116,8 +135,13 @@ do {								\
 
 #define BRIDGE_ERROR_INTR	53	/* Setup by PROM to catch	*/
 					/* Bridge Errors */
+<<<<<<< HEAD
 #define	DEBUG_INTR_A		54
 #define	DEBUG_INTR_B		55	/* Used by symmon to stop all cpus */
+=======
+#define DEBUG_INTR_A		54
+#define DEBUG_INTR_B		55	/* Used by symmon to stop all cpus */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IO_ERROR_INTR		57	/* Setup by PROM */
 #define CLK_ERR_INTR		58
 #define COR_ERR_INTR_A		59

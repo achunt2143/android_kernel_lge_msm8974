@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * User memory access support for Hexagon
  *
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,6 +21,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_UACCESS_H
@@ -23,6 +30,7 @@
 /*
  * User space memory access functions
  */
+<<<<<<< HEAD
 #include <linux/sched.h>
 #include <linux/mm.h>
 #include <asm/segment.h>
@@ -58,6 +66,11 @@
 	  (unsigned long)size < (get_fs().seg - (unsigned long)addr)))
 
 /*
+=======
+#include <asm/sections.h>
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * When a kernel-mode page fault is taken, the faulting instruction
  * address is checked against a table of exception_table_entries.
  * Each entry is a tuple of the address of an instruction that may
@@ -67,6 +80,7 @@
  */
 
 /*  Assembly somewhat optimized copy routines  */
+<<<<<<< HEAD
 unsigned long __copy_from_user_hexagon(void *to, const void __user *from,
 				     unsigned long n);
 unsigned long __copy_to_user_hexagon(void __user *to, const void *from,
@@ -80,10 +94,19 @@ unsigned long __copy_to_user_hexagon(void __user *to, const void *from,
  * implementing __copy_to/from_user_inatomic, which is much
  * like __copy_to/from_user, but performs slightly less checking.
  */
+=======
+unsigned long raw_copy_from_user(void *to, const void __user *from,
+				     unsigned long n);
+unsigned long raw_copy_to_user(void __user *to, const void *from,
+				   unsigned long n);
+#define INLINE_COPY_FROM_USER
+#define INLINE_COPY_TO_USER
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 __kernel_size_t __clear_user_hexagon(void __user *dest, unsigned long count);
 #define __clear_user(a, s) __clear_user_hexagon((a), (s))
 
+<<<<<<< HEAD
 #define __strncpy_from_user(dst, src, n) hexagon_strncpy_from_user(dst, src, n)
 
 /*  get around the ifndef in asm-generic/uaccess.h  */
@@ -112,5 +135,9 @@ static inline long hexagon_strncpy_from_user(char *dst, const char __user *src,
 		return res-1;
 	}
 }
+=======
+#include <asm-generic/uaccess.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

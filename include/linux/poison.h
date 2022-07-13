@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_POISON_H
 #define _LINUX_POISON_H
 
@@ -20,6 +24,7 @@
  * non-initialized list entries.
  */
 #define LIST_POISON1  ((void *) 0x100 + POISON_POINTER_DELTA)
+<<<<<<< HEAD
 #define LIST_POISON2  ((void *) 0x200 + POISON_POINTER_DELTA)
 
 /********** include/linux/timer.h **********/
@@ -32,6 +37,20 @@
 /********** mm/debug-pagealloc.c **********/
 #define PAGE_POISON 0xaa
 
+=======
+#define LIST_POISON2  ((void *) 0x122 + POISON_POINTER_DELTA)
+
+/********** include/linux/timer.h **********/
+#define TIMER_ENTRY_STATIC	((void *) 0x300 + POISON_POINTER_DELTA)
+
+/********** mm/page_poison.c **********/
+#define PAGE_POISON 0xaa
+
+/********** mm/page_alloc.c ************/
+
+#define TAIL_MAPPING	((void *) 0x400 + POISON_POINTER_DELTA)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /********** mm/slab.c **********/
 /*
  * Magic nums for obj red zoning.
@@ -69,6 +88,7 @@
 #define ATM_POISON_FREE		0x12
 #define ATM_POISON		0xdeadbeef
 
+<<<<<<< HEAD
 /********** net/ **********/
 #define NEIGHBOR_DEAD		0xdeadbeef
 #define NETFILTER_LINK_POISON	0xdead57ac
@@ -79,11 +99,36 @@
 
 /********** lib/flex_array.c **********/
 #define FLEX_ARRAY_FREE	0x6c	/* for use-after-free poisoning */
+=======
+/********** kernel/mutexes **********/
+#define MUTEX_DEBUG_INIT	0x11
+#define MUTEX_DEBUG_FREE	0x22
+#define MUTEX_POISON_WW_CTX	((void *) 0x500 + POISON_POINTER_DELTA)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /********** security/ **********/
 #define KEY_DESTROY		0xbd
 
+<<<<<<< HEAD
 /********** sound/oss/ **********/
 #define OSS_POISON_FREE		0xAB
+=======
+/********** net/core/page_pool.c **********/
+#define PP_SIGNATURE		(0x40 + POISON_POINTER_DELTA)
+
+/********** net/core/skbuff.c **********/
+#define SKB_LIST_POISON_NEXT	((void *)(0x800 + POISON_POINTER_DELTA))
+/********** net/ **********/
+#define NET_PTR_POISON		((void *)(0x801 + POISON_POINTER_DELTA))
+
+/********** kernel/bpf/ **********/
+#define BPF_PTR_POISON ((void *)(0xeB9FUL + POISON_POINTER_DELTA))
+
+/********** VFS **********/
+#define VFS_PTR_POISON ((void *)(0xF5 + POISON_POINTER_DELTA))
+
+/********** lib/stackdepot.c **********/
+#define STACK_DEPOT_POISON ((void *)(0xD390 + POISON_POINTER_DELTA))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

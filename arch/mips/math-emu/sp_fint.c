@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IEEE754 floating point arithmetic
  * single precision
  */
 /*
  * MIPS floating point support
  * Copyright (C) 1994-2000 Algorithmics Ltd.
+<<<<<<< HEAD
  *
  * ########################################################################
  *
@@ -33,6 +38,19 @@ ieee754sp ieee754sp_fint(int x)
 	int xs;
 
 	CLEARCX;
+=======
+ */
+
+#include "ieee754sp.h"
+
+union ieee754sp ieee754sp_fint(int x)
+{
+	unsigned int xm;
+	int xe;
+	int xs;
+
+	ieee754_clearcx();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (x == 0)
 		return ieee754sp_zero(0);
@@ -50,22 +68,36 @@ ieee754sp ieee754sp_fint(int x)
 	} else {
 		xm = x;
 	}
+<<<<<<< HEAD
 	xe = SP_MBITS + 3;
 
 	if (xm >> (SP_MBITS + 1 + 3)) {
 		/* shunt out overflow bits
 		 */
 		while (xm >> (SP_MBITS + 1 + 3)) {
+=======
+	xe = SP_FBITS + 3;
+
+	if (xm >> (SP_FBITS + 1 + 3)) {
+		/* shunt out overflow bits
+		 */
+		while (xm >> (SP_FBITS + 1 + 3)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SPXSRSX1();
 		}
 	} else {
 		/* normalize in grs extended single precision
 		 */
+<<<<<<< HEAD
 		while ((xm >> (SP_MBITS + 3)) == 0) {
+=======
+		while ((xm >> (SP_FBITS + 3)) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			xm <<= 1;
 			xe--;
 		}
 	}
+<<<<<<< HEAD
 	SPNORMRET1(xs, xe, xm, "fint", x);
 }
 
@@ -76,4 +108,7 @@ ieee754sp ieee754sp_funs(unsigned int u)
 		return ieee754sp_add(ieee754sp_1e31(),
 				     ieee754sp_fint(u & ~(1 << 31)));
 	return ieee754sp_fint(u);
+=======
+	return ieee754sp_format(xs, xe, xm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

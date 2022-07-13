@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2006, 2007, 2008, 2009, 2010 QLogic Corporation.
  * All rights reserved.
  * Copyright (c) 2005, 2006 PathScale, Inc. All rights reserved.
+<<<<<<< HEAD
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -33,6 +38,11 @@
  */
 
 #if !defined(IB_PMA_H)
+=======
+ */
+
+#ifndef IB_PMA_H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IB_PMA_H
 
 #include <rdma/ib_mad.h>
@@ -42,6 +52,10 @@
  */
 #define IB_PMA_CLASS_CAP_ALLPORTSELECT  cpu_to_be16(1 << 8)
 #define IB_PMA_CLASS_CAP_EXT_WIDTH      cpu_to_be16(1 << 9)
+<<<<<<< HEAD
+=======
+#define IB_PMA_CLASS_CAP_EXT_WIDTH_NOIETF cpu_to_be16(1 << 10)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IB_PMA_CLASS_CAP_XMIT_WAIT      cpu_to_be16(1 << 12)
 
 #define IB_PMA_CLASS_PORT_INFO          cpu_to_be16(0x0001)

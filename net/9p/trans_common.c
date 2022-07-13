@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright IBM Corporation, 2010
  * Author Venkateswararao Jujjuri <jvrao@linux.vnet.ibm.com>
@@ -21,6 +22,22 @@
 
 /**
  *  p9_release_req_pages - Release pages after the transaction.
+=======
+// SPDX-License-Identifier: LGPL-2.1
+/*
+ * Copyright IBM Corporation, 2010
+ * Author Venkateswararao Jujjuri <jvrao@linux.vnet.ibm.com>
+ */
+
+#include <linux/mm.h>
+#include <linux/module.h>
+#include "trans_common.h"
+
+/**
+ * p9_release_pages - Release pages after the transaction.
+ * @pages: array of pages to be put
+ * @nr_pages: size of array
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void p9_release_pages(struct page **pages, int nr_pages)
 {
@@ -31,6 +48,7 @@ void p9_release_pages(struct page **pages, int nr_pages)
 			put_page(pages[i]);
 }
 EXPORT_SYMBOL(p9_release_pages);
+<<<<<<< HEAD
 
 /**
  * p9_nr_pages - Return number of pages needed to accommodate the payload.
@@ -67,3 +85,5 @@ int p9_payload_gup(char *data, int *nr_pages, struct page **pages, int write)
 	return 0;
 }
 EXPORT_SYMBOL(p9_payload_gup);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

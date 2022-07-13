@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 OUTPUT=./
 ifeq ("$(origin O)", "command line")
 	OUTPUT := $(O)/
@@ -26,7 +30,14 @@ $(OUTPUT)powernow-k8-decode: powernow-k8-decode.c
 all: $(OUTPUT)centrino-decode $(OUTPUT)dump_psb $(OUTPUT)intel_gsic $(OUTPUT)powernow-k8-decode
 
 clean:
+<<<<<<< HEAD
 	rm -rf $(OUTPUT){centrino-decode,dump_psb,intel_gsic,powernow-k8-decode}
+=======
+	rm -rf $(OUTPUT)centrino-decode
+	rm -rf $(OUTPUT)dump_psb
+	rm -rf $(OUTPUT)intel_gsic
+	rm -rf $(OUTPUT)powernow-k8-decode
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 install:
 	$(INSTALL) -d $(DESTDIR)${bindir}

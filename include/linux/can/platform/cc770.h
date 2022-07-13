@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 #ifndef _CAN_PLATFORM_CC770_H_
 #define _CAN_PLATFORM_CC770_H_
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _CAN_PLATFORM_CC770_H
+#define _CAN_PLATFORM_CC770_H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CPU Interface Register (0x02) */
 #define CPUIF_CEN	0x01	/* Clock Out Enable */
@@ -30,4 +36,8 @@ struct cc770_platform_data {
 	u8 bcr;		/* Bus Configuration Register */
 };
 
+<<<<<<< HEAD
 #endif	/* !_CAN_PLATFORM_CC770_H_ */
+=======
+#endif	/* !_CAN_PLATFORM_CC770_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

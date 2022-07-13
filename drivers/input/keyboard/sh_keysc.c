@@ -1,18 +1,28 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SuperH KEYSC Keypad Driver
  *
  * Copyright (C) 2008 Magnus Damm
  *
  * Based on gpio_keys.c, Copyright 2005 Phil Blundell
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/delay.h>
@@ -162,7 +172,11 @@ static irqreturn_t sh_keysc_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int __devinit sh_keysc_probe(struct platform_device *pdev)
+=======
+static int sh_keysc_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sh_keysc_priv *priv;
 	struct sh_keysc_info *pdata;
@@ -171,7 +185,11 @@ static int __devinit sh_keysc_probe(struct platform_device *pdev)
 	int i;
 	int irq, error;
 
+<<<<<<< HEAD
 	if (!pdev->dev.platform_data) {
+=======
+	if (!dev_get_platdata(&pdev->dev)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "no platform data defined\n");
 		error = -EINVAL;
 		goto err0;
@@ -185,10 +203,15 @@ static int __devinit sh_keysc_probe(struct platform_device *pdev)
 	}
 
 	irq = platform_get_irq(pdev, 0);
+<<<<<<< HEAD
 	if (irq < 0) {
 		dev_err(&pdev->dev, "failed to get irq\n");
 		goto err0;
 	}
+=======
+	if (irq < 0)
+		goto err0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
 	if (priv == NULL) {
@@ -198,10 +221,17 @@ static int __devinit sh_keysc_probe(struct platform_device *pdev)
 	}
 
 	platform_set_drvdata(pdev, priv);
+<<<<<<< HEAD
 	memcpy(&priv->pdata, pdev->dev.platform_data, sizeof(priv->pdata));
 	pdata = &priv->pdata;
 
 	priv->iomem_base = ioremap_nocache(res->start, resource_size(res));
+=======
+	memcpy(&priv->pdata, dev_get_platdata(&pdev->dev), sizeof(priv->pdata));
+	pdata = &priv->pdata;
+
+	priv->iomem_base = ioremap(res->start, resource_size(res));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (priv->iomem_base == NULL) {
 		dev_err(&pdev->dev, "failed to remap I/O memory\n");
 		error = -ENXIO;
@@ -266,13 +296,20 @@ static int __devinit sh_keysc_probe(struct platform_device *pdev)
  err2:
 	iounmap(priv->iomem_base);
  err1:
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(priv);
  err0:
 	return error;
 }
 
+<<<<<<< HEAD
 static int __devexit sh_keysc_remove(struct platform_device *pdev)
+=======
+static void sh_keysc_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sh_keysc_priv *priv = platform_get_drvdata(pdev);
 
@@ -285,6 +322,7 @@ static int __devexit sh_keysc_remove(struct platform_device *pdev)
 	pm_runtime_put_sync(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 	kfree(priv);
 
@@ -292,6 +330,11 @@ static int __devexit sh_keysc_remove(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_PM_SLEEP
+=======
+	kfree(priv);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sh_keysc_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -324,6 +367,7 @@ static int sh_keysc_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static SIMPLE_DEV_PM_OPS(sh_keysc_dev_pm_ops,
@@ -335,6 +379,18 @@ static struct platform_driver sh_keysc_device_driver = {
 	.driver		= {
 		.name	= "sh_keysc",
 		.pm	= &sh_keysc_dev_pm_ops,
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(sh_keysc_dev_pm_ops,
+				sh_keysc_suspend, sh_keysc_resume);
+
+static struct platform_driver sh_keysc_device_driver = {
+	.probe		= sh_keysc_probe,
+	.remove_new	= sh_keysc_remove,
+	.driver		= {
+		.name	= "sh_keysc",
+		.pm	= pm_sleep_ptr(&sh_keysc_dev_pm_ops),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 module_platform_driver(sh_keysc_device_driver);

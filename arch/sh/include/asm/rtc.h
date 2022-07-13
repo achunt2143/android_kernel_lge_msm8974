@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_RTC_H
 #define _ASM_RTC_H
 
@@ -17,6 +18,12 @@ struct rtc_time;
 unsigned int get_rtc_time(struct rtc_time *);
 int set_rtc_time(struct rtc_time *);
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_RTC_H
+#define _ASM_RTC_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RTC_CAP_4_DIGIT_YEAR	(1 << 0)
 
 struct sh_rtc_platform_info {

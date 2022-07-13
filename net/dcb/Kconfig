@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 config DCB
 	bool "Data Center Bridging support"
 	default n
 	---help---
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config DCB
+	bool "Data Center Bridging support"
+	default n
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This enables support for configuring Data Center Bridging (DCB)
 	  features on DCB capable Ethernet adapters via rtnetlink.  Say 'Y'
 	  if you have a DCB capable Ethernet adapter which supports this

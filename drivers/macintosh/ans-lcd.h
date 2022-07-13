@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 #ifndef _PPC_ANS_LCD_H
 #define _PPC_ANS_LCD_H
 
 #define ANSLCD_MINOR		156
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _PPC_ANS_LCD_H
+#define _PPC_ANS_LCD_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ANSLCD_CLEAR		0x01
 #define ANSLCD_SENDCTRL		0x02
 #define ANSLCD_SETSHORTDELAY	0x03

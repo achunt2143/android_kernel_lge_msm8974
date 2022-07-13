@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  *    EISA "eeprom" support routines
  *
  *    Copyright (C) 2001 Thomas Bogendoerfer <tsbogend at parisc-linux.org>
+<<<<<<< HEAD
  *
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -17,6 +22,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -26,11 +33,16 @@
 #include <linux/slab.h>
 #include <linux/fs.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/eisa_eeprom.h>
 
 #define 	EISA_EEPROM_MINOR 241
 
+<<<<<<< HEAD
 static loff_t eisa_eeprom_llseek(struct file *file, loff_t offset, int origin )
 {
 	switch (origin) {
@@ -45,6 +57,11 @@ static loff_t eisa_eeprom_llseek(struct file *file, loff_t offset, int origin )
 		break;
 	}
 	return (offset >= 0 && offset < HPEE_MAX_LENGTH) ? (file->f_pos = offset) : -EINVAL;
+=======
+static loff_t eisa_eeprom_llseek(struct file *file, loff_t offset, int origin)
+{
+	return fixed_size_llseek(file, offset, origin, HPEE_MAX_LENGTH);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t eisa_eeprom_read(struct file * file,
@@ -117,7 +134,11 @@ static int __init eisa_eeprom_init(void)
 		return retval;
 	}
 
+<<<<<<< HEAD
 	printk(KERN_INFO "EISA EEPROM at 0x%p\n", eisa_eeprom_addr);
+=======
+	printk(KERN_INFO "EISA EEPROM at 0x%px\n", eisa_eeprom_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

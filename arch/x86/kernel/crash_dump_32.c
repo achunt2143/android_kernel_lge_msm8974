@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Memory preserving reboot related code.
  *
@@ -9,10 +13,14 @@
 #include <linux/errno.h>
 #include <linux/highmem.h>
 #include <linux/crash_dump.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
 
 static void *kdump_buf_page;
+=======
+#include <linux/uio.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline bool is_crashed_pfn_valid(unsigned long pfn)
 {
@@ -30,6 +38,7 @@ static inline bool is_crashed_pfn_valid(unsigned long pfn)
 #endif
 }
 
+<<<<<<< HEAD
 /**
  * copy_oldmem_page - copy one page from "oldmem"
  * @pfn: page frame number to be copied
@@ -49,6 +58,10 @@ static inline bool is_crashed_pfn_valid(unsigned long pfn)
  */
 ssize_t copy_oldmem_page(unsigned long pfn, char *buf,
                                size_t csize, unsigned long offset, int userbuf)
+=======
+ssize_t copy_oldmem_page(struct iov_iter *iter, unsigned long pfn, size_t csize,
+			 unsigned long offset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void  *vaddr;
 
@@ -58,6 +71,7 @@ ssize_t copy_oldmem_page(unsigned long pfn, char *buf,
 	if (!is_crashed_pfn_valid(pfn))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	vaddr = kmap_atomic_pfn(pfn);
 
 	if (!userbuf) {
@@ -93,3 +107,11 @@ static int __init kdump_buf_page_init(void)
 	return ret;
 }
 arch_initcall(kdump_buf_page_init);
+=======
+	vaddr = kmap_local_pfn(pfn);
+	csize = copy_to_iter(vaddr + offset, csize, iter);
+	kunmap_local(vaddr);
+
+	return csize;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

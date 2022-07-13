@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/acorn/scsi/queue.c: queue handling primitives
  *
  *  Copyright (C) 1997-2000 Russell King
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Changelog:
  *   15-Sep-1997 RMK	Created.
  *   11-Oct-1997 RMK	Corrected problem with queue_remove_exclude
@@ -23,7 +30,15 @@
 #include <linux/list.h>
 #include <linux/init.h>
 
+<<<<<<< HEAD
 #include "../scsi.h"
+=======
+#include <scsi/scsi.h>
+#include <scsi/scsi_cmnd.h>
+#include <scsi/scsi_device.h>
+#include <scsi/scsi_eh.h>
+#include <scsi/scsi_tcq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DEBUG
 
@@ -70,7 +85,11 @@ int queue_initialise (Queue_t *queue)
 	 * need to keep free lists or allocate this
 	 * memory.
 	 */
+<<<<<<< HEAD
 	queue->alloc = q = kmalloc(sizeof(QE_t) * nqueues, GFP_KERNEL);
+=======
+	queue->alloc = q = kmalloc_array(nqueues, sizeof(QE_t), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (q) {
 		for (; nqueues; q++, nqueues--) {
 			SET_MAGIC(q, QUEUE_MAGIC_FREE);
@@ -167,7 +186,12 @@ struct scsi_cmnd *queue_remove_exclude(Queue_t *queue, unsigned long *exclude)
 	spin_lock_irqsave(&queue->queue_lock, flags);
 	list_for_each(l, &queue->head) {
 		QE_t *q = list_entry(l, QE_t, list);
+<<<<<<< HEAD
 		if (!test_bit(q->SCpnt->device->id * 8 + q->SCpnt->device->lun, exclude)) {
+=======
+		if (!test_bit(q->SCpnt->device->id * 8 +
+			      (u8)(q->SCpnt->device->lun & 0x7), exclude)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SCpnt = __queue_remove(queue, l);
 			break;
 		}
@@ -216,7 +240,11 @@ struct scsi_cmnd *queue_remove_tgtluntag(Queue_t *queue, int target, int lun,
 	list_for_each(l, &queue->head) {
 		QE_t *q = list_entry(l, QE_t, list);
 		if (q->SCpnt->device->id == target && q->SCpnt->device->lun == lun &&
+<<<<<<< HEAD
 		    q->SCpnt->tag == tag) {
+=======
+		    scsi_cmd_to_rq(q->SCpnt)->tag == tag) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SCpnt = __queue_remove(queue, l);
 			break;
 		}

@@ -137,10 +137,17 @@ void tulip_media_task(struct work_struct *work)
 }
 
 
+<<<<<<< HEAD
 void mxic_timer(unsigned long data)
 {
 	struct net_device *dev = (struct net_device *)data;
 	struct tulip_private *tp = netdev_priv(dev);
+=======
+void mxic_timer(struct timer_list *t)
+{
+	struct tulip_private *tp = from_timer(tp, t, timer);
+	struct net_device *dev = tp->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *ioaddr = tp->base_addr;
 	int next_tick = 60*HZ;
 
@@ -154,11 +161,19 @@ void mxic_timer(unsigned long data)
 }
 
 
+<<<<<<< HEAD
 void comet_timer(unsigned long data)
 {
 	struct net_device *dev = (struct net_device *)data;
 	struct tulip_private *tp = netdev_priv(dev);
 	int next_tick = 60*HZ;
+=======
+void comet_timer(struct timer_list *t)
+{
+	struct tulip_private *tp = from_timer(tp, t, timer);
+	struct net_device *dev = tp->dev;
+	int next_tick = 2*HZ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tulip_debug > 1)
 		netdev_dbg(dev, "Comet link status %04x partner capability %04x\n",

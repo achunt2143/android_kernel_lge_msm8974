@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_KMOD_H__
 #define __LINUX_KMOD_H__
 
 /*
  *	include/linux/kmod.h
+<<<<<<< HEAD
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
@@ -19,6 +24,11 @@
  *      Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+=======
+ */
+
+#include <linux/umh.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/gfp.h>
 #include <linux/stddef.h>
 #include <linux/errno.h>
@@ -44,6 +54,7 @@ static inline int request_module_nowait(const char *name, ...) { return -ENOSYS;
 #define try_then_request_module(x, mod...) (x)
 #endif
 
+<<<<<<< HEAD
 
 struct cred;
 struct file;
@@ -135,4 +146,6 @@ extern int usermodehelper_read_trylock(void);
 extern long usermodehelper_read_lock_wait(long timeout);
 extern void usermodehelper_read_unlock(void);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_KMOD_H__ */

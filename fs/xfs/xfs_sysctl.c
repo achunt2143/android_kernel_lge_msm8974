@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2001-2005 Silicon Graphics, Inc.
  * All Rights Reserved.
@@ -18,6 +19,14 @@
 #include "xfs.h"
 #include <linux/sysctl.h>
 #include <linux/proc_fs.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2001-2005 Silicon Graphics, Inc.
+ * All Rights Reserved.
+ */
+#include "xfs.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "xfs_error.h"
 
 static struct ctl_table_header *xfs_table_header;
@@ -25,6 +34,7 @@ static struct ctl_table_header *xfs_table_header;
 #ifdef CONFIG_PROC_FS
 STATIC int
 xfs_stats_clear_proc_handler(
+<<<<<<< HEAD
 	ctl_table	*ctl,
 	int		write,
 	void		__user *buffer,
@@ -33,10 +43,20 @@ xfs_stats_clear_proc_handler(
 {
 	int		c, ret, *valp = ctl->data;
 	__uint32_t	vn_active;
+=======
+	struct ctl_table	*ctl,
+	int			write,
+	void			*buffer,
+	size_t			*lenp,
+	loff_t			*ppos)
+{
+	int		ret, *valp = ctl->data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = proc_dointvec_minmax(ctl, write, buffer, lenp, ppos);
 
 	if (!ret && write && *valp) {
+<<<<<<< HEAD
 		xfs_notice(NULL, "Clearing xfsstats");
 		for_each_possible_cpu(c) {
 			preempt_disable();
@@ -47,6 +67,9 @@ xfs_stats_clear_proc_handler(
 			per_cpu(xfsstats, c).vn_active = vn_active;
 			preempt_enable();
 		}
+=======
+		xfs_stats_clearall(xfsstats.xs_stats);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xfs_stats_clear = 0;
 	}
 
@@ -55,11 +78,19 @@ xfs_stats_clear_proc_handler(
 
 STATIC int
 xfs_panic_mask_proc_handler(
+<<<<<<< HEAD
 	ctl_table	*ctl,
 	int		write,
 	void		__user *buffer,
 	size_t		*lenp,
 	loff_t		*ppos)
+=======
+	struct ctl_table	*ctl,
+	int			write,
+	void			*buffer,
+	size_t			*lenp,
+	loff_t			*ppos)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int		ret, *valp = ctl->data;
 
@@ -74,13 +105,37 @@ xfs_panic_mask_proc_handler(
 }
 #endif /* CONFIG_PROC_FS */
 
+<<<<<<< HEAD
 static ctl_table xfs_table[] = {
+=======
+STATIC int
+xfs_deprecated_dointvec_minmax(
+	struct ctl_table	*ctl,
+	int			write,
+	void			*buffer,
+	size_t			*lenp,
+	loff_t			*ppos)
+{
+	if (write) {
+		printk_ratelimited(KERN_WARNING
+				"XFS: %s sysctl option is deprecated.\n",
+				ctl->procname);
+	}
+	return proc_dointvec_minmax(ctl, write, buffer, lenp, ppos);
+}
+
+static struct ctl_table xfs_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "irix_sgid_inherit",
 		.data		= &xfs_params.sgid_inherit.val,
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
+<<<<<<< HEAD
 		.proc_handler	= proc_dointvec_minmax,
+=======
+		.proc_handler	= xfs_deprecated_dointvec_minmax,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.extra1		= &xfs_params.sgid_inherit.min,
 		.extra2		= &xfs_params.sgid_inherit.max
 	},
@@ -89,7 +144,11 @@ static ctl_table xfs_table[] = {
 		.data		= &xfs_params.symlink_mode.val,
 		.maxlen		= sizeof(int),
 		.mode		= 0644,
+<<<<<<< HEAD
 		.proc_handler	= proc_dointvec_minmax,
+=======
+		.proc_handler	= xfs_deprecated_dointvec_minmax,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.extra1		= &xfs_params.symlink_mode.min,
 		.extra2		= &xfs_params.symlink_mode.max
 	},
@@ -149,6 +208,7 @@ static ctl_table xfs_table[] = {
 		.extra2		= &xfs_params.inherit_noatim.max
 	},
 	{
+<<<<<<< HEAD
 		.procname	= "xfsbufd_centisecs",
 		.data		= &xfs_params.xfs_buf_timer.val,
 		.maxlen		= sizeof(int),
@@ -167,6 +227,8 @@ static ctl_table xfs_table[] = {
 		.extra2		= &xfs_params.xfs_buf_age.max
 	},
 	{
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.procname	= "inherit_nosymlinks",
 		.data		= &xfs_params.inherit_nosym.val,
 		.maxlen		= sizeof(int),
@@ -202,6 +264,27 @@ static ctl_table xfs_table[] = {
 		.extra1		= &xfs_params.fstrm_timer.min,
 		.extra2		= &xfs_params.fstrm_timer.max,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.procname	= "speculative_prealloc_lifetime",
+		.data		= &xfs_params.blockgc_timer.val,
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec_minmax,
+		.extra1		= &xfs_params.blockgc_timer.min,
+		.extra2		= &xfs_params.blockgc_timer.max,
+	},
+	{
+		.procname	= "speculative_cow_prealloc_lifetime",
+		.data		= &xfs_params.blockgc_timer.val,
+		.maxlen		= sizeof(int),
+		.mode		= 0644,
+		.proc_handler	= xfs_deprecated_dointvec_minmax,
+		.extra1		= &xfs_params.blockgc_timer.min,
+		.extra2		= &xfs_params.blockgc_timer.max,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* please keep this the last entry */
 #ifdef CONFIG_PROC_FS
 	{
@@ -214,6 +297,7 @@ static ctl_table xfs_table[] = {
 		.extra2		= &xfs_params.stats_clear.max
 	},
 #endif /* CONFIG_PROC_FS */
+<<<<<<< HEAD
 
 	{}
 };
@@ -234,12 +318,18 @@ static ctl_table xfs_root_table[] = {
 		.child		= xfs_dir_table
 	},
 	{}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int
 xfs_sysctl_register(void)
 {
+<<<<<<< HEAD
 	xfs_table_header = register_sysctl_table(xfs_root_table);
+=======
+	xfs_table_header = register_sysctl("fs/xfs", xfs_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!xfs_table_header)
 		return -ENOMEM;
 	return 0;

@@ -1,13 +1,21 @@
+<<<<<<< HEAD
 /**
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  arch/arm/mac-sa1100/jornada720_ssp.c
  *
  *  Copyright (C) 2006/2007 Kristoffer Ericson <Kristoffer.Ericson@gmail.com>
  *   Copyright (C) 2006 Filip Zyzniewski <filip.zyzniewski@tefnet.pl>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  SSP driver for the HP Jornada 710/720/728
  */
 
@@ -18,6 +26,10 @@
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <mach/hardware.h>
 #include <mach/jornada720.h>
@@ -28,11 +40,19 @@ static unsigned long jornada_ssp_flags;
 
 /**
  * jornada_ssp_reverse - reverses input byte
+<<<<<<< HEAD
+=======
+ * @byte: input byte to reverse
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * we need to reverse all data we receive from the mcu due to its physical location
  * returns : 01110111 -> 11101110
  */
+<<<<<<< HEAD
 u8 inline jornada_ssp_reverse(u8 byte)
+=======
+inline u8 jornada_ssp_reverse(u8 byte)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return
 		((0x80 & byte) >> 7) |
@@ -48,6 +68,10 @@ EXPORT_SYMBOL(jornada_ssp_reverse);
 
 /**
  * jornada_ssp_byte - waits for ready ssp bus and sends byte
+<<<<<<< HEAD
+=======
+ * @byte: input byte to transmit
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * waits for fifo buffer to clear and then transmits, if it doesn't then we will
  * timeout after <timeout> rounds. Needs mcu running before its called.
@@ -79,6 +103,10 @@ EXPORT_SYMBOL(jornada_ssp_byte);
 
 /**
  * jornada_ssp_inout - decide if input is command or trading byte
+<<<<<<< HEAD
+=======
+ * @byte: input byte to send (may be %TXDUMMY)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * returns : (jornada_ssp_byte(byte)) on success
  *         : %-ETIMEDOUT on timeout failure
@@ -129,7 +157,11 @@ void jornada_ssp_end(void)
 };
 EXPORT_SYMBOL(jornada_ssp_end);
 
+<<<<<<< HEAD
 static int __devinit jornada_ssp_probe(struct platform_device *dev)
+=======
+static int jornada_ssp_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -177,18 +209,29 @@ static int __devinit jornada_ssp_probe(struct platform_device *dev)
 	return 0;
 };
 
+<<<<<<< HEAD
 static int jornada_ssp_remove(struct platform_device *dev)
+=======
+static void jornada_ssp_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Note that this doesn't actually remove the driver, since theres nothing to remove
 	 * It just makes sure everything is turned off */
 	GPSR = GPIO_GPIO25;
 	ssp_exit();
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct platform_driver jornadassp_driver = {
 	.probe	= jornada_ssp_probe,
+<<<<<<< HEAD
 	.remove	= jornada_ssp_remove,
+=======
+	.remove_new = jornada_ssp_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver	= {
 		.name	= "jornada_ssp",
 	},

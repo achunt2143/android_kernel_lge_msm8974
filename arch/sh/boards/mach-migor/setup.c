@@ -1,32 +1,63 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas System Solutions Asia Pte. Ltd - Migo-R
  *
  * Copyright (C) 2008 Magnus Damm
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  */
+=======
+ */
+#include <linux/clkdev.h>
+#include <linux/dma-map-ops.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
 #include <linux/input.h>
 #include <linux/input/sh_keysc.h>
+<<<<<<< HEAD
 #include <linux/mmc/host.h>
 #include <linux/mmc/sh_mobile_sdhi.h>
 #include <linux/mtd/physmap.h>
 #include <linux/mtd/nand.h>
 #include <linux/i2c.h>
+=======
+#include <linux/memblock.h>
+#include <linux/mmc/host.h>
+#include <linux/mtd/physmap.h>
+#include <linux/mfd/tmio.h>
+#include <linux/mtd/platnand.h>
+#include <linux/i2c.h>
+#include <linux/regulator/fixed.h>
+#include <linux/regulator/machine.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smc91x.h>
 #include <linux/delay.h>
 #include <linux/clk.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
 #include <linux/videodev2.h>
 #include <video/sh_mobile_lcdc.h>
 #include <media/sh_mobile_ceu.h>
 #include <media/ov772x.h>
 #include <media/soc_camera.h>
 #include <media/tw9910.h>
+=======
+#include <linux/gpio/machine.h>
+#include <linux/videodev2.h>
+#include <linux/sh_intc.h>
+#include <video/sh_mobile_lcdc.h>
+#include <media/drv-intf/renesas-ceu.h>
+#include <media/i2c/ov772x.h>
+#include <media/i2c/tw9910.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/clock.h>
 #include <asm/machvec.h>
 #include <asm/io.h>
@@ -42,6 +73,12 @@
  * 0x18000000       8GB    8   NAND Flash (K9K8G08U0A)
  */
 
+<<<<<<< HEAD
+=======
+#define CEU_BUFFER_MEMORY_SIZE		(4 << 20)
+static phys_addr_t ceu_dma_membase;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct smc91x_platdata smc91x_info = {
 	.flags = SMC91X_USE_16BIT | SMC91X_NOWAIT,
 };
@@ -54,7 +91,11 @@ static struct resource smc91x_eth_resources[] = {
 		.flags  = IORESOURCE_MEM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.start  = 32, /* IRQ0 */
+=======
+		.start  = evt2irq(0x600), /* IRQ0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ | IORESOURCE_IRQ_HIGHLEVEL,
 	},
 };
@@ -88,7 +129,11 @@ static struct resource sh_keysc_resources[] = {
 		.flags  = IORESOURCE_MEM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.start  = 79,
+=======
+		.start  = evt2irq(0xbe0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
@@ -160,15 +205,22 @@ static struct mtd_partition migor_nand_flash_partitions[] = {
 	},
 };
 
+<<<<<<< HEAD
 static void migor_nand_flash_cmd_ctl(struct mtd_info *mtd, int cmd,
 				     unsigned int ctrl)
 {
 	struct nand_chip *chip = mtd->priv;
 
+=======
+static void migor_nand_flash_cmd_ctl(struct nand_chip *chip, int cmd,
+				     unsigned int ctrl)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cmd == NAND_CMD_NONE)
 		return;
 
 	if (ctrl & NAND_CLE)
+<<<<<<< HEAD
 		writeb(cmd, chip->IO_ADDR_W + 0x00400000);
 	else if (ctrl & NAND_ALE)
 		writeb(cmd, chip->IO_ADDR_W + 0x00800000);
@@ -177,6 +229,16 @@ static void migor_nand_flash_cmd_ctl(struct mtd_info *mtd, int cmd,
 }
 
 static int migor_nand_flash_ready(struct mtd_info *mtd)
+=======
+		writeb(cmd, chip->legacy.IO_ADDR_W + 0x00400000);
+	else if (ctrl & NAND_ALE)
+		writeb(cmd, chip->legacy.IO_ADDR_W + 0x00800000);
+	else
+		writeb(cmd, chip->legacy.IO_ADDR_W);
+}
+
+static int migor_nand_flash_ready(struct nand_chip *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return gpio_get_value(GPIO_PTA1); /* NAND_RBn */
 }
@@ -187,7 +249,10 @@ static struct platform_nand_data migor_nand_flash_data = {
 		.partitions = migor_nand_flash_partitions,
 		.nr_partitions = ARRAY_SIZE(migor_nand_flash_partitions),
 		.chip_delay = 20,
+<<<<<<< HEAD
 		.part_probe_types = (const char *[]) { "cmdlinepart", NULL },
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.ctrl = {
 		.dev_ready = migor_nand_flash_ready,
@@ -285,7 +350,11 @@ static struct resource migor_lcdc_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.start	= 28,
+=======
+		.start	= evt2irq(0x580),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
@@ -299,6 +368,7 @@ static struct platform_device migor_lcdc_device = {
 	},
 };
 
+<<<<<<< HEAD
 static struct clk *camera_clk;
 static DEFINE_MUTEX(camera_lock);
 
@@ -358,6 +428,26 @@ static int tw9910_power(struct device *dev, int mode)
 
 static struct sh_mobile_ceu_info sh_mobile_ceu_info = {
 	.flags = SH_CEU_FLAG_USE_8BIT_BUS,
+=======
+static struct ceu_platform_data ceu_pdata = {
+	.num_subdevs			= 2,
+	.subdevs = {
+		{ /* [0] = ov772x */
+			.flags		= 0,
+			.bus_width	= 8,
+			.bus_shift	= 0,
+			.i2c_adapter_id	= 0,
+			.i2c_address	= 0x21,
+		},
+		{ /* [1] = tw9910 */
+			.flags		= 0,
+			.bus_width	= 8,
+			.bus_shift	= 0,
+			.i2c_adapter_id	= 0,
+			.i2c_address	= 0x45,
+		},
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource migor_ceu_resources[] = {
@@ -368,6 +458,7 @@ static struct resource migor_ceu_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.start  = 52,
 		.flags  = IORESOURCE_IRQ,
 	},
@@ -386,6 +477,48 @@ static struct platform_device migor_ceu_device = {
 	},
 };
 
+=======
+		.start  = evt2irq(0x880),
+		.flags  = IORESOURCE_IRQ,
+	},
+};
+
+static struct platform_device migor_ceu_device = {
+	.name		= "renesas-ceu",
+	.id             = 0, /* ceu.0 */
+	.num_resources	= ARRAY_SIZE(migor_ceu_resources),
+	.resource	= migor_ceu_resources,
+	.dev	= {
+		.platform_data	= &ceu_pdata,
+	},
+};
+
+/* Powerdown/reset gpios for CEU image sensors */
+static struct gpiod_lookup_table ov7725_gpios = {
+	.dev_id		= "0-0021",
+	.table		= {
+		GPIO_LOOKUP("sh7722_pfc", GPIO_PTT0, "powerdown",
+			    GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP("sh7722_pfc", GPIO_PTT3, "reset", GPIO_ACTIVE_LOW),
+	},
+};
+
+static struct gpiod_lookup_table tw9910_gpios = {
+	.dev_id		= "0-0045",
+	.table		= {
+		GPIO_LOOKUP("sh7722_pfc", GPIO_PTT2, "pdn", GPIO_ACTIVE_LOW),
+		GPIO_LOOKUP("sh7722_pfc", GPIO_PTT3, "rstb", GPIO_ACTIVE_LOW),
+	},
+};
+
+/* Fixed 3.3V regulator to be used by SDHI0 */
+static struct regulator_consumer_supply fixed3v3_power_consumers[] =
+{
+	REGULATOR_SUPPLY("vmmc", "sh_mobile_sdhi.0"),
+	REGULATOR_SUPPLY("vqmmc", "sh_mobile_sdhi.0"),
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource sdhi_cn9_resources[] = {
 	[0] = {
 		.name	= "SDHI",
@@ -394,15 +527,26 @@ static struct resource sdhi_cn9_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.start	= 100,
+=======
+		.start	= evt2irq(0xe80),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
 
+<<<<<<< HEAD
 static struct sh_mobile_sdhi_info sh7724_sdhi_data = {
 	.dma_slave_tx	= SHDMA_SLAVE_SDHI0_TX,
 	.dma_slave_rx	= SHDMA_SLAVE_SDHI0_RX,
 	.tmio_caps      = MMC_CAP_SDIO_IRQ,
+=======
+static struct tmio_mmc_data sh7724_sdhi_data = {
+	.chan_priv_tx	= (void *)SHDMA_SLAVE_SDHI0_TX,
+	.chan_priv_rx	= (void *)SHDMA_SLAVE_SDHI0_RX,
+	.capabilities	= MMC_CAP_SDIO_IRQ,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device sdhi_cn9_device = {
@@ -414,17 +558,34 @@ static struct platform_device sdhi_cn9_device = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+static struct ov772x_camera_info ov7725_info = {
+	.flags		= 0,
+};
+
+static struct tw9910_video_info tw9910_info = {
+	.buswidth       = 8,
+	.mpout          = TW9910_MPO_FIELD,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct i2c_board_info migor_i2c_devices[] = {
 	{
 		I2C_BOARD_INFO("rs5c372b", 0x32),
 	},
 	{
 		I2C_BOARD_INFO("migor_ts", 0x51),
+<<<<<<< HEAD
 		.irq = 38, /* IRQ6 */
+=======
+		.irq = evt2irq(0x6c0), /* IRQ6 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		I2C_BOARD_INFO("wm8978", 0x1a),
 	},
+<<<<<<< HEAD
 };
 
 static struct i2c_board_info migor_i2c_camera[] = {
@@ -470,6 +631,15 @@ static struct platform_device migor_camera[] = {
 		.dev	= {
 			.platform_data = &tw9910_link,
 		},
+=======
+	{
+		I2C_BOARD_INFO("ov772x", 0x21),
+		.platform_data = &ov7725_info,
+	},
+	{
+		I2C_BOARD_INFO("tw9910", 0x45),
+		.platform_data = &tw9910_info,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -477,12 +647,18 @@ static struct platform_device *migor_devices[] __initdata = {
 	&smc91x_eth_device,
 	&sh_keysc_device,
 	&migor_lcdc_device,
+<<<<<<< HEAD
 	&migor_ceu_device,
 	&migor_nor_flash_device,
 	&migor_nand_flash_device,
 	&sdhi_cn9_device,
 	&migor_camera[0],
 	&migor_camera[1],
+=======
+	&migor_nor_flash_device,
+	&migor_nand_flash_device,
+	&sdhi_cn9_device,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern char migor_sdram_enter_start;
@@ -492,12 +668,24 @@ extern char migor_sdram_leave_end;
 
 static int __init migor_devices_setup(void)
 {
+<<<<<<< HEAD
+=======
+	struct clk *video_clk;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* register board specific self-refresh code */
 	sh_mobile_register_self_refresh(SUSP_SH_STANDBY | SUSP_SH_SF,
 					&migor_sdram_enter_start,
 					&migor_sdram_enter_end,
 					&migor_sdram_leave_start,
 					&migor_sdram_leave_end);
+<<<<<<< HEAD
+=======
+
+	regulator_register_always_on(0, "fixed-3.3V", fixed3v3_power_consumers,
+				     ARRAY_SIZE(fixed3v3_power_consumers), 3300000);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Let D11 LED show STATUS0 */
 	gpio_request(GPIO_FN_STATUS0, NULL);
 
@@ -607,6 +795,7 @@ static int __init migor_devices_setup(void)
 	gpio_request(GPIO_FN_VIO_D9, NULL);
 	gpio_request(GPIO_FN_VIO_D8, NULL);
 
+<<<<<<< HEAD
 	gpio_request(GPIO_PTT3, NULL); /* VIO_RST */
 	gpio_direction_output(GPIO_PTT3, 0);
 	gpio_request(GPIO_PTT2, NULL); /* TV_IN_EN */
@@ -621,6 +810,10 @@ static int __init migor_devices_setup(void)
 
 	platform_resource_setup_memory(&migor_ceu_device, "ceu", 4 << 20);
 
+=======
+	__raw_writew(__raw_readw(PORT_MSELCRB) | 0x2000, PORT_MSELCRB); /* D15->D8 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* SIU: Port B */
 	gpio_request(GPIO_FN_SIUBOLR, NULL);
 	gpio_request(GPIO_FN_SIUBOBT, NULL);
@@ -634,9 +827,40 @@ static int __init migor_devices_setup(void)
 	 */
 	__raw_writew(__raw_readw(PORT_MSELCRA) | 1, PORT_MSELCRA);
 
+<<<<<<< HEAD
 	i2c_register_board_info(0, migor_i2c_devices,
 				ARRAY_SIZE(migor_i2c_devices));
 
+=======
+	 /*
+	  * Use 10 MHz VIO_CKO instead of 24 MHz to work around signal quality
+	  * issues on Panel Board V2.1.
+	  */
+	video_clk = clk_get(NULL, "video_clk");
+	if (!IS_ERR(video_clk)) {
+		clk_set_rate(video_clk, clk_round_rate(video_clk, 10000000));
+		clk_put(video_clk);
+	}
+
+	/* Add a clock alias for ov7725 xclk source. */
+	clk_add_alias(NULL, "0-0021", "video_clk", NULL);
+
+	/* Register GPIOs for video sources. */
+	gpiod_add_lookup_table(&ov7725_gpios);
+	gpiod_add_lookup_table(&tw9910_gpios);
+
+	i2c_register_board_info(0, migor_i2c_devices,
+				ARRAY_SIZE(migor_i2c_devices));
+
+	/* Initialize CEU platform device separately to map memory first */
+	device_initialize(&migor_ceu_device.dev);
+	dma_declare_coherent_memory(&migor_ceu_device.dev,
+			ceu_dma_membase, ceu_dma_membase,
+			CEU_BUFFER_MEMORY_SIZE);
+
+	platform_device_add(&migor_ceu_device);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return platform_add_devices(migor_devices, ARRAY_SIZE(migor_devices));
 }
 arch_initcall(migor_devices_setup);
@@ -652,10 +876,33 @@ static int migor_mode_pins(void)
 	return MODE_PIN0 | MODE_PIN1 | MODE_PIN5;
 }
 
+<<<<<<< HEAD
+=======
+/* Reserve a portion of memory for CEU buffers */
+static void __init migor_mv_mem_reserve(void)
+{
+	phys_addr_t phys;
+	phys_addr_t size = CEU_BUFFER_MEMORY_SIZE;
+
+	phys = memblock_phys_alloc(size, PAGE_SIZE);
+	if (!phys)
+		panic("Failed to allocate CEU memory\n");
+
+	memblock_phys_free(phys, size);
+	memblock_remove(phys, size);
+
+	ceu_dma_membase = phys;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The Machine Vector
  */
 static struct sh_machine_vector mv_migor __initmv = {
 	.mv_name		= "Migo-R",
 	.mv_mode_pins		= migor_mode_pins,
+<<<<<<< HEAD
+=======
+	.mv_mem_reserve		= migor_mv_mem_reserve,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

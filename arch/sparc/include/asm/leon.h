@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2004 Konrad Eisele (eiselekd@web.de,konrad@gaisler.com) Gaisler Research
  * Copyright (C) 2004 Stefan Holst (mail@s-holst.de) Uni-Stuttgart
@@ -8,6 +12,7 @@
 #ifndef LEON_H_INCLUDE
 #define LEON_H_INCLUDE
 
+<<<<<<< HEAD
 #ifdef CONFIG_SPARC_LEON
 
 #define ASI_LEON_NOCACHE	0x01
@@ -23,6 +28,8 @@
 #define ASI_LEON_BYPASS		0x1c
 #define ASI_LEON_FLUSH_PAGE	0x10
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* mmu register access, ASI_LEON_MMUREGS */
 #define LEON_CNR_CTRL		0x000
 #define LEON_CNR_CTXP		0x100
@@ -57,6 +64,7 @@
 #define LEON_IRQMASK_R		0x0000fffe	/* bit 15- 1 of lregs.irqmask */
 #define LEON_IRQPRIO_R		0xfffe0000	/* bit 31-17 of lregs.irqmask */
 
+<<<<<<< HEAD
 /* leon uart register definitions */
 #define LEON_OFF_UDATA	0x0
 #define LEON_OFF_USTAT	0x4
@@ -80,6 +88,8 @@
 #define LEON_USTAT_PE	0x20
 #define LEON_USTAT_FE	0x40
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LEON_MCFG2_SRAMDIS		0x00002000
 #define LEON_MCFG2_SDRAMEN		0x00004000
 #define LEON_MCFG2_SRAMBANKSZ		0x00001e00	/* [12-9] */
@@ -89,8 +99,11 @@
 
 #define LEON_TCNT0_MASK	0x7fffff
 
+<<<<<<< HEAD
 #define LEON_USTAT_ERROR (LEON_USTAT_OV | LEON_USTAT_PE | LEON_USTAT_FE)
 /* no break yet */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ASI_LEON3_SYSCTRL		0x02
 #define ASI_LEON3_SYSCTRL_ICFG		0x08
@@ -100,6 +113,7 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 /* do a virtual address read without cache */
 static inline unsigned long leon_readnobuffer_reg(unsigned long paddr)
 {
@@ -109,6 +123,8 @@ static inline unsigned long leon_readnobuffer_reg(unsigned long paddr)
 	return retval;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* do a physical address bypass write, i.e. for 0x80000000 */
 static inline void leon_store_reg(unsigned long paddr, unsigned long value)
 {
@@ -125,6 +141,7 @@ static inline unsigned long leon_load_reg(unsigned long paddr)
 	return retval;
 }
 
+<<<<<<< HEAD
 static inline void leon_srmmu_disabletlb(void)
 {
 	unsigned int retval;
@@ -165,6 +182,16 @@ extern void leon_switch_mm(void);
 extern void leon_init_IRQ(void);
 
 extern unsigned long last_valid_pfn;
+=======
+/* macro access for leon_load_reg() and leon_store_reg() */
+#define LEON3_BYPASS_LOAD_PA(x)	    (leon_load_reg((unsigned long)(x)))
+#define LEON3_BYPASS_STORE_PA(x, v) (leon_store_reg((unsigned long)(x), (unsigned long)(v)))
+#define LEON_BYPASS_LOAD_PA(x)      leon_load_reg((unsigned long)(x))
+#define LEON_BYPASS_STORE_PA(x, v)  leon_store_reg((unsigned long)(x), (unsigned long)(v))
+
+void leon_switch_mm(void);
+void leon_init_IRQ(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned long sparc_leon3_get_dcachecfg(void)
 {
@@ -189,7 +216,11 @@ static inline int sparc_leon3_snooping_enabled(void)
 {
 	u32 cctrl;
 	__asm__ __volatile__("lda [%%g0] 2, %0\n\t" : "=r"(cctrl));
+<<<<<<< HEAD
         return (cctrl >> 23) & 1;
+=======
+	return ((cctrl >> 23) & 1) && ((cctrl >> 17) & 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline void sparc_leon3_disable_cache(void)
@@ -216,7 +247,11 @@ static inline int sparc_leon3_cpuid(void)
 
 #ifdef CONFIG_SMP
 # define LEON3_IRQ_IPI_DEFAULT		13
+<<<<<<< HEAD
 # define LEON3_IRQ_TICKER		(leon3_ticker_irq)
+=======
+# define LEON3_IRQ_TICKER		(leon3_gptimer_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define LEON3_IRQ_CROSS_CALL		15
 #endif
 
@@ -268,9 +303,12 @@ static inline int sparc_leon3_cpuid(void)
 #error cannot determine LEON_PAGE_SIZE_LEON
 #endif
 
+<<<<<<< HEAD
 #define PAGE_MIN_SHIFT   (12)
 #define PAGE_MIN_SIZE    (1UL << PAGE_MIN_SHIFT)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LEON3_XCCR_SETS_MASK  0x07000000UL
 #define LEON3_XCCR_SSIZE_MASK 0x00f00000UL
 
@@ -278,6 +316,7 @@ static inline int sparc_leon3_cpuid(void)
 #define LEON2_CFG_SSIZE_MASK 0x00007000UL
 
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
 extern unsigned long srmmu_swprobe(unsigned long vaddr, unsigned long *paddr);
 extern void leon_flush_icache_all(void);
 extern void leon_flush_dcache_all(void);
@@ -295,6 +334,18 @@ extern void leon_flush_tlb_all(void);
 extern int leon_flush_during_switch;
 extern int leon_flush_needed(void);
 extern void leon_flush_pcache_all(struct vm_area_struct *vma, unsigned long page);
+=======
+struct vm_area_struct;
+
+unsigned long leon_swprobe(unsigned long vaddr, unsigned long *paddr);
+void leon_flush_icache_all(void);
+void leon_flush_dcache_all(void);
+void leon_flush_cache_all(void);
+void leon_flush_tlb_all(void);
+extern int leon_flush_during_switch;
+int leon_flush_needed(void);
+void leon_flush_pcache_all(struct vm_area_struct *vma, unsigned long page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* struct that hold LEON3 cache configuration registers */
 struct leon3_cacheregs {
@@ -303,6 +354,7 @@ struct leon3_cacheregs {
 	unsigned long dccr;	/* 0x0c - Data Cache Configuration Register */
 };
 
+<<<<<<< HEAD
 /* struct that hold LEON2 cache configuration register
  * & configuration register
  */
@@ -358,12 +410,47 @@ extern unsigned int smpleon_ipi[];
 extern unsigned int patchme_maybe_smp_msg[];
 extern unsigned int t_nmi[], linux_trap_ipi15_leon[];
 extern unsigned int linux_trap_ipi15_sun4m[];
+=======
+#include <linux/irq.h>
+#include <linux/interrupt.h>
+
+struct device_node;
+struct task_struct;
+unsigned int leon_build_device_irq(unsigned int real_irq,
+				   irq_flow_handler_t flow_handler,
+				   const char *name, int do_ack);
+void leon_update_virq_handling(unsigned int virq,
+			       irq_flow_handler_t flow_handler,
+			       const char *name, int do_ack);
+void leon_init_timers(void);
+void leon_node_init(struct device_node *dp, struct device_node ***nextp);
+void init_leon(void);
+void poke_leonsparc(void);
+void leon3_getCacheRegs(struct leon3_cacheregs *regs);
+extern int leon3_ticker_irq;
+
+#ifdef CONFIG_SMP
+int leon_smp_nrcpus(void);
+void leon_clear_profile_irq(int cpu);
+void leon_smp_done(void);
+void leon_boot_cpus(void);
+int leon_boot_one_cpu(int i, struct task_struct *);
+void leon_init_smp(void);
+void leon_enable_irq_cpu(unsigned int irq_nr, unsigned int cpu);
+irqreturn_t leon_percpu_timer_interrupt(int irq, void *unused);
+
+extern unsigned int smpleon_ipi[];
+extern unsigned int linux_trap_ipi15_leon[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int leon_ipi_irq;
 
 #endif /* CONFIG_SMP */
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASSEMBLY__ */
 
 /* macros used in leon_mm.c */
@@ -371,6 +458,7 @@ extern int leon_ipi_irq;
 #define _pfn_valid(pfn)	 ((pfn < last_valid_pfn) && (pfn >= PFN(phys_base)))
 #define _SRMMU_PTE_PMASK_LEON 0xffffffff
 
+<<<<<<< HEAD
 #else /* defined(CONFIG_SPARC_LEON) */
 
 /* nop definitions for !LEON case */
@@ -384,5 +472,15 @@ extern int leon_ipi_irq;
 #define leon_init_smp() do {} while (0)
 
 #endif /* !defined(CONFIG_SPARC_LEON) */
+=======
+/*
+ * On LEON PCI Memory space is mapped 1:1 with physical address space.
+ *
+ * I/O space is located at low 64Kbytes in PCI I/O space. The I/O addresses
+ * are converted into CPU addresses to virtual addresses that are mapped with
+ * MMU to the PCI Host PCI I/O space window which are translated to the low
+ * 64Kbytes by the Host controller.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

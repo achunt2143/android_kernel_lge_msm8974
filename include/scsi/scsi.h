@@ -1,15 +1,23 @@
+<<<<<<< HEAD
 /*
  * This header file contains public constants and structures used by
  * the scsi code for linux.
  *
  * For documentation on the OPCODES, MESSAGES, and SENSE values,
  * please consult the SCSI standard.
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * This header file contains public constants and structures used by
+ * the SCSI initiator code.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _SCSI_SCSI_H
 #define _SCSI_SCSI_H
 
 #include <linux/types.h>
 #include <linux/scatterlist.h>
+<<<<<<< HEAD
 #include <linux/device.h>
 
 struct scsi_cmnd;
@@ -32,6 +40,18 @@ struct scsi_cmnd;
 #else
 #define SCSI_MAX_SG_CHAIN_SEGMENTS	SCSI_MAX_SG_SEGMENTS
 #endif
+=======
+#include <linux/kernel.h>
+#include <scsi/scsi_common.h>
+#include <scsi/scsi_proto.h>
+#include <scsi/scsi_status.h>
+
+struct scsi_cmnd;
+
+enum scsi_timeouts {
+	SCSI_DEFAULT_EH_TIMEOUT		= 10 * HZ,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * DIX-capable adapters effectively support infinite chaining for the
@@ -46,6 +66,7 @@ struct scsi_cmnd;
 #define SCAN_WILD_CARD	~0
 
 /*
+<<<<<<< HEAD
  *      SCSI opcodes
  */
 
@@ -334,6 +355,8 @@ enum scsi_protocol {
 extern const char * scsi_device_type(unsigned type);
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * standard mode-select header prepended to all mode-select commands
  */
 
@@ -353,6 +376,7 @@ struct ccs_modesel_head {
 };
 
 /*
+<<<<<<< HEAD
  * ScsiLun: 8 byte LUN.
  */
 struct scsi_lun {
@@ -360,6 +384,8 @@ struct scsi_lun {
 };
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The Well Known LUNS (SAM-3) in our int representation of a LUN
  */
 #define SCSI_W_LUN_BASE 0xc100
@@ -367,11 +393,16 @@ struct scsi_lun {
 #define SCSI_W_LUN_ACCESS_CONTROL (SCSI_W_LUN_BASE + 2)
 #define SCSI_W_LUN_TARGET_LOG_PAGE (SCSI_W_LUN_BASE + 3)
 
+<<<<<<< HEAD
 static inline int scsi_is_wlun(unsigned int lun)
+=======
+static inline int scsi_is_wlun(u64 lun)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (lun & 0xff00) == SCSI_W_LUN_BASE;
 }
 
+<<<<<<< HEAD
 
 /*
  *  MESSAGE CODES
@@ -379,12 +410,34 @@ static inline int scsi_is_wlun(unsigned int lun)
 
 #define COMMAND_COMPLETE    0x00
 #define EXTENDED_MESSAGE    0x01
+=======
+/**
+ * scsi_status_is_check_condition - check the status return.
+ *
+ * @status: the status passed up from the driver (including host and
+ *          driver components)
+ *
+ * This returns true if the status code is SAM_STAT_CHECK_CONDITION.
+ */
+static inline int scsi_status_is_check_condition(int status)
+{
+	if (status < 0)
+		return false;
+	status &= 0xfe;
+	return status == SAM_STAT_CHECK_CONDITION;
+}
+
+/*
+ *  Extended message codes.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define     EXTENDED_MODIFY_DATA_POINTER    0x00
 #define     EXTENDED_SDTR                   0x01
 #define     EXTENDED_EXTENDED_IDENTIFY      0x02    /* SCSI-I only */
 #define     EXTENDED_WDTR                   0x03
 #define     EXTENDED_PPR                    0x04
 #define     EXTENDED_MODIFY_BIDI_DATA_PTR   0x05
+<<<<<<< HEAD
 #define SAVE_POINTERS       0x02
 #define RESTORE_POINTERS    0x03
 #define DISCONNECT          0x04
@@ -456,10 +509,13 @@ static inline int scsi_is_wlun(unsigned int lun)
 #define DRIVER_TIMEOUT      0x06
 #define DRIVER_HARD         0x07
 #define DRIVER_SENSE	    0x08
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Internal return values.
  */
+<<<<<<< HEAD
 
 #define NEEDS_RETRY     0x2001
 #define SUCCESS         0x2002
@@ -471,6 +527,19 @@ static inline int scsi_is_wlun(unsigned int lun)
 #define SCSI_RETURN_NOT_HANDLED   0x2008
 #define FAST_IO_FAIL	0x2009
 #define TARGET_ERROR    0x200A
+=======
+enum scsi_disposition {
+	NEEDS_RETRY		= 0x2001,
+	SUCCESS			= 0x2002,
+	FAILED			= 0x2003,
+	QUEUED			= 0x2004,
+	SOFT_ERROR		= 0x2005,
+	ADD_TO_MLQUEUE		= 0x2006,
+	TIMEOUT_ERROR		= 0x2007,
+	SCSI_RETURN_NOT_HANDLED	= 0x2008,
+	FAST_IO_FAIL		= 0x2009,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Midlevel queue return values.
@@ -486,6 +555,7 @@ static inline int scsi_is_wlun(unsigned int lun)
  *  These are set by:
  *
  *      status byte = set from target device
+<<<<<<< HEAD
  *      msg_byte    = return status from host adapter itself.
  *      host_byte   = set by low-level driver to indicate status.
  *      driver_byte = set by mid-level.
@@ -494,6 +564,13 @@ static inline int scsi_is_wlun(unsigned int lun)
 #define msg_byte(result)    (((result) >> 8) & 0xff)
 #define host_byte(result)   (((result) >> 16) & 0xff)
 #define driver_byte(result) (((result) >> 24) & 0xff)
+=======
+ *      msg_byte    (unused)
+ *      host_byte   = set by low-level driver to indicate status.
+ */
+#define status_byte(result) (result & 0xff)
+#define host_byte(result)   (((result) >> 16) & 0xff)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define sense_class(sense)  (((sense) >> 4) & 0x7)
 #define sense_error(sense)  ((sense) & 0xf)
@@ -528,6 +605,12 @@ static inline int scsi_is_wlun(unsigned int lun)
 #define SCSI_3          4        /* SPC */
 #define SCSI_SPC_2      5
 #define SCSI_SPC_3      6
+<<<<<<< HEAD
+=======
+#define SCSI_SPC_4	7
+#define SCSI_SPC_5	8
+#define SCSI_SPC_6	14
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * INQ PERIPHERAL QUALIFIERS
@@ -557,6 +640,7 @@ static inline int scsi_is_wlun(unsigned int lun)
 /* Used to obtain the PCI location of a device */
 #define SCSI_IOCTL_GET_PCI		0x5387
 
+<<<<<<< HEAD
 /* Pull a u32 out of a SCSI message (using BE SCSI conventions) */
 static inline __u32 scsi_to_u32(__u8 *ptr)
 {
@@ -565,4 +649,37 @@ static inline __u32 scsi_to_u32(__u8 *ptr)
 
 struct scsi_disk *scsi_disk_get_from_dev(struct device *dev);
 
+=======
+/** scsi_status_is_good - check the status return.
+ *
+ * @status: the status passed up from the driver (including host and
+ *          driver components)
+ *
+ * This returns true for known good conditions that may be treated as
+ * command completed normally
+ */
+static inline bool scsi_status_is_good(int status)
+{
+	if (status < 0)
+		return false;
+
+	if (host_byte(status) == DID_NO_CONNECT)
+		return false;
+
+	/*
+	 * FIXME: bit0 is listed as reserved in SCSI-2, but is
+	 * significant in SCSI-3.  For now, we follow the SCSI-2
+	 * behaviour and ignore reserved bits.
+	 */
+	status &= 0xfe;
+	return ((status == SAM_STAT_GOOD) ||
+		(status == SAM_STAT_CONDITION_MET) ||
+		/* Next two "intermediate" statuses are obsolete in SAM-4 */
+		(status == SAM_STAT_INTERMEDIATE) ||
+		(status == SAM_STAT_INTERMEDIATE_CONDITION_MET) ||
+		/* FIXME: this is obsolete in SAM-3 */
+		(status == SAM_STAT_COMMAND_TERMINATED));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _SCSI_SCSI_H */

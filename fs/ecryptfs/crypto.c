@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /**
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * eCryptfs: Linux filesystem encryption layer
  *
  * Copyright (C) 1997-2004 Erez Zadok
@@ -6,6 +11,7 @@
  * Copyright (C) 2004-2007 International Business Machines Corp.
  *   Author(s): Michael A. Halcrow <mahalcro@us.ibm.com>
  *   		Michael C. Thompson <mcthomps@us.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,6 +29,12 @@
  * 02111-1307, USA.
  */
 
+=======
+ */
+
+#include <crypto/hash.h>
+#include <crypto/skcipher.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/mount.h>
 #include <linux/pagemap.h>
@@ -30,11 +42,15 @@
 #include <linux/compiler.h>
 #include <linux/key.h>
 #include <linux/namei.h>
+<<<<<<< HEAD
 #include <linux/crypto.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/file.h>
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
 #include <asm/unaligned.h>
+<<<<<<< HEAD
 #include "ecryptfs_kernel.h"
 
 #ifdef CONFIG_CRYPTO_FIPS
@@ -174,12 +190,24 @@ void ecryptfs_to_hex(char *dst, char *src, size_t src_size)
 	for (x = 0; x < src_size; x++)
 		sprintf(&dst[x * 2], "%.2x", (unsigned char)src[x]);
 }
+=======
+#include <linux/kernel.h>
+#include <linux/xattr.h>
+#include "ecryptfs_kernel.h"
+
+#define DECRYPT		0
+#define ENCRYPT		1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * ecryptfs_from_hex
  * @dst: Buffer to take the bytes from src hex; must be at least of
  *       size (src_size / 2)
+<<<<<<< HEAD
  * @src: Buffer to be converted from a hex string respresentation to raw value
+=======
+ * @src: Buffer to be converted from a hex string representation to raw value
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dst_size: size of dst buffer, or number of hex characters pairs to convert
  */
 void ecryptfs_from_hex(char *dst, char *src, int dst_size)
@@ -194,6 +222,7 @@ void ecryptfs_from_hex(char *dst, char *src, int dst_size)
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_CRYPTO_FIPS
 /**
  * ecryptfs_calculate_sha256 - calculates the sha256 of @src
@@ -257,6 +286,8 @@ out:
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ecryptfs_calculate_md5 - calculates the md5 of @src
  * @dst: Pointer to 16 bytes of allocated memory
@@ -271,6 +302,7 @@ static int ecryptfs_calculate_md5(char *dst,
 				  struct ecryptfs_crypt_stat *crypt_stat,
 				  char *src, int len)
 {
+<<<<<<< HEAD
 	struct scatterlist sg;
 	struct hash_desc desc = {
 		.tfm = crypt_stat->hash_tfm,
@@ -310,11 +342,21 @@ static int ecryptfs_calculate_md5(char *dst,
 	if (rc) {
 		printk(KERN_ERR
 		       "%s: Error finalizing crypto hash; rc = [%d]\n",
+=======
+	int rc = crypto_shash_tfm_digest(crypt_stat->hash_tfm, src, len, dst);
+
+	if (rc) {
+		printk(KERN_ERR
+		       "%s: Error computing crypto hash; rc = [%d]\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       __func__, rc);
 		goto out;
 	}
 out:
+<<<<<<< HEAD
 	mutex_unlock(&crypt_stat->cs_hash_tfm_mutex);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -322,6 +364,7 @@ static int ecryptfs_crypto_api_algify_cipher_name(char **algified_name,
 						  char *cipher_name,
 						  char *chaining_modifier)
 {
+<<<<<<< HEAD
 #ifndef CONFIG_CRYPTO_DEV_KFIPS
 	int cipher_name_len = strlen(cipher_name);
 	int chaining_modifier_len = strlen(chaining_modifier);
@@ -342,6 +385,13 @@ static int ecryptfs_crypto_api_algify_cipher_name(char **algified_name,
 	chaining_modifier_len = strlen(chaining_modifier);
 
 #endif
+=======
+	int cipher_name_len = strlen(cipher_name);
+	int chaining_modifier_len = strlen(chaining_modifier);
+	int algified_name_len;
+	int rc;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	algified_name_len = (chaining_modifier_len + cipher_name_len + 3);
 	(*algified_name) = kmalloc(algified_name_len, GFP_KERNEL);
 	if (!(*algified_name)) {
@@ -354,6 +404,7 @@ static int ecryptfs_crypto_api_algify_cipher_name(char **algified_name,
 out:
 	return rc;
 }
+<<<<<<< HEAD
 #ifdef CONFIG_CRYPTO_DEV_KFIPS
 /**
  * ecryptfs_alloc_page_crypt_req - allocates a page crypt request
@@ -469,6 +520,8 @@ static void ecryptfs_free_extent_crypt_req(
 	kmem_cache_free(ecryptfs_extent_crypt_req_cache, extent_crypt_req);
 }
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * ecryptfs_derive_iv
@@ -485,11 +538,15 @@ int ecryptfs_derive_iv(char *iv, struct ecryptfs_crypt_stat *crypt_stat,
 		       loff_t offset)
 {
 	int rc = 0;
+<<<<<<< HEAD
 #ifdef CONFIG_CRYPTO_FIPS
 	char dst[SHA256_HASH_SIZE];
 #else
 	char dst[MD5_DIGEST_SIZE];
 #endif
+=======
+	char dst[MD5_DIGEST_SIZE];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char src[ECRYPTFS_MAX_IV_BYTES + 16];
 
 	if (unlikely(ecryptfs_verbosity > 0)) {
@@ -507,11 +564,14 @@ int ecryptfs_derive_iv(char *iv, struct ecryptfs_crypt_stat *crypt_stat,
 		ecryptfs_printk(KERN_DEBUG, "source:\n");
 		ecryptfs_dump_hex(src, (crypt_stat->iv_bytes + 16));
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_CRYPTO_FIPS
 	if (get_cc_mode_state())
 		rc = ecryptfs_calculate_sha256(dst, crypt_stat, src, (crypt_stat->iv_bytes + 16));
 	else
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ecryptfs_calculate_md5(dst, crypt_stat, src,
 				    (crypt_stat->iv_bytes + 16));
 	if (rc) {
@@ -534,16 +594,40 @@ out:
  *
  * Initialize the crypt_stat structure.
  */
+<<<<<<< HEAD
 void
 ecryptfs_init_crypt_stat(struct ecryptfs_crypt_stat *crypt_stat)
 {
+=======
+int ecryptfs_init_crypt_stat(struct ecryptfs_crypt_stat *crypt_stat)
+{
+	struct crypto_shash *tfm;
+	int rc;
+
+	tfm = crypto_alloc_shash(ECRYPTFS_DEFAULT_HASH, 0, 0);
+	if (IS_ERR(tfm)) {
+		rc = PTR_ERR(tfm);
+		ecryptfs_printk(KERN_ERR, "Error attempting to "
+				"allocate crypto context; rc = [%d]\n",
+				rc);
+		return rc;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset((void *)crypt_stat, 0, sizeof(struct ecryptfs_crypt_stat));
 	INIT_LIST_HEAD(&crypt_stat->keysig_list);
 	mutex_init(&crypt_stat->keysig_list_mutex);
 	mutex_init(&crypt_stat->cs_mutex);
 	mutex_init(&crypt_stat->cs_tfm_mutex);
+<<<<<<< HEAD
 	mutex_init(&crypt_stat->cs_hash_tfm_mutex);
 	crypt_stat->flags |= ECRYPTFS_STRUCT_INITIALIZED;
+=======
+	crypt_stat->hash_tfm = tfm;
+	crypt_stat->flags |= ECRYPTFS_STRUCT_INITIALIZED;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -556,6 +640,7 @@ void ecryptfs_destroy_crypt_stat(struct ecryptfs_crypt_stat *crypt_stat)
 {
 	struct ecryptfs_key_sig *key_sig, *key_sig_tmp;
 
+<<<<<<< HEAD
 	if (crypt_stat->tfm)
 #ifndef CONFIG_CRYPTO_DEV_KFIPS
 		crypto_free_blkcipher(crypt_stat->tfm);
@@ -564,6 +649,10 @@ void ecryptfs_destroy_crypt_stat(struct ecryptfs_crypt_stat *crypt_stat)
 #endif
 	if (crypt_stat->hash_tfm)
 		crypto_free_hash(crypt_stat->hash_tfm);
+=======
+	crypto_free_skcipher(crypt_stat->tfm);
+	crypto_free_shash(crypt_stat->hash_tfm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry_safe(key_sig, key_sig_tmp,
 				 &crypt_stat->keysig_list, crypt_stat_list) {
 		list_del(&key_sig->crypt_stat_list);
@@ -584,8 +673,12 @@ void ecryptfs_destroy_mount_crypt_stat(
 				 &mount_crypt_stat->global_auth_tok_list,
 				 mount_crypt_stat_list) {
 		list_del(&auth_tok->mount_crypt_stat_list);
+<<<<<<< HEAD
 		if (auth_tok->global_auth_tok_key
 		    && !(auth_tok->flags & ECRYPTFS_AUTH_TOK_INVALID))
+=======
+		if (!(auth_tok->flags & ECRYPTFS_AUTH_TOK_INVALID))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			key_put(auth_tok->global_auth_tok_key);
 		kmem_cache_free(ecryptfs_global_auth_tok_cache, auth_tok);
 	}
@@ -614,12 +707,16 @@ int virt_to_scatterlist(const void *addr, int size, struct scatterlist *sg,
 	int offset;
 	int remainder_of_page;
 
+<<<<<<< HEAD
 	if (sg)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sg_init_table(sg, sg_size);
 
 	while (size > 0 && i < sg_size) {
 		pg = virt_to_page(addr);
 		offset = offset_in_page(addr);
+<<<<<<< HEAD
 		if (sg)
 			sg_set_page(&sg[i], pg, 0, offset);
 		remainder_of_page = PAGE_CACHE_SIZE - offset;
@@ -631,6 +728,16 @@ int virt_to_scatterlist(const void *addr, int size, struct scatterlist *sg,
 		} else {
 			if (sg)
 				sg[i].length = size;
+=======
+		sg_set_page(&sg[i], pg, 0, offset);
+		remainder_of_page = PAGE_SIZE - offset;
+		if (size >= remainder_of_page) {
+			sg[i].length = remainder_of_page;
+			addr += remainder_of_page;
+			size -= remainder_of_page;
+		} else {
+			sg[i].length = size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			addr += size;
 			size = 0;
 		}
@@ -642,6 +749,7 @@ int virt_to_scatterlist(const void *addr, int size, struct scatterlist *sg,
 }
 
 /**
+<<<<<<< HEAD
  * encrypt_scatterlist
  *ifndef CONFIG_CRYPTO_DEV_KFIPS
  * @crypt_stat: Pointer to the crypt_stat struct to initialize.
@@ -682,12 +790,34 @@ static int encrypt_scatterlist(struct ecryptfs_crypt_stat *crypt_stat,
 #endif
 	BUG_ON(!crypt_stat || !crypt_stat->tfm
 	       || !(crypt_stat->flags & ECRYPTFS_STRUCT_INITIALIZED));
+=======
+ * crypt_scatterlist
+ * @crypt_stat: Pointer to the crypt_stat struct to initialize.
+ * @dst_sg: Destination of the data after performing the crypto operation
+ * @src_sg: Data to be encrypted or decrypted
+ * @size: Length of data
+ * @iv: IV to use
+ * @op: ENCRYPT or DECRYPT to indicate the desired operation
+ *
+ * Returns the number of bytes encrypted or decrypted; negative value on error
+ */
+static int crypt_scatterlist(struct ecryptfs_crypt_stat *crypt_stat,
+			     struct scatterlist *dst_sg,
+			     struct scatterlist *src_sg, int size,
+			     unsigned char *iv, int op)
+{
+	struct skcipher_request *req = NULL;
+	DECLARE_CRYPTO_WAIT(ecr);
+	int rc = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(ecryptfs_verbosity > 0)) {
 		ecryptfs_printk(KERN_DEBUG, "Key size [%zd]; key:\n",
 				crypt_stat->key_size);
 		ecryptfs_dump_hex(crypt_stat->key,
 				  crypt_stat->key_size);
 	}
+<<<<<<< HEAD
 	/* Consider doing this once, when the file is opened */
 	mutex_lock(&crypt_stat->cs_tfm_mutex);
 	if (!(crypt_stat->flags & ECRYPTFS_KEY_SET)) {
@@ -794,6 +924,82 @@ static void ecryptfs_encrypt_extent(
 
 	extent_base = (((loff_t)page->index)
 		       * (PAGE_CACHE_SIZE / crypt_stat->extent_size));
+=======
+
+	mutex_lock(&crypt_stat->cs_tfm_mutex);
+	req = skcipher_request_alloc(crypt_stat->tfm, GFP_NOFS);
+	if (!req) {
+		mutex_unlock(&crypt_stat->cs_tfm_mutex);
+		rc = -ENOMEM;
+		goto out;
+	}
+
+	skcipher_request_set_callback(req,
+			CRYPTO_TFM_REQ_MAY_BACKLOG | CRYPTO_TFM_REQ_MAY_SLEEP,
+			crypto_req_done, &ecr);
+	/* Consider doing this once, when the file is opened */
+	if (!(crypt_stat->flags & ECRYPTFS_KEY_SET)) {
+		rc = crypto_skcipher_setkey(crypt_stat->tfm, crypt_stat->key,
+					    crypt_stat->key_size);
+		if (rc) {
+			ecryptfs_printk(KERN_ERR,
+					"Error setting key; rc = [%d]\n",
+					rc);
+			mutex_unlock(&crypt_stat->cs_tfm_mutex);
+			rc = -EINVAL;
+			goto out;
+		}
+		crypt_stat->flags |= ECRYPTFS_KEY_SET;
+	}
+	mutex_unlock(&crypt_stat->cs_tfm_mutex);
+	skcipher_request_set_crypt(req, src_sg, dst_sg, size, iv);
+	rc = op == ENCRYPT ? crypto_skcipher_encrypt(req) :
+			     crypto_skcipher_decrypt(req);
+	rc = crypto_wait_req(rc, &ecr);
+out:
+	skcipher_request_free(req);
+	return rc;
+}
+
+/*
+ * lower_offset_for_page
+ *
+ * Convert an eCryptfs page index into a lower byte offset
+ */
+static loff_t lower_offset_for_page(struct ecryptfs_crypt_stat *crypt_stat,
+				    struct page *page)
+{
+	return ecryptfs_lower_header_size(crypt_stat) +
+	       ((loff_t)page->index << PAGE_SHIFT);
+}
+
+/**
+ * crypt_extent
+ * @crypt_stat: crypt_stat containing cryptographic context for the
+ *              encryption operation
+ * @dst_page: The page to write the result into
+ * @src_page: The page to read from
+ * @extent_offset: Page extent offset for use in generating IV
+ * @op: ENCRYPT or DECRYPT to indicate the desired operation
+ *
+ * Encrypts or decrypts one extent of data.
+ *
+ * Return zero on success; non-zero otherwise
+ */
+static int crypt_extent(struct ecryptfs_crypt_stat *crypt_stat,
+			struct page *dst_page,
+			struct page *src_page,
+			unsigned long extent_offset, int op)
+{
+	pgoff_t page_index = op == ENCRYPT ? src_page->index : dst_page->index;
+	loff_t extent_base;
+	char extent_iv[ECRYPTFS_MAX_IV_BYTES];
+	struct scatterlist src_sg, dst_sg;
+	size_t extent_size = crypt_stat->extent_size;
+	int rc;
+
+	extent_base = (((loff_t)page_index) * (PAGE_SIZE / extent_size));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ecryptfs_derive_iv(extent_iv, crypt_stat,
 				(extent_base + extent_offset));
 	if (rc) {
@@ -802,6 +1008,7 @@ static void ecryptfs_encrypt_extent(
 			(unsigned long long)(extent_base + extent_offset), rc);
 		goto out;
 	}
+<<<<<<< HEAD
 #ifndef CONFIG_CRYPTO_DEV_KFIPS
 	rc = ecryptfs_encrypt_page_offset(crypt_stat, enc_extent_page, 0,
 #else
@@ -829,10 +1036,28 @@ static void ecryptfs_encrypt_extent(
 		       "page->index = [%ld], extent_offset = [%ld]; "
 		       "rc = [%d]\n", __func__, page->index, extent_offset,
 		       rc);
+=======
+
+	sg_init_table(&src_sg, 1);
+	sg_init_table(&dst_sg, 1);
+
+	sg_set_page(&src_sg, src_page, extent_size,
+		    extent_offset * extent_size);
+	sg_set_page(&dst_sg, dst_page, extent_size,
+		    extent_offset * extent_size);
+
+	rc = crypt_scatterlist(crypt_stat, &dst_sg, &src_sg, extent_size,
+			       extent_iv, op);
+	if (rc < 0) {
+		printk(KERN_ERR "%s: Error attempting to crypt page with "
+		       "page_index = [%ld], extent_offset = [%ld]; "
+		       "rc = [%d]\n", __func__, page_index, extent_offset, rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	rc = 0;
 out:
+<<<<<<< HEAD
 #ifndef CONFIG_CRYPTO_DEV_KFIPS
 	return rc;
 #else
@@ -846,10 +1071,17 @@ out:
 
 /**
  *ifndef CONFIG_CRYPTO_DEV_KFIPS
+=======
+	return rc;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ecryptfs_encrypt_page
  * @page: Page mapped from the eCryptfs inode for the file; contains
  *        decrypted content that needs to be encrypted (to a temporary
  *        page; not in place) and written out to the lower file
+<<<<<<< HEAD
  *else
  * ecryptfs_encrypt_extent_done
  * @req: The original extent encrypt request
@@ -857,11 +1089,15 @@ out:
  *endif
  *
  *ifndef CONFIG_CRYPTO_DEV_KFIPS
+=======
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Encrypt an eCryptfs page. This is done on a per-extent basis. Note
  * that eCryptfs pages may straddle the lower pages -- for instance,
  * if the file was created on a machine with an 8K page size
  * (resulting in an 8K header), and then the file is copied onto a
  * host with a 32K page size, then when reading page 0 of the eCryptfs
+<<<<<<< HEAD
  *else
  * This function is called when the extent encryption is completed.
  */
@@ -975,6 +1211,21 @@ void ecryptfs_encrypt_page_async(
 	struct ecryptfs_extent_crypt_req *extent_crypt_req = NULL;
 	loff_t extent_offset = 0;
 #endif
+=======
+ * file, 24K of page 0 of the lower file will be read and decrypted,
+ * and then 8K of page 1 of the lower file will be read and decrypted.
+ *
+ * Returns zero on success; negative on error
+ */
+int ecryptfs_encrypt_page(struct page *page)
+{
+	struct inode *ecryptfs_inode;
+	struct ecryptfs_crypt_stat *crypt_stat;
+	char *enc_extent_virt;
+	struct page *enc_extent_page = NULL;
+	loff_t extent_offset;
+	loff_t lower_offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	ecryptfs_inode = page->mapping->host;
@@ -988,6 +1239,7 @@ void ecryptfs_encrypt_page_async(
 				"encrypted extent\n");
 		goto out;
 	}
+<<<<<<< HEAD
 #ifndef CONFIG_CRYPTO_DEV_KFIPS
 	enc_extent_virt = kmap(enc_extent_page);
 #endif
@@ -999,11 +1251,20 @@ void ecryptfs_encrypt_page_async(
 
 		rc = ecryptfs_encrypt_extent(enc_extent_page, crypt_stat, page,
 					     extent_offset);
+=======
+
+	for (extent_offset = 0;
+	     extent_offset < (PAGE_SIZE / crypt_stat->extent_size);
+	     extent_offset++) {
+		rc = crypt_extent(crypt_stat, enc_extent_page, page,
+				  extent_offset, ENCRYPT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc) {
 			printk(KERN_ERR "%s: Error encrypting extent; "
 			       "rc = [%d]\n", __func__, rc);
 			goto out;
 		}
+<<<<<<< HEAD
 		ecryptfs_lower_offset_for_extent(
 			&offset, ((((loff_t)page->index)
 				   * (PAGE_CACHE_SIZE
@@ -1166,10 +1427,24 @@ static void ecryptfs_decrypt_extent(
 		       "page->index = [%ld], extent_offset = [%ld]; "
 		       "rc = [%d]\n", __func__, page->index, extent_offset,
 		       rc);
+=======
+	}
+
+	lower_offset = lower_offset_for_page(crypt_stat, page);
+	enc_extent_virt = kmap_local_page(enc_extent_page);
+	rc = ecryptfs_write_lower(ecryptfs_inode, enc_extent_virt, lower_offset,
+				  PAGE_SIZE);
+	kunmap_local(enc_extent_virt);
+	if (rc < 0) {
+		ecryptfs_printk(KERN_ERR,
+			"Error attempting to write lower page; rc = [%d]\n",
+			rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	rc = 0;
 out:
+<<<<<<< HEAD
 #ifndef CONFIG_CRYPTO_DEV_KFIPS
 	return rc;
 #else
@@ -1183,10 +1458,20 @@ out:
 
 /**
  *ifndef CONFIG_CRYPTO_DEV_KFIPS
+=======
+	if (enc_extent_page) {
+		__free_page(enc_extent_page);
+	}
+	return rc;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ecryptfs_decrypt_page
  * @page: Page mapped from the eCryptfs inode for the file; data read
  *        and decrypted from the lower file will be written into this
  *        page
+<<<<<<< HEAD
  *else
  * ecryptfs_decrypt_extent_done
  * @extent_crypt_req: The original extent decrypt request
@@ -1241,11 +1526,15 @@ static void ecryptfs_decrypt_extent_done(
  *                  this page
  *
  *ifndef CONFIG_CRYPTO_DEV_KFIPS
+=======
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Decrypt an eCryptfs page. This is done on a per-extent basis. Note
  * that eCryptfs pages may straddle the lower pages -- for instance,
  * if the file was created on a machine with an 8K page size
  * (resulting in an 8K header), and then the file is copied onto a
  * host with a 32K page size, then when reading page 0 of the eCryptfs
+<<<<<<< HEAD
  *else
  * Function that asynchronously decrypts an eCryptfs page.
  * This is done on a per-extent basis. Note that eCryptfs pages may straddle
@@ -1282,12 +1571,27 @@ void ecryptfs_decrypt_page_async(struct ecryptfs_page_crypt_req *page_crypt_req)
 	struct ecryptfs_extent_crypt_req *extent_crypt_req = NULL;
 	unsigned long extent_offset = 0;
 #endif
+=======
+ * file, 24K of page 0 of the lower file will be read and decrypted,
+ * and then 8K of page 1 of the lower file will be read and decrypted.
+ *
+ * Returns zero on success; negative on error
+ */
+int ecryptfs_decrypt_page(struct page *page)
+{
+	struct inode *ecryptfs_inode;
+	struct ecryptfs_crypt_stat *crypt_stat;
+	char *page_virt;
+	unsigned long extent_offset;
+	loff_t lower_offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	ecryptfs_inode = page->mapping->host;
 	crypt_stat =
 		&(ecryptfs_inode_to_private(ecryptfs_inode)->crypt_stat);
 	BUG_ON(!(crypt_stat->flags & ECRYPTFS_ENCRYPTED));
+<<<<<<< HEAD
 	enc_extent_page = alloc_page(GFP_USER);
 	if (!enc_extent_page) {
 		rc = -ENOMEM;
@@ -1485,10 +1789,37 @@ static int decrypt_scatterlist(struct ecryptfs_crypt_stat *crypt_stat,
 	ablkcipher_request_set_crypt(req, src_sg, dest_sg, size, iv);
 	rc = crypto_ablkcipher_decrypt(req);
 #endif
+=======
+
+	lower_offset = lower_offset_for_page(crypt_stat, page);
+	page_virt = kmap_local_page(page);
+	rc = ecryptfs_read_lower(page_virt, lower_offset, PAGE_SIZE,
+				 ecryptfs_inode);
+	kunmap_local(page_virt);
+	if (rc < 0) {
+		ecryptfs_printk(KERN_ERR,
+			"Error attempting to read lower page; rc = [%d]\n",
+			rc);
+		goto out;
+	}
+
+	for (extent_offset = 0;
+	     extent_offset < (PAGE_SIZE / crypt_stat->extent_size);
+	     extent_offset++) {
+		rc = crypt_extent(crypt_stat, page, page,
+				  extent_offset, DECRYPT);
+		if (rc) {
+			printk(KERN_ERR "%s: Error decrypting extent; "
+			       "rc = [%d]\n", __func__, rc);
+			goto out;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return rc;
 }
 
+<<<<<<< HEAD
 /**
  * ecryptfs_encrypt_page_offset
  *ifndef CONFIG_CRYPTO_DEV_KFIPS
@@ -1620,6 +1951,8 @@ ecryptfs_decrypt_page_offset(struct ecryptfs_extent_crypt_req *extent_crypt_req,
 #endif
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ECRYPTFS_MAX_SCATTERLIST_LEN 4
 
 /**
@@ -1636,24 +1969,36 @@ int ecryptfs_init_crypt_ctx(struct ecryptfs_crypt_stat *crypt_stat)
 	char *full_alg_name;
 	int rc = -EINVAL;
 
+<<<<<<< HEAD
 	if (!crypt_stat->cipher) {
 		ecryptfs_printk(KERN_ERR, "No cipher specified\n");
 		goto out;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ecryptfs_printk(KERN_DEBUG,
 			"Initializing cipher [%s]; strlen = [%d]; "
 			"key_size_bits = [%zd]\n",
 			crypt_stat->cipher, (int)strlen(crypt_stat->cipher),
 			crypt_stat->key_size << 3);
+<<<<<<< HEAD
 	if (crypt_stat->tfm) {
 		rc = 0;
 		goto out;
 	}
 	mutex_lock(&crypt_stat->cs_tfm_mutex);
+=======
+	mutex_lock(&crypt_stat->cs_tfm_mutex);
+	if (crypt_stat->tfm) {
+		rc = 0;
+		goto out_unlock;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ecryptfs_crypto_api_algify_cipher_name(&full_alg_name,
 						    crypt_stat->cipher, "cbc");
 	if (rc)
 		goto out_unlock;
+<<<<<<< HEAD
 #ifndef CONFIG_CRYPTO_DEV_KFIPS
 	crypt_stat->tfm = crypto_alloc_blkcipher(full_alg_name, 0,
 						 CRYPTO_ALG_ASYNC);
@@ -1661,11 +2006,15 @@ int ecryptfs_init_crypt_ctx(struct ecryptfs_crypt_stat *crypt_stat)
 	crypt_stat->tfm = crypto_alloc_ablkcipher(full_alg_name, 0, 0);
 #endif
 	kfree(full_alg_name);
+=======
+	crypt_stat->tfm = crypto_alloc_skcipher(full_alg_name, 0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(crypt_stat->tfm)) {
 		rc = PTR_ERR(crypt_stat->tfm);
 		crypt_stat->tfm = NULL;
 		ecryptfs_printk(KERN_ERR, "cryptfs: init_crypt_ctx(): "
 				"Error initializing cipher [%s]\n",
+<<<<<<< HEAD
 				crypt_stat->cipher);
 		goto out_unlock;
 	}
@@ -1678,6 +2027,18 @@ int ecryptfs_init_crypt_ctx(struct ecryptfs_crypt_stat *crypt_stat)
 out_unlock:
 	mutex_unlock(&crypt_stat->cs_tfm_mutex);
 out:
+=======
+				full_alg_name);
+		goto out_free;
+	}
+	crypto_skcipher_set_flags(crypt_stat->tfm,
+				  CRYPTO_TFM_REQ_FORBID_WEAK_KEYS);
+	rc = 0;
+out_free:
+	kfree(full_alg_name);
+out_unlock:
+	mutex_unlock(&crypt_stat->cs_tfm_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -1707,6 +2068,7 @@ void ecryptfs_set_default_sizes(struct ecryptfs_crypt_stat *crypt_stat)
 	if (crypt_stat->flags & ECRYPTFS_METADATA_IN_XATTR)
 		crypt_stat->metadata_size = ECRYPTFS_MINIMUM_HEADER_EXTENT_SIZE;
 	else {
+<<<<<<< HEAD
 		if (PAGE_CACHE_SIZE <= ECRYPTFS_MINIMUM_HEADER_EXTENT_SIZE)
 			crypt_stat->metadata_size =
 				ECRYPTFS_MINIMUM_HEADER_EXTENT_SIZE;
@@ -1718,17 +2080,33 @@ void ecryptfs_set_default_sizes(struct ecryptfs_crypt_stat *crypt_stat)
 /**
  * ecryptfs_compute_root_iv
  * @crypt_stats
+=======
+		if (PAGE_SIZE <= ECRYPTFS_MINIMUM_HEADER_EXTENT_SIZE)
+			crypt_stat->metadata_size =
+				ECRYPTFS_MINIMUM_HEADER_EXTENT_SIZE;
+		else
+			crypt_stat->metadata_size = PAGE_SIZE;
+	}
+}
+
+/*
+ * ecryptfs_compute_root_iv
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * On error, sets the root IV to all 0's.
  */
 int ecryptfs_compute_root_iv(struct ecryptfs_crypt_stat *crypt_stat)
 {
 	int rc = 0;
+<<<<<<< HEAD
 #ifdef CONFIG_CRYPTO_FIPS
 	char dst[SHA256_HASH_SIZE];
 #else
 	char dst[MD5_DIGEST_SIZE];
 #endif
+=======
+	char dst[MD5_DIGEST_SIZE];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(crypt_stat->iv_bytes > MD5_DIGEST_SIZE);
 	BUG_ON(crypt_stat->iv_bytes <= 0);
@@ -1738,11 +2116,14 @@ int ecryptfs_compute_root_iv(struct ecryptfs_crypt_stat *crypt_stat)
 				"cannot generate root IV\n");
 		goto out;
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_CRYPTO_FIPS
 	if (get_cc_mode_state())
 		rc = ecryptfs_calculate_sha256(dst, crypt_stat, crypt_stat->key, crypt_stat->key_size);
 	else
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ecryptfs_calculate_md5(dst, crypt_stat, crypt_stat->key,
 				    crypt_stat->key_size);
 	if (rc) {
@@ -1761,11 +2142,15 @@ out:
 
 static void ecryptfs_generate_new_key(struct ecryptfs_crypt_stat *crypt_stat)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_CRYPTO_FIPS
 	crypto_sec_rng_get_bytes(crypt_stat->key, crypt_stat->key_size);
 #else
 	get_random_bytes(crypt_stat->key, crypt_stat->key_size);
 #endif
+=======
+	get_random_bytes(crypt_stat->key, crypt_stat->key_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	crypt_stat->flags |= ECRYPTFS_KEY_VALID;
 	ecryptfs_compute_root_iv(crypt_stat);
 	if (unlikely(ecryptfs_verbosity > 0)) {
@@ -1882,6 +2267,7 @@ int ecryptfs_new_file_context(struct inode *ecryptfs_inode)
 
 	ecryptfs_set_default_crypt_stat_vals(crypt_stat, mount_crypt_stat);
 	crypt_stat->flags |= (ECRYPTFS_ENCRYPTED | ECRYPTFS_KEY_VALID);
+<<<<<<< HEAD
 #if 1 // FEATURE_SDCARD_ENCRYPTION  DEBUG
 	if (mount_crypt_stat && (mount_crypt_stat->flags & ECRYPTFS_DECRYPTION_ONLY))
 	{
@@ -1889,6 +2275,8 @@ int ecryptfs_new_file_context(struct inode *ecryptfs_inode)
 	//	crypt_stat->flags &= ~(ECRYPTFS_ENCRYPTED);
 	}
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ecryptfs_copy_mount_wide_flags_to_inode_flags(crypt_stat,
 						      mount_crypt_stat);
 	rc = ecryptfs_copy_mount_wide_sigs_to_inode_sigs(crypt_stat,
@@ -1956,6 +2344,7 @@ static struct ecryptfs_flag_map_elem ecryptfs_flag_map[] = {
  * @crypt_stat: The cryptographic context
  * @page_virt: Source data to be parsed
  * @bytes_read: Updated with the number of bytes read
+<<<<<<< HEAD
  *
  * Returns zero on success; non-zero if the flag set is invalid
  */
@@ -1963,12 +2352,22 @@ static int ecryptfs_process_flags(struct ecryptfs_crypt_stat *crypt_stat,
 				  char *page_virt, int *bytes_read)
 {
 	int rc = 0;
+=======
+ */
+static void ecryptfs_process_flags(struct ecryptfs_crypt_stat *crypt_stat,
+				  char *page_virt, int *bytes_read)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	u32 flags;
 
 	flags = get_unaligned_be32(page_virt);
+<<<<<<< HEAD
 	for (i = 0; i < ((sizeof(ecryptfs_flag_map)
 			  / sizeof(struct ecryptfs_flag_map_elem))); i++)
+=======
+	for (i = 0; i < ARRAY_SIZE(ecryptfs_flag_map); i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (flags & ecryptfs_flag_map[i].file_flag) {
 			crypt_stat->flags |= ecryptfs_flag_map[i].local_flag;
 		} else
@@ -1976,7 +2375,10 @@ static int ecryptfs_process_flags(struct ecryptfs_crypt_stat *crypt_stat,
 	/* Version is in top 8 bits of the 32-bit flag vector */
 	crypt_stat->file_version = ((flags >> 24) & 0xFF);
 	(*bytes_read) = 4;
+<<<<<<< HEAD
 	return rc;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1990,11 +2392,15 @@ static void write_ecryptfs_marker(char *page_virt, size_t *written)
 {
 	u32 m_1, m_2;
 
+<<<<<<< HEAD
 #ifdef CONFIG_CRYPTO_FIPS
 	crypto_sec_rng_get_bytes((unsigned char*)&m_1, (MAGIC_ECRYPTFS_MARKER_SIZE_BYTES / 2));
 #else
 	get_random_bytes(&m_1, (MAGIC_ECRYPTFS_MARKER_SIZE_BYTES / 2));
 #endif
+=======
+	get_random_bytes(&m_1, (MAGIC_ECRYPTFS_MARKER_SIZE_BYTES / 2));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	m_2 = (m_1 ^ MAGIC_ECRYPTFS_MARKER);
 	put_unaligned_be32(m_1, page_virt);
 	page_virt += (MAGIC_ECRYPTFS_MARKER_SIZE_BYTES / 2);
@@ -2009,8 +2415,12 @@ void ecryptfs_write_crypt_stat_flags(char *page_virt,
 	u32 flags = 0;
 	int i;
 
+<<<<<<< HEAD
 	for (i = 0; i < ((sizeof(ecryptfs_flag_map)
 			  / sizeof(struct ecryptfs_flag_map_elem))); i++)
+=======
+	for (i = 0; i < ARRAY_SIZE(ecryptfs_flag_map); i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (crypt_stat->flags & ecryptfs_flag_map[i].local_flag)
 			flags |= ecryptfs_flag_map[i].file_flag;
 	/* Version is in top 8 bits of the 32-bit flag vector */
@@ -2025,7 +2435,11 @@ struct ecryptfs_cipher_code_str_map_elem {
 };
 
 /* Add support for additional ciphers by adding elements here. The
+<<<<<<< HEAD
  * cipher_code is whatever OpenPGP applicatoins use to identify the
+=======
+ * cipher_code is whatever OpenPGP applications use to identify the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ciphers. List in order of probability. */
 static struct ecryptfs_cipher_code_str_map_elem
 ecryptfs_cipher_code_str_map[] = {
@@ -2106,8 +2520,15 @@ int ecryptfs_read_and_validate_header_region(struct inode *inode)
 
 	rc = ecryptfs_read_lower(file_size, 0, ECRYPTFS_SIZE_AND_MARKER_BYTES,
 				 inode);
+<<<<<<< HEAD
 	if (rc < ECRYPTFS_SIZE_AND_MARKER_BYTES)
 		return rc >= 0 ? -EINVAL : rc;
+=======
+	if (rc < 0)
+		return rc;
+	else if (rc < ECRYPTFS_SIZE_AND_MARKER_BYTES)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ecryptfs_validate_marker(marker);
 	if (!rc)
 		ecryptfs_i_size_init(file_size, inode);
@@ -2213,12 +2634,34 @@ ecryptfs_write_metadata_to_contents(struct inode *ecryptfs_inode,
 
 static int
 ecryptfs_write_metadata_to_xattr(struct dentry *ecryptfs_dentry,
+<<<<<<< HEAD
 				 char *page_virt, size_t size)
 {
 	int rc;
 
 	rc = ecryptfs_setxattr(ecryptfs_dentry, ECRYPTFS_XATTR_NAME, page_virt,
 			       size, 0);
+=======
+				 struct inode *ecryptfs_inode,
+				 char *page_virt, size_t size)
+{
+	int rc;
+	struct dentry *lower_dentry = ecryptfs_dentry_to_lower(ecryptfs_dentry);
+	struct inode *lower_inode = d_inode(lower_dentry);
+
+	if (!(lower_inode->i_opflags & IOP_XATTR)) {
+		rc = -EOPNOTSUPP;
+		goto out;
+	}
+
+	inode_lock(lower_inode);
+	rc = __vfs_setxattr(&nop_mnt_idmap, lower_dentry, lower_inode,
+			    ECRYPTFS_XATTR_NAME, page_virt, size, 0);
+	if (!rc && ecryptfs_inode)
+		fsstack_copy_attr_all(ecryptfs_inode, lower_inode);
+	inode_unlock(lower_inode);
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -2251,23 +2694,29 @@ int ecryptfs_write_metadata(struct dentry *ecryptfs_dentry,
 {
 	struct ecryptfs_crypt_stat *crypt_stat =
 		&ecryptfs_inode_to_private(ecryptfs_inode)->crypt_stat;
+<<<<<<< HEAD
 #if 1 // FEATURE_SDCARD_ENCRYPTION DEBUG
 	struct ecryptfs_mount_crypt_stat *mount_crypt_stat =
                 &ecryptfs_superblock_to_private(
                         ecryptfs_dentry->d_sb)->mount_crypt_stat;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int order;
 	char *virt;
 	size_t virt_len;
 	size_t size = 0;
 	int rc = 0;
 
+<<<<<<< HEAD
 #if 1 // FEATURE_SDCARD_ENCRYPTION DEBUG
 if (mount_crypt_stat && (mount_crypt_stat->flags
                         & ECRYPTFS_DECRYPTION_ONLY)) {
 ecryptfs_printk(KERN_ERR, "%s:%d:: Error decryption_only set \n", __FUNCTION__, __LINE__);
 }
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (likely(crypt_stat->flags & ECRYPTFS_ENCRYPTED)) {
 		if (!(crypt_stat->flags & ECRYPTFS_KEY_VALID)) {
 			printk(KERN_ERR "Key is invalid; bailing out\n");
@@ -2298,8 +2747,13 @@ ecryptfs_printk(KERN_ERR, "%s:%d:: Error decryption_only set \n", __FUNCTION__, 
 		goto out_free;
 	}
 	if (crypt_stat->flags & ECRYPTFS_METADATA_IN_XATTR)
+<<<<<<< HEAD
 		rc = ecryptfs_write_metadata_to_xattr(ecryptfs_dentry, virt,
 						      size);
+=======
+		rc = ecryptfs_write_metadata_to_xattr(ecryptfs_dentry, ecryptfs_inode,
+						      virt, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		rc = ecryptfs_write_metadata_to_contents(ecryptfs_inode, virt,
 							 virt_len);
@@ -2401,6 +2855,7 @@ static int ecryptfs_read_headers_virt(char *page_virt,
 	if (rc)
 		goto out;
 	if (!(crypt_stat->flags & ECRYPTFS_I_SIZE_INITIALIZED))
+<<<<<<< HEAD
 		ecryptfs_i_size_init(page_virt, ecryptfs_dentry->d_inode);
 	offset += MAGIC_ECRYPTFS_MARKER_SIZE_BYTES;
 	rc = ecryptfs_process_flags(crypt_stat, (page_virt + offset),
@@ -2409,6 +2864,11 @@ static int ecryptfs_read_headers_virt(char *page_virt,
 		ecryptfs_printk(KERN_WARNING, "Error processing flags\n");
 		goto out;
 	}
+=======
+		ecryptfs_i_size_init(page_virt, d_inode(ecryptfs_dentry));
+	offset += MAGIC_ECRYPTFS_MARKER_SIZE_BYTES;
+	ecryptfs_process_flags(crypt_stat, (page_virt + offset), &bytes_read);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (crypt_stat->file_version > ECRYPTFS_SUPPORTED_FILE_VERSION) {
 		ecryptfs_printk(KERN_WARNING, "File version is [%d]; only "
 				"file version [%d] is supported by this "
@@ -2448,11 +2908,21 @@ out:
 int ecryptfs_read_xattr_region(char *page_virt, struct inode *ecryptfs_inode)
 {
 	struct dentry *lower_dentry =
+<<<<<<< HEAD
 		ecryptfs_inode_to_private(ecryptfs_inode)->lower_file->f_dentry;
 	ssize_t size;
 	int rc = 0;
 
 	size = ecryptfs_getxattr_lower(lower_dentry, ECRYPTFS_XATTR_NAME,
+=======
+		ecryptfs_inode_to_private(ecryptfs_inode)->lower_file->f_path.dentry;
+	ssize_t size;
+	int rc = 0;
+
+	size = ecryptfs_getxattr_lower(lower_dentry,
+				       ecryptfs_inode_to_lower(ecryptfs_inode),
+				       ECRYPTFS_XATTR_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       page_virt, ECRYPTFS_DEFAULT_EXTENT_SIZE);
 	if (size < 0) {
 		if (unlikely(ecryptfs_verbosity > 0))
@@ -2474,22 +2944,40 @@ int ecryptfs_read_and_validate_xattr_region(struct dentry *dentry,
 	int rc;
 
 	rc = ecryptfs_getxattr_lower(ecryptfs_dentry_to_lower(dentry),
+<<<<<<< HEAD
 				     ECRYPTFS_XATTR_NAME, file_size,
 				     ECRYPTFS_SIZE_AND_MARKER_BYTES);
 	if (rc < ECRYPTFS_SIZE_AND_MARKER_BYTES)
 		return rc >= 0 ? -EINVAL : rc;
+=======
+				     ecryptfs_inode_to_lower(inode),
+				     ECRYPTFS_XATTR_NAME, file_size,
+				     ECRYPTFS_SIZE_AND_MARKER_BYTES);
+	if (rc < 0)
+		return rc;
+	else if (rc < ECRYPTFS_SIZE_AND_MARKER_BYTES)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ecryptfs_validate_marker(marker);
 	if (!rc)
 		ecryptfs_i_size_init(file_size, inode);
 	return rc;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ecryptfs_read_metadata
  *
  * Common entry point for reading file metadata. From here, we could
  * retrieve the header information from the header region of the file,
+<<<<<<< HEAD
  * the xattr region of the file, or some other repostory that is
+=======
+ * the xattr region of the file, or some other repository that is
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * stored separately from the file itself. The current implementation
  * supports retrieving the metadata information from the file contents
  * and from the xattr region.
@@ -2500,7 +2988,11 @@ int ecryptfs_read_metadata(struct dentry *ecryptfs_dentry)
 {
 	int rc;
 	char *page_virt;
+<<<<<<< HEAD
 	struct inode *ecryptfs_inode = ecryptfs_dentry->d_inode;
+=======
+	struct inode *ecryptfs_inode = d_inode(ecryptfs_dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ecryptfs_crypt_stat *crypt_stat =
 	    &ecryptfs_inode_to_private(ecryptfs_inode)->crypt_stat;
 	struct ecryptfs_mount_crypt_stat *mount_crypt_stat =
@@ -2513,8 +3005,11 @@ int ecryptfs_read_metadata(struct dentry *ecryptfs_dentry)
 	page_virt = kmem_cache_alloc(ecryptfs_header_cache, GFP_USER);
 	if (!page_virt) {
 		rc = -ENOMEM;
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Unable to allocate page_virt\n",
 		       __func__);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	rc = ecryptfs_read_lower(page_virt, 0, crypt_stat->extent_size,
@@ -2525,7 +3020,11 @@ int ecryptfs_read_metadata(struct dentry *ecryptfs_dentry)
 						ECRYPTFS_VALIDATE_HEADER_SIZE);
 	if (rc) {
 		/* metadata is not in the file header, so try xattrs */
+<<<<<<< HEAD
 		memset(page_virt, 0, PAGE_CACHE_SIZE);
+=======
+		memset(page_virt, 0, PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = ecryptfs_read_xattr_region(page_virt, ecryptfs_inode);
 		if (rc) {
 			printk(KERN_DEBUG "Valid eCryptfs headers not found in "
@@ -2558,13 +3057,21 @@ int ecryptfs_read_metadata(struct dentry *ecryptfs_dentry)
 	}
 out:
 	if (page_virt) {
+<<<<<<< HEAD
 		memset(page_virt, 0, PAGE_CACHE_SIZE);
+=======
+		memset(page_virt, 0, PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kmem_cache_free(ecryptfs_header_cache, page_virt);
 	}
 	return rc;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ecryptfs_encrypt_filename - encrypt filename
  *
  * CBC-encrypts the filename. We do not want to encrypt the same
@@ -2575,16 +3082,24 @@ out:
  */
 static int
 ecryptfs_encrypt_filename(struct ecryptfs_filename *filename,
+<<<<<<< HEAD
 			  struct ecryptfs_crypt_stat *crypt_stat,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct ecryptfs_mount_crypt_stat *mount_crypt_stat)
 {
 	int rc = 0;
 
 	filename->encrypted_filename = NULL;
 	filename->encrypted_filename_size = 0;
+<<<<<<< HEAD
 	if ((crypt_stat && (crypt_stat->flags & ECRYPTFS_ENCFN_USE_MOUNT_FNEK))
 	    || (mount_crypt_stat && (mount_crypt_stat->flags
 				     & ECRYPTFS_GLOBAL_ENCFN_USE_MOUNT_FNEK))) {
+=======
+	if (mount_crypt_stat && (mount_crypt_stat->flags
+				     & ECRYPTFS_GLOBAL_ENCFN_USE_MOUNT_FNEK)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		size_t packet_size;
 		size_t remaining_bytes;
 
@@ -2603,9 +3118,12 @@ ecryptfs_encrypt_filename(struct ecryptfs_filename *filename,
 		filename->encrypted_filename =
 			kmalloc(filename->encrypted_filename_size, GFP_KERNEL);
 		if (!filename->encrypted_filename) {
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: Out of memory whilst attempting "
 			       "to kmalloc [%zd] bytes\n", __func__,
 			       filename->encrypted_filename_size);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -ENOMEM;
 			goto out;
 		}
@@ -2667,12 +3185,20 @@ out:
  * event, regardless of whether this function succeeds for fails.
  */
 static int
+<<<<<<< HEAD
 ecryptfs_process_key_cipher(struct crypto_blkcipher **key_tfm,
+=======
+ecryptfs_process_key_cipher(struct crypto_skcipher **key_tfm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    char *cipher_name, size_t *key_size)
 {
 	char dummy_key[ECRYPTFS_MAX_KEY_BYTES];
 	char *full_alg_name = NULL;
+<<<<<<< HEAD
 	int rc = 0;
+=======
+	int rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*key_tfm = NULL;
 	if (*key_size > ECRYPTFS_MAX_KEY_BYTES) {
@@ -2681,6 +3207,7 @@ ecryptfs_process_key_cipher(struct crypto_blkcipher **key_tfm,
 		      "allowable is [%d]\n", *key_size, ECRYPTFS_MAX_KEY_BYTES);
 		goto out;
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_CRYPTO_FIPS
 	if (get_cc_mode_state()) {
 		kfree(full_alg_name);
@@ -2696,12 +3223,20 @@ ecryptfs_process_key_cipher(struct crypto_blkcipher **key_tfm,
 	if (rc)
 		goto out;
 	*key_tfm = crypto_alloc_blkcipher(full_alg_name, 0, CRYPTO_ALG_ASYNC);
+=======
+	rc = ecryptfs_crypto_api_algify_cipher_name(&full_alg_name, cipher_name,
+						    "ecb");
+	if (rc)
+		goto out;
+	*key_tfm = crypto_alloc_skcipher(full_alg_name, 0, CRYPTO_ALG_ASYNC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(*key_tfm)) {
 		rc = PTR_ERR(*key_tfm);
 		printk(KERN_ERR "Unable to allocate crypto cipher with name "
 		       "[%s]; rc = [%d]\n", full_alg_name, rc);
 		goto out;
 	}
+<<<<<<< HEAD
 	crypto_blkcipher_set_flags(*key_tfm, CRYPTO_TFM_REQ_WEAK_KEY);
 	if (*key_size == 0) {
 		struct blkcipher_alg *alg = crypto_blkcipher_alg(*key_tfm);
@@ -2714,6 +3249,13 @@ ecryptfs_process_key_cipher(struct crypto_blkcipher **key_tfm,
 	get_random_bytes(dummy_key, *key_size);
 #endif
 	rc = crypto_blkcipher_setkey(*key_tfm, dummy_key, *key_size);
+=======
+	crypto_skcipher_set_flags(*key_tfm, CRYPTO_TFM_REQ_FORBID_WEAK_KEYS);
+	if (*key_size == 0)
+		*key_size = crypto_skcipher_max_keysize(*key_tfm);
+	get_random_bytes(dummy_key, *key_size);
+	rc = crypto_skcipher_setkey(*key_tfm, dummy_key, *key_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		printk(KERN_ERR "Error attempting to set key of size [%zd] for "
 		       "cipher [%s]; rc = [%d]\n", *key_size, full_alg_name,
@@ -2728,11 +3270,18 @@ out:
 
 struct kmem_cache *ecryptfs_key_tfm_cache;
 static struct list_head key_tfm_list;
+<<<<<<< HEAD
 struct mutex key_tfm_list_mutex;
 
 int __init ecryptfs_init_crypto(void)
 {
 	mutex_init(&key_tfm_list_mutex);
+=======
+DEFINE_MUTEX(key_tfm_list_mutex);
+
+int __init ecryptfs_init_crypto(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&key_tfm_list);
 	return 0;
 }
@@ -2750,8 +3299,12 @@ int ecryptfs_destroy_crypto(void)
 	list_for_each_entry_safe(key_tfm, key_tfm_tmp, &key_tfm_list,
 				 key_tfm_list) {
 		list_del(&key_tfm->key_tfm_list);
+<<<<<<< HEAD
 		if (key_tfm->key_tfm)
 			crypto_free_blkcipher(key_tfm->key_tfm);
+=======
+		crypto_free_skcipher(key_tfm->key_tfm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kmem_cache_free(ecryptfs_key_tfm_cache, key_tfm);
 	}
 	mutex_unlock(&key_tfm_list_mutex);
@@ -2768,12 +3321,19 @@ ecryptfs_add_new_key_tfm(struct ecryptfs_key_tfm **key_tfm, char *cipher_name,
 	BUG_ON(!mutex_is_locked(&key_tfm_list_mutex));
 
 	tmp_tfm = kmem_cache_alloc(ecryptfs_key_tfm_cache, GFP_KERNEL);
+<<<<<<< HEAD
 	if (key_tfm != NULL)
 		(*key_tfm) = tmp_tfm;
 	if (!tmp_tfm) {
 		rc = -ENOMEM;
 		printk(KERN_ERR "Error attempting to allocate from "
 		       "ecryptfs_key_tfm_cache\n");
+=======
+	if (key_tfm)
+		(*key_tfm) = tmp_tfm;
+	if (!tmp_tfm) {
+		rc = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	mutex_init(&tmp_tfm->key_tfm_mutex);
@@ -2789,7 +3349,11 @@ ecryptfs_add_new_key_tfm(struct ecryptfs_key_tfm **key_tfm, char *cipher_name,
 		       "cipher with name = [%s]; rc = [%d]\n",
 		       tmp_tfm->cipher_name, rc);
 		kmem_cache_free(ecryptfs_key_tfm_cache, tmp_tfm);
+<<<<<<< HEAD
 		if (key_tfm != NULL)
+=======
+		if (key_tfm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(*key_tfm) = NULL;
 		goto out;
 	}
@@ -2837,7 +3401,11 @@ int ecryptfs_tfm_exists(char *cipher_name, struct ecryptfs_key_tfm **key_tfm)
  * Searches for cached item first, and creates new if not found.
  * Returns 0 on success, non-zero if adding new cipher failed
  */
+<<<<<<< HEAD
 int ecryptfs_get_tfm_and_mutex_for_cipher_name(struct crypto_blkcipher **tfm,
+=======
+int ecryptfs_get_tfm_and_mutex_for_cipher_name(struct crypto_skcipher **tfm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       struct mutex **tfm_mutex,
 					       char *cipher_name)
 {
@@ -2897,7 +3465,11 @@ static const unsigned char filename_rev_map[256] = {
  * @src: Source location for the filename to encode
  * @src_size: Size of the source in bytes
  */
+<<<<<<< HEAD
 void ecryptfs_encode_for_filename(unsigned char *dst, size_t *dst_size,
+=======
+static void ecryptfs_encode_for_filename(unsigned char *dst, size_t *dst_size,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  unsigned char *src, size_t src_size)
 {
 	size_t num_blocks;
@@ -2980,7 +3552,11 @@ ecryptfs_decode_from_filename(unsigned char *dst, size_t *dst_size,
 	size_t src_byte_offset = 0;
 	size_t dst_byte_offset = 0;
 
+<<<<<<< HEAD
 	if (dst == NULL) {
+=======
+	if (!dst) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(*dst_size) = ecryptfs_max_decoded_size(src_size);
 		goto out;
 	}
@@ -3018,10 +3594,18 @@ out:
 
 /**
  * ecryptfs_encrypt_and_encode_filename - converts a plaintext file name to cipher text
+<<<<<<< HEAD
  * @crypt_stat: The crypt_stat struct associated with the file anem to encode
  * @name: The plaintext name
  * @length: The length of the plaintext
  * @encoded_name: The encypted name
+=======
+ * @encoded_name: The encrypted name
+ * @encoded_name_size: Length of the encrypted name
+ * @mount_crypt_stat: The crypt_stat struct associated with the file name to encode
+ * @name: The plaintext name
+ * @name_size: The length of the plaintext name
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Encrypts and encodes a filename into something that constitutes a
  * valid filename for a filesystem, with printable characters.
@@ -3034,7 +3618,10 @@ out:
 int ecryptfs_encrypt_and_encode_filename(
 	char **encoded_name,
 	size_t *encoded_name_size,
+<<<<<<< HEAD
 	struct ecryptfs_crypt_stat *crypt_stat,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ecryptfs_mount_crypt_stat *mount_crypt_stat,
 	const char *name, size_t name_size)
 {
@@ -3043,23 +3630,35 @@ int ecryptfs_encrypt_and_encode_filename(
 
 	(*encoded_name) = NULL;
 	(*encoded_name_size) = 0;
+<<<<<<< HEAD
 	if ((crypt_stat && (crypt_stat->flags & ECRYPTFS_ENCRYPT_FILENAMES))
 	    || (mount_crypt_stat && (mount_crypt_stat->flags
 				     & ECRYPTFS_GLOBAL_ENCRYPT_FILENAMES))) {
+=======
+	if (mount_crypt_stat && (mount_crypt_stat->flags
+				     & ECRYPTFS_GLOBAL_ENCRYPT_FILENAMES)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct ecryptfs_filename *filename;
 
 		filename = kzalloc(sizeof(*filename), GFP_KERNEL);
 		if (!filename) {
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: Out of memory whilst attempting "
 			       "to kzalloc [%zd] bytes\n", __func__,
 			       sizeof(*filename));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -ENOMEM;
 			goto out;
 		}
 		filename->filename = (char *)name;
 		filename->filename_size = name_size;
+<<<<<<< HEAD
 		rc = ecryptfs_encrypt_filename(filename, crypt_stat,
 					       mount_crypt_stat);
+=======
+		rc = ecryptfs_encrypt_filename(filename, mount_crypt_stat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc) {
 			printk(KERN_ERR "%s: Error attempting to encrypt "
 			       "filename; rc = [%d]\n", __func__, rc);
@@ -3070,11 +3669,17 @@ int ecryptfs_encrypt_and_encode_filename(
 			NULL, &encoded_name_no_prefix_size,
 			filename->encrypted_filename,
 			filename->encrypted_filename_size);
+<<<<<<< HEAD
 		if ((crypt_stat && (crypt_stat->flags
 				    & ECRYPTFS_ENCFN_USE_MOUNT_FNEK))
 		    || (mount_crypt_stat
 			&& (mount_crypt_stat->flags
 			    & ECRYPTFS_GLOBAL_ENCFN_USE_MOUNT_FNEK)))
+=======
+		if (mount_crypt_stat
+			&& (mount_crypt_stat->flags
+			    & ECRYPTFS_GLOBAL_ENCFN_USE_MOUNT_FNEK))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(*encoded_name_size) =
 				(ECRYPTFS_FNEK_ENCRYPTED_FILENAME_PREFIX_SIZE
 				 + encoded_name_no_prefix_size);
@@ -3084,19 +3689,28 @@ int ecryptfs_encrypt_and_encode_filename(
 				 + encoded_name_no_prefix_size);
 		(*encoded_name) = kmalloc((*encoded_name_size) + 1, GFP_KERNEL);
 		if (!(*encoded_name)) {
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: Out of memory whilst attempting "
 			       "to kzalloc [%zd] bytes\n", __func__,
 			       (*encoded_name_size));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -ENOMEM;
 			kfree(filename->encrypted_filename);
 			kfree(filename);
 			goto out;
 		}
+<<<<<<< HEAD
 		if ((crypt_stat && (crypt_stat->flags
 				    & ECRYPTFS_ENCFN_USE_MOUNT_FNEK))
 		    || (mount_crypt_stat
 			&& (mount_crypt_stat->flags
 			    & ECRYPTFS_GLOBAL_ENCFN_USE_MOUNT_FNEK))) {
+=======
+		if (mount_crypt_stat
+			&& (mount_crypt_stat->flags
+			    & ECRYPTFS_GLOBAL_ENCFN_USE_MOUNT_FNEK)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy((*encoded_name),
 			       ECRYPTFS_FNEK_ENCRYPTED_FILENAME_PREFIX,
 			       ECRYPTFS_FNEK_ENCRYPTED_FILENAME_PREFIX_SIZE);
@@ -3136,7 +3750,11 @@ out:
  * ecryptfs_decode_and_decrypt_filename - converts the encoded cipher text name to decoded plaintext
  * @plaintext_name: The plaintext name
  * @plaintext_name_size: The plaintext name size
+<<<<<<< HEAD
  * @ecryptfs_dir_dentry: eCryptfs directory dentry
+=======
+ * @sb: Ecryptfs's super_block
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @name: The filename in cipher text
  * @name_size: The cipher text name size
  *
@@ -3146,17 +3764,26 @@ out:
  */
 int ecryptfs_decode_and_decrypt_filename(char **plaintext_name,
 					 size_t *plaintext_name_size,
+<<<<<<< HEAD
 					 struct dentry *ecryptfs_dir_dentry,
 					 const char *name, size_t name_size)
 {
 	struct ecryptfs_mount_crypt_stat *mount_crypt_stat =
 		&ecryptfs_superblock_to_private(
 			ecryptfs_dir_dentry->d_sb)->mount_crypt_stat;
+=======
+					 struct super_block *sb,
+					 const char *name, size_t name_size)
+{
+	struct ecryptfs_mount_crypt_stat *mount_crypt_stat =
+		&ecryptfs_superblock_to_private(sb)->mount_crypt_stat;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *decoded_name;
 	size_t decoded_name_size;
 	size_t packet_size;
 	int rc = 0;
 
+<<<<<<< HEAD
 	if ((mount_crypt_stat->flags & ECRYPTFS_GLOBAL_ENCRYPT_FILENAMES)
 	    && !(mount_crypt_stat->flags & ECRYPTFS_ENCRYPTED_VIEW_ENABLED)
 	    && (name_size > ECRYPTFS_FNEK_ENCRYPTED_FILENAME_PREFIX_SIZE)
@@ -3164,6 +3791,23 @@ int ecryptfs_decode_and_decrypt_filename(char **plaintext_name,
 			ECRYPTFS_FNEK_ENCRYPTED_FILENAME_PREFIX_SIZE) == 0)) {
 		const char *orig_name = name;
 		size_t orig_name_size = name_size;
+=======
+	if ((mount_crypt_stat->flags & ECRYPTFS_GLOBAL_ENCRYPT_FILENAMES) &&
+	    !(mount_crypt_stat->flags & ECRYPTFS_ENCRYPTED_VIEW_ENABLED)) {
+		if (is_dot_dotdot(name, name_size)) {
+			rc = ecryptfs_copy_filename(plaintext_name,
+						    plaintext_name_size,
+						    name, name_size);
+			goto out;
+		}
+
+		if (name_size <= ECRYPTFS_FNEK_ENCRYPTED_FILENAME_PREFIX_SIZE ||
+		    strncmp(name, ECRYPTFS_FNEK_ENCRYPTED_FILENAME_PREFIX,
+			    ECRYPTFS_FNEK_ENCRYPTED_FILENAME_PREFIX_SIZE)) {
+			rc = -EINVAL;
+			goto out;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		name += ECRYPTFS_FNEK_ENCRYPTED_FILENAME_PREFIX_SIZE;
 		name_size -= ECRYPTFS_FNEK_ENCRYPTED_FILENAME_PREFIX_SIZE;
@@ -3171,9 +3815,12 @@ int ecryptfs_decode_and_decrypt_filename(char **plaintext_name,
 					      name, name_size);
 		decoded_name = kmalloc(decoded_name_size, GFP_KERNEL);
 		if (!decoded_name) {
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: Out of memory whilst attempting "
 			       "to kmalloc [%zd] bytes\n", __func__,
 			       decoded_name_size);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -ENOMEM;
 			goto out;
 		}
@@ -3186,12 +3833,18 @@ int ecryptfs_decode_and_decrypt_filename(char **plaintext_name,
 						  decoded_name,
 						  decoded_name_size);
 		if (rc) {
+<<<<<<< HEAD
 			printk(KERN_INFO "%s: Could not parse tag 70 packet "
 			       "from filename; copying through filename "
 			       "as-is\n", __func__);
 			rc = ecryptfs_copy_filename(plaintext_name,
 						    plaintext_name_size,
 						    orig_name, orig_name_size);
+=======
+			ecryptfs_printk(KERN_DEBUG,
+					"%s: Could not parse tag 70 packet from filename\n",
+					__func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_free;
 		}
 	} else {
@@ -3211,7 +3864,11 @@ out:
 int ecryptfs_set_f_namelen(long *namelen, long lower_namelen,
 			   struct ecryptfs_mount_crypt_stat *mount_crypt_stat)
 {
+<<<<<<< HEAD
 	struct blkcipher_desc desc;
+=======
+	struct crypto_skcipher *tfm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex *tfm_mutex;
 	size_t cipher_blocksize;
 	int rc;
@@ -3221,7 +3878,11 @@ int ecryptfs_set_f_namelen(long *namelen, long lower_namelen,
 		return 0;
 	}
 
+<<<<<<< HEAD
 	rc = ecryptfs_get_tfm_and_mutex_for_cipher_name(&desc.tfm, &tfm_mutex,
+=======
+	rc = ecryptfs_get_tfm_and_mutex_for_cipher_name(&tfm, &tfm_mutex,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mount_crypt_stat->global_default_fn_cipher_name);
 	if (unlikely(rc)) {
 		(*namelen) = 0;
@@ -3229,7 +3890,11 @@ int ecryptfs_set_f_namelen(long *namelen, long lower_namelen,
 	}
 
 	mutex_lock(tfm_mutex);
+<<<<<<< HEAD
 	cipher_blocksize = crypto_blkcipher_blocksize(desc.tfm);
+=======
+	cipher_blocksize = crypto_skcipher_blocksize(tfm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(tfm_mutex);
 
 	/* Return an exact amount for the common cases */

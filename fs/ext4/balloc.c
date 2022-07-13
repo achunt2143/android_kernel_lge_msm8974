@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ext4/balloc.c
  *
@@ -14,7 +18,10 @@
 #include <linux/time.h>
 #include <linux/capability.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <linux/jbd2.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/quotaops.h>
 #include <linux/buffer_head.h>
 #include "ext4.h"
@@ -22,6 +29,10 @@
 #include "mballoc.h"
 
 #include <trace/events/ext4.h>
+<<<<<<< HEAD
+=======
+#include <kunit/static_stub.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned ext4_num_base_meta_clusters(struct super_block *sb,
 					    ext4_group_t block_group);
@@ -30,6 +41,26 @@ static unsigned ext4_num_base_meta_clusters(struct super_block *sb,
  */
 
 /*
+<<<<<<< HEAD
+=======
+ * Calculate block group number for a given block number
+ */
+ext4_group_t ext4_get_group_number(struct super_block *sb,
+				   ext4_fsblk_t block)
+{
+	ext4_group_t group;
+
+	if (test_opt2(sb, STD_GROUP_SIZE))
+		group = (block -
+			 le32_to_cpu(EXT4_SB(sb)->s_es->s_first_data_block)) >>
+			(EXT4_BLOCK_SIZE_BITS(sb) + EXT4_CLUSTER_BITS(sb) + 3);
+	else
+		ext4_get_group_no_and_offset(sb, block, &group, NULL);
+	return group;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Calculate the block group number and offset into the block/cluster
  * allocation bitmap, given a block number
  */
@@ -49,6 +80,7 @@ void ext4_get_group_no_and_offset(struct super_block *sb, ext4_fsblk_t blocknr,
 
 }
 
+<<<<<<< HEAD
 static int ext4_block_in_group(struct super_block *sb, ext4_fsblk_t block,
 			ext4_group_t block_group)
 {
@@ -70,11 +102,42 @@ unsigned ext4_num_overhead_clusters(struct super_block *sb,
 	int block_cluster = -1, inode_cluster = -1, itbl_cluster = -1, i, c;
 	ext4_fsblk_t start = ext4_group_first_block_no(sb, block_group);
 	ext4_fsblk_t itbl_blk;
+=======
+/*
+ * Check whether the 'block' lives within the 'block_group'. Returns 1 if so
+ * and 0 otherwise.
+ */
+static inline int ext4_block_in_group(struct super_block *sb,
+				      ext4_fsblk_t block,
+				      ext4_group_t block_group)
+{
+	ext4_group_t actual_group;
+
+	actual_group = ext4_get_group_number(sb, block);
+	return (actual_group == block_group) ? 1 : 0;
+}
+
+/*
+ * Return the number of clusters used for file system metadata; this
+ * represents the overhead needed by the file system.
+ */
+static unsigned ext4_num_overhead_clusters(struct super_block *sb,
+					   ext4_group_t block_group,
+					   struct ext4_group_desc *gdp)
+{
+	unsigned base_clusters, num_clusters;
+	int block_cluster = -1, inode_cluster;
+	int itbl_cluster_start = -1, itbl_cluster_end = -1;
+	ext4_fsblk_t start = ext4_group_first_block_no(sb, block_group);
+	ext4_fsblk_t end = start + EXT4_BLOCKS_PER_GROUP(sb) - 1;
+	ext4_fsblk_t itbl_blk_start, itbl_blk_end;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 
 	/* This is the number of clusters used by the superblock,
 	 * block group descriptors, and reserved block group
 	 * descriptor blocks */
+<<<<<<< HEAD
 	num_clusters = ext4_num_base_meta_clusters(sb, block_group);
 
 	/*
@@ -85,6 +148,37 @@ unsigned ext4_num_overhead_clusters(struct super_block *sb,
 	 * if we can increment the base metadata cluster to include
 	 * that block.  Otherwise, we will have to track the cluster
 	 * used for the allocation bitmap or inode table explicitly.
+=======
+	base_clusters = ext4_num_base_meta_clusters(sb, block_group);
+	num_clusters = base_clusters;
+
+	/*
+	 * Account and record inode table clusters if any cluster
+	 * is in the block group, or inode table cluster range is
+	 * [-1, -1] and won't overlap with block/inode bitmap cluster
+	 * accounted below.
+	 */
+	itbl_blk_start = ext4_inode_table(sb, gdp);
+	itbl_blk_end = itbl_blk_start + sbi->s_itb_per_group - 1;
+	if (itbl_blk_start <= end && itbl_blk_end >= start) {
+		itbl_blk_start = max(itbl_blk_start, start);
+		itbl_blk_end = min(itbl_blk_end, end);
+
+		itbl_cluster_start = EXT4_B2C(sbi, itbl_blk_start - start);
+		itbl_cluster_end = EXT4_B2C(sbi, itbl_blk_end - start);
+
+		num_clusters += itbl_cluster_end - itbl_cluster_start + 1;
+		/* check if border cluster is overlapped */
+		if (itbl_cluster_start == base_clusters - 1)
+			num_clusters--;
+	}
+
+	/*
+	 * For the allocation bitmaps, we first need to check to see
+	 * if the block is in the block group.  If it is, then check
+	 * to see if the cluster is already accounted for in the clusters
+	 * used for the base metadata cluster and inode tables cluster.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Normally all of these blocks are contiguous, so the special
 	 * case handling shouldn't be necessary except for *very*
 	 * unusual file system layouts.
@@ -92,17 +186,25 @@ unsigned ext4_num_overhead_clusters(struct super_block *sb,
 	if (ext4_block_in_group(sb, ext4_block_bitmap(sb, gdp), block_group)) {
 		block_cluster = EXT4_B2C(sbi,
 					 ext4_block_bitmap(sb, gdp) - start);
+<<<<<<< HEAD
 		if (block_cluster < num_clusters)
 			block_cluster = -1;
 		else if (block_cluster == num_clusters) {
 			num_clusters++;
 			block_cluster = -1;
 		}
+=======
+		if (block_cluster >= base_clusters &&
+		    (block_cluster < itbl_cluster_start ||
+		    block_cluster > itbl_cluster_end))
+			num_clusters++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ext4_block_in_group(sb, ext4_inode_bitmap(sb, gdp), block_group)) {
 		inode_cluster = EXT4_B2C(sbi,
 					 ext4_inode_bitmap(sb, gdp) - start);
+<<<<<<< HEAD
 		if (inode_cluster < num_clusters)
 			inode_cluster = -1;
 		else if (inode_cluster == num_clusters) {
@@ -132,6 +234,19 @@ unsigned ext4_num_overhead_clusters(struct super_block *sb,
 	if (inode_cluster != -1)
 		num_clusters++;
 
+=======
+		/*
+		 * Additional check if inode bitmap is in just accounted
+		 * block_cluster
+		 */
+		if (inode_cluster != block_cluster &&
+		    inode_cluster >= base_clusters &&
+		    (inode_cluster < itbl_cluster_start ||
+		    inode_cluster > itbl_cluster_end))
+			num_clusters++;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return num_clusters;
 }
 
@@ -164,6 +279,7 @@ static int ext4_init_block_bitmap(struct super_block *sb,
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 	ext4_fsblk_t start, tmp;
 
+<<<<<<< HEAD
 	J_ASSERT_BH(bh, buffer_locked(bh));
 
 	/* If checksum is bad mark all blocks used to prevent allocation
@@ -175,10 +291,25 @@ static int ext4_init_block_bitmap(struct super_block *sb,
 		memset(bh->b_data, 0xff, sb->s_blocksize);
 		ext4_block_bitmap_csum_set(sb, block_group, gdp, bh);
 		return -EIO;
+=======
+	ASSERT(buffer_locked(bh));
+
+	if (!ext4_group_desc_csum_verify(sb, block_group, gdp)) {
+		ext4_mark_group_bitmap_corrupted(sb, block_group,
+					EXT4_GROUP_INFO_BBITMAP_CORRUPT |
+					EXT4_GROUP_INFO_IBITMAP_CORRUPT);
+		return -EFSBADCRC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	memset(bh->b_data, 0, sb->s_blocksize);
 
 	bit_max = ext4_num_base_meta_clusters(sb, block_group);
+<<<<<<< HEAD
+=======
+	if ((bit_max >> 3) >= bh->b_size)
+		return -EFSCORRUPTED;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (bit = 0; bit < bit_max; bit++)
 		ext4_set_bit(bit, bh->b_data);
 
@@ -207,8 +338,11 @@ static int ext4_init_block_bitmap(struct super_block *sb,
 	 */
 	ext4_mark_bitmap_end(num_clusters_in_group(sb, block_group),
 			     sb->s_blocksize * 8, bh->b_data);
+<<<<<<< HEAD
 	ext4_block_bitmap_csum_set(sb, block_group, gdp, bh);
 	ext4_group_desc_csum_set(sb, block_group, gdp);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -219,7 +353,11 @@ unsigned ext4_free_clusters_after_init(struct super_block *sb,
 				       ext4_group_t block_group,
 				       struct ext4_group_desc *gdp)
 {
+<<<<<<< HEAD
 	return num_clusters_in_group(sb, block_group) - 
+=======
+	return num_clusters_in_group(sb, block_group) -
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ext4_num_overhead_clusters(sb, block_group, gdp);
 }
 
@@ -250,6 +388,13 @@ struct ext4_group_desc * ext4_get_group_desc(struct super_block *sb,
 	ext4_group_t ngroups = ext4_get_groups_count(sb);
 	struct ext4_group_desc *desc;
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
+<<<<<<< HEAD
+=======
+	struct buffer_head *bh_p;
+
+	KUNIT_STATIC_STUB_REDIRECT(ext4_get_group_desc,
+				   sb, block_group, bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (block_group >= ngroups) {
 		ext4_error(sb, "block_group >= groups_count - block_group = %u,"
@@ -260,7 +405,18 @@ struct ext4_group_desc * ext4_get_group_desc(struct super_block *sb,
 
 	group_desc = block_group >> EXT4_DESC_PER_BLOCK_BITS(sb);
 	offset = block_group & (EXT4_DESC_PER_BLOCK(sb) - 1);
+<<<<<<< HEAD
 	if (!sbi->s_group_desc[group_desc]) {
+=======
+	bh_p = sbi_array_rcu_deref(sbi, s_group_desc, group_desc);
+	/*
+	 * sbi_array_rcu_deref returns with rcu unlocked, this is ok since
+	 * the pointer being dereferenced won't be dereferenced again. By
+	 * looking at the usage in add_new_gdb() the value isn't modified,
+	 * just the pointer, and so it remains valid.
+	 */
+	if (!bh_p) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ext4_error(sb, "Group descriptor not loaded - "
 			   "block_group = %u, group_desc = %u, desc = %u",
 			   block_group, group_desc, offset);
@@ -268,6 +424,7 @@ struct ext4_group_desc * ext4_get_group_desc(struct super_block *sb,
 	}
 
 	desc = (struct ext4_group_desc *)(
+<<<<<<< HEAD
 		(__u8 *)sbi->s_group_desc[group_desc]->b_data +
 		offset * EXT4_DESC_SIZE(sb));
 	if (bh)
@@ -275,13 +432,56 @@ struct ext4_group_desc * ext4_get_group_desc(struct super_block *sb,
 	return desc;
 }
 
+=======
+		(__u8 *)bh_p->b_data +
+		offset * EXT4_DESC_SIZE(sb));
+	if (bh)
+		*bh = bh_p;
+	return desc;
+}
+
+static ext4_fsblk_t ext4_valid_block_bitmap_padding(struct super_block *sb,
+						    ext4_group_t block_group,
+						    struct buffer_head *bh)
+{
+	ext4_grpblk_t next_zero_bit;
+	unsigned long bitmap_size = sb->s_blocksize * 8;
+	unsigned int offset = num_clusters_in_group(sb, block_group);
+
+	if (bitmap_size <= offset)
+		return 0;
+
+	next_zero_bit = ext4_find_next_zero_bit(bh->b_data, bitmap_size, offset);
+
+	return (next_zero_bit < bitmap_size ? next_zero_bit : 0);
+}
+
+struct ext4_group_info *ext4_get_group_info(struct super_block *sb,
+					    ext4_group_t group)
+{
+	struct ext4_group_info **grp_info;
+	long indexv, indexh;
+
+	if (unlikely(group >= EXT4_SB(sb)->s_groups_count))
+		return NULL;
+	indexv = group >> (EXT4_DESC_PER_BLOCK_BITS(sb));
+	indexh = group & ((EXT4_DESC_PER_BLOCK(sb)) - 1);
+	grp_info = sbi_array_rcu_deref(EXT4_SB(sb), s_group_info, indexv);
+	return grp_info[indexh];
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Return the block number which was discovered to be invalid, or 0 if
  * the block bitmap is valid.
  */
 static ext4_fsblk_t ext4_valid_block_bitmap(struct super_block *sb,
 					    struct ext4_group_desc *desc,
+<<<<<<< HEAD
 					    unsigned int block_group,
+=======
+					    ext4_group_t block_group,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    struct buffer_head *bh)
 {
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
@@ -291,7 +491,11 @@ static ext4_fsblk_t ext4_valid_block_bitmap(struct super_block *sb,
 	ext4_fsblk_t blk;
 	ext4_fsblk_t group_first_block;
 
+<<<<<<< HEAD
 	if (EXT4_HAS_INCOMPAT_FEATURE(sb, EXT4_FEATURE_INCOMPAT_FLEX_BG)) {
+=======
+	if (ext4_has_feature_flex_bg(sb)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* with FLEX_BG, the inode/block bitmaps and itable
 		 * blocks may not be in the group at all
 		 * so the bitmap validation will be skipped for those groups
@@ -307,21 +511,32 @@ static ext4_fsblk_t ext4_valid_block_bitmap(struct super_block *sb,
 	offset = blk - group_first_block;
 	if (offset < 0 || EXT4_B2C(sbi, offset) >= max_bit ||
 	    !ext4_test_bit(EXT4_B2C(sbi, offset), bh->b_data))
+<<<<<<< HEAD
 			/* bad block bitmap */
 			return blk;
+=======
+		/* bad block bitmap */
+		return blk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check whether the inode bitmap block number is set */
 	blk = ext4_inode_bitmap(sb, desc);
 	offset = blk - group_first_block;
 	if (offset < 0 || EXT4_B2C(sbi, offset) >= max_bit ||
 	    !ext4_test_bit(EXT4_B2C(sbi, offset), bh->b_data))
+<<<<<<< HEAD
 			/* bad block bitmap */
 			return blk;
+=======
+		/* bad block bitmap */
+		return blk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check whether the inode table block number is set */
 	blk = ext4_inode_table(sb, desc);
 	offset = blk - group_first_block;
 	if (offset < 0 || EXT4_B2C(sbi, offset) >= max_bit ||
+<<<<<<< HEAD
 	    EXT4_B2C(sbi, offset + sbi->s_itb_per_group) >= max_bit)
 			return blk;
 	next_zero_bit = ext4_find_next_zero_bit(bh->b_data,
@@ -329,11 +544,21 @@ static ext4_fsblk_t ext4_valid_block_bitmap(struct super_block *sb,
 			EXT4_B2C(sbi, offset));
 	if (next_zero_bit <
 	    EXT4_B2C(sbi, offset + EXT4_SB(sb)->s_itb_per_group))
+=======
+	    EXT4_B2C(sbi, offset + sbi->s_itb_per_group - 1) >= max_bit)
+		return blk;
+	next_zero_bit = ext4_find_next_zero_bit(bh->b_data,
+			EXT4_B2C(sbi, offset + sbi->s_itb_per_group - 1) + 1,
+			EXT4_B2C(sbi, offset));
+	if (next_zero_bit <
+	    EXT4_B2C(sbi, offset + sbi->s_itb_per_group - 1) + 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* bad bitmap for inode tables */
 		return blk;
 	return 0;
 }
 
+<<<<<<< HEAD
 void ext4_validate_block_bitmap(struct super_block *sb,
 			       struct ext4_group_desc *desc,
 			       unsigned int block_group,
@@ -345,11 +570,43 @@ void ext4_validate_block_bitmap(struct super_block *sb,
 		return;
 
 	ext4_lock_group(sb, block_group);
+=======
+static int ext4_validate_block_bitmap(struct super_block *sb,
+				      struct ext4_group_desc *desc,
+				      ext4_group_t block_group,
+				      struct buffer_head *bh)
+{
+	ext4_fsblk_t	blk;
+	struct ext4_group_info *grp;
+
+	if (EXT4_SB(sb)->s_mount_state & EXT4_FC_REPLAY)
+		return 0;
+
+	grp = ext4_get_group_info(sb, block_group);
+
+	if (buffer_verified(bh))
+		return 0;
+	if (!grp || EXT4_MB_GRP_BBITMAP_CORRUPT(grp))
+		return -EFSCORRUPTED;
+
+	ext4_lock_group(sb, block_group);
+	if (buffer_verified(bh))
+		goto verified;
+	if (unlikely(!ext4_block_bitmap_csum_verify(sb, desc, bh) ||
+		     ext4_simulate_fail(sb, EXT4_SIM_BBITMAP_CRC))) {
+		ext4_unlock_group(sb, block_group);
+		ext4_error(sb, "bg %u: bad block bitmap checksum", block_group);
+		ext4_mark_group_bitmap_corrupted(sb, block_group,
+					EXT4_GROUP_INFO_BBITMAP_CORRUPT);
+		return -EFSBADCRC;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blk = ext4_valid_block_bitmap(sb, desc, block_group, bh);
 	if (unlikely(blk != 0)) {
 		ext4_unlock_group(sb, block_group);
 		ext4_error(sb, "bg %u: block %llu: invalid block bitmap",
 			   block_group, blk);
+<<<<<<< HEAD
 		return;
 	}
 	if (unlikely(!ext4_block_bitmap_csum_verify(sb, block_group,
@@ -360,34 +617,77 @@ void ext4_validate_block_bitmap(struct super_block *sb,
 	}
 	set_buffer_verified(bh);
 	ext4_unlock_group(sb, block_group);
+=======
+		ext4_mark_group_bitmap_corrupted(sb, block_group,
+					EXT4_GROUP_INFO_BBITMAP_CORRUPT);
+		return -EFSCORRUPTED;
+	}
+	blk = ext4_valid_block_bitmap_padding(sb, block_group, bh);
+	if (unlikely(blk != 0)) {
+		ext4_unlock_group(sb, block_group);
+		ext4_error(sb, "bg %u: block %llu: padding at end of block bitmap is not set",
+			   block_group, blk);
+		ext4_mark_group_bitmap_corrupted(sb, block_group,
+						 EXT4_GROUP_INFO_BBITMAP_CORRUPT);
+		return -EFSCORRUPTED;
+	}
+	set_buffer_verified(bh);
+verified:
+	ext4_unlock_group(sb, block_group);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * ext4_read_block_bitmap_nowait()
  * @sb:			super block
  * @block_group:	given block group
+<<<<<<< HEAD
+=======
+ * @ignore_locked:	ignore locked buffers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Read the bitmap for a given block_group,and validate the
  * bits for block/inode/inode tables are set in the bitmaps
  *
+<<<<<<< HEAD
  * Return buffer_head on success or NULL in case of failure.
  */
 struct buffer_head *
 ext4_read_block_bitmap_nowait(struct super_block *sb, ext4_group_t block_group)
+=======
+ * Return buffer_head on success or an ERR_PTR in case of failure.
+ */
+struct buffer_head *
+ext4_read_block_bitmap_nowait(struct super_block *sb, ext4_group_t block_group,
+			      bool ignore_locked)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ext4_group_desc *desc;
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 	struct buffer_head *bh;
 	ext4_fsblk_t bitmap_blk;
+<<<<<<< HEAD
 
 	desc = ext4_get_group_desc(sb, block_group, NULL);
 	if (!desc)
 		return NULL;
+=======
+	int err;
+
+	KUNIT_STATIC_STUB_REDIRECT(ext4_read_block_bitmap_nowait,
+				   sb, block_group, ignore_locked);
+
+	desc = ext4_get_group_desc(sb, block_group, NULL);
+	if (!desc)
+		return ERR_PTR(-EFSCORRUPTED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bitmap_blk = ext4_block_bitmap(sb, desc);
 	if ((bitmap_blk <= le32_to_cpu(sbi->s_es->s_first_data_block)) ||
 	    (bitmap_blk >= ext4_blocks_count(sbi->s_es))) {
 		ext4_error(sb, "Invalid block bitmap block %llu in "
 			   "block_group %u", bitmap_blk, block_group);
+<<<<<<< HEAD
 		return NULL;
 	}
 	bh = sb_getblk(sb, bitmap_blk);
@@ -395,6 +695,23 @@ ext4_read_block_bitmap_nowait(struct super_block *sb, ext4_group_t block_group)
 		ext4_error(sb, "Cannot get buffer for block bitmap - "
 			   "block_group = %u, block_bitmap = %llu",
 			   block_group, bitmap_blk);
+=======
+		ext4_mark_group_bitmap_corrupted(sb, block_group,
+					EXT4_GROUP_INFO_BBITMAP_CORRUPT);
+		return ERR_PTR(-EFSCORRUPTED);
+	}
+	bh = sb_getblk(sb, bitmap_blk);
+	if (unlikely(!bh)) {
+		ext4_warning(sb, "Cannot get buffer for block bitmap - "
+			     "block_group = %u, block_bitmap = %llu",
+			     block_group, bitmap_blk);
+		return ERR_PTR(-ENOMEM);
+	}
+
+	if (ignore_locked && buffer_locked(bh)) {
+		/* buffer under IO already, return if called for prefetching */
+		put_bh(bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -409,13 +726,17 @@ ext4_read_block_bitmap_nowait(struct super_block *sb, ext4_group_t block_group)
 	ext4_lock_group(sb, block_group);
 	if (ext4_has_group_desc_csum(sb) &&
 	    (desc->bg_flags & cpu_to_le16(EXT4_BG_BLOCK_UNINIT))) {
+<<<<<<< HEAD
 		int err;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (block_group == 0) {
 			ext4_unlock_group(sb, block_group);
 			unlock_buffer(bh);
 			ext4_error(sb, "Block bitmap for bg 0 marked "
 				   "uninitialized");
+<<<<<<< HEAD
 			put_bh(bh);
 			return NULL;
 		}
@@ -426,6 +747,24 @@ ext4_read_block_bitmap_nowait(struct super_block *sb, ext4_group_t block_group)
 		unlock_buffer(bh);
 		if (err)
 			ext4_error(sb, "Checksum bad for grp %u", block_group);
+=======
+			err = -EFSCORRUPTED;
+			goto out;
+		}
+		err = ext4_init_block_bitmap(sb, bh, block_group, desc);
+		if (err) {
+			ext4_unlock_group(sb, block_group);
+			unlock_buffer(bh);
+			ext4_error(sb, "Failed to init block bitmap for group "
+				   "%u: %d", block_group, err);
+			goto out;
+		}
+		set_bitmap_uptodate(bh);
+		set_buffer_uptodate(bh);
+		set_buffer_verified(bh);
+		ext4_unlock_group(sb, block_group);
+		unlock_buffer(bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return bh;
 	}
 	ext4_unlock_group(sb, block_group);
@@ -442,6 +781,7 @@ ext4_read_block_bitmap_nowait(struct super_block *sb, ext4_group_t block_group)
 	 * submit the buffer_head for reading
 	 */
 	set_buffer_new(bh);
+<<<<<<< HEAD
 	trace_ext4_read_block_bitmap_load(sb, block_group);
 	bh->b_end_io = ext4_end_bitmap_read;
 	get_bh(bh);
@@ -453,15 +793,40 @@ verify:
 }
 
 /* Returns 0 on success, 1 on error */
+=======
+	trace_ext4_read_block_bitmap_load(sb, block_group, ignore_locked);
+	ext4_read_bh_nowait(bh, REQ_META | REQ_PRIO |
+			    (ignore_locked ? REQ_RAHEAD : 0),
+			    ext4_end_bitmap_read);
+	return bh;
+verify:
+	err = ext4_validate_block_bitmap(sb, desc, block_group, bh);
+	if (err)
+		goto out;
+	return bh;
+out:
+	put_bh(bh);
+	return ERR_PTR(err);
+}
+
+/* Returns 0 on success, -errno on error */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ext4_wait_block_bitmap(struct super_block *sb, ext4_group_t block_group,
 			   struct buffer_head *bh)
 {
 	struct ext4_group_desc *desc;
 
+<<<<<<< HEAD
+=======
+	KUNIT_STATIC_STUB_REDIRECT(ext4_wait_block_bitmap,
+				   sb, block_group, bh);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buffer_new(bh))
 		return 0;
 	desc = ext4_get_group_desc(sb, block_group, NULL);
 	if (!desc)
+<<<<<<< HEAD
 		return 1;
 	wait_on_buffer(bh);
 	if (!buffer_uptodate(bh)) {
@@ -474,12 +839,29 @@ int ext4_wait_block_bitmap(struct super_block *sb, ext4_group_t block_group,
 	/* Panic or remount fs read-only if block bitmap is invalid */
 	ext4_validate_block_bitmap(sb, desc, block_group, bh);
 	return 0;
+=======
+		return -EFSCORRUPTED;
+	wait_on_buffer(bh);
+	ext4_simulate_fail_bh(sb, bh, EXT4_SIM_BBITMAP_EIO);
+	if (!buffer_uptodate(bh)) {
+		ext4_error_err(sb, EIO, "Cannot read block bitmap - "
+			       "block_group = %u, block_bitmap = %llu",
+			       block_group, (unsigned long long) bh->b_blocknr);
+		ext4_mark_group_bitmap_corrupted(sb, block_group,
+					EXT4_GROUP_INFO_BBITMAP_CORRUPT);
+		return -EIO;
+	}
+	clear_buffer_new(bh);
+	/* Panic or remount fs read-only if block bitmap is invalid */
+	return ext4_validate_block_bitmap(sb, desc, block_group, bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct buffer_head *
 ext4_read_block_bitmap(struct super_block *sb, ext4_group_t block_group)
 {
 	struct buffer_head *bh;
+<<<<<<< HEAD
 
 	bh = ext4_read_block_bitmap_nowait(sb, block_group);
 	if (!bh)
@@ -487,6 +869,17 @@ ext4_read_block_bitmap(struct super_block *sb, ext4_group_t block_group)
 	if (ext4_wait_block_bitmap(sb, block_group, bh)) {
 		put_bh(bh);
 		return NULL;
+=======
+	int err;
+
+	bh = ext4_read_block_bitmap_nowait(sb, block_group, false);
+	if (IS_ERR(bh))
+		return bh;
+	err = ext4_wait_block_bitmap(sb, block_group, bh);
+	if (err) {
+		put_bh(bh);
+		return ERR_PTR(err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return bh;
 }
@@ -503,20 +896,35 @@ ext4_read_block_bitmap(struct super_block *sb, ext4_group_t block_group)
 static int ext4_has_free_clusters(struct ext4_sb_info *sbi,
 				  s64 nclusters, unsigned int flags)
 {
+<<<<<<< HEAD
 	s64 free_clusters, dirty_clusters, root_clusters;
+=======
+	s64 free_clusters, dirty_clusters, rsv, resv_clusters;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct percpu_counter *fcc = &sbi->s_freeclusters_counter;
 	struct percpu_counter *dcc = &sbi->s_dirtyclusters_counter;
 
 	free_clusters  = percpu_counter_read_positive(fcc);
 	dirty_clusters = percpu_counter_read_positive(dcc);
+<<<<<<< HEAD
+=======
+	resv_clusters = atomic64_read(&sbi->s_resv_clusters);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * r_blocks_count should always be multiple of the cluster ratio so
 	 * we are safe to do a plane bit shift only.
 	 */
+<<<<<<< HEAD
 	root_clusters = ext4_r_blocks_count(sbi->s_es) >> sbi->s_cluster_bits;
 
 	if (free_clusters - (nclusters + root_clusters + dirty_clusters) <
+=======
+	rsv = (ext4_r_blocks_count(sbi->s_es) >> sbi->s_cluster_bits) +
+	      resv_clusters;
+
+	if (free_clusters - (nclusters + rsv + dirty_clusters) <
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					EXT4_FREECLUSTERS_WATERMARK) {
 		free_clusters  = percpu_counter_sum_positive(fcc);
 		dirty_clusters = percpu_counter_sum_positive(dcc);
@@ -524,6 +932,7 @@ static int ext4_has_free_clusters(struct ext4_sb_info *sbi,
 	/* Check whether we have space after accounting for current
 	 * dirty clusters & root reserved clusters.
 	 */
+<<<<<<< HEAD
 	if (free_clusters >= ((root_clusters + nclusters) + dirty_clusters))
 		return 1;
 
@@ -533,6 +942,23 @@ static int ext4_has_free_clusters(struct ext4_sb_info *sbi,
 	    capable(CAP_SYS_RESOURCE) ||
 		(flags & EXT4_MB_USE_ROOT_BLOCKS)) {
 
+=======
+	if (free_clusters >= (rsv + nclusters + dirty_clusters))
+		return 1;
+
+	/* Hm, nope.  Are (enough) root reserved clusters available? */
+	if (uid_eq(sbi->s_resuid, current_fsuid()) ||
+	    (!gid_eq(sbi->s_resgid, GLOBAL_ROOT_GID) && in_group_p(sbi->s_resgid)) ||
+	    capable(CAP_SYS_RESOURCE) ||
+	    (flags & EXT4_MB_USE_ROOT_BLOCKS)) {
+
+		if (free_clusters >= (nclusters + dirty_clusters +
+				      resv_clusters))
+			return 1;
+	}
+	/* No free blocks. Let's see if we can dip into reserved pool */
+	if (flags & EXT4_MB_USE_RESERVED) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (free_clusters >= (nclusters + dirty_clusters))
 			return 1;
 	}
@@ -551,6 +977,7 @@ int ext4_claim_free_clusters(struct ext4_sb_info *sbi,
 }
 
 /**
+<<<<<<< HEAD
  * ext4_should_retry_alloc()
  * @sb:			super block
  * @retries		number of attemps has been made
@@ -572,6 +999,51 @@ int ext4_should_retry_alloc(struct super_block *sb, int *retries)
 	jbd_debug(1, "%s: retrying operation after ENOSPC\n", sb->s_id);
 
 	return jbd2_journal_force_commit_nested(EXT4_SB(sb)->s_journal);
+=======
+ * ext4_should_retry_alloc() - check if a block allocation should be retried
+ * @sb:			superblock
+ * @retries:		number of retry attempts made so far
+ *
+ * ext4_should_retry_alloc() is called when ENOSPC is returned while
+ * attempting to allocate blocks.  If there's an indication that a pending
+ * journal transaction might free some space and allow another attempt to
+ * succeed, this function will wait for the current or committing transaction
+ * to complete and then return TRUE.
+ */
+int ext4_should_retry_alloc(struct super_block *sb, int *retries)
+{
+	struct ext4_sb_info *sbi = EXT4_SB(sb);
+
+	if (!sbi->s_journal)
+		return 0;
+
+	if (++(*retries) > 3) {
+		percpu_counter_inc(&sbi->s_sra_exceeded_retry_limit);
+		return 0;
+	}
+
+	/*
+	 * if there's no indication that blocks are about to be freed it's
+	 * possible we just missed a transaction commit that did so
+	 */
+	smp_mb();
+	if (sbi->s_mb_free_pending == 0) {
+		if (test_opt(sb, DISCARD)) {
+			atomic_inc(&sbi->s_retry_alloc_pending);
+			flush_work(&sbi->s_discard_work);
+			atomic_dec(&sbi->s_retry_alloc_pending);
+		}
+		return ext4_has_free_clusters(sbi, 1, 0);
+	}
+
+	/*
+	 * it's possible we've just missed a transaction commit here,
+	 * so ignore the returned status
+	 */
+	ext4_debug("%s: retrying operation after ENOSPC\n", sb->s_id);
+	(void) jbd2_journal_force_commit_nested(sbi->s_journal);
+	return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -607,11 +1079,15 @@ ext4_fsblk_t ext4_new_meta_blocks(handle_t *handle, struct inode *inode,
 	 * Account for the allocated meta blocks.  We will never
 	 * fail EDQUOT for metdata, but we do account for it.
 	 */
+<<<<<<< HEAD
 	if (!(*errp) &&
 	    ext4_test_inode_state(inode, EXT4_STATE_DELALLOC_RESERVED)) {
 		spin_lock(&EXT4_I(inode)->i_block_reservation_lock);
 		EXT4_I(inode)->i_allocated_meta_blocks += ar.len;
 		spin_unlock(&EXT4_I(inode)->i_block_reservation_lock);
+=======
+	if (!(*errp) && (flags & EXT4_MB_DELALLOC_RESERVED)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dquot_alloc_block_nofail(inode,
 				EXT4_C2B(EXT4_SB(inode->i_sb), ar.len));
 	}
@@ -630,6 +1106,10 @@ ext4_fsblk_t ext4_count_free_clusters(struct super_block *sb)
 	struct ext4_group_desc *gdp;
 	ext4_group_t i;
 	ext4_group_t ngroups = ext4_get_groups_count(sb);
+<<<<<<< HEAD
+=======
+	struct ext4_group_info *grp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef EXT4FS_DEBUG
 	struct ext4_super_block *es;
 	ext4_fsblk_t bitmap_count;
@@ -645,6 +1125,7 @@ ext4_fsblk_t ext4_count_free_clusters(struct super_block *sb)
 		gdp = ext4_get_group_desc(sb, i, NULL);
 		if (!gdp)
 			continue;
+<<<<<<< HEAD
 		desc_count += ext4_free_group_clusters(sb, gdp);
 		brelse(bitmap_bh);
 		bitmap_bh = ext4_read_block_bitmap(sb, i);
@@ -653,6 +1134,22 @@ ext4_fsblk_t ext4_count_free_clusters(struct super_block *sb)
 
 		x = ext4_count_free(bitmap_bh->b_data,
 				    EXT4_BLOCKS_PER_GROUP(sb) / 8);
+=======
+		grp = NULL;
+		if (EXT4_SB(sb)->s_group_info)
+			grp = ext4_get_group_info(sb, i);
+		if (!grp || !EXT4_MB_GRP_BBITMAP_CORRUPT(grp))
+			desc_count += ext4_free_group_clusters(sb, gdp);
+		brelse(bitmap_bh);
+		bitmap_bh = ext4_read_block_bitmap(sb, i);
+		if (IS_ERR(bitmap_bh)) {
+			bitmap_bh = NULL;
+			continue;
+		}
+
+		x = ext4_count_free(bitmap_bh->b_data,
+				    EXT4_CLUSTERS_PER_GROUP(sb) / 8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_DEBUG "group %u: stored = %d, counted = %u\n",
 			i, ext4_free_group_clusters(sb, gdp), x);
 		bitmap_count += x;
@@ -669,7 +1166,15 @@ ext4_fsblk_t ext4_count_free_clusters(struct super_block *sb)
 		gdp = ext4_get_group_desc(sb, i, NULL);
 		if (!gdp)
 			continue;
+<<<<<<< HEAD
 		desc_count += ext4_free_group_clusters(sb, gdp);
+=======
+		grp = NULL;
+		if (EXT4_SB(sb)->s_group_info)
+			grp = ext4_get_group_info(sb, i);
+		if (!grp || !EXT4_MB_GRP_BBITMAP_CORRUPT(grp))
+			desc_count += ext4_free_group_clusters(sb, gdp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return desc_count;
@@ -678,6 +1183,7 @@ ext4_fsblk_t ext4_count_free_clusters(struct super_block *sb)
 
 static inline int test_root(ext4_group_t a, int b)
 {
+<<<<<<< HEAD
 	int num = b;
 
 	while (a > num)
@@ -693,6 +1199,17 @@ static int ext4_group_sparse(ext4_group_t group)
 		return 0;
 	return (test_root(group, 7) || test_root(group, 5) ||
 		test_root(group, 3));
+=======
+	while (1) {
+		if (a < b)
+			return 0;
+		if (a == b)
+			return 1;
+		if ((a % b) != 0)
+			return 0;
+		a = a / b;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -705,11 +1222,33 @@ static int ext4_group_sparse(ext4_group_t group)
  */
 int ext4_bg_has_super(struct super_block *sb, ext4_group_t group)
 {
+<<<<<<< HEAD
 	if (EXT4_HAS_RO_COMPAT_FEATURE(sb,
 				EXT4_FEATURE_RO_COMPAT_SPARSE_SUPER) &&
 			!ext4_group_sparse(group))
 		return 0;
 	return 1;
+=======
+	struct ext4_super_block *es = EXT4_SB(sb)->s_es;
+
+	if (group == 0)
+		return 1;
+	if (ext4_has_feature_sparse_super2(sb)) {
+		if (group == le32_to_cpu(es->s_backup_bgs[0]) ||
+		    group == le32_to_cpu(es->s_backup_bgs[1]))
+			return 1;
+		return 0;
+	}
+	if ((group <= 1) || !ext4_has_feature_sparse_super(sb))
+		return 1;
+	if (!(group & 1))
+		return 0;
+	if (test_root(group, 3) || (test_root(group, 5)) ||
+	    test_root(group, 7))
+		return 1;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned long ext4_bg_num_gdb_meta(struct super_block *sb,
@@ -730,7 +1269,11 @@ static unsigned long ext4_bg_num_gdb_nometa(struct super_block *sb,
 	if (!ext4_bg_has_super(sb, group))
 		return 0;
 
+<<<<<<< HEAD
 	if (EXT4_HAS_INCOMPAT_FEATURE(sb,EXT4_FEATURE_INCOMPAT_META_BG))
+=======
+	if (ext4_has_feature_meta_bg(sb))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return le32_to_cpu(EXT4_SB(sb)->s_es->s_first_meta_bg);
 	else
 		return EXT4_SB(sb)->s_gdb_count;
@@ -751,8 +1294,12 @@ unsigned long ext4_bg_num_gdb(struct super_block *sb, ext4_group_t group)
 			le32_to_cpu(EXT4_SB(sb)->s_es->s_first_meta_bg);
 	unsigned long metagroup = group / EXT4_DESC_PER_BLOCK(sb);
 
+<<<<<<< HEAD
 	if (!EXT4_HAS_INCOMPAT_FEATURE(sb,EXT4_FEATURE_INCOMPAT_META_BG) ||
 			metagroup < first_meta_bg)
+=======
+	if (!ext4_has_feature_meta_bg(sb) || metagroup < first_meta_bg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ext4_bg_num_gdb_nometa(sb, group);
 
 	return ext4_bg_num_gdb_meta(sb,group);
@@ -760,11 +1307,19 @@ unsigned long ext4_bg_num_gdb(struct super_block *sb, ext4_group_t group)
 }
 
 /*
+<<<<<<< HEAD
  * This function returns the number of file system metadata clusters at
  * the beginning of a block group, including the reserved gdt blocks.
  */
 static unsigned ext4_num_base_meta_clusters(struct super_block *sb,
 				     ext4_group_t block_group)
+=======
+ * This function returns the number of file system metadata blocks at
+ * the beginning of a block group, including the reserved gdt blocks.
+ */
+unsigned int ext4_num_base_meta_blocks(struct super_block *sb,
+				       ext4_group_t block_group)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 	unsigned num;
@@ -772,6 +1327,7 @@ static unsigned ext4_num_base_meta_clusters(struct super_block *sb,
 	/* Check for superblock and gdt backups in this group */
 	num = ext4_bg_has_super(sb, block_group);
 
+<<<<<<< HEAD
 	if (!EXT4_HAS_INCOMPAT_FEATURE(sb, EXT4_FEATURE_INCOMPAT_META_BG) ||
 	    block_group < le32_to_cpu(sbi->s_es->s_first_meta_bg) *
 			  sbi->s_desc_per_block) {
@@ -784,6 +1340,27 @@ static unsigned ext4_num_base_meta_clusters(struct super_block *sb,
 	}
 	return EXT4_NUM_B2C(sbi, num);
 }
+=======
+	if (!ext4_has_feature_meta_bg(sb) ||
+	    block_group < le32_to_cpu(sbi->s_es->s_first_meta_bg) *
+			  sbi->s_desc_per_block) {
+		if (num) {
+			num += ext4_bg_num_gdb_nometa(sb, block_group);
+			num += le16_to_cpu(sbi->s_es->s_reserved_gdt_blocks);
+		}
+	} else { /* For META_BG_BLOCK_GROUPS */
+		num += ext4_bg_num_gdb_meta(sb, block_group);
+	}
+	return num;
+}
+
+static unsigned int ext4_num_base_meta_clusters(struct super_block *sb,
+						ext4_group_t block_group)
+{
+	return EXT4_NUM_B2C(EXT4_SB(sb), ext4_num_base_meta_blocks(sb, block_group));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	ext4_inode_to_goal_block - return a hint for block allocation
  *	@inode: inode for block allocation
@@ -825,10 +1402,18 @@ ext4_fsblk_t ext4_inode_to_goal_block(struct inode *inode)
 		return bg_start;
 
 	if (bg_start + EXT4_BLOCKS_PER_GROUP(inode->i_sb) <= last_block)
+<<<<<<< HEAD
 		colour = (current->pid % 16) *
 			(EXT4_BLOCKS_PER_GROUP(inode->i_sb) / 16);
 	else
 		colour = (current->pid % 16) * ((last_block - bg_start) / 16);
+=======
+		colour = (task_pid_nr(current) % 16) *
+			(EXT4_BLOCKS_PER_GROUP(inode->i_sb) / 16);
+	else
+		colour = (task_pid_nr(current) % 16) *
+			((last_block - bg_start) / 16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bg_start + colour;
 }
 

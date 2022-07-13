@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for AMD InterWave soundcard
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,6 +25,10 @@
  *   1999/07/22		Erik Inge Bolso <knan@mo.himolde.no>
  *			* mixer group handlers
  *
+=======
+ *   1999/07/22		Erik Inge Bolso <knan@mo.himolde.no>
+ *			* mixer group handlers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -43,6 +52,7 @@ MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_LICENSE("GPL");
 #ifndef SNDRV_STB
 MODULE_DESCRIPTION("AMD InterWave");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Gravis,UltraSound Plug & Play},"
 		"{STB,SoundRage32},"
 		"{MED,MED3210},"
@@ -51,6 +61,10 @@ MODULE_SUPPORTED_DEVICE("{{Gravis,UltraSound Plug & Play},"
 #else
 MODULE_DESCRIPTION("AMD InterWave STB with TEA6330T");
 MODULE_SUPPORTED_DEVICE("{{AMD,InterWave STB with TEA6330T}}");
+=======
+#else
+MODULE_DESCRIPTION("AMD InterWave STB with TEA6330T");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
@@ -92,6 +106,7 @@ MODULE_PARM_DESC(enable, "Enable InterWave soundcard.");
 module_param_array(isapnp, bool, NULL, 0444);
 MODULE_PARM_DESC(isapnp, "ISA PnP detection for specified soundcard.");
 #endif
+<<<<<<< HEAD
 module_param_array(port, long, NULL, 0444);
 MODULE_PARM_DESC(port, "Port # for InterWave driver.");
 #ifdef SNDRV_STB
@@ -103,6 +118,19 @@ MODULE_PARM_DESC(irq, "IRQ # for InterWave driver.");
 module_param_array(dma1, int, NULL, 0444);
 MODULE_PARM_DESC(dma1, "DMA1 # for InterWave driver.");
 module_param_array(dma2, int, NULL, 0444);
+=======
+module_param_hw_array(port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(port, "Port # for InterWave driver.");
+#ifdef SNDRV_STB
+module_param_hw_array(port_tc, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(port_tc, "Tone control (TEA6330T - i2c bus) port # for InterWave driver.");
+#endif
+module_param_hw_array(irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(irq, "IRQ # for InterWave driver.");
+module_param_hw_array(dma1, int, dma, NULL, 0444);
+MODULE_PARM_DESC(dma1, "DMA1 # for InterWave driver.");
+module_param_hw_array(dma2, int, dma, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(dma2, "DMA2 # for InterWave driver.");
 module_param_array(joystick_dac, int, NULL, 0444);
 MODULE_PARM_DESC(joystick_dac, "Joystick DAC level 0.59V-4.52V or 0.389V-2.98V for InterWave driver.");
@@ -136,7 +164,11 @@ struct snd_interwave {
 static int isa_registered;
 static int pnp_registered;
 
+<<<<<<< HEAD
 static struct pnp_card_device_id snd_interwave_pnpids[] = {
+=======
+static const struct pnp_card_device_id snd_interwave_pnpids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef SNDRV_STB
 	/* Gravis UltraSound Plug & Play */
 	{ .id = "GRV0001", .devs = { { .id = "GRV0000" } } },
@@ -207,9 +239,15 @@ static struct snd_i2c_bit_ops snd_interwave_i2c_bit_ops = {
 	.getdata  = snd_interwave_i2c_getdataline,
 };
 
+<<<<<<< HEAD
 static int __devinit snd_interwave_detect_stb(struct snd_interwave *iwcard,
 					      struct snd_gus_card * gus, int dev,
 					      struct snd_i2c_bus **rbus)
+=======
+static int snd_interwave_detect_stb(struct snd_interwave *iwcard,
+				    struct snd_gus_card *gus, int dev,
+				    struct snd_i2c_bus **rbus)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long port;
 	struct snd_i2c_bus *bus;
@@ -225,12 +263,23 @@ static int __devinit snd_interwave_detect_stb(struct snd_interwave *iwcard,
 			port = 0x360;
 		}
 		while (port <= 0x380) {
+<<<<<<< HEAD
 			if ((iwcard->i2c_res = request_region(port, 1, "InterWave (I2C bus)")) != NULL)
+=======
+			iwcard->i2c_res = devm_request_region(card->dev, port, 1,
+							      "InterWave (I2C bus)");
+			if (iwcard->i2c_res)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			port += 0x10;
 		}
 	} else {
+<<<<<<< HEAD
 		iwcard->i2c_res = request_region(port, 1, "InterWave (I2C bus)");
+=======
+		iwcard->i2c_res = devm_request_region(card->dev, port, 1,
+						      "InterWave (I2C bus)");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (iwcard->i2c_res == NULL) {
 		snd_printk(KERN_ERR "interwave: can't grab i2c bus port\n");
@@ -238,22 +287,40 @@ static int __devinit snd_interwave_detect_stb(struct snd_interwave *iwcard,
 	}
 
 	sprintf(name, "InterWave-%i", card->number);
+<<<<<<< HEAD
 	if ((err = snd_i2c_bus_create(card, name, NULL, &bus)) < 0)
 		return err;
 	bus->private_value = port;
 	bus->hw_ops.bit = &snd_interwave_i2c_bit_ops;
 	if ((err = snd_tea6330t_detect(bus, 0)) < 0)
+=======
+	err = snd_i2c_bus_create(card, name, NULL, &bus);
+	if (err < 0)
+		return err;
+	bus->private_value = port;
+	bus->hw_ops.bit = &snd_interwave_i2c_bit_ops;
+	err = snd_tea6330t_detect(bus, 0);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	*rbus = bus;
 	return 0;
 }
 #endif
 
+<<<<<<< HEAD
 static int __devinit snd_interwave_detect(struct snd_interwave *iwcard,
 				          struct snd_gus_card * gus,
 				          int dev
 #ifdef SNDRV_STB
 				          , struct snd_i2c_bus **rbus
+=======
+static int snd_interwave_detect(struct snd_interwave *iwcard,
+				struct snd_gus_card *gus,
+				int dev
+#ifdef SNDRV_STB
+				, struct snd_i2c_bus **rbus
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 				          )
 {
@@ -262,14 +329,24 @@ static int __devinit snd_interwave_detect(struct snd_interwave *iwcard,
 	int d;
 
 	snd_gf1_i_write8(gus, SNDRV_GF1_GB_RESET, 0);	/* reset GF1 */
+<<<<<<< HEAD
 	if (((d = snd_gf1_i_look8(gus, SNDRV_GF1_GB_RESET)) & 0x07) != 0) {
+=======
+	d = snd_gf1_i_look8(gus, SNDRV_GF1_GB_RESET);
+	if ((d & 0x07) != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printdd("[0x%lx] check 1 failed - 0x%x\n", gus->gf1.port, d);
 		return -ENODEV;
 	}
 	udelay(160);
 	snd_gf1_i_write8(gus, SNDRV_GF1_GB_RESET, 1);	/* release reset */
 	udelay(160);
+<<<<<<< HEAD
 	if (((d = snd_gf1_i_look8(gus, SNDRV_GF1_GB_RESET)) & 0x07) != 1) {
+=======
+	d = snd_gf1_i_look8(gus, SNDRV_GF1_GB_RESET);
+	if ((d & 0x07) != 1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printdd("[0x%lx] check 2 failed - 0x%x\n", gus->gf1.port, d);
 		return -ENODEV;
 	}
@@ -318,7 +395,11 @@ static irqreturn_t snd_interwave_interrupt(int irq, void *dev_id)
 	return IRQ_RETVAL(handled);
 }
 
+<<<<<<< HEAD
 static void __devinit snd_interwave_reset(struct snd_gus_card * gus)
+=======
+static void snd_interwave_reset(struct snd_gus_card *gus)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	snd_gf1_write8(gus, SNDRV_GF1_GB_RESET, 0x00);
 	udelay(160);
@@ -326,7 +407,11 @@ static void __devinit snd_interwave_reset(struct snd_gus_card * gus)
 	udelay(160);
 }
 
+<<<<<<< HEAD
 static void __devinit snd_interwave_bank_sizes(struct snd_gus_card * gus, int *sizes)
+=======
+static void snd_interwave_bank_sizes(struct snd_gus_card *gus, int *sizes)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int idx;
 	unsigned int local;
@@ -377,9 +462,15 @@ struct rom_hdr {
 	/* 511 */ unsigned char csum;
 };
 
+<<<<<<< HEAD
 static void __devinit snd_interwave_detect_memory(struct snd_gus_card * gus)
 {
 	static unsigned int lmc[13] =
+=======
+static void snd_interwave_detect_memory(struct snd_gus_card *gus)
+{
+	static const unsigned int lmc[13] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		0x00000001, 0x00000101, 0x01010101, 0x00000401,
 		0x04040401, 0x00040101, 0x04040101, 0x00000004,
@@ -442,19 +533,25 @@ static void __devinit snd_interwave_detect_memory(struct snd_gus_card * gus)
 	for (bank_pos = 0; bank_pos < 16L * 1024L * 1024L; bank_pos += 4L * 1024L * 1024L) {
 		for (i = 0; i < 8; ++i)
 			iwave[i] = snd_gf1_peek(gus, bank_pos + i);
+<<<<<<< HEAD
 #ifdef CONFIG_SND_DEBUG_ROM
 		printk(KERN_DEBUG "ROM at 0x%06x = %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n", bank_pos,
 		       iwave[0], iwave[1], iwave[2], iwave[3],
 		       iwave[4], iwave[5], iwave[6], iwave[7]);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (strncmp(iwave, "INTRWAVE", 8))
 			continue;	/* first check */
 		csum = 0;
 		for (i = 0; i < sizeof(struct rom_hdr); i++)
 			csum += snd_gf1_peek(gus, bank_pos + i);
+<<<<<<< HEAD
 #ifdef CONFIG_SND_DEBUG_ROM
 		printk(KERN_DEBUG "ROM checksum = 0x%x (computed)\n", csum);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (csum != 0)
 			continue;	/* not valid rom */
 		gus->gf1.rom_banks++;
@@ -476,7 +573,11 @@ static void __devinit snd_interwave_detect_memory(struct snd_gus_card * gus)
 		snd_interwave_reset(gus);
 }
 
+<<<<<<< HEAD
 static void __devinit snd_interwave_init(int dev, struct snd_gus_card * gus)
+=======
+static void snd_interwave_init(int dev, struct snd_gus_card *gus)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -498,7 +599,11 @@ static void __devinit snd_interwave_init(int dev, struct snd_gus_card * gus)
 
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_interwave_controls[] = {
+=======
+static const struct snd_kcontrol_new snd_interwave_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 WSS_DOUBLE("Master Playback Switch", 0,
 		CS4231_LINE_LEFT_OUTPUT, CS4231_LINE_RIGHT_OUTPUT, 7, 7, 1, 1),
 WSS_DOUBLE("Master Playback Volume", 0,
@@ -509,7 +614,11 @@ WSS_DOUBLE("Mic Playback Volume", 0,
 		CS4231_LEFT_MIC_INPUT, CS4231_RIGHT_MIC_INPUT, 0, 0, 31, 1)
 };
 
+<<<<<<< HEAD
 static int __devinit snd_interwave_mixer(struct snd_wss *chip)
+=======
+static int snd_interwave_mixer(struct snd_wss *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = chip->card;
 	struct snd_ctl_elem_id id1, id2;
@@ -522,6 +631,7 @@ static int __devinit snd_interwave_mixer(struct snd_wss *chip)
 #if 0
 	/* remove mono microphone controls */
 	strcpy(id1.name, "Mic Playback Switch");
+<<<<<<< HEAD
 	if ((err = snd_ctl_remove_id(card, &id1)) < 0)
 		return err;
 	strcpy(id1.name, "Mic Playback Volume");
@@ -532,6 +642,22 @@ static int __devinit snd_interwave_mixer(struct snd_wss *chip)
 	for (idx = 0; idx < ARRAY_SIZE(snd_interwave_controls); idx++)
 		if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_interwave_controls[idx], chip))) < 0)
 			return err;
+=======
+	err = snd_ctl_remove_id(card, &id1);
+	if (err < 0)
+		return err;
+	strcpy(id1.name, "Mic Playback Volume");
+	err = snd_ctl_remove_id(card, &id1);
+	if (err < 0)
+		return err;
+#endif
+	/* add new master and mic controls */
+	for (idx = 0; idx < ARRAY_SIZE(snd_interwave_controls); idx++) {
+		err = snd_ctl_add(card, snd_ctl_new1(&snd_interwave_controls[idx], chip));
+		if (err < 0)
+			return err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_wss_out(chip, CS4231_LINE_LEFT_OUTPUT, 0x9f);
 	snd_wss_out(chip, CS4231_LINE_RIGHT_OUTPUT, 0x9f);
 	snd_wss_out(chip, CS4231_LEFT_MIC_INPUT, 0x9f);
@@ -539,29 +665,55 @@ static int __devinit snd_interwave_mixer(struct snd_wss *chip)
 	/* reassign AUXA to SYNTHESIZER */
 	strcpy(id1.name, "Aux Playback Switch");
 	strcpy(id2.name, "Synth Playback Switch");
+<<<<<<< HEAD
 	if ((err = snd_ctl_rename_id(card, &id1, &id2)) < 0)
 		return err;
 	strcpy(id1.name, "Aux Playback Volume");
 	strcpy(id2.name, "Synth Playback Volume");
 	if ((err = snd_ctl_rename_id(card, &id1, &id2)) < 0)
+=======
+	err = snd_ctl_rename_id(card, &id1, &id2);
+	if (err < 0)
+		return err;
+	strcpy(id1.name, "Aux Playback Volume");
+	strcpy(id2.name, "Synth Playback Volume");
+	err = snd_ctl_rename_id(card, &id1, &id2);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	/* reassign AUXB to CD */
 	strcpy(id1.name, "Aux Playback Switch"); id1.index = 1;
 	strcpy(id2.name, "CD Playback Switch");
+<<<<<<< HEAD
 	if ((err = snd_ctl_rename_id(card, &id1, &id2)) < 0)
 		return err;
 	strcpy(id1.name, "Aux Playback Volume");
 	strcpy(id2.name, "CD Playback Volume");
 	if ((err = snd_ctl_rename_id(card, &id1, &id2)) < 0)
+=======
+	err = snd_ctl_rename_id(card, &id1, &id2);
+	if (err < 0)
+		return err;
+	strcpy(id1.name, "Aux Playback Volume");
+	strcpy(id2.name, "CD Playback Volume");
+	err = snd_ctl_rename_id(card, &id1, &id2);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return 0;
 }
 
 #ifdef CONFIG_PNP
 
+<<<<<<< HEAD
 static int __devinit snd_interwave_pnp(int dev, struct snd_interwave *iwcard,
 				       struct pnp_card_link *card,
 				       const struct pnp_card_device_id *id)
+=======
+static int snd_interwave_pnp(int dev, struct snd_interwave *iwcard,
+			     struct pnp_card_link *card,
+			     const struct pnp_card_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pnp_dev *pdev;
 	int err;
@@ -614,6 +766,7 @@ static int __devinit snd_interwave_pnp(int dev, struct snd_interwave *iwcard,
 }
 #endif /* CONFIG_PNP */
 
+<<<<<<< HEAD
 static void snd_interwave_free(struct snd_card *card)
 {
 	struct snd_interwave *iwcard = card->private_data;
@@ -628,33 +781,63 @@ static void snd_interwave_free(struct snd_card *card)
 }
 
 static int snd_interwave_card_new(int dev, struct snd_card **cardp)
+=======
+static int snd_interwave_card_new(struct device *pdev, int dev,
+				  struct snd_card **cardp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct snd_interwave *iwcard;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct snd_interwave), &card);
+=======
+	err = snd_devm_card_new(pdev, index[dev], id[dev], THIS_MODULE,
+				sizeof(struct snd_interwave), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 	iwcard = card->private_data;
 	iwcard->card = card;
 	iwcard->irq = -1;
+<<<<<<< HEAD
 	card->private_free = snd_interwave_free;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*cardp = card;
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_interwave_probe(struct snd_card *card, int dev)
+=======
+static int snd_interwave_probe_gus(struct snd_card *card, int dev,
+				   struct snd_gus_card **gusp)
+{
+	return snd_gus_create(card, port[dev], -irq[dev], dma1[dev], dma2[dev],
+			      0, 32, pcm_channels[dev], effect[dev], gusp);
+}
+
+static int snd_interwave_probe(struct snd_card *card, int dev,
+			       struct snd_gus_card *gus)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int xirq, xdma1, xdma2;
 	struct snd_interwave *iwcard = card->private_data;
 	struct snd_wss *wss;
+<<<<<<< HEAD
 	struct snd_gus_card *gus;
 #ifdef SNDRV_STB
 	struct snd_i2c_bus *i2c_bus;
 #endif
 	struct snd_pcm *pcm;
+=======
+#ifdef SNDRV_STB
+	struct snd_i2c_bus *i2c_bus;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *str;
 	int err;
 
@@ -662,6 +845,7 @@ static int __devinit snd_interwave_probe(struct snd_card *card, int dev)
 	xdma1 = dma1[dev];
 	xdma2 = dma2[dev];
 
+<<<<<<< HEAD
 	if ((err = snd_gus_create(card,
 				  port[dev],
 				  -xirq, xdma1, xdma2,
@@ -674,6 +858,14 @@ static int __devinit snd_interwave_probe(struct snd_card *card, int dev)
             , &i2c_bus
 #endif
 	    )) < 0)
+=======
+	err = snd_interwave_detect(iwcard, gus, dev
+#ifdef SNDRV_STB
+				   , &i2c_bus
+#endif
+				   );
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	iwcard->gus_status_reg = gus->gf1.reg_irqstat;
@@ -681,15 +873,28 @@ static int __devinit snd_interwave_probe(struct snd_card *card, int dev)
 
 	snd_interwave_init(dev, gus);
 	snd_interwave_detect_memory(gus);
+<<<<<<< HEAD
 	if ((err = snd_gus_initialize(gus)) < 0)
 		return err;
 
 	if (request_irq(xirq, snd_interwave_interrupt, 0,
 			"InterWave", iwcard)) {
+=======
+	err = snd_gus_initialize(gus);
+	if (err < 0)
+		return err;
+
+	if (devm_request_irq(card->dev, xirq, snd_interwave_interrupt, 0,
+			     "InterWave", iwcard)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR PFX "unable to grab IRQ %d\n", xirq);
 		return -EBUSY;
 	}
 	iwcard->irq = xirq;
+<<<<<<< HEAD
+=======
+	card->sync_irq = iwcard->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = snd_wss_create(card,
 			     gus->gf1.port + 0x10c, -1, xirq,
@@ -702,6 +907,7 @@ static int __devinit snd_interwave_probe(struct snd_card *card, int dev)
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
 	err = snd_wss_pcm(wss, 0, &pcm);
 	if (err < 0)
 		return err;
@@ -710,6 +916,17 @@ static int __devinit snd_interwave_probe(struct snd_card *card, int dev)
 	strcat(pcm->name, " (codec)");
 
 	err = snd_wss_timer(wss, 2, NULL);
+=======
+	err = snd_wss_pcm(wss, 0);
+	if (err < 0)
+		return err;
+
+	sprintf(wss->pcm->name + strlen(wss->pcm->name), " rev %c",
+		gus->revision + 'A');
+	strcat(wss->pcm->name, " (codec)");
+
+	err = snd_wss_timer(wss, 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -718,7 +935,11 @@ static int __devinit snd_interwave_probe(struct snd_card *card, int dev)
 		return err;
 
 	if (pcm_channels[dev] > 0) {
+<<<<<<< HEAD
 		err = snd_gf1_pcm_new(gus, 1, 1, NULL);
+=======
+		err = snd_gf1_pcm_new(gus, 1, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return err;
 	}
@@ -735,6 +956,7 @@ static int __devinit snd_interwave_probe(struct snd_card *card, int dev)
 		strcpy(id1.name, "Master Playback Switch");
 		strcpy(id2.name, id1.name);
 		id2.index = 1;
+<<<<<<< HEAD
 		if ((err = snd_ctl_rename_id(card, &id1, &id2)) < 0)
 			return err;
 		strcpy(id1.name, "Master Playback Volume");
@@ -742,12 +964,29 @@ static int __devinit snd_interwave_probe(struct snd_card *card, int dev)
 		if ((err = snd_ctl_rename_id(card, &id1, &id2)) < 0)
 			return err;
 		if ((err = snd_tea6330t_update_mixer(card, i2c_bus, 0, 1)) < 0)
+=======
+		err = snd_ctl_rename_id(card, &id1, &id2);
+		if (err < 0)
+			return err;
+		strcpy(id1.name, "Master Playback Volume");
+		strcpy(id2.name, id1.name);
+		err = snd_ctl_rename_id(card, &id1, &id2);
+		if (err < 0)
+			return err;
+		err = snd_tea6330t_update_mixer(card, i2c_bus, 0, 1);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 #endif
 
 	gus->uart_enable = midi[dev];
+<<<<<<< HEAD
 	if ((err = snd_gf1_rawmidi_new(gus, 0, NULL)) < 0)
+=======
+	err = snd_gf1_rawmidi_new(gus, 0);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 #ifndef SNDRV_STB
@@ -776,6 +1015,7 @@ static int __devinit snd_interwave_probe(struct snd_card *card, int dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_interwave_isa_probe1(int dev, struct device *devptr)
 {
 	struct snd_card *card;
@@ -796,6 +1036,10 @@ static int __devinit snd_interwave_isa_probe1(int dev, struct device *devptr)
 
 static int __devinit snd_interwave_isa_match(struct device *pdev,
 					     unsigned int dev)
+=======
+static int snd_interwave_isa_match(struct device *pdev,
+				   unsigned int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!enable[dev])
 		return 0;
@@ -806,6 +1050,7 @@ static int __devinit snd_interwave_isa_match(struct device *pdev,
 	return 1;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_interwave_isa_probe(struct device *pdev,
 					     unsigned int dev)
 {
@@ -815,23 +1060,48 @@ static int __devinit snd_interwave_isa_probe(struct device *pdev,
 
 	if (irq[dev] == SNDRV_AUTO_IRQ) {
 		if ((irq[dev] = snd_legacy_find_free_irq(possible_irqs)) < 0) {
+=======
+static int snd_interwave_isa_probe(struct device *pdev,
+				   unsigned int dev)
+{
+	struct snd_card *card;
+	struct snd_gus_card *gus;
+	int err;
+	static const int possible_irqs[] = {5, 11, 12, 9, 7, 15, 3, -1};
+	static const int possible_dmas[] = {0, 1, 3, 5, 6, 7, -1};
+
+	if (irq[dev] == SNDRV_AUTO_IRQ) {
+		irq[dev] = snd_legacy_find_free_irq(possible_irqs);
+		if (irq[dev] < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR PFX "unable to find a free IRQ\n");
 			return -EBUSY;
 		}
 	}
 	if (dma1[dev] == SNDRV_AUTO_DMA) {
+<<<<<<< HEAD
 		if ((dma1[dev] = snd_legacy_find_free_dma(possible_dmas)) < 0) {
+=======
+		dma1[dev] = snd_legacy_find_free_dma(possible_dmas);
+		if (dma1[dev] < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR PFX "unable to find a free DMA1\n");
 			return -EBUSY;
 		}
 	}
 	if (dma2[dev] == SNDRV_AUTO_DMA) {
+<<<<<<< HEAD
 		if ((dma2[dev] = snd_legacy_find_free_dma(possible_dmas)) < 0) {
+=======
+		dma2[dev] = snd_legacy_find_free_dma(possible_dmas);
+		if (dma2[dev] < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR PFX "unable to find a free DMA2\n");
 			return -EBUSY;
 		}
 	}
 
+<<<<<<< HEAD
 	if (port[dev] != SNDRV_AUTO_PORT)
 		return snd_interwave_isa_probe1(dev, pdev);
 	else {
@@ -851,13 +1121,42 @@ static int __devexit snd_interwave_isa_remove(struct device *devptr, unsigned in
 {
 	snd_card_free(dev_get_drvdata(devptr));
 	dev_set_drvdata(devptr, NULL);
+=======
+	err = snd_interwave_card_new(pdev, dev, &card);
+	if (err < 0)
+		return err;
+
+	if (port[dev] != SNDRV_AUTO_PORT)
+		err = snd_interwave_probe_gus(card, dev, &gus);
+	else {
+		static const long possible_ports[] = {0x210, 0x220, 0x230, 0x240, 0x250, 0x260};
+		int i;
+		for (i = 0; i < ARRAY_SIZE(possible_ports); i++) {
+			port[dev] = possible_ports[i];
+			err = snd_interwave_probe_gus(card, dev, &gus);
+			if (! err)
+				return 0;
+		}
+	}
+	if (err < 0)
+		return err;
+
+	err = snd_interwave_probe(card, dev, gus);
+	if (err < 0)
+		return err;
+
+	dev_set_drvdata(pdev, card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static struct isa_driver snd_interwave_driver = {
 	.match		= snd_interwave_isa_match,
 	.probe		= snd_interwave_isa_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_interwave_isa_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* FIXME: suspend,resume */
 	.driver		= {
 		.name	= INTERWAVE_DRIVER
@@ -865,11 +1164,20 @@ static struct isa_driver snd_interwave_driver = {
 };
 
 #ifdef CONFIG_PNP
+<<<<<<< HEAD
 static int __devinit snd_interwave_pnp_detect(struct pnp_card_link *pcard,
 					      const struct pnp_card_device_id *pid)
 {
 	static int dev;
 	struct snd_card *card;
+=======
+static int snd_interwave_pnp_detect(struct pnp_card_link *pcard,
+				    const struct pnp_card_device_id *pid)
+{
+	static int dev;
+	struct snd_card *card;
+	struct snd_gus_card *gus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	for ( ; dev < SNDRV_CARDS; dev++) {
@@ -879,6 +1187,7 @@ static int __devinit snd_interwave_pnp_detect(struct pnp_card_link *pcard,
 	if (dev >= SNDRV_CARDS)
 		return -ENODEV;
 				
+<<<<<<< HEAD
 	res = snd_interwave_card_new(dev, &card);
 	if (res < 0)
 		return res;
@@ -892,23 +1201,44 @@ static int __devinit snd_interwave_pnp_detect(struct pnp_card_link *pcard,
 		snd_card_free(card);
 		return res;
 	}
+=======
+	res = snd_interwave_card_new(&pcard->card->dev, dev, &card);
+	if (res < 0)
+		return res;
+
+	res = snd_interwave_pnp(dev, card->private_data, pcard, pid);
+	if (res < 0)
+		return res;
+	res = snd_interwave_probe_gus(card, dev, &gus);
+	if (res < 0)
+		return res;
+	res = snd_interwave_probe(card, dev, gus);
+	if (res < 0)
+		return res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnp_set_card_drvdata(pcard, card);
 	dev++;
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_interwave_pnp_remove(struct pnp_card_link * pcard)
 {
 	snd_card_free(pnp_get_card_drvdata(pcard));
 	pnp_set_card_drvdata(pcard, NULL);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pnp_card_driver interwave_pnpc_driver = {
 	.flags = PNP_DRIVER_RES_DISABLE,
 	.name = INTERWAVE_PNP_DRIVER,
 	.id_table = snd_interwave_pnpids,
 	.probe = snd_interwave_pnp_detect,
+<<<<<<< HEAD
 	.remove = __devexit_p(snd_interwave_pnp_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* FIXME: suspend,resume */
 };
 

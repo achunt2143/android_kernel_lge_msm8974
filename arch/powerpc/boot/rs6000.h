@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IBM RS/6000 "XCOFF" file definitions for BFD.
    Copyright (C) 1990, 1991 Free Software Foundation, Inc.
    FIXME: Can someone provide a transliteration of this name into ASCII?
@@ -239,5 +243,9 @@ struct external_reloc {
 #define DEFAULT_DATA_SECTION_ALIGNMENT 4
 #define DEFAULT_BSS_SECTION_ALIGNMENT 4
 #define DEFAULT_TEXT_SECTION_ALIGNMENT 4
+<<<<<<< HEAD
 /* For new sections we havn't heard of before */
+=======
+/* For new sections we haven't heard of before */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFAULT_SECTION_ALIGNMENT 4

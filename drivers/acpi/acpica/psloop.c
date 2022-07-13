@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: psloop - Main AML parse loop
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -42,6 +47,13 @@
  */
 
 /*
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Parse the AML and build an operation tree as most interpreters, (such as
  * Perl) do. Parsing is done by hand rather than with a YACC generated parser
  * to tightly constrain stack and dynamic memory usage. Parsing is kept
@@ -51,13 +63,23 @@
 
 #include <acpi/acpi.h>
 #include "accommon.h"
+<<<<<<< HEAD
 #include "acparser.h"
 #include "acdispat.h"
 #include "amlcode.h"
+=======
+#include "acinterp.h"
+#include "acparser.h"
+#include "acdispat.h"
+#include "amlcode.h"
+#include "acconvert.h"
+#include "acnamesp.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_PARSER
 ACPI_MODULE_NAME("psloop")
 
+<<<<<<< HEAD
 static u32 acpi_gbl_depth = 0;
 
 /* Local prototypes */
@@ -74,10 +96,14 @@ static acpi_status
 acpi_ps_create_op(struct acpi_walk_state *walk_state,
 		  u8 * aml_op_start, union acpi_parse_object **new_op);
 
+=======
+/* Local prototypes */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static acpi_status
 acpi_ps_get_arguments(struct acpi_walk_state *walk_state,
 		      u8 * aml_op_start, union acpi_parse_object *op);
 
+<<<<<<< HEAD
 static acpi_status
 acpi_ps_complete_op(struct acpi_walk_state *walk_state,
 		    union acpi_parse_object **op, acpi_status status);
@@ -374,13 +400,19 @@ acpi_ps_create_op(struct acpi_walk_state *walk_state,
 	return_ACPI_STATUS(status);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ps_get_arguments
  *
  * PARAMETERS:  walk_state          - Current state
  *              aml_op_start        - Op start in AML
+<<<<<<< HEAD
  *              Op                  - Current Op
+=======
+ *              op                  - Current Op
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -394,10 +426,20 @@ acpi_ps_get_arguments(struct acpi_walk_state *walk_state,
 {
 	acpi_status status = AE_OK;
 	union acpi_parse_object *arg = NULL;
+<<<<<<< HEAD
 	const struct acpi_opcode_info *op_info;
 
 	ACPI_FUNCTION_TRACE_PTR(ps_get_arguments, walk_state);
 
+=======
+
+	ACPI_FUNCTION_TRACE_PTR(ps_get_arguments, walk_state);
+
+	ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
+			  "Get arguments for opcode [%s]\n",
+			  op->common.aml_op_name));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (op->common.aml_opcode) {
 	case AML_BYTE_OP:	/* AML_BYTEDATA_ARG */
 	case AML_WORD_OP:	/* AML_WORDDATA_ARG */
@@ -415,10 +457,17 @@ acpi_ps_get_arguments(struct acpi_walk_state *walk_state,
 
 	case AML_INT_NAMEPATH_OP:	/* AML_NAMESTRING_ARG */
 
+<<<<<<< HEAD
 		status =
 		    acpi_ps_get_next_namepath(walk_state,
 					      &(walk_state->parser_state), op,
 					      1);
+=======
+		status = acpi_ps_get_next_namepath(walk_state,
+						   &(walk_state->parser_state),
+						   op,
+						   ACPI_POSSIBLE_METHOD_CALL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}
@@ -430,12 +479,33 @@ acpi_ps_get_arguments(struct acpi_walk_state *walk_state,
 		/*
 		 * Op is not a constant or string, append each argument to the Op
 		 */
+<<<<<<< HEAD
 		while (GET_CURRENT_ARG_TYPE(walk_state->arg_types)
 		       && !walk_state->arg_count) {
 			walk_state->aml_offset =
 			    (u32) ACPI_PTR_DIFF(walk_state->parser_state.aml,
 						walk_state->parser_state.
 						aml_start);
+=======
+		while (GET_CURRENT_ARG_TYPE(walk_state->arg_types) &&
+		       !walk_state->arg_count) {
+			walk_state->aml = walk_state->parser_state.aml;
+
+			switch (op->common.aml_opcode) {
+			case AML_METHOD_OP:
+			case AML_BUFFER_OP:
+			case AML_PACKAGE_OP:
+			case AML_VARIABLE_PACKAGE_OP:
+			case AML_WHILE_OP:
+
+				break;
+
+			default:
+
+				ASL_CV_CAPTURE_COMMENTS(walk_state);
+				break;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			status =
 			    acpi_ps_get_next_arg(walk_state,
@@ -447,13 +517,17 @@ acpi_ps_get_arguments(struct acpi_walk_state *walk_state,
 			}
 
 			if (arg) {
+<<<<<<< HEAD
 				arg->common.aml_offset = walk_state->aml_offset;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				acpi_ps_append_arg(op, arg);
 			}
 
 			INCREMENT_ARG_LIST(walk_state->arg_types);
 		}
 
+<<<<<<< HEAD
 		/*
 		 * Handle executable code at "module-level". This refers to
 		 * executable opcodes that appear outside of any control method.
@@ -529,6 +603,12 @@ acpi_ps_get_arguments(struct acpi_walk_state *walk_state,
 				break;
 			}
 		}
+=======
+		ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
+				  "Final argument count: %8.8X pass %u\n",
+				  walk_state->arg_count,
+				  walk_state->pass_number));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Special processing for certain opcodes */
 
@@ -554,13 +634,25 @@ acpi_ps_get_arguments(struct acpi_walk_state *walk_state,
 
 		case AML_BUFFER_OP:
 		case AML_PACKAGE_OP:
+<<<<<<< HEAD
 		case AML_VAR_PACKAGE_OP:
+=======
+		case AML_VARIABLE_PACKAGE_OP:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if ((op->common.parent) &&
 			    (op->common.parent->common.aml_opcode ==
 			     AML_NAME_OP)
 			    && (walk_state->pass_number <=
 				ACPI_IMODE_LOAD_PASS2)) {
+<<<<<<< HEAD
+=======
+				ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
+						  "Setup Package/Buffer: Pass %u, AML Ptr: %p\n",
+						  walk_state->pass_number,
+						  aml_op_start));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * Skip parsing of Buffers and Packages because we don't have
 				 * enough info in the first pass to parse them correctly.
@@ -589,6 +681,10 @@ acpi_ps_get_arguments(struct acpi_walk_state *walk_state,
 		default:
 
 			/* No action for all other opcodes */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -600,6 +696,7 @@ acpi_ps_get_arguments(struct acpi_walk_state *walk_state,
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ps_link_module_code
  *
  * PARAMETERS:  parent_op           - Parent parser op
@@ -960,6 +1057,8 @@ acpi_ps_complete_final_op(struct acpi_walk_state *walk_state,
 
 /*******************************************************************************
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FUNCTION:    acpi_ps_parse_loop
  *
  * PARAMETERS:  walk_state          - Current state
@@ -977,6 +1076,10 @@ acpi_status acpi_ps_parse_loop(struct acpi_walk_state *walk_state)
 	union acpi_parse_object *op = NULL;	/* current op */
 	struct acpi_parse_state *parser_state;
 	u8 *aml_op_start = NULL;
+<<<<<<< HEAD
+=======
+	u8 opcode_length;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE_PTR(ps_parse_loop, walk_state);
 
@@ -987,7 +1090,11 @@ acpi_status acpi_ps_parse_loop(struct acpi_walk_state *walk_state)
 	parser_state = &walk_state->parser_state;
 	walk_state->arg_types = 0;
 
+<<<<<<< HEAD
 #if (!defined (ACPI_NO_METHOD_EXECUTION) && !defined (ACPI_CONSTANT_EVAL_ONLY))
+=======
+#ifndef ACPI_CONSTANT_EVAL_ONLY
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (walk_state->walk_type & ACPI_WALK_METHOD_RESTART) {
 
@@ -1016,8 +1123,12 @@ acpi_status acpi_ps_parse_loop(struct acpi_walk_state *walk_state)
 								ACPI_TO_POINTER
 								(TRUE));
 				if (ACPI_FAILURE(status)
+<<<<<<< HEAD
 				    && ((status & AE_CODE_MASK) !=
 					AE_CODE_CONTROL)) {
+=======
+				    && !ACPI_CNTL_EXCEPTION(status)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (status == AE_AML_NO_RETURN_VALUE) {
 						ACPI_EXCEPTION((AE_INFO, status,
 								"Invoked method did not return a value"));
@@ -1051,11 +1162,32 @@ acpi_status acpi_ps_parse_loop(struct acpi_walk_state *walk_state)
 	/* Iterative parsing loop, while there is more AML to process: */
 
 	while ((parser_state->aml < parser_state->aml_end) || (op)) {
+<<<<<<< HEAD
+=======
+		ASL_CV_CAPTURE_COMMENTS(walk_state);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		aml_op_start = parser_state->aml;
 		if (!op) {
 			status =
 			    acpi_ps_create_op(walk_state, aml_op_start, &op);
 			if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
+=======
+				/*
+				 * ACPI_PARSE_MODULE_LEVEL means that we are loading a table by
+				 * executing it as a control method. However, if we encounter
+				 * an error while loading the table, we need to keep trying to
+				 * load the table rather than aborting the table load. Set the
+				 * status to AE_OK to proceed with the table load.
+				 */
+				if ((walk_state->
+				     parse_flags & ACPI_PARSE_MODULE_LEVEL)
+				    && ((status == AE_ALREADY_EXISTS)
+					|| (status == AE_NOT_FOUND))) {
+					status = AE_OK;
+				}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (status == AE_CTRL_PARSE_CONTINUE) {
 					continue;
 				}
@@ -1064,16 +1196,55 @@ acpi_status acpi_ps_parse_loop(struct acpi_walk_state *walk_state)
 					status = AE_OK;
 				}
 
+<<<<<<< HEAD
+=======
+				if (status == AE_CTRL_TERMINATE) {
+					return_ACPI_STATUS(status);
+				}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				status =
 				    acpi_ps_complete_op(walk_state, &op,
 							status);
 				if (ACPI_FAILURE(status)) {
 					return_ACPI_STATUS(status);
 				}
+<<<<<<< HEAD
+=======
+				if (acpi_ns_opens_scope
+				    (acpi_ps_get_opcode_info
+				     (walk_state->opcode)->object_type)) {
+					/*
+					 * If the scope/device op fails to parse, skip the body of
+					 * the scope op because the parse failure indicates that
+					 * the device may not exist.
+					 */
+					ACPI_INFO(("Skipping parse of AML opcode: %s (0x%4.4X)", acpi_ps_get_opcode_name(walk_state->opcode), walk_state->opcode));
+
+					/*
+					 * Determine the opcode length before skipping the opcode.
+					 * An opcode can be 1 byte or 2 bytes in length.
+					 */
+					opcode_length = 1;
+					if ((walk_state->opcode & 0xFF00) ==
+					    AML_EXTENDED_OPCODE) {
+						opcode_length = 2;
+					}
+					walk_state->parser_state.aml =
+					    walk_state->aml + opcode_length;
+
+					walk_state->parser_state.aml =
+					    acpi_ps_get_next_package_end
+					    (&walk_state->parser_state);
+					walk_state->aml =
+					    walk_state->parser_state.aml;
+				}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				continue;
 			}
 
+<<<<<<< HEAD
 			op->common.aml_offset = walk_state->aml_offset;
 
 			if (walk_state->op_info) {
@@ -1084,6 +1255,9 @@ acpi_status acpi_ps_parse_loop(struct acpi_walk_state *walk_state)
 						  parser_state->aml,
 						  op->common.aml_offset));
 			}
+=======
+			acpi_ex_start_trace_opcode(op, walk_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/*
@@ -1092,6 +1266,23 @@ acpi_status acpi_ps_parse_loop(struct acpi_walk_state *walk_state)
 		 */
 		walk_state->arg_count = 0;
 
+<<<<<<< HEAD
+=======
+		switch (op->common.aml_opcode) {
+		case AML_BYTE_OP:
+		case AML_WORD_OP:
+		case AML_DWORD_OP:
+		case AML_QWORD_OP:
+
+			break;
+
+		default:
+
+			ASL_CV_CAPTURE_COMMENTS(walk_state);
+			break;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Are there any arguments that must be processed? */
 
 		if (walk_state->arg_types) {
@@ -1107,13 +1298,57 @@ acpi_status acpi_ps_parse_loop(struct acpi_walk_state *walk_state)
 				if (ACPI_FAILURE(status)) {
 					return_ACPI_STATUS(status);
 				}
+<<<<<<< HEAD
 
+=======
+				if ((walk_state->control_state) &&
+				    ((walk_state->control_state->control.
+				      opcode == AML_IF_OP)
+				     || (walk_state->control_state->control.
+					 opcode == AML_WHILE_OP))) {
+					/*
+					 * If the if/while op fails to parse, we will skip parsing
+					 * the body of the op.
+					 */
+					parser_state->aml =
+					    walk_state->control_state->control.
+					    aml_predicate_start + 1;
+					parser_state->aml =
+					    acpi_ps_get_next_package_end
+					    (parser_state);
+					walk_state->aml = parser_state->aml;
+
+					ACPI_ERROR((AE_INFO,
+						    "Skipping While/If block"));
+					if (*walk_state->aml == AML_ELSE_OP) {
+						ACPI_ERROR((AE_INFO,
+							    "Skipping Else block"));
+						walk_state->parser_state.aml =
+						    walk_state->aml + 1;
+						walk_state->parser_state.aml =
+						    acpi_ps_get_next_package_end
+						    (parser_state);
+						walk_state->aml =
+						    parser_state->aml;
+					}
+					ACPI_FREE(acpi_ut_pop_generic_state
+						  (&walk_state->control_state));
+				}
+				op = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 		}
 
 		/* Check for arguments that need to be processed */
 
+<<<<<<< HEAD
+=======
+		ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
+				  "Parseloop: argument count: %8.8X\n",
+				  walk_state->arg_count));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (walk_state->arg_count) {
 			/*
 			 * There are arguments (complex ones), push Op and
@@ -1144,10 +1379,13 @@ acpi_status acpi_ps_parse_loop(struct acpi_walk_state *walk_state)
 		walk_state->op_info =
 		    acpi_ps_get_opcode_info(op->common.aml_opcode);
 		if (walk_state->op_info->flags & AML_NAMED) {
+<<<<<<< HEAD
 			if (acpi_gbl_depth) {
 				acpi_gbl_depth--;
 			}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (op->common.aml_opcode == AML_REGION_OP ||
 			    op->common.aml_opcode == AML_DATA_REGION_OP) {
 				/*
@@ -1165,7 +1403,11 @@ acpi_status acpi_ps_parse_loop(struct acpi_walk_state *walk_state)
 
 		if (walk_state->op_info->flags & AML_CREATE) {
 			/*
+<<<<<<< HEAD
 			 * Backup to beginning of create_xXXfield declaration (1 for
+=======
+			 * Backup to beginning of create_XXXfield declaration (1 for
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * Opcode)
 			 *
 			 * body_length is unknown until we parse the body
@@ -1195,6 +1437,28 @@ acpi_status acpi_ps_parse_loop(struct acpi_walk_state *walk_state)
 			    acpi_ps_next_parse_state(walk_state, op, status);
 			if (status == AE_CTRL_PENDING) {
 				status = AE_OK;
+<<<<<<< HEAD
+=======
+			} else
+			    if ((walk_state->
+				 parse_flags & ACPI_PARSE_MODULE_LEVEL)
+				&& (ACPI_AML_EXCEPTION(status)
+				    || status == AE_ALREADY_EXISTS
+				    || status == AE_NOT_FOUND)) {
+				/*
+				 * ACPI_PARSE_MODULE_LEVEL flag means that we
+				 * are currently loading a table by executing
+				 * it as a control method. However, if we
+				 * encounter an error while loading the table,
+				 * we need to keep trying to load the table
+				 * rather than aborting the table load (setting
+				 * the status to AE_OK continues the table
+				 * load). If we get a failure at this point, it
+				 * means that the dispatcher got an error while
+				 * trying to execute the Op.
+				 */
+				status = AE_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 

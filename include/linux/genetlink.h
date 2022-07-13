@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __LINUX_GENERIC_NETLINK_H
 #define __LINUX_GENERIC_NETLINK_H
 
@@ -81,10 +82,19 @@ enum {
 #define CTRL_ATTR_MCAST_GRP_MAX (__CTRL_ATTR_MCAST_GRP_MAX - 1)
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __LINUX_GENERIC_NETLINK_H
+#define __LINUX_GENERIC_NETLINK_H
+
+#include <uapi/linux/genetlink.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* All generic netlink requests are serialized by a global lock.  */
 extern void genl_lock(void);
 extern void genl_unlock(void);
+<<<<<<< HEAD
 #ifdef CONFIG_PROVE_LOCKING
 extern int lockdep_genl_is_held(void);
 #endif
@@ -111,5 +121,14 @@ extern int lockdep_genl_is_held(void);
 	rcu_dereference_protected(p, lockdep_genl_is_held())
 
 #endif /* __KERNEL__ */
+=======
+
+/* for synchronisation between af_netlink and genetlink */
+extern atomic_t genl_sk_destructing_cnt;
+extern wait_queue_head_t genl_sk_destructing_waitq;
+
+#define MODULE_ALIAS_GENL_FAMILY(family)\
+ MODULE_ALIAS_NET_PF_PROTO_NAME(PF_NETLINK, NETLINK_GENERIC, "-family-" family)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __LINUX_GENERIC_NETLINK_H */

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/dma-mapping.h>
 #include <linux/spi/pxa2xx_spi.h>
 #include <linux/i2c/pxa-i2c.h>
@@ -20,6 +25,25 @@
 #include <mach/hardware.h>
 #include <plat/pxa3xx_nand.h>
 
+=======
+#include <linux/clkdev.h>
+#include <linux/clk-provider.h>
+#include <linux/dma-mapping.h>
+#include <linux/dmaengine.h>
+#include <linux/spi/pxa2xx_spi.h>
+#include <linux/platform_data/i2c-pxa.h>
+#include <linux/soc/pxa/cpu.h>
+
+#include "udc.h"
+#include <linux/platform_data/video-pxafb.h>
+#include <linux/platform_data/mmc-pxamci.h>
+#include "irqs.h"
+#include <linux/platform_data/usb-ohci-pxa27x.h>
+#include <linux/platform_data/mmp_dma.h>
+
+#include "regs-ost.h"
+#include "reset.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "devices.h"
 #include "generic.h"
 
@@ -41,8 +65,13 @@ static struct resource pxa_resource_pmu = {
 };
 
 struct platform_device pxa_device_pmu = {
+<<<<<<< HEAD
 	.name		= "arm-pmu",
 	.id		= ARM_PMU_DEVICE_CPU,
+=======
+	.name		= "xscale-pmu",
+	.id		= -1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.resource	= &pxa_resource_pmu,
 	.num_resources	= 1,
 };
@@ -58,6 +87,7 @@ static struct resource pxamci_resources[] = {
 		.end	= IRQ_MMC,
 		.flags	= IORESOURCE_IRQ,
 	},
+<<<<<<< HEAD
 	[2] = {
 		.start	= 21,
 		.end	= 21,
@@ -68,6 +98,8 @@ static struct resource pxamci_resources[] = {
 		.end	= 22,
 		.flags	= IORESOURCE_DMA,
 	},
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static u64 pxamci_dmamask = 0xffffffffUL;
@@ -88,16 +120,22 @@ void __init pxa_set_mci_info(struct pxamci_platform_data *info)
 	pxa_register_device(&pxa_device_mci, info);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pxa2xx_udc_mach_info pxa_udc_info = {
 	.gpio_pullup = -1,
 };
 
+<<<<<<< HEAD
 void __init pxa_set_udc_info(struct pxa2xx_udc_mach_info *info)
 {
 	memcpy(&pxa_udc_info, info, sizeof *info);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource pxa2xx_udc_resources[] = {
 	[0] = {
 		.start	= 0x40600000,
@@ -135,6 +173,7 @@ struct platform_device pxa27x_device_udc = {
 	}
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PXA3xx
 static struct resource pxa3xx_u2d_resources[] = {
 	[0] = {
@@ -162,6 +201,8 @@ void __init pxa3xx_set_u2d_info(struct pxa3xx_u2d_platform_data *info)
 }
 #endif /* CONFIG_PXA3xx */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource pxafb_resources[] = {
 	[0] = {
 		.start	= 0x44000000,
@@ -382,6 +423,7 @@ struct platform_device pxa_device_asoc_platform = {
 	.id		= -1,
 };
 
+<<<<<<< HEAD
 static u64 pxaficp_dmamask = ~(u32)0;
 
 struct platform_device pxa_device_ficp = {
@@ -398,6 +440,8 @@ void __init pxa_set_ficp_info(struct pxaficp_platform_data *info)
 	pxa_register_device(&pxa_device_ficp, info);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource pxa_rtc_resources[] = {
 	[0] = {
 		.start  = 0x40900000,
@@ -425,6 +469,7 @@ struct platform_device pxa_device_rtc = {
 	.resource       = pxa_rtc_resources,
 };
 
+<<<<<<< HEAD
 static struct resource sa1100_rtc_resources[] = {
 	{
 		.start  = IRQ_RTC1Hz,
@@ -477,6 +522,15 @@ void __init pxa_set_ac97_info(pxa2xx_audio_ops_t *ops)
 	pxa_register_device(&pxa_device_ac97, ops);
 }
 
+=======
+struct platform_device sa1100_device_rtc = {
+	.name		= "sa1100-rtc",
+	.id		= -1,
+	.num_resources  = ARRAY_SIZE(pxa_rtc_resources),
+	.resource       = pxa_rtc_resources,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PXA25x
 
 static struct resource pxa25x_resource_pwm0[] = {
@@ -522,6 +576,7 @@ static struct resource pxa25x_resource_ssp[] = {
 		.end	= IRQ_SSP,
 		.flags	= IORESOURCE_IRQ,
 	},
+<<<<<<< HEAD
 	[2] = {
 		/* DRCMR for RX */
 		.start	= 13,
@@ -534,6 +589,8 @@ static struct resource pxa25x_resource_ssp[] = {
 		.end	= 14,
 		.flags	= IORESOURCE_DMA,
 	},
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct platform_device pxa25x_device_ssp = {
@@ -560,6 +617,7 @@ static struct resource pxa25x_resource_nssp[] = {
 		.end	= IRQ_NSSP,
 		.flags	= IORESOURCE_IRQ,
 	},
+<<<<<<< HEAD
 	[2] = {
 		/* DRCMR for RX */
 		.start	= 15,
@@ -572,6 +630,8 @@ static struct resource pxa25x_resource_nssp[] = {
 		.end	= 16,
 		.flags	= IORESOURCE_DMA,
 	},
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct platform_device pxa25x_device_nssp = {
@@ -598,6 +658,7 @@ static struct resource pxa25x_resource_assp[] = {
 		.end	= IRQ_ASSP,
 		.flags	= IORESOURCE_IRQ,
 	},
+<<<<<<< HEAD
 	[2] = {
 		/* DRCMR for RX */
 		.start	= 23,
@@ -610,6 +671,8 @@ static struct resource pxa25x_resource_assp[] = {
 		.end	= 24,
 		.flags	= IORESOURCE_DMA,
 	},
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct platform_device pxa25x_device_assp = {
@@ -626,6 +689,7 @@ struct platform_device pxa25x_device_assp = {
 #endif /* CONFIG_PXA25x */
 
 #if defined(CONFIG_PXA27x) || defined(CONFIG_PXA3xx)
+<<<<<<< HEAD
 static struct resource pxa27x_resource_camera[] = {
 	[0] = {
 		.start	= 0x50000000,
@@ -657,6 +721,8 @@ void __init pxa_set_camera_info(struct pxacamera_platform_data *info)
 	pxa_register_device(&pxa27x_device_camera, info);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u64 pxa27x_ohci_dma_mask = DMA_BIT_MASK(32);
 
 static struct resource pxa27x_resource_ohci[] = {
@@ -689,6 +755,7 @@ void __init pxa_set_ohci_info(struct pxaohci_platform_data *info)
 }
 #endif /* CONFIG_PXA27x || CONFIG_PXA3xx */
 
+<<<<<<< HEAD
 #if defined(CONFIG_PXA27x) || defined(CONFIG_PXA3xx) || defined(CONFIG_PXA95x)
 static struct resource pxa27x_resource_keypad[] = {
 	[0] = {
@@ -715,6 +782,9 @@ void __init pxa_set_keypad_info(struct pxa27x_keypad_platform_data *info)
 	pxa_register_device(&pxa27x_device_keypad, info);
 }
 
+=======
+#if defined(CONFIG_PXA27x) || defined(CONFIG_PXA3xx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u64 pxa27x_ssp1_dma_mask = DMA_BIT_MASK(32);
 
 static struct resource pxa27x_resource_ssp1[] = {
@@ -728,6 +798,7 @@ static struct resource pxa27x_resource_ssp1[] = {
 		.end	= IRQ_SSP,
 		.flags	= IORESOURCE_IRQ,
 	},
+<<<<<<< HEAD
 	[2] = {
 		/* DRCMR for RX */
 		.start	= 13,
@@ -740,6 +811,8 @@ static struct resource pxa27x_resource_ssp1[] = {
 		.end	= 14,
 		.flags	= IORESOURCE_DMA,
 	},
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct platform_device pxa27x_device_ssp1 = {
@@ -766,6 +839,7 @@ static struct resource pxa27x_resource_ssp2[] = {
 		.end	= IRQ_SSP2,
 		.flags	= IORESOURCE_IRQ,
 	},
+<<<<<<< HEAD
 	[2] = {
 		/* DRCMR for RX */
 		.start	= 15,
@@ -778,6 +852,8 @@ static struct resource pxa27x_resource_ssp2[] = {
 		.end	= 16,
 		.flags	= IORESOURCE_DMA,
 	},
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct platform_device pxa27x_device_ssp2 = {
@@ -804,6 +880,7 @@ static struct resource pxa27x_resource_ssp3[] = {
 		.end	= IRQ_SSP3,
 		.flags	= IORESOURCE_IRQ,
 	},
+<<<<<<< HEAD
 	[2] = {
 		/* DRCMR for RX */
 		.start	= 66,
@@ -816,6 +893,8 @@ static struct resource pxa27x_resource_ssp3[] = {
 		.end	= 67,
 		.flags	= IORESOURCE_DMA,
 	},
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct platform_device pxa27x_device_ssp3 = {
@@ -858,6 +937,7 @@ struct platform_device pxa27x_device_pwm1 = {
 	.resource	= pxa27x_resource_pwm1,
 	.num_resources	= ARRAY_SIZE(pxa27x_resource_pwm1),
 };
+<<<<<<< HEAD
 #endif /* CONFIG_PXA27x || CONFIG_PXA3xx || CONFIG_PXA95x*/
 
 #ifdef CONFIG_PXA3xx
@@ -1069,6 +1149,9 @@ struct platform_device pxa3xx_device_ssp4 = {
 	.num_resources	= ARRAY_SIZE(pxa3xx_resource_ssp4),
 };
 #endif /* CONFIG_PXA3xx || CONFIG_PXA95x */
+=======
+#endif /* CONFIG_PXA27x || CONFIG_PXA3xx */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct resource pxa_resource_gpio[] = {
 	{
@@ -1093,8 +1176,20 @@ struct resource pxa_resource_gpio[] = {
 	},
 };
 
+<<<<<<< HEAD
 struct platform_device pxa_device_gpio = {
 	.name		= "pxa-gpio",
+=======
+struct platform_device pxa25x_device_gpio = {
+	.name		= "pxa25x-gpio",
+	.id		= -1,
+	.num_resources	= ARRAY_SIZE(pxa_resource_gpio),
+	.resource	= pxa_resource_gpio,
+};
+
+struct platform_device pxa27x_device_gpio = {
+	.name		= "pxa27x-gpio",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id		= -1,
 	.num_resources	= ARRAY_SIZE(pxa_resource_gpio),
 	.resource	= pxa_resource_gpio,
@@ -1102,7 +1197,11 @@ struct platform_device pxa_device_gpio = {
 
 /* pxa2xx-spi platform-device ID equals respective SSP platform-device ID + 1.
  * See comment in arch/arm/mach-pxa/ssp.c::ssp_probe() */
+<<<<<<< HEAD
 void __init pxa2xx_set_spi_info(unsigned id, struct pxa2xx_spi_master *info)
+=======
+void __init pxa2xx_set_spi_info(unsigned id, struct pxa2xx_spi_controller *info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platform_device *pd;
 
@@ -1116,3 +1215,46 @@ void __init pxa2xx_set_spi_info(unsigned id, struct pxa2xx_spi_master *info)
 	pd->dev.platform_data = info;
 	platform_device_add(pd);
 }
+<<<<<<< HEAD
+=======
+
+static struct resource pxa_dma_resource[] = {
+	[0] = {
+		.start	= 0x40000000,
+		.end	= 0x4000ffff,
+		.flags	= IORESOURCE_MEM,
+	},
+	[1] = {
+		.start	= IRQ_DMA,
+		.end	= IRQ_DMA,
+		.flags	= IORESOURCE_IRQ,
+	},
+};
+
+static u64 pxadma_dmamask = 0xffffffffUL;
+
+static struct platform_device pxa2xx_pxa_dma = {
+	.name		= "pxa-dma",
+	.id		= 0,
+	.dev		= {
+		.dma_mask = &pxadma_dmamask,
+		.coherent_dma_mask = 0xffffffff,
+	},
+	.num_resources	= ARRAY_SIZE(pxa_dma_resource),
+	.resource	= pxa_dma_resource,
+};
+
+void __init pxa2xx_set_dmac_info(struct mmp_dma_platdata *dma_pdata)
+{
+	pxa_register_device(&pxa2xx_pxa_dma, dma_pdata);
+}
+
+void __init pxa_register_wdt(unsigned int reset_status)
+{
+	struct resource res = DEFINE_RES_MEM(OST_PHYS, OST_LEN);
+
+	reset_status &= RESET_STATUS_WATCHDOG;
+	platform_device_register_resndata(NULL, "sa1100_wdt", -1, &res, 1,
+					  &reset_status, sizeof(reset_status));
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

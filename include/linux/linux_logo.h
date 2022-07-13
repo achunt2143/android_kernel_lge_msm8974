@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_LINUX_LOGO_H
 #define _LINUX_LINUX_LOGO_H
 
@@ -35,8 +39,11 @@ struct linux_logo {
 extern const struct linux_logo logo_linux_mono;
 extern const struct linux_logo logo_linux_vga16;
 extern const struct linux_logo logo_linux_clut224;
+<<<<<<< HEAD
 extern const struct linux_logo logo_blackfin_vga16;
 extern const struct linux_logo logo_blackfin_clut224;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct linux_logo logo_dec_clut224;
 extern const struct linux_logo logo_mac_clut224;
 extern const struct linux_logo logo_parisc_clut224;
@@ -45,7 +52,10 @@ extern const struct linux_logo logo_sun_clut224;
 extern const struct linux_logo logo_superh_mono;
 extern const struct linux_logo logo_superh_vga16;
 extern const struct linux_logo logo_superh_clut224;
+<<<<<<< HEAD
 extern const struct linux_logo logo_m32r_clut224;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct linux_logo logo_spe_clut224;
 
 extern const struct linux_logo *fb_find_logo(int depth);

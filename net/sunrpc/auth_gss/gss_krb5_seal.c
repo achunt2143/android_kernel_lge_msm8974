@@ -63,6 +63,7 @@
 #include <linux/sunrpc/gss_krb5.h>
 #include <linux/random.h>
 #include <linux/crypto.h>
+<<<<<<< HEAD
 
 #ifdef RPC_DEBUG
 # define RPCDBG_FACILITY        RPCDBG_AUTH
@@ -95,6 +96,21 @@ static void *
 setup_token_v2(struct krb5_ctx *ctx, struct xdr_netobj *token)
 {
 	__be16 *ptr, *krb5_hdr;
+=======
+#include <linux/atomic.h>
+
+#include "gss_krb5_internal.h"
+
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+# define RPCDBG_FACILITY        RPCDBG_AUTH
+#endif
+
+static void *
+setup_token_v2(struct krb5_ctx *ctx, struct xdr_netobj *token)
+{
+	u16 *ptr;
+	void *krb5_hdr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *p, flags = 0x00;
 
 	if ((ctx->flags & KRB5_CTX_FLAG_INITIATOR) == 0)
@@ -103,21 +119,35 @@ setup_token_v2(struct krb5_ctx *ctx, struct xdr_netobj *token)
 		flags |= 0x04;
 
 	/* Per rfc 4121, sec 4.2.6.1, there is no header,
+<<<<<<< HEAD
 	 * just start the token */
 	krb5_hdr = ptr = (__be16 *)token->data;
+=======
+	 * just start the token.
+	 */
+	krb5_hdr = (u16 *)token->data;
+	ptr = krb5_hdr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*ptr++ = KG2_TOK_MIC;
 	p = (u8 *)ptr;
 	*p++ = flags;
 	*p++ = 0xff;
+<<<<<<< HEAD
 	ptr = (__be16 *)p;
 	*ptr++ = 0xffff;
 	*ptr++ = 0xffff;
+=======
+	ptr = (u16 *)p;
+	*ptr++ = 0xffff;
+	*ptr = 0xffff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	token->len = GSS_KRB5_TOK_HDR_LEN + ctx->gk5e->cksumlength;
 	return krb5_hdr;
 }
 
+<<<<<<< HEAD
 static u32
 gss_get_mic_v1(struct krb5_ctx *ctx, struct xdr_buf *text,
 		struct xdr_netobj *token)
@@ -171,6 +201,20 @@ gss_get_mic_v2(struct krb5_ctx *ctx, struct xdr_buf *text,
 	u64 seq_send;
 	u8 *cksumkey;
 	unsigned int cksum_usage;
+=======
+u32
+gss_krb5_get_mic_v2(struct krb5_ctx *ctx, struct xdr_buf *text,
+		    struct xdr_netobj *token)
+{
+	struct crypto_ahash *tfm = ctx->initiate ?
+				   ctx->initiator_sign : ctx->acceptor_sign;
+	struct xdr_netobj cksumobj = {
+		.len =	ctx->gk5e->cksumlength,
+	};
+	__be64 seq_send_be64;
+	void *krb5_hdr;
+	time64_t now;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk("RPC:       %s\n", __func__);
 
@@ -178,6 +222,7 @@ gss_get_mic_v2(struct krb5_ctx *ctx, struct xdr_buf *text,
 
 	/* Set up the sequence number. Now 64-bits in clear
 	 * text and w/o direction indicator */
+<<<<<<< HEAD
 	spin_lock(&krb5_seq_lock);
 	seq_send = ctx->seq_send64++;
 	spin_unlock(&krb5_seq_lock);
@@ -221,3 +266,16 @@ gss_get_mic_kerberos(struct gss_ctx *gss_ctx, struct xdr_buf *text,
 	}
 }
 
+=======
+	seq_send_be64 = cpu_to_be64(atomic64_fetch_inc(&ctx->seq_send64));
+	memcpy(krb5_hdr + 8, (char *) &seq_send_be64, 8);
+
+	cksumobj.data = krb5_hdr + GSS_KRB5_TOK_HDR_LEN;
+	if (gss_krb5_checksum(tfm, krb5_hdr, GSS_KRB5_TOK_HDR_LEN,
+			      text, 0, &cksumobj))
+		return GSS_S_FAILURE;
+
+	now = ktime_get_real_seconds();
+	return (ctx->endtime < now) ? GSS_S_CONTEXT_EXPIRED : GSS_S_COMPLETE;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2007, 2011 Wolfgang Grandegger <wg@grandegger.com>
  * Copyright (C) 2012 Stephane Grosjean <s.grosjean@peak-system.com>
@@ -5,6 +9,7 @@
  * Derived from the PCAN project file driver/src/pcan_pci.c:
  *
  * Copyright (C) 2001-2006  PEAK System-Technik GmbH
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the version 2 of the GNU General Public License
@@ -14,6 +19,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -30,13 +37,25 @@
 
 #include "sja1000.h"
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Wolfgang Grandegger <wg@grandegger.com>");
 MODULE_DESCRIPTION("Socket-CAN driver for PEAK PCAN PCI family cards");
 MODULE_SUPPORTED_DEVICE("PEAK PCAN PCI/PCIe/PCIeC miniPCI CAN cards");
+=======
+MODULE_AUTHOR("Stephane Grosjean <s.grosjean@peak-system.com>");
+MODULE_DESCRIPTION("Socket-CAN driver for PEAK PCAN PCI family cards");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL v2");
 
 #define DRV_NAME  "peak_pci"
 
+<<<<<<< HEAD
+=======
+/* FPGA cards FW version registers */
+#define PEAK_VER_REG1		0x40
+#define PEAK_VER_REG2		0x44
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct peak_pciec_card;
 struct peak_pci_chan {
 	void __iomem *cfg_base;		/* Common for all channels */
@@ -50,9 +69,13 @@ struct peak_pci_chan {
 #define PEAK_PCI_CDR		(CDR_CBP | CDR_CLKOUT_MASK)
 #define PEAK_PCI_OCR		OCR_TX0_PUSHPULL
 
+<<<<<<< HEAD
 /*
  * Important PITA registers
  */
+=======
+/* Important PITA registers */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PITA_ICR		0x00	/* Interrupt control register */
 #define PITA_GPIOICR		0x18	/* GPIO interface control register */
 #define PITA_MISC		0x1C	/* Miscellaneous register */
@@ -64,7 +87,17 @@ struct peak_pci_chan {
 #define PEAK_PCI_DEVICE_ID	0x0001	/* for PCI/PCIe slot cards */
 #define PEAK_PCIEC_DEVICE_ID	0x0002	/* for ExpressCard slot cards */
 #define PEAK_PCIE_DEVICE_ID	0x0003	/* for nextgen PCIe slot cards */
+<<<<<<< HEAD
 #define PEAK_MPCI_DEVICE_ID	0x0008	/* The miniPCI slot cards */
+=======
+#define PEAK_CPCI_DEVICE_ID	0x0004	/* for nextgen cPCI slot cards */
+#define PEAK_MPCI_DEVICE_ID	0x0005	/* for nextgen miniPCI slot cards */
+#define PEAK_PC_104P_DEVICE_ID	0x0006	/* PCAN-PC/104+ cards */
+#define PEAK_PCI_104E_DEVICE_ID	0x0007	/* PCAN-PCI/104 Express cards */
+#define PEAK_MPCIE_DEVICE_ID	0x0008	/* The miniPCIe slot cards */
+#define PEAK_PCIE_OEM_ID	0x0009	/* PCAN-PCI Express OEM */
+#define PEAK_PCIEC34_DEVICE_ID	0x000A	/* PCAN-PCI Express 34 (one channel) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PEAK_PCI_CHAN_MAX	4
 
@@ -72,6 +105,7 @@ static const u16 peak_pci_icr_masks[PEAK_PCI_CHAN_MAX] = {
 	0x02, 0x01, 0x40, 0x80
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(peak_pci_tbl) = {
 	{PEAK_PCI_VENDOR_ID, PEAK_PCI_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
 	{PEAK_PCI_VENDOR_ID, PEAK_PCIE_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
@@ -80,19 +114,65 @@ static DEFINE_PCI_DEVICE_TABLE(peak_pci_tbl) = {
 	{PEAK_PCI_VENDOR_ID, PEAK_PCIEC_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,},
 #endif
 	{0,}
+=======
+static const struct pci_device_id peak_pci_tbl[] = {
+	{
+		PEAK_PCI_VENDOR_ID, PEAK_PCI_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,
+		.driver_data = (kernel_ulong_t)"PCAN-PCI",
+	}, {
+		PEAK_PCI_VENDOR_ID, PEAK_PCIE_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,
+		.driver_data = (kernel_ulong_t)"PCAN-PCI Express",
+	}, {
+		PEAK_PCI_VENDOR_ID, PEAK_MPCI_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,
+		.driver_data = (kernel_ulong_t)"PCAN-miniPCI",
+	}, {
+		PEAK_PCI_VENDOR_ID, PEAK_MPCIE_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,
+		.driver_data = (kernel_ulong_t)"PCAN-miniPCIe",
+	}, {
+		PEAK_PCI_VENDOR_ID, PEAK_PC_104P_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,
+		.driver_data = (kernel_ulong_t)"PCAN-PC/104-Plus Quad",
+	}, {
+		PEAK_PCI_VENDOR_ID, PEAK_PCI_104E_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,
+		.driver_data = (kernel_ulong_t)"PCAN-PCI/104-Express",
+	}, {
+		PEAK_PCI_VENDOR_ID, PEAK_CPCI_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,
+		.driver_data = (kernel_ulong_t)"PCAN-cPCI",
+	}, {
+		PEAK_PCI_VENDOR_ID, PEAK_PCIE_OEM_ID, PCI_ANY_ID, PCI_ANY_ID,
+		.driver_data = (kernel_ulong_t)"PCAN-Chip PCIe",
+	},
+#ifdef CONFIG_CAN_PEAK_PCIEC
+	{
+		PEAK_PCI_VENDOR_ID, PEAK_PCIEC_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,
+		.driver_data = (kernel_ulong_t)"PCAN-ExpressCard",
+	}, {
+		PEAK_PCI_VENDOR_ID, PEAK_PCIEC34_DEVICE_ID, PCI_ANY_ID, PCI_ANY_ID,
+		.driver_data = (kernel_ulong_t)"PCAN-ExpressCard 34",
+	},
+#endif
+	{ /* sentinel */ }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 MODULE_DEVICE_TABLE(pci, peak_pci_tbl);
 
 #ifdef CONFIG_CAN_PEAK_PCIEC
+<<<<<<< HEAD
 /*
  * PCAN-ExpressCard needs I2C bit-banging configuration option.
  */
+=======
+/* PCAN-ExpressCard needs I2C bit-banging configuration option. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* GPIOICR byte access offsets */
 #define PITA_GPOUT		0x18	/* GPx output value */
 #define PITA_GPIN		0x19	/* GPx input value */
+<<<<<<< HEAD
 #define PITA_GPOEN		0x1A	/* configure GPx as ouput pin */
+=======
+#define PITA_GPOEN		0x1A	/* configure GPx as output pin */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* I2C GP bits */
 #define PITA_GPIN_SCL		0x01	/* Serial Clock Line */
@@ -153,12 +233,20 @@ static void peak_pci_write_reg(const struct sja1000_priv *priv,
 static inline void pita_set_scl_highz(struct peak_pciec_card *card)
 {
 	u8 gp_outen = readb(card->cfg_base + PITA_GPOEN) & ~PITA_GPIN_SCL;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writeb(gp_outen, card->cfg_base + PITA_GPOEN);
 }
 
 static inline void pita_set_sda_highz(struct peak_pciec_card *card)
 {
 	u8 gp_outen = readb(card->cfg_base + PITA_GPOEN) & ~PITA_GPIN_SDA;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writeb(gp_outen, card->cfg_base + PITA_GPOEN);
 }
 
@@ -227,9 +315,13 @@ static int pita_getscl(void *data)
 	return (readb(card->cfg_base + PITA_GPIN) & PITA_GPIN_SCL) ? 1 : 0;
 }
 
+<<<<<<< HEAD
 /*
  * write commands to the LED chip though the I2C-bus of the PCAN-PCIeC
  */
+=======
+/* write commands to the LED chip though the I2C-bus of the PCAN-PCIeC */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int peak_pciec_write_pca9553(struct peak_pciec_card *card,
 				    u8 offset, u8 data)
 {
@@ -245,7 +337,11 @@ static int peak_pciec_write_pca9553(struct peak_pciec_card *card,
 	int ret;
 
 	/* cache led mask */
+<<<<<<< HEAD
 	if ((offset == 5) && (data == card->led_cache))
+=======
+	if (offset == 5 && data == card->led_cache)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	ret = i2c_transfer(&card->led_chip, &msg, 1);
@@ -258,9 +354,13 @@ static int peak_pciec_write_pca9553(struct peak_pciec_card *card,
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * delayed work callback used to control the LEDs
  */
+=======
+/* delayed work callback used to control the LEDs */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void peak_pciec_led_work(struct work_struct *work)
 {
 	struct peak_pciec_card *card =
@@ -306,9 +406,13 @@ static void peak_pciec_led_work(struct work_struct *work)
 		schedule_delayed_work(&card->led_work, HZ);
 }
 
+<<<<<<< HEAD
 /*
  * set LEDs blinking state
  */
+=======
+/* set LEDs blinking state */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void peak_pciec_set_leds(struct peak_pciec_card *card, u8 led_mask, u8 s)
 {
 	u8 new_led = card->led_cache;
@@ -325,6 +429,7 @@ static void peak_pciec_set_leds(struct peak_pciec_card *card, u8 led_mask, u8 s)
 	peak_pciec_write_pca9553(card, 5, new_led);
 }
 
+<<<<<<< HEAD
 /*
  * start one second delayed work to control LEDs
  */
@@ -337,14 +442,27 @@ static void peak_pciec_start_led_work(struct peak_pciec_card *card)
 /*
  * stop LEDs delayed work
  */
+=======
+/* start one second delayed work to control LEDs */
+static void peak_pciec_start_led_work(struct peak_pciec_card *card)
+{
+	schedule_delayed_work(&card->led_work, HZ);
+}
+
+/* stop LEDs delayed work */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void peak_pciec_stop_led_work(struct peak_pciec_card *card)
 {
 	cancel_delayed_work_sync(&card->led_work);
 }
 
+<<<<<<< HEAD
 /*
  * initialize the PCA9553 4-bit I2C-bus LED chip
  */
+=======
+/* initialize the PCA9553 4-bit I2C-bus LED chip */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int peak_pciec_init_leds(struct peak_pciec_card *card)
 {
 	int err;
@@ -373,17 +491,25 @@ static int peak_pciec_init_leds(struct peak_pciec_card *card)
 	return peak_pciec_write_pca9553(card, 5, PCA9553_LS0_INIT);
 }
 
+<<<<<<< HEAD
 /*
  * restore LEDs state to off peak_pciec_leds_exit
  */
+=======
+/* restore LEDs state to off peak_pciec_leds_exit */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void peak_pciec_leds_exit(struct peak_pciec_card *card)
 {
 	/* switch LEDs to off */
 	peak_pciec_write_pca9553(card, 5, PCA9553_LED_OFF_ALL);
 }
 
+<<<<<<< HEAD
 /*
  * normal write sja1000 register method overloaded to catch when controller
+=======
+/* normal write sja1000 register method overloaded to catch when controller
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * is started or stopped, to control leds
  */
 static void peak_pciec_write_reg(const struct sja1000_priv *priv,
@@ -394,7 +520,11 @@ static void peak_pciec_write_reg(const struct sja1000_priv *priv,
 	int c = (priv->reg_base - card->reg_base) / PEAK_PCI_CHAN_SIZE;
 
 	/* sja1000 register changes control the leds state */
+<<<<<<< HEAD
 	if (port == REG_MOD)
+=======
+	if (port == SJA1000_MOD)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (val) {
 		case MOD_RM:
 			/* Reset Mode: set led on */
@@ -413,7 +543,11 @@ static void peak_pciec_write_reg(const struct sja1000_priv *priv,
 	peak_pci_write_reg(priv, port, val);
 }
 
+<<<<<<< HEAD
 static struct i2c_algo_bit_data peak_pciec_i2c_bit_ops = {
+=======
+static const struct i2c_algo_bit_data peak_pciec_i2c_bit_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setsda	= pita_setsda,
 	.setscl	= pita_setscl,
 	.getsda	= pita_getsda,
@@ -441,12 +575,18 @@ static int peak_pciec_probe(struct pci_dev *pdev, struct net_device *dev)
 	/* channel is the first one: do the init part */
 	} else {
 		/* create the bit banging I2C adapter structure */
+<<<<<<< HEAD
 		card = kzalloc(sizeof(struct peak_pciec_card), GFP_KERNEL);
 		if (!card) {
 			dev_err(&pdev->dev,
 				 "failed allocating memory for i2c chip\n");
 			return -ENOMEM;
 		}
+=======
+		card = kzalloc(sizeof(*card), GFP_KERNEL);
+		if (!card)
+			return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		card->cfg_base = chan->cfg_base;
 		card->reg_base = priv->reg_base;
@@ -454,7 +594,11 @@ static int peak_pciec_probe(struct pci_dev *pdev, struct net_device *dev)
 		card->led_chip.owner = THIS_MODULE;
 		card->led_chip.dev.parent = &pdev->dev;
 		card->led_chip.algo_data = &card->i2c_bit;
+<<<<<<< HEAD
 		strncpy(card->led_chip.name, "peak_i2c",
+=======
+		strscpy(card->led_chip.name, "peak_i2c",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(card->led_chip.name));
 
 		card->i2c_bit = peak_pciec_i2c_bit_ops;
@@ -507,9 +651,13 @@ static void peak_pciec_remove(struct peak_pciec_card *card)
 
 #else /* CONFIG_CAN_PEAK_PCIEC */
 
+<<<<<<< HEAD
 /*
  * Placebo functions when PCAN-ExpressCard support is not selected
  */
+=======
+/* Placebo functions when PCAN-ExpressCard support is not selected */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int peak_pciec_probe(struct pci_dev *pdev, struct net_device *dev)
 {
 	return -ENODEV;
@@ -542,8 +690,12 @@ static void peak_pci_post_irq(const struct sja1000_priv *priv)
 		writew(chan->icr_mask, chan->cfg_base + PITA_ICR);
 }
 
+<<<<<<< HEAD
 static int __devinit peak_pci_probe(struct pci_dev *pdev,
 				    const struct pci_device_id *ent)
+=======
+static int peak_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sja1000_priv *priv;
 	struct peak_pci_chan *chan;
@@ -551,6 +703,10 @@ static int __devinit peak_pci_probe(struct pci_dev *pdev,
 	void __iomem *cfg_base, *reg_base;
 	u16 sub_sys_id, icr;
 	int i, err, channels;
+<<<<<<< HEAD
+=======
+	char fw_str[14] = "";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = pci_enable_device(pdev);
 	if (err)
@@ -583,12 +739,20 @@ static int __devinit peak_pci_probe(struct pci_dev *pdev,
 	cfg_base = pci_iomap(pdev, 0, PEAK_PCI_CFG_SIZE);
 	if (!cfg_base) {
 		dev_err(&pdev->dev, "failed to map PCI resource #0\n");
+<<<<<<< HEAD
+=======
+		err = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failure_release_regions;
 	}
 
 	reg_base = pci_iomap(pdev, 1, PEAK_PCI_CHAN_SIZE * channels);
 	if (!reg_base) {
 		dev_err(&pdev->dev, "failed to map PCI resource #1\n");
+<<<<<<< HEAD
+=======
+		err = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failure_unmap_cfg_base;
 	}
 
@@ -598,10 +762,32 @@ static int __devinit peak_pci_probe(struct pci_dev *pdev,
 	writeb(0x00, cfg_base + PITA_GPIOICR);
 	/* Toggle reset */
 	writeb(0x05, cfg_base + PITA_MISC + 3);
+<<<<<<< HEAD
 	mdelay(5);
 	/* Leave parport mux mode */
 	writeb(0x04, cfg_base + PITA_MISC + 3);
 
+=======
+	usleep_range(5000, 6000);
+	/* Leave parport mux mode */
+	writeb(0x04, cfg_base + PITA_MISC + 3);
+
+	/* FPGA equipped card if not 0 */
+	if (readl(cfg_base + PEAK_VER_REG1)) {
+		/* FPGA card: display version of the running firmware */
+		u32 fw_ver = readl(cfg_base + PEAK_VER_REG2);
+
+		snprintf(fw_str, sizeof(fw_str), " FW v%u.%u.%u",
+			 (fw_ver >> 12) & 0xf,
+			 (fw_ver >> 8) & 0xf,
+			 (fw_ver >> 4) & 0xf);
+	}
+
+	/* Display commercial name (and, eventually, FW version) of the card */
+	dev_info(&pdev->dev, "%ux CAN %s%s\n",
+		 channels, (const char *)ent->driver_data, fw_str);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	icr = readw(cfg_base + PITA_ICR + 2);
 
 	for (i = 0; i < channels; i++) {
@@ -636,17 +822,30 @@ static int __devinit peak_pci_probe(struct pci_dev *pdev,
 		icr |= chan->icr_mask;
 
 		SET_NETDEV_DEV(dev, &pdev->dev);
+<<<<<<< HEAD
+=======
+		dev->dev_id = i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Create chain of SJA1000 devices */
 		chan->prev_dev = pci_get_drvdata(pdev);
 		pci_set_drvdata(pdev, dev);
 
+<<<<<<< HEAD
 		/*
 		 * PCAN-ExpressCard needs some additional i2c init.
 		 * This must be done *before* register_sja1000dev() but
 		 * *after* devices linkage
 		 */
 		if (pdev->device == PEAK_PCIEC_DEVICE_ID) {
+=======
+		/* PCAN-ExpressCard needs some additional i2c init.
+		 * This must be done *before* register_sja1000dev() but
+		 * *after* devices linkage
+		 */
+		if (pdev->device == PEAK_PCIEC_DEVICE_ID ||
+		    pdev->device == PEAK_PCIEC34_DEVICE_ID) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = peak_pciec_probe(pdev, dev);
 			if (err) {
 				dev_err(&pdev->dev,
@@ -705,10 +904,21 @@ failure_release_regions:
 failure_disable_pci:
 	pci_disable_device(pdev);
 
+<<<<<<< HEAD
 	return err;
 }
 
 static void __devexit peak_pci_remove(struct pci_dev *pdev)
+=======
+	/* pci_xxx_config_word() return positive PCIBIOS_xxx error codes while
+	 * the probe() function must return a negative errno in case of failure
+	 * (err is unchanged if negative)
+	 */
+	return pcibios_err_to_errno(err);
+}
+
+static void peak_pci_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev); /* Last device */
 	struct sja1000_priv *priv = netdev_priv(dev);
@@ -724,16 +934,27 @@ static void __devexit peak_pci_remove(struct pci_dev *pdev)
 		struct net_device *prev_dev = chan->prev_dev;
 
 		dev_info(&pdev->dev, "removing device %s\n", dev->name);
+<<<<<<< HEAD
+=======
+		/* do that only for first channel */
+		if (!prev_dev && chan->pciec_card)
+			peak_pciec_remove(chan->pciec_card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unregister_sja1000dev(dev);
 		free_sja1000dev(dev);
 		dev = prev_dev;
 
+<<<<<<< HEAD
 		if (!dev) {
 			/* do that only for first channel */
 			if (chan->pciec_card)
 				peak_pciec_remove(chan->pciec_card);
 			break;
 		}
+=======
+		if (!dev)
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv = netdev_priv(dev);
 		chan = priv->priv;
 	}
@@ -742,14 +963,18 @@ static void __devexit peak_pci_remove(struct pci_dev *pdev)
 	pci_iounmap(pdev, cfg_base);
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pci_driver peak_pci_driver = {
 	.name = DRV_NAME,
 	.id_table = peak_pci_tbl,
 	.probe = peak_pci_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(peak_pci_remove),
 };
 
@@ -764,3 +989,9 @@ static void __exit peak_pci_exit(void)
 	pci_unregister_driver(&peak_pci_driver);
 }
 module_exit(peak_pci_exit);
+=======
+	.remove = peak_pci_remove,
+};
+
+module_pci_driver(peak_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

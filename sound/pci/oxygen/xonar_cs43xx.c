@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * card driver for models with CS4398/CS4362A DACs (Xonar D1/DX)
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
+<<<<<<< HEAD
  *
  *
  *  This driver is free software; you can redistribute it and/or modify
@@ -14,6 +19,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this driver; if not, see <http://www.gnu.org/licenses/>.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -431,8 +438,13 @@ static const struct oxygen_model model_xonar_d1 = {
 	.adc_i2s_format = OXYGEN_I2S_FORMAT_LJUST,
 };
 
+<<<<<<< HEAD
 int __devinit get_xonar_cs43xx_model(struct oxygen *chip,
 				     const struct pci_device_id *id)
+=======
+int get_xonar_cs43xx_model(struct oxygen *chip,
+			   const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (id->subdevice) {
 	case 0x834f:

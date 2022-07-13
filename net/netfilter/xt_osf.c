@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2003+ Evgeniy Polyakov <zbr@ioremap.net>
  *
@@ -15,11 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2003+ Evgeniy Polyakov <zbr@ioremap.net>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/kernel.h>
 
+<<<<<<< HEAD
+=======
+#include <linux/capability.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/if.h>
 #include <linux/inetdevice.h>
 #include <linux/ip.h>
@@ -37,6 +47,7 @@
 #include <net/netfilter/nf_log.h>
 #include <linux/netfilter/xt_osf.h>
 
+<<<<<<< HEAD
 struct xt_osf_finger {
 	struct rcu_head			rcu_head;
 	struct list_head		finger_entry;
@@ -350,6 +361,13 @@ xt_osf_match_packet(const struct sk_buff *skb, struct xt_action_param *p)
 		fmatch = FMATCH_OK;
 
 	return fmatch == FMATCH_OK;
+=======
+static bool
+xt_osf_match_packet(const struct sk_buff *skb, struct xt_action_param *p)
+{
+	return nf_osf_match(skb, xt_family(p), xt_hooknum(p), xt_in(p),
+			    xt_out(p), p->matchinfo, xt_net(p), nf_osf_fingers);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xt_match xt_osf_match = {
@@ -367,6 +385,7 @@ static struct xt_match xt_osf_match = {
 
 static int __init xt_osf_init(void)
 {
+<<<<<<< HEAD
 	int err = -EINVAL;
 	int i;
 
@@ -378,11 +397,15 @@ static int __init xt_osf_init(void)
 		pr_err("Failed to register OSF nsfnetlink helper (%d)\n", err);
 		goto err_out_exit;
 	}
+=======
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = xt_register_match(&xt_osf_match);
 	if (err) {
 		pr_err("Failed to register OS fingerprint "
 		       "matching module (%d)\n", err);
+<<<<<<< HEAD
 		goto err_out_remove;
 	}
 
@@ -392,10 +415,17 @@ err_out_remove:
 	nfnetlink_subsys_unregister(&xt_osf_nfnetlink);
 err_out_exit:
 	return err;
+=======
+		return err;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit xt_osf_fini(void)
 {
+<<<<<<< HEAD
 	struct xt_osf_finger *f;
 	int i;
 
@@ -413,6 +443,9 @@ static void __exit xt_osf_fini(void)
 	rcu_read_unlock();
 
 	rcu_barrier();
+=======
+	xt_unregister_match(&xt_osf_match);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(xt_osf_init);
@@ -421,4 +454,9 @@ module_exit(xt_osf_fini);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Evgeniy Polyakov <zbr@ioremap.net>");
 MODULE_DESCRIPTION("Passive OS fingerprint matching.");
+<<<<<<< HEAD
 MODULE_ALIAS_NFNL_SUBSYS(NFNL_SUBSYS_OSF);
+=======
+MODULE_ALIAS("ipt_osf");
+MODULE_ALIAS("ip6t_osf");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

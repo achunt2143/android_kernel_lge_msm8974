@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the kernel character device drivers.
 #
@@ -7,6 +11,7 @@ obj-$(CONFIG_TTY_PRINTK)	+= ttyprintk.o
 obj-y				+= misc.o
 obj-$(CONFIG_ATARI_DSP56K)	+= dsp56k.o
 obj-$(CONFIG_VIRTIO_CONSOLE)	+= virtio_console.o
+<<<<<<< HEAD
 obj-$(CONFIG_RAW_DRIVER)	+= raw.o
 obj-$(CONFIG_SGI_SNSC)		+= snsc.o snsc_event.o
 obj-$(CONFIG_MSPEC)		+= mspec.o
@@ -16,6 +21,10 @@ obj-$(CONFIG_VIOTAPE)		+= viotape.o
 obj-$(CONFIG_IBM_BSR)		+= bsr.o
 obj-$(CONFIG_SGI_MBCS)		+= mbcs.o
 obj-$(CONFIG_BFIN_OTP)		+= bfin-otp.o
+=======
+obj-$(CONFIG_UV_MMTIMER)	+= uv_mmtimer.o
+obj-$(CONFIG_IBM_BSR)		+= bsr.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_PRINTER)		+= lp.o
 
@@ -24,6 +33,7 @@ obj-$(CONFIG_APM_EMULATION)	+= apm-emulation.o
 obj-$(CONFIG_DTLK)		+= dtlk.o
 obj-$(CONFIG_APPLICOM)		+= applicom.o
 obj-$(CONFIG_SONYPI)		+= sonypi.o
+<<<<<<< HEAD
 obj-$(CONFIG_RTC)		+= rtc.o
 obj-$(CONFIG_HPET)		+= hpet.o
 obj-$(CONFIG_GEN_RTC)		+= genrtc.o
@@ -37,6 +47,12 @@ else
 endif
 obj-$(CONFIG_TOSHIBA)		+= toshiba.o
 obj-$(CONFIG_I8K)		+= i8k.o
+=======
+obj-$(CONFIG_HPET)		+= hpet.o
+obj-$(CONFIG_XILINX_HWICAP)	+= xilinx_hwicap/
+obj-$(CONFIG_NVRAM)		+= nvram.o
+obj-$(CONFIG_TOSHIBA)		+= toshiba.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_DS1620)		+= ds1620.o
 obj-$(CONFIG_HW_RANDOM)		+= hw_random/
 obj-$(CONFIG_PPDEV)		+= ppdev.o
@@ -45,6 +61,7 @@ obj-$(CONFIG_NWFLASH)		+= nwflash.o
 obj-$(CONFIG_SCx200_GPIO)	+= scx200_gpio.o
 obj-$(CONFIG_PC8736x_GPIO)	+= pc8736x_gpio.o
 obj-$(CONFIG_NSC_GPIO)		+= nsc_gpio.o
+<<<<<<< HEAD
 obj-$(CONFIG_GPIO_TB0219)	+= tb0219.o
 obj-$(CONFIG_TELCLOCK)		+= tlclk.o
 
@@ -52,10 +69,17 @@ obj-$(CONFIG_MWAVE)		+= mwave/
 obj-$(CONFIG_AGP)		+= agp/
 obj-$(CONFIG_PCMCIA)		+= pcmcia/
 obj-$(CONFIG_IPMI_HANDLER)	+= ipmi/
+=======
+obj-$(CONFIG_TELCLOCK)		+= tlclk.o
+
+obj-$(CONFIG_MWAVE)		+= mwave/
+obj-y				+= agp/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_HANGCHECK_TIMER)	+= hangcheck-timer.o
 obj-$(CONFIG_TCG_TPM)		+= tpm/
 
+<<<<<<< HEAD
 obj-$(CONFIG_DCC_TTY)		+= dcc_tty.o
 obj-$(CONFIG_PS3_FLASH)		+= ps3flash.o
 obj-$(CONFIG_RAMOOPS)		+= ramoops.o
@@ -69,3 +93,10 @@ obj-$(CONFIG_DIAG_CHAR)		+= diag/
 obj-$(CONFIG_MSM_ADSPRPC)       += adsprpc.o
 obj-$(CONFIG_MSM_RDBG)       += rdbg.o
 obj-$(CONFIG_LGE_DDM_TTY) 	+= lg_ddm_tty.o
+=======
+obj-$(CONFIG_PS3_FLASH)		+= ps3flash.o
+
+obj-$(CONFIG_XILLYBUS_CLASS)	+= xillybus/
+obj-$(CONFIG_POWERNV_OP_PANEL)	+= powernv-op-panel.o
+obj-$(CONFIG_ADI)		+= adi.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

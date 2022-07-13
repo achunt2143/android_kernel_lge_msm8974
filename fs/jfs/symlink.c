@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) Christoph Hellwig, 2001-2002
  *
@@ -18,10 +19,19 @@
 
 #include <linux/fs.h>
 #include <linux/namei.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *   Copyright (C) Christoph Hellwig, 2001-2002
+ */
+
+#include <linux/fs.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "jfs_incore.h"
 #include "jfs_inode.h"
 #include "jfs_xattr.h"
 
+<<<<<<< HEAD
 static void *jfs_follow_link(struct dentry *dentry, struct nameidata *nd)
 {
 	char *s = JFS_IP(dentry->d_inode)->i_inline;
@@ -48,5 +58,17 @@ const struct inode_operations jfs_symlink_inode_operations = {
 	.getxattr	= jfs_getxattr,
 	.listxattr	= jfs_listxattr,
 	.removexattr	= jfs_removexattr,
+=======
+const struct inode_operations jfs_fast_symlink_inode_operations = {
+	.get_link	= simple_get_link,
+	.setattr	= jfs_setattr,
+	.listxattr	= jfs_listxattr,
+};
+
+const struct inode_operations jfs_symlink_inode_operations = {
+	.get_link	= page_get_link,
+	.setattr	= jfs_setattr,
+	.listxattr	= jfs_listxattr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 

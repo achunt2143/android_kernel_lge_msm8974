@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sony Programmable I/O Control Device driver for VAIO
  *
@@ -16,6 +20,7 @@
  * Copyright (C) 2000 Andrew Tridgell <tridge@valinux.com>
  *
  * Earlier work by Werner Almesberger, Paul `Rusty' Russell and Paul Mackerras.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -143,6 +148,14 @@
 #define SONYPI_IOCGTEMP		_IOR('v', 12, __u8)
 
 #ifdef __KERNEL__
+=======
+ */
+#ifndef _SONYPI_H_
+#define _SONYPI_H_
+
+#include <uapi/linux/sonypi.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* used only for communication between v4l and sonypi */
 
@@ -166,6 +179,9 @@
 #define SONYPI_COMMAND_GETCAMERAROMVERSION	18	/* obsolete */
 #define SONYPI_COMMAND_GETCAMERAREVISION	19	/* obsolete */
 
+<<<<<<< HEAD
 #endif				/* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* _SONYPI_H_ */

@@ -240,7 +240,11 @@ static void set_addr_filter(struct cmac *mac, int idx, const u8 * addr)
 }
 
 /* Set one of the station's unicast MAC addresses. */
+<<<<<<< HEAD
 int t3_mac_set_address(struct cmac *mac, unsigned int idx, u8 addr[6])
+=======
+int t3_mac_set_address(struct cmac *mac, unsigned int idx, const u8 addr[6])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (idx >= mac->nucast)
 		return -EINVAL;

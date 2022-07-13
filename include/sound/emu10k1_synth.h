@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __EMU10K1_SYNTH_H
 #define __EMU10K1_SYNTH_H
 /*
  *  Defines for the Emu10k1 WaveTable synth
  *
  *  Copyright (C) 2000 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,6 +27,12 @@
 
 #include "emu10k1.h"
 #include "emux_synth.h"
+=======
+ */
+
+#include <sound/emu10k1.h>
+#include <sound/emux_synth.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sequencer device id */
 #define SNDRV_SEQ_DEV_ID_EMU10K1_SYNTH	"emu10k1-synth"

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definitions for talking to the PMU.  The PMU is a microcontroller
  * which controls battery charging and system power on PowerBook 3400
@@ -5,6 +9,7 @@
  *
  * Copyright (C) 1998 Paul Mackerras.
  */
+<<<<<<< HEAD
 
 #ifndef _LINUX_PMU_H
 #define _LINUX_PMU_H
@@ -138,6 +143,16 @@ enum {
 #ifdef __KERNEL__
 
 extern int find_via_pmu(void);
+=======
+#ifndef _LINUX_PMU_H
+#define _LINUX_PMU_H
+
+#include <linux/rtc.h>
+#include <uapi/linux/pmu.h>
+
+
+extern int __init find_via_pmu(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int pmu_request(struct adb_request *req,
 		void (*done)(struct adb_request *), int nbytes, ...);
@@ -161,6 +176,12 @@ static inline void pmu_resume(void)
 
 extern void pmu_enable_irled(int on);
 
+<<<<<<< HEAD
+=======
+extern time64_t pmu_get_time(void);
+extern int pmu_set_rtc_time(struct rtc_time *tm);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void pmu_restart(void);
 extern void pmu_shutdown(void);
 extern void pmu_unlock(void);
@@ -208,6 +229,9 @@ extern int pmu_sys_suspended;
 #define pmu_sys_suspended	0
 #endif
 
+<<<<<<< HEAD
 #endif	/* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_PMU_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # RF switch subsystem configuration
 #
@@ -10,11 +14,14 @@ menuconfig RFKILL
 	  To compile this driver as a module, choose M here: the
 	  module will be called rfkill.
 
+<<<<<<< HEAD
 config RFKILL_PM
 	bool "Power off on suspend"
 	depends on RFKILL && PM
 	default y
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # LED trigger support
 config RFKILL_LEDS
 	bool
@@ -28,6 +35,7 @@ config RFKILL_INPUT
 	depends on INPUT = y || RFKILL = INPUT
 	default y if !EXPERT
 
+<<<<<<< HEAD
 config RFKILL_REGULATOR
 	tristate "Generic rfkill regulator driver"
 	depends on RFKILL || !RFKILL
@@ -47,3 +55,13 @@ config RFKILL_GPIO
 	  If you say yes here you get support of a generic gpio RFKILL
 	  driver. The platform should fill in the appropriate fields in the
 	  rfkill_gpio_platform_data structure and pass that to the driver.
+=======
+config RFKILL_GPIO
+	tristate "GPIO RFKILL driver"
+	depends on RFKILL
+	depends on GPIOLIB || COMPILE_TEST
+	default n
+	help
+	  If you say yes here you get support of a generic gpio RFKILL
+	  driver.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

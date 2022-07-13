@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/ata/sata_fsl.c
  *
@@ -7,16 +11,25 @@
  * Li Yang <leoli@freescale.com>
  *
  * Copyright (c) 2006-2007, 2011-2012 Freescale Semiconductor, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
@@ -24,7 +37,10 @@
 #include <scsi/scsi_cmnd.h>
 #include <linux/libata.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int intr_coalescing_count;
 module_param(intr_coalescing_count, int, S_IRUGO);
@@ -43,7 +59,12 @@ enum {
 	SATA_FSL_MAX_PRD_DIRECT	= 16,	/* Direct PRDT entries */
 
 	SATA_FSL_HOST_FLAGS	= (ATA_FLAG_SATA | ATA_FLAG_PIO_DMA |
+<<<<<<< HEAD
 				ATA_FLAG_PMP | ATA_FLAG_NCQ | ATA_FLAG_AN),
+=======
+				   ATA_FLAG_PMP | ATA_FLAG_NCQ |
+				   ATA_FLAG_AN | ATA_FLAG_NO_LOG_PAGE),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SATA_FSL_MAX_CMDS	= SATA_FSL_QUEUE_DEPTH,
 	SATA_FSL_CMD_HDR_SIZE	= 16,	/* 4 DWORDS */
@@ -123,6 +144,10 @@ enum {
 	ONLINE = (1 << 31),
 	GOING_OFFLINE = (1 << 30),
 	BIST_ERR = (1 << 29),
+<<<<<<< HEAD
+=======
+	CLEAR_ERROR = (1 << 27),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	FATAL_ERR_HC_MASTER_ERR = (1 << 18),
 	FATAL_ERR_PARITY_ERR_TX = (1 << 17),
@@ -143,6 +168,10 @@ enum {
 	    FATAL_ERR_CRC_ERR_RX |
 	    FATAL_ERR_FIFO_OVRFL_TX | FATAL_ERR_FIFO_OVRFL_RX,
 
+<<<<<<< HEAD
+=======
+	INT_ON_DATA_LENGTH_MISMATCH = (1 << 12),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INT_ON_FATAL_ERR = (1 << 5),
 	INT_ON_PHYRDY_CHG = (1 << 4),
 
@@ -221,10 +250,17 @@ enum {
  * 4 Dwords per command slot, command header size ==  64 Dwords.
  */
 struct cmdhdr_tbl_entry {
+<<<<<<< HEAD
 	u32 cda;
 	u32 prde_fis_len;
 	u32 ttl;
 	u32 desc_info;
+=======
+	__le32 cda;
+	__le32 prde_fis_len;
+	__le32 ttl;
+	__le32 desc_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -246,8 +282,15 @@ enum {
 struct command_desc {
 	u8 cfis[8 * 4];
 	u8 sfis[8 * 4];
+<<<<<<< HEAD
 	u8 acmd[4 * 4];
 	u8 fill[4 * 4];
+=======
+	struct_group(cdb,
+		u8 acmd[4 * 4];
+		u8 fill[4 * 4];
+	);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 prdt[SATA_FSL_MAX_PRD_DIRECT * 4];
 	u32 prdt_indirect[(SATA_FSL_MAX_PRD - SATA_FSL_MAX_PRD_DIRECT) * 4];
 };
@@ -257,9 +300,15 @@ struct command_desc {
  */
 
 struct prde {
+<<<<<<< HEAD
 	u32 dba;
 	u8 fill[2 * 4];
 	u32 ddc_and_ext;
+=======
+	__le32 dba;
+	u8 fill[2 * 4];
+	__le32 ddc_and_ext;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -283,6 +332,10 @@ struct sata_fsl_host_priv {
 	int irq;
 	int data_snoop;
 	struct device_attribute intr_coalescing;
+<<<<<<< HEAD
+=======
+	struct device_attribute rx_watermark;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void fsl_sata_set_irq_coalescing(struct ata_host *host,
@@ -290,6 +343,10 @@ static void fsl_sata_set_irq_coalescing(struct ata_host *host,
 {
 	struct sata_fsl_host_priv *host_priv = host->private_data;
 	void __iomem *hcr_base = host_priv->hcr_base;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (count > ICC_MAX_INT_COUNT_THRESHOLD)
 		count = ICC_MAX_INT_COUNT_THRESHOLD;
@@ -302,23 +359,40 @@ static void fsl_sata_set_irq_coalescing(struct ata_host *host,
 			(count > ICC_MIN_INT_COUNT_THRESHOLD))
 		ticks = ICC_SAFE_INT_TICKS;
 
+<<<<<<< HEAD
 	spin_lock(&host->lock);
+=======
+	spin_lock_irqsave(&host->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iowrite32((count << 24 | ticks), hcr_base + ICC);
 
 	intr_coalescing_count = count;
 	intr_coalescing_ticks = ticks;
+<<<<<<< HEAD
 	spin_unlock(&host->lock);
 
 	DPRINTK("intrrupt coalescing, count = 0x%x, ticks = %x\n",
 			intr_coalescing_count, intr_coalescing_ticks);
 	DPRINTK("ICC register status: (hcr base: 0x%x) = 0x%x\n",
 			hcr_base, ioread32(hcr_base + ICC));
+=======
+	spin_unlock_irqrestore(&host->lock, flags);
+
+	dev_dbg(host->dev, "interrupt coalescing, count = 0x%x, ticks = %x\n",
+		intr_coalescing_count, intr_coalescing_ticks);
+	dev_dbg(host->dev, "ICC register status: (hcr base: 0x%p) = 0x%x\n",
+		hcr_base, ioread32(hcr_base + ICC));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t fsl_sata_intr_coalescing_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	return sprintf(buf, "%d	%d\n",
+=======
+	return sysfs_emit(buf, "%u	%u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			intr_coalescing_count, intr_coalescing_ticks);
 }
 
@@ -328,10 +402,15 @@ static ssize_t fsl_sata_intr_coalescing_store(struct device *dev,
 {
 	unsigned int coalescing_count,	coalescing_ticks;
 
+<<<<<<< HEAD
 	if (sscanf(buf, "%d%d",
 				&coalescing_count,
 				&coalescing_ticks) != 2) {
 		printk(KERN_ERR "fsl-sata: wrong parameter format.\n");
+=======
+	if (sscanf(buf, "%u%u", &coalescing_count, &coalescing_ticks) != 2) {
+		dev_err(dev, "fsl-sata: wrong parameter format.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -341,11 +420,59 @@ static ssize_t fsl_sata_intr_coalescing_store(struct device *dev,
 	return strlen(buf);
 }
 
+<<<<<<< HEAD
 static inline unsigned int sata_fsl_tag(unsigned int tag,
+=======
+static ssize_t fsl_sata_rx_watermark_show(struct device *dev,
+		struct device_attribute *attr, char *buf)
+{
+	unsigned int rx_watermark;
+	unsigned long flags;
+	struct ata_host *host = dev_get_drvdata(dev);
+	struct sata_fsl_host_priv *host_priv = host->private_data;
+	void __iomem *csr_base = host_priv->csr_base;
+
+	spin_lock_irqsave(&host->lock, flags);
+	rx_watermark = ioread32(csr_base + TRANSCFG);
+	rx_watermark &= 0x1f;
+	spin_unlock_irqrestore(&host->lock, flags);
+
+	return sysfs_emit(buf, "%u\n", rx_watermark);
+}
+
+static ssize_t fsl_sata_rx_watermark_store(struct device *dev,
+		struct device_attribute *attr,
+		const char *buf, size_t count)
+{
+	unsigned int rx_watermark;
+	unsigned long flags;
+	struct ata_host *host = dev_get_drvdata(dev);
+	struct sata_fsl_host_priv *host_priv = host->private_data;
+	void __iomem *csr_base = host_priv->csr_base;
+	u32 temp;
+
+	if (kstrtouint(buf, 10, &rx_watermark) < 0) {
+		dev_err(dev, "fsl-sata: wrong parameter format.\n");
+		return -EINVAL;
+	}
+
+	spin_lock_irqsave(&host->lock, flags);
+	temp = ioread32(csr_base + TRANSCFG);
+	temp &= 0xffffffe0;
+	iowrite32(temp | rx_watermark, csr_base + TRANSCFG);
+	spin_unlock_irqrestore(&host->lock, flags);
+
+	return strlen(buf);
+}
+
+static inline unsigned int sata_fsl_tag(struct ata_port *ap,
+					unsigned int tag,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					void __iomem *hcr_base)
 {
 	/* We let libATA core do actual (queue) tag allocation */
 
+<<<<<<< HEAD
 	/* all non NCQ/queued commands should have tag#0 */
 	if (ata_tag_internal(tag)) {
 		DPRINTK("mapping internal cmds to tag#0\n");
@@ -354,18 +481,31 @@ static inline unsigned int sata_fsl_tag(unsigned int tag,
 
 	if (unlikely(tag >= SATA_FSL_QUEUE_DEPTH)) {
 		DPRINTK("tag %d invalid : out of range\n", tag);
+=======
+	if (unlikely(tag >= SATA_FSL_QUEUE_DEPTH)) {
+		ata_port_dbg(ap, "tag %d invalid : out of range\n", tag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	if (unlikely((ioread32(hcr_base + CQ)) & (1 << tag))) {
+<<<<<<< HEAD
 		DPRINTK("tag %d invalid : in use!!\n", tag);
+=======
+		ata_port_dbg(ap, "tag %d invalid : in use!!\n", tag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	return tag;
 }
 
+<<<<<<< HEAD
 static void sata_fsl_setup_cmd_hdr_entry(struct sata_fsl_port_priv *pp,
+=======
+static void sata_fsl_setup_cmd_hdr_entry(struct ata_port *ap,
+					 struct sata_fsl_port_priv *pp,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 unsigned int tag, u32 desc_info,
 					 u32 data_xfer_len, u8 num_prde,
 					 u8 fis_len)
@@ -383,11 +523,19 @@ static void sata_fsl_setup_cmd_hdr_entry(struct sata_fsl_port_priv *pp,
 	pp->cmdslot[tag].ttl = cpu_to_le32(data_xfer_len & ~0x03);
 	pp->cmdslot[tag].desc_info = cpu_to_le32(desc_info | (tag & 0x1F));
 
+<<<<<<< HEAD
 	VPRINTK("cda=0x%x, prde_fis_len=0x%x, ttl=0x%x, di=0x%x\n",
 		pp->cmdslot[tag].cda,
 		pp->cmdslot[tag].prde_fis_len,
 		pp->cmdslot[tag].ttl, pp->cmdslot[tag].desc_info);
 
+=======
+	ata_port_dbg(ap, "cda=0x%x, prde_fis_len=0x%x, ttl=0x%x, di=0x%x\n",
+		     le32_to_cpu(pp->cmdslot[tag].cda),
+		     le32_to_cpu(pp->cmdslot[tag].prde_fis_len),
+		     le32_to_cpu(pp->cmdslot[tag].ttl),
+		     le32_to_cpu(pp->cmdslot[tag].desc_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int sata_fsl_fill_sg(struct ata_queued_cmd *qc, void *cmd_desc,
@@ -409,8 +557,11 @@ static unsigned int sata_fsl_fill_sg(struct ata_queued_cmd *qc, void *cmd_desc,
 	dma_addr_t indirect_ext_segment_paddr;
 	unsigned int si;
 
+<<<<<<< HEAD
 	VPRINTK("SATA FSL : cd = 0x%p, prd = 0x%p\n", cmd_desc, prd);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	indirect_ext_segment_paddr = cmd_desc_paddr +
 	    SATA_FSL_CMD_DESC_OFFSET_TO_PRDT + SATA_FSL_MAX_PRD_DIRECT * 16;
 
@@ -418,9 +569,12 @@ static unsigned int sata_fsl_fill_sg(struct ata_queued_cmd *qc, void *cmd_desc,
 		dma_addr_t sg_addr = sg_dma_address(sg);
 		u32 sg_len = sg_dma_len(sg);
 
+<<<<<<< HEAD
 		VPRINTK("SATA FSL : fill_sg, sg_addr = 0x%llx, sg_len = %d\n",
 			(unsigned long long)sg_addr, sg_len);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* warn if each s/g element is not dword aligned */
 		if (unlikely(sg_addr & 0x03))
 			ata_port_err(qc->ap, "s/g addr unaligned : 0x%llx\n",
@@ -431,7 +585,10 @@ static unsigned int sata_fsl_fill_sg(struct ata_queued_cmd *qc, void *cmd_desc,
 
 		if (num_prde == (SATA_FSL_MAX_PRD_DIRECT - 1) &&
 		    sg_next(sg) != NULL) {
+<<<<<<< HEAD
 			VPRINTK("setting indirect prde\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			prd_ptr_to_indirect_ext = prd;
 			prd->dba = cpu_to_le32(indirect_ext_segment_paddr);
 			indirect_ext_segment_sz = 0;
@@ -443,9 +600,12 @@ static unsigned int sata_fsl_fill_sg(struct ata_queued_cmd *qc, void *cmd_desc,
 		prd->dba = cpu_to_le32(sg_addr);
 		prd->ddc_and_ext = cpu_to_le32(data_snoop | (sg_len & ~0x03));
 
+<<<<<<< HEAD
 		VPRINTK("sg_fill, ttl=%d, dba=0x%x, ddc=0x%x\n",
 			ttl_dwords, prd->dba, prd->ddc_and_ext);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		++num_prde;
 		++prd;
 		if (prd_ptr_to_indirect_ext)
@@ -464,13 +624,21 @@ static unsigned int sata_fsl_fill_sg(struct ata_queued_cmd *qc, void *cmd_desc,
 	return num_prde;
 }
 
+<<<<<<< HEAD
 static void sata_fsl_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors sata_fsl_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_port *ap = qc->ap;
 	struct sata_fsl_port_priv *pp = ap->private_data;
 	struct sata_fsl_host_priv *host_priv = ap->host->private_data;
 	void __iomem *hcr_base = host_priv->hcr_base;
+<<<<<<< HEAD
 	unsigned int tag = sata_fsl_tag(qc->tag, hcr_base);
+=======
+	unsigned int tag = sata_fsl_tag(ap, qc->hw_tag, hcr_base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct command_desc *cd;
 	u32 desc_info = CMD_DESC_RES | CMD_DESC_SNOOP_ENABLE;
 	u32 num_prde = 0;
@@ -482,6 +650,7 @@ static void sata_fsl_qc_prep(struct ata_queued_cmd *qc)
 
 	ata_tf_to_fis(&qc->tf, qc->dev->link->pmp, 1, (u8 *) &cd->cfis);
 
+<<<<<<< HEAD
 	VPRINTK("Dumping cfis : 0x%x, 0x%x, 0x%x\n",
 		cd->cfis[0], cd->cfis[1], cd->cfis[2]);
 
@@ -495,6 +664,13 @@ static void sata_fsl_qc_prep(struct ata_queued_cmd *qc)
 		desc_info |= ATAPI_CMD;
 		memset((void *)&cd->acmd, 0, 32);
 		memcpy((void *)&cd->acmd, qc->cdb, qc->dev->cdb_len);
+=======
+	/* setup "ACMD - atapi command" in cmd. desc. if this is ATAPI cmd */
+	if (ata_is_atapi(qc->tf.protocol)) {
+		desc_info |= ATAPI_CMD;
+		memset(&cd->cdb, 0, sizeof(cd->cdb));
+		memcpy(&cd->cdb, qc->cdb, qc->dev->cdb_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (qc->flags & ATA_QCFLAG_DMAMAP)
@@ -505,11 +681,21 @@ static void sata_fsl_qc_prep(struct ata_queued_cmd *qc)
 	if (qc->tf.protocol == ATA_PROT_NCQ)
 		desc_info |= FPDMA_QUEUED_CMD;
 
+<<<<<<< HEAD
 	sata_fsl_setup_cmd_hdr_entry(pp, tag, desc_info, ttl_dwords,
 				     num_prde, 5);
 
 	VPRINTK("SATA FSL : xx_qc_prep, di = 0x%x, ttl = %d, num_prde = %d\n",
 		desc_info, ttl_dwords, num_prde);
+=======
+	sata_fsl_setup_cmd_hdr_entry(ap, pp, tag, desc_info, ttl_dwords,
+				     num_prde, 5);
+
+	ata_port_dbg(ap, "SATA FSL : di = 0x%x, ttl = %d, num_prde = %d\n",
+		desc_info, ttl_dwords, num_prde);
+
+	return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int sata_fsl_qc_issue(struct ata_queued_cmd *qc)
@@ -517,9 +703,15 @@ static unsigned int sata_fsl_qc_issue(struct ata_queued_cmd *qc)
 	struct ata_port *ap = qc->ap;
 	struct sata_fsl_host_priv *host_priv = ap->host->private_data;
 	void __iomem *hcr_base = host_priv->hcr_base;
+<<<<<<< HEAD
 	unsigned int tag = sata_fsl_tag(qc->tag, hcr_base);
 
 	VPRINTK("xx_qc_issue called,CQ=0x%x,CA=0x%x,CE=0x%x,CC=0x%x\n",
+=======
+	unsigned int tag = sata_fsl_tag(ap, qc->hw_tag, hcr_base);
+
+	ata_port_dbg(ap, "CQ=0x%x,CA=0x%x,CE=0x%x,CC=0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioread32(CQ + hcr_base),
 		ioread32(CA + hcr_base),
 		ioread32(CE + hcr_base), ioread32(CC + hcr_base));
@@ -529,10 +721,17 @@ static unsigned int sata_fsl_qc_issue(struct ata_queued_cmd *qc)
 	/* Simply queue command to the controller/device */
 	iowrite32(1 << tag, CQ + hcr_base);
 
+<<<<<<< HEAD
 	VPRINTK("xx_qc_issue called, tag=%d, CQ=0x%x, CA=0x%x\n",
 		tag, ioread32(CQ + hcr_base), ioread32(CA + hcr_base));
 
 	VPRINTK("CE=0x%x, DE=0x%x, CC=0x%x, CmdStat = 0x%x\n",
+=======
+	ata_port_dbg(ap, "tag=%d, CQ=0x%x, CA=0x%x\n",
+		tag, ioread32(CQ + hcr_base), ioread32(CA + hcr_base));
+
+	ata_port_dbg(ap, "CE=0x%x, DE=0x%x, CC=0x%x, CmdStat = 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioread32(CE + hcr_base),
 		ioread32(DE + hcr_base),
 		ioread32(CC + hcr_base),
@@ -541,18 +740,29 @@ static unsigned int sata_fsl_qc_issue(struct ata_queued_cmd *qc)
 	return 0;
 }
 
+<<<<<<< HEAD
 static bool sata_fsl_qc_fill_rtf(struct ata_queued_cmd *qc)
+=======
+static void sata_fsl_qc_fill_rtf(struct ata_queued_cmd *qc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sata_fsl_port_priv *pp = qc->ap->private_data;
 	struct sata_fsl_host_priv *host_priv = qc->ap->host->private_data;
 	void __iomem *hcr_base = host_priv->hcr_base;
+<<<<<<< HEAD
 	unsigned int tag = sata_fsl_tag(qc->tag, hcr_base);
+=======
+	unsigned int tag = sata_fsl_tag(qc->ap, qc->hw_tag, hcr_base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct command_desc *cd;
 
 	cd = pp->cmdentry + tag;
 
 	ata_tf_from_fis(cd->sfis, &qc->result_tf);
+<<<<<<< HEAD
 	return true;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sata_fsl_scr_write(struct ata_link *link,
@@ -573,7 +783,11 @@ static int sata_fsl_scr_write(struct ata_link *link,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	VPRINTK("xx_scr_write, reg_in = %d\n", sc_reg);
+=======
+	ata_link_dbg(link, "reg_in = %d\n", sc_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iowrite32(val, ssr_base + (sc_reg * 4));
 	return 0;
@@ -597,7 +811,11 @@ static int sata_fsl_scr_read(struct ata_link *link,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	VPRINTK("xx_scr_read, reg_in = %d\n", sc_reg);
+=======
+	ata_link_dbg(link, "reg_in = %d\n", sc_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*val = ioread32(ssr_base + (sc_reg * 4));
 	return 0;
@@ -609,18 +827,30 @@ static void sata_fsl_freeze(struct ata_port *ap)
 	void __iomem *hcr_base = host_priv->hcr_base;
 	u32 temp;
 
+<<<<<<< HEAD
 	VPRINTK("xx_freeze, CQ=0x%x, CA=0x%x, CE=0x%x, DE=0x%x\n",
 		ioread32(CQ + hcr_base),
 		ioread32(CA + hcr_base),
 		ioread32(CE + hcr_base), ioread32(DE + hcr_base));
 	VPRINTK("CmdStat = 0x%x\n",
+=======
+	ata_port_dbg(ap, "CQ=0x%x, CA=0x%x, CE=0x%x, DE=0x%x\n",
+		ioread32(CQ + hcr_base),
+		ioread32(CA + hcr_base),
+		ioread32(CE + hcr_base), ioread32(DE + hcr_base));
+	ata_port_dbg(ap, "CmdStat = 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioread32(host_priv->csr_base + COMMANDSTAT));
 
 	/* disable interrupts on the controller/port */
 	temp = ioread32(hcr_base + HCONTROL);
 	iowrite32((temp & ~0x3F), hcr_base + HCONTROL);
 
+<<<<<<< HEAD
 	VPRINTK("in xx_freeze : HControl = 0x%x, HStatus = 0x%x\n",
+=======
+	ata_port_dbg(ap, "HControl = 0x%x, HStatus = 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioread32(hcr_base + HCONTROL), ioread32(hcr_base + HSTATUS));
 }
 
@@ -633,7 +863,11 @@ static void sata_fsl_thaw(struct ata_port *ap)
 	/* ack. any pending IRQs for this controller/port */
 	temp = ioread32(hcr_base + HSTATUS);
 
+<<<<<<< HEAD
 	VPRINTK("xx_thaw, pending IRQs = 0x%x\n", (temp & 0x3F));
+=======
+	ata_port_dbg(ap, "pending IRQs = 0x%x\n", (temp & 0x3F));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (temp & 0x3F)
 		iowrite32((temp & 0x3F), hcr_base + HSTATUS);
@@ -642,7 +876,11 @@ static void sata_fsl_thaw(struct ata_port *ap)
 	temp = ioread32(hcr_base + HCONTROL);
 	iowrite32((temp | DEFAULT_PORT_IRQ_ENABLE_MASK), hcr_base + HCONTROL);
 
+<<<<<<< HEAD
 	VPRINTK("xx_thaw : HControl = 0x%x, HStatus = 0x%x\n",
+=======
+	ata_port_dbg(ap, "HControl = 0x%x, HStatus = 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioread32(hcr_base + HCONTROL), ioread32(hcr_base + HSTATUS));
 }
 
@@ -692,7 +930,10 @@ static int sata_fsl_port_start(struct ata_port *ap)
 		kfree(pp);
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	memset(mem, 0, SATA_FSL_PORT_PRIV_DMA_SZ);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pp->cmdslot = mem;
 	pp->cmdslot_paddr = mem_dma;
@@ -705,8 +946,14 @@ static int sata_fsl_port_start(struct ata_port *ap)
 
 	ap->private_data = pp;
 
+<<<<<<< HEAD
 	VPRINTK("CHBA = 0x%x, cmdentry_phys = 0x%x\n",
 		pp->cmdslot_paddr, pp->cmdentry_paddr);
+=======
+	ata_port_dbg(ap, "CHBA = 0x%lx, cmdentry_phys = 0x%lx\n",
+		(unsigned long)pp->cmdslot_paddr,
+		(unsigned long)pp->cmdentry_paddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Now, update the CHBA register in host controller cmd register set */
 	iowrite32(pp->cmdslot_paddr & 0xffffffff, hcr_base + CHBA);
@@ -722,6 +969,7 @@ static int sata_fsl_port_start(struct ata_port *ap)
 	temp = ioread32(hcr_base + HCONTROL);
 	iowrite32((temp | HCONTROL_ONLINE_PHY_RST), hcr_base + HCONTROL);
 
+<<<<<<< HEAD
 	VPRINTK("HStatus = 0x%x\n", ioread32(hcr_base + HSTATUS));
 	VPRINTK("HControl = 0x%x\n", ioread32(hcr_base + HCONTROL));
 	VPRINTK("CHBA  = 0x%x\n", ioread32(hcr_base + CHBA));
@@ -739,6 +987,11 @@ static int sata_fsl_port_start(struct ata_port *ap)
 	sata_fsl_scr_read(&ap->link, SCR_CONTROL, &temp);
 	dev_warn(dev, "scr_control, speed limited to %x\n", temp);
 #endif
+=======
+	ata_port_dbg(ap, "HStatus = 0x%x\n", ioread32(hcr_base + HSTATUS));
+	ata_port_dbg(ap, "HControl = 0x%x\n", ioread32(hcr_base + HCONTROL));
+	ata_port_dbg(ap, "CHBA  = 0x%x\n", ioread32(hcr_base + CHBA));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -778,16 +1031,25 @@ static unsigned int sata_fsl_dev_classify(struct ata_port *ap)
 
 	temp = ioread32(hcr_base + SIGNATURE);
 
+<<<<<<< HEAD
 	VPRINTK("raw sig = 0x%x\n", temp);
 	VPRINTK("HStatus = 0x%x\n", ioread32(hcr_base + HSTATUS));
 	VPRINTK("HControl = 0x%x\n", ioread32(hcr_base + HCONTROL));
+=======
+	ata_port_dbg(ap, "HStatus = 0x%x\n", ioread32(hcr_base + HSTATUS));
+	ata_port_dbg(ap, "HControl = 0x%x\n", ioread32(hcr_base + HCONTROL));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tf.lbah = (temp >> 24) & 0xff;
 	tf.lbam = (temp >> 16) & 0xff;
 	tf.lbal = (temp >> 8) & 0xff;
 	tf.nsect = temp & 0xff;
 
+<<<<<<< HEAD
 	return ata_dev_classify(&tf);
+=======
+	return ata_port_classify(ap, &tf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sata_fsl_hardreset(struct ata_link *link, unsigned int *class,
@@ -800,8 +1062,11 @@ static int sata_fsl_hardreset(struct ata_link *link, unsigned int *class,
 	int i = 0;
 	unsigned long start_jiffies;
 
+<<<<<<< HEAD
 	DPRINTK("in xx_hardreset\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 try_offline_again:
 	/*
 	 * Force host controller to go off-line, aborting current operations
@@ -827,15 +1092,27 @@ try_offline_again:
 			goto try_offline_again;
 	}
 
+<<<<<<< HEAD
 	DPRINTK("hardreset, controller off-lined\n");
 	VPRINTK("HStatus = 0x%x\n", ioread32(hcr_base + HSTATUS));
 	VPRINTK("HControl = 0x%x\n", ioread32(hcr_base + HCONTROL));
+=======
+	ata_port_dbg(ap, "hardreset, controller off-lined\n"
+		     "HStatus = 0x%x HControl = 0x%x\n",
+		     ioread32(hcr_base + HSTATUS),
+		     ioread32(hcr_base + HCONTROL));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * PHY reset should remain asserted for atleast 1ms
 	 */
 	ata_msleep(ap, 1);
 
+<<<<<<< HEAD
+=======
+	sata_set_spd(link);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Now, bring the host controller online again, this can take time
 	 * as PHY reset and communication establishment, 1st D2H FIS and
@@ -855,9 +1132,16 @@ try_offline_again:
 		goto err;
 	}
 
+<<<<<<< HEAD
 	DPRINTK("hardreset, controller off-lined & on-lined\n");
 	VPRINTK("HStatus = 0x%x\n", ioread32(hcr_base + HSTATUS));
 	VPRINTK("HControl = 0x%x\n", ioread32(hcr_base + HCONTROL));
+=======
+	ata_port_dbg(ap, "controller off-lined & on-lined\n"
+		     "HStatus = 0x%x HControl = 0x%x\n",
+		     ioread32(hcr_base + HSTATUS),
+		     ioread32(hcr_base + HCONTROL));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * First, wait for the PHYRDY change to occur before waiting for
@@ -914,10 +1198,14 @@ static int sata_fsl_softreset(struct ata_link *link, unsigned int *class,
 	u8 *cfis;
 	u32 Serror;
 
+<<<<<<< HEAD
 	DPRINTK("in xx_softreset\n");
 
 	if (ata_link_offline(link)) {
 		DPRINTK("PHY reports no device\n");
+=======
+	if (ata_link_offline(link)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*class = ATA_DEV_NONE;
 		return 0;
 	}
@@ -930,19 +1218,30 @@ static int sata_fsl_softreset(struct ata_link *link, unsigned int *class,
 	 * reached here, we can send a command to the target device
 	 */
 
+<<<<<<< HEAD
 	DPRINTK("Sending SRST/device reset\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ata_tf_init(link->device, &tf);
 	cfis = (u8 *) &pp->cmdentry->cfis;
 
 	/* device reset/SRST is a control register update FIS, uses tag0 */
+<<<<<<< HEAD
 	sata_fsl_setup_cmd_hdr_entry(pp, 0,
+=======
+	sata_fsl_setup_cmd_hdr_entry(ap, pp, 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SRST_CMD | CMD_DESC_RES | CMD_DESC_SNOOP_ENABLE, 0, 0, 5);
 
 	tf.ctl |= ATA_SRST;	/* setup SRST bit in taskfile control reg */
 	ata_tf_to_fis(&tf, pmp, 0, cfis);
 
+<<<<<<< HEAD
 	DPRINTK("Dumping cfis : 0x%x, 0x%x, 0x%x, 0x%x\n",
+=======
+	ata_port_dbg(ap, "Dumping cfis : 0x%x, 0x%x, 0x%x, 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cfis[0], cfis[1], cfis[2], cfis[3]);
 
 	/*
@@ -950,7 +1249,11 @@ static int sata_fsl_softreset(struct ata_link *link, unsigned int *class,
 	 * other commands are active on the controller/device
 	 */
 
+<<<<<<< HEAD
 	DPRINTK("@Softreset, CQ = 0x%x, CA = 0x%x, CC = 0x%x\n",
+=======
+	ata_port_dbg(ap, "CQ = 0x%x, CA = 0x%x, CC = 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ioread32(CQ + hcr_base),
 		ioread32(CA + hcr_base), ioread32(CC + hcr_base));
 
@@ -963,15 +1266,26 @@ static int sata_fsl_softreset(struct ata_link *link, unsigned int *class,
 	if (temp & 0x1) {
 		ata_port_warn(ap, "ATA_SRST issue failed\n");
 
+<<<<<<< HEAD
 		DPRINTK("Softreset@5000,CQ=0x%x,CA=0x%x,CC=0x%x\n",
+=======
+		ata_port_dbg(ap, "Softreset@5000,CQ=0x%x,CA=0x%x,CC=0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ioread32(CQ + hcr_base),
 			ioread32(CA + hcr_base), ioread32(CC + hcr_base));
 
 		sata_fsl_scr_read(&ap->link, SCR_ERROR, &Serror);
 
+<<<<<<< HEAD
 		DPRINTK("HStatus = 0x%x\n", ioread32(hcr_base + HSTATUS));
 		DPRINTK("HControl = 0x%x\n", ioread32(hcr_base + HCONTROL));
 		DPRINTK("Serror = 0x%x\n", Serror);
+=======
+		ata_port_dbg(ap, "HStatus = 0x%x HControl = 0x%x Serror = 0x%x\n",
+			     ioread32(hcr_base + HSTATUS),
+			     ioread32(hcr_base + HCONTROL),
+			     Serror);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
@@ -985,8 +1299,14 @@ static int sata_fsl_softreset(struct ata_link *link, unsigned int *class,
 	 * using ATA signature D2H register FIS to the host controller.
 	 */
 
+<<<<<<< HEAD
 	sata_fsl_setup_cmd_hdr_entry(pp, 0, CMD_DESC_RES | CMD_DESC_SNOOP_ENABLE,
 				      0, 0, 5);
+=======
+	sata_fsl_setup_cmd_hdr_entry(ap, pp, 0,
+				     CMD_DESC_RES | CMD_DESC_SNOOP_ENABLE,
+				     0, 0, 5);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tf.ctl &= ~ATA_SRST;	/* 2nd H2D Ctl. register FIS */
 	ata_tf_to_fis(&tf, pmp, 0, cfis);
@@ -1003,8 +1323,11 @@ static int sata_fsl_softreset(struct ata_link *link, unsigned int *class,
 	 */
 	iowrite32(0x01, CC + hcr_base);	/* We know it will be cmd#0 always */
 
+<<<<<<< HEAD
 	DPRINTK("SATA FSL : Now checking device signature\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*class = ATA_DEV_NONE;
 
 	/* Verify if SStatus indicates device presence */
@@ -1018,9 +1341,14 @@ static int sata_fsl_softreset(struct ata_link *link, unsigned int *class,
 
 		*class = sata_fsl_dev_classify(ap);
 
+<<<<<<< HEAD
 		DPRINTK("class = %d\n", *class);
 		VPRINTK("ccreg = 0x%x\n", ioread32(hcr_base + CC));
 		VPRINTK("cereg = 0x%x\n", ioread32(hcr_base + CE));
+=======
+		ata_port_dbg(ap, "ccreg = 0x%x\n", ioread32(hcr_base + CC));
+		ata_port_dbg(ap, "cereg = 0x%x\n", ioread32(hcr_base + CE));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1031,15 +1359,23 @@ err:
 
 static void sata_fsl_error_handler(struct ata_port *ap)
 {
+<<<<<<< HEAD
 
 	DPRINTK("in xx_error_handler\n");
 	sata_pmp_error_handler(ap);
 
+=======
+	sata_pmp_error_handler(ap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sata_fsl_post_internal_cmd(struct ata_queued_cmd *qc)
 {
+<<<<<<< HEAD
 	if (qc->flags & ATA_QCFLAG_FAILED)
+=======
+	if (qc->flags & ATA_QCFLAG_EH)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qc->err_mask |= AC_ERR_OTHER;
 
 	if (qc->err_mask) {
@@ -1075,7 +1411,11 @@ static void sata_fsl_error_intr(struct ata_port *ap)
 	if (unlikely(SError & 0xFFFF0000))
 		sata_fsl_scr_write(&ap->link, SCR_ERROR, SError);
 
+<<<<<<< HEAD
 	DPRINTK("error_intr,hStat=0x%x,CE=0x%x,DE =0x%x,SErr=0x%x\n",
+=======
+	ata_port_dbg(ap, "hStat=0x%x,CE=0x%x,DE =0x%x,SErr=0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hstatus, cereg, ioread32(hcr_base + DE), SError);
 
 	/* handle fatal errors */
@@ -1092,7 +1432,11 @@ static void sata_fsl_error_intr(struct ata_port *ap)
 
 	/* Handle PHYRDY change notification */
 	if (hstatus & INT_ON_PHYRDY_CHG) {
+<<<<<<< HEAD
 		DPRINTK("SATA FSL: PHYRDY change indication\n");
+=======
+		ata_port_dbg(ap, "PHYRDY change indication\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Setup a soft-reset EH action */
 		ata_ehi_hotplugged(ehi);
@@ -1113,7 +1457,11 @@ static void sata_fsl_error_intr(struct ata_port *ap)
 		 */
 		abort = 1;
 
+<<<<<<< HEAD
 		DPRINTK("single device error, CE=0x%x, DE=0x%x\n",
+=======
+		ata_port_dbg(ap, "single device error, CE=0x%x, DE=0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ioread32(hcr_base + CE), ioread32(hcr_base + DE));
 
 		/* find out the offending link and qc */
@@ -1181,11 +1529,17 @@ static void sata_fsl_host_intr(struct ata_port *ap)
 	u32 hstatus, done_mask = 0;
 	struct ata_queued_cmd *qc;
 	u32 SError;
+<<<<<<< HEAD
+=======
+	u32 tag;
+	u32 status_mask = INT_ON_ERROR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hstatus = ioread32(hcr_base + HSTATUS);
 
 	sata_fsl_scr_read(&ap->link, SCR_ERROR, &SError);
 
+<<<<<<< HEAD
 	if (unlikely(SError & 0xFFFF0000)) {
 		DPRINTK("serror @host_intr : 0x%x\n", SError);
 		sata_fsl_error_intr(ap);
@@ -1193,15 +1547,58 @@ static void sata_fsl_host_intr(struct ata_port *ap)
 
 	if (unlikely(hstatus & INT_ON_ERROR)) {
 		DPRINTK("error interrupt!!\n");
+=======
+	/* Read command completed register */
+	done_mask = ioread32(hcr_base + CC);
+
+	/* Workaround for data length mismatch errata */
+	if (unlikely(hstatus & INT_ON_DATA_LENGTH_MISMATCH)) {
+		ata_qc_for_each_with_internal(ap, qc, tag) {
+			if (qc && ata_is_atapi(qc->tf.protocol)) {
+				u32 hcontrol;
+				/* Set HControl[27] to clear error registers */
+				hcontrol = ioread32(hcr_base + HCONTROL);
+				iowrite32(hcontrol | CLEAR_ERROR,
+						hcr_base + HCONTROL);
+
+				/* Clear HControl[27] */
+				iowrite32(hcontrol & ~CLEAR_ERROR,
+						hcr_base + HCONTROL);
+
+				/* Clear SError[E] bit */
+				sata_fsl_scr_write(&ap->link, SCR_ERROR,
+						SError);
+
+				/* Ignore fatal error and device error */
+				status_mask &= ~(INT_ON_SINGL_DEVICE_ERR
+						| INT_ON_FATAL_ERR);
+				break;
+			}
+		}
+	}
+
+	if (unlikely(SError & 0xFFFF0000)) {
+		ata_port_dbg(ap, "serror @host_intr : 0x%x\n", SError);
+		sata_fsl_error_intr(ap);
+	}
+
+	if (unlikely(hstatus & status_mask)) {
+		ata_port_dbg(ap, "error interrupt!!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sata_fsl_error_intr(ap);
 		return;
 	}
 
+<<<<<<< HEAD
 	/* Read command completed register */
 	done_mask = ioread32(hcr_base + CC);
 
 	VPRINTK("Status of all queues :\n");
 	VPRINTK("done_mask/CC = 0x%x, CA = 0x%x, CE=0x%x,CQ=0x%x,apqa=0x%x\n",
+=======
+	ata_port_dbg(ap, "Status of all queues :\n");
+	ata_port_dbg(ap, "done_mask/CC = 0x%x, CA = 0x%x, CE=0x%x,CQ=0x%x,apqa=0x%llx\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		done_mask,
 		ioread32(hcr_base + CA),
 		ioread32(hcr_base + CE),
@@ -1213,13 +1610,18 @@ static void sata_fsl_host_intr(struct ata_port *ap)
 		/* clear CC bit, this will also complete the interrupt */
 		iowrite32(done_mask, hcr_base + CC);
 
+<<<<<<< HEAD
 		DPRINTK("Status of all queues :\n");
 		DPRINTK("done_mask/CC = 0x%x, CA = 0x%x, CE=0x%x\n",
+=======
+		ata_port_dbg(ap, "Status of all queues: done_mask/CC = 0x%x, CA = 0x%x, CE=0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			done_mask, ioread32(hcr_base + CA),
 			ioread32(hcr_base + CE));
 
 		for (i = 0; i < SATA_FSL_QUEUE_DEPTH; i++) {
 			if (done_mask & (1 << i))
+<<<<<<< HEAD
 				DPRINTK
 				    ("completing ncq cmd,tag=%d,CC=0x%x,CA=0x%x\n",
 				     i, ioread32(hcr_base + CC),
@@ -1233,6 +1635,20 @@ static void sata_fsl_host_intr(struct ata_port *ap)
 		qc = ata_qc_from_tag(ap, ATA_TAG_INTERNAL);
 
 		DPRINTK("completing non-ncq cmd, CC=0x%x\n",
+=======
+				ata_port_dbg(ap, "completing ncq cmd,tag=%d,CC=0x%x,CA=0x%x\n",
+				     i, ioread32(hcr_base + CC),
+				     ioread32(hcr_base + CA));
+		}
+		ata_qc_complete_multiple(ap, ata_qc_get_active(ap) ^ done_mask);
+		return;
+
+	} else if ((ap->qc_active & (1ULL << ATA_TAG_INTERNAL))) {
+		iowrite32(1, hcr_base + CC);
+		qc = ata_qc_from_tag(ap, ATA_TAG_INTERNAL);
+
+		ata_port_dbg(ap, "completing non-ncq cmd, CC=0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 ioread32(hcr_base + CC));
 
 		if (qc) {
@@ -1240,7 +1656,11 @@ static void sata_fsl_host_intr(struct ata_port *ap)
 		}
 	} else {
 		/* Spurious Interrupt!! */
+<<<<<<< HEAD
 		DPRINTK("spurious interrupt!!, CC = 0x%x\n",
+=======
+		ata_port_dbg(ap, "spurious interrupt!!, CC = 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ioread32(hcr_base + CC));
 		iowrite32(done_mask, hcr_base + CC);
 		return;
@@ -1260,8 +1680,11 @@ static irqreturn_t sata_fsl_interrupt(int irq, void *dev_instance)
 	interrupt_enables = ioread32(hcr_base + HSTATUS);
 	interrupt_enables &= 0x3F;
 
+<<<<<<< HEAD
 	DPRINTK("interrupt status 0x%x\n", interrupt_enables);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!interrupt_enables)
 		return IRQ_NONE;
 
@@ -1314,7 +1737,11 @@ static int sata_fsl_init_controller(struct ata_host *host)
 	iowrite32((temp & ~0x3F), hcr_base + HCONTROL);
 
 	/* Disable interrupt coalescing control(icc), for the moment */
+<<<<<<< HEAD
 	DPRINTK("icc = 0x%x\n", ioread32(hcr_base + ICC));
+=======
+	dev_dbg(host->dev, "icc = 0x%x\n", ioread32(hcr_base + ICC));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iowrite32(0x01000000, hcr_base + ICC);
 
 	/* clear error registers, SError is cleared by libATA  */
@@ -1333,18 +1760,39 @@ static int sata_fsl_init_controller(struct ata_host *host)
 	 * callback, that should also initiate the OOB, COMINIT sequence
 	 */
 
+<<<<<<< HEAD
 	DPRINTK("HStatus = 0x%x\n", ioread32(hcr_base + HSTATUS));
 	DPRINTK("HControl = 0x%x\n", ioread32(hcr_base + HCONTROL));
+=======
+	dev_dbg(host->dev, "HStatus = 0x%x HControl = 0x%x\n",
+		ioread32(hcr_base + HSTATUS), ioread32(hcr_base + HCONTROL));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * scsi mid-layer and libata interface structures
  */
 static struct scsi_host_template sata_fsl_sht = {
 	ATA_NCQ_SHT("sata_fsl"),
 	.can_queue = SATA_FSL_QUEUE_DEPTH,
+=======
+static void sata_fsl_host_stop(struct ata_host *host)
+{
+        struct sata_fsl_host_priv *host_priv = host->private_data;
+
+        iounmap(host_priv->hcr_base);
+        kfree(host_priv);
+}
+
+/*
+ * scsi mid-layer and libata interface structures
+ */
+static const struct scsi_host_template sata_fsl_sht = {
+	ATA_NCQ_SHT_QD("sata_fsl", SATA_FSL_QUEUE_DEPTH),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sg_tablesize = SATA_FSL_MAX_PRD_USABLE,
 	.dma_boundary = ATA_DMA_BOUNDARY,
 };
@@ -1371,6 +1819,11 @@ static struct ata_port_operations sata_fsl_ops = {
 	.port_start = sata_fsl_port_start,
 	.port_stop = sata_fsl_port_stop,
 
+<<<<<<< HEAD
+=======
+	.host_stop      = sata_fsl_host_stop,
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pmp_attach = sata_fsl_pmp_attach,
 	.pmp_detach = sata_fsl_pmp_detach,
 };
@@ -1413,9 +1866,14 @@ static int sata_fsl_probe(struct platform_device *ofdev)
 		iowrite32(temp | TRANSCFG_RX_WATER_MARK, csr_base + TRANSCFG);
 	}
 
+<<<<<<< HEAD
 	DPRINTK("@reset i/o = 0x%x\n", ioread32(csr_base + TRANSCFG));
 	DPRINTK("sizeof(cmd_desc) = %d\n", sizeof(struct command_desc));
 	DPRINTK("sizeof(#define cmd_desc) = %d\n", SATA_FSL_CMD_DESC_SIZE);
+=======
+	dev_dbg(&ofdev->dev, "@reset i/o = 0x%x\n",
+		ioread32(csr_base + TRANSCFG));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host_priv = kzalloc(sizeof(struct sata_fsl_host_priv), GFP_KERNEL);
 	if (!host_priv)
@@ -1425,9 +1883,15 @@ static int sata_fsl_probe(struct platform_device *ofdev)
 	host_priv->ssr_base = ssr_base;
 	host_priv->csr_base = csr_base;
 
+<<<<<<< HEAD
 	irq = irq_of_parse_and_map(ofdev->dev.of_node, 0);
 	if (!irq) {
 		dev_err(&ofdev->dev, "invalid irq from platform\n");
+=======
+	irq = platform_get_irq(ofdev, 0);
+	if (irq < 0) {
+		retval = irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error_exit_with_cleanup;
 	}
 	host_priv->irq = irq;
@@ -1458,8 +1922,11 @@ static int sata_fsl_probe(struct platform_device *ofdev)
 	ata_host_activate(host, irq, sata_fsl_interrupt, SATA_FSL_IRQ_FLAG,
 			  &sata_fsl_sht);
 
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, host);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host_priv->intr_coalescing.show = fsl_sata_intr_coalescing_show;
 	host_priv->intr_coalescing.store = fsl_sata_intr_coalescing_store;
 	sysfs_attr_init(&host_priv->intr_coalescing.attr);
@@ -1469,10 +1936,25 @@ static int sata_fsl_probe(struct platform_device *ofdev)
 	if (retval)
 		goto error_exit_with_cleanup;
 
+<<<<<<< HEAD
+=======
+	host_priv->rx_watermark.show = fsl_sata_rx_watermark_show;
+	host_priv->rx_watermark.store = fsl_sata_rx_watermark_store;
+	sysfs_attr_init(&host_priv->rx_watermark.attr);
+	host_priv->rx_watermark.attr.name = "rx_watermark";
+	host_priv->rx_watermark.attr.mode = S_IRUGO | S_IWUSR;
+	retval = device_create_file(host->dev, &host_priv->rx_watermark);
+	if (retval) {
+		device_remove_file(&ofdev->dev, &host_priv->intr_coalescing);
+		goto error_exit_with_cleanup;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 error_exit_with_cleanup:
 
+<<<<<<< HEAD
 	if (host) {
 		dev_set_drvdata(&ofdev->dev, NULL);
 		ata_host_detach(host);
@@ -1482,10 +1964,19 @@ error_exit_with_cleanup:
 		iounmap(hcr_base);
 	if (host_priv)
 		kfree(host_priv);
+=======
+	if (host)
+		ata_host_detach(host);
+
+	if (hcr_base)
+		iounmap(hcr_base);
+	kfree(host_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
 
+<<<<<<< HEAD
 static int sata_fsl_remove(struct platform_device *ofdev)
 {
 	struct ata_host *host = dev_get_drvdata(&ofdev->dev);
@@ -1509,11 +2000,35 @@ static int sata_fsl_suspend(struct platform_device *op, pm_message_t state)
 {
 	struct ata_host *host = dev_get_drvdata(&op->dev);
 	return ata_host_suspend(host, state);
+=======
+static void sata_fsl_remove(struct platform_device *ofdev)
+{
+	struct ata_host *host = platform_get_drvdata(ofdev);
+	struct sata_fsl_host_priv *host_priv = host->private_data;
+
+	device_remove_file(&ofdev->dev, &host_priv->intr_coalescing);
+	device_remove_file(&ofdev->dev, &host_priv->rx_watermark);
+
+	ata_host_detach(host);
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int sata_fsl_suspend(struct platform_device *op, pm_message_t state)
+{
+	struct ata_host *host = platform_get_drvdata(op);
+
+	ata_host_suspend(host, state);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sata_fsl_resume(struct platform_device *op)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&op->dev);
+=======
+	struct ata_host *host = platform_get_drvdata(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sata_fsl_host_priv *host_priv = host->private_data;
 	int ret;
 	void __iomem *hcr_base = host_priv->hcr_base;
@@ -1540,6 +2055,7 @@ static int sata_fsl_resume(struct platform_device *op)
 }
 #endif
 
+<<<<<<< HEAD
 static struct of_device_id fsl_sata_match[] = {
 	{
 		.compatible = "fsl,pq-sata",
@@ -1548,6 +2064,12 @@ static struct of_device_id fsl_sata_match[] = {
 		.compatible = "fsl,pq-sata-v2",
 	},
 	{},
+=======
+static const struct of_device_id fsl_sata_match[] = {
+	{ .compatible = "fsl,pq-sata", },
+	{ .compatible = "fsl,pq-sata-v2", },
+	{ /* sentinel */ }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 MODULE_DEVICE_TABLE(of, fsl_sata_match);
@@ -1555,12 +2077,20 @@ MODULE_DEVICE_TABLE(of, fsl_sata_match);
 static struct platform_driver fsl_sata_driver = {
 	.driver = {
 		.name = "fsl-sata",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = fsl_sata_match,
 	},
 	.probe		= sata_fsl_probe,
 	.remove		= sata_fsl_remove,
 #ifdef CONFIG_PM
+=======
+		.of_match_table = fsl_sata_match,
+	},
+	.probe		= sata_fsl_probe,
+	.remove_new	= sata_fsl_remove,
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= sata_fsl_suspend,
 	.resume		= sata_fsl_resume,
 #endif

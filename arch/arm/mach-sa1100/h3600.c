@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support for Compaq iPAQ H3600 handheld computer
  *
  * Copyright (c) 2000,1 Compaq Computer Corporation. (Author: Jamey Hicks)
  * Copyright (c) 2009 Dmitry Artamonow <mad_soft@inbox.ru>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -18,7 +25,10 @@
 
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
+<<<<<<< HEAD
 #include <asm/mach/irda.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <mach/h3xxx.h>
 #include <mach/irqs.h>
@@ -28,6 +38,7 @@
 /*
  * helper for sa1100fb
  */
+<<<<<<< HEAD
 static void h3600_lcd_power(int enable)
 {
 	if (gpio_request(H3XXX_EGPIO_LCD_ON, "LCD power")) {
@@ -46,17 +57,50 @@ static void h3600_lcd_power(int enable)
 		pr_err("%s: can't request H3600_EGPIO_LVDD_ON\n", __func__);
 		goto err4;
 	}
+=======
+static struct gpio h3600_lcd_gpio[] = {
+	{ H3XXX_EGPIO_LCD_ON,	GPIOF_OUT_INIT_LOW,	"LCD power" },
+	{ H3600_EGPIO_LCD_PCI,	GPIOF_OUT_INIT_LOW,	"LCD control" },
+	{ H3600_EGPIO_LCD_5V_ON, GPIOF_OUT_INIT_LOW,	"LCD 5v" },
+	{ H3600_EGPIO_LVDD_ON,	GPIOF_OUT_INIT_LOW,	"LCD 9v/-6.5v" },
+};
+
+static bool h3600_lcd_request(void)
+{
+	static bool h3600_lcd_ok;
+	int rc;
+
+	if (h3600_lcd_ok)
+		return true;
+
+	rc = gpio_request_array(h3600_lcd_gpio, ARRAY_SIZE(h3600_lcd_gpio));
+	if (rc)
+		pr_err("%s: can't request GPIOs\n", __func__);
+	else
+		h3600_lcd_ok = true;
+
+	return h3600_lcd_ok;
+}
+
+static void h3600_lcd_power(int enable)
+{
+	if (!h3600_lcd_request())
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gpio_direction_output(H3XXX_EGPIO_LCD_ON, enable);
 	gpio_direction_output(H3600_EGPIO_LCD_PCI, enable);
 	gpio_direction_output(H3600_EGPIO_LCD_5V_ON, enable);
 	gpio_direction_output(H3600_EGPIO_LVDD_ON, enable);
+<<<<<<< HEAD
 
 	gpio_free(H3600_EGPIO_LVDD_ON);
 err4:	gpio_free(H3600_EGPIO_LCD_5V_ON);
 err3:	gpio_free(H3600_EGPIO_LCD_PCI);
 err2:	gpio_free(H3XXX_EGPIO_LCD_ON);
 err1:	return;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct sa1100fb_rgb h3600_rgb_16 = {
@@ -90,6 +134,7 @@ static void __init h3600_map_io(void)
 	h3xxx_map_io();
 }
 
+<<<<<<< HEAD
 /*
  * This turns the IRDA power on or off on the Compaq H3600
  */
@@ -151,6 +196,13 @@ static void __init h3600_mach_init(void)
 
 	sa11x0_register_lcd(&h3600_lcd_info);
 	sa11x0_register_irda(&h3600_irda_data);
+=======
+static void __init h3600_mach_init(void)
+{
+	h3xxx_mach_init();
+
+	sa11x0_register_lcd(&h3600_lcd_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MACHINE_START(H3600, "Compaq iPAQ H3600")
@@ -158,8 +210,14 @@ MACHINE_START(H3600, "Compaq iPAQ H3600")
 	.map_io		= h3600_map_io,
 	.nr_irqs	= SA1100_NR_IRQS,
 	.init_irq	= sa1100_init_irq,
+<<<<<<< HEAD
 	.timer		= &sa1100_timer,
 	.init_machine	= h3600_mach_init,
+=======
+	.init_time	= sa1100_timer_init,
+	.init_machine	= h3600_mach_init,
+	.init_late	= sa11x0_init_late,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= sa11x0_restart,
 MACHINE_END
 

@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 /*
  * rational fractions
  *
  * Copyright (C) 2009 emlix GmbH, Oskar Schirmer <os@emlix.com>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * rational fractions
+ *
+ * Copyright (C) 2009 emlix GmbH, Oskar Schirmer <oskar@scara.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * helper functions when coping with rational numbers,
  * e.g. when calculating optimum numerator/denominator pairs for

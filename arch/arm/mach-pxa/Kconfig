@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 if ARCH_PXA
 
 menu "Intel PXA2xx/PXA3xx Implementations"
@@ -134,6 +135,65 @@ config MACH_CAPC7117
 	bool "Embedian CAPC-7117 evaluation kit based on the MXM-8x10 CoM"
 	select CPU_PXA320
 	select PXA3xx
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+menuconfig ARCH_PXA
+	bool "PXA2xx/PXA3xx-based"
+	depends on ARCH_MULTI_V5
+	depends on CPU_LITTLE_ENDIAN
+	select ARM_CPU_SUSPEND if PM
+	select CLKSRC_PXA
+	select CLKSRC_MMIO
+	select TIMER_OF
+	select CPU_XSCALE if !CPU_XSC3
+	select GPIO_PXA
+	select GPIOLIB
+	select PLAT_PXA
+	help
+	  Support for Intel/Marvell's PXA2xx/PXA3xx processor line.
+
+if ARCH_PXA
+
+config MACH_PXA25X_DT
+	bool "Support PXA25x platforms from device tree"
+	select PINCTRL
+	select POWER_SUPPLY
+	select PXA25x
+	select USE_OF
+	help
+	  Include support for Marvell PXA25x based platforms using
+	  the device tree. Needn't select any other machine while
+	  MACH_PXA25x_DT is enabled.
+
+config MACH_PXA27X_DT
+	bool "Support PXA27x platforms from device tree"
+	select PINCTRL
+	select POWER_SUPPLY
+	select PXA27x
+	select USE_OF
+	help
+	  Include support for Marvell PXA27x based platforms using
+	  the device tree. Needn't select any other machine while
+	  MACH_PXA27X_DT is enabled.
+
+config MACH_PXA3XX_DT
+	bool "Support PXA3xx platforms from device tree"
+	select CPU_PXA300
+	select CPU_PXA310
+	select CPU_PXA320
+	select PINCTRL
+	select POWER_SUPPLY
+	select PXA3xx
+	select USE_OF
+	help
+	  Include support for Marvell PXA3xx based platforms using
+	  the device tree. Needn't select any other machine while
+	  MACH_PXA3XX_DT is enabled.
+
+if ATAGS
+
+comment "Legacy board files"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ARCH_GUMSTIX
 	bool "Gumstix XScale 255 boards"
@@ -154,6 +214,7 @@ config GUMSTIX_AM300EPD
 
 endchoice
 
+<<<<<<< HEAD
 config MACH_INTELMOTE2
 	bool "Intel Mote 2 Platform"
 	select PXA27x
@@ -472,6 +533,12 @@ config PXA_SHARPSL
 	bool "SHARP Zaurus SL-5600, SL-C7xx and SL-Cxx00 Models"
 	select SHARP_SCOOP
 	select SHARP_PARAM
+=======
+config PXA_SHARPSL
+	bool "SHARP Zaurus SL-5600, SL-C7xx and SL-Cxx00 Models"
+	select SHARP_PARAM
+	select SHARP_SCOOP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you intend to run this kernel on a
 	  Sharp Zaurus SL-5600 (Poodle), SL-C700 (Corgi),
@@ -487,6 +554,7 @@ config PXA_SHARPSL_DETECT_MACH_ID
 	  the Zaurus machine ID at run-time. For latest kexec-based
 	  boot loader, this is not necessary.
 
+<<<<<<< HEAD
 config MACH_POODLE
 	bool "Enable Sharp SL-5600 (Poodle) Support"
 	depends on PXA_SHARPSL
@@ -519,6 +587,16 @@ config MACH_AKITA
 	select MACH_SPITZ
 	select I2C
 	select I2C_PXA
+=======
+config MACH_AKITA
+	bool "Enable Sharp SL-1000 (Akita) Support"
+	depends on PXA_SHARPSL
+	select I2C
+	select I2C_PXA
+	select MACH_SPITZ
+	select PXA27x
+	select PXA_SHARP_Cxx00
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MACH_SPITZ
 	bool "Enable Sharp Zaurus SL-3000 (Spitz) Support"
@@ -532,6 +610,7 @@ config MACH_BORZOI
 	select PXA27x
 	select PXA_SHARP_Cxx00
 
+<<<<<<< HEAD
 config MACH_TOSA
 	bool "Enable Sharp SL-6000x (Tosa) Support"
 	depends on PXA_SHARPSL
@@ -620,6 +699,9 @@ config MACH_ZIPIT2
 	select HAVE_PWM
 endif
 endmenu
+=======
+endif # ATAGS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PXA25x
 	bool
@@ -633,12 +715,15 @@ config PXA27x
 	help
 	  Select code specific to PXA27x variants
 
+<<<<<<< HEAD
 config CPU_PXA26x
 	bool
 	select PXA25x
 	help
 	  Select code specific to PXA26x (codename Dalhart)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config PXA3xx
 	bool
 	select CPU_XSC3
@@ -654,7 +739,10 @@ config CPU_PXA300
 config CPU_PXA310
 	bool
 	select CPU_PXA300
+<<<<<<< HEAD
 	select PXA310_ULPI if USB_ULPI
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  PXA310 (codename Monahans-LV)
 
@@ -664,6 +752,7 @@ config CPU_PXA320
 	help
 	  PXA320 (codename Monahans-P)
 
+<<<<<<< HEAD
 config CPU_PXA930
 	bool
 	select PXA3xx
@@ -694,6 +783,8 @@ config PXA_SHARP_C7xx
 	help
 	  Enable support for all Sharp C7xx models
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config PXA_SHARP_Cxx00
 	bool
 	select SHARPSL_PM
@@ -708,6 +799,7 @@ config SHARPSL_PM
 config SHARPSL_PM_MAX1111
 	bool
 	select HWMON
+<<<<<<< HEAD
 	select SPI
 	select SPI_MASTER
 	select SENSORS_MAX1111
@@ -726,5 +818,10 @@ config PXA_SYSTEMS_CPLDS
 	  found on the pxa25x development platform system (Lubbock) and pxa27x
 	  development platform system (Mainstone). This IO board supports the
 	  interrupts handling, ethernet controller, flash chips, etc ...
+=======
+	select SENSORS_MAX1111
+	select SPI
+	select SPI_MASTER
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif

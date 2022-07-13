@@ -1,19 +1,44 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ALSA SoC TLV320AIC3X codec driver
  *
  * Author:      Vladimir Barinov, <vbarinov@embeddedalley.com>
  * Copyright:   (C) 2007 MontaVista Software, Inc., <source@mvista.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _AIC3X_H
 #define _AIC3X_H
 
+<<<<<<< HEAD
 /* AIC3X register space */
 #define AIC3X_CACHEREGNUM		103
+=======
+struct device;
+struct regmap_config;
+
+extern const struct regmap_config aic3x_regmap;
+int aic3x_probe(struct device *dev, struct regmap *regmap, kernel_ulong_t driver_data);
+void aic3x_remove(struct device *dev);
+
+#define AIC3X_MODEL_3X 0
+#define AIC3X_MODEL_33 1
+#define AIC3X_MODEL_3007 2
+#define AIC3X_MODEL_3104 3
+#define AIC3X_MODEL_3106 4
+
+/* AIC3X register space */
+#define AIC3X_CACHEREGNUM		110
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Page select register */
 #define AIC3X_PAGE_SELECT		0
@@ -74,6 +99,11 @@
 #define HPLCOM_CFG			37
 /* Right High Power Output control registers */
 #define HPRCOM_CFG			38
+<<<<<<< HEAD
+=======
+/* High Power Output Stage Control Register */
+#define HPOUT_SC			40
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* DAC Output Switching control registers */
 #define DAC_LINE_MUX			41
 /* High Power Output Driver Pop Reduction registers */
@@ -148,6 +178,20 @@
 #define AIC3X_GPIOB_REG			101
 /* Clock generation control register */
 #define AIC3X_CLKGEN_CTRL_REG		102
+<<<<<<< HEAD
+=======
+/* New AGC registers */
+#define LAGCN_ATTACK			103
+#define LAGCN_DECAY			104
+#define RAGCN_ATTACK			105
+#define RAGCN_DECAY			106
+/* New Programmable ADC Digital Path and I2C Bus Condition Register */
+#define NEW_ADC_DIGITALPATH		107
+/* Passive Analog Signal Bypass Selection During Powerdown Register */
+#define PASSIVE_BYPASS			108
+/* DAC Quiescent Current Adjustment Register */
+#define DAC_ICC_ADJ			109
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Page select register bits */
 #define PAGE0_SELECT		0
@@ -156,6 +200,10 @@
 /* Audio serial data interface control register A bits */
 #define BIT_CLK_MASTER          0x80
 #define WORD_CLK_MASTER         0x40
+<<<<<<< HEAD
+=======
+#define DOUT_TRISTATE		0x20
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Codec Datapath setup register 7 */
 #define FSREF_44100		(1 << 7)
@@ -163,6 +211,13 @@
 #define DUAL_RATE_MODE		((1 << 5) | (1 << 6))
 #define LDAC2LCH		(0x1 << 3)
 #define RDAC2RCH		(0x1 << 1)
+<<<<<<< HEAD
+=======
+#define LDAC2RCH		(0x2 << 3)
+#define RDAC2LCH		(0x2 << 1)
+#define LDAC2MONOMIX		(0x3 << 3)
+#define RDAC2MONOMIX		(0x3 << 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PLL registers bitfields */
 #define PLLP_SHIFT		0
@@ -179,6 +234,17 @@
 #define PLL_CLKIN_SHIFT		4
 #define MCLK_SOURCE		0x0
 #define PLL_CLKDIV_SHIFT	0
+<<<<<<< HEAD
+=======
+#define PLLCLK_IN_MASK		0x30
+#define PLLCLK_IN_SHIFT		4
+#define CLKDIV_IN_MASK		0xc0
+#define CLKDIV_IN_SHIFT		6
+/* clock in source */
+#define CLKIN_MCLK		0
+#define CLKIN_GPIO2		1
+#define CLKIN_BCLK		2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Software reset register bits */
 #define SOFT_RESET		0x80
@@ -213,6 +279,21 @@
 /* Default input volume */
 #define DEFAULT_GAIN    0x20
 
+<<<<<<< HEAD
+=======
+/* MICBIAS Control Register */
+#define MICBIAS_LEVEL_SHIFT	(6)
+#define MICBIAS_LEVEL_MASK	(3 << 6)
+
+/* HPOUT_SC */
+#define HPOUT_SC_OCMV_MASK	(3 << 6)
+#define HPOUT_SC_OCMV_SHIFT	(6)
+#define HPOUT_SC_OCMV_1_35V	0
+#define HPOUT_SC_OCMV_1_5V	1
+#define HPOUT_SC_OCMV_1_65V	2
+#define HPOUT_SC_OCMV_1_8V	3
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* headset detection / button API */
 
 /* The AIC3x supports detection of stereo headsets (GND + left + right signal)
@@ -250,4 +331,50 @@ enum {
 #define AIC3X_BUTTON_DEBOUNCE_SHIFT 	0
 #define AIC3X_BUTTON_DEBOUNCE_MASK	3
 
+<<<<<<< HEAD
+=======
+/* GPIO API */
+enum {
+	AIC3X_GPIO1_FUNC_DISABLED		= 0,
+	AIC3X_GPIO1_FUNC_AUDIO_WORDCLK_ADC	= 1,
+	AIC3X_GPIO1_FUNC_CLOCK_MUX		= 2,
+	AIC3X_GPIO1_FUNC_CLOCK_MUX_DIV2		= 3,
+	AIC3X_GPIO1_FUNC_CLOCK_MUX_DIV4		= 4,
+	AIC3X_GPIO1_FUNC_CLOCK_MUX_DIV8		= 5,
+	AIC3X_GPIO1_FUNC_SHORT_CIRCUIT_IRQ	= 6,
+	AIC3X_GPIO1_FUNC_AGC_NOISE_IRQ		= 7,
+	AIC3X_GPIO1_FUNC_INPUT			= 8,
+	AIC3X_GPIO1_FUNC_OUTPUT			= 9,
+	AIC3X_GPIO1_FUNC_DIGITAL_MIC_MODCLK	= 10,
+	AIC3X_GPIO1_FUNC_AUDIO_WORDCLK		= 11,
+	AIC3X_GPIO1_FUNC_BUTTON_IRQ		= 12,
+	AIC3X_GPIO1_FUNC_HEADSET_DETECT_IRQ	= 13,
+	AIC3X_GPIO1_FUNC_HEADSET_DETECT_OR_BUTTON_IRQ	= 14,
+	AIC3X_GPIO1_FUNC_ALL_IRQ		= 16
+};
+
+enum {
+	AIC3X_GPIO2_FUNC_DISABLED		= 0,
+	AIC3X_GPIO2_FUNC_HEADSET_DETECT_IRQ	= 2,
+	AIC3X_GPIO2_FUNC_INPUT			= 3,
+	AIC3X_GPIO2_FUNC_OUTPUT			= 4,
+	AIC3X_GPIO2_FUNC_DIGITAL_MIC_INPUT	= 5,
+	AIC3X_GPIO2_FUNC_AUDIO_BITCLK		= 8,
+	AIC3X_GPIO2_FUNC_HEADSET_DETECT_OR_BUTTON_IRQ = 9,
+	AIC3X_GPIO2_FUNC_ALL_IRQ		= 10,
+	AIC3X_GPIO2_FUNC_SHORT_CIRCUIT_OR_AGC_IRQ = 11,
+	AIC3X_GPIO2_FUNC_HEADSET_OR_BUTTON_PRESS_OR_SHORT_CIRCUIT_IRQ = 12,
+	AIC3X_GPIO2_FUNC_SHORT_CIRCUIT_IRQ	= 13,
+	AIC3X_GPIO2_FUNC_AGC_NOISE_IRQ		= 14,
+	AIC3X_GPIO2_FUNC_BUTTON_PRESS_IRQ	= 15
+};
+
+enum aic3x_micbias_voltage {
+	AIC3X_MICBIAS_OFF = 0,
+	AIC3X_MICBIAS_2_0V = 1,
+	AIC3X_MICBIAS_2_5V = 2,
+	AIC3X_MICBIAS_AVDDV = 3,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _AIC3X_H */

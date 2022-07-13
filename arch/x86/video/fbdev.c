@@ -6,13 +6,35 @@
  * for more details.
  *
  */
+<<<<<<< HEAD
 #include <linux/fb.h>
 #include <linux/pci.h>
 #include <linux/module.h>
+=======
+
+#include <linux/fb.h>
+#include <linux/module.h>
+#include <linux/pci.h>
+#include <linux/vgaarb.h>
+#include <asm/fb.h>
+
+pgprot_t pgprot_framebuffer(pgprot_t prot,
+			    unsigned long vm_start, unsigned long vm_end,
+			    unsigned long offset)
+{
+	pgprot_val(prot) &= ~_PAGE_CACHE_MASK;
+	if (boot_cpu_data.x86 > 3)
+		pgprot_val(prot) |= cachemode2protval(_PAGE_CACHE_MODE_UC_MINUS);
+
+	return prot;
+}
+EXPORT_SYMBOL(pgprot_framebuffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int fb_is_primary_device(struct fb_info *info)
 {
 	struct device *device = info->device;
+<<<<<<< HEAD
 	struct pci_dev *pci_dev = NULL;
 	struct resource *res = NULL;
 	int retval = 0;
@@ -29,4 +51,19 @@ int fb_is_primary_device(struct fb_info *info)
 	return retval;
 }
 EXPORT_SYMBOL(fb_is_primary_device);
+=======
+	struct pci_dev *pci_dev;
+
+	if (!device || !dev_is_pci(device))
+		return 0;
+
+	pci_dev = to_pci_dev(device);
+
+	if (pci_dev == vga_default_device())
+		return 1;
+	return 0;
+}
+EXPORT_SYMBOL(fb_is_primary_device);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

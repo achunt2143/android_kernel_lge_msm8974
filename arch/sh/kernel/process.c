@@ -1,13 +1,41 @@
+<<<<<<< HEAD
 #include <linux/mm.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/sched.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/mm.h>
+#include <linux/kernel.h>
+#include <linux/slab.h>
+#include <linux/sched/signal.h>
+#include <linux/sched/task_stack.h>
+#include <linux/export.h>
+#include <linux/stackprotector.h>
+#include <asm/fpu.h>
+#include <asm/ptrace.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct kmem_cache *task_xstate_cachep = NULL;
 unsigned int xstate_size;
 
+<<<<<<< HEAD
 int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
 {
+=======
+#ifdef CONFIG_STACKPROTECTOR
+unsigned long __stack_chk_guard __read_mostly;
+EXPORT_SYMBOL(__stack_chk_guard);
+#endif
+
+/*
+ * this gets called so that we can store lazy state into memory and copy the
+ * current task into the new thread.
+ */
+int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
+{
+	unlazy_fpu(src, task_pt_regs(src));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*dst = *src;
 
 	if (src->thread.xstate) {
@@ -29,6 +57,7 @@ void free_thread_xstate(struct task_struct *tsk)
 	}
 }
 
+<<<<<<< HEAD
 #if THREAD_SHIFT < PAGE_SHIFT
 static struct kmem_cache *thread_info_cache;
 
@@ -76,6 +105,13 @@ void free_thread_info(struct thread_info *ti)
 }
 #endif /* THREAD_SHIFT < PAGE_SHIFT */
 
+=======
+void arch_release_task_struct(struct task_struct *tsk)
+{
+	free_thread_xstate(tsk);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void arch_task_cache_init(void)
 {
 	if (!xstate_size)
@@ -83,7 +119,11 @@ void arch_task_cache_init(void)
 
 	task_xstate_cachep = kmem_cache_create("task_xstate", xstate_size,
 					       __alignof__(union thread_xstate),
+<<<<<<< HEAD
 					       SLAB_PANIC | SLAB_NOTRACK, NULL);
+=======
+					       SLAB_PANIC, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_SH_FPU_EMU
@@ -92,7 +132,11 @@ void arch_task_cache_init(void)
 # define HAVE_SOFTFP	0
 #endif
 
+<<<<<<< HEAD
 void __cpuinit init_thread_xstate(void)
+=======
+void init_thread_xstate(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (boot_cpu_data.flags & CPU_HAS_FPU)
 		xstate_size = sizeof(struct sh_fpu_hard_struct);

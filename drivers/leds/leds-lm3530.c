@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 ST-Ericsson SA.
  * Copyright (C) 2009 Motorola, Inc.
  *
+<<<<<<< HEAD
  * License Terms: GNU General Public License v2
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Simple driver for National Semiconductor LM3530 Backlight driver chip
  *
  * Author: Shreshtha Kumar SAHU <shreshthakumar.sahu@stericsson.com>
@@ -100,7 +107,11 @@ static struct lm3530_mode_map mode_map[] = {
  * @pdata: LM3530 platform data
  * @mode: mode of operation - manual, ALS, PWM
  * @regulator: regulator
+<<<<<<< HEAD
  * @brighness: previous brightness value
+=======
+ * @brightness: previous brightness value
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @enable: regulator is enabled
  */
 struct lm3530_data {
@@ -113,6 +124,21 @@ struct lm3530_data {
 	bool enable;
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * struct lm3530_als_data
+ * @config  : value of ALS configuration register
+ * @imp_sel : value of ALS resistor select register
+ * @zone    : values of ALS ZB(Zone Boundary) registers
+ */
+struct lm3530_als_data {
+	u8 config;
+	u8 imp_sel;
+	u8 zones[LM3530_ALS_ZB_MAX];
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const u8 lm3530_reg[LM3530_REG_MAX] = {
 	LM3530_GEN_CONFIG,
 	LM3530_ALS_CONFIG,
@@ -138,7 +164,79 @@ static int lm3530_get_mode_from_str(const char *str)
 		if (sysfs_streq(str, mode_map[i].mode))
 			return mode_map[i].mode_val;
 
+<<<<<<< HEAD
 	return -1;
+=======
+	return -EINVAL;
+}
+
+static void lm3530_als_configure(struct lm3530_platform_data *pdata,
+				struct lm3530_als_data *als)
+{
+	int i;
+	u32 als_vmin, als_vmax, als_vstep;
+
+	if (pdata->als_vmax == 0) {
+		pdata->als_vmin = 0;
+		pdata->als_vmax = LM3530_ALS_WINDOW_mV;
+	}
+
+	als_vmin = pdata->als_vmin;
+	als_vmax = pdata->als_vmax;
+
+	if ((als_vmax - als_vmin) > LM3530_ALS_WINDOW_mV)
+		pdata->als_vmax = als_vmax = als_vmin + LM3530_ALS_WINDOW_mV;
+
+	/* n zone boundary makes n+1 zones */
+	als_vstep = (als_vmax - als_vmin) / (LM3530_ALS_ZB_MAX + 1);
+
+	for (i = 0; i < LM3530_ALS_ZB_MAX; i++)
+		als->zones[i] = (((als_vmin + LM3530_ALS_OFFSET_mV) +
+			als_vstep + (i * als_vstep)) * LED_FULL) / 1000;
+
+	als->config =
+		(pdata->als_avrg_time << LM3530_ALS_AVG_TIME_SHIFT) |
+		(LM3530_ENABLE_ALS) |
+		(pdata->als_input_mode << LM3530_ALS_SEL_SHIFT);
+
+	als->imp_sel =
+		(pdata->als1_resistor_sel << LM3530_ALS1_IMP_SHIFT) |
+		(pdata->als2_resistor_sel << LM3530_ALS2_IMP_SHIFT);
+}
+
+static int lm3530_led_enable(struct lm3530_data *drvdata)
+{
+	int ret;
+
+	if (drvdata->enable)
+		return 0;
+
+	ret = regulator_enable(drvdata->regulator);
+	if (ret) {
+		dev_err(drvdata->led_dev.dev, "Failed to enable vin:%d\n", ret);
+		return ret;
+	}
+
+	drvdata->enable = true;
+	return 0;
+}
+
+static void lm3530_led_disable(struct lm3530_data *drvdata)
+{
+	int ret;
+
+	if (!drvdata->enable)
+		return;
+
+	ret = regulator_disable(drvdata->regulator);
+	if (ret) {
+		dev_err(drvdata->led_dev.dev, "Failed to disable vin:%d\n",
+			ret);
+		return;
+	}
+
+	drvdata->enable = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int lm3530_init_registers(struct lm3530_data *drvdata)
@@ -146,6 +244,7 @@ static int lm3530_init_registers(struct lm3530_data *drvdata)
 	int ret = 0;
 	int i;
 	u8 gen_config;
+<<<<<<< HEAD
 	u8 als_config = 0;
 	u8 brt_ramp;
 	u8 als_imp_sel = 0;
@@ -156,14 +255,33 @@ static int lm3530_init_registers(struct lm3530_data *drvdata)
 	struct lm3530_platform_data *pdata = drvdata->pdata;
 	struct i2c_client *client = drvdata->client;
 	struct lm3530_pwm_data *pwm = &pdata->pwm_data;
+=======
+	u8 brt_ramp;
+	u8 brightness;
+	u8 reg_val[LM3530_REG_MAX];
+	struct lm3530_platform_data *pdata = drvdata->pdata;
+	struct i2c_client *client = drvdata->client;
+	struct lm3530_pwm_data *pwm = &pdata->pwm_data;
+	struct lm3530_als_data als;
+
+	memset(&als, 0, sizeof(struct lm3530_als_data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gen_config = (pdata->brt_ramp_law << LM3530_RAMP_LAW_SHIFT) |
 			((pdata->max_current & 7) << LM3530_MAX_CURR_SHIFT);
 
 	switch (drvdata->mode) {
 	case LM3530_BL_MODE_MANUAL:
+<<<<<<< HEAD
 	case LM3530_BL_MODE_ALS:
 		gen_config |= LM3530_ENABLE_I2C;
+=======
+		gen_config |= LM3530_ENABLE_I2C;
+		break;
+	case LM3530_BL_MODE_ALS:
+		gen_config |= LM3530_ENABLE_I2C;
+		lm3530_als_configure(pdata, &als);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case LM3530_BL_MODE_PWM:
 		gen_config |= LM3530_ENABLE_PWM | LM3530_ENABLE_PWM_SIMPLE |
@@ -171,6 +289,7 @@ static int lm3530_init_registers(struct lm3530_data *drvdata)
 		break;
 	}
 
+<<<<<<< HEAD
 	if (drvdata->mode == LM3530_BL_MODE_ALS) {
 		if (pdata->als_vmax == 0) {
 			pdata->als_vmin = 0;
@@ -203,6 +322,8 @@ static int lm3530_init_registers(struct lm3530_data *drvdata)
 
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brt_ramp = (pdata->brt_ramp_fall << LM3530_BRT_RAMP_FALL_SHIFT) |
 			(pdata->brt_ramp_rise << LM3530_BRT_RAMP_RISE_SHIFT);
 
@@ -215,6 +336,7 @@ static int lm3530_init_registers(struct lm3530_data *drvdata)
 		brightness = drvdata->led_dev.max_brightness;
 
 	reg_val[0] = gen_config;	/* LM3530_GEN_CONFIG */
+<<<<<<< HEAD
 	reg_val[1] = als_config;	/* LM3530_ALS_CONFIG */
 	reg_val[2] = brt_ramp;		/* LM3530_BRT_RAMP_RATE */
 	reg_val[3] = als_imp_sel;	/* LM3530_ALS_IMP_SELECT */
@@ -223,12 +345,23 @@ static int lm3530_init_registers(struct lm3530_data *drvdata)
 	reg_val[6] = zones[1];		/* LM3530_ALS_ZB1_REG */
 	reg_val[7] = zones[2];		/* LM3530_ALS_ZB2_REG */
 	reg_val[8] = zones[3];		/* LM3530_ALS_ZB3_REG */
+=======
+	reg_val[1] = als.config;	/* LM3530_ALS_CONFIG */
+	reg_val[2] = brt_ramp;		/* LM3530_BRT_RAMP_RATE */
+	reg_val[3] = als.imp_sel;	/* LM3530_ALS_IMP_SELECT */
+	reg_val[4] = brightness;	/* LM3530_BRT_CTRL_REG */
+	reg_val[5] = als.zones[0];	/* LM3530_ALS_ZB0_REG */
+	reg_val[6] = als.zones[1];	/* LM3530_ALS_ZB1_REG */
+	reg_val[7] = als.zones[2];	/* LM3530_ALS_ZB2_REG */
+	reg_val[8] = als.zones[3];	/* LM3530_ALS_ZB3_REG */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg_val[9] = LM3530_DEF_ZT_0;	/* LM3530_ALS_Z0T_REG */
 	reg_val[10] = LM3530_DEF_ZT_1;	/* LM3530_ALS_Z1T_REG */
 	reg_val[11] = LM3530_DEF_ZT_2;	/* LM3530_ALS_Z2T_REG */
 	reg_val[12] = LM3530_DEF_ZT_3;	/* LM3530_ALS_Z3T_REG */
 	reg_val[13] = LM3530_DEF_ZT_4;	/* LM3530_ALS_Z4T_REG */
 
+<<<<<<< HEAD
 	if (!drvdata->enable) {
 		ret = regulator_enable(drvdata->regulator);
 		if (ret) {
@@ -238,6 +371,11 @@ static int lm3530_init_registers(struct lm3530_data *drvdata)
 		}
 		drvdata->enable = true;
 	}
+=======
+	ret = lm3530_led_enable(drvdata);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < LM3530_REG_MAX; i++) {
 		/* do not update brightness register when pwm mode */
@@ -289,6 +427,7 @@ static void lm3530_brightness_set(struct led_classdev *led_cdev,
 		else
 			drvdata->brightness = brt_val;
 
+<<<<<<< HEAD
 		if (brt_val == 0) {
 			err = regulator_disable(drvdata->regulator);
 			if (err)
@@ -296,6 +435,10 @@ static void lm3530_brightness_set(struct led_classdev *led_cdev,
 					"Disable regulator failed\n");
 			drvdata->enable = false;
 		}
+=======
+		if (brt_val == 0)
+			lm3530_led_disable(drvdata);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case LM3530_BL_MODE_ALS:
 		break;
@@ -308,8 +451,13 @@ static void lm3530_brightness_set(struct led_classdev *led_cdev,
 	}
 }
 
+<<<<<<< HEAD
 static ssize_t lm3530_mode_get(struct device *dev,
 		struct device_attribute *attr, char *buf)
+=======
+static ssize_t mode_show(struct device *dev,
+			 struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct led_classdev *led_cdev = dev_get_drvdata(dev);
 	struct lm3530_data *drvdata;
@@ -327,8 +475,13 @@ static ssize_t lm3530_mode_get(struct device *dev,
 	return len;
 }
 
+<<<<<<< HEAD
 static ssize_t lm3530_mode_set(struct device *dev, struct device_attribute
 				   *attr, const char *buf, size_t size)
+=======
+static ssize_t mode_store(struct device *dev, struct device_attribute
+			  *attr, const char *buf, size_t size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct led_classdev *led_cdev = dev_get_drvdata(dev);
 	struct lm3530_data *drvdata;
@@ -342,7 +495,11 @@ static ssize_t lm3530_mode_set(struct device *dev, struct device_attribute
 	mode = lm3530_get_mode_from_str(buf);
 	if (mode < 0) {
 		dev_err(dev, "Invalid mode\n");
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return mode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	drvdata->mode = mode;
@@ -359,30 +516,53 @@ static ssize_t lm3530_mode_set(struct device *dev, struct device_attribute
 
 	return sizeof(drvdata->mode);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(mode, 0644, lm3530_mode_get, lm3530_mode_set);
 
 static int __devinit lm3530_probe(struct i2c_client *client,
 			   const struct i2c_device_id *id)
 {
 	struct lm3530_platform_data *pdata = client->dev.platform_data;
+=======
+static DEVICE_ATTR_RW(mode);
+
+static struct attribute *lm3530_attrs[] = {
+	&dev_attr_mode.attr,
+	NULL
+};
+ATTRIBUTE_GROUPS(lm3530);
+
+static int lm3530_probe(struct i2c_client *client)
+{
+	struct lm3530_platform_data *pdata = dev_get_platdata(&client->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lm3530_data *drvdata;
 	int err = 0;
 
 	if (pdata == NULL) {
 		dev_err(&client->dev, "platform data required\n");
+<<<<<<< HEAD
 		err = -ENODEV;
 		goto err_out;
+=======
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* BL mode */
 	if (pdata->mode > LM3530_BL_MODE_PWM) {
 		dev_err(&client->dev, "Illegal Mode request\n");
+<<<<<<< HEAD
 		err = -EINVAL;
 		goto err_out;
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		dev_err(&client->dev, "I2C_FUNC_I2C not supported\n");
+<<<<<<< HEAD
 		err = -EIO;
 		goto err_out;
 	}
@@ -392,6 +572,15 @@ static int __devinit lm3530_probe(struct i2c_client *client,
 		err = -ENOMEM;
 		goto err_out;
 	}
+=======
+		return -EIO;
+	}
+
+	drvdata = devm_kzalloc(&client->dev, sizeof(struct lm3530_data),
+				GFP_KERNEL);
+	if (drvdata == NULL)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	drvdata->mode = pdata->mode;
 	drvdata->client = client;
@@ -401,15 +590,27 @@ static int __devinit lm3530_probe(struct i2c_client *client,
 	drvdata->led_dev.name = LM3530_LED_DEV;
 	drvdata->led_dev.brightness_set = lm3530_brightness_set;
 	drvdata->led_dev.max_brightness = MAX_BRIGHTNESS;
+<<<<<<< HEAD
 
 	i2c_set_clientdata(client, drvdata);
 
 	drvdata->regulator = regulator_get(&client->dev, "vin");
+=======
+	drvdata->led_dev.groups = lm3530_groups;
+
+	i2c_set_clientdata(client, drvdata);
+
+	drvdata->regulator = devm_regulator_get(&client->dev, "vin");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(drvdata->regulator)) {
 		dev_err(&client->dev, "regulator get failed\n");
 		err = PTR_ERR(drvdata->regulator);
 		drvdata->regulator = NULL;
+<<<<<<< HEAD
 		goto err_regulator_get;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (drvdata->pdata->brt_val) {
@@ -417,13 +618,18 @@ static int __devinit lm3530_probe(struct i2c_client *client,
 		if (err < 0) {
 			dev_err(&client->dev,
 				"Register Init failed: %d\n", err);
+<<<<<<< HEAD
 			err = -ENODEV;
 			goto err_reg_init;
+=======
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	err = led_classdev_register(&client->dev, &drvdata->led_dev);
 	if (err < 0) {
 		dev_err(&client->dev, "Register led class failed: %d\n", err);
+<<<<<<< HEAD
 		err = -ENODEV;
 		goto err_class_register;
 	}
@@ -460,6 +666,20 @@ static int __devexit lm3530_remove(struct i2c_client *client)
 	led_classdev_unregister(&drvdata->led_dev);
 	kfree(drvdata);
 	return 0;
+=======
+		return err;
+	}
+
+	return 0;
+}
+
+static void lm3530_remove(struct i2c_client *client)
+{
+	struct lm3530_data *drvdata = i2c_get_clientdata(client);
+
+	lm3530_led_disable(drvdata);
+	led_classdev_unregister(&drvdata->led_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id lm3530_id[] = {
@@ -470,11 +690,18 @@ MODULE_DEVICE_TABLE(i2c, lm3530_id);
 
 static struct i2c_driver lm3530_i2c_driver = {
 	.probe = lm3530_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(lm3530_remove),
 	.id_table = lm3530_id,
 	.driver = {
 		.name = LM3530_NAME,
 		.owner = THIS_MODULE,
+=======
+	.remove = lm3530_remove,
+	.id_table = lm3530_id,
+	.driver = {
+		.name = LM3530_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

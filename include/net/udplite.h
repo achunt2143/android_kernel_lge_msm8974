@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Definitions for the UDP-Lite (RFC 3828) code.
  */
@@ -5,6 +9,10 @@
 #define _UDPLITE_H
 
 #include <net/ip6_checksum.h>
+<<<<<<< HEAD
+=======
+#include <net/udp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* UDP-Lite socket options */
 #define UDPLITE_SEND_CSCOV   10 /* sender partial coverage (as sent)      */
@@ -19,6 +27,7 @@ extern struct udp_table		udplite_table;
 static __inline__ int udplite_getfrag(void *from, char *to, int  offset,
 				      int len, int odd, struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	return memcpy_fromiovecend(to, (struct iovec *) from, offset, len);
 }
 
@@ -27,6 +36,10 @@ static inline int udplite_sk_init(struct sock *sk)
 {
 	udp_sk(sk)->pcflag = UDPLITE_BIT;
 	return 0;
+=======
+	struct msghdr *msg = from;
+	return copy_from_iter_full(to, len, &msg->msg_iter) ? 0 : -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -40,7 +53,11 @@ static inline int udplite_checksum_init(struct sk_buff *skb, struct udphdr *uh)
          * checksum. UDP-Lite (like IPv6) mandates checksums, hence packets
          * with a zero checksum field are illegal.                            */
 	if (uh->check == 0) {
+<<<<<<< HEAD
 		LIMIT_NETDEBUG(KERN_DEBUG "UDPLite: zeroed checksum field\n");
+=======
+		net_dbg_ratelimited("UDPLite: zeroed checksum field\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
@@ -52,8 +69,13 @@ static inline int udplite_checksum_init(struct sk_buff *skb, struct udphdr *uh)
 		/*
 		 * Coverage length violates RFC 3828: log and discard silently.
 		 */
+<<<<<<< HEAD
 		LIMIT_NETDEBUG(KERN_DEBUG "UDPLite: bad csum coverage %d/%d\n",
 			       cscov, skb->len);
+=======
+		net_dbg_ratelimited("UDPLite: bad csum coverage %d/%d\n",
+				    cscov, skb->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	} else if (cscov < skb->len) {
@@ -61,11 +83,16 @@ static inline int udplite_checksum_init(struct sk_buff *skb, struct udphdr *uh)
 		UDP_SKB_CB(skb)->cscov = cscov;
 		if (skb->ip_summed == CHECKSUM_COMPLETE)
 			skb->ip_summed = CHECKSUM_NONE;
+<<<<<<< HEAD
+=======
+		skb->csum_valid = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         }
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Slow-path computation of checksum. Socket is locked. */
 static inline __wsum udplite_csum_outgoing(struct sock *sk, struct sk_buff *skb)
 {
@@ -120,13 +147,34 @@ static inline __wsum udplite_csum(struct sk_buff *skb)
 		if (0 < up->pcslen)
 			len = up->pcslen;
 		udp_hdr(skb)->len = htons(up->pcslen);
+=======
+/* Fast-path computation of checksum. Socket may not be locked. */
+static inline __wsum udplite_csum(struct sk_buff *skb)
+{
+	const int off = skb_transport_offset(skb);
+	const struct sock *sk = skb->sk;
+	int len = skb->len - off;
+
+	if (udp_test_bit(UDPLITE_SEND_CC, sk)) {
+		u16 pcslen = READ_ONCE(udp_sk(sk)->pcslen);
+
+		if (pcslen < len) {
+			if (pcslen > 0)
+				len = pcslen;
+			udp_hdr(skb)->len = htons(pcslen);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	skb->ip_summed = CHECKSUM_NONE;     /* no HW support for checksumming */
 
 	return skb_checksum(skb, off, len, 0);
 }
 
+<<<<<<< HEAD
 extern void	udplite4_register(void);
 extern int 	udplite_get_port(struct sock *sk, unsigned short snum,
 			int (*scmp)(const struct sock *, const struct sock *));
+=======
+void udplite4_register(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _UDPLITE_H */

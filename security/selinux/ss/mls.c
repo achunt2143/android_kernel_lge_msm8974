@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Implementation of the multi-level security (MLS) policy.
  *
@@ -16,6 +17,23 @@
  *      Added support to import/export the MLS label from NetLabel
  *
  * (c) Copyright Hewlett-Packard Development Company, L.P., 2006
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Implementation of the multi-level security (MLS) policy.
+ *
+ * Author : Stephen Smalley, <stephen.smalley.work@gmail.com>
+ */
+
+/*
+ * Updated: Trusted Computer Solutions, Inc. <dgoeddel@trustedcs.com>
+ *          Support for enhanced MLS infrastructure.
+ *          Copyright (C) 2004-2006 Trusted Computer Solutions, Inc.
+ *
+ * Updated: Hewlett-Packard <paul@paul-moore.com>
+ *          Added support to import/export the MLS label from NetLabel
+ *          Copyright (C) Hewlett-Packard Development Company, L.P., 2006
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -32,25 +50,39 @@
  * Return the length in bytes for the MLS fields of the
  * security context string representation of `context'.
  */
+<<<<<<< HEAD
 int mls_compute_context_len(struct context *context)
+=======
+int mls_compute_context_len(struct policydb *p, struct context *context)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, l, len, head, prev;
 	char *nm;
 	struct ebitmap *e;
 	struct ebitmap_node *node;
 
+<<<<<<< HEAD
 	if (!policydb.mls_enabled)
+=======
+	if (!p->mls_enabled)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	len = 1; /* for the beginning ":" */
 	for (l = 0; l < 2; l++) {
+<<<<<<< HEAD
 		int index_sens = context->range.level[l].sens;
 		len += strlen(sym_name(&policydb, SYM_LEVELS, index_sens - 1));
+=======
+		u32 index_sens = context->range.level[l].sens;
+		len += strlen(sym_name(p, SYM_LEVELS, index_sens - 1));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* categories */
 		head = -2;
 		prev = -2;
 		e = &context->range.level[l].cat;
+<<<<<<< HEAD
 		ebitmap_for_each_positive_bit(e, node, i) {
 			if (i - prev > 1) {
 				/* one or more negative bits are skipped */
@@ -59,13 +91,28 @@ int mls_compute_context_len(struct context *context)
 					len += strlen(nm) + 1;
 				}
 				nm = sym_name(&policydb, SYM_CATS, i);
+=======
+		ebitmap_for_each_positive_bit(e, node, i)
+		{
+			if (i - prev > 1) {
+				/* one or more negative bits are skipped */
+				if (head != prev) {
+					nm = sym_name(p, SYM_CATS, prev);
+					len += strlen(nm) + 1;
+				}
+				nm = sym_name(p, SYM_CATS, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				len += strlen(nm) + 1;
 				head = i;
 			}
 			prev = i;
 		}
 		if (prev != head) {
+<<<<<<< HEAD
 			nm = sym_name(&policydb, SYM_CATS, prev);
+=======
+			nm = sym_name(p, SYM_CATS, prev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			len += strlen(nm) + 1;
 		}
 		if (l == 0) {
@@ -85,7 +132,11 @@ int mls_compute_context_len(struct context *context)
  * the MLS fields of `context' into the string `*scontext'.
  * Update `*scontext' to point to the end of the MLS fields.
  */
+<<<<<<< HEAD
 void mls_sid_to_context(struct context *context,
+=======
+void mls_sid_to_context(struct policydb *p, struct context *context,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			char **scontext)
 {
 	char *scontextp, *nm;
@@ -93,7 +144,11 @@ void mls_sid_to_context(struct context *context,
 	struct ebitmap *e;
 	struct ebitmap_node *node;
 
+<<<<<<< HEAD
 	if (!policydb.mls_enabled)
+=======
+	if (!p->mls_enabled)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	scontextp = *scontext;
@@ -102,7 +157,11 @@ void mls_sid_to_context(struct context *context,
 	scontextp++;
 
 	for (l = 0; l < 2; l++) {
+<<<<<<< HEAD
 		strcpy(scontextp, sym_name(&policydb, SYM_LEVELS,
+=======
+		strcpy(scontextp, sym_name(p, SYM_LEVELS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   context->range.level[l].sens - 1));
 		scontextp += strlen(scontextp);
 
@@ -110,7 +169,12 @@ void mls_sid_to_context(struct context *context,
 		head = -2;
 		prev = -2;
 		e = &context->range.level[l].cat;
+<<<<<<< HEAD
 		ebitmap_for_each_positive_bit(e, node, i) {
+=======
+		ebitmap_for_each_positive_bit(e, node, i)
+		{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i - prev > 1) {
 				/* one or more negative bits are skipped */
 				if (prev != head) {
@@ -118,7 +182,11 @@ void mls_sid_to_context(struct context *context,
 						*scontextp++ = '.';
 					else
 						*scontextp++ = ',';
+<<<<<<< HEAD
 					nm = sym_name(&policydb, SYM_CATS, prev);
+=======
+					nm = sym_name(p, SYM_CATS, prev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					strcpy(scontextp, nm);
 					scontextp += strlen(nm);
 				}
@@ -126,7 +194,11 @@ void mls_sid_to_context(struct context *context,
 					*scontextp++ = ':';
 				else
 					*scontextp++ = ',';
+<<<<<<< HEAD
 				nm = sym_name(&policydb, SYM_CATS, i);
+=======
+				nm = sym_name(p, SYM_CATS, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				strcpy(scontextp, nm);
 				scontextp += strlen(nm);
 				head = i;
@@ -139,7 +211,11 @@ void mls_sid_to_context(struct context *context,
 				*scontextp++ = '.';
 			else
 				*scontextp++ = ',';
+<<<<<<< HEAD
 			nm = sym_name(&policydb, SYM_CATS, prev);
+=======
+			nm = sym_name(p, SYM_CATS, prev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			strcpy(scontextp, nm);
 			scontextp += strlen(nm);
 		}
@@ -154,12 +230,16 @@ void mls_sid_to_context(struct context *context,
 	}
 
 	*scontext = scontextp;
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mls_level_isvalid(struct policydb *p, struct mls_level *l)
 {
 	struct level_datum *levdatum;
+<<<<<<< HEAD
 	struct ebitmap_node *node;
 	int i;
 
@@ -183,6 +263,23 @@ int mls_level_isvalid(struct policydb *p, struct mls_level *l)
 	}
 
 	return 1;
+=======
+
+	if (!l->sens || l->sens > p->p_levels.nprim)
+		return 0;
+	levdatum = symtab_search(&p->p_levels,
+				 sym_name(p, SYM_LEVELS, l->sens - 1));
+	if (!levdatum)
+		return 0;
+
+	/*
+	 * Return 1 iff all the bits set in l->cat are also be set in
+	 * levdatum->level->cat and no bit in l->cat is larger than
+	 * p->p_cats.nprim.
+	 */
+	return ebitmap_contains(&levdatum->level->cat, &l->cat,
+				p->p_cats.nprim);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mls_range_isvalid(struct policydb *p, struct mls_range *r)
@@ -224,9 +321,13 @@ int mls_context_isvalid(struct policydb *p, struct context *c)
 /*
  * Set the MLS fields in the security context structure
  * `context' based on the string representation in
+<<<<<<< HEAD
  * the string `*scontext'.  Update `*scontext' to
  * point to the end of the string representation of
  * the MLS fields.
+=======
+ * the string `scontext'.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function modifies the string in place, inserting
  * NULL characters to terminate the MLS fields.
@@ -239,6 +340,7 @@ int mls_context_isvalid(struct policydb *p, struct context *c)
  * Policy read-lock must be held for sidtab lookup.
  *
  */
+<<<<<<< HEAD
 int mls_context_to_sid(struct policydb *pol,
 		       char oldc,
 		       char **scontext,
@@ -256,6 +358,25 @@ int mls_context_to_sid(struct policydb *pol,
 	if (!pol->mls_enabled) {
 		if (def_sid != SECSID_NULL && oldc)
 			*scontext += strlen(*scontext) + 1;
+=======
+int mls_context_to_sid(struct policydb *pol, char oldc, char *scontext,
+		       struct context *context, struct sidtab *s, u32 def_sid)
+{
+	char *sensitivity, *cur_cat, *next_cat, *rngptr;
+	struct level_datum *levdatum;
+	struct cat_datum *catdatum, *rngdatum;
+	u32 i;
+	int l, rc;
+	char *rangep[2];
+
+	if (!pol->mls_enabled) {
+		/*
+		 * With no MLS, only return -EINVAL if there is a MLS field
+		 * and it did not come from an xattr.
+		 */
+		if (oldc && def_sid == SECSID_NULL)
+			return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -267,6 +388,7 @@ int mls_context_to_sid(struct policydb *pol,
 		struct context *defcon;
 
 		if (def_sid == SECSID_NULL)
+<<<<<<< HEAD
 			goto out;
 
 		defcon = sidtab_search(s, def_sid);
@@ -364,16 +486,106 @@ int mls_context_to_sid(struct policydb *pol,
 	}
 
 	if (l == 0) {
+=======
+			return -EINVAL;
+
+		defcon = sidtab_search(s, def_sid);
+		if (!defcon)
+			return -EINVAL;
+
+		return mls_context_cpy(context, defcon);
+	}
+
+	/*
+	 * If we're dealing with a range, figure out where the two parts
+	 * of the range begin.
+	 */
+	rangep[0] = scontext;
+	rangep[1] = strchr(scontext, '-');
+	if (rangep[1]) {
+		rangep[1][0] = '\0';
+		rangep[1]++;
+	}
+
+	/* For each part of the range: */
+	for (l = 0; l < 2; l++) {
+		/* Split sensitivity and category set. */
+		sensitivity = rangep[l];
+		if (sensitivity == NULL)
+			break;
+		next_cat = strchr(sensitivity, ':');
+		if (next_cat)
+			*(next_cat++) = '\0';
+
+		/* Parse sensitivity. */
+		levdatum = symtab_search(&pol->p_levels, sensitivity);
+		if (!levdatum)
+			return -EINVAL;
+		context->range.level[l].sens = levdatum->level->sens;
+
+		/* Extract category set. */
+		while (next_cat != NULL) {
+			cur_cat = next_cat;
+			next_cat = strchr(next_cat, ',');
+			if (next_cat != NULL)
+				*(next_cat++) = '\0';
+
+			/* Separate into range if exists */
+			rngptr = strchr(cur_cat, '.');
+			if (rngptr != NULL) {
+				/* Remove '.' */
+				*rngptr++ = '\0';
+			}
+
+			catdatum = symtab_search(&pol->p_cats, cur_cat);
+			if (!catdatum)
+				return -EINVAL;
+
+			rc = ebitmap_set_bit(&context->range.level[l].cat,
+					     catdatum->value - 1, 1);
+			if (rc)
+				return rc;
+
+			/* If range, set all categories in range */
+			if (rngptr == NULL)
+				continue;
+
+			rngdatum = symtab_search(&pol->p_cats, rngptr);
+			if (!rngdatum)
+				return -EINVAL;
+
+			if (catdatum->value >= rngdatum->value)
+				return -EINVAL;
+
+			for (i = catdatum->value; i < rngdatum->value; i++) {
+				rc = ebitmap_set_bit(
+					&context->range.level[l].cat, i, 1);
+				if (rc)
+					return rc;
+			}
+		}
+	}
+
+	/* If we didn't see a '-', the range start is also the range end. */
+	if (rangep[1] == NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		context->range.level[1].sens = context->range.level[0].sens;
 		rc = ebitmap_cpy(&context->range.level[1].cat,
 				 &context->range.level[0].cat);
 		if (rc)
+<<<<<<< HEAD
 			goto out;
 	}
 	*scontext = ++p;
 	rc = 0;
 out:
 	return rc;
+=======
+			return rc;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -382,6 +594,7 @@ out:
  * the string `str'.  This function will allocate temporary memory with the
  * given constraints of gfp_mask.
  */
+<<<<<<< HEAD
 int mls_from_string(char *str, struct context *context, gfp_t gfp_mask)
 {
 	char *tmpstr, *freestr;
@@ -399,6 +612,24 @@ int mls_from_string(char *str, struct context *context, gfp_t gfp_mask)
 		rc = mls_context_to_sid(&policydb, ':', &tmpstr, context,
 					NULL, SECSID_NULL);
 		kfree(freestr);
+=======
+int mls_from_string(struct policydb *p, char *str, struct context *context,
+		    gfp_t gfp_mask)
+{
+	char *tmpstr;
+	int rc;
+
+	if (!p->mls_enabled)
+		return -EINVAL;
+
+	tmpstr = kstrdup(str, gfp_mask);
+	if (!tmpstr) {
+		rc = -ENOMEM;
+	} else {
+		rc = mls_context_to_sid(p, ':', tmpstr, context, NULL,
+					SECSID_NULL);
+		kfree(tmpstr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return rc;
@@ -407,8 +638,12 @@ int mls_from_string(char *str, struct context *context, gfp_t gfp_mask)
 /*
  * Copies the MLS range `range' into `context'.
  */
+<<<<<<< HEAD
 int mls_range_set(struct context *context,
 				struct mls_range *range)
+=======
+int mls_range_set(struct context *context, struct mls_range *range)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int l, rc = 0;
 
@@ -424,10 +659,17 @@ int mls_range_set(struct context *context,
 	return rc;
 }
 
+<<<<<<< HEAD
 int mls_setup_user_range(struct context *fromcon, struct user_datum *user,
 			 struct context *usercon)
 {
 	if (policydb.mls_enabled) {
+=======
+int mls_setup_user_range(struct policydb *p, struct context *fromcon,
+			 struct user_datum *user, struct context *usercon)
+{
+	if (p->mls_enabled) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct mls_level *fromcon_sen = &(fromcon->range.level[0]);
 		struct mls_level *fromcon_clr = &(fromcon->range.level[1]);
 		struct mls_level *user_low = &(user->range.level[0]);
@@ -464,6 +706,7 @@ int mls_setup_user_range(struct context *fromcon, struct user_datum *user,
 
 /*
  * Convert the MLS fields in the security context
+<<<<<<< HEAD
  * structure `c' from the values specified in the
  * policy `oldp' to the values specified in the policy `newp'.
  */
@@ -503,24 +746,78 @@ int mls_convert_context(struct policydb *oldp,
 		}
 		ebitmap_destroy(&c->range.level[l].cat);
 		c->range.level[l].cat = bitmap;
+=======
+ * structure `oldc' from the values specified in the
+ * policy `oldp' to the values specified in the policy `newp',
+ * storing the resulting context in `newc'.
+ */
+int mls_convert_context(struct policydb *oldp, struct policydb *newp,
+			struct context *oldc, struct context *newc)
+{
+	struct level_datum *levdatum;
+	struct cat_datum *catdatum;
+	struct ebitmap_node *node;
+	u32 i;
+	int l;
+
+	if (!oldp->mls_enabled || !newp->mls_enabled)
+		return 0;
+
+	for (l = 0; l < 2; l++) {
+		char *name = sym_name(oldp, SYM_LEVELS,
+				      oldc->range.level[l].sens - 1);
+
+		levdatum = symtab_search(&newp->p_levels, name);
+
+		if (!levdatum)
+			return -EINVAL;
+		newc->range.level[l].sens = levdatum->level->sens;
+
+		ebitmap_for_each_positive_bit(&oldc->range.level[l].cat, node,
+					      i)
+		{
+			int rc;
+
+			catdatum = symtab_search(&newp->p_cats,
+						 sym_name(oldp, SYM_CATS, i));
+			if (!catdatum)
+				return -EINVAL;
+			rc = ebitmap_set_bit(&newc->range.level[l].cat,
+					     catdatum->value - 1, 1);
+			if (rc)
+				return rc;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 int mls_compute_sid(struct context *scontext,
 		    struct context *tcontext,
 		    u16 tclass,
 		    u32 specified,
 		    struct context *newcontext,
 		    bool sock)
+=======
+int mls_compute_sid(struct policydb *p, struct context *scontext,
+		    struct context *tcontext, u16 tclass, u32 specified,
+		    struct context *newcontext, bool sock)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct range_trans rtr;
 	struct mls_range *r;
 	struct class_datum *cladatum;
+<<<<<<< HEAD
 	int default_range = 0;
 
 	if (!policydb.mls_enabled)
+=======
+	char default_range = 0;
+
+	if (!p->mls_enabled)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	switch (specified) {
@@ -529,12 +826,21 @@ int mls_compute_sid(struct context *scontext,
 		rtr.source_type = scontext->type;
 		rtr.target_type = tcontext->type;
 		rtr.target_class = tclass;
+<<<<<<< HEAD
 		r = hashtab_search(policydb.range_tr, &rtr);
 		if (r)
 			return mls_range_set(newcontext, r);
 
 		if (tclass && tclass <= policydb.p_classes.nprim) {
 			cladatum = policydb.class_val_to_struct[tclass - 1];
+=======
+		r = policydb_rangetr_search(p, &rtr);
+		if (r)
+			return mls_range_set(newcontext, r);
+
+		if (tclass && tclass <= p->p_classes.nprim) {
+			cladatum = p->class_val_to_struct[tclass - 1];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cladatum)
 				default_range = cladatum->default_range;
 		}
@@ -552,11 +858,22 @@ int mls_compute_sid(struct context *scontext,
 			return mls_context_cpy_high(newcontext, tcontext);
 		case DEFAULT_TARGET_LOW_HIGH:
 			return mls_context_cpy(newcontext, tcontext);
+<<<<<<< HEAD
 		}
 
 		/* Fallthrough */
 	case AVTAB_CHANGE:
 		if ((tclass == policydb.process_class) || (sock == true))
+=======
+		case DEFAULT_GLBLUB:
+			return mls_context_glblub(newcontext, scontext,
+						  tcontext);
+		}
+
+		fallthrough;
+	case AVTAB_CHANGE:
+		if ((tclass == p->process_class) || sock)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Use the process MLS attributes. */
 			return mls_context_cpy(newcontext, scontext);
 		else
@@ -565,8 +882,11 @@ int mls_compute_sid(struct context *scontext,
 	case AVTAB_MEMBER:
 		/* Use the process effective MLS attributes. */
 		return mls_context_cpy_low(newcontext, scontext);
+<<<<<<< HEAD
 
 	/* fall through */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return -EINVAL;
 }
@@ -574,6 +894,10 @@ int mls_compute_sid(struct context *scontext,
 #ifdef CONFIG_NETLABEL
 /**
  * mls_export_netlbl_lvl - Export the MLS sensitivity levels to NetLabel
+<<<<<<< HEAD
+=======
+ * @p: the policy
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @context: the security context
  * @secattr: the NetLabel security attributes
  *
@@ -582,10 +906,17 @@ int mls_compute_sid(struct context *scontext,
  * NetLabel MLS sensitivity level field.
  *
  */
+<<<<<<< HEAD
 void mls_export_netlbl_lvl(struct context *context,
 			   struct netlbl_lsm_secattr *secattr)
 {
 	if (!policydb.mls_enabled)
+=======
+void mls_export_netlbl_lvl(struct policydb *p, struct context *context,
+			   struct netlbl_lsm_secattr *secattr)
+{
+	if (!p->mls_enabled)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	secattr->attr.mls.lvl = context->range.level[0].sens - 1;
@@ -594,6 +925,10 @@ void mls_export_netlbl_lvl(struct context *context,
 
 /**
  * mls_import_netlbl_lvl - Import the NetLabel MLS sensitivity levels
+<<<<<<< HEAD
+=======
+ * @p: the policy
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @context: the security context
  * @secattr: the NetLabel security attributes
  *
@@ -602,10 +937,17 @@ void mls_export_netlbl_lvl(struct context *context,
  * NetLabel MLS sensitivity level into the context.
  *
  */
+<<<<<<< HEAD
 void mls_import_netlbl_lvl(struct context *context,
 			   struct netlbl_lsm_secattr *secattr)
 {
 	if (!policydb.mls_enabled)
+=======
+void mls_import_netlbl_lvl(struct policydb *p, struct context *context,
+			   struct netlbl_lsm_secattr *secattr)
+{
+	if (!p->mls_enabled)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	context->range.level[0].sens = secattr->attr.mls.lvl + 1;
@@ -614,6 +956,10 @@ void mls_import_netlbl_lvl(struct context *context,
 
 /**
  * mls_export_netlbl_cat - Export the MLS categories to NetLabel
+<<<<<<< HEAD
+=======
+ * @p: the policy
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @context: the security context
  * @secattr: the NetLabel security attributes
  *
@@ -622,12 +968,20 @@ void mls_import_netlbl_lvl(struct context *context,
  * MLS category field.  Returns zero on success, negative values on failure.
  *
  */
+<<<<<<< HEAD
 int mls_export_netlbl_cat(struct context *context,
+=======
+int mls_export_netlbl_cat(struct policydb *p, struct context *context,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct netlbl_lsm_secattr *secattr)
 {
 	int rc;
 
+<<<<<<< HEAD
 	if (!policydb.mls_enabled)
+=======
+	if (!p->mls_enabled)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	rc = ebitmap_netlbl_export(&context->range.level[0].cat,
@@ -640,6 +994,10 @@ int mls_export_netlbl_cat(struct context *context,
 
 /**
  * mls_import_netlbl_cat - Import the MLS categories from NetLabel
+<<<<<<< HEAD
+=======
+ * @p: the policy
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @context: the security context
  * @secattr: the NetLabel security attributes
  *
@@ -650,16 +1008,25 @@ int mls_export_netlbl_cat(struct context *context,
  * negative values on failure.
  *
  */
+<<<<<<< HEAD
 int mls_import_netlbl_cat(struct context *context,
+=======
+int mls_import_netlbl_cat(struct policydb *p, struct context *context,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct netlbl_lsm_secattr *secattr)
 {
 	int rc;
 
+<<<<<<< HEAD
 	if (!policydb.mls_enabled)
+=======
+	if (!p->mls_enabled)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	rc = ebitmap_netlbl_import(&context->range.level[0].cat,
 				   secattr->attr.mls.cat);
+<<<<<<< HEAD
 	if (rc != 0)
 		goto import_netlbl_cat_failure;
 
@@ -667,12 +1034,21 @@ int mls_import_netlbl_cat(struct context *context,
 			 &context->range.level[0].cat);
 	if (rc != 0)
 		goto import_netlbl_cat_failure;
+=======
+	if (rc)
+		goto import_netlbl_cat_failure;
+	memcpy(&context->range.level[1].cat, &context->range.level[0].cat,
+	       sizeof(context->range.level[0].cat));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 import_netlbl_cat_failure:
 	ebitmap_destroy(&context->range.level[0].cat);
+<<<<<<< HEAD
 	ebitmap_destroy(&context->range.level[1].cat);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 #endif /* CONFIG_NETLABEL */

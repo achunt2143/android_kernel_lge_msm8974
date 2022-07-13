@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MCT (Magic Control Technology Corp.) USB RS232 Converter Driver
  *
  *   Copyright (C) 2000 Wolfgang Grandegger (wolfgang@ces.ch)
  *
+<<<<<<< HEAD
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
  *   (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This program is largely derived from the Belkin USB Serial Adapter Driver
  * (see belkin_sa.[ch]). All of the information about the device was acquired
  * by using SniffUSB on Windows98. For technical details see mct_u232.h.
@@ -23,7 +30,10 @@
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -35,6 +45,7 @@
 #include <linux/usb.h>
 #include <linux/usb/serial.h>
 #include <linux/serial.h>
+<<<<<<< HEAD
 #include <linux/ioctl.h>
 #include "mct_u232.h"
 
@@ -52,11 +63,24 @@ static bool debug;
  */
 static int  mct_u232_startup(struct usb_serial *serial);
 static void mct_u232_release(struct usb_serial *serial);
+=======
+#include "mct_u232.h"
+
+#define DRIVER_AUTHOR "Wolfgang Grandegger <wolfgang@ces.ch>"
+#define DRIVER_DESC "Magic Control Technology USB-RS232 converter driver"
+
+/*
+ * Function prototypes
+ */
+static int  mct_u232_port_probe(struct usb_serial_port *port);
+static void mct_u232_port_remove(struct usb_serial_port *remove);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int  mct_u232_open(struct tty_struct *tty, struct usb_serial_port *port);
 static void mct_u232_close(struct usb_serial_port *port);
 static void mct_u232_dtr_rts(struct usb_serial_port *port, int on);
 static void mct_u232_read_int_callback(struct urb *urb);
 static void mct_u232_set_termios(struct tty_struct *tty,
+<<<<<<< HEAD
 			struct usb_serial_port *port, struct ktermios *old);
 static void mct_u232_break_ctl(struct tty_struct *tty, int break_state);
 static int  mct_u232_tiocmget(struct tty_struct *tty);
@@ -66,6 +90,14 @@ static int  mct_u232_ioctl(struct tty_struct *tty,
 			unsigned int cmd, unsigned long arg);
 static int  mct_u232_get_icount(struct tty_struct *tty,
 			struct serial_icounter_struct *icount);
+=======
+				 struct usb_serial_port *port,
+				 const struct ktermios *old_termios);
+static int  mct_u232_break_ctl(struct tty_struct *tty, int break_state);
+static int  mct_u232_tiocmget(struct tty_struct *tty);
+static int  mct_u232_tiocmset(struct tty_struct *tty,
+			unsigned int set, unsigned int clear);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mct_u232_throttle(struct tty_struct *tty);
 static void mct_u232_unthrottle(struct tty_struct *tty);
 
@@ -73,13 +105,18 @@ static void mct_u232_unthrottle(struct tty_struct *tty);
 /*
  * All of the device info needed for the MCT USB-RS232 converter.
  */
+<<<<<<< HEAD
 static const struct usb_device_id id_table_combined[] = {
+=======
+static const struct usb_device_id id_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_DEVICE(MCT_U232_VID, MCT_U232_PID) },
 	{ USB_DEVICE(MCT_U232_VID, MCT_U232_SITECOM_PID) },
 	{ USB_DEVICE(MCT_U232_VID, MCT_U232_DU_H3SP_PID) },
 	{ USB_DEVICE(MCT_U232_BELKIN_F5U109_VID, MCT_U232_BELKIN_F5U109_PID) },
 	{ }		/* Terminating entry */
 };
+<<<<<<< HEAD
 
 MODULE_DEVICE_TABLE(usb, id_table_combined);
 
@@ -89,6 +126,9 @@ static struct usb_driver mct_u232_driver = {
 	.disconnect =	usb_serial_disconnect,
 	.id_table =	id_table_combined,
 };
+=======
+MODULE_DEVICE_TABLE(usb, id_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct usb_serial_driver mct_u232_device = {
 	.driver = {
@@ -96,7 +136,11 @@ static struct usb_serial_driver mct_u232_device = {
 		.name =		"mct_u232",
 	},
 	.description =	     "MCT U232",
+<<<<<<< HEAD
 	.id_table =	     id_table_combined,
+=======
+	.id_table =	     id_table,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.num_ports =	     1,
 	.open =		     mct_u232_open,
 	.close =	     mct_u232_close,
@@ -108,10 +152,17 @@ static struct usb_serial_driver mct_u232_device = {
 	.break_ctl =	     mct_u232_break_ctl,
 	.tiocmget =	     mct_u232_tiocmget,
 	.tiocmset =	     mct_u232_tiocmset,
+<<<<<<< HEAD
 	.attach =	     mct_u232_startup,
 	.release =	     mct_u232_release,
 	.ioctl =             mct_u232_ioctl,
 	.get_icount =        mct_u232_get_icount,
+=======
+	.tiocmiwait =        usb_serial_generic_tiocmiwait,
+	.port_probe =        mct_u232_port_probe,
+	.port_remove =       mct_u232_port_remove,
+	.get_icount =        usb_serial_generic_get_icount,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct usb_serial_driver * const serial_drivers[] = {
@@ -119,13 +170,20 @@ static struct usb_serial_driver * const serial_drivers[] = {
 };
 
 struct mct_u232_private {
+<<<<<<< HEAD
+=======
+	struct urb *read_urb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t lock;
 	unsigned int	     control_state; /* Modem Line Setting (TIOCM) */
 	unsigned char        last_lcr;      /* Line Control Register */
 	unsigned char	     last_lsr;      /* Line Status Register */
 	unsigned char	     last_msr;      /* Modem Status Register */
 	unsigned int	     rx_flags;      /* Throttling flags */
+<<<<<<< HEAD
 	struct async_icount  icount;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define THROTTLED		0x01
@@ -209,7 +267,11 @@ static int mct_u232_set_baud_rate(struct tty_struct *tty,
 		return -ENOMEM;
 
 	divisor = mct_u232_calculate_baud_rate(serial, value, &speed);
+<<<<<<< HEAD
 	put_unaligned_le32(cpu_to_le32(divisor), buf);
+=======
+	put_unaligned_le32(divisor, buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
 				MCT_U232_SET_BAUD_RATE_REQUEST,
 				MCT_U232_SET_REQUEST_TYPE,
@@ -220,7 +282,11 @@ static int mct_u232_set_baud_rate(struct tty_struct *tty,
 			value, rc);
 	else
 		tty_encode_baud_rate(tty, speed, speed);
+<<<<<<< HEAD
 	dbg("set_baud_rate: value: 0x%x, divisor: 0x%x", value, divisor);
+=======
+	dev_dbg(&port->dev, "set_baud_rate: value: 0x%x, divisor: 0x%x\n", value, divisor);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Mimic the MCT-supplied Windows driver (version 1.21P.0104), which
 	   always sends two extra USB 'device request' messages after the
@@ -253,8 +319,13 @@ static int mct_u232_set_baud_rate(struct tty_struct *tty,
 	if (port && C_CRTSCTS(tty))
 	   cts_enable_byte = 1;
 
+<<<<<<< HEAD
 	dbg("set_baud_rate: send second control message, data = %02X",
 							cts_enable_byte);
+=======
+	dev_dbg(&port->dev, "set_baud_rate: send second control message, data = %02X\n",
+		cts_enable_byte);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf[0] = cts_enable_byte;
 	rc = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
 			MCT_U232_SET_CTS_REQUEST,
@@ -269,7 +340,12 @@ static int mct_u232_set_baud_rate(struct tty_struct *tty,
 	return rc;
 } /* mct_u232_set_baud_rate */
 
+<<<<<<< HEAD
 static int mct_u232_set_line_ctrl(struct usb_serial *serial, unsigned char lcr)
+=======
+static int mct_u232_set_line_ctrl(struct usb_serial_port *port,
+				  unsigned char lcr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 	unsigned char *buf;
@@ -279,20 +355,33 @@ static int mct_u232_set_line_ctrl(struct usb_serial *serial, unsigned char lcr)
 		return -ENOMEM;
 
 	buf[0] = lcr;
+<<<<<<< HEAD
 	rc = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
+=======
+	rc = usb_control_msg(port->serial->dev, usb_sndctrlpipe(port->serial->dev, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			MCT_U232_SET_LINE_CTRL_REQUEST,
 			MCT_U232_SET_REQUEST_TYPE,
 			0, 0, buf, MCT_U232_SET_LINE_CTRL_SIZE,
 			WDR_TIMEOUT);
 	if (rc < 0)
+<<<<<<< HEAD
 		dev_err(&serial->dev->dev,
 			"Set LINE CTRL 0x%x failed (error = %d)\n", lcr, rc);
 	dbg("set_line_ctrl: 0x%x", lcr);
+=======
+		dev_err(&port->dev, "Set LINE CTRL 0x%x failed (error = %d)\n", lcr, rc);
+	dev_dbg(&port->dev, "set_line_ctrl: 0x%x\n", lcr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(buf);
 	return rc;
 } /* mct_u232_set_line_ctrl */
 
+<<<<<<< HEAD
 static int mct_u232_set_modem_ctrl(struct usb_serial *serial,
+=======
+static int mct_u232_set_modem_ctrl(struct usb_serial_port *port,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   unsigned int control_state)
 {
 	int rc;
@@ -310,25 +399,41 @@ static int mct_u232_set_modem_ctrl(struct usb_serial *serial,
 		mcr |= MCT_U232_MCR_RTS;
 
 	buf[0] = mcr;
+<<<<<<< HEAD
 	rc = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
+=======
+	rc = usb_control_msg(port->serial->dev, usb_sndctrlpipe(port->serial->dev, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			MCT_U232_SET_MODEM_CTRL_REQUEST,
 			MCT_U232_SET_REQUEST_TYPE,
 			0, 0, buf, MCT_U232_SET_MODEM_CTRL_SIZE,
 			WDR_TIMEOUT);
 	kfree(buf);
 
+<<<<<<< HEAD
 	dbg("set_modem_ctrl: state=0x%x ==> mcr=0x%x", control_state, mcr);
 
 	if (rc < 0) {
 		dev_err(&serial->dev->dev,
 			"Set MODEM CTRL 0x%x failed (error = %d)\n", mcr, rc);
+=======
+	dev_dbg(&port->dev, "set_modem_ctrl: state=0x%x ==> mcr=0x%x\n", control_state, mcr);
+
+	if (rc < 0) {
+		dev_err(&port->dev, "Set MODEM CTRL 0x%x failed (error = %d)\n", mcr, rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 	return 0;
 } /* mct_u232_set_modem_ctrl */
 
+<<<<<<< HEAD
 static int mct_u232_get_modem_stat(struct usb_serial *serial,
 						unsigned char *msr)
+=======
+static int mct_u232_get_modem_stat(struct usb_serial_port *port,
+				   unsigned char *msr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 	unsigned char *buf;
@@ -338,19 +443,36 @@ static int mct_u232_get_modem_stat(struct usb_serial *serial,
 		*msr = 0;
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	rc = usb_control_msg(serial->dev, usb_rcvctrlpipe(serial->dev, 0),
+=======
+	rc = usb_control_msg(port->serial->dev, usb_rcvctrlpipe(port->serial->dev, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			MCT_U232_GET_MODEM_STAT_REQUEST,
 			MCT_U232_GET_REQUEST_TYPE,
 			0, 0, buf, MCT_U232_GET_MODEM_STAT_SIZE,
 			WDR_TIMEOUT);
+<<<<<<< HEAD
 	if (rc < 0) {
 		dev_err(&serial->dev->dev,
 			"Get MODEM STATus failed (error = %d)\n", rc);
+=======
+	if (rc < MCT_U232_GET_MODEM_STAT_SIZE) {
+		dev_err(&port->dev, "Get MODEM STATus failed (error = %d)\n", rc);
+
+		if (rc >= 0)
+			rc = -EIO;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*msr = 0;
 	} else {
 		*msr = buf[0];
 	}
+<<<<<<< HEAD
 	dbg("get_modem_stat: 0x%x", *msr);
+=======
+	dev_dbg(&port->dev, "get_modem_stat: 0x%x\n", *msr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(buf);
 	return rc;
 } /* mct_u232_get_modem_stat */
@@ -369,8 +491,13 @@ static void mct_u232_msr_to_icount(struct async_icount *icount,
 		icount->dcd++;
 } /* mct_u232_msr_to_icount */
 
+<<<<<<< HEAD
 static void mct_u232_msr_to_state(unsigned int *control_state,
 						unsigned char msr)
+=======
+static void mct_u232_msr_to_state(struct usb_serial_port *port,
+				  unsigned int *control_state, unsigned char msr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Translate Control Line states */
 	if (msr & MCT_U232_MSR_DSR)
@@ -389,17 +516,28 @@ static void mct_u232_msr_to_state(unsigned int *control_state,
 		*control_state |=  TIOCM_CD;
 	else
 		*control_state &= ~TIOCM_CD;
+<<<<<<< HEAD
 	dbg("msr_to_state: msr=0x%x ==> state=0x%x", msr, *control_state);
+=======
+	dev_dbg(&port->dev, "msr_to_state: msr=0x%x ==> state=0x%x\n", msr, *control_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } /* mct_u232_msr_to_state */
 
 /*
  * Driver's tty interface functions
  */
 
+<<<<<<< HEAD
 static int mct_u232_startup(struct usb_serial *serial)
 {
 	struct mct_u232_private *priv;
 	struct usb_serial_port *port, *rport;
+=======
+static int mct_u232_port_probe(struct usb_serial_port *port)
+{
+	struct usb_serial *serial = port->serial;
+	struct mct_u232_private *priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check first to simplify error handling */
 	if (!serial->port[1] || !serial->port[1]->interrupt_in_urb) {
@@ -407,6 +545,7 @@ static int mct_u232_startup(struct usb_serial *serial)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	priv = kzalloc(sizeof(struct mct_u232_private), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
@@ -441,6 +580,30 @@ static void mct_u232_release(struct usb_serial *serial)
 		kfree(priv);
 	}
 } /* mct_u232_release */
+=======
+	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+	/* Use second interrupt-in endpoint for reading. */
+	priv->read_urb = serial->port[1]->interrupt_in_urb;
+	priv->read_urb->context = port;
+
+	spin_lock_init(&priv->lock);
+
+	usb_set_serial_port_data(port, priv);
+
+	return 0;
+}
+
+static void mct_u232_port_remove(struct usb_serial_port *port)
+{
+	struct mct_u232_private *priv;
+
+	priv = usb_get_serial_port_data(port);
+	kfree(priv);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int  mct_u232_open(struct tty_struct *tty, struct usb_serial_port *port)
 {
@@ -452,8 +615,11 @@ static int  mct_u232_open(struct tty_struct *tty, struct usb_serial_port *port)
 	unsigned char last_lcr;
 	unsigned char last_msr;
 
+<<<<<<< HEAD
 	dbg("%s port %d", __func__, port->number);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Compensate for a hardware bug: although the Sitecom U232-P25
 	 * device reports a maximum output packet size of 32 bytes,
 	 * it seems to be able to accept only 16 bytes (and that's what
@@ -469,7 +635,11 @@ static int  mct_u232_open(struct tty_struct *tty, struct usb_serial_port *port)
 	 * either.
 	 */
 	spin_lock_irqsave(&priv->lock, flags);
+<<<<<<< HEAD
 	if (tty && (tty->termios->c_cflag & CBAUD))
+=======
+	if (tty && C_BAUD(tty))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv->control_state = TIOCM_DTR | TIOCM_RTS;
 	else
 		priv->control_state = 0;
@@ -480,6 +650,7 @@ static int  mct_u232_open(struct tty_struct *tty, struct usb_serial_port *port)
 	control_state = priv->control_state;
 	last_lcr = priv->last_lcr;
 	spin_unlock_irqrestore(&priv->lock, flags);
+<<<<<<< HEAD
 	mct_u232_set_modem_ctrl(serial, control_state);
 	mct_u232_set_line_ctrl(serial, last_lcr);
 
@@ -494,13 +665,33 @@ static int  mct_u232_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (retval) {
 		dev_err(&port->dev,
 			"usb_submit_urb(read bulk) failed pipe 0x%x err %d\n",
+=======
+	mct_u232_set_modem_ctrl(port, control_state);
+	mct_u232_set_line_ctrl(port, last_lcr);
+
+	/* Read modem status and update control state */
+	mct_u232_get_modem_stat(port, &last_msr);
+	spin_lock_irqsave(&priv->lock, flags);
+	priv->last_msr = last_msr;
+	mct_u232_msr_to_state(port, &priv->control_state, priv->last_msr);
+	spin_unlock_irqrestore(&priv->lock, flags);
+
+	retval = usb_submit_urb(priv->read_urb, GFP_KERNEL);
+	if (retval) {
+		dev_err(&port->dev,
+			"usb_submit_urb(read) failed pipe 0x%x err %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			port->read_urb->pipe, retval);
 		goto error;
 	}
 
 	retval = usb_submit_urb(port->interrupt_in_urb, GFP_KERNEL);
 	if (retval) {
+<<<<<<< HEAD
 		usb_kill_urb(port->read_urb);
+=======
+		usb_kill_urb(priv->read_urb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&port->dev,
 			"usb_submit_urb(read int) failed pipe 0x%x err %d",
 			port->interrupt_in_urb->pipe, retval);
@@ -525,11 +716,16 @@ static void mct_u232_dtr_rts(struct usb_serial_port *port, int on)
 	control_state = priv->control_state;
 	spin_unlock_irq(&priv->lock);
 
+<<<<<<< HEAD
 	mct_u232_set_modem_ctrl(port->serial, control_state);
+=======
+	mct_u232_set_modem_ctrl(port, control_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mct_u232_close(struct usb_serial_port *port)
 {
+<<<<<<< HEAD
 	dbg("%s port %d", __func__, port->number);
 
 	/*
@@ -537,6 +733,11 @@ static void mct_u232_close(struct usb_serial_port *port)
 	 * generic close thus fails to kill.
 	 */
 	usb_kill_urb(port->read_urb);
+=======
+	struct mct_u232_private *priv = usb_get_serial_port_data(port);
+
+	usb_kill_urb(priv->read_urb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_kill_urb(port->interrupt_in_urb);
 
 	usb_serial_generic_close(port);
@@ -547,8 +748,11 @@ static void mct_u232_read_int_callback(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
 	struct mct_u232_private *priv = usb_get_serial_port_data(port);
+<<<<<<< HEAD
 	struct usb_serial *serial = port->serial;
 	struct tty_struct *tty;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *data = urb->transfer_buffer;
 	int retval;
 	int status = urb->status;
@@ -562,6 +766,7 @@ static void mct_u232_read_int_callback(struct urb *urb)
 	case -ENOENT:
 	case -ESHUTDOWN:
 		/* this urb is terminated, clean up */
+<<<<<<< HEAD
 		dbg("%s - urb shutting down with status: %d",
 		    __func__, status);
 		return;
@@ -579,12 +784,25 @@ static void mct_u232_read_int_callback(struct urb *urb)
 	dbg("%s - port %d", __func__, port->number);
 	usb_serial_debug_data(debug, &port->dev, __func__,
 					urb->actual_length, data);
+=======
+		dev_dbg(&port->dev, "%s - urb shutting down with status: %d\n",
+			__func__, status);
+		return;
+	default:
+		dev_dbg(&port->dev, "%s - nonzero urb status received: %d\n",
+			__func__, status);
+		goto exit;
+	}
+
+	usb_serial_debug_data(&port->dev, __func__, urb->actual_length, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Work-a-round: handle the 'usual' bulk-in pipe here
 	 */
 	if (urb->transfer_buffer_length > 2) {
 		if (urb->actual_length) {
+<<<<<<< HEAD
 			tty = tty_port_tty_get(&port->port);
 			if (tty) {
 				tty_insert_flip_string(tty, data,
@@ -592,6 +810,11 @@ static void mct_u232_read_int_callback(struct urb *urb)
 				tty_flip_buffer_push(tty);
 			}
 			tty_kref_put(tty);
+=======
+			tty_insert_flip_string(&port->port, data,
+					urb->actual_length);
+			tty_flip_buffer_push(&port->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		goto exit;
 	}
@@ -604,9 +827,15 @@ static void mct_u232_read_int_callback(struct urb *urb)
 	priv->last_msr = data[MCT_U232_MSR_INDEX];
 
 	/* Record Control Line states */
+<<<<<<< HEAD
 	mct_u232_msr_to_state(&priv->control_state, priv->last_msr);
 
 	mct_u232_msr_to_icount(&priv->icount, priv->last_msr);
+=======
+	mct_u232_msr_to_state(port, &priv->control_state, priv->last_msr);
+
+	mct_u232_msr_to_icount(&port->icount, priv->last_msr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if 0
 	/* Not yet handled. See belkin_sa.c for further information */
@@ -634,7 +863,11 @@ static void mct_u232_read_int_callback(struct urb *urb)
 		tty_kref_put(tty);
 	}
 #endif
+<<<<<<< HEAD
 	wake_up_interruptible(&port->delta_msr_wait);
+=======
+	wake_up_interruptible(&port->port.delta_msr_wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&priv->lock, flags);
 exit:
 	retval = usb_submit_urb(urb, GFP_ATOMIC);
@@ -646,11 +879,19 @@ exit:
 
 static void mct_u232_set_termios(struct tty_struct *tty,
 				 struct usb_serial_port *port,
+<<<<<<< HEAD
 				 struct ktermios *old_termios)
 {
 	struct usb_serial *serial = port->serial;
 	struct mct_u232_private *priv = usb_get_serial_port_data(port);
 	struct ktermios *termios = tty->termios;
+=======
+				 const struct ktermios *old_termios)
+{
+	struct usb_serial *serial = port->serial;
+	struct mct_u232_private *priv = usb_get_serial_port_data(port);
+	struct ktermios *termios = &tty->termios;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cflag = termios->c_cflag;
 	unsigned int old_cflag = old_termios->c_cflag;
 	unsigned long flags;
@@ -672,18 +913,31 @@ static void mct_u232_set_termios(struct tty_struct *tty,
 
 	/* reassert DTR and RTS on transition from B0 */
 	if ((old_cflag & CBAUD) == B0) {
+<<<<<<< HEAD
 		dbg("%s: baud was B0", __func__);
 		control_state |= TIOCM_DTR | TIOCM_RTS;
 		mct_u232_set_modem_ctrl(serial, control_state);
+=======
+		dev_dbg(&port->dev, "%s: baud was B0\n", __func__);
+		control_state |= TIOCM_DTR | TIOCM_RTS;
+		mct_u232_set_modem_ctrl(port, control_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mct_u232_set_baud_rate(tty, serial, port, tty_get_baud_rate(tty));
 
 	if ((cflag & CBAUD) == B0) {
+<<<<<<< HEAD
 		dbg("%s: baud is B0", __func__);
 		/* Drop RTS and DTR */
 		control_state &= ~(TIOCM_DTR | TIOCM_RTS);
 		mct_u232_set_modem_ctrl(serial, control_state);
+=======
+		dev_dbg(&port->dev, "%s: baud is B0\n", __func__);
+		/* Drop RTS and DTR */
+		control_state &= ~(TIOCM_DTR | TIOCM_RTS);
+		mct_u232_set_modem_ctrl(port, control_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -720,7 +974,11 @@ static void mct_u232_set_termios(struct tty_struct *tty,
 	last_lcr |= (cflag & CSTOPB) ?
 		MCT_U232_STOP_BITS_2 : MCT_U232_STOP_BITS_1;
 
+<<<<<<< HEAD
 	mct_u232_set_line_ctrl(serial, last_lcr);
+=======
+	mct_u232_set_line_ctrl(port, last_lcr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* save off the modified port settings */
 	spin_lock_irqsave(&priv->lock, flags);
@@ -729,16 +987,25 @@ static void mct_u232_set_termios(struct tty_struct *tty,
 	spin_unlock_irqrestore(&priv->lock, flags);
 } /* mct_u232_set_termios */
 
+<<<<<<< HEAD
 static void mct_u232_break_ctl(struct tty_struct *tty, int break_state)
 {
 	struct usb_serial_port *port = tty->driver_data;
 	struct usb_serial *serial = port->serial;
+=======
+static int mct_u232_break_ctl(struct tty_struct *tty, int break_state)
+{
+	struct usb_serial_port *port = tty->driver_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mct_u232_private *priv = usb_get_serial_port_data(port);
 	unsigned char lcr;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	dbg("%sstate=%d", __func__, break_state);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&priv->lock, flags);
 	lcr = priv->last_lcr;
 
@@ -746,7 +1013,11 @@ static void mct_u232_break_ctl(struct tty_struct *tty, int break_state)
 		lcr |= MCT_U232_SET_BREAK;
 	spin_unlock_irqrestore(&priv->lock, flags);
 
+<<<<<<< HEAD
 	mct_u232_set_line_ctrl(serial, lcr);
+=======
+	return mct_u232_set_line_ctrl(port, lcr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } /* mct_u232_break_ctl */
 
 
@@ -757,8 +1028,11 @@ static int mct_u232_tiocmget(struct tty_struct *tty)
 	unsigned int control_state;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&priv->lock, flags);
 	control_state = priv->control_state;
 	spin_unlock_irqrestore(&priv->lock, flags);
@@ -770,13 +1044,19 @@ static int mct_u232_tiocmset(struct tty_struct *tty,
 			      unsigned int set, unsigned int clear)
 {
 	struct usb_serial_port *port = tty->driver_data;
+<<<<<<< HEAD
 	struct usb_serial *serial = port->serial;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mct_u232_private *priv = usb_get_serial_port_data(port);
 	unsigned int control_state;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&priv->lock, flags);
 	control_state = priv->control_state;
 
@@ -791,7 +1071,11 @@ static int mct_u232_tiocmset(struct tty_struct *tty,
 
 	priv->control_state = control_state;
 	spin_unlock_irqrestore(&priv->lock, flags);
+<<<<<<< HEAD
 	return mct_u232_set_modem_ctrl(serial, control_state);
+=======
+	return mct_u232_set_modem_ctrl(port, control_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mct_u232_throttle(struct tty_struct *tty)
@@ -800,15 +1084,22 @@ static void mct_u232_throttle(struct tty_struct *tty)
 	struct mct_u232_private *priv = usb_get_serial_port_data(port);
 	unsigned int control_state;
 
+<<<<<<< HEAD
 	dbg("%s - port %d", __func__, port->number);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&priv->lock);
 	priv->rx_flags |= THROTTLED;
 	if (C_CRTSCTS(tty)) {
 		priv->control_state &= ~TIOCM_RTS;
 		control_state = priv->control_state;
 		spin_unlock_irq(&priv->lock);
+<<<<<<< HEAD
 		(void) mct_u232_set_modem_ctrl(port->serial, control_state);
+=======
+		mct_u232_set_modem_ctrl(port, control_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		spin_unlock_irq(&priv->lock);
 	}
@@ -820,20 +1111,28 @@ static void mct_u232_unthrottle(struct tty_struct *tty)
 	struct mct_u232_private *priv = usb_get_serial_port_data(port);
 	unsigned int control_state;
 
+<<<<<<< HEAD
 	dbg("%s - port %d", __func__, port->number);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&priv->lock);
 	if ((priv->rx_flags & THROTTLED) && C_CRTSCTS(tty)) {
 		priv->rx_flags &= ~THROTTLED;
 		priv->control_state |= TIOCM_RTS;
 		control_state = priv->control_state;
 		spin_unlock_irq(&priv->lock);
+<<<<<<< HEAD
 		(void) mct_u232_set_modem_ctrl(port->serial, control_state);
+=======
+		mct_u232_set_modem_ctrl(port, control_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		spin_unlock_irq(&priv->lock);
 	}
 }
 
+<<<<<<< HEAD
 static int  mct_u232_ioctl(struct tty_struct *tty,
 			unsigned int cmd, unsigned long arg)
 {
@@ -915,10 +1214,16 @@ static int  mct_u232_get_icount(struct tty_struct *tty,
 }
 
 module_usb_serial_driver(mct_u232_driver, serial_drivers);
+=======
+module_usb_serial_driver(serial_drivers, id_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug enabled or not");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

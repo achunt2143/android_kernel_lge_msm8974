@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram pcxhr compatible soundcards
  *
  * low level interface with interrupt and message handling
  *
  * Copyright (c) 2004 by Digigram <alsa@digigram.com>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __SOUND_PCXHR_CORE_H
@@ -79,6 +86,11 @@ enum {
 	CMD_FORMAT_STREAM_IN,		/* cmd_len >= 4	stat_len = 0 */
 	CMD_STREAM_SAMPLE_COUNT,	/* cmd_len = 2	stat_len = (2 * nb_stream) */
 	CMD_AUDIO_LEVEL_ADJUST,		/* cmd_len = 3	stat_len = 0 */
+<<<<<<< HEAD
+=======
+	CMD_GET_TIME_CODE,		/* cmd_len = 1  stat_len = 5 */
+	CMD_MANAGE_SIGNAL,		/* cmd_len = 1  stat_len = 0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CMD_LAST_INDEX
 };
 
@@ -116,7 +128,11 @@ int pcxhr_send_msg(struct pcxhr_mgr *mgr, struct pcxhr_rmh *rmh);
 #define IO_NUM_REG_OUT_ANA_LEVEL	20
 #define IO_NUM_REG_IN_ANA_LEVEL		21
 
+<<<<<<< HEAD
 
+=======
+#define REG_CONT_VALSMPTE		0x000800
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REG_CONT_UNMUTE_INPUTS		0x020000
 
 /* parameters used with register IO_NUM_REG_STATUS */
@@ -198,6 +214,10 @@ int pcxhr_write_io_num_reg_cont(struct pcxhr_mgr *mgr, unsigned int mask,
 
 /* interrupt handling */
 irqreturn_t pcxhr_interrupt(int irq, void *dev_id);
+<<<<<<< HEAD
 void pcxhr_msg_tasklet(unsigned long arg);
+=======
+irqreturn_t pcxhr_threaded_irq(int irq, void *dev_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __SOUND_PCXHR_CORE_H */

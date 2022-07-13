@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright (C) 1991, 1992 Linus Torvalds
  *   Copyright 2007 rPath, Inc. - All Rights Reserved
  *   Copyright 2009 Intel Corporation; author H. Peter Anvin
  *
+<<<<<<< HEAD
  *   This file is part of the Linux kernel, and is made available under
  *   the terms of the GNU General Public License version 2.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -241,9 +248,15 @@ static int vga_probe(void)
 		vga_modes,
 	};
 	static int mode_count[] = {
+<<<<<<< HEAD
 		sizeof(cga_modes)/sizeof(struct mode_info),
 		sizeof(ega_modes)/sizeof(struct mode_info),
 		sizeof(vga_modes)/sizeof(struct mode_info),
+=======
+		ARRAY_SIZE(cga_modes),
+		ARRAY_SIZE(ega_modes),
+		ARRAY_SIZE(vga_modes),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	struct biosregs ireg, oreg;

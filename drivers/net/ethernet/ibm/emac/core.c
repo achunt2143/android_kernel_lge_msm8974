@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/net/ethernet/ibm/emac/core.c
  *
@@ -16,12 +20,15 @@
  *	(c) 2003 Benjamin Herrenschmidt <benh@kernel.crashing.org>
  *      Armin Kuster <akuster@mvista.com>
  * 	Johnnie Peters <jpeters@mvista.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -39,13 +46,26 @@
 #include <linux/bitops.h>
 #include <linux/workqueue.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_net.h>
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+#include <linux/of_net.h>
+#include <linux/of_mdio.h>
+#include <linux/of_platform.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 #include <asm/processor.h>
 #include <asm/io.h>
 #include <asm/dma.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dcr.h>
 #include <asm/dcr-regs.h>
 
@@ -77,6 +97,7 @@ MODULE_AUTHOR
     ("Eugene Surovegin <eugene.surovegin@zultys.com> or <ebs@ebshome.net>");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 /*
  * PPC64 doesn't (yet) have a cacheable_memcpy
  */
@@ -84,6 +105,8 @@ MODULE_LICENSE("GPL");
 #define cacheable_memcpy(d,s,n) memcpy((d),(s),(n))
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* minimum number of free TX descriptors required to wake up TX process */
 #define EMAC_TX_WAKEUP_THRESH		(NUM_TX_BUFF / 4)
 
@@ -137,8 +160,12 @@ static inline void emac_report_timeout_error(struct emac_instance *dev,
 				  EMAC_FTR_440EP_PHY_CLK_FIX))
 		DBG(dev, "%s" NL, error);
 	else if (net_ratelimit())
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: %s\n", dev->ofdev->dev.of_node->full_name,
 			error);
+=======
+		printk(KERN_ERR "%pOF: %s\n", dev->ofdev->dev.of_node, error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* EMAC PHY clock workaround:
@@ -204,18 +231,32 @@ static void __emac_set_multicast_list(struct emac_instance *dev);
 
 static inline int emac_phy_supports_gige(int phy_mode)
 {
+<<<<<<< HEAD
 	return  phy_mode == PHY_MODE_GMII ||
 		phy_mode == PHY_MODE_RGMII ||
 		phy_mode == PHY_MODE_SGMII ||
 		phy_mode == PHY_MODE_TBI ||
 		phy_mode == PHY_MODE_RTBI;
+=======
+	return  phy_interface_mode_is_rgmii(phy_mode) ||
+		phy_mode == PHY_INTERFACE_MODE_GMII ||
+		phy_mode == PHY_INTERFACE_MODE_SGMII ||
+		phy_mode == PHY_INTERFACE_MODE_TBI ||
+		phy_mode == PHY_INTERFACE_MODE_RTBI;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int emac_phy_gpcs(int phy_mode)
 {
+<<<<<<< HEAD
 	return  phy_mode == PHY_MODE_SGMII ||
 		phy_mode == PHY_MODE_TBI ||
 		phy_mode == PHY_MODE_RTBI;
+=======
+	return  phy_mode == PHY_INTERFACE_MODE_SGMII ||
+		phy_mode == PHY_INTERFACE_MODE_TBI ||
+		phy_mode == PHY_INTERFACE_MODE_RTBI;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void emac_tx_enable(struct emac_instance *dev)
@@ -306,7 +347,11 @@ static inline void emac_netif_stop(struct emac_instance *dev)
 	dev->no_mcast = 1;
 	netif_addr_unlock(dev->ndev);
 	netif_tx_unlock_bh(dev->ndev);
+<<<<<<< HEAD
 	dev->ndev->trans_start = jiffies;	/* prevent tx timeout */
+=======
+	netif_trans_update(dev->ndev);	/* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mal_poll_disable(dev->mal, &dev->commac);
 	netif_tx_disable(dev->ndev);
 }
@@ -347,6 +392,10 @@ static int emac_reset(struct emac_instance *dev)
 {
 	struct emac_regs __iomem *p = dev->emacp;
 	int n = 20;
+<<<<<<< HEAD
+=======
+	bool __maybe_unused try_internal_clock = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DBG(dev, "reset" NL);
 
@@ -359,10 +408,43 @@ static int emac_reset(struct emac_instance *dev)
 	}
 
 #ifdef CONFIG_PPC_DCR_NATIVE
+<<<<<<< HEAD
 	/* Enable internal clock source */
 	if (emac_has_feature(dev, EMAC_FTR_460EX_PHY_CLK_FIX))
 		dcri_clrset(SDR0, SDR0_ETH_CFG,
 			    0, SDR0_ETH_CFG_ECS << dev->cell_index);
+=======
+do_retry:
+	/*
+	 * PPC460EX/GT Embedded Processor Advanced User's Manual
+	 * section 28.10.1 Mode Register 0 (EMACx_MR0) states:
+	 * Note: The PHY must provide a TX Clk in order to perform a soft reset
+	 * of the EMAC. If none is present, select the internal clock
+	 * (SDR0_ETH_CFG[EMACx_PHY_CLK] = 1).
+	 * After a soft reset, select the external clock.
+	 *
+	 * The AR8035-A PHY Meraki MR24 does not provide a TX Clk if the
+	 * ethernet cable is not attached. This causes the reset to timeout
+	 * and the PHY detection code in emac_init_phy() is unable to
+	 * communicate and detect the AR8035-A PHY. As a result, the emac
+	 * driver bails out early and the user has no ethernet.
+	 * In order to stay compatible with existing configurations, the
+	 * driver will temporarily switch to the internal clock, after
+	 * the first reset fails.
+	 */
+	if (emac_has_feature(dev, EMAC_FTR_460EX_PHY_CLK_FIX)) {
+		if (try_internal_clock || (dev->phy_address == 0xffffffff &&
+					   dev->phy_map == 0xffffffff)) {
+			/* No PHY: select internal loop clock before reset */
+			dcri_clrset(SDR0, SDR0_ETH_CFG,
+				    0, SDR0_ETH_CFG_ECS << dev->cell_index);
+		} else {
+			/* PHY present: select external clock before reset */
+			dcri_clrset(SDR0, SDR0_ETH_CFG,
+				    SDR0_ETH_CFG_ECS << dev->cell_index, 0);
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	out_be32(&p->mr0, EMAC_MR0_SRST);
@@ -370,10 +452,28 @@ static int emac_reset(struct emac_instance *dev)
 		--n;
 
 #ifdef CONFIG_PPC_DCR_NATIVE
+<<<<<<< HEAD
 	 /* Enable external clock source */
 	if (emac_has_feature(dev, EMAC_FTR_460EX_PHY_CLK_FIX))
 		dcri_clrset(SDR0, SDR0_ETH_CFG,
 			    SDR0_ETH_CFG_ECS << dev->cell_index, 0);
+=======
+	if (emac_has_feature(dev, EMAC_FTR_460EX_PHY_CLK_FIX)) {
+		if (!n && !try_internal_clock) {
+			/* first attempt has timed out. */
+			n = 20;
+			try_internal_clock = true;
+			goto do_retry;
+		}
+
+		if (try_internal_clock || (dev->phy_address == 0xffffffff &&
+					   dev->phy_map == 0xffffffff)) {
+			/* No PHY: restore external clock source after reset */
+			dcri_clrset(SDR0, SDR0_ETH_CFG,
+				    SDR0_ETH_CFG_ECS << dev->cell_index, 0);
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	if (n) {
@@ -390,7 +490,11 @@ static void emac_hash_mc(struct emac_instance *dev)
 {
 	const int regs = EMAC_XAHT_REGS(dev);
 	u32 *gaht_base = emac_gaht_base(dev);
+<<<<<<< HEAD
 	u32 gaht_temp[regs];
+=======
+	u32 gaht_temp[EMAC_XAHT_MAX_REGS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct netdev_hw_addr *ha;
 	int i;
 
@@ -483,6 +587,12 @@ static u32 __emac4_calc_base_mr1(struct emac_instance *dev, int tx_size, int rx_
 	case 16384:
 		ret |= EMAC4_MR1_TFS_16K;
 		break;
+<<<<<<< HEAD
+=======
+	case 8192:
+		ret |= EMAC4_MR1_TFS_8K;
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 4096:
 		ret |= EMAC4_MR1_TFS_4K;
 		break;
@@ -498,6 +608,12 @@ static u32 __emac4_calc_base_mr1(struct emac_instance *dev, int tx_size, int rx_
 	case 16384:
 		ret |= EMAC4_MR1_RFS_16K;
 		break;
+<<<<<<< HEAD
+=======
+	case 8192:
+		ret |= EMAC4_MR1_RFS_8K;
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 4096:
 		ret |= EMAC4_MR1_RFS_4K;
 		break;
@@ -742,7 +858,11 @@ static void emac_reset_work(struct work_struct *work)
 	mutex_unlock(&dev->link_lock);
 }
 
+<<<<<<< HEAD
 static void emac_tx_timeout(struct net_device *ndev)
+=======
+static void emac_tx_timeout(struct net_device *ndev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct emac_instance *dev = netdev_priv(ndev);
 
@@ -838,7 +958,11 @@ static void __emac_mdio_write(struct emac_instance *dev, u8 id, u8 reg,
 {
 	struct emac_regs __iomem *p = dev->emacp;
 	u32 r = 0;
+<<<<<<< HEAD
 	int n, err = -ETIMEDOUT;
+=======
+	int n;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&dev->mdio_lock);
 
@@ -885,7 +1009,10 @@ static void __emac_mdio_write(struct emac_instance *dev, u8 id, u8 reg,
 			goto bail;
 		}
 	}
+<<<<<<< HEAD
 	err = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  bail:
 	if (emac_has_feature(dev, EMAC_FTR_HAS_RGMII))
 		rgmii_put_mdio(dev->rgmii_dev, dev->rgmii_port);
@@ -962,7 +1089,41 @@ static void emac_set_multicast_list(struct net_device *ndev)
 		dev->mcast_pending = 1;
 		return;
 	}
+<<<<<<< HEAD
 	__emac_set_multicast_list(dev);
+=======
+
+	mutex_lock(&dev->link_lock);
+	__emac_set_multicast_list(dev);
+	mutex_unlock(&dev->link_lock);
+}
+
+static int emac_set_mac_address(struct net_device *ndev, void *sa)
+{
+	struct emac_instance *dev = netdev_priv(ndev);
+	struct sockaddr *addr = sa;
+	struct emac_regs __iomem *p = dev->emacp;
+
+	if (!is_valid_ether_addr(addr->sa_data))
+	       return -EADDRNOTAVAIL;
+
+	mutex_lock(&dev->link_lock);
+
+	eth_hw_addr_set(ndev, addr->sa_data);
+
+	emac_rx_disable(dev);
+	emac_tx_disable(dev);
+	out_be32(&p->iahr, (ndev->dev_addr[0] << 8) | ndev->dev_addr[1]);
+	out_be32(&p->ialr, (ndev->dev_addr[2] << 24) |
+		(ndev->dev_addr[3] << 16) | (ndev->dev_addr[4] << 8) |
+		ndev->dev_addr[5]);
+	emac_tx_enable(dev);
+	emac_rx_enable(dev);
+
+	mutex_unlock(&dev->link_lock);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int emac_resize_rx_ring(struct emac_instance *dev, int new_mtu)
@@ -1002,7 +1163,13 @@ static int emac_resize_rx_ring(struct emac_instance *dev, int new_mtu)
 
 	/* Second pass, allocate new skbs */
 	for (i = 0; i < NUM_RX_BUFF; ++i) {
+<<<<<<< HEAD
 		struct sk_buff *skb = alloc_skb(rx_skb_size, GFP_ATOMIC);
+=======
+		struct sk_buff *skb;
+
+		skb = netdev_alloc_skb_ip_align(dev->ndev, rx_skb_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!skb) {
 			ret = -ENOMEM;
 			goto oom;
@@ -1011,10 +1178,17 @@ static int emac_resize_rx_ring(struct emac_instance *dev, int new_mtu)
 		BUG_ON(!dev->rx_skb[i]);
 		dev_kfree_skb(dev->rx_skb[i]);
 
+<<<<<<< HEAD
 		skb_reserve(skb, EMAC_RX_SKB_HEADROOM + 2);
 		dev->rx_desc[i].data_ptr =
 		    dma_map_single(&dev->ofdev->dev, skb->data - 2, rx_sync_size,
 				   DMA_FROM_DEVICE) + 2;
+=======
+		dev->rx_desc[i].data_ptr =
+		    dma_map_single(&dev->ofdev->dev, skb->data - NET_IP_ALIGN,
+				   rx_sync_size, DMA_FROM_DEVICE)
+				   + NET_IP_ALIGN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->rx_skb[i] = skb;
 	}
  skip:
@@ -1054,9 +1228,12 @@ static int emac_change_mtu(struct net_device *ndev, int new_mtu)
 	struct emac_instance *dev = netdev_priv(ndev);
 	int ret = 0;
 
+<<<<<<< HEAD
 	if (new_mtu < EMAC_MIN_MTU || new_mtu > dev->max_mtu)
 		return -EINVAL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DBG(dev, "change_mtu(%d)" NL, new_mtu);
 
 	if (netif_running(ndev)) {
@@ -1108,20 +1285,32 @@ static void emac_clean_rx_ring(struct emac_instance *dev)
 	}
 }
 
+<<<<<<< HEAD
 static inline int emac_alloc_rx_skb(struct emac_instance *dev, int slot,
 				    gfp_t flags)
 {
 	struct sk_buff *skb = alloc_skb(dev->rx_skb_size, flags);
+=======
+static int
+__emac_prepare_rx_skb(struct sk_buff *skb, struct emac_instance *dev, int slot)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!skb))
 		return -ENOMEM;
 
 	dev->rx_skb[slot] = skb;
 	dev->rx_desc[slot].data_len = 0;
 
+<<<<<<< HEAD
 	skb_reserve(skb, EMAC_RX_SKB_HEADROOM + 2);
 	dev->rx_desc[slot].data_ptr =
 	    dma_map_single(&dev->ofdev->dev, skb->data - 2, dev->rx_sync_size,
 			   DMA_FROM_DEVICE) + 2;
+=======
+	dev->rx_desc[slot].data_ptr =
+	    dma_map_single(&dev->ofdev->dev, skb->data - NET_IP_ALIGN,
+			   dev->rx_sync_size, DMA_FROM_DEVICE) + NET_IP_ALIGN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb();
 	dev->rx_desc[slot].ctrl = MAL_RX_CTRL_EMPTY |
 	    (slot == (NUM_RX_BUFF - 1) ? MAL_RX_CTRL_WRAP : 0);
@@ -1129,6 +1318,30 @@ static inline int emac_alloc_rx_skb(struct emac_instance *dev, int slot,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int
+emac_alloc_rx_skb(struct emac_instance *dev, int slot)
+{
+	struct sk_buff *skb;
+
+	skb = __netdev_alloc_skb_ip_align(dev->ndev, dev->rx_skb_size,
+					  GFP_KERNEL);
+
+	return __emac_prepare_rx_skb(skb, dev, slot);
+}
+
+static int
+emac_alloc_rx_skb_napi(struct emac_instance *dev, int slot)
+{
+	struct sk_buff *skb;
+
+	skb = napi_alloc_skb(&dev->mal->napi, dev->rx_skb_size);
+
+	return __emac_prepare_rx_skb(skb, dev, slot);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void emac_print_link_status(struct emac_instance *dev)
 {
 	if (netif_carrier_ok(dev->ndev))
@@ -1159,7 +1372,11 @@ static int emac_open(struct net_device *ndev)
 
 	/* Allocate RX ring */
 	for (i = 0; i < NUM_RX_BUFF; ++i)
+<<<<<<< HEAD
 		if (emac_alloc_rx_skb(dev, i, GFP_KERNEL)) {
+=======
+		if (emac_alloc_rx_skb(dev, i)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_ERR "%s: failed to allocate RX ring\n",
 			       ndev->name);
 			goto oom;
@@ -1343,7 +1560,11 @@ static inline u16 emac_tx_csum(struct emac_instance *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int emac_xmit_finish(struct emac_instance *dev, int len)
+=======
+static inline netdev_tx_t emac_xmit_finish(struct emac_instance *dev, int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct emac_regs __iomem *p = dev->emacp;
 	struct net_device *ndev = dev->ndev;
@@ -1362,7 +1583,11 @@ static inline int emac_xmit_finish(struct emac_instance *dev, int len)
 		DBG2(dev, "stopped TX queue" NL);
 	}
 
+<<<<<<< HEAD
 	ndev->trans_start = jiffies;
+=======
+	netif_trans_update(ndev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	++dev->stats.tx_packets;
 	dev->stats.tx_bytes += len;
 
@@ -1370,7 +1595,11 @@ static inline int emac_xmit_finish(struct emac_instance *dev, int len)
 }
 
 /* Tx lock BH */
+<<<<<<< HEAD
 static int emac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+=======
+static netdev_tx_t emac_start_xmit(struct sk_buff *skb, struct net_device *ndev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct emac_instance *dev = netdev_priv(ndev);
 	unsigned int len = skb->len;
@@ -1428,7 +1657,12 @@ static inline int emac_xmit_split(struct emac_instance *dev, int slot,
 }
 
 /* Tx lock BH disabled (SG version for TAH equipped EMACs) */
+<<<<<<< HEAD
 static int emac_start_xmit_sg(struct sk_buff *skb, struct net_device *ndev)
+=======
+static netdev_tx_t
+emac_start_xmit_sg(struct sk_buff *skb, struct net_device *ndev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct emac_instance *dev = netdev_priv(ndev);
 	int nr_frags = skb_shinfo(skb)->nr_frags;
@@ -1466,7 +1700,11 @@ static int emac_start_xmit_sg(struct sk_buff *skb, struct net_device *ndev)
 				       ctrl);
 	/* skb fragments */
 	for (i = 0; i < nr_frags; ++i) {
+<<<<<<< HEAD
 		struct skb_frag_struct *frag = &skb_shinfo(skb)->frags[i];
+=======
+		skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = skb_frag_size(frag);
 
 		if (unlikely(dev->tx_cnt + mal_tx_chunks(len) >= NUM_TX_BUFF))
@@ -1593,8 +1831,14 @@ static inline void emac_recycle_rx_skb(struct emac_instance *dev, int slot,
 	DBG2(dev, "recycle %d %d" NL, slot, len);
 
 	if (len)
+<<<<<<< HEAD
 		dma_map_single(&dev->ofdev->dev, skb->data - 2,
 			       EMAC_DMA_ALIGN(len + 2), DMA_FROM_DEVICE);
+=======
+		dma_map_single(&dev->ofdev->dev, skb->data - NET_IP_ALIGN,
+			       SKB_DATA_ALIGN(len + NET_IP_ALIGN),
+			       DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->rx_desc[slot].data_len = 0;
 	wmb();
@@ -1646,12 +1890,20 @@ static inline int emac_rx_sg_append(struct emac_instance *dev, int slot)
 		int len = dev->rx_desc[slot].data_len;
 		int tot_len = dev->rx_sg_skb->len + len;
 
+<<<<<<< HEAD
 		if (unlikely(tot_len + 2 > dev->rx_skb_size)) {
+=======
+		if (unlikely(tot_len + NET_IP_ALIGN > dev->rx_skb_size)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			++dev->estats.rx_dropped_mtu;
 			dev_kfree_skb(dev->rx_sg_skb);
 			dev->rx_sg_skb = NULL;
 		} else {
+<<<<<<< HEAD
 			cacheable_memcpy(skb_tail_pointer(dev->rx_sg_skb),
+=======
+			memcpy(skb_tail_pointer(dev->rx_sg_skb),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 dev->rx_skb[slot]->data, len);
 			skb_put(dev->rx_sg_skb, len);
 			emac_recycle_rx_skb(dev, slot, len);
@@ -1702,6 +1954,7 @@ static int emac_poll_rx(void *param, int budget)
 		}
 
 		if (len && len < EMAC_RX_COPY_THRESH) {
+<<<<<<< HEAD
 			struct sk_buff *copy_skb =
 			    alloc_skb(len + EMAC_RX_SKB_HEADROOM + 2, GFP_ATOMIC);
 			if (unlikely(!copy_skb))
@@ -1713,6 +1966,20 @@ static int emac_poll_rx(void *param, int budget)
 			emac_recycle_rx_skb(dev, slot, len);
 			skb = copy_skb;
 		} else if (unlikely(emac_alloc_rx_skb(dev, slot, GFP_ATOMIC)))
+=======
+			struct sk_buff *copy_skb;
+
+			copy_skb = napi_alloc_skb(&dev->mal->napi, len);
+			if (unlikely(!copy_skb))
+				goto oom;
+
+			memcpy(copy_skb->data - NET_IP_ALIGN,
+			       skb->data - NET_IP_ALIGN,
+			       len + NET_IP_ALIGN);
+			emac_recycle_rx_skb(dev, slot, len);
+			skb = copy_skb;
+		} else if (unlikely(emac_alloc_rx_skb_napi(dev, slot)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto oom;
 
 		skb_put(skb, len);
@@ -1733,7 +2000,11 @@ static int emac_poll_rx(void *param, int budget)
 	sg:
 		if (ctrl & MAL_RX_CTRL_FIRST) {
 			BUG_ON(dev->rx_sg_skb);
+<<<<<<< HEAD
 			if (unlikely(emac_alloc_rx_skb(dev, slot, GFP_ATOMIC))) {
+=======
+			if (unlikely(emac_alloc_rx_skb_napi(dev, slot))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DBG(dev, "rx OOM %d" NL, slot);
 				++dev->estats.rx_dropped_oom;
 				emac_recycle_rx_skb(dev, slot, 0);
@@ -1887,7 +2158,11 @@ static struct net_device_stats *emac_stats(struct net_device *ndev)
 	struct emac_instance *dev = netdev_priv(ndev);
 	struct emac_stats *st = &dev->stats;
 	struct emac_error_stats *est = &dev->estats;
+<<<<<<< HEAD
 	struct net_device_stats *nst = &dev->nstats;
+=======
+	struct net_device_stats *nst = &ndev->stats;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	DBG2(dev, "stats" NL);
@@ -1950,6 +2225,7 @@ static struct mal_commac_ops emac_commac_sg_ops = {
 };
 
 /* Ethtool support */
+<<<<<<< HEAD
 static int emac_ethtool_get_settings(struct net_device *ndev,
 				     struct ethtool_cmd *cmd)
 {
@@ -1979,10 +2255,51 @@ static int emac_ethtool_set_settings(struct net_device *ndev,
 
 	DBG(dev, "set_settings(%d, %d, %d, 0x%08x)" NL,
 	    cmd->autoneg, cmd->speed, cmd->duplex, cmd->advertising);
+=======
+static int emac_ethtool_get_link_ksettings(struct net_device *ndev,
+					   struct ethtool_link_ksettings *cmd)
+{
+	struct emac_instance *dev = netdev_priv(ndev);
+	u32 supported, advertising;
+
+	supported = dev->phy.features;
+	cmd->base.port = PORT_MII;
+	cmd->base.phy_address = dev->phy.address;
+
+	mutex_lock(&dev->link_lock);
+	advertising = dev->phy.advertising;
+	cmd->base.autoneg = dev->phy.autoneg;
+	cmd->base.speed = dev->phy.speed;
+	cmd->base.duplex = dev->phy.duplex;
+	mutex_unlock(&dev->link_lock);
+
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
+						supported);
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
+						advertising);
+
+	return 0;
+}
+
+static int
+emac_ethtool_set_link_ksettings(struct net_device *ndev,
+				const struct ethtool_link_ksettings *cmd)
+{
+	struct emac_instance *dev = netdev_priv(ndev);
+	u32 f = dev->phy.features;
+	u32 advertising;
+
+	ethtool_convert_link_mode_to_legacy_u32(&advertising,
+						cmd->link_modes.advertising);
+
+	DBG(dev, "set_settings(%d, %d, %d, 0x%08x)" NL,
+	    cmd->base.autoneg, cmd->base.speed, cmd->base.duplex, advertising);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Basic sanity checks */
 	if (dev->phy.address < 0)
 		return -EOPNOTSUPP;
+<<<<<<< HEAD
 	if (cmd->autoneg != AUTONEG_ENABLE && cmd->autoneg != AUTONEG_DISABLE)
 		return -EINVAL;
 	if (cmd->autoneg == AUTONEG_ENABLE && cmd->advertising == 0)
@@ -1997,22 +2314,53 @@ static int emac_ethtool_set_settings(struct net_device *ndev,
 			    !(f & SUPPORTED_10baseT_Half))
 				return -EINVAL;
 			if (cmd->duplex == DUPLEX_FULL &&
+=======
+	if (cmd->base.autoneg != AUTONEG_ENABLE &&
+	    cmd->base.autoneg != AUTONEG_DISABLE)
+		return -EINVAL;
+	if (cmd->base.autoneg == AUTONEG_ENABLE && advertising == 0)
+		return -EINVAL;
+	if (cmd->base.duplex != DUPLEX_HALF && cmd->base.duplex != DUPLEX_FULL)
+		return -EINVAL;
+
+	if (cmd->base.autoneg == AUTONEG_DISABLE) {
+		switch (cmd->base.speed) {
+		case SPEED_10:
+			if (cmd->base.duplex == DUPLEX_HALF &&
+			    !(f & SUPPORTED_10baseT_Half))
+				return -EINVAL;
+			if (cmd->base.duplex == DUPLEX_FULL &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    !(f & SUPPORTED_10baseT_Full))
 				return -EINVAL;
 			break;
 		case SPEED_100:
+<<<<<<< HEAD
 			if (cmd->duplex == DUPLEX_HALF &&
 			    !(f & SUPPORTED_100baseT_Half))
 				return -EINVAL;
 			if (cmd->duplex == DUPLEX_FULL &&
+=======
+			if (cmd->base.duplex == DUPLEX_HALF &&
+			    !(f & SUPPORTED_100baseT_Half))
+				return -EINVAL;
+			if (cmd->base.duplex == DUPLEX_FULL &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    !(f & SUPPORTED_100baseT_Full))
 				return -EINVAL;
 			break;
 		case SPEED_1000:
+<<<<<<< HEAD
 			if (cmd->duplex == DUPLEX_HALF &&
 			    !(f & SUPPORTED_1000baseT_Half))
 				return -EINVAL;
 			if (cmd->duplex == DUPLEX_FULL &&
+=======
+			if (cmd->base.duplex == DUPLEX_HALF &&
+			    !(f & SUPPORTED_1000baseT_Half))
+				return -EINVAL;
+			if (cmd->base.duplex == DUPLEX_FULL &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    !(f & SUPPORTED_1000baseT_Full))
 				return -EINVAL;
 			break;
@@ -2021,8 +2369,13 @@ static int emac_ethtool_set_settings(struct net_device *ndev,
 		}
 
 		mutex_lock(&dev->link_lock);
+<<<<<<< HEAD
 		dev->phy.def->ops->setup_forced(&dev->phy, cmd->speed,
 						cmd->duplex);
+=======
+		dev->phy.def->ops->setup_forced(&dev->phy, cmd->base.speed,
+						cmd->base.duplex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&dev->link_lock);
 
 	} else {
@@ -2031,7 +2384,11 @@ static int emac_ethtool_set_settings(struct net_device *ndev,
 
 		mutex_lock(&dev->link_lock);
 		dev->phy.def->ops->setup_aneg(&dev->phy,
+<<<<<<< HEAD
 					      (cmd->advertising & f) |
+=======
+					      (advertising & f) |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      (dev->phy.advertising &
 					       (ADVERTISED_Pause |
 						ADVERTISED_Asym_Pause)));
@@ -2042,8 +2399,16 @@ static int emac_ethtool_set_settings(struct net_device *ndev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void emac_ethtool_get_ringparam(struct net_device *ndev,
 				       struct ethtool_ringparam *rp)
+=======
+static void
+emac_ethtool_get_ringparam(struct net_device *ndev,
+			   struct ethtool_ringparam *rp,
+			   struct kernel_ethtool_ringparam *kernel_rp,
+			   struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	rp->rx_max_pending = rp->rx_pending = NUM_RX_BUFF;
 	rp->tx_max_pending = rp->tx_pending = NUM_TX_BUFF;
@@ -2070,12 +2435,17 @@ static void emac_ethtool_get_pauseparam(struct net_device *ndev,
 
 static int emac_get_regs_len(struct emac_instance *dev)
 {
+<<<<<<< HEAD
 	if (emac_has_feature(dev, EMAC_FTR_EMAC4))
 		return sizeof(struct emac_ethtool_regs_subhdr) +
 			EMAC4_ETHTOOL_REGS_SIZE(dev);
 	else
 		return sizeof(struct emac_ethtool_regs_subhdr) +
 			EMAC_ETHTOOL_REGS_SIZE(dev);
+=======
+		return sizeof(struct emac_ethtool_regs_subhdr) +
+			sizeof(struct emac_regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int emac_ethtool_get_regs_len(struct net_device *ndev)
@@ -2100,6 +2470,7 @@ static void *emac_dump_regs(struct emac_instance *dev, void *buf)
 	struct emac_ethtool_regs_subhdr *hdr = buf;
 
 	hdr->index = dev->cell_index;
+<<<<<<< HEAD
 	if (emac_has_feature(dev, EMAC_FTR_EMAC4)) {
 		hdr->version = EMAC4_ETHTOOL_REGS_VER;
 		memcpy_fromio(hdr + 1, dev->emacp, EMAC4_ETHTOOL_REGS_SIZE(dev));
@@ -2109,6 +2480,17 @@ static void *emac_dump_regs(struct emac_instance *dev, void *buf)
 		memcpy_fromio(hdr + 1, dev->emacp, EMAC_ETHTOOL_REGS_SIZE(dev));
 		return (void *)(hdr + 1) + EMAC_ETHTOOL_REGS_SIZE(dev);
 	}
+=======
+	if (emac_has_feature(dev, EMAC_FTR_EMAC4SYNC)) {
+		hdr->version = EMAC4SYNC_ETHTOOL_REGS_VER;
+	} else if (emac_has_feature(dev, EMAC_FTR_EMAC4)) {
+		hdr->version = EMAC4_ETHTOOL_REGS_VER;
+	} else {
+		hdr->version = EMAC_ETHTOOL_REGS_VER;
+	}
+	memcpy_fromio(hdr + 1, dev->emacp, sizeof(struct emac_regs));
+	return (void *)(hdr + 1) + sizeof(struct emac_regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void emac_ethtool_get_regs(struct net_device *ndev,
@@ -2190,6 +2572,7 @@ static void emac_ethtool_get_drvinfo(struct net_device *ndev,
 {
 	struct emac_instance *dev = netdev_priv(ndev);
 
+<<<<<<< HEAD
 	strcpy(info->driver, "ibm_emac");
 	strcpy(info->version, DRV_VERSION);
 	info->fw_version[0] = '\0';
@@ -2201,6 +2584,15 @@ static void emac_ethtool_get_drvinfo(struct net_device *ndev,
 static const struct ethtool_ops emac_ethtool_ops = {
 	.get_settings = emac_ethtool_get_settings,
 	.set_settings = emac_ethtool_set_settings,
+=======
+	strscpy(info->driver, "ibm_emac", sizeof(info->driver));
+	strscpy(info->version, DRV_VERSION, sizeof(info->version));
+	snprintf(info->bus_info, sizeof(info->bus_info), "PPC 4xx EMAC-%d %pOF",
+		 dev->cell_index, dev->ofdev->dev.of_node);
+}
+
+static const struct ethtool_ops emac_ethtool_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo = emac_ethtool_get_drvinfo,
 
 	.get_regs_len = emac_ethtool_get_regs_len,
@@ -2216,6 +2608,11 @@ static const struct ethtool_ops emac_ethtool_ops = {
 	.get_ethtool_stats = emac_ethtool_get_ethtool_stats,
 
 	.get_link = ethtool_op_get_link,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings = emac_ethtool_get_link_ksettings,
+	.set_link_ksettings = emac_ethtool_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int emac_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
@@ -2231,7 +2628,11 @@ static int emac_ioctl(struct net_device *ndev, struct ifreq *rq, int cmd)
 	switch (cmd) {
 	case SIOCGMIIPHY:
 		data->phy_id = dev->phy.address;
+<<<<<<< HEAD
 		/* Fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SIOCGMIIREG:
 		data->val_out = emac_mdio_read(ndev, dev->phy.address,
 					       data->reg_num);
@@ -2261,8 +2662,13 @@ struct emac_depentry {
 #define	EMAC_DEP_PREV_IDX	5
 #define	EMAC_DEP_COUNT		6
 
+<<<<<<< HEAD
 static int __devinit emac_check_deps(struct emac_instance *dev,
 				     struct emac_depentry *deps)
+=======
+static int emac_check_deps(struct emac_instance *dev,
+			   struct emac_depentry *deps)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, there = 0;
 	struct device_node *np;
@@ -2293,7 +2699,11 @@ static int __devinit emac_check_deps(struct emac_instance *dev,
 		if (deps[i].ofdev == NULL)
 			continue;
 		if (deps[i].drvdata == NULL)
+<<<<<<< HEAD
 			deps[i].drvdata = dev_get_drvdata(&deps[i].ofdev->dev);
+=======
+			deps[i].drvdata = platform_get_drvdata(deps[i].ofdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (deps[i].drvdata != NULL)
 			there++;
 	}
@@ -2302,6 +2712,7 @@ static int __devinit emac_check_deps(struct emac_instance *dev,
 
 static void emac_put_deps(struct emac_instance *dev)
 {
+<<<<<<< HEAD
 	if (dev->mal_dev)
 		of_dev_put(dev->mal_dev);
 	if (dev->zmii_dev)
@@ -2316,6 +2727,17 @@ static void emac_put_deps(struct emac_instance *dev)
 
 static int __devinit emac_of_bus_notify(struct notifier_block *nb,
 					unsigned long action, void *data)
+=======
+	platform_device_put(dev->mal_dev);
+	platform_device_put(dev->zmii_dev);
+	platform_device_put(dev->rgmii_dev);
+	platform_device_put(dev->mdio_dev);
+	platform_device_put(dev->tah_dev);
+}
+
+static int emac_of_bus_notify(struct notifier_block *nb, unsigned long action,
+			      void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* We are only intereted in device addition */
 	if (action == BUS_NOTIFY_BOUND_DRIVER)
@@ -2323,11 +2745,19 @@ static int __devinit emac_of_bus_notify(struct notifier_block *nb,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct notifier_block emac_of_bus_notifier __devinitdata = {
 	.notifier_call = emac_of_bus_notify
 };
 
 static int __devinit emac_wait_deps(struct emac_instance *dev)
+=======
+static struct notifier_block emac_of_bus_notifier = {
+	.notifier_call = emac_of_bus_notify
+};
+
+static int emac_wait_deps(struct emac_instance *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct emac_depentry deps[EMAC_DEP_COUNT];
 	int i, err;
@@ -2350,10 +2780,16 @@ static int __devinit emac_wait_deps(struct emac_instance *dev)
 	bus_unregister_notifier(&platform_bus_type, &emac_of_bus_notifier);
 	err = emac_check_deps(dev, deps) ? 0 : -ENODEV;
 	for (i = 0; i < EMAC_DEP_COUNT; i++) {
+<<<<<<< HEAD
 		if (deps[i].node)
 			of_node_put(deps[i].node);
 		if (err && deps[i].ofdev)
 			of_dev_put(deps[i].ofdev);
+=======
+		of_node_put(deps[i].node);
+		if (err)
+			platform_device_put(deps[i].ofdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (err == 0) {
 		dev->mal_dev = deps[EMAC_DEP_MAL_IDX].ofdev;
@@ -2362,6 +2798,7 @@ static int __devinit emac_wait_deps(struct emac_instance *dev)
 		dev->tah_dev = deps[EMAC_DEP_TAH_IDX].ofdev;
 		dev->mdio_dev = deps[EMAC_DEP_MDIO_IDX].ofdev;
 	}
+<<<<<<< HEAD
 	if (deps[EMAC_DEP_PREV_IDX].ofdev)
 		of_dev_put(deps[EMAC_DEP_PREV_IDX].ofdev);
 	return err;
@@ -2369,20 +2806,246 @@ static int __devinit emac_wait_deps(struct emac_instance *dev)
 
 static int __devinit emac_read_uint_prop(struct device_node *np, const char *name,
 					 u32 *val, int fatal)
+=======
+	platform_device_put(deps[EMAC_DEP_PREV_IDX].ofdev);
+	return err;
+}
+
+static int emac_read_uint_prop(struct device_node *np, const char *name,
+			       u32 *val, int fatal)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len;
 	const u32 *prop = of_get_property(np, name, &len);
 	if (prop == NULL || len < sizeof(u32)) {
 		if (fatal)
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: missing %s property\n",
 			       np->full_name, name);
+=======
+			printk(KERN_ERR "%pOF: missing %s property\n",
+			       np, name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	*val = *prop;
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit emac_init_phy(struct emac_instance *dev)
+=======
+static void emac_adjust_link(struct net_device *ndev)
+{
+	struct emac_instance *dev = netdev_priv(ndev);
+	struct phy_device *phy = dev->phy_dev;
+
+	dev->phy.autoneg = phy->autoneg;
+	dev->phy.speed = phy->speed;
+	dev->phy.duplex = phy->duplex;
+	dev->phy.pause = phy->pause;
+	dev->phy.asym_pause = phy->asym_pause;
+	ethtool_convert_link_mode_to_legacy_u32(&dev->phy.advertising,
+						phy->advertising);
+}
+
+static int emac_mii_bus_read(struct mii_bus *bus, int addr, int regnum)
+{
+	int ret = emac_mdio_read(bus->priv, addr, regnum);
+	/* This is a workaround for powered down ports/phys.
+	 * In the wild, this was seen on the Cisco Meraki MX60(W).
+	 * This hardware disables ports as part of the handoff
+	 * procedure. Accessing the ports will lead to errors
+	 * (-ETIMEDOUT, -EREMOTEIO) that do more harm than good.
+	 */
+	return ret < 0 ? 0xffff : ret;
+}
+
+static int emac_mii_bus_write(struct mii_bus *bus, int addr,
+			      int regnum, u16 val)
+{
+	emac_mdio_write(bus->priv, addr, regnum, val);
+	return 0;
+}
+
+static int emac_mii_bus_reset(struct mii_bus *bus)
+{
+	struct emac_instance *dev = netdev_priv(bus->priv);
+
+	return emac_reset(dev);
+}
+
+static int emac_mdio_phy_start_aneg(struct mii_phy *phy,
+				    struct phy_device *phy_dev)
+{
+	phy_dev->autoneg = phy->autoneg;
+	phy_dev->speed = phy->speed;
+	phy_dev->duplex = phy->duplex;
+	ethtool_convert_legacy_u32_to_link_mode(phy_dev->advertising,
+						phy->advertising);
+	return phy_start_aneg(phy_dev);
+}
+
+static int emac_mdio_setup_aneg(struct mii_phy *phy, u32 advertise)
+{
+	struct net_device *ndev = phy->dev;
+	struct emac_instance *dev = netdev_priv(ndev);
+
+	phy->autoneg = AUTONEG_ENABLE;
+	phy->advertising = advertise;
+	return emac_mdio_phy_start_aneg(phy, dev->phy_dev);
+}
+
+static int emac_mdio_setup_forced(struct mii_phy *phy, int speed, int fd)
+{
+	struct net_device *ndev = phy->dev;
+	struct emac_instance *dev = netdev_priv(ndev);
+
+	phy->autoneg = AUTONEG_DISABLE;
+	phy->speed = speed;
+	phy->duplex = fd;
+	return emac_mdio_phy_start_aneg(phy, dev->phy_dev);
+}
+
+static int emac_mdio_poll_link(struct mii_phy *phy)
+{
+	struct net_device *ndev = phy->dev;
+	struct emac_instance *dev = netdev_priv(ndev);
+	int res;
+
+	res = phy_read_status(dev->phy_dev);
+	if (res) {
+		dev_err(&dev->ofdev->dev, "link update failed (%d).", res);
+		return ethtool_op_get_link(ndev);
+	}
+
+	return dev->phy_dev->link;
+}
+
+static int emac_mdio_read_link(struct mii_phy *phy)
+{
+	struct net_device *ndev = phy->dev;
+	struct emac_instance *dev = netdev_priv(ndev);
+	struct phy_device *phy_dev = dev->phy_dev;
+	int res;
+
+	res = phy_read_status(phy_dev);
+	if (res)
+		return res;
+
+	phy->speed = phy_dev->speed;
+	phy->duplex = phy_dev->duplex;
+	phy->pause = phy_dev->pause;
+	phy->asym_pause = phy_dev->asym_pause;
+	return 0;
+}
+
+static int emac_mdio_init_phy(struct mii_phy *phy)
+{
+	struct net_device *ndev = phy->dev;
+	struct emac_instance *dev = netdev_priv(ndev);
+
+	phy_start(dev->phy_dev);
+	return phy_init_hw(dev->phy_dev);
+}
+
+static const struct mii_phy_ops emac_dt_mdio_phy_ops = {
+	.init		= emac_mdio_init_phy,
+	.setup_aneg	= emac_mdio_setup_aneg,
+	.setup_forced	= emac_mdio_setup_forced,
+	.poll_link	= emac_mdio_poll_link,
+	.read_link	= emac_mdio_read_link,
+};
+
+static int emac_dt_mdio_probe(struct emac_instance *dev)
+{
+	struct device_node *mii_np;
+	int res;
+
+	mii_np = of_get_child_by_name(dev->ofdev->dev.of_node, "mdio");
+	if (!mii_np) {
+		dev_err(&dev->ofdev->dev, "no mdio definition found.");
+		return -ENODEV;
+	}
+
+	if (!of_device_is_available(mii_np)) {
+		res = -ENODEV;
+		goto put_node;
+	}
+
+	dev->mii_bus = devm_mdiobus_alloc(&dev->ofdev->dev);
+	if (!dev->mii_bus) {
+		res = -ENOMEM;
+		goto put_node;
+	}
+
+	dev->mii_bus->priv = dev->ndev;
+	dev->mii_bus->parent = dev->ndev->dev.parent;
+	dev->mii_bus->name = "emac_mdio";
+	dev->mii_bus->read = &emac_mii_bus_read;
+	dev->mii_bus->write = &emac_mii_bus_write;
+	dev->mii_bus->reset = &emac_mii_bus_reset;
+	snprintf(dev->mii_bus->id, MII_BUS_ID_SIZE, "%s", dev->ofdev->name);
+	res = of_mdiobus_register(dev->mii_bus, mii_np);
+	if (res) {
+		dev_err(&dev->ofdev->dev, "cannot register MDIO bus %s (%d)",
+			dev->mii_bus->name, res);
+	}
+
+ put_node:
+	of_node_put(mii_np);
+	return res;
+}
+
+static int emac_dt_phy_connect(struct emac_instance *dev,
+			       struct device_node *phy_handle)
+{
+	dev->phy.def = devm_kzalloc(&dev->ofdev->dev, sizeof(*dev->phy.def),
+				    GFP_KERNEL);
+	if (!dev->phy.def)
+		return -ENOMEM;
+
+	dev->phy_dev = of_phy_connect(dev->ndev, phy_handle, &emac_adjust_link,
+				      0, dev->phy_mode);
+	if (!dev->phy_dev) {
+		dev_err(&dev->ofdev->dev, "failed to connect to PHY.\n");
+		return -ENODEV;
+	}
+
+	dev->phy.def->phy_id = dev->phy_dev->drv->phy_id;
+	dev->phy.def->phy_id_mask = dev->phy_dev->drv->phy_id_mask;
+	dev->phy.def->name = dev->phy_dev->drv->name;
+	dev->phy.def->ops = &emac_dt_mdio_phy_ops;
+	ethtool_convert_link_mode_to_legacy_u32(&dev->phy.features,
+						dev->phy_dev->supported);
+	dev->phy.address = dev->phy_dev->mdio.addr;
+	dev->phy.mode = dev->phy_dev->interface;
+	return 0;
+}
+
+static int emac_dt_phy_probe(struct emac_instance *dev)
+{
+	struct device_node *np = dev->ofdev->dev.of_node;
+	struct device_node *phy_handle;
+	int res = 1;
+
+	phy_handle = of_parse_phandle(np, "phy-handle", 0);
+
+	if (phy_handle) {
+		res = emac_dt_mdio_probe(dev);
+		if (!res) {
+			res = emac_dt_phy_connect(dev, phy_handle);
+			if (res)
+				mdiobus_unregister(dev->mii_bus);
+		}
+	}
+
+	of_node_put(phy_handle);
+	return res;
+}
+
+static int emac_init_phy(struct emac_instance *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *np = dev->ofdev->dev.of_node;
 	struct net_device *ndev = dev->ndev;
@@ -2392,6 +3055,7 @@ static int __devinit emac_init_phy(struct emac_instance *dev)
 	dev->phy.dev = ndev;
 	dev->phy.mode = dev->phy_mode;
 
+<<<<<<< HEAD
 	/* PHY-less configuration.
 	 * XXX I probably should move these settings to the dev tree
 	 */
@@ -2401,6 +3065,14 @@ static int __devinit emac_init_phy(struct emac_instance *dev)
 		/* PHY-less configuration.
 		 * XXX I probably should move these settings to the dev tree
 		 */
+=======
+	/* PHY-less configuration. */
+	if ((dev->phy_address == 0xffffffff && dev->phy_map == 0xffffffff) ||
+	    of_phy_is_fixed_link(np)) {
+		emac_reset(dev);
+
+		/* PHY-less configuration. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->phy.address = -1;
 		dev->phy.features = SUPPORTED_MII;
 		if (emac_phy_supports_gige(dev->phy_mode))
@@ -2409,6 +3081,24 @@ static int __devinit emac_init_phy(struct emac_instance *dev)
 			dev->phy.features |= SUPPORTED_100baseT_Full;
 		dev->phy.pause = 1;
 
+<<<<<<< HEAD
+=======
+		if (of_phy_is_fixed_link(np)) {
+			int res = emac_dt_mdio_probe(dev);
+
+			if (res)
+				return res;
+
+			res = of_phy_register_fixed_link(np);
+			dev->phy_dev = of_phy_find_device(np);
+			if (res || !dev->phy_dev) {
+				mdiobus_unregister(dev->mii_bus);
+				return res ? res : -EINVAL;
+			}
+			emac_adjust_link(dev->ndev);
+			put_device(&dev->phy_dev->mdio.dev);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -2452,6 +3142,32 @@ static int __devinit emac_init_phy(struct emac_instance *dev)
 
 	emac_configure(dev);
 
+<<<<<<< HEAD
+=======
+	if (emac_has_feature(dev, EMAC_FTR_HAS_RGMII)) {
+		int res = emac_dt_phy_probe(dev);
+
+		switch (res) {
+		case 1:
+			/* No phy-handle property configured.
+			 * Continue with the existing phy probe
+			 * and setup code.
+			 */
+			break;
+
+		case 0:
+			mutex_unlock(&emac_phy_map_lock);
+			goto init_phy;
+
+		default:
+			mutex_unlock(&emac_phy_map_lock);
+			dev_err(&dev->ofdev->dev, "failed to attach dt phy (%d).\n",
+				res);
+			return res;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->phy_address != 0xffffffff)
 		phy_map = ~(1 << dev->phy_address);
 
@@ -2475,10 +3191,18 @@ static int __devinit emac_init_phy(struct emac_instance *dev)
 #endif
 	mutex_unlock(&emac_phy_map_lock);
 	if (i == 0x20) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: can't find PHY!\n", np->full_name);
 		return -ENXIO;
 	}
 
+=======
+		printk(KERN_WARNING "%pOF: can't find PHY!\n", np);
+		return -ENXIO;
+	}
+
+ init_phy:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Init PHY */
 	if (dev->phy.def->ops->init)
 		dev->phy.def->ops->init(&dev->phy);
@@ -2518,10 +3242,17 @@ static int __devinit emac_init_phy(struct emac_instance *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit emac_init_config(struct emac_instance *dev)
 {
 	struct device_node *np = dev->ofdev->dev.of_node;
 	const void *p;
+=======
+static int emac_init_config(struct emac_instance *dev)
+{
+	struct device_node *np = dev->ofdev->dev.of_node;
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read config from device-tree */
 	if (emac_read_uint_prop(np, "mal-device", &dev->mal_ph, 1))
@@ -2533,7 +3264,11 @@ static int __devinit emac_init_config(struct emac_instance *dev)
 	if (emac_read_uint_prop(np, "cell-index", &dev->cell_index, 1))
 		return -ENXIO;
 	if (emac_read_uint_prop(np, "max-frame-size", &dev->max_mtu, 0))
+<<<<<<< HEAD
 		dev->max_mtu = 1500;
+=======
+		dev->max_mtu = ETH_DATA_LEN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (emac_read_uint_prop(np, "rx-fifo-size", &dev->rx_fifo_size, 0))
 		dev->rx_fifo_size = 2048;
 	if (emac_read_uint_prop(np, "tx-fifo-size", &dev->tx_fifo_size, 0))
@@ -2570,9 +3305,15 @@ static int __devinit emac_init_config(struct emac_instance *dev)
 		dev->mal_burst_size = 256;
 
 	/* PHY mode needs some decoding */
+<<<<<<< HEAD
 	dev->phy_mode = of_get_phy_mode(np);
 	if (dev->phy_mode < 0)
 		dev->phy_mode = PHY_MODE_NA;
+=======
+	err = of_get_phy_mode(np, &dev->phy_mode);
+	if (err)
+		dev->phy_mode = PHY_INTERFACE_MODE_NA;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check EMAC version */
 	if (of_device_is_compatible(np, "ibm,emac4sync")) {
@@ -2600,8 +3341,13 @@ static int __devinit emac_init_config(struct emac_instance *dev)
 #ifdef CONFIG_IBM_EMAC_NO_FLOW_CTRL
 			dev->features |= EMAC_FTR_NO_FLOW_CONTROL_40x;
 #else
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: Flow control not disabled!\n",
 					np->full_name);
+=======
+			printk(KERN_ERR "%pOF: Flow control not disabled!\n",
+					np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENXIO;
 #endif
 		}
@@ -2609,9 +3355,15 @@ static int __devinit emac_init_config(struct emac_instance *dev)
 	}
 
 	/* Fixup some feature bits based on the device tree */
+<<<<<<< HEAD
 	if (of_get_property(np, "has-inverted-stacr-oc", NULL))
 		dev->features |= EMAC_FTR_STACR_OC_INVERT;
 	if (of_get_property(np, "has-new-stacr-staopc", NULL))
+=======
+	if (of_property_read_bool(np, "has-inverted-stacr-oc"))
+		dev->features |= EMAC_FTR_STACR_OC_INVERT;
+	if (of_property_read_bool(np, "has-new-stacr-staopc"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->features |= EMAC_FTR_HAS_NEW_STACR;
 
 	/* CAB lacks the appropriate properties */
@@ -2624,8 +3376,12 @@ static int __devinit emac_init_config(struct emac_instance *dev)
 #ifdef CONFIG_IBM_EMAC_TAH
 		dev->features |= EMAC_FTR_HAS_TAH;
 #else
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: TAH support not enabled !\n",
 		       np->full_name);
+=======
+		printk(KERN_ERR "%pOF: TAH support not enabled !\n", np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 #endif
 	}
@@ -2634,8 +3390,12 @@ static int __devinit emac_init_config(struct emac_instance *dev)
 #ifdef CONFIG_IBM_EMAC_ZMII
 		dev->features |= EMAC_FTR_HAS_ZMII;
 #else
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: ZMII support not enabled !\n",
 		       np->full_name);
+=======
+		printk(KERN_ERR "%pOF: ZMII support not enabled !\n", np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 #endif
 	}
@@ -2644,13 +3404,18 @@ static int __devinit emac_init_config(struct emac_instance *dev)
 #ifdef CONFIG_IBM_EMAC_RGMII
 		dev->features |= EMAC_FTR_HAS_RGMII;
 #else
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: RGMII support not enabled !\n",
 		       np->full_name);
+=======
+		printk(KERN_ERR "%pOF: RGMII support not enabled !\n", np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 #endif
 	}
 
 	/* Read MAC-address */
+<<<<<<< HEAD
 	p = of_get_property(np, "local-mac-address", NULL);
 	if (p == NULL) {
 		printk(KERN_ERR "%s: Can't find local-mac-address property\n",
@@ -2658,6 +3423,12 @@ static int __devinit emac_init_config(struct emac_instance *dev)
 		return -ENXIO;
 	}
 	memcpy(dev->ndev->dev_addr, p, 6);
+=======
+	err = of_get_ethdev_address(np, dev->ndev);
+	if (err)
+		return dev_err_probe(&dev->ofdev->dev, err,
+				     "Can't get valid [local-]mac-address from OF !\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* IAHT and GAHT filter parameterization */
 	if (emac_has_feature(dev, EMAC_FTR_EMAC4SYNC)) {
@@ -2668,6 +3439,13 @@ static int __devinit emac_init_config(struct emac_instance *dev)
 		dev->xaht_width_shift = EMAC4_XAHT_WIDTH_SHIFT;
 	}
 
+<<<<<<< HEAD
+=======
+	/* This should never happen */
+	if (WARN_ON(EMAC_XAHT_REGS(dev) > EMAC_XAHT_MAX_REGS))
+		return -ENXIO;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DBG(dev, "features     : 0x%08x / 0x%08x\n", dev->features, EMAC_FTRS_POSSIBLE);
 	DBG(dev, "tx_fifo_size : %d (%d gige)\n", dev->tx_fifo_size, dev->tx_fifo_size_gige);
 	DBG(dev, "rx_fifo_size : %d (%d gige)\n", dev->rx_fifo_size, dev->rx_fifo_size_gige);
@@ -2682,12 +3460,20 @@ static const struct net_device_ops emac_netdev_ops = {
 	.ndo_stop		= emac_close,
 	.ndo_get_stats		= emac_stats,
 	.ndo_set_rx_mode	= emac_set_multicast_list,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= emac_ioctl,
 	.ndo_tx_timeout		= emac_tx_timeout,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= eth_mac_addr,
 	.ndo_start_xmit		= emac_start_xmit,
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+	.ndo_eth_ioctl		= emac_ioctl,
+	.ndo_tx_timeout		= emac_tx_timeout,
+	.ndo_validate_addr	= eth_validate_addr,
+	.ndo_set_mac_address	= emac_set_mac_address,
+	.ndo_start_xmit		= emac_start_xmit,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct net_device_ops emac_gige_netdev_ops = {
@@ -2695,15 +3481,26 @@ static const struct net_device_ops emac_gige_netdev_ops = {
 	.ndo_stop		= emac_close,
 	.ndo_get_stats		= emac_stats,
 	.ndo_set_rx_mode	= emac_set_multicast_list,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= emac_ioctl,
 	.ndo_tx_timeout		= emac_tx_timeout,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= eth_mac_addr,
+=======
+	.ndo_eth_ioctl		= emac_ioctl,
+	.ndo_tx_timeout		= emac_tx_timeout,
+	.ndo_validate_addr	= eth_validate_addr,
+	.ndo_set_mac_address	= emac_set_mac_address,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_start_xmit		= emac_start_xmit_sg,
 	.ndo_change_mtu		= emac_change_mtu,
 };
 
+<<<<<<< HEAD
 static int __devinit emac_probe(struct platform_device *ofdev)
+=======
+static int emac_probe(struct platform_device *ofdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *ndev;
 	struct emac_instance *dev;
@@ -2715,7 +3512,11 @@ static int __devinit emac_probe(struct platform_device *ofdev)
 	 * property here for now, but new flat device trees should set a
 	 * status property to "disabled" instead.
 	 */
+<<<<<<< HEAD
 	if (of_get_property(np, "unused", NULL) || !of_device_is_available(np))
+=======
+	if (of_property_read_bool(np, "unused") || !of_device_is_available(np))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	/* Find ourselves in the bootlist if we are there */
@@ -2743,19 +3544,30 @@ static int __devinit emac_probe(struct platform_device *ofdev)
 
 	/* Init various config data based on device-tree */
 	err = emac_init_config(dev);
+<<<<<<< HEAD
 	if (err != 0)
+=======
+	if (err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free;
 
 	/* Get interrupts. EMAC irq is mandatory, WOL irq is optional */
 	dev->emac_irq = irq_of_parse_and_map(np, 0);
 	dev->wol_irq = irq_of_parse_and_map(np, 1);
+<<<<<<< HEAD
 	if (dev->emac_irq == NO_IRQ) {
 		printk(KERN_ERR "%s: Can't map main interrupt\n", np->full_name);
+=======
+	if (!dev->emac_irq) {
+		printk(KERN_ERR "%pOF: Can't map main interrupt\n", np);
+		err = -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free;
 	}
 	ndev->irq = dev->emac_irq;
 
 	/* Map EMAC regs */
+<<<<<<< HEAD
 	if (of_address_to_resource(np, 0, &dev->rsrc_regs)) {
 		printk(KERN_ERR "%s: Can't get registers address\n",
 		       np->full_name);
@@ -2767,6 +3579,12 @@ static int __devinit emac_probe(struct platform_device *ofdev)
 	if (dev->emacp == NULL) {
 		printk(KERN_ERR "%s: Can't map device registers!\n",
 		       np->full_name);
+=======
+	// TODO : platform_get_resource() and devm_ioremap_resource()
+	dev->emacp = of_iomap(np, 0);
+	if (dev->emacp == NULL) {
+		printk(KERN_ERR "%pOF: Can't map device registers!\n", np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		goto err_irq_unmap;
 	}
@@ -2775,6 +3593,7 @@ static int __devinit emac_probe(struct platform_device *ofdev)
 	err = emac_wait_deps(dev);
 	if (err) {
 		printk(KERN_ERR
+<<<<<<< HEAD
 		       "%s: Timeout waiting for dependent devices\n",
 		       np->full_name);
 		/*  display more info about what's missing ? */
@@ -2783,6 +3602,15 @@ static int __devinit emac_probe(struct platform_device *ofdev)
 	dev->mal = dev_get_drvdata(&dev->mal_dev->dev);
 	if (dev->mdio_dev != NULL)
 		dev->mdio_instance = dev_get_drvdata(&dev->mdio_dev->dev);
+=======
+		       "%pOF: Timeout waiting for dependent devices\n", np);
+		/*  display more info about what's missing ? */
+		goto err_reg_unmap;
+	}
+	dev->mal = platform_get_drvdata(dev->mal_dev);
+	if (dev->mdio_dev != NULL)
+		dev->mdio_instance = platform_get_drvdata(dev->mdio_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Register with MAL */
 	dev->commac.ops = &emac_commac_ops;
@@ -2791,8 +3619,13 @@ static int __devinit emac_probe(struct platform_device *ofdev)
 	dev->commac.rx_chan_mask = MAL_CHAN_MASK(dev->mal_rx_chan);
 	err = mal_register_commac(dev->mal, &dev->commac);
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: failed to register with mal %s!\n",
 		       np->full_name, dev->mal_dev->dev.of_node->full_name);
+=======
+		printk(KERN_ERR "%pOF: failed to register with mal %pOF!\n",
+		       np, dev->mal_dev->dev.of_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_rel_deps;
 	}
 	dev->rx_skb_size = emac_rx_skb_size(ndev->mtu);
@@ -2858,14 +3691,27 @@ static int __devinit emac_probe(struct platform_device *ofdev)
 		dev->commac.ops = &emac_commac_sg_ops;
 	} else
 		ndev->netdev_ops = &emac_netdev_ops;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(ndev, &emac_ethtool_ops);
+=======
+	ndev->ethtool_ops = &emac_ethtool_ops;
+
+	/* MTU range: 46 - 1500 or whatever is in OF */
+	ndev->min_mtu = EMAC_MIN_MTU;
+	ndev->max_mtu = dev->max_mtu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_carrier_off(ndev);
 
 	err = register_netdev(ndev);
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: failed to register net device (%d)!\n",
 		       np->full_name, err);
+=======
+		printk(KERN_ERR "%pOF: failed to register net device (%d)!\n",
+		       np, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_detach_tah;
 	}
 
@@ -2873,24 +3719,38 @@ static int __devinit emac_probe(struct platform_device *ofdev)
 	 * fully initialized
 	 */
 	wmb();
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, dev);
+=======
+	platform_set_drvdata(ofdev, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* There's a new kid in town ! Let's tell everybody */
 	wake_up_all(&emac_probe_wait);
 
 
+<<<<<<< HEAD
 	printk(KERN_INFO "%s: EMAC-%d %s, MAC %pM\n",
 	       ndev->name, dev->cell_index, np->full_name, ndev->dev_addr);
 
 	if (dev->phy_mode == PHY_MODE_SGMII)
+=======
+	printk(KERN_INFO "%s: EMAC-%d %pOF, MAC %pM\n",
+	       ndev->name, dev->cell_index, np, ndev->dev_addr);
+
+	if (dev->phy_mode == PHY_INTERFACE_MODE_SGMII)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_NOTICE "%s: in SGMII mode\n", ndev->name);
 
 	if (dev->phy.address >= 0)
 		printk("%s: found %s PHY (0x%02x)\n", ndev->name,
 		       dev->phy.def->name, dev->phy.address);
 
+<<<<<<< HEAD
 	emac_dbg_register(dev);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Life is good */
 	return 0;
 
@@ -2912,9 +3772,15 @@ static int __devinit emac_probe(struct platform_device *ofdev)
  err_reg_unmap:
 	iounmap(dev->emacp);
  err_irq_unmap:
+<<<<<<< HEAD
 	if (dev->wol_irq != NO_IRQ)
 		irq_dispose_mapping(dev->wol_irq);
 	if (dev->emac_irq != NO_IRQ)
+=======
+	if (dev->wol_irq)
+		irq_dispose_mapping(dev->wol_irq);
+	if (dev->emac_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		irq_dispose_mapping(dev->emac_irq);
  err_free:
 	free_netdev(ndev);
@@ -2930,6 +3796,7 @@ static int __devinit emac_probe(struct platform_device *ofdev)
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit emac_remove(struct platform_device *ofdev)
 {
 	struct emac_instance *dev = dev_get_drvdata(&ofdev->dev);
@@ -2938,6 +3805,14 @@ static int __devexit emac_remove(struct platform_device *ofdev)
 
 	dev_set_drvdata(&ofdev->dev, NULL);
 
+=======
+static void emac_remove(struct platform_device *ofdev)
+{
+	struct emac_instance *dev = platform_get_drvdata(ofdev);
+
+	DBG(dev, "remove" NL);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_netdev(dev->ndev);
 
 	cancel_work_sync(&dev->reset_work);
@@ -2949,12 +3824,22 @@ static int __devexit emac_remove(struct platform_device *ofdev)
 	if (emac_has_feature(dev, EMAC_FTR_HAS_ZMII))
 		zmii_detach(dev->zmii_dev, dev->zmii_port);
 
+<<<<<<< HEAD
+=======
+	if (dev->phy_dev)
+		phy_disconnect(dev->phy_dev);
+
+	if (dev->mii_bus)
+		mdiobus_unregister(dev->mii_bus);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	busy_phy_map &= ~(1 << dev->phy.address);
 	DBG(dev, "busy_phy_map now %#x" NL, busy_phy_map);
 
 	mal_unregister_commac(dev->mal, &dev->commac);
 	emac_put_deps(dev);
 
+<<<<<<< HEAD
 	emac_dbg_unregister(dev);
 	iounmap(dev->emacp);
 
@@ -2970,6 +3855,20 @@ static int __devexit emac_remove(struct platform_device *ofdev)
 
 /* XXX Features in here should be replaced by properties... */
 static struct of_device_id emac_match[] =
+=======
+	iounmap(dev->emacp);
+
+	if (dev->wol_irq)
+		irq_dispose_mapping(dev->wol_irq);
+	if (dev->emac_irq)
+		irq_dispose_mapping(dev->emac_irq);
+
+	free_netdev(dev->ndev);
+}
+
+/* XXX Features in here should be replaced by properties... */
+static const struct of_device_id emac_match[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{
 		.type		= "network",
@@ -2990,17 +3889,28 @@ MODULE_DEVICE_TABLE(of, emac_match);
 static struct platform_driver emac_driver = {
 	.driver = {
 		.name = "emac",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = emac_match,
 	},
 	.probe = emac_probe,
 	.remove = emac_remove,
+=======
+		.of_match_table = emac_match,
+	},
+	.probe = emac_probe,
+	.remove_new = emac_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __init emac_make_bootlist(void)
 {
 	struct device_node *np = NULL;
+<<<<<<< HEAD
 	int j, max, i = 0, k;
+=======
+	int j, max, i = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cell_indices[EMAC_BOOT_LIST_SIZE];
 
 	/* Collect EMACs */
@@ -3009,7 +3919,11 @@ static void __init emac_make_bootlist(void)
 
 		if (of_match_node(emac_match, np) == NULL)
 			continue;
+<<<<<<< HEAD
 		if (of_get_property(np, "unused", NULL))
+=======
+		if (of_property_read_bool(np, "unused"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		idx = of_get_property(np, "cell-index", NULL);
 		if (idx == NULL)
@@ -3027,12 +3941,17 @@ static void __init emac_make_bootlist(void)
 	for (i = 0; max > 1 && (i < (max - 1)); i++)
 		for (j = i; j < max; j++) {
 			if (cell_indices[i] > cell_indices[j]) {
+<<<<<<< HEAD
 				np = emac_boot_list[i];
 				emac_boot_list[i] = emac_boot_list[j];
 				emac_boot_list[j] = np;
 				k = cell_indices[i];
 				cell_indices[i] = cell_indices[j];
 				cell_indices[j] = k;
+=======
+				swap(emac_boot_list[i], emac_boot_list[j]);
+				swap(cell_indices[i], cell_indices[j]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 }
@@ -3043,9 +3962,12 @@ static int __init emac_init(void)
 
 	printk(KERN_INFO DRV_DESC ", version " DRV_VERSION "\n");
 
+<<<<<<< HEAD
 	/* Init debug stuff */
 	emac_init_debug();
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Build EMAC boot list */
 	emac_make_bootlist();
 
@@ -3090,12 +4012,19 @@ static void __exit emac_exit(void)
 	rgmii_exit();
 	zmii_exit();
 	mal_exit();
+<<<<<<< HEAD
 	emac_fini_debug();
 
 	/* Destroy EMAC boot list */
 	for (i = 0; i < EMAC_BOOT_LIST_SIZE; i++)
 		if (emac_boot_list[i])
 			of_node_put(emac_boot_list[i]);
+=======
+
+	/* Destroy EMAC boot list */
+	for (i = 0; i < EMAC_BOOT_LIST_SIZE; i++)
+		of_node_put(emac_boot_list[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(emac_init);

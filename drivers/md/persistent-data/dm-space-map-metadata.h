@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Red Hat, Inc.
  *
@@ -9,6 +13,20 @@
 
 #include "dm-transaction-manager.h"
 
+<<<<<<< HEAD
+=======
+#define DM_SM_METADATA_BLOCK_SIZE (4096 >> SECTOR_SHIFT)
+
+/*
+ * The metadata device is currently limited in size.
+ *
+ * We have one block of index, which can hold 255 index entries.  Each
+ * index entry contains allocation info about ~16k metadata blocks.
+ */
+#define DM_SM_METADATA_MAX_BLOCKS (255 * ((1 << 14) - 64))
+#define DM_SM_METADATA_MAX_SECTORS (DM_SM_METADATA_MAX_BLOCKS * DM_SM_METADATA_BLOCK_SIZE)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Unfortunately we have to use two-phase construction due to the cycle
  * between the tm and sm.

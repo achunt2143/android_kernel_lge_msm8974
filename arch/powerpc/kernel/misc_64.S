@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file contains miscellaneous low-level functions.
  *    Copyright (C) 1995-1996 Gary Thomas (gdt@linuxppc.org)
@@ -6,6 +10,7 @@
  * and Paul Mackerras.
  * Adapted for iSeries by Mike Corrigan (mikejc@us.ibm.com)
  * PPC64 updates by Dave Engebretsen (engebret@us.ibm.com)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -14,6 +19,12 @@
  *
  */
 
+=======
+ */
+
+#include <linux/export.h>
+#include <linux/linkage.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sys.h>
 #include <asm/unistd.h>
 #include <asm/errno.h>
@@ -26,6 +37,7 @@
 #include <asm/thread_info.h>
 #include <asm/kexec.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
 
 	.text
 
@@ -236,6 +248,61 @@ _GLOBAL(__flush_dcache_icache)
 
 
 #if defined(CONFIG_PPC_PMAC) || defined(CONFIG_PPC_MAPLE)
+=======
+#include <asm/mmu.h>
+#include <asm/feature-fixups.h>
+
+	.text
+
+_GLOBAL(__bswapdi2)
+EXPORT_SYMBOL(__bswapdi2)
+	srdi	r8,r3,32
+	rlwinm	r7,r3,8,0xffffffff
+	rlwimi	r7,r3,24,0,7
+	rlwinm	r9,r8,8,0xffffffff
+	rlwimi	r7,r3,24,16,23
+	rlwimi	r9,r8,24,0,7
+	rlwimi	r9,r8,24,16,23
+	sldi	r7,r7,32
+	or	r3,r7,r9
+	blr
+
+
+#ifdef CONFIG_PPC_EARLY_DEBUG_BOOTX
+_GLOBAL(rmci_on)
+	sync
+	isync
+	li	r3,0x100
+	rldicl	r3,r3,32,0
+	mfspr	r5,SPRN_HID4
+	or	r5,r5,r3
+	sync
+	mtspr	SPRN_HID4,r5
+	isync
+	slbia
+	isync
+	sync
+	blr
+
+_GLOBAL(rmci_off)
+	sync
+	isync
+	li	r3,0x100
+	rldicl	r3,r3,32,0
+	mfspr	r5,SPRN_HID4
+	andc	r5,r5,r3
+	sync
+	mtspr	SPRN_HID4,r5
+	isync
+	slbia
+	isync
+	sync
+	blr
+#endif /* CONFIG_PPC_EARLY_DEBUG_BOOTX */
+
+#if defined(CONFIG_PPC_PMAC) || defined(CONFIG_PPC_MAPLE)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Do an IO access in real mode
  */
@@ -301,11 +368,14 @@ _GLOBAL(real_writeb)
 
 #ifdef CONFIG_PPC_PASEMI
 
+<<<<<<< HEAD
 /* No support in all binutils for these yet, so use defines */
 #define LBZCIX(RT,RA,RB)  .long (0x7c0006aa|(RT<<21)|(RA<<16)|(RB << 11))
 #define STBCIX(RS,RA,RB)  .long (0x7c0007aa|(RS<<21)|(RA<<16)|(RB << 11))
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 _GLOBAL(real_205_readb)
 	mfmsr	r7
 	ori	r0,r7,MSR_DR
@@ -314,7 +384,11 @@ _GLOBAL(real_205_readb)
 	mtmsrd	r0
 	sync
 	isync
+<<<<<<< HEAD
 	LBZCIX(r3,0,r3)
+=======
+	LBZCIX(R3,R0,R3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	isync
 	mtmsrd	r7
 	sync
@@ -329,7 +403,11 @@ _GLOBAL(real_205_writeb)
 	mtmsrd	r0
 	sync
 	isync
+<<<<<<< HEAD
 	STBCIX(r3,0,r4)
+=======
+	STBCIX(R3,R0,R4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	isync
 	mtmsrd	r7
 	sync
@@ -410,6 +488,7 @@ _GLOBAL(scom970_write)
 	blr
 #endif /* CONFIG_CPU_FREQ_PMAC64 || CONFIG_CPU_FREQ_MAPLE */
 
+<<<<<<< HEAD
 
 /*
  * Create a kernel thread
@@ -457,6 +536,8 @@ _GLOBAL(disable_kernel_fp)
 	isync
 	blr
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* kexec_wait(phys_cpu)
  *
  * wait for the flag to change, indicating this kernel is going away but
@@ -468,17 +549,41 @@ _GLOBAL(disable_kernel_fp)
  * Physical (hardware) cpu id should be in r3.
  */
 _GLOBAL(kexec_wait)
+<<<<<<< HEAD
 	bl	1f
+=======
+	bcl	20,31,$+4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	mflr	r5
 	addi	r5,r5,kexec_flag-1b
 
 99:	HMT_LOW
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC		/* use no memory without kexec */
 	lwz	r4,0(r5)
 	cmpwi	0,r4,0
 	bnea	0x60
 #endif
 	b	99b
+=======
+#ifdef CONFIG_KEXEC_CORE	/* use no memory without kexec */
+	lwz	r4,0(r5)
+	cmpwi	0,r4,0
+	beq	99b
+#ifdef CONFIG_PPC_BOOK3S_64
+	li	r10,0x60
+	mfmsr	r11
+	clrrdi	r11,r11,1	/* Clear MSR_LE */
+	mtsrr0	r10
+	mtsrr1	r11
+	rfid
+#else
+	/* Create TLB entry in book3e_secondary_core_init */
+	li	r4,0
+	ba	0x60
+#endif
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* this can be in text because we won't change it until we are
  * running in real anyways
@@ -487,7 +592,51 @@ kexec_flag:
 	.long	0
 
 
+<<<<<<< HEAD
 #ifdef CONFIG_KEXEC
+=======
+#ifdef CONFIG_KEXEC_CORE
+#ifdef CONFIG_PPC_BOOK3E_64
+/*
+ * BOOK3E has no real MMU mode, so we have to setup the initial TLB
+ * for a core to identity map v:0 to p:0.  This current implementation
+ * assumes that 1G is enough for kexec.
+ */
+kexec_create_tlb:
+	/*
+	 * Invalidate all non-IPROT TLB entries to avoid any TLB conflict.
+	 * IPROT TLB entries should be >= PAGE_OFFSET and thus not conflict.
+	 */
+	PPC_TLBILX_ALL(0,R0)
+	sync
+	isync
+
+	mfspr	r10,SPRN_TLB1CFG
+	andi.	r10,r10,TLBnCFG_N_ENTRY	/* Extract # entries */
+	subi	r10,r10,1	/* Last entry: no conflict with kernel text */
+	lis	r9,MAS0_TLBSEL(1)@h
+	rlwimi	r9,r10,16,4,15		/* Setup MAS0 = TLBSEL | ESEL(r9) */
+
+/* Set up a temp identity mapping v:0 to p:0 and return to it. */
+	mtspr	SPRN_MAS0,r9
+
+	lis	r9,(MAS1_VALID|MAS1_IPROT)@h
+	ori	r9,r9,(MAS1_TSIZE(BOOK3E_PAGESZ_1GB))@l
+	mtspr	SPRN_MAS1,r9
+
+	LOAD_REG_IMMEDIATE(r9, 0x0 | MAS2_M_IF_NEEDED)
+	mtspr	SPRN_MAS2,r9
+
+	LOAD_REG_IMMEDIATE(r9, 0x0 | MAS3_SR | MAS3_SW | MAS3_SX)
+	mtspr	SPRN_MAS3,r9
+	li	r9,0
+	mtspr	SPRN_MAS7,r9
+
+	tlbwe
+	isync
+	blr
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* kexec_smp_wait(void)
  *
@@ -505,9 +654,14 @@ _GLOBAL(kexec_smp_wait)
 
 	li	r4,KEXEC_STATE_REAL_MODE
 	stb	r4,PACAKEXECSTATE(r13)
+<<<<<<< HEAD
 	SYNC
 
 	b	.kexec_wait
+=======
+
+	b	kexec_wait
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * switch to real mode (turn mmu off)
@@ -516,7 +670,15 @@ _GLOBAL(kexec_smp_wait)
  *
  * don't overwrite r3 here, it is live for kexec_wait above.
  */
+<<<<<<< HEAD
 real_mode:	/* assume normal blr return */
+=======
+SYM_FUNC_START_LOCAL(real_mode)	/* assume normal blr return */
+#ifdef CONFIG_PPC_BOOK3E_64
+	/* Create an identity mapping. */
+	b	kexec_create_tlb
+#else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	li	r9,MSR_RI
 	li	r10,MSR_DR|MSR_IR
 	mflr	r11		/* return address to SRR0 */
@@ -528,10 +690,19 @@ real_mode:	/* assume normal blr return */
 	mtspr	SPRN_SRR1,r10
 	mtspr	SPRN_SRR0,r11
 	rfid
+<<<<<<< HEAD
 
 
 /*
  * kexec_sequence(newstack, start, image, control, clear_all())
+=======
+#endif
+SYM_FUNC_END(real_mode)
+
+/*
+ * kexec_sequence(newstack, start, image, control, clear_all(),
+	          copy_with_mmu_off)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * does the grungy work with stack switching and real mode switches
  * also does simple calls to other code
@@ -542,7 +713,11 @@ _GLOBAL(kexec_sequence)
 	std	r0,16(r1)
 
 	/* switch stacks to newstack -- &kexec_stack.stack */
+<<<<<<< HEAD
 	stdu	r1,THREAD_SIZE-STACK_FRAME_OVERHEAD(r3)
+=======
+	stdu	r1,THREAD_SIZE-STACK_FRAME_MIN_SIZE(r3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mr	r1,r3
 
 	li	r0,0
@@ -559,7 +734,11 @@ _GLOBAL(kexec_sequence)
 	std	r26,-48(r1)
 	std	r25,-56(r1)
 
+<<<<<<< HEAD
 	stdu	r1,-STACK_FRAME_OVERHEAD-64(r1)
+=======
+	stdu	r1,-STACK_FRAME_MIN_SIZE-64(r1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* save args into preserved regs */
 	mr	r31,r3			/* newstack (both) */
@@ -567,6 +746,7 @@ _GLOBAL(kexec_sequence)
 	mr	r29,r5			/* image (virt) */
 	mr	r28,r6			/* control, unused */
 	mr	r27,r7			/* clear_all() fn desc */
+<<<<<<< HEAD
 	mr	r26,r8			/* spare */
 	lhz	r25,PACAHWCPUID(r13)	/* get our phys cpu from paca */
 
@@ -588,6 +768,42 @@ _GLOBAL(kexec_sequence)
 	li	r5,0x100
 	li	r6,0
 	bl	.copy_and_flush	/* (dest, src, copy limit, start offset) */
+=======
+	mr	r26,r8			/* copy_with_mmu_off */
+	lhz	r25,PACAHWCPUID(r13)	/* get our phys cpu from paca */
+
+	/* disable interrupts, we are overwriting kernel data next */
+#ifdef CONFIG_PPC_BOOK3E_64
+	wrteei	0
+#else
+	mfmsr	r3
+	rlwinm	r3,r3,0,17,15
+	mtmsrd	r3,1
+#endif
+
+	/* We need to turn the MMU off unless we are in hash mode
+	 * under a hypervisor
+	 */
+	cmpdi	r26,0
+	beq	1f
+	bl	real_mode
+1:
+	/* copy dest pages, flush whole dest image */
+	mr	r3,r29
+	bl	CFUNC(kexec_copy_flush)	/* (image) */
+
+	/* turn off mmu now if not done earlier */
+	cmpdi	r26,0
+	bne	1f
+	bl	real_mode
+
+	/* copy  0x100 bytes starting at start to 0 */
+1:	li	r3,0
+	mr	r4,r30		/* start, aka phys mem offset */
+	li	r5,0x100
+	li	r6,0
+	bl	copy_and_flush	/* (dest, src, copy limit, start offset) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	/* assume normal blr return */
 
 	/* release other cpus to the new kernel secondary start at 0x60 */
@@ -595,10 +811,24 @@ _GLOBAL(kexec_sequence)
 	li	r6,1
 	stw	r6,kexec_flag-1b(5)
 
+<<<<<<< HEAD
 	/* clear out hardware hash page table and tlb */
 	ld	r5,0(r27)		/* deref function descriptor */
 	mtctr	r5
 	bctrl				/* ppc_md.hpte_clear_all(void); */
+=======
+	cmpdi	r27,0
+	beq	1f
+
+	/* clear out hardware hash page table and tlb */
+#ifdef CONFIG_PPC64_ELF_ABI_V1
+	ld	r12,0(r27)		/* deref function descriptor */
+#else
+	mr	r12,r27
+#endif
+	mtctr	r12
+	bctrl				/* mmu_hash_ops.hpte_clear_all(void); */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *   kexec image calling is:
@@ -625,9 +855,17 @@ _GLOBAL(kexec_sequence)
  *    are the boot cpu ?????
  *    other device tree differences (prop sizes, va vs pa, etc)...
  */
+<<<<<<< HEAD
 	mr	r3,r25	# my phys cpu
+=======
+1:	mr	r3,r25	# my phys cpu
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mr	r4,r30	# start, aka phys mem offset
 	mtlr	4
 	li	r5,0
 	blr	/* image->start(physid, image->start, 0); */
+<<<<<<< HEAD
 #endif /* CONFIG_KEXEC */
+=======
+#endif /* CONFIG_KEXEC_CORE */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

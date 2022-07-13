@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /******************************************************************************
  * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
  *
@@ -17,11 +18,20 @@
  * wlanfae <wlanfae@realtek.com>
 ******************************************************************************/
 
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
+ *
+ * Contact Information: wlanfae <wlanfae@realtek.com>
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "rtl_core.h"
 #include "r8192E_hw.h"
 #include "r8190P_rtl8256.h"
 #include "rtl_pm.h"
 
+<<<<<<< HEAD
 int rtl8192E_save_state(struct pci_dev *dev, pm_message_t state)
 {
 	printk(KERN_NOTICE "r8192E save state call (state %u).\n", state.event);
@@ -43,6 +53,22 @@ int rtl8192E_suspend(struct pci_dev *pdev, pm_message_t state)
 	if (!netif_running(dev)) {
 		printk(KERN_INFO "RTL819XE:UI is open out of suspend "
 		       "function\n");
+=======
+int rtl92e_suspend(struct device *dev_d)
+{
+	struct net_device *dev = dev_get_drvdata(dev_d);
+	struct r8192_priv *priv = rtllib_priv(dev);
+	u32	ulRegRead;
+
+	netdev_info(dev, "============> r8192E suspend call.\n");
+	del_timer_sync(&priv->gpio_polling_timer);
+	cancel_delayed_work_sync(&priv->gpio_change_rf_wq);
+	priv->polling_timer_on = 0;
+
+	if (!netif_running(dev)) {
+		netdev_info(dev,
+			    "RTL819XE:UI is open out of suspend function\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_pci_suspend;
 	}
 
@@ -51,6 +77,7 @@ int rtl8192E_suspend(struct pci_dev *pdev, pm_message_t state)
 	netif_device_detach(dev);
 
 	if (!priv->rtllib->bSupportRemoteWakeUp) {
+<<<<<<< HEAD
 		MgntActSet_RF_State(dev, eRfOff, RF_CHANGE_BY_INIT, true);
 		ulRegRead = read_nic_dword(dev, CPU_GEN);
 		ulRegRead |= CPU_GEN_SYSTEM_RESET;
@@ -72,12 +99,30 @@ out_pci_suspend:
 	pci_enable_wake(pdev, pci_choose_state(pdev, state),
 			priv->rtllib->bSupportRemoteWakeUp ? 1 : 0);
 	pci_set_power_state(pdev, pci_choose_state(pdev, state));
+=======
+		rtl92e_set_rf_state(dev, rf_off, RF_CHANGE_BY_INIT);
+		ulRegRead = rtl92e_readl(dev, CPU_GEN);
+		ulRegRead |= CPU_GEN_SYSTEM_RESET;
+		rtl92e_writel(dev, CPU_GEN, ulRegRead);
+	} else {
+		rtl92e_writel(dev, WFCRC0, 0xffffffff);
+		rtl92e_writel(dev, WFCRC1, 0xffffffff);
+		rtl92e_writel(dev, WFCRC2, 0xffffffff);
+		rtl92e_writeb(dev, PMR, 0x5);
+		rtl92e_writeb(dev, MAC_BLK_CTRL, 0xa);
+	}
+out_pci_suspend:
+	netdev_info(dev, "WOL is %s\n", priv->rtllib->bSupportRemoteWakeUp ?
+			    "Supported" : "Not supported");
+	device_set_wakeup_enable(dev_d, priv->rtllib->bSupportRemoteWakeUp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mdelay(20);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 int rtl8192E_resume(struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
@@ -96,11 +141,22 @@ int rtl8192E_resume(struct pci_dev *pdev)
 		return err;
 	}
 	pci_restore_state(pdev);
+=======
+int rtl92e_resume(struct device *dev_d)
+{
+	struct pci_dev *pdev = to_pci_dev(dev_d);
+	struct net_device *dev = dev_get_drvdata(dev_d);
+	struct r8192_priv *priv = rtllib_priv(dev);
+	u32 val;
+
+	netdev_info(dev, "================>r8192E resume call.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_read_config_dword(pdev, 0x40, &val);
 	if ((val & 0x0000ff00) != 0)
 		pci_write_config_dword(pdev, 0x40, val & 0xffff00ff);
 
+<<<<<<< HEAD
 	pci_enable_wake(pdev, PCI_D0, 0);
 
 	if (priv->polling_timer_on == 0)
@@ -109,6 +165,16 @@ int rtl8192E_resume(struct pci_dev *pdev)
 	if (!netif_running(dev)) {
 		printk(KERN_INFO "RTL819XE:UI is open out of resume "
 		       "function\n");
+=======
+	device_wakeup_disable(dev_d);
+
+	if (priv->polling_timer_on == 0)
+		rtl92e_check_rfctrl_gpio_timer(&priv->gpio_polling_timer);
+
+	if (!netif_running(dev)) {
+		netdev_info(dev,
+			    "RTL819XE:UI is open out of resume function\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -117,6 +183,7 @@ int rtl8192E_resume(struct pci_dev *pdev)
 		dev->netdev_ops->ndo_open(dev);
 
 	if (!priv->rtllib->bSupportRemoteWakeUp)
+<<<<<<< HEAD
 		MgntActSet_RF_State(dev, eRfOn, RF_CHANGE_BY_INIT, true);
 
 out:
@@ -132,3 +199,11 @@ int rtl8192E_enable_wake(struct pci_dev *dev, pm_message_t state, int enable)
 	return -EAGAIN;
 }
 
+=======
+		rtl92e_set_rf_state(dev, rf_on, RF_CHANGE_BY_INIT);
+
+out:
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

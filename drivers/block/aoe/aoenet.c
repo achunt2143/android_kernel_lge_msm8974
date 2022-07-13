@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2007 Coraid, Inc.  See COPYING for GPL terms. */
+=======
+/* Copyright (c) 2013 Coraid, Inc.  See COPYING for GPL terms. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * aoenet.c
  * Ethernet portion of AoE driver
@@ -31,19 +35,56 @@ enum {
 
 static char aoe_iflist[IFLISTSZ];
 module_param_string(aoe_iflist, aoe_iflist, IFLISTSZ, 0600);
+<<<<<<< HEAD
 MODULE_PARM_DESC(aoe_iflist, "aoe_iflist=\"dev1 [dev2 ...]\"");
+=======
+MODULE_PARM_DESC(aoe_iflist, "aoe_iflist=dev1[,dev2...]");
+
+static wait_queue_head_t txwq;
+static struct ktstate kts;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef MODULE
 static int __init aoe_iflist_setup(char *str)
 {
+<<<<<<< HEAD
 	strncpy(aoe_iflist, str, IFLISTSZ);
 	aoe_iflist[IFLISTSZ - 1] = '\0';
+=======
+	strscpy(aoe_iflist, str, IFLISTSZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
 __setup("aoe_iflist=", aoe_iflist_setup);
 #endif
 
+<<<<<<< HEAD
+=======
+static spinlock_t txlock;
+static struct sk_buff_head skbtxq;
+
+/* enters with txlock held */
+static int
+tx(int id) __must_hold(&txlock)
+{
+	struct sk_buff *skb;
+	struct net_device *ifp;
+
+	while ((skb = skb_dequeue(&skbtxq))) {
+		spin_unlock_irq(&txlock);
+		ifp = skb->dev;
+		if (dev_queue_xmit(skb) == NET_XMIT_DROP && net_ratelimit())
+			pr_warn("aoe: packet could not be sent on %s.  %s\n",
+				ifp ? ifp->name : "netif",
+				"consider increasing tx_queue_len");
+		dev_put(ifp);
+		spin_lock_irq(&txlock);
+	}
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int
 is_aoe_netif(struct net_device *ifp)
 {
@@ -88,6 +129,7 @@ void
 aoenet_xmit(struct sk_buff_head *queue)
 {
 	struct sk_buff *skb, *tmp;
+<<<<<<< HEAD
 
 	skb_queue_walk_safe(queue, skb, tmp) {
 		__skb_unlink(skb, queue);
@@ -97,12 +139,33 @@ aoenet_xmit(struct sk_buff_head *queue)
 
 /* 
  * (1) len doesn't include the header by default.  I want this. 
+=======
+	ulong flags;
+
+	skb_queue_walk_safe(queue, skb, tmp) {
+		__skb_unlink(skb, queue);
+		spin_lock_irqsave(&txlock, flags);
+		skb_queue_tail(&skbtxq, skb);
+		spin_unlock_irqrestore(&txlock, flags);
+		wake_up(&txwq);
+	}
+}
+
+/*
+ * (1) len doesn't include the header by default.  I want this.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 aoenet_rcv(struct sk_buff *skb, struct net_device *ifp, struct packet_type *pt, struct net_device *orig_dev)
 {
 	struct aoe_hdr *h;
+<<<<<<< HEAD
 	u32 n;
+=======
+	struct aoe_atahdr *ah;
+	u32 n;
+	int sn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev_net(ifp) != &init_net)
 		goto exit;
@@ -110,6 +173,7 @@ aoenet_rcv(struct sk_buff *skb, struct net_device *ifp, struct packet_type *pt, 
 	skb = skb_share_check(skb, GFP_ATOMIC);
 	if (skb == NULL)
 		return 0;
+<<<<<<< HEAD
 	if (skb_linearize(skb))
 		goto exit;
 	if (!is_aoe_netif(ifp))
@@ -117,6 +181,18 @@ aoenet_rcv(struct sk_buff *skb, struct net_device *ifp, struct packet_type *pt, 
 	skb_push(skb, ETH_HLEN);	/* (1) */
 
 	h = (struct aoe_hdr *) skb_mac_header(skb);
+=======
+	if (!is_aoe_netif(ifp))
+		goto exit;
+	skb_push(skb, ETH_HLEN);	/* (1) */
+	sn = sizeof(*h) + sizeof(*ah);
+	if (skb->len >= sn) {
+		sn -= skb_headlen(skb);
+		if (sn > 0 && !__pskb_pull_tail(skb, sn))
+			goto exit;
+	}
+	h = (struct aoe_hdr *) skb->data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	n = get_unaligned_be32(&h->tag);
 	if ((h->verfl & AOEFL_RSP) == 0 || (n & 1<<31))
 		goto exit;
@@ -137,7 +213,12 @@ aoenet_rcv(struct sk_buff *skb, struct net_device *ifp, struct packet_type *pt, 
 
 	switch (h->cmd) {
 	case AOECMD_ATA:
+<<<<<<< HEAD
 		aoecmd_ata_rsp(skb);
+=======
+		/* ata_rsp may keep skb for later processing or give it back */
+		skb = aoecmd_ata_rsp(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case AOECMD_CFG:
 		aoecmd_cfg_rsp(skb);
@@ -145,8 +226,17 @@ aoenet_rcv(struct sk_buff *skb, struct net_device *ifp, struct packet_type *pt, 
 	default:
 		if (h->cmd >= AOECMD_VEND_MIN)
 			break;	/* don't complain about vendor commands */
+<<<<<<< HEAD
 		printk(KERN_INFO "aoe: unknown cmd %d\n", h->cmd);
 	}
+=======
+		pr_info("aoe: unknown AoE command type 0x%02x\n", h->cmd);
+		break;
+	}
+
+	if (!skb)
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit:
 	dev_kfree_skb(skb);
 	return 0;
@@ -160,6 +250,19 @@ static struct packet_type aoe_pt __read_mostly = {
 int __init
 aoenet_init(void)
 {
+<<<<<<< HEAD
+=======
+	skb_queue_head_init(&skbtxq);
+	init_waitqueue_head(&txwq);
+	spin_lock_init(&txlock);
+	kts.lock = &txlock;
+	kts.fn = tx;
+	kts.waitq = &txwq;
+	kts.id = 0;
+	snprintf(kts.name, sizeof(kts.name), "aoe_tx%d", kts.id);
+	if (aoe_ktstart(&kts))
+		return -EAGAIN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_add_pack(&aoe_pt);
 	return 0;
 }
@@ -167,6 +270,11 @@ aoenet_init(void)
 void
 aoenet_exit(void)
 {
+<<<<<<< HEAD
+=======
+	aoe_ktstop(&kts);
+	skb_queue_purge(&skbtxq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_remove_pack(&aoe_pt);
 }
 

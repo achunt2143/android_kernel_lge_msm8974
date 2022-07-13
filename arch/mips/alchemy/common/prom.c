@@ -33,11 +33,22 @@
  *  675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/string.h>
 
 #include <asm/bootinfo.h>
+=======
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/memblock.h>
+#include <linux/sizes.h>
+#include <linux/string.h>
+
+#include <asm/bootinfo.h>
+#include <prom.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int prom_argc;
 char **prom_argv;
@@ -77,6 +88,27 @@ char *prom_getenv(char *envname)
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+void __init prom_init(void)
+{
+	unsigned char *memsize_str;
+	unsigned long memsize;
+
+	prom_argc = (int)fw_arg0;
+	prom_argv = (char **)fw_arg1;
+	prom_envp = (char **)fw_arg2;
+
+	prom_init_cmdline();
+
+	memsize_str = prom_getenv("memsize");
+	if (!memsize_str || kstrtoul(memsize_str, 0, &memsize))
+		memsize = SZ_64M; /* minimum memsize is 64MB RAM */
+
+	memblock_add(0, memsize);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned char str2hexnum(unsigned char c)
 {
 	if (c >= '0' && c <= '9')
@@ -123,7 +155,10 @@ int __init prom_get_ethernet_addr(char *ethernet_addr)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 void __init prom_free_prom_memory(void)
 {
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

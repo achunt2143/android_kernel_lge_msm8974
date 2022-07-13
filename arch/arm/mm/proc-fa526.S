@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/proc-fa526.S: MMU functions for FA526
  *
@@ -5,21 +9,31 @@
  *  Copyright (C) 2005 Faraday Corp.
  *  Copyright (C) 2008-2009 Paulius Zaleckas <paulius.zaleckas@teltonika.lt>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * These are the low level assembler for performing cache and TLB
  * functions on the fa526.
  */
 #include <linux/linkage.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <asm/assembler.h>
 #include <asm/hwcap.h>
 #include <asm/pgtable-hwdef.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/pgtable.h>
+#include <asm/assembler.h>
+#include <asm/hwcap.h>
+#include <asm/pgtable-hwdef.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm/ptrace.h>
 
@@ -32,7 +46,11 @@
  * cpu_fa526_proc_init()
  */
 ENTRY(cpu_fa526_proc_init)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_fa526_proc_fin()
@@ -44,7 +62,11 @@ ENTRY(cpu_fa526_proc_fin)
 	mcr	p15, 0, r0, c1, c0, 0		@ disable caches
 	nop
 	nop
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_fa526_reset(loc)
@@ -72,7 +94,11 @@ ENTRY(cpu_fa526_reset)
 	mcr	p15, 0, ip, c1, c0, 0		@ ctrl register
 	nop
 	nop
+<<<<<<< HEAD
 	mov	pc, r0
+=======
+	ret	r0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(cpu_fa526_reset)
 	.popsection
 
@@ -81,8 +107,12 @@ ENDPROC(cpu_fa526_reset)
  */
 	.align	4
 ENTRY(cpu_fa526_do_idle)
+<<<<<<< HEAD
 	mcr	p15, 0, r0, c7, c0, 4		@ Wait for interrupt
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 ENTRY(cpu_fa526_dcache_clean_area)
@@ -91,7 +121,11 @@ ENTRY(cpu_fa526_dcache_clean_area)
 	subs	r1, r1, #CACHE_DLINESIZE
 	bhi	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* =============================== PageTable ============================== */
 
@@ -118,7 +152,11 @@ ENTRY(cpu_fa526_switch_mm)
 	mcr	p15, 0, r0, c2, c0, 0		@ load page table pointer
 	mcr	p15, 0, ip, c8, c7, 0		@ invalidate UTLB
 #endif
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_fa526_set_pte_ext(ptep, pte, ext)
@@ -134,9 +172,13 @@ ENTRY(cpu_fa526_set_pte_ext)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
 #endif
+<<<<<<< HEAD
 	mov	pc, lr
 
 	__CPUINIT
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.type	__fa526_setup, #function
 __fa526_setup:
@@ -165,7 +207,11 @@ __fa526_setup:
 	bic	r0, r0, r5
 	ldr	r5, fa526_cr1_set
 	orr	r0, r0, r5
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size	__fa526_setup, . - __fa526_setup
 
 	/*
@@ -193,7 +239,11 @@ fa526_cr1_set:
 
 	.align
 
+<<<<<<< HEAD
 	.section ".proc.info.init", #alloc, #execinstr
+=======
+	.section ".proc.info.init", "a"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.type	__fa526_proc_info,#object
 __fa526_proc_info:
@@ -209,7 +259,11 @@ __fa526_proc_info:
 		PMD_BIT4 | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
+<<<<<<< HEAD
 	b	__fa526_setup
+=======
+	initfn	__fa526_setup, __fa526_proc_info
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP | HWCAP_HALF

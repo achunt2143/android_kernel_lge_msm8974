@@ -11,8 +11,13 @@
 #define __ASM_ALPHA_FLOPPY_H
 
 
+<<<<<<< HEAD
 #define fd_inb(port)			inb_p(port)
 #define fd_outb(value,port)		outb_p(value,port)
+=======
+#define fd_inb(base, reg)		inb_p((base) + (reg))
+#define fd_outb(value, base, reg)	outb_p(value, (base) + (reg))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define fd_enable_dma()         enable_dma(FLOPPY_DMA)
 #define fd_disable_dma()        disable_dma(FLOPPY_DMA)
@@ -20,6 +25,7 @@
 #define fd_free_dma()           free_dma(FLOPPY_DMA)
 #define fd_clear_dma_ff()       clear_dma_ff(FLOPPY_DMA)
 #define fd_set_dma_mode(mode)   set_dma_mode(FLOPPY_DMA,mode)
+<<<<<<< HEAD
 #define fd_set_dma_addr(addr)   set_dma_addr(FLOPPY_DMA,virt_to_bus(addr))
 #define fd_set_dma_count(count) set_dma_count(FLOPPY_DMA,count)
 #define fd_enable_irq()         enable_irq(FLOPPY_IRQ)
@@ -27,6 +33,14 @@
 #define fd_cacheflush(addr,size) /* nothing */
 #define fd_request_irq()        request_irq(FLOPPY_IRQ, floppy_interrupt,\
 					    IRQF_DISABLED, "floppy", NULL)
+=======
+#define fd_set_dma_addr(addr)   set_dma_addr(FLOPPY_DMA,isa_virt_to_bus(addr))
+#define fd_set_dma_count(count) set_dma_count(FLOPPY_DMA,count)
+#define fd_enable_irq()         enable_irq(FLOPPY_IRQ)
+#define fd_disable_irq()        disable_irq(FLOPPY_IRQ)
+#define fd_request_irq()        request_irq(FLOPPY_IRQ, floppy_interrupt,\
+					    0, "floppy", NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define fd_free_irq()           free_irq(FLOPPY_IRQ, NULL)
 
 #ifdef CONFIG_PCI
@@ -44,17 +58,30 @@ alpha_fd_dma_setup(char *addr, unsigned long size, int mode, int io)
 	static int prev_dir;
 	int dir;
 
+<<<<<<< HEAD
 	dir = (mode != DMA_MODE_READ) ? PCI_DMA_FROMDEVICE : PCI_DMA_TODEVICE;
+=======
+	dir = (mode != DMA_MODE_READ) ? DMA_FROM_DEVICE : DMA_TO_DEVICE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bus_addr 
 	    && (addr != prev_addr || size != prev_size || dir != prev_dir)) {
 		/* different from last time -- unmap prev */
+<<<<<<< HEAD
 		pci_unmap_single(isa_bridge, bus_addr, prev_size, prev_dir);
+=======
+		dma_unmap_single(&isa_bridge->dev, bus_addr, prev_size,
+				 prev_dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bus_addr = 0;
 	}
 
 	if (!bus_addr)	/* need to map it */
+<<<<<<< HEAD
 		bus_addr = pci_map_single(isa_bridge, addr, size, dir);
+=======
+		bus_addr = dma_map_single(&isa_bridge->dev, addr, size, dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* remember this one as prev */
 	prev_addr = addr;
@@ -62,7 +89,10 @@ alpha_fd_dma_setup(char *addr, unsigned long size, int mode, int io)
 	prev_dir = dir;
 
 	fd_clear_dma_ff();
+<<<<<<< HEAD
 	fd_cacheflush(addr, size);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fd_set_dma_mode(mode);
 	set_dma_addr(FLOPPY_DMA, bus_addr);
 	fd_set_dma_count(size);

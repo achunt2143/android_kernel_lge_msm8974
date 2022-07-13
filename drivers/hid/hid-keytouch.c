@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  HID driver for Keytouch devices not fully compliant with HID standard
  *
@@ -5,10 +9,13 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -49,6 +56,7 @@ static struct hid_driver keytouch_driver = {
 	.id_table = keytouch_devices,
 	.report_fixup = keytouch_report_fixup,
 };
+<<<<<<< HEAD
 
 static int __init keytouch_init(void)
 {
@@ -62,5 +70,9 @@ static void __exit keytouch_exit(void)
 
 module_init(keytouch_init);
 module_exit(keytouch_exit);
+=======
+module_hid_driver(keytouch_driver);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jiri Kosina");

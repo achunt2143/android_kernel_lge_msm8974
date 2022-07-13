@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -8,6 +9,10 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  *  GNU General Public License for more details.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Copyright (C) 2004 IDT Inc.
  *  Copyright (C) 2006 Felix Fietkau <nbd@openwrt.org>
@@ -15,10 +20,15 @@
 #ifndef __ASM_RC32434_RB_H
 #define __ASM_RC32434_RB_H
 
+<<<<<<< HEAD
 #include <linux/genhd.h>
 
 #define REGBASE		0x18000000
 #define IDT434_REG_BASE	((volatile void *) KSEG1ADDR(REGBASE))
+=======
+#define REGBASE		0x18000000
+#define IDT434_REG_BASE ((volatile void *) KSEG1ADDR(REGBASE))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define UART0BASE	0x58000
 #define RST		(1 << 15)
 #define DEV0BASE	0x010000
@@ -39,6 +49,7 @@
 #define DEV3TC		0x01003C
 #define BTCS		0x010040
 #define BTCOMPARE	0x010044
+<<<<<<< HEAD
 #define GPIOBASE	0x050000
 /* Offsets relative to GPIOBASE */
 #define GPIOFUNC	0x00
@@ -48,6 +59,8 @@
 #define GPIOISTAT	0x10
 #define GPIONMIEN	0x14
 #define IMASK6		0x38
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LO_WPX		(1 << 0)
 #define LO_ALE		(1 << 1)
 #define LO_CLE		(1 << 2)
@@ -71,6 +84,7 @@ struct korina_device {
 	struct net_device *dev;
 };
 
+<<<<<<< HEAD
 struct cf_device {
 	int gpio_pin;
 	void *dev;
@@ -81,9 +95,19 @@ struct mpmc_device {
 	unsigned char	state;
 	spinlock_t	lock;
 	void __iomem 	*base;
+=======
+struct mpmc_device {
+	unsigned char	state;
+	spinlock_t	lock;
+	void __iomem	*base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern void set_latch_u5(unsigned char or_mask, unsigned char nand_mask);
 extern unsigned char get_latch_u5(void);
 
+<<<<<<< HEAD
 #endif  /* __ASM_RC32434_RB_H */
+=======
+#endif	/* __ASM_RC32434_RB_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

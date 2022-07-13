@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 config BT_BNEP
 	tristate "BNEP protocol support"
 	depends on BT
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config BT_BNEP
+	tristate "BNEP protocol support"
+	depends on BT_BREDR
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CRC32
 	help
 	  BNEP (Bluetooth Network Encapsulation Protocol) is Ethernet

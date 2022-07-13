@@ -1,13 +1,25 @@
+<<<<<<< HEAD
 /* bnx2i_sysfs.c: Broadcom NetXtreme II iSCSI driver.
  *
  * Copyright (c) 2004 - 2011 Broadcom Corporation
+=======
+/* bnx2i_sysfs.c: QLogic NetXtreme II iSCSI driver.
+ *
+ * Copyright (c) 2004 - 2013 Broadcom Corporation
+ * Copyright (c) 2014, QLogic Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation.
  *
  * Written by: Anil Veerabhadrappa (anilgv@broadcom.com)
+<<<<<<< HEAD
  * Maintained by: Eddie Wai (eddie.wai@broadcom.com)
+=======
+ * Previously Maintained by: Eddie Wai (eddie.wai@broadcom.com)
+ * Maintained by: QLogic-Storage-Upstream@qlogic.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "bnx2i.h"
@@ -28,6 +40,10 @@ static inline struct bnx2i_hba *bnx2i_dev_to_hba(struct device *dev)
 /**
  * bnx2i_show_sq_info - return(s currently configured send queue (SQ) size
  * @dev:	device pointer
+<<<<<<< HEAD
+=======
+ * @attr:	device attribute (unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf:	buffer to return current SQ size parameter
  *
  * Returns current SQ size parameter, this paramater determines the number
@@ -45,6 +61,10 @@ static ssize_t bnx2i_show_sq_info(struct device *dev,
 /**
  * bnx2i_set_sq_info - update send queue (SQ) size parameter
  * @dev:	device pointer
+<<<<<<< HEAD
+=======
+ * @attr:	device attribute (unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf:	buffer to return current SQ size parameter
  * @count:	parameter buffer size
  *
@@ -85,6 +105,10 @@ skip_config:
 /**
  * bnx2i_show_ccell_info - returns command cell (HQ) size
  * @dev:	device pointer
+<<<<<<< HEAD
+=======
+ * @attr:	device attribute (unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf:	buffer to return current SQ size parameter
  *
  * returns per-connection TCP history queue size parameter
@@ -99,8 +123,14 @@ static ssize_t bnx2i_show_ccell_info(struct device *dev,
 
 
 /**
+<<<<<<< HEAD
  * bnx2i_get_link_state - set command cell (HQ) size
  * @dev:	device pointer
+=======
+ * bnx2i_set_ccell_info - set command cell (HQ) size
+ * @dev:	device pointer
+ * @attr:	device attribute (unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buf:	buffer to return current SQ size parameter
  * @count:	parameter buffer size
  *
@@ -136,8 +166,23 @@ static DEVICE_ATTR(sq_size, S_IRUGO | S_IWUSR,
 static DEVICE_ATTR(num_ccell, S_IRUGO | S_IWUSR,
 		   bnx2i_show_ccell_info, bnx2i_set_ccell_info);
 
+<<<<<<< HEAD
 struct device_attribute *bnx2i_dev_attributes[] = {
 	&dev_attr_sq_size,
 	&dev_attr_num_ccell,
+=======
+static struct attribute *bnx2i_dev_attributes[] = {
+	&dev_attr_sq_size.attr,
+	&dev_attr_num_ccell.attr,
+	NULL
+};
+
+static const struct attribute_group bnx2i_dev_attr_group = {
+	.attrs = bnx2i_dev_attributes
+};
+
+const struct attribute_group *bnx2i_dev_groups[] = {
+	&bnx2i_dev_attr_group,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL
 };

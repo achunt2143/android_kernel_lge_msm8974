@@ -19,6 +19,7 @@
 **   Redesign of the boot information structure; moved boot information
 **   structure to bootinfo.h
 */
+<<<<<<< HEAD
 
 #ifndef _M68K_SETUP_H
 #define _M68K_SETUP_H
@@ -46,6 +47,15 @@
 
 #ifdef __KERNEL__
 
+=======
+#ifndef _M68K_SETUP_H
+#define _M68K_SETUP_H
+
+#include <uapi/asm/bootinfo.h>
+#include <uapi/asm/setup.h>
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CL_SIZE COMMAND_LINE_SIZE
 
 #ifndef __ASSEMBLY__
@@ -57,7 +67,12 @@ extern unsigned long m68k_machtype;
 #elif defined(CONFIG_ATARI) || defined(CONFIG_MAC) || defined(CONFIG_APOLLO) \
 	|| defined(CONFIG_MVME16x) || defined(CONFIG_BVME6000)               \
 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                      \
+<<<<<<< HEAD
 	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
+=======
+	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                  \
+	|| defined(CONFIG_VIRT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  define MACH_IS_AMIGA (m68k_machtype == MACH_AMIGA)
 #else
 #  define MACH_AMIGA_ONLY
@@ -70,7 +85,12 @@ extern unsigned long m68k_machtype;
 #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_APOLLO) \
 	|| defined(CONFIG_MVME16x) || defined(CONFIG_BVME6000)               \
 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                      \
+<<<<<<< HEAD
 	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
+=======
+	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                  \
+	|| defined(CONFIG_VIRT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  define MACH_IS_ATARI (m68k_machtype == MACH_ATARI)
 #else
 #  define MACH_ATARI_ONLY
@@ -83,7 +103,12 @@ extern unsigned long m68k_machtype;
 #elif defined(CONFIG_AMIGA) || defined(CONFIG_ATARI) || defined(CONFIG_APOLLO) \
 	|| defined(CONFIG_MVME16x) || defined(CONFIG_BVME6000)                 \
 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                        \
+<<<<<<< HEAD
 	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
+=======
+	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                    \
+	|| defined(CONFIG_VIRT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  define MACH_IS_MAC (m68k_machtype == MACH_MAC)
 #else
 #  define MACH_MAC_ONLY
@@ -104,7 +129,12 @@ extern unsigned long m68k_machtype;
 #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
 	|| defined(CONFIG_MVME16x) || defined(CONFIG_BVME6000)              \
 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                     \
+<<<<<<< HEAD
 	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
+=======
+	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                 \
+	|| defined(CONFIG_VIRT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  define MACH_IS_APOLLO (m68k_machtype == MACH_APOLLO)
 #else
 #  define MACH_APOLLO_ONLY
@@ -117,7 +147,12 @@ extern unsigned long m68k_machtype;
 #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
 	|| defined(CONFIG_APOLLO) || defined(CONFIG_BVME6000)               \
 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                     \
+<<<<<<< HEAD
 	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME16x)
+=======
+	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME16x)                 \
+	|| defined(CONFIG_VIRT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  define MACH_IS_MVME147 (m68k_machtype == MACH_MVME147)
 #else
 #  define MACH_MVME147_ONLY
@@ -130,7 +165,12 @@ extern unsigned long m68k_machtype;
 #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
 	|| defined(CONFIG_APOLLO) || defined(CONFIG_BVME6000)               \
 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                     \
+<<<<<<< HEAD
 	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
+=======
+	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                 \
+	|| defined(CONFIG_VIRT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  define MACH_IS_MVME16x (m68k_machtype == MACH_MVME16x)
 #else
 #  define MACH_MVME16x_ONLY
@@ -143,7 +183,12 @@ extern unsigned long m68k_machtype;
 #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
 	|| defined(CONFIG_APOLLO) || defined(CONFIG_MVME16x)                \
 	|| defined(CONFIG_HP300) || defined(CONFIG_Q40)                     \
+<<<<<<< HEAD
 	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
+=======
+	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                 \
+	|| defined(CONFIG_VIRT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  define MACH_IS_BVME6000 (m68k_machtype == MACH_BVME6000)
 #else
 #  define MACH_BVME6000_ONLY
@@ -156,7 +201,12 @@ extern unsigned long m68k_machtype;
 #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
 	|| defined(CONFIG_APOLLO) || defined(CONFIG_MVME16x) \
 	|| defined(CONFIG_BVME6000) || defined(CONFIG_Q40) \
+<<<<<<< HEAD
 	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
+=======
+	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147) \
+	|| defined(CONFIG_VIRT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  define MACH_IS_HP300 (m68k_machtype == MACH_HP300)
 #else
 #  define MACH_HP300_ONLY
@@ -169,7 +219,12 @@ extern unsigned long m68k_machtype;
 #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
 	|| defined(CONFIG_APOLLO) || defined(CONFIG_MVME16x)                \
 	|| defined(CONFIG_BVME6000) || defined(CONFIG_HP300)                \
+<<<<<<< HEAD
 	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)
+=======
+	|| defined(CONFIG_SUN3X) || defined(CONFIG_MVME147)                 \
+	|| defined(CONFIG_VIRT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  define MACH_IS_Q40 (m68k_machtype == MACH_Q40)
 #else
 #  define MACH_Q40_ONLY
@@ -182,7 +237,12 @@ extern unsigned long m68k_machtype;
 #elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
 	|| defined(CONFIG_APOLLO) || defined(CONFIG_MVME16x)                \
 	|| defined(CONFIG_BVME6000) || defined(CONFIG_HP300)                \
+<<<<<<< HEAD
 	|| defined(CONFIG_Q40) || defined(CONFIG_MVME147)
+=======
+	|| defined(CONFIG_Q40) || defined(CONFIG_MVME147)                   \
+	|| defined(CONFIG_VIRT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  define MACH_IS_SUN3X (m68k_machtype == MACH_SUN3X)
 #else
 #  define CONFIG_SUN3X_ONLY
@@ -190,10 +250,28 @@ extern unsigned long m68k_machtype;
 #  define MACH_TYPE (MACH_SUN3X)
 #endif
 
+<<<<<<< HEAD
+=======
+#if !defined(CONFIG_VIRT)
+#  define MACH_IS_VIRT (0)
+#elif defined(CONFIG_AMIGA) || defined(CONFIG_MAC) || defined(CONFIG_ATARI) \
+	|| defined(CONFIG_APOLLO) || defined(CONFIG_MVME16x)                \
+	|| defined(CONFIG_BVME6000) || defined(CONFIG_HP300)                \
+	|| defined(CONFIG_Q40) || defined(CONFIG_SUN3X)                     \
+	|| defined(CONFIG_MVME147)
+#  define MACH_IS_VIRT (m68k_machtype == MACH_VIRT)
+#else
+#  define MACH_VIRT_ONLY
+#  define MACH_IS_VIRT (1)
+#  define MACH_TYPE (MACH_VIRT)
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef MACH_TYPE
 #  define MACH_TYPE (m68k_machtype)
 #endif
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
 
@@ -251,6 +329,8 @@ extern unsigned long m68k_machtype;
 #define MMU_COLDFIRE   (1<<MMUB_COLDFIRE)
 
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 extern unsigned long m68k_cputype;
@@ -375,16 +455,26 @@ extern int m68k_is040or060;
 #define NUM_MEMINFO	4
 
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
 struct mem_info {
+=======
+struct m68k_mem_info {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long addr;		/* physical address of memory chunk */
 	unsigned long size;		/* length of memory chunk (in bytes) */
 };
 
 extern int m68k_num_memory;		/* # of memory blocks found (and used) */
 extern int m68k_realnum_memory;		/* real # of memory blocks found */
+<<<<<<< HEAD
 extern struct mem_info m68k_memory[NUM_MEMINFO];/* memory description */
 #endif
 
 #endif /* __KERNEL__ */
 
+=======
+extern struct m68k_mem_info m68k_memory[NUM_MEMINFO];/* memory description */
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _M68K_SETUP_H */

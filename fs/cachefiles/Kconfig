@@ -1,13 +1,25 @@
+<<<<<<< HEAD
 
 config CACHEFILES
 	tristate "Filesystem caching on files"
 	depends on FSCACHE && BLOCK
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+
+config CACHEFILES
+	tristate "Filesystem caching on files"
+	depends on NETFS_SUPPORT && FSCACHE && BLOCK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This permits use of a mounted filesystem as a cache for other
 	  filesystems - primarily networking filesystems - thus allowing fast
 	  local disk to enhance the speed of slower devices.
 
+<<<<<<< HEAD
 	  See Documentation/filesystems/caching/cachefiles.txt for more
+=======
+	  See Documentation/filesystems/caching/cachefiles.rst for more
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  information.
 
 config CACHEFILES_DEBUG
@@ -19,6 +31,7 @@ config CACHEFILES_DEBUG
 	  enabled by setting bits in /sys/modules/cachefiles/parameter/debug or
 	  by including a debugging specifier in /etc/cachefilesd.conf.
 
+<<<<<<< HEAD
 config CACHEFILES_HISTOGRAM
 	bool "Gather latency information on CacheFiles"
 	depends on CACHEFILES && PROC_FS
@@ -37,3 +50,23 @@ config CACHEFILES_HISTOGRAM
 
 	  See Documentation/filesystems/caching/cachefiles.txt for more
 	  information.
+=======
+config CACHEFILES_ERROR_INJECTION
+	bool "Provide error injection for cachefiles"
+	depends on CACHEFILES && SYSCTL
+	help
+	  This permits error injection to be enabled in cachefiles whilst a
+	  cache is in service.
+
+config CACHEFILES_ONDEMAND
+	bool "Support for on-demand read"
+	depends on CACHEFILES
+	default n
+	help
+	  This permits userspace to enable the cachefiles on-demand read mode.
+	  In this mode, when a cache miss occurs, responsibility for fetching
+	  the data lies with the cachefiles backend instead of with the netfs
+	  and is delegated to userspace.
+
+	  If unsure, say N.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 /*
+=======
+/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
+/*
+ * Copyright (c) 2015-2017 Oracle. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2003-2007 Network Appliance, Inc. All rights reserved.
  *
  * This software is available to you under a choice of one of two
@@ -41,6 +47,7 @@
 #define _LINUX_SUNRPC_RPC_RDMA_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 
 struct rpcrdma_segment {
 	__be32 rs_handle;	/* Registered memory handle */
@@ -96,17 +103,46 @@ struct rpcrdma_msg {
 };
 
 #define RPCRDMA_HDRLEN_MIN	28
+=======
+#include <linux/bitops.h>
+
+#define RPCRDMA_VERSION		1
+#define rpcrdma_version		cpu_to_be32(RPCRDMA_VERSION)
+
+enum {
+	RPCRDMA_V1_DEF_INLINE_SIZE	= 1024,
+};
+
+/*
+ * XDR sizes, in quads
+ */
+enum {
+	rpcrdma_fixed_maxsz	= 4,
+	rpcrdma_segment_maxsz	= 4,
+	rpcrdma_readseg_maxsz	= 1 + rpcrdma_segment_maxsz,
+	rpcrdma_readchunk_maxsz	= 1 + rpcrdma_readseg_maxsz,
+};
+
+/*
+ * Smallest RPC/RDMA header: rm_xid through rm_type, then rm_nochunks
+ */
+#define RPCRDMA_HDRLEN_MIN	(sizeof(__be32) * 7)
+#define RPCRDMA_HDRLEN_ERR	(sizeof(__be32) * 5)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum rpcrdma_errcode {
 	ERR_VERS = 1,
 	ERR_CHUNK = 2
 };
 
+<<<<<<< HEAD
 struct rpcrdma_err_vers {
 	uint32_t rdma_vers_low;	/* Version range supported by peer */
 	uint32_t rdma_vers_high;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum rpcrdma_proc {
 	RDMA_MSG = 0,		/* An RPC call or reply msg */
 	RDMA_NOMSG = 1,		/* An RPC call or reply msg - separate body */
@@ -115,4 +151,124 @@ enum rpcrdma_proc {
 	RDMA_ERROR = 4		/* An RPC RDMA encoding error */
 };
 
+<<<<<<< HEAD
+=======
+#define rdma_msg	cpu_to_be32(RDMA_MSG)
+#define rdma_nomsg	cpu_to_be32(RDMA_NOMSG)
+#define rdma_msgp	cpu_to_be32(RDMA_MSGP)
+#define rdma_done	cpu_to_be32(RDMA_DONE)
+#define rdma_error	cpu_to_be32(RDMA_ERROR)
+
+#define err_vers	cpu_to_be32(ERR_VERS)
+#define err_chunk	cpu_to_be32(ERR_CHUNK)
+
+/*
+ * Private extension to RPC-over-RDMA Version One.
+ * Message passed during RDMA-CM connection set-up.
+ *
+ * Add new fields at the end, and don't permute existing
+ * fields.
+ */
+struct rpcrdma_connect_private {
+	__be32			cp_magic;
+	u8			cp_version;
+	u8			cp_flags;
+	u8			cp_send_size;
+	u8			cp_recv_size;
+} __packed;
+
+#define rpcrdma_cmp_magic	__cpu_to_be32(0xf6ab0e18)
+
+enum {
+	RPCRDMA_CMP_VERSION		= 1,
+	RPCRDMA_CMP_F_SND_W_INV_OK	= BIT(0),
+};
+
+static inline u8
+rpcrdma_encode_buffer_size(unsigned int size)
+{
+	return (size >> 10) - 1;
+}
+
+static inline unsigned int
+rpcrdma_decode_buffer_size(u8 val)
+{
+	return ((unsigned int)val + 1) << 10;
+}
+
+/**
+ * xdr_encode_rdma_segment - Encode contents of an RDMA segment
+ * @p: Pointer into a send buffer
+ * @handle: The RDMA handle to encode
+ * @length: The RDMA length to encode
+ * @offset: The RDMA offset to encode
+ *
+ * Return value:
+ *   Pointer to the XDR position that follows the encoded RDMA segment
+ */
+static inline __be32 *xdr_encode_rdma_segment(__be32 *p, u32 handle,
+					      u32 length, u64 offset)
+{
+	*p++ = cpu_to_be32(handle);
+	*p++ = cpu_to_be32(length);
+	return xdr_encode_hyper(p, offset);
+}
+
+/**
+ * xdr_encode_read_segment - Encode contents of a Read segment
+ * @p: Pointer into a send buffer
+ * @position: The position to encode
+ * @handle: The RDMA handle to encode
+ * @length: The RDMA length to encode
+ * @offset: The RDMA offset to encode
+ *
+ * Return value:
+ *   Pointer to the XDR position that follows the encoded Read segment
+ */
+static inline __be32 *xdr_encode_read_segment(__be32 *p, u32 position,
+					      u32 handle, u32 length,
+					      u64 offset)
+{
+	*p++ = cpu_to_be32(position);
+	return xdr_encode_rdma_segment(p, handle, length, offset);
+}
+
+/**
+ * xdr_decode_rdma_segment - Decode contents of an RDMA segment
+ * @p: Pointer to the undecoded RDMA segment
+ * @handle: Upon return, the RDMA handle
+ * @length: Upon return, the RDMA length
+ * @offset: Upon return, the RDMA offset
+ *
+ * Return value:
+ *   Pointer to the XDR item that follows the RDMA segment
+ */
+static inline __be32 *xdr_decode_rdma_segment(__be32 *p, u32 *handle,
+					      u32 *length, u64 *offset)
+{
+	*handle = be32_to_cpup(p++);
+	*length = be32_to_cpup(p++);
+	return xdr_decode_hyper(p, offset);
+}
+
+/**
+ * xdr_decode_read_segment - Decode contents of a Read segment
+ * @p: Pointer to the undecoded Read segment
+ * @position: Upon return, the segment's position
+ * @handle: Upon return, the RDMA handle
+ * @length: Upon return, the RDMA length
+ * @offset: Upon return, the RDMA offset
+ *
+ * Return value:
+ *   Pointer to the XDR item that follows the Read segment
+ */
+static inline __be32 *xdr_decode_read_segment(__be32 *p, u32 *position,
+					      u32 *handle, u32 *length,
+					      u64 *offset)
+{
+	*position = be32_to_cpup(p++);
+	return xdr_decode_rdma_segment(p, handle, length, offset);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* _LINUX_SUNRPC_RPC_RDMA_H */

@@ -40,12 +40,21 @@
 	 * pin muxing when the DIU is enabled.
 	 */
 	compatible = "fsl,p1022-elbc", "fsl,elbc";
+<<<<<<< HEAD
 	interrupts = <19 2 0 0>;
+=======
+	interrupts = <19 2 0 0>,
+		     <16 2 0 0>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* controller at 0x9000 */
 &pci0 {
+<<<<<<< HEAD
 	compatible = "fsl,p1022-pcie";
+=======
+	compatible = "fsl,mpc8548-pcie";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_type = "pci";
 	#size-cells = <2>;
 	#address-cells = <3>;
@@ -73,7 +82,11 @@
 
 /* controller at 0xa000 */
 &pci1 {
+<<<<<<< HEAD
 	compatible = "fsl,p1022-pcie";
+=======
+	compatible = "fsl,mpc8548-pcie";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_type = "pci";
 	#size-cells = <2>;
 	#address-cells = <3>;
@@ -102,7 +115,11 @@
 
 /* controller at 0xb000 */
 &pci2 {
+<<<<<<< HEAD
 	compatible = "fsl,p1022-pcie";
+=======
+	compatible = "fsl,mpc8548-pcie";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_type = "pci";
 	#size-cells = <2>;
 	#address-cells = <3>;
@@ -174,7 +191,11 @@
 
 /include/ "pq3-gpio-0.dtsi"
 
+<<<<<<< HEAD
 	display@10000 {
+=======
+	display: display@10000 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		compatible = "fsl,diu", "fsl,p1022-diu";
 		reg = <0x10000 1000>;
 		interrupts = <64 2 0 0>;
@@ -223,10 +244,18 @@
 
 /include/ "pq3-etsec2-0.dtsi"
 	enet0: enet0_grp2: ethernet@b0000 {
+<<<<<<< HEAD
+=======
+		fsl,wake-on-filer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 /include/ "pq3-etsec2-1.dtsi"
 	enet1: enet1_grp2: ethernet@b1000 {
+<<<<<<< HEAD
+=======
+		fsl,wake-on-filer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	global-utilities@e0000 {
@@ -235,7 +264,11 @@
 		fsl,has-rstcr;
 	};
 
+<<<<<<< HEAD
 	power@e0070{
+=======
+	power@e0070 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		compatible = "fsl,mpc8536-pmc", "fsl,mpc8548-pmc";
 		reg = <0xe0070 0x20>;
 	};

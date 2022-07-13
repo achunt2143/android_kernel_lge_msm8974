@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_HUGETLB_H
 #define _ASM_X86_HUGETLB_H
 
 #include <asm/page.h>
+<<<<<<< HEAD
 
 
 static inline int is_hugepage_only_range(struct mm_struct *mm,
@@ -90,5 +95,10 @@ static inline int arch_prepare_hugepage(struct page *page)
 static inline void arch_release_hugepage(struct page *page)
 {
 }
+=======
+#include <asm-generic/hugetlb.h>
+
+#define hugepages_supported() boot_cpu_has(X86_FEATURE_PSE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_HUGETLB_H */

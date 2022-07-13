@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Procedures for creating, accessing and interpreting the device tree.
  *
@@ -8,6 +12,7 @@
  *    {engebret|bergner}@us.ibm.com 
  *
  *  Adapted for sparc64 by David S. Miller davem@davemloft.net
+<<<<<<< HEAD
  *
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
@@ -20,6 +25,16 @@
 #include <linux/string.h>
 #include <linux/mm.h>
 #include <linux/memblock.h>
+=======
+ */
+
+#include <linux/memblock.h>
+#include <linux/kernel.h>
+#include <linux/string.h>
+#include <linux/types.h>
+#include <linux/cpu.h>
+#include <linux/mm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of.h>
 
 #include <asm/prom.h>
@@ -33,6 +48,7 @@
 
 void * __init prom_early_alloc(unsigned long size)
 {
+<<<<<<< HEAD
 	unsigned long paddr = memblock_alloc(size, SMP_CACHE_BYTES);
 	void *ret;
 
@@ -43,6 +59,15 @@ void * __init prom_early_alloc(unsigned long size)
 
 	ret = __va(paddr);
 	memset(ret, 0, size);
+=======
+	void *ret = memblock_alloc(size, SMP_CACHE_BYTES);
+
+	if (!ret) {
+		prom_printf("prom_early_alloc(%lu) failed\n", size);
+		prom_halt();
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prom_early_allocated += size;
 
 	return ret;
@@ -71,6 +96,10 @@ void * __init prom_early_alloc(unsigned long size)
  */
 static void __init sun4v_path_component(struct device_node *dp, char *tmp_buf)
 {
+<<<<<<< HEAD
+=======
+	const char *name = of_get_property(dp, "name", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct linux_prom64_registers *regs;
 	struct property *rprop;
 	u32 high_bits, low_bits, type;
@@ -82,7 +111,11 @@ static void __init sun4v_path_component(struct device_node *dp, char *tmp_buf)
 	regs = rprop->value;
 	if (!of_node_is_root(dp->parent)) {
 		sprintf(tmp_buf, "%s@%x,%x",
+<<<<<<< HEAD
 			dp->name,
+=======
+			name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(unsigned int) (regs->phys_addr >> 32UL),
 			(unsigned int) (regs->phys_addr & 0xffffffffUL));
 		return;
@@ -97,21 +130,37 @@ static void __init sun4v_path_component(struct device_node *dp, char *tmp_buf)
 
 		if (low_bits)
 			sprintf(tmp_buf, "%s@%s%x,%x",
+<<<<<<< HEAD
 				dp->name, prefix,
 				high_bits, low_bits);
 		else
 			sprintf(tmp_buf, "%s@%s%x",
 				dp->name,
+=======
+				name, prefix,
+				high_bits, low_bits);
+		else
+			sprintf(tmp_buf, "%s@%s%x",
+				name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				prefix,
 				high_bits);
 	} else if (type == 12) {
 		sprintf(tmp_buf, "%s@%x",
+<<<<<<< HEAD
 			dp->name, high_bits);
+=======
+			name, high_bits);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void __init sun4u_path_component(struct device_node *dp, char *tmp_buf)
 {
+<<<<<<< HEAD
+=======
+	const char *name = of_get_property(dp, "name", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct linux_prom64_registers *regs;
 	struct property *prop;
 
@@ -122,7 +171,11 @@ static void __init sun4u_path_component(struct device_node *dp, char *tmp_buf)
 	regs = prop->value;
 	if (!of_node_is_root(dp->parent)) {
 		sprintf(tmp_buf, "%s@%x,%x",
+<<<<<<< HEAD
 			dp->name,
+=======
+			name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(unsigned int) (regs->phys_addr >> 32UL),
 			(unsigned int) (regs->phys_addr & 0xffffffffUL));
 		return;
@@ -138,7 +191,11 @@ static void __init sun4u_path_component(struct device_node *dp, char *tmp_buf)
 			mask = 0x7fffff;
 
 		sprintf(tmp_buf, "%s@%x,%x",
+<<<<<<< HEAD
 			dp->name,
+=======
+			name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*(u32 *)prop->value,
 			(unsigned int) (regs->phys_addr & mask));
 	}
@@ -147,6 +204,10 @@ static void __init sun4u_path_component(struct device_node *dp, char *tmp_buf)
 /* "name@slot,offset"  */
 static void __init sbus_path_component(struct device_node *dp, char *tmp_buf)
 {
+<<<<<<< HEAD
+=======
+	const char *name = of_get_property(dp, "name", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct linux_prom_registers *regs;
 	struct property *prop;
 
@@ -156,7 +217,11 @@ static void __init sbus_path_component(struct device_node *dp, char *tmp_buf)
 
 	regs = prop->value;
 	sprintf(tmp_buf, "%s@%x,%x",
+<<<<<<< HEAD
 		dp->name,
+=======
+		name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		regs->which_io,
 		regs->phys_addr);
 }
@@ -164,6 +229,10 @@ static void __init sbus_path_component(struct device_node *dp, char *tmp_buf)
 /* "name@devnum[,func]" */
 static void __init pci_path_component(struct device_node *dp, char *tmp_buf)
 {
+<<<<<<< HEAD
+=======
+	const char *name = of_get_property(dp, "name", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct linux_prom_pci_registers *regs;
 	struct property *prop;
 	unsigned int devfn;
@@ -176,12 +245,20 @@ static void __init pci_path_component(struct device_node *dp, char *tmp_buf)
 	devfn = (regs->phys_hi >> 8) & 0xff;
 	if (devfn & 0x07) {
 		sprintf(tmp_buf, "%s@%x,%x",
+<<<<<<< HEAD
 			dp->name,
+=======
+			name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			devfn >> 3,
 			devfn & 0x07);
 	} else {
 		sprintf(tmp_buf, "%s@%x",
+<<<<<<< HEAD
 			dp->name,
+=======
+			name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			devfn >> 3);
 	}
 }
@@ -189,6 +266,10 @@ static void __init pci_path_component(struct device_node *dp, char *tmp_buf)
 /* "name@UPA_PORTID,offset" */
 static void __init upa_path_component(struct device_node *dp, char *tmp_buf)
 {
+<<<<<<< HEAD
+=======
+	const char *name = of_get_property(dp, "name", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct linux_prom64_registers *regs;
 	struct property *prop;
 
@@ -203,7 +284,11 @@ static void __init upa_path_component(struct device_node *dp, char *tmp_buf)
 		return;
 
 	sprintf(tmp_buf, "%s@%x,%x",
+<<<<<<< HEAD
 		dp->name,
+=======
+		name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*(u32 *) prop->value,
 		(unsigned int) (regs->phys_addr & 0xffffffffUL));
 }
@@ -211,6 +296,10 @@ static void __init upa_path_component(struct device_node *dp, char *tmp_buf)
 /* "name@reg" */
 static void __init vdev_path_component(struct device_node *dp, char *tmp_buf)
 {
+<<<<<<< HEAD
+=======
+	const char *name = of_get_property(dp, "name", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct property *prop;
 	u32 *regs;
 
@@ -220,12 +309,20 @@ static void __init vdev_path_component(struct device_node *dp, char *tmp_buf)
 
 	regs = prop->value;
 
+<<<<<<< HEAD
 	sprintf(tmp_buf, "%s@%x", dp->name, *regs);
+=======
+	sprintf(tmp_buf, "%s@%x", name, *regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* "name@addrhi,addrlo" */
 static void __init ebus_path_component(struct device_node *dp, char *tmp_buf)
 {
+<<<<<<< HEAD
+=======
+	const char *name = of_get_property(dp, "name", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct linux_prom64_registers *regs;
 	struct property *prop;
 
@@ -236,7 +333,11 @@ static void __init ebus_path_component(struct device_node *dp, char *tmp_buf)
 	regs = prop->value;
 
 	sprintf(tmp_buf, "%s@%x,%x",
+<<<<<<< HEAD
 		dp->name,
+=======
+		name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(unsigned int) (regs->phys_addr >> 32UL),
 		(unsigned int) (regs->phys_addr & 0xffffffffUL));
 }
@@ -244,6 +345,10 @@ static void __init ebus_path_component(struct device_node *dp, char *tmp_buf)
 /* "name@bus,addr" */
 static void __init i2c_path_component(struct device_node *dp, char *tmp_buf)
 {
+<<<<<<< HEAD
+=======
+	const char *name = of_get_property(dp, "name", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct property *prop;
 	u32 *regs;
 
@@ -257,12 +362,20 @@ static void __init i2c_path_component(struct device_node *dp, char *tmp_buf)
 	 * property of the i2c bus node etc. etc.
 	 */
 	sprintf(tmp_buf, "%s@%x,%x",
+<<<<<<< HEAD
 		dp->name, regs[0], regs[1]);
+=======
+		name, regs[0], regs[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* "name@reg0[,reg1]" */
 static void __init usb_path_component(struct device_node *dp, char *tmp_buf)
 {
+<<<<<<< HEAD
+=======
+	const char *name = of_get_property(dp, "name", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct property *prop;
 	u32 *regs;
 
@@ -274,16 +387,27 @@ static void __init usb_path_component(struct device_node *dp, char *tmp_buf)
 
 	if (prop->length == sizeof(u32) || regs[1] == 1) {
 		sprintf(tmp_buf, "%s@%x",
+<<<<<<< HEAD
 			dp->name, regs[0]);
 	} else {
 		sprintf(tmp_buf, "%s@%x,%x",
 			dp->name, regs[0], regs[1]);
+=======
+			name, regs[0]);
+	} else {
+		sprintf(tmp_buf, "%s@%x,%x",
+			name, regs[0], regs[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /* "name@reg0reg1[,reg2reg3]" */
 static void __init ieee1394_path_component(struct device_node *dp, char *tmp_buf)
 {
+<<<<<<< HEAD
+=======
+	const char *name = of_get_property(dp, "name", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct property *prop;
 	u32 *regs;
 
@@ -295,10 +419,17 @@ static void __init ieee1394_path_component(struct device_node *dp, char *tmp_buf
 
 	if (regs[2] || regs[3]) {
 		sprintf(tmp_buf, "%s@%08x%08x,%04x%08x",
+<<<<<<< HEAD
 			dp->name, regs[0], regs[1], regs[2], regs[3]);
 	} else {
 		sprintf(tmp_buf, "%s@%08x%08x",
 			dp->name, regs[0], regs[1]);
+=======
+			name, regs[0], regs[1], regs[2], regs[3]);
+	} else {
+		sprintf(tmp_buf, "%s@%08x%08x",
+			name, regs[0], regs[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -307,6 +438,7 @@ static void __init __build_path_component(struct device_node *dp, char *tmp_buf)
 	struct device_node *parent = dp->parent;
 
 	if (parent != NULL) {
+<<<<<<< HEAD
 		if (!strcmp(parent->type, "pci") ||
 		    !strcmp(parent->type, "pciex")) {
 			pci_path_component(dp, tmp_buf);
@@ -338,6 +470,39 @@ static void __init __build_path_component(struct device_node *dp, char *tmp_buf)
 			return;
 		}
 		if (!strcmp(parent->type, "virtual-devices")) {
+=======
+		if (of_node_is_type(parent, "pci") ||
+		    of_node_is_type(parent, "pciex")) {
+			pci_path_component(dp, tmp_buf);
+			return;
+		}
+		if (of_node_is_type(parent, "sbus")) {
+			sbus_path_component(dp, tmp_buf);
+			return;
+		}
+		if (of_node_is_type(parent, "upa")) {
+			upa_path_component(dp, tmp_buf);
+			return;
+		}
+		if (of_node_is_type(parent, "ebus")) {
+			ebus_path_component(dp, tmp_buf);
+			return;
+		}
+		if (of_node_name_eq(parent, "usb") ||
+		    of_node_name_eq(parent, "hub")) {
+			usb_path_component(dp, tmp_buf);
+			return;
+		}
+		if (of_node_is_type(parent, "i2c")) {
+			i2c_path_component(dp, tmp_buf);
+			return;
+		}
+		if (of_node_is_type(parent, "firewire")) {
+			ieee1394_path_component(dp, tmp_buf);
+			return;
+		}
+		if (of_node_is_type(parent, "virtual-devices")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vdev_path_component(dp, tmp_buf);
 			return;
 		}
@@ -355,12 +520,20 @@ static void __init __build_path_component(struct device_node *dp, char *tmp_buf)
 
 char * __init build_path_component(struct device_node *dp)
 {
+<<<<<<< HEAD
+=======
+	const char *name = of_get_property(dp, "name", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char tmp_buf[64], *n;
 
 	tmp_buf[0] = '\0';
 	__build_path_component(dp, tmp_buf);
 	if (tmp_buf[0] == '\0')
+<<<<<<< HEAD
 		strcpy(tmp_buf, dp->name);
+=======
+		strcpy(tmp_buf, name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	n = prom_early_alloc(strlen(tmp_buf) + 1);
 	strcpy(n, tmp_buf);
@@ -373,6 +546,62 @@ static const char *get_mid_prop(void)
 	return (tlb_type == spitfire ? "upa-portid" : "portid");
 }
 
+<<<<<<< HEAD
+=======
+bool arch_find_n_match_cpu_physical_id(struct device_node *cpun,
+				       int cpu, unsigned int *thread)
+{
+	const char *mid_prop = get_mid_prop();
+	int this_cpu_id;
+
+	/* On hypervisor based platforms we interrogate the 'reg'
+	 * property.  On everything else we look for a 'upa-portid',
+	 * 'portid', or 'cpuid' property.
+	 */
+
+	if (tlb_type == hypervisor) {
+		struct property *prop = of_find_property(cpun, "reg", NULL);
+		u32 *regs;
+
+		if (!prop) {
+			pr_warn("CPU node missing reg property\n");
+			return false;
+		}
+		regs = prop->value;
+		this_cpu_id = regs[0] & 0x0fffffff;
+	} else {
+		this_cpu_id = of_getintprop_default(cpun, mid_prop, -1);
+
+		if (this_cpu_id < 0) {
+			mid_prop = "cpuid";
+			this_cpu_id = of_getintprop_default(cpun, mid_prop, -1);
+		}
+		if (this_cpu_id < 0) {
+			pr_warn("CPU node missing cpu ID property\n");
+			return false;
+		}
+	}
+	if (this_cpu_id == cpu) {
+		if (thread) {
+			int proc_id = cpu_data(cpu).proc_id;
+
+			/* On sparc64, the cpu thread information is obtained
+			 * either from OBP or the machine description.  We've
+			 * actually probed this information already long before
+			 * this interface gets called so instead of interrogating
+			 * both the OF node and the MDESC again, just use what
+			 * we discovered already.
+			 */
+			if (proc_id < 0)
+				proc_id = 0;
+			*thread = proc_id;
+		}
+		return true;
+	}
+	return false;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void *of_iterate_over_cpus(void *(*func)(struct device_node *, int, int), int arg)
 {
 	struct device_node *dp;
@@ -444,7 +673,11 @@ static void *fill_in_one_cpu(struct device_node *dp, int cpuid, int arg)
 	struct device_node *portid_parent = NULL;
 	int portid = -1;
 
+<<<<<<< HEAD
 	if (of_find_property(dp, "cpuid", NULL)) {
+=======
+	if (of_property_present(dp, "cpuid")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int limit = 2;
 
 		portid_parent = dp;
@@ -502,9 +735,12 @@ static void *fill_in_one_cpu(struct device_node *dp, int cpuid, int arg)
 
 		cpu_data(cpuid).core_id = portid + 1;
 		cpu_data(cpuid).proc_id = portid;
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 		sparc64_multi_core = 1;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		cpu_data(cpuid).dcache_size =
 			of_getintprop_default(dp, "dcache-size", 16 * 1024);
@@ -543,7 +779,10 @@ void __init of_console_init(void)
 {
 	char *msg = "OF stdout device is: %s\n";
 	struct device_node *dp;
+<<<<<<< HEAD
 	const char *type;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phandle node;
 
 	of_console_path = prom_early_alloc(256);
@@ -566,6 +805,7 @@ void __init of_console_init(void)
 	}
 
 	dp = of_find_node_by_phandle(node);
+<<<<<<< HEAD
 	type = of_get_property(dp, "device_type", NULL);
 	if (!type) {
 		prom_printf("Console stdout lacks device_type property.\n");
@@ -573,6 +813,10 @@ void __init of_console_init(void)
 	}
 
 	if (strcmp(type, "display") && strcmp(type, "serial")) {
+=======
+
+	if (!of_node_is_type(dp, "display") && !of_node_is_type(dp, "serial")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		prom_printf("Console device_type is neither display "
 			    "nor serial.\n");
 		prom_halt();

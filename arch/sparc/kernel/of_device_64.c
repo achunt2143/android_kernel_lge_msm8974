@@ -1,14 +1,27 @@
+<<<<<<< HEAD
 #include <linux/string.h>
 #include <linux/kernel.h>
 #include <linux/of.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/string.h>
+#include <linux/kernel.h>
+#include <linux/dma-mapping.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/export.h>
 #include <linux/mod_devicetable.h>
 #include <linux/slab.h>
 #include <linux/errno.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
+=======
+#include <linux/of.h>
+#include <linux/of_platform.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/spitfire.h>
 
 #include "of_device_common.h"
@@ -44,7 +57,11 @@ EXPORT_SYMBOL(of_iounmap);
 
 static int of_bus_pci_match(struct device_node *np)
 {
+<<<<<<< HEAD
 	if (!strcmp(np->name, "pci")) {
+=======
+	if (of_node_name_eq(np, "pci")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const char *model = of_get_property(np, "model", NULL);
 
 		if (model && !strcmp(model, "SUNW,simba"))
@@ -56,7 +73,11 @@ static int of_bus_pci_match(struct device_node *np)
 		 * parent as-is, not with the PCI translate
 		 * method which chops off the top address cell.
 		 */
+<<<<<<< HEAD
 		if (!of_find_property(np, "ranges", NULL))
+=======
+		if (!of_property_present(np, "ranges"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 
 		return 1;
@@ -75,8 +96,13 @@ static int of_bus_simba_match(struct device_node *np)
 	/* Treat PCI busses lacking ranges property just like
 	 * simba.
 	 */
+<<<<<<< HEAD
 	if (!strcmp(np->name, "pci")) {
 		if (!of_find_property(np, "ranges", NULL))
+=======
+	if (of_node_name_eq(np, "pci")) {
+		if (!of_property_present(np, "ranges"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 	}
 
@@ -168,8 +194,13 @@ static unsigned long of_bus_pci_get_flags(const u32 *addr, unsigned long flags)
  */
 static int of_bus_fhc_match(struct device_node *np)
 {
+<<<<<<< HEAD
 	return !strcmp(np->name, "fhc") ||
 		!strcmp(np->name, "central");
+=======
+	return of_node_name_eq(np, "fhc") ||
+		of_node_name_eq(np, "central");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define of_bus_fhc_count_cells of_bus_sbus_count_cells
@@ -281,7 +312,11 @@ static int __init build_one_resource(struct device_node *parent,
 static int __init use_1to1_mapping(struct device_node *pp)
 {
 	/* If we have a ranges property in the parent, use it.  */
+<<<<<<< HEAD
 	if (of_find_property(pp, "ranges", NULL) != NULL)
+=======
+	if (of_property_present(pp, "ranges"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* If the parent is the dma node of an ISA bus, pass
@@ -293,17 +328,28 @@ static int __init use_1to1_mapping(struct device_node *pp)
 	 * But, we should still pass the translation work up
 	 * to the SBUS itself.
 	 */
+<<<<<<< HEAD
 	if (!strcmp(pp->name, "dma") ||
 	    !strcmp(pp->name, "espdma") ||
 	    !strcmp(pp->name, "ledma") ||
 	    !strcmp(pp->name, "lebuffer"))
+=======
+	if (of_node_name_eq(pp, "dma") ||
+	    of_node_name_eq(pp, "espdma") ||
+	    of_node_name_eq(pp, "ledma") ||
+	    of_node_name_eq(pp, "lebuffer"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* Similarly for all PCI bridges, if we get this far
 	 * it lacks a ranges property, and this will include
 	 * cases like Simba.
 	 */
+<<<<<<< HEAD
 	if (!strcmp(pp->name, "pci"))
+=======
+	if (of_node_name_eq(pp, "pci"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return 1;
@@ -339,9 +385,15 @@ static void __init build_device_resources(struct platform_device *op,
 
 	/* Prevent overrunning the op->resources[] array.  */
 	if (num_reg > PROMREG_MAX) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: Too many regs (%d), "
 		       "limiting to %d.\n",
 		       op->dev.of_node->full_name, num_reg, PROMREG_MAX);
+=======
+		printk(KERN_WARNING "%pOF: Too many regs (%d), "
+		       "limiting to %d.\n",
+		       op->dev.of_node, num_reg, PROMREG_MAX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		num_reg = PROMREG_MAX;
 	}
 
@@ -399,8 +451,13 @@ static void __init build_device_resources(struct platform_device *op,
 		memset(r, 0, sizeof(*r));
 
 		if (of_resource_verbose)
+<<<<<<< HEAD
 			printk("%s reg[%d] -> %llx\n",
 			       op->dev.of_node->full_name, index,
+=======
+			printk("%pOF reg[%d] -> %llx\n",
+			       op->dev.of_node, index,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       result);
 
 		if (result != OF_BAD_ADDR) {
@@ -411,7 +468,11 @@ static void __init build_device_resources(struct platform_device *op,
 			r->end = result + size - 1;
 			r->flags = flags;
 		}
+<<<<<<< HEAD
 		r->name = op->dev.of_node->name;
+=======
+		r->name = op->dev.of_node->full_name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -546,8 +607,13 @@ static unsigned int __init build_one_device_irq(struct platform_device *op,
 					       dp->irq_trans->data);
 
 		if (of_irq_verbose)
+<<<<<<< HEAD
 			printk("%s: direct translate %x --> %x\n",
 			       dp->full_name, orig_irq, irq);
+=======
+			printk("%pOF: direct translate %x --> %x\n",
+			       dp, orig_irq, irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		goto out;
 	}
@@ -558,7 +624,11 @@ static unsigned int __init build_one_device_irq(struct platform_device *op,
 	 *
 	 * If we hit a bus type or situation we cannot handle, we
 	 * stop and assume that the original IRQ number was in a
+<<<<<<< HEAD
 	 * format which has special meaning to it's immediate parent.
+=======
+	 * format which has special meaning to its immediate parent.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	pp = dp->parent;
 	ip = NULL;
@@ -577,10 +647,16 @@ static unsigned int __init build_one_device_irq(struct platform_device *op,
 						   &irq);
 
 			if (of_irq_verbose)
+<<<<<<< HEAD
 				printk("%s: Apply [%s:%x] imap --> [%s:%x]\n",
 				       op->dev.of_node->full_name,
 				       pp->full_name, this_orig_irq,
 				       (iret ? iret->full_name : "NULL"), irq);
+=======
+				printk("%pOF: Apply [%pOF:%x] imap --> [%pOF:%x]\n",
+				       op->dev.of_node,
+				       pp, this_orig_irq, iret, irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (!iret)
 				break;
@@ -590,15 +666,26 @@ static unsigned int __init build_one_device_irq(struct platform_device *op,
 				break;
 			}
 		} else {
+<<<<<<< HEAD
 			if (!strcmp(pp->name, "pci")) {
+=======
+			if (of_node_name_eq(pp, "pci")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				unsigned int this_orig_irq = irq;
 
 				irq = pci_irq_swizzle(dp, pp, irq);
 				if (of_irq_verbose)
+<<<<<<< HEAD
 					printk("%s: PCI swizzle [%s] "
 					       "%x --> %x\n",
 					       op->dev.of_node->full_name,
 					       pp->full_name, this_orig_irq,
+=======
+					printk("%pOF: PCI swizzle [%pOF] "
+					       "%x --> %x\n",
+					       op->dev.of_node,
+					       pp, this_orig_irq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       irq);
 
 			}
@@ -617,8 +704,13 @@ static unsigned int __init build_one_device_irq(struct platform_device *op,
 	irq = ip->irq_trans->irq_build(op->dev.of_node, irq,
 				       ip->irq_trans->data);
 	if (of_irq_verbose)
+<<<<<<< HEAD
 		printk("%s: Apply IRQ trans [%s] %x --> %x\n",
 		      op->dev.of_node->full_name, ip->full_name, orig_irq, irq);
+=======
+		printk("%pOF: Apply IRQ trans [%pOF] %x --> %x\n",
+		      op->dev.of_node, ip, orig_irq, irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	nid = of_node_to_nid(dp);
@@ -654,9 +746,15 @@ static struct platform_device * __init scan_one_device(struct device_node *dp,
 
 		/* Prevent overrunning the op->irqs[] array.  */
 		if (op->archdata.num_irqs > PROMINTR_MAX) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "%s: Too many irqs (%d), "
 			       "limiting to %d.\n",
 			       dp->full_name, op->archdata.num_irqs, PROMINTR_MAX);
+=======
+			printk(KERN_WARNING "%pOF: Too many irqs (%d), "
+			       "limiting to %d.\n",
+			       dp, op->archdata.num_irqs, PROMINTR_MAX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			op->archdata.num_irqs = PROMINTR_MAX;
 		}
 		memcpy(op->archdata.irqs, irq, op->archdata.num_irqs * 4);
@@ -674,10 +772,18 @@ static struct platform_device * __init scan_one_device(struct device_node *dp,
 		dev_set_name(&op->dev, "root");
 	else
 		dev_set_name(&op->dev, "%08x", dp->phandle);
+<<<<<<< HEAD
 
 	if (of_device_register(op)) {
 		printk("%s: Could not register of device.\n",
 		       dp->full_name);
+=======
+	op->dev.coherent_dma_mask = DMA_BIT_MASK(32);
+	op->dev.dma_mask = &op->dev.coherent_dma_mask;
+
+	if (of_device_register(op)) {
+		printk("%pOF: Could not register of device.\n", dp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(op);
 		op = NULL;
 	}

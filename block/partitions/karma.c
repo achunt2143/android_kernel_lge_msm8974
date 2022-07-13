@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fs/partitions/karma.c
  *  Rio Karma partition info.
@@ -7,7 +11,13 @@
  */
 
 #include "check.h"
+<<<<<<< HEAD
 #include "karma.h"
+=======
+#include <linux/compiler.h>
+
+#define KARMA_LABEL_MAGIC		0xAB56
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int karma_partition(struct parsed_partitions *state)
 {
@@ -26,7 +36,11 @@ int karma_partition(struct parsed_partitions *state)
 		} d_partitions[2];
 		u8 d_blank[208];
 		__le16 d_magic;
+<<<<<<< HEAD
 	} __attribute__((packed)) *label;
+=======
+	} __packed *label;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct d_partition *p;
 
 	data = read_part_sector(state, 0, &sect);

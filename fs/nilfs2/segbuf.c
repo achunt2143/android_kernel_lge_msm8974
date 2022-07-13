@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * segbuf.c - NILFS segment buffer
  *
@@ -18,6 +19,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Ryusuke Konishi <ryusuke@osrg.net>
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * NILFS segment buffer
+ *
+ * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
+ *
+ * Written by Ryusuke Konishi.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -114,6 +124,15 @@ int nilfs_segbuf_extend_segsum(struct nilfs_segment_buffer *segbuf)
 	if (unlikely(!bh))
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	lock_buffer(bh);
+	if (!buffer_uptodate(bh)) {
+		memset(bh->b_data, 0, bh->b_size);
+		set_buffer_uptodate(bh);
+	}
+	unlock_buffer(bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nilfs_segbuf_add_segsum_buffer(segbuf, bh);
 	return 0;
 }
@@ -133,8 +152,13 @@ int nilfs_segbuf_extend_payload(struct nilfs_segment_buffer *segbuf,
 	return 0;
 }
 
+<<<<<<< HEAD
 int nilfs_segbuf_reset(struct nilfs_segment_buffer *segbuf, unsigned flags,
 		       time_t ctime, __u64 cno)
+=======
+int nilfs_segbuf_reset(struct nilfs_segment_buffer *segbuf, unsigned int flags,
+		       time64_t ctime, __u64 cno)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -227,9 +251,15 @@ static void nilfs_segbuf_fill_in_data_crc(struct nilfs_segment_buffer *segbuf,
 		crc = crc32_le(crc, bh->b_data, bh->b_size);
 	}
 	list_for_each_entry(bh, &segbuf->sb_payload_buffers, b_assoc_buffers) {
+<<<<<<< HEAD
 		kaddr = kmap_atomic(bh->b_page);
 		crc = crc32_le(crc, kaddr + bh_offset(bh), bh->b_size);
 		kunmap_atomic(kaddr);
+=======
+		kaddr = kmap_local_page(bh->b_page);
+		crc = crc32_le(crc, kaddr + bh_offset(bh), bh->b_size);
+		kunmap_local(kaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	raw_sum->ss_datasum = cpu_to_le32(crc);
 }
@@ -240,7 +270,11 @@ nilfs_segbuf_fill_in_super_root_crc(struct nilfs_segment_buffer *segbuf,
 {
 	struct nilfs_super_root *raw_sr;
 	struct the_nilfs *nilfs = segbuf->sb_super->s_fs_info;
+<<<<<<< HEAD
 	unsigned srsize;
+=======
+	unsigned int srsize;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 crc;
 
 	raw_sr = (struct nilfs_super_root *)segbuf->sb_super_root->b_data;
@@ -338,6 +372,7 @@ void nilfs_add_checksums_on_logs(struct list_head *logs, u32 seed)
 /*
  * BIO operations
  */
+<<<<<<< HEAD
 static void nilfs_end_bio_write(struct bio *bio, int err)
 {
 	const int uptodate = test_bit(BIO_UPTODATE, &bio->bi_flags);
@@ -349,6 +384,13 @@ static void nilfs_end_bio_write(struct bio *bio, int err)
 	}
 
 	if (!uptodate)
+=======
+static void nilfs_end_bio_write(struct bio *bio)
+{
+	struct nilfs_segment_buffer *segbuf = bio->bi_private;
+
+	if (bio->bi_status)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_inc(&segbuf->sb_err);
 
 	bio_put(bio);
@@ -356,6 +398,7 @@ static void nilfs_end_bio_write(struct bio *bio, int err)
 }
 
 static int nilfs_segbuf_submit_bio(struct nilfs_segment_buffer *segbuf,
+<<<<<<< HEAD
 				   struct nilfs_write_info *wi, int mode)
 {
 	struct bio *bio = wi->bio;
@@ -383,12 +426,23 @@ static int nilfs_segbuf_submit_bio(struct nilfs_segment_buffer *segbuf,
 		goto failed;
 	}
 	bio_put(bio);
+=======
+				   struct nilfs_write_info *wi)
+{
+	struct bio *bio = wi->bio;
+
+	bio->bi_end_io = nilfs_end_bio_write;
+	bio->bi_private = segbuf;
+	submit_bio(bio);
+	segbuf->sb_nbio++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wi->bio = NULL;
 	wi->rest_blocks -= wi->end - wi->start;
 	wi->nr_vecs = min(wi->max_pages, wi->rest_blocks);
 	wi->start = wi->end;
 	return 0;
+<<<<<<< HEAD
 
  failed:
 	wi->bio = NULL;
@@ -419,6 +473,8 @@ static struct bio *nilfs_alloc_seg_bio(struct the_nilfs *nilfs, sector_t start,
 		bio->bi_sector = start << (nilfs->ns_blocksize_bits - 9);
 	}
 	return bio;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nilfs_segbuf_prepare_write(struct nilfs_segment_buffer *segbuf,
@@ -426,7 +482,11 @@ static void nilfs_segbuf_prepare_write(struct nilfs_segment_buffer *segbuf,
 {
 	wi->bio = NULL;
 	wi->rest_blocks = segbuf->sb_sum.nblocks;
+<<<<<<< HEAD
 	wi->max_pages = bio_get_nr_vecs(wi->nilfs->ns_bdev);
+=======
+	wi->max_pages = BIO_MAX_VECS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wi->nr_vecs = min(wi->max_pages, wi->rest_blocks);
 	wi->start = wi->end = 0;
 	wi->blocknr = segbuf->sb_pseg_start;
@@ -434,17 +494,28 @@ static void nilfs_segbuf_prepare_write(struct nilfs_segment_buffer *segbuf,
 
 static int nilfs_segbuf_submit_bh(struct nilfs_segment_buffer *segbuf,
 				  struct nilfs_write_info *wi,
+<<<<<<< HEAD
 				  struct buffer_head *bh, int mode)
+=======
+				  struct buffer_head *bh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len, err;
 
 	BUG_ON(wi->nr_vecs <= 0);
  repeat:
 	if (!wi->bio) {
+<<<<<<< HEAD
 		wi->bio = nilfs_alloc_seg_bio(wi->nilfs, wi->blocknr + wi->end,
 					      wi->nr_vecs);
 		if (unlikely(!wi->bio))
 			return -ENOMEM;
+=======
+		wi->bio = bio_alloc(wi->nilfs->ns_bdev, wi->nr_vecs,
+				    REQ_OP_WRITE, GFP_NOIO);
+		wi->bio->bi_iter.bi_sector = (wi->blocknr + wi->end) <<
+			(wi->nilfs->ns_blocksize_bits - 9);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	len = bio_add_page(wi->bio, bh->b_page, bh->b_size, bh_offset(bh));
@@ -453,7 +524,11 @@ static int nilfs_segbuf_submit_bh(struct nilfs_segment_buffer *segbuf,
 		return 0;
 	}
 	/* bio is FULL */
+<<<<<<< HEAD
 	err = nilfs_segbuf_submit_bio(segbuf, wi, mode);
+=======
+	err = nilfs_segbuf_submit_bio(segbuf, wi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* never submit current bh */
 	if (likely(!err))
 		goto repeat;
@@ -477,19 +552,31 @@ static int nilfs_segbuf_write(struct nilfs_segment_buffer *segbuf,
 {
 	struct nilfs_write_info wi;
 	struct buffer_head *bh;
+<<<<<<< HEAD
 	int res = 0, rw = WRITE;
+=======
+	int res = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wi.nilfs = nilfs;
 	nilfs_segbuf_prepare_write(segbuf, &wi);
 
 	list_for_each_entry(bh, &segbuf->sb_segsum_buffers, b_assoc_buffers) {
+<<<<<<< HEAD
 		res = nilfs_segbuf_submit_bh(segbuf, &wi, bh, rw);
+=======
+		res = nilfs_segbuf_submit_bh(segbuf, &wi, bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(res))
 			goto failed_bio;
 	}
 
 	list_for_each_entry(bh, &segbuf->sb_payload_buffers, b_assoc_buffers) {
+<<<<<<< HEAD
 		res = nilfs_segbuf_submit_bh(segbuf, &wi, bh, rw);
+=======
+		res = nilfs_segbuf_submit_bh(segbuf, &wi, bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(res))
 			goto failed_bio;
 	}
@@ -499,8 +586,13 @@ static int nilfs_segbuf_write(struct nilfs_segment_buffer *segbuf,
 		 * Last BIO is always sent through the following
 		 * submission.
 		 */
+<<<<<<< HEAD
 		rw |= REQ_SYNC;
 		res = nilfs_segbuf_submit_bio(segbuf, &wi, rw);
+=======
+		wi.bio->bi_opf |= REQ_SYNC;
+		res = nilfs_segbuf_submit_bio(segbuf, &wi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
  failed_bio:
@@ -528,7 +620,15 @@ static int nilfs_segbuf_wait(struct nilfs_segment_buffer *segbuf)
 	} while (--segbuf->sb_nbio > 0);
 
 	if (unlikely(atomic_read(&segbuf->sb_err) > 0)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "NILFS: IO error writing segment\n");
+=======
+		nilfs_err(segbuf->sb_super,
+			  "I/O error writing log (start-blocknr=%llu, block-count=%lu) in segment %llu",
+			  (unsigned long long)segbuf->sb_pseg_start,
+			  segbuf->sb_sum.nblocks,
+			  (unsigned long long)segbuf->sb_segnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EIO;
 	}
 	return err;

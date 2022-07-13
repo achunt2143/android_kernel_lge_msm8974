@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IPWireless 3G PCMCIA Network Driver
  *
@@ -32,7 +36,11 @@ static void handle_received_SETUP_packet(struct ipw_hardware *ipw,
 					 unsigned int address,
 					 const unsigned char *data, int len,
 					 int is_last);
+<<<<<<< HEAD
 static void ipwireless_setup_timer(unsigned long data);
+=======
+static void ipwireless_setup_timer(struct timer_list *t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void handle_received_CTRL_packet(struct ipw_hardware *hw,
 		unsigned int channel_idx, const unsigned char *data, int len);
 
@@ -378,9 +386,15 @@ static void swap_packet_bitfield_to_le(unsigned char *data)
 	/*
 	 * transform bits from aa.bbb.ccc to ccc.bbb.aa
 	 */
+<<<<<<< HEAD
 	ret |= tmp & 0xc0 >> 6;
 	ret |= tmp & 0x38 >> 1;
 	ret |= tmp & 0x07 << 5;
+=======
+	ret |= (tmp & 0xc0) >> 6;
+	ret |= (tmp & 0x38) >> 1;
+	ret |= (tmp & 0x07) << 5;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*data = ret & 0xff;
 #endif
 }
@@ -393,9 +407,15 @@ static void swap_packet_bitfield_from_le(unsigned char *data)
 	/*
 	 * transform bits from ccc.bbb.aa to aa.bbb.ccc
 	 */
+<<<<<<< HEAD
 	ret |= tmp & 0xe0 >> 5;
 	ret |= tmp & 0x1c << 1;
 	ret |= tmp & 0x03 << 6;
+=======
+	ret |= (tmp & 0xe0) >> 5;
+	ret |= (tmp & 0x1c) << 1;
+	ret |= (tmp & 0x03) << 6;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*data = ret & 0xff;
 #endif
 }
@@ -646,7 +666,11 @@ static void queue_received_packet(struct ipw_hardware *hw,
 		(*assem) = pool_allocate(hw, *assem, length);
 		if (!(*assem)) {
 			printk(KERN_ERR IPWIRELESS_PCCARD_NAME
+<<<<<<< HEAD
 				": no memory for incomming data packet, dropped!\n");
+=======
+				": no memory for incoming data packet, dropped!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		(*assem)->protocol = protocol;
@@ -670,7 +694,11 @@ static void queue_received_packet(struct ipw_hardware *hw,
 		packet = pool_allocate(hw, NULL, length);
 		if (!packet) {
 			printk(KERN_ERR IPWIRELESS_PCCARD_NAME
+<<<<<<< HEAD
 				": no memory for incomming ctrl packet, dropped!\n");
+=======
+				": no memory for incoming ctrl packet, dropped!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		packet->protocol = protocol;
@@ -1005,9 +1033,15 @@ static int send_pending_packet(struct ipw_hardware *hw, int priority_limit)
 /*
  * Send and receive all queued packets.
  */
+<<<<<<< HEAD
 static void ipwireless_do_tasklet(unsigned long hw_)
 {
 	struct ipw_hardware *hw = (struct ipw_hardware *) hw_;
+=======
+static void ipwireless_do_tasklet(struct tasklet_struct *t)
+{
+	struct ipw_hardware *hw = from_tasklet(hw, t, tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&hw->lock, flags);
@@ -1291,7 +1325,11 @@ static void *alloc_ctrl_packet(int header_size,
 }
 
 int ipwireless_send_packet(struct ipw_hardware *hw, unsigned int channel_idx,
+<<<<<<< HEAD
 			    const unsigned char *data, unsigned int length,
+=======
+			    const u8 *data, unsigned int length,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    void (*callback) (void *cb, unsigned int length),
 			    void *callback_data)
 {
@@ -1455,7 +1493,11 @@ static void __handle_setup_get_version_rsp(struct ipw_hardware *hw)
 			return;
 		}
 
+<<<<<<< HEAD
 		set_RTS(hw, PRIO_SETUP, channel_idx,
+=======
+		ret = set_RTS(hw, PRIO_SETUP, channel_idx,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(hw->control_lines [channel_idx] &
 			 IPW_CONTROL_LINE_RTS) != 0);
 		if (ret) {
@@ -1515,6 +1557,11 @@ static void ipw_send_setup_packet(struct ipw_hardware *hw)
 			sizeof(struct ipw_setup_get_version_query_packet),
 			ADDR_SETUP_PROT, TL_PROTOCOLID_SETUP,
 			TL_SETUP_SIGNO_GET_VERSION_QRY);
+<<<<<<< HEAD
+=======
+	if (!ver_packet)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ver_packet->header.length = sizeof(struct tl_setup_get_version_qry);
 
 	/*
@@ -1572,6 +1619,14 @@ static void handle_received_SETUP_packet(struct ipw_hardware *hw,
 					sizeof(struct ipw_setup_reboot_msg_ack),
 					ADDR_SETUP_PROT, TL_PROTOCOLID_SETUP,
 					TL_SETUP_SIGNO_REBOOT_MSG_ACK);
+<<<<<<< HEAD
+=======
+			if (!packet) {
+				pr_err(IPWIRELESS_PCCARD_NAME
+				       ": Not enough memory to send reboot packet");
+				break;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			packet->header.length =
 				sizeof(struct TlSetupRebootMsgAck);
 			send_packet(hw, PRIO_SETUP, &packet->header);
@@ -1627,10 +1682,16 @@ struct ipw_hardware *ipwireless_hardware_create(void)
 	INIT_LIST_HEAD(&hw->rx_queue);
 	INIT_LIST_HEAD(&hw->rx_pool);
 	spin_lock_init(&hw->lock);
+<<<<<<< HEAD
 	tasklet_init(&hw->tasklet, ipwireless_do_tasklet, (unsigned long) hw);
 	INIT_WORK(&hw->work_rx, ipw_receive_data_work);
 	setup_timer(&hw->setup_timer, ipwireless_setup_timer,
 			(unsigned long) hw);
+=======
+	tasklet_setup(&hw->tasklet, ipwireless_do_tasklet);
+	INIT_WORK(&hw->work_rx, ipw_receive_data_work);
+	timer_setup(&hw->setup_timer, ipwireless_setup_timer, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return hw;
 }
@@ -1664,12 +1725,21 @@ void ipwireless_init_hardware_v2_v3(struct ipw_hardware *hw)
 	hw->init_loops = 0;
 	printk(KERN_INFO IPWIRELESS_PCCARD_NAME
 	       ": waiting for card to start up...\n");
+<<<<<<< HEAD
 	ipwireless_setup_timer((unsigned long) hw);
 }
 
 static void ipwireless_setup_timer(unsigned long data)
 {
 	struct ipw_hardware *hw = (struct ipw_hardware *) data;
+=======
+	ipwireless_setup_timer(&hw->setup_timer);
+}
+
+static void ipwireless_setup_timer(struct timer_list *t)
+{
+	struct ipw_hardware *hw = from_timer(hw, t, setup_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hw->init_loops++;
 
@@ -1729,11 +1799,18 @@ void ipwireless_hardware_free(struct ipw_hardware *hw)
 
 	ipwireless_stop_interrupts(hw);
 
+<<<<<<< HEAD
 	flush_work_sync(&hw->work_rx);
 
 	for (i = 0; i < NL_NUM_OF_ADDRESSES; i++)
 		if (hw->packet_assembler[i] != NULL)
 			kfree(hw->packet_assembler[i]);
+=======
+	flush_work(&hw->work_rx);
+
+	for (i = 0; i < NL_NUM_OF_ADDRESSES; i++)
+		kfree(hw->packet_assembler[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < NL_NUM_OF_PRIORITIES; i++)
 		list_for_each_entry_safe(tp, tq, &hw->tx_queue[i], queue) {

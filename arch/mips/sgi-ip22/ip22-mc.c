@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ip22-mc.c: Routines for manipulating SGI Memory Controller.
  *
@@ -8,8 +12,15 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/kernel.h>
+=======
+#include <linux/export.h>
+#include <linux/kernel.h>
+#include <linux/memblock.h>
+#include <linux/spinlock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 #include <asm/bootinfo.h>
@@ -24,14 +35,22 @@ EXPORT_SYMBOL(sgimc);
 
 static inline unsigned long get_bank_addr(unsigned int memconfig)
 {
+<<<<<<< HEAD
 	return ((memconfig & SGIMC_MCONFIG_BASEADDR) <<
 		((sgimc->systemid & SGIMC_SYSID_MASKREV) >= 5 ? 24 : 22));
+=======
+	return (memconfig & SGIMC_MCONFIG_BASEADDR) << ((sgimc->systemid & SGIMC_SYSID_MASKREV) >= 5 ? 24 : 22);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned long get_bank_size(unsigned int memconfig)
 {
+<<<<<<< HEAD
 	return ((memconfig & SGIMC_MCONFIG_RMASK) + 0x0100) <<
 		((sgimc->systemid & SGIMC_SYSID_MASKREV) >= 5 ? 16 : 14);
+=======
+	return ((memconfig & SGIMC_MCONFIG_RMASK) + 0x0100) << ((sgimc->systemid & SGIMC_SYSID_MASKREV) >= 5 ? 16 : 14);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned int get_bank_config(int bank)
@@ -40,6 +59,7 @@ static inline unsigned int get_bank_config(int bank)
 	return bank % 2 ? res & 0xffff : res >> 16;
 }
 
+<<<<<<< HEAD
 struct mem {
 	unsigned long addr;
 	unsigned long size;
@@ -56,10 +76,29 @@ static void __init probe_memory(void)
 
 	printk(KERN_INFO "MC: Probing memory configuration:\n");
 	for (i = 0; i < ARRAY_SIZE(bank); i++) {
+=======
+#if defined(CONFIG_SGI_IP28) || defined(CONFIG_32BIT)
+static void __init probe_memory(void)
+{
+	/* prom detects all usable memory */
+}
+#else
+/*
+ * Detect installed memory, which PROM misses
+ */
+static void __init probe_memory(void)
+{
+	unsigned long addr, size;
+	int i;
+
+	printk(KERN_INFO "MC: Probing memory configuration:\n");
+	for (i = 0; i < 4; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int tmp = get_bank_config(i);
 		if (!(tmp & SGIMC_MCONFIG_BVALID))
 			continue;
 
+<<<<<<< HEAD
 		bank[cnt].size = get_bank_size(tmp);
 		bank[cnt].addr = get_bank_addr(tmp);
 		printk(KERN_INFO " bank%d: %3ldM @ %08lx\n",
@@ -104,6 +143,18 @@ static void __init probe_memory(void)
 			add_memory_region(space[i].addr, space[i].size,
 					  BOOT_MEM_RAM);
 }
+=======
+		size = get_bank_size(tmp);
+		addr = get_bank_addr(tmp);
+		printk(KERN_INFO " bank%d: %3ldM @ %08lx\n",
+			i, size / 1024 / 1024, addr);
+
+		if (addr >= SGIMC_SEG1_BADDR)
+			memblock_add(addr, size);
+	}
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init sgimc_init(void)
 {
@@ -121,22 +172,37 @@ void __init sgimc_init(void)
 	 */
 
 	/* Step 0: Make sure we turn off the watchdog in case it's
+<<<<<<< HEAD
 	 *         still running (which might be the case after a
 	 *         soft reboot).
+=======
+	 *	   still running (which might be the case after a
+	 *	   soft reboot).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	tmp = sgimc->cpuctrl0;
 	tmp &= ~SGIMC_CCTRL0_WDOG;
 	sgimc->cpuctrl0 = tmp;
 
 	/* Step 1: The CPU/GIO error status registers will not latch
+<<<<<<< HEAD
 	 *         up a new error status until the register has been
 	 *         cleared by the cpu.  These status registers are
 	 *         cleared by writing any value to them.
+=======
+	 *	   up a new error status until the register has been
+	 *	   cleared by the cpu.	These status registers are
+	 *	   cleared by writing any value to them.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	sgimc->cstat = sgimc->gstat = 0;
 
 	/* Step 2: Enable all parity checking in cpu control register
+<<<<<<< HEAD
 	 *         zero.
+=======
+	 *	   zero.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	/* don't touch parity settings for IP28 */
 	tmp = sgimc->cpuctrl0;
@@ -147,7 +213,11 @@ void __init sgimc_init(void)
 	sgimc->cpuctrl0 = tmp;
 
 	/* Step 3: Setup the MC write buffer depth, this is controlled
+<<<<<<< HEAD
 	 *         in cpu control register 1 in the lower 4 bits.
+=======
+	 *	   in cpu control register 1 in the lower 4 bits.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	tmp = sgimc->cpuctrl1;
 	tmp &= ~0xf;
@@ -155,6 +225,7 @@ void __init sgimc_init(void)
 	sgimc->cpuctrl1 = tmp;
 
 	/* Step 4: Initialize the RPSS divider register to run as fast
+<<<<<<< HEAD
 	 *         as it can correctly operate.  The register is laid
 	 *         out as follows:
 	 *
@@ -167,14 +238,33 @@ void __init sgimc_init(void)
 	 *         INCREMENT determines by how the RPSS increment
 	 *         registers value increases at each 'tick'. Thus,
 	 *         for IP22 we get INCREMENT=1, DIVIDER=1 == 0x101
+=======
+	 *	   as it can correctly operate.	 The register is laid
+	 *	   out as follows:
+	 *
+	 *	   ----------------------------------------
+	 *	   |  RESERVED	|   INCREMENT	| DIVIDER |
+	 *	   ----------------------------------------
+	 *	    31	      16 15	       8 7	 0
+	 *
+	 *	   DIVIDER determines how often a 'tick' happens,
+	 *	   INCREMENT determines by how the RPSS increment
+	 *	   registers value increases at each 'tick'. Thus,
+	 *	   for IP22 we get INCREMENT=1, DIVIDER=1 == 0x101
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	sgimc->divider = 0x101;
 
 	/* Step 5: Initialize GIO64 arbitrator configuration register.
 	 *
 	 * NOTE: HPC init code in sgihpc_init() must run before us because
+<<<<<<< HEAD
 	 *       we need to know Guiness vs. FullHouse and the board
 	 *       revision on this machine. You have been warned.
+=======
+	 *	 we need to know Guiness vs. FullHouse and the board
+	 *	 revision on this machine. You have been warned.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	/* First the basic invariants across all GIO64 implementations. */
@@ -187,28 +277,46 @@ void __init sgimc_init(void)
 		if (SGIOC_SYSID_BOARDREV(sgioc->sysid) < 2) {
 			tmp |= SGIMC_GIOPAR_HPC264;	/* 2nd HPC at 64bits */
 			tmp |= SGIMC_GIOPAR_PLINEEXP0;	/* exp0 pipelines */
+<<<<<<< HEAD
 			tmp |= SGIMC_GIOPAR_MASTEREXP1;	/* exp1 masters */
+=======
+			tmp |= SGIMC_GIOPAR_MASTEREXP1; /* exp1 masters */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tmp |= SGIMC_GIOPAR_RTIMEEXP0;	/* exp0 is realtime */
 		} else {
 			tmp |= SGIMC_GIOPAR_HPC264;	/* 2nd HPC 64bits */
 			tmp |= SGIMC_GIOPAR_PLINEEXP0;	/* exp[01] pipelined */
 			tmp |= SGIMC_GIOPAR_PLINEEXP1;
+<<<<<<< HEAD
 			tmp |= SGIMC_GIOPAR_MASTEREISA;	/* EISA masters */
+=======
+			tmp |= SGIMC_GIOPAR_MASTEREISA; /* EISA masters */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		/* Guiness specific settings. */
 		tmp |= SGIMC_GIOPAR_EISA64;	/* MC talks to EISA at 64bits */
+<<<<<<< HEAD
 		tmp |= SGIMC_GIOPAR_MASTEREISA;	/* EISA bus can act as master */
+=======
+		tmp |= SGIMC_GIOPAR_MASTEREISA; /* EISA bus can act as master */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	sgimc->giopar = tmp;	/* poof */
 
 	probe_memory();
 }
 
+<<<<<<< HEAD
 void __init prom_meminit(void) {}
 void __init prom_free_prom_memory(void)
 {
 #ifdef CONFIG_SGI_IP28
+=======
+#ifdef CONFIG_SGI_IP28
+void __init prom_cleanup(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 mconfig1;
 	unsigned long flags;
 	spinlock_t lock;
@@ -233,5 +341,10 @@ void __init prom_free_prom_memory(void)
 	sgimc->mconfig1 = mconfig1;
 	iob();
 	spin_unlock_irqrestore(&lock, flags);
+<<<<<<< HEAD
 #endif
 }
+=======
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

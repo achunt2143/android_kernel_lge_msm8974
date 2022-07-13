@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_PARISC_SIGNAL_H
 #define _ASM_PARISC_SIGNAL_H
 
@@ -81,12 +82,20 @@
 #define SIGSTKSZ	8192
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_PARISC_SIGNAL_H
+#define _ASM_PARISC_SIGNAL_H
+
+#include <uapi/asm/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _NSIG		64
 /* bits-per-word, where word apparently means 'long' not 'int' */
 #define _NSIG_BPW	BITS_PER_LONG
 #define _NSIG_WORDS	(_NSIG / _NSIG_BPW)
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
 #define SIG_BLOCK          0	/* for blocking signals */
@@ -124,6 +133,10 @@ typedef struct sigaltstack {
 
 #ifdef __KERNEL__
 
+=======
+# ifndef __ASSEMBLY__
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Most things should be clean enough to redefine this at will, if care
    is taken to make libc match.  */
 
@@ -134,6 +147,7 @@ typedef struct {
 	unsigned long sig[_NSIG_WORDS];
 } sigset_t;
 
+<<<<<<< HEAD
 struct sigaction {
 	__sighandler_t sa_handler;
 	unsigned long sa_flags;
@@ -149,5 +163,9 @@ struct k_sigaction {
 #include <asm/sigcontext.h>
 
 #endif /* __KERNEL__ */
+=======
+#include <asm/sigcontext.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !__ASSEMBLY */
 #endif /* _ASM_PARISC_SIGNAL_H */

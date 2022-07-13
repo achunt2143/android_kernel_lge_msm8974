@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 /*
  * linux/kernel/irq/spurious.c
  *
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 1992, 1998-2004 Linus Torvalds, Ingo Molnar
  *
  * This file contains spurious interrupt handling.
@@ -9,7 +14,10 @@
 #include <linux/jiffies.h>
 #include <linux/irq.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/kallsyms.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/moduleparam.h>
 #include <linux/timer.h>
@@ -19,8 +27,13 @@
 static int irqfixup __read_mostly;
 
 #define POLL_SPURIOUS_IRQ_INTERVAL (HZ/10)
+<<<<<<< HEAD
 static void poll_spurious_irqs(unsigned long dummy);
 static DEFINE_TIMER(poll_spurious_irq_timer, poll_spurious_irqs, 0, 0);
+=======
+static void poll_spurious_irqs(struct timer_list *unused);
+static DEFINE_TIMER(poll_spurious_irq_timer, poll_spurious_irqs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int irq_poll_cpu;
 static atomic_t irq_poll_active;
 
@@ -36,6 +49,10 @@ static atomic_t irq_poll_active;
  * true and let the handler run.
  */
 bool irq_wait_for_poll(struct irq_desc *desc)
+<<<<<<< HEAD
+=======
+	__must_hold(&desc->lock)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (WARN_ONCE(irq_poll_cpu == smp_processor_id(),
 		      "irq poll in progress on cpu %d for irq %d\n",
@@ -60,20 +77,38 @@ bool irq_wait_for_poll(struct irq_desc *desc)
 /*
  * Recovery handler for misrouted interrupts.
  */
+<<<<<<< HEAD
 static int try_one_irq(int irq, struct irq_desc *desc, bool force)
+=======
+static int try_one_irq(struct irq_desc *desc, bool force)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	irqreturn_t ret = IRQ_NONE;
 	struct irqaction *action;
 
 	raw_spin_lock(&desc->lock);
 
+<<<<<<< HEAD
 	/* PER_CPU and nested thread interrupts are never polled */
 	if (irq_settings_is_per_cpu(desc) || irq_settings_is_nested_thread(desc))
+=======
+	/*
+	 * PER_CPU, nested thread interrupts and interrupts explicitly
+	 * marked polled are excluded from polling.
+	 */
+	if (irq_settings_is_per_cpu(desc) ||
+	    irq_settings_is_nested_thread(desc) ||
+	    irq_settings_is_polled(desc))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	/*
 	 * Do not poll disabled interrupts unless the spurious
+<<<<<<< HEAD
 	 * disabled poller asks explicitely.
+=======
+	 * disabled poller asks explicitly.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (irqd_irq_disabled(&desc->irq_data) && !force)
 		goto out;
@@ -128,7 +163,11 @@ static int misrouted_irq(int irq)
 		if (i == irq)	/* Already tried */
 			continue;
 
+<<<<<<< HEAD
 		if (try_one_irq(i, desc, false))
+=======
+		if (try_one_irq(desc, false))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ok = 1;
 	}
 out:
@@ -137,7 +176,11 @@ out:
 	return ok;
 }
 
+<<<<<<< HEAD
 static void poll_spurious_irqs(unsigned long dummy)
+=======
+static void poll_spurious_irqs(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct irq_desc *desc;
 	int i;
@@ -159,7 +202,11 @@ static void poll_spurious_irqs(unsigned long dummy)
 			continue;
 
 		local_irq_disable();
+<<<<<<< HEAD
 		try_one_irq(i, desc, true);
+=======
+		try_one_irq(desc, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		local_irq_enable();
 	}
 out:
@@ -170,7 +217,13 @@ out:
 
 static inline int bad_action_ret(irqreturn_t action_ret)
 {
+<<<<<<< HEAD
 	if (likely(action_ret <= (IRQ_HANDLED | IRQ_WAKE_THREAD)))
+=======
+	unsigned int r = action_ret;
+
+	if (likely(r <= (IRQ_HANDLED | IRQ_WAKE_THREAD)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	return 1;
 }
@@ -183,10 +236,16 @@ static inline int bad_action_ret(irqreturn_t action_ret)
  * (The other 100-of-100,000 interrupts may have been a correctly
  *  functioning device sharing an IRQ with the failing one)
  */
+<<<<<<< HEAD
 static void
 __report_bad_irq(unsigned int irq, struct irq_desc *desc,
 		 irqreturn_t action_ret)
 {
+=======
+static void __report_bad_irq(struct irq_desc *desc, irqreturn_t action_ret)
+{
+	unsigned int irq = irq_desc_get_irq(desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct irqaction *action;
 	unsigned long flags;
 
@@ -207,6 +266,7 @@ __report_bad_irq(unsigned int irq, struct irq_desc *desc,
 	 * desc->lock here. See synchronize_irq().
 	 */
 	raw_spin_lock_irqsave(&desc->lock, flags);
+<<<<<<< HEAD
 	action = desc->action;
 	while (action) {
 		printk(KERN_ERR "[<%p>] %pf", action->handler, action->handler);
@@ -215,18 +275,34 @@ __report_bad_irq(unsigned int irq, struct irq_desc *desc,
 					action->thread_fn, action->thread_fn);
 		printk(KERN_CONT "\n");
 		action = action->next;
+=======
+	for_each_action_of_desc(desc, action) {
+		printk(KERN_ERR "[<%p>] %ps", action->handler, action->handler);
+		if (action->thread_fn)
+			printk(KERN_CONT " threaded [<%p>] %ps",
+					action->thread_fn, action->thread_fn);
+		printk(KERN_CONT "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	raw_spin_unlock_irqrestore(&desc->lock, flags);
 }
 
+<<<<<<< HEAD
 static void
 report_bad_irq(unsigned int irq, struct irq_desc *desc, irqreturn_t action_ret)
+=======
+static void report_bad_irq(struct irq_desc *desc, irqreturn_t action_ret)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int count = 100;
 
 	if (count > 0) {
 		count--;
+<<<<<<< HEAD
 		__report_bad_irq(irq, desc, action_ret);
+=======
+		__report_bad_irq(desc, action_ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -267,6 +343,7 @@ try_misrouted_irq(unsigned int irq, struct irq_desc *desc,
 
 #define SPURIOUS_DEFERRED	0x80000000
 
+<<<<<<< HEAD
 void note_interrupt(unsigned int irq, struct irq_desc *desc,
 		    irqreturn_t action_ret)
 {
@@ -275,6 +352,18 @@ void note_interrupt(unsigned int irq, struct irq_desc *desc,
 
 	if (bad_action_ret(action_ret)) {
 		report_bad_irq(irq, desc, action_ret);
+=======
+void note_interrupt(struct irq_desc *desc, irqreturn_t action_ret)
+{
+	unsigned int irq;
+
+	if (desc->istate & IRQS_POLL_INPROGRESS ||
+	    irq_settings_is_polled(desc))
+		return;
+
+	if (bad_action_ret(action_ret)) {
+		report_bad_irq(desc, action_ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -289,7 +378,11 @@ void note_interrupt(unsigned int irq, struct irq_desc *desc,
 	 * So in case a thread is woken, we just note the fact and
 	 * defer the analysis to the next hardware interrupt.
 	 *
+<<<<<<< HEAD
 	 * The threaded handlers store whether they sucessfully
+=======
+	 * The threaded handlers store whether they successfully
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * handled an interrupt and we check whether that number
 	 * changed versus the last invocation.
 	 *
@@ -392,12 +485,23 @@ void note_interrupt(unsigned int irq, struct irq_desc *desc,
 		desc->last_unhandled = jiffies;
 	}
 
+<<<<<<< HEAD
+=======
+	irq = irq_desc_get_irq(desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(try_misrouted_irq(irq, desc, action_ret))) {
 		int ok = misrouted_irq(irq);
 		if (action_ret == IRQ_NONE)
 			desc->irqs_unhandled -= ok;
 	}
 
+<<<<<<< HEAD
+=======
+	if (likely(!desc->irqs_unhandled))
+		return;
+
+	/* Now getting into unhandled irq detection */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc->irq_count++;
 	if (likely(desc->irq_count < 100000))
 		return;
@@ -407,7 +511,11 @@ void note_interrupt(unsigned int irq, struct irq_desc *desc,
 		/*
 		 * The interrupt is stuck
 		 */
+<<<<<<< HEAD
 		__report_bad_irq(irq, desc, action_ret);
+=======
+		__report_bad_irq(desc, action_ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Now kill the IRQ
 		 */
@@ -438,6 +546,13 @@ MODULE_PARM_DESC(noirqdebug, "Disable irq lockup detection when true");
 
 static int __init irqfixup_setup(char *str)
 {
+<<<<<<< HEAD
+=======
+	if (IS_ENABLED(CONFIG_PREEMPT_RT)) {
+		pr_warn("irqfixup boot option not supported with PREEMPT_RT\n");
+		return 1;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irqfixup = 1;
 	printk(KERN_WARNING "Misrouted IRQ fixup support enabled.\n");
 	printk(KERN_WARNING "This may impact system performance.\n");
@@ -450,6 +565,13 @@ module_param(irqfixup, int, 0644);
 
 static int __init irqpoll_setup(char *str)
 {
+<<<<<<< HEAD
+=======
+	if (IS_ENABLED(CONFIG_PREEMPT_RT)) {
+		pr_warn("irqpoll boot option not supported with PREEMPT_RT\n");
+		return 1;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irqfixup = 2;
 	printk(KERN_WARNING "Misrouted IRQ fixup and polling support "
 				"enabled\n");

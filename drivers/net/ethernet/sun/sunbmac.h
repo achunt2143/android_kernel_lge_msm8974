@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Id: sunbmac.h,v 1.7 2000/07/11 22:35:22 davem Exp $
  * sunbmac.h: Defines for the Sun "Big MAC" 100baseT ethernet cards.
  *
@@ -291,7 +295,11 @@ struct bigmac {
 	void __iomem	*bregs;	/* BigMAC Registers                   */
 	void __iomem	*tregs;	/* BigMAC Transceiver                 */
 	struct bmac_init_block	*bmac_block;	/* RX and TX descriptors */
+<<<<<<< HEAD
 	__u32			 bblock_dvma;	/* RX and TX descriptors */
+=======
+	dma_addr_t		bblock_dvma;	/* RX and TX descriptors */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t		lock;
 
@@ -311,7 +319,10 @@ struct bigmac {
 	enum bigmac_timer_state	timer_state;
 	unsigned int		timer_ticks;
 
+<<<<<<< HEAD
 	struct net_device_stats	enet_stats;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct platform_device	*qec_op;
 	struct platform_device	*bigmac_op;
 	struct net_device	*dev;

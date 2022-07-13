@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2005 - 2011 Emulex
  * All rights reserved.
@@ -7,6 +8,13 @@
  * as published by the Free Software Foundation.  The full GNU General
  * Public License is included in this distribution in the file called COPYING.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) 2005-2016 Broadcom.
+ * All rights reserved.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Contact Information:
  * linux-drivers@emulex.com
  *
@@ -31,25 +39,49 @@
 
 #define MPU_EP_CONTROL 		0
 
+<<<<<<< HEAD
 /********** MPU semphore ******************/
 #define MPU_EP_SEMAPHORE_OFFSET		0xac
 #define MPU_EP_SEMAPHORE_IF_TYPE2_OFFSET	0x400
 #define EP_SEMAPHORE_POST_STAGE_MASK		0x0000FFFF
 #define EP_SEMAPHORE_POST_ERR_MASK		0x1
 #define EP_SEMAPHORE_POST_ERR_SHIFT		31
+=======
+/********** MPU semphore: used for SH & BE  *************/
+#define SLIPORT_SOFTRESET_OFFSET		0x5c	/* CSR BAR offset */
+#define SLIPORT_SEMAPHORE_OFFSET_BEx		0xac  /* CSR BAR offset */
+#define SLIPORT_SEMAPHORE_OFFSET_SH		0x94  /* PCI-CFG offset */
+#define POST_STAGE_MASK				0x0000FFFF
+#define POST_ERR_MASK				0x1
+#define POST_ERR_SHIFT				31
+#define POST_ERR_RECOVERY_CODE_MASK		0xFFF
+
+/* Soft Reset register masks */
+#define SLIPORT_SOFTRESET_SR_MASK		0x00000080	/* SR bit */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* MPU semphore POST stage values */
 #define POST_STAGE_AWAITING_HOST_RDY 	0x1 /* FW awaiting goahead from host */
 #define POST_STAGE_HOST_RDY 		0x2 /* Host has given go-ahed to FW */
 #define POST_STAGE_BE_RESET		0x3 /* Host wants to reset chip */
 #define POST_STAGE_ARMFW_RDY		0xc000	/* FW is done with POST */
+<<<<<<< HEAD
 
 
 /* Lancer SLIPORT_CONTROL SLIPORT_STATUS registers */
+=======
+#define POST_STAGE_RECOVERABLE_ERR	0xE000	/* Recoverable err detected */
+/* FW has detected a UE and is dumping FAT log data */
+#define POST_STAGE_FAT_LOG_START       0x0D00
+#define POST_STAGE_ARMFW_UE            0xF000  /*FW has asserted an UE*/
+
+/* Lancer SLIPORT registers */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SLIPORT_STATUS_OFFSET		0x404
 #define SLIPORT_CONTROL_OFFSET		0x408
 #define SLIPORT_ERROR1_OFFSET		0x40C
 #define SLIPORT_ERROR2_OFFSET		0x410
+<<<<<<< HEAD
 
 #define SLIPORT_STATUS_ERR_MASK		0x80000000
 #define SLIPORT_STATUS_RN_MASK		0x01000000
@@ -57,6 +89,24 @@
 
 
 #define SLI_PORT_CONTROL_IP_MASK	0x08000000
+=======
+#define PHYSDEV_CONTROL_OFFSET		0x414
+
+#define SLIPORT_STATUS_ERR_MASK		0x80000000
+#define SLIPORT_STATUS_DIP_MASK		0x02000000
+#define SLIPORT_STATUS_RN_MASK		0x01000000
+#define SLIPORT_STATUS_RDY_MASK		0x00800000
+#define SLI_PORT_CONTROL_IP_MASK	0x08000000
+#define PHYSDEV_CONTROL_FW_RESET_MASK	0x00000002
+#define PHYSDEV_CONTROL_DD_MASK		0x00000004
+#define PHYSDEV_CONTROL_INP_MASK	0x40000000
+
+#define SLIPORT_ERROR_NO_RESOURCE1	0x2
+#define SLIPORT_ERROR_NO_RESOURCE2	0x9
+
+#define SLIPORT_ERROR_FW_RESET1		0x2
+#define SLIPORT_ERROR_FW_RESET2		0x0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /********* Memory BAR register ************/
 #define PCICFG_MEMBAR_CTRL_INT_CTRL_OFFSET 	0xfc
@@ -66,7 +116,15 @@
  * atomically without having to arbitrate for the PCI Interrupt Disable bit
  * with the OS.
  */
+<<<<<<< HEAD
 #define MEMBAR_CTRL_INT_CTRL_HOSTINTR_MASK	(1 << 29) /* bit 29 */
+=======
+#define MEMBAR_CTRL_INT_CTRL_HOSTINTR_MASK	BIT(29) /* bit 29 */
+
+/********* PCI Function Capability *********/
+#define BE_FUNCTION_CAPS_RSS			0x2
+#define BE_FUNCTION_CAPS_SUPER_NIC		0x40
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /********* Power management (WOL) **********/
 #define PCICFG_PM_CONTROL_OFFSET		0x44
@@ -98,11 +156,16 @@
 #define SLI_INTF_REV_SHIFT			4
 #define SLI_INTF_FT_MASK			0x00000001
 
+<<<<<<< HEAD
 
 /* SLI family */
 #define BE_SLI_FAMILY		0x0
 #define LANCER_A0_SLI_FAMILY	0xA
 
+=======
+#define SLI_INTF_TYPE_2		2
+#define SLI_INTF_TYPE_3		3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /********* ISR0 Register offset **********/
 #define CEV_ISR0_OFFSET 			0xC18
@@ -122,6 +185,21 @@
 #define DB_EQ_NUM_POPPED_SHIFT		(16)	/* bits 16 - 28 */
 /* Rearm bit */
 #define DB_EQ_REARM_SHIFT		(29)	/* bit 29 */
+<<<<<<< HEAD
+=======
+/* Rearm to interrupt delay encoding */
+#define DB_EQ_R2I_DLY_SHIFT		(30)    /* bits 30 - 31 */
+
+/* Rearm to interrupt (R2I) delay multiplier encoding represents 3 different
+ * values configured in CEV_REARM2IRPT_DLY_MULT_CSR register. This value is
+ * programmed by host driver while ringing an EQ doorbell(EQ_DB) if a delay
+ * between rearming the EQ and next interrupt on this EQ is desired.
+ */
+#define	R2I_DLY_ENC_0			0	/* No delay */
+#define	R2I_DLY_ENC_1			1	/* maps to 160us EQ delay */
+#define	R2I_DLY_ENC_2			2	/* maps to 96us EQ delay */
+#define	R2I_DLY_ENC_3			3	/* maps to 48us EQ delay */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /********* Compl Q door bell *************/
 #define DB_CQ_OFFSET 			0x120
@@ -161,6 +239,7 @@
 #define RETRIEVE_FAT	0
 #define QUERY_FAT	1
 
+<<<<<<< HEAD
 /* Flashrom related descriptors */
 #define IMAGE_TYPE_FIRMWARE		160
 #define IMAGE_TYPE_BOOTCODE		224
@@ -223,6 +302,8 @@
 #define FLASH_REDBOOT_START_g3             (262144)
 #define FLASH_PHY_FW_START_g3		   1310720
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /************* Rx Packet Type Encoding **************/
 #define BE_UNICAST_PACKET		0
 #define BE_MULTICAST_PACKET		1
@@ -245,10 +326,17 @@ struct be_eq_entry {
 /* TX Queue Descriptor */
 #define ETH_WRB_FRAG_LEN_MASK		0xFFFF
 struct be_eth_wrb {
+<<<<<<< HEAD
 	u32 frag_pa_hi;		/* dword 0 */
 	u32 frag_pa_lo;		/* dword 1 */
 	u32 rsvd0;		/* dword 2 */
 	u32 frag_len;		/* dword 3: bits 0 - 15 */
+=======
+	__le32 frag_pa_hi;		/* dword 0 */
+	__le32 frag_pa_lo;		/* dword 1 */
+	u32 rsvd0;			/* dword 2 */
+	__le32 frag_len;		/* dword 3: bits 0 - 15 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* Pseudo amap definition for eth_hdr_wrb in which each bit of the
@@ -275,10 +363,35 @@ struct amap_eth_hdr_wrb {
 	u8 vlan_tag[16];
 } __packed;
 
+<<<<<<< HEAD
 struct be_eth_hdr_wrb {
 	u32 dw[4];
 };
 
+=======
+#define TX_HDR_WRB_COMPL		1		/* word 2 */
+#define TX_HDR_WRB_EVT			BIT(1)		/* word 2 */
+#define TX_HDR_WRB_NUM_SHIFT		13		/* word 2: bits 13:17 */
+#define TX_HDR_WRB_NUM_MASK		0x1F		/* word 2: bits 13:17 */
+
+struct be_eth_hdr_wrb {
+	__le32 dw[4];
+};
+
+/********* Tx Compl Status Encoding *********/
+#define BE_TX_COMP_HDR_PARSE_ERR	0x2
+#define BE_TX_COMP_NDMA_ERR		0x3
+#define BE_TX_COMP_ACL_ERR		0x5
+
+#define LANCER_TX_COMP_LSO_ERR			0x1
+#define LANCER_TX_COMP_HSW_DROP_MAC_ERR		0x3
+#define LANCER_TX_COMP_HSW_DROP_VLAN_ERR	0x5
+#define LANCER_TX_COMP_QINQ_ERR			0x7
+#define LANCER_TX_COMP_SGE_ERR			0x9
+#define LANCER_TX_COMP_PARITY_ERR		0xb
+#define LANCER_TX_COMP_DMA_ERR			0xd
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* TX Compl Queue Descriptor */
 
 /* Pseudo amap definition for eth_tx_compl in which each bit of the
@@ -332,14 +445,22 @@ struct amap_eth_rx_compl_v0 {
 	u8 ip_version;		/* dword 1 */
 	u8 macdst[6];		/* dword 1 */
 	u8 vtp;			/* dword 1 */
+<<<<<<< HEAD
 	u8 rsvd0;		/* dword 1 */
+=======
+	u8 ip_frag;		/* dword 1 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 fragndx[10];		/* dword 1 */
 	u8 ct[2];		/* dword 1 */
 	u8 sw;			/* dword 1 */
 	u8 numfrags[3];		/* dword 1 */
 	u8 rss_flush;		/* dword 2 */
 	u8 cast_enc[2];		/* dword 2 */
+<<<<<<< HEAD
 	u8 vtm;			/* dword 2 */
+=======
+	u8 qnq;			/* dword 2 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 rss_bank;		/* dword 2 */
 	u8 rsvd1[23];		/* dword 2 */
 	u8 lro_pkt;		/* dword 2 */
@@ -372,13 +493,22 @@ struct amap_eth_rx_compl_v1 {
 	u8 numfrags[3];		/* dword 1 */
 	u8 rss_flush;		/* dword 2 */
 	u8 cast_enc[2];		/* dword 2 */
+<<<<<<< HEAD
 	u8 vtm;			/* dword 2 */
+=======
+	u8 qnq;			/* dword 2 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 rss_bank;		/* dword 2 */
 	u8 port[2];		/* dword 2 */
 	u8 vntagp;		/* dword 2 */
 	u8 header_len[8];	/* dword 2 */
 	u8 header_split[2];	/* dword 2 */
+<<<<<<< HEAD
 	u8 rsvd1[13];		/* dword 2 */
+=======
+	u8 rsvd1[12];		/* dword 2 */
+	u8 tunneled;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 valid;		/* dword 2 */
 	u8 rsshash[32];		/* dword 3 */
 } __packed;
@@ -386,6 +516,7 @@ struct amap_eth_rx_compl_v1 {
 struct be_eth_rx_compl {
 	u32 dw[4];
 };
+<<<<<<< HEAD
 
 struct mgmt_hba_attribs {
 	u8 flashrom_version_string[32];
@@ -510,3 +641,5 @@ struct flash_section_info {
 	struct flash_section_hdr fsec_hdr;
 	struct flash_section_entry fsec_entry[32];
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

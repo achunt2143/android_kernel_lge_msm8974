@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Contains register definitions common to the Book E PowerPC
  * specification.  Notice that while the IBM-40x series of CPUs
@@ -5,16 +9,20 @@
  * before Book E was finalized, and are included here as well.  Unfortunately,
  * they sometimes used different locations than true Book E CPUs did.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version 2
  * as published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright 2009-2010 Freescale Semiconductor, Inc.
  */
 #ifdef __KERNEL__
 #ifndef __ASM_POWERPC_REG_BOOKE_H__
 #define __ASM_POWERPC_REG_BOOKE_H__
 
+<<<<<<< HEAD
 /* Machine State Register (MSR) Fields */
 #define MSR_GS		(1<<28) /* Guest state */
 #define MSR_UCLE	(1<<26)	/* User-mode cache lock enable */
@@ -25,14 +33,45 @@
 #define MSR_DS		MSR_DR	/* Data Space */
 #define MSR_PMM		(1<<2)	/* Performance monitor mark bit */
 #define MSR_CM		(1<<31) /* Computation Mode (0=32-bit, 1=64-bit) */
+=======
+#include <asm/ppc-opcode.h>
+
+/* Machine State Register (MSR) Fields */
+#define MSR_GS_LG	28	/* Guest state */
+#define MSR_UCLE_LG	26	/* User-mode cache lock enable */
+#define MSR_SPE_LG	25	/* Enable SPE */
+#define MSR_DWE_LG	10	/* Debug Wait Enable */
+#define MSR_UBLE_LG	10	/* BTB lock enable (e500) */
+#define MSR_IS_LG	MSR_IR_LG /* Instruction Space */
+#define MSR_DS_LG	MSR_DR_LG /* Data Space */
+#define MSR_PMM_LG	2	/* Performance monitor mark bit */
+#define MSR_CM_LG	31	/* Computation Mode (0=32-bit, 1=64-bit) */
+
+#define MSR_GS		__MASK(MSR_GS_LG)
+#define MSR_UCLE	__MASK(MSR_UCLE_LG)
+#define MSR_SPE		__MASK(MSR_SPE_LG)
+#define MSR_DWE		__MASK(MSR_DWE_LG)
+#define MSR_UBLE	__MASK(MSR_UBLE_LG)
+#define MSR_IS		__MASK(MSR_IS_LG)
+#define MSR_DS		__MASK(MSR_DS_LG)
+#define MSR_PMM		__MASK(MSR_PMM_LG)
+#define MSR_CM		__MASK(MSR_CM_LG)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_PPC_BOOK3E_64)
 #define MSR_64BIT	MSR_CM
 
+<<<<<<< HEAD
 #define MSR_		MSR_ME | MSR_CE
 #define MSR_KERNEL	MSR_ | MSR_64BIT
 #define MSR_USER32	MSR_ | MSR_PR | MSR_EE
 #define MSR_USER64	MSR_USER32 | MSR_64BIT
+=======
+#define MSR_		(MSR_ME | MSR_RI | MSR_CE)
+#define MSR_KERNEL	(MSR_ | MSR_64BIT)
+#define MSR_USER32	(MSR_ | MSR_PR | MSR_EE)
+#define MSR_USER64	(MSR_USER32 | MSR_64BIT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #elif defined (CONFIG_40x)
 #define MSR_KERNEL	(MSR_ME|MSR_RI|MSR_IR|MSR_DR|MSR_CE)
 #define MSR_USER	(MSR_KERNEL|MSR_PR|MSR_EE)
@@ -56,18 +95,42 @@
 #define SPRN_SPRG7W	0x117	/* Special Purpose Register General 7 Write */
 #define SPRN_EPCR	0x133	/* Embedded Processor Control Register */
 #define SPRN_DBCR2	0x136	/* Debug Control Register 2 */
+<<<<<<< HEAD
+=======
+#define SPRN_DBCR4	0x233	/* Debug Control Register 4 */
+#define SPRN_MSRP	0x137	/* MSR Protect Register */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SPRN_IAC3	0x13A	/* Instruction Address Compare 3 */
 #define SPRN_IAC4	0x13B	/* Instruction Address Compare 4 */
 #define SPRN_DVC1	0x13E	/* Data Value Compare Register 1 */
 #define SPRN_DVC2	0x13F	/* Data Value Compare Register 2 */
+<<<<<<< HEAD
+=======
+#define SPRN_LPID	0x152	/* Logical Partition ID */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SPRN_MAS8	0x155	/* MMU Assist Register 8 */
 #define SPRN_TLB0PS	0x158	/* TLB 0 Page Size Register */
 #define SPRN_TLB1PS	0x159	/* TLB 1 Page Size Register */
 #define SPRN_MAS5_MAS6	0x15c	/* MMU Assist Register 5 || 6 */
 #define SPRN_MAS8_MAS1	0x15d	/* MMU Assist Register 8 || 1 */
 #define SPRN_EPTCFG	0x15e	/* Embedded Page Table Config */
+<<<<<<< HEAD
 #define SPRN_MAS7_MAS3	0x174	/* MMU Assist Register 7 || 3 */
 #define SPRN_MAS0_MAS1	0x175	/* MMU Assist Register 0 || 1 */
+=======
+#define SPRN_GSPRG0	0x170	/* Guest SPRG0 */
+#define SPRN_GSPRG1	0x171	/* Guest SPRG1 */
+#define SPRN_GSPRG2	0x172	/* Guest SPRG2 */
+#define SPRN_GSPRG3	0x173	/* Guest SPRG3 */
+#define SPRN_MAS7_MAS3	0x174	/* MMU Assist Register 7 || 3 */
+#define SPRN_MAS0_MAS1	0x175	/* MMU Assist Register 0 || 1 */
+#define SPRN_GSRR0	0x17A	/* Guest SRR0 */
+#define SPRN_GSRR1	0x17B	/* Guest SRR1 */
+#define SPRN_GEPR	0x17C	/* Guest EPR */
+#define SPRN_GDEAR	0x17D	/* Guest DEAR */
+#define SPRN_GPIR	0x17E	/* Guest PIR */
+#define SPRN_GESR	0x17F	/* Guest Exception Syndrome Register */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SPRN_IVOR0	0x190	/* Interrupt Vector Offset Register 0 */
 #define SPRN_IVOR1	0x191	/* Interrupt Vector Offset Register 1 */
 #define SPRN_IVOR2	0x192	/* Interrupt Vector Offset Register 2 */
@@ -88,6 +151,17 @@
 #define SPRN_IVOR39	0x1B1	/* Interrupt Vector Offset Register 39 */
 #define SPRN_IVOR40	0x1B2	/* Interrupt Vector Offset Register 40 */
 #define SPRN_IVOR41	0x1B3	/* Interrupt Vector Offset Register 41 */
+<<<<<<< HEAD
+=======
+#define SPRN_IVOR42	0x1B4	/* Interrupt Vector Offset Register 42 */
+#define SPRN_GIVOR2	0x1B8	/* Guest IVOR2 */
+#define SPRN_GIVOR3	0x1B9	/* Guest IVOR3 */
+#define SPRN_GIVOR4	0x1BA	/* Guest IVOR4 */
+#define SPRN_GIVOR8	0x1BB	/* Guest IVOR8 */
+#define SPRN_GIVOR13	0x1BC	/* Guest IVOR13 */
+#define SPRN_GIVOR14	0x1BD	/* Guest IVOR14 */
+#define SPRN_GIVPR	0x1BF	/* Guest IVPR */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SPRN_SPEFSCR	0x200	/* SPE & Embedded FP Status & Control */
 #define SPRN_BBEAR	0x201	/* Branch Buffer Entry Address Register */
 #define SPRN_BBTAR	0x202	/* Branch Buffer Target Address Register */
@@ -144,12 +218,19 @@
 #define SPRN_L1CSR1	0x3F3	/* L1 Cache Control and Status Register 1 */
 #define SPRN_MMUCSR0	0x3F4	/* MMU Control and Status Register 0 */
 #define SPRN_MMUCFG	0x3F7	/* MMU Configuration Register */
+<<<<<<< HEAD
 #define SPRN_PIT	0x3DB	/* Programmable Interval Timer */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SPRN_BUCSR	0x3F5	/* Branch Unit Control and Status */
 #define SPRN_L2CSR0	0x3F9	/* L2 Data Cache Control and Status Register 0 */
 #define SPRN_L2CSR1	0x3FA	/* L2 Data Cache Control and Status Register 1 */
 #define SPRN_DCCR	0x3FA	/* Data Cache Cacheability Register */
 #define SPRN_ICCR	0x3FB	/* Instruction Cache Cacheability Register */
+<<<<<<< HEAD
+=======
+#define SPRN_PWRMGTCR0	0x3FB	/* Power management control register 0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SPRN_SVR	0x3FF	/* System Version Register */
 
 /*
@@ -187,15 +268,30 @@
 #define SPRN_CSRR0	SPRN_SRR2 /* Critical Save and Restore Register 0 */
 #define SPRN_CSRR1	SPRN_SRR3 /* Critical Save and Restore Register 1 */
 #endif
+<<<<<<< HEAD
 
 #ifdef CONFIG_PPC_ICSWX
 #define SPRN_HACOP	0x15F	/* Hypervisor Available Coprocessor Register */
 #endif
+=======
+#define SPRN_HACOP	0x15F	/* Hypervisor Available Coprocessor Register */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Bit definitions for CCR1. */
 #define	CCR1_DPC	0x00000100 /* Disable L1 I-Cache/D-Cache parity checking */
 #define	CCR1_TCS	0x00000080 /* Timer Clock Select */
 
+<<<<<<< HEAD
+=======
+/* Bit definitions for PWRMGTCR0. */
+#define PWRMGTCR0_PW20_WAIT		(1 << 14) /* PW20 state enable bit */
+#define PWRMGTCR0_PW20_ENT_SHIFT	8
+#define PWRMGTCR0_PW20_ENT		0x3F00
+#define PWRMGTCR0_AV_IDLE_PD_EN		(1 << 22) /* Altivec idle enable */
+#define PWRMGTCR0_AV_IDLE_CNT_SHIFT	16
+#define PWRMGTCR0_AV_IDLE_CNT		0x3F0000
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Bit definitions for the MCSR. */
 #define MCSR_MCS	0x80000000 /* Machine Check Summary */
 #define MCSR_IB		0x40000000 /* Instruction PLB Error */
@@ -211,7 +307,11 @@
 #define PPC47x_MCSR_FPR	0x00800000 /* FPR parity error */
 #define PPC47x_MCSR_IPR	0x00400000 /* Imprecise Machine Check Exception */
 
+<<<<<<< HEAD
 #ifdef CONFIG_E500
+=======
+#ifdef CONFIG_PPC_E500
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* All e500 */
 #define MCSR_MCP 	0x80000000UL /* Machine Check Input Pin */
 #define MCSR_ICPERR 	0x40000000UL /* I-Cache Parity Error */
@@ -230,7 +330,11 @@
 
 /* e500mc */
 #define MCSR_DCPERR_MC	0x20000000UL /* D-Cache Parity Error */
+<<<<<<< HEAD
 #define MCSR_L2MMU_MHIT	0x04000000UL /* Hit on multiple TLB entries */
+=======
+#define MCSR_L2MMU_MHIT	0x08000000UL /* Hit on multiple TLB entries */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MCSR_NMI	0x00100000UL /* Non-Maskable Interrupt */
 #define MCSR_MAV	0x00080000UL /* MCAR address valid */
 #define MCSR_MEA	0x00040000UL /* MCAR is effective address */
@@ -240,6 +344,7 @@
 #define MCSR_LDG	0x00002000UL /* Guarded Load */
 #define MCSR_TLBSYNC	0x00000002UL /* Multiple tlbsyncs detected */
 #define MCSR_BSL2_ERR	0x00000001UL /* Backside L2 cache error */
+<<<<<<< HEAD
 #endif
 
 #ifdef CONFIG_E200
@@ -256,6 +361,16 @@
 
 /* Bit definitions for the HID1 */
 #ifdef CONFIG_E500
+=======
+
+#define MSRP_UCLEP	0x04000000 /* Protect MSR[UCLE] */
+#define MSRP_DEP	0x00000200 /* Protect MSR[DE] */
+#define MSRP_PMMP	0x00000004 /* Protect MSR[PMM] */
+#endif
+
+/* Bit definitions for the HID1 */
+#ifdef CONFIG_PPC_E500
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* e500v1/v2 */
 #define HID1_PLL_CFG_MASK 0xfc000000	/* PLL_CFG input pins */
 #define HID1_RFXE	0x00020000	/* Read fault exception enable */
@@ -273,6 +388,11 @@
  * DBSR bits which have conflicting definitions on true Book E versus IBM 40x.
  */
 #ifdef CONFIG_BOOKE
+<<<<<<< HEAD
+=======
+#define DBSR_IDE	0x80000000	/* Imprecise Debug Event */
+#define DBSR_MRR	0x30000000	/* Most Recent Reset */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DBSR_IC		0x08000000	/* Instruction Completion */
 #define DBSR_BT		0x04000000	/* Branch Taken */
 #define DBSR_IRPT	0x02000000	/* Exception Debug Event */
@@ -357,7 +477,11 @@
 #define DBCR0_IA34T	0x00004000	/* Instr Addr 3-4 range Toggle */
 #define DBCR0_FT	0x00000001	/* Freeze Timers on debug event */
 
+<<<<<<< HEAD
 #define dbcr_iac_range(task)	((task)->thread.dbcr0)
+=======
+#define dbcr_iac_range(task)	((task)->thread.debug.dbcr0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DBCR_IAC12I	DBCR0_IA12			/* Range Inclusive */
 #define DBCR_IAC12X	(DBCR0_IA12 | DBCR0_IA12X)	/* Range Exclusive */
 #define DBCR_IAC12MODE	(DBCR0_IA12 | DBCR0_IA12X)	/* IAC 1-2 Mode Bits */
@@ -371,7 +495,11 @@
 #define DBCR1_DAC1W	0x20000000	/* DAC1 Write Debug Event */
 #define DBCR1_DAC2W	0x10000000	/* DAC2 Write Debug Event */
 
+<<<<<<< HEAD
 #define dbcr_dac(task)	((task)->thread.dbcr1)
+=======
+#define dbcr_dac(task)	((task)->thread.debug.dbcr1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DBCR_DAC1R	DBCR1_DAC1R
 #define DBCR_DAC1W	DBCR1_DAC1W
 #define DBCR_DAC2R	DBCR1_DAC2R
@@ -417,7 +545,11 @@
 #define DBCR0_CRET	0x00000020	/* Critical Return Debug Event */
 #define DBCR0_FT	0x00000001	/* Freeze Timers on debug event */
 
+<<<<<<< HEAD
 #define dbcr_dac(task)	((task)->thread.dbcr0)
+=======
+#define dbcr_dac(task)	((task)->thread.debug.dbcr0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DBCR_DAC1R	DBCR0_DAC1R
 #define DBCR_DAC1W	DBCR0_DAC1W
 #define DBCR_DAC2R	DBCR0_DAC2R
@@ -451,7 +583,11 @@
 #define DBCR1_IAC34MX	0x000000C0	/* Instr Addr 3-4 range eXclusive */
 #define DBCR1_IAC34AT	0x00000001	/* Instr Addr 3-4 range Toggle */
 
+<<<<<<< HEAD
 #define dbcr_iac_range(task)	((task)->thread.dbcr1)
+=======
+#define dbcr_iac_range(task)	((task)->thread.debug.dbcr1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DBCR_IAC12I	DBCR1_IAC12M	/* Range Inclusive */
 #define DBCR_IAC12X	DBCR1_IAC12MX	/* Range Exclusive */
 #define DBCR_IAC12MODE	DBCR1_IAC12MX	/* IAC 1-2 Mode Bits */
@@ -516,6 +652,16 @@
 #define TCR_FIE		0x00800000	/* FIT Interrupt Enable */
 #define TCR_ARE		0x00400000	/* Auto Reload Enable */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC_E500
+#define TCR_GET_WP(tcr)  ((((tcr) & 0xC0000000) >> 30) | \
+			      (((tcr) & 0x1E0000) >> 15))
+#else
+#define TCR_GET_WP(tcr)  (((tcr) & 0xC0000000) >> 30)
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Bit definitions for the TSR. */
 #define TSR_ENW		0x80000000	/* Enable Next Watchdog */
 #define TSR_WIS		0x40000000	/* WDT Interrupt Status */
@@ -542,6 +688,10 @@
 
 /* Bit definitions for L1CSR0. */
 #define L1CSR0_CPE	0x00010000	/* Data Cache Parity Enable */
+<<<<<<< HEAD
+=======
+#define L1CSR0_CUL	0x00000400	/* Data Cache Unable to Lock */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define L1CSR0_CLFC	0x00000100	/* Cache Lock Bits Flash Clear */
 #define L1CSR0_DCFI	0x00000002	/* Data Cache Flash Invalidate */
 #define L1CSR0_CFI	0x00000002	/* Cache Flash Invalidate */
@@ -556,6 +706,16 @@
 /* Bit definitions for L1CSR2. */
 #define L1CSR2_DCWS	0x40000000	/* Data Cache write shadow */
 
+<<<<<<< HEAD
+=======
+/* Bit definitions for BUCSR. */
+#define BUCSR_STAC_EN	0x01000000	/* Segment Target Address Cache */
+#define BUCSR_LS_EN	0x00400000	/* Link Stack */
+#define BUCSR_BBFI	0x00000200	/* Branch Buffer flash invalidate */
+#define BUCSR_BPEN	0x00000001	/* Branch prediction enable */
+#define BUCSR_INIT	(BUCSR_STAC_EN | BUCSR_LS_EN | BUCSR_BBFI | BUCSR_BPEN)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Bit definitions for L2CSR0. */
 #define L2CSR0_L2E	0x80000000	/* L2 Cache Enable */
 #define L2CSR0_L2PE	0x40000000	/* L2 Cache Parity/ECC Enable */
@@ -594,6 +754,7 @@
 #define SPRN_EPCR_DMIUH		0x00400000	/* Disable MAS Interrupt updates
 						 * for hypervisor */
 
+<<<<<<< HEAD
 
 /*
  * The IBM-403 is an even more odd special case, as it is much
@@ -648,6 +809,19 @@
 #define DBCR_JOI	0x00000002	/* JTAG Serial Outbound Int. Enable */
 #define DBCR_JII	0x00000001	/* JTAG Serial Inbound Int. Enable */
 #endif /* 403GCX */
+=======
+/* Bit definitions for EPLC/EPSC */
+#define EPC_EPR		0x80000000 /* 1 = user, 0 = kernel */
+#define EPC_EPR_SHIFT	31
+#define EPC_EAS		0x40000000 /* Address Space */
+#define EPC_EAS_SHIFT	30
+#define EPC_EGS		0x20000000 /* 1 = guest, 0 = hypervisor */
+#define EPC_EGS_SHIFT	29
+#define EPC_ELPID	0x00ff0000
+#define EPC_ELPID_SHIFT	16
+#define EPC_EPID	0x00003fff
+#define EPC_EPID_SHIFT	0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Some 476 specific registers */
 #define SPRN_SSPCR		830
@@ -668,5 +842,35 @@
 #define MMUBE1_VBE4		0x00000002
 #define MMUBE1_VBE5		0x00000001
 
+<<<<<<< HEAD
+=======
+#define TMRN_TMCFG0      16	/* Thread Management Configuration Register 0 */
+#define TMRN_TMCFG0_NPRIBITS       0x003f0000 /* Bits of thread priority */
+#define TMRN_TMCFG0_NPRIBITS_SHIFT 16
+#define TMRN_TMCFG0_NATHRD         0x00003f00 /* Number of active threads */
+#define TMRN_TMCFG0_NATHRD_SHIFT   8
+#define TMRN_TMCFG0_NTHRD          0x0000003f /* Number of threads */
+#define TMRN_IMSR0	0x120	/* Initial MSR Register 0 (e6500) */
+#define TMRN_IMSR1	0x121	/* Initial MSR Register 1 (e6500) */
+#define TMRN_INIA0	0x140	/* Next Instruction Address Register 0 */
+#define TMRN_INIA1	0x141	/* Next Instruction Address Register 1 */
+#define SPRN_TENSR	0x1b5	/* Thread Enable Status Register */
+#define SPRN_TENS	0x1b6	/* Thread Enable Set Register */
+#define SPRN_TENC	0x1b7	/* Thread Enable Clear Register */
+
+#define TEN_THREAD(x)	(1 << (x))
+
+#ifndef __ASSEMBLY__
+#define mftmr(rn)	({unsigned long rval; \
+			asm volatile(MFTMR(rn, %0) : "=r" (rval)); rval;})
+#define mttmr(rn, v)	asm volatile(MTTMR(rn, %0) : \
+				     : "r" ((unsigned long)(v)) \
+				     : "memory")
+
+extern unsigned long global_dbcr0[];
+
+#endif /* !__ASSEMBLY__ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_POWERPC_REG_BOOKE_H__ */
 #endif /* __KERNEL__ */

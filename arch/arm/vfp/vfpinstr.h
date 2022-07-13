@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/vfp/vfpinstr.h
  *
  *  Copyright (C) 2004 ARM Limited.
  *  Written by Deep Blue Solutions Limited.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * VFP instruction masks.
  */
 #define INST_CPRTDO(inst)	(((inst) & 0x0f000000) == 0x0e000000)
@@ -65,10 +72,30 @@
 #define FPSCR_C (1 << 29)
 #define FPSCR_V	(1 << 28)
 
+<<<<<<< HEAD
 /*
  * Since we aren't building with -mfpu=vfp, we need to code
  * these instructions using their MRC/MCR equivalents.
  */
+=======
+#ifdef CONFIG_AS_VFP_VMRS_FPINST
+
+#define fmrx(_vfp_) ({			\
+	u32 __v;			\
+	asm(".fpu	vfpv2\n"	\
+	    "vmrs	%0, " #_vfp_	\
+	    : "=r" (__v) : : "cc");	\
+	__v;				\
+ })
+
+#define fmxr(_vfp_,_var_)		\
+	asm(".fpu	vfpv2\n"	\
+	    "vmsr	" #_vfp_ ", %0"	\
+	   : : "r" (_var_) : "cc")
+
+#else
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define vfpreg(_vfp_) #_vfp_
 
 #define fmrx(_vfp_) ({			\
@@ -82,6 +109,11 @@
 	asm("mcr p10, 7, %0, " vfpreg(_vfp_) ", cr0, 0 @ fmxr	" #_vfp_ ", %0"	\
 	   : : "r" (_var_) : "cc")
 
+<<<<<<< HEAD
+=======
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u32 vfp_single_cpdo(u32 inst, u32 fpscr);
 u32 vfp_single_cprt(u32 inst, u32 fpscr, struct pt_regs *regs);
 

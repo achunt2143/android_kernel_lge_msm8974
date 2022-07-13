@@ -1,10 +1,20 @@
+<<<<<<< HEAD
 /*
  * hvc_iucv.c - z/VM IUCV hypervisor console (HVC) device driver
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * z/VM IUCV hypervisor console (HVC) device driver
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This HVC device driver provides terminal access using
  * z/VM IUCV communication paths.
  *
+<<<<<<< HEAD
  * Copyright IBM Corp. 2008, 2009
+=======
+ * Copyright IBM Corp. 2008, 2013
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Author(s):	Hendrik Brueckner <brueckner@linux.vnet.ibm.com>
  */
@@ -28,7 +38,10 @@
 
 
 /* General device driver settings */
+<<<<<<< HEAD
 #define HVC_IUCV_MAGIC		0xc9e4c3e5
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_HVC_IUCV_LINES	HVC_ALLOC_TTY_ADAPTERS
 #define MEMPOOL_MIN_NR		(PAGE_SIZE / sizeof(struct iucv_tty_buffer)/4)
 
@@ -77,6 +90,10 @@ struct hvc_iucv_private {
 	struct list_head	tty_outqueue;	/* outgoing IUCV messages */
 	struct list_head	tty_inqueue;	/* incoming IUCV messages */
 	struct device		*dev;		/* device structure */
+<<<<<<< HEAD
+=======
+	u8			info_path[16];	/* IUCV path info (dev attr) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct iucv_tty_buffer {
@@ -87,8 +104,13 @@ struct iucv_tty_buffer {
 };
 
 /* IUCV callback handler */
+<<<<<<< HEAD
 static	int hvc_iucv_path_pending(struct iucv_path *, u8[8], u8[16]);
 static void hvc_iucv_path_severed(struct iucv_path *, u8[16]);
+=======
+static	int hvc_iucv_path_pending(struct iucv_path *, u8 *, u8 *);
+static void hvc_iucv_path_severed(struct iucv_path *, u8 *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void hvc_iucv_msg_pending(struct iucv_path *, struct iucv_message *);
 static void hvc_iucv_msg_complete(struct iucv_path *, struct iucv_message *);
 
@@ -101,6 +123,10 @@ static struct hvc_iucv_private *hvc_iucv_table[MAX_HVC_IUCV_LINES];
 #define IUCV_HVC_CON_IDX	(0)
 /* List of z/VM user ID filter entries (struct iucv_vmid_filter) */
 #define MAX_VMID_FILTER		(500)
+<<<<<<< HEAD
+=======
+#define FILTER_WILDCARD_CHAR	'*'
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static size_t hvc_iucv_filter_size;
 static void *hvc_iucv_filter;
 static const char *hvc_iucv_filter_string;
@@ -126,11 +152,19 @@ static struct iucv_handler hvc_iucv_handler = {
  * This function returns the struct hvc_iucv_private instance that corresponds
  * to the HVC virtual terminal number specified as parameter @num.
  */
+<<<<<<< HEAD
 struct hvc_iucv_private *hvc_iucv_get_private(uint32_t num)
 {
 	if ((num < HVC_IUCV_MAGIC) || (num - HVC_IUCV_MAGIC > hvc_iucv_devices))
 		return NULL;
 	return hvc_iucv_table[num - HVC_IUCV_MAGIC];
+=======
+static struct hvc_iucv_private *hvc_iucv_get_private(uint32_t num)
+{
+	if (num > hvc_iucv_devices)
+		return NULL;
+	return hvc_iucv_table[num];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -213,11 +247,19 @@ static void destroy_tty_buffer_list(struct list_head *list)
  * If the IUCV path has been severed, then -EPIPE is returned to cause a
  * hang up (that is issued by the HVC layer).
  */
+<<<<<<< HEAD
 static int hvc_iucv_write(struct hvc_iucv_private *priv,
 			  char *buf, int count, int *has_more_data)
 {
 	struct iucv_tty_buffer *rb;
 	int written;
+=======
+static ssize_t hvc_iucv_write(struct hvc_iucv_private *priv,
+			      u8 *buf, size_t count, int *has_more_data)
+{
+	struct iucv_tty_buffer *rb;
+	ssize_t written;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	/* immediately return if there is no IUCV connection */
@@ -310,10 +352,17 @@ out_written:
  *		the routine locks the struct hvc_iucv_private->lock to call
  *		helper functions.
  */
+<<<<<<< HEAD
 static int hvc_iucv_get_chars(uint32_t vtermno, char *buf, int count)
 {
 	struct hvc_iucv_private *priv = hvc_iucv_get_private(vtermno);
 	int written;
+=======
+static ssize_t hvc_iucv_get_chars(uint32_t vtermno, u8 *buf, size_t count)
+{
+	struct hvc_iucv_private *priv = hvc_iucv_get_private(vtermno);
+	ssize_t written;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int has_more_data;
 
 	if (count <= 0)
@@ -350,8 +399,13 @@ static int hvc_iucv_get_chars(uint32_t vtermno, char *buf, int count)
  * If an existing IUCV communicaton path has been severed, -EPIPE is returned
  * (that can be passed to HVC layer to cause a tty hangup).
  */
+<<<<<<< HEAD
 static int hvc_iucv_queue(struct hvc_iucv_private *priv, const char *buf,
 			  int count)
+=======
+static ssize_t hvc_iucv_queue(struct hvc_iucv_private *priv, const u8 *buf,
+			      size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	size_t len;
 
@@ -435,8 +489,11 @@ static void hvc_iucv_sndbuf_work(struct work_struct *work)
 	struct hvc_iucv_private *priv;
 
 	priv = container_of(work, struct hvc_iucv_private, sndbuf_work.work);
+<<<<<<< HEAD
 	if (!priv)
 		return;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&priv->lock);
 	hvc_iucv_send(priv);
@@ -455,12 +512,20 @@ static void hvc_iucv_sndbuf_work(struct work_struct *work)
  * Locking:	The method gets called under an irqsave() spinlock; and
  *		locks struct hvc_iucv_private->lock.
  */
+<<<<<<< HEAD
 static int hvc_iucv_put_chars(uint32_t vtermno, const char *buf, int count)
+=======
+static ssize_t hvc_iucv_put_chars(uint32_t vtermno, const u8 *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hvc_iucv_private *priv = hvc_iucv_get_private(vtermno);
 	int queued;
 
+<<<<<<< HEAD
 	if (count <= 0)
+=======
+	if (!count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (!priv)
@@ -656,6 +721,7 @@ static void hvc_iucv_notifier_hangup(struct hvc_struct *hp, int id)
 }
 
 /**
+<<<<<<< HEAD
  * hvc_iucv_notifier_del() - HVC notifier for closing a TTY for the last time.
  * @hp:		Pointer to the HVC device (struct hvc_struct)
  * @id:		Additional data (originally passed to hvc_alloc):
@@ -676,15 +742,50 @@ static void hvc_iucv_notifier_del(struct hvc_struct *hp, int id)
 	if (!priv)
 		return;
 
+=======
+ * hvc_iucv_dtr_rts() - HVC notifier for handling DTR/RTS
+ * @hp:		Pointer the HVC device (struct hvc_struct)
+ * @active:	True to raise or false to lower DTR/RTS lines
+ *
+ * This routine notifies the HVC back-end to raise or lower DTR/RTS
+ * lines.  Raising DTR/RTS is ignored.  Lowering DTR/RTS indicates to
+ * drop the IUCV connection (similar to hang up the modem).
+ */
+static void hvc_iucv_dtr_rts(struct hvc_struct *hp, bool active)
+{
+	struct hvc_iucv_private *priv;
+	struct iucv_path        *path;
+
+	/* Raising the DTR/RTS is ignored as IUCV connections can be
+	 * established at any times.
+	 */
+	if (active)
+		return;
+
+	priv = hvc_iucv_get_private(hp->vtermno);
+	if (!priv)
+		return;
+
+	/* Lowering the DTR/RTS lines disconnects an established IUCV
+	 * connection.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_sndbuf_sync(priv);
 
 	spin_lock_bh(&priv->lock);
 	path = priv->path;		/* save reference to IUCV path */
 	priv->path = NULL;
+<<<<<<< HEAD
 	hvc_iucv_cleanup(priv);
 	spin_unlock_bh(&priv->lock);
 
 	/* sever IUCV path outside of priv->lock due to lock ordering of:
+=======
+	priv->iucv_state = IUCV_DISCONN;
+	spin_unlock_bh(&priv->lock);
+
+	/* Sever IUCV path outside of priv->lock due to lock ordering of:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * priv->lock <--> iucv_table_lock */
 	if (path) {
 		iucv_path_sever(path, NULL);
@@ -693,6 +794,7 @@ static void hvc_iucv_notifier_del(struct hvc_struct *hp, int id)
 }
 
 /**
+<<<<<<< HEAD
  * hvc_iucv_filter_connreq() - Filter connection request based on z/VM user ID
  * @ipvmid:	Originating z/VM user ID (right padded with blanks)
  *
@@ -702,14 +804,73 @@ static void hvc_iucv_notifier_del(struct hvc_struct *hp, int id)
 static int hvc_iucv_filter_connreq(u8 ipvmid[8])
 {
 	size_t i;
+=======
+ * hvc_iucv_notifier_del() - HVC notifier for closing a TTY for the last time.
+ * @hp:		Pointer to the HVC device (struct hvc_struct)
+ * @id:		Additional data (originally passed to hvc_alloc):
+ *		the index of an struct hvc_iucv_private instance.
+ *
+ * This routine notifies the HVC back-end that the last tty device fd has been
+ * closed.  The function cleans up tty resources.  The clean-up of the IUCV
+ * connection is done in hvc_iucv_dtr_rts() and depends on the HUPCL termios
+ * control setting.
+ *
+ * Locking:	struct hvc_iucv_private->lock
+ */
+static void hvc_iucv_notifier_del(struct hvc_struct *hp, int id)
+{
+	struct hvc_iucv_private *priv;
+
+	priv = hvc_iucv_get_private(id);
+	if (!priv)
+		return;
+
+	flush_sndbuf_sync(priv);
+
+	spin_lock_bh(&priv->lock);
+	destroy_tty_buffer_list(&priv->tty_outqueue);
+	destroy_tty_buffer_list(&priv->tty_inqueue);
+	priv->tty_state = TTY_CLOSED;
+	priv->sndbuf_len = 0;
+	spin_unlock_bh(&priv->lock);
+}
+
+/**
+ * hvc_iucv_filter_connreq() - Filter connection request based on z/VM user ID
+ * @ipvmid:	Originating z/VM user ID (right padded with blanks)
+ *
+ * Returns 0 if the z/VM user ID that is specified with @ipvmid is permitted to
+ * connect, otherwise non-zero.
+ */
+static int hvc_iucv_filter_connreq(u8 ipvmid[8])
+{
+	const char *wildcard, *filter_entry;
+	size_t i, len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Note: default policy is ACCEPT if no filter is set */
 	if (!hvc_iucv_filter_size)
 		return 0;
 
+<<<<<<< HEAD
 	for (i = 0; i < hvc_iucv_filter_size; i++)
 		if (0 == memcmp(ipvmid, hvc_iucv_filter + (8 * i), 8))
 			return 0;
+=======
+	for (i = 0; i < hvc_iucv_filter_size; i++) {
+		filter_entry = hvc_iucv_filter + (8 * i);
+
+		/* If a filter entry contains the filter wildcard character,
+		 * reduce the length to match the leading portion of the user
+		 * ID only (wildcard match).  Characters following the wildcard
+		 * are ignored.
+		 */
+		wildcard = strnchr(filter_entry, 8, FILTER_WILDCARD_CHAR);
+		len = (wildcard) ? wildcard - filter_entry : 8;
+		if (0 == memcmp(ipvmid, filter_entry, len))
+			return 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -732,6 +893,7 @@ static int hvc_iucv_filter_connreq(u8 ipvmid[8])
  *
  * Locking:	struct hvc_iucv_private->lock
  */
+<<<<<<< HEAD
 static	int hvc_iucv_path_pending(struct iucv_path *path,
 				  u8 ipvmid[8], u8 ipuser[16])
 {
@@ -747,6 +909,42 @@ static	int hvc_iucv_path_pending(struct iucv_path *path,
 			priv = hvc_iucv_table[i];
 			break;
 		}
+=======
+static	int hvc_iucv_path_pending(struct iucv_path *path, u8 *ipvmid,
+				  u8 *ipuser)
+{
+	struct hvc_iucv_private *priv, *tmp;
+	u8 wildcard[9] = "lnxhvc  ";
+	int i, rc, find_unused;
+	u8 nuser_data[16];
+	u8 vm_user_id[9];
+
+	ASCEBC(wildcard, sizeof(wildcard));
+	find_unused = !memcmp(wildcard, ipuser, 8);
+
+	/* First, check if the pending path request is managed by this
+	 * IUCV handler:
+	 * - find a disconnected device if ipuser contains the wildcard
+	 * - find the device that matches the terminal ID in ipuser
+	 */
+	priv = NULL;
+	for (i = 0; i < hvc_iucv_devices; i++) {
+		tmp = hvc_iucv_table[i];
+		if (!tmp)
+			continue;
+
+		if (find_unused) {
+			spin_lock(&tmp->lock);
+			if (tmp->iucv_state == IUCV_DISCONN)
+				priv = tmp;
+			spin_unlock(&tmp->lock);
+
+		} else if (!memcmp(tmp->srv_name, ipuser, 8))
+				priv = tmp;
+		if (priv)
+			break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!priv)
 		return -ENODEV;
 
@@ -789,6 +987,13 @@ static	int hvc_iucv_path_pending(struct iucv_path *path,
 	priv->path = path;
 	priv->iucv_state = IUCV_CONNECTED;
 
+<<<<<<< HEAD
+=======
+	/* store path information */
+	memcpy(priv->info_path, ipvmid, 8);
+	memcpy(priv->info_path + 8, ipuser + 8, 8);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* flush buffered output data... */
 	schedule_delayed_work(&priv->sndbuf_work, 5);
 
@@ -808,7 +1013,11 @@ out_path_handled:
  *
  * Locking:	struct hvc_iucv_private->lock
  */
+<<<<<<< HEAD
 static void hvc_iucv_path_severed(struct iucv_path *path, u8 ipuser[16])
+=======
+static void hvc_iucv_path_severed(struct iucv_path *path, u8 *ipuser)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hvc_iucv_private *priv = path->private;
 
@@ -892,6 +1101,7 @@ static void hvc_iucv_msg_complete(struct iucv_path *path,
 	destroy_tty_buffer_list(&list_remove);
 }
 
+<<<<<<< HEAD
 /**
  * hvc_iucv_pm_freeze() - Freeze PM callback
  * @dev:	IUVC HVC terminal device
@@ -921,6 +1131,49 @@ static int hvc_iucv_pm_restore_thaw(struct device *dev)
 {
 	hvc_kick();
 	return 0;
+=======
+static ssize_t hvc_iucv_dev_termid_show(struct device *dev,
+					struct device_attribute *attr,
+					char *buf)
+{
+	struct hvc_iucv_private *priv = dev_get_drvdata(dev);
+	size_t len;
+
+	len = sizeof(priv->srv_name);
+	memcpy(buf, priv->srv_name, len);
+	EBCASC(buf, len);
+	buf[len++] = '\n';
+	return len;
+}
+
+static ssize_t hvc_iucv_dev_state_show(struct device *dev,
+					struct device_attribute *attr,
+					char *buf)
+{
+	struct hvc_iucv_private *priv = dev_get_drvdata(dev);
+	return sprintf(buf, "%u:%u\n", priv->iucv_state, priv->tty_state);
+}
+
+static ssize_t hvc_iucv_dev_peer_show(struct device *dev,
+				      struct device_attribute *attr,
+				      char *buf)
+{
+	struct hvc_iucv_private *priv = dev_get_drvdata(dev);
+	char vmid[9], ipuser[9];
+
+	memset(vmid, 0, sizeof(vmid));
+	memset(ipuser, 0, sizeof(ipuser));
+
+	spin_lock_bh(&priv->lock);
+	if (priv->iucv_state == IUCV_CONNECTED) {
+		memcpy(vmid, priv->info_path, 8);
+		memcpy(ipuser, priv->info_path + 8, 8);
+	}
+	spin_unlock_bh(&priv->lock);
+	EBCASC(ipuser, 8);
+
+	return sprintf(buf, "%s:%s\n", vmid, ipuser);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -931,6 +1184,7 @@ static const struct hv_ops hvc_iucv_ops = {
 	.notifier_add = hvc_iucv_notifier_add,
 	.notifier_del = hvc_iucv_notifier_del,
 	.notifier_hangup = hvc_iucv_notifier_hangup,
+<<<<<<< HEAD
 };
 
 /* Suspend / resume device operations */
@@ -946,6 +1200,33 @@ static struct device_driver hvc_iucv_driver = {
 	.bus  = &iucv_bus,
 	.pm   = &hvc_iucv_pm_ops,
 };
+=======
+	.dtr_rts = hvc_iucv_dtr_rts,
+};
+
+/* IUCV HVC device attributes */
+static DEVICE_ATTR(termid, 0640, hvc_iucv_dev_termid_show, NULL);
+static DEVICE_ATTR(state, 0640, hvc_iucv_dev_state_show, NULL);
+static DEVICE_ATTR(peer, 0640, hvc_iucv_dev_peer_show, NULL);
+static struct attribute *hvc_iucv_dev_attrs[] = {
+	&dev_attr_termid.attr,
+	&dev_attr_state.attr,
+	&dev_attr_peer.attr,
+	NULL,
+};
+static struct attribute_group hvc_iucv_dev_attr_group = {
+	.attrs = hvc_iucv_dev_attrs,
+};
+static const struct attribute_group *hvc_iucv_dev_attr_groups[] = {
+	&hvc_iucv_dev_attr_group,
+	NULL,
+};
+
+static void hvc_iucv_free(struct device *data)
+{
+	kfree(data);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * hvc_iucv_alloc() - Allocates a new struct hvc_iucv_private instance
@@ -982,8 +1263,13 @@ static int __init hvc_iucv_alloc(int id, unsigned int is_console)
 	priv->is_console = is_console;
 
 	/* allocate hvc device */
+<<<<<<< HEAD
 	priv->hvc = hvc_alloc(HVC_IUCV_MAGIC + id, /*		  PAGE_SIZE */
 			      HVC_IUCV_MAGIC + id, &hvc_iucv_ops, 256);
+=======
+	priv->hvc = hvc_alloc(id, /*		 PAGE_SIZE */
+			      id, &hvc_iucv_ops, 256);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(priv->hvc)) {
 		rc = PTR_ERR(priv->hvc);
 		goto out_error_hvc;
@@ -1007,8 +1293,13 @@ static int __init hvc_iucv_alloc(int id, unsigned int is_console)
 	dev_set_drvdata(priv->dev, priv);
 	priv->dev->bus = &iucv_bus;
 	priv->dev->parent = iucv_root;
+<<<<<<< HEAD
 	priv->dev->driver = &hvc_iucv_driver;
 	priv->dev->release = (void (*)(struct device *)) kfree;
+=======
+	priv->dev->groups = hvc_iucv_dev_attr_groups;
+	priv->dev->release = hvc_iucv_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = device_register(priv->dev);
 	if (rc) {
 		put_device(priv->dev);
@@ -1041,6 +1332,10 @@ static void __init hvc_iucv_destroy(struct hvc_iucv_private *priv)
 /**
  * hvc_iucv_parse_filter() - Parse filter for a single z/VM user ID
  * @filter:	String containing a comma-separated list of z/VM user IDs
+<<<<<<< HEAD
+=======
+ * @dest:	Location where to store the parsed z/VM user ID
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static const char *hvc_iucv_parse_filter(const char *filter, char *dest)
 {
@@ -1063,6 +1358,13 @@ static const char *hvc_iucv_parse_filter(const char *filter, char *dest)
 	if (filter[len - 1] == '\n')
 		len--;
 
+<<<<<<< HEAD
+=======
+	/* prohibit filter entries containing the wildcard character only */
+	if (len == 1 && *filter == FILTER_WILDCARD_CHAR)
+		return ERR_PTR(-EINVAL);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len > 8)
 		return ERR_PTR(-EINVAL);
 
@@ -1109,7 +1411,11 @@ static int hvc_iucv_setup_filter(const char *val)
 	if (size > MAX_VMID_FILTER)
 		return -ENOSPC;
 
+<<<<<<< HEAD
 	array = kzalloc(size * 8, GFP_KERNEL);
+=======
+	array = kcalloc(size, 8, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!array)
 		return -ENOMEM;
 
@@ -1203,7 +1509,11 @@ static int param_get_vmidfilter(char *buffer, const struct kernel_param *kp)
 
 #define param_check_vmidfilter(name, p) __param_check(name, p, void)
 
+<<<<<<< HEAD
 static struct kernel_param_ops param_ops_vmidfilter = {
+=======
+static const struct kernel_param_ops param_ops_vmidfilter = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_set_vmidfilter,
 	.get = param_get_vmidfilter,
 };
@@ -1233,11 +1543,14 @@ static int __init hvc_iucv_init(void)
 		goto out_error;
 	}
 
+<<<<<<< HEAD
 	/* register IUCV HVC device driver */
 	rc = driver_register(&hvc_iucv_driver);
 	if (rc)
 		goto out_error;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* parse hvc_iucv_allow string and create z/VM user ID filter list */
 	if (hvc_iucv_filter_string) {
 		rc = hvc_iucv_setup_filter(hvc_iucv_filter_string);
@@ -1281,7 +1594,11 @@ static int __init hvc_iucv_init(void)
 
 	/* register the first terminal device as console
 	 * (must be done before allocating hvc terminal devices) */
+<<<<<<< HEAD
 	rc = hvc_instantiate(HVC_IUCV_MAGIC, IUCV_HVC_CON_IDX, &hvc_iucv_ops);
+=======
+	rc = hvc_instantiate(0, IUCV_HVC_CON_IDX, &hvc_iucv_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		pr_err("Registering HVC terminal device as "
 		       "Linux console failed\n");
@@ -1316,8 +1633,12 @@ out_error_memory:
 	mempool_destroy(hvc_iucv_mempool);
 	kmem_cache_destroy(hvc_iucv_buffer_cache);
 out_error:
+<<<<<<< HEAD
 	if (hvc_iucv_filter)
 		kfree(hvc_iucv_filter);
+=======
+	kfree(hvc_iucv_filter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hvc_iucv_devices = 0; /* ensure that we do not provide any device */
 	return rc;
 }
@@ -1328,7 +1649,13 @@ out_error:
  */
 static	int __init hvc_iucv_config(char *val)
 {
+<<<<<<< HEAD
 	 return strict_strtoul(val, 10, &hvc_iucv_devices);
+=======
+	if (kstrtoul(val, 10, &hvc_iucv_devices))
+		pr_warn("hvc_iucv= invalid parameter value '%s'\n", val);
+	return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 

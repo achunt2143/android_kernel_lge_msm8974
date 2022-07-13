@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8753.h  --  audio driver for WM8753
  *
  * Copyright 2003 Wolfson Microelectronics PLC.
  * Author: Liam Girdwood <lrg@slimlogic.co.uk>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _WM8753_H
@@ -112,7 +119,10 @@
 #define WM8753_VXCLK_DIV_8	(3 << 6)
 #define WM8753_VXCLK_DIV_16	(4 << 6)
 
+<<<<<<< HEAD
 #define WM8753_DAI_HIFI		0
 #define WM8753_DAI_VOICE		1
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

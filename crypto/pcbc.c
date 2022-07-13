@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCBC: Propagating Cipher Block Chaining mode
  *
@@ -6,6 +10,7 @@
  *
  * Derived from cbc.c
  * - Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -15,10 +20,18 @@
  */
 
 #include <crypto/algapi.h>
+=======
+ */
+
+#include <crypto/algapi.h>
+#include <crypto/internal/cipher.h>
+#include <crypto/internal/skcipher.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
 
@@ -48,10 +61,18 @@ static int crypto_pcbc_encrypt_segment(struct blkcipher_desc *desc,
 {
 	void (*fn)(struct crypto_tfm *, u8 *, const u8 *) =
 		crypto_cipher_alg(tfm)->cia_encrypt;
+=======
+
+static int crypto_pcbc_encrypt_segment(struct skcipher_request *req,
+				       struct skcipher_walk *walk,
+				       struct crypto_cipher *tfm)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int bsize = crypto_cipher_blocksize(tfm);
 	unsigned int nbytes = walk->nbytes;
 	u8 *src = walk->src.virt.addr;
 	u8 *dst = walk->dst.virt.addr;
+<<<<<<< HEAD
 	u8 *iv = walk->iv;
 
 	do {
@@ -59,6 +80,14 @@ static int crypto_pcbc_encrypt_segment(struct blkcipher_desc *desc,
 		fn(crypto_cipher_tfm(tfm), dst, iv);
 		memcpy(iv, dst, bsize);
 		crypto_xor(iv, src, bsize);
+=======
+	u8 * const iv = walk->iv;
+
+	do {
+		crypto_xor(iv, src, bsize);
+		crypto_cipher_encrypt_one(tfm, dst, iv);
+		crypto_xor_cpy(iv, dst, src, bsize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		src += bsize;
 		dst += bsize;
@@ -67,6 +96,7 @@ static int crypto_pcbc_encrypt_segment(struct blkcipher_desc *desc,
 	return nbytes;
 }
 
+<<<<<<< HEAD
 static int crypto_pcbc_encrypt_inplace(struct blkcipher_desc *desc,
 				       struct blkcipher_walk *walk,
 				       struct crypto_cipher *tfm)
@@ -78,17 +108,34 @@ static int crypto_pcbc_encrypt_inplace(struct blkcipher_desc *desc,
 	u8 *src = walk->src.virt.addr;
 	u8 *iv = walk->iv;
 	u8 tmpbuf[bsize];
+=======
+static int crypto_pcbc_encrypt_inplace(struct skcipher_request *req,
+				       struct skcipher_walk *walk,
+				       struct crypto_cipher *tfm)
+{
+	int bsize = crypto_cipher_blocksize(tfm);
+	unsigned int nbytes = walk->nbytes;
+	u8 *src = walk->src.virt.addr;
+	u8 * const iv = walk->iv;
+	u8 tmpbuf[MAX_CIPHER_BLOCKSIZE];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		memcpy(tmpbuf, src, bsize);
 		crypto_xor(iv, src, bsize);
+<<<<<<< HEAD
 		fn(crypto_cipher_tfm(tfm), src, iv);
 		memcpy(iv, tmpbuf, bsize);
 		crypto_xor(iv, src, bsize);
+=======
+		crypto_cipher_encrypt_one(tfm, src, iv);
+		crypto_xor_cpy(iv, tmpbuf, src, bsize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		src += bsize;
 	} while ((nbytes -= bsize) >= bsize);
 
+<<<<<<< HEAD
 	memcpy(walk->iv, iv, bsize);
 
 	return nbytes;
@@ -115,21 +162,52 @@ static int crypto_pcbc_encrypt(struct blkcipher_desc *desc,
 			nbytes = crypto_pcbc_encrypt_segment(desc, &walk,
 							     child);
 		err = blkcipher_walk_done(desc, &walk, nbytes);
+=======
+	return nbytes;
+}
+
+static int crypto_pcbc_encrypt(struct skcipher_request *req)
+{
+	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+	struct crypto_cipher *cipher = skcipher_cipher_simple(tfm);
+	struct skcipher_walk walk;
+	unsigned int nbytes;
+	int err;
+
+	err = skcipher_walk_virt(&walk, req, false);
+
+	while (walk.nbytes) {
+		if (walk.src.virt.addr == walk.dst.virt.addr)
+			nbytes = crypto_pcbc_encrypt_inplace(req, &walk,
+							     cipher);
+		else
+			nbytes = crypto_pcbc_encrypt_segment(req, &walk,
+							     cipher);
+		err = skcipher_walk_done(&walk, nbytes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
 }
 
+<<<<<<< HEAD
 static int crypto_pcbc_decrypt_segment(struct blkcipher_desc *desc,
 				       struct blkcipher_walk *walk,
 				       struct crypto_cipher *tfm)
 {
 	void (*fn)(struct crypto_tfm *, u8 *, const u8 *) =
 		crypto_cipher_alg(tfm)->cia_decrypt;
+=======
+static int crypto_pcbc_decrypt_segment(struct skcipher_request *req,
+				       struct skcipher_walk *walk,
+				       struct crypto_cipher *tfm)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int bsize = crypto_cipher_blocksize(tfm);
 	unsigned int nbytes = walk->nbytes;
 	u8 *src = walk->src.virt.addr;
 	u8 *dst = walk->dst.virt.addr;
+<<<<<<< HEAD
 	u8 *iv = walk->iv;
 
 	do {
@@ -137,11 +215,20 @@ static int crypto_pcbc_decrypt_segment(struct blkcipher_desc *desc,
 		crypto_xor(dst, iv, bsize);
 		memcpy(iv, src, bsize);
 		crypto_xor(iv, dst, bsize);
+=======
+	u8 * const iv = walk->iv;
+
+	do {
+		crypto_cipher_decrypt_one(tfm, dst, src);
+		crypto_xor(dst, iv, bsize);
+		crypto_xor_cpy(iv, dst, src, bsize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		src += bsize;
 		dst += bsize;
 	} while ((nbytes -= bsize) >= bsize);
 
+<<<<<<< HEAD
 	memcpy(walk->iv, iv, bsize);
 
 	return nbytes;
@@ -165,10 +252,31 @@ static int crypto_pcbc_decrypt_inplace(struct blkcipher_desc *desc,
 		crypto_xor(src, iv, bsize);
 		memcpy(iv, tmpbuf, bsize);
 		crypto_xor(iv, src, bsize);
+=======
+	return nbytes;
+}
+
+static int crypto_pcbc_decrypt_inplace(struct skcipher_request *req,
+				       struct skcipher_walk *walk,
+				       struct crypto_cipher *tfm)
+{
+	int bsize = crypto_cipher_blocksize(tfm);
+	unsigned int nbytes = walk->nbytes;
+	u8 *src = walk->src.virt.addr;
+	u8 * const iv = walk->iv;
+	u8 tmpbuf[MAX_CIPHER_BLOCKSIZE] __aligned(__alignof__(u32));
+
+	do {
+		memcpy(tmpbuf, src, bsize);
+		crypto_cipher_decrypt_one(tfm, src, src);
+		crypto_xor(src, iv, bsize);
+		crypto_xor_cpy(iv, src, tmpbuf, bsize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		src += bsize;
 	} while ((nbytes -= bsize) >= bsize);
 
+<<<<<<< HEAD
 	memcpy(walk->iv, iv, bsize);
 
 	return nbytes;
@@ -195,11 +303,35 @@ static int crypto_pcbc_decrypt(struct blkcipher_desc *desc,
 			nbytes = crypto_pcbc_decrypt_segment(desc, &walk,
 							     child);
 		err = blkcipher_walk_done(desc, &walk, nbytes);
+=======
+	return nbytes;
+}
+
+static int crypto_pcbc_decrypt(struct skcipher_request *req)
+{
+	struct crypto_skcipher *tfm = crypto_skcipher_reqtfm(req);
+	struct crypto_cipher *cipher = skcipher_cipher_simple(tfm);
+	struct skcipher_walk walk;
+	unsigned int nbytes;
+	int err;
+
+	err = skcipher_walk_virt(&walk, req, false);
+
+	while (walk.nbytes) {
+		if (walk.src.virt.addr == walk.dst.virt.addr)
+			nbytes = crypto_pcbc_decrypt_inplace(req, &walk,
+							     cipher);
+		else
+			nbytes = crypto_pcbc_decrypt_segment(req, &walk,
+							     cipher);
+		err = skcipher_walk_done(&walk, nbytes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
 }
 
+<<<<<<< HEAD
 static int crypto_pcbc_init_tfm(struct crypto_tfm *tfm)
 {
 	struct crypto_instance *inst = (void *)tfm->__crt_alg;
@@ -271,12 +403,35 @@ static void crypto_pcbc_free(struct crypto_instance *inst)
 {
 	crypto_drop_spawn(crypto_instance_ctx(inst));
 	kfree(inst);
+=======
+static int crypto_pcbc_create(struct crypto_template *tmpl, struct rtattr **tb)
+{
+	struct skcipher_instance *inst;
+	int err;
+
+	inst = skcipher_alloc_instance_simple(tmpl, tb);
+	if (IS_ERR(inst))
+		return PTR_ERR(inst);
+
+	inst->alg.encrypt = crypto_pcbc_encrypt;
+	inst->alg.decrypt = crypto_pcbc_decrypt;
+
+	err = skcipher_register_instance(tmpl, inst);
+	if (err)
+		inst->free(inst);
+
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct crypto_template crypto_pcbc_tmpl = {
 	.name = "pcbc",
+<<<<<<< HEAD
 	.alloc = crypto_pcbc_alloc,
 	.free = crypto_pcbc_free,
+=======
+	.create = crypto_pcbc_create,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module = THIS_MODULE,
 };
 
@@ -290,8 +445,18 @@ static void __exit crypto_pcbc_module_exit(void)
 	crypto_unregister_template(&crypto_pcbc_tmpl);
 }
 
+<<<<<<< HEAD
 module_init(crypto_pcbc_module_init);
 module_exit(crypto_pcbc_module_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("PCBC block cipher algorithm");
+=======
+subsys_initcall(crypto_pcbc_module_init);
+module_exit(crypto_pcbc_module_exit);
+
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("PCBC block cipher mode of operation");
+MODULE_ALIAS_CRYPTO("pcbc");
+MODULE_IMPORT_NS(CRYPTO_INTERNAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

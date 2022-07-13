@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1998-2005 Vojtech Pavlik
  */
@@ -6,6 +10,7 @@
  * Logitech ADI joystick family driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +31,8 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -33,7 +40,10 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/gameport.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/jiffies.h>
 
 #define DRIVER_DESC	"Logitech ADI joystick family driver"
@@ -140,7 +150,11 @@ static void adi_read_packet(struct adi_port *port)
 {
 	struct adi *adi = port->adi;
 	struct gameport *gameport = port->gameport;
+<<<<<<< HEAD
 	unsigned char u, v, w, x, z;
+=======
+	unsigned char u, v, w, x;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int t[2], s[2], i;
 	unsigned long flags;
 
@@ -153,7 +167,11 @@ static void adi_read_packet(struct adi_port *port)
 	local_irq_save(flags);
 
 	gameport_trigger(gameport);
+<<<<<<< HEAD
 	v = z = gameport_read(gameport);
+=======
+	v = gameport_read(gameport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		u = v;
@@ -314,7 +332,11 @@ static void adi_close(struct input_dev *dev)
 
 static void adi_init_digital(struct gameport *gameport)
 {
+<<<<<<< HEAD
 	int seq[] = { 4, -2, -3, 10, -6, -11, -7, -9, 11, 0 };
+=======
+	static const int seq[] = { 4, -2, -3, 10, -6, -11, -7, -9, 11, 0 };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; seq[i]; i++) {
@@ -536,8 +558,12 @@ static int adi_connect(struct gameport *gameport, struct gameport_driver *drv)
 		}
 	}
  fail2:	for (i = 0; i < 2; i++)
+<<<<<<< HEAD
 		if (port->adi[i].dev)
 			input_free_device(port->adi[i].dev);
+=======
+		input_free_device(port->adi[i].dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gameport_close(gameport);
  fail1:	gameport_set_drvdata(gameport, NULL);
 	kfree(port);
@@ -557,10 +583,13 @@ static void adi_disconnect(struct gameport *gameport)
 	kfree(port);
 }
 
+<<<<<<< HEAD
 /*
  * The gameport device structure.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct gameport_driver adi_drv = {
 	.driver		= {
 		.name	= "adi",
@@ -570,6 +599,7 @@ static struct gameport_driver adi_drv = {
 	.disconnect	= adi_disconnect,
 };
 
+<<<<<<< HEAD
 static int __init adi_init(void)
 {
 	return gameport_register_driver(&adi_drv);
@@ -582,3 +612,6 @@ static void __exit adi_exit(void)
 
 module_init(adi_init);
 module_exit(adi_exit);
+=======
+module_gameport_driver(adi_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

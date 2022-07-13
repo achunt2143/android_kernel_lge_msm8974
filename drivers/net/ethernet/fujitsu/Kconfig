@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Fujitsu Network device configuration
 #
@@ -5,11 +9,17 @@
 config NET_VENDOR_FUJITSU
 	bool "Fujitsu devices"
 	default y
+<<<<<<< HEAD
 	depends on ISA || PCMCIA || ((ISA || MCA_LEGACY) && EXPERIMENTAL)
 	---help---
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	depends on PCMCIA
+	help
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note that the answer to this question doesn't directly affect the
 	  the questions about Fujitsu cards. If you say Y, you will be asked for
@@ -17,6 +27,7 @@ config NET_VENDOR_FUJITSU
 
 if NET_VENDOR_FUJITSU
 
+<<<<<<< HEAD
 config AT1700
 	tristate "AT1700/1720 support (EXPERIMENTAL)"
 	depends on (ISA || MCA_LEGACY) && EXPERIMENTAL
@@ -29,17 +40,24 @@ config AT1700
 	  To compile this driver as a module, choose M here. The module
 	  will be called at1700.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config PCMCIA_FMVJ18X
 	tristate "Fujitsu FMV-J18x PCMCIA support"
 	depends on PCMCIA
 	select CRC32
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here if you intend to attach a Fujitsu FMV-J18x or compatible
 	  PCMCIA (PC-card) Ethernet card to your computer.
 
 	  To compile this driver as a module, choose M here: the module will be
 	  called fmvj18x_cs.  If unsure, say N.
 
+<<<<<<< HEAD
 config ETH16I
 	tristate "ICL EtherTeam 16i/32 support"
 	depends on ISA
@@ -51,4 +69,6 @@ config ETH16I
 	  To compile this driver as a module, choose M here. The module
 	  will be called eth16i.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # NET_VENDOR_FUJITSU

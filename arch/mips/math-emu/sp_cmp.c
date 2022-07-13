@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IEEE754 floating point arithmetic
  * single precision
  */
 /*
  * MIPS floating point support
  * Copyright (C) 1994-2000 Algorithmics Ltd.
+<<<<<<< HEAD
  *
  * ########################################################################
  *
@@ -28,6 +33,17 @@
 
 int ieee754sp_cmp(ieee754sp x, ieee754sp y, int cmp, int sig)
 {
+=======
+ */
+
+#include "ieee754sp.h"
+
+int ieee754sp_cmp(union ieee754sp x, union ieee754sp y, int cmp, int sig)
+{
+	int vx;
+	int vy;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	COMPXSP;
 	COMPYSP;
 
@@ -35,6 +51,7 @@ int ieee754sp_cmp(ieee754sp x, ieee754sp y, int cmp, int sig)
 	EXPLODEYSP;
 	FLUSHXSP;
 	FLUSHYSP;
+<<<<<<< HEAD
 	CLEARCX;	/* Even clear inexact flag here */
 
 	if (ieee754sp_isnan(x) || ieee754sp_isnan(y)) {
@@ -50,6 +67,18 @@ int ieee754sp_cmp(ieee754sp x, ieee754sp y, int cmp, int sig)
 	} else {
 		int vx = x.bits;
 		int vy = y.bits;
+=======
+	ieee754_clearcx();	/* Even clear inexact flag here */
+
+	if (ieee754_class_nan(xc) || ieee754_class_nan(yc)) {
+		if (sig ||
+		    xc == IEEE754_CLASS_SNAN || yc == IEEE754_CLASS_SNAN)
+			ieee754_setcx(IEEE754_INVALID_OPERATION);
+		return (cmp & IEEE754_CUN) != 0;
+	} else {
+		vx = x.bits;
+		vy = y.bits;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (vx < 0)
 			vx = -vx ^ SP_SIGN_BIT;

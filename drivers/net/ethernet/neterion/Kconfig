@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Exar device configuration
 #
 
+<<<<<<< HEAD
 config NET_VENDOR_EXAR
 	bool "Exar devices"
 	default y
@@ -26,10 +31,38 @@ config S2IO
 
 	  More specific information on configuring the driver is in
 	  <file:Documentation/networking/s2io.txt>.
+=======
+config NET_VENDOR_NETERION
+	bool "Neterion (Exar) devices"
+	default y
+	depends on PCI
+	help
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+
+	  Note that the answer to this question doesn't directly affect the
+	  kernel: saying N will just cause the configurator to skip all
+	  the questions about Neterion/Exar cards. If you say Y, you will be
+	  asked for your specific card in the following questions.
+
+if NET_VENDOR_NETERION
+
+config S2IO
+	tristate "Neterion (Exar) Xframe 10Gb Ethernet Adapter"
+	depends on PCI
+	help
+	  This driver supports Exar Corp's Xframe Series 10Gb Ethernet Adapters.
+	  These were originally released from S2IO, which renamed itself
+	  Neterion.  So, the adapters might be labeled as either one, depending
+	  on its age.
+
+	  More specific information on configuring the driver is in
+	  <file:Documentation/networking/device_drivers/ethernet/neterion/s2io.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here. The module
 	  will be called s2io.
 
+<<<<<<< HEAD
 config VXGE
 	tristate "Exar X3100 Series 10GbE PCIe Server Adapter"
 	depends on PCI && INET
@@ -53,3 +86,6 @@ config VXGE_DEBUG_TRACE_ALL
 	  enabled.
 
 endif # NET_VENDOR_EXAR
+=======
+endif # NET_VENDOR_NETERION
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

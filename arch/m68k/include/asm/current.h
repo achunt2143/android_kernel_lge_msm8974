@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _M68K_CURRENT_H
 #define _M68K_CURRENT_H
 
@@ -23,6 +27,12 @@ static inline struct task_struct *get_current(void)
 
 #define	current	get_current()
 
+<<<<<<< HEAD
 #endif /* CONFNIG_MMU */
+=======
+#endif /* CONFIG_MMU */
+
+register unsigned long current_stack_pointer __asm__("sp");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* !(_M68K_CURRENT_H) */

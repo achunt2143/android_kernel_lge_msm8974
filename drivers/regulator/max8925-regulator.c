@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Regulators driver for Maxim max8925
  *
  * Copyright (C) 2009 Marvell International Ltd.
  *      Haojian Zhuang <haojian.zhuang@marvell.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,6 +24,11 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
 #include <linux/mfd/max8925.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/regulator/of_regulator.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SD1_DVM_VMIN		850000
 #define SD1_DVM_VMAX		1000000
@@ -34,6 +46,7 @@
 
 struct max8925_regulator_info {
 	struct regulator_desc	desc;
+<<<<<<< HEAD
 	struct regulator_dev	*regulator;
 	struct i2c_client	*i2c;
 	struct max8925_chip	*chip;
@@ -82,6 +95,24 @@ static int max8925_set_voltage(struct regulator_dev *rdev,
 }
 
 static int max8925_get_voltage(struct regulator_dev *rdev)
+=======
+	struct i2c_client	*i2c;
+
+	int	vol_reg;
+	int	enable_reg;
+};
+
+static int max8925_set_voltage_sel(struct regulator_dev *rdev,
+				   unsigned int selector)
+{
+	struct max8925_regulator_info *info = rdev_get_drvdata(rdev);
+	unsigned char mask = rdev->desc->n_voltages - 1;
+
+	return max8925_set_bits(info->i2c, info->vol_reg, mask, selector);
+}
+
+static int max8925_get_voltage_sel(struct regulator_dev *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct max8925_regulator_info *info = rdev_get_drvdata(rdev);
 	unsigned char data, mask;
@@ -90,10 +121,17 @@ static int max8925_get_voltage(struct regulator_dev *rdev)
 	ret = max8925_reg_read(info->i2c, info->vol_reg);
 	if (ret < 0)
 		return ret;
+<<<<<<< HEAD
 	mask = ((1 << info->vol_nbits) - 1) << info->vol_shift;
 	data = (ret & mask) >> info->vol_shift;
 
 	return max8925_list_voltage(rdev, data);
+=======
+	mask = rdev->desc->n_voltages - 1;
+	data = ret & mask;
+
+	return data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int max8925_enable(struct regulator_dev *rdev)
@@ -162,9 +200,17 @@ static int max8925_set_dvm_disable(struct regulator_dev *rdev)
 	return max8925_set_bits(info->i2c, info->vol_reg, 1 << SD1_DVM_EN, 0);
 }
 
+<<<<<<< HEAD
 static struct regulator_ops max8925_regulator_sdv_ops = {
 	.set_voltage		= max8925_set_voltage,
 	.get_voltage		= max8925_get_voltage,
+=======
+static const struct regulator_ops max8925_regulator_sdv_ops = {
+	.map_voltage		= regulator_map_voltage_linear,
+	.list_voltage		= regulator_list_voltage_linear,
+	.set_voltage_sel	= max8925_set_voltage_sel,
+	.get_voltage_sel	= max8925_get_voltage_sel,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable			= max8925_enable,
 	.disable		= max8925_disable,
 	.is_enabled		= max8925_is_enabled,
@@ -173,9 +219,17 @@ static struct regulator_ops max8925_regulator_sdv_ops = {
 	.set_suspend_disable	= max8925_set_dvm_disable,
 };
 
+<<<<<<< HEAD
 static struct regulator_ops max8925_regulator_ldo_ops = {
 	.set_voltage		= max8925_set_voltage,
 	.get_voltage		= max8925_get_voltage,
+=======
+static const struct regulator_ops max8925_regulator_ldo_ops = {
+	.map_voltage		= regulator_map_voltage_linear,
+	.list_voltage		= regulator_list_voltage_linear,
+	.set_voltage_sel	= max8925_set_voltage_sel,
+	.get_voltage_sel	= max8925_get_voltage_sel,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable			= max8925_enable,
 	.disable		= max8925_disable,
 	.is_enabled		= max8925_is_enabled,
@@ -185,10 +239,16 @@ static struct regulator_ops max8925_regulator_ldo_ops = {
 {								\
 	.desc	= {						\
 		.name	= "SDV" #_id,				\
+<<<<<<< HEAD
+=======
+		.of_match = of_match_ptr("SDV" #_id),		\
+		.regulators_node = of_match_ptr("regulators"),	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.ops	= &max8925_regulator_sdv_ops,		\
 		.type	= REGULATOR_VOLTAGE,			\
 		.id	= MAX8925_ID_SD##_id,			\
 		.owner	= THIS_MODULE,				\
+<<<<<<< HEAD
 	},							\
 	.min_uV		= min * 1000,				\
 	.max_uV		= max * 1000,				\
@@ -196,6 +256,13 @@ static struct regulator_ops max8925_regulator_ldo_ops = {
 	.vol_reg	= MAX8925_SDV##_id,			\
 	.vol_shift	= 0,					\
 	.vol_nbits	= 6,					\
+=======
+		.n_voltages = 64,				\
+		.min_uV = min * 1000,				\
+		.uV_step = step * 1000,				\
+	},							\
+	.vol_reg	= MAX8925_SDV##_id,			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable_reg	= MAX8925_SDCTL##_id,			\
 }
 
@@ -203,10 +270,16 @@ static struct regulator_ops max8925_regulator_ldo_ops = {
 {								\
 	.desc	= {						\
 		.name	= "LDO" #_id,				\
+<<<<<<< HEAD
+=======
+		.of_match = of_match_ptr("LDO" #_id),		\
+		.regulators_node = of_match_ptr("regulators"),	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.ops	= &max8925_regulator_ldo_ops,		\
 		.type	= REGULATOR_VOLTAGE,			\
 		.id	= MAX8925_ID_LDO##_id,			\
 		.owner	= THIS_MODULE,				\
+<<<<<<< HEAD
 	},							\
 	.min_uV		= min * 1000,				\
 	.max_uV		= max * 1000,				\
@@ -214,6 +287,13 @@ static struct regulator_ops max8925_regulator_ldo_ops = {
 	.vol_reg	= MAX8925_LDOVOUT##_id,			\
 	.vol_shift	= 0,					\
 	.vol_nbits	= 6,					\
+=======
+		.n_voltages = 64,				\
+		.min_uV = min * 1000,				\
+		.uV_step = step * 1000,				\
+	},							\
+	.vol_reg	= MAX8925_LDOVOUT##_id,			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable_reg	= MAX8925_LDOCTL##_id,			\
 }
 
@@ -244,6 +324,7 @@ static struct max8925_regulator_info max8925_regulator_info[] = {
 	MAX8925_LDO(20, 750, 3900, 50),
 };
 
+<<<<<<< HEAD
 static struct max8925_regulator_info * __devinit find_regulator_info(int id)
 {
 	struct max8925_regulator_info *ri;
@@ -274,6 +355,43 @@ static int __devinit max8925_regulator_probe(struct platform_device *pdev)
 
 	rdev = regulator_register(&ri->desc, &pdev->dev,
 				  pdata->regulator[pdev->id], ri, NULL);
+=======
+static int max8925_regulator_probe(struct platform_device *pdev)
+{
+	struct max8925_chip *chip = dev_get_drvdata(pdev->dev.parent);
+	struct regulator_init_data *pdata = dev_get_platdata(&pdev->dev);
+	struct regulator_config config = { };
+	struct max8925_regulator_info *ri;
+	struct resource *res;
+	struct regulator_dev *rdev;
+	int i;
+
+	res = platform_get_resource(pdev, IORESOURCE_REG, 0);
+	if (!res) {
+		dev_err(&pdev->dev, "No REG resource!\n");
+		return -EINVAL;
+	}
+	for (i = 0; i < ARRAY_SIZE(max8925_regulator_info); i++) {
+		ri = &max8925_regulator_info[i];
+		if (ri->vol_reg == res->start)
+			break;
+	}
+
+	if (i == ARRAY_SIZE(max8925_regulator_info)) {
+		dev_err(&pdev->dev, "Failed to find regulator %llu\n",
+			(unsigned long long)res->start);
+		return -EINVAL;
+	}
+	ri->i2c = chip->i2c;
+
+	config.dev = chip->dev;
+	config.driver_data = ri;
+
+	if (pdata)
+		config.init_data = pdata;
+
+	rdev = devm_regulator_register(&pdev->dev, &ri->desc, &config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(rdev)) {
 		dev_err(&pdev->dev, "failed to register regulator %s\n",
 				ri->desc.name);
@@ -284,6 +402,7 @@ static int __devinit max8925_regulator_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit max8925_regulator_remove(struct platform_device *pdev)
 {
 	struct regulator_dev *rdev = platform_get_drvdata(pdev);
@@ -301,6 +420,14 @@ static struct platform_driver max8925_regulator_driver = {
 	},
 	.probe		= max8925_regulator_probe,
 	.remove		= __devexit_p(max8925_regulator_remove),
+=======
+static struct platform_driver max8925_regulator_driver = {
+	.driver		= {
+		.name	= "max8925-regulator",
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+	},
+	.probe		= max8925_regulator_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init max8925_regulator_init(void)
@@ -319,4 +446,7 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Haojian Zhuang <haojian.zhuang@marvell.com>");
 MODULE_DESCRIPTION("Regulator Driver for Maxim 8925 PMIC");
 MODULE_ALIAS("platform:max8925-regulator");
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

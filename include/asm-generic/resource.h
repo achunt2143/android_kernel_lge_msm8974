@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_GENERIC_RESOURCE_H
 #define _ASM_GENERIC_RESOURCE_H
 
@@ -65,6 +66,14 @@
 #endif
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_GENERIC_RESOURCE_H
+#define _ASM_GENERIC_RESOURCE_H
+
+#include <uapi/asm-generic/resource.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * boot-time rlimit defaults for the init task:
@@ -74,7 +83,11 @@
 	[RLIMIT_CPU]		= {  RLIM_INFINITY,  RLIM_INFINITY },	\
 	[RLIMIT_FSIZE]		= {  RLIM_INFINITY,  RLIM_INFINITY },	\
 	[RLIMIT_DATA]		= {  RLIM_INFINITY,  RLIM_INFINITY },	\
+<<<<<<< HEAD
 	[RLIMIT_STACK]		= {       _STK_LIM,   _STK_LIM_MAX },	\
+=======
+	[RLIMIT_STACK]		= {       _STK_LIM,  RLIM_INFINITY },	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[RLIMIT_CORE]		= {              0,  RLIM_INFINITY },	\
 	[RLIMIT_RSS]		= {  RLIM_INFINITY,  RLIM_INFINITY },	\
 	[RLIMIT_NPROC]		= {              0,              0 },	\
@@ -89,6 +102,9 @@
 	[RLIMIT_RTTIME]		= {  RLIM_INFINITY,  RLIM_INFINITY },	\
 }
 
+<<<<<<< HEAD
 #endif	/* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

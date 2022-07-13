@@ -308,6 +308,10 @@ do {									     \
 									     \
   case _FP_CLS_COMBINE(FP_CLS_NORMAL,FP_CLS_ZERO):			     \
     R##_e = X##_e;							     \
+<<<<<<< HEAD
+=======
+	fallthrough;							     \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   case _FP_CLS_COMBINE(FP_CLS_NAN,FP_CLS_NORMAL):			     \
   case _FP_CLS_COMBINE(FP_CLS_NAN,FP_CLS_INF):				     \
   case _FP_CLS_COMBINE(FP_CLS_NAN,FP_CLS_ZERO):				     \
@@ -318,6 +322,10 @@ do {									     \
 									     \
   case _FP_CLS_COMBINE(FP_CLS_ZERO,FP_CLS_NORMAL):			     \
     R##_e = Y##_e;							     \
+<<<<<<< HEAD
+=======
+	fallthrough;							     \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   case _FP_CLS_COMBINE(FP_CLS_NORMAL,FP_CLS_NAN):			     \
   case _FP_CLS_COMBINE(FP_CLS_INF,FP_CLS_NAN):				     \
   case _FP_CLS_COMBINE(FP_CLS_ZERO,FP_CLS_NAN):				     \
@@ -336,7 +344,11 @@ do {									     \
 	FP_SET_EXCEPTION(FP_EX_INVALID | FP_EX_INVALID_ISI);		     \
 	break;								     \
       }									     \
+<<<<<<< HEAD
     /* FALLTHRU */							     \
+=======
+    fallthrough;							     \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 									     \
   case _FP_CLS_COMBINE(FP_CLS_INF,FP_CLS_NORMAL):			     \
   case _FP_CLS_COMBINE(FP_CLS_INF,FP_CLS_ZERO):				     \
@@ -415,6 +427,10 @@ do {							\
   case _FP_CLS_COMBINE(FP_CLS_NAN,FP_CLS_INF):		\
   case _FP_CLS_COMBINE(FP_CLS_NAN,FP_CLS_ZERO):		\
     R##_s = X##_s;					\
+<<<<<<< HEAD
+=======
+	  fallthrough;					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							\
   case _FP_CLS_COMBINE(FP_CLS_INF,FP_CLS_INF):		\
   case _FP_CLS_COMBINE(FP_CLS_INF,FP_CLS_NORMAL):	\
@@ -428,6 +444,10 @@ do {							\
   case _FP_CLS_COMBINE(FP_CLS_INF,FP_CLS_NAN):		\
   case _FP_CLS_COMBINE(FP_CLS_ZERO,FP_CLS_NAN):		\
     R##_s = Y##_s;					\
+<<<<<<< HEAD
+=======
+	  fallthrough;					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							\
   case _FP_CLS_COMBINE(FP_CLS_NORMAL,FP_CLS_INF):	\
   case _FP_CLS_COMBINE(FP_CLS_NORMAL,FP_CLS_ZERO):	\
@@ -493,6 +513,10 @@ do {							\
 							\
   case _FP_CLS_COMBINE(FP_CLS_NORMAL,FP_CLS_ZERO):	\
     FP_SET_EXCEPTION(FP_EX_DIVZERO);			\
+<<<<<<< HEAD
+=======
+	fallthrough;					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   case _FP_CLS_COMBINE(FP_CLS_INF,FP_CLS_ZERO):		\
   case _FP_CLS_COMBINE(FP_CLS_INF,FP_CLS_NORMAL):	\
     R##_c = FP_CLS_INF;					\
@@ -657,12 +681,20 @@ do {									\
 	if (X##_e < 0)								\
 	  {									\
 	    FP_SET_EXCEPTION(FP_EX_INEXACT);					\
+<<<<<<< HEAD
+=======
+	    fallthrough;							\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  case FP_CLS_ZERO:							\
 	    r = 0;								\
 	  }									\
 	else if (X##_e >= rsize - (rsigned > 0 || X##_s)			\
 		 || (!rsigned && X##_s))					\
 	  {	/* overflow */							\
+<<<<<<< HEAD
+=======
+	    fallthrough;							\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  case FP_CLS_NAN:                                                      \
 	  case FP_CLS_INF:							\
 	    if (rsigned == 2)							\
@@ -685,7 +717,11 @@ do {									\
 	    else								\
 	      {									\
 		r = 0;								\
+<<<<<<< HEAD
 		if (X##_s)							\
+=======
+		if (!X##_s)							\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  r = ~r;							\
 	      }									\
 	    FP_SET_EXCEPTION(FP_EX_INVALID);					\
@@ -743,12 +779,24 @@ do {									\
 	  }									\
 	else									\
 	  {									\
+<<<<<<< HEAD
+=======
+	    int _lz0, _lz1;							\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    if (X##_e <= -_FP_WORKBITS - 1)					\
 	      _FP_FRAC_SET_##wc(X, _FP_MINFRAC_##wc);				\
 	    else								\
 	      _FP_FRAC_SRS_##wc(X, _FP_FRACBITS_##fs - 1 - X##_e,		\
 				_FP_WFRACBITS_##fs);				\
+<<<<<<< HEAD
 	    _FP_ROUND(wc, X);							\
+=======
+	    _FP_FRAC_CLZ_##wc(_lz0, X);						\
+	    _FP_ROUND(wc, X);							\
+	    _FP_FRAC_CLZ_##wc(_lz1, X);						\
+	    if (_lz1 < _lz0)							\
+	      X##_e++; /* For overflow detection.  */				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    _FP_FRAC_SRL_##wc(X, _FP_WORKBITS);					\
 	    _FP_FRAC_ASSEMBLE_##wc(r, X, rsize);				\
 	  }									\
@@ -757,12 +805,20 @@ do {									\
 	if (X##_e >= rsize - (rsigned > 0 || X##_s)				\
 	    || (!rsigned && X##_s))						\
 	  {	/* overflow */							\
+<<<<<<< HEAD
+=======
+	    fallthrough;							\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  case FP_CLS_NAN:                                                      \
 	  case FP_CLS_INF:							\
 	    if (!rsigned)							\
 	      {									\
 		r = 0;								\
+<<<<<<< HEAD
 		if (X##_s)							\
+=======
+		if (!X##_s)							\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  r = ~r;							\
 	      }									\
 	    else if (rsigned != 2)						\
@@ -790,11 +846,20 @@ do {									\
 	  ur_ = (unsigned rtype) -r;					\
 	else								\
 	  ur_ = (unsigned rtype) r;					\
+<<<<<<< HEAD
 	if (rsize <= _FP_W_TYPE_SIZE)					\
 	  __FP_CLZ(X##_e, ur_);						\
 	else								\
 	  __FP_CLZ_2(X##_e, (_FP_W_TYPE)(ur_ >> _FP_W_TYPE_SIZE), 	\
 		     (_FP_W_TYPE)ur_);					\
+=======
+	(void) (((rsize) <= _FP_W_TYPE_SIZE)				\
+		? ({ __FP_CLZ(X##_e, ur_); })				\
+		: ({							\
+		     __FP_CLZ_2(X##_e, (_FP_W_TYPE)(ur_ >> _FP_W_TYPE_SIZE),  \
+							    (_FP_W_TYPE)ur_); \
+		  }));							\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rsize < _FP_W_TYPE_SIZE)					\
 		X##_e -= (_FP_W_TYPE_SIZE - rsize);			\
 	X##_e = rsize - X##_e - 1;					\

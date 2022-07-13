@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright(c) 2007 - 2009 Intel Corporation. All rights reserved.
  *
@@ -17,6 +18,11 @@
  *
  * The full GNU General Public License is included in this distribution in the
  * file called COPYING.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright(c) 2007 - 2009 Intel Corporation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -270,7 +276,11 @@ EXPORT_SYMBOL_GPL(dca_remove_requester);
  * @dev - the device that wants dca service
  * @cpu - the cpuid as returned by get_cpu()
  */
+<<<<<<< HEAD
 u8 dca_common_get_tag(struct device *dev, int cpu)
+=======
+static u8 dca_common_get_tag(struct device *dev, int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dca_provider *dca;
 	u8 tag;
@@ -310,9 +320,13 @@ EXPORT_SYMBOL_GPL(dca3_get_tag);
  */
 u8 dca_get_tag(int cpu)
 {
+<<<<<<< HEAD
 	struct device *dev = NULL;
 
 	return dca_common_get_tag(dev, cpu);
+=======
+	return dca_common_get_tag(NULL, cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(dca_get_tag);
 
@@ -321,7 +335,12 @@ EXPORT_SYMBOL_GPL(dca_get_tag);
  * @ops - pointer to struct of dca operation function pointers
  * @priv_size - size of extra mem to be added for provider's needs
  */
+<<<<<<< HEAD
 struct dca_provider *alloc_dca_provider(struct dca_ops *ops, int priv_size)
+=======
+struct dca_provider *alloc_dca_provider(const struct dca_ops *ops,
+					int priv_size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dca_provider *dca;
 	int alloc_size;

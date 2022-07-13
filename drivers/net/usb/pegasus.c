@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Copyright (c) 1999-2005 Petko Manolov (petkan@users.sourceforge.net)
  *
@@ -26,6 +27,12 @@
  *		v0.5.1	ethtool support added
  *		v0.5.5	rx socket buffers are in a pool and the their allocation
  *			is out of the interrupt routine.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  Copyright (c) 1999-2021 Petko Manolov (petkan@nucleusys.com)
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/sched.h>
@@ -39,14 +46,22 @@
 #include <linux/usb.h>
 #include <linux/module.h>
 #include <asm/byteorder.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "pegasus.h"
 
 /*
  * Version Information
  */
+<<<<<<< HEAD
 #define DRIVER_VERSION "v0.6.14 (2006/09/27)"
 #define DRIVER_AUTHOR "Petko Manolov <petkan@users.sourceforge.net>"
+=======
+#define DRIVER_AUTHOR "Petko Manolov <petkan@nucleusys.com>"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_DESC "Pegasus/Pegasus II USB Ethernet driver"
 
 static const char driver_name[] = "pegasus";
@@ -54,6 +69,10 @@ static const char driver_name[] = "pegasus";
 #undef	PEGASUS_WRITE_EEPROM
 #define	BMSR_MEDIA	(BMSR_10HALF | BMSR_10FULL | BMSR_100HALF | \
 			BMSR_100FULL | BMSR_ANEGCAPABLE)
+<<<<<<< HEAD
+=======
+#define CARRIER_CHECK_DELAY (2 * HZ)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool loopback;
 static bool mii_mode;
@@ -108,6 +127,7 @@ MODULE_PARM_DESC(msg_level, "Override default message level");
 MODULE_DEVICE_TABLE(usb, pegasus_ids);
 static const struct net_device_ops pegasus_netdev_ops;
 
+<<<<<<< HEAD
 static int update_eth_regs_async(pegasus_t *);
 /* Aargh!!! I _really_ hate such tweaks */
 static void ctrl_callback(struct urb *urb)
@@ -244,10 +264,43 @@ static int set_registers(pegasus_t *pegasus, __u16 indx, __u16 size,
 out:
 	remove_wait_queue(&pegasus->ctrl_wait, &wait);
 	kfree(buffer);
+=======
+/*****/
+
+static void async_ctrl_callback(struct urb *urb)
+{
+	struct usb_ctrlrequest *req = (struct usb_ctrlrequest *)urb->context;
+	int status = urb->status;
+
+	if (status < 0)
+		dev_dbg(&urb->dev->dev, "%s failed with %d", __func__, status);
+	kfree(req);
+	usb_free_urb(urb);
+}
+
+static int get_registers(pegasus_t *pegasus, __u16 indx, __u16 size, void *data)
+{
+	return usb_control_msg_recv(pegasus->usb, 0, PEGASUS_REQ_GET_REGS,
+				   PEGASUS_REQT_READ, 0, indx, data, size,
+				   1000, GFP_NOIO);
+}
+
+static int set_registers(pegasus_t *pegasus, __u16 indx, __u16 size,
+			 const void *data)
+{
+	int ret;
+
+	ret = usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REGS,
+				    PEGASUS_REQT_WRITE, 0, indx, data, size,
+				    1000, GFP_NOIO);
+	if (ret < 0)
+		netif_dbg(pegasus, drv, pegasus->net, "%s failed with %d\n", __func__, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int set_register(pegasus_t *pegasus, __u16 indx, __u8 data)
 {
 	int ret;
@@ -295,12 +348,30 @@ static int set_register(pegasus_t *pegasus, __u16 indx, __u8 data)
 out:
 	remove_wait_queue(&pegasus->ctrl_wait, &wait);
 	kfree(tmp);
+=======
+/*
+ * There is only one way to write to a single ADM8511 register and this is via
+ * specific control request.  'data' is ignored by the device, but it is here to
+ * not break the API.
+ */
+static int set_register(pegasus_t *pegasus, __u16 indx, __u8 data)
+{
+	void *buf = &data;
+	int ret;
+
+	ret = usb_control_msg_send(pegasus->usb, 0, PEGASUS_REQ_SET_REG,
+				    PEGASUS_REQT_WRITE, data, indx, buf, 1,
+				    1000, GFP_NOIO);
+	if (ret < 0)
+		netif_dbg(pegasus, drv, pegasus->net, "%s failed with %d\n", __func__, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 static int update_eth_regs_async(pegasus_t *pegasus)
 {
+<<<<<<< HEAD
 	int ret;
 
 	pegasus->dr.bRequestType = PEGASUS_REQT_WRITE;
@@ -339,10 +410,62 @@ static int read_mii_word(pegasus_t *pegasus, __u8 phy, __u8 indx, __u16 *regd)
 	for (i = 0; i < REG_TIMEOUT; i++) {
 		ret = get_registers(pegasus, PhyCtrl, 1, data);
 		if (ret == -ESHUTDOWN)
+=======
+	int ret = -ENOMEM;
+	struct urb *async_urb;
+	struct usb_ctrlrequest *req;
+
+	req = kmalloc(sizeof(struct usb_ctrlrequest), GFP_ATOMIC);
+	if (req == NULL)
+		return ret;
+
+	async_urb = usb_alloc_urb(0, GFP_ATOMIC);
+	if (async_urb == NULL) {
+		kfree(req);
+		return ret;
+	}
+	req->bRequestType = PEGASUS_REQT_WRITE;
+	req->bRequest = PEGASUS_REQ_SET_REGS;
+	req->wValue = cpu_to_le16(0);
+	req->wIndex = cpu_to_le16(EthCtrl0);
+	req->wLength = cpu_to_le16(3);
+
+	usb_fill_control_urb(async_urb, pegasus->usb,
+			     usb_sndctrlpipe(pegasus->usb, 0), (void *)req,
+			     pegasus->eth_regs, 3, async_ctrl_callback, req);
+
+	ret = usb_submit_urb(async_urb, GFP_ATOMIC);
+	if (ret) {
+		if (ret == -ENODEV)
+			netif_device_detach(pegasus->net);
+		netif_err(pegasus, drv, pegasus->net,
+			  "%s returned %d\n", __func__, ret);
+	}
+	return ret;
+}
+
+static int __mii_op(pegasus_t *p, __u8 phy, __u8 indx, __u16 *regd, __u8 cmd)
+{
+	int i, ret;
+	__le16 regdi;
+	__u8 data[4] = { phy, 0, 0, indx };
+
+	if (cmd & PHY_WRITE) {
+		__le16 *t = (__le16 *) & data[1];
+		*t = cpu_to_le16(*regd);
+	}
+	set_register(p, PhyCtrl, 0);
+	set_registers(p, PhyAddr, sizeof(data), data);
+	set_register(p, PhyCtrl, (indx | cmd));
+	for (i = 0; i < REG_TIMEOUT; i++) {
+		ret = get_registers(p, PhyCtrl, 1, data);
+		if (ret < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fail;
 		if (data[0] & PHY_DONE)
 			break;
 	}
+<<<<<<< HEAD
 
 	if (i >= REG_TIMEOUT)
 		goto fail;
@@ -400,14 +523,69 @@ static void mdio_write(struct net_device *dev, int phy_id, int loc, int val)
 	pegasus_t *pegasus = netdev_priv(dev);
 
 	write_mii_word(pegasus, phy_id, loc, val);
+=======
+	if (i >= REG_TIMEOUT) {
+		ret = -ETIMEDOUT;
+		goto fail;
+	}
+	if (cmd & PHY_READ) {
+		ret = get_registers(p, PhyData, 2, &regdi);
+		if (ret < 0)
+			goto fail;
+		*regd = le16_to_cpu(regdi);
+	}
+	return 0;
+fail:
+	netif_dbg(p, drv, p->net, "%s failed\n", __func__);
+	return ret;
+}
+
+/* Returns non-negative int on success, error on failure */
+static int read_mii_word(pegasus_t *pegasus, __u8 phy, __u8 indx, __u16 *regd)
+{
+	return __mii_op(pegasus, phy, indx, regd, PHY_READ);
+}
+
+/* Returns zero on success, error on failure */
+static int write_mii_word(pegasus_t *pegasus, __u8 phy, __u8 indx, __u16 *regd)
+{
+	return __mii_op(pegasus, phy, indx, regd, PHY_WRITE);
+}
+
+static int mdio_read(struct net_device *dev, int phy_id, int loc)
+{
+	pegasus_t *pegasus = netdev_priv(dev);
+	int ret;
+	u16 res;
+
+	ret = read_mii_word(pegasus, phy_id, loc, &res);
+	if (ret < 0)
+		return ret;
+
+	return (int)res;
+}
+
+static void mdio_write(struct net_device *dev, int phy_id, int loc, int val)
+{
+	pegasus_t *pegasus = netdev_priv(dev);
+	u16 data = val;
+
+	write_mii_word(pegasus, phy_id, loc, &data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int read_eprom_word(pegasus_t *pegasus, __u8 index, __u16 *retdata)
 {
+<<<<<<< HEAD
 	int i;
 	__u8 tmp;
 	__le16 retdatai;
 	int ret;
+=======
+	int ret, i;
+	__le16 retdatai;
+	__u8 tmp = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_register(pegasus, EpromCtrl, 0);
 	set_register(pegasus, EpromOffset, index);
@@ -415,6 +593,7 @@ static int read_eprom_word(pegasus_t *pegasus, __u8 index, __u16 *retdata)
 
 	for (i = 0; i < REG_TIMEOUT; i++) {
 		ret = get_registers(pegasus, EpromCtrl, 1, &tmp);
+<<<<<<< HEAD
 		if (tmp & EPROM_DONE)
 			break;
 		if (ret == -ESHUTDOWN)
@@ -424,19 +603,42 @@ static int read_eprom_word(pegasus_t *pegasus, __u8 index, __u16 *retdata)
 		goto fail;
 
 	ret = get_registers(pegasus, EpromData, 2, &retdatai);
+=======
+		if (ret < 0)
+			goto fail;
+		if (tmp & EPROM_DONE)
+			break;
+	}
+	if (i >= REG_TIMEOUT) {
+		ret = -ETIMEDOUT;
+		goto fail;
+	}
+
+	ret = get_registers(pegasus, EpromData, 2, &retdatai);
+	if (ret < 0)
+		goto fail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*retdata = le16_to_cpu(retdatai);
 	return ret;
 
 fail:
+<<<<<<< HEAD
 	netif_warn(pegasus, drv, pegasus->net, "%s failed\n", __func__);
 	return -ETIMEDOUT;
+=======
+	netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef	PEGASUS_WRITE_EEPROM
 static inline void enable_eprom_write(pegasus_t *pegasus)
 {
 	__u8 tmp;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	get_registers(pegasus, EthCtrl2, 1, &tmp);
 	set_register(pegasus, EthCtrl2, tmp | EPROM_WR_ENABLE);
@@ -445,7 +647,10 @@ static inline void enable_eprom_write(pegasus_t *pegasus)
 static inline void disable_eprom_write(pegasus_t *pegasus)
 {
 	__u8 tmp;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	get_registers(pegasus, EthCtrl2, 1, &tmp);
 	set_register(pegasus, EpromCtrl, 0);
@@ -479,6 +684,7 @@ static int write_eprom_word(pegasus_t *pegasus, __u8 index, __u16 data)
 	return ret;
 
 fail:
+<<<<<<< HEAD
 	netif_warn(pegasus, drv, pegasus->net, "%s failed\n", __func__);
 	return -ETIMEDOUT;
 }
@@ -493,10 +699,31 @@ static inline void get_node_id(pegasus_t *pegasus, __u8 *id)
 		read_eprom_word(pegasus, i, &w16);
 		((__le16 *) id)[i] = cpu_to_le16(w16);
 	}
+=======
+	netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
+	return -ETIMEDOUT;
+}
+#endif	/* PEGASUS_WRITE_EEPROM */
+
+static inline int get_node_id(pegasus_t *pegasus, u8 *id)
+{
+	int i, ret;
+	u16 w16;
+
+	for (i = 0; i < 3; i++) {
+		ret = read_eprom_word(pegasus, i, &w16);
+		if (ret < 0)
+			return ret;
+		((__le16 *) id)[i] = cpu_to_le16(w16);
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void set_ethernet_addr(pegasus_t *pegasus)
 {
+<<<<<<< HEAD
 	__u8 node_id[6];
 
 	if (pegasus->features & PEGASUS_II) {
@@ -506,16 +733,53 @@ static void set_ethernet_addr(pegasus_t *pegasus)
 		set_registers(pegasus, EthID, sizeof(node_id), node_id);
 	}
 	memcpy(pegasus->net->dev_addr, node_id, sizeof(node_id));
+=======
+	int ret;
+	u8 node_id[6];
+
+	if (pegasus->features & PEGASUS_II) {
+		ret = get_registers(pegasus, 0x10, sizeof(node_id), node_id);
+		if (ret < 0)
+			goto err;
+	} else {
+		ret = get_node_id(pegasus, node_id);
+		if (ret < 0)
+			goto err;
+		ret = set_registers(pegasus, EthID, sizeof(node_id), node_id);
+		if (ret < 0)
+			goto err;
+	}
+
+	eth_hw_addr_set(pegasus->net, node_id);
+
+	return;
+err:
+	eth_hw_addr_random(pegasus->net);
+	netif_dbg(pegasus, drv, pegasus->net, "software assigned MAC address.\n");
+
+	return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int reset_mac(pegasus_t *pegasus)
 {
+<<<<<<< HEAD
 	__u8 data = 0x8;
 	int i;
 
 	set_register(pegasus, EthCtrl1, data);
 	for (i = 0; i < REG_TIMEOUT; i++) {
 		get_registers(pegasus, EthCtrl1, 1, &data);
+=======
+	int ret, i;
+	__u8 data = 0x8;
+
+	set_register(pegasus, EthCtrl1, data);
+	for (i = 0; i < REG_TIMEOUT; i++) {
+		ret = get_registers(pegasus, EthCtrl1, 1, &data);
+		if (ret < 0)
+			goto fail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (~data & 0x08) {
 			if (loopback)
 				break;
@@ -538,15 +802,30 @@ static inline int reset_mac(pegasus_t *pegasus)
 	}
 	if (usb_dev_id[pegasus->dev_index].vendor == VENDOR_ELCON) {
 		__u16 auxmode;
+<<<<<<< HEAD
 		read_mii_word(pegasus, 3, 0x1b, &auxmode);
 		write_mii_word(pegasus, 3, 0x1b, auxmode | 4);
 	}
 
 	return 0;
+=======
+		ret = read_mii_word(pegasus, 3, 0x1b, &auxmode);
+		if (ret < 0)
+			goto fail;
+		auxmode |= 4;
+		write_mii_word(pegasus, 3, 0x1b, &auxmode);
+	}
+
+	return 0;
+fail:
+	netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int enable_net_traffic(struct net_device *dev, struct usb_device *usb)
 {
+<<<<<<< HEAD
 	__u16 linkpart;
 	__u8 data[4];
 	pegasus_t *pegasus = netdev_priv(dev);
@@ -554,6 +833,17 @@ static int enable_net_traffic(struct net_device *dev, struct usb_device *usb)
 
 	read_mii_word(pegasus, pegasus->phy, MII_LPA, &linkpart);
 	data[0] = 0xc9;
+=======
+	pegasus_t *pegasus = netdev_priv(dev);
+	int ret;
+	__u16 linkpart;
+	__u8 data[4];
+
+	ret = read_mii_word(pegasus, pegasus->phy, MII_LPA, &linkpart);
+	if (ret < 0)
+		goto fail;
+	data[0] = 0xc8; /* TX & RX enable, append status, no CRC */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data[1] = 0;
 	if (linkpart & (ADVERTISE_100FULL | ADVERTISE_10FULL))
 		data[1] |= 0x20;	/* set full duplex */
@@ -570,6 +860,7 @@ static int enable_net_traffic(struct net_device *dev, struct usb_device *usb)
 	    usb_dev_id[pegasus->dev_index].vendor == VENDOR_LINKSYS2 ||
 	    usb_dev_id[pegasus->dev_index].vendor == VENDOR_DLINK) {
 		u16 auxmode;
+<<<<<<< HEAD
 		read_mii_word(pegasus, 0, 0x1b, &auxmode);
 		write_mii_word(pegasus, 0, 0x1b, auxmode | 4);
 	}
@@ -620,15 +911,34 @@ static inline struct sk_buff *pull_skb(pegasus_t * pegasus)
 		}
 	}
 	return NULL;
+=======
+		ret = read_mii_word(pegasus, 0, 0x1b, &auxmode);
+		if (ret < 0)
+			goto fail;
+		auxmode |= 4;
+		write_mii_word(pegasus, 0, 0x1b, &auxmode);
+	}
+
+	return ret;
+fail:
+	netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void read_bulk_callback(struct urb *urb)
 {
 	pegasus_t *pegasus = urb->context;
 	struct net_device *net;
+<<<<<<< HEAD
 	int rx_status, count = urb->actual_length;
 	int status = urb->status;
 	u8 *buf = urb->transfer_buffer;
+=======
+	u8 *buf = urb->transfer_buffer;
+	int rx_status, count = urb->actual_length;
+	int status = urb->status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u16 pkt_len;
 
 	if (!pegasus)
@@ -659,6 +969,7 @@ static void read_bulk_callback(struct urb *urb)
 		goto goon;
 	}
 
+<<<<<<< HEAD
 	if (!count || count < 4)
 		goto goon;
 
@@ -673,6 +984,22 @@ static void read_bulk_callback(struct urb *urb)
 			pegasus->stats.rx_crc_errors++;
 		if (rx_status & 0x10)	/* extra bits	*/
 			pegasus->stats.rx_frame_errors++;
+=======
+	if (count < 4)
+		goto goon;
+
+	rx_status = buf[count - 2];
+	if (rx_status & 0x1c) {
+		netif_dbg(pegasus, rx_err, net,
+			  "RX packet error %x\n", rx_status);
+		net->stats.rx_errors++;
+		if (rx_status & 0x04)	/* runt	*/
+			net->stats.rx_length_errors++;
+		if (rx_status & 0x08)
+			net->stats.rx_crc_errors++;
+		if (rx_status & 0x10)	/* extra bits	*/
+			net->stats.rx_frame_errors++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto goon;
 	}
 	if (pegasus->chip == 0x8513) {
@@ -683,7 +1010,11 @@ static void read_bulk_callback(struct urb *urb)
 		pkt_len = buf[count - 3] << 8;
 		pkt_len += buf[count - 4];
 		pkt_len &= 0xfff;
+<<<<<<< HEAD
 		pkt_len -= 8;
+=======
+		pkt_len -= 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -700,22 +1031,36 @@ static void read_bulk_callback(struct urb *urb)
 	skb_put(pegasus->rx_skb, pkt_len);
 	pegasus->rx_skb->protocol = eth_type_trans(pegasus->rx_skb, net);
 	netif_rx(pegasus->rx_skb);
+<<<<<<< HEAD
 	pegasus->stats.rx_packets++;
 	pegasus->stats.rx_bytes += pkt_len;
+=======
+	net->stats.rx_packets++;
+	net->stats.rx_bytes += pkt_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pegasus->flags & PEGASUS_UNPLUG)
 		return;
 
+<<<<<<< HEAD
 	spin_lock(&pegasus->rx_pool_lock);
 	pegasus->rx_skb = pull_skb(pegasus);
 	spin_unlock(&pegasus->rx_pool_lock);
+=======
+	pegasus->rx_skb = __netdev_alloc_skb_ip_align(pegasus->net, PEGASUS_MTU,
+						      GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pegasus->rx_skb == NULL)
 		goto tl_sched;
 goon:
 	usb_fill_bulk_urb(pegasus->rx_urb, pegasus->usb,
 			  usb_rcvbulkpipe(pegasus->usb, 1),
+<<<<<<< HEAD
 			  pegasus->rx_skb->data, PEGASUS_MTU + 8,
+=======
+			  pegasus->rx_skb->data, PEGASUS_MTU,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  read_bulk_callback, pegasus);
 	rx_status = usb_submit_urb(pegasus->rx_urb, GFP_ATOMIC);
 	if (rx_status == -ENODEV)
@@ -733,6 +1078,7 @@ tl_sched:
 	tasklet_schedule(&pegasus->rx_tl);
 }
 
+<<<<<<< HEAD
 static void rx_fixup(unsigned long data)
 {
 	pegasus_t *pegasus;
@@ -745,10 +1091,21 @@ static void rx_fixup(unsigned long data)
 
 	spin_lock_irqsave(&pegasus->rx_pool_lock, flags);
 	fill_skb_pool(pegasus);
+=======
+static void rx_fixup(struct tasklet_struct *t)
+{
+	pegasus_t *pegasus = from_tasklet(pegasus, t, rx_tl);
+	int status;
+
+	if (pegasus->flags & PEGASUS_UNPLUG)
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pegasus->flags & PEGASUS_RX_URB_FAIL)
 		if (pegasus->rx_skb)
 			goto try_again;
 	if (pegasus->rx_skb == NULL)
+<<<<<<< HEAD
 		pegasus->rx_skb = pull_skb(pegasus);
 	if (pegasus->rx_skb == NULL) {
 		netif_warn(pegasus, rx_err, pegasus->net, "low on memory\n");
@@ -758,6 +1115,19 @@ static void rx_fixup(unsigned long data)
 	usb_fill_bulk_urb(pegasus->rx_urb, pegasus->usb,
 			  usb_rcvbulkpipe(pegasus->usb, 1),
 			  pegasus->rx_skb->data, PEGASUS_MTU + 8,
+=======
+		pegasus->rx_skb = __netdev_alloc_skb_ip_align(pegasus->net,
+							      PEGASUS_MTU,
+							      GFP_ATOMIC);
+	if (pegasus->rx_skb == NULL) {
+		netif_warn(pegasus, rx_err, pegasus->net, "low on memory\n");
+		tasklet_schedule(&pegasus->rx_tl);
+		return;
+	}
+	usb_fill_bulk_urb(pegasus->rx_urb, pegasus->usb,
+			  usb_rcvbulkpipe(pegasus->usb, 1),
+			  pegasus->rx_skb->data, PEGASUS_MTU,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  read_bulk_callback, pegasus);
 try_again:
 	status = usb_submit_urb(pegasus->rx_urb, GFP_ATOMIC);
@@ -769,8 +1139,11 @@ try_again:
 	} else {
 		pegasus->flags &= ~PEGASUS_RX_URB_FAIL;
 	}
+<<<<<<< HEAD
 done:
 	spin_unlock_irqrestore(&pegasus->rx_pool_lock, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void write_bulk_callback(struct urb *urb)
@@ -800,12 +1173,20 @@ static void write_bulk_callback(struct urb *urb)
 		return;
 	default:
 		netif_info(pegasus, tx_err, net, "TX status %d\n", status);
+<<<<<<< HEAD
 		/* FALL THROUGH */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0:
 		break;
 	}
 
+<<<<<<< HEAD
 	net->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(net); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue(net);
 }
 
@@ -839,6 +1220,7 @@ static void intr_callback(struct urb *urb)
 		/* byte 0 == tx_status1, reg 2B */
 		if (d[0] & (TX_UNDERRUN|EXCESSIVE_COL
 					|LATE_COL|JABBER_TIMEOUT)) {
+<<<<<<< HEAD
 			pegasus->stats.tx_errors++;
 			if (d[0] & TX_UNDERRUN)
 				pegasus->stats.tx_fifo_errors++;
@@ -846,6 +1228,15 @@ static void intr_callback(struct urb *urb)
 				pegasus->stats.tx_aborted_errors++;
 			if (d[0] & LATE_COL)
 				pegasus->stats.tx_window_errors++;
+=======
+			net->stats.tx_errors++;
+			if (d[0] & TX_UNDERRUN)
+				net->stats.tx_fifo_errors++;
+			if (d[0] & (EXCESSIVE_COL | JABBER_TIMEOUT))
+				net->stats.tx_aborted_errors++;
+			if (d[0] & LATE_COL)
+				net->stats.tx_window_errors++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* d[5].LINK_STATUS lies on some adapters.
@@ -854,7 +1245,11 @@ static void intr_callback(struct urb *urb)
 		 */
 
 		/* bytes 3-4 == rx_lostpkt, reg 2E/2F */
+<<<<<<< HEAD
 		pegasus->stats.rx_missed_errors += ((d[3] & 0x7f) << 8) | d[4];
+=======
+		net->stats.rx_missed_errors += ((d[3] & 0x7f) << 8) | d[4];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	res = usb_submit_urb(urb, GFP_ATOMIC);
@@ -865,12 +1260,20 @@ static void intr_callback(struct urb *urb)
 			  "can't resubmit interrupt urb, %d\n", res);
 }
 
+<<<<<<< HEAD
 static void pegasus_tx_timeout(struct net_device *net)
+=======
+static void pegasus_tx_timeout(struct net_device *net, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pegasus_t *pegasus = netdev_priv(net);
 	netif_warn(pegasus, timer, net, "tx timeout\n");
 	usb_unlink_urb(pegasus->tx_urb);
+<<<<<<< HEAD
 	pegasus->stats.tx_errors++;
+=======
+	net->stats.tx_errors++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static netdev_tx_t pegasus_start_xmit(struct sk_buff *skb,
@@ -900,23 +1303,35 @@ static netdev_tx_t pegasus_start_xmit(struct sk_buff *skb,
 			netif_device_detach(pegasus->net);
 			break;
 		default:
+<<<<<<< HEAD
 			pegasus->stats.tx_errors++;
 			netif_start_queue(net);
 		}
 	} else {
 		pegasus->stats.tx_packets++;
 		pegasus->stats.tx_bytes += skb->len;
+=======
+			net->stats.tx_errors++;
+			netif_start_queue(net);
+		}
+	} else {
+		net->stats.tx_packets++;
+		net->stats.tx_bytes += skb->len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	dev_kfree_skb(skb);
 
 	return NETDEV_TX_OK;
 }
 
+<<<<<<< HEAD
 static struct net_device_stats *pegasus_netdev_stats(struct net_device *dev)
 {
 	return &((pegasus_t *) netdev_priv(dev))->stats;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void disable_net_traffic(pegasus_t *pegasus)
 {
 	__le16 tmp = cpu_to_le16(0);
@@ -924,12 +1339,25 @@ static inline void disable_net_traffic(pegasus_t *pegasus)
 	set_registers(pegasus, EthCtrl0, sizeof(tmp), &tmp);
 }
 
+<<<<<<< HEAD
 static inline void get_interrupt_interval(pegasus_t *pegasus)
 {
 	u16 data;
 	u8 interval;
 
 	read_eprom_word(pegasus, 4, &data);
+=======
+static inline int get_interrupt_interval(pegasus_t *pegasus)
+{
+	u16 data;
+	u8 interval;
+	int ret;
+
+	ret = read_eprom_word(pegasus, 4, &data);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	interval = data >> 8;
 	if (pegasus->usb->speed != USB_SPEED_HIGH) {
 		if (interval < 0x80) {
@@ -944,6 +1372,11 @@ static inline void get_interrupt_interval(pegasus_t *pegasus)
 		}
 	}
 	pegasus->intr_interval = interval;
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void set_carrier(struct net_device *net)
@@ -965,7 +1398,10 @@ static void free_all_urbs(pegasus_t *pegasus)
 	usb_free_urb(pegasus->intr_urb);
 	usb_free_urb(pegasus->tx_urb);
 	usb_free_urb(pegasus->rx_urb);
+<<<<<<< HEAD
 	usb_free_urb(pegasus->ctrl_urb);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void unlink_all_urbs(pegasus_t *pegasus)
@@ -973,11 +1409,15 @@ static void unlink_all_urbs(pegasus_t *pegasus)
 	usb_kill_urb(pegasus->intr_urb);
 	usb_kill_urb(pegasus->tx_urb);
 	usb_kill_urb(pegasus->rx_urb);
+<<<<<<< HEAD
 	usb_kill_urb(pegasus->ctrl_urb);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int alloc_urbs(pegasus_t *pegasus)
 {
+<<<<<<< HEAD
 	pegasus->ctrl_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!pegasus->ctrl_urb)
 		return 0;
@@ -985,27 +1425,46 @@ static int alloc_urbs(pegasus_t *pegasus)
 	if (!pegasus->rx_urb) {
 		usb_free_urb(pegasus->ctrl_urb);
 		return 0;
+=======
+	int res = -ENOMEM;
+
+	pegasus->rx_urb = usb_alloc_urb(0, GFP_KERNEL);
+	if (!pegasus->rx_urb) {
+		return res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pegasus->tx_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!pegasus->tx_urb) {
 		usb_free_urb(pegasus->rx_urb);
+<<<<<<< HEAD
 		usb_free_urb(pegasus->ctrl_urb);
 		return 0;
+=======
+		return res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pegasus->intr_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!pegasus->intr_urb) {
 		usb_free_urb(pegasus->tx_urb);
 		usb_free_urb(pegasus->rx_urb);
+<<<<<<< HEAD
 		usb_free_urb(pegasus->ctrl_urb);
 		return 0;
 	}
 
 	return 1;
+=======
+		return res;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pegasus_open(struct net_device *net)
 {
 	pegasus_t *pegasus = netdev_priv(net);
+<<<<<<< HEAD
 	int res;
 
 	if (pegasus->rx_skb == NULL)
@@ -1021,6 +1480,22 @@ static int pegasus_open(struct net_device *net)
 	usb_fill_bulk_urb(pegasus->rx_urb, pegasus->usb,
 			  usb_rcvbulkpipe(pegasus->usb, 1),
 			  pegasus->rx_skb->data, PEGASUS_MTU + 8,
+=======
+	int res=-ENOMEM;
+
+	if (pegasus->rx_skb == NULL)
+		pegasus->rx_skb = __netdev_alloc_skb_ip_align(pegasus->net,
+							      PEGASUS_MTU,
+							      GFP_KERNEL);
+	if (!pegasus->rx_skb)
+		goto exit;
+
+	set_registers(pegasus, EthID, 6, net->dev_addr);
+
+	usb_fill_bulk_urb(pegasus->rx_urb, pegasus->usb,
+			  usb_rcvbulkpipe(pegasus->usb, 1),
+			  pegasus->rx_skb->data, PEGASUS_MTU,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  read_bulk_callback, pegasus);
 	if ((res = usb_submit_urb(pegasus->rx_urb, GFP_KERNEL))) {
 		if (res == -ENODEV)
@@ -1040,13 +1515,21 @@ static int pegasus_open(struct net_device *net)
 		usb_kill_urb(pegasus->rx_urb);
 		goto exit;
 	}
+<<<<<<< HEAD
 	if ((res = enable_net_traffic(net, pegasus->usb))) {
+=======
+	res = enable_net_traffic(net, pegasus->usb);
+	if (res < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_dbg(pegasus, ifup, net,
 			  "can't enable_net_traffic() - %d\n", res);
 		res = -EIO;
 		usb_kill_urb(pegasus->rx_urb);
 		usb_kill_urb(pegasus->intr_urb);
+<<<<<<< HEAD
 		free_skb_pool(pegasus);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 	set_carrier(net);
@@ -1074,8 +1557,13 @@ static void pegasus_get_drvinfo(struct net_device *dev,
 				struct ethtool_drvinfo *info)
 {
 	pegasus_t *pegasus = netdev_priv(dev);
+<<<<<<< HEAD
 	strncpy(info->driver, driver_name, sizeof(info->driver) - 1);
 	strncpy(info->version, DRIVER_VERSION, sizeof(info->version) - 1);
+=======
+
+	strscpy(info->driver, driver_name, sizeof(info->driver));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_make_path(pegasus->usb, info->bus_info, sizeof(info->bus_info));
 }
 
@@ -1096,6 +1584,10 @@ pegasus_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 {
 	pegasus_t	*pegasus = netdev_priv(dev);
 	u8		reg78 = 0x04;
+<<<<<<< HEAD
+=======
+	int		ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (wol->wolopts & ~WOL_SUPPORTED)
 		return -EINVAL;
@@ -1110,7 +1602,16 @@ pegasus_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 	else
 		pegasus->eth_regs[0] &= ~0x10;
 	pegasus->wolopts = wol->wolopts;
+<<<<<<< HEAD
 	return set_register(pegasus, WakeupControl, reg78);
+=======
+
+	ret = set_register(pegasus, WakeupControl, reg78);
+	if (!ret)
+		ret = device_set_wakeup_enable(&pegasus->usb->dev,
+						wol->wolopts);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void pegasus_reset_wol(struct net_device *dev)
@@ -1122,20 +1623,37 @@ static inline void pegasus_reset_wol(struct net_device *dev)
 }
 
 static int
+<<<<<<< HEAD
 pegasus_get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
+=======
+pegasus_get_link_ksettings(struct net_device *dev,
+			   struct ethtool_link_ksettings *ecmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pegasus_t *pegasus;
 
 	pegasus = netdev_priv(dev);
+<<<<<<< HEAD
 	mii_ethtool_gset(&pegasus->mii, ecmd);
+=======
+	mii_ethtool_get_link_ksettings(&pegasus->mii, ecmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int
+<<<<<<< HEAD
 pegasus_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 {
 	pegasus_t *pegasus = netdev_priv(dev);
 	return mii_ethtool_sset(&pegasus->mii, ecmd);
+=======
+pegasus_set_link_ksettings(struct net_device *dev,
+			   const struct ethtool_link_ksettings *ecmd)
+{
+	pegasus_t *pegasus = netdev_priv(dev);
+	return mii_ethtool_set_link_ksettings(&pegasus->mii, ecmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pegasus_nway_reset(struct net_device *dev)
@@ -1164,17 +1682,29 @@ static void pegasus_set_msglevel(struct net_device *dev, u32 v)
 
 static const struct ethtool_ops ops = {
 	.get_drvinfo = pegasus_get_drvinfo,
+<<<<<<< HEAD
 	.get_settings = pegasus_get_settings,
 	.set_settings = pegasus_set_settings,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.nway_reset = pegasus_nway_reset,
 	.get_link = pegasus_get_link,
 	.get_msglevel = pegasus_get_msglevel,
 	.set_msglevel = pegasus_set_msglevel,
 	.get_wol = pegasus_get_wol,
 	.set_wol = pegasus_set_wol,
+<<<<<<< HEAD
 };
 
 static int pegasus_ioctl(struct net_device *net, struct ifreq *rq, int cmd)
+=======
+	.get_link_ksettings = pegasus_get_link_ksettings,
+	.set_link_ksettings = pegasus_set_link_ksettings,
+};
+
+static int pegasus_siocdevprivate(struct net_device *net, struct ifreq *rq,
+				  void __user *udata, int cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u16 *data = (__u16 *) &rq->ifr_ifru;
 	pegasus_t *pegasus = netdev_priv(net);
@@ -1183,14 +1713,24 @@ static int pegasus_ioctl(struct net_device *net, struct ifreq *rq, int cmd)
 	switch (cmd) {
 	case SIOCDEVPRIVATE:
 		data[0] = pegasus->phy;
+<<<<<<< HEAD
 	case SIOCDEVPRIVATE + 1:
 		read_mii_word(pegasus, data[0], data[1] & 0x1f, &data[3]);
 		res = 0;
+=======
+		fallthrough;
+	case SIOCDEVPRIVATE + 1:
+		res = read_mii_word(pegasus, data[0], data[1] & 0x1f, &data[3]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SIOCDEVPRIVATE + 2:
 		if (!capable(CAP_NET_ADMIN))
 			return -EPERM;
+<<<<<<< HEAD
 		write_mii_word(pegasus, pegasus->phy, data[1] & 0x1f, data[2]);
+=======
+		write_mii_word(pegasus, pegasus->phy, data[1] & 0x1f, &data[2]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res = 0;
 		break;
 	default:
@@ -1214,43 +1754,75 @@ static void pegasus_set_multicast(struct net_device *net)
 		pegasus->eth_regs[EthCtrl0] &= ~RX_MULTICAST;
 		pegasus->eth_regs[EthCtrl2] &= ~RX_PROMISCUOUS;
 	}
+<<<<<<< HEAD
 
 	pegasus->ctrl_urb->status = 0;
 
 	pegasus->flags |= ETH_REGS_CHANGE;
 	ctrl_callback(pegasus->ctrl_urb);
+=======
+	update_eth_regs_async(pegasus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __u8 mii_phy_probe(pegasus_t *pegasus)
 {
+<<<<<<< HEAD
 	int i;
 	__u16 tmp;
 
 	for (i = 0; i < 32; i++) {
 		read_mii_word(pegasus, i, MII_BMSR, &tmp);
+=======
+	int i, ret;
+	__u16 tmp;
+
+	for (i = 0; i < 32; i++) {
+		ret = read_mii_word(pegasus, i, MII_BMSR, &tmp);
+		if (ret < 0)
+			goto fail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tmp == 0 || tmp == 0xffff || (tmp & BMSR_MEDIA) == 0)
 			continue;
 		else
 			return i;
 	}
+<<<<<<< HEAD
 
+=======
+fail:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0xff;
 }
 
 static inline void setup_pegasus_II(pegasus_t *pegasus)
 {
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 data = 0xa5;
 
 	set_register(pegasus, Reg1d, 0);
 	set_register(pegasus, Reg7b, 1);
+<<<<<<< HEAD
 	mdelay(100);
+=======
+	msleep(100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((pegasus->features & HAS_HOME_PNA) && mii_mode)
 		set_register(pegasus, Reg7b, 0);
 	else
 		set_register(pegasus, Reg7b, 2);
 
 	set_register(pegasus, 0x83, data);
+<<<<<<< HEAD
 	get_registers(pegasus, 0x83, 1, &data);
+=======
+	ret = get_registers(pegasus, 0x83, 1, &data);
+	if (ret < 0)
+		goto fail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (data == 0xa5)
 		pegasus->chip = 0x8513;
@@ -1265,6 +1837,7 @@ static inline void setup_pegasus_II(pegasus_t *pegasus)
 		set_register(pegasus, Reg81, 6);
 	else
 		set_register(pegasus, Reg81, 2);
+<<<<<<< HEAD
 }
 
 
@@ -1272,12 +1845,24 @@ static int pegasus_count;
 static struct workqueue_struct *pegasus_workqueue;
 #define CARRIER_CHECK_DELAY (2 * HZ)
 
+=======
+
+	return;
+fail:
+	netif_dbg(pegasus, drv, pegasus->net, "%s failed\n", __func__);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void check_carrier(struct work_struct *work)
 {
 	pegasus_t *pegasus = container_of(work, pegasus_t, carrier_check.work);
 	set_carrier(pegasus->net);
 	if (!(pegasus->flags & PEGASUS_UNPLUG)) {
+<<<<<<< HEAD
 		queue_delayed_work(pegasus_workqueue, &pegasus->carrier_check,
+=======
+		queue_delayed_work(system_long_wq, &pegasus->carrier_check,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			CARRIER_CHECK_DELAY);
 	}
 }
@@ -1298,6 +1883,7 @@ static int pegasus_blacklisted(struct usb_device *udev)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* we rely on probe() and remove() being serialized so we
  * don't need extra locking on pegasus_count.
  */
@@ -1310,6 +1896,8 @@ static void pegasus_dec_workqueue(void)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pegasus_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
 {
@@ -1322,6 +1910,7 @@ static int pegasus_probe(struct usb_interface *intf,
 	if (pegasus_blacklisted(dev))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (pegasus_count == 0) {
 		pegasus_workqueue = create_singlethread_workqueue("pegasus");
 		if (!pegasus_workqueue)
@@ -1331,20 +1920,32 @@ static int pegasus_probe(struct usb_interface *intf,
 
 	usb_get_dev(dev);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	net = alloc_etherdev(sizeof(struct pegasus));
 	if (!net)
 		goto out;
 
 	pegasus = netdev_priv(net);
 	pegasus->dev_index = dev_index;
+<<<<<<< HEAD
 	init_waitqueue_head(&pegasus->ctrl_wait);
 
 	if (!alloc_urbs(pegasus)) {
+=======
+
+	res = alloc_urbs(pegasus);
+	if (res < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&intf->dev, "can't allocate %s\n", "urbs");
 		goto out1;
 	}
 
+<<<<<<< HEAD
 	tasklet_init(&pegasus->rx_tl, rx_fixup, (unsigned long) pegasus);
+=======
+	tasklet_setup(&pegasus->rx_tl, rx_fixup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_DELAYED_WORK(&pegasus->carrier_check, check_carrier);
 
@@ -1355,25 +1956,41 @@ static int pegasus_probe(struct usb_interface *intf,
 
 	net->watchdog_timeo = PEGASUS_TX_TIMEOUT;
 	net->netdev_ops = &pegasus_netdev_ops;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(net, &ops);
+=======
+	net->ethtool_ops = &ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pegasus->mii.dev = net;
 	pegasus->mii.mdio_read = mdio_read;
 	pegasus->mii.mdio_write = mdio_write;
 	pegasus->mii.phy_id_mask = 0x1f;
 	pegasus->mii.reg_num_mask = 0x1f;
+<<<<<<< HEAD
 	spin_lock_init(&pegasus->rx_pool_lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pegasus->msg_enable = netif_msg_init(msg_level, NETIF_MSG_DRV
 				| NETIF_MSG_PROBE | NETIF_MSG_LINK);
 
 	pegasus->features = usb_dev_id[dev_index].private;
+<<<<<<< HEAD
 	get_interrupt_interval(pegasus);
+=======
+	res = get_interrupt_interval(pegasus);
+	if (res)
+		goto out2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (reset_mac(pegasus)) {
 		dev_err(&intf->dev, "can't reset MAC\n");
 		res = -EIO;
 		goto out2;
 	}
 	set_ethernet_addr(pegasus);
+<<<<<<< HEAD
 	fill_skb_pool(pegasus);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pegasus->features & PEGASUS_II) {
 		dev_info(&intf->dev, "setup Pegasus II specific registers\n");
 		setup_pegasus_II(pegasus);
@@ -1390,6 +2007,7 @@ static int pegasus_probe(struct usb_interface *intf,
 	res = register_netdev(net);
 	if (res)
 		goto out3;
+<<<<<<< HEAD
 	queue_delayed_work(pegasus_workqueue, &pegasus->carrier_check,
 				CARRIER_CHECK_DELAY);
 
@@ -1397,18 +2015,30 @@ static int pegasus_probe(struct usb_interface *intf,
 		 net->name,
 		 usb_dev_id[dev_index].name,
 		 net->dev_addr);
+=======
+	queue_delayed_work(system_long_wq, &pegasus->carrier_check,
+			   CARRIER_CHECK_DELAY);
+	dev_info(&intf->dev, "%s, %s, %pM\n", net->name,
+		 usb_dev_id[dev_index].name, net->dev_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 out3:
 	usb_set_intfdata(intf, NULL);
+<<<<<<< HEAD
 	free_skb_pool(pegasus);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out2:
 	free_all_urbs(pegasus);
 out1:
 	free_netdev(net);
 out:
+<<<<<<< HEAD
 	usb_put_dev(dev);
 	pegasus_dec_workqueue();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
@@ -1423,18 +2053,28 @@ static void pegasus_disconnect(struct usb_interface *intf)
 	}
 
 	pegasus->flags |= PEGASUS_UNPLUG;
+<<<<<<< HEAD
 	cancel_delayed_work(&pegasus->carrier_check);
 	unregister_netdev(pegasus->net);
 	usb_put_dev(interface_to_usbdev(intf));
 	unlink_all_urbs(pegasus);
 	free_all_urbs(pegasus);
 	free_skb_pool(pegasus);
+=======
+	cancel_delayed_work_sync(&pegasus->carrier_check);
+	unregister_netdev(pegasus->net);
+	unlink_all_urbs(pegasus);
+	free_all_urbs(pegasus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pegasus->rx_skb != NULL) {
 		dev_kfree_skb(pegasus->rx_skb);
 		pegasus->rx_skb = NULL;
 	}
 	free_netdev(pegasus->net);
+<<<<<<< HEAD
 	pegasus_dec_workqueue();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pegasus_suspend(struct usb_interface *intf, pm_message_t message)
@@ -1442,7 +2082,11 @@ static int pegasus_suspend(struct usb_interface *intf, pm_message_t message)
 	struct pegasus *pegasus = usb_get_intfdata(intf);
 
 	netif_device_detach(pegasus->net);
+<<<<<<< HEAD
 	cancel_delayed_work(&pegasus->carrier_check);
+=======
+	cancel_delayed_work_sync(&pegasus->carrier_check);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (netif_running(pegasus->net)) {
 		usb_kill_urb(pegasus->rx_urb);
 		usb_kill_urb(pegasus->intr_urb);
@@ -1464,7 +2108,11 @@ static int pegasus_resume(struct usb_interface *intf)
 		pegasus->intr_urb->actual_length = 0;
 		intr_callback(pegasus->intr_urb);
 	}
+<<<<<<< HEAD
 	queue_delayed_work(pegasus_workqueue, &pegasus->carrier_check,
+=======
+	queue_delayed_work(system_long_wq, &pegasus->carrier_check,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				CARRIER_CHECK_DELAY);
 	return 0;
 }
@@ -1472,12 +2120,19 @@ static int pegasus_resume(struct usb_interface *intf)
 static const struct net_device_ops pegasus_netdev_ops = {
 	.ndo_open =			pegasus_open,
 	.ndo_stop =			pegasus_close,
+<<<<<<< HEAD
 	.ndo_do_ioctl =			pegasus_ioctl,
 	.ndo_start_xmit =		pegasus_start_xmit,
 	.ndo_set_rx_mode =		pegasus_set_multicast,
 	.ndo_get_stats =		pegasus_netdev_stats,
 	.ndo_tx_timeout =		pegasus_tx_timeout,
 	.ndo_change_mtu =		eth_change_mtu,
+=======
+	.ndo_siocdevprivate =		pegasus_siocdevprivate,
+	.ndo_start_xmit =		pegasus_start_xmit,
+	.ndo_set_rx_mode =		pegasus_set_multicast,
+	.ndo_tx_timeout =		pegasus_tx_timeout,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address =		eth_mac_addr,
 	.ndo_validate_addr =		eth_validate_addr,
 };
@@ -1489,6 +2144,10 @@ static struct usb_driver pegasus_driver = {
 	.id_table = pegasus_ids,
 	.suspend = pegasus_suspend,
 	.resume = pegasus_resume,
+<<<<<<< HEAD
+=======
+	.disable_hub_initiated_lpm = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __init parse_id(char *id)
@@ -1524,7 +2183,11 @@ static void __init parse_id(char *id)
 
 static int __init pegasus_init(void)
 {
+<<<<<<< HEAD
 	pr_info("%s: %s, " DRIVER_DESC "\n", driver_name, DRIVER_VERSION);
+=======
+	pr_info("%s: " DRIVER_DESC "\n", driver_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (devid)
 		parse_id(devid);
 	return usb_register(&pegasus_driver);

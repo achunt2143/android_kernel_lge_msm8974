@@ -51,6 +51,10 @@
 #include <linux/zorro.h>
 #include <linux/bitops.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/byteorder.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/amigaints.h>
 #include <asm/amigahw.h>
 #include <asm/irq.h>
@@ -192,8 +196,12 @@ static int ariadne_rx(struct net_device *dev)
 			struct sk_buff *skb;
 
 			skb = netdev_alloc_skb(dev, pkt_len + 2);
+<<<<<<< HEAD
 			if (skb == NULL) {
 				netdev_warn(dev, "Memory squeeze, deferring packet\n");
+=======
+			if (!skb) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				for (i = 0; i < RX_RING_SIZE; i++)
 					if (lowb(priv->rx_ring[(entry + i) % RX_RING_SIZE]->RMD1) & RF_OWN)
 						break;
@@ -213,10 +221,17 @@ static int ariadne_rx(struct net_device *dev)
 						(const void *)priv->rx_buff[entry],
 						pkt_len);
 			skb->protocol = eth_type_trans(skb, dev);
+<<<<<<< HEAD
 			netdev_dbg(dev, "RX pkt type 0x%04x from %pM to %pM data 0x%08x len %d\n",
 				   ((u_short *)skb->data)[6],
 				   skb->data + 6, skb->data,
 				   (int)skb->data, (int)skb->len);
+=======
+			netdev_dbg(dev, "RX pkt type 0x%04x from %pM to %pM data %p len %u\n",
+				   ((u_short *)skb->data)[6],
+				   skb->data + 6, skb->data,
+				   skb->data, skb->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			netif_rx(skb);
 			dev->stats.rx_packets++;
@@ -441,11 +456,19 @@ static int ariadne_open(struct net_device *dev)
 
 	/* Set the Ethernet Hardware Address */
 	lance->RAP = CSR12;		/* Physical Address Register, PADR[15:0] */
+<<<<<<< HEAD
 	lance->RDP = ((u_short *)&dev->dev_addr[0])[0];
 	lance->RAP = CSR13;		/* Physical Address Register, PADR[31:16] */
 	lance->RDP = ((u_short *)&dev->dev_addr[0])[1];
 	lance->RAP = CSR14;		/* Physical Address Register, PADR[47:32] */
 	lance->RDP = ((u_short *)&dev->dev_addr[0])[2];
+=======
+	lance->RDP = ((const u_short *)&dev->dev_addr[0])[0];
+	lance->RAP = CSR13;		/* Physical Address Register, PADR[31:16] */
+	lance->RDP = ((const u_short *)&dev->dev_addr[0])[1];
+	lance->RAP = CSR14;		/* Physical Address Register, PADR[47:32] */
+	lance->RDP = ((const u_short *)&dev->dev_addr[0])[2];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set the Init Block Mode */
 	lance->RAP = CSR15;		/* Mode Register */
@@ -530,7 +553,11 @@ static inline void ariadne_reset(struct net_device *dev)
 	netif_start_queue(dev);
 }
 
+<<<<<<< HEAD
 static void ariadne_tx_timeout(struct net_device *dev)
+=======
+static void ariadne_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	volatile struct Am79C960 *lance = (struct Am79C960 *)dev->base_addr;
 
@@ -566,10 +593,17 @@ static netdev_tx_t ariadne_start_xmit(struct sk_buff *skb,
 
 	/* Fill in a Tx ring entry */
 
+<<<<<<< HEAD
 	netdev_dbg(dev, "TX pkt type 0x%04x from %pM to %pM data 0x%08x len %d\n",
 		   ((u_short *)skb->data)[6],
 		   skb->data + 6, skb->data,
 		   (int)skb->data, (int)skb->len);
+=======
+	netdev_dbg(dev, "TX pkt type 0x%04x from %pM to %pM data %p len %u\n",
+		   ((u_short *)skb->data)[6],
+		   skb->data + 6, skb->data,
+		   skb->data, skb->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local_irq_save(flags);
 
@@ -682,7 +716,11 @@ static void set_multicast_list(struct net_device *dev)
 }
 
 
+<<<<<<< HEAD
 static void __devexit ariadne_remove_one(struct zorro_dev *z)
+=======
+static void ariadne_remove_one(struct zorro_dev *z)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = zorro_get_drvdata(z);
 
@@ -692,7 +730,11 @@ static void __devexit ariadne_remove_one(struct zorro_dev *z)
 	free_netdev(dev);
 }
 
+<<<<<<< HEAD
 static struct zorro_device_id ariadne_zorro_tbl[] __devinitdata = {
+=======
+static const struct zorro_device_id ariadne_zorro_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ ZORRO_PROD_VILLAGE_TRONIC_ARIADNE },
 	{ 0 }
 };
@@ -706,19 +748,32 @@ static const struct net_device_ops ariadne_netdev_ops = {
 	.ndo_get_stats		= ariadne_get_stats,
 	.ndo_set_rx_mode	= set_multicast_list,
 	.ndo_validate_addr	= eth_validate_addr,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
 	.ndo_set_mac_address	= eth_mac_addr,
 };
 
 static int __devinit ariadne_init_one(struct zorro_dev *z,
 				      const struct zorro_device_id *ent)
+=======
+	.ndo_set_mac_address	= eth_mac_addr,
+};
+
+static int ariadne_init_one(struct zorro_dev *z,
+			    const struct zorro_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long board = z->resource.start;
 	unsigned long base_addr = board + ARIADNE_LANCE;
 	unsigned long mem_start = board + ARIADNE_RAM;
 	struct resource *r1, *r2;
 	struct net_device *dev;
+<<<<<<< HEAD
 	struct ariadne_private *priv;
+=======
+	u8 addr[ETH_ALEN];
+	u32 serial;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	r1 = request_mem_region(base_addr, sizeof(struct Am79C960), "Am79C960");
@@ -731,12 +786,17 @@ static int __devinit ariadne_init_one(struct zorro_dev *z,
 	}
 
 	dev = alloc_etherdev(sizeof(struct ariadne_private));
+<<<<<<< HEAD
 	if (dev == NULL) {
+=======
+	if (!dev) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_mem_region(base_addr, sizeof(struct Am79C960));
 		release_mem_region(mem_start, ARIADNE_RAM_SIZE);
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	priv = netdev_priv(dev);
 
 	r1->name = dev->name;
@@ -750,6 +810,21 @@ static int __devinit ariadne_init_one(struct zorro_dev *z,
 	dev->dev_addr[5] = z->rom.er_SerialNumber & 0xff;
 	dev->base_addr = ZTWO_VADDR(base_addr);
 	dev->mem_start = ZTWO_VADDR(mem_start);
+=======
+	r1->name = dev->name;
+	r2->name = dev->name;
+
+	serial = be32_to_cpu(z->rom.er_SerialNumber);
+	addr[0] = 0x00;
+	addr[1] = 0x60;
+	addr[2] = 0x30;
+	addr[3] = (serial >> 16) & 0xff;
+	addr[4] = (serial >> 8) & 0xff;
+	addr[5] = serial & 0xff;
+	eth_hw_addr_set(dev, addr);
+	dev->base_addr = (unsigned long)ZTWO_VADDR(base_addr);
+	dev->mem_start = (unsigned long)ZTWO_VADDR(mem_start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->mem_end = dev->mem_start + ARIADNE_RAM_SIZE;
 
 	dev->netdev_ops = &ariadne_netdev_ops;
@@ -774,7 +849,11 @@ static struct zorro_driver ariadne_driver = {
 	.name		= "ariadne",
 	.id_table	= ariadne_zorro_tbl,
 	.probe		= ariadne_init_one,
+<<<<<<< HEAD
 	.remove		= __devexit_p(ariadne_remove_one),
+=======
+	.remove		= ariadne_remove_one,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ariadne_init_module(void)

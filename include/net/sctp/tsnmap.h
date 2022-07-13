@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (c) 1999-2000 Cisco, Inc.
@@ -9,6 +13,7 @@
  * These are the definitions needed for the tsnmap type.  The tsnmap is used
  * to track out of order TSNs received.
  *
+<<<<<<< HEAD
  * This SCTP implementation is free software;
  * you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by
@@ -32,15 +37,23 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *   Jon Grimm             <jgrimm@us.ibm.com>
  *   La Monte H.P. Yarroll <piggy@acm.org>
  *   Karl Knutson          <karl@athena.chicago.il.us>
  *   Sridhar Samudrala     <sri@us.ibm.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <net/sctp/constants.h>
 
@@ -117,7 +130,12 @@ void sctp_tsnmap_free(struct sctp_tsnmap *map);
 int sctp_tsnmap_check(const struct sctp_tsnmap *, __u32 tsn);
 
 /* Mark this TSN as seen.  */
+<<<<<<< HEAD
 int sctp_tsnmap_mark(struct sctp_tsnmap *, __u32 tsn);
+=======
+int sctp_tsnmap_mark(struct sctp_tsnmap *, __u32 tsn,
+		     struct sctp_transport *trans);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Mark this TSN and all lower as seen. */
 void sctp_tsnmap_skip(struct sctp_tsnmap *map, __u32 tsn);

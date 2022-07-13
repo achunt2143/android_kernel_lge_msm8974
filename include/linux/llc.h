@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 #ifndef __LINUX_LLC_H
 #define __LINUX_LLC_H
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IEEE 802.2 User Interface SAPs for Linux, data structures and indicators.
  *
@@ -12,6 +15,7 @@
  *
  * See the GNU General Public License for more details.
  */
+<<<<<<< HEAD
 
 #include <linux/socket.h>
 
@@ -82,10 +86,20 @@ struct llc_pktinfo {
 };
 
 #ifdef __KERNEL__
+=======
+#ifndef __LINUX_LLC_H
+#define __LINUX_LLC_H
+
+#include <uapi/linux/llc.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LLC_SAP_DYN_START	0xC0
 #define LLC_SAP_DYN_STOP	0xDE
 #define LLC_SAP_DYN_TRIES	4
 
 #define llc_ui_skb_cb(__skb) ((struct sockaddr_llc *)&((__skb)->cb[0]))
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_LLC_H */

@@ -13,7 +13,10 @@
 #include <linux/pci.h>
 #include <linux/slab.h>
 #include "tulip.h"
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unaligned.h>
 
 
@@ -26,7 +29,11 @@
    */
 
 /* Known cards that have old-style EEPROMs. */
+<<<<<<< HEAD
 static struct eeprom_fixup eeprom_fixups[] __devinitdata = {
+=======
+static struct eeprom_fixup eeprom_fixups[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   {"Asante", 0, 0, 0x94, {0x1e00, 0x0000, 0x0800, 0x0100, 0x018c,
 			  0x0000, 0x0000, 0xe078, 0x0001, 0x0050, 0x0018 }},
   {"SMC9332DST", 0, 0, 0xC0, { 0x1e00, 0x0000, 0x0800, 0x041f,
@@ -79,7 +86,11 @@ static struct eeprom_fixup eeprom_fixups[] __devinitdata = {
   {NULL}};
 
 
+<<<<<<< HEAD
 static const char *block_name[] __devinitdata = {
+=======
+static const char *const block_name[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"21140 non-MII",
 	"21140 MII PHY",
 	"21142 Serial PHY",
@@ -102,7 +113,11 @@ static const char *block_name[] __devinitdata = {
  * #ifdef __hppa__ should completely optimize this function away for
  * non-parisc hardware.
  */
+<<<<<<< HEAD
 static void __devinit tulip_build_fake_mediatable(struct tulip_private *tp)
+=======
+static void tulip_build_fake_mediatable(struct tulip_private *tp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_GSC
 	if (tp->flags & NEEDS_FAKE_MEDIA_TABLE) {
@@ -118,8 +133,13 @@ static void __devinit tulip_build_fake_mediatable(struct tulip_private *tp)
 			  0x00, 0x06  /* ttm bit map */
 			};
 
+<<<<<<< HEAD
 		tp->mtable = kmalloc(sizeof(struct mediatable) +
 				     sizeof(struct medialeaf), GFP_KERNEL);
+=======
+		tp->mtable = devm_kmalloc(&tp->pdev->dev, sizeof(struct mediatable) +
+					  sizeof(struct medialeaf), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (tp->mtable == NULL)
 			return; /* Horrible, impossible failure. */
@@ -140,7 +160,11 @@ static void __devinit tulip_build_fake_mediatable(struct tulip_private *tp)
 #endif
 }
 
+<<<<<<< HEAD
 void __devinit tulip_parse_eeprom(struct net_device *dev)
+=======
+void tulip_parse_eeprom(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	  dev is not registered at this point, so logging messages can't
@@ -225,9 +249,14 @@ subsequent_board:
 		        return;
 		}
 
+<<<<<<< HEAD
 		mtable = kmalloc(sizeof(struct mediatable) +
 				 count * sizeof(struct medialeaf),
 				 GFP_KERNEL);
+=======
+		mtable = devm_kmalloc(&tp->pdev->dev, struct_size(mtable, mleaf, count),
+				      GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mtable == NULL)
 			return;				/* Horrible, impossible failure. */
 		last_mediatable = tp->mtable = mtable;
@@ -339,7 +368,11 @@ subsequent_board:
 #define EE_READ_CMD		(6)
 
 /* Note: this routine returns extra data bits for size detection. */
+<<<<<<< HEAD
 int __devinit tulip_read_eeprom(struct net_device *dev, int location, int addr_len)
+=======
+int tulip_read_eeprom(struct net_device *dev, int location, int addr_len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	unsigned retval = 0;

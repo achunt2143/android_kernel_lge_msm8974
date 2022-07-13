@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _IF_TUNNEL_H_
 #define _IF_TUNNEL_H_
 
@@ -79,5 +80,22 @@ enum {
 };
 
 #define IFLA_GRE_MAX	(__IFLA_GRE_MAX - 1)
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _IF_TUNNEL_H_
+#define _IF_TUNNEL_H_
+
+#include <linux/ip.h>
+#include <linux/in6.h>
+#include <uapi/linux/if_tunnel.h>
+#include <linux/u64_stats_sync.h>
+
+/*
+ * Locking : hash tables are protected by RCU and RTNL
+ */
+
+#define for_each_ip_tunnel_rcu(pos, start) \
+	for (pos = rcu_dereference(start); pos; pos = rcu_dereference(pos->next))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _IF_TUNNEL_H_ */

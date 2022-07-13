@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 include include/asm-generic/Kbuild.asm
 
 header-y += registers.h
@@ -56,3 +57,10 @@ generic-y += types.h
 generic-y += ucontext.h
 generic-y += unaligned.h
 generic-y += xor.h
+=======
+# SPDX-License-Identifier: GPL-2.0
+generic-y += extable.h
+generic-y += iomap.h
+generic-y += kvm_para.h
+generic-y += mcs_spinlock.h
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

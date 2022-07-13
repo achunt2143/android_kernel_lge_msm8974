@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Interrupt management for most GSC and related devices.
  *
@@ -6,11 +10,14 @@
  * (c) Copyright 1999 Matthew Wilcox
  * (c) Copyright 2000 Helge Deller
  * (c) Copyright 2001 Matthew Wilcox for Hewlett-Packard
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
  *      (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bitops.h>
@@ -139,10 +146,47 @@ static void gsc_asic_unmask_irq(struct irq_data *d)
 	 */
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+static int gsc_set_affinity_irq(struct irq_data *d, const struct cpumask *dest,
+				bool force)
+{
+	struct gsc_asic *gsc_dev = irq_data_get_irq_chip_data(d);
+	struct cpumask tmask;
+	int cpu_irq;
+
+	if (!cpumask_and(&tmask, dest, cpu_online_mask))
+		return -EINVAL;
+
+	cpu_irq = cpu_check_affinity(d, &tmask);
+	if (cpu_irq < 0)
+		return cpu_irq;
+
+	gsc_dev->gsc_irq.txn_addr = txn_affinity_addr(d->irq, cpu_irq);
+	gsc_dev->eim = ((u32) gsc_dev->gsc_irq.txn_addr) | gsc_dev->gsc_irq.txn_data;
+
+	/* switch IRQ's for devices below LASI/WAX to other CPU */
+	gsc_writel(gsc_dev->eim, gsc_dev->hpa + OFFSET_IAR);
+
+	irq_data_update_effective_affinity(d, &tmask);
+
+	return IRQ_SET_MASK_OK;
+}
+#endif
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct irq_chip gsc_asic_interrupt_type = {
 	.name		=	"GSC-ASIC",
 	.irq_unmask	=	gsc_asic_unmask_irq,
 	.irq_mask	=	gsc_asic_mask_irq,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+	.irq_set_affinity =	gsc_set_affinity_irq,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int gsc_assign_irq(struct irq_chip *type, void *data)
@@ -231,6 +275,7 @@ int gsc_common_setup(struct parisc_device *parent, struct gsc_asic *gsc_asic)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 extern struct parisc_driver lasi_driver;
 extern struct parisc_driver asp_driver;
@@ -246,3 +291,5 @@ void __init gsc_init(void)
 	register_parisc_driver(&wax_driver);
 #endif
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

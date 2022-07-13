@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_KGDB
 	.globl		arch_kgdb_breakpoint
 	.type		arch_kgdb_breakpoint,#function
@@ -18,8 +22,12 @@ __do_privact:
 109:	or		%g7, %lo(109b), %g7
 	call		do_privact
 	 add		%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
 	 nop
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size		__do_privact,.-__do_privact
 
 	.type		do_mna,#function
@@ -46,8 +54,12 @@ do_mna:
 	mov		%l5, %o2
 	call		mem_address_unaligned
 	 add		%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
 	 nop
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size		do_mna,.-do_mna
 
 	.type		do_lddfmna,#function
@@ -65,8 +77,12 @@ do_lddfmna:
 	mov		%l5, %o2
 	call		handle_lddfmna
 	 add		%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
 	 nop
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size		do_lddfmna,.-do_lddfmna
 
 	.type		do_stdfmna,#function
@@ -84,7 +100,11 @@ do_stdfmna:
 	mov		%l5, %o2
 	call		handle_stdfmna
 	 add		%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 nop
 	.size		do_stdfmna,.-do_stdfmna
 

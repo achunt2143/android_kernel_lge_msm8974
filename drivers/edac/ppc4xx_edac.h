@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2008 Nuovation System Designs, LLC
  *   Grant Erickson <gerickson@nuovations.com>
@@ -5,12 +9,15 @@
  * This file defines processor mnemonics for accessing and managing
  * the IBM DDR1/DDR2 ECC controller found in the 405EX[r], 440SP,
  * 440SPe, 460EX, 460GT and 460SX.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; version 2 of the
  * License.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __PPC4XX_EDAC_H

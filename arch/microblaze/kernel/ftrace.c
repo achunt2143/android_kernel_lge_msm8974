@@ -22,11 +22,21 @@
 void prepare_ftrace_return(unsigned long *parent, unsigned long self_addr)
 {
 	unsigned long old;
+<<<<<<< HEAD
 	int faulted, err;
 	struct ftrace_graph_ent trace;
 	unsigned long return_hooker = (unsigned long)
 				&return_to_handler;
 
+=======
+	int faulted;
+	unsigned long return_hooker = (unsigned long)
+				&return_to_handler;
+
+	if (unlikely(ftrace_graph_is_dead()))
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(atomic_read(&current->tracing_graph_pause)))
 		return;
 
@@ -35,6 +45,7 @@ void prepare_ftrace_return(unsigned long *parent, unsigned long self_addr)
 	 * happen. This tool is too much intrusive to
 	 * ignore such a protection.
 	 */
+<<<<<<< HEAD
 	asm volatile("	1:	lwi	%0, %2, 0;		\
 			2:	swi	%3, %2, 0;		\
 				addik	%1, r0, 0;		\
@@ -47,6 +58,20 @@ void prepare_ftrace_return(unsigned long *parent, unsigned long self_addr)
 				.word	1b,4b;			\
 				.word	2b,4b;			\
 				.previous;"			\
+=======
+	asm volatile("	1:	lwi	%0, %2, 0;"		\
+			"2:	swi	%3, %2, 0;"		\
+			"	addik	%1, r0, 0;"		\
+			"3:"					\
+			"	.section .fixup, \"ax\";"	\
+			"4:	brid	3b;"			\
+			"	addik	%1, r0, 1;"		\
+			"	.previous;"			\
+			"	.section __ex_table,\"a\";"	\
+			"	.word	1b,4b;"			\
+			"	.word	2b,4b;"			\
+			"	.previous;"			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			: "=&r" (old), "=r" (faulted)
 			: "r" (parent), "r" (return_hooker)
 	);
@@ -60,6 +85,7 @@ void prepare_ftrace_return(unsigned long *parent, unsigned long self_addr)
 		return;
 	}
 
+<<<<<<< HEAD
 	err = ftrace_push_return_trace(old, self_addr, &trace.depth, 0);
 	if (err == -EBUSY) {
 		*parent = old;
@@ -72,6 +98,10 @@ void prepare_ftrace_return(unsigned long *parent, unsigned long self_addr)
 		current->curr_ret_stack--;
 		*parent = old;
 	}
+=======
+	if (function_graph_enter(old, self_addr, 0, NULL))
+		*parent = old;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_FUNCTION_GRAPH_TRACER */
 
@@ -81,6 +111,7 @@ static int ftrace_modify_code(unsigned long addr, unsigned int value)
 {
 	int faulted = 0;
 
+<<<<<<< HEAD
 	__asm__ __volatile__("	1:	swi	%2, %1, 0;		\
 					addik	%0, r0, 0;		\
 				2:					\
@@ -91,6 +122,18 @@ static int ftrace_modify_code(unsigned long addr, unsigned int value)
 					.section __ex_table,\"a\";	\
 					.word	1b,3b;			\
 					.previous;"			\
+=======
+	__asm__ __volatile__("	1:	swi	%2, %1, 0;"		\
+				"	addik	%0, r0, 0;"		\
+				"2:"					\
+				"	.section .fixup, \"ax\";"	\
+				"3:	brid	2b;"			\
+				"	addik	%0, r0, 1;"		\
+				"	.previous;"			\
+				"	.section __ex_table,\"a\";"	\
+				"	.word	1b,3b;"			\
+				"	.previous;"			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				: "=r" (faulted)
 				: "r" (addr), "r" (value)
 	);
@@ -171,6 +214,7 @@ int ftrace_make_call(struct dyn_ftrace *rec, unsigned long addr)
 	return ret;
 }
 
+<<<<<<< HEAD
 int __init ftrace_dyn_arch_init(void *data)
 {
 	/* The return code is retured via data */
@@ -179,6 +223,8 @@ int __init ftrace_dyn_arch_init(void *data)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ftrace_update_ftrace_func(ftrace_func_t func)
 {
 	unsigned long ip = (unsigned long)(&ftrace_call);

@@ -10,6 +10,11 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_fdt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_platform.h>
 
 #include <asm/machdep.h>
@@ -18,6 +23,10 @@
 #include <asm/cpm1.h>
 
 #include "mpc8xx.h"
+<<<<<<< HEAD
+=======
+#include "pic.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct cpm_pin {
 	int port, pin, flags;
@@ -139,6 +148,7 @@ static void __init ep88xc_setup_arch(void)
 	                          BCSR8_PHY2_ENABLE | BCSR8_PHY2_POWER);
 }
 
+<<<<<<< HEAD
 static int __init ep88xc_probe(void)
 {
 	unsigned long root = of_get_flat_dt_root();
@@ -146,6 +156,9 @@ static int __init ep88xc_probe(void)
 }
 
 static struct of_device_id __initdata of_bus_ids[] = {
+=======
+static const struct of_device_id of_bus_ids[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .name = "soc", },
 	{ .name = "cpm", },
 	{ .name = "localbus", },
@@ -163,6 +176,7 @@ machine_device_initcall(ep88xc, declare_of_platform_devices);
 
 define_machine(ep88xc) {
 	.name = "Embedded Planet EP88xC",
+<<<<<<< HEAD
 	.probe = ep88xc_probe,
 	.setup_arch = ep88xc_setup_arch,
 	.init_IRQ = mpc8xx_pics_init,
@@ -171,5 +185,13 @@ define_machine(ep88xc) {
 	.calibrate_decr = mpc8xx_calibrate_decr,
 	.set_rtc_time = mpc8xx_set_rtc_time,
 	.get_rtc_time = mpc8xx_get_rtc_time,
+=======
+	.compatible = "fsl,ep88xc",
+	.setup_arch = ep88xc_setup_arch,
+	.init_IRQ = mpc8xx_pic_init,
+	.get_irq	= mpc8xx_get_irq,
+	.restart = mpc8xx_restart,
+	.calibrate_decr = mpc8xx_calibrate_decr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress = udbg_progress,
 };

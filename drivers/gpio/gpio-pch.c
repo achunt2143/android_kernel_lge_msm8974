@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
  *
@@ -27,6 +28,27 @@
 #define PCH_LEVEL_H		(BIT(0) | BIT(1))
 #define PCH_EDGE_BOTH		BIT(2)
 #define PCH_IM_MASK		(BIT(0) | BIT(1) | BIT(2))
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
+ */
+#include <linux/bits.h>
+#include <linux/gpio/driver.h>
+#include <linux/interrupt.h>
+#include <linux/irq.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/pci.h>
+#include <linux/slab.h>
+
+#define PCH_EDGE_FALLING	0
+#define PCH_EDGE_RISING		1
+#define PCH_LEVEL_L		2
+#define PCH_LEVEL_H		3
+#define PCH_EDGE_BOTH		4
+#define PCH_IM_MASK		GENMASK(2, 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCH_IRQ_BASE		24
 
@@ -47,6 +69,14 @@ struct pch_regs {
 	u32	reset;
 };
 
+<<<<<<< HEAD
+=======
+#define PCI_DEVICE_ID_INTEL_EG20T_PCH		0x8803
+#define PCI_DEVICE_ID_ROHM_ML7223m_IOH		0x8014
+#define PCI_DEVICE_ID_ROHM_ML7223n_IOH		0x8043
+#define PCI_DEVICE_ID_ROHM_EG20T_PCH		0x8803
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum pch_type_t {
 	INTEL_EG20T_PCH,
 	OKISEMI_ML7223m_IOH, /* LAPIS Semiconductor ML7223 IOH PCIe Bus-m */
@@ -92,9 +122,13 @@ struct pch_gpio_reg_data {
  * @lock:			Used for register access protection
  * @irq_base:		Save base of IRQ number for interrupt
  * @ioh:		IOH ID
+<<<<<<< HEAD
  * @spinlock:		Used for register access protection in
  *				interrupt context pch_irq_mask,
  *				pch_irq_unmask and pch_irq_type;
+=======
+ * @spinlock:		Used for register access protection
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct pch_gpio {
 	void __iomem *base;
@@ -102,12 +136,16 @@ struct pch_gpio {
 	struct device *dev;
 	struct gpio_chip gpio;
 	struct pch_gpio_reg_data pch_gpio_reg;
+<<<<<<< HEAD
 	struct mutex lock;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int irq_base;
 	enum pch_type_t ioh;
 	spinlock_t spinlock;
 };
 
+<<<<<<< HEAD
 static void pch_gpio_set(struct gpio_chip *gpio, unsigned nr, int val)
 {
 	u32 reg_val;
@@ -151,10 +189,60 @@ static int pch_gpio_direction_output(struct gpio_chip *gpio, unsigned nr,
 	iowrite32(reg_val, &chip->reg->po);
 
 	mutex_unlock(&chip->lock);
+=======
+static void pch_gpio_set(struct gpio_chip *gpio, unsigned int nr, int val)
+{
+	u32 reg_val;
+	struct pch_gpio *chip =	gpiochip_get_data(gpio);
+	unsigned long flags;
+
+	spin_lock_irqsave(&chip->spinlock, flags);
+	reg_val = ioread32(&chip->reg->po);
+	if (val)
+		reg_val |= BIT(nr);
+	else
+		reg_val &= ~BIT(nr);
+
+	iowrite32(reg_val, &chip->reg->po);
+	spin_unlock_irqrestore(&chip->spinlock, flags);
+}
+
+static int pch_gpio_get(struct gpio_chip *gpio, unsigned int nr)
+{
+	struct pch_gpio *chip =	gpiochip_get_data(gpio);
+
+	return !!(ioread32(&chip->reg->pi) & BIT(nr));
+}
+
+static int pch_gpio_direction_output(struct gpio_chip *gpio, unsigned int nr,
+				     int val)
+{
+	struct pch_gpio *chip =	gpiochip_get_data(gpio);
+	u32 pm;
+	u32 reg_val;
+	unsigned long flags;
+
+	spin_lock_irqsave(&chip->spinlock, flags);
+
+	reg_val = ioread32(&chip->reg->po);
+	if (val)
+		reg_val |= BIT(nr);
+	else
+		reg_val &= ~BIT(nr);
+	iowrite32(reg_val, &chip->reg->po);
+
+	pm = ioread32(&chip->reg->pm);
+	pm &= BIT(gpio_pins[chip->ioh]) - 1;
+	pm |= BIT(nr);
+	iowrite32(pm, &chip->reg->pm);
+
+	spin_unlock_irqrestore(&chip->spinlock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pch_gpio_direction_input(struct gpio_chip *gpio, unsigned nr)
 {
 	struct pch_gpio *chip =	container_of(gpio, struct pch_gpio, gpio);
@@ -165,6 +253,20 @@ static int pch_gpio_direction_input(struct gpio_chip *gpio, unsigned nr)
 	pm &= ~(1 << nr);
 	iowrite32(pm, &chip->reg->pm);
 	mutex_unlock(&chip->lock);
+=======
+static int pch_gpio_direction_input(struct gpio_chip *gpio, unsigned int nr)
+{
+	struct pch_gpio *chip =	gpiochip_get_data(gpio);
+	u32 pm;
+	unsigned long flags;
+
+	spin_lock_irqsave(&chip->spinlock, flags);
+	pm = ioread32(&chip->reg->pm);
+	pm &= BIT(gpio_pins[chip->ioh]) - 1;
+	pm &= ~BIT(nr);
+	iowrite32(pm, &chip->reg->pm);
+	spin_unlock_irqrestore(&chip->spinlock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -172,7 +274,11 @@ static int pch_gpio_direction_input(struct gpio_chip *gpio, unsigned nr)
 /*
  * Save register configuration and disable interrupts.
  */
+<<<<<<< HEAD
 static void pch_gpio_save_reg_conf(struct pch_gpio *chip)
+=======
+static void __maybe_unused pch_gpio_save_reg_conf(struct pch_gpio *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	chip->pch_gpio_reg.ien_reg = ioread32(&chip->reg->ien);
 	chip->pch_gpio_reg.imask_reg = ioread32(&chip->reg->imask);
@@ -182,14 +288,22 @@ static void pch_gpio_save_reg_conf(struct pch_gpio *chip)
 	if (chip->ioh == INTEL_EG20T_PCH)
 		chip->pch_gpio_reg.im1_reg = ioread32(&chip->reg->im1);
 	if (chip->ioh == OKISEMI_ML7223n_IOH)
+<<<<<<< HEAD
 		chip->pch_gpio_reg.gpio_use_sel_reg =\
 					    ioread32(&chip->reg->gpio_use_sel);
+=======
+		chip->pch_gpio_reg.gpio_use_sel_reg = ioread32(&chip->reg->gpio_use_sel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * This function restores the register configuration of the GPIO device.
  */
+<<<<<<< HEAD
 static void pch_gpio_restore_reg_conf(struct pch_gpio *chip)
+=======
+static void __maybe_unused pch_gpio_restore_reg_conf(struct pch_gpio *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	iowrite32(chip->pch_gpio_reg.ien_reg, &chip->reg->ien);
 	iowrite32(chip->pch_gpio_reg.imask_reg, &chip->reg->imask);
@@ -201,6 +315,7 @@ static void pch_gpio_restore_reg_conf(struct pch_gpio *chip)
 	if (chip->ioh == INTEL_EG20T_PCH)
 		iowrite32(chip->pch_gpio_reg.im1_reg, &chip->reg->im1);
 	if (chip->ioh == OKISEMI_ML7223n_IOH)
+<<<<<<< HEAD
 		iowrite32(chip->pch_gpio_reg.gpio_use_sel_reg,
 			  &chip->reg->gpio_use_sel);
 }
@@ -208,6 +323,15 @@ static void pch_gpio_restore_reg_conf(struct pch_gpio *chip)
 static int pch_gpio_to_irq(struct gpio_chip *gpio, unsigned offset)
 {
 	struct pch_gpio *chip = container_of(gpio, struct pch_gpio, gpio);
+=======
+		iowrite32(chip->pch_gpio_reg.gpio_use_sel_reg, &chip->reg->gpio_use_sel);
+}
+
+static int pch_gpio_to_irq(struct gpio_chip *gpio, unsigned int offset)
+{
+	struct pch_gpio *chip = gpiochip_get_data(gpio);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return chip->irq_base + offset;
 }
 
@@ -216,15 +340,25 @@ static void pch_gpio_setup(struct pch_gpio *chip)
 	struct gpio_chip *gpio = &chip->gpio;
 
 	gpio->label = dev_name(chip->dev);
+<<<<<<< HEAD
+=======
+	gpio->parent = chip->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gpio->owner = THIS_MODULE;
 	gpio->direction_input = pch_gpio_direction_input;
 	gpio->get = pch_gpio_get;
 	gpio->direction_output = pch_gpio_direction_output;
 	gpio->set = pch_gpio_set;
+<<<<<<< HEAD
 	gpio->dbg_show = NULL;
 	gpio->base = -1;
 	gpio->ngpio = gpio_pins[chip->ioh];
 	gpio->can_sleep = 0;
+=======
+	gpio->base = -1;
+	gpio->ngpio = gpio_pins[chip->ioh];
+	gpio->can_sleep = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gpio->to_irq = pch_gpio_to_irq;
 }
 
@@ -238,17 +372,27 @@ static int pch_irq_type(struct irq_data *d, unsigned int type)
 	int ch, irq = d->irq;
 
 	ch = irq - chip->irq_base;
+<<<<<<< HEAD
 	if (irq <= chip->irq_base + 7) {
 		im_reg = &chip->reg->im0;
 		im_pos = ch;
+=======
+	if (irq < chip->irq_base + 8) {
+		im_reg = &chip->reg->im0;
+		im_pos = ch - 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		im_reg = &chip->reg->im1;
 		im_pos = ch - 8;
 	}
+<<<<<<< HEAD
 	dev_dbg(chip->dev, "%s:irq=%d type=%d ch=%d pos=%d\n",
 		__func__, irq, type, ch, im_pos);
 
 	spin_lock_irqsave(&chip->spinlock, flags);
+=======
+	dev_dbg(chip->dev, "irq=%d type=%d ch=%d pos=%d\n", irq, type, ch, im_pos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (type) {
 	case IRQ_TYPE_EDGE_RISING:
@@ -267,20 +411,36 @@ static int pch_irq_type(struct irq_data *d, unsigned int type)
 		val = PCH_LEVEL_L;
 		break;
 	default:
+<<<<<<< HEAD
 		goto unlock;
 	}
 
+=======
+		return 0;
+	}
+
+	spin_lock_irqsave(&chip->spinlock, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set interrupt mode */
 	im = ioread32(im_reg) & ~(PCH_IM_MASK << (im_pos * 4));
 	iowrite32(im | (val << (im_pos * 4)), im_reg);
 
 	/* And the handler */
+<<<<<<< HEAD
 	if (type & (IRQ_TYPE_LEVEL_LOW | IRQ_TYPE_LEVEL_HIGH))
 		__irq_set_handler_locked(d->irq, handle_level_irq);
 	else if (type & (IRQ_TYPE_EDGE_FALLING | IRQ_TYPE_EDGE_RISING))
 		__irq_set_handler_locked(d->irq, handle_edge_irq);
 
 unlock:
+=======
+	if (type & IRQ_TYPE_LEVEL_MASK)
+		irq_set_handler_locked(d, handle_level_irq);
+	else if (type & IRQ_TYPE_EDGE_BOTH)
+		irq_set_handler_locked(d, handle_edge_irq);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&chip->spinlock, flags);
 	return 0;
 }
@@ -290,7 +450,11 @@ static void pch_irq_unmask(struct irq_data *d)
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
 	struct pch_gpio *chip = gc->private;
 
+<<<<<<< HEAD
 	iowrite32(1 << (d->irq - chip->irq_base), &chip->reg->imaskclr);
+=======
+	iowrite32(BIT(d->irq - chip->irq_base), &chip->reg->imaskclr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pch_irq_mask(struct irq_data *d)
@@ -298,7 +462,11 @@ static void pch_irq_mask(struct irq_data *d)
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
 	struct pch_gpio *chip = gc->private;
 
+<<<<<<< HEAD
 	iowrite32(1 << (d->irq - chip->irq_base), &chip->reg->imask);
+=======
+	iowrite32(BIT(d->irq - chip->irq_base), &chip->reg->imask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pch_irq_ack(struct irq_data *d)
@@ -306,12 +474,17 @@ static void pch_irq_ack(struct irq_data *d)
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
 	struct pch_gpio *chip = gc->private;
 
+<<<<<<< HEAD
 	iowrite32(1 << (d->irq - chip->irq_base), &chip->reg->iclr);
+=======
+	iowrite32(BIT(d->irq - chip->irq_base), &chip->reg->iclr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t pch_gpio_handler(int irq, void *dev_id)
 {
 	struct pch_gpio *chip = dev_id;
+<<<<<<< HEAD
 	u32 reg_val = ioread32(&chip->reg->istatus);
 	int i, ret = IRQ_NONE;
 
@@ -334,6 +507,34 @@ static __devinit void pch_gpio_alloc_generic_chip(struct pch_gpio *chip,
 
 	gc = irq_alloc_generic_chip("pch_gpio", 1, irq_start, chip->base,
 				    handle_simple_irq);
+=======
+	unsigned long reg_val = ioread32(&chip->reg->istatus);
+	int i;
+
+	dev_vdbg(chip->dev, "irq=%d  status=0x%lx\n", irq, reg_val);
+
+	reg_val &= BIT(gpio_pins[chip->ioh]) - 1;
+
+	for_each_set_bit(i, &reg_val, gpio_pins[chip->ioh])
+		generic_handle_irq(chip->irq_base + i);
+
+	return IRQ_RETVAL(reg_val);
+}
+
+static int pch_gpio_alloc_generic_chip(struct pch_gpio *chip,
+				       unsigned int irq_start,
+				       unsigned int num)
+{
+	struct irq_chip_generic *gc;
+	struct irq_chip_type *ct;
+	int rv;
+
+	gc = devm_irq_alloc_generic_chip(chip->dev, "pch_gpio", 1, irq_start,
+					 chip->base, handle_simple_irq);
+	if (!gc)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gc->private = chip;
 	ct = gc->chip_types;
 
@@ -342,6 +543,7 @@ static __devinit void pch_gpio_alloc_generic_chip(struct pch_gpio *chip,
 	ct->chip.irq_unmask = pch_irq_unmask;
 	ct->chip.irq_set_type = pch_irq_type;
 
+<<<<<<< HEAD
 	irq_setup_generic_chip(gc, IRQ_MSK(num), IRQ_GC_INIT_MASK_CACHE,
 			       IRQ_NOREQUEST | IRQ_NOPROBE, 0);
 }
@@ -401,10 +603,58 @@ static int __devinit pch_gpio_probe(struct pci_dev *pdev,
 		dev_warn(&pdev->dev, "PCH gpio: Failed to get IRQ base num\n");
 		chip->irq_base = -1;
 		goto end;
+=======
+	rv = devm_irq_setup_generic_chip(chip->dev, gc, IRQ_MSK(num),
+					 IRQ_GC_INIT_MASK_CACHE,
+					 IRQ_NOREQUEST | IRQ_NOPROBE, 0);
+
+	return rv;
+}
+
+static int pch_gpio_probe(struct pci_dev *pdev,
+				    const struct pci_device_id *id)
+{
+	struct device *dev = &pdev->dev;
+	s32 ret;
+	struct pch_gpio *chip;
+	int irq_base;
+
+	chip = devm_kzalloc(dev, sizeof(*chip), GFP_KERNEL);
+	if (chip == NULL)
+		return -ENOMEM;
+
+	chip->dev = dev;
+	ret = pcim_enable_device(pdev);
+	if (ret)
+		return dev_err_probe(dev, ret, "Failed to enable PCI device\n");
+
+	ret = pcim_iomap_regions(pdev, BIT(1), KBUILD_MODNAME);
+	if (ret)
+		return dev_err_probe(dev, ret, "Failed to request and map PCI regions\n");
+
+	chip->base = pcim_iomap_table(pdev)[1];
+	chip->ioh = id->driver_data;
+	chip->reg = chip->base;
+	pci_set_drvdata(pdev, chip);
+	spin_lock_init(&chip->spinlock);
+	pch_gpio_setup(chip);
+
+	ret = devm_gpiochip_add_data(dev, &chip->gpio, chip);
+	if (ret)
+		return dev_err_probe(dev, ret, "Failed to register GPIO\n");
+
+	irq_base = devm_irq_alloc_descs(dev, -1, 0,
+					gpio_pins[chip->ioh], NUMA_NO_NODE);
+	if (irq_base < 0) {
+		dev_warn(dev, "PCH gpio: Failed to get IRQ base num\n");
+		chip->irq_base = -1;
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	chip->irq_base = irq_base;
 
 	/* Mask all interrupts, but enable them */
+<<<<<<< HEAD
 	msk = (1 << gpio_pins[chip->ioh]) - 1;
 	iowrite32(msk, &chip->reg->imask);
 	iowrite32(msk, &chip->reg->ien);
@@ -470,12 +720,29 @@ static int pch_gpio_suspend(struct pci_dev *pdev, pm_message_t state)
 {
 	s32 ret;
 	struct pch_gpio *chip = pci_get_drvdata(pdev);
+=======
+	iowrite32(BIT(gpio_pins[chip->ioh]) - 1, &chip->reg->imask);
+	iowrite32(BIT(gpio_pins[chip->ioh]) - 1, &chip->reg->ien);
+
+	ret = devm_request_irq(dev, pdev->irq, pch_gpio_handler,
+			       IRQF_SHARED, KBUILD_MODNAME, chip);
+	if (ret)
+		return dev_err_probe(dev, ret, "Failed to request IRQ\n");
+
+	return pch_gpio_alloc_generic_chip(chip, irq_base, gpio_pins[chip->ioh]);
+}
+
+static int __maybe_unused pch_gpio_suspend(struct device *dev)
+{
+	struct pch_gpio *chip = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&chip->spinlock, flags);
 	pch_gpio_save_reg_conf(chip);
 	spin_unlock_irqrestore(&chip->spinlock, flags);
 
+<<<<<<< HEAD
 	ret = pci_save_state(pdev);
 	if (ret) {
 		dev_err(&pdev->dev, "pci_save_state Failed-%d\n", ret);
@@ -506,6 +773,16 @@ static int pch_gpio_resume(struct pci_dev *pdev)
 	}
 	pci_restore_state(pdev);
 
+=======
+	return 0;
+}
+
+static int __maybe_unused pch_gpio_resume(struct device *dev)
+{
+	struct pch_gpio *chip = dev_get_drvdata(dev);
+	unsigned long flags;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&chip->spinlock, flags);
 	iowrite32(0x01, &chip->reg->reset);
 	iowrite32(0x00, &chip->reg->reset);
@@ -514,6 +791,7 @@ static int pch_gpio_resume(struct pci_dev *pdev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #else
 #define pch_gpio_suspend NULL
 #define pch_gpio_resume NULL
@@ -526,6 +804,17 @@ static DEFINE_PCI_DEVICE_TABLE(pch_gpio_pcidev_id) = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x8043) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_ROHM, 0x8803) },
 	{ 0, }
+=======
+
+static SIMPLE_DEV_PM_OPS(pch_gpio_pm_ops, pch_gpio_suspend, pch_gpio_resume);
+
+static const struct pci_device_id pch_gpio_pcidev_id[] = {
+	{ PCI_DEVICE_DATA(INTEL, EG20T_PCH, INTEL_EG20T_PCH) },
+	{ PCI_DEVICE_DATA(ROHM, ML7223m_IOH, OKISEMI_ML7223m_IOH) },
+	{ PCI_DEVICE_DATA(ROHM, ML7223n_IOH, OKISEMI_ML7223n_IOH) },
+	{ PCI_DEVICE_DATA(ROHM, EG20T_PCH, INTEL_EG20T_PCH) },
+	{ }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 MODULE_DEVICE_TABLE(pci, pch_gpio_pcidev_id);
 
@@ -533,6 +822,7 @@ static struct pci_driver pch_gpio_driver = {
 	.name = "pch_gpio",
 	.id_table = pch_gpio_pcidev_id,
 	.probe = pch_gpio_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(pch_gpio_remove),
 	.suspend = pch_gpio_suspend,
 	.resume = pch_gpio_resume
@@ -552,3 +842,14 @@ module_exit(pch_gpio_pci_exit);
 
 MODULE_DESCRIPTION("PCH GPIO PCI Driver");
 MODULE_LICENSE("GPL");
+=======
+	.driver = {
+		.pm = &pch_gpio_pm_ops,
+	},
+};
+
+module_pci_driver(pch_gpio_driver);
+
+MODULE_DESCRIPTION("PCH GPIO PCI Driver");
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * asmmacro.h: Assembler macros to make things easier to read.
  *
@@ -13,6 +17,7 @@
 #include <asm/fpregdef.h>
 #include <asm/mipsregs.h>
 
+<<<<<<< HEAD
 	.macro	fpu_save_16even thread tmp=t0
 	cfc1	\tmp, fcr31
 	sdc1	$f0,  THREAD_FPR0(\thread)
@@ -109,6 +114,8 @@
 1:	fpu_restore_16even \thread \tmp
 	.endm
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.macro	cpu_save_nonscratch thread
 	LONG_S	s0, THREAD_REG16(\thread)
 	LONG_S	s1, THREAD_REG17(\thread)

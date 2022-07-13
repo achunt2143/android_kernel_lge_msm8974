@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/input/keyboard/jornada680_kbd.c
  *
@@ -10,6 +14,7 @@
  * Split from drivers/input/keyboard/hp600_keyb.c
  *  Copyright (C) 2000 Yaegashi Takeshi (hp6xx kbd scan routine and translation table)
  *  Copyright (C) 2000 Niibe Yutaka (HP620 Keyb translation table)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as
@@ -19,6 +24,12 @@
 #include <linux/init.h>
 #include <linux/input.h>
 #include <linux/input-polldev.h>
+=======
+ */
+
+#include <linux/device.h>
+#include <linux/input.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/jiffies.h>
 #include <linux/kernel.h>
@@ -67,7 +78,11 @@ static const unsigned short jornada_scancodes[] = {
 #define JORNADA_SCAN_SIZE	18
 
 struct jornadakbd {
+<<<<<<< HEAD
 	struct input_polled_dev *poll_dev;
+=======
+	struct input_dev *input;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short keymap[ARRAY_SIZE(jornada_scancodes)];
 	unsigned char length;
 	unsigned char old_scan[JORNADA_SCAN_SIZE];
@@ -76,7 +91,11 @@ struct jornadakbd {
 
 static void jornada_parse_kbd(struct jornadakbd *jornadakbd)
 {
+<<<<<<< HEAD
 	struct input_dev *input_dev = jornadakbd->poll_dev->input;
+=======
+	struct input_dev *input_dev = jornadakbd->input;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short *keymap = jornadakbd->keymap;
 	unsigned int sync_me = 0;
 	unsigned int i, j;
@@ -170,15 +189,22 @@ static void jornada_scan_keyb(unsigned char *s)
 	*s++ = __raw_readb(PHDR);
 }
 
+<<<<<<< HEAD
 static void jornadakbd680_poll(struct input_polled_dev *dev)
 {
 	struct jornadakbd *jornadakbd = dev->private;
+=======
+static void jornadakbd680_poll(struct input_dev *input)
+{
+	struct jornadakbd *jornadakbd = input_get_drvdata(input);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	jornada_scan_keyb(jornadakbd->new_scan);
 	jornada_parse_kbd(jornadakbd);
 	memcpy(jornadakbd->old_scan, jornadakbd->new_scan, JORNADA_SCAN_SIZE);
 }
 
+<<<<<<< HEAD
 static int __devinit jornada680kbd_probe(struct platform_device *pdev)
 {
 	struct jornadakbd *jornadakbd;
@@ -199,22 +225,49 @@ static int __devinit jornada680kbd_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, jornadakbd);
 
 	jornadakbd->poll_dev = poll_dev;
+=======
+static int jornada680kbd_probe(struct platform_device *pdev)
+{
+	struct jornadakbd *jornadakbd;
+	struct input_dev *input_dev;
+	int i, error;
+
+	jornadakbd = devm_kzalloc(&pdev->dev, sizeof(struct jornadakbd),
+				  GFP_KERNEL);
+	if (!jornadakbd)
+		return -ENOMEM;
+
+	input_dev = devm_input_allocate_device(&pdev->dev);
+	if (!input_dev) {
+		dev_err(&pdev->dev, "failed to allocate input device\n");
+		return -ENOMEM;
+	}
+
+	jornadakbd->input = input_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(jornadakbd->keymap, jornada_scancodes,
 		sizeof(jornadakbd->keymap));
 
+<<<<<<< HEAD
 	poll_dev->private = jornadakbd;
 	poll_dev->poll = jornadakbd680_poll;
 	poll_dev->poll_interval = 50; /* msec */
 
 	input_dev = poll_dev->input;
+=======
+	input_set_drvdata(input_dev, jornadakbd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_dev->evbit[0] = BIT(EV_KEY) | BIT(EV_REP);
 	input_dev->name = "HP Jornada 680 keyboard";
 	input_dev->phys = "jornadakbd/input0";
 	input_dev->keycode = jornadakbd->keymap;
 	input_dev->keycodesize = sizeof(unsigned short);
 	input_dev->keycodemax = ARRAY_SIZE(jornada_scancodes);
+<<<<<<< HEAD
 	input_dev->dev.parent = &pdev->dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_dev->id.bustype = BUS_HOST;
 
 	for (i = 0; i < 128; i++)
@@ -224,6 +277,7 @@ static int __devinit jornada680kbd_probe(struct platform_device *pdev)
 
 	input_set_capability(input_dev, EV_MSC, MSC_SCAN);
 
+<<<<<<< HEAD
 	error = input_register_polled_device(jornadakbd->poll_dev);
 	if (error)
 		goto failed;
@@ -248,6 +302,21 @@ static int __devexit jornada680kbd_remove(struct platform_device *pdev)
 	input_unregister_polled_device(jornadakbd->poll_dev);
 	input_free_polled_device(jornadakbd->poll_dev);
 	kfree(jornadakbd);
+=======
+	error = input_setup_polling(input_dev, jornadakbd680_poll);
+	if (error) {
+		dev_err(&pdev->dev, "failed to set up polling\n");
+		return error;
+	}
+
+	input_set_poll_interval(input_dev, 50 /* msec */);
+
+	error = input_register_device(input_dev);
+	if (error) {
+		dev_err(&pdev->dev, "failed to register input device\n");
+		return error;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -255,10 +324,15 @@ static int __devexit jornada680kbd_remove(struct platform_device *pdev)
 static struct platform_driver jornada680kbd_driver = {
 	.driver	= {
 		.name	= "jornada680_kbd",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe	= jornada680kbd_probe,
 	.remove	= __devexit_p(jornada680kbd_remove),
+=======
+	},
+	.probe	= jornada680kbd_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 module_platform_driver(jornada680kbd_driver);
 

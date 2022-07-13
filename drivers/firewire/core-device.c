@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Device probing and sysfs code.
  *
  * Copyright (C) 2005-2006  Kristian Hoegsberg <krh@bitplanet.net>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/bug.h>
@@ -32,6 +39,10 @@
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/random.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/rwsem.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
@@ -43,6 +54,11 @@
 
 #include "core.h"
 
+<<<<<<< HEAD
+=======
+#define ROOT_DIR_OFFSET	5
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void fw_csr_iterator_init(struct fw_csr_iterator *ci, const u32 *p)
 {
 	ci->p = p + 1;
@@ -59,6 +75,25 @@ int fw_csr_iterator_next(struct fw_csr_iterator *ci, int *key, int *value)
 }
 EXPORT_SYMBOL(fw_csr_iterator_next);
 
+<<<<<<< HEAD
+=======
+static const u32 *search_directory(const u32 *directory, int search_key)
+{
+	struct fw_csr_iterator ci;
+	int key, value;
+
+	search_key |= CSR_DIRECTORY;
+
+	fw_csr_iterator_init(&ci, directory);
+	while (fw_csr_iterator_next(&ci, &key, &value)) {
+		if (key == search_key)
+			return ci.p - 1 + value;
+	}
+
+	return NULL;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const u32 *search_leaf(const u32 *directory, int search_key)
 {
 	struct fw_csr_iterator ci;
@@ -112,8 +147,15 @@ static int textual_leaf_to_string(const u32 *block, char *buf, size_t size)
  * @buf:	where to put the string
  * @size:	size of @buf, in bytes
  *
+<<<<<<< HEAD
  * The string is taken from a minimal ASCII text descriptor leaf after
  * the immediate entry with @key.  The string is zero-terminated.
+=======
+ * The string is taken from a minimal ASCII text descriptor leaf just after the entry with the
+ * @key. The string is zero-terminated. An overlong string is silently truncated such that it
+ * and the zero byte fit into @size.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns strlen(buf) or a negative error code.
  */
 int fw_csr_string(const u32 *directory, int key, char *buf, size_t size)
@@ -142,10 +184,34 @@ static void get_ids(const u32 *directory, int *id)
 	}
 }
 
+<<<<<<< HEAD
 static void get_modalias_ids(struct fw_unit *unit, int *id)
 {
 	get_ids(&fw_parent_device(unit)->config_rom[5], id);
 	get_ids(unit->directory, id);
+=======
+static void get_modalias_ids(const struct fw_unit *unit, int *id)
+{
+	const u32 *root_directory = &fw_parent_device(unit)->config_rom[ROOT_DIR_OFFSET];
+	const u32 *directories[] = {NULL, NULL, NULL};
+	const u32 *vendor_directory;
+	int i;
+
+	directories[0] = root_directory;
+
+	// Legacy layout of configuration ROM described in Annex 1 of 'Configuration ROM for AV/C
+	// Devices 1.0 (December 12, 2000, 1394 Trading Association, TA Document 1999027)'.
+	vendor_directory = search_directory(root_directory, CSR_VENDOR);
+	if (!vendor_directory) {
+		directories[1] = unit->directory;
+	} else {
+		directories[1] = vendor_directory;
+		directories[2] = unit->directory;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(directories) && !!directories[i]; ++i)
+		get_ids(directories[i], id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool match_ids(const struct ieee1394_device_id *id_table, int *id)
@@ -164,28 +230,69 @@ static bool match_ids(const struct ieee1394_device_id *id_table, int *id)
 	return (match & id_table->match_flags) == id_table->match_flags;
 }
 
+<<<<<<< HEAD
 static bool is_fw_unit(struct device *dev);
 
 static int fw_unit_match(struct device *dev, struct device_driver *drv)
+=======
+static const struct ieee1394_device_id *unit_match(struct device *dev,
+						   struct device_driver *drv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct ieee1394_device_id *id_table =
 			container_of(drv, struct fw_driver, driver)->id_table;
 	int id[] = {0, 0, 0, 0};
 
+<<<<<<< HEAD
 	/* We only allow binding to fw_units. */
 	if (!is_fw_unit(dev))
 		return 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	get_modalias_ids(fw_unit(dev), id);
 
 	for (; id_table->match_flags != 0; id_table++)
 		if (match_ids(id_table, id))
+<<<<<<< HEAD
 			return 1;
 
 	return 0;
 }
 
 static int get_modalias(struct fw_unit *unit, char *buffer, size_t buffer_size)
+=======
+			return id_table;
+
+	return NULL;
+}
+
+static bool is_fw_unit(const struct device *dev);
+
+static int fw_unit_match(struct device *dev, struct device_driver *drv)
+{
+	/* We only allow binding to fw_units. */
+	return is_fw_unit(dev) && unit_match(dev, drv) != NULL;
+}
+
+static int fw_unit_probe(struct device *dev)
+{
+	struct fw_driver *driver =
+			container_of(dev->driver, struct fw_driver, driver);
+
+	return driver->probe(fw_unit(dev), unit_match(dev, dev->driver));
+}
+
+static void fw_unit_remove(struct device *dev)
+{
+	struct fw_driver *driver =
+			container_of(dev->driver, struct fw_driver, driver);
+
+	driver->remove(fw_unit(dev));
+}
+
+static int get_modalias(const struct fw_unit *unit, char *buffer, size_t buffer_size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int id[] = {0, 0, 0, 0};
 
@@ -196,9 +303,15 @@ static int get_modalias(struct fw_unit *unit, char *buffer, size_t buffer_size)
 			id[0], id[1], id[2], id[3]);
 }
 
+<<<<<<< HEAD
 static int fw_unit_uevent(struct device *dev, struct kobj_uevent_env *env)
 {
 	struct fw_unit *unit = fw_unit(dev);
+=======
+static int fw_unit_uevent(const struct device *dev, struct kobj_uevent_env *env)
+{
+	const struct fw_unit *unit = fw_unit(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char modalias[64];
 
 	get_modalias(unit, modalias, sizeof(modalias));
@@ -209,9 +322,17 @@ static int fw_unit_uevent(struct device *dev, struct kobj_uevent_env *env)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct bus_type fw_bus_type = {
 	.name = "firewire",
 	.match = fw_unit_match,
+=======
+const struct bus_type fw_bus_type = {
+	.name = "firewire",
+	.match = fw_unit_match,
+	.probe = fw_unit_probe,
+	.remove = fw_unit_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 EXPORT_SYMBOL(fw_bus_type);
 
@@ -239,6 +360,7 @@ static ssize_t show_immediate(struct device *dev,
 	struct config_rom_attribute *attr =
 		container_of(dattr, struct config_rom_attribute, attr);
 	struct fw_csr_iterator ci;
+<<<<<<< HEAD
 	const u32 *dir;
 	int key, value, ret = -ENOENT;
 
@@ -260,6 +382,47 @@ static ssize_t show_immediate(struct device *dev,
 	up_read(&fw_device_rwsem);
 
 	return ret;
+=======
+	const u32 *directories[] = {NULL, NULL};
+	int i, value = -1;
+
+	down_read(&fw_device_rwsem);
+
+	if (is_fw_unit(dev)) {
+		directories[0] = fw_unit(dev)->directory;
+	} else {
+		const u32 *root_directory = fw_device(dev)->config_rom + ROOT_DIR_OFFSET;
+		const u32 *vendor_directory = search_directory(root_directory, CSR_VENDOR);
+
+		if (!vendor_directory) {
+			directories[0] = root_directory;
+		} else {
+			// Legacy layout of configuration ROM described in Annex 1 of
+			// 'Configuration ROM for AV/C Devices 1.0 (December 12, 2000, 1394 Trading
+			// Association, TA Document 1999027)'.
+			directories[0] = vendor_directory;
+			directories[1] = root_directory;
+		}
+	}
+
+	for (i = 0; i < ARRAY_SIZE(directories) && !!directories[i]; ++i) {
+		int key, val;
+
+		fw_csr_iterator_init(&ci, directories[i]);
+		while (fw_csr_iterator_next(&ci, &key, &val)) {
+			if (attr->key == key)
+				value = val;
+		}
+	}
+
+	up_read(&fw_device_rwsem);
+
+	if (value < 0)
+		return -ENOENT;
+
+	// Note that this function is also called by init_fw_attribute_group() with NULL pointer.
+	return buf ? sysfs_emit(buf, "0x%06x\n", value) : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define IMMEDIATE_ATTR(name, key)				\
@@ -270,6 +433,7 @@ static ssize_t show_text_leaf(struct device *dev,
 {
 	struct config_rom_attribute *attr =
 		container_of(dattr, struct config_rom_attribute, attr);
+<<<<<<< HEAD
 	const u32 *dir;
 	size_t bufsize;
 	char dummy_buf[2];
@@ -282,6 +446,33 @@ static ssize_t show_text_leaf(struct device *dev,
 	else
 		dir = fw_device(dev)->config_rom + 5;
 
+=======
+	const u32 *directories[] = {NULL, NULL};
+	size_t bufsize;
+	char dummy_buf[2];
+	int i, ret = -ENOENT;
+
+	down_read(&fw_device_rwsem);
+
+	if (is_fw_unit(dev)) {
+		directories[0] = fw_unit(dev)->directory;
+	} else {
+		const u32 *root_directory = fw_device(dev)->config_rom + ROOT_DIR_OFFSET;
+		const u32 *vendor_directory = search_directory(root_directory, CSR_VENDOR);
+
+		if (!vendor_directory) {
+			directories[0] = root_directory;
+		} else {
+			// Legacy layout of configuration ROM described in Annex 1 of
+			// 'Configuration ROM for AV/C Devices 1.0 (December 12, 2000, 1394
+			// Trading Association, TA Document 1999027)'.
+			directories[0] = root_directory;
+			directories[1] = vendor_directory;
+		}
+	}
+
+	// Note that this function is also called by init_fw_attribute_group() with NULL pointer.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (buf) {
 		bufsize = PAGE_SIZE - 1;
 	} else {
@@ -289,7 +480,25 @@ static ssize_t show_text_leaf(struct device *dev,
 		bufsize = 1;
 	}
 
+<<<<<<< HEAD
 	ret = fw_csr_string(dir, attr->key, buf, bufsize);
+=======
+	for (i = 0; i < ARRAY_SIZE(directories) && !!directories[i]; ++i) {
+		int result = fw_csr_string(directories[i], attr->key, buf, bufsize);
+		// Detected.
+		if (result >= 0) {
+			ret = result;
+		} else if (i == 0 && attr->key == CSR_VENDOR) {
+			// Sony DVMC-DA1 has configuration ROM such that the descriptor leaf entry
+			// in the root directory follows to the directory entry for vendor ID
+			// instead of the immediate value for vendor ID.
+			result = fw_csr_string(directories[i], CSR_DIRECTORY | attr->key, buf,
+					       bufsize);
+			if (result >= 0)
+				ret = result;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret >= 0) {
 		/* Strip trailing whitespace and add newline. */
@@ -360,8 +569,12 @@ static ssize_t rom_index_show(struct device *dev,
 	struct fw_device *device = fw_device(dev->parent);
 	struct fw_unit *unit = fw_unit(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%d\n",
 			(int)(unit->directory - device->config_rom));
+=======
+	return sysfs_emit(buf, "%td\n", unit->directory - device->config_rom);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct device_attribute fw_unit_attributes[] = {
@@ -391,13 +604,28 @@ static ssize_t guid_show(struct device *dev,
 	int ret;
 
 	down_read(&fw_device_rwsem);
+<<<<<<< HEAD
 	ret = snprintf(buf, PAGE_SIZE, "0x%08x%08x\n",
 		       device->config_rom[3], device->config_rom[4]);
+=======
+	ret = sysfs_emit(buf, "0x%08x%08x\n", device->config_rom[3], device->config_rom[4]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_read(&fw_device_rwsem);
 
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static ssize_t is_local_show(struct device *dev,
+			     struct device_attribute *attr, char *buf)
+{
+	struct fw_device *device = fw_device(dev);
+
+	return sysfs_emit(buf, "%u\n", device->is_local);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int units_sprintf(char *buf, const u32 *directory)
 {
 	struct fw_csr_iterator ci;
@@ -428,7 +656,11 @@ static ssize_t units_show(struct device *dev,
 	int key, value, i = 0;
 
 	down_read(&fw_device_rwsem);
+<<<<<<< HEAD
 	fw_csr_iterator_init(&ci, &device->config_rom[5]);
+=======
+	fw_csr_iterator_init(&ci, &device->config_rom[ROOT_DIR_OFFSET]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (fw_csr_iterator_next(&ci, &key, &value)) {
 		if (key != (CSR_UNIT | CSR_DIRECTORY))
 			continue;
@@ -447,6 +679,10 @@ static ssize_t units_show(struct device *dev,
 static struct device_attribute fw_device_attributes[] = {
 	__ATTR_RO(config_rom),
 	__ATTR_RO(guid),
+<<<<<<< HEAD
+=======
+	__ATTR_RO(is_local),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__ATTR_RO(units),
 	__ATTR_NULL,
 };
@@ -481,6 +717,10 @@ static int read_rom(struct fw_device *device,
  * generation changes under us, read_config_rom will fail and get retried.
  * It's better to start all over in this case because the node from which we
  * are reading the ROM may have changed the ROM during the reset.
+<<<<<<< HEAD
+=======
+ * Returns either a result code or a negative error code.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int read_config_rom(struct fw_device *device, int generation)
 {
@@ -488,7 +728,11 @@ static int read_config_rom(struct fw_device *device, int generation)
 	const u32 *old_rom, *new_rom;
 	u32 *rom, *stack;
 	u32 sp, key;
+<<<<<<< HEAD
 	int i, end, length, ret = -1;
+=======
+	int i, end, length, ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rom = kmalloc(sizeof(*rom) * MAX_CONFIG_ROM_SIZE +
 		      sizeof(*stack) * MAX_CONFIG_ROM_SIZE, GFP_KERNEL);
@@ -502,18 +746,33 @@ static int read_config_rom(struct fw_device *device, int generation)
 
 	/* First read the bus info block. */
 	for (i = 0; i < 5; i++) {
+<<<<<<< HEAD
 		if (read_rom(device, generation, i, &rom[i]) != RCODE_COMPLETE)
 			goto out;
 		/*
 		 * As per IEEE1212 7.2, during power-up, devices can
+=======
+		ret = read_rom(device, generation, i, &rom[i]);
+		if (ret != RCODE_COMPLETE)
+			goto out;
+		/*
+		 * As per IEEE1212 7.2, during initialization, devices can
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * reply with a 0 for the first quadlet of the config
 		 * rom to indicate that they are booting (for example,
 		 * if the firmware is on the disk of a external
 		 * harddisk).  In that case we just fail, and the
 		 * retry mechanism will try again later.
 		 */
+<<<<<<< HEAD
 		if (i == 0 && rom[i] == 0)
 			goto out;
+=======
+		if (i == 0 && rom[i] == 0) {
+			ret = RCODE_BUSY;
+			goto out;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	device->max_speed = device->node->max_speed;
@@ -563,11 +822,22 @@ static int read_config_rom(struct fw_device *device, int generation)
 		 */
 		key = stack[--sp];
 		i = key & 0xffffff;
+<<<<<<< HEAD
 		if (WARN_ON(i >= MAX_CONFIG_ROM_SIZE))
 			goto out;
 
 		/* Read header quadlet for the block to get the length. */
 		if (read_rom(device, generation, i, &rom[i]) != RCODE_COMPLETE)
+=======
+		if (WARN_ON(i >= MAX_CONFIG_ROM_SIZE)) {
+			ret = -ENXIO;
+			goto out;
+		}
+
+		/* Read header quadlet for the block to get the length. */
+		ret = read_rom(device, generation, i, &rom[i]);
+		if (ret != RCODE_COMPLETE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		end = i + (rom[i] >> 16) + 1;
 		if (end > MAX_CONFIG_ROM_SIZE) {
@@ -590,8 +860,13 @@ static int read_config_rom(struct fw_device *device, int generation)
 		 * it references another block, and push it in that case.
 		 */
 		for (; i < end; i++) {
+<<<<<<< HEAD
 			if (read_rom(device, generation, i, &rom[i]) !=
 			    RCODE_COMPLETE)
+=======
+			ret = read_rom(device, generation, i, &rom[i]);
+			if (ret != RCODE_COMPLETE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out;
 
 			if ((key >> 30) != 3 || (rom[i] >> 30) < 2)
@@ -619,8 +894,15 @@ static int read_config_rom(struct fw_device *device, int generation)
 
 	old_rom = device->config_rom;
 	new_rom = kmemdup(rom, length * 4, GFP_KERNEL);
+<<<<<<< HEAD
 	if (new_rom == NULL)
 		goto out;
+=======
+	if (new_rom == NULL) {
+		ret = -ENOMEM;
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_write(&fw_device_rwsem);
 	device->config_rom = new_rom;
@@ -628,7 +910,11 @@ static int read_config_rom(struct fw_device *device, int generation)
 	up_write(&fw_device_rwsem);
 
 	kfree(old_rom);
+<<<<<<< HEAD
 	ret = 0;
+=======
+	ret = RCODE_COMPLETE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device->max_rec	= rom[2] >> 12 & 0xf;
 	device->cmc	= rom[2] >> 30 & 1;
 	device->irmc	= rom[2] >> 31 & 1;
@@ -651,7 +937,11 @@ static struct device_type fw_unit_type = {
 	.release	= fw_unit_release,
 };
 
+<<<<<<< HEAD
 static bool is_fw_unit(struct device *dev)
+=======
+static bool is_fw_unit(const struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return dev->type == &fw_unit_type;
 }
@@ -663,7 +953,11 @@ static void create_units(struct fw_device *device)
 	int key, value, i;
 
 	i = 0;
+<<<<<<< HEAD
 	fw_csr_iterator_init(&ci, &device->config_rom[5]);
+=======
+	fw_csr_iterator_init(&ci, &device->config_rom[ROOT_DIR_OFFSET]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (fw_csr_iterator_next(&ci, &key, &value)) {
 		if (key != (CSR_UNIT | CSR_DIRECTORY))
 			continue;
@@ -673,10 +967,15 @@ static void create_units(struct fw_device *device)
 		 * match the drivers id_tables against it.
 		 */
 		unit = kzalloc(sizeof(*unit), GFP_KERNEL);
+<<<<<<< HEAD
 		if (unit == NULL) {
 			fw_err(device->card, "out of memory for unit\n");
 			continue;
 		}
+=======
+		if (unit == NULL)
+			continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		unit->directory = ci.p + value - 1;
 		unit->device.bus = &fw_bus_type;
@@ -691,6 +990,7 @@ static void create_units(struct fw_device *device)
 					fw_unit_attributes,
 					&unit->attribute_group);
 
+<<<<<<< HEAD
 		if (device_register(&unit->device) < 0)
 			goto skip_unit;
 
@@ -699,6 +999,13 @@ static void create_units(struct fw_device *device)
 
 	skip_unit:
 		kfree(unit);
+=======
+		fw_device_get(device);
+		if (device_register(&unit->device) < 0) {
+			put_device(&unit->device);
+			continue;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -812,7 +1119,11 @@ static struct device_type fw_device_type = {
 	.release = fw_device_release,
 };
 
+<<<<<<< HEAD
 static bool is_fw_device(struct device *dev)
+=======
+static bool is_fw_device(const struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return dev->type == &fw_device_type;
 }
@@ -929,7 +1240,11 @@ static void set_broadcast_channel(struct fw_device *device, int generation)
 				device->bc_implemented = BC_IMPLEMENTED;
 				break;
 			}
+<<<<<<< HEAD
 			/* else fall through to case address error */
+=======
+			fallthrough;	/* to case address error */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case RCODE_ADDRESS_ERROR:
 			device->bc_implemented = BC_UNIMPLEMENTED;
 		}
@@ -967,15 +1282,26 @@ static void fw_device_init(struct work_struct *work)
 	 * device.
 	 */
 
+<<<<<<< HEAD
 	if (read_config_rom(device, device->generation) < 0) {
+=======
+	ret = read_config_rom(device, device->generation);
+	if (ret != RCODE_COMPLETE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (device->config_rom_retries < MAX_RETRIES &&
 		    atomic_read(&device->state) == FW_DEVICE_INITIALIZING) {
 			device->config_rom_retries++;
 			fw_schedule_device_work(device, RETRY_DELAY);
 		} else {
 			if (device->node->link_on)
+<<<<<<< HEAD
 				fw_notice(card, "giving up on Config ROM for node id %x\n",
 					  device->node_id);
+=======
+				fw_notice(card, "giving up on node %x: reading config rom failed: %s\n",
+					  device->node_id,
+					  fw_rcode_string(ret));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (device->node == card->root_node)
 				fw_schedule_bm_work(card, 0);
 			fw_device_release(&device->device);
@@ -996,6 +1322,7 @@ static void fw_device_init(struct work_struct *work)
 
 	fw_device_get(device);
 	down_write(&fw_device_rwsem);
+<<<<<<< HEAD
 	ret = idr_pre_get(&fw_device_idr, GFP_KERNEL) ?
 	      idr_get_new(&fw_device_idr, device, &minor) :
 	      -ENOMEM;
@@ -1006,6 +1333,13 @@ static void fw_device_init(struct work_struct *work)
 	up_write(&fw_device_rwsem);
 
 	if (ret < 0)
+=======
+	minor = idr_alloc(&fw_device_idr, device, 0, 1 << MINORBITS,
+			GFP_KERNEL);
+	up_write(&fw_device_rwsem);
+
+	if (minor < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 
 	device->device.bus = &fw_bus_type;
@@ -1030,7 +1364,11 @@ static void fw_device_init(struct work_struct *work)
 
 	/*
 	 * Transition the device to running state.  If it got pulled
+<<<<<<< HEAD
 	 * out from under us while we did the intialization work, we
+=======
+	 * out from under us while we did the initialization work, we
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * have to shut down the device again here.  Normally, though,
 	 * fw_node_event will be responsible for shutting it down when
 	 * necessary.  We have to use the atomic cmpxchg here to avoid
@@ -1050,6 +1388,11 @@ static void fw_device_init(struct work_struct *work)
 		device->config_rom_retries = 0;
 
 		set_broadcast_channel(device, device->generation);
+<<<<<<< HEAD
+=======
+
+		add_device_randomness(&device->config_rom[3], 8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1073,6 +1416,7 @@ static void fw_device_init(struct work_struct *work)
 	put_device(&device->device);	/* our reference */
 }
 
+<<<<<<< HEAD
 enum {
 	REREAD_BIB_ERROR,
 	REREAD_BIB_GONE,
@@ -1098,6 +1442,32 @@ static int reread_config_rom(struct fw_device *device, int generation)
 	}
 
 	return REREAD_BIB_UNCHANGED;
+=======
+/* Reread and compare bus info block and header of root directory */
+static int reread_config_rom(struct fw_device *device, int generation,
+			     bool *changed)
+{
+	u32 q;
+	int i, rcode;
+
+	for (i = 0; i < 6; i++) {
+		rcode = read_rom(device, generation, i, &q);
+		if (rcode != RCODE_COMPLETE)
+			return rcode;
+
+		if (i == 0 && q == 0)
+			/* inaccessible (see read_config_rom); retry later */
+			return RCODE_BUSY;
+
+		if (q != device->config_rom[i]) {
+			*changed = true;
+			return RCODE_COMPLETE;
+		}
+	}
+
+	*changed = false;
+	return RCODE_COMPLETE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fw_device_refresh(struct work_struct *work)
@@ -1105,6 +1475,7 @@ static void fw_device_refresh(struct work_struct *work)
 	struct fw_device *device =
 		container_of(work, struct fw_device, work.work);
 	struct fw_card *card = device->card;
+<<<<<<< HEAD
 	int node_id = device->node_id;
 
 	switch (reread_config_rom(device, device->generation)) {
@@ -1122,6 +1493,16 @@ static void fw_device_refresh(struct work_struct *work)
 		goto gone;
 
 	case REREAD_BIB_UNCHANGED:
+=======
+	int ret, node_id = device->node_id;
+	bool changed;
+
+	ret = reread_config_rom(device, device->generation, &changed);
+	if (ret != RCODE_COMPLETE)
+		goto failed_config_rom;
+
+	if (!changed) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (atomic_cmpxchg(&device->state,
 				   FW_DEVICE_INITIALIZING,
 				   FW_DEVICE_RUNNING) == FW_DEVICE_GONE)
@@ -1130,9 +1511,12 @@ static void fw_device_refresh(struct work_struct *work)
 		fw_device_update(work);
 		device->config_rom_retries = 0;
 		goto out;
+<<<<<<< HEAD
 
 	case REREAD_BIB_CHANGED:
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1141,6 +1525,7 @@ static void fw_device_refresh(struct work_struct *work)
 	 */
 	device_for_each_child(&device->device, NULL, shutdown_unit);
 
+<<<<<<< HEAD
 	if (read_config_rom(device, device->generation) < 0) {
 		if (device->config_rom_retries < MAX_RETRIES &&
 		    atomic_read(&device->state) == FW_DEVICE_INITIALIZING) {
@@ -1151,6 +1536,11 @@ static void fw_device_refresh(struct work_struct *work)
 		}
 		goto give_up;
 	}
+=======
+	ret = read_config_rom(device, device->generation);
+	if (ret != RCODE_COMPLETE)
+		goto failed_config_rom;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fw_device_cdev_update(device);
 	create_units(device);
@@ -1167,9 +1557,22 @@ static void fw_device_refresh(struct work_struct *work)
 	device->config_rom_retries = 0;
 	goto out;
 
+<<<<<<< HEAD
  give_up:
 	fw_notice(card, "giving up on refresh of device %s\n",
 		  dev_name(&device->device));
+=======
+ failed_config_rom:
+	if (device->config_rom_retries < MAX_RETRIES &&
+	    atomic_read(&device->state) == FW_DEVICE_INITIALIZING) {
+		device->config_rom_retries++;
+		fw_schedule_device_work(device, RETRY_DELAY);
+		return;
+	}
+
+	fw_notice(card, "giving up on refresh of device %s: %s\n",
+		  dev_name(&device->device), fw_rcode_string(ret));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  gone:
 	atomic_set(&device->state, FW_DEVICE_GONE);
 	device->workfn = fw_device_shutdown;
@@ -1204,7 +1607,11 @@ void fw_node_event(struct fw_card *card, struct fw_node *node, int event)
 			break;
 
 		/*
+<<<<<<< HEAD
 		 * Do minimal intialization of the device here, the
+=======
+		 * Do minimal initialization of the device here, the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * rest will happen in fw_device_init().
 		 *
 		 * Attention:  A lot of things, even fw_device_get(),
@@ -1299,3 +1706,10 @@ void fw_node_event(struct fw_card *card, struct fw_node *node, int event)
 		break;
 	}
 }
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_FIREWIRE_KUNIT_DEVICE_ATTRIBUTE_TEST
+#include "device-attribute-test.c"
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

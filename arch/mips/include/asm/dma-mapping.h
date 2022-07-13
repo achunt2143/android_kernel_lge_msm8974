@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_DMA_MAPPING_H
 #define _ASM_DMA_MAPPING_H
 
@@ -93,4 +94,23 @@ void *dma_alloc_noncoherent(struct device *dev, size_t size,
 void dma_free_noncoherent(struct device *dev, size_t size,
 			 void *vaddr, dma_addr_t dma_handle);
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_DMA_MAPPING_H
+#define _ASM_DMA_MAPPING_H
+
+#include <linux/swiotlb.h>
+
+extern const struct dma_map_ops jazz_dma_ops;
+
+static inline const struct dma_map_ops *get_arch_dma_ops(void)
+{
+#if defined(CONFIG_MACH_JAZZ)
+	return &jazz_dma_ops;
+#else
+	return NULL;
+#endif
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_DMA_MAPPING_H */

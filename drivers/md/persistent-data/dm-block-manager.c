@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Red Hat, Inc.
  *
@@ -5,19 +9,33 @@
  */
 #include "dm-block-manager.h"
 #include "dm-persistent-data-internal.h"
+<<<<<<< HEAD
 #include "../dm-bufio.h"
 
+=======
+
+#include <linux/dm-bufio.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/crc32c.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/rwsem.h>
 #include <linux/device-mapper.h>
 #include <linux/stacktrace.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/task.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DM_MSG_PREFIX "block manager"
 
 /*----------------------------------------------------------------*/
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_DM_DEBUG_BLOCK_MANAGER_LOCKING
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is a read/write semaphore with a couple of differences.
  *
@@ -25,14 +43,25 @@
  * may be held at once.  This is just an implementation detail.
  *
  * ii) Recursive locking attempts are detected and return EINVAL.  A stack
+<<<<<<< HEAD
  * trace is also emitted for the previous lock aquisition.
+=======
+ * trace is also emitted for the previous lock acquisition.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * iii) Priority is given to write locks.
  */
 #define MAX_HOLDERS 4
 #define MAX_STACK 10
 
+<<<<<<< HEAD
 typedef unsigned long stack_entries[MAX_STACK];
+=======
+struct stack_store {
+	unsigned int	nr_entries;
+	unsigned long	entries[MAX_STACK];
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct block_lock {
 	spinlock_t lock;
@@ -41,8 +70,12 @@ struct block_lock {
 	struct task_struct *holders[MAX_HOLDERS];
 
 #ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
+<<<<<<< HEAD
 	struct stack_trace traces[MAX_HOLDERS];
 	stack_entries entries[MAX_HOLDERS];
+=======
+	struct stack_store traces[MAX_HOLDERS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
@@ -52,10 +85,17 @@ struct waiter {
 	int wants_write;
 };
 
+<<<<<<< HEAD
 static unsigned __find_holder(struct block_lock *lock,
 			      struct task_struct *task)
 {
 	unsigned i;
+=======
+static unsigned int __find_holder(struct block_lock *lock,
+			      struct task_struct *task)
+{
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < MAX_HOLDERS; i++)
 		if (lock->holders[i] == task)
@@ -68,9 +108,15 @@ static unsigned __find_holder(struct block_lock *lock,
 /* call this *after* you increment lock->count */
 static void __add_holder(struct block_lock *lock, struct task_struct *task)
 {
+<<<<<<< HEAD
 	unsigned h = __find_holder(lock, NULL);
 #ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
 	struct stack_trace *t;
+=======
+	unsigned int h = __find_holder(lock, NULL);
+#ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
+	struct stack_store *t;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	get_task_struct(task);
@@ -78,24 +124,34 @@ static void __add_holder(struct block_lock *lock, struct task_struct *task)
 
 #ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
 	t = lock->traces + h;
+<<<<<<< HEAD
 	t->nr_entries = 0;
 	t->max_entries = MAX_STACK;
 	t->entries = lock->entries[h];
 	t->skip = 2;
 	save_stack_trace(t);
+=======
+	t->nr_entries = stack_trace_save(t->entries, MAX_STACK, 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
 /* call this *before* you decrement lock->count */
 static void __del_holder(struct block_lock *lock, struct task_struct *task)
 {
+<<<<<<< HEAD
 	unsigned h = __find_holder(lock, task);
+=======
+	unsigned int h = __find_holder(lock, task);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lock->holders[h] = NULL;
 	put_task_struct(task);
 }
 
 static int __check_holder(struct block_lock *lock)
 {
+<<<<<<< HEAD
 	unsigned i;
 #ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
 	static struct stack_trace t;
@@ -116,6 +172,20 @@ static int __check_holder(struct block_lock *lock)
 			t.skip = 3;
 			save_stack_trace(&t);
 			print_stack_trace(&t, 4);
+=======
+	unsigned int i;
+
+	for (i = 0; i < MAX_HOLDERS; i++) {
+		if (lock->holders[i] == current) {
+			DMERR("recursive lock detected in metadata");
+#ifdef CONFIG_DM_DEBUG_BLOCK_STACK_TRACING
+			DMERR("previously held here:");
+			stack_trace_print(lock->traces[i].entries,
+					  lock->traces[i].nr_entries, 4);
+
+			DMERR("subsequent acquisition attempted here:");
+			dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 			return -EINVAL;
 		}
@@ -127,7 +197,11 @@ static int __check_holder(struct block_lock *lock)
 static void __wait(struct waiter *w)
 {
 	for (;;) {
+<<<<<<< HEAD
 		set_task_state(current, TASK_UNINTERRUPTIBLE);
+=======
+		set_current_state(TASK_UNINTERRUPTIBLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!w->task)
 			break;
@@ -135,7 +209,11 @@ static void __wait(struct waiter *w)
 		schedule();
 	}
 
+<<<<<<< HEAD
 	set_task_state(current, TASK_RUNNING);
+=======
+	set_current_state(TASK_RUNNING);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __wake_waiter(struct waiter *w)
@@ -311,6 +389,21 @@ static void report_recursive_bug(dm_block_t b, int r)
 		      (unsigned long long) b);
 }
 
+<<<<<<< HEAD
+=======
+#else  /* !CONFIG_DM_DEBUG_BLOCK_MANAGER_LOCKING */
+
+#define bl_init(x) do { } while (0)
+#define bl_down_read(x) 0
+#define bl_down_read_nonblock(x) 0
+#define bl_up_read(x) do { } while (0)
+#define bl_down_write(x) 0
+#define bl_up_write(x) do { } while (0)
+#define report_recursive_bug(x, y) do { } while (0)
+
+#endif /* CONFIG_DM_DEBUG_BLOCK_MANAGER_LOCKING */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*----------------------------------------------------------------*/
 
 /*
@@ -325,11 +418,14 @@ static struct dm_buffer *to_buffer(struct dm_block *b)
 	return (struct dm_buffer *) b;
 }
 
+<<<<<<< HEAD
 static struct dm_bufio_client *to_bufio(struct dm_block_manager *bm)
 {
 	return (struct dm_bufio_client *) bm;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 dm_block_t dm_block_location(struct dm_block *b)
 {
 	return dm_bufio_get_block_number(to_buffer(b));
@@ -344,13 +440,25 @@ EXPORT_SYMBOL_GPL(dm_block_data);
 
 struct buffer_aux {
 	struct dm_block_validator *validator;
+<<<<<<< HEAD
 	struct block_lock lock;
 	int write_locked;
+=======
+	int write_locked;
+
+#ifdef CONFIG_DM_DEBUG_BLOCK_MANAGER_LOCKING
+	struct block_lock lock;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void dm_block_manager_alloc_callback(struct dm_buffer *buf)
 {
 	struct buffer_aux *aux = dm_bufio_get_aux_data(buf);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aux->validator = NULL;
 	bl_init(&aux->lock);
 }
@@ -358,12 +466,17 @@ static void dm_block_manager_alloc_callback(struct dm_buffer *buf)
 static void dm_block_manager_write_callback(struct dm_buffer *buf)
 {
 	struct buffer_aux *aux = dm_bufio_get_aux_data(buf);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (aux->validator) {
 		aux->validator->prepare_for_write(aux->validator, (struct dm_block *) buf,
 			 dm_bufio_get_block_size(dm_bufio_get_client(buf)));
 	}
 }
 
+<<<<<<< HEAD
 /*----------------------------------------------------------------
  * Public interface
  *--------------------------------------------------------------*/
@@ -377,11 +490,54 @@ struct dm_block_manager *dm_block_manager_create(struct block_device *bdev,
 				       sizeof(struct buffer_aux),
 				       dm_block_manager_alloc_callback,
 				       dm_block_manager_write_callback);
+=======
+/*
+ * -------------------------------------------------------------
+ * Public interface
+ *--------------------------------------------------------------
+ */
+struct dm_block_manager {
+	struct dm_bufio_client *bufio;
+	bool read_only:1;
+};
+
+struct dm_block_manager *dm_block_manager_create(struct block_device *bdev,
+						 unsigned int block_size,
+						 unsigned int max_held_per_thread)
+{
+	int r;
+	struct dm_block_manager *bm;
+
+	bm = kmalloc(sizeof(*bm), GFP_KERNEL);
+	if (!bm) {
+		r = -ENOMEM;
+		goto bad;
+	}
+
+	bm->bufio = dm_bufio_client_create(bdev, block_size, max_held_per_thread,
+					   sizeof(struct buffer_aux),
+					   dm_block_manager_alloc_callback,
+					   dm_block_manager_write_callback,
+					   0);
+	if (IS_ERR(bm->bufio)) {
+		r = PTR_ERR(bm->bufio);
+		kfree(bm);
+		goto bad;
+	}
+
+	bm->read_only = false;
+
+	return bm;
+
+bad:
+	return ERR_PTR(r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(dm_block_manager_create);
 
 void dm_block_manager_destroy(struct dm_block_manager *bm)
 {
+<<<<<<< HEAD
 	return dm_bufio_client_destroy(to_bufio(bm));
 }
 EXPORT_SYMBOL_GPL(dm_block_manager_destroy);
@@ -389,12 +545,32 @@ EXPORT_SYMBOL_GPL(dm_block_manager_destroy);
 unsigned dm_bm_block_size(struct dm_block_manager *bm)
 {
 	return dm_bufio_get_block_size(to_bufio(bm));
+=======
+	dm_bufio_client_destroy(bm->bufio);
+	kfree(bm);
+}
+EXPORT_SYMBOL_GPL(dm_block_manager_destroy);
+
+void dm_block_manager_reset(struct dm_block_manager *bm)
+{
+	dm_bufio_client_reset(bm->bufio);
+}
+EXPORT_SYMBOL_GPL(dm_block_manager_reset);
+
+unsigned int dm_bm_block_size(struct dm_block_manager *bm)
+{
+	return dm_bufio_get_block_size(bm->bufio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(dm_bm_block_size);
 
 dm_block_t dm_bm_nr_blocks(struct dm_block_manager *bm)
 {
+<<<<<<< HEAD
 	return dm_bufio_get_device_size(to_bufio(bm));
+=======
+	return dm_bufio_get_device_size(bm->bufio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dm_bm_validate_buffer(struct dm_block_manager *bm,
@@ -404,6 +580,7 @@ static int dm_bm_validate_buffer(struct dm_block_manager *bm,
 {
 	if (unlikely(!aux->validator)) {
 		int r;
+<<<<<<< HEAD
 		if (!v)
 			return 0;
 		r = v->check(v, (struct dm_block *) buf, dm_bufio_get_block_size(to_bufio(bm)));
@@ -416,6 +593,23 @@ static int dm_bm_validate_buffer(struct dm_block_manager *bm,
 				aux->validator->name, v ? v->name : "NULL",
 				(unsigned long long)
 					dm_bufio_get_block_number(buf));
+=======
+
+		if (!v)
+			return 0;
+		r = v->check(v, (struct dm_block *) buf, dm_bufio_get_block_size(bm->bufio));
+		if (unlikely(r)) {
+			DMERR_LIMIT("%s validator check failed for block %llu", v->name,
+				    (unsigned long long) dm_bufio_get_block_number(buf));
+			return r;
+		}
+		aux->validator = v;
+	} else {
+		if (unlikely(aux->validator != v)) {
+			DMERR_LIMIT("validator mismatch (old=%s vs new=%s) for block %llu",
+				    aux->validator->name, v ? v->name : "NULL",
+				    (unsigned long long) dm_bufio_get_block_number(buf));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
@@ -430,8 +624,13 @@ int dm_bm_read_lock(struct dm_block_manager *bm, dm_block_t b,
 	void *p;
 	int r;
 
+<<<<<<< HEAD
 	p = dm_bufio_read(to_bufio(bm), b, (struct dm_buffer **) result);
 	if (unlikely(IS_ERR(p)))
+=======
+	p = dm_bufio_read(bm->bufio, b, (struct dm_buffer **) result);
+	if (IS_ERR(p))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return PTR_ERR(p);
 
 	aux = dm_bufio_get_aux_data(to_buffer(*result));
@@ -463,8 +662,16 @@ int dm_bm_write_lock(struct dm_block_manager *bm,
 	void *p;
 	int r;
 
+<<<<<<< HEAD
 	p = dm_bufio_read(to_bufio(bm), b, (struct dm_buffer **) result);
 	if (unlikely(IS_ERR(p)))
+=======
+	if (dm_bm_is_read_only(bm))
+		return -EPERM;
+
+	p = dm_bufio_read(bm->bufio, b, (struct dm_buffer **) result);
+	if (IS_ERR(p))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return PTR_ERR(p);
 
 	aux = dm_bufio_get_aux_data(to_buffer(*result));
@@ -496,8 +703,13 @@ int dm_bm_read_try_lock(struct dm_block_manager *bm,
 	void *p;
 	int r;
 
+<<<<<<< HEAD
 	p = dm_bufio_get(to_bufio(bm), b, (struct dm_buffer **) result);
 	if (unlikely(IS_ERR(p)))
+=======
+	p = dm_bufio_get(bm->bufio, b, (struct dm_buffer **) result);
+	if (IS_ERR(p))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return PTR_ERR(p);
 	if (unlikely(!p))
 		return -EWOULDBLOCK;
@@ -529,8 +741,16 @@ int dm_bm_write_lock_zero(struct dm_block_manager *bm,
 	struct buffer_aux *aux;
 	void *p;
 
+<<<<<<< HEAD
 	p = dm_bufio_new(to_bufio(bm), b, (struct dm_buffer **) result);
 	if (unlikely(IS_ERR(p)))
+=======
+	if (dm_bm_is_read_only(bm))
+		return -EPERM;
+
+	p = dm_bufio_new(bm->bufio, b, (struct dm_buffer **) result);
+	if (IS_ERR(p))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return PTR_ERR(p);
 
 	memset(p, 0, dm_bm_block_size(bm));
@@ -547,11 +767,19 @@ int dm_bm_write_lock_zero(struct dm_block_manager *bm,
 
 	return 0;
 }
+<<<<<<< HEAD
 
 int dm_bm_unlock(struct dm_block *b)
 {
 	struct buffer_aux *aux;
 	aux = dm_bufio_get_aux_data(to_buffer(b));
+=======
+EXPORT_SYMBOL_GPL(dm_bm_write_lock_zero);
+
+void dm_bm_unlock(struct dm_block *b)
+{
+	struct buffer_aux *aux = dm_bufio_get_aux_data(to_buffer(b));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (aux->write_locked) {
 		dm_bufio_mark_buffer_dirty(to_buffer(b));
@@ -560,6 +788,7 @@ int dm_bm_unlock(struct dm_block *b)
 		bl_up_read(&aux->lock);
 
 	dm_bufio_release(to_buffer(b));
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -604,6 +833,44 @@ int dm_bm_flush_and_unlock(struct dm_block_manager *bm,
 
 	return 0;
 }
+=======
+}
+EXPORT_SYMBOL_GPL(dm_bm_unlock);
+
+int dm_bm_flush(struct dm_block_manager *bm)
+{
+	if (dm_bm_is_read_only(bm))
+		return -EPERM;
+
+	return dm_bufio_write_dirty_buffers(bm->bufio);
+}
+EXPORT_SYMBOL_GPL(dm_bm_flush);
+
+void dm_bm_prefetch(struct dm_block_manager *bm, dm_block_t b)
+{
+	dm_bufio_prefetch(bm->bufio, b, 1);
+}
+
+bool dm_bm_is_read_only(struct dm_block_manager *bm)
+{
+	return bm ? bm->read_only : true;
+}
+EXPORT_SYMBOL_GPL(dm_bm_is_read_only);
+
+void dm_bm_set_read_only(struct dm_block_manager *bm)
+{
+	if (bm)
+		bm->read_only = true;
+}
+EXPORT_SYMBOL_GPL(dm_bm_set_read_only);
+
+void dm_bm_set_read_write(struct dm_block_manager *bm)
+{
+	if (bm)
+		bm->read_only = false;
+}
+EXPORT_SYMBOL_GPL(dm_bm_set_read_write);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 u32 dm_bm_checksum(const void *data, size_t len, u32 init_xor)
 {
@@ -614,7 +881,11 @@ EXPORT_SYMBOL_GPL(dm_bm_checksum);
 /*----------------------------------------------------------------*/
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Joe Thornber <dm-devel@redhat.com>");
+=======
+MODULE_AUTHOR("Joe Thornber <dm-devel@lists.linux.dev>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Immutable metadata library for dm");
 
 /*----------------------------------------------------------------*/

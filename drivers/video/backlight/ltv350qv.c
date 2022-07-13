@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Power control for Samsung LTV350QV Quarter VGA LCD Panel
  *
  * Copyright (C) 2006, 2007 Atmel Corporation
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -30,8 +37,12 @@ struct ltv350qv {
 /*
  * The power-on and power-off sequences are taken from the
  * LTV350QV-F04 data sheet from Samsung. The register definitions are
+<<<<<<< HEAD
  * taken from the S6F2002 command list also from Samsung. Both
  * documents are distributed with the AVR32 Linux BSP CD from Atmel.
+=======
+ * taken from the S6F2002 command list also from Samsung.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * There's still some voodoo going on here, but it's a lot better than
  * in the first incarnation of the driver where all we had was the raw
@@ -75,7 +86,11 @@ static int ltv350qv_power_on(struct ltv350qv *lcd)
 	/* Power On Reset Display off State */
 	if (ltv350qv_write_reg(lcd, LTV_PWRCTL1, 0x0000))
 		goto err;
+<<<<<<< HEAD
 	msleep(15);
+=======
+	usleep_range(15000, 16000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Power Setting Function 1 */
 	if (ltv350qv_write_reg(lcd, LTV_PWRCTL1, LTV_VCOM_DISABLE))
@@ -153,7 +168,11 @@ err_settings:
 err_power2:
 err_power1:
 	ltv350qv_write_reg(lcd, LTV_PWRCTL2, 0x0000);
+<<<<<<< HEAD
 	msleep(1);
+=======
+	usleep_range(1000, 1100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	ltv350qv_write_reg(lcd, LTV_PWRCTL1, LTV_VCOM_DISABLE);
 	return -EIO;
@@ -175,7 +194,11 @@ static int ltv350qv_power_off(struct ltv350qv *lcd)
 	ret |= ltv350qv_write_reg(lcd, LTV_PWRCTL2, 0x0000);
 
 	/* Wait at least 1 ms */
+<<<<<<< HEAD
 	msleep(1);
+=======
+	usleep_range(1000, 1100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Power down setting 2 */
 	ret |= ltv350qv_write_reg(lcd, LTV_PWRCTL1, LTV_VCOM_DISABLE);
@@ -226,18 +249,27 @@ static struct lcd_ops ltv_ops = {
 	.set_power	= ltv350qv_set_power,
 };
 
+<<<<<<< HEAD
 static int __devinit ltv350qv_probe(struct spi_device *spi)
+=======
+static int ltv350qv_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ltv350qv *lcd;
 	struct lcd_device *ld;
 	int ret;
 
+<<<<<<< HEAD
 	lcd = kzalloc(sizeof(struct ltv350qv), GFP_KERNEL);
+=======
+	lcd = devm_kzalloc(&spi->dev, sizeof(struct ltv350qv), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lcd)
 		return -ENOMEM;
 
 	lcd->spi = spi;
 	lcd->power = FB_BLANK_POWERDOWN;
+<<<<<<< HEAD
 	lcd->buffer = kzalloc(8, GFP_KERNEL);
 	if (!lcd->buffer) {
 		ret = -ENOMEM;
@@ -249,10 +281,22 @@ static int __devinit ltv350qv_probe(struct spi_device *spi)
 		ret = PTR_ERR(ld);
 		goto out_free_buffer;
 	}
+=======
+	lcd->buffer = devm_kzalloc(&spi->dev, 8, GFP_KERNEL);
+	if (!lcd->buffer)
+		return -ENOMEM;
+
+	ld = devm_lcd_device_register(&spi->dev, "ltv350qv", &spi->dev, lcd,
+					&ltv_ops);
+	if (IS_ERR(ld))
+		return PTR_ERR(ld);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lcd->ld = ld;
 
 	ret = ltv350qv_power(lcd, FB_BLANK_UNBLANK);
 	if (ret)
+<<<<<<< HEAD
 		goto out_unregister;
 
 	dev_set_drvdata(&spi->dev, lcd);
@@ -284,10 +328,31 @@ static int __devexit ltv350qv_remove(struct spi_device *spi)
 static int ltv350qv_suspend(struct spi_device *spi, pm_message_t state)
 {
 	struct ltv350qv *lcd = dev_get_drvdata(&spi->dev);
+=======
+		return ret;
+
+	spi_set_drvdata(spi, lcd);
+
+	return 0;
+}
+
+static void ltv350qv_remove(struct spi_device *spi)
+{
+	struct ltv350qv *lcd = spi_get_drvdata(spi);
+
+	ltv350qv_power(lcd, FB_BLANK_POWERDOWN);
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int ltv350qv_suspend(struct device *dev)
+{
+	struct ltv350qv *lcd = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ltv350qv_power(lcd, FB_BLANK_POWERDOWN);
 }
 
+<<<<<<< HEAD
 static int ltv350qv_resume(struct spi_device *spi)
 {
 	struct ltv350qv *lcd = dev_get_drvdata(&spi->dev);
@@ -303,6 +368,22 @@ static int ltv350qv_resume(struct spi_device *spi)
 static void ltv350qv_shutdown(struct spi_device *spi)
 {
 	struct ltv350qv *lcd = dev_get_drvdata(&spi->dev);
+=======
+static int ltv350qv_resume(struct device *dev)
+{
+	struct ltv350qv *lcd = dev_get_drvdata(dev);
+
+	return ltv350qv_power(lcd, FB_BLANK_UNBLANK);
+}
+#endif
+
+static SIMPLE_DEV_PM_OPS(ltv350qv_pm_ops, ltv350qv_suspend, ltv350qv_resume);
+
+/* Power down all displays on reboot, poweroff or halt */
+static void ltv350qv_shutdown(struct spi_device *spi)
+{
+	struct ltv350qv *lcd = spi_get_drvdata(spi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ltv350qv_power(lcd, FB_BLANK_POWERDOWN);
 }
@@ -310,6 +391,7 @@ static void ltv350qv_shutdown(struct spi_device *spi)
 static struct spi_driver ltv350qv_driver = {
 	.driver = {
 		.name		= "ltv350qv",
+<<<<<<< HEAD
 		.bus		= &spi_bus_type,
 		.owner		= THIS_MODULE,
 	},
@@ -319,6 +401,14 @@ static struct spi_driver ltv350qv_driver = {
 	.shutdown	= ltv350qv_shutdown,
 	.suspend	= ltv350qv_suspend,
 	.resume		= ltv350qv_resume,
+=======
+		.pm		= &ltv350qv_pm_ops,
+	},
+
+	.probe		= ltv350qv_probe,
+	.remove		= ltv350qv_remove,
+	.shutdown	= ltv350qv_shutdown,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(ltv350qv_driver);

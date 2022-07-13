@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Apple Onboard Audio driver for tas codec
  *
  * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
  *
+<<<<<<< HEAD
  * GPL v2, can be found in COPYING.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Open questions:
  *  - How to distinguish between 3004 and versions?
  *
@@ -59,6 +66,7 @@
  *    and up to the hardware designer to not wire
  *    them up in some weird unusable way.
  */
+<<<<<<< HEAD
 #include <stddef.h>
 #include <linux/i2c.h>
 #include <asm/pmac_low_i2c.h>
@@ -66,6 +74,14 @@
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
+=======
+#include <linux/i2c.h>
+#include <asm/pmac_low_i2c.h>
+#include <linux/delay.h>
+#include <linux/module.h>
+#include <linux/mutex.h>
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 MODULE_AUTHOR("Johannes Berg <johannes@sipsolutions.net>");
@@ -218,7 +234,11 @@ static int tas_dev_register(struct snd_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_device_ops ops = {
+=======
+static const struct snd_device_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dev_register = tas_dev_register,
 };
 
@@ -271,7 +291,11 @@ static int tas_snd_vol_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new volume_control = {
+=======
+static const struct snd_kcontrol_new volume_control = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Master Playback Volume",
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
@@ -314,7 +338,11 @@ static int tas_snd_mute_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new mute_control = {
+=======
+static const struct snd_kcontrol_new mute_control = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Master Playback Switch",
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
@@ -370,7 +398,11 @@ static int tas_snd_mixer_put(struct snd_kcontrol *kcontrol,
 }
 
 #define MIXER_CONTROL(n,descr,idx)			\
+<<<<<<< HEAD
 static struct snd_kcontrol_new n##_control = {		\
+=======
+static const struct snd_kcontrol_new n##_control = {	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,		\
 	.name = descr " Playback Volume",		\
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,	\
@@ -426,7 +458,11 @@ static int tas_snd_drc_range_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new drc_range_control = {
+=======
+static const struct snd_kcontrol_new drc_range_control = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "DRC Range",
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
@@ -466,7 +502,11 @@ static int tas_snd_drc_switch_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new drc_switch_control = {
+=======
+static const struct snd_kcontrol_new drc_switch_control = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "DRC Range Switch",
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
@@ -478,6 +518,7 @@ static struct snd_kcontrol_new drc_switch_control = {
 static int tas_snd_capture_source_info(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[] = { "Line-In", "Microphone" };
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -487,6 +528,11 @@ static int tas_snd_capture_source_info(struct snd_kcontrol *kcontrol,
 		uinfo->value.enumerated.item = 1;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[] = { "Line-In", "Microphone" };
+
+	return snd_ctl_enum_info(uinfo, 1, 2, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int tas_snd_capture_source_get(struct snd_kcontrol *kcontrol,
@@ -530,7 +576,11 @@ static int tas_snd_capture_source_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new capture_source_control = {
+=======
+static const struct snd_kcontrol_new capture_source_control = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	/* If we name this 'Input Source', it properly shows up in
 	 * alsamixer as a selection, * but it's shown under the
@@ -592,7 +642,11 @@ static int tas_snd_treble_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new treble_control = {
+=======
+static const struct snd_kcontrol_new treble_control = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Treble",
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
@@ -643,7 +697,11 @@ static int tas_snd_bass_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new bass_control = {
+=======
+static const struct snd_kcontrol_new bass_control = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Bass",
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
@@ -826,7 +884,11 @@ static int tas_init_codec(struct aoa_codec *codec)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	if (aoa_snd_device_new(SNDRV_DEV_LOWLEVEL, tas, &ops)) {
+=======
+	if (aoa_snd_device_new(SNDRV_DEV_CODEC, tas, &ops)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR PFX "failed to create tas snd device!\n");
 		return -ENODEV;
 	}
@@ -883,6 +945,7 @@ static void tas_exit_codec(struct aoa_codec *codec)
 }
 
 
+<<<<<<< HEAD
 static int tas_create(struct i2c_adapter *adapter,
 		       struct device_node *node,
 		       int addr)
@@ -920,6 +983,11 @@ static int tas_i2c_probe(struct i2c_client *client,
 			 const struct i2c_device_id *id)
 {
 	struct device_node *node = client->dev.platform_data;
+=======
+static int tas_i2c_probe(struct i2c_client *client)
+{
+	struct device_node *node = client->dev.of_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tas *tas;
 
 	tas = kzalloc(sizeof(struct tas), GFP_KERNEL);
@@ -934,7 +1002,11 @@ static int tas_i2c_probe(struct i2c_client *client,
 	/* seems that half is a saner default */
 	tas->drc_range = TAS3004_DRC_MAX / 2;
 
+<<<<<<< HEAD
 	strlcpy(tas->codec.name, "tas", MAX_CODEC_NAME_LEN);
+=======
+	strscpy(tas->codec.name, "tas", MAX_CODEC_NAME_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tas->codec.owner = THIS_MODULE;
 	tas->codec.init = tas_init_codec;
 	tas->codec.exit = tas_exit_codec;
@@ -944,8 +1016,13 @@ static int tas_i2c_probe(struct i2c_client *client,
 		goto fail;
 	}
 	printk(KERN_DEBUG
+<<<<<<< HEAD
 	       "snd-aoa-codec-tas: tas found, addr 0x%02x on %s\n",
 	       (unsigned int)client->addr, node->full_name);
+=======
+	       "snd-aoa-codec-tas: tas found, addr 0x%02x on %pOF\n",
+	       (unsigned int)client->addr, node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
  fail:
 	mutex_destroy(&tas->mtx);
@@ -953,6 +1030,7 @@ static int tas_i2c_probe(struct i2c_client *client,
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static int tas_i2c_attach(struct i2c_adapter *adapter)
 {
 	struct device_node *busnode, *dev = NULL;
@@ -995,6 +1073,9 @@ static int tas_i2c_attach(struct i2c_adapter *adapter)
 }
 
 static int tas_i2c_remove(struct i2c_client *client)
+=======
+static void tas_i2c_remove(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tas *tas = i2c_get_clientdata(client);
 	u8 tmp = TAS_ACR_ANALOG_PDOWN;
@@ -1007,6 +1088,7 @@ static int tas_i2c_remove(struct i2c_client *client)
 
 	mutex_destroy(&tas->mtx);
 	kfree(tas);
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -1014,13 +1096,26 @@ static const struct i2c_device_id tas_i2c_id[] = {
 	{ "aoa_codec_tas", 0 },
 	{ }
 };
+=======
+}
+
+static const struct i2c_device_id tas_i2c_id[] = {
+	{ "MAC,tas3004", 0 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c,tas_i2c_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct i2c_driver tas_driver = {
 	.driver = {
 		.name = "aoa_codec_tas",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.attach_adapter = tas_i2c_attach,
+=======
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe = tas_i2c_probe,
 	.remove = tas_i2c_remove,
 	.id_table = tas_i2c_id,

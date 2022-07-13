@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * MAX8925 ONKEY driver
  *
  * Copyright (C) 2009 Marvell International Ltd.
@@ -26,6 +30,10 @@
 #include <linux/interrupt.h>
 #include <linux/mfd/max8925.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SW_INPUT		(1 << 7)	/* 0/1 -- up/down */
 #define HARDRESET_EN		(1 << 7)
@@ -62,7 +70,11 @@ static irqreturn_t max8925_onkey_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int __devinit max8925_onkey_probe(struct platform_device *pdev)
+=======
+static int max8925_onkey_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct max8925_chip *chip = dev_get_drvdata(pdev->dev.parent);
 	struct max8925_onkey_info *info;
@@ -70,6 +82,7 @@ static int __devinit max8925_onkey_probe(struct platform_device *pdev)
 	int irq[2], error;
 
 	irq[0] = platform_get_irq(pdev, 0);
+<<<<<<< HEAD
 	if (irq[0] < 0) {
 		dev_err(&pdev->dev, "No IRQ resource!\n");
 		return -EINVAL;
@@ -87,6 +100,23 @@ static int __devinit max8925_onkey_probe(struct platform_device *pdev)
 		error = -ENOMEM;
 		goto err_free_mem;
 	}
+=======
+	if (irq[0] < 0)
+		return -EINVAL;
+
+	irq[1] = platform_get_irq(pdev, 1);
+	if (irq[1] < 0)
+		return -EINVAL;
+
+	info = devm_kzalloc(&pdev->dev, sizeof(struct max8925_onkey_info),
+			    GFP_KERNEL);
+	if (!info)
+		return -ENOMEM;
+
+	input = devm_input_allocate_device(&pdev->dev);
+	if (!input)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info->idev = input;
 	info->i2c = chip->i2c;
@@ -100,6 +130,7 @@ static int __devinit max8925_onkey_probe(struct platform_device *pdev)
 	input->dev.parent = &pdev->dev;
 	input_set_capability(input, EV_KEY, KEY_POWER);
 
+<<<<<<< HEAD
 	irq[0] += chip->irq_base;
 	irq[1] += chip->irq_base;
 
@@ -117,18 +148,41 @@ static int __devinit max8925_onkey_probe(struct platform_device *pdev)
 		dev_err(chip->dev, "Failed to request IRQ: #%d: %d\n",
 			irq[1], error);
 		goto err_free_irq0;
+=======
+	error = devm_request_threaded_irq(&pdev->dev, irq[0], NULL,
+					  max8925_onkey_handler, IRQF_ONESHOT,
+					  "onkey-down", info);
+	if (error < 0) {
+		dev_err(chip->dev, "Failed to request IRQ: #%d: %d\n",
+			irq[0], error);
+		return error;
+	}
+
+	error = devm_request_threaded_irq(&pdev->dev, irq[1], NULL,
+					  max8925_onkey_handler, IRQF_ONESHOT,
+					  "onkey-up", info);
+	if (error < 0) {
+		dev_err(chip->dev, "Failed to request IRQ: #%d: %d\n",
+			irq[1], error);
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = input_register_device(info->idev);
 	if (error) {
 		dev_err(chip->dev, "Can't register input device: %d\n", error);
+<<<<<<< HEAD
 		goto err_free_irq1;
+=======
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_set_drvdata(pdev, info);
 	device_init_wakeup(&pdev->dev, 1);
 
 	return 0;
+<<<<<<< HEAD
 
 err_free_irq1:
 	free_irq(irq[1], info);
@@ -157,6 +211,10 @@ static int __devexit max8925_onkey_remove(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_PM_SLEEP
+=======
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int max8925_onkey_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -184,18 +242,30 @@ static int max8925_onkey_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static SIMPLE_DEV_PM_OPS(max8925_onkey_pm_ops, max8925_onkey_suspend, max8925_onkey_resume);
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(max8925_onkey_pm_ops,
+				max8925_onkey_suspend, max8925_onkey_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver max8925_onkey_driver = {
 	.driver		= {
 		.name	= "max8925-onkey",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= &max8925_onkey_pm_ops,
 	},
 	.probe		= max8925_onkey_probe,
 	.remove		= __devexit_p(max8925_onkey_remove),
+=======
+		.pm	= pm_sleep_ptr(&max8925_onkey_pm_ops),
+	},
+	.probe		= max8925_onkey_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 module_platform_driver(max8925_onkey_driver);
 

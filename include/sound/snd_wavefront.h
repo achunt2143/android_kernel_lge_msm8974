@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __SOUND_SND_WAVEFRONT_H__
 #define __SOUND_SND_WAVEFRONT_H__
 
@@ -5,6 +6,16 @@
 #include "hwdep.h"
 #include "rawmidi.h"
 #include "wavefront.h"  /* generic OSS/ALSA/user-level wavefront header */
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __SOUND_SND_WAVEFRONT_H__
+#define __SOUND_SND_WAVEFRONT_H__
+
+#include <sound/mpu401.h>
+#include <sound/hwdep.h>
+#include <sound/rawmidi.h>
+#include <sound/wavefront.h>  /* generic OSS/ALSA/user-level wavefront header */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* MIDI interface */
 
@@ -28,6 +39,10 @@ struct _snd_wavefront_midi {
 	struct snd_rawmidi_substream	 *substream_output[2];
 	struct snd_rawmidi_substream	 *substream_input[2];
 	struct timer_list	 timer;
+<<<<<<< HEAD
+=======
+	snd_wavefront_card_t	 *timer_card;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         spinlock_t               open;
         spinlock_t               virtual;     /* protects isvirtual */
 };
@@ -37,8 +52,13 @@ struct _snd_wavefront_midi {
 #define	MPU_ACK		0xFE
 #define	UART_MODE_ON	0x3F
 
+<<<<<<< HEAD
 extern struct snd_rawmidi_ops snd_wavefront_midi_output;
 extern struct snd_rawmidi_ops snd_wavefront_midi_input;
+=======
+extern const struct snd_rawmidi_ops snd_wavefront_midi_output;
+extern const struct snd_rawmidi_ops snd_wavefront_midi_input;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void   snd_wavefront_midi_enable_virtual (snd_wavefront_card_t *);
 extern void   snd_wavefront_midi_disable_virtual (snd_wavefront_card_t *);

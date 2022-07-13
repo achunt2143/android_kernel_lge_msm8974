@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * w83l786ng.c - Linux kernel driver for hardware monitoring
  * Copyright (c) 2007 Kevin Lo <kevlo@kevlo.org>
@@ -15,12 +16,22 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * w83l786ng.c - Linux kernel driver for hardware monitoring
+ * Copyright (c) 2007 Kevin Lo <kevlo@kevlo.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * Supports following chips:
  *
+<<<<<<< HEAD
  * Chip	#vin	#fanin	#pwm	#temp	wchipid	vendid	i2c	ISA
+=======
+ * Chip		#vin	#fanin	#pwm	#temp	wchipid	vendid	i2c	ISA
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * w83l786ng	3	2	2	2	0x7b	0x5ca3	yes	no
  */
 
@@ -29,10 +40,17 @@
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/hwmon.h>
+<<<<<<< HEAD
 #include <linux/hwmon-vid.h>
 #include <linux/hwmon-sysfs.h>
 #include <linux/err.h>
 #include <linux/mutex.h>
+=======
+#include <linux/hwmon-sysfs.h>
+#include <linux/err.h>
+#include <linux/mutex.h>
+#include <linux/jiffies.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Addresses to scan */
 static const unsigned short normal_i2c[] = { 0x2e, 0x2f, I2C_CLIENT_END };
@@ -85,8 +103,13 @@ FAN_TO_REG(long rpm, int div)
 {
 	if (rpm == 0)
 		return 255;
+<<<<<<< HEAD
 	rpm = SENSORS_LIMIT(rpm, 1, 1000000);
 	return SENSORS_LIMIT((1350000 + rpm * div / 2) / (rpm * div), 1, 254);
+=======
+	rpm = clamp_val(rpm, 1, 1000000);
+	return clamp_val((1350000 + rpm * div / 2) / (rpm * div), 1, 254);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define FAN_FROM_REG(val, div)	((val) == 0   ? -1 : \
@@ -94,9 +117,14 @@ FAN_TO_REG(long rpm, int div)
 				1350000 / ((val) * (div))))
 
 /* for temp */
+<<<<<<< HEAD
 #define TEMP_TO_REG(val)	(SENSORS_LIMIT(((val) < 0 ? \
 						(val) + 0x100 * 1000 \
 						: (val)) / 1000, 0, 0xff))
+=======
+#define TEMP_TO_REG(val)	(clamp_val(((val) < 0 ? (val) + 0x100 * 1000 \
+						      : (val)) / 1000, 0, 0xff))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TEMP_FROM_REG(val)	(((val) & 0x80 ? \
 				  (val) - 0x100 : (val)) * 1000)
 
@@ -105,7 +133,11 @@ FAN_TO_REG(long rpm, int div)
  * in mV as would be measured on the chip input pin, need to just
  * multiply/divide by 8 to translate from/to register values.
  */
+<<<<<<< HEAD
 #define IN_TO_REG(val)		(SENSORS_LIMIT((((val) + 4) / 8), 0, 255))
+=======
+#define IN_TO_REG(val)		(clamp_val((((val) + 4) / 8), 0, 255))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IN_FROM_REG(val)	((val) * 8)
 
 #define DIV_FROM_REG(val)	(1 << (val))
@@ -114,7 +146,11 @@ static inline u8
 DIV_TO_REG(long val)
 {
 	int i;
+<<<<<<< HEAD
 	val = SENSORS_LIMIT(val, 1, 128) >> 1;
+=======
+	val = clamp_val(val, 1, 128) >> 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 7; i++) {
 		if (val == 0)
 			break;
@@ -124,9 +160,15 @@ DIV_TO_REG(long val)
 }
 
 struct w83l786ng_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
 	struct mutex update_lock;
 	char valid;			/* !=0 if following fields are valid */
+=======
+	struct i2c_client *client;
+	struct mutex update_lock;
+	bool valid;			/* true if following fields are valid */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated;	/* In jiffies */
 	unsigned long last_nonvolatile;	/* In jiffies, last time we update the
 					 * nonvolatile registers */
@@ -148,6 +190,7 @@ struct w83l786ng_data {
 	u8 tolerance[2];
 };
 
+<<<<<<< HEAD
 static int w83l786ng_probe(struct i2c_client *client,
 			   const struct i2c_device_id *id);
 static int w83l786ng_detect(struct i2c_client *client,
@@ -174,6 +217,8 @@ static struct i2c_driver w83l786ng_driver = {
 	.address_list	= normal_i2c,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u8
 w83l786ng_read_value(struct i2c_client *client, u8 reg)
 {
@@ -186,6 +231,80 @@ w83l786ng_write_value(struct i2c_client *client, u8 reg, u8 value)
 	return i2c_smbus_write_byte_data(client, reg, value);
 }
 
+<<<<<<< HEAD
+=======
+static struct w83l786ng_data *w83l786ng_update_device(struct device *dev)
+{
+	struct w83l786ng_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	int i, j;
+	u8 reg_tmp, pwmcfg;
+
+	mutex_lock(&data->update_lock);
+	if (time_after(jiffies, data->last_updated + HZ + HZ / 2)
+	    || !data->valid) {
+		dev_dbg(&client->dev, "Updating w83l786ng data.\n");
+
+		/* Update the voltages measured value and limits */
+		for (i = 0; i < 3; i++) {
+			data->in[i] = w83l786ng_read_value(client,
+			    W83L786NG_REG_IN(i));
+			data->in_min[i] = w83l786ng_read_value(client,
+			    W83L786NG_REG_IN_MIN(i));
+			data->in_max[i] = w83l786ng_read_value(client,
+			    W83L786NG_REG_IN_MAX(i));
+		}
+
+		/* Update the fan counts and limits */
+		for (i = 0; i < 2; i++) {
+			data->fan[i] = w83l786ng_read_value(client,
+			    W83L786NG_REG_FAN(i));
+			data->fan_min[i] = w83l786ng_read_value(client,
+			    W83L786NG_REG_FAN_MIN(i));
+		}
+
+		/* Update the fan divisor */
+		reg_tmp = w83l786ng_read_value(client, W83L786NG_REG_FAN_DIV);
+		data->fan_div[0] = reg_tmp & 0x07;
+		data->fan_div[1] = (reg_tmp >> 4) & 0x07;
+
+		pwmcfg = w83l786ng_read_value(client, W83L786NG_REG_FAN_CFG);
+		for (i = 0; i < 2; i++) {
+			data->pwm_mode[i] =
+			    ((pwmcfg >> W83L786NG_PWM_MODE_SHIFT[i]) & 1)
+			    ? 0 : 1;
+			data->pwm_enable[i] =
+			    ((pwmcfg >> W83L786NG_PWM_ENABLE_SHIFT[i]) & 3) + 1;
+			data->pwm[i] =
+			    (w83l786ng_read_value(client, W83L786NG_REG_PWM[i])
+			     & 0x0f) * 0x11;
+		}
+
+
+		/* Update the temperature sensors */
+		for (i = 0; i < 2; i++) {
+			for (j = 0; j < 3; j++) {
+				data->temp[i][j] = w83l786ng_read_value(client,
+				    W83L786NG_REG_TEMP[i][j]);
+			}
+		}
+
+		/* Update Smart Fan I/II tolerance */
+		reg_tmp = w83l786ng_read_value(client, W83L786NG_REG_TOLERANCE);
+		data->tolerance[0] = reg_tmp & 0x0f;
+		data->tolerance[1] = (reg_tmp >> 4) & 0x0f;
+
+		data->last_updated = jiffies;
+		data->valid = true;
+
+	}
+
+	mutex_unlock(&data->update_lock);
+
+	return data;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* following are the sysfs callback functions */
 #define show_in_reg(reg) \
 static ssize_t \
@@ -207,8 +326,13 @@ store_in_##reg(struct device *dev, struct device_attribute *attr, \
 	       const char *buf, size_t count) \
 { \
 	int nr = to_sensor_dev_attr(attr)->index; \
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev); \
 	struct w83l786ng_data *data = i2c_get_clientdata(client); \
+=======
+	struct w83l786ng_data *data = dev_get_drvdata(dev); \
+	struct i2c_client *client = data->client; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long val; \
 	int err = kstrtoul(buf, 10, &val); \
 	if (err) \
@@ -249,7 +373,11 @@ static ssize_t show_##reg(struct device *dev, struct device_attribute *attr, \
 	int nr = to_sensor_dev_attr(attr)->index; \
 	struct w83l786ng_data *data = w83l786ng_update_device(dev); \
 	return sprintf(buf, "%d\n", \
+<<<<<<< HEAD
 		FAN_FROM_REG(data->fan[nr], DIV_FROM_REG(data->fan_div[nr]))); \
+=======
+		FAN_FROM_REG(data->reg[nr], DIV_FROM_REG(data->fan_div[nr]))); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 show_fan_reg(fan);
@@ -260,8 +388,13 @@ store_fan_min(struct device *dev, struct device_attribute *attr,
 	      const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83l786ng_data *data = i2c_get_clientdata(client);
+=======
+	struct w83l786ng_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long val;
 	int err;
 
@@ -298,8 +431,13 @@ store_fan_div(struct device *dev, struct device_attribute *attr,
 	      const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83l786ng_data *data = i2c_get_clientdata(client);
+=======
+	struct w83l786ng_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long min;
 	u8 tmp_fan_div;
@@ -389,8 +527,13 @@ store_temp(struct device *dev, struct device_attribute *attr,
 	    to_sensor_dev_attr_2(attr);
 	int nr = sensor_attr->nr;
 	int index = sensor_attr->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83l786ng_data *data = i2c_get_clientdata(client);
+=======
+	struct w83l786ng_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long val;
 	int err;
 
@@ -444,8 +587,13 @@ store_pwm_mode(struct device *dev, struct device_attribute *attr,
 	       const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83l786ng_data *data = i2c_get_clientdata(client);
+=======
+	struct w83l786ng_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 reg;
 	unsigned long val;
 	int err;
@@ -472,15 +620,24 @@ store_pwm(struct device *dev, struct device_attribute *attr,
 	  const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83l786ng_data *data = i2c_get_clientdata(client);
+=======
+	struct w83l786ng_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long val;
 	int err;
 
 	err = kstrtoul(buf, 10, &val);
 	if (err)
 		return err;
+<<<<<<< HEAD
 	val = SENSORS_LIMIT(val, 0, 255);
+=======
+	val = clamp_val(val, 0, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = DIV_ROUND_CLOSEST(val, 0x11);
 
 	mutex_lock(&data->update_lock);
@@ -496,8 +653,13 @@ store_pwm_enable(struct device *dev, struct device_attribute *attr,
 		 const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83l786ng_data *data = i2c_get_clientdata(client);
+=======
+	struct w83l786ng_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 reg;
 	unsigned long val;
 	int err;
@@ -552,8 +714,13 @@ store_tolerance(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct w83l786ng_data *data = i2c_get_clientdata(client);
+=======
+	struct w83l786ng_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 tol_tmp, tol_mask;
 	unsigned long val;
 	int err;
@@ -565,7 +732,11 @@ store_tolerance(struct device *dev, struct device_attribute *attr,
 	mutex_lock(&data->update_lock);
 	tol_mask = w83l786ng_read_value(client,
 	    W83L786NG_REG_TOLERANCE) & ((nr == 1) ? 0x0f : 0xf0);
+<<<<<<< HEAD
 	tol_tmp = SENSORS_LIMIT(val, 0, 15);
+=======
+	tol_tmp = clamp_val(val, 0, 15);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tol_tmp &= 0x0f;
 	data->tolerance[nr] = tol_tmp;
 	if (nr == 1)
@@ -608,7 +779,11 @@ static struct sensor_device_attribute sda_tolerance[] = {
 #define TOLERANCE_UNIT_ATTRS(X)	\
 	&sda_tolerance[X].dev_attr.attr
 
+<<<<<<< HEAD
 static struct attribute *w83l786ng_attributes[] = {
+=======
+static struct attribute *w83l786ng_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IN_UNIT_ATTRS(0),
 	IN_UNIT_ATTRS(1),
 	IN_UNIT_ATTRS(2),
@@ -623,9 +798,13 @@ static struct attribute *w83l786ng_attributes[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct attribute_group w83l786ng_group = {
 	.attrs = w83l786ng_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(w83l786ng);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int
 w83l786ng_detect(struct i2c_client *client, struct i2c_board_info *info)
@@ -657,11 +836,16 @@ w83l786ng_detect(struct i2c_client *client, struct i2c_board_info *info)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	strlcpy(info->type, "w83l786ng", I2C_NAME_SIZE);
+=======
+	strscpy(info->type, "w83l786ng", I2C_NAME_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 w83l786ng_probe(struct i2c_client *client, const struct i2c_device_id *id)
 {
@@ -677,6 +861,35 @@ w83l786ng_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	}
 
 	i2c_set_clientdata(client, data);
+=======
+static void w83l786ng_init_client(struct i2c_client *client)
+{
+	u8 tmp;
+
+	if (reset)
+		w83l786ng_write_value(client, W83L786NG_REG_CONFIG, 0x80);
+
+	/* Start monitoring */
+	tmp = w83l786ng_read_value(client, W83L786NG_REG_CONFIG);
+	if (!(tmp & 0x01))
+		w83l786ng_write_value(client, W83L786NG_REG_CONFIG, tmp | 0x01);
+}
+
+static int
+w83l786ng_probe(struct i2c_client *client)
+{
+	struct device *dev = &client->dev;
+	struct w83l786ng_data *data;
+	struct device *hwmon_dev;
+	int i;
+	u8 reg_tmp;
+
+	data = devm_kzalloc(dev, sizeof(struct w83l786ng_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&data->update_lock);
 
 	/* Initialize the chip */
@@ -693,6 +906,7 @@ w83l786ng_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	data->fan_div[0] = reg_tmp & 0x07;
 	data->fan_div[1] = (reg_tmp >> 4) & 0x07;
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	err = sysfs_create_group(&client->dev.kobj, &w83l786ng_group);
 	if (err)
@@ -812,6 +1026,30 @@ static struct w83l786ng_data *w83l786ng_update_device(struct device *dev)
 
 	return data;
 }
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data,
+							   w83l786ng_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+}
+
+static const struct i2c_device_id w83l786ng_id[] = {
+	{ "w83l786ng", 0 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, w83l786ng_id);
+
+static struct i2c_driver w83l786ng_driver = {
+	.class		= I2C_CLASS_HWMON,
+	.driver = {
+		   .name = "w83l786ng",
+	},
+	.probe		= w83l786ng_probe,
+	.id_table	= w83l786ng_id,
+	.detect		= w83l786ng_detect,
+	.address_list	= normal_i2c,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_i2c_driver(w83l786ng_driver);
 

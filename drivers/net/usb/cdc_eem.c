@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * USB CDC EEM network interface driver
  * Copyright (C) 2009 Oberthur Technologies
  * by Omar Laazimani, Olivier Condemine
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +25,11 @@
 
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+ */
+
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ctype.h>
@@ -31,6 +41,10 @@
 #include <linux/usb/cdc.h>
 #include <linux/usb/usbnet.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
+=======
+#include <linux/if_vlan.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -39,7 +53,11 @@
  * for transport over USB using a simpler USB device model than the
  * previous CDC "Ethernet Control Model" (ECM, or "CDC Ethernet").
  *
+<<<<<<< HEAD
  * For details, see www.usb.org/developers/devclass_docs/CDC_EEM10.pdf
+=======
+ * For details, see https://usb.org/sites/default/files/CDC_EEM10.pdf
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This version has been tested with GIGAntIC WuaoW SIM Smart Card on 2.6.24,
  * 2.6.27 and 2.6.30rc2 kernel.
@@ -84,6 +102,7 @@ static int eem_bind(struct usbnet *dev, struct usb_interface *intf)
 	int status = 0;
 
 	status = usbnet_get_endpoints(dev, intf);
+<<<<<<< HEAD
 	if (status < 0) {
 		usb_set_intfdata(intf, NULL);
 		usb_driver_release_interface(driver_of(intf), intf);
@@ -93,6 +112,14 @@ static int eem_bind(struct usbnet *dev, struct usb_interface *intf)
 	/* no jumbogram (16K) support for now */
 
 	dev->net->hard_header_len += EEM_HEAD + ETH_FCS_LEN;
+=======
+	if (status < 0)
+		return status;
+
+	/* no jumbogram (16K) support for now */
+
+	dev->net->hard_header_len += EEM_HEAD + ETH_FCS_LEN + VLAN_HLEN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->hard_mtu = dev->net->mtu + dev->net->hard_header_len;
 
 	return 0;
@@ -139,10 +166,17 @@ static struct sk_buff *eem_tx_fixup(struct usbnet *dev, struct sk_buff *skb,
 	}
 
 	skb2 = skb_copy_expand(skb, EEM_HEAD, ETH_FCS_LEN + padlen, flags);
+<<<<<<< HEAD
 	if (!skb2)
 		return NULL;
 
 	dev_kfree_skb_any(skb);
+=======
+	dev_kfree_skb_any(skb);
+	if (!skb2)
+		return NULL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb = skb2;
 
 done:
@@ -234,7 +268,11 @@ static int eem_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 				if (unlikely(!skb2))
 					goto next;
 				skb_trim(skb2, len);
+<<<<<<< HEAD
 				put_unaligned_le16(BIT(15) | (1 << 11) | len,
+=======
+				put_unaligned_le16(BIT(15) | BIT(11) | len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						skb_push(skb2, 2));
 				eem_linkcmd(dev, skb2);
 				break;
@@ -244,8 +282,17 @@ static int eem_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 			 *  - suspend: peripheral ready to suspend
 			 *  - response: suggest N millisec polling
 			 *  - response complete: suggest N sec polling
+<<<<<<< HEAD
 			 */
 			case 2:		/* Suspend hint */
+=======
+			 *
+			 * Suspend is reported and maybe heeded.
+			 */
+			case 2:		/* Suspend hint */
+				usbnet_device_suggests_idle(dev);
+				continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 3:		/* Response hint */
 			case 4:		/* Response complete hint */
 				continue;
@@ -368,6 +415,10 @@ static struct usb_driver eem_driver = {
 	.disconnect =	usbnet_disconnect,
 	.suspend =	usbnet_suspend,
 	.resume =	usbnet_resume,
+<<<<<<< HEAD
+=======
+	.disable_hub_initiated_lpm = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(eem_driver);

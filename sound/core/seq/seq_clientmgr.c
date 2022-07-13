@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ALSA sequencer Client Manager
  *  Copyright (c) 1998-2001 by Frank van de Pol <fvdpol@coil.demon.nl>
  *                             Jaroslav Kysela <perex@perex.cz>
  *                             Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -19,6 +24,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -29,12 +36,20 @@
 #include <linux/kmod.h>
 
 #include <sound/seq_kernel.h>
+<<<<<<< HEAD
+=======
+#include <sound/ump.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "seq_clientmgr.h"
 #include "seq_memory.h"
 #include "seq_queue.h"
 #include "seq_timer.h"
 #include "seq_info.h"
 #include "seq_system.h"
+<<<<<<< HEAD
+=======
+#include "seq_ump_convert.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/seq_device.h>
 #ifdef CONFIG_COMPAT
 #include <linux/compat.h>
@@ -85,6 +100,7 @@ static int snd_seq_deliver_single_event(struct snd_seq_client *client,
 					struct snd_seq_event *event,
 					int filter, int atomic, int hop);
 
+<<<<<<< HEAD
 /*
  */
  
@@ -99,6 +115,11 @@ static inline void snd_leave_user(mm_segment_t fs)
 {
 	set_fs(fs);
 }
+=======
+#if IS_ENABLED(CONFIG_SND_SEQ_UMP)
+static void free_ump_info(struct snd_seq_client *client);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  */
@@ -123,7 +144,11 @@ static inline int snd_seq_write_pool_allocated(struct snd_seq_client *client)
 static struct snd_seq_client *clientptr(int clientid)
 {
 	if (clientid < 0 || clientid >= SNDRV_SEQ_MAX_CLIENTS) {
+<<<<<<< HEAD
 		snd_printd("Seq: oops. Trying to get pointer to client %d\n",
+=======
+		pr_debug("ALSA: seq: oops. Trying to get pointer to client %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   clientid);
 		return NULL;
 	}
@@ -136,7 +161,11 @@ struct snd_seq_client *snd_seq_client_use_ptr(int clientid)
 	struct snd_seq_client *client;
 
 	if (clientid < 0 || clientid >= SNDRV_SEQ_MAX_CLIENTS) {
+<<<<<<< HEAD
 		snd_printd("Seq: oops. Trying to get pointer to client %d\n",
+=======
+		pr_debug("ALSA: seq: oops. Trying to get pointer to client %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   clientid);
 		return NULL;
 	}
@@ -151,6 +180,7 @@ struct snd_seq_client *snd_seq_client_use_ptr(int clientid)
 	spin_unlock_irqrestore(&clients_lock, flags);
 #ifdef CONFIG_MODULES
 	if (!in_interrupt()) {
+<<<<<<< HEAD
 		static char client_requested[SNDRV_SEQ_GLOBAL_CLIENTS];
 		static char card_requested[SNDRV_CARDS];
 		if (clientid < SNDRV_SEQ_GLOBAL_CLIENTS) {
@@ -158,6 +188,15 @@ struct snd_seq_client *snd_seq_client_use_ptr(int clientid)
 			
 			if (!client_requested[clientid]) {
 				client_requested[clientid] = 1;
+=======
+		static DECLARE_BITMAP(client_requested, SNDRV_SEQ_GLOBAL_CLIENTS);
+		static DECLARE_BITMAP(card_requested, SNDRV_CARDS);
+
+		if (clientid < SNDRV_SEQ_GLOBAL_CLIENTS) {
+			int idx;
+			
+			if (!test_and_set_bit(clientid, client_requested)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				for (idx = 0; idx < 15; idx++) {
 					if (seq_client_load[idx] < 0)
 						break;
@@ -172,10 +211,15 @@ struct snd_seq_client *snd_seq_client_use_ptr(int clientid)
 			int card = (clientid - SNDRV_SEQ_GLOBAL_CLIENTS) /
 				SNDRV_SEQ_CLIENTS_PER_CARD;
 			if (card < snd_ecards_limit) {
+<<<<<<< HEAD
 				if (! card_requested[card]) {
 					card_requested[card] = 1;
 					snd_request_card(card);
 				}
+=======
+				if (!test_and_set_bit(card, card_requested))
+					snd_request_card(card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				snd_seq_device_load_drivers();
 			}
 		}
@@ -194,6 +238,44 @@ struct snd_seq_client *snd_seq_client_use_ptr(int clientid)
 	return client;
 }
 
+<<<<<<< HEAD
+=======
+/* Take refcount and perform ioctl_mutex lock on the given client;
+ * used only for OSS sequencer
+ * Unlock via snd_seq_client_ioctl_unlock() below
+ */
+bool snd_seq_client_ioctl_lock(int clientid)
+{
+	struct snd_seq_client *client;
+
+	client = snd_seq_client_use_ptr(clientid);
+	if (!client)
+		return false;
+	mutex_lock(&client->ioctl_mutex);
+	/* The client isn't unrefed here; see snd_seq_client_ioctl_unlock() */
+	return true;
+}
+EXPORT_SYMBOL_GPL(snd_seq_client_ioctl_lock);
+
+/* Unlock and unref the given client; for OSS sequencer use only */
+void snd_seq_client_ioctl_unlock(int clientid)
+{
+	struct snd_seq_client *client;
+
+	client = snd_seq_client_use_ptr(clientid);
+	if (WARN_ON(!client))
+		return;
+	mutex_unlock(&client->ioctl_mutex);
+	/* The doubly unrefs below are intentional; the first one releases the
+	 * leftover from snd_seq_client_ioctl_lock() above, and the second one
+	 * is for releasing snd_seq_client_use_ptr() in this function
+	 */
+	snd_seq_client_unlock(client);
+	snd_seq_client_unlock(client);
+}
+EXPORT_SYMBOL_GPL(snd_seq_client_ioctl_unlock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void usage_alloc(struct snd_seq_usage *res, int num)
 {
 	res->cur += num;
@@ -218,7 +300,10 @@ int __init client_init_data(void)
 
 static struct snd_seq_client *seq_create_client1(int client_index, int poolsize)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int c;
 	struct snd_seq_client *client;
 
@@ -236,9 +321,17 @@ static struct snd_seq_client *seq_create_client1(int client_index, int poolsize)
 	rwlock_init(&client->ports_lock);
 	mutex_init(&client->ports_mutex);
 	INIT_LIST_HEAD(&client->ports_list_head);
+<<<<<<< HEAD
 
 	/* find free slot in the client table */
 	spin_lock_irqsave(&clients_lock, flags);
+=======
+	mutex_init(&client->ioctl_mutex);
+	client->ump_endpoint_port = -1;
+
+	/* find free slot in the client table */
+	spin_lock_irq(&clients_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (client_index < 0) {
 		for (c = SNDRV_SEQ_DYNAMIC_CLIENTS_BEGIN;
 		     c < SNDRV_SEQ_MAX_CLIENTS;
@@ -246,17 +339,29 @@ static struct snd_seq_client *seq_create_client1(int client_index, int poolsize)
 			if (clienttab[c] || clienttablock[c])
 				continue;
 			clienttab[client->number = c] = client;
+<<<<<<< HEAD
 			spin_unlock_irqrestore(&clients_lock, flags);
+=======
+			spin_unlock_irq(&clients_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return client;
 		}
 	} else {
 		if (clienttab[client_index] == NULL && !clienttablock[client_index]) {
 			clienttab[client->number = client_index] = client;
+<<<<<<< HEAD
 			spin_unlock_irqrestore(&clients_lock, flags);
 			return client;
 		}
 	}
 	spin_unlock_irqrestore(&clients_lock, flags);
+=======
+			spin_unlock_irq(&clients_lock);
+			return client;
+		}
+	}
+	spin_unlock_irq(&clients_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_seq_pool_delete(&client->pool);
 	kfree(client);
 	return NULL;	/* no free slot found or busy, return failure code */
@@ -265,6 +370,7 @@ static struct snd_seq_client *seq_create_client1(int client_index, int poolsize)
 
 static int seq_free_client1(struct snd_seq_client *client)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	if (!client)
@@ -282,6 +388,22 @@ static int seq_free_client1(struct snd_seq_client *client)
 	spin_lock_irqsave(&clients_lock, flags);
 	clienttablock[client->number] = 0;
 	spin_unlock_irqrestore(&clients_lock, flags);
+=======
+	if (!client)
+		return 0;
+	spin_lock_irq(&clients_lock);
+	clienttablock[client->number] = 1;
+	clienttab[client->number] = NULL;
+	spin_unlock_irq(&clients_lock);
+	snd_seq_delete_all_ports(client);
+	snd_seq_queue_client_leave(client->number);
+	snd_use_lock_sync(&client->use_lock);
+	if (client->pool)
+		snd_seq_pool_delete(&client->pool);
+	spin_lock_irq(&clients_lock);
+	clienttablock[client->number] = 0;
+	spin_unlock_irq(&clients_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -291,8 +413,13 @@ static void seq_free_client(struct snd_seq_client * client)
 	mutex_lock(&register_mutex);
 	switch (client->type) {
 	case NO_CLIENT:
+<<<<<<< HEAD
 		snd_printk(KERN_WARNING "Seq: Trying to free unused client %d\n",
 			   client->number);
+=======
+		pr_warn("ALSA: seq: Trying to free unused client %d\n",
+			client->number);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case USER_CLIENT:
 	case KERNEL_CLIENT:
@@ -301,7 +428,11 @@ static void seq_free_client(struct snd_seq_client * client)
 		break;
 
 	default:
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "Seq: Trying to free client %d with undefined type = %d\n",
+=======
+		pr_err("ALSA: seq: Trying to free client %d with undefined type = %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   client->number, client->type);
 	}
 	mutex_unlock(&register_mutex);
@@ -321,6 +452,7 @@ static int snd_seq_open(struct inode *inode, struct file *file)
 	struct snd_seq_user_client *user;
 	int err;
 
+<<<<<<< HEAD
 	err = nonseekable_open(inode, file);
 	if (err < 0)
 		return err;
@@ -329,6 +461,15 @@ static int snd_seq_open(struct inode *inode, struct file *file)
 		return -ERESTARTSYS;
 	client = seq_create_client1(-1, SNDRV_SEQ_DEFAULT_EVENTS);
 	if (client == NULL) {
+=======
+	err = stream_open(inode, file);
+	if (err < 0)
+		return err;
+
+	mutex_lock(&register_mutex);
+	client = seq_create_client1(-1, SNDRV_SEQ_DEFAULT_EVENTS);
+	if (!client) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&register_mutex);
 		return -ENOMEM;	/* failure code */
 	}
@@ -364,6 +505,10 @@ static int snd_seq_open(struct inode *inode, struct file *file)
 	/* fill client data */
 	user->file = file;
 	sprintf(client->name, "Client-%d", c);
+<<<<<<< HEAD
+=======
+	client->data.user.owner = get_pid(task_pid(current));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* make others aware this new client */
 	snd_seq_system_client_ev_client_start(c);
@@ -380,12 +525,31 @@ static int snd_seq_release(struct inode *inode, struct file *file)
 		seq_free_client(client);
 		if (client->data.user.fifo)
 			snd_seq_fifo_delete(&client->data.user.fifo);
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_SND_SEQ_UMP)
+		free_ump_info(client);
+#endif
+		put_pid(client->data.user.owner);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(client);
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static bool event_is_compatible(const struct snd_seq_client *client,
+				const struct snd_seq_event *ev)
+{
+	if (snd_seq_ev_is_ump(ev) && !client->midi_version)
+		return false;
+	if (snd_seq_ev_is_ump(ev) && snd_seq_ev_is_variable(ev))
+		return false;
+	return true;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* handle client read() */
 /* possible error values:
@@ -399,6 +563,10 @@ static ssize_t snd_seq_read(struct file *file, char __user *buf, size_t count,
 {
 	struct snd_seq_client *client = file->private_data;
 	struct snd_seq_fifo *fifo;
+<<<<<<< HEAD
+=======
+	size_t aligned_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	long result = 0;
 	struct snd_seq_event_cell *cell;
@@ -406,14 +574,25 @@ static ssize_t snd_seq_read(struct file *file, char __user *buf, size_t count,
 	if (!(snd_seq_file_flags(file) & SNDRV_SEQ_LFLG_INPUT))
 		return -ENXIO;
 
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_WRITE, buf, count))
+=======
+	if (!access_ok(buf, count))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	/* check client structures are in place */
 	if (snd_BUG_ON(!client))
 		return -ENXIO;
 
+<<<<<<< HEAD
 	if (!client->accept_input || (fifo = client->data.user.fifo) == NULL)
+=======
+	if (!client->accept_input)
+		return -ENXIO;
+	fifo = client->data.user.fifo;
+	if (!fifo)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 
 	if (atomic_read(&fifo->overflow) > 0) {
@@ -427,6 +606,7 @@ static ssize_t snd_seq_read(struct file *file, char __user *buf, size_t count,
 	err = 0;
 	snd_seq_fifo_lock(fifo);
 
+<<<<<<< HEAD
 	/* while data available in queue */
 	while (count >= sizeof(struct snd_seq_event)) {
 		int nonblock;
@@ -448,12 +628,47 @@ static ssize_t snd_seq_read(struct file *file, char __user *buf, size_t count,
 			err = snd_seq_expand_var_event(&cell->event, count,
 						       (char __force *)buf, 0,
 						       sizeof(struct snd_seq_event));
+=======
+	if (IS_ENABLED(CONFIG_SND_SEQ_UMP) && client->midi_version > 0)
+		aligned_size = sizeof(struct snd_seq_ump_event);
+	else
+		aligned_size = sizeof(struct snd_seq_event);
+
+	/* while data available in queue */
+	while (count >= aligned_size) {
+		int nonblock;
+
+		nonblock = (file->f_flags & O_NONBLOCK) || result > 0;
+		err = snd_seq_fifo_cell_out(fifo, &cell, nonblock);
+		if (err < 0)
+			break;
+		if (!event_is_compatible(client, &cell->event)) {
+			snd_seq_cell_free(cell);
+			cell = NULL;
+			continue;
+		}
+		if (snd_seq_ev_is_variable(&cell->event)) {
+			struct snd_seq_ump_event tmpev;
+
+			memcpy(&tmpev, &cell->event, aligned_size);
+			tmpev.data.ext.len &= ~SNDRV_SEQ_EXT_MASK;
+			if (copy_to_user(buf, &tmpev, aligned_size)) {
+				err = -EFAULT;
+				break;
+			}
+			count -= aligned_size;
+			buf += aligned_size;
+			err = snd_seq_expand_var_event(&cell->event, count,
+						       (char __force *)buf, 0,
+						       aligned_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err < 0)
 				break;
 			result += err;
 			count -= err;
 			buf += err;
 		} else {
+<<<<<<< HEAD
 			if (copy_to_user(buf, &cell->event, sizeof(struct snd_seq_event))) {
 				err = -EFAULT;
 				break;
@@ -464,6 +679,18 @@ static ssize_t snd_seq_read(struct file *file, char __user *buf, size_t count,
 		snd_seq_cell_free(cell);
 		cell = NULL; /* to be sure */
 		result += sizeof(struct snd_seq_event);
+=======
+			if (copy_to_user(buf, &cell->event, aligned_size)) {
+				err = -EFAULT;
+				break;
+			}
+			count -= aligned_size;
+			buf += aligned_size;
+		}
+		snd_seq_cell_free(cell);
+		cell = NULL; /* to be sure */
+		result += aligned_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (err < 0) {
@@ -576,7 +803,11 @@ static int update_timestamp_of_queue(struct snd_seq_event *event,
 	event->queue = queue;
 	event->flags &= ~SNDRV_SEQ_TIME_STAMP_MASK;
 	if (real_time) {
+<<<<<<< HEAD
 		event->time.time = snd_seq_timer_get_cur_time(q->timer);
+=======
+		event->time.time = snd_seq_timer_get_cur_time(q->timer, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		event->flags |= SNDRV_SEQ_TIME_STAMP_REAL;
 	} else {
 		event->time.tick = snd_seq_timer_get_cur_tick(q->timer);
@@ -586,6 +817,30 @@ static int update_timestamp_of_queue(struct snd_seq_event *event,
 	return 1;
 }
 
+<<<<<<< HEAD
+=======
+/* deliver a single event; called from below and UMP converter */
+int __snd_seq_deliver_single_event(struct snd_seq_client *dest,
+				   struct snd_seq_client_port *dest_port,
+				   struct snd_seq_event *event,
+				   int atomic, int hop)
+{
+	switch (dest->type) {
+	case USER_CLIENT:
+		if (!dest->data.user.fifo)
+			return 0;
+		return snd_seq_fifo_event_in(dest->data.user.fifo, event);
+	case KERNEL_CLIENT:
+		if (!dest_port->event_input)
+			return 0;
+		return dest_port->event_input(event,
+					      snd_seq_ev_is_direct(event),
+					      dest_port->private_data,
+					      atomic, hop);
+	}
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * deliver an event to the specified destination.
@@ -622,6 +877,7 @@ static int snd_seq_deliver_single_event(struct snd_seq_client *client,
 		update_timestamp_of_queue(event, dest_port->time_queue,
 					  dest_port->time_real);
 
+<<<<<<< HEAD
 	switch (dest->type) {
 	case USER_CLIENT:
 		if (dest->data.user.fifo)
@@ -638,6 +894,24 @@ static int snd_seq_deliver_single_event(struct snd_seq_client *client,
 	default:
 		break;
 	}
+=======
+#if IS_ENABLED(CONFIG_SND_SEQ_UMP)
+	if (!(dest->filter & SNDRV_SEQ_FILTER_NO_CONVERT)) {
+		if (snd_seq_ev_is_ump(event)) {
+			result = snd_seq_deliver_from_ump(client, dest, dest_port,
+							  event, atomic, hop);
+			goto __skip;
+		} else if (snd_seq_client_is_ump(dest)) {
+			result = snd_seq_deliver_to_ump(client, dest, dest_port,
+							event, atomic, hop);
+			goto __skip;
+		}
+	}
+#endif /* CONFIG_SND_SEQ_UMP */
+
+	result = __snd_seq_deliver_single_event(dest, dest_port, event,
+						atomic, hop);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   __skip:
 	if (dest_port)
@@ -655,6 +929,7 @@ static int snd_seq_deliver_single_event(struct snd_seq_client *client,
 /*
  * send the event to all subscribers:
  */
+<<<<<<< HEAD
 static int deliver_to_subscribers(struct snd_seq_client *client,
 				  struct snd_seq_event *event,
 				  int atomic, int hop)
@@ -670,14 +945,38 @@ static int deliver_to_subscribers(struct snd_seq_client *client,
 		return -EINVAL; /* invalid source port */
 	/* save original event record */
 	event_saved = *event;
+=======
+static int __deliver_to_subscribers(struct snd_seq_client *client,
+				    struct snd_seq_event *event,
+				    struct snd_seq_client_port *src_port,
+				    int atomic, int hop)
+{
+	struct snd_seq_subscribers *subs;
+	int err, result = 0, num_ev = 0;
+	union __snd_seq_event event_saved;
+	size_t saved_size;
+	struct snd_seq_port_subs_info *grp;
+
+	/* save original event record */
+	saved_size = snd_seq_event_packet_size(event);
+	memcpy(&event_saved, event, saved_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	grp = &src_port->c_src;
 	
 	/* lock list */
 	if (atomic)
 		read_lock(&grp->list_lock);
 	else
+<<<<<<< HEAD
 		down_read(&grp->list_mutex);
 	list_for_each_entry(subs, &grp->list_head, src_list) {
+=======
+		down_read_nested(&grp->list_mutex, hop);
+	list_for_each_entry(subs, &grp->list_head, src_list) {
+		/* both ports ready? */
+		if (atomic_read(&subs->ref_count) != 2)
+			continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		event->dest = subs->info.dest;
 		if (subs->info.flags & SNDRV_SEQ_PORT_SUBS_TIMESTAMP)
 			/* convert time according to flag with subscription */
@@ -685,16 +984,29 @@ static int deliver_to_subscribers(struct snd_seq_client *client,
 						  subs->info.flags & SNDRV_SEQ_PORT_SUBS_TIME_REAL);
 		err = snd_seq_deliver_single_event(client, event,
 						   0, atomic, hop);
+<<<<<<< HEAD
 		if (err < 0)
 			break;
 		num_ev++;
 		/* restore original event record */
 		*event = event_saved;
+=======
+		if (err < 0) {
+			/* save first error that occurs and continue */
+			if (!result)
+				result = err;
+			continue;
+		}
+		num_ev++;
+		/* restore original event record */
+		memcpy(event, &event_saved, saved_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (atomic)
 		read_unlock(&grp->list_lock);
 	else
 		up_read(&grp->list_mutex);
+<<<<<<< HEAD
 	*event = event_saved; /* restore */
 	snd_seq_port_unlock(src_port);
 	return (err < 0) ? err : num_ev;
@@ -779,6 +1091,37 @@ static int multicast_event(struct snd_seq_client *client, struct snd_seq_event *
 #endif /* SUPPORT_BROADCAST */
 
 
+=======
+	memcpy(event, &event_saved, saved_size);
+	return (result < 0) ? result : num_ev;
+}
+
+static int deliver_to_subscribers(struct snd_seq_client *client,
+				  struct snd_seq_event *event,
+				  int atomic, int hop)
+{
+	struct snd_seq_client_port *src_port;
+	int ret = 0, ret2;
+
+	src_port = snd_seq_port_use_ptr(client, event->source.port);
+	if (src_port) {
+		ret = __deliver_to_subscribers(client, event, src_port, atomic, hop);
+		snd_seq_port_unlock(src_port);
+	}
+
+	if (client->ump_endpoint_port < 0 ||
+	    event->source.port == client->ump_endpoint_port)
+		return ret;
+
+	src_port = snd_seq_port_use_ptr(client, client->ump_endpoint_port);
+	if (!src_port)
+		return ret;
+	ret2 = __deliver_to_subscribers(client, event, src_port, atomic, hop);
+	snd_seq_port_unlock(src_port);
+	return ret2 < 0 ? ret2 : ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* deliver an event to the destination port(s).
  * if the event is to subscribers or broadcast, the event is dispatched
  * to multiple targets.
@@ -794,12 +1137,17 @@ static int snd_seq_deliver_event(struct snd_seq_client *client, struct snd_seq_e
 
 	hop++;
 	if (hop >= SNDRV_SEQ_MAX_HOPS) {
+<<<<<<< HEAD
 		snd_printd("too long delivery path (%d:%d->%d:%d)\n",
+=======
+		pr_debug("ALSA: seq: too long delivery path (%d:%d->%d:%d)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   event->source.client, event->source.port,
 			   event->dest.client, event->dest.port);
 		return -EMLINK;
 	}
 
+<<<<<<< HEAD
 	if (event->queue == SNDRV_SEQ_ADDRESS_SUBSCRIBERS ||
 	    event->dest.client == SNDRV_SEQ_ADDRESS_SUBSCRIBERS)
 		result = deliver_to_subscribers(client, event, atomic, hop);
@@ -812,6 +1160,15 @@ static int snd_seq_deliver_event(struct snd_seq_client *client, struct snd_seq_e
 	else if (event->dest.port == SNDRV_SEQ_ADDRESS_BROADCAST)
 		result = port_broadcast_event(client, event, atomic, hop);
 #endif
+=======
+	if (snd_seq_ev_is_variable(event) &&
+	    snd_BUG_ON(atomic && (event->data.ext.len & SNDRV_SEQ_EXT_USRPTR)))
+		return -EINVAL;
+
+	if (event->queue == SNDRV_SEQ_ADDRESS_SUBSCRIBERS ||
+	    event->dest.client == SNDRV_SEQ_ADDRESS_SUBSCRIBERS)
+		result = deliver_to_subscribers(client, event, atomic, hop);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		result = snd_seq_deliver_single_event(client, event, 0, atomic, hop);
 
@@ -842,7 +1199,12 @@ int snd_seq_dispatch_event(struct snd_seq_event_cell *cell, int atomic, int hop)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (cell->event.type == SNDRV_SEQ_EVENT_NOTE) {
+=======
+	if (!snd_seq_ev_is_ump(&cell->event) &&
+	    cell->event.type == SNDRV_SEQ_EVENT_NOTE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* NOTE event:
 		 * the event cell is re-used as a NOTE-OFF event and
 		 * enqueued again.
@@ -866,7 +1228,11 @@ int snd_seq_dispatch_event(struct snd_seq_event_cell *cell, int atomic, int hop)
 		/* add the duration time */
 		switch (ev->flags & SNDRV_SEQ_TIME_STAMP_MASK) {
 		case SNDRV_SEQ_TIME_STAMP_TICK:
+<<<<<<< HEAD
 			ev->time.tick += ev->data.note.duration;
+=======
+			cell->event.time.tick += ev->data.note.duration;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case SNDRV_SEQ_TIME_STAMP_REAL:
 			/* unit for duration is ms */
@@ -903,7 +1269,12 @@ int snd_seq_dispatch_event(struct snd_seq_event_cell *cell, int atomic, int hop)
 static int snd_seq_client_enqueue_event(struct snd_seq_client *client,
 					struct snd_seq_event *event,
 					struct file *file, int blocking,
+<<<<<<< HEAD
 					int atomic, int hop)
+=======
+					int atomic, int hop,
+					struct mutex *mutexp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_seq_event_cell *cell;
 	int err;
@@ -912,6 +1283,7 @@ static int snd_seq_client_enqueue_event(struct snd_seq_client *client,
 	if (event->queue == SNDRV_SEQ_ADDRESS_SUBSCRIBERS) {
 		event->dest.client = SNDRV_SEQ_ADDRESS_SUBSCRIBERS;
 		event->queue = SNDRV_SEQ_QUEUE_DIRECT;
+<<<<<<< HEAD
 	} else
 #ifdef SUPPORT_BROADCAST
 		if (event->queue == SNDRV_SEQ_ADDRESS_BROADCAST) {
@@ -920,6 +1292,9 @@ static int snd_seq_client_enqueue_event(struct snd_seq_client *client,
 		}
 #endif
 	if (event->dest.client == SNDRV_SEQ_ADDRESS_SUBSCRIBERS) {
+=======
+	} else if (event->dest.client == SNDRV_SEQ_ADDRESS_SUBSCRIBERS) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* check presence of source port */
 		struct snd_seq_client_port *src_port = snd_seq_port_use_ptr(client, event->source.port);
 		if (src_port == NULL)
@@ -929,7 +1304,12 @@ static int snd_seq_client_enqueue_event(struct snd_seq_client *client,
 
 	/* direct event processing without enqueued */
 	if (snd_seq_ev_is_direct(event)) {
+<<<<<<< HEAD
 		if (event->type == SNDRV_SEQ_EVENT_NOTE)
+=======
+		if (!snd_seq_ev_is_ump(event) &&
+		    event->type == SNDRV_SEQ_EVENT_NOTE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL; /* this event must be enqueued! */
 		return snd_seq_deliver_event(client, event, atomic, hop);
 	}
@@ -941,12 +1321,22 @@ static int snd_seq_client_enqueue_event(struct snd_seq_client *client,
 		return -ENXIO; /* queue is not allocated */
 
 	/* allocate an event cell */
+<<<<<<< HEAD
 	err = snd_seq_event_dup(client->pool, event, &cell, !blocking || atomic, file);
+=======
+	err = snd_seq_event_dup(client->pool, event, &cell, !blocking || atomic,
+				file, mutexp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
 	/* we got a cell. enqueue it. */
+<<<<<<< HEAD
 	if ((err = snd_seq_enqueue_event(cell, atomic, hop)) < 0) {
+=======
+	err = snd_seq_enqueue_event(cell, atomic, hop);
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_seq_cell_free(cell);
 		return err;
 	}
@@ -996,8 +1386,14 @@ static ssize_t snd_seq_write(struct file *file, const char __user *buf,
 {
 	struct snd_seq_client *client = file->private_data;
 	int written = 0, len;
+<<<<<<< HEAD
 	int err = -EINVAL;
 	struct snd_seq_event event;
+=======
+	int err, handled;
+	union __snd_seq_event __event;
+	struct snd_seq_event *ev = &__event.legacy;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(snd_seq_file_flags(file) & SNDRV_SEQ_LFLG_OUTPUT))
 		return -ENXIO;
@@ -1009,6 +1405,7 @@ static ssize_t snd_seq_write(struct file *file, const char __user *buf,
 	if (!client->accept_output || client->pool == NULL)
 		return -ENXIO;
 
+<<<<<<< HEAD
 	/* allocate the pool now if the pool is not allocated yet */ 
 	if (client->pool->size > 0 && !snd_seq_write_pool_allocated(client)) {
 		if (snd_seq_pool_init(client->pool) < 0)
@@ -1026,11 +1423,53 @@ static ssize_t snd_seq_write(struct file *file, const char __user *buf,
 		event.source.client = client->number;	/* fill in client number */
 		/* Check for extension data length */
 		if (check_event_type_and_length(&event)) {
+=======
+ repeat:
+	handled = 0;
+	/* allocate the pool now if the pool is not allocated yet */ 
+	mutex_lock(&client->ioctl_mutex);
+	if (client->pool->size > 0 && !snd_seq_write_pool_allocated(client)) {
+		err = snd_seq_pool_init(client->pool);
+		if (err < 0)
+			goto out;
+	}
+
+	/* only process whole events */
+	err = -EINVAL;
+	while (count >= sizeof(struct snd_seq_event)) {
+		/* Read in the event header from the user */
+		len = sizeof(struct snd_seq_event);
+		if (copy_from_user(ev, buf, len)) {
+			err = -EFAULT;
+			break;
+		}
+		/* read in the rest bytes for UMP events */
+		if (snd_seq_ev_is_ump(ev)) {
+			if (count < sizeof(struct snd_seq_ump_event))
+				break;
+			if (copy_from_user((char *)ev + len, buf + len,
+					   sizeof(struct snd_seq_ump_event) - len)) {
+				err = -EFAULT;
+				break;
+			}
+			len = sizeof(struct snd_seq_ump_event);
+		}
+
+		ev->source.client = client->number;	/* fill in client number */
+		/* Check for extension data length */
+		if (check_event_type_and_length(ev)) {
+			err = -EINVAL;
+			break;
+		}
+
+		if (!event_is_compatible(client, ev)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			break;
 		}
 
 		/* check for special events */
+<<<<<<< HEAD
 		if (event.type == SNDRV_SEQ_EVENT_NONE)
 			goto __skip_event;
 		else if (snd_seq_ev_is_reserved(&event)) {
@@ -1040,12 +1479,26 @@ static ssize_t snd_seq_write(struct file *file, const char __user *buf,
 
 		if (snd_seq_ev_is_variable(&event)) {
 			int extlen = event.data.ext.len & ~SNDRV_SEQ_EXT_MASK;
+=======
+		if (!snd_seq_ev_is_ump(ev)) {
+			if (ev->type == SNDRV_SEQ_EVENT_NONE)
+				goto __skip_event;
+			else if (snd_seq_ev_is_reserved(ev)) {
+				err = -EINVAL;
+				break;
+			}
+		}
+
+		if (snd_seq_ev_is_variable(ev)) {
+			int extlen = ev->data.ext.len & ~SNDRV_SEQ_EXT_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((size_t)(extlen + len) > count) {
 				/* back out, will get an error this time or next */
 				err = -EINVAL;
 				break;
 			}
 			/* set user space pointer */
+<<<<<<< HEAD
 			event.data.ext.len = extlen | SNDRV_SEQ_EXT_USRPTR;
 			event.data.ext.ptr = (char __force *)buf
 						+ sizeof(struct snd_seq_event);
@@ -1056,23 +1509,55 @@ static ssize_t snd_seq_write(struct file *file, const char __user *buf,
 				void *ptr = (void __force *)compat_ptr(event.data.raw32.d[1]);
 				event.data.ext.ptr = ptr;
 			}
+=======
+			ev->data.ext.len = extlen | SNDRV_SEQ_EXT_USRPTR;
+			ev->data.ext.ptr = (char __force *)buf + len;
+			len += extlen; /* increment data length */
+		} else {
+#ifdef CONFIG_COMPAT
+			if (client->convert32 && snd_seq_ev_is_varusr(ev))
+				ev->data.ext.ptr =
+					(void __force *)compat_ptr(ev->data.raw32.d[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		}
 
 		/* ok, enqueue it */
+<<<<<<< HEAD
 		err = snd_seq_client_enqueue_event(client, &event, file,
 						   !(file->f_flags & O_NONBLOCK),
 						   0, 0);
 		if (err < 0)
 			break;
+=======
+		err = snd_seq_client_enqueue_event(client, ev, file,
+						   !(file->f_flags & O_NONBLOCK),
+						   0, 0, &client->ioctl_mutex);
+		if (err < 0)
+			break;
+		handled++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__skip_event:
 		/* Update pointers and counts */
 		count -= len;
 		buf += len;
 		written += len;
+<<<<<<< HEAD
 	}
 
+=======
+
+		/* let's have a coffee break if too many events are queued */
+		if (++handled >= 200) {
+			mutex_unlock(&client->ioctl_mutex);
+			goto repeat;
+		}
+	}
+
+ out:
+	mutex_unlock(&client->ioctl_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return written ? written : err;
 }
 
@@ -1080,6 +1565,7 @@ static ssize_t snd_seq_write(struct file *file, const char __user *buf,
 /*
  * handle polling
  */
+<<<<<<< HEAD
 static unsigned int snd_seq_poll(struct file *file, poll_table * wait)
 {
 	struct snd_seq_client *client = file->private_data;
@@ -1088,13 +1574,27 @@ static unsigned int snd_seq_poll(struct file *file, poll_table * wait)
 	/* check client structures are in place */
 	if (snd_BUG_ON(!client))
 		return -ENXIO;
+=======
+static __poll_t snd_seq_poll(struct file *file, poll_table * wait)
+{
+	struct snd_seq_client *client = file->private_data;
+	__poll_t mask = 0;
+
+	/* check client structures are in place */
+	if (snd_BUG_ON(!client))
+		return EPOLLERR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((snd_seq_file_flags(file) & SNDRV_SEQ_LFLG_INPUT) &&
 	    client->data.user.fifo) {
 
 		/* check if data is available in the outqueue */
 		if (snd_seq_fifo_poll_wait(client->data.user.fifo, file, wait))
+<<<<<<< HEAD
 			mask |= POLLIN | POLLRDNORM;
+=======
+			mask |= EPOLLIN | EPOLLRDNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (snd_seq_file_flags(file) & SNDRV_SEQ_LFLG_OUTPUT) {
@@ -1102,7 +1602,11 @@ static unsigned int snd_seq_poll(struct file *file, poll_table * wait)
 		/* check if data is available in the pool */
 		if (!snd_seq_write_pool_allocated(client) ||
 		    snd_seq_pool_poll_wait(client->pool, file, wait))
+<<<<<<< HEAD
 			mask |= POLLOUT | POLLWRNORM;
+=======
+			mask |= EPOLLOUT | EPOLLWRNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return mask;
@@ -1111,6 +1615,7 @@ static unsigned int snd_seq_poll(struct file *file, poll_table * wait)
 
 /*-----------------------------------------------------*/
 
+<<<<<<< HEAD
 
 /* SYSTEM_INFO ioctl() */
 static int snd_seq_ioctl_system_info(struct snd_seq_client *client, void __user *arg)
@@ -1128,11 +1633,50 @@ static int snd_seq_ioctl_system_info(struct snd_seq_client *client, void __user 
 
 	if (copy_to_user(arg, &info, sizeof(info)))
 		return -EFAULT;
+=======
+static int snd_seq_ioctl_pversion(struct snd_seq_client *client, void *arg)
+{
+	int *pversion = arg;
+
+	*pversion = SNDRV_SEQ_VERSION;
+	return 0;
+}
+
+static int snd_seq_ioctl_user_pversion(struct snd_seq_client *client, void *arg)
+{
+	client->user_pversion = *(unsigned int *)arg;
+	return 0;
+}
+
+static int snd_seq_ioctl_client_id(struct snd_seq_client *client, void *arg)
+{
+	int *client_id = arg;
+
+	*client_id = client->number;
+	return 0;
+}
+
+/* SYSTEM_INFO ioctl() */
+static int snd_seq_ioctl_system_info(struct snd_seq_client *client, void *arg)
+{
+	struct snd_seq_system_info *info = arg;
+
+	memset(info, 0, sizeof(*info));
+	/* fill the info fields */
+	info->queues = SNDRV_SEQ_MAX_QUEUES;
+	info->clients = SNDRV_SEQ_MAX_CLIENTS;
+	info->ports = SNDRV_SEQ_MAX_PORTS;
+	info->channels = 256;	/* fixed limit */
+	info->cur_clients = client_usage.cur;
+	info->cur_queues = snd_seq_queue_get_cur_queues();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
 /* RUNNING_MODE ioctl() */
+<<<<<<< HEAD
 static int snd_seq_ioctl_running_mode(struct snd_seq_client *client, void __user *arg)
 {
 	struct snd_seq_running_info info;
@@ -1144,26 +1688,52 @@ static int snd_seq_ioctl_running_mode(struct snd_seq_client *client, void __user
 
 	/* requested client number */
 	cptr = snd_seq_client_use_ptr(info.client);
+=======
+static int snd_seq_ioctl_running_mode(struct snd_seq_client *client, void  *arg)
+{
+	struct snd_seq_running_info *info = arg;
+	struct snd_seq_client *cptr;
+	int err = 0;
+
+	/* requested client number */
+	cptr = snd_seq_client_use_ptr(info->client);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cptr == NULL)
 		return -ENOENT;		/* don't change !!! */
 
 #ifdef SNDRV_BIG_ENDIAN
+<<<<<<< HEAD
 	if (! info.big_endian) {
+=======
+	if (!info->big_endian) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto __err;
 	}
 #else
+<<<<<<< HEAD
 	if (info.big_endian) {
+=======
+	if (info->big_endian) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto __err;
 	}
 
 #endif
+<<<<<<< HEAD
 	if (info.cpu_mode > sizeof(long)) {
 		err = -EINVAL;
 		goto __err;
 	}
 	cptr->convert32 = (info.cpu_mode < sizeof(long));
+=======
+	if (info->cpu_mode > sizeof(long)) {
+		err = -EINVAL;
+		goto __err;
+	}
+	cptr->convert32 = (info->cpu_mode < sizeof(long));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  __err:
 	snd_seq_client_unlock(cptr);
 	return err;
@@ -1181,11 +1751,29 @@ static void get_client_info(struct snd_seq_client *cptr,
 	info->filter = cptr->filter;
 	info->event_lost = cptr->event_lost;
 	memcpy(info->event_filter, cptr->event_filter, 32);
+<<<<<<< HEAD
 	info->num_ports = cptr->num_ports;
+=======
+	info->group_filter = cptr->group_filter;
+	info->num_ports = cptr->num_ports;
+
+	if (cptr->type == USER_CLIENT)
+		info->pid = pid_vnr(cptr->data.user.owner);
+	else
+		info->pid = -1;
+
+	if (cptr->type == KERNEL_CLIENT)
+		info->card = cptr->data.kernel.card ? cptr->data.kernel.card->number : -1;
+	else
+		info->card = -1;
+
+	info->midi_version = cptr->midi_version;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(info->reserved, 0, sizeof(info->reserved));
 }
 
 static int snd_seq_ioctl_get_client_info(struct snd_seq_client *client,
+<<<<<<< HEAD
 					 void __user *arg)
 {
 	struct snd_seq_client *cptr;
@@ -1204,12 +1792,28 @@ static int snd_seq_ioctl_get_client_info(struct snd_seq_client *client,
 
 	if (copy_to_user(arg, &client_info, sizeof(client_info)))
 		return -EFAULT;
+=======
+					 void *arg)
+{
+	struct snd_seq_client_info *client_info = arg;
+	struct snd_seq_client *cptr;
+
+	/* requested client number */
+	cptr = snd_seq_client_use_ptr(client_info->client);
+	if (cptr == NULL)
+		return -ENOENT;		/* don't change !!! */
+
+	get_client_info(cptr, client_info);
+	snd_seq_client_unlock(cptr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
 /* CLIENT_INFO ioctl() */
 static int snd_seq_ioctl_set_client_info(struct snd_seq_client *client,
+<<<<<<< HEAD
 					 void __user *arg)
 {
 	struct snd_seq_client_info client_info;
@@ -1232,6 +1836,34 @@ static int snd_seq_ioctl_set_client_info(struct snd_seq_client *client,
 	client->event_lost = client_info.event_lost;
 	memcpy(client->event_filter, client_info.event_filter, 32);
 
+=======
+					 void *arg)
+{
+	struct snd_seq_client_info *client_info = arg;
+
+	/* it is not allowed to set the info fields for an another client */
+	if (client->number != client_info->client)
+		return -EPERM;
+	/* also client type must be set now */
+	if (client->type != client_info->type)
+		return -EINVAL;
+
+	/* check validity of midi_version field */
+	if (client->user_pversion >= SNDRV_PROTOCOL_VERSION(1, 0, 3) &&
+	    client_info->midi_version > SNDRV_SEQ_CLIENT_UMP_MIDI_2_0)
+		return -EINVAL;
+
+	/* fill the info fields */
+	if (client_info->name[0])
+		strscpy(client->name, client_info->name, sizeof(client->name));
+
+	client->filter = client_info->filter;
+	client->event_lost = client_info->event_lost;
+	if (client->user_pversion >= SNDRV_PROTOCOL_VERSION(1, 0, 3))
+		client->midi_version = client_info->midi_version;
+	memcpy(client->event_filter, client_info->event_filter, 32);
+	client->group_filter = client_info->group_filter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1239,6 +1871,7 @@ static int snd_seq_ioctl_set_client_info(struct snd_seq_client *client,
 /* 
  * CREATE PORT ioctl() 
  */
+<<<<<<< HEAD
 static int snd_seq_ioctl_create_port(struct snd_seq_client *client,
 				     void __user *arg)
 {
@@ -1266,11 +1899,45 @@ static int snd_seq_ioctl_create_port(struct snd_seq_client *client,
 	}
 	if (client->type == KERNEL_CLIENT) {
 		if ((callback = info.kernel) != NULL) {
+=======
+static int snd_seq_ioctl_create_port(struct snd_seq_client *client, void *arg)
+{
+	struct snd_seq_port_info *info = arg;
+	struct snd_seq_client_port *port;
+	struct snd_seq_port_callback *callback;
+	int port_idx, err;
+
+	/* it is not allowed to create the port for an another client */
+	if (info->addr.client != client->number)
+		return -EPERM;
+	if (client->type == USER_CLIENT && info->kernel)
+		return -EINVAL;
+	if ((info->capability & SNDRV_SEQ_PORT_CAP_UMP_ENDPOINT) &&
+	    client->ump_endpoint_port >= 0)
+		return -EBUSY;
+
+	if (info->flags & SNDRV_SEQ_PORT_FLG_GIVEN_PORT)
+		port_idx = info->addr.port;
+	else
+		port_idx = -1;
+	if (port_idx >= SNDRV_SEQ_ADDRESS_UNKNOWN)
+		return -EINVAL;
+	err = snd_seq_create_port(client, port_idx, &port);
+	if (err < 0)
+		return err;
+
+	if (client->type == KERNEL_CLIENT) {
+		callback = info->kernel;
+		if (callback) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (callback->owner)
 				port->owner = callback->owner;
 			port->private_data = callback->private_data;
 			port->private_free = callback->private_free;
+<<<<<<< HEAD
 			port->callback_all = callback->callback_all;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			port->event_input = callback->event_input;
 			port->c_src.open = callback->subscribe;
 			port->c_src.close = callback->unsubscribe;
@@ -1279,6 +1946,7 @@ static int snd_seq_ioctl_create_port(struct snd_seq_client *client,
 		}
 	}
 
+<<<<<<< HEAD
 	info.addr = port->addr;
 
 	snd_seq_set_port_info(port, &info);
@@ -1288,12 +1956,23 @@ static int snd_seq_ioctl_create_port(struct snd_seq_client *client,
 	if (copy_to_user(arg, &info, sizeof(info)))
 		return -EFAULT;
 
+=======
+	info->addr = port->addr;
+
+	snd_seq_set_port_info(port, info);
+	if (info->capability & SNDRV_SEQ_PORT_CAP_UMP_ENDPOINT)
+		client->ump_endpoint_port = port->addr.port;
+	snd_seq_system_client_ev_port_start(port->addr.client, port->addr.port);
+	snd_seq_port_unlock(port);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /* 
  * DELETE PORT ioctl() 
  */
+<<<<<<< HEAD
 static int snd_seq_ioctl_delete_port(struct snd_seq_client *client,
 				     void __user *arg)
 {
@@ -1311,6 +1990,23 @@ static int snd_seq_ioctl_delete_port(struct snd_seq_client *client,
 	err = snd_seq_delete_port(client, info.addr.port);
 	if (err >= 0)
 		snd_seq_system_client_ev_port_exit(client->number, info.addr.port);
+=======
+static int snd_seq_ioctl_delete_port(struct snd_seq_client *client, void *arg)
+{
+	struct snd_seq_port_info *info = arg;
+	int err;
+
+	/* it is not allowed to remove the port for an another client */
+	if (info->addr.client != client->number)
+		return -EPERM;
+
+	err = snd_seq_delete_port(client, info->addr.port);
+	if (err >= 0) {
+		if (client->ump_endpoint_port == info->addr.port)
+			client->ump_endpoint_port = -1;
+		snd_seq_system_client_ev_port_exit(client->number, info->addr.port);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1318,6 +2014,7 @@ static int snd_seq_ioctl_delete_port(struct snd_seq_client *client,
 /* 
  * GET_PORT_INFO ioctl() (on any client) 
  */
+<<<<<<< HEAD
 static int snd_seq_ioctl_get_port_info(struct snd_seq_client *client,
 				       void __user *arg)
 {
@@ -1332,18 +2029,38 @@ static int snd_seq_ioctl_get_port_info(struct snd_seq_client *client,
 		return -ENXIO;
 
 	port = snd_seq_port_use_ptr(cptr, info.addr.port);
+=======
+static int snd_seq_ioctl_get_port_info(struct snd_seq_client *client, void *arg)
+{
+	struct snd_seq_port_info *info = arg;
+	struct snd_seq_client *cptr;
+	struct snd_seq_client_port *port;
+
+	cptr = snd_seq_client_use_ptr(info->addr.client);
+	if (cptr == NULL)
+		return -ENXIO;
+
+	port = snd_seq_port_use_ptr(cptr, info->addr.port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (port == NULL) {
 		snd_seq_client_unlock(cptr);
 		return -ENOENT;			/* don't change */
 	}
 
 	/* get port info */
+<<<<<<< HEAD
 	snd_seq_get_port_info(port, &info);
 	snd_seq_port_unlock(port);
 	snd_seq_client_unlock(cptr);
 
 	if (copy_to_user(arg, &info, sizeof(info)))
 		return -EFAULT;
+=======
+	snd_seq_get_port_info(port, info);
+	snd_seq_port_unlock(port);
+	snd_seq_client_unlock(cptr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1351,6 +2068,7 @@ static int snd_seq_ioctl_get_port_info(struct snd_seq_client *client,
 /* 
  * SET_PORT_INFO ioctl() (only ports on this/own client) 
  */
+<<<<<<< HEAD
 static int snd_seq_ioctl_set_port_info(struct snd_seq_client *client,
 				       void __user *arg)
 {
@@ -1365,6 +2083,18 @@ static int snd_seq_ioctl_set_port_info(struct snd_seq_client *client,
 	port = snd_seq_port_use_ptr(client, info.addr.port);
 	if (port) {
 		snd_seq_set_port_info(port, &info);
+=======
+static int snd_seq_ioctl_set_port_info(struct snd_seq_client *client, void *arg)
+{
+	struct snd_seq_port_info *info = arg;
+	struct snd_seq_client_port *port;
+
+	if (info->addr.client != client->number) /* only set our own ports ! */
+		return -EPERM;
+	port = snd_seq_port_use_ptr(client, info->addr.port);
+	if (port) {
+		snd_seq_set_port_info(port, info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_seq_port_unlock(port);
 	}
 	return 0;
@@ -1430,6 +2160,7 @@ int snd_seq_client_notify_subscription(int client, int port,
  * add to port's subscription list IOCTL interface 
  */
 static int snd_seq_ioctl_subscribe_port(struct snd_seq_client *client,
+<<<<<<< HEAD
 					void __user *arg)
 {
 	int result = -EINVAL;
@@ -1450,14 +2181,44 @@ static int snd_seq_ioctl_subscribe_port(struct snd_seq_client *client,
 		goto __end;
 
 	result = check_subscription_permission(client, sport, dport, &subs);
+=======
+					void *arg)
+{
+	struct snd_seq_port_subscribe *subs = arg;
+	int result = -EINVAL;
+	struct snd_seq_client *receiver = NULL, *sender = NULL;
+	struct snd_seq_client_port *sport = NULL, *dport = NULL;
+
+	receiver = snd_seq_client_use_ptr(subs->dest.client);
+	if (!receiver)
+		goto __end;
+	sender = snd_seq_client_use_ptr(subs->sender.client);
+	if (!sender)
+		goto __end;
+	sport = snd_seq_port_use_ptr(sender, subs->sender.port);
+	if (!sport)
+		goto __end;
+	dport = snd_seq_port_use_ptr(receiver, subs->dest.port);
+	if (!dport)
+		goto __end;
+
+	result = check_subscription_permission(client, sport, dport, subs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result < 0)
 		goto __end;
 
 	/* connect them */
+<<<<<<< HEAD
 	result = snd_seq_port_connect(client, sender, sport, receiver, dport, &subs);
 	if (! result) /* broadcast announce */
 		snd_seq_client_notify_subscription(SNDRV_SEQ_ADDRESS_SUBSCRIBERS, 0,
 						   &subs, SNDRV_SEQ_EVENT_PORT_SUBSCRIBED);
+=======
+	result = snd_seq_port_connect(client, sender, sport, receiver, dport, subs);
+	if (! result) /* broadcast announce */
+		snd_seq_client_notify_subscription(SNDRV_SEQ_ADDRESS_SUBSCRIBERS, 0,
+						   subs, SNDRV_SEQ_EVENT_PORT_SUBSCRIBED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
       __end:
       	if (sport)
 		snd_seq_port_unlock(sport);
@@ -1475,6 +2236,7 @@ static int snd_seq_ioctl_subscribe_port(struct snd_seq_client *client,
  * remove from port's subscription list 
  */
 static int snd_seq_ioctl_unsubscribe_port(struct snd_seq_client *client,
+<<<<<<< HEAD
 					  void __user *arg)
 {
 	int result = -ENXIO;
@@ -1502,6 +2264,36 @@ static int snd_seq_ioctl_unsubscribe_port(struct snd_seq_client *client,
 	if (! result) /* broadcast announce */
 		snd_seq_client_notify_subscription(SNDRV_SEQ_ADDRESS_SUBSCRIBERS, 0,
 						   &subs, SNDRV_SEQ_EVENT_PORT_UNSUBSCRIBED);
+=======
+					  void *arg)
+{
+	struct snd_seq_port_subscribe *subs = arg;
+	int result = -ENXIO;
+	struct snd_seq_client *receiver = NULL, *sender = NULL;
+	struct snd_seq_client_port *sport = NULL, *dport = NULL;
+
+	receiver = snd_seq_client_use_ptr(subs->dest.client);
+	if (!receiver)
+		goto __end;
+	sender = snd_seq_client_use_ptr(subs->sender.client);
+	if (!sender)
+		goto __end;
+	sport = snd_seq_port_use_ptr(sender, subs->sender.port);
+	if (!sport)
+		goto __end;
+	dport = snd_seq_port_use_ptr(receiver, subs->dest.port);
+	if (!dport)
+		goto __end;
+
+	result = check_subscription_permission(client, sport, dport, subs);
+	if (result < 0)
+		goto __end;
+
+	result = snd_seq_port_disconnect(client, sender, sport, receiver, dport, subs);
+	if (! result) /* broadcast announce */
+		snd_seq_client_notify_subscription(SNDRV_SEQ_ADDRESS_SUBSCRIBERS, 0,
+						   subs, SNDRV_SEQ_EVENT_PORT_UNSUBSCRIBED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
       __end:
       	if (sport)
 		snd_seq_port_unlock(sport);
@@ -1516,6 +2308,7 @@ static int snd_seq_ioctl_unsubscribe_port(struct snd_seq_client *client,
 
 
 /* CREATE_QUEUE ioctl() */
+<<<<<<< HEAD
 static int snd_seq_ioctl_create_queue(struct snd_seq_client *client,
 				      void __user *arg)
 {
@@ -1546,11 +2339,32 @@ static int snd_seq_ioctl_create_queue(struct snd_seq_client *client,
 
 	if (copy_to_user(arg, &info, sizeof(info)))
 		return -EFAULT;
+=======
+static int snd_seq_ioctl_create_queue(struct snd_seq_client *client, void *arg)
+{
+	struct snd_seq_queue_info *info = arg;
+	struct snd_seq_queue *q;
+
+	q = snd_seq_queue_alloc(client->number, info->locked, info->flags);
+	if (IS_ERR(q))
+		return PTR_ERR(q);
+
+	info->queue = q->queue;
+	info->locked = q->locked;
+	info->owner = q->owner;
+
+	/* set queue name */
+	if (!info->name[0])
+		snprintf(info->name, sizeof(info->name), "Queue-%d", q->queue);
+	strscpy(q->name, info->name, sizeof(q->name));
+	snd_use_lock_free(&q->use_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /* DELETE_QUEUE ioctl() */
+<<<<<<< HEAD
 static int snd_seq_ioctl_delete_queue(struct snd_seq_client *client,
 				      void __user *arg)
 {
@@ -1560,10 +2374,18 @@ static int snd_seq_ioctl_delete_queue(struct snd_seq_client *client,
 		return -EFAULT;
 
 	return snd_seq_queue_delete(client->number, info.queue);
+=======
+static int snd_seq_ioctl_delete_queue(struct snd_seq_client *client, void *arg)
+{
+	struct snd_seq_queue_info *info = arg;
+
+	return snd_seq_queue_delete(client->number, info->queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* GET_QUEUE_INFO ioctl() */
 static int snd_seq_ioctl_get_queue_info(struct snd_seq_client *client,
+<<<<<<< HEAD
 					void __user *arg)
 {
 	struct snd_seq_queue_info info;
@@ -1586,11 +2408,30 @@ static int snd_seq_ioctl_get_queue_info(struct snd_seq_client *client,
 	if (copy_to_user(arg, &info, sizeof(info)))
 		return -EFAULT;
 
+=======
+					void *arg)
+{
+	struct snd_seq_queue_info *info = arg;
+	struct snd_seq_queue *q;
+
+	q = queueptr(info->queue);
+	if (q == NULL)
+		return -EINVAL;
+
+	memset(info, 0, sizeof(*info));
+	info->queue = q->queue;
+	info->owner = q->owner;
+	info->locked = q->locked;
+	strscpy(info->name, q->name, sizeof(info->name));
+	queuefree(q);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /* SET_QUEUE_INFO ioctl() */
 static int snd_seq_ioctl_set_queue_info(struct snd_seq_client *client,
+<<<<<<< HEAD
 					void __user *arg)
 {
 	struct snd_seq_queue_info info;
@@ -1608,24 +2449,49 @@ static int snd_seq_ioctl_set_queue_info(struct snd_seq_client *client,
 			return -EPERM;
 		if (info.locked)
 			snd_seq_queue_use(info.queue, client->number, 1);
+=======
+					void *arg)
+{
+	struct snd_seq_queue_info *info = arg;
+	struct snd_seq_queue *q;
+
+	if (info->owner != client->number)
+		return -EINVAL;
+
+	/* change owner/locked permission */
+	if (snd_seq_queue_check_access(info->queue, client->number)) {
+		if (snd_seq_queue_set_owner(info->queue, client->number, info->locked) < 0)
+			return -EPERM;
+		if (info->locked)
+			snd_seq_queue_use(info->queue, client->number, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		return -EPERM;
 	}	
 
+<<<<<<< HEAD
 	q = queueptr(info.queue);
+=======
+	q = queueptr(info->queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (! q)
 		return -EINVAL;
 	if (q->owner != client->number) {
 		queuefree(q);
 		return -EPERM;
 	}
+<<<<<<< HEAD
 	strlcpy(q->name, info.name, sizeof(q->name));
+=======
+	strscpy(q->name, info->name, sizeof(q->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	queuefree(q);
 
 	return 0;
 }
 
 /* GET_NAMED_QUEUE ioctl() */
+<<<<<<< HEAD
 static int snd_seq_ioctl_get_named_queue(struct snd_seq_client *client, void __user *arg)
 {
 	struct snd_seq_queue_info info;
@@ -1645,11 +2511,28 @@ static int snd_seq_ioctl_get_named_queue(struct snd_seq_client *client, void __u
 	if (copy_to_user(arg, &info, sizeof(info)))
 		return -EFAULT;
 
+=======
+static int snd_seq_ioctl_get_named_queue(struct snd_seq_client *client,
+					 void *arg)
+{
+	struct snd_seq_queue_info *info = arg;
+	struct snd_seq_queue *q;
+
+	q = snd_seq_queue_find_name(info->name);
+	if (q == NULL)
+		return -EINVAL;
+	info->queue = q->queue;
+	info->owner = q->owner;
+	info->locked = q->locked;
+	queuefree(q);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /* GET_QUEUE_STATUS ioctl() */
 static int snd_seq_ioctl_get_queue_status(struct snd_seq_client *client,
+<<<<<<< HEAD
 					  void __user *arg)
 {
 	struct snd_seq_queue_status status;
@@ -1678,12 +2561,38 @@ static int snd_seq_ioctl_get_queue_status(struct snd_seq_client *client,
 
 	if (copy_to_user(arg, &status, sizeof(status)))
 		return -EFAULT;
+=======
+					  void *arg)
+{
+	struct snd_seq_queue_status *status = arg;
+	struct snd_seq_queue *queue;
+	struct snd_seq_timer *tmr;
+
+	queue = queueptr(status->queue);
+	if (queue == NULL)
+		return -EINVAL;
+	memset(status, 0, sizeof(*status));
+	status->queue = queue->queue;
+	
+	tmr = queue->timer;
+	status->events = queue->tickq->cells + queue->timeq->cells;
+
+	status->time = snd_seq_timer_get_cur_time(tmr, true);
+	status->tick = snd_seq_timer_get_cur_tick(tmr);
+
+	status->running = tmr->running;
+
+	status->flags = queue->flags;
+	queuefree(queue);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
 /* GET_QUEUE_TEMPO ioctl() */
 static int snd_seq_ioctl_get_queue_tempo(struct snd_seq_client *client,
+<<<<<<< HEAD
 					 void __user *arg)
 {
 	struct snd_seq_queue_tempo tempo;
@@ -1709,6 +2618,28 @@ static int snd_seq_ioctl_get_queue_tempo(struct snd_seq_client *client,
 
 	if (copy_to_user(arg, &tempo, sizeof(tempo)))
 		return -EFAULT;
+=======
+					 void *arg)
+{
+	struct snd_seq_queue_tempo *tempo = arg;
+	struct snd_seq_queue *queue;
+	struct snd_seq_timer *tmr;
+
+	queue = queueptr(tempo->queue);
+	if (queue == NULL)
+		return -EINVAL;
+	memset(tempo, 0, sizeof(*tempo));
+	tempo->queue = queue->queue;
+	
+	tmr = queue->timer;
+
+	tempo->tempo = tmr->tempo;
+	tempo->ppq = tmr->ppq;
+	tempo->skew_value = tmr->skew;
+	tempo->skew_base = tmr->skew_base;
+	queuefree(queue);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1720,6 +2651,7 @@ int snd_seq_set_queue_tempo(int client, struct snd_seq_queue_tempo *tempo)
 		return -EPERM;
 	return snd_seq_queue_timer_set_tempo(tempo->queue, client, tempo);
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(snd_seq_set_queue_tempo);
 
@@ -1733,12 +2665,24 @@ static int snd_seq_ioctl_set_queue_tempo(struct snd_seq_client *client,
 		return -EFAULT;
 
 	result = snd_seq_set_queue_tempo(client->number, &tempo);
+=======
+EXPORT_SYMBOL(snd_seq_set_queue_tempo);
+
+static int snd_seq_ioctl_set_queue_tempo(struct snd_seq_client *client,
+					 void *arg)
+{
+	struct snd_seq_queue_tempo *tempo = arg;
+	int result;
+
+	result = snd_seq_set_queue_tempo(client->number, tempo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result < 0 ? result : 0;
 }
 
 
 /* GET_QUEUE_TIMER ioctl() */
 static int snd_seq_ioctl_get_queue_timer(struct snd_seq_client *client,
+<<<<<<< HEAD
 					 void __user *arg)
 {
 	struct snd_seq_queue_timer timer;
@@ -1764,18 +2708,43 @@ static int snd_seq_ioctl_get_queue_timer(struct snd_seq_client *client,
 	if (tmr->type == SNDRV_SEQ_TIMER_ALSA) {
 		timer.u.alsa.id = tmr->alsa_id;
 		timer.u.alsa.resolution = tmr->preferred_resolution;
+=======
+					 void *arg)
+{
+	struct snd_seq_queue_timer *timer = arg;
+	struct snd_seq_queue *queue;
+	struct snd_seq_timer *tmr;
+
+	queue = queueptr(timer->queue);
+	if (queue == NULL)
+		return -EINVAL;
+
+	mutex_lock(&queue->timer_mutex);
+	tmr = queue->timer;
+	memset(timer, 0, sizeof(*timer));
+	timer->queue = queue->queue;
+
+	timer->type = tmr->type;
+	if (tmr->type == SNDRV_SEQ_TIMER_ALSA) {
+		timer->u.alsa.id = tmr->alsa_id;
+		timer->u.alsa.resolution = tmr->preferred_resolution;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&queue->timer_mutex);
 	queuefree(queue);
 	
+<<<<<<< HEAD
 	if (copy_to_user(arg, &timer, sizeof(timer)))
 		return -EFAULT;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
 /* SET_QUEUE_TIMER ioctl() */
 static int snd_seq_ioctl_set_queue_timer(struct snd_seq_client *client,
+<<<<<<< HEAD
 					 void __user *arg)
 {
 	int result = 0;
@@ -1806,6 +2775,32 @@ static int snd_seq_ioctl_set_queue_timer(struct snd_seq_client *client,
 			tmr->preferred_resolution = timer.u.alsa.resolution;
 		}
 		result = snd_seq_queue_timer_open(timer.queue);
+=======
+					 void *arg)
+{
+	struct snd_seq_queue_timer *timer = arg;
+	int result = 0;
+
+	if (timer->type != SNDRV_SEQ_TIMER_ALSA)
+		return -EINVAL;
+
+	if (snd_seq_queue_check_access(timer->queue, client->number)) {
+		struct snd_seq_queue *q;
+		struct snd_seq_timer *tmr;
+
+		q = queueptr(timer->queue);
+		if (q == NULL)
+			return -ENXIO;
+		mutex_lock(&q->timer_mutex);
+		tmr = q->timer;
+		snd_seq_queue_timer_close(timer->queue);
+		tmr->type = timer->type;
+		if (tmr->type == SNDRV_SEQ_TIMER_ALSA) {
+			tmr->alsa_id = timer->u.alsa.id;
+			tmr->preferred_resolution = timer->u.alsa.resolution;
+		}
+		result = snd_seq_queue_timer_open(timer->queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&q->timer_mutex);
 		queuefree(q);
 	} else {
@@ -1818,6 +2813,7 @@ static int snd_seq_ioctl_set_queue_timer(struct snd_seq_client *client,
 
 /* GET_QUEUE_CLIENT ioctl() */
 static int snd_seq_ioctl_get_queue_client(struct snd_seq_client *client,
+<<<<<<< HEAD
 					  void __user *arg)
 {
 	struct snd_seq_queue_client info;
@@ -1834,12 +2830,26 @@ static int snd_seq_ioctl_get_queue_client(struct snd_seq_client *client,
 
 	if (copy_to_user(arg, &info, sizeof(info)))
 		return -EFAULT;
+=======
+					  void *arg)
+{
+	struct snd_seq_queue_client *info = arg;
+	int used;
+
+	used = snd_seq_queue_is_used(info->queue, client->number);
+	if (used < 0)
+		return -EINVAL;
+	info->used = used;
+	info->client = client->number;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
 /* SET_QUEUE_CLIENT ioctl() */
 static int snd_seq_ioctl_set_queue_client(struct snd_seq_client *client,
+<<<<<<< HEAD
 					  void __user *arg)
 {
 	int err;
@@ -1850,6 +2860,15 @@ static int snd_seq_ioctl_set_queue_client(struct snd_seq_client *client,
 
 	if (info.used >= 0) {
 		err = snd_seq_queue_use(info.queue, client->number, info.used);
+=======
+					  void *arg)
+{
+	struct snd_seq_queue_client *info = arg;
+	int err;
+
+	if (info->used >= 0) {
+		err = snd_seq_queue_use(info->queue, client->number, info->used);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return err;
 	}
@@ -1860,6 +2879,7 @@ static int snd_seq_ioctl_set_queue_client(struct snd_seq_client *client,
 
 /* GET_CLIENT_POOL ioctl() */
 static int snd_seq_ioctl_get_client_pool(struct snd_seq_client *client,
+<<<<<<< HEAD
 					 void __user *arg)
 {
 	struct snd_seq_client_pool info;
@@ -1889,11 +2909,38 @@ static int snd_seq_ioctl_get_client_pool(struct snd_seq_client *client,
 	
 	if (copy_to_user(arg, &info, sizeof(info)))
 		return -EFAULT;
+=======
+					 void *arg)
+{
+	struct snd_seq_client_pool *info = arg;
+	struct snd_seq_client *cptr;
+
+	cptr = snd_seq_client_use_ptr(info->client);
+	if (cptr == NULL)
+		return -ENOENT;
+	memset(info, 0, sizeof(*info));
+	info->client = cptr->number;
+	info->output_pool = cptr->pool->size;
+	info->output_room = cptr->pool->room;
+	info->output_free = info->output_pool;
+	info->output_free = snd_seq_unused_cells(cptr->pool);
+	if (cptr->type == USER_CLIENT) {
+		info->input_pool = cptr->data.user.fifo_pool_size;
+		info->input_free = info->input_pool;
+		info->input_free = snd_seq_fifo_unused_cells(cptr->data.user.fifo);
+	} else {
+		info->input_pool = 0;
+		info->input_free = 0;
+	}
+	snd_seq_client_unlock(cptr);
+	
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /* SET_CLIENT_POOL ioctl() */
 static int snd_seq_ioctl_set_client_pool(struct snd_seq_client *client,
+<<<<<<< HEAD
 					 void __user *arg)
 {
 	struct snd_seq_client_pool info;
@@ -1914,11 +2961,34 @@ static int snd_seq_ioctl_set_client_pool(struct snd_seq_client *client,
 			snd_seq_pool_done(client->pool);
 		}
 		client->pool->size = info.output_pool;
+=======
+					 void *arg)
+{
+	struct snd_seq_client_pool *info = arg;
+	int rc;
+
+	if (client->number != info->client)
+		return -EINVAL; /* can't change other clients */
+
+	if (info->output_pool >= 1 && info->output_pool <= SNDRV_SEQ_MAX_EVENTS &&
+	    (! snd_seq_write_pool_allocated(client) ||
+	     info->output_pool != client->pool->size)) {
+		if (snd_seq_write_pool_allocated(client)) {
+			/* is the pool in use? */
+			if (atomic_read(&client->pool->counter))
+				return -EBUSY;
+			/* remove all existing cells */
+			snd_seq_pool_mark_closing(client->pool);
+			snd_seq_pool_done(client->pool);
+		}
+		client->pool->size = info->output_pool;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = snd_seq_pool_init(client->pool);
 		if (rc < 0)
 			return rc;
 	}
 	if (client->type == USER_CLIENT && client->data.user.fifo != NULL &&
+<<<<<<< HEAD
 	    info.input_pool >= 1 &&
 	    info.input_pool <= SNDRV_SEQ_MAX_CLIENT_EVENTS &&
 	    info.input_pool != client->data.user.fifo_pool_size) {
@@ -1931,6 +3001,20 @@ static int snd_seq_ioctl_set_client_pool(struct snd_seq_client *client,
 	if (info.output_room >= 1 &&
 	    info.output_room <= client->pool->size) {
 		client->pool->room  = info.output_room;
+=======
+	    info->input_pool >= 1 &&
+	    info->input_pool <= SNDRV_SEQ_MAX_CLIENT_EVENTS &&
+	    info->input_pool != client->data.user.fifo_pool_size) {
+		/* change pool size */
+		rc = snd_seq_fifo_resize(client->data.user.fifo, info->input_pool);
+		if (rc < 0)
+			return rc;
+		client->data.user.fifo_pool_size = info->input_pool;
+	}
+	if (info->output_room >= 1 &&
+	    info->output_room <= client->pool->size) {
+		client->pool->room  = info->output_room;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return snd_seq_ioctl_get_client_pool(client, arg);
@@ -1939,27 +3023,46 @@ static int snd_seq_ioctl_set_client_pool(struct snd_seq_client *client,
 
 /* REMOVE_EVENTS ioctl() */
 static int snd_seq_ioctl_remove_events(struct snd_seq_client *client,
+<<<<<<< HEAD
 				       void __user *arg)
 {
 	struct snd_seq_remove_events info;
 
 	if (copy_from_user(&info, arg, sizeof(info)))
 		return -EFAULT;
+=======
+				       void *arg)
+{
+	struct snd_seq_remove_events *info = arg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Input mostly not implemented XXX.
 	 */
+<<<<<<< HEAD
 	if (info.remove_mode & SNDRV_SEQ_REMOVE_INPUT) {
+=======
+	if (info->remove_mode & SNDRV_SEQ_REMOVE_INPUT) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * No restrictions so for a user client we can clear
 		 * the whole fifo
 		 */
+<<<<<<< HEAD
 		if (client->type == USER_CLIENT)
 			snd_seq_fifo_clear(client->data.user.fifo);
 	}
 
 	if (info.remove_mode & SNDRV_SEQ_REMOVE_OUTPUT)
 		snd_seq_queue_remove_cells(client->number, &info);
+=======
+		if (client->type == USER_CLIENT && client->data.user.fifo)
+			snd_seq_fifo_clear(client->data.user.fifo);
+	}
+
+	if (info->remove_mode & SNDRV_SEQ_REMOVE_OUTPUT)
+		snd_seq_queue_remove_cells(client->number, info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1969,6 +3072,7 @@ static int snd_seq_ioctl_remove_events(struct snd_seq_client *client,
  * get subscription info
  */
 static int snd_seq_ioctl_get_subscription(struct snd_seq_client *client,
+<<<<<<< HEAD
 					  void __user *arg)
 {
 	int result;
@@ -1992,15 +3096,37 @@ static int snd_seq_ioctl_get_subscription(struct snd_seq_client *client,
 	} else
 		result = -ENOENT;
 
+=======
+					  void *arg)
+{
+	struct snd_seq_port_subscribe *subs = arg;
+	int result;
+	struct snd_seq_client *sender = NULL;
+	struct snd_seq_client_port *sport = NULL;
+
+	result = -EINVAL;
+	sender = snd_seq_client_use_ptr(subs->sender.client);
+	if (!sender)
+		goto __end;
+	sport = snd_seq_port_use_ptr(sender, subs->sender.port);
+	if (!sport)
+		goto __end;
+	result = snd_seq_port_get_subscription(&sport->c_src, &subs->dest,
+					       subs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
       __end:
       	if (sport)
 		snd_seq_port_unlock(sport);
 	if (sender)
 		snd_seq_client_unlock(sender);
+<<<<<<< HEAD
 	if (result >= 0) {
 		if (copy_to_user(arg, &subs, sizeof(subs)))
 			return -EFAULT;
 	}
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -2008,6 +3134,7 @@ static int snd_seq_ioctl_get_subscription(struct snd_seq_client *client,
 /*
  * get subscription info - check only its presence
  */
+<<<<<<< HEAD
 static int snd_seq_ioctl_query_subs(struct snd_seq_client *client,
 				    void __user *arg)
 {
@@ -2015,10 +3142,19 @@ static int snd_seq_ioctl_query_subs(struct snd_seq_client *client,
 	struct snd_seq_client *cptr = NULL;
 	struct snd_seq_client_port *port = NULL;
 	struct snd_seq_query_subs subs;
+=======
+static int snd_seq_ioctl_query_subs(struct snd_seq_client *client, void *arg)
+{
+	struct snd_seq_query_subs *subs = arg;
+	int result = -ENXIO;
+	struct snd_seq_client *cptr = NULL;
+	struct snd_seq_client_port *port = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_seq_port_subs_info *group;
 	struct list_head *p;
 	int i;
 
+<<<<<<< HEAD
 	if (copy_from_user(&subs, arg, sizeof(subs)))
 		return -EFAULT;
 
@@ -2028,6 +3164,16 @@ static int snd_seq_ioctl_query_subs(struct snd_seq_client *client,
 		goto __end;
 
 	switch (subs.type) {
+=======
+	cptr = snd_seq_client_use_ptr(subs->root.client);
+	if (!cptr)
+		goto __end;
+	port = snd_seq_port_use_ptr(cptr, subs->root.port);
+	if (!port)
+		goto __end;
+
+	switch (subs->type) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_SEQ_QUERY_SUBS_READ:
 		group = &port->c_src;
 		break;
@@ -2040,6 +3186,7 @@ static int snd_seq_ioctl_query_subs(struct snd_seq_client *client,
 
 	down_read(&group->list_mutex);
 	/* search for the subscriber */
+<<<<<<< HEAD
 	subs.num_subs = group->count;
 	i = 0;
 	result = -ENOENT;
@@ -2056,6 +3203,24 @@ static int snd_seq_ioctl_query_subs(struct snd_seq_client *client,
 			}
 			subs.flags = s->info.flags;
 			subs.queue = s->info.queue;
+=======
+	subs->num_subs = group->count;
+	i = 0;
+	result = -ENOENT;
+	list_for_each(p, &group->list_head) {
+		if (i++ == subs->index) {
+			/* found! */
+			struct snd_seq_subscribers *s;
+			if (subs->type == SNDRV_SEQ_QUERY_SUBS_READ) {
+				s = list_entry(p, struct snd_seq_subscribers, src_list);
+				subs->addr = s->info.dest;
+			} else {
+				s = list_entry(p, struct snd_seq_subscribers, dest_list);
+				subs->addr = s->info.sender;
+			}
+			subs->flags = s->info.flags;
+			subs->queue = s->info.queue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result = 0;
 			break;
 		}
@@ -2067,10 +3232,14 @@ static int snd_seq_ioctl_query_subs(struct snd_seq_client *client,
 		snd_seq_port_unlock(port);
 	if (cptr)
 		snd_seq_client_unlock(cptr);
+<<<<<<< HEAD
 	if (result >= 0) {
 		if (copy_to_user(arg, &subs, sizeof(subs)))
 			return -EFAULT;
 	}
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -2079,6 +3248,7 @@ static int snd_seq_ioctl_query_subs(struct snd_seq_client *client,
  * query next client
  */
 static int snd_seq_ioctl_query_next_client(struct snd_seq_client *client,
+<<<<<<< HEAD
 					   void __user *arg)
 {
 	struct snd_seq_client *cptr = NULL;
@@ -2093,17 +3263,37 @@ static int snd_seq_ioctl_query_next_client(struct snd_seq_client *client,
 		info.client = 0;
 	for (; info.client < SNDRV_SEQ_MAX_CLIENTS; info.client++) {
 		cptr = snd_seq_client_use_ptr(info.client);
+=======
+					   void *arg)
+{
+	struct snd_seq_client_info *info = arg;
+	struct snd_seq_client *cptr = NULL;
+
+	/* search for next client */
+	if (info->client < INT_MAX)
+		info->client++;
+	if (info->client < 0)
+		info->client = 0;
+	for (; info->client < SNDRV_SEQ_MAX_CLIENTS; info->client++) {
+		cptr = snd_seq_client_use_ptr(info->client);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cptr)
 			break; /* found */
 	}
 	if (cptr == NULL)
 		return -ENOENT;
 
+<<<<<<< HEAD
 	get_client_info(cptr, &info);
 	snd_seq_client_unlock(cptr);
 
 	if (copy_to_user(arg, &info, sizeof(info)))
 		return -EFAULT;
+=======
+	get_client_info(cptr, info);
+	snd_seq_client_unlock(cptr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2111,6 +3301,7 @@ static int snd_seq_ioctl_query_next_client(struct snd_seq_client *client,
  * query next port
  */
 static int snd_seq_ioctl_query_next_port(struct snd_seq_client *client,
+<<<<<<< HEAD
 					 void __user *arg)
 {
 	struct snd_seq_client *cptr;
@@ -2120,18 +3311,33 @@ static int snd_seq_ioctl_query_next_port(struct snd_seq_client *client,
 	if (copy_from_user(&info, arg, sizeof(info)))
 		return -EFAULT;
 	cptr = snd_seq_client_use_ptr(info.addr.client);
+=======
+					 void *arg)
+{
+	struct snd_seq_port_info *info = arg;
+	struct snd_seq_client *cptr;
+	struct snd_seq_client_port *port = NULL;
+
+	cptr = snd_seq_client_use_ptr(info->addr.client);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cptr == NULL)
 		return -ENXIO;
 
 	/* search for next port */
+<<<<<<< HEAD
 	info.addr.port++;
 	port = snd_seq_port_query_nearest(cptr, &info);
+=======
+	info->addr.port++;
+	port = snd_seq_port_query_nearest(cptr, info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (port == NULL) {
 		snd_seq_client_unlock(cptr);
 		return -ENOENT;
 	}
 
 	/* get port info */
+<<<<<<< HEAD
 	info.addr = port->addr;
 	snd_seq_get_port_info(port, &info);
 	snd_seq_port_unlock(port);
@@ -2148,6 +3354,154 @@ static struct seq_ioctl_table {
 	unsigned int cmd;
 	int (*func)(struct snd_seq_client *client, void __user * arg);
 } ioctl_tables[] = {
+=======
+	info->addr = port->addr;
+	snd_seq_get_port_info(port, info);
+	snd_seq_port_unlock(port);
+	snd_seq_client_unlock(cptr);
+
+	return 0;
+}
+
+#if IS_ENABLED(CONFIG_SND_SEQ_UMP)
+#define NUM_UMP_INFOS (SNDRV_UMP_MAX_BLOCKS + 1)
+
+static void free_ump_info(struct snd_seq_client *client)
+{
+	int i;
+
+	if (!client->ump_info)
+		return;
+	for (i = 0; i < NUM_UMP_INFOS; i++)
+		kfree(client->ump_info[i]);
+	kfree(client->ump_info);
+	client->ump_info = NULL;
+}
+
+static void terminate_ump_info_strings(void *p, int type)
+{
+	if (type == SNDRV_SEQ_CLIENT_UMP_INFO_ENDPOINT) {
+		struct snd_ump_endpoint_info *ep = p;
+		ep->name[sizeof(ep->name) - 1] = 0;
+	} else {
+		struct snd_ump_block_info *bp = p;
+		bp->name[sizeof(bp->name) - 1] = 0;
+	}
+}
+
+#ifdef CONFIG_SND_PROC_FS
+static void dump_ump_info(struct snd_info_buffer *buffer,
+			  struct snd_seq_client *client)
+{
+	struct snd_ump_endpoint_info *ep;
+	struct snd_ump_block_info *bp;
+	int i;
+
+	if (!client->ump_info)
+		return;
+	ep = client->ump_info[SNDRV_SEQ_CLIENT_UMP_INFO_ENDPOINT];
+	if (ep && *ep->name)
+		snd_iprintf(buffer, "  UMP Endpoint: \"%s\"\n", ep->name);
+	for (i = 0; i < SNDRV_UMP_MAX_BLOCKS; i++) {
+		bp = client->ump_info[i + 1];
+		if (bp && *bp->name) {
+			snd_iprintf(buffer, "  UMP Block %d: \"%s\" [%s]\n",
+				    i, bp->name,
+				    bp->active ? "Active" : "Inactive");
+			snd_iprintf(buffer, "    Groups: %d-%d\n",
+				    bp->first_group + 1,
+				    bp->first_group + bp->num_groups);
+		}
+	}
+}
+#endif
+
+/* UMP-specific ioctls -- called directly without data copy */
+static int snd_seq_ioctl_client_ump_info(struct snd_seq_client *caller,
+					 unsigned int cmd,
+					 unsigned long arg)
+{
+	struct snd_seq_client_ump_info __user *argp =
+		(struct snd_seq_client_ump_info __user *)arg;
+	struct snd_seq_client *cptr;
+	int client, type, err = 0;
+	size_t size;
+	void *p;
+
+	if (get_user(client, &argp->client) || get_user(type, &argp->type))
+		return -EFAULT;
+	if (cmd == SNDRV_SEQ_IOCTL_SET_CLIENT_UMP_INFO &&
+	    caller->number != client)
+		return -EPERM;
+	if (type < 0 || type >= NUM_UMP_INFOS)
+		return -EINVAL;
+	if (type == SNDRV_SEQ_CLIENT_UMP_INFO_ENDPOINT)
+		size = sizeof(struct snd_ump_endpoint_info);
+	else
+		size = sizeof(struct snd_ump_block_info);
+	cptr = snd_seq_client_use_ptr(client);
+	if (!cptr)
+		return -ENOENT;
+
+	mutex_lock(&cptr->ioctl_mutex);
+	if (!cptr->midi_version) {
+		err = -EBADFD;
+		goto error;
+	}
+
+	if (cmd == SNDRV_SEQ_IOCTL_GET_CLIENT_UMP_INFO) {
+		if (!cptr->ump_info)
+			p = NULL;
+		else
+			p = cptr->ump_info[type];
+		if (!p) {
+			err = -ENODEV;
+			goto error;
+		}
+		if (copy_to_user(argp->info, p, size)) {
+			err = -EFAULT;
+			goto error;
+		}
+	} else {
+		if (cptr->type != USER_CLIENT) {
+			err = -EBADFD;
+			goto error;
+		}
+		if (!cptr->ump_info) {
+			cptr->ump_info = kcalloc(NUM_UMP_INFOS,
+						 sizeof(void *), GFP_KERNEL);
+			if (!cptr->ump_info) {
+				err = -ENOMEM;
+				goto error;
+			}
+		}
+		p = memdup_user(argp->info, size);
+		if (IS_ERR(p)) {
+			err = PTR_ERR(p);
+			goto error;
+		}
+		kfree(cptr->ump_info[type]);
+		terminate_ump_info_strings(p, type);
+		cptr->ump_info[type] = p;
+	}
+
+ error:
+	mutex_unlock(&cptr->ioctl_mutex);
+	snd_seq_client_unlock(cptr);
+	return err;
+}
+#endif
+
+/* -------------------------------------------------------- */
+
+static const struct ioctl_handler {
+	unsigned int cmd;
+	int (*func)(struct snd_seq_client *client, void *arg);
+} ioctl_handlers[] = {
+	{ SNDRV_SEQ_IOCTL_PVERSION, snd_seq_ioctl_pversion },
+	{ SNDRV_SEQ_IOCTL_USER_PVERSION, snd_seq_ioctl_user_pversion },
+	{ SNDRV_SEQ_IOCTL_CLIENT_ID, snd_seq_ioctl_client_id },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ SNDRV_SEQ_IOCTL_SYSTEM_INFO, snd_seq_ioctl_system_info },
 	{ SNDRV_SEQ_IOCTL_RUNNING_MODE, snd_seq_ioctl_running_mode },
 	{ SNDRV_SEQ_IOCTL_GET_CLIENT_INFO, snd_seq_ioctl_get_client_info },
@@ -2180,6 +3534,7 @@ static struct seq_ioctl_table {
 	{ 0, NULL },
 };
 
+<<<<<<< HEAD
 static int snd_seq_do_ioctl(struct snd_seq_client *client, unsigned int cmd,
 			    void __user *arg)
 {
@@ -2214,6 +3569,78 @@ static long snd_seq_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 		return -ENXIO;
 		
 	return snd_seq_do_ioctl(client, cmd, (void __user *) arg);
+=======
+static long snd_seq_ioctl(struct file *file, unsigned int cmd,
+			  unsigned long arg)
+{
+	struct snd_seq_client *client = file->private_data;
+	/* To use kernel stack for ioctl data. */
+	union {
+		int pversion;
+		int client_id;
+		struct snd_seq_system_info	system_info;
+		struct snd_seq_running_info	running_info;
+		struct snd_seq_client_info	client_info;
+		struct snd_seq_port_info	port_info;
+		struct snd_seq_port_subscribe	port_subscribe;
+		struct snd_seq_queue_info	queue_info;
+		struct snd_seq_queue_status	queue_status;
+		struct snd_seq_queue_tempo	tempo;
+		struct snd_seq_queue_timer	queue_timer;
+		struct snd_seq_queue_client	queue_client;
+		struct snd_seq_client_pool	client_pool;
+		struct snd_seq_remove_events	remove_events;
+		struct snd_seq_query_subs	query_subs;
+	} buf;
+	const struct ioctl_handler *handler;
+	unsigned long size;
+	int err;
+
+	if (snd_BUG_ON(!client))
+		return -ENXIO;
+
+#if IS_ENABLED(CONFIG_SND_SEQ_UMP)
+	/* exception - handling large data */
+	switch (cmd) {
+	case SNDRV_SEQ_IOCTL_GET_CLIENT_UMP_INFO:
+	case SNDRV_SEQ_IOCTL_SET_CLIENT_UMP_INFO:
+		return snd_seq_ioctl_client_ump_info(client, cmd, arg);
+	}
+#endif
+
+	for (handler = ioctl_handlers; handler->cmd > 0; ++handler) {
+		if (handler->cmd == cmd)
+			break;
+	}
+	if (handler->cmd == 0)
+		return -ENOTTY;
+
+	memset(&buf, 0, sizeof(buf));
+
+	/*
+	 * All of ioctl commands for ALSA sequencer get an argument of size
+	 * within 13 bits. We can safely pick up the size from the command.
+	 */
+	size = _IOC_SIZE(handler->cmd);
+	if (handler->cmd & IOC_IN) {
+		if (copy_from_user(&buf, (const void __user *)arg, size))
+			return -EFAULT;
+	}
+
+	mutex_lock(&client->ioctl_mutex);
+	err = handler->func(client, &buf);
+	mutex_unlock(&client->ioctl_mutex);
+	if (err >= 0) {
+		/* Some commands includes a bug in 'dir' field. */
+		if (handler->cmd == SNDRV_SEQ_IOCTL_SET_QUEUE_CLIENT ||
+		    handler->cmd == SNDRV_SEQ_IOCTL_SET_CLIENT_POOL ||
+		    (handler->cmd & IOC_OUT))
+			if (copy_to_user((void __user *)arg, &buf, size))
+				return -EFAULT;
+	}
+
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_COMPAT
@@ -2240,8 +3667,12 @@ int snd_seq_create_kernel_client(struct snd_card *card, int client_index,
 	if (card == NULL && client_index >= SNDRV_SEQ_GLOBAL_CLIENTS)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (mutex_lock_interruptible(&register_mutex))
 		return -ERESTARTSYS;
+=======
+	mutex_lock(&register_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (card) {
 		client_index += SNDRV_SEQ_GLOBAL_CLIENTS
@@ -2260,6 +3691,11 @@ int snd_seq_create_kernel_client(struct snd_card *card, int client_index,
 
 	client->accept_input = 1;
 	client->accept_output = 1;
+<<<<<<< HEAD
+=======
+	client->data.kernel.card = card;
+	client->user_pversion = SNDRV_SEQ_VERSION;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		
 	va_start(args, name_fmt);
 	vsnprintf(client->name, sizeof(client->name), name_fmt, args);
@@ -2274,7 +3710,10 @@ int snd_seq_create_kernel_client(struct snd_card *card, int client_index,
 	/* return client number to caller */
 	return client->number;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_seq_create_kernel_client);
 
 /* exported to kernel modules */
@@ -2293,6 +3732,7 @@ int snd_seq_delete_kernel_client(int client)
 	kfree(ptr);
 	return 0;
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(snd_seq_delete_kernel_client);
 
@@ -2302,6 +3742,17 @@ EXPORT_SYMBOL(snd_seq_delete_kernel_client);
 static int kernel_client_enqueue(int client, struct snd_seq_event *ev,
 				 struct file *file, int blocking,
 				 int atomic, int hop)
+=======
+EXPORT_SYMBOL(snd_seq_delete_kernel_client);
+
+/*
+ * exported, called by kernel clients to enqueue events (w/o blocking)
+ *
+ * RETURN VALUE: zero if succeed, negative if error
+ */
+int snd_seq_kernel_client_enqueue(int client, struct snd_seq_event *ev,
+				  struct file *file, bool blocking)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_seq_client *cptr;
 	int result;
@@ -2309,10 +3760,19 @@ static int kernel_client_enqueue(int client, struct snd_seq_event *ev,
 	if (snd_BUG_ON(!ev))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (ev->type == SNDRV_SEQ_EVENT_NONE)
 		return 0; /* ignore this */
 	if (ev->type == SNDRV_SEQ_EVENT_KERNEL_ERROR)
 		return -EINVAL; /* quoted events can't be enqueued */
+=======
+	if (!snd_seq_ev_is_ump(ev)) {
+		if (ev->type == SNDRV_SEQ_EVENT_NONE)
+			return 0; /* ignore this */
+		if (ev->type == SNDRV_SEQ_EVENT_KERNEL_ERROR)
+			return -EINVAL; /* quoted events can't be enqueued */
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* fill in client number */
 	ev->source.client = client;
@@ -2324,14 +3784,27 @@ static int kernel_client_enqueue(int client, struct snd_seq_event *ev,
 	if (cptr == NULL)
 		return -EINVAL;
 	
+<<<<<<< HEAD
 	if (! cptr->accept_output)
 		result = -EPERM;
 	else /* send it */
 		result = snd_seq_client_enqueue_event(cptr, ev, file, blocking, atomic, hop);
+=======
+	if (!cptr->accept_output) {
+		result = -EPERM;
+	} else { /* send it */
+		mutex_lock(&cptr->ioctl_mutex);
+		result = snd_seq_client_enqueue_event(cptr, ev, file, blocking,
+						      false, 0,
+						      &cptr->ioctl_mutex);
+		mutex_unlock(&cptr->ioctl_mutex);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_seq_client_unlock(cptr);
 	return result;
 }
+<<<<<<< HEAD
 
 /*
  * exported, called by kernel clients to enqueue events (w/o blocking)
@@ -2360,6 +3833,10 @@ int snd_seq_kernel_client_enqueue_blocking(int client, struct snd_seq_event * ev
 
 EXPORT_SYMBOL(snd_seq_kernel_client_enqueue_blocking);
 
+=======
+EXPORT_SYMBOL(snd_seq_kernel_client_enqueue);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * exported, called by kernel clients to dispatch events directly to other
  * clients, bypassing the queues.  Event time-stamp will be updated.
@@ -2395,6 +3872,7 @@ int snd_seq_kernel_client_dispatch(int client, struct snd_seq_event * ev,
 	snd_seq_client_unlock(cptr);
 	return result;
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(snd_seq_kernel_client_dispatch);
 
@@ -2407,16 +3885,49 @@ int snd_seq_kernel_client_ctl(int clientid, unsigned int cmd, void *arg)
 	struct snd_seq_client *client;
 	mm_segment_t fs;
 	int result;
+=======
+EXPORT_SYMBOL(snd_seq_kernel_client_dispatch);
+
+/**
+ * snd_seq_kernel_client_ctl - operate a command for a client with data in
+ *			       kernel space.
+ * @clientid:	A numerical ID for a client.
+ * @cmd:	An ioctl(2) command for ALSA sequencer operation.
+ * @arg:	A pointer to data in kernel space.
+ *
+ * Against its name, both kernel/application client can be handled by this
+ * kernel API. A pointer of 'arg' argument should be in kernel space.
+ *
+ * Return: 0 at success. Negative error code at failure.
+ */
+int snd_seq_kernel_client_ctl(int clientid, unsigned int cmd, void *arg)
+{
+	const struct ioctl_handler *handler;
+	struct snd_seq_client *client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	client = clientptr(clientid);
 	if (client == NULL)
 		return -ENXIO;
+<<<<<<< HEAD
 	fs = snd_enter_user();
 	result = snd_seq_do_ioctl(client, cmd, (void __force __user *)arg);
 	snd_leave_user(fs);
 	return result;
 }
 
+=======
+
+	for (handler = ioctl_handlers; handler->cmd > 0; ++handler) {
+		if (handler->cmd == cmd)
+			return handler->func(client, arg);
+	}
+
+	pr_debug("ALSA: seq unknown ioctl() 0x%x (type='%c', number=0x%02x)\n",
+		 cmd, _IOC_TYPE(cmd), _IOC_NR(cmd));
+	return -ENOTTY;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_seq_kernel_client_ctl);
 
 /* exported (for OSS emulator) */
@@ -2434,12 +3945,35 @@ int snd_seq_kernel_client_write_poll(int clientid, struct file *file, poll_table
 		return 1;
 	return 0;
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(snd_seq_kernel_client_write_poll);
 
 /*---------------------------------------------------------------------------*/
 
 #ifdef CONFIG_PROC_FS
+=======
+EXPORT_SYMBOL(snd_seq_kernel_client_write_poll);
+
+/* get a sequencer client object; for internal use from a kernel client */
+struct snd_seq_client *snd_seq_kernel_client_get(int id)
+{
+	return snd_seq_client_use_ptr(id);
+}
+EXPORT_SYMBOL_GPL(snd_seq_kernel_client_get);
+
+/* put a sequencer client object; for internal use from a kernel client */
+void snd_seq_kernel_client_put(struct snd_seq_client *cptr)
+{
+	if (cptr)
+		snd_seq_client_unlock(cptr);
+}
+EXPORT_SYMBOL_GPL(snd_seq_kernel_client_put);
+
+/*---------------------------------------------------------------------------*/
+
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  /proc interface
  */
@@ -2482,6 +4016,20 @@ static void snd_seq_info_dump_subscribers(struct snd_info_buffer *buffer,
 
 #define FLAG_PERM_DUPLEX(perm) ((perm) & SNDRV_SEQ_PORT_CAP_DUPLEX ? 'X' : '-')
 
+<<<<<<< HEAD
+=======
+static const char *port_direction_name(unsigned char dir)
+{
+	static const char *names[4] = {
+		"-", "In", "Out", "In/Out"
+	};
+
+	if (dir > SNDRV_SEQ_PORT_DIR_BIDIRECTION)
+		return "Invalid";
+	return names[dir];
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void snd_seq_info_dump_ports(struct snd_info_buffer *buffer,
 				    struct snd_seq_client *client)
 {
@@ -2489,18 +4037,45 @@ static void snd_seq_info_dump_ports(struct snd_info_buffer *buffer,
 
 	mutex_lock(&client->ports_mutex);
 	list_for_each_entry(p, &client->ports_list_head, list) {
+<<<<<<< HEAD
 		snd_iprintf(buffer, "  Port %3d : \"%s\" (%c%c%c%c)\n",
+=======
+		if (p->capability & SNDRV_SEQ_PORT_CAP_INACTIVE)
+			continue;
+		snd_iprintf(buffer, "  Port %3d : \"%s\" (%c%c%c%c) [%s]\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    p->addr.port, p->name,
 			    FLAG_PERM_RD(p->capability),
 			    FLAG_PERM_WR(p->capability),
 			    FLAG_PERM_EX(p->capability),
+<<<<<<< HEAD
 			    FLAG_PERM_DUPLEX(p->capability));
+=======
+			    FLAG_PERM_DUPLEX(p->capability),
+			    port_direction_name(p->direction));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_seq_info_dump_subscribers(buffer, &p->c_src, 1, "    Connecting To: ");
 		snd_seq_info_dump_subscribers(buffer, &p->c_dest, 0, "    Connected From: ");
 	}
 	mutex_unlock(&client->ports_mutex);
 }
 
+<<<<<<< HEAD
+=======
+static const char *midi_version_string(unsigned int version)
+{
+	switch (version) {
+	case SNDRV_SEQ_CLIENT_LEGACY_MIDI:
+		return "Legacy";
+	case SNDRV_SEQ_CLIENT_UMP_MIDI_1_0:
+		return "UMP MIDI1";
+	case SNDRV_SEQ_CLIENT_UMP_MIDI_2_0:
+		return "UMP MIDI2";
+	default:
+		return "Unknown";
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* exported to seq_info.c */
 void snd_seq_info_clients_read(struct snd_info_entry *entry, 
@@ -2525,9 +4100,19 @@ void snd_seq_info_clients_read(struct snd_info_entry *entry,
 			continue;
 		}
 
+<<<<<<< HEAD
 		snd_iprintf(buffer, "Client %3d : \"%s\" [%s]\n",
 			    c, client->name,
 			    client->type == USER_CLIENT ? "User" : "Kernel");
+=======
+		snd_iprintf(buffer, "Client %3d : \"%s\" [%s %s]\n",
+			    c, client->name,
+			    client->type == USER_CLIENT ? "User" : "Kernel",
+			    midi_version_string(client->midi_version));
+#if IS_ENABLED(CONFIG_SND_SEQ_UMP)
+		dump_ump_info(buffer, client);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_seq_info_dump_ports(buffer, client);
 		if (snd_seq_write_pool_allocated(client)) {
 			snd_iprintf(buffer, "  Output pool :\n");
@@ -2541,7 +4126,11 @@ void snd_seq_info_clients_read(struct snd_info_entry *entry,
 		snd_seq_client_unlock(client);
 	}
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PROC_FS */
+=======
+#endif /* CONFIG_SND_PROC_FS */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*---------------------------------------------------------------------------*/
 
@@ -2563,6 +4152,11 @@ static const struct file_operations snd_seq_f_ops =
 	.compat_ioctl =	snd_seq_ioctl_compat,
 };
 
+<<<<<<< HEAD
+=======
+static struct device *seq_dev;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * register sequencer device 
  */
@@ -2570,6 +4164,7 @@ int __init snd_sequencer_device_init(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	if (mutex_lock_interruptible(&register_mutex))
 		return -ERESTARTSYS;
 
@@ -2581,6 +4176,22 @@ int __init snd_sequencer_device_init(void)
 	
 	mutex_unlock(&register_mutex);
 
+=======
+	err = snd_device_alloc(&seq_dev, NULL);
+	if (err < 0)
+		return err;
+	dev_set_name(seq_dev, "seq");
+
+	mutex_lock(&register_mutex);
+	err = snd_register_device(SNDRV_DEVICE_TYPE_SEQUENCER, NULL, 0,
+				  &snd_seq_f_ops, NULL, seq_dev);
+	mutex_unlock(&register_mutex);
+	if (err < 0) {
+		put_device(seq_dev);
+		return err;
+	}
+	
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2589,7 +4200,14 @@ int __init snd_sequencer_device_init(void)
 /* 
  * unregister sequencer device 
  */
+<<<<<<< HEAD
 void __exit snd_sequencer_device_done(void)
 {
 	snd_unregister_device(SNDRV_DEVICE_TYPE_SEQUENCER, NULL, 0);
+=======
+void snd_sequencer_device_done(void)
+{
+	snd_unregister_device(seq_dev);
+	put_device(seq_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

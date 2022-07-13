@@ -46,10 +46,19 @@
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
 
+<<<<<<< HEAD
 extern struct bus_type ibmebus_bus_type;
 
 int ibmebus_register_driver(struct of_platform_driver *drv);
 void ibmebus_unregister_driver(struct of_platform_driver *drv);
+=======
+struct platform_driver;
+
+extern const struct bus_type ibmebus_bus_type;
+
+int ibmebus_register_driver(struct platform_driver *drv);
+void ibmebus_unregister_driver(struct platform_driver *drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int ibmebus_request_irq(u32 ist, irq_handler_t handler,
 			unsigned long irq_flags, const char *devname,

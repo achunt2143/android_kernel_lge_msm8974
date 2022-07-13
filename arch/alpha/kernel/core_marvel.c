@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/core_marvel.c
  *
@@ -17,14 +21,22 @@
 #include <linux/mc146818rtc.h>
 #include <linux/rtc.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/ptrace.h>
 #include <asm/smp.h>
 #include <asm/gct.h>
+<<<<<<< HEAD
 #include <asm/pgalloc.h>
 #include <asm/tlbflush.h>
 #include <asm/rtc.h>
+=======
+#include <asm/tlbflush.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/vga.h>
 
 #include "proto.h"
@@ -82,7 +94,14 @@ mk_resource_name(int pe, int port, char *str)
 	char *name;
 	
 	sprintf(tmp, "PCI %s PE %d PORT %d", str, pe, port);
+<<<<<<< HEAD
 	name = alloc_bootmem(strlen(tmp) + 1);
+=======
+	name = memblock_alloc(strlen(tmp) + 1, SMP_CACHE_BYTES);
+	if (!name)
+		panic("%s: Failed to allocate %zu bytes\n", __func__,
+		      strlen(tmp) + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strcpy(name, tmp);
 
 	return name;
@@ -117,9 +136,18 @@ alloc_io7(unsigned int pe)
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	io7 = alloc_bootmem(sizeof(*io7));
 	io7->pe = pe;
 	spin_lock_init(&io7->irq_lock);
+=======
+	io7 = memblock_alloc(sizeof(*io7), SMP_CACHE_BYTES);
+	if (!io7)
+		panic("%s: Failed to allocate %zu bytes\n", __func__,
+		      sizeof(*io7));
+	io7->pe = pe;
+	raw_spin_lock_init(&io7->irq_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (h = 0; h < 4; h++) {
 		io7->ports[h].io7 = io7;
@@ -282,8 +310,12 @@ io7_init_hose(struct io7 *io7, int port)
 	/*
 	 * Set up window 0 for scatter-gather 8MB at 8MB.
 	 */
+<<<<<<< HEAD
 	hose->sg_isa = iommu_arena_new_node(marvel_cpuid_to_nid(io7->pe),
 					    hose, 0x00800000, 0x00800000, 0);
+=======
+	hose->sg_isa = iommu_arena_new_node(0, hose, 0x00800000, 0x00800000, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hose->sg_isa->align_entry = 8;	/* cache line boundary */
 	csrs->POx_WBASE[0].csr = 
 		hose->sg_isa->dma_base | wbase_m_ena | wbase_m_sg;
@@ -300,8 +332,12 @@ io7_init_hose(struct io7 *io7, int port)
 	/*
 	 * Set up window 2 for scatter-gather (up-to) 1GB at 3GB.
 	 */
+<<<<<<< HEAD
 	hose->sg_pci = iommu_arena_new_node(marvel_cpuid_to_nid(io7->pe),
 					    hose, 0xc0000000, 0x40000000, 0);
+=======
+	hose->sg_pci = iommu_arena_new_node(0, hose, 0xc0000000, 0x40000000, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hose->sg_pci->align_entry = 8;	/* cache line boundary */
 	csrs->POx_WBASE[2].csr = 
 		hose->sg_pci->dma_base | wbase_m_ena | wbase_m_sg;
@@ -352,7 +388,11 @@ marvel_init_io7(struct io7 *io7)
 	}
 }
 
+<<<<<<< HEAD
 void
+=======
+void __init
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 marvel_io7_present(gct6_node *node)
 {
 	int pe;
@@ -370,6 +410,10 @@ marvel_io7_present(gct6_node *node)
 static void __init
 marvel_find_console_vga_hose(void)
 {
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_VGA_HOSE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 *pu64 = (u64 *)((u64)hwrpb + hwrpb->ctbt_offset);
 
 	if (pu64[7] == 3) {	/* TERM_TYPE == graphics */
@@ -403,9 +447,16 @@ marvel_find_console_vga_hose(void)
 			pci_vga_hose = hose;
 		}
 	}
+<<<<<<< HEAD
 }
 
 gct6_search_struct gct_wanted_node_list[] = {
+=======
+#endif
+}
+
+gct6_search_struct gct_wanted_node_list[] __initdata = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ GCT_TYPE_HOSE, GCT_SUBTYPE_IO_PORT_MODULE, marvel_io7_present },
 	{ 0, 0, NULL }
 };
@@ -798,8 +849,13 @@ void __iomem *marvel_ioportmap (unsigned long addr)
 	return (void __iomem *)addr;
 }
 
+<<<<<<< HEAD
 unsigned int
 marvel_ioread8(void __iomem *xaddr)
+=======
+u8
+marvel_ioread8(const void __iomem *xaddr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long addr = (unsigned long) xaddr;
 	if (__marvel_is_port_kbd(addr))
@@ -836,6 +892,7 @@ EXPORT_SYMBOL(marvel_ioportmap);
 EXPORT_SYMBOL(marvel_ioread8);
 EXPORT_SYMBOL(marvel_iowrite8);
 #endif
+<<<<<<< HEAD
 
 /*
  * NUMA Support
@@ -883,6 +940,10 @@ marvel_node_mem_size(int nid)
 
 
 /* 
+=======
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * AGP GART Support.
  */
 #include <linux/agp_backend.h>

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * helper functions for Asus Xonar cards
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
+<<<<<<< HEAD
  *
  *
  *  This driver is free software; you can redistribute it and/or modify
@@ -14,6 +19,8 @@
  *
  *  You should have received a copy of the GNU General Public License
  *  along with this driver; if not, see <http://www.gnu.org/licenses/>.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -56,9 +63,15 @@ static void xonar_ext_power_gpio_changed(struct oxygen *chip)
 	if (has_power != data->has_power) {
 		data->has_power = has_power;
 		if (has_power) {
+<<<<<<< HEAD
 			snd_printk(KERN_NOTICE "power restored\n");
 		} else {
 			snd_printk(KERN_CRIT
+=======
+			dev_notice(chip->card->dev, "power restored\n");
+		} else {
+			dev_crit(chip->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   "Hey! Don't unplug the power cable!\n");
 			/* TODO: stop PCMs */
 		}

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* smp.h: Sparc specific SMP stuff.
  *
  * Copyright (C) 1996 David S. Miller (davem@caip.rutgers.edu)
@@ -8,7 +12,10 @@
 
 #include <linux/threads.h>
 #include <asm/head.h>
+<<<<<<< HEAD
 #include <asm/btfixup.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 
@@ -33,11 +40,15 @@ extern volatile unsigned long cpu_callin_map[NR_CPUS];
 extern cpumask_t smp_commenced_mask;
 extern struct linux_prom_registers smp_penguin_ctable;
 
+<<<<<<< HEAD
 typedef void (*smpfunc_t)(unsigned long, unsigned long, unsigned long,
 		       unsigned long, unsigned long);
 
 void cpu_panic(void);
 extern void smp4m_irq_rotate(int cpu);
+=======
+void cpu_panic(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	General functions that each host system must provide.
@@ -47,7 +58,10 @@ void sun4m_init_smp(void);
 void sun4d_init_smp(void);
 
 void smp_callin(void);
+<<<<<<< HEAD
 void smp_boot_cpus(void);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void smp_store_cpu_info(int);
 
 void smp_resched_interrupt(void);
@@ -58,6 +72,7 @@ struct seq_file;
 void smp_bogo(struct seq_file *);
 void smp_info(struct seq_file *);
 
+<<<<<<< HEAD
 BTFIXUPDEF_CALL(void, smp_cross_call, smpfunc_t, cpumask_t, unsigned long, unsigned long, unsigned long, unsigned long)
 BTFIXUPDEF_CALL(int, __hard_smp_processor_id, void)
 BTFIXUPDEF_CALL(void, smp_ipi_resched, int);
@@ -82,12 +97,55 @@ static inline void xc4(smpfunc_t func, unsigned long arg1, unsigned long arg2,
 
 extern void arch_send_call_function_single_ipi(int cpu);
 extern void arch_send_call_function_ipi_mask(const struct cpumask *mask);
+=======
+struct sparc32_ipi_ops {
+	void (*cross_call)(void *func, cpumask_t mask, unsigned long arg1,
+			   unsigned long arg2, unsigned long arg3,
+			   unsigned long arg4);
+	void (*resched)(int cpu);
+	void (*single)(int cpu);
+	void (*mask_one)(int cpu);
+};
+extern const struct sparc32_ipi_ops *sparc32_ipi_ops;
+
+static inline void xc0(void *func)
+{
+	sparc32_ipi_ops->cross_call(func, *cpu_online_mask, 0, 0, 0, 0);
+}
+
+static inline void xc1(void *func, unsigned long arg1)
+{
+	sparc32_ipi_ops->cross_call(func, *cpu_online_mask, arg1, 0, 0, 0);
+}
+static inline void xc2(void *func, unsigned long arg1, unsigned long arg2)
+{
+	sparc32_ipi_ops->cross_call(func, *cpu_online_mask, arg1, arg2, 0, 0);
+}
+
+static inline void xc3(void *func, unsigned long arg1, unsigned long arg2,
+		       unsigned long arg3)
+{
+	sparc32_ipi_ops->cross_call(func, *cpu_online_mask,
+				    arg1, arg2, arg3, 0);
+}
+
+static inline void xc4(void *func, unsigned long arg1, unsigned long arg2,
+		       unsigned long arg3, unsigned long arg4)
+{
+	sparc32_ipi_ops->cross_call(func, *cpu_online_mask,
+				    arg1, arg2, arg3, arg4);
+}
+
+void arch_send_call_function_single_ipi(int cpu);
+void arch_send_call_function_ipi_mask(const struct cpumask *mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int cpu_logical_map(int cpu)
 {
 	return cpu;
 }
 
+<<<<<<< HEAD
 static inline int hard_smp4m_processor_id(void)
 {
 	int cpuid;
@@ -162,6 +220,12 @@ static inline int hard_smp_processor_id(void)
 #define prof_multiplier(__cpu)		cpu_data(__cpu).multiplier
 #define prof_counter(__cpu)		cpu_data(__cpu).counter
 
+=======
+int hard_smp_processor_id(void);
+
+#define raw_smp_processor_id()		(current_thread_info()->cpu)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void smp_setup_cpu_possible_map(void);
 
 #endif /* !(__ASSEMBLY__) */

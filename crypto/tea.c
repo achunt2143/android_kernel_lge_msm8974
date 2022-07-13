@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  * Cryptographic API.
  *
@@ -11,6 +15,7 @@
  * compatibility with these implementations.
  *
  * Copyright (c) 2004 Aaron Grothe ajgrothe@yahoo.com
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,11 +24,19 @@
  *
  */
 
+=======
+ */
+
+#include <crypto/algapi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/mm.h>
 #include <asm/byteorder.h>
+<<<<<<< HEAD
 #include <linux/crypto.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 
 #define TEA_KEY_SIZE		16
@@ -219,52 +232,80 @@ static void xeta_decrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
 	out[1] = cpu_to_le32(z);
 }
 
+<<<<<<< HEAD
 static struct crypto_alg tea_alg = {
 	.cra_name		=	"tea",
+=======
+static struct crypto_alg tea_algs[3] = { {
+	.cra_name		=	"tea",
+	.cra_driver_name	=	"tea-generic",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_flags		=	CRYPTO_ALG_TYPE_CIPHER,
 	.cra_blocksize		=	TEA_BLOCK_SIZE,
 	.cra_ctxsize		=	sizeof (struct tea_ctx),
 	.cra_alignmask		=	3,
 	.cra_module		=	THIS_MODULE,
+<<<<<<< HEAD
 	.cra_list		=	LIST_HEAD_INIT(tea_alg.cra_list),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_u			=	{ .cipher = {
 	.cia_min_keysize	=	TEA_KEY_SIZE,
 	.cia_max_keysize	=	TEA_KEY_SIZE,
 	.cia_setkey		= 	tea_setkey,
 	.cia_encrypt		=	tea_encrypt,
 	.cia_decrypt		=	tea_decrypt } }
+<<<<<<< HEAD
 };
 
 static struct crypto_alg xtea_alg = {
 	.cra_name		=	"xtea",
+=======
+}, {
+	.cra_name		=	"xtea",
+	.cra_driver_name	=	"xtea-generic",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_flags		=	CRYPTO_ALG_TYPE_CIPHER,
 	.cra_blocksize		=	XTEA_BLOCK_SIZE,
 	.cra_ctxsize		=	sizeof (struct xtea_ctx),
 	.cra_alignmask		=	3,
 	.cra_module		=	THIS_MODULE,
+<<<<<<< HEAD
 	.cra_list		=	LIST_HEAD_INIT(xtea_alg.cra_list),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_u			=	{ .cipher = {
 	.cia_min_keysize	=	XTEA_KEY_SIZE,
 	.cia_max_keysize	=	XTEA_KEY_SIZE,
 	.cia_setkey		= 	xtea_setkey,
 	.cia_encrypt		=	xtea_encrypt,
 	.cia_decrypt		=	xtea_decrypt } }
+<<<<<<< HEAD
 };
 
 static struct crypto_alg xeta_alg = {
 	.cra_name		=	"xeta",
+=======
+}, {
+	.cra_name		=	"xeta",
+	.cra_driver_name	=	"xeta-generic",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_flags		=	CRYPTO_ALG_TYPE_CIPHER,
 	.cra_blocksize		=	XTEA_BLOCK_SIZE,
 	.cra_ctxsize		=	sizeof (struct xtea_ctx),
 	.cra_alignmask		=	3,
 	.cra_module		=	THIS_MODULE,
+<<<<<<< HEAD
 	.cra_list		=	LIST_HEAD_INIT(xtea_alg.cra_list),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_u			=	{ .cipher = {
 	.cia_min_keysize	=	XTEA_KEY_SIZE,
 	.cia_max_keysize	=	XTEA_KEY_SIZE,
 	.cia_setkey		= 	xtea_setkey,
 	.cia_encrypt		=	xeta_encrypt,
 	.cia_decrypt		=	xeta_decrypt } }
+<<<<<<< HEAD
 };
 
 static int __init tea_mod_init(void)
@@ -290,10 +331,18 @@ static int __init tea_mod_init(void)
 
 out:	
 	return ret;
+=======
+} };
+
+static int __init tea_mod_init(void)
+{
+	return crypto_register_algs(tea_algs, ARRAY_SIZE(tea_algs));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit tea_mod_fini(void)
 {
+<<<<<<< HEAD
 	crypto_unregister_alg(&tea_alg);
 	crypto_unregister_alg(&xtea_alg);
 	crypto_unregister_alg(&xeta_alg);
@@ -303,6 +352,16 @@ MODULE_ALIAS("xtea");
 MODULE_ALIAS("xeta");
 
 module_init(tea_mod_init);
+=======
+	crypto_unregister_algs(tea_algs, ARRAY_SIZE(tea_algs));
+}
+
+MODULE_ALIAS_CRYPTO("tea");
+MODULE_ALIAS_CRYPTO("xtea");
+MODULE_ALIAS_CRYPTO("xeta");
+
+subsys_initcall(tea_mod_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(tea_mod_fini);
 
 MODULE_LICENSE("GPL");

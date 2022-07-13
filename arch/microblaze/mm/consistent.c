@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Microblaze support for cache consistent memory.
  * Copyright (C) 2010 Michal Simek <monstr@monstr.eu>
  * Copyright (C) 2010 PetaLogix
  * Copyright (C) 2005 John Williams <jwilliams@itee.uq.edu.au>
+<<<<<<< HEAD
  *
  * Based on PowerPC version derived from arch/arm/mm/consistent.c
  * Copyright (C) 2001 Dan Malek (dmalek@jlc.net)
@@ -253,3 +258,22 @@ void consistent_sync_page(struct page *page, unsigned long offset,
 	consistent_sync((void *)start, size, direction);
 }
 EXPORT_SYMBOL(consistent_sync_page);
+=======
+ */
+
+#include <linux/kernel.h>
+#include <linux/string.h>
+#include <linux/types.h>
+#include <linux/mm.h>
+#include <linux/init.h>
+#include <linux/dma-map-ops.h>
+#include <asm/cpuinfo.h>
+#include <asm/cacheflush.h>
+
+void arch_dma_prep_coherent(struct page *page, size_t size)
+{
+	phys_addr_t paddr = page_to_phys(page);
+
+	flush_dcache_range(paddr, paddr + size);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

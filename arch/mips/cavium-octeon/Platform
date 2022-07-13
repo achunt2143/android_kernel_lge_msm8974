@@ -1,6 +1,7 @@
 #
 # Cavium Octeon
 #
+<<<<<<< HEAD
 platform-$(CONFIG_CPU_CAVIUM_OCTEON)	+= cavium-octeon/
 cflags-$(CONFIG_CPU_CAVIUM_OCTEON)	+=				\
 		-I$(srctree)/arch/mips/include/asm/mach-cavium-octeon
@@ -9,3 +10,8 @@ load-$(CONFIG_CPU_CAVIUM_OCTEON)	+= 0xffffffff84100000
 else
 load-$(CONFIG_CPU_CAVIUM_OCTEON)	+= 0xffffffff81100000
 endif
+=======
+cflags-$(CONFIG_CAVIUM_OCTEON_SOC)	+=				\
+		-I$(srctree)/arch/mips/include/asm/mach-cavium-octeon
+load-$(CONFIG_CAVIUM_OCTEON_SOC)	+= 0xffffffff81100000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

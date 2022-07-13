@@ -92,11 +92,19 @@ static dma_addr_t to_sgl_element_pair_dma(struct isci_host *ihost,
 	if (idx == 0) {
 		offset = (void *) &ireq->tc->sgl_pair_ab -
 			 (void *) &ihost->task_context_table[0];
+<<<<<<< HEAD
 		return ihost->task_context_dma + offset;
 	} else if (idx == 1) {
 		offset = (void *) &ireq->tc->sgl_pair_cd -
 			 (void *) &ihost->task_context_table[0];
 		return ihost->task_context_dma + offset;
+=======
+		return ihost->tc_dma + offset;
+	} else if (idx == 1) {
+		offset = (void *) &ireq->tc->sgl_pair_cd -
+			 (void *) &ihost->task_context_table[0];
+		return ihost->tc_dma + offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return sci_io_request_get_dma_addr(ireq, &ireq->sg_table[idx - 2]);
@@ -180,12 +188,21 @@ static void sci_io_request_build_ssp_command_iu(struct isci_request *ireq)
 	cmd_iu->_r_a = 0;
 	cmd_iu->_r_b = 0;
 	cmd_iu->en_fburst = 0; /* unsupported */
+<<<<<<< HEAD
 	cmd_iu->task_prio = task->ssp_task.task_prio;
 	cmd_iu->task_attr = task->ssp_task.task_attr;
 	cmd_iu->_r_c = 0;
 
 	sci_swab32_cpy(&cmd_iu->cdb, task->ssp_task.cdb,
 		       sizeof(task->ssp_task.cdb) / sizeof(u32));
+=======
+	cmd_iu->task_prio = 0;
+	cmd_iu->task_attr = task->ssp_task.task_attr;
+	cmd_iu->_r_c = 0;
+
+	sci_swab32_cpy(&cmd_iu->cdb, task->ssp_task.cmd->cmnd,
+		       (task->ssp_task.cmd->cmd_len+3) / sizeof(u32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sci_task_request_build_ssp_task_iu(struct isci_request *ireq)
@@ -207,6 +224,7 @@ static void sci_task_request_build_ssp_task_iu(struct isci_request *ireq)
 		SCI_CONTROLLER_INVALID_IO_TAG;
 }
 
+<<<<<<< HEAD
 /**
  * This method is will fill in the SCU Task Context for any type of SSP request.
  * @sci_req:
@@ -214,6 +232,12 @@ static void sci_task_request_build_ssp_task_iu(struct isci_request *ireq)
  *
  */
 static void scu_ssp_reqeust_construct_task_context(
+=======
+/*
+ * This method is will fill in the SCU Task Context for any type of SSP request.
+ */
+static void scu_ssp_request_construct_task_context(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct isci_request *ireq,
 	struct scu_task_context *task_context)
 {
@@ -224,7 +248,11 @@ static void scu_ssp_reqeust_construct_task_context(
 	idev = ireq->target_device;
 	iport = idev->owning_port;
 
+<<<<<<< HEAD
 	/* Fill in the TC with the its required data */
+=======
+	/* Fill in the TC with its required data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task_context->abort = 0;
 	task_context->priority = 0;
 	task_context->initiator_request = 1;
@@ -344,7 +372,11 @@ static void scu_ssp_ireq_dif_insert(struct isci_request *ireq, u8 type, u8 op)
 	tc->reserved_E8_0 = 0;
 
 	if ((type & SCSI_PROT_DIF_TYPE1) || (type & SCSI_PROT_DIF_TYPE2))
+<<<<<<< HEAD
 		tc->ref_tag_seed_gen = scsi_get_lba(scmd) & 0xffffffff;
+=======
+		tc->ref_tag_seed_gen = scsi_prot_ref_tag(scmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (type & SCSI_PROT_DIF_TYPE3)
 		tc->ref_tag_seed_gen = 0;
 }
@@ -372,7 +404,11 @@ static void scu_ssp_ireq_dif_strip(struct isci_request *ireq, u8 type, u8 op)
 	tc->app_tag_gen = 0;
 
 	if ((type & SCSI_PROT_DIF_TYPE1) || (type & SCSI_PROT_DIF_TYPE2))
+<<<<<<< HEAD
 		tc->ref_tag_seed_verify = scsi_get_lba(scmd) & 0xffffffff;
+=======
+		tc->ref_tag_seed_verify = scsi_prot_ref_tag(scmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (type & SCSI_PROT_DIF_TYPE3)
 		tc->ref_tag_seed_verify = 0;
 
@@ -410,10 +446,15 @@ static void scu_ssp_ireq_dif_strip(struct isci_request *ireq, u8 type, u8 op)
 	tc->ref_tag_seed_gen = 0;
 }
 
+<<<<<<< HEAD
 /**
  * This method is will fill in the SCU Task Context for a SSP IO request.
  * @sci_req:
  *
+=======
+/*
+ * This method is will fill in the SCU Task Context for a SSP IO request.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void scu_ssp_io_request_construct_task_context(struct isci_request *ireq,
 						      enum dma_data_direction dir,
@@ -425,7 +466,11 @@ static void scu_ssp_io_request_construct_task_context(struct isci_request *ireq,
 	u8 prot_type = scsi_get_prot_type(scmd);
 	u8 prot_op = scsi_get_prot_op(scmd);
 
+<<<<<<< HEAD
 	scu_ssp_reqeust_construct_task_context(ireq, task_context);
+=======
+	scu_ssp_request_construct_task_context(ireq, task_context);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	task_context->ssp_command_iu_length =
 		sizeof(struct ssp_cmd_iu) / sizeof(u32);
@@ -456,6 +501,7 @@ static void scu_ssp_io_request_construct_task_context(struct isci_request *ireq,
 }
 
 /**
+<<<<<<< HEAD
  * This method will fill in the SCU Task Context for a SSP Task request.  The
  *    following important settings are utilized: -# priority ==
  *    SCU_TASK_PRIORITY_HIGH.  This ensures that the task request is issued
@@ -467,12 +513,28 @@ static void scu_ssp_io_request_construct_task_context(struct isci_request *ireq,
  * @sci_req: This parameter specifies the task request object being
  *    constructed.
  *
+=======
+ * scu_ssp_task_request_construct_task_context() - This method will fill in
+ *    the SCU Task Context for a SSP Task request.  The following important
+ *    settings are utilized: -# priority == SCU_TASK_PRIORITY_HIGH.  This
+ *    ensures that the task request is issued ahead of other task destined
+ *    for the same Remote Node. -# task_type == SCU_TASK_TYPE_IOREAD.  This
+ *    simply indicates that a normal request type (i.e. non-raw frame) is
+ *    being utilized to perform task management. -#control_frame == 1.  This
+ *    ensures that the proper endianness is set so that the bytes are
+ *    transmitted in the right order for a task frame.
+ * @ireq: This parameter specifies the task request object being constructed.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void scu_ssp_task_request_construct_task_context(struct isci_request *ireq)
 {
 	struct scu_task_context *task_context = ireq->tc;
 
+<<<<<<< HEAD
 	scu_ssp_reqeust_construct_task_context(ireq, task_context);
+=======
+	scu_ssp_request_construct_task_context(ireq, task_context);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	task_context->control_frame                = 1;
 	task_context->priority                     = SCU_TASK_PRIORITY_HIGH;
@@ -484,9 +546,16 @@ static void scu_ssp_task_request_construct_task_context(struct isci_request *ire
 }
 
 /**
+<<<<<<< HEAD
  * This method is will fill in the SCU Task Context for any type of SATA
  *    request.  This is called from the various SATA constructors.
  * @sci_req: The general IO request object which is to be used in
+=======
+ * scu_sata_request_construct_task_context()
+ * This method is will fill in the SCU Task Context for any type of SATA
+ *    request.  This is called from the various SATA constructors.
+ * @ireq: The general IO request object which is to be used in
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    constructing the SCU task context.
  * @task_context: The buffer pointer for the SCU task context which is being
  *    constructed.
@@ -495,7 +564,11 @@ static void scu_ssp_task_request_construct_task_context(struct isci_request *ire
  * the command buffer is complete. none Revisit task context construction to
  * determine what is common for SSP/SMP/STP task context structures.
  */
+<<<<<<< HEAD
 static void scu_sata_reqeust_construct_task_context(
+=======
+static void scu_sata_request_construct_task_context(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct isci_request *ireq,
 	struct scu_task_context *task_context)
 {
@@ -506,7 +579,11 @@ static void scu_sata_reqeust_construct_task_context(
 	idev = ireq->target_device;
 	iport = idev->owning_port;
 
+<<<<<<< HEAD
 	/* Fill in the TC with the its required data */
+=======
+	/* Fill in the TC with its required data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task_context->abort = 0;
 	task_context->priority = SCU_TASK_PRIORITY_NORMAL;
 	task_context->initiator_request = 1;
@@ -562,7 +639,11 @@ static void scu_stp_raw_request_construct_task_context(struct isci_request *ireq
 {
 	struct scu_task_context *task_context = ireq->tc;
 
+<<<<<<< HEAD
 	scu_sata_reqeust_construct_task_context(ireq, task_context);
+=======
+	scu_sata_request_construct_task_context(ireq, task_context);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	task_context->control_frame         = 0;
 	task_context->priority              = SCU_TASK_PRIORITY_NORMAL;
@@ -593,9 +674,15 @@ static enum sci_status sci_stp_pio_request_construct(struct isci_request *ireq,
 	return SCI_SUCCESS;
 }
 
+<<<<<<< HEAD
 /**
  *
  * @sci_req: This parameter specifies the request to be constructed as an
+=======
+/*
+ * sci_stp_optimized_request_construct()
+ * @ireq: This parameter specifies the request to be constructed as an
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    optimized request.
  * @optimized_task_type: This parameter specifies whether the request is to be
  *    an UDMA request or a NCQ request. - A value of 0 indicates UDMA. - A
@@ -613,7 +700,11 @@ static void sci_stp_optimized_request_construct(struct isci_request *ireq,
 	struct scu_task_context *task_context = ireq->tc;
 
 	/* Build the STP task context structure */
+<<<<<<< HEAD
 	scu_sata_reqeust_construct_task_context(ireq, task_context);
+=======
+	scu_sata_request_construct_task_context(ireq, task_context);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Copy over the SGL elements */
 	sci_request_build_sgl(ireq);
@@ -694,7 +785,11 @@ sci_io_request_construct_sata(struct isci_request *ireq,
 	}
 
 	/* ATAPI */
+<<<<<<< HEAD
 	if (dev->sata_dev.command_set == ATAPI_COMMAND_SET &&
+=======
+	if (dev->sata_dev.class == ATA_DEV_ATAPI &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    task->ata_task.fis.command == ATA_CMD_PACKET) {
 		sci_atapi_construct(ireq);
 		return SCI_SUCCESS;
@@ -730,7 +825,11 @@ static enum sci_status sci_io_request_construct_basic_ssp(struct isci_request *i
 {
 	struct sas_task *task = isci_request_access_task(ireq);
 
+<<<<<<< HEAD
 	ireq->protocol = SCIC_SSP_PROTOCOL;
+=======
+	ireq->protocol = SAS_PROTOCOL_SSP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scu_ssp_io_request_construct_task_context(ireq,
 						  task->data_dir,
@@ -743,8 +842,12 @@ static enum sci_status sci_io_request_construct_basic_ssp(struct isci_request *i
 	return SCI_SUCCESS;
 }
 
+<<<<<<< HEAD
 enum sci_status sci_task_request_construct_ssp(
 	struct isci_request *ireq)
+=======
+void sci_task_request_construct_ssp(struct isci_request *ireq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Construct the SSP Task SCU Task Context */
 	scu_ssp_task_request_construct_task_context(ireq);
@@ -753,8 +856,11 @@ enum sci_status sci_task_request_construct_ssp(
 	sci_task_request_build_ssp_task_iu(ireq);
 
 	sci_change_state(&ireq->sm, SCI_REQ_CONSTRUCTED);
+<<<<<<< HEAD
 
 	return SCI_SUCCESS;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum sci_status sci_io_request_construct_basic_sata(struct isci_request *ireq)
@@ -763,7 +869,11 @@ static enum sci_status sci_io_request_construct_basic_sata(struct isci_request *
 	bool copy = false;
 	struct sas_task *task = isci_request_access_task(ireq);
 
+<<<<<<< HEAD
 	ireq->protocol = SCIC_STP_PROTOCOL;
+=======
+	ireq->protocol = SAS_PROTOCOL_STP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	copy = (task->data_dir == DMA_NONE) ? false : true;
 
@@ -778,11 +888,18 @@ static enum sci_status sci_io_request_construct_basic_sata(struct isci_request *
 	return status;
 }
 
+<<<<<<< HEAD
+=======
+#define SCU_TASK_CONTEXT_SRAM 0x200000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * sci_req_tx_bytes - bytes transferred when reply underruns request
  * @ireq: request that was terminated early
  */
+<<<<<<< HEAD
 #define SCU_TASK_CONTEXT_SRAM 0x200000
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 sci_req_tx_bytes(struct isci_request *ireq)
 {
 	struct isci_host *ihost = ireq->owning_controller;
@@ -863,6 +980,11 @@ sci_io_request_terminate(struct isci_request *ireq)
 
 	switch (state) {
 	case SCI_REQ_CONSTRUCTED:
+<<<<<<< HEAD
+=======
+		/* Set to make sure no HW terminate posting is done: */
+		set_bit(IREQ_TC_ABORT_POSTED, &ireq->flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ireq->scu_status = SCU_TASK_DONE_TASK_ABORT;
 		ireq->sci_status = SCI_FAILURE_IO_TERMINATED;
 		sci_change_state(&ireq->sm, SCI_REQ_COMPLETED);
@@ -883,8 +1005,12 @@ sci_io_request_terminate(struct isci_request *ireq)
 	case SCI_REQ_ATAPI_WAIT_PIO_SETUP:
 	case SCI_REQ_ATAPI_WAIT_D2H:
 	case SCI_REQ_ATAPI_WAIT_TC_COMP:
+<<<<<<< HEAD
 		sci_change_state(&ireq->sm, SCI_REQ_ABORTING);
 		return SCI_SUCCESS;
+=======
+		/* Fall through and change state to ABORTING... */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SCI_REQ_TASK_WAIT_TC_RESP:
 		/* The task frame was already confirmed to have been
 		 * sent by the SCU HW.  Since the state machine is
@@ -893,6 +1019,7 @@ sci_io_request_terminate(struct isci_request *ireq)
 		 * and don't wait for the task response.
 		 */
 		sci_change_state(&ireq->sm, SCI_REQ_ABORTING);
+<<<<<<< HEAD
 		sci_change_state(&ireq->sm, SCI_REQ_COMPLETED);
 		return SCI_SUCCESS;
 	case SCI_REQ_ABORTING:
@@ -900,13 +1027,29 @@ sci_io_request_terminate(struct isci_request *ireq)
 		 * a failure indication, since HW confirmation of the first
 		 * abort is still outstanding.
 		 */
+=======
+		fallthrough;	/* and handle like ABORTING */
+	case SCI_REQ_ABORTING:
+		if (!isci_remote_device_is_safe_to_abort(ireq->target_device))
+			set_bit(IREQ_PENDING_ABORT, &ireq->flags);
+		else
+			clear_bit(IREQ_PENDING_ABORT, &ireq->flags);
+		/* If the request is only waiting on the remote device
+		 * suspension, return SUCCESS so the caller will wait too.
+		 */
+		return SCI_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SCI_REQ_COMPLETED:
 	default:
 		dev_warn(&ireq->owning_controller->pdev->dev,
 			 "%s: SCIC IO Request requested to abort while in wrong "
+<<<<<<< HEAD
 			 "state %d\n",
 			 __func__,
 			 ireq->sm.current_state_id);
+=======
+			 "state %d\n", __func__, ireq->sm.current_state_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -1050,7 +1193,12 @@ request_started_state_tc_event(struct isci_request *ireq,
 		resp_iu = &ireq->ssp.rsp;
 		datapres = resp_iu->datapres;
 
+<<<<<<< HEAD
 		if (datapres == 1 || datapres == 2) {
+=======
+		if (datapres == SAS_DATAPRES_RESPONSE_DATA ||
+		    datapres == SAS_DATAPRES_SENSE_DATA) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ireq->scu_status = SCU_TASK_DONE_CHECK_RESPONSE;
 			ireq->sci_status = SCI_FAILURE_IO_RESPONSE_VALID;
 		} else {
@@ -1070,7 +1218,11 @@ request_started_state_tc_event(struct isci_request *ireq,
 	case SCU_MAKE_COMPLETION_STATUS(SCU_TASK_DONE_UNEXP_SDBFIS):
 	case SCU_MAKE_COMPLETION_STATUS(SCU_TASK_DONE_REG_ERR):
 	case SCU_MAKE_COMPLETION_STATUS(SCU_TASK_DONE_SDB_ERR):
+<<<<<<< HEAD
 		if (ireq->protocol == SCIC_STP_PROTOCOL) {
+=======
+		if (ireq->protocol == SAS_PROTOCOL_STP) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ireq->scu_status = SCU_GET_COMPLETION_TL_STATUS(completion_code) >>
 					   SCU_COMPLETION_TL_STATUS_SHIFT;
 			ireq->sci_status = SCI_FAILURE_REMOTE_DEVICE_RESET_REQUIRED;
@@ -1394,12 +1546,21 @@ static enum sci_status sci_stp_request_pio_data_out_transmit_data(struct isci_re
 }
 
 /**
+<<<<<<< HEAD
  *
  * @stp_request: The request that is used for the SGL processing.
  * @data_buffer: The buffer of data to be copied.
  * @length: The length of the data transfer.
  *
  * Copy the data from the buffer for the length specified to the IO reqeust SGL
+=======
+ * sci_stp_request_pio_data_in_copy_data_buffer()
+ * @stp_req: The request that is used for the SGL processing.
+ * @data_buf: The buffer of data to be copied.
+ * @len: The length of the data transfer.
+ *
+ * Copy the data from the buffer for the length specified to the IO request SGL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * specified data region. enum sci_status
  */
 static enum sci_status
@@ -1441,8 +1602,13 @@ sci_stp_request_pio_data_in_copy_data_buffer(struct isci_stp_request *stp_req,
 }
 
 /**
+<<<<<<< HEAD
  *
  * @sci_req: The PIO DATA IN request that is to receive the data.
+=======
+ * sci_stp_request_pio_data_in_copy_data()
+ * @stp_req: The PIO DATA IN request that is to receive the data.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @data_buffer: The buffer to copy from.
  *
  * Copy the data buffer to the io request data region. enum sci_status
@@ -1478,8 +1644,11 @@ static enum sci_status
 stp_request_pio_await_h2d_completion_tc_event(struct isci_request *ireq,
 					      u32 completion_code)
 {
+<<<<<<< HEAD
 	enum sci_status status = SCI_SUCCESS;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (SCU_GET_COMPLETION_TL_STATUS(completion_code)) {
 	case SCU_MAKE_COMPLETION_STATUS(SCU_TASK_DONE_GOOD):
 		ireq->scu_status = SCU_TASK_DONE_GOOD;
@@ -1498,7 +1667,11 @@ stp_request_pio_await_h2d_completion_tc_event(struct isci_request *ireq,
 		break;
 	}
 
+<<<<<<< HEAD
 	return status;
+=======
+	return SCI_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum sci_status
@@ -1624,9 +1797,15 @@ static enum sci_status atapi_d2h_reg_frame_handler(struct isci_request *ireq,
 
 	if (status == SCI_SUCCESS) {
 		if (ireq->stp.rsp.status & ATA_ERR)
+<<<<<<< HEAD
 			status = SCI_IO_FAILURE_RESPONSE_VALID;
 	} else {
 		status = SCI_IO_FAILURE_RESPONSE_VALID;
+=======
+			status = SCI_FAILURE_IO_RESPONSE_VALID;
+	} else {
+		status = SCI_FAILURE_IO_RESPONSE_VALID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (status != SCI_SUCCESS) {
@@ -1735,8 +1914,13 @@ sci_io_request_frame_handler(struct isci_request *ireq,
 
 			resp_iu = &ireq->ssp.rsp;
 
+<<<<<<< HEAD
 			if (resp_iu->datapres == 0x01 ||
 			    resp_iu->datapres == 0x02) {
+=======
+			if (resp_iu->datapres == SAS_DATAPRES_RESPONSE_DATA ||
+			    resp_iu->datapres == SAS_DATAPRES_SENSE_DATA) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ireq->scu_status = SCU_TASK_DONE_CHECK_RESPONSE;
 				ireq->sci_status = SCI_FAILURE_CONTROLLER_SPECIFIC_IO_ERR;
 			} else {
@@ -2101,8 +2285,11 @@ sci_io_request_frame_handler(struct isci_request *ireq,
 static enum sci_status stp_request_udma_await_tc_event(struct isci_request *ireq,
 						       u32 completion_code)
 {
+<<<<<<< HEAD
 	enum sci_status status = SCI_SUCCESS;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (SCU_GET_COMPLETION_TL_STATUS(completion_code)) {
 	case SCU_MAKE_COMPLETION_STATUS(SCU_TASK_DONE_GOOD):
 		ireq->scu_status = SCU_TASK_DONE_GOOD;
@@ -2117,7 +2304,11 @@ static enum sci_status stp_request_udma_await_tc_event(struct isci_request *ireq
 		 */
 		if (ireq->stp.rsp.fis_type == FIS_REGD2H) {
 			sci_remote_device_suspend(ireq->target_device,
+<<<<<<< HEAD
 				SCU_EVENT_SPECIFIC(SCU_NORMALIZE_COMPLETION_STATUS(completion_code)));
+=======
+						  SCI_SW_SUSPEND_NORMAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			ireq->scu_status = SCU_TASK_DONE_CHECK_RESPONSE;
 			ireq->sci_status = SCI_FAILURE_IO_RESPONSE_VALID;
@@ -2138,6 +2329,7 @@ static enum sci_status stp_request_udma_await_tc_event(struct isci_request *ireq
 	/* TODO We can retry the command for SCU_TASK_DONE_CMD_LL_R_ERR
 	 * - this comes only for B0
 	 */
+<<<<<<< HEAD
 	case SCU_MAKE_COMPLETION_STATUS(SCU_TASK_DONE_INV_FIS_LEN):
 	case SCU_MAKE_COMPLETION_STATUS(SCU_TASK_DONE_MAX_PLD_ERR):
 	case SCU_MAKE_COMPLETION_STATUS(SCU_TASK_DONE_LL_R_ERR):
@@ -2145,6 +2337,8 @@ static enum sci_status stp_request_udma_await_tc_event(struct isci_request *ireq
 		sci_remote_device_suspend(ireq->target_device,
 			SCU_EVENT_SPECIFIC(SCU_NORMALIZE_COMPLETION_STATUS(completion_code)));
 		/* Fall through to the default case */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		/* All other completion status cause the IO to be complete. */
 		ireq->scu_status = SCU_NORMALIZE_COMPLETION_STATUS(completion_code);
@@ -2153,14 +2347,21 @@ static enum sci_status stp_request_udma_await_tc_event(struct isci_request *ireq
 		break;
 	}
 
+<<<<<<< HEAD
 	return status;
+=======
+	return SCI_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum sci_status atapi_raw_completion(struct isci_request *ireq, u32 completion_code,
 						  enum sci_base_request_states next)
 {
+<<<<<<< HEAD
 	enum sci_status status = SCI_SUCCESS;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (SCU_GET_COMPLETION_TL_STATUS(completion_code)) {
 	case SCU_MAKE_COMPLETION_STATUS(SCU_TASK_DONE_GOOD):
 		ireq->scu_status = SCU_TASK_DONE_GOOD;
@@ -2179,7 +2380,11 @@ static enum sci_status atapi_raw_completion(struct isci_request *ireq, u32 compl
 		break;
 	}
 
+<<<<<<< HEAD
 	return status;
+=======
+	return SCI_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum sci_status atapi_data_tc_completion_handler(struct isci_request *ireq,
@@ -2197,7 +2402,11 @@ static enum sci_status atapi_data_tc_completion_handler(struct isci_request *ire
 	case (SCU_TASK_DONE_UNEXP_FIS << SCU_COMPLETION_TL_STATUS_SHIFT): {
 		u16 len = sci_req_tx_bytes(ireq);
 
+<<<<<<< HEAD
 		/* likely non-error data underrrun, workaround missing
+=======
+		/* likely non-error data underrun, workaround missing
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * d2h frame from the controller
 		 */
 		if (d2h->fis_type != FIS_REGD2H) {
@@ -2245,7 +2454,11 @@ static enum sci_status atapi_data_tc_completion_handler(struct isci_request *ire
 			status = ireq->sci_status;
 			sci_change_state(&idev->sm, SCI_STP_DEV_ATAPI_ERROR);
 		} else {
+<<<<<<< HEAD
 			/* If receiving any non-sucess TC status, no UF
+=======
+			/* If receiving any non-success TC status, no UF
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * received yet, then an UF for the status fis
 			 * is coming after (XXX: suspect this is
 			 * actually a protocol error or a bug like the
@@ -2262,15 +2475,160 @@ static enum sci_status atapi_data_tc_completion_handler(struct isci_request *ire
 	return status;
 }
 
+<<<<<<< HEAD
 enum sci_status
 sci_io_request_tc_completion(struct isci_request *ireq,
 				  u32 completion_code)
+=======
+static int sci_request_smp_completion_status_is_tx_suspend(
+	unsigned int completion_status)
+{
+	switch (completion_status) {
+	case SCU_TASK_OPEN_REJECT_WRONG_DESTINATION:
+	case SCU_TASK_OPEN_REJECT_RESERVED_ABANDON_1:
+	case SCU_TASK_OPEN_REJECT_RESERVED_ABANDON_2:
+	case SCU_TASK_OPEN_REJECT_RESERVED_ABANDON_3:
+	case SCU_TASK_OPEN_REJECT_BAD_DESTINATION:
+	case SCU_TASK_OPEN_REJECT_ZONE_VIOLATION:
+		return 1;
+	}
+	return 0;
+}
+
+static int sci_request_smp_completion_status_is_tx_rx_suspend(
+	unsigned int completion_status)
+{
+	return 0; /* There are no Tx/Rx SMP suspend conditions. */
+}
+
+static int sci_request_ssp_completion_status_is_tx_suspend(
+	unsigned int completion_status)
+{
+	switch (completion_status) {
+	case SCU_TASK_DONE_TX_RAW_CMD_ERR:
+	case SCU_TASK_DONE_LF_ERR:
+	case SCU_TASK_OPEN_REJECT_WRONG_DESTINATION:
+	case SCU_TASK_OPEN_REJECT_RESERVED_ABANDON_1:
+	case SCU_TASK_OPEN_REJECT_RESERVED_ABANDON_2:
+	case SCU_TASK_OPEN_REJECT_RESERVED_ABANDON_3:
+	case SCU_TASK_OPEN_REJECT_BAD_DESTINATION:
+	case SCU_TASK_OPEN_REJECT_ZONE_VIOLATION:
+	case SCU_TASK_OPEN_REJECT_STP_RESOURCES_BUSY:
+	case SCU_TASK_OPEN_REJECT_PROTOCOL_NOT_SUPPORTED:
+	case SCU_TASK_OPEN_REJECT_CONNECTION_RATE_NOT_SUPPORTED:
+		return 1;
+	}
+	return 0;
+}
+
+static int sci_request_ssp_completion_status_is_tx_rx_suspend(
+	unsigned int completion_status)
+{
+	return 0; /* There are no Tx/Rx SSP suspend conditions. */
+}
+
+static int sci_request_stpsata_completion_status_is_tx_suspend(
+	unsigned int completion_status)
+{
+	switch (completion_status) {
+	case SCU_TASK_DONE_TX_RAW_CMD_ERR:
+	case SCU_TASK_DONE_LL_R_ERR:
+	case SCU_TASK_DONE_LL_PERR:
+	case SCU_TASK_DONE_REG_ERR:
+	case SCU_TASK_DONE_SDB_ERR:
+	case SCU_TASK_OPEN_REJECT_WRONG_DESTINATION:
+	case SCU_TASK_OPEN_REJECT_RESERVED_ABANDON_1:
+	case SCU_TASK_OPEN_REJECT_RESERVED_ABANDON_2:
+	case SCU_TASK_OPEN_REJECT_RESERVED_ABANDON_3:
+	case SCU_TASK_OPEN_REJECT_BAD_DESTINATION:
+	case SCU_TASK_OPEN_REJECT_ZONE_VIOLATION:
+	case SCU_TASK_OPEN_REJECT_STP_RESOURCES_BUSY:
+	case SCU_TASK_OPEN_REJECT_PROTOCOL_NOT_SUPPORTED:
+	case SCU_TASK_OPEN_REJECT_CONNECTION_RATE_NOT_SUPPORTED:
+		return 1;
+	}
+	return 0;
+}
+
+
+static int sci_request_stpsata_completion_status_is_tx_rx_suspend(
+	unsigned int completion_status)
+{
+	switch (completion_status) {
+	case SCU_TASK_DONE_LF_ERR:
+	case SCU_TASK_DONE_LL_SY_TERM:
+	case SCU_TASK_DONE_LL_LF_TERM:
+	case SCU_TASK_DONE_BREAK_RCVD:
+	case SCU_TASK_DONE_INV_FIS_LEN:
+	case SCU_TASK_DONE_UNEXP_FIS:
+	case SCU_TASK_DONE_UNEXP_SDBFIS:
+	case SCU_TASK_DONE_MAX_PLD_ERR:
+		return 1;
+	}
+	return 0;
+}
+
+static void sci_request_handle_suspending_completions(
+	struct isci_request *ireq,
+	u32 completion_code)
+{
+	int is_tx = 0;
+	int is_tx_rx = 0;
+
+	switch (ireq->protocol) {
+	case SAS_PROTOCOL_SMP:
+		is_tx = sci_request_smp_completion_status_is_tx_suspend(
+			completion_code);
+		is_tx_rx = sci_request_smp_completion_status_is_tx_rx_suspend(
+			completion_code);
+		break;
+	case SAS_PROTOCOL_SSP:
+		is_tx = sci_request_ssp_completion_status_is_tx_suspend(
+			completion_code);
+		is_tx_rx = sci_request_ssp_completion_status_is_tx_rx_suspend(
+			completion_code);
+		break;
+	case SAS_PROTOCOL_STP:
+		is_tx = sci_request_stpsata_completion_status_is_tx_suspend(
+			completion_code);
+		is_tx_rx =
+			sci_request_stpsata_completion_status_is_tx_rx_suspend(
+				completion_code);
+		break;
+	default:
+		dev_warn(&ireq->isci_host->pdev->dev,
+			 "%s: request %p has no valid protocol\n",
+			 __func__, ireq);
+		break;
+	}
+	if (is_tx || is_tx_rx) {
+		BUG_ON(is_tx && is_tx_rx);
+
+		sci_remote_node_context_suspend(
+			&ireq->target_device->rnc,
+			SCI_HW_SUSPEND,
+			(is_tx_rx) ? SCU_EVENT_TL_RNC_SUSPEND_TX_RX
+				   : SCU_EVENT_TL_RNC_SUSPEND_TX);
+	}
+}
+
+enum sci_status
+sci_io_request_tc_completion(struct isci_request *ireq,
+			     u32 completion_code)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	enum sci_base_request_states state;
 	struct isci_host *ihost = ireq->owning_controller;
 
 	state = ireq->sm.current_state_id;
 
+<<<<<<< HEAD
+=======
+	/* Decode those completions that signal upcoming suspension events. */
+	sci_request_handle_suspending_completions(
+		ireq, SCU_GET_COMPLETION_TL_STATUS(completion_code));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (state) {
 	case SCI_REQ_STARTED:
 		return request_started_state_tc_event(ireq, completion_code);
@@ -2327,7 +2685,11 @@ sci_io_request_tc_completion(struct isci_request *ireq,
  * isci_request_process_response_iu() - This function sets the status and
  *    response iu, in the task struct, from the request object for the upper
  *    layer driver.
+<<<<<<< HEAD
  * @sas_task: This parameter is the task struct from the upper layer driver.
+=======
+ * @task: This parameter is the task struct from the upper layer driver.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @resp_iu: This parameter points to the response iu of the completed request.
  * @dev: This parameter specifies the linux device struct.
  *
@@ -2342,7 +2704,11 @@ static void isci_request_process_response_iu(
 		"%s: resp_iu = %p "
 		"resp_iu->status = 0x%x,\nresp_iu->datapres = %d "
 		"resp_iu->response_data_len = %x, "
+<<<<<<< HEAD
 		"resp_iu->sense_data_len = %x\nrepsonse data: ",
+=======
+		"resp_iu->sense_data_len = %x\nresponse data: ",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__func__,
 		resp_iu,
 		resp_iu->status,
@@ -2360,11 +2726,17 @@ static void isci_request_process_response_iu(
  * isci_request_set_open_reject_status() - This function prepares the I/O
  *    completion for OPEN_REJECT conditions.
  * @request: This parameter is the completed isci_request object.
+<<<<<<< HEAD
  * @response_ptr: This parameter specifies the service response for the I/O.
  * @status_ptr: This parameter specifies the exec status for the I/O.
  * @complete_to_host_ptr: This parameter specifies the action to be taken by
  *    the LLDD with respect to completing this request or forcing an abort
  *    condition on the I/O.
+=======
+ * @task: This parameter is the task struct from the upper layer driver.
+ * @response_ptr: This parameter specifies the service response for the I/O.
+ * @status_ptr: This parameter specifies the exec status for the I/O.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @open_rej_reason: This parameter specifies the encoded reason for the
  *    abandon-class reject.
  *
@@ -2375,26 +2747,40 @@ static void isci_request_set_open_reject_status(
 	struct sas_task *task,
 	enum service_response *response_ptr,
 	enum exec_status *status_ptr,
+<<<<<<< HEAD
 	enum isci_completion_selection *complete_to_host_ptr,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum sas_open_rej_reason open_rej_reason)
 {
 	/* Task in the target is done. */
 	set_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
 	*response_ptr                     = SAS_TASK_UNDELIVERED;
 	*status_ptr                       = SAS_OPEN_REJECT;
+<<<<<<< HEAD
 	*complete_to_host_ptr             = isci_perform_normal_io_completion;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task->task_status.open_rej_reason = open_rej_reason;
 }
 
 /**
  * isci_request_handle_controller_specific_errors() - This function decodes
  *    controller-specific I/O completion error conditions.
+<<<<<<< HEAD
  * @request: This parameter is the completed isci_request object.
  * @response_ptr: This parameter specifies the service response for the I/O.
  * @status_ptr: This parameter specifies the exec status for the I/O.
  * @complete_to_host_ptr: This parameter specifies the action to be taken by
  *    the LLDD with respect to completing this request or forcing an abort
  *    condition on the I/O.
+=======
+ * @idev: Remote device
+ * @request: This parameter is the completed isci_request object.
+ * @task: This parameter is the task struct from the upper layer driver.
+ * @response_ptr: This parameter specifies the service response for the I/O.
+ * @status_ptr: This parameter specifies the exec status for the I/O.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * none.
  */
@@ -2403,8 +2789,12 @@ static void isci_request_handle_controller_specific_errors(
 	struct isci_request *request,
 	struct sas_task *task,
 	enum service_response *response_ptr,
+<<<<<<< HEAD
 	enum exec_status *status_ptr,
 	enum isci_completion_selection *complete_to_host_ptr)
+=======
+	enum exec_status *status_ptr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int cstatus;
 
@@ -2445,9 +2835,12 @@ static void isci_request_handle_controller_specific_errors(
 				*status_ptr = SAS_ABORTED_TASK;
 
 			set_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
+<<<<<<< HEAD
 
 			*complete_to_host_ptr =
 				isci_perform_normal_io_completion;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/* Task in the target is not done. */
 			*response_ptr = SAS_TASK_UNDELIVERED;
@@ -2455,12 +2848,18 @@ static void isci_request_handle_controller_specific_errors(
 			if (!idev)
 				*status_ptr = SAS_DEVICE_UNKNOWN;
 			else
+<<<<<<< HEAD
 				*status_ptr = SAM_STAT_TASK_ABORTED;
 
 			clear_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
 
 			*complete_to_host_ptr =
 				isci_perform_error_io_completion;
+=======
+				*status_ptr = SAS_SAM_STAT_TASK_ABORTED;
+
+			clear_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		break;
@@ -2489,8 +2888,11 @@ static void isci_request_handle_controller_specific_errors(
 			*status_ptr = SAS_ABORTED_TASK;
 
 		set_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
+<<<<<<< HEAD
 
 		*complete_to_host_ptr = isci_perform_normal_io_completion;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 
@@ -2501,7 +2903,11 @@ static void isci_request_handle_controller_specific_errors(
 
 		isci_request_set_open_reject_status(
 			request, task, response_ptr, status_ptr,
+<<<<<<< HEAD
 			complete_to_host_ptr, SAS_OREJ_WRONG_DEST);
+=======
+			SAS_OREJ_WRONG_DEST);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCU_TASK_OPEN_REJECT_ZONE_VIOLATION:
@@ -2511,56 +2917,88 @@ static void isci_request_handle_controller_specific_errors(
 		 */
 		isci_request_set_open_reject_status(
 			request, task, response_ptr, status_ptr,
+<<<<<<< HEAD
 			complete_to_host_ptr, SAS_OREJ_RESV_AB0);
+=======
+			SAS_OREJ_RESV_AB0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCU_TASK_OPEN_REJECT_RESERVED_ABANDON_1:
 
 		isci_request_set_open_reject_status(
 			request, task, response_ptr, status_ptr,
+<<<<<<< HEAD
 			complete_to_host_ptr, SAS_OREJ_RESV_AB1);
+=======
+			SAS_OREJ_RESV_AB1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCU_TASK_OPEN_REJECT_RESERVED_ABANDON_2:
 
 		isci_request_set_open_reject_status(
 			request, task, response_ptr, status_ptr,
+<<<<<<< HEAD
 			complete_to_host_ptr, SAS_OREJ_RESV_AB2);
+=======
+			SAS_OREJ_RESV_AB2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCU_TASK_OPEN_REJECT_RESERVED_ABANDON_3:
 
 		isci_request_set_open_reject_status(
 			request, task, response_ptr, status_ptr,
+<<<<<<< HEAD
 			complete_to_host_ptr, SAS_OREJ_RESV_AB3);
+=======
+			SAS_OREJ_RESV_AB3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCU_TASK_OPEN_REJECT_BAD_DESTINATION:
 
 		isci_request_set_open_reject_status(
 			request, task, response_ptr, status_ptr,
+<<<<<<< HEAD
 			complete_to_host_ptr, SAS_OREJ_BAD_DEST);
+=======
+			SAS_OREJ_BAD_DEST);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCU_TASK_OPEN_REJECT_STP_RESOURCES_BUSY:
 
 		isci_request_set_open_reject_status(
 			request, task, response_ptr, status_ptr,
+<<<<<<< HEAD
 			complete_to_host_ptr, SAS_OREJ_STP_NORES);
+=======
+			SAS_OREJ_STP_NORES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCU_TASK_OPEN_REJECT_PROTOCOL_NOT_SUPPORTED:
 
 		isci_request_set_open_reject_status(
 			request, task, response_ptr, status_ptr,
+<<<<<<< HEAD
 			complete_to_host_ptr, SAS_OREJ_EPROTO);
+=======
+			SAS_OREJ_EPROTO);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCU_TASK_OPEN_REJECT_CONNECTION_RATE_NOT_SUPPORTED:
 
 		isci_request_set_open_reject_status(
 			request, task, response_ptr, status_ptr,
+<<<<<<< HEAD
 			complete_to_host_ptr, SAS_OREJ_CONN_RATE);
+=======
+			SAS_OREJ_CONN_RATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SCU_TASK_DONE_LL_R_ERR:
@@ -2590,6 +3028,7 @@ static void isci_request_handle_controller_specific_errors(
 	default:
 		/* Task in the target is not done. */
 		*response_ptr = SAS_TASK_UNDELIVERED;
+<<<<<<< HEAD
 		*status_ptr = SAM_STAT_TASK_ABORTED;
 
 		if (task->task_proto == SAS_PROTOCOL_SMP) {
@@ -2601,10 +3040,19 @@ static void isci_request_handle_controller_specific_errors(
 
 			*complete_to_host_ptr = isci_perform_error_io_completion;
 		}
+=======
+		*status_ptr = SAS_SAM_STAT_TASK_ABORTED;
+
+		if (task->task_proto == SAS_PROTOCOL_SMP)
+			set_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
+		else
+			clear_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
+<<<<<<< HEAD
 /**
  * isci_task_save_for_upper_layer_completion() - This function saves the
  *    request for later completion to the upper layer driver.
@@ -2683,6 +3131,8 @@ static void isci_task_save_for_upper_layer_completion(
 		(task) ? task->task_status.stat : 0, status);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void isci_process_stp_response(struct sas_task *task, struct dev_to_host_fis *fis)
 {
 	struct task_status_struct *ts = &task->task_status;
@@ -2692,6 +3142,7 @@ static void isci_process_stp_response(struct sas_task *task, struct dev_to_host_
 	memcpy(resp->ending_fis, fis, sizeof(*fis));
 	ts->buf_valid_size = sizeof(*resp);
 
+<<<<<<< HEAD
 	/* If the device fault bit is set in the status register, then
 	 * set the sense data and return.
 	 */
@@ -2701,6 +3152,13 @@ static void isci_process_stp_response(struct sas_task *task, struct dev_to_host_
 		ts->stat = SAM_STAT_CHECK_CONDITION;
 	else
 		ts->stat = SAM_STAT_GOOD;
+=======
+	/* If an error is flagged let libata decode the fis */
+	if (ac_err_mask(fis->status))
+		ts->stat = SAS_PROTO_RESPONSE;
+	else
+		ts->stat = SAS_SAM_STAT_GOOD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ts->resp = SAS_TASK_COMPLETE;
 }
@@ -2715,6 +3173,7 @@ static void isci_request_io_request_complete(struct isci_host *ihost,
 	struct isci_remote_device *idev = request->target_device;
 	enum service_response response = SAS_TASK_UNDELIVERED;
 	enum exec_status status = SAS_ABORTED_TASK;
+<<<<<<< HEAD
 	enum isci_request_status request_status;
 	enum isci_completion_selection complete_to_host
 		= isci_perform_normal_io_completion;
@@ -2755,11 +3214,141 @@ static void isci_request_io_request_complete(struct isci_host *ihost,
 		 * that we ignore the quiesce state, since we are
 		 * concerned about the actual device state.
 		 */
+=======
+
+	dev_dbg(&ihost->pdev->dev,
+		"%s: request = %p, task = %p, "
+		"task->data_dir = %d completion_status = 0x%x\n",
+		__func__, request, task, task->data_dir, completion_status);
+
+	/* The request is done from an SCU HW perspective. */
+
+	/* This is an active request being completed from the core. */
+	switch (completion_status) {
+
+	case SCI_IO_FAILURE_RESPONSE_VALID:
+		dev_dbg(&ihost->pdev->dev,
+			"%s: SCI_IO_FAILURE_RESPONSE_VALID (%p/%p)\n",
+			__func__, request, task);
+
+		if (sas_protocol_ata(task->task_proto)) {
+			isci_process_stp_response(task, &request->stp.rsp);
+		} else if (SAS_PROTOCOL_SSP == task->task_proto) {
+
+			/* crack the iu response buffer. */
+			resp_iu = &request->ssp.rsp;
+			isci_request_process_response_iu(task, resp_iu,
+							 &ihost->pdev->dev);
+
+		} else if (SAS_PROTOCOL_SMP == task->task_proto) {
+
+			dev_err(&ihost->pdev->dev,
+				"%s: SCI_IO_FAILURE_RESPONSE_VALID: "
+					"SAS_PROTOCOL_SMP protocol\n",
+				__func__);
+
+		} else
+			dev_err(&ihost->pdev->dev,
+				"%s: unknown protocol\n", __func__);
+
+		/* use the task status set in the task struct by the
+		* isci_request_process_response_iu call.
+		*/
+		set_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
+		response = task->task_status.resp;
+		status = task->task_status.stat;
+		break;
+
+	case SCI_IO_SUCCESS:
+	case SCI_IO_SUCCESS_IO_DONE_EARLY:
+
+		response = SAS_TASK_COMPLETE;
+		status   = SAS_SAM_STAT_GOOD;
+		set_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
+
+		if (completion_status == SCI_IO_SUCCESS_IO_DONE_EARLY) {
+
+			/* This was an SSP / STP / SATA transfer.
+			* There is a possibility that less data than
+			* the maximum was transferred.
+			*/
+			u32 transferred_length = sci_req_tx_bytes(request);
+
+			task->task_status.residual
+				= task->total_xfer_len - transferred_length;
+
+			/* If there were residual bytes, call this an
+			* underrun.
+			*/
+			if (task->task_status.residual != 0)
+				status = SAS_DATA_UNDERRUN;
+
+			dev_dbg(&ihost->pdev->dev,
+				"%s: SCI_IO_SUCCESS_IO_DONE_EARLY %d\n",
+				__func__, status);
+
+		} else
+			dev_dbg(&ihost->pdev->dev, "%s: SCI_IO_SUCCESS\n",
+				__func__);
+		break;
+
+	case SCI_IO_FAILURE_TERMINATED:
+
+		dev_dbg(&ihost->pdev->dev,
+			"%s: SCI_IO_FAILURE_TERMINATED (%p/%p)\n",
+			__func__, request, task);
+
+		/* The request was terminated explicitly. */
+		set_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
+		response = SAS_TASK_UNDELIVERED;
+
+		/* See if the device has been/is being stopped. Note
+		* that we ignore the quiesce state, since we are
+		* concerned about the actual device state.
+		*/
+		if (!idev)
+			status = SAS_DEVICE_UNKNOWN;
+		else
+			status = SAS_ABORTED_TASK;
+		break;
+
+	case SCI_FAILURE_CONTROLLER_SPECIFIC_IO_ERR:
+
+		isci_request_handle_controller_specific_errors(idev, request,
+							       task, &response,
+							       &status);
+		break;
+
+	case SCI_IO_FAILURE_REMOTE_DEVICE_RESET_REQUIRED:
+		/* This is a special case, in that the I/O completion
+		* is telling us that the device needs a reset.
+		* In order for the device reset condition to be
+		* noticed, the I/O has to be handled in the error
+		* handler.  Set the reset flag and cause the
+		* SCSI error thread to be scheduled.
+		*/
+		spin_lock_irqsave(&task->task_state_lock, task_flags);
+		task->task_state_flags |= SAS_TASK_NEED_DEV_RESET;
+		spin_unlock_irqrestore(&task->task_state_lock, task_flags);
+
+		/* Fail the I/O. */
+		response = SAS_TASK_UNDELIVERED;
+		status = SAS_SAM_STAT_TASK_ABORTED;
+
+		clear_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
+		break;
+
+	case SCI_FAILURE_RETRY_REQUIRED:
+
+		/* Fail the I/O so it can be retried. */
+		response = SAS_TASK_UNDELIVERED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!idev)
 			status = SAS_DEVICE_UNKNOWN;
 		else
 			status = SAS_ABORTED_TASK;
 
+<<<<<<< HEAD
 		complete_to_host = isci_perform_aborted_io_completion;
 		/* This was an aborted request. */
 
@@ -3004,6 +3593,34 @@ static void isci_request_io_request_complete(struct isci_host *ihost,
 			}
 			break;
 		}
+=======
+		set_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
+		break;
+
+
+	default:
+		/* Catch any otherwise unhandled error codes here. */
+		dev_dbg(&ihost->pdev->dev,
+			"%s: invalid completion code: 0x%x - "
+				"isci_request = %p\n",
+			__func__, completion_status, request);
+
+		response = SAS_TASK_UNDELIVERED;
+
+		/* See if the device has been/is being stopped. Note
+		* that we ignore the quiesce state, since we are
+		* concerned about the actual device state.
+		*/
+		if (!idev)
+			status = SAS_DEVICE_UNKNOWN;
+		else
+			status = SAS_ABORTED_TASK;
+
+		if (SAS_PROTOCOL_SMP == task->task_proto)
+			set_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
+		else
+			clear_bit(IREQ_COMPLETE_IN_TARGET, &request->flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -3038,10 +3655,24 @@ static void isci_request_io_request_complete(struct isci_host *ihost,
 		break;
 	}
 
+<<<<<<< HEAD
 	/* Put the completed request on the correct list */
 	isci_task_save_for_upper_layer_completion(ihost, request, response,
 						  status, complete_to_host
 						  );
+=======
+	spin_lock_irqsave(&task->task_state_lock, task_flags);
+
+	task->task_status.resp = response;
+	task->task_status.stat = status;
+
+	if (test_bit(IREQ_COMPLETE_IN_TARGET, &request->flags)) {
+		/* Normal notification (task_done) */
+		task->task_state_flags |= SAS_TASK_STATE_DONE;
+		task->task_state_flags &= ~SAS_TASK_STATE_PENDING;
+	}
+	spin_unlock_irqrestore(&task->task_state_lock, task_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* complete the io request to the core. */
 	sci_controller_complete_io(ihost, request->target_device, request);
@@ -3051,6 +3682,11 @@ static void isci_request_io_request_complete(struct isci_host *ihost,
 	 * task to recognize the already completed case.
 	 */
 	set_bit(IREQ_TERMINATED, &request->flags);
+<<<<<<< HEAD
+=======
+
+	ireq_done(ihost, request, task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sci_request_started_state_enter(struct sci_base_state_machine *sm)
@@ -3068,13 +3704,21 @@ static void sci_request_started_state_enter(struct sci_base_state_machine *sm)
 	/* all unaccelerated request types (non ssp or ncq) handled with
 	 * substates
 	 */
+<<<<<<< HEAD
 	if (!task && dev->dev_type == SAS_END_DEV) {
+=======
+	if (!task && dev->dev_type == SAS_END_DEVICE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		state = SCI_REQ_TASK_WAIT_TC_COMP;
 	} else if (task && task->task_proto == SAS_PROTOCOL_SMP) {
 		state = SCI_REQ_SMP_WAIT_RESP;
 	} else if (task && sas_protocol_ata(task->task_proto) &&
 		   !task->ata_task.use_ncq) {
+<<<<<<< HEAD
 		if (dev->sata_dev.command_set == ATAPI_COMMAND_SET &&
+=======
+		if (dev->sata_dev.class == ATA_DEV_ATAPI &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			task->ata_task.fis.command == ATA_CMD_PACKET) {
 			state = SCI_REQ_ATAPI_WAIT_H2D;
 		} else if (task->data_dir == DMA_NONE) {
@@ -3169,7 +3813,11 @@ sci_general_request_construct(struct isci_host *ihost,
 	sci_init_sm(&ireq->sm, sci_request_state_table, SCI_REQ_INIT);
 
 	ireq->target_device = idev;
+<<<<<<< HEAD
 	ireq->protocol = SCIC_NO_PROTOCOL;
+=======
+	ireq->protocol = SAS_PROTOCOL_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ireq->saved_rx_frame_index = SCU_INVALID_FRAME_INDEX;
 
 	ireq->sci_status   = SCI_SUCCESS;
@@ -3191,11 +3839,19 @@ sci_io_request_construct(struct isci_host *ihost,
 	if (idev->rnc.remote_node_index == SCIC_SDS_REMOTE_NODE_CONTEXT_INVALID_INDEX)
 		return SCI_FAILURE_INVALID_REMOTE_DEVICE;
 
+<<<<<<< HEAD
 	if (dev->dev_type == SAS_END_DEV)
 		/* pass */;
 	else if (dev->dev_type == SATA_DEV || (dev->tproto & SAS_PROTOCOL_STP))
 		memset(&ireq->stp.cmd, 0, sizeof(ireq->stp.cmd));
 	else if (dev_is_expander(dev))
+=======
+	if (dev->dev_type == SAS_END_DEVICE)
+		/* pass */;
+	else if (dev_is_sata(dev))
+		memset(&ireq->stp.cmd, 0, sizeof(ireq->stp.cmd));
+	else if (dev_is_expander(dev->dev_type))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* pass */;
 	else
 		return SCI_FAILURE_UNSUPPORTED_PROTOCOL;
@@ -3215,10 +3871,22 @@ enum sci_status sci_task_request_construct(struct isci_host *ihost,
 	/* Build the common part of the request */
 	sci_general_request_construct(ihost, idev, ireq);
 
+<<<<<<< HEAD
 	if (dev->dev_type == SAS_END_DEV ||
 	    dev->dev_type == SATA_DEV || (dev->tproto & SAS_PROTOCOL_STP)) {
 		set_bit(IREQ_TMF, &ireq->flags);
 		memset(ireq->tc, 0, sizeof(struct scu_task_context));
+=======
+	if (dev->dev_type == SAS_END_DEVICE || dev_is_sata(dev)) {
+		set_bit(IREQ_TMF, &ireq->flags);
+		memset(ireq->tc, 0, sizeof(struct scu_task_context));
+
+		/* Set the protocol indicator. */
+		if (dev_is_sata(dev))
+			ireq->protocol = SAS_PROTOCOL_STP;
+		else
+			ireq->protocol = SAS_PROTOCOL_SSP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		status = SCI_FAILURE_UNSUPPORTED_PROTOCOL;
 
@@ -3258,7 +3926,14 @@ static enum sci_status isci_request_stp_request_construct(struct isci_request *i
 	status = sci_io_request_construct_basic_sata(ireq);
 
 	if (qc && (qc->tf.command == ATA_CMD_FPDMA_WRITE ||
+<<<<<<< HEAD
 		   qc->tf.command == ATA_CMD_FPDMA_READ)) {
+=======
+		   qc->tf.command == ATA_CMD_FPDMA_READ ||
+		   qc->tf.command == ATA_CMD_FPDMA_RECV ||
+		   qc->tf.command == ATA_CMD_FPDMA_SEND ||
+		   qc->tf.command == ATA_CMD_NCQ_NON_DATA)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fis->sector_count = qc->tag << 3;
 		ireq->tc->type.stp.ncq_tag = qc->tag;
 	}
@@ -3311,7 +3986,11 @@ sci_io_request_construct_smp(struct device *dev,
 	if (!dma_map_sg(dev, sg, 1, DMA_TO_DEVICE))
 		return SCI_FAILURE;
 
+<<<<<<< HEAD
 	ireq->protocol = SCIC_SMP_PROTOCOL;
+=======
+	ireq->protocol = SAS_PROTOCOL_SMP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* byte swap the smp request. */
 
@@ -3321,7 +4000,11 @@ sci_io_request_construct_smp(struct device *dev,
 	iport = idev->owning_port;
 
 	/*
+<<<<<<< HEAD
 	 * Fill in the TC with the its required data
+=======
+	 * Fill in the TC with its required data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * 00h
 	 */
 	task_context->priority = 0;
@@ -3418,7 +4101,11 @@ static enum sci_status isci_smp_request_build(struct isci_request *ireq)
  * @ihost: This parameter specifies the ISCI host object
  * @request: This parameter points to the isci_request object allocated in the
  *    request construct function.
+<<<<<<< HEAD
  * @sci_device: This parameter is the handle for the sci core's remote device
+=======
+ * @idev: This parameter is the handle for the sci core's remote device
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    object that is the destination for this request.
  *
  * SCI_SUCCESS on successfull completion, or specific failure code.
@@ -3484,7 +4171,11 @@ static enum sci_status isci_io_request_build(struct isci_host *ihost,
 		return SCI_FAILURE;
 	}
 
+<<<<<<< HEAD
 	return SCI_SUCCESS;
+=======
+	return status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct isci_request *isci_request_from_tag(struct isci_host *ihost, u16 tag)
@@ -3496,16 +4187,25 @@ static struct isci_request *isci_request_from_tag(struct isci_host *ihost, u16 t
 	ireq->io_request_completion = NULL;
 	ireq->flags = 0;
 	ireq->num_sg_entries = 0;
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&ireq->completed_node);
 	INIT_LIST_HEAD(&ireq->dev_node);
 	isci_request_change_state(ireq, allocated);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ireq;
 }
 
+<<<<<<< HEAD
 static struct isci_request *isci_io_request_from_tag(struct isci_host *ihost,
 						     struct sas_task *task,
 						     u16 tag)
+=======
+struct isci_request *isci_io_request_from_tag(struct isci_host *ihost,
+					      struct sas_task *task,
+					      u16 tag)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct isci_request *ireq;
 
@@ -3531,6 +4231,7 @@ struct isci_request *isci_tmf_request_from_tag(struct isci_host *ihost,
 }
 
 int isci_request_execute(struct isci_host *ihost, struct isci_remote_device *idev,
+<<<<<<< HEAD
 			 struct sas_task *task, u16 tag)
 {
 	enum sci_status status = SCI_FAILURE_UNSUPPORTED_PROTOCOL;
@@ -3541,6 +4242,14 @@ int isci_request_execute(struct isci_host *ihost, struct isci_remote_device *ide
 	/* do common allocation and init of request object. */
 	ireq = isci_io_request_from_tag(ihost, task, tag);
 
+=======
+			 struct sas_task *task, struct isci_request *ireq)
+{
+	enum sci_status status;
+	unsigned long flags;
+	int ret = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = isci_io_request_build(ihost, ireq, idev);
 	if (status != SCI_SUCCESS) {
 		dev_dbg(&ihost->pdev->dev,
@@ -3582,6 +4291,7 @@ int isci_request_execute(struct isci_host *ihost, struct isci_remote_device *ide
 		spin_unlock_irqrestore(&ihost->scic_lock, flags);
 		return status;
 	}
+<<<<<<< HEAD
 
 	/* Either I/O started OK, or the core has signaled that
 	 * the device needs a target reset.
@@ -3596,12 +4306,21 @@ int isci_request_execute(struct isci_host *ihost, struct isci_remote_device *ide
 	if (status == SCI_SUCCESS) {
 		isci_request_change_state(ireq, started);
 	} else {
+=======
+	/* Either I/O started OK, or the core has signaled that
+	 * the device needs a target reset.
+	 */
+	if (status != SCI_SUCCESS) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* The request did not really start in the
 		 * hardware, so clear the request handle
 		 * here so no terminations will be done.
 		 */
 		set_bit(IREQ_TERMINATED, &ireq->flags);
+<<<<<<< HEAD
 		isci_request_change_state(ireq, completed);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&ihost->scic_lock, flags);
 

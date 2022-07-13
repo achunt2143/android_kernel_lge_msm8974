@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* csum_copy_to_user.S: Checksum+copy to userspace.
  *
  * Copyright (C) 2005 David S. Miller (davem@davemloft.net)
@@ -8,14 +12,22 @@
 	.section .fixup,"ax";	\
 	.align 4;		\
 99:	retl;			\
+<<<<<<< HEAD
 	 mov	-1, %o0;	\
+=======
+	 mov	0, %o0;		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.section __ex_table,"a";\
 	.align 4;		\
 	.word 98b, 99b;		\
 	.text;			\
 	.align 4;
 
+<<<<<<< HEAD
 #define FUNC_NAME		__csum_partial_copy_to_user
+=======
+#define FUNC_NAME		csum_and_copy_to_user
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define STORE(type,src,addr)	type##a src, [addr] %asi
 
 #include "csum_copy.S"

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -9,15 +13,19 @@
  *
  * Authors:	Original taken from the GNU Project <netinet/in.h> file.
  *		Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
+<<<<<<< HEAD
  *
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_IN_H
 #define _LINUX_IN_H
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/socket.h>
 
@@ -252,6 +260,11 @@ struct sockaddr_in {
 #ifdef __KERNEL__
 
 #include <linux/errno.h>
+=======
+
+#include <linux/errno.h>
+#include <uapi/linux/in.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int proto_ports_offset(int proto)
 {
@@ -291,9 +304,20 @@ static inline bool ipv4_is_lbcast(__be32 addr)
 	return addr == htonl(INADDR_BROADCAST);
 }
 
+<<<<<<< HEAD
 static inline bool ipv4_is_zeronet(__be32 addr)
 {
 	return (addr & htonl(0xff000000)) == htonl(0x00000000);
+=======
+static inline bool ipv4_is_all_snoopers(__be32 addr)
+{
+	return addr == htonl(INADDR_ALLSNOOPERS_GROUP);
+}
+
+static inline bool ipv4_is_zeronet(__be32 addr)
+{
+	return (addr == 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Special-Use IPv4 Addresses (RFC3330) */
@@ -332,6 +356,9 @@ static inline bool ipv4_is_test_198(__be32 addr)
 {
 	return (addr & htonl(0xfffe0000)) == htonl(0xc6120000);
 }
+<<<<<<< HEAD
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _LINUX_IN_H */

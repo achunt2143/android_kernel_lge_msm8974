@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-pxa/generic.h
  *
  * Author:	Nicolas Pitre
  * Copyright:	MontaVista Software Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,6 +22,18 @@ extern struct sys_timer pxa_timer;
 extern void __init pxa_map_io(void);
 
 extern unsigned int get_clk_frequency_khz(int info);
+=======
+ */
+
+#include <linux/reboot.h>
+
+struct irq_data;
+
+extern void __init pxa_dt_irq_init(int (*fn)(struct irq_data *,
+					     unsigned int));
+extern void __init pxa_map_io(void);
+extern void pxa_timer_init(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SET_BANK(__nr,__start,__size) \
 	mi->bank[__nr].start = (__start), \
@@ -24,6 +41,7 @@ extern unsigned int get_clk_frequency_khz(int info);
 
 #define ARRAY_AND_SIZE(x)	(x), ARRAY_SIZE(x)
 
+<<<<<<< HEAD
 #ifdef CONFIG_PXA25x
 extern unsigned pxa25x_get_clk_frequency_khz(int);
 #else
@@ -47,6 +65,20 @@ extern unsigned pxa3xx_get_clk_frequency_khz(int);
 #else
 #define pxa3xx_get_clk_frequency_khz(x)		(0)
 #endif
+=======
+#define pxa25x_handle_irq icip_handle_irq
+extern void __init pxa25x_init_irq(void);
+extern void __init pxa25x_map_io(void);
+extern void __init pxa26x_init_irq(void);
+
+#define pxa27x_handle_irq ichp_handle_irq
+extern void __init pxa27x_init_irq(void);
+extern void __init pxa27x_map_io(void);
+
+#define pxa3xx_handle_irq ichp_handle_irq
+extern void __init pxa3xx_init_irq(void);
+extern void __init pxa3xx_map_io(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct syscore_ops pxa_irq_syscore_ops;
 extern struct syscore_ops pxa2xx_mfp_syscore_ops;
@@ -57,4 +89,16 @@ void __init pxa_set_btuart_info(void *info);
 void __init pxa_set_stuart_info(void *info);
 void __init pxa_set_hwuart_info(void *info);
 
+<<<<<<< HEAD
 void pxa_restart(char, const char *);
+=======
+void pxa_restart(enum reboot_mode, const char *);
+
+#if defined(CONFIG_PXA25x) || defined(CONFIG_PXA27x)
+extern void pxa2xx_clear_reset_status(unsigned int);
+#else
+static inline void pxa2xx_clear_reset_status(unsigned int mask) {}
+#endif
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

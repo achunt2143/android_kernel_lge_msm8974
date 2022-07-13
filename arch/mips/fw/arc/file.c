@@ -8,12 +8,16 @@
  * Copyright (C) 1994, 1995, 1996, 1999 Ralf Baechle
  * Copyright (C) 1999 Silicon Graphics, Inc.
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/fw/arc/types.h>
 #include <asm/sgialib.h>
 
 LONG
+<<<<<<< HEAD
 ArcGetDirectoryEntry(ULONG FileID, struct linux_vdirent *Buffer,
                      ULONG N, ULONG *Count)
 {
@@ -33,22 +37,28 @@ ArcClose(ULONG FileID)
 }
 
 LONG
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ArcRead(ULONG FileID, VOID *Buffer, ULONG N, ULONG *Count)
 {
 	return ARC_CALL4(read, FileID, Buffer, N, Count);
 }
 
 LONG
+<<<<<<< HEAD
 ArcGetReadStatus(ULONG FileID)
 {
 	return ARC_CALL1(get_rstatus, FileID);
 }
 
 LONG
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ArcWrite(ULONG FileID, PVOID Buffer, ULONG N, PULONG Count)
 {
 	return ARC_CALL4(write, FileID, Buffer, N, Count);
 }
+<<<<<<< HEAD
 
 LONG
 ArcSeek(ULONG FileID, struct linux_bigint *Position, enum linux_seekmode SeekMode)
@@ -73,3 +83,5 @@ LONG ArcSetFileInformation(ULONG FileID, ULONG AttributeFlags,
 {
 	return ARC_CALL3(set_finfo, FileID, AttributeFlags, AttributeMask);
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

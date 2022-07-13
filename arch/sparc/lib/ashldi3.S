@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ashldi3.S:	GCC emits these for certain drivers playing
  *		with long longs.
@@ -5,10 +9,18 @@
  * Copyright (C) 1999 David S. Miller (davem@redhat.com)
  */
 
+<<<<<<< HEAD
 	.text
 	.align	4
 	.globl	__ashldi3
 __ashldi3:
+=======
+#include <linux/export.h>
+#include <linux/linkage.h>
+
+	.text
+ENTRY(__ashldi3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmp	%o2, 0
 	be	9f
 	 mov	0x20, %g2
@@ -32,3 +44,8 @@ __ashldi3:
 9:
 	retl
 	 nop
+<<<<<<< HEAD
+=======
+ENDPROC(__ashldi3)
+EXPORT_SYMBOL(__ashldi3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

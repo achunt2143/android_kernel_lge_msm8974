@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/kernel/exit.c
  *
@@ -6,6 +10,15 @@
 
 #include <linux/mm.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/autogroup.h>
+#include <linux/sched/mm.h>
+#include <linux/sched/stat.h>
+#include <linux/sched/task.h>
+#include <linux/sched/task_stack.h>
+#include <linux/sched/cputime.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/module.h>
 #include <linux/capability.h>
@@ -14,12 +27,19 @@
 #include <linux/tty.h>
 #include <linux/iocontext.h>
 #include <linux/key.h>
+<<<<<<< HEAD
 #include <linux/security.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cpu.h>
 #include <linux/acct.h>
 #include <linux/tsacct_kern.h>
 #include <linux/file.h>
 #include <linux/fdtable.h>
+<<<<<<< HEAD
+=======
+#include <linux/freezer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/binfmts.h>
 #include <linux/nsproxy.h>
 #include <linux/pid_namespace.h>
@@ -31,7 +51,10 @@
 #include <linux/mempolicy.h>
 #include <linux/taskstats_kern.h>
 #include <linux/delayacct.h>
+<<<<<<< HEAD
 #include <linux/freezer.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cgroup.h>
 #include <linux/syscalls.h>
 #include <linux/signal.h>
@@ -42,9 +65,15 @@
 #include <linux/pipe_fs_i.h>
 #include <linux/audit.h> /* for audit_free() */
 #include <linux/resource.h>
+<<<<<<< HEAD
 #include <linux/blkdev.h>
 #include <linux/task_io_accounting_ops.h>
 #include <linux/tracehook.h>
+=======
+#include <linux/task_io_accounting_ops.h>
+#include <linux/blkdev.h>
+#include <linux/task_work.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs_struct.h>
 #include <linux/init_task.h>
 #include <linux/perf_event.h>
@@ -53,6 +82,7 @@
 #include <linux/oom.h>
 #include <linux/writeback.h>
 #include <linux/shm.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
 #include <asm/unistd.h>
@@ -60,12 +90,82 @@
 #include <asm/mmu_context.h>
 
 static void exit_mm(struct task_struct * tsk);
+=======
+#include <linux/kcov.h>
+#include <linux/kmsan.h>
+#include <linux/random.h>
+#include <linux/rcuwait.h>
+#include <linux/compat.h>
+#include <linux/io_uring.h>
+#include <linux/kprobes.h>
+#include <linux/rethook.h>
+#include <linux/sysfs.h>
+#include <linux/user_events.h>
+#include <linux/uaccess.h>
+
+#include <uapi/linux/wait.h>
+
+#include <asm/unistd.h>
+#include <asm/mmu_context.h>
+
+#include "exit.h"
+
+/*
+ * The default value should be high enough to not crash a system that randomly
+ * crashes its kernel from time to time, but low enough to at least not permit
+ * overflowing 32-bit refcounts or the ldsem writer count.
+ */
+static unsigned int oops_limit = 10000;
+
+#ifdef CONFIG_SYSCTL
+static struct ctl_table kern_exit_table[] = {
+	{
+		.procname       = "oops_limit",
+		.data           = &oops_limit,
+		.maxlen         = sizeof(oops_limit),
+		.mode           = 0644,
+		.proc_handler   = proc_douintvec,
+	},
+	{ }
+};
+
+static __init int kernel_exit_sysctls_init(void)
+{
+	register_sysctl_init("kernel", kern_exit_table);
+	return 0;
+}
+late_initcall(kernel_exit_sysctls_init);
+#endif
+
+static atomic_t oops_count = ATOMIC_INIT(0);
+
+#ifdef CONFIG_SYSFS
+static ssize_t oops_count_show(struct kobject *kobj, struct kobj_attribute *attr,
+			       char *page)
+{
+	return sysfs_emit(page, "%d\n", atomic_read(&oops_count));
+}
+
+static struct kobj_attribute oops_count_attr = __ATTR_RO(oops_count);
+
+static __init int kernel_exit_sysfs_init(void)
+{
+	sysfs_add_file_to_group(kernel_kobj, &oops_count_attr.attr, NULL);
+	return 0;
+}
+late_initcall(kernel_exit_sysfs_init);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __unhash_process(struct task_struct *p, bool group_dead)
 {
 	nr_threads--;
 	detach_pid(p, PIDTYPE_PID);
 	if (group_dead) {
+<<<<<<< HEAD
+=======
+		detach_pid(p, PIDTYPE_TGID);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		detach_pid(p, PIDTYPE_PGID);
 		detach_pid(p, PIDTYPE_SID);
 
@@ -73,7 +173,10 @@ static void __unhash_process(struct task_struct *p, bool group_dead)
 		list_del_init(&p->sibling);
 		__this_cpu_dec(process_counts);
 	}
+<<<<<<< HEAD
 	list_del_rcu(&p->thread_group);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del_rcu(&p->thread_node);
 }
 
@@ -85,19 +188,35 @@ static void __exit_signal(struct task_struct *tsk)
 	struct signal_struct *sig = tsk->signal;
 	bool group_dead = thread_group_leader(tsk);
 	struct sighand_struct *sighand;
+<<<<<<< HEAD
 	struct tty_struct *uninitialized_var(tty);
+=======
+	struct tty_struct *tty;
+	u64 utime, stime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sighand = rcu_dereference_check(tsk->sighand,
 					lockdep_tasklist_lock_is_held());
 	spin_lock(&sighand->siglock);
 
+<<<<<<< HEAD
 	posix_cpu_timers_exit(tsk);
 	if (group_dead) {
 		posix_cpu_timers_exit_group(tsk);
+=======
+#ifdef CONFIG_POSIX_TIMERS
+	posix_cpu_timers_exit(tsk);
+	if (group_dead)
+		posix_cpu_timers_exit_group(tsk);
+#endif
+
+	if (group_dead) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tty = sig->tty;
 		sig->tty = NULL;
 	} else {
 		/*
+<<<<<<< HEAD
 		 * This can only happen if the caller is de_thread().
 		 * FIXME: this is the temporary hack, we should teach
 		 * posix-cpu-timers to handle this case correctly.
@@ -106,10 +225,13 @@ static void __exit_signal(struct task_struct *tsk)
 			posix_cpu_timers_exit_group(tsk);
 
 		/*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * If there is any task waiting for the group exit
 		 * then notify it:
 		 */
 		if (sig->notify_count > 0 && !--sig->notify_count)
+<<<<<<< HEAD
 			wake_up_process(sig->group_exit_task);
 
 		if (tsk == sig->curr_target)
@@ -139,6 +261,39 @@ static void __exit_signal(struct task_struct *tsk)
 
 	sig->nr_threads--;
 	__unhash_process(tsk, group_dead);
+=======
+			wake_up_process(sig->group_exec_task);
+
+		if (tsk == sig->curr_target)
+			sig->curr_target = next_thread(tsk);
+	}
+
+	add_device_randomness((const void*) &tsk->se.sum_exec_runtime,
+			      sizeof(unsigned long long));
+
+	/*
+	 * Accumulate here the counters for all threads as they die. We could
+	 * skip the group leader because it is the last user of signal_struct,
+	 * but we want to avoid the race with thread_group_cputime() which can
+	 * see the empty ->thread_head list.
+	 */
+	task_cputime(tsk, &utime, &stime);
+	write_seqlock(&sig->stats_lock);
+	sig->utime += utime;
+	sig->stime += stime;
+	sig->gtime += task_gtime(tsk);
+	sig->min_flt += tsk->min_flt;
+	sig->maj_flt += tsk->maj_flt;
+	sig->nvcsw += tsk->nvcsw;
+	sig->nivcsw += tsk->nivcsw;
+	sig->inblock += task_io_get_inblock(tsk);
+	sig->oublock += task_io_get_oublock(tsk);
+	task_io_accounting_add(&sig->ioac, &tsk->ioac);
+	sig->sum_sched_runtime += tsk->se.sum_exec_runtime;
+	sig->nr_threads--;
+	__unhash_process(tsk, group_dead);
+	write_sequnlock(&sig->stats_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Do this under ->siglock, we can race with another thread
@@ -149,7 +304,11 @@ static void __exit_signal(struct task_struct *tsk)
 	spin_unlock(&sighand->siglock);
 
 	__cleanup_sighand(sighand);
+<<<<<<< HEAD
 	clear_tsk_thread_flag(tsk,TIF_SIGPENDING);
+=======
+	clear_tsk_thread_flag(tsk, TIF_SIGPENDING);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (group_dead) {
 		flush_sigqueue(&sig->shared_pending);
 		tty_kref_put(tty);
@@ -160,20 +319,43 @@ static void delayed_put_task_struct(struct rcu_head *rhp)
 {
 	struct task_struct *tsk = container_of(rhp, struct task_struct, rcu);
 
+<<<<<<< HEAD
+=======
+	kprobe_flush_task(tsk);
+	rethook_flush_task(tsk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	perf_event_delayed_put(tsk);
 	trace_sched_process_free(tsk);
 	put_task_struct(tsk);
 }
 
+<<<<<<< HEAD
 
 void release_task(struct task_struct * p)
 {
 	struct task_struct *leader;
+=======
+void put_task_struct_rcu_user(struct task_struct *task)
+{
+	if (refcount_dec_and_test(&task->rcu_users))
+		call_rcu(&task->rcu, delayed_put_task_struct);
+}
+
+void __weak release_thread(struct task_struct *dead_task)
+{
+}
+
+void release_task(struct task_struct *p)
+{
+	struct task_struct *leader;
+	struct pid *thread_pid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int zap_leader;
 repeat:
 	/* don't need to get the RCU readlock here - the process is dead and
 	 * can't be modifying its own credentials. But shut RCU-lockdep up */
 	rcu_read_lock();
+<<<<<<< HEAD
 	atomic_dec(&__task_cred(p)->user->processes);
 	rcu_read_unlock();
 
@@ -181,6 +363,16 @@ repeat:
 
 	write_lock_irq(&tasklist_lock);
 	ptrace_release_task(p);
+=======
+	dec_rlimit_ucounts(task_ucounts(p), UCOUNT_RLIMIT_NPROC, 1);
+	rcu_read_unlock();
+
+	cgroup_release(p);
+
+	write_lock_irq(&tasklist_lock);
+	ptrace_release_task(p);
+	thread_pid = get_pid(p->thread_pid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__exit_signal(p);
 
 	/*
@@ -190,7 +382,12 @@ repeat:
 	 */
 	zap_leader = 0;
 	leader = p->group_leader;
+<<<<<<< HEAD
 	if (leader != p && thread_group_empty(leader) && leader->exit_state == EXIT_ZOMBIE) {
+=======
+	if (leader != p && thread_group_empty(leader)
+			&& leader->exit_state == EXIT_ZOMBIE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If we were the last child thread and the leader has
 		 * exited already, and the leader's parent ignores SIGCHLD,
@@ -202,14 +399,23 @@ repeat:
 	}
 
 	write_unlock_irq(&tasklist_lock);
+<<<<<<< HEAD
 	release_thread(p);
 	call_rcu(&p->rcu, delayed_put_task_struct);
+=======
+	seccomp_filter_release(p);
+	proc_flush_pid(thread_pid);
+	put_pid(thread_pid);
+	release_thread(p);
+	put_task_struct_rcu_user(p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = leader;
 	if (unlikely(zap_leader))
 		goto repeat;
 }
 
+<<<<<<< HEAD
 /*
  * This checks not only the pgrp, but falls back on the pid if no
  * satisfactory pgrp is found. I dunno - gdb doesn't work correctly
@@ -230,6 +436,36 @@ struct pid *session_of_pgrp(struct pid *pgrp)
 
 	return sid;
 }
+=======
+int rcuwait_wake_up(struct rcuwait *w)
+{
+	int ret = 0;
+	struct task_struct *task;
+
+	rcu_read_lock();
+
+	/*
+	 * Order condition vs @task, such that everything prior to the load
+	 * of @task is visible. This is the condition as to why the user called
+	 * rcuwait_wake() in the first place. Pairs with set_current_state()
+	 * barrier (A) in rcuwait_wait_event().
+	 *
+	 *    WAIT                WAKE
+	 *    [S] tsk = current	  [S] cond = true
+	 *        MB (A)	      MB (B)
+	 *    [L] cond		  [L] tsk
+	 */
+	smp_mb(); /* (B) */
+
+	task = rcu_dereference(w->task);
+	if (task)
+		ret = wake_up_process(task);
+	rcu_read_unlock();
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(rcuwait_wake_up);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Determine if a process group is "orphaned", according to the POSIX
@@ -239,7 +475,12 @@ struct pid *session_of_pgrp(struct pid *pgrp)
  *
  * "I ask you, have you ever known what it is to be an orphan?"
  */
+<<<<<<< HEAD
 static int will_become_orphaned_pgrp(struct pid *pgrp, struct task_struct *ignored_task)
+=======
+static int will_become_orphaned_pgrp(struct pid *pgrp,
+					struct task_struct *ignored_task)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct task_struct *p;
 
@@ -292,9 +533,15 @@ kill_orphaned_pgrp(struct task_struct *tsk, struct task_struct *parent)
 	struct task_struct *ignored_task = tsk;
 
 	if (!parent)
+<<<<<<< HEAD
 		 /* exit: our father is in a different pgrp than
 		  * we are and we were the only connection outside.
 		  */
+=======
+		/* exit: our father is in a different pgrp than
+		 * we are and we were the only connection outside.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		parent = tsk->real_parent;
 	else
 		/* reparent: our child is in a different pgrp than
@@ -311,6 +558,7 @@ kill_orphaned_pgrp(struct task_struct *tsk, struct task_struct *parent)
 	}
 }
 
+<<<<<<< HEAD
 /**
  * reparent_to_kthreadd - Reparent the calling kernel thread to kthreadd
  *
@@ -549,6 +797,52 @@ void exit_files(struct task_struct *tsk)
 }
 
 #ifdef CONFIG_MM_OWNER
+=======
+static void coredump_task_exit(struct task_struct *tsk)
+{
+	struct core_state *core_state;
+
+	/*
+	 * Serialize with any possible pending coredump.
+	 * We must hold siglock around checking core_state
+	 * and setting PF_POSTCOREDUMP.  The core-inducing thread
+	 * will increment ->nr_threads for each thread in the
+	 * group without PF_POSTCOREDUMP set.
+	 */
+	spin_lock_irq(&tsk->sighand->siglock);
+	tsk->flags |= PF_POSTCOREDUMP;
+	core_state = tsk->signal->core_state;
+	spin_unlock_irq(&tsk->sighand->siglock);
+
+	/* The vhost_worker does not particpate in coredumps */
+	if (core_state &&
+	    ((tsk->flags & (PF_IO_WORKER | PF_USER_WORKER)) != PF_USER_WORKER)) {
+		struct core_thread self;
+
+		self.task = current;
+		if (self.task->flags & PF_SIGNALED)
+			self.next = xchg(&core_state->dumper.next, &self);
+		else
+			self.task = NULL;
+		/*
+		 * Implies mb(), the result of xchg() must be visible
+		 * to core_state->dumper.
+		 */
+		if (atomic_dec_and_test(&core_state->nr_threads))
+			complete(&core_state->startup);
+
+		for (;;) {
+			set_current_state(TASK_UNINTERRUPTIBLE|TASK_FREEZABLE);
+			if (!self.task) /* see coredump_finish() */
+				break;
+			schedule();
+		}
+		__set_current_state(TASK_RUNNING);
+	}
+}
+
+#ifdef CONFIG_MEMCG
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A task is exiting.   If it owned this mm, find a new owner for the mm.
  */
@@ -569,7 +863,11 @@ retry:
 	 * freed task structure.
 	 */
 	if (atomic_read(&mm->mm_users) <= 1) {
+<<<<<<< HEAD
 		mm->owner = NULL;
+=======
+		WRITE_ONCE(mm->owner, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -591,6 +889,7 @@ retry:
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Search through everything else. We should not get
 	 * here often
 	 */
@@ -599,13 +898,31 @@ retry:
 			goto assign_new_owner;
 	} while_each_thread(g, c);
 
+=======
+	 * Search through everything else, we should not get here often.
+	 */
+	for_each_process(g) {
+		if (g->flags & PF_KTHREAD)
+			continue;
+		for_each_thread(g, c) {
+			if (c->mm == mm)
+				goto assign_new_owner;
+			if (c->mm)
+				break;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_unlock(&tasklist_lock);
 	/*
 	 * We found no owner yet mm_users > 1: this implies that we are
 	 * most likely racing with swapoff (try_to_unuse()) or /proc or
 	 * ptrace or page migration (get_task_mm()).  Mark owner as NULL.
 	 */
+<<<<<<< HEAD
 	mm->owner = NULL;
+=======
+	WRITE_ONCE(mm->owner, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 assign_new_owner:
@@ -626,16 +943,26 @@ assign_new_owner:
 		put_task_struct(c);
 		goto retry;
 	}
+<<<<<<< HEAD
 	mm->owner = c;
 	task_unlock(c);
 	put_task_struct(c);
 }
 #endif /* CONFIG_MM_OWNER */
+=======
+	WRITE_ONCE(mm->owner, c);
+	lru_gen_migrate_mm(mm);
+	task_unlock(c);
+	put_task_struct(c);
+}
+#endif /* CONFIG_MEMCG */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Turn us into a lazy TLB process if we
  * aren't already..
  */
+<<<<<<< HEAD
 static void exit_mm(struct task_struct * tsk)
 {
 	struct mm_struct *mm = tsk->mm;
@@ -690,6 +1017,84 @@ static void exit_mm(struct task_struct * tsk)
 	mm_released = mmput(mm);
 	if (mm_released)
 		set_tsk_thread_flag(tsk, TIF_MM_RELEASED);
+=======
+static void exit_mm(void)
+{
+	struct mm_struct *mm = current->mm;
+
+	exit_mm_release(current, mm);
+	if (!mm)
+		return;
+	mmap_read_lock(mm);
+	mmgrab_lazy_tlb(mm);
+	BUG_ON(mm != current->active_mm);
+	/* more a memory barrier than a real lock */
+	task_lock(current);
+	/*
+	 * When a thread stops operating on an address space, the loop
+	 * in membarrier_private_expedited() may not observe that
+	 * tsk->mm, and the loop in membarrier_global_expedited() may
+	 * not observe a MEMBARRIER_STATE_GLOBAL_EXPEDITED
+	 * rq->membarrier_state, so those would not issue an IPI.
+	 * Membarrier requires a memory barrier after accessing
+	 * user-space memory, before clearing tsk->mm or the
+	 * rq->membarrier_state.
+	 */
+	smp_mb__after_spinlock();
+	local_irq_disable();
+	current->mm = NULL;
+	membarrier_update_current_mm(NULL);
+	enter_lazy_tlb(mm, current);
+	local_irq_enable();
+	task_unlock(current);
+	mmap_read_unlock(mm);
+	mm_update_next_owner(mm);
+	mmput(mm);
+	if (test_thread_flag(TIF_MEMDIE))
+		exit_oom_victim();
+}
+
+static struct task_struct *find_alive_thread(struct task_struct *p)
+{
+	struct task_struct *t;
+
+	for_each_thread(p, t) {
+		if (!(t->flags & PF_EXITING))
+			return t;
+	}
+	return NULL;
+}
+
+static struct task_struct *find_child_reaper(struct task_struct *father,
+						struct list_head *dead)
+	__releases(&tasklist_lock)
+	__acquires(&tasklist_lock)
+{
+	struct pid_namespace *pid_ns = task_active_pid_ns(father);
+	struct task_struct *reaper = pid_ns->child_reaper;
+	struct task_struct *p, *n;
+
+	if (likely(reaper != father))
+		return reaper;
+
+	reaper = find_alive_thread(father);
+	if (reaper) {
+		pid_ns->child_reaper = reaper;
+		return reaper;
+	}
+
+	write_unlock_irq(&tasklist_lock);
+
+	list_for_each_entry_safe(p, n, dead, ptrace_entry) {
+		list_del_init(&p->ptrace_entry);
+		release_task(p);
+	}
+
+	zap_pid_ns_processes(pid_ns);
+	write_lock_irq(&tasklist_lock);
+
+	return father;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -699,6 +1104,7 @@ static void exit_mm(struct task_struct * tsk)
  *    child_subreaper for its children (like a service manager)
  * 3. give it to the init process (PID 1) in our pid namespace
  */
+<<<<<<< HEAD
 static struct task_struct *find_new_reaper(struct task_struct *father)
 	__releases(&tasklist_lock)
 	__acquires(&tasklist_lock)
@@ -757,6 +1163,41 @@ static struct task_struct *find_new_reaper(struct task_struct *father)
 	}
 
 	return pid_ns->child_reaper;
+=======
+static struct task_struct *find_new_reaper(struct task_struct *father,
+					   struct task_struct *child_reaper)
+{
+	struct task_struct *thread, *reaper;
+
+	thread = find_alive_thread(father);
+	if (thread)
+		return thread;
+
+	if (father->signal->has_child_subreaper) {
+		unsigned int ns_level = task_pid(father)->level;
+		/*
+		 * Find the first ->is_child_subreaper ancestor in our pid_ns.
+		 * We can't check reaper != child_reaper to ensure we do not
+		 * cross the namespaces, the exiting parent could be injected
+		 * by setns() + fork().
+		 * We check pid->level, this is slightly more efficient than
+		 * task_active_pid_ns(reaper) != task_active_pid_ns(father).
+		 */
+		for (reaper = father->real_parent;
+		     task_pid(reaper)->level == ns_level;
+		     reaper = reaper->real_parent) {
+			if (reaper == &init_task)
+				break;
+			if (!reaper->signal->is_child_subreaper)
+				continue;
+			thread = find_alive_thread(reaper);
+			if (thread)
+				return thread;
+		}
+	}
+
+	return child_reaper;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -765,6 +1206,7 @@ static struct task_struct *find_new_reaper(struct task_struct *father)
 static void reparent_leader(struct task_struct *father, struct task_struct *p,
 				struct list_head *dead)
 {
+<<<<<<< HEAD
 	list_move_tail(&p->sibling, &p->real_parent->children);
 	/*
 	 * If this is a threaded reparent there is no need to
@@ -786,18 +1228,31 @@ static void reparent_leader(struct task_struct *father, struct task_struct *p,
 	if (p->exit_state == EXIT_DEAD)
 		return;
 
+=======
+	if (unlikely(p->exit_state == EXIT_DEAD))
+		return;
+
+	/* We don't want people slaying init. */
+	p->exit_signal = SIGCHLD;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If it has exited notify the new parent about this child's death. */
 	if (!p->ptrace &&
 	    p->exit_state == EXIT_ZOMBIE && thread_group_empty(p)) {
 		if (do_notify_parent(p, p->exit_signal)) {
 			p->exit_state = EXIT_DEAD;
+<<<<<<< HEAD
 			list_move_tail(&p->sibling, dead);
+=======
+			list_add(&p->ptrace_entry, dead);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	kill_orphaned_pgrp(p, father);
 }
 
+<<<<<<< HEAD
 static void forget_original_parent(struct task_struct *father)
 {
 	struct task_struct *p, *n, *reaper;
@@ -833,6 +1288,49 @@ static void forget_original_parent(struct task_struct *father)
 		list_del_init(&p->sibling);
 		release_task(p);
 	}
+=======
+/*
+ * This does two things:
+ *
+ * A.  Make init inherit all the child processes
+ * B.  Check to see if any process groups have become orphaned
+ *	as a result of our exiting, and if they have any stopped
+ *	jobs, send them a SIGHUP and then a SIGCONT.  (POSIX 3.2.2.2)
+ */
+static void forget_original_parent(struct task_struct *father,
+					struct list_head *dead)
+{
+	struct task_struct *p, *t, *reaper;
+
+	if (unlikely(!list_empty(&father->ptraced)))
+		exit_ptrace(father, dead);
+
+	/* Can drop and reacquire tasklist_lock */
+	reaper = find_child_reaper(father, dead);
+	if (list_empty(&father->children))
+		return;
+
+	reaper = find_new_reaper(father, reaper);
+	list_for_each_entry(p, &father->children, sibling) {
+		for_each_thread(p, t) {
+			RCU_INIT_POINTER(t->real_parent, reaper);
+			BUG_ON((!t->ptrace) != (rcu_access_pointer(t->parent) == father));
+			if (likely(!t->ptrace))
+				t->parent = t->real_parent;
+			if (t->pdeath_signal)
+				group_send_sig_info(t->pdeath_signal,
+						    SEND_SIG_NOINFO, t,
+						    PIDTYPE_TGID);
+		}
+		/*
+		 * If this is a threaded reparent there is no need to
+		 * notify anyone anything has happened.
+		 */
+		if (!same_thread_group(reaper, father))
+			reparent_leader(father, p, dead);
+	}
+	list_splice_tail_init(&father->children, &reaper->children);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -842,6 +1340,7 @@ static void forget_original_parent(struct task_struct *father)
 static void exit_notify(struct task_struct *tsk, int group_dead)
 {
 	bool autoreap;
+<<<<<<< HEAD
 
 	/*
 	 * This does two things:
@@ -858,6 +1357,25 @@ static void exit_notify(struct task_struct *tsk, int group_dead)
 	if (group_dead)
 		kill_orphaned_pgrp(tsk->group_leader, NULL);
 
+=======
+	struct task_struct *p, *n;
+	LIST_HEAD(dead);
+
+	write_lock_irq(&tasklist_lock);
+	forget_original_parent(tsk, &dead);
+
+	if (group_dead)
+		kill_orphaned_pgrp(tsk->group_leader, NULL);
+
+	tsk->exit_state = EXIT_ZOMBIE;
+	/*
+	 * sub-thread or delay_group_leader(), wake up the
+	 * PIDFD_THREAD waiters.
+	 */
+	if (!thread_group_empty(tsk))
+		do_notify_pidfd(tsk);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(tsk->ptrace)) {
 		int sig = thread_group_leader(tsk) &&
 				thread_group_empty(tsk) &&
@@ -871,6 +1389,7 @@ static void exit_notify(struct task_struct *tsk, int group_dead)
 		autoreap = true;
 	}
 
+<<<<<<< HEAD
 	tsk->exit_state = autoreap ? EXIT_DEAD : EXIT_ZOMBIE;
 
 	/* mt-exec, de_thread() is waiting for group leader */
@@ -881,6 +1400,22 @@ static void exit_notify(struct task_struct *tsk, int group_dead)
 	/* If the process is dead, release it - nobody will wait for it */
 	if (autoreap)
 		release_task(tsk);
+=======
+	if (autoreap) {
+		tsk->exit_state = EXIT_DEAD;
+		list_add(&tsk->ptrace_entry, &dead);
+	}
+
+	/* mt-exec, de_thread() is waiting for group leader */
+	if (unlikely(tsk->signal->notify_count < 0))
+		wake_up_process(tsk->signal->group_exec_task);
+	write_unlock_irq(&tasklist_lock);
+
+	list_for_each_entry_safe(p, n, &dead, ptrace_entry) {
+		list_del_init(&p->ptrace_entry);
+		release_task(p);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_DEBUG_STACK_USAGE
@@ -897,9 +1432,14 @@ static void check_stack_usage(void)
 
 	spin_lock(&low_water_lock);
 	if (free < lowest_to_date) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s used greatest stack depth: %lu bytes "
 				"left\n",
 				current->comm, free);
+=======
+		pr_info("%s (%d) used greatest stack depth: %lu bytes left\n",
+			current->comm, task_pid_nr(current), free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lowest_to_date = free;
 	}
 	spin_unlock(&low_water_lock);
@@ -908,11 +1448,32 @@ static void check_stack_usage(void)
 static inline void check_stack_usage(void) {}
 #endif
 
+<<<<<<< HEAD
 void do_exit(long code)
+=======
+static void synchronize_group_exit(struct task_struct *tsk, long code)
+{
+	struct sighand_struct *sighand = tsk->sighand;
+	struct signal_struct *signal = tsk->signal;
+
+	spin_lock_irq(&sighand->siglock);
+	signal->quick_threads--;
+	if ((signal->quick_threads == 0) &&
+	    !(signal->flags & SIGNAL_GROUP_EXIT)) {
+		signal->flags = SIGNAL_GROUP_EXIT;
+		signal->group_exit_code = code;
+		signal->group_stop_count = 0;
+	}
+	spin_unlock_irq(&sighand->siglock);
+}
+
+void __noreturn do_exit(long code)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct task_struct *tsk = current;
 	int group_dead;
 
+<<<<<<< HEAD
 	profile_task_exit(tsk);
 
 	WARN_ON(blk_needs_flush_plug(tsk));
@@ -984,6 +1545,39 @@ void do_exit(long code)
 	if (group_dead) {
 		hrtimer_cancel(&tsk->signal->real_timer);
 		exit_itimers(tsk->signal);
+=======
+	WARN_ON(irqs_disabled());
+
+	synchronize_group_exit(tsk, code);
+
+	WARN_ON(tsk->plug);
+
+	kcov_task_exit(tsk);
+	kmsan_task_exit(tsk);
+
+	coredump_task_exit(tsk);
+	ptrace_event(PTRACE_EVENT_EXIT, code);
+	user_events_exit(tsk);
+
+	io_uring_files_cancel();
+	exit_signals(tsk);  /* sets PF_EXITING */
+
+	acct_update_integrals(tsk);
+	group_dead = atomic_dec_and_test(&tsk->signal->live);
+	if (group_dead) {
+		/*
+		 * If the last thread of global init has exited, panic
+		 * immediately to get a useable coredump.
+		 */
+		if (unlikely(is_global_init(tsk)))
+			panic("Attempted to kill init! exitcode=0x%08x\n",
+				tsk->signal->group_exit_code ?: (int)code);
+
+#ifdef CONFIG_POSIX_TIMERS
+		hrtimer_cancel(&tsk->signal->real_timer);
+		exit_itimers(tsk);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tsk->mm)
 			setmax_mm_hiwater_rss(&tsk->signal->maxrss, tsk->mm);
 	}
@@ -995,7 +1589,11 @@ void do_exit(long code)
 	tsk->exit_code = code;
 	taskstats_exit(tsk, group_dead);
 
+<<<<<<< HEAD
 	exit_mm(tsk);
+=======
+	exit_mm();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (group_dead)
 		acct_process();
@@ -1005,8 +1603,16 @@ void do_exit(long code)
 	exit_shm(tsk);
 	exit_files(tsk);
 	exit_fs(tsk);
+<<<<<<< HEAD
 	check_stack_usage();
 	exit_thread();
+=======
+	if (group_dead)
+		disassociate_ctty(1);
+	exit_task_namespaces(tsk);
+	exit_task_work(tsk);
+	exit_thread(tsk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Flush inherited counters to the parent - before the parent
@@ -1016,6 +1622,7 @@ void do_exit(long code)
 	 */
 	perf_event_exit_task(tsk);
 
+<<<<<<< HEAD
 	cgroup_exit(tsk, 1);
 
 	if (group_dead)
@@ -1024,10 +1631,15 @@ void do_exit(long code)
 	module_put(task_thread_info(tsk)->exec_domain->module);
 
 	proc_exit_connector(tsk);
+=======
+	sched_autogroup_exit_task(tsk);
+	cgroup_exit(tsk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * FIXME: do that only when needed, using sched_exit tracepoint
 	 */
+<<<<<<< HEAD
 	ptrace_put_breakpoints(tsk);
 
 	exit_notify(tsk, group_dead);
@@ -1037,6 +1649,14 @@ void do_exit(long code)
 	tsk->mempolicy = NULL;
 	task_unlock(tsk);
 #endif
+=======
+	flush_ptrace_hw_breakpoint(tsk);
+
+	exit_tasks_rcu_start();
+	exit_notify(tsk, group_dead);
+	proc_exit_connector(tsk);
+	mpol_put_task_policy(tsk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_FUTEX
 	if (unlikely(current->pi_state_cache))
 		kfree(current->pi_state_cache);
@@ -1044,6 +1664,7 @@ void do_exit(long code)
 	/*
 	 * Make sure we are holding no locks:
 	 */
+<<<<<<< HEAD
 	debug_check_no_locks_held(tsk);
 	/*
 	 * We can do this unlocked here. The futex code uses this flag
@@ -1051,19 +1672,34 @@ void do_exit(long code)
 	 * or not. In the worst case it loops once more.
 	 */
 	tsk->flags |= PF_EXITPIDONE;
+=======
+	debug_check_no_locks_held();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tsk->io_context)
 		exit_io_context(tsk);
 
 	if (tsk->splice_pipe)
+<<<<<<< HEAD
 		__free_pipe_info(tsk->splice_pipe);
 
 	validate_creds_for_do_exit(tsk);
 
+=======
+		free_pipe_info(tsk->splice_pipe);
+
+	if (tsk->task_frag.page)
+		put_page(tsk->task_frag.page);
+
+	exit_task_stack_account(tsk);
+
+	check_stack_usage();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	preempt_disable();
 	if (tsk->nr_dirtied)
 		__this_cpu_add(dirty_throttle_leaks, tsk->nr_dirtied);
 	exit_rcu();
+<<<<<<< HEAD
 
 	/*
 	 * The setting of TASK_RUNNING by try_to_wake_up() may be delayed
@@ -1102,6 +1738,74 @@ void complete_and_exit(struct completion *comp, long code)
 
 EXPORT_SYMBOL(complete_and_exit);
 
+=======
+	exit_tasks_rcu_finish();
+
+	lockdep_free_task(tsk);
+	do_task_dead();
+}
+
+void __noreturn make_task_dead(int signr)
+{
+	/*
+	 * Take the task off the cpu after something catastrophic has
+	 * happened.
+	 *
+	 * We can get here from a kernel oops, sometimes with preemption off.
+	 * Start by checking for critical errors.
+	 * Then fix up important state like USER_DS and preemption.
+	 * Then do everything else.
+	 */
+	struct task_struct *tsk = current;
+	unsigned int limit;
+
+	if (unlikely(in_interrupt()))
+		panic("Aiee, killing interrupt handler!");
+	if (unlikely(!tsk->pid))
+		panic("Attempted to kill the idle task!");
+
+	if (unlikely(irqs_disabled())) {
+		pr_info("note: %s[%d] exited with irqs disabled\n",
+			current->comm, task_pid_nr(current));
+		local_irq_enable();
+	}
+	if (unlikely(in_atomic())) {
+		pr_info("note: %s[%d] exited with preempt_count %d\n",
+			current->comm, task_pid_nr(current),
+			preempt_count());
+		preempt_count_set(PREEMPT_ENABLED);
+	}
+
+	/*
+	 * Every time the system oopses, if the oops happens while a reference
+	 * to an object was held, the reference leaks.
+	 * If the oops doesn't also leak memory, repeated oopsing can cause
+	 * reference counters to wrap around (if they're not using refcount_t).
+	 * This means that repeated oopsing can make unexploitable-looking bugs
+	 * exploitable through repeated oopsing.
+	 * To make sure this can't happen, place an upper bound on how often the
+	 * kernel may oops without panic().
+	 */
+	limit = READ_ONCE(oops_limit);
+	if (atomic_inc_return(&oops_count) >= limit && limit)
+		panic("Oopsed too often (kernel.oops_limit is %d)", limit);
+
+	/*
+	 * We're taking recursive faults here in make_task_dead. Safest is to just
+	 * leave this task alone and wait for reboot.
+	 */
+	if (unlikely(tsk->flags & PF_EXITING)) {
+		pr_alert("Fixing recursive fault but reboot is needed!\n");
+		futex_exit_recursive(tsk);
+		tsk->exit_state = EXIT_DEAD;
+		refcount_inc(&tsk->rcu_users);
+		do_task_dead();
+	}
+
+	do_exit(signr);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SYSCALL_DEFINE1(exit, int, error_code)
 {
 	do_exit((error_code&0xff)<<8);
@@ -1111,11 +1815,16 @@ SYSCALL_DEFINE1(exit, int, error_code)
  * Take down every thread in the group.  This is called by fatal signals
  * as well as by sys_exit_group (below).
  */
+<<<<<<< HEAD
 void
+=======
+void __noreturn
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 do_group_exit(int exit_code)
 {
 	struct signal_struct *sig = current->signal;
 
+<<<<<<< HEAD
 	BUG_ON(exit_code & 0x80); /* core dumps don't get here */
 
 	if (signal_group_exit(sig))
@@ -1126,6 +1835,21 @@ do_group_exit(int exit_code)
 		if (signal_group_exit(sig))
 			/* Another thread got here before we took the lock.  */
 			exit_code = sig->group_exit_code;
+=======
+	if (sig->flags & SIGNAL_GROUP_EXIT)
+		exit_code = sig->group_exit_code;
+	else if (sig->group_exec_task)
+		exit_code = 0;
+	else {
+		struct sighand_struct *const sighand = current->sighand;
+
+		spin_lock_irq(&sighand->siglock);
+		if (sig->flags & SIGNAL_GROUP_EXIT)
+			/* Another thread got here before we took the lock.  */
+			exit_code = sig->group_exit_code;
+		else if (sig->group_exec_task)
+			exit_code = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {
 			sig->group_exit_code = exit_code;
 			sig->flags = SIGNAL_GROUP_EXIT;
@@ -1150,6 +1874,7 @@ SYSCALL_DEFINE1(exit_group, int, error_code)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct wait_opts {
 	enum pid_type		wo_type;
 	int			wo_flags;
@@ -1171,12 +1896,15 @@ struct pid *task_pid_type(struct task_struct *task, enum pid_type type)
 	return task->pids[type].pid;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int eligible_pid(struct wait_opts *wo, struct task_struct *p)
 {
 	return	wo->wo_type == PIDTYPE_MAX ||
 		task_pid_type(p, wo->wo_type) == wo->wo_pid;
 }
 
+<<<<<<< HEAD
 static int eligible_child(struct wait_opts *wo, struct task_struct *p)
 {
 	if (!eligible_pid(wo, p))
@@ -1188,11 +1916,36 @@ static int eligible_child(struct wait_opts *wo, struct task_struct *p)
 	 * using a signal other than SIGCHLD.) */
 	if (((p->exit_signal != SIGCHLD) ^ !!(wo->wo_flags & __WCLONE))
 	    && !(wo->wo_flags & __WALL))
+=======
+static int
+eligible_child(struct wait_opts *wo, bool ptrace, struct task_struct *p)
+{
+	if (!eligible_pid(wo, p))
+		return 0;
+
+	/*
+	 * Wait for all children (clone and not) if __WALL is set or
+	 * if it is traced by us.
+	 */
+	if (ptrace || (wo->wo_flags & __WALL))
+		return 1;
+
+	/*
+	 * Otherwise, wait for clone children *only* if __WCLONE is set;
+	 * otherwise, wait for non-clone children *only*.
+	 *
+	 * Note: a "clone" child here is one that reports to its parent
+	 * using a signal other than SIGCHLD, or a non-leader thread which
+	 * we can only see if it is traced by us.
+	 */
+	if ((p->exit_signal != SIGCHLD) ^ !!(wo->wo_flags & __WCLONE))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return 1;
 }
 
+<<<<<<< HEAD
 static int wait_noreap_copyout(struct wait_opts *wo, struct task_struct *p,
 				pid_t pid, uid_t uid, int why, int status)
 {
@@ -1221,6 +1974,8 @@ static int wait_noreap_copyout(struct wait_opts *wo, struct task_struct *p,
 	return retval;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Handle sys_wait4 work for one task in state EXIT_ZOMBIE.  We hold
  * read_lock(&tasklist_lock) on entry.  If we return zero, we still hold
@@ -1229,16 +1984,24 @@ static int wait_noreap_copyout(struct wait_opts *wo, struct task_struct *p,
  */
 static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
 {
+<<<<<<< HEAD
 	unsigned long state;
 	int retval, status, traced;
 	pid_t pid = task_pid_vnr(p);
 	uid_t uid = __task_cred(p)->uid;
 	struct siginfo __user *infop;
+=======
+	int state, status;
+	pid_t pid = task_pid_vnr(p);
+	uid_t uid = from_kuid_munged(current_user_ns(), task_uid(p));
+	struct waitid_info *infop;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!likely(wo->wo_flags & WEXITED))
 		return 0;
 
 	if (unlikely(wo->wo_flags & WNOWAIT)) {
+<<<<<<< HEAD
 		int exit_code = p->exit_code;
 		int why;
 
@@ -1274,6 +2037,39 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
 		struct signal_struct *sig;
 		unsigned long maxrss;
 		cputime_t tgutime, tgstime;
+=======
+		status = (p->signal->flags & SIGNAL_GROUP_EXIT)
+			? p->signal->group_exit_code : p->exit_code;
+		get_task_struct(p);
+		read_unlock(&tasklist_lock);
+		sched_annotate_sleep();
+		if (wo->wo_rusage)
+			getrusage(p, RUSAGE_BOTH, wo->wo_rusage);
+		put_task_struct(p);
+		goto out_info;
+	}
+	/*
+	 * Move the task's state to DEAD/TRACE, only one thread can do this.
+	 */
+	state = (ptrace_reparented(p) && thread_group_leader(p)) ?
+		EXIT_TRACE : EXIT_DEAD;
+	if (cmpxchg(&p->exit_state, EXIT_ZOMBIE, state) != EXIT_ZOMBIE)
+		return 0;
+	/*
+	 * We own this thread, nobody else can reap it.
+	 */
+	read_unlock(&tasklist_lock);
+	sched_annotate_sleep();
+
+	/*
+	 * Check thread_group_leader() to exclude the traced sub-threads.
+	 */
+	if (state == EXIT_DEAD && thread_group_leader(p)) {
+		struct signal_struct *sig = p->signal;
+		struct signal_struct *psig = current->signal;
+		unsigned long maxrss;
+		u64 tgutime, tgstime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * The resource counters for the group leader are in its
@@ -1283,6 +2079,7 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
 		 * accumulate in the parent's signal_struct c* fields.
 		 *
 		 * We don't bother to take a lock here to protect these
+<<<<<<< HEAD
 		 * p->signal fields, because they are only touched by
 		 * __exit_signal, which runs with tasklist_lock
 		 * write-locked anyway, and so is excluded here.  We do
@@ -1301,6 +2098,23 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
 		psig->cutime += tgutime + sig->cutime;
 		psig->cstime += tgstime + sig->cstime;
 		psig->cgtime += p->gtime + sig->gtime + sig->cgtime;
+=======
+		 * p->signal fields because the whole thread group is dead
+		 * and nobody can change them.
+		 *
+		 * psig->stats_lock also protects us from our sub-threads
+		 * which can reap other children at the same time.
+		 *
+		 * We use thread_group_cputime_adjusted() to get times for
+		 * the thread group, which consolidates times for all threads
+		 * in the group including the group leader.
+		 */
+		thread_group_cputime_adjusted(p, &tgutime, &tgstime);
+		write_seqlock_irq(&psig->stats_lock);
+		psig->cutime += tgutime + sig->cutime;
+		psig->cstime += tgstime + sig->cstime;
+		psig->cgtime += task_gtime(p) + sig->gtime + sig->cgtime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psig->cmin_flt +=
 			p->min_flt + sig->min_flt + sig->cmin_flt;
 		psig->cmaj_flt +=
@@ -1320,6 +2134,7 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
 			psig->cmaxrss = maxrss;
 		task_io_accounting_add(&psig->ioac, &p->ioac);
 		task_io_accounting_add(&psig->ioac, &sig->ioac);
+<<<<<<< HEAD
 		spin_unlock_irq(&p->real_parent->sighand->siglock);
 	}
 
@@ -1381,13 +2196,58 @@ static int wait_task_zombie(struct wait_opts *wo, struct task_struct *p)
 		release_task(p);
 
 	return retval;
+=======
+		write_sequnlock_irq(&psig->stats_lock);
+	}
+
+	if (wo->wo_rusage)
+		getrusage(p, RUSAGE_BOTH, wo->wo_rusage);
+	status = (p->signal->flags & SIGNAL_GROUP_EXIT)
+		? p->signal->group_exit_code : p->exit_code;
+	wo->wo_stat = status;
+
+	if (state == EXIT_TRACE) {
+		write_lock_irq(&tasklist_lock);
+		/* We dropped tasklist, ptracer could die and untrace */
+		ptrace_unlink(p);
+
+		/* If parent wants a zombie, don't release it now */
+		state = EXIT_ZOMBIE;
+		if (do_notify_parent(p, p->exit_signal))
+			state = EXIT_DEAD;
+		p->exit_state = state;
+		write_unlock_irq(&tasklist_lock);
+	}
+	if (state == EXIT_DEAD)
+		release_task(p);
+
+out_info:
+	infop = wo->wo_info;
+	if (infop) {
+		if ((status & 0x7f) == 0) {
+			infop->cause = CLD_EXITED;
+			infop->status = status >> 8;
+		} else {
+			infop->cause = (status & 0x80) ? CLD_DUMPED : CLD_KILLED;
+			infop->status = status & 0x7f;
+		}
+		infop->pid = pid;
+		infop->uid = uid;
+	}
+
+	return pid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int *task_stopped_code(struct task_struct *p, bool ptrace)
 {
 	if (ptrace) {
+<<<<<<< HEAD
 		if (task_is_stopped_or_traced(p) &&
 		    !(p->jobctl & JOBCTL_LISTENING))
+=======
+		if (task_is_traced(p) && !(p->jobctl & JOBCTL_LISTENING))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return &p->exit_code;
 	} else {
 		if (p->signal->flags & SIGNAL_STOP_STOPPED)
@@ -1417,8 +2277,13 @@ static int *task_stopped_code(struct task_struct *p, bool ptrace)
 static int wait_task_stopped(struct wait_opts *wo,
 				int ptrace, struct task_struct *p)
 {
+<<<<<<< HEAD
 	struct siginfo __user *infop;
 	int retval, exit_code, *p_code, why;
+=======
+	struct waitid_info *infop;
+	int exit_code, *p_code, why;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uid_t uid = 0; /* unneeded, required by compiler */
 	pid_t pid;
 
@@ -1445,7 +2310,11 @@ static int wait_task_stopped(struct wait_opts *wo,
 	if (!unlikely(wo->wo_flags & WNOWAIT))
 		*p_code = 0;
 
+<<<<<<< HEAD
 	uid = task_uid(p);
+=======
+	uid = from_kuid_munged(current_user_ns(), task_uid(p));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unlock_sig:
 	spin_unlock_irq(&p->sighand->siglock);
 	if (!exit_code)
@@ -1462,6 +2331,7 @@ unlock_sig:
 	pid = task_pid_vnr(p);
 	why = ptrace ? CLD_TRAPPED : CLD_STOPPED;
 	read_unlock(&tasklist_lock);
+<<<<<<< HEAD
 
 	if (unlikely(wo->wo_flags & WNOWAIT))
 		return wait_noreap_copyout(wo, p, pid, uid, why, exit_code);
@@ -1490,6 +2360,24 @@ unlock_sig:
 
 	BUG_ON(!retval);
 	return retval;
+=======
+	sched_annotate_sleep();
+	if (wo->wo_rusage)
+		getrusage(p, RUSAGE_BOTH, wo->wo_rusage);
+	put_task_struct(p);
+
+	if (likely(!(wo->wo_flags & WNOWAIT)))
+		wo->wo_stat = (exit_code << 8) | 0x7f;
+
+	infop = wo->wo_info;
+	if (infop) {
+		infop->cause = why;
+		infop->status = exit_code;
+		infop->pid = pid;
+		infop->uid = uid;
+	}
+	return pid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1500,7 +2388,11 @@ unlock_sig:
  */
 static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
 {
+<<<<<<< HEAD
 	int retval;
+=======
+	struct waitid_info *infop;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pid_t pid;
 	uid_t uid;
 
@@ -1518,12 +2410,17 @@ static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
 	}
 	if (!unlikely(wo->wo_flags & WNOWAIT))
 		p->signal->flags &= ~SIGNAL_STOP_CONTINUED;
+<<<<<<< HEAD
 	uid = task_uid(p);
+=======
+	uid = from_kuid_munged(current_user_ns(), task_uid(p));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&p->sighand->siglock);
 
 	pid = task_pid_vnr(p);
 	get_task_struct(p);
 	read_unlock(&tasklist_lock);
+<<<<<<< HEAD
 
 	if (!wo->wo_info) {
 		retval = wo->wo_rusage
@@ -1540,6 +2437,23 @@ static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
 	}
 
 	return retval;
+=======
+	sched_annotate_sleep();
+	if (wo->wo_rusage)
+		getrusage(p, RUSAGE_BOTH, wo->wo_rusage);
+	put_task_struct(p);
+
+	infop = wo->wo_info;
+	if (!infop) {
+		wo->wo_stat = 0xffff;
+	} else {
+		infop->cause = CLD_CONTINUED;
+		infop->pid = pid;
+		infop->uid = uid;
+		infop->status = SIGCONT;
+	}
+	return pid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1549,11 +2463,16 @@ static int wait_task_continued(struct wait_opts *wo, struct task_struct *p)
  * Returns nonzero for a final return, when we have unlocked tasklist_lock.
  * Returns zero if the search for a child should continue;
  * then ->notask_error is 0 if @p is an eligible child,
+<<<<<<< HEAD
  * or another error from security_task_wait(), or still -ECHILD.
+=======
+ * or still -ECHILD.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int wait_consider_task(struct wait_opts *wo, int ptrace,
 				struct task_struct *p)
 {
+<<<<<<< HEAD
 	int ret = eligible_child(wo, p);
 	if (!ret)
 		return ret;
@@ -1599,6 +2518,61 @@ static int wait_consider_task(struct wait_opts *wo, int ptrace,
 		/* we don't reap group leaders with subthreads */
 		if (!delay_group_leader(p))
 			return wait_task_zombie(wo, p);
+=======
+	/*
+	 * We can race with wait_task_zombie() from another thread.
+	 * Ensure that EXIT_ZOMBIE -> EXIT_DEAD/EXIT_TRACE transition
+	 * can't confuse the checks below.
+	 */
+	int exit_state = READ_ONCE(p->exit_state);
+	int ret;
+
+	if (unlikely(exit_state == EXIT_DEAD))
+		return 0;
+
+	ret = eligible_child(wo, ptrace, p);
+	if (!ret)
+		return ret;
+
+	if (unlikely(exit_state == EXIT_TRACE)) {
+		/*
+		 * ptrace == 0 means we are the natural parent. In this case
+		 * we should clear notask_error, debugger will notify us.
+		 */
+		if (likely(!ptrace))
+			wo->notask_error = 0;
+		return 0;
+	}
+
+	if (likely(!ptrace) && unlikely(p->ptrace)) {
+		/*
+		 * If it is traced by its real parent's group, just pretend
+		 * the caller is ptrace_do_wait() and reap this child if it
+		 * is zombie.
+		 *
+		 * This also hides group stop state from real parent; otherwise
+		 * a single stop can be reported twice as group and ptrace stop.
+		 * If a ptracer wants to distinguish these two events for its
+		 * own children it should create a separate process which takes
+		 * the role of real parent.
+		 */
+		if (!ptrace_reparented(p))
+			ptrace = 1;
+	}
+
+	/* slay zombie? */
+	if (exit_state == EXIT_ZOMBIE) {
+		/* we don't reap group leaders with subthreads */
+		if (!delay_group_leader(p)) {
+			/*
+			 * A zombie ptracee is only visible to its ptracer.
+			 * Notification and reaping will be cascaded to the
+			 * real parent when the ptracer detaches.
+			 */
+			if (unlikely(ptrace) || likely(!p->ptrace))
+				return wait_task_zombie(wo, p);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Allow access to stopped/continued state via zombie by
@@ -1624,6 +2598,7 @@ static int wait_consider_task(struct wait_opts *wo, int ptrace,
 			wo->notask_error = 0;
 	} else {
 		/*
+<<<<<<< HEAD
 		 * If @p is ptraced by a task in its real parent's group,
 		 * hide group stop/continued state when looking at @p as
 		 * the real parent; otherwise, a single stop can be
@@ -1637,6 +2612,8 @@ static int wait_consider_task(struct wait_opts *wo, int ptrace,
 			return 0;
 
 		/*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * @p is alive and it's gonna stop, continue or exit, so
 		 * there always is something to wait for.
 		 */
@@ -1666,7 +2643,11 @@ static int wait_consider_task(struct wait_opts *wo, int ptrace,
  * Returns nonzero for a final return, when we have unlocked tasklist_lock.
  * Returns zero if the search for a child should continue; then
  * ->notask_error is 0 if there were any eligible children,
+<<<<<<< HEAD
  * or another error from security_task_wait(), or still -ECHILD.
+=======
+ * or still -ECHILD.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int do_wait_thread(struct wait_opts *wo, struct task_struct *tsk)
 {
@@ -1674,6 +2655,10 @@ static int do_wait_thread(struct wait_opts *wo, struct task_struct *tsk)
 
 	list_for_each_entry(p, &tsk->children, sibling) {
 		int ret = wait_consider_task(wo, 0, p);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			return ret;
 	}
@@ -1687,6 +2672,10 @@ static int ptrace_do_wait(struct wait_opts *wo, struct task_struct *tsk)
 
 	list_for_each_entry(p, &tsk->ptraced, ptrace_entry) {
 		int ret = wait_consider_task(wo, 1, p);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			return ret;
 	}
@@ -1694,13 +2683,29 @@ static int ptrace_do_wait(struct wait_opts *wo, struct task_struct *tsk)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int child_wait_callback(wait_queue_t *wait, unsigned mode,
+=======
+bool pid_child_should_wake(struct wait_opts *wo, struct task_struct *p)
+{
+	if (!eligible_pid(wo, p))
+		return false;
+
+	if ((wo->wo_flags & __WNOTHREAD) && wo->child_wait.private != p->parent)
+		return false;
+
+	return true;
+}
+
+static int child_wait_callback(wait_queue_entry_t *wait, unsigned mode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				int sync, void *key)
 {
 	struct wait_opts *wo = container_of(wait, struct wait_opts,
 						child_wait);
 	struct task_struct *p = key;
 
+<<<<<<< HEAD
 	if (!eligible_pid(wo, p))
 		return 0;
 
@@ -1708,17 +2713,117 @@ static int child_wait_callback(wait_queue_t *wait, unsigned mode,
 		return 0;
 
 	return default_wake_function(wait, mode, sync, key);
+=======
+	if (pid_child_should_wake(wo, p))
+		return default_wake_function(wait, mode, sync, key);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __wake_up_parent(struct task_struct *p, struct task_struct *parent)
 {
 	__wake_up_sync_key(&parent->signal->wait_chldexit,
+<<<<<<< HEAD
 				TASK_INTERRUPTIBLE, 1, p);
+=======
+			   TASK_INTERRUPTIBLE, p);
+}
+
+static bool is_effectively_child(struct wait_opts *wo, bool ptrace,
+				 struct task_struct *target)
+{
+	struct task_struct *parent =
+		!ptrace ? target->real_parent : target->parent;
+
+	return current == parent || (!(wo->wo_flags & __WNOTHREAD) &&
+				     same_thread_group(current, parent));
+}
+
+/*
+ * Optimization for waiting on PIDTYPE_PID. No need to iterate through child
+ * and tracee lists to find the target task.
+ */
+static int do_wait_pid(struct wait_opts *wo)
+{
+	bool ptrace;
+	struct task_struct *target;
+	int retval;
+
+	ptrace = false;
+	target = pid_task(wo->wo_pid, PIDTYPE_TGID);
+	if (target && is_effectively_child(wo, ptrace, target)) {
+		retval = wait_consider_task(wo, ptrace, target);
+		if (retval)
+			return retval;
+	}
+
+	ptrace = true;
+	target = pid_task(wo->wo_pid, PIDTYPE_PID);
+	if (target && target->ptrace &&
+	    is_effectively_child(wo, ptrace, target)) {
+		retval = wait_consider_task(wo, ptrace, target);
+		if (retval)
+			return retval;
+	}
+
+	return 0;
+}
+
+long __do_wait(struct wait_opts *wo)
+{
+	long retval;
+
+	/*
+	 * If there is nothing that can match our criteria, just get out.
+	 * We will clear ->notask_error to zero if we see any child that
+	 * might later match our criteria, even if we are not able to reap
+	 * it yet.
+	 */
+	wo->notask_error = -ECHILD;
+	if ((wo->wo_type < PIDTYPE_MAX) &&
+	   (!wo->wo_pid || !pid_has_task(wo->wo_pid, wo->wo_type)))
+		goto notask;
+
+	read_lock(&tasklist_lock);
+
+	if (wo->wo_type == PIDTYPE_PID) {
+		retval = do_wait_pid(wo);
+		if (retval)
+			return retval;
+	} else {
+		struct task_struct *tsk = current;
+
+		do {
+			retval = do_wait_thread(wo, tsk);
+			if (retval)
+				return retval;
+
+			retval = ptrace_do_wait(wo, tsk);
+			if (retval)
+				return retval;
+
+			if (wo->wo_flags & __WNOTHREAD)
+				break;
+		} while_each_thread(current, tsk);
+	}
+	read_unlock(&tasklist_lock);
+
+notask:
+	retval = wo->notask_error;
+	if (!retval && !(wo->wo_flags & WNOHANG))
+		return -ERESTARTSYS;
+
+	return retval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static long do_wait(struct wait_opts *wo)
 {
+<<<<<<< HEAD
 	struct task_struct *tsk;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval;
 
 	trace_sched_process_wait(wo->wo_pid);
@@ -1726,6 +2831,7 @@ static long do_wait(struct wait_opts *wo)
 	init_waitqueue_func_entry(&wo->child_wait, child_wait_callback);
 	wo->child_wait.private = current;
 	add_wait_queue(&current->signal->wait_chldexit, &wo->child_wait);
+<<<<<<< HEAD
 repeat:
 	/*
 	 * If there is nothing that can match our critiera just get out.
@@ -1765,11 +2871,25 @@ notask:
 		}
 	}
 end:
+=======
+
+	do {
+		set_current_state(TASK_INTERRUPTIBLE);
+		retval = __do_wait(wo);
+		if (retval != -ERESTARTSYS)
+			break;
+		if (signal_pending(current))
+			break;
+		schedule();
+	} while (1);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__set_current_state(TASK_RUNNING);
 	remove_wait_queue(&current->signal->wait_chldexit, &wo->child_wait);
 	return retval;
 }
 
+<<<<<<< HEAD
 SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
 		infop, int, options, struct rusage __user *, ru)
 {
@@ -1779,6 +2899,18 @@ SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
 	long ret;
 
 	if (options & ~(WNOHANG|WNOWAIT|WEXITED|WSTOPPED|WCONTINUED))
+=======
+int kernel_waitid_prepare(struct wait_opts *wo, int which, pid_t upid,
+			  struct waitid_info *infop, int options,
+			  struct rusage *ru)
+{
+	unsigned int f_flags = 0;
+	struct pid *pid = NULL;
+	enum pid_type type;
+
+	if (options & ~(WNOHANG|WNOWAIT|WEXITED|WSTOPPED|WCONTINUED|
+			__WNOTHREAD|__WCLONE|__WALL))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	if (!(options & (WEXITED|WSTOPPED|WCONTINUED)))
 		return -EINVAL;
@@ -1791,16 +2923,42 @@ SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
 		type = PIDTYPE_PID;
 		if (upid <= 0)
 			return -EINVAL;
+<<<<<<< HEAD
 		break;
 	case P_PGID:
 		type = PIDTYPE_PGID;
 		if (upid <= 0)
 			return -EINVAL;
+=======
+
+		pid = find_get_pid(upid);
+		break;
+	case P_PGID:
+		type = PIDTYPE_PGID;
+		if (upid < 0)
+			return -EINVAL;
+
+		if (upid)
+			pid = find_get_pid(upid);
+		else
+			pid = get_task_pid(current, PIDTYPE_PGID);
+		break;
+	case P_PIDFD:
+		type = PIDTYPE_PID;
+		if (upid < 0)
+			return -EINVAL;
+
+		pid = pidfd_get_pid(upid, &f_flags);
+		if (IS_ERR(pid))
+			return PTR_ERR(pid);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (type < PIDTYPE_MAX)
 		pid = find_get_pid(upid);
 
@@ -1843,6 +3001,72 @@ SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
 
 SYSCALL_DEFINE4(wait4, pid_t, upid, int __user *, stat_addr,
 		int, options, struct rusage __user *, ru)
+=======
+	wo->wo_type	= type;
+	wo->wo_pid	= pid;
+	wo->wo_flags	= options;
+	wo->wo_info	= infop;
+	wo->wo_rusage	= ru;
+	if (f_flags & O_NONBLOCK)
+		wo->wo_flags |= WNOHANG;
+
+	return 0;
+}
+
+static long kernel_waitid(int which, pid_t upid, struct waitid_info *infop,
+			  int options, struct rusage *ru)
+{
+	struct wait_opts wo;
+	long ret;
+
+	ret = kernel_waitid_prepare(&wo, which, upid, infop, options, ru);
+	if (ret)
+		return ret;
+
+	ret = do_wait(&wo);
+	if (!ret && !(options & WNOHANG) && (wo.wo_flags & WNOHANG))
+		ret = -EAGAIN;
+
+	put_pid(wo.wo_pid);
+	return ret;
+}
+
+SYSCALL_DEFINE5(waitid, int, which, pid_t, upid, struct siginfo __user *,
+		infop, int, options, struct rusage __user *, ru)
+{
+	struct rusage r;
+	struct waitid_info info = {.status = 0};
+	long err = kernel_waitid(which, upid, &info, options, ru ? &r : NULL);
+	int signo = 0;
+
+	if (err > 0) {
+		signo = SIGCHLD;
+		err = 0;
+		if (ru && copy_to_user(ru, &r, sizeof(struct rusage)))
+			return -EFAULT;
+	}
+	if (!infop)
+		return err;
+
+	if (!user_write_access_begin(infop, sizeof(*infop)))
+		return -EFAULT;
+
+	unsafe_put_user(signo, &infop->si_signo, Efault);
+	unsafe_put_user(0, &infop->si_errno, Efault);
+	unsafe_put_user(info.cause, &infop->si_code, Efault);
+	unsafe_put_user(info.pid, &infop->si_pid, Efault);
+	unsafe_put_user(info.uid, &infop->si_uid, Efault);
+	unsafe_put_user(info.status, &infop->si_status, Efault);
+	user_write_access_end();
+	return err;
+Efault:
+	user_write_access_end();
+	return -EFAULT;
+}
+
+long kernel_wait4(pid_t upid, int __user *stat_addr, int options,
+		  struct rusage *ru)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wait_opts wo;
 	struct pid *pid = NULL;
@@ -1853,6 +3077,13 @@ SYSCALL_DEFINE4(wait4, pid_t, upid, int __user *, stat_addr,
 			__WNOTHREAD|__WCLONE|__WALL))
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	/* -INT_MIN is not defined */
+	if (upid == INT_MIN)
+		return -ESRCH;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (upid == -1)
 		type = PIDTYPE_MAX;
 	else if (upid < 0) {
@@ -1870,6 +3101,7 @@ SYSCALL_DEFINE4(wait4, pid_t, upid, int __user *, stat_addr,
 	wo.wo_pid	= pid;
 	wo.wo_flags	= options | WEXITED;
 	wo.wo_info	= NULL;
+<<<<<<< HEAD
 	wo.wo_stat	= stat_addr;
 	wo.wo_rusage	= ru;
 	ret = do_wait(&wo);
@@ -1880,6 +3112,47 @@ SYSCALL_DEFINE4(wait4, pid_t, upid, int __user *, stat_addr,
 	return ret;
 }
 
+=======
+	wo.wo_stat	= 0;
+	wo.wo_rusage	= ru;
+	ret = do_wait(&wo);
+	put_pid(pid);
+	if (ret > 0 && stat_addr && put_user(wo.wo_stat, stat_addr))
+		ret = -EFAULT;
+
+	return ret;
+}
+
+int kernel_wait(pid_t pid, int *stat)
+{
+	struct wait_opts wo = {
+		.wo_type	= PIDTYPE_PID,
+		.wo_pid		= find_get_pid(pid),
+		.wo_flags	= WEXITED,
+	};
+	int ret;
+
+	ret = do_wait(&wo);
+	if (ret > 0 && wo.wo_stat)
+		*stat = wo.wo_stat;
+	put_pid(wo.wo_pid);
+	return ret;
+}
+
+SYSCALL_DEFINE4(wait4, pid_t, upid, int __user *, stat_addr,
+		int, options, struct rusage __user *, ru)
+{
+	struct rusage r;
+	long err = kernel_wait4(upid, stat_addr, options, ru ? &r : NULL);
+
+	if (err > 0) {
+		if (ru && copy_to_user(ru, &r, sizeof(struct rusage)))
+			return -EFAULT;
+	}
+	return err;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __ARCH_WANT_SYS_WAITPID
 
 /*
@@ -1888,7 +3161,89 @@ SYSCALL_DEFINE4(wait4, pid_t, upid, int __user *, stat_addr,
  */
 SYSCALL_DEFINE3(waitpid, pid_t, pid, int __user *, stat_addr, int, options)
 {
+<<<<<<< HEAD
 	return sys_wait4(pid, stat_addr, options, NULL);
 }
 
 #endif
+=======
+	return kernel_wait4(pid, stat_addr, options, NULL);
+}
+
+#endif
+
+#ifdef CONFIG_COMPAT
+COMPAT_SYSCALL_DEFINE4(wait4,
+	compat_pid_t, pid,
+	compat_uint_t __user *, stat_addr,
+	int, options,
+	struct compat_rusage __user *, ru)
+{
+	struct rusage r;
+	long err = kernel_wait4(pid, stat_addr, options, ru ? &r : NULL);
+	if (err > 0) {
+		if (ru && put_compat_rusage(&r, ru))
+			return -EFAULT;
+	}
+	return err;
+}
+
+COMPAT_SYSCALL_DEFINE5(waitid,
+		int, which, compat_pid_t, pid,
+		struct compat_siginfo __user *, infop, int, options,
+		struct compat_rusage __user *, uru)
+{
+	struct rusage ru;
+	struct waitid_info info = {.status = 0};
+	long err = kernel_waitid(which, pid, &info, options, uru ? &ru : NULL);
+	int signo = 0;
+	if (err > 0) {
+		signo = SIGCHLD;
+		err = 0;
+		if (uru) {
+			/* kernel_waitid() overwrites everything in ru */
+			if (COMPAT_USE_64BIT_TIME)
+				err = copy_to_user(uru, &ru, sizeof(ru));
+			else
+				err = put_compat_rusage(&ru, uru);
+			if (err)
+				return -EFAULT;
+		}
+	}
+
+	if (!infop)
+		return err;
+
+	if (!user_write_access_begin(infop, sizeof(*infop)))
+		return -EFAULT;
+
+	unsafe_put_user(signo, &infop->si_signo, Efault);
+	unsafe_put_user(0, &infop->si_errno, Efault);
+	unsafe_put_user(info.cause, &infop->si_code, Efault);
+	unsafe_put_user(info.pid, &infop->si_pid, Efault);
+	unsafe_put_user(info.uid, &infop->si_uid, Efault);
+	unsafe_put_user(info.status, &infop->si_status, Efault);
+	user_write_access_end();
+	return err;
+Efault:
+	user_write_access_end();
+	return -EFAULT;
+}
+#endif
+
+/*
+ * This needs to be __function_aligned as GCC implicitly makes any
+ * implementation of abort() cold and drops alignment specified by
+ * -falign-functions=N.
+ *
+ * See https://gcc.gnu.org/bugzilla/show_bug.cgi?id=88345#c11
+ */
+__weak __function_aligned void abort(void)
+{
+	BUG();
+
+	/* if that doesn't kill us, halt */
+	panic("Oops failed to kill thread");
+}
+EXPORT_SYMBOL(abort);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2004
  *   Portions Copyright (C) Christoph Hellwig, 2001-2002
@@ -15,6 +16,12 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *   Copyright (C) International Business Machines Corp., 2000-2004
+ *   Portions Copyright (C) Christoph Hellwig, 2001-2002
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -72,8 +79,13 @@ static inline void free_ea_wmap(struct inode *inode)
  * RETURN:	Errors from subroutines
  *
  */
+<<<<<<< HEAD
 static int jfs_create(struct inode *dip, struct dentry *dentry, umode_t mode,
 		bool excl)
+=======
+static int jfs_create(struct mnt_idmap *idmap, struct inode *dip,
+		      struct dentry *dentry, umode_t mode, bool excl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = 0;
 	tid_t tid;		/* transaction id */
@@ -84,9 +96,17 @@ static int jfs_create(struct inode *dip, struct dentry *dentry, umode_t mode,
 	struct inode *iplist[2];
 	struct tblock *tblk;
 
+<<<<<<< HEAD
 	jfs_info("jfs_create: dip:0x%p name:%s", dip, dentry->d_name.name);
 
 	dquot_initialize(dip);
+=======
+	jfs_info("jfs_create: dip:0x%p name:%pd", dip, dentry);
+
+	rc = dquot_initialize(dip);
+	if (rc)
+		goto out1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * search parent directory for entry/freespace
@@ -160,7 +180,11 @@ static int jfs_create(struct inode *dip, struct dentry *dentry, umode_t mode,
 
 	mark_inode_dirty(ip);
 
+<<<<<<< HEAD
 	dip->i_ctime = dip->i_mtime = CURRENT_TIME;
+=======
+	inode_set_mtime_to_ts(dip, inode_set_ctime_current(dip));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mark_inode_dirty(dip);
 
@@ -173,11 +197,17 @@ static int jfs_create(struct inode *dip, struct dentry *dentry, umode_t mode,
 	if (rc) {
 		free_ea_wmap(ip);
 		clear_nlink(ip);
+<<<<<<< HEAD
 		unlock_new_inode(ip);
 		iput(ip);
 	} else {
 		d_instantiate(dentry, ip);
 		unlock_new_inode(ip);
+=======
+		discard_new_inode(ip);
+	} else {
+		d_instantiate_new(dentry, ip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
       out2:
@@ -203,9 +233,16 @@ static int jfs_create(struct inode *dip, struct dentry *dentry, umode_t mode,
  * RETURN:	Errors from subroutines
  *
  * note:
+<<<<<<< HEAD
  * EACCESS: user needs search+write permission on the parent directory
  */
 static int jfs_mkdir(struct inode *dip, struct dentry *dentry, umode_t mode)
+=======
+ * EACCES: user needs search+write permission on the parent directory
+ */
+static int jfs_mkdir(struct mnt_idmap *idmap, struct inode *dip,
+		     struct dentry *dentry, umode_t mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = 0;
 	tid_t tid;		/* transaction id */
@@ -216,9 +253,17 @@ static int jfs_mkdir(struct inode *dip, struct dentry *dentry, umode_t mode)
 	struct inode *iplist[2];
 	struct tblock *tblk;
 
+<<<<<<< HEAD
 	jfs_info("jfs_mkdir: dip:0x%p name:%s", dip, dentry->d_name.name);
 
 	dquot_initialize(dip);
+=======
+	jfs_info("jfs_mkdir: dip:0x%p name:%pd", dip, dentry);
+
+	rc = dquot_initialize(dip);
+	if (rc)
+		goto out1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * search parent directory for entry/freespace
@@ -294,7 +339,11 @@ static int jfs_mkdir(struct inode *dip, struct dentry *dentry, umode_t mode)
 
 	/* update parent directory inode */
 	inc_nlink(dip);		/* for '..' from child directory */
+<<<<<<< HEAD
 	dip->i_ctime = dip->i_mtime = CURRENT_TIME;
+=======
+	inode_set_mtime_to_ts(dip, inode_set_ctime_current(dip));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(dip);
 
 	rc = txCommit(tid, 2, &iplist[0], 0);
@@ -306,11 +355,17 @@ static int jfs_mkdir(struct inode *dip, struct dentry *dentry, umode_t mode)
 	if (rc) {
 		free_ea_wmap(ip);
 		clear_nlink(ip);
+<<<<<<< HEAD
 		unlock_new_inode(ip);
 		iput(ip);
 	} else {
 		d_instantiate(dentry, ip);
 		unlock_new_inode(ip);
+=======
+		discard_new_inode(ip);
+	} else {
+		d_instantiate_new(dentry, ip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
       out2:
@@ -346,17 +401,33 @@ static int jfs_rmdir(struct inode *dip, struct dentry *dentry)
 {
 	int rc;
 	tid_t tid;		/* transaction id */
+<<<<<<< HEAD
 	struct inode *ip = dentry->d_inode;
+=======
+	struct inode *ip = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ino_t ino;
 	struct component_name dname;
 	struct inode *iplist[2];
 	struct tblock *tblk;
 
+<<<<<<< HEAD
 	jfs_info("jfs_rmdir: dip:0x%p name:%s", dip, dentry->d_name.name);
 
 	/* Init inode for quota operations. */
 	dquot_initialize(dip);
 	dquot_initialize(ip);
+=======
+	jfs_info("jfs_rmdir: dip:0x%p name:%pd", dip, dentry);
+
+	/* Init inode for quota operations. */
+	rc = dquot_initialize(dip);
+	if (rc)
+		goto out;
+	rc = dquot_initialize(ip);
+	if (rc)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* directory must be empty to be removed */
 	if (!dtEmpty(ip)) {
@@ -398,7 +469,11 @@ static int jfs_rmdir(struct inode *dip, struct dentry *dentry)
 	/* update parent directory's link count corresponding
 	 * to ".." entry of the target directory deleted
 	 */
+<<<<<<< HEAD
 	dip->i_ctime = dip->i_mtime = CURRENT_TIME;
+=======
+	inode_set_mtime_to_ts(dip, inode_set_ctime_current(dip));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode_dec_link_count(dip);
 
 	/*
@@ -472,7 +547,11 @@ static int jfs_unlink(struct inode *dip, struct dentry *dentry)
 {
 	int rc;
 	tid_t tid;		/* transaction id */
+<<<<<<< HEAD
 	struct inode *ip = dentry->d_inode;
+=======
+	struct inode *ip = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ino_t ino;
 	struct component_name dname;	/* object name */
 	struct inode *iplist[2];
@@ -480,11 +559,23 @@ static int jfs_unlink(struct inode *dip, struct dentry *dentry)
 	s64 new_size = 0;
 	int commit_flag;
 
+<<<<<<< HEAD
 	jfs_info("jfs_unlink: dip:0x%p name:%s", dip, dentry->d_name.name);
 
 	/* Init inode for quota operations. */
 	dquot_initialize(dip);
 	dquot_initialize(ip);
+=======
+	jfs_info("jfs_unlink: dip:0x%p name:%pd", dip, dentry);
+
+	/* Init inode for quota operations. */
+	rc = dquot_initialize(dip);
+	if (rc)
+		goto out;
+	rc = dquot_initialize(ip);
+	if (rc)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((rc = get_UCSname(&dname, dentry)))
 		goto out;
@@ -516,7 +607,12 @@ static int jfs_unlink(struct inode *dip, struct dentry *dentry)
 
 	ASSERT(ip->i_nlink);
 
+<<<<<<< HEAD
 	ip->i_ctime = dip->i_ctime = dip->i_mtime = CURRENT_TIME;
+=======
+	inode_set_mtime_to_ts(dip,
+			      inode_set_ctime_to_ts(dip, inode_set_ctime_current(ip)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(dip);
 
 	/* update target's inode */
@@ -791,16 +887,33 @@ static int jfs_link(struct dentry *old_dentry,
 {
 	int rc;
 	tid_t tid;
+<<<<<<< HEAD
 	struct inode *ip = old_dentry->d_inode;
+=======
+	struct inode *ip = d_inode(old_dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ino_t ino;
 	struct component_name dname;
 	struct btstack btstack;
 	struct inode *iplist[2];
 
+<<<<<<< HEAD
 	jfs_info("jfs_link: %s %s", old_dentry->d_name.name,
 		 dentry->d_name.name);
 
 	dquot_initialize(dir);
+=======
+	jfs_info("jfs_link: %pd %pd", old_dentry, dentry);
+
+	rc = dquot_initialize(dir);
+	if (rc)
+		goto out;
+
+	if (isReadOnly(ip)) {
+		jfs_error(ip->i_sb, "read-only filesystem\n");
+		return -EROFS;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tid = txBegin(ip->i_sb, 0);
 
@@ -811,7 +924,11 @@ static int jfs_link(struct dentry *old_dentry,
 	 * scan parent directory for entry/freespace
 	 */
 	if ((rc = get_UCSname(&dname, dentry)))
+<<<<<<< HEAD
 		goto out;
+=======
+		goto out_tx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((rc = dtSearch(dir, &dname, &ino, &btstack, JFS_CREATE)))
 		goto free_dname;
@@ -825,8 +942,13 @@ static int jfs_link(struct dentry *old_dentry,
 
 	/* update object inode */
 	inc_nlink(ip);		/* for new link */
+<<<<<<< HEAD
 	ip->i_ctime = CURRENT_TIME;
 	dir->i_ctime = dir->i_mtime = CURRENT_TIME;
+=======
+	inode_set_ctime_current(ip);
+	inode_set_mtime_to_ts(dir, inode_set_ctime_current(dir));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(dir);
 	ihold(ip);
 
@@ -843,12 +965,20 @@ static int jfs_link(struct dentry *old_dentry,
       free_dname:
 	free_UCSname(&dname);
 
+<<<<<<< HEAD
       out:
+=======
+      out_tx:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	txEnd(tid);
 
 	mutex_unlock(&JFS_IP(ip)->commit_mutex);
 	mutex_unlock(&JFS_IP(dir)->commit_mutex);
 
+<<<<<<< HEAD
+=======
+      out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jfs_info("jfs_link: rc:%d", rc);
 	return rc;
 }
@@ -871,17 +1001,28 @@ static int jfs_link(struct dentry *old_dentry,
  * an intermediate result whose length exceeds PATH_MAX [XPG4.2]
 */
 
+<<<<<<< HEAD
 static int jfs_symlink(struct inode *dip, struct dentry *dentry,
 		const char *name)
+=======
+static int jfs_symlink(struct mnt_idmap *idmap, struct inode *dip,
+		       struct dentry *dentry, const char *name)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 	tid_t tid;
 	ino_t ino = 0;
 	struct component_name dname;
+<<<<<<< HEAD
 	int ssize;		/* source pathname size */
 	struct btstack btstack;
 	struct inode *ip = dentry->d_inode;
 	unchar *i_fastsymlink;
+=======
+	u32 ssize;		/* source pathname size */
+	struct btstack btstack;
+	struct inode *ip;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s64 xlen = 0;
 	int bmask = 0, xsize;
 	s64 xaddr;
@@ -893,7 +1034,13 @@ static int jfs_symlink(struct inode *dip, struct dentry *dentry,
 
 	jfs_info("jfs_symlink: dip:0x%p name:%s", dip, name);
 
+<<<<<<< HEAD
 	dquot_initialize(dip);
+=======
+	rc = dquot_initialize(dip);
+	if (rc)
+		goto out1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ssize = strlen(name) + 1;
 
@@ -947,8 +1094,13 @@ static int jfs_symlink(struct inode *dip, struct dentry *dentry,
 	if (ssize <= IDATASIZE) {
 		ip->i_op = &jfs_fast_symlink_inode_operations;
 
+<<<<<<< HEAD
 		i_fastsymlink = JFS_IP(ip)->i_inline;
 		memcpy(i_fastsymlink, name, ssize);
+=======
+		ip->i_link = JFS_IP(ip)->i_inline_all;
+		memcpy(ip->i_link, name, ssize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ip->i_size = ssize - 1;
 
 		/*
@@ -958,7 +1110,11 @@ static int jfs_symlink(struct inode *dip, struct dentry *dentry,
 		if (ssize > sizeof (JFS_IP(ip)->i_inline))
 			JFS_IP(ip)->mode2 &= ~INLINEEA;
 
+<<<<<<< HEAD
 		jfs_info("jfs_symlink: fast symlink added  ssize:%d name:%s ",
+=======
+		jfs_info("jfs_symlink: fast symlink added  ssize:%u name:%s ",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 ssize, name);
 	}
 	/*
@@ -968,6 +1124,10 @@ static int jfs_symlink(struct inode *dip, struct dentry *dentry,
 		jfs_info("jfs_symlink: allocate extent ip:0x%p", ip);
 
 		ip->i_op = &jfs_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(ip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ip->i_mapping->a_ops = &jfs_aops;
 
 		/*
@@ -987,7 +1147,11 @@ static int jfs_symlink(struct inode *dip, struct dentry *dentry,
 		ip->i_size = ssize - 1;
 		while (ssize) {
 			/* This is kind of silly since PATH_MAX == 4K */
+<<<<<<< HEAD
 			int copy_size = min(ssize, PSIZE);
+=======
+			u32 copy_size = min_t(u32, ssize, PSIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			mp = get_metapage(ip, xaddr, PSIZE, 1);
 
@@ -1023,7 +1187,11 @@ static int jfs_symlink(struct inode *dip, struct dentry *dentry,
 
 	mark_inode_dirty(ip);
 
+<<<<<<< HEAD
 	dip->i_ctime = dip->i_mtime = CURRENT_TIME;
+=======
+	inode_set_mtime_to_ts(dip, inode_set_ctime_current(dip));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(dip);
 	/*
 	 * commit update of parent directory and link object
@@ -1040,11 +1208,17 @@ static int jfs_symlink(struct inode *dip, struct dentry *dentry,
 	if (rc) {
 		free_ea_wmap(ip);
 		clear_nlink(ip);
+<<<<<<< HEAD
 		unlock_new_inode(ip);
 		iput(ip);
 	} else {
 		d_instantiate(dentry, ip);
 		unlock_new_inode(ip);
+=======
+		discard_new_inode(ip);
+	} else {
+		d_instantiate_new(dentry, ip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
       out2:
@@ -1061,8 +1235,14 @@ static int jfs_symlink(struct inode *dip, struct dentry *dentry,
  *
  * FUNCTION:	rename a file or directory
  */
+<<<<<<< HEAD
 static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	       struct inode *new_dir, struct dentry *new_dentry)
+=======
+static int jfs_rename(struct mnt_idmap *idmap, struct inode *old_dir,
+		      struct dentry *old_dentry, struct inode *new_dir,
+		      struct dentry *new_dentry, unsigned int flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct btstack btstack;
 	ino_t ino;
@@ -1081,6 +1261,7 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	s64 new_size = 0;
 	int commit_flag;
 
+<<<<<<< HEAD
 
 	jfs_info("jfs_rename: %s %s", old_dentry->d_name.name,
 		 new_dentry->d_name.name);
@@ -1090,6 +1271,22 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 
 	old_ip = old_dentry->d_inode;
 	new_ip = new_dentry->d_inode;
+=======
+	if (flags & ~RENAME_NOREPLACE)
+		return -EINVAL;
+
+	jfs_info("jfs_rename: %pd %pd", old_dentry, new_dentry);
+
+	rc = dquot_initialize(old_dir);
+	if (rc)
+		goto out1;
+	rc = dquot_initialize(new_dir);
+	if (rc)
+		goto out1;
+
+	old_ip = d_inode(old_dentry);
+	new_ip = d_inode(new_dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((rc = get_UCSname(&old_dname, old_dentry)))
 		goto out1;
@@ -1133,7 +1330,13 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	} else if (new_ip) {
 		IWRITE_LOCK(new_ip, RDWRLOCK_NORMAL);
 		/* Init inode for quota operations. */
+<<<<<<< HEAD
 		dquot_initialize(new_ip);
+=======
+		rc = dquot_initialize(new_ip);
+		if (rc)
+			goto out_unlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1163,7 +1366,11 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 		rc = dtModify(tid, new_dir, &new_dname, &ino,
 			      old_ip->i_ino, JFS_RENAME);
 		if (rc)
+<<<<<<< HEAD
 			goto out4;
+=======
+			goto out_tx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drop_nlink(new_ip);
 		if (S_ISDIR(new_ip->i_mode)) {
 			drop_nlink(new_ip);
@@ -1176,7 +1383,11 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 				if (!S_ISDIR(old_ip->i_mode) && new_ip)
 					IWRITE_UNLOCK(new_ip);
 				jfs_error(new_ip->i_sb,
+<<<<<<< HEAD
 					  "jfs_rename: new_ip->i_nlink != 0");
+=======
+					  "new_ip->i_nlink != 0\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EIO;
 			}
 			tblk = tid_to_tblock(tid);
@@ -1188,13 +1399,21 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 			if ((new_size = commitZeroLink(tid, new_ip)) < 0) {
 				txAbort(tid, 1);	/* Marks FS Dirty */
 				rc = new_size;
+<<<<<<< HEAD
 				goto out4;
+=======
+				goto out_tx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			tblk = tid_to_tblock(tid);
 			tblk->xflag |= COMMIT_DELETE;
 			tblk->u.ip = new_ip;
 		} else {
+<<<<<<< HEAD
 			new_ip->i_ctime = CURRENT_TIME;
+=======
+			inode_set_ctime_current(new_ip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mark_inode_dirty(new_ip);
 		}
 	} else {
@@ -1204,9 +1423,15 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 		rc = dtSearch(new_dir, &new_dname, &ino, &btstack,
 			      JFS_CREATE);
 		if (rc) {
+<<<<<<< HEAD
 			jfs_err("jfs_rename didn't expect dtSearch to fail "
 				"w/rc = %d", rc);
 			goto out4;
+=======
+			jfs_err("jfs_rename didn't expect dtSearch to fail w/rc = %d",
+				rc);
+			goto out_tx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		ino = old_ip->i_ino;
@@ -1214,7 +1439,11 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 		if (rc) {
 			if (rc == -EIO)
 				jfs_err("jfs_rename: dtInsert returned -EIO");
+<<<<<<< HEAD
 			goto out4;
+=======
+			goto out_tx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (S_ISDIR(old_ip->i_mode))
 			inc_nlink(new_dir);
@@ -1229,7 +1458,11 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 		jfs_err("jfs_rename did not expect dtDelete to return rc = %d",
 			rc);
 		txAbort(tid, 1);	/* Marks Filesystem dirty */
+<<<<<<< HEAD
 		goto out4;
+=======
+		goto out_tx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (S_ISDIR(old_ip->i_mode)) {
 		drop_nlink(old_dir);
@@ -1257,10 +1490,17 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	/*
 	 * Update ctime on changed/moved inodes & mark dirty
 	 */
+<<<<<<< HEAD
 	old_ip->i_ctime = CURRENT_TIME;
 	mark_inode_dirty(old_ip);
 
 	new_dir->i_ctime = new_dir->i_mtime = current_fs_time(new_dir->i_sb);
+=======
+	inode_set_ctime_current(old_ip);
+	mark_inode_dirty(old_ip);
+
+	inode_set_mtime_to_ts(new_dir, inode_set_ctime_current(new_dir));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(new_dir);
 
 	/* Build list of inodes modified by this transaction */
@@ -1272,7 +1512,12 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 
 	if (old_dir != new_dir) {
 		iplist[ipcount++] = new_dir;
+<<<<<<< HEAD
 		old_dir->i_ctime = old_dir->i_mtime = CURRENT_TIME;
+=======
+		inode_set_mtime_to_ts(old_dir,
+				      inode_set_ctime_current(old_dir));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mark_inode_dirty(old_dir);
 	}
 
@@ -1288,7 +1533,11 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 
 	rc = txCommit(tid, ipcount, iplist, commit_flag);
 
+<<<<<<< HEAD
       out4:
+=======
+      out_tx:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	txEnd(tid);
 	if (new_ip)
 		mutex_unlock(&JFS_IP(new_ip)->commit_mutex);
@@ -1311,6 +1560,7 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 	}
 	if (new_ip && (new_ip->i_nlink == 0))
 		set_cflag(COMMIT_Nolink, new_ip);
+<<<<<<< HEAD
       out3:
 	free_UCSname(&new_dname);
       out2:
@@ -1318,6 +1568,8 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
       out1:
 	if (new_ip && !S_ISDIR(new_ip->i_mode))
 		IWRITE_UNLOCK(new_ip);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Truncating the directory index table is not guaranteed.  It
 	 * may need to be done iteratively
@@ -1328,7 +1580,18 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
 
 		clear_cflag(COMMIT_Stale, old_dir);
 	}
+<<<<<<< HEAD
 
+=======
+      out_unlock:
+	if (new_ip && !S_ISDIR(new_ip->i_mode))
+		IWRITE_UNLOCK(new_ip);
+      out3:
+	free_UCSname(&new_dname);
+      out2:
+	free_UCSname(&old_dname);
+      out1:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jfs_info("jfs_rename: returning %d", rc);
 	return rc;
 }
@@ -1339,8 +1602,13 @@ static int jfs_rename(struct inode *old_dir, struct dentry *old_dentry,
  *
  * FUNCTION:	Create a special file (device)
  */
+<<<<<<< HEAD
 static int jfs_mknod(struct inode *dir, struct dentry *dentry,
 		umode_t mode, dev_t rdev)
+=======
+static int jfs_mknod(struct mnt_idmap *idmap, struct inode *dir,
+		     struct dentry *dentry, umode_t mode, dev_t rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jfs_inode_info *jfs_ip;
 	struct btstack btstack;
@@ -1352,12 +1620,20 @@ static int jfs_mknod(struct inode *dir, struct dentry *dentry,
 	tid_t tid;
 	struct tblock *tblk;
 
+<<<<<<< HEAD
 	if (!new_valid_dev(rdev))
 		return -EINVAL;
 
 	jfs_info("jfs_mknod: %s", dentry->d_name.name);
 
 	dquot_initialize(dir);
+=======
+	jfs_info("jfs_mknod: %pd", dentry);
+
+	rc = dquot_initialize(dir);
+	if (rc)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((rc = get_UCSname(&dname, dentry)))
 		goto out;
@@ -1406,7 +1682,11 @@ static int jfs_mknod(struct inode *dir, struct dentry *dentry,
 
 	mark_inode_dirty(ip);
 
+<<<<<<< HEAD
 	dir->i_ctime = dir->i_mtime = CURRENT_TIME;
+=======
+	inode_set_mtime_to_ts(dir, inode_set_ctime_current(dir));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mark_inode_dirty(dir);
 
@@ -1421,11 +1701,17 @@ static int jfs_mknod(struct inode *dir, struct dentry *dentry,
 	if (rc) {
 		free_ea_wmap(ip);
 		clear_nlink(ip);
+<<<<<<< HEAD
 		unlock_new_inode(ip);
 		iput(ip);
 	} else {
 		d_instantiate(dentry, ip);
 		unlock_new_inode(ip);
+=======
+		discard_new_inode(ip);
+	} else {
+		d_instantiate_new(dentry, ip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
       out1:
@@ -1444,7 +1730,11 @@ static struct dentry *jfs_lookup(struct inode *dip, struct dentry *dentry, unsig
 	struct component_name key;
 	int rc;
 
+<<<<<<< HEAD
 	jfs_info("jfs_lookup: name = %s", dentry->d_name.name);
+=======
+	jfs_info("jfs_lookup: name = %pd", dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((rc = get_UCSname(&key, dentry)))
 		return ERR_PTR(rc);
@@ -1502,9 +1792,15 @@ struct dentry *jfs_get_parent(struct dentry *dentry)
 	unsigned long parent_ino;
 
 	parent_ino =
+<<<<<<< HEAD
 		le32_to_cpu(JFS_IP(dentry->d_inode)->i_dtroot.header.idotdot);
 
 	return d_obtain_alias(jfs_iget(dentry->d_inode->i_sb, parent_ino));
+=======
+		le32_to_cpu(JFS_IP(d_inode(dentry))->i_dtroot.header.idotdot);
+
+	return d_obtain_alias(jfs_iget(dentry->d_sb, parent_ino));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct inode_operations jfs_dir_inode_operations = {
@@ -1517,6 +1813,7 @@ const struct inode_operations jfs_dir_inode_operations = {
 	.rmdir		= jfs_rmdir,
 	.mknod		= jfs_mknod,
 	.rename		= jfs_rename,
+<<<<<<< HEAD
 	.setxattr	= jfs_setxattr,
 	.getxattr	= jfs_getxattr,
 	.listxattr	= jfs_listxattr,
@@ -1540,11 +1837,38 @@ const struct file_operations jfs_dir_operations = {
 
 static int jfs_ci_hash(const struct dentry *dir, const struct inode *inode,
 		struct qstr *this)
+=======
+	.listxattr	= jfs_listxattr,
+	.setattr	= jfs_setattr,
+	.fileattr_get	= jfs_fileattr_get,
+	.fileattr_set	= jfs_fileattr_set,
+#ifdef CONFIG_JFS_POSIX_ACL
+	.get_inode_acl	= jfs_get_acl,
+	.set_acl	= jfs_set_acl,
+#endif
+};
+
+WRAP_DIR_ITER(jfs_readdir) // FIXME!
+const struct file_operations jfs_dir_operations = {
+	.read		= generic_read_dir,
+	.iterate_shared	= shared_jfs_readdir,
+	.fsync		= jfs_fsync,
+	.unlocked_ioctl = jfs_ioctl,
+	.compat_ioctl	= compat_ptr_ioctl,
+	.llseek		= generic_file_llseek,
+};
+
+static int jfs_ci_hash(const struct dentry *dir, struct qstr *this)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long hash;
 	int i;
 
+<<<<<<< HEAD
 	hash = init_name_hash();
+=======
+	hash = init_name_hash(dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i=0; i < this->len; i++)
 		hash = partial_name_hash(tolower(this->name[i]), hash);
 	this->hash = end_name_hash(hash);
@@ -1552,9 +1876,13 @@ static int jfs_ci_hash(const struct dentry *dir, const struct inode *inode,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int jfs_ci_compare(const struct dentry *parent,
 		const struct inode *pinode,
 		const struct dentry *dentry, const struct inode *inode,
+=======
+static int jfs_ci_compare(const struct dentry *dentry,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int len, const char *str, const struct qstr *name)
 {
 	int i, result = 1;
@@ -1582,7 +1910,11 @@ static int jfs_ci_revalidate(struct dentry *dentry, unsigned int flags)
 	 * positive dentry isn't good idea. So it's unsupported like
 	 * rename("filename", "FILENAME") for now.
 	 */
+<<<<<<< HEAD
 	if (dentry->d_inode)
+=======
+	if (d_really_is_positive(dentry))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	/*

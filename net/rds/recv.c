@@ -1,5 +1,9 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2006 Oracle.  All rights reserved.
+=======
+ * Copyright (c) 2006, 2019 Oracle and/or its affiliates. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -35,10 +39,17 @@
 #include <net/sock.h>
 #include <linux/in.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/clock.h>
+#include <linux/time.h>
+#include <linux/rds.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "rds.h"
 
 void rds_inc_init(struct rds_incoming *inc, struct rds_connection *conn,
+<<<<<<< HEAD
 		  __be32 saddr)
 {
 	atomic_set(&inc->i_refcount, 1);
@@ -53,12 +64,49 @@ static void rds_inc_addref(struct rds_incoming *inc)
 {
 	rdsdebug("addref inc %p ref %d\n", inc, atomic_read(&inc->i_refcount));
 	atomic_inc(&inc->i_refcount);
+=======
+		 struct in6_addr *saddr)
+{
+	refcount_set(&inc->i_refcount, 1);
+	INIT_LIST_HEAD(&inc->i_item);
+	inc->i_conn = conn;
+	inc->i_saddr = *saddr;
+	inc->i_usercopy.rdma_cookie = 0;
+	inc->i_usercopy.rx_tstamp = ktime_set(0, 0);
+
+	memset(inc->i_rx_lat_trace, 0, sizeof(inc->i_rx_lat_trace));
+}
+EXPORT_SYMBOL_GPL(rds_inc_init);
+
+void rds_inc_path_init(struct rds_incoming *inc, struct rds_conn_path *cp,
+		       struct in6_addr  *saddr)
+{
+	refcount_set(&inc->i_refcount, 1);
+	INIT_LIST_HEAD(&inc->i_item);
+	inc->i_conn = cp->cp_conn;
+	inc->i_conn_path = cp;
+	inc->i_saddr = *saddr;
+	inc->i_usercopy.rdma_cookie = 0;
+	inc->i_usercopy.rx_tstamp = ktime_set(0, 0);
+}
+EXPORT_SYMBOL_GPL(rds_inc_path_init);
+
+static void rds_inc_addref(struct rds_incoming *inc)
+{
+	rdsdebug("addref inc %p ref %d\n", inc, refcount_read(&inc->i_refcount));
+	refcount_inc(&inc->i_refcount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rds_inc_put(struct rds_incoming *inc)
 {
+<<<<<<< HEAD
 	rdsdebug("put inc %p ref %d\n", inc, atomic_read(&inc->i_refcount));
 	if (atomic_dec_and_test(&inc->i_refcount)) {
+=======
+	rdsdebug("put inc %p ref %d\n", inc, refcount_read(&inc->i_refcount));
+	if (refcount_dec_and_test(&inc->i_refcount)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG_ON(!list_empty(&inc->i_item));
 
 		inc->i_conn->c_trans->inc_free(inc);
@@ -76,9 +124,24 @@ static void rds_recv_rcvbuf_delta(struct rds_sock *rs, struct sock *sk,
 		return;
 
 	rs->rs_rcv_bytes += delta;
+<<<<<<< HEAD
 	now_congested = rs->rs_rcv_bytes > rds_sk_rcvbuf(rs);
 
 	rdsdebug("rs %p (%pI4:%u) recv bytes %d buf %d "
+=======
+	if (delta > 0)
+		rds_stats_add(s_recv_bytes_added_to_socket, delta);
+	else
+		rds_stats_add(s_recv_bytes_removed_from_socket, -delta);
+
+	/* loop transport doesn't send/recv congestion updates */
+	if (rs->rs_transport->t_type == RDS_TRANS_LOOP)
+		return;
+
+	now_congested = rs->rs_rcv_bytes > rds_sk_rcvbuf(rs);
+
+	rdsdebug("rs %p (%pI6c:%u) recv bytes %d buf %d "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  "now_cong %d delta %d\n",
 	  rs, &rs->rs_bound_addr,
 	  ntohs(rs->rs_bound_port), rs->rs_rcv_bytes,
@@ -102,6 +165,39 @@ static void rds_recv_rcvbuf_delta(struct rds_sock *rs, struct sock *sk,
 	/* do nothing if no change in cong state */
 }
 
+<<<<<<< HEAD
+=======
+static void rds_conn_peer_gen_update(struct rds_connection *conn,
+				     u32 peer_gen_num)
+{
+	int i;
+	struct rds_message *rm, *tmp;
+	unsigned long flags;
+
+	WARN_ON(conn->c_trans->t_type != RDS_TRANS_TCP);
+	if (peer_gen_num != 0) {
+		if (conn->c_peer_gen_num != 0 &&
+		    peer_gen_num != conn->c_peer_gen_num) {
+			for (i = 0; i < RDS_MPATH_WORKERS; i++) {
+				struct rds_conn_path *cp;
+
+				cp = &conn->c_path[i];
+				spin_lock_irqsave(&cp->cp_lock, flags);
+				cp->cp_next_tx_seq = 1;
+				cp->cp_next_rx_seq = 0;
+				list_for_each_entry_safe(rm, tmp,
+							 &cp->cp_retrans,
+							 m_conn_item) {
+					set_bit(RDS_MSG_FLUSH, &rm->m_flags);
+				}
+				spin_unlock_irqrestore(&cp->cp_lock, flags);
+			}
+		}
+		conn->c_peer_gen_num = peer_gen_num;
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Process all extension headers that come with this message.
  */
@@ -129,7 +225,11 @@ static void rds_recv_incoming_exthdrs(struct rds_incoming *inc, struct rds_sock 
 		case RDS_EXTHDR_RDMA_DEST:
 			/* We ignore the size for now. We could stash it
 			 * somewhere and use it for error checking. */
+<<<<<<< HEAD
 			inc->i_rdma_cookie = rds_rdma_make_cookie(
+=======
+			inc->i_usercopy.rdma_cookie = rds_rdma_make_cookie(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					be32_to_cpu(buffer.rdma_dest.h_rdma_rkey),
 					be32_to_cpu(buffer.rdma_dest.h_rdma_offset));
 
@@ -138,6 +238,77 @@ static void rds_recv_incoming_exthdrs(struct rds_incoming *inc, struct rds_sock 
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void rds_recv_hs_exthdrs(struct rds_header *hdr,
+				struct rds_connection *conn)
+{
+	unsigned int pos = 0, type, len;
+	union {
+		struct rds_ext_header_version version;
+		u16 rds_npaths;
+		u32 rds_gen_num;
+	} buffer;
+	u32 new_peer_gen_num = 0;
+
+	while (1) {
+		len = sizeof(buffer);
+		type = rds_message_next_extension(hdr, &pos, &buffer, &len);
+		if (type == RDS_EXTHDR_NONE)
+			break;
+		/* Process extension header here */
+		switch (type) {
+		case RDS_EXTHDR_NPATHS:
+			conn->c_npaths = min_t(int, RDS_MPATH_WORKERS,
+					       be16_to_cpu(buffer.rds_npaths));
+			break;
+		case RDS_EXTHDR_GEN_NUM:
+			new_peer_gen_num = be32_to_cpu(buffer.rds_gen_num);
+			break;
+		default:
+			pr_warn_ratelimited("ignoring unknown exthdr type "
+					     "0x%x\n", type);
+		}
+	}
+	/* if RDS_EXTHDR_NPATHS was not found, default to a single-path */
+	conn->c_npaths = max_t(int, conn->c_npaths, 1);
+	conn->c_ping_triggered = 0;
+	rds_conn_peer_gen_update(conn, new_peer_gen_num);
+}
+
+/* rds_start_mprds() will synchronously start multiple paths when appropriate.
+ * The scheme is based on the following rules:
+ *
+ * 1. rds_sendmsg on first connect attempt sends the probe ping, with the
+ *    sender's npaths (s_npaths)
+ * 2. rcvr of probe-ping knows the mprds_paths = min(s_npaths, r_npaths). It
+ *    sends back a probe-pong with r_npaths. After that, if rcvr is the
+ *    smaller ip addr, it starts rds_conn_path_connect_if_down on all
+ *    mprds_paths.
+ * 3. sender gets woken up, and can move to rds_conn_path_connect_if_down.
+ *    If it is the smaller ipaddr, rds_conn_path_connect_if_down can be
+ *    called after reception of the probe-pong on all mprds_paths.
+ *    Otherwise (sender of probe-ping is not the smaller ip addr): just call
+ *    rds_conn_path_connect_if_down on the hashed path. (see rule 4)
+ * 4. rds_connect_worker must only trigger a connection if laddr < faddr.
+ * 5. sender may end up queuing the packet on the cp. will get sent out later.
+ *    when connection is completed.
+ */
+static void rds_start_mprds(struct rds_connection *conn)
+{
+	int i;
+	struct rds_conn_path *cp;
+
+	if (conn->c_npaths > 1 &&
+	    rds_addr_cmp(&conn->c_laddr, &conn->c_faddr) < 0) {
+		for (i = 0; i < conn->c_npaths; i++) {
+			cp = &conn->c_path[i];
+			rds_conn_path_connect_if_down(cp);
+		}
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The transport must make sure that this is serialized against other
  * rx and conn reset on this specific conn.
@@ -154,12 +325,18 @@ static void rds_recv_incoming_exthdrs(struct rds_incoming *inc, struct rds_sock 
  * conn.  This lets loopback, who only has one conn for both directions,
  * tell us which roles the addrs in the conn are playing for this message.
  */
+<<<<<<< HEAD
 void rds_recv_incoming(struct rds_connection *conn, __be32 saddr, __be32 daddr,
+=======
+void rds_recv_incoming(struct rds_connection *conn, struct in6_addr *saddr,
+		       struct in6_addr *daddr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       struct rds_incoming *inc, gfp_t gfp)
 {
 	struct rds_sock *rs = NULL;
 	struct sock *sk;
 	unsigned long flags;
+<<<<<<< HEAD
 
 	inc->i_conn = conn;
 	inc->i_rx_jiffies = jiffies;
@@ -167,6 +344,20 @@ void rds_recv_incoming(struct rds_connection *conn, __be32 saddr, __be32 daddr,
 	rdsdebug("conn %p next %llu inc %p seq %llu len %u sport %u dport %u "
 		 "flags 0x%x rx_jiffies %lu\n", conn,
 		 (unsigned long long)conn->c_next_rx_seq,
+=======
+	struct rds_conn_path *cp;
+
+	inc->i_conn = conn;
+	inc->i_rx_jiffies = jiffies;
+	if (conn->c_trans->t_mp_capable)
+		cp = inc->i_conn_path;
+	else
+		cp = &conn->c_path[0];
+
+	rdsdebug("conn %p next %llu inc %p seq %llu len %u sport %u dport %u "
+		 "flags 0x%x rx_jiffies %lu\n", conn,
+		 (unsigned long long)cp->cp_next_rx_seq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 inc,
 		 (unsigned long long)be64_to_cpu(inc->i_hdr.h_sequence),
 		 be32_to_cpu(inc->i_hdr.h_len),
@@ -195,11 +386,16 @@ void rds_recv_incoming(struct rds_connection *conn, __be32 saddr, __be32 daddr,
 	 * XXX we could spend more on the wire to get more robust failure
 	 * detection, arguably worth it to avoid data corruption.
 	 */
+<<<<<<< HEAD
 	if (be64_to_cpu(inc->i_hdr.h_sequence) < conn->c_next_rx_seq &&
+=======
+	if (be64_to_cpu(inc->i_hdr.h_sequence) < cp->cp_next_rx_seq &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (inc->i_hdr.h_flags & RDS_FLAG_RETRANSMITTED)) {
 		rds_stats_inc(s_recv_drop_old_seq);
 		goto out;
 	}
+<<<<<<< HEAD
 	conn->c_next_rx_seq = be64_to_cpu(inc->i_hdr.h_sequence) + 1;
 
 	if (rds_sysctl_ping_enable && inc->i_hdr.h_dport == 0) {
@@ -209,6 +405,37 @@ void rds_recv_incoming(struct rds_connection *conn, __be32 saddr, __be32 daddr,
 	}
 
 	rs = rds_find_bound(daddr, inc->i_hdr.h_dport);
+=======
+	cp->cp_next_rx_seq = be64_to_cpu(inc->i_hdr.h_sequence) + 1;
+
+	if (rds_sysctl_ping_enable && inc->i_hdr.h_dport == 0) {
+		if (inc->i_hdr.h_sport == 0) {
+			rdsdebug("ignore ping with 0 sport from %pI6c\n",
+				 saddr);
+			goto out;
+		}
+		rds_stats_inc(s_recv_ping);
+		rds_send_pong(cp, inc->i_hdr.h_sport);
+		/* if this is a handshake ping, start multipath if necessary */
+		if (RDS_HS_PROBE(be16_to_cpu(inc->i_hdr.h_sport),
+				 be16_to_cpu(inc->i_hdr.h_dport))) {
+			rds_recv_hs_exthdrs(&inc->i_hdr, cp->cp_conn);
+			rds_start_mprds(cp->cp_conn);
+		}
+		goto out;
+	}
+
+	if (be16_to_cpu(inc->i_hdr.h_dport) ==  RDS_FLAG_PROBE_PORT &&
+	    inc->i_hdr.h_sport == 0) {
+		rds_recv_hs_exthdrs(&inc->i_hdr, cp->cp_conn);
+		/* if this is a handshake pong, start multipath if necessary */
+		rds_start_mprds(cp->cp_conn);
+		wake_up(&cp->cp_conn->c_hs_waitq);
+		goto out;
+	}
+
+	rs = rds_find_bound(daddr, inc->i_hdr.h_dport, conn->c_bound_if);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rs) {
 		rds_stats_inc(s_recv_drop_no_sock);
 		goto out;
@@ -228,7 +455,14 @@ void rds_recv_incoming(struct rds_connection *conn, __be32 saddr, __be32 daddr,
 		rds_recv_rcvbuf_delta(rs, sk, inc->i_conn->c_lcong,
 				      be32_to_cpu(inc->i_hdr.h_len),
 				      inc->i_hdr.h_dport);
+<<<<<<< HEAD
 		rds_inc_addref(inc);
+=======
+		if (sock_flag(sk, SOCK_RCVTSTAMP))
+			inc->i_usercopy.rx_tstamp = ktime_get_real();
+		rds_inc_addref(inc);
+		inc->i_rx_lat_trace[RDS_MSG_RX_END] = local_clock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&inc->i_item, &rs->rs_recv_queue);
 		__rds_wake_sk_sleep(sk);
 	} else {
@@ -270,6 +504,10 @@ static int rds_still_queued(struct rds_sock *rs, struct rds_incoming *inc,
 	struct sock *sk = rds_rs_to_sk(rs);
 	int ret = 0;
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	struct rds_incoming *to_drop = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_lock_irqsave(&rs->rs_recv_lock, flags);
 	if (!list_empty(&inc->i_item)) {
@@ -280,11 +518,21 @@ static int rds_still_queued(struct rds_sock *rs, struct rds_incoming *inc,
 					      -be32_to_cpu(inc->i_hdr.h_len),
 					      inc->i_hdr.h_dport);
 			list_del_init(&inc->i_item);
+<<<<<<< HEAD
 			rds_inc_put(inc);
+=======
+			to_drop = inc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	write_unlock_irqrestore(&rs->rs_recv_lock, flags);
 
+<<<<<<< HEAD
+=======
+	if (to_drop)
+		rds_inc_put(to_drop);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdsdebug("inc %p rs %p still %d dropped %d\n", inc, rs, ret, drop);
 	return ret;
 }
@@ -296,12 +544,20 @@ static int rds_still_queued(struct rds_sock *rs, struct rds_incoming *inc,
 int rds_notify_queue_get(struct rds_sock *rs, struct msghdr *msghdr)
 {
 	struct rds_notifier *notifier;
+<<<<<<< HEAD
 	struct rds_rdma_notify cmsg = { 0 }; /* fill holes with zero */
+=======
+	struct rds_rdma_notify cmsg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int count = 0, max_messages = ~0U;
 	unsigned long flags;
 	LIST_HEAD(copy);
 	int err = 0;
 
+<<<<<<< HEAD
+=======
+	memset(&cmsg, 0, sizeof(cmsg));	/* fill holes with zero */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* put_cmsg copies to user space and thus may sleep. We can't do this
 	 * with rs_lock held, so first grab as many notifications as we can stuff
@@ -381,6 +637,7 @@ static int rds_notify_cong(struct rds_sock *rs, struct msghdr *msghdr)
 /*
  * Receive any control messages.
  */
+<<<<<<< HEAD
 static int rds_cmsg_recv(struct rds_incoming *inc, struct msghdr *msg)
 {
 	int ret = 0;
@@ -397,12 +654,115 @@ static int rds_cmsg_recv(struct rds_incoming *inc, struct msghdr *msg)
 
 int rds_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 		size_t size, int msg_flags)
+=======
+static int rds_cmsg_recv(struct rds_incoming *inc, struct msghdr *msg,
+			 struct rds_sock *rs)
+{
+	int ret = 0;
+
+	if (inc->i_usercopy.rdma_cookie) {
+		ret = put_cmsg(msg, SOL_RDS, RDS_CMSG_RDMA_DEST,
+				sizeof(inc->i_usercopy.rdma_cookie),
+				&inc->i_usercopy.rdma_cookie);
+		if (ret)
+			goto out;
+	}
+
+	if ((inc->i_usercopy.rx_tstamp != 0) &&
+	    sock_flag(rds_rs_to_sk(rs), SOCK_RCVTSTAMP)) {
+		struct __kernel_old_timeval tv =
+			ns_to_kernel_old_timeval(inc->i_usercopy.rx_tstamp);
+
+		if (!sock_flag(rds_rs_to_sk(rs), SOCK_TSTAMP_NEW)) {
+			ret = put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_OLD,
+				       sizeof(tv), &tv);
+		} else {
+			struct __kernel_sock_timeval sk_tv;
+
+			sk_tv.tv_sec = tv.tv_sec;
+			sk_tv.tv_usec = tv.tv_usec;
+
+			ret = put_cmsg(msg, SOL_SOCKET, SO_TIMESTAMP_NEW,
+				       sizeof(sk_tv), &sk_tv);
+		}
+
+		if (ret)
+			goto out;
+	}
+
+	if (rs->rs_rx_traces) {
+		struct rds_cmsg_rx_trace t;
+		int i, j;
+
+		memset(&t, 0, sizeof(t));
+		inc->i_rx_lat_trace[RDS_MSG_RX_CMSG] = local_clock();
+		t.rx_traces =  rs->rs_rx_traces;
+		for (i = 0; i < rs->rs_rx_traces; i++) {
+			j = rs->rs_rx_trace[i];
+			t.rx_trace_pos[i] = j;
+			t.rx_trace[i] = inc->i_rx_lat_trace[j + 1] -
+					  inc->i_rx_lat_trace[j];
+		}
+
+		ret = put_cmsg(msg, SOL_RDS, RDS_CMSG_RXPATH_LATENCY,
+			       sizeof(t), &t);
+		if (ret)
+			goto out;
+	}
+
+out:
+	return ret;
+}
+
+static bool rds_recvmsg_zcookie(struct rds_sock *rs, struct msghdr *msg)
+{
+	struct rds_msg_zcopy_queue *q = &rs->rs_zcookie_queue;
+	struct rds_msg_zcopy_info *info = NULL;
+	struct rds_zcopy_cookies *done;
+	unsigned long flags;
+
+	if (!msg->msg_control)
+		return false;
+
+	if (!sock_flag(rds_rs_to_sk(rs), SOCK_ZEROCOPY) ||
+	    msg->msg_controllen < CMSG_SPACE(sizeof(*done)))
+		return false;
+
+	spin_lock_irqsave(&q->lock, flags);
+	if (!list_empty(&q->zcookie_head)) {
+		info = list_entry(q->zcookie_head.next,
+				  struct rds_msg_zcopy_info, rs_zcookie_next);
+		list_del(&info->rs_zcookie_next);
+	}
+	spin_unlock_irqrestore(&q->lock, flags);
+	if (!info)
+		return false;
+	done = &info->zcookies;
+	if (put_cmsg(msg, SOL_RDS, RDS_CMSG_ZCOPY_COMPLETION, sizeof(*done),
+		     done)) {
+		spin_lock_irqsave(&q->lock, flags);
+		list_add(&info->rs_zcookie_next, &q->zcookie_head);
+		spin_unlock_irqrestore(&q->lock, flags);
+		return false;
+	}
+	kfree(info);
+	return true;
+}
+
+int rds_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+		int msg_flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct rds_sock *rs = rds_sk_to_rs(sk);
 	long timeo;
 	int ret = 0, nonblock = msg_flags & MSG_DONTWAIT;
+<<<<<<< HEAD
 	struct sockaddr_in *sin;
+=======
+	DECLARE_SOCKADDR(struct sockaddr_in6 *, sin6, msg->msg_name);
+	DECLARE_SOCKADDR(struct sockaddr_in *, sin, msg->msg_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rds_incoming *inc = NULL;
 
 	/* udp_recvmsg()->sock_recvtimeo() gets away without locking too.. */
@@ -412,6 +772,11 @@ int rds_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 
 	if (msg_flags & MSG_OOB)
 		goto out;
+<<<<<<< HEAD
+=======
+	if (msg_flags & MSG_ERRQUEUE)
+		return sock_recv_errqueue(sk, msg, size, SOL_IP, IP_RECVERR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (1) {
 		/* If there are pending notifications, do those - and nothing else */
@@ -427,7 +792,13 @@ int rds_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 
 		if (!rds_next_incoming(rs, &inc)) {
 			if (nonblock) {
+<<<<<<< HEAD
 				ret = -EAGAIN;
+=======
+				bool reaped = rds_recvmsg_zcookie(rs, msg);
+
+				ret = reaped ?  0 : -EAGAIN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 
@@ -446,11 +817,18 @@ int rds_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 			break;
 		}
 
+<<<<<<< HEAD
 		rdsdebug("copying inc %p from %pI4:%u to user\n", inc,
 			 &inc->i_conn->c_faddr,
 			 ntohs(inc->i_hdr.h_sport));
 		ret = inc->i_conn->c_trans->inc_copy_to_user(inc, msg->msg_iov,
 							     size);
+=======
+		rdsdebug("copying inc %p from %pI6c:%u to user\n", inc,
+			 &inc->i_conn->c_faddr,
+			 ntohs(inc->i_hdr.h_sport));
+		ret = inc->i_conn->c_trans->inc_copy_to_user(inc, &msg->msg_iter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			break;
 
@@ -463,6 +841,10 @@ int rds_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 			rds_inc_put(inc);
 			inc = NULL;
 			rds_stats_inc(s_recv_deliver_raced);
+<<<<<<< HEAD
+=======
+			iov_iter_revert(&msg->msg_iter, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -472,6 +854,7 @@ int rds_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 			msg->msg_flags |= MSG_TRUNC;
 		}
 
+<<<<<<< HEAD
 		if (rds_cmsg_recv(inc, msg)) {
 			ret = -EFAULT;
 			goto out;
@@ -486,6 +869,32 @@ int rds_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
 			sin->sin_addr.s_addr = inc->i_saddr;
 			memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
 			msg->msg_namelen = sizeof(*sin);
+=======
+		if (rds_cmsg_recv(inc, msg, rs)) {
+			ret = -EFAULT;
+			break;
+		}
+		rds_recvmsg_zcookie(rs, msg);
+
+		rds_stats_inc(s_recv_delivered);
+
+		if (msg->msg_name) {
+			if (ipv6_addr_v4mapped(&inc->i_saddr)) {
+				sin->sin_family = AF_INET;
+				sin->sin_port = inc->i_hdr.h_sport;
+				sin->sin_addr.s_addr =
+				    inc->i_saddr.s6_addr32[3];
+				memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
+				msg->msg_namelen = sizeof(*sin);
+			} else {
+				sin6->sin6_family = AF_INET6;
+				sin6->sin6_port = inc->i_hdr.h_sport;
+				sin6->sin6_addr = inc->i_saddr;
+				sin6->sin6_flowinfo = 0;
+				sin6->sin6_scope_id = rs->rs_bound_scope_id;
+				msg->msg_namelen = sizeof(*sin6);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	}
@@ -507,16 +916,31 @@ void rds_clear_recv_queue(struct rds_sock *rs)
 	struct sock *sk = rds_rs_to_sk(rs);
 	struct rds_incoming *inc, *tmp;
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	LIST_HEAD(to_drop);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_lock_irqsave(&rs->rs_recv_lock, flags);
 	list_for_each_entry_safe(inc, tmp, &rs->rs_recv_queue, i_item) {
 		rds_recv_rcvbuf_delta(rs, sk, inc->i_conn->c_lcong,
 				      -be32_to_cpu(inc->i_hdr.h_len),
 				      inc->i_hdr.h_dport);
+<<<<<<< HEAD
 		list_del_init(&inc->i_item);
 		rds_inc_put(inc);
 	}
 	write_unlock_irqrestore(&rs->rs_recv_lock, flags);
+=======
+		list_move(&inc->i_item, &to_drop);
+	}
+	write_unlock_irqrestore(&rs->rs_recv_lock, flags);
+
+	list_for_each_entry_safe(inc, tmp, &to_drop, i_item) {
+		list_del_init(&inc->i_item);
+		rds_inc_put(inc);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -531,6 +955,10 @@ void rds_inc_info_copy(struct rds_incoming *inc,
 
 	minfo.seq = be64_to_cpu(inc->i_hdr.h_sequence);
 	minfo.len = be32_to_cpu(inc->i_hdr.h_len);
+<<<<<<< HEAD
+=======
+	minfo.tos = inc->i_conn->c_tos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (flip) {
 		minfo.laddr = daddr;
@@ -544,5 +972,42 @@ void rds_inc_info_copy(struct rds_incoming *inc,
 		minfo.fport = inc->i_hdr.h_dport;
 	}
 
+<<<<<<< HEAD
 	rds_info_copy(iter, &minfo, sizeof(minfo));
 }
+=======
+	minfo.flags = 0;
+
+	rds_info_copy(iter, &minfo, sizeof(minfo));
+}
+
+#if IS_ENABLED(CONFIG_IPV6)
+void rds6_inc_info_copy(struct rds_incoming *inc,
+			struct rds_info_iterator *iter,
+			struct in6_addr *saddr, struct in6_addr *daddr,
+			int flip)
+{
+	struct rds6_info_message minfo6;
+
+	minfo6.seq = be64_to_cpu(inc->i_hdr.h_sequence);
+	minfo6.len = be32_to_cpu(inc->i_hdr.h_len);
+	minfo6.tos = inc->i_conn->c_tos;
+
+	if (flip) {
+		minfo6.laddr = *daddr;
+		minfo6.faddr = *saddr;
+		minfo6.lport = inc->i_hdr.h_dport;
+		minfo6.fport = inc->i_hdr.h_sport;
+	} else {
+		minfo6.laddr = *saddr;
+		minfo6.faddr = *daddr;
+		minfo6.lport = inc->i_hdr.h_sport;
+		minfo6.fport = inc->i_hdr.h_dport;
+	}
+
+	minfo6.flags = 0;
+
+	rds_info_copy(iter, &minfo6, sizeof(minfo6));
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

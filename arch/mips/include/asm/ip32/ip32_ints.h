@@ -13,7 +13,11 @@
 
 /*
  * This list reflects the assignment of interrupt numbers to
+<<<<<<< HEAD
  * interrupting events.  Order is fairly irrelevant to handling
+=======
+ * interrupting events.	 Order is fairly irrelevant to handling
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * priority.  This differs from irix.
  */
 

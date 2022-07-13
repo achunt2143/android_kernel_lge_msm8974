@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC Linux
  *
@@ -9,6 +13,7 @@
  * Copyright (C) 2003 Matjaz Breskvar <phoenix@bsemi.com>
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
  * et al.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -61,6 +66,15 @@ typedef unsigned long elf_fpregset_t;
 #define ELF_DATA	ELFDATA2MSB
 
 #ifdef __KERNEL__
+=======
+ */
+#ifndef __ASM_OPENRISC_ELF_H
+#define __ASM_OPENRISC_ELF_H
+
+
+#include <linux/types.h>
+#include <uapi/asm/elf.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is used to ensure we don't load something for the wrong architecture.
@@ -102,7 +116,10 @@ extern void dump_elf_thread(elf_greg_t *dest, struct pt_regs *pt);
 
 #define ELF_PLATFORM	(NULL)
 
+<<<<<<< HEAD
 #define SET_PERSONALITY(ex) set_personality(PER_LINUX)
 
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

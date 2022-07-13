@@ -1,14 +1,25 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * mm/percpu-vm.c - vmalloc area based chunk allocation
  *
  * Copyright (C) 2010		SUSE Linux Products GmbH
  * Copyright (C) 2010		Tejun Heo <tj@kernel.org>
  *
+<<<<<<< HEAD
  * This file is released under the GPLv2.
  *
  * Chunks are mapped into vmalloc areas and populated page by page.
  * This is the default chunk allocator.
  */
+=======
+ * Chunks are mapped into vmalloc areas and populated page by page.
+ * This is the default chunk allocator.
+ */
+#include "internal.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct page *pcpu_chunk_page(struct pcpu_chunk *chunk,
 				    unsigned int cpu, int page_idx)
@@ -20,6 +31,7 @@ static struct page *pcpu_chunk_page(struct pcpu_chunk *chunk,
 }
 
 /**
+<<<<<<< HEAD
  * pcpu_get_pages_and_bitmap - get temp pages array and bitmap
  * @chunk: chunk of interest
  * @bitmapp: output parameter for bitmap
@@ -60,6 +72,26 @@ static struct page **pcpu_get_pages_and_bitmap(struct pcpu_chunk *chunk,
 	bitmap_copy(bitmap, chunk->populated, pcpu_unit_pages);
 
 	*bitmapp = bitmap;
+=======
+ * pcpu_get_pages - get temp pages array
+ *
+ * Returns pointer to array of pointers to struct page which can be indexed
+ * with pcpu_page_idx().  Note that there is only one array and accesses
+ * should be serialized by pcpu_alloc_mutex.
+ *
+ * RETURNS:
+ * Pointer to temp pages array on success.
+ */
+static struct page **pcpu_get_pages(void)
+{
+	static struct page **pages;
+	size_t pages_size = pcpu_nr_units * pcpu_unit_pages * sizeof(pages[0]);
+
+	lockdep_assert_held(&pcpu_alloc_mutex);
+
+	if (!pages)
+		pages = pcpu_mem_zalloc(pages_size, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pages;
 }
 
@@ -67,7 +99,10 @@ static struct page **pcpu_get_pages_and_bitmap(struct pcpu_chunk *chunk,
  * pcpu_free_pages - free pages which were allocated for @chunk
  * @chunk: chunk pages were allocated for
  * @pages: array of pages to be freed, indexed by pcpu_page_idx()
+<<<<<<< HEAD
  * @populated: populated bitmap
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @page_start: page index of the first page to be freed
  * @page_end: page index of the last page to be freed + 1
  *
@@ -75,8 +110,12 @@ static struct page **pcpu_get_pages_and_bitmap(struct pcpu_chunk *chunk,
  * The pages were allocated for @chunk.
  */
 static void pcpu_free_pages(struct pcpu_chunk *chunk,
+<<<<<<< HEAD
 			    struct page **pages, unsigned long *populated,
 			    int page_start, int page_end)
+=======
+			    struct page **pages, int page_start, int page_end)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int cpu;
 	int i;
@@ -95,15 +134,22 @@ static void pcpu_free_pages(struct pcpu_chunk *chunk,
  * pcpu_alloc_pages - allocates pages for @chunk
  * @chunk: target chunk
  * @pages: array to put the allocated pages into, indexed by pcpu_page_idx()
+<<<<<<< HEAD
  * @populated: populated bitmap
  * @page_start: page index of the first page to be allocated
  * @page_end: page index of the last page to be allocated + 1
+=======
+ * @page_start: page index of the first page to be allocated
+ * @page_end: page index of the last page to be allocated + 1
+ * @gfp: allocation flags passed to the underlying allocator
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Allocate pages [@page_start,@page_end) into @pages for all units.
  * The allocation is for @chunk.  Percpu core doesn't care about the
  * content of @pages and will pass it verbatim to pcpu_map_pages().
  */
 static int pcpu_alloc_pages(struct pcpu_chunk *chunk,
+<<<<<<< HEAD
 			    struct page **pages, unsigned long *populated,
 			    int page_start, int page_end)
 {
@@ -111,6 +157,16 @@ static int pcpu_alloc_pages(struct pcpu_chunk *chunk,
 	unsigned int cpu, tcpu;
 	int i;
 
+=======
+			    struct page **pages, int page_start, int page_end,
+			    gfp_t gfp)
+{
+	unsigned int cpu, tcpu;
+	int i;
+
+	gfp |= __GFP_HIGHMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for_each_possible_cpu(cpu) {
 		for (i = page_start; i < page_end; i++) {
 			struct page **pagep = &pages[pcpu_page_idx(cpu, i)];
@@ -157,14 +213,21 @@ static void pcpu_pre_unmap_flush(struct pcpu_chunk *chunk,
 
 static void __pcpu_unmap_pages(unsigned long addr, int nr_pages)
 {
+<<<<<<< HEAD
 	unmap_kernel_range_noflush(addr, nr_pages << PAGE_SHIFT);
+=======
+	vunmap_range_noflush(addr, addr + (nr_pages << PAGE_SHIFT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * pcpu_unmap_pages - unmap pages out of a pcpu_chunk
  * @chunk: chunk of interest
  * @pages: pages array which can be used to pass information to free
+<<<<<<< HEAD
  * @populated: populated bitmap
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @page_start: page index of the first page to unmap
  * @page_end: page index of the last page to unmap + 1
  *
@@ -175,8 +238,12 @@ static void __pcpu_unmap_pages(unsigned long addr, int nr_pages)
  * proper pre/post flush functions.
  */
 static void pcpu_unmap_pages(struct pcpu_chunk *chunk,
+<<<<<<< HEAD
 			     struct page **pages, unsigned long *populated,
 			     int page_start, int page_end)
+=======
+			     struct page **pages, int page_start, int page_end)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int cpu;
 	int i;
@@ -192,8 +259,11 @@ static void pcpu_unmap_pages(struct pcpu_chunk *chunk,
 		__pcpu_unmap_pages(pcpu_chunk_addr(chunk, cpu, page_start),
 				   page_end - page_start);
 	}
+<<<<<<< HEAD
 
 	bitmap_clear(populated, page_start, page_end - page_start);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -220,15 +290,23 @@ static void pcpu_post_unmap_tlb_flush(struct pcpu_chunk *chunk,
 static int __pcpu_map_pages(unsigned long addr, struct page **pages,
 			    int nr_pages)
 {
+<<<<<<< HEAD
 	return map_kernel_range_noflush(addr, nr_pages << PAGE_SHIFT,
 					PAGE_KERNEL, pages);
+=======
+	return vmap_pages_range_noflush(addr, addr + (nr_pages << PAGE_SHIFT),
+					PAGE_KERNEL, pages, PAGE_SHIFT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * pcpu_map_pages - map pages into a pcpu_chunk
  * @chunk: chunk of interest
  * @pages: pages array containing pages to be mapped
+<<<<<<< HEAD
  * @populated: populated bitmap
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @page_start: page index of the first page to map
  * @page_end: page index of the last page to map + 1
  *
@@ -236,6 +314,7 @@ static int __pcpu_map_pages(unsigned long addr, struct page **pages,
  * caller is responsible for calling pcpu_post_map_flush() after all
  * mappings are complete.
  *
+<<<<<<< HEAD
  * This function is responsible for setting corresponding bits in
  * @chunk->populated bitmap and whatever is necessary for reverse
  * lookup (addr -> chunk).
@@ -243,6 +322,13 @@ static int __pcpu_map_pages(unsigned long addr, struct page **pages,
 static int pcpu_map_pages(struct pcpu_chunk *chunk,
 			  struct page **pages, unsigned long *populated,
 			  int page_start, int page_end)
+=======
+ * This function is responsible for setting up whatever is necessary for
+ * reverse lookup (addr -> chunk).
+ */
+static int pcpu_map_pages(struct pcpu_chunk *chunk,
+			  struct page **pages, int page_start, int page_end)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int cpu, tcpu;
 	int i, err;
@@ -253,6 +339,7 @@ static int pcpu_map_pages(struct pcpu_chunk *chunk,
 				       page_end - page_start);
 		if (err < 0)
 			goto err;
+<<<<<<< HEAD
 	}
 
 	/* mapping successful, link chunk and mark populated */
@@ -265,6 +352,14 @@ static int pcpu_map_pages(struct pcpu_chunk *chunk,
 
 	return 0;
 
+=======
+
+		for (i = page_start; i < page_end; i++)
+			pcpu_set_page_chunk(pages[pcpu_page_idx(cpu, i)],
+					    chunk);
+	}
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	for_each_possible_cpu(tcpu) {
 		if (tcpu == cpu)
@@ -299,15 +394,25 @@ static void pcpu_post_map_flush(struct pcpu_chunk *chunk,
 /**
  * pcpu_populate_chunk - populate and map an area of a pcpu_chunk
  * @chunk: chunk of interest
+<<<<<<< HEAD
  * @off: offset to the area to populate
  * @size: size of the area to populate in bytes
  *
  * For each cpu, populate and map pages [@page_start,@page_end) into
  * @chunk.  The area is cleared on return.
+=======
+ * @page_start: the start page
+ * @page_end: the end page
+ * @gfp: allocation flags passed to the underlying memory allocator
+ *
+ * For each cpu, populate and map pages [@page_start,@page_end) into
+ * @chunk.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * CONTEXT:
  * pcpu_alloc_mutex, does GFP_KERNEL allocation.
  */
+<<<<<<< HEAD
 static int pcpu_populate_chunk(struct pcpu_chunk *chunk, int off, int size)
 {
 	int page_start = PFN_DOWN(off);
@@ -363,11 +468,33 @@ err_free:
 	pcpu_for_each_unpop_region(chunk, rs, re, page_start, free_end)
 		pcpu_free_pages(chunk, pages, populated, rs, re);
 	return rc;
+=======
+static int pcpu_populate_chunk(struct pcpu_chunk *chunk,
+			       int page_start, int page_end, gfp_t gfp)
+{
+	struct page **pages;
+
+	pages = pcpu_get_pages();
+	if (!pages)
+		return -ENOMEM;
+
+	if (pcpu_alloc_pages(chunk, pages, page_start, page_end, gfp))
+		return -ENOMEM;
+
+	if (pcpu_map_pages(chunk, pages, page_start, page_end)) {
+		pcpu_free_pages(chunk, pages, page_start, page_end);
+		return -ENOMEM;
+	}
+	pcpu_post_map_flush(chunk, page_start, page_end);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * pcpu_depopulate_chunk - depopulate and unmap an area of a pcpu_chunk
  * @chunk: chunk to depopulate
+<<<<<<< HEAD
  * @off: offset to the area to depopulate
  * @size: size of the area to depopulate in bytes
  * @flush: whether to flush cache and tlb or not
@@ -375,10 +502,21 @@ err_free:
  * For each cpu, depopulate and unmap pages [@page_start,@page_end)
  * from @chunk.  If @flush is true, vcache is flushed before unmapping
  * and tlb after.
+=======
+ * @page_start: the start page
+ * @page_end: the end page
+ *
+ * For each cpu, depopulate and unmap pages [@page_start,@page_end)
+ * from @chunk.
+ *
+ * Caller is required to call pcpu_post_unmap_tlb_flush() if not returning the
+ * region back to vmalloc() which will lazily flush the tlb.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * CONTEXT:
  * pcpu_alloc_mutex.
  */
+<<<<<<< HEAD
 static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk, int off, int size)
 {
 	int page_start = PFN_DOWN(off);
@@ -395,18 +533,29 @@ static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk, int off, int size)
 
 	/* immutable chunks can't be depopulated */
 	WARN_ON(chunk->immutable);
+=======
+static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk,
+				  int page_start, int page_end)
+{
+	struct page **pages;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If control reaches here, there must have been at least one
 	 * successful population attempt so the temp pages array must
 	 * be available now.
 	 */
+<<<<<<< HEAD
 	pages = pcpu_get_pages_and_bitmap(chunk, &populated, false);
+=======
+	pages = pcpu_get_pages();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(!pages);
 
 	/* unmap and free */
 	pcpu_pre_unmap_flush(chunk, page_start, page_end);
 
+<<<<<<< HEAD
 	pcpu_for_each_pop_region(chunk, rs, re, page_start, page_end)
 		pcpu_unmap_pages(chunk, pages, populated, rs, re);
 
@@ -420,11 +569,23 @@ static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk, int off, int size)
 }
 
 static struct pcpu_chunk *pcpu_create_chunk(void)
+=======
+	pcpu_unmap_pages(chunk, pages, page_start, page_end);
+
+	pcpu_free_pages(chunk, pages, page_start, page_end);
+}
+
+static struct pcpu_chunk *pcpu_create_chunk(gfp_t gfp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcpu_chunk *chunk;
 	struct vm_struct **vms;
 
+<<<<<<< HEAD
 	chunk = pcpu_alloc_chunk();
+=======
+	chunk = pcpu_alloc_chunk(gfp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!chunk)
 		return NULL;
 
@@ -437,12 +598,29 @@ static struct pcpu_chunk *pcpu_create_chunk(void)
 
 	chunk->data = vms;
 	chunk->base_addr = vms[0]->addr - pcpu_group_offsets[0];
+<<<<<<< HEAD
+=======
+
+	pcpu_stats_chunk_alloc();
+	trace_percpu_create_chunk(chunk->base_addr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return chunk;
 }
 
 static void pcpu_destroy_chunk(struct pcpu_chunk *chunk)
 {
+<<<<<<< HEAD
 	if (chunk && chunk->data)
+=======
+	if (!chunk)
+		return;
+
+	pcpu_stats_chunk_dealloc();
+	trace_percpu_destroy_chunk(chunk->base_addr);
+
+	if (chunk->data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pcpu_free_vm_areas(chunk->data, pcpu_nr_groups);
 	pcpu_free_chunk(chunk);
 }
@@ -457,3 +635,36 @@ static int __init pcpu_verify_alloc_info(const struct pcpu_alloc_info *ai)
 	/* no extra restriction */
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+/**
+ * pcpu_should_reclaim_chunk - determine if a chunk should go into reclaim
+ * @chunk: chunk of interest
+ *
+ * This is the entry point for percpu reclaim.  If a chunk qualifies, it is then
+ * isolated and managed in separate lists at the back of pcpu_slot: sidelined
+ * and to_depopulate respectively.  The to_depopulate list holds chunks slated
+ * for depopulation.  They no longer contribute to pcpu_nr_empty_pop_pages once
+ * they are on this list.  Once depopulated, they are moved onto the sidelined
+ * list which enables them to be pulled back in for allocation if no other chunk
+ * can suffice the allocation.
+ */
+static bool pcpu_should_reclaim_chunk(struct pcpu_chunk *chunk)
+{
+	/* do not reclaim either the first chunk or reserved chunk */
+	if (chunk == pcpu_first_chunk || chunk == pcpu_reserved_chunk)
+		return false;
+
+	/*
+	 * If it is isolated, it may be on the sidelined list so move it back to
+	 * the to_depopulate list.  If we hit at least 1/4 pages empty pages AND
+	 * there is no system-wide shortage of empty pages aside from this
+	 * chunk, move it to the to_depopulate list.
+	 */
+	return ((chunk->isolated && chunk->nr_empty_pop_pages) ||
+		(pcpu_nr_empty_pop_pages >
+		 (PCPU_EMPTY_POP_PAGES_HIGH + chunk->nr_empty_pop_pages) &&
+		 chunk->nr_empty_pop_pages >= chunk->nr_pages / 4));
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

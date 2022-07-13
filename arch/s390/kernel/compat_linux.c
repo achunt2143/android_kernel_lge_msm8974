@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 /*
  *  arch/s390x/kernel/linux32.c
  *
  *  S390 version
  *    Copyright (C) 2000 IBM Deutschland Entwicklung GmbH, IBM Corporation
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ *  S390 version
+ *    Copyright IBM Corp. 2000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Martin Schwidefsky (schwidefsky@de.ibm.com),
  *               Gerhard Tonn (ton@de.ibm.com)   
  *               Thomas Spatzier (tspat@de.ibm.com)
@@ -30,13 +37,19 @@
 #include <linux/shm.h>
 #include <linux/uio.h>
 #include <linux/quota.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/poll.h>
 #include <linux/personality.h>
 #include <linux/stat.h>
 #include <linux/filter.h>
 #include <linux/highmem.h>
+<<<<<<< HEAD
 #include <linux/highuid.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mman.h>
 #include <linux/ipv6.h>
 #include <linux/in.h>
@@ -53,13 +66,18 @@
 #include <linux/slab.h>
 
 #include <asm/types.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/scm.h>
 #include <net/sock.h>
 
 #include "compat_linux.h"
 
+<<<<<<< HEAD
 u32 psw32_user_bits = PSW32_MASK_DAT | PSW32_MASK_IO | PSW32_MASK_EXT |
 		      PSW32_DEFAULT_KEY | PSW32_MASK_BASE | PSW32_MASK_MCHECK |
 		      PSW32_MASK_PSTATE | PSW32_ASC_HOME;
@@ -499,6 +517,47 @@ asmlinkage long sys32_sendfile64(int out_fd, int in_fd,
 		return -EFAULT;
 		
 	return ret;
+=======
+#ifdef CONFIG_SYSVIPC
+COMPAT_SYSCALL_DEFINE5(s390_ipc, uint, call, int, first, compat_ulong_t, second,
+		compat_ulong_t, third, compat_uptr_t, ptr)
+{
+	if (call >> 16)		/* hack for backward compatibility */
+		return -EINVAL;
+	return compat_ksys_ipc(call, first, second, third, ptr, third);
+}
+#endif
+
+COMPAT_SYSCALL_DEFINE3(s390_truncate64, const char __user *, path, u32, high, u32, low)
+{
+	return ksys_truncate(path, (unsigned long)high << 32 | low);
+}
+
+COMPAT_SYSCALL_DEFINE3(s390_ftruncate64, unsigned int, fd, u32, high, u32, low)
+{
+	return ksys_ftruncate(fd, (unsigned long)high << 32 | low);
+}
+
+COMPAT_SYSCALL_DEFINE5(s390_pread64, unsigned int, fd, char __user *, ubuf,
+		       compat_size_t, count, u32, high, u32, low)
+{
+	if ((compat_ssize_t) count < 0)
+		return -EINVAL;
+	return ksys_pread64(fd, ubuf, count, (unsigned long)high << 32 | low);
+}
+
+COMPAT_SYSCALL_DEFINE5(s390_pwrite64, unsigned int, fd, const char __user *, ubuf,
+		       compat_size_t, count, u32, high, u32, low)
+{
+	if ((compat_ssize_t) count < 0)
+		return -EINVAL;
+	return ksys_pwrite64(fd, ubuf, count, (unsigned long)high << 32 | low);
+}
+
+COMPAT_SYSCALL_DEFINE4(s390_readahead, int, fd, u32, high, u32, low, s32, count)
+{
+	return ksys_readahead(fd, (unsigned long)high << 32 | low, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct stat64_emu31 {
@@ -537,8 +596,13 @@ static int cp_stat64(struct stat64_emu31 __user *ubuf, struct kstat *stat)
 	tmp.__st_ino = (u32)stat->ino;
 	tmp.st_mode = stat->mode;
 	tmp.st_nlink = (unsigned int)stat->nlink;
+<<<<<<< HEAD
 	tmp.st_uid = stat->uid;
 	tmp.st_gid = stat->gid;
+=======
+	tmp.st_uid = from_kuid_munged(current_user_ns(), stat->uid);
+	tmp.st_gid = from_kgid_munged(current_user_ns(), stat->gid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp.st_rdev = huge_encode_dev(stat->rdev);
 	tmp.st_size = stat->size;
 	tmp.st_blksize = (u32)stat->blksize;
@@ -550,7 +614,11 @@ static int cp_stat64(struct stat64_emu31 __user *ubuf, struct kstat *stat)
 	return copy_to_user(ubuf,&tmp,sizeof(tmp)) ? -EFAULT : 0; 
 }
 
+<<<<<<< HEAD
 asmlinkage long sys32_stat64(const char __user * filename, struct stat64_emu31 __user * statbuf)
+=======
+COMPAT_SYSCALL_DEFINE2(s390_stat64, const char __user *, filename, struct stat64_emu31 __user *, statbuf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kstat stat;
 	int ret = vfs_stat(filename, &stat);
@@ -559,7 +627,11 @@ asmlinkage long sys32_stat64(const char __user * filename, struct stat64_emu31 _
 	return ret;
 }
 
+<<<<<<< HEAD
 asmlinkage long sys32_lstat64(const char __user * filename, struct stat64_emu31 __user * statbuf)
+=======
+COMPAT_SYSCALL_DEFINE2(s390_lstat64, const char __user *, filename, struct stat64_emu31 __user *, statbuf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kstat stat;
 	int ret = vfs_lstat(filename, &stat);
@@ -568,7 +640,11 @@ asmlinkage long sys32_lstat64(const char __user * filename, struct stat64_emu31 
 	return ret;
 }
 
+<<<<<<< HEAD
 asmlinkage long sys32_fstat64(unsigned long fd, struct stat64_emu31 __user * statbuf)
+=======
+COMPAT_SYSCALL_DEFINE2(s390_fstat64, unsigned int, fd, struct stat64_emu31 __user *, statbuf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kstat stat;
 	int ret = vfs_fstat(fd, &stat);
@@ -577,8 +653,13 @@ asmlinkage long sys32_fstat64(unsigned long fd, struct stat64_emu31 __user * sta
 	return ret;
 }
 
+<<<<<<< HEAD
 asmlinkage long sys32_fstatat64(unsigned int dfd, const char __user *filename,
 				struct stat64_emu31 __user* statbuf, int flag)
+=======
+COMPAT_SYSCALL_DEFINE4(s390_fstatat64, unsigned int, dfd, const char __user *, filename,
+		       struct stat64_emu31 __user *, statbuf, int, flag)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kstat stat;
 	int error;
@@ -604,7 +685,11 @@ struct mmap_arg_struct_emu31 {
 	compat_ulong_t offset;
 };
 
+<<<<<<< HEAD
 asmlinkage unsigned long old32_mmap(struct mmap_arg_struct_emu31 __user *arg)
+=======
+COMPAT_SYSCALL_DEFINE1(s390_old_mmap, struct mmap_arg_struct_emu31 __user *, arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mmap_arg_struct_emu31 a;
 
@@ -612,33 +697,59 @@ asmlinkage unsigned long old32_mmap(struct mmap_arg_struct_emu31 __user *arg)
 		return -EFAULT;
 	if (a.offset & ~PAGE_MASK)
 		return -EINVAL;
+<<<<<<< HEAD
 	return sys_mmap_pgoff(a.addr, a.len, a.prot, a.flags, a.fd,
 			      a.offset >> PAGE_SHIFT);
 }
 
 asmlinkage long sys32_mmap2(struct mmap_arg_struct_emu31 __user *arg)
+=======
+	return ksys_mmap_pgoff(a.addr, a.len, a.prot, a.flags, a.fd,
+			       a.offset >> PAGE_SHIFT);
+}
+
+COMPAT_SYSCALL_DEFINE1(s390_mmap2, struct mmap_arg_struct_emu31 __user *, arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mmap_arg_struct_emu31 a;
 
 	if (copy_from_user(&a, arg, sizeof(a)))
 		return -EFAULT;
+<<<<<<< HEAD
 	return sys_mmap_pgoff(a.addr, a.len, a.prot, a.flags, a.fd, a.offset);
 }
 
 asmlinkage long sys32_read(unsigned int fd, char __user * buf, size_t count)
+=======
+	return ksys_mmap_pgoff(a.addr, a.len, a.prot, a.flags, a.fd, a.offset);
+}
+
+COMPAT_SYSCALL_DEFINE3(s390_read, unsigned int, fd, char __user *, buf, compat_size_t, count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if ((compat_ssize_t) count < 0)
 		return -EINVAL; 
 
+<<<<<<< HEAD
 	return sys_read(fd, buf, count);
 }
 
 asmlinkage long sys32_write(unsigned int fd, const char __user * buf, size_t count)
+=======
+	return ksys_read(fd, buf, count);
+}
+
+COMPAT_SYSCALL_DEFINE3(s390_write, unsigned int, fd, const char __user *, buf, compat_size_t, count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if ((compat_ssize_t) count < 0)
 		return -EINVAL; 
 
+<<<<<<< HEAD
 	return sys_write(fd, buf, count);
+=======
+	return ksys_write(fd, buf, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -647,14 +758,23 @@ asmlinkage long sys32_write(unsigned int fd, const char __user * buf, size_t cou
  * because the 31 bit values differ from the 64 bit values.
  */
 
+<<<<<<< HEAD
 asmlinkage long
 sys32_fadvise64(int fd, loff_t offset, size_t len, int advise)
+=======
+COMPAT_SYSCALL_DEFINE5(s390_fadvise64, int, fd, u32, high, u32, low, compat_size_t, len, int, advise)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (advise == 4)
 		advise = POSIX_FADV_DONTNEED;
 	else if (advise == 5)
 		advise = POSIX_FADV_NOREUSE;
+<<<<<<< HEAD
 	return sys_fadvise64(fd, offset, len, advise);
+=======
+	return ksys_fadvise64_64(fd, (unsigned long)high << 32 | low, len,
+				 advise);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct fadvise64_64_args {
@@ -664,8 +784,12 @@ struct fadvise64_64_args {
 	int advice;
 };
 
+<<<<<<< HEAD
 asmlinkage long
 sys32_fadvise64_64(struct fadvise64_64_args __user *args)
+=======
+COMPAT_SYSCALL_DEFINE1(s390_fadvise64_64, struct fadvise64_64_args __user *, args)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fadvise64_64_args a;
 
@@ -675,5 +799,23 @@ sys32_fadvise64_64(struct fadvise64_64_args __user *args)
 		a.advice = POSIX_FADV_DONTNEED;
 	else if (a.advice == 5)
 		a.advice = POSIX_FADV_NOREUSE;
+<<<<<<< HEAD
 	return sys_fadvise64_64(a.fd, a.offset, a.len, a.advice);
+=======
+	return ksys_fadvise64_64(a.fd, a.offset, a.len, a.advice);
+}
+
+COMPAT_SYSCALL_DEFINE6(s390_sync_file_range, int, fd, u32, offhigh, u32, offlow,
+		       u32, nhigh, u32, nlow, unsigned int, flags)
+{
+	return ksys_sync_file_range(fd, ((loff_t)offhigh << 32) + offlow,
+				   ((u64)nhigh << 32) + nlow, flags);
+}
+
+COMPAT_SYSCALL_DEFINE6(s390_fallocate, int, fd, int, mode, u32, offhigh, u32, offlow,
+		       u32, lenhigh, u32, lenlow)
+{
+	return ksys_fallocate(fd, mode, ((loff_t)offhigh << 32) + offlow,
+			      ((u64)lenhigh << 32) + lenlow);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

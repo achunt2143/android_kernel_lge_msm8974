@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  ALSA sequencer Timer
  *  Copyright (c) 1998-1999 by Frank van de Pol <fvdpol@coil.demon.nl>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *  ALSA sequencer Timer
+ *  Copyright (c) 1998-1999 by Frank van de Pol <fvdpol@coil.demon.nl>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __SND_SEQ_TIMER_H
 #define __SND_SEQ_TIMER_H
@@ -52,7 +59,11 @@ struct snd_seq_timer {
 	unsigned int skew;
 	unsigned int skew_base;
 
+<<<<<<< HEAD
 	struct timeval 		last_update;	 /* time of last clock update, used for interpolation */
+=======
+	struct timespec64	last_update;	 /* time of last clock update, used for interpolation */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t lock;
 };
@@ -131,11 +142,20 @@ int snd_seq_timer_stop(struct snd_seq_timer *tmr);
 int snd_seq_timer_start(struct snd_seq_timer *tmr);
 int snd_seq_timer_continue(struct snd_seq_timer *tmr);
 int snd_seq_timer_set_tempo(struct snd_seq_timer *tmr, int tempo);
+<<<<<<< HEAD
 int snd_seq_timer_set_ppq(struct snd_seq_timer *tmr, int ppq);
 int snd_seq_timer_set_position_tick(struct snd_seq_timer *tmr, snd_seq_tick_time_t position);
 int snd_seq_timer_set_position_time(struct snd_seq_timer *tmr, snd_seq_real_time_t position);
 int snd_seq_timer_set_skew(struct snd_seq_timer *tmr, unsigned int skew, unsigned int base);
 snd_seq_real_time_t snd_seq_timer_get_cur_time(struct snd_seq_timer *tmr);
+=======
+int snd_seq_timer_set_tempo_ppq(struct snd_seq_timer *tmr, int tempo, int ppq);
+int snd_seq_timer_set_position_tick(struct snd_seq_timer *tmr, snd_seq_tick_time_t position);
+int snd_seq_timer_set_position_time(struct snd_seq_timer *tmr, snd_seq_real_time_t position);
+int snd_seq_timer_set_skew(struct snd_seq_timer *tmr, unsigned int skew, unsigned int base);
+snd_seq_real_time_t snd_seq_timer_get_cur_time(struct snd_seq_timer *tmr,
+					       bool adjust_ktime);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_seq_tick_time_t snd_seq_timer_get_cur_tick(struct snd_seq_timer *tmr);
 
 extern int seq_default_timer_class;

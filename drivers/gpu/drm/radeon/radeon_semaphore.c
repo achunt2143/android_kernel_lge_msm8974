@@ -27,6 +27,7 @@
  * Authors:
  *    Christian König <deathsimple@vodafone.de>
  */
+<<<<<<< HEAD
 #include "drmP.h"
 #include "drm.h"
 #include "radeon.h"
@@ -99,10 +100,16 @@ void radeon_semaphore_shrink_locked(struct radeon_device *rdev)
 		radeon_semaphore_del_bo_locked(rdev, bo);
 	}
 }
+=======
+
+#include "radeon.h"
+#include "radeon_trace.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int radeon_semaphore_create(struct radeon_device *rdev,
 			    struct radeon_semaphore **semaphore)
 {
+<<<<<<< HEAD
 	struct radeon_semaphore_bo *bo;
 	unsigned long irq_flags;
 	bool do_retry = true;
@@ -133,10 +140,30 @@ retry:
 		}
 		return -ENOMEM;
 	}
+=======
+	int r;
+
+	*semaphore = kmalloc(sizeof(struct radeon_semaphore), GFP_KERNEL);
+	if (*semaphore == NULL) {
+		return -ENOMEM;
+	}
+	r = radeon_sa_bo_new(&rdev->ring_tmp_bo,
+			     &(*semaphore)->sa_bo, 8, 8);
+	if (r) {
+		kfree(*semaphore);
+		*semaphore = NULL;
+		return r;
+	}
+	(*semaphore)->waiters = 0;
+	(*semaphore)->gpu_addr = radeon_sa_bo_gpu_addr((*semaphore)->sa_bo);
+
+	*((uint64_t *)radeon_sa_bo_cpu_addr((*semaphore)->sa_bo)) = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 void radeon_semaphore_emit_signal(struct radeon_device *rdev, int ring,
 			          struct radeon_semaphore *semaphore)
 {
@@ -175,4 +202,54 @@ void radeon_semaphore_driver_fini(struct radeon_device *rdev)
 		radeon_semaphore_del_bo_locked(rdev, bo);
 	}
 	write_unlock_irqrestore(&rdev->semaphore_drv.lock, irq_flags);
+=======
+bool radeon_semaphore_emit_signal(struct radeon_device *rdev, int ridx,
+				  struct radeon_semaphore *semaphore)
+{
+	struct radeon_ring *ring = &rdev->ring[ridx];
+
+	trace_radeon_semaphore_signale(ridx, semaphore);
+
+	if (radeon_semaphore_ring_emit(rdev, ridx, ring, semaphore, false)) {
+		--semaphore->waiters;
+
+		/* for debugging lockup only, used by sysfs debug files */
+		ring->last_semaphore_signal_addr = semaphore->gpu_addr;
+		return true;
+	}
+	return false;
+}
+
+bool radeon_semaphore_emit_wait(struct radeon_device *rdev, int ridx,
+				struct radeon_semaphore *semaphore)
+{
+	struct radeon_ring *ring = &rdev->ring[ridx];
+
+	trace_radeon_semaphore_wait(ridx, semaphore);
+
+	if (radeon_semaphore_ring_emit(rdev, ridx, ring, semaphore, true)) {
+		++semaphore->waiters;
+
+		/* for debugging lockup only, used by sysfs debug files */
+		ring->last_semaphore_wait_addr = semaphore->gpu_addr;
+		return true;
+	}
+	return false;
+}
+
+void radeon_semaphore_free(struct radeon_device *rdev,
+			   struct radeon_semaphore **semaphore,
+			   struct radeon_fence *fence)
+{
+	if (semaphore == NULL || *semaphore == NULL) {
+		return;
+	}
+	if ((*semaphore)->waiters > 0) {
+		dev_err(rdev->dev, "semaphore %p has more waiters than signalers,"
+			" hardware lockup imminent!\n", *semaphore);
+	}
+	radeon_sa_bo_free(&(*semaphore)->sa_bo, fence);
+	kfree(*semaphore);
+	*semaphore = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

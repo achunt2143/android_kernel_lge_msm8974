@@ -16,6 +16,11 @@
 
 #include <asm/amigahw.h>
 
+<<<<<<< HEAD
+=======
+#include "amiga.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned short *snd_data;
 static const signed char sine_data[] = {
 	0,  39,  75,  103,  121,  127,  121,  103,  75,  39,
@@ -51,7 +56,11 @@ void __init amiga_init_sound(void)
 
 	snd_data = amiga_chip_alloc_res(sizeof(sine_data), &beep_res);
 	if (!snd_data) {
+<<<<<<< HEAD
 		printk (KERN_CRIT "amiga init_sound: failed to allocate chipmem\n");
+=======
+		pr_crit("amiga init_sound: failed to allocate chipmem\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	memcpy (snd_data, sine_data, sizeof(sine_data));
@@ -65,8 +74,13 @@ void __init amiga_init_sound(void)
 #endif
 }
 
+<<<<<<< HEAD
 static void nosound( unsigned long ignored );
 static DEFINE_TIMER(sound_timer, nosound, 0, 0);
+=======
+static void nosound(struct timer_list *unused);
+static DEFINE_TIMER(sound_timer, nosound);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void amiga_mksound( unsigned int hz, unsigned int ticks )
 {
@@ -107,7 +121,11 @@ void amiga_mksound( unsigned int hz, unsigned int ticks )
 }
 
 
+<<<<<<< HEAD
 static void nosound( unsigned long ignored )
+=======
+static void nosound(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* turn off DMA for audio channel 2 */
 	custom.dmacon = DMAF_AUD2;

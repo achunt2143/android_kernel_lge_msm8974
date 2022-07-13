@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*------------------------------------------------------------------------
  . smc91x.h - macros for SMSC's 91C9x/91C1xx single-chip Ethernet device.
  .
@@ -7,6 +11,7 @@
  . Copyright (C) 2003 Monta Vista Software, Inc.
  .	Unified SMC91x driver by Nicolas Pitre
  .
+<<<<<<< HEAD
  . This program is free software; you can redistribute it and/or modify
  . it under the terms of the GNU General Public License as published by
  . the Free Software Foundation; either version 2 of the License, or
@@ -20,6 +25,8 @@
  . You should have received a copy of the GNU General Public License
  . along with this program; if not, write to the Free Software
  . Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  .
  . Information contained in this file was obtained from the LAN91C111
  . manual from SMC.  To get a copy, if you really want one, you can find
@@ -34,6 +41,7 @@
 #ifndef _SMC91X_H_
 #define _SMC91X_H_
 
+<<<<<<< HEAD
 #include <linux/smc91x.h>
 
 /*
@@ -48,6 +56,37 @@
     defined(CONFIG_ARCH_VIPER) ||\
     defined(CONFIG_MACH_STARGATE2) ||\
     defined(CONFIG_ARCH_VERSATILE)
+=======
+#include <linux/dmaengine.h>
+#include <linux/smc91x.h>
+
+/*
+ * Any 16-bit access is performed with two 8-bit accesses if the hardware
+ * can't do it directly. Most registers are 16-bit so those are mandatory.
+ */
+#define SMC_outw_b(x, a, r)						\
+	do {								\
+		unsigned int __val16 = (x);				\
+		unsigned int __reg = (r);				\
+		SMC_outb(__val16, a, __reg);				\
+		SMC_outb(__val16 >> 8, a, __reg + (1 << SMC_IO_SHIFT));	\
+	} while (0)
+
+#define SMC_inw_b(a, r)							\
+	({								\
+		unsigned int __val16;					\
+		unsigned int __reg = r;					\
+		__val16  = SMC_inb(a, __reg);				\
+		__val16 |= SMC_inb(a, __reg + (1 << SMC_IO_SHIFT)) << 8; \
+		__val16;						\
+	})
+
+/*
+ * Define your architecture specific bus configuration parameters here.
+ */
+
+#if defined(CONFIG_ARM)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mach-types.h>
 
@@ -62,10 +101,37 @@
 #define SMC_IO_SHIFT		(lp->io_shift)
 
 #define SMC_inb(a, r)		readb((a) + (r))
+<<<<<<< HEAD
 #define SMC_inw(a, r)		readw((a) + (r))
 #define SMC_inl(a, r)		readl((a) + (r))
 #define SMC_outb(v, a, r)	writeb(v, (a) + (r))
 #define SMC_outl(v, a, r)	writel(v, (a) + (r))
+=======
+#define SMC_inw(a, r)							\
+	({								\
+		unsigned int __smc_r = r;				\
+		SMC_16BIT(lp) ? readw((a) + __smc_r) :			\
+		SMC_8BIT(lp) ? SMC_inw_b(a, __smc_r) :			\
+		({ BUG(); 0; });					\
+	})
+
+#define SMC_inl(a, r)		readl((a) + (r))
+#define SMC_outb(v, a, r)	writeb(v, (a) + (r))
+#define SMC_outw(lp, v, a, r)						\
+	do {								\
+		unsigned int __v = v, __smc_r = r;			\
+		if (SMC_16BIT(lp))					\
+			__SMC_outw(lp, __v, a, __smc_r);		\
+		else if (SMC_8BIT(lp))					\
+			SMC_outw_b(__v, a, __smc_r);			\
+		else							\
+			BUG();						\
+	} while (0)
+
+#define SMC_outl(v, a, r)	writel(v, (a) + (r))
+#define SMC_insb(a, r, p, l)	readsb((a) + (r), p, l)
+#define SMC_outsb(a, r, p, l)	writesb((a) + (r), p, l)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SMC_insw(a, r, p, l)	readsw((a) + (r), p, l)
 #define SMC_outsw(a, r, p, l)	writesw((a) + (r), p, l)
 #define SMC_insl(a, r, p, l)	readsl((a) + (r), p, l)
@@ -73,9 +139,16 @@
 #define SMC_IRQ_FLAGS		(-1)	/* from resource */
 
 /* We actually can't write halfwords properly if not word aligned */
+<<<<<<< HEAD
 static inline void SMC_outw(u16 val, void __iomem *ioaddr, int reg)
 {
 	if ((machine_is_mainstone() || machine_is_stargate2()) && reg & 2) {
+=======
+static inline void _SMC_outw_align4(u16 val, void __iomem *ioaddr, int reg,
+				    bool use_align4_workaround)
+{
+	if (use_align4_workaround) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int v = val << 16;
 		v |= readl(ioaddr + (reg & ~2)) & 0xffff;
 		writel(v, ioaddr + (reg & ~2));
@@ -84,6 +157,7 @@ static inline void SMC_outw(u16 val, void __iomem *ioaddr, int reg)
 	}
 }
 
+<<<<<<< HEAD
 #elif defined(CONFIG_SA1100_PLEB)
 /* We can only do 16-bit reads and writes in the static memory space. */
 #define SMC_CAN_USE_8BIT	1
@@ -244,6 +318,34 @@ SMC_outw(u16 val, void __iomem *ioaddr, int reg)
 #define SMC_outsw(a, r, p, l)	writesw((a) + (r), p, l)
 
 #define SMC_IRQ_FLAGS		IRQF_TRIGGER_HIGH
+=======
+#define __SMC_outw(lp, v, a, r)						\
+	_SMC_outw_align4((v), (a), (r),					\
+			 IS_BUILTIN(CONFIG_ARCH_PXA) && ((r) & 2) &&	\
+			 (lp)->cfg.pxa_u16_align4)
+
+
+#elif defined(CONFIG_ATARI)
+
+#define SMC_CAN_USE_8BIT        1
+#define SMC_CAN_USE_16BIT       1
+#define SMC_CAN_USE_32BIT       1
+#define SMC_NOWAIT              1
+
+#define SMC_inb(a, r)           readb((a) + (r))
+#define SMC_inw(a, r)           readw((a) + (r))
+#define SMC_inl(a, r)           readl((a) + (r))
+#define SMC_outb(v, a, r)       writeb(v, (a) + (r))
+#define SMC_outw(lp, v, a, r)   writew(v, (a) + (r))
+#define SMC_outl(v, a, r)       writel(v, (a) + (r))
+#define SMC_insw(a, r, p, l)    readsw((a) + (r), p, l)
+#define SMC_outsw(a, r, p, l)   writesw((a) + (r), p, l)
+#define SMC_insl(a, r, p, l)    readsl((a) + (r), p, l)
+#define SMC_outsl(a, r, p, l)   writesl((a) + (r), p, l)
+
+#define RPC_LSA_DEFAULT         RPC_LED_100_10
+#define RPC_LSB_DEFAULT         RPC_LED_TX_RX
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #elif defined(CONFIG_COLDFIRE)
 
@@ -267,11 +369,19 @@ static inline void mcf_outsw(void *a, unsigned char *p, int l)
 }
 
 #define SMC_inw(a, r)		_swapw(readw((a) + (r)))
+<<<<<<< HEAD
 #define SMC_outw(v, a, r)	writew(_swapw(v), (a) + (r))
 #define SMC_insw(a, r, p, l)	mcf_insw(a + r, p, l)
 #define SMC_outsw(a, r, p, l)	mcf_outsw(a + r, p, l)
 
 #define SMC_IRQ_FLAGS		(IRQF_DISABLED)
+=======
+#define SMC_outw(lp, v, a, r)	writew(_swapw(v), (a) + (r))
+#define SMC_insw(a, r, p, l)	mcf_insw(a + r, p, l)
+#define SMC_outsw(a, r, p, l)	mcf_outsw(a + r, p, l)
+
+#define SMC_IRQ_FLAGS		0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 
@@ -286,6 +396,7 @@ static inline void mcf_outsw(void *a, unsigned char *p, int l)
 
 #define SMC_IO_SHIFT		(lp->io_shift)
 
+<<<<<<< HEAD
 #define SMC_inb(a, r)		readb((a) + (r))
 #define SMC_inw(a, r)		readw((a) + (r))
 #define SMC_inl(a, r)		readl((a) + (r))
@@ -296,6 +407,18 @@ static inline void mcf_outsw(void *a, unsigned char *p, int l)
 #define SMC_outsw(a, r, p, l)	writesw((a) + (r), p, l)
 #define SMC_insl(a, r, p, l)	readsl((a) + (r), p, l)
 #define SMC_outsl(a, r, p, l)	writesl((a) + (r), p, l)
+=======
+#define SMC_inb(a, r)		ioread8((a) + (r))
+#define SMC_inw(a, r)		ioread16((a) + (r))
+#define SMC_inl(a, r)		ioread32((a) + (r))
+#define SMC_outb(v, a, r)	iowrite8(v, (a) + (r))
+#define SMC_outw(lp, v, a, r)	iowrite16(v, (a) + (r))
+#define SMC_outl(v, a, r)	iowrite32(v, (a) + (r))
+#define SMC_insw(a, r, p, l)	ioread16_rep((a) + (r), p, l)
+#define SMC_outsw(a, r, p, l)	iowrite16_rep((a) + (r), p, l)
+#define SMC_insl(a, r, p, l)	ioread32_rep((a) + (r), p, l)
+#define SMC_outsl(a, r, p, l)	iowrite32_rep((a) + (r), p, l)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RPC_LSA_DEFAULT		RPC_LED_100_10
 #define RPC_LSB_DEFAULT		RPC_LED_TX_RX
@@ -313,6 +436,12 @@ struct smc_local {
 	struct sk_buff *pending_tx_skb;
 	struct tasklet_struct tx_task;
 
+<<<<<<< HEAD
+=======
+	struct gpio_desc *power_gpio;
+	struct gpio_desc *reset_gpio;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* version/revision of the SMC91x chip */
 	int	version;
 
@@ -343,11 +472,20 @@ struct smc_local {
 	u_long physaddr;
 	struct device *device;
 #endif
+<<<<<<< HEAD
+=======
+	struct dma_chan *dma_chan;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *base;
 	void __iomem *datacs;
 
 	/* the low address lines on some platforms aren't connected... */
 	int	io_shift;
+<<<<<<< HEAD
+=======
+	/* on some platforms a u16 write must be 4-bytes aligned */
+	bool	half_word_align4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct smc91x_platdata cfg;
 };
@@ -364,13 +502,17 @@ struct smc_local {
  * as RX which can overrun memory and lose packets.
  */
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <mach/dma.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef SMC_insl
 #undef SMC_insl
 #define SMC_insl(a, r, p, l) \
 	smc_pxa_dma_insl(a, lp, r, dev->dma, p, l)
 static inline void
+<<<<<<< HEAD
 smc_pxa_dma_insl(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
 		 u_char *buf, int len)
 {
@@ -379,6 +521,42 @@ smc_pxa_dma_insl(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
 
 	/* fallback if no DMA available */
 	if (dma == (unsigned char)-1) {
+=======
+smc_pxa_dma_inpump(struct smc_local *lp, u_char *buf, int len)
+{
+	dma_addr_t dmabuf;
+	struct dma_async_tx_descriptor *tx;
+	dma_cookie_t cookie;
+	enum dma_status status;
+	struct dma_tx_state state;
+
+	dmabuf = dma_map_single(lp->device, buf, len, DMA_FROM_DEVICE);
+	tx = dmaengine_prep_slave_single(lp->dma_chan, dmabuf, len,
+					 DMA_DEV_TO_MEM, 0);
+	if (tx) {
+		cookie = dmaengine_submit(tx);
+		dma_async_issue_pending(lp->dma_chan);
+		do {
+			status = dmaengine_tx_status(lp->dma_chan, cookie,
+						     &state);
+			cpu_relax();
+		} while (status != DMA_COMPLETE && status != DMA_ERROR &&
+			 state.residue);
+		dmaengine_terminate_all(lp->dma_chan);
+	}
+	dma_unmap_single(lp->device, dmabuf, len, DMA_FROM_DEVICE);
+}
+
+static inline void
+smc_pxa_dma_insl(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
+		 u_char *buf, int len)
+{
+	struct dma_slave_config	config;
+	int ret;
+
+	/* fallback if no DMA available */
+	if (!lp->dma_chan) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		readsl(ioaddr + reg, buf, len);
 		return;
 	}
@@ -390,6 +568,7 @@ smc_pxa_dma_insl(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
 		len--;
 	}
 
+<<<<<<< HEAD
 	len *= 4;
 	dmabuf = dma_map_single(lp->device, buf, len, DMA_FROM_DEVICE);
 	DCSR(dma) = DCSR_NODESC;
@@ -402,6 +581,24 @@ smc_pxa_dma_insl(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
 		cpu_relax();
 	DCSR(dma) = 0;
 	dma_unmap_single(lp->device, dmabuf, len, DMA_FROM_DEVICE);
+=======
+	memset(&config, 0, sizeof(config));
+	config.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+	config.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
+	config.src_addr = lp->physaddr + reg;
+	config.dst_addr = lp->physaddr + reg;
+	config.src_maxburst = 32;
+	config.dst_maxburst = 32;
+	ret = dmaengine_slave_config(lp->dma_chan, &config);
+	if (ret) {
+		dev_err(lp->device, "dma channel configuration failed: %d\n",
+			ret);
+		return;
+	}
+
+	len *= 4;
+	smc_pxa_dma_inpump(lp, buf, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -413,11 +610,19 @@ static inline void
 smc_pxa_dma_insw(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
 		 u_char *buf, int len)
 {
+<<<<<<< HEAD
 	u_long physaddr = lp->physaddr;
 	dma_addr_t dmabuf;
 
 	/* fallback if no DMA available */
 	if (dma == (unsigned char)-1) {
+=======
+	struct dma_slave_config	config;
+	int ret;
+
+	/* fallback if no DMA available */
+	if (!lp->dma_chan) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		readsw(ioaddr + reg, buf, len);
 		return;
 	}
@@ -429,6 +634,7 @@ smc_pxa_dma_insw(void __iomem *ioaddr, struct smc_local *lp, int reg, int dma,
 		len--;
 	}
 
+<<<<<<< HEAD
 	len *= 2;
 	dmabuf = dma_map_single(lp->device, buf, len, DMA_FROM_DEVICE);
 	DCSR(dma) = DCSR_NODESC;
@@ -449,6 +655,27 @@ smc_pxa_dma_irq(int dma, void *dummy)
 {
 	DCSR(dma) = 0;
 }
+=======
+	memset(&config, 0, sizeof(config));
+	config.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+	config.dst_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+	config.src_addr = lp->physaddr + reg;
+	config.dst_addr = lp->physaddr + reg;
+	config.src_maxburst = 32;
+	config.dst_maxburst = 32;
+	ret = dmaengine_slave_config(lp->dma_chan, &config);
+	if (ret) {
+		dev_err(lp->device, "dma channel configuration failed: %d\n",
+			ret);
+		return;
+	}
+
+	len *= 2;
+	smc_pxa_dma_inpump(lp, buf, len);
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif  /* CONFIG_ARCH_PXA */
 
 
@@ -473,6 +700,7 @@ smc_pxa_dma_irq(int dma, void *dummy)
 
 #if ! SMC_CAN_USE_16BIT
 
+<<<<<<< HEAD
 /*
  * Any 16-bit access is performed with two 8-bit accesses if the hardware
  * can't do it directly. Most registers are 16-bit so those are mandatory.
@@ -491,6 +719,10 @@ smc_pxa_dma_irq(int dma, void *dummy)
 		__val16;						\
 	})
 
+=======
+#define SMC_outw(lp, x, ioaddr, reg)	SMC_outw_b(x, ioaddr, reg)
+#define SMC_inw(ioaddr, reg)		SMC_inw_b(ioaddr, reg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SMC_insw(a, r, p, l)		BUG()
 #define SMC_outsw(a, r, p, l)		BUG()
 
@@ -502,7 +734,13 @@ smc_pxa_dma_irq(int dma, void *dummy)
 #endif
 
 #if ! SMC_CAN_USE_8BIT
+<<<<<<< HEAD
 #define SMC_inb(ioaddr, reg)		({ BUG(); 0; })
+=======
+#undef SMC_inb
+#define SMC_inb(ioaddr, reg)		({ BUG(); 0; })
+#undef SMC_outb
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SMC_outb(x, ioaddr, reg)	BUG()
 #define SMC_insb(a, r, p, l)		BUG()
 #define SMC_outsb(a, r, p, l)		BUG()
@@ -907,8 +1145,13 @@ static const char * chip_ids[ 16 ] =  {
 	({								\
 		int __b = SMC_CURRENT_BANK(lp);			\
 		if (unlikely((__b & ~0xf0) != (0x3300 | bank))) {	\
+<<<<<<< HEAD
 			printk( "%s: bank reg screwed (0x%04x)\n",	\
 				CARDNAME, __b );			\
+=======
+			pr_err("%s: bank reg screwed (0x%04x)\n",	\
+			       CARDNAME, __b);				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BUG();						\
 		}							\
 		reg<<SMC_IO_SHIFT;					\
@@ -939,7 +1182,11 @@ static const char * chip_ids[ 16 ] =  {
 		else if (SMC_8BIT(lp))				\
 			SMC_outb(x, ioaddr, PN_REG(lp));		\
 		else							\
+<<<<<<< HEAD
 			SMC_outw(x, ioaddr, PN_REG(lp));		\
+=======
+			SMC_outw(lp, x, ioaddr, PN_REG(lp));		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 #define SMC_GET_AR(lp)						\
@@ -967,7 +1214,11 @@ static const char * chip_ids[ 16 ] =  {
 			int __mask;					\
 			local_irq_save(__flags);			\
 			__mask = SMC_inw(ioaddr, INT_REG(lp)) & ~0xff; \
+<<<<<<< HEAD
 			SMC_outw(__mask | (x), ioaddr, INT_REG(lp));	\
+=======
+			SMC_outw(lp, __mask | (x), ioaddr, INT_REG(lp)); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			local_irq_restore(__flags);			\
 		}							\
 	} while (0)
@@ -981,7 +1232,11 @@ static const char * chip_ids[ 16 ] =  {
 		if (SMC_8BIT(lp))					\
 			SMC_outb(x, ioaddr, IM_REG(lp));		\
 		else							\
+<<<<<<< HEAD
 			SMC_outw((x) << 8, ioaddr, INT_REG(lp));	\
+=======
+			SMC_outw(lp, (x) << 8, ioaddr, INT_REG(lp));	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 #define SMC_CURRENT_BANK(lp)	SMC_inw(ioaddr, BANK_SELECT)
@@ -991,22 +1246,38 @@ static const char * chip_ids[ 16 ] =  {
 		if (SMC_MUST_ALIGN_WRITE(lp))				\
 			SMC_outl((x)<<16, ioaddr, 12<<SMC_IO_SHIFT);	\
 		else							\
+<<<<<<< HEAD
 			SMC_outw(x, ioaddr, BANK_SELECT);		\
+=======
+			SMC_outw(lp, x, ioaddr, BANK_SELECT);		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 #define SMC_GET_BASE(lp)		SMC_inw(ioaddr, BASE_REG(lp))
 
+<<<<<<< HEAD
 #define SMC_SET_BASE(lp, x)		SMC_outw(x, ioaddr, BASE_REG(lp))
 
 #define SMC_GET_CONFIG(lp)	SMC_inw(ioaddr, CONFIG_REG(lp))
 
 #define SMC_SET_CONFIG(lp, x)	SMC_outw(x, ioaddr, CONFIG_REG(lp))
+=======
+#define SMC_SET_BASE(lp, x)	SMC_outw(lp, x, ioaddr, BASE_REG(lp))
+
+#define SMC_GET_CONFIG(lp)	SMC_inw(ioaddr, CONFIG_REG(lp))
+
+#define SMC_SET_CONFIG(lp, x)	SMC_outw(lp, x, ioaddr, CONFIG_REG(lp))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SMC_GET_COUNTER(lp)	SMC_inw(ioaddr, COUNTER_REG(lp))
 
 #define SMC_GET_CTL(lp)		SMC_inw(ioaddr, CTL_REG(lp))
 
+<<<<<<< HEAD
 #define SMC_SET_CTL(lp, x)		SMC_outw(x, ioaddr, CTL_REG(lp))
+=======
+#define SMC_SET_CTL(lp, x)	SMC_outw(lp, x, ioaddr, CTL_REG(lp))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SMC_GET_MII(lp)		SMC_inw(ioaddr, MII_REG(lp))
 
@@ -1017,6 +1288,7 @@ static const char * chip_ids[ 16 ] =  {
 		if (SMC_MUST_ALIGN_WRITE(lp))				\
 			SMC_outl((x)<<16, ioaddr, SMC_REG(lp, 8, 1));	\
 		else							\
+<<<<<<< HEAD
 			SMC_outw(x, ioaddr, GP_REG(lp));		\
 	} while (0)
 
@@ -1031,6 +1303,22 @@ static const char * chip_ids[ 16 ] =  {
 #define SMC_SET_MMU_CMD(lp, x)	SMC_outw(x, ioaddr, MMU_CMD_REG(lp))
 
 #define SMC_GET_FIFO(lp)		SMC_inw(ioaddr, FIFO_REG(lp))
+=======
+			SMC_outw(lp, x, ioaddr, GP_REG(lp));		\
+	} while (0)
+
+#define SMC_SET_MII(lp, x)	SMC_outw(lp, x, ioaddr, MII_REG(lp))
+
+#define SMC_GET_MIR(lp)		SMC_inw(ioaddr, MIR_REG(lp))
+
+#define SMC_SET_MIR(lp, x)	SMC_outw(lp, x, ioaddr, MIR_REG(lp))
+
+#define SMC_GET_MMU_CMD(lp)	SMC_inw(ioaddr, MMU_CMD_REG(lp))
+
+#define SMC_SET_MMU_CMD(lp, x)	SMC_outw(lp, x, ioaddr, MMU_CMD_REG(lp))
+
+#define SMC_GET_FIFO(lp)	SMC_inw(ioaddr, FIFO_REG(lp))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SMC_GET_PTR(lp)		SMC_inw(ioaddr, PTR_REG(lp))
 
@@ -1039,14 +1327,22 @@ static const char * chip_ids[ 16 ] =  {
 		if (SMC_MUST_ALIGN_WRITE(lp))				\
 			SMC_outl((x)<<16, ioaddr, SMC_REG(lp, 4, 2));	\
 		else							\
+<<<<<<< HEAD
 			SMC_outw(x, ioaddr, PTR_REG(lp));		\
+=======
+			SMC_outw(lp, x, ioaddr, PTR_REG(lp));		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 #define SMC_GET_EPH_STATUS(lp)	SMC_inw(ioaddr, EPH_STATUS_REG(lp))
 
 #define SMC_GET_RCR(lp)		SMC_inw(ioaddr, RCR_REG(lp))
 
+<<<<<<< HEAD
 #define SMC_SET_RCR(lp, x)		SMC_outw(x, ioaddr, RCR_REG(lp))
+=======
+#define SMC_SET_RCR(lp, x)		SMC_outw(lp, x, ioaddr, RCR_REG(lp))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SMC_GET_REV(lp)		SMC_inw(ioaddr, REV_REG(lp))
 
@@ -1057,12 +1353,20 @@ static const char * chip_ids[ 16 ] =  {
 		if (SMC_MUST_ALIGN_WRITE(lp))				\
 			SMC_outl((x)<<16, ioaddr, SMC_REG(lp, 8, 0));	\
 		else							\
+<<<<<<< HEAD
 			SMC_outw(x, ioaddr, RPC_REG(lp));		\
+=======
+			SMC_outw(lp, x, ioaddr, RPC_REG(lp));		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 #define SMC_GET_TCR(lp)		SMC_inw(ioaddr, TCR_REG(lp))
 
+<<<<<<< HEAD
 #define SMC_SET_TCR(lp, x)		SMC_outw(x, ioaddr, TCR_REG(lp))
+=======
+#define SMC_SET_TCR(lp, x)	SMC_outw(lp, x, ioaddr, TCR_REG(lp))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef SMC_GET_MAC_ADDR
 #define SMC_GET_MAC_ADDR(lp, addr)					\
@@ -1079,18 +1383,31 @@ static const char * chip_ids[ 16 ] =  {
 
 #define SMC_SET_MAC_ADDR(lp, addr)					\
 	do {								\
+<<<<<<< HEAD
 		SMC_outw(addr[0]|(addr[1] << 8), ioaddr, ADDR0_REG(lp)); \
 		SMC_outw(addr[2]|(addr[3] << 8), ioaddr, ADDR1_REG(lp)); \
 		SMC_outw(addr[4]|(addr[5] << 8), ioaddr, ADDR2_REG(lp)); \
+=======
+		SMC_outw(lp, addr[0] | (addr[1] << 8), ioaddr, ADDR0_REG(lp)); \
+		SMC_outw(lp, addr[2] | (addr[3] << 8), ioaddr, ADDR1_REG(lp)); \
+		SMC_outw(lp, addr[4] | (addr[5] << 8), ioaddr, ADDR2_REG(lp)); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 #define SMC_SET_MCAST(lp, x)						\
 	do {								\
 		const unsigned char *mt = (x);				\
+<<<<<<< HEAD
 		SMC_outw(mt[0] | (mt[1] << 8), ioaddr, MCAST_REG1(lp)); \
 		SMC_outw(mt[2] | (mt[3] << 8), ioaddr, MCAST_REG2(lp)); \
 		SMC_outw(mt[4] | (mt[5] << 8), ioaddr, MCAST_REG3(lp)); \
 		SMC_outw(mt[6] | (mt[7] << 8), ioaddr, MCAST_REG4(lp)); \
+=======
+		SMC_outw(lp, mt[0] | (mt[1] << 8), ioaddr, MCAST_REG1(lp)); \
+		SMC_outw(lp, mt[2] | (mt[3] << 8), ioaddr, MCAST_REG2(lp)); \
+		SMC_outw(lp, mt[4] | (mt[5] << 8), ioaddr, MCAST_REG3(lp)); \
+		SMC_outw(lp, mt[6] | (mt[7] << 8), ioaddr, MCAST_REG4(lp)); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (0)
 
 #define SMC_PUT_PKT_HDR(lp, status, length)				\
@@ -1099,8 +1416,13 @@ static const char * chip_ids[ 16 ] =  {
 			SMC_outl((status) | (length)<<16, ioaddr,	\
 				 DATA_REG(lp));			\
 		else {							\
+<<<<<<< HEAD
 			SMC_outw(status, ioaddr, DATA_REG(lp));	\
 			SMC_outw(length, ioaddr, DATA_REG(lp));	\
+=======
+			SMC_outw(lp, status, ioaddr, DATA_REG(lp));	\
+			SMC_outw(lp, length, ioaddr, DATA_REG(lp));	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}							\
 	} while (0)
 
@@ -1124,8 +1446,12 @@ static const char * chip_ids[ 16 ] =  {
 			void __iomem *__ioaddr = ioaddr;		\
 			if (__len >= 2 && (unsigned long)__ptr & 2) {	\
 				__len -= 2;				\
+<<<<<<< HEAD
 				SMC_outw(*(u16 *)__ptr, ioaddr,		\
 					DATA_REG(lp));		\
+=======
+				SMC_outsw(ioaddr, DATA_REG(lp), __ptr, 1); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__ptr += 2;				\
 			}						\
 			if (SMC_CAN_USE_DATACS && lp->datacs)		\
@@ -1133,8 +1459,12 @@ static const char * chip_ids[ 16 ] =  {
 			SMC_outsl(__ioaddr, DATA_REG(lp), __ptr, __len>>2); \
 			if (__len & 2) {				\
 				__ptr += (__len & ~3);			\
+<<<<<<< HEAD
 				SMC_outw(*((u16 *)__ptr), ioaddr,	\
 					 DATA_REG(lp));		\
+=======
+				SMC_outsw(ioaddr, DATA_REG(lp), __ptr, 1); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}						\
 		} else if (SMC_16BIT(lp))				\
 			SMC_outsw(ioaddr, DATA_REG(lp), p, (l) >> 1);	\

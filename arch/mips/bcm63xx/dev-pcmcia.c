@@ -79,11 +79,19 @@ static int __init config_pcmcia_cs(unsigned int cs,
 	return ret;
 }
 
+<<<<<<< HEAD
 static const __initdata struct {
 	unsigned int	cs;
 	unsigned int	base;
 	unsigned int	size;
 } pcmcia_cs[3] = {
+=======
+static const struct {
+	unsigned int	cs;
+	unsigned int	base;
+	unsigned int	size;
+} pcmcia_cs[3] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.cs	= MPI_CS_PCMCIA_COMMON,
 		.base	= BCM_PCMCIA_COMMON_BASE_PA,
@@ -139,6 +147,10 @@ int __init bcm63xx_pcmcia_register(void)
 	return platform_device_register(&bcm63xx_pcmcia_device);
 
 out_err:
+<<<<<<< HEAD
 	printk(KERN_ERR "unable to set pcmcia chip select\n");
+=======
+	pr_err("unable to set pcmcia chip select\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }

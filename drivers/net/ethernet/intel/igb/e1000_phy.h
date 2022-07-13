@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel(R) Gigabit Ethernet Linux driver
@@ -24,6 +25,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Copyright(c) 2007 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _E1000_PHY_H_
 #define _E1000_PHY_H_
@@ -65,14 +70,29 @@ s32  igb_phy_has_link(struct e1000_hw *hw, u32 iterations,
 void igb_power_up_phy_copper(struct e1000_hw *hw);
 void igb_power_down_phy_copper(struct e1000_hw *hw);
 s32  igb_phy_init_script_igp3(struct e1000_hw *hw);
+<<<<<<< HEAD
+=======
+s32  igb_initialize_M88E1512_phy(struct e1000_hw *hw);
+s32  igb_initialize_M88E1543_phy(struct e1000_hw *hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 s32  igb_read_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 *data);
 s32  igb_write_phy_reg_mdic(struct e1000_hw *hw, u32 offset, u16 data);
 s32  igb_read_phy_reg_i2c(struct e1000_hw *hw, u32 offset, u16 *data);
 s32  igb_write_phy_reg_i2c(struct e1000_hw *hw, u32 offset, u16 data);
+<<<<<<< HEAD
+=======
+s32  igb_read_sfp_data_byte(struct e1000_hw *hw, u16 offset, u8 *data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 s32  igb_copper_link_setup_82580(struct e1000_hw *hw);
 s32  igb_get_phy_info_82580(struct e1000_hw *hw);
 s32  igb_phy_force_speed_duplex_82580(struct e1000_hw *hw);
 s32  igb_get_cable_length_82580(struct e1000_hw *hw);
+<<<<<<< HEAD
+=======
+s32  igb_read_phy_reg_82580(struct e1000_hw *hw, u32 offset, u16 *data);
+s32  igb_write_phy_reg_82580(struct e1000_hw *hw, u32 offset, u16 data);
+s32  igb_check_polarity_m88(struct e1000_hw *hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* IGP01E1000 Specific Registers */
 #define IGP01E1000_PHY_PORT_CONFIG        0x10 /* Port Config */
@@ -89,10 +109,17 @@ s32  igb_get_cable_length_82580(struct e1000_hw *hw);
 
 #define I82580_ADDR_REG                   16
 #define I82580_CFG_REG                    22
+<<<<<<< HEAD
 #define I82580_CFG_ASSERT_CRS_ON_TX       (1 << 15)
 #define I82580_CFG_ENABLE_DOWNSHIFT       (3 << 10) /* auto downshift 100/10 */
 #define I82580_CTRL_REG                   23
 #define I82580_CTRL_DOWNSHIFT_MASK        (7 << 10)
+=======
+#define I82580_CFG_ASSERT_CRS_ON_TX       BIT(15)
+#define I82580_CFG_ENABLE_DOWNSHIFT       (3u << 10) /* auto downshift 100/10 */
+#define I82580_CTRL_REG                   23
+#define I82580_CTRL_DOWNSHIFT_MASK        (7u << 10)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 82580 specific PHY registers */
 #define I82580_PHY_CTRL_2            18
@@ -108,12 +135,29 @@ s32  igb_get_cable_length_82580(struct e1000_hw *hw);
 #define I82580_PHY_STATUS2_SPEED_100MBPS  0x0100
 
 /* I82580 PHY Control 2 */
+<<<<<<< HEAD
 #define I82580_PHY_CTRL2_AUTO_MDIX        0x0400
 #define I82580_PHY_CTRL2_FORCE_MDI_MDIX   0x0200
+=======
+#define I82580_PHY_CTRL2_MANUAL_MDIX      0x0200
+#define I82580_PHY_CTRL2_AUTO_MDI_MDIX    0x0400
+#define I82580_PHY_CTRL2_MDIX_CFG_MASK    0x0600
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* I82580 PHY Diagnostics Status */
 #define I82580_DSTATUS_CABLE_LENGTH       0x03FC
 #define I82580_DSTATUS_CABLE_LENGTH_SHIFT 2
+<<<<<<< HEAD
+=======
+
+/* 82580 PHY Power Management */
+#define E1000_82580_PHY_POWER_MGMT	0xE14
+#define E1000_82580_PM_SPD		0x0001 /* Smart Power Down */
+#define E1000_82580_PM_D0_LPLU		0x0002 /* For D0a states */
+#define E1000_82580_PM_D3_LPLU		0x0004 /* For all other states */
+#define E1000_82580_PM_GO_LINKD		0x0020 /* Go Link Disconnect */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Enable flexible speed on link-up */
 #define IGP02E1000_PM_D0_LPLU             0x0002 /* For D0a states */
 #define IGP02E1000_PM_D3_LPLU             0x0004 /* For all other states */
@@ -133,4 +177,25 @@ s32  igb_get_cable_length_82580(struct e1000_hw *hw);
 
 #define E1000_CABLE_LENGTH_UNDEFINED      0xFF
 
+<<<<<<< HEAD
+=======
+/* SFP modules ID memory locations */
+#define E1000_SFF_IDENTIFIER_OFFSET	0x00
+#define E1000_SFF_IDENTIFIER_SFF	0x02
+#define E1000_SFF_IDENTIFIER_SFP	0x03
+
+#define E1000_SFF_ETH_FLAGS_OFFSET	0x06
+/* Flags for SFP modules compatible with ETH up to 1Gb */
+struct e1000_sfp_flags {
+	u8 e1000_base_sx:1;
+	u8 e1000_base_lx:1;
+	u8 e1000_base_cx:1;
+	u8 e1000_base_t:1;
+	u8 e100_base_lx:1;
+	u8 e100_base_fx:1;
+	u8 e10_base_bx10:1;
+	u8 e10_base_px:1;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

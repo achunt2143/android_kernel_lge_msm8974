@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <linux/kernel.h>
 
 #include <asm/cputype.h>
@@ -8,6 +9,29 @@
 #include <asm/system_info.h>
 
 pgd_t *idmap_pgd;
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/slab.h>
+#include <linux/mm_types.h>
+#include <linux/pgtable.h>
+
+#include <asm/cputype.h>
+#include <asm/idmap.h>
+#include <asm/hwcap.h>
+#include <asm/pgalloc.h>
+#include <asm/sections.h>
+#include <asm/system_info.h>
+
+/*
+ * Note: accesses outside of the kernel image and the identity map area
+ * are not supported on any CPU using the idmap tables as its current
+ * page tables.
+ */
+pgd_t *idmap_pgd __ro_after_init;
+long long arch_phys_to_idmap_offset __ro_after_init;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_ARM_LPAE
 static void idmap_add_pmd(pud_t *pud, unsigned long addr, unsigned long end,
@@ -19,7 +43,11 @@ static void idmap_add_pmd(pud_t *pud, unsigned long addr, unsigned long end,
 	if (pud_none_or_clear_bad(pud) || (pud_val(*pud) & L_PGD_SWAPPER)) {
 		pmd = pmd_alloc_one(&init_mm, addr);
 		if (!pmd) {
+<<<<<<< HEAD
 			pr_warning("Failed to allocate identity pmd.\n");
+=======
+			pr_warn("Failed to allocate identity pmd.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		/*
@@ -57,7 +85,12 @@ static void idmap_add_pmd(pud_t *pud, unsigned long addr, unsigned long end,
 static void idmap_add_pud(pgd_t *pgd, unsigned long addr, unsigned long end,
 	unsigned long prot)
 {
+<<<<<<< HEAD
 	pud_t *pud = pud_offset(pgd, addr);
+=======
+	p4d_t *p4d = p4d_offset(pgd, addr);
+	pud_t *pud = pud_offset(p4d, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long next;
 
 	do {
@@ -66,12 +99,28 @@ static void idmap_add_pud(pgd_t *pgd, unsigned long addr, unsigned long end,
 	} while (pud++, addr = next, addr != end);
 }
 
+<<<<<<< HEAD
 static void identity_mapping_add(pgd_t *pgd, unsigned long addr, unsigned long end)
 {
 	unsigned long prot, next;
 
 	prot = PMD_TYPE_SECT | PMD_SECT_AP_WRITE | PMD_SECT_AF;
 	if (cpu_architecture() <= CPU_ARCH_ARMv5TEJ && !cpu_is_xscale())
+=======
+static void identity_mapping_add(pgd_t *pgd, const char *text_start,
+				 const char *text_end, unsigned long prot)
+{
+	unsigned long addr, end;
+	unsigned long next;
+
+	addr = virt_to_idmap(text_start);
+	end = virt_to_idmap(text_end);
+	pr_info("Setting up static identity map for 0x%lx - 0x%lx\n", addr, end);
+
+	prot |= PMD_TYPE_SECT | PMD_SECT_AP_WRITE | PMD_SECT_AF;
+
+	if (cpu_architecture() <= CPU_ARCH_ARMv5TEJ && !cpu_is_xscale_family())
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		prot |= PMD_BIT4;
 
 	pgd += pgd_index(addr);
@@ -85,12 +134,16 @@ extern char  __idmap_text_start[], __idmap_text_end[];
 
 static int __init init_static_idmap(void)
 {
+<<<<<<< HEAD
 	phys_addr_t idmap_start, idmap_end;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	idmap_pgd = pgd_alloc(&init_mm);
 	if (!idmap_pgd)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	/* Add an identity mapping for the physical address of the section. */
 	idmap_start = virt_to_phys((void *)__idmap_text_start);
 	idmap_end = virt_to_phys((void *)__idmap_text_end);
@@ -98,6 +151,14 @@ static int __init init_static_idmap(void)
 	pr_info("Setting up static identity map for 0x%llx - 0x%llx\n",
 		(long long)idmap_start, (long long)idmap_end);
 	identity_mapping_add(idmap_pgd, idmap_start, idmap_end);
+=======
+	identity_mapping_add(idmap_pgd, __idmap_text_start,
+			     __idmap_text_end, 0);
+
+	/* Flush L1 for the hardware to see this page table content */
+	if (!(elf_hwcap & HWCAP_LPAE))
+		flush_cache_louis();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -110,6 +171,7 @@ early_initcall(init_static_idmap);
  */
 void setup_mm_for_reboot(void)
 {
+<<<<<<< HEAD
 	/* Clean and invalidate L1. */
 	flush_cache_all();
 
@@ -118,4 +180,18 @@ void setup_mm_for_reboot(void)
 
 	/* Flush the TLB. */
 	local_flush_tlb_all();
+=======
+	/* Switch to the identity mapping. */
+	cpu_switch_mm(idmap_pgd, &init_mm);
+	local_flush_bp_all();
+
+#ifdef CONFIG_CPU_HAS_ASID
+	/*
+	 * We don't have a clean ASID for the identity mapping, which
+	 * may clash with virtual addresses of the previous page tables
+	 * and therefore potentially in the TLB.
+	 */
+	local_flush_tlb_all();
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Real Time Clock driver for Wolfson Microelectronics WM831x
  *
@@ -5,11 +9,14 @@
  *
  *  Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
  *
+<<<<<<< HEAD
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -155,8 +162,13 @@ static int wm831x_rtc_readtime(struct device *dev, struct rtc_time *tm)
 		if (memcmp(time1, time2, sizeof(time1)) == 0) {
 			u32 time = (time1[0] << 16) | time1[1];
 
+<<<<<<< HEAD
 			rtc_time_to_tm(time, tm);
 			return rtc_valid_tm(tm);
+=======
+			rtc_time64_to_tm(time, tm);
+			return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 	} while (++count < WM831X_GET_TIME_RETRIES);
@@ -169,15 +181,28 @@ static int wm831x_rtc_readtime(struct device *dev, struct rtc_time *tm)
 /*
  * Set current time and date in RTC
  */
+<<<<<<< HEAD
 static int wm831x_rtc_set_mmss(struct device *dev, unsigned long time)
+=======
+static int wm831x_rtc_settime(struct device *dev, struct rtc_time *tm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm831x_rtc *wm831x_rtc = dev_get_drvdata(dev);
 	struct wm831x *wm831x = wm831x_rtc->wm831x;
 	struct rtc_time new_tm;
+<<<<<<< HEAD
 	unsigned long new_time;
 	int ret;
 	int count = 0;
 
+=======
+	unsigned long time, new_time;
+	int ret;
+	int count = 0;
+
+	time = rtc_tm_to_time64(tm);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = wm831x_reg_write(wm831x, WM831X_RTC_TIME_1,
 			       (time >> 16) & 0xffff);
 	if (ret < 0) {
@@ -215,11 +240,15 @@ static int wm831x_rtc_set_mmss(struct device *dev, unsigned long time)
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	ret = rtc_tm_to_time(&new_tm, &new_time);
 	if (ret < 0) {
 		dev_err(dev, "Failed to convert time: %d\n", ret);
 		return ret;
 	}
+=======
+	new_time = rtc_tm_to_time64(&new_tm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Allow a second of change in case of tick */
 	if (new_time - time > 1) {
@@ -249,7 +278,11 @@ static int wm831x_rtc_readalarm(struct device *dev, struct rtc_wkalrm *alrm)
 
 	time = (data[0] << 16) | data[1];
 
+<<<<<<< HEAD
 	rtc_time_to_tm(time, &alrm->time);
+=======
+	rtc_time64_to_tm(time, &alrm->time);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = wm831x_reg_read(wm831x_rtc->wm831x, WM831X_RTC_CONTROL);
 	if (ret < 0) {
@@ -288,11 +321,15 @@ static int wm831x_rtc_setalarm(struct device *dev, struct rtc_wkalrm *alrm)
 	int ret;
 	unsigned long time;
 
+<<<<<<< HEAD
 	ret = rtc_tm_to_time(&alrm->time, &time);
 	if (ret < 0) {
 		dev_err(dev, "Failed to convert time: %d\n", ret);
 		return ret;
 	}
+=======
+	time = rtc_tm_to_time64(&alrm->time);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = wm831x_rtc_stop_alarm(wm831x_rtc);
 	if (ret < 0) {
@@ -346,7 +383,11 @@ static irqreturn_t wm831x_alm_irq(int irq, void *data)
 
 static const struct rtc_class_ops wm831x_rtc_ops = {
 	.read_time = wm831x_rtc_readtime,
+<<<<<<< HEAD
 	.set_mmss = wm831x_rtc_set_mmss,
+=======
+	.set_time = wm831x_rtc_settime,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read_alarm = wm831x_rtc_readalarm,
 	.set_alarm = wm831x_rtc_setalarm,
 	.alarm_irq_enable = wm831x_rtc_alarm_irq_enable,
@@ -356,11 +397,18 @@ static const struct rtc_class_ops wm831x_rtc_ops = {
 /* Turn off the alarm if it should not be a wake source. */
 static int wm831x_rtc_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct wm831x_rtc *wm831x_rtc = dev_get_drvdata(&pdev->dev);
 	int ret, enable;
 
 	if (wm831x_rtc->alarm_enabled && device_may_wakeup(&pdev->dev))
+=======
+	struct wm831x_rtc *wm831x_rtc = dev_get_drvdata(dev);
+	int ret, enable;
+
+	if (wm831x_rtc->alarm_enabled && device_may_wakeup(dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		enable = WM831X_RTC_ALM_ENA;
 	else
 		enable = 0;
@@ -368,7 +416,11 @@ static int wm831x_rtc_suspend(struct device *dev)
 	ret = wm831x_set_bits(wm831x_rtc->wm831x, WM831X_RTC_CONTROL,
 			      WM831X_RTC_ALM_ENA, enable);
 	if (ret != 0)
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "Failed to update RTC alarm: %d\n", ret);
+=======
+		dev_err(dev, "Failed to update RTC alarm: %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -378,15 +430,23 @@ static int wm831x_rtc_suspend(struct device *dev)
  */
 static int wm831x_rtc_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct wm831x_rtc *wm831x_rtc = dev_get_drvdata(&pdev->dev);
+=======
+	struct wm831x_rtc *wm831x_rtc = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (wm831x_rtc->alarm_enabled) {
 		ret = wm831x_rtc_start_alarm(wm831x_rtc);
 		if (ret != 0)
+<<<<<<< HEAD
 			dev_err(&pdev->dev,
 				"Failed to restart RTC alarm: %d\n", ret);
+=======
+			dev_err(dev, "Failed to restart RTC alarm: %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -395,14 +455,22 @@ static int wm831x_rtc_resume(struct device *dev)
 /* Unconditionally disable the alarm */
 static int wm831x_rtc_freeze(struct device *dev)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct wm831x_rtc *wm831x_rtc = dev_get_drvdata(&pdev->dev);
+=======
+	struct wm831x_rtc *wm831x_rtc = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = wm831x_set_bits(wm831x_rtc->wm831x, WM831X_RTC_CONTROL,
 			      WM831X_RTC_ALM_ENA, 0);
 	if (ret != 0)
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "Failed to stop RTC alarm: %d\n", ret);
+=======
+		dev_err(dev, "Failed to stop RTC alarm: %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -416,7 +484,11 @@ static int wm831x_rtc_probe(struct platform_device *pdev)
 {
 	struct wm831x *wm831x = dev_get_drvdata(pdev->dev.parent);
 	struct wm831x_rtc *wm831x_rtc;
+<<<<<<< HEAD
 	int alm_irq = platform_get_irq_byname(pdev, "ALM");
+=======
+	int alm_irq = wm831x_irq(wm831x, platform_get_irq_byname(pdev, "ALM"));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	wm831x_rtc = devm_kzalloc(&pdev->dev, sizeof(*wm831x_rtc), GFP_KERNEL);
@@ -429,13 +501,18 @@ static int wm831x_rtc_probe(struct platform_device *pdev)
 	ret = wm831x_reg_read(wm831x, WM831X_RTC_CONTROL);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Failed to read RTC control: %d\n", ret);
+<<<<<<< HEAD
 		goto err;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (ret & WM831X_RTC_ALM_ENA)
 		wm831x_rtc->alarm_enabled = 1;
 
 	device_init_wakeup(&pdev->dev, 1);
 
+<<<<<<< HEAD
 	wm831x_rtc->rtc = rtc_device_register("wm831x", &pdev->dev,
 					      &wm831x_rtc_ops, THIS_MODULE);
 	if (IS_ERR(wm831x_rtc->rtc)) {
@@ -446,6 +523,24 @@ static int wm831x_rtc_probe(struct platform_device *pdev)
 	ret = request_threaded_irq(alm_irq, NULL, wm831x_alm_irq,
 				   IRQF_TRIGGER_RISING, "RTC alarm",
 				   wm831x_rtc);
+=======
+	wm831x_rtc->rtc = devm_rtc_allocate_device(&pdev->dev);
+	if (IS_ERR(wm831x_rtc->rtc))
+		return PTR_ERR(wm831x_rtc->rtc);
+
+	wm831x_rtc->rtc->ops = &wm831x_rtc_ops;
+	wm831x_rtc->rtc->range_max = U32_MAX;
+
+	ret = devm_rtc_register_device(wm831x_rtc->rtc);
+	if (ret)
+		return ret;
+
+	ret = devm_request_threaded_irq(&pdev->dev, alm_irq, NULL,
+				wm831x_alm_irq,
+				IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+				"RTC alarm",
+				wm831x_rtc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0) {
 		dev_err(&pdev->dev, "Failed to request alarm IRQ %d: %d\n",
 			alm_irq, ret);
@@ -454,6 +549,7 @@ static int wm831x_rtc_probe(struct platform_device *pdev)
 	wm831x_rtc_add_randomness(wm831x);
 
 	return 0;
+<<<<<<< HEAD
 
 err:
 	return ret;
@@ -468,6 +564,8 @@ static int __devexit wm831x_rtc_remove(struct platform_device *pdev)
 	rtc_device_unregister(wm831x_rtc->rtc);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct dev_pm_ops wm831x_rtc_pm_ops = {
@@ -483,7 +581,10 @@ static const struct dev_pm_ops wm831x_rtc_pm_ops = {
 
 static struct platform_driver wm831x_rtc_driver = {
 	.probe = wm831x_rtc_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(wm831x_rtc_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.name = "wm831x-rtc",
 		.pm = &wm831x_rtc_pm_ops,

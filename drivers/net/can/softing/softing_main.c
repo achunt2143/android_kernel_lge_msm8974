@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2008-2010
  *
  * - Kurt Van Dijck, EIA Electronics
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the version 2 of the GNU General Public License
@@ -19,6 +24,12 @@
 
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+ */
+
+#include <linux/ethtool.h>
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <asm/io.h>
 
@@ -72,7 +83,11 @@ static netdev_tx_t softing_netdev_start_xmit(struct sk_buff *skb,
 	struct can_frame *cf = (struct can_frame *)skb->data;
 	uint8_t buf[DPRAM_TX_SIZE];
 
+<<<<<<< HEAD
 	if (can_dropped_invalid_skb(dev, skb))
+=======
+	if (can_dev_dropped_skb(dev, skb))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NETDEV_TX_OK;
 
 	spin_lock(&card->spin);
@@ -97,7 +112,11 @@ static netdev_tx_t softing_netdev_start_xmit(struct sk_buff *skb,
 	if (priv->index)
 		*ptr |= CMD_BUS2;
 	++ptr;
+<<<<<<< HEAD
 	*ptr++ = cf->can_dlc;
+=======
+	*ptr++ = cf->len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*ptr++ = (cf->can_id >> 0);
 	*ptr++ = (cf->can_id >> 8);
 	if (cf->can_id & CAN_EFF_FLAG) {
@@ -108,7 +127,11 @@ static netdev_tx_t softing_netdev_start_xmit(struct sk_buff *skb,
 		ptr += 1;
 	}
 	if (!(cf->can_id & CAN_RTR_FLAG))
+<<<<<<< HEAD
 		memcpy(ptr, &cf->data[0], cf->can_dlc);
+=======
+		memcpy(ptr, &cf->data[0], cf->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy_toio(&card->dpram[DPRAM_TX + DPRAM_TX_SIZE * fifo_wr],
 			buf, DPRAM_TX_SIZE);
 	if (++fifo_wr >= DPRAM_TX_CNT)
@@ -117,7 +140,11 @@ static netdev_tx_t softing_netdev_start_xmit(struct sk_buff *skb,
 	card->tx.last_bus = priv->index;
 	++card->tx.pending;
 	++priv->tx.pending;
+<<<<<<< HEAD
 	can_put_echo_skb(skb, dev, priv->tx.echo_put);
+=======
+	can_put_echo_skb(skb, dev, priv->tx.echo_put, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	++priv->tx.echo_put;
 	if (priv->tx.echo_put >= TX_ECHO_SKB_MAX)
 		priv->tx.echo_put = 0;
@@ -180,11 +207,19 @@ static int softing_handle_1(struct softing *card)
 		iowrite8(0, &card->dpram[DPRAM_RX_LOST]);
 		/* prepare msg */
 		msg.can_id = CAN_ERR_FLAG | CAN_ERR_CRTL;
+<<<<<<< HEAD
 		msg.can_dlc = CAN_ERR_DLC;
 		msg.data[1] = CAN_ERR_CRTL_RX_OVERFLOW;
 		/*
 		 * service to all busses, we don't know which it was applicable
 		 * but only service busses that are online
+=======
+		msg.len = CAN_ERR_DLC;
+		msg.data[1] = CAN_ERR_CRTL_RX_OVERFLOW;
+		/*
+		 * service to all buses, we don't know which it was applicable
+		 * but only service buses that are online
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		for (j = 0; j < ARRAY_SIZE(card->net); ++j) {
 			netdev = card->net[j];
@@ -194,7 +229,11 @@ static int softing_handle_1(struct softing *card)
 				/* a dead bus has no overflows */
 				continue;
 			++netdev->stats.rx_over_errors;
+<<<<<<< HEAD
 			softing_netdev_rx(netdev, &msg, ktime_set(0, 0));
+=======
+			softing_netdev_rx(netdev, &msg, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* prepare for other use */
 		memset(&msg, 0, sizeof(msg));
@@ -231,7 +270,11 @@ static int softing_handle_1(struct softing *card)
 		state = *ptr++;
 
 		msg.can_id = CAN_ERR_FLAG;
+<<<<<<< HEAD
 		msg.can_dlc = CAN_ERR_DLC;
+=======
+		msg.len = CAN_ERR_DLC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (state & SF_MASK_BUSOFF) {
 			can_state = CAN_STATE_BUS_OFF;
@@ -252,7 +295,10 @@ static int softing_handle_1(struct softing *card)
 				DPRAM_INFO_BUSSTATE2 : DPRAM_INFO_BUSSTATE]);
 		/* timestamp */
 		tmp_u32 = le32_to_cpup((void *)ptr);
+<<<<<<< HEAD
 		ptr += 4;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ktime = softing_raw2ktime(card, tmp_u32);
 
 		++netdev->stats.rx_errors;
@@ -263,6 +309,10 @@ static int softing_handle_1(struct softing *card)
 				++priv->can.can_stats.error_passive;
 			else if (can_state == CAN_STATE_BUS_OFF) {
 				/* this calls can_close_cleanup() */
+<<<<<<< HEAD
+=======
+				++priv->can.can_stats.bus_off;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				can_bus_off(netdev);
 				netif_stop_queue(netdev);
 			}
@@ -273,7 +323,11 @@ static int softing_handle_1(struct softing *card)
 	} else {
 		if (cmd & CMD_RTR)
 			msg.can_id |= CAN_RTR_FLAG;
+<<<<<<< HEAD
 		msg.can_dlc = get_can_dlc(*ptr++);
+=======
+		msg.len = can_cc_dlc2len(*ptr++);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cmd & CMD_XTD) {
 			msg.can_id |= CAN_EFF_FLAG;
 			msg.can_id |= le32_to_cpup((void *)ptr);
@@ -288,7 +342,10 @@ static int softing_handle_1(struct softing *card)
 		ktime = softing_raw2ktime(card, tmp_u32);
 		if (!(msg.can_id & CAN_RTR_FLAG))
 			memcpy(&msg.data[0], ptr, 8);
+<<<<<<< HEAD
 		ptr += 8;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* update socket */
 		if (cmd & CMD_ACK) {
 			/* acknowledge, was tx msg */
@@ -296,7 +353,14 @@ static int softing_handle_1(struct softing *card)
 			skb = priv->can.echo_skb[priv->tx.echo_get];
 			if (skb)
 				skb->tstamp = ktime;
+<<<<<<< HEAD
 			can_get_echo_skb(netdev, priv->tx.echo_get);
+=======
+			++netdev->stats.tx_packets;
+			netdev->stats.tx_bytes +=
+				can_get_echo_skb(netdev, priv->tx.echo_get,
+						 NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			++priv->tx.echo_get;
 			if (priv->tx.echo_get >= TX_ECHO_SKB_MAX)
 				priv->tx.echo_get = 0;
@@ -304,9 +368,12 @@ static int softing_handle_1(struct softing *card)
 				--priv->tx.pending;
 			if (card->tx.pending)
 				--card->tx.pending;
+<<<<<<< HEAD
 			++netdev->stats.tx_packets;
 			if (!(msg.can_id & CAN_RTR_FLAG))
 				netdev->stats.tx_bytes += msg.can_dlc;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			int ret;
 
@@ -314,7 +381,11 @@ static int softing_handle_1(struct softing *card)
 			if (ret == NET_RX_SUCCESS) {
 				++netdev->stats.rx_packets;
 				if (!(msg.can_id & CAN_RTR_FLAG))
+<<<<<<< HEAD
 					netdev->stats.rx_bytes += msg.can_dlc;
+=======
+					netdev->stats.rx_bytes += msg.len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else {
 				++netdev->stats.rx_dropped;
 			}
@@ -351,7 +422,11 @@ static irqreturn_t softing_irq_thread(int irq, void *dev_id)
 			continue;
 		priv = netdev_priv(netdev);
 		if (!canif_is_active(netdev))
+<<<<<<< HEAD
 			/* it makes no sense to wake dead busses */
+=======
+			/* it makes no sense to wake dead buses */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (priv->tx.pending >= TX_ECHO_SKB_MAX)
 			continue;
@@ -386,7 +461,11 @@ static irqreturn_t softing_irq_v1(int irq, void *dev_id)
 }
 
 /*
+<<<<<<< HEAD
  * netdev/candev inter-operability
+=======
+ * netdev/candev interoperability
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int softing_netdev_open(struct net_device *ndev)
 {
@@ -394,13 +473,24 @@ static int softing_netdev_open(struct net_device *ndev)
 
 	/* check or determine and set bittime */
 	ret = open_candev(ndev);
+<<<<<<< HEAD
 	if (!ret)
 		ret = softing_startstop(ndev, 1);
+=======
+	if (ret)
+		return ret;
+
+	ret = softing_startstop(ndev, 1);
+	if (ret < 0)
+		close_candev(ndev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int softing_netdev_stop(struct net_device *ndev)
 {
+<<<<<<< HEAD
 	int ret;
 
 	netif_stop_queue(ndev);
@@ -408,6 +498,12 @@ static int softing_netdev_stop(struct net_device *ndev)
 	/* softing cycle does close_candev() */
 	ret = softing_startstop(ndev, 0);
 	return ret;
+=======
+	netif_stop_queue(ndev);
+
+	/* softing cycle does close_candev() */
+	return softing_startstop(ndev, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int softing_candev_set_mode(struct net_device *ndev, enum can_mode mode)
@@ -459,8 +555,14 @@ static void softing_card_shutdown(struct softing *card)
 {
 	int fw_up = 0;
 
+<<<<<<< HEAD
 	if (mutex_lock_interruptible(&card->fw.lock))
 		/* return -ERESTARTSYS */;
+=======
+	if (mutex_lock_interruptible(&card->fw.lock)) {
+		/* return -ERESTARTSYS */;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fw_up = card->fw.up;
 	card->fw.up = 0;
 
@@ -478,7 +580,11 @@ static void softing_card_shutdown(struct softing *card)
 	mutex_unlock(&card->fw.lock);
 }
 
+<<<<<<< HEAD
 static __devinit int softing_card_boot(struct softing *card)
+=======
+static int softing_card_boot(struct softing *card)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret, j;
 	static const uint8_t stream[] = {
@@ -558,6 +664,7 @@ failed:
 /*
  * netdev sysfs
  */
+<<<<<<< HEAD
 static ssize_t show_channel(struct device *dev, struct device_attribute *attr,
 		char *buf)
 {
@@ -567,6 +674,8 @@ static ssize_t show_channel(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%i\n", priv->index);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t show_chip(struct device *dev, struct device_attribute *attr,
 		char *buf)
 {
@@ -594,7 +703,11 @@ static ssize_t store_output(struct device *dev, struct device_attribute *attr,
 	unsigned long val;
 	int ret;
 
+<<<<<<< HEAD
 	ret = strict_strtoul(buf, 0, &val);
+=======
+	ret = kstrtoul(buf, 0, &val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 	val &= 0xFF;
@@ -611,12 +724,19 @@ static ssize_t store_output(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 static const DEVICE_ATTR(channel, S_IRUGO, show_channel, NULL);
 static const DEVICE_ATTR(chip, S_IRUGO, show_chip, NULL);
 static const DEVICE_ATTR(output, S_IRUGO | S_IWUSR, show_output, store_output);
 
 static const struct attribute *const netdev_sysfs_attrs[] = {
 	&dev_attr_channel.attr,
+=======
+static const DEVICE_ATTR(chip, 0444, show_chip, NULL);
+static const DEVICE_ATTR(output, 0644, show_output, store_output);
+
+static const struct attribute *const netdev_sysfs_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_chip.attr,
 	&dev_attr_output.attr,
 	NULL,
@@ -630,10 +750,22 @@ static const struct net_device_ops softing_netdev_ops = {
 	.ndo_open = softing_netdev_open,
 	.ndo_stop = softing_netdev_stop,
 	.ndo_start_xmit	= softing_netdev_start_xmit,
+<<<<<<< HEAD
 };
 
 static const struct can_bittiming_const softing_btr_const = {
 	.name = "softing",
+=======
+	.ndo_change_mtu = can_change_mtu,
+};
+
+static const struct ethtool_ops softing_ethtool_ops = {
+	.get_ts_info = ethtool_op_get_ts_info,
+};
+
+static const struct can_bittiming_const softing_btr_const = {
+	.name = KBUILD_MODNAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tseg1_min = 1,
 	.tseg1_max = 16,
 	.tseg2_min = 1,
@@ -645,8 +777,13 @@ static const struct can_bittiming_const softing_btr_const = {
 };
 
 
+<<<<<<< HEAD
 static __devinit struct net_device *softing_netdev_create(struct softing *card,
 		uint16_t chip_id)
+=======
+static struct net_device *softing_netdev_create(struct softing *card,
+						uint16_t chip_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev;
 	struct softing_priv *priv;
@@ -670,27 +807,48 @@ static __devinit struct net_device *softing_netdev_create(struct softing *card,
 
 	netdev->flags |= IFF_ECHO;
 	netdev->netdev_ops = &softing_netdev_ops;
+<<<<<<< HEAD
+=======
+	netdev->ethtool_ops = &softing_ethtool_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->can.do_set_mode = softing_candev_set_mode;
 	priv->can.ctrlmode_supported = CAN_CTRLMODE_3_SAMPLES;
 
 	return netdev;
 }
 
+<<<<<<< HEAD
 static __devinit int softing_netdev_register(struct net_device *netdev)
 {
 	int ret;
 
 	netdev->sysfs_groups[0] = &netdev_sysfs_group;
+=======
+static int softing_netdev_register(struct net_device *netdev)
+{
+	int ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = register_candev(netdev);
 	if (ret) {
 		dev_alert(&netdev->dev, "register failed\n");
 		return ret;
 	}
+<<<<<<< HEAD
+=======
+	if (sysfs_create_group(&netdev->dev.kobj, &netdev_sysfs_group) < 0)
+		netdev_alert(netdev, "sysfs group failed\n");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void softing_netdev_cleanup(struct net_device *netdev)
 {
+<<<<<<< HEAD
+=======
+	sysfs_remove_group(&netdev->dev.kobj, &netdev_sysfs_group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_candev(netdev);
 	free_candev(netdev);
 }
@@ -702,7 +860,11 @@ static void softing_netdev_cleanup(struct net_device *netdev)
 static ssize_t show_##name(struct device *dev, \
 		struct device_attribute *attr, char *buf) \
 { \
+<<<<<<< HEAD
 	struct softing *card = platform_get_drvdata(to_platform_device(dev)); \
+=======
+	struct softing *card = dev_get_drvdata(dev); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sprintf(buf, "%u\n", card->member); \
 } \
 static DEVICE_ATTR(name, 0444, show_##name, NULL)
@@ -711,7 +873,11 @@ static DEVICE_ATTR(name, 0444, show_##name, NULL)
 static ssize_t show_##name(struct device *dev, \
 		struct device_attribute *attr, char *buf) \
 { \
+<<<<<<< HEAD
 	struct softing *card = platform_get_drvdata(to_platform_device(dev)); \
+=======
+	struct softing *card = dev_get_drvdata(dev); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sprintf(buf, "%s\n", card->member); \
 } \
 static DEVICE_ATTR(name, 0444, show_##name, NULL)
@@ -722,8 +888,11 @@ DEV_ATTR_RO(firmware_version, id.fw_version);
 DEV_ATTR_RO_STR(hardware, pdat->name);
 DEV_ATTR_RO(hardware_version, id.hw_version);
 DEV_ATTR_RO(license, id.license);
+<<<<<<< HEAD
 DEV_ATTR_RO(frequency, id.freq);
 DEV_ATTR_RO(txpending, tx.pending);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *softing_pdev_attrs[] = {
 	&dev_attr_serial.attr,
@@ -732,8 +901,11 @@ static struct attribute *softing_pdev_attrs[] = {
 	&dev_attr_hardware.attr,
 	&dev_attr_hardware_version.attr,
 	&dev_attr_license.attr,
+<<<<<<< HEAD
 	&dev_attr_frequency.attr,
 	&dev_attr_txpending.attr,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL,
 };
 
@@ -745,7 +917,11 @@ static const struct attribute_group softing_pdev_group = {
 /*
  * platform driver
  */
+<<<<<<< HEAD
 static __devexit int softing_pdev_remove(struct platform_device *pdev)
+=======
+static void softing_pdev_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct softing *card = platform_get_drvdata(pdev);
 	int j;
@@ -763,12 +939,20 @@ static __devexit int softing_pdev_remove(struct platform_device *pdev)
 
 	iounmap(card->dpram);
 	kfree(card);
+<<<<<<< HEAD
 	return 0;
 }
 
 static __devinit int softing_pdev_probe(struct platform_device *pdev)
 {
 	const struct softing_platform_data *pdat = pdev->dev.platform_data;
+=======
+}
+
+static int softing_pdev_probe(struct platform_device *pdev)
+{
+	const struct softing_platform_data *pdat = dev_get_platdata(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct softing *card;
 	struct net_device *netdev;
 	struct softing_priv *priv;
@@ -800,7 +984,11 @@ static __devinit int softing_pdev_probe(struct platform_device *pdev)
 		goto platform_resource_failed;
 	card->dpram_phys = pres->start;
 	card->dpram_size = resource_size(pres);
+<<<<<<< HEAD
 	card->dpram = ioremap_nocache(card->dpram_phys, card->dpram_size);
+=======
+	card->dpram = ioremap(card->dpram_phys, card->dpram_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!card->dpram) {
 		dev_alert(&card->pdev->dev, "dpram ioremap failed\n");
 		goto ioremap_failed;
@@ -826,14 +1014,24 @@ static __devinit int softing_pdev_probe(struct platform_device *pdev)
 		goto sysfs_failed;
 	}
 
+<<<<<<< HEAD
 	ret = -ENOMEM;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (j = 0; j < ARRAY_SIZE(card->net); ++j) {
 		card->net[j] = netdev =
 			softing_netdev_create(card, card->id.chip[j]);
 		if (!netdev) {
 			dev_alert(&pdev->dev, "failed to make can[%i]", j);
+<<<<<<< HEAD
 			goto netdev_failed;
 		}
+=======
+			ret = -ENOMEM;
+			goto netdev_failed;
+		}
+		netdev->dev_id = j;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv = netdev_priv(card->net[j]);
 		priv->index = j;
 		ret = softing_netdev_register(netdev);
@@ -867,11 +1065,18 @@ platform_resource_failed:
 
 static struct platform_driver softing_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.name = "softing",
 		.owner = THIS_MODULE,
 	},
 	.probe = softing_pdev_probe,
 	.remove = __devexit_p(softing_pdev_remove),
+=======
+		.name = KBUILD_MODNAME,
+	},
+	.probe = softing_pdev_probe,
+	.remove_new = softing_pdev_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(softing_driver);

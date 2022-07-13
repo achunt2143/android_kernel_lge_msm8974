@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  cb710/cb710.h
  *
  *  Copyright by Michał Mirosław, 2008-2009
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef LINUX_CB710_DRIVER_H
 #define LINUX_CB710_DRIVER_H
@@ -39,7 +46,11 @@ struct cb710_chip {
 	unsigned		slot_mask;
 	unsigned		slots;
 	spinlock_t		irq_lock;
+<<<<<<< HEAD
 	struct cb710_slot	slot[0];
+=======
+	struct cb710_slot	slot[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* NOTE: cb710_chip.slots is modified only during device init/exit and
@@ -129,10 +140,13 @@ void cb710_dump_regs(struct cb710_chip *chip, unsigned dump);
  *  cb710/sgbuf2.h
  *
  *  Copyright by Michał Mirosław, 2008-2009
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef LINUX_CB710_SG_H
 #define LINUX_CB710_SG_H

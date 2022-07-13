@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * usage.c
  *
@@ -7,6 +11,7 @@
  * Copyright (C) Linus Torvalds, 2005
  */
 #include "util.h"
+<<<<<<< HEAD
 #include "debug.h"
 
 static void report(const char *prefix, const char *err, va_list params)
@@ -17,11 +22,25 @@ static void report(const char *prefix, const char *err, va_list params)
 }
 
 static NORETURN void usage_builtin(const char *err)
+=======
+#include <stdio.h>
+#include <stdlib.h>
+#include <linux/compiler.h>
+
+const char perf_usage_string[] =
+	"perf [--version] [--help] [OPTIONS] COMMAND [ARGS]";
+
+const char perf_more_info_string[] =
+	"See 'perf help COMMAND' for more information on a specific command.";
+
+static __noreturn void usage_builtin(const char *err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	fprintf(stderr, "\n Usage: %s\n", err);
 	exit(129);
 }
 
+<<<<<<< HEAD
 static NORETURN void die_builtin(const char *err, va_list params)
 {
 	report(" Fatal: ", err, params);
@@ -49,11 +68,17 @@ void set_die_routine(void (*routine)(const char *err, va_list params) NORETURN)
 {
 	die_routine = routine;
 }
+=======
+/* If we are in a dlopen()ed .so write to a global variable would segfault
+ * (ugh), so keep things static. */
+static void (*usage_routine)(const char *err) __noreturn = usage_builtin;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void usage(const char *err)
 {
 	usage_routine(err);
 }
+<<<<<<< HEAD
 
 void die(const char *err, ...)
 {
@@ -120,3 +145,5 @@ uid_t parse_target_uid(const char *str, const char *tid, const char *pid)
 
 	return result->pw_uid;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

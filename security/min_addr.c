@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/mm.h>
 #include <linux/security.h>
@@ -29,7 +33,11 @@ static void update_mmap_min_addr(void)
  * calls update_mmap_min_addr() so non MAP_FIXED hints get rounded properly
  */
 int mmap_min_addr_handler(struct ctl_table *table, int write,
+<<<<<<< HEAD
 			  void __user *buffer, size_t *lenp, loff_t *ppos)
+=======
+			  void *buffer, size_t *lenp, loff_t *ppos)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 

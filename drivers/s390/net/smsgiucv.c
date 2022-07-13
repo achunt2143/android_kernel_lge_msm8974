@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IUCV special message driver
  *
  * Copyright IBM Corp. 2003, 2009
  *
  * Author(s): Martin Schwidefsky (schwidefsky@de.ibm.com)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -42,6 +49,7 @@ MODULE_AUTHOR
 MODULE_DESCRIPTION ("Linux for S/390 IUCV special message driver");
 
 static struct iucv_path *smsg_path;
+<<<<<<< HEAD
 /* dummy device used as trigger for PM functions */
 static struct device *smsg_dev;
 
@@ -50,6 +58,13 @@ static LIST_HEAD(smsg_list);
 static int iucv_path_connected;
 
 static int smsg_path_pending(struct iucv_path *, u8 ipvmid[8], u8 ipuser[16]);
+=======
+
+static DEFINE_SPINLOCK(smsg_list_lock);
+static LIST_HEAD(smsg_list);
+
+static int smsg_path_pending(struct iucv_path *, u8 *, u8 *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void smsg_message_pending(struct iucv_path *, struct iucv_message *);
 
 static struct iucv_handler smsg_handler = {
@@ -57,8 +72,12 @@ static struct iucv_handler smsg_handler = {
 	.message_pending = smsg_message_pending,
 };
 
+<<<<<<< HEAD
 static int smsg_path_pending(struct iucv_path *path, u8 ipvmid[8],
 			     u8 ipuser[16])
+=======
+static int smsg_path_pending(struct iucv_path *path, u8 *ipvmid, u8 *ipuser)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (strncmp(ipvmid, "*MSG    ", 8) != 0)
 		return -EINVAL;
@@ -138,6 +157,7 @@ void smsg_unregister_callback(const char *prefix,
 	kfree(cb);
 }
 
+<<<<<<< HEAD
 static int smsg_pm_freeze(struct device *dev)
 {
 #ifdef CONFIG_PM_DEBUG
@@ -181,17 +201,26 @@ static const struct dev_pm_ops smsg_pm_ops = {
 	.restore = smsg_pm_restore_thaw,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct device_driver smsg_driver = {
 	.owner = THIS_MODULE,
 	.name = SMSGIUCV_DRV_NAME,
 	.bus  = &iucv_bus,
+<<<<<<< HEAD
 	.pm = &smsg_pm_ops,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __exit smsg_exit(void)
 {
+<<<<<<< HEAD
 	cpcmd("SET SMSG IUCV", NULL, 0, NULL);
 	device_unregister(smsg_dev);
+=======
+	cpcmd("SET SMSG OFF", NULL, 0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iucv_unregister(&smsg_handler, 1);
 	driver_unregister(&smsg_driver);
 }
@@ -219,6 +248,7 @@ static int __init smsg_init(void)
 			       NULL, NULL, NULL);
 	if (rc)
 		goto out_free_path;
+<<<<<<< HEAD
 	else
 		iucv_path_connected = 1;
 	smsg_dev = kzalloc(sizeof(struct device), GFP_KERNEL);
@@ -234,12 +264,17 @@ static int __init smsg_init(void)
 	rc = device_register(smsg_dev);
 	if (rc)
 		goto out_put;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cpcmd("SET SMSG IUCV", NULL, 0, NULL);
 	return 0;
 
+<<<<<<< HEAD
 out_put:
 	put_device(smsg_dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_free_path:
 	iucv_path_free(smsg_path);
 	smsg_path = NULL;

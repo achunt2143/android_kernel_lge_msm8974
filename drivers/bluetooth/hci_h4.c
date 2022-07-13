@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  *  Bluetooth HCI UART driver
@@ -5,6 +9,7 @@
  *  Copyright (C) 2000-2001  Qualcomm Incorporated
  *  Copyright (C) 2002-2003  Maxim Krasnyansky <maxk@qualcomm.com>
  *  Copyright (C) 2004-2005  Marcel Holtmann <marcel@holtmann.org>
+<<<<<<< HEAD
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -21,6 +26,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -40,21 +47,30 @@
 #include <linux/signal.h>
 #include <linux/ioctl.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
+=======
+#include <asm/unaligned.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
 
 #include "hci_uart.h"
 
+<<<<<<< HEAD
 #define VERSION "1.2"
 
 struct h4_struct {
 	unsigned long rx_state;
 	unsigned long rx_count;
+=======
+struct h4_struct {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *rx_skb;
 	struct sk_buff_head txq;
 };
 
+<<<<<<< HEAD
 /* H4 receiver States */
 #define H4_W4_PACKET_TYPE	0
 #define H4_W4_EVENT_HDR		1
@@ -62,6 +78,8 @@ struct h4_struct {
 #define H4_W4_SCO_HDR		3
 #define H4_W4_DATA		4
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Initialize protocol */
 static int h4_open(struct hci_uart *hu)
 {
@@ -69,7 +87,11 @@ static int h4_open(struct hci_uart *hu)
 
 	BT_DBG("hu %p", hu);
 
+<<<<<<< HEAD
 	h4 = kzalloc(sizeof(*h4), GFP_ATOMIC);
+=======
+	h4 = kzalloc(sizeof(*h4), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!h4)
 		return -ENOMEM;
 
@@ -96,8 +118,11 @@ static int h4_close(struct hci_uart *hu)
 {
 	struct h4_struct *h4 = hu->priv;
 
+<<<<<<< HEAD
 	hu->priv = NULL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BT_DBG("hu %p", hu);
 
 	skb_queue_purge(&h4->txq);
@@ -110,7 +135,11 @@ static int h4_close(struct hci_uart *hu)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Enqueue frame for transmittion (padding, crc, etc) */
+=======
+/* Enqueue frame for transmission (padding, crc, etc) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int h4_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 {
 	struct h4_struct *h4 = hu->priv;
@@ -118,12 +147,17 @@ static int h4_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 	BT_DBG("hu %p skb %p", hu, skb);
 
 	/* Prepend skb with frame type */
+<<<<<<< HEAD
 	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
+=======
+	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_queue_tail(&h4->txq, skb);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int h4_check_data_len(struct h4_struct *h4, int len)
 {
 	register int room = skb_tailroom(h4->rx_skb);
@@ -157,6 +191,30 @@ static int h4_recv(struct hci_uart *hu, void *data, int count)
 	if (ret < 0) {
 		BT_ERR("Frame Reassembly Failed");
 		return ret;
+=======
+static const struct h4_recv_pkt h4_recv_pkts[] = {
+	{ H4_RECV_ACL,   .recv = hci_recv_frame },
+	{ H4_RECV_SCO,   .recv = hci_recv_frame },
+	{ H4_RECV_EVENT, .recv = hci_recv_frame },
+	{ H4_RECV_ISO,   .recv = hci_recv_frame },
+};
+
+/* Recv data */
+static int h4_recv(struct hci_uart *hu, const void *data, int count)
+{
+	struct h4_struct *h4 = hu->priv;
+
+	if (!test_bit(HCI_UART_REGISTERED, &hu->flags))
+		return -EUNATCH;
+
+	h4->rx_skb = h4_recv_buf(hu->hdev, h4->rx_skb, data, count,
+				 h4_recv_pkts, ARRAY_SIZE(h4_recv_pkts));
+	if (IS_ERR(h4->rx_skb)) {
+		int err = PTR_ERR(h4->rx_skb);
+		bt_dev_err(hu->hdev, "Frame reassembly failed (%d)", err);
+		h4->rx_skb = NULL;
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return count;
@@ -168,8 +226,14 @@ static struct sk_buff *h4_dequeue(struct hci_uart *hu)
 	return skb_dequeue(&h4->txq);
 }
 
+<<<<<<< HEAD
 static struct hci_uart_proto h4p = {
 	.id		= HCI_UART_H4,
+=======
+static const struct hci_uart_proto h4p = {
+	.id		= HCI_UART_H4,
+	.name		= "H4",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= h4_open,
 	.close		= h4_close,
 	.recv		= h4_recv,
@@ -180,6 +244,7 @@ static struct hci_uart_proto h4p = {
 
 int __init h4_init(void)
 {
+<<<<<<< HEAD
 	int err = hci_uart_register_proto(&h4p);
 
 	if (!err)
@@ -188,9 +253,137 @@ int __init h4_init(void)
 		BT_ERR("HCI H4 protocol registration failed");
 
 	return err;
+=======
+	return hci_uart_register_proto(&h4p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __exit h4_deinit(void)
 {
 	return hci_uart_unregister_proto(&h4p);
 }
+<<<<<<< HEAD
+=======
+
+struct sk_buff *h4_recv_buf(struct hci_dev *hdev, struct sk_buff *skb,
+			    const unsigned char *buffer, int count,
+			    const struct h4_recv_pkt *pkts, int pkts_count)
+{
+	struct hci_uart *hu = hci_get_drvdata(hdev);
+	u8 alignment = hu->alignment ? hu->alignment : 1;
+
+	/* Check for error from previous call */
+	if (IS_ERR(skb))
+		skb = NULL;
+
+	while (count) {
+		int i, len;
+
+		/* remove padding bytes from buffer */
+		for (; hu->padding && count > 0; hu->padding--) {
+			count--;
+			buffer++;
+		}
+		if (!count)
+			break;
+
+		if (!skb) {
+			for (i = 0; i < pkts_count; i++) {
+				if (buffer[0] != (&pkts[i])->type)
+					continue;
+
+				skb = bt_skb_alloc((&pkts[i])->maxlen,
+						   GFP_ATOMIC);
+				if (!skb)
+					return ERR_PTR(-ENOMEM);
+
+				hci_skb_pkt_type(skb) = (&pkts[i])->type;
+				hci_skb_expect(skb) = (&pkts[i])->hlen;
+				break;
+			}
+
+			/* Check for invalid packet type */
+			if (!skb)
+				return ERR_PTR(-EILSEQ);
+
+			count -= 1;
+			buffer += 1;
+		}
+
+		len = min_t(uint, hci_skb_expect(skb) - skb->len, count);
+		skb_put_data(skb, buffer, len);
+
+		count -= len;
+		buffer += len;
+
+		/* Check for partial packet */
+		if (skb->len < hci_skb_expect(skb))
+			continue;
+
+		for (i = 0; i < pkts_count; i++) {
+			if (hci_skb_pkt_type(skb) == (&pkts[i])->type)
+				break;
+		}
+
+		if (i >= pkts_count) {
+			kfree_skb(skb);
+			return ERR_PTR(-EILSEQ);
+		}
+
+		if (skb->len == (&pkts[i])->hlen) {
+			u16 dlen;
+
+			switch ((&pkts[i])->lsize) {
+			case 0:
+				/* No variable data length */
+				dlen = 0;
+				break;
+			case 1:
+				/* Single octet variable length */
+				dlen = skb->data[(&pkts[i])->loff];
+				hci_skb_expect(skb) += dlen;
+
+				if (skb_tailroom(skb) < dlen) {
+					kfree_skb(skb);
+					return ERR_PTR(-EMSGSIZE);
+				}
+				break;
+			case 2:
+				/* Double octet variable length */
+				dlen = get_unaligned_le16(skb->data +
+							  (&pkts[i])->loff);
+				hci_skb_expect(skb) += dlen;
+
+				if (skb_tailroom(skb) < dlen) {
+					kfree_skb(skb);
+					return ERR_PTR(-EMSGSIZE);
+				}
+				break;
+			default:
+				/* Unsupported variable length */
+				kfree_skb(skb);
+				return ERR_PTR(-EILSEQ);
+			}
+
+			if (!dlen) {
+				hu->padding = (skb->len + 1) % alignment;
+				hu->padding = (alignment - hu->padding) % alignment;
+
+				/* No more data, complete frame */
+				(&pkts[i])->recv(hdev, skb);
+				skb = NULL;
+			}
+		} else {
+			hu->padding = (skb->len + 1) % alignment;
+			hu->padding = (alignment - hu->padding) % alignment;
+
+			/* Complete frame */
+			(&pkts[i])->recv(hdev, skb);
+			skb = NULL;
+		}
+	}
+
+	return skb;
+}
+EXPORT_SYMBOL_GPL(h4_recv_buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

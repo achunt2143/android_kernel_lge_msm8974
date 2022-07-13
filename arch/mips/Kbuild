@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Fail on warnings - also for files referenced in subdirs
 # -Werror can be disabled for specific files using:
 # CFLAGS_<file.o> := -Wno-error
@@ -5,15 +6,40 @@ subdir-ccflags-y := -Werror
 
 # platform specific definitions
 include arch/mips/Kbuild.platforms
+=======
+# SPDX-License-Identifier: GPL-2.0
+
+# platform specific definitions
+include $(srctree)/arch/mips/Kbuild.platforms
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-y := $(platform-y)
 
 # make clean traverses $(obj-) without having included .config, so
 # everything ends up here
+<<<<<<< HEAD
 obj- := $(platform-)
+=======
+obj- := $(platform-y)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # mips object files
 # The object files are linked as core-y files would be linked
 
+<<<<<<< HEAD
 obj-y += kernel/
 obj-y += mm/
 obj-y += math-emu/
+=======
+obj-y += generic/
+obj-y += kernel/
+obj-y += mm/
+obj-y += net/
+obj-y += vdso/
+
+ifdef CONFIG_KVM
+obj-y += kvm/
+endif
+
+# for cleaning
+subdir- += boot
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

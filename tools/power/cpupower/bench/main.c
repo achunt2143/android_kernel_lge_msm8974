@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*  cpufreq-bench CPUFreq microbenchmark
  *
  *  Copyright (C) 2008 Christian Kornacker <ckornacker@suse.de>
@@ -15,6 +16,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*  cpufreq-bench CPUFreq microbenchmark
+ *
+ *  Copyright (C) 2008 Christian Kornacker <ckornacker@suse.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdio.h>

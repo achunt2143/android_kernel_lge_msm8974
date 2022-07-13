@@ -1,17 +1,25 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Routines for doing kexec-based kdump.
  *
  * Copyright (C) 2005, IBM Corp.
  *
  * Created by: Michael Ellerman
+<<<<<<< HEAD
  *
  * This source code is licensed under the GNU General Public License,
  * Version 2.  See the file COPYING for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
 
 #include <linux/crash_dump.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/memblock.h>
 #include <asm/code-patching.h>
@@ -20,6 +28,18 @@
 #include <asm/firmware.h>
 #include <asm/uaccess.h>
 #include <asm/rtas.h>
+=======
+#include <linux/io.h>
+#include <linux/memblock.h>
+#include <linux/of.h>
+#include <asm/code-patching.h>
+#include <asm/kdump.h>
+#include <asm/firmware.h>
+#include <linux/uio.h>
+#include <asm/rtas.h>
+#include <asm/inst.h>
+#include <asm/fadump.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef DEBUG
 #include <asm/udbg.h>
@@ -36,7 +56,11 @@ void __init reserve_kdump_trampoline(void)
 
 static void __init create_trampoline(unsigned long addr)
 {
+<<<<<<< HEAD
 	unsigned int *p = (unsigned int *)addr;
+=======
+	u32 *p = (u32 *)addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The maximum range of a single instruction branch, is the current
 	 * instruction's address + (32 MB - 4) bytes. For the trampoline we
@@ -46,8 +70,13 @@ static void __init create_trampoline(unsigned long addr)
 	 * branch to "addr" we jump to ("addr" + 32 MB). Although it requires
 	 * two instructions it doesn't require any registers.
 	 */
+<<<<<<< HEAD
 	patch_instruction(p, PPC_INST_NOP);
 	patch_branch(++p, addr + PHYSICAL_START, 0);
+=======
+	patch_instruction(p, ppc_inst(PPC_RAW_NOP()));
+	patch_branch(p + 1, addr + PHYSICAL_START, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init setup_kdump_trampoline(void)
@@ -69,6 +98,7 @@ void __init setup_kdump_trampoline(void)
 }
 #endif /* CONFIG_NONSTATIC_KERNEL */
 
+<<<<<<< HEAD
 static int __init parse_savemaxmem(char *p)
 {
 	if (p)
@@ -106,6 +136,10 @@ static size_t copy_oldmem_vaddr(void *vaddr, char *buf, size_t csize,
  */
 ssize_t copy_oldmem_page(unsigned long pfn, char *buf,
 			size_t csize, unsigned long offset, int userbuf)
+=======
+ssize_t copy_oldmem_page(struct iov_iter *iter, unsigned long pfn,
+			size_t csize, unsigned long offset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void  *vaddr;
 	phys_addr_t paddr;
@@ -118,16 +152,37 @@ ssize_t copy_oldmem_page(unsigned long pfn, char *buf,
 
 	if (memblock_is_region_memory(paddr, csize)) {
 		vaddr = __va(paddr);
+<<<<<<< HEAD
 		csize = copy_oldmem_vaddr(vaddr, buf, csize, offset, userbuf);
 	} else {
 		vaddr = __ioremap(paddr, PAGE_SIZE, 0);
 		csize = copy_oldmem_vaddr(vaddr, buf, csize, offset, userbuf);
+=======
+		csize = copy_to_iter(vaddr + offset, csize, iter);
+	} else {
+		vaddr = ioremap_cache(paddr, PAGE_SIZE);
+		csize = copy_to_iter(vaddr + offset, csize, iter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iounmap(vaddr);
 	}
 
 	return csize;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Return true only when kexec based kernel dump capturing method is used.
+ * This ensures all restritions applied for kdump case are not automatically
+ * applied for fadump case.
+ */
+bool is_kdump_kernel(void)
+{
+	return !is_fadump_active() && elfcorehdr_addr != ELFCORE_ADDR_MAX;
+}
+EXPORT_SYMBOL_GPL(is_kdump_kernel);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PPC_RTAS
 /*
  * The crashkernel region will almost always overlap the RTAS region, so
@@ -136,15 +191,24 @@ ssize_t copy_oldmem_page(unsigned long pfn, char *buf,
 void crash_free_reserved_phys_range(unsigned long begin, unsigned long end)
 {
 	unsigned long addr;
+<<<<<<< HEAD
 	const u32 *basep, *sizep;
+=======
+	const __be32 *basep, *sizep;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int rtas_start = 0, rtas_end = 0;
 
 	basep = of_get_property(rtas.dev, "linux,rtas-base", NULL);
 	sizep = of_get_property(rtas.dev, "rtas-size", NULL);
 
 	if (basep && sizep) {
+<<<<<<< HEAD
 		rtas_start = *basep;
 		rtas_end = *basep + *sizep;
+=======
+		rtas_start = be32_to_cpup(basep);
+		rtas_end = rtas_start + be32_to_cpup(sizep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (addr = begin; addr < end; addr += PAGE_SIZE) {
@@ -152,10 +216,14 @@ void crash_free_reserved_phys_range(unsigned long begin, unsigned long end)
 		if (addr <= rtas_end && ((addr + PAGE_SIZE) > rtas_start))
 			continue;
 
+<<<<<<< HEAD
 		ClearPageReserved(pfn_to_page(addr >> PAGE_SHIFT));
 		init_page_count(pfn_to_page(addr >> PAGE_SHIFT));
 		free_page((unsigned long)__va(addr));
 		totalram_pages++;
+=======
+		free_reserved_page(pfn_to_page(addr >> PAGE_SHIFT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #endif

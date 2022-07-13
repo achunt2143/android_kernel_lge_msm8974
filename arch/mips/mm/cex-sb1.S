@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2001,2002,2003 Broadcom Corporation
  *
@@ -16,6 +17,12 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 #include <linux/init.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (C) 2001,2002,2003 Broadcom Corporation
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/asm.h>
 #include <asm/regdef.h>
@@ -24,9 +31,15 @@
 #include <asm/cacheops.h>
 #include <asm/sibyte/board.h>
 
+<<<<<<< HEAD
 #define C0_ERRCTL     $26             /* CP0: Error info */
 #define C0_CERR_I     $27             /* CP0: Icache error */
 #define C0_CERR_D     $27,1           /* CP0: Dcache error */
+=======
+#define C0_ERRCTL     $26	      /* CP0: Error info */
+#define C0_CERR_I     $27	      /* CP0: Icache error */
+#define C0_CERR_D     $27,1	      /* CP0: Dcache error */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Based on SiByte sample software cache-err/cerr.S
@@ -49,8 +62,11 @@
 	 * (0x170-0x17f) are used to preserve k0, k1, and ra.
 	 */
 
+<<<<<<< HEAD
 	__CPUINIT
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 LEAF(except_vec2_sb1)
 	/*
 	 * If this error is recoverable, we need to exit the handler
@@ -88,7 +104,11 @@ attempt_recovery:
 	/*
 	 * k0 has C0_ERRCTL << 1, which puts 'DC' at bit 31.  Any
 	 * Dcache errors we can recover from will take more extensive
+<<<<<<< HEAD
 	 * processing.  For now, they are considered "unrecoverable".
+=======
+	 * processing.	For now, they are considered "unrecoverable".
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Note that 'DC' becoming set (outside of ERL mode) will
 	 * cause 'IC' to clear; so if there's an Icache error, we'll
 	 * only find out about it if we recover from this error and
@@ -142,8 +162,11 @@ unrecoverable:
 
 END(except_vec2_sb1)
 
+<<<<<<< HEAD
 	__FINIT
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LEAF(handle_vec2_sb1)
 	mfc0	k0,CP0_CONFIG
 	li	k1,~CONF_CM_CMASK

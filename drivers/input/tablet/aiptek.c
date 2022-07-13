@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Native support for the Aiptek HyperPen USB Tablets
  *  (4000U/5000U/6000U/8000U/12000U)
@@ -54,6 +58,7 @@
  *      so therefore it's easier to document them all as one subsystem.
  *      Please visit the project's "home page", located at,
  *      http://aiptektablet.sourceforge.net.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -68,12 +73,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/jiffies.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/usb/input.h>
 #include <asm/uaccess.h>
@@ -87,6 +95,13 @@
 #define DRIVER_DESC    "Aiptek HyperPen USB Tablet Driver (Linux 2.6.x)"
 
 /*
+=======
+#include <linux/usb/input.h>
+#include <linux/uaccess.h>
+#include <asm/unaligned.h>
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Aiptek status packet:
  *
  * (returned as Report 1 - relative coordinates from mouse and stylus)
@@ -308,7 +323,11 @@ struct aiptek_settings {
 
 struct aiptek {
 	struct input_dev *inputdev;		/* input device struct           */
+<<<<<<< HEAD
 	struct usb_device *usbdev;		/* usb device struct             */
+=======
+	struct usb_interface *intf;		/* usb interface struct          */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct urb *urb;			/* urb for incoming reports      */
 	dma_addr_t data_dma;			/* our dma stuffage              */
 	struct aiptek_features features;	/* tablet's array of features    */
@@ -435,6 +454,10 @@ static void aiptek_irq(struct urb *urb)
 	struct aiptek *aiptek = urb->context;
 	unsigned char *data = aiptek->data;
 	struct input_dev *inputdev = aiptek->inputdev;
+<<<<<<< HEAD
+=======
+	struct usb_interface *intf = aiptek->intf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int jitterable = 0;
 	int retval, macro, x, y, z, left, right, middle, p, dv, tip, bs, pck;
 
@@ -447,6 +470,7 @@ static void aiptek_irq(struct urb *urb)
 	case -ENOENT:
 	case -ESHUTDOWN:
 		/* This urb is terminated, clean up */
+<<<<<<< HEAD
 		dbg("%s - urb shutting down with status: %d",
 		    __func__, urb->status);
 		return;
@@ -454,6 +478,15 @@ static void aiptek_irq(struct urb *urb)
 	default:
 		dbg("%s - nonzero urb status received: %d",
 		    __func__, urb->status);
+=======
+		dev_dbg(&intf->dev, "%s - urb shutting down with status: %d\n",
+			__func__, urb->status);
+		return;
+
+	default:
+		dev_dbg(&intf->dev, "%s - nonzero urb status received: %d\n",
+			__func__, urb->status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
@@ -785,7 +818,11 @@ static void aiptek_irq(struct urb *urb)
 				 1 | AIPTEK_REPORT_TOOL_UNKNOWN);
 		input_sync(inputdev);
 	} else {
+<<<<<<< HEAD
 		dbg("Unknown report %d", data[0]);
+=======
+		dev_dbg(&intf->dev, "Unknown report %d\n", data[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Jitter may occur when the user presses a button on the stlyus
@@ -811,8 +848,14 @@ static void aiptek_irq(struct urb *urb)
 exit:
 	retval = usb_submit_urb(urb, GFP_ATOMIC);
 	if (retval != 0) {
+<<<<<<< HEAD
 		err("%s - usb_submit_urb failed with result %d",
 		    __func__, retval);
+=======
+		dev_err(&intf->dev,
+			"%s - usb_submit_urb failed with result %d\n",
+			__func__, retval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -845,7 +888,11 @@ static int aiptek_open(struct input_dev *inputdev)
 {
 	struct aiptek *aiptek = input_get_drvdata(inputdev);
 
+<<<<<<< HEAD
 	aiptek->urb->dev = aiptek->usbdev;
+=======
+	aiptek->urb->dev = interface_to_usbdev(aiptek->intf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (usb_submit_urb(aiptek->urb, GFP_KERNEL) != 0)
 		return -EIO;
 
@@ -871,8 +918,15 @@ aiptek_set_report(struct aiptek *aiptek,
 		  unsigned char report_type,
 		  unsigned char report_id, void *buffer, int size)
 {
+<<<<<<< HEAD
 	return usb_control_msg(aiptek->usbdev,
 			       usb_sndctrlpipe(aiptek->usbdev, 0),
+=======
+	struct usb_device *udev = interface_to_usbdev(aiptek->intf);
+
+	return usb_control_msg(udev,
+			       usb_sndctrlpipe(udev, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       USB_REQ_SET_REPORT,
 			       USB_TYPE_CLASS | USB_RECIP_INTERFACE |
 			       USB_DIR_OUT, (report_type << 8) + report_id,
@@ -884,8 +938,15 @@ aiptek_get_report(struct aiptek *aiptek,
 		  unsigned char report_type,
 		  unsigned char report_id, void *buffer, int size)
 {
+<<<<<<< HEAD
 	return usb_control_msg(aiptek->usbdev,
 			       usb_rcvctrlpipe(aiptek->usbdev, 0),
+=======
+	struct usb_device *udev = interface_to_usbdev(aiptek->intf);
+
+	return usb_control_msg(udev,
+			       usb_rcvctrlpipe(udev, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       USB_REQ_GET_REPORT,
 			       USB_TYPE_CLASS | USB_RECIP_INTERFACE |
 			       USB_DIR_IN, (report_type << 8) + report_id,
@@ -912,8 +973,14 @@ aiptek_command(struct aiptek *aiptek, unsigned char command, unsigned char data)
 
 	if ((ret =
 	     aiptek_set_report(aiptek, 3, 2, buf, sizeof_buf)) != sizeof_buf) {
+<<<<<<< HEAD
 		dbg("aiptek_program: failed, tried to send: 0x%02x 0x%02x",
 		    command, data);
+=======
+		dev_dbg(&aiptek->intf->dev,
+			"aiptek_program: failed, tried to send: 0x%02x 0x%02x\n",
+			command, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	kfree(buf);
 	return ret < 0 ? ret : 0;
@@ -945,10 +1012,17 @@ aiptek_query(struct aiptek *aiptek, unsigned char command, unsigned char data)
 	}
 	msleep(aiptek->curSetting.programmableDelay);
 
+<<<<<<< HEAD
 	if ((ret =
 	     aiptek_get_report(aiptek, 3, 2, buf, sizeof_buf)) != sizeof_buf) {
 		dbg("aiptek_query failed: returned 0x%02x 0x%02x 0x%02x",
 		    buf[0], buf[1], buf[2]);
+=======
+	if (aiptek_get_report(aiptek, 3, 2, buf, sizeof_buf) != sizeof_buf) {
+		dev_dbg(&aiptek->intf->dev,
+			"aiptek_query failed: returned 0x%02x 0x%02x 0x%02x\n",
+			buf[0], buf[1], buf[2]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EIO;
 	} else {
 		ret = get_unaligned_le16(buf + 1);
@@ -1049,9 +1123,15 @@ static ssize_t show_tabletSize(struct device *dev, struct device_attribute *attr
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%dx%d\n",
 			input_abs_get_max(aiptek->inputdev, ABS_X) + 1,
 			input_abs_get_max(aiptek->inputdev, ABS_Y) + 1);
+=======
+	return sysfs_emit(buf, "%dx%d\n",
+			  input_abs_get_max(aiptek->inputdev, ABS_X) + 1,
+			  input_abs_get_max(aiptek->inputdev, ABS_Y) + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* These structs define the sysfs files, param #1 is the name of the
@@ -1077,9 +1157,14 @@ static ssize_t show_tabletPointerMode(struct device *dev, struct device_attribut
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n",
 			map_val_to_str(pointer_mode_map,
 					aiptek->curSetting.pointerMode));
+=======
+	return sysfs_emit(buf, "%s\n", map_val_to_str(pointer_mode_map,
+						      aiptek->curSetting.pointerMode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1114,9 +1199,14 @@ static ssize_t show_tabletCoordinateMode(struct device *dev, struct device_attri
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n",
 			map_val_to_str(coordinate_mode_map,
 					aiptek->curSetting.coordinateMode));
+=======
+	return sysfs_emit(buf, "%s\n", map_val_to_str(coordinate_mode_map,
+						      aiptek->curSetting.coordinateMode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1156,9 +1246,14 @@ static ssize_t show_tabletToolMode(struct device *dev, struct device_attribute *
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n",
 			map_val_to_str(tool_mode_map,
 					aiptek->curSetting.toolMode));
+=======
+	return sysfs_emit(buf, "%s\n", map_val_to_str(tool_mode_map,
+						      aiptek->curSetting.toolMode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1187,10 +1282,16 @@ static ssize_t show_tabletXtilt(struct device *dev, struct device_attribute *att
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
 	if (aiptek->curSetting.xTilt == AIPTEK_TILT_DISABLE) {
+<<<<<<< HEAD
 		return snprintf(buf, PAGE_SIZE, "disable\n");
 	} else {
 		return snprintf(buf, PAGE_SIZE, "%d\n",
 				aiptek->curSetting.xTilt);
+=======
+		return sysfs_emit(buf, "disable\n");
+	} else {
+		return sysfs_emit(buf, "%d\n", aiptek->curSetting.xTilt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1229,10 +1330,16 @@ static ssize_t show_tabletYtilt(struct device *dev, struct device_attribute *att
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
 	if (aiptek->curSetting.yTilt == AIPTEK_TILT_DISABLE) {
+<<<<<<< HEAD
 		return snprintf(buf, PAGE_SIZE, "disable\n");
 	} else {
 		return snprintf(buf, PAGE_SIZE, "%d\n",
 				aiptek->curSetting.yTilt);
+=======
+		return sysfs_emit(buf, "disable\n");
+	} else {
+		return sysfs_emit(buf, "%d\n", aiptek->curSetting.yTilt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1270,7 +1377,11 @@ static ssize_t show_tabletJitterDelay(struct device *dev, struct device_attribut
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%d\n", aiptek->curSetting.jitterDelay);
+=======
+	return sysfs_emit(buf, "%d\n", aiptek->curSetting.jitterDelay);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1299,8 +1410,12 @@ static ssize_t show_tabletProgrammableDelay(struct device *dev, struct device_at
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%d\n",
 			aiptek->curSetting.programmableDelay);
+=======
+	return sysfs_emit(buf, "%d\n", aiptek->curSetting.programmableDelay);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1329,7 +1444,11 @@ static ssize_t show_tabletEventsReceived(struct device *dev, struct device_attri
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%ld\n", aiptek->eventCount);
+=======
+	return sysfs_emit(buf, "%ld\n", aiptek->eventCount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(event_count, S_IRUGO, show_tabletEventsReceived, NULL);
@@ -1368,7 +1487,11 @@ static ssize_t show_tabletDiagnosticMessage(struct device *dev, struct device_at
 	default:
 		return 0;
 	}
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, retMsg);
+=======
+	return sysfs_emit(buf, retMsg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(diagnostic, S_IRUGO, show_tabletDiagnosticMessage, NULL);
@@ -1388,9 +1511,14 @@ static ssize_t show_tabletStylusUpper(struct device *dev, struct device_attribut
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n",
 			map_val_to_str(stylus_button_map,
 					aiptek->curSetting.stylusButtonUpper));
+=======
+	return sysfs_emit(buf, "%s\n", map_val_to_str(stylus_button_map,
+						      aiptek->curSetting.stylusButtonUpper));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1419,9 +1547,14 @@ static ssize_t show_tabletStylusLower(struct device *dev, struct device_attribut
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n",
 			map_val_to_str(stylus_button_map,
 					aiptek->curSetting.stylusButtonLower));
+=======
+	return sysfs_emit(buf, "%s\n", map_val_to_str(stylus_button_map,
+						      aiptek->curSetting.stylusButtonLower));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1457,9 +1590,14 @@ static ssize_t show_tabletMouseLeft(struct device *dev, struct device_attribute 
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n",
 			map_val_to_str(mouse_button_map,
 					aiptek->curSetting.mouseButtonLeft));
+=======
+	return sysfs_emit(buf, "%s\n", map_val_to_str(mouse_button_map,
+						      aiptek->curSetting.mouseButtonLeft));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1487,9 +1625,14 @@ static ssize_t show_tabletMouseMiddle(struct device *dev, struct device_attribut
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n",
 			map_val_to_str(mouse_button_map,
 					aiptek->curSetting.mouseButtonMiddle));
+=======
+	return sysfs_emit(buf, "%s\n", map_val_to_str(mouse_button_map,
+						      aiptek->curSetting.mouseButtonMiddle));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1517,9 +1660,14 @@ static ssize_t show_tabletMouseRight(struct device *dev, struct device_attribute
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n",
 			map_val_to_str(mouse_button_map,
 					aiptek->curSetting.mouseButtonRight));
+=======
+	return sysfs_emit(buf, "%s\n", map_val_to_str(mouse_button_map,
+						      aiptek->curSetting.mouseButtonRight));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1548,10 +1696,16 @@ static ssize_t show_tabletWheel(struct device *dev, struct device_attribute *att
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
 	if (aiptek->curSetting.wheel == AIPTEK_WHEEL_DISABLE) {
+<<<<<<< HEAD
 		return snprintf(buf, PAGE_SIZE, "disable\n");
 	} else {
 		return snprintf(buf, PAGE_SIZE, "%d\n",
 				aiptek->curSetting.wheel);
+=======
+		return sysfs_emit(buf, "disable\n");
+	} else {
+		return sysfs_emit(buf, "%d\n", aiptek->curSetting.wheel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1581,8 +1735,12 @@ static ssize_t show_tabletExecute(struct device *dev, struct device_attribute *a
 	/* There is nothing useful to display, so a one-line manual
 	 * is in order...
 	 */
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE,
 			"Write anything to this file to program your tablet.\n");
+=======
+	return sysfs_emit(buf, "Write anything to this file to program your tablet.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -1613,7 +1771,11 @@ static ssize_t show_tabletODMCode(struct device *dev, struct device_attribute *a
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "0x%04x\n", aiptek->features.odmCode);
+=======
+	return sysfs_emit(buf, "0x%04x\n", aiptek->features.odmCode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(odm_code, S_IRUGO, show_tabletODMCode, NULL);
@@ -1626,7 +1788,11 @@ static ssize_t show_tabletModelCode(struct device *dev, struct device_attribute 
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "0x%04x\n", aiptek->features.modelCode);
+=======
+	return sysfs_emit(buf, "0x%04x\n", aiptek->features.modelCode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(model_code, S_IRUGO, show_tabletModelCode, NULL);
@@ -1639,13 +1805,21 @@ static ssize_t show_firmwareCode(struct device *dev, struct device_attribute *at
 {
 	struct aiptek *aiptek = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%04x\n",
 			aiptek->features.firmwareCode);
+=======
+	return sysfs_emit(buf, "%04x\n", aiptek->features.firmwareCode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(firmware_code, S_IRUGO, show_firmwareCode, NULL);
 
+<<<<<<< HEAD
 static struct attribute *aiptek_attributes[] = {
+=======
+static struct attribute *aiptek_dev_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_size.attr,
 	&dev_attr_pointer_mode.attr,
 	&dev_attr_coordinate_mode.attr,
@@ -1669,9 +1843,13 @@ static struct attribute *aiptek_attributes[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static struct attribute_group aiptek_attribute_group = {
 	.attrs	= aiptek_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(aiptek_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /***********************************************************************
  * This routine is called when a tablet has been identified. It basically
@@ -1712,7 +1890,11 @@ aiptek_probe(struct usb_interface *intf, const struct usb_device_id *id)
         }
 
 	aiptek->data = usb_alloc_coherent(usbdev, AIPTEK_PACKET_LENGTH,
+<<<<<<< HEAD
 					  GFP_ATOMIC, &aiptek->data_dma);
+=======
+					  GFP_KERNEL, &aiptek->data_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         if (!aiptek->data) {
 		dev_warn(&intf->dev, "cannot allocate usb buffer\n");
 		goto fail1;
@@ -1725,8 +1907,13 @@ aiptek_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	}
 
 	aiptek->inputdev = inputdev;
+<<<<<<< HEAD
 	aiptek->usbdev = usbdev;
 	aiptek->ifnum = intf->altsetting[0].desc.bInterfaceNumber;
+=======
+	aiptek->intf = intf;
+	aiptek->ifnum = intf->cur_altsetting->desc.bInterfaceNumber;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aiptek->inDelay = 0;
 	aiptek->endDelay = 0;
 	aiptek->previousJitterable = 0;
@@ -1814,6 +2001,7 @@ aiptek_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	input_set_abs_params(inputdev, ABS_TILT_Y, AIPTEK_TILT_MIN, AIPTEK_TILT_MAX, 0, 0);
 	input_set_abs_params(inputdev, ABS_WHEEL, AIPTEK_WHEEL_MIN, AIPTEK_WHEEL_MAX - 1, 0, 0);
 
+<<<<<<< HEAD
 	/* Verify that a device really has an endpoint */
 	if (intf->altsetting[0].desc.bNumEndpoints < 1) {
 		dev_err(&intf->dev,
@@ -1823,13 +2011,27 @@ aiptek_probe(struct usb_interface *intf, const struct usb_device_id *id)
 		goto fail3;
 	}
 	endpoint = &intf->altsetting[0].endpoint[0].desc;
+=======
+	err = usb_find_common_endpoints(intf->cur_altsetting,
+					NULL, NULL, &endpoint, NULL);
+	if (err) {
+		dev_err(&intf->dev,
+			"interface has no int in endpoints, but must have minimum 1\n");
+		goto fail3;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Go set up our URB, which is called when the tablet receives
 	 * input.
 	 */
 	usb_fill_int_urb(aiptek->urb,
+<<<<<<< HEAD
 			 aiptek->usbdev,
 			 usb_rcvintpipe(aiptek->usbdev,
+=======
+			 usbdev,
+			 usb_rcvintpipe(usbdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					endpoint->bEndpointAddress),
 			 aiptek->data, 8, aiptek_irq, aiptek,
 			 endpoint->bInterval);
@@ -1872,6 +2074,7 @@ aiptek_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	 */
 	usb_set_intfdata(intf, aiptek);
 
+<<<<<<< HEAD
 	/* Set up the sysfs files
 	 */
 	err = sysfs_create_group(&intf->dev.kobj, &aiptek_attribute_group);
@@ -1881,17 +2084,26 @@ aiptek_probe(struct usb_interface *intf, const struct usb_device_id *id)
 		goto fail3;
         }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Register the tablet as an Input Device
 	 */
 	err = input_register_device(aiptek->inputdev);
 	if (err) {
 		dev_warn(&intf->dev,
 			 "input_register_device returned err: %d\n", err);
+<<<<<<< HEAD
 		goto fail4;
         }
 	return 0;
 
  fail4:	sysfs_remove_group(&intf->dev.kobj, &aiptek_attribute_group);
+=======
+		goto fail3;
+        }
+	return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  fail3: usb_free_urb(aiptek->urb);
  fail2:	usb_free_coherent(usbdev, AIPTEK_PACKET_LENGTH, aiptek->data,
 			  aiptek->data_dma);
@@ -1916,7 +2128,10 @@ static void aiptek_disconnect(struct usb_interface *intf)
 		 */
 		usb_kill_urb(aiptek->urb);
 		input_unregister_device(aiptek->inputdev);
+<<<<<<< HEAD
 		sysfs_remove_group(&intf->dev.kobj, &aiptek_attribute_group);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_free_urb(aiptek->urb);
 		usb_free_coherent(interface_to_usbdev(intf),
 				  AIPTEK_PACKET_LENGTH,
@@ -1930,12 +2145,21 @@ static struct usb_driver aiptek_driver = {
 	.probe = aiptek_probe,
 	.disconnect = aiptek_disconnect,
 	.id_table = aiptek_ids,
+<<<<<<< HEAD
+=======
+	.dev_groups = aiptek_dev_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(aiptek_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
+=======
+MODULE_AUTHOR("Bryan W. Headley/Chris Atenasio/Cedric Brun/Rene van Paassen");
+MODULE_DESCRIPTION("Aiptek HyperPen USB Tablet Driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 module_param(programmableDelay, int, 0);

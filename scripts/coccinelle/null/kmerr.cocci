@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /// This semantic patch looks for kmalloc etc that are not followed by a
 /// NULL check.  It only gives a report in the case where there is some
 /// error handling code later in the function, which may be helpful
@@ -5,12 +9,21 @@
 /// should be.
 ///
 // Confidence: High
+<<<<<<< HEAD
 // Copyright: (C) 2010 Nicolas Palix, DIKU.  GPLv2.
 // Copyright: (C) 2010 Julia Lawall, DIKU.  GPLv2.
 // Copyright: (C) 2010 Gilles Muller, INRIA/LiP6.  GPLv2.
 // URL: http://coccinelle.lip6.fr/
 // Comments:
 // Options: -no_includes -include_headers
+=======
+// Copyright: (C) 2010 Nicolas Palix, DIKU.
+// Copyright: (C) 2010 Julia Lawall, DIKU.
+// Copyright: (C) 2010 Gilles Muller, INRIA/LiP6.
+// URL: https://coccinelle.gitlabpages.inria.fr/website
+// Comments:
+// Options: --no-includes --include-headers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 virtual context
 virtual org

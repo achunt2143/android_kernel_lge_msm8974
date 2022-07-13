@@ -153,7 +153,11 @@ static void md4_transform(uint32_t *hash, uint32_t const *in)
 
 static inline void md4_transform_helper(struct md4_ctx *ctx)
 {
+<<<<<<< HEAD
 	le32_to_cpu_array(ctx->block, sizeof(ctx->block) / sizeof(uint32_t));
+=======
+	le32_to_cpu_array(ctx->block, ARRAY_SIZE(ctx->block));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	md4_transform(ctx->hash, ctx->block);
 }
 
@@ -214,9 +218,15 @@ static void md4_final_ascii(struct md4_ctx *mctx, char *out, unsigned int len)
 	mctx->block[14] = mctx->byte_count << 3;
 	mctx->block[15] = mctx->byte_count >> 29;
 	le32_to_cpu_array(mctx->block, (sizeof(mctx->block) -
+<<<<<<< HEAD
 	                  sizeof(uint64_t)) / sizeof(uint32_t));
 	md4_transform(mctx->hash, mctx->block);
 	cpu_to_le32_array(mctx->hash, sizeof(mctx->hash) / sizeof(uint32_t));
+=======
+			  sizeof(uint64_t)) / sizeof(uint32_t));
+	md4_transform(mctx->hash, mctx->block);
+	cpu_to_le32_array(mctx->hash, ARRAY_SIZE(mctx->hash));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snprintf(out, len, "%08X%08X%08X%08X",
 		 mctx->hash[0], mctx->hash[1], mctx->hash[2], mctx->hash[3]);
@@ -258,9 +268,14 @@ static int parse_file(const char *fname, struct md4_ctx *md)
 	char *file;
 	unsigned long i, len;
 
+<<<<<<< HEAD
 	file = grab_file(fname, &len);
 	if (!file)
 		return 0;
+=======
+	file = read_text_file(fname);
+	len = strlen(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < len; i++) {
 		/* Collapse and ignore \ and CR. */
@@ -287,6 +302,7 @@ static int parse_file(const char *fname, struct md4_ctx *md)
 
 		add_char(file[i], md);
 	}
+<<<<<<< HEAD
 	release_file(file, len);
 	return 1;
 }
@@ -298,15 +314,31 @@ static int is_static_library(const char *objfile)
 		return 1;
 	else
 		return 0;
+=======
+	free(file);
+	return 1;
+}
+/* Check whether the file is a static library or not */
+static bool is_static_library(const char *objfile)
+{
+	int len = strlen(objfile);
+
+	return objfile[len - 2] == '.' && objfile[len - 1] == 'a';
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* We have dir/file.o.  Open dir/.file.o.cmd, look for source_ and deps_ line
  * to figure out source files. */
 static int parse_source_files(const char *objfile, struct md4_ctx *md)
 {
+<<<<<<< HEAD
 	char *cmd, *file, *line, *dir;
 	const char *base;
 	unsigned long flen, pos = 0;
+=======
+	char *cmd, *file, *line, *dir, *pos;
+	const char *base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dirlen, ret = 0, check_files = 0;
 
 	cmd = NOFAIL(malloc(strlen(objfile) + sizeof("..cmd")));
@@ -324,6 +356,7 @@ static int parse_source_files(const char *objfile, struct md4_ctx *md)
 	strncpy(dir, objfile, dirlen);
 	dir[dirlen] = '\0';
 
+<<<<<<< HEAD
 	file = grab_file(cmd, &flen);
 	if (!file) {
 		warn("could not find %s for %s\n", cmd, objfile);
@@ -340,6 +373,20 @@ static int parse_source_files(const char *objfile, struct md4_ctx *md)
 	*/
 	while ((line = get_next_line(&pos, file, flen)) != NULL) {
 		char* p = line;
+=======
+	file = read_text_file(cmd);
+
+	pos = file;
+
+	/* Sum all files in the same dir or subdirs. */
+	while ((line = get_line(&pos))) {
+		char* p;
+
+		/* trim the leading spaces away */
+		while (isspace(*line))
+			line++;
+		p = line;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (strncmp(line, "source_", sizeof("source_")-1) == 0) {
 			p = strrchr(line, ' ');
@@ -367,7 +414,11 @@ static int parse_source_files(const char *objfile, struct md4_ctx *md)
 			break;
 		/* Terminate line at first space, to get rid of final ' \' */
 		while (*p) {
+<<<<<<< HEAD
                        if (isspace(*p)) {
+=======
+			if (isspace(*p)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				*p = '\0';
 				break;
 			}
@@ -389,8 +440,12 @@ static int parse_source_files(const char *objfile, struct md4_ctx *md)
 	/* Everyone parsed OK */
 	ret = 1;
 out_file:
+<<<<<<< HEAD
 	release_file(file, flen);
 out:
+=======
+	free(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free(dir);
 	free(cmd);
 	return ret;
@@ -399,6 +454,7 @@ out:
 /* Calc and record src checksum. */
 void get_src_version(const char *modname, char sum[], unsigned sumlen)
 {
+<<<<<<< HEAD
 	void *file;
 	unsigned long len;
 	struct md4_ctx md;
@@ -440,10 +496,25 @@ void get_src_version(const char *modname, char sum[], unsigned sumlen)
 
 	md4_init(&md);
 	while ((fname = strsep(&sources, " ")) != NULL) {
+=======
+	char *buf;
+	struct md4_ctx md;
+	char *fname;
+	char filelist[PATH_MAX + 1];
+
+	/* objects for a module are listed in the first line of *.mod file. */
+	snprintf(filelist, sizeof(filelist), "%s.mod", modname);
+
+	buf = read_text_file(filelist);
+
+	md4_init(&md);
+	while ((fname = strsep(&buf, "\n"))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!*fname)
 			continue;
 		if (!(is_static_library(fname)) &&
 				!parse_source_files(fname, &md))
+<<<<<<< HEAD
 			goto release;
 	}
 
@@ -516,4 +587,12 @@ void maybe_frob_rcs_version(const char *modfilename,
 {
 	if (strip_rcs_crap(version))
 		write_version(modfilename, version, version_offset);
+=======
+			goto free;
+	}
+
+	md4_final_ascii(&md, sum, sumlen);
+free:
+	free(buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

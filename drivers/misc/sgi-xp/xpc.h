@@ -71,14 +71,20 @@
  *     'SAL_nasids_size'. (Local partition's mask pointers are xpc_part_nasids
  *     and xpc_mach_nasids.)
  *
+<<<<<<< HEAD
  *   vars	(ia64-sn2 only)
  *   vars part	(ia64-sn2 only)
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *     Immediately following the mach_nasids mask are the XPC variables
  *     required by other partitions. First are those that are generic to all
  *     partitions (vars), followed on the next available cacheline by those
  *     which are partition specific (vars part). These are setup by XPC.
+<<<<<<< HEAD
  *     (Local partition's vars pointers are xpc_vars and xpc_vars_part.)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note: Until 'ts_jiffies' is set non-zero, the partition XPC code has not been
  *       initialized.
@@ -93,9 +99,12 @@ struct xpc_rsvd_page {
 	unsigned long ts_jiffies; /* timestamp when rsvd pg was setup by XPC */
 	union {
 		struct {
+<<<<<<< HEAD
 			unsigned long vars_pa;	/* phys addr */
 		} sn2;
 		struct {
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned long heartbeat_gpa; /* phys addr */
 			unsigned long activate_gru_mq_desc_gpa; /* phys addr */
 		} uv;
@@ -106,6 +115,7 @@ struct xpc_rsvd_page {
 
 #define XPC_RP_VERSION _XPC_VERSION(3, 0) /* version 3.0 of the reserved page */
 
+<<<<<<< HEAD
 /*
  * Define the structures by which XPC variables can be exported to other
  * partitions. (There are two: struct xpc_vars and struct xpc_vars_part)
@@ -176,14 +186,22 @@ struct xpc_vars_part_sn2 {
 
 #define XPC_RP_HEADER_SIZE	L1_CACHE_ALIGN(sizeof(struct xpc_rsvd_page))
 #define XPC_RP_VARS_SIZE	L1_CACHE_ALIGN(sizeof(struct xpc_vars_sn2))
+=======
+/* the reserved page sizes and offsets */
+
+#define XPC_RP_HEADER_SIZE	L1_CACHE_ALIGN(sizeof(struct xpc_rsvd_page))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define XPC_RP_PART_NASIDS(_rp) ((unsigned long *)((u8 *)(_rp) + \
 				 XPC_RP_HEADER_SIZE))
 #define XPC_RP_MACH_NASIDS(_rp) (XPC_RP_PART_NASIDS(_rp) + \
 				 xpc_nasid_mask_nlongs)
+<<<<<<< HEAD
 #define XPC_RP_VARS(_rp)	((struct xpc_vars_sn2 *) \
 				 (XPC_RP_MACH_NASIDS(_rp) + \
 				  xpc_nasid_mask_nlongs))
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -298,6 +316,7 @@ struct xpc_activate_mq_msg_chctl_opencomplete_uv {
 #define XPC_UNPACK_ARG2(_args)	((((u64)_args) >> 32) & 0xffffffff)
 
 /*
+<<<<<<< HEAD
  * Define a Get/Put value pair (pointers) used with a message queue.
  */
 struct xpc_gp_sn2 {
@@ -309,6 +328,8 @@ struct xpc_gp_sn2 {
 		L1_CACHE_ALIGN(sizeof(struct xpc_gp_sn2) * XPC_MAX_NCHANNELS)
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Define a structure that contains arguments associated with opening and
  * closing a channel.
  */
@@ -341,6 +362,7 @@ struct xpc_fifo_head_uv {
 };
 
 /*
+<<<<<<< HEAD
  * Define a sn2 styled message.
  *
  * A user-defined message resides in the payload area. The max size of the
@@ -365,6 +387,8 @@ struct xpc_msg_sn2 {
 #define	XPC_M_SN2_INTERRUPT	0x04	/* send interrupt when msg consumed */
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The format of a uv XPC notify_mq GRU message is as follows:
  *
  * A user-defined message resides in the payload area. The max size of the
@@ -390,6 +414,7 @@ struct xpc_notify_mq_msg_uv {
 	unsigned long payload;
 };
 
+<<<<<<< HEAD
 /*
  * Define sn2's notify entry.
  *
@@ -404,6 +429,8 @@ struct xpc_notify_sn2 {
 	void *key;		/* pointer to user's key */
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* struct xpc_notify_sn2 type of notification */
 
 #define	XPC_N_CALL	0x01	/* notify function provided by user */
@@ -431,6 +458,7 @@ struct xpc_send_msg_slot_uv {
  * of these structures for each potential channel connection to that partition.
  */
 
+<<<<<<< HEAD
 /*
  * The following is sn2 only.
  *
@@ -527,6 +555,8 @@ struct xpc_channel_sn2 {
 	struct mutex msg_to_pull_mutex;	/* next msg to pull serialization */
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct xpc_channel_uv {
 	void *cached_notify_gru_mq_desc; /* remote partition's notify mq's */
 					 /* gru mq descriptor */
@@ -579,7 +609,10 @@ struct xpc_channel {
 	wait_queue_head_t idle_wq;	/* idle kthread wait queue */
 
 	union {
+<<<<<<< HEAD
 		struct xpc_channel_sn2 sn2;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct xpc_channel_uv uv;
 	} sn;
 
@@ -666,6 +699,7 @@ xpc_any_msg_chctl_flags_set(union xpc_channel_ctl_flags *chctl)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Manage channels on a partition basis. There is one of these structures
  * for each partition (a partition will never utilize the structure that
@@ -703,6 +737,8 @@ struct xpc_partition_sn2 {
 	struct timer_list dropped_notify_IRQ_timer;	/* dropped IRQ timer */
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct xpc_partition_uv {
 	unsigned long heartbeat_gpa; /* phys addr of partition's heartbeat */
 	struct xpc_heartbeat_uv cached_heartbeat; /* cached copy of */
@@ -774,7 +810,10 @@ struct xpc_partition {
 	wait_queue_head_t channel_mgr_wq;	/* channel mgr's wait queue */
 
 	union {
+<<<<<<< HEAD
 		struct xpc_partition_sn2 sn2;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct xpc_partition_uv uv;
 	} sn;
 
@@ -854,6 +893,7 @@ struct xpc_arch_operations {
 #define XPC_P_SS_WTEARDOWN	0x02	/* waiting to teardown infrastructure */
 #define XPC_P_SS_TORNDOWN	0x03	/* infrastructure is torndown */
 
+<<<<<<< HEAD
 /*
  * struct xpc_partition_sn2's dropped notify IRQ timer is set to wait the
  * following interval #of seconds before checking for dropped notify IRQs.
@@ -862,6 +902,8 @@ struct xpc_arch_operations {
  */
 #define XPC_DROPPED_NOTIFY_IRQ_WAIT_INTERVAL	(0.25 * HZ)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* number of seconds to wait for other partitions to disengage */
 #define XPC_DISENGAGE_DEFAULT_TIMELIMIT		90
 
@@ -888,10 +930,13 @@ extern void xpc_activate_kthreads(struct xpc_channel *, int);
 extern void xpc_create_kthreads(struct xpc_channel *, int, int);
 extern void xpc_disconnect_wait(int);
 
+<<<<<<< HEAD
 /* found in xpc_sn2.c */
 extern int xpc_init_sn2(void);
 extern void xpc_exit_sn2(void);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* found in xpc_uv.c */
 extern int xpc_init_uv(void);
 extern void xpc_exit_uv(void);
@@ -907,6 +952,10 @@ extern int xpc_setup_rsvd_page(void);
 extern void xpc_teardown_rsvd_page(void);
 extern int xpc_identify_activate_IRQ_sender(void);
 extern int xpc_partition_disengaged(struct xpc_partition *);
+<<<<<<< HEAD
+=======
+extern int xpc_partition_disengaged_from_timer(struct xpc_partition *part);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern enum xp_retval xpc_mark_partition_active(struct xpc_partition *);
 extern void xpc_mark_partition_inactive(struct xpc_partition *);
 extern void xpc_discovery(void);

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * (C) Copyright 2007
  * Texas Instruments
@@ -6,6 +10,7 @@
  * (C) Copyright 2004
  * Texas Instruments, <www.ti.com>
  * Richard Woodruff <r-woodruff2@ti.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -21,11 +26,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/linkage.h>
 
 #include <asm/assembler.h>
 
+<<<<<<< HEAD
 #include <plat/hardware.h>
 #include <plat/sram.h>
 
@@ -33,6 +41,14 @@
 #include "cm2xxx_3xxx.h"
 #include "prm2xxx_3xxx.h"
 #include "sdrc.h"
+=======
+#include "omap34xx.h"
+#include "iomap.h"
+#include "cm3xxx.h"
+#include "prm3xxx.h"
+#include "sdrc.h"
+#include "sram.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "control.h"
 
 /*
@@ -87,6 +103,7 @@ ENTRY(enable_omap3630_toggle_l2_on_restore)
 	stmfd	sp!, {lr}	@ save registers on stack
 	/* Setup so that we will disable and enable l2 */
 	mov	r1, #0x1
+<<<<<<< HEAD
 	adrl	r2, l2dis_3630	@ may be too distant for plain adr
 	str	r1, [r2]
 	ldmfd	sp!, {pc}	@ restore regs and return
@@ -103,6 +120,24 @@ ENTRY(save_secure_ram_context)
 	and	r3, r3, r12
 	ldr	r12, sram_phy_addr_mask
 	orr	r3, r3, r12
+=======
+	adr	r3, l2dis_3630_offset
+	ldr	r2, [r3]		@ value for offset
+	str	r1, [r2, r3]		@ write to l2dis_3630
+	ldmfd	sp!, {pc}	@ restore regs and return
+ENDPROC(enable_omap3630_toggle_l2_on_restore)
+
+/*
+ * Function to call rom code to save secure ram context.
+ *
+ * r0 = physical address of the parameters
+ */
+	.arch armv7-a
+	.arch_extension sec
+ENTRY(save_secure_ram_context)
+	stmfd	sp!, {r4 - r11, lr}	@ save registers on stack
+	mov	r3, r0			@ physical address of parameters
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov	r0, #25			@ set service ID for PPA
 	mov	r12, r0			@ copy secure service ID in r12
 	mov	r1, #0			@ set task id for ROM code in r1
@@ -116,6 +151,7 @@ ENTRY(save_secure_ram_context)
 	nop
 	nop
 	ldmfd	sp!, {r4 - r11, pc}
+<<<<<<< HEAD
 	.align
 sram_phy_addr_mask:
 	.word	SRAM_BASE_P
@@ -126,6 +162,9 @@ api_params:
 ENDPROC(save_secure_ram_context)
 ENTRY(save_secure_ram_context_sz)
 	.word	. - save_secure_ram_context
+=======
+ENDPROC(save_secure_ram_context)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ======================
@@ -204,6 +243,7 @@ save_context_wfi:
 	 */
 	ldr	r1, kernel_flush
 	blx	r1
+<<<<<<< HEAD
 	/*
 	 * The kernel doesn't interwork: v7_flush_dcache_all in particluar will
 	 * always return in Thumb state when CONFIG_THUMB2_KERNEL is enabled.
@@ -221,6 +261,10 @@ save_context_wfi:
 /*
  * Local variables
  */
+=======
+	b	omap3_do_wfi
+ENDPROC(omap34xx_cpu_suspend)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 omap3_do_wfi_sram_addr:
 	.word omap3_do_wfi_sram
 kernel_flush:
@@ -305,12 +349,15 @@ wait_sdrc_ready:
 	bic	r5, r5, #0x40
 	str	r5, [r4]
 
+<<<<<<< HEAD
 /*
  * PC-relative stores lead to undefined behaviour in Thumb-2: use a r7 as a
  * base instead.
  * Be careful not to clobber r7 when maintaing this code.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 is_dll_in_lock_mode:
 	/* Is dll in lock mode? */
 	ldr	r4, sdrc_dlla_ctrl
@@ -318,11 +365,15 @@ is_dll_in_lock_mode:
 	tst	r5, #0x4
 	bne	exit_nonoff_modes	@ Return if locked
 	/* wait till dll locks */
+<<<<<<< HEAD
 	adr	r7, kick_counter
 wait_dll_lock_timed:
 	ldr	r4, wait_dll_lock_counter
 	add	r4, r4, #1
 	str	r4, [r7, #wait_dll_lock_counter - kick_counter]
+=======
+wait_dll_lock_timed:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldr	r4, sdrc_dlla_status
 	/* Wait 20uS for lock */
 	mov	r6, #8
@@ -346,9 +397,12 @@ kick_dll:
 	orr	r6, r6, #(1<<3)		@ enable dll
 	str	r6, [r4]
 	dsb
+<<<<<<< HEAD
 	ldr	r4, kick_counter
 	add	r4, r4, #1
 	str	r4, [r7]		@ kick_counter
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b	wait_dll_lock_timed
 
 exit_nonoff_modes:
@@ -365,10 +419,14 @@ exit_nonoff_modes:
  * ===================================
  */
 	ldmfd	sp!, {r4 - r11, pc}	@ restore regs and return
+<<<<<<< HEAD
 
 /*
  * Local variables
  */
+=======
+ENDPROC(omap3_do_wfi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sdrc_power:
 	.word	SDRC_POWER_V
 cm_idlest1_core:
@@ -379,6 +437,7 @@ sdrc_dlla_status:
 	.word	SDRC_DLLA_STATUS_V
 sdrc_dlla_ctrl:
 	.word	SDRC_DLLA_CTRL_V
+<<<<<<< HEAD
 	/*
 	 * When exporting to userspace while the counters are in SRAM,
 	 * these 2 words need to be at the end to facilitate retrival!
@@ -388,6 +447,8 @@ kick_counter:
 wait_dll_lock_counter:
 	.word	0
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENTRY(omap3_do_wfi_sz)
 	.word	. - omap3_do_wfi
 
@@ -456,7 +517,13 @@ ENTRY(omap3_restore)
 	cmp	r2, #0x0	@ Check if target power state was OFF or RET
 	bne	logic_l1_restore
 
+<<<<<<< HEAD
 	ldr	r0, l2dis_3630
+=======
+	adr	r1, l2dis_3630_offset	@ address for offset
+	ldr	r0, [r1]		@ value for offset
+	ldr	r0, [r1, r0]		@ value at l2dis_3630
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmp	r0, #0x1	@ should we disable L2 on 3630?
 	bne	skipl2dis
 	mrc	p15, 0, r0, c1, c0, 1
@@ -468,12 +535,21 @@ skipl2dis:
 	and	r1, #0x700
 	cmp	r1, #0x300
 	beq	l2_inv_gp
+<<<<<<< HEAD
+=======
+	adr	r0, l2_inv_api_params_offset
+	ldr	r3, [r0]
+	add	r3, r3, r0		@ r3 points to dummy parameters
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov	r0, #40			@ set service ID for PPA
 	mov	r12, r0			@ copy secure Service ID in r12
 	mov	r1, #0			@ set task id for ROM code in r1
 	mov	r2, #4			@ set some flags in r2, r6
 	mov	r6, #0xff
+<<<<<<< HEAD
 	adr	r3, l2_inv_api_params	@ r3 points to dummy parameters
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dsb				@ data write barrier
 	dmb				@ data memory barrier
 	smc	#1			@ call SMI monitor (smi #1)
@@ -507,8 +583,13 @@ skipl2dis:
 	b	logic_l1_restore
 
 	.align
+<<<<<<< HEAD
 l2_inv_api_params:
 	.word	0x1, 0x00
+=======
+l2_inv_api_params_offset:
+	.long	l2_inv_api_params - .
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 l2_inv_gp:
 	/* Execute smi to invalidate L2 cache */
 	mov r12, #0x1			@ set up to invalidate L2
@@ -525,7 +606,13 @@ l2_inv_gp:
 	mov	r12, #0x2
 	smc	#0			@ Call SMI monitor (smieq)
 logic_l1_restore:
+<<<<<<< HEAD
 	ldr	r1, l2dis_3630
+=======
+	adr	r0, l2dis_3630_offset	@ address for offset
+	ldr	r1, [r0]		@ value for offset
+	ldr	r1, [r0, r1]		@ value at l2dis_3630
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmp	r1, #0x1		@ Test if L2 re-enable needed on 3630
 	bne	skipl2reen
 	mrc	p15, 0, r1, c1, c0, 1
@@ -554,9 +641,25 @@ control_stat:
 	.word	CONTROL_STAT
 control_mem_rta:
 	.word	CONTROL_MEM_RTA_CTRL
+<<<<<<< HEAD
 l2dis_3630:
 	.word	0
 
+=======
+l2dis_3630_offset:
+	.long	l2dis_3630 - .
+
+	.data
+	.align	2
+l2dis_3630:
+	.word	0
+
+	.data
+	.align	2
+l2_inv_api_params:
+	.word	0x1, 0x00
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Internal functions
  */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Alchemy PCI host mode support.
  *
@@ -7,6 +11,10 @@
  * Support for all devices (greater than 16) added by David Gathright.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/types.h>
 #include <linux/pci.h>
@@ -15,11 +23,19 @@
 #include <linux/init.h>
 #include <linux/syscore_ops.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
+=======
+#include <linux/dma-map-ops.h> /* for dma_default_coherent */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mach-au1x00/au1000.h>
 #include <asm/tlbmisc.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_PCI
+=======
+#ifdef CONFIG_PCI_DEBUG
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DBG(x...) printk(KERN_DEBUG x)
 #else
 #define DBG(x...) do {} while (0)
@@ -29,7 +45,11 @@
 #define PCI_ACCESS_WRITE	1
 
 struct alchemy_pci_context {
+<<<<<<< HEAD
 	struct pci_controller alchemy_pci_ctrl;	/* leave as first member! */
+=======
+	struct pci_controller alchemy_pci_ctrl; /* leave as first member! */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *regs;			/* ctrl base */
 	/* tools for wired entry for config space access */
 	unsigned long last_elo0;
@@ -49,7 +69,11 @@ struct alchemy_pci_context {
 static struct alchemy_pci_context *__alchemy_pci_ctx;
 
 
+<<<<<<< HEAD
 /* IO/MEM resources for PCI. Keep the memres in sync with __fixup_bigphys_addr
+=======
+/* IO/MEM resources for PCI. Keep the memres in sync with fixup_bigphys_addr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * in arch/mips/alchemy/common/setup.c
  */
 static struct resource alchemy_pci_def_memres = {
@@ -74,7 +98,11 @@ static void mod_wired_entry(int entry, unsigned long entrylo0,
 	unsigned long old_ctx;
 
 	/* Save old context and create impossible VPN2 value */
+<<<<<<< HEAD
 	old_ctx = read_c0_entryhi() & 0xff;
+=======
+	old_ctx = read_c0_entryhi() & MIPS_ENTRYHI_ASID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	old_pagemask = read_c0_pagemask();
 	write_c0_index(entry);
 	write_c0_pagemask(pagemask);
@@ -162,7 +190,11 @@ static int config_access(unsigned char access_type, struct pci_bus *bus,
 	if (status & (1 << 29)) {
 		*data = 0xffffffff;
 		error = -1;
+<<<<<<< HEAD
 		DBG("alchemy-pci: master abort on cfg access %d bus %d dev %d",
+=======
+		DBG("alchemy-pci: master abort on cfg access %d bus %d dev %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    access_type, bus->number, device);
 	} else if ((status >> 28) & 0xf) {
 		DBG("alchemy-pci: PCI ERR detected: dev %d, status %lx\n",
@@ -356,13 +388,21 @@ static struct syscore_ops alchemy_pci_pmops = {
 	.resume		= alchemy_pci_resume,
 };
 
+<<<<<<< HEAD
 static int __devinit alchemy_pci_probe(struct platform_device *pdev)
+=======
+static int alchemy_pci_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct alchemy_pci_platdata *pd = pdev->dev.platform_data;
 	struct alchemy_pci_context *ctx;
 	void __iomem *virt_io;
 	unsigned long val;
 	struct resource *r;
+<<<<<<< HEAD
+=======
+	struct clk *c;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/* need at least PCI IRQ mapping table */
@@ -381,7 +421,11 @@ static int __devinit alchemy_pci_probe(struct platform_device *pdev)
 
 	r = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!r) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "no  pcictl ctrl regs resource\n");
+=======
+		dev_err(&pdev->dev, "no	 pcictl ctrl regs resource\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENODEV;
 		goto out1;
 	}
@@ -392,11 +436,32 @@ static int __devinit alchemy_pci_probe(struct platform_device *pdev)
 		goto out1;
 	}
 
+<<<<<<< HEAD
 	ctx->regs = ioremap_nocache(r->start, resource_size(r));
 	if (!ctx->regs) {
 		dev_err(&pdev->dev, "cannot map pci regs\n");
 		ret = -ENODEV;
 		goto out2;
+=======
+	c = clk_get(&pdev->dev, "pci_clko");
+	if (IS_ERR(c)) {
+		dev_err(&pdev->dev, "unable to find PCI clock\n");
+		ret = PTR_ERR(c);
+		goto out2;
+	}
+
+	ret = clk_prepare_enable(c);
+	if (ret) {
+		dev_err(&pdev->dev, "cannot enable PCI clock\n");
+		goto out6;
+	}
+
+	ctx->regs = ioremap(r->start, resource_size(r));
+	if (!ctx->regs) {
+		dev_err(&pdev->dev, "cannot map pci regs\n");
+		ret = -ENODEV;
+		goto out5;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* map parts of the PCI IO area */
@@ -411,17 +476,26 @@ static int __devinit alchemy_pci_probe(struct platform_device *pdev)
 	}
 	ctx->alchemy_pci_ctrl.io_map_base = (unsigned long)virt_io;
 
+<<<<<<< HEAD
 #ifdef CONFIG_DMA_NONCOHERENT
 	/* Au1500 revisions older than AD have borked coherent PCI */
 	if ((alchemy_get_cputype() == ALCHEMY_CPU_AU1500) &&
 	    (read_c0_prid() < 0x01030202)) {
+=======
+	/* Au1500 revisions older than AD have borked coherent PCI */
+	if (alchemy_get_cputype() == ALCHEMY_CPU_AU1500 &&
+	    read_c0_prid() < 0x01030202 && !dma_default_coherent) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = __raw_readl(ctx->regs + PCI_REG_CONFIG);
 		val |= PCI_CONFIG_NC;
 		__raw_writel(val, ctx->regs + PCI_REG_CONFIG);
 		wmb();
 		dev_info(&pdev->dev, "non-coherent PCI on Au1500 AA/AB/AC\n");
 	}
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pd->board_map_irq)
 		ctx->board_map_irq = pd->board_map_irq;
@@ -438,7 +512,11 @@ static int __devinit alchemy_pci_probe(struct platform_device *pdev)
 
 	/* we can't ioremap the entire pci config space because it's too large,
 	 * nor can we dynamically ioremap it because some drivers use the
+<<<<<<< HEAD
 	 * PCI config routines from within atomic contex and that becomes a
+=======
+	 * PCI config routines from within atomic context and that becomes a
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * problem in get_vm_area().  Instead we use one wired TLB entry to
 	 * handle all config accesses for all busses.
 	 */
@@ -466,12 +544,25 @@ static int __devinit alchemy_pci_probe(struct platform_device *pdev)
 	register_syscore_ops(&alchemy_pci_pmops);
 	register_pci_controller(&ctx->alchemy_pci_ctrl);
 
+<<<<<<< HEAD
+=======
+	dev_info(&pdev->dev, "PCI controller at %ld MHz\n",
+		 clk_get_rate(c) / 1000000);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 out4:
 	iounmap(virt_io);
 out3:
 	iounmap(ctx->regs);
+<<<<<<< HEAD
+=======
+out5:
+	clk_disable_unprepare(c);
+out6:
+	clk_put(c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out2:
 	release_mem_region(r->start, resource_size(r));
 out1:
@@ -482,9 +573,14 @@ out:
 
 static struct platform_driver alchemy_pcictl_driver = {
 	.probe		= alchemy_pci_probe,
+<<<<<<< HEAD
 	.driver	= {
 		.name	= "alchemy-pci",
 		.owner	= THIS_MODULE,
+=======
+	.driver = {
+		.name	= "alchemy-pci",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -501,7 +597,11 @@ static int __init alchemy_pci_init(void)
 arch_initcall(alchemy_pci_init);
 
 
+<<<<<<< HEAD
 int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+=======
+int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct alchemy_pci_context *ctx = dev->sysdata;
 	if (ctx && ctx->board_map_irq)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
@@ -11,6 +12,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright SUSE Linux Products GmbH 2009
  *
@@ -23,6 +28,10 @@
 #include <asm/mmu.h>
 #include <asm/page.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
+=======
+#include <asm/asm-compat.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PPC_BOOK3S_64
 #include <asm/exception-64s.h>
@@ -36,6 +45,7 @@
 
 #if defined(CONFIG_PPC_BOOK3S_64)
 
+<<<<<<< HEAD
 #define FUNC(name) 		GLUE(.,name)
 #define MTMSR_EERI(reg)		mtmsrd	(reg),1
 
@@ -64,11 +74,24 @@ kvmppc_skip_Hinterrupt:
 	GET_SCRATCH0(r13)
 	hrfid
 	b	.
+=======
+#ifdef CONFIG_PPC64_ELF_ABI_V2
+#define FUNC(name) 		name
+#else
+#define FUNC(name) 		GLUE(.,name)
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #elif defined(CONFIG_PPC_BOOK3S_32)
 
 #define FUNC(name)		name
+<<<<<<< HEAD
 #define MTMSR_EERI(reg)		mtmsr	(reg)
+=======
+
+#define RFI_TO_KERNEL	rfi
+#define RFI_TO_GUEST	rfi
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .macro INTERRUPT_TRAMPOLINE intno
 
@@ -154,6 +177,10 @@ INTERRUPT_TRAMPOLINE	BOOK3S_INTERRUPT_ALTIVEC
 kvmppc_handler_skip_ins:
 
 	/* Patch the IP to the next instruction */
+<<<<<<< HEAD
+=======
+	/* Note that prefixed instructions are disabled in PR KVM for now */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfsrr0	r12
 	addi	r12, r12, 4
 	mtsrr0	r12
@@ -165,19 +192,30 @@ kvmppc_handler_skip_ins:
 	GET_SCRATCH0(r13)
 
 	/* And get back into the code */
+<<<<<<< HEAD
 	RFI
+=======
+	RFI_TO_KERNEL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
  * Call kvmppc_handler_trampoline_enter in real mode
  *
  * On entry, r4 contains the guest shadow MSR
+<<<<<<< HEAD
  */
 _GLOBAL(kvmppc_entry_trampoline)
+=======
+ * MSR.EE has to be 0 when calling this function
+ */
+_GLOBAL_TOC(kvmppc_entry_trampoline)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfmsr	r5
 	LOAD_REG_ADDR(r7, kvmppc_handler_trampoline_enter)
 	toreal(r7)
 
+<<<<<<< HEAD
 	li	r9, MSR_RI
 	ori	r9, r9, MSR_EE
 	andc	r9, r5, r9	/* Clear EE and RI in MSR value */
@@ -238,5 +276,17 @@ define_load_up(altivec)
 #ifdef CONFIG_VSX
 define_load_up(vsx)
 #endif
+=======
+	li	r6, MSR_IR | MSR_DR
+	andc	r6, r5, r6	/* Clear DR and IR in MSR value */
+	/*
+	 * Set EE in HOST_MSR so that it's enabled when we get into our
+	 * C exit handler function.
+	 */
+	ori	r5, r5, MSR_EE
+	mtsrr0	r7
+	mtsrr1	r6
+	RFI_TO_KERNEL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "book3s_segment.S"

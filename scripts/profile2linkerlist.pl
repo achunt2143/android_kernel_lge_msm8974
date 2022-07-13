@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 #!/usr/bin/perl
+=======
+#!/usr/bin/env perl
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Takes a (sorted) output of readprofile and turns it into a list suitable for

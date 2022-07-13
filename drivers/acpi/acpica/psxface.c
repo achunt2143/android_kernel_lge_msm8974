@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: psxface - Parser external interfaces
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,21 +46,34 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acparser.h"
 #include "acdispat.h"
 #include "acinterp.h"
 #include "actables.h"
+<<<<<<< HEAD
+=======
+#include "acnamesp.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_PARSER
 ACPI_MODULE_NAME("psxface")
 
 /* Local Prototypes */
+<<<<<<< HEAD
 static void acpi_ps_start_trace(struct acpi_evaluate_info *info);
 
 static void acpi_ps_stop_trace(struct acpi_evaluate_info *info);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 acpi_ps_update_parameter_list(struct acpi_evaluate_info *info, u16 action);
 
@@ -66,7 +84,11 @@ acpi_ps_update_parameter_list(struct acpi_evaluate_info *info, u16 action);
  * PARAMETERS:  method_name     - Valid ACPI name string
  *              debug_level     - Optional level mask. 0 to use default
  *              debug_layer     - Optional layer mask. 0 to use default
+<<<<<<< HEAD
  *              Flags           - bit 1: one shot(1) or persistent(0)
+=======
+ *              flags           - bit 1: one shot(1) or persistent(0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -76,7 +98,11 @@ acpi_ps_update_parameter_list(struct acpi_evaluate_info *info, u16 action);
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_debug_trace(char *name, u32 debug_level, u32 debug_layer, u32 flags)
+=======
+acpi_debug_trace(const char *name, u32 debug_level, u32 debug_layer, u32 flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 
@@ -85,6 +111,7 @@ acpi_debug_trace(char *name, u32 debug_level, u32 debug_layer, u32 flags)
 		return (status);
 	}
 
+<<<<<<< HEAD
 	/* TBDs: Validate name, allow full path or just nameseg */
 
 	acpi_gbl_trace_method_name = *ACPI_CAST_PTR(u32, name);
@@ -187,16 +214,33 @@ static void acpi_ps_stop_trace(struct acpi_evaluate_info *info)
 
       exit:
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
+=======
+	acpi_gbl_trace_method_name = name;
+	acpi_gbl_trace_flags = flags;
+	acpi_gbl_trace_dbg_level = debug_level;
+	acpi_gbl_trace_dbg_layer = debug_layer;
+	status = AE_OK;
+
+	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
+	return (status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ps_execute_method
  *
+<<<<<<< HEAD
  * PARAMETERS:  Info            - Method info block, contains:
  *                  Node            - Method Node to execute
  *                  obj_desc        - Method object
  *                  Parameters      - List of parameters to pass to the method,
+=======
+ * PARAMETERS:  info            - Method info block, contains:
+ *                  node            - Method Node to execute
+ *                  obj_desc        - Method object
+ *                  parameters      - List of parameters to pass to the method,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                    terminated by NULL. Params itself may be
  *                                    NULL if no parameters are being passed.
  *                  return_object   - Where to put method's return value (if
@@ -226,15 +270,23 @@ acpi_status acpi_ps_execute_method(struct acpi_evaluate_info *info)
 
 	/* Validate the Info and method Node */
 
+<<<<<<< HEAD
 	if (!info || !info->resolved_node) {
+=======
+	if (!info || !info->node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_ACPI_STATUS(AE_NULL_ENTRY);
 	}
 
 	/* Init for new method, wait on concurrency semaphore */
 
 	status =
+<<<<<<< HEAD
 	    acpi_ds_begin_method_execution(info->resolved_node, info->obj_desc,
 					   NULL);
+=======
+	    acpi_ds_begin_method_execution(info->node, info->obj_desc, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -244,21 +296,32 @@ acpi_status acpi_ps_execute_method(struct acpi_evaluate_info *info)
 	 */
 	acpi_ps_update_parameter_list(info, REF_INCREMENT);
 
+<<<<<<< HEAD
 	/* Begin tracing if requested */
 
 	acpi_ps_start_trace(info);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Execute the method. Performs parse simultaneously
 	 */
 	ACPI_DEBUG_PRINT((ACPI_DB_PARSE,
 			  "**** Begin Method Parse/Execute [%4.4s] **** Node=%p Obj=%p\n",
+<<<<<<< HEAD
 			  info->resolved_node->name.ascii, info->resolved_node,
 			  info->obj_desc));
 
 	/* Create and init a Root Node */
 
 	op = acpi_ps_create_scope_op();
+=======
+			  info->node->name.ascii, info->node, info->obj_desc));
+
+	/* Create and init a Root Node */
+
+	op = acpi_ps_create_scope_op(info->obj_desc->method.aml_start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!op) {
 		status = AE_NO_MEMORY;
 		goto cleanup;
@@ -275,7 +338,11 @@ acpi_status acpi_ps_execute_method(struct acpi_evaluate_info *info)
 		goto cleanup;
 	}
 
+<<<<<<< HEAD
 	status = acpi_ds_init_aml_walk(walk_state, op, info->resolved_node,
+=======
+	status = acpi_ds_init_aml_walk(walk_state, op, info->node,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       info->obj_desc->method.aml_start,
 				       info->obj_desc->method.aml_length, info,
 				       info->pass_number);
@@ -284,6 +351,12 @@ acpi_status acpi_ps_execute_method(struct acpi_evaluate_info *info)
 		goto cleanup;
 	}
 
+<<<<<<< HEAD
+=======
+	walk_state->method_pathname = info->full_pathname;
+	walk_state->method_is_nested = FALSE;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info->obj_desc->method.info_flags & ACPI_METHOD_MODULE_LEVEL) {
 		walk_state->parse_flags |= ACPI_PARSE_MODULE_LEVEL;
 	}
@@ -325,6 +398,7 @@ acpi_status acpi_ps_execute_method(struct acpi_evaluate_info *info)
 
 	/* walk_state was deleted by parse_aml */
 
+<<<<<<< HEAD
       cleanup:
 	acpi_ps_delete_parse_tree(op);
 
@@ -332,6 +406,11 @@ acpi_status acpi_ps_execute_method(struct acpi_evaluate_info *info)
 
 	acpi_ps_stop_trace(info);
 
+=======
+cleanup:
+	acpi_ps_delete_parse_tree(op);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Take away the extra reference that we gave the parameters above */
 
 	acpi_ps_update_parameter_list(info, REF_DECREMENT);
@@ -359,11 +438,106 @@ acpi_status acpi_ps_execute_method(struct acpi_evaluate_info *info)
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ps_update_parameter_list
  *
  * PARAMETERS:  Info            - See struct acpi_evaluate_info
  *                                (Used: parameter_type and Parameters)
  *              Action          - Add or Remove reference
+=======
+ * FUNCTION:    acpi_ps_execute_table
+ *
+ * PARAMETERS:  info            - Method info block, contains:
+ *              node            - Node to where the is entered into the
+ *                                namespace
+ *              obj_desc        - Pseudo method object describing the AML
+ *                                code of the entire table
+ *              pass_number     - Parse or execute pass
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Execute a table
+ *
+ ******************************************************************************/
+
+acpi_status acpi_ps_execute_table(struct acpi_evaluate_info *info)
+{
+	acpi_status status;
+	union acpi_parse_object *op = NULL;
+	struct acpi_walk_state *walk_state = NULL;
+
+	ACPI_FUNCTION_TRACE(ps_execute_table);
+
+	/* Create and init a Root Node */
+
+	op = acpi_ps_create_scope_op(info->obj_desc->method.aml_start);
+	if (!op) {
+		status = AE_NO_MEMORY;
+		goto cleanup;
+	}
+
+	/* Create and initialize a new walk state */
+
+	walk_state =
+	    acpi_ds_create_walk_state(info->obj_desc->method.owner_id, NULL,
+				      NULL, NULL);
+	if (!walk_state) {
+		status = AE_NO_MEMORY;
+		goto cleanup;
+	}
+
+	status = acpi_ds_init_aml_walk(walk_state, op, info->node,
+				       info->obj_desc->method.aml_start,
+				       info->obj_desc->method.aml_length, info,
+				       info->pass_number);
+	if (ACPI_FAILURE(status)) {
+		goto cleanup;
+	}
+
+	walk_state->method_pathname = info->full_pathname;
+	walk_state->method_is_nested = FALSE;
+
+	if (info->obj_desc->method.info_flags & ACPI_METHOD_MODULE_LEVEL) {
+		walk_state->parse_flags |= ACPI_PARSE_MODULE_LEVEL;
+	}
+
+	/* Info->Node is the default location to load the table  */
+
+	if (info->node && info->node != acpi_gbl_root_node) {
+		status =
+		    acpi_ds_scope_stack_push(info->node, ACPI_TYPE_METHOD,
+					     walk_state);
+		if (ACPI_FAILURE(status)) {
+			goto cleanup;
+		}
+	}
+
+	/*
+	 * Parse the AML, walk_state will be deleted by parse_aml
+	 */
+	acpi_ex_enter_interpreter();
+	status = acpi_ps_parse_aml(walk_state);
+	acpi_ex_exit_interpreter();
+	walk_state = NULL;
+
+cleanup:
+	if (walk_state) {
+		acpi_ds_delete_walk_state(walk_state);
+	}
+	if (op) {
+		acpi_ps_delete_parse_tree(op);
+	}
+	return_ACPI_STATUS(status);
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_ps_update_parameter_list
+ *
+ * PARAMETERS:  info            - See struct acpi_evaluate_info
+ *                                (Used: parameter_type and Parameters)
+ *              action          - Add or Remove reference
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *

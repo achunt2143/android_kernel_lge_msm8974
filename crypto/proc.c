@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Scatterlist Cryptographic API.
  *
@@ -5,21 +9,29 @@
  *
  * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
  * Copyright (c) 2005 Herbert Xu <herbert@gondor.apana.org.au>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option) 
  * any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/atomic.h>
 #include <linux/init.h>
 #include <linux/crypto.h>
+<<<<<<< HEAD
+=======
+#include <linux/fips.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>	/* for module_name() */
 #include <linux/rwsem.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
 #include <linux/sysctl.h>
 #include "internal.h"
 
@@ -73,6 +85,10 @@ static void crypto_proc_fips_exit(void)
 #define crypto_proc_fips_exit()
 #endif
 
+=======
+#include "internal.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void *c_start(struct seq_file *m, loff_t *pos)
 {
 	down_read(&crypto_alg_sem);
@@ -92,15 +108,34 @@ static void c_stop(struct seq_file *m, void *p)
 static int c_show(struct seq_file *m, void *p)
 {
 	struct crypto_alg *alg = list_entry(p, struct crypto_alg, cra_list);
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(m, "name         : %s\n", alg->cra_name);
 	seq_printf(m, "driver       : %s\n", alg->cra_driver_name);
 	seq_printf(m, "module       : %s\n", module_name(alg->cra_module));
 	seq_printf(m, "priority     : %d\n", alg->cra_priority);
+<<<<<<< HEAD
 	seq_printf(m, "refcnt       : %d\n", atomic_read(&alg->cra_refcnt));
 	seq_printf(m, "selftest     : %s\n",
 		   (alg->cra_flags & CRYPTO_ALG_TESTED) ?
 		   "passed" : "unknown");
+=======
+	seq_printf(m, "refcnt       : %u\n", refcount_read(&alg->cra_refcnt));
+	seq_printf(m, "selftest     : %s\n",
+		   (alg->cra_flags & CRYPTO_ALG_TESTED) ?
+		   "passed" : "unknown");
+	seq_printf(m, "internal     : %s\n",
+		   (alg->cra_flags & CRYPTO_ALG_INTERNAL) ?
+		   "yes" : "no");
+	if (fips_enabled) {
+		seq_printf(m, "fips         : %s\n",
+			   (alg->cra_flags & CRYPTO_ALG_FIPS_INTERNAL) ?
+			   "no" : "yes");
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (alg->cra_flags & CRYPTO_ALG_LARVAL) {
 		seq_printf(m, "type         : larval\n");
@@ -112,8 +147,13 @@ static int c_show(struct seq_file *m, void *p)
 		alg->cra_type->show(m, alg);
 		goto out;
 	}
+<<<<<<< HEAD
 	
 	switch (alg->cra_flags & (CRYPTO_ALG_TYPE_MASK | CRYPTO_ALG_LARVAL)) {
+=======
+
+	switch (alg->cra_flags & CRYPTO_ALG_TYPE_MASK) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CRYPTO_ALG_TYPE_CIPHER:
 		seq_printf(m, "type         : cipher\n");
 		seq_printf(m, "blocksize    : %u\n", alg->cra_blocksize);
@@ -142,6 +182,7 @@ static const struct seq_operations crypto_seq_ops = {
 	.show		= c_show
 };
 
+<<<<<<< HEAD
 static int crypto_info_open(struct inode *inode, struct file *file)
 {
 	return seq_open(file, &crypto_seq_ops);
@@ -173,5 +214,14 @@ void __init crypto_init_proc(void)
 void __exit crypto_exit_proc(void)
 {
 	crypto_proc_fips_exit();
+=======
+void __init crypto_init_proc(void)
+{
+	proc_create_seq("crypto", 0, NULL, &crypto_seq_ops);
+}
+
+void __exit crypto_exit_proc(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	remove_proc_entry("crypto", NULL);
 }

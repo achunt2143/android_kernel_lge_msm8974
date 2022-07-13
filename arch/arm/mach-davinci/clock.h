@@ -1,21 +1,31 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TI DaVinci clock definitions
  *
  * Copyright (C) 2006-2007 Texas Instruments.
  * Copyright (C) 2008-2009 Deep Root Systems, LLC
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ARCH_ARM_DAVINCI_CLOCK_H
 #define __ARCH_ARM_DAVINCI_CLOCK_H
 
+<<<<<<< HEAD
 #define DAVINCI_PLL1_BASE 0x01c40800
 #define DAVINCI_PLL2_BASE 0x01c40c00
 #define MAX_PLL 2
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PLL/Reset register offsets */
 #define PLLCTL          0x100
 #define PLLCTL_PLLEN    BIT(0)
@@ -65,6 +75,7 @@
  */
 #define PLL_LOCK_TIME		20
 
+<<<<<<< HEAD
 #ifndef __ASSEMBLER__
 
 #include <linux/list.h>
@@ -132,4 +143,6 @@ extern void davinci_watchdog_reset(struct platform_device *);
 
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

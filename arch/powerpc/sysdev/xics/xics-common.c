@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2011 IBM Corporation.
  *
@@ -6,11 +7,20 @@
  *  as published by the Free Software Foundation; either version
  *  2 of the License, or (at your option) any later version.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright 2011 IBM Corporation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/types.h>
 #include <linux/threads.h>
 #include <linux/kernel.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqdomain.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/debugfs.h>
 #include <linux/smp.h>
 #include <linux/interrupt.h>
@@ -20,8 +30,13 @@
 #include <linux/of.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 
 #include <asm/prom.h>
+=======
+#include <linux/delay.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/smp.h>
 #include <asm/machdep.h>
@@ -42,14 +57,22 @@ DEFINE_PER_CPU(struct xics_cppr, xics_cppr);
 
 struct irq_domain *xics_host;
 
+<<<<<<< HEAD
 static LIST_HEAD(ics_list);
+=======
+static struct ics *xics_ics;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void xics_update_irq_servers(void)
 {
 	int i, j;
 	struct device_node *np;
 	u32 ilen;
+<<<<<<< HEAD
 	const u32 *ireg;
+=======
+	const __be32 *ireg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 hcpuid;
 
 	/* Find the server numbers for the boot cpu. */
@@ -75,8 +98,13 @@ void xics_update_irq_servers(void)
 	 * default distribution server
 	 */
 	for (j = 0; j < i; j += 2) {
+<<<<<<< HEAD
 		if (ireg[j] == hcpuid) {
 			xics_default_distrib_server = ireg[j+1];
+=======
+		if (be32_to_cpu(ireg[j]) == hcpuid) {
+			xics_default_distrib_server = be32_to_cpu(ireg[j+1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -115,28 +143,45 @@ void xics_setup_cpu(void)
 
 void xics_mask_unknown_vec(unsigned int vec)
 {
+<<<<<<< HEAD
 	struct ics *ics;
 
 	pr_err("Interrupt 0x%x (real) is invalid, disabling it.\n", vec);
 
 	list_for_each_entry(ics, &ics_list, link)
 		ics->mask_unknown(ics, vec);
+=======
+	pr_err("Interrupt 0x%x (real) is invalid, disabling it.\n", vec);
+
+	if (WARN_ON(!xics_ics))
+		return;
+	xics_ics->mask_unknown(xics_ics, vec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 #ifdef CONFIG_SMP
 
+<<<<<<< HEAD
 static void xics_request_ipi(void)
+=======
+static void __init xics_request_ipi(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int ipi;
 
 	ipi = irq_create_mapping(xics_host, XICS_IPI);
+<<<<<<< HEAD
 	BUG_ON(ipi == NO_IRQ);
+=======
+	BUG_ON(!ipi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * IPIs are marked IRQF_PERCPU. The handler was set in map.
 	 */
 	BUG_ON(request_irq(ipi, icp_ops->ipi_action,
+<<<<<<< HEAD
 			   IRQF_PERCPU | IRQF_NO_THREAD, "IPI", NULL));
 }
 
@@ -149,13 +194,31 @@ int __init xics_smp_probe(void)
 	xics_request_ipi();
 
 	return cpumask_weight(cpu_possible_mask);
+=======
+			   IRQF_NO_DEBUG | IRQF_PERCPU | IRQF_NO_THREAD, "IPI", NULL));
+}
+
+void __init xics_smp_probe(void)
+{
+	/* Register all the IPIs */
+	xics_request_ipi();
+
+	/* Setup cause_ipi callback based on which ICP is used */
+	smp_ops->cause_ipi = icp_ops->cause_ipi;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* CONFIG_SMP */
 
+<<<<<<< HEAD
 void xics_teardown_cpu(void)
 {
 	struct xics_cppr *os_cppr = &__get_cpu_var(xics_cppr);
+=======
+noinstr void xics_teardown_cpu(void)
+{
+	struct xics_cppr *os_cppr = this_cpu_ptr(&xics_cppr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * we have to reset the cppr index to 0 because we're
@@ -166,7 +229,11 @@ void xics_teardown_cpu(void)
 	icp_ops->teardown_cpu();
 }
 
+<<<<<<< HEAD
 void xics_kexec_teardown_cpu(int secondary)
+=======
+noinstr void xics_kexec_teardown_cpu(int secondary)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	xics_teardown_cpu();
 
@@ -190,6 +257,11 @@ void xics_migrate_irqs_away(void)
 	unsigned int irq, virq;
 	struct irq_desc *desc;
 
+<<<<<<< HEAD
+=======
+	pr_debug("%s: CPU %u\n", __func__, cpu);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If we used to be the default server, move to the new "boot_cpuid" */
 	if (hw_cpu == xics_default_server)
 		xics_update_irq_servers();
@@ -200,24 +272,42 @@ void xics_migrate_irqs_away(void)
 	/* Remove ourselves from the global interrupt queue */
 	xics_set_cpu_giq(xics_default_distrib_server, 0);
 
+<<<<<<< HEAD
 	/* Allow IPIs again... */
 	icp_ops->set_priority(DEFAULT_PRIORITY);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for_each_irq_desc(virq, desc) {
 		struct irq_chip *chip;
 		long server;
 		unsigned long flags;
+<<<<<<< HEAD
 		struct ics *ics;
 
 		/* We can't set affinity on ISA interrupts */
 		if (virq < NUM_ISA_INTERRUPTS)
+=======
+		struct irq_data *irqd;
+
+		/* We can't set affinity on ISA interrupts */
+		if (virq < NR_IRQS_LEGACY)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		/* We only need to migrate enabled IRQS */
 		if (!desc->action)
 			continue;
+<<<<<<< HEAD
 		if (desc->irq_data.domain != xics_host)
 			continue;
 		irq = desc->irq_data.hwirq;
+=======
+		/* We need a mapping in the XICS IRQ domain */
+		irqd = irq_domain_get_irq_data(xics_host, virq);
+		if (!irqd)
+			continue;
+		irq = irqd_to_hwirq(irqd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* We need to get IPIs still. */
 		if (irq == XICS_IPI || irq == XICS_IRQ_SPURIOUS)
 			continue;
@@ -228,6 +318,7 @@ void xics_migrate_irqs_away(void)
 		raw_spin_lock_irqsave(&desc->lock, flags);
 
 		/* Locate interrupt server */
+<<<<<<< HEAD
 		server = -1;
 		ics = irq_get_chip_data(virq);
 		if (ics)
@@ -235,6 +326,12 @@ void xics_migrate_irqs_away(void)
 		if (server < 0) {
 			printk(KERN_ERR "%s: Can't find server for irq %d\n",
 			       __func__, irq);
+=======
+		server = xics_ics->get_server(xics_ics, irq);
+		if (server < 0) {
+			pr_err("%s: Can't find server for irq %d/%x\n",
+			       __func__, virq, irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto unlock;
 		}
 
@@ -247,8 +344,13 @@ void xics_migrate_irqs_away(void)
 
 		/* This is expected during cpu offline. */
 		if (cpu_online(cpu))
+<<<<<<< HEAD
 			pr_warning("IRQ %u affinity broken off cpu %u\n",
 			       virq, cpu);
+=======
+			pr_warn("IRQ %u affinity broken off cpu %u\n",
+				virq, cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Reset affinity to all cpus */
 		raw_spin_unlock_irqrestore(&desc->lock, flags);
@@ -257,6 +359,22 @@ void xics_migrate_irqs_away(void)
 unlock:
 		raw_spin_unlock_irqrestore(&desc->lock, flags);
 	}
+<<<<<<< HEAD
+=======
+
+	/* Allow "sufficient" time to drop any inflight IRQ's */
+	mdelay(5);
+
+	/*
+	 * Allow IPIs again. This is done at the very end, after migrating all
+	 * interrupts, the expectation is that we'll only get woken up by an IPI
+	 * interrupt beyond this point, but leave externals masked just to be
+	 * safe. If we're using icp-opal this may actually allow all
+	 * interrupts anyway, but that should be OK.
+	 */
+	icp_ops->set_priority(DEFAULT_PRIORITY);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_HOTPLUG_CPU */
 
@@ -300,6 +418,7 @@ int xics_get_irq_server(unsigned int virq, const struct cpumask *cpumask,
 }
 #endif /* CONFIG_SMP */
 
+<<<<<<< HEAD
 static int xics_host_match(struct irq_domain *h, struct device_node *node)
 {
 	struct ics *ics;
@@ -309,6 +428,14 @@ static int xics_host_match(struct irq_domain *h, struct device_node *node)
 			return 1;
 
 	return 0;
+=======
+static int xics_host_match(struct irq_domain *h, struct device_node *node,
+			   enum irq_domain_bus_token bus_token)
+{
+	if (WARN_ON(!xics_ics))
+		return 0;
+	return xics_ics->host_match(xics_ics, node) ? 1 : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Dummies */
@@ -322,6 +449,7 @@ static struct irq_chip xics_ipi_chip = {
 	.irq_unmask = xics_ipi_unmask,
 };
 
+<<<<<<< HEAD
 static int xics_host_map(struct irq_domain *h, unsigned int virq,
 			 irq_hw_number_t hw)
 {
@@ -337,17 +465,47 @@ static int xics_host_map(struct irq_domain *h, unsigned int virq,
 
 	/* Don't call into ICS for IPIs */
 	if (hw == XICS_IPI) {
+=======
+static int xics_host_map(struct irq_domain *domain, unsigned int virq,
+			 irq_hw_number_t hwirq)
+{
+	pr_devel("xics: map virq %d, hwirq 0x%lx\n", virq, hwirq);
+
+	/*
+	 * Mark interrupts as edge sensitive by default so that resend
+	 * actually works. The device-tree parsing will turn the LSIs
+	 * back to level.
+	 */
+	irq_clear_status_flags(virq, IRQ_LEVEL);
+
+	/* Don't call into ICS for IPIs */
+	if (hwirq == XICS_IPI) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		irq_set_chip_and_handler(virq, &xics_ipi_chip,
 					 handle_percpu_irq);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	/* Let the ICS setup the chip data */
 	list_for_each_entry(ics, &ics_list, link)
 		if (ics->map(ics, virq) == 0)
 			return 0;
 
 	return -EINVAL;
+=======
+	if (WARN_ON(!xics_ics))
+		return -EINVAL;
+
+	if (xics_ics->check(xics_ics, hwirq))
+		return -EINVAL;
+
+	/* Let the ICS be the chip data for the XICS domain. For ICS native */
+	irq_domain_set_info(domain, virq, hwirq, xics_ics->chip,
+			    xics_ics, handle_fasteoi_irq, NULL, NULL);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xics_host_xlate(struct irq_domain *h, struct device_node *ct,
@@ -355,38 +513,162 @@ static int xics_host_xlate(struct irq_domain *h, struct device_node *ct,
 			   irq_hw_number_t *out_hwirq, unsigned int *out_flags)
 
 {
+<<<<<<< HEAD
 	/* Current xics implementation translates everything
 	 * to level. It is not technically right for MSIs but this
 	 * is irrelevant at this point. We might get smarter in the future
 	 */
 	*out_hwirq = intspec[0];
 	*out_flags = IRQ_TYPE_LEVEL_LOW;
+=======
+	*out_hwirq = intspec[0];
+
+	/*
+	 * If intsize is at least 2, we look for the type in the second cell,
+	 * we assume the LSB indicates a level interrupt.
+	 */
+	if (intsize > 1) {
+		if (intspec[1] & 1)
+			*out_flags = IRQ_TYPE_LEVEL_LOW;
+		else
+			*out_flags = IRQ_TYPE_EDGE_RISING;
+	} else
+		*out_flags = IRQ_TYPE_LEVEL_LOW;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops xics_host_ops = {
+=======
+int xics_set_irq_type(struct irq_data *d, unsigned int flow_type)
+{
+	/*
+	 * We only support these. This has really no effect other than setting
+	 * the corresponding descriptor bits mind you but those will in turn
+	 * affect the resend function when re-enabling an edge interrupt.
+	 *
+	 * Set set the default to edge as explained in map().
+	 */
+	if (flow_type == IRQ_TYPE_DEFAULT || flow_type == IRQ_TYPE_NONE)
+		flow_type = IRQ_TYPE_EDGE_RISING;
+
+	if (flow_type != IRQ_TYPE_EDGE_RISING &&
+	    flow_type != IRQ_TYPE_LEVEL_LOW)
+		return -EINVAL;
+
+	irqd_set_trigger_type(d, flow_type);
+
+	return IRQ_SET_MASK_OK_NOCOPY;
+}
+
+int xics_retrigger(struct irq_data *data)
+{
+	/*
+	 * We need to push a dummy CPPR when retriggering, since the subsequent
+	 * EOI will try to pop it. Passing 0 works, as the function hard codes
+	 * the priority value anyway.
+	 */
+	xics_push_cppr(0);
+
+	/* Tell the core to do a soft retrigger */
+	return 0;
+}
+
+#ifdef	CONFIG_IRQ_DOMAIN_HIERARCHY
+static int xics_host_domain_translate(struct irq_domain *d, struct irq_fwspec *fwspec,
+				      unsigned long *hwirq, unsigned int *type)
+{
+	return xics_host_xlate(d, to_of_node(fwspec->fwnode), fwspec->param,
+			       fwspec->param_count, hwirq, type);
+}
+
+static int xics_host_domain_alloc(struct irq_domain *domain, unsigned int virq,
+				  unsigned int nr_irqs, void *arg)
+{
+	struct irq_fwspec *fwspec = arg;
+	irq_hw_number_t hwirq;
+	unsigned int type = IRQ_TYPE_NONE;
+	int i, rc;
+
+	rc = xics_host_domain_translate(domain, fwspec, &hwirq, &type);
+	if (rc)
+		return rc;
+
+	pr_debug("%s %d/%lx #%d\n", __func__, virq, hwirq, nr_irqs);
+
+	for (i = 0; i < nr_irqs; i++)
+		irq_domain_set_info(domain, virq + i, hwirq + i, xics_ics->chip,
+				    xics_ics, handle_fasteoi_irq, NULL, NULL);
+
+	return 0;
+}
+
+static void xics_host_domain_free(struct irq_domain *domain,
+				  unsigned int virq, unsigned int nr_irqs)
+{
+	pr_debug("%s %d #%d\n", __func__, virq, nr_irqs);
+}
+#endif
+
+static const struct irq_domain_ops xics_host_ops = {
+#ifdef	CONFIG_IRQ_DOMAIN_HIERARCHY
+	.alloc	= xics_host_domain_alloc,
+	.free	= xics_host_domain_free,
+	.translate = xics_host_domain_translate,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.match = xics_host_match,
 	.map = xics_host_map,
 	.xlate = xics_host_xlate,
 };
 
+<<<<<<< HEAD
 static void __init xics_init_host(void)
 {
 	xics_host = irq_domain_add_tree(NULL, &xics_host_ops, NULL);
 	BUG_ON(xics_host == NULL);
 	irq_set_default_host(xics_host);
+=======
+static int __init xics_allocate_domain(void)
+{
+	struct fwnode_handle *fn;
+
+	fn = irq_domain_alloc_named_fwnode("XICS");
+	if (!fn)
+		return -ENOMEM;
+
+	xics_host = irq_domain_create_tree(fn, &xics_host_ops, NULL);
+	if (!xics_host) {
+		irq_domain_free_fwnode(fn);
+		return -ENOMEM;
+	}
+
+	irq_set_default_host(xics_host);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init xics_register_ics(struct ics *ics)
 {
+<<<<<<< HEAD
 	list_add(&ics->link, &ics_list);
+=======
+	if (WARN_ONCE(xics_ics, "XICS: Source Controller is already defined !"))
+		return;
+	xics_ics = ics;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init xics_get_server_size(void)
 {
 	struct device_node *np;
+<<<<<<< HEAD
 	const u32 *isize;
+=======
+	const __be32 *isize;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We fetch the interrupt server size from the first ICS node
 	 * we find if any
@@ -394,10 +676,18 @@ static void __init xics_get_server_size(void)
 	np = of_find_compatible_node(NULL, NULL, "ibm,ppc-xics");
 	if (!np)
 		return;
+<<<<<<< HEAD
 	isize = of_get_property(np, "ibm,interrupt-server#-size", NULL);
 	if (!isize)
 		return;
 	xics_interrupt_server_size = *isize;
+=======
+
+	isize = of_get_property(np, "ibm,interrupt-server#-size", NULL);
+	if (isize)
+		xics_interrupt_server_size = be32_to_cpu(*isize);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	of_node_put(np);
 }
 
@@ -408,10 +698,20 @@ void __init xics_init(void)
 	/* Fist locate ICP */
 	if (firmware_has_feature(FW_FEATURE_LPAR))
 		rc = icp_hv_init();
+<<<<<<< HEAD
 	if (rc < 0)
 		rc = icp_native_init();
 	if (rc < 0) {
 		pr_warning("XICS: Cannot find a Presentation Controller !\n");
+=======
+	if (rc < 0) {
+		rc = icp_native_init();
+		if (rc == -ENODEV)
+		    rc = icp_opal_init();
+	}
+	if (rc < 0) {
+		pr_warn("XICS: Cannot find a Presentation Controller !\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -426,11 +726,23 @@ void __init xics_init(void)
 	if (rc < 0)
 		rc = ics_opal_init();
 	if (rc < 0)
+<<<<<<< HEAD
 		pr_warning("XICS: Cannot find a Source Controller !\n");
+=======
+		rc = ics_native_init();
+	if (rc < 0)
+		pr_warn("XICS: Cannot find a Source Controller !\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize common bits */
 	xics_get_server_size();
 	xics_update_irq_servers();
+<<<<<<< HEAD
 	xics_init_host();
+=======
+	rc = xics_allocate_domain();
+	if (rc < 0)
+		pr_err("XICS: Failed to create IRQ domain");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xics_setup_cpu();
 }

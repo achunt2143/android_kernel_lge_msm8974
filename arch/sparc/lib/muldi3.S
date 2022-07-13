@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Copyright (C) 1989, 1992, 1993, 1994, 1995 Free Software Foundation, Inc.
 
 This file is part of GNU CC.
 
+<<<<<<< HEAD
 GNU CC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
@@ -17,6 +22,11 @@ along with GNU CC; see the file COPYING.  If not, write to
 the Free Software Foundation, 59 Temple Place - Suite 330,
 Boston, MA 02111-1307, USA.  */
 
+=======
+ */
+
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.text
 	.align 4
 	.globl __muldi3
@@ -63,14 +73,27 @@ __muldi3:
 	rd  %y, %o1
 	mov  %o1, %l3
 	mov  %i1, %o0
+<<<<<<< HEAD
 	call  .umul
 	mov  %i2, %o1
 	mov  %o0, %l0
 	mov  %i0, %o0
 	call  .umul
 	mov  %i3, %o1
+=======
+	mov  %i2, %o1
+	umul %o0, %o1, %o0
+	mov  %o0, %l0
+	mov  %i0, %o0
+	mov  %i3, %o1
+	umul %o0, %o1, %o0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add  %l0, %o0, %l0
 	mov  %l2, %i0
 	add  %l2, %l0, %i0
 	ret 
 	restore  %g0, %l3, %o1
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__muldi3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

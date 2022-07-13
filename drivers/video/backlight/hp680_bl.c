@@ -26,19 +26,28 @@
 #define HP680_DEFAULT_INTENSITY 10
 
 static int hp680bl_suspended;
+<<<<<<< HEAD
 static int current_intensity = 0;
+=======
+static int current_intensity;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_SPINLOCK(bl_lock);
 
 static void hp680bl_send_intensity(struct backlight_device *bd)
 {
 	unsigned long flags;
 	u16 v;
+<<<<<<< HEAD
 	int intensity = bd->props.brightness;
 
 	if (bd->props.power != FB_BLANK_UNBLANK)
 		intensity = 0;
 	if (bd->props.fb_blank != FB_BLANK_UNBLANK)
 		intensity = 0;
+=======
+	int intensity = backlight_get_brightness(bd);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hp680bl_suspended)
 		intensity = 0;
 
@@ -64,29 +73,49 @@ static void hp680bl_send_intensity(struct backlight_device *bd)
 }
 
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int hp680bl_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	struct backlight_device *bd = platform_get_drvdata(pdev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int hp680bl_suspend(struct device *dev)
+{
+	struct backlight_device *bd = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hp680bl_suspended = 1;
 	hp680bl_send_intensity(bd);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int hp680bl_resume(struct platform_device *pdev)
 {
 	struct backlight_device *bd = platform_get_drvdata(pdev);
+=======
+static int hp680bl_resume(struct device *dev)
+{
+	struct backlight_device *bd = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hp680bl_suspended = 0;
 	hp680bl_send_intensity(bd);
 	return 0;
 }
+<<<<<<< HEAD
 #else
 #define hp680bl_suspend	NULL
 #define hp680bl_resume	NULL
 #endif
 
+=======
+#endif
+
+static SIMPLE_DEV_PM_OPS(hp680bl_pm_ops, hp680bl_suspend, hp680bl_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hp680bl_set_intensity(struct backlight_device *bd)
 {
 	hp680bl_send_intensity(bd);
@@ -103,7 +132,11 @@ static const struct backlight_ops hp680bl_ops = {
 	.update_status  = hp680bl_set_intensity,
 };
 
+<<<<<<< HEAD
 static int __devinit hp680bl_probe(struct platform_device *pdev)
+=======
+static int hp680bl_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct backlight_properties props;
 	struct backlight_device *bd;
@@ -111,8 +144,13 @@ static int __devinit hp680bl_probe(struct platform_device *pdev)
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = HP680_MAX_INTENSITY;
+<<<<<<< HEAD
 	bd = backlight_device_register("hp680-bl", &pdev->dev, NULL,
 				       &hp680bl_ops, &props);
+=======
+	bd = devm_backlight_device_register(&pdev->dev, "hp680-bl", &pdev->dev,
+					NULL, &hp680bl_ops, &props);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(bd))
 		return PTR_ERR(bd);
 
@@ -124,26 +162,40 @@ static int __devinit hp680bl_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int hp680bl_remove(struct platform_device *pdev)
+=======
+static void hp680bl_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct backlight_device *bd = platform_get_drvdata(pdev);
 
 	bd->props.brightness = 0;
 	bd->props.power = 0;
 	hp680bl_send_intensity(bd);
+<<<<<<< HEAD
 
 	backlight_device_unregister(bd);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver hp680bl_driver = {
 	.probe		= hp680bl_probe,
+<<<<<<< HEAD
 	.remove		= hp680bl_remove,
 	.suspend	= hp680bl_suspend,
 	.resume		= hp680bl_resume,
 	.driver		= {
 		.name	= "hp680-bl",
+=======
+	.remove_new	= hp680bl_remove,
+	.driver		= {
+		.name	= "hp680-bl",
+		.pm	= &hp680bl_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -168,7 +220,11 @@ static int __init hp680bl_init(void)
 static void __exit hp680bl_exit(void)
 {
 	platform_device_unregister(hp680bl_device);
+<<<<<<< HEAD
  	platform_driver_unregister(&hp680bl_driver);
+=======
+	platform_driver_unregister(&hp680bl_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(hp680bl_init);

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Shared Transport driver
  *	HCI-LL module responsible for TI proprietary HCI_LL protocol
  *  Copyright (C) 2009-2010 Texas Instruments
  *  Author: Pavan Savoy <pavan_savoy@ti.com>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -17,6 +22,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) "(stll) :" fmt
@@ -87,7 +94,11 @@ static void ll_device_want_to_wakeup(struct st_data_s *st_data)
 	/* communicate to platform about chip wakeup */
 	kim_data = st_data->kim_data;
 	pdata = kim_data->kim_pdev->dev.platform_data;
+<<<<<<< HEAD
 	if (pdata->chip_asleep)
+=======
+	if (pdata->chip_awake)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdata->chip_awake(NULL);
 }
 

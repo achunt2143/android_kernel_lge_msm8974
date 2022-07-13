@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Linux network driver for Brocade Converged Network Adapter.
  *
@@ -14,12 +15,27 @@
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+ */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __BFA_DEFS_STATUS_H__
 #define __BFA_DEFS_STATUS_H__
 
+<<<<<<< HEAD
 /**
  * API status return values
+=======
+/* API status return values
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * NOTE: The error msgs are auto generated from the comments. Only singe line
  * comments are supported

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2007 Jon Loeliger, Freescale Semiconductor, Inc.
  *
@@ -21,6 +22,19 @@
 #define _SRCPOS_H_
 
 #include <stdio.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright 2007 Jon Loeliger, Freescale Semiconductor, Inc.
+ */
+
+#ifndef SRCPOS_H
+#define SRCPOS_H
+
+#include <stdio.h>
+#include <stdbool.h>
+#include "util.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct srcfile_state {
 	FILE *f;
@@ -55,7 +69,11 @@ extern struct srcfile_state *current_srcfile; /* = NULL */
 FILE *srcfile_relative_open(const char *fname, char **fullnamep);
 
 void srcfile_push(const char *fname);
+<<<<<<< HEAD
 int srcfile_pop(void);
+=======
+bool srcfile_pop(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Add a new directory to the search path for input files
@@ -72,6 +90,10 @@ struct srcpos {
     int last_line;
     int last_column;
     struct srcfile_state *file;
+<<<<<<< HEAD
+=======
+    struct srcpos *next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define YYLTYPE struct srcpos
@@ -91,6 +113,7 @@ struct srcpos {
 				YYRHSLOC(Rhs, 0).last_column;			\
 			(Current).file = YYRHSLOC (Rhs, 0).file;		\
 		}								\
+<<<<<<< HEAD
 	} while (0)
 
 
@@ -116,3 +139,26 @@ extern void srcpos_warn(struct srcpos *pos, char const *, ...)
 extern void srcpos_set_line(char *f, int l);
 
 #endif /* _SRCPOS_H_ */
+=======
+		(Current).next = NULL;						\
+	} while (0)
+
+
+extern void srcpos_update(struct srcpos *pos, const char *text, int len);
+extern struct srcpos *srcpos_copy(struct srcpos *pos);
+extern struct srcpos *srcpos_extend(struct srcpos *new_srcpos,
+				    struct srcpos *old_srcpos);
+extern char *srcpos_string(struct srcpos *pos);
+extern char *srcpos_string_first(struct srcpos *pos, int level);
+extern char *srcpos_string_last(struct srcpos *pos, int level);
+
+
+extern void PRINTF(3, 0) srcpos_verror(struct srcpos *pos, const char *prefix,
+					const char *fmt, va_list va);
+extern void PRINTF(3, 4) srcpos_error(struct srcpos *pos, const char *prefix,
+				      const char *fmt, ...);
+
+extern void srcpos_set_line(char *f, int l);
+
+#endif /* SRCPOS_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

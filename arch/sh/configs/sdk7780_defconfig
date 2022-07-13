@@ -1,4 +1,7 @@
+<<<<<<< HEAD
 CONFIG_EXPERIMENTAL=y
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_LOCALVERSION="_SDK7780"
 CONFIG_SYSVIPC=y
 CONFIG_POSIX_MQUEUE=y
@@ -30,6 +33,10 @@ CONFIG_PCI_DEBUG=y
 CONFIG_PCCARD=y
 CONFIG_YENTA=y
 CONFIG_HOTPLUG_PCI=y
+<<<<<<< HEAD
+=======
+CONFIG_NET=y
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_PACKET=y
 CONFIG_UNIX=y
 CONFIG_INET=y
@@ -38,6 +45,7 @@ CONFIG_IP_ADVANCED_ROUTER=y
 CONFIG_IP_PNP=y
 CONFIG_IP_PNP_BOOTP=y
 # CONFIG_INET_XFRM_MODE_BEET is not set
+<<<<<<< HEAD
 # CONFIG_INET_LRO is not set
 CONFIG_IPV6=y
 # CONFIG_INET6_XFRM_MODE_BEET is not set
@@ -51,19 +59,35 @@ CONFIG_IDE=y
 CONFIG_BLK_DEV_IDECD=y
 CONFIG_BLK_DEV_PLATFORM=y
 CONFIG_BLK_DEV_GENERIC=y
+=======
+CONFIG_IPV6=y
+# CONFIG_INET6_XFRM_MODE_BEET is not set
+CONFIG_NET_SCHED=y
+CONFIG_PARPORT=y
+CONFIG_BLK_DEV_LOOP=y
+CONFIG_BLK_DEV_RAM=y
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_BLK_DEV_SD=y
 CONFIG_BLK_DEV_SR=y
 CONFIG_CHR_DEV_SG=y
 CONFIG_SCSI_SPI_ATTRS=y
 CONFIG_SCSI_FC_ATTRS=y
 CONFIG_ATA=y
+<<<<<<< HEAD
+=======
+CONFIG_ATA_GENERIC=y
+CONFIG_PATA_PLATFORM=y
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_MD=y
 CONFIG_BLK_DEV_DM=y
 CONFIG_NETDEVICES=y
 CONFIG_NET_ETHERNET=y
 CONFIG_SMC91X=y
+<<<<<<< HEAD
 # CONFIG_NETDEV_1000 is not set
 # CONFIG_NETDEV_10000 is not set
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_NETCONSOLE=y
 CONFIG_INPUT_FF_MEMLESS=m
 CONFIG_INPUT_EVDEV=y
@@ -77,7 +101,10 @@ CONFIG_SSB=y
 CONFIG_SSB_DRIVER_PCICORE=y
 CONFIG_FB=y
 CONFIG_FB_SH_MOBILE_LCDC=m
+<<<<<<< HEAD
 CONFIG_DISPLAY_SUPPORT=y
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_FRAMEBUFFER_CONSOLE=y
 CONFIG_FRAMEBUFFER_CONSOLE_DETECT_PRIMARY=y
 CONFIG_LOGO=y
@@ -100,9 +127,12 @@ CONFIG_HID_SAMSUNG=y
 CONFIG_HID_SONY=y
 CONFIG_HID_SUNPLUS=y
 CONFIG_USB=y
+<<<<<<< HEAD
 CONFIG_USB_DEBUG=y
 CONFIG_USB_DEVICEFS=y
 # CONFIG_USB_DEVICE_CLASS is not set
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_USB_MON=y
 CONFIG_USB_EHCI_HCD=y
 # CONFIG_USB_EHCI_TT_NEWSCHED is not set
@@ -116,7 +146,11 @@ CONFIG_EXT2_FS_POSIX_ACL=y
 CONFIG_EXT3_FS=y
 # CONFIG_EXT3_DEFAULTS_TO_ORDERED is not set
 CONFIG_EXT3_FS_POSIX_ACL=y
+<<<<<<< HEAD
 CONFIG_AUTOFS4_FS=y
+=======
+CONFIG_AUTOFS_FS=y
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_ISO9660_FS=y
 CONFIG_MSDOS_FS=y
 CONFIG_VFAT_FS=y
@@ -131,7 +165,10 @@ CONFIG_NFS_FS=y
 CONFIG_NFS_V3=y
 CONFIG_ROOT_NFS=y
 CONFIG_NFSD=y
+<<<<<<< HEAD
 CONFIG_NFSD_V3=y
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_NLS_CODEPAGE_437=y
 CONFIG_NLS_ASCII=y
 CONFIG_NLS_ISO8859_1=y
@@ -139,14 +176,21 @@ CONFIG_NLS_ISO8859_15=y
 CONFIG_NLS_UTF8=y
 # CONFIG_ENABLE_MUST_CHECK is not set
 CONFIG_MAGIC_SYSRQ=y
+<<<<<<< HEAD
 CONFIG_UNUSED_SYMBOLS=y
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_DEBUG_KERNEL=y
 CONFIG_DETECT_HUNG_TASK=y
 # CONFIG_SCHED_DEBUG is not set
 CONFIG_TIMER_STATS=y
+<<<<<<< HEAD
 CONFIG_DEBUG_INFO=y
 # CONFIG_RCU_CPU_STALL_DETECTOR is not set
 CONFIG_SYSCTL_SYSCALL_CHECK=y
+=======
+CONFIG_DEBUG_INFO_DWARF_TOOLCHAIN_DEFAULT=y
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CONFIG_SH_STANDARD_BIOS=y
 CONFIG_CRYPTO_MD5=y
 CONFIG_CRYPTO_DES=y

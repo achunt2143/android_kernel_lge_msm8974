@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 /* Driver for USB Mass Storage compliant devices
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Driver for USB Mass Storage compliant devices
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Current development and maintenance by:
  *   (c) 1999-2002 Matthew Dharm (mdharm-usb@one-eyed-alien.net)
@@ -23,6 +29,7 @@
  *
  * Also, for certain devices, the interrupt endpoint is used to convey
  * status of a command.
+<<<<<<< HEAD
  *
  * Please see http://www.one-eyed-alien.net/~mdharm/linux-usb for more
  * information about this driver.
@@ -40,6 +47,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/highmem.h>
@@ -66,7 +75,11 @@ void usb_stor_pad12_command(struct scsi_cmnd *srb, struct us_data *us)
 	 * NOTE: This only works because a scsi_cmnd struct field contains
 	 * a unsigned char cmnd[16], so we know we have storage available
 	 */
+<<<<<<< HEAD
 	for (; srb->cmd_len<12; srb->cmd_len++)
+=======
+	for (; srb->cmd_len < 12; srb->cmd_len++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		srb->cmnd[srb->cmd_len] = 0;
 
 	/* send the command to the transport layer */
@@ -75,15 +88,25 @@ void usb_stor_pad12_command(struct scsi_cmnd *srb, struct us_data *us)
 
 void usb_stor_ufi_command(struct scsi_cmnd *srb, struct us_data *us)
 {
+<<<<<<< HEAD
 	/* fix some commands -- this is a form of mode translation
 	 * UFI devices only accept 12 byte long commands 
+=======
+	/*
+	 * fix some commands -- this is a form of mode translation
+	 * UFI devices only accept 12 byte long commands
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * NOTE: This only works because a scsi_cmnd struct field contains
 	 * a unsigned char cmnd[16], so we know we have storage available
 	 */
 
 	/* Pad the ATAPI command with zeros */
+<<<<<<< HEAD
 	for (; srb->cmd_len<12; srb->cmd_len++)
+=======
+	for (; srb->cmd_len < 12; srb->cmd_len++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		srb->cmnd[srb->cmd_len] = 0;
 
 	/* set command length to 12 bytes (this affects the transport layer) */
@@ -127,7 +150,12 @@ EXPORT_SYMBOL_GPL(usb_stor_transparent_scsi_command);
  * Scatter-gather transfer buffer access routines
  ***********************************************************************/
 
+<<<<<<< HEAD
 /* Copy a buffer of length buflen to/from the srb's transfer buffer.
+=======
+/*
+ * Copy a buffer of length buflen to/from the srb's transfer buffer.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Update the **sgptr and *offset variables so that the next copy will
  * pick up from where this one left off.
  */
@@ -135,6 +163,7 @@ unsigned int usb_stor_access_xfer_buf(unsigned char *buffer,
 	unsigned int buflen, struct scsi_cmnd *srb, struct scatterlist **sgptr,
 	unsigned int *offset, enum xfer_buf_dir dir)
 {
+<<<<<<< HEAD
 	unsigned int cnt;
 	struct scatterlist *sg = *sgptr;
 
@@ -198,11 +227,54 @@ unsigned int usb_stor_access_xfer_buf(unsigned char *buffer,
 	*sgptr = sg;
 
 	/* Return the amount actually transferred */
+=======
+	unsigned int cnt = 0;
+	struct scatterlist *sg = *sgptr;
+	struct sg_mapping_iter miter;
+	unsigned int nents = scsi_sg_count(srb);
+
+	if (sg)
+		nents = sg_nents(sg);
+	else
+		sg = scsi_sglist(srb);
+
+	sg_miter_start(&miter, sg, nents, dir == FROM_XFER_BUF ?
+		SG_MITER_FROM_SG: SG_MITER_TO_SG);
+
+	if (!sg_miter_skip(&miter, *offset))
+		return cnt;
+
+	while (sg_miter_next(&miter) && cnt < buflen) {
+		unsigned int len = min_t(unsigned int, miter.length,
+				buflen - cnt);
+
+		if (dir == FROM_XFER_BUF)
+			memcpy(buffer + cnt, miter.addr, len);
+		else
+			memcpy(miter.addr, buffer + cnt, len);
+
+		if (*offset + len < miter.piter.sg->length) {
+			*offset += len;
+			*sgptr = miter.piter.sg;
+		} else {
+			*offset = 0;
+			*sgptr = sg_next(miter.piter.sg);
+		}
+		cnt += len;
+	}
+	sg_miter_stop(&miter);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cnt;
 }
 EXPORT_SYMBOL_GPL(usb_stor_access_xfer_buf);
 
+<<<<<<< HEAD
 /* Store the contents of buffer into srb's transfer buffer and set the
+=======
+/*
+ * Store the contents of buffer into srb's transfer buffer and set the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SCSI residue.
  */
 void usb_stor_set_xfer_buf(unsigned char *buffer,

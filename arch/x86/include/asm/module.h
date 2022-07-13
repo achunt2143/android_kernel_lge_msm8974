@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_MODULE_H
 #define _ASM_X86_MODULE_H
 
 #include <asm-generic/module.h>
+<<<<<<< HEAD
 
 #ifdef CONFIG_X86_64
 /* X86_64 does not define MODULE_PROC_FAMILY */
@@ -62,5 +67,16 @@
 #ifdef CONFIG_X86_32
 # define MODULE_ARCH_VERMAGIC MODULE_PROC_FAMILY
 #endif
+=======
+#include <asm/orc_types.h>
+
+struct mod_arch_specific {
+#ifdef CONFIG_UNWINDER_ORC
+	unsigned int num_orcs;
+	int *orc_unwind_ip;
+	struct orc_entry *orc_unwind;
+#endif
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_MODULE_H */

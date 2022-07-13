@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SPU info structures
  *
  * (C) Copyright 2006 IBM Corp.
  *
  * Author: Dwayne Grant McConnell <decimal@us.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -51,5 +56,13 @@ struct spu_proxydma_info {
 	__u64 proxydma_info_status;
 	struct mfc_cq_sr proxydma_info_command_data[8];
 };
+=======
+ */
+#ifndef _SPU_INFO_H
+#define _SPU_INFO_H
+
+#include <asm/spu.h>
+#include <uapi/asm/spu_info.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

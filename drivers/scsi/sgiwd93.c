@@ -28,7 +28,15 @@
 #include <asm/sgi/ip22.h>
 #include <asm/sgi/wd.h>
 
+<<<<<<< HEAD
 #include "scsi.h"
+=======
+#include <scsi/scsi.h>
+#include <scsi/scsi_cmnd.h>
+#include <scsi/scsi_device.h>
+#include <scsi/scsi_eh.h>
+#include <scsi/scsi_tcq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "wd33c93.h"
 
 struct ip22_hostdata {
@@ -65,14 +73,24 @@ static irqreturn_t sgiwd93_intr(int irq, void *dev_id)
 static inline
 void fill_hpc_entries(struct ip22_hostdata *hd, struct scsi_cmnd *cmd, int din)
 {
+<<<<<<< HEAD
 	unsigned long len = cmd->SCp.this_residual;
 	void *addr = cmd->SCp.ptr;
+=======
+	struct scsi_pointer *scsi_pointer = WD33C93_scsi_pointer(cmd);
+	unsigned long len = scsi_pointer->this_residual;
+	void *addr = scsi_pointer->ptr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t physaddr;
 	unsigned long count;
 	struct hpc_chunk *hcp;
 
 	physaddr = dma_map_single(hd->dev, addr, len, DMA_DIR(din));
+<<<<<<< HEAD
 	cmd->SCp.dma_handle = physaddr;
+=======
+	scsi_pointer->dma_handle = physaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hcp = hd->cpu;
 
 	while (len) {
@@ -95,13 +113,21 @@ void fill_hpc_entries(struct ip22_hostdata *hd, struct scsi_cmnd *cmd, int din)
 	 */
 	hcp->desc.pbuf = 0;
 	hcp->desc.cntinfo = HPCDMA_EOX;
+<<<<<<< HEAD
 	dma_cache_sync(hd->dev, hd->cpu,
+=======
+	dma_sync_single_for_device(hd->dev, hd->dma,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       (unsigned long)(hcp + 1) - (unsigned long)hd->cpu,
 		       DMA_TO_DEVICE);
 }
 
 static int dma_setup(struct scsi_cmnd *cmd, int datainp)
 {
+<<<<<<< HEAD
+=======
+	struct scsi_pointer *scsi_pointer = WD33C93_scsi_pointer(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ip22_hostdata *hdata = host_to_hostdata(cmd->device->host);
 	struct hpc3_scsiregs *hregs =
 		(struct hpc3_scsiregs *) cmd->device->host->base;
@@ -116,7 +142,11 @@ static int dma_setup(struct scsi_cmnd *cmd, int datainp)
 	 * obvious).  IMHO a better fix would be, not to do these dma setups
 	 * in the first place.
 	 */
+<<<<<<< HEAD
 	if (cmd->SCp.ptr == NULL || cmd->SCp.this_residual == 0)
+=======
+	if (scsi_pointer->ptr == NULL || scsi_pointer->this_residual == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	fill_hpc_entries(hdata, cmd, datainp);
@@ -136,13 +166,21 @@ static int dma_setup(struct scsi_cmnd *cmd, int datainp)
 static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
 		     int status)
 {
+<<<<<<< HEAD
+=======
+	struct scsi_pointer *scsi_pointer = WD33C93_scsi_pointer(SCpnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ip22_hostdata *hdata = host_to_hostdata(instance);
 	struct hpc3_scsiregs *hregs;
 
 	if (!SCpnt)
 		return;
 
+<<<<<<< HEAD
 	if (SCpnt->SCp.ptr == NULL || SCpnt->SCp.this_residual == 0)
+=======
+	if (scsi_pointer->ptr == NULL || scsi_pointer->this_residual == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	hregs = (struct hpc3_scsiregs *) SCpnt->device->host->base;
@@ -156,8 +194,13 @@ static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
 			barrier();
 	}
 	hregs->ctrl = 0;
+<<<<<<< HEAD
 	dma_unmap_single(hdata->dev, SCpnt->SCp.dma_handle,
 			 SCpnt->SCp.this_residual,
+=======
+	dma_unmap_single(hdata->dev, scsi_pointer->dma_handle,
+			 scsi_pointer->this_residual,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 DMA_DIR(hdata->wh.dma_dir));
 
 	pr_debug("\n");
@@ -187,11 +230,16 @@ static inline void init_hpc_chain(struct ip22_hostdata *hdata)
 		hcp++;
 		dma += sizeof(struct hpc_chunk);
 		start += sizeof(struct hpc_chunk);
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hcp--;
 	hcp->desc.pnext = hdata->dma;
 }
 
+<<<<<<< HEAD
 static int sgiwd93_bus_reset(struct scsi_cmnd *cmd)
 {
 	/* FIXME perform bus-specific reset */
@@ -206,27 +254,44 @@ static int sgiwd93_bus_reset(struct scsi_cmnd *cmd)
 	return SUCCESS;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Kludge alert - the SCSI code calls the abort and reset method with int
  * arguments not with pointers.  So this is going to blow up beautyfully
  * on 64-bit systems with memory outside the compat address spaces.
  */
+<<<<<<< HEAD
 static struct scsi_host_template sgiwd93_template = {
+=======
+static const struct scsi_host_template sgiwd93_template = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module			= THIS_MODULE,
 	.proc_name		= "SGIWD93",
 	.name			= "SGI WD93",
 	.queuecommand		= wd33c93_queuecommand,
 	.eh_abort_handler	= wd33c93_abort,
+<<<<<<< HEAD
 	.eh_bus_reset_handler	= sgiwd93_bus_reset,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eh_host_reset_handler	= wd33c93_host_reset,
 	.can_queue		= 16,
 	.this_id		= 7,
 	.sg_tablesize		= SG_ALL,
 	.cmd_per_lun		= 8,
+<<<<<<< HEAD
 	.use_clustering		= DISABLE_CLUSTERING,
 };
 
 static int __devinit sgiwd93_probe(struct platform_device *pdev)
+=======
+	.dma_boundary		= PAGE_SIZE - 1,
+	.cmd_size		= sizeof(struct scsi_pointer),
+};
+
+static int sgiwd93_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sgiwd93_platform_data *pd = pdev->dev.platform_data;
 	unsigned char *wdregs = pd->wdregs;
@@ -250,7 +315,11 @@ static int __devinit sgiwd93_probe(struct platform_device *pdev)
 	hdata = host_to_hostdata(host);
 	hdata->dev = &pdev->dev;
 	hdata->cpu = dma_alloc_noncoherent(&pdev->dev, HPC_DMA_SIZE,
+<<<<<<< HEAD
 					   &hdata->dma, GFP_KERNEL);
+=======
+				&hdata->dma, DMA_TO_DEVICE, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hdata->cpu) {
 		printk(KERN_WARNING "sgiwd93: Could not allocate memory for "
 		       "host %d buffer.\n", unit);
@@ -289,7 +358,12 @@ static int __devinit sgiwd93_probe(struct platform_device *pdev)
 out_irq:
 	free_irq(irq, host);
 out_free:
+<<<<<<< HEAD
 	dma_free_noncoherent(&pdev->dev, HPC_DMA_SIZE, hdata->cpu, hdata->dma);
+=======
+	dma_free_noncoherent(&pdev->dev, HPC_DMA_SIZE, hdata->cpu, hdata->dma,
+			DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_put:
 	scsi_host_put(host);
 out:
@@ -297,7 +371,11 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __exit sgiwd93_remove(struct platform_device *pdev)
+=======
+static void sgiwd93_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host = platform_get_drvdata(pdev);
 	struct ip22_hostdata *hdata = (struct ip22_hostdata *) host->hostdata;
@@ -305,17 +383,29 @@ static int __exit sgiwd93_remove(struct platform_device *pdev)
 
 	scsi_remove_host(host);
 	free_irq(pd->irq, host);
+<<<<<<< HEAD
 	dma_free_noncoherent(&pdev->dev, HPC_DMA_SIZE, hdata->cpu, hdata->dma);
 	scsi_host_put(host);
 	return 0;
+=======
+	dma_free_noncoherent(&pdev->dev, HPC_DMA_SIZE, hdata->cpu, hdata->dma,
+			DMA_TO_DEVICE);
+	scsi_host_put(host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver sgiwd93_driver = {
 	.probe  = sgiwd93_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(sgiwd93_remove),
 	.driver = {
 		.name   = "sgiwd93",
 		.owner	= THIS_MODULE,
+=======
+	.remove_new = sgiwd93_remove,
+	.driver = {
+		.name   = "sgiwd93",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 

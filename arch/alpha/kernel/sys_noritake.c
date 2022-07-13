@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/sys_noritake.c
  *
@@ -23,7 +27,10 @@
 #include <asm/irq.h>
 #include <asm/mmu_context.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/core_apecs.h>
 #include <asm/core_cia.h>
 #include <asm/tlbflush.h>
@@ -193,10 +200,17 @@ noritake_init_irq(void)
  * comes in on.  This makes interrupt processing much easier.
  */
 
+<<<<<<< HEAD
 static int __init
 noritake_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	static char irq_tab[15][5] __initdata = {
+=======
+static int
+noritake_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+{
+	static char irq_tab[15][5] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*INT    INTA   INTB   INTC   INTD */
 		/* note: IDSELs 16, 17, and 25 are CORELLE only */
 		{ 16+1,  16+1,  16+1,  16+1,  16+1},  /* IdSel 16,  QLOGIC */
@@ -221,7 +235,11 @@ noritake_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return COMMON_TABLE_LOOKUP;
 }
 
+<<<<<<< HEAD
 static u8 __init
+=======
+static u8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 noritake_swizzle(struct pci_dev *dev, u8 *pinp)
 {
 	int slot, pin = *pinp;

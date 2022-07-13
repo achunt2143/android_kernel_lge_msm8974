@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IBM ASM Service Processor Device Driver
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -20,6 +25,11 @@
  *
  * Author: Max Asböck <amax@us.ibm.com>
  *
+=======
+ * Copyright (C) IBM Corporation, 2004
+ *
+ * Author: Max Asböck <amax@us.ibm.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -34,6 +44,10 @@
 #include <linux/kref.h>
 #include <linux/device.h>
 #include <linux/input.h>
+<<<<<<< HEAD
+=======
+#include <linux/time64.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Driver identification */
 #define DRIVER_NAME	"ibmasm"
@@ -53,9 +67,17 @@ extern int ibmasm_debug;
 
 static inline char *get_timestamp(char *buf)
 {
+<<<<<<< HEAD
 	struct timeval now;
 	do_gettimeofday(&now);
 	sprintf(buf, "%lu.%lu", now.tv_sec, now.tv_usec);
+=======
+	struct timespec64 now;
+
+	ktime_get_real_ts64(&now);
+	sprintf(buf, "%llu.%.08lu", (long long)now.tv_sec,
+				now.tv_nsec / NSEC_PER_USEC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return buf;
 }
 
@@ -211,7 +233,11 @@ void ibmasmfs_unregister(void);
 void ibmasmfs_add_sp(struct service_processor *sp);
 
 /* uart */
+<<<<<<< HEAD
 #ifdef CONFIG_SERIAL_8250
+=======
+#if IS_ENABLED(CONFIG_SERIAL_8250)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ibmasm_register_uart(struct service_processor *sp);
 void ibmasm_unregister_uart(struct service_processor *sp);
 #else

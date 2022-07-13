@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Primary function overlay window definitions
  * and service functions used by LPDDR chips
  */
@@ -18,7 +22,11 @@
 /* Identification info for LPDDR chip */
 #define PFOW_MANUFACTURER_ID			0x0020
 #define PFOW_DEVICE_ID				0x0022
+<<<<<<< HEAD
 /* Address in PFOW where prog buffer can can be found */
+=======
+/* Address in PFOW where prog buffer can be found */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PFOW_PROGRAM_BUFFER_OFFSET		0x0040
 /* Size of program buffer in words */
 #define PFOW_PROGRAM_BUFFER_SIZE		0x0042
@@ -101,9 +109,12 @@ static inline void send_pfow_command(struct map_info *map,
 				unsigned long len, map_word *datum)
 {
 	int bits_per_chip = map_bankwidth(map) * 8;
+<<<<<<< HEAD
 	int chipnum;
 	struct lpddr_private *lpddr = map->fldrv_priv;
 	chipnum = adr >> lpddr->chipshift;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	map_write(map, CMD(cmd_code), map->pfow_base + PFOW_COMMAND_CODE);
 	map_write(map, CMD(adr & ((1<<bits_per_chip) - 1)),
@@ -123,6 +134,7 @@ static inline void send_pfow_command(struct map_info *map,
 	map_write(map, CMD(LPDDR_START_EXECUTION),
 			map->pfow_base + PFOW_COMMAND_EXECUTE);
 }
+<<<<<<< HEAD
 
 static inline void print_drs_error(unsigned dsr)
 {
@@ -156,4 +168,6 @@ static inline void print_drs_error(unsigned dsr)
 		printk(KERN_NOTICE"DSR.1: (1) Aborted Erase/Program attempt "
 					"on locked block\n");
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_MTD_PFOW_H */

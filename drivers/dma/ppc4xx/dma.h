@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 440SPe's DMA engines support header file
  *
  * 2006-2009 (C) DENX Software Engineering.
  *
  * Author: Yuri Tikhonov <yur@emcraft.com>
+<<<<<<< HEAD
  *
  * This file is licensed under the term of  the GNU General Public License
  * version 2. The program licensed "as is" without any warranty of any
  * kind, whether express or implied.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef	_PPC440SPE_DMA_H

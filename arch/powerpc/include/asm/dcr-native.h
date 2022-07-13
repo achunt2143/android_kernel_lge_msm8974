@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * (c) Copyright 2006 Benjamin Herrenschmidt, IBM Corp.
  *                    <benh@kernel.crashing.org>
@@ -15,6 +16,12 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * (c) Copyright 2006 Benjamin Herrenschmidt, IBM Corp.
+ *                    <benh@kernel.crashing.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_POWERPC_DCR_NATIVE_H
@@ -24,6 +31,11 @@
 
 #include <linux/spinlock.h>
 #include <asm/cputable.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu_has_feature.h>
+#include <linux/stringify.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct {
 	unsigned int base;
@@ -31,7 +43,11 @@ typedef struct {
 
 static inline bool dcr_map_ok_native(dcr_host_native_t host)
 {
+<<<<<<< HEAD
 	return 1;
+=======
+	return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define dcr_map_native(dev, dcr_n, dcr_c) \
@@ -64,8 +80,13 @@ static inline void mtdcrx(unsigned int reg, unsigned int val)
 #define mfdcr(rn)						\
 	({unsigned int rval;					\
 	if (__builtin_constant_p(rn) && rn < 1024)		\
+<<<<<<< HEAD
 		asm volatile("mfdcr %0," __stringify(rn)	\
 		              : "=r" (rval));			\
+=======
+		asm volatile("mfdcr %0, %1" : "=r" (rval)	\
+			      : "n" (rn));			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (likely(cpu_has_feature(CPU_FTR_INDEXED_DCR)))	\
 		rval = mfdcrx(rn);				\
 	else							\
@@ -75,8 +96,13 @@ static inline void mtdcrx(unsigned int reg, unsigned int val)
 #define mtdcr(rn, v)						\
 do {								\
 	if (__builtin_constant_p(rn) && rn < 1024)		\
+<<<<<<< HEAD
 		asm volatile("mtdcr " __stringify(rn) ",%0"	\
 			      : : "r" (v)); 			\
+=======
+		asm volatile("mtdcr %0, %1"			\
+			      : : "n" (rn), "r" (v));		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (likely(cpu_has_feature(CPU_FTR_INDEXED_DCR)))	\
 		mtdcrx(rn, v);					\
 	else							\

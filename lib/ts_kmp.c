@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * lib/ts_kmp.c		Knuth-Morris-Pratt text search implementation
  *
@@ -6,6 +7,12 @@
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * lib/ts_kmp.c		Knuth-Morris-Pratt text search implementation
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:	Thomas Graf <tgraf@suug.ch>
  *
  * ==========================================================================
@@ -27,7 +34,11 @@
  *
  *   [1] Cormen, Leiserson, Rivest, Stein
  *       Introdcution to Algorithms, 2nd Edition, MIT Press
+<<<<<<< HEAD
  *   [2] See finite automation theory
+=======
+ *   [2] See finite automaton theory
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -40,7 +51,11 @@ struct ts_kmp
 {
 	u8 *		pattern;
 	unsigned int	pattern_len;
+<<<<<<< HEAD
 	unsigned int 	prefix_tbl[0];
+=======
+	unsigned int	prefix_tbl[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static unsigned int kmp_find(struct ts_config *conf, struct ts_state *state)

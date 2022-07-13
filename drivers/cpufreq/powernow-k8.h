@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  (c) 2003-2006 Advanced Micro Devices, Inc.
  *  Your use of this code is subject to the terms and conditions of the
@@ -17,12 +18,22 @@ enum pstate {
 	HW_PSTATE_7 = 7,
 };
 
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ *  (c) 2003-2006 Advanced Micro Devices, Inc.
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct powernow_k8_data {
 	unsigned int cpu;
 
 	u32 numps;  /* number of p-states */
 	u32 batps;  /* number of p-states supported on battery */
+<<<<<<< HEAD
 	u32 max_hw_pstate; /* maximum legal hardware pstate */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* these values are constant when the PSB is used to determine
 	 * vid/fid pairings, but are modified during the ->target() call
@@ -32,12 +43,19 @@ struct powernow_k8_data {
 	u32 vidmvs;  /* usable value calculated from mvs */
 	u32 vstable; /* voltage stabilization time, units 20 us */
 	u32 plllock; /* pll lock time, units 1 us */
+<<<<<<< HEAD
         u32 exttype; /* extended interface = 1 */
+=======
+	u32 exttype; /* extended interface = 1 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* keep track of the current fid / vid or pstate */
 	u32 currvid;
 	u32 currfid;
+<<<<<<< HEAD
 	enum pstate currpstate;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* the powernow_table includes all frequency and vid/fid pairings:
 	 * fid are the lower 8 bits of the index, vid are the upper 8 bits.
@@ -97,6 +115,7 @@ struct powernow_k8_data {
 #define MSR_S_HI_CURRENT_VID      0x0000003f
 #define MSR_C_HI_STP_GNT_BENIGN	  0x00000001
 
+<<<<<<< HEAD
 
 /* Hardware Pstate _PSS and MSR definitions */
 #define USE_HW_PSTATE		0x00000080
@@ -114,6 +133,8 @@ struct powernow_k8_data {
 #define CPU_HW_PSTATE 1
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * There are restrictions frequencies have to follow:
  * - only 1 entry in the low fid table ( <=1.4GHz )
@@ -218,5 +239,8 @@ static int core_frequency_transition(struct powernow_k8_data *data, u32 reqfid);
 
 static void powernow_k8_acpi_pst_values(struct powernow_k8_data *data, unsigned int index);
 
+<<<<<<< HEAD
 static int fill_powernow_table_pstate(struct powernow_k8_data *data, struct cpufreq_frequency_table *powernow_table);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int fill_powernow_table_fidvid(struct powernow_k8_data *data, struct cpufreq_frequency_table *powernow_table);

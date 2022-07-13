@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/minix/file.c
  *
@@ -14,6 +18,7 @@
  */
 const struct file_operations minix_file_operations = {
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.read		= do_sync_read,
 	.aio_read	= generic_file_aio_read,
 	.write		= do_sync_write,
@@ -29,23 +34,54 @@ static int minix_setattr(struct dentry *dentry, struct iattr *attr)
 	int error;
 
 	error = inode_change_ok(inode, attr);
+=======
+	.read_iter	= generic_file_read_iter,
+	.write_iter	= generic_file_write_iter,
+	.mmap		= generic_file_mmap,
+	.fsync		= generic_file_fsync,
+	.splice_read	= filemap_splice_read,
+};
+
+static int minix_setattr(struct mnt_idmap *idmap,
+			 struct dentry *dentry, struct iattr *attr)
+{
+	struct inode *inode = d_inode(dentry);
+	int error;
+
+	error = setattr_prepare(&nop_mnt_idmap, dentry, attr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
 	if ((attr->ia_valid & ATTR_SIZE) &&
 	    attr->ia_size != i_size_read(inode)) {
+<<<<<<< HEAD
 		error = vmtruncate(inode, attr->ia_size);
 		if (error)
 			return error;
 	}
 
 	setattr_copy(inode, attr);
+=======
+		error = inode_newsize_ok(inode, attr->ia_size);
+		if (error)
+			return error;
+
+		truncate_setsize(inode, attr->ia_size);
+		minix_truncate(inode);
+	}
+
+	setattr_copy(&nop_mnt_idmap, inode, attr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 	return 0;
 }
 
 const struct inode_operations minix_file_inode_operations = {
+<<<<<<< HEAD
 	.truncate	= minix_truncate,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setattr	= minix_setattr,
 	.getattr	= minix_getattr,
 };

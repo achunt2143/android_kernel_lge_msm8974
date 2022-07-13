@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* toshiba.h -- Linux driver for accessing the SMM on Toshiba laptops 
  *
  * Copyright (c) 1996-2000  Jonathan A. Buzzard (jonathan@buzzard.org.uk)
  *
  * Thanks to Juergen Heinzl <juergen@monocerus.demon.co.uk> for the pointers
  * on making sure the structure is aligned and packed.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -37,4 +42,13 @@ typedef struct {
 int tosh_smm(SMMRegisters *regs);
 #endif /* __KERNEL__ */
 
+=======
+ */
+#ifndef _LINUX_TOSHIBA_H
+#define _LINUX_TOSHIBA_H
+
+#include <uapi/linux/toshiba.h>
+
+int tosh_smm(SMMRegisters *regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

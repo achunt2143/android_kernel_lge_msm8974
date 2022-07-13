@@ -30,6 +30,7 @@
  *   Based on QEMU and Xen.
  */
 
+<<<<<<< HEAD
 #define pr_fmt(fmt) "pit: " fmt
 
 #include <linux/kvm_host.h>
@@ -38,6 +39,17 @@
 
 #include "irq.h"
 #include "i8254.h"
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/kvm_host.h>
+#include <linux/slab.h>
+
+#include "ioapic.h"
+#include "irq.h"
+#include "i8254.h"
+#include "x86.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef CONFIG_X86_64
 #define mod_64(x, y) ((x) - (y) * div64_u64(x, y))
@@ -50,6 +62,7 @@
 #define RW_STATE_WORD0 3
 #define RW_STATE_WORD1 4
 
+<<<<<<< HEAD
 /* Compute with 96 bit intermediate result: (a*b)/c */
 static u64 muldiv64(u64 a, u32 b, u32 c)
 {
@@ -76,6 +89,11 @@ static void pit_set_gate(struct kvm *kvm, int channel, u32 val)
 		&kvm->arch.vpit->pit_state.channels[channel];
 
 	WARN_ON(!mutex_is_locked(&kvm->arch.vpit->pit_state.lock));
+=======
+static void pit_set_gate(struct kvm_pit *pit, int channel, u32 val)
+{
+	struct kvm_kpit_channel_state *c = &pit->pit_state.channels[channel];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (c->mode) {
 	default:
@@ -96,6 +114,7 @@ static void pit_set_gate(struct kvm *kvm, int channel, u32 val)
 	c->gate = val;
 }
 
+<<<<<<< HEAD
 static int pit_get_gate(struct kvm *kvm, int channel)
 {
 	WARN_ON(!mutex_is_locked(&kvm->arch.vpit->pit_state.lock));
@@ -110,6 +129,20 @@ static s64 __kpit_elapsed(struct kvm *kvm)
 	struct kvm_kpit_state *ps = &kvm->arch.vpit->pit_state;
 
 	if (!ps->pit_timer.period)
+=======
+static int pit_get_gate(struct kvm_pit *pit, int channel)
+{
+	return pit->pit_state.channels[channel].gate;
+}
+
+static s64 __kpit_elapsed(struct kvm_pit *pit)
+{
+	s64 elapsed;
+	ktime_t remaining;
+	struct kvm_kpit_state *ps = &pit->pit_state;
+
+	if (!ps->period)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/*
@@ -121,22 +154,36 @@ static s64 __kpit_elapsed(struct kvm *kvm)
 	 * itself with the initial count and continues counting
 	 * from there.
 	 */
+<<<<<<< HEAD
 	remaining = hrtimer_get_remaining(&ps->pit_timer.timer);
 	elapsed = ps->pit_timer.period - ktime_to_ns(remaining);
 	elapsed = mod_64(elapsed, ps->pit_timer.period);
+=======
+	remaining = hrtimer_get_remaining(&ps->timer);
+	elapsed = ps->period - ktime_to_ns(remaining);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return elapsed;
 }
 
+<<<<<<< HEAD
 static s64 kpit_elapsed(struct kvm *kvm, struct kvm_kpit_channel_state *c,
 			int channel)
 {
 	if (channel == 0)
 		return __kpit_elapsed(kvm);
+=======
+static s64 kpit_elapsed(struct kvm_pit *pit, struct kvm_kpit_channel_state *c,
+			int channel)
+{
+	if (channel == 0)
+		return __kpit_elapsed(pit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ktime_to_ns(ktime_sub(ktime_get(), c->count_load_time));
 }
 
+<<<<<<< HEAD
 static int pit_get_count(struct kvm *kvm, int channel)
 {
 	struct kvm_kpit_channel_state *c =
@@ -148,6 +195,16 @@ static int pit_get_count(struct kvm *kvm, int channel)
 
 	t = kpit_elapsed(kvm, c, channel);
 	d = muldiv64(t, KVM_PIT_FREQ, NSEC_PER_SEC);
+=======
+static int pit_get_count(struct kvm_pit *pit, int channel)
+{
+	struct kvm_kpit_channel_state *c = &pit->pit_state.channels[channel];
+	s64 d, t;
+	int counter;
+
+	t = kpit_elapsed(pit, c, channel);
+	d = mul_u64_u32_div(t, KVM_PIT_FREQ, NSEC_PER_SEC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (c->mode) {
 	case 0:
@@ -167,6 +224,7 @@ static int pit_get_count(struct kvm *kvm, int channel)
 	return counter;
 }
 
+<<<<<<< HEAD
 static int pit_get_out(struct kvm *kvm, int channel)
 {
 	struct kvm_kpit_channel_state *c =
@@ -178,6 +236,16 @@ static int pit_get_out(struct kvm *kvm, int channel)
 
 	t = kpit_elapsed(kvm, c, channel);
 	d = muldiv64(t, KVM_PIT_FREQ, NSEC_PER_SEC);
+=======
+static int pit_get_out(struct kvm_pit *pit, int channel)
+{
+	struct kvm_kpit_channel_state *c = &pit->pit_state.channels[channel];
+	s64 d, t;
+	int out;
+
+	t = kpit_elapsed(pit, c, channel);
+	d = mul_u64_u32_div(t, KVM_PIT_FREQ, NSEC_PER_SEC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (c->mode) {
 	default:
@@ -202,6 +270,7 @@ static int pit_get_out(struct kvm *kvm, int channel)
 	return out;
 }
 
+<<<<<<< HEAD
 static void pit_latch_count(struct kvm *kvm, int channel)
 {
 	struct kvm_kpit_channel_state *c =
@@ -211,10 +280,19 @@ static void pit_latch_count(struct kvm *kvm, int channel)
 
 	if (!c->count_latched) {
 		c->latched_count = pit_get_count(kvm, channel);
+=======
+static void pit_latch_count(struct kvm_pit *pit, int channel)
+{
+	struct kvm_kpit_channel_state *c = &pit->pit_state.channels[channel];
+
+	if (!c->count_latched) {
+		c->latched_count = pit_get_count(pit, channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->count_latched = c->rw_mode;
 	}
 }
 
+<<<<<<< HEAD
 static void pit_latch_status(struct kvm *kvm, int channel)
 {
 	struct kvm_kpit_channel_state *c =
@@ -225,6 +303,15 @@ static void pit_latch_status(struct kvm *kvm, int channel)
 	if (!c->status_latched) {
 		/* TODO: Return NULL COUNT (bit 6). */
 		c->status = ((pit_get_out(kvm, channel) << 7) |
+=======
+static void pit_latch_status(struct kvm_pit *pit, int channel)
+{
+	struct kvm_kpit_channel_state *c = &pit->pit_state.channels[channel];
+
+	if (!c->status_latched) {
+		/* TODO: Return NULL COUNT (bit 6). */
+		c->status = ((pit_get_out(pit, channel) << 7) |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(c->rw_mode << 4) |
 				(c->mode << 1) |
 				c->bcd);
@@ -232,10 +319,19 @@ static void pit_latch_status(struct kvm *kvm, int channel)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static inline struct kvm_pit *pit_state_to_pit(struct kvm_kpit_state *ps)
+{
+	return container_of(ps, struct kvm_pit, pit_state);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void kvm_pit_ack_irq(struct kvm_irq_ack_notifier *kian)
 {
 	struct kvm_kpit_state *ps = container_of(kian, struct kvm_kpit_state,
 						 irq_ack_notifier);
+<<<<<<< HEAD
 	int value;
 
 	spin_lock(&ps->inject_lock);
@@ -252,6 +348,17 @@ static void kvm_pit_ack_irq(struct kvm_irq_ack_notifier *kian)
 		queue_work(ps->pit->wq, &ps->pit->expired);
 	ps->irq_ack = 1;
 	spin_unlock(&ps->inject_lock);
+=======
+	struct kvm_pit *pit = pit_state_to_pit(ps);
+
+	atomic_set(&ps->irq_ack, 1);
+	/* irq_ack should be set before pending is read.  Order accesses with
+	 * inc(pending) in pit_timer_fn and xchg(irq_ack, 0) in pit_do_work.
+	 */
+	smp_mb();
+	if (atomic_dec_if_positive(&ps->pending) > 0)
+		kthread_queue_work(pit->worker, &pit->expired);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __kvm_migrate_pit_timer(struct kvm_vcpu *vcpu)
@@ -259,10 +366,18 @@ void __kvm_migrate_pit_timer(struct kvm_vcpu *vcpu)
 	struct kvm_pit *pit = vcpu->kvm->arch.vpit;
 	struct hrtimer *timer;
 
+<<<<<<< HEAD
 	if (!kvm_vcpu_is_bsp(vcpu) || !pit)
 		return;
 
 	timer = &pit->pit_state.pit_timer.timer;
+=======
+	/* Somewhat arbitrarily make vcpu0 the owner of the PIT. */
+	if (vcpu->vcpu_id || !pit)
+		return;
+
+	timer = &pit->pit_state.timer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&pit->pit_state.lock);
 	if (hrtimer_cancel(timer))
 		hrtimer_start_expires(timer, HRTIMER_MODE_ABS);
@@ -271,6 +386,7 @@ void __kvm_migrate_pit_timer(struct kvm_vcpu *vcpu)
 
 static void destroy_pit_timer(struct kvm_pit *pit)
 {
+<<<<<<< HEAD
 	hrtimer_cancel(&pit->pit_state.pit_timer.timer);
 	cancel_work_sync(&pit->expired);
 }
@@ -287,10 +403,18 @@ static struct kvm_timer_ops kpit_ops = {
 };
 
 static void pit_do_work(struct work_struct *work)
+=======
+	hrtimer_cancel(&pit->pit_state.timer);
+	kthread_flush_work(&pit->expired);
+}
+
+static void pit_do_work(struct kthread_work *work)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kvm_pit *pit = container_of(work, struct kvm_pit, expired);
 	struct kvm *kvm = pit->kvm;
 	struct kvm_vcpu *vcpu;
+<<<<<<< HEAD
 	int i;
 	struct kvm_kpit_state *ps = &pit->pit_state;
 	int inject = 0;
@@ -321,10 +445,34 @@ static void pit_do_work(struct work_struct *work)
 			kvm_for_each_vcpu(i, vcpu, kvm)
 				kvm_apic_nmi_wd_deliver(vcpu);
 	}
+=======
+	unsigned long i;
+	struct kvm_kpit_state *ps = &pit->pit_state;
+
+	if (atomic_read(&ps->reinject) && !atomic_xchg(&ps->irq_ack, 0))
+		return;
+
+	kvm_set_irq(kvm, pit->irq_source_id, 0, 1, false);
+	kvm_set_irq(kvm, pit->irq_source_id, 0, 0, false);
+
+	/*
+	 * Provides NMI watchdog support via Virtual Wire mode.
+	 * The route is: PIT -> LVT0 in NMI mode.
+	 *
+	 * Note: Our Virtual Wire implementation does not follow
+	 * the MP specification.  We propagate a PIT interrupt to all
+	 * VCPUs and only when LVT0 is in NMI mode.  The interrupt can
+	 * also be simultaneously delivered through PIC and IOAPIC.
+	 */
+	if (atomic_read(&kvm->arch.vapics_in_nmi_mode) > 0)
+		kvm_for_each_vcpu(i, vcpu, kvm)
+			kvm_apic_nmi_wd_deliver(vcpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum hrtimer_restart pit_timer_fn(struct hrtimer *data)
 {
+<<<<<<< HEAD
 	struct kvm_timer *ktimer = container_of(data, struct kvm_timer, timer);
 	struct kvm_pit *pt = ktimer->kvm->arch.vpit;
 
@@ -335,11 +483,24 @@ static enum hrtimer_restart pit_timer_fn(struct hrtimer *data)
 
 	if (ktimer->t_ops->is_periodic(ktimer)) {
 		hrtimer_add_expires_ns(&ktimer->timer, ktimer->period);
+=======
+	struct kvm_kpit_state *ps = container_of(data, struct kvm_kpit_state, timer);
+	struct kvm_pit *pt = pit_state_to_pit(ps);
+
+	if (atomic_read(&ps->reinject))
+		atomic_inc(&ps->pending);
+
+	kthread_queue_work(pt->worker, &pt->expired);
+
+	if (ps->is_periodic) {
+		hrtimer_add_expires_ns(&ps->timer, ps->period);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return HRTIMER_RESTART;
 	} else
 		return HRTIMER_NORESTART;
 }
 
+<<<<<<< HEAD
 static void create_pit_timer(struct kvm *kvm, u32 val, int is_period)
 {
 	struct kvm_kpit_state *ps = &kvm->arch.vpit->pit_state;
@@ -350,10 +511,61 @@ static void create_pit_timer(struct kvm *kvm, u32 val, int is_period)
 		return;
 
 	interval = muldiv64(val, NSEC_PER_SEC, KVM_PIT_FREQ);
+=======
+static inline void kvm_pit_reset_reinject(struct kvm_pit *pit)
+{
+	atomic_set(&pit->pit_state.pending, 0);
+	atomic_set(&pit->pit_state.irq_ack, 1);
+}
+
+void kvm_pit_set_reinject(struct kvm_pit *pit, bool reinject)
+{
+	struct kvm_kpit_state *ps = &pit->pit_state;
+	struct kvm *kvm = pit->kvm;
+
+	if (atomic_read(&ps->reinject) == reinject)
+		return;
+
+	/*
+	 * AMD SVM AVIC accelerates EOI write and does not trap.
+	 * This cause in-kernel PIT re-inject mode to fail
+	 * since it checks ps->irq_ack before kvm_set_irq()
+	 * and relies on the ack notifier to timely queue
+	 * the pt->worker work iterm and reinject the missed tick.
+	 * So, deactivate APICv when PIT is in reinject mode.
+	 */
+	if (reinject) {
+		kvm_set_apicv_inhibit(kvm, APICV_INHIBIT_REASON_PIT_REINJ);
+		/* The initial state is preserved while ps->reinject == 0. */
+		kvm_pit_reset_reinject(pit);
+		kvm_register_irq_ack_notifier(kvm, &ps->irq_ack_notifier);
+		kvm_register_irq_mask_notifier(kvm, 0, &pit->mask_notifier);
+	} else {
+		kvm_clear_apicv_inhibit(kvm, APICV_INHIBIT_REASON_PIT_REINJ);
+		kvm_unregister_irq_ack_notifier(kvm, &ps->irq_ack_notifier);
+		kvm_unregister_irq_mask_notifier(kvm, 0, &pit->mask_notifier);
+	}
+
+	atomic_set(&ps->reinject, reinject);
+}
+
+static void create_pit_timer(struct kvm_pit *pit, u32 val, int is_period)
+{
+	struct kvm_kpit_state *ps = &pit->pit_state;
+	struct kvm *kvm = pit->kvm;
+	s64 interval;
+
+	if (!ioapic_in_kernel(kvm) ||
+	    ps->flags & KVM_PIT_FLAGS_HPET_LEGACY)
+		return;
+
+	interval = mul_u64_u32_div(val, NSEC_PER_SEC, KVM_PIT_FREQ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("create pit timer, interval is %llu nsec\n", interval);
 
 	/* TODO The new value only affected after the retriggered */
+<<<<<<< HEAD
 	hrtimer_cancel(&pt->timer);
 	cancel_work_sync(&ps->pit->expired);
 	pt->period = interval;
@@ -377,6 +589,41 @@ static void pit_load_count(struct kvm *kvm, int channel, u32 val)
 	WARN_ON(!mutex_is_locked(&ps->lock));
 
 	pr_debug("load_count val is %d, channel is %d\n", val, channel);
+=======
+	hrtimer_cancel(&ps->timer);
+	kthread_flush_work(&pit->expired);
+	ps->period = interval;
+	ps->is_periodic = is_period;
+
+	kvm_pit_reset_reinject(pit);
+
+	/*
+	 * Do not allow the guest to program periodic timers with small
+	 * interval, since the hrtimers are not throttled by the host
+	 * scheduler.
+	 */
+	if (ps->is_periodic) {
+		s64 min_period = min_timer_period_us * 1000LL;
+
+		if (ps->period < min_period) {
+			pr_info_ratelimited(
+			    "requested %lld ns "
+			    "i8254 timer period limited to %lld ns\n",
+			    ps->period, min_period);
+			ps->period = min_period;
+		}
+	}
+
+	hrtimer_start(&ps->timer, ktime_add_ns(ktime_get(), interval),
+		      HRTIMER_MODE_ABS);
+}
+
+static void pit_load_count(struct kvm_pit *pit, int channel, u32 val)
+{
+	struct kvm_kpit_state *ps = &pit->pit_state;
+
+	pr_debug("load_count val is %u, channel is %d\n", val, channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The largest possible initial count is 0; this is equivalent
@@ -399,6 +646,7 @@ static void pit_load_count(struct kvm *kvm, int channel, u32 val)
 	case 1:
         /* FIXME: enhance mode 4 precision */
 	case 4:
+<<<<<<< HEAD
 		create_pit_timer(kvm, val, 0);
 		break;
 	case 2:
@@ -421,6 +669,35 @@ void kvm_pit_load_count(struct kvm *kvm, int channel, u32 val, int hpet_legacy_s
 		kvm->arch.vpit->pit_state.channels[0].mode = saved_mode;
 	} else {
 		pit_load_count(kvm, channel, val);
+=======
+		create_pit_timer(pit, val, 0);
+		break;
+	case 2:
+	case 3:
+		create_pit_timer(pit, val, 1);
+		break;
+	default:
+		destroy_pit_timer(pit);
+	}
+}
+
+void kvm_pit_load_count(struct kvm_pit *pit, int channel, u32 val,
+		int hpet_legacy_start)
+{
+	u8 saved_mode;
+
+	WARN_ON_ONCE(!mutex_is_locked(&pit->pit_state.lock));
+
+	if (hpet_legacy_start) {
+		/* save existing mode for later reenablement */
+		WARN_ON(channel != 0);
+		saved_mode = pit->pit_state.channels[0].mode;
+		pit->pit_state.channels[0].mode = 0xff; /* disable timer */
+		pit_load_count(pit, channel, val);
+		pit->pit_state.channels[0].mode = saved_mode;
+	} else {
+		pit_load_count(pit, channel, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -440,12 +717,20 @@ static inline int pit_in_range(gpa_t addr)
 		(addr < KVM_PIT_BASE_ADDRESS + KVM_PIT_MEM_LENGTH));
 }
 
+<<<<<<< HEAD
 static int pit_ioport_write(struct kvm_io_device *this,
+=======
+static int pit_ioport_write(struct kvm_vcpu *vcpu,
+				struct kvm_io_device *this,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    gpa_t addr, int len, const void *data)
 {
 	struct kvm_pit *pit = dev_to_pit(this);
 	struct kvm_kpit_state *pit_state = &pit->pit_state;
+<<<<<<< HEAD
 	struct kvm *kvm = pit->kvm;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int channel, access;
 	struct kvm_kpit_channel_state *s;
 	u32 val = *(u32 *) data;
@@ -466,12 +751,20 @@ static int pit_ioport_write(struct kvm_io_device *this,
 		if (channel == 3) {
 			/* Read-Back Command. */
 			for (channel = 0; channel < 3; channel++) {
+<<<<<<< HEAD
 				s = &pit_state->channels[channel];
 				if (val & (2 << channel)) {
 					if (!(val & 0x20))
 						pit_latch_count(kvm, channel);
 					if (!(val & 0x10))
 						pit_latch_status(kvm, channel);
+=======
+				if (val & (2 << channel)) {
+					if (!(val & 0x20))
+						pit_latch_count(pit, channel);
+					if (!(val & 0x10))
+						pit_latch_status(pit, channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 		} else {
@@ -479,7 +772,11 @@ static int pit_ioport_write(struct kvm_io_device *this,
 			s = &pit_state->channels[channel];
 			access = (val >> 4) & KVM_PIT_CHANNEL_MASK;
 			if (access == 0) {
+<<<<<<< HEAD
 				pit_latch_count(kvm, channel);
+=======
+				pit_latch_count(pit, channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else {
 				s->rw_mode = access;
 				s->read_state = access;
@@ -496,17 +793,28 @@ static int pit_ioport_write(struct kvm_io_device *this,
 		switch (s->write_state) {
 		default:
 		case RW_STATE_LSB:
+<<<<<<< HEAD
 			pit_load_count(kvm, addr, val);
 			break;
 		case RW_STATE_MSB:
 			pit_load_count(kvm, addr, val << 8);
+=======
+			pit_load_count(pit, addr, val);
+			break;
+		case RW_STATE_MSB:
+			pit_load_count(pit, addr, val << 8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case RW_STATE_WORD0:
 			s->write_latch = val;
 			s->write_state = RW_STATE_WORD1;
 			break;
 		case RW_STATE_WORD1:
+<<<<<<< HEAD
 			pit_load_count(kvm, addr, s->write_latch | (val << 8));
+=======
+			pit_load_count(pit, addr, s->write_latch | (val << 8));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			s->write_state = RW_STATE_WORD0;
 			break;
 		}
@@ -516,12 +824,20 @@ static int pit_ioport_write(struct kvm_io_device *this,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pit_ioport_read(struct kvm_io_device *this,
+=======
+static int pit_ioport_read(struct kvm_vcpu *vcpu,
+			   struct kvm_io_device *this,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   gpa_t addr, int len, void *data)
 {
 	struct kvm_pit *pit = dev_to_pit(this);
 	struct kvm_kpit_state *pit_state = &pit->pit_state;
+<<<<<<< HEAD
 	struct kvm *kvm = pit->kvm;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret, count;
 	struct kvm_kpit_channel_state *s;
 	if (!pit_in_range(addr))
@@ -558,6 +874,7 @@ static int pit_ioport_read(struct kvm_io_device *this,
 		switch (s->read_state) {
 		default:
 		case RW_STATE_LSB:
+<<<<<<< HEAD
 			count = pit_get_count(kvm, addr);
 			ret = count & 0xff;
 			break;
@@ -567,11 +884,26 @@ static int pit_ioport_read(struct kvm_io_device *this,
 			break;
 		case RW_STATE_WORD0:
 			count = pit_get_count(kvm, addr);
+=======
+			count = pit_get_count(pit, addr);
+			ret = count & 0xff;
+			break;
+		case RW_STATE_MSB:
+			count = pit_get_count(pit, addr);
+			ret = (count >> 8) & 0xff;
+			break;
+		case RW_STATE_WORD0:
+			count = pit_get_count(pit, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = count & 0xff;
 			s->read_state = RW_STATE_WORD1;
 			break;
 		case RW_STATE_WORD1:
+<<<<<<< HEAD
 			count = pit_get_count(kvm, addr);
+=======
+			count = pit_get_count(pit, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = (count >> 8) & 0xff;
 			s->read_state = RW_STATE_WORD0;
 			break;
@@ -586,29 +918,54 @@ static int pit_ioport_read(struct kvm_io_device *this,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int speaker_ioport_write(struct kvm_io_device *this,
+=======
+static int speaker_ioport_write(struct kvm_vcpu *vcpu,
+				struct kvm_io_device *this,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				gpa_t addr, int len, const void *data)
 {
 	struct kvm_pit *pit = speaker_to_pit(this);
 	struct kvm_kpit_state *pit_state = &pit->pit_state;
+<<<<<<< HEAD
 	struct kvm *kvm = pit->kvm;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 val = *(u32 *) data;
 	if (addr != KVM_SPEAKER_BASE_ADDRESS)
 		return -EOPNOTSUPP;
 
 	mutex_lock(&pit_state->lock);
+<<<<<<< HEAD
 	pit_state->speaker_data_on = (val >> 1) & 1;
 	pit_set_gate(kvm, 2, val & 1);
+=======
+	if (val & (1 << 1))
+		pit_state->flags |= KVM_PIT_FLAGS_SPEAKER_DATA_ON;
+	else
+		pit_state->flags &= ~KVM_PIT_FLAGS_SPEAKER_DATA_ON;
+	pit_set_gate(pit, 2, val & 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&pit_state->lock);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int speaker_ioport_read(struct kvm_io_device *this,
 			       gpa_t addr, int len, void *data)
 {
 	struct kvm_pit *pit = speaker_to_pit(this);
 	struct kvm_kpit_state *pit_state = &pit->pit_state;
 	struct kvm *kvm = pit->kvm;
+=======
+static int speaker_ioport_read(struct kvm_vcpu *vcpu,
+				   struct kvm_io_device *this,
+				   gpa_t addr, int len, void *data)
+{
+	struct kvm_pit *pit = speaker_to_pit(this);
+	struct kvm_kpit_state *pit_state = &pit->pit_state;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int refresh_clock;
 	int ret;
 	if (addr != KVM_SPEAKER_BASE_ADDRESS)
@@ -618,8 +975,14 @@ static int speaker_ioport_read(struct kvm_io_device *this,
 	refresh_clock = ((unsigned int)ktime_to_ns(ktime_get()) >> 14) & 1;
 
 	mutex_lock(&pit_state->lock);
+<<<<<<< HEAD
 	ret = ((pit_state->speaker_data_on << 1) | pit_get_gate(kvm, 2) |
 		(pit_get_out(kvm, 2) << 5) | (refresh_clock << 4));
+=======
+	ret = (!!(pit_state->flags & KVM_PIT_FLAGS_SPEAKER_DATA_ON) << 1) |
+		pit_get_gate(pit, 2) | (pit_get_out(pit, 2) << 5) |
+		(refresh_clock << 4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len > sizeof(ret))
 		len = sizeof(ret);
 	memcpy(data, (char *)&ret, len);
@@ -627,33 +990,52 @@ static int speaker_ioport_read(struct kvm_io_device *this,
 	return 0;
 }
 
+<<<<<<< HEAD
 void kvm_pit_reset(struct kvm_pit *pit)
+=======
+static void kvm_pit_reset(struct kvm_pit *pit)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct kvm_kpit_channel_state *c;
 
+<<<<<<< HEAD
 	mutex_lock(&pit->pit_state.lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pit->pit_state.flags = 0;
 	for (i = 0; i < 3; i++) {
 		c = &pit->pit_state.channels[i];
 		c->mode = 0xff;
 		c->gate = (i != 2);
+<<<<<<< HEAD
 		pit_load_count(pit->kvm, i, 0);
 	}
 	mutex_unlock(&pit->pit_state.lock);
 
 	atomic_set(&pit->pit_state.pit_timer.pending, 0);
 	pit->pit_state.irq_ack = 1;
+=======
+		pit_load_count(pit, i, 0);
+	}
+
+	kvm_pit_reset_reinject(pit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pit_mask_notifer(struct kvm_irq_mask_notifier *kimn, bool mask)
 {
 	struct kvm_pit *pit = container_of(kimn, struct kvm_pit, mask_notifier);
 
+<<<<<<< HEAD
 	if (!mask) {
 		atomic_set(&pit->pit_state.pit_timer.pending, 0);
 		pit->pit_state.irq_ack = 1;
 	}
+=======
+	if (!mask)
+		kvm_pit_reset_reinject(pit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct kvm_io_device_ops pit_dev_ops = {
@@ -666,18 +1048,30 @@ static const struct kvm_io_device_ops speaker_dev_ops = {
 	.write    = speaker_ioport_write,
 };
 
+<<<<<<< HEAD
 /* Caller must hold slots_lock */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct kvm_pit *kvm_create_pit(struct kvm *kvm, u32 flags)
 {
 	struct kvm_pit *pit;
 	struct kvm_kpit_state *pit_state;
+<<<<<<< HEAD
 	int ret;
 
 	pit = kzalloc(sizeof(struct kvm_pit), GFP_KERNEL);
+=======
+	struct pid *pid;
+	pid_t pid_nr;
+	int ret;
+
+	pit = kzalloc(sizeof(struct kvm_pit), GFP_KERNEL_ACCOUNT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pit)
 		return NULL;
 
 	pit->irq_source_id = kvm_request_irq_source_id(kvm);
+<<<<<<< HEAD
 	if (pit->irq_source_id < 0) {
 		kfree(pit);
 		return NULL;
@@ -714,11 +1108,47 @@ struct kvm_pit *kvm_create_pit(struct kvm *kvm, u32 flags)
 	pit->mask_notifier.func = pit_mask_notifer;
 	kvm_register_irq_mask_notifier(kvm, 0, &pit->mask_notifier);
 
+=======
+	if (pit->irq_source_id < 0)
+		goto fail_request;
+
+	mutex_init(&pit->pit_state.lock);
+
+	pid = get_pid(task_tgid(current));
+	pid_nr = pid_vnr(pid);
+	put_pid(pid);
+
+	pit->worker = kthread_create_worker(0, "kvm-pit/%d", pid_nr);
+	if (IS_ERR(pit->worker))
+		goto fail_kthread;
+
+	kthread_init_work(&pit->expired, pit_do_work);
+
+	pit->kvm = kvm;
+
+	pit_state = &pit->pit_state;
+	hrtimer_init(&pit_state->timer, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
+	pit_state->timer.function = pit_timer_fn;
+
+	pit_state->irq_ack_notifier.gsi = 0;
+	pit_state->irq_ack_notifier.irq_acked = kvm_pit_ack_irq;
+	pit->mask_notifier.func = pit_mask_notifer;
+
+	kvm_pit_reset(pit);
+
+	kvm_pit_set_reinject(pit, true);
+
+	mutex_lock(&kvm->slots_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kvm_iodevice_init(&pit->dev, &pit_dev_ops);
 	ret = kvm_io_bus_register_dev(kvm, KVM_PIO_BUS, KVM_PIT_BASE_ADDRESS,
 				      KVM_PIT_MEM_LENGTH, &pit->dev);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto fail;
+=======
+		goto fail_register_pit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (flags & KVM_PIT_SPEAKER_DUMMY) {
 		kvm_iodevice_init(&pit->speaker_dev, &speaker_dev_ops);
@@ -726,6 +1156,7 @@ struct kvm_pit *kvm_create_pit(struct kvm *kvm, u32 flags)
 					      KVM_SPEAKER_BASE_ADDRESS, 4,
 					      &pit->speaker_dev);
 		if (ret < 0)
+<<<<<<< HEAD
 			goto fail_unregister;
 	}
 
@@ -739,12 +1170,30 @@ fail:
 	kvm_unregister_irq_ack_notifier(kvm, &pit_state->irq_ack_notifier);
 	kvm_free_irq_source_id(kvm, pit->irq_source_id);
 	destroy_workqueue(pit->wq);
+=======
+			goto fail_register_speaker;
+	}
+	mutex_unlock(&kvm->slots_lock);
+
+	return pit;
+
+fail_register_speaker:
+	kvm_io_bus_unregister_dev(kvm, KVM_PIO_BUS, &pit->dev);
+fail_register_pit:
+	mutex_unlock(&kvm->slots_lock);
+	kvm_pit_set_reinject(pit, false);
+	kthread_destroy_worker(pit->worker);
+fail_kthread:
+	kvm_free_irq_source_id(kvm, pit->irq_source_id);
+fail_request:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(pit);
 	return NULL;
 }
 
 void kvm_free_pit(struct kvm *kvm)
 {
+<<<<<<< HEAD
 	struct hrtimer *timer;
 
 	if (kvm->arch.vpit) {
@@ -763,5 +1212,19 @@ void kvm_free_pit(struct kvm *kvm)
 		mutex_unlock(&kvm->arch.vpit->pit_state.lock);
 		destroy_workqueue(kvm->arch.vpit->wq);
 		kfree(kvm->arch.vpit);
+=======
+	struct kvm_pit *pit = kvm->arch.vpit;
+
+	if (pit) {
+		mutex_lock(&kvm->slots_lock);
+		kvm_io_bus_unregister_dev(kvm, KVM_PIO_BUS, &pit->dev);
+		kvm_io_bus_unregister_dev(kvm, KVM_PIO_BUS, &pit->speaker_dev);
+		mutex_unlock(&kvm->slots_lock);
+		kvm_pit_set_reinject(pit, false);
+		hrtimer_cancel(&pit->pit_state.timer);
+		kthread_destroy_worker(pit->worker);
+		kvm_free_irq_source_id(kvm, pit->irq_source_id);
+		kfree(pit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/linux/buffer_head.h
  *
@@ -8,22 +12,32 @@
 #define _LINUX_BUFFER_HEAD_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <linux/blk_types.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/linkage.h>
 #include <linux/pagemap.h>
 #include <linux/wait.h>
 #include <linux/atomic.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_BLOCK
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum bh_state_bits {
 	BH_Uptodate,	/* Contains valid data */
 	BH_Dirty,	/* Is dirty */
 	BH_Lock,	/* Is locked */
 	BH_Req,		/* Has been submitted for I/O */
+<<<<<<< HEAD
 	BH_Uptodate_Lock,/* Used by the first bh in a page, to serialise
 			  * IO completion of other buffers in the page
 			  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BH_Mapped,	/* Has a disk mapping */
 	BH_New,		/* Disk mapping was newly created by get_block */
@@ -34,13 +48,23 @@ enum bh_state_bits {
 	BH_Write_EIO,	/* I/O error on write */
 	BH_Unwritten,	/* Buffer is allocated on disk but not written */
 	BH_Quiet,	/* Buffer Error Prinks to be quiet */
+<<<<<<< HEAD
+=======
+	BH_Meta,	/* Buffer contains metadata */
+	BH_Prio,	/* Buffer should be submitted with REQ_PRIO */
+	BH_Defer_Completion, /* Defer AIO completion to workqueue */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BH_PrivateStart,/* not a state bit, but the first bit available
 			 * for private allocation by other entities
 			 */
 };
 
+<<<<<<< HEAD
 #define MAX_BUF_PER_PAGE (PAGE_CACHE_SIZE / 512)
+=======
+#define MAX_BUF_PER_PAGE (PAGE_SIZE / 512)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct page;
 struct buffer_head;
@@ -59,7 +83,14 @@ typedef void (bh_end_io_t)(struct buffer_head *bh, int uptodate);
 struct buffer_head {
 	unsigned long b_state;		/* buffer state bitmap (see above) */
 	struct buffer_head *b_this_page;/* circular list of page's buffers */
+<<<<<<< HEAD
 	struct page *b_page;		/* the page this bh is mapped to */
+=======
+	union {
+		struct page *b_page;	/* the page this bh is mapped to */
+		struct folio *b_folio;	/* the folio this bh is mapped to */
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sector_t b_blocknr;		/* start block number */
 	size_t b_size;			/* size of mapping */
@@ -72,11 +103,18 @@ struct buffer_head {
 	struct address_space *b_assoc_map;	/* mapping this buffer is
 						   associated with */
 	atomic_t b_count;		/* users using this buffer_head */
+<<<<<<< HEAD
+=======
+	spinlock_t b_uptodate_lock;	/* Used by the first bh in a page, to
+					 * serialise IO completion of other
+					 * buffers in the page */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * macro tricks to expand the set_buffer_foo(), clear_buffer_foo()
  * and buffer_foo() functions.
+<<<<<<< HEAD
  */
 #define BUFFER_FNS(bit, name)						\
 static inline void set_buffer_##name(struct buffer_head *bh)		\
@@ -88,6 +126,22 @@ static inline void clear_buffer_##name(struct buffer_head *bh)		\
 	clear_bit(BH_##bit, &(bh)->b_state);				\
 }									\
 static inline int buffer_##name(const struct buffer_head *bh)		\
+=======
+ * To avoid reset buffer flags that are already set, because that causes
+ * a costly cache line transition, check the flag first.
+ */
+#define BUFFER_FNS(bit, name)						\
+static __always_inline void set_buffer_##name(struct buffer_head *bh)	\
+{									\
+	if (!test_bit(BH_##bit, &(bh)->b_state))			\
+		set_bit(BH_##bit, &(bh)->b_state);			\
+}									\
+static __always_inline void clear_buffer_##name(struct buffer_head *bh)	\
+{									\
+	clear_bit(BH_##bit, &(bh)->b_state);				\
+}									\
+static __always_inline int buffer_##name(const struct buffer_head *bh)	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {									\
 	return test_bit(BH_##bit, &(bh)->b_state);			\
 }
@@ -96,11 +150,19 @@ static inline int buffer_##name(const struct buffer_head *bh)		\
  * test_set_buffer_foo() and test_clear_buffer_foo()
  */
 #define TAS_BUFFER_FNS(bit, name)					\
+<<<<<<< HEAD
 static inline int test_set_buffer_##name(struct buffer_head *bh)	\
 {									\
 	return test_and_set_bit(BH_##bit, &(bh)->b_state);		\
 }									\
 static inline int test_clear_buffer_##name(struct buffer_head *bh)	\
+=======
+static __always_inline int test_set_buffer_##name(struct buffer_head *bh) \
+{									\
+	return test_and_set_bit(BH_##bit, &(bh)->b_state);		\
+}									\
+static __always_inline int test_clear_buffer_##name(struct buffer_head *bh) \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {									\
 	return test_and_clear_bit(BH_##bit, &(bh)->b_state);		\
 }									\
@@ -110,7 +172,10 @@ static inline int test_clear_buffer_##name(struct buffer_head *bh)	\
  * of the form "mark_buffer_foo()".  These are higher-level functions which
  * do something in addition to setting a b_state bit.
  */
+<<<<<<< HEAD
 BUFFER_FNS(Uptodate, uptodate)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 BUFFER_FNS(Dirty, dirty)
 TAS_BUFFER_FNS(Dirty, dirty)
 BUFFER_FNS(Lock, locked)
@@ -124,9 +189,55 @@ BUFFER_FNS(Delay, delay)
 BUFFER_FNS(Boundary, boundary)
 BUFFER_FNS(Write_EIO, write_io_error)
 BUFFER_FNS(Unwritten, unwritten)
+<<<<<<< HEAD
 
 #define bh_offset(bh)		((unsigned long)(bh)->b_data & ~PAGE_MASK)
 #define touch_buffer(bh)	mark_page_accessed(bh->b_page)
+=======
+BUFFER_FNS(Meta, meta)
+BUFFER_FNS(Prio, prio)
+BUFFER_FNS(Defer_Completion, defer_completion)
+
+static __always_inline void set_buffer_uptodate(struct buffer_head *bh)
+{
+	/*
+	 * If somebody else already set this uptodate, they will
+	 * have done the memory barrier, and a reader will thus
+	 * see *some* valid buffer state.
+	 *
+	 * Any other serialization (with IO errors or whatever that
+	 * might clear the bit) has to come from other state (eg BH_Lock).
+	 */
+	if (test_bit(BH_Uptodate, &bh->b_state))
+		return;
+
+	/*
+	 * make it consistent with folio_mark_uptodate
+	 * pairs with smp_load_acquire in buffer_uptodate
+	 */
+	smp_mb__before_atomic();
+	set_bit(BH_Uptodate, &bh->b_state);
+}
+
+static __always_inline void clear_buffer_uptodate(struct buffer_head *bh)
+{
+	clear_bit(BH_Uptodate, &bh->b_state);
+}
+
+static __always_inline int buffer_uptodate(const struct buffer_head *bh)
+{
+	/*
+	 * make it consistent with folio_test_uptodate
+	 * pairs with smp_mb__before_atomic in set_buffer_uptodate
+	 */
+	return test_bit_acquire(BH_Uptodate, &bh->b_state);
+}
+
+static inline unsigned long bh_offset(const struct buffer_head *bh)
+{
+	return (unsigned long)(bh)->b_data & (page_size(bh->b_page) - 1);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* If we *know* page->private refers to buffer_heads */
 #define page_buffers(page)					\
@@ -135,12 +246,20 @@ BUFFER_FNS(Unwritten, unwritten)
 		((struct buffer_head *)page_private(page));	\
 	})
 #define page_has_buffers(page)	PagePrivate(page)
+<<<<<<< HEAD
+=======
+#define folio_buffers(folio)		folio_get_private(folio)
+
+void buffer_check_dirty_writeback(struct folio *folio,
+				     bool *dirty, bool *writeback);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Declarations
  */
 
 void mark_buffer_dirty(struct buffer_head *bh);
+<<<<<<< HEAD
 void init_buffer(struct buffer_head *, bh_end_io_t *, void *);
 void set_bh_page(struct buffer_head *bh,
 		struct page *page, unsigned long offset);
@@ -160,24 +279,60 @@ void invalidate_inode_buffers(struct inode *);
 int remove_inode_buffers(struct inode *inode);
 int sync_mapping_buffers(struct address_space *mapping);
 void unmap_underlying_metadata(struct block_device *bdev, sector_t block);
+=======
+void mark_buffer_write_io_error(struct buffer_head *bh);
+void touch_buffer(struct buffer_head *bh);
+void folio_set_bh(struct buffer_head *bh, struct folio *folio,
+		  unsigned long offset);
+struct buffer_head *folio_alloc_buffers(struct folio *folio, unsigned long size,
+					gfp_t gfp);
+struct buffer_head *alloc_page_buffers(struct page *page, unsigned long size,
+		bool retry);
+struct buffer_head *create_empty_buffers(struct folio *folio,
+		unsigned long blocksize, unsigned long b_state);
+void end_buffer_read_sync(struct buffer_head *bh, int uptodate);
+void end_buffer_write_sync(struct buffer_head *bh, int uptodate);
+
+/* Things to do with buffers at mapping->private_list */
+void mark_buffer_dirty_inode(struct buffer_head *bh, struct inode *inode);
+int generic_buffers_fsync_noflush(struct file *file, loff_t start, loff_t end,
+				  bool datasync);
+int generic_buffers_fsync(struct file *file, loff_t start, loff_t end,
+			  bool datasync);
+void clean_bdev_aliases(struct block_device *bdev, sector_t block,
+			sector_t len);
+static inline void clean_bdev_bh_alias(struct buffer_head *bh)
+{
+	clean_bdev_aliases(bh->b_bdev, bh->b_blocknr, 1);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void mark_buffer_async_write(struct buffer_head *bh);
 void __wait_on_buffer(struct buffer_head *);
 wait_queue_head_t *bh_waitq_head(struct buffer_head *bh);
 struct buffer_head *__find_get_block(struct block_device *bdev, sector_t block,
 			unsigned size);
+<<<<<<< HEAD
 struct buffer_head *__getblk_gfp(struct block_device *bdev, sector_t block,
 				  unsigned size, gfp_t gfp);
+=======
+struct buffer_head *bdev_getblk(struct block_device *bdev, sector_t block,
+		unsigned size, gfp_t gfp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __brelse(struct buffer_head *);
 void __bforget(struct buffer_head *);
 void __breadahead(struct block_device *, sector_t block, unsigned int size);
 struct buffer_head *__bread_gfp(struct block_device *,
 				sector_t block, unsigned size, gfp_t gfp);
+<<<<<<< HEAD
 void invalidate_bh_lrus(void);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct buffer_head *alloc_buffer_head(gfp_t gfp_flags);
 void free_buffer_head(struct buffer_head * bh);
 void unlock_buffer(struct buffer_head *bh);
 void __lock_buffer(struct buffer_head *bh);
+<<<<<<< HEAD
 void ll_rw_block(int, int, struct buffer_head * bh[]);
 int sync_dirty_buffer(struct buffer_head *bh);
 int __sync_dirty_buffer(struct buffer_head *bh, int rw);
@@ -189,11 +344,24 @@ int bh_uptodate_or_lock(struct buffer_head *bh);
 int bh_submit_read(struct buffer_head *bh);
 
 extern int buffer_heads_over_limit;
+=======
+int sync_dirty_buffer(struct buffer_head *bh);
+int __sync_dirty_buffer(struct buffer_head *bh, blk_opf_t op_flags);
+void write_dirty_buffer(struct buffer_head *bh, blk_opf_t op_flags);
+void submit_bh(blk_opf_t, struct buffer_head *);
+void write_boundary_block(struct block_device *bdev,
+			sector_t bblock, unsigned blocksize);
+int bh_uptodate_or_lock(struct buffer_head *bh);
+int __bh_read(struct buffer_head *bh, blk_opf_t op_flags, bool wait);
+void __bh_read_batch(int nr, struct buffer_head *bhs[],
+		     blk_opf_t op_flags, bool force_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Generic address_space_operations implementations for buffer_head-backed
  * address_spaces.
  */
+<<<<<<< HEAD
 void block_invalidatepage(struct page *page, unsigned long offset);
 int block_write_full_page(struct page *page, get_block_t *get_block,
 				struct writeback_control *wbc);
@@ -204,6 +372,17 @@ int block_is_partially_uptodate(struct page *page, read_descriptor_t *desc,
 				unsigned long from);
 int block_write_begin(struct address_space *mapping, loff_t pos, unsigned len,
 		unsigned flags, struct page **pagep, get_block_t *get_block);
+=======
+void block_invalidate_folio(struct folio *folio, size_t offset, size_t length);
+int block_write_full_folio(struct folio *folio, struct writeback_control *wbc,
+		void *get_block);
+int __block_write_full_folio(struct inode *inode, struct folio *folio,
+		get_block_t *get_block, struct writeback_control *wbc);
+int block_read_full_folio(struct folio *, get_block_t *);
+bool block_is_partially_uptodate(struct folio *, size_t from, size_t count);
+int block_write_begin(struct address_space *mapping, loff_t pos, unsigned len,
+		struct page **pagep, get_block_t *get_block);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __block_write_begin(struct page *page, loff_t pos, unsigned len,
 		get_block_t *get_block);
 int block_write_end(struct file *, struct address_space *,
@@ -212,6 +391,7 @@ int block_write_end(struct file *, struct address_space *,
 int generic_write_end(struct file *, struct address_space *,
 				loff_t, unsigned, unsigned,
 				struct page *, void *);
+<<<<<<< HEAD
 void page_zero_new_buffers(struct page *page, unsigned from, unsigned to);
 int cont_write_begin(struct file *, struct address_space *, loff_t,
 			unsigned, unsigned, struct page **, void **,
@@ -248,11 +428,34 @@ int nobh_writepage(struct page *page, get_block_t *get_block,
                         struct writeback_control *wbc);
 
 void buffer_init(void);
+=======
+void folio_zero_new_buffers(struct folio *folio, size_t from, size_t to);
+int cont_write_begin(struct file *, struct address_space *, loff_t,
+			unsigned, struct page **, void **,
+			get_block_t *, loff_t *);
+int generic_cont_expand_simple(struct inode *inode, loff_t size);
+void block_commit_write(struct page *page, unsigned int from, unsigned int to);
+int block_page_mkwrite(struct vm_area_struct *vma, struct vm_fault *vmf,
+				get_block_t get_block);
+sector_t generic_block_bmap(struct address_space *, sector_t, get_block_t *);
+int block_truncate_page(struct address_space *, loff_t, get_block_t *);
+
+#ifdef CONFIG_MIGRATION
+extern int buffer_migrate_folio(struct address_space *,
+		struct folio *dst, struct folio *src, enum migrate_mode);
+extern int buffer_migrate_folio_norefs(struct address_space *,
+		struct folio *dst, struct folio *src, enum migrate_mode);
+#else
+#define buffer_migrate_folio NULL
+#define buffer_migrate_folio_norefs NULL
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * inline definitions
  */
 
+<<<<<<< HEAD
 static inline void attach_page_buffers(struct page *page,
 		struct buffer_head *head)
 {
@@ -261,6 +464,8 @@ static inline void attach_page_buffers(struct page *page,
 	set_page_private(page, (unsigned long)head);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void get_bh(struct buffer_head *bh)
 {
         atomic_inc(&bh->b_count);
@@ -268,7 +473,11 @@ static inline void get_bh(struct buffer_head *bh)
 
 static inline void put_bh(struct buffer_head *bh)
 {
+<<<<<<< HEAD
         smp_mb__before_atomic_dec();
+=======
+        smp_mb__before_atomic();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         atomic_dec(&bh->b_count);
 }
 
@@ -302,6 +511,7 @@ sb_breadahead(struct super_block *sb, sector_t block)
 	__breadahead(sb->s_bdev, block, sb->s_blocksize);
 }
 
+<<<<<<< HEAD
 static inline struct buffer_head *
 sb_getblk(struct super_block *sb, sector_t block)
 {
@@ -313,6 +523,40 @@ static inline struct buffer_head *
 sb_getblk_gfp(struct super_block *sb, sector_t block, gfp_t gfp)
 {
 	return __getblk_gfp(sb->s_bdev, block, sb->s_blocksize, gfp);
+=======
+static inline struct buffer_head *getblk_unmovable(struct block_device *bdev,
+		sector_t block, unsigned size)
+{
+	gfp_t gfp;
+
+	gfp = mapping_gfp_constraint(bdev->bd_inode->i_mapping, ~__GFP_FS);
+	gfp |= __GFP_NOFAIL;
+
+	return bdev_getblk(bdev, block, size, gfp);
+}
+
+static inline struct buffer_head *__getblk(struct block_device *bdev,
+		sector_t block, unsigned size)
+{
+	gfp_t gfp;
+
+	gfp = mapping_gfp_constraint(bdev->bd_inode->i_mapping, ~__GFP_FS);
+	gfp |= __GFP_MOVABLE | __GFP_NOFAIL;
+
+	return bdev_getblk(bdev, block, size, gfp);
+}
+
+static inline struct buffer_head *sb_getblk(struct super_block *sb,
+		sector_t block)
+{
+	return __getblk(sb->s_bdev, block, sb->s_blocksize);
+}
+
+static inline struct buffer_head *sb_getblk_gfp(struct super_block *sb,
+		sector_t block, gfp_t gfp)
+{
+	return bdev_getblk(sb->s_bdev, block, sb->s_blocksize, gfp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct buffer_head *
@@ -349,6 +593,7 @@ static inline void lock_buffer(struct buffer_head *bh)
 		__lock_buffer(bh);
 }
 
+<<<<<<< HEAD
 static inline struct buffer_head *getblk_unmovable(struct block_device *bdev,
 						   sector_t block,
 						   unsigned size)
@@ -361,6 +606,41 @@ static inline struct buffer_head *__getblk(struct block_device *bdev,
 					   unsigned size)
 {
 	return __getblk_gfp(bdev, block, size, __GFP_MOVABLE);
+=======
+static inline void bh_readahead(struct buffer_head *bh, blk_opf_t op_flags)
+{
+	if (!buffer_uptodate(bh) && trylock_buffer(bh)) {
+		if (!buffer_uptodate(bh))
+			__bh_read(bh, op_flags, false);
+		else
+			unlock_buffer(bh);
+	}
+}
+
+static inline void bh_read_nowait(struct buffer_head *bh, blk_opf_t op_flags)
+{
+	if (!bh_uptodate_or_lock(bh))
+		__bh_read(bh, op_flags, false);
+}
+
+/* Returns 1 if buffer uptodated, 0 on success, and -EIO on error. */
+static inline int bh_read(struct buffer_head *bh, blk_opf_t op_flags)
+{
+	if (bh_uptodate_or_lock(bh))
+		return 1;
+	return __bh_read(bh, op_flags, true);
+}
+
+static inline void bh_read_batch(int nr, struct buffer_head *bhs[])
+{
+	__bh_read_batch(nr, bhs, 0, true);
+}
+
+static inline void bh_readahead_batch(int nr, struct buffer_head *bhs[],
+				      blk_opf_t op_flags)
+{
+	__bh_read_batch(nr, bhs, op_flags, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -379,16 +659,69 @@ __bread(struct block_device *bdev, sector_t block, unsigned size)
 	return __bread_gfp(bdev, block, size, __GFP_MOVABLE);
 }
 
+<<<<<<< HEAD
 extern int __set_page_dirty_buffers(struct page *page);
 
 #else /* CONFIG_BLOCK */
 
 static inline void buffer_init(void) {}
 static inline int try_to_free_buffers(struct page *page) { return 1; }
+=======
+/**
+ * get_nth_bh - Get a reference on the n'th buffer after this one.
+ * @bh: The buffer to start counting from.
+ * @count: How many buffers to skip.
+ *
+ * This is primarily useful for finding the nth buffer in a folio; in
+ * that case you pass the head buffer and the byte offset in the folio
+ * divided by the block size.  It can be used for other purposes, but
+ * it will wrap at the end of the folio rather than returning NULL or
+ * proceeding to the next folio for you.
+ *
+ * Return: The requested buffer with an elevated refcount.
+ */
+static inline __must_check
+struct buffer_head *get_nth_bh(struct buffer_head *bh, unsigned int count)
+{
+	while (count--)
+		bh = bh->b_this_page;
+	get_bh(bh);
+	return bh;
+}
+
+bool block_dirty_folio(struct address_space *mapping, struct folio *folio);
+
+#ifdef CONFIG_BUFFER_HEAD
+
+void buffer_init(void);
+bool try_to_free_buffers(struct folio *folio);
+int inode_has_buffers(struct inode *inode);
+void invalidate_inode_buffers(struct inode *inode);
+int remove_inode_buffers(struct inode *inode);
+int sync_mapping_buffers(struct address_space *mapping);
+void invalidate_bh_lrus(void);
+void invalidate_bh_lrus_cpu(void);
+bool has_bh_in_lru(int cpu, void *dummy);
+extern int buffer_heads_over_limit;
+
+#else /* CONFIG_BUFFER_HEAD */
+
+static inline void buffer_init(void) {}
+static inline bool try_to_free_buffers(struct folio *folio) { return true; }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int inode_has_buffers(struct inode *inode) { return 0; }
 static inline void invalidate_inode_buffers(struct inode *inode) {}
 static inline int remove_inode_buffers(struct inode *inode) { return 1; }
 static inline int sync_mapping_buffers(struct address_space *mapping) { return 0; }
+<<<<<<< HEAD
 
 #endif /* CONFIG_BLOCK */
+=======
+static inline void invalidate_bh_lrus(void) {}
+static inline void invalidate_bh_lrus_cpu(void) {}
+static inline bool has_bh_in_lru(int cpu, void *dummy) { return false; }
+#define buffer_heads_over_limit 0
+
+#endif /* CONFIG_BUFFER_HEAD */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_BUFFER_HEAD_H */

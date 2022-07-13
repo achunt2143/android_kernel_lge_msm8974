@@ -1,5 +1,8 @@
+<<<<<<< HEAD
 #ifndef SOUNDCARD_H
 #define SOUNDCARD_H
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright by Hannu Savolainen 1993-1997
  *
@@ -23,6 +26,7 @@
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
  */
+<<<<<<< HEAD
 
 
 /*
@@ -191,6 +195,14 @@ typedef struct seq_event_rec {
 #undef _LINUX_PATCHKEY_H_INDIRECT
 
 #if defined(__KERNEL__)
+=======
+#ifndef SOUNDCARD_H
+#define SOUNDCARD_H
+
+#  include <asm/byteorder.h>
+#include <uapi/linux/soundcard.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  if defined(__BIG_ENDIAN)
 #    define AFMT_S16_NE AFMT_S16_BE
 #  elif defined(__LITTLE_ENDIAN)
@@ -198,6 +210,7 @@ typedef struct seq_event_rec {
 #  else
 #    error "could not determine byte order"
 #  endif
+<<<<<<< HEAD
 #else
 # if defined(__BYTE_ORDER)
 #  if __BYTE_ORDER == __BIG_ENDIAN
@@ -1289,4 +1302,6 @@ void seqbuf_dump(void);	/* This function must be provided by programs */
 		(SEQ_DUMPBUF(), write(seqfd, (char*)(patchx), len))
 
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Compaq Hot Plug Controller Driver
  *
@@ -7,6 +11,7 @@
  *
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
@@ -22,6 +27,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <greg@kroah.com>
  *
  */
@@ -34,8 +41,12 @@
 #include <linux/workqueue.h>
 #include <linux/pci.h>
 #include <linux/pci_hotplug.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "cpqphp.h"
 #include "cpqphp_nvram.h"
 
@@ -95,7 +106,11 @@ static u8 evbuffer[1024];
 static void __iomem *compaq_int15_entry_point;
 
 /* lock for ordering int15_bios_call() */
+<<<<<<< HEAD
 static spinlock_t int15_lock;
+=======
+static DEFINE_SPINLOCK(int15_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* This is a series of function that deals with
@@ -108,29 +123,48 @@ static spinlock_t int15_lock;
  */
 
 
+<<<<<<< HEAD
 static u32 add_byte( u32 **p_buffer, u8 value, u32 *used, u32 *avail)
+=======
+static u32 add_byte(u32 **p_buffer, u8 value, u32 *used, u32 *avail)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 **tByte;
 
 	if ((*used + 1) > *avail)
 		return(1);
 
+<<<<<<< HEAD
 	*((u8*)*p_buffer) = value;
 	tByte = (u8**)p_buffer;
 	(*tByte)++;
 	*used+=1;
+=======
+	*((u8 *)*p_buffer) = value;
+	tByte = (u8 **)p_buffer;
+	(*tByte)++;
+	*used += 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return(0);
 }
 
 
+<<<<<<< HEAD
 static u32 add_dword( u32 **p_buffer, u32 value, u32 *used, u32 *avail)
+=======
+static u32 add_dword(u32 **p_buffer, u32 value, u32 *used, u32 *avail)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if ((*used + 4) > *avail)
 		return(1);
 
 	**p_buffer = value;
 	(*p_buffer)++;
+<<<<<<< HEAD
 	*used+=4;
+=======
+	*used += 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return(0);
 }
 
@@ -142,7 +176,11 @@ static u32 add_dword( u32 **p_buffer, u32 value, u32 *used, u32 *avail)
  *
  * returns 0 for non-Compaq ROM, 1 for Compaq ROM
  */
+<<<<<<< HEAD
 static int check_for_compaq_ROM (void __iomem *rom_start)
+=======
+static int check_for_compaq_ROM(void __iomem *rom_start)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 temp1, temp2, temp3, temp4, temp5, temp6;
 	int result = 0;
@@ -161,12 +199,20 @@ static int check_for_compaq_ROM (void __iomem *rom_start)
 	    (temp6 == 'Q')) {
 		result = 1;
 	}
+<<<<<<< HEAD
 	dbg ("%s - returned %d\n", __func__, result);
+=======
+	dbg("%s - returned %d\n", __func__, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
 
+<<<<<<< HEAD
 static u32 access_EV (u16 operation, u8 *ev_name, u8 *buffer, u32 *buf_size)
+=======
+static u32 access_EV(u16 operation, u8 *ev_name, u8 *buffer, u32 *buf_size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	int op = operation;
@@ -198,16 +244,25 @@ static u32 access_EV (u16 operation, u8 *ev_name, u8 *buffer, u32 *buf_size)
  *
  * Read the hot plug Resource Table from NVRAM
  */
+<<<<<<< HEAD
 static int load_HRT (void __iomem *rom_start)
+=======
+static int load_HRT(void __iomem *rom_start)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 available;
 	u32 temp_dword;
 	u8 temp_byte = 0xFF;
 	u32 rc;
 
+<<<<<<< HEAD
 	if (!check_for_compaq_ROM(rom_start)) {
 		return -ENODEV;
 	}
+=======
+	if (!check_for_compaq_ROM(rom_start))
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	available = 1024;
 
@@ -234,7 +289,11 @@ static int load_HRT (void __iomem *rom_start)
  *
  * Save the hot plug Resource Table in NVRAM
  */
+<<<<<<< HEAD
 static u32 store_HRT (void __iomem *rom_start)
+=======
+static u32 store_HRT(void __iomem *rom_start)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 *buffer;
 	u32 *pFill;
@@ -251,11 +310,18 @@ static u32 store_HRT (void __iomem *rom_start)
 
 	available = 1024;
 
+<<<<<<< HEAD
 	if (!check_for_compaq_ROM(rom_start)) {
 		return(1);
 	}
 
 	buffer = (u32*) evbuffer;
+=======
+	if (!check_for_compaq_ROM(rom_start))
+		return(1);
+
+	buffer = (u32 *) evbuffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!buffer)
 		return(1);
@@ -268,12 +334,20 @@ static u32 store_HRT (void __iomem *rom_start)
 	ctrl = cpqhp_ctrl_list;
 
 	/* The revision of this structure */
+<<<<<<< HEAD
 	rc = add_byte( &pFill, 1 + ctrl->push_flag, &usedbytes, &available);
+=======
+	rc = add_byte(&pFill, 1 + ctrl->push_flag, &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return(rc);
 
 	/* The number of controllers */
+<<<<<<< HEAD
 	rc = add_byte( &pFill, 1, &usedbytes, &available);
+=======
+	rc = add_byte(&pFill, 1, &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return(rc);
 
@@ -283,22 +357,38 @@ static u32 store_HRT (void __iomem *rom_start)
 		numCtrl++;
 
 		/* The bus number */
+<<<<<<< HEAD
 		rc = add_byte( &pFill, ctrl->bus, &usedbytes, &available);
+=======
+		rc = add_byte(&pFill, ctrl->bus, &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc)
 			return(rc);
 
 		/* The device Number */
+<<<<<<< HEAD
 		rc = add_byte( &pFill, PCI_SLOT(ctrl->pci_dev->devfn), &usedbytes, &available);
+=======
+		rc = add_byte(&pFill, PCI_SLOT(ctrl->pci_dev->devfn), &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc)
 			return(rc);
 
 		/* The function Number */
+<<<<<<< HEAD
 		rc = add_byte( &pFill, PCI_FUNC(ctrl->pci_dev->devfn), &usedbytes, &available);
+=======
+		rc = add_byte(&pFill, PCI_FUNC(ctrl->pci_dev->devfn), &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc)
 			return(rc);
 
 		/* Skip the number of available entries */
+<<<<<<< HEAD
 		rc = add_dword( &pFill, 0, &usedbytes, &available);
+=======
+		rc = add_dword(&pFill, 0, &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc)
 			return(rc);
 
@@ -309,15 +399,26 @@ static u32 store_HRT (void __iomem *rom_start)
 		loop = 0;
 
 		while (resNode) {
+<<<<<<< HEAD
 			loop ++;
 
 			/* base */
 			rc = add_dword( &pFill, resNode->base, &usedbytes, &available);
+=======
+			loop++;
+
+			/* base */
+			rc = add_dword(&pFill, resNode->base, &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc)
 				return(rc);
 
 			/* length */
+<<<<<<< HEAD
 			rc = add_dword( &pFill, resNode->length, &usedbytes, &available);
+=======
+			rc = add_dword(&pFill, resNode->length, &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc)
 				return(rc);
 
@@ -334,15 +435,26 @@ static u32 store_HRT (void __iomem *rom_start)
 		loop = 0;
 
 		while (resNode) {
+<<<<<<< HEAD
 			loop ++;
 
 			/* base */
 			rc = add_dword( &pFill, resNode->base, &usedbytes, &available);
+=======
+			loop++;
+
+			/* base */
+			rc = add_dword(&pFill, resNode->base, &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc)
 				return(rc);
 
 			/* length */
+<<<<<<< HEAD
 			rc = add_dword( &pFill, resNode->length, &usedbytes, &available);
+=======
+			rc = add_dword(&pFill, resNode->length, &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc)
 				return(rc);
 
@@ -359,15 +471,26 @@ static u32 store_HRT (void __iomem *rom_start)
 		loop = 0;
 
 		while (resNode) {
+<<<<<<< HEAD
 			loop ++;
 
 			/* base */
 			rc = add_dword( &pFill, resNode->base, &usedbytes, &available);
+=======
+			loop++;
+
+			/* base */
+			rc = add_dword(&pFill, resNode->base, &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc)
 				return(rc);
 
 			/* length */
+<<<<<<< HEAD
 			rc = add_dword( &pFill, resNode->length, &usedbytes, &available);
+=======
+			rc = add_dword(&pFill, resNode->length, &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc)
 				return(rc);
 
@@ -384,15 +507,26 @@ static u32 store_HRT (void __iomem *rom_start)
 		loop = 0;
 
 		while (resNode) {
+<<<<<<< HEAD
 			loop ++;
 
 			/* base */
 			rc = add_dword( &pFill, resNode->base, &usedbytes, &available);
+=======
+			loop++;
+
+			/* base */
+			rc = add_dword(&pFill, resNode->base, &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc)
 				return(rc);
 
 			/* length */
+<<<<<<< HEAD
 			rc = add_dword( &pFill, resNode->length, &usedbytes, &available);
+=======
+			rc = add_dword(&pFill, resNode->length, &usedbytes, &available);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc)
 				return(rc);
 
@@ -411,7 +545,11 @@ static u32 store_HRT (void __iomem *rom_start)
 
 	temp_dword = usedbytes;
 
+<<<<<<< HEAD
 	rc = access_EV(WRITE_EV, "CQTHPS", (u8*) buffer, &temp_dword);
+=======
+	rc = access_EV(WRITE_EV, "CQTHPS", (u8 *) buffer, &temp_dword);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg("usedbytes = 0x%x, length = 0x%x\n", usedbytes, temp_dword);
 
@@ -426,6 +564,7 @@ static u32 store_HRT (void __iomem *rom_start)
 }
 
 
+<<<<<<< HEAD
 void compaq_nvram_init (void __iomem *rom_start)
 {
 	if (rom_start) {
@@ -439,6 +578,18 @@ void compaq_nvram_init (void __iomem *rom_start)
 
 
 int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
+=======
+void compaq_nvram_init(void __iomem *rom_start)
+{
+	if (rom_start)
+		compaq_int15_entry_point = (rom_start + ROM_INT15_PHY_ADDR - ROM_PHY_ADDR);
+
+	dbg("int15 entry  = %p\n", compaq_int15_entry_point);
+}
+
+
+int compaq_nvram_load(void __iomem *rom_start, struct controller *ctrl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 bus, device, function;
 	u8 nummem, numpmem, numio, numbus;
@@ -454,7 +605,11 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 	if (!evbuffer_init) {
 		/* Read the resource list information in from NVRAM */
 		if (load_HRT(rom_start))
+<<<<<<< HEAD
 			memset (evbuffer, 0, 1024);
+=======
+			memset(evbuffer, 0, 1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		evbuffer_init = 1;
 	}
@@ -475,7 +630,11 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 
 		p_byte += 3;
 
+<<<<<<< HEAD
 		if (p_byte > ((u8*)p_EV_header + evbuffer_length))
+=======
+		if (p_byte > ((u8 *)p_EV_header + evbuffer_length))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 2;
 
 		bus = p_ev_ctrl->bus;
@@ -492,20 +651,32 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 
 			p_byte += 4;
 
+<<<<<<< HEAD
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length))
+=======
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 2;
 
 			/* Skip forward to the next entry */
 			p_byte += (nummem + numpmem + numio + numbus) * 8;
 
+<<<<<<< HEAD
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length))
+=======
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 2;
 
 			p_ev_ctrl = (struct ev_hrt_ctrl *) p_byte;
 
 			p_byte += 3;
 
+<<<<<<< HEAD
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length))
+=======
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 2;
 
 			bus = p_ev_ctrl->bus;
@@ -520,7 +691,11 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 
 		p_byte += 4;
 
+<<<<<<< HEAD
 		if (p_byte > ((u8*)p_EV_header + evbuffer_length))
+=======
+		if (p_byte > ((u8 *)p_EV_header + evbuffer_length))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 2;
 
 		while (nummem--) {
@@ -529,20 +704,36 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 			if (!mem_node)
 				break;
 
+<<<<<<< HEAD
 			mem_node->base = *(u32*)p_byte;
 			dbg("mem base = %8.8x\n",mem_node->base);
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			mem_node->base = *(u32 *)p_byte;
+			dbg("mem base = %8.8x\n", mem_node->base);
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(mem_node);
 				return 2;
 			}
 
+<<<<<<< HEAD
 			mem_node->length = *(u32*)p_byte;
 			dbg("mem length = %8.8x\n",mem_node->length);
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			mem_node->length = *(u32 *)p_byte;
+			dbg("mem length = %8.8x\n", mem_node->length);
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(mem_node);
 				return 2;
 			}
@@ -557,20 +748,36 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 			if (!p_mem_node)
 				break;
 
+<<<<<<< HEAD
 			p_mem_node->base = *(u32*)p_byte;
 			dbg("pre-mem base = %8.8x\n",p_mem_node->base);
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			p_mem_node->base = *(u32 *)p_byte;
+			dbg("pre-mem base = %8.8x\n", p_mem_node->base);
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(p_mem_node);
 				return 2;
 			}
 
+<<<<<<< HEAD
 			p_mem_node->length = *(u32*)p_byte;
 			dbg("pre-mem length = %8.8x\n",p_mem_node->length);
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			p_mem_node->length = *(u32 *)p_byte;
+			dbg("pre-mem length = %8.8x\n", p_mem_node->length);
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(p_mem_node);
 				return 2;
 			}
@@ -585,20 +792,36 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 			if (!io_node)
 				break;
 
+<<<<<<< HEAD
 			io_node->base = *(u32*)p_byte;
 			dbg("io base = %8.8x\n",io_node->base);
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			io_node->base = *(u32 *)p_byte;
+			dbg("io base = %8.8x\n", io_node->base);
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(io_node);
 				return 2;
 			}
 
+<<<<<<< HEAD
 			io_node->length = *(u32*)p_byte;
 			dbg("io length = %8.8x\n",io_node->length);
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			io_node->length = *(u32 *)p_byte;
+			dbg("io length = %8.8x\n", io_node->length);
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(io_node);
 				return 2;
 			}
@@ -613,18 +836,32 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 			if (!bus_node)
 				break;
 
+<<<<<<< HEAD
 			bus_node->base = *(u32*)p_byte;
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			bus_node->base = *(u32 *)p_byte;
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(bus_node);
 				return 2;
 			}
 
+<<<<<<< HEAD
 			bus_node->length = *(u32*)p_byte;
 			p_byte += 4;
 
 			if (p_byte > ((u8*)p_EV_header + evbuffer_length)) {
+=======
+			bus_node->length = *(u32 *)p_byte;
+			p_byte += 4;
+
+			if (p_byte > ((u8 *)p_EV_header + evbuffer_length)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(bus_node);
 				return 2;
 			}
@@ -653,7 +890,11 @@ int compaq_nvram_load (void __iomem *rom_start, struct controller *ctrl)
 }
 
 
+<<<<<<< HEAD
 int compaq_nvram_store (void __iomem *rom_start)
+=======
+int compaq_nvram_store(void __iomem *rom_start)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = 1;
 
@@ -662,9 +903,14 @@ int compaq_nvram_store (void __iomem *rom_start)
 
 	if (evbuffer_init) {
 		rc = store_HRT(rom_start);
+<<<<<<< HEAD
 		if (rc) {
 			err(msg_unable_to_save);
 		}
+=======
+		if (rc)
+			err(msg_unable_to_save);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return rc;
 }

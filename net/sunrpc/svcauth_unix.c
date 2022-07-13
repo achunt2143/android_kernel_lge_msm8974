@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/sched.h>
 #include <linux/module.h>
@@ -6,6 +10,10 @@
 #include <linux/sunrpc/svcsock.h>
 #include <linux/sunrpc/svcauth.h>
 #include <linux/sunrpc/gss_api.h>
+<<<<<<< HEAD
+=======
+#include <linux/sunrpc/addr.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/seq_file.h>
 #include <linux/hash.h>
@@ -14,9 +22,16 @@
 #include <net/sock.h>
 #include <net/ipv6.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #define RPCDBG_FACILITY	RPCDBG_AUTH
 
 #include <linux/sunrpc/clnt.h>
+=======
+#include <linux/user_namespace.h>
+#include <trace/events/sunrpc.h>
+
+#define RPCDBG_FACILITY	RPCDBG_AUTH
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "netns.h"
 
@@ -35,21 +50,41 @@ struct unix_domain {
 
 extern struct auth_ops svcauth_null;
 extern struct auth_ops svcauth_unix;
+<<<<<<< HEAD
 
 static void svcauth_unix_domain_release(struct auth_domain *dom)
 {
+=======
+extern struct auth_ops svcauth_tls;
+
+static void svcauth_unix_domain_release_rcu(struct rcu_head *head)
+{
+	struct auth_domain *dom = container_of(head, struct auth_domain, rcu_head);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct unix_domain *ud = container_of(dom, struct unix_domain, h);
 
 	kfree(dom->name);
 	kfree(ud);
 }
 
+<<<<<<< HEAD
+=======
+static void svcauth_unix_domain_release(struct auth_domain *dom)
+{
+	call_rcu(&dom->rcu_head, svcauth_unix_domain_release_rcu);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct auth_domain *unix_domain_find(char *name)
 {
 	struct auth_domain *rv;
 	struct unix_domain *new = NULL;
 
+<<<<<<< HEAD
 	rv = auth_domain_lookup(name, NULL);
+=======
+	rv = auth_domain_find(name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while(1) {
 		if (rv) {
 			if (new && rv != &new->h)
@@ -90,6 +125,10 @@ struct ip_map {
 	char			m_class[8]; /* e.g. "nfsd" */
 	struct in6_addr		m_addr;
 	struct unix_domain	*m_client;
+<<<<<<< HEAD
+=======
+	struct rcu_head		m_rcu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void ip_map_put(struct kref *kref)
@@ -100,6 +139,7 @@ static void ip_map_put(struct kref *kref)
 	if (test_bit(CACHE_VALID, &item->flags) &&
 	    !test_bit(CACHE_NEGATIVE, &item->flags))
 		auth_domain_put(&im->m_client->h);
+<<<<<<< HEAD
 	kfree(im);
 }
 
@@ -120,6 +160,14 @@ static inline int hash_ip6(struct in6_addr ip)
 		hash_ip(ip.s6_addr32[1]) ^
 		hash_ip(ip.s6_addr32[2]) ^
 		hash_ip(ip.s6_addr32[3]));
+=======
+	kfree_rcu(im, m_rcu);
+}
+
+static inline int hash_ip6(const struct in6_addr *ip)
+{
+	return hash_32(ipv6_addr_hash(ip), IP_HASHBITS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static int ip_map_match(struct cache_head *corig, struct cache_head *cnew)
 {
@@ -153,6 +201,14 @@ static struct cache_head *ip_map_alloc(void)
 		return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static int ip_map_upcall(struct cache_detail *cd, struct cache_head *h)
+{
+	return sunrpc_cache_pipe_upcall(cd, h);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ip_map_request(struct cache_detail *cd,
 				  struct cache_head *h,
 				  char **bpp, int *blen)
@@ -170,6 +226,7 @@ static void ip_map_request(struct cache_detail *cd,
 	(*bpp)[-1] = '\n';
 }
 
+<<<<<<< HEAD
 static int ip_map_upcall(struct cache_detail *cd, struct cache_head *h)
 {
 	return sunrpc_cache_pipe_upcall(cd, h, ip_map_request);
@@ -177,6 +234,10 @@ static int ip_map_upcall(struct cache_detail *cd, struct cache_head *h)
 
 static struct ip_map *__ip_map_lookup(struct cache_detail *cd, char *class, struct in6_addr *addr);
 static int __ip_map_update(struct cache_detail *cd, struct ip_map *ipm, struct unix_domain *udom, time_t expiry);
+=======
+static struct ip_map *__ip_map_lookup(struct cache_detail *cd, char *class, struct in6_addr *addr);
+static int __ip_map_update(struct cache_detail *cd, struct ip_map *ipm, struct unix_domain *udom, time64_t expiry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ip_map_parse(struct cache_detail *cd,
 			  char *mesg, int mlen)
@@ -197,7 +258,11 @@ static int ip_map_parse(struct cache_detail *cd,
 
 	struct ip_map *ipmp;
 	struct auth_domain *dom;
+<<<<<<< HEAD
 	time_t expiry;
+=======
+	time64_t expiry;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mesg[mlen-1] != '\n')
 		return -EINVAL;
@@ -229,9 +294,15 @@ static int ip_map_parse(struct cache_detail *cd,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	expiry = get_expiry(&mesg);
 	if (expiry ==0)
 		return -EINVAL;
+=======
+	err = get_expiry(&mesg, &expiry);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* domainname, or empty for NEGATIVE */
 	len = qword_get(&mesg, buf, mlen);
@@ -298,9 +369,15 @@ static struct ip_map *__ip_map_lookup(struct cache_detail *cd, char *class,
 
 	strcpy(ip.m_class, class);
 	ip.m_addr = *addr;
+<<<<<<< HEAD
 	ch = sunrpc_cache_lookup(cd, &ip.h,
 				 hash_str(class, IP_HASHBITS) ^
 				 hash_ip6(*addr));
+=======
+	ch = sunrpc_cache_lookup_rcu(cd, &ip.h,
+				     hash_str(class, IP_HASHBITS) ^
+				     hash_ip6(addr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ch)
 		return container_of(ch, struct ip_map, h);
@@ -308,6 +385,7 @@ static struct ip_map *__ip_map_lookup(struct cache_detail *cd, char *class,
 		return NULL;
 }
 
+<<<<<<< HEAD
 static inline struct ip_map *ip_map_lookup(struct net *net, char *class,
 		struct in6_addr *addr)
 {
@@ -319,6 +397,10 @@ static inline struct ip_map *ip_map_lookup(struct net *net, char *class,
 
 static int __ip_map_update(struct cache_detail *cd, struct ip_map *ipm,
 		struct unix_domain *udom, time_t expiry)
+=======
+static int __ip_map_update(struct cache_detail *cd, struct ip_map *ipm,
+		struct unix_domain *udom, time64_t expiry)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ip_map ip;
 	struct cache_head *ch;
@@ -330,19 +412,28 @@ static int __ip_map_update(struct cache_detail *cd, struct ip_map *ipm,
 	ip.h.expiry_time = expiry;
 	ch = sunrpc_cache_update(cd, &ip.h, &ipm->h,
 				 hash_str(ipm->m_class, IP_HASHBITS) ^
+<<<<<<< HEAD
 				 hash_ip6(ipm->m_addr));
+=======
+				 hash_ip6(&ipm->m_addr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ch)
 		return -ENOMEM;
 	cache_put(ch, cd);
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int ip_map_update(struct net *net, struct ip_map *ipm,
 		struct unix_domain *udom, time_t expiry)
+=======
+void svcauth_unix_purge(struct net *net)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sunrpc_net *sn;
 
 	sn = net_generic(net, sunrpc_net_id);
+<<<<<<< HEAD
 	return __ip_map_update(sn->ip_map_cache, ipm, udom, expiry);
 }
 
@@ -357,6 +448,9 @@ void svcauth_unix_purge(void)
 		sn = net_generic(net, sunrpc_net_id);
 		cache_purge(sn->ip_map_cache);
 	}
+=======
+	cache_purge(sn->ip_map_cache);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(svcauth_unix_purge);
 
@@ -370,13 +464,21 @@ ip_map_cached_get(struct svc_xprt *xprt)
 		spin_lock(&xprt->xpt_lock);
 		ipm = xprt->xpt_auth_cache;
 		if (ipm != NULL) {
+<<<<<<< HEAD
 			if (!cache_valid(&ipm->h)) {
+=======
+			sn = net_generic(xprt->xpt_net, sunrpc_net_id);
+			if (cache_is_expired(sn->ip_map_cache, &ipm->h)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * The entry has been invalidated since it was
 				 * remembered, e.g. by a second mount from the
 				 * same IP address.
 				 */
+<<<<<<< HEAD
 				sn = net_generic(xprt->xpt_net, sunrpc_net_id);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				xprt->xpt_auth_cache = NULL;
 				spin_unlock(&xprt->xpt_lock);
 				cache_put(&ipm->h, sn->ip_map_cache);
@@ -426,13 +528,18 @@ svcauth_unix_info_release(struct svc_xprt *xpt)
 /****************************************************************************
  * auth.unix.gid cache
  * simple cache to map a UID to a list of GIDs
+<<<<<<< HEAD
  * because AUTH_UNIX aka AUTH_SYS has a max of 16
+=======
+ * because AUTH_UNIX aka AUTH_SYS has a max of UNX_NGROUPS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define	GID_HASHBITS	8
 #define	GID_HASHMAX	(1<<GID_HASHBITS)
 
 struct unix_gid {
 	struct cache_head	h;
+<<<<<<< HEAD
 	uid_t			uid;
 	struct group_info	*gi;
 };
@@ -441,17 +548,49 @@ static void unix_gid_put(struct kref *kref)
 {
 	struct cache_head *item = container_of(kref, struct cache_head, ref);
 	struct unix_gid *ug = container_of(item, struct unix_gid, h);
+=======
+	kuid_t			uid;
+	struct group_info	*gi;
+	struct rcu_head		rcu;
+};
+
+static int unix_gid_hash(kuid_t uid)
+{
+	return hash_long(from_kuid(&init_user_ns, uid), GID_HASHBITS);
+}
+
+static void unix_gid_free(struct rcu_head *rcu)
+{
+	struct unix_gid *ug = container_of(rcu, struct unix_gid, rcu);
+	struct cache_head *item = &ug->h;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_bit(CACHE_VALID, &item->flags) &&
 	    !test_bit(CACHE_NEGATIVE, &item->flags))
 		put_group_info(ug->gi);
 	kfree(ug);
 }
 
+<<<<<<< HEAD
+=======
+static void unix_gid_put(struct kref *kref)
+{
+	struct cache_head *item = container_of(kref, struct cache_head, ref);
+	struct unix_gid *ug = container_of(item, struct unix_gid, h);
+
+	call_rcu(&ug->rcu, unix_gid_free);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int unix_gid_match(struct cache_head *corig, struct cache_head *cnew)
 {
 	struct unix_gid *orig = container_of(corig, struct unix_gid, h);
 	struct unix_gid *new = container_of(cnew, struct unix_gid, h);
+<<<<<<< HEAD
 	return orig->uid == new->uid;
+=======
+	return uid_eq(orig->uid, new->uid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static void unix_gid_init(struct cache_head *cnew, struct cache_head *citem)
 {
@@ -476,6 +615,14 @@ static struct cache_head *unix_gid_alloc(void)
 		return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static int unix_gid_upcall(struct cache_detail *cd, struct cache_head *h)
+{
+	return sunrpc_cache_pipe_upcall_timeout(cd, h);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void unix_gid_request(struct cache_detail *cd,
 			     struct cache_head *h,
 			     char **bpp, int *blen)
@@ -483,34 +630,52 @@ static void unix_gid_request(struct cache_detail *cd,
 	char tuid[20];
 	struct unix_gid *ug = container_of(h, struct unix_gid, h);
 
+<<<<<<< HEAD
 	snprintf(tuid, 20, "%u", ug->uid);
+=======
+	snprintf(tuid, 20, "%u", from_kuid(&init_user_ns, ug->uid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qword_add(bpp, blen, tuid);
 	(*bpp)[-1] = '\n';
 }
 
+<<<<<<< HEAD
 static int unix_gid_upcall(struct cache_detail *cd, struct cache_head *h)
 {
 	return sunrpc_cache_pipe_upcall(cd, h, unix_gid_request);
 }
 
 static struct unix_gid *unix_gid_lookup(struct cache_detail *cd, uid_t uid);
+=======
+static struct unix_gid *unix_gid_lookup(struct cache_detail *cd, kuid_t uid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int unix_gid_parse(struct cache_detail *cd,
 			char *mesg, int mlen)
 {
 	/* uid expiry Ngid gid0 gid1 ... gidN-1 */
+<<<<<<< HEAD
 	int uid;
+=======
+	int id;
+	kuid_t uid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int gids;
 	int rv;
 	int i;
 	int err;
+<<<<<<< HEAD
 	time_t expiry;
+=======
+	time64_t expiry;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct unix_gid ug, *ugp;
 
 	if (mesg[mlen - 1] != '\n')
 		return -EINVAL;
 	mesg[mlen-1] = 0;
 
+<<<<<<< HEAD
 	rv = get_int(&mesg, &uid);
 	if (rv)
 		return -EINVAL;
@@ -519,6 +684,17 @@ static int unix_gid_parse(struct cache_detail *cd,
 	expiry = get_expiry(&mesg);
 	if (expiry == 0)
 		return -EINVAL;
+=======
+	rv = get_int(&mesg, &id);
+	if (rv)
+		return -EINVAL;
+	uid = make_kuid(current_user_ns(), id);
+	ug.uid = uid;
+
+	err = get_expiry(&mesg, &expiry);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rv = get_int(&mesg, &gids);
 	if (rv || gids < 0 || gids > 8192)
@@ -530,13 +706,27 @@ static int unix_gid_parse(struct cache_detail *cd,
 
 	for (i = 0 ; i < gids ; i++) {
 		int gid;
+<<<<<<< HEAD
+=======
+		kgid_t kgid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rv = get_int(&mesg, &gid);
 		err = -EINVAL;
 		if (rv)
 			goto out;
+<<<<<<< HEAD
 		GROUP_AT(ug.gi, i) = gid;
 	}
 
+=======
+		kgid = make_kgid(current_user_ns(), gid);
+		if (!gid_valid(kgid))
+			goto out;
+		ug.gi->gid[i] = kgid;
+	}
+
+	groups_sort(ug.gi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ugp = unix_gid_lookup(cd, uid);
 	if (ugp) {
 		struct cache_head *ch;
@@ -544,7 +734,11 @@ static int unix_gid_parse(struct cache_detail *cd,
 		ug.h.expiry_time = expiry;
 		ch = sunrpc_cache_update(cd,
 					 &ug.h, &ugp->h,
+<<<<<<< HEAD
 					 hash_long(uid, GID_HASHBITS));
+=======
+					 unix_gid_hash(uid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ch)
 			err = -ENOMEM;
 		else {
@@ -563,6 +757,10 @@ static int unix_gid_show(struct seq_file *m,
 			 struct cache_detail *cd,
 			 struct cache_head *h)
 {
+<<<<<<< HEAD
+=======
+	struct user_namespace *user_ns = m->file->f_cred->user_ns;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct unix_gid *ug;
 	int i;
 	int glen;
@@ -578,19 +776,33 @@ static int unix_gid_show(struct seq_file *m,
 	else
 		glen = 0;
 
+<<<<<<< HEAD
 	seq_printf(m, "%u %d:", ug->uid, glen);
 	for (i = 0; i < glen; i++)
 		seq_printf(m, " %d", GROUP_AT(ug->gi, i));
+=======
+	seq_printf(m, "%u %d:", from_kuid_munged(user_ns, ug->uid), glen);
+	for (i = 0; i < glen; i++)
+		seq_printf(m, " %d", from_kgid_munged(user_ns, ug->gi->gid[i]));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(m, "\n");
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct cache_detail unix_gid_cache_template = {
+=======
+static const struct cache_detail unix_gid_cache_template = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner		= THIS_MODULE,
 	.hash_size	= GID_HASHMAX,
 	.name		= "auth.unix.gid",
 	.cache_put	= unix_gid_put,
 	.cache_upcall	= unix_gid_upcall,
+<<<<<<< HEAD
+=======
+	.cache_request	= unix_gid_request,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cache_parse	= unix_gid_parse,
 	.cache_show	= unix_gid_show,
 	.match		= unix_gid_match,
@@ -628,20 +840,32 @@ void unix_gid_cache_destroy(struct net *net)
 	cache_destroy_net(cd, net);
 }
 
+<<<<<<< HEAD
 static struct unix_gid *unix_gid_lookup(struct cache_detail *cd, uid_t uid)
+=======
+static struct unix_gid *unix_gid_lookup(struct cache_detail *cd, kuid_t uid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct unix_gid ug;
 	struct cache_head *ch;
 
 	ug.uid = uid;
+<<<<<<< HEAD
 	ch = sunrpc_cache_lookup(cd, &ug.h, hash_long(uid, GID_HASHBITS));
+=======
+	ch = sunrpc_cache_lookup_rcu(cd, &ug.h, unix_gid_hash(uid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ch)
 		return container_of(ch, struct unix_gid, h);
 	else
 		return NULL;
 }
 
+<<<<<<< HEAD
 static struct group_info *unix_gid_find(uid_t uid, struct svc_rqst *rqstp)
+=======
+static struct group_info *unix_gid_find(kuid_t uid, struct svc_rqst *rqstp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct unix_gid *ug;
 	struct group_info *gi;
@@ -667,7 +891,11 @@ static struct group_info *unix_gid_find(uid_t uid, struct svc_rqst *rqstp)
 	}
 }
 
+<<<<<<< HEAD
 int
+=======
+enum svc_auth_status
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 svcauth_unix_set_client(struct svc_rqst *rqstp)
 {
 	struct sockaddr_in *sin;
@@ -694,8 +922,14 @@ svcauth_unix_set_client(struct svc_rqst *rqstp)
 
 	rqstp->rq_client = NULL;
 	if (rqstp->rq_proc == 0)
+<<<<<<< HEAD
 		return SVC_OK;
 
+=======
+		goto out;
+
+	rqstp->rq_auth_stat = rpc_autherr_badcred;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ipm = ip_map_cached_get(xprt);
 	if (ipm == NULL)
 		ipm = __ip_map_lookup(sn->ip_map_cache, rqstp->rq_server->sv_program->pg_class,
@@ -732,6 +966,7 @@ svcauth_unix_set_client(struct svc_rqst *rqstp)
 		put_group_info(cred->cr_group_info);
 		cred->cr_group_info = gi;
 	}
+<<<<<<< HEAD
 	return SVC_OK;
 }
 
@@ -758,21 +993,78 @@ svcauth_null_accept(struct svc_rqst *rqstp, __be32 *authp)
 	if (svc_getu32(argv) != htonl(RPC_AUTH_NULL) || svc_getu32(argv) != 0) {
 		dprintk("svc: bad null verf\n");
 		*authp = rpc_autherr_badverf;
+=======
+
+out:
+	rqstp->rq_auth_stat = rpc_auth_ok;
+	return SVC_OK;
+}
+EXPORT_SYMBOL_GPL(svcauth_unix_set_client);
+
+/**
+ * svcauth_null_accept - Decode and validate incoming RPC_AUTH_NULL credential
+ * @rqstp: RPC transaction
+ *
+ * Return values:
+ *   %SVC_OK: Both credential and verifier are valid
+ *   %SVC_DENIED: Credential or verifier is not valid
+ *   %SVC_GARBAGE: Failed to decode credential or verifier
+ *   %SVC_CLOSE: Temporary failure
+ *
+ * rqstp->rq_auth_stat is set as mandated by RFC 5531.
+ */
+static enum svc_auth_status
+svcauth_null_accept(struct svc_rqst *rqstp)
+{
+	struct xdr_stream *xdr = &rqstp->rq_arg_stream;
+	struct svc_cred	*cred = &rqstp->rq_cred;
+	u32 flavor, len;
+	void *body;
+
+	/* Length of Call's credential body field: */
+	if (xdr_stream_decode_u32(xdr, &len) < 0)
+		return SVC_GARBAGE;
+	if (len != 0) {
+		rqstp->rq_auth_stat = rpc_autherr_badcred;
+		return SVC_DENIED;
+	}
+
+	/* Call's verf field: */
+	if (xdr_stream_decode_opaque_auth(xdr, &flavor, &body, &len) < 0)
+		return SVC_GARBAGE;
+	if (flavor != RPC_AUTH_NULL || len != 0) {
+		rqstp->rq_auth_stat = rpc_autherr_badverf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SVC_DENIED;
 	}
 
 	/* Signal that mapping to nobody uid/gid is required */
+<<<<<<< HEAD
 	cred->cr_uid = (uid_t) -1;
 	cred->cr_gid = (gid_t) -1;
+=======
+	cred->cr_uid = INVALID_UID;
+	cred->cr_gid = INVALID_GID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cred->cr_group_info = groups_alloc(0);
 	if (cred->cr_group_info == NULL)
 		return SVC_CLOSE; /* kmalloc failure - client must retry */
 
+<<<<<<< HEAD
 	/* Put NULL verifier */
 	svc_putnl(resv, RPC_AUTH_NULL);
 	svc_putnl(resv, 0);
 
 	rqstp->rq_flavor = RPC_AUTH_NULL;
+=======
+	if (xdr_stream_encode_opaque_auth(&rqstp->rq_res_stream,
+					  RPC_AUTH_NULL, NULL, 0) < 0)
+		return SVC_CLOSE;
+	if (!svcxdr_set_accept_stat(rqstp))
+		return SVC_CLOSE;
+
+	rqstp->rq_cred.cr_flavor = RPC_AUTH_NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return SVC_OK;
 }
 
@@ -794,12 +1086,17 @@ struct auth_ops svcauth_null = {
 	.name		= "null",
 	.owner		= THIS_MODULE,
 	.flavour	= RPC_AUTH_NULL,
+<<<<<<< HEAD
 	.accept 	= svcauth_null_accept,
+=======
+	.accept		= svcauth_null_accept,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.release	= svcauth_null_release,
 	.set_client	= svcauth_unix_set_client,
 };
 
 
+<<<<<<< HEAD
 static int
 svcauth_unix_accept(struct svc_rqst *rqstp, __be32 *authp)
 {
@@ -847,6 +1144,180 @@ svcauth_unix_accept(struct svc_rqst *rqstp, __be32 *authp)
 
 badcred:
 	*authp = rpc_autherr_badcred;
+=======
+/**
+ * svcauth_tls_accept - Decode and validate incoming RPC_AUTH_TLS credential
+ * @rqstp: RPC transaction
+ *
+ * Return values:
+ *   %SVC_OK: Both credential and verifier are valid
+ *   %SVC_DENIED: Credential or verifier is not valid
+ *   %SVC_GARBAGE: Failed to decode credential or verifier
+ *   %SVC_CLOSE: Temporary failure
+ *
+ * rqstp->rq_auth_stat is set as mandated by RFC 5531.
+ */
+static enum svc_auth_status
+svcauth_tls_accept(struct svc_rqst *rqstp)
+{
+	struct xdr_stream *xdr = &rqstp->rq_arg_stream;
+	struct svc_cred	*cred = &rqstp->rq_cred;
+	struct svc_xprt *xprt = rqstp->rq_xprt;
+	u32 flavor, len;
+	void *body;
+	__be32 *p;
+
+	/* Length of Call's credential body field: */
+	if (xdr_stream_decode_u32(xdr, &len) < 0)
+		return SVC_GARBAGE;
+	if (len != 0) {
+		rqstp->rq_auth_stat = rpc_autherr_badcred;
+		return SVC_DENIED;
+	}
+
+	/* Call's verf field: */
+	if (xdr_stream_decode_opaque_auth(xdr, &flavor, &body, &len) < 0)
+		return SVC_GARBAGE;
+	if (flavor != RPC_AUTH_NULL || len != 0) {
+		rqstp->rq_auth_stat = rpc_autherr_badverf;
+		return SVC_DENIED;
+	}
+
+	/* AUTH_TLS is not valid on non-NULL procedures */
+	if (rqstp->rq_proc != 0) {
+		rqstp->rq_auth_stat = rpc_autherr_badcred;
+		return SVC_DENIED;
+	}
+
+	/* Signal that mapping to nobody uid/gid is required */
+	cred->cr_uid = INVALID_UID;
+	cred->cr_gid = INVALID_GID;
+	cred->cr_group_info = groups_alloc(0);
+	if (cred->cr_group_info == NULL)
+		return SVC_CLOSE;
+
+	if (xprt->xpt_ops->xpo_handshake) {
+		p = xdr_reserve_space(&rqstp->rq_res_stream, XDR_UNIT * 2 + 8);
+		if (!p)
+			return SVC_CLOSE;
+		trace_svc_tls_start(xprt);
+		*p++ = rpc_auth_null;
+		*p++ = cpu_to_be32(8);
+		memcpy(p, "STARTTLS", 8);
+
+		set_bit(XPT_HANDSHAKE, &xprt->xpt_flags);
+		svc_xprt_enqueue(xprt);
+	} else {
+		trace_svc_tls_unavailable(xprt);
+		if (xdr_stream_encode_opaque_auth(&rqstp->rq_res_stream,
+						  RPC_AUTH_NULL, NULL, 0) < 0)
+			return SVC_CLOSE;
+	}
+	if (!svcxdr_set_accept_stat(rqstp))
+		return SVC_CLOSE;
+
+	rqstp->rq_cred.cr_flavor = RPC_AUTH_TLS;
+	return SVC_OK;
+}
+
+struct auth_ops svcauth_tls = {
+	.name		= "tls",
+	.owner		= THIS_MODULE,
+	.flavour	= RPC_AUTH_TLS,
+	.accept		= svcauth_tls_accept,
+	.release	= svcauth_null_release,
+	.set_client	= svcauth_unix_set_client,
+};
+
+
+/**
+ * svcauth_unix_accept - Decode and validate incoming RPC_AUTH_SYS credential
+ * @rqstp: RPC transaction
+ *
+ * Return values:
+ *   %SVC_OK: Both credential and verifier are valid
+ *   %SVC_DENIED: Credential or verifier is not valid
+ *   %SVC_GARBAGE: Failed to decode credential or verifier
+ *   %SVC_CLOSE: Temporary failure
+ *
+ * rqstp->rq_auth_stat is set as mandated by RFC 5531.
+ */
+static enum svc_auth_status
+svcauth_unix_accept(struct svc_rqst *rqstp)
+{
+	struct xdr_stream *xdr = &rqstp->rq_arg_stream;
+	struct svc_cred	*cred = &rqstp->rq_cred;
+	struct user_namespace *userns;
+	u32 flavor, len, i;
+	void *body;
+	__be32 *p;
+
+	/*
+	 * This implementation ignores the length of the Call's
+	 * credential body field and the timestamp and machinename
+	 * fields.
+	 */
+	p = xdr_inline_decode(xdr, XDR_UNIT * 3);
+	if (!p)
+		return SVC_GARBAGE;
+	len = be32_to_cpup(p + 2);
+	if (len > RPC_MAX_MACHINENAME)
+		return SVC_GARBAGE;
+	if (!xdr_inline_decode(xdr, len))
+		return SVC_GARBAGE;
+
+	/*
+	 * Note: we skip uid_valid()/gid_valid() checks here for
+	 * backwards compatibility with clients that use -1 id's.
+	 * Instead, -1 uid or gid is later mapped to the
+	 * (export-specific) anonymous id by nfsd_setuser.
+	 * Supplementary gid's will be left alone.
+	 */
+	userns = (rqstp->rq_xprt && rqstp->rq_xprt->xpt_cred) ?
+		rqstp->rq_xprt->xpt_cred->user_ns : &init_user_ns;
+	if (xdr_stream_decode_u32(xdr, &i) < 0)
+		return SVC_GARBAGE;
+	cred->cr_uid = make_kuid(userns, i);
+	if (xdr_stream_decode_u32(xdr, &i) < 0)
+		return SVC_GARBAGE;
+	cred->cr_gid = make_kgid(userns, i);
+
+	if (xdr_stream_decode_u32(xdr, &len) < 0)
+		return SVC_GARBAGE;
+	if (len > UNX_NGROUPS)
+		goto badcred;
+	p = xdr_inline_decode(xdr, XDR_UNIT * len);
+	if (!p)
+		return SVC_GARBAGE;
+	cred->cr_group_info = groups_alloc(len);
+	if (cred->cr_group_info == NULL)
+		return SVC_CLOSE;
+	for (i = 0; i < len; i++) {
+		kgid_t kgid = make_kgid(userns, be32_to_cpup(p++));
+		cred->cr_group_info->gid[i] = kgid;
+	}
+	groups_sort(cred->cr_group_info);
+
+	/* Call's verf field: */
+	if (xdr_stream_decode_opaque_auth(xdr, &flavor, &body, &len) < 0)
+		return SVC_GARBAGE;
+	if (flavor != RPC_AUTH_NULL || len != 0) {
+		rqstp->rq_auth_stat = rpc_autherr_badverf;
+		return SVC_DENIED;
+	}
+
+	if (xdr_stream_encode_opaque_auth(&rqstp->rq_res_stream,
+					  RPC_AUTH_NULL, NULL, 0) < 0)
+		return SVC_CLOSE;
+	if (!svcxdr_set_accept_stat(rqstp))
+		return SVC_CLOSE;
+
+	rqstp->rq_cred.cr_flavor = RPC_AUTH_UNIX;
+	return SVC_OK;
+
+badcred:
+	rqstp->rq_auth_stat = rpc_autherr_badcred;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return SVC_DENIED;
 }
 
@@ -870,18 +1341,30 @@ struct auth_ops svcauth_unix = {
 	.name		= "unix",
 	.owner		= THIS_MODULE,
 	.flavour	= RPC_AUTH_UNIX,
+<<<<<<< HEAD
 	.accept 	= svcauth_unix_accept,
+=======
+	.accept		= svcauth_unix_accept,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.release	= svcauth_unix_release,
 	.domain_release	= svcauth_unix_domain_release,
 	.set_client	= svcauth_unix_set_client,
 };
 
+<<<<<<< HEAD
 static struct cache_detail ip_map_cache_template = {
+=======
+static const struct cache_detail ip_map_cache_template = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner		= THIS_MODULE,
 	.hash_size	= IP_HASHMAX,
 	.name		= "auth.unix.ip",
 	.cache_put	= ip_map_put,
 	.cache_upcall	= ip_map_upcall,
+<<<<<<< HEAD
+=======
+	.cache_request	= ip_map_request,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cache_parse	= ip_map_parse,
 	.cache_show	= ip_map_show,
 	.match		= ip_map_match,

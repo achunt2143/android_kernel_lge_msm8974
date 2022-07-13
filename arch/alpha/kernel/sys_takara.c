@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/sys_takara.c
  *
@@ -20,7 +24,10 @@
 #include <asm/irq.h>
 #include <asm/mmu_context.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/core_cia.h>
 #include <asm/tlbflush.h>
 
@@ -155,10 +162,17 @@ takara_init_irq(void)
  * assign it whatever the hell IRQ we like and it doesn't matter.
  */
 
+<<<<<<< HEAD
 static int __init
 takara_map_irq_srm(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	static char irq_tab[15][5] __initdata = {
+=======
+static int
+takara_map_irq_srm(const struct pci_dev *dev, u8 slot, u8 pin)
+{
+	static char irq_tab[15][5] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ 16+3, 16+3, 16+3, 16+3, 16+3},   /* slot  6 == device 3 */
 		{ 16+2, 16+2, 16+2, 16+2, 16+2},   /* slot  7 == device 2 */
 		{ 16+1, 16+1, 16+1, 16+1, 16+1},   /* slot  8 == device 1 */
@@ -210,7 +224,11 @@ takara_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return COMMON_TABLE_LOOKUP;
 }
 
+<<<<<<< HEAD
 static u8 __init
+=======
+static u8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 takara_swizzle(struct pci_dev *dev, u8 *pinp)
 {
 	int slot = PCI_SLOT(dev->devfn);

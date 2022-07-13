@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASMARM_SIGNAL_H
 #define _ASMARM_SIGNAL_H
 
@@ -7,6 +8,14 @@
 struct siginfo;
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASMARM_SIGNAL_H
+#define _ASMARM_SIGNAL_H
+
+#include <uapi/asm/signal.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Most things should be clean enough to redefine this at will, if care
    is taken to make libc match.  */
 
@@ -20,6 +29,7 @@ typedef struct {
 	unsigned long sig[_NSIG_WORDS];
 } sigset_t;
 
+<<<<<<< HEAD
 #else
 /* Here we must cater to libcs that poke about in kernel headers.  */
 
@@ -161,5 +171,16 @@ typedef struct sigaltstack {
 #include <asm/sigcontext.h>
 #define ptrace_signal_deliver(regs, cookie) do { } while (0)
 #endif
+=======
+#define __ARCH_UAPI_SA_FLAGS	(SA_THIRTYTWO | SA_RESTORER)
+
+#define __ARCH_HAS_SA_RESTORER
+
+#include <asm/sigcontext.h>
+
+void do_rseq_syscall(struct pt_regs *regs);
+int do_work_pending(struct pt_regs *regs, unsigned int thread_flags,
+		    int syscall);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

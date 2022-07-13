@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __OPL3_VOICE_H
 #define __OPL3_VOICE_H
 
 /*
  *  Copyright (c) 2000 Uros Bizjak <uros@kss-loka.si>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <sound/opl3.h>
@@ -37,6 +44,7 @@ void snd_opl3_nrpn(void *p, struct snd_midi_channel *chan, struct snd_midi_chann
 void snd_opl3_sysex(void *p, unsigned char *buf, int len, int parsed, struct snd_midi_channel_set *chset);
 
 void snd_opl3_calc_volume(unsigned char *reg, int vel, struct snd_midi_channel *chan);
+<<<<<<< HEAD
 void snd_opl3_timer_func(unsigned long data);
 
 /* Prototypes for opl3_drums.c */
@@ -49,4 +57,25 @@ void snd_opl3_init_seq_oss(struct snd_opl3 *opl3, char *name);
 void snd_opl3_free_seq_oss(struct snd_opl3 *opl3);
 #endif
 
+=======
+void snd_opl3_timer_func(struct timer_list *t);
+
+/* Prototypes for opl3_drums.c */
+void snd_opl3_load_drums(struct snd_opl3 *opl3);
+void snd_opl3_drum_switch(struct snd_opl3 *opl3, int note, int vel, int on_off, struct snd_midi_channel *chan);
+
+/* Prototypes for opl3_oss.c */
+#if IS_ENABLED(CONFIG_SND_SEQUENCER_OSS)
+void snd_opl3_init_seq_oss(struct snd_opl3 *opl3, char *name);
+void snd_opl3_free_seq_oss(struct snd_opl3 *opl3);
+#else
+#define snd_opl3_init_seq_oss(opl3, name) /* NOP */
+#define snd_opl3_free_seq_oss(opl3) /* NOP */
+#endif
+
+extern char snd_opl3_regmap[MAX_OPL2_VOICES][4];
+extern bool use_internal_drums;
+extern const struct snd_midi_op opl3_ops;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

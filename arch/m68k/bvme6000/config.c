@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/m68k/bvme6000/config.c
  *
@@ -8,26 +12,37 @@
  *  linux/amiga/config.c
  *
  *  Copyright (C) 1993 Hamish Macdonald
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file README.legal in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/tty.h>
+<<<<<<< HEAD
+=======
+#include <linux/clocksource.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/console.h>
 #include <linux/linkage.h>
 #include <linux/init.h>
 #include <linux/major.h>
+<<<<<<< HEAD
 #include <linux/genhd.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/rtc.h>
 #include <linux/interrupt.h>
 #include <linux/bcd.h>
 
 #include <asm/bootinfo.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/setup.h>
 #include <asm/irq.h>
@@ -53,6 +68,27 @@ static irq_handler_t tick_handler;
 int bvme6000_parse_bootinfo(const struct bi_record *bi)
 {
 	if (bi->tag == BI_VME_TYPE)
+=======
+#include <asm/bootinfo-vme.h>
+#include <asm/byteorder.h>
+#include <asm/setup.h>
+#include <asm/irq.h>
+#include <asm/traps.h>
+#include <asm/machdep.h>
+#include <asm/bvme6000hw.h>
+#include <asm/config.h>
+
+static void bvme6000_get_model(char *model);
+extern void bvme6000_sched_init(void);
+extern int bvme6000_hwclk (int, struct rtc_time *);
+extern void bvme6000_reset (void);
+void bvme6000_set_vectors (void);
+
+
+int __init bvme6000_parse_bootinfo(const struct bi_record *bi)
+{
+	if (be16_to_cpu(bi->tag) == BI_VME_TYPE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	else
 		return 1;
@@ -62,8 +98,13 @@ void bvme6000_reset(void)
 {
 	volatile PitRegsPtr pit = (PitRegsPtr)BVME_PIT_BASE;
 
+<<<<<<< HEAD
 	printk ("\r\n\nCalled bvme6000_reset\r\n"
 			"\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r");
+=======
+	pr_info("\r\n\nCalled bvme6000_reset\r\n"
+		"\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r\r");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The string of returns is to delay the reset until the whole
 	 * message is output. */
 	/* Enable the watchdog, via PIT port C bit 4 */
@@ -107,6 +148,7 @@ void __init config_bvme6000(void)
     bvme6000_set_vectors();
 #endif
 
+<<<<<<< HEAD
     mach_max_dma_address = 0xffffffff;
     mach_sched_init      = bvme6000_sched_init;
     mach_init_IRQ        = bvme6000_init_IRQ;
@@ -118,6 +160,16 @@ void __init config_bvme6000(void)
 
     printk ("Board is %sconfigured as a System Controller\n",
 		*config_reg_ptr & BVME_CONFIG_SW1 ? "" : "not ");
+=======
+    mach_sched_init      = bvme6000_sched_init;
+    mach_init_IRQ        = bvme6000_init_IRQ;
+    mach_hwclk           = bvme6000_hwclk;
+    mach_reset		 = bvme6000_reset;
+    mach_get_model       = bvme6000_get_model;
+
+    pr_info("Board is %sconfigured as a System Controller\n",
+	    *config_reg_ptr & BVME_CONFIG_SW1 ? "" : "not ");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     /* Now do the PIT configuration */
 
@@ -139,7 +191,11 @@ void __init config_bvme6000(void)
 }
 
 
+<<<<<<< HEAD
 irqreturn_t bvme6000_abort_int (int irq, void *dev_id)
+=======
+static irqreturn_t bvme6000_abort_int(int irq, void *dev_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
         unsigned long *new = (unsigned long *)vectors;
         unsigned long *old = (unsigned long *)0xf8000000;
@@ -155,6 +211,7 @@ irqreturn_t bvme6000_abort_int (int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 
 static irqreturn_t bvme6000_timer_int (int irq, void *dev_id)
 {
@@ -164,6 +221,39 @@ static irqreturn_t bvme6000_timer_int (int irq, void *dev_id)
     rtc->msr = msr | 0x20;		/* Ack the interrupt */
 
     return tick_handler(irq, dev_id);
+=======
+static u64 bvme6000_read_clk(struct clocksource *cs);
+
+static struct clocksource bvme6000_clk = {
+	.name   = "rtc",
+	.rating = 250,
+	.read   = bvme6000_read_clk,
+	.mask   = CLOCKSOURCE_MASK(32),
+	.flags  = CLOCK_SOURCE_IS_CONTINUOUS,
+};
+
+static u32 clk_total, clk_offset;
+
+#define RTC_TIMER_CLOCK_FREQ 8000000
+#define RTC_TIMER_CYCLES     (RTC_TIMER_CLOCK_FREQ / HZ)
+#define RTC_TIMER_COUNT      ((RTC_TIMER_CYCLES / 2) - 1)
+
+static irqreturn_t bvme6000_timer_int (int irq, void *dev_id)
+{
+    unsigned long flags;
+    volatile RtcPtr_t rtc = (RtcPtr_t)BVME_RTC_BASE;
+    unsigned char msr;
+
+    local_irq_save(flags);
+    msr = rtc->msr & 0xc0;
+    rtc->msr = msr | 0x20;		/* Ack the interrupt */
+    clk_total += RTC_TIMER_CYCLES;
+    clk_offset = 0;
+    legacy_timer_tick(1);
+    local_irq_restore(flags);
+
+    return IRQ_HANDLED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -175,13 +265,18 @@ static irqreturn_t bvme6000_timer_int (int irq, void *dev_id)
  * so divide by 8 to get the microsecond result.
  */
 
+<<<<<<< HEAD
 void bvme6000_sched_init (irq_handler_t timer_routine)
+=======
+void bvme6000_sched_init (void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     volatile RtcPtr_t rtc = (RtcPtr_t)BVME_RTC_BASE;
     unsigned char msr = rtc->msr & 0xc0;
 
     rtc->msr = 0;	/* Ensure timer registers accessible */
 
+<<<<<<< HEAD
     tick_handler = timer_routine;
     if (request_irq(BVME_IRQ_RTC, bvme6000_timer_int, 0,
 				"timer", bvme6000_timer_int))
@@ -190,6 +285,15 @@ void bvme6000_sched_init (irq_handler_t timer_routine)
     rtc->t1cr_omr = 0x04;	/* Mode 2, ext clk */
     rtc->t1msb = 39999 >> 8;
     rtc->t1lsb = 39999 & 0xff;
+=======
+    if (request_irq(BVME_IRQ_RTC, bvme6000_timer_int, IRQF_TIMER, "timer",
+                    NULL))
+	panic ("Couldn't register timer int");
+
+    rtc->t1cr_omr = 0x04;	/* Mode 2, ext clk */
+    rtc->t1msb = RTC_TIMER_COUNT >> 8;
+    rtc->t1lsb = RTC_TIMER_COUNT & 0xff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     rtc->irr_icr1 &= 0xef;	/* Route timer 1 to INTR pin */
     rtc->msr = 0x40;		/* Access int.cntrl, etc */
     rtc->pfr_icr0 = 0x80;	/* Just timer 1 ints enabled */
@@ -201,14 +305,22 @@ void bvme6000_sched_init (irq_handler_t timer_routine)
 
     rtc->msr = msr;
 
+<<<<<<< HEAD
+=======
+    clocksource_register_hz(&bvme6000_clk, RTC_TIMER_CLOCK_FREQ);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (request_irq(BVME_IRQ_ABORT, bvme6000_abort_int, 0,
 				"abort", bvme6000_abort_int))
 	panic ("Couldn't register abort int");
 }
 
 
+<<<<<<< HEAD
 /* This is always executed with interrupts disabled.  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NOTE:  Don't accept any readings within 5us of rollover, as
  * the T1INT bit may be a little slow getting set.  There is also
@@ -216,6 +328,7 @@ void bvme6000_sched_init (irq_handler_t timer_routine)
  * results...
  */
 
+<<<<<<< HEAD
 unsigned long bvme6000_gettimeoffset (void)
 {
     volatile RtcPtr_t rtc = (RtcPtr_t)BVME_RTC_BASE;
@@ -224,6 +337,20 @@ unsigned long bvme6000_gettimeoffset (void)
     unsigned char t1int, t1op;
     unsigned long v = 800000, ov;
 
+=======
+static u64 bvme6000_read_clk(struct clocksource *cs)
+{
+    unsigned long flags;
+    volatile RtcPtr_t rtc = (RtcPtr_t)BVME_RTC_BASE;
+    volatile PitRegsPtr pit = (PitRegsPtr)BVME_PIT_BASE;
+    unsigned char msr, msb;
+    unsigned char t1int, t1op;
+    u32 v = 800000, ov;
+
+    local_irq_save(flags);
+
+    msr = rtc->msr & 0xc0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     rtc->msr = 0;	/* Ensure timer registers accessible */
 
     do {
@@ -231,6 +358,7 @@ unsigned long bvme6000_gettimeoffset (void)
 	t1int = rtc->msr & 0x20;
 	t1op  = pit->pcdr & 0x04;
 	rtc->t1cr_omr |= 0x40;		/* Latch timer1 */
+<<<<<<< HEAD
 	v = rtc->t1msb << 8;		/* Read timer1 */
 	v |= rtc->t1lsb;		/* Read timer1 */
     } while (t1int != (rtc->msr & 0x20) ||
@@ -246,6 +374,26 @@ unsigned long bvme6000_gettimeoffset (void)
 	v += 10000;			/* Int pending, + 10ms */
     rtc->msr = msr;
 
+=======
+	msb = rtc->t1msb;		/* Read timer1 */
+	v = (msb << 8) | rtc->t1lsb;	/* Read timer1 */
+    } while (t1int != (rtc->msr & 0x20) ||
+		t1op != (pit->pcdr & 0x04) ||
+			abs(ov-v) > 80 ||
+				v > RTC_TIMER_COUNT - (RTC_TIMER_COUNT / 100));
+
+    v = RTC_TIMER_COUNT - v;
+    if (!t1op)				/* If in second half cycle.. */
+	v += RTC_TIMER_CYCLES / 2;
+    if (msb > 0 && t1int)
+	clk_offset = RTC_TIMER_CYCLES;
+    rtc->msr = msr;
+
+    v += clk_offset + clk_total;
+
+    local_irq_restore(flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     return v;
 }
 
@@ -304,6 +452,7 @@ int bvme6000_hwclk(int op, struct rtc_time *t)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 /*
  * Set the minutes and seconds from seconds value 'nowtime'.  Fail if
@@ -347,3 +496,5 @@ int bvme6000_set_clock_mmss (unsigned long nowtime)
 	return retval;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

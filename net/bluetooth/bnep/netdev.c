@@ -25,6 +25,7 @@
    SOFTWARE IS DISCLAIMED.
 */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/slab.h>
@@ -36,6 +37,9 @@
 #include <linux/wait.h>
 
 #include <asm/unaligned.h>
+=======
+#include <linux/etherdevice.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
@@ -85,16 +89,26 @@ static void bnep_net_set_mc_list(struct net_device *dev)
 		u8 start[ETH_ALEN] = { 0x01 };
 
 		/* Request all addresses */
+<<<<<<< HEAD
 		memcpy(__skb_put(skb, ETH_ALEN), start, ETH_ALEN);
 		memcpy(__skb_put(skb, ETH_ALEN), dev->broadcast, ETH_ALEN);
+=======
+		__skb_put_data(skb, start, ETH_ALEN);
+		__skb_put_data(skb, dev->broadcast, ETH_ALEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r->len = htons(ETH_ALEN * 2);
 	} else {
 		struct netdev_hw_addr *ha;
 		int i, len = skb->len;
 
 		if (dev->flags & IFF_BROADCAST) {
+<<<<<<< HEAD
 			memcpy(__skb_put(skb, ETH_ALEN), dev->broadcast, ETH_ALEN);
 			memcpy(__skb_put(skb, ETH_ALEN), dev->broadcast, ETH_ALEN);
+=======
+			__skb_put_data(skb, dev->broadcast, ETH_ALEN);
+			__skb_put_data(skb, dev->broadcast, ETH_ALEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* FIXME: We should group addresses here. */
@@ -103,8 +117,13 @@ static void bnep_net_set_mc_list(struct net_device *dev)
 		netdev_for_each_mc_addr(ha, dev) {
 			if (i == BNEP_MAX_MULTICAST_FILTERS)
 				break;
+<<<<<<< HEAD
 			memcpy(__skb_put(skb, ETH_ALEN), ha->addr, ETH_ALEN);
 			memcpy(__skb_put(skb, ETH_ALEN), ha->addr, ETH_ALEN);
+=======
+			__skb_put_data(skb, ha->addr, ETH_ALEN);
+			__skb_put_data(skb, ha->addr, ETH_ALEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			i++;
 		}
@@ -122,14 +141,22 @@ static int bnep_net_set_mac_addr(struct net_device *dev, void *arg)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void bnep_net_timeout(struct net_device *dev)
+=======
+static void bnep_net_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	BT_DBG("net_timeout");
 	netif_wake_queue(dev);
 }
 
 #ifdef CONFIG_BT_BNEP_MC_FILTER
+<<<<<<< HEAD
 static inline int bnep_net_mc_filter(struct sk_buff *skb, struct bnep_session *s)
+=======
+static int bnep_net_mc_filter(struct sk_buff *skb, struct bnep_session *s)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ethhdr *eh = (void *) skb->data;
 
@@ -141,12 +168,20 @@ static inline int bnep_net_mc_filter(struct sk_buff *skb, struct bnep_session *s
 
 #ifdef CONFIG_BT_BNEP_PROTO_FILTER
 /* Determine ether protocol. Based on eth_type_trans. */
+<<<<<<< HEAD
 static inline u16 bnep_net_eth_proto(struct sk_buff *skb)
+=======
+static u16 bnep_net_eth_proto(struct sk_buff *skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ethhdr *eh = (void *) skb->data;
 	u16 proto = ntohs(eh->h_proto);
 
+<<<<<<< HEAD
 	if (proto >= 1536)
+=======
+	if (proto >= ETH_P_802_3_MIN)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return proto;
 
 	if (get_unaligned((__be16 *) skb->data) == htons(0xFFFF))
@@ -155,7 +190,11 @@ static inline u16 bnep_net_eth_proto(struct sk_buff *skb)
 	return ETH_P_802_2;
 }
 
+<<<<<<< HEAD
 static inline int bnep_net_proto_filter(struct sk_buff *skb, struct bnep_session *s)
+=======
+static int bnep_net_proto_filter(struct sk_buff *skb, struct bnep_session *s)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 proto = bnep_net_eth_proto(skb);
 	struct bnep_proto_filter *f = s->proto_filter;
@@ -198,7 +237,11 @@ static netdev_tx_t bnep_net_xmit(struct sk_buff *skb,
 	 * So we have to queue them and wake up session thread which is sleeping
 	 * on the sk_sleep(sk).
 	 */
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_queue_tail(&sk->sk_write_queue, skb);
 	wake_up_interruptible(sk_sleep(sk));
 
@@ -221,17 +264,29 @@ static const struct net_device_ops bnep_netdev_ops = {
 	.ndo_set_rx_mode     = bnep_net_set_mc_list,
 	.ndo_set_mac_address = bnep_net_set_mac_addr,
 	.ndo_tx_timeout      = bnep_net_timeout,
+<<<<<<< HEAD
 	.ndo_change_mtu	     = eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 };
 
 void bnep_net_setup(struct net_device *dev)
 {
 
+<<<<<<< HEAD
 	memset(dev->broadcast, 0xff, ETH_ALEN);
 	dev->addr_len = ETH_ALEN;
 
 	ether_setup(dev);
+=======
+	eth_broadcast_addr(dev->broadcast);
+	dev->addr_len = ETH_ALEN;
+
+	ether_setup(dev);
+	dev->min_mtu = 0;
+	dev->max_mtu = ETH_MAX_MTU;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->priv_flags &= ~IFF_TX_SKB_SHARING;
 	dev->netdev_ops = &bnep_netdev_ops;
 

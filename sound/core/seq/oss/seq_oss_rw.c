@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OSS compatible sequencer driver
  *
  * read/write/select interface to device file
  *
  * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "seq_oss_device.h"
@@ -145,7 +152,12 @@ snd_seq_oss_write(struct seq_oss_devinfo *dp, const char __user *buf, int count,
 		}
 
 		/* insert queue */
+<<<<<<< HEAD
 		if ((err = insert_queue(dp, &rec, opt)) < 0)
+=======
+		err = insert_queue(dp, &rec, opt);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		result += ev_size;
@@ -174,12 +186,17 @@ insert_queue(struct seq_oss_devinfo *dp, union evrec *rec, struct file *opt)
 	memset(&event, 0, sizeof(event));
 	/* set dummy -- to be sure */
 	event.type = SNDRV_SEQ_EVENT_NOTEOFF;
+<<<<<<< HEAD
 	snd_seq_oss_fill_addr(dp, &event, dp->addr.port, dp->addr.client);
+=======
+	snd_seq_oss_fill_addr(dp, &event, dp->addr.client, dp->addr.port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (snd_seq_oss_process_event(dp, rec, &event))
 		return 0; /* invalid event - no need to insert queue */
 
 	event.time.tick = snd_seq_oss_timer_cur_tick(dp->timer);
+<<<<<<< HEAD
 	if (dp->timer->realtime || !dp->timer->running) {
 		snd_seq_oss_dispatch(dp, &event, 0, 0);
 	} else {
@@ -188,6 +205,13 @@ insert_queue(struct seq_oss_devinfo *dp, union evrec *rec, struct file *opt)
 		else
 			rc = snd_seq_kernel_client_enqueue_blocking(dp->cseq, &event, opt, 0, 0);
 	}
+=======
+	if (dp->timer->realtime || !dp->timer->running)
+		snd_seq_oss_dispatch(dp, &event, 0, 0);
+	else
+		rc = snd_seq_kernel_client_enqueue(dp->cseq, &event, opt,
+						   !is_nonblock_mode(dp->file_mode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 		
@@ -196,21 +220,36 @@ insert_queue(struct seq_oss_devinfo *dp, union evrec *rec, struct file *opt)
  * select / poll
  */
   
+<<<<<<< HEAD
 unsigned int
 snd_seq_oss_poll(struct seq_oss_devinfo *dp, struct file *file, poll_table * wait)
 {
 	unsigned int mask = 0;
+=======
+__poll_t
+snd_seq_oss_poll(struct seq_oss_devinfo *dp, struct file *file, poll_table * wait)
+{
+	__poll_t mask = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* input */
 	if (dp->readq && is_read_mode(dp->file_mode)) {
 		if (snd_seq_oss_readq_poll(dp->readq, file, wait))
+<<<<<<< HEAD
 			mask |= POLLIN | POLLRDNORM;
+=======
+			mask |= EPOLLIN | EPOLLRDNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* output */
 	if (dp->writeq && is_write_mode(dp->file_mode)) {
 		if (snd_seq_kernel_client_write_poll(dp->cseq, file, wait))
+<<<<<<< HEAD
 			mask |= POLLOUT | POLLWRNORM;
+=======
+			mask |= EPOLLOUT | EPOLLWRNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return mask;
 }

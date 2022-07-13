@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _SPARC_TLB_H
 #define _SPARC_TLB_H
 
@@ -19,6 +20,12 @@ do {								\
 	flush_tlb_mm((tlb)->mm);				\
 } while (0)
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _SPARC_TLB_H
+#define _SPARC_TLB_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/tlb.h>
 
 #endif /* _SPARC_TLB_H */

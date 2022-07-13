@@ -1,20 +1,44 @@
+<<<<<<< HEAD
 /*
  * wm8994.h  --  WM8994 Soc Audio driver
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * wm8994.h  --  WM8994 Soc Audio driver
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _WM8994_H
 #define _WM8994_H
 
+<<<<<<< HEAD
 #include <sound/soc.h>
 #include <linux/firmware.h>
 #include <linux/completion.h>
 
 #include "wm_hubs.h"
 
+=======
+#include <linux/clk.h>
+#include <sound/soc.h>
+#include <linux/firmware.h>
+#include <linux/completion.h>
+#include <linux/workqueue.h>
+#include <linux/mutex.h>
+
+#include "wm_hubs.h"
+
+enum {
+	WM8994_MCLK1,
+	WM8994_MCLK2,
+	WM8994_NUM_MCLK
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Sources for AIF1/2 SYSCLK - use with set_dai_sysclk() */
 #define WM8994_SYSCLK_MCLK1 1
 #define WM8994_SYSCLK_MCLK2 2
@@ -27,16 +51,25 @@
 #define WM8994_FLL1 1
 #define WM8994_FLL2 2
 
+<<<<<<< HEAD
 #define WM8994_FLL_SRC_MCLK1  1
 #define WM8994_FLL_SRC_MCLK2  2
 #define WM8994_FLL_SRC_LRCLK  3
 #define WM8994_FLL_SRC_BCLK   4
+=======
+#define WM8994_FLL_SRC_MCLK1    1
+#define WM8994_FLL_SRC_MCLK2    2
+#define WM8994_FLL_SRC_LRCLK    3
+#define WM8994_FLL_SRC_BCLK     4
+#define WM8994_FLL_SRC_INTERNAL 5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum wm8994_vmid_mode {
 	WM8994_VMID_NORMAL,
 	WM8994_VMID_FORCE,
 };
 
+<<<<<<< HEAD
 typedef void (*wm8958_micdet_cb)(u16 status, void *data);
 
 int wm8994_mic_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack,
@@ -45,11 +78,27 @@ int wm8958_mic_detect(struct snd_soc_codec *codec, struct snd_soc_jack *jack,
 		      wm8958_micdet_cb cb, void *cb_data);
 
 int wm8994_vmid_mode(struct snd_soc_codec *codec, enum wm8994_vmid_mode mode);
+=======
+typedef void (*wm1811_micdet_cb)(void *data);
+typedef void (*wm1811_mic_id_cb)(void *data, u16 status);
+
+int wm8994_mic_detect(struct snd_soc_component *component, struct snd_soc_jack *jack,
+		      int micbias);
+int wm8958_mic_detect(struct snd_soc_component *component, struct snd_soc_jack *jack,
+		      wm1811_micdet_cb det_cb, void *det_cb_data,
+		      wm1811_mic_id_cb id_cb, void *id_cb_data);
+
+int wm8994_vmid_mode(struct snd_soc_component *component, enum wm8994_vmid_mode mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int wm8958_aif_ev(struct snd_soc_dapm_widget *w,
 		  struct snd_kcontrol *kcontrol, int event);
 
+<<<<<<< HEAD
 void wm8958_dsp2_init(struct snd_soc_codec *codec);
+=======
+void wm8958_dsp2_init(struct snd_soc_component *component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct wm8994_micdet {
 	struct snd_soc_jack *jack;
@@ -71,6 +120,7 @@ struct wm8994;
 struct wm8994_priv {
 	struct wm_hubs_data hubs;
 	struct wm8994 *wm8994;
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
 	int sysclk[2];
 	int sysclk_rate[2];
@@ -79,6 +129,20 @@ struct wm8994_priv {
 	struct wm8994_fll_config fll[2], fll_suspend[2];
 	struct completion fll_locked[2];
 	bool fll_locked_irq;
+=======
+	struct clk_bulk_data mclk[WM8994_NUM_MCLK];
+	int sysclk[2];
+	int sysclk_rate[2];
+	int mclk_rate[2];
+	int aifclk[2];
+	int aifdiv[2];
+	int channels[2];
+	struct wm8994_fll_config fll[2], fll_suspend[2];
+	struct completion fll_locked[2];
+	bool fll_locked_irq;
+	bool fll_byp;
+	bool clk_has_run;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int vmid_refcount;
 	int active_refcount;
@@ -126,11 +190,19 @@ struct wm8994_priv {
 
 	struct mutex accdet_lock;
 	struct wm8994_micdet micdet[2];
+<<<<<<< HEAD
+=======
+	struct delayed_work mic_work;
+	struct delayed_work open_circuit_work;
+	struct delayed_work mic_complete_work;
+	u16 mic_status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool mic_detecting;
 	bool jack_mic;
 	int btn_mask;
 	bool jackdet;
 	int jackdet_mode;
+<<<<<<< HEAD
 
 	wm8958_micdet_cb jack_cb;
 	void *jack_cb_data;
@@ -138,6 +210,15 @@ struct wm8994_priv {
 
 	int revision;
 	struct wm8994_pdata *pdata;
+=======
+	struct delayed_work jackdet_bootstrap;
+
+	int micdet_irq;
+	wm1811_micdet_cb micd_cb;
+	void *micd_cb_data;
+	wm1811_mic_id_cb mic_id_cb;
+	void *mic_id_cb_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned int aif1clk_enable:1;
 	unsigned int aif2clk_enable:1;
@@ -145,6 +226,10 @@ struct wm8994_priv {
 	unsigned int aif1clk_disable:1;
 	unsigned int aif2clk_disable:1;
 
+<<<<<<< HEAD
+=======
+	struct mutex fw_lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dsp_active;
 	const struct firmware *cur_fw;
 	const struct firmware *mbc;

@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * extent_map.c
  *
  * Block/Cluster mapping functions
  *
  * Copyright (C) 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -20,6 +26,8 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -38,6 +46,10 @@
 #include "inode.h"
 #include "super.h"
 #include "symlink.h"
+<<<<<<< HEAD
+=======
+#include "aops.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ocfs2_trace.h"
 
 #include "buffer_head_io.h"
@@ -282,8 +294,12 @@ search:
 	spin_unlock(&oi->ip_lock);
 
 out:
+<<<<<<< HEAD
 	if (new_emi)
 		kfree(new_emi);
+=======
+	kfree(new_emi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ocfs2_last_eb_is_empty(struct inode *inode,
@@ -306,8 +322,13 @@ static int ocfs2_last_eb_is_empty(struct inode *inode,
 
 	if (el->l_tree_depth) {
 		ocfs2_error(inode->i_sb,
+<<<<<<< HEAD
 			    "Inode %lu has non zero tree depth in "
 			    "leaf block %llu\n", inode->i_ino,
+=======
+			    "Inode %lu has non zero tree depth in leaf block %llu\n",
+			    inode->i_ino,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    (unsigned long long)eb_bh->b_blocknr);
 		ret = -EROFS;
 		goto out;
@@ -416,7 +437,11 @@ static int ocfs2_get_clusters_nocache(struct inode *inode,
 {
 	int i, ret, tree_height, len;
 	struct ocfs2_dinode *di;
+<<<<<<< HEAD
 	struct ocfs2_extent_block *uninitialized_var(eb);
+=======
+	struct ocfs2_extent_block *eb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_extent_list *el;
 	struct ocfs2_extent_rec *rec;
 	struct buffer_head *eb_bh = NULL;
@@ -442,8 +467,13 @@ static int ocfs2_get_clusters_nocache(struct inode *inode,
 
 		if (el->l_tree_depth) {
 			ocfs2_error(inode->i_sb,
+<<<<<<< HEAD
 				    "Inode %lu has non zero tree depth in "
 				    "leaf block %llu\n", inode->i_ino,
+=======
+				    "Inode %lu has non zero tree depth in leaf block %llu\n",
+				    inode->i_ino,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    (unsigned long long)eb_bh->b_blocknr);
 			ret = -EROFS;
 			goto out;
@@ -476,8 +506,14 @@ static int ocfs2_get_clusters_nocache(struct inode *inode,
 	BUG_ON(v_cluster < le32_to_cpu(rec->e_cpos));
 
 	if (!rec->e_blkno) {
+<<<<<<< HEAD
 		ocfs2_error(inode->i_sb, "Inode %lu has bad extent "
 			    "record (%u, %u, 0)", inode->i_ino,
+=======
+		ocfs2_error(inode->i_sb,
+			    "Inode %lu has bad extent record (%u, %u, 0)\n",
+			    inode->i_ino,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    le32_to_cpu(rec->e_cpos),
 			    ocfs2_rec_clusters(el, rec));
 		ret = -EROFS;
@@ -565,8 +601,13 @@ int ocfs2_xattr_get_clusters(struct inode *inode, u32 v_cluster,
 
 		if (el->l_tree_depth) {
 			ocfs2_error(inode->i_sb,
+<<<<<<< HEAD
 				    "Inode %lu has non zero tree depth in "
 				    "xattr leaf block %llu\n", inode->i_ino,
+=======
+				    "Inode %lu has non zero tree depth in xattr leaf block %llu\n",
+				    inode->i_ino,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    (unsigned long long)eb_bh->b_blocknr);
 			ret = -EROFS;
 			goto out;
@@ -583,8 +624,14 @@ int ocfs2_xattr_get_clusters(struct inode *inode, u32 v_cluster,
 		BUG_ON(v_cluster < le32_to_cpu(rec->e_cpos));
 
 		if (!rec->e_blkno) {
+<<<<<<< HEAD
 			ocfs2_error(inode->i_sb, "Inode %lu has bad extent "
 				    "record (%u, %u, 0) in xattr", inode->i_ino,
+=======
+			ocfs2_error(inode->i_sb,
+				    "Inode %lu has bad extent record (%u, %u, 0) in xattr\n",
+				    inode->i_ino,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    le32_to_cpu(rec->e_cpos),
 				    ocfs2_rec_clusters(el, rec));
 			ret = -EROFS;
@@ -601,8 +648,12 @@ int ocfs2_xattr_get_clusters(struct inode *inode, u32 v_cluster,
 			*extent_flags = rec->e_flags;
 	}
 out:
+<<<<<<< HEAD
 	if (eb_bh)
 		brelse(eb_bh);
+=======
+	brelse(eb_bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -611,7 +662,11 @@ int ocfs2_get_clusters(struct inode *inode, u32 v_cluster,
 		       unsigned int *extent_flags)
 {
 	int ret;
+<<<<<<< HEAD
 	unsigned int uninitialized_var(hole_len), flags = 0;
+=======
+	unsigned int hole_len, flags = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *di_bh = NULL;
 	struct ocfs2_extent_rec rec;
 
@@ -745,8 +800,11 @@ static int ocfs2_fiemap_inline(struct inode *inode, struct buffer_head *di_bh,
 	return 0;
 }
 
+<<<<<<< HEAD
 #define OCFS2_FIEMAP_FLAGS	(FIEMAP_FLAG_SYNC)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ocfs2_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
 		 u64 map_start, u64 map_len)
 {
@@ -758,7 +816,11 @@ int ocfs2_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
 	struct buffer_head *di_bh = NULL;
 	struct ocfs2_extent_rec rec;
 
+<<<<<<< HEAD
 	ret = fiemap_check_flags(fieinfo, OCFS2_FIEMAP_FLAGS);
+=======
+	ret = fiemap_prep(inode, fieinfo, map_start, &map_len, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -831,7 +893,55 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 int ocfs2_seek_data_hole_offset(struct file *file, loff_t *offset, int origin)
+=======
+/* Is IO overwriting allocated blocks? */
+int ocfs2_overwrite_io(struct inode *inode, struct buffer_head *di_bh,
+		       u64 map_start, u64 map_len)
+{
+	int ret = 0, is_last;
+	u32 mapping_end, cpos;
+	struct ocfs2_super *osb = OCFS2_SB(inode->i_sb);
+	struct ocfs2_extent_rec rec;
+
+	if (OCFS2_I(inode)->ip_dyn_features & OCFS2_INLINE_DATA_FL) {
+		if (ocfs2_size_fits_inline_data(di_bh, map_start + map_len))
+			return ret;
+		else
+			return -EAGAIN;
+	}
+
+	cpos = map_start >> osb->s_clustersize_bits;
+	mapping_end = ocfs2_clusters_for_bytes(inode->i_sb,
+					       map_start + map_len);
+	is_last = 0;
+	while (cpos < mapping_end && !is_last) {
+		ret = ocfs2_get_clusters_nocache(inode, di_bh, cpos,
+						 NULL, &rec, &is_last);
+		if (ret) {
+			mlog_errno(ret);
+			goto out;
+		}
+
+		if (rec.e_blkno == 0ULL)
+			break;
+
+		if (rec.e_flags & OCFS2_EXT_REFCOUNTED)
+			break;
+
+		cpos = le32_to_cpu(rec.e_cpos) +
+			le16_to_cpu(rec.e_leaf_clusters);
+	}
+
+	if (cpos < mapping_end)
+		ret = -EAGAIN;
+out:
+	return ret;
+}
+
+int ocfs2_seek_data_hole_offset(struct file *file, loff_t *offset, int whence)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode = file->f_mapping->host;
 	int ret;
@@ -842,7 +952,11 @@ int ocfs2_seek_data_hole_offset(struct file *file, loff_t *offset, int origin)
 	struct buffer_head *di_bh = NULL;
 	struct ocfs2_extent_rec rec;
 
+<<<<<<< HEAD
 	BUG_ON(origin != SEEK_DATA && origin != SEEK_HOLE);
+=======
+	BUG_ON(whence != SEEK_DATA && whence != SEEK_HOLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ocfs2_inode_lock(inode, &di_bh, 0);
 	if (ret) {
@@ -852,20 +966,33 @@ int ocfs2_seek_data_hole_offset(struct file *file, loff_t *offset, int origin)
 
 	down_read(&OCFS2_I(inode)->ip_alloc_sem);
 
+<<<<<<< HEAD
 	if (*offset >= inode->i_size) {
+=======
+	if (*offset >= i_size_read(inode)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENXIO;
 		goto out_unlock;
 	}
 
 	if (OCFS2_I(inode)->ip_dyn_features & OCFS2_INLINE_DATA_FL) {
+<<<<<<< HEAD
 		if (origin == SEEK_HOLE)
 			*offset = inode->i_size;
+=======
+		if (whence == SEEK_HOLE)
+			*offset = i_size_read(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unlock;
 	}
 
 	clen = 0;
 	cpos = *offset >> cs_bits;
+<<<<<<< HEAD
 	cend = ocfs2_clusters_for_bytes(inode->i_sb, inode->i_size);
+=======
+	cend = ocfs2_clusters_for_bytes(inode->i_sb, i_size_read(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (cpos < cend && !is_last) {
 		ret = ocfs2_get_clusters_nocache(inode, di_bh, cpos, &hole_size,
@@ -887,8 +1014,13 @@ int ocfs2_seek_data_hole_offset(struct file *file, loff_t *offset, int origin)
 			is_data = (rec.e_flags & OCFS2_EXT_UNWRITTEN) ?  0 : 1;
 		}
 
+<<<<<<< HEAD
 		if ((!is_data && origin == SEEK_HOLE) ||
 		    (is_data && origin == SEEK_DATA)) {
+=======
+		if ((!is_data && whence == SEEK_HOLE) ||
+		    (is_data && whence == SEEK_DATA)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (extoff > *offset)
 				*offset = extoff;
 			goto out_unlock;
@@ -898,14 +1030,23 @@ int ocfs2_seek_data_hole_offset(struct file *file, loff_t *offset, int origin)
 			cpos += clen;
 	}
 
+<<<<<<< HEAD
 	if (origin == SEEK_HOLE) {
+=======
+	if (whence == SEEK_HOLE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		extoff = cpos;
 		extoff <<= cs_bits;
 		extlen = clen;
 		extlen <<=  cs_bits;
 
+<<<<<<< HEAD
 		if ((extoff + extlen) > inode->i_size)
 			extlen = inode->i_size - extoff;
+=======
+		if ((extoff + extlen) > i_size_read(inode))
+			extlen = i_size_read(inode) - extoff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		extoff += extlen;
 		if (extoff > *offset)
 			*offset = extoff;
@@ -922,8 +1063,11 @@ out_unlock:
 
 	ocfs2_inode_unlock(inode, 0);
 out:
+<<<<<<< HEAD
 	if (ret && ret != -ENXIO)
 		ret = -ENXIO;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 

@@ -8,12 +8,25 @@
  * Copyright (C) 2003 Guido Guenther <agx@sigxcpu.org>
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/notifier.h>
 #include <linux/delay.h>
 #include <linux/ds17287rtc.h>
+=======
+#include <linux/compiler.h>
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/panic_notifier.h>
+#include <linux/sched.h>
+#include <linux/sched/signal.h>
+#include <linux/notifier.h>
+#include <linux/delay.h>
+#include <linux/rtc/ds1685.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/pm.h>
 
@@ -25,6 +38,11 @@
 #include <asm/ip32/crime.h>
 #include <asm/ip32/ip32_ints.h>
 
+<<<<<<< HEAD
+=======
+#include "ip32-common.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define POWERDOWN_TIMEOUT	120
 /*
  * Blink frequency during reboot grace period and when panicked.
@@ -32,6 +50,7 @@
 #define POWERDOWN_FREQ		(HZ / 4)
 #define PANIC_FREQ		(HZ / 8)
 
+<<<<<<< HEAD
 static struct timer_list power_timer, blink_timer, debounce_timer;
 static int has_panicked, shuting_down;
 
@@ -116,10 +135,68 @@ static void debounce(unsigned long data)
 }
 
 static inline void ip32_power_button(void)
+=======
+extern struct platform_device ip32_rtc_device;
+
+static struct timer_list power_timer, blink_timer;
+static unsigned long blink_timer_timeout;
+static int has_panicked, shutting_down;
+
+static __noreturn void ip32_poweroff(void *data)
+{
+	void (*poweroff_func)(struct platform_device *) =
+		symbol_get(ds1685_rtc_poweroff);
+
+#ifdef CONFIG_MODULES
+	/* If the first __symbol_get failed, our module wasn't loaded. */
+	if (!poweroff_func) {
+		request_module("rtc-ds1685");
+		poweroff_func = symbol_get(ds1685_rtc_poweroff);
+	}
+#endif
+
+	if (!poweroff_func)
+		pr_emerg("RTC not available for power-off.  Spinning forever ...\n");
+	else {
+		(*poweroff_func)((struct platform_device *)data);
+		symbol_put(ds1685_rtc_poweroff);
+	}
+
+	unreachable();
+}
+
+static void ip32_machine_restart(char *cmd) __noreturn;
+static void ip32_machine_restart(char *cmd)
+{
+	msleep(20);
+	crime->control = CRIME_CONTROL_HARD_RESET;
+	unreachable();
+}
+
+static void blink_timeout(struct timer_list *unused)
+{
+	unsigned long led = mace->perif.ctrl.misc ^ MACEISA_LED_RED;
+	mace->perif.ctrl.misc = led;
+	mod_timer(&blink_timer, jiffies + blink_timer_timeout);
+}
+
+static void ip32_machine_halt(void)
+{
+	ip32_poweroff(&ip32_rtc_device);
+}
+
+static void power_timeout(struct timer_list *unused)
+{
+	ip32_poweroff(&ip32_rtc_device);
+}
+
+void ip32_prepare_poweroff(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (has_panicked)
 		return;
 
+<<<<<<< HEAD
 	if (shuting_down || kill_cad_pid(SIGINT, 1)) {
 		/* No init process or button pressed twice.  */
 		ip32_machine_power_off();
@@ -131,10 +208,23 @@ static inline void ip32_power_button(void)
 
 	init_timer(&power_timer);
 	power_timer.function = power_timeout;
+=======
+	if (shutting_down || kill_cad_pid(SIGINT, 1)) {
+		/* No init process or button pressed twice.  */
+		ip32_poweroff(&ip32_rtc_device);
+	}
+
+	shutting_down = 1;
+	blink_timer_timeout = POWERDOWN_FREQ;
+	blink_timeout(&blink_timer);
+
+	timer_setup(&power_timer, power_timeout, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	power_timer.expires = jiffies + POWERDOWN_TIMEOUT * HZ;
 	add_timer(&power_timer);
 }
 
+<<<<<<< HEAD
 static irqreturn_t ip32_rtc_int(int irq, void *dev_id)
 {
 	unsigned char reg_c;
@@ -156,6 +246,8 @@ static irqreturn_t ip32_rtc_int(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int panic_event(struct notifier_block *this, unsigned long event,
 		       void *ptr)
 {
@@ -169,8 +261,13 @@ static int panic_event(struct notifier_block *this, unsigned long event,
 	led = mace->perif.ctrl.misc | MACEISA_LED_GREEN;
 	mace->perif.ctrl.misc = led;
 
+<<<<<<< HEAD
 	blink_timer.data = PANIC_FREQ;
 	blink_timeout(PANIC_FREQ);
+=======
+	blink_timer_timeout = PANIC_FREQ;
+	blink_timeout(&blink_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NOTIFY_DONE;
 }
@@ -189,6 +286,7 @@ static __init int ip32_reboot_setup(void)
 
 	_machine_restart = ip32_machine_restart;
 	_machine_halt = ip32_machine_halt;
+<<<<<<< HEAD
 	pm_power_off = ip32_machine_power_off;
 
 	init_timer(&blink_timer);
@@ -198,6 +296,13 @@ static __init int ip32_reboot_setup(void)
 	if (request_irq(MACEISA_RTC_IRQ, ip32_rtc_int, 0, "rtc", NULL))
 		panic("Can't allocate MACEISA RTC IRQ");
 
+=======
+	pm_power_off = ip32_machine_halt;
+
+	timer_setup(&blink_timer, blink_timeout, 0);
+	atomic_notifier_chain_register(&panic_notifier_list, &panic_block);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

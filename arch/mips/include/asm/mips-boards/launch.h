@@ -1,7 +1,17 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  */
 
+<<<<<<< HEAD
+=======
+#ifndef _ASM_MIPS_BOARDS_LAUNCH_H
+#define _ASM_MIPS_BOARDS_LAUNCH_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASSEMBLER_
 
 struct cpulaunch {
@@ -16,11 +26,19 @@ struct cpulaunch {
 #else
 
 #define LOG2CPULAUNCH	5
+<<<<<<< HEAD
 #define	LAUNCH_PC	0
 #define	LAUNCH_GP	4
 #define	LAUNCH_SP	8
 #define	LAUNCH_A0	12
 #define	LAUNCH_FLAGS	28
+=======
+#define LAUNCH_PC	0
+#define LAUNCH_GP	4
+#define LAUNCH_SP	8
+#define LAUNCH_A0	12
+#define LAUNCH_FLAGS	28
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 
@@ -33,3 +51,8 @@ struct cpulaunch {
 
 /* Polling period in count cycles for secondary CPU's */
 #define LAUNCHPERIOD	10000
+<<<<<<< HEAD
+=======
+
+#endif /* _ASM_MIPS_BOARDS_LAUNCH_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

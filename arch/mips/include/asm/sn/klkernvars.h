@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * File ported from IRIX to Linux by Kanoj Sarcar, 06/08/00.
  * Copyright 2000 Silicon Graphics, Inc.

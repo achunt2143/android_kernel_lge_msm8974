@@ -6,11 +6,16 @@
  * This software may be used and distributed according to the terms
  * of the GNU General Public License, incorporated herein by reference.
  */
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/interrupt.h>
 #include <linux/miscdevice.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
 #include <asm/uaccess.h>
 #include "irq_kern.h"
@@ -24,11 +29,26 @@
 
 #define RNG_MISCDEV_MINOR		183 /* official */
 
+=======
+#include <linux/hw_random.h>
+#include <linux/delay.h>
+#include <linux/uaccess.h>
+#include <init.h>
+#include <irq_kern.h>
+#include <os.h>
+
+/*
+ * core module information
+ */
+#define RNG_MODULE_NAME "hw_random"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Changed at init time, in the non-modular case, and at module load
  * time, in the module case.  Presumably, the module subsystem
  * protects against a module being loaded twice at the same time.
  */
 static int random_fd = -1;
+<<<<<<< HEAD
 static DECLARE_WAIT_QUEUE_HEAD(host_read_wait);
 
 static int rng_dev_open (struct inode *inode, struct file *filp)
@@ -113,6 +133,38 @@ static struct miscdevice rng_miscdev = {
 static irqreturn_t random_interrupt(int irq, void *data)
 {
 	wake_up(&host_read_wait);
+=======
+static struct hwrng hwrng;
+static DECLARE_COMPLETION(have_data);
+
+static int rng_dev_read(struct hwrng *rng, void *buf, size_t max, bool block)
+{
+	int ret;
+
+	for (;;) {
+		ret = os_read_file(random_fd, buf, max);
+		if (block && ret == -EAGAIN) {
+			add_sigio_fd(random_fd);
+
+			ret = wait_for_completion_killable(&have_data);
+
+			ignore_sigio_fd(random_fd);
+			deactivate_fd(random_fd, RANDOM_IRQ);
+
+			if (ret < 0)
+				break;
+		} else {
+			break;
+		}
+	}
+
+	return ret != -EAGAIN ? ret : 0;
+}
+
+static irqreturn_t random_interrupt(int irq, void *data)
+{
+	complete(&have_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -129,6 +181,7 @@ static int __init rng_init (void)
 		goto out;
 
 	random_fd = err;
+<<<<<<< HEAD
 
 	err = um_request_irq(RANDOM_IRQ, random_fd, IRQ_READ, random_interrupt,
 			     IRQF_SAMPLE_RANDOM, "random",
@@ -142,6 +195,20 @@ static int __init rng_init (void)
 	if (err) {
 		printk (KERN_ERR RNG_MODULE_NAME ": misc device register "
 			"failed\n");
+=======
+	err = um_request_irq(RANDOM_IRQ, random_fd, IRQ_READ, random_interrupt,
+			     0, "random", NULL);
+	if (err < 0)
+		goto err_out_cleanup_hw;
+
+	sigio_broken(random_fd);
+	hwrng.name = RNG_MODULE_NAME;
+	hwrng.read = rng_dev_read;
+
+	err = hwrng_register(&hwrng);
+	if (err) {
+		pr_err(RNG_MODULE_NAME " registering failed (%d)\n", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_cleanup_hw;
 	}
 out:
@@ -156,14 +223,32 @@ err_out_cleanup_hw:
 /*
  * rng_cleanup - shutdown RNG module
  */
+<<<<<<< HEAD
 static void __exit rng_cleanup (void)
 {
 	os_close_file(random_fd);
 	misc_deregister (&rng_miscdev);
+=======
+
+static void cleanup(void)
+{
+	free_irq_by_fd(random_fd);
+	os_close_file(random_fd);
+}
+
+static void __exit rng_cleanup(void)
+{
+	hwrng_unregister(&hwrng);
+	os_close_file(random_fd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init (rng_init);
 module_exit (rng_cleanup);
+<<<<<<< HEAD
+=======
+__uml_exitcall(cleanup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("UML Host Random Number Generator (RNG) driver");
 MODULE_LICENSE("GPL");

@@ -1,11 +1,22 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Plug and Play BIOS configuration
 #
 config PNPBIOS
+<<<<<<< HEAD
 	bool "Plug and Play BIOS support (EXPERIMENTAL)"
 	depends on ISA && X86 && EXPERIMENTAL
 	default n
 	---help---
+=======
+	bool "Plug and Play BIOS support"
+	depends on ISA && X86_32
+	default n
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Linux uses the PNPBIOS as defined in "Plug and Play BIOS
 	  Specification Version 1.0A May 5, 1994" to autodetect built-in
 	  mainboard resources (e.g. parallel port resources).
@@ -25,7 +36,11 @@ config PNPBIOS
 config PNPBIOS_PROC_FS
 	bool "Plug and Play BIOS /proc interface"
 	depends on PNPBIOS && PROC_FS
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  If you say Y here and to "/proc file system support", you will be
 	  able to directly access the PNPBIOS.  This includes resource
 	  allocation, ESCD, and other PNPBIOS services.  Using this

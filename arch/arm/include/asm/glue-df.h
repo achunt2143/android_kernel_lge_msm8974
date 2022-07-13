@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/glue-df.h
  *
  *  Copyright (C) 1997-1999 Russell King
  *  Copyright (C) 2000-2002 Deep Blue Solutions Ltd.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef ASM_GLUE_DF_H
 #define ASM_GLUE_DF_H
@@ -18,12 +25,20 @@
  *	================
  *
  *	We have the following to choose from:
+<<<<<<< HEAD
  *	  arm6          - ARM6 style
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	  arm7		- ARM7 style
  *	  v4_early	- ARMv4 without Thumb early abort handler
  *	  v4t_late	- ARMv4 with Thumb late abort handler
  *	  v4t_early	- ARMv4 with Thumb early abort handler
+<<<<<<< HEAD
  *	  v5tej_early	- ARMv5 with Thumb and Java early abort handler
+=======
+ *	  v5t_early	- ARMv5 with Thumb early abort handler
+ *	  v5tj_early	- ARMv5 with Thumb and Java early abort handler
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	  xscale	- ARMv5 with Thumb with Xscale extensions
  *	  v6_early	- ARMv6 generic early abort handler
  *	  v7_early	- ARMv7 generic early abort handler
@@ -31,6 +46,7 @@
 #undef CPU_DABORT_HANDLER
 #undef MULTI_DABORT
 
+<<<<<<< HEAD
 #if defined(CONFIG_CPU_ARM610)
 # ifdef CPU_DABORT_HANDLER
 #  define MULTI_DABORT 1
@@ -44,6 +60,13 @@
 #  define MULTI_DABORT 1
 # else
 #  define CPU_DABORT_HANDLER cpu_arm7_data_abort
+=======
+#ifdef CONFIG_CPU_ABRT_EV4
+# ifdef CPU_DABORT_HANDLER
+#  define MULTI_DABORT 1
+# else
+#  define CPU_DABORT_HANDLER v4_early_abort
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # endif
 #endif
 
@@ -55,6 +78,7 @@
 # endif
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_ABRT_EV4
 # ifdef CPU_DABORT_HANDLER
 #  define MULTI_DABORT 1
@@ -63,6 +87,8 @@
 # endif
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CPU_ABRT_EV4T
 # ifdef CPU_DABORT_HANDLER
 #  define MULTI_DABORT 1
@@ -71,6 +97,7 @@
 # endif
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_ABRT_EV5TJ
 # ifdef CPU_DABORT_HANDLER
 #  define MULTI_DABORT 1
@@ -79,6 +106,8 @@
 # endif
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CPU_ABRT_EV5T
 # ifdef CPU_DABORT_HANDLER
 #  define MULTI_DABORT 1
@@ -87,6 +116,17 @@
 # endif
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_ABRT_EV5TJ
+# ifdef CPU_DABORT_HANDLER
+#  define MULTI_DABORT 1
+# else
+#  define CPU_DABORT_HANDLER v5tj_early_abort
+# endif
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CPU_ABRT_EV6
 # ifdef CPU_DABORT_HANDLER
 #  define MULTI_DABORT 1
@@ -103,6 +143,17 @@
 # endif
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_ABRT_NOMMU
+# ifdef CPU_DABORT_HANDLER
+#  define MULTI_DABORT 1
+# else
+#  define CPU_DABORT_HANDLER nommu_early_abort
+# endif
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CPU_DABORT_HANDLER
 #error Unknown data abort handler type
 #endif

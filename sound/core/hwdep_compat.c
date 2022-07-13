@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   32bit -> 64bit ioctl wrapper for hwdep API
  *   Copyright (c) by Takashi Iwai <tiwai@suse.de>
@@ -16,6 +17,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *   32bit -> 64bit ioctl wrapper for hwdep API
+ *   Copyright (c) by Takashi Iwai <tiwai@suse.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* This file is included from hwdep.c */
@@ -33,6 +40,7 @@ struct snd_hwdep_dsp_image32 {
 static int snd_hwdep_dsp_load_compat(struct snd_hwdep *hw,
 				     struct snd_hwdep_dsp_image32 __user *src)
 {
+<<<<<<< HEAD
 	struct snd_hwdep_dsp_image __user *dst;
 	compat_caddr_t ptr;
 	u32 val;
@@ -53,6 +61,19 @@ static int snd_hwdep_dsp_load_compat(struct snd_hwdep *hw,
 		return -EFAULT;
 
 	return snd_hwdep_dsp_load(hw, dst);
+=======
+	struct snd_hwdep_dsp_image info = {};
+	compat_caddr_t ptr;
+
+	if (copy_from_user(&info, src, 4 + 64) ||
+	    get_user(ptr, &src->image) ||
+	    get_user(info.length, &src->length) ||
+	    get_user(info.driver_data, &src->driver_data))
+		return -EFAULT;
+	info.image = compat_ptr(ptr);
+
+	return snd_hwdep_dsp_load(hw, &info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 enum {

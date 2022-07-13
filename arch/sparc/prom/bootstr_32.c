@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bootstr.c:  Boot string/argument acquisition from the PROM.
  *
@@ -23,6 +27,7 @@ prom_getbootargs(void)
 		return barg_buf;
 	}
 
+<<<<<<< HEAD
 	switch(prom_vers) {
 	case PROM_V0:
 		cp = barg_buf;
@@ -40,6 +45,27 @@ prom_getbootargs(void)
 				*cp++ = *arg++;
 			}
 			*cp++ = ' ';
+=======
+	switch (prom_vers) {
+	case PROM_V0:
+		cp = barg_buf;
+		/* Start from 1 and go over fd(0,0,0)kernel */
+		for (iter = 1; iter < 8; iter++) {
+			arg = (*(romvec->pv_v0bootargs))->argv[iter];
+			if (arg == NULL)
+				break;
+			while (*arg != 0) {
+				/* Leave place for space and null. */
+				if (cp >= barg_buf + BARG_LEN - 2)
+					/* We might issue a warning here. */
+					break;
+				*cp++ = *arg++;
+			}
+			*cp++ = ' ';
+			if (cp >= barg_buf + BARG_LEN - 1)
+				/* We might issue a warning here. */
+				break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		*cp = 0;
 		break;
@@ -49,7 +75,11 @@ prom_getbootargs(void)
 		 * V3 PROM cannot supply as with more than 128 bytes
 		 * of an argument. But a smart bootstrap loader can.
 		 */
+<<<<<<< HEAD
 		strlcpy(barg_buf, *romvec->pv_v2bootargs.bootargs, sizeof(barg_buf));
+=======
+		strscpy(barg_buf, *romvec->pv_v2bootargs.bootargs, sizeof(barg_buf));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;

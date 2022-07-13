@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  blacklist.c
  *
  *  Check to see if the given machine has a known bad ACPI BIOS
  *  or if the BIOS is too old.
+<<<<<<< HEAD
  *  Check given machine against acpi_osi_dmi_table[].
  *
  *  Copyright (C) 2004 Len Brown <len.brown@intel.com>
@@ -31,10 +36,24 @@
 #include <linux/init.h>
 #include <linux/acpi.h>
 #include <acpi/acpi_bus.h>
+=======
+ *  Check given machine against acpi_rev_dmi_table[].
+ *
+ *  Copyright (C) 2004 Len Brown <len.brown@intel.com>
+ *  Copyright (C) 2002 Andy Grover <andrew.grover@intel.com>
+ */
+
+#define pr_fmt(fmt) "ACPI: " fmt
+
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/acpi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dmi.h>
 
 #include "internal.h"
 
+<<<<<<< HEAD
 enum acpi_blacklist_predicates {
 	all_versions,
 	less_than_or_equal,
@@ -53,12 +72,21 @@ struct acpi_blacklist_item {
 };
 
 static struct dmi_system_id acpi_osi_dmi_table[] __initdata;
+=======
+#ifdef CONFIG_DMI
+static const struct dmi_system_id acpi_rev_dmi_table[] __initconst;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * POLICY: If *anything* doesn't work, put it on the blacklist.
  *	   If they are critical errors, mark it critical, and abort driver load.
  */
+<<<<<<< HEAD
 static struct acpi_blacklist_item acpi_blacklist[] __initdata = {
+=======
+static struct acpi_platform_list acpi_blacklist[] __initdata = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Compaq Presario 1700 */
 	{"PTLTD ", "  DSDT  ", 0x06040000, ACPI_SIG_DSDT, less_than_or_equal,
 	 "Multiple problems", 1},
@@ -72,6 +100,7 @@ static struct acpi_blacklist_item acpi_blacklist[] __initdata = {
 	{"IBM   ", "TP600E  ", 0x00000105, ACPI_SIG_DSDT, less_than_or_equal,
 	 "Incorrect _ADR", 1},
 
+<<<<<<< HEAD
 	{""}
 };
 
@@ -169,10 +198,40 @@ int __init acpi_blacklisted(void)
 	blacklisted += blacklist_by_year();
 
 	dmi_check_system(acpi_osi_dmi_table);
+=======
+	{ }
+};
+
+int __init acpi_blacklisted(void)
+{
+	int i;
+	int blacklisted = 0;
+
+	i = acpi_match_platform_list(acpi_blacklist);
+	if (i >= 0) {
+		pr_err("Vendor \"%6.6s\" System \"%8.8s\" Revision 0x%x has a known ACPI BIOS problem.\n",
+		       acpi_blacklist[i].oem_id,
+		       acpi_blacklist[i].oem_table_id,
+		       acpi_blacklist[i].oem_revision);
+
+		pr_err("Reason: %s. This is a %s error\n",
+		       acpi_blacklist[i].reason,
+		       (acpi_blacklist[i].data ?
+			"non-recoverable" : "recoverable"));
+
+		blacklisted = acpi_blacklist[i].data;
+	}
+
+	(void)early_acpi_osi_init();
+#ifdef CONFIG_DMI
+	dmi_check_system(acpi_rev_dmi_table);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return blacklisted;
 }
 #ifdef CONFIG_DMI
+<<<<<<< HEAD
 static int __init dmi_enable_osi_linux(const struct dmi_system_id *d)
 {
 	acpi_dmi_osi_linux(1, d);	/* enable */
@@ -340,6 +399,70 @@ static struct dmi_system_id acpi_osi_dmi_table[] __initdata = {
 		     DMI_MATCH(DMI_PRODUCT_NAME, "1015PX"),
 		},
 	},
+=======
+#ifdef CONFIG_ACPI_REV_OVERRIDE_POSSIBLE
+static int __init dmi_enable_rev_override(const struct dmi_system_id *d)
+{
+	pr_notice("DMI detected: %s (force ACPI _REV to 5)\n", d->ident);
+	acpi_rev_override_setup(NULL);
+	return 0;
+}
+#endif
+
+static const struct dmi_system_id acpi_rev_dmi_table[] __initconst = {
+#ifdef CONFIG_ACPI_REV_OVERRIDE_POSSIBLE
+	/*
+	 * DELL XPS 13 (2015) switches sound between HDA and I2S
+	 * depending on the ACPI _REV callback. If userspace supports
+	 * I2S sufficiently (or if you do not care about sound), you
+	 * can safely disable this quirk.
+	 */
+	{
+	 .callback = dmi_enable_rev_override,
+	 .ident = "DELL XPS 13 (2015)",
+	 .matches = {
+		      DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+		      DMI_MATCH(DMI_PRODUCT_NAME, "XPS 13 9343"),
+		},
+	},
+	{
+	 .callback = dmi_enable_rev_override,
+	 .ident = "DELL Precision 5520",
+	 .matches = {
+		      DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+		      DMI_MATCH(DMI_PRODUCT_NAME, "Precision 5520"),
+		},
+	},
+	{
+	 .callback = dmi_enable_rev_override,
+	 .ident = "DELL Precision 3520",
+	 .matches = {
+		      DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+		      DMI_MATCH(DMI_PRODUCT_NAME, "Precision 3520"),
+		},
+	},
+	/*
+	 * Resolves a quirk with the Dell Latitude 3350 that
+	 * causes the ethernet adapter to not function.
+	 */
+	{
+	 .callback = dmi_enable_rev_override,
+	 .ident = "DELL Latitude 3350",
+	 .matches = {
+		      DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+		      DMI_MATCH(DMI_PRODUCT_NAME, "Latitude 3350"),
+		},
+	},
+	{
+	 .callback = dmi_enable_rev_override,
+	 .ident = "DELL Inspiron 7537",
+	 .matches = {
+		      DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+		      DMI_MATCH(DMI_PRODUCT_NAME, "Inspiron 7537"),
+		},
+	},
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 

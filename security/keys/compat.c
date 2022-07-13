@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 32-bit compatibility syscall for 64-bit systems
  *
  * Copyright (C) 2004-5 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/syscalls.h>
@@ -16,6 +23,7 @@
 #include "internal.h"
 
 /*
+<<<<<<< HEAD
  * Instantiate a key with the specified compatibility multipart payload and
  * link the key into the destination keyring if one is given.
  *
@@ -67,6 +75,12 @@ no_payload:
  */
 asmlinkage long compat_sys_keyctl(u32 option,
 				  u32 arg2, u32 arg3, u32 arg4, u32 arg5)
+=======
+ * The key control system call, 32-bit compatibility version for 64-bit archs
+ */
+COMPAT_SYSCALL_DEFINE5(keyctl, u32, option,
+		       u32, arg2, u32, arg3, u32, arg4, u32, arg5)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (option) {
 	case KEYCTL_GET_KEYRING_ID:
@@ -132,12 +146,59 @@ asmlinkage long compat_sys_keyctl(u32 option,
 		return keyctl_reject_key(arg2, arg3, arg4, arg5);
 
 	case KEYCTL_INSTANTIATE_IOV:
+<<<<<<< HEAD
 		return compat_keyctl_instantiate_key_iov(
 			arg2, compat_ptr(arg3), arg4, arg5);
+=======
+		return keyctl_instantiate_key_iov(arg2, compat_ptr(arg3), arg4,
+						  arg5);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case KEYCTL_INVALIDATE:
 		return keyctl_invalidate_key(arg2);
 
+<<<<<<< HEAD
+=======
+	case KEYCTL_GET_PERSISTENT:
+		return keyctl_get_persistent(arg2, arg3);
+
+	case KEYCTL_DH_COMPUTE:
+		return compat_keyctl_dh_compute(compat_ptr(arg2),
+						compat_ptr(arg3),
+						arg4, compat_ptr(arg5));
+
+	case KEYCTL_RESTRICT_KEYRING:
+		return keyctl_restrict_keyring(arg2, compat_ptr(arg3),
+					       compat_ptr(arg4));
+
+	case KEYCTL_PKEY_QUERY:
+		if (arg3 != 0)
+			return -EINVAL;
+		return keyctl_pkey_query(arg2,
+					 compat_ptr(arg4),
+					 compat_ptr(arg5));
+
+	case KEYCTL_PKEY_ENCRYPT:
+	case KEYCTL_PKEY_DECRYPT:
+	case KEYCTL_PKEY_SIGN:
+		return keyctl_pkey_e_d_s(option,
+					 compat_ptr(arg2), compat_ptr(arg3),
+					 compat_ptr(arg4), compat_ptr(arg5));
+
+	case KEYCTL_PKEY_VERIFY:
+		return keyctl_pkey_verify(compat_ptr(arg2), compat_ptr(arg3),
+					  compat_ptr(arg4), compat_ptr(arg5));
+
+	case KEYCTL_MOVE:
+		return keyctl_keyring_move(arg2, arg3, arg4, arg5);
+
+	case KEYCTL_CAPABILITIES:
+		return keyctl_capabilities(compat_ptr(arg2), arg3);
+
+	case KEYCTL_WATCH_KEY:
+		return keyctl_watch_key(arg2, arg3, arg4);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EOPNOTSUPP;
 	}

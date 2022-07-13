@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * pps_parport.c -- kernel parallel port PPS client
  *
@@ -17,6 +18,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * pps_parport.c -- kernel parallel port PPS client
+ *
+ * Copyright (C) 2009   Alexander Gordeev <lasaine@lvk.cs.msu.su>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -32,11 +40,18 @@
 #include <linux/init.h>
 #include <linux/irqnr.h>
 #include <linux/time.h>
+<<<<<<< HEAD
 #include <linux/parport.h>
 #include <linux/pps_kernel.h>
 
 #define DRVDESC "parallel port PPS client"
 
+=======
+#include <linux/slab.h>
+#include <linux/parport.h>
+#include <linux/pps_kernel.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* module parameters */
 
 #define CLEAR_WAIT_MAX		100
@@ -48,6 +63,10 @@ MODULE_PARM_DESC(clear_wait,
 	" zero turns clear edge capture off entirely");
 module_param(clear_wait, uint, 0);
 
+<<<<<<< HEAD
+=======
+static DEFINE_IDA(pps_client_index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* internal per port structure */
 struct pps_client_pp {
@@ -55,6 +74,10 @@ struct pps_client_pp {
 	struct pps_device *pps;		/* PPS device */
 	unsigned int cw;		/* port clear timeout */
 	unsigned int cw_err;		/* number of timeouts */
+<<<<<<< HEAD
+=======
+	int index;			/* device number */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline int signal_is_set(struct parport *port)
@@ -135,6 +158,11 @@ out_both:
 
 static void parport_attach(struct parport *port)
 {
+<<<<<<< HEAD
+=======
+	struct pardev_cb pps_client_cb;
+	int index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pps_client_pp *device;
 	struct pps_source_info info = {
 		.name		= KBUILD_MODNAME,
@@ -147,14 +175,35 @@ static void parport_attach(struct parport *port)
 		.dev		= NULL
 	};
 
+<<<<<<< HEAD
+=======
+	if (clear_wait > CLEAR_WAIT_MAX) {
+		pr_err("clear_wait value should be not greater then %d\n",
+		       CLEAR_WAIT_MAX);
+		return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device = kzalloc(sizeof(struct pps_client_pp), GFP_KERNEL);
 	if (!device) {
 		pr_err("memory allocation failed, not attaching\n");
 		return;
 	}
 
+<<<<<<< HEAD
 	device->pardev = parport_register_device(port, KBUILD_MODNAME,
 			NULL, NULL, parport_irq, PARPORT_FLAG_EXCL, device);
+=======
+	index = ida_simple_get(&pps_client_index, 0, 0, GFP_KERNEL);
+	memset(&pps_client_cb, 0, sizeof(pps_client_cb));
+	pps_client_cb.private = device;
+	pps_client_cb.irq_func = parport_irq;
+	pps_client_cb.flags = PARPORT_FLAG_EXCL;
+	device->pardev = parport_register_dev_model(port,
+						    KBUILD_MODNAME,
+						    &pps_client_cb,
+						    index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!device->pardev) {
 		pr_err("couldn't register with %s\n", port->name);
 		goto err_free;
@@ -167,7 +216,11 @@ static void parport_attach(struct parport *port)
 
 	device->pps = pps_register_source(&info,
 			PPS_CAPTUREBOTH | PPS_OFFSETASSERT | PPS_OFFSETCLEAR);
+<<<<<<< HEAD
 	if (device->pps == NULL) {
+=======
+	if (IS_ERR(device->pps)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("couldn't register PPS source\n");
 		goto err_release_dev;
 	}
@@ -175,6 +228,10 @@ static void parport_attach(struct parport *port)
 	device->cw = clear_wait;
 
 	port->ops->enable_irq(port);
+<<<<<<< HEAD
+=======
+	device->index = index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_info("attached to %s\n", port->name);
 
@@ -185,6 +242,10 @@ err_release_dev:
 err_unregister_dev:
 	parport_unregister_device(device->pardev);
 err_free:
+<<<<<<< HEAD
+=======
+	ida_simple_remove(&pps_client_index, index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(device);
 }
 
@@ -194,7 +255,11 @@ static void parport_detach(struct parport *port)
 	struct pps_client_pp *device;
 
 	/* FIXME: oooh, this is ugly! */
+<<<<<<< HEAD
 	if (strcmp(pardev->name, KBUILD_MODNAME))
+=======
+	if (!pardev || strcmp(pardev->name, KBUILD_MODNAME))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* not our port */
 		return;
 
@@ -204,11 +269,16 @@ static void parport_detach(struct parport *port)
 	pps_unregister_source(device->pps);
 	parport_release(pardev);
 	parport_unregister_device(pardev);
+<<<<<<< HEAD
+=======
+	ida_simple_remove(&pps_client_index, device->index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(device);
 }
 
 static struct parport_driver pps_parport_driver = {
 	.name = KBUILD_MODNAME,
+<<<<<<< HEAD
 	.attach = parport_attach,
 	.detach = parport_detach,
 };
@@ -246,4 +316,14 @@ module_exit(pps_parport_exit);
 
 MODULE_AUTHOR("Alexander Gordeev <lasaine@lvk.cs.msu.su>");
 MODULE_DESCRIPTION(DRVDESC);
+=======
+	.match_port = parport_attach,
+	.detach = parport_detach,
+	.devmodel = true,
+};
+module_parport_driver(pps_parport_driver);
+
+MODULE_AUTHOR("Alexander Gordeev <lasaine@lvk.cs.msu.su>");
+MODULE_DESCRIPTION("parallel port PPS client");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

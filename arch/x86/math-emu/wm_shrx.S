@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.file	"wm_shrx.S"
 /*---------------------------------------------------------------------------+
  |  wm_shrx.S                                                                |
@@ -32,7 +36,11 @@
  |   Results returned in the 64 bit arg and eax.                             |
  +---------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 ENTRY(FPU_shrx)
+=======
+SYM_FUNC_START(FPU_shrx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	push	%ebp
 	movl	%esp,%ebp
 	pushl	%esi
@@ -54,7 +62,11 @@ ENTRY(FPU_shrx)
 	popl	%ebx
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 L_more_than_31:
 	cmpl	$64,%ecx
@@ -69,7 +81,11 @@ L_more_than_31:
 	movl	$0,4(%esi)
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 L_more_than_63:
 	cmpl	$96,%ecx
@@ -83,7 +99,11 @@ L_more_than_63:
 	movl	%edx,4(%esi)
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 L_more_than_95:
 	xorl	%eax,%eax
@@ -91,7 +111,12 @@ L_more_than_95:
 	movl	%eax,4(%esi)
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+SYM_FUNC_END(FPU_shrx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*---------------------------------------------------------------------------+
@@ -110,7 +135,11 @@ L_more_than_95:
  |   part which has been shifted out of the arg.                             |
  |   Results returned in the 64 bit arg and eax.                             |
  +---------------------------------------------------------------------------*/
+<<<<<<< HEAD
 ENTRY(FPU_shrxs)
+=======
+SYM_FUNC_START(FPU_shrxs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	push	%ebp
 	movl	%esp,%ebp
 	pushl	%esi
@@ -144,7 +173,11 @@ ENTRY(FPU_shrxs)
 	popl	%ebx
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Shift by [0..31] bits */
 Ls_less_than_32:
@@ -161,7 +194,11 @@ Ls_less_than_32:
 	popl	%ebx
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Shift by [64..95] bits */
 Ls_more_than_63:
@@ -187,7 +224,11 @@ Ls_more_than_63:
 	popl	%ebx
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Ls_more_than_95:
 /* Shift by [96..inf) bits */
@@ -201,4 +242,9 @@ Ls_more_than_95:
 	popl	%ebx
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+SYM_FUNC_END(FPU_shrxs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

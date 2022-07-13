@@ -21,8 +21,11 @@
 #define cpu_has_4kex		1
 #define cpu_has_3k_cache	0
 #define cpu_has_4k_cache	0
+<<<<<<< HEAD
 #define cpu_has_tx39_cache	0
 #define cpu_has_fpu		0
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define cpu_has_counter		1
 #define cpu_has_watch		1
 #define cpu_has_divec		1
@@ -46,6 +49,7 @@
 #define cpu_has_ic_fills_f_dc	0
 #define cpu_has_64bits		1
 #define cpu_has_octeon_cache	1
+<<<<<<< HEAD
 #define cpu_has_saa		octeon_has_saa()
 #define cpu_has_mips32r1	0
 #define cpu_has_mips32r2	0
@@ -63,6 +67,22 @@
 #define ARCH_HAS_IRQ_PER_CPU	1
 #define ARCH_HAS_SPINLOCK_PREFETCH 1
 #define spin_lock_prefetch(x) prefetch(x)
+=======
+#define cpu_has_mips32r1	1
+#define cpu_has_mips32r2	1
+#define cpu_has_mips64r1	1
+#define cpu_has_mips64r2	1
+#define cpu_has_dsp		0
+#define cpu_has_dsp2		0
+#define cpu_has_mipsmt		0
+#define cpu_has_vint		0
+#define cpu_has_veic		0
+#define cpu_hwrena_impl_bits	(MIPS_HWRENA_IMPL1 | MIPS_HWRENA_IMPL2)
+#define cpu_has_wsbh            1
+
+#define cpu_has_rixi		(cpu_data[0].cputype != CPU_CAVIUM_OCTEON)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PREFETCH_STRIDE 128
 
 #ifdef __OCTEON__
@@ -73,6 +93,7 @@
 #define ARCH_HAS_USABLE_BUILTIN_POPCOUNT 1
 #endif
 
+<<<<<<< HEAD
 static inline int octeon_has_saa(void)
 {
 	int id;
@@ -80,6 +101,8 @@ static inline int octeon_has_saa(void)
 	return id >= 0x000d0300;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The last 256MB are reserved for device to device mappings and the
  * BAR1 hole.

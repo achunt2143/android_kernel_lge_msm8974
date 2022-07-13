@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TSC-40 serial touchscreen driver. It should be compatible with
  * TSC-10 and 25.
  *
  * Author: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+<<<<<<< HEAD
  * License: GPLv2 as published by the FSF.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -11,7 +18,10 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/serio.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PACKET_LENGTH  5
 struct tsc_ser {
@@ -142,7 +152,11 @@ static void tsc_disconnect(struct serio *serio)
 	serio_set_drvdata(serio, NULL);
 }
 
+<<<<<<< HEAD
 static struct serio_device_id tsc_serio_ids[] = {
+=======
+static const struct serio_device_id tsc_serio_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type   = SERIO_RS232,
 		.proto  = SERIO_TSC40,
@@ -166,6 +180,7 @@ static struct serio_driver tsc_drv = {
 	.disconnect     = tsc_disconnect,
 };
 
+<<<<<<< HEAD
 static int __init tsc_ser_init(void)
 {
 	return serio_register_driver(&tsc_drv);
@@ -177,6 +192,9 @@ static void __exit tsc_exit(void)
 	serio_unregister_driver(&tsc_drv);
 }
 module_exit(tsc_exit);
+=======
+module_serio_driver(tsc_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Sebastian Andrzej Siewior <bigeasy@linutronix.de>");
 MODULE_DESCRIPTION(DRIVER_DESC);

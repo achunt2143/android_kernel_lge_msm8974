@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* behold-columbus.h - Keytable for behold_columbus Remote Controller
  *
  * keymap imported from ir-keymaps.c
@@ -9,6 +10,14 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+// behold-columbus.h - Keytable for behold_columbus Remote Controller
+//
+// keymap imported from ir-keymaps.c
+//
+// Copyright (c) 2010 by Mauro Carvalho Chehab
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -19,7 +28,11 @@
  * The "ascii-art picture" below (in comments, first row
  * is the keycode in hex, and subsequent row(s) shows
  * the button labels (several variants when appropriate)
+<<<<<<< HEAD
  * helps to descide which keycodes to assign to the buttons.
+=======
+ * helps to decide which keycodes to assign to the buttons.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static struct rc_map_table behold_columbus[] = {
@@ -35,6 +48,7 @@ static struct rc_map_table behold_columbus[] = {
 
 	/*  0x01    0x02    0x03  0x0D    *
 	 *   1       2       3   Stereo   *
+<<<<<<< HEAD
 	 *                        	  *
 	 *  0x04    0x05    0x06  0x19    *
 	 *   4       5       6   Snapshot *
@@ -53,13 +67,37 @@ static struct rc_map_table behold_columbus[] = {
 	{ 0x07, KEY_7 },
 	{ 0x08, KEY_8 },
 	{ 0x09, KEY_9 },
+=======
+	 *				  *
+	 *  0x04    0x05    0x06  0x19    *
+	 *   4       5       6   Snapshot *
+	 *				  *
+	 *  0x07    0x08    0x09  0x10    *
+	 *   7       8       9    Zoom	  *
+	 *                                */
+	{ 0x01, KEY_NUMERIC_1 },
+	{ 0x02, KEY_NUMERIC_2 },
+	{ 0x03, KEY_NUMERIC_3 },
+	{ 0x0D, KEY_SETUP },	  /* Setup key */
+	{ 0x04, KEY_NUMERIC_4 },
+	{ 0x05, KEY_NUMERIC_5 },
+	{ 0x06, KEY_NUMERIC_6 },
+	{ 0x19, KEY_CAMERA },	/* Snapshot key */
+	{ 0x07, KEY_NUMERIC_7 },
+	{ 0x08, KEY_NUMERIC_8 },
+	{ 0x09, KEY_NUMERIC_9 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x10, KEY_ZOOM },
 
 	/*  0x0A    0x00    0x0B       0x0C   *
 	 * RECALL    0    ChannelUp  VolumeUp *
 	 *                                    */
 	{ 0x0A, KEY_AGAIN },
+<<<<<<< HEAD
 	{ 0x00, KEY_0 },
+=======
+	{ 0x00, KEY_NUMERIC_0 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0B, KEY_CHANNELUP },
 	{ 0x0C, KEY_VOLUMEUP },
 
@@ -73,7 +111,11 @@ static struct rc_map_table behold_columbus[] = {
 	{ 0x18, KEY_VOLUMEDOWN },
 
 	/*   0x0E   0x1E     0x0F     0x1A  *
+<<<<<<< HEAD
 	 *   Stop   Pause  Previouse  Next  *
+=======
+	 *   Stop   Pause  Previous   Next  *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *                                  */
 
 	{ 0x0E, KEY_STOP },
@@ -85,10 +127,17 @@ static struct rc_map_table behold_columbus[] = {
 
 static struct rc_map_list behold_columbus_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = behold_columbus,
 		.size    = ARRAY_SIZE(behold_columbus),
 		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
 		.name    = RC_MAP_BEHOLD_COLUMBUS,
+=======
+		.scan     = behold_columbus,
+		.size     = ARRAY_SIZE(behold_columbus),
+		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.name     = RC_MAP_BEHOLD_COLUMBUS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -106,4 +155,9 @@ module_init(init_rc_map_behold_columbus)
 module_exit(exit_rc_map_behold_columbus)
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+MODULE_DESCRIPTION("BeholdTV Columbus remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

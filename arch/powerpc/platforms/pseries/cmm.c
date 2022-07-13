@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Collaborative memory management interface.
  *
  * Copyright (C) 2008 IBM Corporation
  * Author(s): Brian King (brking@linux.vnet.ibm.com),
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/ctype.h>
@@ -25,7 +32,10 @@
 #include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kthread.h>
 #include <linux/module.h>
 #include <linux/oom.h>
@@ -34,6 +44,7 @@
 #include <linux/stringify.h>
 #include <linux/swap.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <asm/firmware.h>
 #include <asm/hvcall.h>
 #include <asm/mmu.h>
@@ -42,6 +53,17 @@
 #include <linux/memory.h>
 
 #include "plpar_wrappers.h"
+=======
+#include <linux/balloon_compaction.h>
+#include <asm/firmware.h>
+#include <asm/hvcall.h>
+#include <asm/mmu.h>
+#include <linux/uaccess.h>
+#include <linux/memory.h>
+#include <asm/plpar_wrappers.h>
+
+#include "pseries.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CMM_DRIVER_VERSION	"1.0.0"
 #define CMM_DEFAULT_DELAY	1
@@ -52,12 +74,17 @@
 #define CMM_MIN_MEM_MB		256
 #define KB2PAGES(_p)		((_p)>>(PAGE_SHIFT-10))
 #define PAGES2KB(_p)		((_p)<<(PAGE_SHIFT-10))
+<<<<<<< HEAD
 /*
  * The priority level tries to ensure that this notifier is called as
  * late as possible to reduce thrashing in the shared memory pool.
  */
 #define CMM_MEM_HOTPLUG_PRI	1
 #define CMM_MEM_ISOLATE_PRI	15
+=======
+
+#define CMM_MEM_HOTPLUG_PRI	1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int delay = CMM_DEFAULT_DELAY;
 static unsigned int hotplug_delay = CMM_HOTPLUG_DELAY;
@@ -65,6 +92,11 @@ static unsigned int oom_kb = CMM_OOM_KB;
 static unsigned int cmm_debug = CMM_DEBUG;
 static unsigned int cmm_disabled = CMM_DISABLE;
 static unsigned long min_mem_mb = CMM_MIN_MEM_MB;
+<<<<<<< HEAD
+=======
+static bool __read_mostly simulate;
+static unsigned long simulate_loan_target_kb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct device cmm_dev;
 
 MODULE_AUTHOR("Brian King <brking@linux.vnet.ibm.com>");
@@ -72,6 +104,7 @@ MODULE_DESCRIPTION("IBM System p Collaborative Memory Manager");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(CMM_DRIVER_VERSION);
 
+<<<<<<< HEAD
 module_param_named(delay, delay, uint, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(delay, "Delay (in seconds) between polls to query hypervisor paging requests. "
 		 "[Default=" __stringify(CMM_DEFAULT_DELAY) "]");
@@ -106,10 +139,81 @@ static unsigned long oom_freed_pages;
 static struct cmm_page_array *cmm_page_list;
 static DEFINE_SPINLOCK(cmm_lock);
 
+=======
+module_param_named(delay, delay, uint, 0644);
+MODULE_PARM_DESC(delay, "Delay (in seconds) between polls to query hypervisor paging requests. "
+		 "[Default=" __stringify(CMM_DEFAULT_DELAY) "]");
+module_param_named(hotplug_delay, hotplug_delay, uint, 0644);
+MODULE_PARM_DESC(hotplug_delay, "Delay (in seconds) after memory hotplug remove "
+		 "before loaning resumes. "
+		 "[Default=" __stringify(CMM_HOTPLUG_DELAY) "]");
+module_param_named(oom_kb, oom_kb, uint, 0644);
+MODULE_PARM_DESC(oom_kb, "Amount of memory in kb to free on OOM. "
+		 "[Default=" __stringify(CMM_OOM_KB) "]");
+module_param_named(min_mem_mb, min_mem_mb, ulong, 0644);
+MODULE_PARM_DESC(min_mem_mb, "Minimum amount of memory (in MB) to not balloon. "
+		 "[Default=" __stringify(CMM_MIN_MEM_MB) "]");
+module_param_named(debug, cmm_debug, uint, 0644);
+MODULE_PARM_DESC(debug, "Enable module debugging logging. Set to 1 to enable. "
+		 "[Default=" __stringify(CMM_DEBUG) "]");
+module_param_named(simulate, simulate, bool, 0444);
+MODULE_PARM_DESC(simulate, "Enable simulation mode (no communication with hw).");
+
+#define cmm_dbg(...) if (cmm_debug) { printk(KERN_INFO "cmm: "__VA_ARGS__); }
+
+static atomic_long_t loaned_pages;
+static unsigned long loaned_pages_target;
+static unsigned long oom_freed_pages;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_MUTEX(hotplug_mutex);
 static int hotplug_occurred; /* protected by the hotplug mutex */
 
 static struct task_struct *cmm_thread_ptr;
+<<<<<<< HEAD
+=======
+static struct balloon_dev_info b_dev_info;
+
+static long plpar_page_set_loaned(struct page *page)
+{
+	const unsigned long vpa = page_to_phys(page);
+	unsigned long cmo_page_sz = cmo_get_page_size();
+	long rc = 0;
+	int i;
+
+	if (unlikely(simulate))
+		return 0;
+
+	for (i = 0; !rc && i < PAGE_SIZE; i += cmo_page_sz)
+		rc = plpar_hcall_norets(H_PAGE_INIT, H_PAGE_SET_LOANED, vpa + i, 0);
+
+	for (i -= cmo_page_sz; rc && i != 0; i -= cmo_page_sz)
+		plpar_hcall_norets(H_PAGE_INIT, H_PAGE_SET_ACTIVE,
+				   vpa + i - cmo_page_sz, 0);
+
+	return rc;
+}
+
+static long plpar_page_set_active(struct page *page)
+{
+	const unsigned long vpa = page_to_phys(page);
+	unsigned long cmo_page_sz = cmo_get_page_size();
+	long rc = 0;
+	int i;
+
+	if (unlikely(simulate))
+		return 0;
+
+	for (i = 0; !rc && i < PAGE_SIZE; i += cmo_page_sz)
+		rc = plpar_hcall_norets(H_PAGE_INIT, H_PAGE_SET_ACTIVE, vpa + i, 0);
+
+	for (i -= cmo_page_sz; rc && i != 0; i -= cmo_page_sz)
+		plpar_hcall_norets(H_PAGE_INIT, H_PAGE_SET_LOANED,
+				   vpa + i - cmo_page_sz, 0);
+
+	return rc;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * cmm_alloc_pages - Allocate pages and mark them as loaned
@@ -120,8 +224,12 @@ static struct task_struct *cmm_thread_ptr;
  **/
 static long cmm_alloc_pages(long nr)
 {
+<<<<<<< HEAD
 	struct cmm_page_array *pa, *npa;
 	unsigned long addr;
+=======
+	struct page *page;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long rc;
 
 	cmm_dbg("Begin request for %ld pages\n", nr);
@@ -138,6 +246,7 @@ static long cmm_alloc_pages(long nr)
 			break;
 		}
 
+<<<<<<< HEAD
 		addr = __get_free_page(GFP_NOIO | __GFP_NOWARN |
 				       __GFP_NORETRY | __GFP_NOMEMALLOC);
 		if (!addr)
@@ -178,6 +287,21 @@ static long cmm_alloc_pages(long nr)
 		loaned_pages++;
 		totalram_pages--;
 		spin_unlock(&cmm_lock);
+=======
+		page = balloon_page_alloc();
+		if (!page)
+			break;
+		rc = plpar_page_set_loaned(page);
+		if (rc) {
+			pr_err("%s: Can not set page to loaned. rc=%ld\n", __func__, rc);
+			__free_page(page);
+			break;
+		}
+
+		balloon_page_enqueue(&b_dev_info, page);
+		atomic_long_inc(&loaned_pages);
+		adjust_managed_page_count(page, -1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nr--;
 	}
 
@@ -194,6 +318,7 @@ static long cmm_alloc_pages(long nr)
  **/
 static long cmm_free_pages(long nr)
 {
+<<<<<<< HEAD
 	struct cmm_page_array *pa;
 	unsigned long addr;
 
@@ -218,6 +343,21 @@ static long cmm_free_pages(long nr)
 		totalram_pages++;
 	}
 	spin_unlock(&cmm_lock);
+=======
+	struct page *page;
+
+	cmm_dbg("Begin free of %ld pages.\n", nr);
+	while (nr) {
+		page = balloon_page_dequeue(&b_dev_info);
+		if (!page)
+			break;
+		plpar_page_set_active(page);
+		adjust_managed_page_count(page, 1);
+		__free_page(page);
+		atomic_long_dec(&loaned_pages);
+		nr--;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmm_dbg("End request with %ld pages unfulfilled\n", nr);
 	return nr;
 }
@@ -239,7 +379,11 @@ static int cmm_oom_notify(struct notifier_block *self,
 
 	cmm_dbg("OOM processing started\n");
 	nr = cmm_free_pages(nr);
+<<<<<<< HEAD
 	loaned_pages_target = loaned_pages;
+=======
+	loaned_pages_target = atomic_long_read(&loaned_pages);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*freed += KB2PAGES(oom_kb) - nr;
 	oom_freed_pages += KB2PAGES(oom_kb) - nr;
 	cmm_dbg("OOM processing complete\n");
@@ -256,6 +400,7 @@ static int cmm_oom_notify(struct notifier_block *self,
  **/
 static void cmm_get_mpp(void)
 {
+<<<<<<< HEAD
 	int rc;
 	struct hvcall_mpp_data mpp_data;
 	signed long active_pages_target, page_loan_request, target;
@@ -269,6 +414,26 @@ static void cmm_get_mpp(void)
 
 	page_loan_request = div_s64((s64)mpp_data.loan_request, PAGE_SIZE);
 	target = page_loan_request + (signed long)loaned_pages;
+=======
+	const long __loaned_pages = atomic_long_read(&loaned_pages);
+	const long total_pages = totalram_pages() + __loaned_pages;
+	int rc;
+	struct hvcall_mpp_data mpp_data;
+	signed long active_pages_target, page_loan_request, target;
+	signed long min_mem_pages = (min_mem_mb * 1024 * 1024) / PAGE_SIZE;
+
+	if (likely(!simulate)) {
+		rc = h_get_mpp(&mpp_data);
+		if (rc != H_SUCCESS)
+			return;
+		page_loan_request = div_s64((s64)mpp_data.loan_request,
+					    PAGE_SIZE);
+		target = page_loan_request + __loaned_pages;
+	} else {
+		target = KB2PAGES(simulate_loan_target_kb);
+		page_loan_request = target - __loaned_pages;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (target < 0 || total_pages < min_mem_pages)
 		target = 0;
@@ -289,8 +454,13 @@ static void cmm_get_mpp(void)
 	loaned_pages_target = target;
 
 	cmm_dbg("delta = %ld, loaned = %lu, target = %lu, oom = %lu, totalram = %lu\n",
+<<<<<<< HEAD
 		page_loan_request, loaned_pages, loaned_pages_target,
 		oom_freed_pages, totalram_pages);
+=======
+		page_loan_request, __loaned_pages, loaned_pages_target,
+		oom_freed_pages, totalram_pages());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct notifier_block cmm_oom_nb = {
@@ -307,6 +477,10 @@ static struct notifier_block cmm_oom_nb = {
 static int cmm_thread(void *dummy)
 {
 	unsigned long timeleft;
+<<<<<<< HEAD
+=======
+	long __loaned_pages;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (1) {
 		timeleft = msleep_interruptible(delay * 1000);
@@ -337,11 +511,20 @@ static int cmm_thread(void *dummy)
 
 		cmm_get_mpp();
 
+<<<<<<< HEAD
 		if (loaned_pages_target > loaned_pages) {
 			if (cmm_alloc_pages(loaned_pages_target - loaned_pages))
 				loaned_pages_target = loaned_pages;
 		} else if (loaned_pages_target < loaned_pages)
 			cmm_free_pages(loaned_pages - loaned_pages_target);
+=======
+		__loaned_pages = atomic_long_read(&loaned_pages);
+		if (loaned_pages_target > __loaned_pages) {
+			if (cmm_alloc_pages(loaned_pages_target - __loaned_pages))
+				loaned_pages_target = __loaned_pages;
+		} else if (loaned_pages_target < __loaned_pages)
+			cmm_free_pages(__loaned_pages - loaned_pages_target);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -353,9 +536,15 @@ static int cmm_thread(void *dummy)
 	{							\
 		return sprintf(buf, format, ##args);		\
 	}							\
+<<<<<<< HEAD
 	static DEVICE_ATTR(name, S_IRUGO, show_##name, NULL)
 
 CMM_SHOW(loaned_kb, "%lu\n", PAGES2KB(loaned_pages));
+=======
+	static DEVICE_ATTR(name, 0444, show_##name, NULL)
+
+CMM_SHOW(loaned_kb, "%lu\n", PAGES2KB(atomic_long_read(&loaned_pages)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CMM_SHOW(loaned_target_kb, "%lu\n", PAGES2KB(loaned_pages_target));
 
 static ssize_t show_oom_pages(struct device *dev,
@@ -379,7 +568,11 @@ static ssize_t store_oom_pages(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(oom_freed_kb, S_IWUSR | S_IRUGO,
+=======
+static DEVICE_ATTR(oom_freed_kb, 0644,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   show_oom_pages, store_oom_pages);
 
 static struct device_attribute *cmm_attrs[] = {
@@ -388,11 +581,24 @@ static struct device_attribute *cmm_attrs[] = {
 	&dev_attr_oom_freed_kb,
 };
 
+<<<<<<< HEAD
+=======
+static DEVICE_ULONG_ATTR(simulate_loan_target_kb, 0644,
+			 simulate_loan_target_kb);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct bus_type cmm_subsys = {
 	.name = "cmm",
 	.dev_name = "cmm",
 };
 
+<<<<<<< HEAD
+=======
+static void cmm_release_device(struct device *dev)
+{
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * cmm_sysfs_register - Register with sysfs
  *
@@ -408,6 +614,10 @@ static int cmm_sysfs_register(struct device *dev)
 
 	dev->id = 0;
 	dev->bus = &cmm_subsys;
+<<<<<<< HEAD
+=======
+	dev->release = cmm_release_device;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((rc = device_register(dev)))
 		goto subsys_unregister;
@@ -417,6 +627,14 @@ static int cmm_sysfs_register(struct device *dev)
 			goto fail;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!simulate)
+		return 0;
+	rc = device_create_file(dev, &dev_attr_simulate_loan_target_kb.attr);
+	if (rc)
+		goto fail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 fail:
@@ -453,7 +671,11 @@ static int cmm_reboot_notifier(struct notifier_block *nb,
 		if (cmm_thread_ptr)
 			kthread_stop(cmm_thread_ptr);
 		cmm_thread_ptr = NULL;
+<<<<<<< HEAD
 		cmm_free_pages(loaned_pages);
+=======
+		cmm_free_pages(atomic_long_read(&loaned_pages));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NOTIFY_DONE;
 }
@@ -463,6 +685,7 @@ static struct notifier_block cmm_reboot_nb = {
 };
 
 /**
+<<<<<<< HEAD
  * cmm_count_pages - Count the number of pages loaned in a particular range.
  *
  * @arg: memory_isolate_notify structure with address range and count
@@ -600,6 +823,8 @@ static int cmm_mem_going_offline(void *arg)
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * cmm_memory_cb - Handle memory hotplug notifier calls
  * @self:	notifier block struct
  * @action:	action to take
@@ -612,13 +837,19 @@ static int cmm_mem_going_offline(void *arg)
 static int cmm_memory_cb(struct notifier_block *self,
 			unsigned long action, void *arg)
 {
+<<<<<<< HEAD
 	int ret = 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (action) {
 	case MEM_GOING_OFFLINE:
 		mutex_lock(&hotplug_mutex);
 		hotplug_occurred = 1;
+<<<<<<< HEAD
 		ret = cmm_mem_going_offline(arg);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MEM_OFFLINE:
 	case MEM_CANCEL_OFFLINE:
@@ -631,7 +862,11 @@ static int cmm_memory_cb(struct notifier_block *self,
 		break;
 	}
 
+<<<<<<< HEAD
 	return notifier_from_errno(ret);
+=======
+	return NOTIFY_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct notifier_block cmm_mem_nb = {
@@ -639,6 +874,72 @@ static struct notifier_block cmm_mem_nb = {
 	.priority = CMM_MEM_HOTPLUG_PRI
 };
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_BALLOON_COMPACTION
+static int cmm_migratepage(struct balloon_dev_info *b_dev_info,
+			   struct page *newpage, struct page *page,
+			   enum migrate_mode mode)
+{
+	unsigned long flags;
+
+	/*
+	 * loan/"inflate" the newpage first.
+	 *
+	 * We might race against the cmm_thread who might discover after our
+	 * loan request that another page is to be unloaned. However, once
+	 * the cmm_thread runs again later, this error will automatically
+	 * be corrected.
+	 */
+	if (plpar_page_set_loaned(newpage)) {
+		/* Unlikely, but possible. Tell the caller not to retry now. */
+		pr_err_ratelimited("%s: Cannot set page to loaned.", __func__);
+		return -EBUSY;
+	}
+
+	/* balloon page list reference */
+	get_page(newpage);
+
+	/*
+	 * When we migrate a page to a different zone, we have to fixup the
+	 * count of both involved zones as we adjusted the managed page count
+	 * when inflating.
+	 */
+	if (page_zone(page) != page_zone(newpage)) {
+		adjust_managed_page_count(page, 1);
+		adjust_managed_page_count(newpage, -1);
+	}
+
+	spin_lock_irqsave(&b_dev_info->pages_lock, flags);
+	balloon_page_insert(b_dev_info, newpage);
+	balloon_page_delete(page);
+	b_dev_info->isolated_pages--;
+	spin_unlock_irqrestore(&b_dev_info->pages_lock, flags);
+
+	/*
+	 * activate/"deflate" the old page. We ignore any errors just like the
+	 * other callers.
+	 */
+	plpar_page_set_active(page);
+
+	/* balloon page list reference */
+	put_page(page);
+
+	return MIGRATEPAGE_SUCCESS;
+}
+
+static void cmm_balloon_compaction_init(void)
+{
+	balloon_devinfo_init(&b_dev_info);
+	b_dev_info.migratepage = cmm_migratepage;
+}
+#else /* CONFIG_BALLOON_COMPACTION */
+static void cmm_balloon_compaction_init(void)
+{
+}
+#endif /* CONFIG_BALLOON_COMPACTION */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * cmm_init - Module initialization
  *
@@ -647,6 +948,7 @@ static struct notifier_block cmm_mem_nb = {
  **/
 static int cmm_init(void)
 {
+<<<<<<< HEAD
 	int rc = -ENOMEM;
 
 	if (!firmware_has_feature(FW_FEATURE_CMO))
@@ -654,6 +956,18 @@ static int cmm_init(void)
 
 	if ((rc = register_oom_notifier(&cmm_oom_nb)) < 0)
 		return rc;
+=======
+	int rc;
+
+	if (!firmware_has_feature(FW_FEATURE_CMO) && !simulate)
+		return -EOPNOTSUPP;
+
+	cmm_balloon_compaction_init();
+
+	rc = register_oom_notifier(&cmm_oom_nb);
+	if (rc < 0)
+		goto out_balloon_compaction;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((rc = register_reboot_notifier(&cmm_reboot_nb)))
 		goto out_oom_notifier;
@@ -661,12 +975,21 @@ static int cmm_init(void)
 	if ((rc = cmm_sysfs_register(&cmm_dev)))
 		goto out_reboot_notifier;
 
+<<<<<<< HEAD
 	if (register_memory_notifier(&cmm_mem_nb) ||
 	    register_memory_isolate_notifier(&cmm_mem_isolate_nb))
 		goto out_unregister_notifier;
 
 	if (cmm_disabled)
 		return rc;
+=======
+	rc = register_memory_notifier(&cmm_mem_nb);
+	if (rc)
+		goto out_unregister_notifier;
+
+	if (cmm_disabled)
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmm_thread_ptr = kthread_run(cmm_thread, NULL, "cmmthread");
 	if (IS_ERR(cmm_thread_ptr)) {
@@ -674,16 +997,26 @@ static int cmm_init(void)
 		goto out_unregister_notifier;
 	}
 
+<<<<<<< HEAD
 	return rc;
 
 out_unregister_notifier:
 	unregister_memory_notifier(&cmm_mem_nb);
 	unregister_memory_isolate_notifier(&cmm_mem_isolate_nb);
+=======
+	return 0;
+out_unregister_notifier:
+	unregister_memory_notifier(&cmm_mem_nb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmm_unregister_sysfs(&cmm_dev);
 out_reboot_notifier:
 	unregister_reboot_notifier(&cmm_reboot_nb);
 out_oom_notifier:
 	unregister_oom_notifier(&cmm_oom_nb);
+<<<<<<< HEAD
+=======
+out_balloon_compaction:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -700,8 +1033,12 @@ static void cmm_exit(void)
 	unregister_oom_notifier(&cmm_oom_nb);
 	unregister_reboot_notifier(&cmm_reboot_nb);
 	unregister_memory_notifier(&cmm_mem_nb);
+<<<<<<< HEAD
 	unregister_memory_isolate_notifier(&cmm_mem_isolate_nb);
 	cmm_free_pages(loaned_pages);
+=======
+	cmm_free_pages(atomic_long_read(&loaned_pages));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmm_unregister_sysfs(&cmm_dev);
 }
 
@@ -711,7 +1048,11 @@ static void cmm_exit(void)
  * Return value:
  * 	0 on success / other on failure
  **/
+<<<<<<< HEAD
 static int cmm_set_disable(const char *val, struct kernel_param *kp)
+=======
+static int cmm_set_disable(const char *val, const struct kernel_param *kp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int disable = simple_strtoul(val, NULL, 10);
 
@@ -722,7 +1063,11 @@ static int cmm_set_disable(const char *val, struct kernel_param *kp)
 		if (cmm_thread_ptr)
 			kthread_stop(cmm_thread_ptr);
 		cmm_thread_ptr = NULL;
+<<<<<<< HEAD
 		cmm_free_pages(loaned_pages);
+=======
+		cmm_free_pages(atomic_long_read(&loaned_pages));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (!disable && cmm_disabled) {
 		cmm_thread_ptr = kthread_run(cmm_thread, NULL, "cmmthread");
 		if (IS_ERR(cmm_thread_ptr))
@@ -734,7 +1079,11 @@ static int cmm_set_disable(const char *val, struct kernel_param *kp)
 }
 
 module_param_call(disable, cmm_set_disable, param_get_uint,
+<<<<<<< HEAD
 		  &cmm_disabled, S_IRUGO | S_IWUSR);
+=======
+		  &cmm_disabled, 0644);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(disable, "Disable CMM. Set to 1 to disable. "
 		 "[Default=" __stringify(CMM_DISABLE) "]");
 

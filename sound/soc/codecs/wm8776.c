@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * wm8776.c  --  WM8776 ALSA SoC Audio driver
  *
@@ -12,13 +13,31 @@
  * TODO: Input ALC/limiter support
  */
 
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * wm8776.c  --  WM8776 ALSA SoC Audio driver
+ *
+ * Copyright 2009-12 Wolfson Microelectronics plc
+ *
+ * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+ *
+ * TODO: Input ALC/limiter support
+ */
+
+#include <linux/mod_devicetable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/pm.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/regmap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spi/spi.h>
 #include <linux/slab.h>
 #include <sound/core.h>
@@ -37,6 +56,7 @@ enum wm8776_chip_type {
 
 /* codec private data */
 struct wm8776_priv {
+<<<<<<< HEAD
 	enum snd_soc_control_type control_type;
 	int sysclk[2];
 };
@@ -52,6 +72,51 @@ static const u16 wm8776_reg[WM8776_CACHEREGNUM] = {
 static int wm8776_reset(struct snd_soc_codec *codec)
 {
 	return snd_soc_write(codec, WM8776_RESET, 0);
+=======
+	struct regmap *regmap;
+	int sysclk[2];
+};
+
+static const struct reg_default wm8776_reg_defaults[] = {
+	{  0, 0x79 },
+	{  1, 0x79 },
+	{  2, 0x79 },
+	{  3, 0xff },
+	{  4, 0xff },
+	{  5, 0xff },
+	{  6, 0x00 },
+	{  7, 0x90 },
+	{  8, 0x00 },
+	{  9, 0x00 },
+	{ 10, 0x22 },
+	{ 11, 0x22 },
+	{ 12, 0x22 },
+	{ 13, 0x08 },
+	{ 14, 0xcf },
+	{ 15, 0xcf },
+	{ 16, 0x7b },
+	{ 17, 0x00 },
+	{ 18, 0x32 },
+	{ 19, 0x00 },
+	{ 20, 0xa6 },
+	{ 21, 0x01 },
+	{ 22, 0x01 },
+};
+
+static bool wm8776_volatile(struct device *dev, unsigned int reg)
+{
+	switch (reg) {
+	case WM8776_RESET:
+		return true;
+	default:
+		return false;
+	}
+}
+
+static int wm8776_reset(struct snd_soc_component *component)
+{
+	return snd_soc_component_write(component, WM8776_RESET, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const DECLARE_TLV_DB_SCALE(hp_tlv, -12100, 100, 1);
@@ -137,7 +202,11 @@ static const struct snd_soc_dapm_route routes[] = {
 
 static int wm8776_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
+=======
+	struct snd_soc_component *component = dai->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int reg, iface, master;
 
 	switch (dai->driver->id) {
@@ -195,8 +264,13 @@ static int wm8776_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	}
 
 	/* Finally, write out the values */
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, reg, 0xf, iface);
 	snd_soc_update_bits(codec, WM8776_MSTRCTRL, 0x180, master);
+=======
+	snd_soc_component_update_bits(component, reg, 0xf, iface);
+	snd_soc_component_update_bits(component, WM8776_MSTRCTRL, 0x180, master);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -214,8 +288,13 @@ static int wm8776_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	struct wm8776_priv *wm8776 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8776_priv *wm8776 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int iface_reg, iface;
 	int ratio_shift, master;
 	int i;
@@ -236,7 +315,11 @@ static int wm8776_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	/* Set word length */
+<<<<<<< HEAD
 	switch (snd_pcm_format_width(params_format(params))) {
+=======
+	switch (params_width(params)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 16:
 		iface = 0;
 		break;
@@ -250,13 +333,22 @@ static int wm8776_hw_params(struct snd_pcm_substream *substream,
 		iface = 0x30;
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(codec->dev, "Unsupported sample size: %i\n",
 			snd_pcm_format_width(params_format(params)));
+=======
+		dev_err(component->dev, "Unsupported sample size: %i\n",
+			params_width(params));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* Only need to set MCLK/LRCLK ratio if we're master */
+<<<<<<< HEAD
 	if (snd_soc_read(codec, WM8776_MSTRCTRL) & master) {
+=======
+	if (snd_soc_component_read(component, WM8776_MSTRCTRL) & master) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < ARRAY_SIZE(mclk_ratios); i++) {
 			if (wm8776->sysclk[dai->driver->id] / params_rate(params)
 			    == mclk_ratios[i])
@@ -264,12 +356,17 @@ static int wm8776_hw_params(struct snd_pcm_substream *substream,
 		}
 
 		if (i == ARRAY_SIZE(mclk_ratios)) {
+<<<<<<< HEAD
 			dev_err(codec->dev,
+=======
+			dev_err(component->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Unable to configure MCLK ratio %d/%d\n",
 				wm8776->sysclk[dai->driver->id], params_rate(params));
 			return -EINVAL;
 		}
 
+<<<<<<< HEAD
 		dev_dbg(codec->dev, "MCLK is %dfs\n", mclk_ratios[i]);
 
 		snd_soc_update_bits(codec, WM8776_MSTRCTRL,
@@ -279,53 +376,103 @@ static int wm8776_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	snd_soc_update_bits(codec, iface_reg, 0x30, iface);
+=======
+		dev_dbg(component->dev, "MCLK is %dfs\n", mclk_ratios[i]);
+
+		snd_soc_component_update_bits(component, WM8776_MSTRCTRL,
+				    0x7 << ratio_shift, i << ratio_shift);
+	} else {
+		dev_dbg(component->dev, "DAI in slave mode\n");
+	}
+
+	snd_soc_component_update_bits(component, iface_reg, 0x30, iface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8776_mute(struct snd_soc_dai *dai, int mute)
 {
 	struct snd_soc_codec *codec = dai->codec;
 
 	return snd_soc_write(codec, WM8776_DACMUTE, !!mute);
+=======
+static int wm8776_mute(struct snd_soc_dai *dai, int mute, int direction)
+{
+	struct snd_soc_component *component = dai->component;
+
+	return snd_soc_component_write(component, WM8776_DACMUTE, !!mute);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int wm8776_set_sysclk(struct snd_soc_dai *dai,
 			     int clk_id, unsigned int freq, int dir)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	struct wm8776_priv *wm8776 = snd_soc_codec_get_drvdata(codec);
 
 	BUG_ON(dai->driver->id >= ARRAY_SIZE(wm8776->sysclk));
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8776_priv *wm8776 = snd_soc_component_get_drvdata(component);
+
+	if (WARN_ON(dai->driver->id >= ARRAY_SIZE(wm8776->sysclk)))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wm8776->sysclk[dai->driver->id] = freq;
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8776_set_bias_level(struct snd_soc_codec *codec,
 				 enum snd_soc_bias_level level)
 {
+=======
+static int wm8776_set_bias_level(struct snd_soc_component *component,
+				 enum snd_soc_bias_level level)
+{
+	struct wm8776_priv *wm8776 = snd_soc_component_get_drvdata(component);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 		break;
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
 			snd_soc_cache_sync(codec);
 
 			/* Disable the global powerdown; DAPM does the rest */
 			snd_soc_update_bits(codec, WM8776_PWRDOWN, 1, 0);
+=======
+		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
+			regcache_sync(wm8776->regmap);
+
+			/* Disable the global powerdown; DAPM does the rest */
+			snd_soc_component_update_bits(component, WM8776_PWRDOWN, 1, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		break;
 	case SND_SOC_BIAS_OFF:
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, WM8776_PWRDOWN, 1, 1);
 		break;
 	}
 
 	codec->dapm.bias_level = level;
+=======
+		snd_soc_component_update_bits(component, WM8776_PWRDOWN, 1, 1);
+		break;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -333,10 +480,18 @@ static int wm8776_set_bias_level(struct snd_soc_codec *codec,
 			SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
 
 static const struct snd_soc_dai_ops wm8776_dac_ops = {
+<<<<<<< HEAD
 	.digital_mute	= wm8776_mute,
 	.hw_params      = wm8776_hw_params,
 	.set_fmt        = wm8776_set_fmt,
 	.set_sysclk     = wm8776_set_sysclk,
+=======
+	.mute_stream	= wm8776_mute,
+	.hw_params      = wm8776_hw_params,
+	.set_fmt        = wm8776_set_fmt,
+	.set_sysclk     = wm8776_set_sysclk,
+	.no_capture_mute = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct snd_soc_dai_ops wm8776_adc_ops = {
@@ -376,6 +531,7 @@ static struct snd_soc_dai_driver wm8776_dai[] = {
 	},
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int wm8776_suspend(struct snd_soc_codec *codec)
 {
@@ -417,10 +573,27 @@ static int wm8776_probe(struct snd_soc_codec *codec)
 	 * update both. */
 	snd_soc_update_bits(codec, WM8776_HPRVOL, 0x100, 0x100);
 	snd_soc_update_bits(codec, WM8776_DACRVOL, 0x100, 0x100);
+=======
+static int wm8776_probe(struct snd_soc_component *component)
+{
+	int ret = 0;
+
+	ret = wm8776_reset(component);
+	if (ret < 0) {
+		dev_err(component->dev, "Failed to issue reset: %d\n", ret);
+		return ret;
+	}
+
+	/* Latch the update bits; right channel only since we always
+	 * update both. */
+	snd_soc_component_update_bits(component, WM8776_HPRVOL, 0x100, 0x100);
+	snd_soc_component_update_bits(component, WM8776_DACRVOL, 0x100, 0x100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 /* power down chip */
 static int wm8776_remove(struct snd_soc_codec *codec)
 {
@@ -444,6 +617,21 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8776 = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8776_dapm_widgets),
 	.dapm_routes = routes,
 	.num_dapm_routes = ARRAY_SIZE(routes),
+=======
+static const struct snd_soc_component_driver soc_component_dev_wm8776 = {
+	.probe			= wm8776_probe,
+	.set_bias_level		= wm8776_set_bias_level,
+	.controls		= wm8776_snd_controls,
+	.num_controls		= ARRAY_SIZE(wm8776_snd_controls),
+	.dapm_widgets		= wm8776_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(wm8776_dapm_widgets),
+	.dapm_routes		= routes,
+	.num_dapm_routes	= ARRAY_SIZE(routes),
+	.suspend_bias_off	= 1,
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct of_device_id wm8776_of_match[] = {
@@ -452,8 +640,25 @@ static const struct of_device_id wm8776_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, wm8776_of_match);
 
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_MASTER)
 static int __devinit wm8776_spi_probe(struct spi_device *spi)
+=======
+static const struct regmap_config wm8776_regmap = {
+	.reg_bits = 7,
+	.val_bits = 9,
+	.max_register = WM8776_RESET,
+
+	.reg_defaults = wm8776_reg_defaults,
+	.num_reg_defaults = ARRAY_SIZE(wm8776_reg_defaults),
+	.cache_type = REGCACHE_MAPLE,
+
+	.volatile_reg = wm8776_volatile,
+};
+
+#if defined(CONFIG_SPI_MASTER)
+static int wm8776_spi_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8776_priv *wm8776;
 	int ret;
@@ -463,15 +668,27 @@ static int __devinit wm8776_spi_probe(struct spi_device *spi)
 	if (wm8776 == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	wm8776->control_type = SND_SOC_SPI;
 	spi_set_drvdata(spi, wm8776);
 
 	ret = snd_soc_register_codec(&spi->dev,
 			&soc_codec_dev_wm8776, wm8776_dai, ARRAY_SIZE(wm8776_dai));
+=======
+	wm8776->regmap = devm_regmap_init_spi(spi, &wm8776_regmap);
+	if (IS_ERR(wm8776->regmap))
+		return PTR_ERR(wm8776->regmap);
+
+	spi_set_drvdata(spi, wm8776);
+
+	ret = devm_snd_soc_register_component(&spi->dev,
+			&soc_component_dev_wm8776, wm8776_dai, ARRAY_SIZE(wm8776_dai));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit wm8776_spi_remove(struct spi_device *spi)
 {
 	snd_soc_unregister_codec(&spi->dev);
@@ -492,6 +709,19 @@ static struct spi_driver wm8776_spi_driver = {
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
 static __devinit int wm8776_i2c_probe(struct i2c_client *i2c,
 				      const struct i2c_device_id *id)
+=======
+static struct spi_driver wm8776_spi_driver = {
+	.driver = {
+		.name	= "wm8776",
+		.of_match_table = wm8776_of_match,
+	},
+	.probe		= wm8776_spi_probe,
+};
+#endif /* CONFIG_SPI_MASTER */
+
+#if IS_ENABLED(CONFIG_I2C)
+static int wm8776_i2c_probe(struct i2c_client *i2c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8776_priv *wm8776;
 	int ret;
@@ -501,21 +731,35 @@ static __devinit int wm8776_i2c_probe(struct i2c_client *i2c,
 	if (wm8776 == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	i2c_set_clientdata(i2c, wm8776);
 	wm8776->control_type = SND_SOC_I2C;
 
 	ret =  snd_soc_register_codec(&i2c->dev,
 			&soc_codec_dev_wm8776, wm8776_dai, ARRAY_SIZE(wm8776_dai));
+=======
+	wm8776->regmap = devm_regmap_init_i2c(i2c, &wm8776_regmap);
+	if (IS_ERR(wm8776->regmap))
+		return PTR_ERR(wm8776->regmap);
+
+	i2c_set_clientdata(i2c, wm8776);
+
+	ret = devm_snd_soc_register_component(&i2c->dev,
+			&soc_component_dev_wm8776, wm8776_dai, ARRAY_SIZE(wm8776_dai));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static __devexit int wm8776_i2c_remove(struct i2c_client *client)
 {
 	snd_soc_unregister_codec(&client->dev);
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id wm8776_i2c_id[] = {
 	{ "wm8775", WM8775 },
 	{ "wm8776", WM8776 },
@@ -526,11 +770,17 @@ MODULE_DEVICE_TABLE(i2c, wm8776_i2c_id);
 static struct i2c_driver wm8776_i2c_driver = {
 	.driver = {
 		.name = "wm8776",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = wm8776_of_match,
 	},
 	.probe =    wm8776_i2c_probe,
 	.remove =   __devexit_p(wm8776_i2c_remove),
+=======
+		.of_match_table = wm8776_of_match,
+	},
+	.probe = wm8776_i2c_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = wm8776_i2c_id,
 };
 #endif
@@ -538,7 +788,11 @@ static struct i2c_driver wm8776_i2c_driver = {
 static int __init wm8776_modinit(void)
 {
 	int ret = 0;
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = i2c_add_driver(&wm8776_i2c_driver);
 	if (ret != 0) {
 		printk(KERN_ERR "Failed to register wm8776 I2C driver: %d\n",
@@ -558,7 +812,11 @@ module_init(wm8776_modinit);
 
 static void __exit wm8776_exit(void)
 {
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_del_driver(&wm8776_i2c_driver);
 #endif
 #if defined(CONFIG_SPI_MASTER)

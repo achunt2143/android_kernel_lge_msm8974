@@ -11,6 +11,14 @@
 #ifndef _XTENSA_SPINLOCK_H
 #define _XTENSA_SPINLOCK_H
 
+<<<<<<< HEAD
 #include <linux/spinlock.h>
+=======
+#include <asm/barrier.h>
+#include <asm/qspinlock.h>
+#include <asm/qrwlock.h>
+
+#define smp_mb__after_spinlock()	smp_mb()
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* _XTENSA_SPINLOCK_H */

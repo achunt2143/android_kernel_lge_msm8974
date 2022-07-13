@@ -20,7 +20,11 @@
 #include <linux/seq_file.h>
 #include <linux/serial.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 
 #include <platform/simcall.h>
@@ -28,6 +32,7 @@
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 
+<<<<<<< HEAD
 #ifdef SERIAL_INLINE
 #define _INLINE_ inline
 #endif
@@ -75,10 +80,26 @@ static int rs_open(struct tty_struct *tty, struct file * filp)
 		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
 	}
 	spin_unlock(&timer_lock);
+=======
+#define SERIAL_MAX_NUM_LINES 1
+#define SERIAL_TIMER_VALUE (HZ / 10)
+
+static void rs_poll(struct timer_list *);
+
+static struct tty_driver *serial_driver;
+static struct tty_port serial_port;
+static DEFINE_TIMER(serial_timer, rs_poll);
+
+static int rs_open(struct tty_struct *tty, struct file * filp)
+{
+	if (tty->count == 1)
+		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 
 /*
  * ------------------------------------------------------------
@@ -121,10 +142,40 @@ static void rs_poll(unsigned long priv)
 	while (__simc(SYS_select_one, 0, XTISS_SELECT_ONE_READ, (int)&tv,0,0)){
 		__simc (SYS_read, 0, (unsigned long)&c, 1, 0, 0);
 		tty_insert_flip_char(tty, c, TTY_NORMAL);
+=======
+static void rs_close(struct tty_struct *tty, struct file * filp)
+{
+	if (tty->count == 1)
+		del_timer_sync(&serial_timer);
+}
+
+
+static ssize_t rs_write(struct tty_struct * tty, const u8 *buf, size_t count)
+{
+	/* see drivers/char/serialX.c to reference original version */
+
+	simc_write(1, buf, count);
+	return count;
+}
+
+static void rs_poll(struct timer_list *unused)
+{
+	struct tty_port *port = &serial_port;
+	int i = 0;
+	int rd = 1;
+	u8 c;
+
+	while (simc_poll(0)) {
+		rd = simc_read(0, &c, 1);
+		if (rd <= 0)
+			break;
+		tty_insert_flip_char(port, c, TTY_NORMAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i++;
 	}
 
 	if (i)
+<<<<<<< HEAD
 		tty_flip_buffer_push(tty);
 
 
@@ -148,11 +199,20 @@ static void rs_flush_chars(struct tty_struct *tty)
 }
 
 static int rs_write_room(struct tty_struct *tty)
+=======
+		tty_flip_buffer_push(port);
+	if (rd)
+		mod_timer(&serial_timer, jiffies + SERIAL_TIMER_VALUE);
+}
+
+static unsigned int rs_write_room(struct tty_struct *tty)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Let's say iss can always accept 2K characters.. */
 	return 2 * 1024;
 }
 
+<<<<<<< HEAD
 static int rs_chars_in_buffer(struct tty_struct *tty)
 {
 	/* the iss doesn't buffer characters */
@@ -188,10 +248,19 @@ static const struct file_operations rs_proc_fops = {
 	.release	= single_release,
 };
 
+=======
+static int rs_proc_show(struct seq_file *m, void *v)
+{
+	seq_printf(m, "serinfo:1.0 driver:0.1\n");
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct tty_operations serial_ops = {
 	.open = rs_open,
 	.close = rs_close,
 	.write = rs_write,
+<<<<<<< HEAD
 	.put_char = rs_put_char,
 	.flush_chars = rs_flush_chars,
 	.write_room = rs_write_room,
@@ -226,18 +295,67 @@ int __init rs_init(void)
 
 	if (tty_register_driver(serial_driver))
 		panic("Couldn't register serial driver\n");
+=======
+	.write_room = rs_write_room,
+	.proc_show = rs_proc_show,
+};
+
+static int __init rs_init(void)
+{
+	struct tty_driver *driver;
+	int ret;
+
+	driver = tty_alloc_driver(SERIAL_MAX_NUM_LINES, TTY_DRIVER_REAL_RAW);
+	if (IS_ERR(driver))
+		return PTR_ERR(driver);
+
+	tty_port_init(&serial_port);
+
+	/* Initialize the tty_driver structure */
+
+	driver->driver_name = "iss_serial";
+	driver->name = "ttyS";
+	driver->major = TTY_MAJOR;
+	driver->minor_start = 64;
+	driver->type = TTY_DRIVER_TYPE_SERIAL;
+	driver->subtype = SERIAL_TYPE_NORMAL;
+	driver->init_termios = tty_std_termios;
+	driver->init_termios.c_cflag =
+		B9600 | CS8 | CREAD | HUPCL | CLOCAL;
+
+	tty_set_operations(driver, &serial_ops);
+	tty_port_link_device(&serial_port, driver, 0);
+
+	ret = tty_register_driver(driver);
+	if (ret) {
+		pr_err("Couldn't register serial driver\n");
+		tty_driver_kref_put(driver);
+		tty_port_destroy(&serial_port);
+
+		return ret;
+	}
+
+	serial_driver = driver;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
 static __exit void rs_exit(void)
 {
+<<<<<<< HEAD
 	int error;
 
 	if ((error = tty_unregister_driver(serial_driver)))
 		printk("ISS_SERIAL: failed to unregister serial driver (%d)\n",
 		       error);
 	put_tty_driver(serial_driver);
+=======
+	tty_unregister_driver(serial_driver);
+	tty_driver_kref_put(serial_driver);
+	tty_port_destroy(&serial_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -257,11 +375,16 @@ late_initcall(rs_init);
 
 static void iss_console_write(struct console *co, const char *s, unsigned count)
 {
+<<<<<<< HEAD
 	int len = strlen(s);
 
 	if (s != 0 && *s != 0)
 		__simc (SYS_write, 1, (unsigned long)s,
 			count < len ? count : len,0,0);
+=======
+	if (s && *s != 0)
+		simc_write(1, s, min(count, strlen(s)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct tty_driver* iss_console_device(struct console *c, int *index)

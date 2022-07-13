@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * namei.c
  *
  * Create and rename file, directory, symlinks
@@ -19,6 +24,7 @@
  *   linux/fs/minix/dir.c
  *
  *   Copyright (C) 1991, 1992 Linux Torvalds
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -34,6 +40,8 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -41,6 +49,10 @@
 #include <linux/slab.h>
 #include <linux/highmem.h>
 #include <linux/quotaops.h>
+<<<<<<< HEAD
+=======
+#include <linux/iversion.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <cluster/masklog.h>
 
@@ -63,6 +75,10 @@
 #include "xattr.h"
 #include "acl.h"
 #include "ocfs2_trace.h"
+<<<<<<< HEAD
+=======
+#include "ioctl.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "buffer_head_io.h"
 
@@ -79,7 +95,12 @@ static int ocfs2_prepare_orphan_dir(struct ocfs2_super *osb,
 				    struct inode **ret_orphan_dir,
 				    u64 blkno,
 				    char *name,
+<<<<<<< HEAD
 				    struct ocfs2_dir_lookup_result *lookup);
+=======
+				    struct ocfs2_dir_lookup_result *lookup,
+				    bool dio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ocfs2_orphan_add(struct ocfs2_super *osb,
 			    handle_t *handle,
@@ -87,13 +108,29 @@ static int ocfs2_orphan_add(struct ocfs2_super *osb,
 			    struct buffer_head *fe_bh,
 			    char *name,
 			    struct ocfs2_dir_lookup_result *lookup,
+<<<<<<< HEAD
 			    struct inode *orphan_dir_inode);
+=======
+			    struct inode *orphan_dir_inode,
+			    bool dio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ocfs2_create_symlink_data(struct ocfs2_super *osb,
 				     handle_t *handle,
 				     struct inode *inode,
 				     const char *symname);
 
+<<<<<<< HEAD
+=======
+static int ocfs2_double_lock(struct ocfs2_super *osb,
+			     struct buffer_head **bh1,
+			     struct inode *inode1,
+			     struct buffer_head **bh2,
+			     struct inode *inode2,
+			     int rename);
+
+static void ocfs2_double_unlock(struct inode *inode1, struct inode *inode2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* An orphan dir name is an 8 byte value, printed as a hex string */
 #define OCFS2_ORPHAN_NAMELEN ((int)(2 * sizeof(u64)))
 
@@ -158,7 +195,11 @@ bail_add:
 		 * NOTE: This dentry already has ->d_op set from
 		 * ocfs2_get_parent() and ocfs2_get_dentry()
 		 */
+<<<<<<< HEAD
 		if (ret)
+=======
+		if (!IS_ERR_OR_NULL(ret))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dentry = ret;
 
 		status = ocfs2_dentry_attach_lock(dentry, inode,
@@ -188,11 +229,19 @@ bail:
 static struct inode *ocfs2_get_init_inode(struct inode *dir, umode_t mode)
 {
 	struct inode *inode;
+<<<<<<< HEAD
+=======
+	int status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inode = new_inode(dir->i_sb);
 	if (!inode) {
 		mlog(ML_ERROR, "new_inode failed!\n");
+<<<<<<< HEAD
 		return NULL;
+=======
+		return ERR_PTR(-ENOMEM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* populate as many fields early on as possible - many of
@@ -200,12 +249,41 @@ static struct inode *ocfs2_get_init_inode(struct inode *dir, umode_t mode)
 	 * callers. */
 	if (S_ISDIR(mode))
 		set_nlink(inode, 2);
+<<<<<<< HEAD
 	inode_init_owner(inode, dir, mode);
 	dquot_initialize(inode);
 	return inode;
 }
 
 static int ocfs2_mknod(struct inode *dir,
+=======
+	mode = mode_strip_sgid(&nop_mnt_idmap, dir, mode);
+	inode_init_owner(&nop_mnt_idmap, inode, dir, mode);
+	status = dquot_initialize(inode);
+	if (status)
+		return ERR_PTR(status);
+
+	return inode;
+}
+
+static void ocfs2_cleanup_add_entry_failure(struct ocfs2_super *osb,
+		struct dentry *dentry, struct inode *inode)
+{
+	struct ocfs2_dentry_lock *dl = dentry->d_fsdata;
+
+	ocfs2_simple_drop_lockres(osb, &dl->dl_lockres);
+	ocfs2_lock_res_free(&dl->dl_lockres);
+	BUG_ON(dl->dl_count != 1);
+	spin_lock(&dentry_attach_lock);
+	dentry->d_fsdata = NULL;
+	spin_unlock(&dentry_attach_lock);
+	kfree(dl);
+	iput(inode);
+}
+
+static int ocfs2_mknod(struct mnt_idmap *idmap,
+		       struct inode *dir,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       struct dentry *dentry,
 		       umode_t mode,
 		       dev_t dev)
@@ -215,6 +293,10 @@ static int ocfs2_mknod(struct inode *dir,
 	handle_t *handle = NULL;
 	struct ocfs2_super *osb;
 	struct ocfs2_dinode *dirfe;
+<<<<<<< HEAD
+=======
+	struct ocfs2_dinode *fe = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *new_fe_bh = NULL;
 	struct inode *inode = NULL;
 	struct ocfs2_alloc_context *inode_ac = NULL;
@@ -224,18 +306,34 @@ static int ocfs2_mknod(struct inode *dir,
 	int want_meta = 0;
 	int xattr_credits = 0;
 	struct ocfs2_security_xattr_info si = {
+<<<<<<< HEAD
+=======
+		.name = NULL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.enable = 1,
 	};
 	int did_quota_inode = 0;
 	struct ocfs2_dir_lookup_result lookup = { NULL, };
 	sigset_t oldset;
 	int did_block_signals = 0;
+<<<<<<< HEAD
+=======
+	struct ocfs2_dentry_lock *dl = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_mknod(dir, dentry, dentry->d_name.len, dentry->d_name.name,
 			  (unsigned long long)OCFS2_I(dir)->ip_blkno,
 			  (unsigned long)dev, mode);
 
+<<<<<<< HEAD
 	dquot_initialize(dir);
+=======
+	status = dquot_initialize(dir);
+	if (status) {
+		mlog_errno(status);
+		return status;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get our super block */
 	osb = OCFS2_SB(dir->i_sb);
@@ -282,8 +380,14 @@ static int ocfs2_mknod(struct inode *dir,
 	}
 
 	inode = ocfs2_get_init_inode(dir, mode);
+<<<<<<< HEAD
 	if (!inode) {
 		status = -ENOMEM;
+=======
+	if (IS_ERR(inode)) {
+		status = PTR_ERR(inode);
+		inode = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog_errno(status);
 		goto leave;
 	}
@@ -359,6 +463,10 @@ static int ocfs2_mknod(struct inode *dir,
 		goto leave;
 	}
 
+<<<<<<< HEAD
+=======
+	fe = (struct ocfs2_dinode *) new_fe_bh->b_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (S_ISDIR(mode)) {
 		status = ocfs2_fill_new_dir(osb, handle, dir, inode,
 					    new_fe_bh, data_ac, meta_ac);
@@ -380,10 +488,18 @@ static int ocfs2_mknod(struct inode *dir,
 	}
 
 	status = ocfs2_init_acl(handle, inode, dir, new_fe_bh, parent_fe_bh,
+<<<<<<< HEAD
 				meta_ac, data_ac);
 	if (status < 0) {
 		mlog_errno(status);
 		goto leave;
+=======
+			 meta_ac, data_ac);
+
+	if (status < 0) {
+		mlog_errno(status);
+		goto roll_back;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (si.enable) {
@@ -391,7 +507,11 @@ static int ocfs2_mknod(struct inode *dir,
 						 meta_ac, data_ac);
 		if (status < 0) {
 			mlog_errno(status);
+<<<<<<< HEAD
 			goto leave;
+=======
+			goto roll_back;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -404,25 +524,55 @@ static int ocfs2_mknod(struct inode *dir,
 					  OCFS2_I(dir)->ip_blkno);
 	if (status) {
 		mlog_errno(status);
+<<<<<<< HEAD
 		goto leave;
 	}
 
+=======
+		goto roll_back;
+	}
+
+	dl = dentry->d_fsdata;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = ocfs2_add_entry(handle, dentry, inode,
 				 OCFS2_I(inode)->ip_blkno, parent_fe_bh,
 				 &lookup);
 	if (status < 0) {
 		mlog_errno(status);
+<<<<<<< HEAD
 		goto leave;
+=======
+		goto roll_back;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	insert_inode_hash(inode);
 	d_instantiate(dentry, inode);
 	status = 0;
+<<<<<<< HEAD
 leave:
 	if (status < 0 && did_quota_inode)
 		dquot_free_inode(inode);
 	if (handle)
 		ocfs2_commit_trans(osb, handle);
+=======
+
+roll_back:
+	if (status < 0 && S_ISDIR(mode)) {
+		ocfs2_add_links_count(dirfe, -1);
+		drop_nlink(dir);
+	}
+
+leave:
+	if (status < 0 && did_quota_inode)
+		dquot_free_inode(inode);
+	if (handle) {
+		if (status < 0 && fe)
+			ocfs2_set_links_count(fe, 0);
+		ocfs2_commit_trans(osb, handle);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_inode_unlock(dir, 1);
 	if (did_block_signals)
@@ -430,7 +580,10 @@ leave:
 
 	brelse(new_fe_bh);
 	brelse(parent_fe_bh);
+<<<<<<< HEAD
 	kfree(si.name);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(si.value);
 
 	ocfs2_free_dir_lookup_result(&lookup);
@@ -445,11 +598,21 @@ leave:
 		ocfs2_free_alloc_context(meta_ac);
 
 	/*
+<<<<<<< HEAD
 	 * We should call iput after the i_mutex of the bitmap been
+=======
+	 * We should call iput after the i_rwsem of the bitmap been
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * unlocked in ocfs2_free_alloc_context, or the
 	 * ocfs2_delete_inode will mutex_lock again.
 	 */
 	if ((status < 0) && inode) {
+<<<<<<< HEAD
+=======
+		if (dl)
+			ocfs2_cleanup_add_entry_failure(osb, dentry, inode);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		OCFS2_I(inode)->ip_flags |= OCFS2_INODE_SKIP_ORPHAN_DIR;
 		clear_nlink(inode);
 		iput(inode);
@@ -475,6 +638,11 @@ static int __ocfs2_mknod_locked(struct inode *dir,
 	struct ocfs2_dinode *fe = NULL;
 	struct ocfs2_extent_list *fel;
 	u16 feat;
+<<<<<<< HEAD
+=======
+	struct ocfs2_inode_info *oi = OCFS2_I(inode);
+	struct timespec64 ts;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*new_fe_bh = NULL;
 
@@ -482,14 +650,22 @@ static int __ocfs2_mknod_locked(struct inode *dir,
 	 * these are used by the support functions here and in
 	 * callers. */
 	inode->i_ino = ino_from_blkno(osb->sb, fe_blkno);
+<<<<<<< HEAD
 	OCFS2_I(inode)->ip_blkno = fe_blkno;
+=======
+	oi->ip_blkno = fe_blkno;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&osb->osb_lock);
 	inode->i_generation = osb->s_next_generation++;
 	spin_unlock(&osb->osb_lock);
 
 	*new_fe_bh = sb_getblk(osb->sb, fe_blkno);
 	if (!*new_fe_bh) {
+<<<<<<< HEAD
 		status = -EIO;
+=======
+		status = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog_errno(status);
 		goto leave;
 	}
@@ -512,8 +688,13 @@ static int __ocfs2_mknod_locked(struct inode *dir,
 	fe->i_suballoc_loc = cpu_to_le64(suballoc_loc);
 	fe->i_suballoc_bit = cpu_to_le16(suballoc_bit);
 	fe->i_suballoc_slot = cpu_to_le16(inode_ac->ac_alloc_slot);
+<<<<<<< HEAD
 	fe->i_uid = cpu_to_le32(inode->i_uid);
 	fe->i_gid = cpu_to_le32(inode->i_gid);
+=======
+	fe->i_uid = cpu_to_le32(i_uid_read(inode));
+	fe->i_gid = cpu_to_le32(i_gid_read(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fe->i_mode = cpu_to_le16(inode->i_mode);
 	if (S_ISCHR(inode->i_mode) || S_ISBLK(inode->i_mode))
 		fe->id1.dev1.i_rdev = cpu_to_le64(huge_encode_dev(dev));
@@ -522,11 +703,20 @@ static int __ocfs2_mknod_locked(struct inode *dir,
 
 	fe->i_last_eb_blk = 0;
 	strcpy(fe->i_signature, OCFS2_INODE_SIGNATURE);
+<<<<<<< HEAD
 	le32_add_cpu(&fe->i_flags, OCFS2_VALID_FL);
 	fe->i_atime = fe->i_ctime = fe->i_mtime =
 		cpu_to_le64(CURRENT_TIME.tv_sec);
 	fe->i_mtime_nsec = fe->i_ctime_nsec = fe->i_atime_nsec =
 		cpu_to_le32(CURRENT_TIME.tv_nsec);
+=======
+	fe->i_flags |= cpu_to_le32(OCFS2_VALID_FL);
+	ktime_get_real_ts64(&ts);
+	fe->i_atime = fe->i_ctime = fe->i_mtime =
+		cpu_to_le64(ts.tv_sec);
+	fe->i_mtime_nsec = fe->i_ctime_nsec = fe->i_atime_nsec =
+		cpu_to_le32(ts.tv_nsec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fe->i_dtime = 0;
 
 	/*
@@ -556,8 +746,12 @@ static int __ocfs2_mknod_locked(struct inode *dir,
 			mlog_errno(status);
 	}
 
+<<<<<<< HEAD
 	status = 0; /* error in ocfs2_create_new_inode_locks is not
 		     * critical */
+=======
+	ocfs2_update_inode_fsync_trans(handle, inode, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 leave:
 	if (status < 0) {
@@ -600,7 +794,12 @@ static int ocfs2_mknod_locked(struct ocfs2_super *osb,
 				    fe_blkno, suballoc_loc, suballoc_bit);
 }
 
+<<<<<<< HEAD
 static int ocfs2_mkdir(struct inode *dir,
+=======
+static int ocfs2_mkdir(struct mnt_idmap *idmap,
+		       struct inode *dir,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       struct dentry *dentry,
 		       umode_t mode)
 {
@@ -608,14 +807,23 @@ static int ocfs2_mkdir(struct inode *dir,
 
 	trace_ocfs2_mkdir(dir, dentry, dentry->d_name.len, dentry->d_name.name,
 			  OCFS2_I(dir)->ip_blkno, mode);
+<<<<<<< HEAD
 	ret = ocfs2_mknod(dir, dentry, mode | S_IFDIR, 0);
+=======
+	ret = ocfs2_mknod(&nop_mnt_idmap, dir, dentry, mode | S_IFDIR, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		mlog_errno(ret);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ocfs2_create(struct inode *dir,
+=======
+static int ocfs2_create(struct mnt_idmap *idmap,
+			struct inode *dir,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct dentry *dentry,
 			umode_t mode,
 			bool excl)
@@ -624,7 +832,11 @@ static int ocfs2_create(struct inode *dir,
 
 	trace_ocfs2_create(dir, dentry, dentry->d_name.len, dentry->d_name.name,
 			   (unsigned long long)OCFS2_I(dir)->ip_blkno, mode);
+<<<<<<< HEAD
 	ret = ocfs2_mknod(dir, dentry, mode | S_IFREG, 0);
+=======
+	ret = ocfs2_mknod(&nop_mnt_idmap, dir, dentry, mode | S_IFREG, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		mlog_errno(ret);
 
@@ -636,14 +848,26 @@ static int ocfs2_link(struct dentry *old_dentry,
 		      struct dentry *dentry)
 {
 	handle_t *handle;
+<<<<<<< HEAD
 	struct inode *inode = old_dentry->d_inode;
 	int err;
 	struct buffer_head *fe_bh = NULL;
+=======
+	struct inode *inode = d_inode(old_dentry);
+	struct inode *old_dir = d_inode(old_dentry->d_parent);
+	int err;
+	struct buffer_head *fe_bh = NULL;
+	struct buffer_head *old_dir_bh = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *parent_fe_bh = NULL;
 	struct ocfs2_dinode *fe = NULL;
 	struct ocfs2_super *osb = OCFS2_SB(dir->i_sb);
 	struct ocfs2_dir_lookup_result lookup = { NULL, };
 	sigset_t oldset;
+<<<<<<< HEAD
+=======
+	u64 old_de_ino;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_link((unsigned long long)OCFS2_I(inode)->ip_blkno,
 			 old_dentry->d_name.len, old_dentry->d_name.name,
@@ -652,20 +876,66 @@ static int ocfs2_link(struct dentry *old_dentry,
 	if (S_ISDIR(inode->i_mode))
 		return -EPERM;
 
+<<<<<<< HEAD
 	dquot_initialize(dir);
 
 	err = ocfs2_inode_lock_nested(dir, &parent_fe_bh, 1, OI_LS_PARENT);
+=======
+	err = dquot_initialize(dir);
+	if (err) {
+		mlog_errno(err);
+		return err;
+	}
+
+	err = ocfs2_double_lock(osb, &old_dir_bh, old_dir,
+			&parent_fe_bh, dir, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 		if (err != -ENOENT)
 			mlog_errno(err);
 		return err;
 	}
 
+<<<<<<< HEAD
+=======
+	/* make sure both dirs have bhs
+	 * get an extra ref on old_dir_bh if old==new */
+	if (!parent_fe_bh) {
+		if (old_dir_bh) {
+			parent_fe_bh = old_dir_bh;
+			get_bh(parent_fe_bh);
+		} else {
+			mlog(ML_ERROR, "%s: no old_dir_bh!\n", osb->uuid_str);
+			err = -EIO;
+			goto out;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dir->i_nlink) {
 		err = -ENOENT;
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	err = ocfs2_lookup_ino_from_name(old_dir, old_dentry->d_name.name,
+			old_dentry->d_name.len, &old_de_ino);
+	if (err) {
+		err = -ENOENT;
+		goto out;
+	}
+
+	/*
+	 * Check whether another node removed the source inode while we
+	 * were in the vfs.
+	 */
+	if (old_de_ino != OCFS2_I(inode)->ip_blkno) {
+		err = -ENOENT;
+		goto out;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = ocfs2_check_dir_for_entry(dir, dentry->d_name.name,
 					dentry->d_name.len);
 	if (err)
@@ -711,10 +981,17 @@ static int ocfs2_link(struct dentry *old_dentry,
 	}
 
 	inc_nlink(inode);
+<<<<<<< HEAD
 	inode->i_ctime = CURRENT_TIME;
 	ocfs2_set_links_count(fe, inode->i_nlink);
 	fe->i_ctime = cpu_to_le64(inode->i_ctime.tv_sec);
 	fe->i_ctime_nsec = cpu_to_le32(inode->i_ctime.tv_nsec);
+=======
+	inode_set_ctime_current(inode);
+	ocfs2_set_links_count(fe, inode->i_nlink);
+	fe->i_ctime = cpu_to_le64(inode_get_ctime_sec(inode));
+	fe->i_ctime_nsec = cpu_to_le32(inode_get_ctime_nsec(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_journal_dirty(handle, fe_bh);
 
 	err = ocfs2_add_entry(handle, dentry, inode,
@@ -743,10 +1020,18 @@ out_unlock_inode:
 	ocfs2_inode_unlock(inode, 1);
 
 out:
+<<<<<<< HEAD
 	ocfs2_inode_unlock(dir, 1);
 
 	brelse(fe_bh);
 	brelse(parent_fe_bh);
+=======
+	ocfs2_double_unlock(old_dir, dir);
+
+	brelse(fe_bh);
+	brelse(parent_fe_bh);
+	brelse(old_dir_bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_free_dir_lookup_result(&lookup);
 
@@ -773,7 +1058,11 @@ static int ocfs2_remote_dentry_delete(struct dentry *dentry)
 	return ret;
 }
 
+<<<<<<< HEAD
 static inline int inode_is_unlinkable(struct inode *inode)
+=======
+static inline int ocfs2_inode_is_unlinkable(struct inode *inode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (S_ISDIR(inode->i_mode)) {
 		if (inode->i_nlink == 2)
@@ -791,7 +1080,12 @@ static int ocfs2_unlink(struct inode *dir,
 {
 	int status;
 	int child_locked = 0;
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	bool is_unlinkable = false;
+	struct inode *inode = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *orphan_dir = NULL;
 	struct ocfs2_super *osb = OCFS2_SB(dir->i_sb);
 	u64 blkno;
@@ -808,9 +1102,19 @@ static int ocfs2_unlink(struct inode *dir,
 			   (unsigned long long)OCFS2_I(dir)->ip_blkno,
 			   (unsigned long long)OCFS2_I(inode)->ip_blkno);
 
+<<<<<<< HEAD
 	dquot_initialize(dir);
 
 	BUG_ON(dentry->d_parent->d_inode != dir);
+=======
+	status = dquot_initialize(dir);
+	if (status) {
+		mlog_errno(status);
+		return status;
+	}
+
+	BUG_ON(d_inode(dentry->d_parent) != dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (inode == osb->root_inode)
 		return -EPERM;
@@ -865,14 +1169,26 @@ static int ocfs2_unlink(struct inode *dir,
 		goto leave;
 	}
 
+<<<<<<< HEAD
 	if (inode_is_unlinkable(inode)) {
 		status = ocfs2_prepare_orphan_dir(osb, &orphan_dir,
 						  OCFS2_I(inode)->ip_blkno,
 						  orphan_name, &orphan_insert);
+=======
+	if (ocfs2_inode_is_unlinkable(inode)) {
+		status = ocfs2_prepare_orphan_dir(osb, &orphan_dir,
+						  OCFS2_I(inode)->ip_blkno,
+						  orphan_name, &orphan_insert,
+						  false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status < 0) {
 			mlog_errno(status);
 			goto leave;
 		}
+<<<<<<< HEAD
+=======
+		is_unlinkable = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	handle = ocfs2_start_trans(osb, ocfs2_unlink_credits(osb->sb));
@@ -892,6 +1208,7 @@ static int ocfs2_unlink(struct inode *dir,
 
 	fe = (struct ocfs2_dinode *) fe_bh->b_data;
 
+<<<<<<< HEAD
 	if (inode_is_unlinkable(inode)) {
 		status = ocfs2_orphan_add(osb, handle, inode, fe_bh, orphan_name,
 					  &orphan_insert, orphan_dir);
@@ -901,6 +1218,8 @@ static int ocfs2_unlink(struct inode *dir,
 		}
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* delete the name from the parent dir */
 	status = ocfs2_delete_entry(handle, dir, &lookup);
 	if (status < 0) {
@@ -914,7 +1233,11 @@ static int ocfs2_unlink(struct inode *dir,
 	ocfs2_set_links_count(fe, inode->i_nlink);
 	ocfs2_journal_dirty(handle, fe_bh);
 
+<<<<<<< HEAD
 	dir->i_ctime = dir->i_mtime = CURRENT_TIME;
+=======
+	inode_set_mtime_to_ts(dir, inode_set_ctime_current(dir));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (S_ISDIR(inode->i_mode))
 		drop_nlink(dir);
 
@@ -923,17 +1246,39 @@ static int ocfs2_unlink(struct inode *dir,
 		mlog_errno(status);
 		if (S_ISDIR(inode->i_mode))
 			inc_nlink(dir);
+<<<<<<< HEAD
+=======
+		goto leave;
+	}
+
+	if (is_unlinkable) {
+		status = ocfs2_orphan_add(osb, handle, inode, fe_bh,
+				orphan_name, &orphan_insert, orphan_dir, false);
+		if (status < 0)
+			mlog_errno(status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 leave:
 	if (handle)
 		ocfs2_commit_trans(osb, handle);
 
+<<<<<<< HEAD
+=======
+	if (orphan_dir) {
+		/* This was locked for us in ocfs2_prepare_orphan_dir() */
+		ocfs2_inode_unlock(orphan_dir, 1);
+		inode_unlock(orphan_dir);
+		iput(orphan_dir);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (child_locked)
 		ocfs2_inode_unlock(inode, 1);
 
 	ocfs2_inode_unlock(dir, 1);
 
+<<<<<<< HEAD
 	if (orphan_dir) {
 		/* This was locked for us in ocfs2_prepare_orphan_dir() */
 		ocfs2_inode_unlock(orphan_dir, 1);
@@ -941,26 +1286,97 @@ leave:
 		iput(orphan_dir);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(fe_bh);
 	brelse(parent_node_bh);
 
 	ocfs2_free_dir_lookup_result(&orphan_insert);
 	ocfs2_free_dir_lookup_result(&lookup);
 
+<<<<<<< HEAD
 	if (status)
+=======
+	if (status && (status != -ENOTEMPTY) && (status != -ENOENT))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog_errno(status);
 
 	return status;
 }
 
+<<<<<<< HEAD
 /*
  * The only place this should be used is rename!
+=======
+static int ocfs2_check_if_ancestor(struct ocfs2_super *osb,
+		u64 src_inode_no, u64 dest_inode_no)
+{
+	int ret = 0, i = 0;
+	u64 parent_inode_no = 0;
+	u64 child_inode_no = src_inode_no;
+	struct inode *child_inode;
+
+#define MAX_LOOKUP_TIMES 32
+	while (1) {
+		child_inode = ocfs2_iget(osb, child_inode_no, 0, 0);
+		if (IS_ERR(child_inode)) {
+			ret = PTR_ERR(child_inode);
+			break;
+		}
+
+		ret = ocfs2_inode_lock(child_inode, NULL, 0);
+		if (ret < 0) {
+			iput(child_inode);
+			if (ret != -ENOENT)
+				mlog_errno(ret);
+			break;
+		}
+
+		ret = ocfs2_lookup_ino_from_name(child_inode, "..", 2,
+				&parent_inode_no);
+		ocfs2_inode_unlock(child_inode, 0);
+		iput(child_inode);
+		if (ret < 0) {
+			ret = -ENOENT;
+			break;
+		}
+
+		if (parent_inode_no == dest_inode_no) {
+			ret = 1;
+			break;
+		}
+
+		if (parent_inode_no == osb->root_inode->i_ino) {
+			ret = 0;
+			break;
+		}
+
+		child_inode_no = parent_inode_no;
+
+		if (++i >= MAX_LOOKUP_TIMES) {
+			mlog_ratelimited(ML_NOTICE, "max lookup times reached, "
+					"filesystem may have nested directories, "
+					"src inode: %llu, dest inode: %llu.\n",
+					(unsigned long long)src_inode_no,
+					(unsigned long long)dest_inode_no);
+			ret = 0;
+			break;
+		}
+	}
+
+	return ret;
+}
+
+/*
+ * The only place this should be used is rename and link!
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * if they have the same id, then the 1st one is the only one locked.
  */
 static int ocfs2_double_lock(struct ocfs2_super *osb,
 			     struct buffer_head **bh1,
 			     struct inode *inode1,
 			     struct buffer_head **bh2,
+<<<<<<< HEAD
 			     struct inode *inode2)
 {
 	int status;
@@ -968,6 +1384,15 @@ static int ocfs2_double_lock(struct ocfs2_super *osb,
 	struct ocfs2_inode_info *oi2 = OCFS2_I(inode2);
 	struct buffer_head **tmpbh;
 	struct inode *tmpinode;
+=======
+			     struct inode *inode2,
+			     int rename)
+{
+	int status;
+	int inode1_is_ancestor, inode2_is_ancestor;
+	struct ocfs2_inode_info *oi1 = OCFS2_I(inode1);
+	struct ocfs2_inode_info *oi2 = OCFS2_I(inode2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_double_lock((unsigned long long)oi1->ip_blkno,
 				(unsigned long long)oi2->ip_blkno);
@@ -977,6 +1402,7 @@ static int ocfs2_double_lock(struct ocfs2_super *osb,
 	if (*bh2)
 		*bh2 = NULL;
 
+<<<<<<< HEAD
 	/* we always want to lock the one with the lower lockid first. */
 	if (oi1->ip_blkno != oi2->ip_blkno) {
 		if (oi1->ip_blkno < oi2->ip_blkno) {
@@ -992,6 +1418,35 @@ static int ocfs2_double_lock(struct ocfs2_super *osb,
 		/* lock id2 */
 		status = ocfs2_inode_lock_nested(inode2, bh2, 1,
 						 OI_LS_RENAME1);
+=======
+	/* we always want to lock the one with the lower lockid first.
+	 * and if they are nested, we lock ancestor first */
+	if (oi1->ip_blkno != oi2->ip_blkno) {
+		inode1_is_ancestor = ocfs2_check_if_ancestor(osb, oi2->ip_blkno,
+				oi1->ip_blkno);
+		if (inode1_is_ancestor < 0) {
+			status = inode1_is_ancestor;
+			goto bail;
+		}
+
+		inode2_is_ancestor = ocfs2_check_if_ancestor(osb, oi1->ip_blkno,
+				oi2->ip_blkno);
+		if (inode2_is_ancestor < 0) {
+			status = inode2_is_ancestor;
+			goto bail;
+		}
+
+		if ((inode1_is_ancestor == 1) ||
+				(oi1->ip_blkno < oi2->ip_blkno &&
+				inode2_is_ancestor == 0)) {
+			/* switch id1 and id2 around */
+			swap(bh2, bh1);
+			swap(inode2, inode1);
+		}
+		/* lock id2 */
+		status = ocfs2_inode_lock_nested(inode2, bh2, 1,
+				rename == 1 ? OI_LS_RENAME1 : OI_LS_PARENT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (status < 0) {
 			if (status != -ENOENT)
 				mlog_errno(status);
@@ -1000,7 +1455,12 @@ static int ocfs2_double_lock(struct ocfs2_super *osb,
 	}
 
 	/* lock id1 */
+<<<<<<< HEAD
 	status = ocfs2_inode_lock_nested(inode1, bh1, 1, OI_LS_RENAME2);
+=======
+	status = ocfs2_inode_lock_nested(inode1, bh1, 1,
+			rename == 1 ?  OI_LS_RENAME2 : OI_LS_PARENT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		/*
 		 * An error return must mean that no cluster locks
@@ -1017,8 +1477,13 @@ static int ocfs2_double_lock(struct ocfs2_super *osb,
 	}
 
 	trace_ocfs2_double_lock_end(
+<<<<<<< HEAD
 			(unsigned long long)OCFS2_I(inode1)->ip_blkno,
 			(unsigned long long)OCFS2_I(inode2)->ip_blkno);
+=======
+			(unsigned long long)oi1->ip_blkno,
+			(unsigned long long)oi2->ip_blkno);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 bail:
 	if (status)
@@ -1034,6 +1499,7 @@ static void ocfs2_double_unlock(struct inode *inode1, struct inode *inode2)
 		ocfs2_inode_unlock(inode2, 1);
 }
 
+<<<<<<< HEAD
 static int ocfs2_rename(struct inode *old_dir,
 			struct dentry *old_dentry,
 			struct inode *new_dir,
@@ -1043,6 +1509,19 @@ static int ocfs2_rename(struct inode *old_dir,
 	int old_child_locked = 0, new_child_locked = 0, update_dot_dot = 0;
 	struct inode *old_inode = old_dentry->d_inode;
 	struct inode *new_inode = new_dentry->d_inode;
+=======
+static int ocfs2_rename(struct mnt_idmap *idmap,
+			struct inode *old_dir,
+			struct dentry *old_dentry,
+			struct inode *new_dir,
+			struct dentry *new_dentry,
+			unsigned int flags)
+{
+	int status = 0, rename_lock = 0, parents_locked = 0, target_exists = 0;
+	int old_child_locked = 0, new_child_locked = 0, update_dot_dot = 0;
+	struct inode *old_inode = d_inode(old_dentry);
+	struct inode *new_inode = d_inode(new_dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *orphan_dir = NULL;
 	struct ocfs2_dinode *newfe = NULL;
 	char orphan_name[OCFS2_ORPHAN_NAMELEN + 1];
@@ -1060,6 +1539,13 @@ static int ocfs2_rename(struct inode *old_dir,
 	struct ocfs2_dir_lookup_result old_entry_lookup = { NULL, };
 	struct ocfs2_dir_lookup_result orphan_insert = { NULL, };
 	struct ocfs2_dir_lookup_result target_insert = { NULL, };
+<<<<<<< HEAD
+=======
+	bool should_add_orphan = false;
+
+	if (flags)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* At some point it might be nice to break this function up a
 	 * bit. */
@@ -1068,8 +1554,21 @@ static int ocfs2_rename(struct inode *old_dir,
 			   old_dentry->d_name.len, old_dentry->d_name.name,
 			   new_dentry->d_name.len, new_dentry->d_name.name);
 
+<<<<<<< HEAD
 	dquot_initialize(old_dir);
 	dquot_initialize(new_dir);
+=======
+	status = dquot_initialize(old_dir);
+	if (status) {
+		mlog_errno(status);
+		goto bail;
+	}
+	status = dquot_initialize(new_dir);
+	if (status) {
+		mlog_errno(status);
+		goto bail;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	osb = OCFS2_SB(old_dir->i_sb);
 
@@ -1096,17 +1595,47 @@ static int ocfs2_rename(struct inode *old_dir,
 			goto bail;
 		}
 		rename_lock = 1;
+<<<<<<< HEAD
+=======
+
+		/* here we cannot guarantee the inodes haven't just been
+		 * changed, so check if they are nested again */
+		status = ocfs2_check_if_ancestor(osb, new_dir->i_ino,
+				old_inode->i_ino);
+		if (status < 0) {
+			mlog_errno(status);
+			goto bail;
+		} else if (status == 1) {
+			status = -EPERM;
+			trace_ocfs2_rename_not_permitted(
+					(unsigned long long)old_inode->i_ino,
+					(unsigned long long)new_dir->i_ino);
+			goto bail;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* if old and new are the same, this'll just do one lock. */
 	status = ocfs2_double_lock(osb, &old_dir_bh, old_dir,
+<<<<<<< HEAD
 				   &new_dir_bh, new_dir);
+=======
+				   &new_dir_bh, new_dir, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		mlog_errno(status);
 		goto bail;
 	}
 	parents_locked = 1;
 
+<<<<<<< HEAD
+=======
+	if (!new_dir->i_nlink) {
+		status = -EACCES;
+		goto bail;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* make sure both dirs have bhs
 	 * get an extra ref on old_dir_bh if old==new */
 	if (!new_dir_bh) {
@@ -1141,7 +1670,11 @@ static int ocfs2_rename(struct inode *old_dir,
 		goto bail;
 	}
 
+<<<<<<< HEAD
 	if (S_ISDIR(old_inode->i_mode)) {
+=======
+	if (S_ISDIR(old_inode->i_mode) && new_dir != old_dir) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64 old_inode_parent;
 
 		update_dot_dot = 1;
@@ -1158,8 +1691,12 @@ static int ocfs2_rename(struct inode *old_dir,
 			goto bail;
 		}
 
+<<<<<<< HEAD
 		if (!new_inode && new_dir != old_dir &&
 		    new_dir->i_nlink >= ocfs2_link_max(osb)) {
+=======
+		if (!new_inode && new_dir->i_nlink >= ocfs2_link_max(osb)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = -EMLINK;
 			goto bail;
 		}
@@ -1261,14 +1798,26 @@ static int ocfs2_rename(struct inode *old_dir,
 		if (S_ISDIR(new_inode->i_mode) || (new_inode->i_nlink == 1)) {
 			status = ocfs2_prepare_orphan_dir(osb, &orphan_dir,
 						OCFS2_I(new_inode)->ip_blkno,
+<<<<<<< HEAD
 						orphan_name, &orphan_insert);
+=======
+						orphan_name, &orphan_insert,
+						false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (status < 0) {
 				mlog_errno(status);
 				goto bail;
 			}
+<<<<<<< HEAD
 		}
 	} else {
 		BUG_ON(new_dentry->d_parent->d_inode != new_dir);
+=======
+			should_add_orphan = true;
+		}
+	} else {
+		BUG_ON(d_inode(new_dentry->d_parent) != new_dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		status = ocfs2_check_dir_for_entry(new_dir,
 						   new_dentry->d_name.name,
@@ -1310,6 +1859,7 @@ static int ocfs2_rename(struct inode *old_dir,
 			goto bail;
 		}
 
+<<<<<<< HEAD
 		if (S_ISDIR(new_inode->i_mode) ||
 		    (ocfs2_read_links_count(newfe) == 1)) {
 			status = ocfs2_orphan_add(osb, handle, new_inode,
@@ -1321,6 +1871,8 @@ static int ocfs2_rename(struct inode *old_dir,
 			}
 		}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* change the dirent to point to the correct inode */
 		status = ocfs2_update_entry(new_dir, handle, &target_lookup_res,
 					    old_inode);
@@ -1328,21 +1880,47 @@ static int ocfs2_rename(struct inode *old_dir,
 			mlog_errno(status);
 			goto bail;
 		}
+<<<<<<< HEAD
 		new_dir->i_version++;
+=======
+		inode_inc_iversion(new_dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (S_ISDIR(new_inode->i_mode))
 			ocfs2_set_links_count(newfe, 0);
 		else
 			ocfs2_add_links_count(newfe, -1);
 		ocfs2_journal_dirty(handle, newfe_bh);
+<<<<<<< HEAD
+=======
+		if (should_add_orphan) {
+			status = ocfs2_orphan_add(osb, handle, new_inode,
+					newfe_bh, orphan_name,
+					&orphan_insert, orphan_dir, false);
+			if (status < 0) {
+				mlog_errno(status);
+				goto bail;
+			}
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* if the name was not found in new_dir, add it now */
 		status = ocfs2_add_entry(handle, new_dentry, old_inode,
 					 OCFS2_I(old_inode)->ip_blkno,
 					 new_dir_bh, &target_insert);
+<<<<<<< HEAD
 	}
 
 	old_inode->i_ctime = CURRENT_TIME;
+=======
+		if (status < 0) {
+			mlog_errno(status);
+			goto bail;
+		}
+	}
+
+	inode_set_ctime_current(old_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(old_inode);
 
 	status = ocfs2_journal_access_di(handle, INODE_CACHE(old_inode),
@@ -1351,8 +1929,13 @@ static int ocfs2_rename(struct inode *old_dir,
 	if (status >= 0) {
 		old_di = (struct ocfs2_dinode *) old_inode_bh->b_data;
 
+<<<<<<< HEAD
 		old_di->i_ctime = cpu_to_le64(old_inode->i_ctime.tv_sec);
 		old_di->i_ctime_nsec = cpu_to_le32(old_inode->i_ctime.tv_nsec);
+=======
+		old_di->i_ctime = cpu_to_le64(inode_get_ctime_sec(old_inode));
+		old_di->i_ctime_nsec = cpu_to_le32(inode_get_ctime_nsec(old_inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ocfs2_journal_dirty(handle, old_inode_bh);
 	} else
 		mlog_errno(status);
@@ -1367,24 +1950,61 @@ static int ocfs2_rename(struct inode *old_dir,
 	status = ocfs2_find_entry(old_dentry->d_name.name,
 				  old_dentry->d_name.len, old_dir,
 				  &old_entry_lookup);
+<<<<<<< HEAD
 	if (status)
 		goto bail;
+=======
+	if (status) {
+		if (!is_journal_aborted(osb->journal->j_journal)) {
+			ocfs2_error(osb->sb, "new entry %.*s is added, but old entry %.*s "
+					"is not deleted.",
+					new_dentry->d_name.len, new_dentry->d_name.name,
+					old_dentry->d_name.len, old_dentry->d_name.name);
+		}
+		goto bail;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = ocfs2_delete_entry(handle, old_dir, &old_entry_lookup);
 	if (status < 0) {
 		mlog_errno(status);
+<<<<<<< HEAD
+=======
+		if (!is_journal_aborted(osb->journal->j_journal)) {
+			ocfs2_error(osb->sb, "new entry %.*s is added, but old entry %.*s "
+					"is not deleted.",
+					new_dentry->d_name.len, new_dentry->d_name.name,
+					old_dentry->d_name.len, old_dentry->d_name.name);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 
 	if (new_inode) {
 		drop_nlink(new_inode);
+<<<<<<< HEAD
 		new_inode->i_ctime = CURRENT_TIME;
 	}
 	old_dir->i_ctime = old_dir->i_mtime = CURRENT_TIME;
+=======
+		inode_set_ctime_current(new_inode);
+	}
+	inode_set_mtime_to_ts(old_dir, inode_set_ctime_current(old_dir));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (update_dot_dot) {
 		status = ocfs2_update_entry(old_inode, handle,
 					    &old_inode_dot_dot_res, new_dir);
+<<<<<<< HEAD
+=======
+		if (status < 0) {
+			mlog_errno(status);
+			goto bail;
+		}
+	}
+
+	if (S_ISDIR(old_inode->i_mode)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		drop_nlink(old_dir);
 		if (new_inode) {
 			drop_nlink(new_inode);
@@ -1402,7 +2022,12 @@ static int ocfs2_rename(struct inode *old_dir,
 
 	if (old_dir != new_dir) {
 		/* Keep the same times on both directories.*/
+<<<<<<< HEAD
 		new_dir->i_ctime = new_dir->i_mtime = old_dir->i_ctime;
+=======
+		inode_set_mtime_to_ts(new_dir,
+				      inode_set_ctime_to_ts(new_dir, inode_get_ctime(old_dir)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * This will also pick up the i_nlink change from the
@@ -1423,6 +2048,13 @@ static int ocfs2_rename(struct inode *old_dir,
 							 INODE_CACHE(old_dir),
 							 old_dir_bh,
 							 OCFS2_JOURNAL_ACCESS_WRITE);
+<<<<<<< HEAD
+=======
+			if (status < 0) {
+				mlog_errno(status);
+				goto bail;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fe = (struct ocfs2_dinode *) old_dir_bh->b_data;
 			ocfs2_set_links_count(fe, old_dir->i_nlink);
 			ocfs2_journal_dirty(handle, old_dir_bh);
@@ -1431,6 +2063,7 @@ static int ocfs2_rename(struct inode *old_dir,
 	ocfs2_dentry_move(old_dentry, new_dentry, old_dir, new_dir);
 	status = 0;
 bail:
+<<<<<<< HEAD
 	if (rename_lock)
 		ocfs2_rename_unlock(osb);
 
@@ -1458,6 +2091,34 @@ bail:
 
 	if (new_inode)
 		iput(new_inode);
+=======
+	if (handle)
+		ocfs2_commit_trans(osb, handle);
+
+	if (orphan_dir) {
+		/* This was locked for us in ocfs2_prepare_orphan_dir() */
+		ocfs2_inode_unlock(orphan_dir, 1);
+		inode_unlock(orphan_dir);
+		iput(orphan_dir);
+	}
+
+	if (new_child_locked)
+		ocfs2_inode_unlock(new_inode, 1);
+
+	if (old_child_locked)
+		ocfs2_inode_unlock(old_inode, 1);
+
+	if (parents_locked)
+		ocfs2_double_unlock(old_dir, new_dir);
+
+	if (rename_lock)
+		ocfs2_rename_unlock(osb);
+
+	if (new_inode)
+		sync_mapping_buffers(old_inode->i_mapping);
+
+	iput(new_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_free_dir_lookup_result(&target_lookup_res);
 	ocfs2_free_dir_lookup_result(&old_entry_lookup);
@@ -1578,7 +2239,12 @@ bail:
 	return status;
 }
 
+<<<<<<< HEAD
 static int ocfs2_symlink(struct inode *dir,
+=======
+static int ocfs2_symlink(struct mnt_idmap *idmap,
+			 struct inode *dir,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 struct dentry *dentry,
 			 const char *symname)
 {
@@ -1598,17 +2264,33 @@ static int ocfs2_symlink(struct inode *dir,
 	int want_clusters = 0;
 	int xattr_credits = 0;
 	struct ocfs2_security_xattr_info si = {
+<<<<<<< HEAD
+=======
+		.name = NULL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.enable = 1,
 	};
 	int did_quota = 0, did_quota_inode = 0;
 	struct ocfs2_dir_lookup_result lookup = { NULL, };
 	sigset_t oldset;
 	int did_block_signals = 0;
+<<<<<<< HEAD
+=======
+	struct ocfs2_dentry_lock *dl = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_symlink_begin(dir, dentry, symname,
 				  dentry->d_name.len, dentry->d_name.name);
 
+<<<<<<< HEAD
 	dquot_initialize(dir);
+=======
+	status = dquot_initialize(dir);
+	if (status) {
+		mlog_errno(status);
+		goto bail;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sb = dir->i_sb;
 	osb = OCFS2_SB(sb);
@@ -1653,8 +2335,14 @@ static int ocfs2_symlink(struct inode *dir,
 	}
 
 	inode = ocfs2_get_init_inode(dir, S_IFLNK | S_IRWXUGO);
+<<<<<<< HEAD
 	if (!inode) {
 		status = -ENOMEM;
+=======
+	if (IS_ERR(inode)) {
+		status = PTR_ERR(inode);
+		inode = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog_errno(status);
 		goto bail;
 	}
@@ -1724,15 +2412,27 @@ static int ocfs2_symlink(struct inode *dir,
 	fe = (struct ocfs2_dinode *) new_fe_bh->b_data;
 	inode->i_rdev = 0;
 	newsize = l - 1;
+<<<<<<< HEAD
 	if (l > ocfs2_fast_symlink_chars(sb)) {
 		u32 offset = 0;
 
 		inode->i_op = &ocfs2_symlink_inode_operations;
+=======
+	inode->i_op = &ocfs2_symlink_inode_operations;
+	inode_nohighmem(inode);
+	if (l > ocfs2_fast_symlink_chars(sb)) {
+		u32 offset = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = dquot_alloc_space_nodirty(inode,
 		    ocfs2_clusters_to_bytes(osb->sb, 1));
 		if (status)
 			goto bail;
 		did_quota = 1;
+<<<<<<< HEAD
+=======
+		inode->i_mapping->a_ops = &ocfs2_aops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = ocfs2_add_inode_data(osb, inode, &offset, 1, 0,
 					      new_fe_bh,
 					      handle, data_ac, NULL,
@@ -1750,7 +2450,11 @@ static int ocfs2_symlink(struct inode *dir,
 		i_size_write(inode, newsize);
 		inode->i_blocks = ocfs2_inode_sector_count(inode);
 	} else {
+<<<<<<< HEAD
 		inode->i_op = &ocfs2_fast_symlink_inode_operations;
+=======
+		inode->i_mapping->a_ops = &ocfs2_fast_symlink_aops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy((char *) fe->id2.i_symlink, symname, l);
 		i_size_write(inode, newsize);
 		inode->i_blocks = 0;
@@ -1791,6 +2495,11 @@ static int ocfs2_symlink(struct inode *dir,
 		goto bail;
 	}
 
+<<<<<<< HEAD
+=======
+	dl = dentry->d_fsdata;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = ocfs2_add_entry(handle, dentry, inode,
 				 le64_to_cpu(fe->i_blkno), parent_fe_bh,
 				 &lookup);
@@ -1807,8 +2516,16 @@ bail:
 					ocfs2_clusters_to_bytes(osb->sb, 1));
 	if (status < 0 && did_quota_inode)
 		dquot_free_inode(inode);
+<<<<<<< HEAD
 	if (handle)
 		ocfs2_commit_trans(osb, handle);
+=======
+	if (handle) {
+		if (status < 0 && fe)
+			ocfs2_set_links_count(fe, 0);
+		ocfs2_commit_trans(osb, handle);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_inode_unlock(dir, 1);
 	if (did_block_signals)
@@ -1816,7 +2533,10 @@ bail:
 
 	brelse(new_fe_bh);
 	brelse(parent_fe_bh);
+<<<<<<< HEAD
 	kfree(si.name);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(si.value);
 	ocfs2_free_dir_lookup_result(&lookup);
 	if (inode_ac)
@@ -1826,6 +2546,12 @@ bail:
 	if (xattr_ac)
 		ocfs2_free_alloc_context(xattr_ac);
 	if ((status < 0) && inode) {
+<<<<<<< HEAD
+=======
+		if (dl)
+			ocfs2_cleanup_add_entry_failure(osb, dentry, inode);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		OCFS2_I(inode)->ip_flags |= OCFS2_INODE_SKIP_ORPHAN_DIR;
 		clear_nlink(inode);
 		iput(inode);
@@ -1883,11 +2609,19 @@ static int ocfs2_lookup_lock_orphan_dir(struct ocfs2_super *osb,
 		return ret;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&orphan_dir_inode->i_mutex);
 
 	ret = ocfs2_inode_lock(orphan_dir_inode, &orphan_dir_bh, 1);
 	if (ret < 0) {
 		mutex_unlock(&orphan_dir_inode->i_mutex);
+=======
+	inode_lock(orphan_dir_inode);
+
+	ret = ocfs2_inode_lock(orphan_dir_inode, &orphan_dir_bh, 1);
+	if (ret < 0) {
+		inode_unlock(orphan_dir_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iput(orphan_dir_inode);
 
 		mlog_errno(ret);
@@ -1904,12 +2638,37 @@ static int __ocfs2_prepare_orphan_dir(struct inode *orphan_dir_inode,
 				      struct buffer_head *orphan_dir_bh,
 				      u64 blkno,
 				      char *name,
+<<<<<<< HEAD
 				      struct ocfs2_dir_lookup_result *lookup)
 {
 	int ret;
 	struct ocfs2_super *osb = OCFS2_SB(orphan_dir_inode->i_sb);
 
 	ret = ocfs2_blkno_stringify(blkno, name);
+=======
+				      struct ocfs2_dir_lookup_result *lookup,
+				      bool dio)
+{
+	int ret;
+	struct ocfs2_super *osb = OCFS2_SB(orphan_dir_inode->i_sb);
+	int namelen = dio ?
+			(OCFS2_DIO_ORPHAN_PREFIX_LEN + OCFS2_ORPHAN_NAMELEN) :
+			OCFS2_ORPHAN_NAMELEN;
+
+	if (dio) {
+		ret = snprintf(name, OCFS2_DIO_ORPHAN_PREFIX_LEN + 1, "%s",
+				OCFS2_DIO_ORPHAN_PREFIX);
+		if (ret != OCFS2_DIO_ORPHAN_PREFIX_LEN) {
+			ret = -EINVAL;
+			mlog_errno(ret);
+			return ret;
+		}
+
+		ret = ocfs2_blkno_stringify(blkno,
+				name + OCFS2_DIO_ORPHAN_PREFIX_LEN);
+	} else
+		ret = ocfs2_blkno_stringify(blkno, name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		mlog_errno(ret);
 		return ret;
@@ -1917,7 +2676,11 @@ static int __ocfs2_prepare_orphan_dir(struct inode *orphan_dir_inode,
 
 	ret = ocfs2_prepare_dir_for_insert(osb, orphan_dir_inode,
 					   orphan_dir_bh, name,
+<<<<<<< HEAD
 					   OCFS2_ORPHAN_NAMELEN, lookup);
+=======
+					   namelen, lookup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		mlog_errno(ret);
 		return ret;
@@ -1944,7 +2707,12 @@ static int ocfs2_prepare_orphan_dir(struct ocfs2_super *osb,
 				    struct inode **ret_orphan_dir,
 				    u64 blkno,
 				    char *name,
+<<<<<<< HEAD
 				    struct ocfs2_dir_lookup_result *lookup)
+=======
+				    struct ocfs2_dir_lookup_result *lookup,
+				    bool dio)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *orphan_dir_inode = NULL;
 	struct buffer_head *orphan_dir_bh = NULL;
@@ -1958,7 +2726,11 @@ static int ocfs2_prepare_orphan_dir(struct ocfs2_super *osb,
 	}
 
 	ret = __ocfs2_prepare_orphan_dir(orphan_dir_inode, orphan_dir_bh,
+<<<<<<< HEAD
 					 blkno, name, lookup);
+=======
+					 blkno, name, lookup, dio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		mlog_errno(ret);
 		goto out;
@@ -1971,7 +2743,11 @@ out:
 
 	if (ret) {
 		ocfs2_inode_unlock(orphan_dir_inode, 1);
+<<<<<<< HEAD
 		mutex_unlock(&orphan_dir_inode->i_mutex);
+=======
+		inode_unlock(orphan_dir_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iput(orphan_dir_inode);
 	}
 
@@ -1986,12 +2762,23 @@ static int ocfs2_orphan_add(struct ocfs2_super *osb,
 			    struct buffer_head *fe_bh,
 			    char *name,
 			    struct ocfs2_dir_lookup_result *lookup,
+<<<<<<< HEAD
 			    struct inode *orphan_dir_inode)
+=======
+			    struct inode *orphan_dir_inode,
+			    bool dio)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct buffer_head *orphan_dir_bh = NULL;
 	int status = 0;
 	struct ocfs2_dinode *orphan_fe;
 	struct ocfs2_dinode *fe = (struct ocfs2_dinode *) fe_bh->b_data;
+<<<<<<< HEAD
+=======
+	int namelen = dio ?
+			(OCFS2_DIO_ORPHAN_PREFIX_LEN + OCFS2_ORPHAN_NAMELEN) :
+			OCFS2_ORPHAN_NAMELEN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_orphan_add_begin(
 				(unsigned long long)OCFS2_I(inode)->ip_blkno);
@@ -2011,6 +2798,7 @@ static int ocfs2_orphan_add(struct ocfs2_super *osb,
 		goto leave;
 	}
 
+<<<<<<< HEAD
 	/* we're a cluster, and nlink can change on disk from
 	 * underneath us... */
 	orphan_fe = (struct ocfs2_dinode *) orphan_dir_bh->b_data;
@@ -2028,6 +2816,8 @@ static int ocfs2_orphan_add(struct ocfs2_super *osb,
 		goto leave;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We're going to journal the change of i_flags and i_orphaned_slot.
 	 * It's safe anyway, though some callers may duplicate the journaling.
@@ -2043,6 +2833,7 @@ static int ocfs2_orphan_add(struct ocfs2_super *osb,
 		goto leave;
 	}
 
+<<<<<<< HEAD
 	le32_add_cpu(&fe->i_flags, OCFS2_ORPHANED_FL);
 	OCFS2_I(inode)->ip_flags &= ~OCFS2_INODE_SKIP_ORPHAN_DIR;
 
@@ -2050,17 +2841,64 @@ static int ocfs2_orphan_add(struct ocfs2_super *osb,
 	 * in. delete_inode will use this to determine which orphan
 	 * dir to lock. */
 	fe->i_orphaned_slot = cpu_to_le16(osb->slot_num);
+=======
+	/* we're a cluster, and nlink can change on disk from
+	 * underneath us... */
+	orphan_fe = (struct ocfs2_dinode *) orphan_dir_bh->b_data;
+	if (S_ISDIR(inode->i_mode))
+		ocfs2_add_links_count(orphan_fe, 1);
+	set_nlink(orphan_dir_inode, ocfs2_read_links_count(orphan_fe));
+	ocfs2_journal_dirty(handle, orphan_dir_bh);
+
+	status = __ocfs2_add_entry(handle, orphan_dir_inode, name,
+				   namelen, inode,
+				   OCFS2_I(inode)->ip_blkno,
+				   orphan_dir_bh, lookup);
+	if (status < 0) {
+		mlog_errno(status);
+		goto rollback;
+	}
+
+	if (dio) {
+		/* Update flag OCFS2_DIO_ORPHANED_FL and record the orphan
+		 * slot.
+		 */
+		fe->i_flags |= cpu_to_le32(OCFS2_DIO_ORPHANED_FL);
+		fe->i_dio_orphaned_slot = cpu_to_le16(osb->slot_num);
+	} else {
+		fe->i_flags |= cpu_to_le32(OCFS2_ORPHANED_FL);
+		OCFS2_I(inode)->ip_flags &= ~OCFS2_INODE_SKIP_ORPHAN_DIR;
+
+		/* Record which orphan dir our inode now resides
+		 * in. delete_inode will use this to determine which orphan
+		 * dir to lock. */
+		fe->i_orphaned_slot = cpu_to_le16(osb->slot_num);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ocfs2_journal_dirty(handle, fe_bh);
 
 	trace_ocfs2_orphan_add_end((unsigned long long)OCFS2_I(inode)->ip_blkno,
 				   osb->slot_num);
 
+<<<<<<< HEAD
 leave:
 	brelse(orphan_dir_bh);
 
 	if (status)
 		mlog_errno(status);
+=======
+rollback:
+	if (status < 0) {
+		if (S_ISDIR(inode->i_mode))
+			ocfs2_add_links_count(orphan_fe, -1);
+		set_nlink(orphan_dir_inode, ocfs2_read_links_count(orphan_fe));
+	}
+
+leave:
+	brelse(orphan_dir_bh);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return status;
 }
 
@@ -2069,14 +2907,37 @@ int ocfs2_orphan_del(struct ocfs2_super *osb,
 		     handle_t *handle,
 		     struct inode *orphan_dir_inode,
 		     struct inode *inode,
+<<<<<<< HEAD
 		     struct buffer_head *orphan_dir_bh)
 {
 	char name[OCFS2_ORPHAN_NAMELEN + 1];
+=======
+		     struct buffer_head *orphan_dir_bh,
+		     bool dio)
+{
+	char name[OCFS2_DIO_ORPHAN_PREFIX_LEN + OCFS2_ORPHAN_NAMELEN + 1];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_dinode *orphan_fe;
 	int status = 0;
 	struct ocfs2_dir_lookup_result lookup = { NULL, };
 
+<<<<<<< HEAD
 	status = ocfs2_blkno_stringify(OCFS2_I(inode)->ip_blkno, name);
+=======
+	if (dio) {
+		status = snprintf(name, OCFS2_DIO_ORPHAN_PREFIX_LEN + 1, "%s",
+				OCFS2_DIO_ORPHAN_PREFIX);
+		if (status != OCFS2_DIO_ORPHAN_PREFIX_LEN) {
+			status = -EINVAL;
+			mlog_errno(status);
+			return status;
+		}
+
+		status = ocfs2_blkno_stringify(OCFS2_I(inode)->ip_blkno,
+				name + OCFS2_DIO_ORPHAN_PREFIX_LEN);
+	} else
+		status = ocfs2_blkno_stringify(OCFS2_I(inode)->ip_blkno, name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		mlog_errno(status);
 		goto leave;
@@ -2084,10 +2945,26 @@ int ocfs2_orphan_del(struct ocfs2_super *osb,
 
 	trace_ocfs2_orphan_del(
 	     (unsigned long long)OCFS2_I(orphan_dir_inode)->ip_blkno,
+<<<<<<< HEAD
 	     name, OCFS2_ORPHAN_NAMELEN);
 
 	/* find it's spot in the orphan directory */
 	status = ocfs2_find_entry(name, OCFS2_ORPHAN_NAMELEN, orphan_dir_inode,
+=======
+	     name, strlen(name));
+
+	status = ocfs2_journal_access_di(handle,
+					 INODE_CACHE(orphan_dir_inode),
+					 orphan_dir_bh,
+					 OCFS2_JOURNAL_ACCESS_WRITE);
+	if (status < 0) {
+		mlog_errno(status);
+		goto leave;
+	}
+
+	/* find it's spot in the orphan directory */
+	status = ocfs2_find_entry(name, strlen(name), orphan_dir_inode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  &lookup);
 	if (status) {
 		mlog_errno(status);
@@ -2101,6 +2978,7 @@ int ocfs2_orphan_del(struct ocfs2_super *osb,
 		goto leave;
 	}
 
+<<<<<<< HEAD
 	status = ocfs2_journal_access_di(handle,
 					 INODE_CACHE(orphan_dir_inode),
 					 orphan_dir_bh,
@@ -2110,6 +2988,8 @@ int ocfs2_orphan_del(struct ocfs2_super *osb,
 		goto leave;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* do the i_nlink dance! :) */
 	orphan_fe = (struct ocfs2_dinode *) orphan_dir_bh->b_data;
 	if (S_ISDIR(inode->i_mode))
@@ -2187,7 +3067,12 @@ static int ocfs2_prep_new_orphaned_file(struct inode *dir,
 	}
 
 	ret = __ocfs2_prepare_orphan_dir(orphan_dir, orphan_dir_bh,
+<<<<<<< HEAD
 					 di_blkno, orphan_name, orphan_insert);
+=======
+					 di_blkno, orphan_name, orphan_insert,
+					 false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		mlog_errno(ret);
 		goto out;
@@ -2208,14 +3093,22 @@ out:
 			ocfs2_free_alloc_context(inode_ac);
 
 		/* Unroll orphan dir locking */
+<<<<<<< HEAD
 		mutex_unlock(&orphan_dir->i_mutex);
+=======
+		inode_unlock(orphan_dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ocfs2_inode_unlock(orphan_dir, 1);
 		iput(orphan_dir);
 	}
 
 	brelse(orphan_dir_bh);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ocfs2_create_inode_in_orphan(struct inode *dir,
@@ -2226,14 +3119,21 @@ int ocfs2_create_inode_in_orphan(struct inode *dir,
 	struct inode *inode = NULL;
 	struct inode *orphan_dir = NULL;
 	struct ocfs2_super *osb = OCFS2_SB(dir->i_sb);
+<<<<<<< HEAD
 	struct ocfs2_dinode *di = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	handle_t *handle = NULL;
 	char orphan_name[OCFS2_ORPHAN_NAMELEN + 1];
 	struct buffer_head *parent_di_bh = NULL;
 	struct buffer_head *new_di_bh = NULL;
 	struct ocfs2_alloc_context *inode_ac = NULL;
 	struct ocfs2_dir_lookup_result orphan_insert = { NULL, };
+<<<<<<< HEAD
 	u64 uninitialized_var(di_blkno), suballoc_loc;
+=======
+	u64 di_blkno, suballoc_loc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 suballoc_bit;
 
 	status = ocfs2_inode_lock(dir, &parent_di_bh, 1);
@@ -2253,8 +3153,14 @@ int ocfs2_create_inode_in_orphan(struct inode *dir,
 	}
 
 	inode = ocfs2_get_init_inode(dir, mode);
+<<<<<<< HEAD
 	if (!inode) {
 		status = -ENOMEM;
+=======
+	if (IS_ERR(inode)) {
+		status = PTR_ERR(inode);
+		inode = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog_errno(status);
 		goto leave;
 	}
@@ -2291,9 +3197,14 @@ int ocfs2_create_inode_in_orphan(struct inode *dir,
 		goto leave;
 	}
 
+<<<<<<< HEAD
 	di = (struct ocfs2_dinode *)new_di_bh->b_data;
 	status = ocfs2_orphan_add(osb, handle, inode, new_di_bh, orphan_name,
 				  &orphan_insert, orphan_dir);
+=======
+	status = ocfs2_orphan_add(osb, handle, inode, new_di_bh, orphan_name,
+				  &orphan_insert, orphan_dir, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		mlog_errno(status);
 		goto leave;
@@ -2314,7 +3225,11 @@ leave:
 	if (orphan_dir) {
 		/* This was locked for us in ocfs2_prepare_orphan_dir() */
 		ocfs2_inode_unlock(orphan_dir, 1);
+<<<<<<< HEAD
 		mutex_unlock(&orphan_dir->i_mutex);
+=======
+		inode_unlock(orphan_dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iput(orphan_dir);
 	}
 
@@ -2338,6 +3253,161 @@ leave:
 	return status;
 }
 
+<<<<<<< HEAD
+=======
+int ocfs2_add_inode_to_orphan(struct ocfs2_super *osb,
+	struct inode *inode)
+{
+	char orphan_name[OCFS2_DIO_ORPHAN_PREFIX_LEN + OCFS2_ORPHAN_NAMELEN + 1];
+	struct inode *orphan_dir_inode = NULL;
+	struct ocfs2_dir_lookup_result orphan_insert = { NULL, };
+	struct buffer_head *di_bh = NULL;
+	int status = 0;
+	handle_t *handle = NULL;
+	struct ocfs2_dinode *di = NULL;
+
+	status = ocfs2_inode_lock(inode, &di_bh, 1);
+	if (status < 0) {
+		mlog_errno(status);
+		goto bail;
+	}
+
+	di = (struct ocfs2_dinode *) di_bh->b_data;
+	/*
+	 * Another append dio crashed?
+	 * If so, manually recover it first.
+	 */
+	if (unlikely(di->i_flags & cpu_to_le32(OCFS2_DIO_ORPHANED_FL))) {
+		status = ocfs2_truncate_file(inode, di_bh, i_size_read(inode));
+		if (status < 0) {
+			if (status != -ENOSPC)
+				mlog_errno(status);
+			goto bail_unlock_inode;
+		}
+
+		status = ocfs2_del_inode_from_orphan(osb, inode, di_bh, 0, 0);
+		if (status < 0) {
+			mlog_errno(status);
+			goto bail_unlock_inode;
+		}
+	}
+
+	status = ocfs2_prepare_orphan_dir(osb, &orphan_dir_inode,
+			OCFS2_I(inode)->ip_blkno,
+			orphan_name,
+			&orphan_insert,
+			true);
+	if (status < 0) {
+		mlog_errno(status);
+		goto bail_unlock_inode;
+	}
+
+	handle = ocfs2_start_trans(osb,
+			OCFS2_INODE_ADD_TO_ORPHAN_CREDITS);
+	if (IS_ERR(handle)) {
+		status = PTR_ERR(handle);
+		goto bail_unlock_orphan;
+	}
+
+	status = ocfs2_orphan_add(osb, handle, inode, di_bh, orphan_name,
+			&orphan_insert, orphan_dir_inode, true);
+	if (status)
+		mlog_errno(status);
+
+	ocfs2_commit_trans(osb, handle);
+
+bail_unlock_orphan:
+	ocfs2_inode_unlock(orphan_dir_inode, 1);
+	inode_unlock(orphan_dir_inode);
+	iput(orphan_dir_inode);
+
+	ocfs2_free_dir_lookup_result(&orphan_insert);
+
+bail_unlock_inode:
+	ocfs2_inode_unlock(inode, 1);
+	brelse(di_bh);
+
+bail:
+	return status;
+}
+
+int ocfs2_del_inode_from_orphan(struct ocfs2_super *osb,
+		struct inode *inode, struct buffer_head *di_bh,
+		int update_isize, loff_t end)
+{
+	struct inode *orphan_dir_inode = NULL;
+	struct buffer_head *orphan_dir_bh = NULL;
+	struct ocfs2_dinode *di = (struct ocfs2_dinode *)di_bh->b_data;
+	handle_t *handle = NULL;
+	int status = 0;
+
+	orphan_dir_inode = ocfs2_get_system_file_inode(osb,
+			ORPHAN_DIR_SYSTEM_INODE,
+			le16_to_cpu(di->i_dio_orphaned_slot));
+	if (!orphan_dir_inode) {
+		status = -ENOENT;
+		mlog_errno(status);
+		goto bail;
+	}
+
+	inode_lock(orphan_dir_inode);
+	status = ocfs2_inode_lock(orphan_dir_inode, &orphan_dir_bh, 1);
+	if (status < 0) {
+		inode_unlock(orphan_dir_inode);
+		iput(orphan_dir_inode);
+		mlog_errno(status);
+		goto bail;
+	}
+
+	handle = ocfs2_start_trans(osb,
+			OCFS2_INODE_DEL_FROM_ORPHAN_CREDITS);
+	if (IS_ERR(handle)) {
+		status = PTR_ERR(handle);
+		goto bail_unlock_orphan;
+	}
+
+	BUG_ON(!(di->i_flags & cpu_to_le32(OCFS2_DIO_ORPHANED_FL)));
+
+	status = ocfs2_orphan_del(osb, handle, orphan_dir_inode,
+				inode, orphan_dir_bh, true);
+	if (status < 0) {
+		mlog_errno(status);
+		goto bail_commit;
+	}
+
+	status = ocfs2_journal_access_di(handle,
+			INODE_CACHE(inode),
+			di_bh,
+			OCFS2_JOURNAL_ACCESS_WRITE);
+	if (status < 0) {
+		mlog_errno(status);
+		goto bail_commit;
+	}
+
+	di->i_flags &= ~cpu_to_le32(OCFS2_DIO_ORPHANED_FL);
+	di->i_dio_orphaned_slot = 0;
+
+	if (update_isize) {
+		status = ocfs2_set_inode_size(handle, inode, di_bh, end);
+		if (status)
+			mlog_errno(status);
+	} else
+		ocfs2_journal_dirty(handle, di_bh);
+
+bail_commit:
+	ocfs2_commit_trans(osb, handle);
+
+bail_unlock_orphan:
+	ocfs2_inode_unlock(orphan_dir_inode, 1);
+	inode_unlock(orphan_dir_inode);
+	brelse(orphan_dir_bh);
+	iput(orphan_dir_inode);
+
+bail:
+	return status;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ocfs2_mv_orphaned_inode_to_new(struct inode *dir,
 				   struct inode *inode,
 				   struct dentry *dentry)
@@ -2389,17 +3459,29 @@ int ocfs2_mv_orphaned_inode_to_new(struct inode *dir,
 						       ORPHAN_DIR_SYSTEM_INODE,
 						       osb->slot_num);
 	if (!orphan_dir_inode) {
+<<<<<<< HEAD
 		status = -EEXIST;
+=======
+		status = -ENOENT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mlog_errno(status);
 		goto leave;
 	}
 
+<<<<<<< HEAD
 	mutex_lock(&orphan_dir_inode->i_mutex);
+=======
+	inode_lock(orphan_dir_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = ocfs2_inode_lock(orphan_dir_inode, &orphan_dir_bh, 1);
 	if (status < 0) {
 		mlog_errno(status);
+<<<<<<< HEAD
 		mutex_unlock(&orphan_dir_inode->i_mutex);
+=======
+		inode_unlock(orphan_dir_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iput(orphan_dir_inode);
 		goto leave;
 	}
@@ -2426,17 +3508,29 @@ int ocfs2_mv_orphaned_inode_to_new(struct inode *dir,
 	}
 
 	status = ocfs2_orphan_del(osb, handle, orphan_dir_inode, inode,
+<<<<<<< HEAD
 				  orphan_dir_bh);
+=======
+				  orphan_dir_bh, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		mlog_errno(status);
 		goto out_commit;
 	}
 
 	di = (struct ocfs2_dinode *)di_bh->b_data;
+<<<<<<< HEAD
 	le32_add_cpu(&di->i_flags, -OCFS2_ORPHANED_FL);
 	di->i_orphaned_slot = 0;
 	set_nlink(inode, 1);
 	ocfs2_set_links_count(di, inode->i_nlink);
+=======
+	di->i_flags &= ~cpu_to_le32(OCFS2_ORPHANED_FL);
+	di->i_orphaned_slot = 0;
+	set_nlink(inode, 1);
+	ocfs2_set_links_count(di, inode->i_nlink);
+	ocfs2_update_inode_fsync_trans(handle, inode, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_journal_dirty(handle, di_bh);
 
 	status = ocfs2_add_entry(handle, dentry, inode,
@@ -2460,7 +3554,11 @@ out_commit:
 	ocfs2_commit_trans(osb, handle);
 orphan_unlock:
 	ocfs2_inode_unlock(orphan_dir_inode, 1);
+<<<<<<< HEAD
 	mutex_unlock(&orphan_dir_inode->i_mutex);
+=======
+	inode_unlock(orphan_dir_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iput(orphan_dir_inode);
 leave:
 
@@ -2491,10 +3589,19 @@ const struct inode_operations ocfs2_dir_iops = {
 	.setattr	= ocfs2_setattr,
 	.getattr	= ocfs2_getattr,
 	.permission	= ocfs2_permission,
+<<<<<<< HEAD
 	.setxattr	= generic_setxattr,
 	.getxattr	= generic_getxattr,
 	.listxattr	= ocfs2_listxattr,
 	.removexattr	= generic_removexattr,
 	.fiemap         = ocfs2_fiemap,
 	.get_acl	= ocfs2_iop_get_acl,
+=======
+	.listxattr	= ocfs2_listxattr,
+	.fiemap         = ocfs2_fiemap,
+	.get_inode_acl	= ocfs2_iop_get_acl,
+	.set_acl	= ocfs2_iop_set_acl,
+	.fileattr_get	= ocfs2_fileattr_get,
+	.fileattr_set	= ocfs2_fileattr_set,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

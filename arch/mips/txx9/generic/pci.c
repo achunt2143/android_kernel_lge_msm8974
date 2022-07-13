@@ -2,7 +2,11 @@
  * linux/arch/mips/txx9/pci.c
  *
  * Based on linux/arch/mips/txx9/rbtx4927/setup.c,
+<<<<<<< HEAD
  *          linux/arch/mips/txx9/rbtx4938/setup.c,
+=======
+ *	    linux/arch/mips/txx9/rbtx4938/setup.c,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	    and RBTX49xx patch from CELF patch archive.
  *
  * Copyright 2001-2005 MontaVista Software Inc.
@@ -29,12 +33,17 @@ static int __init
 early_read_config_word(struct pci_controller *hose,
 		       int top_bus, int bus, int devfn, int offset, u16 *value)
 {
+<<<<<<< HEAD
 	struct pci_dev fake_dev;
 	struct pci_bus fake_bus;
 
 	fake_dev.bus = &fake_bus;
 	fake_dev.sysdata = hose;
 	fake_dev.devfn = devfn;
+=======
+	struct pci_bus fake_bus;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fake_bus.number = bus;
 	fake_bus.sysdata = hose;
 	fake_bus.ops = hose->pci_ops;
@@ -45,7 +54,11 @@ early_read_config_word(struct pci_controller *hose,
 	else
 		fake_bus.parent = NULL;
 
+<<<<<<< HEAD
 	return pci_read_config_word(&fake_dev, offset, value);
+=======
+	return pci_bus_read_config_word(&fake_bus, devfn, offset, value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __init txx9_pci66_check(struct pci_controller *hose, int top_bus,
@@ -55,18 +68,32 @@ int __init txx9_pci66_check(struct pci_controller *hose, int top_bus,
 	unsigned short vid;
 	int cap66 = -1;
 	u16 stat;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* It seems SLC90E66 needs some time after PCI reset... */
 	mdelay(80);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "PCI: Checking 66MHz capabilities...\n");
+=======
+	pr_info("PCI: Checking 66MHz capabilities...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (pci_devfn = 0; pci_devfn < 0xff; pci_devfn++) {
 		if (PCI_FUNC(pci_devfn))
 			continue;
+<<<<<<< HEAD
 		if (early_read_config_word(hose, top_bus, current_bus,
 					   pci_devfn, PCI_VENDOR_ID, &vid) !=
 		    PCIBIOS_SUCCESSFUL)
+=======
+		ret = early_read_config_word(hose, top_bus, current_bus,
+					     pci_devfn, PCI_VENDOR_ID, &vid);
+		if (ret != PCIBIOS_SUCCESSFUL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (vid == 0xffff)
 			continue;
@@ -78,9 +105,14 @@ int __init txx9_pci66_check(struct pci_controller *hose, int top_bus,
 			early_read_config_word(hose, top_bus, current_bus,
 					       pci_devfn, PCI_STATUS, &stat);
 			if (!(stat & PCI_STATUS_66MHZ)) {
+<<<<<<< HEAD
 				printk(KERN_DEBUG
 				       "PCI: %02x:%02x not 66MHz capable.\n",
 				       current_bus, pci_devfn);
+=======
+				pr_debug("PCI: %02x:%02x not 66MHz capable.\n",
+					 current_bus, pci_devfn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cap66 = 0;
 				break;
 			}
@@ -107,7 +139,11 @@ int txx9_pci_mem_high __initdata;
 
 /*
  * allocate pci_controller and resources.
+<<<<<<< HEAD
  * mem_base, io_base: physical address.  0 for auto assignment.
+=======
+ * mem_base, io_base: physical address.	 0 for auto assignment.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * mem_size and io_size means max size on auto assignment.
  * pcic must be &txx9_primary_pcic or NULL.
  */
@@ -213,8 +249,13 @@ txx9_alloc_pci_controller(struct pci_controller *pcic,
 
 	pcic->mem_offset = 0;	/* busaddr == physaddr */
 
+<<<<<<< HEAD
 	printk(KERN_INFO "PCI: IO %pR MEM %pR\n",
 	       &pcic->mem_resource[1], &pcic->mem_resource[0]);
+=======
+	pr_info("PCI: IO %pR MEM %pR\n", &pcic->mem_resource[1],
+		&pcic->mem_resource[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* register_pci_controller() will request MEM resource */
 	release_resource(&pcic->mem_resource[0]);
@@ -223,14 +264,22 @@ txx9_alloc_pci_controller(struct pci_controller *pcic,
 	release_resource(&pcic->mem_resource[0]);
  free_and_exit:
 	kfree(new);
+<<<<<<< HEAD
 	printk(KERN_ERR "PCI: Failed to allocate resources.\n");
+=======
+	pr_err("PCI: Failed to allocate resources.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
 static int __init
 txx9_arch_pci_init(void)
 {
+<<<<<<< HEAD
 	PCIBIOS_MIN_IO = 0x8000;	/* reseve legacy I/O space */
+=======
+	PCIBIOS_MIN_IO = 0x8000;	/* reserve legacy I/O space */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 arch_initcall(txx9_arch_pci_init);
@@ -256,8 +305,12 @@ static irqreturn_t i8259_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int __init
 txx9_i8259_irq_setup(int irq)
+=======
+static int txx9_i8259_irq_setup(int irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -265,11 +318,19 @@ txx9_i8259_irq_setup(int irq)
 	err = request_irq(irq, &i8259_interrupt, IRQF_SHARED,
 			  "cascade(i8259)", (void *)(long)irq);
 	if (!err)
+<<<<<<< HEAD
 		printk(KERN_INFO "PCI-ISA bridge PIC (irq %d)\n", irq);
 	return err;
 }
 
 static void __init quirk_slc90e66_bridge(struct pci_dev *dev)
+=======
+		pr_info("PCI-ISA bridge PIC (irq %d)\n", irq);
+	return err;
+}
+
+static void __ref quirk_slc90e66_bridge(struct pci_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int irq;	/* PCI/ISA Bridge interrupt */
 	u8 reg_64;
@@ -313,13 +374,21 @@ static void quirk_slc90e66_ide(struct pci_dev *dev)
 	/* SMSC SLC90E66 IDE uses irq 14, 15 (default) */
 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, 14);
 	pci_read_config_byte(dev, PCI_INTERRUPT_LINE, &dat);
+<<<<<<< HEAD
 	printk(KERN_INFO "PCI: %s: IRQ %02x", pci_name(dev), dat);
+=======
+	pr_info("PCI: %s: IRQ %02x", pci_name(dev), dat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable SMSC SLC90E66 IDE */
 	for (i = 0; i < ARRAY_SIZE(regs); i++) {
 		pci_read_config_byte(dev, regs[i], &dat);
 		pci_write_config_byte(dev, regs[i], dat | 0x80);
 		pci_read_config_byte(dev, regs[i], &dat);
+<<<<<<< HEAD
 		printk(KERN_CONT " IDETIM%d %02x", i, dat);
+=======
+		pr_cont(" IDETIM%d %02x", i, dat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pci_read_config_byte(dev, 0x5c, &dat);
 	/*
@@ -332,16 +401,26 @@ static void quirk_slc90e66_ide(struct pci_dev *dev)
 	 * !!! DO NOT REMOVE THIS COMMENT IT IS REQUIRED BY SMSC !!!
 	 */
 	dat |= 0x01;
+<<<<<<< HEAD
 	pci_write_config_byte(dev, regs[i], dat);
 	pci_read_config_byte(dev, 0x5c, &dat);
 	printk(KERN_CONT " REG5C %02x", dat);
 	printk(KERN_CONT "\n");
+=======
+	pci_write_config_byte(dev, 0x5c, dat);
+	pci_read_config_byte(dev, 0x5c, &dat);
+	pr_cont(" REG5C %02x\n", dat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_TOSHIBA_FPCIB0 */
 
 static void tc35815_fixup(struct pci_dev *dev)
 {
+<<<<<<< HEAD
 	/* This device may have PM registers but not they are not suported. */
+=======
+	/* This device may have PM registers but not they are not supported. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->pm_cap) {
 		dev_info(&dev->dev, "PM disabled\n");
 		dev->pm_cap = 0;
@@ -350,6 +429,7 @@ static void tc35815_fixup(struct pci_dev *dev)
 
 static void final_fixup(struct pci_dev *dev)
 {
+<<<<<<< HEAD
 	unsigned char bist;
 
 	/* Do build-in self test */
@@ -370,6 +450,30 @@ static void final_fixup(struct pci_dev *dev)
 		else
 			printk(KERN_CONT "OK.\n");
 	}
+=======
+	unsigned long timeout;
+	unsigned char bist;
+	int ret;
+
+	/* Do built-in self test */
+	ret = pci_read_config_byte(dev, PCI_BIST, &bist);
+	if ((ret != PCIBIOS_SUCCESSFUL) || !(bist & PCI_BIST_CAPABLE))
+		return;
+
+	pci_set_power_state(dev, PCI_D0);
+	pr_info("PCI: %s BIST...", pci_name(dev));
+	pci_write_config_byte(dev, PCI_BIST, PCI_BIST_START);
+	timeout = jiffies + HZ * 2;	/* timeout after 2 sec */
+	do {
+		pci_read_config_byte(dev, PCI_BIST, &bist);
+		if (time_after(jiffies, timeout))
+			break;
+	} while (bist & PCI_BIST_START);
+	if (bist & (PCI_BIST_CODE_MASK | PCI_BIST_START))
+		pr_cont("failed. (0x%x)\n", bist);
+	else
+		pr_cont("OK.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_TOSHIBA_FPCIB0
@@ -393,6 +497,7 @@ int pcibios_plat_dev_init(struct pci_dev *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	return txx9_board_vec->pci_map_irq(dev, slot, pin);
@@ -401,6 +506,17 @@ int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 char * (*txx9_board_pcibios_setup)(char *str) __devinitdata;
 
 char *__devinit txx9_pcibios_setup(char *str)
+=======
+static int (*txx9_pci_map_irq)(const struct pci_dev *dev, u8 slot, u8 pin);
+int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+{
+	return txx9_pci_map_irq(dev, slot, pin);
+}
+
+char * (*txx9_board_pcibios_setup)(char *str) __initdata;
+
+char *__init txx9_pcibios_setup(char *str)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (txx9_board_pcibios_setup && !txx9_board_pcibios_setup(str))
 		return NULL;
@@ -431,5 +547,11 @@ char *__devinit txx9_pcibios_setup(char *str)
 			txx9_pci_err_action = TXX9_PCI_ERR_IGNORE;
 		return NULL;
 	}
+<<<<<<< HEAD
+=======
+
+	txx9_pci_map_irq = txx9_board_vec->pci_map_irq;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return str;
 }

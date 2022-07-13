@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  *  Copyright (C) 2008 Christian Pellegrin <chripell@evolware.org>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Notes: the MAX3100 doesn't provide an interrupt on CTS so we have
  * to use polling for flow control. TX empty IRQ is unusable, since
  * writing conf clears FIFO buffer and we cannot have this interrupt
@@ -179,6 +186,7 @@ static void max3100_work(struct work_struct *w);
 
 static void max3100_dowork(struct max3100_port *s)
 {
+<<<<<<< HEAD
 	if (!s->force_end_work && !work_pending(&s->work) &&
 	    !freezing(current) && !s->suspending)
 		queue_work(s->workqueue, &s->work);
@@ -187,6 +195,15 @@ static void max3100_dowork(struct max3100_port *s)
 static void max3100_timeout(unsigned long data)
 {
 	struct max3100_port *s = (struct max3100_port *)data;
+=======
+	if (!s->force_end_work && !freezing(current) && !s->suspending)
+		queue_work(s->workqueue, &s->work);
+}
+
+static void max3100_timeout(struct timer_list *t)
+{
+	struct max3100_port *s = from_timer(s, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (s->port.state) {
 		max3100_dowork(s);
@@ -221,8 +238,14 @@ static int max3100_sr(struct max3100_port *s, u16 tx, u16 *rx)
 
 static int max3100_handlerx(struct max3100_port *s, u16 rx)
 {
+<<<<<<< HEAD
 	unsigned int ch, flg, status = 0;
 	int ret = 0, cts;
+=======
+	unsigned int status = 0;
+	int ret = 0, cts;
+	u8 ch, flg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rx & MAX3100_R && s->rx_enabled) {
 		dev_dbg(&s->spi->dev, "%s\n", __func__);
@@ -253,7 +276,11 @@ static int max3100_handlerx(struct max3100_port *s, u16 rx)
 	cts = (rx & MAX3100_CTS) > 0;
 	if (s->cts != cts) {
 		s->cts = cts;
+<<<<<<< HEAD
 		uart_handle_cts_change(&s->port, cts ? TIOCM_CTS : 0);
+=======
+		uart_handle_cts_change(&s->port, cts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -264,7 +291,11 @@ static void max3100_work(struct work_struct *w)
 	struct max3100_port *s = container_of(w, struct max3100_port, work);
 	int rxchars;
 	u16 tx, rx;
+<<<<<<< HEAD
 	int conf, cconf, rts, crts;
+=======
+	int conf, cconf, crts;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct circ_buf *xmit = &s->port.state->xmit;
 
 	dev_dbg(&s->spi->dev, "%s\n", __func__);
@@ -275,7 +306,10 @@ static void max3100_work(struct work_struct *w)
 		conf = s->conf;
 		cconf = s->conf_commit;
 		s->conf_commit = 0;
+<<<<<<< HEAD
 		rts = s->rts;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		crts = s->rts_commit;
 		s->rts_commit = 0;
 		spin_unlock(&s->conf_lock);
@@ -299,9 +333,13 @@ static void max3100_work(struct work_struct *w)
 			} else if (!uart_circ_empty(xmit) &&
 				   !uart_tx_stopped(&s->port)) {
 				tx = xmit->buf[xmit->tail];
+<<<<<<< HEAD
 				xmit->tail = (xmit->tail + 1) &
 					(UART_XMIT_SIZE - 1);
 				s->port.icount.tx++;
+=======
+				uart_xmit_advance(&s->port, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			if (tx != 0xffff) {
 				max3100_calc_parity(s, &tx);
@@ -311,8 +349,13 @@ static void max3100_work(struct work_struct *w)
 			}
 		}
 
+<<<<<<< HEAD
 		if (rxchars > 16 && s->port.state->port.tty != NULL) {
 			tty_flip_buffer_push(s->port.state->port.tty);
+=======
+		if (rxchars > 16) {
+			tty_flip_buffer_push(&s->port.state->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rxchars = 0;
 		}
 		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
@@ -324,8 +367,13 @@ static void max3100_work(struct work_struct *w)
 		  (!uart_circ_empty(xmit) &&
 		   !uart_tx_stopped(&s->port))));
 
+<<<<<<< HEAD
 	if (rxchars > 0 && s->port.state->port.tty != NULL)
 		tty_flip_buffer_push(s->port.state->port.tty);
+=======
+	if (rxchars > 0)
+		tty_flip_buffer_push(&s->port.state->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t max3100_irq(int irqno, void *dev_id)
@@ -425,7 +473,11 @@ static void max3100_set_mctrl(struct uart_port *port, unsigned int mctrl)
 
 static void
 max3100_set_termios(struct uart_port *port, struct ktermios *termios,
+<<<<<<< HEAD
 		    struct ktermios *old)
+=======
+		    const struct ktermios *old)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct max3100_port *s = container_of(port,
 					      struct max3100_port,
@@ -437,7 +489,10 @@ max3100_set_termios(struct uart_port *port, struct ktermios *termios,
 	dev_dbg(&s->spi->dev, "%s\n", __func__);
 
 	cflag = termios->c_cflag;
+<<<<<<< HEAD
 	param_new = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	param_mask = 0;
 
 	baud = tty_termios_baud_rate(termios);
@@ -529,9 +584,12 @@ max3100_set_termios(struct uart_port *port, struct ktermios *termios,
 			MAX3100_STATUS_PE | MAX3100_STATUS_FE |
 			MAX3100_STATUS_OE;
 
+<<<<<<< HEAD
 	/* we are sending char from a workqueue so enable */
 	s->port.state->port.tty->low_latency = 1;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (s->poll_time > 0)
 		del_timer_sync(&s->timer);
 
@@ -565,7 +623,10 @@ static void max3100_shutdown(struct uart_port *port)
 		del_timer_sync(&s->timer);
 
 	if (s->workqueue) {
+<<<<<<< HEAD
 		flush_workqueue(s->workqueue);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		destroy_workqueue(s->workqueue);
 		s->workqueue = NULL;
 	}
@@ -713,7 +774,11 @@ static void max3100_break_ctl(struct uart_port *port, int break_state)
 	dev_dbg(&s->spi->dev, "%s\n", __func__);
 }
 
+<<<<<<< HEAD
 static struct uart_ops max3100_ops = {
+=======
+static const struct uart_ops max3100_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	= max3100_tx_empty,
 	.set_mctrl	= max3100_set_mctrl,
 	.get_mctrl	= max3100_get_mctrl,
@@ -742,7 +807,11 @@ static struct uart_driver max3100_uart_driver = {
 };
 static int uart_driver_registered;
 
+<<<<<<< HEAD
 static int __devinit max3100_probe(struct spi_device *spi)
+=======
+static int max3100_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, retval;
 	struct plat_max3100 *pdata;
@@ -779,18 +848,30 @@ static int __devinit max3100_probe(struct spi_device *spi)
 	max3100s[i]->spi = spi;
 	max3100s[i]->irq = spi->irq;
 	spin_lock_init(&max3100s[i]->conf_lock);
+<<<<<<< HEAD
 	dev_set_drvdata(&spi->dev, max3100s[i]);
 	pdata = spi->dev.platform_data;
 	max3100s[i]->crystal = pdata->crystal;
 	max3100s[i]->loopback = pdata->loopback;
 	max3100s[i]->poll_time = pdata->poll_time * HZ / 1000;
+=======
+	spi_set_drvdata(spi, max3100s[i]);
+	pdata = dev_get_platdata(&spi->dev);
+	max3100s[i]->crystal = pdata->crystal;
+	max3100s[i]->loopback = pdata->loopback;
+	max3100s[i]->poll_time = msecs_to_jiffies(pdata->poll_time);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdata->poll_time > 0 && max3100s[i]->poll_time == 0)
 		max3100s[i]->poll_time = 1;
 	max3100s[i]->max3100_hw_suspend = pdata->max3100_hw_suspend;
 	max3100s[i]->minor = i;
+<<<<<<< HEAD
 	init_timer(&max3100s[i]->timer);
 	max3100s[i]->timer.function = max3100_timeout;
 	max3100s[i]->timer.data = (unsigned long) max3100s[i];
+=======
+	timer_setup(&max3100s[i]->timer, max3100_timeout, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&spi->dev, "%s: adding port %d\n", __func__, i);
 	max3100s[i]->port.irq = max3100s[i]->irq;
@@ -818,15 +899,22 @@ static int __devinit max3100_probe(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit max3100_remove(struct spi_device *spi)
 {
 	struct max3100_port *s = dev_get_drvdata(&spi->dev);
+=======
+static void max3100_remove(struct spi_device *spi)
+{
+	struct max3100_port *s = spi_get_drvdata(spi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	mutex_lock(&max3100s_lock);
 
 	/* find out the index for the chip we are removing */
 	for (i = 0; i < MAX_MAX3100; i++)
+<<<<<<< HEAD
 		if (max3100s[i] == s)
 			break;
 
@@ -835,16 +923,33 @@ static int __devexit max3100_remove(struct spi_device *spi)
 	kfree(max3100s[i]);
 	max3100s[i] = NULL;
 
+=======
+		if (max3100s[i] == s) {
+			dev_dbg(&spi->dev, "%s: removing port %d\n", __func__, i);
+			uart_remove_one_port(&max3100_uart_driver, &max3100s[i]->port);
+			kfree(max3100s[i]);
+			max3100s[i] = NULL;
+			break;
+		}
+
+	WARN_ON(i == MAX_MAX3100);
+	
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* check if this is the last chip we have */
 	for (i = 0; i < MAX_MAX3100; i++)
 		if (max3100s[i]) {
 			mutex_unlock(&max3100s_lock);
+<<<<<<< HEAD
 			return 0;
+=======
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	pr_debug("removing max3100 driver\n");
 	uart_unregister_driver(&max3100_uart_driver);
 
 	mutex_unlock(&max3100s_lock);
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -853,6 +958,15 @@ static int __devexit max3100_remove(struct spi_device *spi)
 static int max3100_suspend(struct spi_device *spi, pm_message_t state)
 {
 	struct max3100_port *s = dev_get_drvdata(&spi->dev);
+=======
+}
+
+#ifdef CONFIG_PM_SLEEP
+
+static int max3100_suspend(struct device *dev)
+{
+	struct max3100_port *s = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&s->spi->dev, "%s\n", __func__);
 
@@ -873,9 +987,15 @@ static int max3100_suspend(struct spi_device *spi, pm_message_t state)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int max3100_resume(struct spi_device *spi)
 {
 	struct max3100_port *s = dev_get_drvdata(&spi->dev);
+=======
+static int max3100_resume(struct device *dev)
+{
+	struct max3100_port *s = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&s->spi->dev, "%s\n", __func__);
 
@@ -893,14 +1013,23 @@ static int max3100_resume(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 #else
 #define max3100_suspend NULL
 #define max3100_resume  NULL
+=======
+static SIMPLE_DEV_PM_OPS(max3100_pm_ops, max3100_suspend, max3100_resume);
+#define MAX3100_PM_OPS (&max3100_pm_ops)
+
+#else
+#define MAX3100_PM_OPS NULL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static struct spi_driver max3100_driver = {
 	.driver = {
 		.name		= "max3100",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
 	},
 
@@ -921,6 +1050,15 @@ static void __exit max3100_exit(void)
 	spi_unregister_driver(&max3100_driver);
 }
 module_exit(max3100_exit);
+=======
+		.pm		= MAX3100_PM_OPS,
+	},
+	.probe		= max3100_probe,
+	.remove		= max3100_remove,
+};
+
+module_spi_driver(max3100_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("MAX3100 driver");
 MODULE_AUTHOR("Christian Pellegrin <chripell@evolware.org>");

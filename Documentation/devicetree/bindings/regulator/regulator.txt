@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 Voltage/Current Regulators
 
 Optional properties:
@@ -58,3 +59,6 @@ regulators (twl_reg1 and twl_reg2),
 		vmmc-supply = <&twl_reg1>;
 		vmmcaux-supply = <&twl_reg2>;
 	};
+=======
+This file has moved to regulator.yaml.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

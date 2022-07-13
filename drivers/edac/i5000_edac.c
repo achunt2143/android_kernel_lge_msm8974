@@ -22,7 +22,11 @@
 #include <linux/edac.h>
 #include <asm/mmzone.h>
 
+<<<<<<< HEAD
 #include "edac_core.h"
+=======
+#include "edac_module.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Alter this version for the I5000 module when modifications are made
@@ -227,7 +231,11 @@
 #define			NREC_RDWR(x)		(((x)>>11) & 1)
 #define			NREC_RANK(x)		(((x)>>8) & 0x7)
 #define		NRECMEMB		0xC0
+<<<<<<< HEAD
 #define			NREC_CAS(x)		(((x)>>16) & 0xFFFFFF)
+=======
+#define			NREC_CAS(x)		(((x)>>16) & 0xFFF)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define			NREC_RAS(x)		((x) & 0x7FFF)
 #define		NRECFGLOG		0xC4
 #define		NREEECFBDA		0xC8
@@ -270,9 +278,16 @@
 #define MTR3		0x8C
 
 #define NUM_MTRS		4
+<<<<<<< HEAD
 #define CHANNELS_PER_BRANCH	(2)
 
 /* Defines to extract the vaious fields from the
+=======
+#define CHANNELS_PER_BRANCH	2
+#define MAX_BRANCHES		2
+
+/* Defines to extract the various fields from the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	MTRx - Memory Technology Registers
  */
 #define MTR_DIMMS_PRESENT(mtr)		((mtr) & (0x1 << 8))
@@ -286,6 +301,7 @@
 #define MTR_DIMM_COLS(mtr)		((mtr) & 0x3)
 #define MTR_DIMM_COLS_ADDR_BITS(mtr)	(MTR_DIMM_COLS(mtr) + 10)
 
+<<<<<<< HEAD
 #ifdef CONFIG_EDAC_DEBUG
 static char *numrow_toString[] = {
 	"8,192 - 13 rows",
@@ -302,6 +318,8 @@ static char *numcol_toString[] = {
 };
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* enables the report of miscellaneous messages as CE errors - default off */
 static int misc_messages;
 
@@ -343,7 +361,17 @@ struct i5000_pvt {
 	struct pci_dev *branch_1;	/* 22.0 */
 
 	u16 tolm;		/* top of low memory */
+<<<<<<< HEAD
 	u64 ambase;		/* AMB BAR */
+=======
+	union {
+		u64 ambase;		/* AMB BAR */
+		struct {
+			u32 ambase_bottom;
+			u32 ambase_top;
+		} u __packed;
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u16 mir0, mir1, mir2;
 
@@ -380,7 +408,11 @@ struct i5000_error_info {
 	/* These registers are input ONLY if there was a
 	 * Non-Recoverable Error */
 	u16 nrecmema;		/* Non-Recoverable Mem log A */
+<<<<<<< HEAD
 	u16 nrecmemb;		/* Non-Recoverable Mem log B */
+=======
+	u32 nrecmemb;		/* Non-Recoverable Mem log B */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 };
 
@@ -416,7 +448,11 @@ static void i5000_get_error_info(struct mem_ctl_info *mci,
 				NERR_FAT_FBD, &info->nerr_fat_fbd);
 		pci_read_config_word(pvt->branchmap_werrors,
 				NRECMEMA, &info->nrecmema);
+<<<<<<< HEAD
 		pci_read_config_word(pvt->branchmap_werrors,
+=======
+		pci_read_config_dword(pvt->branchmap_werrors,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				NRECMEMB, &info->nrecmemb);
 
 		/* Clear the error bits, by writing them back */
@@ -473,7 +509,10 @@ static void i5000_process_fatal_error_info(struct mem_ctl_info *mci,
 	char msg[EDAC_MC_LABEL_LEN + 1 + 160];
 	char *specific = NULL;
 	u32 allErrors;
+<<<<<<< HEAD
 	int branch;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int channel;
 	int bank;
 	int rank;
@@ -485,8 +524,12 @@ static void i5000_process_fatal_error_info(struct mem_ctl_info *mci,
 	if (!allErrors)
 		return;		/* if no error, return now */
 
+<<<<<<< HEAD
 	branch = EXTRACT_FBDCHAN_INDX(info->ferr_fat_fbd);
 	channel = branch;
+=======
+	channel = EXTRACT_FBDCHAN_INDX(info->ferr_fat_fbd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Use the NON-Recoverable macros to extract data */
 	bank = NREC_BANK(info->nrecmema);
@@ -495,10 +538,16 @@ static void i5000_process_fatal_error_info(struct mem_ctl_info *mci,
 	ras = NREC_RAS(info->nrecmemb);
 	cas = NREC_CAS(info->nrecmemb);
 
+<<<<<<< HEAD
 	debugf0("\t\tCSROW= %d  Channels= %d,%d  (Branch= %d "
 		"DRAM Bank= %d rdwr= %s ras= %d cas= %d)\n",
 		rank, channel, channel + 1, branch >> 1, bank,
 		rdwr ? "Write" : "Read", ras, cas);
+=======
+	edac_dbg(0, "\t\tCSROW= %d  Channel= %d (DRAM Bank= %d rdwr= %s ras= %d cas= %d)\n",
+		 rank, channel, bank,
+		 rdwr ? "Write" : "Read", ras, cas);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Only 1 bit will be on */
 	switch (allErrors) {
@@ -533,6 +582,7 @@ static void i5000_process_fatal_error_info(struct mem_ctl_info *mci,
 
 	/* Form out message */
 	snprintf(msg, sizeof(msg),
+<<<<<<< HEAD
 		 "(Branch=%d DRAM-Bank=%d RDWR=%s RAS=%d CAS=%d "
 		 "FATAL Err=0x%x (%s))",
 		 branch >> 1, bank, rdwr ? "Write" : "Read", ras, cas,
@@ -540,6 +590,16 @@ static void i5000_process_fatal_error_info(struct mem_ctl_info *mci,
 
 	/* Call the helper to output message */
 	edac_mc_handle_fbd_ue(mci, rank, channel, channel + 1, msg);
+=======
+		 "Bank=%d RAS=%d CAS=%d FATAL Err=0x%x (%s)",
+		 bank, ras, cas, allErrors, specific);
+
+	/* Call the helper to output message */
+	edac_mc_handle_error(HW_EVENT_ERR_FATAL, mci, 1, 0, 0, 0,
+			     channel >> 1, channel & 1, rank,
+			     rdwr ? "Write error" : "Read error",
+			     msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -574,7 +634,11 @@ static void i5000_process_nonfatal_error_info(struct mem_ctl_info *mci,
 	/* ONLY ONE of the possible error bits will be set, as per the docs */
 	ue_errors = allErrors & FERR_NF_UNCORRECTABLE;
 	if (ue_errors) {
+<<<<<<< HEAD
 		debugf0("\tUncorrected bits= 0x%x\n", ue_errors);
+=======
+		edac_dbg(0, "\tUncorrected bits= 0x%x\n", ue_errors);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		branch = EXTRACT_FBDCHAN_INDX(info->ferr_nf_fbd);
 
@@ -590,11 +654,17 @@ static void i5000_process_nonfatal_error_info(struct mem_ctl_info *mci,
 		ras = NREC_RAS(info->nrecmemb);
 		cas = NREC_CAS(info->nrecmemb);
 
+<<<<<<< HEAD
 		debugf0
 			("\t\tCSROW= %d  Channels= %d,%d  (Branch= %d "
 			"DRAM Bank= %d rdwr= %s ras= %d cas= %d)\n",
 			rank, channel, channel + 1, branch >> 1, bank,
 			rdwr ? "Write" : "Read", ras, cas);
+=======
+		edac_dbg(0, "\t\tCSROW= %d  Channels= %d,%d  (Branch= %d DRAM Bank= %d rdwr= %s ras= %d cas= %d)\n",
+			 rank, channel, channel + 1, branch >> 1, bank,
+			 rdwr ? "Write" : "Read", ras, cas);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (ue_errors) {
 		case FERR_NF_M12ERR:
@@ -633,6 +703,7 @@ static void i5000_process_nonfatal_error_info(struct mem_ctl_info *mci,
 
 		/* Form out message */
 		snprintf(msg, sizeof(msg),
+<<<<<<< HEAD
 			 "(Branch=%d DRAM-Bank=%d RDWR=%s RAS=%d "
 			 "CAS=%d, UE Err=0x%x (%s))",
 			 branch >> 1, bank, rdwr ? "Write" : "Read", ras, cas,
@@ -640,12 +711,26 @@ static void i5000_process_nonfatal_error_info(struct mem_ctl_info *mci,
 
 		/* Call the helper to output message */
 		edac_mc_handle_fbd_ue(mci, rank, channel, channel + 1, msg);
+=======
+			 "Rank=%d Bank=%d RAS=%d CAS=%d, UE Err=0x%x (%s)",
+			 rank, bank, ras, cas, ue_errors, specific);
+
+		/* Call the helper to output message */
+		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1, 0, 0, 0,
+				channel >> 1, -1, rank,
+				rdwr ? "Write error" : "Read error",
+				msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Check correctable errors */
 	ce_errors = allErrors & FERR_NF_CORRECTABLE;
 	if (ce_errors) {
+<<<<<<< HEAD
 		debugf0("\tCorrected bits= 0x%x\n", ce_errors);
+=======
+		edac_dbg(0, "\tCorrected bits= 0x%x\n", ce_errors);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		branch = EXTRACT_FBDCHAN_INDX(info->ferr_nf_fbd);
 
@@ -663,10 +748,16 @@ static void i5000_process_nonfatal_error_info(struct mem_ctl_info *mci,
 		ras = REC_RAS(info->recmemb);
 		cas = REC_CAS(info->recmemb);
 
+<<<<<<< HEAD
 		debugf0("\t\tCSROW= %d Channel= %d  (Branch %d "
 			"DRAM Bank= %d rdwr= %s ras= %d cas= %d)\n",
 			rank, channel, branch >> 1, bank,
 			rdwr ? "Write" : "Read", ras, cas);
+=======
+		edac_dbg(0, "\t\tCSROW= %d Channel= %d  (Branch %d DRAM Bank= %d rdwr= %s ras= %d cas= %d)\n",
+			 rank, channel, branch >> 1, bank,
+			 rdwr ? "Write" : "Read", ras, cas);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (ce_errors) {
 		case FERR_NF_M17ERR:
@@ -685,13 +776,24 @@ static void i5000_process_nonfatal_error_info(struct mem_ctl_info *mci,
 
 		/* Form out message */
 		snprintf(msg, sizeof(msg),
+<<<<<<< HEAD
 			 "(Branch=%d DRAM-Bank=%d RDWR=%s RAS=%d "
+=======
+			 "Rank=%d Bank=%d RDWR=%s RAS=%d "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 "CAS=%d, CE Err=0x%x (%s))", branch >> 1, bank,
 			 rdwr ? "Write" : "Read", ras, cas, ce_errors,
 			 specific);
 
 		/* Call the helper to output message */
+<<<<<<< HEAD
 		edac_mc_handle_fbd_ce(mci, rank, channel, msg);
+=======
+		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1, 0, 0, 0,
+				channel >> 1, channel % 2, rank,
+				rdwr ? "Write error" : "Read error",
+				msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!misc_messages)
@@ -731,11 +833,20 @@ static void i5000_process_nonfatal_error_info(struct mem_ctl_info *mci,
 
 		/* Form out message */
 		snprintf(msg, sizeof(msg),
+<<<<<<< HEAD
 			 "(Branch=%d Err=%#x (%s))", branch >> 1,
 			 misc_errors, specific);
 
 		/* Call the helper to output message */
 		edac_mc_handle_fbd_ce(mci, 0, 0, msg);
+=======
+			 "Err=%#x (%s)", misc_errors, specific);
+
+		/* Call the helper to output message */
+		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1, 0, 0, 0,
+				branch >> 1, -1, -1,
+				"Misc error", msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -774,7 +885,11 @@ static void i5000_clear_error(struct mem_ctl_info *mci)
 static void i5000_check_error(struct mem_ctl_info *mci)
 {
 	struct i5000_error_info info;
+<<<<<<< HEAD
 	debugf4("MC%d: %s: %s()\n", mci->mc_idx, __FILE__, __func__);
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i5000_get_error_info(mci, &info);
 	i5000_process_error_info(mci, &info, 1);
 }
@@ -845,6 +960,7 @@ static int i5000_get_devices(struct mem_ctl_info *mci, int dev_idx)
 
 	pvt->fsb_error_regs = pdev;
 
+<<<<<<< HEAD
 	debugf1("System Address, processor bus- PCI Bus ID: %s  %x:%x\n",
 		pci_name(pvt->system_address),
 		pvt->system_address->vendor, pvt->system_address->device);
@@ -854,6 +970,18 @@ static int i5000_get_devices(struct mem_ctl_info *mci, int dev_idx)
 	debugf1("FSB Error Regs - PCI Bus ID: %s  %x:%x\n",
 		pci_name(pvt->fsb_error_regs),
 		pvt->fsb_error_regs->vendor, pvt->fsb_error_regs->device);
+=======
+	edac_dbg(1, "System Address, processor bus- PCI Bus ID: %s  %x:%x\n",
+		 pci_name(pvt->system_address),
+		 pvt->system_address->vendor, pvt->system_address->device);
+	edac_dbg(1, "Branchmap, control and errors - PCI Bus ID: %s  %x:%x\n",
+		 pci_name(pvt->branchmap_werrors),
+		 pvt->branchmap_werrors->vendor,
+		 pvt->branchmap_werrors->device);
+	edac_dbg(1, "FSB Error Regs - PCI Bus ID: %s  %x:%x\n",
+		 pci_name(pvt->fsb_error_regs),
+		 pvt->fsb_error_regs->vendor, pvt->fsb_error_regs->device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdev = NULL;
 	pdev = pci_get_device(PCI_VENDOR_ID_INTEL,
@@ -956,14 +1084,24 @@ static int determine_amb_present_reg(struct i5000_pvt *pvt, int channel)
  *
  *	return the proper MTR register as determine by the csrow and channel desired
  */
+<<<<<<< HEAD
 static int determine_mtr(struct i5000_pvt *pvt, int csrow, int channel)
+=======
+static int determine_mtr(struct i5000_pvt *pvt, int slot, int channel)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int mtr;
 
 	if (channel < CHANNELS_PER_BRANCH)
+<<<<<<< HEAD
 		mtr = pvt->b0_mtr[csrow >> 1];
 	else
 		mtr = pvt->b1_mtr[csrow >> 1];
+=======
+		mtr = pvt->b0_mtr[slot];
+	else
+		mtr = pvt->b1_mtr[slot];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mtr;
 }
@@ -976,6 +1114,7 @@ static void decode_mtr(int slot_row, u16 mtr)
 
 	ans = MTR_DIMMS_PRESENT(mtr);
 
+<<<<<<< HEAD
 	debugf2("\tMTR%d=0x%x:  DIMMs are %s\n", slot_row, mtr,
 		ans ? "Present" : "NOT Present");
 	if (!ans)
@@ -989,12 +1128,37 @@ static void decode_mtr(int slot_row, u16 mtr)
 }
 
 static void handle_channel(struct i5000_pvt *pvt, int csrow, int channel,
+=======
+	edac_dbg(2, "\tMTR%d=0x%x:  DIMMs are %sPresent\n",
+		 slot_row, mtr, ans ? "" : "NOT ");
+	if (!ans)
+		return;
+
+	edac_dbg(2, "\t\tWIDTH: x%d\n", MTR_DRAM_WIDTH(mtr));
+	edac_dbg(2, "\t\tNUMBANK: %d bank(s)\n", MTR_DRAM_BANKS(mtr));
+	edac_dbg(2, "\t\tNUMRANK: %s\n",
+		 MTR_DIMM_RANK(mtr) ? "double" : "single");
+	edac_dbg(2, "\t\tNUMROW: %s\n",
+		 MTR_DIMM_ROWS(mtr) == 0 ? "8,192 - 13 rows" :
+		 MTR_DIMM_ROWS(mtr) == 1 ? "16,384 - 14 rows" :
+		 MTR_DIMM_ROWS(mtr) == 2 ? "32,768 - 15 rows" :
+		 "reserved");
+	edac_dbg(2, "\t\tNUMCOL: %s\n",
+		 MTR_DIMM_COLS(mtr) == 0 ? "1,024 - 10 columns" :
+		 MTR_DIMM_COLS(mtr) == 1 ? "2,048 - 11 columns" :
+		 MTR_DIMM_COLS(mtr) == 2 ? "4,096 - 12 columns" :
+		 "reserved");
+}
+
+static void handle_channel(struct i5000_pvt *pvt, int slot, int channel,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct i5000_dimm_info *dinfo)
 {
 	int mtr;
 	int amb_present_reg;
 	int addrBits;
 
+<<<<<<< HEAD
 	mtr = determine_mtr(pvt, csrow, channel);
 	if (MTR_DIMMS_PRESENT(mtr)) {
 		amb_present_reg = determine_amb_present_reg(pvt, channel);
@@ -1019,6 +1183,33 @@ static void handle_channel(struct i5000_pvt *pvt, int csrow, int channel,
 
 				dinfo->megabytes = 1 << addrBits;
 			}
+=======
+	mtr = determine_mtr(pvt, slot, channel);
+	if (MTR_DIMMS_PRESENT(mtr)) {
+		amb_present_reg = determine_amb_present_reg(pvt, channel);
+
+		/* Determine if there is a DIMM present in this DIMM slot */
+		if (amb_present_reg) {
+			dinfo->dual_rank = MTR_DIMM_RANK(mtr);
+
+			/* Start with the number of bits for a Bank
+				* on the DRAM */
+			addrBits = MTR_DRAM_BANKS_ADDR_BITS(mtr);
+			/* Add the number of ROW bits */
+			addrBits += MTR_DIMM_ROWS_ADDR_BITS(mtr);
+			/* add the number of COLUMN bits */
+			addrBits += MTR_DIMM_COLS_ADDR_BITS(mtr);
+
+			/* Dual-rank memories have twice the size */
+			if (dinfo->dual_rank)
+				addrBits++;
+
+			addrBits += 6;	/* add 64 bits per DIMM */
+			addrBits -= 20;	/* divide by 2^^20 */
+			addrBits -= 3;	/* 8 bits per bytes */
+
+			dinfo->megabytes = 1 << addrBits;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -1032,10 +1223,16 @@ static void handle_channel(struct i5000_pvt *pvt, int csrow, int channel,
 static void calculate_dimm_size(struct i5000_pvt *pvt)
 {
 	struct i5000_dimm_info *dinfo;
+<<<<<<< HEAD
 	int csrow, max_csrows;
 	char *p, *mem_buffer;
 	int space, n;
 	int channel;
+=======
+	int slot, channel, branch;
+	char *p, *mem_buffer;
+	int space, n;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ================= Generate some debug output ================= */
 	space = PAGE_SIZE;
@@ -1046,6 +1243,7 @@ static void calculate_dimm_size(struct i5000_pvt *pvt)
 		return;
 	}
 
+<<<<<<< HEAD
 	n = snprintf(p, space, "\n");
 	p += n;
 	space -= n;
@@ -1070,10 +1268,32 @@ static void calculate_dimm_size(struct i5000_pvt *pvt)
 			space = PAGE_SIZE;
 		}
 		n = snprintf(p, space, "csrow %2d    ", csrow);
+=======
+	/* Scan all the actual slots
+	 * and calculate the information for each DIMM
+	 * Start with the highest slot first, to display it first
+	 * and work toward the 0th slot
+	 */
+	for (slot = pvt->maxdimmperch - 1; slot >= 0; slot--) {
+
+		/* on an odd slot, first output a 'boundary' marker,
+		 * then reset the message buffer  */
+		if (slot & 0x1) {
+			n = snprintf(p, space, "--------------------------"
+				"--------------------------------");
+			p += n;
+			space -= n;
+			edac_dbg(2, "%s\n", mem_buffer);
+			p = mem_buffer;
+			space = PAGE_SIZE;
+		}
+		n = snprintf(p, space, "slot %2d    ", slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p += n;
 		space -= n;
 
 		for (channel = 0; channel < pvt->maxch; channel++) {
+<<<<<<< HEAD
 			dinfo = &pvt->dimm_info[csrow][channel];
 			handle_channel(pvt, csrow, channel, dinfo);
 			n = snprintf(p, space, "%4d MB   | ", dinfo->megabytes);
@@ -1093,6 +1313,36 @@ static void calculate_dimm_size(struct i5000_pvt *pvt)
 
 	/* now output the 'channel' labels */
 	n = snprintf(p, space, "            ");
+=======
+			dinfo = &pvt->dimm_info[slot][channel];
+			handle_channel(pvt, slot, channel, dinfo);
+			if (dinfo->megabytes)
+				n = snprintf(p, space, "%4d MB %dR| ",
+					     dinfo->megabytes, dinfo->dual_rank + 1);
+			else
+				n = snprintf(p, space, "%4d MB   | ", 0);
+			p += n;
+			space -= n;
+		}
+		p += n;
+		space -= n;
+		edac_dbg(2, "%s\n", mem_buffer);
+		p = mem_buffer;
+		space = PAGE_SIZE;
+	}
+
+	/* Output the last bottom 'boundary' marker */
+	n = snprintf(p, space, "--------------------------"
+		"--------------------------------");
+	p += n;
+	space -= n;
+	edac_dbg(2, "%s\n", mem_buffer);
+	p = mem_buffer;
+	space = PAGE_SIZE;
+
+	/* now output the 'channel' labels */
+	n = snprintf(p, space, "           ");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p += n;
 	space -= n;
 	for (channel = 0; channel < pvt->maxch; channel++) {
@@ -1100,12 +1350,29 @@ static void calculate_dimm_size(struct i5000_pvt *pvt)
 		p += n;
 		space -= n;
 	}
+<<<<<<< HEAD
 	n = snprintf(p, space, "\n");
 	p += n;
 	space -= n;
 
 	/* output the last message and free buffer */
 	debugf2("%s\n", mem_buffer);
+=======
+	edac_dbg(2, "%s\n", mem_buffer);
+	p = mem_buffer;
+	space = PAGE_SIZE;
+
+	n = snprintf(p, space, "           ");
+	p += n;
+	for (branch = 0; branch < MAX_BRANCHES; branch++) {
+		n = snprintf(p, space, "       branch %d       | ", branch);
+		p += n;
+		space -= n;
+	}
+
+	/* output the last message and free buffer */
+	edac_dbg(2, "%s\n", mem_buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(mem_buffer);
 }
 
@@ -1121,13 +1388,17 @@ static void i5000_get_mc_regs(struct mem_ctl_info *mci)
 	u32 actual_tolm;
 	u16 limit;
 	int slot_row;
+<<<<<<< HEAD
 	int maxch;
 	int maxdimmperch;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int way0, way1;
 
 	pvt = mci->pvt_info;
 
 	pci_read_config_dword(pvt->system_address, AMBASE,
+<<<<<<< HEAD
 			(u32 *) & pvt->ambase);
 	pci_read_config_dword(pvt->system_address, AMBASE + sizeof(u32),
 			((u32 *) & pvt->ambase) + sizeof(u32));
@@ -1137,15 +1408,32 @@ static void i5000_get_mc_regs(struct mem_ctl_info *mci)
 
 	debugf2("AMBASE= 0x%lx  MAXCH= %d  MAX-DIMM-Per-CH= %d\n",
 		(long unsigned int)pvt->ambase, pvt->maxch, pvt->maxdimmperch);
+=======
+			&pvt->u.ambase_bottom);
+	pci_read_config_dword(pvt->system_address, AMBASE + sizeof(u32),
+			&pvt->u.ambase_top);
+
+	edac_dbg(2, "AMBASE= 0x%lx  MAXCH= %d  MAX-DIMM-Per-CH= %d\n",
+		 (long unsigned int)pvt->ambase, pvt->maxch, pvt->maxdimmperch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the Branch Map regs */
 	pci_read_config_word(pvt->branchmap_werrors, TOLM, &pvt->tolm);
 	pvt->tolm >>= 12;
+<<<<<<< HEAD
 	debugf2("\nTOLM (number of 256M regions) =%u (0x%x)\n", pvt->tolm,
 		pvt->tolm);
 
 	actual_tolm = pvt->tolm << 28;
 	debugf2("Actual TOLM byte addr=%u (0x%x)\n", actual_tolm, actual_tolm);
+=======
+	edac_dbg(2, "TOLM (number of 256M regions) =%u (0x%x)\n",
+		 pvt->tolm, pvt->tolm);
+
+	actual_tolm = pvt->tolm << 28;
+	edac_dbg(2, "Actual TOLM byte addr=%u (0x%x)\n",
+		 actual_tolm, actual_tolm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_read_config_word(pvt->branchmap_werrors, MIR0, &pvt->mir0);
 	pci_read_config_word(pvt->branchmap_werrors, MIR1, &pvt->mir1);
@@ -1155,6 +1443,7 @@ static void i5000_get_mc_regs(struct mem_ctl_info *mci)
 	limit = (pvt->mir0 >> 4) & 0x0FFF;
 	way0 = pvt->mir0 & 0x1;
 	way1 = pvt->mir0 & 0x2;
+<<<<<<< HEAD
 	debugf2("MIR0: limit= 0x%x  WAY1= %u  WAY0= %x\n", limit, way1, way0);
 	limit = (pvt->mir1 >> 4) & 0x0FFF;
 	way0 = pvt->mir1 & 0x1;
@@ -1164,6 +1453,20 @@ static void i5000_get_mc_regs(struct mem_ctl_info *mci)
 	way0 = pvt->mir2 & 0x1;
 	way1 = pvt->mir2 & 0x2;
 	debugf2("MIR2: limit= 0x%x  WAY1= %u  WAY0= %x\n", limit, way1, way0);
+=======
+	edac_dbg(2, "MIR0: limit= 0x%x  WAY1= %u  WAY0= %x\n",
+		 limit, way1, way0);
+	limit = (pvt->mir1 >> 4) & 0x0FFF;
+	way0 = pvt->mir1 & 0x1;
+	way1 = pvt->mir1 & 0x2;
+	edac_dbg(2, "MIR1: limit= 0x%x  WAY1= %u  WAY0= %x\n",
+		 limit, way1, way0);
+	limit = (pvt->mir2 >> 4) & 0x0FFF;
+	way0 = pvt->mir2 & 0x1;
+	way1 = pvt->mir2 & 0x2;
+	edac_dbg(2, "MIR2: limit= 0x%x  WAY1= %u  WAY0= %x\n",
+		 limit, way1, way0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the MTR[0-3] regs */
 	for (slot_row = 0; slot_row < NUM_MTRS; slot_row++) {
@@ -1172,31 +1475,53 @@ static void i5000_get_mc_regs(struct mem_ctl_info *mci)
 		pci_read_config_word(pvt->branch_0, where,
 				&pvt->b0_mtr[slot_row]);
 
+<<<<<<< HEAD
 		debugf2("MTR%d where=0x%x B0 value=0x%x\n", slot_row, where,
 			pvt->b0_mtr[slot_row]);
+=======
+		edac_dbg(2, "MTR%d where=0x%x B0 value=0x%x\n",
+			 slot_row, where, pvt->b0_mtr[slot_row]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (pvt->maxch >= CHANNELS_PER_BRANCH) {
 			pci_read_config_word(pvt->branch_1, where,
 					&pvt->b1_mtr[slot_row]);
+<<<<<<< HEAD
 			debugf2("MTR%d where=0x%x B1 value=0x%x\n", slot_row,
 				where, pvt->b1_mtr[slot_row]);
+=======
+			edac_dbg(2, "MTR%d where=0x%x B1 value=0x%x\n",
+				 slot_row, where, pvt->b1_mtr[slot_row]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			pvt->b1_mtr[slot_row] = 0;
 		}
 	}
 
 	/* Read and dump branch 0's MTRs */
+<<<<<<< HEAD
 	debugf2("\nMemory Technology Registers:\n");
 	debugf2("   Branch 0:\n");
+=======
+	edac_dbg(2, "Memory Technology Registers:\n");
+	edac_dbg(2, "   Branch 0:\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (slot_row = 0; slot_row < NUM_MTRS; slot_row++) {
 		decode_mtr(slot_row, pvt->b0_mtr[slot_row]);
 	}
 	pci_read_config_word(pvt->branch_0, AMB_PRESENT_0,
 			&pvt->b0_ambpresent0);
+<<<<<<< HEAD
 	debugf2("\t\tAMB-Branch 0-present0 0x%x:\n", pvt->b0_ambpresent0);
 	pci_read_config_word(pvt->branch_0, AMB_PRESENT_1,
 			&pvt->b0_ambpresent1);
 	debugf2("\t\tAMB-Branch 0-present1 0x%x:\n", pvt->b0_ambpresent1);
+=======
+	edac_dbg(2, "\t\tAMB-Branch 0-present0 0x%x:\n", pvt->b0_ambpresent0);
+	pci_read_config_word(pvt->branch_0, AMB_PRESENT_1,
+			&pvt->b0_ambpresent1);
+	edac_dbg(2, "\t\tAMB-Branch 0-present1 0x%x:\n", pvt->b0_ambpresent1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Only if we have 2 branchs (4 channels) */
 	if (pvt->maxch < CHANNELS_PER_BRANCH) {
@@ -1204,18 +1529,31 @@ static void i5000_get_mc_regs(struct mem_ctl_info *mci)
 		pvt->b1_ambpresent1 = 0;
 	} else {
 		/* Read and dump  branch 1's MTRs */
+<<<<<<< HEAD
 		debugf2("   Branch 1:\n");
+=======
+		edac_dbg(2, "   Branch 1:\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (slot_row = 0; slot_row < NUM_MTRS; slot_row++) {
 			decode_mtr(slot_row, pvt->b1_mtr[slot_row]);
 		}
 		pci_read_config_word(pvt->branch_1, AMB_PRESENT_0,
 				&pvt->b1_ambpresent0);
+<<<<<<< HEAD
 		debugf2("\t\tAMB-Branch 1-present0 0x%x:\n",
 			pvt->b1_ambpresent0);
 		pci_read_config_word(pvt->branch_1, AMB_PRESENT_1,
 				&pvt->b1_ambpresent1);
 		debugf2("\t\tAMB-Branch 1-present1 0x%x:\n",
 			pvt->b1_ambpresent1);
+=======
+		edac_dbg(2, "\t\tAMB-Branch 1-present0 0x%x:\n",
+			 pvt->b1_ambpresent0);
+		pci_read_config_word(pvt->branch_1, AMB_PRESENT_1,
+				&pvt->b1_ambpresent1);
+		edac_dbg(2, "\t\tAMB-Branch 1-present1 0x%x:\n",
+			 pvt->b1_ambpresent1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Go and determine the size of each DIMM and place in an
@@ -1235,6 +1573,7 @@ static void i5000_get_mc_regs(struct mem_ctl_info *mci)
 static int i5000_init_csrows(struct mem_ctl_info *mci)
 {
 	struct i5000_pvt *pvt;
+<<<<<<< HEAD
 	struct csrow_info *p_csrow;
 	int empty, channel_count;
 	int max_csrows;
@@ -1246,10 +1585,22 @@ static int i5000_init_csrows(struct mem_ctl_info *mci)
 	pvt = mci->pvt_info;
 
 	channel_count = pvt->maxch;
+=======
+	struct dimm_info *dimm;
+	int empty;
+	int max_csrows;
+	int mtr;
+	int csrow_megs;
+	int channel;
+	int slot;
+
+	pvt = mci->pvt_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max_csrows = pvt->maxdimmperch * 2;
 
 	empty = 1;		/* Assume NO memory */
 
+<<<<<<< HEAD
 	for (csrow = 0; csrow < max_csrows; csrow++) {
 		p_csrow = &mci->csrows[csrow];
 
@@ -1288,6 +1639,42 @@ static int i5000_init_csrows(struct mem_ctl_info *mci)
 
 		p_csrow->edac_mode = EDAC_S8ECD8ED;
 
+=======
+	/*
+	 * FIXME: The memory layout used to map slot/channel into the
+	 * real memory architecture is weird: branch+slot are "csrows"
+	 * and channel is channel. That required an extra array (dimm_info)
+	 * to map the dimms. A good cleanup would be to remove this array,
+	 * and do a loop here with branch, channel, slot
+	 */
+	for (slot = 0; slot < max_csrows; slot++) {
+		for (channel = 0; channel < pvt->maxch; channel++) {
+
+			mtr = determine_mtr(pvt, slot, channel);
+
+			if (!MTR_DIMMS_PRESENT(mtr))
+				continue;
+
+			dimm = edac_get_dimm(mci, channel / MAX_BRANCHES,
+					     channel % MAX_BRANCHES, slot);
+
+			csrow_megs = pvt->dimm_info[slot][channel].megabytes;
+			dimm->grain = 8;
+
+			/* Assume DDR2 for now */
+			dimm->mtype = MEM_FB_DDR2;
+
+			/* ask what device type on this row */
+			if (MTR_DRAM_WIDTH(mtr) == 8)
+				dimm->dtype = DEV_X8;
+			else
+				dimm->dtype = DEV_X4;
+
+			dimm->edac_mode = EDAC_S8ECD8ED;
+			dimm->nr_pages = csrow_megs << 8;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		empty = 0;
 	}
 
@@ -1317,7 +1704,11 @@ static void i5000_enable_error_reporting(struct mem_ctl_info *mci)
 }
 
 /*
+<<<<<<< HEAD
  * i5000_get_dimm_and_channel_counts(pdev, &num_csrows, &num_channels)
+=======
+ * i5000_get_dimm_and_channel_counts(pdev, &nr_csrows, &num_channels)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	ask the device how many channels are present and how many CSROWS
  *	 as well
@@ -1332,7 +1723,11 @@ static void i5000_get_dimm_and_channel_counts(struct pci_dev *pdev,
 	 * supported on this memory controller
 	 */
 	pci_read_config_byte(pdev, MAXDIMMPERCH, &value);
+<<<<<<< HEAD
 	*num_dimms_per_channel = (int)value *2;
+=======
+	*num_dimms_per_channel = (int)value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_read_config_byte(pdev, MAXCH, &value);
 	*num_channels = (int)value;
@@ -1348,6 +1743,7 @@ static void i5000_get_dimm_and_channel_counts(struct pci_dev *pdev,
 static int i5000_probe1(struct pci_dev *pdev, int dev_idx)
 {
 	struct mem_ctl_info *mci;
+<<<<<<< HEAD
 	struct i5000_pvt *pvt;
 	int num_channels;
 	int num_dimms_per_channel;
@@ -1357,6 +1753,16 @@ static int i5000_probe1(struct pci_dev *pdev, int dev_idx)
 		__FILE__, __func__,
 		pdev->bus->number,
 		PCI_SLOT(pdev->devfn), PCI_FUNC(pdev->devfn));
+=======
+	struct edac_mc_layer layers[3];
+	struct i5000_pvt *pvt;
+	int num_channels;
+	int num_dimms_per_channel;
+
+	edac_dbg(0, "MC: pdev bus %u dev=0x%x fn=0x%x\n",
+		 pdev->bus->number,
+		 PCI_SLOT(pdev->devfn), PCI_FUNC(pdev->devfn));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We only are looking for func 0 of the set */
 	if (PCI_FUNC(pdev->devfn) != 0)
@@ -1377,6 +1783,7 @@ static int i5000_probe1(struct pci_dev *pdev, int dev_idx)
 	 */
 	i5000_get_dimm_and_channel_counts(pdev, &num_dimms_per_channel,
 					&num_channels);
+<<<<<<< HEAD
 	num_csrows = num_dimms_per_channel * 2;
 
 	debugf0("MC: %s(): Number of - Channels= %d  DIMMS= %d  CSROWS= %d\n",
@@ -1392,6 +1799,30 @@ static int i5000_probe1(struct pci_dev *pdev, int dev_idx)
 	debugf0("MC: %s: %s(): mci = %p\n", __FILE__, __func__, mci);
 
 	mci->dev = &pdev->dev;	/* record ptr  to the generic device */
+=======
+
+	edac_dbg(0, "MC: Number of Branches=2 Channels= %d  DIMMS= %d\n",
+		 num_channels, num_dimms_per_channel);
+
+	/* allocate a new MC control structure */
+
+	layers[0].type = EDAC_MC_LAYER_BRANCH;
+	layers[0].size = MAX_BRANCHES;
+	layers[0].is_virt_csrow = false;
+	layers[1].type = EDAC_MC_LAYER_CHANNEL;
+	layers[1].size = num_channels / MAX_BRANCHES;
+	layers[1].is_virt_csrow = false;
+	layers[2].type = EDAC_MC_LAYER_SLOT;
+	layers[2].size = num_dimms_per_channel;
+	layers[2].is_virt_csrow = true;
+	mci = edac_mc_alloc(0, ARRAY_SIZE(layers), layers, sizeof(*pvt));
+	if (mci == NULL)
+		return -ENOMEM;
+
+	edac_dbg(0, "MC: mci = %p\n", mci);
+
+	mci->pdev = &pdev->dev;	/* record ptr  to the generic device */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pvt = mci->pvt_info;
 	pvt->system_address = pdev;	/* Record this device in our private */
@@ -1410,7 +1841,10 @@ static int i5000_probe1(struct pci_dev *pdev, int dev_idx)
 	mci->edac_ctl_cap = EDAC_FLAG_NONE;
 	mci->edac_cap = EDAC_FLAG_NONE;
 	mci->mod_name = "i5000_edac.c";
+<<<<<<< HEAD
 	mci->mod_ver = I5000_REVISION;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mci->ctl_name = i5000_devs[dev_idx].ctl_name;
 	mci->dev_name = pci_name(pdev);
 	mci->ctl_page_to_phys = NULL;
@@ -1421,19 +1855,30 @@ static int i5000_probe1(struct pci_dev *pdev, int dev_idx)
 	/* initialize the MC control structure 'csrows' table
 	 * with the mapping and control information */
 	if (i5000_init_csrows(mci)) {
+<<<<<<< HEAD
 		debugf0("MC: Setting mci->edac_cap to EDAC_FLAG_NONE\n"
 			"    because i5000_init_csrows() returned nonzero "
 			"value\n");
 		mci->edac_cap = EDAC_FLAG_NONE;	/* no csrows found */
 	} else {
 		debugf1("MC: Enable error reporting now\n");
+=======
+		edac_dbg(0, "MC: Setting mci->edac_cap to EDAC_FLAG_NONE because i5000_init_csrows() returned nonzero value\n");
+		mci->edac_cap = EDAC_FLAG_NONE;	/* no csrows found */
+	} else {
+		edac_dbg(1, "MC: Enable error reporting now\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i5000_enable_error_reporting(mci);
 	}
 
 	/* add this new MC control structure to EDAC's list of MCs */
 	if (edac_mc_add_mc(mci)) {
+<<<<<<< HEAD
 		debugf0("MC: %s: %s(): failed edac_mc_add_mc()\n",
 			__FILE__, __func__);
+=======
+		edac_dbg(0, "MC: failed edac_mc_add_mc()\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* FIXME: perhaps some code should go here that disables error
 		 * reporting if we just enabled it
 		 */
@@ -1461,7 +1906,10 @@ fail1:
 	i5000_put_devices(mci);
 
 fail0:
+<<<<<<< HEAD
 	kobject_put(&mci->edac_mci_kobj);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	edac_mc_free(mci);
 	return -ENODEV;
 }
@@ -1473,12 +1921,20 @@ fail0:
  *		negative on error
  *		count (>= 0)
  */
+<<<<<<< HEAD
 static int __devinit i5000_init_one(struct pci_dev *pdev,
 				const struct pci_device_id *id)
 {
 	int rc;
 
 	debugf0("MC: %s: %s()\n", __FILE__, __func__);
+=======
+static int i5000_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
+{
+	int rc;
+
+	edac_dbg(0, "MC:\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* wake up device */
 	rc = pci_enable_device(pdev);
@@ -1493,11 +1949,19 @@ static int __devinit i5000_init_one(struct pci_dev *pdev,
  *	i5000_remove_one	destructor for one instance of device
  *
  */
+<<<<<<< HEAD
 static void __devexit i5000_remove_one(struct pci_dev *pdev)
 {
 	struct mem_ctl_info *mci;
 
 	debugf0("%s: %s()\n", __FILE__, __func__);
+=======
+static void i5000_remove_one(struct pci_dev *pdev)
+{
+	struct mem_ctl_info *mci;
+
+	edac_dbg(0, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (i5000_pci)
 		edac_pci_release_generic_ctl(i5000_pci);
@@ -1507,7 +1971,10 @@ static void __devexit i5000_remove_one(struct pci_dev *pdev)
 
 	/* retrieve references to resources, and free those resources */
 	i5000_put_devices(mci);
+<<<<<<< HEAD
 	kobject_put(&mci->edac_mci_kobj);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	edac_mc_free(mci);
 }
 
@@ -1516,7 +1983,11 @@ static void __devexit i5000_remove_one(struct pci_dev *pdev)
  *
  *	The "E500P" device is the first device supported.
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(i5000_pci_tbl) = {
+=======
+static const struct pci_device_id i5000_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_I5000_DEV16),
 	 .driver_data = I5000P},
 
@@ -1532,7 +2003,11 @@ MODULE_DEVICE_TABLE(pci, i5000_pci_tbl);
 static struct pci_driver i5000_driver = {
 	.name = KBUILD_BASENAME,
 	.probe = i5000_init_one,
+<<<<<<< HEAD
 	.remove = __devexit_p(i5000_remove_one),
+=======
+	.remove = i5000_remove_one,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = i5000_pci_tbl,
 };
 
@@ -1544,10 +2019,17 @@ static int __init i5000_init(void)
 {
 	int pci_rc;
 
+<<<<<<< HEAD
 	debugf2("MC: %s: %s()\n", __FILE__, __func__);
 
        /* Ensure that the OPSTATE is set correctly for POLL or NMI */
        opstate_init();
+=======
+	edac_dbg(2, "MC:\n");
+
+	/* Ensure that the OPSTATE is set correctly for POLL or NMI */
+	opstate_init();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_rc = pci_register_driver(&i5000_driver);
 
@@ -1560,7 +2042,11 @@ static int __init i5000_init(void)
  */
 static void __exit i5000_exit(void)
 {
+<<<<<<< HEAD
 	debugf2("MC: %s: %s()\n", __FILE__, __func__);
+=======
+	edac_dbg(2, "MC:\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_unregister_driver(&i5000_driver);
 }
 
@@ -1568,13 +2054,21 @@ module_init(i5000_init);
 module_exit(i5000_exit);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR
     ("Linux Networx (http://lnxi.com) Doug Thompson <norsk5@xmission.com>");
 MODULE_DESCRIPTION("MC Driver for Intel I5000 memory controllers - "
 		I5000_REVISION);
+=======
+MODULE_AUTHOR("Linux Networx (http://lnxi.com) Doug Thompson <norsk5@xmission.com>");
+MODULE_DESCRIPTION("MC Driver for Intel I5000 memory controllers - " I5000_REVISION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(edac_op_state, int, 0444);
 MODULE_PARM_DESC(edac_op_state, "EDAC Error Reporting state: 0=Poll,1=NMI");
 module_param(misc_messages, int, 0444);
 MODULE_PARM_DESC(misc_messages, "Log miscellaneous non fatal messages");
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

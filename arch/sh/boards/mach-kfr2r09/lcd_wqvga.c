@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * KFR2R09 LCD panel support
  *
@@ -5,10 +9,13 @@
  *
  * Register settings based on the out-of-tree t33fb.c driver
  * Copyright (C) 2008 Lineo Solutions, Inc.
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file COPYING in the main directory of this archive for
  * more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -276,6 +283,7 @@ void kfr2r09_lcd_start(void *sohandle, struct sh_mobile_lcdc_sys_bus_ops *so)
 {
 	write_memory_start(sohandle, so);
 }
+<<<<<<< HEAD
 
 #define CTRL_CKSW       0x10
 #define CTRL_C10        0x20
@@ -334,3 +342,5 @@ void kfr2r09_lcd_off(void)
 {
 	kfr2r09_lcd_backlight(0);
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

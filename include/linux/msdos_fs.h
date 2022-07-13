@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_MSDOS_FS_H
 #define _LINUX_MSDOS_FS_H
 
@@ -176,10 +177,21 @@ struct msdos_dir_slot {
 };
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_MSDOS_FS_H
+#define _LINUX_MSDOS_FS_H
+
+#include <uapi/linux/msdos_fs.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* media of boot sector */
 static inline int fat_valid_media(u8 media)
 {
 	return 0xf8 <= media || media == 0xf0;
 }
+<<<<<<< HEAD
 #endif /* !__KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !_LINUX_MSDOS_FS_H */

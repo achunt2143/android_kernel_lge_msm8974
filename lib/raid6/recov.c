@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright 2002 H. Peter Anvin - All Rights Reserved
  *
+<<<<<<< HEAD
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, Inc., 53 Temple Place Ste 330,
  *   Boston MA 02111-1307, USA; either version 2 of the License, or
  *   (at your option) any later version; incorporated herein by reference.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -18,12 +25,20 @@
  * the syndrome.)
  */
 
+<<<<<<< HEAD
 #include <linux/export.h>
 #include <linux/raid/pq.h>
 
 /* Recover two failed data blocks. */
 void raid6_2data_recov(int disks, size_t bytes, int faila, int failb,
 		       void **ptrs)
+=======
+#include <linux/raid/pq.h>
+
+/* Recover two failed data blocks. */
+static void raid6_2data_recov_intx1(int disks, size_t bytes, int faila,
+		int failb, void **ptrs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 *p, *q, *dp, *dq;
 	u8 px, qx, db;
@@ -64,10 +79,17 @@ void raid6_2data_recov(int disks, size_t bytes, int faila, int failb,
 		p++; q++;
 	}
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(raid6_2data_recov);
 
 /* Recover failure of one data block plus the P block */
 void raid6_datap_recov(int disks, size_t bytes, int faila, void **ptrs)
+=======
+
+/* Recover failure of one data block plus the P block */
+static void raid6_datap_recov_intx1(int disks, size_t bytes, int faila,
+		void **ptrs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 *p, *q, *dq;
 	const u8 *qmul;		/* Q multiplier table */
@@ -96,7 +118,19 @@ void raid6_datap_recov(int disks, size_t bytes, int faila, void **ptrs)
 		q++; dq++;
 	}
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(raid6_datap_recov);
+=======
+
+
+const struct raid6_recov_calls raid6_recov_intx1 = {
+	.data2 = raid6_2data_recov_intx1,
+	.datap = raid6_datap_recov_intx1,
+	.valid = NULL,
+	.name = "intx1",
+	.priority = 0,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __KERNEL__
 /* Testing only */

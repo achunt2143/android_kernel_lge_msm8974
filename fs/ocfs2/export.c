@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * export.c
  *
  * Functions to facilitate NFS exporting
  *
  * Copyright (C) 2002, 2005 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -21,6 +27,8 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -82,7 +90,10 @@ static struct dentry *ocfs2_get_dentry(struct super_block *sb,
 	}
 
 	status = ocfs2_test_inode_bit(osb, blkno, &set);
+<<<<<<< HEAD
 	trace_ocfs2_get_dentry_test_bit(status, set);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0) {
 		if (status == -EINVAL) {
 			/*
@@ -96,6 +107,10 @@ static struct dentry *ocfs2_get_dentry(struct super_block *sb,
 		goto unlock_nfs_sync;
 	}
 
+<<<<<<< HEAD
+=======
+	trace_ocfs2_get_dentry_test_bit(status, set);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If the inode allocator bit is clear, this inode must be stale */
 	if (!set) {
 		status = -ESTALE;
@@ -119,16 +134,27 @@ check_err:
 
 	if (IS_ERR(inode)) {
 		mlog_errno(PTR_ERR(inode));
+<<<<<<< HEAD
 		result = (void *)inode;
+=======
+		result = ERR_CAST(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 
 check_gen:
 	if (handle->ih_generation != inode->i_generation) {
+<<<<<<< HEAD
 		iput(inode);
 		trace_ocfs2_get_dentry_generation((unsigned long long)blkno,
 						  handle->ih_generation,
 						  inode->i_generation);
+=======
+		trace_ocfs2_get_dentry_generation((unsigned long long)blkno,
+						  handle->ih_generation,
+						  inode->i_generation);
+		iput(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = ERR_PTR(-ESTALE);
 		goto bail;
 	}
@@ -147,17 +173,36 @@ static struct dentry *ocfs2_get_parent(struct dentry *child)
 	int status;
 	u64 blkno;
 	struct dentry *parent;
+<<<<<<< HEAD
 	struct inode *dir = child->d_inode;
+=======
+	struct inode *dir = d_inode(child);
+	int set;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_ocfs2_get_parent(child, child->d_name.len, child->d_name.name,
 			       (unsigned long long)OCFS2_I(dir)->ip_blkno);
 
+<<<<<<< HEAD
+=======
+	status = ocfs2_nfs_sync_lock(OCFS2_SB(dir->i_sb), 1);
+	if (status < 0) {
+		mlog(ML_ERROR, "getting nfs sync lock(EX) failed %d\n", status);
+		parent = ERR_PTR(status);
+		goto bail;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = ocfs2_inode_lock(dir, NULL, 0);
 	if (status < 0) {
 		if (status != -ENOENT)
 			mlog_errno(status);
 		parent = ERR_PTR(status);
+<<<<<<< HEAD
 		goto bail;
+=======
+		goto unlock_nfs_sync;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	status = ocfs2_lookup_ino_from_name(dir, "..", 2, &blkno);
@@ -166,27 +211,60 @@ static struct dentry *ocfs2_get_parent(struct dentry *child)
 		goto bail_unlock;
 	}
 
+<<<<<<< HEAD
+=======
+	status = ocfs2_test_inode_bit(OCFS2_SB(dir->i_sb), blkno, &set);
+	if (status < 0) {
+		if (status == -EINVAL) {
+			status = -ESTALE;
+		} else
+			mlog(ML_ERROR, "test inode bit failed %d\n", status);
+		parent = ERR_PTR(status);
+		goto bail_unlock;
+	}
+
+	trace_ocfs2_get_dentry_test_bit(status, set);
+	if (!set) {
+		status = -ESTALE;
+		parent = ERR_PTR(status);
+		goto bail_unlock;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parent = d_obtain_alias(ocfs2_iget(OCFS2_SB(dir->i_sb), blkno, 0, 0));
 
 bail_unlock:
 	ocfs2_inode_unlock(dir, 0);
 
+<<<<<<< HEAD
+=======
+unlock_nfs_sync:
+	ocfs2_nfs_sync_unlock(OCFS2_SB(dir->i_sb), 1);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bail:
 	trace_ocfs2_get_parent_end(parent);
 
 	return parent;
 }
 
+<<<<<<< HEAD
 static int ocfs2_encode_fh(struct dentry *dentry, u32 *fh_in, int *max_len,
 			   int connectable)
 {
 	struct inode *inode = dentry->d_inode;
+=======
+static int ocfs2_encode_fh(struct inode *inode, u32 *fh_in, int *max_len,
+			   struct inode *parent)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int len = *max_len;
 	int type = 1;
 	u64 blkno;
 	u32 generation;
 	__le32 *fh = (__force __le32 *) fh_in;
 
+<<<<<<< HEAD
 	trace_ocfs2_encode_fh_begin(dentry, dentry->d_name.len,
 				    dentry->d_name.name,
 				    fh, len, connectable);
@@ -198,6 +276,22 @@ static int ocfs2_encode_fh(struct dentry *dentry, u32 *fh_in, int *max_len,
 	} else if (len < 3) {
 		*max_len = 3;
 		type = 255;
+=======
+#ifdef TRACE_HOOKS_ARE_NOT_BRAINDEAD_IN_YOUR_OPINION
+#error "You go ahead and fix that mess, then.  Somehow"
+	trace_ocfs2_encode_fh_begin(dentry, dentry->d_name.len,
+				    dentry->d_name.name,
+				    fh, len, connectable);
+#endif
+
+	if (parent && (len < 6)) {
+		*max_len = 6;
+		type = FILEID_INVALID;
+		goto bail;
+	} else if (len < 3) {
+		*max_len = 3;
+		type = FILEID_INVALID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 
@@ -211,12 +305,16 @@ static int ocfs2_encode_fh(struct dentry *dentry, u32 *fh_in, int *max_len,
 	fh[1] = cpu_to_le32((u32)(blkno & 0xffffffff));
 	fh[2] = cpu_to_le32(generation);
 
+<<<<<<< HEAD
 	if (connectable && !S_ISDIR(inode->i_mode)) {
 		struct inode *parent;
 
 		spin_lock(&dentry->d_lock);
 
 		parent = dentry->d_parent->d_inode;
+=======
+	if (parent) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		blkno = OCFS2_I(parent)->ip_blkno;
 		generation = parent->i_generation;
 
@@ -224,8 +322,11 @@ static int ocfs2_encode_fh(struct dentry *dentry, u32 *fh_in, int *max_len,
 		fh[4] = cpu_to_le32((u32)(blkno & 0xffffffff));
 		fh[5] = cpu_to_le32(generation);
 
+<<<<<<< HEAD
 		spin_unlock(&dentry->d_lock);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = 6;
 		type = 2;
 
@@ -273,4 +374,8 @@ const struct export_operations ocfs2_export_ops = {
 	.fh_to_dentry	= ocfs2_fh_to_dentry,
 	.fh_to_parent	= ocfs2_fh_to_parent,
 	.get_parent	= ocfs2_get_parent,
+<<<<<<< HEAD
+=======
+	.flags		= EXPORT_OP_ASYNC_LOCK,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

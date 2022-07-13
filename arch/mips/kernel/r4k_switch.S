@@ -12,11 +12,16 @@
  */
 #include <asm/asm.h>
 #include <asm/cachectl.h>
+<<<<<<< HEAD
 #include <asm/fpregdef.h>
 #include <asm/mipsregs.h>
 #include <asm/asm-offsets.h>
 #include <asm/page.h>
 #include <asm/pgtable-bits.h>
+=======
+#include <asm/mipsregs.h>
+#include <asm/asm-offsets.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/regdef.h>
 #include <asm/stackframe.h>
 #include <asm/thread_info.h>
@@ -24,6 +29,7 @@
 #include <asm/asmmacro.h>
 
 /*
+<<<<<<< HEAD
  * Offset to the current process status flags, the first 32 bytes of the
  * stack are not used.
  */
@@ -42,6 +48,10 @@
 /*
  * task_struct *resume(task_struct *prev, task_struct *next,
  *                     struct thread_info *next_ti)
+=======
+ * task_struct *resume(task_struct *prev, task_struct *next,
+ *		       struct thread_info *next_ti)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 	.align	5
 	LEAF(resume)
@@ -50,6 +60,7 @@
 	cpu_save_nonscratch a0
 	LONG_S	ra, THREAD_REG31(a0)
 
+<<<<<<< HEAD
 	/*
 	 * check if we need to save FPU registers
 	 */
@@ -74,6 +85,13 @@
 	fpu_save_double a0 t0 t1		# c0_status passed in t0
 						# clobbers t1
 1:
+=======
+#if defined(CONFIG_STACKPROTECTOR) && !defined(CONFIG_SMP)
+	PTR_LA	t8, __stack_chk_guard
+	LONG_L	t9, TASK_STACK_CANARY(a1)
+	LONG_S	t9, 0(t8)
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The order of restoring the registers takes care of the race
@@ -84,6 +102,7 @@
 
 	PTR_ADDU	t0, $28, _THREAD_SIZE - 32
 	set_saved_sp	t0, t1, t2
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	/* Read-modify-writes of Status must be atomic on a VPE */
 	mfc0	t2, CP0_TCSTATUS
@@ -96,6 +115,8 @@
 	jal	mips_ihb
 	move	ra,t1
 #endif /* CONFIG_MIPS_MT_SMTC */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfc0	t1, CP0_STATUS		/* Do we really need this? */
 	li	a3, 0xff01
 	and	t1, a3
@@ -104,6 +125,7 @@
 	and	a2, a3
 	or	a2, t1
 	mtc0	a2, CP0_STATUS
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	_ehb
 	andi	t0, t0, VPECONTROL_TE
@@ -250,3 +272,8 @@ LEAF(_init_fpu)
 #endif
 	jr	ra
 	END(_init_fpu)
+=======
+	move	v0, a0
+	jr	ra
+	END(resume)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

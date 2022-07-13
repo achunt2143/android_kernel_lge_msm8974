@@ -8,6 +8,10 @@
  * for more details.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <asm/cpuinfo.h>
 #include <asm/pvr.h>
@@ -37,6 +41,23 @@ const struct cpu_ver_key cpu_ver_lookup[] = {
 	{"8.20.a", 0x15},
 	{"8.20.b", 0x16},
 	{"8.30.a", 0x17},
+<<<<<<< HEAD
+=======
+	{"8.40.a", 0x18},
+	{"8.40.b", 0x19},
+	{"8.50.a", 0x1a},
+	{"8.50.b", 0x1c},
+	{"8.50.c", 0x1e},
+	{"9.0", 0x1b},
+	{"9.1", 0x1d},
+	{"9.2", 0x1f},
+	{"9.3", 0x20},
+	{"9.4", 0x21},
+	{"9.5", 0x22},
+	{"9.6", 0x23},
+	{"10.0", 0x24},
+	{"11.0", 0x25},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{NULL, 0},
 };
 
@@ -55,12 +76,28 @@ const struct family_string_key family_string_lookup[] = {
 	{"spartan3adsp", 0xc},
 	{"spartan6", 0xd},
 	{"virtex6", 0xe},
+<<<<<<< HEAD
 	/* FIXME There is no key code defined for spartan2 */
 	{"spartan2", 0xf0},
+=======
+	{"virtex7", 0xf},
+	/* FIXME There is no key code defined for spartan2 */
+	{"spartan2", 0xf0},
+	{"kintex7", 0x10},
+	{"artix7", 0x11},
+	{"zynq7000", 0x12},
+	{"UltraScale Virtex", 0x13},
+	{"UltraScale Kintex", 0x14},
+	{"UltraScale+ Zynq", 0x15},
+	{"UltraScale+ Virtex", 0x16},
+	{"UltraScale+ Kintex", 0x17},
+	{"Spartan7", 0x18},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{NULL, 0},
 };
 
 struct cpuinfo cpuinfo;
+<<<<<<< HEAD
 
 void __init setup_cpuinfo(void)
 {
@@ -76,23 +113,72 @@ void __init setup_cpuinfo(void)
 	case 0:
 		printk(KERN_WARNING
 			"%s: No PVR support. Using static CPU info from FDT\n",
+=======
+static struct device_node *cpu;
+
+void __init setup_cpuinfo(void)
+{
+	cpu = of_get_cpu_node(0, NULL);
+	if (!cpu)
+		pr_err("You don't have cpu or are missing cpu reg property!!!\n");
+
+	pr_info("%s: initialising\n", __func__);
+
+	switch (cpu_has_pvr()) {
+	case 0:
+		pr_warn("%s: No PVR support. Using static CPU info from FDT\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__);
 		set_cpuinfo_static(&cpuinfo, cpu);
 		break;
 /* FIXME I found weird behavior with MB 7.00.a/b 7.10.a
  * please do not use FULL PVR with MMU */
 	case 1:
+<<<<<<< HEAD
 		printk(KERN_INFO "%s: Using full CPU PVR support\n",
+=======
+		pr_info("%s: Using full CPU PVR support\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__);
 		set_cpuinfo_static(&cpuinfo, cpu);
 		set_cpuinfo_pvr_full(&cpuinfo, cpu);
 		break;
 	default:
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: Unsupported PVR setting\n", __func__);
+=======
+		pr_warn("%s: Unsupported PVR setting\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_cpuinfo_static(&cpuinfo, cpu);
 	}
 
 	if (cpuinfo.mmu_privins)
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: Stream instructions enabled"
 			" - USERSPACE CAN LOCK THIS KERNEL!\n", __func__);
+=======
+		pr_warn("%s: Stream instructions enabled"
+			" - USERSPACE CAN LOCK THIS KERNEL!\n", __func__);
+
+	of_node_put(cpu);
+}
+
+void __init setup_cpuinfo_clk(void)
+{
+	struct clk *clk;
+
+	clk = of_clk_get(cpu, 0);
+	if (IS_ERR(clk)) {
+		pr_err("ERROR: CPU CCF input clock not found\n");
+		/* take timebase-frequency from DTS */
+		cpuinfo.cpu_clock_freq = fcpu(cpu, "timebase-frequency");
+	} else {
+		cpuinfo.cpu_clock_freq = clk_get_rate(clk);
+	}
+
+	if (!cpuinfo.cpu_clock_freq) {
+		pr_err("ERROR: CPU clock frequency not setup\n");
+		BUG();
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

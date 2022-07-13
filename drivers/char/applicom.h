@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Id: applicom.h,v 1.2 1999/08/28 15:09:49 dwmw2 Exp $ */
 
 

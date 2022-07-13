@@ -1,6 +1,10 @@
 /*
  * Parallel-port resource manager code.
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: David Campbell <campbell@tirian.che.curtin.edu.au>
  *          Tim Waugh <tim@cyberelk.demon.co.uk>
  *          Jose Renau <renau@acm.org>
@@ -27,8 +31,14 @@
 #include <linux/ioport.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
 #include <linux/kmod.h>
+=======
+#include <linux/sched/signal.h>
+#include <linux/kmod.h>
+#include <linux/device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/spinlock.h>
 #include <linux/mutex.h>
@@ -53,6 +63,7 @@ static LIST_HEAD(drivers);
 static DEFINE_MUTEX(registration_lock);
 
 /* What you can do to a port that's gone away.. */
+<<<<<<< HEAD
 static void dead_write_lines (struct parport *p, unsigned char b){}
 static unsigned char dead_read_lines (struct parport *p) { return 0; }
 static unsigned char dead_frob_lines (struct parport *p, unsigned char b,
@@ -63,6 +74,18 @@ static void dead_state (struct parport *p, struct parport_state *s) { }
 static size_t dead_write (struct parport *p, const void *b, size_t l, int f)
 { return 0; }
 static size_t dead_read (struct parport *p, void *b, size_t l, int f)
+=======
+static void dead_write_lines(struct parport *p, unsigned char b){}
+static unsigned char dead_read_lines(struct parport *p) { return 0; }
+static unsigned char dead_frob_lines(struct parport *p, unsigned char b,
+			     unsigned char c) { return 0; }
+static void dead_onearg(struct parport *p){}
+static void dead_initstate(struct pardevice *d, struct parport_state *s) { }
+static void dead_state(struct parport *p, struct parport_state *s) { }
+static size_t dead_write(struct parport *p, const void *b, size_t l, int f)
+{ return 0; }
+static size_t dead_read(struct parport *p, void *b, size_t l, int f)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 { return 0; }
 static struct parport_operations dead_ops = {
 	.write_data	= dead_write_lines,	/* data */
@@ -92,7 +115,11 @@ static struct parport_operations dead_ops = {
 	.ecp_write_data	= dead_write,		/* ecp */
 	.ecp_read_data	= dead_read,
 	.ecp_write_addr	= dead_write,
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.compat_write_data	= dead_write,	/* compat */
 	.nibble_read_data	= dead_read,	/* nibble */
 	.byte_read_data		= dead_read,	/* byte */
@@ -100,13 +127,99 @@ static struct parport_operations dead_ops = {
 	.owner		= NULL,
 };
 
+<<<<<<< HEAD
+=======
+static struct device_type parport_device_type = {
+	.name = "parport",
+};
+
+static int is_parport(struct device *dev)
+{
+	return dev->type == &parport_device_type;
+}
+
+static int parport_probe(struct device *dev)
+{
+	struct parport_driver *drv;
+
+	if (is_parport(dev))
+		return -ENODEV;
+
+	drv = to_parport_driver(dev->driver);
+	if (!drv->probe) {
+		/* if driver has not defined a custom probe */
+		struct pardevice *par_dev = to_pardevice(dev);
+
+		if (strcmp(par_dev->name, drv->name))
+			return -ENODEV;
+		return 0;
+	}
+	/* if driver defined its own probe */
+	return drv->probe(to_pardevice(dev));
+}
+
+static struct bus_type parport_bus_type = {
+	.name = "parport",
+	.probe = parport_probe,
+};
+
+int parport_bus_init(void)
+{
+	return bus_register(&parport_bus_type);
+}
+
+void parport_bus_exit(void)
+{
+	bus_unregister(&parport_bus_type);
+}
+
+/*
+ * iterates through all the drivers registered with the bus and sends the port
+ * details to the match_port callback of the driver, so that the driver can
+ * know about the new port that just registered with the bus and decide if it
+ * wants to use this new port.
+ */
+static int driver_check(struct device_driver *dev_drv, void *_port)
+{
+	struct parport *port = _port;
+	struct parport_driver *drv = to_parport_driver(dev_drv);
+
+	if (drv->match_port)
+		drv->match_port(port);
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Call attach(port) for each registered driver. */
 static void attach_driver_chain(struct parport *port)
 {
 	/* caller has exclusive registration_lock */
 	struct parport_driver *drv;
+<<<<<<< HEAD
 	list_for_each_entry(drv, &drivers, list)
 		drv->attach(port);
+=======
+
+	list_for_each_entry(drv, &drivers, list)
+		drv->attach(port);
+
+	/*
+	 * call the driver_check function of the drivers registered in
+	 * new device model
+	 */
+
+	bus_for_each_drv(&parport_bus_type, NULL, port, driver_check);
+}
+
+static int driver_detach(struct device_driver *_drv, void *_port)
+{
+	struct parport *port = _port;
+	struct parport_driver *drv = to_parport_driver(_drv);
+
+	if (drv->detach)
+		drv->detach(port);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Call detach(port) for each registered driver. */
@@ -115,6 +228,7 @@ static void detach_driver_chain(struct parport *port)
 	struct parport_driver *drv;
 	/* caller has exclusive registration_lock */
 	list_for_each_entry(drv, &drivers, list)
+<<<<<<< HEAD
 		drv->detach (port);
 }
 
@@ -129,14 +243,79 @@ static void get_lowlevel_driver (void)
 /**
  *	parport_register_driver - register a parallel port device driver
  *	@drv: structure describing the driver
+=======
+		drv->detach(port);
+
+	/*
+	 * call the detach function of the drivers registered in
+	 * new device model
+	 */
+
+	bus_for_each_drv(&parport_bus_type, NULL, port, driver_detach);
+}
+
+/* Ask kmod for some lowlevel drivers. */
+static void get_lowlevel_driver(void)
+{
+	/*
+	 * There is no actual module called this: you should set
+	 * up an alias for modutils.
+	 */
+	request_module("parport_lowlevel");
+}
+
+/*
+ * iterates through all the devices connected to the bus and sends the device
+ * details to the match_port callback of the driver, so that the driver can
+ * know what are all the ports that are connected to the bus and choose the
+ * port to which it wants to register its device.
+ */
+static int port_check(struct device *dev, void *dev_drv)
+{
+	struct parport_driver *drv = dev_drv;
+
+	/* only send ports, do not send other devices connected to bus */
+	if (is_parport(dev))
+		drv->match_port(to_parport_dev(dev));
+	return 0;
+}
+
+/*
+ * Iterates through all the devices connected to the bus and return 1
+ * if the device is a parallel port.
+ */
+
+static int port_detect(struct device *dev, void *dev_drv)
+{
+	if (is_parport(dev))
+		return 1;
+	return 0;
+}
+
+/**
+ *	__parport_register_driver - register a parallel port device driver
+ *	@drv: structure describing the driver
+ *	@owner: owner module of drv
+ *	@mod_name: module name string
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	This can be called by a parallel port device driver in order
  *	to receive notifications about ports being found in the
  *	system, as well as ports no longer available.
  *
+<<<<<<< HEAD
  *	The @drv structure is allocated by the caller and must not be
  *	deallocated until after calling parport_unregister_driver().
  *
+=======
+ *	If devmodel is true then the new device model is used
+ *	for registration.
+ *
+ *	The @drv structure is allocated by the caller and must not be
+ *	deallocated until after calling parport_unregister_driver().
+ *
+ *	If using the non device model:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The driver's attach() function may block.  The port that
  *	attach() is given will be valid for the duration of the
  *	callback, but if the driver wants to take a copy of the
@@ -148,6 +327,7 @@ static void get_lowlevel_driver (void)
  *	callback, but if the driver wants to take a copy of the
  *	pointer it must call parport_get_port() to do so.
  *
+<<<<<<< HEAD
  *	Returns 0 on success.  Currently it always succeeds.
  **/
 
@@ -162,10 +342,59 @@ int parport_register_driver (struct parport_driver *drv)
 	list_for_each_entry(port, &portlist, list)
 		drv->attach(port);
 	list_add(&drv->list, &drivers);
+=======
+ *
+ *	Returns 0 on success. The non device model will always succeeds.
+ *	but the new device model can fail and will return the error code.
+ **/
+
+int __parport_register_driver(struct parport_driver *drv, struct module *owner,
+			      const char *mod_name)
+{
+	/* using device model */
+	int ret;
+
+	/* initialize common driver fields */
+	drv->driver.name = drv->name;
+	drv->driver.bus = &parport_bus_type;
+	drv->driver.owner = owner;
+	drv->driver.mod_name = mod_name;
+	ret = driver_register(&drv->driver);
+	if (ret)
+		return ret;
+
+	/*
+	 * check if bus has any parallel port registered, if
+	 * none is found then load the lowlevel driver.
+	 */
+	ret = bus_for_each_dev(&parport_bus_type, NULL, NULL,
+			       port_detect);
+	if (!ret)
+		get_lowlevel_driver();
+
+	mutex_lock(&registration_lock);
+	if (drv->match_port)
+		bus_for_each_dev(&parport_bus_type, NULL, drv,
+				 port_check);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&registration_lock);
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__parport_register_driver);
+
+static int port_detach(struct device *dev, void *_drv)
+{
+	struct parport_driver *drv = _drv;
+
+	if (is_parport(dev) && drv->detach)
+		drv->detach(to_parport_dev(dev));
+
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	parport_unregister_driver - deregister a parallel port device driver
@@ -184,6 +413,7 @@ int parport_register_driver (struct parport_driver *drv)
  *	finished by the time this function returns.
  **/
 
+<<<<<<< HEAD
 void parport_unregister_driver (struct parport_driver *drv)
 {
 	struct parport *port;
@@ -198,6 +428,22 @@ void parport_unregister_driver (struct parport_driver *drv)
 static void free_port (struct parport *port)
 {
 	int d;
+=======
+void parport_unregister_driver(struct parport_driver *drv)
+{
+	mutex_lock(&registration_lock);
+	bus_for_each_dev(&parport_bus_type, NULL, drv, port_detach);
+	driver_unregister(&drv->driver);
+	mutex_unlock(&registration_lock);
+}
+EXPORT_SYMBOL(parport_unregister_driver);
+
+static void free_port(struct device *dev)
+{
+	int d;
+	struct parport *port = to_parport_dev(dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&full_list_lock);
 	list_del(&port->full_list);
 	spin_unlock(&full_list_lock);
@@ -209,7 +455,10 @@ static void free_port (struct parport *port)
 		kfree(port->probe_info[d].description);
 	}
 
+<<<<<<< HEAD
 	kfree(port->name);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(port);
 }
 
@@ -221,17 +470,34 @@ static void free_port (struct parport *port)
  *	until the matching parport_put_port() call.
  **/
 
+<<<<<<< HEAD
 struct parport *parport_get_port (struct parport *port)
 {
 	atomic_inc (&port->ref_count);
 	return port;
 }
+=======
+struct parport *parport_get_port(struct parport *port)
+{
+	struct device *dev = get_device(&port->bus_dev);
+
+	return to_parport_dev(dev);
+}
+EXPORT_SYMBOL(parport_get_port);
+
+void parport_del_port(struct parport *port)
+{
+	device_unregister(&port->bus_dev);
+}
+EXPORT_SYMBOL(parport_del_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	parport_put_port - decrement a port's reference count
  *	@port: the port
  *
  *	This should be called once for each call to parport_get_port(),
+<<<<<<< HEAD
  *	once the port is no longer needed.
  **/
 
@@ -243,6 +509,17 @@ void parport_put_port (struct parport *port)
 
 	return;
 }
+=======
+ *	once the port is no longer needed. When the reference count reaches
+ *	zero (port is no longer used), free_port is called.
+ **/
+
+void parport_put_port(struct parport *port)
+{
+	put_device(&port->bus_dev);
+}
+EXPORT_SYMBOL(parport_put_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	parport_register_port - register a parallel port
@@ -280,6 +557,7 @@ struct parport *parport_register_port(unsigned long base, int irq, int dma,
 	struct parport *tmp;
 	int num;
 	int device;
+<<<<<<< HEAD
 	char *name;
 
 	tmp = kmalloc(sizeof(struct parport), GFP_KERNEL);
@@ -290,10 +568,20 @@ struct parport *parport_register_port(unsigned long base, int irq, int dma,
 
 	/* Init our structure */
  	memset(tmp, 0, sizeof(struct parport));
+=======
+	int ret;
+
+	tmp = kzalloc(sizeof(struct parport), GFP_KERNEL);
+	if (!tmp)
+		return NULL;
+
+	/* Init our structure */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp->base = base;
 	tmp->irq = irq;
 	tmp->dma = dma;
 	tmp->muxport = tmp->daisy = tmp->muxsel = -1;
+<<<<<<< HEAD
 	tmp->modes = 0;
  	INIT_LIST_HEAD(&tmp->list);
 	tmp->devices = tmp->cad = NULL;
@@ -301,6 +589,11 @@ struct parport *parport_register_port(unsigned long base, int irq, int dma,
 	tmp->ops = ops;
 	tmp->physport = tmp;
 	memset (tmp->probe_info, 0, 5 * sizeof (struct parport_device_info));
+=======
+	INIT_LIST_HEAD(&tmp->list);
+	tmp->ops = ops;
+	tmp->physport = tmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rwlock_init(&tmp->cad_lock);
 	spin_lock_init(&tmp->waitlist_lock);
 	spin_lock_init(&tmp->pardevice_lock);
@@ -308,6 +601,7 @@ struct parport *parport_register_port(unsigned long base, int irq, int dma,
 	tmp->ieee1284.phase = IEEE1284_PH_FWD_IDLE;
 	sema_init(&tmp->ieee1284.irq, 0);
 	tmp->spintime = parport_default_spintime;
+<<<<<<< HEAD
 	atomic_set (&tmp->ref_count, 1);
 	INIT_LIST_HEAD(&tmp->full_list);
 
@@ -323,6 +617,18 @@ struct parport *parport_register_port(unsigned long base, int irq, int dma,
 	for (l = all_ports.next, num = 0; l != &all_ports; l = l->next, num++) {
 		struct parport *p = list_entry(l, struct parport, full_list);
 		if (p->number != num)
+=======
+	atomic_set(&tmp->ref_count, 1);
+
+	/* Search for the lowest free parport number. */
+
+	spin_lock(&full_list_lock);
+	num = 0;
+	list_for_each(l, &all_ports) {
+		struct parport *p = list_entry(l, struct parport, full_list);
+
+		if (p->number != num++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 	tmp->portnum = tmp->number = num;
@@ -332,17 +638,38 @@ struct parport *parport_register_port(unsigned long base, int irq, int dma,
 	/*
 	 * Now that the portnum is known finish doing the Init.
 	 */
+<<<<<<< HEAD
 	sprintf(name, "parport%d", tmp->portnum = tmp->number);
 	tmp->name = name;
+=======
+	dev_set_name(&tmp->bus_dev, "parport%d", tmp->portnum);
+	tmp->bus_dev.bus = &parport_bus_type;
+	tmp->bus_dev.release = free_port;
+	tmp->bus_dev.type = &parport_device_type;
+
+	tmp->name = dev_name(&tmp->bus_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (device = 0; device < 5; device++)
 		/* assume the worst */
 		tmp->probe_info[device].class = PARPORT_CLASS_LEGACY;
 
+<<<<<<< HEAD
 	tmp->waithead = tmp->waittail = NULL;
 
 	return tmp;
 }
+=======
+	ret = device_register(&tmp->bus_dev);
+	if (ret) {
+		put_device(&tmp->bus_dev);
+		return NULL;
+	}
+
+	return tmp;
+}
+EXPORT_SYMBOL(parport_register_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	parport_announce_port - tell device drivers about a parallel port
@@ -356,7 +683,11 @@ struct parport *parport_register_port(unsigned long base, int irq, int dma,
  *	functions will be called, with @port as the parameter.
  **/
 
+<<<<<<< HEAD
 void parport_announce_port (struct parport *port)
+=======
+void parport_announce_port(struct parport *port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -366,9 +697,14 @@ void parport_announce_port (struct parport *port)
 #endif
 
 	if (!port->dev)
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: fix this legacy "
 				"no-device port driver!\n",
 				port->name);
+=======
+		pr_warn("%s: fix this legacy no-device port driver!\n",
+			port->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	parport_proc_register(port);
 	mutex_lock(&registration_lock);
@@ -382,7 +718,11 @@ void parport_announce_port (struct parport *port)
 	spin_unlock_irq(&parportlist_lock);
 
 	/* Let drivers know that new port(s) has arrived. */
+<<<<<<< HEAD
 	attach_driver_chain (port);
+=======
+	attach_driver_chain(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 1; i < 3; i++) {
 		struct parport *slave = port->slaves[i-1];
 		if (slave)
@@ -390,6 +730,10 @@ void parport_announce_port (struct parport *port)
 	}
 	mutex_unlock(&registration_lock);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(parport_announce_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	parport_remove_port - deregister a parallel port
@@ -417,7 +761,11 @@ void parport_remove_port(struct parport *port)
 	mutex_lock(&registration_lock);
 
 	/* Spread the word. */
+<<<<<<< HEAD
 	detach_driver_chain (port);
+=======
+	detach_driver_chain(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PARPORT_1284
 	/* Forget the IEEE1284.3 topology of the port. */
@@ -451,6 +799,7 @@ void parport_remove_port(struct parport *port)
 			parport_put_port(slave);
 	}
 }
+<<<<<<< HEAD
 
 /**
  *	parport_register_device - register a device on a parallel port
@@ -461,11 +810,30 @@ void parport_remove_port(struct parport *port)
  *	@irq_func: interrupt handler
  *	@flags: registration flags
  *	@handle: data for callback functions
+=======
+EXPORT_SYMBOL(parport_remove_port);
+
+static void free_pardevice(struct device *dev)
+{
+	struct pardevice *par_dev = to_pardevice(dev);
+
+	kfree_const(par_dev->name);
+	kfree(par_dev);
+}
+
+/**
+ *	parport_register_dev_model - register a device on a parallel port
+ *	@port: port to which the device is attached
+ *	@name: a name to refer to the device
+ *	@par_dev_cb: struct containing callbacks
+ *	@id: device number to be given to the device
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	This function, called by parallel port device drivers,
  *	declares that a device is connected to a port, and tells the
  *	system all it needs to know.
  *
+<<<<<<< HEAD
  *	The @name is allocated by the caller and must not be
  *	deallocated until the caller calls @parport_unregister_device
  *	for that device.
@@ -486,13 +854,35 @@ void parport_remove_port(struct parport *port)
  *	does not support preemption, @pf can be %NULL.
  *
  *	The wake-up ("kick") callback function, @kf, is called when
+=======
+ *	The struct pardev_cb contains pointer to callbacks. preemption
+ *	callback function, @preempt, is called when this device driver
+ *	has claimed access to the port but another device driver wants
+ *	to use it.  It is given, @private, as its parameter, and should
+ *	return zero if it is willing for the system to release the port
+ *	to another driver on its behalf. If it wants to keep control of
+ *	the port it should return non-zero, and no action will be taken.
+ *	It is good manners for the driver to try to release the port at
+ *	the earliest opportunity after its preemption callback rejects a
+ *	preemption attempt. Note that if a preemption callback is happy
+ *	for preemption to go ahead, there is no need to release the
+ *	port; it is done automatically. This function may not block, as
+ *	it may be called from interrupt context. If the device driver
+ *	does not support preemption, @preempt can be %NULL.
+ *
+ *	The wake-up ("kick") callback function, @wakeup, is called when
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	the port is available to be claimed for exclusive access; that
  *	is, parport_claim() is guaranteed to succeed when called from
  *	inside the wake-up callback function.  If the driver wants to
  *	claim the port it should do so; otherwise, it need not take
  *	any action.  This function may not block, as it may be called
  *	from interrupt context.  If the device driver does not want to
+<<<<<<< HEAD
  *	be explicitly invited to claim the port in this way, @kf can
+=======
+ *	be explicitly invited to claim the port in this way, @wakeup can
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	be %NULL.
  *
  *	The interrupt handler, @irq_func, is called when an interrupt
@@ -522,6 +912,7 @@ void parport_remove_port(struct parport *port)
  **/
 
 struct pardevice *
+<<<<<<< HEAD
 parport_register_device(struct parport *port, const char *name,
 			int (*pf)(void *), void (*kf)(void *),
 			void (*irq_func)(void *), 
@@ -539,10 +930,30 @@ parport_register_device(struct parport *port, const char *name,
 	if (flags & PARPORT_DEV_LURK) {
 		if (!pf || !kf) {
 			printk(KERN_INFO "%s: refused to register lurking device (%s) without callbacks\n", port->name, name);
+=======
+parport_register_dev_model(struct parport *port, const char *name,
+			   const struct pardev_cb *par_dev_cb, int id)
+{
+	struct pardevice *par_dev;
+	const char *devname;
+	int ret;
+
+	if (port->physport->flags & PARPORT_FLAG_EXCL) {
+		/* An exclusive device is registered. */
+		pr_err("%s: no more devices allowed\n", port->name);
+		return NULL;
+	}
+
+	if (par_dev_cb->flags & PARPORT_DEV_LURK) {
+		if (!par_dev_cb->preempt || !par_dev_cb->wakeup) {
+			pr_info("%s: refused to register lurking device (%s) without callbacks\n",
+				port->name, name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NULL;
 		}
 	}
 
+<<<<<<< HEAD
 	/* We up our own module reference count, and that of the port
            on which a device is to be registered, to ensure that
            neither of us gets unloaded while we sleep in (e.g.)
@@ -579,12 +990,73 @@ parport_register_device(struct parport *port, const char *name,
 
 	/* Chain this onto the list */
 	tmp->prev = NULL;
+=======
+	if (par_dev_cb->flags & PARPORT_DEV_EXCL) {
+		if (port->physport->devices) {
+			/*
+			 * If a device is already registered and this new
+			 * device wants exclusive access, then no need to
+			 * continue as we can not grant exclusive access to
+			 * this device.
+			 */
+			pr_err("%s: cannot grant exclusive access for device %s\n",
+			       port->name, name);
+			return NULL;
+		}
+	}
+
+	if (!try_module_get(port->ops->owner))
+		return NULL;
+
+	parport_get_port(port);
+
+	par_dev = kzalloc(sizeof(*par_dev), GFP_KERNEL);
+	if (!par_dev)
+		goto err_put_port;
+
+	par_dev->state = kzalloc(sizeof(*par_dev->state), GFP_KERNEL);
+	if (!par_dev->state)
+		goto err_put_par_dev;
+
+	devname = kstrdup_const(name, GFP_KERNEL);
+	if (!devname)
+		goto err_free_par_dev;
+
+	par_dev->name = devname;
+	par_dev->port = port;
+	par_dev->daisy = -1;
+	par_dev->preempt = par_dev_cb->preempt;
+	par_dev->wakeup = par_dev_cb->wakeup;
+	par_dev->private = par_dev_cb->private;
+	par_dev->flags = par_dev_cb->flags;
+	par_dev->irq_func = par_dev_cb->irq_func;
+	par_dev->waiting = 0;
+	par_dev->timeout = 5 * HZ;
+
+	par_dev->dev.parent = &port->bus_dev;
+	par_dev->dev.bus = &parport_bus_type;
+	ret = dev_set_name(&par_dev->dev, "%s.%d", devname, id);
+	if (ret)
+		goto err_free_devname;
+	par_dev->dev.release = free_pardevice;
+	par_dev->devmodel = true;
+	ret = device_register(&par_dev->dev);
+	if (ret) {
+		kfree(par_dev->state);
+		put_device(&par_dev->dev);
+		goto err_put_port;
+	}
+
+	/* Chain this onto the list */
+	par_dev->prev = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * This function must not run from an irq handler so we don' t need
 	 * to clear irq on the local CPU. -arca
 	 */
 	spin_lock(&port->physport->pardevice_lock);
 
+<<<<<<< HEAD
 	if (flags & PARPORT_DEV_EXCL) {
 		if (port->physport->devices) {
 			spin_unlock (&port->physport->pardevice_lock);
@@ -592,10 +1064,21 @@ parport_register_device(struct parport *port, const char *name,
 				"%s: cannot grant exclusive access for "
 				"device %s\n", port->name, name);
 			goto out_free_all;
+=======
+	if (par_dev_cb->flags & PARPORT_DEV_EXCL) {
+		if (port->physport->devices) {
+			spin_unlock(&port->physport->pardevice_lock);
+			pr_debug("%s: cannot grant exclusive access for device %s\n",
+				 port->name, name);
+			kfree(par_dev->state);
+			device_unregister(&par_dev->dev);
+			goto err_put_port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		port->flags |= PARPORT_FLAG_EXCL;
 	}
 
+<<<<<<< HEAD
 	tmp->next = port->physport->devices;
 	wmb(); /* Make sure that tmp->next is written before it's
                   added to the list; see comments marked 'no locking
@@ -608,11 +1091,29 @@ parport_register_device(struct parport *port, const char *name,
 	init_waitqueue_head(&tmp->wait_q);
 	tmp->timeslice = parport_default_timeslice;
 	tmp->waitnext = tmp->waitprev = NULL;
+=======
+	par_dev->next = port->physport->devices;
+	wmb();	/*
+		 * Make sure that tmp->next is written before it's
+		 * added to the list; see comments marked 'no locking
+		 * required'
+		 */
+	if (port->physport->devices)
+		port->physport->devices->prev = par_dev;
+	port->physport->devices = par_dev;
+	spin_unlock(&port->physport->pardevice_lock);
+
+	init_waitqueue_head(&par_dev->wait_q);
+	par_dev->timeslice = parport_default_timeslice;
+	par_dev->waitnext = NULL;
+	par_dev->waitprev = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This has to be run as last thing since init_state may need other
 	 * pardevice fields. -arca
 	 */
+<<<<<<< HEAD
 	port->ops->init_state(tmp, tmp->state);
 	if (!test_and_set_bit(PARPORT_DEVPROC_REGISTERED, &port->devflags)) {
 		port->proc_device = tmp;
@@ -626,10 +1127,33 @@ parport_register_device(struct parport *port, const char *name,
 	kfree(tmp);
  out:
 	parport_put_port (port);
+=======
+	port->ops->init_state(par_dev, par_dev->state);
+	if (!test_and_set_bit(PARPORT_DEVPROC_REGISTERED, &port->devflags)) {
+		port->proc_device = par_dev;
+		parport_device_proc_register(par_dev);
+	}
+
+	return par_dev;
+
+err_free_devname:
+	kfree_const(devname);
+err_free_par_dev:
+	kfree(par_dev->state);
+err_put_par_dev:
+	if (!par_dev->devmodel)
+		kfree(par_dev);
+err_put_port:
+	parport_put_port(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	module_put(port->ops->owner);
 
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(parport_register_dev_model);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	parport_unregister_device - deregister a device on a parallel port
@@ -643,8 +1167,13 @@ void parport_unregister_device(struct pardevice *dev)
 	struct parport *port;
 
 #ifdef PARPORT_PARANOID
+<<<<<<< HEAD
 	if (dev == NULL) {
 		printk(KERN_ERR "parport_unregister_device: passed NULL\n");
+=======
+	if (!dev) {
+		pr_err("%s: passed NULL\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 #endif
@@ -660,7 +1189,11 @@ void parport_unregister_device(struct pardevice *dev)
 	if (port->cad == dev) {
 		printk(KERN_DEBUG "%s: %s forgot to release port\n",
 		       port->name, dev->name);
+<<<<<<< HEAD
 		parport_release (dev);
+=======
+		parport_release(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_lock(&port->pardevice_lock);
@@ -676,8 +1209,15 @@ void parport_unregister_device(struct pardevice *dev)
 
 	spin_unlock(&port->pardevice_lock);
 
+<<<<<<< HEAD
 	/* Make sure we haven't left any pointers around in the wait
 	 * list. */
+=======
+	/*
+	 * Make sure we haven't left any pointers around in the wait
+	 * list.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&port->waitlist_lock);
 	if (dev->waitprev || dev->waitnext || port->waithead == dev) {
 		if (dev->waitprev)
@@ -692,11 +1232,20 @@ void parport_unregister_device(struct pardevice *dev)
 	spin_unlock_irq(&port->waitlist_lock);
 
 	kfree(dev->state);
+<<<<<<< HEAD
 	kfree(dev);
 
 	module_put(port->ops->owner);
 	parport_put_port (port);
 }
+=======
+	device_unregister(&dev->dev);
+
+	module_put(port->ops->owner);
+	parport_put_port(port);
+}
+EXPORT_SYMBOL(parport_unregister_device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	parport_find_number - find a parallel port by number
@@ -710,11 +1259,16 @@ void parport_unregister_device(struct pardevice *dev)
  *	gives you, use parport_put_port().
  */
 
+<<<<<<< HEAD
 struct parport *parport_find_number (int number)
+=======
+struct parport *parport_find_number(int number)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct parport *port, *result = NULL;
 
 	if (list_empty(&portlist))
+<<<<<<< HEAD
 		get_lowlevel_driver ();
 
 	spin_lock (&parportlist_lock);
@@ -727,6 +1281,21 @@ struct parport *parport_find_number (int number)
 	spin_unlock (&parportlist_lock);
 	return result;
 }
+=======
+		get_lowlevel_driver();
+
+	spin_lock(&parportlist_lock);
+	list_for_each_entry(port, &portlist, list) {
+		if (port->number == number) {
+			result = parport_get_port(port);
+			break;
+		}
+	}
+	spin_unlock(&parportlist_lock);
+	return result;
+}
+EXPORT_SYMBOL(parport_find_number);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	parport_find_base - find a parallel port by base address
@@ -740,11 +1309,16 @@ struct parport *parport_find_number (int number)
  *	gives you, use parport_put_port().
  */
 
+<<<<<<< HEAD
 struct parport *parport_find_base (unsigned long base)
+=======
+struct parport *parport_find_base(unsigned long base)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct parport *port, *result = NULL;
 
 	if (list_empty(&portlist))
+<<<<<<< HEAD
 		get_lowlevel_driver ();
 
 	spin_lock (&parportlist_lock);
@@ -757,6 +1331,21 @@ struct parport *parport_find_base (unsigned long base)
 	spin_unlock (&parportlist_lock);
 	return result;
 }
+=======
+		get_lowlevel_driver();
+
+	spin_lock(&parportlist_lock);
+	list_for_each_entry(port, &portlist, list) {
+		if (port->base == base) {
+			result = parport_get_port(port);
+			break;
+		}
+	}
+	spin_unlock(&parportlist_lock);
+	return result;
+}
+EXPORT_SYMBOL(parport_find_base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	parport_claim - claim access to a parallel port device
@@ -777,14 +1366,24 @@ int parport_claim(struct pardevice *dev)
 	unsigned long flags;
 
 	if (port->cad == dev) {
+<<<<<<< HEAD
 		printk(KERN_INFO "%s: %s already owner\n",
 		       dev->port->name,dev->name);
+=======
+		pr_info("%s: %s already owner\n", dev->port->name, dev->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	/* Preempt any current device */
+<<<<<<< HEAD
 	write_lock_irqsave (&port->cad_lock, flags);
 	if ((oldcad = port->cad) != NULL) {
+=======
+	write_lock_irqsave(&port->cad_lock, flags);
+	oldcad = port->cad;
+	if (oldcad) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (oldcad->preempt) {
 			if (oldcad->preempt(oldcad->private))
 				goto blocked;
@@ -793,11 +1392,20 @@ int parport_claim(struct pardevice *dev)
 			goto blocked;
 
 		if (port->cad != oldcad) {
+<<<<<<< HEAD
 			/* I think we'll actually deadlock rather than
                            get here, but just in case.. */
 			printk(KERN_WARNING
 			       "%s: %s released port when preempted!\n",
 			       port->name, oldcad->name);
+=======
+			/*
+			 * I think we'll actually deadlock rather than
+			 * get here, but just in case..
+			 */
+			pr_warn("%s: %s released port when preempted!\n",
+				port->name, oldcad->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (port->cad)
 				goto blocked;
 		}
@@ -808,7 +1416,11 @@ int parport_claim(struct pardevice *dev)
 		dev->waiting = 0;
 
 		/* Take ourselves out of the wait list again.  */
+<<<<<<< HEAD
 		spin_lock_irq (&port->waitlist_lock);
+=======
+		spin_lock_irq(&port->waitlist_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dev->waitprev)
 			dev->waitprev->waitnext = dev->waitnext;
 		else
@@ -817,7 +1429,11 @@ int parport_claim(struct pardevice *dev)
 			dev->waitnext->waitprev = dev->waitprev;
 		else
 			port->waittail = dev->waitprev;
+<<<<<<< HEAD
 		spin_unlock_irq (&port->waitlist_lock);
+=======
+		spin_unlock_irq(&port->waitlist_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->waitprev = dev->waitnext = NULL;
 	}
 
@@ -834,7 +1450,11 @@ int parport_claim(struct pardevice *dev)
 	/* If it's a daisy chain device, select it. */
 	if (dev->daisy >= 0) {
 		/* This could be lazier. */
+<<<<<<< HEAD
 		if (!parport_daisy_select (port, dev->daisy,
+=======
+		if (!parport_daisy_select(port, dev->daisy,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   IEEE1284_MODE_COMPAT))
 			port->daisy = dev->daisy;
 	}
@@ -847,6 +1467,7 @@ int parport_claim(struct pardevice *dev)
 	return 0;
 
 blocked:
+<<<<<<< HEAD
 	/* If this is the first time we tried to claim the port, register an
 	   interest.  This is only allowed for devices sleeping in
 	   parport_claim_or_block(), or those with a wakeup function.  */
@@ -854,6 +1475,17 @@ blocked:
 	/* The cad_lock is still held for writing here */
 	if (dev->waiting & 2 || dev->wakeup) {
 		spin_lock (&port->waitlist_lock);
+=======
+	/*
+	 * If this is the first time we tried to claim the port, register an
+	 * interest.  This is only allowed for devices sleeping in
+	 * parport_claim_or_block(), or those with a wakeup function.
+	 */
+
+	/* The cad_lock is still held for writing here */
+	if (dev->waiting & 2 || dev->wakeup) {
+		spin_lock(&port->waitlist_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (test_and_set_bit(0, &dev->waiting) == 0) {
 			/* First add ourselves to the end of the wait list. */
 			dev->waitnext = NULL;
@@ -864,11 +1496,20 @@ blocked:
 			} else
 				port->waithead = port->waittail = dev;
 		}
+<<<<<<< HEAD
 		spin_unlock (&port->waitlist_lock);
 	}
 	write_unlock_irqrestore (&port->cad_lock, flags);
 	return -EAGAIN;
 }
+=======
+		spin_unlock(&port->waitlist_lock);
+	}
+	write_unlock_irqrestore(&port->cad_lock, flags);
+	return -EAGAIN;
+}
+EXPORT_SYMBOL(parport_claim);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	parport_claim_or_block - claim access to a parallel port device
@@ -884,15 +1525,27 @@ int parport_claim_or_block(struct pardevice *dev)
 {
 	int r;
 
+<<<<<<< HEAD
 	/* Signal to parport_claim() that we can wait even without a
 	   wakeup function.  */
+=======
+	/*
+	 * Signal to parport_claim() that we can wait even without a
+	 * wakeup function.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->waiting = 2;
 
 	/* Try to claim the port.  If this fails, we need to sleep.  */
 	r = parport_claim(dev);
 	if (r == -EAGAIN) {
 #ifdef PARPORT_DEBUG_SHARING
+<<<<<<< HEAD
 		printk(KERN_DEBUG "%s: parport_claim() returned -EAGAIN\n", dev->name);
+=======
+		printk(KERN_DEBUG "%s: parport_claim() returned -EAGAIN\n",
+		       dev->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		/*
 		 * FIXME!!! Use the proper locking for dev->waiting,
@@ -903,6 +1556,7 @@ int parport_claim_or_block(struct pardevice *dev)
 		 * See also parport_release()
 		 */
 
+<<<<<<< HEAD
 		/* If dev->waiting is clear now, an interrupt
 		   gave us the port and we would deadlock if we slept.  */
 		if (dev->waiting) {
@@ -910,6 +1564,17 @@ int parport_claim_or_block(struct pardevice *dev)
 			if (signal_pending (current)) {
 				return -EINTR;
 			}
+=======
+		/*
+		 * If dev->waiting is clear now, an interrupt
+		 * gave us the port and we would deadlock if we slept.
+		 */
+		if (dev->waiting) {
+			wait_event_interruptible(dev->wait_q,
+						 !dev->waiting);
+			if (signal_pending(current))
+				return -EINTR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r = 1;
 		} else {
 			r = 0;
@@ -921,15 +1586,25 @@ int parport_claim_or_block(struct pardevice *dev)
 
 #ifdef PARPORT_DEBUG_SHARING
 		if (dev->port->physport->cad != dev)
+<<<<<<< HEAD
 			printk(KERN_DEBUG "%s: exiting parport_claim_or_block "
 			       "but %s owns port!\n", dev->name,
 			       dev->port->physport->cad ?
 			       dev->port->physport->cad->name:"nobody");
+=======
+			printk(KERN_DEBUG "%s: exiting parport_claim_or_block but %s owns port!\n",
+			       dev->name, dev->port->physport->cad ?
+			       dev->port->physport->cad->name : "nobody");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	}
 	dev->waiting = 0;
 	return r;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(parport_claim_or_block);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	parport_release - give up access to a parallel port device
@@ -949,9 +1624,15 @@ void parport_release(struct pardevice *dev)
 	/* Make sure that dev is the current device */
 	write_lock_irqsave(&port->cad_lock, flags);
 	if (port->cad != dev) {
+<<<<<<< HEAD
 		write_unlock_irqrestore (&port->cad_lock, flags);
 		printk(KERN_WARNING "%s: %s tried to release parport "
 		       "when not owner\n", port->name, dev->name);
+=======
+		write_unlock_irqrestore(&port->cad_lock, flags);
+		pr_warn("%s: %s tried to release parport when not owner\n",
+			port->name, dev->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -964,7 +1645,11 @@ void parport_release(struct pardevice *dev)
 
 	/* If this is a daisy device, deselect it. */
 	if (dev->daisy >= 0) {
+<<<<<<< HEAD
 		parport_daisy_deselect_all (port);
+=======
+		parport_daisy_deselect_all(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		port->daisy = -1;
 	}
 #endif
@@ -975,8 +1660,15 @@ void parport_release(struct pardevice *dev)
 	/* Save control registers */
 	port->ops->save_state(port, dev->state);
 
+<<<<<<< HEAD
 	/* If anybody is waiting, find out who's been there longest and
 	   then wake them up. (Note: no locking required) */
+=======
+	/*
+	 * If anybody is waiting, find out who's been there longest and
+	 * then wake them up. (Note: no locking required)
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* !!! LOCKING IS NEEDED HERE */
 	for (pd = port->waithead; pd; pd = pd->waitnext) {
 		if (pd->waiting & 2) { /* sleeping in claim_or_block */
@@ -989,6 +1681,7 @@ void parport_release(struct pardevice *dev)
 			if (dev->port->cad) /* racy but no matter */
 				return;
 		} else {
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: don't know how to wake %s\n", port->name, pd->name);
 		}
 	}
@@ -997,10 +1690,27 @@ void parport_release(struct pardevice *dev)
 	   interested in being woken up. (Note: no locking required) */
 	/* !!! LOCKING IS NEEDED HERE */
 	for (pd = port->devices; (port->cad == NULL) && pd; pd = pd->next) {
+=======
+			pr_err("%s: don't know how to wake %s\n",
+			       port->name, pd->name);
+		}
+	}
+
+	/*
+	 * Nobody was waiting, so walk the list to see if anyone is
+	 * interested in being woken up. (Note: no locking required)
+	 */
+	/* !!! LOCKING IS NEEDED HERE */
+	for (pd = port->devices; !port->cad && pd; pd = pd->next) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pd->wakeup && pd != dev)
 			pd->wakeup(pd->private);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(parport_release);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 irqreturn_t parport_irq_handler(int irq, void *dev_id)
 {
@@ -1010,6 +1720,7 @@ irqreturn_t parport_irq_handler(int irq, void *dev_id)
 
 	return IRQ_HANDLED;
 }
+<<<<<<< HEAD
 
 /* Exported symbols for modules. */
 
@@ -1027,6 +1738,8 @@ EXPORT_SYMBOL(parport_get_port);
 EXPORT_SYMBOL(parport_put_port);
 EXPORT_SYMBOL(parport_find_number);
 EXPORT_SYMBOL(parport_find_base);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(parport_irq_handler);
 
 MODULE_LICENSE("GPL");

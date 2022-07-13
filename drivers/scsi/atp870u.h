@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ATP870U_H
 #define _ATP870U_H
 
@@ -6,11 +10,18 @@
 
 /* I/O Port */
 
+<<<<<<< HEAD
 #define MAX_CDB 	12
 #define MAX_SENSE 	14
 #define qcnt	       	32
 #define ATP870U_SCATTER 	128
 #define ATP870U_CMDLUN  	1
+=======
+#define MAX_CDB		12
+#define MAX_SENSE	14
+#define qcnt		32
+#define ATP870U_SCATTER	128
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_ADAPTER	8
 #define MAX_SCSI_ID	16
@@ -27,24 +38,35 @@ struct atp_unit
 	unsigned long baseport;
 	unsigned long ioport[2];
 	unsigned long pciport[2];
+<<<<<<< HEAD
 	unsigned long irq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char last_cmd[2];
 	unsigned char in_snd[2];
 	unsigned char in_int[2];
 	unsigned char quhd[2];
 	unsigned char quend[2];
 	unsigned char global_map[2];
+<<<<<<< HEAD
 	unsigned char chip_ver;
 	unsigned char scam_on;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char host_id[2];
 	unsigned int working[2];
 	unsigned short wide_id[2];
 	unsigned short active_id[2];
 	unsigned short ultra_map[2];
 	unsigned short async[2];
+<<<<<<< HEAD
 	unsigned short dev_id;
 	unsigned char sp[2][16];
 	unsigned char r1f[2][16];		
+=======
+	unsigned char sp[2][16];
+	unsigned char r1f[2][16];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scsi_cmnd *quereq[2][qcnt];
 	struct atp_id
 	{
@@ -59,8 +81,13 @@ struct atp_unit
 		dma_addr_t prdaddr;		/* Dynamically updated in driver */
 		struct scsi_cmnd *curr_req;
 	} id[2][16];
+<<<<<<< HEAD
     	struct Scsi_Host *host;
     	struct pci_dev *pdev;
+=======
+	struct Scsi_Host *host;
+	struct pci_dev *pdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int unit;
 };
 

@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	common UDP/RAW code
  *	Linux INET6 implementation
  *
  *	Authors:
  *	Pedro Roque		<roque@di.fc.ul.pt>
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
  *      as published by the Free Software Foundation; either version
  *      2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/capability.h>
@@ -22,6 +29,11 @@
 #include <linux/ipv6.h>
 #include <linux/route.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+#include <linux/icmp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/ipv6.h>
 #include <net/ndisc.h>
@@ -29,6 +41,7 @@
 #include <net/transp_v6.h>
 #include <net/ip6_route.h>
 #include <net/tcp_states.h>
+<<<<<<< HEAD
 
 #include <linux/errqueue.h>
 #include <asm/uaccess.h>
@@ -48,13 +61,142 @@ int ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 	struct flowi6		fl6;
 	struct ip6_flowlabel	*flowlabel = NULL;
 	struct ipv6_txoptions   *opt;
+=======
+#include <net/dsfield.h>
+#include <net/sock_reuseport.h>
+
+#include <linux/errqueue.h>
+#include <linux/uaccess.h>
+
+static bool ipv6_mapped_addr_any(const struct in6_addr *a)
+{
+	return ipv6_addr_v4mapped(a) && (a->s6_addr32[3] == 0);
+}
+
+static void ip6_datagram_flow_key_init(struct flowi6 *fl6,
+				       const struct sock *sk)
+{
+	const struct inet_sock *inet = inet_sk(sk);
+	const struct ipv6_pinfo *np = inet6_sk(sk);
+	int oif = sk->sk_bound_dev_if;
+
+	memset(fl6, 0, sizeof(*fl6));
+	fl6->flowi6_proto = sk->sk_protocol;
+	fl6->daddr = sk->sk_v6_daddr;
+	fl6->saddr = np->saddr;
+	fl6->flowi6_mark = sk->sk_mark;
+	fl6->fl6_dport = inet->inet_dport;
+	fl6->fl6_sport = inet->inet_sport;
+	fl6->flowlabel = ip6_make_flowinfo(np->tclass, np->flow_label);
+	fl6->flowi6_uid = sk->sk_uid;
+
+	if (!oif)
+		oif = np->sticky_pktinfo.ipi6_ifindex;
+
+	if (!oif) {
+		if (ipv6_addr_is_multicast(&fl6->daddr))
+			oif = READ_ONCE(np->mcast_oif);
+		else
+			oif = READ_ONCE(np->ucast_oif);
+	}
+
+	fl6->flowi6_oif = oif;
+	security_sk_classify_flow(sk, flowi6_to_flowi_common(fl6));
+}
+
+int ip6_datagram_dst_update(struct sock *sk, bool fix_sk_saddr)
+{
+	struct ip6_flowlabel *flowlabel = NULL;
+	struct in6_addr *final_p, final;
+	struct ipv6_txoptions *opt;
+	struct dst_entry *dst;
+	struct inet_sock *inet = inet_sk(sk);
+	struct ipv6_pinfo *np = inet6_sk(sk);
+	struct flowi6 fl6;
+	int err = 0;
+
+	if (inet6_test_bit(SNDFLOW, sk) &&
+	    (np->flow_label & IPV6_FLOWLABEL_MASK)) {
+		flowlabel = fl6_sock_lookup(sk, np->flow_label);
+		if (IS_ERR(flowlabel))
+			return -EINVAL;
+	}
+	ip6_datagram_flow_key_init(&fl6, sk);
+
+	rcu_read_lock();
+	opt = flowlabel ? flowlabel->opt : rcu_dereference(np->opt);
+	final_p = fl6_update_dst(&fl6, opt, &final);
+	rcu_read_unlock();
+
+	dst = ip6_dst_lookup_flow(sock_net(sk), sk, &fl6, final_p);
+	if (IS_ERR(dst)) {
+		err = PTR_ERR(dst);
+		goto out;
+	}
+
+	if (fix_sk_saddr) {
+		if (ipv6_addr_any(&np->saddr))
+			np->saddr = fl6.saddr;
+
+		if (ipv6_addr_any(&sk->sk_v6_rcv_saddr)) {
+			sk->sk_v6_rcv_saddr = fl6.saddr;
+			inet->inet_rcv_saddr = LOOPBACK4_IPV6;
+			if (sk->sk_prot->rehash)
+				sk->sk_prot->rehash(sk);
+		}
+	}
+
+	ip6_sk_dst_store_flow(sk, dst, &fl6);
+
+out:
+	fl6_sock_release(flowlabel);
+	return err;
+}
+
+void ip6_datagram_release_cb(struct sock *sk)
+{
+	struct dst_entry *dst;
+
+	if (ipv6_addr_v4mapped(&sk->sk_v6_daddr))
+		return;
+
+	rcu_read_lock();
+	dst = __sk_dst_get(sk);
+	if (!dst || !dst->obsolete ||
+	    dst->ops->check(dst, inet6_sk(sk)->dst_cookie)) {
+		rcu_read_unlock();
+		return;
+	}
+	rcu_read_unlock();
+
+	ip6_datagram_dst_update(sk, false);
+}
+EXPORT_SYMBOL_GPL(ip6_datagram_release_cb);
+
+int __ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr,
+			   int addr_len)
+{
+	struct sockaddr_in6	*usin = (struct sockaddr_in6 *) uaddr;
+	struct inet_sock	*inet = inet_sk(sk);
+	struct ipv6_pinfo	*np = inet6_sk(sk);
+	struct in6_addr		*daddr, old_daddr;
+	__be32			fl6_flowlabel = 0;
+	__be32			old_fl6_flowlabel;
+	__be16			old_dport;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			addr_type;
 	int			err;
 
 	if (usin->sin6_family == AF_INET) {
+<<<<<<< HEAD
 		if (__ipv6_only_sock(sk))
 			return -EAFNOSUPPORT;
 		err = ip4_datagram_connect(sk, uaddr, addr_len);
+=======
+		if (ipv6_only_sock(sk))
+			return -EAFNOSUPPORT;
+		err = __ip4_datagram_connect(sk, uaddr, addr_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto ipv4_connected;
 	}
 
@@ -64,6 +206,7 @@ int ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 	if (usin->sin6_family != AF_INET6)
 		return -EAFNOSUPPORT;
 
+<<<<<<< HEAD
 	memset(&fl6, 0, sizeof(fl6));
 	if (np->sndflow) {
 		fl6.flowlabel = usin->sin6_flowinfo&IPV6_FLOWINFO_MASK;
@@ -73,10 +216,25 @@ int ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 				return -EINVAL;
 			usin->sin6_addr = flowlabel->dst;
 		}
+=======
+	if (inet6_test_bit(SNDFLOW, sk))
+		fl6_flowlabel = usin->sin6_flowinfo & IPV6_FLOWINFO_MASK;
+
+	if (ipv6_addr_any(&usin->sin6_addr)) {
+		/*
+		 *	connect to self
+		 */
+		if (ipv6_addr_v4mapped(&sk->sk_v6_rcv_saddr))
+			ipv6_addr_set_v4mapped(htonl(INADDR_LOOPBACK),
+					       &usin->sin6_addr);
+		else
+			usin->sin6_addr = in6addr_loopback;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	addr_type = ipv6_addr_type(&usin->sin6_addr);
 
+<<<<<<< HEAD
 	if (addr_type == IPV6_ADDR_ANY) {
 		/*
 		 *	connect to self
@@ -90,6 +248,14 @@ int ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 		struct sockaddr_in sin;
 
 		if (__ipv6_only_sock(sk)) {
+=======
+	daddr = &usin->sin6_addr;
+
+	if (addr_type & IPV6_ADDR_MAPPED) {
+		struct sockaddr_in sin;
+
+		if (ipv6_only_sock(sk)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -ENETUNREACH;
 			goto out;
 		}
@@ -97,24 +263,41 @@ int ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
 		sin.sin_addr.s_addr = daddr->s6_addr32[3];
 		sin.sin_port = usin->sin6_port;
 
+<<<<<<< HEAD
 		err = ip4_datagram_connect(sk,
 					   (struct sockaddr*) &sin,
 					   sizeof(sin));
+=======
+		err = __ip4_datagram_connect(sk,
+					     (struct sockaddr *) &sin,
+					     sizeof(sin));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ipv4_connected:
 		if (err)
 			goto out;
 
+<<<<<<< HEAD
 		ipv6_addr_set_v4mapped(inet->inet_daddr, &np->daddr);
+=======
+		ipv6_addr_set_v4mapped(inet->inet_daddr, &sk->sk_v6_daddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ipv6_addr_any(&np->saddr) ||
 		    ipv6_mapped_addr_any(&np->saddr))
 			ipv6_addr_set_v4mapped(inet->inet_saddr, &np->saddr);
 
+<<<<<<< HEAD
 		if (ipv6_addr_any(&np->rcv_saddr) ||
 		    ipv6_mapped_addr_any(&np->rcv_saddr)) {
 			ipv6_addr_set_v4mapped(inet->inet_rcv_saddr,
 					       &np->rcv_saddr);
+=======
+		if (ipv6_addr_any(&sk->sk_v6_rcv_saddr) ||
+		    ipv6_mapped_addr_any(&sk->sk_v6_rcv_saddr)) {
+			ipv6_addr_set_v4mapped(inet->inet_rcv_saddr,
+					       &sk->sk_v6_rcv_saddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (sk->sk_prot->rehash)
 				sk->sk_prot->rehash(sk);
 		}
@@ -122,6 +305,7 @@ ipv4_connected:
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (addr_type&IPV6_ADDR_LINKLOCAL) {
 		if (addr_len >= sizeof(struct sockaddr_in6) &&
 		    usin->sin6_scope_id) {
@@ -135,6 +319,20 @@ ipv4_connected:
 
 		if (!sk->sk_bound_dev_if && (addr_type & IPV6_ADDR_MULTICAST))
 			sk->sk_bound_dev_if = np->mcast_oif;
+=======
+	if (__ipv6_addr_needs_scope_id(addr_type)) {
+		if (addr_len >= sizeof(struct sockaddr_in6) &&
+		    usin->sin6_scope_id) {
+			if (!sk_dev_equal_l3scope(sk, usin->sin6_scope_id)) {
+				err = -EINVAL;
+				goto out;
+			}
+			WRITE_ONCE(sk->sk_bound_dev_if, usin->sin6_scope_id);
+		}
+
+		if (!sk->sk_bound_dev_if && (addr_type & IPV6_ADDR_MULTICAST))
+			WRITE_ONCE(sk->sk_bound_dev_if, READ_ONCE(np->mcast_oif));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Connect to link-local address requires an interface */
 		if (!sk->sk_bound_dev_if) {
@@ -143,9 +341,19 @@ ipv4_connected:
 		}
 	}
 
+<<<<<<< HEAD
 	np->daddr = *daddr;
 	np->flow_label = fl6.flowlabel;
 
+=======
+	/* save the current peer information before updating it */
+	old_daddr = sk->sk_v6_daddr;
+	old_fl6_flowlabel = np->flow_label;
+	old_dport = inet->inet_dport;
+
+	sk->sk_v6_daddr = *daddr;
+	np->flow_label = fl6_flowlabel;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inet->inet_dport = usin->sin6_port;
 
 	/*
@@ -153,6 +361,7 @@ ipv4_connected:
 	 *	destination cache for it.
 	 */
 
+<<<<<<< HEAD
 	fl6.flowi6_proto = sk->sk_protocol;
 	fl6.daddr = np->daddr;
 	fl6.saddr = np->saddr;
@@ -203,15 +412,74 @@ out:
 	fl6_sock_release(flowlabel);
 	return err;
 }
+=======
+	err = ip6_datagram_dst_update(sk, true);
+	if (err) {
+		/* Restore the socket peer info, to keep it consistent with
+		 * the old socket state
+		 */
+		sk->sk_v6_daddr = old_daddr;
+		np->flow_label = old_fl6_flowlabel;
+		inet->inet_dport = old_dport;
+		goto out;
+	}
+
+	reuseport_has_conns_set(sk);
+	sk->sk_state = TCP_ESTABLISHED;
+	sk_set_txhash(sk);
+out:
+	return err;
+}
+EXPORT_SYMBOL_GPL(__ip6_datagram_connect);
+
+int ip6_datagram_connect(struct sock *sk, struct sockaddr *uaddr, int addr_len)
+{
+	int res;
+
+	lock_sock(sk);
+	res = __ip6_datagram_connect(sk, uaddr, addr_len);
+	release_sock(sk);
+	return res;
+}
+EXPORT_SYMBOL_GPL(ip6_datagram_connect);
+
+int ip6_datagram_connect_v6_only(struct sock *sk, struct sockaddr *uaddr,
+				 int addr_len)
+{
+	DECLARE_SOCKADDR(struct sockaddr_in6 *, sin6, uaddr);
+	if (sin6->sin6_family != AF_INET6)
+		return -EAFNOSUPPORT;
+	return ip6_datagram_connect(sk, uaddr, addr_len);
+}
+EXPORT_SYMBOL_GPL(ip6_datagram_connect_v6_only);
+
+static void ipv6_icmp_error_rfc4884(const struct sk_buff *skb,
+				    struct sock_ee_data_rfc4884 *out)
+{
+	switch (icmp6_hdr(skb)->icmp6_type) {
+	case ICMPV6_TIME_EXCEED:
+	case ICMPV6_DEST_UNREACH:
+		ip_icmp_error_rfc4884(skb, out, sizeof(struct icmp6hdr),
+				      icmp6_hdr(skb)->icmp6_datagram_len * 8);
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ipv6_icmp_error(struct sock *sk, struct sk_buff *skb, int err,
 		     __be16 port, u32 info, u8 *payload)
 {
+<<<<<<< HEAD
 	struct ipv6_pinfo *np  = inet6_sk(sk);
 	struct icmp6hdr *icmph = icmp6_hdr(skb);
 	struct sock_exterr_skb *serr;
 
 	if (!np->recverr)
+=======
+	struct icmp6hdr *icmph = icmp6_hdr(skb);
+	struct sock_exterr_skb *serr;
+
+	if (!inet6_test_bit(RECVERR6, sk))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	skb = skb_clone(skb, GFP_ATOMIC);
@@ -233,20 +501,38 @@ void ipv6_icmp_error(struct sock *sk, struct sk_buff *skb, int err,
 	serr->port = port;
 
 	__skb_pull(skb, payload - skb->data);
+<<<<<<< HEAD
+=======
+
+	if (inet6_test_bit(RECVERR6_RFC4884, sk))
+		ipv6_icmp_error_rfc4884(skb, &serr->ee.ee_rfc4884);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_reset_transport_header(skb);
 
 	if (sock_queue_err_skb(sk, skb))
 		kfree_skb(skb);
 }
+<<<<<<< HEAD
 
 void ipv6_local_error(struct sock *sk, int err, struct flowi6 *fl6, u32 info)
 {
 	struct ipv6_pinfo *np = inet6_sk(sk);
+=======
+EXPORT_SYMBOL_GPL(ipv6_icmp_error);
+
+void ipv6_local_error(struct sock *sk, int err, struct flowi6 *fl6, u32 info)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sock_exterr_skb *serr;
 	struct ipv6hdr *iph;
 	struct sk_buff *skb;
 
+<<<<<<< HEAD
 	if (!np->recverr)
+=======
+	if (!inet6_test_bit(RECVERR6, sk))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	skb = alloc_skb(sizeof(struct ipv6hdr), GFP_ATOMIC);
@@ -259,6 +545,10 @@ void ipv6_local_error(struct sock *sk, int err, struct flowi6 *fl6, u32 info)
 	skb_reset_network_header(skb);
 	iph = ipv6_hdr(skb);
 	iph->daddr = fl6->daddr;
+<<<<<<< HEAD
+=======
+	ip6_flow_hdr(iph, 0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	serr = SKB_EXT_ERR(skb);
 	serr->ee.ee_errno = err;
@@ -313,6 +603,41 @@ void ipv6_local_rxpmtu(struct sock *sk, struct flowi6 *fl6, u32 mtu)
 	kfree_skb(skb);
 }
 
+<<<<<<< HEAD
+=======
+/* For some errors we have valid addr_offset even with zero payload and
+ * zero port. Also, addr_offset should be supported if port is set.
+ */
+static inline bool ipv6_datagram_support_addr(struct sock_exterr_skb *serr)
+{
+	return serr->ee.ee_origin == SO_EE_ORIGIN_ICMP6 ||
+	       serr->ee.ee_origin == SO_EE_ORIGIN_ICMP ||
+	       serr->ee.ee_origin == SO_EE_ORIGIN_LOCAL || serr->port;
+}
+
+/* IPv6 supports cmsg on all origins aside from SO_EE_ORIGIN_LOCAL.
+ *
+ * At one point, excluding local errors was a quick test to identify icmp/icmp6
+ * errors. This is no longer true, but the test remained, so the v6 stack,
+ * unlike v4, also honors cmsg requests on all wifi and timestamp errors.
+ */
+static bool ip6_datagram_support_cmsg(struct sk_buff *skb,
+				      struct sock_exterr_skb *serr)
+{
+	if (serr->ee.ee_origin == SO_EE_ORIGIN_ICMP ||
+	    serr->ee.ee_origin == SO_EE_ORIGIN_ICMP6)
+		return true;
+
+	if (serr->ee.ee_origin == SO_EE_ORIGIN_LOCAL)
+		return false;
+
+	if (!IP6CB(skb)->iif)
+		return false;
+
+	return true;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Handle MSG_ERRQUEUE
  */
@@ -320,8 +645,13 @@ int ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
 {
 	struct ipv6_pinfo *np = inet6_sk(sk);
 	struct sock_exterr_skb *serr;
+<<<<<<< HEAD
 	struct sk_buff *skb, *skb2;
 	struct sockaddr_in6 *sin;
+=======
+	struct sk_buff *skb;
+	DECLARE_SOCKADDR(struct sockaddr_in6 *, sin, msg->msg_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		struct sock_extended_err ee;
 		struct sockaddr_in6	 offender;
@@ -330,8 +660,13 @@ int ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
 	int copied;
 
 	err = -EAGAIN;
+<<<<<<< HEAD
 	skb = skb_dequeue(&sk->sk_error_queue);
 	if (skb == NULL)
+=======
+	skb = sock_dequeue_err_skb(sk);
+	if (!skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	copied = skb->len;
@@ -339,20 +674,33 @@ int ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
 		msg->msg_flags |= MSG_TRUNC;
 		copied = len;
 	}
+<<<<<<< HEAD
 	err = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copied);
 	if (err)
 		goto out_free_skb;
 
+=======
+	err = skb_copy_datagram_msg(skb, 0, msg, copied);
+	if (unlikely(err)) {
+		kfree_skb(skb);
+		return err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sock_recv_timestamp(msg, sk, skb);
 
 	serr = SKB_EXT_ERR(skb);
 
+<<<<<<< HEAD
 	sin = (struct sockaddr_in6 *)msg->msg_name;
 	if (sin) {
+=======
+	if (sin && ipv6_datagram_support_addr(serr)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const unsigned char *nh = skb_network_header(skb);
 		sin->sin6_family = AF_INET6;
 		sin->sin6_flowinfo = 0;
 		sin->sin6_port = serr->port;
+<<<<<<< HEAD
 		sin->sin6_scope_id = 0;
 		if (skb->protocol == htons(ETH_P_IPV6)) {
 			sin->sin6_addr =
@@ -366,12 +714,28 @@ int ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
 		} else {
 			ipv6_addr_set_v4mapped(*(__be32 *)(nh + serr->addr_offset),
 					       &sin->sin6_addr);
+=======
+		if (skb->protocol == htons(ETH_P_IPV6)) {
+			const struct ipv6hdr *ip6h = container_of((struct in6_addr *)(nh + serr->addr_offset),
+								  struct ipv6hdr, daddr);
+			sin->sin6_addr = ip6h->daddr;
+			if (inet6_test_bit(SNDFLOW, sk))
+				sin->sin6_flowinfo = ip6_flowinfo(ip6h);
+			sin->sin6_scope_id =
+				ipv6_iface_scope_id(&sin->sin6_addr,
+						    IP6CB(skb)->iif);
+		} else {
+			ipv6_addr_set_v4mapped(*(__be32 *)(nh + serr->addr_offset),
+					       &sin->sin6_addr);
+			sin->sin6_scope_id = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		*addr_len = sizeof(*sin);
 	}
 
 	memcpy(&errhdr.ee, &serr->ee, sizeof(struct sock_extended_err));
 	sin = &errhdr.offender;
+<<<<<<< HEAD
 	sin->sin6_family = AF_UNSPEC;
 	if (serr->ee.ee_origin != SO_EE_ORIGIN_LOCAL) {
 		sin->sin6_family = AF_INET6;
@@ -390,6 +754,25 @@ int ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
 			ipv6_addr_set_v4mapped(ip_hdr(skb)->saddr,
 					       &sin->sin6_addr);
 			if (inet->cmsg_flags)
+=======
+	memset(sin, 0, sizeof(*sin));
+
+	if (ip6_datagram_support_cmsg(skb, serr)) {
+		sin->sin6_family = AF_INET6;
+		if (np->rxopt.all)
+			ip6_datagram_recv_common_ctl(sk, msg, skb);
+		if (skb->protocol == htons(ETH_P_IPV6)) {
+			sin->sin6_addr = ipv6_hdr(skb)->saddr;
+			if (np->rxopt.all)
+				ip6_datagram_recv_specific_ctl(sk, msg, skb);
+			sin->sin6_scope_id =
+				ipv6_iface_scope_id(&sin->sin6_addr,
+						    IP6CB(skb)->iif);
+		} else {
+			ipv6_addr_set_v4mapped(ip_hdr(skb)->saddr,
+					       &sin->sin6_addr);
+			if (inet_cmsg_flags(inet_sk(sk)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ip_cmsg_recv(msg, skb);
 		}
 	}
@@ -401,6 +784,7 @@ int ipv6_recv_error(struct sock *sk, struct msghdr *msg, int len, int *addr_len)
 	msg->msg_flags |= MSG_ERRQUEUE;
 	err = copied;
 
+<<<<<<< HEAD
 	/* Reset and regenerate socket error */
 	spin_lock_bh(&sk->sk_error_queue.lock);
 	sk->sk_err = 0;
@@ -417,6 +801,13 @@ out_free_skb:
 out:
 	return err;
 }
+=======
+	consume_skb(skb);
+out:
+	return err;
+}
+EXPORT_SYMBOL_GPL(ipv6_recv_error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Handle IPV6_RECVPATHMTU
@@ -426,14 +817,23 @@ int ipv6_recv_rxpmtu(struct sock *sk, struct msghdr *msg, int len,
 {
 	struct ipv6_pinfo *np = inet6_sk(sk);
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	struct sockaddr_in6 *sin;
 	struct ip6_mtuinfo mtu_info;
+=======
+	struct ip6_mtuinfo mtu_info;
+	DECLARE_SOCKADDR(struct sockaddr_in6 *, sin, msg->msg_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	int copied;
 
 	err = -EAGAIN;
 	skb = xchg(&np->rxpmtu, NULL);
+<<<<<<< HEAD
 	if (skb == NULL)
+=======
+	if (!skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	copied = skb->len;
@@ -441,7 +841,11 @@ int ipv6_recv_rxpmtu(struct sock *sk, struct msghdr *msg, int len,
 		msg->msg_flags |= MSG_TRUNC;
 		copied = len;
 	}
+<<<<<<< HEAD
 	err = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copied);
+=======
+	err = skb_copy_datagram_msg(skb, 0, msg, copied);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out_free_skb;
 
@@ -449,7 +853,10 @@ int ipv6_recv_rxpmtu(struct sock *sk, struct msghdr *msg, int len,
 
 	memcpy(&mtu_info, IP6CBMTU(skb), sizeof(mtu_info));
 
+<<<<<<< HEAD
 	sin = (struct sockaddr_in6 *)msg->msg_name;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sin) {
 		sin->sin6_family = AF_INET6;
 		sin->sin6_flowinfo = 0;
@@ -470,19 +877,52 @@ out:
 }
 
 
+<<<<<<< HEAD
 int datagram_recv_ctl(struct sock *sk, struct msghdr *msg, struct sk_buff *skb)
 {
 	struct ipv6_pinfo *np = inet6_sk(sk);
 	struct inet6_skb_parm *opt = IP6CB(skb);
 	unsigned char *nh = skb_network_header(skb);
+=======
+void ip6_datagram_recv_common_ctl(struct sock *sk, struct msghdr *msg,
+				 struct sk_buff *skb)
+{
+	struct ipv6_pinfo *np = inet6_sk(sk);
+	bool is_ipv6 = skb->protocol == htons(ETH_P_IPV6);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (np->rxopt.bits.rxinfo) {
 		struct in6_pktinfo src_info;
 
+<<<<<<< HEAD
 		src_info.ipi6_ifindex = opt->iif;
 		src_info.ipi6_addr = ipv6_hdr(skb)->daddr;
 		put_cmsg(msg, SOL_IPV6, IPV6_PKTINFO, sizeof(src_info), &src_info);
 	}
+=======
+		if (is_ipv6) {
+			src_info.ipi6_ifindex = IP6CB(skb)->iif;
+			src_info.ipi6_addr = ipv6_hdr(skb)->daddr;
+		} else {
+			src_info.ipi6_ifindex =
+				PKTINFO_SKB_CB(skb)->ipi_ifindex;
+			ipv6_addr_set_v4mapped(ip_hdr(skb)->daddr,
+					       &src_info.ipi6_addr);
+		}
+
+		if (src_info.ipi6_ifindex >= 0)
+			put_cmsg(msg, SOL_IPV6, IPV6_PKTINFO,
+				 sizeof(src_info), &src_info);
+	}
+}
+
+void ip6_datagram_recv_specific_ctl(struct sock *sk, struct msghdr *msg,
+				    struct sk_buff *skb)
+{
+	struct ipv6_pinfo *np = inet6_sk(sk);
+	struct inet6_skb_parm *opt = IP6CB(skb);
+	unsigned char *nh = skb_network_header(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (np->rxopt.bits.rxhlim) {
 		int hlim = ipv6_hdr(skb)->hop_limit;
@@ -490,6 +930,7 @@ int datagram_recv_ctl(struct sock *sk, struct msghdr *msg, struct sk_buff *skb)
 	}
 
 	if (np->rxopt.bits.rxtclass) {
+<<<<<<< HEAD
 		int tclass = ipv6_tclass(ipv6_hdr(skb));
 		put_cmsg(msg, SOL_IPV6, IPV6_TCLASS, sizeof(tclass), &tclass);
 	}
@@ -502,6 +943,21 @@ int datagram_recv_ctl(struct sock *sk, struct msghdr *msg, struct sk_buff *skb)
 	/* HbH is allowed only once */
 	if (np->rxopt.bits.hopopts && opt->hop) {
 		u8 *ptr = nh + opt->hop;
+=======
+		int tclass = ipv6_get_dsfield(ipv6_hdr(skb));
+		put_cmsg(msg, SOL_IPV6, IPV6_TCLASS, sizeof(tclass), &tclass);
+	}
+
+	if (np->rxopt.bits.rxflow) {
+		__be32 flowinfo = ip6_flowinfo((struct ipv6hdr *)nh);
+		if (flowinfo)
+			put_cmsg(msg, SOL_IPV6, IPV6_FLOWINFO, sizeof(flowinfo), &flowinfo);
+	}
+
+	/* HbH is allowed only once */
+	if (np->rxopt.bits.hopopts && (opt->flags & IP6SKB_HOPBYHOP)) {
+		u8 *ptr = nh + sizeof(struct ipv6hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_cmsg(msg, SOL_IPV6, IPV6_HOPOPTS, (ptr[1]+1)<<3, ptr);
 	}
 
@@ -520,10 +976,17 @@ int datagram_recv_ctl(struct sock *sk, struct msghdr *msg, struct sk_buff *skb)
 		u8 nexthdr = ipv6_hdr(skb)->nexthdr;
 
 		while (off <= opt->lastopt) {
+<<<<<<< HEAD
 			unsigned len;
 			u8 *ptr = nh + off;
 
 			switch(nexthdr) {
+=======
+			unsigned int len;
+			u8 *ptr = nh + off;
+
+			switch (nexthdr) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case IPPROTO_DSTOPTS:
 				nexthdr = ptr[0];
 				len = (ptr[1] + 1) << 3;
@@ -562,8 +1025,13 @@ int datagram_recv_ctl(struct sock *sk, struct msghdr *msg, struct sk_buff *skb)
 		int hlim = ipv6_hdr(skb)->hop_limit;
 		put_cmsg(msg, SOL_IPV6, IPV6_2292HOPLIMIT, sizeof(hlim), &hlim);
 	}
+<<<<<<< HEAD
 	if (np->rxopt.bits.ohopopts && opt->hop) {
 		u8 *ptr = nh + opt->hop;
+=======
+	if (np->rxopt.bits.ohopopts && (opt->flags & IP6SKB_HOPBYHOP)) {
+		u8 *ptr = nh + sizeof(struct ipv6hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_cmsg(msg, SOL_IPV6, IPV6_2292HOPOPTS, (ptr[1]+1)<<3, ptr);
 	}
 	if (np->rxopt.bits.odstopts && opt->dst0) {
@@ -580,23 +1048,41 @@ int datagram_recv_ctl(struct sock *sk, struct msghdr *msg, struct sk_buff *skb)
 	}
 	if (np->rxopt.bits.rxorigdstaddr) {
 		struct sockaddr_in6 sin6;
+<<<<<<< HEAD
 		__be16 *ports = (__be16 *) skb_transport_header(skb);
 
 		if (skb_transport_offset(skb) + 4 <= skb->len) {
+=======
+		__be16 _ports[2], *ports;
+
+		ports = skb_header_pointer(skb, skb_transport_offset(skb),
+					   sizeof(_ports), &_ports);
+		if (ports) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* All current transport protocols have the port numbers in the
 			 * first four bytes of the transport header and this function is
 			 * written with this assumption in mind.
 			 */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sin6.sin6_family = AF_INET6;
 			sin6.sin6_addr = ipv6_hdr(skb)->daddr;
 			sin6.sin6_port = ports[1];
 			sin6.sin6_flowinfo = 0;
+<<<<<<< HEAD
 			sin6.sin6_scope_id = 0;
+=======
+			sin6.sin6_scope_id =
+				ipv6_iface_scope_id(&ipv6_hdr(skb)->daddr,
+						    opt->iif);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			put_cmsg(msg, SOL_IPV6, IPV6_ORIGDSTADDR, sizeof(sin6), &sin6);
 		}
 	}
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -604,15 +1090,43 @@ int datagram_send_ctl(struct net *net, struct sock *sk,
 		      struct msghdr *msg, struct flowi6 *fl6,
 		      struct ipv6_txoptions *opt,
 		      int *hlimit, int *tclass, int *dontfrag)
+=======
+	if (np->rxopt.bits.recvfragsize && opt->frag_max_size) {
+		int val = opt->frag_max_size;
+
+		put_cmsg(msg, SOL_IPV6, IPV6_RECVFRAGSIZE, sizeof(val), &val);
+	}
+}
+
+void ip6_datagram_recv_ctl(struct sock *sk, struct msghdr *msg,
+			  struct sk_buff *skb)
+{
+	ip6_datagram_recv_common_ctl(sk, msg, skb);
+	ip6_datagram_recv_specific_ctl(sk, msg, skb);
+}
+EXPORT_SYMBOL_GPL(ip6_datagram_recv_ctl);
+
+int ip6_datagram_send_ctl(struct net *net, struct sock *sk,
+			  struct msghdr *msg, struct flowi6 *fl6,
+			  struct ipcm6_cookie *ipc6)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct in6_pktinfo *src_info;
 	struct cmsghdr *cmsg;
 	struct ipv6_rt_hdr *rthdr;
 	struct ipv6_opt_hdr *hdr;
+<<<<<<< HEAD
 	int len;
 	int err = 0;
 
 	for (cmsg = CMSG_FIRSTHDR(msg); cmsg; cmsg = CMSG_NXTHDR(msg, cmsg)) {
+=======
+	struct ipv6_txoptions *opt = ipc6->opt;
+	int len;
+	int err = 0;
+
+	for_each_cmsghdr(cmsg, msg) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int addr_type;
 
 		if (!CMSG_OK(msg, cmsg)) {
@@ -620,6 +1134,16 @@ int datagram_send_ctl(struct net *net, struct sock *sk,
 			goto exit_f;
 		}
 
+<<<<<<< HEAD
+=======
+		if (cmsg->cmsg_level == SOL_SOCKET) {
+			err = __sock_cmsg_send(sk, cmsg, &ipc6->sockc);
+			if (err)
+				return err;
+			continue;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cmsg->cmsg_level != SOL_IPV6)
 			continue;
 
@@ -628,6 +1152,10 @@ int datagram_send_ctl(struct net *net, struct sock *sk,
 		case IPV6_2292PKTINFO:
 		    {
 			struct net_device *dev = NULL;
+<<<<<<< HEAD
+=======
+			int src_idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (cmsg->cmsg_len < CMSG_LEN(sizeof(struct in6_pktinfo))) {
 				err = -EINVAL;
@@ -635,12 +1163,24 @@ int datagram_send_ctl(struct net *net, struct sock *sk,
 			}
 
 			src_info = (struct in6_pktinfo *)CMSG_DATA(cmsg);
+<<<<<<< HEAD
 
 			if (src_info->ipi6_ifindex) {
 				if (fl6->flowi6_oif &&
 				    src_info->ipi6_ifindex != fl6->flowi6_oif)
 					return -EINVAL;
 				fl6->flowi6_oif = src_info->ipi6_ifindex;
+=======
+			src_idx = src_info->ipi6_ifindex;
+
+			if (src_idx) {
+				if (fl6->flowi6_oif &&
+				    src_idx != fl6->flowi6_oif &&
+				    (READ_ONCE(sk->sk_bound_dev_if) != fl6->flowi6_oif ||
+				     !sk_dev_equal_l3scope(sk, src_idx)))
+					return -EINVAL;
+				fl6->flowi6_oif = src_idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			addr_type = __ipv6_addr_type(&src_info->ipi6_addr);
@@ -659,9 +1199,18 @@ int datagram_send_ctl(struct net *net, struct sock *sk,
 
 			if (addr_type != IPV6_ADDR_ANY) {
 				int strict = __ipv6_addr_src_scope(addr_type) <= IPV6_ADDR_SCOPE_LINKLOCAL;
+<<<<<<< HEAD
 				if (!(inet_sk(sk)->freebind || inet_sk(sk)->transparent) &&
 				    !ipv6_chk_addr(net, &src_info->ipi6_addr,
 						   strict ? dev : NULL, 0))
+=======
+				if (!ipv6_can_nonlocal_bind(net, inet_sk(sk)) &&
+				    !ipv6_chk_addr_and_flags(net, &src_info->ipi6_addr,
+							     dev, !strict, 0,
+							     IFA_F_TENTATIVE) &&
+				    !ipv6_chk_acast_addr_src(net, dev,
+							     &src_info->ipi6_addr))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					err = -EINVAL;
 				else
 					fl6->saddr = src_info->ipi6_addr;
@@ -703,7 +1252,11 @@ int datagram_send_ctl(struct net *net, struct sock *sk,
 				err = -EINVAL;
 				goto exit_f;
 			}
+<<<<<<< HEAD
 			if (!capable(CAP_NET_RAW)) {
+=======
+			if (!ns_capable(net->user_ns, CAP_NET_RAW)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = -EPERM;
 				goto exit_f;
 			}
@@ -723,7 +1276,11 @@ int datagram_send_ctl(struct net *net, struct sock *sk,
 				err = -EINVAL;
 				goto exit_f;
 			}
+<<<<<<< HEAD
 			if (!capable(CAP_NET_RAW)) {
+=======
+			if (!ns_capable(net->user_ns, CAP_NET_RAW)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = -EPERM;
 				goto exit_f;
 			}
@@ -748,7 +1305,11 @@ int datagram_send_ctl(struct net *net, struct sock *sk,
 				err = -EINVAL;
 				goto exit_f;
 			}
+<<<<<<< HEAD
 			if (!capable(CAP_NET_RAW)) {
+=======
+			if (!ns_capable(net->user_ns, CAP_NET_RAW)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = -EPERM;
 				goto exit_f;
 			}
@@ -771,7 +1332,11 @@ int datagram_send_ctl(struct net *net, struct sock *sk,
 			rthdr = (struct ipv6_rt_hdr *)CMSG_DATA(cmsg);
 
 			switch (rthdr->type) {
+<<<<<<< HEAD
 #if defined(CONFIG_IPV6_MIP6) || defined(CONFIG_IPV6_MIP6_MODULE)
+=======
+#if IS_ENABLED(CONFIG_IPV6_MIP6)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case IPV6_SRCRT_TYPE_2:
 				if (rthdr->hdrlen != 2 ||
 				    rthdr->segments_left != 1) {
@@ -819,8 +1384,13 @@ int datagram_send_ctl(struct net *net, struct sock *sk,
 				goto exit_f;
 			}
 
+<<<<<<< HEAD
 			*hlimit = *(int *)CMSG_DATA(cmsg);
 			if (*hlimit < -1 || *hlimit > 0xff) {
+=======
+			ipc6->hlimit = *(int *)CMSG_DATA(cmsg);
+			if (ipc6->hlimit < -1 || ipc6->hlimit > 0xff) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = -EINVAL;
 				goto exit_f;
 			}
@@ -832,16 +1402,25 @@ int datagram_send_ctl(struct net *net, struct sock *sk,
 			int tc;
 
 			err = -EINVAL;
+<<<<<<< HEAD
 			if (cmsg->cmsg_len != CMSG_LEN(sizeof(int))) {
 				goto exit_f;
 			}
+=======
+			if (cmsg->cmsg_len != CMSG_LEN(sizeof(int)))
+				goto exit_f;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			tc = *(int *)CMSG_DATA(cmsg);
 			if (tc < -1 || tc > 0xff)
 				goto exit_f;
 
 			err = 0;
+<<<<<<< HEAD
 			*tclass = tc;
+=======
+			ipc6->tclass = tc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			break;
 		    }
@@ -851,22 +1430,36 @@ int datagram_send_ctl(struct net *net, struct sock *sk,
 			int df;
 
 			err = -EINVAL;
+<<<<<<< HEAD
 			if (cmsg->cmsg_len != CMSG_LEN(sizeof(int))) {
 				goto exit_f;
 			}
+=======
+			if (cmsg->cmsg_len != CMSG_LEN(sizeof(int)))
+				goto exit_f;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			df = *(int *)CMSG_DATA(cmsg);
 			if (df < 0 || df > 1)
 				goto exit_f;
 
 			err = 0;
+<<<<<<< HEAD
 			*dontfrag = df;
+=======
+			ipc6->dontfrag = df;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			break;
 		    }
 		default:
+<<<<<<< HEAD
 			LIMIT_NETDEBUG(KERN_DEBUG "invalid cmsg type: %d\n",
 				       cmsg->cmsg_type);
+=======
+			net_dbg_ratelimited("invalid cmsg type: %d\n",
+					    cmsg->cmsg_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			goto exit_f;
 		}
@@ -875,3 +1468,33 @@ int datagram_send_ctl(struct net *net, struct sock *sk,
 exit_f:
 	return err;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(ip6_datagram_send_ctl);
+
+void __ip6_dgram_sock_seq_show(struct seq_file *seq, struct sock *sp,
+			       __u16 srcp, __u16 destp, int rqueue, int bucket)
+{
+	const struct in6_addr *dest, *src;
+
+	dest  = &sp->sk_v6_daddr;
+	src   = &sp->sk_v6_rcv_saddr;
+	seq_printf(seq,
+		   "%5d: %08X%08X%08X%08X:%04X %08X%08X%08X%08X:%04X "
+		   "%02X %08X:%08X %02X:%08lX %08X %5u %8d %lu %d %pK %u\n",
+		   bucket,
+		   src->s6_addr32[0], src->s6_addr32[1],
+		   src->s6_addr32[2], src->s6_addr32[3], srcp,
+		   dest->s6_addr32[0], dest->s6_addr32[1],
+		   dest->s6_addr32[2], dest->s6_addr32[3], destp,
+		   sp->sk_state,
+		   sk_wmem_alloc_get(sp),
+		   rqueue,
+		   0, 0L, 0,
+		   from_kuid_munged(seq_user_ns(seq), sock_i_uid(sp)),
+		   0,
+		   sock_i_ino(sp),
+		   refcount_read(&sp->sk_refcnt), sp,
+		   atomic_read(&sp->sk_drops));
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

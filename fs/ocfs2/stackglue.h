@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * stackglue.h
  *
  * Glue to the underlying cluster stack.
  *
  * Copyright (C) 2007 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -15,6 +21,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -45,6 +53,12 @@ struct file_lock;
  */
 #define GROUP_NAME_MAX		64
 
+<<<<<<< HEAD
+=======
+/* This shadows  OCFS2_CLUSTER_NAME_LEN */
+#define CLUSTER_NAME_MAX	16
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ocfs2_protocol_version changes when ocfs2 does something different in
@@ -97,8 +111,15 @@ struct ocfs2_locking_protocol {
  * locking compatibility.
  */
 struct ocfs2_cluster_connection {
+<<<<<<< HEAD
 	char cc_name[GROUP_NAME_MAX];
 	int cc_namelen;
+=======
+	char cc_name[GROUP_NAME_MAX + 1];
+	int cc_namelen;
+	char cc_cluster_name[CLUSTER_NAME_MAX + 1];
+	int cc_cluster_name_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ocfs2_protocol_version cc_version;
 	struct ocfs2_locking_protocol *cc_proto;
 	void (*cc_recovery_handler)(int node_num, void *recovery_data);
@@ -152,7 +173,12 @@ struct ocfs2_stack_operations {
 	 * ->this_node() returns the cluster's unique identifier for the
 	 * local node.
 	 */
+<<<<<<< HEAD
 	int (*this_node)(unsigned int *node);
+=======
+	int (*this_node)(struct ocfs2_cluster_connection *conn,
+			 unsigned int *node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Call the underlying dlm lock function.  The ->dlm_lock()
@@ -239,6 +265,11 @@ struct ocfs2_stack_plugin {
 
 /* Used by the filesystem */
 int ocfs2_cluster_connect(const char *stack_name,
+<<<<<<< HEAD
+=======
+			  const char *cluster_name,
+			  int cluster_name_len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  const char *group,
 			  int grouplen,
 			  struct ocfs2_locking_protocol *lproto,
@@ -260,7 +291,12 @@ int ocfs2_cluster_connect_agnostic(const char *group,
 int ocfs2_cluster_disconnect(struct ocfs2_cluster_connection *conn,
 			     int hangup_pending);
 void ocfs2_cluster_hangup(const char *group, int grouplen);
+<<<<<<< HEAD
 int ocfs2_cluster_this_node(unsigned int *node);
+=======
+int ocfs2_cluster_this_node(struct ocfs2_cluster_connection *conn,
+			    unsigned int *node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ocfs2_lock_res;
 int ocfs2_dlm_lock(struct ocfs2_cluster_connection *conn,
@@ -289,4 +325,9 @@ void ocfs2_stack_glue_set_max_proto_version(struct ocfs2_protocol_version *max_p
 int ocfs2_stack_glue_register(struct ocfs2_stack_plugin *plugin);
 void ocfs2_stack_glue_unregister(struct ocfs2_stack_plugin *plugin);
 
+<<<<<<< HEAD
+=======
+extern struct kset *ocfs2_kset;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif  /* STACKGLUE_H */

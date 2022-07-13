@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Dave DNET Ethernet Controller driver
  *
  * Copyright (C) 2008 Dave S.r.l. <www.dave.eu>
  * Copyright (C) 2009 Ilya Yanok, Emcraft Systems Ltd, <yanok@emcraft.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/io.h>
 #include <linux/module.h>
@@ -15,7 +22,10 @@
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -64,6 +74,7 @@ static void __dnet_set_hwaddr(struct dnet *bp)
 {
 	u16 tmp;
 
+<<<<<<< HEAD
 	tmp = be16_to_cpup((__be16 *)bp->dev->dev_addr);
 	dnet_writew_mac(bp, DNET_INTERNAL_MAC_ADDR_0_REG, tmp);
 	tmp = be16_to_cpup((__be16 *)(bp->dev->dev_addr + 2));
@@ -73,6 +84,17 @@ static void __dnet_set_hwaddr(struct dnet *bp)
 }
 
 static void __devinit dnet_get_hwaddr(struct dnet *bp)
+=======
+	tmp = be16_to_cpup((const __be16 *)bp->dev->dev_addr);
+	dnet_writew_mac(bp, DNET_INTERNAL_MAC_ADDR_0_REG, tmp);
+	tmp = be16_to_cpup((const __be16 *)(bp->dev->dev_addr + 2));
+	dnet_writew_mac(bp, DNET_INTERNAL_MAC_ADDR_1_REG, tmp);
+	tmp = be16_to_cpup((const __be16 *)(bp->dev->dev_addr + 4));
+	dnet_writew_mac(bp, DNET_INTERNAL_MAC_ADDR_2_REG, tmp);
+}
+
+static void dnet_get_hwaddr(struct dnet *bp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 tmp;
 	u8 addr[6];
@@ -97,7 +119,11 @@ static void __devinit dnet_get_hwaddr(struct dnet *bp)
 	*((__be16 *)(addr + 4)) = cpu_to_be16(tmp);
 
 	if (is_valid_ether_addr(addr))
+<<<<<<< HEAD
 		memcpy(bp->dev->dev_addr, addr, sizeof(addr));
+=======
+		eth_hw_addr_set(bp->dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dnet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
@@ -171,6 +197,7 @@ static int dnet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dnet_mdio_reset(struct mii_bus *bus)
 {
 	return 0;
@@ -180,6 +207,12 @@ static void dnet_handle_link_change(struct net_device *dev)
 {
 	struct dnet *bp = netdev_priv(dev);
 	struct phy_device *phydev = bp->phy_dev;
+=======
+static void dnet_handle_link_change(struct net_device *dev)
+{
+	struct dnet *bp = netdev_priv(dev);
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	u32 mode_reg, ctl_reg;
 
@@ -261,6 +294,7 @@ static int dnet_mii_probe(struct net_device *dev)
 {
 	struct dnet *bp = netdev_priv(dev);
 	struct phy_device *phydev = NULL;
+<<<<<<< HEAD
 	int phy_addr;
 
 	/* find the first phy */
@@ -270,6 +304,11 @@ static int dnet_mii_probe(struct net_device *dev)
 			break;
 		}
 	}
+=======
+
+	/* find the first phy */
+	phydev = phy_find_first(bp->mii_bus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!phydev) {
 		printk(KERN_ERR "%s: no PHY found\n", dev->name);
@@ -280,12 +319,21 @@ static int dnet_mii_probe(struct net_device *dev)
 
 	/* attach the mac to the phy */
 	if (bp->capabilities & DNET_HAS_RMII) {
+<<<<<<< HEAD
 		phydev = phy_connect(dev, dev_name(&phydev->dev),
 				     &dnet_handle_link_change, 0,
 				     PHY_INTERFACE_MODE_RMII);
 	} else {
 		phydev = phy_connect(dev, dev_name(&phydev->dev),
 				     &dnet_handle_link_change, 0,
+=======
+		phydev = phy_connect(dev, phydev_name(phydev),
+				     &dnet_handle_link_change,
+				     PHY_INTERFACE_MODE_RMII);
+	} else {
+		phydev = phy_connect(dev, phydev_name(phydev),
+				     &dnet_handle_link_change,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     PHY_INTERFACE_MODE_MII);
 	}
 
@@ -296,6 +344,7 @@ static int dnet_mii_probe(struct net_device *dev)
 
 	/* mask with MAC supported features */
 	if (bp->capabilities & DNET_HAS_GIGABIT)
+<<<<<<< HEAD
 		phydev->supported &= PHY_GBIT_FEATURES;
 	else
 		phydev->supported &= PHY_BASIC_FEATURES;
@@ -303,18 +352,32 @@ static int dnet_mii_probe(struct net_device *dev)
 	phydev->supported |= SUPPORTED_Asym_Pause | SUPPORTED_Pause;
 
 	phydev->advertising = phydev->supported;
+=======
+		phy_set_max_speed(phydev, SPEED_1000);
+	else
+		phy_set_max_speed(phydev, SPEED_100);
+
+	phy_support_asym_pause(phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bp->link = 0;
 	bp->speed = 0;
 	bp->duplex = -1;
+<<<<<<< HEAD
 	bp->phy_dev = phydev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int dnet_mii_init(struct dnet *bp)
 {
+<<<<<<< HEAD
 	int err, i;
+=======
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bp->mii_bus = mdiobus_alloc();
 	if (bp->mii_bus == NULL)
@@ -323,13 +386,17 @@ static int dnet_mii_init(struct dnet *bp)
 	bp->mii_bus->name = "dnet_mii_bus";
 	bp->mii_bus->read = &dnet_mdio_read;
 	bp->mii_bus->write = &dnet_mdio_write;
+<<<<<<< HEAD
 	bp->mii_bus->reset = &dnet_mdio_reset;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snprintf(bp->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
 		bp->pdev->name, bp->pdev->id);
 
 	bp->mii_bus->priv = bp;
 
+<<<<<<< HEAD
 	bp->mii_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
 	if (!bp->mii_bus->irq) {
 		err = -ENOMEM;
@@ -342,6 +409,11 @@ static int dnet_mii_init(struct dnet *bp)
 	if (mdiobus_register(bp->mii_bus)) {
 		err = -ENXIO;
 		goto err_out_free_mdio_irq;
+=======
+	if (mdiobus_register(bp->mii_bus)) {
+		err = -ENXIO;
+		goto err_out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (dnet_mii_probe(bp->dev) != 0) {
@@ -353,8 +425,11 @@ static int dnet_mii_init(struct dnet *bp)
 
 err_out_unregister_bus:
 	mdiobus_unregister(bp->mii_bus);
+<<<<<<< HEAD
 err_out_free_mdio_irq:
 	kfree(bp->mii_bus->irq);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out:
 	mdiobus_free(bp->mii_bus);
 	return err;
@@ -406,6 +481,7 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 		 * break out of while loop if there are no more
 		 * packets waiting
 		 */
+<<<<<<< HEAD
 		if (!(dnet_readl(bp, RX_FIFO_WCNT) >> 16)) {
 			napi_complete(napi);
 			int_enable = dnet_readl(bp, INTR_ENB);
@@ -413,6 +489,10 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 			dnet_writel(bp, int_enable, INTR_ENB);
 			return 0;
 		}
+=======
+		if (!(dnet_readl(bp, RX_FIFO_WCNT) >> 16))
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cmd_word = dnet_readl(bp, RX_LEN_FIFO);
 		pkt_len = cmd_word & 0xFFFF;
@@ -429,7 +509,11 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 			 * 'skb_put()' points to the start of sk_buff
 			 * data area.
 			 */
+<<<<<<< HEAD
 			data_ptr = (unsigned int *)skb_put(skb, pkt_len);
+=======
+			data_ptr = skb_put(skb, pkt_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (i = 0; i < (pkt_len + 3) >> 2; i++)
 				*data_ptr++ = dnet_readl(bp, RX_DATA_FIFO);
 			skb->protocol = eth_type_trans(skb, dev);
@@ -441,6 +525,7 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 			       "size %u.\n", dev->name, pkt_len);
 	}
 
+<<<<<<< HEAD
 	budget -= npackets;
 
 	if (npackets < budget) {
@@ -455,6 +540,19 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 
 	/* There are still packets waiting */
 	return 1;
+=======
+	if (npackets < budget) {
+		/* We processed all packets available.  Tell NAPI it can
+		 * stop polling then re-enable rx interrupts.
+		 */
+		napi_complete_done(napi, npackets);
+		int_enable = dnet_readl(bp, INTR_ENB);
+		int_enable |= DNET_INTR_SRC_RX_CMDFIFOAF;
+		dnet_writel(bp, int_enable, INTR_ENB);
+	}
+
+	return npackets;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t dnet_interrupt(int irq, void *dev_id)
@@ -545,23 +643,38 @@ static netdev_tx_t dnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 
 	struct dnet *bp = netdev_priv(dev);
+<<<<<<< HEAD
 	u32 tx_status, irq_enable;
 	unsigned int len, i, tx_cmd, wrsz;
 	unsigned long flags;
 	unsigned int *bufp;
 
 	tx_status = dnet_readl(bp, TX_STATUS);
+=======
+	unsigned int i, tx_cmd, wrsz;
+	unsigned long flags;
+	unsigned int *bufp;
+	u32 irq_enable;
+
+	dnet_readl(bp, TX_STATUS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("start_xmit: len %u head %p data %p\n",
 	       skb->len, skb->head, skb->data);
 	dnet_print_skb(skb);
 
+<<<<<<< HEAD
 	/* frame size (words) */
 	len = (skb->len + 3) >> 2;
 
 	spin_lock_irqsave(&bp->lock, flags);
 
 	tx_status = dnet_readl(bp, TX_STATUS);
+=======
+	spin_lock_irqsave(&bp->lock, flags);
+
+	dnet_readl(bp, TX_STATUS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bufp = (unsigned int *)(((unsigned long) skb->data) & ~0x3UL);
 	wrsz = (u32) skb->len + 3;
@@ -583,7 +696,11 @@ static netdev_tx_t dnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	if (dnet_readl(bp, TX_FIFO_WCNT) > DNET_FIFO_TX_DATA_AF_TH) {
 		netif_stop_queue(dev);
+<<<<<<< HEAD
 		tx_status = dnet_readl(bp, INTR_SRC);
+=======
+		dnet_readl(bp, INTR_SRC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		irq_enable = dnet_readl(bp, INTR_ENB);
 		irq_enable |= DNET_INTR_ENB_TX_FIFOAE;
 		dnet_writel(bp, irq_enable, INTR_ENB);
@@ -591,11 +708,19 @@ static netdev_tx_t dnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	skb_tx_timestamp(skb);
 
+<<<<<<< HEAD
 	/* free the buffer */
 	dev_kfree_skb(skb);
 
 	spin_unlock_irqrestore(&bp->lock, flags);
 
+=======
+	spin_unlock_irqrestore(&bp->lock, flags);
+
+	/* free the buffer */
+	dev_kfree_skb(skb);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NETDEV_TX_OK;
 }
 
@@ -661,6 +786,7 @@ static int dnet_open(struct net_device *dev)
 	struct dnet *bp = netdev_priv(dev);
 
 	/* if the phy is not yet register, retry later */
+<<<<<<< HEAD
 	if (!bp->phy_dev)
 		return -EAGAIN;
 
@@ -674,6 +800,18 @@ static int dnet_open(struct net_device *dev)
 
 	/* schedule a link state check */
 	phy_start(bp->phy_dev);
+=======
+	if (!dev->phydev)
+		return -EAGAIN;
+
+	napi_enable(&bp->napi);
+	dnet_init_hw(bp);
+
+	phy_start_aneg(dev->phydev);
+
+	/* schedule a link state check */
+	phy_start(dev->phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_start_queue(dev);
 
@@ -687,8 +825,13 @@ static int dnet_close(struct net_device *dev)
 	netif_stop_queue(dev);
 	napi_disable(&bp->napi);
 
+<<<<<<< HEAD
 	if (bp->phy_dev)
 		phy_stop(bp->phy_dev);
+=======
+	if (dev->phydev)
+		phy_stop(dev->phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dnet_reset_hw(bp);
 	netif_carrier_off(dev);
@@ -766,6 +909,7 @@ static struct net_device_stats *dnet_get_stats(struct net_device *dev)
 	return nstat;
 }
 
+<<<<<<< HEAD
 static int dnet_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct dnet *bp = netdev_priv(dev);
@@ -815,6 +959,21 @@ static const struct ethtool_ops dnet_ethtool_ops = {
 	.set_settings		= dnet_set_settings,
 	.get_drvinfo		= dnet_get_drvinfo,
 	.get_link		= ethtool_op_get_link,
+=======
+static void dnet_get_drvinfo(struct net_device *dev,
+			     struct ethtool_drvinfo *info)
+{
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	strscpy(info->bus_info, "0", sizeof(info->bus_info));
+}
+
+static const struct ethtool_ops dnet_ethtool_ops = {
+	.get_drvinfo		= dnet_get_drvinfo,
+	.get_link		= ethtool_op_get_link,
+	.get_ts_info		= ethtool_op_get_ts_info,
+	.get_link_ksettings     = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings     = phy_ethtool_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct net_device_ops dnet_netdev_ops = {
@@ -822,6 +981,7 @@ static const struct net_device_ops dnet_netdev_ops = {
 	.ndo_stop		= dnet_close,
 	.ndo_get_stats		= dnet_get_stats,
 	.ndo_start_xmit		= dnet_start_xmit,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= dnet_ioctl,
 	.ndo_set_mac_address	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
@@ -829,11 +989,20 @@ static const struct net_device_ops dnet_netdev_ops = {
 };
 
 static int __devinit dnet_probe(struct platform_device *pdev)
+=======
+	.ndo_eth_ioctl		= phy_do_ioctl_running,
+	.ndo_set_mac_address	= eth_mac_addr,
+	.ndo_validate_addr	= eth_validate_addr,
+};
+
+static int dnet_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *res;
 	struct net_device *dev;
 	struct dnet *bp;
 	struct phy_device *phydev;
+<<<<<<< HEAD
 	int err = -ENXIO;
 	unsigned int mem_base, mem_size, irq;
 
@@ -856,6 +1025,16 @@ static int __devinit dnet_probe(struct platform_device *pdev)
 	dev = alloc_etherdev(sizeof(*bp));
 	if (!dev)
 		goto err_out_release_mem;
+=======
+	int err;
+	unsigned int irq;
+
+	irq = platform_get_irq(pdev, 0);
+
+	dev = alloc_etherdev(sizeof(*bp));
+	if (!dev)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* TODO: Actually, we have some interesting features... */
 	dev->features |= 0;
@@ -868,10 +1047,16 @@ static int __devinit dnet_probe(struct platform_device *pdev)
 
 	spin_lock_init(&bp->lock);
 
+<<<<<<< HEAD
 	bp->regs = ioremap(mem_base, mem_size);
 	if (!bp->regs) {
 		dev_err(&pdev->dev, "failed to map registers, aborting.\n");
 		err = -ENOMEM;
+=======
+	bp->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+	if (IS_ERR(bp->regs)) {
+		err = PTR_ERR(bp->regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_free_dev;
 	}
 
@@ -880,11 +1065,19 @@ static int __devinit dnet_probe(struct platform_device *pdev)
 	if (err) {
 		dev_err(&pdev->dev, "Unable to request IRQ %d (error %d)\n",
 		       irq, err);
+<<<<<<< HEAD
 		goto err_out_iounmap;
 	}
 
 	dev->netdev_ops = &dnet_netdev_ops;
 	netif_napi_add(dev, &bp->napi, dnet_poll, 64);
+=======
+		goto err_out_free_dev;
+	}
+
+	dev->netdev_ops = &dnet_netdev_ops;
+	netif_napi_add(dev, &bp->napi, dnet_poll);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->ethtool_ops = &dnet_ethtool_ops;
 
 	dev->base_addr = (unsigned long)bp->regs;
@@ -917,16 +1110,25 @@ static int __devinit dnet_probe(struct platform_device *pdev)
 		goto err_out_unregister_netdev;
 
 	dev_info(&pdev->dev, "Dave DNET at 0x%p (0x%08x) irq %d %pM\n",
+<<<<<<< HEAD
 	       bp->regs, mem_base, dev->irq, dev->dev_addr);
+=======
+	       bp->regs, (unsigned int)res->start, dev->irq, dev->dev_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(&pdev->dev, "has %smdio, %sirq, %sgigabit, %sdma\n",
 	       (bp->capabilities & DNET_HAS_MDIO) ? "" : "no ",
 	       (bp->capabilities & DNET_HAS_IRQ) ? "" : "no ",
 	       (bp->capabilities & DNET_HAS_GIGABIT) ? "" : "no ",
 	       (bp->capabilities & DNET_HAS_DMA) ? "" : "no ");
+<<<<<<< HEAD
 	phydev = bp->phy_dev;
 	dev_info(&pdev->dev, "attached PHY driver [%s] "
 	       "(mii_bus:phy_addr=%s, irq=%d)\n",
 	       phydev->drv->name, dev_name(&phydev->dev), phydev->irq);
+=======
+	phydev = dev->phydev;
+	phy_attached_info(phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -934,6 +1136,7 @@ err_out_unregister_netdev:
 	unregister_netdev(dev);
 err_out_free_irq:
 	free_irq(dev->irq, dev);
+<<<<<<< HEAD
 err_out_iounmap:
 	iounmap(bp->regs);
 err_out_free_dev:
@@ -945,6 +1148,14 @@ err_out:
 }
 
 static int __devexit dnet_remove(struct platform_device *pdev)
+=======
+err_out_free_dev:
+	free_netdev(dev);
+	return err;
+}
+
+static void dnet_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	struct net_device *dev;
@@ -954,6 +1165,7 @@ static int __devexit dnet_remove(struct platform_device *pdev)
 
 	if (dev) {
 		bp = netdev_priv(dev);
+<<<<<<< HEAD
 		if (bp->phy_dev)
 			phy_disconnect(bp->phy_dev);
 		mdiobus_unregister(bp->mii_bus);
@@ -966,11 +1178,25 @@ static int __devexit dnet_remove(struct platform_device *pdev)
 	}
 
 	return 0;
+=======
+		if (dev->phydev)
+			phy_disconnect(dev->phydev);
+		mdiobus_unregister(bp->mii_bus);
+		mdiobus_free(bp->mii_bus);
+		unregister_netdev(dev);
+		free_irq(dev->irq, dev);
+		free_netdev(dev);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver dnet_driver = {
 	.probe		= dnet_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(dnet_remove),
+=======
+	.remove_new	= dnet_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver		= {
 		.name		= "dnet",
 	},

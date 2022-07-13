@@ -27,6 +27,7 @@
 
 /*  Special registers.  */
 
+<<<<<<< HEAD
 #define LBEG		0
 #define LEND		1
 #define LCOUNT		2
@@ -73,6 +74,18 @@
 #define INTREAD		226
 #define INTSET		226
 #define INTCLEAR	227
+=======
+#define SREG_MR			32
+#define SREG_IBREAKENABLE	96
+#define SREG_IBREAKA		128
+#define SREG_DBREAKA		144
+#define SREG_DBREAKC		160
+#define SREG_EPC		176
+#define SREG_EPS		192
+#define SREG_EXCSAVE		208
+#define SREG_CCOMPARE		240
+#define SREG_MISC		244
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*  EXCCAUSE register fields  */
 
@@ -89,6 +102,13 @@
 #define EXCCAUSE_SPECULATION			7
 #define EXCCAUSE_PRIVILEGED			8
 #define EXCCAUSE_UNALIGNED			9
+<<<<<<< HEAD
+=======
+#define EXCCAUSE_INSTR_DATA_ERROR		12
+#define EXCCAUSE_LOAD_STORE_DATA_ERROR		13
+#define EXCCAUSE_INSTR_ADDR_ERROR		14
+#define EXCCAUSE_LOAD_STORE_ADDR_ERROR		15
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXCCAUSE_ITLB_MISS			16
 #define EXCCAUSE_ITLB_MULTIHIT			17
 #define EXCCAUSE_ITLB_PRIVILEGE			18
@@ -108,19 +128,35 @@
 #define EXCCAUSE_COPROCESSOR5_DISABLED		37
 #define EXCCAUSE_COPROCESSOR6_DISABLED		38
 #define EXCCAUSE_COPROCESSOR7_DISABLED		39
+<<<<<<< HEAD
+=======
+#define EXCCAUSE_N				64
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*  PS register fields.  */
 
 #define PS_WOE_BIT		18
+<<<<<<< HEAD
 #define PS_CALLINC_SHIFT	16
 #define PS_CALLINC_MASK		0x00030000
 #define PS_OWB_SHIFT		8
+=======
+#define PS_WOE_MASK		0x00040000
+#define PS_CALLINC_SHIFT	16
+#define PS_CALLINC_MASK		0x00030000
+#define PS_OWB_SHIFT		8
+#define PS_OWB_WIDTH		4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PS_OWB_MASK		0x00000F00
 #define PS_RING_SHIFT		6
 #define PS_RING_MASK		0x000000C0
 #define PS_UM_BIT		5
 #define PS_EXCM_BIT		4
 #define PS_INTLEVEL_SHIFT	0
+<<<<<<< HEAD
+=======
+#define PS_INTLEVEL_WIDTH	4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PS_INTLEVEL_MASK	0x0000000F
 
 /*  DBREAKCn register fields.  */
@@ -134,6 +170,11 @@
 
 /*  DEBUGCAUSE register fields.  */
 
+<<<<<<< HEAD
+=======
+#define DEBUGCAUSE_DBNUM_MASK		0xf00
+#define DEBUGCAUSE_DBNUM_SHIFT		8	/* First bit of DBNUM field */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEBUGCAUSE_DEBUGINT_BIT		5	/* External debug interrupt */
 #define DEBUGCAUSE_BREAKN_BIT		4	/* BREAK.N instruction */
 #define DEBUGCAUSE_BREAK_BIT		3	/* BREAK instruction */
@@ -142,4 +183,7 @@
 #define DEBUGCAUSE_ICOUNT_BIT		0	/* ICOUNT would incr. to zero */
 
 #endif /* _XTENSA_SPECREG_H */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

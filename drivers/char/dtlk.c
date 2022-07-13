@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*                                              -*- linux-c -*-
  * dtlk.c - DoubleTalk PC driver for Linux
  *
@@ -59,10 +63,17 @@
 #include <linux/sched.h>
 #include <linux/mutex.h>
 #include <asm/io.h>		/* for inb_p, outb_p, inb, outb, etc. */
+<<<<<<< HEAD
 #include <asm/uaccess.h>	/* for get_user, etc. */
 #include <linux/wait.h>		/* for wait_queue */
 #include <linux/init.h>		/* for __init, module_{init,exit} */
 #include <linux/poll.h>		/* for POLLIN, etc. */
+=======
+#include <linux/uaccess.h>	/* for get_user, etc. */
+#include <linux/wait.h>		/* for wait_queue */
+#include <linux/init.h>		/* for __init, module_{init,exit} */
+#include <linux/poll.h>		/* for EPOLLIN, etc. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dtlk.h>		/* local header file for DoubleTalk values */
 
 #ifdef TRACING
@@ -74,7 +85,11 @@
 #endif				/* TRACING */
 
 static DEFINE_MUTEX(dtlk_mutex);
+<<<<<<< HEAD
 static void dtlk_timer_tick(unsigned long data);
+=======
+static void dtlk_timer_tick(struct timer_list *unused);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int dtlk_major;
 static int dtlk_port_lpc;
@@ -84,14 +99,22 @@ static int dtlk_has_indexing;
 static unsigned int dtlk_portlist[] =
 {0x25e, 0x29e, 0x2de, 0x31e, 0x35e, 0x39e, 0};
 static wait_queue_head_t dtlk_process_list;
+<<<<<<< HEAD
 static DEFINE_TIMER(dtlk_timer, dtlk_timer_tick, 0, 0);
+=======
+static DEFINE_TIMER(dtlk_timer, dtlk_timer_tick);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* prototypes for file_operations struct */
 static ssize_t dtlk_read(struct file *, char __user *,
 			 size_t nbytes, loff_t * ppos);
 static ssize_t dtlk_write(struct file *, const char __user *,
 			  size_t nbytes, loff_t * ppos);
+<<<<<<< HEAD
 static unsigned int dtlk_poll(struct file *, poll_table *);
+=======
+static __poll_t dtlk_poll(struct file *, poll_table *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int dtlk_open(struct inode *, struct file *);
 static int dtlk_release(struct inode *, struct file *);
 static long dtlk_ioctl(struct file *file,
@@ -125,7 +148,11 @@ static char dtlk_write_tts(char);
 static ssize_t dtlk_read(struct file *file, char __user *buf,
 			 size_t count, loff_t * ppos)
 {
+<<<<<<< HEAD
 	unsigned int minor = iminor(file->f_path.dentry->d_inode);
+=======
+	unsigned int minor = iminor(file_inode(file));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char ch;
 	int i = 0, retries;
 
@@ -177,7 +204,11 @@ static ssize_t dtlk_write(struct file *file, const char __user *buf,
 	}
 #endif
 
+<<<<<<< HEAD
 	if (iminor(file->f_path.dentry->d_inode) != DTLK_MINOR)
+=======
+	if (iminor(file_inode(file)) != DTLK_MINOR)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	while (1) {
@@ -228,9 +259,15 @@ static ssize_t dtlk_write(struct file *file, const char __user *buf,
 	return -EAGAIN;
 }
 
+<<<<<<< HEAD
 static unsigned int dtlk_poll(struct file *file, poll_table * wait)
 {
 	int mask = 0;
+=======
+static __poll_t dtlk_poll(struct file *file, poll_table * wait)
+{
+	__poll_t mask = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long expires;
 
 	TRACE_TEXT(" dtlk_poll");
@@ -244,11 +281,19 @@ static unsigned int dtlk_poll(struct file *file, poll_table * wait)
 
 	if (dtlk_has_indexing && dtlk_readable()) {
 	        del_timer(&dtlk_timer);
+<<<<<<< HEAD
 		mask = POLLIN | POLLRDNORM;
 	}
 	if (dtlk_writeable()) {
 	        del_timer(&dtlk_timer);
 		mask |= POLLOUT | POLLWRNORM;
+=======
+		mask = EPOLLIN | EPOLLRDNORM;
+	}
+	if (dtlk_writeable()) {
+	        del_timer(&dtlk_timer);
+		mask |= EPOLLOUT | EPOLLWRNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* there are no exception conditions */
 
@@ -259,7 +304,11 @@ static unsigned int dtlk_poll(struct file *file, poll_table * wait)
 	return mask;
 }
 
+<<<<<<< HEAD
 static void dtlk_timer_tick(unsigned long data)
+=======
+static void dtlk_timer_tick(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	TRACE_TEXT(" dtlk_timer_tick");
 	wake_up_interruptible(&dtlk_process_list);
@@ -298,12 +347,19 @@ static int dtlk_open(struct inode *inode, struct file *file)
 {
 	TRACE_TEXT("(dtlk_open");
 
+<<<<<<< HEAD
 	nonseekable_open(inode, file);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (iminor(inode)) {
 	case DTLK_MINOR:
 		if (dtlk_busy)
 			return -EBUSY;
+<<<<<<< HEAD
 		return nonseekable_open(inode, file);
+=======
+		return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		return -ENXIO;

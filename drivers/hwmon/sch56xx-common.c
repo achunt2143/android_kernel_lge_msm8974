@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /***************************************************************************
  *   Copyright (C) 2010-2012 Hans de Goede <hdegoede@redhat.com>           *
  *                                                                         *
@@ -15,6 +16,12 @@
  *   along with this program; if not, write to the                         *
  *   Free Software Foundation, Inc.,                                       *
  *   59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.             *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/***************************************************************************
+ *   Copyright (C) 2010-2012 Hans de Goede <hdegoede@redhat.com>           *
+ *                                                                         *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ***************************************************************************/
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -22,21 +29,34 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
+=======
+#include <linux/regmap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/acpi.h>
 #include <linux/delay.h>
 #include <linux/fs.h>
 #include <linux/watchdog.h>
+<<<<<<< HEAD
 #include <linux/miscdevice.h>
 #include <linux/uaccess.h>
 #include <linux/kref.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include "sch56xx-common.h"
 
 /* Insmod parameters */
+<<<<<<< HEAD
 static int nowayout = WATCHDOG_NOWAYOUT;
 module_param(nowayout, int, 0);
+=======
+static bool nowayout = WATCHDOG_NOWAYOUT;
+module_param(nowayout, bool, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
 	__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 
@@ -66,6 +86,7 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
 
 struct sch56xx_watchdog_data {
 	u16 addr;
+<<<<<<< HEAD
 	u32 revision;
 	struct mutex *io_lock;
 	struct mutex watchdog_lock;
@@ -75,11 +96,17 @@ struct sch56xx_watchdog_data {
 	unsigned long watchdog_is_open;
 	char watchdog_name[10]; /* must be unique to avoid sysfs conflict */
 	char watchdog_expect_close;
+=======
+	struct mutex *io_lock;
+	struct watchdog_info wdinfo;
+	struct watchdog_device wddev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 watchdog_preset;
 	u8 watchdog_control;
 	u8 watchdog_output_enable;
 };
 
+<<<<<<< HEAD
 static struct platform_device *sch56xx_pdev;
 
 /*
@@ -90,6 +117,14 @@ static struct platform_device *sch56xx_pdev;
 static LIST_HEAD(watchdog_data_list);
 /* Note this lock not only protect list access, but also data.kref access */
 static DEFINE_MUTEX(watchdog_data_mutex);
+=======
+struct sch56xx_bus_context {
+	struct mutex *lock;	/* Used to serialize access to the mailbox registers */
+	u16 addr;
+};
+
+static struct platform_device *sch56xx_pdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Super I/O functions */
 static inline int superio_inb(int base, int reg)
@@ -164,7 +199,11 @@ static int sch56xx_send_cmd(u16 addr, u8 cmd, u16 reg, u8 v)
 	/* EM Interface Polling "Algorithm" */
 	for (i = 0; i < max_busy_polls + max_lazy_polls; i++) {
 		if (i >= max_busy_polls)
+<<<<<<< HEAD
 			msleep(1);
+=======
+			usleep_range(1000, 2000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Read Interrupt source Register */
 		val = inb(addr + 8);
 		/* Write Clear the interrupt source bits */
@@ -175,8 +214,13 @@ static int sch56xx_send_cmd(u16 addr, u8 cmd, u16 reg, u8 v)
 			break;
 	}
 	if (i == max_busy_polls + max_lazy_polls) {
+<<<<<<< HEAD
 		pr_err("Max retries exceeded reading virtual "
 		       "register 0x%04hx (%d)\n", reg, 1);
+=======
+		pr_err("Max retries exceeded reading virtual register 0x%04hx (%d)\n",
+		       reg, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -192,12 +236,21 @@ static int sch56xx_send_cmd(u16 addr, u8 cmd, u16 reg, u8 v)
 			break;
 
 		if (i == 0)
+<<<<<<< HEAD
 			pr_warn("EC reports: 0x%02x reading virtual register "
 				"0x%04hx\n", (unsigned int)val, reg);
 	}
 	if (i == max_busy_polls) {
 		pr_err("Max retries exceeded reading virtual "
 		       "register 0x%04hx (%d)\n", reg, 2);
+=======
+			pr_warn("EC reports: 0x%02x reading virtual register 0x%04hx\n",
+				(unsigned int)val, reg);
+	}
+	if (i == max_busy_polls) {
+		pr_err("Max retries exceeded reading virtual register 0x%04hx (%d)\n",
+		       reg, 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -269,6 +322,7 @@ int sch56xx_read_virtual_reg12(u16 addr, u16 msb_reg, u16 lsn_reg,
 EXPORT_SYMBOL(sch56xx_read_virtual_reg12);
 
 /*
+<<<<<<< HEAD
  * Watchdog routines
  */
 
@@ -288,6 +342,119 @@ static int watchdog_set_timeout(struct sch56xx_watchdog_data *data,
 {
 	int ret, resolution;
 	u8 control;
+=======
+ * Regmap support
+ */
+
+int sch56xx_regmap_read16(struct regmap *map, unsigned int reg, unsigned int *val)
+{
+	int lsb, msb, ret;
+
+	/* See sch56xx_read_virtual_reg16() */
+	ret = regmap_read(map, reg, &lsb);
+	if (ret < 0)
+		return ret;
+
+	ret = regmap_read(map, reg + 1, &msb);
+	if (ret < 0)
+		return ret;
+
+	*val = lsb | (msb << 8);
+
+	return 0;
+}
+EXPORT_SYMBOL(sch56xx_regmap_read16);
+
+int sch56xx_regmap_write16(struct regmap *map, unsigned int reg, unsigned int val)
+{
+	int ret;
+
+	ret = regmap_write(map, reg, val & 0xff);
+	if (ret < 0)
+		return ret;
+
+	return regmap_write(map, reg + 1, (val >> 8) & 0xff);
+}
+EXPORT_SYMBOL(sch56xx_regmap_write16);
+
+static int sch56xx_reg_write(void *context, unsigned int reg, unsigned int val)
+{
+	struct sch56xx_bus_context *bus = context;
+	int ret;
+
+	mutex_lock(bus->lock);
+	ret = sch56xx_write_virtual_reg(bus->addr, (u16)reg, (u8)val);
+	mutex_unlock(bus->lock);
+
+	return ret;
+}
+
+static int sch56xx_reg_read(void *context, unsigned int reg, unsigned int *val)
+{
+	struct sch56xx_bus_context *bus = context;
+	int ret;
+
+	mutex_lock(bus->lock);
+	ret = sch56xx_read_virtual_reg(bus->addr, (u16)reg);
+	mutex_unlock(bus->lock);
+
+	if (ret < 0)
+		return ret;
+
+	*val = ret;
+
+	return 0;
+}
+
+static void sch56xx_free_context(void *context)
+{
+	kfree(context);
+}
+
+static const struct regmap_bus sch56xx_bus = {
+	.reg_write = sch56xx_reg_write,
+	.reg_read = sch56xx_reg_read,
+	.free_context = sch56xx_free_context,
+	.reg_format_endian_default = REGMAP_ENDIAN_LITTLE,
+	.val_format_endian_default = REGMAP_ENDIAN_LITTLE,
+};
+
+struct regmap *devm_regmap_init_sch56xx(struct device *dev, struct mutex *lock, u16 addr,
+					const struct regmap_config *config)
+{
+	struct sch56xx_bus_context *context;
+	struct regmap *map;
+
+	if (config->reg_bits != 16 && config->val_bits != 8)
+		return ERR_PTR(-EOPNOTSUPP);
+
+	context = kzalloc(sizeof(*context), GFP_KERNEL);
+	if (!context)
+		return ERR_PTR(-ENOMEM);
+
+	context->lock = lock;
+	context->addr = addr;
+
+	map = devm_regmap_init(dev, &sch56xx_bus, context, config);
+	if (IS_ERR(map))
+		kfree(context);
+
+	return map;
+}
+EXPORT_SYMBOL(devm_regmap_init_sch56xx);
+
+/*
+ * Watchdog routines
+ */
+
+static int watchdog_set_timeout(struct watchdog_device *wddev,
+				unsigned int timeout)
+{
+	struct sch56xx_watchdog_data *data = watchdog_get_drvdata(wddev);
+	unsigned int resolution;
+	u8 control;
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 1 second or 60 second resolution? */
 	if (timeout <= 255)
@@ -298,12 +465,15 @@ static int watchdog_set_timeout(struct sch56xx_watchdog_data *data,
 	if (timeout < resolution || timeout > (resolution * 255))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	mutex_lock(&data->watchdog_lock);
 	if (!data->addr) {
 		ret = -ENODEV;
 		goto leave;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (resolution == 1)
 		control = data->watchdog_control | SCH56XX_WDOG_TIME_BASE_SEC;
 	else
@@ -316,7 +486,11 @@ static int watchdog_set_timeout(struct sch56xx_watchdog_data *data,
 						control);
 		mutex_unlock(data->io_lock);
 		if (ret)
+<<<<<<< HEAD
 			goto leave;
+=======
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		data->watchdog_control = control;
 	}
@@ -326,6 +500,7 @@ static int watchdog_set_timeout(struct sch56xx_watchdog_data *data,
 	 * the watchdog countdown.
 	 */
 	data->watchdog_preset = DIV_ROUND_UP(timeout, resolution);
+<<<<<<< HEAD
 
 	ret = data->watchdog_preset * resolution;
 leave:
@@ -358,6 +533,19 @@ static int watchdog_start(struct sch56xx_watchdog_data *data)
 		goto leave_unlock_watchdog;
 	}
 
+=======
+	wddev->timeout = data->watchdog_preset * resolution;
+
+	return 0;
+}
+
+static int watchdog_start(struct watchdog_device *wddev)
+{
+	struct sch56xx_watchdog_data *data = watchdog_get_drvdata(wddev);
+	int ret;
+	u8 val;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The sch56xx's watchdog cannot really be started / stopped
 	 * it is always running, but we can avoid the timer expiring
@@ -385,6 +573,7 @@ static int watchdog_start(struct sch56xx_watchdog_data *data)
 	if (ret)
 		goto leave;
 
+<<<<<<< HEAD
 	/* 2. Enable output (if not already enabled) */
 	if (!(data->watchdog_output_enable & SCH56XX_WDOG_OUTPUT_ENABLE)) {
 		val = data->watchdog_output_enable |
@@ -397,6 +586,16 @@ static int watchdog_start(struct sch56xx_watchdog_data *data)
 
 		data->watchdog_output_enable = val;
 	}
+=======
+	/* 2. Enable output */
+	val = data->watchdog_output_enable | SCH56XX_WDOG_OUTPUT_ENABLE;
+	ret = sch56xx_write_virtual_reg(data->addr,
+					SCH56XX_REG_WDOG_OUTPUT_ENABLE, val);
+	if (ret)
+		goto leave;
+
+	data->watchdog_output_enable = val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 3. Clear the watchdog event bit if set */
 	val = inb(data->addr + 9);
@@ -405,6 +604,7 @@ static int watchdog_start(struct sch56xx_watchdog_data *data)
 
 leave:
 	mutex_unlock(data->io_lock);
+<<<<<<< HEAD
 leave_unlock_watchdog:
 	mutex_unlock(&data->watchdog_lock);
 	return ret;
@@ -420,11 +620,22 @@ static int watchdog_trigger(struct sch56xx_watchdog_data *data)
 		goto leave;
 	}
 
+=======
+	return ret;
+}
+
+static int watchdog_trigger(struct watchdog_device *wddev)
+{
+	struct sch56xx_watchdog_data *data = watchdog_get_drvdata(wddev);
+	int ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Reset the watchdog countdown counter */
 	mutex_lock(data->io_lock);
 	ret = sch56xx_write_virtual_reg(data->addr, SCH56XX_REG_WDOG_PRESET,
 					data->watchdog_preset);
 	mutex_unlock(data->io_lock);
+<<<<<<< HEAD
 leave:
 	mutex_unlock(&data->watchdog_lock);
 	return ret;
@@ -633,6 +844,43 @@ struct sch56xx_watchdog_data *sch56xx_watchdog_register(
 	struct sch56xx_watchdog_data *data;
 	int i, err, control, output_enable;
 	const int watchdog_minors[] = { WATCHDOG_MINOR, 212, 213, 214, 215 };
+=======
+
+	return ret;
+}
+
+static int watchdog_stop(struct watchdog_device *wddev)
+{
+	struct sch56xx_watchdog_data *data = watchdog_get_drvdata(wddev);
+	int ret = 0;
+	u8 val;
+
+	val = data->watchdog_output_enable & ~SCH56XX_WDOG_OUTPUT_ENABLE;
+	mutex_lock(data->io_lock);
+	ret = sch56xx_write_virtual_reg(data->addr,
+					SCH56XX_REG_WDOG_OUTPUT_ENABLE, val);
+	mutex_unlock(data->io_lock);
+	if (ret)
+		return ret;
+
+	data->watchdog_output_enable = val;
+	return 0;
+}
+
+static const struct watchdog_ops watchdog_ops = {
+	.owner		= THIS_MODULE,
+	.start		= watchdog_start,
+	.stop		= watchdog_stop,
+	.ping		= watchdog_trigger,
+	.set_timeout	= watchdog_set_timeout,
+};
+
+void sch56xx_watchdog_register(struct device *parent, u16 addr, u32 revision,
+			       struct mutex *io_lock, int check_enabled)
+{
+	struct sch56xx_watchdog_data *data;
+	int err, control, output_enable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Cache the watchdog registers */
 	mutex_lock(io_lock);
@@ -643,6 +891,7 @@ struct sch56xx_watchdog_data *sch56xx_watchdog_register(
 	mutex_unlock(io_lock);
 
 	if (control < 0)
+<<<<<<< HEAD
 		return NULL;
 	if (output_enable < 0)
 		return NULL;
@@ -735,14 +984,74 @@ void sch56xx_watchdog_unregister(struct sch56xx_watchdog_data *data)
 }
 EXPORT_SYMBOL(sch56xx_watchdog_unregister);
 
+=======
+		return;
+	if (output_enable < 0)
+		return;
+	if (check_enabled && !(output_enable & SCH56XX_WDOG_OUTPUT_ENABLE)) {
+		pr_warn("Watchdog not enabled by BIOS, not registering\n");
+		return;
+	}
+
+	data = devm_kzalloc(parent, sizeof(struct sch56xx_watchdog_data), GFP_KERNEL);
+	if (!data)
+		return;
+
+	data->addr = addr;
+	data->io_lock = io_lock;
+
+	strscpy(data->wdinfo.identity, "sch56xx watchdog", sizeof(data->wdinfo.identity));
+	data->wdinfo.firmware_version = revision;
+	data->wdinfo.options = WDIOF_KEEPALIVEPING | WDIOF_SETTIMEOUT;
+	if (!nowayout)
+		data->wdinfo.options |= WDIOF_MAGICCLOSE;
+
+	data->wddev.info = &data->wdinfo;
+	data->wddev.ops = &watchdog_ops;
+	data->wddev.parent = parent;
+	data->wddev.timeout = 60;
+	data->wddev.min_timeout = 1;
+	data->wddev.max_timeout = 255 * 60;
+	watchdog_set_nowayout(&data->wddev, nowayout);
+	if (output_enable & SCH56XX_WDOG_OUTPUT_ENABLE)
+		set_bit(WDOG_HW_RUNNING, &data->wddev.status);
+
+	/* Since the watchdog uses a downcounter there is no register to read
+	   the BIOS set timeout from (if any was set at all) ->
+	   Choose a preset which will give us a 1 minute timeout */
+	if (control & SCH56XX_WDOG_TIME_BASE_SEC)
+		data->watchdog_preset = 60; /* seconds */
+	else
+		data->watchdog_preset = 1; /* minute */
+
+	data->watchdog_control = control;
+	data->watchdog_output_enable = output_enable;
+
+	watchdog_set_drvdata(&data->wddev, data);
+	err = devm_watchdog_register_device(parent, &data->wddev);
+	if (err) {
+		pr_err("Registering watchdog chardev: %d\n", err);
+		devm_kfree(parent, data);
+	}
+}
+EXPORT_SYMBOL(sch56xx_watchdog_register);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * platform dev find, add and remove functions
  */
 
+<<<<<<< HEAD
 static int __init sch56xx_find(int sioaddr, unsigned short *address,
 			       const char **name)
 {
 	u8 devid;
+=======
+static int __init sch56xx_find(int sioaddr, const char **name)
+{
+	u8 devid;
+	unsigned short address;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = superio_enter(sioaddr);
@@ -776,28 +1085,47 @@ static int __init sch56xx_find(int sioaddr, unsigned short *address,
 	 * Warning the order of the low / high byte is the other way around
 	 * as on most other superio devices!!
 	 */
+<<<<<<< HEAD
 	*address = superio_inb(sioaddr, SIO_REG_ADDR) |
 		   superio_inb(sioaddr, SIO_REG_ADDR + 1) << 8;
 	if (*address == 0) {
+=======
+	address = superio_inb(sioaddr, SIO_REG_ADDR) |
+		   superio_inb(sioaddr, SIO_REG_ADDR + 1) << 8;
+	if (address == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_warn("Base address not set\n");
 		err = -ENODEV;
 		goto exit;
 	}
+<<<<<<< HEAD
+=======
+	err = address;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 exit:
 	superio_exit(sioaddr);
 	return err;
 }
 
+<<<<<<< HEAD
 static int __init sch56xx_device_add(unsigned short address, const char *name)
+=======
+static int __init sch56xx_device_add(int address, const char *name)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource res = {
 		.start	= address,
 		.end	= address + REGION_LENGTH - 1,
+<<<<<<< HEAD
+=======
+		.name	= name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IO,
 	};
 	int err;
 
+<<<<<<< HEAD
 	sch56xx_pdev = platform_device_alloc(name, address);
 	if (!sch56xx_pdev)
 		return -ENOMEM;
@@ -825,10 +1153,20 @@ exit_device_put:
 	platform_device_put(sch56xx_pdev);
 
 	return err;
+=======
+	err = acpi_check_resource_conflict(&res);
+	if (err)
+		return err;
+
+	sch56xx_pdev = platform_device_register_simple(name, -1, &res, 1);
+
+	return PTR_ERR_OR_ZERO(sch56xx_pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init sch56xx_init(void)
 {
+<<<<<<< HEAD
 	int err;
 	unsigned short address;
 	const char *name;
@@ -838,6 +1176,16 @@ static int __init sch56xx_init(void)
 		err = sch56xx_find(0x2e, &address, &name);
 	if (err)
 		return err;
+=======
+	int address;
+	const char *name = NULL;
+
+	address = sch56xx_find(0x4e, &name);
+	if (address < 0)
+		address = sch56xx_find(0x2e, &name);
+	if (address < 0)
+		return address;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sch56xx_device_add(address, name);
 }

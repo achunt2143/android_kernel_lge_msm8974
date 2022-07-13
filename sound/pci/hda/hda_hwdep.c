@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * HWDEP Interface for HD-audio codec
  *
  * Copyright (c) 2007 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *  This driver is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,10 +21,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 #include <linux/compat.h>
 #include <linux/mutex.h>
@@ -29,16 +37,25 @@
 #include <linux/export.h>
 #include <sound/core.h>
 #include "hda_codec.h"
+=======
+#include <linux/compat.h>
+#include <linux/nospec.h>
+#include <sound/core.h>
+#include <sound/hda_codec.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "hda_local.h"
 #include <sound/hda_hwdep.h>
 #include <sound/minors.h>
 
+<<<<<<< HEAD
 /* hint string pair */
 struct hda_hint {
 	const char *key;
 	const char *val;	/* contained in the same alloc as key */
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * write/read an out-of-bound verb
  */
@@ -63,7 +80,20 @@ static int get_wcap_ioctl(struct hda_codec *codec,
 	
 	if (get_user(verb, &arg->verb))
 		return -EFAULT;
+<<<<<<< HEAD
 	res = get_wcaps(codec, verb >> 24);
+=======
+	/* open-code get_wcaps(verb>>24) with nospec */
+	verb >>= 24;
+	if (verb < codec->core.start_nid ||
+	    verb >= codec->core.start_nid + codec->core.num_nodes) {
+		res = 0;
+	} else {
+		verb -= codec->core.start_nid;
+		verb = array_index_nospec(verb, codec->core.num_nodes);
+		res = codec->wcaps[verb];
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (put_user(res, &arg->res))
 		return -EFAULT;
 	return 0;
@@ -106,6 +136,7 @@ static int hda_hwdep_open(struct snd_hwdep *hw, struct file *file)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void clear_hwdep_elements(struct hda_codec *codec)
 {
 	int i;
@@ -127,20 +158,30 @@ static void hwdep_free(struct snd_hwdep *hwdep)
 }
 
 int /*__devinit*/ snd_hda_create_hwdep(struct hda_codec *codec)
+=======
+int snd_hda_create_hwdep(struct hda_codec *codec)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char hwname[16];
 	struct snd_hwdep *hwdep;
 	int err;
 
 	sprintf(hwname, "HDA Codec %d", codec->addr);
+<<<<<<< HEAD
 	err = snd_hwdep_new(codec->bus->card, hwname, codec->addr, &hwdep);
+=======
+	err = snd_hwdep_new(codec->card, hwname, codec->addr, &hwdep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 	codec->hwdep = hwdep;
 	sprintf(hwdep->name, "HDA Codec %d", codec->addr);
 	hwdep->iface = SNDRV_HWDEP_IFACE_HDA;
 	hwdep->private_data = codec;
+<<<<<<< HEAD
 	hwdep->private_free = hwdep_free;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hwdep->exclusive = 1;
 
 	hwdep->ops.open = hda_hwdep_open;
@@ -149,6 +190,7 @@ int /*__devinit*/ snd_hda_create_hwdep(struct hda_codec *codec)
 	hwdep->ops.ioctl_compat = hda_hwdep_ioctl_compat;
 #endif
 
+<<<<<<< HEAD
 	snd_array_init(&codec->init_verbs, sizeof(struct hda_verb), 32);
 	snd_array_init(&codec->hints, sizeof(struct hda_hint), 32);
 	snd_array_init(&codec->user_pins, sizeof(struct hda_pincfg), 16);
@@ -815,3 +857,11 @@ int snd_hda_load_patch(struct hda_bus *bus, const char *patch)
 }
 EXPORT_SYMBOL_HDA(snd_hda_load_patch);
 #endif /* CONFIG_SND_HDA_PATCH_LOADER */
+=======
+	/* for sysfs */
+	hwdep->dev->groups = snd_hda_dev_attr_groups;
+	dev_set_drvdata(hwdep->dev, codec);
+
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

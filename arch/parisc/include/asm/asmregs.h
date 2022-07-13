@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 1999 Hewlett-Packard (Frank Rowand)
  *
@@ -14,6 +15,11 @@
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (C) 1999 Hewlett-Packard (Frank Rowand)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _PARISC_ASMREGS_H

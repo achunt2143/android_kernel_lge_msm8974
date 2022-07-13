@@ -156,8 +156,11 @@ int sci_oem_parameters_validate(struct sci_oem_params *oem, u8 version);
 
 struct isci_orom;
 struct isci_orom *isci_request_oprom(struct pci_dev *pdev);
+<<<<<<< HEAD
 enum sci_status isci_parse_oem_parameters(struct sci_oem_params *oem,
 					  struct isci_orom *orom, int scu_index);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct isci_orom *isci_request_firmware(struct pci_dev *pdev, const struct firmware *fw);
 struct isci_orom *isci_get_efi_var(struct pci_dev *pdev);
 

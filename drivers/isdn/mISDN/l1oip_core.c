@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 
  * l1oip.c  low level driver for tunneling layer 1 over IP
@@ -5,6 +9,7 @@
  * NOTE: It is not compatible with TDMoIP nor "ISDN over IP".
  *
  * Author	Andreas Eversberg (jolly@eversberg.eu)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* module parameters:
@@ -214,7 +221,11 @@
 
  The complete socket opening and closing is done by a thread.
  When the thread opened a socket, the hc->socket descriptor is set. Whenever a
+<<<<<<< HEAD
  packet shall be sent to the socket, the hc->socket must be checked wheter not
+=======
+ packet shall be sent to the socket, the hc->socket must be checked whether not
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  NULL. To prevent change in socket descriptor, the hc->socket_lock must be used.
  To change the socket, a recall of l1oip_socket_open() will safely kill the
  socket process and create a new one.
@@ -234,6 +245,11 @@
 #include <linux/workqueue.h>
 #include <linux/kthread.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/sock.h>
 #include "core.h"
 #include "l1oip.h"
@@ -241,8 +257,13 @@
 static const char *l1oip_revision = "2.00";
 
 static int l1oip_cnt;
+<<<<<<< HEAD
 static spinlock_t l1oip_lock;
 static struct list_head l1oip_ilist;
+=======
+static DEFINE_SPINLOCK(l1oip_lock);
+static LIST_HEAD(l1oip_ilist);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_CARDS	16
 static u_int type[MAX_CARDS];
@@ -277,8 +298,12 @@ l1oip_socket_send(struct l1oip *hc, u8 localcodec, u8 channel, u32 chanmask,
 		  u16 timebase, u8 *buf, int len)
 {
 	u8 *p;
+<<<<<<< HEAD
 	int multi = 0;
 	u8 frame[len + 32];
+=======
+	u8 frame[MAX_DFRAME_LEN_L1 + 32];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct socket *socket = NULL;
 
 	if (debug & DEBUG_L1OIP_MSG)
@@ -288,11 +313,17 @@ l1oip_socket_send(struct l1oip *hc, u8 localcodec, u8 channel, u32 chanmask,
 	p = frame;
 
 	/* restart timer */
+<<<<<<< HEAD
 	if ((int)(hc->keep_tl.expires-jiffies) < 5 * HZ) {
 		del_timer(&hc->keep_tl);
 		hc->keep_tl.expires = jiffies + L1OIP_KEEPALIVE * HZ;
 		add_timer(&hc->keep_tl);
 	} else
+=======
+	if (time_before(hc->keep_tl.expires, jiffies + 5 * HZ) && !hc->shutdown)
+		mod_timer(&hc->keep_tl, jiffies + L1OIP_KEEPALIVE * HZ);
+	else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hc->keep_tl.expires = jiffies + L1OIP_KEEPALIVE * HZ;
 
 	if (debug & DEBUG_L1OIP_MSG)
@@ -317,9 +348,13 @@ l1oip_socket_send(struct l1oip *hc, u8 localcodec, u8 channel, u32 chanmask,
 		*p++ = hc->id >> 8;
 		*p++ = hc->id;
 	}
+<<<<<<< HEAD
 	*p++ = (multi == 1) ? 0x80 : 0x00 + channel; /* m-flag, channel */
 	if (multi == 1)
 		*p++ = len; /* length */
+=======
+	*p++ =  0x00 + channel; /* m-flag, channel */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*p++ = timebase >> 8; /* time base */
 	*p++ = timebase;
 
@@ -443,6 +478,7 @@ l1oip_socket_recv(struct l1oip *hc, u8 remotecodec, u8 channel, u16 timebase,
 
 #ifdef REORDER_DEBUG
 		if (hc->chan[channel].disorder_flag) {
+<<<<<<< HEAD
 			struct sk_buff *skb;
 			int cnt;
 			skb = hc->chan[channel].disorder_skb;
@@ -451,6 +487,10 @@ l1oip_socket_recv(struct l1oip *hc, u8 remotecodec, u8 channel, u16 timebase,
 			cnt = hc->chan[channel].disorder_cnt;
 			hc->chan[channel].disorder_cnt = rx_counter;
 			rx_counter = cnt;
+=======
+			swap(hc->chan[channel].disorder_skb, nskb);
+			swap(hc->chan[channel].disorder_cnt, rx_counter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		hc->chan[channel].disorder_flag ^= 1;
 		if (nskb)
@@ -624,11 +664,19 @@ multiframe:
 		goto multiframe;
 
 	/* restart timer */
+<<<<<<< HEAD
 	if ((int)(hc->timeout_tl.expires-jiffies) < 5 * HZ || !hc->timeout_on) {
 		hc->timeout_on = 1;
 		del_timer(&hc->timeout_tl);
 		hc->timeout_tl.expires = jiffies + L1OIP_TIMEOUT * HZ;
 		add_timer(&hc->timeout_tl);
+=======
+	if ((time_before(hc->timeout_tl.expires, jiffies + 5 * HZ) ||
+	     !hc->timeout_on) &&
+	    !hc->shutdown) {
+		hc->timeout_on = 1;
+		mod_timer(&hc->timeout_tl, jiffies + L1OIP_TIMEOUT * HZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else /* only adjust timer */
 		hc->timeout_tl.expires = jiffies + L1OIP_TIMEOUT * HZ;
 
@@ -656,8 +704,15 @@ l1oip_socket_thread(void *data)
 {
 	struct l1oip *hc = (struct l1oip *)data;
 	int ret = 0;
+<<<<<<< HEAD
 	struct msghdr msg;
 	struct sockaddr_in sin_rx;
+=======
+	struct sockaddr_in sin_rx;
+	struct kvec iov;
+	struct msghdr msg = {.msg_name = &sin_rx,
+			     .msg_namelen = sizeof(sin_rx)};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *recvbuf;
 	size_t recvbuf_size = 1500;
 	int recvlen;
@@ -672,6 +727,12 @@ l1oip_socket_thread(void *data)
 		goto fail;
 	}
 
+<<<<<<< HEAD
+=======
+	iov.iov_base = recvbuf;
+	iov.iov_len = recvbuf_size;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* make daemon */
 	allow_signal(SIGTERM);
 
@@ -692,7 +753,11 @@ l1oip_socket_thread(void *data)
 	hc->sin_remote.sin_addr.s_addr = htonl(hc->remoteip);
 	hc->sin_remote.sin_port = htons((unsigned short)hc->remoteport);
 
+<<<<<<< HEAD
 	/* bind to incomming port */
+=======
+	/* bind to incoming port */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (socket->ops->bind(socket, (struct sockaddr *)&hc->sin_local,
 			      sizeof(hc->sin_local))) {
 		printk(KERN_ERR "%s: Failed to bind socket to port %d.\n",
@@ -708,12 +773,15 @@ l1oip_socket_thread(void *data)
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	/* build receive message */
 	msg.msg_name = &sin_rx;
 	msg.msg_namelen = sizeof(sin_rx);
 	msg.msg_control = NULL;
 	msg.msg_controllen = 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* build send message */
 	hc->sendmsg.msg_name = &hc->sin_remote;
 	hc->sendmsg.msg_namelen = sizeof(hc->sin_remote);
@@ -730,12 +798,17 @@ l1oip_socket_thread(void *data)
 		printk(KERN_DEBUG "%s: socket created and open\n",
 		       __func__);
 	while (!signal_pending(current)) {
+<<<<<<< HEAD
 		struct kvec iov = {
 			.iov_base = recvbuf,
 			.iov_len = recvbuf_size,
 		};
 		recvlen = kernel_recvmsg(socket, &msg, &iov, 1,
 					 recvbuf_size, 0);
+=======
+		iov_iter_kvec(&msg.msg_iter, ITER_DEST, &iov, 1, recvbuf_size);
+		recvlen = sock_recvmsg(socket, &msg, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (recvlen > 0) {
 			l1oip_socket_parse(hc, &sin_rx, recvbuf, recvlen);
 		} else {
@@ -847,17 +920,30 @@ l1oip_send_bh(struct work_struct *work)
  * timer stuff
  */
 static void
+<<<<<<< HEAD
 l1oip_keepalive(void *data)
 {
 	struct l1oip *hc = (struct l1oip *)data;
+=======
+l1oip_keepalive(struct timer_list *t)
+{
+	struct l1oip *hc = from_timer(hc, t, keep_tl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	schedule_work(&hc->workq);
 }
 
 static void
+<<<<<<< HEAD
 l1oip_timeout(void *data)
 {
 	struct l1oip			*hc = (struct l1oip *)data;
+=======
+l1oip_timeout(struct timer_list *t)
+{
+	struct l1oip			*hc = from_timer(hc, t,
+								  timeout_tl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dchannel		*dch = hc->chan[hc->d_idx].dch;
 
 	if (debug & DEBUG_L1OIP_MSG)
@@ -916,7 +1002,15 @@ handle_dmsg(struct mISDNchannel *ch, struct sk_buff *skb)
 		p = skb->data;
 		l = skb->len;
 		while (l) {
+<<<<<<< HEAD
 			ll = (l < L1OIP_MAX_PERFRAME) ? l : L1OIP_MAX_PERFRAME;
+=======
+			/*
+			 * This is technically bounded by L1OIP_MAX_PERFRAME but
+			 * MAX_DFRAME_LEN_L1 < L1OIP_MAX_PERFRAME
+			 */
+			ll = (l < MAX_DFRAME_LEN_L1) ? l : MAX_DFRAME_LEN_L1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			l1oip_socket_send(hc, 0, dch->slot, 0,
 					  hc->chan[dch->slot].tx_counter++, p, ll);
 			p += ll;
@@ -1154,7 +1248,15 @@ handle_bmsg(struct mISDNchannel *ch, struct sk_buff *skb)
 		p = skb->data;
 		l = skb->len;
 		while (l) {
+<<<<<<< HEAD
 			ll = (l < L1OIP_MAX_PERFRAME) ? l : L1OIP_MAX_PERFRAME;
+=======
+			/*
+			 * This is technically bounded by L1OIP_MAX_PERFRAME but
+			 * MAX_DFRAME_LEN_L1 < L1OIP_MAX_PERFRAME
+			 */
+			ll = (l < MAX_DFRAME_LEN_L1) ? l : MAX_DFRAME_LEN_L1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			l1oip_socket_send(hc, hc->codec, bch->slot, 0,
 					  hc->chan[bch->slot].tx_counter, p, ll);
 			hc->chan[bch->slot].tx_counter += ll;
@@ -1253,11 +1355,18 @@ release_card(struct l1oip *hc)
 {
 	int	ch;
 
+<<<<<<< HEAD
 	if (timer_pending(&hc->keep_tl))
 		del_timer(&hc->keep_tl);
 
 	if (timer_pending(&hc->timeout_tl))
 		del_timer(&hc->timeout_tl);
+=======
+	hc->shutdown = true;
+
+	timer_shutdown_sync(&hc->keep_tl);
+	timer_shutdown_sync(&hc->timeout_tl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cancel_work_sync(&hc->workq);
 
@@ -1275,8 +1384,12 @@ release_card(struct l1oip *hc)
 			mISDN_freebchannel(hc->chan[ch].bch);
 			kfree(hc->chan[ch].bch);
 #ifdef REORDER_DEBUG
+<<<<<<< HEAD
 			if (hc->chan[ch].disorder_skb)
 				dev_kfree_skb(hc->chan[ch].disorder_skb);
+=======
+			dev_kfree_skb(hc->chan[ch].disorder_skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		}
 	}
@@ -1341,7 +1454,11 @@ init_card(struct l1oip *hc, int pri, int bundle)
 	if (id[l1oip_cnt] == 0) {
 		printk(KERN_WARNING "Warning: No 'id' value given or "
 		       "0, this is highly unsecure. Please use 32 "
+<<<<<<< HEAD
 		       "bit randmom number 0x...\n");
+=======
+		       "bit random number 0x...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	hc->id = id[l1oip_cnt];
 	if (debug & DEBUG_L1OIP_INIT)
@@ -1420,7 +1537,11 @@ init_card(struct l1oip *hc, int pri, int bundle)
 		bch->nr = i + ch;
 		bch->slot = i + ch;
 		bch->debug = debug;
+<<<<<<< HEAD
 		mISDN_initbchannel(bch, MAX_DATA_MEM);
+=======
+		mISDN_initbchannel(bch, MAX_DATA_MEM, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bch->hw = hc;
 		bch->ch.send = handle_bmsg;
 		bch->ch.ctrl = l1oip_bctrl;
@@ -1442,6 +1563,7 @@ init_card(struct l1oip *hc, int pri, int bundle)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	hc->keep_tl.function = (void *)l1oip_keepalive;
 	hc->keep_tl.data = (ulong)hc;
 	init_timer(&hc->keep_tl);
@@ -1451,6 +1573,13 @@ init_card(struct l1oip *hc, int pri, int bundle)
 	hc->timeout_tl.function = (void *)l1oip_timeout;
 	hc->timeout_tl.data = (ulong)hc;
 	init_timer(&hc->timeout_tl);
+=======
+	timer_setup(&hc->keep_tl, l1oip_keepalive, 0);
+	hc->keep_tl.expires = jiffies + 2 * HZ; /* two seconds first time */
+	add_timer(&hc->keep_tl);
+
+	timer_setup(&hc->timeout_tl, l1oip_timeout, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hc->timeout_on = 0; /* state that we have timer off */
 
 	return 0;
@@ -1466,9 +1595,12 @@ l1oip_init(void)
 	printk(KERN_INFO "mISDN: Layer-1-over-IP driver Rev. %s\n",
 	       l1oip_revision);
 
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&l1oip_ilist);
 	spin_lock_init(&l1oip_lock);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (l1oip_4bit_alloc(ulaw))
 		return -ENOMEM;
 

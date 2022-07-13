@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Advanced Linux Sound Architecture - ALSA - Driver
  *  Copyright (c) 1994-2003 by Jaroslav Kysela <perex@perex.cz>,
  *                             Abramo Bagnara <abramo@alsa-project.org>
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -26,6 +31,12 @@
 #include <linux/types.h>
 
 #ifdef __KERNEL__
+=======
+ */
+#ifndef __SOUND_ASOUND_H
+#define __SOUND_ASOUND_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ioctl.h>
 #include <linux/time.h>
 #include <asm/byteorder.h>
@@ -40,6 +51,7 @@
 #endif
 #endif
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ **/
 
 /*
@@ -948,4 +960,7 @@ struct snd_ctl_event {
 #define SNDRV_CTL_NAME_IEC958_PCM_STREAM		"PCM Stream"
 #define SNDRV_CTL_NAME_IEC958(expl,direction,what)	"IEC958 " expl SNDRV_CTL_NAME_##direction SNDRV_CTL_NAME_IEC958_##what
 
+=======
+#include <uapi/sound/asound.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __SOUND_ASOUND_H */

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Copyright (C) 2003 - 2009 NetXen, Inc.
 # Copyright (C) 2009 - QLogic Corporation.
 # All rights reserved.
@@ -20,6 +21,12 @@
 # The full GNU General Public License is included in this distribution
 # in the file called "COPYING".
 # 
+=======
+# SPDX-License-Identifier: GPL-2.0-or-later
+# Copyright (C) 2003 - 2009 NetXen, Inc.
+# Copyright (C) 2009 - QLogic Corporation.
+# All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 
 

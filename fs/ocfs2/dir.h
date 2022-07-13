@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dir.h
  *
  * Function prototypes
  *
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -21,6 +27,8 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef OCFS2_DIR_H
@@ -72,7 +80,11 @@ static inline int ocfs2_add_entry(handle_t *handle,
 				  struct buffer_head *parent_fe_bh,
 				  struct ocfs2_dir_lookup_result *lookup)
 {
+<<<<<<< HEAD
 	return __ocfs2_add_entry(handle, dentry->d_parent->d_inode,
+=======
+	return __ocfs2_add_entry(handle, d_inode(dentry->d_parent),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 dentry->d_name.name, dentry->d_name.len,
 				 inode, blkno, parent_fe_bh, lookup);
 }
@@ -92,9 +104,14 @@ int ocfs2_find_files_on_disk(const char *name,
 			     struct ocfs2_dir_lookup_result *res);
 int ocfs2_lookup_ino_from_name(struct inode *dir, const char *name,
 			       int namelen, u64 *blkno);
+<<<<<<< HEAD
 int ocfs2_readdir(struct file *filp, void *dirent, filldir_t filldir);
 int ocfs2_dir_foreach(struct inode *inode, loff_t *f_pos, void *priv,
 		      filldir_t filldir);
+=======
+int ocfs2_readdir(struct file *file, struct dir_context *ctx);
+int ocfs2_dir_foreach(struct inode *inode, struct dir_context *ctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ocfs2_prepare_dir_for_insert(struct ocfs2_super *osb,
 				 struct inode *dir,
 				 struct buffer_head *parent_fe_bh,

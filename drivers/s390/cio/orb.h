@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Orb related data structures.
  *
@@ -11,6 +15,12 @@
 #ifndef S390_ORB_H
 #define S390_ORB_H
 
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+#include <asm/dma-types.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Command-mode operation request block
  */
@@ -33,7 +43,11 @@ struct cmd_orb {
 	u32 ils:1;	/* incorrect length */
 	u32 zero:6;	/* reserved zeros */
 	u32 orbx:1;	/* ORB extension control */
+<<<<<<< HEAD
 	u32 cpa;	/* channel program address */
+=======
+	dma32_t cpa;	/* channel program address */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }  __packed __aligned(4);
 
 /*
@@ -48,7 +62,11 @@ struct tm_orb {
 	u32 lpm:8;
 	u32:7;
 	u32 x:1;
+<<<<<<< HEAD
 	u32 tcw;
+=======
+	dma32_t tcw;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 prio:8;
 	u32:8;
 	u32 rsvpgm:8;
@@ -59,9 +77,39 @@ struct tm_orb {
 	u32:32;
 }  __packed __aligned(4);
 
+<<<<<<< HEAD
 union orb {
 	struct cmd_orb cmd;
 	struct tm_orb tm;
+=======
+/*
+ * eadm operation request block
+ */
+struct eadm_orb {
+	u32 intparm;
+	u32 key:4;
+	u32:4;
+	u32 compat1:1;
+	u32 compat2:1;
+	u32:21;
+	u32 x:1;
+	dma32_t aob;
+	u32 css_prio:8;
+	u32:8;
+	u32 scm_prio:8;
+	u32:8;
+	u32:29;
+	u32 fmt:3;
+	u32:32;
+	u32:32;
+	u32:32;
+}  __packed __aligned(4);
+
+union orb {
+	struct cmd_orb cmd;
+	struct tm_orb tm;
+	struct eadm_orb eadm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }  __packed __aligned(4);
 
 #endif /* S390_ORB_H */

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -14,6 +15,9 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/jiffies.h>
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -28,10 +32,33 @@
 #include "transport.h"
 #include "protocol.h"
 #include "debug.h"
+<<<<<<< HEAD
 
 MODULE_DESCRIPTION("Driver for ENE UB6250 reader");
 MODULE_LICENSE("GPL");
 
+=======
+#include "scsiglue.h"
+
+#define SD_INIT1_FIRMWARE "ene-ub6250/sd_init1.bin"
+#define SD_INIT2_FIRMWARE "ene-ub6250/sd_init2.bin"
+#define SD_RW_FIRMWARE "ene-ub6250/sd_rdwr.bin"
+#define MS_INIT_FIRMWARE "ene-ub6250/ms_init.bin"
+#define MSP_RW_FIRMWARE "ene-ub6250/msp_rdwr.bin"
+#define MS_RW_FIRMWARE "ene-ub6250/ms_rdwr.bin"
+
+#define DRV_NAME "ums_eneub6250"
+
+MODULE_DESCRIPTION("Driver for ENE UB6250 reader");
+MODULE_LICENSE("GPL");
+MODULE_IMPORT_NS(USB_STORAGE);
+MODULE_FIRMWARE(SD_INIT1_FIRMWARE);
+MODULE_FIRMWARE(SD_INIT2_FIRMWARE);
+MODULE_FIRMWARE(SD_RW_FIRMWARE);
+MODULE_FIRMWARE(MS_INIT_FIRMWARE);
+MODULE_FIRMWARE(MSP_RW_FIRMWARE);
+MODULE_FIRMWARE(MS_RW_FIRMWARE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The table of devices
@@ -40,7 +67,11 @@ MODULE_LICENSE("GPL");
 		    vendorName, productName, useProtocol, useTransport, \
 		    initFunction, flags) \
 { USB_DEVICE_VER(id_vendor, id_product, bcdDeviceMin, bcdDeviceMax), \
+<<<<<<< HEAD
 	.driver_info = (flags)|(USB_US_TYPE_STOR<<24) }
+=======
+	.driver_info = (flags)}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct usb_device_id ene_ub6250_usb_ids[] = {
 #	include "unusual_ene_ub6250.h"
@@ -80,12 +111,21 @@ static struct us_unusual_dev ene_ub6250_unusual_dev_list[] = {
 #define REG_HW_TRAP1        0xFF89
 
 /* SRB Status */
+<<<<<<< HEAD
 #define SS_SUCCESS                  0x00      /* No Sense */
 #define SS_NOT_READY                0x02
 #define SS_MEDIUM_ERR               0x03
 #define SS_HW_ERR                   0x04
 #define SS_ILLEGAL_REQUEST          0x05
 #define SS_UNIT_ATTENTION           0x06
+=======
+#define SS_SUCCESS		0x000000	/* No Sense */
+#define SS_NOT_READY		0x023A00	/* Medium not present */
+#define SS_MEDIUM_ERR		0x031100	/* Unrecovered read error */
+#define SS_HW_ERR		0x040800	/* Communication failure */
+#define SS_ILLEGAL_REQUEST	0x052000	/* Invalid command */
+#define SS_UNIT_ATTENTION	0x062900	/* Reset occurred */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ENE Load FW Pattern */
 #define SD_INIT1_PATTERN   1
@@ -236,6 +276,7 @@ static struct us_unusual_dev ene_ub6250_unusual_dev_list[] = {
 #define memstick_logaddr(logadr1, logadr0) ((((u16)(logadr1)) << 8) | (logadr0))
 
 
+<<<<<<< HEAD
 struct SD_STATUS {
 	u8    Insert:1;
 	u8    Ready:1;
@@ -266,6 +307,35 @@ struct SM_STATUS {
 	u8    WtP:1;
 	u8    IsMS:1;
 };
+=======
+/* SD_STATUS bits */
+#define SD_Insert	BIT(0)
+#define SD_Ready	BIT(1)
+#define SD_MediaChange	BIT(2)
+#define SD_IsMMC	BIT(3)
+#define SD_HiCapacity	BIT(4)
+#define SD_HiSpeed	BIT(5)
+#define SD_WtP		BIT(6)
+			/* Bit 7 reserved */
+
+/* MS_STATUS bits */
+#define MS_Insert	BIT(0)
+#define MS_Ready	BIT(1)
+#define MS_MediaChange	BIT(2)
+#define MS_IsMSPro	BIT(3)
+#define MS_IsMSPHG	BIT(4)
+			/* Bit 5 reserved */
+#define MS_WtP		BIT(6)
+			/* Bit 7 reserved */
+
+/* SM_STATUS bits */
+#define SM_Insert	BIT(0)
+#define SM_Ready	BIT(1)
+#define SM_MediaChange	BIT(2)
+			/* Bits 3-5 reserved */
+#define SM_WtP		BIT(6)
+#define SM_IsMS		BIT(7)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ms_bootblock_cis {
 	u8 bCistplDEVICE[6];    /* 0 */
@@ -431,10 +501,21 @@ struct ms_lib_ctrl {
 #define SD_BLOCK_LEN  9
 
 struct ene_ub6250_info {
+<<<<<<< HEAD
 	/* for 6250 code */
 	struct SD_STATUS	SD_Status;
 	struct MS_STATUS	MS_Status;
 	struct SM_STATUS	SM_Status;
+=======
+
+	/* I/O bounce buffer */
+	u8		*bbuf;
+
+	/* for 6250 code */
+	u8		SD_Status;
+	u8		MS_Status;
+	u8		SM_Status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ----- SD Control Data ---------------- */
 	/*SD_REGISTER SD_Regs; */
@@ -478,8 +559,16 @@ static int ene_load_bincode(struct us_data *us, unsigned char flag);
 
 static void ene_ub6250_info_destructor(void *extra)
 {
+<<<<<<< HEAD
 	if (!extra)
 		return;
+=======
+	struct ene_ub6250_info *info = (struct ene_ub6250_info *) extra;
+
+	if (!extra)
+		return;
+	kfree(info->bbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ene_send_scsi_cmd(struct us_data *us, u8 fDir, void *buf, int use_sg)
@@ -492,12 +581,20 @@ static int ene_send_scsi_cmd(struct us_data *us, u8 fDir, void *buf, int use_sg)
 	unsigned int cswlen = 0, partial = 0;
 	unsigned int transfer_length = bcb->DataTransferLength;
 
+<<<<<<< HEAD
 	/* US_DEBUGP("transport --- ene_send_scsi_cmd\n"); */
+=======
+	/* usb_stor_dbg(us, "transport --- ene_send_scsi_cmd\n"); */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* send cmd to out endpoint */
 	result = usb_stor_bulk_transfer_buf(us, us->send_bulk_pipe,
 					    bcb, US_BULK_CB_WRAP_LEN, NULL);
 	if (result != USB_STOR_XFER_GOOD) {
+<<<<<<< HEAD
 		US_DEBUGP("send cmd to out endpoint fail ---\n");
+=======
+		usb_stor_dbg(us, "send cmd to out endpoint fail ---\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
@@ -517,7 +614,11 @@ static int ene_send_scsi_cmd(struct us_data *us, u8 fDir, void *buf, int use_sg)
 						transfer_length, 0, &partial);
 		}
 		if (result != USB_STOR_XFER_GOOD) {
+<<<<<<< HEAD
 			US_DEBUGP("data transfer fail ---\n");
+=======
+			usb_stor_dbg(us, "data transfer fail ---\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return USB_STOR_TRANSPORT_ERROR;
 		}
 	}
@@ -527,14 +628,22 @@ static int ene_send_scsi_cmd(struct us_data *us, u8 fDir, void *buf, int use_sg)
 					    US_BULK_CS_WRAP_LEN, &cswlen);
 
 	if (result == USB_STOR_XFER_SHORT && cswlen == 0) {
+<<<<<<< HEAD
 		US_DEBUGP("Received 0-length CSW; retrying...\n");
+=======
+		usb_stor_dbg(us, "Received 0-length CSW; retrying...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = usb_stor_bulk_transfer_buf(us, us->recv_bulk_pipe,
 					    bcs, US_BULK_CS_WRAP_LEN, &cswlen);
 	}
 
 	if (result == USB_STOR_XFER_STALLED) {
 		/* get the status again */
+<<<<<<< HEAD
 		US_DEBUGP("Attempting to get CSW (2nd try)...\n");
+=======
+		usb_stor_dbg(us, "Attempting to get CSW (2nd try)...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = usb_stor_bulk_transfer_buf(us, us->recv_bulk_pipe,
 						bcs, US_BULK_CS_WRAP_LEN, NULL);
 	}
@@ -545,13 +654,24 @@ static int ene_send_scsi_cmd(struct us_data *us, u8 fDir, void *buf, int use_sg)
 	/* check bulk status */
 	residue = le32_to_cpu(bcs->Residue);
 
+<<<<<<< HEAD
 	/* try to compute the actual residue, based on how much data
 	 * was really transferred and what the device tells us */
+=======
+	/*
+	 * try to compute the actual residue, based on how much data
+	 * was really transferred and what the device tells us
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (residue && !(us->fflags & US_FL_IGNORE_RESIDUE)) {
 		residue = min(residue, transfer_length);
 		if (us->srb != NULL)
 			scsi_set_resid(us->srb, max(scsi_get_resid(us->srb),
+<<<<<<< HEAD
 								(int)residue));
+=======
+								residue));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (bcs->Status != US_BULK_STAT_OK)
@@ -560,11 +680,46 @@ static int ene_send_scsi_cmd(struct us_data *us, u8 fDir, void *buf, int use_sg)
 	return USB_STOR_TRANSPORT_GOOD;
 }
 
+<<<<<<< HEAD
+=======
+static int do_scsi_request_sense(struct us_data *us, struct scsi_cmnd *srb)
+{
+	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
+	unsigned char buf[18];
+
+	memset(buf, 0, 18);
+	buf[0] = 0x70;				/* Current error */
+	buf[2] = info->SrbStatus >> 16;		/* Sense key */
+	buf[7] = 10;				/* Additional length */
+	buf[12] = info->SrbStatus >> 8;		/* ASC */
+	buf[13] = info->SrbStatus;		/* ASCQ */
+
+	usb_stor_set_xfer_buf(buf, sizeof(buf), srb);
+	return USB_STOR_TRANSPORT_GOOD;
+}
+
+static int do_scsi_inquiry(struct us_data *us, struct scsi_cmnd *srb)
+{
+	unsigned char data_ptr[36] = {
+		0x00, 0x00, 0x02, 0x00, 0x1F, 0x00, 0x00, 0x00, 0x55,
+		0x53, 0x42, 0x32, 0x2E, 0x30, 0x20, 0x20, 0x43, 0x61,
+		0x72, 0x64, 0x52, 0x65, 0x61, 0x64, 0x65, 0x72, 0x20,
+		0x20, 0x20, 0x20, 0x20, 0x20, 0x30, 0x31, 0x30, 0x30 };
+
+	usb_stor_set_xfer_buf(data_ptr, 36, srb);
+	return USB_STOR_TRANSPORT_GOOD;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sd_scsi_test_unit_ready(struct us_data *us, struct scsi_cmnd *srb)
 {
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
 
+<<<<<<< HEAD
 	if (info->SD_Status.Insert && info->SD_Status.Ready)
+=======
+	if ((info->SD_Status & SD_Insert) && (info->SD_Status & SD_Ready))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_TRANSPORT_GOOD;
 	else {
 		ene_sd_init(us);
@@ -574,6 +729,7 @@ static int sd_scsi_test_unit_ready(struct us_data *us, struct scsi_cmnd *srb)
 	return USB_STOR_TRANSPORT_GOOD;
 }
 
+<<<<<<< HEAD
 static int sd_scsi_inquiry(struct us_data *us, struct scsi_cmnd *srb)
 {
 	unsigned char data_ptr[36] = {
@@ -586,6 +742,8 @@ static int sd_scsi_inquiry(struct us_data *us, struct scsi_cmnd *srb)
 	return USB_STOR_TRANSPORT_GOOD;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sd_scsi_mode_sense(struct us_data *us, struct scsi_cmnd *srb)
 {
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
@@ -596,7 +754,11 @@ static int sd_scsi_mode_sense(struct us_data *us, struct scsi_cmnd *srb)
 		0x0b, 0x00, 0x80, 0x08, 0x00, 0x00,
 		0x71, 0xc0, 0x00, 0x00, 0x02, 0x00 };
 
+<<<<<<< HEAD
 	if (info->SD_Status.WtP)
+=======
+	if (info->SD_Status & SD_WtP)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_stor_set_xfer_buf(mediaWP, 12, srb);
 	else
 		usb_stor_set_xfer_buf(mediaNoWP, 12, srb);
@@ -614,10 +776,17 @@ static int sd_scsi_read_capacity(struct us_data *us, struct scsi_cmnd *srb)
 	struct scatterlist *sg = NULL;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
 
+<<<<<<< HEAD
 	US_DEBUGP("sd_scsi_read_capacity\n");
 	if (info->SD_Status.HiCapacity) {
 		bl_len = 0x200;
 		if (info->SD_Status.IsMMC)
+=======
+	usb_stor_dbg(us, "sd_scsi_read_capacity\n");
+	if (info->SD_Status & SD_HiCapacity) {
+		bl_len = 0x200;
+		if (info->SD_Status & SD_IsMMC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bl_num = info->HC_C_SIZE-1;
 		else
 			bl_num = (info->HC_C_SIZE + 1) * 1024 - 1;
@@ -627,8 +796,13 @@ static int sd_scsi_read_capacity(struct us_data *us, struct scsi_cmnd *srb)
 				* (1 << (info->SD_C_SIZE_MULT + 2)) - 1;
 	}
 	info->bl_num = bl_num;
+<<<<<<< HEAD
 	US_DEBUGP("bl_len = %x\n", bl_len);
 	US_DEBUGP("bl_num = %x\n", bl_num);
+=======
+	usb_stor_dbg(us, "bl_len = %x\n", bl_len);
+	usb_stor_dbg(us, "bl_num = %x\n", bl_num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*srb->request_bufflen = 8; */
 	buf[0] = (bl_num >> 24) & 0xff;
@@ -663,11 +837,19 @@ static int sd_scsi_read(struct us_data *us, struct scsi_cmnd *srb)
 
 	result = ene_load_bincode(us, SD_RW_PATTERN);
 	if (result != USB_STOR_XFER_GOOD) {
+<<<<<<< HEAD
 		US_DEBUGP("Load SD RW pattern Fail !!\n");
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
 	if (info->SD_Status.HiCapacity)
+=======
+		usb_stor_dbg(us, "Load SD RW pattern Fail !!\n");
+		return USB_STOR_TRANSPORT_ERROR;
+	}
+
+	if (info->SD_Status & SD_HiCapacity)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnByte = bn;
 
 	/* set up the command wrapper */
@@ -703,11 +885,19 @@ static int sd_scsi_write(struct us_data *us, struct scsi_cmnd *srb)
 
 	result = ene_load_bincode(us, SD_RW_PATTERN);
 	if (result != USB_STOR_XFER_GOOD) {
+<<<<<<< HEAD
 		US_DEBUGP("Load SD RW pattern Fail !!\n");
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
 	if (info->SD_Status.HiCapacity)
+=======
+		usb_stor_dbg(us, "Load SD RW pattern Fail !!\n");
+		return USB_STOR_TRANSPORT_ERROR;
+	}
+
+	if (info->SD_Status & SD_HiCapacity)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bnByte = bn;
 
 	/* set up the command wrapper */
@@ -782,8 +972,17 @@ static int ms_lib_alloc_logicalmap(struct us_data *us)
 	u32  i;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
 
+<<<<<<< HEAD
 	info->MS_Lib.Phy2LogMap = kmalloc(info->MS_Lib.NumberOfPhyBlock * sizeof(u16), GFP_KERNEL);
 	info->MS_Lib.Log2PhyMap = kmalloc(info->MS_Lib.NumberOfLogBlock * sizeof(u16), GFP_KERNEL);
+=======
+	info->MS_Lib.Phy2LogMap = kmalloc_array(info->MS_Lib.NumberOfPhyBlock,
+						sizeof(u16),
+						GFP_KERNEL);
+	info->MS_Lib.Log2PhyMap = kmalloc_array(info->MS_Lib.NumberOfLogBlock,
+						sizeof(u16),
+						GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((info->MS_Lib.Phy2LogMap == NULL) || (info->MS_Lib.Log2PhyMap == NULL)) {
 		ms_lib_free_logicalmap(us);
@@ -831,6 +1030,10 @@ static int ms_count_freeblock(struct us_data *us, u16 PhyBlock)
 		case MS_LB_NOT_USED:
 		case MS_LB_NOT_USED_ERASED:
 			Count++;
+<<<<<<< HEAD
+=======
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			break;
 		}
@@ -843,6 +1046,7 @@ static int ms_read_readpage(struct us_data *us, u32 PhyBlockAddr,
 		u8 PageNum, u32 *PageBuf, struct ms_lib_type_extdat *ExtraDat)
 {
 	struct bulk_cb_wrap *bcb = (struct bulk_cb_wrap *) us->iobuf;
+<<<<<<< HEAD
 	int result;
 	u8 ExtBuf[4];
 	u32 bn = PhyBlockAddr * 0x20 + PageNum;
@@ -850,6 +1054,13 @@ static int ms_read_readpage(struct us_data *us, u32 PhyBlockAddr,
 	/* printk(KERN_INFO "MS --- MS_ReaderReadPage,
 	PhyBlockAddr = %x, PageNum = %x\n", PhyBlockAddr, PageNum); */
 
+=======
+	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
+	u8 *bbuf = info->bbuf;
+	int result;
+	u32 bn = PhyBlockAddr * 0x20 + PageNum;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = ene_load_bincode(us, MS_RW_PATTERN);
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
@@ -887,7 +1098,11 @@ static int ms_read_readpage(struct us_data *us, u32 PhyBlockAddr,
 	bcb->CDB[2]     = (unsigned char)(PhyBlockAddr>>16);
 	bcb->CDB[6]     = 0x01;
 
+<<<<<<< HEAD
 	result = ene_send_scsi_cmd(us, FDIR_READ, &ExtBuf, 0);
+=======
+	result = ene_send_scsi_cmd(us, FDIR_READ, bbuf, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
 
@@ -896,9 +1111,15 @@ static int ms_read_readpage(struct us_data *us, u32 PhyBlockAddr,
 	ExtraDat->status0  = 0x10;  /* Not yet,fireware support */
 
 	ExtraDat->status1  = 0x00;  /* Not yet,fireware support */
+<<<<<<< HEAD
 	ExtraDat->ovrflg   = ExtBuf[0];
 	ExtraDat->mngflg   = ExtBuf[1];
 	ExtraDat->logadr   = memstick_logaddr(ExtBuf[2], ExtBuf[3]);
+=======
+	ExtraDat->ovrflg   = bbuf[0];
+	ExtraDat->mngflg   = bbuf[1];
+	ExtraDat->logadr   = memstick_logaddr(bbuf[2], bbuf[3]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return USB_STOR_TRANSPORT_GOOD;
 }
@@ -913,7 +1134,11 @@ static int ms_lib_process_bootblock(struct us_data *us, u16 PhyBlock, u8 *PageDa
 	struct ms_lib_type_extdat ExtraData;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
 
+<<<<<<< HEAD
 	PageBuffer = kmalloc(MS_BYTES_PER_PAGE, GFP_KERNEL);
+=======
+	PageBuffer = kzalloc(MS_BYTES_PER_PAGE * 2, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (PageBuffer == NULL)
 		return (u32)-1;
 
@@ -1052,12 +1277,20 @@ static void ms_lib_free_writebuf(struct us_data *us)
 	ms_lib_clear_pagemap(info); /* (pdx)->MS_Lib.pagemap memset 0 in ms.h */
 
 	if (info->MS_Lib.blkpag) {
+<<<<<<< HEAD
 		kfree((u8 *)(info->MS_Lib.blkpag));  /* Arnold test ... */
+=======
+		kfree(info->MS_Lib.blkpag);  /* Arnold test ... */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->MS_Lib.blkpag = NULL;
 	}
 
 	if (info->MS_Lib.blkext) {
+<<<<<<< HEAD
 		kfree((u8 *)(info->MS_Lib.blkext));  /* Arnold test ... */
+=======
+		kfree(info->MS_Lib.blkext);  /* Arnold test ... */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->MS_Lib.blkext = NULL;
 	}
 }
@@ -1090,8 +1323,17 @@ static int ms_lib_alloc_writebuf(struct us_data *us)
 
 	info->MS_Lib.wrtblk = (u16)-1;
 
+<<<<<<< HEAD
 	info->MS_Lib.blkpag = kmalloc(info->MS_Lib.PagesPerBlock * info->MS_Lib.BytesPerSector, GFP_KERNEL);
 	info->MS_Lib.blkext = kmalloc(info->MS_Lib.PagesPerBlock * sizeof(struct ms_lib_type_extdat), GFP_KERNEL);
+=======
+	info->MS_Lib.blkpag = kmalloc_array(info->MS_Lib.PagesPerBlock,
+					    info->MS_Lib.BytesPerSector,
+					    GFP_KERNEL);
+	info->MS_Lib.blkext = kmalloc_array(info->MS_Lib.PagesPerBlock,
+					    sizeof(struct ms_lib_type_extdat),
+					    GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((info->MS_Lib.blkpag == NULL) || (info->MS_Lib.blkext == NULL)) {
 		ms_lib_free_writebuf(us);
@@ -1100,7 +1342,11 @@ static int ms_lib_alloc_writebuf(struct us_data *us)
 
 	ms_lib_clear_writebuf(us);
 
+<<<<<<< HEAD
 return 0;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ms_lib_force_setlogical_pair(struct us_data *us, u16 logblk, u16 phyblk)
@@ -1126,8 +1372,11 @@ static int ms_read_copyblock(struct us_data *us, u16 oldphy, u16 newphy,
 	struct bulk_cb_wrap *bcb = (struct bulk_cb_wrap *) us->iobuf;
 	int result;
 
+<<<<<<< HEAD
 	/* printk(KERN_INFO "MS_ReaderCopyBlock --- PhyBlockAddr = %x,
 		PageNum = %x\n", PhyBlockAddr, PageNum); */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = ene_load_bincode(us, MS_RW_PATTERN);
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
@@ -1161,8 +1410,11 @@ static int ms_read_eraseblock(struct us_data *us, u32 PhyBlockAddr)
 	int result;
 	u32 bn = PhyBlockAddr;
 
+<<<<<<< HEAD
 	/* printk(KERN_INFO "MS --- ms_read_eraseblock,
 			PhyBlockAddr = %x\n", PhyBlockAddr); */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = ene_load_bincode(us, MS_RW_PATTERN);
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
@@ -1240,8 +1492,11 @@ static int ms_lib_overwrite_extra(struct us_data *us, u32 PhyBlockAddr,
 	struct bulk_cb_wrap *bcb = (struct bulk_cb_wrap *) us->iobuf;
 	int result;
 
+<<<<<<< HEAD
 	/* printk("MS --- MS_LibOverwriteExtra,
 		PhyBlockAddr = %x, PageNum = %x\n", PhyBlockAddr, PageNum); */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = ene_load_bincode(us, MS_RW_PATTERN);
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
@@ -1324,10 +1579,17 @@ static int ms_lib_read_extra(struct us_data *us, u32 PhyBlock,
 				u8 PageNum, struct ms_lib_type_extdat *ExtraDat)
 {
 	struct bulk_cb_wrap *bcb = (struct bulk_cb_wrap *) us->iobuf;
+<<<<<<< HEAD
 	int result;
 	u8 ExtBuf[4];
 
 	/* printk("MS_LibReadExtra --- PhyBlock = %x, PageNum = %x\n", PhyBlock, PageNum); */
+=======
+	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
+	u8 *bbuf = info->bbuf;
+	int result;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(bcb, 0, sizeof(struct bulk_cb_wrap));
 	bcb->Signature = cpu_to_le32(US_BULK_CB_SIGN);
 	bcb->DataTransferLength = 0x4;
@@ -1340,7 +1602,11 @@ static int ms_lib_read_extra(struct us_data *us, u32 PhyBlock,
 	bcb->CDB[2]     = (unsigned char)(PhyBlock>>16);
 	bcb->CDB[6]     = 0x01;
 
+<<<<<<< HEAD
 	result = ene_send_scsi_cmd(us, FDIR_READ, &ExtBuf, 0);
+=======
+	result = ene_send_scsi_cmd(us, FDIR_READ, bbuf, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result != USB_STOR_XFER_GOOD)
 		return USB_STOR_TRANSPORT_ERROR;
 
@@ -1348,16 +1614,25 @@ static int ms_lib_read_extra(struct us_data *us, u32 PhyBlock,
 	ExtraDat->intr     = 0x80;  /* Not yet, waiting for fireware support */
 	ExtraDat->status0  = 0x10;  /* Not yet, waiting for fireware support */
 	ExtraDat->status1  = 0x00;  /* Not yet, waiting for fireware support */
+<<<<<<< HEAD
 	ExtraDat->ovrflg   = ExtBuf[0];
 	ExtraDat->mngflg   = ExtBuf[1];
 	ExtraDat->logadr   = memstick_logaddr(ExtBuf[2], ExtBuf[3]);
+=======
+	ExtraDat->ovrflg   = bbuf[0];
+	ExtraDat->mngflg   = bbuf[1];
+	ExtraDat->logadr   = memstick_logaddr(bbuf[2], bbuf[3]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return USB_STOR_TRANSPORT_GOOD;
 }
 
 static int ms_libsearch_block_from_physical(struct us_data *us, u16 phyblk)
 {
+<<<<<<< HEAD
 	u16 Newblk;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 blk;
 	struct ms_lib_type_extdat extdat; /* need check */
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
@@ -1370,7 +1645,10 @@ static int ms_libsearch_block_from_physical(struct us_data *us, u16 phyblk)
 		if ((blk & MS_PHYSICAL_BLOCKS_PER_SEGMENT_MASK) == 0)
 			blk -= MS_PHYSICAL_BLOCKS_PER_SEGMENT;
 
+<<<<<<< HEAD
 		Newblk = info->MS_Lib.Phy2LogMap[blk];
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (info->MS_Lib.Phy2LogMap[blk] == MS_LB_NOT_USED_ERASED) {
 			return blk;
 		} else if (info->MS_Lib.Phy2LogMap[blk] == MS_LB_NOT_USED) {
@@ -1431,7 +1709,11 @@ static int ms_scsi_test_unit_ready(struct us_data *us, struct scsi_cmnd *srb)
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *)(us->extra);
 
 	/* pr_info("MS_SCSI_Test_Unit_Ready\n"); */
+<<<<<<< HEAD
 	if (info->MS_Status.Insert && info->MS_Status.Ready) {
+=======
+	if ((info->MS_Status & MS_Insert) && (info->MS_Status & MS_Ready)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_TRANSPORT_GOOD;
 	} else {
 		ene_ms_init(us);
@@ -1441,6 +1723,7 @@ static int ms_scsi_test_unit_ready(struct us_data *us, struct scsi_cmnd *srb)
 	return USB_STOR_TRANSPORT_GOOD;
 }
 
+<<<<<<< HEAD
 static int ms_scsi_inquiry(struct us_data *us, struct scsi_cmnd *srb)
 {
 	/* pr_info("MS_SCSI_Inquiry\n"); */
@@ -1454,6 +1737,8 @@ static int ms_scsi_inquiry(struct us_data *us, struct scsi_cmnd *srb)
 	return USB_STOR_TRANSPORT_GOOD;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ms_scsi_mode_sense(struct us_data *us, struct scsi_cmnd *srb)
 {
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
@@ -1464,7 +1749,11 @@ static int ms_scsi_mode_sense(struct us_data *us, struct scsi_cmnd *srb)
 		0x0b, 0x00, 0x80, 0x08, 0x00, 0x00,
 		0x71, 0xc0, 0x00, 0x00, 0x02, 0x00 };
 
+<<<<<<< HEAD
 	if (info->MS_Status.WtP)
+=======
+	if (info->MS_Status & MS_WtP)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_stor_set_xfer_buf(mediaWP, 12, srb);
 	else
 		usb_stor_set_xfer_buf(mediaNoWP, 12, srb);
@@ -1481,16 +1770,27 @@ static int ms_scsi_read_capacity(struct us_data *us, struct scsi_cmnd *srb)
 	struct scatterlist *sg = NULL;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
 
+<<<<<<< HEAD
 	US_DEBUGP("ms_scsi_read_capacity\n");
 	bl_len = 0x200;
 	if (info->MS_Status.IsMSPro)
+=======
+	usb_stor_dbg(us, "ms_scsi_read_capacity\n");
+	bl_len = 0x200;
+	if (info->MS_Status & MS_IsMSPro)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bl_num = info->MSP_TotalBlock - 1;
 	else
 		bl_num = info->MS_Lib.NumberOfLogBlock * info->MS_Lib.blockSize * 2 - 1;
 
 	info->bl_num = bl_num;
+<<<<<<< HEAD
 	US_DEBUGP("bl_len = %x\n", bl_len);
 	US_DEBUGP("bl_num = %x\n", bl_num);
+=======
+	usb_stor_dbg(us, "bl_len = %x\n", bl_len);
+	usb_stor_dbg(us, "bl_num = %x\n", bl_num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*srb->request_bufflen = 8; */
 	buf[0] = (bl_num >> 24) & 0xff;
@@ -1526,9 +1826,12 @@ static int ms_lib_read_extrablock(struct us_data *us, u32 PhyBlock,
 	struct bulk_cb_wrap *bcb = (struct bulk_cb_wrap *) us->iobuf;
 	int     result;
 
+<<<<<<< HEAD
 	/* printk("MS_LibReadExtraBlock --- PhyBlock = %x,
 		PageNum = %x, blen = %x\n", PhyBlock, PageNum, blen); */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Read Extra Data */
 	memset(bcb, 0, sizeof(struct bulk_cb_wrap));
 	bcb->Signature = cpu_to_le32(US_BULK_CB_SIGN);
@@ -1554,9 +1857,15 @@ static int ms_lib_scan_logicalblocknumber(struct us_data *us, u16 btBlk1st)
 	u16 PhyBlock, newblk, i;
 	u16 LogStart, LogEnde;
 	struct ms_lib_type_extdat extdat;
+<<<<<<< HEAD
 	u8 buf[0x200];
 	u32 count = 0, index = 0;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
+=======
+	u32 count = 0, index = 0;
+	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
+	u8 *bbuf = info->bbuf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (PhyBlock = 0; PhyBlock < info->MS_Lib.NumberOfPhyBlock;) {
 		ms_lib_phy_to_log_range(PhyBlock, &LogStart, &LogEnde);
@@ -1570,14 +1879,26 @@ static int ms_lib_scan_logicalblocknumber(struct us_data *us, u16 btBlk1st)
 			}
 
 			if (count == PhyBlock) {
+<<<<<<< HEAD
 				ms_lib_read_extrablock(us, PhyBlock, 0, 0x80, &buf);
+=======
+				ms_lib_read_extrablock(us, PhyBlock, 0, 0x80,
+						bbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				count += 0x80;
 			}
 			index = (PhyBlock % 0x80) * 4;
 
+<<<<<<< HEAD
 			extdat.ovrflg = buf[index];
 			extdat.mngflg = buf[index+1];
 			extdat.logadr = memstick_logaddr(buf[index+2], buf[index+3]);
+=======
+			extdat.ovrflg = bbuf[index];
+			extdat.mngflg = bbuf[index+1];
+			extdat.logadr = memstick_logaddr(bbuf[index+2],
+					bbuf[index+3]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if ((extdat.ovrflg & MS_REG_OVR_BKST) != MS_REG_OVR_BKST_OK) {
 				ms_lib_setacquired_errorblock(us, PhyBlock);
@@ -1639,10 +1960,17 @@ static int ms_scsi_read(struct us_data *us, struct scsi_cmnd *srb)
 	if (bn > info->bl_num)
 		return USB_STOR_TRANSPORT_ERROR;
 
+<<<<<<< HEAD
 	if (info->MS_Status.IsMSPro) {
 		result = ene_load_bincode(us, MSP_RW_PATTERN);
 		if (result != USB_STOR_XFER_GOOD) {
 			US_DEBUGP("Load MPS RW pattern Fail !!\n");
+=======
+	if (info->MS_Status & MS_IsMSPro) {
+		result = ene_load_bincode(us, MSP_RW_PATTERN);
+		if (result != USB_STOR_XFER_GOOD) {
+			usb_stor_dbg(us, "Load MPS RW pattern Fail !!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return USB_STOR_TRANSPORT_ERROR;
 		}
 
@@ -1740,7 +2068,11 @@ static int ms_scsi_write(struct us_data *us, struct scsi_cmnd *srb)
 	if (bn > info->bl_num)
 		return USB_STOR_TRANSPORT_ERROR;
 
+<<<<<<< HEAD
 	if (info->MS_Status.IsMSPro) {
+=======
+	if (info->MS_Status & MS_IsMSPro) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = ene_load_bincode(us, MSP_RW_PATTERN);
 		if (result != USB_STOR_XFER_GOOD) {
 			pr_info("Load MSP RW pattern Fail !!\n");
@@ -1842,18 +2174,30 @@ static int ene_get_card_status(struct us_data *us, u8 *buf)
 	u32 reg4b;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
 
+<<<<<<< HEAD
 	/*US_DEBUGP("transport --- ENE_ReadSDReg\n");*/
+=======
+	/*usb_stor_dbg(us, "transport --- ENE_ReadSDReg\n");*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg4b = *(u32 *)&buf[0x18];
 	info->SD_READ_BL_LEN = (u8)((reg4b >> 8) & 0x0f);
 
 	tmpreg = (u16) reg4b;
 	reg4b = *(u32 *)(&buf[0x14]);
+<<<<<<< HEAD
 	if (info->SD_Status.HiCapacity && !info->SD_Status.IsMMC)
+=======
+	if ((info->SD_Status & SD_HiCapacity) && !(info->SD_Status & SD_IsMMC))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->HC_C_SIZE = (reg4b >> 8) & 0x3fffff;
 
 	info->SD_C_SIZE = ((tmpreg & 0x03) << 10) | (u16)(reg4b >> 22);
 	info->SD_C_SIZE_MULT = (u8)(reg4b >> 7)  & 0x07;
+<<<<<<< HEAD
 	if (info->SD_Status.HiCapacity && info->SD_Status.IsMMC)
+=======
+	if ((info->SD_Status & SD_HiCapacity) && (info->SD_Status & SD_IsMMC))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->HC_C_SIZE = *(u32 *)(&buf[0x100]);
 
 	if (info->SD_READ_BL_LEN > SD_BLOCK_LEN) {
@@ -1882,6 +2226,7 @@ static int ene_load_bincode(struct us_data *us, unsigned char flag)
 	switch (flag) {
 	/* For SD */
 	case SD_INIT1_PATTERN:
+<<<<<<< HEAD
 		US_DEBUGP("SD_INIT1_PATTERN\n");
 		fw_name = "ene-ub6250/sd_init1.bin";
 		break;
@@ -1908,11 +2253,40 @@ static int ene_load_bincode(struct us_data *us, unsigned char flag)
 		break;
 	default:
 		US_DEBUGP("----------- Unknown PATTERN ----------\n");
+=======
+		usb_stor_dbg(us, "SD_INIT1_PATTERN\n");
+		fw_name = SD_INIT1_FIRMWARE;
+		break;
+	case SD_INIT2_PATTERN:
+		usb_stor_dbg(us, "SD_INIT2_PATTERN\n");
+		fw_name = SD_INIT2_FIRMWARE;
+		break;
+	case SD_RW_PATTERN:
+		usb_stor_dbg(us, "SD_RW_PATTERN\n");
+		fw_name = SD_RW_FIRMWARE;
+		break;
+	/* For MS */
+	case MS_INIT_PATTERN:
+		usb_stor_dbg(us, "MS_INIT_PATTERN\n");
+		fw_name = MS_INIT_FIRMWARE;
+		break;
+	case MSP_RW_PATTERN:
+		usb_stor_dbg(us, "MSP_RW_PATTERN\n");
+		fw_name = MSP_RW_FIRMWARE;
+		break;
+	case MS_RW_PATTERN:
+		usb_stor_dbg(us, "MS_RW_PATTERN\n");
+		fw_name = MS_RW_FIRMWARE;
+		break;
+	default:
+		usb_stor_dbg(us, "----------- Unknown PATTERN ----------\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto nofw;
 	}
 
 	err = request_firmware(&sd_fw, fw_name, &us->pusb_dev->dev);
 	if (err) {
+<<<<<<< HEAD
 		US_DEBUGP("load firmware %s failed\n", fw_name);
 		goto nofw;
 	}
@@ -1922,6 +2296,15 @@ static int ene_load_bincode(struct us_data *us, unsigned char flag)
 		goto nofw;
 	}
 	memcpy(buf, sd_fw->data, sd_fw->size);
+=======
+		usb_stor_dbg(us, "load firmware %s failed\n", fw_name);
+		goto nofw;
+	}
+	buf = kmemdup(sd_fw->data, sd_fw->size, GFP_KERNEL);
+	if (buf == NULL)
+		goto nofw;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(bcb, 0, sizeof(struct bulk_cb_wrap));
 	bcb->Signature = cpu_to_le32(US_BULK_CB_SIGN);
 	bcb->DataTransferLength = sd_fw->size;
@@ -1929,15 +2312,24 @@ static int ene_load_bincode(struct us_data *us, unsigned char flag)
 	bcb->CDB[0] = 0xEF;
 
 	result = ene_send_scsi_cmd(us, FDIR_WRITE, buf, 0);
+<<<<<<< HEAD
+=======
+	if (us->srb != NULL)
+		scsi_set_resid(us->srb, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->BIN_FLAG = flag;
 	kfree(buf);
 
 nofw:
+<<<<<<< HEAD
 	if (sd_fw != NULL) {
 		release_firmware(sd_fw);
 		sd_fw = NULL;
 	}
 
+=======
+	release_firmware(sd_fw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -2066,9 +2458,16 @@ static int ene_ms_init(struct us_data *us)
 {
 	struct bulk_cb_wrap *bcb = (struct bulk_cb_wrap *) us->iobuf;
 	int result;
+<<<<<<< HEAD
 	u8 buf[0x200];
 	u16 MSP_BlockSize, MSP_UserAreaBlocks;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
+=======
+	u16 MSP_BlockSize, MSP_UserAreaBlocks;
+	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
+	u8 *bbuf = info->bbuf;
+	unsigned int s;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "transport --- ENE_MSInit\n");
 
@@ -2087,12 +2486,17 @@ static int ene_ms_init(struct us_data *us)
 	bcb->CDB[0]     = 0xF1;
 	bcb->CDB[1]     = 0x01;
 
+<<<<<<< HEAD
 	result = ene_send_scsi_cmd(us, FDIR_READ, &buf, 0);
+=======
+	result = ene_send_scsi_cmd(us, FDIR_READ, bbuf, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result != USB_STOR_XFER_GOOD) {
 		printk(KERN_ERR "Execution MS Init Code Fail !!\n");
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 	/* the same part to test ENE */
+<<<<<<< HEAD
 	info->MS_Status = *(struct MS_STATUS *)&buf[0];
 
 	if (info->MS_Status.Insert && info->MS_Status.Ready) {
@@ -2104,13 +2508,33 @@ static int ene_ms_init(struct us_data *us)
 		if (info->MS_Status.IsMSPro) {
 			MSP_BlockSize      = (buf[6] << 8) | buf[7];
 			MSP_UserAreaBlocks = (buf[10] << 8) | buf[11];
+=======
+	info->MS_Status = bbuf[0];
+
+	s = info->MS_Status;
+	if ((s & MS_Insert) && (s & MS_Ready)) {
+		printk(KERN_INFO "Insert     = %x\n", !!(s & MS_Insert));
+		printk(KERN_INFO "Ready      = %x\n", !!(s & MS_Ready));
+		printk(KERN_INFO "IsMSPro    = %x\n", !!(s & MS_IsMSPro));
+		printk(KERN_INFO "IsMSPHG    = %x\n", !!(s & MS_IsMSPHG));
+		printk(KERN_INFO "WtP= %x\n", !!(s & MS_WtP));
+		if (s & MS_IsMSPro) {
+			MSP_BlockSize      = (bbuf[6] << 8) | bbuf[7];
+			MSP_UserAreaBlocks = (bbuf[10] << 8) | bbuf[11];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			info->MSP_TotalBlock = MSP_BlockSize * MSP_UserAreaBlocks;
 		} else {
 			ms_card_init(us); /* Card is MS (to ms.c)*/
 		}
+<<<<<<< HEAD
 		US_DEBUGP("MS Init Code OK !!\n");
 	} else {
 		US_DEBUGP("MS Card Not Ready --- %x\n", buf[0]);
+=======
+		usb_stor_dbg(us, "MS Init Code OK !!\n");
+	} else {
+		usb_stor_dbg(us, "MS Card Not Ready --- %x\n", bbuf[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
@@ -2120,6 +2544,7 @@ static int ene_ms_init(struct us_data *us)
 static int ene_sd_init(struct us_data *us)
 {
 	int result;
+<<<<<<< HEAD
 	u8  buf[0x200];
 	struct bulk_cb_wrap *bcb = (struct bulk_cb_wrap *) us->iobuf;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
@@ -2129,6 +2554,17 @@ static int ene_sd_init(struct us_data *us)
 	result = ene_load_bincode(us, SD_INIT1_PATTERN);
 	if (result != USB_STOR_XFER_GOOD) {
 		US_DEBUGP("Load SD Init Code Part-1 Fail !!\n");
+=======
+	struct bulk_cb_wrap *bcb = (struct bulk_cb_wrap *) us->iobuf;
+	struct ene_ub6250_info *info = (struct ene_ub6250_info *) us->extra;
+	u8 *bbuf = info->bbuf;
+
+	usb_stor_dbg(us, "transport --- ENE_SDInit\n");
+	/* SD Init Part-1 */
+	result = ene_load_bincode(us, SD_INIT1_PATTERN);
+	if (result != USB_STOR_XFER_GOOD) {
+		usb_stor_dbg(us, "Load SD Init Code Part-1 Fail !!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
@@ -2139,14 +2575,22 @@ static int ene_sd_init(struct us_data *us)
 
 	result = ene_send_scsi_cmd(us, FDIR_READ, NULL, 0);
 	if (result != USB_STOR_XFER_GOOD) {
+<<<<<<< HEAD
 		US_DEBUGP("Execution SD Init Code Fail !!\n");
+=======
+		usb_stor_dbg(us, "Execution SD Init Code Fail !!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
 	/* SD Init Part-2 */
 	result = ene_load_bincode(us, SD_INIT2_PATTERN);
 	if (result != USB_STOR_XFER_GOOD) {
+<<<<<<< HEAD
 		US_DEBUGP("Load SD Init Code Part-2 Fail !!\n");
+=======
+		usb_stor_dbg(us, "Load SD Init Code Part-2 Fail !!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
@@ -2156,6 +2600,7 @@ static int ene_sd_init(struct us_data *us)
 	bcb->Flags              = US_BULK_FLAG_IN;
 	bcb->CDB[0]             = 0xF1;
 
+<<<<<<< HEAD
 	result = ene_send_scsi_cmd(us, FDIR_READ, &buf, 0);
 	if (result != USB_STOR_XFER_GOOD) {
 		US_DEBUGP("Execution SD Init Code Fail !!\n");
@@ -2173,6 +2618,27 @@ static int ene_sd_init(struct us_data *us)
 		US_DEBUGP("WtP        = %x\n", info->SD_Status.WtP);
 	} else {
 		US_DEBUGP("SD Card Not Ready --- %x\n", buf[0]);
+=======
+	result = ene_send_scsi_cmd(us, FDIR_READ, bbuf, 0);
+	if (result != USB_STOR_XFER_GOOD) {
+		usb_stor_dbg(us, "Execution SD Init Code Fail !!\n");
+		return USB_STOR_TRANSPORT_ERROR;
+	}
+
+	info->SD_Status = bbuf[0];
+	if ((info->SD_Status & SD_Insert) && (info->SD_Status & SD_Ready)) {
+		unsigned int s = info->SD_Status;
+
+		ene_get_card_status(us, bbuf);
+		usb_stor_dbg(us, "Insert     = %x\n", !!(s & SD_Insert));
+		usb_stor_dbg(us, "Ready      = %x\n", !!(s & SD_Ready));
+		usb_stor_dbg(us, "IsMMC      = %x\n", !!(s & SD_IsMMC));
+		usb_stor_dbg(us, "HiCapacity = %x\n", !!(s & SD_HiCapacity));
+		usb_stor_dbg(us, "HiSpeed    = %x\n", !!(s & SD_HiSpeed));
+		usb_stor_dbg(us, "WtP        = %x\n", !!(s & SD_WtP));
+	} else {
+		usb_stor_dbg(us, "SD Card Not Ready --- %x\n", bbuf[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 	return USB_STOR_TRANSPORT_GOOD;
@@ -2182,6 +2648,7 @@ static int ene_sd_init(struct us_data *us)
 static int ene_init(struct us_data *us)
 {
 	int result;
+<<<<<<< HEAD
 	u8  misc_reg03 = 0;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *)(us->extra);
 
@@ -2191,13 +2658,30 @@ static int ene_init(struct us_data *us)
 
 	if (misc_reg03 & 0x01) {
 		if (!info->SD_Status.Ready) {
+=======
+	u8  misc_reg03;
+	struct ene_ub6250_info *info = (struct ene_ub6250_info *)(us->extra);
+	u8 *bbuf = info->bbuf;
+
+	result = ene_get_card_type(us, REG_CARD_STATUS, bbuf);
+	if (result != USB_STOR_XFER_GOOD)
+		return USB_STOR_TRANSPORT_ERROR;
+
+	misc_reg03 = bbuf[0];
+	if (misc_reg03 & 0x01) {
+		if (!(info->SD_Status & SD_Ready)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result = ene_sd_init(us);
 			if (result != USB_STOR_XFER_GOOD)
 				return USB_STOR_TRANSPORT_ERROR;
 		}
 	}
 	if (misc_reg03 & 0x02) {
+<<<<<<< HEAD
 		if (!info->MS_Status.Ready) {
+=======
+		if (!(info->MS_Status & MS_Ready)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result = ene_ms_init(us);
 			if (result != USB_STOR_XFER_GOOD)
 				return USB_STOR_TRANSPORT_ERROR;
@@ -2212,13 +2696,24 @@ static int sd_scsi_irp(struct us_data *us, struct scsi_cmnd *srb)
 	int    result;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *)us->extra;
 
+<<<<<<< HEAD
 	info->SrbStatus = SS_SUCCESS;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (srb->cmnd[0]) {
 	case TEST_UNIT_READY:
 		result = sd_scsi_test_unit_ready(us, srb);
 		break; /* 0x00 */
+<<<<<<< HEAD
 	case INQUIRY:
 		result = sd_scsi_inquiry(us, srb);
+=======
+	case REQUEST_SENSE:
+		result = do_scsi_request_sense(us, srb);
+		break; /* 0x03 */
+	case INQUIRY:
+		result = do_scsi_inquiry(us, srb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break; /* 0x12 */
 	case MODE_SENSE:
 		result = sd_scsi_mode_sense(us, srb);
@@ -2242,6 +2737,11 @@ static int sd_scsi_irp(struct us_data *us, struct scsi_cmnd *srb)
 		result = USB_STOR_TRANSPORT_FAILED;
 		break;
 	}
+<<<<<<< HEAD
+=======
+	if (result == USB_STOR_TRANSPORT_GOOD)
+		info->SrbStatus = SS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -2252,13 +2752,25 @@ static int ms_scsi_irp(struct us_data *us, struct scsi_cmnd *srb)
 {
 	int result;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *)us->extra;
+<<<<<<< HEAD
 	info->SrbStatus = SS_SUCCESS;
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (srb->cmnd[0]) {
 	case TEST_UNIT_READY:
 		result = ms_scsi_test_unit_ready(us, srb);
 		break; /* 0x00 */
+<<<<<<< HEAD
 	case INQUIRY:
 		result = ms_scsi_inquiry(us, srb);
+=======
+	case REQUEST_SENSE:
+		result = do_scsi_request_sense(us, srb);
+		break; /* 0x03 */
+	case INQUIRY:
+		result = do_scsi_inquiry(us, srb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break; /* 0x12 */
 	case MODE_SENSE:
 		result = ms_scsi_mode_sense(us, srb);
@@ -2277,11 +2789,17 @@ static int ms_scsi_irp(struct us_data *us, struct scsi_cmnd *srb)
 		result = USB_STOR_TRANSPORT_FAILED;
 		break;
 	}
+<<<<<<< HEAD
+=======
+	if (result == USB_STOR_TRANSPORT_GOOD)
+		info->SrbStatus = SS_SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
 static int ene_transport(struct scsi_cmnd *srb, struct us_data *us)
 {
+<<<<<<< HEAD
 	int result = 0;
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *)(us->extra);
 
@@ -2299,25 +2817,69 @@ static int ene_transport(struct scsi_cmnd *srb, struct us_data *us)
 	return 0;
 }
 
+=======
+	int result = USB_STOR_XFER_GOOD;
+	struct ene_ub6250_info *info = (struct ene_ub6250_info *)(us->extra);
+
+	/*US_DEBUG(usb_stor_show_command(us, srb)); */
+	scsi_set_resid(srb, 0);
+	if (unlikely(!(info->SD_Status & SD_Ready) || (info->MS_Status & MS_Ready)))
+		result = ene_init(us);
+	if (result == USB_STOR_XFER_GOOD) {
+		result = USB_STOR_TRANSPORT_ERROR;
+		if (info->SD_Status & SD_Ready)
+			result = sd_scsi_irp(us, srb);
+
+		if (info->MS_Status & MS_Ready)
+			result = ms_scsi_irp(us, srb);
+	}
+	return result;
+}
+
+static struct scsi_host_template ene_ub6250_host_template;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ene_ub6250_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
 {
 	int result;
+<<<<<<< HEAD
 	u8  misc_reg03 = 0;
 	struct us_data *us;
 
 	result = usb_stor_probe1(&us, intf, id,
 		   (id - ene_ub6250_usb_ids) + ene_ub6250_unusual_dev_list);
+=======
+	u8  misc_reg03;
+	struct us_data *us;
+	struct ene_ub6250_info *info;
+
+	result = usb_stor_probe1(&us, intf, id,
+		   (id - ene_ub6250_usb_ids) + ene_ub6250_unusual_dev_list,
+		   &ene_ub6250_host_template);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result)
 		return result;
 
 	/* FIXME: where should the code alloc extra buf ? */
+<<<<<<< HEAD
 	if (!us->extra) {
 		us->extra = kzalloc(sizeof(struct ene_ub6250_info), GFP_KERNEL);
 		if (!us->extra)
 			return -ENOMEM;
 		us->extra_destructor = ene_ub6250_info_destructor;
+=======
+	us->extra = kzalloc(sizeof(struct ene_ub6250_info), GFP_KERNEL);
+	if (!us->extra)
+		return -ENOMEM;
+	us->extra_destructor = ene_ub6250_info_destructor;
+
+	info = (struct ene_ub6250_info *)(us->extra);
+	info->bbuf = kmalloc(512, GFP_KERNEL);
+	if (!info->bbuf) {
+		kfree(us->extra);
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	us->transport_name = "ene_ub6250";
@@ -2329,15 +2891,26 @@ static int ene_ub6250_probe(struct usb_interface *intf,
 		return result;
 
 	/* probe card type */
+<<<<<<< HEAD
 	result = ene_get_card_type(us, REG_CARD_STATUS, &misc_reg03);
+=======
+	result = ene_get_card_type(us, REG_CARD_STATUS, info->bbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result != USB_STOR_XFER_GOOD) {
 		usb_stor_disconnect(intf);
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
+<<<<<<< HEAD
 	if (!(misc_reg03 & 0x01)) {
 		pr_info("ums_eneub6250: The driver only supports SD/MS card. "
 			"To use SM card, please build driver/staging/keucr\n");
+=======
+	misc_reg03 = info->bbuf[0];
+	if (!(misc_reg03 & 0x01)) {
+		pr_info("ums_eneub6250: This driver only supports SD/MS cards. "
+			"It does not support SM cards.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return result;
@@ -2348,29 +2921,43 @@ static int ene_ub6250_probe(struct usb_interface *intf,
 
 static int ene_ub6250_resume(struct usb_interface *iface)
 {
+<<<<<<< HEAD
 	u8 tmp = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct us_data *us = usb_get_intfdata(iface);
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *)(us->extra);
 
 	mutex_lock(&us->dev_mutex);
 
+<<<<<<< HEAD
 	US_DEBUGP("%s\n", __func__);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (us->suspend_resume_hook)
 		(us->suspend_resume_hook)(us, US_RESUME);
 
 	mutex_unlock(&us->dev_mutex);
 
 	info->Power_IsResum = true;
+<<<<<<< HEAD
 	/*info->SD_Status.Ready = 0; */
 	info->SD_Status = *(struct SD_STATUS *)&tmp;
 	info->MS_Status = *(struct MS_STATUS *)&tmp;
 	info->SM_Status = *(struct SM_STATUS *)&tmp;
+=======
+	/* info->SD_Status &= ~SD_Ready; */
+	info->SD_Status = 0;
+	info->MS_Status = 0;
+	info->SM_Status = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int ene_ub6250_reset_resume(struct usb_interface *iface)
 {
+<<<<<<< HEAD
 	u8 tmp = 0;
 	struct us_data *us = usb_get_intfdata(iface);
 	struct ene_ub6250_info *info = (struct ene_ub6250_info *)(us->extra);
@@ -2385,6 +2972,23 @@ static int ene_ub6250_reset_resume(struct usb_interface *iface)
 	info->SD_Status = *(struct SD_STATUS *)&tmp;
 	info->MS_Status = *(struct MS_STATUS *)&tmp;
 	info->SM_Status = *(struct SM_STATUS *)&tmp;
+=======
+	struct us_data *us = usb_get_intfdata(iface);
+	struct ene_ub6250_info *info = (struct ene_ub6250_info *)(us->extra);
+
+	/* Report the reset to the SCSI core */
+	usb_stor_reset_resume(iface);
+
+	/*
+	 * FIXME: Notify the subdrivers that they need to reinitialize
+	 * the device
+	 */
+	info->Power_IsResum = true;
+	/* info->SD_Status &= ~SD_Ready; */
+	info->SD_Status = 0;
+	info->MS_Status = 0;
+	info->SM_Status = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2397,7 +3001,11 @@ static int ene_ub6250_reset_resume(struct usb_interface *iface)
 #endif
 
 static struct usb_driver ene_ub6250_driver = {
+<<<<<<< HEAD
 	.name =		"ums_eneub6250",
+=======
+	.name =		DRV_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe =	ene_ub6250_probe,
 	.disconnect =	usb_stor_disconnect,
 	.suspend =	usb_stor_suspend,
@@ -2410,4 +3018,8 @@ static struct usb_driver ene_ub6250_driver = {
 	.no_dynamic_id = 1,
 };
 
+<<<<<<< HEAD
 module_usb_driver(ene_ub6250_driver);
+=======
+module_usb_stor_driver(ene_ub6250_driver, ene_ub6250_host_template, DRV_NAME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Task credentials management - see Documentation/security/credentials.txt
  *
  * Copyright (C) 2008 Red Hat, Inc. All Rights Reserved.
@@ -8,16 +9,32 @@
  * as published by the Free Software Foundation; either version
  * 2 of the Licence, or (at your option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/* Task credentials management - see Documentation/security/credentials.rst
+ *
+ * Copyright (C) 2008 Red Hat, Inc. All Rights Reserved.
+ * Written by David Howells (dhowells@redhat.com)
+ */
+
+#define pr_fmt(fmt) "CRED: " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/cred.h>
 #include <linux/slab.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/coredump.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/key.h>
 #include <linux/keyctl.h>
 #include <linux/init_task.h>
 #include <linux/security.h>
 #include <linux/binfmts.h>
 #include <linux/cn_proc.h>
+<<<<<<< HEAD
 
 #if 0
 #define kdebug(FMT, ...) \
@@ -25,10 +42,26 @@
 #else
 #define kdebug(FMT, ...) \
 	no_printk("[%-5.5s%5u] "FMT"\n", current->comm, current->pid ,##__VA_ARGS__)
+=======
+#include <linux/uidgid.h>
+
+#if 0
+#define kdebug(FMT, ...)						\
+	printk("[%-5.5s%5u] " FMT "\n",					\
+	       current->comm, current->pid, ##__VA_ARGS__)
+#else
+#define kdebug(FMT, ...)						\
+do {									\
+	if (0)								\
+		no_printk("[%-5.5s%5u] " FMT "\n",			\
+			  current->comm, current->pid, ##__VA_ARGS__);	\
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static struct kmem_cache *cred_jar;
 
+<<<<<<< HEAD
 /*
  * The common credentials for the initial task's thread group
  */
@@ -39,16 +72,31 @@ static struct thread_group_cred init_tgcred = {
 	.lock	= __SPIN_LOCK_UNLOCKED(init_cred.tgcred.lock),
 };
 #endif
+=======
+/* init to 2 - one for init_task, one to ensure it is never freed */
+static struct group_info init_groups = { .usage = REFCOUNT_INIT(2) };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The initial credentials for the initial task
  */
 struct cred init_cred = {
 	.usage			= ATOMIC_INIT(4),
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_CREDENTIALS
 	.subscribers		= ATOMIC_INIT(2),
 	.magic			= CRED_MAGIC,
 #endif
+=======
+	.uid			= GLOBAL_ROOT_UID,
+	.gid			= GLOBAL_ROOT_GID,
+	.suid			= GLOBAL_ROOT_UID,
+	.sgid			= GLOBAL_ROOT_GID,
+	.euid			= GLOBAL_ROOT_UID,
+	.egid			= GLOBAL_ROOT_GID,
+	.fsuid			= GLOBAL_ROOT_UID,
+	.fsgid			= GLOBAL_ROOT_GID,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.securebits		= SECUREBITS_DEFAULT,
 	.cap_inheritable	= CAP_EMPTY_SET,
 	.cap_permitted		= CAP_FULL_SET,
@@ -57,6 +105,7 @@ struct cred init_cred = {
 	.user			= INIT_USER,
 	.user_ns		= &init_user_ns,
 	.group_info		= &init_groups,
+<<<<<<< HEAD
 #ifdef CONFIG_KEYS
 	.tgcred			= &init_tgcred,
 #endif
@@ -117,6 +166,11 @@ static void release_tgcred(struct cred *cred)
 #endif
 }
 
+=======
+	.ucounts		= &init_ucounts,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The RCU callback to actually dispose of a set of credentials
  */
@@ -126,6 +180,7 @@ static void put_cred_rcu(struct rcu_head *rcu)
 
 	kdebug("put_cred_rcu(%p)", cred);
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_CREDENTIALS
 	if (cred->magic != CRED_MAGIC_DEAD ||
 	    atomic_read(&cred->usage) != 0 ||
@@ -148,6 +203,23 @@ static void put_cred_rcu(struct rcu_head *rcu)
 	if (cred->group_info)
 		put_group_info(cred->group_info);
 	free_uid(cred->user);
+=======
+	if (atomic_long_read(&cred->usage) != 0)
+		panic("CRED: put_cred_rcu() sees %p with usage %ld\n",
+		      cred, atomic_long_read(&cred->usage));
+
+	security_cred_free(cred);
+	key_put(cred->session_keyring);
+	key_put(cred->process_keyring);
+	key_put(cred->thread_keyring);
+	key_put(cred->request_key_auth);
+	if (cred->group_info)
+		put_group_info(cred->group_info);
+	free_uid(cred->user);
+	if (cred->ucounts)
+		put_ucounts(cred->ucounts);
+	put_user_ns(cred->user_ns);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_free(cred_jar, cred);
 }
 
@@ -159,6 +231,7 @@ static void put_cred_rcu(struct rcu_head *rcu)
  */
 void __put_cred(struct cred *cred)
 {
+<<<<<<< HEAD
 	kdebug("__put_cred(%p{%d,%d})", cred,
 	       atomic_read(&cred->usage),
 	       read_cred_subscribers(cred));
@@ -173,6 +246,19 @@ void __put_cred(struct cred *cred)
 	BUG_ON(cred == current->real_cred);
 
 	call_rcu(&cred->rcu, put_cred_rcu);
+=======
+	kdebug("__put_cred(%p{%ld})", cred,
+	       atomic_long_read(&cred->usage));
+
+	BUG_ON(atomic_long_read(&cred->usage) != 0);
+	BUG_ON(cred == current->cred);
+	BUG_ON(cred == current->real_cred);
+
+	if (cred->non_rcu)
+		put_cred_rcu(&cred->rcu);
+	else
+		call_rcu(&cred->rcu, put_cred_rcu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(__put_cred);
 
@@ -181,6 +267,7 @@ EXPORT_SYMBOL(__put_cred);
  */
 void exit_creds(struct task_struct *tsk)
 {
+<<<<<<< HEAD
 	struct cred *cred;
 
 	kdebug("exit_creds(%u,%p,%p,{%d,%d})", tsk->pid, tsk->real_cred, tsk->cred,
@@ -205,6 +292,30 @@ void exit_creds(struct task_struct *tsk)
 		validate_creds(cred);
 		put_cred(cred);
 	}
+=======
+	struct cred *real_cred, *cred;
+
+	kdebug("exit_creds(%u,%p,%p,{%ld})", tsk->pid, tsk->real_cred, tsk->cred,
+	       atomic_long_read(&tsk->cred->usage));
+
+	real_cred = (struct cred *) tsk->real_cred;
+	tsk->real_cred = NULL;
+
+	cred = (struct cred *) tsk->cred;
+	tsk->cred = NULL;
+
+	if (real_cred == cred) {
+		put_cred_many(cred, 2);
+	} else {
+		put_cred(real_cred);
+		put_cred(cred);
+	}
+
+#ifdef CONFIG_KEYS_REQUEST_CACHE
+	key_put(tsk->cached_requested_key);
+	tsk->cached_requested_key = NULL;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -226,11 +337,19 @@ const struct cred *get_task_cred(struct task_struct *task)
 	do {
 		cred = __task_cred((task));
 		BUG_ON(!cred);
+<<<<<<< HEAD
 	} while (!atomic_inc_not_zero(&((struct cred *)cred)->usage));
+=======
+	} while (!get_cred_rcu(cred));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_unlock();
 	return cred;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(get_task_cred);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Allocate blank credentials, such that the credentials can be filled in at a
@@ -244,6 +363,7 @@ struct cred *cred_alloc_blank(void)
 	if (!new)
 		return NULL;
 
+<<<<<<< HEAD
 #ifdef CONFIG_KEYS
 	new->tgcred = kzalloc(sizeof(*new->tgcred), GFP_KERNEL);
 	if (!new->tgcred) {
@@ -259,6 +379,10 @@ struct cred *cred_alloc_blank(void)
 #endif
 
 	if (security_cred_alloc_blank(new, GFP_KERNEL) < 0)
+=======
+	atomic_long_set(&new->usage, 1);
+	if (security_cred_alloc_blank(new, GFP_KERNEL_ACCOUNT) < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 
 	return new;
@@ -288,8 +412,11 @@ struct cred *prepare_creds(void)
 	const struct cred *old;
 	struct cred *new;
 
+<<<<<<< HEAD
 	validate_process_creds();
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new = kmem_cache_alloc(cred_jar, GFP_KERNEL);
 	if (!new)
 		return NULL;
@@ -299,6 +426,7 @@ struct cred *prepare_creds(void)
 	old = task->cred;
 	memcpy(new, old, sizeof(struct cred));
 
+<<<<<<< HEAD
 	atomic_set(&new->usage, 1);
 	set_cred_subscribers(new, 0);
 	get_group_info(new->group_info);
@@ -308,15 +436,38 @@ struct cred *prepare_creds(void)
 	key_get(new->thread_keyring);
 	key_get(new->request_key_auth);
 	atomic_inc(&new->tgcred->usage);
+=======
+	new->non_rcu = 0;
+	atomic_long_set(&new->usage, 1);
+	get_group_info(new->group_info);
+	get_uid(new->user);
+	get_user_ns(new->user_ns);
+
+#ifdef CONFIG_KEYS
+	key_get(new->session_keyring);
+	key_get(new->process_keyring);
+	key_get(new->thread_keyring);
+	key_get(new->request_key_auth);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_SECURITY
 	new->security = NULL;
 #endif
 
+<<<<<<< HEAD
 	if (security_prepare_creds(new, old, GFP_KERNEL) < 0)
 		goto error;
 	validate_creds(new);
+=======
+	new->ucounts = get_ucounts(new->ucounts);
+	if (!new->ucounts)
+		goto error;
+
+	if (security_prepare_creds(new, old, GFP_KERNEL_ACCOUNT) < 0)
+		goto error;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return new;
 
 error:
@@ -331,6 +482,7 @@ EXPORT_SYMBOL(prepare_creds);
  */
 struct cred *prepare_exec_creds(void)
 {
+<<<<<<< HEAD
 	struct thread_group_cred *tgcred = NULL;
 	struct cred *new;
 
@@ -345,12 +497,20 @@ struct cred *prepare_exec_creds(void)
 		kfree(tgcred);
 		return new;
 	}
+=======
+	struct cred *new;
+
+	new = prepare_creds();
+	if (!new)
+		return new;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_KEYS
 	/* newly exec'd tasks don't get a thread keyring */
 	key_put(new->thread_keyring);
 	new->thread_keyring = NULL;
 
+<<<<<<< HEAD
 	/* create a new per-thread-group creds for all this set of threads to
 	 * share */
 	memcpy(tgcred, new->tgcred, sizeof(struct thread_group_cred));
@@ -366,6 +526,16 @@ struct cred *prepare_exec_creds(void)
 	new->tgcred = tgcred;
 #endif
 
+=======
+	/* inherit the session keyring; new process keyring */
+	key_put(new->process_keyring);
+	new->process_keyring = NULL;
+#endif
+
+	new->suid = new->fsuid = new->euid;
+	new->sgid = new->fsgid = new->egid;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return new;
 }
 
@@ -380,6 +550,7 @@ struct cred *prepare_exec_creds(void)
  */
 int copy_creds(struct task_struct *p, unsigned long clone_flags)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_KEYS
 	struct thread_group_cred *tgcred;
 #endif
@@ -387,6 +558,14 @@ int copy_creds(struct task_struct *p, unsigned long clone_flags)
 	int ret;
 
 	p->replacement_session_keyring = NULL;
+=======
+	struct cred *new;
+	int ret;
+
+#ifdef CONFIG_KEYS_REQUEST_CACHE
+	p->cached_requested_key = NULL;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (
 #ifdef CONFIG_KEYS
@@ -394,6 +573,7 @@ int copy_creds(struct task_struct *p, unsigned long clone_flags)
 #endif
 		clone_flags & CLONE_THREAD
 	    ) {
+<<<<<<< HEAD
 		p->real_cred = get_cred(p->cred);
 		get_cred(p->cred);
 		alter_cred_subscribers(p->cred, 2);
@@ -401,6 +581,12 @@ int copy_creds(struct task_struct *p, unsigned long clone_flags)
 		       p->cred, atomic_read(&p->cred->usage),
 		       read_cred_subscribers(p->cred));
 		atomic_inc(&p->cred->user->processes);
+=======
+		p->real_cred = get_cred_many(p->cred, 2);
+		kdebug("share_creds(%p{%ld})",
+		       p->cred, atomic_long_read(&p->cred->usage));
+		inc_rlimit_ucounts(task_ucounts(p), UCOUNT_RLIMIT_NPROC, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -412,6 +598,7 @@ int copy_creds(struct task_struct *p, unsigned long clone_flags)
 		ret = create_user_ns(new);
 		if (ret < 0)
 			goto error_put;
+<<<<<<< HEAD
 	}
 
 	/* cache user_ns in cred.  Doesn't need a refcount because it will
@@ -419,6 +606,13 @@ int copy_creds(struct task_struct *p, unsigned long clone_flags)
 	 */
 	new->user_ns = new->user->user_ns;
 
+=======
+		ret = set_cred_ucounts(new);
+		if (ret < 0)
+			goto error_put;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_KEYS
 	/* new threads get their own thread keyrings if their parent already
 	 * had one */
@@ -429,6 +623,7 @@ int copy_creds(struct task_struct *p, unsigned long clone_flags)
 			install_thread_keyring_to_cred(new);
 	}
 
+<<<<<<< HEAD
 	/* we share the process and session keyrings between all the threads in
 	 * a process - this is slightly icky as we violate COW credentials a
 	 * bit */
@@ -452,6 +647,19 @@ int copy_creds(struct task_struct *p, unsigned long clone_flags)
 	p->cred = p->real_cred = get_cred(new);
 	alter_cred_subscribers(new, 2);
 	validate_creds(new);
+=======
+	/* The process keyring is only shared between the threads in a process;
+	 * anything outside of those threads doesn't inherit.
+	 */
+	if (!(clone_flags & CLONE_THREAD)) {
+		key_put(new->process_keyring);
+		new->process_keyring = NULL;
+	}
+#endif
+
+	p->cred = p->real_cred = get_cred(new);
+	inc_rlimit_ucounts(task_ucounts(p), UCOUNT_RLIMIT_NPROC, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 error_put:
@@ -459,6 +667,34 @@ error_put:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static bool cred_cap_issubset(const struct cred *set, const struct cred *subset)
+{
+	const struct user_namespace *set_ns = set->user_ns;
+	const struct user_namespace *subset_ns = subset->user_ns;
+
+	/* If the two credentials are in the same user namespace see if
+	 * the capabilities of subset are a subset of set.
+	 */
+	if (set_ns == subset_ns)
+		return cap_issubset(subset->cap_permitted, set->cap_permitted);
+
+	/* The credentials are in a different user namespaces
+	 * therefore one is a subset of the other only if a set is an
+	 * ancestor of subset and set->euid is owner of subset or one
+	 * of subsets ancestors.
+	 */
+	for (;subset_ns != &init_user_ns; subset_ns = subset_ns->parent) {
+		if ((set_ns == subset_ns->parent)  &&
+		    uid_eq(subset_ns->owner, set->euid))
+			return true;
+	}
+
+	return false;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * commit_creds - Install new credentials upon the current task
  * @new: The credentials to be assigned
@@ -478,6 +714,7 @@ int commit_creds(struct cred *new)
 	struct task_struct *task = current;
 	const struct cred *old = task->real_cred;
 
+<<<<<<< HEAD
 	kdebug("commit_creds(%p{%d,%d})", new,
 	       atomic_read(&new->usage),
 	       read_cred_subscribers(new));
@@ -489,10 +726,18 @@ int commit_creds(struct cred *new)
 	validate_creds(new);
 #endif
 	BUG_ON(atomic_read(&new->usage) < 1);
+=======
+	kdebug("commit_creds(%p{%ld})", new,
+	       atomic_long_read(&new->usage));
+
+	BUG_ON(task->cred != old);
+	BUG_ON(atomic_long_read(&new->usage) < 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	get_cred(new); /* we will require a ref for the subj creds too */
 
 	/* dumpability changes */
+<<<<<<< HEAD
 	if (old->euid != new->euid ||
 	    old->egid != new->egid ||
 	    old->fsuid != new->fsuid ||
@@ -501,19 +746,46 @@ int commit_creds(struct cred *new)
 		if (task->mm)
 			set_dumpable(task->mm, suid_dumpable);
 		task->pdeath_signal = 0;
+=======
+	if (!uid_eq(old->euid, new->euid) ||
+	    !gid_eq(old->egid, new->egid) ||
+	    !uid_eq(old->fsuid, new->fsuid) ||
+	    !gid_eq(old->fsgid, new->fsgid) ||
+	    !cred_cap_issubset(old, new)) {
+		if (task->mm)
+			set_dumpable(task->mm, suid_dumpable);
+		task->pdeath_signal = 0;
+		/*
+		 * If a task drops privileges and becomes nondumpable,
+		 * the dumpability change must become visible before
+		 * the credential change; otherwise, a __ptrace_may_access()
+		 * racing with this change may be able to attach to a task it
+		 * shouldn't be able to attach to (as if the task had dropped
+		 * privileges without becoming nondumpable).
+		 * Pairs with a read barrier in __ptrace_may_access().
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smp_wmb();
 	}
 
 	/* alter the thread keyring */
+<<<<<<< HEAD
 	if (new->fsuid != old->fsuid)
 		key_fsuid_changed(task);
 	if (new->fsgid != old->fsgid)
 		key_fsgid_changed(task);
+=======
+	if (!uid_eq(new->fsuid, old->fsuid))
+		key_fsuid_changed(new);
+	if (!gid_eq(new->fsgid, old->fsgid))
+		key_fsgid_changed(new);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* do it
 	 * RLIMIT_NPROC limits on user->processes have already been checked
 	 * in set_user().
 	 */
+<<<<<<< HEAD
 	alter_cred_subscribers(new, 2);
 	if (new->user != old->user)
 		atomic_inc(&new->user->processes);
@@ -539,6 +811,30 @@ int commit_creds(struct cred *new)
 	/* release the old obj and subj refs both */
 	put_cred(old);
 	put_cred(old);
+=======
+	if (new->user != old->user || new->user_ns != old->user_ns)
+		inc_rlimit_ucounts(new->ucounts, UCOUNT_RLIMIT_NPROC, 1);
+	rcu_assign_pointer(task->real_cred, new);
+	rcu_assign_pointer(task->cred, new);
+	if (new->user != old->user || new->user_ns != old->user_ns)
+		dec_rlimit_ucounts(old->ucounts, UCOUNT_RLIMIT_NPROC, 1);
+
+	/* send notifications */
+	if (!uid_eq(new->uid,   old->uid)  ||
+	    !uid_eq(new->euid,  old->euid) ||
+	    !uid_eq(new->suid,  old->suid) ||
+	    !uid_eq(new->fsuid, old->fsuid))
+		proc_id_connector(task, PROC_EVENT_UID);
+
+	if (!gid_eq(new->gid,   old->gid)  ||
+	    !gid_eq(new->egid,  old->egid) ||
+	    !gid_eq(new->sgid,  old->sgid) ||
+	    !gid_eq(new->fsgid, old->fsgid))
+		proc_id_connector(task, PROC_EVENT_GID);
+
+	/* release the old obj and subj refs both */
+	put_cred_many(old, 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(commit_creds);
@@ -552,6 +848,7 @@ EXPORT_SYMBOL(commit_creds);
  */
 void abort_creds(struct cred *new)
 {
+<<<<<<< HEAD
 	kdebug("abort_creds(%p{%d,%d})", new,
 	       atomic_read(&new->usage),
 	       read_cred_subscribers(new));
@@ -560,6 +857,12 @@ void abort_creds(struct cred *new)
 	BUG_ON(read_cred_subscribers(new) != 0);
 #endif
 	BUG_ON(atomic_read(&new->usage) < 1);
+=======
+	kdebug("abort_creds(%p{%ld})", new,
+	       atomic_long_read(&new->usage));
+
+	BUG_ON(atomic_long_read(&new->usage) < 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_cred(new);
 }
 EXPORT_SYMBOL(abort_creds);
@@ -575,6 +878,7 @@ const struct cred *override_creds(const struct cred *new)
 {
 	const struct cred *old = current->cred;
 
+<<<<<<< HEAD
 	kdebug("override_creds(%p{%d,%d})", new,
 	       atomic_read(&new->usage),
 	       read_cred_subscribers(new));
@@ -589,6 +893,24 @@ const struct cred *override_creds(const struct cred *new)
 	kdebug("override_creds() = %p{%d,%d}", old,
 	       atomic_read(&old->usage),
 	       read_cred_subscribers(old));
+=======
+	kdebug("override_creds(%p{%ld})", new,
+	       atomic_long_read(&new->usage));
+
+	/*
+	 * NOTE! This uses 'get_new_cred()' rather than 'get_cred()'.
+	 *
+	 * That means that we do not clear the 'non_rcu' flag, since
+	 * we are only installing the cred into the thread-synchronous
+	 * '->cred' pointer, not the '->real_cred' pointer that is
+	 * visible to other threads under RCU.
+	 */
+	get_new_cred((struct cred *)new);
+	rcu_assign_pointer(current->cred, new);
+
+	kdebug("override_creds() = %p{%ld}", old,
+	       atomic_long_read(&old->usage));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return old;
 }
 EXPORT_SYMBOL(override_creds);
@@ -604,6 +926,7 @@ void revert_creds(const struct cred *old)
 {
 	const struct cred *override = current->cred;
 
+<<<<<<< HEAD
 	kdebug("revert_creds(%p{%d,%d})", old,
 	       atomic_read(&old->usage),
 	       read_cred_subscribers(old));
@@ -613,18 +936,106 @@ void revert_creds(const struct cred *old)
 	alter_cred_subscribers(old, 1);
 	rcu_assign_pointer(current->cred, old);
 	alter_cred_subscribers(override, -1);
+=======
+	kdebug("revert_creds(%p{%ld})", old,
+	       atomic_long_read(&old->usage));
+
+	rcu_assign_pointer(current->cred, old);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	put_cred(override);
 }
 EXPORT_SYMBOL(revert_creds);
 
+<<<<<<< HEAD
+=======
+/**
+ * cred_fscmp - Compare two credentials with respect to filesystem access.
+ * @a: The first credential
+ * @b: The second credential
+ *
+ * cred_cmp() will return zero if both credentials have the same
+ * fsuid, fsgid, and supplementary groups.  That is, if they will both
+ * provide the same access to files based on mode/uid/gid.
+ * If the credentials are different, then either -1 or 1 will
+ * be returned depending on whether @a comes before or after @b
+ * respectively in an arbitrary, but stable, ordering of credentials.
+ *
+ * Return: -1, 0, or 1 depending on comparison
+ */
+int cred_fscmp(const struct cred *a, const struct cred *b)
+{
+	struct group_info *ga, *gb;
+	int g;
+
+	if (a == b)
+		return 0;
+	if (uid_lt(a->fsuid, b->fsuid))
+		return -1;
+	if (uid_gt(a->fsuid, b->fsuid))
+		return 1;
+
+	if (gid_lt(a->fsgid, b->fsgid))
+		return -1;
+	if (gid_gt(a->fsgid, b->fsgid))
+		return 1;
+
+	ga = a->group_info;
+	gb = b->group_info;
+	if (ga == gb)
+		return 0;
+	if (ga == NULL)
+		return -1;
+	if (gb == NULL)
+		return 1;
+	if (ga->ngroups < gb->ngroups)
+		return -1;
+	if (ga->ngroups > gb->ngroups)
+		return 1;
+
+	for (g = 0; g < ga->ngroups; g++) {
+		if (gid_lt(ga->gid[g], gb->gid[g]))
+			return -1;
+		if (gid_gt(ga->gid[g], gb->gid[g]))
+			return 1;
+	}
+	return 0;
+}
+EXPORT_SYMBOL(cred_fscmp);
+
+int set_cred_ucounts(struct cred *new)
+{
+	struct ucounts *new_ucounts, *old_ucounts = new->ucounts;
+
+	/*
+	 * This optimization is needed because alloc_ucounts() uses locks
+	 * for table lookups.
+	 */
+	if (old_ucounts->ns == new->user_ns && uid_eq(old_ucounts->uid, new->uid))
+		return 0;
+
+	if (!(new_ucounts = alloc_ucounts(new->user_ns, new->uid)))
+		return -EAGAIN;
+
+	new->ucounts = new_ucounts;
+	put_ucounts(old_ucounts);
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * initialise the credentials stuff
  */
 void __init cred_init(void)
 {
 	/* allocate a slab in which we can store credentials */
+<<<<<<< HEAD
 	cred_jar = kmem_cache_create("cred_jar", sizeof(struct cred),
 				     0, SLAB_HWCACHE_ALIGN|SLAB_PANIC, NULL);
+=======
+	cred_jar = KMEM_CACHE(cred,
+			      SLAB_HWCACHE_ALIGN | SLAB_PANIC | SLAB_ACCOUNT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -635,13 +1046,20 @@ void __init cred_init(void)
  * override a task's own credentials so that work can be done on behalf of that
  * task that requires a different subjective context.
  *
+<<<<<<< HEAD
  * @daemon is used to provide a base for the security record, but can be NULL.
  * If @daemon is supplied, then the security data will be derived from that;
  * otherwise they'll be set to 0 and no groups, full capabilities and no keys.
+=======
+ * @daemon is used to provide a base cred, with the security data derived from
+ * that; if this is "&init_task", they'll be set to 0, no groups, full
+ * capabilities, and no keys.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The caller may change these controls afterwards if desired.
  *
  * Returns the new credentials or NULL if out of memory.
+<<<<<<< HEAD
  *
  * Does not take, and does not return holding current->cred_replace_mutex.
  */
@@ -653,10 +1071,22 @@ struct cred *prepare_kernel_cred(struct task_struct *daemon)
 	const struct cred *old;
 	struct cred *new;
 
+=======
+ */
+struct cred *prepare_kernel_cred(struct task_struct *daemon)
+{
+	const struct cred *old;
+	struct cred *new;
+
+	if (WARN_ON_ONCE(!daemon))
+		return NULL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new = kmem_cache_alloc(cred_jar, GFP_KERNEL);
 	if (!new)
 		return NULL;
 
+<<<<<<< HEAD
 #ifdef CONFIG_KEYS
 	tgcred = kmalloc(sizeof(*tgcred), GFP_KERNEL);
 	if (!tgcred) {
@@ -688,17 +1118,46 @@ struct cred *prepare_kernel_cred(struct task_struct *daemon)
 	new->tgcred = tgcred;
 	new->request_key_auth = NULL;
 	new->thread_keyring = NULL;
+=======
+	kdebug("prepare_kernel_cred() alloc %p", new);
+
+	old = get_task_cred(daemon);
+
+	*new = *old;
+	new->non_rcu = 0;
+	atomic_long_set(&new->usage, 1);
+	get_uid(new->user);
+	get_user_ns(new->user_ns);
+	get_group_info(new->group_info);
+
+#ifdef CONFIG_KEYS
+	new->session_keyring = NULL;
+	new->process_keyring = NULL;
+	new->thread_keyring = NULL;
+	new->request_key_auth = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new->jit_keyring = KEY_REQKEY_DEFL_THREAD_KEYRING;
 #endif
 
 #ifdef CONFIG_SECURITY
 	new->security = NULL;
 #endif
+<<<<<<< HEAD
 	if (security_prepare_creds(new, old, GFP_KERNEL) < 0)
 		goto error;
 
 	put_cred(old);
 	validate_creds(new);
+=======
+	new->ucounts = get_ucounts(new->ucounts);
+	if (!new->ucounts)
+		goto error;
+
+	if (security_prepare_creds(new, old, GFP_KERNEL_ACCOUNT) < 0)
+		goto error;
+
+	put_cred(old);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return new;
 
 error:
@@ -756,11 +1215,17 @@ EXPORT_SYMBOL(set_security_override_from_ctx);
  */
 int set_create_files_as(struct cred *new, struct inode *inode)
 {
+<<<<<<< HEAD
+=======
+	if (!uid_valid(inode->i_uid) || !gid_valid(inode->i_gid))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new->fsuid = inode->i_uid;
 	new->fsgid = inode->i_gid;
 	return security_kernel_create_files_as(new, inode);
 }
 EXPORT_SYMBOL(set_create_files_as);
+<<<<<<< HEAD
 
 #ifdef CONFIG_DEBUG_CREDENTIALS
 
@@ -874,3 +1339,5 @@ void validate_creds_for_do_exit(struct task_struct *tsk)
 }
 
 #endif /* CONFIG_DEBUG_CREDENTIALS */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

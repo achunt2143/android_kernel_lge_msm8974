@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Voltage and current regulation for AD5398 and AD5821
  *
  * Copyright 2010 Analog Devices Inc.
  *
  * Enter bugs at http://blackfin.uclinux.org/
+<<<<<<< HEAD
  *
  * Licensed under the GPL-2 or later.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -58,10 +65,19 @@ static int ad5398_write_reg(struct i2c_client *client, const unsigned short data
 
 	val = cpu_to_be16(data);
 	ret = i2c_master_send(client, (char *)&val, 2);
+<<<<<<< HEAD
 	if (ret < 0)
 		dev_err(&client->dev, "I2C write error\n");
 
 	return ret;
+=======
+	if (ret != 2) {
+		dev_err(&client->dev, "I2C write error\n");
+		return ret < 0 ? ret : -EIO;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ad5398_get_current_limit(struct regulator_dev *rdev)
@@ -89,9 +105,18 @@ static int ad5398_set_current_limit(struct regulator_dev *rdev, int min_uA, int 
 	unsigned short data;
 	int ret;
 
+<<<<<<< HEAD
 	if (min_uA > chip->max_uA || min_uA < chip->min_uA)
 		return -EINVAL;
 	if (max_uA > chip->max_uA || max_uA < chip->min_uA)
+=======
+	if (min_uA < chip->min_uA)
+		min_uA = chip->min_uA;
+	if (max_uA > chip->max_uA)
+		max_uA = chip->max_uA;
+
+	if (min_uA > chip->max_uA || max_uA < chip->min_uA)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	selector = DIV_ROUND_UP((min_uA - chip->min_uA) * chip->current_level,
@@ -99,8 +124,13 @@ static int ad5398_set_current_limit(struct regulator_dev *rdev, int min_uA, int 
 	if (ad5398_calc_current(chip, selector) > max_uA)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	dev_dbg(&client->dev, "changing current %dmA\n",
 		ad5398_calc_current(chip, selector) / 1000);
+=======
+	dev_dbg(&client->dev, "changing current %duA\n",
+		ad5398_calc_current(chip, selector));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* read chip enable bit */
 	ret = ad5398_read_reg(client, &data);
@@ -176,7 +206,11 @@ static int ad5398_disable(struct regulator_dev *rdev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct regulator_ops ad5398_ops = {
+=======
+static const struct regulator_ops ad5398_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_current_limit = ad5398_get_current_limit,
 	.set_current_limit = ad5398_set_current_limit,
 	.enable = ad5398_enable,
@@ -184,7 +218,11 @@ static struct regulator_ops ad5398_ops = {
 	.is_enabled = ad5398_is_enabled,
 };
 
+<<<<<<< HEAD
 static struct regulator_desc ad5398_reg = {
+=======
+static const struct regulator_desc ad5398_reg = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "isink",
 	.id = 0,
 	.ops = &ad5398_ops,
@@ -208,6 +246,7 @@ static const struct i2c_device_id ad5398_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, ad5398_id);
 
+<<<<<<< HEAD
 static int __devinit ad5398_probe(struct i2c_client *client,
 				const struct i2c_device_id *id)
 {
@@ -216,14 +255,35 @@ static int __devinit ad5398_probe(struct i2c_client *client,
 	const struct ad5398_current_data_format *df =
 			(struct ad5398_current_data_format *)id->driver_data;
 	int ret;
+=======
+static int ad5398_probe(struct i2c_client *client)
+{
+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+	struct regulator_init_data *init_data = dev_get_platdata(&client->dev);
+	struct regulator_config config = { };
+	struct ad5398_chip_info *chip;
+	const struct ad5398_current_data_format *df =
+			(struct ad5398_current_data_format *)id->driver_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!init_data)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
 	if (!chip)
 		return -ENOMEM;
 
+=======
+	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
+	if (!chip)
+		return -ENOMEM;
+
+	config.dev = &client->dev;
+	config.init_data = init_data;
+	config.driver_data = chip;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->client = client;
 
 	chip->min_uA = df->min_uA;
@@ -232,6 +292,7 @@ static int __devinit ad5398_probe(struct i2c_client *client,
 	chip->current_offset = df->current_offset;
 	chip->current_mask = (chip->current_level - 1) << chip->current_offset;
 
+<<<<<<< HEAD
 	chip->rdev = regulator_register(&ad5398_reg, &client->dev,
 					init_data, chip, NULL);
 	if (IS_ERR(chip->rdev)) {
@@ -239,11 +300,20 @@ static int __devinit ad5398_probe(struct i2c_client *client,
 		dev_err(&client->dev, "failed to register %s %s\n",
 			id->name, ad5398_reg.name);
 		goto err;
+=======
+	chip->rdev = devm_regulator_register(&client->dev, &ad5398_reg,
+					     &config);
+	if (IS_ERR(chip->rdev)) {
+		dev_err(&client->dev, "failed to register %s %s\n",
+			id->name, ad5398_reg.name);
+		return PTR_ERR(chip->rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	i2c_set_clientdata(client, chip);
 	dev_dbg(&client->dev, "%s regulator driver is registered.\n", id->name);
 	return 0;
+<<<<<<< HEAD
 
 err:
 	kfree(chip);
@@ -258,13 +328,21 @@ static int __devexit ad5398_remove(struct i2c_client *client)
 	kfree(chip);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct i2c_driver ad5398_driver = {
 	.probe = ad5398_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(ad5398_remove),
 	.driver		= {
 		.name	= "ad5398",
+=======
+	.driver		= {
+		.name	= "ad5398",
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.id_table	= ad5398_id,
 };
@@ -284,4 +362,7 @@ module_exit(ad5398_exit);
 MODULE_DESCRIPTION("AD5398 and AD5821 current regulator driver");
 MODULE_AUTHOR("Sonic Zhang");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS("i2c:ad5398-regulator");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

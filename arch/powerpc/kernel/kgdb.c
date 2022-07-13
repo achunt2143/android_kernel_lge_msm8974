@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PowerPC backend to the KGDB stub.
  *
@@ -8,6 +12,7 @@
  * PPC32 support restored by Vitaly Wool <vwool@ru.mvista.com> and
  * Sergei Shtylyov <sshtylyov@ru.mvista.com>
  * Copyright (C) 2007-2008 Wind River Systems, Inc.
+<<<<<<< HEAD
  *
  * This file is licensed under the terms of the GNU General Public License
  * version 2. This program as licensed "as is" without any warranty of any
@@ -16,6 +21,11 @@
 
 #include <linux/kernel.h>
 #include <linux/init.h>
+=======
+ */
+
+#include <linux/kernel.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kgdb.h>
 #include <linux/smp.h>
 #include <linux/signal.h>
@@ -25,6 +35,12 @@
 #include <asm/processor.h>
 #include <asm/machdep.h>
 #include <asm/debug.h>
+<<<<<<< HEAD
+=======
+#include <asm/code-patching.h>
+#include <linux/slab.h>
+#include <asm/inst.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This table contains the mapping between PowerPC hardware trap types, and
@@ -46,9 +62,15 @@ static struct hard_trap_info
 	{ 0x0800, 0x08 /* SIGFPE */  },		/* fp unavailable */
 	{ 0x0900, 0x0e /* SIGALRM */ },		/* decrementer */
 	{ 0x0c00, 0x14 /* SIGCHLD */ },		/* system call */
+<<<<<<< HEAD
 #if defined(CONFIG_40x) || defined(CONFIG_BOOKE)
 	{ 0x2002, 0x05 /* SIGTRAP */ },		/* debug */
 #if defined(CONFIG_FSL_BOOKE)
+=======
+#ifdef CONFIG_BOOKE_OR_40x
+	{ 0x2002, 0x05 /* SIGTRAP */ },		/* debug */
+#if defined(CONFIG_PPC_85xx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x2010, 0x08 /* SIGFPE */  },		/* spe unavailable */
 	{ 0x2020, 0x08 /* SIGFPE */  },		/* spe unavailable */
 	{ 0x2030, 0x08 /* SIGFPE */  },		/* spe fp data */
@@ -58,18 +80,30 @@ static struct hard_trap_info
 	{ 0x2900, 0x08 /* SIGFPE */  },		/* apu unavailable */
 	{ 0x3100, 0x0e /* SIGALRM */ },		/* fixed interval timer */
 	{ 0x3200, 0x02 /* SIGINT */  }, 	/* watchdog */
+<<<<<<< HEAD
 #else /* ! CONFIG_FSL_BOOKE */
+=======
+#else /* ! CONFIG_PPC_85xx */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x1000, 0x0e /* SIGALRM */ },		/* prog interval timer */
 	{ 0x1010, 0x0e /* SIGALRM */ },		/* fixed interval timer */
 	{ 0x1020, 0x02 /* SIGINT */  }, 	/* watchdog */
 	{ 0x2010, 0x08 /* SIGFPE */  },		/* fp unavailable */
 	{ 0x2020, 0x08 /* SIGFPE */  },		/* ap unavailable */
 #endif
+<<<<<<< HEAD
 #else /* ! (defined(CONFIG_40x) || defined(CONFIG_BOOKE)) */
 	{ 0x0d00, 0x05 /* SIGTRAP */ },		/* single-step */
 #if defined(CONFIG_8xx)
 	{ 0x1000, 0x04 /* SIGILL */  },		/* software emulation */
 #else /* ! CONFIG_8xx */
+=======
+#else /* !CONFIG_BOOKE_OR_40x */
+	{ 0x0d00, 0x05 /* SIGTRAP */ },		/* single-step */
+#if defined(CONFIG_PPC_8xx)
+	{ 0x1000, 0x04 /* SIGILL */  },		/* software emulation */
+#else /* ! CONFIG_PPC_8xx */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0f00, 0x04 /* SIGILL */  },		/* performance monitor */
 	{ 0x0f20, 0x08 /* SIGFPE */  },		/* altivec unavailable */
 	{ 0x1300, 0x05 /* SIGTRAP */ }, 	/* instruction address break */
@@ -101,14 +135,37 @@ static int computeSignal(unsigned int tt)
 	return SIGHUP;		/* default for things we don't know about */
 }
 
+<<<<<<< HEAD
 static int kgdb_call_nmi_hook(struct pt_regs *regs)
+=======
+/**
+ *
+ *	kgdb_skipexception - Bail out of KGDB when we've been triggered.
+ *	@exception: Exception vector number
+ *	@regs: Current &struct pt_regs.
+ *
+ *	On some architectures we need to skip a breakpoint exception when
+ *	it occurs after a breakpoint has been removed.
+ *
+ */
+int kgdb_skipexception(int exception, struct pt_regs *regs)
+{
+	return kgdb_isremovedbreak(regs->nip);
+}
+
+static int kgdb_debugger_ipi(struct pt_regs *regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	kgdb_nmicallback(raw_smp_processor_id(), regs);
 	return 0;
 }
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 void kgdb_roundup_cpus(unsigned long flags)
+=======
+void kgdb_roundup_cpus(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	smp_send_debugger_break();
 }
@@ -129,14 +186,20 @@ static int kgdb_handle_breakpoint(struct pt_regs *regs)
 	if (kgdb_handle_exception(1, SIGTRAP, 0, regs) != 0)
 		return 0;
 
+<<<<<<< HEAD
 	if (*(u32 *) (regs->nip) == *(u32 *) (&arch_kgdb_ops.gdb_bpt_instr))
 		regs->nip += BREAK_INSTR_SIZE;
+=======
+	if (*(u32 *)regs->nip == BREAK_INSTR)
+		regs_add_return_ip(regs, BREAK_INSTR_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
 
 static int kgdb_singlestep(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	struct thread_info *thread_info, *exception_thread_info;
 
 	if (user_mode(regs))
@@ -163,6 +226,13 @@ static int kgdb_singlestep(struct pt_regs *regs)
 	if (thread_info != exception_thread_info)
 		memcpy(thread_info, exception_thread_info, sizeof *thread_info);
 
+=======
+	if (user_mode(regs))
+		return 0;
+
+	kgdb_handle_exception(0, SIGTRAP, 0, regs);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -176,7 +246,11 @@ static int kgdb_iabr_match(struct pt_regs *regs)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int kgdb_dabr_match(struct pt_regs *regs)
+=======
+static int kgdb_break_match(struct pt_regs *regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (user_mode(regs))
 		return 0;
@@ -198,7 +272,11 @@ static int kgdb_dabr_match(struct pt_regs *regs)
 void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *p)
 {
 	struct pt_regs *regs = (struct pt_regs *)(p->thread.ksp +
+<<<<<<< HEAD
 						  STACK_FRAME_OVERHEAD);
+=======
+						  STACK_INT_FRAME_REGS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long *ptr = gdb_regs;
 	int reg;
 
@@ -215,7 +293,11 @@ void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *p)
 	for (reg = 14; reg < 32; reg++)
 		PACK64(ptr, regs->gpr[reg]);
 
+<<<<<<< HEAD
 #ifdef CONFIG_FSL_BOOKE
+=======
+#ifdef CONFIG_PPC_85xx
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SPE
 	for (reg = 0; reg < 32; reg++)
 		PACK64(ptr, p->thread.evr[reg]);
@@ -241,7 +323,11 @@ void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *p)
 #define GDB_SIZEOF_REG sizeof(unsigned long)
 #define GDB_SIZEOF_REG_U32 sizeof(u32)
 
+<<<<<<< HEAD
 #ifdef CONFIG_FSL_BOOKE
+=======
+#ifdef CONFIG_PPC_85xx
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GDB_SIZEOF_FLOAT_REG sizeof(unsigned long)
 #else
 #define GDB_SIZEOF_FLOAT_REG sizeof(u64)
@@ -336,7 +422,11 @@ char *dbg_get_reg(int regno, void *mem, struct pt_regs *regs)
 
 	if (regno >= 32 && regno < 64) {
 		/* FP registers 32 -> 63 */
+<<<<<<< HEAD
 #if defined(CONFIG_FSL_BOOKE) && defined(CONFIG_SPE)
+=======
+#if defined(CONFIG_PPC_85xx) && defined(CONFIG_SPE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (current)
 			memcpy(mem, &current->thread.evr[regno-32],
 					dbg_reg_def[regno].size);
@@ -362,7 +452,11 @@ int dbg_set_reg(int regno, void *mem, struct pt_regs *regs)
 
 	if (regno >= 32 && regno < 64) {
 		/* FP registers 32 -> 63 */
+<<<<<<< HEAD
 #if defined(CONFIG_FSL_BOOKE) && defined(CONFIG_SPE)
+=======
+#if defined(CONFIG_PPC_85xx) && defined(CONFIG_SPE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(&current->thread.evr[regno-32], mem,
 				dbg_reg_def[regno].size);
 #else
@@ -376,11 +470,19 @@ int dbg_set_reg(int regno, void *mem, struct pt_regs *regs)
 
 void kgdb_arch_set_pc(struct pt_regs *regs, unsigned long pc)
 {
+<<<<<<< HEAD
 	regs->nip = pc;
 }
 
 /*
  * This function does PowerPC specific procesing for interfacing to gdb.
+=======
+	regs_set_return_ip(regs, pc);
+}
+
+/*
+ * This function does PowerPC specific processing for interfacing to gdb.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int kgdb_arch_handle_exception(int vector, int signo, int err_code,
 			       char *remcom_in_buffer, char *remcom_out_buffer,
@@ -398,7 +500,11 @@ int kgdb_arch_handle_exception(int vector, int signo, int err_code,
 	case 'c':
 		/* handle the optional parameter */
 		if (kgdb_hex2long(&ptr, &addr))
+<<<<<<< HEAD
 			linux_regs->nip = addr;
+=======
+			regs_set_return_ip(linux_regs, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		atomic_set(&kgdb_cpu_doing_single_step, -1);
 		/* set the trace bit if we're stepping */
@@ -406,11 +512,18 @@ int kgdb_arch_handle_exception(int vector, int signo, int err_code,
 #ifdef CONFIG_PPC_ADV_DEBUG_REGS
 			mtspr(SPRN_DBCR0,
 			      mfspr(SPRN_DBCR0) | DBCR0_IC | DBCR0_IDM);
+<<<<<<< HEAD
 			linux_regs->msr |= MSR_DE;
 #else
 			linux_regs->msr |= MSR_SE;
 #endif
 			kgdb_single_step = 1;
+=======
+			regs_set_return_msr(linux_regs, linux_regs->msr | MSR_DE);
+#else
+			regs_set_return_msr(linux_regs, linux_regs->msr | MSR_SE);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atomic_set(&kgdb_cpu_doing_single_step,
 				   raw_smp_processor_id());
 		}
@@ -420,12 +533,50 @@ int kgdb_arch_handle_exception(int vector, int signo, int err_code,
 	return -1;
 }
 
+<<<<<<< HEAD
 /*
  * Global data
  */
 struct kgdb_arch arch_kgdb_ops = {
 	.gdb_bpt_instr = {0x7d, 0x82, 0x10, 0x08},
 };
+=======
+int kgdb_arch_set_breakpoint(struct kgdb_bkpt *bpt)
+{
+	u32 instr, *addr = (u32 *)bpt->bpt_addr;
+	int err;
+
+	err = get_kernel_nofault(instr, addr);
+	if (err)
+		return err;
+
+	err = patch_instruction(addr, ppc_inst(BREAK_INSTR));
+	if (err)
+		return -EFAULT;
+
+	*(u32 *)bpt->saved_instr = instr;
+
+	return 0;
+}
+
+int kgdb_arch_remove_breakpoint(struct kgdb_bkpt *bpt)
+{
+	int err;
+	unsigned int instr = *(unsigned int *)bpt->saved_instr;
+	u32 *addr = (u32 *)bpt->bpt_addr;
+
+	err = patch_instruction(addr, ppc_inst(instr));
+	if (err)
+		return -EFAULT;
+
+	return 0;
+}
+
+/*
+ * Global data
+ */
+const struct kgdb_arch arch_kgdb_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int kgdb_not_implemented(struct pt_regs *regs)
 {
@@ -437,7 +588,11 @@ static void *old__debugger;
 static void *old__debugger_bpt;
 static void *old__debugger_sstep;
 static void *old__debugger_iabr_match;
+<<<<<<< HEAD
 static void *old__debugger_dabr_match;
+=======
+static void *old__debugger_break_match;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void *old__debugger_fault_handler;
 
 int kgdb_arch_init(void)
@@ -447,15 +602,26 @@ int kgdb_arch_init(void)
 	old__debugger_bpt = __debugger_bpt;
 	old__debugger_sstep = __debugger_sstep;
 	old__debugger_iabr_match = __debugger_iabr_match;
+<<<<<<< HEAD
 	old__debugger_dabr_match = __debugger_dabr_match;
 	old__debugger_fault_handler = __debugger_fault_handler;
 
 	__debugger_ipi = kgdb_call_nmi_hook;
+=======
+	old__debugger_break_match = __debugger_break_match;
+	old__debugger_fault_handler = __debugger_fault_handler;
+
+	__debugger_ipi = kgdb_debugger_ipi;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__debugger = kgdb_debugger;
 	__debugger_bpt = kgdb_handle_breakpoint;
 	__debugger_sstep = kgdb_singlestep;
 	__debugger_iabr_match = kgdb_iabr_match;
+<<<<<<< HEAD
 	__debugger_dabr_match = kgdb_dabr_match;
+=======
+	__debugger_break_match = kgdb_break_match;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__debugger_fault_handler = kgdb_not_implemented;
 
 	return 0;
@@ -468,6 +634,10 @@ void kgdb_arch_exit(void)
 	__debugger_bpt = old__debugger_bpt;
 	__debugger_sstep = old__debugger_sstep;
 	__debugger_iabr_match = old__debugger_iabr_match;
+<<<<<<< HEAD
 	__debugger_dabr_match = old__debugger_dabr_match;
+=======
+	__debugger_break_match = old__debugger_break_match;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__debugger_fault_handler = old__debugger_fault_handler;
 }

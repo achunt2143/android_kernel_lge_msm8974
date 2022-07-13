@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2012 Red Hat
  * based in parts on udlfb.c:
  * Copyright (C) 2009 Roberto De Ioris <roberto@unbit.it>
  * Copyright (C) 2009 Jaya Kumar <jayakumar.lkml@gmail.com>
  * Copyright (C) 2009 Bernie Thompson <bernie@plugable.com>
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License v2. See the file COPYING in the main directory of this archive for
@@ -17,6 +22,14 @@
 
 #include "drmP.h"
 #include "udl_drv.h"
+=======
+ */
+
+#include <asm/unaligned.h>
+
+#include "udl_drv.h"
+#include "udl_proto.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_CMD_PIXELS		255
 
@@ -32,6 +45,7 @@
 #define MIN_RAW_PIX_BYTES	2
 #define MIN_RAW_CMD_BYTES	(RAW_HEADER_BYTES + MIN_RAW_PIX_BYTES)
 
+<<<<<<< HEAD
 /*
  * Trims identical data from front and back of line
  * Sets new front buffer address and width
@@ -84,6 +98,23 @@ static inline u16 pixel32_to_be16p(const uint8_t *pixel)
 		   ((pix >> 5) & 0x07e0) |
 		   ((pix >> 8) & 0xf800));
 	return retval;
+=======
+static inline u16 pixel32_to_be16(const uint32_t pixel)
+{
+	return (((pixel >> 3) & 0x001f) |
+		((pixel >> 5) & 0x07e0) |
+		((pixel >> 8) & 0xf800));
+}
+
+static inline u16 get_pixel_val16(const uint8_t *pixel, int log_bpp)
+{
+	u16 pixel_val16;
+	if (log_bpp == 1)
+		pixel_val16 = *(const uint16_t *)pixel;
+	else
+		pixel_val16 = pixel32_to_be16(*(const uint32_t *)pixel);
+	return pixel_val16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -118,14 +149,21 @@ static void udl_compress_hline16(
 	const u8 *const pixel_end,
 	uint32_t *device_address_ptr,
 	uint8_t **command_buffer_ptr,
+<<<<<<< HEAD
 	const uint8_t *const cmd_buffer_end, int bpp)
 {
+=======
+	const uint8_t *const cmd_buffer_end, int log_bpp)
+{
+	const int bpp = 1 << log_bpp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const u8 *pixel = *pixel_start_ptr;
 	uint32_t dev_addr  = *device_address_ptr;
 	uint8_t *cmd = *command_buffer_ptr;
 
 	while ((pixel_end > pixel) &&
 	       (cmd_buffer_end - MIN_RLX_CMD_BYTES > cmd)) {
+<<<<<<< HEAD
 		uint8_t *raw_pixels_count_byte = 0;
 		uint8_t *cmd_pixels_count_byte = 0;
 		const u8 *raw_pixel_start = 0;
@@ -135,6 +173,16 @@ static void udl_compress_hline16(
 
 		*cmd++ = 0xaf;
 		*cmd++ = 0x6b;
+=======
+		uint8_t *raw_pixels_count_byte = NULL;
+		uint8_t *cmd_pixels_count_byte = NULL;
+		const u8 *raw_pixel_start = NULL;
+		const u8 *cmd_pixel_start, *cmd_pixel_end = NULL;
+		uint16_t pixel_val16;
+
+		*cmd++ = UDL_MSG_BULK;
+		*cmd++ = UDL_CMD_WRITERLX16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*cmd++ = (uint8_t) ((dev_addr >> 16) & 0xFF);
 		*cmd++ = (uint8_t) ((dev_addr >> 8) & 0xFF);
 		*cmd++ = (uint8_t) ((dev_addr) & 0xFF);
@@ -145,6 +193,7 @@ static void udl_compress_hline16(
 		raw_pixels_count_byte = cmd++; /*  we'll know this later */
 		raw_pixel_start = pixel;
 
+<<<<<<< HEAD
 		cmd_pixel_end = pixel + (min(MAX_CMD_PIXELS + 1,
 			min((int)(pixel_end - pixel) / bpp,
 			    (int)(cmd_buffer_end - cmd) / 2))) * bpp;
@@ -158,10 +207,24 @@ static void udl_compress_hline16(
 				*(uint16_t *)cmd = cpu_to_be16p((uint16_t *)pixel);
 			else if (bpp == 4)
 				*(uint16_t *)cmd = cpu_to_be16(pixel32_to_be16p(pixel));
+=======
+		cmd_pixel_end = pixel + (min3(MAX_CMD_PIXELS + 1UL,
+					(unsigned long)(pixel_end - pixel) >> log_bpp,
+					(unsigned long)(cmd_buffer_end - 1 - cmd) / 2) << log_bpp);
+
+		pixel_val16 = get_pixel_val16(pixel, log_bpp);
+
+		while (pixel < cmd_pixel_end) {
+			const u8 *const start = pixel;
+			const uint16_t repeating_pixel_val16 = pixel_val16;
+
+			put_unaligned_be16(pixel_val16, cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			cmd += 2;
 			pixel += bpp;
 
+<<<<<<< HEAD
 			if (unlikely((pixel < cmd_pixel_end) &&
 				     (!memcmp(pixel, repeating_pixel, bpp)))) {
 				/* go back and fill in raw pixel count */
@@ -175,6 +238,22 @@ static void udl_compress_hline16(
 
 				/* immediately after raw data is repeat byte */
 				*cmd++ = (((pixel - repeating_pixel) / bpp) - 1) & 0xFF;
+=======
+			while (pixel < cmd_pixel_end) {
+				pixel_val16 = get_pixel_val16(pixel, log_bpp);
+				if (pixel_val16 != repeating_pixel_val16)
+					break;
+				pixel += bpp;
+			}
+
+			if (unlikely(pixel > start + bpp)) {
+				/* go back and fill in raw pixel count */
+				*raw_pixels_count_byte = (((start -
+						raw_pixel_start) >> log_bpp) + 1) & 0xFF;
+
+				/* immediately after raw data is repeat byte */
+				*cmd++ = (((pixel - start) >> log_bpp) - 1) & 0xFF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* Then start another raw pixel span */
 				raw_pixel_start = pixel;
@@ -184,17 +263,32 @@ static void udl_compress_hline16(
 
 		if (pixel > raw_pixel_start) {
 			/* finalize last RAW span */
+<<<<<<< HEAD
 			*raw_pixels_count_byte = ((pixel-raw_pixel_start) / bpp) & 0xFF;
 		}
 
 		*cmd_pixels_count_byte = ((pixel - cmd_pixel_start) / bpp) & 0xFF;
 		dev_addr += ((pixel - cmd_pixel_start) / bpp) * 2;
+=======
+			*raw_pixels_count_byte = ((pixel - raw_pixel_start) >> log_bpp) & 0xFF;
+		} else {
+			/* undo unused byte */
+			cmd--;
+		}
+
+		*cmd_pixels_count_byte = ((pixel - cmd_pixel_start) >> log_bpp) & 0xFF;
+		dev_addr += ((pixel - cmd_pixel_start) >> log_bpp) * 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (cmd_buffer_end <= MIN_RLX_CMD_BYTES + cmd) {
 		/* Fill leftover bytes with no-ops */
 		if (cmd_buffer_end > cmd)
+<<<<<<< HEAD
 			memset(cmd, 0xAF, cmd_buffer_end - cmd);
+=======
+			memset(cmd, UDL_MSG_BULK, cmd_buffer_end - cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmd = (uint8_t *) cmd_buffer_end;
 	}
 
@@ -211,6 +305,7 @@ static void udl_compress_hline16(
  * (that we can only write to, slowly, and can never read), and (optionally)
  * our shadow copy that tracks what's been sent to that hardware buffer.
  */
+<<<<<<< HEAD
 int udl_render_hline(struct drm_device *dev, int bpp, struct urb **urb_ptr,
 		     const char *front, char **urb_buf_ptr,
 		     u32 byte_offset, u32 device_byte_offset,
@@ -219,10 +314,28 @@ int udl_render_hline(struct drm_device *dev, int bpp, struct urb **urb_ptr,
 {
 	const u8 *line_start, *line_end, *next_pixel;
 	u32 base16 = 0 + (device_byte_offset / bpp) * 2;
+=======
+int udl_render_hline(struct drm_device *dev, int log_bpp, struct urb **urb_ptr,
+		     const char *front, char **urb_buf_ptr,
+		     u32 byte_offset, u32 device_byte_offset,
+		     u32 byte_width)
+{
+	const u8 *line_start, *line_end, *next_pixel;
+	u32 base16 = 0 + (device_byte_offset >> log_bpp) * 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct urb *urb = *urb_ptr;
 	u8 *cmd = *urb_buf_ptr;
 	u8 *cmd_end = (u8 *) urb->transfer_buffer + urb->transfer_buffer_length;
 
+<<<<<<< HEAD
+=======
+	if (WARN_ON(!(log_bpp == 1 || log_bpp == 2))) {
+		/* need to finish URB at error from this function */
+		udl_urb_completion(urb);
+		return -EINVAL;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	line_start = (u8 *) (front + byte_offset);
 	next_pixel = line_start;
 	line_end = next_pixel + byte_width;
@@ -231,6 +344,7 @@ int udl_render_hline(struct drm_device *dev, int bpp, struct urb **urb_ptr,
 
 		udl_compress_hline16(&next_pixel,
 			     line_end, &base16,
+<<<<<<< HEAD
 			     (u8 **) &cmd, (u8 *) cmd_end, bpp);
 
 		if (cmd >= cmd_end) {
@@ -241,6 +355,18 @@ int udl_render_hline(struct drm_device *dev, int bpp, struct urb **urb_ptr,
 			urb = udl_get_urb(dev);
 			if (!urb)
 				return 1; /* lost_pixels is set */
+=======
+			     (u8 **) &cmd, (u8 *) cmd_end, log_bpp);
+
+		if (cmd >= cmd_end) {
+			int len = cmd - (u8 *) urb->transfer_buffer;
+			int ret = udl_submit_urb(dev, urb, len);
+			if (ret)
+				return ret;
+			urb = udl_get_urb(dev);
+			if (!urb)
+				return -EAGAIN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*urb_ptr = urb;
 			cmd = urb->transfer_buffer;
 			cmd_end = &cmd[urb->transfer_buffer_length];
@@ -251,4 +377,7 @@ int udl_render_hline(struct drm_device *dev, int bpp, struct urb **urb_ptr,
 
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

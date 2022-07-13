@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 /* Driver for USB Mass Storage compliant devices
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * Driver for USB Mass Storage compliant devices
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Main Header File
  *
  * Current development and maintenance by:
@@ -20,6 +26,7 @@
  *
  * Also, for certain devices, the interrupt endpoint is used to convey
  * status of a command.
+<<<<<<< HEAD
  *
  * Please see http://www.one-eyed-alien.net/~mdharm/linux-usb for more
  * information about this driver.
@@ -37,6 +44,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _USB_H_
@@ -100,15 +109,26 @@ typedef void (*pm_hook)(struct us_data *, int);	/* power management hook */
 
 /* we allocate one of these for every device that we remember */
 struct us_data {
+<<<<<<< HEAD
 	/* The device we're working with
+=======
+	/*
+	 * The device we're working with
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * It's important to note:
 	 *    (o) you must hold dev_mutex to change pusb_dev
 	 */
 	struct mutex		dev_mutex;	 /* protect pusb_dev */
 	struct usb_device	*pusb_dev;	 /* this usb_device */
 	struct usb_interface	*pusb_intf;	 /* this interface */
+<<<<<<< HEAD
 	struct us_unusual_dev   *unusual_dev;	 /* device-filter entry     */
 	unsigned long		fflags;		 /* fixed flags from filter */
+=======
+	const struct us_unusual_dev   *unusual_dev;
+						/* device-filter entry     */
+	u64			fflags;		 /* fixed flags from filter */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		dflags;		 /* dynamic atomic bitflags */
 	unsigned int		send_bulk_pipe;	 /* cached pipe values */
 	unsigned int		recv_bulk_pipe;
@@ -125,7 +145,11 @@ struct us_data {
 	u8			max_lun;
 
 	u8			ifnum;		 /* interface number   */
+<<<<<<< HEAD
 	u8			ep_bInterval;	 /* interrupt interval */ 
+=======
+	u8			ep_bInterval;	 /* interrupt interval */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* function pointers for this device */
 	trans_cmnd		transport;	 /* transport function	   */
@@ -161,7 +185,10 @@ struct us_data {
 	/* hacks for READ CAPACITY bug handling */
 	int			use_last_sector_hacks;
 	int			last_sector_retries;
+<<<<<<< HEAD
 	int			sdev_autosuspend_delay;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Convert between us_data and the corresponding Scsi_Host */
@@ -176,8 +203,15 @@ static inline struct us_data *host_to_us(struct Scsi_Host *host) {
 extern void fill_inquiry_response(struct us_data *us,
 	unsigned char *data, unsigned int data_len);
 
+<<<<<<< HEAD
 /* The scsi_lock() and scsi_unlock() macros protect the sm_state and the
  * single queue element srb for write access */
+=======
+/*
+ * The scsi_lock() and scsi_unlock() macros protect the sm_state and the
+ * single queue element srb for write access
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define scsi_unlock(host)	spin_unlock_irq(host->host_lock)
 #define scsi_lock(host)		spin_lock_irq(host->host_lock)
 
@@ -198,8 +232,32 @@ extern int usb_stor_post_reset(struct usb_interface *iface);
 extern int usb_stor_probe1(struct us_data **pus,
 		struct usb_interface *intf,
 		const struct usb_device_id *id,
+<<<<<<< HEAD
 		struct us_unusual_dev *unusual_dev);
 extern int usb_stor_probe2(struct us_data *us);
 extern void usb_stor_disconnect(struct usb_interface *intf);
 
+=======
+		const struct us_unusual_dev *unusual_dev,
+		const struct scsi_host_template *sht);
+extern int usb_stor_probe2(struct us_data *us);
+extern void usb_stor_disconnect(struct usb_interface *intf);
+
+extern void usb_stor_adjust_quirks(struct usb_device *dev,
+		u64 *fflags);
+
+#define module_usb_stor_driver(__driver, __sht, __name) \
+static int __init __driver##_init(void) \
+{ \
+	usb_stor_host_template_init(&(__sht), __name, THIS_MODULE); \
+	return usb_register(&(__driver)); \
+} \
+module_init(__driver##_init); \
+static void __exit __driver##_exit(void) \
+{ \
+	usb_deregister(&(__driver)); \
+} \
+module_exit(__driver##_exit)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

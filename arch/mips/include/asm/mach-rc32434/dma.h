@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2002 Integrated Device Technology, Inc.
  *		All rights reserved.
@@ -5,7 +9,11 @@
  * DMA register definition.
  *
  * Author : ryan.holmQVist@idt.com
+<<<<<<< HEAD
  * Date   : 20011005
+=======
+ * Date	  : 20011005
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_RC32434_DMA_H
@@ -71,10 +79,17 @@ struct dma_reg {
 #define DMA_CHAN_DONE_BIT		(1 << 1)
 #define DMA_CHAN_MODE_BIT		(1 << 2)
 #define DMA_CHAN_MODE_MSK		0x0000000c
+<<<<<<< HEAD
 #define  DMA_CHAN_MODE_AUTO		0
 #define  DMA_CHAN_MODE_BURST		1
 #define  DMA_CHAN_MODE_XFRT		2
 #define  DMA_CHAN_MODE_RSVD		3
+=======
+#define	 DMA_CHAN_MODE_AUTO		0
+#define	 DMA_CHAN_MODE_BURST		1
+#define	 DMA_CHAN_MODE_XFRT		2
+#define	 DMA_CHAN_MODE_RSVD		3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DMA_CHAN_ACT_BIT		(1 << 4)
 
 /* DMA status registers */
@@ -100,4 +115,8 @@ struct dma_channel {
 	struct dma_reg ch[DMA_CHAN_COUNT];
 };
 
+<<<<<<< HEAD
 #endif  /* __ASM_RC32434_DMA_H */
+=======
+#endif	/* __ASM_RC32434_DMA_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

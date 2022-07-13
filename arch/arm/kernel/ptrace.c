@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/ptrace.c
  *
  *  By Ross Biro 1/23/92
  * edited by Linus Torvalds
  * ARM modifications Copyright (C) 2000 Russell King
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -11,6 +16,12 @@
  */
 #include <linux/kernel.h>
 #include <linux/sched.h>
+=======
+ */
+#include <linux/kernel.h>
+#include <linux/sched/signal.h>
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/elf.h>
 #include <linux/smp.h>
@@ -26,9 +37,18 @@
 #include <linux/audit.h>
 #include <linux/unistd.h>
 
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/traps.h>
 
+=======
+#include <asm/syscall.h>
+#include <asm/traps.h>
+
+#define CREATE_TRACE_POINTS
+#include <trace/events/syscalls.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REG_PC	15
 #define REG_PSR	16
 /*
@@ -196,6 +216,7 @@ void ptrace_disable(struct task_struct *child)
 /*
  * Handle hitting a breakpoint.
  */
+<<<<<<< HEAD
 void ptrace_break(struct task_struct *tsk, struct pt_regs *regs)
 {
 	siginfo_t info;
@@ -206,11 +227,21 @@ void ptrace_break(struct task_struct *tsk, struct pt_regs *regs)
 	info.si_addr  = (void __user *)instruction_pointer(regs);
 
 	force_sig_info(SIGTRAP, &info, tsk);
+=======
+void ptrace_break(struct pt_regs *regs)
+{
+	force_sig_fault(SIGTRAP, TRAP_BRKPT,
+			(void __user *)instruction_pointer(regs));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int break_trap(struct pt_regs *regs, unsigned int instr)
 {
+<<<<<<< HEAD
 	ptrace_break(current, regs);
+=======
+	ptrace_break(regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -223,8 +254,13 @@ static struct undef_hook arm_break_hook = {
 };
 
 static struct undef_hook thumb_break_hook = {
+<<<<<<< HEAD
 	.instr_mask	= 0xffff,
 	.instr_val	= 0xde01,
+=======
+	.instr_mask	= 0xffffffff,
+	.instr_val	= 0x0000de01,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cpsr_mask	= PSR_T_BIT,
 	.cpsr_val	= PSR_T_BIT,
 	.fn		= break_trap,
@@ -323,6 +359,7 @@ static int ptrace_setwmmxregs(struct task_struct *tsk, void __user *ufp)
 
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_CRUNCH
 /*
  * Get the child Crunch state.
@@ -349,6 +386,8 @@ static int ptrace_setcrunchregs(struct task_struct *tsk, void __user *ufp)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_HAVE_HW_BREAKPOINT
 /*
  * Convert a virtual register number into an index for a thread_info
@@ -385,7 +424,10 @@ static void ptrace_hbptriggered(struct perf_event *bp,
 	struct arch_hw_breakpoint *bkpt = counter_arch_bp(bp);
 	long num;
 	int i;
+<<<<<<< HEAD
 	siginfo_t info;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARM_MAX_HBP_SLOTS; ++i)
 		if (current->thread.debug.hbp[i] == bp)
@@ -393,12 +435,16 @@ static void ptrace_hbptriggered(struct perf_event *bp,
 
 	num = (i == ARM_MAX_HBP_SLOTS) ? 0 : ptrace_hbp_idx_to_num(i);
 
+<<<<<<< HEAD
 	info.si_signo	= SIGTRAP;
 	info.si_errno	= (int)num;
 	info.si_code	= TRAP_HWBKPT;
 	info.si_addr	= (void __user *)(bkpt->trigger);
 
 	force_sig_info(SIGTRAP, &info, current);
+=======
+	force_sig_ptrace_errno_trap((int)num, (void __user *)(bkpt->trigger));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -580,6 +626,7 @@ out:
 
 static int gpr_get(struct task_struct *target,
 		   const struct user_regset *regset,
+<<<<<<< HEAD
 		   unsigned int pos, unsigned int count,
 		   void *kbuf, void __user *ubuf)
 {
@@ -588,6 +635,11 @@ static int gpr_get(struct task_struct *target,
 	return user_regset_copyout(&pos, &count, &kbuf, &ubuf,
 				   regs,
 				   0, sizeof(*regs));
+=======
+		   struct membuf to)
+{
+	return membuf_write(&to, task_pt_regs(target), sizeof(struct pt_regs));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int gpr_set(struct task_struct *target,
@@ -596,7 +648,11 @@ static int gpr_set(struct task_struct *target,
 		   const void *kbuf, const void __user *ubuf)
 {
 	int ret;
+<<<<<<< HEAD
 	struct pt_regs newregs;
+=======
+	struct pt_regs newregs = *task_pt_regs(target);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf,
 				 &newregs,
@@ -613,12 +669,19 @@ static int gpr_set(struct task_struct *target,
 
 static int fpa_get(struct task_struct *target,
 		   const struct user_regset *regset,
+<<<<<<< HEAD
 		   unsigned int pos, unsigned int count,
 		   void *kbuf, void __user *ubuf)
 {
 	return user_regset_copyout(&pos, &count, &kbuf, &ubuf,
 				   &task_thread_info(target)->fpstate,
 				   0, sizeof(struct user_fp));
+=======
+		   struct membuf to)
+{
+	return membuf_write(&to, &task_thread_info(target)->fpstate,
+				 sizeof(struct user_fp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fpa_set(struct task_struct *target,
@@ -628,8 +691,11 @@ static int fpa_set(struct task_struct *target,
 {
 	struct thread_info *thread = task_thread_info(target);
 
+<<<<<<< HEAD
 	thread->used_cp[1] = thread->used_cp[2] = 1;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return user_regset_copyin(&pos, &count, &kbuf, &ubuf,
 		&thread->fpstate,
 		0, sizeof(struct user_fp));
@@ -653,6 +719,7 @@ static int fpa_set(struct task_struct *target,
  *	vfp_set() ignores this chunk
  *
  * 1 word for the FPSCR
+<<<<<<< HEAD
  *
  * The bounds-checking logic built into user_regset_copyout and friends
  * means that we can make a simple sequence of calls to map the relevant data
@@ -667,10 +734,20 @@ static int vfp_get(struct task_struct *target,
 	struct thread_info *thread = task_thread_info(target);
 	struct vfp_hard_struct const *vfp = &thread->vfpstate.hard;
 	const size_t user_fpregs_offset = offsetof(struct user_vfp, fpregs);
+=======
+ */
+static int vfp_get(struct task_struct *target,
+		   const struct user_regset *regset,
+		   struct membuf to)
+{
+	struct thread_info *thread = task_thread_info(target);
+	struct vfp_hard_struct const *vfp = &thread->vfpstate.hard;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const size_t user_fpscr_offset = offsetof(struct user_vfp, fpscr);
 
 	vfp_sync_hwstate(thread);
 
+<<<<<<< HEAD
 	ret = user_regset_copyout(&pos, &count, &kbuf, &ubuf,
 				  &vfp->fpregs,
 				  user_fpregs_offset,
@@ -688,6 +765,11 @@ static int vfp_get(struct task_struct *target,
 				   &vfp->fpscr,
 				   user_fpscr_offset,
 				   user_fpscr_offset + sizeof(vfp->fpscr));
+=======
+	membuf_write(&to, vfp->fpregs, sizeof(vfp->fpregs));
+	membuf_zero(&to, user_fpscr_offset - sizeof(vfp->fpregs));
+	return membuf_store(&to, vfp->fpscr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -716,11 +798,17 @@ static int vfp_set(struct task_struct *target,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	ret = user_regset_copyin_ignore(&pos, &count, &kbuf, &ubuf,
 				user_fpregs_offset + sizeof(new_vfp.fpregs),
 				user_fpscr_offset);
 	if (ret)
 		return ret;
+=======
+	user_regset_copyin_ignore(&pos, &count, &kbuf, &ubuf,
+				  user_fpregs_offset + sizeof(new_vfp.fpregs),
+				  user_fpscr_offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = user_regset_copyin(&pos, &count, &kbuf, &ubuf,
 				 &new_vfp.fpscr,
@@ -729,8 +817,13 @@ static int vfp_set(struct task_struct *target,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	vfp_flush_hwstate(thread);
 	thread->vfpstate.hard = new_vfp;
+=======
+	thread->vfpstate.hard = new_vfp;
+	vfp_flush_hwstate(thread);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -750,7 +843,11 @@ static const struct user_regset arm_regsets[] = {
 		.n = ELF_NGREG,
 		.size = sizeof(u32),
 		.align = sizeof(u32),
+<<<<<<< HEAD
 		.get = gpr_get,
+=======
+		.regset_get = gpr_get,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.set = gpr_set
 	},
 	[REGSET_FPR] = {
@@ -762,7 +859,11 @@ static const struct user_regset arm_regsets[] = {
 		.n = sizeof(struct user_fp) / sizeof(u32),
 		.size = sizeof(u32),
 		.align = sizeof(u32),
+<<<<<<< HEAD
 		.get = fpa_get,
+=======
+		.regset_get = fpa_get,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.set = fpa_set
 	},
 #ifdef CONFIG_VFP
@@ -775,7 +876,11 @@ static const struct user_regset arm_regsets[] = {
 		.n = ARM_VFPREGS_SIZE / sizeof(u32),
 		.size = sizeof(u32),
 		.align = sizeof(u32),
+<<<<<<< HEAD
 		.get = vfp_get,
+=======
+		.regset_get = vfp_get,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.set = vfp_set
 	},
 #endif /* CONFIG_VFP */
@@ -850,6 +955,7 @@ long arch_ptrace(struct task_struct *child, long request,
 			break;
 
 		case PTRACE_SET_SYSCALL:
+<<<<<<< HEAD
 			task_thread_info(child)->syscall = data;
 			ret = 0;
 			break;
@@ -864,6 +970,14 @@ long arch_ptrace(struct task_struct *child, long request,
 			break;
 #endif
 
+=======
+			if (data != -1)
+				data &= __NR_SYSCALL_MASK;
+			task_thread_info(child)->abi_syscall = data;
+			ret = 0;
+			break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_VFP
 		case PTRACE_GETVFPREGS:
 			ret = copy_regset_to_user(child,
@@ -882,6 +996,7 @@ long arch_ptrace(struct task_struct *child, long request,
 
 #ifdef CONFIG_HAVE_HW_BREAKPOINT
 		case PTRACE_GETHBPREGS:
+<<<<<<< HEAD
 			if (ptrace_get_breakpoints(child) < 0)
 				return -ESRCH;
 
@@ -896,6 +1011,14 @@ long arch_ptrace(struct task_struct *child, long request,
 			ret = ptrace_sethbpregs(child, addr,
 						(unsigned long __user *)data);
 			ptrace_put_breakpoints(child);
+=======
+			ret = ptrace_gethbpregs(child, addr,
+						(unsigned long __user *)data);
+			break;
+		case PTRACE_SETHBPREGS:
+			ret = ptrace_sethbpregs(child, addr,
+						(unsigned long __user *)data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 #endif
 
@@ -907,6 +1030,7 @@ long arch_ptrace(struct task_struct *child, long request,
 	return ret;
 }
 
+<<<<<<< HEAD
 asmlinkage int syscall_trace(int why, struct pt_regs *regs, int scno)
 {
 	unsigned long ip;
@@ -927,12 +1051,23 @@ asmlinkage int syscall_trace(int why, struct pt_regs *regs, int scno)
 		return scno;
 	if (!(current->ptrace & PT_PTRACED))
 		return scno;
+=======
+enum ptrace_syscall_dir {
+	PTRACE_SYSCALL_ENTER = 0,
+	PTRACE_SYSCALL_EXIT,
+};
+
+static void report_syscall(struct pt_regs *regs, enum ptrace_syscall_dir dir)
+{
+	unsigned long ip;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * IP is used to denote syscall entry/exit:
 	 * IP = 0 -> entry, =1 -> exit
 	 */
 	ip = regs->ARM_ip;
+<<<<<<< HEAD
 	regs->ARM_ip = why;
 
 	/*
@@ -958,4 +1093,63 @@ asmlinkage int syscall_trace(int why, struct pt_regs *regs, int scno)
 	regs->ARM_ip = ip;
 
 	return current_thread_info()->syscall;
+=======
+	regs->ARM_ip = dir;
+
+	if (dir == PTRACE_SYSCALL_EXIT)
+		ptrace_report_syscall_exit(regs, 0);
+	else if (ptrace_report_syscall_entry(regs))
+		current_thread_info()->abi_syscall = -1;
+
+	regs->ARM_ip = ip;
+}
+
+asmlinkage int syscall_trace_enter(struct pt_regs *regs)
+{
+	int scno;
+
+	if (test_thread_flag(TIF_SYSCALL_TRACE))
+		report_syscall(regs, PTRACE_SYSCALL_ENTER);
+
+	/* Do seccomp after ptrace; syscall may have changed. */
+#ifdef CONFIG_HAVE_ARCH_SECCOMP_FILTER
+	if (secure_computing() == -1)
+		return -1;
+#else
+	/* XXX: remove this once OABI gets fixed */
+	secure_computing_strict(syscall_get_nr(current, regs));
+#endif
+
+	/* Tracer or seccomp may have changed syscall. */
+	scno = syscall_get_nr(current, regs);
+
+	if (test_thread_flag(TIF_SYSCALL_TRACEPOINT))
+		trace_sys_enter(regs, scno);
+
+	audit_syscall_entry(scno, regs->ARM_r0, regs->ARM_r1, regs->ARM_r2,
+			    regs->ARM_r3);
+
+	return scno;
+}
+
+asmlinkage void syscall_trace_exit(struct pt_regs *regs)
+{
+	/*
+	 * Audit the syscall before anything else, as a debugger may
+	 * come in and change the current registers.
+	 */
+	audit_syscall_exit(regs);
+
+	/*
+	 * Note that we haven't updated the ->syscall field for the
+	 * current thread. This isn't a problem because it will have
+	 * been set on syscall entry and there hasn't been an opportunity
+	 * for a PTRACE_SET_SYSCALL since then.
+	 */
+	if (test_thread_flag(TIF_SYSCALL_TRACEPOINT))
+		trace_sys_exit(regs, regs_return_value(regs));
+
+	if (test_thread_flag(TIF_SYSCALL_TRACE))
+		report_syscall(regs, PTRACE_SYSCALL_EXIT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

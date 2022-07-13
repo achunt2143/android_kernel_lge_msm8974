@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Copyright (c) 1998-2002 by Paul Davis <pbd@op.net>
  *
@@ -17,6 +18,14 @@
  */
 
 #include <asm/io.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Copyright (c) 1998-2002 by Paul Davis <pbd@op.net>
+ */
+
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/time.h>
 #include <linux/wait.h>
@@ -79,13 +88,21 @@ wavefront_fx_memset (snd_wavefront_t *dev,
 	if (page < 0 || page > 7) {
 		snd_printk ("FX memset: "
 			"page must be >= 0 and <= 7\n");
+<<<<<<< HEAD
 		return -(EINVAL);
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (addr < 0 || addr > 0x7f) {
 		snd_printk ("FX memset: "
 			"addr must be >= 0 and <= 7f\n");
+<<<<<<< HEAD
 		return -(EINVAL);
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (cnt == 1) {
@@ -118,7 +135,11 @@ wavefront_fx_memset (snd_wavefront_t *dev,
 			snd_printk ("FX memset "
 				    "(0x%x, 0x%x, 0x%lx, %d) incomplete\n",
 				    page, addr, (unsigned long) data, cnt);
+<<<<<<< HEAD
 			return -(EIO);
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -204,9 +225,15 @@ snd_wavefront_fx_ioctl (struct snd_hwdep *sdev, struct file *file,
 					    "> 512 bytes to FX\n");
 				return -EIO;
 			}
+<<<<<<< HEAD
 			page_data = memdup_user((unsigned char __user *)
 						r.data[3],
 						r.data[2] * sizeof(short));
+=======
+			page_data = memdup_array_user((unsigned char __user *)
+						      r.data[3],
+						      r.data[2], sizeof(short));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (IS_ERR(page_data))
 				return PTR_ERR(page_data);
 			pd = page_data;
@@ -240,7 +267,11 @@ snd_wavefront_fx_ioctl (struct snd_hwdep *sdev, struct file *file,
    that outputs it.
 */
 
+<<<<<<< HEAD
 int __devinit
+=======
+int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_wavefront_fx_start (snd_wavefront_t *dev)
 {
 	unsigned int i;

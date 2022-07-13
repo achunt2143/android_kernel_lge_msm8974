@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**********************************************************************
  * Author: Cavium Networks
  *
@@ -45,6 +46,17 @@
  *      Controls if the Octeon TCP/UDP checksum engine is used for packet
  *      output. If this is zero, the kernel will perform the checksum in
  *      software.
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * This file is based on code from OCTEON SDK by Cavium Networks.
+ *
+ * Copyright (c) 2003-2007 Cavium Networks
+ */
+
+/*
+ * A few defines are used to control the operation of this driver:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  USE_ASYNC_IOBDMA
  *      Use asynchronous IO access to hardware. This uses Octeon's asynchronous
  *      IOBDMAs to issue IO accesses without stalling. Set this to zero
@@ -59,6 +71,7 @@
 #ifndef __ETHERNET_DEFINES_H__
 #define __ETHERNET_DEFINES_H__
 
+<<<<<<< HEAD
 #include <asm/octeon/cvmx-config.h>
 
 
@@ -102,5 +115,22 @@
 
 #define TOTAL_NUMBER_OF_PORTS       (CVMX_PIP_NUM_INPUT_PORTS+1)
 
+=======
+#ifdef CONFIG_NETFILTER
+#define REUSE_SKBUFFS_WITHOUT_FREE	0
+#else
+#define REUSE_SKBUFFS_WITHOUT_FREE	1
+#endif
+
+#define USE_ASYNC_IOBDMA		(CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE > 0)
+
+/* Maximum number of SKBs to try to free per xmit packet. */
+#define MAX_OUT_QUEUE_DEPTH		1000
+
+#define FAU_TOTAL_TX_TO_CLEAN (CVMX_FAU_REG_END - sizeof(u32))
+#define FAU_NUM_PACKET_BUFFERS_TO_FREE (FAU_TOTAL_TX_TO_CLEAN - sizeof(u32))
+
+#define TOTAL_NUMBER_OF_PORTS		(CVMX_PIP_NUM_INPUT_PORTS + 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ETHERNET_DEFINES_H__ */

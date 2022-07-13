@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* net/atm/common.h - ATM sockets (common part for PVC and SVC) */
 
 /* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */
@@ -10,6 +14,7 @@
 #include <linux/poll.h> /* for poll_table */
 
 
+<<<<<<< HEAD
 int vcc_create(struct net *net, struct socket *sock, int protocol, int family);
 int vcc_release(struct socket *sock);
 int vcc_connect(struct socket *sock, int itf, short vpi, int vci);
@@ -22,6 +27,19 @@ int vcc_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);
 int vcc_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);
 int vcc_setsockopt(struct socket *sock, int level, int optname,
 		   char __user *optval, unsigned int optlen);
+=======
+int vcc_create(struct net *net, struct socket *sock, int protocol, int family, int kern);
+int vcc_release(struct socket *sock);
+int vcc_connect(struct socket *sock, int itf, short vpi, int vci);
+int vcc_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+		int flags);
+int vcc_sendmsg(struct socket *sock, struct msghdr *m, size_t total_len);
+__poll_t vcc_poll(struct file *file, struct socket *sock, poll_table *wait);
+int vcc_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);
+int vcc_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg);
+int vcc_setsockopt(struct socket *sock, int level, int optname,
+		   sockptr_t optval, unsigned int optlen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int vcc_getsockopt(struct socket *sock, int level, int optname,
 		   char __user *optval, int __user *optlen);
 void vcc_process_recv_queue(struct atm_vcc *vcc);

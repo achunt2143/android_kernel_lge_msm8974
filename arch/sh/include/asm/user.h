@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_USER_H
 #define __ASM_SH_USER_H
 
@@ -27,19 +31,25 @@
  *	to write an integer number of pages.
  */
 
+<<<<<<< HEAD
 #if defined(__SH5__) || defined(CONFIG_CPU_SH5)
 struct user_fpu_struct {
 	unsigned long fp_regs[32];
 	unsigned int fpscr;
 };
 #else
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct user_fpu_struct {
 	unsigned long fp_regs[16];
 	unsigned long xfp_regs[16];
 	unsigned long fpscr;
 	unsigned long fpul;
 };
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct user {
 	struct pt_regs	regs;			/* entire machine state */
@@ -58,10 +68,13 @@ struct user {
 	char		u_comm[32];		/* user command name */
 };
 
+<<<<<<< HEAD
 #define NBPG			PAGE_SIZE
 #define UPAGES			1
 #define HOST_TEXT_START_ADDR	(u.start_code)
 #define HOST_DATA_START_ADDR	(u.start_data)
 #define HOST_STACK_END_ADDR	(u.start_stack + u.u_ssize * NBPG)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_USER_H */

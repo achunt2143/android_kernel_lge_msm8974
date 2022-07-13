@@ -11,6 +11,7 @@
 #include <linux/sched.h>
 #include <linux/smp.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/cpumask.h>
 #include <asm/cpu.h>
@@ -21,17 +22,32 @@
 #include <asm/sn/sn0/addrs.h>
 #include <asm/sn/sn0/hubni.h>
 #include <asm/sn/sn0/hubio.h>
+=======
+#include <linux/export.h>
+#include <linux/cpumask.h>
+#include <asm/bootinfo.h>
+#include <asm/cpu.h>
+#include <asm/io.h>
+#include <asm/sgialib.h>
+#include <asm/time.h>
+#include <asm/sn/agent.h>
+#include <asm/sn/types.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sn/klconfig.h>
 #include <asm/sn/ioc3.h>
 #include <asm/mipsregs.h>
 #include <asm/sn/gda.h>
+<<<<<<< HEAD
 #include <asm/sn/hub.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sn/intr.h>
 #include <asm/current.h>
 #include <asm/processor.h>
 #include <asm/mmu_context.h>
 #include <asm/thread_info.h>
 #include <asm/sn/launch.h>
+<<<<<<< HEAD
 #include <asm/sn/sn_private.h>
 #include <asm/sn/sn0/ip27.h>
 #include <asm/sn/mapped_kernel.h>
@@ -63,6 +79,27 @@ static void __cpuinit per_hub_init(cnodeid_t cnode)
 	cpu_set(smp_processor_id(), hub->h_cpus);
 
 	if (test_and_set_bit(cnode, hub_init_mask))
+=======
+#include <asm/sn/mapped_kernel.h>
+
+#include "ip27-common.h"
+
+#define CPU_NONE		(cpuid_t)-1
+
+static DECLARE_BITMAP(hub_init_mask, MAX_NUMNODES);
+nasid_t master_nasid = INVALID_NASID;
+
+struct cpuinfo_ip27 sn_cpu_info[NR_CPUS];
+EXPORT_SYMBOL_GPL(sn_cpu_info);
+
+static void per_hub_init(nasid_t nasid)
+{
+	struct hub_data *hub = hub_data(nasid);
+
+	cpumask_set_cpu(smp_processor_id(), &hub->h_cpus);
+
+	if (test_and_set_bit(nasid, hub_init_mask))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	/*
 	 * Set CRB timeout at 5ms, (< PI timeout of 10ms)
@@ -70,6 +107,7 @@ static void __cpuinit per_hub_init(cnodeid_t cnode)
 	REMOTE_HUB_S(nasid, IIO_ICTP, 0x800);
 	REMOTE_HUB_S(nasid, IIO_ICTO, 0xff);
 
+<<<<<<< HEAD
 	hub_rtc_init(cnode);
 	xtalk_probe_node(cnode);
 
@@ -136,11 +174,37 @@ void __cpuinit per_cpu_init(void)
 	cpu_data[cpu].data = si;
 
 	cpu_time_init();
+=======
+	hub_rtc_init(nasid);
+
+	if (nasid) {
+		/* copy exception handlers from first node to current node */
+		memcpy((void *)NODE_OFFSET_TO_K0(nasid, 0),
+		       (void *)CKSEG0, 0x200);
+		__flush_cache_all();
+		/* switch to node local exception handlers */
+		REMOTE_HUB_S(nasid, PI_CALIAS_SIZE, PI_CALIAS_SIZE_8K);
+	}
+}
+
+void per_cpu_init(void)
+{
+	int cpu = smp_processor_id();
+	nasid_t nasid = get_nasid();
+
+	clear_c0_status(ST0_IM);
+
+	per_hub_init(nasid);
+
+	pr_info("CPU %d clock is %dMHz.\n", cpu, sn_cpu_info[cpu].p_speed);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	install_ipi();
 
 	/* Install our NMI handler if symmon hasn't installed one. */
 	install_cpu_nmi_handler(cputoslice(cpu));
 
+<<<<<<< HEAD
 	set_c0_status(SRB_DEV0 | SRB_DEV1);
 }
 
@@ -180,6 +244,19 @@ void __init plat_mem_setup(void)
 	hubreg_t p, e, n_mode;
 	nasid_t nid;
 
+=======
+	enable_percpu_irq(IP27_HUB_PEND0_IRQ, IRQ_TYPE_NONE);
+	enable_percpu_irq(IP27_HUB_PEND1_IRQ, IRQ_TYPE_NONE);
+}
+
+void __init plat_mem_setup(void)
+{
+	u64 p, e, n_mode;
+	nasid_t nid;
+
+	register_smp_ops(&ip27_smp_ops);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ip27_reboot_setup();
 
 	/*
@@ -214,8 +291,27 @@ void __init plat_mem_setup(void)
 		panic("Kernel compiled for N mode.");
 #endif
 
+<<<<<<< HEAD
 	ioc3_eth_init();
 	per_cpu_init();
 
 	set_io_port_base(IO_BASE);
 }
+=======
+	ioport_resource.start = 0;
+	ioport_resource.end = ~0UL;
+	set_io_port_base(IO_BASE);
+}
+
+const char *get_system_type(void)
+{
+	return "SGI Origin";
+}
+
+void __init prom_init(void)
+{
+	prom_init_cmdline(fw_arg0, (LONG *)fw_arg1);
+	prom_meminit();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

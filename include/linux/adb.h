@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definitions for ADB (Apple Desktop Bus) support.
  */
 #ifndef __ADB_H
 #define __ADB_H
 
+<<<<<<< HEAD
 /* ADB commands */
 #define ADB_BUSRESET		0
 #define ADB_FLUSH(id)		(0x01 | ((id) << 4))
@@ -41,6 +46,10 @@
 #define ADB_QUERY_GETDEVINFO	1
 
 #ifdef __KERNEL__
+=======
+#include <uapi/linux/adb.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct adb_request {
 	unsigned char data[32];
@@ -98,6 +107,9 @@ int adb_reset_bus(void);
 int adb_try_handler_change(int address, int new_id);
 int adb_get_infos(int address, int *original_address, int *handler_id);
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ADB_H */

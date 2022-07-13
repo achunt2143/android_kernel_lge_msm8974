@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright(c) 2004 - 2009 Intel Corporation. All rights reserved.
  *
@@ -17,6 +18,11 @@
  *
  * The full GNU General Public License is included in this distribution in the
  * file called COPYING.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright(c) 2004 - 2009 Intel Corporation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _IOAT_REGISTERS_H_
 #define _IOAT_REGISTERS_H_
@@ -79,6 +85,14 @@
 #define IOAT_CAP_APIC				0x00000080
 #define IOAT_CAP_XOR				0x00000100
 #define IOAT_CAP_PQ				0x00000200
+<<<<<<< HEAD
+=======
+#define IOAT_CAP_DWBES				0x00002000
+#define IOAT_CAP_RAID16SS			0x00020000
+#define IOAT_CAP_DPS				0x00800000
+
+#define IOAT_PREFETCH_LIMIT_OFFSET		0x4C	/* CHWPREFLMT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IOAT_CHANNEL_MMIO_SIZE			0x80	/* Each Channel MMIO space is this size */
 
@@ -93,12 +107,18 @@
 #define IOAT_CHANCTRL_ERR_COMPLETION_EN		0x0004
 #define IOAT_CHANCTRL_INT_REARM			0x0001
 #define IOAT_CHANCTRL_RUN			(IOAT_CHANCTRL_INT_REARM |\
+<<<<<<< HEAD
+=======
+						 IOAT_CHANCTRL_ERR_INT_EN |\
+						 IOAT_CHANCTRL_ERR_COMPLETION_EN |\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 IOAT_CHANCTRL_ANY_ERR_ABORT_EN)
 
 #define IOAT_DMA_COMP_OFFSET			0x02	/* 16-bit DMA channel compatibility */
 #define IOAT_DMA_COMP_V1			0x0001	/* Compatibility with DMA version 1 */
 #define IOAT_DMA_COMP_V2			0x0002	/* Compatibility with DMA version 2 */
 
+<<<<<<< HEAD
 
 #define IOAT1_CHANSTS_OFFSET		0x04	/* 64-bit Channel Status Register */
 #define IOAT2_CHANSTS_OFFSET		0x08	/* 64-bit Channel Status Register */
@@ -112,6 +132,9 @@
 #define IOAT2_CHANSTS_OFFSET_HIGH	0x0C
 #define IOAT_CHANSTS_OFFSET_HIGH(ver)		((ver) < IOAT_VER_2_0 \
 						? IOAT1_CHANSTS_OFFSET_HIGH : IOAT2_CHANSTS_OFFSET_HIGH)
+=======
+#define IOAT_CHANSTS_OFFSET		0x08	/* 64-bit Channel Status Register */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IOAT_CHANSTS_COMPLETED_DESCRIPTOR_ADDR	(~0x3fULL)
 #define IOAT_CHANSTS_SOFT_ERR			0x10ULL
 #define IOAT_CHANSTS_UNAFFILIATED_ERR		0x8ULL
@@ -243,7 +266,36 @@
 #define IOAT_CHANERR_DESCRIPTOR_COUNT_ERR	0x40000
 
 #define IOAT_CHANERR_HANDLE_MASK (IOAT_CHANERR_XOR_P_OR_CRC_ERR | IOAT_CHANERR_XOR_Q_ERR)
+<<<<<<< HEAD
 
 #define IOAT_CHANERR_MASK_OFFSET		0x2C	/* 32-bit Channel Error Register */
 
+=======
+#define IOAT_CHANERR_RECOVER_MASK (IOAT_CHANERR_READ_DATA_ERR | \
+				   IOAT_CHANERR_WRITE_DATA_ERR)
+
+#define IOAT_CHANERR_MASK_OFFSET		0x2C	/* 32-bit Channel Error Register */
+
+#define IOAT_CHAN_DRSCTL_OFFSET			0xB6
+#define IOAT_CHAN_DRSZ_4KB			0x0000
+#define IOAT_CHAN_DRSZ_8KB			0x0001
+#define IOAT_CHAN_DRSZ_2MB			0x0009
+#define IOAT_CHAN_DRS_EN			0x0100
+#define IOAT_CHAN_DRS_AUTOWRAP			0x0200
+
+#define IOAT_CHAN_LTR_SWSEL_OFFSET		0xBC
+#define IOAT_CHAN_LTR_SWSEL_ACTIVE		0x0
+#define IOAT_CHAN_LTR_SWSEL_IDLE		0x1
+
+#define IOAT_CHAN_LTR_ACTIVE_OFFSET		0xC0
+#define IOAT_CHAN_LTR_ACTIVE_SNVAL		0x0000	/* 0 us */
+#define IOAT_CHAN_LTR_ACTIVE_SNLATSCALE		0x0800	/* 1us scale */
+#define IOAT_CHAN_LTR_ACTIVE_SNREQMNT		0x8000	/* snoop req enable */
+
+#define IOAT_CHAN_LTR_IDLE_OFFSET		0xC4
+#define IOAT_CHAN_LTR_IDLE_SNVAL		0x0258	/* 600 us */
+#define IOAT_CHAN_LTR_IDLE_SNLATSCALE		0x0800	/* 1us scale */
+#define IOAT_CHAN_LTR_IDLE_SNREQMNT		0x8000	/* snoop req enable */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _IOAT_REGISTERS_H_ */

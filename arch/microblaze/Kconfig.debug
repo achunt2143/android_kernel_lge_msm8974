@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # For a description of the syntax of this configuration file,
 # see Documentation/kbuild/kconfig-language.txt.
 
@@ -24,3 +25,6 @@ config HEART_BEAT
 	  First GPIO node is taken.
 
 endmenu
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2002 Integrated Device Technology, Inc.
  *	All rights reserved.
@@ -5,7 +9,11 @@
  * GPIO register definition.
  *
  * Author : ryan.holmQVist@idt.com
+<<<<<<< HEAD
  * Date   : 20011005
+=======
+ * Date	  : 20011005
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2001, 2002 Ryan Holm <ryan.holmQVist@idt.com>
  * Copyright (C) 2008 Florian Fainelli <florian@openwrt.org>
  */
@@ -13,6 +21,7 @@
 #ifndef _RC32434_GPIO_H_
 #define _RC32434_GPIO_H_
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <asm-generic/gpio.h>
 
@@ -29,6 +38,12 @@ struct rb532_gpio_reg {
 	u32   gpiofunc;   /* GPIO Function Register
 			   * gpiofunc[x]==0 bit = gpio
 			   * func[x]==1  bit = altfunc
+=======
+struct rb532_gpio_reg {
+	u32   gpiofunc;	  /* GPIO Function Register
+			   * gpiofunc[x]==0 bit = gpio
+			   * func[x]==1	 bit = altfunc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   */
 	u32   gpiocfg;	  /* GPIO Configuration Register
 			   * gpiocfg[x]==0 bit = input

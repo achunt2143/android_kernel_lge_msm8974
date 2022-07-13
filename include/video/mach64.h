@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ATI Mach64 Register Definitions
  *
@@ -5,11 +9,14 @@
  *  written with much help from Jon Howell
  *
  * Updated for 3D RAGE PRO and 3D RAGE Mobility by Geert Uytterhoeven
+<<<<<<< HEAD
  *	
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*

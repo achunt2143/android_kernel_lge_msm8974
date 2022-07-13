@@ -1,21 +1,35 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/armksyms.c
  *
  *  Copyright (C) 2000 Russell King
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/export.h>
 #include <linux/sched.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/cryptohash.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/in6.h>
 #include <linux/syscalls.h>
 #include <linux/uaccess.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/arm-smccc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/checksum.h>
 #include <asm/ftrace.h>
@@ -35,6 +49,11 @@ extern void __ucmpdi2(void);
 extern void __udivsi3(void);
 extern void __umodsi3(void);
 extern void __do_div64(void);
+<<<<<<< HEAD
+=======
+extern void __bswapsi2(void);
+extern void __bswapdi2(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void __aeabi_idiv(void);
 extern void __aeabi_idivmod(void);
@@ -48,6 +67,12 @@ extern void __aeabi_ulcmp(void);
 
 extern void fpundefinstr(void);
 
+<<<<<<< HEAD
+=======
+void mmioset(void *, unsigned int, size_t);
+void mmiocpy(void *, const void *, size_t);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* platform dependent support */
 EXPORT_SYMBOL(arm_delay_ops);
 
@@ -81,6 +106,7 @@ EXPORT_SYMBOL(__raw_writesl);
 EXPORT_SYMBOL(strchr);
 EXPORT_SYMBOL(strrchr);
 EXPORT_SYMBOL(memset);
+<<<<<<< HEAD
 EXPORT_SYMBOL(memcpy);
 EXPORT_SYMBOL(memmove);
 EXPORT_SYMBOL(memchr);
@@ -97,10 +123,38 @@ EXPORT_SYMBOL(cmp_page);
 EXPORT_SYMBOL(__copy_from_user);
 EXPORT_SYMBOL(__copy_to_user);
 EXPORT_SYMBOL(__clear_user);
+=======
+EXPORT_SYMBOL(__memset32);
+EXPORT_SYMBOL(__memset64);
+EXPORT_SYMBOL(memcpy);
+EXPORT_SYMBOL(memmove);
+EXPORT_SYMBOL(memchr);
+
+EXPORT_SYMBOL(mmioset);
+EXPORT_SYMBOL(mmiocpy);
+
+#ifdef CONFIG_MMU
+EXPORT_SYMBOL(copy_page);
+
+EXPORT_SYMBOL(arm_copy_from_user);
+EXPORT_SYMBOL(arm_copy_to_user);
+EXPORT_SYMBOL(arm_clear_user);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 EXPORT_SYMBOL(__get_user_1);
 EXPORT_SYMBOL(__get_user_2);
 EXPORT_SYMBOL(__get_user_4);
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__get_user_8);
+
+#ifdef __ARMEB__
+EXPORT_SYMBOL(__get_user_64t_1);
+EXPORT_SYMBOL(__get_user_64t_2);
+EXPORT_SYMBOL(__get_user_64t_4);
+EXPORT_SYMBOL(__get_user_32t_8);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 EXPORT_SYMBOL(__put_user_1);
 EXPORT_SYMBOL(__put_user_2);
@@ -119,6 +173,11 @@ EXPORT_SYMBOL(__ucmpdi2);
 EXPORT_SYMBOL(__udivsi3);
 EXPORT_SYMBOL(__umodsi3);
 EXPORT_SYMBOL(__do_div64);
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__bswapsi2);
+EXPORT_SYMBOL(__bswapdi2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_AEABI
 EXPORT_SYMBOL(__aeabi_idiv);
@@ -152,12 +211,25 @@ EXPORT_SYMBOL(_find_next_bit_be);
 #endif
 
 #ifdef CONFIG_FUNCTION_TRACER
+<<<<<<< HEAD
 #ifdef CONFIG_OLD_MCOUNT
 EXPORT_SYMBOL(mcount);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(__gnu_mcount_nc);
 #endif
 
 #ifdef CONFIG_ARM_PATCH_PHYS_VIRT
+<<<<<<< HEAD
 EXPORT_SYMBOL(__pv_phys_offset);
+=======
+EXPORT_SYMBOL(__pv_phys_pfn_offset);
+EXPORT_SYMBOL(__pv_offset);
+#endif
+
+#ifdef CONFIG_HAVE_ARM_SMCCC
+EXPORT_SYMBOL(__arm_smccc_smc);
+EXPORT_SYMBOL(__arm_smccc_hvc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

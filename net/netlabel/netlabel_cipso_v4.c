@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NetLabel CIPSO/IPv4 Support
  *
@@ -6,11 +10,15 @@
  * protocols such as CIPSO and RIPSO.
  *
  * Author: Paul Moore <paul@paul-moore.com>
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * (c) Copyright Hewlett-Packard Development Company, L.P., 2006
+<<<<<<< HEAD
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +34,8 @@
  * along with this program;  if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -60,6 +70,7 @@ struct netlbl_domhsh_walk_arg {
 };
 
 /* NetLabel Generic NETLINK CIPSOv4 family */
+<<<<<<< HEAD
 static struct genl_family netlbl_cipsov4_gnl_family = {
 	.id = GENL_ID_GENERATE,
 	.hdrsize = 0,
@@ -68,6 +79,9 @@ static struct genl_family netlbl_cipsov4_gnl_family = {
 	.maxattr = NLBL_CIPSOV4_A_MAX,
 };
 
+=======
+static struct genl_family netlbl_cipsov4_gnl_family;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* NetLabel Netlink attribute policy */
 static const struct nla_policy netlbl_cipsov4_genl_policy[NLBL_CIPSOV4_A_MAX + 1] = {
 	[NLBL_CIPSOV4_A_DOI] = { .type = NLA_U32 },
@@ -107,9 +121,16 @@ static int netlbl_cipsov4_add_common(struct genl_info *info,
 
 	doi_def->doi = nla_get_u32(info->attrs[NLBL_CIPSOV4_A_DOI]);
 
+<<<<<<< HEAD
 	if (nla_validate_nested(info->attrs[NLBL_CIPSOV4_A_TAGLST],
 				NLBL_CIPSOV4_A_MAX,
 				netlbl_cipsov4_genl_policy) != 0)
+=======
+	if (nla_validate_nested_deprecated(info->attrs[NLBL_CIPSOV4_A_TAGLST],
+					   NLBL_CIPSOV4_A_MAX,
+					   netlbl_cipsov4_genl_policy,
+					   NULL) != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	nla_for_each_nested(nla, info->attrs[NLBL_CIPSOV4_A_TAGLST], nla_rem)
@@ -154,9 +175,16 @@ static int netlbl_cipsov4_add_std(struct genl_info *info,
 	    !info->attrs[NLBL_CIPSOV4_A_MLSLVLLST])
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (nla_validate_nested(info->attrs[NLBL_CIPSOV4_A_MLSLVLLST],
 				NLBL_CIPSOV4_A_MAX,
 				netlbl_cipsov4_genl_policy) != 0)
+=======
+	if (nla_validate_nested_deprecated(info->attrs[NLBL_CIPSOV4_A_MLSLVLLST],
+					   NLBL_CIPSOV4_A_MAX,
+					   netlbl_cipsov4_genl_policy,
+					   NULL) != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	doi_def = kmalloc(sizeof(*doi_def), GFP_KERNEL);
@@ -164,8 +192,13 @@ static int netlbl_cipsov4_add_std(struct genl_info *info,
 		return -ENOMEM;
 	doi_def->map.std = kzalloc(sizeof(*doi_def->map.std), GFP_KERNEL);
 	if (doi_def->map.std == NULL) {
+<<<<<<< HEAD
 		ret_val = -ENOMEM;
 		goto add_std_failure;
+=======
+		kfree(doi_def);
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	doi_def->type = CIPSO_V4_MAP_TRANS;
 
@@ -178,10 +211,18 @@ static int netlbl_cipsov4_add_std(struct genl_info *info,
 			    info->attrs[NLBL_CIPSOV4_A_MLSLVLLST],
 			    nla_a_rem)
 		if (nla_type(nla_a) == NLBL_CIPSOV4_A_MLSLVL) {
+<<<<<<< HEAD
 			if (nla_validate_nested(nla_a,
 					    NLBL_CIPSOV4_A_MAX,
 					    netlbl_cipsov4_genl_policy) != 0)
 					goto add_std_failure;
+=======
+			if (nla_validate_nested_deprecated(nla_a,
+							   NLBL_CIPSOV4_A_MAX,
+							   netlbl_cipsov4_genl_policy,
+							   NULL) != 0)
+				goto add_std_failure;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nla_for_each_nested(nla_b, nla_a, nla_b_rem)
 				switch (nla_type(nla_b)) {
 				case NLBL_CIPSOV4_A_MLSLVLLOC:
@@ -206,14 +247,22 @@ static int netlbl_cipsov4_add_std(struct genl_info *info,
 		}
 	doi_def->map.std->lvl.local = kcalloc(doi_def->map.std->lvl.local_size,
 					      sizeof(u32),
+<<<<<<< HEAD
 					      GFP_KERNEL);
+=======
+					      GFP_KERNEL | __GFP_NOWARN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (doi_def->map.std->lvl.local == NULL) {
 		ret_val = -ENOMEM;
 		goto add_std_failure;
 	}
 	doi_def->map.std->lvl.cipso = kcalloc(doi_def->map.std->lvl.cipso_size,
 					      sizeof(u32),
+<<<<<<< HEAD
 					      GFP_KERNEL);
+=======
+					      GFP_KERNEL | __GFP_NOWARN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (doi_def->map.std->lvl.cipso == NULL) {
 		ret_val = -ENOMEM;
 		goto add_std_failure;
@@ -242,18 +291,32 @@ static int netlbl_cipsov4_add_std(struct genl_info *info,
 		}
 
 	if (info->attrs[NLBL_CIPSOV4_A_MLSCATLST]) {
+<<<<<<< HEAD
 		if (nla_validate_nested(info->attrs[NLBL_CIPSOV4_A_MLSCATLST],
 					NLBL_CIPSOV4_A_MAX,
 					netlbl_cipsov4_genl_policy) != 0)
+=======
+		if (nla_validate_nested_deprecated(info->attrs[NLBL_CIPSOV4_A_MLSCATLST],
+						   NLBL_CIPSOV4_A_MAX,
+						   netlbl_cipsov4_genl_policy,
+						   NULL) != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto add_std_failure;
 
 		nla_for_each_nested(nla_a,
 				    info->attrs[NLBL_CIPSOV4_A_MLSCATLST],
 				    nla_a_rem)
 			if (nla_type(nla_a) == NLBL_CIPSOV4_A_MLSCAT) {
+<<<<<<< HEAD
 				if (nla_validate_nested(nla_a,
 					      NLBL_CIPSOV4_A_MAX,
 					      netlbl_cipsov4_genl_policy) != 0)
+=======
+				if (nla_validate_nested_deprecated(nla_a,
+								   NLBL_CIPSOV4_A_MAX,
+								   netlbl_cipsov4_genl_policy,
+								   NULL) != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto add_std_failure;
 				nla_for_each_nested(nla_b, nla_a, nla_b_rem)
 					switch (nla_type(nla_b)) {
@@ -280,7 +343,11 @@ static int netlbl_cipsov4_add_std(struct genl_info *info,
 		doi_def->map.std->cat.local = kcalloc(
 					      doi_def->map.std->cat.local_size,
 					      sizeof(u32),
+<<<<<<< HEAD
 					      GFP_KERNEL);
+=======
+					      GFP_KERNEL | __GFP_NOWARN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (doi_def->map.std->cat.local == NULL) {
 			ret_val = -ENOMEM;
 			goto add_std_failure;
@@ -288,7 +355,11 @@ static int netlbl_cipsov4_add_std(struct genl_info *info,
 		doi_def->map.std->cat.cipso = kcalloc(
 					      doi_def->map.std->cat.cipso_size,
 					      sizeof(u32),
+<<<<<<< HEAD
 					      GFP_KERNEL);
+=======
+					      GFP_KERNEL | __GFP_NOWARN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (doi_def->map.std->cat.cipso == NULL) {
 			ret_val = -ENOMEM;
 			goto add_std_failure;
@@ -325,8 +396,12 @@ static int netlbl_cipsov4_add_std(struct genl_info *info,
 	return 0;
 
 add_std_failure:
+<<<<<<< HEAD
 	if (doi_def)
 		cipso_v4_doi_free(doi_def);
+=======
+	cipso_v4_doi_free(doi_def);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret_val;
 }
 
@@ -428,7 +503,11 @@ static int netlbl_cipsov4_add(struct sk_buff *skb, struct genl_info *info)
 	    !info->attrs[NLBL_CIPSOV4_A_MTYPE])
 		return -EINVAL;
 
+<<<<<<< HEAD
 	netlbl_netlink_auditinfo(skb, &audit_info);
+=======
+	netlbl_netlink_auditinfo(&audit_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (nla_get_u32(info->attrs[NLBL_CIPSOV4_A_MTYPE])) {
 	case CIPSO_V4_MAP_TRANS:
 		ret_val = netlbl_cipsov4_add_std(info, &audit_info);
@@ -506,7 +585,11 @@ list_start:
 	if (ret_val != 0)
 		goto list_failure_lock;
 
+<<<<<<< HEAD
 	nla_a = nla_nest_start(ans_skb, NLBL_CIPSOV4_A_TAGLST);
+=======
+	nla_a = nla_nest_start_noflag(ans_skb, NLBL_CIPSOV4_A_TAGLST);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nla_a == NULL) {
 		ret_val = -ENOMEM;
 		goto list_failure_lock;
@@ -525,7 +608,12 @@ list_start:
 
 	switch (doi_def->type) {
 	case CIPSO_V4_MAP_TRANS:
+<<<<<<< HEAD
 		nla_a = nla_nest_start(ans_skb, NLBL_CIPSOV4_A_MLSLVLLST);
+=======
+		nla_a = nla_nest_start_noflag(ans_skb,
+					      NLBL_CIPSOV4_A_MLSLVLLST);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (nla_a == NULL) {
 			ret_val = -ENOMEM;
 			goto list_failure_lock;
@@ -537,7 +625,12 @@ list_start:
 			    CIPSO_V4_INV_LVL)
 				continue;
 
+<<<<<<< HEAD
 			nla_b = nla_nest_start(ans_skb, NLBL_CIPSOV4_A_MLSLVL);
+=======
+			nla_b = nla_nest_start_noflag(ans_skb,
+						      NLBL_CIPSOV4_A_MLSLVL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (nla_b == NULL) {
 				ret_val = -ENOMEM;
 				goto list_retry;
@@ -556,7 +649,12 @@ list_start:
 		}
 		nla_nest_end(ans_skb, nla_a);
 
+<<<<<<< HEAD
 		nla_a = nla_nest_start(ans_skb, NLBL_CIPSOV4_A_MLSCATLST);
+=======
+		nla_a = nla_nest_start_noflag(ans_skb,
+					      NLBL_CIPSOV4_A_MLSCATLST);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (nla_a == NULL) {
 			ret_val = -ENOMEM;
 			goto list_retry;
@@ -568,7 +666,12 @@ list_start:
 			    CIPSO_V4_INV_CAT)
 				continue;
 
+<<<<<<< HEAD
 			nla_b = nla_nest_start(ans_skb, NLBL_CIPSOV4_A_MLSCAT);
+=======
+			nla_b = nla_nest_start_noflag(ans_skb,
+						      NLBL_CIPSOV4_A_MLSCAT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (nla_b == NULL) {
 				ret_val = -ENOMEM;
 				goto list_retry;
@@ -589,6 +692,10 @@ list_start:
 
 		break;
 	}
+<<<<<<< HEAD
+=======
+	cipso_v4_doi_putdef(doi_def);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 
 	genlmsg_end(ans_skb, data);
@@ -597,12 +704,20 @@ list_start:
 list_retry:
 	/* XXX - this limit is a guesstimate */
 	if (nlsze_mult < 4) {
+<<<<<<< HEAD
+=======
+		cipso_v4_doi_putdef(doi_def);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcu_read_unlock();
 		kfree_skb(ans_skb);
 		nlsze_mult *= 2;
 		goto list_start;
 	}
 list_failure_lock:
+<<<<<<< HEAD
+=======
+	cipso_v4_doi_putdef(doi_def);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 list_failure:
 	kfree_skb(ans_skb);
@@ -627,7 +742,11 @@ static int netlbl_cipsov4_listall_cb(struct cipso_v4_doi *doi_def, void *arg)
 	struct netlbl_cipsov4_doiwalk_arg *cb_arg = arg;
 	void *data;
 
+<<<<<<< HEAD
 	data = genlmsg_put(cb_arg->skb, NETLINK_CB(cb_arg->nl_cb->skb).pid,
+=======
+	data = genlmsg_put(cb_arg->skb, NETLINK_CB(cb_arg->nl_cb->skb).portid,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   cb_arg->seq, &netlbl_cipsov4_gnl_family,
 			   NLM_F_MULTI, NLBL_CIPSOV4_C_LISTALL);
 	if (data == NULL)
@@ -642,7 +761,12 @@ static int netlbl_cipsov4_listall_cb(struct cipso_v4_doi *doi_def, void *arg)
 	if (ret_val != 0)
 		goto listall_cb_failure;
 
+<<<<<<< HEAD
 	return genlmsg_end(cb_arg->skb, data);
+=======
+	genlmsg_end(cb_arg->skb, data);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 listall_cb_failure:
 	genlmsg_cancel(cb_arg->skb, data);
@@ -691,8 +815,13 @@ static int netlbl_cipsov4_remove_cb(struct netlbl_dom_map *entry, void *arg)
 {
 	struct netlbl_domhsh_walk_arg *cb_arg = arg;
 
+<<<<<<< HEAD
 	if (entry->type == NETLBL_NLTYPE_CIPSOV4 &&
 	    entry->type_def.cipsov4->doi == cb_arg->doi)
+=======
+	if (entry->def.type == NETLBL_NLTYPE_CIPSOV4 &&
+	    entry->def.cipso->doi == cb_arg->doi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return netlbl_domhsh_remove_entry(entry, cb_arg->audit_info);
 
 	return 0;
@@ -719,7 +848,11 @@ static int netlbl_cipsov4_remove(struct sk_buff *skb, struct genl_info *info)
 	if (!info->attrs[NLBL_CIPSOV4_A_DOI])
 		return -EINVAL;
 
+<<<<<<< HEAD
 	netlbl_netlink_auditinfo(skb, &audit_info);
+=======
+	netlbl_netlink_auditinfo(&audit_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cb_arg.doi = nla_get_u32(info->attrs[NLBL_CIPSOV4_A_DOI]);
 	cb_arg.audit_info = &audit_info;
 	ret_val = netlbl_domhsh_walk(&skip_bkt, &skip_chain,
@@ -737,37 +870,75 @@ static int netlbl_cipsov4_remove(struct sk_buff *skb, struct genl_info *info)
  * NetLabel Generic NETLINK Command Definitions
  */
 
+<<<<<<< HEAD
 static struct genl_ops netlbl_cipsov4_ops[] = {
 	{
 	.cmd = NLBL_CIPSOV4_C_ADD,
 	.flags = GENL_ADMIN_PERM,
 	.policy = netlbl_cipsov4_genl_policy,
+=======
+static const struct genl_small_ops netlbl_cipsov4_ops[] = {
+	{
+	.cmd = NLBL_CIPSOV4_C_ADD,
+	.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+	.flags = GENL_ADMIN_PERM,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.doit = netlbl_cipsov4_add,
 	.dumpit = NULL,
 	},
 	{
 	.cmd = NLBL_CIPSOV4_C_REMOVE,
+<<<<<<< HEAD
 	.flags = GENL_ADMIN_PERM,
 	.policy = netlbl_cipsov4_genl_policy,
+=======
+	.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+	.flags = GENL_ADMIN_PERM,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.doit = netlbl_cipsov4_remove,
 	.dumpit = NULL,
 	},
 	{
 	.cmd = NLBL_CIPSOV4_C_LIST,
+<<<<<<< HEAD
 	.flags = 0,
 	.policy = netlbl_cipsov4_genl_policy,
+=======
+	.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+	.flags = 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.doit = netlbl_cipsov4_list,
 	.dumpit = NULL,
 	},
 	{
 	.cmd = NLBL_CIPSOV4_C_LISTALL,
+<<<<<<< HEAD
 	.flags = 0,
 	.policy = netlbl_cipsov4_genl_policy,
+=======
+	.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+	.flags = 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.doit = NULL,
 	.dumpit = netlbl_cipsov4_listall,
 	},
 };
 
+<<<<<<< HEAD
+=======
+static struct genl_family netlbl_cipsov4_gnl_family __ro_after_init = {
+	.hdrsize = 0,
+	.name = NETLBL_NLTYPE_CIPSOV4_NAME,
+	.version = NETLBL_PROTO_VERSION,
+	.maxattr = NLBL_CIPSOV4_A_MAX,
+	.policy = netlbl_cipsov4_genl_policy,
+	.module = THIS_MODULE,
+	.small_ops = netlbl_cipsov4_ops,
+	.n_small_ops = ARRAY_SIZE(netlbl_cipsov4_ops),
+	.resv_start_op = NLBL_CIPSOV4_C_LISTALL + 1,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NetLabel Generic NETLINK Protocol Functions
  */
@@ -782,6 +953,10 @@ static struct genl_ops netlbl_cipsov4_ops[] = {
  */
 int __init netlbl_cipsov4_genl_init(void)
 {
+<<<<<<< HEAD
 	return genl_register_family_with_ops(&netlbl_cipsov4_gnl_family,
 		netlbl_cipsov4_ops, ARRAY_SIZE(netlbl_cipsov4_ops));
+=======
+	return genl_register_family(&netlbl_cipsov4_gnl_family);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

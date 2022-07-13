@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2004
  *   Portions Copyright (C) Christoph Hellwig, 2001-2002
@@ -15,6 +16,12 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *   Copyright (C) International Business Machines Corp., 2000-2004
+ *   Portions Copyright (C) Christoph Hellwig, 2001-2002
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _H_JFS_INCORE
 #define _H_JFS_INCORE
@@ -23,6 +30,11 @@
 #include <linux/rwsem.h>
 #include <linux/slab.h>
 #include <linux/bitops.h>
+<<<<<<< HEAD
+=======
+#include <linux/uuid.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "jfs_types.h"
 #include "jfs_xtree.h"
 #include "jfs_dtree.h"
@@ -38,12 +50,21 @@
 struct jfs_inode_info {
 	int	fileset;	/* fileset number (always 16)*/
 	uint	mode2;		/* jfs-specific mode		*/
+<<<<<<< HEAD
 	uint	saved_uid;	/* saved for uid mount option */
 	uint	saved_gid;	/* saved for gid mount option */
 	pxd_t	ixpxd;		/* inode extent descriptor	*/
 	dxd_t	acl;		/* dxd describing acl	*/
 	dxd_t	ea;		/* dxd describing ea	*/
 	time_t	otime;		/* time created	*/
+=======
+	kuid_t	saved_uid;	/* saved for uid mount option */
+	kgid_t	saved_gid;	/* saved for gid mount option */
+	pxd_t	ixpxd;		/* inode extent descriptor	*/
+	dxd_t	acl;		/* dxd describing acl	*/
+	dxd_t	ea;		/* dxd describing ea	*/
+	time64_t otime;		/* time created	*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint	next_index;	/* next available directory entry index */
 	int	acltype;	/* Type of ACL	*/
 	short	btorder;	/* access order	*/
@@ -77,7 +98,11 @@ struct jfs_inode_info {
 	lid_t	xtlid;		/* lid of xtree lock on directory */
 	union {
 		struct {
+<<<<<<< HEAD
 			xtpage_t _xtroot;	/* 288: xtree root */
+=======
+			xtroot_t _xtroot;	/* 288: xtree root */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct inomap *_imap;	/* 4: inode map header	*/
 		} file;
 		struct {
@@ -87,6 +112,7 @@ struct jfs_inode_info {
 		struct {
 			unchar _unused[16];	/* 16: */
 			dxd_t _dxd;		/* 16: */
+<<<<<<< HEAD
 			unchar _inline[128];	/* 128: inline symlink */
 			/* _inline_ea may overlay the last part of
 			 * file._xtroot if maxentry = XTROOTINITSLOT
@@ -94,6 +120,26 @@ struct jfs_inode_info {
 			unchar _inline_ea[128];	/* 128: inline extended attr */
 		} link;
 	} u;
+=======
+			/* _inline may overflow into _inline_ea when needed */
+			/* _inline_ea may overlay the last part of
+			 * file._xtroot if maxentry = XTROOTINITSLOT
+			 */
+			union {
+				struct {
+					/* 128: inline symlink */
+					unchar _inline[128];
+					/* 128: inline extended attr */
+					unchar _inline_ea[128];
+				};
+				unchar _inline_all[256];
+			};
+		} link;
+	} u;
+#ifdef CONFIG_QUOTA
+	struct dquot __rcu *i_dquot[MAXQUOTAS];
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 dev;	/* will die when we get wide dev_t */
 	struct inode	vfs_inode;
 };
@@ -103,6 +149,10 @@ struct jfs_inode_info {
 #define i_dtroot u.dir._dtroot
 #define i_inline u.link._inline
 #define i_inline_ea u.link._inline_ea
+<<<<<<< HEAD
+=======
+#define i_inline_all u.link._inline_all
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define IREAD_LOCK(ip, subclass) \
 	down_read_nested(&JFS_IP(ip)->rdwrlock, subclass)
@@ -174,8 +224,13 @@ struct jfs_sb_info {
 	pxd_t		logpxd;		/* pxd describing log	*/
 	pxd_t		fsckpxd;	/* pxd describing fsck wkspc */
 	pxd_t		ait2;		/* pxd describing AIT copy	*/
+<<<<<<< HEAD
 	char		uuid[16];	/* 128-bit uuid for volume	*/
 	char		loguuid[16];	/* 128-bit uuid for log	*/
+=======
+	uuid_t		uuid;		/* 128-bit uuid for volume	*/
+	uuid_t		loguuid;	/* 128-bit uuid for log	*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * commit_state is used for synchronization of the jfs_commit
 	 * threads.  It is protected by LAZY_LOCK().
@@ -192,9 +247,16 @@ struct jfs_sb_info {
 	uint		state;		/* mount/recovery state	*/
 	unsigned long	flag;		/* mount time flags */
 	uint		p_state;	/* state prior to going no integrity */
+<<<<<<< HEAD
 	uint		uid;		/* uid to override on-disk uid */
 	uint		gid;		/* gid to override on-disk gid */
 	uint		umask;		/* umask to override on-disk umask */
+=======
+	kuid_t		uid;		/* uid to override on-disk uid */
+	kgid_t		gid;		/* gid to override on-disk gid */
+	uint		umask;		/* umask to override on-disk umask */
+	uint		minblks_trim;	/* minimum blocks, for online trim */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* jfs_sb_info commit_state */
@@ -202,7 +264,11 @@ struct jfs_sb_info {
 
 static inline struct jfs_inode_info *JFS_IP(struct inode *inode)
 {
+<<<<<<< HEAD
 	return list_entry(inode, struct jfs_inode_info, vfs_inode);
+=======
+	return container_of(inode, struct jfs_inode_info, vfs_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int jfs_dirtable_inline(struct inode *inode)

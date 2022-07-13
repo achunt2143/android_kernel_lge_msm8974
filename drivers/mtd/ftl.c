@@ -70,7 +70,11 @@
 #include <linux/hdreg.h>
 #include <linux/vmalloc.h>
 #include <linux/blkpg.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mtd/ftl.h>
 
@@ -111,7 +115,10 @@ typedef struct partition_t {
     struct mtd_blktrans_dev mbd;
     uint32_t		state;
     uint32_t		*VirtualBlockMap;
+<<<<<<< HEAD
     uint32_t		*VirtualPageMap;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     uint32_t		FreeTotal;
     struct eun_info_t {
 	uint32_t		Offset;
@@ -141,12 +148,15 @@ typedef struct partition_t {
 #define XFER_PREPARED	0x03
 #define XFER_FAILED	0x04
 
+<<<<<<< HEAD
 /*====================================================================*/
 
 
 static void ftl_erase_callback(struct erase_info *done);
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*======================================================================
 
     Scan_header() checks to see if a memory region contains an FTL
@@ -208,15 +218,26 @@ static int build_maps(partition_t *part)
     /* Set up erase unit maps */
     part->DataUnits = le16_to_cpu(part->header.NumEraseUnits) -
 	part->header.NumTransferUnits;
+<<<<<<< HEAD
     part->EUNInfo = kmalloc(part->DataUnits * sizeof(struct eun_info_t),
 			    GFP_KERNEL);
+=======
+    part->EUNInfo = kmalloc_array(part->DataUnits, sizeof(struct eun_info_t),
+                                  GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (!part->EUNInfo)
 	    goto out;
     for (i = 0; i < part->DataUnits; i++)
 	part->EUNInfo[i].Offset = 0xffffffff;
     part->XferInfo =
+<<<<<<< HEAD
 	kmalloc(part->header.NumTransferUnits * sizeof(struct xfer_info_t),
 		GFP_KERNEL);
+=======
+	kmalloc_array(part->header.NumTransferUnits,
+                      sizeof(struct xfer_info_t),
+                      GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (!part->XferInfo)
 	    goto out_EUNInfo;
 
@@ -269,15 +290,24 @@ static int build_maps(partition_t *part)
 
     /* Set up virtual page map */
     blocks = le32_to_cpu(header.FormattedSize) >> header.BlockSize;
+<<<<<<< HEAD
     part->VirtualBlockMap = vmalloc(blocks * sizeof(uint32_t));
+=======
+    part->VirtualBlockMap = vmalloc(array_size(blocks, sizeof(uint32_t)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (!part->VirtualBlockMap)
 	    goto out_XferInfo;
 
     memset(part->VirtualBlockMap, 0xff, blocks * sizeof(uint32_t));
     part->BlocksPerUnit = (1 << header.EraseUnitSize) >> header.BlockSize;
 
+<<<<<<< HEAD
     part->bam_cache = kmalloc(part->BlocksPerUnit * sizeof(uint32_t),
 			      GFP_KERNEL);
+=======
+    part->bam_cache = kmalloc_array(part->BlocksPerUnit, sizeof(uint32_t),
+                                    GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     if (!part->bam_cache)
 	    goto out_VirtualBlockMap;
 
@@ -349,6 +379,7 @@ static int erase_xfer(partition_t *part,
     if (!erase)
             return -ENOMEM;
 
+<<<<<<< HEAD
     erase->mtd = part->mbd.mtd;
     erase->callback = ftl_erase_callback;
     erase->addr = xfer->Offset;
@@ -361,6 +392,21 @@ static int erase_xfer(partition_t *part,
 	    xfer->EraseCount++;
     else
 	    kfree(erase);
+=======
+    erase->addr = xfer->Offset;
+    erase->len = 1 << part->header.EraseUnitSize;
+
+    ret = mtd_erase(part->mbd.mtd, erase);
+    if (!ret) {
+	xfer->state = XFER_ERASED;
+	xfer->EraseCount++;
+    } else {
+	xfer->state = XFER_FAILED;
+	pr_notice("ftl_cs: erase failed: err = %d\n", ret);
+    }
+
+    kfree(erase);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     return ret;
 } /* erase_xfer */
@@ -372,6 +418,7 @@ static int erase_xfer(partition_t *part,
 
 ======================================================================*/
 
+<<<<<<< HEAD
 static void ftl_erase_callback(struct erase_info *erase)
 {
     partition_t *part;
@@ -403,6 +450,8 @@ static void ftl_erase_callback(struct erase_info *erase)
 
 } /* ftl_erase_callback */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int prepare_xfer(partition_t *part, int i)
 {
     erase_unit_header_t header;
@@ -430,8 +479,13 @@ static int prepare_xfer(partition_t *part, int i)
     }
 
     /* Write the BAM stub */
+<<<<<<< HEAD
     nbam = (part->BlocksPerUnit * sizeof(uint32_t) +
 	    le32_to_cpu(part->header.BAMOffset) + SECTOR_SIZE - 1) / SECTOR_SIZE;
+=======
+    nbam = DIV_ROUND_UP(part->BlocksPerUnit * sizeof(uint32_t) +
+			le32_to_cpu(part->header.BAMOffset), SECTOR_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     offset = xfer->Offset + le32_to_cpu(part->header.BAMOffset);
     ctl = cpu_to_le32(BLOCK_CONTROL);
@@ -572,12 +626,17 @@ static int copy_erase_unit(partition_t *part, uint16_t srcunit,
 
 
     /* Update the maps and usage stats*/
+<<<<<<< HEAD
     i = xfer->EraseCount;
     xfer->EraseCount = eun->EraseCount;
     eun->EraseCount = i;
     i = xfer->Offset;
     xfer->Offset = eun->Offset;
     eun->Offset = i;
+=======
+    swap(xfer->EraseCount, eun->EraseCount);
+    swap(xfer->Offset, eun->Offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     part->FreeTotal -= eun->Free;
     part->FreeTotal += free;
     eun->Free = free;
@@ -981,7 +1040,11 @@ static int ftl_write(partition_t *part, caddr_t buffer,
 
 static int ftl_getgeo(struct mtd_blktrans_dev *dev, struct hd_geometry *geo)
 {
+<<<<<<< HEAD
 	partition_t *part = (void *)dev;
+=======
+	partition_t *part = container_of(dev, struct partition_t, mbd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u_long sect;
 
 	/* Sort of arbitrary: round size down to 4KiB boundary */
@@ -1009,7 +1072,11 @@ static int ftl_writesect(struct mtd_blktrans_dev *dev,
 static int ftl_discardsect(struct mtd_blktrans_dev *dev,
 			   unsigned long sector, unsigned nr_sects)
 {
+<<<<<<< HEAD
 	partition_t *part = (void *)dev;
+=======
+	partition_t *part = container_of(dev, struct partition_t, mbd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t bsize = 1 << part->header.EraseUnitSize;
 
 	pr_debug("FTL erase sector %ld for %d sectors\n",
@@ -1035,8 +1102,11 @@ static void ftl_freepart(partition_t *part)
 {
 	vfree(part->VirtualBlockMap);
 	part->VirtualBlockMap = NULL;
+<<<<<<< HEAD
 	kfree(part->VirtualPageMap);
 	part->VirtualPageMap = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(part->EUNInfo);
 	part->EUNInfo = NULL;
 	kfree(part->XferInfo);
@@ -1071,11 +1141,18 @@ static void ftl_add_mtd(struct mtd_blktrans_ops *tr, struct mtd_info *mtd)
 
 		partition->mbd.tr = tr;
 		partition->mbd.devnum = -1;
+<<<<<<< HEAD
 		if (!add_mtd_blktrans_dev((void *)partition))
 			return;
 	}
 
 	ftl_freepart(partition);
+=======
+		if (!add_mtd_blktrans_dev(&partition->mbd))
+			return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(partition);
 }
 
@@ -1099,6 +1176,7 @@ static struct mtd_blktrans_ops ftl_tr = {
 	.owner		= THIS_MODULE,
 };
 
+<<<<<<< HEAD
 static int __init init_ftl(void)
 {
 	return register_mtd_blktrans(&ftl_tr);
@@ -1112,6 +1190,9 @@ static void __exit cleanup_ftl(void)
 module_init(init_ftl);
 module_exit(cleanup_ftl);
 
+=======
+module_mtd_blktrans(ftl_tr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("Dual MPL/GPL");
 MODULE_AUTHOR("David Hinds <dahinds@users.sourceforge.net>");

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 addnote
 empty.c
 hack-coff
@@ -5,6 +6,13 @@ infblock.c
 infblock.h
 infcodes.c
 infcodes.h
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+addnote
+decompress_inflate.c
+empty.c
+hack-coff
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 inffast.c
 inffast.h
 inffixed.h
@@ -17,17 +25,33 @@ infutil.h
 kernel-vmlinux.strip.c
 kernel-vmlinux.strip.gz
 mktree
+<<<<<<< HEAD
+=======
+otheros.bld
+otheros-too-big.bld
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 uImage
 cuImage.*
 dtbImage.*
 treeImage.*
+<<<<<<< HEAD
+=======
+vmlinux.strip
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 zImage
 zImage.initrd
 zImage.bin.*
 zImage.chrp
 zImage.coff
+<<<<<<< HEAD
 zImage.holly
 zImage.*lds
+=======
+zImage.epapr
+zImage.holly
+zImage.*lds
+zImage.maple
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 zImage.miboot
 zImage.pmac
 zImage.pseries
@@ -43,4 +67,7 @@ fdt_sw.c
 fdt_wip.c
 libfdt.h
 libfdt_internal.h
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

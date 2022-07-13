@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 1995  Linus Torvalds
  *  Adapted from 'alpha' version by Gary Thomas
@@ -16,6 +20,7 @@
 #include <linux/time.h>
 #include <linux/rtc.h>
 #include <linux/fsl_devices.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
 #include <asm/mpc8xx.h>
@@ -33,6 +38,19 @@ struct mpc8xx_pcmcia_ops m8xx_pcmcia_ops;
 extern int cpm_pic_init(void);
 extern int cpm_get_irq(void);
 
+=======
+#include <linux/of.h>
+#include <linux/of_irq.h>
+
+#include <asm/io.h>
+#include <asm/8xx_immap.h>
+#include <mm/mmu_decl.h>
+
+#include "pic.h"
+
+#include "mpc8xx.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* A place holder for time base interrupts, if they are ever enabled. */
 static irqreturn_t timebase_interrupt(int irq, void *dev)
 {
@@ -41,6 +59,7 @@ static irqreturn_t timebase_interrupt(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static struct irqaction tbint_irqaction = {
 	.handler = timebase_interrupt,
 	.name = "tbint",
@@ -60,6 +79,8 @@ init_internal_rtc(void)
 	immr_unmap(sys_tmr);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init get_freq(char *name, unsigned long *val)
 {
 	struct device_node *cpu;
@@ -67,7 +88,11 @@ static int __init get_freq(char *name, unsigned long *val)
 	int found = 0;
 
 	/* The cpu node should have timebase and clock frequency properties */
+<<<<<<< HEAD
 	cpu = of_find_node_by_type(NULL, "cpu");
+=======
+	cpu = of_get_cpu_node(0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cpu) {
 		fp = of_get_property(cpu, name, NULL);
@@ -89,6 +114,7 @@ static int __init get_freq(char *name, unsigned long *val)
 void __init mpc8xx_calibrate_decr(void)
 {
 	struct device_node *cpu;
+<<<<<<< HEAD
 	cark8xx_t __iomem *clk_r1;
 	car8xx_t __iomem *clk_r2;
 	sitk8xx_t __iomem *sys_tmr1;
@@ -106,6 +132,16 @@ void __init mpc8xx_calibrate_decr(void)
 	clk_r2 = immr_map(im_clkrst);
 	setbits32(&clk_r2->car_sccr, 0x02000000);
 	immr_unmap(clk_r2);
+=======
+	int irq, virq;
+
+	/* Unlock the SCCR. */
+	out_be32(&mpc8xx_immr->im_clkrstk.cark_sccrk, ~KAPWR_KEY);
+	out_be32(&mpc8xx_immr->im_clkrstk.cark_sccrk, KAPWR_KEY);
+
+	/* Force all 8xx processors to use divide by 16 processor clock. */
+	setbits32(&mpc8xx_immr->im_clkrst.car_sccr, 0x02000000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Processor frequency is MHz.
 	 */
@@ -132,6 +168,7 @@ void __init mpc8xx_calibrate_decr(void)
 	 * we guarantee the registers are locked, then we unlock them
 	 * for our use.
 	 */
+<<<<<<< HEAD
 	sys_tmr1 = immr_map(im_sitk);
 	out_be32(&sys_tmr1->sitk_tbscrk, ~KAPWR_KEY);
 	out_be32(&sys_tmr1->sitk_rtcsck, ~KAPWR_KEY);
@@ -142,12 +179,27 @@ void __init mpc8xx_calibrate_decr(void)
 	immr_unmap(sys_tmr1);
 
 	init_internal_rtc();
+=======
+	out_be32(&mpc8xx_immr->im_sitk.sitk_tbscrk, ~KAPWR_KEY);
+	out_be32(&mpc8xx_immr->im_sitk.sitk_rtcsck, ~KAPWR_KEY);
+	out_be32(&mpc8xx_immr->im_sitk.sitk_tbk, ~KAPWR_KEY);
+	out_be32(&mpc8xx_immr->im_sitk.sitk_tbscrk, KAPWR_KEY);
+	out_be32(&mpc8xx_immr->im_sitk.sitk_rtcsck, KAPWR_KEY);
+	out_be32(&mpc8xx_immr->im_sitk.sitk_tbk, KAPWR_KEY);
+
+	/* Disable the RTC one second and alarm interrupts. */
+	clrbits16(&mpc8xx_immr->im_sit.sit_rtcsc, (RTCSC_SIE | RTCSC_ALE));
+
+	/* Enable the RTC */
+	setbits16(&mpc8xx_immr->im_sit.sit_rtcsc, (RTCSC_RTF | RTCSC_RTE));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enabling the decrementer also enables the timebase interrupts
 	 * (or from the other point of view, to get decrementer interrupts
 	 * we have to enable the timebase).  The decrementer interrupt
 	 * is wired into the vector table, nothing to do here for that.
 	 */
+<<<<<<< HEAD
 	cpu = of_find_node_by_type(NULL, "cpu");
 	virq= irq_of_parse_and_map(cpu, 0);
 	irq = virq_to_hw(virq);
@@ -158,6 +210,18 @@ void __init mpc8xx_calibrate_decr(void)
 	immr_unmap(sys_tmr2);
 
 	if (setup_irq(virq, &tbint_irqaction))
+=======
+	cpu = of_get_cpu_node(0, NULL);
+	virq= irq_of_parse_and_map(cpu, 0);
+	of_node_put(cpu);
+	irq = virq_to_hw(virq);
+
+	out_be16(&mpc8xx_immr->im_sit.sit_tbscr,
+		 ((1 << (7 - (irq / 2))) << 8) | (TBSCR_TBF | TBSCR_TBE));
+
+	if (request_irq(virq, timebase_interrupt, IRQF_NO_THREAD, "tbint",
+			NULL))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		panic("Could not allocate timer IRQ!");
 }
 
@@ -168,6 +232,7 @@ void __init mpc8xx_calibrate_decr(void)
 
 int mpc8xx_set_rtc_time(struct rtc_time *tm)
 {
+<<<<<<< HEAD
 	sitk8xx_t __iomem *sys_tmr1;
 	sit8xx_t __iomem *sys_tmr2;
 	int time;
@@ -183,12 +248,23 @@ int mpc8xx_set_rtc_time(struct rtc_time *tm)
 
 	immr_unmap(sys_tmr2);
 	immr_unmap(sys_tmr1);
+=======
+	time64_t time;
+
+	time = rtc_tm_to_time64(tm);
+
+	out_be32(&mpc8xx_immr->im_sitk.sitk_rtck, KAPWR_KEY);
+	out_be32(&mpc8xx_immr->im_sit.sit_rtc, (u32)time);
+	out_be32(&mpc8xx_immr->im_sitk.sitk_rtck, ~KAPWR_KEY);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 void mpc8xx_get_rtc_time(struct rtc_time *tm)
 {
 	unsigned long data;
+<<<<<<< HEAD
 	sit8xx_t __iomem *sys_tmr = immr_map(im_sit);
 
 	/* Get time from the RTC. */
@@ -208,10 +284,25 @@ void mpc8xx_restart(char *cmd)
 	local_irq_disable();
 
 	setbits32(&clk_r->car_plprcr, 0x00000080);
+=======
+
+	/* Get time from the RTC. */
+	data = in_be32(&mpc8xx_immr->im_sit.sit_rtc);
+	rtc_time64_to_tm(data, tm);
+	return;
+}
+
+void __noreturn mpc8xx_restart(char *cmd)
+{
+	local_irq_disable();
+
+	setbits32(&mpc8xx_immr->im_clkrst.car_plprcr, 0x00000080);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Clear the ME bit in MSR to cause checkstop on machine check
 	*/
 	mtmsr(mfmsr() & ~0x1000);
 
+<<<<<<< HEAD
 	in_8(&clk_r->res[0]);
 	panic("Restart failed\n");
 }
@@ -253,3 +344,8 @@ void __init mpc8xx_pics_init(void)
 	if (irq != NO_IRQ)
 		irq_set_chained_handler(irq, cpm_cascade);
 }
+=======
+	in_8(&mpc8xx_immr->im_clkrst.res[0]);
+	panic("Restart failed\n");
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Pseudo NMI support on sparc64 systems.
  *
  * Copyright (C) 2009 David S. Miller <davem@davemloft.net>
@@ -22,7 +26,10 @@
 #include <asm/perf_event.h>
 #include <asm/ptrace.h>
 #include <asm/pcr.h>
+<<<<<<< HEAD
 #include <asm/perfctr.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "kstack.h"
 
@@ -43,7 +50,11 @@ static int panic_on_timeout;
  */
 atomic_t nmi_active = ATOMIC_INIT(0);		/* oprofile uses this */
 EXPORT_SYMBOL(nmi_active);
+<<<<<<< HEAD
 
+=======
+static int nmi_init_done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int nmi_hz = HZ;
 static DEFINE_PER_CPU(short, wd_enabled);
 static int endflag __initdata;
@@ -52,7 +63,11 @@ static DEFINE_PER_CPU(unsigned int, last_irq_sum);
 static DEFINE_PER_CPU(long, alert_counter);
 static DEFINE_PER_CPU(int, nmi_touch);
 
+<<<<<<< HEAD
 void touch_nmi_watchdog(void)
+=======
+void arch_touch_nmi_watchdog(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (atomic_read(&nmi_active)) {
 		int cpu;
@@ -62,6 +77,7 @@ void touch_nmi_watchdog(void)
 				per_cpu(nmi_touch, cpu) = 1;
 		}
 	}
+<<<<<<< HEAD
 
 	touch_softlockup_watchdog();
 }
@@ -69,10 +85,25 @@ EXPORT_SYMBOL(touch_nmi_watchdog);
 
 static void die_nmi(const char *str, struct pt_regs *regs, int do_panic)
 {
+=======
+}
+EXPORT_SYMBOL(arch_touch_nmi_watchdog);
+
+int __init watchdog_hardlockup_probe(void)
+{
+	return 0;
+}
+
+static void die_nmi(const char *str, struct pt_regs *regs, int do_panic)
+{
+	int this_cpu = smp_processor_id();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (notify_die(DIE_NMIWATCHDOG, str, regs, 0,
 		       pt_regs_trap_type(regs), SIGINT) == NOTIFY_STOP)
 		return;
 
+<<<<<<< HEAD
 	console_verbose();
 	bust_spinlocks(1);
 
@@ -90,6 +121,12 @@ static void die_nmi(const char *str, struct pt_regs *regs, int do_panic)
 	nmi_exit();
 	local_irq_enable();
 	do_exit(SIGBUS);
+=======
+	if (do_panic || panic_on_oops)
+		panic("Watchdog detected hard LOCKUP on cpu %d", this_cpu);
+	else
+		WARN(1, "Watchdog detected hard LOCKUP on cpu %d", this_cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 notrace __kprobes void perfctr_irq(int irq, struct pt_regs *regs)
@@ -109,6 +146,7 @@ notrace __kprobes void perfctr_irq(int irq, struct pt_regs *regs)
 		       pt_regs_trap_type(regs), SIGINT) == NOTIFY_STOP)
 		touched = 1;
 	else
+<<<<<<< HEAD
 		pcr_ops->write(PCR_PIC_PRIV);
 
 	sum = local_cpu_data().irq0_irqs;
@@ -117,17 +155,36 @@ notrace __kprobes void perfctr_irq(int irq, struct pt_regs *regs)
 		touched = 1;
 	}
 	if (!touched && __get_cpu_var(last_irq_sum) == sum) {
+=======
+		pcr_ops->write_pcr(0, pcr_ops->pcr_nmi_disable);
+
+	sum = local_cpu_data().irq0_irqs;
+	if (__this_cpu_read(nmi_touch)) {
+		__this_cpu_write(nmi_touch, 0);
+		touched = 1;
+	}
+	if (!touched && __this_cpu_read(last_irq_sum) == sum) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__this_cpu_inc(alert_counter);
 		if (__this_cpu_read(alert_counter) == 30 * nmi_hz)
 			die_nmi("BUG: NMI Watchdog detected LOCKUP",
 				regs, panic_on_timeout);
 	} else {
+<<<<<<< HEAD
 		__get_cpu_var(last_irq_sum) = sum;
 		__this_cpu_write(alert_counter, 0);
 	}
 	if (__get_cpu_var(wd_enabled)) {
 		write_pic(picl_value(nmi_hz));
 		pcr_ops->write(pcr_enable);
+=======
+		__this_cpu_write(last_irq_sum, sum);
+		__this_cpu_write(alert_counter, 0);
+	}
+	if (__this_cpu_read(wd_enabled)) {
+		pcr_ops->write_pic(0, pcr_ops->nmi_picl_value(nmi_hz));
+		pcr_ops->write_pcr(0, pcr_ops->pcr_nmi_enable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	restore_hardirq_stack(orig_sp);
@@ -142,7 +199,10 @@ static inline unsigned int get_nmi_count(int cpu)
 
 static __init void nmi_cpu_busy(void *data)
 {
+<<<<<<< HEAD
 	local_irq_enable_in_hardirq();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (endflag == 0)
 		mb();
 }
@@ -166,8 +226,15 @@ static void report_broken_nmi(int cpu, int *prev_nmi_count)
 
 void stop_nmi_watchdog(void *unused)
 {
+<<<<<<< HEAD
 	pcr_ops->write(PCR_PIC_PRIV);
 	__get_cpu_var(wd_enabled) = 0;
+=======
+	if (!__this_cpu_read(wd_enabled))
+		return;
+	pcr_ops->write_pcr(0, pcr_ops->pcr_nmi_disable);
+	__this_cpu_write(wd_enabled, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_dec(&nmi_active);
 }
 
@@ -179,7 +246,12 @@ static int __init check_nmi_watchdog(void)
 	if (!atomic_read(&nmi_active))
 		return 0;
 
+<<<<<<< HEAD
 	prev_nmi_count = kmalloc(nr_cpu_ids * sizeof(unsigned int), GFP_KERNEL);
+=======
+	prev_nmi_count = kmalloc_array(nr_cpu_ids, sizeof(unsigned int),
+				       GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!prev_nmi_count) {
 		err = -ENOMEM;
 		goto error;
@@ -220,6 +292,7 @@ error:
 
 void start_nmi_watchdog(void *unused)
 {
+<<<<<<< HEAD
 	__get_cpu_var(wd_enabled) = 1;
 	atomic_inc(&nmi_active);
 
@@ -227,10 +300,23 @@ void start_nmi_watchdog(void *unused)
 	write_pic(picl_value(nmi_hz));
 
 	pcr_ops->write(pcr_enable);
+=======
+	if (__this_cpu_read(wd_enabled))
+		return;
+
+	__this_cpu_write(wd_enabled, 1);
+	atomic_inc(&nmi_active);
+
+	pcr_ops->write_pcr(0, pcr_ops->pcr_nmi_disable);
+	pcr_ops->write_pic(0, pcr_ops->nmi_picl_value(nmi_hz));
+
+	pcr_ops->write_pcr(0, pcr_ops->pcr_nmi_enable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nmi_adjust_hz_one(void *unused)
 {
+<<<<<<< HEAD
 	if (!__get_cpu_var(wd_enabled))
 		return;
 
@@ -238,6 +324,15 @@ static void nmi_adjust_hz_one(void *unused)
 	write_pic(picl_value(nmi_hz));
 
 	pcr_ops->write(pcr_enable);
+=======
+	if (!__this_cpu_read(wd_enabled))
+		return;
+
+	pcr_ops->write_pcr(0, pcr_ops->pcr_nmi_disable);
+	pcr_ops->write_pic(0, pcr_ops->nmi_picl_value(nmi_hz));
+
+	pcr_ops->write_pcr(0, pcr_ops->pcr_nmi_enable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nmi_adjust_hz(unsigned int new_hz)
@@ -272,6 +367,11 @@ int __init nmi_init(void)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	nmi_init_done = 1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -280,6 +380,45 @@ static int __init setup_nmi_watchdog(char *str)
 	if (!strncmp(str, "panic", 5))
 		panic_on_timeout = 1;
 
+<<<<<<< HEAD
 	return 0;
 }
 __setup("nmi_watchdog=", setup_nmi_watchdog);
+=======
+	return 1;
+}
+__setup("nmi_watchdog=", setup_nmi_watchdog);
+
+/*
+ * sparc specific NMI watchdog enable function.
+ * Enables watchdog if it is not enabled already.
+ */
+void watchdog_hardlockup_enable(unsigned int cpu)
+{
+	if (atomic_read(&nmi_active) == -1) {
+		pr_warn("NMI watchdog cannot be enabled or disabled\n");
+		return;
+	}
+
+	/*
+	 * watchdog thread could start even before nmi_init is called.
+	 * Just Return in that case. Let nmi_init finish the init
+	 * process first.
+	 */
+	if (!nmi_init_done)
+		return;
+
+	smp_call_function_single(cpu, start_nmi_watchdog, NULL, 1);
+}
+/*
+ * sparc specific NMI watchdog disable function.
+ * Disables watchdog if it is not disabled already.
+ */
+void watchdog_hardlockup_disable(unsigned int cpu)
+{
+	if (atomic_read(&nmi_active) == -1)
+		pr_warn_once("NMI watchdog cannot be enabled or disabled\n");
+	else
+		smp_call_function_single(cpu, stop_nmi_watchdog, NULL, 1);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -17,6 +17,12 @@
 
 #include <linux/errno.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/debug.h>
+#include <linux/sched/task.h>
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/smp.h>
@@ -24,6 +30,10 @@
 #include <linux/unistd.h>
 #include <linux/ptrace.h>
 #include <linux/elf.h>
+<<<<<<< HEAD
+=======
+#include <linux/hw_breakpoint.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/prctl.h>
 #include <linux/init_task.h>
@@ -33,8 +43,12 @@
 #include <linux/slab.h>
 #include <linux/rcupdate.h>
 
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/processor.h>
 #include <asm/platform.h>
@@ -43,15 +57,25 @@
 #include <linux/atomic.h>
 #include <asm/asm-offsets.h>
 #include <asm/regs.h>
+<<<<<<< HEAD
 
 extern void ret_from_fork(void);
 
 struct task_struct *current_set[NR_CPUS] = {&init_task, };
+=======
+#include <asm/hw_breakpoint.h>
+#include <asm/sections.h>
+#include <asm/traps.h>
+
+extern void ret_from_fork(void);
+extern void ret_from_kernel_thread(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void (*pm_power_off)(void) = NULL;
 EXPORT_SYMBOL(pm_power_off);
 
 
+<<<<<<< HEAD
 #if XTENSA_HAVE_COPROCESSORS
 
 void coprocessor_release_all(struct thread_info *ti)
@@ -78,10 +102,101 @@ void coprocessor_release_all(struct thread_info *ti)
 	coprocessor_clear_cpenable();
 
 	preempt_enable();
+=======
+#ifdef CONFIG_STACKPROTECTOR
+#include <linux/stackprotector.h>
+unsigned long __stack_chk_guard __read_mostly;
+EXPORT_SYMBOL(__stack_chk_guard);
+#endif
+
+#if XTENSA_HAVE_COPROCESSORS
+
+void local_coprocessors_flush_release_all(void)
+{
+	struct thread_info **coprocessor_owner;
+	struct thread_info *unique_owner[XCHAL_CP_MAX];
+	int n = 0;
+	int i, j;
+
+	coprocessor_owner = this_cpu_ptr(&exc_table)->coprocessor_owner;
+	xtensa_set_sr(XCHAL_CP_MASK, cpenable);
+
+	for (i = 0; i < XCHAL_CP_MAX; i++) {
+		struct thread_info *ti = coprocessor_owner[i];
+
+		if (ti) {
+			coprocessor_flush(ti, i);
+
+			for (j = 0; j < n; j++)
+				if (unique_owner[j] == ti)
+					break;
+			if (j == n)
+				unique_owner[n++] = ti;
+
+			coprocessor_owner[i] = NULL;
+		}
+	}
+	for (i = 0; i < n; i++) {
+		/* pairs with memw (1) in fast_coprocessor and memw in switch_to */
+		smp_wmb();
+		unique_owner[i]->cpenable = 0;
+	}
+	xtensa_set_sr(0, cpenable);
+}
+
+static void local_coprocessor_release_all(void *info)
+{
+	struct thread_info *ti = info;
+	struct thread_info **coprocessor_owner;
+	int i;
+
+	coprocessor_owner = this_cpu_ptr(&exc_table)->coprocessor_owner;
+
+	/* Walk through all cp owners and release it for the requested one. */
+
+	for (i = 0; i < XCHAL_CP_MAX; i++) {
+		if (coprocessor_owner[i] == ti)
+			coprocessor_owner[i] = NULL;
+	}
+	/* pairs with memw (1) in fast_coprocessor and memw in switch_to */
+	smp_wmb();
+	ti->cpenable = 0;
+	if (ti == current_thread_info())
+		xtensa_set_sr(0, cpenable);
+}
+
+void coprocessor_release_all(struct thread_info *ti)
+{
+	if (ti->cpenable) {
+		/* pairs with memw (2) in fast_coprocessor */
+		smp_rmb();
+		smp_call_function_single(ti->cp_owner_cpu,
+					 local_coprocessor_release_all,
+					 ti, true);
+	}
+}
+
+static void local_coprocessor_flush_all(void *info)
+{
+	struct thread_info *ti = info;
+	struct thread_info **coprocessor_owner;
+	unsigned long old_cpenable;
+	int i;
+
+	coprocessor_owner = this_cpu_ptr(&exc_table)->coprocessor_owner;
+	old_cpenable = xtensa_xsr(ti->cpenable, cpenable);
+
+	for (i = 0; i < XCHAL_CP_MAX; i++) {
+		if (coprocessor_owner[i] == ti)
+			coprocessor_flush(ti, i);
+	}
+	xtensa_set_sr(old_cpenable, cpenable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void coprocessor_flush_all(struct thread_info *ti)
 {
+<<<<<<< HEAD
 	unsigned long cpenable;
 	int i;
 
@@ -96,6 +211,32 @@ void coprocessor_flush_all(struct thread_info *ti)
 	}
 
 	preempt_enable();
+=======
+	if (ti->cpenable) {
+		/* pairs with memw (2) in fast_coprocessor */
+		smp_rmb();
+		smp_call_function_single(ti->cp_owner_cpu,
+					 local_coprocessor_flush_all,
+					 ti, true);
+	}
+}
+
+static void local_coprocessor_flush_release_all(void *info)
+{
+	local_coprocessor_flush_all(info);
+	local_coprocessor_release_all(info);
+}
+
+void coprocessor_flush_release_all(struct thread_info *ti)
+{
+	if (ti->cpenable) {
+		/* pairs with memw (2) in fast_coprocessor */
+		smp_rmb();
+		smp_call_function_single(ti->cp_owner_cpu,
+					 local_coprocessor_flush_release_all,
+					 ti, true);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif
@@ -104,6 +245,7 @@ void coprocessor_flush_all(struct thread_info *ti)
 /*
  * Powermanagement idle function, if any is provided by the platform.
  */
+<<<<<<< HEAD
 
 void cpu_idle(void)
 {
@@ -117,15 +259,28 @@ void cpu_idle(void)
 		rcu_idle_exit();
 		schedule_preempt_disabled();
 	}
+=======
+void arch_cpu_idle(void)
+{
+	platform_idle();
+	raw_local_irq_disable();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * This is called when the thread calls exit().
  */
+<<<<<<< HEAD
 void exit_thread(void)
 {
 #if XTENSA_HAVE_COPROCESSORS
 	coprocessor_release_all(current_thread_info());
+=======
+void exit_thread(struct task_struct *tsk)
+{
+#if XTENSA_HAVE_COPROCESSORS
+	coprocessor_release_all(task_thread_info(tsk));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -137,6 +292,7 @@ void flush_thread(void)
 {
 #if XTENSA_HAVE_COPROCESSORS
 	struct thread_info *ti = current_thread_info();
+<<<<<<< HEAD
 	coprocessor_flush_all(ti);
 	coprocessor_release_all(ti);
 #endif
@@ -150,19 +306,54 @@ void prepare_to_copy(struct task_struct *tsk)
 #if XTENSA_HAVE_COPROCESSORS
 	coprocessor_flush_all(task_thread_info(tsk));
 #endif
+=======
+	coprocessor_flush_release_all(ti);
+#endif
+	flush_ptrace_hw_breakpoint(current);
+}
+
+/*
+ * this gets called so that we can store coprocessor state into memory and
+ * copy the current task into the new thread.
+ */
+int arch_dup_task_struct(struct task_struct *dst, struct task_struct *src)
+{
+#if XTENSA_HAVE_COPROCESSORS
+	coprocessor_flush_all(task_thread_info(src));
+#endif
+	*dst = *src;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Copy thread.
  *
+<<<<<<< HEAD
  * The stack layout for the new thread looks like this:
  *
  *	+------------------------+ <- sp in childregs (= tos)
+=======
+ * There are two modes in which this function is called:
+ * 1) Userspace thread creation,
+ *    regs != NULL, usp_thread_fn is userspace stack pointer.
+ *    It is expected to copy parent regs (in case CLONE_VM is not set
+ *    in the clone_flags) and set up passed usp in the childregs.
+ * 2) Kernel thread creation,
+ *    regs == NULL, usp_thread_fn is the function to run in the new thread
+ *    and thread_fn_arg is its parameter.
+ *    childregs are not used for the kernel threads.
+ *
+ * The stack layout for the new thread looks like this:
+ *
+ *	+------------------------+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	|       childregs        |
  *	+------------------------+ <- thread.sp = sp in dummy-frame
  *	|      dummy-frame       |    (saved in dummy-frame spill-area)
  *	+------------------------+
  *
+<<<<<<< HEAD
  * We create a dummy frame to return to ret_from_fork:
  *   a0 points to ret_from_fork (simulating a call4)
  *   sp points to itself (thread.sp)
@@ -213,6 +404,121 @@ int copy_thread(unsigned long clone_flags, unsigned long usp,
 	} else {
 		/* In kernel space, we start a new thread with a new stack. */
 		childregs->wmask = 1;
+=======
+ * We create a dummy frame to return to either ret_from_fork or
+ *   ret_from_kernel_thread:
+ *   a0 points to ret_from_fork/ret_from_kernel_thread (simulating a call4)
+ *   sp points to itself (thread.sp)
+ *   a2, a3 are unused for userspace threads,
+ *   a2 points to thread_fn, a3 holds thread_fn arg for kernel threads.
+ *
+ * Note: This is a pristine frame, so we don't need any spill region on top of
+ *       childregs.
+ *
+ * The fun part:  if we're keeping the same VM (i.e. cloning a thread,
+ * not an entire process), we're normally given a new usp, and we CANNOT share
+ * any live address register windows.  If we just copy those live frames over,
+ * the two threads (parent and child) will overflow the same frames onto the
+ * parent stack at different times, likely corrupting the parent stack (esp.
+ * if the parent returns from functions that called clone() and calls new
+ * ones, before the child overflows its now old copies of its parent windows).
+ * One solution is to spill windows to the parent stack, but that's fairly
+ * involved.  Much simpler to just not copy those live frames across.
+ */
+
+int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
+{
+	unsigned long clone_flags = args->flags;
+	unsigned long usp_thread_fn = args->stack;
+	unsigned long tls = args->tls;
+	struct pt_regs *childregs = task_pt_regs(p);
+
+#if (XTENSA_HAVE_COPROCESSORS || XTENSA_HAVE_IO_PORTS)
+	struct thread_info *ti;
+#endif
+
+#if defined(__XTENSA_WINDOWED_ABI__)
+	/* Create a call4 dummy-frame: a0 = 0, a1 = childregs. */
+	SPILL_SLOT(childregs, 1) = (unsigned long)childregs;
+	SPILL_SLOT(childregs, 0) = 0;
+
+	p->thread.sp = (unsigned long)childregs;
+#elif defined(__XTENSA_CALL0_ABI__)
+	/* Reserve 16 bytes for the _switch_to stack frame. */
+	p->thread.sp = (unsigned long)childregs - 16;
+#else
+#error Unsupported Xtensa ABI
+#endif
+
+	if (!args->fn) {
+		struct pt_regs *regs = current_pt_regs();
+		unsigned long usp = usp_thread_fn ?
+			usp_thread_fn : regs->areg[1];
+
+		p->thread.ra = MAKE_RA_FOR_CALL(
+				(unsigned long)ret_from_fork, 0x1);
+
+		*childregs = *regs;
+		childregs->areg[1] = usp;
+		childregs->areg[2] = 0;
+
+		/* When sharing memory with the parent thread, the child
+		   usually starts on a pristine stack, so we have to reset
+		   windowbase, windowstart and wmask.
+		   (Note that such a new thread is required to always create
+		   an initial call4 frame)
+		   The exception is vfork, where the new thread continues to
+		   run on the parent's stack until it calls execve. This could
+		   be a call8 or call12, which requires a legal stack frame
+		   of the previous caller for the overflow handlers to work.
+		   (Note that it's always legal to overflow live registers).
+		   In this case, ensure to spill at least the stack pointer
+		   of that frame. */
+
+		if (clone_flags & CLONE_VM) {
+			/* check that caller window is live and same stack */
+			int len = childregs->wmask & ~0xf;
+			if (regs->areg[1] == usp && len != 0) {
+				int callinc = (regs->areg[0] >> 30) & 3;
+				int caller_ars = XCHAL_NUM_AREGS - callinc * 4;
+				put_user(regs->areg[caller_ars+1],
+					 (unsigned __user*)(usp - 12));
+			}
+			childregs->wmask = 1;
+			childregs->windowstart = 1;
+			childregs->windowbase = 0;
+		}
+
+		if (clone_flags & CLONE_SETTLS)
+			childregs->threadptr = tls;
+	} else {
+		p->thread.ra = MAKE_RA_FOR_CALL(
+				(unsigned long)ret_from_kernel_thread, 1);
+
+		/* pass parameters to ret_from_kernel_thread: */
+#if defined(__XTENSA_WINDOWED_ABI__)
+		/*
+		 * a2 = thread_fn, a3 = thread_fn arg.
+		 * Window underflow will load registers from the
+		 * spill slots on the stack on return from _switch_to.
+		 */
+		SPILL_SLOT(childregs, 2) = (unsigned long)args->fn;
+		SPILL_SLOT(childregs, 3) = (unsigned long)args->fn_arg;
+#elif defined(__XTENSA_CALL0_ABI__)
+		/*
+		 * a12 = thread_fn, a13 = thread_fn arg.
+		 * _switch_to epilogue will load registers from the stack.
+		 */
+		((unsigned long *)p->thread.sp)[0] = (unsigned long)args->fn;
+		((unsigned long *)p->thread.sp)[1] = (unsigned long)args->fn_arg;
+#else
+#error Unsupported Xtensa ABI
+#endif
+
+		/* Childregs are only used when we're going to userspace
+		 * in which case start_thread will set them up.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 #if (XTENSA_HAVE_COPROCESSORS || XTENSA_HAVE_IO_PORTS)
@@ -220,6 +526,11 @@ int copy_thread(unsigned long clone_flags, unsigned long usp,
 	ti->cpenable = 0;
 #endif
 
+<<<<<<< HEAD
+=======
+	clear_ptrace_hw_breakpoint(p);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -228,17 +539,26 @@ int copy_thread(unsigned long clone_flags, unsigned long usp,
  * These bracket the sleeping functions..
  */
 
+<<<<<<< HEAD
 unsigned long get_wchan(struct task_struct *p)
+=======
+unsigned long __get_wchan(struct task_struct *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long sp, pc;
 	unsigned long stack_page = (unsigned long) task_stack_page(p);
 	int count = 0;
 
+<<<<<<< HEAD
 	if (!p || p == current || p->state == TASK_RUNNING)
 		return 0;
 
 	sp = p->thread.sp;
 	pc = MAKE_PC_FROM_RA(p->thread.ra, p->thread.sp);
+=======
+	sp = p->thread.sp;
+	pc = MAKE_PC_FROM_RA(p->thread.ra, _text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	do {
 		if (sp < stack_page + sizeof(struct task_struct) ||
@@ -250,6 +570,7 @@ unsigned long get_wchan(struct task_struct *p)
 
 		/* Stack layout: sp-4: ra, sp-3: sp' */
 
+<<<<<<< HEAD
 		pc = MAKE_PC_FROM_RA(*(unsigned long*)sp - 4, sp);
 		sp = *(unsigned long *)sp - 3;
 	} while (count++ < 16);
@@ -337,3 +658,10 @@ out:
 	return error;
 }
 
+=======
+		pc = MAKE_PC_FROM_RA(SPILL_SLOT(sp, 0), _text);
+		sp = SPILL_SLOT(sp, 1);
+	} while (count++ < 16);
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

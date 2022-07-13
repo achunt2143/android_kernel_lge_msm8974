@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * File: pn_dev.h
  *
  * Phonet network device
  *
  * Copyright (C) 2008 Nokia Corporation.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,11 +23,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef PN_DEV_H
 #define PN_DEV_H
 
+<<<<<<< HEAD
+=======
+#include <linux/list.h>
+#include <linux/mutex.h>
+
+struct net;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct phonet_device_list {
 	struct list_head list;
 	struct mutex lock;
@@ -56,7 +71,12 @@ struct net_device *phonet_route_output(struct net *net, u8 daddr);
 
 #define PN_NO_ADDR	0xff
 
+<<<<<<< HEAD
 extern const struct file_operations pn_sock_seq_fops;
 extern const struct file_operations pn_res_seq_fops;
+=======
+extern const struct seq_operations pn_sock_seq_ops;
+extern const struct seq_operations pn_res_seq_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

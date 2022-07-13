@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
  *  Copyright 10/16/2005 Tilman Kranz <tilde@tk-sls.de>
  *  Creative Audio MIDI, for the CA0106 Driver
@@ -8,6 +12,7 @@
  *    tested with ca0106.
  *    mpu401: Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *    emu10k1x: Copyright (c) by Francisco Moraes <fmoraes@nc.rr.com>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,6 +29,8 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/spinlock.h>
@@ -46,7 +53,11 @@ static void ca_midi_clear_rx(struct snd_ca_midi *midi)
 		ca_midi_read_data(midi);
 #ifdef CONFIG_SND_DEBUG
 	if (timeout <= 0)
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "ca_midi_clear_rx: timeout (status = 0x%x)\n",
+=======
+		pr_err("ca_midi_clear_rx: timeout (status = 0x%x)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   ca_midi_read_stat(midi));
 #endif
 }
@@ -113,7 +124,11 @@ static void ca_midi_cmd(struct snd_ca_midi *midi, unsigned char cmd, int ack)
 	}
 	spin_unlock_irqrestore(&midi->input_lock, flags);
 	if (!ok)
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "ca_midi_cmd: 0x%x failed at 0x%x (status = 0x%x, data = 0x%x)!!!\n",
+=======
+		pr_err("ca_midi_cmd: 0x%x failed at 0x%x (status = 0x%x, data = 0x%x)!!!\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   cmd,
 			   midi->get_dev_id_port(midi->dev_id),
 			   ca_midi_read_stat(midi),
@@ -255,14 +270,22 @@ static void ca_midi_output_trigger(struct snd_rawmidi_substream *substream, int 
 	}
 }
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops ca_midi_output =
+=======
+static const struct snd_rawmidi_ops ca_midi_output =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		ca_midi_output_open,
 	.close =	ca_midi_output_close,
 	.trigger =	ca_midi_output_trigger,
 };
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops ca_midi_input =
+=======
+static const struct snd_rawmidi_ops ca_midi_input =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		ca_midi_input_open,
 	.close =	ca_midi_input_close,
@@ -286,12 +309,21 @@ static void ca_rmidi_free(struct snd_rawmidi *rmidi)
 	ca_midi_free(rmidi->private_data);
 }
 
+<<<<<<< HEAD
 int __devinit ca_midi_init(void *dev_id, struct snd_ca_midi *midi, int device, char *name)
+=======
+int ca_midi_init(void *dev_id, struct snd_ca_midi *midi, int device, char *name)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_rawmidi *rmidi;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = snd_rawmidi_new(midi->get_dev_id_card(midi->dev_id), name, device, 1, 1, &rmidi)) < 0)
+=======
+	err = snd_rawmidi_new(midi->get_dev_id_card(midi->dev_id), name, device, 1, 1, &rmidi);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	midi->dev_id = dev_id;

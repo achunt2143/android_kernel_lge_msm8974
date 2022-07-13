@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Host Side support for RNDIS Networking Links
  * Copyright (C) 2005 by David Brownell
@@ -15,11 +16,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Host Side support for RNDIS Networking Links
+ * Copyright (C) 2005 by David Brownell
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef	__LINUX_USB_RNDIS_HOST_H
 #define	__LINUX_USB_RNDIS_HOST_H
 
+<<<<<<< HEAD
+=======
+#include <linux/rndis.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CONTROL uses CDC "encapsulated commands" with funky notifications.
  *  - control-out:  SEND_ENCAPSULATED
@@ -49,6 +61,7 @@ struct rndis_msg_hdr {
  */
 #define	RNDIS_CONTROL_TIMEOUT_MS	(5 * 1000)
 
+<<<<<<< HEAD
 #define RNDIS_MSG_COMPLETION	cpu_to_le32(0x80000000)
 
 /* codes for "msg_type" field of rndis messages;
@@ -90,6 +103,8 @@ struct rndis_msg_hdr {
 #define	RNDIS_PHYSICAL_MEDIUM_WIRELESS_WAN	cpu_to_le32(0x00000008)
 #define	RNDIS_PHYSICAL_MEDIUM_MAX		cpu_to_le32(0x00000009)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rndis_data_hdr {
 	__le32	msg_type;		/* RNDIS_MSG_PACKET */
 	__le32	msg_len;		/* rndis_data_hdr + data_len + pad */
@@ -222,6 +237,7 @@ struct rndis_keepalive_c {	/* IN (optionally OUT) */
 	__le32	status;
 } __attribute__ ((packed));
 
+<<<<<<< HEAD
 /* NOTE:  about 30 OIDs are "mandatory" for peripherals to support ... and
  * there are gobs more that may optionally be supported.  We'll avoid as much
  * of that mess as possible.
@@ -245,6 +261,8 @@ struct rndis_keepalive_c {	/* IN (optionally OUT) */
 #define RNDIS_PACKET_TYPE_FUNCTIONAL		cpu_to_le32(0x00004000)
 #define RNDIS_PACKET_TYPE_MAC_FRAME		cpu_to_le32(0x00008000)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* default filter used with RNDIS devices */
 #define RNDIS_DEFAULT_FILTER ( \
 	RNDIS_PACKET_TYPE_DIRECTED | \
@@ -258,6 +276,10 @@ struct rndis_keepalive_c {	/* IN (optionally OUT) */
 
 /* Flags for driver_info::data */
 #define RNDIS_DRIVER_DATA_POLL_STATUS	1	/* poll status before control */
+<<<<<<< HEAD
+=======
+#define RNDIS_DRIVER_DATA_DST_MAC_FIXUP	2	/* device ignores configured MAC address */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void rndis_status(struct usbnet *dev, struct urb *urb);
 extern int

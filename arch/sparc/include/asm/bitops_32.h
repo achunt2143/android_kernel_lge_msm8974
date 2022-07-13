@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bitops.h: Bit string operations on the Sparc.
  *
@@ -18,9 +22,15 @@
 #error only <linux/bitops.h> can be included directly
 #endif
 
+<<<<<<< HEAD
 extern unsigned long ___set_bit(unsigned long *addr, unsigned long mask);
 extern unsigned long ___clear_bit(unsigned long *addr, unsigned long mask);
 extern unsigned long ___change_bit(unsigned long *addr, unsigned long mask);
+=======
+unsigned long sp32___set_bit(unsigned long *addr, unsigned long mask);
+unsigned long sp32___clear_bit(unsigned long *addr, unsigned long mask);
+unsigned long sp32___change_bit(unsigned long *addr, unsigned long mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set bit 'nr' in 32-bit quantity at address 'addr' where bit '0'
@@ -35,7 +45,11 @@ static inline int test_and_set_bit(unsigned long nr, volatile unsigned long *add
 	ADDR = ((unsigned long *) addr) + (nr >> 5);
 	mask = 1 << (nr & 31);
 
+<<<<<<< HEAD
 	return ___set_bit(ADDR, mask) != 0;
+=======
+	return sp32___set_bit(ADDR, mask) != 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void set_bit(unsigned long nr, volatile unsigned long *addr)
@@ -45,7 +59,11 @@ static inline void set_bit(unsigned long nr, volatile unsigned long *addr)
 	ADDR = ((unsigned long *) addr) + (nr >> 5);
 	mask = 1 << (nr & 31);
 
+<<<<<<< HEAD
 	(void) ___set_bit(ADDR, mask);
+=======
+	(void) sp32___set_bit(ADDR, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int test_and_clear_bit(unsigned long nr, volatile unsigned long *addr)
@@ -55,7 +73,11 @@ static inline int test_and_clear_bit(unsigned long nr, volatile unsigned long *a
 	ADDR = ((unsigned long *) addr) + (nr >> 5);
 	mask = 1 << (nr & 31);
 
+<<<<<<< HEAD
 	return ___clear_bit(ADDR, mask) != 0;
+=======
+	return sp32___clear_bit(ADDR, mask) != 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void clear_bit(unsigned long nr, volatile unsigned long *addr)
@@ -65,7 +87,11 @@ static inline void clear_bit(unsigned long nr, volatile unsigned long *addr)
 	ADDR = ((unsigned long *) addr) + (nr >> 5);
 	mask = 1 << (nr & 31);
 
+<<<<<<< HEAD
 	(void) ___clear_bit(ADDR, mask);
+=======
+	(void) sp32___clear_bit(ADDR, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int test_and_change_bit(unsigned long nr, volatile unsigned long *addr)
@@ -75,7 +101,11 @@ static inline int test_and_change_bit(unsigned long nr, volatile unsigned long *
 	ADDR = ((unsigned long *) addr) + (nr >> 5);
 	mask = 1 << (nr & 31);
 
+<<<<<<< HEAD
 	return ___change_bit(ADDR, mask) != 0;
+=======
+	return sp32___change_bit(ADDR, mask) != 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void change_bit(unsigned long nr, volatile unsigned long *addr)
@@ -85,14 +115,21 @@ static inline void change_bit(unsigned long nr, volatile unsigned long *addr)
 	ADDR = ((unsigned long *) addr) + (nr >> 5);
 	mask = 1 << (nr & 31);
 
+<<<<<<< HEAD
 	(void) ___change_bit(ADDR, mask);
+=======
+	(void) sp32___change_bit(ADDR, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #include <asm-generic/bitops/non-atomic.h>
 
+<<<<<<< HEAD
 #define smp_mb__before_clear_bit()	do { } while(0)
 #define smp_mb__after_clear_bit()	do { } while(0)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/bitops/ffz.h>
 #include <asm-generic/bitops/__ffs.h>
 #include <asm-generic/bitops/sched.h>
@@ -102,7 +139,10 @@ static inline void change_bit(unsigned long nr, volatile unsigned long *addr)
 #include <asm-generic/bitops/fls64.h>
 #include <asm-generic/bitops/hweight.h>
 #include <asm-generic/bitops/lock.h>
+<<<<<<< HEAD
 #include <asm-generic/bitops/find.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/bitops/le.h>
 #include <asm-generic/bitops/ext2-atomic.h>
 

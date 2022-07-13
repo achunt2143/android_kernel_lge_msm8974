@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * starfire.c: Starfire/E10000 support.
  *
@@ -28,11 +32,14 @@ void check_if_starfire(void)
 		this_is_starfire = 1;
 }
 
+<<<<<<< HEAD
 int starfire_hard_smp_processor_id(void)
 {
 	return upa_readl(0x1fff40000d0UL);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Each Starfire board has 32 registers which perform translation
  * and delivery of traditional interrupt packets into the extended

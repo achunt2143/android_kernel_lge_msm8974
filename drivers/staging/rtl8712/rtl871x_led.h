@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -72,14 +79,27 @@ enum LED_STRATEGY_871x {
 	SW_LED_MODE0, /* SW control 1 LED via GPIO0. It is default option. */
 	SW_LED_MODE1, /* 2 LEDs, through LED0 and LED1. For ALPHA. */
 	SW_LED_MODE2, /* SW control 1 LED via GPIO0,
+<<<<<<< HEAD
 		       * custom for AzWave 8187 minicard. */
 	SW_LED_MODE3, /* SW control 1 LED via GPIO0,
 		       *  customized for Sercomm Printer Server case.*/
+=======
+		       * custom for AzWave 8187 minicard.
+		       */
+	SW_LED_MODE3, /* SW control 1 LED via GPIO0,
+		       * customized for Sercomm Printer Server case.
+		       */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SW_LED_MODE4, /*for Edimax / Belkin*/
 	SW_LED_MODE5, /*for Sercomm / Belkin*/
 	SW_LED_MODE6, /*for WNC / Corega*/
 	HW_LED, /* HW control 2 LEDs, LED0 and LED1 (there are 4 different
+<<<<<<< HEAD
 		 * control modes, see MAC.CONFIG1 for details.)*/
+=======
+		 * control modes, see MAC.CONFIG1 for details.)
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct LED_871x {
@@ -96,10 +116,18 @@ struct LED_871x {
 	u8			bLedWPSBlinkInProgress;
 	u32			BlinkTimes; /* No. times to toggle for blink.*/
 	u32			BlinkingLedState; /* Next state for blinking,
+<<<<<<< HEAD
 						   * either LED_ON or OFF.*/
 
 	struct timer_list	BlinkTimer; /* Timer object for led blinking.*/
 	_workitem		BlinkWorkItem; /* Workitem used by BlinkTimer */
+=======
+						   * either LED_ON or OFF.
+						   */
+
+	struct timer_list	BlinkTimer; /* Timer object for led blinking.*/
+	struct work_struct	BlinkWorkItem; /* Workitem used by BlinkTimer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct led_priv {
@@ -115,10 +143,19 @@ struct led_priv {
 
 /*===========================================================================
  * Interface to manipulate LED objects.
+<<<<<<< HEAD
  *===========================================================================*/
 void r8712_InitSwLeds(struct _adapter *padapter);
 void r8712_DeInitSwLeds(struct _adapter *padapter);
 void LedControl871x(struct _adapter *padapter, enum LED_CTL_MODE LedAction);
+=======
+ *===========================================================================
+ */
+void r8712_InitSwLeds(struct _adapter *padapter);
+void r8712_DeInitSwLeds(struct _adapter *padapter);
+void LedControl871x(struct _adapter *padapter, enum LED_CTL_MODE LedAction);
+void r8712_flush_led_works(struct _adapter *padapter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 

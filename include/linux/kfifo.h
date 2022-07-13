@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * A generic kernel FIFO implementation
  *
@@ -17,6 +18,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * A generic kernel FIFO implementation
+ *
+ * Copyright (C) 2013 Stefani Seibold <stefani@seibold.net>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LINUX_KFIFO_H
@@ -41,11 +49,19 @@
  */
 
 /*
+<<<<<<< HEAD
  * Note about locking : There is no locking required until only * one reader
  * and one writer is using the fifo and no kfifo_reset() will be * called
  *  kfifo_reset_out() can be safely used, until it will be only called
  * in the reader thread.
  *  For multiple writer and one reader there is only a need to lock the writer.
+=======
+ * Note about locking: There is no locking required until only one reader
+ * and one writer is using the fifo and no kfifo_reset() will be called.
+ * kfifo_reset_out() can be safely used, until it will be only called
+ * in the reader thread.
+ * For multiple writer and one reader there is only a need to lock the writer.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * And vice versa for only one writer and multiple reader there is only a need
  * to lock the reader.
  */
@@ -67,9 +83,16 @@ struct __kfifo {
 	union { \
 		struct __kfifo	kfifo; \
 		datatype	*type; \
+<<<<<<< HEAD
 		char		(*rectype)[recsize]; \
 		ptrtype		*ptr; \
 		const ptrtype	*ptr_const; \
+=======
+		const datatype	*const_type; \
+		char		(*rectype)[recsize]; \
+		ptrtype		*ptr; \
+		ptrtype const	*ptr_const; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 #define __STRUCT_KFIFO(type, size, recsize, ptrtype) \
@@ -112,7 +135,12 @@ struct kfifo_rec_ptr_2 __STRUCT_KFIFO_PTR(unsigned char, 2, void);
  * array is a part of the structure and the fifo type where the array is
  * outside of the fifo structure.
  */
+<<<<<<< HEAD
 #define	__is_kfifo_ptr(fifo)	(sizeof(*fifo) == sizeof(struct __kfifo))
+=======
+#define	__is_kfifo_ptr(fifo) \
+	(sizeof(*fifo) == sizeof(STRUCT_KFIFO_PTR(typeof(*(fifo)->type))))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * DECLARE_KFIFO_PTR - macro to declare a fifo pointer object
@@ -259,6 +287,40 @@ __kfifo_int_must_check_helper(int val)
 })
 
 /**
+<<<<<<< HEAD
+=======
+ * kfifo_is_empty_spinlocked - returns true if the fifo is empty using
+ * a spinlock for locking
+ * @fifo: address of the fifo to be used
+ * @lock: spinlock to be used for locking
+ */
+#define kfifo_is_empty_spinlocked(fifo, lock) \
+({ \
+	unsigned long __flags; \
+	bool __ret; \
+	spin_lock_irqsave(lock, __flags); \
+	__ret = kfifo_is_empty(fifo); \
+	spin_unlock_irqrestore(lock, __flags); \
+	__ret; \
+})
+
+/**
+ * kfifo_is_empty_spinlocked_noirqsave  - returns true if the fifo is empty
+ * using a spinlock for locking, doesn't disable interrupts
+ * @fifo: address of the fifo to be used
+ * @lock: spinlock to be used for locking
+ */
+#define kfifo_is_empty_spinlocked_noirqsave(fifo, lock) \
+({ \
+	bool __ret; \
+	spin_lock(lock); \
+	__ret = kfifo_is_empty(fifo); \
+	spin_unlock(lock); \
+	__ret; \
+})
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * kfifo_is_full - returns true if the fifo is full
  * @fifo: address of the fifo to be used
  */
@@ -324,7 +386,11 @@ __kfifo_uint_must_check_helper( \
  *
  * This macro dynamically allocates a new fifo buffer.
  *
+<<<<<<< HEAD
  * The numer of elements will be rounded-up to a power of 2.
+=======
+ * The number of elements will be rounded-up to a power of 2.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The fifo will be release with kfifo_free().
  * Return 0 if no error, otherwise an error code.
  */
@@ -357,9 +423,15 @@ __kfifo_int_must_check_helper( \
  * @buffer: the preallocated buffer to be used
  * @size: the size of the internal buffer, this have to be a power of 2
  *
+<<<<<<< HEAD
  * This macro initialize a fifo using a preallocated buffer.
  *
  * The numer of elements will be rounded-up to a power of 2.
+=======
+ * This macro initializes a fifo using a preallocated buffer.
+ *
+ * The number of elements will be rounded-up to a power of 2.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Return 0 if no error, otherwise an error code.
  */
 #define kfifo_init(fifo, buffer, size) \
@@ -386,6 +458,7 @@ __kfifo_int_must_check_helper( \
 #define	kfifo_put(fifo, val) \
 ({ \
 	typeof((fifo) + 1) __tmp = (fifo); \
+<<<<<<< HEAD
 	typeof((val) + 1) __val = (val); \
 	unsigned int __ret; \
 	const size_t __recsize = sizeof(*__tmp->rectype); \
@@ -396,6 +469,14 @@ __kfifo_int_must_check_helper( \
 	} \
 	if (__recsize) \
 		__ret = __kfifo_in_r(__kfifo, __val, sizeof(*__val), \
+=======
+	typeof(*__tmp->const_type) __val = (val); \
+	unsigned int __ret; \
+	size_t __recsize = sizeof(*__tmp->rectype); \
+	struct __kfifo *__kfifo = &__tmp->kfifo; \
+	if (__recsize) \
+		__ret = __kfifo_in_r(__kfifo, &__val, sizeof(__val), \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__recsize); \
 	else { \
 		__ret = !kfifo_is_full(__tmp); \
@@ -404,7 +485,11 @@ __kfifo_int_must_check_helper( \
 			((typeof(__tmp->type))__kfifo->data) : \
 			(__tmp->buf) \
 			)[__kfifo->in & __tmp->kfifo.mask] = \
+<<<<<<< HEAD
 				*(typeof(__tmp->type))__val; \
+=======
+				*(typeof(__tmp->type))&__val; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			smp_wmb(); \
 			__kfifo->in++; \
 		} \
@@ -415,7 +500,11 @@ __kfifo_int_must_check_helper( \
 /**
  * kfifo_get - get data from the fifo
  * @fifo: address of the fifo to be used
+<<<<<<< HEAD
  * @val: the var where to store the data to be added
+=======
+ * @val: address where to store the data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This macro reads the data from the fifo.
  * It returns 0 if the fifo was empty. Otherwise it returns the number
@@ -428,12 +517,19 @@ __kfifo_int_must_check_helper( \
 __kfifo_uint_must_check_helper( \
 ({ \
 	typeof((fifo) + 1) __tmp = (fifo); \
+<<<<<<< HEAD
 	typeof((val) + 1) __val = (val); \
 	unsigned int __ret; \
 	const size_t __recsize = sizeof(*__tmp->rectype); \
 	struct __kfifo *__kfifo = &__tmp->kfifo; \
 	if (0) \
 		__val = (typeof(__tmp->ptr))0; \
+=======
+	typeof(__tmp->ptr) __val = (val); \
+	unsigned int __ret; \
+	const size_t __recsize = sizeof(*__tmp->rectype); \
+	struct __kfifo *__kfifo = &__tmp->kfifo; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (__recsize) \
 		__ret = __kfifo_out_r(__kfifo, __val, sizeof(*__val), \
 			__recsize); \
@@ -456,7 +552,11 @@ __kfifo_uint_must_check_helper( \
 /**
  * kfifo_peek - get data from the fifo without removing
  * @fifo: address of the fifo to be used
+<<<<<<< HEAD
  * @val: the var where to store the data to be added
+=======
+ * @val: address where to store the data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This reads the data from the fifo without removing it from the fifo.
  * It returns 0 if the fifo was empty. Otherwise it returns the number
@@ -469,12 +569,19 @@ __kfifo_uint_must_check_helper( \
 __kfifo_uint_must_check_helper( \
 ({ \
 	typeof((fifo) + 1) __tmp = (fifo); \
+<<<<<<< HEAD
 	typeof((val) + 1) __val = (val); \
 	unsigned int __ret; \
 	const size_t __recsize = sizeof(*__tmp->rectype); \
 	struct __kfifo *__kfifo = &__tmp->kfifo; \
 	if (0) \
 		__val = (typeof(__tmp->ptr))NULL; \
+=======
+	typeof(__tmp->ptr) __val = (val); \
+	unsigned int __ret; \
+	const size_t __recsize = sizeof(*__tmp->rectype); \
+	struct __kfifo *__kfifo = &__tmp->kfifo; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (__recsize) \
 		__ret = __kfifo_out_peek_r(__kfifo, __val, sizeof(*__val), \
 			__recsize); \
@@ -508,6 +615,7 @@ __kfifo_uint_must_check_helper( \
 #define	kfifo_in(fifo, buf, n) \
 ({ \
 	typeof((fifo) + 1) __tmp = (fifo); \
+<<<<<<< HEAD
 	typeof((buf) + 1) __buf = (buf); \
 	unsigned long __n = (n); \
 	const size_t __recsize = sizeof(*__tmp->rectype); \
@@ -516,6 +624,12 @@ __kfifo_uint_must_check_helper( \
 		typeof(__tmp->ptr_const) __dummy __attribute__ ((unused)); \
 		__dummy = (typeof(__buf))NULL; \
 	} \
+=======
+	typeof(__tmp->ptr_const) __buf = (buf); \
+	unsigned long __n = (n); \
+	const size_t __recsize = sizeof(*__tmp->rectype); \
+	struct __kfifo *__kfifo = &__tmp->kfifo; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(__recsize) ?\
 	__kfifo_in_r(__kfifo, __buf, __n, __recsize) : \
 	__kfifo_in(__kfifo, __buf, __n); \
@@ -541,6 +655,29 @@ __kfifo_uint_must_check_helper( \
 	__ret; \
 })
 
+<<<<<<< HEAD
+=======
+/**
+ * kfifo_in_spinlocked_noirqsave - put data into fifo using a spinlock for
+ * locking, don't disable interrupts
+ * @fifo: address of the fifo to be used
+ * @buf: the data to be added
+ * @n: number of elements to be added
+ * @lock: pointer to the spinlock to use for locking
+ *
+ * This is a variant of kfifo_in_spinlocked() but uses spin_lock/unlock()
+ * for locking and doesn't disable interrupts.
+ */
+#define kfifo_in_spinlocked_noirqsave(fifo, buf, n, lock) \
+({ \
+	unsigned int __ret; \
+	spin_lock(lock); \
+	__ret = kfifo_in(fifo, buf, n); \
+	spin_unlock(lock); \
+	__ret; \
+})
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* alias for kfifo_in_spinlocked, will be removed in a future release */
 #define kfifo_in_locked(fifo, buf, n, lock) \
 		kfifo_in_spinlocked(fifo, buf, n, lock)
@@ -561,6 +698,7 @@ __kfifo_uint_must_check_helper( \
 __kfifo_uint_must_check_helper( \
 ({ \
 	typeof((fifo) + 1) __tmp = (fifo); \
+<<<<<<< HEAD
 	typeof((buf) + 1) __buf = (buf); \
 	unsigned long __n = (n); \
 	const size_t __recsize = sizeof(*__tmp->rectype); \
@@ -569,6 +707,12 @@ __kfifo_uint_must_check_helper( \
 		typeof(__tmp->ptr) __dummy = NULL; \
 		__buf = __dummy; \
 	} \
+=======
+	typeof(__tmp->ptr) __buf = (buf); \
+	unsigned long __n = (n); \
+	const size_t __recsize = sizeof(*__tmp->rectype); \
+	struct __kfifo *__kfifo = &__tmp->kfifo; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(__recsize) ?\
 	__kfifo_out_r(__kfifo, __buf, __n, __recsize) : \
 	__kfifo_out(__kfifo, __buf, __n); \
@@ -597,6 +741,31 @@ __kfifo_uint_must_check_helper( \
 }) \
 )
 
+<<<<<<< HEAD
+=======
+/**
+ * kfifo_out_spinlocked_noirqsave - get data from the fifo using a spinlock
+ * for locking, don't disable interrupts
+ * @fifo: address of the fifo to be used
+ * @buf: pointer to the storage buffer
+ * @n: max. number of elements to get
+ * @lock: pointer to the spinlock to use for locking
+ *
+ * This is a variant of kfifo_out_spinlocked() which uses spin_lock/unlock()
+ * for locking and doesn't disable interrupts.
+ */
+#define kfifo_out_spinlocked_noirqsave(fifo, buf, n, lock) \
+__kfifo_uint_must_check_helper( \
+({ \
+	unsigned int __ret; \
+	spin_lock(lock); \
+	__ret = kfifo_out(fifo, buf, n); \
+	spin_unlock(lock); \
+	__ret; \
+}) \
+)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* alias for kfifo_out_spinlocked, will be removed in a future release */
 #define kfifo_out_locked(fifo, buf, n, lock) \
 		kfifo_out_spinlocked(fifo, buf, n, lock)
@@ -643,7 +812,11 @@ __kfifo_uint_must_check_helper( \
  * writer, you don't need extra locking to use these macro.
  */
 #define	kfifo_to_user(fifo, to, len, copied) \
+<<<<<<< HEAD
 __kfifo_uint_must_check_helper( \
+=======
+__kfifo_int_must_check_helper( \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ({ \
 	typeof((fifo) + 1) __tmp = (fifo); \
 	void __user *__to = (to); \
@@ -737,7 +910,11 @@ __kfifo_uint_must_check_helper( \
 /**
  * kfifo_dma_out_finish - finish a DMA OUT operation
  * @fifo: address of the fifo to be used
+<<<<<<< HEAD
  * @len: number of bytes transferd
+=======
+ * @len: number of bytes transferred
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This macro finish a DMA OUT operation. The out counter will be updated by
  * the len parameter. No error checking will be done.
@@ -773,6 +950,7 @@ __kfifo_uint_must_check_helper( \
 __kfifo_uint_must_check_helper( \
 ({ \
 	typeof((fifo) + 1) __tmp = (fifo); \
+<<<<<<< HEAD
 	typeof((buf) + 1) __buf = (buf); \
 	unsigned long __n = (n); \
 	const size_t __recsize = sizeof(*__tmp->rectype); \
@@ -781,6 +959,12 @@ __kfifo_uint_must_check_helper( \
 		typeof(__tmp->ptr) __dummy __attribute__ ((unused)) = NULL; \
 		__buf = __dummy; \
 	} \
+=======
+	typeof(__tmp->ptr) __buf = (buf); \
+	unsigned long __n = (n); \
+	const size_t __recsize = sizeof(*__tmp->rectype); \
+	struct __kfifo *__kfifo = &__tmp->kfifo; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(__recsize) ? \
 	__kfifo_out_peek_r(__kfifo, __buf, __n, __recsize) : \
 	__kfifo_out_peek(__kfifo, __buf, __n); \

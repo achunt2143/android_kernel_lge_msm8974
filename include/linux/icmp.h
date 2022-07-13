@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -8,15 +12,19 @@
  * Version:	@(#)icmp.h	1.0.3	04/28/93
  *
  * Author:	Fred N. van Kempen, <waltje@uWalt.NL.Mugnet.ORG>
+<<<<<<< HEAD
  *
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_ICMP_H
 #define	_LINUX_ICMP_H
 
+<<<<<<< HEAD
 #include <linux/types.h>
 
 #define ICMP_ECHOREPLY		0	/* Echo Reply			*/
@@ -84,11 +92,17 @@ struct icmphdr {
 
 #ifdef __KERNEL__
 #include <linux/skbuff.h>
+=======
+#include <linux/skbuff.h>
+#include <uapi/linux/icmp.h>
+#include <uapi/linux/errqueue.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct icmphdr *icmp_hdr(const struct sk_buff *skb)
 {
 	return (struct icmphdr *)skb_transport_header(skb);
 }
+<<<<<<< HEAD
 #endif
 
 /*
@@ -101,5 +115,25 @@ struct icmp_filter {
 	__u32		data;
 };
 
+=======
+
+static inline bool icmp_is_err(int type)
+{
+	switch (type) {
+	case ICMP_DEST_UNREACH:
+	case ICMP_SOURCE_QUENCH:
+	case ICMP_REDIRECT:
+	case ICMP_TIME_EXCEEDED:
+	case ICMP_PARAMETERPROB:
+		return true;
+	}
+
+	return false;
+}
+
+void ip_icmp_error_rfc4884(const struct sk_buff *skb,
+			   struct sock_ee_data_rfc4884 *out,
+			   int thlen, int off);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* _LINUX_ICMP_H */

@@ -1,7 +1,10 @@
 #!/bin/sh
 #
+<<<<<<< HEAD
 # arch/arm/boot/install.sh
 #
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # This file is subject to the terms and conditions of the GNU General Public
 # License.  See the file "COPYING" in the main directory of this archive
 # for more details.
@@ -18,11 +21,14 @@
 #   $2 - kernel image file
 #   $3 - kernel map file
 #   $4 - default install path (blank if root directory)
+<<<<<<< HEAD
 #
 
 # User may have a custom install script
 if [ -x ~/bin/${INSTALLKERNEL} ]; then exec ~/bin/${INSTALLKERNEL} "$@"; fi
 if [ -x /sbin/${INSTALLKERNEL} ]; then exec /sbin/${INSTALLKERNEL} "$@"; fi
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 if [ "$(basename $2)" = "zImage" ]; then
 # Compressed install

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Instituto Nokia de Tecnologia
  *
  * Authors:
  *    Aloisio Almeida Jr <aloisio.almeida@openbossa.org>
  *    Lauro Ramos Venancio <lauro.venancio@openbossa.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  * along with this program; if not, write to the
  * Free Software Foundation, Inc.,
  * 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
@@ -26,9 +33,34 @@
 #include <net/tcp_states.h>
 #include <linux/nfc.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 
 #include "nfc.h"
 
+=======
+#include <linux/kcov.h>
+
+#include "nfc.h"
+
+static struct nfc_sock_list raw_sk_list = {
+	.lock = __RW_LOCK_UNLOCKED(raw_sk_list.lock)
+};
+
+static void nfc_sock_link(struct nfc_sock_list *l, struct sock *sk)
+{
+	write_lock(&l->lock);
+	sk_add_node(sk, &l->head);
+	write_unlock(&l->lock);
+}
+
+static void nfc_sock_unlink(struct nfc_sock_list *l, struct sock *sk)
+{
+	write_lock(&l->lock);
+	sk_del_node_init(sk);
+	write_unlock(&l->lock);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rawsock_write_queue_purge(struct sock *sk)
 {
 	pr_debug("sk=%p\n", sk);
@@ -45,7 +77,11 @@ static void rawsock_report_error(struct sock *sk, int err)
 
 	sk->sk_shutdown = SHUTDOWN_MASK;
 	sk->sk_err = -err;
+<<<<<<< HEAD
 	sk->sk_error_report(sk);
+=======
+	sk_error_report(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rawsock_write_queue_purge(sk);
 }
@@ -59,6 +95,12 @@ static int rawsock_release(struct socket *sock)
 	if (!sk)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	if (sock->type == SOCK_RAW)
+		nfc_sock_unlink(&raw_sk_list, sk);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sock_orphan(sk);
 	sock_put(sk);
 
@@ -95,6 +137,15 @@ static int rawsock_connect(struct socket *sock, struct sockaddr *_addr,
 		goto error;
 	}
 
+<<<<<<< HEAD
+=======
+	if (addr->target_idx > dev->target_next_idx - 1 ||
+	    addr->target_idx < dev->target_next_idx - dev->n_targets) {
+		rc = -EINVAL;
+		goto put_dev;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = nfc_activate_target(dev, addr->target_idx, addr->nfc_protocol);
 	if (rc)
 		goto put_dev;
@@ -117,7 +168,11 @@ error:
 
 static int rawsock_add_header(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	*skb_push(skb, NFC_HEADER_SIZE) = 0;
+=======
+	*(u8 *)skb_push(skb, NFC_HEADER_SIZE) = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -127,7 +182,11 @@ static void rawsock_data_exchange_complete(void *context, struct sk_buff *skb,
 {
 	struct sock *sk = (struct sock *) context;
 
+<<<<<<< HEAD
 	BUG_ON(in_irq());
+=======
+	BUG_ON(in_hardirq());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("sk=%p err=%d\n", sk, err);
 
@@ -136,11 +195,19 @@ static void rawsock_data_exchange_complete(void *context, struct sk_buff *skb,
 
 	err = rawsock_add_header(skb);
 	if (err)
+<<<<<<< HEAD
 		goto error;
 
 	err = sock_queue_rcv_skb(sk, skb);
 	if (err)
 		goto error;
+=======
+		goto error_skb;
+
+	err = sock_queue_rcv_skb(sk, skb);
+	if (err)
+		goto error_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&sk->sk_write_queue.lock);
 	if (!skb_queue_empty(&sk->sk_write_queue))
@@ -152,6 +219,12 @@ static void rawsock_data_exchange_complete(void *context, struct sk_buff *skb,
 	sock_put(sk);
 	return;
 
+<<<<<<< HEAD
+=======
+error_skb:
+	kfree_skb(skb);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error:
 	rawsock_report_error(sk, err);
 	sock_put(sk);
@@ -173,6 +246,10 @@ static void rawsock_tx_work(struct work_struct *work)
 	}
 
 	skb = skb_dequeue(&sk->sk_write_queue);
+<<<<<<< HEAD
+=======
+	kcov_remote_start_common(skb_get_kcov_handle(skb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sock_hold(sk);
 	rc = nfc_data_exchange(dev, target_idx, skb,
@@ -181,10 +258,17 @@ static void rawsock_tx_work(struct work_struct *work)
 		rawsock_report_error(sk, rc);
 		sock_put(sk);
 	}
+<<<<<<< HEAD
 }
 
 static int rawsock_sendmsg(struct kiocb *iocb, struct socket *sock,
 			   struct msghdr *msg, size_t len)
+=======
+	kcov_remote_stop();
+}
+
+static int rawsock_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct nfc_dev *dev = nfc_rawsock(sk)->dev;
@@ -203,7 +287,11 @@ static int rawsock_sendmsg(struct kiocb *iocb, struct socket *sock,
 	if (skb == NULL)
 		return rc;
 
+<<<<<<< HEAD
 	rc = memcpy_fromiovec(skb_put(skb, len), msg->msg_iov, len);
+=======
+	rc = memcpy_from_msg(skb_put(skb, len), msg, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0) {
 		kfree_skb(skb);
 		return rc;
@@ -220,10 +308,16 @@ static int rawsock_sendmsg(struct kiocb *iocb, struct socket *sock,
 	return len;
 }
 
+<<<<<<< HEAD
 static int rawsock_recvmsg(struct kiocb *iocb, struct socket *sock,
 			   struct msghdr *msg, size_t len, int flags)
 {
 	int noblock = flags & MSG_DONTWAIT;
+=======
+static int rawsock_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+			   int flags)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sock *sk = sock->sk;
 	struct sk_buff *skb;
 	int copied;
@@ -231,7 +325,11 @@ static int rawsock_recvmsg(struct kiocb *iocb, struct socket *sock,
 
 	pr_debug("sock=%p sk=%p len=%zu flags=%d\n", sock, sk, len, flags);
 
+<<<<<<< HEAD
 	skb = skb_recv_datagram(sk, flags, noblock, &rc);
+=======
+	skb = skb_recv_datagram(sk, flags, &rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb)
 		return rc;
 
@@ -241,14 +339,21 @@ static int rawsock_recvmsg(struct kiocb *iocb, struct socket *sock,
 		copied = len;
 	}
 
+<<<<<<< HEAD
 	rc = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copied);
+=======
+	rc = skb_copy_datagram_msg(skb, 0, msg, copied);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_free_datagram(sk, skb);
 
 	return rc ? : copied;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct proto_ops rawsock_ops = {
 	.family         = PF_NFC,
 	.owner          = THIS_MODULE,
@@ -262,20 +367,49 @@ static const struct proto_ops rawsock_ops = {
 	.ioctl          = sock_no_ioctl,
 	.listen         = sock_no_listen,
 	.shutdown       = sock_no_shutdown,
+<<<<<<< HEAD
 	.setsockopt     = sock_no_setsockopt,
 	.getsockopt     = sock_no_getsockopt,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sendmsg        = rawsock_sendmsg,
 	.recvmsg        = rawsock_recvmsg,
 	.mmap           = sock_no_mmap,
 };
 
+<<<<<<< HEAD
+=======
+static const struct proto_ops rawsock_raw_ops = {
+	.family         = PF_NFC,
+	.owner          = THIS_MODULE,
+	.release        = rawsock_release,
+	.bind           = sock_no_bind,
+	.connect        = sock_no_connect,
+	.socketpair     = sock_no_socketpair,
+	.accept         = sock_no_accept,
+	.getname        = sock_no_getname,
+	.poll           = datagram_poll,
+	.ioctl          = sock_no_ioctl,
+	.listen         = sock_no_listen,
+	.shutdown       = sock_no_shutdown,
+	.sendmsg        = sock_no_sendmsg,
+	.recvmsg        = rawsock_recvmsg,
+	.mmap           = sock_no_mmap,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rawsock_destruct(struct sock *sk)
 {
 	pr_debug("sk=%p\n", sk);
 
 	if (sk->sk_state == TCP_ESTABLISHED) {
 		nfc_deactivate_target(nfc_rawsock(sk)->dev,
+<<<<<<< HEAD
 				      nfc_rawsock(sk)->target_idx);
+=======
+				      nfc_rawsock(sk)->target_idx,
+				      NFC_TARGET_MODE_IDLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nfc_put_device(nfc_rawsock(sk)->dev);
 	}
 
@@ -288,18 +422,37 @@ static void rawsock_destruct(struct sock *sk)
 }
 
 static int rawsock_create(struct net *net, struct socket *sock,
+<<<<<<< HEAD
 			  const struct nfc_protocol *nfc_proto)
+=======
+			  const struct nfc_protocol *nfc_proto, int kern)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk;
 
 	pr_debug("sock=%p\n", sock);
 
+<<<<<<< HEAD
 	if (sock->type != SOCK_SEQPACKET)
 		return -ESOCKTNOSUPPORT;
 
 	sock->ops = &rawsock_ops;
 
 	sk = sk_alloc(net, PF_NFC, GFP_ATOMIC, nfc_proto->proto);
+=======
+	if ((sock->type != SOCK_SEQPACKET) && (sock->type != SOCK_RAW))
+		return -ESOCKTNOSUPPORT;
+
+	if (sock->type == SOCK_RAW) {
+		if (!ns_capable(net->user_ns, CAP_NET_RAW))
+			return -EPERM;
+		sock->ops = &rawsock_raw_ops;
+	} else {
+		sock->ops = &rawsock_ops;
+	}
+
+	sk = sk_alloc(net, PF_NFC, GFP_ATOMIC, nfc_proto->proto, kern);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sk)
 		return -ENOMEM;
 
@@ -307,13 +460,62 @@ static int rawsock_create(struct net *net, struct socket *sock,
 	sk->sk_protocol = nfc_proto->id;
 	sk->sk_destruct = rawsock_destruct;
 	sock->state = SS_UNCONNECTED;
+<<<<<<< HEAD
 
 	INIT_WORK(&nfc_rawsock(sk)->tx_work, rawsock_tx_work);
 	nfc_rawsock(sk)->tx_work_scheduled = false;
+=======
+	if (sock->type == SOCK_RAW)
+		nfc_sock_link(&raw_sk_list, sk);
+	else {
+		INIT_WORK(&nfc_rawsock(sk)->tx_work, rawsock_tx_work);
+		nfc_rawsock(sk)->tx_work_scheduled = false;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+void nfc_send_to_raw_sock(struct nfc_dev *dev, struct sk_buff *skb,
+			  u8 payload_type, u8 direction)
+{
+	struct sk_buff *skb_copy = NULL, *nskb;
+	struct sock *sk;
+	u8 *data;
+
+	read_lock(&raw_sk_list.lock);
+
+	sk_for_each(sk, &raw_sk_list.head) {
+		if (!skb_copy) {
+			skb_copy = __pskb_copy_fclone(skb, NFC_RAW_HEADER_SIZE,
+						      GFP_ATOMIC, true);
+			if (!skb_copy)
+				continue;
+
+			data = skb_push(skb_copy, NFC_RAW_HEADER_SIZE);
+
+			data[0] = dev ? dev->idx : 0xFF;
+			data[1] = direction & 0x01;
+			data[1] |= (payload_type << 1);
+		}
+
+		nskb = skb_clone(skb_copy, GFP_ATOMIC);
+		if (!nskb)
+			continue;
+
+		if (sock_queue_rcv_skb(sk, nskb))
+			kfree_skb(nskb);
+	}
+
+	read_unlock(&raw_sk_list.lock);
+
+	kfree_skb(skb_copy);
+}
+EXPORT_SYMBOL(nfc_send_to_raw_sock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct proto rawsock_proto = {
 	.name     = "NFC_RAW",
 	.owner    = THIS_MODULE,

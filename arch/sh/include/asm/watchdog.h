@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 /*
+=======
+/* SPDX-License-Identifier: GPL-2.0+
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * include/asm-sh/watchdog.h
  *
  * Copyright (C) 2002, 2003 Paul Mundt
  * Copyright (C) 2009 Siemens AG
  * Copyright (C) 2009 Valentin Sitdikov
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -13,6 +19,11 @@
 #ifndef __ASM_SH_WATCHDOG_H
 #define __ASM_SH_WATCHDOG_H
 #ifdef __KERNEL__
+=======
+ */
+#ifndef __ASM_SH_WATCHDOG_H
+#define __ASM_SH_WATCHDOG_H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/types.h>
 #include <linux/io.h>
@@ -161,5 +172,8 @@ static inline void sh_wdt_write_csr(__u8 val)
 	__raw_writew((WTCSR_HIGH << 8) | (__u16)val, WTCSR);
 }
 #endif /* CONFIG_CPU_SUBTYPE_SH7785 || CONFIG_CPU_SUBTYPE_SH7780 */
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_WATCHDOG_H */

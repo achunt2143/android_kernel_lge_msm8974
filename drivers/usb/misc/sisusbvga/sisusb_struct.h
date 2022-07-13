@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * General structure definitions for universal mode switching modules
  *
@@ -90,7 +94,11 @@ struct SiS_Ext {
 	unsigned char VB_ExtTVYFilterIndex;
 	unsigned char VB_ExtTVYFilterIndexROM661;
 	unsigned char REFindex;
+<<<<<<< HEAD
 	char ROMMODEIDX661;
+=======
+	signed char ROMMODEIDX661;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct SiS_Ext2 {

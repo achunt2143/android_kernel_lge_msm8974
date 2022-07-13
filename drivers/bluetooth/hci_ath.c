@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Atheros Communication Bluetooth HCIATH3K UART protocol
  *
@@ -5,11 +9,15 @@
  *  power management protocol extension to H4 to support AR300x Bluetooth Chip.
  *
  *  Copyright (c) 2009-2010 Atheros Communications Inc.
+<<<<<<< HEAD
  *  Copyright (c) 2012-2014 The Linux Foundation. All rights reserved.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Acknowledgements:
  *  This file is based on hci_h4.c, which was written
  *  by Maxim Krasnyansky and Marcel Holtmann.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -25,6 +33,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -36,15 +46,19 @@
 #include <linux/errno.h>
 #include <linux/ioctl.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/gpio.h>
 #include <linux/of_gpio.h>
 #include <linux/proc_fs.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
 
 #include "hci_uart.h"
+<<<<<<< HEAD
 #ifdef CONFIG_SERIAL_MSM_HS
 #include <mach/msm_serial_hs.h>
 #endif
@@ -104,15 +118,22 @@ struct work_struct ws_sleep;
 
 /* global pointer to a single hci device. */
 static struct bluesleep_info *bsi;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ath_struct {
 	struct hci_uart *hu;
 	unsigned int cur_sleep;
 
+<<<<<<< HEAD
+=======
+	struct sk_buff *rx_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff_head txq;
 	struct work_struct ctxtsw;
 };
 
+<<<<<<< HEAD
 static void hsuart_serial_clock_on(struct uart_port *port)
 {
 	BT_DBG("");
@@ -167,24 +188,75 @@ static void wakeup_host_work(struct work_struct *work)
 		modify_timer_task();
 }
 
+=======
+#define OP_WRITE_TAG	0x01
+
+#define INDEX_BDADDR	0x01
+
+struct ath_vendor_cmd {
+	__u8 opcode;
+	__le16 index;
+	__u8 len;
+	__u8 data[251];
+} __packed;
+
+static int ath_wakeup_ar3k(struct tty_struct *tty)
+{
+	int status = tty->driver->ops->tiocmget(tty);
+
+	if (status & TIOCM_CTS)
+		return status;
+
+	/* Clear RTS first */
+	tty->driver->ops->tiocmget(tty);
+	tty->driver->ops->tiocmset(tty, 0x00, TIOCM_RTS);
+	msleep(20);
+
+	/* Set RTS, wake up board */
+	tty->driver->ops->tiocmget(tty);
+	tty->driver->ops->tiocmset(tty, TIOCM_RTS, 0x00);
+	msleep(20);
+
+	status = tty->driver->ops->tiocmget(tty);
+	return status;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ath_hci_uart_work(struct work_struct *work)
 {
 	int status;
 	struct ath_struct *ath;
 	struct hci_uart *hu;
+<<<<<<< HEAD
+=======
+	struct tty_struct *tty;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath = container_of(work, struct ath_struct, ctxtsw);
 
 	hu = ath->hu;
+<<<<<<< HEAD
 
 	/* verify and wake up controller */
 	if (test_bit(BT_SLEEPENABLE, &flags))
 		status = ath_wakeup_ar3k();
+=======
+	tty = hu->tty;
+
+	/* verify and wake up controller */
+	if (ath->cur_sleep) {
+		status = ath_wakeup_ar3k(tty);
+		if (!(status & TIOCM_CTS))
+			return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Ready to send Data */
 	clear_bit(HCI_UART_SENDING, &hu->tx_state);
 	hci_uart_tx_wakeup(hu);
 }
 
+<<<<<<< HEAD
 static irqreturn_t bluesleep_hostwake_isr(int irq, void *dev_id)
 {
 	/* schedule a work to global shared workqueue to handle
@@ -335,11 +407,26 @@ static int ath_open(struct hci_uart *hu)
 		BT_ERR("HCIATH3K Memory not enough to init driver");
 		return -ENOMEM;
 	}
+=======
+static int ath_open(struct hci_uart *hu)
+{
+	struct ath_struct *ath;
+
+	BT_DBG("hu %p", hu);
+
+	if (!hci_uart_has_flow_control(hu))
+		return -EOPNOTSUPP;
+
+	ath = kzalloc(sizeof(*ath), GFP_KERNEL);
+	if (!ath)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_queue_head_init(&ath->txq);
 
 	hu->priv = ath;
 	ath->hu = hu;
+<<<<<<< HEAD
 	state = hu->tty->driver_data;
 
 	if (!state) {
@@ -366,6 +453,32 @@ static int ath_open(struct hci_uart *hu)
 }
 
 /* Flush protocol data */
+=======
+
+	INIT_WORK(&ath->ctxtsw, ath_hci_uart_work);
+
+	return 0;
+}
+
+static int ath_close(struct hci_uart *hu)
+{
+	struct ath_struct *ath = hu->priv;
+
+	BT_DBG("hu %p", hu);
+
+	skb_queue_purge(&ath->txq);
+
+	kfree_skb(ath->rx_skb);
+
+	cancel_work_sync(&ath->ctxtsw);
+
+	hu->priv = NULL;
+	kfree(ath);
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ath_flush(struct hci_uart *hu)
 {
 	struct ath_struct *ath = hu->priv;
@@ -377,6 +490,7 @@ static int ath_flush(struct hci_uart *hu)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Close protocol */
 static int ath_close(struct hci_uart *hu)
 {
@@ -396,24 +510,91 @@ static int ath_close(struct hci_uart *hu)
 	hu->priv = NULL;
 	bsi->uport = NULL;
 	kfree(ath);
+=======
+static int ath_vendor_cmd(struct hci_dev *hdev, uint8_t opcode, uint16_t index,
+			  const void *data, size_t dlen)
+{
+	struct sk_buff *skb;
+	struct ath_vendor_cmd cmd;
+
+	if (dlen > sizeof(cmd.data))
+		return -EINVAL;
+
+	cmd.opcode = opcode;
+	cmd.index = cpu_to_le16(index);
+	cmd.len = dlen;
+	memcpy(cmd.data, data, dlen);
+
+	skb = __hci_cmd_sync(hdev, 0xfc0b, dlen + 4, &cmd, HCI_INIT_TIMEOUT);
+	if (IS_ERR(skb))
+		return PTR_ERR(skb);
+	kfree_skb(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #define HCI_OP_ATH_SLEEP 0xFC04
 
 /* Enqueue frame for transmittion */
+=======
+static int ath_set_bdaddr(struct hci_dev *hdev, const bdaddr_t *bdaddr)
+{
+	return ath_vendor_cmd(hdev, OP_WRITE_TAG, INDEX_BDADDR, bdaddr,
+			      sizeof(*bdaddr));
+}
+
+static int ath_setup(struct hci_uart *hu)
+{
+	BT_DBG("hu %p", hu);
+
+	hu->hdev->set_bdaddr = ath_set_bdaddr;
+
+	return 0;
+}
+
+static const struct h4_recv_pkt ath_recv_pkts[] = {
+	{ H4_RECV_ACL,   .recv = hci_recv_frame },
+	{ H4_RECV_SCO,   .recv = hci_recv_frame },
+	{ H4_RECV_EVENT, .recv = hci_recv_frame },
+};
+
+static int ath_recv(struct hci_uart *hu, const void *data, int count)
+{
+	struct ath_struct *ath = hu->priv;
+
+	ath->rx_skb = h4_recv_buf(hu->hdev, ath->rx_skb, data, count,
+				  ath_recv_pkts, ARRAY_SIZE(ath_recv_pkts));
+	if (IS_ERR(ath->rx_skb)) {
+		int err = PTR_ERR(ath->rx_skb);
+		bt_dev_err(hu->hdev, "Frame reassembly failed (%d)", err);
+		ath->rx_skb = NULL;
+		return err;
+	}
+
+	return count;
+}
+
+#define HCI_OP_ATH_SLEEP 0xFC04
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ath_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 {
 	struct ath_struct *ath = hu->priv;
 
+<<<<<<< HEAD
 	BT_DBG("");
 
 	if (bt_cb(skb)->pkt_type == HCI_SCODATA_PKT) {
+=======
+	if (hci_skb_pkt_type(skb) == HCI_SCODATA_PKT) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree_skb(skb);
 		return 0;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Update power management enable flag with parameters of
 	 * HCI sleep enable vendor specific HCI command.
@@ -424,12 +605,26 @@ static int ath_enqueue(struct hci_uart *hu, struct sk_buff *skb)
 			set_bit(BT_SLEEPCMD, &flags);
 			ath->cur_sleep = skb->data[HCI_COMMAND_HDR_SIZE];
 		}
+=======
+	/* Update power management enable flag with parameters of
+	 * HCI sleep enable vendor specific HCI command.
+	 */
+	if (hci_skb_pkt_type(skb) == HCI_COMMAND_PKT) {
+		struct hci_command_hdr *hdr = (void *)skb->data;
+
+		if (__le16_to_cpu(hdr->opcode) == HCI_OP_ATH_SLEEP)
+			ath->cur_sleep = skb->data[HCI_COMMAND_HDR_SIZE];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	BT_DBG("hu %p skb %p", hu, skb);
 
 	/* Prepend skb with frame type */
+<<<<<<< HEAD
 	memcpy(skb_push(skb, 1), &bt_cb(skb)->pkt_type, 1);
+=======
+	memcpy(skb_push(skb, 1), &hci_skb_pkt_type(skb), 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_queue_tail(&ath->txq, skb);
 	set_bit(HCI_UART_SENDING, &hu->tx_state);
@@ -446,6 +641,7 @@ static struct sk_buff *ath_dequeue(struct hci_uart *hu)
 	return skb_dequeue(&ath->txq);
 }
 
+<<<<<<< HEAD
 /* Recv data */
 static int ath_recv(struct hci_uart *hu, void *data, int count)
 {
@@ -697,10 +893,24 @@ static struct platform_driver bluesleep_driver = {
 		.owner = THIS_MODULE,
 		.of_match_table = bluesleep_match_table,
 	},
+=======
+static const struct hci_uart_proto athp = {
+	.id		= HCI_UART_ATH3K,
+	.name		= "ATH3K",
+	.manufacturer	= 69,
+	.open		= ath_open,
+	.close		= ath_close,
+	.flush		= ath_flush,
+	.setup		= ath_setup,
+	.recv		= ath_recv,
+	.enqueue	= ath_enqueue,
+	.dequeue	= ath_dequeue,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int __init ath_init(void)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = hci_uart_register_proto(&athp);
@@ -719,11 +929,17 @@ int __init ath_init(void)
 	}
 
 	return 0;
+=======
+	return hci_uart_register_proto(&athp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __exit ath_deinit(void)
 {
+<<<<<<< HEAD
 	platform_driver_unregister(&bluesleep_driver);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return hci_uart_unregister_proto(&athp);
 }

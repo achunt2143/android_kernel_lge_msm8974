@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
@@ -15,6 +16,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
+ * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _VNIC_NIC_H_
@@ -41,12 +48,20 @@
 #define NIC_CFG_IG_VLAN_STRIP_EN_MASK_FIELD	1UL
 #define NIC_CFG_IG_VLAN_STRIP_EN_SHIFT		24
 
+<<<<<<< HEAD
+=======
+#define NIC_CFG_RSS_HASH_TYPE_UDP_IPV4		(1 << 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NIC_CFG_RSS_HASH_TYPE_IPV4		(1 << 1)
 #define NIC_CFG_RSS_HASH_TYPE_TCP_IPV4		(1 << 2)
 #define NIC_CFG_RSS_HASH_TYPE_IPV6		(1 << 3)
 #define NIC_CFG_RSS_HASH_TYPE_TCP_IPV6		(1 << 4)
 #define NIC_CFG_RSS_HASH_TYPE_IPV6_EX		(1 << 5)
 #define NIC_CFG_RSS_HASH_TYPE_TCP_IPV6_EX	(1 << 6)
+<<<<<<< HEAD
+=======
+#define NIC_CFG_RSS_HASH_TYPE_UDP_IPV6		(1 << 7)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void vnic_set_nic_cfg(u32 *nic_cfg,
 	u8 rss_default_cpu, u8 rss_hash_type,

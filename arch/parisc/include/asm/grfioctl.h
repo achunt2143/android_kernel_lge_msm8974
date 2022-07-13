@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  Architecture specific parts of HP's STI (framebuffer) driver.
  *  Structures are HP-UX compatible for XFree86 usage.
  * 
  *    Linux/PA-RISC Project (http://www.parisc-linux.org/)
  *    Copyright (C) 2001 Helge Deller (deller a parisc-linux org)
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_PARISC_GRFIOCTL_H
@@ -72,6 +79,7 @@
 #define CRT_ID_LEGO		0x35ACDA30	/* Lego FX5, FX10 ... */
 #define CRT_ID_PINNACLE		0x35ACDA16	/* Pinnacle FXe */ 
 
+<<<<<<< HEAD
 /* structure for ioctl(GCDESCRIBE) */
 
 #define gaddr_t unsigned long	/* FIXME: PA2.0 (64bit) portable ? */
@@ -111,3 +119,6 @@ struct	grf_fbinfo {
 
 #endif /* __ASM_PARISC_GRFIOCTL_H */
 
+=======
+#endif /* __ASM_PARISC_GRFIOCTL_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

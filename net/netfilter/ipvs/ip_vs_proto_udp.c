@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ip_vs_proto_udp.c:	UDP load balancing support for IPVS
  *
  * Authors:     Wensong Zhang <wensong@linuxvirtualserver.org>
  *              Julian Anastasov <ja@ssi.bg>
  *
+<<<<<<< HEAD
  *              This program is free software; you can redistribute it and/or
  *              modify it under the terms of the GNU General Public License
  *              as published by the Free Software Foundation; either version
@@ -12,6 +17,10 @@
  * Changes:     Hans Schillstrom <hans.schillstrom@ericsson.com>
  *              Network name space (netns) aware.
  *
+=======
+ * Changes:     Hans Schillstrom <hans.schillstrom@ericsson.com>
+ *              Network name space (netns) aware.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define KMSG_COMPONENT "IPVS"
@@ -23,12 +32,17 @@
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
 #include <linux/udp.h>
+<<<<<<< HEAD
+=======
+#include <linux/indirect_call_wrapper.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/ip_vs.h>
 #include <net/ip.h>
 #include <net/ip6_checksum.h>
 
 static int
+<<<<<<< HEAD
 udp_conn_schedule(int af, struct sk_buff *skb, struct ip_vs_proto_data *pd,
 		  int *verdict, struct ip_vs_conn **cpp)
 {
@@ -51,11 +65,54 @@ udp_conn_schedule(int af, struct sk_buff *skb, struct ip_vs_proto_data *pd,
 		int ignored;
 
 		if (ip_vs_todrop(net_ipvs(net))) {
+=======
+udp_csum_check(int af, struct sk_buff *skb, struct ip_vs_protocol *pp);
+
+static int
+udp_conn_schedule(struct netns_ipvs *ipvs, int af, struct sk_buff *skb,
+		  struct ip_vs_proto_data *pd,
+		  int *verdict, struct ip_vs_conn **cpp,
+		  struct ip_vs_iphdr *iph)
+{
+	struct ip_vs_service *svc;
+	struct udphdr _udph, *uh;
+	__be16 _ports[2], *ports = NULL;
+
+	if (likely(!ip_vs_iph_icmp(iph))) {
+		/* IPv6 fragments, only first fragment will hit this */
+		uh = skb_header_pointer(skb, iph->len, sizeof(_udph), &_udph);
+		if (uh)
+			ports = &uh->source;
+	} else {
+		ports = skb_header_pointer(
+			skb, iph->len, sizeof(_ports), &_ports);
+	}
+
+	if (!ports) {
+		*verdict = NF_DROP;
+		return 0;
+	}
+
+	if (likely(!ip_vs_iph_inverse(iph)))
+		svc = ip_vs_service_find(ipvs, af, skb->mark, iph->protocol,
+					 &iph->daddr, ports[1]);
+	else
+		svc = ip_vs_service_find(ipvs, af, skb->mark, iph->protocol,
+					 &iph->saddr, ports[0]);
+
+	if (svc) {
+		int ignored;
+
+		if (ip_vs_todrop(ipvs)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * It seems that we are very loaded.
 			 * We have to drop this packet :(
 			 */
+<<<<<<< HEAD
 			ip_vs_service_put(svc);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*verdict = NF_DROP;
 			return 0;
 		}
@@ -64,6 +121,7 @@ udp_conn_schedule(int af, struct sk_buff *skb, struct ip_vs_proto_data *pd,
 		 * Let the virtual server select a real server for the
 		 * incoming connection, and create a connection entry.
 		 */
+<<<<<<< HEAD
 		*cpp = ip_vs_schedule(svc, skb, pd, &ignored);
 		if (!*cpp && ignored <= 0) {
 			if (!ignored)
@@ -75,6 +133,16 @@ udp_conn_schedule(int af, struct sk_buff *skb, struct ip_vs_proto_data *pd,
 			return 0;
 		}
 		ip_vs_service_put(svc);
+=======
+		*cpp = ip_vs_schedule(svc, skb, pd, &ignored, iph);
+		if (!*cpp && ignored <= 0) {
+			if (!ignored)
+				*verdict = ip_vs_leave(svc, skb, pd, iph);
+			else
+				*verdict = NF_DROP;
+			return 0;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* NF_ACCEPT */
 	return 1;
@@ -124,6 +192,7 @@ udp_partial_csum_update(int af, struct udphdr *uhdr,
 }
 
 
+<<<<<<< HEAD
 static int
 udp_snat_handler(struct sk_buff *skb,
 		 struct ip_vs_protocol *pp, struct ip_vs_conn *cp)
@@ -143,25 +212,56 @@ udp_snat_handler(struct sk_buff *skb,
 
 	/* csum_check requires unshared skb */
 	if (!skb_make_writable(skb, udphoff+sizeof(*udph)))
+=======
+INDIRECT_CALLABLE_SCOPE int
+udp_snat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
+		 struct ip_vs_conn *cp, struct ip_vs_iphdr *iph)
+{
+	struct udphdr *udph;
+	unsigned int udphoff = iph->len;
+	bool payload_csum = false;
+	int oldlen;
+
+#ifdef CONFIG_IP_VS_IPV6
+	if (cp->af == AF_INET6 && iph->fragoffs)
+		return 1;
+#endif
+	oldlen = skb->len - udphoff;
+
+	/* csum_check requires unshared skb */
+	if (skb_ensure_writable(skb, udphoff + sizeof(*udph)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (unlikely(cp->app != NULL)) {
 		int ret;
 
 		/* Some checks before mangling */
+<<<<<<< HEAD
 		if (pp->csum_check && !pp->csum_check(cp->af, skb, pp))
+=======
+		if (!udp_csum_check(cp->af, skb, pp))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 
 		/*
 		 *	Call application helper if needed
 		 */
+<<<<<<< HEAD
 		if (!(ret = ip_vs_app_pkt_out(cp, skb)))
+=======
+		if (!(ret = ip_vs_app_pkt_out(cp, skb, iph)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		/* ret=2: csum update is needed after payload mangling */
 		if (ret == 1)
 			oldlen = skb->len - udphoff;
 		else
+<<<<<<< HEAD
 			payload_csum = 1;
+=======
+			payload_csum = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	udph = (void *)skb_network_header(skb) + udphoff;
@@ -179,7 +279,11 @@ udp_snat_handler(struct sk_buff *skb,
 		udp_fast_csum_update(cp->af, udph, &cp->daddr, &cp->vaddr,
 				     cp->dport, cp->vport);
 		if (skb->ip_summed == CHECKSUM_COMPLETE)
+<<<<<<< HEAD
 			skb->ip_summed = (cp->app && pp->csum_check) ?
+=======
+			skb->ip_summed = cp->app ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 CHECKSUM_UNNECESSARY : CHECKSUM_NONE;
 	} else {
 		/* full checksum calculation */
@@ -210,6 +314,7 @@ udp_snat_handler(struct sk_buff *skb,
 
 
 static int
+<<<<<<< HEAD
 udp_dnat_handler(struct sk_buff *skb,
 		 struct ip_vs_protocol *pp, struct ip_vs_conn *cp)
 {
@@ -228,26 +333,56 @@ udp_dnat_handler(struct sk_buff *skb,
 
 	/* csum_check requires unshared skb */
 	if (!skb_make_writable(skb, udphoff+sizeof(*udph)))
+=======
+udp_dnat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
+		 struct ip_vs_conn *cp, struct ip_vs_iphdr *iph)
+{
+	struct udphdr *udph;
+	unsigned int udphoff = iph->len;
+	bool payload_csum = false;
+	int oldlen;
+
+#ifdef CONFIG_IP_VS_IPV6
+	if (cp->af == AF_INET6 && iph->fragoffs)
+		return 1;
+#endif
+	oldlen = skb->len - udphoff;
+
+	/* csum_check requires unshared skb */
+	if (skb_ensure_writable(skb, udphoff + sizeof(*udph)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (unlikely(cp->app != NULL)) {
 		int ret;
 
 		/* Some checks before mangling */
+<<<<<<< HEAD
 		if (pp->csum_check && !pp->csum_check(cp->af, skb, pp))
+=======
+		if (!udp_csum_check(cp->af, skb, pp))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 
 		/*
 		 *	Attempt ip_vs_app call.
 		 *	It will fix ip_vs_conn
 		 */
+<<<<<<< HEAD
 		if (!(ret = ip_vs_app_pkt_in(cp, skb)))
+=======
+		if (!(ret = ip_vs_app_pkt_in(cp, skb, iph)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		/* ret=2: csum update is needed after payload mangling */
 		if (ret == 1)
 			oldlen = skb->len - udphoff;
 		else
+<<<<<<< HEAD
 			payload_csum = 1;
+=======
+			payload_csum = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	udph = (void *)skb_network_header(skb) + udphoff;
@@ -265,7 +400,11 @@ udp_dnat_handler(struct sk_buff *skb,
 		udp_fast_csum_update(cp->af, udph, &cp->vaddr, &cp->daddr,
 				     cp->vport, cp->dport);
 		if (skb->ip_summed == CHECKSUM_COMPLETE)
+<<<<<<< HEAD
 			skb->ip_summed = (cp->app && pp->csum_check) ?
+=======
+			skb->ip_summed = cp->app ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 CHECKSUM_UNNECESSARY : CHECKSUM_NONE;
 	} else {
 		/* full checksum calculation */
@@ -314,6 +453,10 @@ udp_csum_check(int af, struct sk_buff *skb, struct ip_vs_protocol *pp)
 		case CHECKSUM_NONE:
 			skb->csum = skb_checksum(skb, udphoff,
 						 skb->len - udphoff, 0);
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case CHECKSUM_COMPLETE:
 #ifdef CONFIG_IP_VS_IPV6
 			if (af == AF_INET6) {
@@ -353,12 +496,17 @@ static inline __u16 udp_app_hashkey(__be16 port)
 }
 
 
+<<<<<<< HEAD
 static int udp_register_app(struct net *net, struct ip_vs_app *inc)
+=======
+static int udp_register_app(struct netns_ipvs *ipvs, struct ip_vs_app *inc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ip_vs_app *i;
 	__u16 hash;
 	__be16 port = inc->port;
 	int ret = 0;
+<<<<<<< HEAD
 	struct netns_ipvs *ipvs = net_ipvs(net);
 	struct ip_vs_proto_data *pd = ip_vs_proto_data_get(net, IPPROTO_UDP);
 
@@ -366,22 +514,36 @@ static int udp_register_app(struct net *net, struct ip_vs_app *inc)
 
 
 	spin_lock_bh(&ipvs->udp_app_lock);
+=======
+	struct ip_vs_proto_data *pd = ip_vs_proto_data_get(ipvs, IPPROTO_UDP);
+
+	hash = udp_app_hashkey(port);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(i, &ipvs->udp_apps[hash], p_list) {
 		if (i->port == port) {
 			ret = -EEXIST;
 			goto out;
 		}
 	}
+<<<<<<< HEAD
 	list_add(&inc->p_list, &ipvs->udp_apps[hash]);
 	atomic_inc(&pd->appcnt);
 
   out:
 	spin_unlock_bh(&ipvs->udp_app_lock);
+=======
+	list_add_rcu(&inc->p_list, &ipvs->udp_apps[hash]);
+	atomic_inc(&pd->appcnt);
+
+  out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 
 static void
+<<<<<<< HEAD
 udp_unregister_app(struct net *net, struct ip_vs_app *inc)
 {
 	struct ip_vs_proto_data *pd = ip_vs_proto_data_get(net, IPPROTO_UDP);
@@ -391,12 +553,24 @@ udp_unregister_app(struct net *net, struct ip_vs_app *inc)
 	atomic_dec(&pd->appcnt);
 	list_del(&inc->p_list);
 	spin_unlock_bh(&ipvs->udp_app_lock);
+=======
+udp_unregister_app(struct netns_ipvs *ipvs, struct ip_vs_app *inc)
+{
+	struct ip_vs_proto_data *pd = ip_vs_proto_data_get(ipvs, IPPROTO_UDP);
+
+	atomic_dec(&pd->appcnt);
+	list_del_rcu(&inc->p_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static int udp_app_conn_bind(struct ip_vs_conn *cp)
 {
+<<<<<<< HEAD
 	struct netns_ipvs *ipvs = net_ipvs(ip_vs_conn_net(cp));
+=======
+	struct netns_ipvs *ipvs = cp->ipvs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int hash;
 	struct ip_vs_app *inc;
 	int result = 0;
@@ -408,12 +582,19 @@ static int udp_app_conn_bind(struct ip_vs_conn *cp)
 	/* Lookup application incarnations and bind the right one */
 	hash = udp_app_hashkey(cp->vport);
 
+<<<<<<< HEAD
 	spin_lock(&ipvs->udp_app_lock);
 	list_for_each_entry(inc, &ipvs->udp_apps[hash], p_list) {
 		if (inc->port == cp->vport) {
 			if (unlikely(!ip_vs_app_inc_get(inc)))
 				break;
 			spin_unlock(&ipvs->udp_app_lock);
+=======
+	list_for_each_entry_rcu(inc, &ipvs->udp_apps[hash], p_list) {
+		if (inc->port == cp->vport) {
+			if (unlikely(!ip_vs_app_inc_get(inc)))
+				break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			IP_VS_DBG_BUF(9, "%s(): Binding conn %s:%u->"
 				      "%s:%u to app %s on port %u\n",
@@ -427,12 +608,19 @@ static int udp_app_conn_bind(struct ip_vs_conn *cp)
 			cp->app = inc;
 			if (inc->init_conn)
 				result = inc->init_conn(inc, cp);
+<<<<<<< HEAD
 			goto out;
 		}
 	}
 	spin_unlock(&ipvs->udp_app_lock);
 
   out:
+=======
+			break;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -465,6 +653,7 @@ udp_state_transition(struct ip_vs_conn *cp, int direction,
 	}
 
 	cp->timeout = pd->timeout_table[IP_VS_UDP_S_NORMAL];
+<<<<<<< HEAD
 }
 
 static int __udp_init(struct net *net, struct ip_vs_proto_data *pd)
@@ -473,6 +662,15 @@ static int __udp_init(struct net *net, struct ip_vs_proto_data *pd)
 
 	ip_vs_init_hash_table(ipvs->udp_apps, UDP_APP_TAB_SIZE);
 	spin_lock_init(&ipvs->udp_app_lock);
+=======
+	if (direction == IP_VS_DIR_OUTPUT)
+		ip_vs_control_assure_ct(cp);
+}
+
+static int __udp_init(struct netns_ipvs *ipvs, struct ip_vs_proto_data *pd)
+{
+	ip_vs_init_hash_table(ipvs->udp_apps, UDP_APP_TAB_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pd->timeout_table = ip_vs_create_timeout_table((int *)udp_timeouts,
 							sizeof(udp_timeouts));
 	if (!pd->timeout_table)
@@ -480,7 +678,11 @@ static int __udp_init(struct net *net, struct ip_vs_proto_data *pd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __udp_exit(struct net *net, struct ip_vs_proto_data *pd)
+=======
+static void __udp_exit(struct netns_ipvs *ipvs, struct ip_vs_proto_data *pd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	kfree(pd->timeout_table);
 }
@@ -500,7 +702,10 @@ struct ip_vs_protocol ip_vs_protocol_udp = {
 	.conn_out_get =		ip_vs_conn_out_get_proto,
 	.snat_handler =		udp_snat_handler,
 	.dnat_handler =		udp_dnat_handler,
+<<<<<<< HEAD
 	.csum_check =		udp_csum_check,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.state_transition =	udp_state_transition,
 	.state_name =		udp_state_name,
 	.register_app =		udp_register_app,

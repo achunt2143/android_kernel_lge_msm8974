@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_GENERIC_UACCESS_H
 #define __ASM_GENERIC_UACCESS_H
 
 /*
  * User space memory access functions, these should work
+<<<<<<< HEAD
  * on a ny machine that has kernel and user data in the same
  * address space, e.g. all NOMMU machines.
  */
@@ -133,6 +138,98 @@ static inline __must_check long __copy_to_user(void __user *to,
 	return 0;
 }
 #endif
+=======
+ * on any machine that has kernel and user data in the same
+ * address space, e.g. all NOMMU machines.
+ */
+#include <linux/string.h>
+#include <asm-generic/access_ok.h>
+
+#ifdef CONFIG_UACCESS_MEMCPY
+#include <asm/unaligned.h>
+
+static __always_inline int
+__get_user_fn(size_t size, const void __user *from, void *to)
+{
+	BUILD_BUG_ON(!__builtin_constant_p(size));
+
+	switch (size) {
+	case 1:
+		*(u8 *)to = *((u8 __force *)from);
+		return 0;
+	case 2:
+		*(u16 *)to = get_unaligned((u16 __force *)from);
+		return 0;
+	case 4:
+		*(u32 *)to = get_unaligned((u32 __force *)from);
+		return 0;
+	case 8:
+		*(u64 *)to = get_unaligned((u64 __force *)from);
+		return 0;
+	default:
+		BUILD_BUG();
+		return 0;
+	}
+
+}
+#define __get_user_fn(sz, u, k)	__get_user_fn(sz, u, k)
+
+static __always_inline int
+__put_user_fn(size_t size, void __user *to, void *from)
+{
+	BUILD_BUG_ON(!__builtin_constant_p(size));
+
+	switch (size) {
+	case 1:
+		*(u8 __force *)to = *(u8 *)from;
+		return 0;
+	case 2:
+		put_unaligned(*(u16 *)from, (u16 __force *)to);
+		return 0;
+	case 4:
+		put_unaligned(*(u32 *)from, (u32 __force *)to);
+		return 0;
+	case 8:
+		put_unaligned(*(u64 *)from, (u64 __force *)to);
+		return 0;
+	default:
+		BUILD_BUG();
+		return 0;
+	}
+}
+#define __put_user_fn(sz, u, k)	__put_user_fn(sz, u, k)
+
+#define __get_kernel_nofault(dst, src, type, err_label)			\
+do {									\
+	*((type *)dst) = get_unaligned((type *)(src));			\
+	if (0) /* make sure the label looks used to the compiler */	\
+		goto err_label;						\
+} while (0)
+
+#define __put_kernel_nofault(dst, src, type, err_label)			\
+do {									\
+	put_unaligned(*((type *)src), (type *)(dst));			\
+	if (0) /* make sure the label looks used to the compiler */	\
+		goto err_label;						\
+} while (0)
+
+static inline __must_check unsigned long
+raw_copy_from_user(void *to, const void __user * from, unsigned long n)
+{
+	memcpy(to, (const void __force *)from, n);
+	return 0;
+}
+
+static inline __must_check unsigned long
+raw_copy_to_user(void __user *to, const void *from, unsigned long n)
+{
+	memcpy((void __force *)to, from, n);
+	return 0;
+}
+#define INLINE_COPY_FROM_USER
+#define INLINE_COPY_TO_USER
+#endif /* CONFIG_UACCESS_MEMCPY */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are the main single-value transfer routines.  They automatically
@@ -162,6 +259,7 @@ static inline __must_check long __copy_to_user(void __user *to,
 
 #define put_user(x, ptr)					\
 ({								\
+<<<<<<< HEAD
 	might_sleep();						\
 	access_ok(VERIFY_WRITE, ptr, sizeof(*ptr)) ?		\
 		__put_user(x, ptr) :				\
@@ -174,6 +272,26 @@ static inline int __put_user_fn(size_t size, void __user *ptr, void *x)
 	return size ? -EFAULT : size;
 }
 
+=======
+	void __user *__p = (ptr);				\
+	might_fault();						\
+	access_ok(__p, sizeof(*ptr)) ?		\
+		__put_user((x), ((__typeof__(*(ptr)) __user *)__p)) :	\
+		-EFAULT;					\
+})
+
+#ifndef __put_user_fn
+
+static inline int __put_user_fn(size_t size, void __user *ptr, void *x)
+{
+	return unlikely(raw_copy_to_user(ptr, x, size)) ? -EFAULT : 0;
+}
+
+#define __put_user_fn(sz, u, k)	__put_user_fn(sz, u, k)
+
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int __put_user_bad(void) __attribute__((noreturn));
 
 #define __get_user(x, ptr)					\
@@ -182,28 +300,44 @@ extern int __put_user_bad(void) __attribute__((noreturn));
 	__chk_user_ptr(ptr);					\
 	switch (sizeof(*(ptr))) {				\
 	case 1: {						\
+<<<<<<< HEAD
 		unsigned char __x;				\
+=======
+		unsigned char __x = 0;				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
 					 ptr, &__x);		\
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\
 	case 2: {						\
+<<<<<<< HEAD
 		unsigned short __x;				\
+=======
+		unsigned short __x = 0;				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
 					 ptr, &__x);		\
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\
 	case 4: {						\
+<<<<<<< HEAD
 		unsigned int __x;				\
+=======
+		unsigned int __x = 0;				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
 					 ptr, &__x);		\
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
 		break;						\
 	};							\
 	case 8: {						\
+<<<<<<< HEAD
 		unsigned long long __x;				\
+=======
+		unsigned long long __x = 0;			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__gu_err = __get_user_fn(sizeof (*(ptr)),	\
 					 ptr, &__x);		\
 		(x) = *(__force __typeof__(*(ptr)) *) &__x;	\
@@ -218,6 +352,7 @@ extern int __put_user_bad(void) __attribute__((noreturn));
 
 #define get_user(x, ptr)					\
 ({								\
+<<<<<<< HEAD
 	might_sleep();						\
 	access_ok(VERIFY_READ, ptr, sizeof(*ptr)) ?		\
 		__get_user(x, ptr) :				\
@@ -309,6 +444,27 @@ static inline long strlen_user(const char __user *src)
 	return strnlen_user(src, 32767);
 }
 
+=======
+	const void __user *__p = (ptr);				\
+	might_fault();						\
+	access_ok(__p, sizeof(*ptr)) ?		\
+		__get_user((x), (__typeof__(*(ptr)) __user *)__p) :\
+		((x) = (__typeof__(*(ptr)))0,-EFAULT);		\
+})
+
+#ifndef __get_user_fn
+static inline int __get_user_fn(size_t size, const void __user *ptr, void *x)
+{
+	return unlikely(raw_copy_from_user(x, ptr, size)) ? -EFAULT : 0;
+}
+
+#define __get_user_fn(sz, u, k)	__get_user_fn(sz, u, k)
+
+#endif
+
+extern int __get_user_bad(void) __attribute__((noreturn));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Zero Userspace
  */
@@ -324,11 +480,25 @@ __clear_user(void __user *to, unsigned long n)
 static inline __must_check unsigned long
 clear_user(void __user *to, unsigned long n)
 {
+<<<<<<< HEAD
 	might_sleep();
 	if (!access_ok(VERIFY_WRITE, to, n))
+=======
+	might_fault();
+	if (!access_ok(to, n))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return n;
 
 	return __clear_user(to, n);
 }
 
+<<<<<<< HEAD
+=======
+#include <asm/extable.h>
+
+__must_check long strncpy_from_user(char *dst, const char __user *src,
+				    long count);
+__must_check long strnlen_user(const char __user *src, long n);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_GENERIC_UACCESS_H */

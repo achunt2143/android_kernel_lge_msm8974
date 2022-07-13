@@ -46,9 +46,18 @@
 #include <linux/completion.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
 #include <rdma/iw_cm.h>
 #include <rdma/ib_addr.h>
+=======
+#include <linux/sysctl.h>
+
+#include <rdma/iw_cm.h>
+#include <rdma/ib_addr.h>
+#include <rdma/iw_portmap.h>
+#include <rdma/rdma_netlink.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "iwcm.h"
 
@@ -56,6 +65,41 @@ MODULE_AUTHOR("Tom Tucker");
 MODULE_DESCRIPTION("iWARP CM");
 MODULE_LICENSE("Dual BSD/GPL");
 
+<<<<<<< HEAD
+=======
+static const char * const iwcm_rej_reason_strs[] = {
+	[ECONNRESET]			= "reset by remote host",
+	[ECONNREFUSED]			= "refused by remote application",
+	[ETIMEDOUT]			= "setup timeout",
+};
+
+const char *__attribute_const__ iwcm_reject_msg(int reason)
+{
+	size_t index;
+
+	/* iWARP uses negative errnos */
+	index = -reason;
+
+	if (index < ARRAY_SIZE(iwcm_rej_reason_strs) &&
+	    iwcm_rej_reason_strs[index])
+		return iwcm_rej_reason_strs[index];
+	else
+		return "unrecognized reason";
+}
+EXPORT_SYMBOL(iwcm_reject_msg);
+
+static struct rdma_nl_cbs iwcm_nl_cb_table[RDMA_NL_IWPM_NUM_OPS] = {
+	[RDMA_NL_IWPM_REG_PID] = {.dump = iwpm_register_pid_cb},
+	[RDMA_NL_IWPM_ADD_MAPPING] = {.dump = iwpm_add_mapping_cb},
+	[RDMA_NL_IWPM_QUERY_MAPPING] = {.dump = iwpm_add_and_query_mapping_cb},
+	[RDMA_NL_IWPM_REMOTE_INFO] = {.dump = iwpm_remote_info_cb},
+	[RDMA_NL_IWPM_HANDLE_ERR] = {.dump = iwpm_mapping_error_cb},
+	[RDMA_NL_IWPM_MAPINFO] = {.dump = iwpm_mapping_info_cb},
+	[RDMA_NL_IWPM_MAPINFO_NUM] = {.dump = iwpm_ack_mapping_info_cb},
+	[RDMA_NL_IWPM_HELLO] = {.dump = iwpm_hello_cb}
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct workqueue_struct *iwcm_wq;
 struct iwcm_work {
 	struct work_struct work;
@@ -65,6 +109,22 @@ struct iwcm_work {
 	struct list_head free_list;
 };
 
+<<<<<<< HEAD
+=======
+static unsigned int default_backlog = 256;
+
+static struct ctl_table_header *iwcm_ctl_table_hdr;
+static struct ctl_table iwcm_ctl_table[] = {
+	{
+		.procname	= "default_backlog",
+		.data		= &default_backlog,
+		.maxlen		= sizeof(default_backlog),
+		.mode		= 0644,
+		.proc_handler	= proc_dointvec,
+	},
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The following services provide a mechanism for pre-allocating iwcm_work
  * elements.  The design pre-allocates them  based on the cm_id type:
@@ -110,8 +170,15 @@ static void dealloc_work_entries(struct iwcm_id_private *cm_id_priv)
 {
 	struct list_head *e, *tmp;
 
+<<<<<<< HEAD
 	list_for_each_safe(e, tmp, &cm_id_priv->work_free_list)
 		kfree(list_entry(e, struct iwcm_work, free_list));
+=======
+	list_for_each_safe(e, tmp, &cm_id_priv->work_free_list) {
+		list_del(e);
+		kfree(list_entry(e, struct iwcm_work, free_list));
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int alloc_work_entries(struct iwcm_id_private *cm_id_priv, int count)
@@ -156,6 +223,7 @@ static void free_cm_id(struct iwcm_id_private *cm_id_priv)
 
 /*
  * Release a reference on cm_id. If the last reference is being
+<<<<<<< HEAD
  * released, enable the waiting thread (in iw_destroy_cm_id) to
  * get woken up, and return 1 if a thread is already waiting.
  */
@@ -165,6 +233,15 @@ static int iwcm_deref_id(struct iwcm_id_private *cm_id_priv)
 	if (atomic_dec_and_test(&cm_id_priv->refcount)) {
 		BUG_ON(!list_empty(&cm_id_priv->work_list));
 		complete(&cm_id_priv->destroy_comp);
+=======
+ * released, free the cm_id and return 1.
+ */
+static int iwcm_deref_id(struct iwcm_id_private *cm_id_priv)
+{
+	if (refcount_dec_and_test(&cm_id_priv->refcount)) {
+		BUG_ON(!list_empty(&cm_id_priv->work_list));
+		free_cm_id(cm_id_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
@@ -175,18 +252,29 @@ static void add_ref(struct iw_cm_id *cm_id)
 {
 	struct iwcm_id_private *cm_id_priv;
 	cm_id_priv = container_of(cm_id, struct iwcm_id_private, id);
+<<<<<<< HEAD
 	atomic_inc(&cm_id_priv->refcount);
+=======
+	refcount_inc(&cm_id_priv->refcount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rem_ref(struct iw_cm_id *cm_id)
 {
 	struct iwcm_id_private *cm_id_priv;
+<<<<<<< HEAD
 	cm_id_priv = container_of(cm_id, struct iwcm_id_private, id);
 	if (iwcm_deref_id(cm_id_priv) &&
 	    test_bit(IWCM_F_CALLBACK_DESTROY, &cm_id_priv->flags)) {
 		BUG_ON(!list_empty(&cm_id_priv->work_list));
 		free_cm_id(cm_id_priv);
 	}
+=======
+
+	cm_id_priv = container_of(cm_id, struct iwcm_id_private, id);
+
+	(void)iwcm_deref_id(cm_id_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cm_event_handler(struct iw_cm_id *cm_id, struct iw_cm_event *event);
@@ -209,7 +297,11 @@ struct iw_cm_id *iw_create_cm_id(struct ib_device *device,
 	cm_id_priv->id.add_ref = add_ref;
 	cm_id_priv->id.rem_ref = rem_ref;
 	spin_lock_init(&cm_id_priv->lock);
+<<<<<<< HEAD
 	atomic_set(&cm_id_priv->refcount, 1);
+=======
+	refcount_set(&cm_id_priv->refcount, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_waitqueue_head(&cm_id_priv->connect_wait);
 	init_completion(&cm_id_priv->destroy_comp);
 	INIT_LIST_HEAD(&cm_id_priv->work_list);
@@ -326,8 +418,13 @@ EXPORT_SYMBOL(iw_cm_disconnect);
 static void destroy_cm_id(struct iw_cm_id *cm_id)
 {
 	struct iwcm_id_private *cm_id_priv;
+<<<<<<< HEAD
 	unsigned long flags;
 	int ret;
+=======
+	struct ib_qp *qp;
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cm_id_priv = container_of(cm_id, struct iwcm_id_private, id);
 	/*
@@ -337,20 +434,41 @@ static void destroy_cm_id(struct iw_cm_id *cm_id)
 	wait_event(cm_id_priv->connect_wait,
 		   !test_bit(IWCM_F_CONNECT_WAIT, &cm_id_priv->flags));
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&cm_id_priv->lock, flags);
+=======
+	/*
+	 * Since we're deleting the cm_id, drop any events that
+	 * might arrive before the last dereference.
+	 */
+	set_bit(IWCM_F_DROP_EVENTS, &cm_id_priv->flags);
+
+	spin_lock_irqsave(&cm_id_priv->lock, flags);
+	qp = cm_id_priv->qp;
+	cm_id_priv->qp = NULL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cm_id_priv->state) {
 	case IW_CM_STATE_LISTEN:
 		cm_id_priv->state = IW_CM_STATE_DESTROYING;
 		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 		/* destroy the listening endpoint */
+<<<<<<< HEAD
 		ret = cm_id->device->iwcm->destroy_listen(cm_id);
+=======
+		cm_id->device->ops.iw_destroy_listen(cm_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&cm_id_priv->lock, flags);
 		break;
 	case IW_CM_STATE_ESTABLISHED:
 		cm_id_priv->state = IW_CM_STATE_DESTROYING;
 		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 		/* Abrupt close of the connection */
+<<<<<<< HEAD
 		(void)iwcm_modify_qp_err(cm_id_priv->qp);
+=======
+		(void)iwcm_modify_qp_err(qp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&cm_id_priv->lock, flags);
 		break;
 	case IW_CM_STATE_IDLE:
@@ -366,7 +484,11 @@ static void destroy_cm_id(struct iw_cm_id *cm_id)
 		 */
 		cm_id_priv->state = IW_CM_STATE_DESTROYING;
 		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
+<<<<<<< HEAD
 		cm_id->device->iwcm->reject(cm_id, NULL, 0);
+=======
+		cm_id->device->ops.iw_reject(cm_id, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&cm_id_priv->lock, flags);
 		break;
 	case IW_CM_STATE_CONN_SENT:
@@ -375,11 +497,22 @@ static void destroy_cm_id(struct iw_cm_id *cm_id)
 		BUG();
 		break;
 	}
+<<<<<<< HEAD
 	if (cm_id_priv->qp) {
 		cm_id_priv->id.device->iwcm->rem_ref(cm_id_priv->qp);
 		cm_id_priv->qp = NULL;
 	}
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
+=======
+	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
+	if (qp)
+		cm_id_priv->id.device->ops.iw_rem_ref(qp);
+
+	if (cm_id->mapped) {
+		iwpm_remove_mapinfo(&cm_id->local_addr, &cm_id->m_local_addr);
+		iwpm_remove_mapping(&cm_id->local_addr, RDMA_NL_IWCM);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	(void)iwcm_deref_id(cm_id_priv);
 }
@@ -392,6 +525,7 @@ static void destroy_cm_id(struct iw_cm_id *cm_id)
  */
 void iw_destroy_cm_id(struct iw_cm_id *cm_id)
 {
+<<<<<<< HEAD
 	struct iwcm_id_private *cm_id_priv;
 
 	cm_id_priv = container_of(cm_id, struct iwcm_id_private, id);
@@ -405,6 +539,109 @@ void iw_destroy_cm_id(struct iw_cm_id *cm_id)
 }
 EXPORT_SYMBOL(iw_destroy_cm_id);
 
+=======
+	destroy_cm_id(cm_id);
+}
+EXPORT_SYMBOL(iw_destroy_cm_id);
+
+/**
+ * iw_cm_check_wildcard - If IP address is 0 then use original
+ * @pm_addr: sockaddr containing the ip to check for wildcard
+ * @cm_addr: sockaddr containing the actual IP address
+ * @cm_outaddr: sockaddr to set IP addr which leaving port
+ *
+ *  Checks the pm_addr for wildcard and then sets cm_outaddr's
+ *  IP to the actual (cm_addr).
+ */
+static void iw_cm_check_wildcard(struct sockaddr_storage *pm_addr,
+				 struct sockaddr_storage *cm_addr,
+				 struct sockaddr_storage *cm_outaddr)
+{
+	if (pm_addr->ss_family == AF_INET) {
+		struct sockaddr_in *pm4_addr = (struct sockaddr_in *)pm_addr;
+
+		if (pm4_addr->sin_addr.s_addr == htonl(INADDR_ANY)) {
+			struct sockaddr_in *cm4_addr =
+				(struct sockaddr_in *)cm_addr;
+			struct sockaddr_in *cm4_outaddr =
+				(struct sockaddr_in *)cm_outaddr;
+
+			cm4_outaddr->sin_addr = cm4_addr->sin_addr;
+		}
+	} else {
+		struct sockaddr_in6 *pm6_addr = (struct sockaddr_in6 *)pm_addr;
+
+		if (ipv6_addr_type(&pm6_addr->sin6_addr) == IPV6_ADDR_ANY) {
+			struct sockaddr_in6 *cm6_addr =
+				(struct sockaddr_in6 *)cm_addr;
+			struct sockaddr_in6 *cm6_outaddr =
+				(struct sockaddr_in6 *)cm_outaddr;
+
+			cm6_outaddr->sin6_addr = cm6_addr->sin6_addr;
+		}
+	}
+}
+
+/**
+ * iw_cm_map - Use portmapper to map the ports
+ * @cm_id: connection manager pointer
+ * @active: Indicates the active side when true
+ * returns nonzero for error only if iwpm_create_mapinfo() fails
+ *
+ * Tries to add a mapping for a port using the Portmapper. If
+ * successful in mapping the IP/Port it will check the remote
+ * mapped IP address for a wildcard IP address and replace the
+ * zero IP address with the remote_addr.
+ */
+static int iw_cm_map(struct iw_cm_id *cm_id, bool active)
+{
+	const char *devname = dev_name(&cm_id->device->dev);
+	const char *ifname = cm_id->device->iw_ifname;
+	struct iwpm_dev_data pm_reg_msg = {};
+	struct iwpm_sa_data pm_msg;
+	int status;
+
+	if (strlen(devname) >= sizeof(pm_reg_msg.dev_name) ||
+	    strlen(ifname) >= sizeof(pm_reg_msg.if_name))
+		return -EINVAL;
+
+	cm_id->m_local_addr = cm_id->local_addr;
+	cm_id->m_remote_addr = cm_id->remote_addr;
+
+	strcpy(pm_reg_msg.dev_name, devname);
+	strcpy(pm_reg_msg.if_name, ifname);
+
+	if (iwpm_register_pid(&pm_reg_msg, RDMA_NL_IWCM) ||
+	    !iwpm_valid_pid())
+		return 0;
+
+	cm_id->mapped = true;
+	pm_msg.loc_addr = cm_id->local_addr;
+	pm_msg.rem_addr = cm_id->remote_addr;
+	pm_msg.flags = (cm_id->device->iw_driver_flags & IW_F_NO_PORT_MAP) ?
+		       IWPM_FLAGS_NO_PORT_MAP : 0;
+	if (active)
+		status = iwpm_add_and_query_mapping(&pm_msg,
+						    RDMA_NL_IWCM);
+	else
+		status = iwpm_add_mapping(&pm_msg, RDMA_NL_IWCM);
+
+	if (!status) {
+		cm_id->m_local_addr = pm_msg.mapped_loc_addr;
+		if (active) {
+			cm_id->m_remote_addr = pm_msg.mapped_rem_addr;
+			iw_cm_check_wildcard(&pm_msg.mapped_rem_addr,
+					     &cm_id->remote_addr,
+					     &cm_id->m_remote_addr);
+		}
+	}
+
+	return iwpm_create_mapinfo(&cm_id->local_addr,
+				   &cm_id->m_local_addr,
+				   RDMA_NL_IWCM, pm_msg.flags);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CM_ID <-- LISTEN
  *
@@ -419,6 +656,12 @@ int iw_cm_listen(struct iw_cm_id *cm_id, int backlog)
 
 	cm_id_priv = container_of(cm_id, struct iwcm_id_private, id);
 
+<<<<<<< HEAD
+=======
+	if (!backlog)
+		backlog = default_backlog;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = alloc_work_entries(cm_id_priv, backlog);
 	if (ret)
 		return ret;
@@ -428,7 +671,14 @@ int iw_cm_listen(struct iw_cm_id *cm_id, int backlog)
 	case IW_CM_STATE_IDLE:
 		cm_id_priv->state = IW_CM_STATE_LISTEN;
 		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
+<<<<<<< HEAD
 		ret = cm_id->device->iwcm->create_listen(cm_id, backlog);
+=======
+		ret = iw_cm_map(cm_id, false);
+		if (!ret)
+			ret = cm_id->device->ops.iw_create_listen(cm_id,
+								  backlog);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			cm_id_priv->state = IW_CM_STATE_IDLE;
 		spin_lock_irqsave(&cm_id_priv->lock, flags);
@@ -468,7 +718,11 @@ int iw_cm_reject(struct iw_cm_id *cm_id,
 	cm_id_priv->state = IW_CM_STATE_IDLE;
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 
+<<<<<<< HEAD
 	ret = cm_id->device->iwcm->reject(cm_id, private_data,
+=======
+	ret = cm_id->device->ops.iw_reject(cm_id, private_data,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  private_data_len);
 
 	clear_bit(IWCM_F_CONNECT_WAIT, &cm_id_priv->flags);
@@ -504,28 +758,48 @@ int iw_cm_accept(struct iw_cm_id *cm_id,
 		return -EINVAL;
 	}
 	/* Get the ib_qp given the QPN */
+<<<<<<< HEAD
 	qp = cm_id->device->iwcm->get_qp(cm_id->device, iw_param->qpn);
+=======
+	qp = cm_id->device->ops.iw_get_qp(cm_id->device, iw_param->qpn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!qp) {
 		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 		clear_bit(IWCM_F_CONNECT_WAIT, &cm_id_priv->flags);
 		wake_up_all(&cm_id_priv->connect_wait);
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	cm_id->device->iwcm->add_ref(qp);
 	cm_id_priv->qp = qp;
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 
 	ret = cm_id->device->iwcm->accept(cm_id, iw_param);
+=======
+	cm_id->device->ops.iw_add_ref(qp);
+	cm_id_priv->qp = qp;
+	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
+
+	ret = cm_id->device->ops.iw_accept(cm_id, iw_param);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		/* An error on accept precludes provider events */
 		BUG_ON(cm_id_priv->state != IW_CM_STATE_CONN_RECV);
 		cm_id_priv->state = IW_CM_STATE_IDLE;
 		spin_lock_irqsave(&cm_id_priv->lock, flags);
+<<<<<<< HEAD
 		if (cm_id_priv->qp) {
 			cm_id->device->iwcm->rem_ref(qp);
 			cm_id_priv->qp = NULL;
 		}
 		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
+=======
+		qp = cm_id_priv->qp;
+		cm_id_priv->qp = NULL;
+		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
+		if (qp)
+			cm_id->device->ops.iw_rem_ref(qp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clear_bit(IWCM_F_CONNECT_WAIT, &cm_id_priv->flags);
 		wake_up_all(&cm_id_priv->connect_wait);
 	}
@@ -546,7 +820,11 @@ int iw_cm_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *iw_param)
 	struct iwcm_id_private *cm_id_priv;
 	int ret;
 	unsigned long flags;
+<<<<<<< HEAD
 	struct ib_qp *qp;
+=======
+	struct ib_qp *qp = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cm_id_priv = container_of(cm_id, struct iwcm_id_private, id);
 
@@ -558,6 +836,7 @@ int iw_cm_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *iw_param)
 	spin_lock_irqsave(&cm_id_priv->lock, flags);
 
 	if (cm_id_priv->state != IW_CM_STATE_IDLE) {
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 		clear_bit(IWCM_F_CONNECT_WAIT, &cm_id_priv->flags);
 		wake_up_all(&cm_id_priv->connect_wait);
@@ -573,10 +852,24 @@ int iw_cm_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *iw_param)
 		return -EINVAL;
 	}
 	cm_id->device->iwcm->add_ref(qp);
+=======
+		ret = -EINVAL;
+		goto err;
+	}
+
+	/* Get the ib_qp given the QPN */
+	qp = cm_id->device->ops.iw_get_qp(cm_id->device, iw_param->qpn);
+	if (!qp) {
+		ret = -EINVAL;
+		goto err;
+	}
+	cm_id->device->ops.iw_add_ref(qp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cm_id_priv->qp = qp;
 	cm_id_priv->state = IW_CM_STATE_CONN_SENT;
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 
+<<<<<<< HEAD
 	ret = cm_id->device->iwcm->connect(cm_id, iw_param);
 	if (ret) {
 		spin_lock_irqsave(&cm_id_priv->lock, flags);
@@ -591,6 +884,24 @@ int iw_cm_connect(struct iw_cm_id *cm_id, struct iw_cm_conn_param *iw_param)
 		wake_up_all(&cm_id_priv->connect_wait);
 	}
 
+=======
+	ret = iw_cm_map(cm_id, true);
+	if (!ret)
+		ret = cm_id->device->ops.iw_connect(cm_id, iw_param);
+	if (!ret)
+		return 0;	/* success */
+
+	spin_lock_irqsave(&cm_id_priv->lock, flags);
+	qp = cm_id_priv->qp;
+	cm_id_priv->qp = NULL;
+	cm_id_priv->state = IW_CM_STATE_IDLE;
+err:
+	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
+	if (qp)
+		cm_id->device->ops.iw_rem_ref(qp);
+	clear_bit(IWCM_F_CONNECT_WAIT, &cm_id_priv->flags);
+	wake_up_all(&cm_id_priv->connect_wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(iw_cm_connect);
@@ -632,8 +943,28 @@ static void cm_conn_req_handler(struct iwcm_id_private *listen_id_priv,
 		goto out;
 
 	cm_id->provider_data = iw_event->provider_data;
+<<<<<<< HEAD
 	cm_id->local_addr = iw_event->local_addr;
 	cm_id->remote_addr = iw_event->remote_addr;
+=======
+	cm_id->m_local_addr = iw_event->local_addr;
+	cm_id->m_remote_addr = iw_event->remote_addr;
+	cm_id->local_addr = listen_id_priv->id.local_addr;
+
+	ret = iwpm_get_remote_info(&listen_id_priv->id.m_local_addr,
+				   &iw_event->remote_addr,
+				   &cm_id->remote_addr,
+				   RDMA_NL_IWCM);
+	if (ret) {
+		cm_id->remote_addr = iw_event->remote_addr;
+	} else {
+		iw_cm_check_wildcard(&listen_id_priv->id.m_local_addr,
+				     &iw_event->local_addr,
+				     &cm_id->local_addr);
+		iw_event->local_addr = cm_id->local_addr;
+		iw_event->remote_addr = cm_id->remote_addr;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cm_id_priv = container_of(cm_id, struct iwcm_id_private, id);
 	cm_id_priv->state = IW_CM_STATE_CONN_RECV;
@@ -662,10 +993,14 @@ static void cm_conn_req_handler(struct iwcm_id_private *listen_id_priv,
 	ret = cm_id->cm_handler(cm_id, iw_event);
 	if (ret) {
 		iw_cm_reject(cm_id, NULL, 0);
+<<<<<<< HEAD
 		set_bit(IWCM_F_CALLBACK_DESTROY, &cm_id_priv->flags);
 		destroy_cm_id(cm_id);
 		if (atomic_read(&cm_id_priv->refcount)==0)
 			free_cm_id(cm_id_priv);
+=======
+		iw_destroy_cm_id(cm_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
@@ -718,6 +1053,10 @@ static int cm_conn_est_handler(struct iwcm_id_private *cm_id_priv,
 static int cm_conn_rep_handler(struct iwcm_id_private *cm_id_priv,
 			       struct iw_cm_event *iw_event)
 {
+<<<<<<< HEAD
+=======
+	struct ib_qp *qp = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int ret;
 
@@ -729,16 +1068,32 @@ static int cm_conn_rep_handler(struct iwcm_id_private *cm_id_priv,
 	clear_bit(IWCM_F_CONNECT_WAIT, &cm_id_priv->flags);
 	BUG_ON(cm_id_priv->state != IW_CM_STATE_CONN_SENT);
 	if (iw_event->status == 0) {
+<<<<<<< HEAD
 		cm_id_priv->id.local_addr = iw_event->local_addr;
 		cm_id_priv->id.remote_addr = iw_event->remote_addr;
 		cm_id_priv->state = IW_CM_STATE_ESTABLISHED;
 	} else {
 		/* REJECTED or RESET */
 		cm_id_priv->id.device->iwcm->rem_ref(cm_id_priv->qp);
+=======
+		cm_id_priv->id.m_local_addr = iw_event->local_addr;
+		cm_id_priv->id.m_remote_addr = iw_event->remote_addr;
+		iw_event->local_addr = cm_id_priv->id.local_addr;
+		iw_event->remote_addr = cm_id_priv->id.remote_addr;
+		cm_id_priv->state = IW_CM_STATE_ESTABLISHED;
+	} else {
+		/* REJECTED or RESET */
+		qp = cm_id_priv->qp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cm_id_priv->qp = NULL;
 		cm_id_priv->state = IW_CM_STATE_IDLE;
 	}
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
+<<<<<<< HEAD
+=======
+	if (qp)
+		cm_id_priv->id.device->ops.iw_rem_ref(qp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = cm_id_priv->id.cm_handler(&cm_id_priv->id, iw_event);
 
 	if (iw_event->private_data_len)
@@ -780,6 +1135,7 @@ static void cm_disconnect_handler(struct iwcm_id_private *cm_id_priv,
 static int cm_close_handler(struct iwcm_id_private *cm_id_priv,
 				  struct iw_cm_event *iw_event)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	int ret = 0;
 	spin_lock_irqsave(&cm_id_priv->lock, flags);
@@ -788,13 +1144,26 @@ static int cm_close_handler(struct iwcm_id_private *cm_id_priv,
 		cm_id_priv->id.device->iwcm->rem_ref(cm_id_priv->qp);
 		cm_id_priv->qp = NULL;
 	}
+=======
+	struct ib_qp *qp;
+	unsigned long flags;
+	int ret = 0, notify_event = 0;
+	spin_lock_irqsave(&cm_id_priv->lock, flags);
+	qp = cm_id_priv->qp;
+	cm_id_priv->qp = NULL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cm_id_priv->state) {
 	case IW_CM_STATE_ESTABLISHED:
 	case IW_CM_STATE_CLOSING:
 		cm_id_priv->state = IW_CM_STATE_IDLE;
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 		ret = cm_id_priv->id.cm_handler(&cm_id_priv->id, iw_event);
 		spin_lock_irqsave(&cm_id_priv->lock, flags);
+=======
+		notify_event = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case IW_CM_STATE_DESTROYING:
 		break;
@@ -803,6 +1172,13 @@ static int cm_close_handler(struct iwcm_id_private *cm_id_priv,
 	}
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 
+<<<<<<< HEAD
+=======
+	if (qp)
+		cm_id_priv->id.device->ops.iw_rem_ref(qp);
+	if (notify_event)
+		ret = cm_id_priv->id.cm_handler(&cm_id_priv->id, iw_event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -851,7 +1227,10 @@ static void cm_work_handler(struct work_struct *_work)
 	unsigned long flags;
 	int empty;
 	int ret = 0;
+<<<<<<< HEAD
 	int destroy_id;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&cm_id_priv->lock, flags);
 	empty = list_empty(&cm_id_priv->work_list);
@@ -864,6 +1243,7 @@ static void cm_work_handler(struct work_struct *_work)
 		put_work(work);
 		spin_unlock_irqrestore(&cm_id_priv->lock, flags);
 
+<<<<<<< HEAD
 		ret = process_event(cm_id_priv, &levent);
 		if (ret) {
 			set_bit(IWCM_F_CALLBACK_DESTROY, &cm_id_priv->flags);
@@ -878,6 +1258,18 @@ static void cm_work_handler(struct work_struct *_work)
 			}
 			return;
 		}
+=======
+		if (!test_bit(IWCM_F_DROP_EVENTS, &cm_id_priv->flags)) {
+			ret = process_event(cm_id_priv, &levent);
+			if (ret)
+				destroy_cm_id(&cm_id_priv->id);
+		} else
+			pr_debug("dropping event %d\n", levent.event);
+		if (iwcm_deref_id(cm_id_priv))
+			return;
+		if (empty)
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&cm_id_priv->lock, flags);
 	}
 	spin_unlock_irqrestore(&cm_id_priv->lock, flags);
@@ -929,7 +1321,11 @@ static int cm_event_handler(struct iw_cm_id *cm_id,
 		}
 	}
 
+<<<<<<< HEAD
 	atomic_inc(&cm_id_priv->refcount);
+=======
+	refcount_inc(&cm_id_priv->refcount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (list_empty(&cm_id_priv->work_list)) {
 		list_add_tail(&work->list, &cm_id_priv->work_list);
 		queue_work(iwcm_wq, &work->work);
@@ -1018,17 +1414,56 @@ EXPORT_SYMBOL(iw_cm_init_qp_attr);
 
 static int __init iw_cm_init(void)
 {
+<<<<<<< HEAD
 	iwcm_wq = create_singlethread_workqueue("iw_cm_wq");
 	if (!iwcm_wq)
 		return -ENOMEM;
 
 	return 0;
+=======
+	int ret;
+
+	ret = iwpm_init(RDMA_NL_IWCM);
+	if (ret)
+		return ret;
+
+	iwcm_wq = alloc_ordered_workqueue("iw_cm_wq", 0);
+	if (!iwcm_wq)
+		goto err_alloc;
+
+	iwcm_ctl_table_hdr = register_net_sysctl(&init_net, "net/iw_cm",
+						 iwcm_ctl_table);
+	if (!iwcm_ctl_table_hdr) {
+		pr_err("iw_cm: couldn't register sysctl paths\n");
+		goto err_sysctl;
+	}
+
+	rdma_nl_register(RDMA_NL_IWCM, iwcm_nl_cb_table);
+	return 0;
+
+err_sysctl:
+	destroy_workqueue(iwcm_wq);
+err_alloc:
+	iwpm_exit(RDMA_NL_IWCM);
+	return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit iw_cm_cleanup(void)
 {
+<<<<<<< HEAD
 	destroy_workqueue(iwcm_wq);
 }
 
+=======
+	rdma_nl_unregister(RDMA_NL_IWCM);
+	unregister_net_sysctl_table(iwcm_ctl_table_hdr);
+	destroy_workqueue(iwcm_wq);
+	iwpm_exit(RDMA_NL_IWCM);
+}
+
+MODULE_ALIAS_RDMA_NETLINK(RDMA_NL_IWCM, 2);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_init(iw_cm_init);
 module_exit(iw_cm_cleanup);

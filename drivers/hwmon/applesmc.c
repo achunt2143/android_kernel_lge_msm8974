@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/hwmon/applesmc.c - driver for Apple's SMC (accelerometer, temperature
  * sensors, fan control, keyboard backlight control) used in Intel-based Apple
@@ -8,6 +12,7 @@
  *
  * Based on hdaps.c driver:
  * Copyright (C) 2005 Robert Love <rml@novell.com>
+<<<<<<< HEAD
  * Copyright (C) 2005 Jesper Juhl <jesper.juhl@gmail.com>
  *
  * Fan control based on smcFanControl:
@@ -25,13 +30,23 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+=======
+ * Copyright (C) 2005 Jesper Juhl <jj@chaosbits.net>
+ *
+ * Fan control based on smcFanControl:
+ * Copyright (C) 2006 Hendrik Holtmann <holtmann@mac.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/delay.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/input-polldev.h>
+=======
+#include <linux/input.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -43,6 +58,11 @@
 #include <linux/leds.h>
 #include <linux/hwmon.h>
 #include <linux/workqueue.h>
+<<<<<<< HEAD
+=======
+#include <linux/err.h>
+#include <linux/bits.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* data port used by Apple SMC */
 #define APPLESMC_DATA_PORT	0x300
@@ -53,11 +73,22 @@
 
 #define APPLESMC_MAX_DATA_LENGTH 32
 
+<<<<<<< HEAD
 /* wait up to 32 ms for a status change. */
 #define APPLESMC_MIN_WAIT	0x0040
 #define APPLESMC_MAX_WAIT	0x8000
 
 #define APPLESMC_STATUS_MASK	0x0f
+=======
+/* Apple SMC status bits */
+#define SMC_STATUS_AWAITING_DATA  BIT(0) /* SMC has data waiting to be read */
+#define SMC_STATUS_IB_CLOSED      BIT(1) /* Will ignore any input */
+#define SMC_STATUS_BUSY           BIT(2) /* Command in progress */
+
+/* Initial wait is 8us */
+#define APPLESMC_MIN_WAIT      0x0008
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define APPLESMC_READ_CMD	0x10
 #define APPLESMC_WRITE_CMD	0x11
 #define APPLESMC_GET_KEY_BY_INDEX_CMD	0x12
@@ -80,6 +111,11 @@
 #define FANS_MANUAL		"FS! " /* r-w ui16 */
 #define FAN_ID_FMT		"F%dID" /* r-o char[16] */
 
+<<<<<<< HEAD
+=======
+#define TEMP_SENSOR_TYPE	"sp78"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* List of keys used to read/write fan speeds */
 static const char *const fan_speed_fmt[] = {
 	"F%dAc",		/* actual speed */
@@ -96,10 +132,13 @@ static const char *const fan_speed_fmt[] = {
 #define APPLESMC_INPUT_FUZZ	4	/* input event threshold */
 #define APPLESMC_INPUT_FLAT	4
 
+<<<<<<< HEAD
 #define SENSOR_X 0
 #define SENSOR_Y 1
 #define SENSOR_Z 2
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define to_index(attr) (to_sensor_dev_attr(attr)->index & 0xffff)
 #define to_option(attr) (to_sensor_dev_attr(attr)->index >> 16)
 
@@ -135,11 +174,19 @@ static struct applesmc_registers {
 	unsigned int temp_count;	/* number of temperature registers */
 	unsigned int temp_begin;	/* temperature lower index bound */
 	unsigned int temp_end;		/* temperature upper index bound */
+<<<<<<< HEAD
+=======
+	unsigned int index_count;	/* size of temperature index array */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int num_light_sensors;		/* number of light sensors */
 	bool has_accelerometer;		/* has motion sensor */
 	bool has_key_backlight;		/* has keyboard backlight */
 	bool init_complete;		/* true when fully initialized */
 	struct applesmc_entry *cache;	/* cached key entries */
+<<<<<<< HEAD
+=======
+	const char **index;		/* temperature key index */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } smcreg = {
 	.mutex = __MUTEX_INITIALIZER(smcreg.mutex),
 };
@@ -151,7 +198,11 @@ static s16 rest_y;
 static u8 backlight_state[2];
 
 static struct device *hwmon_dev;
+<<<<<<< HEAD
 static struct input_polled_dev *applesmc_idev;
+=======
+static struct input_dev *applesmc_idev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Last index written to key_at_index sysfs file, and value to use for all other
@@ -162,6 +213,7 @@ static unsigned int key_at_index;
 static struct workqueue_struct *applesmc_led_wq;
 
 /*
+<<<<<<< HEAD
  * __wait_status - Wait up to 32ms for the status port to get a certain value
  * (masked with 0x0f), returning zero if the value is obtained.  Callers must
  * hold applesmc_lock.
@@ -196,17 +248,103 @@ static int send_command(u8 cmd)
 			return 0;
 	}
 	return -EIO;
+=======
+ * Wait for specific status bits with a mask on the SMC.
+ * Used before all transactions.
+ * This does 10 fast loops of 8us then exponentially backs off for a
+ * minimum total wait of 262ms. Depending on usleep_range this could
+ * run out past 500ms.
+ */
+
+static int wait_status(u8 val, u8 mask)
+{
+	u8 status;
+	int us;
+	int i;
+
+	us = APPLESMC_MIN_WAIT;
+	for (i = 0; i < 24 ; i++) {
+		status = inb(APPLESMC_CMD_PORT);
+		if ((status & mask) == val)
+			return 0;
+		usleep_range(us, us * 2);
+		if (i > 9)
+			us <<= 1;
+	}
+	return -EIO;
+}
+
+/* send_byte - Write to SMC data port. Callers must hold applesmc_lock. */
+
+static int send_byte(u8 cmd, u16 port)
+{
+	int status;
+
+	status = wait_status(0, SMC_STATUS_IB_CLOSED);
+	if (status)
+		return status;
+	/*
+	 * This needs to be a separate read looking for bit 0x04
+	 * after bit 0x02 falls. If consolidated with the wait above
+	 * this extra read may not happen if status returns both
+	 * simultaneously and this would appear to be required.
+	 */
+	status = wait_status(SMC_STATUS_BUSY, SMC_STATUS_BUSY);
+	if (status)
+		return status;
+
+	outb(cmd, port);
+	return 0;
+}
+
+/* send_command - Write a command to the SMC. Callers must hold applesmc_lock. */
+
+static int send_command(u8 cmd)
+{
+	int ret;
+
+	ret = wait_status(0, SMC_STATUS_IB_CLOSED);
+	if (ret)
+		return ret;
+	outb(cmd, APPLESMC_CMD_PORT);
+	return 0;
+}
+
+/*
+ * Based on logic from the Apple driver. This is issued before any interaction
+ * If busy is stuck high, issue a read command to reset the SMC state machine.
+ * If busy is stuck high after the command then the SMC is jammed.
+ */
+
+static int smc_sane(void)
+{
+	int ret;
+
+	ret = wait_status(0, SMC_STATUS_BUSY);
+	if (!ret)
+		return ret;
+	ret = send_command(APPLESMC_READ_CMD);
+	if (ret)
+		return ret;
+	return wait_status(0, SMC_STATUS_BUSY);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int send_argument(const char *key)
 {
 	int i;
 
+<<<<<<< HEAD
 	for (i = 0; i < 4; i++) {
 		outb(key[i], APPLESMC_DATA_PORT);
 		if (__wait_status(0x04))
 			return -EIO;
 	}
+=======
+	for (i = 0; i < 4; i++)
+		if (send_byte(key[i], APPLESMC_DATA_PORT))
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -214,6 +352,14 @@ static int read_smc(u8 cmd, const char *key, u8 *buffer, u8 len)
 {
 	u8 status, data = 0;
 	int i;
+<<<<<<< HEAD
+=======
+	int ret;
+
+	ret = smc_sane();
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (send_command(cmd) || send_argument(key)) {
 		pr_warn("%.4s: read arg fail\n", key);
@@ -221,11 +367,23 @@ static int read_smc(u8 cmd, const char *key, u8 *buffer, u8 len)
 	}
 
 	/* This has no effect on newer (2012) SMCs */
+<<<<<<< HEAD
 	outb(len, APPLESMC_DATA_PORT);
 
 	for (i = 0; i < len; i++) {
 		if (__wait_status(0x05)) {
 			pr_warn("%.4s: read data fail\n", key);
+=======
+	if (send_byte(len, APPLESMC_DATA_PORT)) {
+		pr_warn("%.4s: read len fail\n", key);
+		return -EIO;
+	}
+
+	for (i = 0; i < len; i++) {
+		if (wait_status(SMC_STATUS_AWAITING_DATA | SMC_STATUS_BUSY,
+				SMC_STATUS_AWAITING_DATA | SMC_STATUS_BUSY)) {
+			pr_warn("%.4s: read data[%d] fail\n", key, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 		buffer[i] = inb(APPLESMC_DATA_PORT);
@@ -235,25 +393,42 @@ static int read_smc(u8 cmd, const char *key, u8 *buffer, u8 len)
 	for (i = 0; i < 16; i++) {
 		udelay(APPLESMC_MIN_WAIT);
 		status = inb(APPLESMC_CMD_PORT);
+<<<<<<< HEAD
 		if (!(status & 0x01))
+=======
+		if (!(status & SMC_STATUS_AWAITING_DATA))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		data = inb(APPLESMC_DATA_PORT);
 	}
 	if (i)
 		pr_warn("flushed %d bytes, last value is: %d\n", i, data);
 
+<<<<<<< HEAD
 	return 0;
+=======
+	return wait_status(0, SMC_STATUS_BUSY);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int write_smc(u8 cmd, const char *key, const u8 *buffer, u8 len)
 {
 	int i;
+<<<<<<< HEAD
+=======
+	int ret;
+
+	ret = smc_sane();
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (send_command(cmd) || send_argument(key)) {
 		pr_warn("%s: write arg fail\n", key);
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	outb(len, APPLESMC_DATA_PORT);
 
 	for (i = 0; i < len; i++) {
@@ -265,6 +440,21 @@ static int write_smc(u8 cmd, const char *key, const u8 *buffer, u8 len)
 	}
 
 	return 0;
+=======
+	if (send_byte(len, APPLESMC_DATA_PORT)) {
+		pr_warn("%.4s: write len fail\n", key);
+		return -EIO;
+	}
+
+	for (i = 0; i < len; i++) {
+		if (send_byte(buffer[i], APPLESMC_DATA_PORT)) {
+			pr_warn("%s: write data fail\n", key);
+			return -EIO;
+		}
+	}
+
+	return wait_status(0, SMC_STATUS_BUSY);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int read_register_count(unsigned int *count)
@@ -340,7 +530,11 @@ static const struct applesmc_entry *applesmc_get_entry_by_index(int index)
 	cache->len = info[0];
 	memcpy(cache->type, &info[1], 4);
 	cache->flags = info[5];
+<<<<<<< HEAD
 	cache->valid = 1;
+=======
+	cache->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	mutex_unlock(&smcreg.mutex);
@@ -445,13 +639,20 @@ static int applesmc_has_key(const char *key, bool *value)
 }
 
 /*
+<<<<<<< HEAD
  * applesmc_read_motion_sensor - Read motion sensor (X, Y or Z).
  */
 static int applesmc_read_motion_sensor(int index, s16 *value)
+=======
+ * applesmc_read_s16 - Read 16-bit signed big endian register
+ */
+static int applesmc_read_s16(const char *key, s16 *value)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 buffer[2];
 	int ret;
 
+<<<<<<< HEAD
 	switch (index) {
 	case SENSOR_X:
 		ret = applesmc_read_key(MOTION_SENSOR_X_KEY, buffer, 2);
@@ -469,6 +670,14 @@ static int applesmc_read_motion_sensor(int index, s16 *value)
 	*value = ((s16)buffer[0] << 8) | buffer[1];
 
 	return ret;
+=======
+	ret = applesmc_read_key(key, buffer, 2);
+	if (ret)
+		return ret;
+
+	*value = ((s16)buffer[0] << 8) | buffer[1];
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -495,13 +704,44 @@ static void applesmc_device_init(void)
 	pr_warn("failed to init the device\n");
 }
 
+<<<<<<< HEAD
+=======
+static int applesmc_init_index(struct applesmc_registers *s)
+{
+	const struct applesmc_entry *entry;
+	unsigned int i;
+
+	if (s->index)
+		return 0;
+
+	s->index = kcalloc(s->temp_count, sizeof(s->index[0]), GFP_KERNEL);
+	if (!s->index)
+		return -ENOMEM;
+
+	for (i = s->temp_begin; i < s->temp_end; i++) {
+		entry = applesmc_get_entry_by_index(i);
+		if (IS_ERR(entry))
+			continue;
+		if (strcmp(entry->type, TEMP_SENSOR_TYPE))
+			continue;
+		s->index[s->index_count++] = entry->key;
+	}
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * applesmc_init_smcreg_try - Try to initialize register cache. Idempotent.
  */
 static int applesmc_init_smcreg_try(void)
 {
 	struct applesmc_registers *s = &smcreg;
+<<<<<<< HEAD
 	bool left_light_sensor, right_light_sensor;
+=======
+	bool left_light_sensor = false, right_light_sensor = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int count;
 	u8 tmp[1];
 	int ret;
@@ -530,6 +770,11 @@ static int applesmc_init_smcreg_try(void)
 	if (ret)
 		return ret;
 	s->fan_count = tmp[0];
+<<<<<<< HEAD
+=======
+	if (s->fan_count > 10)
+		s->fan_count = 10;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = applesmc_get_lower_bound(&s->temp_begin, "T");
 	if (ret)
@@ -539,6 +784,13 @@ static int applesmc_init_smcreg_try(void)
 		return ret;
 	s->temp_count = s->temp_end - s->temp_begin;
 
+<<<<<<< HEAD
+=======
+	ret = applesmc_init_index(s);
+	if (ret)
+		return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = applesmc_has_key(LIGHT_SENSOR_LEFT_KEY, &left_light_sensor);
 	if (ret)
 		return ret;
@@ -555,8 +807,13 @@ static int applesmc_init_smcreg_try(void)
 	s->num_light_sensors = left_light_sensor + right_light_sensor;
 	s->init_complete = true;
 
+<<<<<<< HEAD
 	pr_info("key=%d fan=%d temp=%d acc=%d lux=%d kbd=%d\n",
 	       s->key_count, s->fan_count, s->temp_count,
+=======
+	pr_info("key=%d fan=%d temp=%d index=%d acc=%d lux=%d kbd=%d\n",
+	       s->key_count, s->fan_count, s->temp_count, s->index_count,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       s->has_accelerometer,
 	       s->num_light_sensors,
 	       s->has_key_backlight);
@@ -564,6 +821,18 @@ static int applesmc_init_smcreg_try(void)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void applesmc_destroy_smcreg(void)
+{
+	kfree(smcreg.index);
+	smcreg.index = NULL;
+	kfree(smcreg.cache);
+	smcreg.cache = NULL;
+	smcreg.init_complete = false;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * applesmc_init_smcreg - Initialize register cache.
  *
@@ -584,12 +853,17 @@ static int applesmc_init_smcreg(void)
 		msleep(INIT_WAIT_MSECS);
 	}
 
+<<<<<<< HEAD
 	kfree(smcreg.cache);
 	smcreg.cache = NULL;
+=======
+	applesmc_destroy_smcreg();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static void applesmc_destroy_smcreg(void)
 {
 	kfree(smcreg.cache);
@@ -597,6 +871,8 @@ static void applesmc_destroy_smcreg(void)
 	smcreg.init_complete = false;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Device model stuff */
 static int applesmc_probe(struct platform_device *dev)
 {
@@ -635,7 +911,10 @@ static struct platform_driver applesmc_driver = {
 	.probe = applesmc_probe,
 	.driver	= {
 		.name = "applesmc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pm = &applesmc_pm_ops,
 	},
 };
@@ -646,6 +925,7 @@ static struct platform_driver applesmc_driver = {
  */
 static void applesmc_calibrate(void)
 {
+<<<<<<< HEAD
 	applesmc_read_motion_sensor(SENSOR_X, &rest_x);
 	applesmc_read_motion_sensor(SENSOR_Y, &rest_y);
 	rest_x = -rest_x;
@@ -659,6 +939,20 @@ static void applesmc_idev_poll(struct input_polled_dev *dev)
 	if (applesmc_read_motion_sensor(SENSOR_X, &x))
 		return;
 	if (applesmc_read_motion_sensor(SENSOR_Y, &y))
+=======
+	applesmc_read_s16(MOTION_SENSOR_X_KEY, &rest_x);
+	applesmc_read_s16(MOTION_SENSOR_Y_KEY, &rest_y);
+	rest_x = -rest_x;
+}
+
+static void applesmc_idev_poll(struct input_dev *idev)
+{
+	s16 x, y;
+
+	if (applesmc_read_s16(MOTION_SENSOR_X_KEY, &x))
+		return;
+	if (applesmc_read_s16(MOTION_SENSOR_Y_KEY, &y))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	x = -x;
@@ -672,7 +966,11 @@ static void applesmc_idev_poll(struct input_polled_dev *dev)
 static ssize_t applesmc_name_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "applesmc\n");
+=======
+	return sysfs_emit(buf, "applesmc\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t applesmc_position_show(struct device *dev,
@@ -681,6 +979,7 @@ static ssize_t applesmc_position_show(struct device *dev,
 	int ret;
 	s16 x, y, z;
 
+<<<<<<< HEAD
 	ret = applesmc_read_motion_sensor(SENSOR_X, &x);
 	if (ret)
 		goto out;
@@ -688,14 +987,28 @@ static ssize_t applesmc_position_show(struct device *dev,
 	if (ret)
 		goto out;
 	ret = applesmc_read_motion_sensor(SENSOR_Z, &z);
+=======
+	ret = applesmc_read_s16(MOTION_SENSOR_X_KEY, &x);
+	if (ret)
+		goto out;
+	ret = applesmc_read_s16(MOTION_SENSOR_Y_KEY, &y);
+	if (ret)
+		goto out;
+	ret = applesmc_read_s16(MOTION_SENSOR_Z_KEY, &z);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out;
 
 out:
 	if (ret)
 		return ret;
+<<<<<<< HEAD
 	else
 		return snprintf(buf, PAGE_SIZE, "(%d,%d,%d)\n", x, y, z);
+=======
+
+	return sysfs_emit(buf, "(%d,%d,%d)\n", x, y, z);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t applesmc_light_show(struct device *dev,
@@ -718,28 +1031,46 @@ static ssize_t applesmc_light_show(struct device *dev,
 	}
 
 	ret = applesmc_read_key(LIGHT_SENSOR_LEFT_KEY, buffer, data_length);
+<<<<<<< HEAD
+=======
+	if (ret)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* newer macbooks report a single 10-bit bigendian value */
 	if (data_length == 10) {
 		left = be16_to_cpu(*(__be16 *)(buffer + 6)) >> 2;
 		goto out;
 	}
 	left = buffer[2];
+<<<<<<< HEAD
 	if (ret)
 		goto out;
 	ret = applesmc_read_key(LIGHT_SENSOR_RIGHT_KEY, buffer, data_length);
+=======
+
+	ret = applesmc_read_key(LIGHT_SENSOR_RIGHT_KEY, buffer, data_length);
+	if (ret)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	right = buffer[2];
 
 out:
 	if (ret)
 		return ret;
+<<<<<<< HEAD
 	else
 		return snprintf(sysfsbuf, PAGE_SIZE, "(%d,%d)\n", left, right);
+=======
+
+	return sysfs_emit(sysfsbuf, "(%d,%d)\n", left, right);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Displays sensor key as label */
 static ssize_t applesmc_show_sensor_label(struct device *dev,
 			struct device_attribute *devattr, char *sysfsbuf)
 {
+<<<<<<< HEAD
 	int index = smcreg.temp_begin + to_index(devattr);
 	const struct applesmc_entry *entry;
 
@@ -748,12 +1079,18 @@ static ssize_t applesmc_show_sensor_label(struct device *dev,
 		return PTR_ERR(entry);
 
 	return snprintf(sysfsbuf, PAGE_SIZE, "%s\n", entry->key);
+=======
+	const char *key = smcreg.index[to_index(devattr)];
+
+	return sysfs_emit(sysfsbuf, "%s\n", key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Displays degree Celsius * 1000 */
 static ssize_t applesmc_show_temperature(struct device *dev,
 			struct device_attribute *devattr, char *sysfsbuf)
 {
+<<<<<<< HEAD
 	int index = smcreg.temp_begin + to_index(devattr);
 	const struct applesmc_entry *entry;
 	int ret;
@@ -778,6 +1115,20 @@ static ssize_t applesmc_show_temperature(struct device *dev,
 	}
 
 	return snprintf(sysfsbuf, PAGE_SIZE, "%u\n", temp);
+=======
+	const char *key = smcreg.index[to_index(devattr)];
+	int ret;
+	s16 value;
+	int temp;
+
+	ret = applesmc_read_s16(key, &value);
+	if (ret)
+		return ret;
+
+	temp = 250 * (value >> 6);
+
+	return sysfs_emit(sysfsbuf, "%d\n", temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t applesmc_show_fan_speed(struct device *dev,
@@ -788,6 +1139,7 @@ static ssize_t applesmc_show_fan_speed(struct device *dev,
 	char newkey[5];
 	u8 buffer[2];
 
+<<<<<<< HEAD
 	sprintf(newkey, fan_speed_fmt[to_option(attr)], to_index(attr));
 
 	ret = applesmc_read_key(newkey, buffer, 2);
@@ -797,6 +1149,17 @@ static ssize_t applesmc_show_fan_speed(struct device *dev,
 		return ret;
 	else
 		return snprintf(sysfsbuf, PAGE_SIZE, "%u\n", speed);
+=======
+	scnprintf(newkey, sizeof(newkey), fan_speed_fmt[to_option(attr)],
+		  to_index(attr));
+
+	ret = applesmc_read_key(newkey, buffer, 2);
+	if (ret)
+		return ret;
+
+	speed = ((buffer[0] << 8 | buffer[1]) >> 2);
+	return sysfs_emit(sysfsbuf, "%u\n", speed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t applesmc_store_fan_speed(struct device *dev,
@@ -811,7 +1174,12 @@ static ssize_t applesmc_store_fan_speed(struct device *dev,
 	if (kstrtoul(sysfsbuf, 10, &speed) < 0 || speed >= 0x4000)
 		return -EINVAL;		/* Bigger than a 14-bit value */
 
+<<<<<<< HEAD
 	sprintf(newkey, fan_speed_fmt[to_option(attr)], to_index(attr));
+=======
+	scnprintf(newkey, sizeof(newkey), fan_speed_fmt[to_option(attr)],
+		  to_index(attr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buffer[0] = (speed >> 6) & 0xff;
 	buffer[1] = (speed << 2) & 0xff;
@@ -831,12 +1199,20 @@ static ssize_t applesmc_show_fan_manual(struct device *dev,
 	u8 buffer[2];
 
 	ret = applesmc_read_key(FANS_MANUAL, buffer, 2);
+<<<<<<< HEAD
 	manual = ((buffer[0] << 8 | buffer[1]) >> to_index(attr)) & 0x01;
 
 	if (ret)
 		return ret;
 	else
 		return snprintf(sysfsbuf, PAGE_SIZE, "%d\n", manual);
+=======
+	if (ret)
+		return ret;
+
+	manual = ((buffer[0] << 8 | buffer[1]) >> to_index(attr)) & 0x01;
+	return sysfs_emit(sysfsbuf, "%d\n", manual);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t applesmc_store_fan_manual(struct device *dev,
@@ -852,10 +1228,18 @@ static ssize_t applesmc_store_fan_manual(struct device *dev,
 		return -EINVAL;
 
 	ret = applesmc_read_key(FANS_MANUAL, buffer, 2);
+<<<<<<< HEAD
 	val = (buffer[0] << 8 | buffer[1]);
 	if (ret)
 		goto out;
 
+=======
+	if (ret)
+		goto out;
+
+	val = (buffer[0] << 8 | buffer[1]);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (input)
 		val = val | (0x01 << to_index(attr));
 	else
@@ -880,21 +1264,34 @@ static ssize_t applesmc_show_fan_position(struct device *dev,
 	char newkey[5];
 	u8 buffer[17];
 
+<<<<<<< HEAD
 	sprintf(newkey, FAN_ID_FMT, to_index(attr));
+=======
+	scnprintf(newkey, sizeof(newkey), FAN_ID_FMT, to_index(attr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = applesmc_read_key(newkey, buffer, 16);
 	buffer[16] = 0;
 
 	if (ret)
 		return ret;
+<<<<<<< HEAD
 	else
 		return snprintf(sysfsbuf, PAGE_SIZE, "%s\n", buffer+4);
+=======
+
+	return sysfs_emit(sysfsbuf, "%s\n", buffer + 4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t applesmc_calibrate_show(struct device *dev,
 				struct device_attribute *attr, char *sysfsbuf)
 {
+<<<<<<< HEAD
 	return snprintf(sysfsbuf, PAGE_SIZE, "(%d,%d)\n", rest_x, rest_y);
+=======
+	return sysfs_emit(sysfsbuf, "(%d,%d)\n", rest_x, rest_y);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t applesmc_calibrate_store(struct device *dev,
@@ -920,7 +1317,11 @@ static void applesmc_brightness_set(struct led_classdev *led_cdev,
 	ret = queue_work(applesmc_led_wq, &backlight_work);
 
 	if (debug && (!ret))
+<<<<<<< HEAD
 		printk(KERN_DEBUG "applesmc: work was already on the queue.\n");
+=======
+		dev_dbg(led_cdev->dev, "work was already on the queue.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t applesmc_key_count_show(struct device *dev,
@@ -931,6 +1332,7 @@ static ssize_t applesmc_key_count_show(struct device *dev,
 	u32 count;
 
 	ret = applesmc_read_key(KEY_COUNT_KEY, buffer, 4);
+<<<<<<< HEAD
 	count = ((u32)buffer[0]<<24) + ((u32)buffer[1]<<16) +
 						((u32)buffer[2]<<8) + buffer[3];
 
@@ -938,6 +1340,14 @@ static ssize_t applesmc_key_count_show(struct device *dev,
 		return ret;
 	else
 		return snprintf(sysfsbuf, PAGE_SIZE, "%d\n", count);
+=======
+	if (ret)
+		return ret;
+
+	count = ((u32)buffer[0]<<24) + ((u32)buffer[1]<<16) +
+						((u32)buffer[2]<<8) + buffer[3];
+	return sysfs_emit(sysfsbuf, "%d\n", count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t applesmc_key_at_index_read_show(struct device *dev,
@@ -965,7 +1375,11 @@ static ssize_t applesmc_key_at_index_data_length_show(struct device *dev,
 	if (IS_ERR(entry))
 		return PTR_ERR(entry);
 
+<<<<<<< HEAD
 	return snprintf(sysfsbuf, PAGE_SIZE, "%d\n", entry->len);
+=======
+	return sysfs_emit(sysfsbuf, "%d\n", entry->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t applesmc_key_at_index_type_show(struct device *dev,
@@ -977,7 +1391,11 @@ static ssize_t applesmc_key_at_index_type_show(struct device *dev,
 	if (IS_ERR(entry))
 		return PTR_ERR(entry);
 
+<<<<<<< HEAD
 	return snprintf(sysfsbuf, PAGE_SIZE, "%s\n", entry->type);
+=======
+	return sysfs_emit(sysfsbuf, "%s\n", entry->type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t applesmc_key_at_index_name_show(struct device *dev,
@@ -989,13 +1407,21 @@ static ssize_t applesmc_key_at_index_name_show(struct device *dev,
 	if (IS_ERR(entry))
 		return PTR_ERR(entry);
 
+<<<<<<< HEAD
 	return snprintf(sysfsbuf, PAGE_SIZE, "%s\n", entry->key);
+=======
+	return sysfs_emit(sysfsbuf, "%s\n", entry->key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t applesmc_key_at_index_show(struct device *dev,
 				struct device_attribute *attr, char *sysfsbuf)
 {
+<<<<<<< HEAD
 	return snprintf(sysfsbuf, PAGE_SIZE, "%d\n", key_at_index);
+=======
+	return sysfs_emit(sysfsbuf, "%d\n", key_at_index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t applesmc_key_at_index_store(struct device *dev,
@@ -1093,14 +1519,23 @@ static int applesmc_create_nodes(struct applesmc_node_group *groups, int num)
 		}
 		for (i = 0; i < num; i++) {
 			node = &grp->nodes[i];
+<<<<<<< HEAD
 			sprintf(node->name, grp->format, i + 1);
+=======
+			scnprintf(node->name, sizeof(node->name), grp->format,
+				  i + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			node->sda.index = (grp->option << 16) | (i & 0xffff);
 			node->sda.dev_attr.show = grp->show;
 			node->sda.dev_attr.store = grp->store;
 			attr = &node->sda.dev_attr.attr;
 			sysfs_attr_init(attr);
 			attr->name = node->name;
+<<<<<<< HEAD
 			attr->mode = S_IRUGO | (grp->store ? S_IWUSR : 0);
+=======
+			attr->mode = 0444 | (grp->store ? 0200 : 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = sysfs_create_file(&pdev->dev.kobj, attr);
 			if (ret) {
 				attr->name = NULL;
@@ -1115,10 +1550,16 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 /* Create accelerometer ressources */
 static int applesmc_create_accelerometer(void)
 {
 	struct input_dev *idev;
+=======
+/* Create accelerometer resources */
+static int applesmc_create_accelerometer(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (!smcreg.has_accelerometer)
@@ -1128,19 +1569,27 @@ static int applesmc_create_accelerometer(void)
 	if (ret)
 		goto out;
 
+<<<<<<< HEAD
 	applesmc_idev = input_allocate_polled_device();
+=======
+	applesmc_idev = input_allocate_device();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!applesmc_idev) {
 		ret = -ENOMEM;
 		goto out_sysfs;
 	}
 
+<<<<<<< HEAD
 	applesmc_idev->poll = applesmc_idev_poll;
 	applesmc_idev->poll_interval = APPLESMC_POLL_INTERVAL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* initial calibrate for the input device */
 	applesmc_calibrate();
 
 	/* initialize the input device */
+<<<<<<< HEAD
 	idev = applesmc_idev->input;
 	idev->name = "applesmc";
 	idev->id.bustype = BUS_HOST;
@@ -1152,13 +1601,34 @@ static int applesmc_create_accelerometer(void)
 			-256, 256, APPLESMC_INPUT_FUZZ, APPLESMC_INPUT_FLAT);
 
 	ret = input_register_polled_device(applesmc_idev);
+=======
+	applesmc_idev->name = "applesmc";
+	applesmc_idev->id.bustype = BUS_HOST;
+	applesmc_idev->dev.parent = &pdev->dev;
+	input_set_abs_params(applesmc_idev, ABS_X,
+			-256, 256, APPLESMC_INPUT_FUZZ, APPLESMC_INPUT_FLAT);
+	input_set_abs_params(applesmc_idev, ABS_Y,
+			-256, 256, APPLESMC_INPUT_FUZZ, APPLESMC_INPUT_FLAT);
+
+	ret = input_setup_polling(applesmc_idev, applesmc_idev_poll);
+	if (ret)
+		goto out_idev;
+
+	input_set_poll_interval(applesmc_idev, APPLESMC_POLL_INTERVAL);
+
+	ret = input_register_device(applesmc_idev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out_idev;
 
 	return 0;
 
 out_idev:
+<<<<<<< HEAD
 	input_free_polled_device(applesmc_idev);
+=======
+	input_free_device(applesmc_idev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_sysfs:
 	applesmc_destroy_nodes(accelerometer_group);
@@ -1168,13 +1638,21 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 /* Release all ressources used by the accelerometer */
+=======
+/* Release all resources used by the accelerometer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void applesmc_release_accelerometer(void)
 {
 	if (!smcreg.has_accelerometer)
 		return;
+<<<<<<< HEAD
 	input_unregister_polled_device(applesmc_idev);
 	input_free_polled_device(applesmc_idev);
+=======
+	input_unregister_device(applesmc_idev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	applesmc_destroy_nodes(accelerometer_group);
 }
 
@@ -1219,7 +1697,11 @@ static int applesmc_dmi_match(const struct dmi_system_id *id)
  * Note that DMI_MATCH(...,"MacBook") will match "MacBookPro1,1".
  * So we need to put "Apple MacBook Pro" before "Apple MacBook".
  */
+<<<<<<< HEAD
 static __initdata struct dmi_system_id applesmc_whitelist[] = {
+=======
+static const struct dmi_system_id applesmc_whitelist[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ applesmc_dmi_match, "Apple MacBook Air", {
 	  DMI_MATCH(DMI_BOARD_VENDOR, "Apple"),
 	  DMI_MATCH(DMI_PRODUCT_NAME, "MacBookAir") },
@@ -1244,6 +1726,13 @@ static __initdata struct dmi_system_id applesmc_whitelist[] = {
 	  DMI_MATCH(DMI_BOARD_VENDOR, "Apple"),
 	  DMI_MATCH(DMI_PRODUCT_NAME, "iMac") },
 	},
+<<<<<<< HEAD
+=======
+	{ applesmc_dmi_match, "Apple Xserve", {
+	  DMI_MATCH(DMI_BOARD_VENDOR, "Apple"),
+	  DMI_MATCH(DMI_PRODUCT_NAME, "Xserve") },
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .ident = NULL }
 };
 
@@ -1287,7 +1776,11 @@ static int __init applesmc_init(void)
 	if (ret)
 		goto out_info;
 
+<<<<<<< HEAD
 	ret = applesmc_create_nodes(temp_group, smcreg.temp_count);
+=======
+	ret = applesmc_create_nodes(temp_group, smcreg.index_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out_fans;
 

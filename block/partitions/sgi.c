@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fs/partitions/sgi.c
  *
@@ -5,7 +9,16 @@
  */
 
 #include "check.h"
+<<<<<<< HEAD
 #include "sgi.h"
+=======
+
+#define SGI_LABEL_MAGIC 0x0be5a941
+
+enum {
+	LINUX_RAID_PARTITION = 0xfd,	/* autodetect RAID partition */
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sgi_disklabel {
 	__be32 magic_mushroom;		/* Big fat spliff... */
@@ -37,7 +50,10 @@ int sgi_partition(struct parsed_partitions *state)
 	Sector sect;
 	struct sgi_disklabel *label;
 	struct sgi_partition *p;
+<<<<<<< HEAD
 	char b[BDEVNAME_SIZE];
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	label = read_part_sector(state, 0, &sect);
 	if (!label)
@@ -46,7 +62,11 @@ int sgi_partition(struct parsed_partitions *state)
 	magic = label->magic_mushroom;
 	if(be32_to_cpu(magic) != SGI_LABEL_MAGIC) {
 		/*printk("Dev %s SGI disklabel: bad magic %08x\n",
+<<<<<<< HEAD
 		       bdevname(bdev, b), be32_to_cpu(magic));*/
+=======
+		       state->disk->disk_name, be32_to_cpu(magic));*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_dev_sector(sect);
 		return 0;
 	}
@@ -57,7 +77,11 @@ int sgi_partition(struct parsed_partitions *state)
 	}
 	if(csum) {
 		printk(KERN_WARNING "Dev %s SGI disklabel: csum bad, label corrupted\n",
+<<<<<<< HEAD
 		       bdevname(state->bdev, b));
+=======
+		       state->disk->disk_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_dev_sector(sect);
 		return 0;
 	}

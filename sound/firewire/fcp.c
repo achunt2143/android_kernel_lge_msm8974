@@ -1,8 +1,15 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Function Control Protocol (IEC 61883-1) helper functions
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
+<<<<<<< HEAD
  * Licensed under the terms of the GNU General Public License, version 2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -10,12 +17,20 @@
 #include <linux/firewire-constants.h>
 #include <linux/list.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/spinlock.h>
 #include <linux/wait.h>
 #include <linux/delay.h>
 #include "fcp.h"
 #include "lib.h"
+<<<<<<< HEAD
+=======
+#include "amdtp-stream.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CTS_AVC 0x00
 
@@ -23,6 +38,167 @@
 #define ERROR_DELAY_MS	5
 #define FCP_TIMEOUT_MS	125
 
+<<<<<<< HEAD
+=======
+int avc_general_set_sig_fmt(struct fw_unit *unit, unsigned int rate,
+			    enum avc_general_plug_dir dir,
+			    unsigned short pid)
+{
+	unsigned int sfc;
+	u8 *buf;
+	bool flag;
+	int err;
+
+	flag = false;
+	for (sfc = 0; sfc < CIP_SFC_COUNT; sfc++) {
+		if (amdtp_rate_table[sfc] == rate) {
+			flag = true;
+			break;
+		}
+	}
+	if (!flag)
+		return -EINVAL;
+
+	buf = kzalloc(8, GFP_KERNEL);
+	if (buf == NULL)
+		return -ENOMEM;
+
+	buf[0] = 0x00;		/* AV/C CONTROL */
+	buf[1] = 0xff;		/* UNIT */
+	if (dir == AVC_GENERAL_PLUG_DIR_IN)
+		buf[2] = 0x19;	/* INPUT PLUG SIGNAL FORMAT */
+	else
+		buf[2] = 0x18;	/* OUTPUT PLUG SIGNAL FORMAT */
+	buf[3] = 0xff & pid;	/* plug id */
+	buf[4] = 0x90;		/* EOH_1, Form_1, FMT. AM824 */
+	buf[5] = 0x07 & sfc;	/* FDF-hi. AM824, frequency */
+	buf[6] = 0xff;		/* FDF-mid. AM824, SYT hi (not used)*/
+	buf[7] = 0xff;		/* FDF-low. AM824, SYT lo (not used) */
+
+	/* do transaction and check buf[1-5] are the same against command */
+	err = fcp_avc_transaction(unit, buf, 8, buf, 8,
+				  BIT(1) | BIT(2) | BIT(3) | BIT(4) | BIT(5));
+	if (err < 0)
+		;
+	else if (err < 8)
+		err = -EIO;
+	else if (buf[0] == 0x08) /* NOT IMPLEMENTED */
+		err = -ENOSYS;
+	else if (buf[0] == 0x0a) /* REJECTED */
+		err = -EINVAL;
+	if (err < 0)
+		goto end;
+
+	err = 0;
+end:
+	kfree(buf);
+	return err;
+}
+EXPORT_SYMBOL(avc_general_set_sig_fmt);
+
+int avc_general_get_sig_fmt(struct fw_unit *unit, unsigned int *rate,
+			    enum avc_general_plug_dir dir,
+			    unsigned short pid)
+{
+	unsigned int sfc;
+	u8 *buf;
+	int err;
+
+	buf = kzalloc(8, GFP_KERNEL);
+	if (buf == NULL)
+		return -ENOMEM;
+
+	buf[0] = 0x01;		/* AV/C STATUS */
+	buf[1] = 0xff;		/* Unit */
+	if (dir == AVC_GENERAL_PLUG_DIR_IN)
+		buf[2] = 0x19;	/* INPUT PLUG SIGNAL FORMAT */
+	else
+		buf[2] = 0x18;	/* OUTPUT PLUG SIGNAL FORMAT */
+	buf[3] = 0xff & pid;	/* plug id */
+	buf[4] = 0x90;		/* EOH_1, Form_1, FMT. AM824 */
+	buf[5] = 0xff;		/* FDF-hi. AM824, frequency */
+	buf[6] = 0xff;		/* FDF-mid. AM824, SYT hi (not used) */
+	buf[7] = 0xff;		/* FDF-low. AM824, SYT lo (not used) */
+
+	/* do transaction and check buf[1-4] are the same against command */
+	err = fcp_avc_transaction(unit, buf, 8, buf, 8,
+				  BIT(1) | BIT(2) | BIT(3) | BIT(4));
+	if (err < 0)
+		;
+	else if (err < 8)
+		err = -EIO;
+	else if (buf[0] == 0x08) /* NOT IMPLEMENTED */
+		err = -ENOSYS;
+	else if (buf[0] == 0x0a) /* REJECTED */
+		err = -EINVAL;
+	else if (buf[0] == 0x0b) /* IN TRANSITION */
+		err = -EAGAIN;
+	if (err < 0)
+		goto end;
+
+	/* check sfc field and pick up rate */
+	sfc = 0x07 & buf[5];
+	if (sfc >= CIP_SFC_COUNT) {
+		err = -EAGAIN;	/* also in transition */
+		goto end;
+	}
+
+	*rate = amdtp_rate_table[sfc];
+	err = 0;
+end:
+	kfree(buf);
+	return err;
+}
+EXPORT_SYMBOL(avc_general_get_sig_fmt);
+
+int avc_general_get_plug_info(struct fw_unit *unit, unsigned int subunit_type,
+			      unsigned int subunit_id, unsigned int subfunction,
+			      u8 info[AVC_PLUG_INFO_BUF_BYTES])
+{
+	u8 *buf;
+	int err;
+
+	/* extended subunit in spec.4.2 is not supported */
+	if ((subunit_type == 0x1E) || (subunit_id == 5))
+		return -EINVAL;
+
+	buf = kzalloc(8, GFP_KERNEL);
+	if (buf == NULL)
+		return -ENOMEM;
+
+	buf[0] = 0x01;	/* AV/C STATUS */
+	/* UNIT or Subunit, Functionblock */
+	buf[1] = ((subunit_type & 0x1f) << 3) | (subunit_id & 0x7);
+	buf[2] = 0x02;	/* PLUG INFO */
+	buf[3] = 0xff & subfunction;
+
+	err = fcp_avc_transaction(unit, buf, 8, buf, 8, BIT(1) | BIT(2));
+	if (err < 0)
+		;
+	else if (err < 8)
+		err = -EIO;
+	else if (buf[0] == 0x08) /* NOT IMPLEMENTED */
+		err = -ENOSYS;
+	else if (buf[0] == 0x0a) /* REJECTED */
+		err = -EINVAL;
+	else if (buf[0] == 0x0b) /* IN TRANSITION */
+		err = -EAGAIN;
+	if (err < 0)
+		goto end;
+
+	info[0] = buf[4];
+	info[1] = buf[5];
+	info[2] = buf[6];
+	info[3] = buf[7];
+
+	err = 0;
+end:
+	kfree(buf);
+	return err;
+}
+EXPORT_SYMBOL(avc_general_get_plug_info);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_SPINLOCK(transactions_lock);
 static LIST_HEAD(transactions);
 
@@ -30,6 +206,10 @@ enum fcp_state {
 	STATE_PENDING,
 	STATE_BUS_RESET,
 	STATE_COMPLETE,
+<<<<<<< HEAD
+=======
+	STATE_DEFERRED,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct fcp_transaction {
@@ -40,6 +220,10 @@ struct fcp_transaction {
 	unsigned int response_match_bytes;
 	enum fcp_state state;
 	wait_queue_head_t wait;
+<<<<<<< HEAD
+=======
+	bool deferrable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -62,8 +246,11 @@ struct fcp_transaction {
  *
  * @command and @response can point to the same buffer.
  *
+<<<<<<< HEAD
  * Asynchronous operation (INTERIM, NOTIFY) is not supported at the moment.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns the actual size of the response frame, or a negative error code.
  */
 int fcp_avc_transaction(struct fw_unit *unit,
@@ -80,6 +267,10 @@ int fcp_avc_transaction(struct fw_unit *unit,
 	t.response_match_bytes = response_match_bytes;
 	t.state = STATE_PENDING;
 	init_waitqueue_head(&t.wait);
+<<<<<<< HEAD
+=======
+	t.deferrable = (*(const u8 *)command == 0x00 || *(const u8 *)command == 0x03);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&transactions_lock);
 	list_add_tail(&t.list, &transactions);
@@ -90,6 +281,7 @@ int fcp_avc_transaction(struct fw_unit *unit,
 					  : TCODE_WRITE_BLOCK_REQUEST;
 		ret = snd_fw_transaction(t.unit, tcode,
 					 CSR_REGISTER_BASE + CSR_FCP_COMMAND,
+<<<<<<< HEAD
 					 (void *)command, command_size);
 		if (ret < 0)
 			break;
@@ -98,6 +290,26 @@ int fcp_avc_transaction(struct fw_unit *unit,
 				   msecs_to_jiffies(FCP_TIMEOUT_MS));
 
 		if (t.state == STATE_COMPLETE) {
+=======
+					 (void *)command, command_size, 0);
+		if (ret < 0)
+			break;
+deferred:
+		wait_event_timeout(t.wait, t.state != STATE_PENDING,
+				   msecs_to_jiffies(FCP_TIMEOUT_MS));
+
+		if (t.state == STATE_DEFERRED) {
+			/*
+			 * 'AV/C General Specification' define no time limit
+			 * on command completion once an INTERIM response has
+			 * been sent. but we promise to finish this function
+			 * for a caller. Here we use FCP_TIMEOUT_MS for next
+			 * interval. This is not in the specification.
+			 */
+			t.state = STATE_PENDING;
+			goto deferred;
+		} else if (t.state == STATE_COMPLETE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = t.response_size;
 			break;
 		} else if (t.state == STATE_BUS_RESET) {
@@ -132,7 +344,12 @@ void fcp_bus_reset(struct fw_unit *unit)
 	spin_lock_irq(&transactions_lock);
 	list_for_each_entry(t, &transactions, list) {
 		if (t->unit == unit &&
+<<<<<<< HEAD
 		    t->state == STATE_PENDING) {
+=======
+		    (t->state == STATE_PENDING ||
+		     t->state == STATE_DEFERRED)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			t->state = STATE_BUS_RESET;
 			wake_up(&t->wait);
 		}
@@ -186,10 +403,22 @@ static void fcp_response(struct fw_card *card, struct fw_request *request,
 
 		if (t->state == STATE_PENDING &&
 		    is_matching_response(t, data, length)) {
+<<<<<<< HEAD
 			t->state = STATE_COMPLETE;
 			t->response_size = min((unsigned int)length,
 					       t->response_size);
 			memcpy(t->response_buffer, data, t->response_size);
+=======
+			if (t->deferrable && *(const u8 *)data == 0x0f) {
+				t->state = STATE_DEFERRED;
+			} else {
+				t->state = STATE_COMPLETE;
+				t->response_size = min_t(unsigned int, length,
+							 t->response_size);
+				memcpy(t->response_buffer, data,
+				       t->response_size);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wake_up(&t->wait);
 		}
 	}

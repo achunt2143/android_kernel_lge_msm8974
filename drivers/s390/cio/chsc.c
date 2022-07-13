@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/cio/chsc.c
  *   S/390 common I/O routines -- channel subsystem call
  *
  *    Copyright IBM Corp. 1999,2010
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ *   S/390 common I/O routines -- channel subsystem call
+ *
+ *    Copyright IBM Corp. 1999,2012
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Ingo Adlung (adlung@de.ibm.com)
  *		 Cornelia Huck (cornelia.huck@de.ibm.com)
  *		 Arnd Bergmann (arndb@de.ibm.com)
@@ -15,11 +23,22 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/device.h>
+<<<<<<< HEAD
+=======
+#include <linux/mutex.h>
+#include <linux/pci.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/cio.h>
 #include <asm/chpid.h>
 #include <asm/chsc.h>
 #include <asm/crw.h>
+<<<<<<< HEAD
+=======
+#include <asm/isc.h>
+#include <asm/ebcdic.h>
+#include <asm/ap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "css.h"
 #include "cio.h"
@@ -32,6 +51,12 @@ static void *sei_page;
 static void *chsc_page;
 static DEFINE_SPINLOCK(chsc_page_lock);
 
+<<<<<<< HEAD
+=======
+#define SEI_VF_FLA	0xc0 /* VF flag for Full Link Address */
+#define SEI_RS_CHPID	0x4  /* 4 in RS field indicates CHPID */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * chsc_error_from_response() - convert a chsc response to an error
  * @response: chsc response code
@@ -52,7 +77,20 @@ int chsc_error_from_response(int response)
 	case 0x0104:
 		return -EINVAL;
 	case 0x0004:
+<<<<<<< HEAD
 		return -EOPNOTSUPP;
+=======
+	case 0x0106:		/* "Wrong Channel Parm" for the op 0x003d */
+		return -EOPNOTSUPP;
+	case 0x000b:
+	case 0x0107:		/* "Channel busy" for the op 0x003d */
+		return -EBUSY;
+	case 0x0100:
+	case 0x0102:
+		return -ENOMEM;
+	case 0x0108:		/* "HW limit exceeded" for the op 0x003d */
+		return -EUSERS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -EIO;
 	}
@@ -81,17 +119,29 @@ struct chsc_ssd_area {
 	u16 sch;	  /* subchannel */
 	u8 chpid[8];	  /* chpids 0-7 */
 	u16 fla[8];	  /* full link addresses 0-7 */
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed __aligned(PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int chsc_get_ssd_info(struct subchannel_id schid, struct chsc_ssd_info *ssd)
 {
 	struct chsc_ssd_area *ssd_area;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ccode;
 	int ret;
 	int i;
 	int mask;
 
+<<<<<<< HEAD
 	spin_lock_irq(&chsc_page_lock);
+=======
+	spin_lock_irqsave(&chsc_page_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(chsc_page, 0, PAGE_SIZE);
 	ssd_area = chsc_page;
 	ssd_area->request.length = 0x0010;
@@ -135,6 +185,7 @@ int chsc_get_ssd_info(struct subchannel_id schid, struct chsc_ssd_info *ssd)
 			ssd->fla[i] = ssd_area->fla[i];
 	}
 out:
+<<<<<<< HEAD
 	spin_unlock_irq(&chsc_page_lock);
 	return ret;
 }
@@ -146,19 +197,102 @@ static int s390_subchannel_remove_chpid(struct subchannel *sch, void *data)
 		if (sch->driver->chp_event(sch, data, CHP_OFFLINE) != 0)
 			goto out_unreg;
 	spin_unlock_irq(sch->lock);
+=======
+	spin_unlock_irqrestore(&chsc_page_lock, flags);
+	return ret;
+}
+
+/**
+ * chsc_ssqd() - store subchannel QDIO data (SSQD)
+ * @schid: id of the subchannel on which SSQD is performed
+ * @ssqd: request and response block for SSQD
+ *
+ * Returns 0 on success.
+ */
+int chsc_ssqd(struct subchannel_id schid, struct chsc_ssqd_area *ssqd)
+{
+	memset(ssqd, 0, sizeof(*ssqd));
+	ssqd->request.length = 0x0010;
+	ssqd->request.code = 0x0024;
+	ssqd->first_sch = schid.sch_no;
+	ssqd->last_sch = schid.sch_no;
+	ssqd->ssid = schid.ssid;
+
+	if (chsc(ssqd))
+		return -EIO;
+
+	return chsc_error_from_response(ssqd->response.code);
+}
+EXPORT_SYMBOL_GPL(chsc_ssqd);
+
+/**
+ * chsc_sadc() - set adapter device controls (SADC)
+ * @schid: id of the subchannel on which SADC is performed
+ * @scssc: request and response block for SADC
+ * @summary_indicator_addr: summary indicator address
+ * @subchannel_indicator_addr: subchannel indicator address
+ * @isc: Interruption Subclass for this subchannel
+ *
+ * Returns 0 on success.
+ */
+int chsc_sadc(struct subchannel_id schid, struct chsc_scssc_area *scssc,
+	      dma64_t summary_indicator_addr, dma64_t subchannel_indicator_addr, u8 isc)
+{
+	memset(scssc, 0, sizeof(*scssc));
+	scssc->request.length = 0x0fe0;
+	scssc->request.code = 0x0021;
+	scssc->operation_code = 0;
+
+	scssc->summary_indicator_addr = summary_indicator_addr;
+	scssc->subchannel_indicator_addr = subchannel_indicator_addr;
+
+	scssc->ks = PAGE_DEFAULT_KEY >> 4;
+	scssc->kc = PAGE_DEFAULT_KEY >> 4;
+	scssc->isc = isc;
+	scssc->schid = schid;
+
+	/* enable the time delay disablement facility */
+	if (css_general_characteristics.aif_tdd)
+		scssc->word_with_d_bit = 0x10000000;
+
+	if (chsc(scssc))
+		return -EIO;
+
+	return chsc_error_from_response(scssc->response.code);
+}
+EXPORT_SYMBOL_GPL(chsc_sadc);
+
+static int s390_subchannel_remove_chpid(struct subchannel *sch, void *data)
+{
+	spin_lock_irq(&sch->lock);
+	if (sch->driver && sch->driver->chp_event)
+		if (sch->driver->chp_event(sch, data, CHP_OFFLINE) != 0)
+			goto out_unreg;
+	spin_unlock_irq(&sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 out_unreg:
 	sch->lpm = 0;
+<<<<<<< HEAD
 	spin_unlock_irq(sch->lock);
+=======
+	spin_unlock_irq(&sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	css_schedule_eval(sch->schid);
 	return 0;
 }
 
 void chsc_chp_offline(struct chp_id chpid)
 {
+<<<<<<< HEAD
 	char dbf_txt[15];
 	struct chp_link link;
+=======
+	struct channel_path *chp = chpid_to_chp(chpid);
+	struct chp_link link;
+	char dbf_txt[15];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sprintf(dbf_txt, "chpr%x.%02x", chpid.cssid, chpid.id);
 	CIO_TRACE_EVENT(2, dbf_txt);
@@ -169,6 +303,7 @@ void chsc_chp_offline(struct chp_id chpid)
 	link.chpid = chpid;
 	/* Wait until previous actions have settled. */
 	css_wait_for_slow_path();
+<<<<<<< HEAD
 	for_each_subchannel_staged(s390_subchannel_remove_chpid, NULL, &link);
 }
 
@@ -198,6 +333,22 @@ static int __s390_process_res_acc(struct subchannel *sch, void *data)
 	if (sch->driver && sch->driver->chp_event)
 		sch->driver->chp_event(sch, data, CHP_ONLINE);
 	spin_unlock_irq(sch->lock);
+=======
+
+	mutex_lock(&chp->lock);
+	chp_update_desc(chp);
+	mutex_unlock(&chp->lock);
+
+	for_each_subchannel_staged(s390_subchannel_remove_chpid, NULL, &link);
+}
+
+static int __s390_process_res_acc(struct subchannel *sch, void *data)
+{
+	spin_lock_irq(&sch->lock);
+	if (sch->driver && sch->driver->chp_event)
+		sch->driver->chp_event(sch, data, CHP_ONLINE);
+	spin_unlock_irq(&sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -222,6 +373,7 @@ static void s390_process_res_acc(struct chp_link *link)
 	 * The more information we have (info), the less scanning
 	 * will we have to do.
 	 */
+<<<<<<< HEAD
 	for_each_subchannel_staged(__s390_process_res_acc,
 				   s390_process_res_acc_new_sch, link);
 }
@@ -296,6 +448,172 @@ static void chsc_process_sei_link_incident(struct chsc_sei_area *sei_area)
 
 static void chsc_process_sei_res_acc(struct chsc_sei_area *sei_area)
 {
+=======
+	for_each_subchannel_staged(__s390_process_res_acc, NULL, link);
+	css_schedule_reprobe();
+}
+
+static int process_fces_event(struct subchannel *sch, void *data)
+{
+	spin_lock_irq(&sch->lock);
+	if (sch->driver && sch->driver->chp_event)
+		sch->driver->chp_event(sch, data, CHP_FCES_EVENT);
+	spin_unlock_irq(&sch->lock);
+	return 0;
+}
+
+struct chsc_sei_nt0_area {
+	u8  flags;
+	u8  vf;				/* validity flags */
+	u8  rs;				/* reporting source */
+	u8  cc;				/* content code */
+	u16 fla;			/* full link address */
+	u16 rsid;			/* reporting source id */
+	u32 reserved1;
+	u32 reserved2;
+	/* ccdf has to be big enough for a link-incident record */
+	u8  ccdf[PAGE_SIZE - 24 - 16];	/* content-code dependent field */
+} __packed;
+
+struct chsc_sei_nt2_area {
+	u8  flags;			/* p and v bit */
+	u8  reserved1;
+	u8  reserved2;
+	u8  cc;				/* content code */
+	u32 reserved3[13];
+	u8  ccdf[PAGE_SIZE - 24 - 56];	/* content-code dependent field */
+} __packed;
+
+#define CHSC_SEI_NT0	(1ULL << 63)
+#define CHSC_SEI_NT2	(1ULL << 61)
+
+struct chsc_sei {
+	struct chsc_header request;
+	u32 reserved1;
+	u64 ntsm;			/* notification type mask */
+	struct chsc_header response;
+	u32 :24;
+	u8 nt;
+	union {
+		struct chsc_sei_nt0_area nt0_area;
+		struct chsc_sei_nt2_area nt2_area;
+		u8 nt_area[PAGE_SIZE - 24];
+	} u;
+} __packed __aligned(PAGE_SIZE);
+
+/*
+ * Link Incident Record as defined in SA22-7202, "ESCON I/O Interface"
+ */
+
+#define LIR_IQ_CLASS_INFO		0
+#define LIR_IQ_CLASS_DEGRADED		1
+#define LIR_IQ_CLASS_NOT_OPERATIONAL	2
+
+struct lir {
+	struct {
+		u32 null:1;
+		u32 reserved:3;
+		u32 class:2;
+		u32 reserved2:2;
+	} __packed iq;
+	u32 ic:8;
+	u32 reserved:16;
+	struct node_descriptor incident_node;
+	struct node_descriptor attached_node;
+	u8 reserved2[32];
+} __packed;
+
+#define PARAMS_LEN	10	/* PARAMS=xx,xxxxxx */
+#define NODEID_LEN	35	/* NODEID=tttttt/mdl,mmm.ppssssssssssss,xxxx */
+
+/* Copy EBCIDC text, convert to ASCII and optionally add delimiter. */
+static char *store_ebcdic(char *dest, const char *src, unsigned long len,
+			  char delim)
+{
+	memcpy(dest, src, len);
+	EBCASC(dest, len);
+
+	if (delim)
+		dest[len++] = delim;
+
+	return dest + len;
+}
+
+static void chsc_link_from_sei(struct chp_link *link,
+				struct chsc_sei_nt0_area *sei_area)
+{
+	if ((sei_area->vf & SEI_VF_FLA) != 0) {
+		link->fla	= sei_area->fla;
+		link->fla_mask	= ((sei_area->vf & SEI_VF_FLA) == SEI_VF_FLA) ?
+							0xffff : 0xff00;
+	}
+}
+
+/* Format node ID and parameters for output in LIR log message. */
+static void format_node_data(char *params, char *id, struct node_descriptor *nd)
+{
+	memset(params, 0, PARAMS_LEN);
+	memset(id, 0, NODEID_LEN);
+
+	if (nd->validity != ND_VALIDITY_VALID) {
+		strscpy(params, "n/a", PARAMS_LEN);
+		strscpy(id, "n/a", NODEID_LEN);
+		return;
+	}
+
+	/* PARAMS=xx,xxxxxx */
+	snprintf(params, PARAMS_LEN, "%02x,%06x", nd->byte0, nd->params);
+	/* NODEID=tttttt/mdl,mmm.ppssssssssssss,xxxx */
+	id = store_ebcdic(id, nd->type, sizeof(nd->type), '/');
+	id = store_ebcdic(id, nd->model, sizeof(nd->model), ',');
+	id = store_ebcdic(id, nd->manufacturer, sizeof(nd->manufacturer), '.');
+	id = store_ebcdic(id, nd->plant, sizeof(nd->plant), 0);
+	id = store_ebcdic(id, nd->seq, sizeof(nd->seq), ',');
+	sprintf(id, "%04X", nd->tag);
+}
+
+static void chsc_process_sei_link_incident(struct chsc_sei_nt0_area *sei_area)
+{
+	struct lir *lir = (struct lir *) &sei_area->ccdf;
+	char iuparams[PARAMS_LEN], iunodeid[NODEID_LEN], auparams[PARAMS_LEN],
+	     aunodeid[NODEID_LEN];
+
+	CIO_CRW_EVENT(4, "chsc: link incident (rs=%02x, rs_id=%04x, iq=%02x)\n",
+		      sei_area->rs, sei_area->rsid, sei_area->ccdf[0]);
+
+	/* Ignore NULL Link Incident Records. */
+	if (lir->iq.null)
+		return;
+
+	/* Inform user that a link requires maintenance actions because it has
+	 * become degraded or not operational. Note that this log message is
+	 * the primary intention behind a Link Incident Record. */
+
+	format_node_data(iuparams, iunodeid, &lir->incident_node);
+	format_node_data(auparams, aunodeid, &lir->attached_node);
+
+	switch (lir->iq.class) {
+	case LIR_IQ_CLASS_DEGRADED:
+		pr_warn("Link degraded: RS=%02x RSID=%04x IC=%02x "
+			"IUPARAMS=%s IUNODEID=%s AUPARAMS=%s AUNODEID=%s\n",
+			sei_area->rs, sei_area->rsid, lir->ic, iuparams,
+			iunodeid, auparams, aunodeid);
+		break;
+	case LIR_IQ_CLASS_NOT_OPERATIONAL:
+		pr_err("Link stopped: RS=%02x RSID=%04x IC=%02x "
+		       "IUPARAMS=%s IUNODEID=%s AUPARAMS=%s AUNODEID=%s\n",
+		       sei_area->rs, sei_area->rsid, lir->ic, iuparams,
+		       iunodeid, auparams, aunodeid);
+		break;
+	default:
+		break;
+	}
+}
+
+static void chsc_process_sei_res_acc(struct chsc_sei_nt0_area *sei_area)
+{
+	struct channel_path *chp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct chp_link link;
 	struct chp_id chpid;
 	int status;
@@ -308,6 +626,7 @@ static void chsc_process_sei_res_acc(struct chsc_sei_area *sei_area)
 	chpid.id = sei_area->rsid;
 	/* allocate a new channel path structure, if needed */
 	status = chp_get_status(chpid);
+<<<<<<< HEAD
 	if (status < 0)
 		chp_new(chpid);
 	else if (!status)
@@ -327,6 +646,26 @@ static void chsc_process_sei_res_acc(struct chsc_sei_area *sei_area)
 }
 
 static void chsc_process_sei_chp_avail(struct chsc_sei_area *sei_area)
+=======
+	if (!status)
+		return;
+
+	if (status < 0) {
+		chp_new(chpid);
+	} else {
+		chp = chpid_to_chp(chpid);
+		mutex_lock(&chp->lock);
+		chp_update_desc(chp);
+		mutex_unlock(&chp->lock);
+	}
+	memset(&link, 0, sizeof(struct chp_link));
+	link.chpid = chpid;
+	chsc_link_from_sei(&link, sei_area);
+	s390_process_res_acc(&link);
+}
+
+static void chsc_process_sei_chp_avail(struct chsc_sei_nt0_area *sei_area)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct channel_path *chp;
 	struct chp_id chpid;
@@ -351,7 +690,11 @@ static void chsc_process_sei_chp_avail(struct chsc_sei_area *sei_area)
 			continue;
 		}
 		mutex_lock(&chp->lock);
+<<<<<<< HEAD
 		chsc_determine_base_channel_path_desc(chpid, &chp->desc);
+=======
+		chp_update_desc(chp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&chp->lock);
 	}
 }
@@ -362,7 +705,11 @@ struct chp_config_data {
 	u8 pc;
 };
 
+<<<<<<< HEAD
 static void chsc_process_sei_chp_config(struct chsc_sei_area *sei_area)
+=======
+static void chsc_process_sei_chp_config(struct chsc_sei_nt0_area *sei_area)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct chp_config_data *data;
 	struct chp_id chpid;
@@ -394,6 +741,7 @@ static void chsc_process_sei_chp_config(struct chsc_sei_area *sei_area)
 	}
 }
 
+<<<<<<< HEAD
 static void chsc_process_sei(struct chsc_sei_area *sei_area)
 {
 	/* Check if we might have lost some information. */
@@ -401,6 +749,90 @@ static void chsc_process_sei(struct chsc_sei_area *sei_area)
 		CIO_CRW_EVENT(2, "chsc: event overflow\n");
 		css_schedule_eval_all();
 	}
+=======
+static void chsc_process_sei_scm_change(struct chsc_sei_nt0_area *sei_area)
+{
+	int ret;
+
+	CIO_CRW_EVENT(4, "chsc: scm change notification\n");
+	if (sei_area->rs != 7)
+		return;
+
+	ret = scm_update_information();
+	if (ret)
+		CIO_CRW_EVENT(0, "chsc: updating change notification"
+			      " failed (rc=%d).\n", ret);
+}
+
+static void chsc_process_sei_scm_avail(struct chsc_sei_nt0_area *sei_area)
+{
+	int ret;
+
+	CIO_CRW_EVENT(4, "chsc: scm available information\n");
+	if (sei_area->rs != 7)
+		return;
+
+	ret = scm_process_availability_information();
+	if (ret)
+		CIO_CRW_EVENT(0, "chsc: process availability information"
+			      " failed (rc=%d).\n", ret);
+}
+
+static void chsc_process_sei_ap_cfg_chg(struct chsc_sei_nt0_area *sei_area)
+{
+	CIO_CRW_EVENT(3, "chsc: ap config changed\n");
+	if (sei_area->rs != 5)
+		return;
+
+	ap_bus_cfg_chg();
+}
+
+static void chsc_process_sei_fces_event(struct chsc_sei_nt0_area *sei_area)
+{
+	struct chp_link link;
+	struct chp_id chpid;
+	struct channel_path *chp;
+
+	CIO_CRW_EVENT(4,
+	"chsc: FCES status notification (rs=%02x, rs_id=%04x, FCES-status=%x)\n",
+		sei_area->rs, sei_area->rsid, sei_area->ccdf[0]);
+
+	if (sei_area->rs != SEI_RS_CHPID)
+		return;
+	chp_id_init(&chpid);
+	chpid.id = sei_area->rsid;
+
+	/* Ignore the event on unknown/invalid chp */
+	chp = chpid_to_chp(chpid);
+	if (!chp)
+		return;
+
+	memset(&link, 0, sizeof(struct chp_link));
+	link.chpid = chpid;
+	chsc_link_from_sei(&link, sei_area);
+
+	for_each_subchannel_staged(process_fces_event, NULL, &link);
+}
+
+static void chsc_process_sei_nt2(struct chsc_sei_nt2_area *sei_area)
+{
+	switch (sei_area->cc) {
+	case 1:
+		zpci_event_error(sei_area->ccdf);
+		break;
+	case 2:
+		zpci_event_availability(sei_area->ccdf);
+		break;
+	default:
+		CIO_CRW_EVENT(2, "chsc: sei nt2 unhandled cc=%d\n",
+			      sei_area->cc);
+		break;
+	}
+}
+
+static void chsc_process_sei_nt0(struct chsc_sei_nt0_area *sei_area)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* which kind of information was stored? */
 	switch (sei_area->cc) {
 	case 1: /* link incident*/
@@ -409,12 +841,19 @@ static void chsc_process_sei(struct chsc_sei_area *sei_area)
 	case 2: /* i/o resource accessibility */
 		chsc_process_sei_res_acc(sei_area);
 		break;
+<<<<<<< HEAD
+=======
+	case 3: /* ap config changed */
+		chsc_process_sei_ap_cfg_chg(sei_area);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 7: /* channel-path-availability information */
 		chsc_process_sei_chp_avail(sei_area);
 		break;
 	case 8: /* channel-path-configuration notification */
 		chsc_process_sei_chp_config(sei_area);
 		break;
+<<<<<<< HEAD
 	default: /* other stuff */
 		CIO_CRW_EVENT(4, "chsc: unhandled sei content code %d\n",
 			      sei_area->cc);
@@ -425,6 +864,84 @@ static void chsc_process_sei(struct chsc_sei_area *sei_area)
 static void chsc_process_crw(struct crw *crw0, struct crw *crw1, int overflow)
 {
 	struct chsc_sei_area *sei_area;
+=======
+	case 12: /* scm change notification */
+		chsc_process_sei_scm_change(sei_area);
+		break;
+	case 14: /* scm available notification */
+		chsc_process_sei_scm_avail(sei_area);
+		break;
+	case 15: /* FCES event notification */
+		chsc_process_sei_fces_event(sei_area);
+		break;
+	default: /* other stuff */
+		CIO_CRW_EVENT(2, "chsc: sei nt0 unhandled cc=%d\n",
+			      sei_area->cc);
+		break;
+	}
+
+	/* Check if we might have lost some information. */
+	if (sei_area->flags & 0x40) {
+		CIO_CRW_EVENT(2, "chsc: event overflow\n");
+		css_schedule_eval_all();
+	}
+}
+
+static void chsc_process_event_information(struct chsc_sei *sei, u64 ntsm)
+{
+	static int ntsm_unsupported;
+
+	while (true) {
+		memset(sei, 0, sizeof(*sei));
+		sei->request.length = 0x0010;
+		sei->request.code = 0x000e;
+		if (!ntsm_unsupported)
+			sei->ntsm = ntsm;
+
+		if (chsc(sei))
+			break;
+
+		if (sei->response.code != 0x0001) {
+			CIO_CRW_EVENT(2, "chsc: sei failed (rc=%04x, ntsm=%llx)\n",
+				      sei->response.code, sei->ntsm);
+
+			if (sei->response.code == 3 && sei->ntsm) {
+				/* Fallback for old firmware. */
+				ntsm_unsupported = 1;
+				continue;
+			}
+			break;
+		}
+
+		CIO_CRW_EVENT(2, "chsc: sei successful (nt=%d)\n", sei->nt);
+		switch (sei->nt) {
+		case 0:
+			chsc_process_sei_nt0(&sei->u.nt0_area);
+			break;
+		case 2:
+			chsc_process_sei_nt2(&sei->u.nt2_area);
+			break;
+		default:
+			CIO_CRW_EVENT(2, "chsc: unhandled nt: %d\n", sei->nt);
+			break;
+		}
+
+		if (!(sei->u.nt0_area.flags & 0x80))
+			break;
+	}
+}
+
+/*
+ * Handle channel subsystem related CRWs.
+ * Use store event information to find out what's going on.
+ *
+ * Note: Access to sei_page is serialized through machine check handler
+ * thread, so no need for locking.
+ */
+static void chsc_process_crw(struct crw *crw0, struct crw *crw1, int overflow)
+{
+	struct chsc_sei *sei = sei_page;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (overflow) {
 		css_schedule_eval_all();
@@ -434,6 +951,7 @@ static void chsc_process_crw(struct crw *crw0, struct crw *crw1, int overflow)
 		      "chn=%d, rsc=%X, anc=%d, erc=%X, rsid=%X\n",
 		      crw0->slct, crw0->oflw, crw0->chn, crw0->rsc, crw0->anc,
 		      crw0->erc, crw0->rsid);
+<<<<<<< HEAD
 	if (!sei_page)
 		return;
 	/* Access to sei_page is serialized through machine check handler
@@ -457,12 +975,23 @@ static void chsc_process_crw(struct crw *crw0, struct crw *crw1, int overflow)
 			break;
 		}
 	} while (sei_area->flags & 0x80);
+=======
+
+	CIO_TRACE_EVENT(2, "prcss");
+	chsc_process_event_information(sei, CHSC_SEI_NT0 | CHSC_SEI_NT2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void chsc_chp_online(struct chp_id chpid)
 {
+<<<<<<< HEAD
 	char dbf_txt[15];
 	struct chp_link link;
+=======
+	struct channel_path *chp = chpid_to_chp(chpid);
+	struct chp_link link;
+	char dbf_txt[15];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sprintf(dbf_txt, "cadd%x.%02x", chpid.cssid, chpid.id);
 	CIO_TRACE_EVENT(2, dbf_txt);
@@ -472,8 +1001,19 @@ void chsc_chp_online(struct chp_id chpid)
 		link.chpid = chpid;
 		/* Wait until previous actions have settled. */
 		css_wait_for_slow_path();
+<<<<<<< HEAD
 		for_each_subchannel_staged(__s390_process_res_acc, NULL,
 					   &link);
+=======
+
+		mutex_lock(&chp->lock);
+		chp_update_desc(chp);
+		mutex_unlock(&chp->lock);
+
+		for_each_subchannel_staged(__s390_process_res_acc, NULL,
+					   &link);
+		css_schedule_reprobe();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -485,11 +1025,19 @@ static void __s390_subchannel_vary_chpid(struct subchannel *sch,
 
 	memset(&link, 0, sizeof(struct chp_link));
 	link.chpid = chpid;
+<<<<<<< HEAD
 	spin_lock_irqsave(sch->lock, flags);
 	if (sch->driver && sch->driver->chp_event)
 		sch->driver->chp_event(sch, &link,
 				       on ? CHP_VARY_ON : CHP_VARY_OFF);
 	spin_unlock_irqrestore(sch->lock, flags);
+=======
+	spin_lock_irqsave(&sch->lock, flags);
+	if (sch->driver && sch->driver->chp_event)
+		sch->driver->chp_event(sch, &link,
+				       on ? CHP_VARY_ON : CHP_VARY_OFF);
+	spin_unlock_irqrestore(&sch->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int s390_subchannel_vary_chpid_off(struct subchannel *sch, void *data)
@@ -508,6 +1056,7 @@ static int s390_subchannel_vary_chpid_on(struct subchannel *sch, void *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 __s390_vary_chpid_on(struct subchannel_id schid, void *data)
 {
@@ -521,6 +1070,8 @@ __s390_vary_chpid_on(struct subchannel_id schid, void *data)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * chsc_chp_vary - propagate channel-path vary operation to subchannels
  * @chpid: channl-path ID
@@ -530,16 +1081,27 @@ int chsc_chp_vary(struct chp_id chpid, int on)
 {
 	struct channel_path *chp = chpid_to_chp(chpid);
 
+<<<<<<< HEAD
 	/* Wait until previous actions have settled. */
 	css_wait_for_slow_path();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Redo PathVerification on the devices the chpid connects to
 	 */
 	if (on) {
+<<<<<<< HEAD
 		/* Try to update the channel path descritor. */
 		chsc_determine_base_channel_path_desc(chpid, &chp->desc);
 		for_each_subchannel_staged(s390_subchannel_vary_chpid_on,
 					   __s390_vary_chpid_on, &chpid);
+=======
+		/* Try to update the channel path description. */
+		chp_update_desc(chp);
+		for_each_subchannel_staged(s390_subchannel_vary_chpid_on,
+					   NULL, &chpid);
+		css_schedule_reprobe();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		for_each_subchannel_staged(s390_subchannel_vary_chpid_off,
 					   NULL, &chpid);
@@ -574,7 +1136,11 @@ chsc_add_cmg_attr(struct channel_subsystem *css)
 	}
 	return ret;
 cleanup:
+<<<<<<< HEAD
 	for (--i; i >= 0; i--) {
+=======
+	while (i--) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!css->chps[i])
 			continue;
 		chp_remove_cmg_attr(css->chps[i]);
@@ -591,27 +1157,46 @@ int __chsc_do_secm(struct channel_subsystem *css, int enable)
 		u32 key : 4;
 		u32 : 28;
 		u32 zeroes1;
+<<<<<<< HEAD
 		u32 cub_addr1;
 		u32 zeroes2;
 		u32 cub_addr2;
+=======
+		dma32_t cub_addr1;
+		u32 zeroes2;
+		dma32_t cub_addr2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 reserved[13];
 		struct chsc_header response;
 		u32 status : 8;
 		u32 : 4;
 		u32 fmt : 4;
 		u32 : 16;
+<<<<<<< HEAD
 	} __attribute__ ((packed)) *secm_area;
 	int ret, ccode;
 
 	spin_lock_irq(&chsc_page_lock);
+=======
+	} *secm_area;
+	unsigned long flags;
+	int ret, ccode;
+
+	spin_lock_irqsave(&chsc_page_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(chsc_page, 0, PAGE_SIZE);
 	secm_area = chsc_page;
 	secm_area->request.length = 0x0050;
 	secm_area->request.code = 0x0016;
 
 	secm_area->key = PAGE_DEFAULT_KEY >> 4;
+<<<<<<< HEAD
 	secm_area->cub_addr1 = (u64)(unsigned long)css->cub_addr1;
 	secm_area->cub_addr2 = (u64)(unsigned long)css->cub_addr2;
+=======
+	secm_area->cub_addr1 = virt_to_dma32(css->cub_addr1);
+	secm_area->cub_addr2 = virt_to_dma32(css->cub_addr2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	secm_area->operation_code = enable ? 0 : 1;
 
@@ -633,7 +1218,11 @@ int __chsc_do_secm(struct channel_subsystem *css, int enable)
 		CIO_CRW_EVENT(2, "chsc: secm failed (rc=%04x)\n",
 			      secm_area->response.code);
 out:
+<<<<<<< HEAD
 	spin_unlock_irq(&chsc_page_lock);
+=======
+	spin_unlock_irqrestore(&chsc_page_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -676,10 +1265,20 @@ int chsc_determine_channel_path_desc(struct chp_id chpid, int fmt, int rfmt,
 	struct chsc_scpd *scpd_area;
 	int ccode, ret;
 
+<<<<<<< HEAD
 	if ((rfmt == 1) && !css_general_characteristics.fcs)
 		return -EINVAL;
 	if ((rfmt == 2) && !css_general_characteristics.cib)
 		return -EINVAL;
+=======
+	if ((rfmt == 1 || rfmt == 0) && c == 1 &&
+	    !css_general_characteristics.fcs)
+		return -EINVAL;
+	if ((rfmt == 2) && !css_general_characteristics.cib)
+		return -EINVAL;
+	if ((rfmt == 3) && !css_general_characteristics.util_str)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(page, 0, PAGE_SIZE);
 	scpd_area = page;
@@ -705,6 +1304,7 @@ int chsc_determine_channel_path_desc(struct chp_id chpid, int fmt, int rfmt,
 }
 EXPORT_SYMBOL_GPL(chsc_determine_channel_path_desc);
 
+<<<<<<< HEAD
 int chsc_determine_base_channel_path_desc(struct chp_id chpid,
 					  struct channel_path_desc *desc)
 {
@@ -743,11 +1343,38 @@ out:
 	spin_unlock_irq(&chsc_page_lock);
 	return ret;
 }
+=======
+#define chsc_det_chp_desc(FMT, c)					\
+int chsc_determine_fmt##FMT##_channel_path_desc(			\
+	struct chp_id chpid, struct channel_path_desc_fmt##FMT *desc)	\
+{									\
+	struct chsc_scpd *scpd_area;					\
+	unsigned long flags;						\
+	int ret;							\
+									\
+	spin_lock_irqsave(&chsc_page_lock, flags);			\
+	scpd_area = chsc_page;						\
+	ret = chsc_determine_channel_path_desc(chpid, 0, FMT, c, 0,	\
+					       scpd_area);		\
+	if (ret)							\
+		goto out;						\
+									\
+	memcpy(desc, scpd_area->data, sizeof(*desc));			\
+out:									\
+	spin_unlock_irqrestore(&chsc_page_lock, flags);			\
+	return ret;							\
+}
+
+chsc_det_chp_desc(0, 0)
+chsc_det_chp_desc(1, 1)
+chsc_det_chp_desc(3, 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void
 chsc_initialize_cmg_chars(struct channel_path *chp, u8 cmcv,
 			  struct cmg_chars *chars)
 {
+<<<<<<< HEAD
 	struct cmg_chars *cmg_chars;
 	int i, mask;
 
@@ -758,12 +1385,26 @@ chsc_initialize_cmg_chars(struct channel_path *chp, u8 cmcv,
 			cmg_chars->values[i] = chars->values[i];
 		else
 			cmg_chars->values[i] = 0;
+=======
+	int i, mask;
+
+	for (i = 0; i < NR_MEASUREMENT_CHARS; i++) {
+		mask = 0x80 >> (i + 3);
+		if (cmcv & mask)
+			chp->cmg_chars.values[i] = chars->values[i];
+		else
+			chp->cmg_chars.values[i] = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 int chsc_get_channel_measurement_chars(struct channel_path *chp)
 {
+<<<<<<< HEAD
 	struct cmg_chars *cmg_chars;
+=======
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ccode, ret;
 
 	struct {
@@ -785,6 +1426,7 @@ int chsc_get_channel_measurement_chars(struct channel_path *chp)
 		u32 cmg : 8;
 		u32 zeroes3;
 		u32 data[NR_MEASUREMENT_CHARS];
+<<<<<<< HEAD
 	} __attribute__ ((packed)) *scmc_area;
 
 	chp->cmg_chars = NULL;
@@ -793,6 +1435,17 @@ int chsc_get_channel_measurement_chars(struct channel_path *chp)
 		return -ENOMEM;
 
 	spin_lock_irq(&chsc_page_lock);
+=======
+	} *scmc_area;
+
+	chp->shared = -1;
+	chp->cmg = -1;
+
+	if (!css_chsc_characteristics.scmc || !css_chsc_characteristics.secm)
+		return -EINVAL;
+
+	spin_lock_irqsave(&chsc_page_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(chsc_page, 0, PAGE_SIZE);
 	scmc_area = chsc_page;
 	scmc_area->request.length = 0x0010;
@@ -812,17 +1465,24 @@ int chsc_get_channel_measurement_chars(struct channel_path *chp)
 			      scmc_area->response.code);
 		goto out;
 	}
+<<<<<<< HEAD
 	if (scmc_area->not_valid) {
 		chp->cmg = -1;
 		chp->shared = -1;
 		goto out;
 	}
+=======
+	if (scmc_area->not_valid)
+		goto out;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chp->cmg = scmc_area->cmg;
 	chp->shared = scmc_area->shared;
 	if (chp->cmg != 2 && chp->cmg != 3) {
 		/* No cmg-dependent data. */
 		goto out;
 	}
+<<<<<<< HEAD
 	chp->cmg_chars = cmg_chars;
 	chsc_initialize_cmg_chars(chp, scmc_area->cmcv,
 				  (struct cmg_chars *) &scmc_area->data);
@@ -831,6 +1491,12 @@ out:
 	if (!chp->cmg_chars)
 		kfree(cmg_chars);
 
+=======
+	chsc_initialize_cmg_chars(chp, scmc_area->cmcv,
+				  (struct cmg_chars *) &scmc_area->data);
+out:
+	spin_unlock_irqrestore(&chsc_page_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -838,8 +1504,13 @@ int __init chsc_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	sei_page = (void *)get_zeroed_page(GFP_KERNEL | GFP_DMA);
 	chsc_page = (void *)get_zeroed_page(GFP_KERNEL | GFP_DMA);
+=======
+	sei_page = (void *)get_zeroed_page(GFP_KERNEL);
+	chsc_page = (void *)get_zeroed_page(GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sei_page || !chsc_page) {
 		ret = -ENOMEM;
 		goto out_err;
@@ -861,6 +1532,7 @@ void __init chsc_init_cleanup(void)
 	free_page((unsigned long)sei_page);
 }
 
+<<<<<<< HEAD
 int chsc_enable_facility(int operation_code)
 {
 	unsigned long flags;
@@ -883,6 +1555,12 @@ int chsc_enable_facility(int operation_code)
 	spin_lock_irqsave(&chsc_page_lock, flags);
 	memset(chsc_page, 0, PAGE_SIZE);
 	sda_area = chsc_page;
+=======
+int __chsc_enable_facility(struct chsc_sda_area *sda_area, int operation_code)
+{
+	int ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sda_area->request.length = 0x0400;
 	sda_area->request.code = 0x0031;
 	sda_area->operation_code = operation_code;
@@ -900,20 +1578,98 @@ int chsc_enable_facility(int operation_code)
 	default:
 		ret = chsc_error_from_response(sda_area->response.code);
 	}
+<<<<<<< HEAD
 	if (ret != 0)
 		CIO_CRW_EVENT(2, "chsc: sda (oc=%x) failed (rc=%04x)\n",
 			      operation_code, sda_area->response.code);
 out:
+=======
+out:
+	return ret;
+}
+
+int chsc_enable_facility(int operation_code)
+{
+	struct chsc_sda_area *sda_area;
+	unsigned long flags;
+	int ret;
+
+	spin_lock_irqsave(&chsc_page_lock, flags);
+	memset(chsc_page, 0, PAGE_SIZE);
+	sda_area = chsc_page;
+
+	ret = __chsc_enable_facility(sda_area, operation_code);
+	if (ret != 0)
+		CIO_CRW_EVENT(2, "chsc: sda (oc=%x) failed (rc=%04x)\n",
+			      operation_code, sda_area->response.code);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&chsc_page_lock, flags);
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+int __init chsc_get_cssid_iid(int idx, u8 *cssid, u8 *iid)
+{
+	struct {
+		struct chsc_header request;
+		u8 atype;
+		u32 : 24;
+		u32 reserved1[6];
+		struct chsc_header response;
+		u32 reserved2[3];
+		struct {
+			u8 cssid;
+			u8 iid;
+			u32 : 16;
+		} list[];
+	} *sdcal_area;
+	int ret;
+
+	spin_lock_irq(&chsc_page_lock);
+	memset(chsc_page, 0, PAGE_SIZE);
+	sdcal_area = chsc_page;
+	sdcal_area->request.length = 0x0020;
+	sdcal_area->request.code = 0x0034;
+	sdcal_area->atype = 4;
+
+	ret = chsc(sdcal_area);
+	if (ret) {
+		ret = (ret == 3) ? -ENODEV : -EBUSY;
+		goto exit;
+	}
+
+	ret = chsc_error_from_response(sdcal_area->response.code);
+	if (ret) {
+		CIO_CRW_EVENT(2, "chsc: sdcal failed (rc=%04x)\n",
+			      sdcal_area->response.code);
+		goto exit;
+	}
+
+	if ((addr_t) &sdcal_area->list[idx] <
+	    (addr_t) &sdcal_area->response + sdcal_area->response.length) {
+		*cssid = sdcal_area->list[idx].cssid;
+		*iid = sdcal_area->list[idx].iid;
+	}
+	else
+		ret = -ENODEV;
+exit:
+	spin_unlock_irq(&chsc_page_lock);
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct css_general_char css_general_characteristics;
 struct css_chsc_char css_chsc_characteristics;
 
 int __init
 chsc_determine_css_characteristics(void)
 {
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result;
 	struct {
 		struct chsc_header request;
@@ -924,9 +1680,15 @@ chsc_determine_css_characteristics(void)
 		u32 reserved4;
 		u32 general_char[510];
 		u32 chsc_char[508];
+<<<<<<< HEAD
 	} __attribute__ ((packed)) *scsc_area;
 
 	spin_lock_irq(&chsc_page_lock);
+=======
+	} *scsc_area;
+
+	spin_lock_irqsave(&chsc_page_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(chsc_page, 0, PAGE_SIZE);
 	scsc_area = chsc_page;
 	scsc_area->request.length = 0x0010;
@@ -948,14 +1710,22 @@ chsc_determine_css_characteristics(void)
 		CIO_CRW_EVENT(2, "chsc: scsc failed (rc=%04x)\n",
 			      scsc_area->response.code);
 exit:
+<<<<<<< HEAD
 	spin_unlock_irq(&chsc_page_lock);
+=======
+	spin_unlock_irqrestore(&chsc_page_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
 EXPORT_SYMBOL_GPL(css_general_characteristics);
 EXPORT_SYMBOL_GPL(css_chsc_characteristics);
 
+<<<<<<< HEAD
 int chsc_sstpc(void *page, unsigned int op, u16 ctrl)
+=======
+int chsc_sstpc(void *page, unsigned int op, u16 ctrl, long *clock_delta)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct {
 		struct chsc_header request;
@@ -965,8 +1735,15 @@ int chsc_sstpc(void *page, unsigned int op, u16 ctrl)
 		unsigned int ctrl : 16;
 		unsigned int rsvd2[5];
 		struct chsc_header response;
+<<<<<<< HEAD
 		unsigned int rsvd3[7];
 	} __attribute__ ((packed)) *rr;
+=======
+		unsigned int rsvd3[3];
+		s64 clock_delta;
+		unsigned int rsvd4[2];
+	} *rr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	memset(page, 0, PAGE_SIZE);
@@ -979,6 +1756,11 @@ int chsc_sstpc(void *page, unsigned int op, u16 ctrl)
 	if (rc)
 		return -EIO;
 	rc = (rr->response.code == 0x0001) ? 0 : -EIO;
+<<<<<<< HEAD
+=======
+	if (clock_delta)
+		*clock_delta = rr->clock_delta;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -988,8 +1770,13 @@ int chsc_sstpi(void *page, void *result, size_t size)
 		struct chsc_header request;
 		unsigned int rsvd0[3];
 		struct chsc_header response;
+<<<<<<< HEAD
 		char data[size];
 	} __attribute__ ((packed)) *rr;
+=======
+		char data[];
+	} *rr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	memset(page, 0, PAGE_SIZE);
@@ -1003,6 +1790,30 @@ int chsc_sstpi(void *page, void *result, size_t size)
 	return (rr->response.code == 0x0001) ? 0 : -EIO;
 }
 
+<<<<<<< HEAD
+=======
+int chsc_stzi(void *page, void *result, size_t size)
+{
+	struct {
+		struct chsc_header request;
+		unsigned int rsvd0[3];
+		struct chsc_header response;
+		char data[];
+	} *rr;
+	int rc;
+
+	memset(page, 0, PAGE_SIZE);
+	rr = page;
+	rr->request.length = 0x0010;
+	rr->request.code = 0x003e;
+	rc = chsc(rr);
+	if (rc)
+		return -EIO;
+	memcpy(result, &rr->data, size);
+	return (rr->response.code == 0x0001) ? 0 : -EIO;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int chsc_siosl(struct subchannel_id schid)
 {
 	struct {
@@ -1012,7 +1823,11 @@ int chsc_siosl(struct subchannel_id schid)
 		u32 word3;
 		struct chsc_header response;
 		u32 word[11];
+<<<<<<< HEAD
 	} __attribute__ ((packed)) *siosl_area;
+=======
+	} *siosl_area;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int ccode;
 	int rc;
@@ -1048,3 +1863,186 @@ out:
 	return rc;
 }
 EXPORT_SYMBOL_GPL(chsc_siosl);
+<<<<<<< HEAD
+=======
+
+/**
+ * chsc_scm_info() - store SCM information (SSI)
+ * @scm_area: request and response block for SSI
+ * @token: continuation token
+ *
+ * Returns 0 on success.
+ */
+int chsc_scm_info(struct chsc_scm_info *scm_area, u64 token)
+{
+	int ccode, ret;
+
+	memset(scm_area, 0, sizeof(*scm_area));
+	scm_area->request.length = 0x0020;
+	scm_area->request.code = 0x004C;
+	scm_area->reqtok = token;
+
+	ccode = chsc(scm_area);
+	if (ccode > 0) {
+		ret = (ccode == 3) ? -ENODEV : -EBUSY;
+		goto out;
+	}
+	ret = chsc_error_from_response(scm_area->response.code);
+	if (ret != 0)
+		CIO_MSG_EVENT(2, "chsc: scm info failed (rc=%04x)\n",
+			      scm_area->response.code);
+out:
+	return ret;
+}
+EXPORT_SYMBOL_GPL(chsc_scm_info);
+
+/**
+ * chsc_pnso() - Perform Network-Subchannel Operation
+ * @schid:		id of the subchannel on which PNSO is performed
+ * @pnso_area:		request and response block for the operation
+ * @oc:			Operation Code
+ * @resume_token:	resume token for multiblock response
+ * @cnc:		Boolean change-notification control
+ *
+ * pnso_area must be allocated by the caller with get_zeroed_page(GFP_KERNEL)
+ *
+ * Returns 0 on success.
+ */
+int chsc_pnso(struct subchannel_id schid, struct chsc_pnso_area *pnso_area,
+	      u8 oc, struct chsc_pnso_resume_token resume_token, int cnc)
+{
+	memset(pnso_area, 0, sizeof(*pnso_area));
+	pnso_area->request.length = 0x0030;
+	pnso_area->request.code = 0x003d; /* network-subchannel operation */
+	pnso_area->m	   = schid.m;
+	pnso_area->ssid  = schid.ssid;
+	pnso_area->sch	 = schid.sch_no;
+	pnso_area->cssid = schid.cssid;
+	pnso_area->oc	 = oc;
+	pnso_area->resume_token = resume_token;
+	pnso_area->n	   = (cnc != 0);
+	if (chsc(pnso_area))
+		return -EIO;
+	return chsc_error_from_response(pnso_area->response.code);
+}
+
+int chsc_sgib(u32 origin)
+{
+	struct {
+		struct chsc_header request;
+		u16 op;
+		u8  reserved01[2];
+		u8  reserved02:4;
+		u8  fmt:4;
+		u8  reserved03[7];
+		/* operation data area begin */
+		u8  reserved04[4];
+		u32 gib_origin;
+		u8  reserved05[10];
+		u8  aix;
+		u8  reserved06[4029];
+		struct chsc_header response;
+		u8  reserved07[4];
+	} *sgib_area;
+	int ret;
+
+	spin_lock_irq(&chsc_page_lock);
+	memset(chsc_page, 0, PAGE_SIZE);
+	sgib_area = chsc_page;
+	sgib_area->request.length = 0x0fe0;
+	sgib_area->request.code = 0x0021;
+	sgib_area->op = 0x1;
+	sgib_area->gib_origin = origin;
+
+	ret = chsc(sgib_area);
+	if (ret == 0)
+		ret = chsc_error_from_response(sgib_area->response.code);
+	spin_unlock_irq(&chsc_page_lock);
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(chsc_sgib);
+
+#define SCUD_REQ_LEN	0x10 /* SCUD request block length */
+#define SCUD_REQ_CMD	0x4b /* SCUD Command Code */
+
+struct chse_cudb {
+	u16 flags:8;
+	u16 chp_valid:8;
+	u16 cu;
+	u32 esm_valid:8;
+	u32:24;
+	u8 chpid[8];
+	u32:32;
+	u32:32;
+	u8 esm[8];
+	u32 efla[8];
+} __packed;
+
+struct chsc_scud {
+	struct chsc_header request;
+	u16:4;
+	u16 fmt:4;
+	u16 cssid:8;
+	u16 first_cu;
+	u16:16;
+	u16 last_cu;
+	u32:32;
+	struct chsc_header response;
+	u16:4;
+	u16 fmt_resp:4;
+	u32:24;
+	struct chse_cudb cudb[];
+} __packed;
+
+/**
+ * chsc_scud() - Store control-unit description.
+ * @cu:		number of the control-unit
+ * @esm:	8 1-byte endpoint security mode values
+ * @esm_valid:	validity mask for @esm
+ *
+ * Interface to retrieve information about the endpoint security
+ * modes for up to 8 paths of a control unit.
+ *
+ * Returns 0 on success.
+ */
+int chsc_scud(u16 cu, u64 *esm, u8 *esm_valid)
+{
+	struct chsc_scud *scud = chsc_page;
+	int ret;
+
+	spin_lock_irq(&chsc_page_lock);
+	memset(chsc_page, 0, PAGE_SIZE);
+	scud->request.length = SCUD_REQ_LEN;
+	scud->request.code = SCUD_REQ_CMD;
+	scud->fmt = 0;
+	scud->cssid = 0;
+	scud->first_cu = cu;
+	scud->last_cu = cu;
+
+	ret = chsc(scud);
+	if (!ret)
+		ret = chsc_error_from_response(scud->response.code);
+
+	if (!ret && (scud->response.length <= 8 || scud->fmt_resp != 0
+			|| !(scud->cudb[0].flags & 0x80)
+			|| scud->cudb[0].cu != cu)) {
+
+		CIO_MSG_EVENT(2, "chsc: scud failed rc=%04x, L2=%04x "
+			"FMT=%04x, cudb.flags=%02x, cudb.cu=%04x",
+			scud->response.code, scud->response.length,
+			scud->fmt_resp, scud->cudb[0].flags, scud->cudb[0].cu);
+		ret = -EINVAL;
+	}
+
+	if (ret)
+		goto out;
+
+	memcpy(esm, scud->cudb[0].esm, sizeof(*esm));
+	*esm_valid = scud->cudb[0].esm_valid;
+out:
+	spin_unlock_irq(&chsc_page_lock);
+	return ret;
+}
+EXPORT_SYMBOL_GPL(chsc_scud);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

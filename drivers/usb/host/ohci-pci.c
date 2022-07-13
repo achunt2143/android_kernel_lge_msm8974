@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-1.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OHCI HCD (Host Controller Driver) for USB.
  *
@@ -14,12 +18,28 @@
  * This file is licenced under the GPL.
  */
 
+<<<<<<< HEAD
 #ifndef CONFIG_PCI
 #error "This file is PCI bus glue.  CONFIG_PCI must be defined."
 #endif
 
 #include <linux/pci.h>
 #include <linux/io.h>
+=======
+#include <linux/io.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/pci.h>
+#include <linux/usb.h>
+#include <linux/usb/hcd.h>
+
+#include "ohci.h"
+#include "pci-quirks.h"
+
+#define DRIVER_DESC "OHCI PCI platform driver"
+
+static const char hcd_name[] = "ohci-pci";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*-------------------------------------------------------------------------*/
@@ -123,6 +143,7 @@ static void ohci_quirk_nec_worker(struct work_struct *work)
 	struct ohci_hcd *ohci = container_of(work, struct ohci_hcd, nec_work);
 	int status;
 
+<<<<<<< HEAD
 	status = ohci_init(ohci);
 	if (status != 0) {
 		ohci_err(ohci, "Restarting NEC controller failed in %s, %d\n",
@@ -130,6 +151,8 @@ static void ohci_quirk_nec_worker(struct work_struct *work)
 		return;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = ohci_restart(ohci);
 	if (status != 0)
 		ohci_err(ohci, "Restarting NEC controller failed in %s, %d\n",
@@ -150,6 +173,7 @@ static int ohci_quirk_nec(struct usb_hcd *hcd)
 static int ohci_quirk_amd700(struct usb_hcd *hcd)
 {
 	struct ohci_hcd *ohci = hcd_to_ohci(hcd);
+<<<<<<< HEAD
 	struct pci_dev *amd_smbus_dev;
 	u8 rev;
 
@@ -165,10 +189,19 @@ static int ohci_quirk_amd700(struct usb_hcd *hcd)
 
 	/* SB800 needs pre-fetch fix */
 	if ((rev >= 0x40) && (rev <= 0x4f)) {
+=======
+
+	if (usb_amd_quirk_pll_check())
+		ohci->flags |= OHCI_QUIRK_AMD_PLL;
+
+	/* SB800 needs pre-fetch fix */
+	if (usb_amd_prefetch_quirk()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ohci->flags |= OHCI_QUIRK_AMD_PREFETCH;
 		ohci_dbg(ohci, "enabled AMD prefetch quirk\n");
 	}
 
+<<<<<<< HEAD
 	pci_dev_put(amd_smbus_dev);
 	amd_smbus_dev = NULL;
 
@@ -186,6 +219,19 @@ static void sb800_prefetch(struct ohci_hcd *ohci, int on)
 		pci_write_config_word(pdev, 0x50, misc & 0xfcff);
 	else
 		pci_write_config_word(pdev, 0x50, misc | 0x0300);
+=======
+	ohci->flags |= OHCI_QUIRK_GLOBAL_SUSPEND;
+	return 0;
+}
+
+static int ohci_quirk_qemu(struct usb_hcd *hcd)
+{
+	struct ohci_hcd *ohci = hcd_to_ohci(hcd);
+
+	ohci->flags |= OHCI_QUIRK_QEMU;
+	ohci_dbg(ohci, "enabled qemu quirk\n");
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* List of quirks for OHCI */
@@ -238,10 +284,20 @@ static const struct pci_device_id ohci_pci_quirks[] = {
 		PCI_DEVICE(PCI_VENDOR_ID_ATI, 0x4399),
 		.driver_data = (unsigned long)ohci_quirk_amd700,
 	},
+<<<<<<< HEAD
 
 	/* FIXME for some of the early AMD 760 southbridges, OHCI
 	 * won't work at all.  blacklist them.
 	 */
+=======
+	{
+		.vendor		= PCI_VENDOR_ID_APPLE,
+		.device		= 0x003f,
+		.subvendor	= PCI_SUBVENDOR_ID_REDHAT_QUMRANET,
+		.subdevice	= PCI_SUBDEVICE_ID_QEMU,
+		.driver_data	= (unsigned long)ohci_quirk_qemu,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{},
 };
@@ -249,10 +305,17 @@ static const struct pci_device_id ohci_pci_quirks[] = {
 static int ohci_pci_reset (struct usb_hcd *hcd)
 {
 	struct ohci_hcd	*ohci = hcd_to_ohci (hcd);
+<<<<<<< HEAD
 	int ret = 0;
 
 	if (hcd->self.controller) {
 		struct pci_dev *pdev = to_pci_dev(hcd->self.controller);
+=======
+	struct pci_dev *pdev = to_pci_dev(hcd->self.controller);
+	int ret = 0;
+
+	if (hcd->self.controller) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const struct pci_device_id *quirk_id;
 
 		quirk_id = pci_match_id(ohci_pci_quirks, pdev);
@@ -262,6 +325,7 @@ static int ohci_pci_reset (struct usb_hcd *hcd)
 			ret = quirk(hcd);
 		}
 	}
+<<<<<<< HEAD
 	if (ret == 0) {
 		ohci_hcd_init (ohci);
 		return ohci_init (ohci);
@@ -401,16 +465,57 @@ static const struct pci_device_id pci_ids [] = { {
 	/* The device in the ConneXT I/O hub has no class reg */
 	PCI_VDEVICE(STMICRO, PCI_DEVICE_ID_STMICRO_USB_OHCI),
 	.driver_data =	(unsigned long) &ohci_pci_hc_driver,
+=======
+
+	if (ret == 0)
+		ret = ohci_setup(hcd);
+	/*
+	* After ohci setup RWC may not be set for add-in PCI cards.
+	* This transfers PCI PM wakeup capabilities.
+	*/
+	if (device_can_wakeup(&pdev->dev))
+		ohci->hc_control |= OHCI_CTRL_RWC;
+	return ret;
+}
+
+static struct hc_driver __read_mostly ohci_pci_hc_driver;
+
+static const struct ohci_driver_overrides pci_overrides __initconst = {
+	.product_desc =		"OHCI PCI host controller",
+	.reset =		ohci_pci_reset,
+};
+
+static const struct pci_device_id pci_ids[] = { {
+	/* handle any USB OHCI controller */
+	PCI_DEVICE_CLASS(PCI_CLASS_SERIAL_USB_OHCI, ~0),
+	}, {
+	/* The device in the ConneXT I/O hub has no class reg */
+	PCI_VDEVICE(STMICRO, PCI_DEVICE_ID_STMICRO_USB_OHCI),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}, { /* end: all zeroes */ }
 };
 MODULE_DEVICE_TABLE (pci, pci_ids);
 
+<<<<<<< HEAD
 /* pci driver glue; this is a "new style" PCI driver module */
 static struct pci_driver ohci_pci_driver = {
 	.name =		(char *) hcd_name,
 	.id_table =	pci_ids,
 
 	.probe =	usb_hcd_pci_probe,
+=======
+static int ohci_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
+{
+	return usb_hcd_pci_probe(dev, &ohci_pci_hc_driver);
+}
+
+/* pci driver glue; this is a "new style" PCI driver module */
+static struct pci_driver ohci_pci_driver = {
+	.name =		hcd_name,
+	.id_table =	pci_ids,
+
+	.probe =	ohci_pci_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.remove =	usb_hcd_pci_remove,
 	.shutdown =	usb_hcd_pci_shutdown,
 
@@ -420,3 +525,39 @@ static struct pci_driver ohci_pci_driver = {
 	},
 #endif
 };
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_PM
+static int ohci_pci_resume(struct usb_hcd *hcd, pm_message_t msg)
+{
+	return ohci_resume(hcd, msg.event == PM_EVENT_RESTORE);
+}
+#endif
+static int __init ohci_pci_init(void)
+{
+	if (usb_disabled())
+		return -ENODEV;
+
+	ohci_init_driver(&ohci_pci_hc_driver, &pci_overrides);
+
+#ifdef	CONFIG_PM
+	/* Entries for the PCI suspend/resume callbacks are special */
+	ohci_pci_hc_driver.pci_suspend = ohci_suspend;
+	ohci_pci_hc_driver.pci_resume = ohci_pci_resume;
+#endif
+
+	return pci_register_driver(&ohci_pci_driver);
+}
+module_init(ohci_pci_init);
+
+static void __exit ohci_pci_cleanup(void)
+{
+	pci_unregister_driver(&ohci_pci_driver);
+}
+module_exit(ohci_pci_cleanup);
+
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_LICENSE("GPL");
+MODULE_SOFTDEP("pre: ehci_pci");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

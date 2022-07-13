@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/sound/arm/aaci.c - ARM PrimeCell AACI PL041 driver
  *
  *  Copyright (C) 2003 Deep Blue Solutions Ltd, All Rights Reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Documentation: ARM DDI 0173B
  */
 #include <linux/module.h>
@@ -348,7 +355,11 @@ static irqreturn_t aaci_irq(int irq, void *devid)
 /*
  * ALSA support.
  */
+<<<<<<< HEAD
 static struct snd_pcm_hardware aaci_hw_info = {
+=======
+static const struct snd_pcm_hardware aaci_hw_info = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info			= SNDRV_PCM_INFO_MMAP |
 				  SNDRV_PCM_INFO_MMAP_VALID |
 				  SNDRV_PCM_INFO_INTERLEAVED |
@@ -383,7 +394,11 @@ static struct snd_pcm_hardware aaci_hw_info = {
 static int aaci_rule_channels(struct snd_pcm_hw_params *p,
 	struct snd_pcm_hw_rule *rule)
 {
+<<<<<<< HEAD
 	static unsigned int channel_list[] = { 2, 4, 6 };
+=======
+	static const unsigned int channel_list[] = { 2, 4, 6 };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct aaci *aaci = rule->private;
 	unsigned int mask = 1 << 0, slots;
 
@@ -486,11 +501,14 @@ static int aaci_pcm_hw_free(struct snd_pcm_substream *substream)
 		snd_ac97_pcm_close(aacirun->pcm);
 	aacirun->pcm_open = 0;
 
+<<<<<<< HEAD
 	/*
 	 * Clear out the DMA and any allocated buffers.
 	 */
 	snd_pcm_lib_free_pages(substream);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -505,6 +523,10 @@ static int aaci_pcm_hw_params(struct snd_pcm_substream *substream,
 			      struct snd_pcm_hw_params *params)
 {
 	struct aaci_runtime *aacirun = substream->runtime->private_data;
+<<<<<<< HEAD
+=======
+	struct aaci *aaci = substream->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int channels = params_channels(params);
 	unsigned int rate = params_rate(params);
 	int dbl = rate > 48000;
@@ -520,6 +542,7 @@ static int aaci_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (dbl && channels != 2)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	err = snd_pcm_lib_malloc_pages(substream,
 				       params_buffer_bytes(params));
 	if (err >= 0) {
@@ -539,6 +562,21 @@ static int aaci_pcm_hw_params(struct snd_pcm_substream *substream,
 		 */
 		aacirun->fifo_bytes = aaci->fifo_depth * 4 / 2;
 	}
+=======
+	err = snd_ac97_pcm_open(aacirun->pcm, rate, channels,
+				aacirun->pcm->r[dbl].slots);
+
+	aacirun->pcm_open = err == 0;
+	aacirun->cr = CR_FEN | CR_COMPACT | CR_SZ16;
+	aacirun->cr |= channels_to_slotmask[channels + dbl * 2];
+
+	/*
+	 * fifo_bytes is the number of bytes we transfer to/from
+	 * the FIFO, including padding.  So that's x4.  As we're
+	 * in compact mode, the FIFO is half the size.
+	 */
+	aacirun->fifo_bytes = aaci->fifo_depth * 4 / 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -635,10 +673,16 @@ static int aaci_pcm_playback_trigger(struct snd_pcm_substream *substream, int cm
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops aaci_playback_ops = {
 	.open		= aaci_pcm_open,
 	.close		= aaci_pcm_close,
 	.ioctl		= snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops aaci_playback_ops = {
+	.open		= aaci_pcm_open,
+	.close		= aaci_pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params	= aaci_pcm_hw_params,
 	.hw_free	= aaci_pcm_hw_free,
 	.prepare	= aaci_pcm_prepare,
@@ -738,10 +782,16 @@ static int aaci_pcm_capture_prepare(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops aaci_capture_ops = {
 	.open		= aaci_pcm_open,
 	.close		= aaci_pcm_close,
 	.ioctl		= snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops aaci_capture_ops = {
+	.open		= aaci_pcm_open,
+	.close		= aaci_pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params	= aaci_pcm_hw_params,
 	.hw_free	= aaci_pcm_hw_free,
 	.prepare	= aaci_pcm_capture_prepare,
@@ -752,6 +802,7 @@ static struct snd_pcm_ops aaci_capture_ops = {
 /*
  * Power Management.
  */
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int aaci_do_suspend(struct snd_card *card, unsigned int state)
 {
@@ -762,11 +813,21 @@ static int aaci_do_suspend(struct snd_card *card, unsigned int state)
 }
 
 static int aaci_do_resume(struct snd_card *card, unsigned int state)
+=======
+static int aaci_do_suspend(struct snd_card *card)
+{
+	snd_power_change_state(card, SNDRV_CTL_POWER_D3cold);
+	return 0;
+}
+
+static int aaci_do_resume(struct snd_card *card)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int aaci_suspend(struct amba_device *dev, pm_message_t state)
 {
 	struct snd_card *card = amba_get_drvdata(dev);
@@ -787,6 +848,23 @@ static int aaci_resume(struct amba_device *dev)
 
 
 static struct ac97_pcm ac97_defs[] __devinitdata = {
+=======
+static int aaci_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	return card ? aaci_do_suspend(card) : 0;
+}
+
+static int aaci_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	return card ? aaci_do_resume(card) : 0;
+}
+
+static DEFINE_SIMPLE_DEV_PM_OPS(aaci_dev_pm_ops, aaci_suspend, aaci_resume);
+
+static const struct ac97_pcm ac97_defs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = {	/* Front PCM */
 		.exclusive = 1,
 		.r = {
@@ -827,12 +905,20 @@ static struct ac97_pcm ac97_defs[] __devinitdata = {
 	}
 };
 
+<<<<<<< HEAD
 static struct snd_ac97_bus_ops aaci_bus_ops = {
+=======
+static const struct snd_ac97_bus_ops aaci_bus_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write	= aaci_ac97_write,
 	.read	= aaci_ac97_read,
 };
 
+<<<<<<< HEAD
 static int __devinit aaci_probe_ac97(struct aaci *aaci)
+=======
+static int aaci_probe_ac97(struct aaci *aaci)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_ac97_template ac97_template;
 	struct snd_ac97_bus *ac97_bus;
@@ -889,25 +975,43 @@ static int __devinit aaci_probe_ac97(struct aaci *aaci)
 static void aaci_free_card(struct snd_card *card)
 {
 	struct aaci *aaci = card->private_data;
+<<<<<<< HEAD
 	if (aaci->base)
 		iounmap(aaci->base);
 }
 
 static struct aaci * __devinit aaci_init_card(struct amba_device *dev)
+=======
+
+	iounmap(aaci->base);
+}
+
+static struct aaci *aaci_init_card(struct amba_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct aaci *aaci;
 	struct snd_card *card;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
 			      THIS_MODULE, sizeof(struct aaci), &card);
+=======
+	err = snd_card_new(&dev->dev, SNDRV_DEFAULT_IDX1, SNDRV_DEFAULT_STR1,
+			   THIS_MODULE, sizeof(struct aaci), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return NULL;
 
 	card->private_free = aaci_free_card;
 
+<<<<<<< HEAD
 	strlcpy(card->driver, DRIVER_NAME, sizeof(card->driver));
 	strlcpy(card->shortname, "ARM AC'97 Interface", sizeof(card->shortname));
+=======
+	strscpy(card->driver, DRIVER_NAME, sizeof(card->driver));
+	strscpy(card->shortname, "ARM AC'97 Interface", sizeof(card->shortname));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snprintf(card->longname, sizeof(card->longname),
 		 "%s PL%03x rev%u at 0x%08llx, irq %d",
 		 card->shortname, amba_part(dev), amba_rev(dev),
@@ -926,7 +1030,11 @@ static struct aaci * __devinit aaci_init_card(struct amba_device *dev)
 	return aaci;
 }
 
+<<<<<<< HEAD
 static int __devinit aaci_init_pcm(struct aaci *aaci)
+=======
+static int aaci_init_pcm(struct aaci *aaci)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int ret;
@@ -937,18 +1045,32 @@ static int __devinit aaci_init_pcm(struct aaci *aaci)
 		pcm->private_data = aaci;
 		pcm->info_flags = 0;
 
+<<<<<<< HEAD
 		strlcpy(pcm->name, DRIVER_NAME, sizeof(pcm->name));
 
 		snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &aaci_playback_ops);
 		snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &aaci_capture_ops);
 		snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 						      NULL, 0, 64 * 1024);
+=======
+		strscpy(pcm->name, DRIVER_NAME, sizeof(pcm->name));
+
+		snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &aaci_playback_ops);
+		snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &aaci_capture_ops);
+		snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+					       aaci->card->dev,
+					       0, 64 * 1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static unsigned int __devinit aaci_size_fifo(struct aaci *aaci)
+=======
+static unsigned int aaci_size_fifo(struct aaci *aaci)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct aaci_runtime *aacirun = &aaci->playback;
 	int i;
@@ -984,8 +1106,13 @@ static unsigned int __devinit aaci_size_fifo(struct aaci *aaci)
 	return i;
 }
 
+<<<<<<< HEAD
 static int __devinit aaci_probe(struct amba_device *dev,
 	const struct amba_id *id)
+=======
+static int aaci_probe(struct amba_device *dev,
+		      const struct amba_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct aaci *aaci;
 	int ret, i;
@@ -1055,8 +1182,11 @@ static int __devinit aaci_probe(struct amba_device *dev,
 	if (ret)
 		goto out;
 
+<<<<<<< HEAD
 	snd_card_set_dev(aaci->card, &dev->dev);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = snd_card_register(aaci->card);
 	if (ret == 0) {
 		dev_info(&dev->dev, "%s\n", aaci->card->longname);
@@ -1072,12 +1202,19 @@ static int __devinit aaci_probe(struct amba_device *dev,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit aaci_remove(struct amba_device *dev)
 {
 	struct snd_card *card = amba_get_drvdata(dev);
 
 	amba_set_drvdata(dev, NULL);
 
+=======
+static void aaci_remove(struct amba_device *dev)
+{
+	struct snd_card *card = amba_get_drvdata(dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (card) {
 		struct aaci *aaci = card->private_data;
 		writel(0, aaci->base + AACI_MAINCR);
@@ -1085,8 +1222,11 @@ static int __devexit aaci_remove(struct amba_device *dev)
 		snd_card_free(card);
 		amba_release_regions(dev);
 	}
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct amba_id aaci_ids[] = {
@@ -1102,11 +1242,18 @@ MODULE_DEVICE_TABLE(amba, aaci_ids);
 static struct amba_driver aaci_driver = {
 	.drv		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 	},
 	.probe		= aaci_probe,
 	.remove		= __devexit_p(aaci_remove),
 	.suspend	= aaci_suspend,
 	.resume		= aaci_resume,
+=======
+		.pm	= &aaci_dev_pm_ops,
+	},
+	.probe		= aaci_probe,
+	.remove		= aaci_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= aaci_ids,
 };
 

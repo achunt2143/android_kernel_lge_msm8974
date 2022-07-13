@@ -1,8 +1,17 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
  */
 
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+ */
+
+#include <stdarg.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -10,10 +19,19 @@
 #include <signal.h>
 #include <string.h>
 #include <termios.h>
+<<<<<<< HEAD
 #include <wait.h>
 #include <sys/mman.h>
 #include <sys/utsname.h>
 #include "os.h"
+=======
+#include <sys/wait.h>
+#include <sys/mman.h>
+#include <sys/utsname.h>
+#include <sys/random.h>
+#include <init.h>
+#include <os.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void stack_protections(unsigned long address)
 {
@@ -94,6 +112,24 @@ static inline void __attribute__ ((noreturn)) uml_abort(void)
 			exit(127);
 }
 
+<<<<<<< HEAD
+=======
+ssize_t os_getrandom(void *buf, size_t len, unsigned int flags)
+{
+	return getrandom(buf, len, flags);
+}
+
+/*
+ * UML helper threads must not handle SIGWINCH/INT/TERM
+ */
+void os_fix_helper_signals(void)
+{
+	signal(SIGWINCH, SIG_IGN);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGTERM, SIG_DFL);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void os_dump_core(void)
 {
 	int pid;
@@ -142,3 +178,54 @@ void um_early_printk(const char *s, unsigned int n)
 {
 	printf("%.*s", n, s);
 }
+<<<<<<< HEAD
+=======
+
+static int quiet_info;
+
+static int __init quiet_cmd_param(char *str, int *add)
+{
+	quiet_info = 1;
+	return 0;
+}
+
+__uml_setup("quiet", quiet_cmd_param,
+"quiet\n"
+"    Turns off information messages during boot.\n\n");
+
+/*
+ * The os_info/os_warn functions will be called by helper threads. These
+ * have a very limited stack size and using the libc formatting functions
+ * may overflow the stack.
+ * So pull in the kernel vscnprintf and use that instead with a fixed
+ * on-stack buffer.
+ */
+int vscnprintf(char *buf, size_t size, const char *fmt, va_list args);
+
+void os_info(const char *fmt, ...)
+{
+	char buf[256];
+	va_list list;
+	int len;
+
+	if (quiet_info)
+		return;
+
+	va_start(list, fmt);
+	len = vscnprintf(buf, sizeof(buf), fmt, list);
+	fwrite(buf, len, 1, stderr);
+	va_end(list);
+}
+
+void os_warn(const char *fmt, ...)
+{
+	char buf[256];
+	va_list list;
+	int len;
+
+	va_start(list, fmt);
+	len = vscnprintf(buf, sizeof(buf), fmt, list);
+	fwrite(buf, len, 1, stderr);
+	va_end(list);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

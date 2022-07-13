@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel(R) 82576 Virtual Function Linux driver
@@ -24,6 +25,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Copyright(c) 2009 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _E1000_VF_H_
 #define _E1000_VF_H_
@@ -38,6 +43,7 @@
 
 struct e1000_hw;
 
+<<<<<<< HEAD
 #define E1000_DEV_ID_82576_VF                 0x10CA
 #define E1000_DEV_ID_I350_VF                  0x1520
 #define E1000_REVISION_0 0
@@ -51,21 +57,45 @@ struct e1000_hw;
 
 /*
  * Receive Address Register Count
+=======
+#define E1000_DEV_ID_82576_VF		0x10CA
+#define E1000_DEV_ID_I350_VF		0x1520
+#define E1000_REVISION_0	0
+#define E1000_REVISION_1	1
+#define E1000_REVISION_2	2
+#define E1000_REVISION_3	3
+#define E1000_REVISION_4	4
+
+#define E1000_FUNC_0	0
+#define E1000_FUNC_1	1
+
+/* Receive Address Register Count
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Number of high/low register pairs in the RAR.  The RAR (Receive Address
  * Registers) holds the directed and multicast addresses that we monitor.
  * These entries are also used for MAC-based filtering.
  */
+<<<<<<< HEAD
 #define E1000_RAR_ENTRIES_VF      1
+=======
+#define E1000_RAR_ENTRIES_VF	1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Receive Descriptor - Advanced */
 union e1000_adv_rx_desc {
 	struct {
+<<<<<<< HEAD
 		u64 pkt_addr;             /* Packet buffer address */
 		u64 hdr_addr;             /* Header buffer address */
+=======
+		__le64 pkt_addr; /* Packet buffer address */
+		__le64 hdr_addr; /* Header buffer address */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} read;
 	struct {
 		struct {
 			union {
+<<<<<<< HEAD
 				u32 data;
 				struct {
 					u16 pkt_info; /* RSS/Packet type */
@@ -78,23 +108,49 @@ union e1000_adv_rx_desc {
 				struct {
 					u16 ip_id;    /* IP id */
 					u16 csum;     /* Packet Checksum */
+=======
+				__le32 data;
+				struct {
+					__le16 pkt_info; /* RSS/Packet type */
+					/* Split Header, hdr buffer length */
+					__le16 hdr_info;
+				} hs_rss;
+			} lo_dword;
+			union {
+				__le32 rss; /* RSS Hash */
+				struct {
+					__le16 ip_id; /* IP id */
+					__le16 csum;  /* Packet Checksum */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				} csum_ip;
 			} hi_dword;
 		} lower;
 		struct {
+<<<<<<< HEAD
 			u32 status_error;     /* ext status/error */
 			u16 length;           /* Packet length */
 			u16 vlan;             /* VLAN tag */
+=======
+			__le32 status_error; /* ext status/error */
+			__le16 length; /* Packet length */
+			__le16 vlan; /* VLAN tag */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} upper;
 	} wb;  /* writeback */
 };
 
+<<<<<<< HEAD
 #define E1000_RXDADV_HDRBUFLEN_MASK      0x7FE0
 #define E1000_RXDADV_HDRBUFLEN_SHIFT     5
+=======
+#define E1000_RXDADV_HDRBUFLEN_MASK	0x7FE0
+#define E1000_RXDADV_HDRBUFLEN_SHIFT	5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Transmit Descriptor - Advanced */
 union e1000_adv_tx_desc {
 	struct {
+<<<<<<< HEAD
 		u64 buffer_addr;    /* Address of descriptor's data buf */
 		u32 cmd_type_len;
 		u32 olinfo_status;
@@ -103,10 +159,21 @@ union e1000_adv_tx_desc {
 		u64 rsvd;       /* Reserved */
 		u32 nxtseq_seed;
 		u32 status;
+=======
+		__le64 buffer_addr; /* Address of descriptor's data buf */
+		__le32 cmd_type_len;
+		__le32 olinfo_status;
+	} read;
+	struct {
+		__le64 rsvd; /* Reserved */
+		__le32 nxtseq_seed;
+		__le32 status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} wb;
 };
 
 /* Adv Transmit Descriptor Config Masks */
+<<<<<<< HEAD
 #define E1000_ADVTXD_DTYP_CTXT    0x00200000 /* Advanced Context Descriptor */
 #define E1000_ADVTXD_DTYP_DATA    0x00300000 /* Advanced Data Descriptor */
 #define E1000_ADVTXD_DCMD_EOP     0x01000000 /* End of Packet */
@@ -130,6 +197,32 @@ struct e1000_adv_tx_context_desc {
 #define E1000_ADVTXD_TUCMD_L4T_TCP 0x00000800  /* L4 Packet TYPE of TCP */
 #define E1000_ADVTXD_L4LEN_SHIFT     8  /* Adv ctxt L4LEN shift */
 #define E1000_ADVTXD_MSS_SHIFT      16  /* Adv ctxt MSS shift */
+=======
+#define E1000_ADVTXD_DTYP_CTXT	0x00200000 /* Advanced Context Descriptor */
+#define E1000_ADVTXD_DTYP_DATA	0x00300000 /* Advanced Data Descriptor */
+#define E1000_ADVTXD_DCMD_EOP	0x01000000 /* End of Packet */
+#define E1000_ADVTXD_DCMD_IFCS	0x02000000 /* Insert FCS (Ethernet CRC) */
+#define E1000_ADVTXD_DCMD_RS	0x08000000 /* Report Status */
+#define E1000_ADVTXD_DCMD_DEXT	0x20000000 /* Descriptor extension (1=Adv) */
+#define E1000_ADVTXD_DCMD_VLE	0x40000000 /* VLAN pkt enable */
+#define E1000_ADVTXD_DCMD_TSE	0x80000000 /* TCP Seg enable */
+#define E1000_ADVTXD_PAYLEN_SHIFT	14 /* Adv desc PAYLEN shift */
+
+/* Context descriptors */
+struct e1000_adv_tx_context_desc {
+	__le32 vlan_macip_lens;
+	__le32 seqnum_seed;
+	__le32 type_tucmd_mlhl;
+	__le32 mss_l4len_idx;
+};
+
+#define E1000_ADVTXD_MACLEN_SHIFT	9  /* Adv ctxt desc mac len shift */
+#define E1000_ADVTXD_TUCMD_IPV4		0x00000400 /* IP Packet Type: 1=IPv4 */
+#define E1000_ADVTXD_TUCMD_L4T_TCP	0x00000800 /* L4 Packet TYPE of TCP */
+#define E1000_ADVTXD_TUCMD_L4T_SCTP	0x00001000 /* L4 packet TYPE of SCTP */
+#define E1000_ADVTXD_L4LEN_SHIFT	8  /* Adv ctxt L4LEN shift */
+#define E1000_ADVTXD_MSS_SHIFT		16 /* Adv ctxt MSS shift */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum e1000_mac_type {
 	e1000_undefined = 0,
@@ -180,6 +273,10 @@ struct e1000_mac_operations {
 	s32  (*get_bus_info)(struct e1000_hw *);
 	s32  (*get_link_up_info)(struct e1000_hw *, u16 *, u16 *);
 	void (*update_mc_addr_list)(struct e1000_hw *, u8 *, u32, u32, u32);
+<<<<<<< HEAD
+=======
+	s32  (*set_uc_addr)(struct e1000_hw *, u32, u8 *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32  (*reset_hw)(struct e1000_hw *);
 	s32  (*init_hw)(struct e1000_hw *);
 	s32  (*setup_link)(struct e1000_hw *);
@@ -245,6 +342,10 @@ struct e1000_hw {
 
 	struct e1000_mac_info  mac;
 	struct e1000_mbx_info mbx;
+<<<<<<< HEAD
+=======
+	spinlock_t mbx_lock;		/* serializes mailbox ops */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	union {
 		struct e1000_dev_spec_vf vf;
@@ -262,5 +363,8 @@ struct e1000_hw {
 void e1000_rlpml_set_vf(struct e1000_hw *, u16);
 void e1000_init_function_pointers_vf(struct e1000_hw *hw);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _E1000_VF_H_ */

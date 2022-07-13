@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * max8997-irq.c - Interrupt controller support for MAX8997
  *
@@ -20,6 +21,16 @@
  *
  * This driver is based on max8998-irq.c
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+//
+// max8997-irq.c - Interrupt controller support for MAX8997
+//
+// Copyright (C) 2011 Samsung Electronics Co.Ltd
+// MyungJoo Ham <myungjoo.ham@samsung.com>
+//
+// This driver is based on max8998-irq.c
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/err.h>
 #include <linux/irq.h>
@@ -113,14 +124,22 @@ static const struct max8997_irq_data max8997_irqs[] = {
 
 static void max8997_irq_lock(struct irq_data *data)
 {
+<<<<<<< HEAD
 	struct max8997_dev *max8997 = irq_get_chip_data(data->irq);
+=======
+	struct max8997_dev *max8997 = irq_data_get_irq_chip_data(data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&max8997->irqlock);
 }
 
 static void max8997_irq_sync_unlock(struct irq_data *data)
 {
+<<<<<<< HEAD
 	struct max8997_dev *max8997 = irq_get_chip_data(data->irq);
+=======
+	struct max8997_dev *max8997 = irq_data_get_irq_chip_data(data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < MAX8997_IRQ_GROUP_NR; i++) {
@@ -139,26 +158,45 @@ static void max8997_irq_sync_unlock(struct irq_data *data)
 	mutex_unlock(&max8997->irqlock);
 }
 
+<<<<<<< HEAD
 static const inline struct max8997_irq_data *
 irq_to_max8997_irq(struct max8997_dev *max8997, int irq)
 {
 	return &max8997_irqs[irq - max8997->irq_base];
+=======
+inline static const struct max8997_irq_data *
+irq_to_max8997_irq(struct max8997_dev *max8997, struct irq_data *data)
+{
+	return &max8997_irqs[data->hwirq];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void max8997_irq_mask(struct irq_data *data)
 {
+<<<<<<< HEAD
 	struct max8997_dev *max8997 = irq_get_chip_data(data->irq);
 	const struct max8997_irq_data *irq_data = irq_to_max8997_irq(max8997,
 								data->irq);
+=======
+	struct max8997_dev *max8997 = irq_data_get_irq_chip_data(data);
+	const struct max8997_irq_data *irq_data = irq_to_max8997_irq(max8997,
+								     data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	max8997->irq_masks_cur[irq_data->group] |= irq_data->mask;
 }
 
 static void max8997_irq_unmask(struct irq_data *data)
 {
+<<<<<<< HEAD
 	struct max8997_dev *max8997 = irq_get_chip_data(data->irq);
 	const struct max8997_irq_data *irq_data = irq_to_max8997_irq(max8997,
 								data->irq);
+=======
+	struct max8997_dev *max8997 = irq_data_get_irq_chip_data(data);
+	const struct max8997_irq_data *irq_data = irq_to_max8997_irq(max8997,
+								     data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	max8997->irq_masks_cur[irq_data->group] &= ~irq_data->mask;
 }
@@ -182,7 +220,11 @@ static irqreturn_t max8997_irq_thread(int irq, void *data)
 	u8 irq_reg[MAX8997_IRQ_GROUP_NR] = {};
 	u8 irq_src;
 	int ret;
+<<<<<<< HEAD
 	int i;
+=======
+	int i, cur_irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = max8997_read_reg(max8997->i2c, MAX8997_REG_INTSRC, &irq_src);
 	if (ret < 0) {
@@ -269,8 +311,16 @@ static irqreturn_t max8997_irq_thread(int irq, void *data)
 
 	/* Report */
 	for (i = 0; i < MAX8997_IRQ_NR; i++) {
+<<<<<<< HEAD
 		if (irq_reg[max8997_irqs[i].group] & max8997_irqs[i].mask)
 			handle_nested_irq(max8997->irq_base + i);
+=======
+		if (irq_reg[max8997_irqs[i].group] & max8997_irqs[i].mask) {
+			cur_irq = irq_find_mapping(max8997->irq_domain, i);
+			if (cur_irq)
+				handle_nested_irq(cur_irq);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return IRQ_HANDLED;
@@ -278,6 +328,7 @@ static irqreturn_t max8997_irq_thread(int irq, void *data)
 
 int max8997_irq_resume(struct max8997_dev *max8997)
 {
+<<<<<<< HEAD
 	if (max8997->irq && max8997->irq_base)
 		max8997_irq_thread(max8997->irq_base, max8997);
 	return 0;
@@ -287,17 +338,48 @@ int max8997_irq_init(struct max8997_dev *max8997)
 {
 	int i;
 	int cur_irq;
+=======
+	if (max8997->irq && max8997->irq_domain)
+		max8997_irq_thread(0, max8997);
+	return 0;
+}
+
+static int max8997_irq_domain_map(struct irq_domain *d, unsigned int irq,
+					irq_hw_number_t hw)
+{
+	struct max8997_dev *max8997 = d->host_data;
+
+	irq_set_chip_data(irq, max8997);
+	irq_set_chip_and_handler(irq, &max8997_irq_chip, handle_edge_irq);
+	irq_set_nested_thread(irq, 1);
+	irq_set_noprobe(irq);
+
+	return 0;
+}
+
+static const struct irq_domain_ops max8997_irq_domain_ops = {
+	.map = max8997_irq_domain_map,
+};
+
+int max8997_irq_init(struct max8997_dev *max8997)
+{
+	struct irq_domain *domain;
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	u8 val;
 
 	if (!max8997->irq) {
 		dev_warn(max8997->dev, "No interrupt specified.\n");
+<<<<<<< HEAD
 		max8997->irq_base = 0;
 		return 0;
 	}
 
 	if (!max8997->irq_base) {
 		dev_err(max8997->dev, "No interrupt base specified.\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -327,6 +409,7 @@ int max8997_irq_init(struct max8997_dev *max8997)
 					true : false;
 	}
 
+<<<<<<< HEAD
 	/* Register with genirq */
 	for (i = 0; i < MAX8997_IRQ_NR; i++) {
 		cur_irq = i + max8997->irq_base;
@@ -340,6 +423,15 @@ int max8997_irq_init(struct max8997_dev *max8997)
 		irq_set_noprobe(cur_irq);
 #endif
 	}
+=======
+	domain = irq_domain_add_linear(NULL, MAX8997_IRQ_NR,
+					&max8997_irq_domain_ops, max8997);
+	if (!domain) {
+		dev_err(max8997->dev, "could not create irq domain\n");
+		return -ENODEV;
+	}
+	max8997->irq_domain = domain;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = request_threaded_irq(max8997->irq, NULL, max8997_irq_thread,
 			IRQF_TRIGGER_FALLING | IRQF_ONESHOT,

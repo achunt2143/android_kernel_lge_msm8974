@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 /*
  * memory.c: PROM library functions for acquiring/using memory descriptors
  *           given to us from the ARCS firmware.
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * memory.c: PROM library functions for acquiring/using memory descriptors
+ *	     given to us from the ARCS firmware.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 1996 by David S. Miller
  * Copyright (C) 1999, 2000, 2001 by Ralf Baechle
@@ -9,30 +16,55 @@
  * PROM library functions for acquiring/using memory descriptors given to us
  * from the ARCS firmware.  This is only used when CONFIG_ARC_MEMORY is set
  * because on some machines like SGI IP27 the ARC memory configuration data
+<<<<<<< HEAD
  * completly bogus and alternate easier to use mechanisms are available.
+=======
+ * completely bogus and alternate easier to use mechanisms are available.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/sched.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/swap.h>
 
 #include <asm/sgialib.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/bootinfo.h>
 
 #undef DEBUG
 
+<<<<<<< HEAD
 /*
  * For ARC firmware memory functions the unit of meassuring memory is always
+=======
+#define MAX_PROM_MEM 5
+static phys_addr_t prom_mem_base[MAX_PROM_MEM] __initdata;
+static phys_addr_t prom_mem_size[MAX_PROM_MEM] __initdata;
+static unsigned int nr_prom_mem __initdata;
+
+/*
+ * For ARC firmware memory functions the unit of measuring memory is always
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * a 4k page of memory
  */
 #define ARC_PAGE_SHIFT	12
 
+<<<<<<< HEAD
 struct linux_mdesc * __init ArcGetMemoryDescriptor(struct linux_mdesc *Current)
+=======
+static struct linux_mdesc * __init ArcGetMemoryDescriptor(struct linux_mdesc *Current)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (struct linux_mdesc *) ARC_CALL1(get_mdesc, Current);
 }
@@ -63,20 +95,37 @@ static char *arc_mtypes[8] = {
 						: arc_mtypes[a.arc]
 #endif
 
+<<<<<<< HEAD
+=======
+enum {
+	mem_free, mem_prom_used, mem_reserved
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int memtype_classify_arcs(union linux_memtypes type)
 {
 	switch (type.arcs) {
 	case arcs_fcontig:
 	case arcs_free:
+<<<<<<< HEAD
 		return BOOT_MEM_RAM;
 	case arcs_atmp:
 		return BOOT_MEM_ROM_DATA;
+=======
+		return mem_free;
+	case arcs_atmp:
+		return mem_prom_used;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case arcs_eblock:
 	case arcs_rvpage:
 	case arcs_bmem:
 	case arcs_prog:
 	case arcs_aperm:
+<<<<<<< HEAD
 		return BOOT_MEM_RESERVED;
+=======
+		return mem_reserved;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		BUG();
 	}
@@ -88,15 +137,25 @@ static inline int memtype_classify_arc(union linux_memtypes type)
 	switch (type.arc) {
 	case arc_free:
 	case arc_fcontig:
+<<<<<<< HEAD
 		return BOOT_MEM_RAM;
 	case arc_atmp:
 		return BOOT_MEM_ROM_DATA;
+=======
+		return mem_free;
+	case arc_atmp:
+		return mem_prom_used;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case arc_eblock:
 	case arc_rvpage:
 	case arc_bmem:
 	case arc_prog:
 	case arc_aperm:
+<<<<<<< HEAD
 		return BOOT_MEM_RESERVED;
+=======
+		return mem_reserved;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		BUG();
 	}
@@ -111,7 +170,11 @@ static int __init prom_memtype_classify(union linux_memtypes type)
 	return memtype_classify_arc(type);
 }
 
+<<<<<<< HEAD
 void __init prom_meminit(void)
+=======
+void __weak __init prom_meminit(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct linux_mdesc *p;
 
@@ -128,6 +191,10 @@ void __init prom_meminit(void)
 	}
 #endif
 
+<<<<<<< HEAD
+=======
+	nr_prom_mem = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = PROM_NULL_MDESC;
 	while ((p = ArcGetMemoryDescriptor(p))) {
 		unsigned long base, size;
@@ -137,6 +204,7 @@ void __init prom_meminit(void)
 		size = p->pages << ARC_PAGE_SHIFT;
 		type = prom_memtype_classify(p->type);
 
+<<<<<<< HEAD
 		add_memory_region(base, size, type);
 	}
 }
@@ -144,11 +212,42 @@ void __init prom_meminit(void)
 void __init prom_free_prom_memory(void)
 {
 	unsigned long addr;
+=======
+		/* ignore mirrored RAM on IP28/IP30 */
+		if (base < PHYS_OFFSET)
+			continue;
+
+		memblock_add(base, size);
+
+		if (type == mem_reserved)
+			memblock_reserve(base, size);
+
+		if (type == mem_prom_used) {
+			memblock_reserve(base, size);
+			if (nr_prom_mem >= 5) {
+				pr_err("Too many ROM DATA regions");
+				continue;
+			}
+			prom_mem_base[nr_prom_mem] = base;
+			prom_mem_size[nr_prom_mem] = size;
+			nr_prom_mem++;
+		}
+	}
+}
+
+void __weak __init prom_cleanup(void)
+{
+}
+
+void __init prom_free_prom_memory(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (prom_flags & PROM_FLAG_DONT_FREE_TEMP)
 		return;
 
+<<<<<<< HEAD
 	for (i = 0; i < boot_mem_map.nr_map; i++) {
 		if (boot_mem_map.map[i].type != BOOT_MEM_ROM_DATA)
 			continue;
@@ -157,4 +256,15 @@ void __init prom_free_prom_memory(void)
 		free_init_pages("prom memory",
 				addr, addr + boot_mem_map.map[i].size);
 	}
+=======
+	for (i = 0; i < nr_prom_mem; i++) {
+		free_init_pages("prom memory",
+			prom_mem_base[i], prom_mem_base[i] + prom_mem_size[i]);
+	}
+	/*
+	 * at this point it isn't safe to call PROM functions
+	 * give platforms a way to do PROM cleanups
+	 */
+	prom_cleanup();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

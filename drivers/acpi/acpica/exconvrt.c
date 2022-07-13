@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: exconvrt - Object conversion routines
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
@@ -57,10 +68,17 @@ acpi_ex_convert_to_ascii(u64 integer, u16 base, u8 *string, u8 max_length);
  *
  * FUNCTION:    acpi_ex_convert_to_integer
  *
+<<<<<<< HEAD
  * PARAMETERS:  obj_desc        - Object to be converted. Must be an
  *                                Integer, Buffer, or String
  *              result_desc     - Where the new Integer object is returned
  *              Flags           - Used for string conversion
+=======
+ * PARAMETERS:  obj_desc            - Object to be converted. Must be an
+ *                                    Integer, Buffer, or String
+ *              result_desc         - Where the new Integer object is returned
+ *              implicit_conversion - Used for string conversion
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -70,14 +88,22 @@ acpi_ex_convert_to_ascii(u64 integer, u16 base, u8 *string, u8 max_length);
 
 acpi_status
 acpi_ex_convert_to_integer(union acpi_operand_object *obj_desc,
+<<<<<<< HEAD
 			   union acpi_operand_object **result_desc, u32 flags)
+=======
+			   union acpi_operand_object **result_desc,
+			   u32 implicit_conversion)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union acpi_operand_object *return_desc;
 	u8 *pointer;
 	u64 result;
 	u32 i;
 	u32 count;
+<<<<<<< HEAD
 	acpi_status status;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE_PTR(ex_convert_to_integer, obj_desc);
 
@@ -99,6 +125,10 @@ acpi_ex_convert_to_integer(union acpi_operand_object *obj_desc,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_ACPI_STATUS(AE_TYPE);
 	}
 
@@ -117,16 +147,34 @@ acpi_ex_convert_to_integer(union acpi_operand_object *obj_desc,
 
 	switch (obj_desc->common.type) {
 	case ACPI_TYPE_STRING:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Convert string to an integer - for most cases, the string must be
 		 * hexadecimal as per the ACPI specification. The only exception (as
 		 * of ACPI 3.0) is that the to_integer() operator allows both decimal
 		 * and hexadecimal strings (hex prefixed with "0x").
+<<<<<<< HEAD
 		 */
 		status = acpi_ut_strtoul64((char *)pointer, flags, &result);
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
+=======
+		 *
+		 * Explicit conversion is used only by to_integer.
+		 * All other string-to-integer conversions are implicit conversions.
+		 */
+		if (implicit_conversion) {
+			result =
+			    acpi_ut_implicit_strtoul64(ACPI_CAST_PTR
+						       (char, pointer));
+		} else {
+			result =
+			    acpi_ut_explicit_strtoul64(ACPI_CAST_PTR
+						       (char, pointer));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -161,6 +209,10 @@ acpi_ex_convert_to_integer(union acpi_operand_object *obj_desc,
 	default:
 
 		/* No other types can get here */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -176,7 +228,11 @@ acpi_ex_convert_to_integer(union acpi_operand_object *obj_desc,
 
 	/* Save the Result */
 
+<<<<<<< HEAD
 	acpi_ex_truncate_for32bit_table(return_desc);
+=======
+	(void)acpi_ex_truncate_for32bit_table(return_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*result_desc = return_desc;
 	return_ACPI_STATUS(AE_OK);
 }
@@ -213,7 +269,10 @@ acpi_ex_convert_to_buffer(union acpi_operand_object *obj_desc,
 		return_ACPI_STATUS(AE_OK);
 
 	case ACPI_TYPE_INTEGER:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Create a new Buffer object.
 		 * Need enough space for one integer
@@ -227,6 +286,7 @@ acpi_ex_convert_to_buffer(union acpi_operand_object *obj_desc,
 		/* Copy the integer to the buffer, LSB first */
 
 		new_buf = return_desc->buffer.pointer;
+<<<<<<< HEAD
 		ACPI_MEMCPY(new_buf,
 			    &obj_desc->integer.value,
 			    acpi_gbl_integer_byte_width);
@@ -234,6 +294,13 @@ acpi_ex_convert_to_buffer(union acpi_operand_object *obj_desc,
 
 	case ACPI_TYPE_STRING:
 
+=======
+		memcpy(new_buf, &obj_desc->integer.value,
+		       acpi_gbl_integer_byte_width);
+		break;
+
+	case ACPI_TYPE_STRING:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Create a new Buffer object
 		 * Size will be the string length
@@ -253,11 +320,20 @@ acpi_ex_convert_to_buffer(union acpi_operand_object *obj_desc,
 		/* Copy the string to the buffer */
 
 		new_buf = return_desc->buffer.pointer;
+<<<<<<< HEAD
 		ACPI_STRNCPY((char *)new_buf, (char *)obj_desc->string.pointer,
 			     obj_desc->string.length);
 		break;
 
 	default:
+=======
+		strncpy((char *)new_buf, (char *)obj_desc->string.pointer,
+			obj_desc->string.length);
+		break;
+
+	default:
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_ACPI_STATUS(AE_TYPE);
 	}
 
@@ -272,9 +348,15 @@ acpi_ex_convert_to_buffer(union acpi_operand_object *obj_desc,
  *
  * FUNCTION:    acpi_ex_convert_to_ascii
  *
+<<<<<<< HEAD
  * PARAMETERS:  Integer         - Value to be converted
  *              Base            - ACPI_STRING_DECIMAL or ACPI_STRING_HEX
  *              String          - Where the string is returned
+=======
+ * PARAMETERS:  integer         - Value to be converted
+ *              base            - ACPI_STRING_DECIMAL or ACPI_STRING_HEX
+ *              string          - Where the string is returned
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              data_width      - Size of data item to be converted, in bytes
  *
  * RETURN:      Actual string length
@@ -304,15 +386,27 @@ acpi_ex_convert_to_ascii(u64 integer, u16 base, u8 *string, u8 data_width)
 
 		switch (data_width) {
 		case 1:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			decimal_length = ACPI_MAX8_DECIMAL_DIGITS;
 			break;
 
 		case 4:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			decimal_length = ACPI_MAX32_DECIMAL_DIGITS;
 			break;
 
 		case 8:
 		default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			decimal_length = ACPI_MAX64_DECIMAL_DIGITS;
 			break;
 		}
@@ -347,14 +441,23 @@ acpi_ex_convert_to_ascii(u64 integer, u16 base, u8 *string, u8 data_width)
 
 		/* hex_length: 2 ascii hex chars per data byte */
 
+<<<<<<< HEAD
 		hex_length = ACPI_MUL_2(data_width);
+=======
+		hex_length = (data_width * 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0, j = (hex_length - 1); i < hex_length; i++, j--) {
 
 			/* Get one hex digit, most significant digits first */
 
+<<<<<<< HEAD
 			string[k] =
 			    (u8) acpi_ut_hex_to_ascii_char(integer,
 							   ACPI_MUL_4(j));
+=======
+			string[k] = (u8)
+			    acpi_ut_hex_to_ascii_char(integer, ACPI_MUL_4(j));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			k++;
 		}
 		break;
@@ -385,11 +488,20 @@ acpi_ex_convert_to_ascii(u64 integer, u16 base, u8 *string, u8 data_width)
  * PARAMETERS:  obj_desc        - Object to be converted. Must be an
  *                                Integer, Buffer, or String
  *              result_desc     - Where the string object is returned
+<<<<<<< HEAD
  *              Type            - String flags (base and conversion type)
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Convert an ACPI Object to a string
+=======
+ *              type            - String flags (base and conversion type)
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Convert an ACPI Object to a string. Supports both implicit
+ *              and explicit conversions and related rules.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 
@@ -418,9 +530,17 @@ acpi_ex_convert_to_string(union acpi_operand_object * obj_desc,
 
 		switch (type) {
 		case ACPI_EXPLICIT_CONVERT_DECIMAL:
+<<<<<<< HEAD
 
 			/* Make room for maximum decimal number */
 
+=======
+			/*
+			 * From to_decimal_string, integer source.
+			 *
+			 * Make room for the maximum decimal number size
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			string_length = ACPI_MAX_DECIMAL_DIGITS;
 			base = 10;
 			break;
@@ -438,7 +558,11 @@ acpi_ex_convert_to_string(union acpi_operand_object * obj_desc,
 		 * Need enough space for one ASCII integer (plus null terminator)
 		 */
 		return_desc =
+<<<<<<< HEAD
 		    acpi_ut_create_string_object((acpi_size) string_length);
+=======
+		    acpi_ut_create_string_object((acpi_size)string_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!return_desc) {
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
@@ -465,8 +589,15 @@ acpi_ex_convert_to_string(union acpi_operand_object * obj_desc,
 		switch (type) {
 		case ACPI_EXPLICIT_CONVERT_DECIMAL:	/* Used by to_decimal_string */
 			/*
+<<<<<<< HEAD
 			 * From ACPI: "If Data is a buffer, it is converted to a string of
 			 * decimal values separated by commas."
+=======
+			 * Explicit conversion from the to_decimal_string ASL operator.
+			 *
+			 * From ACPI: "If the input is a buffer, it is converted to a
+			 * a string of decimal values separated by commas."
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			base = 10;
 
@@ -487,6 +618,7 @@ acpi_ex_convert_to_string(union acpi_operand_object * obj_desc,
 
 		case ACPI_IMPLICIT_CONVERT_HEX:
 			/*
+<<<<<<< HEAD
 			 * From the ACPI spec:
 			 *"The entire contents of the buffer are converted to a string of
 			 * two-character hexadecimal numbers, each separated by a space."
@@ -501,6 +633,31 @@ acpi_ex_convert_to_string(union acpi_operand_object * obj_desc,
 			 * hexadecimal values separated by commas."
 			 */
 			string_length = (obj_desc->buffer.length * 3);
+=======
+			 * Implicit buffer-to-string conversion
+			 *
+			 * From the ACPI spec:
+			 * "The entire contents of the buffer are converted to a string of
+			 * two-character hexadecimal numbers, each separated by a space."
+			 *
+			 * Each hex number is prefixed with 0x (11/2018)
+			 */
+			separator = ' ';
+			string_length = (obj_desc->buffer.length * 5);
+			break;
+
+		case ACPI_EXPLICIT_CONVERT_HEX:
+			/*
+			 * Explicit conversion from the to_hex_string ASL operator.
+			 *
+			 * From ACPI: "If Data is a buffer, it is converted to a string of
+			 * hexadecimal values separated by commas."
+			 *
+			 * Each hex number is prefixed with 0x (11/2018)
+			 */
+			separator = ',';
+			string_length = (obj_desc->buffer.length * 5);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		default:
@@ -516,8 +673,13 @@ acpi_ex_convert_to_string(union acpi_operand_object * obj_desc,
 			string_length--;
 		}
 
+<<<<<<< HEAD
 		return_desc = acpi_ut_create_string_object((acpi_size)
 							   string_length);
+=======
+		return_desc =
+		    acpi_ut_create_string_object((acpi_size)string_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!return_desc) {
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
@@ -529,10 +691,28 @@ acpi_ex_convert_to_string(union acpi_operand_object * obj_desc,
 		 * (separated by commas or spaces)
 		 */
 		for (i = 0; i < obj_desc->buffer.length; i++) {
+<<<<<<< HEAD
 			new_buf += acpi_ex_convert_to_ascii((u64) obj_desc->
 							    buffer.pointer[i],
 							    base, new_buf, 1);
 			*new_buf++ = separator;	/* each separated by a comma or space */
+=======
+			if (base == 16) {
+
+				/* Emit 0x prefix for explicit/implicit hex conversion */
+
+				*new_buf++ = '0';
+				*new_buf++ = 'x';
+			}
+
+			new_buf += acpi_ex_convert_to_ascii((u64) obj_desc->
+							    buffer.pointer[i],
+							    base, new_buf, 1);
+
+			/* Each digit is separated by either a comma or space */
+
+			*new_buf++ = separator;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/*
@@ -546,6 +726,10 @@ acpi_ex_convert_to_string(union acpi_operand_object * obj_desc,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_ACPI_STATUS(AE_TYPE);
 	}
 
@@ -599,6 +783,10 @@ acpi_ex_convert_to_target_type(acpi_object_type destination_type,
 			break;
 
 		default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* No conversion allowed for these types */
 
 			if (destination_type != source_desc->common.type) {
@@ -614,6 +802,10 @@ acpi_ex_convert_to_target_type(acpi_object_type destination_type,
 		break;
 
 	case ARGI_TARGETREF:
+<<<<<<< HEAD
+=======
+	case ARGI_STORE_TARGET:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (destination_type) {
 		case ACPI_TYPE_INTEGER:
@@ -626,7 +818,11 @@ acpi_ex_convert_to_target_type(acpi_object_type destination_type,
 			 */
 			status =
 			    acpi_ex_convert_to_integer(source_desc, result_desc,
+<<<<<<< HEAD
 						       16);
+=======
+						       ACPI_IMPLICIT_CONVERSION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case ACPI_TYPE_STRING:
@@ -649,6 +845,10 @@ acpi_ex_convert_to_target_type(acpi_object_type destination_type,
 			break;
 
 		default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ACPI_ERROR((AE_INFO,
 				    "Bad destination type during conversion: 0x%X",
 				    destination_type));
@@ -664,6 +864,10 @@ acpi_ex_convert_to_target_type(acpi_object_type destination_type,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ACPI_ERROR((AE_INFO,
 			    "Unknown Target type ID 0x%X AmlOpcode 0x%X DestType %s",
 			    GET_CURRENT_ARG_TYPE(walk_state->op_info->

@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 config EFS_FS
 	tristate "EFS file system support (read only) (EXPERIMENTAL)"
 	depends on BLOCK && EXPERIMENTAL
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config EFS_FS
+	tristate "EFS file system support (read only)"
+	depends on BLOCK
+	select BUFFER_HEAD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  EFS is an older file system used for non-ISO9660 CD-ROMs and hard
 	  disk partitions by SGI's IRIX operating system (IRIX 6.0 and newer

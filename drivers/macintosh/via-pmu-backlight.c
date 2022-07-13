@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Backlight code for via-pmu
  *
@@ -9,9 +13,15 @@
 
 #include <asm/ptrace.h>
 #include <linux/adb.h>
+<<<<<<< HEAD
 #include <linux/pmu.h>
 #include <asm/backlight.h>
 #include <asm/prom.h>
+=======
+#include <linux/backlight.h>
+#include <linux/pmu.h>
+#include <asm/backlight.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_PMU_LEVEL 0xFF
 
@@ -71,12 +81,16 @@ static int pmu_backlight_get_level_brightness(int level)
 static int __pmu_backlight_update_status(struct backlight_device *bd)
 {
 	struct adb_request req;
+<<<<<<< HEAD
 	int level = bd->props.brightness;
 
 
 	if (bd->props.power != FB_BLANK_UNBLANK ||
 	    bd->props.fb_blank != FB_BLANK_UNBLANK)
 		level = 0;
+=======
+	int level = backlight_get_brightness(bd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (level > 0) {
 		int pmulevel = pmu_backlight_get_level_brightness(level);
@@ -110,6 +124,7 @@ static int pmu_backlight_update_status(struct backlight_device *bd)
 }
 
 
+<<<<<<< HEAD
 static int pmu_backlight_get_brightness(struct backlight_device *bd)
 {
 	return bd->props.brightness;
@@ -117,6 +132,9 @@ static int pmu_backlight_get_brightness(struct backlight_device *bd)
 
 static const struct backlight_ops pmu_backlight_data = {
 	.get_brightness	= pmu_backlight_get_brightness,
+=======
+static const struct backlight_ops pmu_backlight_data = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.update_status	= pmu_backlight_update_status,
 
 };
@@ -142,7 +160,11 @@ void pmu_backlight_set_sleep(int sleep)
 }
 #endif /* CONFIG_PM */
 
+<<<<<<< HEAD
 void __init pmu_backlight_init()
+=======
+void __init pmu_backlight_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct backlight_properties props;
 	struct backlight_device *bd;

@@ -1,15 +1,24 @@
+<<<<<<< HEAD
 /*
  * wm8523.h  --  WM8423 ASoC driver
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * wm8523.h  --  WM8523 ASoC driver
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright 2009 Wolfson Microelectronics, plc
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
  *
  * Based on wm8753.h
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _WM8523_H

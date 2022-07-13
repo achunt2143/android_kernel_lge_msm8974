@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/char/sclp_cpi_sys.c
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    SCLP control program identification sysfs interface
  *
  *    Copyright IBM Corp. 2001, 2007
@@ -94,7 +99,11 @@ static struct sclp_req *cpi_prepare_req(void)
 	/* setup SCCB for Control-Program Identification */
 	sccb->header.length = sizeof(struct cpi_sccb);
 	sccb->cpi_evbuf.header.length = sizeof(struct cpi_evbuf);
+<<<<<<< HEAD
 	sccb->cpi_evbuf.header.type = 0x0b;
+=======
+	sccb->cpi_evbuf.header.type = EVTYP_CTLPROGIDENT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	evb = &sccb->cpi_evbuf;
 
 	/* set system type */
@@ -155,16 +164,24 @@ static int cpi_req(void)
 	wait_for_completion(&completion);
 
 	if (req->status != SCLP_REQ_DONE) {
+<<<<<<< HEAD
 		pr_warning("request failed (status=0x%02x)\n",
 			   req->status);
+=======
+		pr_warn("request failed (status=0x%02x)\n", req->status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EIO;
 		goto out_free_req;
 	}
 
 	response = ((struct cpi_sccb *) req->sccb)->header.response_code;
 	if (response != 0x0020) {
+<<<<<<< HEAD
 		pr_warning("request failed with response code 0x%x\n",
 			   response);
+=======
+		pr_warn("request failed with response code 0x%x\n", response);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EIO;
 	}
 

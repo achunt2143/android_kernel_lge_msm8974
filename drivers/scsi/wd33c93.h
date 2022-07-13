@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    wd33c93.h -  Linux device driver definitions for the
  *                 Commodore Amiga A2091/590 SCSI controller card
@@ -7,6 +11,7 @@
  * Copyright (c) 1996 John Shifflett, GeoLog Consulting
  *    john@geolog.com
  *    jshiffle@netcom.com
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef WD33C93_H
 #define WD33C93_H
@@ -190,6 +197,7 @@
 
    /* This is what the 3393 chip looks like to us */
 typedef struct {
+<<<<<<< HEAD
 #ifdef CONFIG_WD33C93_PIO
    unsigned int   SASR;
    unsigned int   SCMD;
@@ -197,6 +205,10 @@ typedef struct {
    volatile unsigned char  *SASR;
    volatile unsigned char  *SCMD;
 #endif
+=======
+   volatile unsigned char  *SASR;
+   volatile unsigned char  *SCMD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } wd33c93_regs;
 
 
@@ -272,6 +284,13 @@ struct WD33C93_hostdata {
 #endif
     };
 
+<<<<<<< HEAD
+=======
+static inline struct scsi_pointer *WD33C93_scsi_pointer(struct scsi_cmnd *cmd)
+{
+	return scsi_cmd_priv(cmd);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* defines for hostdata->chip */
 
@@ -345,7 +364,12 @@ void wd33c93_init (struct Scsi_Host *instance, const wd33c93_regs regs,
 int wd33c93_abort (struct scsi_cmnd *cmd);
 int wd33c93_queuecommand (struct Scsi_Host *h, struct scsi_cmnd *cmd);
 void wd33c93_intr (struct Scsi_Host *instance);
+<<<<<<< HEAD
 int wd33c93_proc_info(struct Scsi_Host *, char *, char **, off_t, int, int);
+=======
+int wd33c93_show_info(struct seq_file *, struct Scsi_Host *);
+int wd33c93_write_info(struct Scsi_Host *, char *, int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int wd33c93_host_reset (struct scsi_cmnd *);
 
 #endif /* WD33C93_H */

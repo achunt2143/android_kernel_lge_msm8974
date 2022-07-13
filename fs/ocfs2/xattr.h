@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
@@ -13,6 +14,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * xattr.h
+ *
+ * Copyright (C) 2004, 2008 Oracle.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef OCFS2_XATTR_H
@@ -32,7 +40,11 @@ enum ocfs2_xattr_type {
 
 struct ocfs2_security_xattr_info {
 	int enable;
+<<<<<<< HEAD
 	char *name;
+=======
+	const char *name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *value;
 	size_t value_len;
 };
@@ -40,9 +52,13 @@ struct ocfs2_security_xattr_info {
 extern const struct xattr_handler ocfs2_xattr_user_handler;
 extern const struct xattr_handler ocfs2_xattr_trusted_handler;
 extern const struct xattr_handler ocfs2_xattr_security_handler;
+<<<<<<< HEAD
 extern const struct xattr_handler ocfs2_xattr_acl_access_handler;
 extern const struct xattr_handler ocfs2_xattr_acl_default_handler;
 extern const struct xattr_handler *ocfs2_xattr_handlers[];
+=======
+extern const struct xattr_handler * const ocfs2_xattr_handlers[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ssize_t ocfs2_listxattr(struct dentry *, char *, size_t);
 int ocfs2_xattr_get_nolock(struct inode *, struct buffer_head *, int,

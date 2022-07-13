@@ -1,9 +1,17 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
+<<<<<<< HEAD
  * Copyright (C) 2004-2012 Emulex.  All rights reserved.           *
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.emulex.com                                                  *
+=======
+ * Copyright (C) 2017-2022 Broadcom. All Rights Reserved. The term *
+ * “Broadcom” refers to Broadcom Inc and/or its subsidiaries.  *
+ * Copyright (C) 2004-2016 Emulex.  All rights reserved.           *
+ * EMULEX and SLI are trademarks of Emulex.                        *
+ * www.broadcom.com                                                *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                 *
  * This program is free software; you can redistribute it and/or   *
  * modify it under the terms of version 2 of the GNU General       *
@@ -41,6 +49,24 @@ struct lpfc_rport_data {
 	struct lpfc_nodelist *pnode;	/* Pointer to the node structure. */
 };
 
+<<<<<<< HEAD
+=======
+struct lpfc_device_id {
+	struct lpfc_name vport_wwpn;
+	struct lpfc_name target_wwpn;
+	uint64_t lun;
+};
+
+struct lpfc_device_data {
+	struct list_head listentry;
+	struct lpfc_rport_data *rport_data;
+	struct lpfc_device_id device_id;
+	uint8_t priority;
+	bool oas_enabled;
+	bool available;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fcp_rsp {
 	uint32_t rspRsvd1;	/* FC Word 0, byte 0:3 */
 	uint32_t rspRsvd2;	/* FC Word 1, byte 0:3 */
@@ -73,6 +99,10 @@ struct fcp_rsp {
 #define RSP_RO_MISMATCH_ERR  0x03
 #define RSP_TM_NOT_SUPPORTED 0x04	/* Task mgmt function not supported */
 #define RSP_TM_NOT_COMPLETED 0x05	/* Task mgmt function not performed */
+<<<<<<< HEAD
+=======
+#define RSP_TM_INVALID_LU    0x09	/* Task mgmt function to invalid LU */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint32_t rspInfoRsvd;	/* FCP_RSP_INFO bytes 4-7 (reserved) */
 
@@ -108,6 +138,7 @@ struct fcp_cmnd {
 
 };
 
+<<<<<<< HEAD
 struct lpfc_scsicmd_bkt {
 	uint32_t cmd_count;
 };
@@ -165,3 +196,26 @@ struct lpfc_scsi_buf {
 #define LPFC_SCSI_DMA_EXT_SIZE 264
 #define LPFC_BPL_SIZE          1024
 #define MDAC_DIRECT_CMD                  0x22
+=======
+#define LPFC_SCSI_DMA_EXT_SIZE	264
+#define LPFC_BPL_SIZE		1024
+#define MDAC_DIRECT_CMD		0x22
+
+#define FIND_FIRST_OAS_LUN	0
+#define NO_MORE_OAS_LUN		-1
+#define NOT_OAS_ENABLED_LUN	NO_MORE_OAS_LUN
+
+#ifndef FC_PORTSPEED_128GBIT
+#define FC_PORTSPEED_128GBIT	0x2000
+#endif
+
+#ifndef FC_PORTSPEED_256GBIT
+#define FC_PORTSPEED_256GBIT	0x4000
+#endif
+
+#define TXRDY_PAYLOAD_LEN	12
+
+/* For sysfs/debugfs tmp string max len */
+#define LPFC_MAX_SCSI_INFO_TMP_LEN	79
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

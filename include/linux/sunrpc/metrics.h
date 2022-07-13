@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/include/linux/sunrpc/metrics.h
  *
@@ -27,10 +31,20 @@
 
 #include <linux/seq_file.h>
 #include <linux/ktime.h>
+<<<<<<< HEAD
 
 #define RPC_IOSTATS_VERS	"1.0"
 
 struct rpc_iostats {
+=======
+#include <linux/spinlock.h>
+
+#define RPC_IOSTATS_VERS	"1.1"
+
+struct rpc_iostats {
+	spinlock_t		om_lock;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * These counters give an idea about how many request
 	 * transmissions are required, on average, to complete that
@@ -62,6 +76,14 @@ struct rpc_iostats {
 	ktime_t			om_queue,	/* queued for xmit */
 				om_rtt,		/* RPC RTT */
 				om_execute;	/* RPC execution */
+<<<<<<< HEAD
+=======
+	/*
+	 * The count of operations that complete with tk_status < 0.
+	 * These statuses usually indicate error conditions.
+	 */
+	unsigned long           om_error_status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } ____cacheline_aligned;
 
 struct rpc_task;
@@ -76,7 +98,13 @@ struct rpc_clnt;
 struct rpc_iostats *	rpc_alloc_iostats(struct rpc_clnt *);
 void			rpc_count_iostats(const struct rpc_task *,
 					  struct rpc_iostats *);
+<<<<<<< HEAD
 void			rpc_print_iostats(struct seq_file *, struct rpc_clnt *);
+=======
+void			rpc_count_iostats_metrics(const struct rpc_task *,
+					  struct rpc_iostats *);
+void			rpc_clnt_show_stats(struct seq_file *, struct rpc_clnt *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void			rpc_free_iostats(struct rpc_iostats *);
 
 #else  /*  CONFIG_PROC_FS  */
@@ -84,7 +112,16 @@ void			rpc_free_iostats(struct rpc_iostats *);
 static inline struct rpc_iostats *rpc_alloc_iostats(struct rpc_clnt *clnt) { return NULL; }
 static inline void rpc_count_iostats(const struct rpc_task *task,
 				     struct rpc_iostats *stats) {}
+<<<<<<< HEAD
 static inline void rpc_print_iostats(struct seq_file *seq, struct rpc_clnt *clnt) {}
+=======
+static inline void rpc_count_iostats_metrics(const struct rpc_task *task,
+					     struct rpc_iostats *stats)
+{
+}
+
+static inline void rpc_clnt_show_stats(struct seq_file *seq, struct rpc_clnt *clnt) {}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void rpc_free_iostats(struct rpc_iostats *stats) {}
 
 #endif  /*  CONFIG_PROC_FS  */

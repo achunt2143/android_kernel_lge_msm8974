@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux driver for TerraTec DMX 6Fire USB
  *
@@ -6,11 +10,14 @@
  * Author:	Torsten Schenk <torsten.schenk@zoho.com>
  * Created:	Jan 01, 2011
  * Copyright:	(C) Torsten Schenk
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <sound/rawmidi.h>
@@ -41,8 +48,14 @@ static void usb6fire_midi_out_handler(struct urb *urb)
 
 			ret = usb_submit_urb(urb, GFP_ATOMIC);
 			if (ret < 0)
+<<<<<<< HEAD
 				snd_printk(KERN_ERR PREFIX "midi out urb "
 						"submit failed: %d\n", ret);
+=======
+				dev_err(&urb->dev->dev,
+					"midi out urb submit failed: %d\n",
+					ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else /* no more data to transmit */
 			rt->out = NULL;
 	}
@@ -94,8 +107,14 @@ static void usb6fire_midi_out_trigger(
 
 			ret = usb_submit_urb(urb, GFP_ATOMIC);
 			if (ret < 0)
+<<<<<<< HEAD
 				snd_printk(KERN_ERR PREFIX "midi out urb "
 						"submit failed: %d\n", ret);
+=======
+				dev_err(&urb->dev->dev,
+					"midi out urb submit failed: %d\n",
+					ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else
 				rt->out = alsa_sub;
 		}
@@ -137,20 +156,32 @@ static void usb6fire_midi_in_trigger(
 	spin_unlock_irqrestore(&rt->in_lock, flags);
 }
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops out_ops = {
+=======
+static const struct snd_rawmidi_ops out_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open = usb6fire_midi_out_open,
 	.close = usb6fire_midi_out_close,
 	.trigger = usb6fire_midi_out_trigger,
 	.drain = usb6fire_midi_out_drain
 };
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops in_ops = {
+=======
+static const struct snd_rawmidi_ops in_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open = usb6fire_midi_in_open,
 	.close = usb6fire_midi_in_close,
 	.trigger = usb6fire_midi_in_trigger
 };
 
+<<<<<<< HEAD
 int __devinit usb6fire_midi_init(struct sfire_chip *chip)
+=======
+int usb6fire_midi_init(struct sfire_chip *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct midi_runtime *rt = kzalloc(sizeof(struct midi_runtime),
@@ -181,7 +212,11 @@ int __devinit usb6fire_midi_init(struct sfire_chip *chip)
 	if (ret < 0) {
 		kfree(rt->out_buffer);
 		kfree(rt);
+<<<<<<< HEAD
 		snd_printk(KERN_ERR PREFIX "unable to create midi.\n");
+=======
+		dev_err(&chip->dev->dev, "unable to create midi.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	rt->instance->private_data = rt;

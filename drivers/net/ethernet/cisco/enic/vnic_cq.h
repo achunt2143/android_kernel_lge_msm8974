@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
@@ -15,6 +16,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
+ * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _VNIC_CQ_H_
@@ -50,6 +57,14 @@ struct vnic_cq_ctrl {
 	u32 pad10;
 };
 
+<<<<<<< HEAD
+=======
+struct vnic_rx_bytes_counter {
+	unsigned int small_pkt_bytes_cnt;
+	unsigned int large_pkt_bytes_cnt;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vnic_cq {
 	unsigned int index;
 	struct vnic_dev *vdev;
@@ -58,6 +73,13 @@ struct vnic_cq {
 	unsigned int to_clean;
 	unsigned int last_color;
 	unsigned int interrupt_offset;
+<<<<<<< HEAD
+=======
+	struct vnic_rx_bytes_counter pkt_size_counter;
+	unsigned int cur_rx_coal_timeval;
+	unsigned int tobe_rx_coal_timeval;
+	ktime_t prev_ts;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline unsigned int vnic_cq_service(struct vnic_cq *cq,

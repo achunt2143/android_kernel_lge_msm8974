@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* net/atm/proc.c - ATM /proc interface
  *
  * Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA
@@ -35,10 +39,16 @@
 static ssize_t proc_dev_atm_read(struct file *file, char __user *buf,
 				 size_t count, loff_t *pos);
 
+<<<<<<< HEAD
 static const struct file_operations proc_atm_dev_ops = {
 	.owner =	THIS_MODULE,
 	.read =		proc_dev_atm_read,
 	.llseek =	noop_llseek,
+=======
+static const struct proc_ops atm_dev_proc_ops = {
+	.proc_read	= proc_dev_atm_read,
+	.proc_lseek	= noop_llseek,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void add_stats(struct seq_file *seq, const char *aal,
@@ -61,14 +71,21 @@ static void atm_dev_info(struct seq_file *seq, const struct atm_dev *dev)
 	add_stats(seq, "0", &dev->stats.aal0);
 	seq_puts(seq, "  ");
 	add_stats(seq, "5", &dev->stats.aal5);
+<<<<<<< HEAD
 	seq_printf(seq, "\t[%d]", atomic_read(&dev->refcnt));
+=======
+	seq_printf(seq, "\t[%d]", refcount_read(&dev->refcnt));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_putc(seq, '\n');
 }
 
 struct vcc_state {
 	int bucket;
 	struct sock *sk;
+<<<<<<< HEAD
 	int family;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline int compare_family(struct sock *sk, int family)
@@ -106,6 +123,7 @@ out:
 	return (l < 0);
 }
 
+<<<<<<< HEAD
 static inline void *vcc_walk(struct vcc_state *state, loff_t l)
 {
 	return __vcc_walk(&state->sk, state->family, &state->bucket, l) ?
@@ -125,6 +143,17 @@ static int __vcc_seq_open(struct inode *inode, struct file *file,
 	return 0;
 }
 
+=======
+static inline void *vcc_walk(struct seq_file *seq, loff_t l)
+{
+	struct vcc_state *state = seq->private;
+	int family = (uintptr_t)(pde_data(file_inode(seq->file)));
+
+	return __vcc_walk(&state->sk, family, &state->bucket, l) ?
+	       state : NULL;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void *vcc_seq_start(struct seq_file *seq, loff_t *pos)
 	__acquires(vcc_sklist_lock)
 {
@@ -133,7 +162,11 @@ static void *vcc_seq_start(struct seq_file *seq, loff_t *pos)
 
 	read_lock(&vcc_sklist_lock);
 	state->sk = SEQ_START_TOKEN;
+<<<<<<< HEAD
 	return left ? vcc_walk(state, left) : SEQ_START_TOKEN;
+=======
+	return left ? vcc_walk(seq, left) : SEQ_START_TOKEN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void vcc_seq_stop(struct seq_file *seq, void *v)
@@ -144,10 +177,15 @@ static void vcc_seq_stop(struct seq_file *seq, void *v)
 
 static void *vcc_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 {
+<<<<<<< HEAD
 	struct vcc_state *state = seq->private;
 
 	v = vcc_walk(state, 1);
 	*pos += !!PTR_ERR(v);
+=======
+	v = vcc_walk(seq, 1);
+	(*pos)++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return v;
 }
 
@@ -211,7 +249,11 @@ static void vcc_info(struct seq_file *seq, struct atm_vcc *vcc)
 		   vcc->flags, sk->sk_err,
 		   sk_wmem_alloc_get(sk), sk->sk_sndbuf,
 		   sk_rmem_alloc_get(sk), sk->sk_rcvbuf,
+<<<<<<< HEAD
 		   atomic_read(&sk->sk_refcnt));
+=======
+		   refcount_read(&sk->sk_refcnt));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void svc_info(struct seq_file *seq, struct atm_vcc *vcc)
@@ -257,6 +299,7 @@ static const struct seq_operations atm_dev_seq_ops = {
 	.show	= atm_dev_seq_show,
 };
 
+<<<<<<< HEAD
 static int atm_dev_seq_open(struct inode *inode, struct file *file)
 {
 	return seq_open(file, &atm_dev_seq_ops);
@@ -269,6 +312,8 @@ static const struct file_operations devices_seq_fops = {
 	.release	= seq_release,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pvc_seq_show(struct seq_file *seq, void *v)
 {
 	static char atm_pvc_banner[] =
@@ -292,6 +337,7 @@ static const struct seq_operations pvc_seq_ops = {
 	.show	= pvc_seq_show,
 };
 
+<<<<<<< HEAD
 static int pvc_seq_open(struct inode *inode, struct file *file)
 {
 	return __vcc_seq_open(inode, file, PF_ATMPVC, &pvc_seq_ops);
@@ -304,6 +350,8 @@ static const struct file_operations pvc_seq_fops = {
 	.release	= seq_release_private,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int vcc_seq_show(struct seq_file *seq, void *v)
 {
 	if (v == SEQ_START_TOKEN) {
@@ -326,6 +374,7 @@ static const struct seq_operations vcc_seq_ops = {
 	.show	= vcc_seq_show,
 };
 
+<<<<<<< HEAD
 static int vcc_seq_open(struct inode *inode, struct file *file)
 {
 	return __vcc_seq_open(inode, file, 0, &vcc_seq_ops);
@@ -338,6 +387,8 @@ static const struct file_operations vcc_seq_fops = {
 	.release	= seq_release_private,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int svc_seq_show(struct seq_file *seq, void *v)
 {
 	static const char atm_svc_banner[] =
@@ -361,6 +412,7 @@ static const struct seq_operations svc_seq_ops = {
 	.show	= svc_seq_show,
 };
 
+<<<<<<< HEAD
 static int svc_seq_open(struct inode *inode, struct file *file)
 {
 	return __vcc_seq_open(inode, file, PF_ATMSVC, &svc_seq_ops);
@@ -373,6 +425,8 @@ static const struct file_operations svc_seq_fops = {
 	.release	= seq_release_private,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t proc_dev_atm_read(struct file *file, char __user *buf,
 				 size_t count, loff_t *pos)
 {
@@ -385,7 +439,11 @@ static ssize_t proc_dev_atm_read(struct file *file, char __user *buf,
 	page = get_zeroed_page(GFP_KERNEL);
 	if (!page)
 		return -ENOMEM;
+<<<<<<< HEAD
 	dev = PDE(file->f_path.dentry->d_inode)->data;
+=======
+	dev = pde_data(file_inode(file));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev->ops->proc_read)
 		length = -EINVAL;
 	else {
@@ -420,7 +478,11 @@ int atm_proc_dev_register(struct atm_dev *dev)
 		goto err_out;
 
 	dev->proc_entry = proc_create_data(dev->proc_name, 0, atm_proc_root,
+<<<<<<< HEAD
 					   &proc_atm_dev_ops, dev);
+=======
+					   &atm_dev_proc_ops, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev->proc_entry)
 		goto err_free_name;
 	return 0;
@@ -440,6 +502,7 @@ void atm_proc_dev_deregister(struct atm_dev *dev)
 	kfree(dev->proc_name);
 }
 
+<<<<<<< HEAD
 static struct atm_proc_entry {
 	char *name;
 	const struct file_operations *proc_fops;
@@ -489,9 +552,28 @@ err_out_remove:
 err_out:
 	ret = -ENOMEM;
 	goto out;
+=======
+int __init atm_proc_init(void)
+{
+	atm_proc_root = proc_net_mkdir(&init_net, "atm", init_net.proc_net);
+	if (!atm_proc_root)
+		return -ENOMEM;
+	proc_create_seq("devices", 0444, atm_proc_root, &atm_dev_seq_ops);
+	proc_create_seq_private("pvc", 0444, atm_proc_root, &pvc_seq_ops,
+			sizeof(struct vcc_state), (void *)(uintptr_t)PF_ATMPVC);
+	proc_create_seq_private("svc", 0444, atm_proc_root, &svc_seq_ops,
+			sizeof(struct vcc_state), (void *)(uintptr_t)PF_ATMSVC);
+	proc_create_seq_private("vc", 0444, atm_proc_root, &vcc_seq_ops,
+			sizeof(struct vcc_state), NULL);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void atm_proc_exit(void)
 {
+<<<<<<< HEAD
 	atm_proc_dirs_remove();
+=======
+	remove_proc_subtree("atm", init_net.proc_net);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

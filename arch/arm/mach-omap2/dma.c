@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP2+ DMA driver
  *
@@ -12,6 +16,7 @@
  * Copyright (C) 2009 Texas Instruments
  * Added OMAP4 support - Santosh Shilimkar <santosh.shilimkar@ti.com>
  *
+<<<<<<< HEAD
  * Copyright (C) 2010 Texas Instruments Incorporated - http://www.ti.com/
  * Converted DMA library into platform driver
  *	- G, Manjunath Kondaiah <manjugk@ti.com>
@@ -19,6 +24,11 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+ * Copyright (C) 2010 Texas Instruments Incorporated - https://www.ti.com/
+ * Converted DMA library into platform driver
+ *	- G, Manjunath Kondaiah <manjugk@ti.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/err.h>
@@ -27,6 +37,7 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 
 #include <plat/omap_hwmod.h>
 #include <plat/omap_device.h>
@@ -136,6 +147,65 @@ static void omap2_show_dma_caps(void)
 
 static u32 configure_dma_errata(void)
 {
+=======
+#include <linux/dma-mapping.h>
+#include <linux/dmaengine.h>
+#include <linux/of.h>
+#include <linux/omap-dma.h>
+
+#include "soc.h"
+#include "common.h"
+
+static const struct omap_dma_reg reg_map[] = {
+	[REVISION]	= { 0x0000, 0x00, OMAP_DMA_REG_32BIT },
+	[GCR]		= { 0x0078, 0x00, OMAP_DMA_REG_32BIT },
+	[IRQSTATUS_L0]	= { 0x0008, 0x00, OMAP_DMA_REG_32BIT },
+	[IRQSTATUS_L1]	= { 0x000c, 0x00, OMAP_DMA_REG_32BIT },
+	[IRQSTATUS_L2]	= { 0x0010, 0x00, OMAP_DMA_REG_32BIT },
+	[IRQSTATUS_L3]	= { 0x0014, 0x00, OMAP_DMA_REG_32BIT },
+	[IRQENABLE_L0]	= { 0x0018, 0x00, OMAP_DMA_REG_32BIT },
+	[IRQENABLE_L1]	= { 0x001c, 0x00, OMAP_DMA_REG_32BIT },
+	[IRQENABLE_L2]	= { 0x0020, 0x00, OMAP_DMA_REG_32BIT },
+	[IRQENABLE_L3]	= { 0x0024, 0x00, OMAP_DMA_REG_32BIT },
+	[SYSSTATUS]	= { 0x0028, 0x00, OMAP_DMA_REG_32BIT },
+	[OCP_SYSCONFIG]	= { 0x002c, 0x00, OMAP_DMA_REG_32BIT },
+	[CAPS_0]	= { 0x0064, 0x00, OMAP_DMA_REG_32BIT },
+	[CAPS_2]	= { 0x006c, 0x00, OMAP_DMA_REG_32BIT },
+	[CAPS_3]	= { 0x0070, 0x00, OMAP_DMA_REG_32BIT },
+	[CAPS_4]	= { 0x0074, 0x00, OMAP_DMA_REG_32BIT },
+
+	/* Common register offsets */
+	[CCR]		= { 0x0080, 0x60, OMAP_DMA_REG_32BIT },
+	[CLNK_CTRL]	= { 0x0084, 0x60, OMAP_DMA_REG_32BIT },
+	[CICR]		= { 0x0088, 0x60, OMAP_DMA_REG_32BIT },
+	[CSR]		= { 0x008c, 0x60, OMAP_DMA_REG_32BIT },
+	[CSDP]		= { 0x0090, 0x60, OMAP_DMA_REG_32BIT },
+	[CEN]		= { 0x0094, 0x60, OMAP_DMA_REG_32BIT },
+	[CFN]		= { 0x0098, 0x60, OMAP_DMA_REG_32BIT },
+	[CSEI]		= { 0x00a4, 0x60, OMAP_DMA_REG_32BIT },
+	[CSFI]		= { 0x00a8, 0x60, OMAP_DMA_REG_32BIT },
+	[CDEI]		= { 0x00ac, 0x60, OMAP_DMA_REG_32BIT },
+	[CDFI]		= { 0x00b0, 0x60, OMAP_DMA_REG_32BIT },
+	[CSAC]		= { 0x00b4, 0x60, OMAP_DMA_REG_32BIT },
+	[CDAC]		= { 0x00b8, 0x60, OMAP_DMA_REG_32BIT },
+
+	/* Channel specific register offsets */
+	[CSSA]		= { 0x009c, 0x60, OMAP_DMA_REG_32BIT },
+	[CDSA]		= { 0x00a0, 0x60, OMAP_DMA_REG_32BIT },
+	[CCEN]		= { 0x00bc, 0x60, OMAP_DMA_REG_32BIT },
+	[CCFN]		= { 0x00c0, 0x60, OMAP_DMA_REG_32BIT },
+	[COLOR]		= { 0x00c4, 0x60, OMAP_DMA_REG_32BIT },
+
+	/* OMAP4 specific registers */
+	[CDP]		= { 0x00d0, 0x60, OMAP_DMA_REG_32BIT },
+	[CNDP]		= { 0x00d4, 0x60, OMAP_DMA_REG_32BIT },
+	[CCDN]		= { 0x00d8, 0x60, OMAP_DMA_REG_32BIT },
+};
+
+static unsigned configure_dma_errata(void)
+{
+	unsigned errata = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Errata applicable for OMAP2430ES1.0 and all omap2420
@@ -217,6 +287,7 @@ static u32 configure_dma_errata(void)
 	return errata;
 }
 
+<<<<<<< HEAD
 /* One time initializations */
 static int __init omap2_system_dma_init_dev(struct omap_hwmod *oh, void *unused)
 {
@@ -286,3 +357,47 @@ static int __init omap2_system_dma_init(void)
 			omap2_system_dma_init_dev, NULL);
 }
 arch_initcall(omap2_system_dma_init);
+=======
+static const struct dma_slave_map omap24xx_sdma_dt_map[] = {
+	/* external DMA requests when tusb6010 is used */
+	{ "musb-hdrc.1.auto", "dmareq0", SDMA_FILTER_PARAM(2) },
+	{ "musb-hdrc.1.auto", "dmareq1", SDMA_FILTER_PARAM(3) },
+	{ "musb-hdrc.1.auto", "dmareq2", SDMA_FILTER_PARAM(14) }, /* OMAP2420 only */
+	{ "musb-hdrc.1.auto", "dmareq3", SDMA_FILTER_PARAM(15) }, /* OMAP2420 only */
+	{ "musb-hdrc.1.auto", "dmareq4", SDMA_FILTER_PARAM(16) }, /* OMAP2420 only */
+	{ "musb-hdrc.1.auto", "dmareq5", SDMA_FILTER_PARAM(64) }, /* OMAP2420 only */
+};
+
+static struct omap_dma_dev_attr dma_attr = {
+	.dev_caps = RESERVE_CHANNEL | DMA_LINKED_LCH | GLOBAL_PRIORITY |
+		    IS_CSSA_32 | IS_CDSA_32,
+	.lch_count = 32,
+};
+
+struct omap_system_dma_plat_info dma_plat_info = {
+	.reg_map	= reg_map,
+	.channel_stride	= 0x60,
+	.dma_attr	= &dma_attr,
+};
+
+/* One time initializations */
+static int __init omap2_system_dma_init(void)
+{
+	dma_plat_info.errata = configure_dma_errata();
+
+	if (soc_is_omap24xx()) {
+		/* DMA slave map for drivers not yet converted to DT */
+		dma_plat_info.slave_map = omap24xx_sdma_dt_map;
+		dma_plat_info.slavecnt = ARRAY_SIZE(omap24xx_sdma_dt_map);
+	}
+
+	if (!soc_is_omap242x())
+		dma_attr.dev_caps |= IS_RW_PRIORITY;
+
+	if (soc_is_omap34xx() && (omap_type() != OMAP2_DEVICE_TYPE_GP))
+		dma_attr.dev_caps |= HS_CHANNELS_RESERVED;
+
+	return 0;
+}
+omap_arch_initcall(omap2_system_dma_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

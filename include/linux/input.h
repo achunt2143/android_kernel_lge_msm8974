@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _INPUT_H
 #define _INPUT_H
 
@@ -1165,6 +1166,21 @@ struct ff_effect {
 #define FF_CNT		(FF_MAX+1)
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 1999-2002 Vojtech Pavlik
+ */
+#ifndef _INPUT_H
+#define _INPUT_H
+
+#include <linux/time.h>
+#include <linux/list.h>
+#include <uapi/linux/input.h>
+/* Implementation details, userspace should not care about these */
+#define ABS_MT_FIRST		ABS_MT_TOUCH_MAJOR
+#define ABS_MT_LAST		ABS_MT_TOOL_Y
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * In-kernel definitions.
@@ -1175,6 +1191,30 @@ struct ff_effect {
 #include <linux/timer.h>
 #include <linux/mod_devicetable.h>
 
+<<<<<<< HEAD
+=======
+struct input_dev_poller;
+
+/**
+ * struct input_value - input value representation
+ * @type: type of value (EV_KEY, EV_ABS, etc)
+ * @code: the value code
+ * @value: the value
+ */
+struct input_value {
+	__u16 type;
+	__u16 code;
+	__s32 value;
+};
+
+enum input_clock_type {
+	INPUT_CLK_REAL = 0,
+	INPUT_CLK_MONO,
+	INPUT_CLK_BOOT,
+	INPUT_CLK_MAX
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct input_dev - represents an input device
  * @name: name of the device
@@ -1206,15 +1246,24 @@ struct ff_effect {
  *	not sleep
  * @ff: force feedback structure associated with the device if device
  *	supports force feedback effects
+<<<<<<< HEAD
+=======
+ * @poller: poller structure associated with the device if device is
+ *	set up to use polling mode
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @repeat_key: stores key code of the last key pressed; used to implement
  *	software autorepeat
  * @timer: timer for software autorepeat
  * @rep: current values for autorepeat parameters (delay, rate)
+<<<<<<< HEAD
  * @mt: pointer to array of struct input_mt_slot holding current values
  *	of tracked contacts
  * @mtsize: number of MT slots the device uses
  * @slot: MT slot currently being transmitted
  * @trkid: stores MT tracking ID for the current contact
+=======
+ * @mt: pointer to multitouch state
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @absinfo: array of &struct input_absinfo elements holding information
  *	about absolute axes (current value, min, max, flat, fuzz,
  *	resolution)
@@ -1225,9 +1274,17 @@ struct ff_effect {
  * @open: this method is called when the very first user calls
  *	input_open_device(). The driver must prepare the device
  *	to start generating events (start polling thread,
+<<<<<<< HEAD
  *	request an IRQ, submit URB, etc.)
  * @close: this method is called when the very last user calls
  *	input_close_device().
+=======
+ *	request an IRQ, submit URB, etc.). The meaning of open() is
+ *	to start providing events to the input core.
+ * @close: this method is called when the very last user calls
+ *	input_close_device(). The meaning of close() is to stop
+ *	providing events to the input core.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @flush: purges the device. Most commonly used to get rid of force
  *	feedback effects loaded into the device when disconnecting
  *	from it
@@ -1238,7 +1295,11 @@ struct ff_effect {
  * @grab: input handle that currently has the device grabbed (via
  *	EVIOCGRAB ioctl). When a handle grabs a device it becomes sole
  *	recipient for all input events coming from the device
+<<<<<<< HEAD
  * @event_lock: this spinlock is is taken when input core receives
+=======
+ * @event_lock: this spinlock is taken when input core receives
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	and processes a new event for the device (in input_event()).
  *	Code that accesses and/or modifies parameters of a device
  *	(such as keymap or absmin, absmax, absfuzz, etc.) after device
@@ -1251,11 +1312,28 @@ struct ff_effect {
  *	last user closes the device
  * @going_away: marks devices that are in a middle of unregistering and
  *	causes input_open_device*() fail with -ENODEV.
+<<<<<<< HEAD
  * @sync: set to %true when there were no new events since last EV_SYN
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: driver model's view of this device
  * @h_list: list of input handles associated with the device. When
  *	accessing the list dev->mutex must be held
  * @node: used to place the device onto input_dev_list
+<<<<<<< HEAD
+=======
+ * @num_vals: number of values queued in the current frame
+ * @max_vals: maximum number of values queued in a frame
+ * @vals: array of values queued in the current frame
+ * @devres_managed: indicates that devices is managed with devres framework
+ *	and needs not be explicitly unregistered or freed.
+ * @timestamp: storage for a timestamp set by input_set_timestamp called
+ *  by a driver
+ * @inhibited: indicates that the input device is inhibited. If that is
+ * the case then input core ignores any events generated by the device.
+ * Device's close() is called when it is being inhibited and its open()
+ * is called when it is being uninhibited.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct input_dev {
 	const char *name;
@@ -1289,15 +1367,24 @@ struct input_dev {
 
 	struct ff_device *ff;
 
+<<<<<<< HEAD
+=======
+	struct input_dev_poller *poller;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int repeat_key;
 	struct timer_list timer;
 
 	int rep[REP_CNT];
 
+<<<<<<< HEAD
 	struct input_mt_slot *mt;
 	int mtsize;
 	int slot;
 	int trkid;
+=======
+	struct input_mt *mt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct input_absinfo *absinfo;
 
@@ -1319,12 +1406,28 @@ struct input_dev {
 	unsigned int users;
 	bool going_away;
 
+<<<<<<< HEAD
 	bool sync;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device dev;
 
 	struct list_head	h_list;
 	struct list_head	node;
+<<<<<<< HEAD
+=======
+
+	unsigned int num_vals;
+	unsigned int max_vals;
+	struct input_value *vals;
+
+	bool devres_managed;
+
+	ktime_t timestamp[INPUT_CLK_MAX];
+
+	bool inhibited;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define to_input_dev(d) container_of(d, struct input_dev, dev)
 
@@ -1372,6 +1475,13 @@ struct input_dev {
 #error "SW_MAX and INPUT_DEVICE_ID_SW_MAX do not match"
 #endif
 
+<<<<<<< HEAD
+=======
+#if INPUT_PROP_MAX != INPUT_DEVICE_ID_PROP_MAX
+#error "INPUT_PROP_MAX and INPUT_DEVICE_ID_PROP_MAX do not match"
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define INPUT_DEVICE_ID_MATCH_DEVICE \
 	(INPUT_DEVICE_ID_MATCH_BUS | INPUT_DEVICE_ID_MATCH_VENDOR | INPUT_DEVICE_ID_MATCH_PRODUCT)
 #define INPUT_DEVICE_ID_MATCH_DEVICE_AND_VERSION \
@@ -1385,6 +1495,12 @@ struct input_handle;
  * @event: event handler. This method is being called by input core with
  *	interrupts disabled and dev->event_lock spinlock held and so
  *	it may not sleep
+<<<<<<< HEAD
+=======
+ * @events: event sequence handler. This method is being called by
+ *	input core with interrupts disabled and dev->event_lock
+ *	spinlock held and so it may not sleep
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @filter: similar to @event; separates normal event handlers from
  *	"filters".
  * @match: called after comparing device's id with handler's id_table
@@ -1394,8 +1510,13 @@ struct input_handle;
  * @start: starts handler for given handle. This function is called by
  *	input core right after connect() method and also when a process
  *	that "grabbed" a device releases it
+<<<<<<< HEAD
  * @fops: file operations this driver implements
  * @minor: beginning of range of 32 minors for devices this driver
+=======
+ * @legacy_minors: set to %true by drivers using legacy minor ranges
+ * @minor: beginning of range of 32 legacy minors for devices this driver
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	can provide
  * @name: name of the handler, to be shown in /proc/bus/input/handlers
  * @id_table: pointer to a table of input_device_ids this driver can
@@ -1421,13 +1542,22 @@ struct input_handler {
 	void *private;
 
 	void (*event)(struct input_handle *handle, unsigned int type, unsigned int code, int value);
+<<<<<<< HEAD
+=======
+	void (*events)(struct input_handle *handle,
+		       const struct input_value *vals, unsigned int count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool (*filter)(struct input_handle *handle, unsigned int type, unsigned int code, int value);
 	bool (*match)(struct input_handler *handler, struct input_dev *dev);
 	int (*connect)(struct input_handler *handler, struct input_dev *dev, const struct input_device_id *id);
 	void (*disconnect)(struct input_handle *handle);
 	void (*start)(struct input_handle *handle);
 
+<<<<<<< HEAD
 	const struct file_operations *fops;
+=======
+	bool legacy_minors;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int minor;
 	const char *name;
 
@@ -1463,7 +1593,12 @@ struct input_handle {
 	struct list_head	h_node;
 };
 
+<<<<<<< HEAD
 struct input_dev *input_allocate_device(void);
+=======
+struct input_dev __must_check *input_allocate_device(void);
+struct input_dev __must_check *devm_input_allocate_device(struct device *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void input_free_device(struct input_dev *dev);
 
 static inline struct input_dev *input_get_device(struct input_dev *dev)
@@ -1492,9 +1627,26 @@ void input_unregister_device(struct input_dev *);
 
 void input_reset_device(struct input_dev *);
 
+<<<<<<< HEAD
 int __must_check input_register_handler(struct input_handler *);
 void input_unregister_handler(struct input_handler *);
 
+=======
+int input_setup_polling(struct input_dev *dev,
+			void (*poll_fn)(struct input_dev *dev));
+void input_set_poll_interval(struct input_dev *dev, unsigned int interval);
+void input_set_min_poll_interval(struct input_dev *dev, unsigned int interval);
+void input_set_max_poll_interval(struct input_dev *dev, unsigned int interval);
+int input_get_poll_interval(struct input_dev *dev);
+
+int __must_check input_register_handler(struct input_handler *);
+void input_unregister_handler(struct input_handler *);
+
+int __must_check input_get_new_minor(int legacy_base, unsigned int legacy_num,
+				     bool allow_dynamic);
+void input_free_minor(unsigned int minor);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int input_handler_for_each_handle(struct input_handler *, void *data,
 				  int (*fn)(struct input_handle *, void *));
 
@@ -1509,6 +1661,12 @@ void input_close_device(struct input_handle *);
 
 int input_flush_device(struct input_handle *handle, struct file *file);
 
+<<<<<<< HEAD
+=======
+void input_set_timestamp(struct input_dev *dev, ktime_t timestamp);
+ktime_t *input_get_timestamp(struct input_dev *dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void input_event(struct input_dev *dev, unsigned int type, unsigned int code, int value);
 void input_inject_event(struct input_handle *handle, unsigned int type, unsigned int code, int value);
 
@@ -1567,6 +1725,11 @@ static inline void input_set_events_per_packet(struct input_dev *dev, int n_even
 void input_alloc_absinfo(struct input_dev *dev);
 void input_set_abs_params(struct input_dev *dev, unsigned int axis,
 			  int min, int max, int fuzz, int flat);
+<<<<<<< HEAD
+=======
+void input_copy_abs(struct input_dev *dst, unsigned int dst_axis,
+		    const struct input_dev *src, unsigned int src_axis);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define INPUT_GENERATE_ABS_ACCESSORS(_suffix, _item)			\
 static inline int input_abs_get_##_suffix(struct input_dev *dev,	\
@@ -1597,7 +1760,18 @@ int input_get_keycode(struct input_dev *dev, struct input_keymap_entry *ke);
 int input_set_keycode(struct input_dev *dev,
 		      const struct input_keymap_entry *ke);
 
+<<<<<<< HEAD
 extern struct class input_class;
+=======
+bool input_match_device_id(const struct input_dev *dev,
+			   const struct input_device_id *id);
+
+void input_enable_softrepeat(struct input_dev *dev, int delay, int period);
+
+bool input_device_enabled(struct input_dev *dev);
+
+extern const struct class input_class;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct ff_device - force-feedback part of an input device
@@ -1645,7 +1819,11 @@ struct ff_device {
 
 	int max_effects;
 	struct ff_effect *effects;
+<<<<<<< HEAD
 	struct file *effect_owners[];
+=======
+	struct file *effect_owners[] __counted_by(max_effects);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int input_ff_create(struct input_dev *dev, unsigned int max_effects);
@@ -1655,9 +1833,16 @@ int input_ff_event(struct input_dev *dev, unsigned int type, unsigned int code, 
 
 int input_ff_upload(struct input_dev *dev, struct ff_effect *effect, struct file *file);
 int input_ff_erase(struct input_dev *dev, int effect_id, struct file *file);
+<<<<<<< HEAD
+=======
+int input_ff_flush(struct input_dev *dev, struct file *file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int input_ff_create_memless(struct input_dev *dev, void *data,
 		int (*play_effect)(struct input_dev *, void *, struct ff_effect *));
 
 #endif
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

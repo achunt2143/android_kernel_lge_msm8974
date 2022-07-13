@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
@@ -46,6 +47,23 @@ static int init_stub_pte(struct mm_struct *mm, unsigned long proc,
  out:
 	return -ENOMEM;
 }
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2015 Thomas Meyer (thomas@m3y3r.de)
+ * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+ */
+
+#include <linux/mm.h>
+#include <linux/sched/signal.h>
+#include <linux/slab.h>
+
+#include <asm/pgalloc.h>
+#include <asm/sections.h>
+#include <as-layout.h>
+#include <os.h>
+#include <skas.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int init_new_context(struct task_struct *task, struct mm_struct *mm)
 {
@@ -54,16 +72,23 @@ int init_new_context(struct task_struct *task, struct mm_struct *mm)
 	unsigned long stack = 0;
 	int ret = -ENOMEM;
 
+<<<<<<< HEAD
 	if (skas_needs_stub) {
 		stack = get_zeroed_page(GFP_KERNEL);
 		if (stack == 0)
 			goto out;
 	}
+=======
+	stack = __get_free_pages(GFP_KERNEL | __GFP_ZERO, ilog2(STUB_DATA_PAGES));
+	if (stack == 0)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	to_mm->id.stack = stack;
 	if (current->mm != NULL && current->mm != &init_mm)
 		from_mm = &current->mm->context;
 
+<<<<<<< HEAD
 	if (proc_mm) {
 		ret = new_mm(stack);
 		if (ret < 0) {
@@ -83,6 +108,18 @@ int init_new_context(struct task_struct *task, struct mm_struct *mm)
 			ret = to_mm->id.u.pid;
 			goto out_free;
 		}
+=======
+	block_signals_trace();
+	if (from_mm)
+		to_mm->id.u.pid = copy_context_skas0(stack,
+						     from_mm->id.u.pid);
+	else to_mm->id.u.pid = start_userspace(stack);
+	unblock_signals_trace();
+
+	if (to_mm->id.u.pid < 0) {
+		ret = to_mm->id.u.pid;
+		goto out_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = init_new_ldt(to_mm, from_mm);
@@ -96,11 +133,16 @@ int init_new_context(struct task_struct *task, struct mm_struct *mm)
 
  out_free:
 	if (to_mm->id.stack != 0)
+<<<<<<< HEAD
 		free_page(to_mm->id.stack);
+=======
+		free_pages(to_mm->id.stack, ilog2(STUB_DATA_PAGES));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	return ret;
 }
 
+<<<<<<< HEAD
 void uml_setup_stubs(struct mm_struct *mm)
 {
 	int err, ret;
@@ -150,10 +192,13 @@ void arch_exit_mmap(struct mm_struct *mm)
 	pte_clear(mm, STUB_DATA, pte);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void destroy_context(struct mm_struct *mm)
 {
 	struct mm_context *mmu = &mm->context;
 
+<<<<<<< HEAD
 	if (proc_mm)
 		os_close_file(mmu->id.u.mm_fd);
 	else {
@@ -174,5 +219,21 @@ void destroy_context(struct mm_struct *mm)
 	if (skas_needs_stub)
 		free_page(mmu->id.stack);
 
+=======
+	/*
+	 * If init_new_context wasn't called, this will be
+	 * zero, resulting in a kill(0), which will result in the
+	 * whole UML suddenly dying.  Also, cover negative and
+	 * 1 cases, since they shouldn't happen either.
+	 */
+	if (mmu->id.u.pid < 2) {
+		printk(KERN_ERR "corrupt mm_context - pid = %d\n",
+		       mmu->id.u.pid);
+		return;
+	}
+	os_kill_ptraced_process(mmu->id.u.pid, 1);
+
+	free_pages(mmu->id.stack, ilog2(STUB_DATA_PAGES));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_ldt(mmu);
 }

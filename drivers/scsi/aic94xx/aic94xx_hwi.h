@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Aic94xx SAS/SATA driver hardware interface header file.
  *
  * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
  * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
+<<<<<<< HEAD
  *
  * This file is licensed under GPLv2.
  *
@@ -22,6 +27,8 @@
  * along with the aic94xx driver; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _AIC94XX_HWI_H_
@@ -291,8 +298,12 @@ static inline void asd_init_ascb(struct asd_ha_struct *asd_ha,
 	INIT_LIST_HEAD(&ascb->list);
 	ascb->scb = ascb->dma_scb.vaddr;
 	ascb->ha = asd_ha;
+<<<<<<< HEAD
 	ascb->timer.function = NULL;
 	init_timer(&ascb->timer);
+=======
+	timer_setup(&ascb->timer, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ascb->tc_index = -1;
 }
 
@@ -392,7 +403,11 @@ void asd_control_led(struct asd_ha_struct *asd_ha, int phy_id, int op);
 void asd_turn_led(struct asd_ha_struct *asd_ha, int phy_id, int op);
 int  asd_enable_phys(struct asd_ha_struct *asd_ha, const u8 phy_mask);
 
+<<<<<<< HEAD
 void asd_ascb_timedout(unsigned long data);
+=======
+void asd_ascb_timedout(struct timer_list *t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int  asd_chip_hardrst(struct asd_ha_struct *asd_ha);
 
 #endif

@@ -1,7 +1,15 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/kernel_stat.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
+=======
+#include "internal.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * /proc/softirqs  ... display the number of softirqs
@@ -24,6 +32,7 @@ static int show_softirqs(struct seq_file *p, void *v)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int softirqs_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, show_softirqs, NULL);
@@ -42,3 +51,14 @@ static int __init proc_softirqs_init(void)
 	return 0;
 }
 module_init(proc_softirqs_init);
+=======
+static int __init proc_softirqs_init(void)
+{
+	struct proc_dir_entry *pde;
+
+	pde = proc_create_single("softirqs", 0, NULL, show_softirqs);
+	pde_make_permanent(pde);
+	return 0;
+}
+fs_initcall(proc_softirqs_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

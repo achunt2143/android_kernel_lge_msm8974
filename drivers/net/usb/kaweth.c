@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************
  *
  *     kaweth.c - driver for KL5KUSB101 based USB->Ethernet
@@ -14,6 +18,7 @@
  *     Also many thanks to Joel Silverman and Ed Surprenant at Kawasaki
  *     for providing the firmware and driver resources.
  *
+<<<<<<< HEAD
  *     This program is free software; you can redistribute it and/or
  *     modify it under the terms of the GNU General Public License as
  *     published by the Free Software Foundation; either version 2, or
@@ -28,6 +33,8 @@
  *     along with this program; if not, write to the Free Software Foundation,
  *     Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ****************************************************************/
 
 /* TODO:
@@ -46,7 +53,10 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -56,7 +66,11 @@
 #include <linux/dma-mapping.h>
 #include <linux/wait.h>
 #include <linux/firmware.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/byteorder.h>
 
 #undef DEBUG
@@ -117,17 +131,24 @@ static int kaweth_probe(
 		const struct usb_device_id *id	/* from id_table */
 	);
 static void kaweth_disconnect(struct usb_interface *intf);
+<<<<<<< HEAD
 static int kaweth_internal_control_msg(struct usb_device *usb_dev,
 				       unsigned int pipe,
 				       struct usb_ctrlrequest *cmd, void *data,
 				       int len, int timeout);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int kaweth_suspend(struct usb_interface *intf, pm_message_t message);
 static int kaweth_resume(struct usb_interface *intf);
 
 /****************************************************************
  *     usb_device_id
  ****************************************************************/
+<<<<<<< HEAD
 static struct usb_device_id usb_klsi_table[] = {
+=======
+static const struct usb_device_id usb_klsi_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_DEVICE(0x03e8, 0x0008) }, /* AOX Endpoints USB Ethernet */
 	{ USB_DEVICE(0x04bb, 0x0901) }, /* I-O DATA USB-ET/T */
 	{ USB_DEVICE(0x0506, 0x03e8) }, /* 3Com 3C19250 */
@@ -179,6 +200,10 @@ static struct usb_driver kaweth_driver = {
 	.resume =	kaweth_resume,
 	.id_table =     usb_klsi_table,
 	.supports_autosuspend =	1,
+<<<<<<< HEAD
+=======
+	.disable_hub_initiated_lpm = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 typedef __u8 eth_addr_t[6];
@@ -238,7 +263,11 @@ struct kaweth_device
 	dma_addr_t rxbufferhandle;
 	__u8 *rx_buf;
 
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *tx_skb;
 
 	__u8 *firmware_buf;
@@ -246,6 +275,7 @@ struct kaweth_device
 	__u16 packet_filter_bitmap;
 
 	struct kaweth_ethernet_configuration configuration;
+<<<<<<< HEAD
 
 	struct net_device_stats stats;
 };
@@ -298,10 +328,16 @@ static int kaweth_control(struct kaweth_device *kaweth,
 }
 
 /****************************************************************
+=======
+};
+
+/****************************************************************
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *     kaweth_read_configuration
  ****************************************************************/
 static int kaweth_read_configuration(struct kaweth_device *kaweth)
 {
+<<<<<<< HEAD
 	int retval;
 
 	dbg("Reading kaweth configuration");
@@ -317,6 +353,15 @@ static int kaweth_read_configuration(struct kaweth_device *kaweth)
 				KAWETH_CONTROL_TIMEOUT);
 
 	return retval;
+=======
+	return usb_control_msg(kaweth->dev, usb_rcvctrlpipe(kaweth->dev, 0),
+				KAWETH_COMMAND_GET_ETHERNET_DESC,
+				USB_TYPE_VENDOR | USB_DIR_IN | USB_RECIP_DEVICE,
+				0, 0,
+				&kaweth->configuration,
+				sizeof(kaweth->configuration),
+				KAWETH_CONTROL_TIMEOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************
@@ -324,6 +369,7 @@ static int kaweth_read_configuration(struct kaweth_device *kaweth)
  ****************************************************************/
 static int kaweth_set_urb_size(struct kaweth_device *kaweth, __u16 urb_size)
 {
+<<<<<<< HEAD
 	int retval;
 
 	dbg("Setting URB size to %d", (unsigned)urb_size);
@@ -339,6 +385,16 @@ static int kaweth_set_urb_size(struct kaweth_device *kaweth, __u16 urb_size)
 				KAWETH_CONTROL_TIMEOUT);
 
 	return retval;
+=======
+	netdev_dbg(kaweth->net, "Setting URB size to %d\n", (unsigned)urb_size);
+
+	return usb_control_msg(kaweth->dev, usb_sndctrlpipe(kaweth->dev, 0),
+			       KAWETH_COMMAND_SET_URB_SIZE,
+			       USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
+			       urb_size, 0,
+			       &kaweth->scratch, 0,
+			       KAWETH_CONTROL_TIMEOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************
@@ -346,6 +402,7 @@ static int kaweth_set_urb_size(struct kaweth_device *kaweth, __u16 urb_size)
  ****************************************************************/
 static int kaweth_set_sofs_wait(struct kaweth_device *kaweth, __u16 sofs_wait)
 {
+<<<<<<< HEAD
 	int retval;
 
 	dbg("Set SOFS wait to %d", (unsigned)sofs_wait);
@@ -361,6 +418,16 @@ static int kaweth_set_sofs_wait(struct kaweth_device *kaweth, __u16 sofs_wait)
 				KAWETH_CONTROL_TIMEOUT);
 
 	return retval;
+=======
+	netdev_dbg(kaweth->net, "Set SOFS wait to %d\n", (unsigned)sofs_wait);
+
+	return usb_control_msg(kaweth->dev, usb_sndctrlpipe(kaweth->dev, 0),
+			       KAWETH_COMMAND_SET_SOFS_WAIT,
+			       USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
+			       sofs_wait, 0,
+			       &kaweth->scratch, 0,
+			       KAWETH_CONTROL_TIMEOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************
@@ -369,6 +436,7 @@ static int kaweth_set_sofs_wait(struct kaweth_device *kaweth, __u16 sofs_wait)
 static int kaweth_set_receive_filter(struct kaweth_device *kaweth,
 				     __u16 receive_filter)
 {
+<<<<<<< HEAD
 	int retval;
 
 	dbg("Set receive filter to %d", (unsigned)receive_filter);
@@ -384,6 +452,17 @@ static int kaweth_set_receive_filter(struct kaweth_device *kaweth,
 				KAWETH_CONTROL_TIMEOUT);
 
 	return retval;
+=======
+	netdev_dbg(kaweth->net, "Set receive filter to %d\n",
+		   (unsigned)receive_filter);
+
+	return usb_control_msg(kaweth->dev, usb_sndctrlpipe(kaweth->dev, 0),
+			       KAWETH_COMMAND_SET_PACKET_FILTER,
+			       USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
+			       receive_filter, 0,
+			       &kaweth->scratch, 0,
+			       KAWETH_CONTROL_TIMEOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************
@@ -400,12 +479,21 @@ static int kaweth_download_firmware(struct kaweth_device *kaweth,
 
 	ret = request_firmware(&fw, fwname, &kaweth->dev->dev);
 	if (ret) {
+<<<<<<< HEAD
 		err("Firmware request failed\n");
+=======
+		dev_err(&kaweth->intf->dev, "Firmware request failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	if (fw->size > KAWETH_FIRMWARE_BUF_SIZE) {
+<<<<<<< HEAD
 		err("Firmware too big: %zu", fw->size);
+=======
+		dev_err(&kaweth->intf->dev, "Firmware too big: %zu\n",
+			fw->size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_firmware(fw);
 		return -ENOSPC;
 	}
@@ -419,6 +507,7 @@ static int kaweth_download_firmware(struct kaweth_device *kaweth,
 	kaweth->firmware_buf[4] = type;
 	kaweth->firmware_buf[5] = interrupt;
 
+<<<<<<< HEAD
 	dbg("High: %i, Low:%i", kaweth->firmware_buf[3],
 		   kaweth->firmware_buf[2]);
 
@@ -434,6 +523,21 @@ static int kaweth_download_firmware(struct kaweth_device *kaweth,
 			      0,
 			      (void *)kaweth->firmware_buf,
 			      data_len,
+=======
+	netdev_dbg(kaweth->net, "High: %i, Low:%i\n", kaweth->firmware_buf[3],
+		   kaweth->firmware_buf[2]);
+
+	netdev_dbg(kaweth->net,
+		   "Downloading firmware at %p to kaweth device at %p\n",
+		   kaweth->firmware_buf, kaweth);
+	netdev_dbg(kaweth->net, "Firmware length: %d\n", data_len);
+
+	return usb_control_msg(kaweth->dev, usb_sndctrlpipe(kaweth->dev, 0),
+			      KAWETH_COMMAND_SCAN,
+			      USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
+			      0, 0,
+			      kaweth->firmware_buf, data_len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      KAWETH_CONTROL_TIMEOUT);
 }
 
@@ -452,6 +556,7 @@ static int kaweth_trigger_firmware(struct kaweth_device *kaweth,
 	kaweth->firmware_buf[6] = 0x00;
 	kaweth->firmware_buf[7] = 0x00;
 
+<<<<<<< HEAD
 	dbg("Triggering firmware");
 
 	return kaweth_control(kaweth,
@@ -463,6 +568,14 @@ static int kaweth_trigger_firmware(struct kaweth_device *kaweth,
 			      (void *)kaweth->firmware_buf,
 			      8,
 			      KAWETH_CONTROL_TIMEOUT);
+=======
+	return usb_control_msg(kaweth->dev, usb_sndctrlpipe(kaweth->dev, 0),
+			       KAWETH_COMMAND_SCAN,
+			       USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
+			       0, 0,
+			       (void *)kaweth->firmware_buf, 8,
+			       KAWETH_CONTROL_TIMEOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************
@@ -472,11 +585,18 @@ static int kaweth_reset(struct kaweth_device *kaweth)
 {
 	int result;
 
+<<<<<<< HEAD
 	dbg("kaweth_reset(%p)", kaweth);
 	result = usb_reset_configuration(kaweth->dev);
 	mdelay(10);
 
 	dbg("kaweth_reset() returns %d.",result);
+=======
+	result = usb_reset_configuration(kaweth->dev);
+	mdelay(10);
+
+	netdev_dbg(kaweth->net, "kaweth_reset() returns %d.\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return result;
 }
@@ -501,9 +621,16 @@ static void kaweth_resubmit_int_urb(struct kaweth_device *kaweth, gfp_t mf)
 	}
 
 	if (status)
+<<<<<<< HEAD
 		err ("can't resubmit intr, %s-%s, status %d",
 				kaweth->dev->bus->bus_name,
 				kaweth->dev->devpath, status);
+=======
+		dev_err(&kaweth->intf->dev,
+			"can't resubmit intr, %s-%s, status %d\n",
+			kaweth->dev->bus->bus_name,
+			kaweth->dev->devpath, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void int_callback(struct urb *u)
@@ -576,7 +703,12 @@ static int kaweth_resubmit_rx_urb(struct kaweth_device *kaweth,
 			kaweth->suspend_lowmem_rx = 1;
 			schedule_delayed_work(&kaweth->lowmem_work, HZ/4);
 		}
+<<<<<<< HEAD
 		err("resubmitting rx_urb %d failed", result);
+=======
+		dev_err(&kaweth->intf->dev, "resubmitting rx_urb %d failed\n",
+			result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		kaweth->suspend_lowmem_rx = 0;
 	}
@@ -584,17 +716,30 @@ static int kaweth_resubmit_rx_urb(struct kaweth_device *kaweth,
 	return result;
 }
 
+<<<<<<< HEAD
 static void kaweth_async_set_rx_mode(struct kaweth_device *kaweth);
+=======
+static void kaweth_async_set_rx_mode(struct kaweth_device *kaweth,
+				     bool may_sleep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /****************************************************************
  *     kaweth_usb_receive
  ****************************************************************/
 static void kaweth_usb_receive(struct urb *urb)
 {
+<<<<<<< HEAD
 	struct kaweth_device *kaweth = urb->context;
 	struct net_device *net = kaweth->net;
 	int status = urb->status;
 
+=======
+	struct device *dev = &urb->dev->dev;
+	struct kaweth_device *kaweth = urb->context;
+	struct net_device *net = kaweth->net;
+	int status = urb->status;
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int count = urb->actual_length;
 	int count2 = urb->transfer_buffer_length;
 
@@ -603,21 +748,33 @@ static void kaweth_usb_receive(struct urb *urb)
 	struct sk_buff *skb;
 
 	if (unlikely(status == -EPIPE)) {
+<<<<<<< HEAD
 		kaweth->stats.rx_errors++;
 		kaweth->end = 1;
 		wake_up(&kaweth->term_wait);
 		dbg("Status was -EPIPE.");
+=======
+		net->stats.rx_errors++;
+		kaweth->end = 1;
+		wake_up(&kaweth->term_wait);
+		dev_dbg(dev, "Status was -EPIPE.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	if (unlikely(status == -ECONNRESET || status == -ESHUTDOWN)) {
 		/* we are killed - set a flag and wake the disconnect handler */
 		kaweth->end = 1;
 		wake_up(&kaweth->term_wait);
+<<<<<<< HEAD
 		dbg("Status was -ECONNRESET or -ESHUTDOWN.");
+=======
+		dev_dbg(dev, "Status was -ECONNRESET or -ESHUTDOWN.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	if (unlikely(status == -EPROTO || status == -ETIME ||
 		     status == -EILSEQ)) {
+<<<<<<< HEAD
 		kaweth->stats.rx_errors++;
 		dbg("Status was -EPROTO, -ETIME, or -EILSEQ.");
 		return;
@@ -639,15 +796,45 @@ static void kaweth_usb_receive(struct urb *urb)
 			   status,
 			   count,
 			   (int)pkt_len);
+=======
+		net->stats.rx_errors++;
+		dev_dbg(dev, "Status was -EPROTO, -ETIME, or -EILSEQ.\n");
+		return;
+	}
+	if (unlikely(status == -EOVERFLOW)) {
+		net->stats.rx_errors++;
+		dev_dbg(dev, "Status was -EOVERFLOW.\n");
+	}
+	spin_lock_irqsave(&kaweth->device_lock, flags);
+	if (IS_BLOCKED(kaweth->status)) {
+		spin_unlock_irqrestore(&kaweth->device_lock, flags);
+		return;
+	}
+	spin_unlock_irqrestore(&kaweth->device_lock, flags);
+
+	if(status && status != -EREMOTEIO && count != 1) {
+		dev_err(&kaweth->intf->dev,
+			"%s RX status: %d count: %d packet_len: %d\n",
+			net->name, status, count, (int)pkt_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kaweth_resubmit_rx_urb(kaweth, GFP_ATOMIC);
                 return;
 	}
 
 	if(kaweth->net && (count > 2)) {
 		if(pkt_len > (count - 2)) {
+<<<<<<< HEAD
 			err("Packet length too long for USB frame (pkt_len: %x, count: %x)",pkt_len, count);
 			err("Packet len & 2047: %x", pkt_len & 2047);
 			err("Count 2: %x", count2);
+=======
+			dev_err(&kaweth->intf->dev,
+				"Packet length too long for USB frame (pkt_len: %x, count: %x)\n",
+				pkt_len, count);
+			dev_err(&kaweth->intf->dev, "Packet len & 2047: %x\n",
+				pkt_len & 2047);
+			dev_err(&kaweth->intf->dev, "Count 2: %x\n", count2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		        kaweth_resubmit_rx_urb(kaweth, GFP_ATOMIC);
                         return;
                 }
@@ -667,8 +854,13 @@ static void kaweth_usb_receive(struct urb *urb)
 
 		netif_rx(skb);
 
+<<<<<<< HEAD
 		kaweth->stats.rx_packets++;
 		kaweth->stats.rx_bytes += pkt_len;
+=======
+		net->stats.rx_packets++;
+		net->stats.rx_bytes += pkt_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kaweth_resubmit_rx_urb(kaweth, GFP_ATOMIC);
@@ -682,11 +874,17 @@ static int kaweth_open(struct net_device *net)
 	struct kaweth_device *kaweth = netdev_priv(net);
 	int res;
 
+<<<<<<< HEAD
 	dbg("Opening network device.");
 
 	res = usb_autopm_get_interface(kaweth->intf);
 	if (res) {
 		err("Interface cannot be resumed.");
+=======
+	res = usb_autopm_get_interface(kaweth->intf);
+	if (res) {
+		dev_err(&kaweth->intf->dev, "Interface cannot be resumed.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	res = kaweth_resubmit_rx_urb(kaweth, GFP_KERNEL);
@@ -714,7 +912,11 @@ static int kaweth_open(struct net_device *net)
 
 	netif_start_queue(net);
 
+<<<<<<< HEAD
 	kaweth_async_set_rx_mode(kaweth);
+=======
+	kaweth_async_set_rx_mode(kaweth, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_out:
@@ -782,7 +984,12 @@ static void kaweth_usb_transmit_complete(struct urb *urb)
 
 	if (unlikely(status != 0))
 		if (status != -ENOENT)
+<<<<<<< HEAD
 			dbg("%s: TX status %d.", kaweth->net->name, status);
+=======
+			dev_dbg(&urb->dev->dev, "%s: TX status %d.\n",
+				kaweth->net->name, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_wake_queue(kaweth->net);
 	dev_kfree_skb_irq(skb);
@@ -801,13 +1008,18 @@ static netdev_tx_t kaweth_start_xmit(struct sk_buff *skb,
 
 	spin_lock_irq(&kaweth->device_lock);
 
+<<<<<<< HEAD
 	kaweth_async_set_rx_mode(kaweth);
+=======
+	kaweth_async_set_rx_mode(kaweth, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_stop_queue(net);
 	if (IS_BLOCKED(kaweth->status)) {
 		goto skip;
 	}
 
 	/* We now decide whether we can put our special header into the sk_buff */
+<<<<<<< HEAD
 	if (skb_cloned(skb) || skb_headroom(skb) < 2) {
 		/* no such luck - we make our own */
 		struct sk_buff *copied_skb;
@@ -823,6 +1035,17 @@ static netdev_tx_t kaweth_start_xmit(struct sk_buff *skb,
 	}
 
 	private_header = (__le16 *)__skb_push(skb, 2);
+=======
+	if (skb_cow_head(skb, 2)) {
+		net->stats.tx_errors++;
+		netif_start_queue(net);
+		spin_unlock_irq(&kaweth->device_lock);
+		dev_kfree_skb_any(skb);
+		return NETDEV_TX_OK;
+	}
+
+	private_header = __skb_push(skb, 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*private_header = cpu_to_le16(skb->len-2);
 	kaweth->tx_skb = skb;
 
@@ -839,15 +1062,24 @@ static netdev_tx_t kaweth_start_xmit(struct sk_buff *skb,
 	{
 		dev_warn(&net->dev, "kaweth failed tx_urb %d\n", res);
 skip:
+<<<<<<< HEAD
 		kaweth->stats.tx_errors++;
+=======
+		net->stats.tx_errors++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		netif_start_queue(net);
 		dev_kfree_skb_irq(skb);
 	}
 	else
 	{
+<<<<<<< HEAD
 		kaweth->stats.tx_packets++;
 		kaweth->stats.tx_bytes += skb->len;
+=======
+		net->stats.tx_packets++;
+		net->stats.tx_bytes += skb->len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irq(&kaweth->device_lock);
@@ -866,7 +1098,11 @@ static void kaweth_set_rx_mode(struct net_device *net)
                                      KAWETH_PACKET_FILTER_BROADCAST |
 		                     KAWETH_PACKET_FILTER_MULTICAST;
 
+<<<<<<< HEAD
 	dbg("Setting Rx mode to %d", packet_filter_bitmap);
+=======
+	netdev_dbg(net, "Setting Rx mode to %d\n", packet_filter_bitmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_stop_queue(net);
 
@@ -884,15 +1120,23 @@ static void kaweth_set_rx_mode(struct net_device *net)
 /****************************************************************
  *     kaweth_async_set_rx_mode
  ****************************************************************/
+<<<<<<< HEAD
 static void kaweth_async_set_rx_mode(struct kaweth_device *kaweth)
 {
 	int result;
+=======
+static void kaweth_async_set_rx_mode(struct kaweth_device *kaweth,
+				     bool may_sleep)
+{
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u16 packet_filter_bitmap = kaweth->packet_filter_bitmap;
 
 	kaweth->packet_filter_bitmap = 0;
 	if (packet_filter_bitmap == 0)
 		return;
 
+<<<<<<< HEAD
 	if (in_interrupt())
 		return;
 
@@ -921,18 +1165,44 @@ static struct net_device_stats *kaweth_netdev_stats(struct net_device *dev)
 {
 	struct kaweth_device *kaweth = netdev_priv(dev);
 	return &kaweth->stats;
+=======
+	if (!may_sleep)
+		return;
+
+	ret = usb_control_msg(kaweth->dev, usb_sndctrlpipe(kaweth->dev, 0),
+			      KAWETH_COMMAND_SET_PACKET_FILTER,
+			      USB_TYPE_VENDOR | USB_DIR_OUT | USB_RECIP_DEVICE,
+			      packet_filter_bitmap, 0,
+			      &kaweth->scratch, 0,
+			      KAWETH_CONTROL_TIMEOUT);
+	if (ret < 0)
+		dev_err(&kaweth->intf->dev, "Failed to set Rx mode: %d\n",
+			ret);
+	else
+		netdev_dbg(kaweth->net, "Set Rx mode to %d\n",
+			   packet_filter_bitmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************
  *     kaweth_tx_timeout
  ****************************************************************/
+<<<<<<< HEAD
 static void kaweth_tx_timeout(struct net_device *net)
+=======
+static void kaweth_tx_timeout(struct net_device *net, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kaweth_device *kaweth = netdev_priv(net);
 
 	dev_warn(&net->dev, "%s: Tx timed out. Resetting.\n", net->name);
+<<<<<<< HEAD
 	kaweth->stats.tx_errors++;
 	net->trans_start = jiffies;
+=======
+	net->stats.tx_errors++;
+	netif_trans_update(net);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_unlink_urb(kaweth->tx_urb);
 }
@@ -945,7 +1215,10 @@ static int kaweth_suspend(struct usb_interface *intf, pm_message_t message)
 	struct kaweth_device *kaweth = usb_get_intfdata(intf);
 	unsigned long flags;
 
+<<<<<<< HEAD
 	dbg("Suspending device");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&kaweth->device_lock, flags);
 	kaweth->status |= KAWETH_STATUS_SUSPENDING;
 	spin_unlock_irqrestore(&kaweth->device_lock, flags);
@@ -962,7 +1235,10 @@ static int kaweth_resume(struct usb_interface *intf)
 	struct kaweth_device *kaweth = usb_get_intfdata(intf);
 	unsigned long flags;
 
+<<<<<<< HEAD
 	dbg("Resuming device");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&kaweth->device_lock, flags);
 	kaweth->status &= ~KAWETH_STATUS_SUSPENDING;
 	spin_unlock_irqrestore(&kaweth->device_lock, flags);
@@ -986,8 +1262,11 @@ static const struct net_device_ops kaweth_netdev_ops = {
 	.ndo_start_xmit =		kaweth_start_xmit,
 	.ndo_tx_timeout =		kaweth_tx_timeout,
 	.ndo_set_rx_mode =		kaweth_set_rx_mode,
+<<<<<<< HEAD
 	.ndo_get_stats =		kaweth_netdev_stats,
 	.ndo_change_mtu =		eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address =		eth_mac_addr,
 	.ndo_validate_addr =		eth_validate_addr,
 };
@@ -997,11 +1276,17 @@ static int kaweth_probe(
 		const struct usb_device_id *id      /* from id_table */
 	)
 {
+<<<<<<< HEAD
 	struct usb_device *dev = interface_to_usbdev(intf);
+=======
+	struct device *dev = &intf->dev;
+	struct usb_device *udev = interface_to_usbdev(intf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kaweth_device *kaweth;
 	struct net_device *netdev;
 	const eth_addr_t bcast_addr = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
 	int result = 0;
+<<<<<<< HEAD
 
 	dbg("Kawasaki Device Probe (Device number:%d): 0x%4.4x:0x%4.4x:0x%4.4x",
 		 dev->devnum,
@@ -1014,19 +1299,44 @@ static int kaweth_probe(
 	dbg("Descriptor length: %x type: %x",
 		 (int)dev->descriptor.bLength,
 		 (int)dev->descriptor.bDescriptorType);
+=======
+	int rv = -EIO;
+
+	dev_dbg(dev,
+		"Kawasaki Device Probe (Device number:%d): 0x%4.4x:0x%4.4x:0x%4.4x\n",
+		udev->devnum, le16_to_cpu(udev->descriptor.idVendor),
+		le16_to_cpu(udev->descriptor.idProduct),
+		le16_to_cpu(udev->descriptor.bcdDevice));
+
+	dev_dbg(dev, "Device at %p\n", udev);
+
+	dev_dbg(dev, "Descriptor length: %x type: %x\n",
+		(int)udev->descriptor.bLength,
+		(int)udev->descriptor.bDescriptorType);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev = alloc_etherdev(sizeof(*kaweth));
 	if (!netdev)
 		return -ENOMEM;
 
 	kaweth = netdev_priv(netdev);
+<<<<<<< HEAD
 	kaweth->dev = dev;
 	kaweth->net = netdev;
+=======
+	kaweth->dev = udev;
+	kaweth->net = netdev;
+	kaweth->intf = intf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&kaweth->device_lock);
 	init_waitqueue_head(&kaweth->term_wait);
 
+<<<<<<< HEAD
 	dbg("Resetting.");
+=======
+	dev_dbg(dev, "Resetting.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kaweth_reset(kaweth);
 
@@ -1035,17 +1345,35 @@ static int kaweth_probe(
 	 * downloaded. Don't try to do it again, or we'll hang the device.
 	 */
 
+<<<<<<< HEAD
 	if (le16_to_cpu(dev->descriptor.bcdDevice) >> 8) {
 		dev_info(&intf->dev, "Firmware present in device.\n");
 	} else {
 		/* Download the firmware */
 		dev_info(&intf->dev, "Downloading firmware...\n");
 		kaweth->firmware_buf = (__u8 *)__get_free_page(GFP_KERNEL);
+=======
+	if (le16_to_cpu(udev->descriptor.bcdDevice) >> 8) {
+		dev_info(dev, "Firmware present in device.\n");
+	} else {
+		/* Download the firmware */
+		dev_info(dev, "Downloading firmware...\n");
+		kaweth->firmware_buf = (__u8 *)__get_free_page(GFP_KERNEL);
+		if (!kaweth->firmware_buf) {
+			rv = -ENOMEM;
+			goto err_free_netdev;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((result = kaweth_download_firmware(kaweth,
 						      "kaweth/new_code.bin",
 						      100,
 						      2)) < 0) {
+<<<<<<< HEAD
 			err("Error downloading firmware (%d)", result);
+=======
+			dev_err(dev, "Error downloading firmware (%d)\n",
+				result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_fw;
 		}
 
@@ -1053,7 +1381,12 @@ static int kaweth_probe(
 						      "kaweth/new_code_fix.bin",
 						      100,
 						      3)) < 0) {
+<<<<<<< HEAD
 			err("Error downloading firmware fix (%d)", result);
+=======
+			dev_err(dev, "Error downloading firmware fix (%d)\n",
+				result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_fw;
 		}
 
@@ -1061,7 +1394,12 @@ static int kaweth_probe(
 						      "kaweth/trigger_code.bin",
 						      126,
 						      2)) < 0) {
+<<<<<<< HEAD
 			err("Error downloading trigger code (%d)", result);
+=======
+			dev_err(dev, "Error downloading trigger code (%d)\n",
+				result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_fw;
 
 		}
@@ -1070,18 +1408,30 @@ static int kaweth_probe(
 						      "kaweth/trigger_code_fix.bin",
 						      126,
 						      3)) < 0) {
+<<<<<<< HEAD
 			err("Error downloading trigger code fix (%d)", result);
+=======
+			dev_err(dev, "Error downloading trigger code fix (%d)\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_fw;
 		}
 
 
 		if ((result = kaweth_trigger_firmware(kaweth, 126)) < 0) {
+<<<<<<< HEAD
 			err("Error triggering firmware (%d)", result);
+=======
+			dev_err(dev, "Error triggering firmware (%d)\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_fw;
 		}
 
 		/* Device will now disappear for a moment...  */
+<<<<<<< HEAD
 		dev_info(&intf->dev, "Firmware loaded.  I'll be back...\n");
+=======
+		dev_info(dev, "Firmware loaded.  I'll be back...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_fw:
 		free_page((unsigned long)kaweth->firmware_buf);
 		free_netdev(netdev);
@@ -1091,6 +1441,7 @@ err_fw:
 	result = kaweth_read_configuration(kaweth);
 
 	if(result < 0) {
+<<<<<<< HEAD
 		err("Error reading configuration (%d), no net device created", result);
 		goto err_free_netdev;
 	}
@@ -1099,21 +1450,43 @@ err_fw:
 	dev_info(&intf->dev, "Multicast filter limit: %x\n", kaweth->configuration.max_multicast_filters & ((1 << 15) - 1));
 	dev_info(&intf->dev, "MTU: %d\n", le16_to_cpu(kaweth->configuration.segment_size));
 	dev_info(&intf->dev, "Read MAC address %pM\n", kaweth->configuration.hw_addr);
+=======
+		dev_err(dev, "Error reading configuration (%d), no net device created\n", result);
+		goto err_free_netdev;
+	}
+
+	dev_info(dev, "Statistics collection: %x\n", kaweth->configuration.statistics_mask);
+	dev_info(dev, "Multicast filter limit: %x\n", kaweth->configuration.max_multicast_filters & ((1 << 15) - 1));
+	dev_info(dev, "MTU: %d\n", le16_to_cpu(kaweth->configuration.segment_size));
+	dev_info(dev, "Read MAC address %pM\n", kaweth->configuration.hw_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if(!memcmp(&kaweth->configuration.hw_addr,
                    &bcast_addr,
 		   sizeof(bcast_addr))) {
+<<<<<<< HEAD
 		err("Firmware not functioning properly, no net device created");
+=======
+		dev_err(dev, "Firmware not functioning properly, no net device created\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free_netdev;
 	}
 
 	if(kaweth_set_urb_size(kaweth, KAWETH_BUF_SIZE) < 0) {
+<<<<<<< HEAD
 		dbg("Error setting URB size");
+=======
+		dev_dbg(dev, "Error setting URB size\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free_netdev;
 	}
 
 	if(kaweth_set_sofs_wait(kaweth, KAWETH_SOFS_TO_WAIT) < 0) {
+<<<<<<< HEAD
 		err("Error setting SOFS wait");
+=======
+		dev_err(dev, "Error setting SOFS wait\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free_netdev;
 	}
 
@@ -1123,6 +1496,7 @@ err_fw:
                                            KAWETH_PACKET_FILTER_MULTICAST);
 
 	if(result < 0) {
+<<<<<<< HEAD
 		err("Error setting receive filter");
 		goto err_free_netdev;
 	}
@@ -1130,6 +1504,13 @@ err_fw:
 	dbg("Initializing net device.");
 
 	kaweth->intf = intf;
+=======
+		dev_err(dev, "Error setting receive filter\n");
+		goto err_free_netdev;
+	}
+
+	dev_dbg(dev, "Initializing net device.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kaweth->tx_urb = usb_alloc_urb(0, GFP_KERNEL);
 	if (!kaweth->tx_urb)
@@ -1155,18 +1536,27 @@ err_fw:
 		goto err_all_but_rxbuf;
 
 	memcpy(netdev->broadcast, &bcast_addr, sizeof(bcast_addr));
+<<<<<<< HEAD
 	memcpy(netdev->dev_addr, &kaweth->configuration.hw_addr,
                sizeof(kaweth->configuration.hw_addr));
+=======
+	eth_hw_addr_set(netdev, (u8 *)&kaweth->configuration.hw_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev->netdev_ops = &kaweth_netdev_ops;
 	netdev->watchdog_timeo = KAWETH_TX_TIMEOUT;
 	netdev->mtu = le16_to_cpu(kaweth->configuration.segment_size);
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &ops);
+=======
+	netdev->ethtool_ops = &ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* kaweth is zeroed as part of alloc_netdev */
 	INIT_DELAYED_WORK(&kaweth->lowmem_work, kaweth_resubmit_tl);
 	usb_set_intfdata(intf, kaweth);
 
+<<<<<<< HEAD
 #if 0
 // dma_supported() is deeply broken on almost all architectures
 	if (dma_supported (&intf->dev, 0xffffffffffffffffULL))
@@ -1184,6 +1574,17 @@ err_fw:
 
 	dbg("Kaweth probe returning.");
 
+=======
+	SET_NETDEV_DEV(netdev, dev);
+	if (register_netdev(netdev) != 0) {
+		dev_err(dev, "Error registering netdev.\n");
+		goto err_intfdata;
+	}
+
+	dev_info(dev, "kaweth interface created at %s\n",
+		 kaweth->net->name);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_intfdata:
@@ -1200,7 +1601,11 @@ err_only_tx:
 err_free_netdev:
 	free_netdev(netdev);
 
+<<<<<<< HEAD
 	return -EIO;
+=======
+	return rv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************
@@ -1211,8 +1616,11 @@ static void kaweth_disconnect(struct usb_interface *intf)
 	struct kaweth_device *kaweth = usb_get_intfdata(intf);
 	struct net_device *netdev;
 
+<<<<<<< HEAD
 	dev_info(&intf->dev, "Unregistering\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_set_intfdata(intf, NULL);
 	if (!kaweth) {
 		dev_warn(&intf->dev, "unregistering non-existent device\n");
@@ -1220,7 +1628,11 @@ static void kaweth_disconnect(struct usb_interface *intf)
 	}
 	netdev = kaweth->net;
 
+<<<<<<< HEAD
 	dbg("Unregistering net device");
+=======
+	netdev_dbg(kaweth->net, "Unregistering net device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_netdev(netdev);
 
 	usb_free_urb(kaweth->rx_urb);
@@ -1234,6 +1646,7 @@ static void kaweth_disconnect(struct usb_interface *intf)
 }
 
 
+<<<<<<< HEAD
 // FIXME this completion stuff is a modified clone of
 // an OLD version of some stuff in usb.c ...
 struct usb_api_data {
@@ -1318,4 +1731,6 @@ static int kaweth_internal_control_msg(struct usb_device *usb_dev,
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_usb_driver(kaweth_driver);

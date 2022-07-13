@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Kernel module to match MAC address parameters. */
 
 /* (C) 1999-2001 Paul `Rusty' Russell
  * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -36,7 +43,11 @@ static bool mac_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		return false;
 	if (skb_mac_header(skb) + ETH_HLEN > skb->data)
 		return false;
+<<<<<<< HEAD
 	ret  = compare_ether_addr(eth_hdr(skb)->h_source, info->srcaddr) == 0;
+=======
+	ret  = ether_addr_equal(eth_hdr(skb)->h_source, info->srcaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret ^= info->invert;
 	return ret;
 }

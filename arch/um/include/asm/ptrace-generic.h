@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 /* 
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* 
+ * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __UM_PTRACE_GENERIC_H
@@ -8,8 +14,12 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 #include <asm/ptrace-abi.h>
 #include "sysdep/ptrace.h"
+=======
+#include <sysdep/ptrace.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct pt_regs {
 	struct uml_pt_regs regs;
@@ -28,6 +38,11 @@ struct pt_regs {
 
 #define instruction_pointer(regs) PT_REGS_IP(regs)
 
+<<<<<<< HEAD
+=======
+#define PTRACE_OLDSETOPTIONS 21
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct task_struct;
 
 extern long subarch_ptrace(struct task_struct *child, long request,
@@ -35,8 +50,15 @@ extern long subarch_ptrace(struct task_struct *child, long request,
 extern unsigned long getreg(struct task_struct *child, int regno);
 extern int putreg(struct task_struct *child, int regno, unsigned long value);
 
+<<<<<<< HEAD
 extern int arch_copy_tls(struct task_struct *new);
 extern void clear_flushed_tls(struct task_struct *task);
+=======
+extern int arch_set_tls(struct task_struct *new, unsigned long tls);
+extern void clear_flushed_tls(struct task_struct *task);
+extern int syscall_trace_enter(struct pt_regs *regs);
+extern void syscall_trace_leave(struct pt_regs *regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 

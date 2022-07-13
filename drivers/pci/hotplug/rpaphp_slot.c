@@ -1,9 +1,16 @@
+<<<<<<< HEAD
 /*
  * RPA Virtual I/O device functions 
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * RPA Virtual I/O device functions
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2004 Linda Xie <lxie@us.ibm.com>
  *
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
@@ -19,12 +26,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <lxie@us.ibm.com>
  *
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/sysfs.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/string.h>
 #include <linux/slab.h>
@@ -33,6 +46,7 @@
 #include "rpaphp.h"
 
 /* free up the memory used by a slot */
+<<<<<<< HEAD
 static void rpaphp_release_slot(struct hotplug_slot *hotplug_slot)
 {
 	struct slot *slot = (struct slot *) hotplug_slot->private;
@@ -44,10 +58,17 @@ void dealloc_slot_struct(struct slot *slot)
 	kfree(slot->hotplug_slot->info);
 	kfree(slot->name);
 	kfree(slot->hotplug_slot);
+=======
+void dealloc_slot_struct(struct slot *slot)
+{
+	of_node_put(slot->dn);
+	kfree(slot->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(slot);
 }
 
 struct slot *alloc_slot_struct(struct device_node *dn,
+<<<<<<< HEAD
                        int drc_index, char *drc_name, int power_domain)
 {
 	struct slot *slot;
@@ -78,6 +99,25 @@ error_info:
 	kfree(slot->hotplug_slot->info);
 error_hpslot:
 	kfree(slot->hotplug_slot);
+=======
+		int drc_index, char *drc_name, int power_domain)
+{
+	struct slot *slot;
+
+	slot = kzalloc(sizeof(struct slot), GFP_KERNEL);
+	if (!slot)
+		goto error_nomem;
+	slot->name = kstrdup(drc_name, GFP_KERNEL);
+	if (!slot->name)
+		goto error_slot;
+	slot->dn = of_node_get(dn);
+	slot->index = drc_index;
+	slot->power_domain = power_domain;
+	slot->hotplug_slot.ops = &rpaphp_hotplug_slot_ops;
+
+	return (slot);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error_slot:
 	kfree(slot);
 error_nomem:
@@ -91,23 +131,36 @@ static int is_registered(struct slot *slot)
 	list_for_each_entry(tmp_slot, &rpaphp_slot_head, rpaphp_slot_list) {
 		if (!strcmp(tmp_slot->name, slot->name))
 			return 1;
+<<<<<<< HEAD
 	}	
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int rpaphp_deregister_slot(struct slot *slot)
 {
 	int retval = 0;
+<<<<<<< HEAD
 	struct hotplug_slot *php_slot = slot->hotplug_slot;
+=======
+	struct hotplug_slot *php_slot = &slot->hotplug_slot;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	 dbg("%s - Entry: deregistering slot=%s\n",
 		__func__, slot->name);
 
 	list_del(&slot->rpaphp_slot_list);
+<<<<<<< HEAD
 	
 	retval = pci_hp_deregister(php_slot);
 	if (retval)
 		err("Problem unregistering a slot %s\n", slot->name);
+=======
+	pci_hp_deregister(php_slot);
+	dealloc_slot_struct(slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg("%s - Exit: rc[%d]\n", __func__, retval);
 	return retval;
@@ -116,24 +169,49 @@ EXPORT_SYMBOL_GPL(rpaphp_deregister_slot);
 
 int rpaphp_register_slot(struct slot *slot)
 {
+<<<<<<< HEAD
 	struct hotplug_slot *php_slot = slot->hotplug_slot;
 	int retval;
 	int slotno;
 
 	dbg("%s registering slot:path[%s] index[%x], name[%s] pdomain[%x] type[%d]\n", 
 		__func__, slot->dn->full_name, slot->index, slot->name,
+=======
+	struct hotplug_slot *php_slot = &slot->hotplug_slot;
+	struct device_node *child;
+	u32 my_index;
+	int retval;
+	int slotno = -1;
+
+	dbg("%s registering slot:path[%pOF] index[%x], name[%s] pdomain[%x] type[%d]\n",
+		__func__, slot->dn, slot->index, slot->name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		slot->power_domain, slot->type);
 
 	/* should not try to register the same slot twice */
 	if (is_registered(slot)) {
 		err("rpaphp_register_slot: slot[%s] is already registered\n", slot->name);
 		return -EAGAIN;
+<<<<<<< HEAD
 	}	
 
 	if (slot->dn->child)
 		slotno = PCI_SLOT(PCI_DN(slot->dn->child)->devfn);
 	else
 		slotno = -1;
+=======
+	}
+
+	for_each_child_of_node(slot->dn, child) {
+		retval = of_property_read_u32(child, "ibm,my-drc-index", &my_index);
+		if (my_index == slot->index) {
+			slotno = PCI_SLOT(PCI_DN(child)->devfn);
+			of_node_put(child);
+			break;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = pci_hp_register(php_slot, slot->bus, slotno, slot->name);
 	if (retval) {
 		err("pci_hp_register failed with error %d\n", retval);
@@ -145,4 +223,7 @@ int rpaphp_register_slot(struct slot *slot)
 	info("Slot [%s] registered\n", slot->name);
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

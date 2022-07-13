@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * ELF definitions for the Hexagon architecture
  *
@@ -16,6 +17,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * ELF definitions for the Hexagon architecture
+ *
+ * Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_ELF_H
@@ -23,11 +31,15 @@
 
 #include <asm/ptrace.h>
 #include <asm/user.h>
+<<<<<<< HEAD
 
 /*
  * This should really be in linux/elf-em.h.
  */
 #define EM_HEXAGON	164   /* QUALCOMM Hexagon */
+=======
+#include <linux/elf-em.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct elf32_hdr;
 
@@ -104,6 +116,19 @@ typedef unsigned long elf_fpregset_t;
  * Bypass the whole "regsets" thing for now and use the define.
  */
 
+<<<<<<< HEAD
+=======
+#if CONFIG_HEXAGON_ARCH_VERSION >= 4
+#define CS_COPYREGS(DEST,REGS) \
+do {\
+	DEST.cs0 = REGS->cs0;\
+	DEST.cs1 = REGS->cs1;\
+} while (0)
+#else
+#define CS_COPYREGS(DEST,REGS)
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ELF_CORE_COPY_REGS(DEST, REGS)	\
 do {					\
 	DEST.r0 = REGS->r00;		\
@@ -148,13 +173,21 @@ do {					\
 	DEST.p3_0 = REGS->preds;	\
 	DEST.gp = REGS->gp;		\
 	DEST.ugp = REGS->ugp;		\
+<<<<<<< HEAD
 	DEST.pc = pt_elr(REGS);	\
+=======
+	CS_COPYREGS(DEST,REGS);		\
+	DEST.pc = pt_elr(REGS);		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEST.cause = pt_cause(REGS);	\
 	DEST.badva = pt_badva(REGS);	\
 } while (0);
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is used to ensure we don't load something for the wrong architecture.
  * Checks the machine and ABI type.
@@ -168,6 +201,7 @@ do {					\
 #define ELF_DATA	ELFDATA2LSB
 #define ELF_ARCH	EM_HEXAGON
 
+<<<<<<< HEAD
 #ifdef CONFIG_HEXAGON_ARCH_V2
 #define ELF_CORE_EFLAGS 0x1
 #endif
@@ -177,6 +211,17 @@ do {					\
 #endif
 
 #ifdef CONFIG_HEXAGON_ARCH_V4
+=======
+#if CONFIG_HEXAGON_ARCH_VERSION == 2
+#define ELF_CORE_EFLAGS 0x1
+#endif
+
+#if CONFIG_HEXAGON_ARCH_VERSION == 3
+#define ELF_CORE_EFLAGS 0x2
+#endif
+
+#if CONFIG_HEXAGON_ARCH_VERSION == 4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ELF_CORE_EFLAGS 0x3
 #endif
 
@@ -189,11 +234,18 @@ do {					\
  */
 #define ELF_PLAT_INIT(regs, load_addr) do { } while (0)
 
+<<<<<<< HEAD
 #define USE_ELF_CORE_DUMP
 #define CORE_DUMP_USE_REGSET
 
 /* Hrm is this going to cause problems for changing PAGE_SIZE?  */
 #define ELF_EXEC_PAGESIZE	4096
+=======
+#define CORE_DUMP_USE_REGSET
+
+/* Hrm is this going to cause problems for changing PAGE_SIZE?  */
+#define ELF_EXEC_PAGESIZE	PAGE_SIZE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is the location that an ET_DYN program is loaded if exec'ed.  Typical
@@ -216,10 +268,13 @@ do {					\
  */
 #define ELF_PLATFORM  (NULL)
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 #define SET_PERSONALITY(ex) set_personality(PER_LINUX)
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ARCH_HAS_SETUP_ADDITIONAL_PAGES 1
 struct linux_binprm;
 extern int arch_setup_additional_pages(struct linux_binprm *bprm,

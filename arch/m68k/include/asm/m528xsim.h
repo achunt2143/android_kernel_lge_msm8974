@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/
 
 /*
@@ -37,6 +41,10 @@
 #define	MCFINT_UART0		13		/* Interrupt number for UART0 */
 #define	MCFINT_UART1		14		/* Interrupt number for UART1 */
 #define	MCFINT_UART2		15		/* Interrupt number for UART2 */
+<<<<<<< HEAD
+=======
+#define	MCFINT_I2C0		17		/* Interrupt number for I2C */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	MCFINT_QSPI		18		/* Interrupt number for QSPI */
 #define	MCFINT_FECRX0		23		/* Interrupt number for FEC */
 #define	MCFINT_FECTX0		27		/* Interrupt number for FEC */
@@ -52,6 +60,11 @@
 #define	MCF_IRQ_FECENTC0	(MCFINT_VECBASE + MCFINT_FECENTC0)
 
 #define	MCF_IRQ_QSPI		(MCFINT_VECBASE + MCFINT_QSPI)
+<<<<<<< HEAD
+=======
+#define MCF_IRQ_PIT1		(MCFINT_VECBASE + MCFINT_PIT1)
+#define	MCF_IRQ_I2C0		(MCFINT_VECBASE + MCFINT_I2C0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	SDRAM configuration registers.
@@ -86,7 +99,11 @@
 /*
  *	QSPI module.
  */
+<<<<<<< HEAD
 #define	MCFQSPI_IOBASE		(MCF_IPSBAR + 0x340)
+=======
+#define	MCFQSPI_BASE		(MCF_IPSBAR + 0x340)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	MCFQSPI_SIZE		0x40
 
 #define	MCFQSPI_CS0		147
@@ -97,6 +114,7 @@
 /*
  * 	GPIO registers
  */
+<<<<<<< HEAD
 #define MCFGPIO_PORTA		(MCF_IPSBAR + 0x00100000)
 #define MCFGPIO_PORTB		(MCF_IPSBAR + 0x00100001)
 #define MCFGPIO_PORTC		(MCF_IPSBAR + 0x00100002)
@@ -191,6 +209,83 @@
 #define MCFGPIO_CLRTC		(MCF_IPSBAR + 0x0010004B)
 #define MCFGPIO_CLRTD		(MCF_IPSBAR + 0x0010004C)
 #define MCFGPIO_CLRUA		(MCF_IPSBAR + 0x0010004D)
+=======
+#define MCFGPIO_PODR_A		(MCF_IPSBAR + 0x00100000)
+#define MCFGPIO_PODR_B		(MCF_IPSBAR + 0x00100001)
+#define MCFGPIO_PODR_C		(MCF_IPSBAR + 0x00100002)
+#define MCFGPIO_PODR_D		(MCF_IPSBAR + 0x00100003)
+#define MCFGPIO_PODR_E		(MCF_IPSBAR + 0x00100004)
+#define MCFGPIO_PODR_F		(MCF_IPSBAR + 0x00100005)
+#define MCFGPIO_PODR_G		(MCF_IPSBAR + 0x00100006)
+#define MCFGPIO_PODR_H		(MCF_IPSBAR + 0x00100007)
+#define MCFGPIO_PODR_J		(MCF_IPSBAR + 0x00100008)
+#define MCFGPIO_PODR_DD		(MCF_IPSBAR + 0x00100009)
+#define MCFGPIO_PODR_EH		(MCF_IPSBAR + 0x0010000A)
+#define MCFGPIO_PODR_EL		(MCF_IPSBAR + 0x0010000B)
+#define MCFGPIO_PODR_AS		(MCF_IPSBAR + 0x0010000C)
+#define MCFGPIO_PODR_QS		(MCF_IPSBAR + 0x0010000D)
+#define MCFGPIO_PODR_SD		(MCF_IPSBAR + 0x0010000E)
+#define MCFGPIO_PODR_TC		(MCF_IPSBAR + 0x0010000F)
+#define MCFGPIO_PODR_TD		(MCF_IPSBAR + 0x00100010)
+#define MCFGPIO_PODR_UA		(MCF_IPSBAR + 0x00100011)
+
+#define MCFGPIO_PDDR_A		(MCF_IPSBAR + 0x00100014)
+#define MCFGPIO_PDDR_B		(MCF_IPSBAR + 0x00100015)
+#define MCFGPIO_PDDR_C		(MCF_IPSBAR + 0x00100016)
+#define MCFGPIO_PDDR_D		(MCF_IPSBAR + 0x00100017)
+#define MCFGPIO_PDDR_E		(MCF_IPSBAR + 0x00100018)
+#define MCFGPIO_PDDR_F		(MCF_IPSBAR + 0x00100019)
+#define MCFGPIO_PDDR_G		(MCF_IPSBAR + 0x0010001A)
+#define MCFGPIO_PDDR_H		(MCF_IPSBAR + 0x0010001B)
+#define MCFGPIO_PDDR_J		(MCF_IPSBAR + 0x0010001C)
+#define MCFGPIO_PDDR_DD		(MCF_IPSBAR + 0x0010001D)
+#define MCFGPIO_PDDR_EH		(MCF_IPSBAR + 0x0010001E)
+#define MCFGPIO_PDDR_EL		(MCF_IPSBAR + 0x0010001F)
+#define MCFGPIO_PDDR_AS		(MCF_IPSBAR + 0x00100020)
+#define MCFGPIO_PDDR_QS		(MCF_IPSBAR + 0x00100021)
+#define MCFGPIO_PDDR_SD		(MCF_IPSBAR + 0x00100022)
+#define MCFGPIO_PDDR_TC		(MCF_IPSBAR + 0x00100023)
+#define MCFGPIO_PDDR_TD		(MCF_IPSBAR + 0x00100024)
+#define MCFGPIO_PDDR_UA		(MCF_IPSBAR + 0x00100025)
+
+#define MCFGPIO_PPDSDR_A	(MCF_IPSBAR + 0x00100028)
+#define MCFGPIO_PPDSDR_B	(MCF_IPSBAR + 0x00100029)
+#define MCFGPIO_PPDSDR_C	(MCF_IPSBAR + 0x0010002A)
+#define MCFGPIO_PPDSDR_D	(MCF_IPSBAR + 0x0010002B)
+#define MCFGPIO_PPDSDR_E	(MCF_IPSBAR + 0x0010002C)
+#define MCFGPIO_PPDSDR_F	(MCF_IPSBAR + 0x0010002D)
+#define MCFGPIO_PPDSDR_G	(MCF_IPSBAR + 0x0010002E)
+#define MCFGPIO_PPDSDR_H	(MCF_IPSBAR + 0x0010002F)
+#define MCFGPIO_PPDSDR_J	(MCF_IPSBAR + 0x00100030)
+#define MCFGPIO_PPDSDR_DD	(MCF_IPSBAR + 0x00100031)
+#define MCFGPIO_PPDSDR_EH	(MCF_IPSBAR + 0x00100032)
+#define MCFGPIO_PPDSDR_EL	(MCF_IPSBAR + 0x00100033)
+#define MCFGPIO_PPDSDR_AS	(MCF_IPSBAR + 0x00100034)
+#define MCFGPIO_PPDSDR_QS	(MCF_IPSBAR + 0x00100035)
+#define MCFGPIO_PPDSDR_SD	(MCF_IPSBAR + 0x00100036)
+#define MCFGPIO_PPDSDR_TC	(MCF_IPSBAR + 0x00100037)
+#define MCFGPIO_PPDSDR_TD	(MCF_IPSBAR + 0x00100038)
+#define MCFGPIO_PPDSDR_UA	(MCF_IPSBAR + 0x00100039)
+
+#define MCFGPIO_PCLRR_A		(MCF_IPSBAR + 0x0010003C)
+#define MCFGPIO_PCLRR_B		(MCF_IPSBAR + 0x0010003D)
+#define MCFGPIO_PCLRR_C		(MCF_IPSBAR + 0x0010003E)
+#define MCFGPIO_PCLRR_D		(MCF_IPSBAR + 0x0010003F)
+#define MCFGPIO_PCLRR_E		(MCF_IPSBAR + 0x00100040)
+#define MCFGPIO_PCLRR_F		(MCF_IPSBAR + 0x00100041)
+#define MCFGPIO_PCLRR_G		(MCF_IPSBAR + 0x00100042)
+#define MCFGPIO_PCLRR_H		(MCF_IPSBAR + 0x00100043)
+#define MCFGPIO_PCLRR_J		(MCF_IPSBAR + 0x00100044)
+#define MCFGPIO_PCLRR_DD	(MCF_IPSBAR + 0x00100045)
+#define MCFGPIO_PCLRR_EH	(MCF_IPSBAR + 0x00100046)
+#define MCFGPIO_PCLRR_EL	(MCF_IPSBAR + 0x00100047)
+#define MCFGPIO_PCLRR_AS	(MCF_IPSBAR + 0x00100048)
+#define MCFGPIO_PCLRR_QS	(MCF_IPSBAR + 0x00100049)
+#define MCFGPIO_PCLRR_SD	(MCF_IPSBAR + 0x0010004A)
+#define MCFGPIO_PCLRR_TC	(MCF_IPSBAR + 0x0010004B)
+#define MCFGPIO_PCLRR_TD	(MCF_IPSBAR + 0x0010004C)
+#define MCFGPIO_PCLRR_UA	(MCF_IPSBAR + 0x0010004D)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MCFGPIO_PBCDPAR		(MCF_IPSBAR + 0x00100050)
 #define MCFGPIO_PFPAR		(MCF_IPSBAR + 0x00100051)
@@ -242,16 +337,25 @@
  * definitions for generic gpio support
  *
  */
+<<<<<<< HEAD
 #define MCFGPIO_PODR		MCFGPIO_PORTA	/* port output data */
 #define MCFGPIO_PDDR		MCFGPIO_DDRA	/* port data direction */
 #define MCFGPIO_PPDR		MCFGPIO_PORTAP	/* port pin data */
 #define MCFGPIO_SETR		MCFGPIO_SETA	/* set output */
 #define MCFGPIO_CLRR		MCFGPIO_CLRA	/* clr output */
+=======
+#define MCFGPIO_PODR		MCFGPIO_PODR_A	/* port output data */
+#define MCFGPIO_PDDR		MCFGPIO_PDDR_A	/* port data direction */
+#define MCFGPIO_PPDR		MCFGPIO_PPDSDR_A/* port pin data */
+#define MCFGPIO_SETR		MCFGPIO_PPDSDR_A/* set output */
+#define MCFGPIO_CLRR		MCFGPIO_PCLRR_A	/* clr output */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MCFGPIO_IRQ_MAX		8
 #define MCFGPIO_IRQ_VECBASE	MCFINT_VECBASE
 #define MCFGPIO_PIN_MAX		180
 
+<<<<<<< HEAD
 
 /*
  *	Derek Cheung - 6 Feb 2005
@@ -269,6 +373,8 @@
 #define MCF5282_INTC0_ICR17     (volatile u8 *) (MCF_IPSBAR + 0x0C51)
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Reset Control Unit (relative to IPSBAR).
  */
@@ -278,6 +384,7 @@
 #define	MCF_RCR_SWRESET		0x80		/* Software reset bit */
 #define	MCF_RCR_FRCSTOUT	0x40		/* Force external reset */
 
+<<<<<<< HEAD
 /*********************************************************************
 *
 * Inter-IC (I2C) Module
@@ -311,4 +418,13 @@
 #define MCF5282_I2C_I2SR_RXAK   (0x01)  // received acknowledge
 
 
+=======
+/*
+ * I2C module
+ */
+#define	MCFI2C_BASE0		(MCF_IPSBAR + 0x300)
+#define	MCFI2C_SIZE0		0x40
+
+/****************************************************************************/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* m528xsim_h */

@@ -82,11 +82,14 @@
 /* Core SCSI definitions */
 #define AIC_LIB_PREFIX ahc
 
+<<<<<<< HEAD
 /* Name space conflict with BSD queue macros */
 #ifdef LIST_HEAD
 #undef LIST_HEAD
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "cam.h"
 #include "queue.h"
 #include "scsi_message.h"
@@ -214,7 +217,11 @@ int	ahc_dmamap_unload(struct ahc_softc *, bus_dma_tag_t, bus_dmamap_t);
 /*
  * XXX
  * ahc_dmamap_sync is only used on buffers allocated with
+<<<<<<< HEAD
  * the pci_alloc_consistent() API.  Although I'm not sure how
+=======
+ * the dma_alloc_coherent() API.  Although I'm not sure how
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * this works on architectures with a write buffer, Linux does
  * not have an API to sync "coherent" memory.  Perhaps we need
  * to do an mb()?
@@ -263,7 +270,11 @@ struct ahc_linux_device {
 	int			active;
 
 	/*
+<<<<<<< HEAD
 	 * The currently allowed number of 
+=======
+	 * The currently allowed number of
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * transactions that can be queued to
 	 * the device.  Must be signed for
 	 * conversion from tagged to untagged
@@ -277,7 +288,11 @@ struct ahc_linux_device {
 	 * device's queue is halted.
 	 */
 	u_int			qfrozen;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Cumulative command counter.
 	 */
@@ -356,16 +371,28 @@ struct ahc_platform_data {
 	/*
 	 * Fields accessed from interrupt context.
 	 */
+<<<<<<< HEAD
 	struct scsi_target *starget[AHC_NUM_TARGETS]; 
+=======
+	struct scsi_target *starget[AHC_NUM_TARGETS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t		 spin_lock;
 	u_int			 qfrozen;
 	struct completion	*eh_done;
+<<<<<<< HEAD
 	struct Scsi_Host        *host;		/* pointer to scsi host */
 #define AHC_LINUX_NOIRQ	((uint32_t)~0)
 	uint32_t		 irq;		/* IRQ for this adapter */
 	uint32_t		 bios_address;
 	resource_size_t 	 mem_busaddr;	/* Mem Base Addr */
+=======
+	struct Scsi_Host	*host;		/* pointer to scsi host */
+#define AHC_LINUX_NOIRQ	((uint32_t)~0)
+	uint32_t		 irq;		/* IRQ for this adapter */
+	uint32_t		 bios_address;
+	resource_size_t		 mem_busaddr;	/* Mem Base Addr */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void ahc_delay(long);
@@ -383,6 +410,7 @@ void ahc_insb(struct ahc_softc * ahc, long port,
 int		ahc_linux_register_host(struct ahc_softc *,
 					struct scsi_host_template *);
 
+<<<<<<< HEAD
 /*************************** Pretty Printing **********************************/
 struct info_str {
 	char *buffer;
@@ -391,6 +419,8 @@ struct info_str {
 	int pos;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************** Locking *************************************/
 /* Lock protecting internal data structures */
 
@@ -446,8 +476,11 @@ ahc_unlock(struct ahc_softc *ahc, unsigned long *flags)
 
 /* config registers for header type 0 devices */
 #define PCIR_MAPS	0x10
+<<<<<<< HEAD
 #define PCIR_SUBVEND_0	0x2c
 #define PCIR_SUBDEV_0	0x2e
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef enum
 {
@@ -523,6 +556,7 @@ ahc_flush_device_writes(struct ahc_softc *ahc)
 }
 
 /**************************** Proc FS Support *********************************/
+<<<<<<< HEAD
 int	ahc_linux_proc_info(struct Scsi_Host *, char *, char **,
 			    off_t, int, int);
 
@@ -551,6 +585,13 @@ static inline void ahc_notify_xfer_settings_change(struct ahc_softc *,
 static inline void ahc_platform_scb_free(struct ahc_softc *ahc,
 					   struct scb *scb);
 static inline void ahc_freeze_scb(struct scb *scb);
+=======
+int	ahc_proc_write_seeprom(struct Scsi_Host *, char *, int);
+int	ahc_linux_show_info(struct seq_file *, struct Scsi_Host *);
+
+/*************************** Domain Validation ********************************/
+/*********************** Transaction Access Wrappers *************************/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline
 void ahc_cmd_set_transaction_status(struct scsi_cmnd *cmd, uint32_t status)
@@ -684,9 +725,15 @@ static inline void
 ahc_freeze_scb(struct scb *scb)
 {
 	if ((scb->io_ctx->result & (CAM_DEV_QFRZN << 16)) == 0) {
+<<<<<<< HEAD
                 scb->io_ctx->result |= CAM_DEV_QFRZN << 16;
                 scb->platform_data->dev->qfrozen++;
         }
+=======
+		scb->io_ctx->result |= CAM_DEV_QFRZN << 16;
+		scb->platform_data->dev->qfrozen++;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void	ahc_platform_set_tags(struct ahc_softc *ahc, struct scsi_device *sdev,
@@ -701,7 +748,10 @@ void	ahc_done(struct ahc_softc*, struct scb*);
 void	ahc_send_async(struct ahc_softc *, char channel,
 		       u_int target, u_int lun, ac_code);
 void	ahc_print_path(struct ahc_softc *, struct scb *);
+<<<<<<< HEAD
 void	ahc_platform_dump_card_state(struct ahc_softc *ahc);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PCI
 #define AHC_PCI_CONFIG 1

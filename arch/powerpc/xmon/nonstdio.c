@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 1996-2005 Paul Mackerras.
  *
@@ -10,6 +11,90 @@
 #include <asm/time.h>
 #include "nonstdio.h"
 
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (C) 1996-2005 Paul Mackerras.
+ */
+#include <linux/string.h>
+#include <asm/udbg.h>
+#include <asm/time.h>
+#include "nonstdio.h"
+
+static bool paginating, paginate_skipping;
+static unsigned long paginate_lpp; /* Lines Per Page */
+static unsigned long paginate_pos;
+
+void xmon_start_pagination(void)
+{
+	paginating = true;
+	paginate_skipping = false;
+	paginate_pos = 0;
+}
+
+void xmon_end_pagination(void)
+{
+	paginating = false;
+}
+
+void xmon_set_pagination_lpp(unsigned long lpp)
+{
+	paginate_lpp = lpp;
+}
+
+static int xmon_readchar(void)
+{
+	if (udbg_getc)
+		return udbg_getc();
+	return -1;
+}
+
+static int xmon_write(const char *ptr, int nb)
+{
+	int rv = 0;
+	const char *p = ptr, *q;
+	const char msg[] = "[Hit a key (a:all, q:truncate, any:next page)]";
+
+	if (nb <= 0)
+		return rv;
+
+	if (paginating && paginate_skipping)
+		return nb;
+
+	if (paginate_lpp) {
+		while (paginating && (q = strchr(p, '\n'))) {
+			rv += udbg_write(p, q - p + 1);
+			p = q + 1;
+			paginate_pos++;
+
+			if (paginate_pos >= paginate_lpp) {
+				udbg_write(msg, strlen(msg));
+
+				switch (xmon_readchar()) {
+				case 'a':
+					paginating = false;
+					break;
+				case 'q':
+					paginate_skipping = true;
+					break;
+				default:
+					/* nothing */
+					break;
+				}
+
+				paginate_pos = 0;
+				udbg_write("\r\n", 2);
+
+				if (paginate_skipping)
+					return nb;
+			}
+		}
+	}
+
+	return rv + udbg_write(p, nb - (p - ptr));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int xmon_putchar(int c)
 {
 	char ch = c;
@@ -23,6 +108,7 @@ static char line[256];
 static char *lineptr;
 static int lineleft;
 
+<<<<<<< HEAD
 int xmon_expect(const char *str, unsigned long timeout)
 {
 	int c;
@@ -51,6 +137,9 @@ int xmon_expect(const char *str, unsigned long timeout)
 }
 
 int xmon_getchar(void)
+=======
+static int xmon_getchar(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int c;
 
@@ -124,13 +213,28 @@ char *xmon_gets(char *str, int nb)
 void xmon_printf(const char *format, ...)
 {
 	va_list args;
+<<<<<<< HEAD
 	int n;
 	static char xmon_outbuf[1024];
+=======
+	static char xmon_outbuf[1024];
+	int rc, n;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	va_start(args, format);
 	n = vsnprintf(xmon_outbuf, sizeof(xmon_outbuf), format, args);
 	va_end(args);
+<<<<<<< HEAD
 	xmon_write(xmon_outbuf, n);
+=======
+
+	rc = xmon_write(xmon_outbuf, n);
+
+	if (n && rc == 0) {
+		/* No udbg hooks, fallback to printk() - dangerous */
+		pr_cont("%s", xmon_outbuf);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void xmon_puts(const char *str)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MOSCHIP MCS7830 based (7730/7830/7832) USB 2.0 Ethernet Devices
  *
@@ -23,6 +27,7 @@
  * - mcs7830_get_regs() handling is weird: for rev 2 we return 32 regs,
  *   can access only ~ 24, remaining user buffer is uninitialized garbage
  * - anything else?
+<<<<<<< HEAD
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -38,12 +43,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/crc32.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mii.h>
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -123,6 +133,7 @@ static const char driver_name[] = "MOSCHIP usb-ethernet driver";
 
 static int mcs7830_get_reg(struct usbnet *dev, u16 index, u16 size, void *data)
 {
+<<<<<<< HEAD
 	struct usb_device *xdev = dev->udev;
 	int ret;
 	void *buffer;
@@ -136,12 +147,23 @@ static int mcs7830_get_reg(struct usbnet *dev, u16 index, u16 size, void *data)
 			      size, MCS7830_CTRL_TIMEOUT);
 	memcpy(data, buffer, size);
 	kfree(buffer);
+=======
+	int ret;
+
+	ret = usbnet_read_cmd(dev, MCS7830_RD_BREQ, MCS7830_RD_BMREQ,
+			      0x0000, index, data, size);
+	if (ret < 0)
+		return ret;
+	else if (ret < size)
+		return -ENODATA;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 static int mcs7830_set_reg(struct usbnet *dev, u16 index, u16 size, const void *data)
 {
+<<<<<<< HEAD
 	struct usb_device *xdev = dev->udev;
 	int ret;
 	void *buffer;
@@ -168,10 +190,15 @@ static void mcs7830_async_cmd_callback(struct urb *urb)
 
 	kfree(req);
 	usb_free_urb(urb);
+=======
+	return usbnet_write_cmd(dev, MCS7830_WR_BREQ, MCS7830_WR_BMREQ,
+				0x0000, index, data, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mcs7830_set_reg_async(struct usbnet *dev, u16 index, u16 size, void *data)
 {
+<<<<<<< HEAD
 	struct usb_ctrlrequest *req;
 	int ret;
 	struct urb *urb;
@@ -210,6 +237,10 @@ static void mcs7830_set_reg_async(struct usbnet *dev, u16 index, u16 size, void 
 out:
 	kfree(req);
 	usb_free_urb(urb);
+=======
+	usbnet_write_cmd_async(dev, MCS7830_WR_BREQ, MCS7830_WR_BMREQ,
+				0x0000, index, data, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mcs7830_hif_get_mac_address(struct usbnet *dev, unsigned char *addr)
@@ -220,7 +251,12 @@ static int mcs7830_hif_get_mac_address(struct usbnet *dev, unsigned char *addr)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mcs7830_hif_set_mac_address(struct usbnet *dev, unsigned char *addr)
+=======
+static int mcs7830_hif_set_mac_address(struct usbnet *dev,
+				       const unsigned char *addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = mcs7830_set_reg(dev, HIF_REG_ETHERNET_ADDR, ETH_ALEN, addr);
 
@@ -247,7 +283,11 @@ static int mcs7830_set_mac_address(struct net_device *netdev, void *p)
 		return ret;
 
 	/* it worked --> adopt it on netdev side */
+<<<<<<< HEAD
 	memcpy(netdev->dev_addr, addr->sa_data, netdev->addr_len);
+=======
+	eth_hw_addr_set(netdev, addr->sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -520,7 +560,10 @@ static int mcs7830_get_regs_len(struct net_device *net)
 static void mcs7830_get_drvinfo(struct net_device *net, struct ethtool_drvinfo *drvinfo)
 {
 	usbnet_get_drvinfo(net, drvinfo);
+<<<<<<< HEAD
 	drvinfo->regdump_len = mcs7830_get_regs_len(net);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mcs7830_get_regs(struct net_device *net, struct ethtool_regs *regs, void *data)
@@ -540,9 +583,15 @@ static const struct ethtool_ops mcs7830_ethtool_ops = {
 	.get_link		= usbnet_get_link,
 	.get_msglevel		= usbnet_get_msglevel,
 	.set_msglevel		= usbnet_set_msglevel,
+<<<<<<< HEAD
 	.get_settings		= usbnet_get_settings,
 	.set_settings		= usbnet_set_settings,
 	.nway_reset		= usbnet_nway_reset,
+=======
+	.nway_reset		= usbnet_nway_reset,
+	.get_link_ksettings	= usbnet_get_link_ksettings_mii,
+	.set_link_ksettings	= usbnet_set_link_ksettings_mii,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct net_device_ops mcs7830_netdev_ops = {
@@ -551,8 +600,14 @@ static const struct net_device_ops mcs7830_netdev_ops = {
 	.ndo_start_xmit		= usbnet_start_xmit,
 	.ndo_tx_timeout		= usbnet_tx_timeout,
 	.ndo_change_mtu		= usbnet_change_mtu,
+<<<<<<< HEAD
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_do_ioctl 		= mcs7830_ioctl,
+=======
+	.ndo_get_stats64	= dev_get_tstats64,
+	.ndo_validate_addr	= eth_validate_addr,
+	.ndo_eth_ioctl		= mcs7830_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_rx_mode	= mcs7830_set_multicast,
 	.ndo_set_mac_address	= mcs7830_set_mac_address,
 };
@@ -560,17 +615,29 @@ static const struct net_device_ops mcs7830_netdev_ops = {
 static int mcs7830_bind(struct usbnet *dev, struct usb_interface *udev)
 {
 	struct net_device *net = dev->net;
+<<<<<<< HEAD
+=======
+	u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	int retry;
 
 	/* Initial startup: Gather MAC address setting from EEPROM */
 	ret = -EINVAL;
 	for (retry = 0; retry < 5 && ret; retry++)
+<<<<<<< HEAD
 		ret = mcs7830_hif_get_mac_address(dev, net->dev_addr);
+=======
+		ret = mcs7830_hif_get_mac_address(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_warn(&dev->udev->dev, "Cannot read MAC address\n");
 		goto out;
 	}
+<<<<<<< HEAD
+=======
+	eth_hw_addr_set(net, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcs7830_data_set_multicast(net);
 
@@ -630,11 +697,35 @@ static int mcs7830_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 	return skb->len > 0;
 }
 
+<<<<<<< HEAD
+=======
+static void mcs7830_status(struct usbnet *dev, struct urb *urb)
+{
+	u8 *buf = urb->transfer_buffer;
+	bool link, link_changed;
+
+	if (urb->actual_length < 16)
+		return;
+
+	link = !(buf[1] == 0x20);
+	link_changed = netif_carrier_ok(dev->net) != link;
+	if (link_changed) {
+		usbnet_link_change(dev, link, 0);
+		netdev_dbg(dev->net, "Link Status is: %d\n", link);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct driver_info moschip_info = {
 	.description	= "MOSCHIP 7830/7832/7730 usb-NET adapter",
 	.bind		= mcs7830_bind,
 	.rx_fixup	= mcs7830_rx_fixup,
+<<<<<<< HEAD
 	.flags		= FLAG_ETHER,
+=======
+	.flags		= FLAG_ETHER | FLAG_LINK_INTR,
+	.status		= mcs7830_status,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.in		= 1,
 	.out		= 2,
 };
@@ -643,7 +734,12 @@ static const struct driver_info sitecom_info = {
 	.description    = "Sitecom LN-30 usb-NET adapter",
 	.bind		= mcs7830_bind,
 	.rx_fixup	= mcs7830_rx_fixup,
+<<<<<<< HEAD
 	.flags		= FLAG_ETHER,
+=======
+	.flags		= FLAG_ETHER | FLAG_LINK_INTR,
+	.status		= mcs7830_status,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.in		= 1,
 	.out		= 2,
 };
@@ -671,7 +767,11 @@ MODULE_DEVICE_TABLE(usb, products);
 
 static int mcs7830_reset_resume (struct usb_interface *intf)
 {
+<<<<<<< HEAD
  	/* YES, this function is successful enough that ethtool -d
+=======
+	/* YES, this function is successful enough that ethtool -d
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
            does show same output pre-/post-suspend */
 
 	struct usbnet		*dev = usb_get_intfdata(intf);
@@ -691,6 +791,10 @@ static struct usb_driver mcs7830_driver = {
 	.suspend = usbnet_suspend,
 	.resume = usbnet_resume,
 	.reset_resume = mcs7830_reset_resume,
+<<<<<<< HEAD
+=======
+	.disable_hub_initiated_lpm = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(mcs7830_driver);

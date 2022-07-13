@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/sys_alcor.c
  *
@@ -22,7 +26,10 @@
 #include <asm/dma.h>
 #include <asm/mmu_context.h>
 #include <asm/irq.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/core_cia.h>
 #include <asm/tlbflush.h>
 
@@ -132,7 +139,12 @@ alcor_init_irq(void)
 	init_i8259a_irqs();
 	common_init_isa_dma();
 
+<<<<<<< HEAD
 	setup_irq(16+31, &isa_cascade_irqaction);
+=======
+	if (request_irq(16 + 31, no_action, 0, "isa-cascade", NULL))
+		pr_err("Failed to register isa-cascade interrupt\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -181,10 +193,17 @@ alcor_init_irq(void)
  * comes in on.  This makes interrupt processing much easier.
  */
 
+<<<<<<< HEAD
 static int __init
 alcor_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	static char irq_tab[7][5] __initdata = {
+=======
+static int
+alcor_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+{
+	static char irq_tab[7][5] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*INT    INTA   INTB   INTC   INTD */
 		/* note: IDSEL 17 is XLT only */
 		{16+13, 16+13, 16+13, 16+13, 16+13},	/* IdSel 17,  TULIP  */

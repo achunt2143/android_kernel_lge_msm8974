@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * transport_class.c - implementation of generic transport classes
  *                     using attribute_containers
  *
  * Copyright (c) 2005 - James Bottomley <James.Bottomley@steeleye.com>
  *
+<<<<<<< HEAD
  * This file is licensed under GPLv2
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The basic idea here is to allow any "device controller" (which
  * would most often be a Host Bus Adapter to use the services of one
  * or more tranport classes for performing transport specific
@@ -31,6 +38,13 @@
 #include <linux/attribute_container.h>
 #include <linux/transport_class.h>
 
+<<<<<<< HEAD
+=======
+static int transport_remove_classdev(struct attribute_container *cont,
+				     struct device *dev,
+				     struct device *classdev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * transport_class_register - register an initial transport class
  *
@@ -152,12 +166,35 @@ static int transport_add_class_device(struct attribute_container *cont,
 				      struct device *dev,
 				      struct device *classdev)
 {
+<<<<<<< HEAD
+=======
+	struct transport_class *tclass = class_to_transport_class(cont->class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = attribute_container_add_class_device(classdev);
 	struct transport_container *tcont = 
 		attribute_container_to_transport_container(cont);
 
+<<<<<<< HEAD
 	if (!error && tcont->statistics)
 		error = sysfs_create_group(&classdev->kobj, tcont->statistics);
+=======
+	if (error)
+		goto err_remove;
+
+	if (tcont->statistics) {
+		error = sysfs_create_group(&classdev->kobj, tcont->statistics);
+		if (error)
+			goto err_del;
+	}
+
+	return 0;
+
+err_del:
+	attribute_container_class_device_del(classdev);
+err_remove:
+	if (tclass->remove)
+		tclass->remove(tcont, dev, classdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
@@ -173,10 +210,18 @@ static int transport_add_class_device(struct attribute_container *cont,
  * routine is simply a trigger point used to add the device to the
  * system and register attributes for it.
  */
+<<<<<<< HEAD
 
 void transport_add_device(struct device *dev)
 {
 	attribute_container_device_trigger(dev, transport_add_class_device);
+=======
+int transport_add_device(struct device *dev)
+{
+	return attribute_container_device_trigger_safe(dev,
+					transport_add_class_device,
+					transport_remove_classdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(transport_add_device);
 

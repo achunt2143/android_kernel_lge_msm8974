@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: LGPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1993, 1994, 1995, 1996, 1997 Free Software Foundation, Inc.
  * This file is part of the GNU C Library.
@@ -21,14 +25,23 @@
 
 /*
  * Converts the calendar time to broken-down time representation
+<<<<<<< HEAD
  * Based on code from glibc-2.6
  *
  * 2009-7-14:
  *   Moved from glibc-2.6 to kernel by Zhaolei<zhaolei@cn.fujitsu.com>
+=======
+ *
+ * 2009-7-14:
+ *   Moved from glibc-2.6 to kernel by Zhaolei<zhaolei@cn.fujitsu.com>
+ * 2021-06-02:
+ *   Reimplemented by Cassio Neri <cassio.neri@gmail.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/time.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
 /*
  * Nonzero if YEAR is a leap year (every 4 years,
@@ -62,11 +75,15 @@ static const unsigned short __mon_yday[2][13] = {
 	/* Leap years. */
 	{0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335, 366}
 };
+=======
+#include <linux/kernel.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SECS_PER_HOUR	(60 * 60)
 #define SECS_PER_DAY	(SECS_PER_HOUR * 24)
 
 /**
+<<<<<<< HEAD
  * time_to_tm - converts the calendar time to local broken-down time
  *
  * @totalsecs	the number of seconds elapsed since 00:00:00 on January 1, 1970,
@@ -81,6 +98,25 @@ void time_to_tm(time_t totalsecs, int offset, struct tm *result)
 
 	days = totalsecs / SECS_PER_DAY;
 	rem = totalsecs % SECS_PER_DAY;
+=======
+ * time64_to_tm - converts the calendar time to local broken-down time
+ *
+ * @totalsecs:	the number of seconds elapsed since 00:00:00 on January 1, 1970,
+ *		Coordinated Universal Time (UTC).
+ * @offset:	offset seconds adding to totalsecs.
+ * @result:	pointer to struct tm variable to receive broken-down time
+ */
+void time64_to_tm(time64_t totalsecs, int offset, struct tm *result)
+{
+	u32 u32tmp, day_of_century, year_of_century, day_of_year, month, day;
+	u64 u64tmp, udays, century, year;
+	bool is_Jan_or_Feb, is_leap_year;
+	long days, rem;
+	int remainder;
+
+	days = div_s64_rem(totalsecs, SECS_PER_DAY, &remainder);
+	rem = remainder;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rem += offset;
 	while (rem < 0) {
 		rem += SECS_PER_DAY;
@@ -101,6 +137,7 @@ void time_to_tm(time_t totalsecs, int offset, struct tm *result)
 	if (result->tm_wday < 0)
 		result->tm_wday += 7;
 
+<<<<<<< HEAD
 	y = 1970;
 
 	while (days < 0 || days >= (__isleap(y) ? 366 : 365)) {
@@ -125,3 +162,70 @@ void time_to_tm(time_t totalsecs, int offset, struct tm *result)
 	result->tm_mday = days + 1;
 }
 EXPORT_SYMBOL(time_to_tm);
+=======
+	/*
+	 * The following algorithm is, basically, Proposition 6.3 of Neri
+	 * and Schneider [1]. In a few words: it works on the computational
+	 * (fictitious) calendar where the year starts in March, month = 2
+	 * (*), and finishes in February, month = 13. This calendar is
+	 * mathematically convenient because the day of the year does not
+	 * depend on whether the year is leap or not. For instance:
+	 *
+	 * March 1st		0-th day of the year;
+	 * ...
+	 * April 1st		31-st day of the year;
+	 * ...
+	 * January 1st		306-th day of the year; (Important!)
+	 * ...
+	 * February 28th	364-th day of the year;
+	 * February 29th	365-th day of the year (if it exists).
+	 *
+	 * After having worked out the date in the computational calendar
+	 * (using just arithmetics) it's easy to convert it to the
+	 * corresponding date in the Gregorian calendar.
+	 *
+	 * [1] "Euclidean Affine Functions and Applications to Calendar
+	 * Algorithms". https://arxiv.org/abs/2102.06959
+	 *
+	 * (*) The numbering of months follows tm more closely and thus,
+	 * is slightly different from [1].
+	 */
+
+	udays	= ((u64) days) + 2305843009213814918ULL;
+
+	u64tmp		= 4 * udays + 3;
+	century		= div64_u64_rem(u64tmp, 146097, &u64tmp);
+	day_of_century	= (u32) (u64tmp / 4);
+
+	u32tmp		= 4 * day_of_century + 3;
+	u64tmp		= 2939745ULL * u32tmp;
+	year_of_century	= upper_32_bits(u64tmp);
+	day_of_year	= lower_32_bits(u64tmp) / 2939745 / 4;
+
+	year		= 100 * century + year_of_century;
+	is_leap_year	= year_of_century ? !(year_of_century % 4) : !(century % 4);
+
+	u32tmp		= 2141 * day_of_year + 132377;
+	month		= u32tmp >> 16;
+	day		= ((u16) u32tmp) / 2141;
+
+	/*
+	 * Recall that January 1st is the 306-th day of the year in the
+	 * computational (not Gregorian) calendar.
+	 */
+	is_Jan_or_Feb	= day_of_year >= 306;
+
+	/* Convert to the Gregorian calendar and adjust to Unix time. */
+	year		= year + is_Jan_or_Feb - 6313183731940000ULL;
+	month		= is_Jan_or_Feb ? month - 12 : month;
+	day		= day + 1;
+	day_of_year	+= is_Jan_or_Feb ? -306 : 31 + 28 + is_leap_year;
+
+	/* Convert to tm's format. */
+	result->tm_year = (long) (year - 1900);
+	result->tm_mon  = (int) month;
+	result->tm_mday = (int) day;
+	result->tm_yday = (int) day_of_year;
+}
+EXPORT_SYMBOL(time64_to_tm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

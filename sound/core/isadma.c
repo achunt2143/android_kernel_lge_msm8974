@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  ISA DMA support functions
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  ISA DMA support functions
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -27,8 +34,13 @@
 #undef HAVE_REALLY_SLOW_DMA_CONTROLLER
 
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <sound/core.h>
 #include <asm/dma.h>
+=======
+#include <linux/isa-dma.h>
+#include <sound/core.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * snd_dma_program - program an ISA DMA transfer
@@ -55,7 +67,10 @@ void snd_dma_program(unsigned long dma,
 		enable_dma(dma);
 	release_dma_lock(flags);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_dma_program);
 
 /**
@@ -73,7 +88,10 @@ void snd_dma_disable(unsigned long dma)
 	disable_dma(dma);
 	release_dma_lock(flags);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_dma_disable);
 
 /**
@@ -81,7 +99,11 @@ EXPORT_SYMBOL(snd_dma_disable);
  * @dma: the dma number
  * @size: the dma transfer size
  *
+<<<<<<< HEAD
  * Returns the current pointer in DMA tranfer buffer in bytes
+=======
+ * Return: The current pointer in DMA transfer buffer in bytes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 unsigned int snd_dma_pointer(unsigned long dma, unsigned int size)
 {
@@ -106,12 +128,59 @@ unsigned int snd_dma_pointer(unsigned long dma, unsigned int size)
 		result = result1;
 #ifdef CONFIG_SND_DEBUG
 	if (result > size)
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "pointer (0x%x) for DMA #%ld is greater than transfer size (0x%x)\n", result, dma, size);
+=======
+		pr_err("ALSA: pointer (0x%x) for DMA #%ld is greater than transfer size (0x%x)\n", result, dma, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	if (result >= size || result == 0)
 		return 0;
 	else
 		return size - result;
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(snd_dma_pointer);
+=======
+EXPORT_SYMBOL(snd_dma_pointer);
+
+struct snd_dma_data {
+	int dma;
+};
+
+static void __snd_release_dma(struct device *dev, void *data)
+{
+	struct snd_dma_data *p = data;
+
+	snd_dma_disable(p->dma);
+	free_dma(p->dma);
+}
+
+/**
+ * snd_devm_request_dma - the managed version of request_dma()
+ * @dev: the device pointer
+ * @dma: the dma number
+ * @name: the name string of the requester
+ *
+ * The requested DMA will be automatically released at unbinding via devres.
+ *
+ * Return: zero on success, or a negative error code
+ */
+int snd_devm_request_dma(struct device *dev, int dma, const char *name)
+{
+	struct snd_dma_data *p;
+
+	if (request_dma(dma, name))
+		return -EBUSY;
+	p = devres_alloc(__snd_release_dma, sizeof(*p), GFP_KERNEL);
+	if (!p) {
+		free_dma(dma);
+		return -ENOMEM;
+	}
+	p->dma = dma;
+	devres_add(dev, p);
+	return 0;
+}
+EXPORT_SYMBOL_GPL(snd_devm_request_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

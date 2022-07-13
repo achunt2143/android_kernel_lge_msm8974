@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for PowerMac AWACS
  * Copyright (c) 2001 by Takashi Iwai <tiwai@suse.de>
  *   based on dmasound.c.
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -31,7 +38,10 @@
 #define CHIP_NAME "PMac"
 
 MODULE_DESCRIPTION("PowerMac");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Apple,PowerMac}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 static int index = SNDRV_DEFAULT_IDX1;		/* Index 0-MAX */
@@ -51,18 +61,31 @@ static struct platform_device *device;
 /*
  */
 
+<<<<<<< HEAD
 static int __devinit snd_pmac_probe(struct platform_device *devptr)
+=======
+static int snd_pmac_probe(struct platform_device *devptr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct snd_pmac *chip;
 	char *name_ext;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
 	if (err < 0)
 		return err;
 
 	if ((err = snd_pmac_new(card, &chip)) < 0)
+=======
+	err = snd_card_new(&devptr->dev, index, id, THIS_MODULE, 0, &card);
+	if (err < 0)
+		return err;
+
+	err = snd_pmac_new(card, &chip);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto __error;
 	card->private_data = chip;
 
@@ -72,7 +95,12 @@ static int __devinit snd_pmac_probe(struct platform_device *devptr)
 		strcpy(card->shortname, "PowerMac Burgundy");
 		sprintf(card->longname, "%s (Dev %d) Sub-frame %d",
 			card->shortname, chip->device_id, chip->subframe);
+<<<<<<< HEAD
 		if ((err = snd_pmac_burgundy_init(chip)) < 0)
+=======
+		err = snd_pmac_burgundy_init(chip);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto __error;
 		break;
 	case PMAC_DACA:
@@ -80,7 +108,12 @@ static int __devinit snd_pmac_probe(struct platform_device *devptr)
 		strcpy(card->shortname, "PowerMac DACA");
 		sprintf(card->longname, "%s (Dev %d) Sub-frame %d",
 			card->shortname, chip->device_id, chip->subframe);
+<<<<<<< HEAD
 		if ((err = snd_pmac_daca_init(chip)) < 0)
+=======
+		err = snd_pmac_daca_init(chip);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto __error;
 		break;
 	case PMAC_TUMBLER:
@@ -90,7 +123,15 @@ static int __devinit snd_pmac_probe(struct platform_device *devptr)
 		sprintf(card->shortname, "PowerMac %s", name_ext);
 		sprintf(card->longname, "%s (Dev %d) Sub-frame %d",
 			card->shortname, chip->device_id, chip->subframe);
+<<<<<<< HEAD
 		if ( snd_pmac_tumbler_init(chip) < 0 || snd_pmac_tumbler_post_init() < 0)
+=======
+		err = snd_pmac_tumbler_init(chip);
+		if (err < 0)
+			goto __error;
+		err = snd_pmac_tumbler_post_init();
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto __error;
 		break;
 	case PMAC_AWACS:
@@ -106,7 +147,12 @@ static int __devinit snd_pmac_probe(struct platform_device *devptr)
 			name_ext = "";
 		sprintf(card->longname, "%s%s Rev %d",
 			card->shortname, name_ext, chip->revision);
+<<<<<<< HEAD
 		if ((err = snd_pmac_awacs_init(chip)) < 0)
+=======
+		err = snd_pmac_awacs_init(chip);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto __error;
 		break;
 	default:
@@ -115,16 +161,26 @@ static int __devinit snd_pmac_probe(struct platform_device *devptr)
 		goto __error;
 	}
 
+<<<<<<< HEAD
 	if ((err = snd_pmac_pcm_new(chip)) < 0)
+=======
+	err = snd_pmac_pcm_new(chip);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto __error;
 
 	chip->initialized = 1;
 	if (enable_beep)
 		snd_pmac_attach_beep(chip);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &devptr->dev);
 
 	if ((err = snd_card_register(card)) < 0)
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto __error;
 
 	platform_set_drvdata(devptr, card);
@@ -136,6 +192,7 @@ __error:
 }
 
 
+<<<<<<< HEAD
 static int __devexit snd_pmac_remove(struct platform_device *devptr)
 {
 	snd_card_free(platform_get_drvdata(devptr));
@@ -147,22 +204,48 @@ static int __devexit snd_pmac_remove(struct platform_device *devptr)
 static int snd_pmac_driver_suspend(struct platform_device *devptr, pm_message_t state)
 {
 	struct snd_card *card = platform_get_drvdata(devptr);
+=======
+static void snd_pmac_remove(struct platform_device *devptr)
+{
+	snd_card_free(platform_get_drvdata(devptr));
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int snd_pmac_driver_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_pmac_suspend(card->private_data);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int snd_pmac_driver_resume(struct platform_device *devptr)
 {
 	struct snd_card *card = platform_get_drvdata(devptr);
 	snd_pmac_resume(card->private_data);
 	return 0;
 }
+=======
+static int snd_pmac_driver_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	snd_pmac_resume(card->private_data);
+	return 0;
+}
+
+static SIMPLE_DEV_PM_OPS(snd_pmac_pm, snd_pmac_driver_suspend, snd_pmac_driver_resume);
+#define SND_PMAC_PM_OPS	&snd_pmac_pm
+#else
+#define SND_PMAC_PM_OPS	NULL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define SND_PMAC_DRIVER		"snd_powermac"
 
 static struct platform_driver snd_pmac_driver = {
 	.probe		= snd_pmac_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_pmac_remove),
 #ifdef CONFIG_PM
 	.suspend	= snd_pmac_driver_suspend,
@@ -170,6 +253,12 @@ static struct platform_driver snd_pmac_driver = {
 #endif
 	.driver		= {
 		.name	= SND_PMAC_DRIVER
+=======
+	.remove_new	= snd_pmac_remove,
+	.driver		= {
+		.name	= SND_PMAC_DRIVER,
+		.pm	= SND_PMAC_PM_OPS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -177,7 +266,12 @@ static int __init alsa_card_pmac_init(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	if ((err = platform_driver_register(&snd_pmac_driver)) < 0)
+=======
+	err = platform_driver_register(&snd_pmac_driver);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	device = platform_device_register_simple(SND_PMAC_DRIVER, -1, NULL, 0);
 	return 0;

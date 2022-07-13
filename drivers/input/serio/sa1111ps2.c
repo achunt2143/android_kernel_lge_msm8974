@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/input/serio/sa1111ps2.c
  *
  *  Copyright (C) 2002 Russell King
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/init.h>
@@ -47,6 +54,11 @@ struct ps2if {
 	struct serio		*io;
 	struct sa1111_dev	*dev;
 	void __iomem		*base;
+<<<<<<< HEAD
+=======
+	int			rx_irq;
+	int			tx_irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		open;
 	spinlock_t		lock;
 	unsigned int		head;
@@ -64,22 +76,37 @@ static irqreturn_t ps2_rxint(int irq, void *dev_id)
 	struct ps2if *ps2if = dev_id;
 	unsigned int scancode, flag, status;
 
+<<<<<<< HEAD
 	status = sa1111_readl(ps2if->base + PS2STAT);
 	while (status & PS2STAT_RXF) {
 		if (status & PS2STAT_STP)
 			sa1111_writel(PS2STAT_STP, ps2if->base + PS2STAT);
+=======
+	status = readl_relaxed(ps2if->base + PS2STAT);
+	while (status & PS2STAT_RXF) {
+		if (status & PS2STAT_STP)
+			writel_relaxed(PS2STAT_STP, ps2if->base + PS2STAT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		flag = (status & PS2STAT_STP ? SERIO_FRAME : 0) |
 		       (status & PS2STAT_RXP ? 0 : SERIO_PARITY);
 
+<<<<<<< HEAD
 		scancode = sa1111_readl(ps2if->base + PS2DATA) & 0xff;
+=======
+		scancode = readl_relaxed(ps2if->base + PS2DATA) & 0xff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (hweight8(scancode) & 1)
 			flag ^= SERIO_PARITY;
 
 		serio_interrupt(ps2if->io, scancode, flag);
 
+<<<<<<< HEAD
 		status = sa1111_readl(ps2if->base + PS2STAT);
+=======
+		status = readl_relaxed(ps2if->base + PS2STAT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         }
 
         return IRQ_HANDLED;
@@ -94,12 +121,20 @@ static irqreturn_t ps2_txint(int irq, void *dev_id)
 	unsigned int status;
 
 	spin_lock(&ps2if->lock);
+<<<<<<< HEAD
 	status = sa1111_readl(ps2if->base + PS2STAT);
+=======
+	status = readl_relaxed(ps2if->base + PS2STAT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ps2if->head == ps2if->tail) {
 		disable_irq_nosync(irq);
 		/* done */
 	} else if (status & PS2STAT_TXE) {
+<<<<<<< HEAD
 		sa1111_writel(ps2if->buf[ps2if->tail], ps2if->base + PS2DATA);
+=======
+		writel_relaxed(ps2if->buf[ps2if->tail], ps2if->base + PS2DATA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ps2if->tail = (ps2if->tail + 1) & (sizeof(ps2if->buf) - 1);
 	}
 	spin_unlock(&ps2if->lock);
@@ -122,11 +157,19 @@ static int ps2_write(struct serio *io, unsigned char val)
 	/*
 	 * If the TX register is empty, we can go straight out.
 	 */
+<<<<<<< HEAD
 	if (sa1111_readl(ps2if->base + PS2STAT) & PS2STAT_TXE) {
 		sa1111_writel(val, ps2if->base + PS2DATA);
 	} else {
 		if (ps2if->head == ps2if->tail)
 			enable_irq(ps2if->dev->irq[1]);
+=======
+	if (readl_relaxed(ps2if->base + PS2STAT) & PS2STAT_TXE) {
+		writel_relaxed(val, ps2if->base + PS2DATA);
+	} else {
+		if (ps2if->head == ps2if->tail)
+			enable_irq(ps2if->tx_irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		head = (ps2if->head + 1) & (sizeof(ps2if->buf) - 1);
 		if (head != ps2if->tail) {
 			ps2if->buf[ps2if->head] = val;
@@ -147,30 +190,53 @@ static int ps2_open(struct serio *io)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	ret = request_irq(ps2if->dev->irq[0], ps2_rxint, 0,
 			  SA1111_DRIVER_NAME(ps2if->dev), ps2if);
 	if (ret) {
 		printk(KERN_ERR "sa1111ps2: could not allocate IRQ%d: %d\n",
 			ps2if->dev->irq[0], ret);
+=======
+	ret = request_irq(ps2if->rx_irq, ps2_rxint, 0,
+			  SA1111_DRIVER_NAME(ps2if->dev), ps2if);
+	if (ret) {
+		printk(KERN_ERR "sa1111ps2: could not allocate IRQ%d: %d\n",
+			ps2if->rx_irq, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sa1111_disable_device(ps2if->dev);
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret = request_irq(ps2if->dev->irq[1], ps2_txint, 0,
 			  SA1111_DRIVER_NAME(ps2if->dev), ps2if);
 	if (ret) {
 		printk(KERN_ERR "sa1111ps2: could not allocate IRQ%d: %d\n",
 			ps2if->dev->irq[1], ret);
 		free_irq(ps2if->dev->irq[0], ps2if);
+=======
+	ret = request_irq(ps2if->tx_irq, ps2_txint, 0,
+			  SA1111_DRIVER_NAME(ps2if->dev), ps2if);
+	if (ret) {
+		printk(KERN_ERR "sa1111ps2: could not allocate IRQ%d: %d\n",
+			ps2if->tx_irq, ret);
+		free_irq(ps2if->rx_irq, ps2if);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sa1111_disable_device(ps2if->dev);
 		return ret;
 	}
 
 	ps2if->open = 1;
 
+<<<<<<< HEAD
 	enable_irq_wake(ps2if->dev->irq[0]);
 
 	sa1111_writel(PS2CR_ENA, ps2if->base + PS2CR);
+=======
+	enable_irq_wake(ps2if->rx_irq);
+
+	writel_relaxed(PS2CR_ENA, ps2if->base + PS2CR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -178,6 +244,7 @@ static void ps2_close(struct serio *io)
 {
 	struct ps2if *ps2if = io->port_data;
 
+<<<<<<< HEAD
 	sa1111_writel(0, ps2if->base + PS2CR);
 
 	disable_irq_wake(ps2if->dev->irq[0]);
@@ -186,6 +253,16 @@ static void ps2_close(struct serio *io)
 
 	free_irq(ps2if->dev->irq[1], ps2if);
 	free_irq(ps2if->dev->irq[0], ps2if);
+=======
+	writel_relaxed(0, ps2if->base + PS2CR);
+
+	disable_irq_wake(ps2if->rx_irq);
+
+	ps2if->open = 0;
+
+	free_irq(ps2if->tx_irq, ps2if);
+	free_irq(ps2if->rx_irq, ps2if);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sa1111_disable_device(ps2if->dev);
 }
@@ -193,26 +270,46 @@ static void ps2_close(struct serio *io)
 /*
  * Clear the input buffer.
  */
+<<<<<<< HEAD
 static void __devinit ps2_clear_input(struct ps2if *ps2if)
+=======
+static void ps2_clear_input(struct ps2if *ps2if)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int maxread = 100;
 
 	while (maxread--) {
+<<<<<<< HEAD
 		if ((sa1111_readl(ps2if->base + PS2DATA) & 0xff) == 0xff)
+=======
+		if ((readl_relaxed(ps2if->base + PS2DATA) & 0xff) == 0xff)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 }
 
+<<<<<<< HEAD
 static unsigned int __devinit ps2_test_one(struct ps2if *ps2if,
+=======
+static unsigned int ps2_test_one(struct ps2if *ps2if,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   unsigned int mask)
 {
 	unsigned int val;
 
+<<<<<<< HEAD
 	sa1111_writel(PS2CR_ENA | mask, ps2if->base + PS2CR);
 
 	udelay(2);
 
 	val = sa1111_readl(ps2if->base + PS2STAT);
+=======
+	writel_relaxed(PS2CR_ENA | mask, ps2if->base + PS2CR);
+
+	udelay(10);
+
+	val = readl_relaxed(ps2if->base + PS2STAT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return val & (PS2STAT_KBC | PS2STAT_KBD);
 }
 
@@ -220,7 +317,11 @@ static unsigned int __devinit ps2_test_one(struct ps2if *ps2if,
  * Test the keyboard interface.  We basically check to make sure that
  * we can drive each line to the keyboard independently of each other.
  */
+<<<<<<< HEAD
 static int __devinit ps2_test(struct ps2if *ps2if)
+=======
+static int ps2_test(struct ps2if *ps2if)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int stat;
 	int ret = 0;
@@ -243,7 +344,11 @@ static int __devinit ps2_test(struct ps2if *ps2if)
 		ret = -ENODEV;
 	}
 
+<<<<<<< HEAD
 	sa1111_writel(0, ps2if->base + PS2CR);
+=======
+	writel_relaxed(0, ps2if->base + PS2CR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -251,7 +356,11 @@ static int __devinit ps2_test(struct ps2if *ps2if)
 /*
  * Add one device to this driver.
  */
+<<<<<<< HEAD
 static int __devinit ps2_probe(struct sa1111_dev *dev)
+=======
+static int ps2_probe(struct sa1111_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps2if *ps2if;
 	struct serio *serio;
@@ -264,13 +373,21 @@ static int __devinit ps2_probe(struct sa1111_dev *dev)
 		goto free;
 	}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	serio->id.type		= SERIO_8042;
 	serio->write		= ps2_write;
 	serio->open		= ps2_open;
 	serio->close		= ps2_close;
+<<<<<<< HEAD
 	strlcpy(serio->name, dev_name(&dev->dev), sizeof(serio->name));
 	strlcpy(serio->phys, dev_name(&dev->dev), sizeof(serio->phys));
+=======
+	strscpy(serio->name, dev_name(&dev->dev), sizeof(serio->name));
+	strscpy(serio->phys, dev_name(&dev->dev), sizeof(serio->phys));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	serio->port_data	= ps2if;
 	serio->dev.parent	= &dev->dev;
 	ps2if->io		= serio;
@@ -279,6 +396,21 @@ static int __devinit ps2_probe(struct sa1111_dev *dev)
 
 	spin_lock_init(&ps2if->lock);
 
+<<<<<<< HEAD
+=======
+	ps2if->rx_irq = sa1111_get_irq(dev, 0);
+	if (ps2if->rx_irq <= 0) {
+		ret = ps2if->rx_irq ? : -ENXIO;
+		goto free;
+	}
+
+	ps2if->tx_irq = sa1111_get_irq(dev, 1);
+	if (ps2if->tx_irq <= 0) {
+		ret = ps2if->tx_irq ? : -ENXIO;
+		goto free;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Request the physical region for this PS2 port.
 	 */
@@ -297,8 +429,13 @@ static int __devinit ps2_probe(struct sa1111_dev *dev)
 	sa1111_enable_device(ps2if->dev);
 
 	/* Incoming clock is 8MHz */
+<<<<<<< HEAD
 	sa1111_writel(0, ps2if->base + PS2CLKDIV);
 	sa1111_writel(127, ps2if->base + PS2PRECNT);
+=======
+	writel_relaxed(0, ps2if->base + PS2CLKDIV);
+	writel_relaxed(127, ps2if->base + PS2PRECNT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Flush any pending input.
@@ -334,7 +471,11 @@ static int __devinit ps2_probe(struct sa1111_dev *dev)
 /*
  * Remove one device from this driver.
  */
+<<<<<<< HEAD
 static int __devexit ps2_remove(struct sa1111_dev *dev)
+=======
+static void ps2_remove(struct sa1111_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ps2if *ps2if = sa1111_get_drvdata(dev);
 
@@ -343,8 +484,11 @@ static int __devexit ps2_remove(struct sa1111_dev *dev)
 	sa1111_set_drvdata(dev, NULL);
 
 	kfree(ps2if);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -357,7 +501,11 @@ static struct sa1111_driver ps2_driver = {
 	},
 	.devid		= SA1111_DEVID_PS2,
 	.probe		= ps2_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(ps2_remove),
+=======
+	.remove		= ps2_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ps2_init(void)

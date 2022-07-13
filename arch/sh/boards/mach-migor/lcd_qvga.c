@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support for SuperH MigoR Quarter VGA LCD Panel
  *
@@ -5,10 +9,13 @@
  *
  * Based on lcd_powertip.c from Kenati Technologies Pvt Ltd.
  * Copyright (c) 2007 Ujjwal Pande <ujjwal@kenati.com>,
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>

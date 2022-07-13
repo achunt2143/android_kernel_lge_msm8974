@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * amd76xrom.c
  *
@@ -100,8 +104,13 @@ static void amd76xrom_cleanup(struct amd76xrom_window *window)
 }
 
 
+<<<<<<< HEAD
 static int __devinit amd76xrom_init_one (struct pci_dev *pdev,
 	const struct pci_device_id *ent)
+=======
+static int amd76xrom_init_one(struct pci_dev *pdev,
+			      const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static char *rom_probe_types[] = { "cfi_probe", "jedec_probe", NULL };
 	u8 byte;
@@ -138,7 +147,11 @@ static int __devinit amd76xrom_init_one (struct pci_dev *pdev,
 	/*
 	 * Try to reserve the window mem region.  If this fails then
 	 * it is likely due to a fragment of the window being
+<<<<<<< HEAD
 	 * "reseved" by the BIOS.  In the case that the
+=======
+	 * "reserved" by the BIOS.  In the case that the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * request_mem_region() fails then once the rom size is
 	 * discovered we will try to reserve the unreserved fragment.
 	 */
@@ -162,7 +175,11 @@ static int __devinit amd76xrom_init_one (struct pci_dev *pdev,
 	/* FIXME handle registers 0x80 - 0x8C the bios region locks */
 
 	/* For write accesses caches are useless */
+<<<<<<< HEAD
 	window->virt = ioremap_nocache(window->phys, window->size);
+=======
+	window->virt = ioremap(window->phys, window->size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!window->virt) {
 		printk(KERN_ERR MOD_NAME ": ioremap(%08lx, %08lx) failed\n",
 			window->phys, window->size);
@@ -188,10 +205,15 @@ static int __devinit amd76xrom_init_one (struct pci_dev *pdev,
 
 		if (!map) {
 			map = kmalloc(sizeof(*map), GFP_KERNEL);
+<<<<<<< HEAD
 		}
 		if (!map) {
 			printk(KERN_ERR MOD_NAME ": kmalloc failed");
 			goto out;
+=======
+			if (!map)
+				goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		memset(map, 0, sizeof(*map));
 		INIT_LIST_HEAD(&map->list);
@@ -289,14 +311,22 @@ static int __devinit amd76xrom_init_one (struct pci_dev *pdev,
 }
 
 
+<<<<<<< HEAD
 static void __devexit amd76xrom_remove_one (struct pci_dev *pdev)
+=======
+static void amd76xrom_remove_one(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct amd76xrom_window *window = &amd76xrom_window;
 
 	amd76xrom_cleanup(window);
 }
 
+<<<<<<< HEAD
 static struct pci_device_id amd76xrom_pci_tbl[] = {
+=======
+static const struct pci_device_id amd76xrom_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_VIPER_7410,
 		PCI_ANY_ID, PCI_ANY_ID, },
 	{ PCI_VENDOR_ID_AMD, PCI_DEVICE_ID_AMD_VIPER_7440,
@@ -319,7 +349,11 @@ static struct pci_driver amd76xrom_driver = {
 static int __init init_amd76xrom(void)
 {
 	struct pci_dev *pdev;
+<<<<<<< HEAD
 	struct pci_device_id *id;
+=======
+	const struct pci_device_id *id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pdev = NULL;
 	for(id = amd76xrom_pci_tbl; id->vendor; id++) {
 		pdev = pci_get_device(id->vendor, id->device, NULL);
@@ -347,4 +381,7 @@ module_exit(cleanup_amd76xrom);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Eric Biederman <ebiederman@lnxi.com>");
 MODULE_DESCRIPTION("MTD map driver for BIOS chips on the AMD76X southbridge");
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

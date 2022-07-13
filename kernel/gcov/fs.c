@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  This code exports profiling data as debugfs files to userspace.
  *
@@ -25,6 +29,10 @@
 #include <linux/slab.h>
 #include <linux/mutex.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
+=======
+#include <linux/mm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "gcov.h"
 
 /**
@@ -57,13 +65,20 @@ struct gcov_node {
 	struct dentry *dentry;
 	struct dentry **links;
 	int num_loaded;
+<<<<<<< HEAD
 	char name[0];
+=======
+	char name[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const char objtree[] = OBJTREE;
 static const char srctree[] = SRCTREE;
 static struct gcov_node root_node;
+<<<<<<< HEAD
 static struct dentry *reset_dentry;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static LIST_HEAD(all_head);
 static DEFINE_MUTEX(node_lock);
 
@@ -74,8 +89,13 @@ static int __init gcov_persist_setup(char *str)
 {
 	unsigned long val;
 
+<<<<<<< HEAD
 	if (strict_strtoul(str, 0, &val)) {
 		pr_warning("invalid gcov_persist parameter '%s'\n", str);
+=======
+	if (kstrtoul(str, 0, &val)) {
+		pr_warn("invalid gcov_persist parameter '%s'\n", str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	gcov_persist = val;
@@ -85,6 +105,118 @@ static int __init gcov_persist_setup(char *str)
 }
 __setup("gcov_persist=", gcov_persist_setup);
 
+<<<<<<< HEAD
+=======
+#define ITER_STRIDE	PAGE_SIZE
+
+/**
+ * struct gcov_iterator - specifies current file position in logical records
+ * @info: associated profiling data
+ * @buffer: buffer containing file data
+ * @size: size of buffer
+ * @pos: current position in file
+ */
+struct gcov_iterator {
+	struct gcov_info *info;
+	size_t size;
+	loff_t pos;
+	char buffer[] __counted_by(size);
+};
+
+/**
+ * gcov_iter_new - allocate and initialize profiling data iterator
+ * @info: profiling data set to be iterated
+ *
+ * Return file iterator on success, %NULL otherwise.
+ */
+static struct gcov_iterator *gcov_iter_new(struct gcov_info *info)
+{
+	struct gcov_iterator *iter;
+	size_t size;
+
+	/* Dry-run to get the actual buffer size. */
+	size = convert_to_gcda(NULL, info);
+
+	iter = kvmalloc(struct_size(iter, buffer, size), GFP_KERNEL);
+	if (!iter)
+		return NULL;
+
+	iter->info = info;
+	iter->size = size;
+	convert_to_gcda(iter->buffer, info);
+
+	return iter;
+}
+
+
+/**
+ * gcov_iter_free - free iterator data
+ * @iter: file iterator
+ */
+static void gcov_iter_free(struct gcov_iterator *iter)
+{
+	kvfree(iter);
+}
+
+/**
+ * gcov_iter_get_info - return profiling data set for given file iterator
+ * @iter: file iterator
+ */
+static struct gcov_info *gcov_iter_get_info(struct gcov_iterator *iter)
+{
+	return iter->info;
+}
+
+/**
+ * gcov_iter_start - reset file iterator to starting position
+ * @iter: file iterator
+ */
+static void gcov_iter_start(struct gcov_iterator *iter)
+{
+	iter->pos = 0;
+}
+
+/**
+ * gcov_iter_next - advance file iterator to next logical record
+ * @iter: file iterator
+ *
+ * Return zero if new position is valid, non-zero if iterator has reached end.
+ */
+static int gcov_iter_next(struct gcov_iterator *iter)
+{
+	if (iter->pos < iter->size)
+		iter->pos += ITER_STRIDE;
+
+	if (iter->pos >= iter->size)
+		return -EINVAL;
+
+	return 0;
+}
+
+/**
+ * gcov_iter_write - write data for current pos to seq_file
+ * @iter: file iterator
+ * @seq: seq_file handle
+ *
+ * Return zero on success, non-zero otherwise.
+ */
+static int gcov_iter_write(struct gcov_iterator *iter, struct seq_file *seq)
+{
+	size_t len;
+
+	if (iter->pos >= iter->size)
+		return -EINVAL;
+
+	len = ITER_STRIDE;
+	if (iter->pos + len > iter->size)
+		len = iter->size - iter->pos;
+
+	seq_write(seq, iter->buffer + iter->pos, len);
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * seq_file.start() implementation for gcov data files. Note that the
  * gcov_iterator interface is designed to be more restrictive than seq_file
@@ -108,9 +240,15 @@ static void *gcov_seq_next(struct seq_file *seq, void *data, loff_t *pos)
 {
 	struct gcov_iterator *iter = data;
 
+<<<<<<< HEAD
 	if (gcov_iter_next(iter))
 		return NULL;
 	(*pos)++;
+=======
+	(*pos)++;
+	if (gcov_iter_next(iter))
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return iter;
 }
@@ -242,7 +380,11 @@ static struct gcov_node *get_node_by_name(const char *name)
 
 	list_for_each_entry(node, &all_head, all) {
 		info = get_node_info(node);
+<<<<<<< HEAD
 		if (info && (strcmp(info->filename, name) == 0))
+=======
+		if (info && (strcmp(gcov_info_filename(info), name) == 0))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return node;
 	}
 
@@ -279,7 +421,11 @@ static ssize_t gcov_seq_write(struct file *file, const char __user *addr,
 	seq = file->private_data;
 	info = gcov_iter_get_info(seq->private);
 	mutex_lock(&node_lock);
+<<<<<<< HEAD
 	node = get_node_by_name(info->filename);
+=======
+	node = get_node_by_name(gcov_info_filename(info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (node) {
 		/* Reset counts or remove node for unloaded modules. */
 		if (node->num_loaded == 0)
@@ -365,7 +511,11 @@ static const char *deskew(const char *basename)
  */
 static void add_links(struct gcov_node *node, struct dentry *parent)
 {
+<<<<<<< HEAD
 	char *basename;
+=======
+	const char *basename;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *target;
 	int num;
 	int i;
@@ -376,6 +526,7 @@ static void add_links(struct gcov_node *node, struct dentry *parent)
 	if (!node->links)
 		return;
 	for (i = 0; i < num; i++) {
+<<<<<<< HEAD
 		target = get_link_target(get_node_info(node)->filename,
 					 &gcov_link[i]);
 		if (!target)
@@ -388,6 +539,18 @@ static void add_links(struct gcov_node *node, struct dentry *parent)
 							parent,	target);
 		if (!node->links[i])
 			goto out_err;
+=======
+		target = get_link_target(
+				gcov_info_filename(get_node_info(node)),
+				&gcov_link[i]);
+		if (!target)
+			goto out_err;
+		basename = kbasename(target);
+		if (basename == target)
+			goto out_err;
+		node->links[i] = debugfs_create_symlink(deskew(basename),
+							parent,	target);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(target);
 	}
 
@@ -449,11 +612,14 @@ static struct gcov_node *new_node(struct gcov_node *parent,
 					parent->dentry, node, &gcov_data_fops);
 	} else
 		node->dentry = debugfs_create_dir(node->name, parent->dentry);
+<<<<<<< HEAD
 	if (!node->dentry) {
 		pr_warning("could not create file\n");
 		kfree(node);
 		return NULL;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info)
 		add_links(node, parent->dentry);
 	list_add(&node->list, &parent->children);
@@ -463,7 +629,11 @@ static struct gcov_node *new_node(struct gcov_node *parent,
 
 err_nomem:
 	kfree(node);
+<<<<<<< HEAD
 	pr_warning("out of memory\n");
+=======
+	pr_warn("out of memory\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -576,7 +746,11 @@ static void add_node(struct gcov_info *info)
 	struct gcov_node *parent;
 	struct gcov_node *node;
 
+<<<<<<< HEAD
 	filename = kstrdup(info->filename, GFP_KERNEL);
+=======
+	filename = kstrdup(gcov_info_filename(info), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!filename)
 		return;
 	parent = &root_node;
@@ -630,8 +804,13 @@ static void add_info(struct gcov_node *node, struct gcov_info *info)
 	 */
 	loaded_info = kcalloc(num + 1, sizeof(struct gcov_info *), GFP_KERNEL);
 	if (!loaded_info) {
+<<<<<<< HEAD
 		pr_warning("could not add '%s' (out of memory)\n",
 			   info->filename);
+=======
+		pr_warn("could not add '%s' (out of memory)\n",
+			gcov_info_filename(info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	memcpy(loaded_info, node->loaded_info,
@@ -644,8 +823,14 @@ static void add_info(struct gcov_node *node, struct gcov_info *info)
 		 * data set replaces the copy of the last one.
 		 */
 		if (!gcov_info_is_compatible(node->unloaded_info, info)) {
+<<<<<<< HEAD
 			pr_warning("discarding saved data for %s "
 				   "(incompatible version)\n", info->filename);
+=======
+			pr_warn("discarding saved data for %s "
+				"(incompatible version)\n",
+				gcov_info_filename(info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			gcov_info_free(node->unloaded_info);
 			node->unloaded_info = NULL;
 		}
@@ -655,8 +840,13 @@ static void add_info(struct gcov_node *node, struct gcov_info *info)
 		 * The initial one takes precedence.
 		 */
 		if (!gcov_info_is_compatible(node->loaded_info[0], info)) {
+<<<<<<< HEAD
 			pr_warning("could not add '%s' (incompatible "
 				   "version)\n", info->filename);
+=======
+			pr_warn("could not add '%s' (incompatible "
+				"version)\n", gcov_info_filename(info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(loaded_info);
 			return;
 		}
@@ -691,8 +881,14 @@ static void save_info(struct gcov_node *node, struct gcov_info *info)
 	else {
 		node->unloaded_info = gcov_info_dup(info);
 		if (!node->unloaded_info) {
+<<<<<<< HEAD
 			pr_warning("could not save data for '%s' "
 				   "(out of memory)\n", info->filename);
+=======
+			pr_warn("could not save data for '%s' "
+				"(out of memory)\n",
+				gcov_info_filename(info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -707,8 +903,13 @@ static void remove_info(struct gcov_node *node, struct gcov_info *info)
 
 	i = get_info_index(node, info);
 	if (i < 0) {
+<<<<<<< HEAD
 		pr_warning("could not remove '%s' (not found)\n",
 			   info->filename);
+=======
+		pr_warn("could not remove '%s' (not found)\n",
+			gcov_info_filename(info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	if (gcov_persist)
@@ -735,7 +936,11 @@ void gcov_event(enum gcov_action action, struct gcov_info *info)
 	struct gcov_node *node;
 
 	mutex_lock(&node_lock);
+<<<<<<< HEAD
 	node = get_node_by_name(info->filename);
+=======
+	node = get_node_by_name(gcov_info_filename(info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (action) {
 	case GCOV_ADD:
 		if (node)
@@ -747,8 +952,13 @@ void gcov_event(enum gcov_action action, struct gcov_info *info)
 		if (node)
 			remove_info(node, info);
 		else {
+<<<<<<< HEAD
 			pr_warning("could not remove '%s' (not found)\n",
 				   info->filename);
+=======
+			pr_warn("could not remove '%s' (not found)\n",
+				gcov_info_filename(info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	}
@@ -758,20 +968,27 @@ void gcov_event(enum gcov_action action, struct gcov_info *info)
 /* Create debugfs entries. */
 static __init int gcov_fs_init(void)
 {
+<<<<<<< HEAD
 	int rc = -EIO;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_node(&root_node, NULL, NULL, NULL);
 	/*
 	 * /sys/kernel/debug/gcov will be parent for the reset control file
 	 * and all profiling files.
 	 */
 	root_node.dentry = debugfs_create_dir("gcov", NULL);
+<<<<<<< HEAD
 	if (!root_node.dentry)
 		goto err_remove;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Create reset file which resets all profiling counts when written
 	 * to.
 	 */
+<<<<<<< HEAD
 	reset_dentry = debugfs_create_file("reset", 0600, root_node.dentry,
 					   NULL, &gcov_reset_fops);
 	if (!reset_dentry)
@@ -786,5 +1003,12 @@ err_remove:
 		debugfs_remove(root_node.dentry);
 
 	return rc;
+=======
+	debugfs_create_file("reset", 0600, root_node.dentry, NULL,
+			    &gcov_reset_fops);
+	/* Replay previous events to get our fs hierarchy up-to-date. */
+	gcov_enable_events();
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 device_initcall(gcov_fs_init);

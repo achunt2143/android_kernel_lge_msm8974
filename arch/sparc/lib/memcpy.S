@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* memcpy.S: Sparc optimized memcpy and memmove code
  * Hand optimized from GNU libc's memcpy and memmove
  * Copyright (C) 1991,1996 Free Software Foundation
@@ -7,6 +11,11 @@
  * Copyright (C) 1996 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FUNC(x) 		\
 	.globl	x;		\
 	.type	x,@function;	\
@@ -58,6 +67,7 @@ x:
 	stb	%t0, [%dst - (offset) - 0x02]; \
 	stb	%t1, [%dst - (offset) - 0x01];
 
+<<<<<<< HEAD
 /* Both these macros have to start with exactly the same insn */
 #define RMOVE_BIGCHUNK(src, dst, offset, t0, t1, t2, t3, t4, t5, t6, t7) \
 	ldd	[%src - (offset) - 0x20], %t0; \
@@ -145,6 +155,13 @@ FUNC(amemmove)
 FUNC(__memmove)
 #endif
 FUNC(memmove)
+=======
+	.text
+	.align	4
+
+FUNC(memmove)
+EXPORT_SYMBOL(memmove)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmp		%o0, %o1
 	mov		%o0, %g7
 	bleu		9f
@@ -202,6 +219,10 @@ FUNC(memmove)
 	 add		%o0, 2, %o0
 
 FUNC(memcpy)	/* %o0=dst %o1=src %o2=len */
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(memcpy)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sub		%o0, %o1, %o4
 	mov		%o0, %g7

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2006 Jens Axboe <axboe@kernel.dk>
  *
@@ -15,6 +16,16 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  */
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2006 Jens Axboe <axboe@kernel.dk>
+ *
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/blkdev.h>
 #include <linux/blktrace_api.h>
@@ -26,6 +37,13 @@
 #include <linux/export.h>
 #include <linux/time.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
+=======
+#include <linux/list.h>
+#include <linux/blk-cgroup.h>
+
+#include "../../block/blk.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <trace/events/block.h>
 
@@ -38,12 +56,29 @@ static unsigned int blktrace_seq __read_mostly = 1;
 static struct trace_array *blk_tr;
 static bool blk_tracer_enabled __read_mostly;
 
+<<<<<<< HEAD
 /* Select an alternative, minimalistic output than the original one */
 #define TRACE_BLK_OPT_CLASSIC	0x1
+=======
+static LIST_HEAD(running_trace_list);
+static __cacheline_aligned_in_smp DEFINE_RAW_SPINLOCK(running_trace_lock);
+
+/* Select an alternative, minimalistic output than the original one */
+#define TRACE_BLK_OPT_CLASSIC	0x1
+#define TRACE_BLK_OPT_CGROUP	0x2
+#define TRACE_BLK_OPT_CGNAME	0x4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct tracer_opt blk_tracer_opts[] = {
 	/* Default disable the minimalistic output */
 	{ TRACER_OPT(blk_classic, TRACE_BLK_OPT_CLASSIC) },
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_BLK_CGROUP
+	{ TRACER_OPT(blk_cgroup, TRACE_BLK_OPT_CGROUP) },
+	{ TRACER_OPT(blk_cgname, TRACE_BLK_OPT_CGNAME) },
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 
@@ -53,7 +88,12 @@ static struct tracer_flags blk_tracer_flags = {
 };
 
 /* Global reference count of probes */
+<<<<<<< HEAD
 static atomic_t blk_probes_ref = ATOMIC_INIT(0);
+=======
+static DEFINE_MUTEX(blk_probe_mutex);
+static int blk_probes_ref;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void blk_register_tracepoints(void);
 static void blk_unregister_tracepoints(void);
@@ -62,6 +102,7 @@ static void blk_unregister_tracepoints(void);
  * Send out a notify message.
  */
 static void trace_note(struct blk_trace *bt, pid_t pid, int action,
+<<<<<<< HEAD
 		       const void *data, size_t len)
 {
 	struct blk_io_trace *t;
@@ -77,6 +118,24 @@ static void trace_note(struct blk_trace *bt, pid_t pid, int action,
 		event = trace_buffer_lock_reserve(buffer, TRACE_BLK,
 						  sizeof(*t) + len,
 						  0, pc);
+=======
+		       const void *data, size_t len, u64 cgid)
+{
+	struct blk_io_trace *t;
+	struct ring_buffer_event *event = NULL;
+	struct trace_buffer *buffer = NULL;
+	unsigned int trace_ctx = 0;
+	int cpu = smp_processor_id();
+	bool blk_tracer = blk_tracer_enabled;
+	ssize_t cgid_len = cgid ? sizeof(cgid) : 0;
+
+	if (blk_tracer) {
+		buffer = blk_tr->array_buffer.buffer;
+		trace_ctx = tracing_gen_ctx_flags(0);
+		event = trace_buffer_lock_reserve(buffer, TRACE_BLK,
+						  sizeof(*t) + len + cgid_len,
+						  trace_ctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!event)
 			return;
 		t = ring_buffer_event_data(event);
@@ -86,12 +145,17 @@ static void trace_note(struct blk_trace *bt, pid_t pid, int action,
 	if (!bt->rchan)
 		return;
 
+<<<<<<< HEAD
 	t = relay_reserve(bt->rchan, sizeof(*t) + len);
+=======
+	t = relay_reserve(bt->rchan, sizeof(*t) + len + cgid_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (t) {
 		t->magic = BLK_IO_TRACE_MAGIC | BLK_IO_TRACE_VERSION;
 		t->time = ktime_to_ns(ktime_get());
 record_it:
 		t->device = bt->dev;
+<<<<<<< HEAD
 		t->action = action;
 		t->pid = pid;
 		t->cpu = cpu;
@@ -100,6 +164,18 @@ record_it:
 
 		if (blk_tracer)
 			trace_buffer_unlock_commit(buffer, event, 0, pc);
+=======
+		t->action = action | (cgid ? __BLK_TN_CGROUP : 0);
+		t->pid = pid;
+		t->cpu = cpu;
+		t->pdu_len = len + cgid_len;
+		if (cgid_len)
+			memcpy((void *)t + sizeof(*t), &cgid, cgid_len);
+		memcpy((void *) t + sizeof(*t) + cgid_len, data, len);
+
+		if (blk_tracer)
+			trace_buffer_unlock_commit(blk_tr, buffer, event, trace_ctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -107,14 +183,30 @@ record_it:
  * Send out a notify for this process, if we haven't done so since a trace
  * started
  */
+<<<<<<< HEAD
 static void trace_note_tsk(struct blk_trace *bt, struct task_struct *tsk)
 {
 	tsk->btrace_seq = blktrace_seq;
 	trace_note(bt, tsk->pid, BLK_TN_PROCESS, tsk->comm, sizeof(tsk->comm));
+=======
+static void trace_note_tsk(struct task_struct *tsk)
+{
+	unsigned long flags;
+	struct blk_trace *bt;
+
+	tsk->btrace_seq = blktrace_seq;
+	raw_spin_lock_irqsave(&running_trace_lock, flags);
+	list_for_each_entry(bt, &running_trace_list, running_list) {
+		trace_note(bt, tsk->pid, BLK_TN_PROCESS, tsk->comm,
+			   sizeof(tsk->comm), 0);
+	}
+	raw_spin_unlock_irqrestore(&running_trace_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void trace_note_time(struct blk_trace *bt)
 {
+<<<<<<< HEAD
 	struct timespec now;
 	unsigned long flags;
 	u32 words[2];
@@ -129,11 +221,33 @@ static void trace_note_time(struct blk_trace *bt)
 }
 
 void __trace_note_message(struct blk_trace *bt, const char *fmt, ...)
+=======
+	struct timespec64 now;
+	unsigned long flags;
+	u32 words[2];
+
+	/* need to check user space to see if this breaks in y2038 or y2106 */
+	ktime_get_real_ts64(&now);
+	words[0] = (u32)now.tv_sec;
+	words[1] = now.tv_nsec;
+
+	local_irq_save(flags);
+	trace_note(bt, 0, BLK_TN_TIMESTAMP, words, sizeof(words), 0);
+	local_irq_restore(flags);
+}
+
+void __blk_trace_note_message(struct blk_trace *bt,
+		struct cgroup_subsys_state *css, const char *fmt, ...)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int n;
 	va_list args;
 	unsigned long flags;
 	char *buf;
+<<<<<<< HEAD
+=======
+	u64 cgid = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(bt->trace_state != Blktrace_running &&
 		     !blk_tracer_enabled))
@@ -147,15 +261,32 @@ void __trace_note_message(struct blk_trace *bt, const char *fmt, ...)
 		return;
 
 	local_irq_save(flags);
+<<<<<<< HEAD
 	buf = per_cpu_ptr(bt->msg_data, smp_processor_id());
+=======
+	buf = this_cpu_ptr(bt->msg_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	va_start(args, fmt);
 	n = vscnprintf(buf, BLK_TN_MAX_MSG, fmt, args);
 	va_end(args);
 
+<<<<<<< HEAD
 	trace_note(bt, 0, BLK_TN_MESSAGE, buf, n);
 	local_irq_restore(flags);
 }
 EXPORT_SYMBOL_GPL(__trace_note_message);
+=======
+#ifdef CONFIG_BLK_CGROUP
+	if (css && (blk_tracer_flags.val & TRACE_BLK_OPT_CGROUP))
+		cgid = cgroup_id(css->cgroup);
+	else
+		cgid = 1;
+#endif
+	trace_note(bt, current->pid, BLK_TN_MESSAGE, buf, n, cgid);
+	local_irq_restore(flags);
+}
+EXPORT_SYMBOL_GPL(__blk_trace_note_message);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int act_log_check(struct blk_trace *bt, u32 what, sector_t sector,
 			 pid_t pid)
@@ -177,9 +308,16 @@ static const u32 ddir_act[2] = { BLK_TC_ACT(BLK_TC_READ),
 				 BLK_TC_ACT(BLK_TC_WRITE) };
 
 #define BLK_TC_RAHEAD		BLK_TC_AHEAD
+<<<<<<< HEAD
 
 /* The ilog2() calls fall out because they're constant */
 #define MASK_TC_BIT(rw, __name) ((rw & REQ_ ## __name) << \
+=======
+#define BLK_TC_PREFLUSH		BLK_TC_FLUSH
+
+/* The ilog2() calls fall out because they're constant */
+#define MASK_TC_BIT(rw, __name) ((__force u32)(rw & REQ_ ## __name) <<	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  (ilog2(BLK_TC_ ## __name) + BLK_TC_SHIFT - __REQ_ ## __name))
 
 /*
@@ -187,6 +325,7 @@ static const u32 ddir_act[2] = { BLK_TC_ACT(BLK_TC_READ),
  * blk_io_trace structure and places it in a per-cpu subbuffer.
  */
 static void __blk_add_trace(struct blk_trace *bt, sector_t sector, int bytes,
+<<<<<<< HEAD
 		     int rw, u32 what, int error, int pdu_len, void *pdu_data)
 {
 	struct task_struct *tsk = current;
@@ -198,10 +337,28 @@ static void __blk_add_trace(struct blk_trace *bt, sector_t sector, int bytes,
 	pid_t pid;
 	int cpu, pc = 0;
 	bool blk_tracer = blk_tracer_enabled;
+=======
+			    const blk_opf_t opf, u32 what, int error,
+			    int pdu_len, void *pdu_data, u64 cgid)
+{
+	struct task_struct *tsk = current;
+	struct ring_buffer_event *event = NULL;
+	struct trace_buffer *buffer = NULL;
+	struct blk_io_trace *t;
+	unsigned long flags = 0;
+	unsigned long *sequence;
+	unsigned int trace_ctx = 0;
+	pid_t pid;
+	int cpu;
+	bool blk_tracer = blk_tracer_enabled;
+	ssize_t cgid_len = cgid ? sizeof(cgid) : 0;
+	const enum req_op op = opf & REQ_OP_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(bt->trace_state != Blktrace_running && !blk_tracer))
 		return;
 
+<<<<<<< HEAD
 	what |= ddir_act[rw & WRITE];
 	what |= MASK_TC_BIT(rw, SYNC);
 	what |= MASK_TC_BIT(rw, RAHEAD);
@@ -209,6 +366,20 @@ static void __blk_add_trace(struct blk_trace *bt, sector_t sector, int bytes,
 	what |= MASK_TC_BIT(rw, DISCARD);
 	what |= MASK_TC_BIT(rw, FLUSH);
 	what |= MASK_TC_BIT(rw, FUA);
+=======
+	what |= ddir_act[op_is_write(op) ? WRITE : READ];
+	what |= MASK_TC_BIT(opf, SYNC);
+	what |= MASK_TC_BIT(opf, RAHEAD);
+	what |= MASK_TC_BIT(opf, META);
+	what |= MASK_TC_BIT(opf, PREFLUSH);
+	what |= MASK_TC_BIT(opf, FUA);
+	if (op == REQ_OP_DISCARD || op == REQ_OP_SECURE_ERASE)
+		what |= BLK_TC_ACT(BLK_TC_DISCARD);
+	if (op == REQ_OP_FLUSH)
+		what |= BLK_TC_ACT(BLK_TC_FLUSH);
+	if (cgid)
+		what |= __BLK_TA_CGROUP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pid = tsk->pid;
 	if (act_log_check(bt, what, sector, pid))
@@ -218,28 +389,46 @@ static void __blk_add_trace(struct blk_trace *bt, sector_t sector, int bytes,
 	if (blk_tracer) {
 		tracing_record_cmdline(current);
 
+<<<<<<< HEAD
 		buffer = blk_tr->buffer;
 		pc = preempt_count();
 		event = trace_buffer_lock_reserve(buffer, TRACE_BLK,
 						  sizeof(*t) + pdu_len,
 						  0, pc);
+=======
+		buffer = blk_tr->array_buffer.buffer;
+		trace_ctx = tracing_gen_ctx_flags(0);
+		event = trace_buffer_lock_reserve(buffer, TRACE_BLK,
+						  sizeof(*t) + pdu_len + cgid_len,
+						  trace_ctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!event)
 			return;
 		t = ring_buffer_event_data(event);
 		goto record_it;
 	}
 
+<<<<<<< HEAD
+=======
+	if (unlikely(tsk->btrace_seq != blktrace_seq))
+		trace_note_tsk(tsk);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * A word about the locking here - we disable interrupts to reserve
 	 * some space in the relay per-cpu buffer, to prevent an irq
 	 * from coming in and stepping on our toes.
 	 */
 	local_irq_save(flags);
+<<<<<<< HEAD
 
 	if (unlikely(tsk->btrace_seq != blktrace_seq))
 		trace_note_tsk(bt, tsk);
 
 	t = relay_reserve(bt->rchan, sizeof(*t) + pdu_len);
+=======
+	t = relay_reserve(bt->rchan, sizeof(*t) + pdu_len + cgid_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (t) {
 		sequence = per_cpu_ptr(bt->sequence, cpu);
 
@@ -261,6 +450,7 @@ record_it:
 		t->action = what;
 		t->device = bt->dev;
 		t->error = error;
+<<<<<<< HEAD
 		t->pdu_len = pdu_len;
 
 		if (pdu_len)
@@ -268,6 +458,17 @@ record_it:
 
 		if (blk_tracer) {
 			trace_buffer_unlock_commit(buffer, event, 0, pc);
+=======
+		t->pdu_len = pdu_len + cgid_len;
+
+		if (cgid_len)
+			memcpy((void *)t + sizeof(*t), &cgid, cgid_len);
+		if (pdu_len)
+			memcpy((void *)t + sizeof(*t) + cgid_len, pdu_data, pdu_len);
+
+		if (blk_tracer) {
+			trace_buffer_unlock_commit(blk_tr, buffer, event, trace_ctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
@@ -275,6 +476,7 @@ record_it:
 	local_irq_restore(flags);
 }
 
+<<<<<<< HEAD
 static struct dentry *blk_tree_root;
 static DEFINE_MUTEX(blk_tree_mutex);
 
@@ -284,20 +486,107 @@ static void blk_trace_free(struct blk_trace *bt)
 	debugfs_remove(bt->dropped_file);
 	relay_close(bt->rchan);
 	debugfs_remove(bt->dir);
+=======
+static void blk_trace_free(struct request_queue *q, struct blk_trace *bt)
+{
+	relay_close(bt->rchan);
+
+	/*
+	 * If 'bt->dir' is not set, then both 'dropped' and 'msg' are created
+	 * under 'q->debugfs_dir', thus lookup and remove them.
+	 */
+	if (!bt->dir) {
+		debugfs_lookup_and_remove("dropped", q->debugfs_dir);
+		debugfs_lookup_and_remove("msg", q->debugfs_dir);
+	} else {
+		debugfs_remove(bt->dir);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_percpu(bt->sequence);
 	free_percpu(bt->msg_data);
 	kfree(bt);
 }
 
+<<<<<<< HEAD
 static void blk_trace_cleanup(struct blk_trace *bt)
 {
 	blk_trace_free(bt);
 	if (atomic_dec_and_test(&blk_probes_ref))
 		blk_unregister_tracepoints();
+=======
+static void get_probe_ref(void)
+{
+	mutex_lock(&blk_probe_mutex);
+	if (++blk_probes_ref == 1)
+		blk_register_tracepoints();
+	mutex_unlock(&blk_probe_mutex);
+}
+
+static void put_probe_ref(void)
+{
+	mutex_lock(&blk_probe_mutex);
+	if (!--blk_probes_ref)
+		blk_unregister_tracepoints();
+	mutex_unlock(&blk_probe_mutex);
+}
+
+static int blk_trace_start(struct blk_trace *bt)
+{
+	if (bt->trace_state != Blktrace_setup &&
+	    bt->trace_state != Blktrace_stopped)
+		return -EINVAL;
+
+	blktrace_seq++;
+	smp_mb();
+	bt->trace_state = Blktrace_running;
+	raw_spin_lock_irq(&running_trace_lock);
+	list_add(&bt->running_list, &running_trace_list);
+	raw_spin_unlock_irq(&running_trace_lock);
+	trace_note_time(bt);
+
+	return 0;
+}
+
+static int blk_trace_stop(struct blk_trace *bt)
+{
+	if (bt->trace_state != Blktrace_running)
+		return -EINVAL;
+
+	bt->trace_state = Blktrace_stopped;
+	raw_spin_lock_irq(&running_trace_lock);
+	list_del_init(&bt->running_list);
+	raw_spin_unlock_irq(&running_trace_lock);
+	relay_flush(bt->rchan);
+
+	return 0;
+}
+
+static void blk_trace_cleanup(struct request_queue *q, struct blk_trace *bt)
+{
+	blk_trace_stop(bt);
+	synchronize_rcu();
+	blk_trace_free(q, bt);
+	put_probe_ref();
+}
+
+static int __blk_trace_remove(struct request_queue *q)
+{
+	struct blk_trace *bt;
+
+	bt = rcu_replace_pointer(q->blk_trace, NULL,
+				 lockdep_is_held(&q->debugfs_mutex));
+	if (!bt)
+		return -EINVAL;
+
+	blk_trace_cleanup(q, bt);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int blk_trace_remove(struct request_queue *q)
 {
+<<<<<<< HEAD
 	struct blk_trace *bt;
 
 	bt = xchg(&q->blk_trace, NULL);
@@ -308,6 +597,15 @@ int blk_trace_remove(struct request_queue *q)
 		blk_trace_cleanup(bt);
 
 	return 0;
+=======
+	int ret;
+
+	mutex_lock(&q->debugfs_mutex);
+	ret = __blk_trace_remove(q);
+	mutex_unlock(&q->debugfs_mutex);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(blk_trace_remove);
 
@@ -338,6 +636,7 @@ static ssize_t blk_msg_write(struct file *filp, const char __user *buffer,
 	if (count >= BLK_TN_MAX_MSG)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	msg = kmalloc(count + 1, GFP_KERNEL);
 	if (msg == NULL)
 		return -ENOMEM;
@@ -350,6 +649,14 @@ static ssize_t blk_msg_write(struct file *filp, const char __user *buffer,
 	msg[count] = '\0';
 	bt = filp->private_data;
 	__trace_note_message(bt, "%s", msg);
+=======
+	msg = memdup_user_nul(buffer, count);
+	if (IS_ERR(msg))
+		return PTR_ERR(msg);
+
+	bt = filp->private_data;
+	__blk_trace_note_message(bt, NULL, "%s", msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(msg);
 
 	return count;
@@ -396,7 +703,11 @@ static struct dentry *blk_create_buf_file_callback(const char *filename,
 					&relay_file_operations);
 }
 
+<<<<<<< HEAD
 static struct rchan_callbacks blk_relay_callbacks = {
+=======
+static const struct rchan_callbacks blk_relay_callbacks = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.subbuf_start		= blk_subbuf_start_callback,
 	.create_buf_file	= blk_create_buf_file_callback,
 	.remove_buf_file	= blk_remove_buf_file_callback,
@@ -405,6 +716,7 @@ static struct rchan_callbacks blk_relay_callbacks = {
 static void blk_trace_setup_lba(struct blk_trace *bt,
 				struct block_device *bdev)
 {
+<<<<<<< HEAD
 	struct hd_struct *part = NULL;
 
 	if (bdev)
@@ -413,6 +725,11 @@ static void blk_trace_setup_lba(struct blk_trace *bt,
 	if (part) {
 		bt->start_lba = part->start_sect;
 		bt->end_lba = part->start_sect + part->nr_sects;
+=======
+	if (bdev) {
+		bt->start_lba = bdev->bd_start_sect;
+		bt->end_lba = bdev->bd_start_sect + bdev_nr_sectors(bdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		bt->start_lba = 0;
 		bt->end_lba = -1ULL;
@@ -422,6 +739,7 @@ static void blk_trace_setup_lba(struct blk_trace *bt,
 /*
  * Setup everything required to start tracing
  */
+<<<<<<< HEAD
 int do_blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
 		       struct block_device *bdev,
 		       struct blk_user_trace_setup *buts)
@@ -429,6 +747,17 @@ int do_blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
 	struct blk_trace *old_bt, *bt = NULL;
 	struct dentry *dir = NULL;
 	int ret, i;
+=======
+static int do_blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
+			      struct block_device *bdev,
+			      struct blk_user_trace_setup *buts)
+{
+	struct blk_trace *bt = NULL;
+	struct dentry *dir = NULL;
+	int ret;
+
+	lockdep_assert_held(&q->debugfs_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!buts->buf_size || !buts->buf_nr)
 		return -EINVAL;
@@ -440,9 +769,24 @@ int do_blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
 	 * some device names have larger paths - convert the slashes
 	 * to underscores for this to work as expected
 	 */
+<<<<<<< HEAD
 	for (i = 0; i < strlen(buts->name); i++)
 		if (buts->name[i] == '/')
 			buts->name[i] = '_';
+=======
+	strreplace(buts->name, '/', '_');
+
+	/*
+	 * bdev can be NULL, as with scsi-generic, this is a helpful as
+	 * we can be.
+	 */
+	if (rcu_dereference_protected(q->blk_trace,
+				      lockdep_is_held(&q->debugfs_mutex))) {
+		pr_warn("Concurrent blktraces are not allowed on %s\n",
+			buts->name);
+		return -EBUSY;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bt = kzalloc(sizeof(*bt), GFP_KERNEL);
 	if (!bt)
@@ -457,6 +801,7 @@ int do_blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
 	if (!bt->msg_data)
 		goto err;
 
+<<<<<<< HEAD
 	ret = -ENOENT;
 
 	mutex_lock(&blk_tree_mutex);
@@ -487,6 +832,38 @@ int do_blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
 	bt->msg_file = debugfs_create_file("msg", 0222, dir, bt, &blk_msg_fops);
 	if (!bt->msg_file)
 		goto err;
+=======
+	/*
+	 * When tracing the whole disk reuse the existing debugfs directory
+	 * created by the block layer on init. For partitions block devices,
+	 * and scsi-generic block devices we create a temporary new debugfs
+	 * directory that will be removed once the trace ends.
+	 */
+	if (bdev && !bdev_is_partition(bdev))
+		dir = q->debugfs_dir;
+	else
+		bt->dir = dir = debugfs_create_dir(buts->name, blk_debugfs_root);
+
+	/*
+	 * As blktrace relies on debugfs for its interface the debugfs directory
+	 * is required, contrary to the usual mantra of not checking for debugfs
+	 * files or directories.
+	 */
+	if (IS_ERR_OR_NULL(dir)) {
+		pr_warn("debugfs_dir not present for %s so skipping\n",
+			buts->name);
+		ret = -ENOENT;
+		goto err;
+	}
+
+	bt->dev = dev;
+	atomic_set(&bt->dropped, 0);
+	INIT_LIST_HEAD(&bt->running_list);
+
+	ret = -EIO;
+	debugfs_create_file("dropped", 0444, dir, bt, &blk_dropped_fops);
+	debugfs_create_file("msg", 0222, dir, bt, &blk_msg_fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bt->rchan = relay_open("trace", dir, buts->buf_size,
 				buts->buf_nr, &blk_relay_callbacks, bt);
@@ -508,6 +885,7 @@ int do_blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
 	bt->pid = buts->pid;
 	bt->trace_state = Blktrace_setup;
 
+<<<<<<< HEAD
 	ret = -EBUSY;
 	old_bt = xchg(&q->blk_trace, bt);
 	if (old_bt) {
@@ -527,6 +905,20 @@ err:
 int blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
 		    struct block_device *bdev,
 		    char __user *arg)
+=======
+	rcu_assign_pointer(q->blk_trace, bt);
+	get_probe_ref();
+
+	ret = 0;
+err:
+	if (ret)
+		blk_trace_free(q, bt);
+	return ret;
+}
+
+static int __blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
+			     struct block_device *bdev, char __user *arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct blk_user_trace_setup buts;
 	int ret;
@@ -540,11 +932,31 @@ int blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
 		return ret;
 
 	if (copy_to_user(arg, &buts, sizeof(buts))) {
+<<<<<<< HEAD
 		blk_trace_remove(q);
+=======
+		__blk_trace_remove(q);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	}
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+int blk_trace_setup(struct request_queue *q, char *name, dev_t dev,
+		    struct block_device *bdev,
+		    char __user *arg)
+{
+	int ret;
+
+	mutex_lock(&q->debugfs_mutex);
+	ret = __blk_trace_setup(q, name, dev, bdev, arg);
+	mutex_unlock(&q->debugfs_mutex);
+
+	return ret;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(blk_trace_setup);
 
 #if defined(CONFIG_COMPAT) && defined(CONFIG_X86_64)
@@ -567,14 +979,22 @@ static int compat_blk_trace_setup(struct request_queue *q, char *name,
 		.end_lba = cbuts.end_lba,
 		.pid = cbuts.pid,
 	};
+<<<<<<< HEAD
 	memcpy(&buts.name, &cbuts.name, 32);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = do_blk_trace_setup(q, name, dev, bdev, &buts);
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	if (copy_to_user(arg, &buts.name, 32)) {
 		blk_trace_remove(q);
+=======
+	if (copy_to_user(arg, &buts.name, ARRAY_SIZE(buts.name))) {
+		__blk_trace_remove(q);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	}
 
@@ -582,6 +1002,7 @@ static int compat_blk_trace_setup(struct request_queue *q, char *name,
 }
 #endif
 
+<<<<<<< HEAD
 int blk_trace_startstop(struct request_queue *q, int start)
 {
 	int ret;
@@ -612,13 +1033,48 @@ int blk_trace_startstop(struct request_queue *q, int start)
 			ret = 0;
 		}
 	}
+=======
+static int __blk_trace_startstop(struct request_queue *q, int start)
+{
+	struct blk_trace *bt;
+
+	bt = rcu_dereference_protected(q->blk_trace,
+				       lockdep_is_held(&q->debugfs_mutex));
+	if (bt == NULL)
+		return -EINVAL;
+
+	if (start)
+		return blk_trace_start(bt);
+	else
+		return blk_trace_stop(bt);
+}
+
+int blk_trace_startstop(struct request_queue *q, int start)
+{
+	int ret;
+
+	mutex_lock(&q->debugfs_mutex);
+	ret = __blk_trace_startstop(q, start);
+	mutex_unlock(&q->debugfs_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 EXPORT_SYMBOL_GPL(blk_trace_startstop);
 
+<<<<<<< HEAD
 /**
  * blk_trace_ioctl: - handle the ioctls associated with tracing
+=======
+/*
+ * When reading or writing the blktrace sysfs files, the references to the
+ * opened sysfs or device files should prevent the underlying block device
+ * from being removed. So no further delete protection is really needed.
+ */
+
+/**
+ * blk_trace_ioctl - handle the ioctls associated with tracing
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bdev:	the block device
  * @cmd:	the ioctl cmd
  * @arg:	the argument data, if any
@@ -626,6 +1082,7 @@ EXPORT_SYMBOL_GPL(blk_trace_startstop);
  **/
 int blk_trace_ioctl(struct block_device *bdev, unsigned cmd, char __user *arg)
 {
+<<<<<<< HEAD
 	struct request_queue *q;
 	int ret, start = 0;
 	char b[BDEVNAME_SIZE];
@@ -644,37 +1101,108 @@ int blk_trace_ioctl(struct block_device *bdev, unsigned cmd, char __user *arg)
 #if defined(CONFIG_COMPAT) && defined(CONFIG_X86_64)
 	case BLKTRACESETUP32:
 		bdevname(bdev, b);
+=======
+	struct request_queue *q = bdev_get_queue(bdev);
+	int ret, start = 0;
+	char b[BDEVNAME_SIZE];
+
+	mutex_lock(&q->debugfs_mutex);
+
+	switch (cmd) {
+	case BLKTRACESETUP:
+		snprintf(b, sizeof(b), "%pg", bdev);
+		ret = __blk_trace_setup(q, b, bdev->bd_dev, bdev, arg);
+		break;
+#if defined(CONFIG_COMPAT) && defined(CONFIG_X86_64)
+	case BLKTRACESETUP32:
+		snprintf(b, sizeof(b), "%pg", bdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = compat_blk_trace_setup(q, b, bdev->bd_dev, bdev, arg);
 		break;
 #endif
 	case BLKTRACESTART:
 		start = 1;
+<<<<<<< HEAD
 	case BLKTRACESTOP:
 		ret = blk_trace_startstop(q, start);
 		break;
 	case BLKTRACETEARDOWN:
 		ret = blk_trace_remove(q);
+=======
+		fallthrough;
+	case BLKTRACESTOP:
+		ret = __blk_trace_startstop(q, start);
+		break;
+	case BLKTRACETEARDOWN:
+		ret = __blk_trace_remove(q);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		ret = -ENOTTY;
 		break;
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&bdev->bd_mutex);
+=======
+	mutex_unlock(&q->debugfs_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /**
+<<<<<<< HEAD
  * blk_trace_shutdown: - stop and cleanup trace structures
+=======
+ * blk_trace_shutdown - stop and cleanup trace structures
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @q:    the request queue associated with the device
  *
  **/
 void blk_trace_shutdown(struct request_queue *q)
 {
+<<<<<<< HEAD
 	if (q->blk_trace) {
 		blk_trace_startstop(q, 0);
 		blk_trace_remove(q);
 	}
+=======
+	if (rcu_dereference_protected(q->blk_trace,
+				      lockdep_is_held(&q->debugfs_mutex)))
+		__blk_trace_remove(q);
+}
+
+#ifdef CONFIG_BLK_CGROUP
+static u64 blk_trace_bio_get_cgid(struct request_queue *q, struct bio *bio)
+{
+	struct cgroup_subsys_state *blkcg_css;
+	struct blk_trace *bt;
+
+	/* We don't use the 'bt' value here except as an optimization... */
+	bt = rcu_dereference_protected(q->blk_trace, 1);
+	if (!bt || !(blk_tracer_flags.val & TRACE_BLK_OPT_CGROUP))
+		return 0;
+
+	blkcg_css = bio_blkcg_css(bio);
+	if (!blkcg_css)
+		return 0;
+	return cgroup_id(blkcg_css->cgroup);
+}
+#else
+static u64 blk_trace_bio_get_cgid(struct request_queue *q, struct bio *bio)
+{
+	return 0;
+}
+#endif
+
+static u64
+blk_trace_request_get_cgid(struct request *rq)
+{
+	if (!rq->bio)
+		return 0;
+	/* Use the first bio */
+	return blk_trace_bio_get_cgid(rq->q, rq->bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -683,15 +1211,24 @@ void blk_trace_shutdown(struct request_queue *q)
 
 /**
  * blk_add_trace_rq - Add a trace for a request oriented action
+<<<<<<< HEAD
  * @q:		queue the io is for
  * @rq:		the source request
  * @nr_bytes:	number of completed bytes
  * @what:	the action
+=======
+ * @rq:		the source request
+ * @error:	return status to log
+ * @nr_bytes:	number of completed bytes
+ * @what:	the action
+ * @cgid:	the cgroup info
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Description:
  *     Records an action against a request. Will log the bio offset + size.
  *
  **/
+<<<<<<< HEAD
 static void blk_add_trace_rq(struct request_queue *q, struct request *rq,
 			     unsigned int nr_bytes, u32 what)
 {
@@ -742,6 +1279,59 @@ static void blk_add_trace_rq_complete(void *ignore,
 				      unsigned int nr_bytes)
 {
 	blk_add_trace_rq(q, rq, nr_bytes, BLK_TA_COMPLETE);
+=======
+static void blk_add_trace_rq(struct request *rq, blk_status_t error,
+			     unsigned int nr_bytes, u32 what, u64 cgid)
+{
+	struct blk_trace *bt;
+
+	rcu_read_lock();
+	bt = rcu_dereference(rq->q->blk_trace);
+	if (likely(!bt)) {
+		rcu_read_unlock();
+		return;
+	}
+
+	if (blk_rq_is_passthrough(rq))
+		what |= BLK_TC_ACT(BLK_TC_PC);
+	else
+		what |= BLK_TC_ACT(BLK_TC_FS);
+
+	__blk_add_trace(bt, blk_rq_trace_sector(rq), nr_bytes, rq->cmd_flags,
+			what, blk_status_to_errno(error), 0, NULL, cgid);
+	rcu_read_unlock();
+}
+
+static void blk_add_trace_rq_insert(void *ignore, struct request *rq)
+{
+	blk_add_trace_rq(rq, 0, blk_rq_bytes(rq), BLK_TA_INSERT,
+			 blk_trace_request_get_cgid(rq));
+}
+
+static void blk_add_trace_rq_issue(void *ignore, struct request *rq)
+{
+	blk_add_trace_rq(rq, 0, blk_rq_bytes(rq), BLK_TA_ISSUE,
+			 blk_trace_request_get_cgid(rq));
+}
+
+static void blk_add_trace_rq_merge(void *ignore, struct request *rq)
+{
+	blk_add_trace_rq(rq, 0, blk_rq_bytes(rq), BLK_TA_BACKMERGE,
+			 blk_trace_request_get_cgid(rq));
+}
+
+static void blk_add_trace_rq_requeue(void *ignore, struct request *rq)
+{
+	blk_add_trace_rq(rq, 0, blk_rq_bytes(rq), BLK_TA_REQUEUE,
+			 blk_trace_request_get_cgid(rq));
+}
+
+static void blk_add_trace_rq_complete(void *ignore, struct request *rq,
+			blk_status_t error, unsigned int nr_bytes)
+{
+	blk_add_trace_rq(rq, error, nr_bytes, BLK_TA_COMPLETE,
+			 blk_trace_request_get_cgid(rq));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -758,6 +1348,7 @@ static void blk_add_trace_rq_complete(void *ignore,
 static void blk_add_trace_bio(struct request_queue *q, struct bio *bio,
 			      u32 what, int error)
 {
+<<<<<<< HEAD
 	struct blk_trace *bt = q->blk_trace;
 
 	if (likely(!bt))
@@ -831,21 +1422,87 @@ static void blk_add_trace_sleeprq(void *ignore,
 			__blk_add_trace(bt, 0, 0, rw, BLK_TA_SLEEPRQ,
 					0, 0, NULL);
 	}
+=======
+	struct blk_trace *bt;
+
+	rcu_read_lock();
+	bt = rcu_dereference(q->blk_trace);
+	if (likely(!bt)) {
+		rcu_read_unlock();
+		return;
+	}
+
+	__blk_add_trace(bt, bio->bi_iter.bi_sector, bio->bi_iter.bi_size,
+			bio->bi_opf, what, error, 0, NULL,
+			blk_trace_bio_get_cgid(q, bio));
+	rcu_read_unlock();
+}
+
+static void blk_add_trace_bio_bounce(void *ignore, struct bio *bio)
+{
+	blk_add_trace_bio(bio->bi_bdev->bd_disk->queue, bio, BLK_TA_BOUNCE, 0);
+}
+
+static void blk_add_trace_bio_complete(void *ignore,
+				       struct request_queue *q, struct bio *bio)
+{
+	blk_add_trace_bio(q, bio, BLK_TA_COMPLETE,
+			  blk_status_to_errno(bio->bi_status));
+}
+
+static void blk_add_trace_bio_backmerge(void *ignore, struct bio *bio)
+{
+	blk_add_trace_bio(bio->bi_bdev->bd_disk->queue, bio, BLK_TA_BACKMERGE,
+			0);
+}
+
+static void blk_add_trace_bio_frontmerge(void *ignore, struct bio *bio)
+{
+	blk_add_trace_bio(bio->bi_bdev->bd_disk->queue, bio, BLK_TA_FRONTMERGE,
+			0);
+}
+
+static void blk_add_trace_bio_queue(void *ignore, struct bio *bio)
+{
+	blk_add_trace_bio(bio->bi_bdev->bd_disk->queue, bio, BLK_TA_QUEUE, 0);
+}
+
+static void blk_add_trace_getrq(void *ignore, struct bio *bio)
+{
+	blk_add_trace_bio(bio->bi_bdev->bd_disk->queue, bio, BLK_TA_GETRQ, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void blk_add_trace_plug(void *ignore, struct request_queue *q)
 {
+<<<<<<< HEAD
 	struct blk_trace *bt = q->blk_trace;
 
 	if (bt)
 		__blk_add_trace(bt, 0, 0, 0, BLK_TA_PLUG, 0, 0, NULL);
+=======
+	struct blk_trace *bt;
+
+	rcu_read_lock();
+	bt = rcu_dereference(q->blk_trace);
+	if (bt)
+		__blk_add_trace(bt, 0, 0, 0, BLK_TA_PLUG, 0, 0, NULL, 0);
+	rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void blk_add_trace_unplug(void *ignore, struct request_queue *q,
 				    unsigned int depth, bool explicit)
 {
+<<<<<<< HEAD
 	struct blk_trace *bt = q->blk_trace;
 
+=======
+	struct blk_trace *bt;
+
+	rcu_read_lock();
+	bt = rcu_dereference(q->blk_trace);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bt) {
 		__be64 rpdu = cpu_to_be64(depth);
 		u32 what;
@@ -855,6 +1512,7 @@ static void blk_add_trace_unplug(void *ignore, struct request_queue *q,
 		else
 			what = BLK_TA_UNPLUG_TIMER;
 
+<<<<<<< HEAD
 		__blk_add_trace(bt, 0, 0, 0, what, 0, sizeof(rpdu), &rpdu);
 	}
 }
@@ -872,11 +1530,36 @@ static void blk_add_trace_split(void *ignore,
 				BLK_TA_SPLIT, !bio_flagged(bio, BIO_UPTODATE),
 				sizeof(rpdu), &rpdu);
 	}
+=======
+		__blk_add_trace(bt, 0, 0, 0, what, 0, sizeof(rpdu), &rpdu, 0);
+	}
+	rcu_read_unlock();
+}
+
+static void blk_add_trace_split(void *ignore, struct bio *bio, unsigned int pdu)
+{
+	struct request_queue *q = bio->bi_bdev->bd_disk->queue;
+	struct blk_trace *bt;
+
+	rcu_read_lock();
+	bt = rcu_dereference(q->blk_trace);
+	if (bt) {
+		__be64 rpdu = cpu_to_be64(pdu);
+
+		__blk_add_trace(bt, bio->bi_iter.bi_sector,
+				bio->bi_iter.bi_size, bio->bi_opf, BLK_TA_SPLIT,
+				blk_status_to_errno(bio->bi_status),
+				sizeof(rpdu), &rpdu,
+				blk_trace_bio_get_cgid(q, bio));
+	}
+	rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * blk_add_trace_bio_remap - Add a trace for a bio-remap operation
  * @ignore:	trace callback data parameter (not used)
+<<<<<<< HEAD
  * @q:		queue the io is for
  * @bio:	the source bio
  * @dev:	target device
@@ -904,12 +1587,46 @@ static void blk_add_trace_bio_remap(void *ignore,
 	__blk_add_trace(bt, bio->bi_sector, bio->bi_size, bio->bi_rw,
 			BLK_TA_REMAP, !bio_flagged(bio, BIO_UPTODATE),
 			sizeof(r), &r);
+=======
+ * @bio:	the source bio
+ * @dev:	source device
+ * @from:	source sector
+ *
+ * Called after a bio is remapped to a different device and/or sector.
+ **/
+static void blk_add_trace_bio_remap(void *ignore, struct bio *bio, dev_t dev,
+				    sector_t from)
+{
+	struct request_queue *q = bio->bi_bdev->bd_disk->queue;
+	struct blk_trace *bt;
+	struct blk_io_trace_remap r;
+
+	rcu_read_lock();
+	bt = rcu_dereference(q->blk_trace);
+	if (likely(!bt)) {
+		rcu_read_unlock();
+		return;
+	}
+
+	r.device_from = cpu_to_be32(dev);
+	r.device_to   = cpu_to_be32(bio_dev(bio));
+	r.sector_from = cpu_to_be64(from);
+
+	__blk_add_trace(bt, bio->bi_iter.bi_sector, bio->bi_iter.bi_size,
+			bio->bi_opf, BLK_TA_REMAP,
+			blk_status_to_errno(bio->bi_status),
+			sizeof(r), &r, blk_trace_bio_get_cgid(q, bio));
+	rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * blk_add_trace_rq_remap - Add a trace for a request-remap operation
  * @ignore:	trace callback data parameter (not used)
+<<<<<<< HEAD
  * @q:		queue the io is for
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rq:		the source request
  * @dev:	target device
  * @from:	source sector
@@ -919,6 +1636,7 @@ static void blk_add_trace_bio_remap(void *ignore,
  *     Add a trace for that action.
  *
  **/
+<<<<<<< HEAD
 static void blk_add_trace_rq_remap(void *ignore,
 				   struct request_queue *q,
 				   struct request *rq, dev_t dev,
@@ -937,11 +1655,37 @@ static void blk_add_trace_rq_remap(void *ignore,
 	__blk_add_trace(bt, blk_rq_pos(rq), blk_rq_bytes(rq),
 			rq_data_dir(rq), BLK_TA_REMAP, !!rq->errors,
 			sizeof(r), &r);
+=======
+static void blk_add_trace_rq_remap(void *ignore, struct request *rq, dev_t dev,
+				   sector_t from)
+{
+	struct blk_trace *bt;
+	struct blk_io_trace_remap r;
+
+	rcu_read_lock();
+	bt = rcu_dereference(rq->q->blk_trace);
+	if (likely(!bt)) {
+		rcu_read_unlock();
+		return;
+	}
+
+	r.device_from = cpu_to_be32(dev);
+	r.device_to   = cpu_to_be32(disk_devt(rq->q->disk));
+	r.sector_from = cpu_to_be64(from);
+
+	__blk_add_trace(bt, blk_rq_pos(rq), blk_rq_bytes(rq),
+			rq->cmd_flags, BLK_TA_REMAP, 0,
+			sizeof(r), &r, blk_trace_request_get_cgid(rq));
+	rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * blk_add_driver_data - Add binary message with driver-specific data
+<<<<<<< HEAD
  * @q:		queue the io is for
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rq:		io request
  * @data:	driver-specific data
  * @len:	length of driver-specific data
@@ -950,6 +1694,7 @@ static void blk_add_trace_rq_remap(void *ignore,
  *     Some drivers might want to write driver-specific data per request.
  *
  **/
+<<<<<<< HEAD
 void blk_add_driver_data(struct request_queue *q,
 			 struct request *rq,
 			 void *data, size_t len)
@@ -965,6 +1710,23 @@ void blk_add_driver_data(struct request_queue *q,
 	else
 		__blk_add_trace(bt, blk_rq_pos(rq), blk_rq_bytes(rq), 0,
 				BLK_TA_DRV_DATA, rq->errors, len, data);
+=======
+void blk_add_driver_data(struct request *rq, void *data, size_t len)
+{
+	struct blk_trace *bt;
+
+	rcu_read_lock();
+	bt = rcu_dereference(rq->q->blk_trace);
+	if (likely(!bt)) {
+		rcu_read_unlock();
+		return;
+	}
+
+	__blk_add_trace(bt, blk_rq_trace_sector(rq), blk_rq_bytes(rq), 0,
+				BLK_TA_DRV_DATA, 0, len, data,
+				blk_trace_request_get_cgid(rq));
+	rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(blk_add_driver_data);
 
@@ -972,12 +1734,20 @@ static void blk_register_tracepoints(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = register_trace_block_rq_abort(blk_add_trace_rq_abort, NULL);
 	WARN_ON(ret);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = register_trace_block_rq_insert(blk_add_trace_rq_insert, NULL);
 	WARN_ON(ret);
 	ret = register_trace_block_rq_issue(blk_add_trace_rq_issue, NULL);
 	WARN_ON(ret);
+<<<<<<< HEAD
+=======
+	ret = register_trace_block_rq_merge(blk_add_trace_rq_merge, NULL);
+	WARN_ON(ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = register_trace_block_rq_requeue(blk_add_trace_rq_requeue, NULL);
 	WARN_ON(ret);
 	ret = register_trace_block_rq_complete(blk_add_trace_rq_complete, NULL);
@@ -994,8 +1764,11 @@ static void blk_register_tracepoints(void)
 	WARN_ON(ret);
 	ret = register_trace_block_getrq(blk_add_trace_getrq, NULL);
 	WARN_ON(ret);
+<<<<<<< HEAD
 	ret = register_trace_block_sleeprq(blk_add_trace_sleeprq, NULL);
 	WARN_ON(ret);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = register_trace_block_plug(blk_add_trace_plug, NULL);
 	WARN_ON(ret);
 	ret = register_trace_block_unplug(blk_add_trace_unplug, NULL);
@@ -1015,7 +1788,10 @@ static void blk_unregister_tracepoints(void)
 	unregister_trace_block_split(blk_add_trace_split, NULL);
 	unregister_trace_block_unplug(blk_add_trace_unplug, NULL);
 	unregister_trace_block_plug(blk_add_trace_plug, NULL);
+<<<<<<< HEAD
 	unregister_trace_block_sleeprq(blk_add_trace_sleeprq, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_trace_block_getrq(blk_add_trace_getrq, NULL);
 	unregister_trace_block_bio_queue(blk_add_trace_bio_queue, NULL);
 	unregister_trace_block_bio_frontmerge(blk_add_trace_bio_frontmerge, NULL);
@@ -1024,9 +1800,15 @@ static void blk_unregister_tracepoints(void)
 	unregister_trace_block_bio_bounce(blk_add_trace_bio_bounce, NULL);
 	unregister_trace_block_rq_complete(blk_add_trace_rq_complete, NULL);
 	unregister_trace_block_rq_requeue(blk_add_trace_rq_requeue, NULL);
+<<<<<<< HEAD
 	unregister_trace_block_rq_issue(blk_add_trace_rq_issue, NULL);
 	unregister_trace_block_rq_insert(blk_add_trace_rq_insert, NULL);
 	unregister_trace_block_rq_abort(blk_add_trace_rq_abort, NULL);
+=======
+	unregister_trace_block_rq_merge(blk_add_trace_rq_merge, NULL);
+	unregister_trace_block_rq_issue(blk_add_trace_rq_issue, NULL);
+	unregister_trace_block_rq_insert(blk_add_trace_rq_insert, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tracepoint_synchronize_unregister();
 }
@@ -1040,7 +1822,11 @@ static void fill_rwbs(char *rwbs, const struct blk_io_trace *t)
 	int i = 0;
 	int tc = t->action >> BLK_TC_SHIFT;
 
+<<<<<<< HEAD
 	if (t->action == BLK_TN_MESSAGE) {
+=======
+	if ((t->action & ~__BLK_TN_CGROUP) == BLK_TN_MESSAGE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rwbs[i++] = 'N';
 		goto out;
 	}
@@ -1075,9 +1861,25 @@ const struct blk_io_trace *te_blk_io_trace(const struct trace_entry *ent)
 	return (const struct blk_io_trace *)ent;
 }
 
+<<<<<<< HEAD
 static inline const void *pdu_start(const struct trace_entry *ent)
 {
 	return te_blk_io_trace(ent) + 1;
+=======
+static inline const void *pdu_start(const struct trace_entry *ent, bool has_cg)
+{
+	return (void *)(te_blk_io_trace(ent) + 1) + (has_cg ? sizeof(u64) : 0);
+}
+
+static inline u64 t_cgid(const struct trace_entry *ent)
+{
+	return *(u64 *)(te_blk_io_trace(ent) + 1);
+}
+
+static inline int pdu_real_len(const struct trace_entry *ent, bool has_cg)
+{
+	return te_blk_io_trace(ent)->pdu_len - (has_cg ? sizeof(u64) : 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 t_action(const struct trace_entry *ent)
@@ -1105,6 +1907,7 @@ static inline __u16 t_error(const struct trace_entry *ent)
 	return te_blk_io_trace(ent)->error;
 }
 
+<<<<<<< HEAD
 static __u64 get_pdu_int(const struct trace_entry *ent)
 {
 	const __u64 *val = pdu_start(ent);
@@ -1125,6 +1928,19 @@ static void get_pdu_remap(const struct trace_entry *ent,
 typedef int (blk_log_action_t) (struct trace_iterator *iter, const char *act);
 
 static int blk_log_action_classic(struct trace_iterator *iter, const char *act)
+=======
+static __u64 get_pdu_int(const struct trace_entry *ent, bool has_cg)
+{
+	const __be64 *val = pdu_start(ent, has_cg);
+	return be64_to_cpu(*val);
+}
+
+typedef void (blk_log_action_t) (struct trace_iterator *iter, const char *act,
+	bool has_cg);
+
+static void blk_log_action_classic(struct trace_iterator *iter, const char *act,
+	bool has_cg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char rwbs[RWBS_LEN];
 	unsigned long long ts  = iter->ts;
@@ -1134,6 +1950,7 @@ static int blk_log_action_classic(struct trace_iterator *iter, const char *act)
 
 	fill_rwbs(rwbs, t);
 
+<<<<<<< HEAD
 	return trace_seq_printf(&iter->seq,
 				"%3d,%-3d %2d %5d.%09lu %5u %2s %3s ",
 				MAJOR(t->device), MINOR(t->device), iter->cpu,
@@ -1141,11 +1958,22 @@ static int blk_log_action_classic(struct trace_iterator *iter, const char *act)
 }
 
 static int blk_log_action(struct trace_iterator *iter, const char *act)
+=======
+	trace_seq_printf(&iter->seq,
+			 "%3d,%-3d %2d %5d.%09lu %5u %2s %3s ",
+			 MAJOR(t->device), MINOR(t->device), iter->cpu,
+			 secs, nsec_rem, iter->ent->pid, act, rwbs);
+}
+
+static void blk_log_action(struct trace_iterator *iter, const char *act,
+	bool has_cg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char rwbs[RWBS_LEN];
 	const struct blk_io_trace *t = te_blk_io_trace(iter->ent);
 
 	fill_rwbs(rwbs, t);
+<<<<<<< HEAD
 	return trace_seq_printf(&iter->seq, "%3d,%-3d %2s %3s ",
 				MAJOR(t->device), MINOR(t->device), act, rwbs);
 }
@@ -1161,6 +1989,55 @@ static int blk_log_dump_pdu(struct trace_seq *s, const struct trace_entry *ent)
 
 	if (!pdu_len)
 		return 1;
+=======
+	if (has_cg) {
+		u64 id = t_cgid(iter->ent);
+
+		if (blk_tracer_flags.val & TRACE_BLK_OPT_CGNAME) {
+			char blkcg_name_buf[NAME_MAX + 1] = "<...>";
+
+			cgroup_path_from_kernfs_id(id, blkcg_name_buf,
+				sizeof(blkcg_name_buf));
+			trace_seq_printf(&iter->seq, "%3d,%-3d %s %2s %3s ",
+				 MAJOR(t->device), MINOR(t->device),
+				 blkcg_name_buf, act, rwbs);
+		} else {
+			/*
+			 * The cgid portion used to be "INO,GEN".  Userland
+			 * builds a FILEID_INO32_GEN fid out of them and
+			 * opens the cgroup using open_by_handle_at(2).
+			 * While 32bit ino setups are still the same, 64bit
+			 * ones now use the 64bit ino as the whole ID and
+			 * no longer use generation.
+			 *
+			 * Regardless of the content, always output
+			 * "LOW32,HIGH32" so that FILEID_INO32_GEN fid can
+			 * be mapped back to @id on both 64 and 32bit ino
+			 * setups.  See __kernfs_fh_to_dentry().
+			 */
+			trace_seq_printf(&iter->seq,
+				 "%3d,%-3d %llx,%-llx %2s %3s ",
+				 MAJOR(t->device), MINOR(t->device),
+				 id & U32_MAX, id >> 32, act, rwbs);
+		}
+	} else
+		trace_seq_printf(&iter->seq, "%3d,%-3d %2s %3s ",
+				 MAJOR(t->device), MINOR(t->device), act, rwbs);
+}
+
+static void blk_log_dump_pdu(struct trace_seq *s,
+	const struct trace_entry *ent, bool has_cg)
+{
+	const unsigned char *pdu_buf;
+	int pdu_len;
+	int i, end;
+
+	pdu_buf = pdu_start(ent, has_cg);
+	pdu_len = pdu_real_len(ent, has_cg);
+
+	if (!pdu_len)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* find the last zero that needs to be printed */
 	for (end = pdu_len - 1; end >= 0; end--)
@@ -1168,6 +2045,7 @@ static int blk_log_dump_pdu(struct trace_seq *s, const struct trace_entry *ent)
 			break;
 	end++;
 
+<<<<<<< HEAD
 	if (!trace_seq_putc(s, '('))
 		return 0;
 
@@ -1190,12 +2068,36 @@ static int blk_log_dump_pdu(struct trace_seq *s, const struct trace_entry *ent)
 }
 
 static int blk_log_generic(struct trace_seq *s, const struct trace_entry *ent)
+=======
+	trace_seq_putc(s, '(');
+
+	for (i = 0; i < pdu_len; i++) {
+
+		trace_seq_printf(s, "%s%02x",
+				 i == 0 ? "" : " ", pdu_buf[i]);
+
+		/*
+		 * stop when the rest is just zeros and indicate so
+		 * with a ".." appended
+		 */
+		if (i == end && end != pdu_len - 1) {
+			trace_seq_puts(s, " ..) ");
+			return;
+		}
+	}
+
+	trace_seq_puts(s, ") ");
+}
+
+static void blk_log_generic(struct trace_seq *s, const struct trace_entry *ent, bool has_cg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char cmd[TASK_COMM_LEN];
 
 	trace_find_cmdline(ent->pid, cmd);
 
 	if (t_action(ent) & BLK_TC_ACT(BLK_TC_PC)) {
+<<<<<<< HEAD
 		int ret;
 
 		ret = trace_seq_printf(s, "%u ", t_bytes(ent));
@@ -1245,29 +2147,87 @@ static int blk_log_remap(struct trace_seq *s, const struct trace_entry *ent)
 }
 
 static int blk_log_plug(struct trace_seq *s, const struct trace_entry *ent)
+=======
+		trace_seq_printf(s, "%u ", t_bytes(ent));
+		blk_log_dump_pdu(s, ent, has_cg);
+		trace_seq_printf(s, "[%s]\n", cmd);
+	} else {
+		if (t_sec(ent))
+			trace_seq_printf(s, "%llu + %u [%s]\n",
+						t_sector(ent), t_sec(ent), cmd);
+		else
+			trace_seq_printf(s, "[%s]\n", cmd);
+	}
+}
+
+static void blk_log_with_error(struct trace_seq *s,
+			      const struct trace_entry *ent, bool has_cg)
+{
+	if (t_action(ent) & BLK_TC_ACT(BLK_TC_PC)) {
+		blk_log_dump_pdu(s, ent, has_cg);
+		trace_seq_printf(s, "[%d]\n", t_error(ent));
+	} else {
+		if (t_sec(ent))
+			trace_seq_printf(s, "%llu + %u [%d]\n",
+					 t_sector(ent),
+					 t_sec(ent), t_error(ent));
+		else
+			trace_seq_printf(s, "%llu [%d]\n",
+					 t_sector(ent), t_error(ent));
+	}
+}
+
+static void blk_log_remap(struct trace_seq *s, const struct trace_entry *ent, bool has_cg)
+{
+	const struct blk_io_trace_remap *__r = pdu_start(ent, has_cg);
+
+	trace_seq_printf(s, "%llu + %u <- (%d,%d) %llu\n",
+			 t_sector(ent), t_sec(ent),
+			 MAJOR(be32_to_cpu(__r->device_from)),
+			 MINOR(be32_to_cpu(__r->device_from)),
+			 be64_to_cpu(__r->sector_from));
+}
+
+static void blk_log_plug(struct trace_seq *s, const struct trace_entry *ent, bool has_cg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char cmd[TASK_COMM_LEN];
 
 	trace_find_cmdline(ent->pid, cmd);
 
+<<<<<<< HEAD
 	return trace_seq_printf(s, "[%s]\n", cmd);
 }
 
 static int blk_log_unplug(struct trace_seq *s, const struct trace_entry *ent)
+=======
+	trace_seq_printf(s, "[%s]\n", cmd);
+}
+
+static void blk_log_unplug(struct trace_seq *s, const struct trace_entry *ent, bool has_cg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char cmd[TASK_COMM_LEN];
 
 	trace_find_cmdline(ent->pid, cmd);
 
+<<<<<<< HEAD
 	return trace_seq_printf(s, "[%s] %llu\n", cmd, get_pdu_int(ent));
 }
 
 static int blk_log_split(struct trace_seq *s, const struct trace_entry *ent)
+=======
+	trace_seq_printf(s, "[%s] %llu\n", cmd, get_pdu_int(ent, has_cg));
+}
+
+static void blk_log_split(struct trace_seq *s, const struct trace_entry *ent, bool has_cg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char cmd[TASK_COMM_LEN];
 
 	trace_find_cmdline(ent->pid, cmd);
 
+<<<<<<< HEAD
 	return trace_seq_printf(s, "%llu / %llu [%s]\n", t_sector(ent),
 				get_pdu_int(ent), cmd);
 }
@@ -1281,6 +2241,19 @@ static int blk_log_msg(struct trace_seq *s, const struct trace_entry *ent)
 	if (ret)
 		return trace_seq_putc(s, '\n');
 	return ret;
+=======
+	trace_seq_printf(s, "%llu / %llu [%s]\n", t_sector(ent),
+			 get_pdu_int(ent, has_cg), cmd);
+}
+
+static void blk_log_msg(struct trace_seq *s, const struct trace_entry *ent,
+			bool has_cg)
+{
+
+	trace_seq_putmem(s, pdu_start(ent, has_cg),
+		pdu_real_len(ent, has_cg));
+	trace_seq_putc(s, '\n');
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1319,7 +2292,12 @@ static void blk_tracer_reset(struct trace_array *tr)
 
 static const struct {
 	const char *act[2];
+<<<<<<< HEAD
 	int	   (*print)(struct trace_seq *s, const struct trace_entry *ent);
+=======
+	void	   (*print)(struct trace_seq *s, const struct trace_entry *ent,
+			    bool has_cg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } what2act[] = {
 	[__BLK_TA_QUEUE]	= {{  "Q", "queue" },	   blk_log_generic },
 	[__BLK_TA_BACKMERGE]	= {{  "M", "backmerge" },  blk_log_generic },
@@ -1341,6 +2319,7 @@ static const struct {
 static enum print_line_t print_one_line(struct trace_iterator *iter,
 					bool classic)
 {
+<<<<<<< HEAD
 	struct trace_seq *s = &iter->seq;
 	const struct blk_io_trace *t;
 	u16 what;
@@ -1369,6 +2348,36 @@ static enum print_line_t print_one_line(struct trace_iterator *iter,
 	}
 out:
 	return ret ? TRACE_TYPE_HANDLED : TRACE_TYPE_PARTIAL_LINE;
+=======
+	struct trace_array *tr = iter->tr;
+	struct trace_seq *s = &iter->seq;
+	const struct blk_io_trace *t;
+	u16 what;
+	bool long_act;
+	blk_log_action_t *log_action;
+	bool has_cg;
+
+	t	   = te_blk_io_trace(iter->ent);
+	what	   = (t->action & ((1 << BLK_TC_SHIFT) - 1)) & ~__BLK_TA_CGROUP;
+	long_act   = !!(tr->trace_flags & TRACE_ITER_VERBOSE);
+	log_action = classic ? &blk_log_action_classic : &blk_log_action;
+	has_cg	   = t->action & __BLK_TA_CGROUP;
+
+	if ((t->action & ~__BLK_TN_CGROUP) == BLK_TN_MESSAGE) {
+		log_action(iter, long_act ? "message" : "m", has_cg);
+		blk_log_msg(s, iter->ent, has_cg);
+		return trace_handle_return(s);
+	}
+
+	if (unlikely(what == 0 || what >= ARRAY_SIZE(what2act)))
+		trace_seq_printf(s, "Unknown action %x\n", what);
+	else {
+		log_action(iter, what2act[what].act[long_act], has_cg);
+		what2act[what].print(s, iter->ent, has_cg);
+	}
+
+	return trace_handle_return(s);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum print_line_t blk_trace_event_print(struct trace_iterator *iter,
@@ -1377,7 +2386,11 @@ static enum print_line_t blk_trace_event_print(struct trace_iterator *iter,
 	return print_one_line(iter, false);
 }
 
+<<<<<<< HEAD
 static int blk_trace_synthesize_old_trace(struct trace_iterator *iter)
+=======
+static void blk_trace_synthesize_old_trace(struct trace_iterator *iter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct trace_seq *s = &iter->seq;
 	struct blk_io_trace *t = (struct blk_io_trace *)iter->ent;
@@ -1387,36 +2400,64 @@ static int blk_trace_synthesize_old_trace(struct trace_iterator *iter)
 		.time     = iter->ts,
 	};
 
+<<<<<<< HEAD
 	if (!trace_seq_putmem(s, &old, offset))
 		return 0;
 	return trace_seq_putmem(s, &t->sector,
 				sizeof(old) - offset + t->pdu_len);
+=======
+	trace_seq_putmem(s, &old, offset);
+	trace_seq_putmem(s, &t->sector,
+			 sizeof(old) - offset + t->pdu_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum print_line_t
 blk_trace_event_print_binary(struct trace_iterator *iter, int flags,
 			     struct trace_event *event)
 {
+<<<<<<< HEAD
 	return blk_trace_synthesize_old_trace(iter) ?
 			TRACE_TYPE_HANDLED : TRACE_TYPE_PARTIAL_LINE;
+=======
+	blk_trace_synthesize_old_trace(iter);
+
+	return trace_handle_return(&iter->seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum print_line_t blk_tracer_print_line(struct trace_iterator *iter)
 {
+<<<<<<< HEAD
 	if (!(blk_tracer_flags.val & TRACE_BLK_OPT_CLASSIC))
+=======
+	if ((iter->ent->type != TRACE_BLK) ||
+	    !(blk_tracer_flags.val & TRACE_BLK_OPT_CLASSIC))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return TRACE_TYPE_UNHANDLED;
 
 	return print_one_line(iter, true);
 }
 
+<<<<<<< HEAD
 static int blk_tracer_set_flag(u32 old_flags, u32 bit, int set)
+=======
+static int
+blk_tracer_set_flag(struct trace_array *tr, u32 old_flags, u32 bit, int set)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* don't output context-info for blk_classic output */
 	if (bit == TRACE_BLK_OPT_CLASSIC) {
 		if (set)
+<<<<<<< HEAD
 			trace_flags &= ~TRACE_ITER_CONTEXT_INFO;
 		else
 			trace_flags |= TRACE_ITER_CONTEXT_INFO;
+=======
+			tr->trace_flags &= ~TRACE_ITER_CONTEXT_INFO;
+		else
+			tr->trace_flags |= TRACE_ITER_CONTEXT_INFO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1445,14 +2486,24 @@ static struct trace_event trace_blk_event = {
 
 static int __init init_blk_tracer(void)
 {
+<<<<<<< HEAD
 	if (!register_ftrace_event(&trace_blk_event)) {
 		pr_warning("Warning: could not register block events\n");
+=======
+	if (!register_trace_event(&trace_blk_event)) {
+		pr_warn("Warning: could not register block events\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
 	if (register_tracer(&blk_tracer) != 0) {
+<<<<<<< HEAD
 		pr_warning("Warning: could not register the block tracer\n");
 		unregister_ftrace_event(&trace_blk_event);
+=======
+		pr_warn("Warning: could not register the block tracer\n");
+		unregister_trace_event(&trace_blk_event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
@@ -1465,6 +2516,7 @@ static int blk_trace_remove_queue(struct request_queue *q)
 {
 	struct blk_trace *bt;
 
+<<<<<<< HEAD
 	bt = xchg(&q->blk_trace, NULL);
 	if (bt == NULL)
 		return -EINVAL;
@@ -1473,6 +2525,18 @@ static int blk_trace_remove_queue(struct request_queue *q)
 		blk_unregister_tracepoints();
 
 	blk_trace_free(bt);
+=======
+	bt = rcu_replace_pointer(q->blk_trace, NULL,
+				 lockdep_is_held(&q->debugfs_mutex));
+	if (bt == NULL)
+		return -EINVAL;
+
+	blk_trace_stop(bt);
+
+	put_probe_ref();
+	synchronize_rcu();
+	blk_trace_free(q, bt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1482,7 +2546,11 @@ static int blk_trace_remove_queue(struct request_queue *q)
 static int blk_trace_setup_queue(struct request_queue *q,
 				 struct block_device *bdev)
 {
+<<<<<<< HEAD
 	struct blk_trace *old_bt, *bt = NULL;
+=======
+	struct blk_trace *bt = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = -ENOMEM;
 
 	bt = kzalloc(sizeof(*bt), GFP_KERNEL);
@@ -1498,6 +2566,7 @@ static int blk_trace_setup_queue(struct request_queue *q,
 
 	blk_trace_setup_lba(bt, bdev);
 
+<<<<<<< HEAD
 	old_bt = xchg(&q->blk_trace, bt);
 	if (old_bt != NULL) {
 		(void)xchg(&q->blk_trace, old_bt);
@@ -1511,6 +2580,14 @@ static int blk_trace_setup_queue(struct request_queue *q,
 
 free_bt:
 	blk_trace_free(bt);
+=======
+	rcu_assign_pointer(q->blk_trace, bt);
+	get_probe_ref();
+	return 0;
+
+free_bt:
+	blk_trace_free(q, bt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1563,6 +2640,10 @@ static const struct {
 	{ BLK_TC_COMPLETE,	"complete"	},
 	{ BLK_TC_FS,		"fs"		},
 	{ BLK_TC_PC,		"pc"		},
+<<<<<<< HEAD
+=======
+	{ BLK_TC_NOTIFY,	"notify"	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ BLK_TC_AHEAD,		"ahead"		},
 	{ BLK_TC_META,		"meta"		},
 	{ BLK_TC_DISCARD,	"discard"	},
@@ -1621,6 +2702,7 @@ static ssize_t blk_trace_mask2str(char *buf, int mask)
 	return p - buf;
 }
 
+<<<<<<< HEAD
 static struct request_queue *blk_trace_get_queue(struct block_device *bdev)
 {
 	if (bdev->bd_disk == NULL)
@@ -1629,10 +2711,13 @@ static struct request_queue *blk_trace_get_queue(struct block_device *bdev)
 	return bdev_get_queue(bdev);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t sysfs_blk_trace_attr_show(struct device *dev,
 					 struct device_attribute *attr,
 					 char *buf)
 {
+<<<<<<< HEAD
 	struct hd_struct *p = dev_to_part(dev);
 	struct request_queue *q;
 	struct block_device *bdev;
@@ -1669,6 +2754,35 @@ out_unlock_bdev:
 out_bdput:
 	bdput(bdev);
 out:
+=======
+	struct block_device *bdev = dev_to_bdev(dev);
+	struct request_queue *q = bdev_get_queue(bdev);
+	struct blk_trace *bt;
+	ssize_t ret = -ENXIO;
+
+	mutex_lock(&q->debugfs_mutex);
+
+	bt = rcu_dereference_protected(q->blk_trace,
+				       lockdep_is_held(&q->debugfs_mutex));
+	if (attr == &dev_attr_enable) {
+		ret = sprintf(buf, "%u\n", !!bt);
+		goto out_unlock_bdev;
+	}
+
+	if (bt == NULL)
+		ret = sprintf(buf, "disabled\n");
+	else if (attr == &dev_attr_act_mask)
+		ret = blk_trace_mask2str(buf, bt->act_mask);
+	else if (attr == &dev_attr_pid)
+		ret = sprintf(buf, "%u\n", bt->pid);
+	else if (attr == &dev_attr_start_lba)
+		ret = sprintf(buf, "%llu\n", bt->start_lba);
+	else if (attr == &dev_attr_end_lba)
+		ret = sprintf(buf, "%llu\n", bt->end_lba);
+
+out_unlock_bdev:
+	mutex_unlock(&q->debugfs_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1676,9 +2790,15 @@ static ssize_t sysfs_blk_trace_attr_store(struct device *dev,
 					  struct device_attribute *attr,
 					  const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct block_device *bdev;
 	struct request_queue *q;
 	struct hd_struct *p;
+=======
+	struct block_device *bdev = dev_to_bdev(dev);
+	struct request_queue *q = bdev_get_queue(bdev);
+	struct blk_trace *bt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 value;
 	ssize_t ret = -EINVAL;
 
@@ -1686,13 +2806,18 @@ static ssize_t sysfs_blk_trace_attr_store(struct device *dev,
 		goto out;
 
 	if (attr == &dev_attr_act_mask) {
+<<<<<<< HEAD
 		if (sscanf(buf, "%llx", &value) != 1) {
+=======
+		if (kstrtoull(buf, 0, &value)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Assume it is a list of trace category names */
 			ret = blk_trace_str2mask(buf);
 			if (ret < 0)
 				goto out;
 			value = ret;
 		}
+<<<<<<< HEAD
 	} else if (sscanf(buf, "%llu", &value) != 1)
 		goto out;
 
@@ -1710,6 +2835,22 @@ static ssize_t sysfs_blk_trace_attr_store(struct device *dev,
 	mutex_lock(&bdev->bd_mutex);
 
 	if (attr == &dev_attr_enable) {
+=======
+	} else {
+		if (kstrtoull(buf, 0, &value))
+			goto out;
+	}
+
+	mutex_lock(&q->debugfs_mutex);
+
+	bt = rcu_dereference_protected(q->blk_trace,
+				       lockdep_is_held(&q->debugfs_mutex));
+	if (attr == &dev_attr_enable) {
+		if (!!value == !!bt) {
+			ret = 0;
+			goto out_unlock_bdev;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (value)
 			ret = blk_trace_setup_queue(q, bdev);
 		else
@@ -1718,6 +2859,7 @@ static ssize_t sysfs_blk_trace_attr_store(struct device *dev,
 	}
 
 	ret = 0;
+<<<<<<< HEAD
 	if (q->blk_trace == NULL)
 		ret = blk_trace_setup_queue(q, bdev);
 
@@ -1750,10 +2892,35 @@ void blk_trace_remove_sysfs(struct device *dev)
 	sysfs_remove_group(&dev->kobj, &blk_trace_attr_group);
 }
 
+=======
+	if (bt == NULL) {
+		ret = blk_trace_setup_queue(q, bdev);
+		bt = rcu_dereference_protected(q->blk_trace,
+				lockdep_is_held(&q->debugfs_mutex));
+	}
+
+	if (ret == 0) {
+		if (attr == &dev_attr_act_mask)
+			bt->act_mask = value;
+		else if (attr == &dev_attr_pid)
+			bt->pid = value;
+		else if (attr == &dev_attr_start_lba)
+			bt->start_lba = value;
+		else if (attr == &dev_attr_end_lba)
+			bt->end_lba = value;
+	}
+
+out_unlock_bdev:
+	mutex_unlock(&q->debugfs_mutex);
+out:
+	return ret ? ret : count;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_BLK_DEV_IO_TRACE */
 
 #ifdef CONFIG_EVENT_TRACING
 
+<<<<<<< HEAD
 void blk_dump_cmd(char *buf, struct request *rq)
 {
 	int i, end;
@@ -1810,6 +2977,58 @@ void blk_fill_rwbs(char *rwbs, u32 rw, int bytes)
 
 	rwbs[i] = '\0';
 }
+=======
+/**
+ * blk_fill_rwbs - Fill the buffer rwbs by mapping op to character string.
+ * @rwbs:	buffer to be filled
+ * @opf:	request operation type (REQ_OP_XXX) and flags for the tracepoint
+ *
+ * Description:
+ *     Maps each request operation and flag to a single character and fills the
+ *     buffer provided by the caller with resulting string.
+ *
+ **/
+void blk_fill_rwbs(char *rwbs, blk_opf_t opf)
+{
+	int i = 0;
+
+	if (opf & REQ_PREFLUSH)
+		rwbs[i++] = 'F';
+
+	switch (opf & REQ_OP_MASK) {
+	case REQ_OP_WRITE:
+		rwbs[i++] = 'W';
+		break;
+	case REQ_OP_DISCARD:
+		rwbs[i++] = 'D';
+		break;
+	case REQ_OP_SECURE_ERASE:
+		rwbs[i++] = 'D';
+		rwbs[i++] = 'E';
+		break;
+	case REQ_OP_FLUSH:
+		rwbs[i++] = 'F';
+		break;
+	case REQ_OP_READ:
+		rwbs[i++] = 'R';
+		break;
+	default:
+		rwbs[i++] = 'N';
+	}
+
+	if (opf & REQ_FUA)
+		rwbs[i++] = 'F';
+	if (opf & REQ_RAHEAD)
+		rwbs[i++] = 'A';
+	if (opf & REQ_SYNC)
+		rwbs[i++] = 'S';
+	if (opf & REQ_META)
+		rwbs[i++] = 'M';
+
+	rwbs[i] = '\0';
+}
+EXPORT_SYMBOL_GPL(blk_fill_rwbs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_EVENT_TRACING */
 

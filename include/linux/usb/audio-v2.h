@@ -1,9 +1,16 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2010 Daniel Mack <daniel@caiaq.de>
  *
  * This software is distributed under the terms of the GNU General Public
  * License ("GPL") version 2, as published by the Free Software Foundation.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2010 Daniel Mack <daniel@caiaq.de>
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file holds USB constants and structures defined
  * by the USB Device Class Definition for Audio Devices in version 2.0.
  * Comments below reference relevant sections of the documents contained
@@ -33,6 +40,7 @@
  *
  */
 
+<<<<<<< HEAD
 static inline bool uac2_control_is_readable(u32 bmControls, u8 control)
 {
 	return (bmControls >> (control * 2)) & 0x1;
@@ -41,6 +49,16 @@ static inline bool uac2_control_is_readable(u32 bmControls, u8 control)
 static inline bool uac2_control_is_writeable(u32 bmControls, u8 control)
 {
 	return (bmControls >> (control * 2)) & 0x2;
+=======
+static inline bool uac_v2v3_control_is_readable(u32 bmControls, u8 control)
+{
+	return (bmControls >> ((control - 1) * 2)) & 0x1;
+}
+
+static inline bool uac_v2v3_control_is_writeable(u32 bmControls, u8 control)
+{
+	return (bmControls >> ((control - 1) * 2)) & 0x2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* 4.7.2 Class-Specific AC Interface Descriptor */
@@ -84,7 +102,11 @@ struct uac_clock_source_descriptor {
 #define UAC_CLOCK_SOURCE_TYPE_INT_PROG	0x3
 #define UAC_CLOCK_SOURCE_SYNCED_TO_SOF	(1 << 2)
 
+<<<<<<< HEAD
 /* 4.7.2.2 Clock Source Descriptor */
+=======
+/* 4.7.2.2 Clock Selector Descriptor */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct uac_clock_selector_descriptor {
 	__u8 bLength;
@@ -93,7 +115,11 @@ struct uac_clock_selector_descriptor {
 	__u8 bClockID;
 	__u8 bNrInPins;
 	__u8 baCSourceID[];
+<<<<<<< HEAD
 	/* bmControls, bAssocTerminal and iClockSource omitted */
+=======
+	/* bmControls and iClockSelector omitted */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((packed));
 
 /* 4.7.2.3 Clock Multiplier Descriptor */
@@ -115,6 +141,7 @@ struct uac2_input_terminal_descriptor {
 	__u8 bDescriptorType;
 	__u8 bDescriptorSubtype;
 	__u8 bTerminalID;
+<<<<<<< HEAD
 	__u16 wTerminalType;
 	__u8 bAssocTerminal;
 	__u8 bCSourceID;
@@ -122,6 +149,15 @@ struct uac2_input_terminal_descriptor {
 	__u32 bmChannelConfig;
 	__u8 iChannelNames;
 	__u16 bmControls;
+=======
+	__le16 wTerminalType;
+	__u8 bAssocTerminal;
+	__u8 bCSourceID;
+	__u8 bNrChannels;
+	__le32 bmChannelConfig;
+	__u8 iChannelNames;
+	__le16 bmControls;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 iTerminal;
 } __attribute__((packed));
 
@@ -132,11 +168,19 @@ struct uac2_output_terminal_descriptor {
 	__u8 bDescriptorType;
 	__u8 bDescriptorSubtype;
 	__u8 bTerminalID;
+<<<<<<< HEAD
 	__u16 wTerminalType;
 	__u8 bAssocTerminal;
 	__u8 bSourceID;
 	__u8 bCSourceID;
 	__u16 bmControls;
+=======
+	__le16 wTerminalType;
+	__u8 bAssocTerminal;
+	__u8 bSourceID;
+	__u8 bCSourceID;
+	__le16 bmControls;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 iTerminal;
 } __attribute__((packed));
 
@@ -152,7 +196,37 @@ struct uac2_feature_unit_descriptor {
 	__u8 bSourceID;
 	/* bmaControls is actually u32,
 	 * but u8 is needed for the hybrid parser */
+<<<<<<< HEAD
 	__u8 bmaControls[0]; /* variable length */
+=======
+	__u8 bmaControls[]; /* variable length */
+} __attribute__((packed));
+
+#define UAC2_DT_FEATURE_UNIT_SIZE(ch)		(6 + ((ch) + 1) * 4)
+
+/* As above, but more useful for defining your own descriptors: */
+#define DECLARE_UAC2_FEATURE_UNIT_DESCRIPTOR(ch)		\
+struct uac2_feature_unit_descriptor_##ch {			\
+	__u8  bLength;						\
+	__u8  bDescriptorType;					\
+	__u8  bDescriptorSubtype;				\
+	__u8  bUnitID;						\
+	__u8  bSourceID;					\
+	__le32 bmaControls[ch + 1];				\
+	__u8  iFeature;						\
+} __packed
+
+/* 4.7.2.10 Effect Unit Descriptor */
+
+struct uac2_effect_unit_descriptor {
+	__u8 bLength;
+	__u8 bDescriptorType;
+	__u8 bDescriptorSubtype;
+	__u8 bUnitID;
+	__le16 wEffectType;
+	__u8 bSourceID;
+	__u8 bmaControls[]; /* variable length */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((packed));
 
 /* 4.9.2 Class-Specific AS Interface Descriptor */
@@ -164,12 +238,23 @@ struct uac2_as_header_descriptor {
 	__u8 bTerminalLink;
 	__u8 bmControls;
 	__u8 bFormatType;
+<<<<<<< HEAD
 	__u32 bmFormats;
 	__u8 bNrChannels;
 	__u32 bmChannelConfig;
 	__u8 iChannelNames;
 } __attribute__((packed));
 
+=======
+	__le32 bmFormats;
+	__u8 bNrChannels;
+	__le32 bmChannelConfig;
+	__u8 iChannelNames;
+} __attribute__((packed));
+
+#define UAC2_FORMAT_TYPE_I_RAW_DATA	(1 << 31)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 4.10.1.2 Class-Specific AS Isochronous Audio Data Endpoint Descriptor */
 
 struct uac2_iso_endpoint_descriptor {
@@ -186,6 +271,16 @@ struct uac2_iso_endpoint_descriptor {
 #define UAC2_CONTROL_DATA_OVERRUN	(3 << 2)
 #define UAC2_CONTROL_DATA_UNDERRUN	(3 << 4)
 
+<<<<<<< HEAD
+=======
+/* 5.2.5.4.2 Connector Control Parameter Block */
+struct uac2_connectors_ctl_blk {
+	__u8 bNrChannels;
+	__le32 bmChannelConfig;
+	__u8 iChannelNames;
+} __attribute__((packed));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 6.1 Interrupt Data Message */
 
 #define UAC2_INTERRUPT_DATA_MSG_VENDOR	(1 << 0)

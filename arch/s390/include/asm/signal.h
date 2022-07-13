@@ -1,10 +1,16 @@
+<<<<<<< HEAD
 /*
  *  include/asm-s390/signal.h
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  S390 version
  *
  *  Derived from "include/asm-i386/signal.h"
  */
+<<<<<<< HEAD
 
 #ifndef _ASMS390_SIGNAL_H
 #define _ASMS390_SIGNAL_H
@@ -17,6 +23,13 @@ struct siginfo;
 struct pt_regs;
 
 #ifdef __KERNEL__
+=======
+#ifndef _ASMS390_SIGNAL_H
+#define _ASMS390_SIGNAL_H
+
+#include <uapi/asm/signal.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Most things should be clean enough to redefine this at will, if care
    is taken to make libc match.  */
 #include <asm/sigcontext.h>
@@ -30,6 +43,7 @@ typedef struct {
         unsigned long sig[_NSIG_WORDS];
 } sigset_t;
 
+<<<<<<< HEAD
 #else
 /* Here we must cater to libcs that poke about in kernel headers.  */
 
@@ -170,4 +184,7 @@ typedef struct sigaltstack {
 } stack_t;
 
 
+=======
+#define __ARCH_HAS_SA_RESTORER
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

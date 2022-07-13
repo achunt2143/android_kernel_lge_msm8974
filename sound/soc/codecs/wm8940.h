@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 /*
  * wm8940.h -- WM8940 Soc Audio driver
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * wm8940.h -- WM8940 Soc Audio driver
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _WM8940_H
@@ -98,5 +104,11 @@ struct wm8940_setup_data {
 #define WM8940_OPCLKDIV_3 2
 #define WM8940_OPCLKDIV_4 3
 
+<<<<<<< HEAD
+=======
+/* Chip ID */
+#define WM8940_CHIP_ID 0x8940
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _WM8940_H */
 

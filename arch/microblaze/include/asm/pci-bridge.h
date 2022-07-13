@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_MICROBLAZE_PCI_BRIDGE_H
 #define _ASM_MICROBLAZE_PCI_BRIDGE_H
 #ifdef __KERNEL__
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/pci.h>
 #include <linux/list.h>
@@ -28,6 +35,7 @@ static inline int pcibios_vaddr_is_ioport(void __iomem *address)
  */
 struct pci_controller {
 	struct pci_bus *bus;
+<<<<<<< HEAD
 	char is_dynamic;
 	struct device_node *dn;
 	struct list_head list_node;
@@ -82,11 +90,17 @@ struct pci_controller {
 #define INDIRECT_TYPE_BIG_ENDIAN		0x00000010
 #define INDIRECT_TYPE_BROKEN_MRM		0x00000020
 	u32 indirect_type;
+=======
+	struct list_head list_node;
+
+	void __iomem *io_base_virt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Currently, we limit ourselves to 1 IO range and 3 mem
 	 * ranges since the common pci_bus structure can't handle more
 	 */
 	struct resource io_resource;
+<<<<<<< HEAD
 	struct resource mem_resources[3];
 	int global_number;	/* PCI domain number */
 };
@@ -97,6 +111,11 @@ static inline struct pci_controller *pci_bus_to_host(const struct pci_bus *bus)
 	return bus->sysdata;
 }
 
+=======
+};
+
+#ifdef CONFIG_PCI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int isa_vaddr_is_ioport(void __iomem *address)
 {
 	/* No specific ISA handling on ppc32 at this stage, it
@@ -106,6 +125,7 @@ static inline int isa_vaddr_is_ioport(void __iomem *address)
 }
 #endif /* CONFIG_PCI */
 
+<<<<<<< HEAD
 /* These are used for config access before all the PCI probing
    has been done. */
 extern int early_read_config_byte(struct pci_controller *hose, int bus,
@@ -140,5 +160,7 @@ extern void pci_process_bridge_OF_ranges(struct pci_controller *hose,
 extern struct pci_controller *pcibios_alloc_controller(struct device_node *dev);
 extern void pcibios_free_controller(struct pci_controller *phb);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* __KERNEL__ */
 #endif	/* _ASM_MICROBLAZE_PCI_BRIDGE_H */

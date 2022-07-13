@@ -62,7 +62,11 @@
 
 #undef C
 #define C(a) (#a)
+<<<<<<< HEAD
 const char *port_state_name(enum sci_port_states state)
+=======
+static const char *port_state_name(enum sci_port_states state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const char * const strings[] = PORT_STATES;
 
@@ -115,9 +119,15 @@ static u32 sci_port_get_phys(struct isci_port *iport)
 /**
  * sci_port_get_properties() - This method simply returns the properties
  *    regarding the port, such as: physical index, protocols, sas address, etc.
+<<<<<<< HEAD
  * @port: this parameter specifies the port for which to retrieve the physical
  *    index.
  * @properties: This parameter specifies the properties structure into which to
+=======
+ * @iport: this parameter specifies the port for which to retrieve the physical
+ *    index.
+ * @prop: This parameter specifies the properties structure into which to
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    copy the requested information.
  *
  * Indicate if the user specified a valid port. SCI_SUCCESS This value is
@@ -164,7 +174,12 @@ static void isci_port_bc_change_received(struct isci_host *ihost,
 		"%s: isci_phy = %p, sas_phy = %p\n",
 		__func__, iphy, &iphy->sas_phy);
 
+<<<<<<< HEAD
 	ihost->sas_ha.notify_port_event(&iphy->sas_phy, PORTE_BROADCAST_RCVD);
+=======
+	sas_notify_port_event(&iphy->sas_phy,
+			      PORTE_BROADCAST_RCVD, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sci_port_bcn_enable(iport);
 }
 
@@ -184,7 +199,11 @@ static void isci_port_link_up(struct isci_host *isci_host,
 
 	sci_port_get_properties(iport, &properties);
 
+<<<<<<< HEAD
 	if (iphy->protocol == SCIC_SDS_PHY_PROTOCOL_SATA) {
+=======
+	if (iphy->protocol == SAS_PROTOCOL_SATA) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64 attached_sas_address;
 
 		iphy->sas_phy.oob_mode = SATA_OOB_MODE;
@@ -204,7 +223,11 @@ static void isci_port_link_up(struct isci_host *isci_host,
 
 		memcpy(&iphy->sas_phy.attached_sas_addr,
 		       &attached_sas_address, sizeof(attached_sas_address));
+<<<<<<< HEAD
 	} else if (iphy->protocol == SCIC_SDS_PHY_PROTOCOL_SAS) {
+=======
+	} else if (iphy->protocol == SAS_PROTOCOL_SSP) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iphy->sas_phy.oob_mode = SAS_OOB_MODE;
 		iphy->sas_phy.frame_rcvd_size = sizeof(struct sas_identify_frame);
 
@@ -212,7 +235,11 @@ static void isci_port_link_up(struct isci_host *isci_host,
 		memcpy(iphy->sas_phy.attached_sas_addr,
 		       iphy->frame_rcvd.iaf.sas_addr, SAS_ADDR_SIZE);
 	} else {
+<<<<<<< HEAD
 		dev_err(&isci_host->pdev->dev, "%s: unkown target\n", __func__);
+=======
+		dev_err(&isci_host->pdev->dev, "%s: unknown target\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		success = false;
 	}
 
@@ -223,8 +250,13 @@ static void isci_port_link_up(struct isci_host *isci_host,
 	/* Notify libsas that we have an address frame, if indeed
 	 * we've found an SSP, SMP, or STP target */
 	if (success)
+<<<<<<< HEAD
 		isci_host->sas_ha.notify_port_event(&iphy->sas_phy,
 						    PORTE_BYTES_DMAED);
+=======
+		sas_notify_port_event(&iphy->sas_phy,
+				      PORTE_BYTES_DMAED, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -232,8 +264,13 @@ static void isci_port_link_up(struct isci_host *isci_host,
  * isci_port_link_down() - This function is called by the sci core when a link
  *    becomes inactive.
  * @isci_host: This parameter specifies the isci host object.
+<<<<<<< HEAD
  * @phy: This parameter specifies the isci phy with the active link.
  * @port: This parameter specifies the isci port with the active link.
+=======
+ * @isci_phy: This parameter specifies the isci phy with the active link.
+ * @isci_port: This parameter specifies the isci port with the active link.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 static void isci_port_link_down(struct isci_host *isci_host,
@@ -251,10 +288,17 @@ static void isci_port_link_down(struct isci_host *isci_host,
 		if (isci_phy->sas_phy.port &&
 		    isci_phy->sas_phy.port->num_phys == 1) {
 			/* change the state for all devices on this port.  The
+<<<<<<< HEAD
 			 * next task sent to this device will be returned as
 			 * SAS_TASK_UNDELIVERED, and the scsi mid layer will
 			 * remove the target
 			 */
+=======
+			* next task sent to this device will be returned as
+			* SAS_TASK_UNDELIVERED, and the scsi mid layer will
+			* remove the target
+			*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_for_each_entry(isci_device,
 					    &isci_port->remote_dev_list,
 					    node) {
@@ -270,8 +314,13 @@ static void isci_port_link_down(struct isci_host *isci_host,
 	 * isci_port_deformed and isci_dev_gone functions.
 	 */
 	sas_phy_disconnected(&isci_phy->sas_phy);
+<<<<<<< HEAD
 	isci_host->sas_ha.notify_phy_event(&isci_phy->sas_phy,
 					   PHYE_LOSS_OF_SIGNAL);
+=======
+	sas_notify_phy_event(&isci_phy->sas_phy,
+			     PHYE_LOSS_OF_SIGNAL, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&isci_host->pdev->dev,
 		"%s: isci_port = %p - Done\n", __func__, isci_port);
@@ -307,7 +356,11 @@ static void port_state_machine_change(struct isci_port *iport,
 /**
  * isci_port_hard_reset_complete() - This function is called by the sci core
  *    when the hard reset complete notification has been received.
+<<<<<<< HEAD
  * @port: This parameter specifies the sci port with the active link.
+=======
+ * @isci_port: This parameter specifies the sci port with the active link.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @completion_status: This parameter specifies the core status for the reset
  *    process.
  *
@@ -394,9 +447,16 @@ bool sci_port_is_valid_phy_assignment(struct isci_port *iport, u32 phy_index)
 }
 
 /**
+<<<<<<< HEAD
  *
  * @sci_port: This is the port object for which to determine if the phy mask
  *    can be supported.
+=======
+ * sci_port_is_phy_mask_valid()
+ * @iport: This is the port object for which to determine if the phy mask
+ *    can be supported.
+ * @phy_mask: Phy mask belonging to this port
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This method will return a true value if the port's phy mask can be supported
  * by the SCU. The following is a list of valid PHY mask configurations for
@@ -517,7 +577,11 @@ void sci_port_get_attached_sas_address(struct isci_port *iport, struct sci_sas_a
 	 */
 	iphy = sci_port_get_a_connected_phy(iport);
 	if (iphy) {
+<<<<<<< HEAD
 		if (iphy->protocol != SCIC_SDS_PHY_PROTOCOL_SATA) {
+=======
+		if (iphy->protocol != SAS_PROTOCOL_SATA) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sci_phy_get_attached_sas_address(iphy, sas);
 		} else {
 			sci_phy_get_sas_address(iphy, sas);
@@ -532,7 +596,11 @@ void sci_port_get_attached_sas_address(struct isci_port *iport, struct sci_sas_a
 /**
  * sci_port_construct_dummy_rnc() - create dummy rnc for si workaround
  *
+<<<<<<< HEAD
  * @sci_port: logical port on which we need to create the remote node context
+=======
+ * @iport: logical port on which we need to create the remote node context
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rni: remote node index for this remote node context.
  *
  * This routine will construct a dummy remote node context data structure
@@ -624,7 +692,11 @@ static void sci_port_activate_phy(struct isci_port *iport,
 {
 	struct isci_host *ihost = iport->owning_controller;
 
+<<<<<<< HEAD
 	if (iphy->protocol != SCIC_SDS_PHY_PROTOCOL_SATA && (flags & PF_RESUME))
+=======
+	if (iphy->protocol != SAS_PROTOCOL_SATA && (flags & PF_RESUME))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sci_phy_resume(iphy);
 
 	iport->active_phy_mask |= 1 << iphy->phy_index;
@@ -676,8 +748,13 @@ static void sci_port_invalid_link_up(struct isci_port *iport, struct isci_phy *i
 
 /**
  * sci_port_general_link_up_handler - phy can be assigned to port?
+<<<<<<< HEAD
  * @sci_port: sci_port object for which has a phy that has gone link up.
  * @sci_phy: This is the struct isci_phy object that has gone link up.
+=======
+ * @iport: sci_port object for which has a phy that has gone link up.
+ * @iphy: This is the struct isci_phy object that has gone link up.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @flags: PF_RESUME, PF_NOTIFY to sci_port_activate_phy
  *
  * Determine if this phy can be assigned to this port . If the phy is
@@ -715,10 +792,18 @@ static void sci_port_general_link_up_handler(struct isci_port *iport,
 
 
 /**
+<<<<<<< HEAD
  * This method returns false if the port only has a single phy object assigned.
  *     If there are no phys or more than one phy then the method will return
  *    true.
  * @sci_port: The port for which the wide port condition is to be checked.
+=======
+ * sci_port_is_wide()
+ * This method returns false if the port only has a single phy object assigned.
+ *     If there are no phys or more than one phy then the method will return
+ *    true.
+ * @iport: The port for which the wide port condition is to be checked.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * bool true Is returned if this is a wide ported port. false Is returned if
  * this is a narrow port.
@@ -738,12 +823,21 @@ static bool sci_port_is_wide(struct isci_port *iport)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * sci_port_link_detected()
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This method is called by the PHY object when the link is detected. if the
  *    port wants the PHY to continue on to the link up state then the port
  *    layer must return true.  If the port object returns false the phy object
  *    must halt its attempt to go link up.
+<<<<<<< HEAD
  * @sci_port: The port associated with the phy object.
  * @sci_phy: The phy object that is trying to go link up.
+=======
+ * @iport: The port associated with the phy object.
+ * @iphy: The phy object that is trying to go link up.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * true if the phy object can continue to the link up condition. true Is
  * returned if this phy can continue to the ready state. false Is returned if
@@ -751,12 +845,19 @@ static bool sci_port_is_wide(struct isci_port *iport)
  * wide ports and direct attached phys.  Since there are no wide ported SATA
  * devices this could become an invalid port configuration.
  */
+<<<<<<< HEAD
 bool sci_port_link_detected(
 	struct isci_port *iport,
 	struct isci_phy *iphy)
 {
 	if ((iport->logical_port_index != SCIC_SDS_DUMMY_PORT) &&
 	    (iphy->protocol == SCIC_SDS_PHY_PROTOCOL_SATA)) {
+=======
+bool sci_port_link_detected(struct isci_port *iport, struct isci_phy *iphy)
+{
+	if ((iport->logical_port_index != SCIC_SDS_DUMMY_PORT) &&
+	    (iphy->protocol == SAS_PROTOCOL_SATA)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sci_port_is_wide(iport)) {
 			sci_port_invalid_link_up(iport, iphy);
 			return false;
@@ -771,9 +872,15 @@ bool sci_port_link_detected(
 	return true;
 }
 
+<<<<<<< HEAD
 static void port_timeout(unsigned long data)
 {
 	struct sci_timer *tmr = (struct sci_timer *)data;
+=======
+static void port_timeout(struct timer_list *t)
+{
+	struct sci_timer *tmr = from_timer(tmr, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct isci_port *iport = container_of(tmr, typeof(*iport), timer);
 	struct isci_host *ihost = iport->owning_controller;
 	unsigned long flags;
@@ -796,7 +903,11 @@ static void port_timeout(unsigned long data)
 		 * case stay in the stopped state.
 		 */
 		dev_err(sciport_to_dev(iport),
+<<<<<<< HEAD
 			"%s: SCIC Port 0x%p failed to stop before tiemout.\n",
+=======
+			"%s: SCIC Port 0x%p failed to stop before timeout.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__,
 			iport);
 	} else if (current_state == SCI_PORT_STOPPING) {
@@ -818,10 +929,15 @@ done:
 
 /* --------------------------------------------------------------------------- */
 
+<<<<<<< HEAD
 /**
  * This function updates the hardwares VIIT entry for this port.
  *
  *
+=======
+/*
+ * This function updates the hardwares VIIT entry for this port.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void sci_port_update_viit_entry(struct isci_port *iport)
 {
@@ -875,7 +991,11 @@ static void sci_port_suspend_port_task_scheduler(struct isci_port *iport)
 
 /**
  * sci_port_post_dummy_request() - post dummy/workaround request
+<<<<<<< HEAD
  * @sci_port: port to post task
+=======
+ * @iport: port to post task
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Prevent the hardware scheduler from posting new requests to the front
  * of the scheduler queue causing a starvation problem for currently
@@ -900,10 +1020,18 @@ static void sci_port_post_dummy_request(struct isci_port *iport)
 }
 
 /**
+<<<<<<< HEAD
  * This routine will abort the dummy request.  This will alow the hardware to
  * power down parts of the silicon to save power.
  *
  * @sci_port: The port on which the task must be aborted.
+=======
+ * sci_port_abort_dummy_request()
+ * This routine will abort the dummy request.  This will allow the hardware to
+ * power down parts of the silicon to save power.
+ *
+ * @iport: The port on which the task must be aborted.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 static void sci_port_abort_dummy_request(struct isci_port *iport)
@@ -924,8 +1052,13 @@ static void sci_port_abort_dummy_request(struct isci_port *iport)
 }
 
 /**
+<<<<<<< HEAD
  *
  * @sci_port: This is the struct isci_port object to resume.
+=======
+ * sci_port_resume_port_task_scheduler()
+ * @iport: This is the struct isci_port object to resume.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This method will resume the port task scheduler for this port object. none
  */
@@ -1015,8 +1148,13 @@ static void sci_port_invalidate_dummy_remote_node(struct isci_port *iport)
 }
 
 /**
+<<<<<<< HEAD
  *
  * @object: This is the object which is cast to a struct isci_port object.
+=======
+ * sci_port_ready_substate_operational_exit()
+ * @sm: This is the object which is cast to a struct isci_port object.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This method will perform the actions required by the struct isci_port on
  * exiting the SCI_PORT_SUB_OPERATIONAL. This function reports
@@ -1187,9 +1325,15 @@ static enum sci_status sci_port_hard_reset(struct isci_port *iport, u32 timeout)
 }
 
 /**
+<<<<<<< HEAD
  * sci_port_add_phy() -
  * @sci_port: This parameter specifies the port in which the phy will be added.
  * @sci_phy: This parameter is the phy which is to be added to the port.
+=======
+ * sci_port_add_phy()
+ * @iport: This parameter specifies the port in which the phy will be added.
+ * @iphy: This parameter is the phy which is to be added to the port.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This method will add a PHY to the selected port. This method returns an
  * enum sci_status. SCI_SUCCESS the phy has been added to the port. Any other
@@ -1201,6 +1345,11 @@ enum sci_status sci_port_add_phy(struct isci_port *iport,
 	enum sci_status status;
 	enum sci_port_states state;
 
+<<<<<<< HEAD
+=======
+	sci_port_bcn_enable(iport);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	state = iport->sm.current_state_id;
 	switch (state) {
 	case SCI_PORT_STOPPED: {
@@ -1256,9 +1405,15 @@ enum sci_status sci_port_add_phy(struct isci_port *iport,
 }
 
 /**
+<<<<<<< HEAD
  * sci_port_remove_phy() -
  * @sci_port: This parameter specifies the port in which the phy will be added.
  * @sci_phy: This parameter is the phy which is to be added to the port.
+=======
+ * sci_port_remove_phy()
+ * @iport: This parameter specifies the port in which the phy will be added.
+ * @iphy: This parameter is the phy which is to be added to the port.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This method will remove the PHY from the selected PORT. This method returns
  * an enum sci_status. SCI_SUCCESS the phy has been removed from the port. Any
@@ -1548,6 +1703,32 @@ static void sci_port_failed_state_enter(struct sci_base_state_machine *sm)
 	isci_port_hard_reset_complete(iport, SCI_FAILURE_TIMEOUT);
 }
 
+<<<<<<< HEAD
+=======
+void sci_port_set_hang_detection_timeout(struct isci_port *iport, u32 timeout)
+{
+	int phy_index;
+	u32 phy_mask = iport->active_phy_mask;
+
+	if (timeout)
+		++iport->hang_detect_users;
+	else if (iport->hang_detect_users > 1)
+		--iport->hang_detect_users;
+	else
+		iport->hang_detect_users = 0;
+
+	if (timeout || (iport->hang_detect_users == 0)) {
+		for (phy_index = 0; phy_index < SCI_MAX_PHYS; phy_index++) {
+			if ((phy_mask >> phy_index) & 1) {
+				writel(timeout,
+				       &iport->phy_table[phy_index]
+					  ->link_layer_registers
+					  ->link_layer_hang_detection_timeout);
+			}
+		}
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* --------------------------------------------------------------------------- */
 
 static const struct sci_base_state sci_port_state_table[] = {
@@ -1596,6 +1777,10 @@ void sci_port_construct(struct isci_port *iport, u8 index,
 
 	iport->started_request_count = 0;
 	iport->assigned_device_count = 0;
+<<<<<<< HEAD
+=======
+	iport->hang_detect_users = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iport->reserved_rni = SCU_DUMMY_INDEX;
 	iport->reserved_tag = SCI_CONTROLLER_INVALID_IO_TAG;
@@ -1608,6 +1793,7 @@ void sci_port_construct(struct isci_port *iport, u8 index,
 		iport->phy_table[index] = NULL;
 }
 
+<<<<<<< HEAD
 void isci_port_init(struct isci_port *iport, struct isci_host *ihost, int index)
 {
 	INIT_LIST_HEAD(&iport->remote_dev_list);
@@ -1615,6 +1801,8 @@ void isci_port_init(struct isci_port *iport, struct isci_host *ihost, int index)
 	iport->isci_host = ihost;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sci_port_broadcast_change_received(struct isci_port *iport, struct isci_phy *iphy)
 {
 	struct isci_host *ihost = iport->owning_controller;
@@ -1671,6 +1859,7 @@ int isci_port_perform_hard_reset(struct isci_host *ihost, struct isci_port *ipor
 			__func__, iport, status);
 
 	}
+<<<<<<< HEAD
 
 	/* If the hard reset for the port has failed, consider this
 	 * the same as link failures on all phys in the port.
@@ -1682,6 +1871,8 @@ int isci_port_perform_hard_reset(struct isci_host *ihost, struct isci_port *ipor
 			"(0x%x) - driving explicit link fail for all phys\n",
 			__func__, iport, iport->hard_reset_status);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1740,7 +1931,11 @@ void isci_port_formed(struct asd_sas_phy *phy)
 	struct isci_host *ihost = phy->ha->lldd_ha;
 	struct isci_phy *iphy = to_iphy(phy);
 	struct asd_sas_port *port = phy->port;
+<<<<<<< HEAD
 	struct isci_port *iport;
+=======
+	struct isci_port *iport = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int i;
 

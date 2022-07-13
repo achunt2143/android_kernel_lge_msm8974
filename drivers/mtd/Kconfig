@@ -1,6 +1,10 @@
 menuconfig MTD
 	tristate "Memory Technology Device (MTD) support"
+<<<<<<< HEAD
 	depends on GENERIC_IO
+=======
+	imply NVMEM
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Memory Technology Devices are flash, RAM and similar chips, often
 	  used for solid state file systems on embedded devices. This option
@@ -23,6 +27,7 @@ config MTD_TESTS
 	  WARNING: some of the tests will ERASE entire MTD device which they
 	  test. Do not use these tests unless you really know what you do.
 
+<<<<<<< HEAD
 config MTD_REDBOOT_PARTS
 	tristate "RedBoot partition table parsing"
 	---help---
@@ -167,21 +172,44 @@ config MTD_BLKDEVS
 	tristate "Common interface to block layer for MTD 'translation layers'"
 	depends on BLOCK
 	default n
+=======
+menu "Partition parsers"
+source "drivers/mtd/parsers/Kconfig"
+endmenu
+
+comment "User Modules And Translation Layers"
+
+#
+# MTD block device support is select'ed if needed
+#
+config MTD_BLKDEVS
+	tristate
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MTD_BLOCK
 	tristate "Caching block device access to MTD devices"
 	depends on BLOCK
 	select MTD_BLKDEVS
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Although most flash chips have an erase size too large to be useful
 	  as block devices, it is possible to use MTD devices which are based
 	  on RAM chips in this manner. This block device is a user of MTD
 	  devices performing that function.
 
+<<<<<<< HEAD
 	  At the moment, it is also required for the Journalling Flash File
 	  System(s) to obtain a handle on the MTD device when it's mounted
 	  (although JFFS and JFFS2 don't actually use any of the functionality
 	  of the mtdblock device).
+=======
+	  Note that mounting a JFFS2 filesystem doesn't require using mtdblock.
+	  It's possible to mount a rootfs using the MTD device on the "root="
+	  bootargs as "root=mtd2" or "root=mtd:name_of_device".
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Later, it may be extended to perform read/erase/modify/write cycles
 	  on flash chips to emulate a smaller block size. Needless to say,
@@ -203,11 +231,21 @@ config MTD_BLOCK_RO
 	  You do not need this option for use with the DiskOnChip devices. For
 	  those, enable NFTL support (CONFIG_NFTL) instead.
 
+<<<<<<< HEAD
+=======
+comment "Note that in some cases UBI block is preferred. See MTD_UBI_BLOCK."
+	depends on MTD_BLOCK || MTD_BLOCK_RO
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config FTL
 	tristate "FTL (Flash Translation Layer) support"
 	depends on BLOCK
 	select MTD_BLKDEVS
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This provides support for the original Flash Translation Layer which
 	  is part of the PCMCIA specification. It uses a kind of pseudo-
 	  file system on a flash device to emulate a block device with
@@ -224,7 +262,11 @@ config NFTL
 	tristate "NFTL (NAND Flash Translation Layer) support"
 	depends on BLOCK
 	select MTD_BLKDEVS
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This provides support for the NAND Flash Translation Layer which is
 	  used on M-Systems' DiskOnChip devices. It uses a kind of pseudo-
 	  file system on a flash device to emulate a block device with
@@ -248,7 +290,11 @@ config INFTL
 	tristate "INFTL (Inverse NAND Flash Translation Layer) support"
 	depends on BLOCK
 	select MTD_BLKDEVS
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This provides support for the Inverse NAND Flash Translation
 	  Layer which is used on M-Systems' newer DiskOnChip devices. It
 	  uses a kind of pseudo-file system on a flash device to emulate
@@ -263,10 +309,17 @@ config INFTL
 	  not use it.
 
 config RFD_FTL
+<<<<<<< HEAD
         tristate "Resident Flash Disk (Flash Translation Layer) support"
 	depends on BLOCK
 	select MTD_BLKDEVS
 	---help---
+=======
+	tristate "Resident Flash Disk (Flash Translation Layer) support"
+	depends on BLOCK
+	select MTD_BLKDEVS
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This provides support for the flash translation layer known
 	  as the Resident Flash Disk (RFD), as used by the Embedded BIOS
 	  of General Software. There is a blurb at:
@@ -281,12 +334,21 @@ config SSFDC
 	  This enables read only access to SmartMedia formatted NAND
 	  flash. You can mount it with FAT file system.
 
+<<<<<<< HEAD
 
 config SM_FTL
 	tristate "SmartMedia/xD new translation layer"
 	depends on EXPERIMENTAL && BLOCK
 	select MTD_BLKDEVS
 	select MTD_NAND_ECC
+=======
+config SM_FTL
+	tristate "SmartMedia/xD new translation layer"
+	depends on BLOCK
+	select MTD_BLKDEVS
+	select MTD_NAND_CORE
+	select MTD_NAND_ECC_SW_HAMMING
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This enables EXPERIMENTAL R/W support for SmartMedia/xD
 	  FTL (Flash translation layer).
@@ -304,12 +366,26 @@ config MTD_OOPS
 	  buffer in a flash partition where it can be read back at some
 	  later point.
 
+<<<<<<< HEAD
+=======
+config MTD_PSTORE
+	tristate "Log panic/oops to an MTD buffer based on pstore"
+	depends on PSTORE_BLK
+	help
+	  This enables panic and oops messages to be logged to a circular
+	  buffer in a flash partition where it can be read back as files after
+	  mounting pstore filesystem.
+
+	  If unsure, say N.
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config MTD_SWAP
 	tristate "Swap on MTD device support"
 	depends on MTD && SWAP
 	select MTD_BLKDEVS
 	help
 	  Provides volatile block device driver on top of mtd partition
+<<<<<<< HEAD
           suitable for swapping.  The mapping of written blocks is not saved.
 	  The driver provides wear leveling by storing erase counter into the
 	  OOB.
@@ -324,6 +400,24 @@ config MTD_LAZYECCSTATS
 
 	  This can significantly decrease boot times depending on the size of
 	  the partition.  If unsure, say 'N'.
+=======
+	  suitable for swapping.  The mapping of written blocks is not saved.
+	  The driver provides wear leveling by storing erase counter into the
+	  OOB.
+
+config MTD_PARTITIONED_MASTER
+	bool "Retain master device when partitioned"
+	default n
+	depends on MTD
+	help
+	  For historical reasons, by default, either a master is present or
+	  several partitions are present, but not both. The concern was that
+	  data listed in multiple partitions was dangerous; however, SCSI does
+	  this and it is frequently useful for applications. This config option
+	  leaves the master in even if the device is partitioned. It also makes
+	  the parent of the partition device be the master device, rather than
+	  what lies behind the master.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 source "drivers/mtd/chips/Kconfig"
 
@@ -333,10 +427,21 @@ source "drivers/mtd/devices/Kconfig"
 
 source "drivers/mtd/nand/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/mtd/onenand/Kconfig"
 
 source "drivers/mtd/lpddr/Kconfig"
 
 source "drivers/mtd/ubi/Kconfig"
 
+=======
+source "drivers/mtd/lpddr/Kconfig"
+
+source "drivers/mtd/spi-nor/Kconfig"
+
+source "drivers/mtd/ubi/Kconfig"
+
+source "drivers/mtd/hyperbus/Kconfig"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif # MTD

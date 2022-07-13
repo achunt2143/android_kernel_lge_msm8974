@@ -28,9 +28,12 @@
 #define PFX "jazz16: "
 
 MODULE_DESCRIPTION("Media Vision Jazz16");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Media Vision ??? },"
 		"{RTL,RTL3000}}");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Krzysztof Helt <krzysztof.h1@wp.pl>");
 MODULE_LICENSE("GPL");
 
@@ -50,6 +53,7 @@ module_param_array(id, charp, NULL, 0444);
 MODULE_PARM_DESC(id, "ID string for Media Vision Jazz16 based soundcard.");
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable Media Vision Jazz16 based soundcard.");
+<<<<<<< HEAD
 module_param_array(port, long, NULL, 0444);
 MODULE_PARM_DESC(port, "Port # for jazz16 driver.");
 module_param_array(mpu_port, long, NULL, 0444);
@@ -61,6 +65,19 @@ MODULE_PARM_DESC(mpu_irq, "MPU-401 IRQ # for jazz16 driver.");
 module_param_array(dma8, int, NULL, 0444);
 MODULE_PARM_DESC(dma8, "DMA8 # for jazz16 driver.");
 module_param_array(dma16, int, NULL, 0444);
+=======
+module_param_hw_array(port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(port, "Port # for jazz16 driver.");
+module_param_hw_array(mpu_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(mpu_port, "MPU-401 port # for jazz16 driver.");
+module_param_hw_array(irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(irq, "IRQ # for jazz16 driver.");
+module_param_hw_array(mpu_irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(mpu_irq, "MPU-401 IRQ # for jazz16 driver.");
+module_param_hw_array(dma8, int, dma, NULL, 0444);
+MODULE_PARM_DESC(dma8, "DMA8 # for jazz16 driver.");
+module_param_hw_array(dma16, int, dma, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(dma16, "DMA16 # for jazz16 driver.");
 
 #define SB_JAZZ16_WAKEUP	0xaf
@@ -78,8 +95,13 @@ static irqreturn_t jazz16_interrupt(int irq, void *chip)
 	return snd_sb8dsp_interrupt(chip);
 }
 
+<<<<<<< HEAD
 static int __devinit jazz16_configure_ports(unsigned long port,
 					    unsigned long mpu_port, int idx)
+=======
+static int jazz16_configure_ports(unsigned long port,
+				  unsigned long mpu_port, int idx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char val;
 
@@ -99,8 +121,13 @@ static int __devinit jazz16_configure_ports(unsigned long port,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit jazz16_detect_board(unsigned long port,
 					 unsigned long mpu_port)
+=======
+static int jazz16_detect_board(unsigned long port,
+			       unsigned long mpu_port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	int val;
@@ -156,11 +183,19 @@ err_unmap:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devinit jazz16_configure_board(struct snd_sb *chip, int mpu_irq)
 {
 	static unsigned char jazz_irq_bits[] = { 0, 0, 2, 3, 0, 1, 0, 4,
 						 0, 2, 5, 0, 0, 0, 0, 6 };
 	static unsigned char jazz_dma_bits[] = { 0, 1, 0, 2, 0, 3, 0, 4 };
+=======
+static int jazz16_configure_board(struct snd_sb *chip, int mpu_irq)
+{
+	static const unsigned char jazz_irq_bits[] = { 0, 0, 2, 3, 0, 1, 0, 4,
+						 0, 2, 5, 0, 0, 0, 0, 6 };
+	static const unsigned char jazz_dma_bits[] = { 0, 1, 0, 2, 0, 3, 0, 4 };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (jazz_dma_bits[chip->dma8] == 0 ||
 	    jazz_dma_bits[chip->dma16] == 0 ||
@@ -183,7 +218,11 @@ static int __devinit jazz16_configure_board(struct snd_sb *chip, int mpu_irq)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_jazz16_match(struct device *devptr, unsigned int dev)
+=======
+static int snd_jazz16_match(struct device *devptr, unsigned int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!enable[dev])
 		return 0;
@@ -218,12 +257,17 @@ static int __devinit snd_jazz16_match(struct device *devptr, unsigned int dev)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_jazz16_probe(struct device *devptr, unsigned int dev)
+=======
+static int snd_jazz16_probe(struct device *devptr, unsigned int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct snd_card_jazz16 *jazz16;
 	struct snd_sb *chip;
 	struct snd_opl3 *opl3;
+<<<<<<< HEAD
 	static int possible_irqs[] = {2, 3, 5, 7, 9, 10, 15, -1};
 	static int possible_dmas8[] = {1, 3, -1};
 	static int possible_dmas16[] = {5, 7, -1};
@@ -231,6 +275,15 @@ static int __devinit snd_jazz16_probe(struct device *devptr, unsigned int dev)
 
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct snd_card_jazz16), &card);
+=======
+	static const int possible_irqs[] = {2, 3, 5, 7, 9, 10, 15, -1};
+	static const int possible_dmas8[] = {1, 3, -1};
+	static const int possible_dmas16[] = {5, 7, -1};
+	int err, xirq, xdma8, xdma16, xmpu_port, xmpu_irq;
+
+	err = snd_devm_card_new(devptr, index[dev], id[dev], THIS_MODULE,
+				sizeof(struct snd_card_jazz16), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -241,8 +294,12 @@ static int __devinit snd_jazz16_probe(struct device *devptr, unsigned int dev)
 		xirq = snd_legacy_find_free_irq(possible_irqs);
 		if (xirq < 0) {
 			snd_printk(KERN_ERR "unable to find a free IRQ\n");
+<<<<<<< HEAD
 			err = -EBUSY;
 			goto err_free;
+=======
+			return -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	xdma8 = dma8[dev];
@@ -250,8 +307,12 @@ static int __devinit snd_jazz16_probe(struct device *devptr, unsigned int dev)
 		xdma8 = snd_legacy_find_free_dma(possible_dmas8);
 		if (xdma8 < 0) {
 			snd_printk(KERN_ERR "unable to find a free DMA8\n");
+<<<<<<< HEAD
 			err = -EBUSY;
 			goto err_free;
+=======
+			return -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	xdma16 = dma16[dev];
@@ -259,8 +320,12 @@ static int __devinit snd_jazz16_probe(struct device *devptr, unsigned int dev)
 		xdma16 = snd_legacy_find_free_dma(possible_dmas16);
 		if (xdma16 < 0) {
 			snd_printk(KERN_ERR "unable to find a free DMA16\n");
+<<<<<<< HEAD
 			err = -EBUSY;
 			goto err_free;
+=======
+			return -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -270,7 +335,11 @@ static int __devinit snd_jazz16_probe(struct device *devptr, unsigned int dev)
 	err = jazz16_detect_board(port[dev], xmpu_port);
 	if (err < 0) {
 		printk(KERN_ERR "Media Vision Jazz16 board not detected\n");
+<<<<<<< HEAD
 		goto err_free;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	err = snd_sbdsp_create(card, port[dev], irq[dev],
 			       jazz16_interrupt,
@@ -278,7 +347,11 @@ static int __devinit snd_jazz16_probe(struct device *devptr, unsigned int dev)
 			       SB_HW_JAZZ16,
 			       &chip);
 	if (err < 0)
+<<<<<<< HEAD
 		goto err_free;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xmpu_irq = mpu_irq[dev];
 	if (xmpu_irq == SNDRV_AUTO_IRQ || mpu_port[dev] == SNDRV_AUTO_PORT)
@@ -286,7 +359,11 @@ static int __devinit snd_jazz16_probe(struct device *devptr, unsigned int dev)
 	err = jazz16_configure_board(chip, xmpu_irq);
 	if (err < 0) {
 		printk(KERN_ERR "Media Vision Jazz16 configuration failed\n");
+<<<<<<< HEAD
 		goto err_free;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	jazz16->chip = chip;
@@ -297,12 +374,21 @@ static int __devinit snd_jazz16_probe(struct device *devptr, unsigned int dev)
 		"Media Vision Jazz16 at 0x%lx, irq %d, dma8 %d, dma16 %d",
 		port[dev], xirq, xdma8, xdma16);
 
+<<<<<<< HEAD
 	err = snd_sb8dsp_pcm(chip, 0, NULL);
 	if (err < 0)
 		goto err_free;
 	err = snd_sbmixer_new(chip);
 	if (err < 0)
 		goto err_free;
+=======
+	err = snd_sb8dsp_pcm(chip, 0);
+	if (err < 0)
+		return err;
+	err = snd_sbmixer_new(chip);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = snd_opl3_create(card, chip->port, chip->port + 2,
 			      OPL3_HW_AUTO, 1, &opl3);
@@ -312,7 +398,11 @@ static int __devinit snd_jazz16_probe(struct device *devptr, unsigned int dev)
 	else {
 		err = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
 		if (err < 0)
+<<<<<<< HEAD
 			goto err_free;
+=======
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (mpu_port[dev] > 0 && mpu_port[dev] != SNDRV_AUTO_PORT) {
 		if (mpu_irq[dev] == SNDRV_AUTO_IRQ)
@@ -327,6 +417,7 @@ static int __devinit snd_jazz16_probe(struct device *devptr, unsigned int dev)
 					mpu_port[dev]);
 	}
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, devptr);
 
 	err = snd_card_register(card);
@@ -348,6 +439,14 @@ static int __devexit snd_jazz16_remove(struct device *devptr, unsigned int dev)
 	dev_set_drvdata(devptr, NULL);
 	snd_card_free(card);
 	return 0;
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+
+	dev_set_drvdata(devptr, card);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -359,7 +458,10 @@ static int snd_jazz16_suspend(struct device *pdev, unsigned int n,
 	struct snd_sb *chip = acard->chip;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+<<<<<<< HEAD
 	snd_pcm_suspend_all(chip->pcm);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_sbmixer_suspend(chip);
 	return 0;
 }
@@ -380,7 +482,10 @@ static int snd_jazz16_resume(struct device *pdev, unsigned int n)
 static struct isa_driver snd_jazz16_driver = {
 	.match		= snd_jazz16_match,
 	.probe		= snd_jazz16_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_jazz16_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= snd_jazz16_suspend,
 	.resume		= snd_jazz16_resume,
@@ -390,6 +495,7 @@ static struct isa_driver snd_jazz16_driver = {
 	},
 };
 
+<<<<<<< HEAD
 static int __init alsa_card_jazz16_init(void)
 {
 	return isa_register_driver(&snd_jazz16_driver, SNDRV_CARDS);
@@ -402,3 +508,6 @@ static void __exit alsa_card_jazz16_exit(void)
 
 module_init(alsa_card_jazz16_init)
 module_exit(alsa_card_jazz16_exit)
+=======
+module_isa_driver(snd_jazz16_driver, SNDRV_CARDS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

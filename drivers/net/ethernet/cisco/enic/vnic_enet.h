@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
@@ -15,6 +16,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
+ * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _VNIC_ENIC_H_
@@ -32,6 +39,11 @@ struct vnic_enet_config {
 	char devname[16];
 	u32 intr_timer_usec;
 	u16 loop_tag;
+<<<<<<< HEAD
+=======
+	u16 vf_rq_count;
+	u16 num_arfs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define VENETF_TSO		0x1	/* TSO enabled */
@@ -46,6 +58,10 @@ struct vnic_enet_config {
 #define VENETF_RSSHASH_IPV6_EX	0x200	/* Hash on IPv6 extended fields */
 #define VENETF_RSSHASH_TCPIPV6_EX 0x400	/* Hash on TCP + IPv6 ext. fields */
 #define VENETF_LOOP		0x800	/* Loopback enabled */
+<<<<<<< HEAD
+=======
+#define VENETF_VXLAN		0x10000	/* VxLAN offload */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VENET_INTR_TYPE_MIN	0	/* Timer specs min interrupt spacing */
 #define VENET_INTR_TYPE_IDLE	1	/* Timer specs idle time before irq */

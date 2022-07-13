@@ -72,9 +72,12 @@ MODULE_VERSION(my_VERSION);
 #define MPT_LAN_RECEIVE_POST_REQUEST_SIZE \
 	(sizeof(LANReceivePostRequest_t) - sizeof(SGE_MPI_UNION))
 
+<<<<<<< HEAD
 #define MPT_LAN_TRANSACTION32_SIZE \
 	(sizeof(SGETransaction32_t) - sizeof(u32))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Fusion MPT LAN private structures
  */
@@ -394,7 +397,12 @@ mpt_lan_open(struct net_device *dev)
 				"a moment.\n");
 	}
 
+<<<<<<< HEAD
 	priv->mpt_txfidx = kmalloc(priv->tx_max_out * sizeof(int), GFP_KERNEL);
+=======
+	priv->mpt_txfidx = kmalloc_array(priv->tx_max_out, sizeof(int),
+					 GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (priv->mpt_txfidx == NULL)
 		goto out;
 	priv->mpt_txfidx_tail = -1;
@@ -408,8 +416,13 @@ mpt_lan_open(struct net_device *dev)
 
 	dlprintk((KERN_INFO MYNAM "@lo: Finished initializing SendCtl\n"));
 
+<<<<<<< HEAD
 	priv->mpt_rxfidx = kmalloc(priv->max_buckets_out * sizeof(int),
 				   GFP_KERNEL);
+=======
+	priv->mpt_rxfidx = kmalloc_array(priv->max_buckets_out, sizeof(int),
+					 GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (priv->mpt_rxfidx == NULL)
 		goto out_SendCtl;
 	priv->mpt_rxfidx_tail = -1;
@@ -518,9 +531,15 @@ mpt_lan_close(struct net_device *dev)
 		if (priv->RcvCtl[i].skb != NULL) {
 /**/			dlprintk((KERN_INFO MYNAM "/lan_close: bucket %05x "
 /**/				  "is still out\n", i));
+<<<<<<< HEAD
 			pci_unmap_single(mpt_dev->pcidev, priv->RcvCtl[i].dma,
 					 priv->RcvCtl[i].len,
 					 PCI_DMA_FROMDEVICE);
+=======
+			dma_unmap_single(&mpt_dev->pcidev->dev,
+					 priv->RcvCtl[i].dma,
+					 priv->RcvCtl[i].len, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(priv->RcvCtl[i].skb);
 		}
 	}
@@ -530,9 +549,15 @@ mpt_lan_close(struct net_device *dev)
 
 	for (i = 0; i < priv->tx_max_out; i++) {
 		if (priv->SendCtl[i].skb != NULL) {
+<<<<<<< HEAD
 			pci_unmap_single(mpt_dev->pcidev, priv->SendCtl[i].dma,
 					 priv->SendCtl[i].len,
 					 PCI_DMA_TODEVICE);
+=======
+			dma_unmap_single(&mpt_dev->pcidev->dev,
+					 priv->SendCtl[i].dma,
+					 priv->SendCtl[i].len, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(priv->SendCtl[i].skb);
 		}
 	}
@@ -549,6 +574,7 @@ mpt_lan_close(struct net_device *dev)
 }
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
+<<<<<<< HEAD
 static int
 mpt_lan_change_mtu(struct net_device *dev, int new_mtu)
 {
@@ -562,6 +588,11 @@ mpt_lan_change_mtu(struct net_device *dev, int new_mtu)
 /* Tx timeout handler. */
 static void
 mpt_lan_tx_timeout(struct net_device *dev)
+=======
+/* Tx timeout handler. */
+static void
+mpt_lan_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpt_lan_priv *priv = netdev_priv(dev);
 	MPT_ADAPTER *mpt_dev = priv->mpt_dev;
@@ -594,8 +625,13 @@ mpt_lan_send_turbo(struct net_device *dev, u32 tmsg)
 			__func__, sent));
 
 	priv->SendCtl[ctx].skb = NULL;
+<<<<<<< HEAD
 	pci_unmap_single(mpt_dev->pcidev, priv->SendCtl[ctx].dma,
 			 priv->SendCtl[ctx].len, PCI_DMA_TODEVICE);
+=======
+	dma_unmap_single(&mpt_dev->pcidev->dev, priv->SendCtl[ctx].dma,
+			 priv->SendCtl[ctx].len, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_kfree_skb_irq(sent);
 
 	spin_lock_irqsave(&priv->txfidx_lock, flags);
@@ -660,8 +696,14 @@ mpt_lan_send_reply(struct net_device *dev, LANSendReply_t *pSendRep)
 				__func__, sent));
 
 		priv->SendCtl[ctx].skb = NULL;
+<<<<<<< HEAD
 		pci_unmap_single(mpt_dev->pcidev, priv->SendCtl[ctx].dma,
 				 priv->SendCtl[ctx].len, PCI_DMA_TODEVICE);
+=======
+		dma_unmap_single(&mpt_dev->pcidev->dev,
+				 priv->SendCtl[ctx].dma,
+				 priv->SendCtl[ctx].len, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_irq(sent);
 
 		priv->mpt_txfidx[++priv->mpt_txfidx_tail] = ctx;
@@ -680,7 +722,11 @@ out:
 }
 
 /*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
+<<<<<<< HEAD
 static int
+=======
+static netdev_tx_t
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 mpt_lan_sdu_send (struct sk_buff *skb, struct net_device *dev)
 {
 	struct mpt_lan_priv *priv = netdev_priv(dev);
@@ -732,8 +778,13 @@ mpt_lan_sdu_send (struct sk_buff *skb, struct net_device *dev)
 	skb_reset_mac_header(skb);
 	skb_pull(skb, 12);
 
+<<<<<<< HEAD
         dma = pci_map_single(mpt_dev->pcidev, skb->data, skb->len,
 			     PCI_DMA_TODEVICE);
+=======
+	dma = dma_map_single(&mpt_dev->pcidev->dev, skb->data, skb->len,
+			     DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv->SendCtl[ctx].skb = skb;
 	priv->SendCtl[ctx].dma = dma;
@@ -754,7 +805,11 @@ mpt_lan_sdu_send (struct sk_buff *skb, struct net_device *dev)
 	pTrans->ContextSize   = sizeof(u32);
 	pTrans->DetailsLength = 2 * sizeof(u32);
 	pTrans->Flags         = 0;
+<<<<<<< HEAD
 	pTrans->TransactionContext[0] = cpu_to_le32(ctx);
+=======
+	pTrans->TransactionContext = cpu_to_le32(ctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 //	dioprintk((KERN_INFO MYNAM ": %s/%s: BC = %08x, skb = %p, buff = %p\n",
 //			IOC_AND_NETDEV_NAMES_s_s(dev),
@@ -791,7 +846,11 @@ mpt_lan_sdu_send (struct sk_buff *skb, struct net_device *dev)
 		pSimple->Address.High = 0;
 
 	mpt_put_msg_frame (LanCtx, mpt_dev, mf);
+<<<<<<< HEAD
 	dev->trans_start = jiffies;
+=======
+	netif_trans_update(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dioprintk((KERN_INFO MYNAM ": %s/%s: Sending packet. FlagsLength = %08x.\n",
 			IOC_AND_NETDEV_NAMES_s_s(dev),
@@ -880,6 +939,7 @@ mpt_lan_receive_post_turbo(struct net_device *dev, u32 tmsg)
 			return -ENOMEM;
 		}
 
+<<<<<<< HEAD
 		pci_dma_sync_single_for_cpu(mpt_dev->pcidev, priv->RcvCtl[ctx].dma,
 					    priv->RcvCtl[ctx].len, PCI_DMA_FROMDEVICE);
 
@@ -887,6 +947,19 @@ mpt_lan_receive_post_turbo(struct net_device *dev, u32 tmsg)
 
 		pci_dma_sync_single_for_device(mpt_dev->pcidev, priv->RcvCtl[ctx].dma,
 					       priv->RcvCtl[ctx].len, PCI_DMA_FROMDEVICE);
+=======
+		dma_sync_single_for_cpu(&mpt_dev->pcidev->dev,
+					priv->RcvCtl[ctx].dma,
+					priv->RcvCtl[ctx].len,
+					DMA_FROM_DEVICE);
+
+		skb_copy_from_linear_data(old_skb, skb_put(skb, len), len);
+
+		dma_sync_single_for_device(&mpt_dev->pcidev->dev,
+					   priv->RcvCtl[ctx].dma,
+					   priv->RcvCtl[ctx].len,
+					   DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -894,8 +967,13 @@ mpt_lan_receive_post_turbo(struct net_device *dev, u32 tmsg)
 
 	priv->RcvCtl[ctx].skb = NULL;
 
+<<<<<<< HEAD
 	pci_unmap_single(mpt_dev->pcidev, priv->RcvCtl[ctx].dma,
 			 priv->RcvCtl[ctx].len, PCI_DMA_FROMDEVICE);
+=======
+	dma_unmap_single(&mpt_dev->pcidev->dev, priv->RcvCtl[ctx].dma,
+			 priv->RcvCtl[ctx].len, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	spin_lock_irqsave(&priv->rxfidx_lock, flags);
@@ -939,8 +1017,13 @@ mpt_lan_receive_post_free(struct net_device *dev,
 //		dlprintk((KERN_INFO MYNAM "@rpr[2] TC + 3\n"));
 
 		priv->RcvCtl[ctx].skb = NULL;
+<<<<<<< HEAD
 		pci_unmap_single(mpt_dev->pcidev, priv->RcvCtl[ctx].dma,
 				 priv->RcvCtl[ctx].len, PCI_DMA_FROMDEVICE);
+=======
+		dma_unmap_single(&mpt_dev->pcidev->dev, priv->RcvCtl[ctx].dma,
+				 priv->RcvCtl[ctx].len, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_any(skb);
 
 		priv->mpt_rxfidx[++priv->mpt_rxfidx_tail] = ctx;
@@ -1040,6 +1123,7 @@ mpt_lan_receive_post_reply(struct net_device *dev,
 //					IOC_AND_NETDEV_NAMES_s_s(dev),
 //					i, l));
 
+<<<<<<< HEAD
 			pci_dma_sync_single_for_cpu(mpt_dev->pcidev,
 						    priv->RcvCtl[ctx].dma,
 						    priv->RcvCtl[ctx].len,
@@ -1050,6 +1134,18 @@ mpt_lan_receive_post_reply(struct net_device *dev,
 						       priv->RcvCtl[ctx].dma,
 						       priv->RcvCtl[ctx].len,
 						       PCI_DMA_FROMDEVICE);
+=======
+			dma_sync_single_for_cpu(&mpt_dev->pcidev->dev,
+						priv->RcvCtl[ctx].dma,
+						priv->RcvCtl[ctx].len,
+						DMA_FROM_DEVICE);
+			skb_copy_from_linear_data(old_skb, skb_put(skb, l), l);
+
+			dma_sync_single_for_device(&mpt_dev->pcidev->dev,
+						   priv->RcvCtl[ctx].dma,
+						   priv->RcvCtl[ctx].len,
+						   DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			priv->mpt_rxfidx[++priv->mpt_rxfidx_tail] = ctx;
 			szrem -= l;
@@ -1068,6 +1164,7 @@ mpt_lan_receive_post_reply(struct net_device *dev,
 			return -ENOMEM;
 		}
 
+<<<<<<< HEAD
 		pci_dma_sync_single_for_cpu(mpt_dev->pcidev,
 					    priv->RcvCtl[ctx].dma,
 					    priv->RcvCtl[ctx].len,
@@ -1079,6 +1176,19 @@ mpt_lan_receive_post_reply(struct net_device *dev,
 					       priv->RcvCtl[ctx].dma,
 					       priv->RcvCtl[ctx].len,
 					       PCI_DMA_FROMDEVICE);
+=======
+		dma_sync_single_for_cpu(&mpt_dev->pcidev->dev,
+					priv->RcvCtl[ctx].dma,
+					priv->RcvCtl[ctx].len,
+					DMA_FROM_DEVICE);
+
+		skb_copy_from_linear_data(old_skb, skb_put(skb, len), len);
+
+		dma_sync_single_for_device(&mpt_dev->pcidev->dev,
+					   priv->RcvCtl[ctx].dma,
+					   priv->RcvCtl[ctx].len,
+					   DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_lock_irqsave(&priv->rxfidx_lock, flags);
 		priv->mpt_rxfidx[++priv->mpt_rxfidx_tail] = ctx;
@@ -1089,8 +1199,13 @@ mpt_lan_receive_post_reply(struct net_device *dev,
 
 		priv->RcvCtl[ctx].skb = NULL;
 
+<<<<<<< HEAD
 		pci_unmap_single(mpt_dev->pcidev, priv->RcvCtl[ctx].dma,
 				 priv->RcvCtl[ctx].len, PCI_DMA_FROMDEVICE);
+=======
+		dma_unmap_single(&mpt_dev->pcidev->dev, priv->RcvCtl[ctx].dma,
+				 priv->RcvCtl[ctx].len, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv->RcvCtl[ctx].dma = 0;
 
 		priv->mpt_rxfidx[++priv->mpt_rxfidx_tail] = ctx;
@@ -1168,7 +1283,11 @@ mpt_lan_post_receive_buckets(struct mpt_lan_priv *priv)
 			__func__, buckets, curr));
 
 	max = (mpt_dev->req_sz - MPT_LAN_RECEIVE_POST_REQUEST_SIZE) /
+<<<<<<< HEAD
 			(MPT_LAN_TRANSACTION32_SIZE + sizeof(SGESimple64_t));
+=======
+			(sizeof(SGETransaction32_t) + sizeof(SGESimple64_t));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (buckets) {
 		mf = mpt_get_msg_frame(LanCtx, mpt_dev);
@@ -1211,10 +1330,17 @@ mpt_lan_post_receive_buckets(struct mpt_lan_priv *priv)
 
 			skb = priv->RcvCtl[ctx].skb;
 			if (skb && (priv->RcvCtl[ctx].len != len)) {
+<<<<<<< HEAD
 				pci_unmap_single(mpt_dev->pcidev,
 						 priv->RcvCtl[ctx].dma,
 						 priv->RcvCtl[ctx].len,
 						 PCI_DMA_FROMDEVICE);
+=======
+				dma_unmap_single(&mpt_dev->pcidev->dev,
+						 priv->RcvCtl[ctx].dma,
+						 priv->RcvCtl[ctx].len,
+						 DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_kfree_skb(priv->RcvCtl[ctx].skb);
 				skb = priv->RcvCtl[ctx].skb = NULL;
 			}
@@ -1230,8 +1356,14 @@ mpt_lan_post_receive_buckets(struct mpt_lan_priv *priv)
 					break;
 				}
 
+<<<<<<< HEAD
 				dma = pci_map_single(mpt_dev->pcidev, skb->data,
 						     len, PCI_DMA_FROMDEVICE);
+=======
+				dma = dma_map_single(&mpt_dev->pcidev->dev,
+						     skb->data, len,
+						     DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				priv->RcvCtl[ctx].skb = skb;
 				priv->RcvCtl[ctx].dma = dma;
@@ -1243,7 +1375,11 @@ mpt_lan_post_receive_buckets(struct mpt_lan_priv *priv)
 			pTrans->ContextSize   = sizeof(u32);
 			pTrans->DetailsLength = 0;
 			pTrans->Flags         = 0;
+<<<<<<< HEAD
 			pTrans->TransactionContext[0] = cpu_to_le32(ctx);
+=======
+			pTrans->TransactionContext = cpu_to_le32(ctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			pSimple = (SGESimple64_t *) pTrans->TransactionDetails;
 
@@ -1304,7 +1440,10 @@ static const struct net_device_ops mpt_netdev_ops = {
 	.ndo_open       = mpt_lan_open,
 	.ndo_stop       = mpt_lan_close,
 	.ndo_start_xmit = mpt_lan_sdu_send,
+<<<<<<< HEAD
 	.ndo_change_mtu = mpt_lan_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout = mpt_lan_tx_timeout,
 };
 
@@ -1363,7 +1502,11 @@ mpt_register_lan_device (MPT_ADAPTER *mpt_dev, int pnum)
 	HWaddr[5] = a[0];
 
 	dev->addr_len = FC_ALEN;
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, HWaddr, FC_ALEN);
+=======
+	dev_addr_set(dev, HWaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(dev->broadcast, 0xff, FC_ALEN);
 
 	/* The Tx queue is 127 deep on the 909.
@@ -1375,6 +1518,13 @@ mpt_register_lan_device (MPT_ADAPTER *mpt_dev, int pnum)
 	dev->netdev_ops = &mpt_netdev_ops;
 	dev->watchdog_timeo = MPT_LAN_TX_TIMEOUT;
 
+<<<<<<< HEAD
+=======
+	/* MTU range: 96 - 65280 */
+	dev->min_mtu = MPT_LAN_MIN_MTU;
+	dev->max_mtu = MPT_LAN_MAX_MTU;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlprintk((KERN_INFO MYNAM ": Finished registering dev "
 		"and setting initial values\n"));
 
@@ -1386,7 +1536,11 @@ mpt_register_lan_device (MPT_ADAPTER *mpt_dev, int pnum)
 }
 
 static int
+<<<<<<< HEAD
 mptlan_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+=======
+mptlan_probe(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	MPT_ADAPTER 		*ioc = pci_get_drvdata(pdev);
 	struct net_device	*dev;
@@ -1436,7 +1590,13 @@ mptlan_remove(struct pci_dev *pdev)
 {
 	MPT_ADAPTER 		*ioc = pci_get_drvdata(pdev);
 	struct net_device	*dev = ioc->netdev;
+<<<<<<< HEAD
 
+=======
+	struct mpt_lan_priv *priv = netdev_priv(dev);
+
+	cancel_delayed_work_sync(&priv->post_buckets_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if(dev != NULL) {
 		unregister_netdev(dev);
 		free_netdev(dev);

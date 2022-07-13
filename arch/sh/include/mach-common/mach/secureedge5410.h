@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 /*
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * include/asm-sh/snapgear.h
  *
  * Modified version of io_se.h for the snapgear-specific functions.
  *
+<<<<<<< HEAD
  * May be copied or modified under the terms of the GNU General Public
  * License.  See linux/COPYING for more information.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * IO functions for a SnapGear
  */
 

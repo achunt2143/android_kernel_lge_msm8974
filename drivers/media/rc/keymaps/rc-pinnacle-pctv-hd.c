@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* pinnacle-pctv-hd.h - Keytable for pinnacle_pctv_hd Remote Controller
  *
  * keymap imported from ir-keymaps.c
@@ -9,6 +10,14 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+// pinnacle-pctv-hd.h - Keytable for pinnacle_pctv_hd Remote Controller
+//
+// keymap imported from ir-keymaps.c
+//
+// Copyright (c) 2010 by Mauro Carvalho Chehab
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -25,6 +34,7 @@ static struct rc_map_table pinnacle_pctv_hd[] = {
 	{ 0x0709, KEY_VOLUMEDOWN },
 	{ 0x0706, KEY_CHANNELUP },
 	{ 0x070c, KEY_CHANNELDOWN },
+<<<<<<< HEAD
 	{ 0x070f, KEY_1 },
 	{ 0x0715, KEY_2 },
 	{ 0x0710, KEY_3 },
@@ -35,6 +45,18 @@ static struct rc_map_table pinnacle_pctv_hd[] = {
 	{ 0x0721, KEY_8 },
 	{ 0x0712, KEY_9 },
 	{ 0x0727, KEY_0 },
+=======
+	{ 0x070f, KEY_NUMERIC_1 },
+	{ 0x0715, KEY_NUMERIC_2 },
+	{ 0x0710, KEY_NUMERIC_3 },
+	{ 0x0718, KEY_NUMERIC_4 },
+	{ 0x071b, KEY_NUMERIC_5 },
+	{ 0x071e, KEY_NUMERIC_6 },
+	{ 0x0711, KEY_NUMERIC_7 },
+	{ 0x0721, KEY_NUMERIC_8 },
+	{ 0x0712, KEY_NUMERIC_9 },
+	{ 0x0727, KEY_NUMERIC_0 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0724, KEY_ZOOM }, /* 'Square' key */
 	{ 0x072a, KEY_SUBTITLE },   /* 'T' key */
 	{ 0x072d, KEY_REWIND },
@@ -47,10 +69,17 @@ static struct rc_map_table pinnacle_pctv_hd[] = {
 
 static struct rc_map_list pinnacle_pctv_hd_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = pinnacle_pctv_hd,
 		.size    = ARRAY_SIZE(pinnacle_pctv_hd),
 		.rc_type = RC_TYPE_RC5,
 		.name    = RC_MAP_PINNACLE_PCTV_HD,
+=======
+		.scan     = pinnacle_pctv_hd,
+		.size     = ARRAY_SIZE(pinnacle_pctv_hd),
+		.rc_proto = RC_PROTO_RC5,
+		.name     = RC_MAP_PINNACLE_PCTV_HD,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -68,4 +97,9 @@ module_init(init_rc_map_pinnacle_pctv_hd)
 module_exit(exit_rc_map_pinnacle_pctv_hd)
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+MODULE_DESCRIPTION("Pinnacle PCTV HD 800i mini remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

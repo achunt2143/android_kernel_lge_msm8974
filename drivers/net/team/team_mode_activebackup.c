@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * net/drivers/team/team_mode_activebackup.c - Active-backup mode for team
  * Copyright (c) 2011 Jiri Pirko <jpirko@redhat.com>
@@ -6,6 +7,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * drivers/net/team/team_mode_activebackup.c - Active-backup mode for team
+ * Copyright (c) 2011 Jiri Pirko <jpirko@redhat.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -19,6 +26,10 @@
 
 struct ab_priv {
 	struct team_port __rcu *active_port;
+<<<<<<< HEAD
+=======
+	struct team_option_inst_info *ap_opt_inst_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ab_priv *ab_priv(struct team *team)
@@ -40,11 +51,18 @@ static bool ab_transmit(struct team *team, struct sk_buff *skb)
 {
 	struct team_port *active_port;
 
+<<<<<<< HEAD
 	active_port = rcu_dereference(ab_priv(team)->active_port);
 	if (unlikely(!active_port))
 		goto drop;
 	skb->dev = active_port->dev;
 	if (dev_queue_xmit(skb))
+=======
+	active_port = rcu_dereference_bh(ab_priv(team)->active_port);
+	if (unlikely(!active_port))
+		goto drop;
+	if (team_dev_queue_xmit(team, active_port, skb))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	return true;
 
@@ -55,6 +73,7 @@ drop:
 
 static void ab_port_leave(struct team *team, struct team_port *port)
 {
+<<<<<<< HEAD
 	if (ab_priv(team)->active_port == port)
 		RCU_INIT_POINTER(ab_priv(team)->active_port, NULL);
 }
@@ -76,6 +95,38 @@ static int ab_active_port_set(struct team *team, void *arg)
 
 	list_for_each_entry_rcu(port, &team->port_list, list) {
 		if (port->dev->ifindex == *ifindex) {
+=======
+	if (ab_priv(team)->active_port == port) {
+		RCU_INIT_POINTER(ab_priv(team)->active_port, NULL);
+		team_option_inst_set_change(ab_priv(team)->ap_opt_inst_info);
+	}
+}
+
+static void ab_active_port_init(struct team *team,
+				struct team_option_inst_info *info)
+{
+	ab_priv(team)->ap_opt_inst_info = info;
+}
+
+static void ab_active_port_get(struct team *team, struct team_gsetter_ctx *ctx)
+{
+	struct team_port *active_port;
+
+	active_port = rcu_dereference_protected(ab_priv(team)->active_port,
+						lockdep_is_held(&team->lock));
+	if (active_port)
+		ctx->data.u32_val = active_port->dev->ifindex;
+	else
+		ctx->data.u32_val = 0;
+}
+
+static int ab_active_port_set(struct team *team, struct team_gsetter_ctx *ctx)
+{
+	struct team_port *port;
+
+	list_for_each_entry(port, &team->port_list, list) {
+		if (port->dev->ifindex == ctx->data.u32_val) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rcu_assign_pointer(ab_priv(team)->active_port, port);
 			return 0;
 		}
@@ -87,17 +138,29 @@ static const struct team_option ab_options[] = {
 	{
 		.name = "activeport",
 		.type = TEAM_OPTION_TYPE_U32,
+<<<<<<< HEAD
+=======
+		.init = ab_active_port_init,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.getter = ab_active_port_get,
 		.setter = ab_active_port_set,
 	},
 };
 
+<<<<<<< HEAD
 int ab_init(struct team *team)
+=======
+static int ab_init(struct team *team)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return team_options_register(team, ab_options, ARRAY_SIZE(ab_options));
 }
 
+<<<<<<< HEAD
 void ab_exit(struct team *team)
+=======
+static void ab_exit(struct team *team)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	team_options_unregister(team, ab_options, ARRAY_SIZE(ab_options));
 }
@@ -110,11 +173,19 @@ static const struct team_mode_ops ab_mode_ops = {
 	.port_leave		= ab_port_leave,
 };
 
+<<<<<<< HEAD
 static struct team_mode ab_mode = {
+=======
+static const struct team_mode ab_mode = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.kind		= "activebackup",
 	.owner		= THIS_MODULE,
 	.priv_size	= sizeof(struct ab_priv),
 	.ops		= &ab_mode_ops,
+<<<<<<< HEAD
+=======
+	.lag_tx_type	= NETDEV_LAG_TX_TYPE_ACTIVEBACKUP,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ab_init_module(void)
@@ -133,4 +204,8 @@ module_exit(ab_cleanup_module);
 MODULE_LICENSE("GPL v2");
 MODULE_AUTHOR("Jiri Pirko <jpirko@redhat.com>");
 MODULE_DESCRIPTION("Active-backup mode for team");
+<<<<<<< HEAD
 MODULE_ALIAS("team-mode-activebackup");
+=======
+MODULE_ALIAS_TEAM_MODE("activebackup");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

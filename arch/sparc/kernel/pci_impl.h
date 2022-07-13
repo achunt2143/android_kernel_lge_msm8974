@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pci_impl.h: Helper definitions for PCI controller support.
  *
  * Copyright (C) 1999, 2007 David S. Miller (davem@davemloft.net)
@@ -10,7 +14,10 @@
 #include <linux/spinlock.h>
 #include <linux/pci.h>
 #include <linux/msi.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/prom.h>
 #include <asm/iommu.h>
@@ -19,9 +26,15 @@
  * each with one (Sabre) or two (PSYCHO/SCHIZO) PCI bus modules
  * underneath.  Each PCI bus module uses an IOMMU (shared by both
  * PBMs of a controller, or per-PBM), and if a streaming buffer
+<<<<<<< HEAD
  * is present, each PCI bus module has it's own. (ie. the IOMMU
  * might be shared between PBMs, the STC is never shared)
  * Furthermore, each PCI bus module controls it's own autonomous
+=======
+ * is present, each PCI bus module has its own. (ie. the IOMMU
+ * might be shared between PBMs, the STC is never shared)
+ * Furthermore, each PCI bus module controls its own autonomous
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * PCI bus.
  */
 
@@ -48,8 +61,13 @@ struct sparc64_msiq_ops {
 			      unsigned long devino);
 };
 
+<<<<<<< HEAD
 extern void sparc64_pbm_msi_init(struct pci_pbm_info *pbm,
 				 const struct sparc64_msiq_ops *ops);
+=======
+void sparc64_pbm_msi_init(struct pci_pbm_info *pbm,
+			  const struct sparc64_msiq_ops *ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sparc64_msiq_cookie {
 	struct pci_pbm_info *pbm;
@@ -88,7 +106,11 @@ struct pci_pbm_info {
 	int				chip_revision;
 
 	/* Name used for top-level resources. */
+<<<<<<< HEAD
 	char				*name;
+=======
+	const char			*name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* OBP specific information. */
 	struct platform_device		*op;
@@ -97,6 +119,15 @@ struct pci_pbm_info {
 	/* PBM I/O and Memory space resources. */
 	struct resource			io_space;
 	struct resource			mem_space;
+<<<<<<< HEAD
+=======
+	struct resource			mem64_space;
+	struct resource			busn;
+	/* offset */
+	resource_size_t			io_offset;
+	resource_size_t			mem_offset;
+	resource_size_t			mem64_offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Base of PCI Config space, can be per-PBM or shared. */
 	unsigned long			config_space;
@@ -157,6 +188,7 @@ extern struct pci_pbm_info *pci_pbm_root;
 extern int pci_num_pbms;
 
 /* PCI bus scanning and fixup support. */
+<<<<<<< HEAD
 extern void pci_get_pbm_props(struct pci_pbm_info *pbm);
 extern struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
 					struct device *parent);
@@ -174,6 +206,25 @@ extern void pci_config_read32(u32 *addr, u32 *ret);
 extern void pci_config_write8(u8 *addr, u8 val);
 extern void pci_config_write16(u16 *addr, u16 val);
 extern void pci_config_write32(u32 *addr, u32 val);
+=======
+void pci_get_pbm_props(struct pci_pbm_info *pbm);
+struct pci_bus *pci_scan_one_pbm(struct pci_pbm_info *pbm,
+				 struct device *parent);
+void pci_determine_mem_io_space(struct pci_pbm_info *pbm);
+
+/* Error reporting support. */
+void pci_scan_for_target_abort(struct pci_pbm_info *, struct pci_bus *);
+void pci_scan_for_master_abort(struct pci_pbm_info *, struct pci_bus *);
+void pci_scan_for_parity_error(struct pci_pbm_info *, struct pci_bus *);
+
+/* Configuration space access. */
+void pci_config_read8(u8 *addr, u8 *ret);
+void pci_config_read16(u16 *addr, u16 *ret);
+void pci_config_read32(u32 *addr, u32 *ret);
+void pci_config_write8(u8 *addr, u8 val);
+void pci_config_write16(u16 *addr, u16 val);
+void pci_config_write32(u32 *addr, u32 val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct pci_ops sun4u_pci_ops;
 extern struct pci_ops sun4v_pci_ops;

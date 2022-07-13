@@ -197,6 +197,7 @@
 						reg = <0x00fa0000 0x00060000>;
 					};
 				};
+<<<<<<< HEAD
 
 				SysACE_CompactFlash: sysace@1,0 {
 					compatible = "xlnx,sysace";
@@ -204,6 +205,8 @@
 					interrupts = <24 0x4>;
 					reg = <0x00000001 0x00000000 0x10000>;
 				};
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			};
 
 			UART0: serial@f0000200 {
@@ -256,7 +259,11 @@
 				#size-cells = <0>;
 
                                 rtc@68 {
+<<<<<<< HEAD
                                         compatible = "stm,m41t00";
+=======
+                                        compatible = "st,m41t00";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                                         reg = <0x68>;
                                 };
 			};
@@ -315,7 +322,11 @@
 			interrupt-map = <0x0 0x0 0x0 0x0 &UIC1 19 0x8>;
 		};
 
+<<<<<<< HEAD
 		PCIE0: pciex@d00000000 {
+=======
+		PCIE0: pcie@d00000000 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			device_type = "pci";
 			#interrupt-cells = <1>;
 			#size-cells = <2>;
@@ -356,7 +367,11 @@
 				0x0 0x0 0x0 0x4 &UIC3 0x3 0x4 /* swizzled int D */>;
 		};
 
+<<<<<<< HEAD
 		PCIE1: pciex@d20000000 {
+=======
+		PCIE1: pcie@d20000000 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			device_type = "pci";
 			#interrupt-cells = <1>;
 			#size-cells = <2>;
@@ -442,6 +457,10 @@
 	};
 
 	chosen {
+<<<<<<< HEAD
 		linux,stdout-path = "/plb/opb/serial@f0000200";
+=======
+		stdout-path = "/plb/opb/serial@f0000200";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };

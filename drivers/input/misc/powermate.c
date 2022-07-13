@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A driver for the Griffin Technology, Inc. "PowerMate" USB controller dial.
  *
@@ -31,7 +35,10 @@
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 #include <linux/usb/input.h>
 
@@ -65,6 +72,10 @@ struct powermate_device {
 	struct urb *irq, *config;
 	struct usb_ctrlrequest *configcr;
 	struct usb_device *udev;
+<<<<<<< HEAD
+=======
+	struct usb_interface *intf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct input_dev *input;
 	spinlock_t lock;
 	int static_brightness;
@@ -85,6 +96,10 @@ static void powermate_config_complete(struct urb *urb);
 static void powermate_irq(struct urb *urb)
 {
 	struct powermate_device *pm = urb->context;
+<<<<<<< HEAD
+=======
+	struct device *dev = &pm->intf->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval;
 
 	switch (urb->status) {
@@ -95,10 +110,19 @@ static void powermate_irq(struct urb *urb)
 	case -ENOENT:
 	case -ESHUTDOWN:
 		/* this urb is terminated, clean up */
+<<<<<<< HEAD
 		dbg("%s - urb shutting down with status: %d", __func__, urb->status);
 		return;
 	default:
 		dbg("%s - nonzero urb status received: %d", __func__, urb->status);
+=======
+		dev_dbg(dev, "%s - urb shutting down with status: %d\n",
+			__func__, urb->status);
+		return;
+	default:
+		dev_dbg(dev, "%s - nonzero urb status received: %d\n",
+			__func__, urb->status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
@@ -110,8 +134,13 @@ static void powermate_irq(struct urb *urb)
 exit:
 	retval = usb_submit_urb (urb, GFP_ATOMIC);
 	if (retval)
+<<<<<<< HEAD
 		err ("%s - usb_submit_urb failed with result %d",
 		     __func__, retval);
+=======
+		dev_err(dev, "%s - usb_submit_urb failed with result: %d\n",
+			__func__, retval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Decide if we need to issue a control message and do so. Must be called with pm->lock taken */
@@ -274,7 +303,11 @@ static int powermate_input_event(struct input_dev *dev, unsigned int type, unsig
 static int powermate_alloc_buffers(struct usb_device *udev, struct powermate_device *pm)
 {
 	pm->data = usb_alloc_coherent(udev, POWERMATE_PAYLOAD_SIZE_MAX,
+<<<<<<< HEAD
 				      GFP_ATOMIC, &pm->data_dma);
+=======
+				      GFP_KERNEL, &pm->data_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pm->data)
 		return -1;
 
@@ -333,6 +366,10 @@ static int powermate_probe(struct usb_interface *intf, const struct usb_device_i
 		goto fail3;
 
 	pm->udev = udev;
+<<<<<<< HEAD
+=======
+	pm->intf = intf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pm->input = input_dev;
 
 	usb_make_path(udev, pm->phys, sizeof(pm->phys));
@@ -369,7 +406,11 @@ static int powermate_probe(struct usb_interface *intf, const struct usb_device_i
 
 	/* get a handle to the interrupt data pipe */
 	pipe = usb_rcvintpipe(udev, endpoint->bEndpointAddress);
+<<<<<<< HEAD
 	maxp = usb_maxpacket(udev, pipe, usb_pipeout(pipe));
+=======
+	maxp = usb_maxpacket(udev, pipe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (maxp < POWERMATE_PAYLOAD_SIZE_MIN || maxp > POWERMATE_PAYLOAD_SIZE_MAX) {
 		printk(KERN_WARNING "powermate: Expected payload of %d--%d bytes, found %d bytes!\n",
@@ -420,6 +461,10 @@ static void powermate_disconnect(struct usb_interface *intf)
 		pm->requires_update = 0;
 		usb_kill_urb(pm->irq);
 		input_unregister_device(pm->input);
+<<<<<<< HEAD
+=======
+		usb_kill_urb(pm->config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_free_urb(pm->irq);
 		usb_free_urb(pm->config);
 		powermate_free_buffers(interface_to_usbdev(intf), pm);
@@ -428,7 +473,11 @@ static void powermate_disconnect(struct usb_interface *intf)
 	}
 }
 
+<<<<<<< HEAD
 static struct usb_device_id powermate_devices [] = {
+=======
+static const struct usb_device_id powermate_devices[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_DEVICE(POWERMATE_VENDOR, POWERMATE_PRODUCT_NEW) },
 	{ USB_DEVICE(POWERMATE_VENDOR, POWERMATE_PRODUCT_OLD) },
 	{ USB_DEVICE(CONTOUR_VENDOR, CONTOUR_JOG) },

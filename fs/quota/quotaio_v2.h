@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Definitions of structures for vfsv0 quota format
  */
@@ -13,12 +17,22 @@
  */
 #define V2_INITQMAGICS {\
 	0xd9c01f11,	/* USRQUOTA */\
+<<<<<<< HEAD
 	0xd9c01927	/* GRPQUOTA */\
+=======
+	0xd9c01927,	/* GRPQUOTA */\
+	0xd9c03f14,	/* PRJQUOTA */\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define V2_INITQVERSIONS {\
 	1,		/* USRQUOTA */\
+<<<<<<< HEAD
 	1		/* GRPQUOTA */\
+=======
+	1,		/* GRPQUOTA */\
+	1,		/* PRJQUOTA */\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* First generic header */

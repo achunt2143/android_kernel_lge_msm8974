@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2010 Cisco Systems, Inc.  All rights reserved.
  *
@@ -15,6 +16,10 @@
  * SOFTWARE.
  *
  */
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+// Copyright 2010 Cisco Systems, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -64,7 +69,12 @@ int vic_provinfo_add_tlv(struct vic_provinfo *vp, u16 type, u16 length,
 
 	tlv->type = htons(type);
 	tlv->length = htons(length);
+<<<<<<< HEAD
 	memcpy(tlv->value, value, length);
+=======
+	unsafe_memcpy(tlv->value, value, length,
+		      /* Flexible array of flexible arrays */);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vp->num_tlvs = htonl(ntohl(vp->num_tlvs) + 1);
 	vp->length = htonl(ntohl(vp->length) +

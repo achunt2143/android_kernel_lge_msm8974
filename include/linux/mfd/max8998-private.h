@@ -1,9 +1,16 @@
+<<<<<<< HEAD
 /*
  * max8998.h - Voltage regulator driver for the Maxim 8998
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * max8998-private.h - Voltage regulator driver for the Maxim 8998
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Copyright (C) 2009-2010 Samsung Electrnoics
  *  Kyungmin Park <kyungmin.park@samsung.com>
  *  Marek Szyprowski <m.szyprowski@samsung.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +25,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MFD_MAX8998_PRIV_H
@@ -132,9 +141,18 @@ enum {
 
 #define MAX8998_ENRAMP                  (1 << 4)
 
+<<<<<<< HEAD
 /**
  * struct max8998_dev - max8998 master device for sub-drivers
  * @dev: master device of the chip (can be used to access platform data)
+=======
+struct irq_domain;
+
+/**
+ * struct max8998_dev - max8998 master device for sub-drivers
+ * @dev: master device of the chip (can be used to access platform data)
+ * @pdata: platform data for the driver and subdrivers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @i2c: i2c client private data for regulator
  * @rtc: i2c client private data for rtc
  * @iolock: mutex for serializing io access
@@ -148,17 +166,30 @@ enum {
  */
 struct max8998_dev {
 	struct device *dev;
+<<<<<<< HEAD
+=======
+	struct max8998_platform_data *pdata;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct i2c_client *i2c;
 	struct i2c_client *rtc;
 	struct mutex iolock;
 	struct mutex irqlock;
 
+<<<<<<< HEAD
 	int irq_base;
+=======
+	unsigned int irq_base;
+	struct irq_domain *irq_domain;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int irq;
 	int ono;
 	u8 irq_masks_cur[MAX8998_NUM_IRQ_REGS];
 	u8 irq_masks_cache[MAX8998_NUM_IRQ_REGS];
+<<<<<<< HEAD
 	int type;
+=======
+	unsigned long type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool wakeup;
 };
 

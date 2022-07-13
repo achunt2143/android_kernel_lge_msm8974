@@ -94,15 +94,34 @@ static struct posix_acl *jffs2_acl_from_medium(void *value, size_t size)
 			case ACL_MASK:
 			case ACL_OTHER:
 				value += sizeof(struct jffs2_acl_entry_short);
+<<<<<<< HEAD
 				acl->a_entries[i].e_id = ACL_UNDEFINED_ID;
 				break;
 
 			case ACL_USER:
+=======
+				break;
+
+			case ACL_USER:
+				value += sizeof(struct jffs2_acl_entry);
+				if (value > end)
+					goto fail;
+				acl->a_entries[i].e_uid =
+					make_kuid(&init_user_ns,
+						  je32_to_cpu(entry->e_id));
+				break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case ACL_GROUP:
 				value += sizeof(struct jffs2_acl_entry);
 				if (value > end)
 					goto fail;
+<<<<<<< HEAD
 				acl->a_entries[i].e_id = je32_to_cpu(entry->e_id);
+=======
+				acl->a_entries[i].e_gid =
+					make_kgid(&init_user_ns,
+						  je32_to_cpu(entry->e_id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 
 			default:
@@ -125,12 +144,18 @@ static void *jffs2_acl_to_medium(const struct posix_acl *acl, size_t *size)
 	size_t i;
 
 	*size = jffs2_acl_size(acl->a_count);
+<<<<<<< HEAD
 	header = kmalloc(sizeof(*header) + acl->a_count * sizeof(*entry), GFP_KERNEL);
+=======
+	header = kmalloc(struct_size(header, a_entries, acl->a_count),
+			GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!header)
 		return ERR_PTR(-ENOMEM);
 	header->a_version = cpu_to_je32(JFFS2_ACL_VERSION);
 	e = header + 1;
 	for (i=0; i < acl->a_count; i++) {
+<<<<<<< HEAD
 		entry = e;
 		entry->e_tag = cpu_to_je16(acl->a_entries[i].e_tag);
 		entry->e_perm = cpu_to_je16(acl->a_entries[i].e_perm);
@@ -138,6 +163,21 @@ static void *jffs2_acl_to_medium(const struct posix_acl *acl, size_t *size)
 			case ACL_USER:
 			case ACL_GROUP:
 				entry->e_id = cpu_to_je32(acl->a_entries[i].e_id);
+=======
+		const struct posix_acl_entry *acl_e = &acl->a_entries[i];
+		entry = e;
+		entry->e_tag = cpu_to_je16(acl_e->e_tag);
+		entry->e_perm = cpu_to_je16(acl_e->e_perm);
+		switch(acl_e->e_tag) {
+			case ACL_USER:
+				entry->e_id = cpu_to_je32(
+					from_kuid(&init_user_ns, acl_e->e_uid));
+				e += sizeof(struct jffs2_acl_entry);
+				break;
+			case ACL_GROUP:
+				entry->e_id = cpu_to_je32(
+					from_kgid(&init_user_ns, acl_e->e_gid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				e += sizeof(struct jffs2_acl_entry);
 				break;
 
@@ -158,15 +198,24 @@ static void *jffs2_acl_to_medium(const struct posix_acl *acl, size_t *size)
 	return ERR_PTR(-EINVAL);
 }
 
+<<<<<<< HEAD
 struct posix_acl *jffs2_get_acl(struct inode *inode, int type)
+=======
+struct posix_acl *jffs2_get_acl(struct inode *inode, int type, bool rcu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct posix_acl *acl;
 	char *value = NULL;
 	int rc, xprefix;
 
+<<<<<<< HEAD
 	acl = get_cached_acl(inode, type);
 	if (acl != ACL_NOT_CACHED)
 		return acl;
+=======
+	if (rcu)
+		return ERR_PTR(-ECHILD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (type) {
 	case ACL_TYPE_ACCESS:
@@ -192,10 +241,14 @@ struct posix_acl *jffs2_get_acl(struct inode *inode, int type)
 	} else {
 		acl = ERR_PTR(rc);
 	}
+<<<<<<< HEAD
 	if (value)
 		kfree(value);
 	if (!IS_ERR(acl))
 		set_cached_acl(inode, type, acl);
+=======
+	kfree(value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return acl;
 }
 
@@ -218,12 +271,20 @@ static int __jffs2_set_acl(struct inode *inode, int xprefix, struct posix_acl *a
 	return rc;
 }
 
+<<<<<<< HEAD
 static int jffs2_set_acl(struct inode *inode, int type, struct posix_acl *acl)
 {
 	int rc, xprefix;
 
 	if (S_ISLNK(inode->i_mode))
 		return -EOPNOTSUPP;
+=======
+int jffs2_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
+		  struct posix_acl *acl, int type)
+{
+	int rc, xprefix;
+	struct inode *inode = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (type) {
 	case ACL_TYPE_ACCESS:
@@ -231,7 +292,12 @@ static int jffs2_set_acl(struct inode *inode, int type, struct posix_acl *acl)
 		if (acl) {
 			umode_t mode;
 
+<<<<<<< HEAD
 			rc = posix_acl_update_mode(inode, &mode, &acl);
+=======
+			rc = posix_acl_update_mode(&nop_mnt_idmap, inode, &mode,
+						   &acl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc)
 				return rc;
 			if (inode->i_mode != mode) {
@@ -239,7 +305,11 @@ static int jffs2_set_acl(struct inode *inode, int type, struct posix_acl *acl)
 
 				attr.ia_valid = ATTR_MODE | ATTR_CTIME;
 				attr.ia_mode = mode;
+<<<<<<< HEAD
 				attr.ia_ctime = CURRENT_TIME_SEC;
+=======
+				attr.ia_ctime = current_time(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rc = jffs2_do_setattr(inode, &attr);
 				if (rc < 0)
 					return rc;
@@ -262,11 +332,16 @@ static int jffs2_set_acl(struct inode *inode, int type, struct posix_acl *acl)
 
 int jffs2_init_acl_pre(struct inode *dir_i, struct inode *inode, umode_t *i_mode)
 {
+<<<<<<< HEAD
 	struct posix_acl *acl;
+=======
+	struct posix_acl *default_acl, *acl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	cache_no_acl(inode);
 
+<<<<<<< HEAD
 	if (S_ISLNK(*i_mode))
 		return 0;	/* Symlink always has no-ACL */
 
@@ -286,6 +361,18 @@ int jffs2_init_acl_pre(struct inode *dir_i, struct inode *inode, umode_t *i_mode
 		if (rc > 0)
 			set_cached_acl(inode, ACL_TYPE_ACCESS, acl);
 
+=======
+	rc = posix_acl_create(dir_i, i_mode, &default_acl, &acl);
+	if (rc)
+		return rc;
+
+	if (default_acl) {
+		set_cached_acl(inode, ACL_TYPE_DEFAULT, default_acl);
+		posix_acl_release(default_acl);
+	}
+	if (acl) {
+		set_cached_acl(inode, ACL_TYPE_ACCESS, acl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		posix_acl_release(acl);
 	}
 	return 0;
@@ -309,6 +396,7 @@ int jffs2_init_acl_post(struct inode *inode)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 int jffs2_acl_chmod(struct inode *inode)
 {
@@ -412,3 +500,5 @@ const struct xattr_handler jffs2_acl_default_xattr_handler = {
 	.get	= jffs2_acl_getxattr,
 	.set	= jffs2_acl_setxattr,
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * event.c - exporting ACPI events via procfs
  *
@@ -6,18 +10,28 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "ACPI: " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 #include <linux/export.h>
 #include <linux/proc_fs.h>
 #include <linux/init.h>
 #include <linux/poll.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
 #include <acpi/acpi_drivers.h>
+=======
+#include <linux/acpi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netlink.h>
 #include <net/genetlink.h>
 
 #include "internal.h"
 
+<<<<<<< HEAD
 #define _COMPONENT		ACPI_SYSTEM_COMPONENT
 ACPI_MODULE_NAME("event");
 
@@ -115,6 +129,8 @@ static const struct file_operations acpi_system_event_ops = {
 };
 #endif	/* CONFIG_ACPI_PROC_EVENT */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ACPI notifier chain */
 static BLOCKING_NOTIFIER_HEAD(acpi_chain_head);
 
@@ -127,7 +143,11 @@ int acpi_notifier_call_chain(struct acpi_device *dev, u32 type, u32 data)
 	event.type = type;
 	event.data = data;
 	return (blocking_notifier_call_chain(&acpi_chain_head, 0, (void *)&event)
+<<<<<<< HEAD
                         == NOTIFY_BAD) ? -EINVAL : 0;
+=======
+			== NOTIFY_BAD) ? -EINVAL : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(acpi_notifier_call_chain);
 
@@ -172,6 +192,7 @@ enum {
 #define ACPI_GENL_VERSION		0x01
 #define ACPI_GENL_MCAST_GROUP_NAME 	"acpi_mc_group"
 
+<<<<<<< HEAD
 static struct genl_family acpi_event_genl_family = {
 	.id = GENL_ID_GENERATE,
 	.name = ACPI_GENL_FAMILY_NAME,
@@ -181,6 +202,19 @@ static struct genl_family acpi_event_genl_family = {
 
 static struct genl_multicast_group acpi_event_mcgrp = {
 	.name = ACPI_GENL_MCAST_GROUP_NAME,
+=======
+static const struct genl_multicast_group acpi_event_mcgrps[] = {
+	{ .name = ACPI_GENL_MCAST_GROUP_NAME, },
+};
+
+static struct genl_family acpi_event_genl_family __ro_after_init = {
+	.module = THIS_MODULE,
+	.name = ACPI_GENL_FAMILY_NAME,
+	.version = ACPI_GENL_VERSION,
+	.maxattr = ACPI_GENL_ATTR_MAX,
+	.mcgrps = acpi_event_mcgrps,
+	.n_mcgrps = ARRAY_SIZE(acpi_event_mcgrps),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int acpi_bus_generate_netlink_event(const char *device_class,
@@ -192,7 +226,10 @@ int acpi_bus_generate_netlink_event(const char *device_class,
 	struct acpi_genl_event *event;
 	void *msg_header;
 	int size;
+<<<<<<< HEAD
 	int result;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allocate memory */
 	size = nla_total_size(sizeof(struct acpi_genl_event)) +
@@ -221,6 +258,7 @@ int acpi_bus_generate_netlink_event(const char *device_class,
 	}
 
 	event = nla_data(attr);
+<<<<<<< HEAD
 	if (!event) {
 		nlmsg_free(skb);
 		return -EINVAL;
@@ -230,10 +268,17 @@ int acpi_bus_generate_netlink_event(const char *device_class,
 
 	strcpy(event->device_class, device_class);
 	strcpy(event->bus_id, bus_id);
+=======
+	memset(event, 0, sizeof(struct acpi_genl_event));
+
+	strscpy(event->device_class, device_class, sizeof(event->device_class));
+	strscpy(event->bus_id, bus_id, sizeof(event->bus_id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	event->type = type;
 	event->data = data;
 
 	/* send multicast genetlink message */
+<<<<<<< HEAD
 	result = genlmsg_end(skb, msg_header);
 	if (result < 0) {
 		nlmsg_free(skb);
@@ -241,11 +286,17 @@ int acpi_bus_generate_netlink_event(const char *device_class,
 	}
 
 	genlmsg_multicast(skb, 0, acpi_event_mcgrp.id, GFP_ATOMIC);
+=======
+	genlmsg_end(skb, msg_header);
+
+	genlmsg_multicast(&acpi_event_genl_family, skb, 0, 0, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 EXPORT_SYMBOL(acpi_bus_generate_netlink_event);
 
+<<<<<<< HEAD
 static int acpi_event_genetlink_init(void)
 {
 	int result;
@@ -260,6 +311,11 @@ static int acpi_event_genetlink_init(void)
 		genl_unregister_family(&acpi_event_genl_family);
 
 	return result;
+=======
+static int __init acpi_event_genetlink_init(void)
+{
+	return genl_register_family(&acpi_event_genl_family);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else
@@ -280,10 +336,14 @@ static int acpi_event_genetlink_init(void)
 
 static int __init acpi_event_init(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_ACPI_PROC_EVENT
 	struct proc_dir_entry *entry;
 #endif
 	int error = 0;
+=======
+	int error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (acpi_disabled)
 		return 0;
@@ -291,6 +351,7 @@ static int __init acpi_event_init(void)
 	/* create genetlink for acpi event */
 	error = acpi_event_genetlink_init();
 	if (error)
+<<<<<<< HEAD
 		printk(KERN_WARNING PREFIX
 		       "Failed to create genetlink family for ACPI event\n");
 
@@ -301,6 +362,9 @@ static int __init acpi_event_init(void)
 	if (!entry)
 		return -ENODEV;
 #endif
+=======
+		pr_warn("Failed to create genetlink family for ACPI event\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

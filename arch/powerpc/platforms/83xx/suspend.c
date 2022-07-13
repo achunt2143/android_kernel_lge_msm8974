@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MPC83xx suspend support
  *
  * Author: Scott Wood <scottwood@freescale.com>
  *
  * Copyright (c) 2006-2007 Freescale Semiconductor, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
@@ -11,16 +16,30 @@
  */
 
 #include <linux/init.h>
+=======
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pm.h>
 #include <linux/types.h>
 #include <linux/ioport.h>
 #include <linux/interrupt.h>
 #include <linux/wait.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kthread.h>
 #include <linux/freezer.h>
 #include <linux/suspend.h>
 #include <linux/fsl_devices.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 
 #include <asm/reg.h>
@@ -101,7 +120,10 @@ struct pmc_type {
 	int has_deep_sleep;
 };
 
+<<<<<<< HEAD
 static struct platform_device *pmc_dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int has_deep_sleep, deep_sleeping;
 static int pmc_irq;
 static struct mpc83xx_pmc __iomem *pmc_regs;
@@ -208,7 +230,12 @@ static int mpc83xx_suspend_enter(suspend_state_t state)
 		out_be32(&pmc_regs->config1,
 		         in_be32(&pmc_regs->config1) | PMCCR1_POWER_OFF);
 
+<<<<<<< HEAD
 		enable_kernel_fp();
+=======
+		if (IS_ENABLED(CONFIG_PPC_FPU))
+			enable_kernel_fp();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mpc83xx_enter_deep_sleep(immrbase);
 
@@ -263,9 +290,16 @@ static int mpc83xx_suspend_begin(suspend_state_t state)
 
 static int agent_thread_fn(void *data)
 {
+<<<<<<< HEAD
 	while (1) {
 		wait_event_interruptible(agent_wq, pci_pm_state >= 2);
 		try_to_freeze();
+=======
+	set_freezable();
+
+	while (1) {
+		wait_event_freezable(agent_wq, pci_pm_state >= 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (signal_pending(current) || pci_pm_state < 2)
 			continue;
@@ -320,6 +354,7 @@ static const struct platform_suspend_ops mpc83xx_suspend_ops = {
 	.end = mpc83xx_suspend_end,
 };
 
+<<<<<<< HEAD
 static struct of_device_id pmc_match[];
 static int pmc_probe(struct platform_device *ofdev)
 {
@@ -335,12 +370,49 @@ static int pmc_probe(struct platform_device *ofdev)
 
 	type = match->data;
 
+=======
+static struct pmc_type pmc_types[] = {
+	{
+		.has_deep_sleep = 1,
+	},
+	{
+		.has_deep_sleep = 0,
+	}
+};
+
+static const struct of_device_id pmc_match[] = {
+	{
+		.compatible = "fsl,mpc8313-pmc",
+		.data = &pmc_types[0],
+	},
+	{
+		.compatible = "fsl,mpc8349-pmc",
+		.data = &pmc_types[1],
+	},
+	{}
+};
+
+static int pmc_probe(struct platform_device *ofdev)
+{
+	struct device_node *np = ofdev->dev.of_node;
+	struct resource res;
+	const struct pmc_type *type;
+	int ret = 0;
+
+	type = of_device_get_match_data(&ofdev->dev);
+	if (!type)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!of_device_is_available(np))
 		return -ENODEV;
 
 	has_deep_sleep = type->has_deep_sleep;
 	immrbase = get_immrbase();
+<<<<<<< HEAD
 	pmc_dev = ofdev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	is_pci_agent = mpc83xx_is_pci_agent();
 	if (is_pci_agent < 0)
@@ -351,7 +423,11 @@ static int pmc_probe(struct platform_device *ofdev)
 		return -ENODEV;
 
 	pmc_irq = irq_of_parse_and_map(np, 0);
+<<<<<<< HEAD
 	if (pmc_irq != NO_IRQ) {
+=======
+	if (pmc_irq) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = request_irq(pmc_irq, pmc_irq_handler, IRQF_SHARED,
 		                  "pmc", ofdev);
 
@@ -359,7 +435,11 @@ static int pmc_probe(struct platform_device *ofdev)
 			return -EBUSY;
 	}
 
+<<<<<<< HEAD
 	pmc_regs = ioremap(res.start, sizeof(struct mpc83xx_pmc));
+=======
+	pmc_regs = ioremap(res.start, sizeof(*pmc_regs));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pmc_regs) {
 		ret = -ENOMEM;
@@ -372,7 +452,11 @@ static int pmc_probe(struct platform_device *ofdev)
 		goto out_pmc;
 	}
 
+<<<<<<< HEAD
 	clock_regs = ioremap(res.start, sizeof(struct mpc83xx_pmc));
+=======
+	clock_regs = ioremap(res.start, sizeof(*clock_regs));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!clock_regs) {
 		ret = -ENOMEM;
@@ -399,12 +483,17 @@ out_syscr:
 out_pmc:
 	iounmap(pmc_regs);
 out:
+<<<<<<< HEAD
 	if (pmc_irq != NO_IRQ)
+=======
+	if (pmc_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_irq(pmc_irq, ofdev);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int pmc_remove(struct platform_device *ofdev)
 {
 	return -EPERM;
@@ -447,3 +536,15 @@ static int pmc_init(void)
 }
 
 module_init(pmc_init);
+=======
+static struct platform_driver pmc_driver = {
+	.driver = {
+		.name = "mpc83xx-pmc",
+		.of_match_table = pmc_match,
+		.suppress_bind_attrs = true,
+	},
+	.probe = pmc_probe,
+};
+
+builtin_platform_driver(pmc_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

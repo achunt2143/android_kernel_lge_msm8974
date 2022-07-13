@@ -28,7 +28,10 @@ enum ctl_group {
 	CTL_ETSI = 0x30,
 };
 
+<<<<<<< HEAD
 #define NO_CTL 0xff
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SD_NO_CTL               0xE0
 #define NO_CTL                  0xff
 #define CTL_11A                 0
@@ -68,12 +71,20 @@ enum CountryCode {
 	CTRY_AUSTRALIA = 36,
 	CTRY_AUSTRIA = 40,
 	CTRY_AZERBAIJAN = 31,
+<<<<<<< HEAD
+=======
+	CTRY_BAHAMAS = 44,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CTRY_BAHRAIN = 48,
 	CTRY_BANGLADESH = 50,
 	CTRY_BARBADOS = 52,
 	CTRY_BELARUS = 112,
 	CTRY_BELGIUM = 56,
 	CTRY_BELIZE = 84,
+<<<<<<< HEAD
+=======
+	CTRY_BERMUDA = 60,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CTRY_BOLIVIA = 68,
 	CTRY_BOSNIA_HERZ = 70,
 	CTRY_BRAZIL = 76,
@@ -125,6 +136,10 @@ enum CountryCode {
 	CTRY_KOREA_ROC = 410,
 	CTRY_KOREA_ROC2 = 411,
 	CTRY_KOREA_ROC3 = 412,
+<<<<<<< HEAD
+=======
+	CTRY_KOREA_ROC4 = 413,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CTRY_KUWAIT = 414,
 	CTRY_LATVIA = 428,
 	CTRY_LEBANON = 422,
@@ -136,8 +151,15 @@ enum CountryCode {
 	CTRY_MACEDONIA = 807,
 	CTRY_MALAYSIA = 458,
 	CTRY_MALTA = 470,
+<<<<<<< HEAD
 	CTRY_MEXICO = 484,
 	CTRY_MONACO = 492,
+=======
+	CTRY_MAURITIUS = 480,
+	CTRY_MEXICO = 484,
+	CTRY_MONACO = 492,
+	CTRY_MONTENEGRO = 499,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CTRY_MOROCCO = 504,
 	CTRY_NEPAL = 524,
 	CTRY_NETHERLANDS = 528,
@@ -159,6 +181,10 @@ enum CountryCode {
 	CTRY_ROMANIA = 642,
 	CTRY_RUSSIA = 643,
 	CTRY_SAUDI_ARABIA = 682,
+<<<<<<< HEAD
+=======
+	CTRY_SERBIA = 688,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CTRY_SERBIA_MONTENEGRO = 891,
 	CTRY_SINGAPORE = 702,
 	CTRY_SLOVAKIA = 703,
@@ -170,15 +196,29 @@ enum CountryCode {
 	CTRY_SWITZERLAND = 756,
 	CTRY_SYRIA = 760,
 	CTRY_TAIWAN = 158,
+<<<<<<< HEAD
+=======
+	CTRY_TANZANIA = 834,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CTRY_THAILAND = 764,
 	CTRY_TRINIDAD_Y_TOBAGO = 780,
 	CTRY_TUNISIA = 788,
 	CTRY_TURKEY = 792,
 	CTRY_UAE = 784,
+<<<<<<< HEAD
 	CTRY_UKRAINE = 804,
 	CTRY_UNITED_KINGDOM = 826,
 	CTRY_UNITED_STATES = 840,
 	CTRY_UNITED_STATES_FCC49 = 842,
+=======
+	CTRY_UGANDA = 800,
+	CTRY_UKRAINE = 804,
+	CTRY_UNITED_KINGDOM = 826,
+	CTRY_UNITED_STATES = 840,
+	CTRY_UNITED_STATES2 = 841,
+	CTRY_UNITED_STATES_FCC49 = 842,
+	CTRY_UNITED_STATES3 = 843,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CTRY_URUGUAY = 858,
 	CTRY_UZBEKISTAN = 860,
 	CTRY_VENEZUELA = 862,
@@ -251,6 +291,7 @@ enum CountryCode {
 
 bool ath_is_world_regd(struct ath_regulatory *reg);
 bool ath_is_49ghz_allowed(u16 redomain);
+<<<<<<< HEAD
 int ath_regd_init(struct ath_regulatory *reg, struct wiphy *wiphy,
 		  int (*reg_notifier)(struct wiphy *wiphy,
 		  struct regulatory_request *request));
@@ -259,5 +300,16 @@ u32 ath_regd_get_band_ctl(struct ath_regulatory *reg,
 int ath_reg_notifier_apply(struct wiphy *wiphy,
 			   struct regulatory_request *request,
 			   struct ath_regulatory *reg);
+=======
+u16 ath_regd_find_country_by_name(char *alpha2);
+int ath_regd_init(struct ath_regulatory *reg, struct wiphy *wiphy,
+		  void (*reg_notifier)(struct wiphy *wiphy,
+				       struct regulatory_request *request));
+u32 ath_regd_get_band_ctl(struct ath_regulatory *reg,
+			  enum nl80211_band band);
+void ath_reg_notifier_apply(struct wiphy *wiphy,
+			    struct regulatory_request *request,
+			    struct ath_regulatory *reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

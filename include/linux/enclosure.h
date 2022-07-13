@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Enclosure Services
  *
@@ -5,6 +9,7 @@
  *
 **-----------------------------------------------------------------------------
 **
+<<<<<<< HEAD
 **  This program is free software; you can redistribute it and/or
 **  modify it under the terms of the GNU General Public License
 **  version 2 as published by the Free Software Foundation.
@@ -17,6 +22,8 @@
 **  You should have received a copy of the GNU General Public License
 **  along with this program; if not, write to the Free Software
 **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 **-----------------------------------------------------------------------------
 */
@@ -83,6 +90,15 @@ struct enclosure_component_callbacks {
 	int (*set_locate)(struct enclosure_device *,
 			  struct enclosure_component *,
 			  enum enclosure_component_setting);
+<<<<<<< HEAD
+=======
+	void (*get_power_status)(struct enclosure_device *,
+				 struct enclosure_component *);
+	int (*set_power_status)(struct enclosure_device *,
+				struct enclosure_component *,
+				int);
+	int (*show_id)(struct enclosure_device *, char *buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -95,7 +111,13 @@ struct enclosure_component {
 	int fault;
 	int active;
 	int locate;
+<<<<<<< HEAD
 	enum enclosure_status status;
+=======
+	int slot;
+	enum enclosure_status status;
+	int power_status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct enclosure_device {
@@ -104,7 +126,11 @@ struct enclosure_device {
 	struct device edev;
 	struct enclosure_component_callbacks *cb;
 	int components;
+<<<<<<< HEAD
 	struct enclosure_component component[0];
+=======
+	struct enclosure_component component[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct enclosure_device *
@@ -124,8 +150,14 @@ enclosure_register(struct device *, const char *, int,
 		   struct enclosure_component_callbacks *);
 void enclosure_unregister(struct enclosure_device *);
 struct enclosure_component *
+<<<<<<< HEAD
 enclosure_component_register(struct enclosure_device *, unsigned int,
 				 enum enclosure_component_type, const char *);
+=======
+enclosure_component_alloc(struct enclosure_device *, unsigned int,
+			  enum enclosure_component_type, const char *);
+int enclosure_component_register(struct enclosure_component *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int enclosure_add_device(struct enclosure_device *enclosure, int component,
 			 struct device *dev);
 int enclosure_remove_device(struct enclosure_device *, struct device *);

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __HID_ROCCAT_KOVAPLUS_H
 #define __HID_ROCCAT_KOVAPLUS_H
 
@@ -6,14 +10,18 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 struct kovaplus_control {
 	uint8_t command; /* KOVAPLUS_COMMAND_CONTROL */
 	uint8_t value;
@@ -23,18 +31,31 @@ struct kovaplus_control {
 enum kovaplus_control_requests {
 	/* read after write; value = 1 */
 	KOVAPLUS_CONTROL_REQUEST_STATUS = 0x0,
+=======
+enum {
+	KOVAPLUS_SIZE_CONTROL = 0x03,
+	KOVAPLUS_SIZE_INFO = 0x06,
+	KOVAPLUS_SIZE_PROFILE_SETTINGS = 0x10,
+	KOVAPLUS_SIZE_PROFILE_BUTTONS = 0x17,
+};
+
+enum kovaplus_control_requests {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* write; value = profile number range 0-4 */
 	KOVAPLUS_CONTROL_REQUEST_PROFILE_SETTINGS = 0x10,
 	/* write; value = profile number range 0-4 */
 	KOVAPLUS_CONTROL_REQUEST_PROFILE_BUTTONS = 0x20,
 };
 
+<<<<<<< HEAD
 enum kovaplus_control_values {
 	KOVAPLUS_CONTROL_REQUEST_STATUS_OVERLOAD = 0, /* supposed */
 	KOVAPLUS_CONTROL_REQUEST_STATUS_OK = 1,
 	KOVAPLUS_CONTROL_REQUEST_STATUS_WAIT = 3, /* supposed */
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct kovaplus_actual_profile {
 	uint8_t command; /* KOVAPLUS_COMMAND_ACTUAL_PROFILE */
 	uint8_t size; /* always 3 */
@@ -67,6 +88,7 @@ struct kovaplus_info {
 	uint8_t unknown[3];
 } __packed;
 
+<<<<<<< HEAD
 /* writes 1 on plugin */
 struct kovaplus_a {
 	uint8_t command; /* KOVAPLUS_COMMAND_A */
@@ -77,6 +99,11 @@ struct kovaplus_a {
 enum kovaplus_commands {
 	KOVAPLUS_COMMAND_CONTROL = 0x4,
 	KOVAPLUS_COMMAND_ACTUAL_PROFILE = 0x5,
+=======
+enum kovaplus_commands {
+	KOVAPLUS_COMMAND_ACTUAL_PROFILE = 0x5,
+	KOVAPLUS_COMMAND_CONTROL = 0x4,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	KOVAPLUS_COMMAND_PROFILE_SETTINGS = 0x6,
 	KOVAPLUS_COMMAND_PROFILE_BUTTONS = 0x7,
 	KOVAPLUS_COMMAND_INFO = 0x9,
@@ -140,7 +167,10 @@ struct kovaplus_device {
 	int roccat_claimed;
 	int chrdev_minor;
 	struct mutex kovaplus_lock;
+<<<<<<< HEAD
 	struct kovaplus_info info;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kovaplus_profile_settings profile_settings[5];
 	struct kovaplus_profile_buttons profile_buttons[5];
 };

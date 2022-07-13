@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: hwpci - Obtain PCI bus, device, and function numbers
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -41,6 +46,8 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 
@@ -123,7 +130,11 @@ acpi_hw_derive_pci_id(struct acpi_pci_id *pci_id,
 		      acpi_handle root_pci_device, acpi_handle pci_region)
 {
 	acpi_status status;
+<<<<<<< HEAD
 	struct acpi_pci_device *list_head = NULL;
+=======
+	struct acpi_pci_device *list_head;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE(hw_derive_pci_id);
 
@@ -140,11 +151,20 @@ acpi_hw_derive_pci_id(struct acpi_pci_id *pci_id,
 		/* Walk the list, updating the PCI device/function/bus numbers */
 
 		status = acpi_hw_process_pci_list(pci_id, list_head);
+<<<<<<< HEAD
 	}
 
 	/* Always delete the list */
 
 	acpi_hw_delete_pci_list(list_head);
+=======
+
+		/* Delete the list */
+
+		acpi_hw_delete_pci_list(list_head);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 
@@ -176,37 +196,67 @@ acpi_hw_build_pci_list(acpi_handle root_pci_device,
 	acpi_handle parent_device;
 	acpi_status status;
 	struct acpi_pci_device *list_element;
+<<<<<<< HEAD
 	struct acpi_pci_device *list_head = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Ascend namespace branch until the root_pci_device is reached, building
 	 * a list of device nodes. Loop will exit when either the PCI device is
 	 * found, or the root of the namespace is reached.
 	 */
+<<<<<<< HEAD
+=======
+	*return_list_head = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	current_device = pci_region;
 	while (1) {
 		status = acpi_get_parent(current_device, &parent_device);
 		if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
+=======
+
+			/* Must delete the list before exit */
+
+			acpi_hw_delete_pci_list(*return_list_head);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return (status);
 		}
 
 		/* Finished when we reach the PCI root device (PNP0A03 or PNP0A08) */
 
 		if (parent_device == root_pci_device) {
+<<<<<<< HEAD
 			*return_list_head = list_head;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return (AE_OK);
 		}
 
 		list_element = ACPI_ALLOCATE(sizeof(struct acpi_pci_device));
 		if (!list_element) {
+<<<<<<< HEAD
+=======
+
+			/* Must delete the list before exit */
+
+			acpi_hw_delete_pci_list(*return_list_head);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return (AE_NO_MEMORY);
 		}
 
 		/* Put new element at the head of the list */
 
+<<<<<<< HEAD
 		list_element->next = list_head;
 		list_element->device = parent_device;
 		list_head = list_element;
+=======
+		list_element->next = *return_list_head;
+		list_element->device = parent_device;
+		*return_list_head = list_element;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		current_device = parent_device;
 	}
@@ -259,7 +309,11 @@ acpi_hw_process_pci_list(struct acpi_pci_id *pci_id,
 		status = acpi_hw_get_pci_device_info(pci_id, info->device,
 						     &bus_number, &is_bridge);
 		if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 			return_ACPI_STATUS(status);
+=======
+			return (status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		info = info->next;
@@ -271,7 +325,11 @@ acpi_hw_process_pci_list(struct acpi_pci_id *pci_id,
 			  pci_id->segment, pci_id->bus, pci_id->device,
 			  pci_id->function, status, bus_number, is_bridge));
 
+<<<<<<< HEAD
 	return_ACPI_STATUS(AE_OK);
+=======
+	return (AE_OK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************

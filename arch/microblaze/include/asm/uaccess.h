@@ -1,16 +1,24 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2008-2009 Michal Simek <monstr@monstr.eu>
  * Copyright (C) 2008-2009 PetaLogix
  * Copyright (C) 2006 Atmark Techno, Inc.
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_MICROBLAZE_UACCESS_H
 #define _ASM_MICROBLAZE_UACCESS_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 #ifndef __ASSEMBLY__
 
@@ -110,6 +118,19 @@ static inline int ___range_ok(unsigned long addr, unsigned long size)
 # define __FIXUP_SECTION	".section .discard,\"ax\"\n"
 # define __EX_TABLE_SECTION	".section .discard,\"a\"\n"
 #endif
+=======
+#include <linux/kernel.h>
+
+#include <asm/mmu.h>
+#include <asm/page.h>
+#include <linux/pgtable.h>
+#include <asm/extable.h>
+#include <linux/string.h>
+#include <asm-generic/access_ok.h>
+
+# define __FIXUP_SECTION	".section .fixup,\"ax\"\n"
+# define __EX_TABLE_SECTION	".section __ex_table,\"a\"\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern unsigned long __copy_tofrom_user(void __user *to,
 		const void __user *from, unsigned long size);
@@ -137,8 +158,13 @@ static inline unsigned long __must_check __clear_user(void __user *to,
 static inline unsigned long __must_check clear_user(void __user *to,
 							unsigned long n)
 {
+<<<<<<< HEAD
 	might_sleep();
 	if (unlikely(!access_ok(VERIFY_WRITE, to, n)))
+=======
+	might_fault();
+	if (unlikely(!access_ok(to, n)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return n;
 
 	return __clear_user(to, n);
@@ -170,7 +196,12 @@ extern long __user_bad(void);
  * @x:   Variable to store result.
  * @ptr: Source address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This macro copies a single simple variable from user space to kernel
  * space.  It supports simple types like char and int, but not larger
@@ -182,6 +213,7 @@ extern long __user_bad(void);
  * Returns zero on success, or -EFAULT on error.
  * On error, the variable @x is set to zero.
  */
+<<<<<<< HEAD
 #define get_user(x, ptr)						\
 	__get_user_check((x), (ptr), sizeof(*(ptr)))
 
@@ -214,10 +246,17 @@ extern long __user_bad(void);
 	}								\
 	x = (typeof(*(ptr)))__gu_val;					\
 	__gu_err;							\
+=======
+#define get_user(x, ptr) ({				\
+	const typeof(*(ptr)) __user *__gu_ptr = (ptr);	\
+	access_ok(__gu_ptr, sizeof(*__gu_ptr)) ?	\
+		__get_user(x, __gu_ptr) : -EFAULT;	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 })
 
 #define __get_user(x, ptr)						\
 ({									\
+<<<<<<< HEAD
 	unsigned long __gu_val;						\
 	/*unsigned long __gu_ptr = (unsigned long)(ptr);*/		\
 	long __gu_err;							\
@@ -235,6 +274,29 @@ extern long __user_bad(void);
 		/* __gu_val = 0; __gu_err = -EINVAL;*/ __gu_err = __user_bad();\
 	}								\
 	x = (__typeof__(*(ptr))) __gu_val;				\
+=======
+	long __gu_err;							\
+	switch (sizeof(*(ptr))) {					\
+	case 1:								\
+		__get_user_asm("lbu", (ptr), x, __gu_err);		\
+		break;							\
+	case 2:								\
+		__get_user_asm("lhu", (ptr), x, __gu_err);		\
+		break;							\
+	case 4:								\
+		__get_user_asm("lw", (ptr), x, __gu_err);		\
+		break;							\
+	case 8: {							\
+		__u64 __x = 0;						\
+		__gu_err = raw_copy_from_user(&__x, ptr, 8) ?		\
+							-EFAULT : 0;	\
+		(x) = (typeof(x))(typeof((x) - (x)))__x;		\
+		break;							\
+	}								\
+	default:							\
+		/* __gu_val = 0; __gu_err = -EINVAL;*/ __gu_err = __user_bad();\
+	}								\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__gu_err;							\
 })
 
@@ -282,7 +344,12 @@ extern long __user_bad(void);
  * @x:   Value to copy to user space.
  * @ptr: Destination address, in user space.
  *
+<<<<<<< HEAD
  * Context: User context only.  This function may sleep.
+=======
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This macro copies a single simple value from kernel space to user
  * space.  It supports simple types like char and int, but not larger
@@ -298,12 +365,20 @@ extern long __user_bad(void);
 
 #define __put_user_check(x, ptr, size)					\
 ({									\
+<<<<<<< HEAD
 	typeof(*(ptr)) __pu_val;					\
 	typeof(*(ptr)) __user *__pu_addr = (ptr);			\
 	int __pu_err = 0;						\
 									\
 	__pu_val = (x);							\
 	if (access_ok(VERIFY_WRITE, __pu_addr, size)) {			\
+=======
+	typeof(*(ptr)) volatile __pu_val = x;				\
+	typeof(*(ptr)) __user *__pu_addr = (ptr);			\
+	int __pu_err = 0;						\
+									\
+	if (access_ok(__pu_addr, size)) {			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (size) {						\
 		case 1:							\
 			__put_user_asm("sb", __pu_addr, __pu_val,	\
@@ -353,6 +428,7 @@ extern long __user_bad(void);
 	__gu_err;							\
 })
 
+<<<<<<< HEAD
 
 /* copy_to_from_user */
 #define __copy_from_user(to, from, n)	\
@@ -383,10 +459,26 @@ static inline long copy_to_user(void __user *to,
 		return __copy_to_user(to, from, n);
 	return n;
 }
+=======
+static inline unsigned long
+raw_copy_from_user(void *to, const void __user *from, unsigned long n)
+{
+	return __copy_tofrom_user((__force void __user *)to, from, n);
+}
+
+static inline unsigned long
+raw_copy_to_user(void __user *to, const void *from, unsigned long n)
+{
+	return __copy_tofrom_user(to, (__force const void __user *)from, n);
+}
+#define INLINE_COPY_FROM_USER
+#define INLINE_COPY_TO_USER
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Copy a null terminated string from userspace.
  */
+<<<<<<< HEAD
 extern int __strncpy_user(char *to, const char __user *from, int len);
 
 #define __strncpy_from_user	__strncpy_user
@@ -398,12 +490,17 @@ strncpy_from_user(char *dst, const char __user *src, long count)
 		return -EFAULT;
 	return __strncpy_from_user(dst, src, count);
 }
+=======
+__must_check long strncpy_from_user(char *dst, const char __user *src,
+				    long count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Return the size of a string (including the ending 0)
  *
  * Return 0 on exception, a value greater than N if too long
  */
+<<<<<<< HEAD
 extern int __strnlen_user(const char __user *sstr, int len);
 
 static inline long strnlen_user(const char __user *src, long n)
@@ -415,5 +512,8 @@ static inline long strnlen_user(const char __user *src, long n)
 
 #endif  /* __ASSEMBLY__ */
 #endif /* __KERNEL__ */
+=======
+__must_check long strnlen_user(const char __user *sstr, long len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_MICROBLAZE_UACCESS_H */

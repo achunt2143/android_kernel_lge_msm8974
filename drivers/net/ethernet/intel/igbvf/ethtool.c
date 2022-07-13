@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel(R) 82576 Virtual Function Linux driver
@@ -24,6 +25,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* Copyright(c) 2009 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ethtool support for igbvf */
 
@@ -36,7 +41,10 @@
 #include "igbvf.h"
 #include <linux/if_vlan.h>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct igbvf_stats {
 	char stat_string[ETH_GSTRING_LEN];
 	int sizeof_stat;
@@ -73,23 +81,38 @@ static const char igbvf_gstrings_test[][ETH_GSTRING_LEN] = {
 
 #define IGBVF_TEST_LEN ARRAY_SIZE(igbvf_gstrings_test)
 
+<<<<<<< HEAD
 static int igbvf_get_settings(struct net_device *netdev,
                               struct ethtool_cmd *ecmd)
+=======
+static int igbvf_get_link_ksettings(struct net_device *netdev,
+				    struct ethtool_link_ksettings *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
 	u32 status;
 
+<<<<<<< HEAD
 	ecmd->supported   = SUPPORTED_1000baseT_Full;
 
 	ecmd->advertising = ADVERTISED_1000baseT_Full;
 
 	ecmd->port = -1;
 	ecmd->transceiver = XCVR_DUMMY1;
+=======
+	ethtool_link_ksettings_zero_link_mode(cmd, supported);
+	ethtool_link_ksettings_add_link_mode(cmd, supported, 1000baseT_Full);
+	ethtool_link_ksettings_zero_link_mode(cmd, advertising);
+	ethtool_link_ksettings_add_link_mode(cmd, advertising, 1000baseT_Full);
+
+	cmd->base.port = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = er32(STATUS);
 	if (status & E1000_STATUS_LU) {
 		if (status & E1000_STATUS_SPEED_1000)
+<<<<<<< HEAD
 			ethtool_cmd_speed_set(ecmd, SPEED_1000);
 		else if (status & E1000_STATUS_SPEED_100)
 			ethtool_cmd_speed_set(ecmd, SPEED_100);
@@ -106,17 +129,41 @@ static int igbvf_get_settings(struct net_device *netdev,
 	}
 
 	ecmd->autoneg = AUTONEG_DISABLE;
+=======
+			cmd->base.speed = SPEED_1000;
+		else if (status & E1000_STATUS_SPEED_100)
+			cmd->base.speed = SPEED_100;
+		else
+			cmd->base.speed = SPEED_10;
+
+		if (status & E1000_STATUS_FD)
+			cmd->base.duplex = DUPLEX_FULL;
+		else
+			cmd->base.duplex = DUPLEX_HALF;
+	} else {
+		cmd->base.speed = SPEED_UNKNOWN;
+		cmd->base.duplex = DUPLEX_UNKNOWN;
+	}
+
+	cmd->base.autoneg = AUTONEG_DISABLE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int igbvf_set_settings(struct net_device *netdev,
                               struct ethtool_cmd *ecmd)
+=======
+static int igbvf_set_link_ksettings(struct net_device *netdev,
+				    const struct ethtool_link_ksettings *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EOPNOTSUPP;
 }
 
 static void igbvf_get_pauseparam(struct net_device *netdev,
+<<<<<<< HEAD
                                  struct ethtool_pauseparam *pause)
 {
 	return;
@@ -124,6 +171,14 @@ static void igbvf_get_pauseparam(struct net_device *netdev,
 
 static int igbvf_set_pauseparam(struct net_device *netdev,
                                 struct ethtool_pauseparam *pause)
+=======
+				 struct ethtool_pauseparam *pause)
+{
+}
+
+static int igbvf_set_pauseparam(struct net_device *netdev,
+				struct ethtool_pauseparam *pause)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EOPNOTSUPP;
 }
@@ -131,12 +186,20 @@ static int igbvf_set_pauseparam(struct net_device *netdev,
 static u32 igbvf_get_msglevel(struct net_device *netdev)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return adapter->msg_enable;
 }
 
 static void igbvf_set_msglevel(struct net_device *netdev, u32 data)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter->msg_enable = data;
 }
 
@@ -147,7 +210,11 @@ static int igbvf_get_regs_len(struct net_device *netdev)
 }
 
 static void igbvf_get_regs(struct net_device *netdev,
+<<<<<<< HEAD
                            struct ethtool_regs *regs, void *p)
+=======
+			   struct ethtool_regs *regs, void *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
@@ -155,7 +222,12 @@ static void igbvf_get_regs(struct net_device *netdev,
 
 	memset(p, 0, IGBVF_REGS_LEN * sizeof(u32));
 
+<<<<<<< HEAD
 	regs->version = (1 << 24) | (adapter->pdev->revision << 16) |
+=======
+	regs->version = (1u << 24) |
+			(adapter->pdev->revision << 16) |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			adapter->pdev->device;
 
 	regs_buff[0] = er32(CTRL);
@@ -176,18 +248,27 @@ static int igbvf_get_eeprom_len(struct net_device *netdev)
 }
 
 static int igbvf_get_eeprom(struct net_device *netdev,
+<<<<<<< HEAD
                             struct ethtool_eeprom *eeprom, u8 *bytes)
+=======
+			    struct ethtool_eeprom *eeprom, u8 *bytes)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EOPNOTSUPP;
 }
 
 static int igbvf_set_eeprom(struct net_device *netdev,
+<<<<<<< HEAD
                             struct ethtool_eeprom *eeprom, u8 *bytes)
+=======
+			    struct ethtool_eeprom *eeprom, u8 *bytes)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EOPNOTSUPP;
 }
 
 static void igbvf_get_drvinfo(struct net_device *netdev,
+<<<<<<< HEAD
                               struct ethtool_drvinfo *drvinfo)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
@@ -203,6 +284,21 @@ static void igbvf_get_drvinfo(struct net_device *netdev,
 
 static void igbvf_get_ringparam(struct net_device *netdev,
                                 struct ethtool_ringparam *ring)
+=======
+			      struct ethtool_drvinfo *drvinfo)
+{
+	struct igbvf_adapter *adapter = netdev_priv(netdev);
+
+	strscpy(drvinfo->driver,  igbvf_driver_name, sizeof(drvinfo->driver));
+	strscpy(drvinfo->bus_info, pci_name(adapter->pdev),
+		sizeof(drvinfo->bus_info));
+}
+
+static void igbvf_get_ringparam(struct net_device *netdev,
+				struct ethtool_ringparam *ring,
+				struct kernel_ethtool_ringparam *kernel_ring,
+				struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	struct igbvf_ring *tx_ring = adapter->tx_ring;
@@ -215,7 +311,13 @@ static void igbvf_get_ringparam(struct net_device *netdev,
 }
 
 static int igbvf_set_ringparam(struct net_device *netdev,
+<<<<<<< HEAD
                                struct ethtool_ringparam *ring)
+=======
+			       struct ethtool_ringparam *ring,
+			       struct kernel_ethtool_ringparam *kernel_ring,
+			       struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	struct igbvf_ring *temp_ring;
@@ -225,12 +327,21 @@ static int igbvf_set_ringparam(struct net_device *netdev,
 	if ((ring->rx_mini_pending) || (ring->rx_jumbo_pending))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	new_rx_count = max(ring->rx_pending, (u32)IGBVF_MIN_RXD);
 	new_rx_count = min(new_rx_count, (u32)IGBVF_MAX_RXD);
 	new_rx_count = ALIGN(new_rx_count, REQ_RX_DESCRIPTOR_MULTIPLE);
 
 	new_tx_count = max(ring->tx_pending, (u32)IGBVF_MIN_TXD);
 	new_tx_count = min(new_tx_count, (u32)IGBVF_MAX_TXD);
+=======
+	new_rx_count = max_t(u32, ring->rx_pending, IGBVF_MIN_RXD);
+	new_rx_count = min_t(u32, new_rx_count, IGBVF_MAX_RXD);
+	new_rx_count = ALIGN(new_rx_count, REQ_RX_DESCRIPTOR_MULTIPLE);
+
+	new_tx_count = max_t(u32, ring->tx_pending, IGBVF_MIN_TXD);
+	new_tx_count = min_t(u32, new_tx_count, IGBVF_MAX_TXD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new_tx_count = ALIGN(new_tx_count, REQ_TX_DESCRIPTOR_MULTIPLE);
 
 	if ((new_tx_count == adapter->tx_ring->count) &&
@@ -240,7 +351,11 @@ static int igbvf_set_ringparam(struct net_device *netdev,
 	}
 
 	while (test_and_set_bit(__IGBVF_RESETTING, &adapter->state))
+<<<<<<< HEAD
 		msleep(1);
+=======
+		usleep_range(1000, 2000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!netif_running(adapter->netdev)) {
 		adapter->tx_ring->count = new_tx_count;
@@ -256,10 +371,16 @@ static int igbvf_set_ringparam(struct net_device *netdev,
 
 	igbvf_down(adapter);
 
+<<<<<<< HEAD
 	/*
 	 * We can't just free everything and then setup again,
 	 * because the ISRs in MSI-X mode get passed pointers
 	 * to the tx and rx ring structs.
+=======
+	/* We can't just free everything and then setup again,
+	 * because the ISRs in MSI-X mode get passed pointers
+	 * to the Tx and Rx ring structs.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (new_tx_count != adapter->tx_ring->count) {
 		memcpy(temp_ring, adapter->tx_ring, sizeof(struct igbvf_ring));
@@ -284,7 +405,11 @@ static int igbvf_set_ringparam(struct net_device *netdev,
 
 		igbvf_free_rx_resources(adapter->rx_ring);
 
+<<<<<<< HEAD
 		memcpy(adapter->rx_ring, temp_ring,sizeof(struct igbvf_ring));
+=======
+		memcpy(adapter->rx_ring, temp_ring, sizeof(struct igbvf_ring));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 err_setup:
 	igbvf_up(adapter);
@@ -299,8 +424,17 @@ static int igbvf_link_test(struct igbvf_adapter *adapter, u64 *data)
 	struct e1000_hw *hw = &adapter->hw;
 	*data = 0;
 
+<<<<<<< HEAD
 	hw->mac.ops.check_for_link(hw);
 
+=======
+	spin_lock_bh(&hw->mbx_lock);
+
+	hw->mac.ops.check_for_link(hw);
+
+	spin_unlock_bh(&hw->mbx_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(er32(STATUS) & E1000_STATUS_LU))
 		*data = 1;
 
@@ -308,14 +442,22 @@ static int igbvf_link_test(struct igbvf_adapter *adapter, u64 *data)
 }
 
 static void igbvf_diag_test(struct net_device *netdev,
+<<<<<<< HEAD
                             struct ethtool_test *eth_test, u64 *data)
+=======
+			    struct ethtool_test *eth_test, u64 *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 
 	set_bit(__IGBVF_TESTING, &adapter->state);
 
+<<<<<<< HEAD
 	/*
 	 * Link test performed before hardware reset so autoneg doesn't
+=======
+	/* Link test performed before hardware reset so autoneg doesn't
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * interfere with test result
 	 */
 	if (igbvf_link_test(adapter, &data[0]))
@@ -326,20 +468,34 @@ static void igbvf_diag_test(struct net_device *netdev,
 }
 
 static void igbvf_get_wol(struct net_device *netdev,
+<<<<<<< HEAD
                           struct ethtool_wolinfo *wol)
+=======
+			  struct ethtool_wolinfo *wol)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	wol->supported = 0;
 	wol->wolopts = 0;
 }
 
 static int igbvf_set_wol(struct net_device *netdev,
+<<<<<<< HEAD
                          struct ethtool_wolinfo *wol)
+=======
+			 struct ethtool_wolinfo *wol)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -EOPNOTSUPP;
 }
 
 static int igbvf_get_coalesce(struct net_device *netdev,
+<<<<<<< HEAD
                               struct ethtool_coalesce *ec)
+=======
+			      struct ethtool_coalesce *ec,
+			      struct kernel_ethtool_coalesce *kernel_coal,
+			      struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 
@@ -352,13 +508,23 @@ static int igbvf_get_coalesce(struct net_device *netdev,
 }
 
 static int igbvf_set_coalesce(struct net_device *netdev,
+<<<<<<< HEAD
                               struct ethtool_coalesce *ec)
+=======
+			      struct ethtool_coalesce *ec,
+			      struct kernel_ethtool_coalesce *kernel_coal,
+			      struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	struct e1000_hw *hw = &adapter->hw;
 
 	if ((ec->rx_coalesce_usecs >= IGBVF_MIN_ITR_USECS) &&
+<<<<<<< HEAD
 	     (ec->rx_coalesce_usecs <= IGBVF_MAX_ITR_USECS)) {
+=======
+	    (ec->rx_coalesce_usecs <= IGBVF_MAX_ITR_USECS)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		adapter->current_itr = ec->rx_coalesce_usecs << 2;
 		adapter->requested_itr = 1000000000 /
 					(adapter->current_itr * 256);
@@ -367,8 +533,12 @@ static int igbvf_set_coalesce(struct net_device *netdev,
 		adapter->current_itr = IGBVF_START_ITR;
 		adapter->requested_itr = ec->rx_coalesce_usecs;
 	} else if (ec->rx_coalesce_usecs == 0) {
+<<<<<<< HEAD
 		/*
 		 * The user's desire is to turn off interrupt throttling
+=======
+		/* The user's desire is to turn off interrupt throttling
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * altogether, but due to HW limitations, we can't do that.
 		 * Instead we set a very small value in EITR, which would
 		 * allow ~967k interrupts per second, but allow the adapter's
@@ -377,8 +547,14 @@ static int igbvf_set_coalesce(struct net_device *netdev,
 		adapter->current_itr = 4;
 		adapter->requested_itr = 1000000000 /
 					(adapter->current_itr * 256);
+<<<<<<< HEAD
 	} else
 		return -EINVAL;
+=======
+	} else {
+		return -EINVAL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writel(adapter->current_itr,
 	       hw->hw_addr + adapter->rx_ring->itr_register);
@@ -389,15 +565,25 @@ static int igbvf_set_coalesce(struct net_device *netdev,
 static int igbvf_nway_reset(struct net_device *netdev)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (netif_running(netdev))
 		igbvf_reinit_locked(adapter);
 	return 0;
 }
 
+<<<<<<< HEAD
 
 static void igbvf_get_ethtool_stats(struct net_device *netdev,
                                     struct ethtool_stats *stats,
                                     u64 *data)
+=======
+static void igbvf_get_ethtool_stats(struct net_device *netdev,
+				    struct ethtool_stats *stats,
+				    u64 *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct igbvf_adapter *adapter = netdev_priv(netdev);
 	int i;
@@ -405,6 +591,7 @@ static void igbvf_get_ethtool_stats(struct net_device *netdev,
 	igbvf_update_stats(adapter);
 	for (i = 0; i < IGBVF_GLOBAL_STATS_LEN; i++) {
 		char *p = (char *)adapter +
+<<<<<<< HEAD
 		          igbvf_gstrings_stats[i].stat_offset;
 		char *b = (char *)adapter +
 		          igbvf_gstrings_stats[i].base_stat_offset;
@@ -413,11 +600,24 @@ static void igbvf_get_ethtool_stats(struct net_device *netdev,
 		            (*(u32 *)p - *(u32 *)b));
 	}
 
+=======
+			  igbvf_gstrings_stats[i].stat_offset;
+		char *b = (char *)adapter +
+			  igbvf_gstrings_stats[i].base_stat_offset;
+		data[i] = ((igbvf_gstrings_stats[i].sizeof_stat ==
+			    sizeof(u64)) ? (*(u64 *)p - *(u64 *)b) :
+			    (*(u32 *)p - *(u32 *)b));
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int igbvf_get_sset_count(struct net_device *dev, int stringset)
 {
+<<<<<<< HEAD
 	switch(stringset) {
+=======
+	switch (stringset) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ETH_SS_TEST:
 		return IGBVF_TEST_LEN;
 	case ETH_SS_STATS:
@@ -428,7 +628,11 @@ static int igbvf_get_sset_count(struct net_device *dev, int stringset)
 }
 
 static void igbvf_get_strings(struct net_device *netdev, u32 stringset,
+<<<<<<< HEAD
                               u8 *data)
+=======
+			      u8 *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 *p = data;
 	int i;
@@ -448,8 +652,12 @@ static void igbvf_get_strings(struct net_device *netdev, u32 stringset,
 }
 
 static const struct ethtool_ops igbvf_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings		= igbvf_get_settings,
 	.set_settings		= igbvf_set_settings,
+=======
+	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo		= igbvf_get_drvinfo,
 	.get_regs_len		= igbvf_get_regs_len,
 	.get_regs		= igbvf_get_regs,
@@ -472,9 +680,18 @@ static const struct ethtool_ops igbvf_ethtool_ops = {
 	.get_ethtool_stats	= igbvf_get_ethtool_stats,
 	.get_coalesce		= igbvf_get_coalesce,
 	.set_coalesce		= igbvf_set_coalesce,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings	= igbvf_get_link_ksettings,
+	.set_link_ksettings	= igbvf_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void igbvf_set_ethtool_ops(struct net_device *netdev)
 {
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &igbvf_ethtool_ops);
+=======
+	netdev->ethtool_ops = &igbvf_ethtool_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

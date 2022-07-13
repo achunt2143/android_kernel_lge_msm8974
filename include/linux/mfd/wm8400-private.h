@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8400 private definitions.
  *
  * Copyright 2008 Wolfson Microelectronics plc
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MFD_WM8400_PRIV_H
@@ -24,19 +31,28 @@
 #include <linux/mfd/wm8400.h>
 #include <linux/mutex.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 
 struct regmap;
+=======
+#include <linux/regmap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WM8400_REGISTER_COUNT 0x55
 
 struct wm8400 {
 	struct device *dev;
+<<<<<<< HEAD
 
 	struct mutex io_lock;
 	struct regmap *regmap;
 
 	u16 reg_cache[WM8400_REGISTER_COUNT];
 
+=======
+	struct regmap *regmap;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct platform_device regulators[6];
 };
 
@@ -928,8 +944,11 @@ struct wm8400 {
 #define WM8400_LINE_CMP_VTHD_SHIFT                   0  /* LINE_CMP_VTHD - [3:0] */
 #define WM8400_LINE_CMP_VTHD_WIDTH                   4  /* LINE_CMP_VTHD - [3:0] */
 
+<<<<<<< HEAD
 u16 wm8400_reg_read(struct wm8400 *wm8400, u8 reg);
 int wm8400_block_read(struct wm8400 *wm8400, u8 reg, int count, u16 *data);
 int wm8400_set_bits(struct wm8400 *wm8400, u8 reg, u16 mask, u16 val);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

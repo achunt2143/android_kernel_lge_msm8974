@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2015 Thomas Meyer (thomas@m3y3r.de)
+ * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdio.h>
@@ -10,11 +17,19 @@
 #include <signal.h>
 #include <string.h>
 #include <sys/resource.h>
+<<<<<<< HEAD
 #include "as-layout.h"
 #include "init.h"
 #include "kern_util.h"
 #include "os.h"
 #include "um_malloc.h"
+=======
+#include <as-layout.h>
+#include <init.h>
+#include <kern_util.h>
+#include <os.h>
+#include <um_malloc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PGD_BOUND (4 * 1024 * 1024)
 #define STACKSIZE (8 * 1024 * 1024)
@@ -39,6 +54,7 @@ static void set_stklim(void)
 	}
 }
 
+<<<<<<< HEAD
 static __init void do_uml_initcalls(void)
 {
 	initcall_t *call;
@@ -50,6 +66,8 @@ static __init void do_uml_initcalls(void)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void last_ditch_exit(int sig)
 {
 	uml_cleanup();
@@ -73,8 +91,13 @@ static void install_fatal_handler(int sig)
 	action.sa_restorer = NULL;
 	action.sa_handler = last_ditch_exit;
 	if (sigaction(sig, &action, NULL) < 0) {
+<<<<<<< HEAD
 		printf("failed to install handler for signal %d - errno = %d\n",
 		       sig, errno);
+=======
+		os_warn("failed to install handler for signal %d "
+			"- errno = %d\n", sig, errno);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		exit(1);
 	}
 }
@@ -123,6 +146,11 @@ int __init main(int argc, char **argv, char **envp)
 
 	setup_env_path();
 
+<<<<<<< HEAD
+=======
+	setsid();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new_argv = malloc((argc + 1) * sizeof(char *));
 	if (new_argv == NULL) {
 		perror("Mallocing argv");
@@ -148,7 +176,11 @@ int __init main(int argc, char **argv, char **envp)
 	scan_elf_aux(envp);
 #endif
 
+<<<<<<< HEAD
 	do_uml_initcalls();
+=======
+	change_sig(SIGPIPE, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = linux_main(argc, argv);
 
 	/*
@@ -160,18 +192,31 @@ int __init main(int argc, char **argv, char **envp)
 
 	/*
 	 * This signal stuff used to be in the reboot case.  However,
+<<<<<<< HEAD
 	 * sometimes a SIGVTALRM can come in when we're halting (reproducably
+=======
+	 * sometimes a timer signal can come in when we're halting (reproducably
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * when writing out gcov information, presumably because that takes
 	 * some time) and cause a segfault.
 	 */
 
+<<<<<<< HEAD
 	/* stop timers and set SIGVTALRM to be ignored */
 	disable_timer();
+=======
+	/* stop timers and set timer signal to be ignored */
+	os_timer_disable();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable SIGIO for the fds and set SIGIO to be ignored */
 	err = deactivate_all_fds();
 	if (err)
+<<<<<<< HEAD
 		printf("deactivate_all_fds failed, errno = %d\n", -err);
+=======
+		os_warn("deactivate_all_fds failed, errno = %d\n", -err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Let any pending signals fire now.  This ensures
@@ -180,14 +225,23 @@ int __init main(int argc, char **argv, char **envp)
 	 */
 	unblock_signals();
 
+<<<<<<< HEAD
 	/* Reboot */
 	if (ret) {
 		printf("\n");
+=======
+	os_info("\n");
+	/* Reboot */
+	if (ret) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		execvp(new_argv[0], new_argv);
 		perror("Failed to exec kernel");
 		ret = 1;
 	}
+<<<<<<< HEAD
 	printf("\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return uml_exitcode;
 }
 

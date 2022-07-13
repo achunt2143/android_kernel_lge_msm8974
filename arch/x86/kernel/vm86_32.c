@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 1994  Linus Torvalds
  *
@@ -28,10 +32,21 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/capability.h>
 #include <linux/errno.h>
 #include <linux/interrupt.h>
 #include <linux/sched.h>
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/capability.h>
+#include <linux/errno.h>
+#include <linux/interrupt.h>
+#include <linux/syscalls.h>
+#include <linux/sched.h>
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/signal.h>
 #include <linux/string.h>
@@ -41,12 +56,25 @@
 #include <linux/ptrace.h>
 #include <linux/audit.h>
 #include <linux/stddef.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
 #include <asm/io.h>
 #include <asm/tlbflush.h>
 #include <asm/irq.h>
 #include <asm/syscalls.h>
+=======
+#include <linux/slab.h>
+#include <linux/security.h>
+
+#include <linux/uaccess.h>
+#include <asm/io.h>
+#include <asm/tlbflush.h>
+#include <asm/irq.h>
+#include <asm/traps.h>
+#include <asm/vm86.h>
+#include <asm/switch_to.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Known problems:
@@ -64,10 +92,13 @@
  */
 
 
+<<<<<<< HEAD
 #define KVM86	((struct kernel_vm86_struct *)regs)
 #define VMPI	KVM86->vm86plus
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 8- and 16-bit register defines..
  */
@@ -79,8 +110,13 @@
 /*
  * virtual flags (16 and 32-bit versions)
  */
+<<<<<<< HEAD
 #define VFLAGS	(*(unsigned short *)&(current->thread.v86flags))
 #define VEFLAGS	(current->thread.v86flags)
+=======
+#define VFLAGS	(*(unsigned short *)&(current->thread.vm86->veflags))
+#define VEFLAGS	(current->thread.vm86->veflags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define set_flags(X, new, mask) \
 ((X) = ((X) & ~(mask)) | ((new) & (mask)))
@@ -88,6 +124,7 @@
 #define SAFE_MASK	(0xDD5)
 #define RETURN_MASK	(0xDFF)
 
+<<<<<<< HEAD
 /* convert kernel_vm86_regs to vm86_regs */
 static int copy_vm86_regs_to_user(struct vm86_regs __user *user,
 				  const struct kernel_vm86_regs *regs)
@@ -128,6 +165,13 @@ struct pt_regs *save_v86_state(struct kernel_vm86_regs *regs)
 	struct tss_struct *tss;
 	struct pt_regs *ret;
 	unsigned long tmp;
+=======
+void save_v86_state(struct kernel_vm86_regs *regs, int retval)
+{
+	struct task_struct *tsk = current;
+	struct vm86plus_struct __user *user;
+	struct vm86 *vm86 = current->thread.vm86;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This gets called from entry.S with interrupts disabled, but
@@ -136,6 +180,7 @@ struct pt_regs *save_v86_state(struct kernel_vm86_regs *regs)
 	 */
 	local_irq_enable();
 
+<<<<<<< HEAD
 	if (!current->thread.vm86_info) {
 		printk("no vm86_info: BAD\n");
 		do_exit(SIGSEGV);
@@ -241,13 +286,88 @@ int sys_vm86(unsigned long cmd, unsigned long arg, struct pt_regs *regs)
 	struct vm86plus_struct __user *v86;
 
 	tsk = current;
+=======
+	BUG_ON(!vm86);
+
+	set_flags(regs->pt.flags, VEFLAGS, X86_EFLAGS_VIF | vm86->veflags_mask);
+	user = vm86->user_vm86;
+
+	if (!user_access_begin(user, vm86->vm86plus.is_vm86pus ?
+		       sizeof(struct vm86plus_struct) :
+		       sizeof(struct vm86_struct)))
+		goto Efault;
+
+	unsafe_put_user(regs->pt.bx, &user->regs.ebx, Efault_end);
+	unsafe_put_user(regs->pt.cx, &user->regs.ecx, Efault_end);
+	unsafe_put_user(regs->pt.dx, &user->regs.edx, Efault_end);
+	unsafe_put_user(regs->pt.si, &user->regs.esi, Efault_end);
+	unsafe_put_user(regs->pt.di, &user->regs.edi, Efault_end);
+	unsafe_put_user(regs->pt.bp, &user->regs.ebp, Efault_end);
+	unsafe_put_user(regs->pt.ax, &user->regs.eax, Efault_end);
+	unsafe_put_user(regs->pt.ip, &user->regs.eip, Efault_end);
+	unsafe_put_user(regs->pt.cs, &user->regs.cs, Efault_end);
+	unsafe_put_user(regs->pt.flags, &user->regs.eflags, Efault_end);
+	unsafe_put_user(regs->pt.sp, &user->regs.esp, Efault_end);
+	unsafe_put_user(regs->pt.ss, &user->regs.ss, Efault_end);
+	unsafe_put_user(regs->es, &user->regs.es, Efault_end);
+	unsafe_put_user(regs->ds, &user->regs.ds, Efault_end);
+	unsafe_put_user(regs->fs, &user->regs.fs, Efault_end);
+	unsafe_put_user(regs->gs, &user->regs.gs, Efault_end);
+
+	/*
+	 * Don't write screen_bitmap in case some user had a value there
+	 * and expected it to remain unchanged.
+	 */
+
+	user_access_end();
+
+exit_vm86:
+	preempt_disable();
+	tsk->thread.sp0 = vm86->saved_sp0;
+	tsk->thread.sysenter_cs = __KERNEL_CS;
+	update_task_stack(tsk);
+	refresh_sysenter_cs(&tsk->thread);
+	vm86->saved_sp0 = 0;
+	preempt_enable();
+
+	memcpy(&regs->pt, &vm86->regs32, sizeof(struct pt_regs));
+
+	loadsegment(gs, vm86->regs32.gs);
+
+	regs->pt.ax = retval;
+	return;
+
+Efault_end:
+	user_access_end();
+Efault:
+	pr_alert("could not access userspace vm86 info\n");
+	force_exit_sig(SIGSEGV);
+	goto exit_vm86;
+}
+
+static int do_vm86_irq_handling(int subfunction, int irqnumber);
+static long do_sys_vm86(struct vm86plus_struct __user *user_vm86, bool plus);
+
+SYSCALL_DEFINE1(vm86old, struct vm86_struct __user *, user_vm86)
+{
+	return do_sys_vm86((struct vm86plus_struct __user *) user_vm86, false);
+}
+
+
+SYSCALL_DEFINE2(vm86, unsigned long, cmd, unsigned long, arg)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case VM86_REQUEST_IRQ:
 	case VM86_FREE_IRQ:
 	case VM86_GET_IRQ_BITS:
 	case VM86_GET_AND_RESET_IRQ:
+<<<<<<< HEAD
 		ret = do_vm86_irq_handling(cmd, (int)arg);
 		goto out;
+=======
+		return do_vm86_irq_handling(cmd, (int)arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case VM86_PLUS_INSTALL_CHECK:
 		/*
 		 * NOTE: on old vm86 stuff this will return the error
@@ -255,6 +375,7 @@ int sys_vm86(unsigned long cmd, unsigned long arg, struct pt_regs *regs)
 		 *  interpreted as (invalid) address to vm86_struct.
 		 *  So the installation check works.
 		 */
+<<<<<<< HEAD
 		ret = 0;
 		goto out;
 	}
@@ -292,12 +413,120 @@ static void do_sys_vm86(struct kernel_vm86_struct *info, struct task_struct *tsk
 #ifndef CONFIG_X86_32_LAZY_GS
 	info->regs.pt.gs = 0;
 #endif
+=======
+		return 0;
+	}
+
+	/* we come here only for functions VM86_ENTER, VM86_ENTER_NO_BYPASS */
+	return do_sys_vm86((struct vm86plus_struct __user *) arg, true);
+}
+
+
+static long do_sys_vm86(struct vm86plus_struct __user *user_vm86, bool plus)
+{
+	struct task_struct *tsk = current;
+	struct vm86 *vm86 = tsk->thread.vm86;
+	struct kernel_vm86_regs vm86regs;
+	struct pt_regs *regs = current_pt_regs();
+	unsigned long err = 0;
+	struct vm86_struct v;
+
+	err = security_mmap_addr(0);
+	if (err) {
+		/*
+		 * vm86 cannot virtualize the address space, so vm86 users
+		 * need to manage the low 1MB themselves using mmap.  Given
+		 * that BIOS places important data in the first page, vm86
+		 * is essentially useless if mmap_min_addr != 0.  DOSEMU,
+		 * for example, won't even bother trying to use vm86 if it
+		 * can't map a page at virtual address 0.
+		 *
+		 * To reduce the available kernel attack surface, simply
+		 * disallow vm86(old) for users who cannot mmap at va 0.
+		 *
+		 * The implementation of security_mmap_addr will allow
+		 * suitably privileged users to map va 0 even if
+		 * vm.mmap_min_addr is set above 0, and we want this
+		 * behavior for vm86 as well, as it ensures that legacy
+		 * tools like vbetool will not fail just because of
+		 * vm.mmap_min_addr.
+		 */
+		pr_info_once("Denied a call to vm86(old) from %s[%d] (uid: %d).  Set the vm.mmap_min_addr sysctl to 0 and/or adjust LSM mmap_min_addr policy to enable vm86 if you are using a vm86-based DOS emulator.\n",
+			     current->comm, task_pid_nr(current),
+			     from_kuid_munged(&init_user_ns, current_uid()));
+		return -EPERM;
+	}
+
+	if (!vm86) {
+		if (!(vm86 = kzalloc(sizeof(*vm86), GFP_KERNEL)))
+			return -ENOMEM;
+		tsk->thread.vm86 = vm86;
+	}
+	if (vm86->saved_sp0)
+		return -EPERM;
+
+	if (copy_from_user(&v, user_vm86,
+			offsetof(struct vm86_struct, int_revectored)))
+		return -EFAULT;
+
+
+	/* VM86_SCREEN_BITMAP had numerous bugs and appears to have no users. */
+	if (v.flags & VM86_SCREEN_BITMAP) {
+		char comm[TASK_COMM_LEN];
+
+		pr_info_once("vm86: '%s' uses VM86_SCREEN_BITMAP, which is no longer supported\n", get_task_comm(comm, current));
+		return -EINVAL;
+	}
+
+	memset(&vm86regs, 0, sizeof(vm86regs));
+
+	vm86regs.pt.bx = v.regs.ebx;
+	vm86regs.pt.cx = v.regs.ecx;
+	vm86regs.pt.dx = v.regs.edx;
+	vm86regs.pt.si = v.regs.esi;
+	vm86regs.pt.di = v.regs.edi;
+	vm86regs.pt.bp = v.regs.ebp;
+	vm86regs.pt.ax = v.regs.eax;
+	vm86regs.pt.ip = v.regs.eip;
+	vm86regs.pt.cs = v.regs.cs;
+	vm86regs.pt.flags = v.regs.eflags;
+	vm86regs.pt.sp = v.regs.esp;
+	vm86regs.pt.ss = v.regs.ss;
+	vm86regs.es = v.regs.es;
+	vm86regs.ds = v.regs.ds;
+	vm86regs.fs = v.regs.fs;
+	vm86regs.gs = v.regs.gs;
+
+	vm86->flags = v.flags;
+	vm86->cpu_type = v.cpu_type;
+
+	if (copy_from_user(&vm86->int_revectored,
+			   &user_vm86->int_revectored,
+			   sizeof(struct revectored_struct)))
+		return -EFAULT;
+	if (copy_from_user(&vm86->int21_revectored,
+			   &user_vm86->int21_revectored,
+			   sizeof(struct revectored_struct)))
+		return -EFAULT;
+	if (plus) {
+		if (copy_from_user(&vm86->vm86plus, &user_vm86->vm86plus,
+				   sizeof(struct vm86plus_info_struct)))
+			return -EFAULT;
+		vm86->vm86plus.is_vm86pus = 1;
+	} else
+		memset(&vm86->vm86plus, 0,
+		       sizeof(struct vm86plus_info_struct));
+
+	memcpy(&vm86->regs32, regs, sizeof(struct pt_regs));
+	vm86->user_vm86 = user_vm86;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The flags register is also special: we cannot trust that the user
  * has set it up safely, so this makes sure interrupt etc flags are
  * inherited from protected mode.
  */
+<<<<<<< HEAD
 	VEFLAGS = info->regs.pt.flags;
 	info->regs.pt.flags &= SAFE_MASK;
 	info->regs.pt.flags |= info->regs32->flags & ~SAFE_MASK;
@@ -315,10 +544,32 @@ static void do_sys_vm86(struct kernel_vm86_struct *info, struct task_struct *tsk
 		break;
 	default:
 		tsk->thread.v86mask = X86_EFLAGS_ID | X86_EFLAGS_AC | X86_EFLAGS_NT | X86_EFLAGS_IOPL;
+=======
+	VEFLAGS = vm86regs.pt.flags;
+	vm86regs.pt.flags &= SAFE_MASK;
+	vm86regs.pt.flags |= regs->flags & ~SAFE_MASK;
+	vm86regs.pt.flags |= X86_VM_MASK;
+
+	vm86regs.pt.orig_ax = regs->orig_ax;
+
+	switch (vm86->cpu_type) {
+	case CPU_286:
+		vm86->veflags_mask = 0;
+		break;
+	case CPU_386:
+		vm86->veflags_mask = X86_EFLAGS_NT | X86_EFLAGS_IOPL;
+		break;
+	case CPU_486:
+		vm86->veflags_mask = X86_EFLAGS_AC | X86_EFLAGS_NT | X86_EFLAGS_IOPL;
+		break;
+	default:
+		vm86->veflags_mask = X86_EFLAGS_ID | X86_EFLAGS_AC | X86_EFLAGS_NT | X86_EFLAGS_IOPL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 /*
+<<<<<<< HEAD
  * Save old state, set default return value (%ax) to 0 (VM86_SIGNAL)
  */
 	info->regs32->ax = VM86_SIGNAL;
@@ -365,13 +616,37 @@ static inline void return_to_32bit(struct kernel_vm86_regs *regs16, int retval)
 		"movl %1,%%ebp\n\t"
 		"jmp resume_userspace"
 		: : "r" (regs32), "r" (current_thread_info()));
+=======
+ * Save old state
+ */
+	vm86->saved_sp0 = tsk->thread.sp0;
+	savesegment(gs, vm86->regs32.gs);
+
+	/* make room for real-mode segments */
+	preempt_disable();
+	tsk->thread.sp0 += 16;
+
+	if (boot_cpu_has(X86_FEATURE_SEP)) {
+		tsk->thread.sysenter_cs = 0;
+		refresh_sysenter_cs(&tsk->thread);
+	}
+
+	update_task_stack(tsk);
+	preempt_enable();
+
+	memcpy((struct kernel_vm86_regs *)regs, &vm86regs, sizeof(vm86regs));
+	return regs->ax;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void set_IF(struct kernel_vm86_regs *regs)
 {
 	VEFLAGS |= X86_EFLAGS_VIF;
+<<<<<<< HEAD
 	if (VEFLAGS & X86_EFLAGS_VIP)
 		return_to_32bit(regs, VM86_STI);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void clear_IF(struct kernel_vm86_regs *regs)
@@ -403,7 +678,11 @@ static inline void clear_AC(struct kernel_vm86_regs *regs)
 
 static inline void set_vflags_long(unsigned long flags, struct kernel_vm86_regs *regs)
 {
+<<<<<<< HEAD
 	set_flags(VEFLAGS, flags, current->thread.v86mask);
+=======
+	set_flags(VEFLAGS, flags, current->thread.vm86->veflags_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_flags(regs->pt.flags, flags, SAFE_MASK);
 	if (flags & X86_EFLAGS_IF)
 		set_IF(regs);
@@ -413,7 +692,11 @@ static inline void set_vflags_long(unsigned long flags, struct kernel_vm86_regs 
 
 static inline void set_vflags_short(unsigned short flags, struct kernel_vm86_regs *regs)
 {
+<<<<<<< HEAD
 	set_flags(VFLAGS, flags, current->thread.v86mask);
+=======
+	set_flags(VFLAGS, flags, current->thread.vm86->veflags_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_flags(regs->pt.flags, flags, SAFE_MASK);
 	if (flags & X86_EFLAGS_IF)
 		set_IF(regs);
@@ -428,15 +711,23 @@ static inline unsigned long get_vflags(struct kernel_vm86_regs *regs)
 	if (VEFLAGS & X86_EFLAGS_VIF)
 		flags |= X86_EFLAGS_IF;
 	flags |= X86_EFLAGS_IOPL;
+<<<<<<< HEAD
 	return flags | (VEFLAGS & current->thread.v86mask);
+=======
+	return flags | (VEFLAGS & current->thread.vm86->veflags_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int is_revectored(int nr, struct revectored_struct *bitmap)
 {
+<<<<<<< HEAD
 	__asm__ __volatile__("btl %2,%1\n\tsbbl %0,%0"
 		:"=r" (nr)
 		:"m" (*bitmap), "r" (nr));
 	return nr;
+=======
+	return test_bit(nr, bitmap->__map);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define val_byte(val, n) (((__u8 *)&val)[n])
@@ -526,12 +817,22 @@ static void do_int(struct kernel_vm86_regs *regs, int i,
 {
 	unsigned long __user *intr_ptr;
 	unsigned long segoffs;
+<<<<<<< HEAD
 
 	if (regs->pt.cs == BIOSSEG)
 		goto cannot_handle;
 	if (is_revectored(i, &KVM86->int_revectored))
 		goto cannot_handle;
 	if (i == 0x21 && is_revectored(AH(regs), &KVM86->int21_revectored))
+=======
+	struct vm86 *vm86 = current->thread.vm86;
+
+	if (regs->pt.cs == BIOSSEG)
+		goto cannot_handle;
+	if (is_revectored(i, &vm86->int_revectored))
+		goto cannot_handle;
+	if (i == 0x21 && is_revectored(AH(regs), &vm86->int21_revectored))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto cannot_handle;
 	intr_ptr = (unsigned long __user *) (i << 2);
 	if (get_user(segoffs, intr_ptr))
@@ -550,11 +851,16 @@ static void do_int(struct kernel_vm86_regs *regs, int i,
 	return;
 
 cannot_handle:
+<<<<<<< HEAD
 	return_to_32bit(regs, VM86_INTx + (i << 8));
+=======
+	save_v86_state(regs, VM86_INTx + (i << 8));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int handle_vm86_trap(struct kernel_vm86_regs *regs, long error_code, int trapno)
 {
+<<<<<<< HEAD
 	if (VMPI.is_vm86pus) {
 		if ((trapno == 3) || (trapno == 1)) {
 			KVM86->regs32->ax = VM86_TRAP + (trapno << 8);
@@ -562,6 +868,13 @@ int handle_vm86_trap(struct kernel_vm86_regs *regs, long error_code, int trapno)
 			   call save_v86_state() and change the stack pointer
 			   to KVM86->regs32 */
 			set_thread_flag(TIF_IRET);
+=======
+	struct vm86 *vm86 = current->thread.vm86;
+
+	if (vm86->vm86plus.is_vm86pus) {
+		if ((trapno == 3) || (trapno == 1)) {
+			save_v86_state(regs, VM86_TRAP + (trapno << 8));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 		do_int(regs, trapno, (unsigned char __user *) (regs->pt.ss << 4), SP(regs));
@@ -571,7 +884,11 @@ int handle_vm86_trap(struct kernel_vm86_regs *regs, long error_code, int trapno)
 		return 1; /* we let this handle by the calling routine */
 	current->thread.trap_nr = trapno;
 	current->thread.error_code = error_code;
+<<<<<<< HEAD
 	force_sig(SIGTRAP, current);
+=======
+	force_sig(SIGTRAP);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -582,6 +899,7 @@ void handle_vm86_fault(struct kernel_vm86_regs *regs, long error_code)
 	unsigned char __user *ssp;
 	unsigned short ip, sp, orig_flags;
 	int data32, pref_done;
+<<<<<<< HEAD
 
 #define CHECK_IF_IN_TRAP \
 	if (VMPI.vm86dbg_active && VMPI.vm86dbg_TFpendig) \
@@ -592,6 +910,13 @@ void handle_vm86_fault(struct kernel_vm86_regs *regs, long error_code)
 	if (orig_flags & X86_EFLAGS_TF) \
 		handle_vm86_trap(regs, 0, 1); \
 	return; } while (0)
+=======
+	struct vm86plus_info_struct *vmpi = &current->thread.vm86->vm86plus;
+
+#define CHECK_IF_IN_TRAP \
+	if (vmpi->vm86dbg_active && vmpi->vm86dbg_TFpendig) \
+		newflags |= X86_EFLAGS_TF
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	orig_flags = *(unsigned short *)&regs->pt.flags;
 
@@ -630,7 +955,11 @@ void handle_vm86_fault(struct kernel_vm86_regs *regs, long error_code)
 			SP(regs) -= 2;
 		}
 		IP(regs) = ip;
+<<<<<<< HEAD
 		VM86_FAULT_RETURN;
+=======
+		goto vm86_fault_return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* popf */
 	case 0x9d:
@@ -650,16 +979,28 @@ void handle_vm86_fault(struct kernel_vm86_regs *regs, long error_code)
 		else
 			set_vflags_short(newflags, regs);
 
+<<<<<<< HEAD
 		VM86_FAULT_RETURN;
+=======
+		goto check_vip;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 	/* int xx */
 	case 0xcd: {
 		int intno = popb(csp, ip, simulate_sigsegv);
 		IP(regs) = ip;
+<<<<<<< HEAD
 		if (VMPI.vm86dbg_active) {
 			if ((1 << (intno & 7)) & VMPI.vm86dbg_intxxtab[intno >> 3])
 				return_to_32bit(regs, VM86_INTx + (intno << 8));
+=======
+		if (vmpi->vm86dbg_active) {
+			if ((1 << (intno & 7)) & vmpi->vm86dbg_intxxtab[intno >> 3]) {
+				save_v86_state(regs, VM86_INTx + (intno << 8));
+				return;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		do_int(regs, intno, ssp, sp);
 		return;
@@ -690,14 +1031,22 @@ void handle_vm86_fault(struct kernel_vm86_regs *regs, long error_code)
 		} else {
 			set_vflags_short(newflags, regs);
 		}
+<<<<<<< HEAD
 		VM86_FAULT_RETURN;
+=======
+		goto check_vip;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 	/* cli */
 	case 0xfa:
 		IP(regs) = ip;
 		clear_IF(regs);
+<<<<<<< HEAD
 		VM86_FAULT_RETURN;
+=======
+		goto vm86_fault_return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sti */
 	/*
@@ -709,14 +1058,40 @@ void handle_vm86_fault(struct kernel_vm86_regs *regs, long error_code)
 	case 0xfb:
 		IP(regs) = ip;
 		set_IF(regs);
+<<<<<<< HEAD
 		VM86_FAULT_RETURN;
 
 	default:
 		return_to_32bit(regs, VM86_UNKNOWN);
+=======
+		goto check_vip;
+
+	default:
+		save_v86_state(regs, VM86_UNKNOWN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return;
 
+<<<<<<< HEAD
+=======
+check_vip:
+	if ((VEFLAGS & (X86_EFLAGS_VIP | X86_EFLAGS_VIF)) ==
+	    (X86_EFLAGS_VIP | X86_EFLAGS_VIF)) {
+		save_v86_state(regs, VM86_STI);
+		return;
+	}
+
+vm86_fault_return:
+	if (vmpi->force_return_for_pic  && (VEFLAGS & (X86_EFLAGS_IF | X86_EFLAGS_VIF))) {
+		save_v86_state(regs, VM86_PICRETURN);
+		return;
+	}
+	if (orig_flags & X86_EFLAGS_TF)
+		handle_vm86_trap(regs, 0, X86_TRAP_DB);
+	return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 simulate_sigsegv:
 	/* FIXME: After a long discussion with Stas we finally
 	 *        agreed, that this is wrong. Here we should
@@ -728,7 +1103,11 @@ simulate_sigsegv:
 	 *        should be a mixture of the two, but how do we
 	 *        get the information? [KD]
 	 */
+<<<<<<< HEAD
 	return_to_32bit(regs, VM86_UNKNOWN);
+=======
+	save_v86_state(regs, VM86_UNKNOWN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ---------------- vm86 special IRQ passing stuff ----------------- */

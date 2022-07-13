@@ -1,4 +1,13 @@
+<<<<<<< HEAD
 /* IPv4 specific functions of netfilter core */
+=======
+/*
+ * IPv4 specific functions of netfilter core
+ *
+ * Rusty Russell (C) 2000 -- This code is GPL.
+ * Patrick McHardy (C) 2006-2012
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
@@ -12,18 +21,36 @@
 #include <net/netfilter/nf_queue.h>
 
 /* route_me_harder function, used by iptable_nat, iptable_mangle + ip_queue */
+<<<<<<< HEAD
 int ip_route_me_harder(struct sk_buff *skb, unsigned addr_type)
 {
 	struct net *net = dev_net(skb_dst(skb)->dev);
+=======
+int ip_route_me_harder(struct net *net, struct sock *sk, struct sk_buff *skb, unsigned int addr_type)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct iphdr *iph = ip_hdr(skb);
 	struct rtable *rt;
 	struct flowi4 fl4 = {};
 	__be32 saddr = iph->saddr;
+<<<<<<< HEAD
 	__u8 flags = skb->sk ? inet_sk_flowi_flags(skb->sk) : 0;
 	unsigned int hh_len;
 
 	if (addr_type == RTN_UNSPEC)
 		addr_type = inet_addr_type(net, saddr);
+=======
+	__u8 flags;
+	struct net_device *dev = skb_dst(skb)->dev;
+	struct flow_keys flkeys;
+	unsigned int hh_len;
+
+	sk = sk_to_full_sk(sk);
+	flags = sk ? inet_sk_flowi_flags(sk) : 0;
+
+	if (addr_type == RTN_UNSPEC)
+		addr_type = inet_addr_type_dev_table(net, dev, saddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (addr_type == RTN_LOCAL || addr_type == RTN_UNICAST)
 		flags |= FLOWI_FLAG_ANYSRC;
 	else
@@ -35,18 +62,30 @@ int ip_route_me_harder(struct sk_buff *skb, unsigned addr_type)
 	fl4.daddr = iph->daddr;
 	fl4.saddr = saddr;
 	fl4.flowi4_tos = RT_TOS(iph->tos);
+<<<<<<< HEAD
 	fl4.flowi4_oif = skb->sk ? skb->sk->sk_bound_dev_if : 0;
 	fl4.flowi4_mark = skb->mark;
 	fl4.flowi4_flags = flags;
 	rt = ip_route_output_key(net, &fl4);
 	if (IS_ERR(rt))
 		return -1;
+=======
+	fl4.flowi4_oif = sk ? sk->sk_bound_dev_if : 0;
+	fl4.flowi4_l3mdev = l3mdev_master_ifindex(dev);
+	fl4.flowi4_mark = skb->mark;
+	fl4.flowi4_flags = flags;
+	fib4_rules_early_flow_dissect(net, skb, &fl4, &flkeys);
+	rt = ip_route_output_key(net, &fl4);
+	if (IS_ERR(rt))
+		return PTR_ERR(rt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Drop old route. */
 	skb_dst_drop(skb);
 	skb_dst_set(skb, &rt->dst);
 
 	if (skb_dst(skb)->error)
+<<<<<<< HEAD
 		return -1;
 
 #ifdef CONFIG_XFRM
@@ -57,6 +96,18 @@ int ip_route_me_harder(struct sk_buff *skb, unsigned addr_type)
 		dst = xfrm_lookup(net, dst, flowi4_to_flowi(&fl4), skb->sk, 0);
 		if (IS_ERR(dst))
 			return -1;
+=======
+		return skb_dst(skb)->error;
+
+#ifdef CONFIG_XFRM
+	if (!(IPCB(skb)->flags & IPSKB_XFRM_TRANSFORMED) &&
+	    xfrm_decode_session(net, skb, flowi4_to_flowi(&fl4), AF_INET) == 0) {
+		struct dst_entry *dst = skb_dst(skb);
+		skb_dst_set(skb, NULL);
+		dst = xfrm_lookup(net, dst, flowi4_to_flowi(&fl4), sk, 0);
+		if (IS_ERR(dst))
+			return PTR_ERR(dst);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_dst_set(skb, dst);
 	}
 #endif
@@ -66,12 +117,17 @@ int ip_route_me_harder(struct sk_buff *skb, unsigned addr_type)
 	if (skb_headroom(skb) < hh_len &&
 	    pskb_expand_head(skb, HH_DATA_ALIGN(hh_len - skb_headroom(skb)),
 				0, GFP_ATOMIC))
+<<<<<<< HEAD
 		return -1;
+=======
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 EXPORT_SYMBOL(ip_route_me_harder);
 
+<<<<<<< HEAD
 /*
  * Extra routing may needed on local out, as the QUEUE target never
  * returns control to the table.
@@ -170,6 +226,10 @@ static __sum16 nf_ip_checksum_partial(struct sk_buff *skb, unsigned int hook,
 
 static int nf_ip_route(struct net *net, struct dst_entry **dst,
 		       struct flowi *fl, bool strict __always_unused)
+=======
+int nf_ip_route(struct net *net, struct dst_entry **dst, struct flowi *fl,
+		bool strict __always_unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtable *rt = ip_route_output_key(net, &fl->u.ip4);
 	if (IS_ERR(rt))
@@ -177,6 +237,7 @@ static int nf_ip_route(struct net *net, struct dst_entry **dst,
 	*dst = &rt->dst;
 	return 0;
 }
+<<<<<<< HEAD
 
 static const struct nf_afinfo nf_ip_afinfo = {
 	.family			= AF_INET,
@@ -210,3 +271,6 @@ struct ctl_path nf_net_ipv4_netfilter_sysctl_path[] = {
 };
 EXPORT_SYMBOL_GPL(nf_net_ipv4_netfilter_sysctl_path);
 #endif /* CONFIG_SYSCTL */
+=======
+EXPORT_SYMBOL_GPL(nf_ip_route);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

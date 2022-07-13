@@ -1,15 +1,22 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/powerpc/platforms/embedded6xx/flipper-pic.c
  *
  * Nintendo GameCube/Wii "Flipper" interrupt controller support.
  * Copyright (C) 2004-2009 The GameCube Linux Team
  * Copyright (C) 2007,2008,2009 Albert Herranz
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
  * of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define DRV_MODULE_NAME "flipper-pic"
 #define pr_fmt(fmt) DRV_MODULE_NAME ": " fmt
@@ -17,7 +24,13 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/of.h>
+=======
+#include <linux/irqdomain.h>
+#include <linux/of.h>
+#include <linux/of_address.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 #include "flipper-pic.h"
@@ -107,6 +120,7 @@ static int flipper_pic_map(struct irq_domain *h, unsigned int virq,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int flipper_pic_match(struct irq_domain *h, struct device_node *np)
 {
 	return 1;
@@ -116,6 +130,10 @@ static int flipper_pic_match(struct irq_domain *h, struct device_node *np)
 static const struct irq_domain_ops flipper_irq_domain_ops = {
 	.map = flipper_pic_map,
 	.match = flipper_pic_match,
+=======
+static const struct irq_domain_ops flipper_irq_domain_ops = {
+	.map = flipper_pic_map,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -130,7 +148,11 @@ static void __flipper_quiesce(void __iomem *io_base)
 	out_be32(io_base + FLIPPER_ICR, 0xffffffff);
 }
 
+<<<<<<< HEAD
 struct irq_domain * __init flipper_pic_init(struct device_node *np)
+=======
+static struct irq_domain * __init flipper_pic_init(struct device_node *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *pi;
 	struct irq_domain *irq_domain = NULL;
@@ -155,7 +177,11 @@ struct irq_domain * __init flipper_pic_init(struct device_node *np)
 	}
 	io_base = ioremap(res.start, resource_size(&res));
 
+<<<<<<< HEAD
 	pr_info("controller at 0x%08x mapped to 0x%p\n", res.start, io_base);
+=======
+	pr_info("controller at 0x%pa mapped to 0x%p\n", &res.start, io_base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__flipper_quiesce(io_base);
 
@@ -179,7 +205,11 @@ unsigned int flipper_pic_get_irq(void)
 	irq_status = in_be32(io_base + FLIPPER_ICR) &
 		     in_be32(io_base + FLIPPER_IMR);
 	if (irq_status == 0)
+<<<<<<< HEAD
 		return NO_IRQ;	/* no more IRQs pending */
+=======
+		return 0;	/* no more IRQs pending */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	irq = __ffs(irq_status);
 	return irq_linear_revmap(flipper_irq_host, irq);

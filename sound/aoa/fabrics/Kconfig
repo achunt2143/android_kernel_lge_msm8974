@@ -1,8 +1,16 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SND_AOA_FABRIC_LAYOUT
 	tristate "layout-id fabric"
 	select SND_AOA_SOUNDBUS
 	select SND_AOA_SOUNDBUS_I2S
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	This enables the layout-id fabric for the Apple Onboard
 	Audio driver, the module holding it all together
 	based on the device-tree's layout-id property.

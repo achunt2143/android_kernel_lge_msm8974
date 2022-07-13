@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CAIAQ_DEVICE_H
 #define CAIAQ_DEVICE_H
 
@@ -25,6 +29,7 @@
 #define CAIAQ_USB_STR_LEN 0xff
 #define MAX_STREAMS 32
 
+<<<<<<< HEAD
 //#define	SND_USB_CAIAQ_DEBUG
 
 #define MODNAME "snd-usb-caiaq"
@@ -35,6 +40,9 @@
 #else
 #define debug(x...) do { } while(0)
 #endif
+=======
+#define MODNAME "snd-usb-caiaq"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EP1_CMD_GET_DEVICE_INFO	0x1
 #define EP1_CMD_READ_ERP	0x2
@@ -61,7 +69,11 @@ struct caiaq_device_spec {
 	unsigned char num_midi_out;
 	unsigned char num_midi_in;
 	unsigned char data_alignment;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct snd_usb_caiaq_cb_info;
 
@@ -124,11 +136,16 @@ struct snd_usb_caiaqdev {
 };
 
 struct snd_usb_caiaq_cb_info {
+<<<<<<< HEAD
 	struct snd_usb_caiaqdev *dev;
+=======
+	struct snd_usb_caiaqdev *cdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int index;
 };
 
 #define caiaqdev(c) ((struct snd_usb_caiaqdev*)(c)->private_data)
+<<<<<<< HEAD
 
 int snd_usb_caiaq_set_audio_params (struct snd_usb_caiaqdev *dev, int rate, int depth, int bbp);
 int snd_usb_caiaq_set_auto_msg (struct snd_usb_caiaqdev *dev, int digital, int analog, int erp);
@@ -136,5 +153,20 @@ int snd_usb_caiaq_send_command(struct snd_usb_caiaqdev *dev,
 			       unsigned char command,
 			       const unsigned char *buffer,
 			       int len);
+=======
+#define caiaqdev_to_dev(d)	(d->chip.card->dev)
+
+int snd_usb_caiaq_set_audio_params (struct snd_usb_caiaqdev *cdev, int rate, int depth, int bbp);
+int snd_usb_caiaq_set_auto_msg (struct snd_usb_caiaqdev *cdev, int digital, int analog, int erp);
+int snd_usb_caiaq_send_command(struct snd_usb_caiaqdev *cdev,
+			       unsigned char command,
+			       const unsigned char *buffer,
+			       int len);
+int snd_usb_caiaq_send_command_bank(struct snd_usb_caiaqdev *cdev,
+			       unsigned char command,
+			       unsigned char bank,
+			       const unsigned char *buffer,
+			       int len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CAIAQ_DEVICE_H */

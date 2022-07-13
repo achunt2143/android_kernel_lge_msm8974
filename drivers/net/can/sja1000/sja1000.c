@@ -52,6 +52,10 @@
 #include <linux/ptrace.h>
 #include <linux/string.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
+=======
+#include <linux/ethtool.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/if_arp.h>
 #include <linux/if_ether.h>
@@ -69,7 +73,11 @@ MODULE_AUTHOR("Oliver Hartkopp <oliver.hartkopp@volkswagen.de>");
 MODULE_LICENSE("Dual BSD/GPL");
 MODULE_DESCRIPTION(DRV_NAME "CAN netdevice driver");
 
+<<<<<<< HEAD
 static struct can_bittiming_const sja1000_bittiming_const = {
+=======
+static const struct can_bittiming_const sja1000_bittiming_const = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = DRV_NAME,
 	.tseg1_min = 1,
 	.tseg1_max = 16,
@@ -90,14 +98,23 @@ static void sja1000_write_cmdreg(struct sja1000_priv *priv, u8 val)
 	 * the write_reg() operation - especially on SMP systems.
 	 */
 	spin_lock_irqsave(&priv->cmdreg_lock, flags);
+<<<<<<< HEAD
 	priv->write_reg(priv, REG_CMR, val);
 	priv->read_reg(priv, SJA1000_REG_SR);
+=======
+	priv->write_reg(priv, SJA1000_CMR, val);
+	priv->read_reg(priv, SJA1000_SR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&priv->cmdreg_lock, flags);
 }
 
 static int sja1000_is_absent(struct sja1000_priv *priv)
 {
+<<<<<<< HEAD
 	return (priv->read_reg(priv, REG_MOD) == 0xFF);
+=======
+	return (priv->read_reg(priv, SJA1000_MOD) == 0xFF);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sja1000_probe_chip(struct net_device *dev)
@@ -105,8 +122,12 @@ static int sja1000_probe_chip(struct net_device *dev)
 	struct sja1000_priv *priv = netdev_priv(dev);
 
 	if (priv->reg_base && sja1000_is_absent(priv)) {
+<<<<<<< HEAD
 		printk(KERN_INFO "%s: probing @0x%lX failed\n",
 		       DRV_NAME, dev->base_addr);
+=======
+		netdev_err(dev, "probing failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	return -1;
@@ -115,11 +136,19 @@ static int sja1000_probe_chip(struct net_device *dev)
 static void set_reset_mode(struct net_device *dev)
 {
 	struct sja1000_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	unsigned char status = priv->read_reg(priv, REG_MOD);
 	int i;
 
 	/* disable interrupts */
 	priv->write_reg(priv, REG_IER, IRQ_OFF);
+=======
+	unsigned char status = priv->read_reg(priv, SJA1000_MOD);
+	int i;
+
+	/* disable interrupts */
+	priv->write_reg(priv, SJA1000_IER, IRQ_OFF);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < 100; i++) {
 		/* check reset bit */
@@ -128,9 +157,16 @@ static void set_reset_mode(struct net_device *dev)
 			return;
 		}
 
+<<<<<<< HEAD
 		priv->write_reg(priv, REG_MOD, MOD_RM);	/* reset chip */
 		udelay(10);
 		status = priv->read_reg(priv, REG_MOD);
+=======
+		/* reset chip */
+		priv->write_reg(priv, SJA1000_MOD, MOD_RM);
+		udelay(10);
+		status = priv->read_reg(priv, SJA1000_MOD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	netdev_err(dev, "setting SJA1000 into reset mode failed!\n");
@@ -139,7 +175,12 @@ static void set_reset_mode(struct net_device *dev)
 static void set_normal_mode(struct net_device *dev)
 {
 	struct sja1000_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	unsigned char status = priv->read_reg(priv, REG_MOD);
+=======
+	unsigned char status = priv->read_reg(priv, SJA1000_MOD);
+	u8 mod_reg_val = 0x00;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < 100; i++) {
@@ -148,26 +189,78 @@ static void set_normal_mode(struct net_device *dev)
 			priv->can.state = CAN_STATE_ERROR_ACTIVE;
 			/* enable interrupts */
 			if (priv->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING)
+<<<<<<< HEAD
 				priv->write_reg(priv, REG_IER, IRQ_ALL);
 			else
 				priv->write_reg(priv, REG_IER,
+=======
+				priv->write_reg(priv, SJA1000_IER, IRQ_ALL);
+			else
+				priv->write_reg(priv, SJA1000_IER,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						IRQ_ALL & ~IRQ_BEI);
 			return;
 		}
 
 		/* set chip to normal mode */
+<<<<<<< HEAD
 		priv->write_reg(priv, REG_MOD, 0x00);
 		udelay(10);
 		status = priv->read_reg(priv, REG_MOD);
+=======
+		if (priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
+			mod_reg_val |= MOD_LOM;
+		if (priv->can.ctrlmode & CAN_CTRLMODE_PRESUME_ACK)
+			mod_reg_val |= MOD_STM;
+		priv->write_reg(priv, SJA1000_MOD, mod_reg_val);
+
+		udelay(10);
+
+		status = priv->read_reg(priv, SJA1000_MOD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	netdev_err(dev, "setting SJA1000 into normal mode failed!\n");
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * initialize SJA1000 chip:
+ *   - reset chip
+ *   - set output mode
+ *   - set baudrate
+ *   - enable interrupts
+ *   - start operating mode
+ */
+static void chipset_init(struct net_device *dev)
+{
+	struct sja1000_priv *priv = netdev_priv(dev);
+
+	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG))
+		/* set clock divider and output control register */
+		priv->write_reg(priv, SJA1000_CDR, priv->cdr | CDR_PELICAN);
+
+	/* set acceptance filter (accept all) */
+	priv->write_reg(priv, SJA1000_ACCC0, 0x00);
+	priv->write_reg(priv, SJA1000_ACCC1, 0x00);
+	priv->write_reg(priv, SJA1000_ACCC2, 0x00);
+	priv->write_reg(priv, SJA1000_ACCC3, 0x00);
+
+	priv->write_reg(priv, SJA1000_ACCM0, 0xFF);
+	priv->write_reg(priv, SJA1000_ACCM1, 0xFF);
+	priv->write_reg(priv, SJA1000_ACCM2, 0xFF);
+	priv->write_reg(priv, SJA1000_ACCM3, 0xFF);
+
+	priv->write_reg(priv, SJA1000_OCR, priv->ocr | OCR_MODE_NORMAL);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sja1000_start(struct net_device *dev)
 {
 	struct sja1000_priv *priv = netdev_priv(dev);
 
+<<<<<<< HEAD
 	/* leave reset mode */
 	if (priv->can.state != CAN_STATE_STOPPED)
 		set_reset_mode(dev);
@@ -179,6 +272,24 @@ static void sja1000_start(struct net_device *dev)
 
 	/* clear interrupt flags */
 	priv->read_reg(priv, REG_IR);
+=======
+	/* enter reset mode */
+	if (priv->can.state != CAN_STATE_STOPPED)
+		set_reset_mode(dev);
+
+	/* Initialize chip if uninitialized at this stage */
+	if (!(priv->flags & SJA1000_QUIRK_NO_CDR_REG ||
+	      priv->read_reg(priv, SJA1000_CDR) & CDR_PELICAN))
+		chipset_init(dev);
+
+	/* Clear error counters and error code capture */
+	priv->write_reg(priv, SJA1000_TXERR, 0x0);
+	priv->write_reg(priv, SJA1000_RXERR, 0x0);
+	priv->read_reg(priv, SJA1000_ECC);
+
+	/* clear interrupt flags */
+	priv->read_reg(priv, SJA1000_IR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* leave reset mode */
 	set_normal_mode(dev);
@@ -186,11 +297,14 @@ static void sja1000_start(struct net_device *dev)
 
 static int sja1000_set_mode(struct net_device *dev, enum can_mode mode)
 {
+<<<<<<< HEAD
 	struct sja1000_priv *priv = netdev_priv(dev);
 
 	if (!priv->open_time)
 		return -EINVAL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (mode) {
 	case CAN_MODE_START:
 		sja1000_start(dev);
@@ -219,8 +333,13 @@ static int sja1000_set_bittiming(struct net_device *dev)
 
 	netdev_info(dev, "setting BTR0=0x%02x BTR1=0x%02x\n", btr0, btr1);
 
+<<<<<<< HEAD
 	priv->write_reg(priv, REG_BTR0, btr0);
 	priv->write_reg(priv, REG_BTR1, btr1);
+=======
+	priv->write_reg(priv, SJA1000_BTR0, btr0);
+	priv->write_reg(priv, SJA1000_BTR1, btr1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -230,13 +349,19 @@ static int sja1000_get_berr_counter(const struct net_device *dev,
 {
 	struct sja1000_priv *priv = netdev_priv(dev);
 
+<<<<<<< HEAD
 	bec->txerr = priv->read_reg(priv, REG_TXERR);
 	bec->rxerr = priv->read_reg(priv, REG_RXERR);
+=======
+	bec->txerr = priv->read_reg(priv, SJA1000_TXERR);
+	bec->rxerr = priv->read_reg(priv, SJA1000_RXERR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /*
+<<<<<<< HEAD
  * initialize SJA1000 chip:
  *   - reset chip
  *   - set output mode
@@ -266,6 +391,8 @@ static void chipset_init(struct net_device *dev)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * transmit a CAN message
  * message layout in the sk_buff should be like this:
  * xx xx xx xx	 ff	 ll   00 11 22 33 44 55 66 77
@@ -277,16 +404,26 @@ static netdev_tx_t sja1000_start_xmit(struct sk_buff *skb,
 	struct sja1000_priv *priv = netdev_priv(dev);
 	struct can_frame *cf = (struct can_frame *)skb->data;
 	uint8_t fi;
+<<<<<<< HEAD
 	uint8_t dlc;
 	canid_t id;
 	uint8_t dreg;
 	int i;
 
 	if (can_dropped_invalid_skb(dev, skb))
+=======
+	canid_t id;
+	uint8_t dreg;
+	u8 cmd_reg_val = 0x00;
+	int i;
+
+	if (can_dev_dropped_skb(dev, skb))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NETDEV_TX_OK;
 
 	netif_stop_queue(dev);
 
+<<<<<<< HEAD
 	fi = dlc = cf->can_dlc;
 	id = cf->can_id;
 
@@ -314,6 +451,43 @@ static netdev_tx_t sja1000_start_xmit(struct sk_buff *skb,
 	can_put_echo_skb(skb, dev, 0);
 
 	sja1000_write_cmdreg(priv, CMD_TR);
+=======
+	fi = can_get_cc_dlc(cf, priv->can.ctrlmode);
+	id = cf->can_id;
+
+	if (id & CAN_RTR_FLAG)
+		fi |= SJA1000_FI_RTR;
+
+	if (id & CAN_EFF_FLAG) {
+		fi |= SJA1000_FI_FF;
+		dreg = SJA1000_EFF_BUF;
+		priv->write_reg(priv, SJA1000_FI, fi);
+		priv->write_reg(priv, SJA1000_ID1, (id & 0x1fe00000) >> 21);
+		priv->write_reg(priv, SJA1000_ID2, (id & 0x001fe000) >> 13);
+		priv->write_reg(priv, SJA1000_ID3, (id & 0x00001fe0) >> 5);
+		priv->write_reg(priv, SJA1000_ID4, (id & 0x0000001f) << 3);
+	} else {
+		dreg = SJA1000_SFF_BUF;
+		priv->write_reg(priv, SJA1000_FI, fi);
+		priv->write_reg(priv, SJA1000_ID1, (id & 0x000007f8) >> 3);
+		priv->write_reg(priv, SJA1000_ID2, (id & 0x00000007) << 5);
+	}
+
+	for (i = 0; i < cf->len; i++)
+		priv->write_reg(priv, dreg++, cf->data[i]);
+
+	can_put_echo_skb(skb, dev, 0, 0);
+
+	if (priv->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT)
+		cmd_reg_val |= CMD_AT;
+
+	if (priv->can.ctrlmode & CAN_CTRLMODE_LOOPBACK)
+		cmd_reg_val |= CMD_SRR;
+	else
+		cmd_reg_val |= CMD_TR;
+
+	sja1000_write_cmdreg(priv, cmd_reg_val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NETDEV_TX_OK;
 }
@@ -334,6 +508,7 @@ static void sja1000_rx(struct net_device *dev)
 	if (skb == NULL)
 		return;
 
+<<<<<<< HEAD
 	fi = priv->read_reg(priv, REG_FI);
 
 	if (fi & FI_FF) {
@@ -358,6 +533,35 @@ static void sja1000_rx(struct net_device *dev)
 		for (i = 0; i < cf->can_dlc; i++)
 			cf->data[i] = priv->read_reg(priv, dreg++);
 	}
+=======
+	fi = priv->read_reg(priv, SJA1000_FI);
+
+	if (fi & SJA1000_FI_FF) {
+		/* extended frame format (EFF) */
+		dreg = SJA1000_EFF_BUF;
+		id = (priv->read_reg(priv, SJA1000_ID1) << 21)
+		    | (priv->read_reg(priv, SJA1000_ID2) << 13)
+		    | (priv->read_reg(priv, SJA1000_ID3) << 5)
+		    | (priv->read_reg(priv, SJA1000_ID4) >> 3);
+		id |= CAN_EFF_FLAG;
+	} else {
+		/* standard frame format (SFF) */
+		dreg = SJA1000_SFF_BUF;
+		id = (priv->read_reg(priv, SJA1000_ID1) << 3)
+		    | (priv->read_reg(priv, SJA1000_ID2) >> 5);
+	}
+
+	can_frame_set_cc_len(cf, fi & 0x0F, priv->can.ctrlmode);
+	if (fi & SJA1000_FI_RTR) {
+		id |= CAN_RTR_FLAG;
+	} else {
+		for (i = 0; i < cf->len; i++)
+			cf->data[i] = priv->read_reg(priv, dreg++);
+
+		stats->rx_bytes += cf->len;
+	}
+	stats->rx_packets++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cf->can_id = id;
 
@@ -365,9 +569,28 @@ static void sja1000_rx(struct net_device *dev)
 	sja1000_write_cmdreg(priv, CMD_RRB);
 
 	netif_rx(skb);
+<<<<<<< HEAD
 
 	stats->rx_packets++;
 	stats->rx_bytes += cf->can_dlc;
+=======
+}
+
+static irqreturn_t sja1000_reset_interrupt(int irq, void *dev_id)
+{
+	struct net_device *dev = (struct net_device *)dev_id;
+
+	netdev_dbg(dev, "performing a soft reset upon overrun\n");
+
+	netif_tx_lock(dev);
+
+	can_free_echo_skb(dev, 0, NULL);
+	sja1000_set_mode(dev, CAN_MODE_START);
+
+	netif_tx_unlock(dev);
+
+	return IRQ_HANDLED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
@@ -377,12 +600,25 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 	struct can_frame *cf;
 	struct sk_buff *skb;
 	enum can_state state = priv->can.state;
+<<<<<<< HEAD
 	uint8_t ecc, alc;
+=======
+	enum can_state rx_state, tx_state;
+	unsigned int rxerr, txerr;
+	uint8_t ecc, alc;
+	int ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = alloc_can_err_skb(dev, &cf);
 	if (skb == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	txerr = priv->read_reg(priv, SJA1000_TXERR);
+	rxerr = priv->read_reg(priv, SJA1000_RXERR);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (isrc & IRQ_DOI) {
 		/* data overrun interrupt */
 		netdev_dbg(dev, "data overrun interrupt\n");
@@ -391,12 +627,25 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 		stats->rx_over_errors++;
 		stats->rx_errors++;
 		sja1000_write_cmdreg(priv, CMD_CDO);	/* clear bit */
+<<<<<<< HEAD
+=======
+
+		/* Some controllers needs additional handling upon overrun
+		 * condition: the controller may sometimes be totally confused
+		 * and refuse any new frame while its buffer is empty. The only
+		 * way to re-sync the read vs. write buffer offsets is to
+		 * stop any current handling and perform a reset.
+		 */
+		if (priv->flags & SJA1000_QUIRK_RESET_ON_OVERRUN)
+			ret = IRQ_WAKE_THREAD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (isrc & IRQ_EI) {
 		/* error warning interrupt */
 		netdev_dbg(dev, "error warning interrupt\n");
 
+<<<<<<< HEAD
 		if (status & SR_BS) {
 			state = CAN_STATE_BUS_OFF;
 			cf->can_id |= CAN_ERR_BUSOFF;
@@ -406,15 +655,37 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 		} else
 			state = CAN_STATE_ERROR_ACTIVE;
 	}
+=======
+		if (status & SR_BS)
+			state = CAN_STATE_BUS_OFF;
+		else if (status & SR_ES)
+			state = CAN_STATE_ERROR_WARNING;
+		else
+			state = CAN_STATE_ERROR_ACTIVE;
+	}
+	if (state != CAN_STATE_BUS_OFF) {
+		cf->can_id |= CAN_ERR_CNT;
+		cf->data[6] = txerr;
+		cf->data[7] = rxerr;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (isrc & IRQ_BEI) {
 		/* bus error interrupt */
 		priv->can.can_stats.bus_error++;
 		stats->rx_errors++;
 
+<<<<<<< HEAD
 		ecc = priv->read_reg(priv, REG_ECC);
 
 		cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
 
+=======
+		ecc = priv->read_reg(priv, SJA1000_ECC);
+
+		cf->can_id |= CAN_ERR_PROT | CAN_ERR_BUSERROR;
+
+		/* set error type */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (ecc & ECC_MASK) {
 		case ECC_BIT:
 			cf->data[2] |= CAN_ERR_PROT_BIT;
@@ -426,10 +697,19 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 			cf->data[2] |= CAN_ERR_PROT_STUFF;
 			break;
 		default:
+<<<<<<< HEAD
 			cf->data[2] |= CAN_ERR_PROT_UNSPEC;
 			cf->data[3] = ecc & ECC_SEG;
 			break;
 		}
+=======
+			break;
+		}
+
+		/* set error location */
+		cf->data[3] = ecc & ECC_SEG;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Error occurred during transmission? */
 		if ((ecc & ECC_DIR) == 0)
 			cf->data[2] |= CAN_ERR_PROT_TX;
@@ -437,21 +717,35 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 	if (isrc & IRQ_EPI) {
 		/* error passive interrupt */
 		netdev_dbg(dev, "error passive interrupt\n");
+<<<<<<< HEAD
 		if (status & SR_ES)
 			state = CAN_STATE_ERROR_PASSIVE;
 		else
 			state = CAN_STATE_ERROR_ACTIVE;
+=======
+
+		if (state == CAN_STATE_ERROR_PASSIVE)
+			state = CAN_STATE_ERROR_WARNING;
+		else
+			state = CAN_STATE_ERROR_PASSIVE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (isrc & IRQ_ALI) {
 		/* arbitration lost interrupt */
 		netdev_dbg(dev, "arbitration lost interrupt\n");
+<<<<<<< HEAD
 		alc = priv->read_reg(priv, REG_ALC);
 		priv->can.can_stats.arbitration_lost++;
 		stats->tx_errors++;
+=======
+		alc = priv->read_reg(priv, SJA1000_ALC);
+		priv->can.can_stats.arbitration_lost++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cf->can_id |= CAN_ERR_LOSTARB;
 		cf->data[0] = alc & 0x1f;
 	}
 
+<<<<<<< HEAD
 	if (state != priv->can.state && (state == CAN_STATE_ERROR_WARNING ||
 					 state == CAN_STATE_ERROR_PASSIVE)) {
 		uint8_t rxerr = priv->read_reg(priv, REG_RXERR);
@@ -480,6 +774,21 @@ static int sja1000_err(struct net_device *dev, uint8_t isrc, uint8_t status)
 	stats->rx_bytes += cf->can_dlc;
 
 	return 0;
+=======
+	if (state != priv->can.state) {
+		tx_state = txerr >= rxerr ? state : 0;
+		rx_state = txerr <= rxerr ? state : 0;
+
+		can_change_state(dev, cf, tx_state, rx_state);
+
+		if(state == CAN_STATE_BUS_OFF)
+			can_bus_off(dev);
+	}
+
+	netif_rx(skb);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 irqreturn_t sja1000_interrupt(int irq, void *dev_id)
@@ -488,18 +797,33 @@ irqreturn_t sja1000_interrupt(int irq, void *dev_id)
 	struct sja1000_priv *priv = netdev_priv(dev);
 	struct net_device_stats *stats = &dev->stats;
 	uint8_t isrc, status;
+<<<<<<< HEAD
 	int n = 0;
+=======
+	irqreturn_t ret = 0;
+	int n = 0, err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (priv->pre_irq)
 		priv->pre_irq(priv);
 
 	/* Shared interrupts and IRQ off? */
+<<<<<<< HEAD
 	if (priv->read_reg(priv, REG_IER) == IRQ_OFF)
 		goto out;
 
 	while ((isrc = priv->read_reg(priv, REG_IR)) && (n < SJA1000_MAX_IRQ)) {
 
 		status = priv->read_reg(priv, SJA1000_REG_SR);
+=======
+	if (priv->read_reg(priv, SJA1000_IER) == IRQ_OFF)
+		goto out;
+
+	while ((isrc = priv->read_reg(priv, SJA1000_IR)) &&
+	       (n < SJA1000_MAX_IRQ)) {
+
+		status = priv->read_reg(priv, SJA1000_SR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* check for absent controller due to hw unplug */
 		if (status == 0xFF && sja1000_is_absent(priv))
 			goto out;
@@ -508,17 +832,34 @@ irqreturn_t sja1000_interrupt(int irq, void *dev_id)
 			netdev_warn(dev, "wakeup interrupt\n");
 
 		if (isrc & IRQ_TI) {
+<<<<<<< HEAD
 			/* transmission complete interrupt */
 			stats->tx_bytes += priv->read_reg(priv, REG_FI) & 0xf;
 			stats->tx_packets++;
 			can_get_echo_skb(dev, 0);
+=======
+			/* transmission buffer released */
+			if (priv->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT &&
+			    !(status & SR_TCS)) {
+				stats->tx_errors++;
+				can_free_echo_skb(dev, 0, NULL);
+			} else {
+				/* transmission complete */
+				stats->tx_bytes += can_get_echo_skb(dev, 0, NULL);
+				stats->tx_packets++;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netif_wake_queue(dev);
 		}
 		if (isrc & IRQ_RI) {
 			/* receive interrupt */
 			while (status & SR_RBS) {
 				sja1000_rx(dev);
+<<<<<<< HEAD
 				status = priv->read_reg(priv, SJA1000_REG_SR);
+=======
+				status = priv->read_reg(priv, SJA1000_SR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* check for absent controller */
 				if (status == 0xFF && sja1000_is_absent(priv))
 					goto out;
@@ -526,19 +867,36 @@ irqreturn_t sja1000_interrupt(int irq, void *dev_id)
 		}
 		if (isrc & (IRQ_DOI | IRQ_EI | IRQ_BEI | IRQ_EPI | IRQ_ALI)) {
 			/* error interrupt */
+<<<<<<< HEAD
 			if (sja1000_err(dev, isrc, status))
+=======
+			err = sja1000_err(dev, isrc, status);
+			if (err == IRQ_WAKE_THREAD)
+				ret = err;
+			if (err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 		}
 		n++;
 	}
 out:
+<<<<<<< HEAD
+=======
+	if (!ret)
+		ret = (n) ? IRQ_HANDLED : IRQ_NONE;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (priv->post_irq)
 		priv->post_irq(priv);
 
 	if (n >= SJA1000_MAX_IRQ)
 		netdev_dbg(dev, "%d messages handled in ISR", n);
 
+<<<<<<< HEAD
 	return (n) ? IRQ_HANDLED : IRQ_NONE;
+=======
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(sja1000_interrupt);
 
@@ -557,8 +915,14 @@ static int sja1000_open(struct net_device *dev)
 
 	/* register interrupt handler, if not done by the device driver */
 	if (!(priv->flags & SJA1000_CUSTOM_IRQ_HANDLER)) {
+<<<<<<< HEAD
 		err = request_irq(dev->irq, sja1000_interrupt, priv->irq_flags,
 				  dev->name, (void *)dev);
+=======
+		err = request_threaded_irq(dev->irq, sja1000_interrupt,
+					   sja1000_reset_interrupt,
+					   priv->irq_flags, dev->name, (void *)dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			close_candev(dev);
 			return -EAGAIN;
@@ -567,7 +931,10 @@ static int sja1000_open(struct net_device *dev)
 
 	/* init and start chi */
 	sja1000_start(dev);
+<<<<<<< HEAD
 	priv->open_time = jiffies;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_start_queue(dev);
 
@@ -586,8 +953,11 @@ static int sja1000_close(struct net_device *dev)
 
 	close_candev(dev);
 
+<<<<<<< HEAD
 	priv->open_time = 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -608,8 +978,18 @@ struct net_device *alloc_sja1000dev(int sizeof_priv)
 	priv->can.do_set_bittiming = sja1000_set_bittiming;
 	priv->can.do_set_mode = sja1000_set_mode;
 	priv->can.do_get_berr_counter = sja1000_get_berr_counter;
+<<<<<<< HEAD
 	priv->can.ctrlmode_supported = CAN_CTRLMODE_3_SAMPLES |
 		CAN_CTRLMODE_BERR_REPORTING;
+=======
+	priv->can.ctrlmode_supported = CAN_CTRLMODE_LOOPBACK |
+				       CAN_CTRLMODE_LISTENONLY |
+				       CAN_CTRLMODE_3_SAMPLES |
+				       CAN_CTRLMODE_ONE_SHOT |
+				       CAN_CTRLMODE_BERR_REPORTING |
+				       CAN_CTRLMODE_PRESUME_ACK |
+				       CAN_CTRLMODE_CC_LEN8_DLC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&priv->cmdreg_lock);
 
@@ -627,9 +1007,20 @@ void free_sja1000dev(struct net_device *dev)
 EXPORT_SYMBOL_GPL(free_sja1000dev);
 
 static const struct net_device_ops sja1000_netdev_ops = {
+<<<<<<< HEAD
        .ndo_open               = sja1000_open,
        .ndo_stop               = sja1000_close,
        .ndo_start_xmit         = sja1000_start_xmit,
+=======
+	.ndo_open	= sja1000_open,
+	.ndo_stop	= sja1000_close,
+	.ndo_start_xmit	= sja1000_start_xmit,
+	.ndo_change_mtu	= can_change_mtu,
+};
+
+static const struct ethtool_ops sja1000_ethtool_ops = {
+	.get_ts_info = ethtool_op_get_ts_info,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int register_sja1000dev(struct net_device *dev)
@@ -639,6 +1030,10 @@ int register_sja1000dev(struct net_device *dev)
 
 	dev->flags |= IFF_ECHO;	/* we support local echo */
 	dev->netdev_ops = &sja1000_netdev_ops;
+<<<<<<< HEAD
+=======
+	dev->ethtool_ops = &sja1000_ethtool_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_reset_mode(dev);
 	chipset_init(dev);

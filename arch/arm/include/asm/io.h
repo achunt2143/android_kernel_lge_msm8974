@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/io.h
  *
  *  Copyright (C) 1996-2000 Russell King
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications:
  *  16-Sep-1996	RMK	Inlined the inx/outx functions & optimised for both
  *			constant addresses and variable addresses.
@@ -23,16 +30,25 @@
 
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <asm/byteorder.h>
 #include <asm/memory.h>
 #include <asm-generic/pci_iomap.h>
 #include <mach/msm_rtb.h>
+=======
+#include <linux/string.h>
+#include <linux/types.h>
+#include <asm/byteorder.h>
+#include <asm/page.h>
+#include <asm-generic/pci_iomap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ISA I/O bus memory addresses are 1:1 with the physical address.
  */
 #define isa_virt_to_bus virt_to_phys
+<<<<<<< HEAD
 #define isa_page_to_bus page_to_phys
 #define isa_bus_to_virt phys_to_virt
 
@@ -98,6 +114,93 @@ extern void __raw_readsl(const void __iomem *addr, void *data, int longlen);
 #define __raw_readw(a)		__raw_read_logged((a), w, short)
 #define __raw_readl(a)		__raw_read_logged((a), l, int)
 #define __raw_readll(a)		__raw_read_logged((a), ll, long long)
+=======
+#define isa_bus_to_virt phys_to_virt
+
+/*
+ * Atomic MMIO-wide IO modify
+ */
+extern void atomic_io_modify(void __iomem *reg, u32 mask, u32 set);
+extern void atomic_io_modify_relaxed(void __iomem *reg, u32 mask, u32 set);
+
+/*
+ * Generic IO read/write.  These perform native-endian accesses.  Note
+ * that some architectures will want to re-define __raw_{read,write}w.
+ */
+void __raw_writesb(volatile void __iomem *addr, const void *data, int bytelen);
+void __raw_writesw(volatile void __iomem *addr, const void *data, int wordlen);
+void __raw_writesl(volatile void __iomem *addr, const void *data, int longlen);
+
+void __raw_readsb(const volatile void __iomem *addr, void *data, int bytelen);
+void __raw_readsw(const volatile void __iomem *addr, void *data, int wordlen);
+void __raw_readsl(const volatile void __iomem *addr, void *data, int longlen);
+
+#if __LINUX_ARM_ARCH__ < 6
+/*
+ * Half-word accesses are problematic with RiscPC due to limitations of
+ * the bus. Rather than special-case the machine, just let the compiler
+ * generate the access for CPUs prior to ARMv6.
+ */
+#define __raw_readw(a)         (__chk_io_ptr(a), *(volatile unsigned short __force *)(a))
+#define __raw_writew(v,a)      ((void)(__chk_io_ptr(a), *(volatile unsigned short __force *)(a) = (v)))
+#else
+/*
+ * When running under a hypervisor, we want to avoid I/O accesses with
+ * writeback addressing modes as these incur a significant performance
+ * overhead (the address generation must be emulated in software).
+ */
+#define __raw_writew __raw_writew
+static inline void __raw_writew(u16 val, volatile void __iomem *addr)
+{
+	asm volatile("strh %1, %0"
+		     : : "Q" (*(volatile u16 __force *)addr), "r" (val));
+}
+
+#define __raw_readw __raw_readw
+static inline u16 __raw_readw(const volatile void __iomem *addr)
+{
+	u16 val;
+	asm volatile("ldrh %0, %1"
+		     : "=r" (val)
+		     : "Q" (*(volatile u16 __force *)addr));
+	return val;
+}
+#endif
+
+#define __raw_writeb __raw_writeb
+static inline void __raw_writeb(u8 val, volatile void __iomem *addr)
+{
+	asm volatile("strb %1, %0"
+		     : : "Qo" (*(volatile u8 __force *)addr), "r" (val));
+}
+
+#define __raw_writel __raw_writel
+static inline void __raw_writel(u32 val, volatile void __iomem *addr)
+{
+	asm volatile("str %1, %0"
+		     : : "Qo" (*(volatile u32 __force *)addr), "r" (val));
+}
+
+#define __raw_readb __raw_readb
+static inline u8 __raw_readb(const volatile void __iomem *addr)
+{
+	u8 val;
+	asm volatile("ldrb %0, %1"
+		     : "=r" (val)
+		     : "Qo" (*(volatile u8 __force *)addr));
+	return val;
+}
+
+#define __raw_readl __raw_readl
+static inline u32 __raw_readl(const volatile void __iomem *addr)
+{
+	u32 val;
+	asm volatile("ldr %0, %1"
+		     : "=r" (val)
+		     : "Qo" (*(volatile u32 __force *)addr));
+	return val;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Architecture ioremap implementation.
@@ -117,6 +220,7 @@ extern void __raw_readsl(const void __iomem *addr, void *data, int longlen);
  * The _caller variety takes a __builtin_return_address(0) value for
  * /proc/vmalloc to use - and should only be used in non-inline functions.
  */
+<<<<<<< HEAD
 extern void __iomem *__arm_ioremap_pfn_caller(unsigned long, unsigned long,
 	size_t, unsigned int, void *);
 extern void __iomem *__arm_ioremap_caller(phys_addr_t, size_t, unsigned int,
@@ -131,6 +235,16 @@ extern void __arm_iounmap(volatile void __iomem *addr);
 extern void __iomem * (*arch_ioremap_caller)(phys_addr_t, size_t,
 	unsigned int, void *);
 extern void (*arch_iounmap)(volatile void __iomem *);
+=======
+extern void __iomem *__arm_ioremap_caller(phys_addr_t, size_t, unsigned int,
+	void *);
+extern void __iomem *__arm_ioremap_pfn(unsigned long, unsigned long, size_t, unsigned int);
+extern void __iomem *__arm_ioremap_exec(phys_addr_t, size_t, bool cached);
+void __arm_iomem_set_ro(void __iomem *ptr, size_t size);
+
+extern void __iomem * (*arch_ioremap_caller)(phys_addr_t, size_t,
+	unsigned int, void *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Bad read/write accesses...
@@ -157,12 +271,41 @@ static inline void __iomem *__typesafe_io(unsigned long addr)
 #define __iowmb()		do { } while (0)
 #endif
 
+<<<<<<< HEAD
+=======
+/* PCI fixed i/o mapping */
+#define PCI_IO_VIRT_BASE	0xfee00000
+#define PCI_IOBASE		((void __iomem *)PCI_IO_VIRT_BASE)
+
+#if defined(CONFIG_PCI) || IS_ENABLED(CONFIG_PCMCIA)
+void pci_ioremap_set_mem_type(int mem_type);
+#else
+static inline void pci_ioremap_set_mem_type(int mem_type) {}
+#endif
+
+struct resource;
+
+#define pci_remap_iospace pci_remap_iospace
+int pci_remap_iospace(const struct resource *res, phys_addr_t phys_addr);
+
+/*
+ * PCI configuration space mapping function.
+ *
+ * The PCI specification does not allow configuration write
+ * transactions to be posted. Add an arch specific
+ * pci_remap_cfgspace() definition that is implemented
+ * through strongly ordered memory mappings.
+ */
+#define pci_remap_cfgspace pci_remap_cfgspace
+void __iomem *pci_remap_cfgspace(resource_size_t res_cookie, size_t size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Now, pick up the machine-defined IO definitions
  */
 #ifdef CONFIG_NEED_MACH_IO_H
 #include <mach/io.h>
 #else
+<<<<<<< HEAD
 #define __io(a)		__typesafe_io((a) & IO_SPACE_LIMIT)
 #endif
 
@@ -185,6 +328,14 @@ static inline void __iomem *__typesafe_io(unsigned long addr)
 #else
 #define IO_SPACE_LIMIT ((resource_size_t)0)
 #endif
+=======
+#if IS_ENABLED(CONFIG_PCMCIA) || defined(CONFIG_PCI)
+#define IO_SPACE_LIMIT	((resource_size_t)0xfffff)
+#else
+#define IO_SPACE_LIMIT ((resource_size_t)0)
+#endif
+#define __io(a)		__typesafe_io(PCI_IO_VIRT_BASE + ((a) & IO_SPACE_LIMIT))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -233,6 +384,7 @@ static inline void __iomem *__typesafe_io(unsigned long addr)
 #define insl(p,d,l)		__raw_readsl(__io(p),d,l)
 #endif
 
+<<<<<<< HEAD
 #define outb_p(val,port)	outb((val),(port))
 #define outw_p(val,port)	outw((val),(port))
 #define outl_p(val,port)	outl((val),(port))
@@ -247,6 +399,8 @@ static inline void __iomem *__typesafe_io(unsigned long addr)
 #define insw_p(port,to,len)	insw(port,to,len)
 #define insl_p(port,to,len)	insl(port,to,len)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * String version of IO memory access ops:
  */
@@ -254,8 +408,11 @@ extern void _memcpy_fromio(void *, const volatile void __iomem *, size_t);
 extern void _memcpy_toio(volatile void __iomem *, const void *, size_t);
 extern void _memset_io(volatile void __iomem *, int, size_t);
 
+<<<<<<< HEAD
 #define mmiowb()
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Memory access primitives
  *  ------------------------
@@ -263,7 +420,11 @@ extern void _memset_io(volatile void __iomem *, int, size_t);
  * These perform PCI memory accesses via an ioremap region.  They don't
  * take an address as such, but a cookie.
  *
+<<<<<<< HEAD
  * Again, this are defined to perform little endian accesses.  See the
+=======
+ * Again, these are defined to perform little endian accesses.  See the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * IO port primitives for more information.
  */
 #ifndef readl
@@ -272,6 +433,7 @@ extern void _memset_io(volatile void __iomem *, int, size_t);
 					__raw_readw(c)); __r; })
 #define readl_relaxed(c) ({ u32 __r = le32_to_cpu((__force __le32) \
 					__raw_readl(c)); __r; })
+<<<<<<< HEAD
 #define readll_relaxed(c) ({ u64 __r = le64_to_cpu((__force __le64) \
 					__raw_readll(c)); __r; })
 #define readl_relaxed_no_log(c) ({ u32 __r = le32_to_cpu((__force __le32) \
@@ -291,16 +453,28 @@ extern void _memset_io(volatile void __iomem *, int, size_t);
 					cpu_to_le32(v), c))
 #define writell_relaxed_no_log(v, c)  ((void)__raw_writell_no_log((__force u64) \
 					cpu_to_le64(v), c))
+=======
+
+#define writeb_relaxed(v,c)	__raw_writeb(v,c)
+#define writew_relaxed(v,c)	__raw_writew((__force u16) cpu_to_le16(v),c)
+#define writel_relaxed(v,c)	__raw_writel((__force u32) cpu_to_le32(v),c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define readb(c)		({ u8  __v = readb_relaxed(c); __iormb(); __v; })
 #define readw(c)		({ u16 __v = readw_relaxed(c); __iormb(); __v; })
 #define readl(c)		({ u32 __v = readl_relaxed(c); __iormb(); __v; })
+<<<<<<< HEAD
 #define readll(c)		({ u64 __v = readll_relaxed(c); __iormb(); __v; })
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define writeb(v,c)		({ __iowmb(); writeb_relaxed(v,c); })
 #define writew(v,c)		({ __iowmb(); writew_relaxed(v,c); })
 #define writel(v,c)		({ __iowmb(); writel_relaxed(v,c); })
+<<<<<<< HEAD
 #define writell(v, c)		({ __iowmb(); writell_relaxed(v, c); })
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define readsb(p,d,l)		__raw_readsb(p,d,l)
 #define readsw(p,d,l)		__raw_readsw(p,d,l)
@@ -310,13 +484,47 @@ extern void _memset_io(volatile void __iomem *, int, size_t);
 #define writesw(p,d,l)		__raw_writesw(p,d,l)
 #define writesl(p,d,l)		__raw_writesl(p,d,l)
 
+<<<<<<< HEAD
 #define memset_io(c,v,l)	_memset_io(c,(v),(l))
 #define memcpy_fromio(a,c,l)	_memcpy_fromio((a),c,(l))
 #define memcpy_toio(c,a,l)	_memcpy_toio(c,(a),(l))
+=======
+#ifndef __ARMBE__
+static inline void memset_io(volatile void __iomem *dst, unsigned c,
+	size_t count)
+{
+	extern void mmioset(void *, unsigned int, size_t);
+	mmioset((void __force *)dst, c, count);
+}
+#define memset_io(dst,c,count) memset_io(dst,c,count)
+
+static inline void memcpy_fromio(void *to, const volatile void __iomem *from,
+	size_t count)
+{
+	extern void mmiocpy(void *, const void *, size_t);
+	mmiocpy(to, (const void __force *)from, count);
+}
+#define memcpy_fromio(to,from,count) memcpy_fromio(to,from,count)
+
+static inline void memcpy_toio(volatile void __iomem *to, const void *from,
+	size_t count)
+{
+	extern void mmiocpy(void *, const void *, size_t);
+	mmiocpy((void __force *)to, from, count);
+}
+#define memcpy_toio(to,from,count) memcpy_toio(to,from,count)
+
+#else
+#define memset_io(c,v,l)	_memset_io(c,(v),(l))
+#define memcpy_fromio(a,c,l)	_memcpy_fromio((a),c,(l))
+#define memcpy_toio(c,a,l)	_memcpy_toio(c,(a),(l))
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* readl */
 
 /*
+<<<<<<< HEAD
  * ioremap and friends.
  *
  * ioremap takes a PCI memory address, as specified in
@@ -360,11 +568,82 @@ extern void _memset_io(volatile void __iomem *, int, size_t);
 #define iowrite32_rep(p,s,c)	__raw_writesl(p,s,c)
 
 extern void __iomem *ioport_map(unsigned long port, unsigned int nr);
+=======
+ * ioremap() and friends.
+ *
+ * ioremap() takes a resource address, and size.  Due to the ARM memory
+ * types, it is important to use the correct ioremap() function as each
+ * mapping has specific properties.
+ *
+ * Function		Memory type	Cacheability	Cache hint
+ * ioremap()		Device		n/a		n/a
+ * ioremap_cache()	Normal		Writeback	Read allocate
+ * ioremap_wc()		Normal		Non-cacheable	n/a
+ * ioremap_wt()		Normal		Non-cacheable	n/a
+ *
+ * All device mappings have the following properties:
+ * - no access speculation
+ * - no repetition (eg, on return from an exception)
+ * - number, order and size of accesses are maintained
+ * - unaligned accesses are "unpredictable"
+ * - writes may be delayed before they hit the endpoint device
+ *
+ * All normal memory mappings have the following properties:
+ * - reads can be repeated with no side effects
+ * - repeated reads return the last value written
+ * - reads can fetch additional locations without side effects
+ * - writes can be repeated (in certain cases) with no side effects
+ * - writes can be merged before accessing the target
+ * - unaligned accesses can be supported
+ * - ordering is not guaranteed without explicit dependencies or barrier
+ *   instructions
+ * - writes may be delayed before they hit the endpoint memory
+ *
+ * The cache hint is only a performance hint: CPUs may alias these hints.
+ * Eg, a CPU not implementing read allocate but implementing write allocate
+ * will provide a write allocate mapping instead.
+ */
+void __iomem *ioremap(resource_size_t res_cookie, size_t size);
+#define ioremap ioremap
+
+/*
+ * Do not use ioremap_cache for mapping memory. Use memremap instead.
+ */
+void __iomem *ioremap_cache(resource_size_t res_cookie, size_t size);
+#define ioremap_cache ioremap_cache
+
+void __iomem *ioremap_wc(resource_size_t res_cookie, size_t size);
+#define ioremap_wc ioremap_wc
+#define ioremap_wt ioremap_wc
+
+void iounmap(volatile void __iomem *io_addr);
+#define iounmap iounmap
+
+void *arch_memremap_wb(phys_addr_t phys_addr, size_t size);
+#define arch_memremap_wb arch_memremap_wb
+
+/*
+ * io{read,write}{16,32}be() macros
+ */
+#define ioread16be(p)		({ __u16 __v = be16_to_cpu((__force __be16)__raw_readw(p)); __iormb(); __v; })
+#define ioread32be(p)		({ __u32 __v = be32_to_cpu((__force __be32)__raw_readl(p)); __iormb(); __v; })
+
+#define iowrite16be(v,p)	({ __iowmb(); __raw_writew((__force __u16)cpu_to_be16(v), p); })
+#define iowrite32be(v,p)	({ __iowmb(); __raw_writel((__force __u32)cpu_to_be32(v), p); })
+
+#ifndef ioport_map
+#define ioport_map ioport_map
+extern void __iomem *ioport_map(unsigned long port, unsigned int nr);
+#endif
+#ifndef ioport_unmap
+#define ioport_unmap ioport_unmap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void ioport_unmap(void __iomem *addr);
 #endif
 
 struct pci_dev;
 
+<<<<<<< HEAD
 extern void pci_iounmap(struct pci_dev *dev, void __iomem *addr);
 
 /*
@@ -393,6 +672,23 @@ extern int devmem_is_allowed(unsigned long pfn);
 #define xlate_dev_kmem_ptr(p)	p
 
 /*
+=======
+#define pci_iounmap pci_iounmap
+extern void pci_iounmap(struct pci_dev *dev, void __iomem *addr);
+
+#include <asm-generic/io.h>
+
+#ifdef CONFIG_MMU
+#define ARCH_HAS_VALID_PHYS_ADDR_RANGE
+extern int valid_phys_addr_range(phys_addr_t addr, size_t size);
+extern int valid_mmap_phys_addr_range(unsigned long pfn, size_t size);
+extern bool arch_memremap_can_ram_remap(resource_size_t offset, size_t size,
+					unsigned long flags);
+#define arch_memremap_can_ram_remap arch_memremap_can_ram_remap
+#endif
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Register ISA memory and port locations for glibc iopl/inb/outb
  * emulation.
  */

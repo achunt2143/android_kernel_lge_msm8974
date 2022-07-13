@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __SPARC_SIGNAL_H
 #define __SPARC_SIGNAL_H
 
@@ -5,10 +6,17 @@
 #include <linux/compiler.h>
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __SPARC_SIGNAL_H
+#define __SPARC_SIGNAL_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASSEMBLY__
 #include <linux/personality.h>
 #include <linux/types.h>
 #endif
+<<<<<<< HEAD
 #endif
 
 /* On the Sparc the signal handlers get passed a 'sub-signal' code
@@ -213,4 +221,14 @@ struct k_sigaction {
 
 #endif /* !(__ASSEMBLY__) */
 
+=======
+#include <uapi/asm/signal.h>
+
+#ifndef __ASSEMBLY__
+
+#define __ARCH_HAS_KA_RESTORER
+#define __ARCH_HAS_SA_RESTORER
+
+#endif /* !(__ASSEMBLY__) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(__SPARC_SIGNAL_H) */

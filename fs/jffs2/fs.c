@@ -15,7 +15,13 @@
 #include <linux/capability.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/fs.h>
+=======
+#include <linux/cred.h>
+#include <linux/fs.h>
+#include <linux/fs_context.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/mtd/mtd.h>
 #include <linux/pagemap.h>
@@ -99,8 +105,15 @@ int jffs2_do_setattr (struct inode *inode, struct iattr *iattr)
 	ri->ino = cpu_to_je32(inode->i_ino);
 	ri->version = cpu_to_je32(++f->highest_version);
 
+<<<<<<< HEAD
 	ri->uid = cpu_to_je16((ivalid & ATTR_UID)?iattr->ia_uid:inode->i_uid);
 	ri->gid = cpu_to_je16((ivalid & ATTR_GID)?iattr->ia_gid:inode->i_gid);
+=======
+	ri->uid = cpu_to_je16((ivalid & ATTR_UID)?
+		from_kuid(&init_user_ns, iattr->ia_uid):i_uid_read(inode));
+	ri->gid = cpu_to_je16((ivalid & ATTR_GID)?
+		from_kgid(&init_user_ns, iattr->ia_gid):i_gid_read(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ivalid & ATTR_MODE)
 		ri->mode = cpu_to_jemode(iattr->ia_mode);
@@ -109,9 +122,15 @@ int jffs2_do_setattr (struct inode *inode, struct iattr *iattr)
 
 
 	ri->isize = cpu_to_je32((ivalid & ATTR_SIZE)?iattr->ia_size:inode->i_size);
+<<<<<<< HEAD
 	ri->atime = cpu_to_je32(I_SEC((ivalid & ATTR_ATIME)?iattr->ia_atime:inode->i_atime));
 	ri->mtime = cpu_to_je32(I_SEC((ivalid & ATTR_MTIME)?iattr->ia_mtime:inode->i_mtime));
 	ri->ctime = cpu_to_je32(I_SEC((ivalid & ATTR_CTIME)?iattr->ia_ctime:inode->i_ctime));
+=======
+	ri->atime = cpu_to_je32(I_SEC((ivalid & ATTR_ATIME)?iattr->ia_atime:inode_get_atime(inode)));
+	ri->mtime = cpu_to_je32(I_SEC((ivalid & ATTR_MTIME)?iattr->ia_mtime:inode_get_mtime(inode)));
+	ri->ctime = cpu_to_je32(I_SEC((ivalid & ATTR_CTIME)?iattr->ia_ctime:inode_get_ctime(inode)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ri->offset = cpu_to_je32(0);
 	ri->csize = ri->dsize = cpu_to_je32(mdatalen);
@@ -143,12 +162,21 @@ int jffs2_do_setattr (struct inode *inode, struct iattr *iattr)
 		return PTR_ERR(new_metadata);
 	}
 	/* It worked. Update the inode */
+<<<<<<< HEAD
 	inode->i_atime = ITIME(je32_to_cpu(ri->atime));
 	inode->i_ctime = ITIME(je32_to_cpu(ri->ctime));
 	inode->i_mtime = ITIME(je32_to_cpu(ri->mtime));
 	inode->i_mode = jemode_to_cpu(ri->mode);
 	inode->i_uid = je16_to_cpu(ri->uid);
 	inode->i_gid = je16_to_cpu(ri->gid);
+=======
+	inode_set_atime_to_ts(inode, ITIME(je32_to_cpu(ri->atime)));
+	inode_set_ctime_to_ts(inode, ITIME(je32_to_cpu(ri->ctime)));
+	inode_set_mtime_to_ts(inode, ITIME(je32_to_cpu(ri->mtime)));
+	inode->i_mode = jemode_to_cpu(ri->mode);
+	i_uid_write(inode, je16_to_cpu(ri->uid));
+	i_gid_write(inode, je16_to_cpu(ri->gid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	old_metadata = f->metadata;
@@ -174,18 +202,27 @@ int jffs2_do_setattr (struct inode *inode, struct iattr *iattr)
 	jffs2_complete_reservation(c);
 
 	/* We have to do the truncate_setsize() without f->sem held, since
+<<<<<<< HEAD
 	   some pages may be locked and waiting for it in readpage().
+=======
+	   some pages may be locked and waiting for it in read_folio().
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   We are protected from a simultaneous write() extending i_size
 	   back past iattr->ia_size, because do_truncate() holds the
 	   generic inode semaphore. */
 	if (ivalid & ATTR_SIZE && inode->i_size > iattr->ia_size) {
 		truncate_setsize(inode, iattr->ia_size);
 		inode->i_blocks = (inode->i_size + 511) >> 9;
+<<<<<<< HEAD
 	}	
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 int jffs2_setattr(struct dentry *dentry, struct iattr *iattr)
 {
 	int rc;
@@ -197,6 +234,21 @@ int jffs2_setattr(struct dentry *dentry, struct iattr *iattr)
 	rc = jffs2_do_setattr(dentry->d_inode, iattr);
 	if (!rc && (iattr->ia_valid & ATTR_MODE))
 		rc = jffs2_acl_chmod(dentry->d_inode);
+=======
+int jffs2_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
+		  struct iattr *iattr)
+{
+	struct inode *inode = d_inode(dentry);
+	int rc;
+
+	rc = setattr_prepare(&nop_mnt_idmap, dentry, iattr);
+	if (rc)
+		return rc;
+
+	rc = jffs2_do_setattr(inode, iattr);
+	if (!rc && (iattr->ia_valid & ATTR_MODE))
+		rc = posix_acl_chmod(&nop_mnt_idmap, dentry, inode->i_mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -239,8 +291,13 @@ void jffs2_evict_inode (struct inode *inode)
 
 	jffs2_dbg(1, "%s(): ino #%lu mode %o\n",
 		  __func__, inode->i_ino, inode->i_mode);
+<<<<<<< HEAD
 	truncate_inode_pages(&inode->i_data, 0);
 	end_writeback(inode);
+=======
+	truncate_inode_pages_final(&inode->i_data);
+	clear_inode(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jffs2_do_clear_inode(c, f);
 }
 
@@ -269,6 +326,7 @@ struct inode *jffs2_iget(struct super_block *sb, unsigned long ino)
 	mutex_lock(&f->sem);
 
 	ret = jffs2_do_read_inode(c, f, inode->i_ino, &latest_node);
+<<<<<<< HEAD
 
 	if (ret) {
 		mutex_unlock(&f->sem);
@@ -282,6 +340,18 @@ struct inode *jffs2_iget(struct super_block *sb, unsigned long ino)
 	inode->i_atime = ITIME(je32_to_cpu(latest_node.atime));
 	inode->i_mtime = ITIME(je32_to_cpu(latest_node.mtime));
 	inode->i_ctime = ITIME(je32_to_cpu(latest_node.ctime));
+=======
+	if (ret)
+		goto error;
+
+	inode->i_mode = jemode_to_cpu(latest_node.mode);
+	i_uid_write(inode, je16_to_cpu(latest_node.uid));
+	i_gid_write(inode, je16_to_cpu(latest_node.gid));
+	inode->i_size = je32_to_cpu(latest_node.isize);
+	inode_set_atime_to_ts(inode, ITIME(je32_to_cpu(latest_node.atime)));
+	inode_set_mtime_to_ts(inode, ITIME(je32_to_cpu(latest_node.mtime)));
+	inode_set_ctime_to_ts(inode, ITIME(je32_to_cpu(latest_node.ctime)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_nlink(inode, f->inocache->pino_nlink);
 
@@ -291,6 +361,10 @@ struct inode *jffs2_iget(struct super_block *sb, unsigned long ino)
 
 	case S_IFLNK:
 		inode->i_op = &jffs2_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode->i_link = f->target;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case S_IFDIR:
@@ -338,6 +412,10 @@ struct inode *jffs2_iget(struct super_block *sb, unsigned long ino)
 			rdev = old_decode_dev(je16_to_cpu(jdev.old_id));
 		else
 			rdev = new_decode_dev(je32_to_cpu(jdev.new_id));
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case S_IFSOCK:
 	case S_IFIFO:
@@ -360,7 +438,10 @@ error_io:
 	ret = -EIO;
 error:
 	mutex_unlock(&f->sem);
+<<<<<<< HEAD
 	jffs2_do_clear_inode(c, f);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iget_failed(inode);
 	return ERR_PTR(ret);
 }
@@ -382,35 +463,61 @@ void jffs2_dirty_inode(struct inode *inode, int flags)
 	iattr.ia_mode = inode->i_mode;
 	iattr.ia_uid = inode->i_uid;
 	iattr.ia_gid = inode->i_gid;
+<<<<<<< HEAD
 	iattr.ia_atime = inode->i_atime;
 	iattr.ia_mtime = inode->i_mtime;
 	iattr.ia_ctime = inode->i_ctime;
+=======
+	iattr.ia_atime = inode_get_atime(inode);
+	iattr.ia_mtime = inode_get_mtime(inode);
+	iattr.ia_ctime = inode_get_ctime(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	jffs2_do_setattr(inode, &iattr);
 }
 
+<<<<<<< HEAD
 int jffs2_do_remount_fs(struct super_block *sb, int *flags, char *data)
 {
 	struct jffs2_sb_info *c = JFFS2_SB_INFO(sb);
 
 	if (c->flags & JFFS2_SB_FLAG_RO && !(sb->s_flags & MS_RDONLY))
+=======
+int jffs2_do_remount_fs(struct super_block *sb, struct fs_context *fc)
+{
+	struct jffs2_sb_info *c = JFFS2_SB_INFO(sb);
+
+	if (c->flags & JFFS2_SB_FLAG_RO && !sb_rdonly(sb))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EROFS;
 
 	/* We stop if it was running, then restart if it needs to.
 	   This also catches the case where it was stopped and this
 	   is just a remount to restart it.
+<<<<<<< HEAD
 	   Flush the writebuffer, if neccecary, else we loose it */
 	if (!(sb->s_flags & MS_RDONLY)) {
+=======
+	   Flush the writebuffer, if necessary, else we loose it */
+	if (!sb_rdonly(sb)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		jffs2_stop_garbage_collect_thread(c);
 		mutex_lock(&c->alloc_sem);
 		jffs2_flush_wbuf_pad(c);
 		mutex_unlock(&c->alloc_sem);
 	}
 
+<<<<<<< HEAD
 	if (!(*flags & MS_RDONLY))
 		jffs2_start_garbage_collect_thread(c);
 
 	*flags |= MS_NOATIME;
+=======
+	if (!(fc->sb_flags & SB_RDONLY))
+		jffs2_start_garbage_collect_thread(c);
+
+	fc->sb_flags |= SB_NOATIME;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -440,6 +547,7 @@ struct inode *jffs2_new_inode (struct inode *dir_i, umode_t mode, struct jffs2_r
 
 	memset(ri, 0, sizeof(*ri));
 	/* Set OS-specific defaults for new inodes */
+<<<<<<< HEAD
 	ri->uid = cpu_to_je16(current_fsuid());
 
 	if (dir_i->i_mode & S_ISGID) {
@@ -448,18 +556,39 @@ struct inode *jffs2_new_inode (struct inode *dir_i, umode_t mode, struct jffs2_r
 			mode |= S_ISGID;
 	} else {
 		ri->gid = cpu_to_je16(current_fsgid());
+=======
+	ri->uid = cpu_to_je16(from_kuid(&init_user_ns, current_fsuid()));
+
+	if (dir_i->i_mode & S_ISGID) {
+		ri->gid = cpu_to_je16(i_gid_read(dir_i));
+		if (S_ISDIR(mode))
+			mode |= S_ISGID;
+	} else {
+		ri->gid = cpu_to_je16(from_kgid(&init_user_ns, current_fsgid()));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* POSIX ACLs have to be processed now, at least partly.
 	   The umask is only applied if there's no default ACL */
 	ret = jffs2_init_acl_pre(dir_i, inode, &mode);
 	if (ret) {
+<<<<<<< HEAD
 	    make_bad_inode(inode);
 	    iput(inode);
 	    return ERR_PTR(ret);
 	}
 	ret = jffs2_do_new_inode (c, f, mode, ri);
 	if (ret) {
+=======
+		mutex_unlock(&f->sem);
+		make_bad_inode(inode);
+		iput(inode);
+		return ERR_PTR(ret);
+	}
+	ret = jffs2_do_new_inode (c, f, mode, ri);
+	if (ret) {
+		mutex_unlock(&f->sem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		make_bad_inode(inode);
 		iput(inode);
 		return ERR_PTR(ret);
@@ -467,15 +596,26 @@ struct inode *jffs2_new_inode (struct inode *dir_i, umode_t mode, struct jffs2_r
 	set_nlink(inode, 1);
 	inode->i_ino = je32_to_cpu(ri->ino);
 	inode->i_mode = jemode_to_cpu(ri->mode);
+<<<<<<< HEAD
 	inode->i_gid = je16_to_cpu(ri->gid);
 	inode->i_uid = je16_to_cpu(ri->uid);
 	inode->i_atime = inode->i_ctime = inode->i_mtime = CURRENT_TIME_SEC;
 	ri->atime = ri->mtime = ri->ctime = cpu_to_je32(I_SEC(inode->i_mtime));
+=======
+	i_gid_write(inode, je16_to_cpu(ri->gid));
+	i_uid_write(inode, je16_to_cpu(ri->uid));
+	simple_inode_init_ts(inode);
+	ri->atime = ri->mtime = ri->ctime = cpu_to_je32(I_SEC(inode_get_mtime(inode)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inode->i_blocks = 0;
 	inode->i_size = 0;
 
 	if (insert_inode_locked(inode) < 0) {
+<<<<<<< HEAD
+=======
+		mutex_unlock(&f->sem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		make_bad_inode(inode);
 		iput(inode);
 		return ERR_PTR(-EINVAL);
@@ -504,7 +644,11 @@ static int calculate_inocache_hashsize(uint32_t flash_size)
 	return hashsize;
 }
 
+<<<<<<< HEAD
 int jffs2_do_fill_super(struct super_block *sb, void *data, int silent)
+=======
+int jffs2_do_fill_super(struct super_block *sb, struct fs_context *fc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jffs2_sb_info *c;
 	struct inode *root_i;
@@ -513,6 +657,7 @@ int jffs2_do_fill_super(struct super_block *sb, void *data, int silent)
 
 	c = JFFS2_SB_INFO(sb);
 
+<<<<<<< HEAD
 #ifndef CONFIG_JFFS2_FS_WRITEBUFFER
 	if (c->mtd->type == MTD_NANDFLASH) {
 		pr_err("Cannot operate on NAND flash unless jffs2 NAND support is compiled in\n");
@@ -520,6 +665,19 @@ int jffs2_do_fill_super(struct super_block *sb, void *data, int silent)
 	}
 	if (c->mtd->type == MTD_DATAFLASH) {
 		pr_err("Cannot operate on DataFlash unless jffs2 DataFlash support is compiled in\n");
+=======
+	/* Do not support the MLC nand */
+	if (c->mtd->type == MTD_MLCNANDFLASH)
+		return -EINVAL;
+
+#ifndef CONFIG_JFFS2_FS_WRITEBUFFER
+	if (c->mtd->type == MTD_NANDFLASH) {
+		errorf(fc, "Cannot operate on NAND flash unless jffs2 NAND support is compiled in");
+		return -EINVAL;
+	}
+	if (c->mtd->type == MTD_DATAFLASH) {
+		errorf(fc, "Cannot operate on DataFlash unless jffs2 DataFlash support is compiled in");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 #endif
@@ -533,12 +691,21 @@ int jffs2_do_fill_super(struct super_block *sb, void *data, int silent)
 	 */
 	if ((c->sector_size * blocks) != c->flash_size) {
 		c->flash_size = c->sector_size * blocks;
+<<<<<<< HEAD
 		pr_info("Flash size not aligned to erasesize, reducing to %dKiB\n",
 			c->flash_size / 1024);
 	}
 
 	if (c->flash_size < 5*c->sector_size) {
 		pr_err("Too few erase blocks (%d)\n",
+=======
+		infof(fc, "Flash size not aligned to erasesize, reducing to %dKiB",
+		      c->flash_size / 1024);
+	}
+
+	if (c->flash_size < 5*c->sector_size) {
+		errorf(fc, "Too few erase blocks (%d)",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       c->flash_size / c->sector_size);
 		return -EINVAL;
 	}
@@ -578,22 +745,39 @@ int jffs2_do_fill_super(struct super_block *sb, void *data, int silent)
 		goto out_root;
 
 	sb->s_maxbytes = 0xFFFFFFFF;
+<<<<<<< HEAD
 	sb->s_blocksize = PAGE_CACHE_SIZE;
 	sb->s_blocksize_bits = PAGE_CACHE_SHIFT;
 	sb->s_magic = JFFS2_SUPER_MAGIC;
 	if (!(sb->s_flags & MS_RDONLY))
+=======
+	sb->s_blocksize = PAGE_SIZE;
+	sb->s_blocksize_bits = PAGE_SHIFT;
+	sb->s_magic = JFFS2_SUPER_MAGIC;
+	sb->s_time_min = 0;
+	sb->s_time_max = U32_MAX;
+
+	if (!sb_rdonly(sb))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		jffs2_start_garbage_collect_thread(c);
 	return 0;
 
 out_root:
 	jffs2_free_ino_caches(c);
 	jffs2_free_raw_node_refs(c);
+<<<<<<< HEAD
 	if (jffs2_blocks_use_vmalloc(c))
 		vfree(c->blocks);
 	else
 		kfree(c->blocks);
  out_inohash:
 	jffs2_clear_xattr_subsystem(c);
+=======
+	kvfree(c->blocks);
+	jffs2_clear_xattr_subsystem(c);
+	jffs2_sum_exit(c);
+ out_inohash:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(c->inocache_list);
  out_wbuf:
 	jffs2_flash_cleanup(c);
@@ -672,6 +856,7 @@ struct jffs2_inode_info *jffs2_gc_fetch_inode(struct jffs2_sb_info *c,
 	return JFFS2_INODE_INFO(inode);
 }
 
+<<<<<<< HEAD
 unsigned char *jffs2_gc_fetch_page(struct jffs2_sb_info *c,
 				   struct jffs2_inode_info *f,
 				   unsigned long offset,
@@ -699,6 +884,8 @@ void jffs2_gc_release_page(struct jffs2_sb_info *c,
 	page_cache_release(pg);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int jffs2_flash_setup(struct jffs2_sb_info *c) {
 	int ret = 0;
 

@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 config PPC_CHRP
 	bool "Common Hardware Reference Platform (CHRP) based machines"
 	depends on 6xx
+=======
+# SPDX-License-Identifier: GPL-2.0
+config PPC_CHRP
+	bool "Common Hardware Reference Platform (CHRP) based machines"
+	depends on PPC_BOOK3S_32
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select HAVE_PCSPKR_PLATFORM
 	select MPIC
 	select PPC_I8259
@@ -10,6 +17,11 @@ config PPC_CHRP
 	select RTAS_ERROR_LOGGING
 	select PPC_MPC106
 	select PPC_UDBG_16550
+<<<<<<< HEAD
 	select PPC_NATIVE
 	select PCI
+=======
+	select PPC_HASH_MMU_NATIVE
+	select FORCE_PCI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y

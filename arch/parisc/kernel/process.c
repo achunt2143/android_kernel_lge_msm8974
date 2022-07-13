@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    PARISC Architecture-dependent parts of process handling
  *    based on the work for i386
@@ -13,6 +17,7 @@
  *    Copyright (C) 2000 Grant Grundler <grundler with parisc-linux.org>
  *    Copyright (C) 2001 Alan Modra <amodra at parisc-linux.org>
  *    Copyright (C) 2001-2002 Ryan Bradetich <rbrad at parisc-linux.org>
+<<<<<<< HEAD
  *    Copyright (C) 2001-2007 Helge Deller <deller at parisc-linux.org>
  *    Copyright (C) 2002 Randolph Chung <tausq with parisc-linux.org>
  *
@@ -34,21 +39,39 @@
 
 #include <stdarg.h>
 
+=======
+ *    Copyright (C) 2001-2014 Helge Deller <deller@gmx.de>
+ *    Copyright (C) 2002 Randolph Chung <tausq with parisc-linux.org>
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/elf.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/personality.h>
 #include <linux/ptrace.h>
 #include <linux/sched.h>
+=======
+#include <linux/cpu.h>
+#include <linux/module.h>
+#include <linux/personality.h>
+#include <linux/ptrace.h>
+#include <linux/reboot.h>
+#include <linux/sched.h>
+#include <linux/sched/debug.h>
+#include <linux/sched/task.h>
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/stddef.h>
 #include <linux/unistd.h>
 #include <linux/kallsyms.h>
 #include <linux/uaccess.h>
 #include <linux/rcupdate.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
 #include <asm/asm-offsets.h>
@@ -79,6 +102,20 @@ void cpu_idle(void)
 	}
 }
 
+=======
+#include <linux/random.h>
+#include <linux/nmi.h>
+#include <linux/sched/hotplug.h>
+
+#include <asm/io.h>
+#include <asm/asm-offsets.h>
+#include <asm/assembly.h>
+#include <asm/pdc.h>
+#include <asm/pdc_chassis.h>
+#include <asm/unwind.h>
+#include <asm/sections.h>
+#include <asm/cacheflush.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define COMMAND_GLOBAL  F_EXTEND(0xfffe0030)
 #define CMD_RESET       5       /* reset any module */
@@ -127,6 +164,7 @@ void machine_restart(char *cmd)
 
 }
 
+<<<<<<< HEAD
 void machine_halt(void)
 {
 	/*
@@ -137,26 +175,38 @@ void machine_halt(void)
 
 void (*chassis_power_off)(void);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This routine is called from sys_reboot to actually turn off the
  * machine 
  */
 void machine_power_off(void)
 {
+<<<<<<< HEAD
 	/* If there is a registered power off handler, call it. */
 	if (chassis_power_off)
 		chassis_power_off();
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Put the soft power button back under hardware control.
 	 * If the user had already pressed the power button, the
 	 * following call will immediately power off. */
 	pdc_soft_power_button(0);
 	
 	pdc_chassis_send_status(PDC_CHASSIS_DIRECT_SHUTDOWN);
+<<<<<<< HEAD
+=======
+
+	/* ipmi_poweroff may have been installed. */
+	do_kernel_power_off();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		
 	/* It seems we have no way to power the system off via
 	 * software. The user has to press the button himself. */
 
+<<<<<<< HEAD
 	printk(KERN_EMERG "System shut down completed.\n"
 	       "Please power this system off now.");
 }
@@ -186,6 +236,28 @@ EXPORT_SYMBOL(kernel_thread);
  */
 void exit_thread(void)
 {
+=======
+	printk("Power off or press RETURN to reboot.\n");
+
+	/* prevent soft lockup/stalled CPU messages for endless loop. */
+	rcu_sysrq_start();
+	lockup_detector_soft_poweroff();
+	while (1) {
+		/* reboot if user presses RETURN key */
+		if (pdc_iodc_getc() == 13) {
+			printk("Rebooting...\n");
+			machine_restart(NULL);
+		}
+	}
+}
+
+void (*pm_power_off)(void);
+EXPORT_SYMBOL(pm_power_off);
+
+void machine_halt(void)
+{
+	machine_power_off();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void flush_thread(void)
@@ -195,6 +267,7 @@ void flush_thread(void)
 	*/
 }
 
+<<<<<<< HEAD
 void release_thread(struct task_struct *dead_task)
 {
 }
@@ -260,6 +333,68 @@ copy_thread(unsigned long clone_flags, unsigned long usp,
 	    struct task_struct * p, struct pt_regs * pregs)
 {
 	struct pt_regs * cregs = &(p->thread.regs);
+=======
+/*
+ * Idle thread support
+ *
+ * Detect when running on QEMU with SeaBIOS PDC Firmware and let
+ * QEMU idle the host too.
+ */
+
+int running_on_qemu __ro_after_init;
+EXPORT_SYMBOL(running_on_qemu);
+
+/*
+ * Called from the idle thread for the CPU which has been shutdown.
+ */
+void __noreturn arch_cpu_idle_dead(void)
+{
+#ifdef CONFIG_HOTPLUG_CPU
+	idle_task_exit();
+
+	local_irq_disable();
+
+	/* Tell the core that this CPU is now safe to dispose of. */
+	cpuhp_ap_report_dead();
+
+	/* Ensure that the cache lines are written out. */
+	flush_cache_all_local();
+	flush_tlb_all_local(NULL);
+
+	/* Let PDC firmware put CPU into firmware idle loop. */
+	__pdc_cpu_rendezvous();
+
+	pr_warn("PDC does not provide rendezvous function.\n");
+#endif
+	while (1);
+}
+
+void __cpuidle arch_cpu_idle(void)
+{
+	/* nop on real hardware, qemu will idle sleep. */
+	asm volatile("or %%r10,%%r10,%%r10\n":::);
+}
+
+static int __init parisc_idle_init(void)
+{
+	if (!running_on_qemu)
+		cpu_idle_poll_ctrl(1);
+
+	return 0;
+}
+arch_initcall(parisc_idle_init);
+
+/*
+ * Copy architecture-specific thread state
+ */
+int
+copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
+{
+	unsigned long clone_flags = args->flags;
+	unsigned long usp = args->stack;
+	unsigned long tls = args->tls;
+	struct pt_regs *cregs = &(p->thread.regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *stack = task_stack_page(p);
 	
 	/* We have to use void * instead of a function pointer, because
@@ -267,6 +402,7 @@ copy_thread(unsigned long clone_flags, unsigned long usp,
 	 * Make them const so the compiler knows they live in .text */
 	extern void * const ret_from_kernel_thread;
 	extern void * const child_return;
+<<<<<<< HEAD
 #ifdef CONFIG_HPUX
 	extern void * const hpux_child_return;
 #endif
@@ -291,12 +427,25 @@ copy_thread(unsigned long clone_flags, unsigned long usp,
 		/* Must exit via ret_from_kernel_thread in order
 		 * to call schedule_tail()
 		 */
+=======
+
+	if (unlikely(args->fn)) {
+		/* kernel thread */
+		memset(cregs, 0, sizeof(struct pt_regs));
+		if (args->idle) /* idle thread */
+			return 0;
+		/* Must exit via ret_from_kernel_thread in order
+		 * to call schedule_tail()
+		 */
+		cregs->ksp = (unsigned long) stack + FRAME_SIZE + PT_SZ_ALGN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cregs->kpc = (unsigned long) &ret_from_kernel_thread;
 		/*
 		 * Copy function and argument to be called from
 		 * ret_from_kernel_thread.
 		 */
 #ifdef CONFIG_64BIT
+<<<<<<< HEAD
 		cregs->gr[27] = pregs->gr[27];
 #endif
 		cregs->gr[26] = pregs->gr[26];
@@ -325,11 +474,36 @@ copy_thread(unsigned long clone_flags, unsigned long usp,
 		if (clone_flags & CLONE_SETTLS)
 		  cregs->cr27 = pregs->gr[23];
 	
+=======
+		cregs->gr[27] = ((unsigned long *)args->fn)[3];
+		cregs->gr[26] = ((unsigned long *)args->fn)[2];
+#else
+		cregs->gr[26] = (unsigned long) args->fn;
+#endif
+		cregs->gr[25] = (unsigned long) args->fn_arg;
+	} else {
+		/* user thread */
+		/* usp must be word aligned.  This also prevents users from
+		 * passing in the value 1 (which is the signal for a special
+		 * return for a kernel thread) */
+		if (usp) {
+			usp = ALIGN(usp, 4);
+			if (likely(usp))
+				cregs->gr[30] = usp;
+		}
+		cregs->ksp = (unsigned long) stack + FRAME_SIZE;
+		cregs->kpc = (unsigned long) &child_return;
+
+		/* Setup thread TLS area */
+		if (clone_flags & CLONE_SETTLS)
+			cregs->cr27 = tls;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 unsigned long thread_saved_pc(struct task_struct *t)
 {
 	return t->thread.regs.kpc;
@@ -370,14 +544,21 @@ int kernel_execve(const char *filename,
 
 unsigned long
 get_wchan(struct task_struct *p)
+=======
+unsigned long
+__get_wchan(struct task_struct *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct unwind_frame_info info;
 	unsigned long ip;
 	int count = 0;
 
+<<<<<<< HEAD
 	if (!p || p == current || p->state == TASK_RUNNING)
 		return 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * These bracket the sleeping functions..
 	 */
@@ -386,6 +567,7 @@ get_wchan(struct task_struct *p)
 	do {
 		if (unwind_once(&info) < 0)
 			return 0;
+<<<<<<< HEAD
 		ip = info.ip;
 		if (!in_sched_functions(ip))
 			return ip;
@@ -404,3 +586,13 @@ void *dereference_function_descriptor(void *ptr)
 	return ptr;
 }
 #endif
+=======
+		if (task_is_running(p))
+                        return 0;
+		ip = info.ip;
+		if (!in_sched_functions(ip))
+			return ip;
+	} while (count++ < MAX_UNWIND_ENTRIES);
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson AB 2010
  * Author:	Sjur Brendeland/sjur.brandeland@stericsson.com
  * License terms: GNU General Public License (GPL) version 2
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) ST-Ericsson AB 2010
+ * Author:	Sjur Brendeland
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
@@ -33,8 +40,12 @@ struct cflayer *cfdgml_create(u8 channel_id, struct dev_info *dev_info)
 	cfsrvl_init(dgm, channel_id, dev_info, true);
 	dgm->layer.receive = cfdgml_receive;
 	dgm->layer.transmit = cfdgml_transmit;
+<<<<<<< HEAD
 	snprintf(dgm->layer.name, CAIF_LAYER_NAME_SZ - 1, "dgm%d", channel_id);
 	dgm->layer.name[CAIF_LAYER_NAME_SZ - 1] = '\0';
+=======
+	snprintf(dgm->layer.name, CAIF_LAYER_NAME_SZ, "dgm%d", channel_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return &dgm->layer;
 }
 

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Squashfs - a compressed read only filesystem for Linux
  *
  * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008
  * Phillip Lougher <phillip@squashfs.org.uk>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2,
@@ -18,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * squashfs.h
  */
 
@@ -25,11 +32,19 @@
 
 #define ERROR(s, args...)	pr_err("SQUASHFS error: "s, ## args)
 
+<<<<<<< HEAD
 #define WARNING(s, args...)	pr_warning("SQUASHFS: "s, ## args)
 
 /* block.c */
 extern int squashfs_read_data(struct super_block *, void **, u64, int, u64 *,
 				int, int);
+=======
+#define WARNING(s, args...)	pr_warn("SQUASHFS: "s, ## args)
+
+/* block.c */
+extern int squashfs_read_data(struct super_block *, u64, int, u64 *,
+				struct squashfs_page_actor *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* cache.c */
 extern struct squashfs_cache *squashfs_cache_init(char *, int, int);
@@ -48,7 +63,31 @@ extern void *squashfs_read_table(struct super_block *, u64, int);
 
 /* decompressor.c */
 extern const struct squashfs_decompressor *squashfs_lookup_decompressor(int);
+<<<<<<< HEAD
 extern void *squashfs_decompressor_init(struct super_block *, unsigned short);
+=======
+extern void *squashfs_decompressor_setup(struct super_block *, unsigned short);
+
+/* decompressor_xxx.c */
+
+struct squashfs_decompressor_thread_ops {
+	void * (*create)(struct squashfs_sb_info *msblk, void *comp_opts);
+	void (*destroy)(struct squashfs_sb_info *msblk);
+	int (*decompress)(struct squashfs_sb_info *msblk, struct bio *bio,
+			  int offset, int length, struct squashfs_page_actor *output);
+	int (*max_decompressors)(void);
+};
+
+#ifdef CONFIG_SQUASHFS_DECOMP_SINGLE
+extern const struct squashfs_decompressor_thread_ops squashfs_decompressor_single;
+#endif
+#ifdef CONFIG_SQUASHFS_DECOMP_MULTI
+extern const struct squashfs_decompressor_thread_ops squashfs_decompressor_multi;
+#endif
+#ifdef CONFIG_SQUASHFS_DECOMP_MULTI_PERCPU
+extern const struct squashfs_decompressor_thread_ops squashfs_decompressor_percpu;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* export.c */
 extern __le64 *squashfs_read_inode_lookup_table(struct super_block *, u64, u64,
@@ -59,6 +98,17 @@ extern int squashfs_frag_lookup(struct super_block *, unsigned int, u64 *);
 extern __le64 *squashfs_read_fragment_index_table(struct super_block *,
 				u64, u64, unsigned int);
 
+<<<<<<< HEAD
+=======
+/* file.c */
+void squashfs_fill_page(struct page *, struct squashfs_cache_entry *, int, int);
+void squashfs_copy_cache(struct page *, struct squashfs_cache_entry *, int,
+				int);
+
+/* file_xxx.c */
+extern int squashfs_readpage_block(struct page *, u64, int, int);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* id.c */
 extern int squashfs_get_id(struct super_block *, unsigned int, unsigned int *);
 extern __le64 *squashfs_read_id_index_table(struct super_block *, u64, u64,
@@ -96,4 +146,8 @@ extern const struct address_space_operations squashfs_symlink_aops;
 extern const struct inode_operations squashfs_symlink_inode_ops;
 
 /* xattr.c */
+<<<<<<< HEAD
 extern const struct xattr_handler *squashfs_xattr_handlers[];
+=======
+extern const struct xattr_handler * const squashfs_xattr_handlers[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

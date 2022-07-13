@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/boards/renesas/r7780rp/psw.c
  *
  * push switch support for RDBRP-1/RDBREVRP-1 debug boards.
  *
  * Copyright (C) 2006  Paul Mundt
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
@@ -11,6 +16,11 @@
  */
 #include <linux/io.h>
 #include <linux/init.h>
+=======
+ */
+#include <linux/io.h>
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <mach/highlander.h>

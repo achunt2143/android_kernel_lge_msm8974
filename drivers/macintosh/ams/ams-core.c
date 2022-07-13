@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Apple Motion Sensor driver
  *
  * Copyright (C) 2005 Stelian Pop (stelian@popies.net)
  * Copyright (C) 2006 Michael Hanselmann (linux-kernel@hansmi.ch)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -63,7 +70,11 @@ static ssize_t ams_show_current(struct device *dev,
 	ams_sensors(&x, &y, &z);
 	mutex_unlock(&ams_info.lock);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%d %d %d\n", x, y, z);
+=======
+	return sysfs_emit(buf, "%d %d %d\n", x, y, z);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(current, S_IRUGO, ams_show_current, NULL);
@@ -189,7 +200,11 @@ release_freefall:
 	return result;
 }
 
+<<<<<<< HEAD
 int __init ams_init(void)
+=======
+static int __init ams_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *np;
 
@@ -226,7 +241,11 @@ void ams_sensor_detach(void)
 	 * We do this after ams_info.exit(), because an interrupt might
 	 * have arrived before disabling them.
 	 */
+<<<<<<< HEAD
 	flush_work_sync(&ams_info.worker);
+=======
+	flush_work(&ams_info.worker);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Remove device */
 	of_device_unregister(ams_info.of_dev);

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_X86_DMA_MAPPING_H
 #define _ASM_X86_DMA_MAPPING_H
 
@@ -163,6 +164,17 @@ static inline void dma_free_attrs(struct device *dev, size_t size,
 	debug_dma_free_coherent(dev, size, vaddr, bus);
 	if (ops->free)
 		ops->free(dev, size, vaddr, bus, attrs);
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_X86_DMA_MAPPING_H
+#define _ASM_X86_DMA_MAPPING_H
+
+extern const struct dma_map_ops *dma_ops;
+
+static inline const struct dma_map_ops *get_arch_dma_ops(void)
+{
+	return dma_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif

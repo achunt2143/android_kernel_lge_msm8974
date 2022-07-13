@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * (c) Copyright 2006 Benjamin Herrenschmidt, IBM Corp.
  *                    <benh@kernel.crashing.org>
@@ -15,6 +16,12 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * (c) Copyright 2006 Benjamin Herrenschmidt, IBM Corp.
+ *                    <benh@kernel.crashing.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_POWERPC_DCR_MMIO_H
@@ -51,10 +58,13 @@ static inline void dcr_write_mmio(dcr_host_mmio_t host,
 	out_be32(host.token + ((host.base + dcr_n) * host.stride), value);
 }
 
+<<<<<<< HEAD
 extern u64 of_translate_dcr_address(struct device_node *dev,
 				    unsigned int dcr_n,
 				    unsigned int *stride);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __KERNEL__ */
 #endif /* _ASM_POWERPC_DCR_MMIO_H */
 

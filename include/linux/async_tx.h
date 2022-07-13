@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright © 2006, Intel Corporation.
  *
@@ -14,6 +15,11 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright © 2006, Intel Corporation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ASYNC_TX_H_
 #define _ASYNC_TX_H_
@@ -49,7 +55,11 @@ struct dma_chan_ref {
 /**
  * async_tx_flags - modifiers for the async_* calls
  * @ASYNC_TX_XOR_ZERO_DST: this flag must be used for xor operations where the
+<<<<<<< HEAD
  * the destination address is not a source.  The asynchronous case handles this
+=======
+ * destination address is not a source.  The asynchronous case handles this
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * implicitly, the synchronous case needs to zero the destination block.
  * @ASYNC_TX_XOR_DROP_DST: this flag must be used if the destination address is
  * also one of the source addresses.  In the synchronous case the destination
@@ -60,12 +70,21 @@ struct dma_chan_ref {
  * dependency chain
  * @ASYNC_TX_FENCE: specify that the next operation in the dependency
  * chain uses this operation's result as an input
+<<<<<<< HEAD
+=======
+ * @ASYNC_TX_PQ_XOR_DST: do not overwrite the syndrome but XOR it with the
+ * input data. Required for rmw case.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum async_tx_flags {
 	ASYNC_TX_XOR_ZERO_DST	 = (1 << 0),
 	ASYNC_TX_XOR_DROP_DST	 = (1 << 1),
 	ASYNC_TX_ACK		 = (1 << 2),
 	ASYNC_TX_FENCE		 = (1 << 3),
+<<<<<<< HEAD
+=======
+	ASYNC_TX_PQ_XOR_DST	 = (1 << 4),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -84,7 +103,11 @@ struct async_submit_ctl {
 	void *scribble;
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_DMA_ENGINE
+=======
+#if defined(CONFIG_DMA_ENGINE) && !defined(CONFIG_ASYNC_TX_CHANNEL_SWITCH)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define async_tx_issue_pending_all dma_issue_pending_all
 
 /**
@@ -173,15 +196,33 @@ async_xor(struct page *dest, struct page **src_list, unsigned int offset,
 	  int src_cnt, size_t len, struct async_submit_ctl *submit);
 
 struct dma_async_tx_descriptor *
+<<<<<<< HEAD
+=======
+async_xor_offs(struct page *dest, unsigned int offset,
+		struct page **src_list, unsigned int *src_offset,
+		int src_cnt, size_t len, struct async_submit_ctl *submit);
+
+struct dma_async_tx_descriptor *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 async_xor_val(struct page *dest, struct page **src_list, unsigned int offset,
 	      int src_cnt, size_t len, enum sum_check_flags *result,
 	      struct async_submit_ctl *submit);
 
 struct dma_async_tx_descriptor *
+<<<<<<< HEAD
+=======
+async_xor_val_offs(struct page *dest, unsigned int offset,
+		struct page **src_list, unsigned int *src_offset,
+		int src_cnt, size_t len, enum sum_check_flags *result,
+		struct async_submit_ctl *submit);
+
+struct dma_async_tx_descriptor *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 async_memcpy(struct page *dest, struct page *src, unsigned int dest_offset,
 	     unsigned int src_offset, size_t len,
 	     struct async_submit_ctl *submit);
 
+<<<<<<< HEAD
 struct dma_async_tx_descriptor *
 async_memset(struct page *dest, int val, unsigned int offset,
 	     size_t len, struct async_submit_ctl *submit);
@@ -204,6 +245,28 @@ async_raid6_2data_recov(int src_num, size_t bytes, int faila, int failb,
 struct dma_async_tx_descriptor *
 async_raid6_datap_recov(int src_num, size_t bytes, int faila,
 			struct page **ptrs, struct async_submit_ctl *submit);
+=======
+struct dma_async_tx_descriptor *async_trigger_callback(struct async_submit_ctl *submit);
+
+struct dma_async_tx_descriptor *
+async_gen_syndrome(struct page **blocks, unsigned int *offsets, int src_cnt,
+		   size_t len, struct async_submit_ctl *submit);
+
+struct dma_async_tx_descriptor *
+async_syndrome_val(struct page **blocks, unsigned int *offsets, int src_cnt,
+		   size_t len, enum sum_check_flags *pqres, struct page *spare,
+		   unsigned int s_off, struct async_submit_ctl *submit);
+
+struct dma_async_tx_descriptor *
+async_raid6_2data_recov(int src_num, size_t bytes, int faila, int failb,
+			struct page **ptrs, unsigned int *offs,
+			struct async_submit_ctl *submit);
+
+struct dma_async_tx_descriptor *
+async_raid6_datap_recov(int src_num, size_t bytes, int faila,
+			struct page **ptrs, unsigned int *offs,
+			struct async_submit_ctl *submit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void async_tx_quiesce(struct dma_async_tx_descriptor **tx);
 #endif /* _ASYNC_TX_H_ */

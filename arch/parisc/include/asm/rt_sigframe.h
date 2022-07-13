@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_PARISC_RT_SIGFRAME_H
 #define _ASM_PARISC_RT_SIGFRAME_H
 
@@ -11,6 +12,14 @@ struct rt_sigframe {
 		trampoline we left on the stack (we were bad and didn't 
 		change sp so we could run really fast.) */
 	unsigned int tramp[TRAMP_SIZE];
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_PARISC_RT_SIGFRAME_H
+#define _ASM_PARISC_RT_SIGFRAME_H
+
+struct rt_sigframe {
+	unsigned int tramp[2]; /* holds original return address */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct siginfo info;
 	struct ucontext uc;
 };

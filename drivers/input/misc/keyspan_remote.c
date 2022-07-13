@@ -1,28 +1,41 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * keyspan_remote: USB driver for the Keyspan DMR
  *
  * Copyright (C) 2005 Zymeta Corporation - Michael Downey (downey@zymeta.com)
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License as
  *	published by the Free Software Foundation, version 2.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This driver has been put together with the support of Innosys, Inc.
  * and Keyspan, Inc the manufacturers of the Keyspan USB DMR product.
  */
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/usb/input.h>
 
+<<<<<<< HEAD
 #define DRIVER_VERSION	"v0.1"
 #define DRIVER_AUTHOR	"Michael Downey <downey@zymeta.com>"
 #define DRIVER_DESC	"Driver for the USB Keyspan remote control."
 #define DRIVER_LICENSE	"GPL"
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Parameters that can be passed to the driver. */
 static int debug;
 module_param(debug, int, 0444);
@@ -86,7 +99,11 @@ static const unsigned short keyspan_key_table[] = {
 };
 
 /* table of devices that work with this driver */
+<<<<<<< HEAD
 static struct usb_device_id keyspan_table[] = {
+=======
+static const struct usb_device_id keyspan_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_DEVICE(USB_KEYSPAN_VENDOR_ID, USB_KEYSPAN_PRODUCT_UIA11) },
 	{ }					/* Terminating entry */
 };
@@ -157,7 +174,11 @@ static int keyspan_load_tester(struct usb_keyspan* dev, int bits_needed)
 	 * though so it's not too big a deal
 	 */
 	if (dev->data.pos >= dev->data.len) {
+<<<<<<< HEAD
 		dev_dbg(&dev->udev->dev,
+=======
+		dev_dbg(&dev->interface->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"%s - Error ran out of data. pos: %d, len: %d\n",
 			__func__, dev->data.pos, dev->data.len);
 		return -1;
@@ -267,7 +288,13 @@ static void keyspan_check_data(struct usb_keyspan *remote)
 				remote->data.tester = remote->data.tester >> 6;
 				remote->data.bits_left -= 6;
 			} else {
+<<<<<<< HEAD
 				err("%s - Unknown sequence found in system data.\n", __func__);
+=======
+				dev_err(&remote->interface->dev,
+					"%s - Unknown sequence found in system data.\n",
+					__func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				remote->stage = 0;
 				return;
 			}
@@ -286,7 +313,13 @@ static void keyspan_check_data(struct usb_keyspan *remote)
 				remote->data.tester = remote->data.tester >> 6;
 				remote->data.bits_left -= 6;
 			} else {
+<<<<<<< HEAD
 				err("%s - Unknown sequence found in button data.\n", __func__);
+=======
+				dev_err(&remote->interface->dev,
+					"%s - Unknown sequence found in button data.\n",
+					__func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				remote->stage = 0;
 				return;
 			}
@@ -302,7 +335,13 @@ static void keyspan_check_data(struct usb_keyspan *remote)
 			remote->data.tester = remote->data.tester >> 6;
 			remote->data.bits_left -= 6;
 		} else {
+<<<<<<< HEAD
 			err("%s - Error in message, invalid toggle.\n", __func__);
+=======
+			dev_err(&remote->interface->dev,
+				"%s - Error in message, invalid toggle.\n",
+				__func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			remote->stage = 0;
 			return;
 		}
@@ -312,10 +351,18 @@ static void keyspan_check_data(struct usb_keyspan *remote)
 			remote->data.tester = remote->data.tester >> 5;
 			remote->data.bits_left -= 5;
 		} else {
+<<<<<<< HEAD
 			err("Bad message received, no stop bit found.\n");
 		}
 
 		dev_dbg(&remote->udev->dev,
+=======
+			dev_err(&remote->interface->dev,
+				"Bad message received, no stop bit found.\n");
+		}
+
+		dev_dbg(&remote->interface->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"%s found valid message: system: %d, button: %d, toggle: %d\n",
 			__func__, message.system, message.button, message.toggle);
 
@@ -338,7 +385,12 @@ static int keyspan_setup(struct usb_device* dev)
 	int retval = 0;
 
 	retval = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
+<<<<<<< HEAD
 				 0x11, 0x40, 0x5601, 0x0, NULL, 0, 0);
+=======
+				 0x11, 0x40, 0x5601, 0x0, NULL, 0,
+				 USB_CTRL_SET_TIMEOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval) {
 		dev_dbg(&dev->dev, "%s - failed to set bit rate due to error: %d\n",
 			__func__, retval);
@@ -346,7 +398,12 @@ static int keyspan_setup(struct usb_device* dev)
 	}
 
 	retval = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
+<<<<<<< HEAD
 				 0x44, 0x40, 0x0, 0x0, NULL, 0, 0);
+=======
+				 0x44, 0x40, 0x0, 0x0, NULL, 0,
+				 USB_CTRL_SET_TIMEOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval) {
 		dev_dbg(&dev->dev, "%s - failed to set resume sensitivity due to error: %d\n",
 			__func__, retval);
@@ -354,7 +411,12 @@ static int keyspan_setup(struct usb_device* dev)
 	}
 
 	retval = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
+<<<<<<< HEAD
 				 0x22, 0x40, 0x0, 0x0, NULL, 0, 0);
+=======
+				 0x22, 0x40, 0x0, 0x0, NULL, 0,
+				 USB_CTRL_SET_TIMEOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval) {
 		dev_dbg(&dev->dev, "%s - failed to turn receive on due to error: %d\n",
 			__func__, retval);
@@ -386,7 +448,10 @@ static void keyspan_irq_recv(struct urb *urb)
 
 	default:
 		goto resubmit;
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (debug)
@@ -397,7 +462,13 @@ static void keyspan_irq_recv(struct urb *urb)
 resubmit:
 	retval = usb_submit_urb(urb, GFP_ATOMIC);
 	if (retval)
+<<<<<<< HEAD
 		err ("%s - usb_submit_urb failed with result: %d", __func__, retval);
+=======
+		dev_err(&dev->interface->dev,
+			"%s - usb_submit_urb failed with result: %d\n",
+			__func__, retval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int keyspan_open(struct input_dev *dev)
@@ -464,7 +535,11 @@ static int keyspan_probe(struct usb_interface *interface, const struct usb_devic
 	remote->in_endpoint = endpoint;
 	remote->toggle = -1;	/* Set to -1 so we will always not match the toggle from the first remote message. */
 
+<<<<<<< HEAD
 	remote->in_buffer = usb_alloc_coherent(udev, RECV_SIZE, GFP_ATOMIC, &remote->in_dma);
+=======
+	remote->in_buffer = usb_alloc_coherent(udev, RECV_SIZE, GFP_KERNEL, &remote->in_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!remote->in_buffer) {
 		error = -ENOMEM;
 		goto fail1;
@@ -483,7 +558,11 @@ static int keyspan_probe(struct usb_interface *interface, const struct usb_devic
 	}
 
 	if (udev->manufacturer)
+<<<<<<< HEAD
 		strlcpy(remote->name, udev->manufacturer, sizeof(remote->name));
+=======
+		strscpy(remote->name, udev->manufacturer, sizeof(remote->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (udev->product) {
 		if (udev->manufacturer)
@@ -583,6 +662,12 @@ static struct usb_driver keyspan_driver =
 module_usb_driver(keyspan_driver);
 
 MODULE_DEVICE_TABLE(usb, keyspan_table);
+<<<<<<< HEAD
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE(DRIVER_LICENSE);
+=======
+MODULE_AUTHOR("Michael Downey <downey@zymeta.com>");
+MODULE_DESCRIPTION("Driver for the USB Keyspan remote control.");
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

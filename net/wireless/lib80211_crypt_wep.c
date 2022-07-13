@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * lib80211 crypt: host-based WEP encryption implementation for lib80211
  *
  * Copyright (c) 2002-2004, Jouni Malinen <j@w1.fi>
  * Copyright (c) 2008, John W. Linville <linville@tuxdriver.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -11,6 +16,12 @@
  */
 
 #include <linux/err.h>
+=======
+ */
+
+#include <linux/err.h>
+#include <linux/fips.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -22,7 +33,11 @@
 
 #include <net/lib80211.h>
 
+<<<<<<< HEAD
 #include <linux/crypto.h>
+=======
+#include <crypto/arc4.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/crc32.h>
 
 MODULE_AUTHOR("Jouni Malinen");
@@ -35,14 +50,20 @@ struct lib80211_wep_data {
 	u8 key[WEP_KEY_LEN + 1];
 	u8 key_len;
 	u8 key_idx;
+<<<<<<< HEAD
 	struct crypto_blkcipher *tx_tfm;
 	struct crypto_blkcipher *rx_tfm;
+=======
+	struct arc4_ctx tx_ctx;
+	struct arc4_ctx rx_ctx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void *lib80211_wep_init(int keyidx)
 {
 	struct lib80211_wep_data *priv;
 
+<<<<<<< HEAD
 	priv = kzalloc(sizeof(*priv), GFP_ATOMIC);
 	if (priv == NULL)
 		goto fail;
@@ -59,10 +80,21 @@ static void *lib80211_wep_init(int keyidx)
 		priv->rx_tfm = NULL;
 		goto fail;
 	}
+=======
+	if (fips_enabled)
+		return NULL;
+
+	priv = kzalloc(sizeof(*priv), GFP_ATOMIC);
+	if (priv == NULL)
+		return NULL;
+	priv->key_idx = keyidx;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* start WEP IV from a random value */
 	get_random_bytes(&priv->iv, 4);
 
 	return priv;
+<<<<<<< HEAD
 
       fail:
 	if (priv) {
@@ -73,10 +105,13 @@ static void *lib80211_wep_init(int keyidx)
 		kfree(priv);
 	}
 	return NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void lib80211_wep_deinit(void *priv)
 {
+<<<<<<< HEAD
 	struct lib80211_wep_data *_priv = priv;
 	if (_priv) {
 		if (_priv->tx_tfm)
@@ -85,6 +120,9 @@ static void lib80211_wep_deinit(void *priv)
 			crypto_free_blkcipher(_priv->rx_tfm);
 	}
 	kfree(priv);
+=======
+	kfree_sensitive(priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Add WEP IV/key info to a frame that has at least 4 bytes of headroom */
@@ -133,10 +171,15 @@ static int lib80211_wep_build_iv(struct sk_buff *skb, int hdr_len,
 static int lib80211_wep_encrypt(struct sk_buff *skb, int hdr_len, void *priv)
 {
 	struct lib80211_wep_data *wep = priv;
+<<<<<<< HEAD
 	struct blkcipher_desc desc = { .tfm = wep->tx_tfm };
 	u32 crc, klen, len;
 	u8 *pos, *icv;
 	struct scatterlist sg;
+=======
+	u32 crc, klen, len;
+	u8 *pos, *icv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 key[WEP_KEY_LEN + 3];
 
 	/* other checks are in lib80211_wep_build_iv */
@@ -165,9 +208,16 @@ static int lib80211_wep_encrypt(struct sk_buff *skb, int hdr_len, void *priv)
 	icv[2] = crc >> 16;
 	icv[3] = crc >> 24;
 
+<<<<<<< HEAD
 	crypto_blkcipher_setkey(wep->tx_tfm, key, klen);
 	sg_init_one(&sg, pos, len + 4);
 	return crypto_blkcipher_encrypt(&desc, &sg, &sg, len + 4);
+=======
+	arc4_setkey(&wep->tx_ctx, key, klen);
+	arc4_crypt(&wep->tx_ctx, pos, pos, len + 4);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Perform WEP decryption on given buffer. Buffer includes whole WEP part of
@@ -180,11 +230,17 @@ static int lib80211_wep_encrypt(struct sk_buff *skb, int hdr_len, void *priv)
 static int lib80211_wep_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 {
 	struct lib80211_wep_data *wep = priv;
+<<<<<<< HEAD
 	struct blkcipher_desc desc = { .tfm = wep->rx_tfm };
 	u32 crc, klen, plen;
 	u8 key[WEP_KEY_LEN + 3];
 	u8 keyidx, *pos, icv[4];
 	struct scatterlist sg;
+=======
+	u32 crc, klen, plen;
+	u8 key[WEP_KEY_LEN + 3];
+	u8 keyidx, *pos, icv[4];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (skb->len < hdr_len + 8)
 		return -1;
@@ -205,10 +261,15 @@ static int lib80211_wep_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 	/* Apply RC4 to data and compute CRC32 over decrypted data */
 	plen = skb->len - hdr_len - 8;
 
+<<<<<<< HEAD
 	crypto_blkcipher_setkey(wep->rx_tfm, key, klen);
 	sg_init_one(&sg, pos, plen + 4);
 	if (crypto_blkcipher_decrypt(&desc, &sg, &sg, plen + 4))
 		return -7;
+=======
+	arc4_setkey(&wep->rx_ctx, key, klen);
+	arc4_crypt(&wep->rx_ctx, pos, pos, plen + 4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	crc = ~crc32_le(~0, pos, plen);
 	icv[0] = crc;
@@ -253,11 +314,18 @@ static int lib80211_wep_get_key(void *key, int len, u8 * seq, void *priv)
 	return wep->key_len;
 }
 
+<<<<<<< HEAD
 static char *lib80211_wep_print_stats(char *p, void *priv)
 {
 	struct lib80211_wep_data *wep = priv;
 	p += sprintf(p, "key[%d] alg=WEP len=%d\n", wep->key_idx, wep->key_len);
 	return p;
+=======
+static void lib80211_wep_print_stats(struct seq_file *m, void *priv)
+{
+	struct lib80211_wep_data *wep = priv;
+	seq_printf(m, "key[%d] alg=WEP len=%d\n", wep->key_idx, wep->key_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct lib80211_crypto_ops lib80211_crypt_wep = {

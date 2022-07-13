@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Libata based driver for Apple "macio" family of PATA controllers
  *
@@ -20,8 +24,15 @@
 #include <linux/adb.h>
 #include <linux/pmu.h>
 #include <linux/scatterlist.h>
+<<<<<<< HEAD
 #include <linux/of.h>
 #include <linux/gfp.h>
+=======
+#include <linux/irqdomain.h>
+#include <linux/of.h>
+#include <linux/gfp.h>
+#include <linux/pci.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
@@ -30,7 +41,10 @@
 #include <asm/macio.h>
 #include <asm/io.h>
 #include <asm/dbdma.h>
+<<<<<<< HEAD
 #include <asm/pci-bridge.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/pmac_feature.h>
 #include <asm/mediabay.h>
@@ -483,6 +497,11 @@ static int pata_macio_cable_detect(struct ata_port *ap)
 		struct device_node *root = of_find_node_by_path("/");
 		const char *model = of_get_property(root, "model", NULL);
 
+<<<<<<< HEAD
+=======
+		of_node_put(root);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cable && !strncmp(cable, "80-", 3)) {
 			/* Some drives fail to detect 80c cable in PowerBook
 			 * These machine use proprietary short IDE cable
@@ -507,7 +526,11 @@ static int pata_macio_cable_detect(struct ata_port *ap)
 	return ATA_CBL_PATA40;
 }
 
+<<<<<<< HEAD
 static void pata_macio_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors pata_macio_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int write = (qc->tf.flags & ATA_TFLAG_WRITE);
 	struct ata_port *ap = qc->ap;
@@ -520,7 +543,11 @@ static void pata_macio_qc_prep(struct ata_queued_cmd *qc)
 		   __func__, qc, qc->flags, write, qc->dev->devno);
 
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
+<<<<<<< HEAD
 		return;
+=======
+		return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	table = (struct dbdma_cmd *) priv->dma_table_cpu;
 
@@ -540,9 +567,15 @@ static void pata_macio_qc_prep(struct ata_queued_cmd *qc)
 			BUG_ON (pi++ >= MAX_DCMDS);
 
 			len = (sg_len < MAX_DBDMA_SEG) ? sg_len : MAX_DBDMA_SEG;
+<<<<<<< HEAD
 			st_le16(&table->command, write ? OUTPUT_MORE: INPUT_MORE);
 			st_le16(&table->req_count, len);
 			st_le32(&table->phy_addr, addr);
+=======
+			table->command = cpu_to_le16(write ? OUTPUT_MORE: INPUT_MORE);
+			table->req_count = cpu_to_le16(len);
+			table->phy_addr = cpu_to_le32(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			table->cmd_dep = 0;
 			table->xfer_status = 0;
 			table->res_count = 0;
@@ -557,14 +590,26 @@ static void pata_macio_qc_prep(struct ata_queued_cmd *qc)
 
 	/* Convert the last command to an input/output */
 	table--;
+<<<<<<< HEAD
 	st_le16(&table->command, write ? OUTPUT_LAST: INPUT_LAST);
+=======
+	table->command = cpu_to_le16(write ? OUTPUT_LAST: INPUT_LAST);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	table++;
 
 	/* Add the stop command to the end of the list */
 	memset(table, 0, sizeof(struct dbdma_cmd));
+<<<<<<< HEAD
 	st_le16(&table->command, DBDMA_STOP);
 
 	dev_dbgdma(priv->dev, "%s: %d DMA list entries\n", __func__, pi);
+=======
+	table->command = cpu_to_le16(DBDMA_STOP);
+
+	dev_dbgdma(priv->dev, "%s: %d DMA list entries\n", __func__, pi);
+
+	return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -661,8 +706,12 @@ static u8 pata_macio_bmdma_status(struct ata_port *ap)
 	 * a multi-block transfer.
 	 *
 	 * - The dbdma fifo hasn't yet finished flushing to
+<<<<<<< HEAD
 	 * to system memory when the disk interrupt occurs.
 	 *
+=======
+	 * system memory when the disk interrupt occurs.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	/* First check for errors */
@@ -845,6 +894,7 @@ static int pata_macio_slave_config(struct scsi_device *sdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
 static int pata_macio_do_suspend(struct pata_macio_priv *priv, pm_message_t mesg)
@@ -855,6 +905,13 @@ static int pata_macio_do_suspend(struct pata_macio_priv *priv, pm_message_t mesg
 	rc = ata_host_suspend(priv->host, mesg);
 	if (rc)
 		return rc;
+=======
+#ifdef CONFIG_PM_SLEEP
+static int pata_macio_do_suspend(struct pata_macio_priv *priv, pm_message_t mesg)
+{
+	/* First, core libata suspend to do most of the work */
+	ata_host_suspend(priv->host, mesg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Restore to default timings */
 	pata_macio_default_timings(priv);
@@ -907,6 +964,7 @@ static int pata_macio_do_resume(struct pata_macio_priv *priv)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 #endif /* CONFIG_PM */
 
@@ -916,6 +974,23 @@ static struct scsi_host_template pata_macio_sht = {
 	/* We may not need that strict one */
 	.dma_boundary		= ATA_DMA_BOUNDARY,
 	.slave_configure	= pata_macio_slave_config,
+=======
+#endif /* CONFIG_PM_SLEEP */
+
+static const struct scsi_host_template pata_macio_sht = {
+	__ATA_BASE_SHT(DRV_NAME),
+	.sg_tablesize		= MAX_DCMDS,
+	/* We may not need that strict one */
+	.dma_boundary		= ATA_DMA_BOUNDARY,
+	/* Not sure what the real max is but we know it's less than 64K, let's
+	 * use 64K minus 256
+	 */
+	.max_segment_size	= MAX_DBDMA_SEG,
+	.slave_configure	= pata_macio_slave_config,
+	.sdev_groups		= ata_common_sdev_groups,
+	.can_queue		= ATA_DEF_QUEUE,
+	.tag_alloc_policy	= BLK_TAG_ALLOC_RR,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ata_port_operations pata_macio_ops = {
@@ -935,7 +1010,11 @@ static struct ata_port_operations pata_macio_ops = {
 	.sff_irq_clear		= pata_macio_irq_clear,
 };
 
+<<<<<<< HEAD
 static void __devinit pata_macio_invariants(struct pata_macio_priv *priv)
+=======
+static void pata_macio_invariants(struct pata_macio_priv *priv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const int *bidp;
 
@@ -950,7 +1029,11 @@ static void __devinit pata_macio_invariants(struct pata_macio_priv *priv)
 		priv->kind = controller_k2_ata6;
 	        priv->timings = pata_macio_kauai_timings;
 	} else if (of_device_is_compatible(priv->node, "keylargo-ata")) {
+<<<<<<< HEAD
 		if (strcmp(priv->node->name, "ata-4") == 0) {
+=======
+		if (of_node_name_eq(priv->node, "ata-4")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			priv->kind = controller_kl_ata4;
 			priv->timings = pata_macio_kl66_timings;
 		} else {
@@ -972,6 +1055,7 @@ static void __devinit pata_macio_invariants(struct pata_macio_priv *priv)
 	priv->aapl_bus_id =  bidp ? *bidp : 0;
 
 	/* Fixup missing Apple bus ID in case of media-bay */
+<<<<<<< HEAD
 	if (priv->mediabay && bidp == 0)
 		priv->aapl_bus_id = 1;
 }
@@ -979,6 +1063,14 @@ static void __devinit pata_macio_invariants(struct pata_macio_priv *priv)
 static void __devinit pata_macio_setup_ios(struct ata_ioports *ioaddr,
 					   void __iomem * base,
 					   void __iomem * dma)
+=======
+	if (priv->mediabay && !bidp)
+		priv->aapl_bus_id = 1;
+}
+
+static void pata_macio_setup_ios(struct ata_ioports *ioaddr,
+				 void __iomem * base, void __iomem * dma)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* cmd_addr is the base of regs for that port */
 	ioaddr->cmd_addr	= base;
@@ -999,8 +1091,13 @@ static void __devinit pata_macio_setup_ios(struct ata_ioports *ioaddr,
 	ioaddr->bmdma_addr	= dma;
 }
 
+<<<<<<< HEAD
 static void __devinit pmac_macio_calc_timing_masks(struct pata_macio_priv *priv,
 						   struct ata_port_info   *pinfo)
+=======
+static void pmac_macio_calc_timing_masks(struct pata_macio_priv *priv,
+					 struct ata_port_info *pinfo)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i = 0;
 
@@ -1023,6 +1120,7 @@ static void __devinit pmac_macio_calc_timing_masks(struct pata_macio_priv *priv,
 		}
 		i++;
 	}
+<<<<<<< HEAD
 	dev_dbg(priv->dev, "Supported masks: PIO=%lx, MWDMA=%lx, UDMA=%lx\n",
 		pinfo->pio_mask, pinfo->mwdma_mask, pinfo->udma_mask);
 }
@@ -1032,6 +1130,17 @@ static int __devinit pata_macio_common_init(struct pata_macio_priv	*priv,
 					    resource_size_t		dmaregs,
 					    resource_size_t		fcregs,
 					    unsigned long		irq)
+=======
+	dev_dbg(priv->dev, "Supported masks: PIO=%x, MWDMA=%x, UDMA=%x\n",
+		pinfo->pio_mask, pinfo->mwdma_mask, pinfo->udma_mask);
+}
+
+static int pata_macio_common_init(struct pata_macio_priv *priv,
+				  resource_size_t tfregs,
+				  resource_size_t dmaregs,
+				  resource_size_t fcregs,
+				  unsigned long irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_port_info		pinfo;
 	const struct ata_port_info	*ppi[] = { &pinfo, NULL };
@@ -1045,11 +1154,14 @@ static int __devinit pata_macio_common_init(struct pata_macio_priv	*priv,
 	/* Make sure we have sane initial timings in the cache */
 	pata_macio_default_timings(priv);
 
+<<<<<<< HEAD
 	/* Not sure what the real max is but we know it's less than 64K, let's
 	 * use 64K minus 256
 	 */
 	dma_set_max_seg_size(priv->dev, MAX_DBDMA_SEG);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Allocate libata host for 1 port */
 	memset(&pinfo, 0, sizeof(struct ata_port_info));
 	pmac_macio_calc_timing_masks(priv, &pinfo);
@@ -1113,8 +1225,13 @@ static int __devinit pata_macio_common_init(struct pata_macio_priv	*priv,
 				 &pata_macio_sht);
 }
 
+<<<<<<< HEAD
 static int __devinit pata_macio_attach(struct macio_dev *mdev,
 				       const struct of_device_id *match)
+=======
+static int pata_macio_attach(struct macio_dev *mdev,
+			     const struct of_device_id *match)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pata_macio_priv	*priv;
 	resource_size_t		tfregs, dmaregs = 0;
@@ -1134,11 +1251,17 @@ static int __devinit pata_macio_attach(struct macio_dev *mdev,
 	/* Allocate and init private data structure */
 	priv = devm_kzalloc(&mdev->ofdev.dev,
 			    sizeof(struct pata_macio_priv), GFP_KERNEL);
+<<<<<<< HEAD
 	if (priv == NULL) {
 		dev_err(&mdev->ofdev.dev,
 			"Failed to allocate private memory\n");
 		return -ENOMEM;
 	}
+=======
+	if (!priv)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->node = of_node_get(mdev->ofdev.dev.of_node);
 	priv->mdev = mdev;
 	priv->dev = &mdev->ofdev.dev;
@@ -1190,7 +1313,11 @@ static int __devinit pata_macio_attach(struct macio_dev *mdev,
 	return rc;
 }
 
+<<<<<<< HEAD
 static int __devexit pata_macio_detach(struct macio_dev *mdev)
+=======
+static void pata_macio_detach(struct macio_dev *mdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_host *host = macio_get_drvdata(mdev);
 	struct pata_macio_priv *priv = host->private_data;
@@ -1205,12 +1332,18 @@ static int __devexit pata_macio_detach(struct macio_dev *mdev)
 	ata_host_detach(host);
 
 	unlock_media_bay(priv->mdev->media_bay);
+<<<<<<< HEAD
 
 	return 0;
 }
 
 #ifdef CONFIG_PM
 
+=======
+}
+
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pata_macio_suspend(struct macio_dev *mdev, pm_message_t mesg)
 {
 	struct ata_host *host = macio_get_drvdata(mdev);
@@ -1224,8 +1357,12 @@ static int pata_macio_resume(struct macio_dev *mdev)
 
 	return pata_macio_do_resume(host->private_data);
 }
+<<<<<<< HEAD
 
 #endif /* CONFIG_PM */
+=======
+#endif /* CONFIG_PM_SLEEP */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PMAC_MEDIABAY
 static void pata_macio_mb_event(struct macio_dev* mdev, int mb_state)
@@ -1257,8 +1394,13 @@ static void pata_macio_mb_event(struct macio_dev* mdev, int mb_state)
 #endif /* CONFIG_PMAC_MEDIABAY */
 
 
+<<<<<<< HEAD
 static int __devinit pata_macio_pci_attach(struct pci_dev *pdev,
 					   const struct pci_device_id *id)
+=======
+static int pata_macio_pci_attach(struct pci_dev *pdev,
+				 const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pata_macio_priv	*priv;
 	struct device_node	*np;
@@ -1282,11 +1424,17 @@ static int __devinit pata_macio_pci_attach(struct pci_dev *pdev,
 	/* Allocate and init private data structure */
 	priv = devm_kzalloc(&pdev->dev,
 			    sizeof(struct pata_macio_priv), GFP_KERNEL);
+<<<<<<< HEAD
 	if (priv == NULL) {
 		dev_err(&pdev->dev,
 			"Failed to allocate private memory\n");
 		return -ENOMEM;
 	}
+=======
+	if (!priv)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->node = of_node_get(np);
 	priv->pdev = pdev;
 	priv->dev = &pdev->dev;
@@ -1310,24 +1458,38 @@ static int __devinit pata_macio_pci_attach(struct pci_dev *pdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit pata_macio_pci_detach(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+static void pata_macio_pci_detach(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ata_host_detach(host);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
 static int pata_macio_pci_suspend(struct pci_dev *pdev, pm_message_t mesg)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int pata_macio_pci_suspend(struct pci_dev *pdev, pm_message_t mesg)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return pata_macio_do_suspend(host->private_data, mesg);
 }
 
 static int pata_macio_pci_resume(struct pci_dev *pdev)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
 
 	return pata_macio_do_resume(host->private_data);
@@ -1351,6 +1513,23 @@ static struct of_device_id pata_macio_match[] =
 	},
 	{},
 };
+=======
+	struct ata_host *host = pci_get_drvdata(pdev);
+
+	return pata_macio_do_resume(host->private_data);
+}
+#endif /* CONFIG_PM_SLEEP */
+
+static const struct of_device_id pata_macio_match[] =
+{
+	{ .name = "IDE", },
+	{ .name = "ATA", },
+	{ .type = "ide", },
+	{ .type = "ata", },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, pata_macio_match);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct macio_driver pata_macio_driver =
 {
@@ -1361,7 +1540,11 @@ static struct macio_driver pata_macio_driver =
 	},
 	.probe		= pata_macio_attach,
 	.remove		= pata_macio_detach,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= pata_macio_suspend,
 	.resume		= pata_macio_resume,
 #endif
@@ -1384,6 +1567,7 @@ static struct pci_driver pata_macio_pci_driver = {
 	.id_table	= pata_macio_pci_match,
 	.probe		= pata_macio_pci_attach,
 	.remove		= pata_macio_pci_detach,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	.suspend	= pata_macio_pci_suspend,
 	.resume		= pata_macio_pci_resume,
@@ -1391,6 +1575,12 @@ static struct pci_driver pata_macio_pci_driver = {
 	.driver = {
 		.owner		= THIS_MODULE,
 	},
+=======
+#ifdef CONFIG_PM_SLEEP
+	.suspend	= pata_macio_pci_suspend,
+	.resume		= pata_macio_pci_resume,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 MODULE_DEVICE_TABLE(pci, pata_macio_pci_match);
 

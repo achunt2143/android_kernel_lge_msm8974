@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/process.c
  *
@@ -8,6 +12,7 @@
  *  SuperH version:  Copyright (C) 1999, 2000  Niibe Yutaka & Kaz Kojima
  *		     Copyright (C) 2006 Lineo Solutions Inc. support SH4A UBC
  *		     Copyright (C) 2002 - 2008  Paul Mundt
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
@@ -18,11 +23,26 @@
 #include <linux/slab.h>
 #include <linux/elfcore.h>
 #include <linux/kallsyms.h>
+=======
+ */
+#include <linux/module.h>
+#include <linux/mm.h>
+#include <linux/sched/debug.h>
+#include <linux/sched/task.h>
+#include <linux/sched/task_stack.h>
+#include <linux/slab.h>
+#include <linux/elfcore.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/ftrace.h>
 #include <linux/hw_breakpoint.h>
 #include <linux/prefetch.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/stackprotector.h>
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mmu_context.h>
 #include <asm/fpu.h>
 #include <asm/syscalls.h>
@@ -30,6 +50,7 @@
 
 void show_regs(struct pt_regs * regs)
 {
+<<<<<<< HEAD
 	printk("\n");
 	printk("Pid : %d, Comm: \t\t%s\n", task_pid_nr(current), current->comm);
 	printk("CPU : %d        \t\t%s  (%s %.*s)\n\n",
@@ -99,6 +120,37 @@ int kernel_thread(int (*fn)(void *), void * arg, unsigned long flags)
 }
 EXPORT_SYMBOL(kernel_thread);
 
+=======
+	pr_info("\n");
+	show_regs_print_info(KERN_DEFAULT);
+
+	pr_info("PC is at %pS\n", (void *)instruction_pointer(regs));
+	pr_info("PR is at %pS\n", (void *)regs->pr);
+
+	pr_info("PC  : %08lx SP  : %08lx SR  : %08lx ", regs->pc,
+		regs->regs[15], regs->sr);
+#ifdef CONFIG_MMU
+	pr_cont("TEA : %08x\n", __raw_readl(MMU_TEA));
+#else
+	pr_cont("\n");
+#endif
+
+	pr_info("R0  : %08lx R1  : %08lx R2  : %08lx R3  : %08lx\n",
+		regs->regs[0], regs->regs[1], regs->regs[2], regs->regs[3]);
+	pr_info("R4  : %08lx R5  : %08lx R6  : %08lx R7  : %08lx\n",
+		regs->regs[4], regs->regs[5], regs->regs[6], regs->regs[7]);
+	pr_info("R8  : %08lx R9  : %08lx R10 : %08lx R11 : %08lx\n",
+		regs->regs[8], regs->regs[9], regs->regs[10], regs->regs[11]);
+	pr_info("R12 : %08lx R13 : %08lx R14 : %08lx\n",
+		regs->regs[12], regs->regs[13], regs->regs[14]);
+	pr_info("MACH: %08lx MACL: %08lx GBR : %08lx PR  : %08lx\n",
+		regs->mach, regs->macl, regs->gbr, regs->pr);
+
+	show_trace(NULL, (unsigned long *)regs->regs[15], regs, KERN_DEFAULT);
+	show_code(regs);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void start_thread(struct pt_regs *regs, unsigned long new_pc,
 		  unsigned long new_sp)
 {
@@ -111,6 +163,7 @@ void start_thread(struct pt_regs *regs, unsigned long new_pc,
 }
 EXPORT_SYMBOL(start_thread);
 
+<<<<<<< HEAD
 /*
  * Free current thread data structures etc..
  */
@@ -118,6 +171,8 @@ void exit_thread(void)
 {
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void flush_thread(void)
 {
 	struct task_struct *tsk = current;
@@ -131,6 +186,7 @@ void flush_thread(void)
 #endif
 }
 
+<<<<<<< HEAD
 void release_thread(struct task_struct *dead_task)
 {
 	/* do nothing */
@@ -170,6 +226,16 @@ int copy_thread(unsigned long clone_flags, unsigned long usp,
 		unsigned long unused,
 		struct task_struct *p, struct pt_regs *regs)
 {
+=======
+asmlinkage void ret_from_fork(void);
+asmlinkage void ret_from_kernel_thread(void);
+
+int copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
+{
+	unsigned long clone_flags = args->flags;
+	unsigned long usp = args->stack;
+	unsigned long tls = args->tls;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct thread_info *ti = task_thread_info(p);
 	struct pt_regs *childregs;
 
@@ -185,6 +251,7 @@ int copy_thread(unsigned long clone_flags, unsigned long usp,
 	}
 #endif
 
+<<<<<<< HEAD
 	childregs = task_pt_regs(p);
 	*childregs = *regs;
 
@@ -208,6 +275,35 @@ int copy_thread(unsigned long clone_flags, unsigned long usp,
 
 	memset(p->thread.ptrace_bps, 0, sizeof(p->thread.ptrace_bps));
 
+=======
+	memset(p->thread.ptrace_bps, 0, sizeof(p->thread.ptrace_bps));
+
+	childregs = task_pt_regs(p);
+	p->thread.sp = (unsigned long) childregs;
+	if (unlikely(args->fn)) {
+		memset(childregs, 0, sizeof(struct pt_regs));
+		p->thread.pc = (unsigned long) ret_from_kernel_thread;
+		childregs->regs[4] = (unsigned long) args->fn_arg;
+		childregs->regs[5] = (unsigned long) args->fn;
+		childregs->sr = SR_MD;
+#if defined(CONFIG_SH_FPU)
+		childregs->sr |= SR_FD;
+#endif
+		ti->status &= ~TS_USEDFPU;
+		p->thread.fpu_counter = 0;
+		return 0;
+	}
+	*childregs = *current_pt_regs();
+
+	if (usp)
+		childregs->regs[15] = usp;
+
+	if (clone_flags & CLONE_SETTLS)
+		childregs->gbr = tls;
+
+	childregs->regs[0] = 0; /* Set return value for child */
+	p->thread.pc = (unsigned long) ret_from_fork;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -220,10 +316,21 @@ __switch_to(struct task_struct *prev, struct task_struct *next)
 {
 	struct thread_struct *next_t = &next->thread;
 
+<<<<<<< HEAD
 	unlazy_fpu(prev, task_pt_regs(prev));
 
 	/* we're going to use this soon, after a few expensive things */
 	if (next->fpu_counter > 5)
+=======
+#if defined(CONFIG_STACKPROTECTOR) && !defined(CONFIG_SMP)
+	__stack_chk_guard = next->stack_canary;
+#endif
+
+	unlazy_fpu(prev, task_pt_regs(prev));
+
+	/* we're going to use this soon, after a few expensive things */
+	if (next->thread.fpu_counter > 5)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		prefetch(next_t->xstate);
 
 #ifdef CONFIG_MMU
@@ -241,12 +348,17 @@ __switch_to(struct task_struct *prev, struct task_struct *next)
 	 * restore of the math state immediately to avoid the trap; the
 	 * chances of needing FPU soon are obviously high now
 	 */
+<<<<<<< HEAD
 	if (next->fpu_counter > 5)
+=======
+	if (next->thread.fpu_counter > 5)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__fpu_state_restore();
 
 	return prev;
 }
 
+<<<<<<< HEAD
 asmlinkage int sys_fork(unsigned long r4, unsigned long r5,
 			unsigned long r6, unsigned long r7,
 			struct pt_regs __regs)
@@ -322,6 +434,12 @@ unsigned long get_wchan(struct task_struct *p)
 	if (!p || p == current || p->state == TASK_RUNNING)
 		return 0;
 
+=======
+unsigned long __get_wchan(struct task_struct *p)
+{
+	unsigned long pc;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The same comment as on the Alpha applies here, too ...
 	 */

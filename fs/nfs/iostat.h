@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/nfs/iostat.h
  *
@@ -16,9 +20,12 @@
 
 struct nfs_iostats {
 	unsigned long long	bytes[__NFSIOS_BYTESMAX];
+<<<<<<< HEAD
 #ifdef CONFIG_NFS_FSCACHE
 	unsigned long long	fscache[__NFSIOS_FSCACHEMAX];
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		events[__NFSIOS_COUNTSMAX];
 } ____cacheline_aligned;
 
@@ -48,6 +55,7 @@ static inline void nfs_add_stats(const struct inode *inode,
 	nfs_add_server_stats(NFS_SERVER(inode), stat, addend);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_NFS_FSCACHE
 static inline void nfs_add_fscache_stats(struct inode *inode,
 					 enum nfs_stat_fscachecounters stat,
@@ -57,6 +65,8 @@ static inline void nfs_add_fscache_stats(struct inode *inode,
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct nfs_iostats __percpu *nfs_alloc_iostats(void)
 {
 	return alloc_percpu(struct nfs_iostats);

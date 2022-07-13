@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * cpcihp_zt5550.h
  *
@@ -7,6 +11,7 @@
  * Copyright 2001 Intel San Luis Obispo
  * Copyright 2000,2001 MontaVista Software Inc.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
@@ -27,6 +32,8 @@
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <scottm@somanetworks.com>
  */
 
@@ -55,7 +62,11 @@
 #define HC_CMD_REG		0x0C
 #define ARB_CONFIG_GNT_REG	0x10
 #define ARB_CONFIG_CFG_REG	0x12
+<<<<<<< HEAD
 #define ARB_CONFIG_REG	 	0x10
+=======
+#define ARB_CONFIG_REG		0x10
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ISOL_CONFIG_REG		0x18
 #define FAULT_STATUS_REG	0x20
 #define FAULT_CONFIG_REG	0x24

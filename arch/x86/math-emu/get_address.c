@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*---------------------------------------------------------------------------+
  |  get_address.c                                                            |
  |                                                                           |
@@ -19,7 +23,12 @@
 
 #include <linux/stddef.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+#include <asm/vm86.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "fpu_system.h"
 #include "exception.h"
@@ -151,12 +160,17 @@ static long pm_address(u_char FPU_modrm, u_char segment,
 	switch (segment) {
 	case PREFIX_GS_ - 1:
 		/* user gs handling can be lazy, use special accessors */
+<<<<<<< HEAD
 		addr->selector = get_user_gs(FPU_info->regs);
+=======
+		savesegment(gs, addr->selector);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		addr->selector = PM_REG_(segment);
 	}
 
+<<<<<<< HEAD
 	descriptor = FPU_get_ldt_descriptor(segment);
 	base_address = SEG_BASE_ADDR(descriptor);
 	address = base_address + offset;
@@ -169,6 +183,21 @@ static long pm_address(u_char FPU_modrm, u_char segment,
 		if (SEG_G_BIT(descriptor))
 			seg_top = 0xffffffff;
 		else {
+=======
+	descriptor = FPU_get_ldt_descriptor(addr->selector);
+	base_address = seg_get_base(&descriptor);
+	address = base_address + offset;
+	limit = seg_get_limit(&descriptor) + 1;
+	limit *= seg_get_granularity(&descriptor);
+	limit += base_address - 1;
+	if (limit < base_address)
+		limit = 0xffffffff;
+
+	if (seg_expands_down(&descriptor)) {
+		if (descriptor.g) {
+			seg_top = 0xffffffff;
+		} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			seg_top = base_address + (1 << 20);
 			if (seg_top < base_address)
 				seg_top = 0xffffffff;
@@ -181,8 +210,13 @@ static long pm_address(u_char FPU_modrm, u_char segment,
 		    (address > limit) || (address < base_address) ? 0 :
 		    ((limit - address) >= 254 ? 255 : limit - address + 1);
 	}
+<<<<<<< HEAD
 	if (SEG_EXECUTE_ONLY(descriptor) ||
 	    (!SEG_WRITE_PERM(descriptor) && (FPU_modrm & FPU_WRITE_BIT))) {
+=======
+	if (seg_execute_only(&descriptor) ||
+	    (!seg_writable(&descriptor) && (FPU_modrm & FPU_WRITE_BIT))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		access_limit = 0;
 	}
 	return address;

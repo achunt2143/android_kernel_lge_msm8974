@@ -1,18 +1,33 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_SEQ_FILE_H
 #define _LINUX_SEQ_FILE_H
 
 #include <linux/types.h>
 #include <linux/string.h>
+<<<<<<< HEAD
+=======
+#include <linux/string_helpers.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bug.h>
 #include <linux/mutex.h>
 #include <linux/cpumask.h>
 #include <linux/nodemask.h>
+<<<<<<< HEAD
 
 struct seq_operations;
 struct file;
 struct path;
 struct inode;
 struct dentry;
+=======
+#include <linux/fs.h>
+#include <linux/cred.h>
+
+struct seq_operations;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct seq_file {
 	char *buf;
@@ -22,10 +37,17 @@ struct seq_file {
 	size_t pad_until;
 	loff_t index;
 	loff_t read_pos;
+<<<<<<< HEAD
 	u64 version;
 	struct mutex lock;
 	const struct seq_operations *op;
 	int poll_event;
+=======
+	struct mutex lock;
+	const struct seq_operations *op;
+	int poll_event;
+	const struct file *file;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *private;
 };
 
@@ -39,6 +61,24 @@ struct seq_operations {
 #define SEQ_SKIP 1
 
 /**
+<<<<<<< HEAD
+=======
+ * seq_has_overflowed - check if the buffer has overflowed
+ * @m: the seq_file handle
+ *
+ * seq_files have a buffer which may overflow. When this happens a larger
+ * buffer is reallocated and all the data will be printed again.
+ * The overflow state is true when m->count == m->size.
+ *
+ * Returns true if the buffer received more than it can hold.
+ */
+static inline bool seq_has_overflowed(struct seq_file *m)
+{
+	return m->count == m->size;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * seq_get_buf - get buffer to write arbitrary data to
  * @m: the seq_file handle
  * @bufp: the beginning of the buffer is stored here
@@ -93,6 +133,7 @@ void seq_pad(struct seq_file *m, char c);
 char *mangle_path(char *s, const char *p, const char *esc);
 int seq_open(struct file *, const struct seq_operations *);
 ssize_t seq_read(struct file *, char __user *, size_t, loff_t *);
+<<<<<<< HEAD
 loff_t seq_lseek(struct file *, loff_t, int);
 int seq_release(struct inode *, struct file *);
 int seq_escape(struct seq_file *, const char *, const char *);
@@ -133,14 +174,151 @@ static inline int seq_nodemask_list(struct seq_file *m, nodemask_t *mask)
 }
 
 int single_open(struct file *, int (*)(struct seq_file *, void *), void *);
+=======
+ssize_t seq_read_iter(struct kiocb *iocb, struct iov_iter *iter);
+loff_t seq_lseek(struct file *, loff_t, int);
+int seq_release(struct inode *, struct file *);
+int seq_write(struct seq_file *seq, const void *data, size_t len);
+
+__printf(2, 0)
+void seq_vprintf(struct seq_file *m, const char *fmt, va_list args);
+__printf(2, 3)
+void seq_printf(struct seq_file *m, const char *fmt, ...);
+void seq_putc(struct seq_file *m, char c);
+void seq_puts(struct seq_file *m, const char *s);
+void seq_put_decimal_ull_width(struct seq_file *m, const char *delimiter,
+			       unsigned long long num, unsigned int width);
+void seq_put_decimal_ull(struct seq_file *m, const char *delimiter,
+			 unsigned long long num);
+void seq_put_decimal_ll(struct seq_file *m, const char *delimiter, long long num);
+void seq_put_hex_ll(struct seq_file *m, const char *delimiter,
+		    unsigned long long v, unsigned int width);
+
+void seq_escape_mem(struct seq_file *m, const char *src, size_t len,
+		    unsigned int flags, const char *esc);
+
+static inline void seq_escape_str(struct seq_file *m, const char *src,
+				  unsigned int flags, const char *esc)
+{
+	seq_escape_mem(m, src, strlen(src), flags, esc);
+}
+
+/**
+ * seq_escape - print string into buffer, escaping some characters
+ * @m: target buffer
+ * @s: NULL-terminated string
+ * @esc: set of characters that need escaping
+ *
+ * Puts string into buffer, replacing each occurrence of character from
+ * @esc with usual octal escape.
+ *
+ * Use seq_has_overflowed() to check for errors.
+ */
+static inline void seq_escape(struct seq_file *m, const char *s, const char *esc)
+{
+	seq_escape_str(m, s, ESCAPE_OCTAL, esc);
+}
+
+void seq_hex_dump(struct seq_file *m, const char *prefix_str, int prefix_type,
+		  int rowsize, int groupsize, const void *buf, size_t len,
+		  bool ascii);
+
+int seq_path(struct seq_file *, const struct path *, const char *);
+int seq_file_path(struct seq_file *, struct file *, const char *);
+int seq_dentry(struct seq_file *, struct dentry *, const char *);
+int seq_path_root(struct seq_file *m, const struct path *path,
+		  const struct path *root, const char *esc);
+
+void *single_start(struct seq_file *, loff_t *);
+int single_open(struct file *, int (*)(struct seq_file *, void *), void *);
+int single_open_size(struct file *, int (*)(struct seq_file *, void *), void *, size_t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int single_release(struct inode *, struct file *);
 void *__seq_open_private(struct file *, const struct seq_operations *, int);
 int seq_open_private(struct file *, const struct seq_operations *, int);
 int seq_release_private(struct inode *, struct file *);
+<<<<<<< HEAD
 int seq_put_decimal_ull(struct seq_file *m, char delimiter,
 			unsigned long long num);
 int seq_put_decimal_ll(struct seq_file *m, char delimiter,
 			long long num);
+=======
+
+#ifdef CONFIG_BINARY_PRINTF
+void seq_bprintf(struct seq_file *m, const char *f, const u32 *binary);
+#endif
+
+#define DEFINE_SEQ_ATTRIBUTE(__name)					\
+static int __name ## _open(struct inode *inode, struct file *file)	\
+{									\
+	int ret = seq_open(file, &__name ## _sops);			\
+	if (!ret && inode->i_private) {					\
+		struct seq_file *seq_f = file->private_data;		\
+		seq_f->private = inode->i_private;			\
+	}								\
+	return ret;							\
+}									\
+									\
+static const struct file_operations __name ## _fops = {			\
+	.owner		= THIS_MODULE,					\
+	.open		= __name ## _open,				\
+	.read		= seq_read,					\
+	.llseek		= seq_lseek,					\
+	.release	= seq_release,					\
+}
+
+#define DEFINE_SHOW_ATTRIBUTE(__name)					\
+static int __name ## _open(struct inode *inode, struct file *file)	\
+{									\
+	return single_open(file, __name ## _show, inode->i_private);	\
+}									\
+									\
+static const struct file_operations __name ## _fops = {			\
+	.owner		= THIS_MODULE,					\
+	.open		= __name ## _open,				\
+	.read		= seq_read,					\
+	.llseek		= seq_lseek,					\
+	.release	= single_release,				\
+}
+
+#define DEFINE_SHOW_STORE_ATTRIBUTE(__name)				\
+static int __name ## _open(struct inode *inode, struct file *file)	\
+{									\
+	return single_open(file, __name ## _show, inode->i_private);	\
+}									\
+									\
+static const struct file_operations __name ## _fops = {			\
+	.owner		= THIS_MODULE,					\
+	.open		= __name ## _open,				\
+	.read		= seq_read,					\
+	.write		= __name ## _write,				\
+	.llseek		= seq_lseek,					\
+	.release	= single_release,				\
+}
+
+#define DEFINE_PROC_SHOW_ATTRIBUTE(__name)				\
+static int __name ## _open(struct inode *inode, struct file *file)	\
+{									\
+	return single_open(file, __name ## _show, pde_data(inode));	\
+}									\
+									\
+static const struct proc_ops __name ## _proc_ops = {			\
+	.proc_open	= __name ## _open,				\
+	.proc_read	= seq_read,					\
+	.proc_lseek	= seq_lseek,					\
+	.proc_release	= single_release,				\
+}
+
+static inline struct user_namespace *seq_user_ns(struct seq_file *seq)
+{
+#ifdef CONFIG_USER_NS
+	return seq->file->f_cred->user_ns;
+#else
+	extern struct user_namespace init_user_ns;
+	return &init_user_ns;
+#endif
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * seq_show_options - display mount options with appropriate escapes.
@@ -161,18 +339,31 @@ static inline void seq_show_option(struct seq_file *m, const char *name,
 
 /**
  * seq_show_option_n - display mount options with appropriate escapes
+<<<<<<< HEAD
  *		       where @value must be a specific length.
  * @m: the seq_file handle
  * @name: the mount option name
  * @value: the mount option name's value, cannot be NULL
  * @length: the length of @value to display
+=======
+ *		       where @value must be a specific length (i.e.
+ *		       not NUL-terminated).
+ * @m: the seq_file handle
+ * @name: the mount option name
+ * @value: the mount option name's value, cannot be NULL
+ * @length: the exact length of @value to display, must be constant expression
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is a macro since this uses "length" to define the size of the
  * stack buffer.
  */
 #define seq_show_option_n(m, name, value, length) {	\
 	char val_buf[length + 1];			\
+<<<<<<< HEAD
 	strncpy(val_buf, value, length);		\
+=======
+	memcpy(val_buf, value, length);			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val_buf[length] = '\0';				\
 	seq_show_option(m, name, val_buf);		\
 }
@@ -189,6 +380,13 @@ extern struct list_head *seq_list_start_head(struct list_head *head,
 extern struct list_head *seq_list_next(void *v, struct list_head *head,
 		loff_t *ppos);
 
+<<<<<<< HEAD
+=======
+extern struct list_head *seq_list_start_rcu(struct list_head *head, loff_t pos);
+extern struct list_head *seq_list_start_head_rcu(struct list_head *head, loff_t pos);
+extern struct list_head *seq_list_next_rcu(void *v, struct list_head *head, loff_t *ppos);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Helpers for iteration over hlist_head-s in seq_files
  */
@@ -207,4 +405,14 @@ extern struct hlist_node *seq_hlist_start_head_rcu(struct hlist_head *head,
 extern struct hlist_node *seq_hlist_next_rcu(void *v,
 						   struct hlist_head *head,
 						   loff_t *ppos);
+<<<<<<< HEAD
+=======
+
+/* Helpers for iterating over per-cpu hlist_head-s in seq_files */
+extern struct hlist_node *seq_hlist_start_percpu(struct hlist_head __percpu *head, int *cpu, loff_t pos);
+
+extern struct hlist_node *seq_hlist_next_percpu(void *v, struct hlist_head __percpu *head, int *cpu, loff_t *pos);
+
+void seq_file_init(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

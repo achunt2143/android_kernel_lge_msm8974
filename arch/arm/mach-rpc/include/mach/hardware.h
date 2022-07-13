@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/mach-rpc/include/mach/hardware.h
  *
  *  Copyright (C) 1996-1999 Russell King.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  This file contains the hardware definitions of the RiscPC series machines.
  */
 #ifndef __ASM_ARCH_HARDWARE_H
@@ -25,8 +32,13 @@
  *  *_SIZE  is the size of the region
  *  *_BASE  is the virtual address
  */
+<<<<<<< HEAD
 #define RAM_SIZE		0x10000000
 #define RAM_START		0x10000000
+=======
+#define RPC_RAM_SIZE		0x10000000
+#define RPC_RAM_START		0x10000000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EASI_SIZE		0x08000000	/* EASI I/O */
 #define EASI_START		0x08000000
@@ -40,7 +52,11 @@
 #define SCREEN_END		0xdfc00000
 #define SCREEN_BASE		0xdf800000
 
+<<<<<<< HEAD
 #define UNCACHEABLE_ADDR	0xdf010000
+=======
+#define UNCACHEABLE_ADDR	(FLUSH_BASE + 0x10000)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IO Addresses

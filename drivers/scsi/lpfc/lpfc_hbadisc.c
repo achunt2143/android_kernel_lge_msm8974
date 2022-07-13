@@ -1,9 +1,17 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
+<<<<<<< HEAD
  * Copyright (C) 2004-2012 Emulex.  All rights reserved.           *
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.emulex.com                                                  *
+=======
+ * Copyright (C) 2017-2024 Broadcom. All Rights Reserved. The term *
+ * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.     *
+ * Copyright (C) 2004-2016 Emulex.  All rights reserved.           *
+ * EMULEX and SLI are trademarks of Emulex.                        *
+ * www.broadcom.com                                                *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Portions Copyright (C) 2004-2005 Christoph Hellwig              *
  *                                                                 *
  * This program is free software; you can redistribute it and/or   *
@@ -25,11 +33,20 @@
 #include <linux/pci.h>
 #include <linux/kthread.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/lockdep.h>
+#include <linux/utsname.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_transport_fc.h>
+<<<<<<< HEAD
+=======
+#include <scsi/fc/fc_fs.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "lpfc_hw4.h"
 #include "lpfc_hw.h"
@@ -37,8 +54,14 @@
 #include "lpfc_disc.h"
 #include "lpfc_sli.h"
 #include "lpfc_sli4.h"
+<<<<<<< HEAD
 #include "lpfc_scsi.h"
 #include "lpfc.h"
+=======
+#include "lpfc.h"
+#include "lpfc_scsi.h"
+#include "lpfc_nvme.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "lpfc_logmsg.h"
 #include "lpfc_crtn.h"
 #include "lpfc_vport.h"
@@ -65,11 +88,66 @@ static void lpfc_disc_timeout_handler(struct lpfc_vport *);
 static void lpfc_disc_flush_list(struct lpfc_vport *vport);
 static void lpfc_unregister_fcfi_cmpl(struct lpfc_hba *, LPFC_MBOXQ_t *);
 static int lpfc_fcf_inuse(struct lpfc_hba *);
+<<<<<<< HEAD
+=======
+static void lpfc_mbx_cmpl_read_sparam(struct lpfc_hba *, LPFC_MBOXQ_t *);
+static void lpfc_check_inactive_vmid(struct lpfc_hba *phba);
+static void lpfc_check_vmid_qfpa_issue(struct lpfc_hba *phba);
+
+static int
+lpfc_valid_xpt_node(struct lpfc_nodelist *ndlp)
+{
+	if (ndlp->nlp_fc4_type ||
+	    ndlp->nlp_type & NLP_FABRIC)
+		return 1;
+	return 0;
+}
+/* The source of a terminate rport I/O is either a dev_loss_tmo
+ * event or a call to fc_remove_host.  While the rport should be
+ * valid during these downcalls, the transport can call twice
+ * in a single event.  This routine provides somoe protection
+ * as the NDLP isn't really free, just released to the pool.
+ */
+static int
+lpfc_rport_invalid(struct fc_rport *rport)
+{
+	struct lpfc_rport_data *rdata;
+	struct lpfc_nodelist *ndlp;
+
+	if (!rport) {
+		pr_err("**** %s: NULL rport, exit.\n", __func__);
+		return -EINVAL;
+	}
+
+	rdata = rport->dd_data;
+	if (!rdata) {
+		pr_err("**** %s: NULL dd_data on rport x%px SID x%x\n",
+		       __func__, rport, rport->scsi_target_id);
+		return -EINVAL;
+	}
+
+	ndlp = rdata->pnode;
+	if (!rdata->pnode) {
+		pr_info("**** %s: NULL ndlp on rport x%px SID x%x\n",
+			__func__, rport, rport->scsi_target_id);
+		return -EINVAL;
+	}
+
+	if (!ndlp->vport) {
+		pr_err("**** %s: Null vport on ndlp x%px, DID x%x rport x%px "
+		       "SID x%x\n", __func__, ndlp, ndlp->nlp_DID, rport,
+		       rport->scsi_target_id);
+		return -EINVAL;
+	}
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void
 lpfc_terminate_rport_io(struct fc_rport *rport)
 {
 	struct lpfc_rport_data *rdata;
+<<<<<<< HEAD
 	struct lpfc_nodelist * ndlp;
 	struct lpfc_hba *phba;
 
@@ -95,6 +173,23 @@ lpfc_terminate_rport_io(struct fc_rport *rport)
 			&phba->sli.ring[phba->sli.fcp_ring],
 			ndlp->nlp_sid, 0, LPFC_CTX_TGT);
 	}
+=======
+	struct lpfc_nodelist *ndlp;
+	struct lpfc_vport *vport;
+
+	if (lpfc_rport_invalid(rport))
+		return;
+
+	rdata = rport->dd_data;
+	ndlp = rdata->pnode;
+	vport = ndlp->vport;
+	lpfc_debugfs_disc_trc(vport, LPFC_DISC_TRC_RPORT,
+			      "rport terminate: sid:x%x did:x%x flg:x%x",
+			      ndlp->nlp_sid, ndlp->nlp_DID, ndlp->nlp_flag);
+
+	if (ndlp->nlp_sid != NLP_NO_SID)
+		lpfc_sli_abort_iocb(vport, ndlp->nlp_sid, 0, LPFC_CTX_TGT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -103,6 +198,7 @@ lpfc_terminate_rport_io(struct fc_rport *rport)
 void
 lpfc_dev_loss_tmo_callbk(struct fc_rport *rport)
 {
+<<<<<<< HEAD
 	struct lpfc_rport_data *rdata;
 	struct lpfc_nodelist * ndlp;
 	struct lpfc_vport *vport;
@@ -114,6 +210,16 @@ lpfc_dev_loss_tmo_callbk(struct fc_rport *rport)
 	rdata = rport->dd_data;
 	ndlp = rdata->pnode;
 	if (!ndlp || !NLP_CHK_NODE_ACT(ndlp))
+=======
+	struct lpfc_nodelist *ndlp;
+	struct lpfc_vport *vport;
+	struct lpfc_hba   *phba;
+	struct lpfc_work_evt *evtp;
+	unsigned long iflags;
+
+	ndlp = ((struct lpfc_rport_data *)rport->dd_data)->pnode;
+	if (!ndlp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	vport = ndlp->vport;
@@ -123,6 +229,7 @@ lpfc_dev_loss_tmo_callbk(struct fc_rport *rport)
 		"rport devlosscb: sid:x%x did:x%x flg:x%x",
 		ndlp->nlp_sid, ndlp->nlp_DID, ndlp->nlp_flag);
 
+<<<<<<< HEAD
 	/* Don't defer this if we are in the process of deleting the vport
 	 * or unloading the driver. The unload will cleanup the node
 	 * appropriately we just need to cleanup the ndlp rport info here.
@@ -136,12 +243,56 @@ lpfc_dev_loss_tmo_callbk(struct fc_rport *rport)
 			lpfc_nlp_put(ndlp);
 		if (put_rport)
 			put_device(&rport->dev);
+=======
+	lpfc_printf_vlog(ndlp->vport, KERN_INFO, LOG_NODE,
+			 "3181 dev_loss_callbk x%06x, rport x%px flg x%x "
+			 "load_flag x%lx refcnt %u state %d xpt x%x\n",
+			 ndlp->nlp_DID, ndlp->rport, ndlp->nlp_flag,
+			 vport->load_flag, kref_read(&ndlp->kref),
+			 ndlp->nlp_state, ndlp->fc4_xpt_flags);
+
+	/* Don't schedule a worker thread event if the vport is going down. */
+	if (test_bit(FC_UNLOADING, &vport->load_flag)) {
+		spin_lock_irqsave(&ndlp->lock, iflags);
+		ndlp->rport = NULL;
+
+		/* The scsi_transport is done with the rport so lpfc cannot
+		 * call to unregister. Remove the scsi transport reference
+		 * and clean up the SCSI transport node details.
+		 */
+		if (ndlp->fc4_xpt_flags & (NLP_XPT_REGD | SCSI_XPT_REGD)) {
+			ndlp->fc4_xpt_flags &= ~SCSI_XPT_REGD;
+
+			/* NVME transport-registered rports need the
+			 * NLP_XPT_REGD flag to complete an unregister.
+			 */
+			if (!(ndlp->fc4_xpt_flags & NVME_XPT_REGD))
+				ndlp->fc4_xpt_flags &= ~NLP_XPT_REGD;
+			spin_unlock_irqrestore(&ndlp->lock, iflags);
+			lpfc_nlp_put(ndlp);
+			spin_lock_irqsave(&ndlp->lock, iflags);
+		}
+
+		/* Only 1 thread can drop the initial node reference.  If
+		 * another thread has set NLP_DROPPED, this thread is done.
+		 */
+		if (!(ndlp->fc4_xpt_flags & NVME_XPT_REGD) &&
+		    !(ndlp->nlp_flag & NLP_DROPPED)) {
+			ndlp->nlp_flag |= NLP_DROPPED;
+			spin_unlock_irqrestore(&ndlp->lock, iflags);
+			lpfc_nlp_put(ndlp);
+			return;
+		}
+
+		spin_unlock_irqrestore(&ndlp->lock, iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if (ndlp->nlp_state == NLP_STE_MAPPED_NODE)
 		return;
 
+<<<<<<< HEAD
 	evtp = &ndlp->dev_loss_evt;
 
 	if (!list_empty(&evtp->evt_listp))
@@ -160,6 +311,207 @@ lpfc_dev_loss_tmo_callbk(struct fc_rport *rport)
 	spin_unlock_irq(&phba->hbalock);
 
 	return;
+=======
+	if (rport->port_name != wwn_to_u64(ndlp->nlp_portname.u.wwn))
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "6789 rport name %llx != node port name %llx",
+				 rport->port_name,
+				 wwn_to_u64(ndlp->nlp_portname.u.wwn));
+
+	evtp = &ndlp->dev_loss_evt;
+
+	if (!list_empty(&evtp->evt_listp)) {
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "6790 rport name %llx dev_loss_evt pending\n",
+				 rport->port_name);
+		return;
+	}
+
+	spin_lock_irqsave(&ndlp->lock, iflags);
+	ndlp->nlp_flag |= NLP_IN_DEV_LOSS;
+
+	/* If there is a PLOGI in progress, and we are in a
+	 * NLP_NPR_2B_DISC state, don't turn off the flag.
+	 */
+	if (ndlp->nlp_state != NLP_STE_PLOGI_ISSUE)
+		ndlp->nlp_flag &= ~NLP_NPR_2B_DISC;
+
+	/*
+	 * The backend does not expect any more calls associated with this
+	 * rport. Remove the association between rport and ndlp.
+	 */
+	ndlp->fc4_xpt_flags &= ~SCSI_XPT_REGD;
+	((struct lpfc_rport_data *)rport->dd_data)->pnode = NULL;
+	ndlp->rport = NULL;
+	spin_unlock_irqrestore(&ndlp->lock, iflags);
+
+	if (phba->worker_thread) {
+		/* We need to hold the node by incrementing the reference
+		 * count until this queued work is done
+		 */
+		evtp->evt_arg1 = lpfc_nlp_get(ndlp);
+
+		spin_lock_irqsave(&phba->hbalock, iflags);
+		if (evtp->evt_arg1) {
+			evtp->evt = LPFC_EVT_DEV_LOSS;
+			list_add_tail(&evtp->evt_listp, &phba->work_list);
+			spin_unlock_irqrestore(&phba->hbalock, iflags);
+			lpfc_worker_wake_up(phba);
+			return;
+		}
+		spin_unlock_irqrestore(&phba->hbalock, iflags);
+	} else {
+		lpfc_printf_vlog(ndlp->vport, KERN_INFO, LOG_NODE,
+				 "3188 worker thread is stopped %s x%06x, "
+				 " rport x%px flg x%x load_flag x%lx refcnt "
+				 "%d\n", __func__, ndlp->nlp_DID,
+				 ndlp->rport, ndlp->nlp_flag,
+				 vport->load_flag, kref_read(&ndlp->kref));
+		if (!(ndlp->fc4_xpt_flags & NVME_XPT_REGD)) {
+			spin_lock_irqsave(&ndlp->lock, iflags);
+			/* Node is in dev loss.  No further transaction. */
+			ndlp->nlp_flag &= ~NLP_IN_DEV_LOSS;
+			spin_unlock_irqrestore(&ndlp->lock, iflags);
+			lpfc_disc_state_machine(vport, ndlp, NULL,
+						NLP_EVT_DEVICE_RM);
+		}
+	}
+}
+
+/**
+ * lpfc_check_inactive_vmid_one - VMID inactivity checker for a vport
+ * @vport: Pointer to vport context object.
+ *
+ * This function checks for idle VMID entries related to a particular vport. If
+ * found unused/idle, free them accordingly.
+ **/
+static void lpfc_check_inactive_vmid_one(struct lpfc_vport *vport)
+{
+	u16 keep;
+	u32 difftime = 0, r, bucket;
+	u64 *lta;
+	int cpu;
+	struct lpfc_vmid *vmp;
+
+	write_lock(&vport->vmid_lock);
+
+	if (!vport->cur_vmid_cnt)
+		goto out;
+
+	/* iterate through the table */
+	hash_for_each(vport->hash_table, bucket, vmp, hnode) {
+		keep = 0;
+		if (vmp->flag & LPFC_VMID_REGISTERED) {
+			/* check if the particular VMID is in use */
+			/* for all available per cpu variable */
+			for_each_possible_cpu(cpu) {
+				/* if last access time is less than timeout */
+				lta = per_cpu_ptr(vmp->last_io_time, cpu);
+				if (!lta)
+					continue;
+				difftime = (jiffies) - (*lta);
+				if ((vport->vmid_inactivity_timeout *
+				     JIFFIES_PER_HR) > difftime) {
+					keep = 1;
+					break;
+				}
+			}
+
+			/* if none of the cpus have been used by the vm, */
+			/*  remove the entry if already registered */
+			if (!keep) {
+				/* mark the entry for deregistration */
+				vmp->flag = LPFC_VMID_DE_REGISTER;
+				write_unlock(&vport->vmid_lock);
+				if (vport->vmid_priority_tagging)
+					r = lpfc_vmid_uvem(vport, vmp, false);
+				else
+					r = lpfc_vmid_cmd(vport,
+							  SLI_CTAS_DAPP_IDENT,
+							  vmp);
+
+				/* decrement number of active vms and mark */
+				/* entry in slot as free */
+				write_lock(&vport->vmid_lock);
+				if (!r) {
+					struct lpfc_vmid *ht = vmp;
+
+					vport->cur_vmid_cnt--;
+					ht->flag = LPFC_VMID_SLOT_FREE;
+					free_percpu(ht->last_io_time);
+					ht->last_io_time = NULL;
+					hash_del(&ht->hnode);
+				}
+			}
+		}
+	}
+ out:
+	write_unlock(&vport->vmid_lock);
+}
+
+/**
+ * lpfc_check_inactive_vmid - VMID inactivity checker
+ * @phba: Pointer to hba context object.
+ *
+ * This function is called from the worker thread to determine if an entry in
+ * the VMID table can be released since there was no I/O activity seen from that
+ * particular VM for the specified time. When this happens, the entry in the
+ * table is released and also the resources on the switch cleared.
+ **/
+
+static void lpfc_check_inactive_vmid(struct lpfc_hba *phba)
+{
+	struct lpfc_vport *vport;
+	struct lpfc_vport **vports;
+	int i;
+
+	vports = lpfc_create_vport_work_array(phba);
+	if (!vports)
+		return;
+
+	for (i = 0; i <= phba->max_vports; i++) {
+		if ((!vports[i]) && (i == 0))
+			vport = phba->pport;
+		else
+			vport = vports[i];
+		if (!vport)
+			break;
+
+		lpfc_check_inactive_vmid_one(vport);
+	}
+	lpfc_destroy_vport_work_array(phba, vports);
+}
+
+/**
+ * lpfc_check_nlp_post_devloss - Check to restore ndlp refcnt after devloss
+ * @vport: Pointer to vport object.
+ * @ndlp: Pointer to remote node object.
+ *
+ * If NLP_IN_RECOV_POST_DEV_LOSS flag was set due to outstanding recovery of
+ * node during dev_loss_tmo processing, then this function restores the nlp_put
+ * kref decrement from lpfc_dev_loss_tmo_handler.
+ **/
+void
+lpfc_check_nlp_post_devloss(struct lpfc_vport *vport,
+			    struct lpfc_nodelist *ndlp)
+{
+	unsigned long iflags;
+
+	spin_lock_irqsave(&ndlp->lock, iflags);
+	if (ndlp->save_flags & NLP_IN_RECOV_POST_DEV_LOSS) {
+		ndlp->save_flags &= ~NLP_IN_RECOV_POST_DEV_LOSS;
+		spin_unlock_irqrestore(&ndlp->lock, iflags);
+		lpfc_nlp_get(ndlp);
+		lpfc_printf_vlog(vport, KERN_INFO, LOG_DISCOVERY | LOG_NODE,
+				 "8438 Devloss timeout reversed on DID x%x "
+				 "refcnt %d ndlp %p flag x%x "
+				 "port_state = x%x\n",
+				 ndlp->nlp_DID, kref_read(&ndlp->kref), ndlp,
+				 ndlp->nlp_flag, vport->port_state);
+		return;
+	}
+	spin_unlock_irqrestore(&ndlp->lock, iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -175,6 +527,7 @@ lpfc_dev_loss_tmo_callbk(struct fc_rport *rport)
 static int
 lpfc_dev_loss_tmo_handler(struct lpfc_nodelist *ndlp)
 {
+<<<<<<< HEAD
 	struct lpfc_rport_data *rdata;
 	struct fc_rport   *rport;
 	struct lpfc_vport *vport;
@@ -194,11 +547,26 @@ lpfc_dev_loss_tmo_handler(struct lpfc_nodelist *ndlp)
 	name = (uint8_t *) &ndlp->nlp_portname;
 	vport = ndlp->vport;
 	phba  = vport->phba;
+=======
+	struct lpfc_vport *vport;
+	struct lpfc_hba   *phba;
+	uint8_t *name;
+	int warn_on = 0;
+	int fcf_inuse = 0;
+	bool recovering = false;
+	struct fc_vport *fc_vport = NULL;
+	unsigned long iflags;
+
+	vport = ndlp->vport;
+	name = (uint8_t *)&ndlp->nlp_portname;
+	phba = vport->phba;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (phba->sli_rev == LPFC_SLI_REV4)
 		fcf_inuse = lpfc_fcf_inuse(phba);
 
 	lpfc_debugfs_disc_trc(vport, LPFC_DISC_TRC_RPORT,
+<<<<<<< HEAD
 		"rport devlosstmo:did:x%x type:x%x id:x%x",
 		ndlp->nlp_DID, ndlp->nlp_type, rport->scsi_target_id);
 
@@ -224,6 +592,17 @@ lpfc_dev_loss_tmo_handler(struct lpfc_nodelist *ndlp)
 		return fcf_inuse;
 	}
 
+=======
+			      "rport devlosstmo:did:x%x type:x%x id:x%x",
+			      ndlp->nlp_DID, ndlp->nlp_type, ndlp->nlp_sid);
+
+	lpfc_printf_vlog(ndlp->vport, KERN_INFO, LOG_NODE,
+			 "3182 %s x%06x, nflag x%x xflags x%x refcnt %d\n",
+			 __func__, ndlp->nlp_DID, ndlp->nlp_flag,
+			 ndlp->fc4_xpt_flags, kref_read(&ndlp->kref));
+
+	/* If the driver is recovering the rport, ignore devloss. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ndlp->nlp_state == NLP_STE_MAPPED_NODE) {
 		lpfc_printf_vlog(vport, KERN_INFO, LOG_DISCOVERY,
 				 "0284 Devloss timeout Ignored on "
@@ -232,6 +611,7 @@ lpfc_dev_loss_tmo_handler(struct lpfc_nodelist *ndlp)
 				 *name, *(name+1), *(name+2), *(name+3),
 				 *(name+4), *(name+5), *(name+6), *(name+7),
 				 ndlp->nlp_DID);
+<<<<<<< HEAD
 		return fcf_inuse;
 	}
 
@@ -245,11 +625,104 @@ lpfc_dev_loss_tmo_handler(struct lpfc_nodelist *ndlp)
 			lpfc_nlp_put(ndlp);
 		if (put_rport)
 			put_device(&rport->dev);
+=======
+
+		spin_lock_irqsave(&ndlp->lock, iflags);
+		ndlp->nlp_flag &= ~NLP_IN_DEV_LOSS;
+		spin_unlock_irqrestore(&ndlp->lock, iflags);
+		return fcf_inuse;
+	}
+
+	/* Fabric nodes are done. */
+	if (ndlp->nlp_type & NLP_FABRIC) {
+		spin_lock_irqsave(&ndlp->lock, iflags);
+
+		/* The driver has to account for a race between any fabric
+		 * node that's in recovery when dev_loss_tmo expires. When this
+		 * happens, the driver has to allow node recovery.
+		 */
+		switch (ndlp->nlp_DID) {
+		case Fabric_DID:
+			fc_vport = vport->fc_vport;
+			if (fc_vport) {
+				/* NPIV path. */
+				if (fc_vport->vport_state ==
+				    FC_VPORT_INITIALIZING)
+					recovering = true;
+			} else {
+				/* Physical port path. */
+				if (phba->hba_flag & HBA_FLOGI_OUTSTANDING)
+					recovering = true;
+			}
+			break;
+		case Fabric_Cntl_DID:
+			if (ndlp->nlp_flag & NLP_REG_LOGIN_SEND)
+				recovering = true;
+			break;
+		case FDMI_DID:
+			fallthrough;
+		case NameServer_DID:
+			if (ndlp->nlp_state >= NLP_STE_PLOGI_ISSUE &&
+			    ndlp->nlp_state <= NLP_STE_REG_LOGIN_ISSUE)
+				recovering = true;
+			break;
+		default:
+			/* Ensure the nlp_DID at least has the correct prefix.
+			 * The fabric domain controller's last three nibbles
+			 * vary so we handle it in the default case.
+			 */
+			if (ndlp->nlp_DID & Fabric_DID_MASK) {
+				if (ndlp->nlp_state >= NLP_STE_PLOGI_ISSUE &&
+				    ndlp->nlp_state <= NLP_STE_REG_LOGIN_ISSUE)
+					recovering = true;
+			}
+			break;
+		}
+		spin_unlock_irqrestore(&ndlp->lock, iflags);
+
+		/* Mark an NLP_IN_RECOV_POST_DEV_LOSS flag to know if reversing
+		 * the following lpfc_nlp_put is necessary after fabric node is
+		 * recovered.
+		 */
+		if (recovering) {
+			lpfc_printf_vlog(vport, KERN_INFO,
+					 LOG_DISCOVERY | LOG_NODE,
+					 "8436 Devloss timeout marked on "
+					 "DID x%x refcnt %d ndlp %p "
+					 "flag x%x port_state = x%x\n",
+					 ndlp->nlp_DID, kref_read(&ndlp->kref),
+					 ndlp, ndlp->nlp_flag,
+					 vport->port_state);
+			spin_lock_irqsave(&ndlp->lock, iflags);
+			ndlp->save_flags |= NLP_IN_RECOV_POST_DEV_LOSS;
+			spin_unlock_irqrestore(&ndlp->lock, iflags);
+		} else if (ndlp->nlp_state == NLP_STE_UNMAPPED_NODE) {
+			/* Fabric node fully recovered before this dev_loss_tmo
+			 * queue work is processed.  Thus, ignore the
+			 * dev_loss_tmo event.
+			 */
+			lpfc_printf_vlog(vport, KERN_INFO,
+					 LOG_DISCOVERY | LOG_NODE,
+					 "8437 Devloss timeout ignored on "
+					 "DID x%x refcnt %d ndlp %p "
+					 "flag x%x port_state = x%x\n",
+					 ndlp->nlp_DID, kref_read(&ndlp->kref),
+					 ndlp, ndlp->nlp_flag,
+					 vport->port_state);
+			return fcf_inuse;
+		}
+
+		spin_lock_irqsave(&ndlp->lock, iflags);
+		ndlp->nlp_flag &= ~NLP_IN_DEV_LOSS;
+		spin_unlock_irqrestore(&ndlp->lock, iflags);
+		lpfc_nlp_put(ndlp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return fcf_inuse;
 	}
 
 	if (ndlp->nlp_sid != NLP_NO_SID) {
 		warn_on = 1;
+<<<<<<< HEAD
 		/* flush the target */
 		lpfc_sli_abort_iocb(vport, &phba->sli.ring[phba->sli.fcp_ring],
 				    ndlp->nlp_sid, 0, LPFC_CTX_TGT);
@@ -266,6 +739,23 @@ lpfc_dev_loss_tmo_handler(struct lpfc_nodelist *ndlp)
 				 ndlp->nlp_state, ndlp->nlp_rpi);
 	} else {
 		lpfc_printf_vlog(vport, KERN_INFO, LOG_DISCOVERY,
+=======
+		lpfc_sli_abort_iocb(vport, ndlp->nlp_sid, 0, LPFC_CTX_TGT);
+	}
+
+	if (warn_on) {
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "0203 Devloss timeout on "
+				 "WWPN %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x "
+				 "NPort x%06x Data: x%x x%x x%x refcnt %d\n",
+				 *name, *(name+1), *(name+2), *(name+3),
+				 *(name+4), *(name+5), *(name+6), *(name+7),
+				 ndlp->nlp_DID, ndlp->nlp_flag,
+				 ndlp->nlp_state, ndlp->nlp_rpi,
+				 kref_read(&ndlp->kref));
+	} else {
+		lpfc_printf_vlog(vport, KERN_INFO, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "0204 Devloss timeout on "
 				 "WWPN %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x "
 				 "NPort x%06x Data: x%x x%x x%x\n",
@@ -274,6 +764,7 @@ lpfc_dev_loss_tmo_handler(struct lpfc_nodelist *ndlp)
 				 ndlp->nlp_DID, ndlp->nlp_flag,
 				 ndlp->nlp_state, ndlp->nlp_rpi);
 	}
+<<<<<<< HEAD
 
 	put_node = rdata->pnode != NULL;
 	put_rport = ndlp->rport != NULL;
@@ -290,11 +781,55 @@ lpfc_dev_loss_tmo_handler(struct lpfc_nodelist *ndlp)
 	    (ndlp->nlp_state != NLP_STE_UNMAPPED_NODE) &&
 	    (ndlp->nlp_state != NLP_STE_REG_LOGIN_ISSUE) &&
 	    (ndlp->nlp_state != NLP_STE_PRLI_ISSUE))
+=======
+	spin_lock_irqsave(&ndlp->lock, iflags);
+	ndlp->nlp_flag &= ~NLP_IN_DEV_LOSS;
+	spin_unlock_irqrestore(&ndlp->lock, iflags);
+
+	/* If we are devloss, but we are in the process of rediscovering the
+	 * ndlp, don't issue a NLP_EVT_DEVICE_RM event.
+	 */
+	if (ndlp->nlp_state >= NLP_STE_PLOGI_ISSUE &&
+	    ndlp->nlp_state <= NLP_STE_PRLI_ISSUE) {
+		return fcf_inuse;
+	}
+
+	if (!(ndlp->fc4_xpt_flags & NVME_XPT_REGD))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_disc_state_machine(vport, ndlp, NULL, NLP_EVT_DEVICE_RM);
 
 	return fcf_inuse;
 }
 
+<<<<<<< HEAD
+=======
+static void lpfc_check_vmid_qfpa_issue(struct lpfc_hba *phba)
+{
+	struct lpfc_vport *vport;
+	struct lpfc_vport **vports;
+	int i;
+
+	vports = lpfc_create_vport_work_array(phba);
+	if (!vports)
+		return;
+
+	for (i = 0; i <= phba->max_vports; i++) {
+		if ((!vports[i]) && (i == 0))
+			vport = phba->pport;
+		else
+			vport = vports[i];
+		if (!vport)
+			break;
+
+		if (vport->vmid_flag & LPFC_VMID_ISSUE_QFPA) {
+			if (!lpfc_issue_els_qfpa(vport))
+				vport->vmid_flag &= ~LPFC_VMID_ISSUE_QFPA;
+		}
+	}
+	lpfc_destroy_vport_work_array(phba, vports);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lpfc_sli4_post_dev_loss_tmo_handler - SLI4 post devloss timeout handler
  * @phba: Pointer to hba context object.
@@ -472,11 +1007,20 @@ lpfc_send_fastpath_evt(struct lpfc_hba *phba,
 		return;
 	}
 
+<<<<<<< HEAD
 	fc_host_post_vendor_event(shost,
 		fc_get_event_number(),
 		evt_data_size,
 		evt_data,
 		LPFC_NL_VENDOR_ID);
+=======
+	if (phba->cfg_enable_fc4_type != LPFC_ENABLE_NVME)
+		fc_host_post_vendor_event(shost,
+			fc_get_event_number(),
+			evt_data_size,
+			evt_data,
+			LPFC_NL_VENDOR_ID);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpfc_free_fast_evt(phba, fast_evt_data);
 	return;
@@ -490,18 +1034,33 @@ lpfc_work_list_done(struct lpfc_hba *phba)
 	int free_evt;
 	int fcf_inuse;
 	uint32_t nlp_did;
+<<<<<<< HEAD
+=======
+	bool hba_pci_err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&phba->hbalock);
 	while (!list_empty(&phba->work_list)) {
 		list_remove_head((&phba->work_list), evtp, typeof(*evtp),
 				 evt_listp);
 		spin_unlock_irq(&phba->hbalock);
+<<<<<<< HEAD
+=======
+		hba_pci_err = test_bit(HBA_PCI_ERR, &phba->bit_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_evt = 1;
 		switch (evtp->evt) {
 		case LPFC_EVT_ELS_RETRY:
 			ndlp = (struct lpfc_nodelist *) (evtp->evt_arg1);
+<<<<<<< HEAD
 			lpfc_els_retry_delay_handler(ndlp);
 			free_evt = 0; /* evt is part of ndlp */
+=======
+			if (!hba_pci_err) {
+				lpfc_els_retry_delay_handler(ndlp);
+				free_evt = 0; /* evt is part of ndlp */
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* decrement the node reference count held
 			 * for this queued work
 			 */
@@ -521,6 +1080,20 @@ lpfc_work_list_done(struct lpfc_hba *phba)
 								    fcf_inuse,
 								    nlp_did);
 			break;
+<<<<<<< HEAD
+=======
+		case LPFC_EVT_RECOVER_PORT:
+			ndlp = (struct lpfc_nodelist *)(evtp->evt_arg1);
+			if (!hba_pci_err) {
+				lpfc_sli_abts_recover_port(ndlp->vport, ndlp);
+				free_evt = 0;
+			}
+			/* decrement the node reference count held for
+			 * this queued work
+			 */
+			lpfc_nlp_put(ndlp);
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case LPFC_EVT_ONLINE:
 			if (phba->link_state < LPFC_LINK_DOWN)
 				*(int *) (evtp->evt_arg1) = lpfc_online(phba);
@@ -530,7 +1103,11 @@ lpfc_work_list_done(struct lpfc_hba *phba)
 			break;
 		case LPFC_EVT_OFFLINE_PREP:
 			if (phba->link_state >= LPFC_LINK_DOWN)
+<<<<<<< HEAD
 				lpfc_offline_prep(phba);
+=======
+				lpfc_offline_prep(phba, LPFC_MBX_WAIT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*(int *)(evtp->evt_arg1) = 0;
 			complete((struct completion *)(evtp->evt_arg2));
 			break;
@@ -565,7 +1142,11 @@ lpfc_work_list_done(struct lpfc_hba *phba)
 			free_evt = 0;
 			break;
 		case LPFC_EVT_RESET_HBA:
+<<<<<<< HEAD
 			if (!(phba->pport->load_flag & FC_UNLOADING))
+=======
+			if (!test_bit(FC_UNLOADING, &phba->pport->load_flag))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lpfc_reset_hba(phba);
 			break;
 		}
@@ -585,11 +1166,18 @@ lpfc_work_done(struct lpfc_hba *phba)
 	struct lpfc_vport **vports;
 	struct lpfc_vport *vport;
 	int i;
+<<<<<<< HEAD
 
+=======
+	bool hba_pci_err;
+
+	hba_pci_err = test_bit(HBA_PCI_ERR, &phba->bit_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&phba->hbalock);
 	ha_copy = phba->work_ha;
 	phba->work_ha = 0;
 	spin_unlock_irq(&phba->hbalock);
+<<<<<<< HEAD
 
 	/* First, try to post the next mailbox command to SLI4 device */
 	if (phba->pci_dev_grp == LPFC_PCI_DEV_OC)
@@ -599,18 +1187,59 @@ lpfc_work_done(struct lpfc_hba *phba)
 		/* Handle the error attention event */
 		lpfc_handle_eratt(phba);
 
+=======
+	if (hba_pci_err)
+		ha_copy = 0;
+
+	/* First, try to post the next mailbox command to SLI4 device */
+	if (phba->pci_dev_grp == LPFC_PCI_DEV_OC && !hba_pci_err)
+		lpfc_sli4_post_async_mbox(phba);
+
+	if (ha_copy & HA_ERATT) {
+		/* Handle the error attention event */
+		lpfc_handle_eratt(phba);
+
+		if (phba->fw_dump_cmpl) {
+			complete(phba->fw_dump_cmpl);
+			phba->fw_dump_cmpl = NULL;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ha_copy & HA_MBATT)
 		lpfc_sli_handle_mb_event(phba);
 
 	if (ha_copy & HA_LATT)
 		lpfc_handle_latt(phba);
 
+<<<<<<< HEAD
+=======
+	/* Handle VMID Events */
+	if (lpfc_is_vmid_enabled(phba) && !hba_pci_err) {
+		if (phba->pport->work_port_events &
+		    WORKER_CHECK_VMID_ISSUE_QFPA) {
+			lpfc_check_vmid_qfpa_issue(phba);
+			phba->pport->work_port_events &=
+				~WORKER_CHECK_VMID_ISSUE_QFPA;
+		}
+		if (phba->pport->work_port_events &
+		    WORKER_CHECK_INACTIVE_VMID) {
+			lpfc_check_inactive_vmid(phba);
+			phba->pport->work_port_events &=
+			    ~WORKER_CHECK_INACTIVE_VMID;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Process SLI4 events */
 	if (phba->pci_dev_grp == LPFC_PCI_DEV_OC) {
 		if (phba->hba_flag & HBA_RRQ_ACTIVE)
 			lpfc_handle_rrq_active(phba);
+<<<<<<< HEAD
 		if (phba->hba_flag & FCP_XRI_ABORT_EVENT)
 			lpfc_sli4_fcp_xri_abort_event_proc(phba);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (phba->hba_flag & ELS_XRI_ABORT_EVENT)
 			lpfc_sli4_els_xri_abort_event_proc(phba);
 		if (phba->hba_flag & ASYNC_EVENT)
@@ -642,6 +1271,11 @@ lpfc_work_done(struct lpfc_hba *phba)
 			work_port_events = vport->work_port_events;
 			vport->work_port_events &= ~work_port_events;
 			spin_unlock_irq(&vport->work_port_lock);
+<<<<<<< HEAD
+=======
+			if (hba_pci_err)
+				continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (work_port_events & WORKER_DISC_TMO)
 				lpfc_disc_timeout_handler(vport);
 			if (work_port_events & WORKER_ELS_TMO)
@@ -652,17 +1286,23 @@ lpfc_work_done(struct lpfc_hba *phba)
 				lpfc_mbox_timeout_handler(phba);
 			if (work_port_events & WORKER_FABRIC_BLOCK_TMO)
 				lpfc_unblock_fabric_iocbs(phba);
+<<<<<<< HEAD
 			if (work_port_events & WORKER_FDMI_TMO)
 				lpfc_fdmi_timeout_handler(vport);
 			if (work_port_events & WORKER_RAMP_DOWN_QUEUE)
 				lpfc_ramp_down_queue_handler(phba);
 			if (work_port_events & WORKER_RAMP_UP_QUEUE)
 				lpfc_ramp_up_queue_handler(phba);
+=======
+			if (work_port_events & WORKER_RAMP_DOWN_QUEUE)
+				lpfc_ramp_down_queue_handler(phba);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (work_port_events & WORKER_DELAYED_DISC_TMO)
 				lpfc_delayed_disc_timeout_handler(vport);
 		}
 	lpfc_destroy_vport_work_array(phba, vports);
 
+<<<<<<< HEAD
 	pring = &phba->sli.ring[LPFC_ELS_RING];
 	status = (ha_copy & (HA_RXMASK  << (4*LPFC_ELS_RING)));
 	status >>= (4*LPFC_ELS_RING);
@@ -680,6 +1320,32 @@ lpfc_work_done(struct lpfc_hba *phba)
 							 HA_RXMASK));
 		}
 		if ((phba->sli_rev == LPFC_SLI_REV4) && pring->txq_cnt)
+=======
+	pring = lpfc_phba_elsring(phba);
+	status = (ha_copy & (HA_RXMASK  << (4*LPFC_ELS_RING)));
+	status >>= (4*LPFC_ELS_RING);
+	if (pring && (status & HA_RXMASK ||
+		      pring->flag & LPFC_DEFERRED_RING_EVENT ||
+		      phba->hba_flag & HBA_SP_QUEUE_EVT)) {
+		if (pring->flag & LPFC_STOP_IOCB_EVENT) {
+			pring->flag |= LPFC_DEFERRED_RING_EVENT;
+			/* Preserve legacy behavior. */
+			if (!(phba->hba_flag & HBA_SP_QUEUE_EVT))
+				set_bit(LPFC_DATA_READY, &phba->data_flags);
+		} else {
+			/* Driver could have abort request completed in queue
+			 * when link goes down.  Allow for this transition.
+			 */
+			if (phba->link_state >= LPFC_LINK_DOWN ||
+			    phba->link_flag & LS_MDS_LOOPBACK) {
+				pring->flag &= ~LPFC_DEFERRED_RING_EVENT;
+				lpfc_sli_handle_slow_ring_event(phba, pring,
+								(status &
+								HA_RXMASK));
+			}
+		}
+		if (phba->sli_rev == LPFC_SLI_REV4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lpfc_drain_txq(phba);
 		/*
 		 * Turn on Ring interrupts
@@ -712,7 +1378,12 @@ lpfc_do_work(void *p)
 	struct lpfc_hba *phba = p;
 	int rc;
 
+<<<<<<< HEAD
 	set_user_nice(current, -20);
+=======
+	set_user_nice(current, MIN_NICE);
+	current->flags |= PF_NOFREEZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phba->data_flags = 0;
 
 	while (!kthread_should_stop()) {
@@ -723,7 +1394,11 @@ lpfc_do_work(void *p)
 					 || kthread_should_stop()));
 		/* Signal wakeup shall terminate the worker thread */
 		if (rc) {
+<<<<<<< HEAD
 			lpfc_printf_log(phba, KERN_ERR, LOG_ELS,
+=======
+			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"0433 Wakeup on signal: rc=x%x\n", rc);
 			break;
 		}
@@ -773,6 +1448,7 @@ lpfc_workq_post_event(struct lpfc_hba *phba, void *arg1, void *arg2,
 void
 lpfc_cleanup_rpis(struct lpfc_vport *vport, int remove)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
 	struct lpfc_hba  *phba = vport->phba;
 	struct lpfc_nodelist *ndlp, *next_ndlp;
@@ -786,24 +1462,52 @@ lpfc_cleanup_rpis(struct lpfc_vport *vport, int remove)
 		if ((phba->sli3_options & LPFC_SLI3_VPORT_TEARDOWN) ||
 			((vport->port_type == LPFC_NPIV_PORT) &&
 			(ndlp->nlp_DID == NameServer_DID)))
+=======
+	struct lpfc_hba  *phba = vport->phba;
+	struct lpfc_nodelist *ndlp, *next_ndlp;
+
+	list_for_each_entry_safe(ndlp, next_ndlp, &vport->fc_nodes, nlp_listp) {
+		if ((phba->sli3_options & LPFC_SLI3_VPORT_TEARDOWN) ||
+		    ((vport->port_type == LPFC_NPIV_PORT) &&
+		     ((ndlp->nlp_DID == NameServer_DID) ||
+		      (ndlp->nlp_DID == FDMI_DID) ||
+		      (ndlp->nlp_DID == Fabric_Cntl_DID))))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lpfc_unreg_rpi(vport, ndlp);
 
 		/* Leave Fabric nodes alone on link down */
 		if ((phba->sli_rev < LPFC_SLI_REV4) &&
 		    (!remove && ndlp->nlp_type & NLP_FABRIC))
 			continue;
+<<<<<<< HEAD
 		rc = lpfc_disc_state_machine(vport, ndlp, NULL,
 					     remove
 					     ? NLP_EVT_DEVICE_RM
 					     : NLP_EVT_DEVICE_RECOVERY);
+=======
+
+		/* Notify transport of connectivity loss to trigger cleanup. */
+		if (phba->nvmet_support &&
+		    ndlp->nlp_state == NLP_STE_UNMAPPED_NODE)
+			lpfc_nvmet_invalidate_host(phba, ndlp);
+
+		lpfc_disc_state_machine(vport, ndlp, NULL,
+					remove
+					? NLP_EVT_DEVICE_RM
+					: NLP_EVT_DEVICE_RECOVERY);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (phba->sli3_options & LPFC_SLI3_VPORT_TEARDOWN) {
 		if (phba->sli_rev == LPFC_SLI_REV4)
 			lpfc_sli4_unreg_all_rpis(vport);
 		lpfc_mbx_unreg_vpi(vport);
+<<<<<<< HEAD
 		spin_lock_irq(shost->host_lock);
 		vport->fc_flag |= FC_VPORT_NEEDS_REG_VPI;
 		spin_unlock_irq(shost->host_lock);
+=======
+		set_bit(FC_VPORT_NEEDS_REG_VPI, &vport->fc_flag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -830,9 +1534,18 @@ lpfc_port_link_failure(struct lpfc_vport *vport)
 void
 lpfc_linkdown_port(struct lpfc_vport *vport)
 {
+<<<<<<< HEAD
 	struct Scsi_Host  *shost = lpfc_shost_from_vport(vport);
 
 	fc_host_post_event(shost, fc_get_event_number(), FCH_EVT_LINKDOWN, 0);
+=======
+	struct lpfc_hba *phba = vport->phba;
+	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
+
+	if (vport->cfg_enable_fc4_type != LPFC_ENABLE_NVME)
+		fc_host_post_event(shost, fc_get_event_number(),
+				   FCH_EVT_LINKDOWN, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpfc_debugfs_disc_trc(vport, LPFC_DISC_TRC_ELS_CMD,
 		"Link Down:       state:x%x rtry:x%x flg:x%x",
@@ -841,32 +1554,62 @@ lpfc_linkdown_port(struct lpfc_vport *vport)
 	lpfc_port_link_failure(vport);
 
 	/* Stop delayed Nport discovery */
+<<<<<<< HEAD
 	spin_lock_irq(shost->host_lock);
 	vport->fc_flag &= ~FC_DISC_DELAYED;
 	spin_unlock_irq(shost->host_lock);
 	del_timer_sync(&vport->delayed_disc_tmo);
+=======
+	clear_bit(FC_DISC_DELAYED, &vport->fc_flag);
+	del_timer_sync(&vport->delayed_disc_tmo);
+
+	if (phba->sli_rev == LPFC_SLI_REV4 &&
+	    vport->port_type == LPFC_PHYSICAL_PORT &&
+	    phba->sli4_hba.fawwpn_flag & LPFC_FAWWPN_CONFIG) {
+		/* Assume success on link up */
+		phba->sli4_hba.fawwpn_flag |= LPFC_FAWWPN_FABRIC;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int
 lpfc_linkdown(struct lpfc_hba *phba)
 {
 	struct lpfc_vport *vport = phba->pport;
+<<<<<<< HEAD
 	struct Scsi_Host  *shost = lpfc_shost_from_vport(vport);
 	struct lpfc_vport **vports;
 	LPFC_MBOXQ_t          *mb;
 	int i;
+=======
+	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
+	struct lpfc_vport **vports;
+	LPFC_MBOXQ_t          *mb;
+	int i;
+	int offline;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (phba->link_state == LPFC_LINK_DOWN)
 		return 0;
 
 	/* Block all SCSI stack I/Os */
 	lpfc_scsi_dev_block(phba);
+<<<<<<< HEAD
+=======
+	offline = pci_channel_offline(phba->pcidev);
+
+	phba->defer_flogi_acc_flag = false;
+
+	/* Clear external loopback plug detected flag */
+	phba->link_flag &= ~LS_EXTERNAL_LOOPBACK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&phba->hbalock);
 	phba->fcf.fcf_flag &= ~(FCF_AVAILABLE | FCF_SCAN_DONE);
 	spin_unlock_irq(&phba->hbalock);
 	if (phba->link_state > LPFC_LINK_DOWN) {
 		phba->link_state = LPFC_LINK_DOWN;
+<<<<<<< HEAD
 		spin_lock_irq(shost->host_lock);
 		phba->pport->fc_flag &= ~FC_LBIT;
 		spin_unlock_irq(shost->host_lock);
@@ -879,6 +1622,43 @@ lpfc_linkdown(struct lpfc_hba *phba)
 		}
 	lpfc_destroy_vport_work_array(phba, vports);
 	/* Clean up any firmware default rpi's */
+=======
+		if (phba->sli4_hba.conf_trunk) {
+			phba->trunk_link.link0.state = 0;
+			phba->trunk_link.link1.state = 0;
+			phba->trunk_link.link2.state = 0;
+			phba->trunk_link.link3.state = 0;
+			phba->trunk_link.phy_lnk_speed =
+						LPFC_LINK_SPEED_UNKNOWN;
+			phba->sli4_hba.link_state.logical_speed =
+						LPFC_LINK_SPEED_UNKNOWN;
+		}
+		clear_bit(FC_LBIT, &phba->pport->fc_flag);
+	}
+	vports = lpfc_create_vport_work_array(phba);
+	if (vports != NULL) {
+		for (i = 0; i <= phba->max_vports && vports[i] != NULL; i++) {
+			/* Issue a LINK DOWN event to all nodes */
+			lpfc_linkdown_port(vports[i]);
+
+			vports[i]->fc_myDID = 0;
+
+			if ((vport->cfg_enable_fc4_type == LPFC_ENABLE_BOTH) ||
+			    (vport->cfg_enable_fc4_type == LPFC_ENABLE_NVME)) {
+				if (phba->nvmet_support)
+					lpfc_nvmet_update_targetport(phba);
+				else
+					lpfc_nvme_update_localport(vports[i]);
+			}
+		}
+	}
+	lpfc_destroy_vport_work_array(phba, vports);
+
+	/* Clean up any SLI3 firmware default rpi's */
+	if (phba->sli_rev > LPFC_SLI_REV3 || offline)
+		goto skip_unreg_did;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mb = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (mb) {
 		lpfc_unreg_did(phba, 0xffff, LPFC_UNREG_ALL_DFLT_RPIS, mb);
@@ -890,9 +1670,15 @@ lpfc_linkdown(struct lpfc_hba *phba)
 		}
 	}
 
+<<<<<<< HEAD
 	/* Setup myDID for link up if we are in pt2pt mode */
 	if (phba->pport->fc_flag & FC_PT2PT) {
 		phba->pport->fc_myDID = 0;
+=======
+ skip_unreg_did:
+	/* Setup myDID for link up if we are in pt2pt mode */
+	if (test_bit(FC_PT2PT, &phba->pport->fc_flag)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mb = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 		if (mb) {
 			lpfc_config_link(phba, mb);
@@ -903,11 +1689,20 @@ lpfc_linkdown(struct lpfc_hba *phba)
 				mempool_free(mb, phba->mbox_mem_pool);
 			}
 		}
+<<<<<<< HEAD
 		spin_lock_irq(shost->host_lock);
 		phba->pport->fc_flag &= ~(FC_PT2PT | FC_PT2PT_PLOGI);
 		spin_unlock_irq(shost->host_lock);
 	}
 
+=======
+		clear_bit(FC_PT2PT, &phba->pport->fc_flag);
+		clear_bit(FC_PT2PT_PLOGI, &phba->pport->fc_flag);
+		spin_lock_irq(shost->host_lock);
+		phba->pport->rcv_flogi_cnt = 0;
+		spin_unlock_irq(shost->host_lock);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -917,8 +1712,13 @@ lpfc_linkup_cleanup_nodes(struct lpfc_vport *vport)
 	struct lpfc_nodelist *ndlp;
 
 	list_for_each_entry(ndlp, &vport->fc_nodes, nlp_listp) {
+<<<<<<< HEAD
 		if (!NLP_CHK_NODE_ACT(ndlp))
 			continue;
+=======
+		ndlp->nlp_fc4_type &= ~(NLP_FC4_FCP | NLP_FC4_NVME);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ndlp->nlp_state == NLP_STE_UNUSED_NODE)
 			continue;
 		if (ndlp->nlp_type & NLP_FABRIC) {
@@ -943,7 +1743,11 @@ lpfc_linkup_port(struct lpfc_vport *vport)
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
 	struct lpfc_hba  *phba = vport->phba;
 
+<<<<<<< HEAD
 	if ((vport->load_flag & FC_UNLOADING) != 0)
+=======
+	if (test_bit(FC_UNLOADING, &vport->load_flag))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	lpfc_debugfs_disc_trc(vport, LPFC_DISC_TRC_ELS_CMD,
@@ -955,6 +1759,7 @@ lpfc_linkup_port(struct lpfc_vport *vport)
 		(vport != phba->pport))
 		return;
 
+<<<<<<< HEAD
 	fc_host_post_event(shost, fc_get_event_number(), FCH_EVT_LINKUP, 0);
 
 	spin_lock_irq(shost->host_lock);
@@ -967,6 +1772,29 @@ lpfc_linkup_port(struct lpfc_vport *vport)
 	if (vport->fc_flag & FC_LBIT)
 		lpfc_linkup_cleanup_nodes(vport);
 
+=======
+	if (phba->defer_flogi_acc_flag) {
+		clear_bit(FC_ABORT_DISCOVERY, &vport->fc_flag);
+		clear_bit(FC_RSCN_MODE, &vport->fc_flag);
+		clear_bit(FC_NLP_MORE, &vport->fc_flag);
+		clear_bit(FC_RSCN_DISCOVERY, &vport->fc_flag);
+	} else {
+		clear_bit(FC_PT2PT, &vport->fc_flag);
+		clear_bit(FC_PT2PT_PLOGI, &vport->fc_flag);
+		clear_bit(FC_ABORT_DISCOVERY, &vport->fc_flag);
+		clear_bit(FC_RSCN_MODE, &vport->fc_flag);
+		clear_bit(FC_NLP_MORE, &vport->fc_flag);
+		clear_bit(FC_RSCN_DISCOVERY, &vport->fc_flag);
+	}
+	set_bit(FC_NDISC_ACTIVE, &vport->fc_flag);
+
+	spin_lock_irq(shost->host_lock);
+	vport->fc_ns_retry = 0;
+	spin_unlock_irq(shost->host_lock);
+	lpfc_setup_fdmi_mask(vport);
+
+	lpfc_linkup_cleanup_nodes(vport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -974,8 +1802,13 @@ lpfc_linkup(struct lpfc_hba *phba)
 {
 	struct lpfc_vport **vports;
 	int i;
+<<<<<<< HEAD
 
 	lpfc_cleanup_wt_rrqs(phba);
+=======
+	struct Scsi_Host  *shost = lpfc_shost_from_vport(phba->pport);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phba->link_state = LPFC_LINK_UP;
 
 	/* Unblock fabric iocbs if they are blocked */
@@ -987,9 +1820,23 @@ lpfc_linkup(struct lpfc_hba *phba)
 		for (i = 0; i <= phba->max_vports && vports[i] != NULL; i++)
 			lpfc_linkup_port(vports[i]);
 	lpfc_destroy_vport_work_array(phba, vports);
+<<<<<<< HEAD
 	if ((phba->sli3_options & LPFC_SLI3_NPIV_ENABLED) &&
 	    (phba->sli_rev < LPFC_SLI_REV4))
 		lpfc_issue_clear_la(phba, phba->pport);
+=======
+
+	/* Clear the pport flogi counter in case the link down was
+	 * absorbed without an ACQE. No lock here - in worker thread
+	 * and discovery is synchronized.
+	 */
+	spin_lock_irq(shost->host_lock);
+	phba->pport->rcv_flogi_cnt = 0;
+	spin_unlock_irq(shost->host_lock);
+
+	/* reinitialize initial HBA flag */
+	phba->hba_flag &= ~(HBA_FLOGI_ISSUED | HBA_RHBA_CMPL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -998,26 +1845,42 @@ lpfc_linkup(struct lpfc_hba *phba)
  * This routine handles processing a CLEAR_LA mailbox
  * command upon completion. It is setup in the LPFC_MBOXQ
  * as the completion routine when the command is
+<<<<<<< HEAD
  * handed off to the SLI layer.
+=======
+ * handed off to the SLI layer. SLI3 only.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void
 lpfc_mbx_cmpl_clear_la(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 {
 	struct lpfc_vport *vport = pmb->vport;
+<<<<<<< HEAD
 	struct Scsi_Host  *shost = lpfc_shost_from_vport(vport);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_sli   *psli = &phba->sli;
 	MAILBOX_t *mb = &pmb->u.mb;
 	uint32_t control;
 
 	/* Since we don't do discovery right now, turn these off here */
+<<<<<<< HEAD
 	psli->ring[psli->extra_ring].flag &= ~LPFC_STOP_IOCB_EVENT;
 	psli->ring[psli->fcp_ring].flag &= ~LPFC_STOP_IOCB_EVENT;
 	psli->ring[psli->next_ring].flag &= ~LPFC_STOP_IOCB_EVENT;
+=======
+	psli->sli3_ring[LPFC_EXTRA_RING].flag &= ~LPFC_STOP_IOCB_EVENT;
+	psli->sli3_ring[LPFC_FCP_RING].flag &= ~LPFC_STOP_IOCB_EVENT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check for error */
 	if ((mb->mbxStatus) && (mb->mbxStatus != 0x1601)) {
 		/* CLEAR_LA mbox error <mbxStatus> state <hba_state> */
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_MBOX,
+=======
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "0320 CLEAR_LA mbxStatus error x%x hba "
 				 "state x%x\n",
 				 mb->mbxStatus, vport->port_state);
@@ -1044,9 +1907,13 @@ out:
 			 "0225 Device Discovery completes\n");
 	mempool_free(pmb, phba->mbox_mem_pool);
 
+<<<<<<< HEAD
 	spin_lock_irq(shost->host_lock);
 	vport->fc_flag &= ~FC_ABORT_DISCOVERY;
 	spin_unlock_irq(shost->host_lock);
+=======
+	clear_bit(FC_ABORT_DISCOVERY, &vport->fc_flag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpfc_can_disctmo(vport);
 
@@ -1063,6 +1930,7 @@ out:
 	return;
 }
 
+<<<<<<< HEAD
 
 static void
 lpfc_mbx_cmpl_local_config_link(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
@@ -1074,6 +1942,21 @@ lpfc_mbx_cmpl_local_config_link(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 
 	mempool_free(pmb, phba->mbox_mem_pool);
 
+=======
+void
+lpfc_mbx_cmpl_local_config_link(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
+{
+	struct lpfc_vport *vport = pmb->vport;
+	LPFC_MBOXQ_t *sparam_mb;
+	u16 status = pmb->u.mb.mbxStatus;
+	int rc;
+
+	mempool_free(pmb, phba->mbox_mem_pool);
+
+	if (status)
+		goto out;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* don't perform discovery for SLI4 loopback diagnostic test */
 	if ((phba->sli_rev == LPFC_SLI_REV4) &&
 	    !(phba->hba_flag & HBA_FCOE_MODE) &&
@@ -1081,8 +1964,13 @@ lpfc_mbx_cmpl_local_config_link(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 		return;
 
 	if (phba->fc_topology == LPFC_TOPOLOGY_LOOP &&
+<<<<<<< HEAD
 	    vport->fc_flag & FC_PUBLIC_LOOP &&
 	    !(vport->fc_flag & FC_LBIT)) {
+=======
+	    test_bit(FC_PUBLIC_LOOP, &vport->fc_flag) &&
+	    !test_bit(FC_LBIT, &vport->fc_flag)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Need to wait for FAN - use discovery timer
 			 * for timeout.  port_state is identically
 			 * LPFC_LOCAL_CFG_LINK while waiting for FAN
@@ -1092,6 +1980,7 @@ lpfc_mbx_cmpl_local_config_link(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	}
 
 	/* Start discovery by sending a FLOGI. port_state is identically
+<<<<<<< HEAD
 	 * LPFC_FLOGI while waiting for FLOGI cmpl
 	 */
 	if (vport->port_state != LPFC_FLOGI)
@@ -1108,6 +1997,54 @@ out:
 	lpfc_linkdown(phba);
 
 	lpfc_printf_vlog(vport, KERN_ERR, LOG_DISCOVERY,
+=======
+	 * LPFC_FLOGI while waiting for FLOGI cmpl.
+	 */
+	if (vport->port_state != LPFC_FLOGI) {
+		/* Issue MBX_READ_SPARAM to update CSPs before FLOGI if
+		 * bb-credit recovery is in place.
+		 */
+		if (phba->bbcredit_support && phba->cfg_enable_bbcr &&
+		    !(phba->link_flag & LS_LOOPBACK_MODE)) {
+			sparam_mb = mempool_alloc(phba->mbox_mem_pool,
+						  GFP_KERNEL);
+			if (!sparam_mb)
+				goto sparam_out;
+
+			rc = lpfc_read_sparam(phba, sparam_mb, 0);
+			if (rc) {
+				mempool_free(sparam_mb, phba->mbox_mem_pool);
+				goto sparam_out;
+			}
+			sparam_mb->vport = vport;
+			sparam_mb->mbox_cmpl = lpfc_mbx_cmpl_read_sparam;
+			rc = lpfc_sli_issue_mbox(phba, sparam_mb, MBX_NOWAIT);
+			if (rc == MBX_NOT_FINISHED) {
+				lpfc_mbox_rsrc_cleanup(phba, sparam_mb,
+						       MBOX_THD_UNLOCKED);
+				goto sparam_out;
+			}
+
+			phba->hba_flag |= HBA_DEFER_FLOGI;
+		}  else {
+			lpfc_initial_flogi(vport);
+		}
+	} else {
+		if (test_bit(FC_PT2PT, &vport->fc_flag))
+			lpfc_disc_start(vport);
+	}
+	return;
+
+out:
+	lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+			 "0306 CONFIG_LINK mbxStatus error x%x HBA state x%x\n",
+			 status, vport->port_state);
+
+sparam_out:
+	lpfc_linkdown(phba);
+
+	lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 "0200 CONFIG_LINK bad hba state x%x\n",
 			 vport->port_state);
 
@@ -1117,7 +2054,11 @@ out:
 
 /**
  * lpfc_sli4_clear_fcf_rr_bmask
+<<<<<<< HEAD
  * @phba pointer to the struct lpfc_hba for this port.
+=======
+ * @phba: pointer to the struct lpfc_hba for this port.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This fucnction resets the round robin bit mask and clears the
  * fcf priority list. The list deletions are done while holding the
  * hbalock. The ON_LIST flag and the FLOGI_FAILED flags are cleared
@@ -1143,10 +2084,17 @@ lpfc_mbx_cmpl_reg_fcfi(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	struct lpfc_vport *vport = mboxq->vport;
 
 	if (mboxq->u.mb.mbxStatus) {
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_MBOX,
 			 "2017 REG_FCFI mbxStatus error x%x "
 			 "HBA state x%x\n",
 			 mboxq->u.mb.mbxStatus, vport->port_state);
+=======
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "2017 REG_FCFI mbxStatus error x%x "
+				 "HBA state x%x\n", mboxq->u.mb.mbxStatus,
+				 vport->port_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_out;
 	}
 
@@ -1216,7 +2164,11 @@ lpfc_fab_name_match(uint8_t *fab_name, struct fcf_record *new_fcf_record)
 
 /**
  * lpfc_sw_name_match - Check if the fcf switch name match.
+<<<<<<< HEAD
  * @fab_name: pointer to fabric name.
+=======
+ * @sw_name: pointer to switch name.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @new_fcf_record: pointer to fcf record.
  *
  * This routine compare the fcf record's switch name with provided
@@ -1279,14 +2231,22 @@ lpfc_vlan_id_match(uint16_t curr_vlan_id, uint16_t new_vlan_id)
 }
 
 /**
+<<<<<<< HEAD
  * lpfc_update_fcf_record - Update driver fcf record
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * __lpfc_update_fcf_record_pri - update the lpfc_fcf_pri record.
  * @phba: pointer to lpfc hba data structure.
  * @fcf_index: Index for the lpfc_fcf_record.
  * @new_fcf_record: pointer to hba fcf record.
  *
  * This routine updates the driver FCF priority record from the new HBA FCF
+<<<<<<< HEAD
  * record. This routine is called with the host lock held.
+=======
+ * record. The hbalock is asserted held in the code path calling this
+ * routine.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void
 __lpfc_update_fcf_record_pri(struct lpfc_hba *phba, uint16_t fcf_index,
@@ -1304,7 +2264,11 @@ __lpfc_update_fcf_record_pri(struct lpfc_hba *phba, uint16_t fcf_index,
 
 /**
  * lpfc_copy_fcf_record - Copy fcf information to lpfc_hba.
+<<<<<<< HEAD
  * @fcf: pointer to driver fcf record.
+=======
+ * @fcf_rec: pointer to driver fcf record.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @new_fcf_record: pointer to fcf record.
  *
  * This routine copies the FCF information from the FCF
@@ -1362,7 +2326,11 @@ lpfc_copy_fcf_record(struct lpfc_fcf_rec *fcf_rec,
 }
 
 /**
+<<<<<<< HEAD
  * lpfc_update_fcf_record - Update driver fcf record
+=======
+ * __lpfc_update_fcf_record - Update driver fcf record
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @phba: pointer to lpfc hba data structure.
  * @fcf_rec: pointer to driver fcf record.
  * @new_fcf_record: pointer to hba fcf record.
@@ -1372,13 +2340,22 @@ lpfc_copy_fcf_record(struct lpfc_fcf_rec *fcf_rec,
  *
  * This routine updates the driver FCF record from the new HBA FCF record
  * together with the address mode, vlan_id, and other informations. This
+<<<<<<< HEAD
  * routine is called with the host lock held.
+=======
+ * routine is called with the hbalock held.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 static void
 __lpfc_update_fcf_record(struct lpfc_hba *phba, struct lpfc_fcf_rec *fcf_rec,
 		       struct fcf_record *new_fcf_record, uint32_t addr_mode,
 		       uint16_t vlan_id, uint32_t flag)
 {
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&phba->hbalock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Copy the fields from the HBA's FCF record */
 	lpfc_copy_fcf_record(fcf_rec, new_fcf_record);
 	/* Update other fields of driver FCF record */
@@ -1415,7 +2392,12 @@ lpfc_register_fcf(struct lpfc_hba *phba)
 	if (phba->fcf.fcf_flag & FCF_REGISTERED) {
 		phba->fcf.fcf_flag |= (FCF_SCAN_DONE | FCF_IN_USE);
 		phba->hba_flag &= ~FCF_TS_INPROG;
+<<<<<<< HEAD
 		if (phba->pport->port_state != LPFC_FLOGI) {
+=======
+		if (phba->pport->port_state != LPFC_FLOGI &&
+		    test_bit(FC_FABRIC, &phba->pport->fc_flag)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			phba->hba_flag |= FCF_RR_INPROG;
 			spin_unlock_irq(&phba->hbalock);
 			lpfc_initial_flogi(phba->pport);
@@ -1488,9 +2470,16 @@ lpfc_match_fcf_conn_list(struct lpfc_hba *phba,
 		}
 	}
 
+<<<<<<< HEAD
 	/* If FCF not available return 0 */
 	if (!bf_get(lpfc_fcf_record_fcf_avail, new_fcf_record) ||
 		!bf_get(lpfc_fcf_record_fcf_valid, new_fcf_record))
+=======
+	/* FCF not valid/available or solicitation in progress */
+	if (!bf_get(lpfc_fcf_record_fcf_avail, new_fcf_record) ||
+	    !bf_get(lpfc_fcf_record_fcf_valid, new_fcf_record) ||
+	    bf_get(lpfc_fcf_record_fcf_sol, new_fcf_record))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (!(phba->hba_flag & HBA_FIP_SUPPORT)) {
@@ -1712,8 +2701,13 @@ lpfc_check_pending_fcoe_event(struct lpfc_hba *phba, uint8_t unreg_fcf)
  * This function makes an running random selection decision on FCF record to
  * use through a sequence of @fcf_cnt eligible FCF records with equal
  * probability. To perform integer manunipulation of random numbers with
+<<<<<<< HEAD
  * size unit32_t, the lower 16 bits of the 32-bit random number returned
  * from random32() are taken as the random random number generated.
+=======
+ * size unit32_t, a 16-bit random number returned from get_random_u16() is
+ * taken as the random random number generated.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns true when outcome is for the newly read FCF record should be
  * chosen; otherwise, return false when outcome is for keeping the previously
@@ -1725,7 +2719,11 @@ lpfc_sli4_new_fcf_random_select(struct lpfc_hba *phba, uint32_t fcf_cnt)
 	uint32_t rand_num;
 
 	/* Get 16-bit uniform random number */
+<<<<<<< HEAD
 	rand_num = (0xFFFF & random32());
+=======
+	rand_num = get_random_u16();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Decision with probability 1/fcf_cnt */
 	if ((fcf_cnt * rand_num) < 0xFFFF)
@@ -1752,10 +2750,16 @@ lpfc_sli4_fcf_rec_mbox_parse(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq,
 			     uint16_t *next_fcf_index)
 {
 	void *virt_addr;
+<<<<<<< HEAD
 	dma_addr_t phys_addr;
 	struct lpfc_mbx_sge sge;
 	struct lpfc_mbx_read_fcf_tbl *read_fcf;
 	uint32_t shdr_status, shdr_add_status;
+=======
+	struct lpfc_mbx_sge sge;
+	struct lpfc_mbx_read_fcf_tbl *read_fcf;
+	uint32_t shdr_status, shdr_add_status, if_type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union lpfc_sli4_cfg_shdr *shdr;
 	struct fcf_record *new_fcf_record;
 
@@ -1763,9 +2767,14 @@ lpfc_sli4_fcf_rec_mbox_parse(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq,
 	 * routine only uses a single SGE.
 	 */
 	lpfc_sli4_mbx_sge_get(mboxq, 0, &sge);
+<<<<<<< HEAD
 	phys_addr = getPaddr(sge.pa_hi, sge.pa_lo);
 	if (unlikely(!mboxq->sge_array)) {
 		lpfc_printf_log(phba, KERN_ERR, LOG_MBOX,
+=======
+	if (unlikely(!mboxq->sge_array)) {
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2524 Failed to get the non-embedded SGE "
 				"virtual address\n");
 		return NULL;
@@ -1773,6 +2782,7 @@ lpfc_sli4_fcf_rec_mbox_parse(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq,
 	virt_addr = mboxq->sge_array->addr[0];
 
 	shdr = (union lpfc_sli4_cfg_shdr *)virt_addr;
+<<<<<<< HEAD
 	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
 	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
 	if (shdr_status || shdr_add_status) {
@@ -1782,6 +2792,22 @@ lpfc_sli4_fcf_rec_mbox_parse(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq,
 					"FCF table.\n");
 		else
 			lpfc_printf_log(phba, KERN_ERR, LOG_FIP,
+=======
+	lpfc_sli_pcimem_bcopy(shdr, shdr,
+			      sizeof(union lpfc_sli4_cfg_shdr));
+	shdr_status = bf_get(lpfc_mbox_hdr_status, &shdr->response);
+	if_type = bf_get(lpfc_sli_intf_if_type, &phba->sli4_hba.sli_intf);
+	shdr_add_status = bf_get(lpfc_mbox_hdr_add_status, &shdr->response);
+	if (shdr_status || shdr_add_status) {
+		if (shdr_status == STATUS_FCF_TABLE_EMPTY ||
+					if_type == LPFC_SLI_INTF_IF_TYPE_2)
+			lpfc_printf_log(phba, KERN_ERR,
+					LOG_TRACE_EVENT,
+					"2726 READ_FCF_RECORD Indicates empty "
+					"FCF table.\n");
+		else
+			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"2521 READ_FCF_RECORD mailbox failed "
 					"with status x%x add_status x%x, "
 					"mbx\n", shdr_status, shdr_add_status);
@@ -1824,6 +2850,10 @@ lpfc_sli4_log_fcf_record_info(struct lpfc_hba *phba,
 			"\tFCF_Index     : x%x\n"
 			"\tFCF_Avail     : x%x\n"
 			"\tFCF_Valid     : x%x\n"
+<<<<<<< HEAD
+=======
+			"\tFCF_SOL       : x%x\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"\tFIP_Priority  : x%x\n"
 			"\tMAC_Provider  : x%x\n"
 			"\tLowest VLANID : x%x\n"
@@ -1834,6 +2864,10 @@ lpfc_sli4_log_fcf_record_info(struct lpfc_hba *phba,
 			bf_get(lpfc_fcf_record_fcf_index, fcf_record),
 			bf_get(lpfc_fcf_record_fcf_avail, fcf_record),
 			bf_get(lpfc_fcf_record_fcf_valid, fcf_record),
+<<<<<<< HEAD
+=======
+			bf_get(lpfc_fcf_record_fcf_sol, fcf_record),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fcf_record->fip_priority,
 			bf_get(lpfc_fcf_record_mac_addr_prov, fcf_record),
 			vlan_id,
@@ -1863,7 +2897,11 @@ lpfc_sli4_log_fcf_record_info(struct lpfc_hba *phba,
 }
 
 /**
+<<<<<<< HEAD
  lpfc_sli4_fcf_record_match - testing new FCF record for matching existing FCF
+=======
+ * lpfc_sli4_fcf_record_match - testing new FCF record for matching existing FCF
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @phba: pointer to lpfc hba data structure.
  * @fcf_rec: pointer to an existing FCF record.
  * @new_fcf_record: pointer to a new FCF record.
@@ -1933,6 +2971,29 @@ int lpfc_sli4_fcf_rr_next_proc(struct lpfc_vport *vport, uint16_t fcf_index)
 				"failover and change port state:x%x/x%x\n",
 				phba->pport->port_state, LPFC_VPORT_UNKNOWN);
 		phba->pport->port_state = LPFC_VPORT_UNKNOWN;
+<<<<<<< HEAD
+=======
+
+		if (!phba->fcf.fcf_redisc_attempted) {
+			lpfc_unregister_fcf(phba);
+
+			rc = lpfc_sli4_redisc_fcf_table(phba);
+			if (!rc) {
+				lpfc_printf_log(phba, KERN_INFO, LOG_FIP,
+						"3195 Rediscover FCF table\n");
+				phba->fcf.fcf_redisc_attempted = 1;
+				lpfc_sli4_clear_fcf_rr_bmask(phba);
+			} else {
+				lpfc_printf_log(phba, KERN_WARNING, LOG_FIP,
+						"3196 Rediscover FCF table "
+						"failed. Status:x%x\n", rc);
+			}
+		} else {
+			lpfc_printf_log(phba, KERN_WARNING, LOG_FIP,
+					"3197 Already rediscover FCF table "
+					"attempted. No more retry\n");
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto stop_flogi_current_fcf;
 	} else {
 		lpfc_printf_log(phba, KERN_INFO, LOG_FIP | LOG_ELS,
@@ -1957,7 +3018,11 @@ stop_flogi_current_fcf:
 /**
  * lpfc_sli4_fcf_pri_list_del
  * @phba: pointer to lpfc hba data structure.
+<<<<<<< HEAD
  * @fcf_index the index of the fcf record to delete
+=======
+ * @fcf_index: the index of the fcf record to delete
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This routine checks the on list flag of the fcf_index to be deleted.
  * If it is one the list then it is removed from the list, and the flag
  * is cleared. This routine grab the hbalock before removing the fcf
@@ -1987,9 +3052,15 @@ static void lpfc_sli4_fcf_pri_list_del(struct lpfc_hba *phba,
 /**
  * lpfc_sli4_set_fcf_flogi_fail
  * @phba: pointer to lpfc hba data structure.
+<<<<<<< HEAD
  * @fcf_index the index of the fcf record to update
  * This routine acquires the hbalock and then set the LPFC_FCF_FLOGI_FAILED
  * flag so the the round robin slection for the particular priority level
+=======
+ * @fcf_index: the index of the fcf record to update
+ * This routine acquires the hbalock and then set the LPFC_FCF_FLOGI_FAILED
+ * flag so the round robin selection for the particular priority level
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * will try a different fcf record that does not have this bit set.
  * If the fcf record is re-read for any reason this flag is cleared brfore
  * adding it to the priority list.
@@ -2007,7 +3078,12 @@ lpfc_sli4_set_fcf_flogi_fail(struct lpfc_hba *phba, uint16_t fcf_index)
 /**
  * lpfc_sli4_fcf_pri_list_add
  * @phba: pointer to lpfc hba data structure.
+<<<<<<< HEAD
  * @fcf_index the index of the fcf record to add
+=======
+ * @fcf_index: the index of the fcf record to add
+ * @new_fcf_record: pointer to a new FCF record.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This routine checks the priority of the fcf_index to be added.
  * If it is a lower priority than the current head of the fcf_pri list
  * then it is added to the list in the right order.
@@ -2019,7 +3095,12 @@ lpfc_sli4_set_fcf_flogi_fail(struct lpfc_hba *phba, uint16_t fcf_index)
  * returns:
  * 0=success 1=failure
  **/
+<<<<<<< HEAD
 int lpfc_sli4_fcf_pri_list_add(struct lpfc_hba *phba, uint16_t fcf_index,
+=======
+static int lpfc_sli4_fcf_pri_list_add(struct lpfc_hba *phba,
+	uint16_t fcf_index,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fcf_record *new_fcf_record)
 {
 	uint16_t current_fcf_pri;
@@ -2122,8 +3203,12 @@ lpfc_mbx_cmpl_fcf_scan_read_fcf_rec(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	uint32_t boot_flag, addr_mode;
 	uint16_t fcf_index, next_fcf_index;
 	struct lpfc_fcf_rec *fcf_rec = NULL;
+<<<<<<< HEAD
 	uint16_t vlan_id;
 	uint32_t seed;
+=======
+	uint16_t vlan_id = LPFC_FCOE_NULL_VID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool select_new_fcf;
 	int rc;
 
@@ -2137,7 +3222,11 @@ lpfc_mbx_cmpl_fcf_scan_read_fcf_rec(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	new_fcf_record = lpfc_sli4_fcf_rec_mbox_parse(phba, mboxq,
 						      &next_fcf_index);
 	if (!new_fcf_record) {
+<<<<<<< HEAD
 		lpfc_printf_log(phba, KERN_ERR, LOG_FIP,
+=======
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2765 Mailbox command READ_FCF_RECORD "
 				"failed to retrieve a FCF record.\n");
 		/* Let next new FCF event trigger fast failover */
@@ -2167,19 +3256,33 @@ lpfc_mbx_cmpl_fcf_scan_read_fcf_rec(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 					       new_fcf_record));
 		lpfc_printf_log(phba, KERN_WARNING, LOG_FIP,
 				"2781 FCF (x%x) failed connection "
+<<<<<<< HEAD
 				"list check: (x%x/x%x)\n",
+=======
+				"list check: (x%x/x%x/%x)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				bf_get(lpfc_fcf_record_fcf_index,
 				       new_fcf_record),
 				bf_get(lpfc_fcf_record_fcf_avail,
 				       new_fcf_record),
 				bf_get(lpfc_fcf_record_fcf_valid,
+<<<<<<< HEAD
+=======
+				       new_fcf_record),
+				bf_get(lpfc_fcf_record_fcf_sol,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       new_fcf_record));
 		if ((phba->fcf.fcf_flag & FCF_IN_USE) &&
 		    lpfc_sli4_fcf_record_match(phba, &phba->fcf.current_rec,
 		    new_fcf_record, LPFC_FCOE_IGNORE_VID)) {
 			if (bf_get(lpfc_fcf_record_fcf_index, new_fcf_record) !=
 			    phba->fcf.current_rec.fcf_indx) {
+<<<<<<< HEAD
 				lpfc_printf_log(phba, KERN_ERR, LOG_FIP,
+=======
+				lpfc_printf_log(phba, KERN_ERR,
+						LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"2862 FCF (x%x) matches property "
 					"of in-use FCF (x%x)\n",
 					bf_get(lpfc_fcf_record_fcf_index,
@@ -2242,11 +3345,22 @@ lpfc_mbx_cmpl_fcf_scan_read_fcf_rec(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 				spin_unlock_irq(&phba->hbalock);
 				lpfc_printf_log(phba, KERN_INFO, LOG_FIP,
 						"2836 New FCF matches in-use "
+<<<<<<< HEAD
 						"FCF (x%x)\n",
 						phba->fcf.current_rec.fcf_indx);
 				goto out;
 			} else
 				lpfc_printf_log(phba, KERN_ERR, LOG_FIP,
+=======
+						"FCF (x%x), port_state:x%x, "
+						"fc_flag:x%lx\n",
+						phba->fcf.current_rec.fcf_indx,
+						phba->pport->port_state,
+						phba->pport->fc_flag);
+				goto out;
+			} else
+				lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"2863 New FCF (x%x) matches "
 					"property of in-use FCF (x%x)\n",
 					bf_get(lpfc_fcf_record_fcf_index,
@@ -2355,9 +3469,12 @@ lpfc_mbx_cmpl_fcf_scan_read_fcf_rec(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 		phba->fcf.fcf_flag |= FCF_AVAILABLE;
 		/* Setup initial running random FCF selection count */
 		phba->fcf.eligible_fcf_cnt = 1;
+<<<<<<< HEAD
 		/* Seeding the random number generator for random selection */
 		seed = (uint32_t)(0xFFFFFFFF & jiffies);
 		srandom32(seed);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irq(&phba->hbalock);
 	goto read_next_fcf;
@@ -2497,7 +3614,11 @@ lpfc_mbx_cmpl_fcf_rr_read_fcf_rec(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	uint32_t boot_flag, addr_mode;
 	uint16_t next_fcf_index, fcf_index;
 	uint16_t current_fcf_index;
+<<<<<<< HEAD
 	uint16_t vlan_id;
+=======
+	uint16_t vlan_id = LPFC_FCOE_NULL_VID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	/* If link state is not up, stop the roundrobin failover process */
@@ -2515,8 +3636,16 @@ lpfc_mbx_cmpl_fcf_rr_read_fcf_rec(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	if (!new_fcf_record) {
 		lpfc_printf_log(phba, KERN_WARNING, LOG_FIP,
 				"2766 Mailbox command READ_FCF_RECORD "
+<<<<<<< HEAD
 				"failed to retrieve a FCF record.\n");
 		goto error_out;
+=======
+				"failed to retrieve a FCF record. "
+				"hba_flg x%x fcf_flg x%x\n", phba->hba_flag,
+				phba->fcf.fcf_flag);
+		lpfc_unregister_fcf_rescan(phba);
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Get the needed parameters from FCF record */
@@ -2599,7 +3728,11 @@ lpfc_mbx_cmpl_read_fcf_rec(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	struct fcf_record *new_fcf_record;
 	uint32_t boot_flag, addr_mode;
 	uint16_t fcf_index, next_fcf_index;
+<<<<<<< HEAD
 	uint16_t vlan_id;
+=======
+	uint16_t vlan_id =  LPFC_FCOE_NULL_VID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	/* If link state is not up, no need to proceed */
@@ -2647,7 +3780,11 @@ out:
  *
  * This function handles completion of init vfi mailbox command.
  */
+<<<<<<< HEAD
 void
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lpfc_init_vfi_cmpl(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 {
 	struct lpfc_vport *vport = mboxq->vport;
@@ -2660,10 +3797,16 @@ lpfc_init_vfi_cmpl(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	    (bf_get(lpfc_sli_intf_if_type, &phba->sli4_hba.sli_intf) !=
 			LPFC_SLI_INTF_IF_TYPE_0) &&
 	    mboxq->u.mb.mbxStatus != MBX_VFI_IN_USE) {
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR,
 				LOG_MBOX,
 				"2891 Init VFI mailbox failed 0x%x\n",
 				mboxq->u.mb.mbxStatus);
+=======
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "2891 Init VFI mailbox failed 0x%x\n",
+				 mboxq->u.mb.mbxStatus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mempool_free(mboxq, phba->mbox_mem_pool);
 		lpfc_vport_set_state(vport, FC_VPORT_FAILED);
 		return;
@@ -2691,7 +3834,11 @@ lpfc_issue_init_vfi(struct lpfc_vport *vport)
 	mboxq = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mboxq) {
 		lpfc_printf_vlog(vport, KERN_ERR,
+<<<<<<< HEAD
 			LOG_MBOX, "2892 Failed to allocate "
+=======
+			LOG_TRACE_EVENT, "2892 Failed to allocate "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"init_vfi mailbox\n");
 		return;
 	}
@@ -2699,8 +3846,13 @@ lpfc_issue_init_vfi(struct lpfc_vport *vport)
 	mboxq->mbox_cmpl = lpfc_init_vfi_cmpl;
 	rc = lpfc_sli_issue_mbox(phba, mboxq, MBX_NOWAIT);
 	if (rc == MBX_NOT_FINISHED) {
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR,
 			LOG_MBOX, "2893 Failed to issue init_vfi mailbox\n");
+=======
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "2893 Failed to issue init_vfi mailbox\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mempool_free(mboxq, vport->phba->mbox_mem_pool);
 	}
 }
@@ -2717,6 +3869,7 @@ lpfc_init_vpi_cmpl(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 {
 	struct lpfc_vport *vport = mboxq->vport;
 	struct lpfc_nodelist *ndlp;
+<<<<<<< HEAD
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
 
 	if (mboxq->u.mb.mbxStatus) {
@@ -2724,20 +3877,35 @@ lpfc_init_vpi_cmpl(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 				LOG_MBOX,
 				"2609 Init VPI mailbox failed 0x%x\n",
 				mboxq->u.mb.mbxStatus);
+=======
+
+	if (mboxq->u.mb.mbxStatus) {
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "2609 Init VPI mailbox failed 0x%x\n",
+				 mboxq->u.mb.mbxStatus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mempool_free(mboxq, phba->mbox_mem_pool);
 		lpfc_vport_set_state(vport, FC_VPORT_FAILED);
 		return;
 	}
+<<<<<<< HEAD
 	spin_lock_irq(shost->host_lock);
 	vport->fc_flag &= ~FC_VPORT_NEEDS_INIT_VPI;
 	spin_unlock_irq(shost->host_lock);
+=======
+	clear_bit(FC_VPORT_NEEDS_INIT_VPI, &vport->fc_flag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If this port is physical port or FDISC is done, do reg_vpi */
 	if ((phba->pport == vport) || (vport->port_state == LPFC_FDISC)) {
 			ndlp = lpfc_findnode_did(vport, Fabric_DID);
 			if (!ndlp)
 				lpfc_printf_vlog(vport, KERN_ERR,
+<<<<<<< HEAD
 					LOG_DISCOVERY,
+=======
+					LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"2731 Cannot find fabric "
 					"controller node\n");
 			else
@@ -2750,7 +3918,11 @@ lpfc_init_vpi_cmpl(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 		lpfc_initial_fdisc(vport);
 	else {
 		lpfc_vport_set_state(vport, FC_VPORT_NO_FABRIC_SUPP);
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_ELS,
+=======
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "2606 No NPIV Fabric support\n");
 	}
 	mempool_free(mboxq, phba->mbox_mem_pool);
@@ -2768,12 +3940,31 @@ void
 lpfc_issue_init_vpi(struct lpfc_vport *vport)
 {
 	LPFC_MBOXQ_t *mboxq;
+<<<<<<< HEAD
 	int rc;
+=======
+	int rc, vpi;
+
+	if ((vport->port_type != LPFC_PHYSICAL_PORT) && (!vport->vpi)) {
+		vpi = lpfc_alloc_vpi(vport->phba);
+		if (!vpi) {
+			lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+					 "3303 Failed to obtain vport vpi\n");
+			lpfc_vport_set_state(vport, FC_VPORT_FAILED);
+			return;
+		}
+		vport->vpi = vpi;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mboxq = mempool_alloc(vport->phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mboxq) {
 		lpfc_printf_vlog(vport, KERN_ERR,
+<<<<<<< HEAD
 			LOG_MBOX, "2607 Failed to allocate "
+=======
+			LOG_TRACE_EVENT, "2607 Failed to allocate "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"init_vpi mailbox\n");
 		return;
 	}
@@ -2782,8 +3973,13 @@ lpfc_issue_init_vpi(struct lpfc_vport *vport)
 	mboxq->mbox_cmpl = lpfc_init_vpi_cmpl;
 	rc = lpfc_sli_issue_mbox(vport->phba, mboxq, MBX_NOWAIT);
 	if (rc == MBX_NOT_FINISHED) {
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR,
 			LOG_MBOX, "2608 Failed to issue init_vpi mailbox\n");
+=======
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "2608 Failed to issue init_vpi mailbox\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mempool_free(mboxq, vport->phba->mbox_mem_pool);
 	}
 }
@@ -2817,7 +4013,12 @@ lpfc_start_fdiscs(struct lpfc_hba *phba)
 						     FC_VPORT_LINKDOWN);
 				continue;
 			}
+<<<<<<< HEAD
 			if (vports[i]->fc_flag & FC_VPORT_NEEDS_INIT_VPI) {
+=======
+			if (test_bit(FC_VPORT_NEEDS_INIT_VPI,
+				     &vports[i]->fc_flag)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lpfc_issue_init_vpi(vports[i]);
 				continue;
 			}
@@ -2827,7 +4028,11 @@ lpfc_start_fdiscs(struct lpfc_hba *phba)
 				lpfc_vport_set_state(vports[i],
 						     FC_VPORT_NO_FABRIC_SUPP);
 				lpfc_printf_vlog(vports[i], KERN_ERR,
+<<<<<<< HEAD
 						 LOG_ELS,
+=======
+						 LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						 "0259 No NPIV "
 						 "Fabric support\n");
 			}
@@ -2839,7 +4044,10 @@ lpfc_start_fdiscs(struct lpfc_hba *phba)
 void
 lpfc_mbx_cmpl_reg_vfi(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 {
+<<<<<<< HEAD
 	struct lpfc_dmabuf *dmabuf = mboxq->context1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_vport *vport = mboxq->vport;
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
 
@@ -2851,10 +4059,17 @@ lpfc_mbx_cmpl_reg_vfi(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	    (bf_get(lpfc_sli_intf_if_type, &phba->sli4_hba.sli_intf) !=
 			LPFC_SLI_INTF_IF_TYPE_0) &&
 	    mboxq->u.mb.mbxStatus != MBX_VFI_IN_USE) {
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_MBOX,
 			 "2018 REG_VFI mbxStatus error x%x "
 			 "HBA state x%x\n",
 			 mboxq->u.mb.mbxStatus, vport->port_state);
+=======
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "2018 REG_VFI mbxStatus error x%x "
+				 "HBA state x%x\n",
+				 mboxq->u.mb.mbxStatus, vport->port_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (phba->fc_topology == LPFC_TOPOLOGY_LOOP) {
 			/* FLOGI failed, use loop map to make discovery list */
 			lpfc_disc_list_loopmap(vport);
@@ -2865,12 +4080,31 @@ lpfc_mbx_cmpl_reg_vfi(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 		lpfc_vport_set_state(vport, FC_VPORT_FAILED);
 		goto out_free_mem;
 	}
+<<<<<<< HEAD
 	/* The VPI is implicitly registered when the VFI is registered */
 	spin_lock_irq(shost->host_lock);
 	vport->vpi_state |= LPFC_VPI_REGISTERED;
 	vport->fc_flag |= FC_VFI_REGISTERED;
 	vport->fc_flag &= ~FC_VPORT_NEEDS_REG_VPI;
 	vport->fc_flag &= ~FC_VPORT_NEEDS_INIT_VPI;
+=======
+
+	/* If the VFI is already registered, there is nothing else to do
+	 * Unless this was a VFI update and we are in PT2PT mode, then
+	 * we should drop through to set the port state to ready.
+	 */
+	if (test_bit(FC_VFI_REGISTERED, &vport->fc_flag))
+		if (!(phba->sli_rev == LPFC_SLI_REV4 &&
+		      test_bit(FC_PT2PT, &vport->fc_flag)))
+			goto out_free_mem;
+
+	/* The VPI is implicitly registered when the VFI is registered */
+	set_bit(FC_VFI_REGISTERED, &vport->fc_flag);
+	clear_bit(FC_VPORT_NEEDS_REG_VPI, &vport->fc_flag);
+	clear_bit(FC_VPORT_NEEDS_INIT_VPI, &vport->fc_flag);
+	spin_lock_irq(shost->host_lock);
+	vport->vpi_state |= LPFC_VPI_REGISTERED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(shost->host_lock);
 
 	/* In case SLI4 FC loopback test, we are ready */
@@ -2880,6 +4114,7 @@ lpfc_mbx_cmpl_reg_vfi(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 		goto out_free_mem;
 	}
 
+<<<<<<< HEAD
 	if (vport->port_state == LPFC_FABRIC_CFG_LINK) {
 		/* For private loop just start discovery and we are done. */
 		if ((phba->fc_topology == LPFC_TOPOLOGY_LOOP) &&
@@ -2888,6 +4123,31 @@ lpfc_mbx_cmpl_reg_vfi(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 			lpfc_disc_list_loopmap(vport);
 			/* Start discovery */
 			lpfc_disc_start(vport);
+=======
+	lpfc_printf_vlog(vport, KERN_INFO, LOG_SLI,
+			 "3313 cmpl reg vfi  port_state:%x fc_flag:%lx "
+			 "myDid:%x alpacnt:%d LinkState:%x topology:%x\n",
+			 vport->port_state, vport->fc_flag, vport->fc_myDID,
+			 vport->phba->alpa_map[0],
+			 phba->link_state, phba->fc_topology);
+
+	if (vport->port_state == LPFC_FABRIC_CFG_LINK) {
+		/*
+		 * For private loop or for NPort pt2pt,
+		 * just start discovery and we are done.
+		 */
+		if (test_bit(FC_PT2PT, &vport->fc_flag) ||
+		    (phba->fc_topology == LPFC_TOPOLOGY_LOOP &&
+		    !test_bit(FC_PUBLIC_LOOP, &vport->fc_flag))) {
+
+			/* Use loop map to make discovery list */
+			lpfc_disc_list_loopmap(vport);
+			/* Start discovery */
+			if (test_bit(FC_PT2PT, &vport->fc_flag))
+				vport->port_state = LPFC_VPORT_READY;
+			else
+				lpfc_disc_start(vport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			lpfc_start_fdiscs(phba);
 			lpfc_do_scr_ns_plogi(phba, vport);
@@ -2895,24 +4155,40 @@ lpfc_mbx_cmpl_reg_vfi(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	}
 
 out_free_mem:
+<<<<<<< HEAD
 	mempool_free(mboxq, phba->mbox_mem_pool);
 	lpfc_mbuf_free(phba, dmabuf->virt, dmabuf->phys);
 	kfree(dmabuf);
 	return;
+=======
+	lpfc_mbox_rsrc_cleanup(phba, mboxq, MBOX_THD_UNLOCKED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 lpfc_mbx_cmpl_read_sparam(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 {
 	MAILBOX_t *mb = &pmb->u.mb;
+<<<<<<< HEAD
 	struct lpfc_dmabuf *mp = (struct lpfc_dmabuf *) pmb->context1;
 	struct lpfc_vport  *vport = pmb->vport;
 
+=======
+	struct lpfc_dmabuf *mp = pmb->ctx_buf;
+	struct lpfc_vport  *vport = pmb->vport;
+	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
+	struct serv_parm *sp = &vport->fc_sparam;
+	uint32_t ed_tov;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check for error */
 	if (mb->mbxStatus) {
 		/* READ_SPARAM mbox error <mbxStatus> state <hba_state> */
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_MBOX,
+=======
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "0319 READ_SPARAM mbxStatus error x%x "
 				 "hba state x%x>\n",
 				 mb->mbxStatus, vport->port_state);
@@ -2922,12 +4198,30 @@ lpfc_mbx_cmpl_read_sparam(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 
 	memcpy((uint8_t *) &vport->fc_sparam, (uint8_t *) mp->virt,
 	       sizeof (struct serv_parm));
+<<<<<<< HEAD
 	lpfc_update_vport_wwn(vport);
+=======
+
+	ed_tov = be32_to_cpu(sp->cmn.e_d_tov);
+	if (sp->cmn.edtovResolution)	/* E_D_TOV ticks are in nanoseconds */
+		ed_tov = (ed_tov + 999999) / 1000000;
+
+	phba->fc_edtov = ed_tov;
+	phba->fc_ratov = (2 * ed_tov) / 1000;
+	if (phba->fc_ratov < FF_DEF_RATOV) {
+		/* RA_TOV should be atleast 10sec for initial flogi */
+		phba->fc_ratov = FF_DEF_RATOV;
+	}
+
+	lpfc_update_vport_wwn(vport);
+	fc_host_port_name(shost) = wwn_to_u64(vport->fc_portname.u.wwn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vport->port_type == LPFC_PHYSICAL_PORT) {
 		memcpy(&phba->wwnn, &vport->fc_nodename, sizeof(phba->wwnn));
 		memcpy(&phba->wwpn, &vport->fc_portname, sizeof(phba->wwnn));
 	}
 
+<<<<<<< HEAD
 	lpfc_mbuf_free(phba, mp->virt, mp->phys);
 	kfree(mp);
 	mempool_free(pmb, phba->mbox_mem_pool);
@@ -2940,6 +4234,22 @@ out:
 	lpfc_issue_clear_la(phba, vport);
 	mempool_free(pmb, phba->mbox_mem_pool);
 	return;
+=======
+	lpfc_mbox_rsrc_cleanup(phba, pmb, MBOX_THD_UNLOCKED);
+
+	/* Check if sending the FLOGI is being deferred to after we get
+	 * up to date CSPs from MBX_READ_SPARAM.
+	 */
+	if (phba->hba_flag & HBA_DEFER_FLOGI) {
+		lpfc_initial_flogi(vport);
+		phba->hba_flag &= ~HBA_DEFER_FLOGI;
+	}
+	return;
+
+out:
+	lpfc_mbox_rsrc_cleanup(phba, pmb, MBOX_THD_UNLOCKED);
+	lpfc_issue_clear_la(phba, vport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -2947,6 +4257,7 @@ lpfc_mbx_process_link_up(struct lpfc_hba *phba, struct lpfc_mbx_read_top *la)
 {
 	struct lpfc_vport *vport = phba->pport;
 	LPFC_MBOXQ_t *sparam_mbox, *cfglink_mbox = NULL;
+<<<<<<< HEAD
 	struct Scsi_Host *shost;
 	int i;
 	struct lpfc_dmabuf *mp;
@@ -2972,6 +4283,47 @@ lpfc_mbx_process_link_up(struct lpfc_hba *phba, struct lpfc_mbx_read_top *la)
 	phba->link_flag &= ~LS_NPIV_FAB_SUPPORTED;
 
 	shost = lpfc_shost_from_vport(vport);
+=======
+	int i;
+	int rc;
+	struct fcf_record *fcf_record;
+	unsigned long iflags;
+
+	spin_lock_irqsave(&phba->hbalock, iflags);
+	phba->fc_linkspeed = bf_get(lpfc_mbx_read_top_link_spd, la);
+
+	if (!(phba->hba_flag & HBA_FCOE_MODE)) {
+		switch (bf_get(lpfc_mbx_read_top_link_spd, la)) {
+		case LPFC_LINK_SPEED_1GHZ:
+		case LPFC_LINK_SPEED_2GHZ:
+		case LPFC_LINK_SPEED_4GHZ:
+		case LPFC_LINK_SPEED_8GHZ:
+		case LPFC_LINK_SPEED_10GHZ:
+		case LPFC_LINK_SPEED_16GHZ:
+		case LPFC_LINK_SPEED_32GHZ:
+		case LPFC_LINK_SPEED_64GHZ:
+		case LPFC_LINK_SPEED_128GHZ:
+		case LPFC_LINK_SPEED_256GHZ:
+			break;
+		default:
+			phba->fc_linkspeed = LPFC_LINK_SPEED_UNKNOWN;
+			break;
+		}
+	}
+
+	if (phba->fc_topology &&
+	    phba->fc_topology != bf_get(lpfc_mbx_read_top_topology, la)) {
+		lpfc_printf_log(phba, KERN_WARNING, LOG_SLI,
+				"3314 Toplogy changed was 0x%x is 0x%x\n",
+				phba->fc_topology,
+				bf_get(lpfc_mbx_read_top_topology, la));
+		phba->fc_topology_changed = 1;
+	}
+
+	phba->fc_topology = bf_get(lpfc_mbx_read_top_topology, la);
+	phba->link_flag &= ~(LS_NPIV_FAB_SUPPORTED | LS_CT_VEN_RPA);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (phba->fc_topology == LPFC_TOPOLOGY_LOOP) {
 		phba->sli3_options &= ~LPFC_SLI3_NPIV_ENABLED;
 
@@ -2983,11 +4335,16 @@ lpfc_mbx_process_link_up(struct lpfc_hba *phba, struct lpfc_mbx_read_top *la)
 				"1309 Link Up Event npiv not supported in loop "
 				"topology\n");
 				/* Get Loop Map information */
+<<<<<<< HEAD
 		if (bf_get(lpfc_mbx_read_top_il, la)) {
 			spin_lock(shost->host_lock);
 			vport->fc_flag |= FC_LBIT;
 			spin_unlock(shost->host_lock);
 		}
+=======
+		if (bf_get(lpfc_mbx_read_top_il, la))
+			set_bit(FC_LBIT, &vport->fc_flag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		vport->fc_myDID = bf_get(lpfc_mbx_read_top_alpa_granted, la);
 		i = la->lilpBde64.tus.f.bdeSize;
@@ -3036,6 +4393,7 @@ lpfc_mbx_process_link_up(struct lpfc_hba *phba, struct lpfc_mbx_read_top *la)
 				phba->sli3_options |= LPFC_SLI3_NPIV_ENABLED;
 		}
 		vport->fc_myDID = phba->fc_pref_DID;
+<<<<<<< HEAD
 		spin_lock(shost->host_lock);
 		vport->fc_flag |= FC_LBIT;
 		spin_unlock(shost->host_lock);
@@ -3043,6 +4401,15 @@ lpfc_mbx_process_link_up(struct lpfc_hba *phba, struct lpfc_mbx_read_top *la)
 	spin_unlock_irq(&phba->hbalock);
 
 	lpfc_linkup(phba);
+=======
+		set_bit(FC_LBIT, &vport->fc_flag);
+	}
+	spin_unlock_irqrestore(&phba->hbalock, iflags);
+
+	lpfc_linkup(phba);
+	sparam_mbox = NULL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sparam_mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!sparam_mbox)
 		goto out;
@@ -3056,10 +4423,14 @@ lpfc_mbx_process_link_up(struct lpfc_hba *phba, struct lpfc_mbx_read_top *la)
 	sparam_mbox->mbox_cmpl = lpfc_mbx_cmpl_read_sparam;
 	rc = lpfc_sli_issue_mbox(phba, sparam_mbox, MBX_NOWAIT);
 	if (rc == MBX_NOT_FINISHED) {
+<<<<<<< HEAD
 		mp = (struct lpfc_dmabuf *) sparam_mbox->context1;
 		lpfc_mbuf_free(phba, mp->virt, mp->phys);
 		kfree(mp);
 		mempool_free(sparam_mbox, phba->mbox_mem_pool);
+=======
+		lpfc_mbox_rsrc_cleanup(phba, sparam_mbox, MBOX_THD_UNLOCKED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -3088,7 +4459,11 @@ lpfc_mbx_process_link_up(struct lpfc_hba *phba, struct lpfc_mbx_read_top *la)
 					GFP_KERNEL);
 			if (unlikely(!fcf_record)) {
 				lpfc_printf_log(phba, KERN_ERR,
+<<<<<<< HEAD
 					LOG_MBOX | LOG_SLI,
+=======
+					LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"2554 Could not allocate memory for "
 					"fcf record\n");
 				rc = -ENODEV;
@@ -3100,7 +4475,11 @@ lpfc_mbx_process_link_up(struct lpfc_hba *phba, struct lpfc_mbx_read_top *la)
 			rc = lpfc_sli4_add_fcf_record(phba, fcf_record);
 			if (unlikely(rc)) {
 				lpfc_printf_log(phba, KERN_ERR,
+<<<<<<< HEAD
 					LOG_MBOX | LOG_SLI,
+=======
+					LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"2013 Could not manually add FCF "
 					"record 0, status %d\n", rc);
 				rc = -ENODEV;
@@ -3113,33 +4492,61 @@ lpfc_mbx_process_link_up(struct lpfc_hba *phba, struct lpfc_mbx_read_top *la)
 		 * The driver is expected to do FIP/FCF. Call the port
 		 * and get the FCF Table.
 		 */
+<<<<<<< HEAD
 		spin_lock_irq(&phba->hbalock);
 		if (phba->hba_flag & FCF_TS_INPROG) {
 			spin_unlock_irq(&phba->hbalock);
+=======
+		spin_lock_irqsave(&phba->hbalock, iflags);
+		if (phba->hba_flag & FCF_TS_INPROG) {
+			spin_unlock_irqrestore(&phba->hbalock, iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		/* This is the initial FCF discovery scan */
 		phba->fcf.fcf_flag |= FCF_INIT_DISC;
+<<<<<<< HEAD
 		spin_unlock_irq(&phba->hbalock);
+=======
+		spin_unlock_irqrestore(&phba->hbalock, iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_printf_log(phba, KERN_INFO, LOG_FIP | LOG_DISCOVERY,
 				"2778 Start FCF table scan at linkup\n");
 		rc = lpfc_sli4_fcf_scan_read_fcf_rec(phba,
 						     LPFC_FCOE_FCF_GET_FIRST);
 		if (rc) {
+<<<<<<< HEAD
 			spin_lock_irq(&phba->hbalock);
 			phba->fcf.fcf_flag &= ~FCF_INIT_DISC;
 			spin_unlock_irq(&phba->hbalock);
+=======
+			spin_lock_irqsave(&phba->hbalock, iflags);
+			phba->fcf.fcf_flag &= ~FCF_INIT_DISC;
+			spin_unlock_irqrestore(&phba->hbalock, iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 		/* Reset FCF roundrobin bmask for new discovery */
 		lpfc_sli4_clear_fcf_rr_bmask(phba);
 	}
 
+<<<<<<< HEAD
 	return;
 out:
 	lpfc_vport_set_state(vport, FC_VPORT_FAILED);
 	lpfc_printf_vlog(vport, KERN_ERR, LOG_MBOX,
 			 "0263 Discovery Mailbox error: state: 0x%x : %p %p\n",
+=======
+	/* Prepare for LINK up registrations */
+	memset(phba->os_host_name, 0, sizeof(phba->os_host_name));
+	scnprintf(phba->os_host_name, sizeof(phba->os_host_name), "%s",
+		  init_utsname()->nodename);
+	return;
+out:
+	lpfc_vport_set_state(vport, FC_VPORT_FAILED);
+	lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+			 "0263 Discovery Mailbox error: state: 0x%x : x%px x%px\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 vport->port_state, sparam_mbox, cfglink_mbox);
 	lpfc_issue_clear_la(phba, vport);
 	return;
@@ -3175,12 +4582,17 @@ lpfc_mbx_issue_link_down(struct lpfc_hba *phba)
  * This routine handles processing a READ_TOPOLOGY mailbox
  * command upon completion. It is setup in the LPFC_MBOXQ
  * as the completion routine when the command is
+<<<<<<< HEAD
  * handed off to the SLI layer.
+=======
+ * handed off to the SLI layer. SLI4 only.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void
 lpfc_mbx_cmpl_read_topology(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 {
 	struct lpfc_vport *vport = pmb->vport;
+<<<<<<< HEAD
 	struct Scsi_Host  *shost = lpfc_shost_from_vport(vport);
 	struct lpfc_mbx_read_top *la;
 	MAILBOX_t *mb = &pmb->u.mb;
@@ -3188,6 +4600,19 @@ lpfc_mbx_cmpl_read_topology(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 
 	/* Unblock ELS traffic */
 	phba->sli.ring[LPFC_ELS_RING].flag &= ~LPFC_STOP_IOCB_EVENT;
+=======
+	struct lpfc_mbx_read_top *la;
+	struct lpfc_sli_ring *pring;
+	MAILBOX_t *mb = &pmb->u.mb;
+	struct lpfc_dmabuf *mp = pmb->ctx_buf;
+	uint8_t attn_type;
+
+	/* Unblock ELS traffic */
+	pring = lpfc_phba_elsring(phba);
+	if (pring)
+		pring->flag &= ~LPFC_STOP_IOCB_EVENT;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check for error */
 	if (mb->mbxStatus) {
 		lpfc_printf_log(phba, KERN_INFO, LOG_LINK_EVENT,
@@ -3199,6 +4624,7 @@ lpfc_mbx_cmpl_read_topology(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	}
 
 	la = (struct lpfc_mbx_read_top *) &pmb->u.mb.un.varReadTop;
+<<<<<<< HEAD
 
 	memcpy(&phba->alpa_map[0], mp->virt, 128);
 
@@ -3213,11 +4639,26 @@ lpfc_mbx_cmpl_read_topology(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	    (phba->fc_eventTag == la->eventTag)) {
 		phba->fc_stat.LinkMultiEvent++;
 		if (bf_get(lpfc_mbx_read_top_att_type, la) == LPFC_ATT_LINK_UP)
+=======
+	attn_type = bf_get(lpfc_mbx_read_top_att_type, la);
+
+	memcpy(&phba->alpa_map[0], mp->virt, 128);
+
+	if (bf_get(lpfc_mbx_read_top_pb, la))
+		set_bit(FC_BYPASSED_MODE, &vport->fc_flag);
+	else
+		clear_bit(FC_BYPASSED_MODE, &vport->fc_flag);
+
+	if (phba->fc_eventTag <= la->eventTag) {
+		phba->fc_stat.LinkMultiEvent++;
+		if (attn_type == LPFC_ATT_LINK_UP)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (phba->fc_eventTag != 0)
 				lpfc_linkdown(phba);
 	}
 
 	phba->fc_eventTag = la->eventTag;
+<<<<<<< HEAD
 	spin_lock_irq(&phba->hbalock);
 	if (bf_get(lpfc_mbx_read_top_mm, la))
 		phba->sli.sli_flag |= LPFC_MENLO_MAINT;
@@ -3228,6 +4669,10 @@ lpfc_mbx_cmpl_read_topology(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	phba->link_events++;
 	if ((bf_get(lpfc_mbx_read_top_att_type, la) == LPFC_ATT_LINK_UP) &&
 	    (!bf_get(lpfc_mbx_read_top_mm, la))) {
+=======
+	phba->link_events++;
+	if (attn_type == LPFC_ATT_LINK_UP) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phba->fc_stat.LinkUp++;
 		if (phba->link_flag & LS_LOOPBACK_MODE) {
 			lpfc_printf_log(phba, KERN_ERR, LOG_LINK_EVENT,
@@ -3241,12 +4686,17 @@ lpfc_mbx_cmpl_read_topology(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 		} else {
 			lpfc_printf_log(phba, KERN_ERR, LOG_LINK_EVENT,
 					"1303 Link Up Event x%x received "
+<<<<<<< HEAD
 					"Data: x%x x%x x%x x%x x%x x%x %d\n",
+=======
+					"Data: x%x x%x x%x x%x x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					la->eventTag, phba->fc_eventTag,
 					bf_get(lpfc_mbx_read_top_alpa_granted,
 					       la),
 					bf_get(lpfc_mbx_read_top_link_spd, la),
 					phba->alpa_map[0],
+<<<<<<< HEAD
 					bf_get(lpfc_mbx_read_top_mm, la),
 					bf_get(lpfc_mbx_read_top_fa, la),
 					phba->wait_4_mlo_maint_flg);
@@ -3254,11 +4704,26 @@ lpfc_mbx_cmpl_read_topology(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 		lpfc_mbx_process_link_up(phba, la);
 	} else if (bf_get(lpfc_mbx_read_top_att_type, la) ==
 		   LPFC_ATT_LINK_DOWN) {
+=======
+					bf_get(lpfc_mbx_read_top_fa, la));
+		}
+		lpfc_mbx_process_link_up(phba, la);
+
+		if (phba->cmf_active_mode != LPFC_CFG_OFF)
+			lpfc_cmf_signal_init(phba);
+
+		if (phba->lmt & LMT_64Gb)
+			lpfc_read_lds_params(phba);
+
+	} else if (attn_type == LPFC_ATT_LINK_DOWN ||
+		   attn_type == LPFC_ATT_UNEXP_WWPN) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phba->fc_stat.LinkDown++;
 		if (phba->link_flag & LS_LOOPBACK_MODE)
 			lpfc_printf_log(phba, KERN_ERR, LOG_LINK_EVENT,
 				"1308 Link Down Event in loop back mode "
 				"x%x received "
+<<<<<<< HEAD
 				"Data: x%x x%x x%x\n",
 				la->eventTag, phba->fc_eventTag,
 				phba->pport->port_state, vport->fc_flag);
@@ -3314,6 +4779,36 @@ lpfc_mbx_cmpl_read_topology_free_mbuf:
 	kfree(mp);
 	mempool_free(pmb, phba->mbox_mem_pool);
 	return;
+=======
+				"Data: x%x x%x x%lx\n",
+				la->eventTag, phba->fc_eventTag,
+				phba->pport->port_state, vport->fc_flag);
+		else if (attn_type == LPFC_ATT_UNEXP_WWPN)
+			lpfc_printf_log(phba, KERN_ERR, LOG_LINK_EVENT,
+				"1313 Link Down Unexpected FA WWPN Event x%x "
+				"received Data: x%x x%x x%lx x%x\n",
+				la->eventTag, phba->fc_eventTag,
+				phba->pport->port_state, vport->fc_flag,
+				bf_get(lpfc_mbx_read_top_fa, la));
+		else
+			lpfc_printf_log(phba, KERN_ERR, LOG_LINK_EVENT,
+				"1305 Link Down Event x%x received "
+				"Data: x%x x%x x%lx x%x\n",
+				la->eventTag, phba->fc_eventTag,
+				phba->pport->port_state, vport->fc_flag,
+				bf_get(lpfc_mbx_read_top_fa, la));
+		lpfc_mbx_issue_link_down(phba);
+	}
+
+	if ((phba->sli_rev < LPFC_SLI_REV4) &&
+	    bf_get(lpfc_mbx_read_top_fa, la))
+		lpfc_printf_log(phba, KERN_INFO, LOG_LINK_EVENT,
+				"1311 fa %d\n",
+				bf_get(lpfc_mbx_read_top_fa, la));
+
+lpfc_mbx_cmpl_read_topology_free_mbuf:
+	lpfc_mbox_rsrc_cleanup(phba, pmb, MBOX_THD_UNLOCKED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3326,6 +4821,7 @@ void
 lpfc_mbx_cmpl_reg_login(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 {
 	struct lpfc_vport  *vport = pmb->vport;
+<<<<<<< HEAD
 	struct lpfc_dmabuf *mp = (struct lpfc_dmabuf *) (pmb->context1);
 	struct lpfc_nodelist *ndlp = (struct lpfc_nodelist *) pmb->context2;
 	struct Scsi_Host  *shost = lpfc_shost_from_vport(vport);
@@ -3333,6 +4829,23 @@ lpfc_mbx_cmpl_reg_login(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	pmb->context1 = NULL;
 	pmb->context2 = NULL;
 
+=======
+	struct lpfc_dmabuf *mp = pmb->ctx_buf;
+	struct lpfc_nodelist *ndlp = pmb->ctx_ndlp;
+
+	/* The driver calls the state machine with the pmb pointer
+	 * but wants to make sure a stale ctx_buf isn't acted on.
+	 * The ctx_buf is restored later and cleaned up.
+	 */
+	pmb->ctx_buf = NULL;
+	pmb->ctx_ndlp = NULL;
+
+	lpfc_printf_vlog(vport, KERN_INFO, LOG_SLI | LOG_NODE | LOG_DISCOVERY,
+			 "0002 rpi:%x DID:%x flg:%x %d x%px\n",
+			 ndlp->nlp_rpi, ndlp->nlp_DID, ndlp->nlp_flag,
+			 kref_read(&ndlp->kref),
+			 ndlp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ndlp->nlp_flag & NLP_REG_LOGIN_SEND)
 		ndlp->nlp_flag &= ~NLP_REG_LOGIN_SEND;
 
@@ -3346,6 +4859,7 @@ lpfc_mbx_cmpl_reg_login(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 		 * there is another reg login in
 		 * process.
 		 */
+<<<<<<< HEAD
 		spin_lock_irq(shost->host_lock);
 		ndlp->nlp_flag &= ~NLP_IGNR_REG_CMPL;
 		spin_unlock_irq(shost->host_lock);
@@ -3357,6 +4871,26 @@ lpfc_mbx_cmpl_reg_login(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	lpfc_mbuf_free(phba, mp->virt, mp->phys);
 	kfree(mp);
 	mempool_free(pmb, phba->mbox_mem_pool);
+=======
+		spin_lock_irq(&ndlp->lock);
+		ndlp->nlp_flag &= ~NLP_IGNR_REG_CMPL;
+		spin_unlock_irq(&ndlp->lock);
+
+		/*
+		 * We cannot leave the RPI registered because
+		 * if we go thru discovery again for this ndlp
+		 * a subsequent REG_RPI will fail.
+		 */
+		ndlp->nlp_flag |= NLP_RPI_REGISTERED;
+		lpfc_unreg_rpi(vport, ndlp);
+	}
+
+	/* Call state machine */
+	lpfc_disc_state_machine(vport, ndlp, pmb, NLP_EVT_CMPL_REG_LOGIN);
+	pmb->ctx_buf = mp;
+	lpfc_mbox_rsrc_cleanup(phba, pmb, MBOX_THD_UNLOCKED);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* decrement the node reference count held for this callback
 	 * function.
 	 */
@@ -3381,6 +4915,7 @@ lpfc_mbx_cmpl_unreg_vpi(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 		break;
 	/* If VPI is busy, reset the HBA */
 	case 0x9700:
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_NODE,
 			"2798 Unreg_vpi failed vpi 0x%x, mb status = 0x%x\n",
 			vport->vpi, mb->mbxStatus);
@@ -3393,13 +4928,31 @@ lpfc_mbx_cmpl_unreg_vpi(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	vport->fc_flag |= FC_VPORT_NEEDS_REG_VPI;
 	spin_unlock_irq(shost->host_lock);
 	vport->unreg_vpi_cmpl = VPORT_OK;
+=======
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+			"2798 Unreg_vpi failed vpi 0x%x, mb status = 0x%x\n",
+			vport->vpi, mb->mbxStatus);
+		if (!test_bit(FC_UNLOADING, &phba->pport->load_flag))
+			lpfc_workq_post_event(phba, NULL, NULL,
+				LPFC_EVT_RESET_HBA);
+	}
+
+	set_bit(FC_VPORT_NEEDS_REG_VPI, &vport->fc_flag);
+	spin_lock_irq(shost->host_lock);
+	vport->vpi_state &= ~LPFC_VPI_REGISTERED;
+	spin_unlock_irq(shost->host_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mempool_free(pmb, phba->mbox_mem_pool);
 	lpfc_cleanup_vports_rrqs(vport, NULL);
 	/*
 	 * This shost reference might have been taken at the beginning of
 	 * lpfc_vport_delete()
 	 */
+<<<<<<< HEAD
 	if ((vport->load_flag & FC_UNLOADING) && (vport != phba->pport))
+=======
+	if (test_bit(FC_UNLOADING, &vport->load_flag) && vport != phba->pport)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		scsi_host_put(shost);
 }
 
@@ -3419,10 +4972,16 @@ lpfc_mbx_unreg_vpi(struct lpfc_vport *vport)
 	mbox->mbox_cmpl = lpfc_mbx_cmpl_unreg_vpi;
 	rc = lpfc_sli_issue_mbox(phba, mbox, MBX_NOWAIT);
 	if (rc == MBX_NOT_FINISHED) {
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_MBOX | LOG_VPORT,
 				 "1800 Could not issue unreg_vpi\n");
 		mempool_free(mbox, phba->mbox_mem_pool);
 		vport->unreg_vpi_cmpl = VPORT_ERROR;
+=======
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "1800 Could not issue unreg_vpi\n");
+		mempool_free(mbox, phba->mbox_mem_pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 	return 0;
@@ -3443,6 +5002,7 @@ lpfc_mbx_cmpl_reg_vpi(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 				 "0912 cmpl_reg_vpi, mb status = 0x%x\n",
 				 mb->mbxStatus);
 		lpfc_vport_set_state(vport, FC_VPORT_FAILED);
+<<<<<<< HEAD
 		spin_lock_irq(shost->host_lock);
 		vport->fc_flag &= ~(FC_FABRIC | FC_PUBLIC_LOOP);
 		spin_unlock_irq(shost->host_lock);
@@ -3463,6 +5023,33 @@ lpfc_mbx_cmpl_reg_vpi(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 		spin_lock_irq(shost->host_lock);
 		vport->fc_flag &= ~FC_NDISC_ACTIVE;
 		spin_unlock_irq(shost->host_lock);
+=======
+		clear_bit(FC_FABRIC, &vport->fc_flag);
+		clear_bit(FC_PUBLIC_LOOP, &vport->fc_flag);
+		vport->fc_myDID = 0;
+
+		if ((vport->cfg_enable_fc4_type == LPFC_ENABLE_BOTH) ||
+		    (vport->cfg_enable_fc4_type == LPFC_ENABLE_NVME)) {
+			if (phba->nvmet_support)
+				lpfc_nvmet_update_targetport(phba);
+			else
+				lpfc_nvme_update_localport(vport);
+		}
+		goto out;
+	}
+
+	clear_bit(FC_VPORT_NEEDS_REG_VPI, &vport->fc_flag);
+	spin_lock_irq(shost->host_lock);
+	vport->vpi_state |= LPFC_VPI_REGISTERED;
+	spin_unlock_irq(shost->host_lock);
+	vport->num_disc_nodes = 0;
+	/* go thru NPR list and issue ELS PLOGIs */
+	if (atomic_read(&vport->fc_npr_cnt))
+		lpfc_els_disc_plogi(vport);
+
+	if (!vport->num_disc_nodes) {
+		clear_bit(FC_NDISC_ACTIVE, &vport->fc_flag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_can_disctmo(vport);
 	}
 	vport->port_state = LPFC_VPORT_READY;
@@ -3486,7 +5073,11 @@ lpfc_create_static_vport(struct lpfc_hba *phba)
 	LPFC_MBOXQ_t *pmb = NULL;
 	MAILBOX_t *mb;
 	struct static_vport_info *vport_info;
+<<<<<<< HEAD
 	int rc = 0, i;
+=======
+	int mbx_wait_rc = 0, i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_vport_identifiers vport_id;
 	struct fc_vport *new_fc_vport;
 	struct Scsi_Host *shost;
@@ -3498,17 +5089,29 @@ lpfc_create_static_vport(struct lpfc_hba *phba)
 
 	pmb = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!pmb) {
+<<<<<<< HEAD
 		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
+=======
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0542 lpfc_create_static_vport failed to"
 				" allocate mailbox memory\n");
 		return;
 	}
+<<<<<<< HEAD
 
+=======
+	memset(pmb, 0, sizeof(LPFC_MBOXQ_t));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mb = &pmb->u.mb;
 
 	vport_info = kzalloc(sizeof(struct static_vport_info), GFP_KERNEL);
 	if (!vport_info) {
+<<<<<<< HEAD
 		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
+=======
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"0543 lpfc_create_static_vport failed to"
 				" allocate vport_info\n");
 		mempool_free(pmb, phba->mbox_mem_pool);
@@ -3517,24 +5120,52 @@ lpfc_create_static_vport(struct lpfc_hba *phba)
 
 	vport_buff = (uint8_t *) vport_info;
 	do {
+<<<<<<< HEAD
+=======
+		/* While loop iteration forces a free dma buffer from
+		 * the previous loop because the mbox is reused and
+		 * the dump routine is a single-use construct.
+		 */
+		if (pmb->ctx_buf) {
+			mp = pmb->ctx_buf;
+			lpfc_mbuf_free(phba, mp->virt, mp->phys);
+			kfree(mp);
+			pmb->ctx_buf = NULL;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lpfc_dump_static_vport(phba, pmb, offset))
 			goto out;
 
 		pmb->vport = phba->pport;
+<<<<<<< HEAD
 		rc = lpfc_sli_issue_mbox_wait(phba, pmb, LPFC_MBOX_TMO);
 
 		if ((rc != MBX_SUCCESS) || mb->mbxStatus) {
+=======
+		mbx_wait_rc = lpfc_sli_issue_mbox_wait(phba, pmb,
+							LPFC_MBOX_TMO);
+
+		if ((mbx_wait_rc != MBX_SUCCESS) || mb->mbxStatus) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lpfc_printf_log(phba, KERN_WARNING, LOG_INIT,
 				"0544 lpfc_create_static_vport failed to"
 				" issue dump mailbox command ret 0x%x "
 				"status 0x%x\n",
+<<<<<<< HEAD
 				rc, mb->mbxStatus);
+=======
+				mbx_wait_rc, mb->mbxStatus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
 		if (phba->sli_rev == LPFC_SLI_REV4) {
 			byte_count = pmb->u.mqe.un.mb_words[5];
+<<<<<<< HEAD
 			mp = (struct lpfc_dmabuf *) pmb->context2;
+=======
+			mp = pmb->ctx_buf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (byte_count > sizeof(struct static_vport_info) -
 					offset)
 				byte_count = sizeof(struct static_vport_info)
@@ -3562,11 +5193,20 @@ lpfc_create_static_vport(struct lpfc_hba *phba)
 	if ((le32_to_cpu(vport_info->signature) != VPORT_INFO_SIG) ||
 		((le32_to_cpu(vport_info->rev) & VPORT_INFO_REV_MASK)
 			!= VPORT_INFO_REV)) {
+<<<<<<< HEAD
 		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
 			"0545 lpfc_create_static_vport bad"
 			" information header 0x%x 0x%x\n",
 			le32_to_cpu(vport_info->signature),
 			le32_to_cpu(vport_info->rev) & VPORT_INFO_REV_MASK);
+=======
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+				"0545 lpfc_create_static_vport bad"
+				" information header 0x%x 0x%x\n",
+				le32_to_cpu(vport_info->signature),
+				le32_to_cpu(vport_info->rev) &
+				VPORT_INFO_REV_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		goto out;
 	}
@@ -3598,6 +5238,7 @@ lpfc_create_static_vport(struct lpfc_hba *phba)
 
 out:
 	kfree(vport_info);
+<<<<<<< HEAD
 	if (rc != MBX_TIMEOUT) {
 		if (pmb->context2) {
 			mp = (struct lpfc_dmabuf *) pmb->context2;
@@ -3608,6 +5249,10 @@ out:
 	}
 
 	return;
+=======
+	if (mbx_wait_rc != MBX_TIMEOUT)
+		lpfc_mbox_rsrc_cleanup(phba, pmb, MBOX_THD_UNLOCKED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -3621,6 +5266,7 @@ lpfc_mbx_cmpl_fabric_reg_login(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 {
 	struct lpfc_vport *vport = pmb->vport;
 	MAILBOX_t *mb = &pmb->u.mb;
+<<<<<<< HEAD
 	struct lpfc_dmabuf *mp = (struct lpfc_dmabuf *) (pmb->context1);
 	struct lpfc_nodelist *ndlp;
 	struct Scsi_Host *shost;
@@ -3637,6 +5283,17 @@ lpfc_mbx_cmpl_fabric_reg_login(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 		kfree(mp);
 		mempool_free(pmb, phba->mbox_mem_pool);
 
+=======
+	struct lpfc_nodelist *ndlp = pmb->ctx_ndlp;
+
+	pmb->ctx_ndlp = NULL;
+
+	if (mb->mbxStatus) {
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "0258 Register Fabric login error: 0x%x\n",
+				 mb->mbxStatus);
+		lpfc_mbox_rsrc_cleanup(phba, pmb, MBOX_THD_UNLOCKED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (phba->fc_topology == LPFC_TOPOLOGY_LOOP) {
 			/* FLOGI failed, use loop map to make discovery list */
 			lpfc_disc_list_loopmap(vport);
@@ -3667,6 +5324,7 @@ lpfc_mbx_cmpl_fabric_reg_login(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	if (vport->port_state == LPFC_FABRIC_CFG_LINK) {
 		/* when physical port receive logo donot start
 		 * vport discovery */
+<<<<<<< HEAD
 		if (!(vport->fc_flag & FC_LOGO_RCVD_DID_CHNG))
 			lpfc_start_fdiscs(phba);
 		else {
@@ -3681,6 +5339,14 @@ lpfc_mbx_cmpl_fabric_reg_login(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	lpfc_mbuf_free(phba, mp->virt, mp->phys);
 	kfree(mp);
 	mempool_free(pmb, phba->mbox_mem_pool);
+=======
+		if (!test_and_clear_bit(FC_LOGO_RCVD_DID_CHNG, &vport->fc_flag))
+			lpfc_start_fdiscs(phba);
+		lpfc_do_scr_ns_plogi(phba, vport);
+	}
+
+	lpfc_mbox_rsrc_cleanup(phba, pmb, MBOX_THD_UNLOCKED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Drop the reference count from the mbox at the end after
 	 * all the current reference to the ndlp have been done.
@@ -3689,6 +5355,84 @@ lpfc_mbx_cmpl_fabric_reg_login(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 	return;
 }
 
+<<<<<<< HEAD
+=======
+ /*
+  * This routine will issue a GID_FT for each FC4 Type supported
+  * by the driver. ALL GID_FTs must complete before discovery is started.
+  */
+int
+lpfc_issue_gidft(struct lpfc_vport *vport)
+{
+	/* Good status, issue CT Request to NameServer */
+	if ((vport->cfg_enable_fc4_type == LPFC_ENABLE_BOTH) ||
+	    (vport->cfg_enable_fc4_type == LPFC_ENABLE_FCP)) {
+		if (lpfc_ns_cmd(vport, SLI_CTNS_GID_FT, 0, SLI_CTPT_FCP)) {
+			/* Cannot issue NameServer FCP Query, so finish up
+			 * discovery
+			 */
+			lpfc_printf_vlog(vport, KERN_ERR,
+					 LOG_TRACE_EVENT,
+					 "0604 %s FC TYPE %x %s\n",
+					 "Failed to issue GID_FT to ",
+					 FC_TYPE_FCP,
+					 "Finishing discovery.");
+			return 0;
+		}
+		vport->gidft_inp++;
+	}
+
+	if ((vport->cfg_enable_fc4_type == LPFC_ENABLE_BOTH) ||
+	    (vport->cfg_enable_fc4_type == LPFC_ENABLE_NVME)) {
+		if (lpfc_ns_cmd(vport, SLI_CTNS_GID_FT, 0, SLI_CTPT_NVME)) {
+			/* Cannot issue NameServer NVME Query, so finish up
+			 * discovery
+			 */
+			lpfc_printf_vlog(vport, KERN_ERR,
+					 LOG_TRACE_EVENT,
+					 "0605 %s FC_TYPE %x %s %d\n",
+					 "Failed to issue GID_FT to ",
+					 FC_TYPE_NVME,
+					 "Finishing discovery: gidftinp ",
+					 vport->gidft_inp);
+			if (vport->gidft_inp == 0)
+				return 0;
+		} else
+			vport->gidft_inp++;
+	}
+	return vport->gidft_inp;
+}
+
+/**
+ * lpfc_issue_gidpt - issue a GID_PT for all N_Ports
+ * @vport: The virtual port for which this call is being executed.
+ *
+ * This routine will issue a GID_PT to get a list of all N_Ports
+ *
+ * Return value :
+ *   0 - Failure to issue a GID_PT
+ *   1 - GID_PT issued
+ **/
+int
+lpfc_issue_gidpt(struct lpfc_vport *vport)
+{
+	/* Good status, issue CT Request to NameServer */
+	if (lpfc_ns_cmd(vport, SLI_CTNS_GID_PT, 0, GID_PT_N_PORT)) {
+		/* Cannot issue NameServer FCP Query, so finish up
+		 * discovery
+		 */
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "0606 %s Port TYPE %x %s\n",
+				 "Failed to issue GID_PT to ",
+				 GID_PT_N_PORT,
+				 "Finishing discovery.");
+		return 0;
+	}
+	vport->gidft_inp++;
+	return 1;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This routine handles processing a NameServer REG_LOGIN mailbox
  * command upon completion. It is setup in the LPFC_MBOXQ
@@ -3699,6 +5443,7 @@ void
 lpfc_mbx_cmpl_ns_reg_login(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 {
 	MAILBOX_t *mb = &pmb->u.mb;
+<<<<<<< HEAD
 	struct lpfc_dmabuf *mp = (struct lpfc_dmabuf *) (pmb->context1);
 	struct lpfc_nodelist *ndlp = (struct lpfc_nodelist *) pmb->context2;
 	struct lpfc_vport *vport = pmb->vport;
@@ -3711,16 +5456,47 @@ out:
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_ELS,
 				 "0260 Register NameServer error: 0x%x\n",
 				 mb->mbxStatus);
+=======
+	struct lpfc_nodelist *ndlp = pmb->ctx_ndlp;
+	struct lpfc_vport *vport = pmb->vport;
+	int rc;
+
+	pmb->ctx_ndlp = NULL;
+	vport->gidft_inp = 0;
+
+	if (mb->mbxStatus) {
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "0260 Register NameServer error: 0x%x\n",
+				 mb->mbxStatus);
+
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* decrement the node reference count held for this
 		 * callback function.
 		 */
 		lpfc_nlp_put(ndlp);
+<<<<<<< HEAD
 		lpfc_mbuf_free(phba, mp->virt, mp->phys);
 		kfree(mp);
 		mempool_free(pmb, phba->mbox_mem_pool);
 
 		/* If no other thread is using the ndlp, free it */
 		lpfc_nlp_not_used(ndlp);
+=======
+		lpfc_mbox_rsrc_cleanup(phba, pmb, MBOX_THD_UNLOCKED);
+
+		/* If the node is not registered with the scsi or nvme
+		 * transport, remove the fabric node.  The failed reg_login
+		 * is terminal and forces the removal of the last node
+		 * reference.
+		 */
+		if (!(ndlp->fc4_xpt_flags & (SCSI_XPT_REGD | NVME_XPT_REGD))) {
+			spin_lock_irq(&ndlp->lock);
+			ndlp->nlp_flag &= ~NLP_NPR_2B_DISC;
+			spin_unlock_irq(&ndlp->lock);
+			lpfc_nlp_put(ndlp);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (phba->fc_topology == LPFC_TOPOLOGY_LOOP) {
 			/*
@@ -3742,15 +5518,27 @@ out:
 	ndlp->nlp_flag |= NLP_RPI_REGISTERED;
 	ndlp->nlp_type |= NLP_FABRIC;
 	lpfc_nlp_set_state(vport, ndlp, NLP_STE_UNMAPPED_NODE);
+<<<<<<< HEAD
 
 	if (vport->port_state < LPFC_VPORT_READY) {
 		/* Link up discovery requires Fabric registration. */
 		lpfc_ns_cmd(vport, SLI_CTNS_RFF_ID, 0, 0); /* Do this first! */
+=======
+	lpfc_printf_vlog(vport, KERN_INFO, LOG_NODE | LOG_DISCOVERY,
+			 "0003 rpi:%x DID:%x flg:%x %d x%px\n",
+			 ndlp->nlp_rpi, ndlp->nlp_DID, ndlp->nlp_flag,
+			 kref_read(&ndlp->kref),
+			 ndlp);
+
+	if (vport->port_state < LPFC_VPORT_READY) {
+		/* Link up discovery requires Fabric registration. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_ns_cmd(vport, SLI_CTNS_RNN_ID, 0, 0);
 		lpfc_ns_cmd(vport, SLI_CTNS_RSNN_NN, 0, 0);
 		lpfc_ns_cmd(vport, SLI_CTNS_RSPN_ID, 0, 0);
 		lpfc_ns_cmd(vport, SLI_CTNS_RFT_ID, 0, 0);
 
+<<<<<<< HEAD
 		/* Issue SCR just before NameServer GID_FT Query */
 		lpfc_issue_els_scr(vport, SCR_DID, 0);
 	}
@@ -3773,6 +5561,102 @@ out:
 	return;
 }
 
+=======
+		if ((vport->cfg_enable_fc4_type == LPFC_ENABLE_BOTH) ||
+		    (vport->cfg_enable_fc4_type == LPFC_ENABLE_FCP))
+			lpfc_ns_cmd(vport, SLI_CTNS_RFF_ID, 0, FC_TYPE_FCP);
+
+		if ((vport->cfg_enable_fc4_type == LPFC_ENABLE_BOTH) ||
+		    (vport->cfg_enable_fc4_type == LPFC_ENABLE_NVME))
+			lpfc_ns_cmd(vport, SLI_CTNS_RFF_ID, 0,
+				    FC_TYPE_NVME);
+
+		/* Issue SCR just before NameServer GID_FT Query */
+		lpfc_issue_els_scr(vport, 0);
+
+		/* Link was bounced or a Fabric LOGO occurred.  Start EDC
+		 * with initial FW values provided the congestion mode is
+		 * not off.  Note that signals may or may not be supported
+		 * by the adapter but FPIN is provided by default for 1
+		 * or both missing signals support.
+		 */
+		if (phba->cmf_active_mode != LPFC_CFG_OFF) {
+			phba->cgn_reg_fpin = phba->cgn_init_reg_fpin;
+			phba->cgn_reg_signal = phba->cgn_init_reg_signal;
+			rc = lpfc_issue_els_edc(vport, 0);
+			lpfc_printf_log(phba, KERN_INFO,
+					LOG_INIT | LOG_ELS | LOG_DISCOVERY,
+					"4220 Issue EDC status x%x Data x%x\n",
+					rc, phba->cgn_init_reg_signal);
+		} else if (phba->lmt & LMT_64Gb) {
+			/* may send link fault capability descriptor */
+			lpfc_issue_els_edc(vport, 0);
+		} else {
+			lpfc_issue_els_rdf(vport, 0);
+		}
+	}
+
+	vport->fc_ns_retry = 0;
+	if (lpfc_issue_gidft(vport) == 0)
+		goto out;
+
+	/*
+	 * At this point in time we may need to wait for multiple
+	 * SLI_CTNS_GID_FT CT commands to complete before we start discovery.
+	 *
+	 * decrement the node reference count held for this
+	 * callback function.
+	 */
+	lpfc_nlp_put(ndlp);
+	lpfc_mbox_rsrc_cleanup(phba, pmb, MBOX_THD_UNLOCKED);
+	return;
+}
+
+/*
+ * This routine handles processing a Fabric Controller REG_LOGIN mailbox
+ * command upon completion. It is setup in the LPFC_MBOXQ
+ * as the completion routine when the command is handed off to the SLI layer.
+ */
+void
+lpfc_mbx_cmpl_fc_reg_login(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
+{
+	struct lpfc_vport *vport = pmb->vport;
+	MAILBOX_t *mb = &pmb->u.mb;
+	struct lpfc_nodelist *ndlp = pmb->ctx_ndlp;
+
+	pmb->ctx_ndlp = NULL;
+	if (mb->mbxStatus) {
+		lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+				 "0933 %s: Register FC login error: 0x%x\n",
+				 __func__, mb->mbxStatus);
+		goto out;
+	}
+
+	lpfc_check_nlp_post_devloss(vport, ndlp);
+
+	if (phba->sli_rev < LPFC_SLI_REV4)
+		ndlp->nlp_rpi = mb->un.varWords[0];
+
+	lpfc_printf_vlog(vport, KERN_INFO, LOG_NODE,
+			 "0934 %s: Complete FC x%x RegLogin rpi x%x ste x%x\n",
+			 __func__, ndlp->nlp_DID, ndlp->nlp_rpi,
+			 ndlp->nlp_state);
+
+	ndlp->nlp_flag |= NLP_RPI_REGISTERED;
+	ndlp->nlp_flag &= ~NLP_REG_LOGIN_SEND;
+	ndlp->nlp_type |= NLP_FABRIC;
+	lpfc_nlp_set_state(vport, ndlp, NLP_STE_UNMAPPED_NODE);
+
+ out:
+	lpfc_mbox_rsrc_cleanup(phba, pmb, MBOX_THD_UNLOCKED);
+
+	/* Drop the reference count from the mbox at the end after
+	 * all the current reference to the ndlp have been done.
+	 */
+	lpfc_nlp_put(ndlp);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 lpfc_register_remote_port(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 {
@@ -3781,6 +5665,13 @@ lpfc_register_remote_port(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 	struct lpfc_rport_data *rdata;
 	struct fc_rport_identifiers rport_ids;
 	struct lpfc_hba  *phba = vport->phba;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+
+	if (vport->cfg_enable_fc4_type == LPFC_ENABLE_NVME)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Remote port has reappeared. Re-register w/ FC transport */
 	rport_ids.node_name = wwn_to_u64(ndlp->nlp_nodename.u.wwn);
@@ -3788,6 +5679,7 @@ lpfc_register_remote_port(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 	rport_ids.port_id = ndlp->nlp_DID;
 	rport_ids.roles = FC_RPORT_ROLE_UNKNOWN;
 
+<<<<<<< HEAD
 	/*
 	 * We leave our node pointer in rport->dd_data when we unregister a
 	 * FCP target port.  But fc_remote_port_add zeros the space to which
@@ -3809,29 +5701,83 @@ lpfc_register_remote_port(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 
 	ndlp->rport = rport = fc_remote_port_add(shost, 0, &rport_ids);
 	if (!rport || !get_device(&rport->dev)) {
+=======
+
+	lpfc_debugfs_disc_trc(vport, LPFC_DISC_TRC_RPORT,
+			      "rport add:       did:x%x flg:x%x type x%x",
+			      ndlp->nlp_DID, ndlp->nlp_flag, ndlp->nlp_type);
+
+	/* Don't add the remote port if unloading. */
+	if (test_bit(FC_UNLOADING, &vport->load_flag))
+		return;
+
+	ndlp->rport = rport = fc_remote_port_add(shost, 0, &rport_ids);
+	if (!rport) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_printk(KERN_WARNING, &phba->pcidev->dev,
 			   "Warning: fc_remote_port_add failed\n");
 		return;
 	}
 
+<<<<<<< HEAD
 	/* initialize static port data */
+=======
+	/* Successful port add.  Complete initializing node data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rport->maxframe_size = ndlp->nlp_maxframe;
 	rport->supported_classes = ndlp->nlp_class_sup;
 	rdata = rport->dd_data;
 	rdata->pnode = lpfc_nlp_get(ndlp);
+<<<<<<< HEAD
 
 	if (ndlp->nlp_type & NLP_FCP_TARGET)
 		rport_ids.roles |= FC_RPORT_ROLE_FCP_TARGET;
 	if (ndlp->nlp_type & NLP_FCP_INITIATOR)
 		rport_ids.roles |= FC_RPORT_ROLE_FCP_INITIATOR;
+=======
+	if (!rdata->pnode) {
+		dev_warn(&phba->pcidev->dev,
+			 "Warning - node ref failed. Unreg rport\n");
+		fc_remote_port_delete(rport);
+		ndlp->rport = NULL;
+		return;
+	}
+
+	spin_lock_irqsave(&ndlp->lock, flags);
+	ndlp->fc4_xpt_flags |= SCSI_XPT_REGD;
+	spin_unlock_irqrestore(&ndlp->lock, flags);
+
+	if (ndlp->nlp_type & NLP_FCP_TARGET)
+		rport_ids.roles |= FC_PORT_ROLE_FCP_TARGET;
+	if (ndlp->nlp_type & NLP_FCP_INITIATOR)
+		rport_ids.roles |= FC_PORT_ROLE_FCP_INITIATOR;
+	if (ndlp->nlp_type & NLP_NVME_INITIATOR)
+		rport_ids.roles |= FC_PORT_ROLE_NVME_INITIATOR;
+	if (ndlp->nlp_type & NLP_NVME_TARGET)
+		rport_ids.roles |= FC_PORT_ROLE_NVME_TARGET;
+	if (ndlp->nlp_type & NLP_NVME_DISCOVERY)
+		rport_ids.roles |= FC_PORT_ROLE_NVME_DISCOVERY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rport_ids.roles !=  FC_RPORT_ROLE_UNKNOWN)
 		fc_remote_port_rolechg(rport, rport_ids.roles);
 
+<<<<<<< HEAD
+=======
+	lpfc_printf_vlog(ndlp->vport, KERN_INFO, LOG_NODE,
+			 "3183 %s rport x%px DID x%x, role x%x refcnt %d\n",
+			 __func__, rport, rport->port_id, rport->roles,
+			 kref_read(&ndlp->kref));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((rport->scsi_target_id != -1) &&
 	    (rport->scsi_target_id < LPFC_MAX_TARGET)) {
 		ndlp->nlp_sid = rport->scsi_target_id;
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -3839,6 +5785,7 @@ static void
 lpfc_unregister_remote_port(struct lpfc_nodelist *ndlp)
 {
 	struct fc_rport *rport = ndlp->rport;
+<<<<<<< HEAD
 
 	lpfc_debugfs_disc_trc(ndlp->vport, LPFC_DISC_TRC_RPORT,
 		"rport delete:    did:x%x flg:x%x type x%x",
@@ -3847,11 +5794,31 @@ lpfc_unregister_remote_port(struct lpfc_nodelist *ndlp)
 	fc_remote_port_delete(rport);
 
 	return;
+=======
+	struct lpfc_vport *vport = ndlp->vport;
+
+	if (vport->cfg_enable_fc4_type == LPFC_ENABLE_NVME)
+		return;
+
+	lpfc_debugfs_disc_trc(vport, LPFC_DISC_TRC_RPORT,
+		"rport delete:    did:x%x flg:x%x type x%x",
+		ndlp->nlp_DID, ndlp->nlp_flag, ndlp->nlp_type);
+
+	lpfc_printf_vlog(vport, KERN_INFO, LOG_NODE,
+			 "3184 rport unregister x%06x, rport x%px "
+			 "xptflg x%x refcnt %d\n",
+			 ndlp->nlp_DID, rport, ndlp->fc4_xpt_flags,
+			 kref_read(&ndlp->kref));
+
+	fc_remote_port_delete(rport);
+	lpfc_nlp_put(ndlp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 lpfc_nlp_counters(struct lpfc_vport *vport, int state, int count)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
 
 	spin_lock_irq(shost->host_lock);
@@ -3882,13 +5849,203 @@ lpfc_nlp_counters(struct lpfc_vport *vport, int state, int count)
 		break;
 	}
 	spin_unlock_irq(shost->host_lock);
+=======
+	switch (state) {
+	case NLP_STE_UNUSED_NODE:
+		atomic_add(count, &vport->fc_unused_cnt);
+		break;
+	case NLP_STE_PLOGI_ISSUE:
+		atomic_add(count, &vport->fc_plogi_cnt);
+		break;
+	case NLP_STE_ADISC_ISSUE:
+		atomic_add(count, &vport->fc_adisc_cnt);
+		break;
+	case NLP_STE_REG_LOGIN_ISSUE:
+		atomic_add(count, &vport->fc_reglogin_cnt);
+		break;
+	case NLP_STE_PRLI_ISSUE:
+		atomic_add(count, &vport->fc_prli_cnt);
+		break;
+	case NLP_STE_UNMAPPED_NODE:
+		atomic_add(count, &vport->fc_unmap_cnt);
+		break;
+	case NLP_STE_MAPPED_NODE:
+		atomic_add(count, &vport->fc_map_cnt);
+		break;
+	case NLP_STE_NPR_NODE:
+		if (!atomic_read(&vport->fc_npr_cnt) && count == -1)
+			atomic_set(&vport->fc_npr_cnt, 0);
+		else
+			atomic_add(count, &vport->fc_npr_cnt);
+		break;
+	}
+}
+
+/* Register a node with backend if not already done */
+void
+lpfc_nlp_reg_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
+{
+	unsigned long iflags;
+
+	lpfc_check_nlp_post_devloss(vport, ndlp);
+
+	spin_lock_irqsave(&ndlp->lock, iflags);
+	if (ndlp->fc4_xpt_flags & NLP_XPT_REGD) {
+		/* Already registered with backend, trigger rescan */
+		spin_unlock_irqrestore(&ndlp->lock, iflags);
+
+		if (ndlp->fc4_xpt_flags & NVME_XPT_REGD &&
+		    ndlp->nlp_type & (NLP_NVME_TARGET | NLP_NVME_DISCOVERY)) {
+			lpfc_nvme_rescan_port(vport, ndlp);
+		}
+		return;
+	}
+
+	ndlp->fc4_xpt_flags |= NLP_XPT_REGD;
+	spin_unlock_irqrestore(&ndlp->lock, iflags);
+
+	if (lpfc_valid_xpt_node(ndlp)) {
+		vport->phba->nport_event_cnt++;
+		/*
+		 * Tell the fc transport about the port, if we haven't
+		 * already. If we have, and it's a scsi entity, be
+		 */
+		lpfc_register_remote_port(vport, ndlp);
+	}
+
+	/* We are done if we do not have any NVME remote node */
+	if (!(ndlp->nlp_fc4_type & NLP_FC4_NVME))
+		return;
+
+	/* Notify the NVME transport of this new rport. */
+	if (vport->phba->sli_rev >= LPFC_SLI_REV4 &&
+			ndlp->nlp_fc4_type & NLP_FC4_NVME) {
+		if (vport->phba->nvmet_support == 0) {
+			/* Register this rport with the transport.
+			 * Only NVME Target Rports are registered with
+			 * the transport.
+			 */
+			if (ndlp->nlp_type & NLP_NVME_TARGET) {
+				vport->phba->nport_event_cnt++;
+				lpfc_nvme_register_port(vport, ndlp);
+			}
+		} else {
+			/* Just take an NDLP ref count since the
+			 * target does not register rports.
+			 */
+			lpfc_nlp_get(ndlp);
+		}
+	}
+}
+
+/* Unregister a node with backend if not already done */
+void
+lpfc_nlp_unreg_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
+{
+	unsigned long iflags;
+
+	spin_lock_irqsave(&ndlp->lock, iflags);
+	if (!(ndlp->fc4_xpt_flags & NLP_XPT_REGD)) {
+		spin_unlock_irqrestore(&ndlp->lock, iflags);
+		lpfc_printf_vlog(vport, KERN_INFO,
+				 LOG_ELS | LOG_NODE | LOG_DISCOVERY,
+				 "0999 %s Not regd: ndlp x%px rport x%px DID "
+				 "x%x FLG x%x XPT x%x\n",
+				  __func__, ndlp, ndlp->rport, ndlp->nlp_DID,
+				  ndlp->nlp_flag, ndlp->fc4_xpt_flags);
+		return;
+	}
+
+	ndlp->fc4_xpt_flags &= ~NLP_XPT_REGD;
+	spin_unlock_irqrestore(&ndlp->lock, iflags);
+
+	if (ndlp->rport &&
+	    ndlp->fc4_xpt_flags & SCSI_XPT_REGD) {
+		vport->phba->nport_event_cnt++;
+		lpfc_unregister_remote_port(ndlp);
+	} else if (!ndlp->rport) {
+		lpfc_printf_vlog(vport, KERN_INFO,
+				 LOG_ELS | LOG_NODE | LOG_DISCOVERY,
+				 "1999 %s NDLP in devloss x%px DID x%x FLG x%x"
+				 " XPT x%x refcnt %u\n",
+				 __func__, ndlp, ndlp->nlp_DID, ndlp->nlp_flag,
+				 ndlp->fc4_xpt_flags,
+				 kref_read(&ndlp->kref));
+	}
+
+	if (ndlp->fc4_xpt_flags & NVME_XPT_REGD) {
+		vport->phba->nport_event_cnt++;
+		if (vport->phba->nvmet_support == 0) {
+			/* Start devloss if target. */
+			if (ndlp->nlp_type & NLP_NVME_TARGET)
+				lpfc_nvme_unregister_port(vport, ndlp);
+		} else {
+			/* NVMET has no upcall. */
+			lpfc_nlp_put(ndlp);
+		}
+	}
+
+}
+
+/*
+ * Adisc state change handling
+ */
+static void
+lpfc_handle_adisc_state(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
+		int new_state)
+{
+	switch (new_state) {
+	/*
+	 * Any state to ADISC_ISSUE
+	 * Do nothing, adisc cmpl handling will trigger state changes
+	 */
+	case NLP_STE_ADISC_ISSUE:
+		break;
+
+	/*
+	 * ADISC_ISSUE to mapped states
+	 * Trigger a registration with backend, it will be nop if
+	 * already registered
+	 */
+	case NLP_STE_UNMAPPED_NODE:
+		ndlp->nlp_type |= NLP_FC_NODE;
+		fallthrough;
+	case NLP_STE_MAPPED_NODE:
+		ndlp->nlp_flag &= ~NLP_NODEV_REMOVE;
+		lpfc_nlp_reg_node(vport, ndlp);
+		break;
+
+	/*
+	 * ADISC_ISSUE to non-mapped states
+	 * We are moving from ADISC_ISSUE to a non-mapped state because
+	 * ADISC failed, we would have skipped unregistering with
+	 * backend, attempt it now
+	 */
+	case NLP_STE_NPR_NODE:
+		ndlp->nlp_flag &= ~NLP_RCV_PLOGI;
+		fallthrough;
+	default:
+		lpfc_nlp_unreg_node(vport, ndlp);
+		break;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 lpfc_nlp_state_cleanup(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 		       int old_state, int new_state)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
+=======
+	/* Trap ADISC changes here */
+	if (new_state == NLP_STE_ADISC_ISSUE ||
+	    old_state == NLP_STE_ADISC_ISSUE) {
+		lpfc_handle_adisc_state(vport, ndlp, new_state);
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (new_state == NLP_STE_UNMAPPED_NODE) {
 		ndlp->nlp_flag &= ~NLP_NODEV_REMOVE;
@@ -3899,6 +6056,7 @@ lpfc_nlp_state_cleanup(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 	if (new_state == NLP_STE_NPR_NODE)
 		ndlp->nlp_flag &= ~NLP_RCV_PLOGI;
 
+<<<<<<< HEAD
 	/* Transport interface */
 	if (ndlp->rport && (old_state == NLP_STE_MAPPED_NODE ||
 			    old_state == NLP_STE_UNMAPPED_NODE)) {
@@ -3945,6 +6103,37 @@ lpfc_nlp_state_cleanup(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 		spin_lock_irq(shost->host_lock);
 		ndlp->nlp_flag |= NLP_TGT_NO_SCSIID;
 		spin_unlock_irq(shost->host_lock);
+=======
+	/* Reg/Unreg for FCP and NVME Transport interface */
+	if ((old_state == NLP_STE_MAPPED_NODE ||
+	     old_state == NLP_STE_UNMAPPED_NODE)) {
+		/* For nodes marked for ADISC, Handle unreg in ADISC cmpl
+		 * if linkup. In linkdown do unreg_node
+		 */
+		if (!(ndlp->nlp_flag & NLP_NPR_ADISC) ||
+		    !lpfc_is_link_up(vport->phba))
+			lpfc_nlp_unreg_node(vport, ndlp);
+	}
+
+	if (new_state ==  NLP_STE_MAPPED_NODE ||
+	    new_state == NLP_STE_UNMAPPED_NODE)
+		lpfc_nlp_reg_node(vport, ndlp);
+
+	/*
+	 * If the node just added to Mapped list was an FCP target,
+	 * but the remote port registration failed or assigned a target
+	 * id outside the presentable range - move the node to the
+	 * Unmapped List.
+	 */
+	if ((new_state == NLP_STE_MAPPED_NODE) &&
+	    (ndlp->nlp_type & NLP_FCP_TARGET) &&
+	    (!ndlp->rport ||
+	     ndlp->rport->scsi_target_id == -1 ||
+	     ndlp->rport->scsi_target_id >= LPFC_MAX_TARGET)) {
+		spin_lock_irq(&ndlp->lock);
+		ndlp->nlp_flag |= NLP_TGT_NO_SCSIID;
+		spin_unlock_irq(&ndlp->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_nlp_set_state(vport, ndlp, NLP_STE_UNMAPPED_NODE);
 	}
 }
@@ -3958,13 +6147,21 @@ lpfc_nlp_state_name(char *buffer, size_t size, int state)
 		[NLP_STE_ADISC_ISSUE] = "ADISC",
 		[NLP_STE_REG_LOGIN_ISSUE] = "REGLOGIN",
 		[NLP_STE_PRLI_ISSUE] = "PRLI",
+<<<<<<< HEAD
+=======
+		[NLP_STE_LOGO_ISSUE] = "LOGO",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		[NLP_STE_UNMAPPED_NODE] = "UNMAPPED",
 		[NLP_STE_MAPPED_NODE] = "MAPPED",
 		[NLP_STE_NPR_NODE] = "NPR",
 	};
 
 	if (state < NLP_STE_MAX_STATE && states[state])
+<<<<<<< HEAD
 		strlcpy(buffer, states[state], size);
+=======
+		strscpy(buffer, states[state], size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		snprintf(buffer, size, "unknown (%d)", state);
 	return buffer;
@@ -3974,9 +6171,16 @@ void
 lpfc_nlp_set_state(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 		   int state)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
 	int  old_state = ndlp->nlp_state;
 	char name1[16], name2[16];
+=======
+	int  old_state = ndlp->nlp_state;
+	int node_dropped = ndlp->nlp_flag & NLP_DROPPED;
+	char name1[16], name2[16];
+	unsigned long iflags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpfc_printf_vlog(vport, KERN_INFO, LOG_NODE,
 			 "0904 NPort state transition x%06x, %s -> %s\n",
@@ -3988,6 +6192,15 @@ lpfc_nlp_set_state(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 		"node statechg    did:x%x old:%d ste:%d",
 		ndlp->nlp_DID, old_state, state);
 
+<<<<<<< HEAD
+=======
+	if (node_dropped && old_state == NLP_STE_UNUSED_NODE &&
+	    state != NLP_STE_UNUSED_NODE) {
+		ndlp->nlp_flag &= ~NLP_DROPPED;
+		lpfc_nlp_get(ndlp);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (old_state == NLP_STE_NPR_NODE &&
 	    state != NLP_STE_NPR_NODE)
 		lpfc_cancel_retry_delay_tmo(vport, ndlp);
@@ -3997,9 +6210,15 @@ lpfc_nlp_set_state(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 	}
 
 	if (list_empty(&ndlp->nlp_listp)) {
+<<<<<<< HEAD
 		spin_lock_irq(shost->host_lock);
 		list_add_tail(&ndlp->nlp_listp, &vport->fc_nodes);
 		spin_unlock_irq(shost->host_lock);
+=======
+		spin_lock_irqsave(&vport->fc_nodes_list_lock, iflags);
+		list_add_tail(&ndlp->nlp_listp, &vport->fc_nodes);
+		spin_unlock_irqrestore(&vport->fc_nodes_list_lock, iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (old_state)
 		lpfc_nlp_counters(vport, old_state, -1);
 
@@ -4011,30 +6230,50 @@ lpfc_nlp_set_state(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 void
 lpfc_enqueue_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
 
 	if (list_empty(&ndlp->nlp_listp)) {
 		spin_lock_irq(shost->host_lock);
 		list_add_tail(&ndlp->nlp_listp, &vport->fc_nodes);
 		spin_unlock_irq(shost->host_lock);
+=======
+	unsigned long iflags;
+
+	if (list_empty(&ndlp->nlp_listp)) {
+		spin_lock_irqsave(&vport->fc_nodes_list_lock, iflags);
+		list_add_tail(&ndlp->nlp_listp, &vport->fc_nodes);
+		spin_unlock_irqrestore(&vport->fc_nodes_list_lock, iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 void
 lpfc_dequeue_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
+=======
+	unsigned long iflags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpfc_cancel_retry_delay_tmo(vport, ndlp);
 	if (ndlp->nlp_state && !list_empty(&ndlp->nlp_listp))
 		lpfc_nlp_counters(vport, ndlp->nlp_state, -1);
+<<<<<<< HEAD
 	spin_lock_irq(shost->host_lock);
 	list_del_init(&ndlp->nlp_listp);
 	spin_unlock_irq(shost->host_lock);
+=======
+	spin_lock_irqsave(&vport->fc_nodes_list_lock, iflags);
+	list_del_init(&ndlp->nlp_listp);
+	spin_unlock_irqrestore(&vport->fc_nodes_list_lock, iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpfc_nlp_state_cleanup(vport, ndlp, ndlp->nlp_state,
 				NLP_STE_UNUSED_NODE);
 }
 
+<<<<<<< HEAD
 static void
 lpfc_disable_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 {
@@ -4044,6 +6283,8 @@ lpfc_disable_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 	lpfc_nlp_state_cleanup(vport, ndlp, ndlp->nlp_state,
 				NLP_STE_UNUSED_NODE);
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * lpfc_initialize_node - Initialize all fields of node object
  * @vport: Pointer to Virtual Port object.
@@ -4064,13 +6305,20 @@ lpfc_initialize_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 {
 	INIT_LIST_HEAD(&ndlp->els_retry_evt.evt_listp);
 	INIT_LIST_HEAD(&ndlp->dev_loss_evt.evt_listp);
+<<<<<<< HEAD
 	init_timer(&ndlp->nlp_delayfunc);
 	ndlp->nlp_delayfunc.function = lpfc_els_retry_delay;
 	ndlp->nlp_delayfunc.data = (unsigned long)ndlp;
+=======
+	timer_setup(&ndlp->nlp_delayfunc, lpfc_els_retry_delay, 0);
+	INIT_LIST_HEAD(&ndlp->recovery_evt.evt_listp);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ndlp->nlp_DID = did;
 	ndlp->vport = vport;
 	ndlp->phba = vport->phba;
 	ndlp->nlp_sid = NLP_NO_SID;
+<<<<<<< HEAD
 	kref_init(&ndlp->kref);
 	NLP_INT_NODE_ACT(ndlp);
 	atomic_set(&ndlp->cmd_pending, 0);
@@ -4129,6 +6377,13 @@ lpfc_enable_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 		"node enable:       did:x%x",
 		ndlp->nlp_DID, 0, 0);
 	return ndlp;
+=======
+	ndlp->nlp_fc4_type = NLP_FC4_NONE;
+	kref_init(&ndlp->kref);
+	atomic_set(&ndlp->cmd_pending, 0);
+	ndlp->cmd_qdepth = vport->cfg_tgt_queue_depth;
+	ndlp->nlp_defer_did = NLP_EVT_NOTHING_PENDING;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
@@ -4136,18 +6391,43 @@ lpfc_drop_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 {
 	/*
 	 * Use of lpfc_drop_node and UNUSED list: lpfc_drop_node should
+<<<<<<< HEAD
 	 * be used if we wish to issue the "last" lpfc_nlp_put() to remove
 	 * the ndlp from the vport. The ndlp marked as UNUSED on the list
 	 * until ALL other outstanding threads have completed. We check
 	 * that the ndlp not already in the UNUSED state before we proceed.
+=======
+	 * be used when lpfc wants to remove the "last" lpfc_nlp_put() to
+	 * release the ndlp from the vport when conditions are correct.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (ndlp->nlp_state == NLP_STE_UNUSED_NODE)
 		return;
 	lpfc_nlp_set_state(vport, ndlp, NLP_STE_UNUSED_NODE);
+<<<<<<< HEAD
 	if (vport->phba->sli_rev == LPFC_SLI_REV4)
 		lpfc_cleanup_vports_rrqs(vport, ndlp);
 	lpfc_nlp_put(ndlp);
 	return;
+=======
+	if (vport->phba->sli_rev == LPFC_SLI_REV4) {
+		lpfc_cleanup_vports_rrqs(vport, ndlp);
+		lpfc_unreg_rpi(vport, ndlp);
+	}
+
+	/* NLP_DROPPED means another thread already removed the initial
+	 * reference from lpfc_nlp_init.  If set, don't drop it again and
+	 * introduce an imbalance.
+	 */
+	spin_lock_irq(&ndlp->lock);
+	if (!(ndlp->nlp_flag & NLP_DROPPED)) {
+		ndlp->nlp_flag |= NLP_DROPPED;
+		spin_unlock_irq(&ndlp->lock);
+		lpfc_nlp_put(ndlp);
+		return;
+	}
+	spin_unlock_irq(&ndlp->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -4156,7 +6436,10 @@ lpfc_drop_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 void
 lpfc_set_disctmo(struct lpfc_vport *vport)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_hba  *phba = vport->phba;
 	uint32_t tmo;
 
@@ -4177,18 +6460,29 @@ lpfc_set_disctmo(struct lpfc_vport *vport)
 			tmo, vport->port_state, vport->fc_flag);
 	}
 
+<<<<<<< HEAD
 	mod_timer(&vport->fc_disctmo, jiffies + HZ * tmo);
 	spin_lock_irq(shost->host_lock);
 	vport->fc_flag |= FC_DISC_TMO;
 	spin_unlock_irq(shost->host_lock);
+=======
+	mod_timer(&vport->fc_disctmo, jiffies + msecs_to_jiffies(1000 * tmo));
+	set_bit(FC_DISC_TMO, &vport->fc_flag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Start Discovery Timer state <hba_state> */
 	lpfc_printf_vlog(vport, KERN_INFO, LOG_DISCOVERY,
 			 "0247 Start Discovery Timer state x%x "
 			 "Data: x%x x%lx x%x x%x\n",
 			 vport->port_state, tmo,
+<<<<<<< HEAD
 			 (unsigned long)&vport->fc_disctmo, vport->fc_plogi_cnt,
 			 vport->fc_adisc_cnt);
+=======
+			 (unsigned long)&vport->fc_disctmo,
+			 atomic_read(&vport->fc_plogi_cnt),
+			 atomic_read(&vport->fc_adisc_cnt));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 }
@@ -4199,7 +6493,10 @@ lpfc_set_disctmo(struct lpfc_vport *vport)
 int
 lpfc_can_disctmo(struct lpfc_vport *vport)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long iflags;
 
 	lpfc_debugfs_disc_trc(vport, LPFC_DISC_TRC_ELS_CMD,
@@ -4207,10 +6504,16 @@ lpfc_can_disctmo(struct lpfc_vport *vport)
 		vport->port_state, vport->fc_ns_retry, vport->fc_flag);
 
 	/* Turn off discovery timer if its running */
+<<<<<<< HEAD
 	if (vport->fc_flag & FC_DISC_TMO) {
 		spin_lock_irqsave(shost->host_lock, iflags);
 		vport->fc_flag &= ~FC_DISC_TMO;
 		spin_unlock_irqrestore(shost->host_lock, iflags);
+=======
+	if (test_bit(FC_DISC_TMO, &vport->fc_flag) ||
+	    timer_pending(&vport->fc_disctmo)) {
+		clear_bit(FC_DISC_TMO, &vport->fc_flag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		del_timer_sync(&vport->fc_disctmo);
 		spin_lock_irqsave(&vport->work_port_lock, iflags);
 		vport->work_port_events &= ~WORKER_DISC_TMO;
@@ -4220,9 +6523,16 @@ lpfc_can_disctmo(struct lpfc_vport *vport)
 	/* Cancel Discovery Timer state <hba_state> */
 	lpfc_printf_vlog(vport, KERN_INFO, LOG_DISCOVERY,
 			 "0248 Cancel Discovery Timer state x%x "
+<<<<<<< HEAD
 			 "Data: x%x x%x x%x\n",
 			 vport->port_state, vport->fc_flag,
 			 vport->fc_plogi_cnt, vport->fc_adisc_cnt);
+=======
+			 "Data: x%lx x%x x%x\n",
+			 vport->port_state, vport->fc_flag,
+			 atomic_read(&vport->fc_plogi_cnt),
+			 atomic_read(&vport->fc_adisc_cnt));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4236,13 +6546,21 @@ lpfc_check_sli_ndlp(struct lpfc_hba *phba,
 		    struct lpfc_iocbq *iocb,
 		    struct lpfc_nodelist *ndlp)
 {
+<<<<<<< HEAD
 	struct lpfc_sli *psli = &phba->sli;
 	IOCB_t *icmd = &iocb->iocb;
 	struct lpfc_vport    *vport = ndlp->vport;
+=======
+	struct lpfc_vport *vport = ndlp->vport;
+	u8 ulp_command;
+	u16 ulp_context;
+	u32 remote_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (iocb->vport != vport)
 		return 0;
 
+<<<<<<< HEAD
 	if (pring->ringno == LPFC_ELS_RING) {
 		switch (icmd->ulpCommand) {
 		case CMD_GEN_REQUEST64_CR:
@@ -4258,20 +6576,97 @@ lpfc_check_sli_ndlp(struct lpfc_hba *phba,
 	} else if (pring->ringno == psli->extra_ring) {
 
 	} else if (pring->ringno == psli->fcp_ring) {
+=======
+	ulp_command = get_job_cmnd(phba, iocb);
+	ulp_context = get_job_ulpcontext(phba, iocb);
+	remote_id = get_job_els_rsp64_did(phba, iocb);
+
+	if (pring->ringno == LPFC_ELS_RING) {
+		switch (ulp_command) {
+		case CMD_GEN_REQUEST64_CR:
+			if (iocb->ndlp == ndlp)
+				return 1;
+			fallthrough;
+		case CMD_ELS_REQUEST64_CR:
+			if (remote_id == ndlp->nlp_DID)
+				return 1;
+			fallthrough;
+		case CMD_XMIT_ELS_RSP64_CX:
+			if (iocb->ndlp == ndlp)
+				return 1;
+		}
+	} else if (pring->ringno == LPFC_FCP_RING) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Skip match check if waiting to relogin to FCP target */
 		if ((ndlp->nlp_type & NLP_FCP_TARGET) &&
 		    (ndlp->nlp_flag & NLP_DELAY_TMO)) {
 			return 0;
 		}
+<<<<<<< HEAD
 		if (icmd->ulpContext == (volatile ushort)ndlp->nlp_rpi) {
 			return 1;
 		}
 	} else if (pring->ringno == psli->next_ring) {
 
+=======
+		if (ulp_context == ndlp->nlp_rpi)
+			return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void
+__lpfc_dequeue_nport_iocbs(struct lpfc_hba *phba,
+		struct lpfc_nodelist *ndlp, struct lpfc_sli_ring *pring,
+		struct list_head *dequeue_list)
+{
+	struct lpfc_iocbq *iocb, *next_iocb;
+
+	list_for_each_entry_safe(iocb, next_iocb, &pring->txq, list) {
+		/* Check to see if iocb matches the nport */
+		if (lpfc_check_sli_ndlp(phba, pring, iocb, ndlp))
+			/* match, dequeue */
+			list_move_tail(&iocb->list, dequeue_list);
+	}
+}
+
+static void
+lpfc_sli3_dequeue_nport_iocbs(struct lpfc_hba *phba,
+		struct lpfc_nodelist *ndlp, struct list_head *dequeue_list)
+{
+	struct lpfc_sli *psli = &phba->sli;
+	uint32_t i;
+
+	spin_lock_irq(&phba->hbalock);
+	for (i = 0; i < psli->num_rings; i++)
+		__lpfc_dequeue_nport_iocbs(phba, ndlp, &psli->sli3_ring[i],
+						dequeue_list);
+	spin_unlock_irq(&phba->hbalock);
+}
+
+static void
+lpfc_sli4_dequeue_nport_iocbs(struct lpfc_hba *phba,
+		struct lpfc_nodelist *ndlp, struct list_head *dequeue_list)
+{
+	struct lpfc_sli_ring *pring;
+	struct lpfc_queue *qp = NULL;
+
+	spin_lock_irq(&phba->hbalock);
+	list_for_each_entry(qp, &phba->sli4_hba.lpfc_wq_list, wq_list) {
+		pring = qp->pring;
+		if (!pring)
+			continue;
+		spin_lock(&pring->ring_lock);
+		__lpfc_dequeue_nport_iocbs(phba, ndlp, pring, dequeue_list);
+		spin_unlock(&pring->ring_lock);
+	}
+	spin_unlock_irq(&phba->hbalock);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Free resources / clean up outstanding I/Os
  * associated with nlp_rpi in the LPFC_NODELIST entry.
@@ -4280,10 +6675,13 @@ static int
 lpfc_no_rpi(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp)
 {
 	LIST_HEAD(completions);
+<<<<<<< HEAD
 	struct lpfc_sli *psli;
 	struct lpfc_sli_ring *pring;
 	struct lpfc_iocbq *iocb, *next_iocb;
 	uint32_t i;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpfc_fabric_abort_nport(ndlp);
 
@@ -4291,6 +6689,7 @@ lpfc_no_rpi(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp)
 	 * Everything that matches on txcmplq will be returned
 	 * by firmware with a no rpi error.
 	 */
+<<<<<<< HEAD
 	psli = &phba->sli;
 	if (ndlp->nlp_flag & NLP_RPI_REGISTERED) {
 		/* Now process each ring */
@@ -4315,6 +6714,13 @@ lpfc_no_rpi(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp)
 			}
 			spin_unlock_irq(&phba->hbalock);
 		}
+=======
+	if (ndlp->nlp_flag & NLP_RPI_REGISTERED) {
+		if (phba->sli_rev != LPFC_SLI_REV4)
+			lpfc_sli3_dequeue_nport_iocbs(phba, ndlp, &completions);
+		else
+			lpfc_sli4_dequeue_nport_iocbs(phba, ndlp, &completions);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Cancel all the IOCBs from the completions list */
@@ -4324,6 +6730,101 @@ lpfc_no_rpi(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * lpfc_nlp_logo_unreg - Unreg mailbox completion handler before LOGO
+ * @phba: Pointer to HBA context object.
+ * @pmb: Pointer to mailbox object.
+ *
+ * This function will issue an ELS LOGO command after completing
+ * the UNREG_RPI.
+ **/
+static void
+lpfc_nlp_logo_unreg(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
+{
+	struct lpfc_vport  *vport = pmb->vport;
+	struct lpfc_nodelist *ndlp;
+
+	ndlp = pmb->ctx_ndlp;
+	if (!ndlp)
+		return;
+	lpfc_issue_els_logo(vport, ndlp, 0);
+
+	/* Check to see if there are any deferred events to process */
+	if ((ndlp->nlp_flag & NLP_UNREG_INP) &&
+	    (ndlp->nlp_defer_did != NLP_EVT_NOTHING_PENDING)) {
+		lpfc_printf_vlog(vport, KERN_INFO, LOG_DISCOVERY,
+				 "1434 UNREG cmpl deferred logo x%x "
+				 "on NPort x%x Data: x%x x%px\n",
+				 ndlp->nlp_rpi, ndlp->nlp_DID,
+				 ndlp->nlp_defer_did, ndlp);
+
+		ndlp->nlp_flag &= ~NLP_UNREG_INP;
+		ndlp->nlp_defer_did = NLP_EVT_NOTHING_PENDING;
+		lpfc_issue_els_plogi(vport, ndlp->nlp_DID, 0);
+	} else {
+		/* NLP_RELEASE_RPI is only set for SLI4 ports. */
+		if (ndlp->nlp_flag & NLP_RELEASE_RPI) {
+			lpfc_sli4_free_rpi(vport->phba, ndlp->nlp_rpi);
+			spin_lock_irq(&ndlp->lock);
+			ndlp->nlp_flag &= ~NLP_RELEASE_RPI;
+			ndlp->nlp_rpi = LPFC_RPI_ALLOC_ERROR;
+			spin_unlock_irq(&ndlp->lock);
+		}
+		spin_lock_irq(&ndlp->lock);
+		ndlp->nlp_flag &= ~NLP_UNREG_INP;
+		spin_unlock_irq(&ndlp->lock);
+	}
+
+	/* The node has an outstanding reference for the unreg. Now
+	 * that the LOGO action and cleanup are finished, release
+	 * resources.
+	 */
+	lpfc_nlp_put(ndlp);
+	mempool_free(pmb, phba->mbox_mem_pool);
+}
+
+/*
+ * Sets the mailbox completion handler to be used for the
+ * unreg_rpi command. The handler varies based on the state of
+ * the port and what will be happening to the rpi next.
+ */
+static void
+lpfc_set_unreg_login_mbx_cmpl(struct lpfc_hba *phba, struct lpfc_vport *vport,
+	struct lpfc_nodelist *ndlp, LPFC_MBOXQ_t *mbox)
+{
+	unsigned long iflags;
+
+	/* Driver always gets a reference on the mailbox job
+	 * in support of async jobs.
+	 */
+	mbox->ctx_ndlp = lpfc_nlp_get(ndlp);
+	if (!mbox->ctx_ndlp)
+		return;
+
+	if (ndlp->nlp_flag & NLP_ISSUE_LOGO) {
+		mbox->mbox_cmpl = lpfc_nlp_logo_unreg;
+
+	} else if (phba->sli_rev == LPFC_SLI_REV4 &&
+		   !test_bit(FC_UNLOADING, &vport->load_flag) &&
+		    (bf_get(lpfc_sli_intf_if_type, &phba->sli4_hba.sli_intf) >=
+				      LPFC_SLI_INTF_IF_TYPE_2) &&
+		    (kref_read(&ndlp->kref) > 0)) {
+		mbox->mbox_cmpl = lpfc_sli4_unreg_rpi_cmpl_clr;
+	} else {
+		if (test_bit(FC_UNLOADING, &vport->load_flag)) {
+			if (phba->sli_rev == LPFC_SLI_REV4) {
+				spin_lock_irqsave(&ndlp->lock, iflags);
+				ndlp->nlp_flag |= NLP_RELEASE_RPI;
+				spin_unlock_irqrestore(&ndlp->lock, iflags);
+			}
+		}
+		mbox->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Free rpi associated with LPFC_NODELIST entry.
  * This routine is called from lpfc_freenode(), when we are removing
@@ -4338,16 +6839,49 @@ lpfc_unreg_rpi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 {
 	struct lpfc_hba *phba = vport->phba;
 	LPFC_MBOXQ_t    *mbox;
+<<<<<<< HEAD
 	int rc;
 	uint16_t rpi;
 
 	if (ndlp->nlp_flag & NLP_RPI_REGISTERED) {
+=======
+	int rc, acc_plogi = 1;
+	uint16_t rpi;
+
+	if (ndlp->nlp_flag & NLP_RPI_REGISTERED ||
+	    ndlp->nlp_flag & NLP_REG_LOGIN_SEND) {
+		if (ndlp->nlp_flag & NLP_REG_LOGIN_SEND)
+			lpfc_printf_vlog(vport, KERN_INFO,
+					 LOG_NODE | LOG_DISCOVERY,
+					 "3366 RPI x%x needs to be "
+					 "unregistered nlp_flag x%x "
+					 "did x%x\n",
+					 ndlp->nlp_rpi, ndlp->nlp_flag,
+					 ndlp->nlp_DID);
+
+		/* If there is already an UNREG in progress for this ndlp,
+		 * no need to queue up another one.
+		 */
+		if (ndlp->nlp_flag & NLP_UNREG_INP) {
+			lpfc_printf_vlog(vport, KERN_INFO,
+					 LOG_NODE | LOG_DISCOVERY,
+					 "1436 unreg_rpi SKIP UNREG x%x on "
+					 "NPort x%x deferred x%x  flg x%x "
+					 "Data: x%px\n",
+					 ndlp->nlp_rpi, ndlp->nlp_DID,
+					 ndlp->nlp_defer_did,
+					 ndlp->nlp_flag, ndlp);
+			goto out;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 		if (mbox) {
 			/* SLI4 ports require the physical rpi value. */
 			rpi = ndlp->nlp_rpi;
 			if (phba->sli_rev == LPFC_SLI_REV4)
 				rpi = phba->sli4_hba.rpi_ids[ndlp->nlp_rpi];
+<<<<<<< HEAD
 			lpfc_unreg_login(phba, vport->vpi, rpi, mbox);
 			mbox->vport = vport;
 			mbox->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
@@ -4357,12 +6891,82 @@ lpfc_unreg_rpi(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 		}
 		lpfc_no_rpi(phba, ndlp);
 
+=======
+
+			lpfc_unreg_login(phba, vport->vpi, rpi, mbox);
+			mbox->vport = vport;
+			lpfc_set_unreg_login_mbx_cmpl(phba, vport, ndlp, mbox);
+			if (!mbox->ctx_ndlp) {
+				mempool_free(mbox, phba->mbox_mem_pool);
+				return 1;
+			}
+
+			if (mbox->mbox_cmpl == lpfc_sli4_unreg_rpi_cmpl_clr)
+				/*
+				 * accept PLOGIs after unreg_rpi_cmpl
+				 */
+				acc_plogi = 0;
+			if (((ndlp->nlp_DID & Fabric_DID_MASK) !=
+			    Fabric_DID_MASK) &&
+			    (!test_bit(FC_OFFLINE_MODE, &vport->fc_flag)))
+				ndlp->nlp_flag |= NLP_UNREG_INP;
+
+			lpfc_printf_vlog(vport, KERN_INFO,
+					 LOG_NODE | LOG_DISCOVERY,
+					 "1433 unreg_rpi UNREG x%x on "
+					 "NPort x%x deferred flg x%x "
+					 "Data:x%px\n",
+					 ndlp->nlp_rpi, ndlp->nlp_DID,
+					 ndlp->nlp_flag, ndlp);
+
+			rc = lpfc_sli_issue_mbox(phba, mbox, MBX_NOWAIT);
+			if (rc == MBX_NOT_FINISHED) {
+				ndlp->nlp_flag &= ~NLP_UNREG_INP;
+				mempool_free(mbox, phba->mbox_mem_pool);
+				acc_plogi = 1;
+				lpfc_nlp_put(ndlp);
+			}
+		} else {
+			lpfc_printf_vlog(vport, KERN_INFO,
+					 LOG_NODE | LOG_DISCOVERY,
+					 "1444 Failed to allocate mempool "
+					 "unreg_rpi UNREG x%x, "
+					 "DID x%x, flag x%x, "
+					 "ndlp x%px\n",
+					 ndlp->nlp_rpi, ndlp->nlp_DID,
+					 ndlp->nlp_flag, ndlp);
+
+			/* Because mempool_alloc failed, we
+			 * will issue a LOGO here and keep the rpi alive if
+			 * not unloading.
+			 */
+			if (!test_bit(FC_UNLOADING, &vport->load_flag)) {
+				ndlp->nlp_flag &= ~NLP_UNREG_INP;
+				lpfc_issue_els_logo(vport, ndlp, 0);
+				ndlp->nlp_prev_state = ndlp->nlp_state;
+				lpfc_nlp_set_state(vport, ndlp,
+						   NLP_STE_NPR_NODE);
+			}
+
+			return 1;
+		}
+		lpfc_no_rpi(phba, ndlp);
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (phba->sli_rev != LPFC_SLI_REV4)
 			ndlp->nlp_rpi = 0;
 		ndlp->nlp_flag &= ~NLP_RPI_REGISTERED;
 		ndlp->nlp_flag &= ~NLP_NPR_ADISC;
+<<<<<<< HEAD
 		return 1;
 	}
+=======
+		if (acc_plogi)
+			ndlp->nlp_flag &= ~NLP_LOGO_ACC;
+		return 1;
+	}
+	ndlp->nlp_flag &= ~NLP_LOGO_ACC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4378,6 +6982,7 @@ lpfc_unreg_hba_rpis(struct lpfc_hba *phba)
 {
 	struct lpfc_vport **vports;
 	struct lpfc_nodelist *ndlp;
+<<<<<<< HEAD
 	struct Scsi_Host *shost;
 	int i;
 
@@ -4399,6 +7004,30 @@ lpfc_unreg_hba_rpis(struct lpfc_hba *phba)
 			}
 		}
 		spin_unlock_irq(shost->host_lock);
+=======
+	int i;
+	unsigned long iflags;
+
+	vports = lpfc_create_vport_work_array(phba);
+	if (!vports) {
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+				"2884 Vport array allocation failed \n");
+		return;
+	}
+	for (i = 0; i <= phba->max_vports && vports[i] != NULL; i++) {
+		spin_lock_irqsave(&vports[i]->fc_nodes_list_lock, iflags);
+		list_for_each_entry(ndlp, &vports[i]->fc_nodes, nlp_listp) {
+			if (ndlp->nlp_flag & NLP_RPI_REGISTERED) {
+				/* The mempool_alloc might sleep */
+				spin_unlock_irqrestore(&vports[i]->fc_nodes_list_lock,
+						       iflags);
+				lpfc_unreg_rpi(vports[i], ndlp);
+				spin_lock_irqsave(&vports[i]->fc_nodes_list_lock,
+						  iflags);
+			}
+		}
+		spin_unlock_irqrestore(&vports[i]->fc_nodes_list_lock, iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	lpfc_destroy_vport_work_array(phba, vports);
 }
@@ -4421,15 +7050,26 @@ lpfc_unreg_all_rpis(struct lpfc_vport *vport)
 				 mbox);
 		mbox->vport = vport;
 		mbox->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
+<<<<<<< HEAD
 		mbox->context1 = NULL;
+=======
+		mbox->ctx_ndlp = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = lpfc_sli_issue_mbox_wait(phba, mbox, LPFC_MBOX_TMO);
 		if (rc != MBX_TIMEOUT)
 			mempool_free(mbox, phba->mbox_mem_pool);
 
 		if ((rc == MBX_TIMEOUT) || (rc == MBX_NOT_FINISHED))
+<<<<<<< HEAD
 			lpfc_printf_vlog(vport, KERN_ERR, LOG_MBOX | LOG_VPORT,
 				"1836 Could not issue "
 				"unreg_login(all_rpis) status %d\n", rc);
+=======
+			lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+					 "1836 Could not issue "
+					 "unreg_login(all_rpis) status %d\n",
+					 rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -4440,19 +7080,34 @@ lpfc_unreg_default_rpis(struct lpfc_vport *vport)
 	LPFC_MBOXQ_t     *mbox;
 	int rc;
 
+<<<<<<< HEAD
+=======
+	/* Unreg DID is an SLI3 operation. */
+	if (phba->sli_rev > LPFC_SLI_REV3)
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (mbox) {
 		lpfc_unreg_did(phba, vport->vpi, LPFC_UNREG_ALL_DFLT_RPIS,
 			       mbox);
 		mbox->vport = vport;
 		mbox->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
+<<<<<<< HEAD
 		mbox->context1 = NULL;
+=======
+		mbox->ctx_ndlp = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = lpfc_sli_issue_mbox_wait(phba, mbox, LPFC_MBOX_TMO);
 		if (rc != MBX_TIMEOUT)
 			mempool_free(mbox, phba->mbox_mem_pool);
 
 		if ((rc == MBX_TIMEOUT) || (rc == MBX_NOT_FINISHED))
+<<<<<<< HEAD
 			lpfc_printf_vlog(vport, KERN_ERR, LOG_MBOX | LOG_VPORT,
+=======
+			lpfc_printf_vlog(vport, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 "1815 Could not issue "
 					 "unreg_did (default rpis) status %d\n",
 					 rc);
@@ -4466,10 +7121,15 @@ lpfc_unreg_default_rpis(struct lpfc_vport *vport)
 static int
 lpfc_cleanup_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
 	struct lpfc_hba  *phba = vport->phba;
 	LPFC_MBOXQ_t *mb, *nextmb;
 	struct lpfc_dmabuf *mp;
+=======
+	struct lpfc_hba  *phba = vport->phba;
+	LPFC_MBOXQ_t *mb, *nextmb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Cleanup node for NPort <nlp_DID> */
 	lpfc_printf_vlog(vport, KERN_INFO, LOG_NODE,
@@ -4477,6 +7137,7 @@ lpfc_cleanup_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 			 "Data: x%x x%x x%x\n",
 			 ndlp->nlp_DID, ndlp->nlp_flag,
 			 ndlp->nlp_state, ndlp->nlp_rpi);
+<<<<<<< HEAD
 	if (NLP_CHK_FREE_REQ(ndlp)) {
 		lpfc_printf_vlog(vport, KERN_WARNING, LOG_NODE,
 				"0280 lpfc_cleanup_node: ndlp:x%p "
@@ -4492,12 +7153,23 @@ lpfc_cleanup_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 				atomic_read(&ndlp->kref.refcount));
 		lpfc_disable_node(vport, ndlp);
 	}
+=======
+	lpfc_dequeue_node(vport, ndlp);
+
+	/* Don't need to clean up REG_LOGIN64 cmds for Default RPI cleanup */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* cleanup any ndlp on mbox q waiting for reglogin cmpl */
 	if ((mb = phba->sli.mbox_active)) {
 		if ((mb->u.mb.mbxCommand == MBX_REG_LOGIN64) &&
+<<<<<<< HEAD
 		   (ndlp == (struct lpfc_nodelist *) mb->context2)) {
 			mb->context2 = NULL;
+=======
+		   !(mb->mbox_flag & LPFC_MBX_IMED_UNREG) &&
+		   (ndlp == mb->ctx_ndlp)) {
+			mb->ctx_ndlp = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mb->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
 		}
 	}
@@ -4506,15 +7178,24 @@ lpfc_cleanup_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 	/* Cleanup REG_LOGIN completions which are not yet processed */
 	list_for_each_entry(mb, &phba->sli.mboxq_cmpl, list) {
 		if ((mb->u.mb.mbxCommand != MBX_REG_LOGIN64) ||
+<<<<<<< HEAD
 			(ndlp != (struct lpfc_nodelist *) mb->context2))
 			continue;
 
 		mb->context2 = NULL;
+=======
+			(mb->mbox_flag & LPFC_MBX_IMED_UNREG) ||
+			(ndlp != mb->ctx_ndlp))
+			continue;
+
+		mb->ctx_ndlp = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mb->mbox_cmpl = lpfc_sli_def_mbox_cmpl;
 	}
 
 	list_for_each_entry_safe(mb, nextmb, &phba->sli.mboxq, list) {
 		if ((mb->u.mb.mbxCommand == MBX_REG_LOGIN64) &&
+<<<<<<< HEAD
 		    (ndlp == (struct lpfc_nodelist *) mb->context2)) {
 			mp = (struct lpfc_dmabuf *) (mb->context1);
 			if (mp) {
@@ -4526,6 +7207,15 @@ lpfc_cleanup_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 			/* We shall not invoke the lpfc_nlp_put to decrement
 			 * the ndlp reference count as we are in the process
 			 * of lpfc_nlp_release.
+=======
+		   !(mb->mbox_flag & LPFC_MBX_IMED_UNREG) &&
+		    (ndlp == mb->ctx_ndlp)) {
+			list_del(&mb->list);
+			lpfc_mbox_rsrc_cleanup(phba, mb, MBOX_THD_LOCKED);
+
+			/* Don't invoke lpfc_nlp_put. The driver is in
+			 * lpfc_nlp_release context.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 		}
 	}
@@ -4533,21 +7223,36 @@ lpfc_cleanup_node(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 
 	lpfc_els_abort(phba, ndlp);
 
+<<<<<<< HEAD
 	spin_lock_irq(shost->host_lock);
 	ndlp->nlp_flag &= ~NLP_DELAY_TMO;
 	spin_unlock_irq(shost->host_lock);
+=======
+	spin_lock_irq(&ndlp->lock);
+	ndlp->nlp_flag &= ~NLP_DELAY_TMO;
+	spin_unlock_irq(&ndlp->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ndlp->nlp_last_elscmd = 0;
 	del_timer_sync(&ndlp->nlp_delayfunc);
 
 	list_del_init(&ndlp->els_retry_evt.evt_listp);
 	list_del_init(&ndlp->dev_loss_evt.evt_listp);
+<<<<<<< HEAD
 	lpfc_cleanup_vports_rrqs(vport, ndlp);
 	lpfc_unreg_rpi(vport, ndlp);
+=======
+	list_del_init(&ndlp->recovery_evt.evt_listp);
+	lpfc_cleanup_vports_rrqs(vport, ndlp);
+
+	if (phba->sli_rev == LPFC_SLI_REV4)
+		ndlp->nlp_flag |= NLP_RELEASE_RPI;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Check to see if we can free the nlp back to the freelist.
  * If we are in the middle of using the nlp in the discovery state
@@ -4601,6 +7306,8 @@ lpfc_nlp_remove(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 lpfc_matchdid(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 	      uint32_t did)
@@ -4625,9 +7332,25 @@ lpfc_matchdid(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 	if (matchdid.un.b.id == ndlpdid.un.b.id) {
 		if ((mydid.un.b.domain == matchdid.un.b.domain) &&
 		    (mydid.un.b.area == matchdid.un.b.area)) {
+<<<<<<< HEAD
 			if ((ndlpdid.un.b.domain == 0) &&
 			    (ndlpdid.un.b.area == 0)) {
 				if (ndlpdid.un.b.id)
+=======
+			/* This code is supposed to match the ID
+			 * for a private loop device that is
+			 * connect to fl_port. But we need to
+			 * check that the port did not just go
+			 * from pt2pt to fabric or we could end
+			 * up matching ndlp->nlp_DID 000001 to
+			 * fabric DID 0x20101
+			 */
+			if ((ndlpdid.un.b.domain == 0) &&
+			    (ndlpdid.un.b.area == 0)) {
+				if (ndlpdid.un.b.id &&
+				    vport->phba->fc_topology ==
+				    LPFC_TOPOLOGY_LOOP)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return 1;
 			}
 			return 0;
@@ -4655,6 +7378,7 @@ __lpfc_findnode_did(struct lpfc_vport *vport, uint32_t did)
 
 	list_for_each_entry(ndlp, &vport->fc_nodes, nlp_listp) {
 		if (lpfc_matchdid(vport, ndlp, did)) {
+<<<<<<< HEAD
 			data1 = (((uint32_t) ndlp->nlp_state << 24) |
 				 ((uint32_t) ndlp->nlp_xri << 16) |
 				 ((uint32_t) ndlp->nlp_type << 8) |
@@ -4664,6 +7388,18 @@ __lpfc_findnode_did(struct lpfc_vport *vport, uint32_t did)
 					 "Data: x%p x%x x%x x%x\n",
 					 ndlp, ndlp->nlp_DID,
 					 ndlp->nlp_flag, data1);
+=======
+			data1 = (((uint32_t)ndlp->nlp_state << 24) |
+				 ((uint32_t)ndlp->nlp_xri << 16) |
+				 ((uint32_t)ndlp->nlp_type << 8)
+				 );
+			lpfc_printf_vlog(vport, KERN_INFO, LOG_NODE_VERBOSE,
+					 "0929 FIND node DID "
+					 "Data: x%px x%x x%x x%x x%x x%px\n",
+					 ndlp, ndlp->nlp_DID,
+					 ndlp->nlp_flag, data1, ndlp->nlp_rpi,
+					 ndlp->active_rrqs_xri_bitmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ndlp;
 		}
 	}
@@ -4688,13 +7424,54 @@ lpfc_findnode_did(struct lpfc_vport *vport, uint32_t did)
 }
 
 struct lpfc_nodelist *
+<<<<<<< HEAD
 lpfc_setup_disc_node(struct lpfc_vport *vport, uint32_t did)
 {
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
+=======
+lpfc_findnode_mapped(struct lpfc_vport *vport)
+{
+	struct lpfc_nodelist *ndlp;
+	uint32_t data1;
+	unsigned long iflags;
+
+	spin_lock_irqsave(&vport->fc_nodes_list_lock, iflags);
+
+	list_for_each_entry(ndlp, &vport->fc_nodes, nlp_listp) {
+		if (ndlp->nlp_state == NLP_STE_UNMAPPED_NODE ||
+		    ndlp->nlp_state == NLP_STE_MAPPED_NODE) {
+			data1 = (((uint32_t)ndlp->nlp_state << 24) |
+				 ((uint32_t)ndlp->nlp_xri << 16) |
+				 ((uint32_t)ndlp->nlp_type << 8) |
+				 ((uint32_t)ndlp->nlp_rpi & 0xff));
+			spin_unlock_irqrestore(&vport->fc_nodes_list_lock,
+					       iflags);
+			lpfc_printf_vlog(vport, KERN_INFO, LOG_NODE_VERBOSE,
+					 "2025 FIND node DID MAPPED "
+					 "Data: x%px x%x x%x x%x x%px\n",
+					 ndlp, ndlp->nlp_DID,
+					 ndlp->nlp_flag, data1,
+					 ndlp->active_rrqs_xri_bitmap);
+			return ndlp;
+		}
+	}
+	spin_unlock_irqrestore(&vport->fc_nodes_list_lock, iflags);
+
+	/* FIND node did <did> NOT FOUND */
+	lpfc_printf_vlog(vport, KERN_INFO, LOG_NODE,
+			 "2026 FIND mapped did NOT FOUND.\n");
+	return NULL;
+}
+
+struct lpfc_nodelist *
+lpfc_setup_disc_node(struct lpfc_vport *vport, uint32_t did)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_nodelist *ndlp;
 
 	ndlp = lpfc_findnode_did(vport, did);
 	if (!ndlp) {
+<<<<<<< HEAD
 		if ((vport->fc_flag & FC_RSCN_MODE) != 0 &&
 		    lpfc_rscn_payload_check(vport, did) == 0)
 			return NULL;
@@ -4726,11 +7503,43 @@ lpfc_setup_disc_node(struct lpfc_vport *vport, uint32_t did)
 			 */
 			if (ndlp->nlp_flag & NLP_RCV_PLOGI)
 				return NULL;
+=======
+		if (vport->phba->nvmet_support)
+			return NULL;
+		if (test_bit(FC_RSCN_MODE, &vport->fc_flag) &&
+		    lpfc_rscn_payload_check(vport, did) == 0)
+			return NULL;
+		ndlp = lpfc_nlp_init(vport, did);
+		if (!ndlp)
+			return NULL;
+		lpfc_nlp_set_state(vport, ndlp, NLP_STE_NPR_NODE);
+
+		lpfc_printf_vlog(vport, KERN_INFO, LOG_DISCOVERY,
+				 "6453 Setup New Node 2B_DISC x%x "
+				 "Data:x%x x%x x%lx\n",
+				 ndlp->nlp_DID, ndlp->nlp_flag,
+				 ndlp->nlp_state, vport->fc_flag);
+
+		spin_lock_irq(&ndlp->lock);
+		ndlp->nlp_flag |= NLP_NPR_2B_DISC;
+		spin_unlock_irq(&ndlp->lock);
+		return ndlp;
+	}
+
+	/* The NVME Target does not want to actively manage an rport.
+	 * The goal is to allow the target to reset its state and clear
+	 * pending IO in preparation for the initiator to recover.
+	 */
+	if (test_bit(FC_RSCN_MODE, &vport->fc_flag) &&
+	    !test_bit(FC_NDISC_ACTIVE, &vport->fc_flag)) {
+		if (lpfc_rscn_payload_check(vport, did)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Since this node is marked for discovery,
 			 * delay timeout is not needed.
 			 */
 			lpfc_cancel_retry_delay_tmo(vport, ndlp);
+<<<<<<< HEAD
 			spin_lock_irq(shost->host_lock);
 			ndlp->nlp_flag |= NLP_NPR_2B_DISC;
 			spin_unlock_irq(shost->host_lock);
@@ -4749,6 +7558,68 @@ lpfc_setup_disc_node(struct lpfc_vport *vport, uint32_t did)
 		spin_lock_irq(shost->host_lock);
 		ndlp->nlp_flag |= NLP_NPR_2B_DISC;
 		spin_unlock_irq(shost->host_lock);
+=======
+
+			lpfc_printf_vlog(vport, KERN_INFO, LOG_DISCOVERY,
+					 "6455 Setup RSCN Node 2B_DISC x%x "
+					 "Data:x%x x%x x%lx\n",
+					 ndlp->nlp_DID, ndlp->nlp_flag,
+					 ndlp->nlp_state, vport->fc_flag);
+
+			/* NVME Target mode waits until rport is known to be
+			 * impacted by the RSCN before it transitions.  No
+			 * active management - just go to NPR provided the
+			 * node had a valid login.
+			 */
+			if (vport->phba->nvmet_support)
+				return ndlp;
+
+			if (ndlp->nlp_state > NLP_STE_UNUSED_NODE &&
+			    ndlp->nlp_state < NLP_STE_PRLI_ISSUE) {
+				lpfc_disc_state_machine(vport, ndlp, NULL,
+							NLP_EVT_DEVICE_RECOVERY);
+			}
+
+			spin_lock_irq(&ndlp->lock);
+			ndlp->nlp_flag |= NLP_NPR_2B_DISC;
+			spin_unlock_irq(&ndlp->lock);
+		} else {
+			lpfc_printf_vlog(vport, KERN_INFO, LOG_DISCOVERY,
+					 "6456 Skip Setup RSCN Node x%x "
+					 "Data:x%x x%x x%lx\n",
+					 ndlp->nlp_DID, ndlp->nlp_flag,
+					 ndlp->nlp_state, vport->fc_flag);
+			ndlp = NULL;
+		}
+	} else {
+		lpfc_printf_vlog(vport, KERN_INFO, LOG_DISCOVERY,
+				 "6457 Setup Active Node 2B_DISC x%x "
+				 "Data:x%x x%x x%lx\n",
+				 ndlp->nlp_DID, ndlp->nlp_flag,
+				 ndlp->nlp_state, vport->fc_flag);
+
+		/* If the initiator received a PLOGI from this NPort or if the
+		 * initiator is already in the process of discovery on it,
+		 * there's no need to try to discover it again.
+		 */
+		if (ndlp->nlp_state == NLP_STE_ADISC_ISSUE ||
+		    ndlp->nlp_state == NLP_STE_PLOGI_ISSUE ||
+		    (!vport->phba->nvmet_support &&
+		     ndlp->nlp_flag & NLP_RCV_PLOGI))
+			return NULL;
+
+		if (vport->phba->nvmet_support)
+			return ndlp;
+
+		/* Moving to NPR state clears unsolicited flags and
+		 * allows for rediscovery
+		 */
+		lpfc_nlp_set_state(vport, ndlp, NLP_STE_NPR_NODE);
+
+		spin_lock_irq(&ndlp->lock);
+		ndlp->nlp_flag |= NLP_NPR_2B_DISC;
+		spin_unlock_irq(&ndlp->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ndlp;
 }
@@ -4794,14 +7665,23 @@ lpfc_disc_list_loopmap(struct lpfc_vport *vport)
 	return;
 }
 
+<<<<<<< HEAD
+=======
+/* SLI3 only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 lpfc_issue_clear_la(struct lpfc_hba *phba, struct lpfc_vport *vport)
 {
 	LPFC_MBOXQ_t *mbox;
 	struct lpfc_sli *psli = &phba->sli;
+<<<<<<< HEAD
 	struct lpfc_sli_ring *extra_ring = &psli->ring[psli->extra_ring];
 	struct lpfc_sli_ring *fcp_ring   = &psli->ring[psli->fcp_ring];
 	struct lpfc_sli_ring *next_ring  = &psli->ring[psli->next_ring];
+=======
+	struct lpfc_sli_ring *extra_ring = &psli->sli3_ring[LPFC_EXTRA_RING];
+	struct lpfc_sli_ring *fcp_ring   = &psli->sli3_ring[LPFC_FCP_RING];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int  rc;
 
 	/*
@@ -4825,7 +7705,10 @@ lpfc_issue_clear_la(struct lpfc_hba *phba, struct lpfc_vport *vport)
 			lpfc_disc_flush_list(vport);
 			extra_ring->flag &= ~LPFC_STOP_IOCB_EVENT;
 			fcp_ring->flag &= ~LPFC_STOP_IOCB_EVENT;
+<<<<<<< HEAD
 			next_ring->flag &= ~LPFC_STOP_IOCB_EVENT;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			phba->link_state = LPFC_HBA_ERROR;
 		}
 	}
@@ -4853,6 +7736,7 @@ lpfc_issue_reg_vpi(struct lpfc_hba *phba, struct lpfc_vport *vport)
 void
 lpfc_disc_start(struct lpfc_vport *vport)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
 	struct lpfc_hba  *phba = vport->phba;
 	uint32_t num_sent;
@@ -4861,6 +7745,18 @@ lpfc_disc_start(struct lpfc_vport *vport)
 
 	if (!lpfc_is_link_up(phba))
 		return;
+=======
+	struct lpfc_hba  *phba = vport->phba;
+	uint32_t num_sent;
+	uint32_t clear_la_pending;
+
+	if (!lpfc_is_link_up(phba)) {
+		lpfc_printf_vlog(vport, KERN_INFO, LOG_SLI,
+				 "3315 Link is not up %x\n",
+				 phba->link_state);
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (phba->link_state == LPFC_CLEAR_LA)
 		clear_la_pending = 1;
@@ -4872,20 +7768,32 @@ lpfc_disc_start(struct lpfc_vport *vport)
 
 	lpfc_set_disctmo(vport);
 
+<<<<<<< HEAD
 	if (vport->fc_prevDID == vport->fc_myDID)
 		did_changed = 0;
 	else
 		did_changed = 1;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vport->fc_prevDID = vport->fc_myDID;
 	vport->num_disc_nodes = 0;
 
 	/* Start Discovery state <hba_state> */
 	lpfc_printf_vlog(vport, KERN_INFO, LOG_DISCOVERY,
+<<<<<<< HEAD
 			 "0202 Start Discovery hba state x%x "
 			 "Data: x%x x%x x%x\n",
 			 vport->port_state, vport->fc_flag, vport->fc_plogi_cnt,
 			 vport->fc_adisc_cnt);
+=======
+			 "0202 Start Discovery port state x%x "
+			 "flg x%lx Data: x%x x%x x%x\n",
+			 vport->port_state, vport->fc_flag,
+			 atomic_read(&vport->fc_plogi_cnt),
+			 atomic_read(&vport->fc_adisc_cnt),
+			 atomic_read(&vport->fc_npr_cnt));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First do ADISCs - if any */
 	num_sent = lpfc_els_disc_adisc(vport);
@@ -4893,11 +7801,20 @@ lpfc_disc_start(struct lpfc_vport *vport)
 	if (num_sent)
 		return;
 
+<<<<<<< HEAD
 	/* Register the VPI for SLI3, NON-NPIV only. */
 	if ((phba->sli3_options & LPFC_SLI3_NPIV_ENABLED) &&
 	    !(vport->fc_flag & FC_PT2PT) &&
 	    !(vport->fc_flag & FC_RSCN_MODE) &&
 	    (phba->sli_rev < LPFC_SLI_REV4)) {
+=======
+	/* Register the VPI for SLI3, NPIV only. */
+	if ((phba->sli3_options & LPFC_SLI3_NPIV_ENABLED) &&
+	    !test_bit(FC_PT2PT, &vport->fc_flag) &&
+	    !test_bit(FC_RSCN_MODE, &vport->fc_flag) &&
+	    (phba->sli_rev < LPFC_SLI_REV4)) {
+		lpfc_issue_clear_la(phba, vport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lpfc_issue_reg_vpi(phba, vport);
 		return;
 	}
@@ -4908,6 +7825,7 @@ lpfc_disc_start(struct lpfc_vport *vport)
 	 */
 	if (vport->port_state < LPFC_VPORT_READY && !clear_la_pending) {
 		/* If we get here, there is nothing to ADISC */
+<<<<<<< HEAD
 		if (vport->port_type == LPFC_PHYSICAL_PORT)
 			lpfc_issue_clear_la(phba, vport);
 
@@ -4921,6 +7839,18 @@ lpfc_disc_start(struct lpfc_vport *vport)
 				spin_lock_irq(shost->host_lock);
 				vport->fc_flag &= ~FC_NDISC_ACTIVE;
 				spin_unlock_irq(shost->host_lock);
+=======
+		lpfc_issue_clear_la(phba, vport);
+
+		if (!test_bit(FC_ABORT_DISCOVERY, &vport->fc_flag)) {
+			vport->num_disc_nodes = 0;
+			/* go thru NPR nodes and issue ELS PLOGIs */
+			if (atomic_read(&vport->fc_npr_cnt))
+				lpfc_els_disc_plogi(vport);
+
+			if (!vport->num_disc_nodes) {
+				clear_bit(FC_NDISC_ACTIVE, &vport->fc_flag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lpfc_can_disctmo(vport);
 			}
 		}
@@ -4932,6 +7862,7 @@ lpfc_disc_start(struct lpfc_vport *vport)
 		if (num_sent)
 			return;
 
+<<<<<<< HEAD
 		if (vport->fc_flag & FC_RSCN_MODE) {
 			/* Check to see if more RSCNs came in while we
 			 * were processing this one.
@@ -4944,6 +7875,19 @@ lpfc_disc_start(struct lpfc_vport *vport)
 				lpfc_can_disctmo(vport);
 			} else
 				lpfc_els_handle_rscn(vport);
+=======
+		if (test_bit(FC_RSCN_MODE, &vport->fc_flag)) {
+			/* Check to see if more RSCNs came in while we
+			 * were processing this one.
+			 */
+			if (vport->fc_rscn_id_cnt == 0 &&
+			    !test_bit(FC_RSCN_DISCOVERY, &vport->fc_flag)) {
+				clear_bit(FC_RSCN_MODE, &vport->fc_flag);
+				lpfc_can_disctmo(vport);
+			} else {
+				lpfc_els_handle_rscn(vport);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return;
@@ -4957,6 +7901,7 @@ static void
 lpfc_free_tx(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp)
 {
 	LIST_HEAD(completions);
+<<<<<<< HEAD
 	struct lpfc_sli *psli;
 	IOCB_t     *icmd;
 	struct lpfc_iocbq    *iocb, *next_iocb;
@@ -4964,12 +7909,22 @@ lpfc_free_tx(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp)
 
 	psli = &phba->sli;
 	pring = &psli->ring[LPFC_ELS_RING];
+=======
+	struct lpfc_iocbq    *iocb, *next_iocb;
+	struct lpfc_sli_ring *pring;
+	u32 ulp_command;
+
+	pring = lpfc_phba_elsring(phba);
+	if (unlikely(!pring))
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Error matching iocb on txq or txcmplq
 	 * First check the txq.
 	 */
 	spin_lock_irq(&phba->hbalock);
 	list_for_each_entry_safe(iocb, next_iocb, &pring->txq, list) {
+<<<<<<< HEAD
 		if (iocb->context1 != ndlp) {
 			continue;
 		}
@@ -4979,11 +7934,23 @@ lpfc_free_tx(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp)
 
 			list_move_tail(&iocb->list, &completions);
 			pring->txq_cnt--;
+=======
+		if (iocb->ndlp != ndlp)
+			continue;
+
+		ulp_command = get_job_cmnd(phba, iocb);
+
+		if (ulp_command == CMD_ELS_REQUEST64_CR ||
+		    ulp_command == CMD_XMIT_ELS_RSP64_CX) {
+
+			list_move_tail(&iocb->list, &completions);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* Next check the txcmplq */
 	list_for_each_entry_safe(iocb, next_iocb, &pring->txcmplq, list) {
+<<<<<<< HEAD
 		if (iocb->context1 != ndlp) {
 			continue;
 		}
@@ -4991,10 +7958,26 @@ lpfc_free_tx(struct lpfc_hba *phba, struct lpfc_nodelist *ndlp)
 		if (icmd->ulpCommand == CMD_ELS_REQUEST64_CR ||
 		    icmd->ulpCommand == CMD_XMIT_ELS_RSP64_CX) {
 			lpfc_sli_issue_abort_iotag(phba, pring, iocb);
+=======
+		if (iocb->ndlp != ndlp)
+			continue;
+
+		ulp_command = get_job_cmnd(phba, iocb);
+
+		if (ulp_command == CMD_ELS_REQUEST64_CR ||
+		    ulp_command == CMD_XMIT_ELS_RSP64_CX) {
+			lpfc_sli_issue_abort_iotag(phba, pring, iocb, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	spin_unlock_irq(&phba->hbalock);
 
+<<<<<<< HEAD
+=======
+	/* Make sure HBA is alive */
+	lpfc_issue_hb_tmo(phba);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Cancel all the IOCBs from the completions list */
 	lpfc_sli_cancel_iocbs(phba, &completions, IOSTAT_LOCAL_REJECT,
 			      IOERR_SLI_ABORTED);
@@ -5006,11 +7989,18 @@ lpfc_disc_flush_list(struct lpfc_vport *vport)
 	struct lpfc_nodelist *ndlp, *next_ndlp;
 	struct lpfc_hba *phba = vport->phba;
 
+<<<<<<< HEAD
 	if (vport->fc_plogi_cnt || vport->fc_adisc_cnt) {
 		list_for_each_entry_safe(ndlp, next_ndlp, &vport->fc_nodes,
 					 nlp_listp) {
 			if (!NLP_CHK_NODE_ACT(ndlp))
 				continue;
+=======
+	if (atomic_read(&vport->fc_plogi_cnt) ||
+	    atomic_read(&vport->fc_adisc_cnt)) {
+		list_for_each_entry_safe(ndlp, next_ndlp, &vport->fc_nodes,
+					 nlp_listp) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ndlp->nlp_state == NLP_STE_PLOGI_ISSUE ||
 			    ndlp->nlp_state == NLP_STE_ADISC_ISSUE) {
 				lpfc_free_tx(phba, ndlp);
@@ -5019,12 +8009,40 @@ lpfc_disc_flush_list(struct lpfc_vport *vport)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * lpfc_notify_xport_npr - notifies xport of node disappearance
+ * @vport: Pointer to Virtual Port object.
+ *
+ * Transitions all ndlps to NPR state.  When lpfc_nlp_set_state
+ * calls lpfc_nlp_state_cleanup, the ndlp->rport is unregistered
+ * and transport notified that the node is gone.
+ * Return Code:
+ *	none
+ */
+static void
+lpfc_notify_xport_npr(struct lpfc_vport *vport)
+{
+	struct lpfc_nodelist *ndlp, *next_ndlp;
+
+	list_for_each_entry_safe(ndlp, next_ndlp, &vport->fc_nodes,
+				 nlp_listp) {
+		lpfc_nlp_set_state(vport, ndlp, NLP_STE_NPR_NODE);
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 lpfc_cleanup_discovery_resources(struct lpfc_vport *vport)
 {
 	lpfc_els_flush_rscn(vport);
 	lpfc_els_flush_cmd(vport);
 	lpfc_disc_flush_list(vport);
+<<<<<<< HEAD
+=======
+	if (pci_channel_offline(vport->phba->pcidev))
+		lpfc_notify_xport_npr(vport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*****************************************************************************/
@@ -5043,9 +8061,15 @@ lpfc_cleanup_discovery_resources(struct lpfc_vport *vport)
  */
 /*****************************************************************************/
 void
+<<<<<<< HEAD
 lpfc_disc_timeout(unsigned long ptr)
 {
 	struct lpfc_vport *vport = (struct lpfc_vport *) ptr;
+=======
+lpfc_disc_timeout(struct timer_list *t)
+{
+	struct lpfc_vport *vport = from_timer(vport, t, fc_disctmo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_hba   *phba = vport->phba;
 	uint32_t tmo_posted;
 	unsigned long flags = 0;
@@ -5067,13 +8091,17 @@ lpfc_disc_timeout(unsigned long ptr)
 static void
 lpfc_disc_timeout_handler(struct lpfc_vport *vport)
 {
+<<<<<<< HEAD
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lpfc_hba  *phba = vport->phba;
 	struct lpfc_sli  *psli = &phba->sli;
 	struct lpfc_nodelist *ndlp, *next_ndlp;
 	LPFC_MBOXQ_t *initlinkmbox;
 	int rc, clrlaerr = 0;
 
+<<<<<<< HEAD
 	if (!(vport->fc_flag & FC_DISC_TMO))
 		return;
 
@@ -5081,6 +8109,11 @@ lpfc_disc_timeout_handler(struct lpfc_vport *vport)
 	vport->fc_flag &= ~FC_DISC_TMO;
 	spin_unlock_irq(shost->host_lock);
 
+=======
+	if (!test_and_clear_bit(FC_DISC_TMO, &vport->fc_flag))
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lpfc_debugfs_disc_trc(vport, LPFC_DISC_TRC_ELS_CMD,
 		"disc timeout:    state:x%x rtry:x%x flg:x%x",
 		vport->port_state, vport->fc_ns_retry, vport->fc_flag);
@@ -5088,6 +8121,7 @@ lpfc_disc_timeout_handler(struct lpfc_vport *vport)
 	switch (vport->port_state) {
 
 	case LPFC_LOCAL_CFG_LINK:
+<<<<<<< HEAD
 	/* port_state is identically  LPFC_LOCAL_CFG_LINK while waiting for
 	 * FAN
 	 */
@@ -5099,6 +8133,18 @@ lpfc_disc_timeout_handler(struct lpfc_vport *vport)
 					 nlp_listp) {
 			if (!NLP_CHK_NODE_ACT(ndlp))
 				continue;
+=======
+		/*
+		 * port_state is identically  LPFC_LOCAL_CFG_LINK while
+		 * waiting for FAN timeout
+		 */
+		lpfc_printf_vlog(vport, KERN_WARNING, LOG_DISCOVERY,
+				 "0221 FAN timeout\n");
+
+		/* Start discovery by sending FLOGI, clean up old rpis */
+		list_for_each_entry_safe(ndlp, next_ndlp, &vport->fc_nodes,
+					 nlp_listp) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ndlp->nlp_state != NLP_STE_NPR_NODE)
 				continue;
 			if (ndlp->nlp_type & NLP_FABRIC) {
@@ -5125,7 +8171,12 @@ lpfc_disc_timeout_handler(struct lpfc_vport *vport)
 	case LPFC_FLOGI:
 	/* port_state is identically LPFC_FLOGI while waiting for FLOGI cmpl */
 		/* Initial FLOGI timeout */
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_DISCOVERY,
+=======
+		lpfc_printf_vlog(vport, KERN_ERR,
+				 LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "0222 Initial %s timeout\n",
 				 vport->vpi ? "FDISC" : "FLOGI");
 
@@ -5143,12 +8194,21 @@ lpfc_disc_timeout_handler(struct lpfc_vport *vport)
 	case LPFC_FABRIC_CFG_LINK:
 	/* hba_state is identically LPFC_FABRIC_CFG_LINK while waiting for
 	   NameServer login */
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_DISCOVERY,
+=======
+		lpfc_printf_vlog(vport, KERN_ERR,
+				 LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "0223 Timeout while waiting for "
 				 "NameServer login\n");
 		/* Next look for NameServer ndlp */
 		ndlp = lpfc_findnode_did(vport, NameServer_DID);
+<<<<<<< HEAD
 		if (ndlp && NLP_CHK_NODE_ACT(ndlp))
+=======
+		if (ndlp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lpfc_els_abort(phba, ndlp);
 
 		/* ReStart discovery */
@@ -5156,7 +8216,12 @@ lpfc_disc_timeout_handler(struct lpfc_vport *vport)
 
 	case LPFC_NS_QRY:
 	/* Check for wait for NameServer Rsp timeout */
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_DISCOVERY,
+=======
+		lpfc_printf_vlog(vport, KERN_ERR,
+				 LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "0224 NameServer Query timeout "
 				 "Data: x%x x%x\n",
 				 vport->fc_ns_retry, LPFC_MAX_NS_RETRY);
@@ -5164,8 +8229,13 @@ lpfc_disc_timeout_handler(struct lpfc_vport *vport)
 		if (vport->fc_ns_retry < LPFC_MAX_NS_RETRY) {
 			/* Try it one more time */
 			vport->fc_ns_retry++;
+<<<<<<< HEAD
 			rc = lpfc_ns_cmd(vport, SLI_CTNS_GID_FT,
 					 vport->fc_ns_retry, 0);
+=======
+			vport->gidft_inp = 0;
+			rc = lpfc_issue_gidft(vport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rc == 0)
 				break;
 		}
@@ -5189,7 +8259,12 @@ restart_disc:
 		/* Setup and issue mailbox INITIALIZE LINK command */
 		initlinkmbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 		if (!initlinkmbox) {
+<<<<<<< HEAD
 			lpfc_printf_vlog(vport, KERN_ERR, LOG_DISCOVERY,
+=======
+			lpfc_printf_vlog(vport, KERN_ERR,
+					 LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 "0206 Device Discovery "
 					 "completion error\n");
 			phba->link_state = LPFC_HBA_ERROR;
@@ -5211,7 +8286,12 @@ restart_disc:
 
 	case LPFC_DISC_AUTH:
 	/* Node Authentication timeout */
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_DISCOVERY,
+=======
+		lpfc_printf_vlog(vport, KERN_ERR,
+				 LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "0227 Node Authentication timeout\n");
 		lpfc_disc_flush_list(vport);
 
@@ -5230,11 +8310,21 @@ restart_disc:
 		break;
 
 	case LPFC_VPORT_READY:
+<<<<<<< HEAD
 		if (vport->fc_flag & FC_RSCN_MODE) {
 			lpfc_printf_vlog(vport, KERN_ERR, LOG_DISCOVERY,
 					 "0231 RSCN timeout Data: x%x "
 					 "x%x\n",
 					 vport->fc_ns_retry, LPFC_MAX_NS_RETRY);
+=======
+		if (test_bit(FC_RSCN_MODE, &vport->fc_flag)) {
+			lpfc_printf_vlog(vport, KERN_ERR,
+					 LOG_TRACE_EVENT,
+					 "0231 RSCN timeout Data: x%x "
+					 "x%x x%x x%x\n",
+					 vport->fc_ns_retry, LPFC_MAX_NS_RETRY,
+					 vport->port_state, vport->gidft_inp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Cleanup any outstanding ELS commands */
 			lpfc_els_flush_cmd(vport);
@@ -5245,7 +8335,12 @@ restart_disc:
 		break;
 
 	default:
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_DISCOVERY,
+=======
+		lpfc_printf_vlog(vport, KERN_ERR,
+				 LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "0273 Unexpected discovery timeout, "
 				 "vport State x%x\n", vport->port_state);
 		break;
@@ -5254,21 +8349,35 @@ restart_disc:
 	switch (phba->link_state) {
 	case LPFC_CLEAR_LA:
 				/* CLEAR LA timeout */
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_DISCOVERY,
+=======
+		lpfc_printf_vlog(vport, KERN_ERR,
+				 LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "0228 CLEAR LA timeout\n");
 		clrlaerr = 1;
 		break;
 
 	case LPFC_LINK_UP:
 		lpfc_issue_clear_la(phba, vport);
+<<<<<<< HEAD
 		/* Drop thru */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case LPFC_LINK_UNKNOWN:
 	case LPFC_WARM_START:
 	case LPFC_INIT_START:
 	case LPFC_INIT_MBX_CMDS:
 	case LPFC_LINK_DOWN:
 	case LPFC_HBA_ERROR:
+<<<<<<< HEAD
 		lpfc_printf_vlog(vport, KERN_ERR, LOG_DISCOVERY,
+=======
+		lpfc_printf_vlog(vport, KERN_ERR,
+				 LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "0230 Unexpected timeout, hba link "
 				 "state x%x\n", phba->link_state);
 		clrlaerr = 1;
@@ -5280,12 +8389,23 @@ restart_disc:
 
 	if (clrlaerr) {
 		lpfc_disc_flush_list(vport);
+<<<<<<< HEAD
 		psli->ring[(psli->extra_ring)].flag &= ~LPFC_STOP_IOCB_EVENT;
 		psli->ring[(psli->fcp_ring)].flag &= ~LPFC_STOP_IOCB_EVENT;
 		psli->ring[(psli->next_ring)].flag &= ~LPFC_STOP_IOCB_EVENT;
 		vport->port_state = LPFC_VPORT_READY;
 	}
 
+=======
+		if (phba->sli_rev != LPFC_SLI_REV4) {
+			psli->sli3_ring[(LPFC_EXTRA_RING)].flag &=
+				~LPFC_STOP_IOCB_EVENT;
+			psli->sli3_ring[LPFC_FCP_RING].flag &=
+				~LPFC_STOP_IOCB_EVENT;
+		}
+		vport->port_state = LPFC_VPORT_READY;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -5299,18 +8419,26 @@ void
 lpfc_mbx_cmpl_fdmi_reg_login(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 {
 	MAILBOX_t *mb = &pmb->u.mb;
+<<<<<<< HEAD
 	struct lpfc_dmabuf   *mp = (struct lpfc_dmabuf *) (pmb->context1);
 	struct lpfc_nodelist *ndlp = (struct lpfc_nodelist *) pmb->context2;
 	struct lpfc_vport    *vport = pmb->vport;
 
 	pmb->context1 = NULL;
 	pmb->context2 = NULL;
+=======
+	struct lpfc_nodelist *ndlp = pmb->ctx_ndlp;
+	struct lpfc_vport    *vport = pmb->vport;
+
+	pmb->ctx_ndlp = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (phba->sli_rev < LPFC_SLI_REV4)
 		ndlp->nlp_rpi = mb->un.varWords[0];
 	ndlp->nlp_flag |= NLP_RPI_REGISTERED;
 	ndlp->nlp_type |= NLP_FABRIC;
 	lpfc_nlp_set_state(vport, ndlp, NLP_STE_UNMAPPED_NODE);
+<<<<<<< HEAD
 
 	/*
 	 * Start issuing Fabric-Device Management Interface (FDMI) command to
@@ -5322,15 +8450,39 @@ lpfc_mbx_cmpl_fdmi_reg_login(struct lpfc_hba *phba, LPFC_MBOXQ_t *pmb)
 		lpfc_fdmi_cmd(vport, ndlp, SLI_MGMT_DHBA);
 	else
 		mod_timer(&vport->fc_fdmitmo, jiffies + HZ * 60);
+=======
+	lpfc_printf_vlog(vport, KERN_INFO, LOG_NODE | LOG_DISCOVERY,
+			 "0004 rpi:%x DID:%x flg:%x %d x%px\n",
+			 ndlp->nlp_rpi, ndlp->nlp_DID, ndlp->nlp_flag,
+			 kref_read(&ndlp->kref),
+			 ndlp);
+	/*
+	 * Start issuing Fabric-Device Management Interface (FDMI) command to
+	 * 0xfffffa (FDMI well known port).
+	 * DHBA -> DPRT -> RHBA -> RPA  (physical port)
+	 * DPRT -> RPRT (vports)
+	 */
+	if (vport->port_type == LPFC_PHYSICAL_PORT) {
+		phba->link_flag &= ~LS_CT_VEN_RPA; /* For extra Vendor RPA */
+		lpfc_fdmi_cmd(vport, ndlp, SLI_MGMT_DHBA, 0);
+	} else {
+		lpfc_fdmi_cmd(vport, ndlp, SLI_MGMT_DPRT, 0);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* decrement the node reference count held for this callback
 	 * function.
 	 */
 	lpfc_nlp_put(ndlp);
+<<<<<<< HEAD
 	lpfc_mbuf_free(phba, mp->virt, mp->phys);
 	kfree(mp);
 	mempool_free(pmb, phba->mbox_mem_pool);
 
+=======
+	lpfc_mbox_rsrc_cleanup(phba, pmb, MBOX_THD_UNLOCKED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -5339,10 +8491,13 @@ lpfc_filter_by_rpi(struct lpfc_nodelist *ndlp, void *param)
 {
 	uint16_t *rpi = param;
 
+<<<<<<< HEAD
 	/* check for active node */
 	if (!NLP_CHK_NODE_ACT(ndlp))
 		return 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ndlp->nlp_rpi == *rpi;
 }
 
@@ -5359,9 +8514,26 @@ __lpfc_find_node(struct lpfc_vport *vport, node_filter filter, void *param)
 	struct lpfc_nodelist *ndlp;
 
 	list_for_each_entry(ndlp, &vport->fc_nodes, nlp_listp) {
+<<<<<<< HEAD
 		if (filter(ndlp, param))
 			return ndlp;
 	}
+=======
+		if (filter(ndlp, param)) {
+			lpfc_printf_vlog(vport, KERN_INFO, LOG_NODE_VERBOSE,
+					 "3185 FIND node filter %ps DID "
+					 "ndlp x%px did x%x flg x%x st x%x "
+					 "xri x%x type x%x rpi x%x\n",
+					 filter, ndlp, ndlp->nlp_DID,
+					 ndlp->nlp_flag, ndlp->nlp_state,
+					 ndlp->nlp_xri, ndlp->nlp_type,
+					 ndlp->nlp_rpi);
+			return ndlp;
+		}
+	}
+	lpfc_printf_vlog(vport, KERN_INFO, LOG_NODE,
+			 "3186 FIND node filter %ps NOT FOUND.\n", filter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -5401,10 +8573,18 @@ lpfc_findnode_rpi(struct lpfc_vport *vport, uint16_t rpi)
 {
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
 	struct lpfc_nodelist *ndlp;
+<<<<<<< HEAD
 
 	spin_lock_irq(shost->host_lock);
 	ndlp = __lpfc_findnode_rpi(vport, rpi);
 	spin_unlock_irq(shost->host_lock);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(shost->host_lock, flags);
+	ndlp = __lpfc_findnode_rpi(vport, rpi);
+	spin_unlock_irqrestore(shost->host_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ndlp;
 }
 
@@ -5434,19 +8614,31 @@ lpfc_find_vport_by_vpid(struct lpfc_hba *phba, uint16_t vpi)
 		 * Translate the physical vpi to the logical vpi.  The
 		 * vport stores the logical vpi.
 		 */
+<<<<<<< HEAD
 		for (i = 0; i < phba->max_vpi; i++) {
+=======
+		for (i = 0; i <= phba->max_vpi; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (vpi == phba->vpi_ids[i])
 				break;
 		}
 
+<<<<<<< HEAD
 		if (i >= phba->max_vpi) {
 			lpfc_printf_log(phba, KERN_ERR, LOG_ELS,
 					 "2936 Could not find Vport mapped "
 					 "to vpi %d\n", vpi);
+=======
+		if (i > phba->max_vpi) {
+			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+					"2936 Could not find Vport mapped "
+					"to vpi %d\n", vpi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NULL;
 		}
 	}
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&phba->hbalock, flags);
 	list_for_each_entry(vport, &phba->port_list, listentry) {
 		if (vport->vpi == i) {
@@ -5466,12 +8658,71 @@ lpfc_nlp_init(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 
 	lpfc_initialize_node(vport, ndlp, did);
 	INIT_LIST_HEAD(&ndlp->nlp_listp);
+=======
+	spin_lock_irqsave(&phba->port_list_lock, flags);
+	list_for_each_entry(vport, &phba->port_list, listentry) {
+		if (vport->vpi == i) {
+			spin_unlock_irqrestore(&phba->port_list_lock, flags);
+			return vport;
+		}
+	}
+	spin_unlock_irqrestore(&phba->port_list_lock, flags);
+	return NULL;
+}
+
+struct lpfc_nodelist *
+lpfc_nlp_init(struct lpfc_vport *vport, uint32_t did)
+{
+	struct lpfc_nodelist *ndlp;
+	int rpi = LPFC_RPI_ALLOC_ERROR;
+
+	if (vport->phba->sli_rev == LPFC_SLI_REV4) {
+		rpi = lpfc_sli4_alloc_rpi(vport->phba);
+		if (rpi == LPFC_RPI_ALLOC_ERROR)
+			return NULL;
+	}
+
+	ndlp = mempool_alloc(vport->phba->nlp_mem_pool, GFP_KERNEL);
+	if (!ndlp) {
+		if (vport->phba->sli_rev == LPFC_SLI_REV4)
+			lpfc_sli4_free_rpi(vport->phba, rpi);
+		return NULL;
+	}
+
+	memset(ndlp, 0, sizeof (struct lpfc_nodelist));
+
+	spin_lock_init(&ndlp->lock);
+
+	lpfc_initialize_node(vport, ndlp, did);
+	INIT_LIST_HEAD(&ndlp->nlp_listp);
+	if (vport->phba->sli_rev == LPFC_SLI_REV4) {
+		ndlp->nlp_rpi = rpi;
+		lpfc_printf_vlog(vport, KERN_INFO, LOG_NODE | LOG_DISCOVERY,
+				 "0007 Init New ndlp x%px, rpi:x%x DID:%x "
+				 "flg:x%x refcnt:%d\n",
+				 ndlp, ndlp->nlp_rpi, ndlp->nlp_DID,
+				 ndlp->nlp_flag, kref_read(&ndlp->kref));
+
+		ndlp->active_rrqs_xri_bitmap =
+				mempool_alloc(vport->phba->active_rrq_pool,
+					      GFP_KERNEL);
+		if (ndlp->active_rrqs_xri_bitmap)
+			memset(ndlp->active_rrqs_xri_bitmap, 0,
+			       ndlp->phba->cfg_rrq_xri_bitmap_sz);
+	}
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpfc_debugfs_disc_trc(vport, LPFC_DISC_TRC_NODE,
 		"node init:       did:x%x",
 		ndlp->nlp_DID, 0, 0);
 
+<<<<<<< HEAD
 	return;
+=======
+	return ndlp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This routine releases all resources associated with a specifc NPort's ndlp
@@ -5480,15 +8731,22 @@ lpfc_nlp_init(struct lpfc_vport *vport, struct lpfc_nodelist *ndlp,
 static void
 lpfc_nlp_release(struct kref *kref)
 {
+<<<<<<< HEAD
 	struct lpfc_hba *phba;
 	unsigned long flags;
 	struct lpfc_nodelist *ndlp = container_of(kref, struct lpfc_nodelist,
 						  kref);
+=======
+	struct lpfc_nodelist *ndlp = container_of(kref, struct lpfc_nodelist,
+						  kref);
+	struct lpfc_vport *vport = ndlp->vport;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpfc_debugfs_disc_trc(ndlp->vport, LPFC_DISC_TRC_NODE,
 		"node release:    did:x%x flg:x%x type:x%x",
 		ndlp->nlp_DID, ndlp->nlp_flag, ndlp->nlp_type);
 
+<<<<<<< HEAD
 	lpfc_printf_vlog(ndlp->vport, KERN_INFO, LOG_NODE,
 			"0279 lpfc_nlp_release: ndlp:x%p "
 			"usgmap:x%x refcnt:%d\n",
@@ -5511,6 +8769,45 @@ lpfc_nlp_release(struct kref *kref)
 		kfree(ndlp->lat_data);
 		mempool_free(ndlp, ndlp->phba->nlp_mem_pool);
 	}
+=======
+	lpfc_printf_vlog(vport, KERN_INFO, LOG_NODE,
+			 "0279 %s: ndlp: x%px did %x refcnt:%d rpi:%x\n",
+			 __func__, ndlp, ndlp->nlp_DID,
+			 kref_read(&ndlp->kref), ndlp->nlp_rpi);
+
+	/* remove ndlp from action. */
+	lpfc_cancel_retry_delay_tmo(vport, ndlp);
+	lpfc_cleanup_node(vport, ndlp);
+
+	/* Not all ELS transactions have registered the RPI with the port.
+	 * In these cases the rpi usage is temporary and the node is
+	 * released when the WQE is completed.  Catch this case to free the
+	 * RPI to the pool.  Because this node is in the release path, a lock
+	 * is unnecessary.  All references are gone and the node has been
+	 * dequeued.
+	 */
+	if (ndlp->nlp_flag & NLP_RELEASE_RPI) {
+		if (ndlp->nlp_rpi != LPFC_RPI_ALLOC_ERROR &&
+		    !(ndlp->nlp_flag & (NLP_RPI_REGISTERED | NLP_UNREG_INP))) {
+			lpfc_sli4_free_rpi(vport->phba, ndlp->nlp_rpi);
+			ndlp->nlp_rpi = LPFC_RPI_ALLOC_ERROR;
+		}
+	}
+
+	/* The node is not freed back to memory, it is released to a pool so
+	 * the node fields need to be cleaned up.
+	 */
+	ndlp->vport = NULL;
+	ndlp->nlp_state = NLP_STE_FREED_NODE;
+	ndlp->nlp_flag = 0;
+	ndlp->fc4_xpt_flags = 0;
+
+	/* free ndlp memory for final ndlp release */
+	if (ndlp->phba->sli_rev == LPFC_SLI_REV4)
+		mempool_free(ndlp->active_rrqs_xri_bitmap,
+				ndlp->phba->active_rrq_pool);
+	mempool_free(ndlp, ndlp->phba->nlp_mem_pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This routine bumps the reference count for a ndlp structure to ensure
@@ -5520,18 +8817,27 @@ lpfc_nlp_release(struct kref *kref)
 struct lpfc_nodelist *
 lpfc_nlp_get(struct lpfc_nodelist *ndlp)
 {
+<<<<<<< HEAD
 	struct lpfc_hba *phba;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	if (ndlp) {
 		lpfc_debugfs_disc_trc(ndlp->vport, LPFC_DISC_TRC_NODE,
 			"node get:        did:x%x flg:x%x refcnt:x%x",
 			ndlp->nlp_DID, ndlp->nlp_flag,
+<<<<<<< HEAD
 			atomic_read(&ndlp->kref.refcount));
+=======
+			kref_read(&ndlp->kref));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* The check of ndlp usage to prevent incrementing the
 		 * ndlp reference count that is in the process of being
 		 * released.
 		 */
+<<<<<<< HEAD
 		phba = ndlp->phba;
 		spin_lock_irqsave(&phba->ndlp_lock, flags);
 		if (!NLP_CHK_NODE_ACT(ndlp) || NLP_CHK_FREE_ACK(ndlp)) {
@@ -5546,18 +8852,38 @@ lpfc_nlp_get(struct lpfc_nodelist *ndlp)
 			kref_get(&ndlp->kref);
 		spin_unlock_irqrestore(&phba->ndlp_lock, flags);
 	}
+=======
+		spin_lock_irqsave(&ndlp->lock, flags);
+		if (!kref_get_unless_zero(&ndlp->kref)) {
+			spin_unlock_irqrestore(&ndlp->lock, flags);
+			lpfc_printf_vlog(ndlp->vport, KERN_WARNING, LOG_NODE,
+				"0276 %s: ndlp:x%px refcnt:%d\n",
+				__func__, (void *)ndlp, kref_read(&ndlp->kref));
+			return NULL;
+		}
+		spin_unlock_irqrestore(&ndlp->lock, flags);
+	} else {
+		WARN_ONCE(!ndlp, "**** %s, get ref on NULL ndlp!", __func__);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ndlp;
 }
 
 /* This routine decrements the reference count for a ndlp structure. If the
+<<<<<<< HEAD
  * count goes to 0, this indicates the the associated nodelist should be
  * freed. Returning 1 indicates the ndlp resource has been released; on the
  * other hand, returning 0 indicates the ndlp resource has not been released
  * yet.
+=======
+ * count goes to 0, this indicates the associated nodelist should be freed.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int
 lpfc_nlp_put(struct lpfc_nodelist *ndlp)
 {
+<<<<<<< HEAD
 	struct lpfc_hba *phba;
 	unsigned long flags;
 
@@ -5634,6 +8960,18 @@ lpfc_nlp_not_used(struct lpfc_nodelist *ndlp)
 		if (lpfc_nlp_put(ndlp))
 			return 1;
 	return 0;
+=======
+	if (ndlp) {
+		lpfc_debugfs_disc_trc(ndlp->vport, LPFC_DISC_TRC_NODE,
+				"node put:        did:x%x flg:x%x refcnt:x%x",
+				ndlp->nlp_DID, ndlp->nlp_flag,
+				kref_read(&ndlp->kref));
+	} else {
+		WARN_ONCE(!ndlp, "**** %s, put ref on NULL ndlp!", __func__);
+	}
+
+	return ndlp ? kref_put(&ndlp->kref, lpfc_nlp_release) : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -5652,7 +8990,11 @@ lpfc_fcf_inuse(struct lpfc_hba *phba)
 	struct lpfc_vport **vports;
 	int i, ret = 0;
 	struct lpfc_nodelist *ndlp;
+<<<<<<< HEAD
 	struct Scsi_Host  *shost;
+=======
+	unsigned long iflags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vports = lpfc_create_vport_work_array(phba);
 
@@ -5661,14 +9003,18 @@ lpfc_fcf_inuse(struct lpfc_hba *phba)
 		return 1;
 
 	for (i = 0; i <= phba->max_vports && vports[i] != NULL; i++) {
+<<<<<<< HEAD
 		shost = lpfc_shost_from_vport(vports[i]);
 		spin_lock_irq(shost->host_lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * IF the CVL_RCVD bit is not set then we have sent the
 		 * flogi.
 		 * If dev_loss fires while we are waiting we do not want to
 		 * unreg the fcf.
 		 */
+<<<<<<< HEAD
 		if (!(vports[i]->fc_flag & FC_VPORT_CVL_RCVD)) {
 			spin_unlock_irq(shost->host_lock);
 			ret =  1;
@@ -5683,13 +9029,35 @@ lpfc_fcf_inuse(struct lpfc_hba *phba)
 			} else if (ndlp->nlp_flag & NLP_RPI_REGISTERED) {
 				ret = 1;
 				lpfc_printf_log(phba, KERN_INFO, LOG_ELS,
+=======
+		if (!test_bit(FC_VPORT_CVL_RCVD, &vports[i]->fc_flag)) {
+			ret =  1;
+			goto out;
+		}
+		spin_lock_irqsave(&vports[i]->fc_nodes_list_lock, iflags);
+		list_for_each_entry(ndlp, &vports[i]->fc_nodes, nlp_listp) {
+			if (ndlp->rport &&
+			  (ndlp->rport->roles & FC_RPORT_ROLE_FCP_TARGET)) {
+				ret = 1;
+				spin_unlock_irqrestore(&vports[i]->fc_nodes_list_lock,
+						       iflags);
+				goto out;
+			} else if (ndlp->nlp_flag & NLP_RPI_REGISTERED) {
+				ret = 1;
+				lpfc_printf_log(phba, KERN_INFO,
+						LOG_NODE | LOG_DISCOVERY,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						"2624 RPI %x DID %x flag %x "
 						"still logged in\n",
 						ndlp->nlp_rpi, ndlp->nlp_DID,
 						ndlp->nlp_flag);
 			}
 		}
+<<<<<<< HEAD
 		spin_unlock_irq(shost->host_lock);
+=======
+		spin_unlock_irqrestore(&vports[i]->fc_nodes_list_lock, iflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	lpfc_destroy_vport_work_array(phba, vports);
@@ -5707,6 +9075,7 @@ void
 lpfc_unregister_vfi_cmpl(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 {
 	struct lpfc_vport *vport = mboxq->vport;
+<<<<<<< HEAD
 	struct Scsi_Host *shost = lpfc_shost_from_vport(vport);
 
 	if (mboxq->u.mb.mbxStatus) {
@@ -5718,6 +9087,16 @@ lpfc_unregister_vfi_cmpl(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	spin_lock_irq(shost->host_lock);
 	phba->pport->fc_flag &= ~FC_VFI_REGISTERED;
 	spin_unlock_irq(shost->host_lock);
+=======
+
+	if (mboxq->u.mb.mbxStatus) {
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+				"2555 UNREG_VFI mbxStatus error x%x "
+				"HBA state x%x\n",
+				mboxq->u.mb.mbxStatus, vport->port_state);
+	}
+	clear_bit(FC_VFI_REGISTERED, &phba->pport->fc_flag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mempool_free(mboxq, phba->mbox_mem_pool);
 	return;
 }
@@ -5735,10 +9114,17 @@ lpfc_unregister_fcfi_cmpl(struct lpfc_hba *phba, LPFC_MBOXQ_t *mboxq)
 	struct lpfc_vport *vport = mboxq->vport;
 
 	if (mboxq->u.mb.mbxStatus) {
+<<<<<<< HEAD
 		lpfc_printf_log(phba, KERN_ERR, LOG_DISCOVERY|LOG_MBOX,
 			"2550 UNREG_FCFI mbxStatus error x%x "
 			"HBA state x%x\n",
 			mboxq->u.mb.mbxStatus, vport->port_state);
+=======
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+				"2550 UNREG_FCFI mbxStatus error x%x "
+				"HBA state x%x\n",
+				mboxq->u.mb.mbxStatus, vport->port_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mempool_free(mboxq, phba->mbox_mem_pool);
 	return;
@@ -5758,7 +9144,11 @@ lpfc_unregister_fcf_prep(struct lpfc_hba *phba)
 	struct lpfc_vport **vports;
 	struct lpfc_nodelist *ndlp;
 	struct Scsi_Host *shost;
+<<<<<<< HEAD
 	int i, rc;
+=======
+	int i = 0, rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Unregister RPIs */
 	if (lpfc_fcf_inuse(phba))
@@ -5781,11 +9171,33 @@ lpfc_unregister_fcf_prep(struct lpfc_hba *phba)
 			lpfc_mbx_unreg_vpi(vports[i]);
 			shost = lpfc_shost_from_vport(vports[i]);
 			spin_lock_irq(shost->host_lock);
+<<<<<<< HEAD
 			vports[i]->fc_flag |= FC_VPORT_NEEDS_INIT_VPI;
 			vports[i]->vpi_state &= ~LPFC_VPI_REGISTERED;
 			spin_unlock_irq(shost->host_lock);
 		}
 	lpfc_destroy_vport_work_array(phba, vports);
+=======
+			vports[i]->vpi_state &= ~LPFC_VPI_REGISTERED;
+			spin_unlock_irq(shost->host_lock);
+			set_bit(FC_VPORT_NEEDS_INIT_VPI, &vports[i]->fc_flag);
+		}
+	lpfc_destroy_vport_work_array(phba, vports);
+	if (i == 0 && (!(phba->sli3_options & LPFC_SLI3_NPIV_ENABLED))) {
+		ndlp = lpfc_findnode_did(phba->pport, Fabric_DID);
+		if (ndlp)
+			lpfc_cancel_retry_delay_tmo(phba->pport, ndlp);
+		lpfc_cleanup_pending_mbox(phba->pport);
+		if (phba->sli_rev == LPFC_SLI_REV4)
+			lpfc_sli4_unreg_all_rpis(phba->pport);
+		lpfc_mbx_unreg_vpi(phba->pport);
+		shost = lpfc_shost_from_vport(phba->pport);
+		spin_lock_irq(shost->host_lock);
+		phba->pport->vpi_state &= ~LPFC_VPI_REGISTERED;
+		spin_unlock_irq(shost->host_lock);
+		set_bit(FC_VPORT_NEEDS_INIT_VPI, &phba->pport->fc_flag);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Cleanup any outstanding ELS commands */
 	lpfc_els_flush_all_cmd(phba);
@@ -5813,7 +9225,11 @@ lpfc_sli4_unregister_fcf(struct lpfc_hba *phba)
 
 	mbox = mempool_alloc(phba->mbox_mem_pool, GFP_KERNEL);
 	if (!mbox) {
+<<<<<<< HEAD
 		lpfc_printf_log(phba, KERN_ERR, LOG_DISCOVERY|LOG_MBOX,
+=======
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2551 UNREG_FCFI mbox allocation failed"
 				"HBA state x%x\n", phba->pport->port_state);
 		return -ENOMEM;
@@ -5824,7 +9240,11 @@ lpfc_sli4_unregister_fcf(struct lpfc_hba *phba)
 	rc = lpfc_sli_issue_mbox(phba, mbox, MBX_NOWAIT);
 
 	if (rc == MBX_NOT_FINISHED) {
+<<<<<<< HEAD
 		lpfc_printf_log(phba, KERN_ERR, LOG_SLI,
+=======
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2552 Unregister FCFI command failed rc x%x "
 				"HBA state x%x\n",
 				rc, phba->pport->port_state);
@@ -5848,7 +9268,11 @@ lpfc_unregister_fcf_rescan(struct lpfc_hba *phba)
 	/* Preparation for unregistering fcf */
 	rc = lpfc_unregister_fcf_prep(phba);
 	if (rc) {
+<<<<<<< HEAD
 		lpfc_printf_log(phba, KERN_ERR, LOG_DISCOVERY,
+=======
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2748 Failed to prepare for unregistering "
 				"HBA's FCF record: rc=%d\n", rc);
 		return;
@@ -5859,15 +9283,26 @@ lpfc_unregister_fcf_rescan(struct lpfc_hba *phba)
 	if (rc)
 		return;
 	/* Reset HBA FCF states after successful unregister FCF */
+<<<<<<< HEAD
 	phba->fcf.fcf_flag = 0;
+=======
+	spin_lock_irq(&phba->hbalock);
+	phba->fcf.fcf_flag = 0;
+	spin_unlock_irq(&phba->hbalock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phba->fcf.current_rec.flag = 0;
 
 	/*
 	 * If driver is not unloading, check if there is any other
 	 * FCF record that can be used for discovery.
 	 */
+<<<<<<< HEAD
 	if ((phba->pport->load_flag & FC_UNLOADING) ||
 	    (phba->link_state < LPFC_LINK_UP))
+=======
+	if (test_bit(FC_UNLOADING, &phba->pport->load_flag) ||
+	    phba->link_state < LPFC_LINK_UP)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/* This is considered as the initial FCF discovery scan */
@@ -5884,7 +9319,11 @@ lpfc_unregister_fcf_rescan(struct lpfc_hba *phba)
 		spin_lock_irq(&phba->hbalock);
 		phba->fcf.fcf_flag &= ~FCF_INIT_DISC;
 		spin_unlock_irq(&phba->hbalock);
+<<<<<<< HEAD
 		lpfc_printf_log(phba, KERN_ERR, LOG_DISCOVERY|LOG_MBOX,
+=======
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2553 lpfc_unregister_unused_fcf failed "
 				"to read FCF record HBA state x%x\n",
 				phba->pport->port_state);
@@ -5906,7 +9345,11 @@ lpfc_unregister_fcf(struct lpfc_hba *phba)
 	/* Preparation for unregistering fcf */
 	rc = lpfc_unregister_fcf_prep(phba);
 	if (rc) {
+<<<<<<< HEAD
 		lpfc_printf_log(phba, KERN_ERR, LOG_DISCOVERY,
+=======
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"2749 Failed to prepare for unregistering "
 				"HBA's FCF record: rc=%d\n", rc);
 		return;
@@ -5993,14 +9436,21 @@ lpfc_read_fcf_conn_tbl(struct lpfc_hba *phba,
 		conn_entry = kzalloc(sizeof(struct lpfc_fcf_conn_entry),
 			GFP_KERNEL);
 		if (!conn_entry) {
+<<<<<<< HEAD
 			lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
 				"2566 Failed to allocate connection"
 				" table entry\n");
+=======
+			lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+					"2566 Failed to allocate connection"
+					" table entry\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 
 		memcpy(&conn_entry->conn_rec, &conn_rec[i],
 			sizeof(struct lpfc_fcf_conn_rec));
+<<<<<<< HEAD
 		conn_entry->conn_rec.vlan_tag =
 			le16_to_cpu(conn_entry->conn_rec.vlan_tag) & 0xFFF;
 		conn_entry->conn_rec.flags =
@@ -6008,6 +9458,43 @@ lpfc_read_fcf_conn_tbl(struct lpfc_hba *phba,
 		list_add_tail(&conn_entry->list,
 			&phba->fcf_conn_rec_list);
 	}
+=======
+		list_add_tail(&conn_entry->list,
+			&phba->fcf_conn_rec_list);
+	}
+
+	if (!list_empty(&phba->fcf_conn_rec_list)) {
+		i = 0;
+		list_for_each_entry(conn_entry, &phba->fcf_conn_rec_list,
+				    list) {
+			conn_rec = &conn_entry->conn_rec;
+			lpfc_printf_log(phba, KERN_INFO, LOG_INIT,
+					"3345 FCF connection list rec[%02d]: "
+					"flags:x%04x, vtag:x%04x, "
+					"fabric_name:x%02x:%02x:%02x:%02x:"
+					"%02x:%02x:%02x:%02x, "
+					"switch_name:x%02x:%02x:%02x:%02x:"
+					"%02x:%02x:%02x:%02x\n", i++,
+					conn_rec->flags, conn_rec->vlan_tag,
+					conn_rec->fabric_name[0],
+					conn_rec->fabric_name[1],
+					conn_rec->fabric_name[2],
+					conn_rec->fabric_name[3],
+					conn_rec->fabric_name[4],
+					conn_rec->fabric_name[5],
+					conn_rec->fabric_name[6],
+					conn_rec->fabric_name[7],
+					conn_rec->switch_name[0],
+					conn_rec->switch_name[1],
+					conn_rec->switch_name[2],
+					conn_rec->switch_name[3],
+					conn_rec->switch_name[4],
+					conn_rec->switch_name[5],
+					conn_rec->switch_name[6],
+					conn_rec->switch_name[7]);
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -6099,7 +9586,11 @@ lpfc_parse_fcoe_conf(struct lpfc_hba *phba,
 		uint8_t *buff,
 		uint32_t size)
 {
+<<<<<<< HEAD
 	uint32_t offset = 0, rec_length;
+=======
+	uint32_t offset = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t *rec_ptr;
 
 	/*
@@ -6111,7 +9602,11 @@ lpfc_parse_fcoe_conf(struct lpfc_hba *phba,
 
 	/* Check the region signature first */
 	if (memcmp(buff, LPFC_REGION23_SIGNATURE, 4)) {
+<<<<<<< HEAD
 		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
+=======
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"2567 Config region 23 has bad signature\n");
 		return;
 	}
@@ -6120,14 +9615,22 @@ lpfc_parse_fcoe_conf(struct lpfc_hba *phba,
 
 	/* Check the data structure version */
 	if (buff[offset] != LPFC_REGION23_VERSION) {
+<<<<<<< HEAD
 		lpfc_printf_log(phba, KERN_ERR, LOG_INIT,
 			"2568 Config region 23 has bad version\n");
+=======
+		lpfc_printf_log(phba, KERN_ERR, LOG_TRACE_EVENT,
+				"2568 Config region 23 has bad version\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	offset += 4;
 
+<<<<<<< HEAD
 	rec_length = buff[offset + 1];
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Read FCoE param record */
 	rec_ptr = lpfc_get_rec_conf23(&buff[offset],
 			size - offset, FCOE_PARAM_TYPE);
@@ -6141,3 +9644,41 @@ lpfc_parse_fcoe_conf(struct lpfc_hba *phba,
 		lpfc_read_fcf_conn_tbl(phba, rec_ptr);
 
 }
+<<<<<<< HEAD
+=======
+
+/*
+ * lpfc_error_lost_link - IO failure from link event or FW reset check.
+ *
+ * @vport: Pointer to lpfc_vport data structure.
+ * @ulp_status: IO completion status.
+ * @ulp_word4: Reason code for the ulp_status.
+ *
+ * This function evaluates the ulp_status and ulp_word4 values
+ * for specific error values that indicate an internal link fault
+ * or fw reset event for the completing IO.  Callers require this
+ * common data to decide next steps on the IO.
+ *
+ * Return:
+ * false - No link or reset error occurred.
+ * true - A link or reset error occurred.
+ */
+bool
+lpfc_error_lost_link(struct lpfc_vport *vport, u32 ulp_status, u32 ulp_word4)
+{
+	/* Mask off the extra port data to get just the reason code. */
+	u32 rsn_code = IOERR_PARAM_MASK & ulp_word4;
+
+	if (ulp_status == IOSTAT_LOCAL_REJECT &&
+	    (rsn_code == IOERR_SLI_ABORTED ||
+	     rsn_code == IOERR_LINK_DOWN ||
+	     rsn_code == IOERR_SLI_DOWN)) {
+		lpfc_printf_vlog(vport, KERN_WARNING, LOG_SLI | LOG_ELS,
+				 "0408 Report link error true: <x%x:x%x>\n",
+				 ulp_status, ulp_word4);
+		return true;
+	}
+
+	return false;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

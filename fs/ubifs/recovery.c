@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -16,6 +21,8 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Adrian Hunter
  *          Artem Bityutskiy (Битюцкий Артём)
  */
@@ -212,11 +219,22 @@ static int write_rcvrd_mst_node(struct ubifs_info *c,
 	save_flags = mst->flags;
 	mst->flags |= cpu_to_le32(UBIFS_MST_RCVRY);
 
+<<<<<<< HEAD
 	ubifs_prepare_node(c, mst, UBIFS_MST_NODE_SZ, 1);
 	err = ubifs_leb_change(c, lnum, mst, sz, UBI_SHORTTERM);
 	if (err)
 		goto out;
 	err = ubifs_leb_change(c, lnum + 1, mst, sz, UBI_SHORTTERM);
+=======
+	err = ubifs_prepare_node_hmac(c, mst, UBIFS_MST_NODE_SZ,
+				      offsetof(struct ubifs_mst_node, hmac), 1);
+	if (err)
+		goto out;
+	err = ubifs_leb_change(c, lnum, mst, sz);
+	if (err)
+		goto out;
+	err = ubifs_leb_change(c, lnum + 1, mst, sz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 out:
@@ -264,9 +282,13 @@ int ubifs_recover_master_node(struct ubifs_info *c)
 			offs2 = (void *)mst2 - buf2;
 			if (offs1 == offs2) {
 				/* Same offset, so must be the same */
+<<<<<<< HEAD
 				if (memcmp((void *)mst1 + UBIFS_CH_SZ,
 					   (void *)mst2 + UBIFS_CH_SZ,
 					   UBIFS_MST_NODE_SZ - UBIFS_CH_SZ))
+=======
+				if (ubifs_compare_master_node(c, mst1, mst2))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto out_err;
 				mst = mst1;
 			} else if (offs2 + sz == offs1) {
@@ -305,7 +327,11 @@ int ubifs_recover_master_node(struct ubifs_info *c)
 		mst = mst2;
 	}
 
+<<<<<<< HEAD
 	ubifs_msg("recovered master node from LEB %d",
+=======
+	ubifs_msg(c, "recovered master node from LEB %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  (mst == mst1 ? UBIFS_MST_LNUM : UBIFS_MST_LNUM + 1));
 
 	memcpy(c->mst_node, mst, UBIFS_MST_NODE_SZ);
@@ -360,6 +386,7 @@ int ubifs_recover_master_node(struct ubifs_info *c)
 out_err:
 	err = -EINVAL;
 out_free:
+<<<<<<< HEAD
 	ubifs_err("failed to recover master node");
 	if (mst1) {
 		dbg_err("dumping first master node");
@@ -368,6 +395,16 @@ out_free:
 	if (mst2) {
 		dbg_err("dumping second master node");
 		dbg_dump_node(c, mst2);
+=======
+	ubifs_err(c, "failed to recover master node");
+	if (mst1) {
+		ubifs_err(c, "dumping first master node");
+		ubifs_dump_node(c, mst1, c->leb_size - ((void *)mst1 - buf1));
+	}
+	if (mst2) {
+		ubifs_err(c, "dumping second master node");
+		ubifs_dump_node(c, mst2, c->leb_size - ((void *)mst2 - buf2));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	vfree(buf2);
 	vfree(buf1);
@@ -442,10 +479,16 @@ static void clean_buf(const struct ubifs_info *c, void **buf, int lnum,
 {
 	int empty_offs, pad_len;
 
+<<<<<<< HEAD
 	lnum = lnum;
 	dbg_rcvry("cleaning corruption at %d:%d", lnum, *offs);
 
 	ubifs_assert(!(*offs & 7));
+=======
+	dbg_rcvry("cleaning corruption at %d:%d", lnum, *offs);
+
+	ubifs_assert(c, !(*offs & 7));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	empty_offs = ALIGN(*offs, c->min_io_size);
 	pad_len = empty_offs - *offs;
 	ubifs_pad(c, *buf, pad_len);
@@ -481,7 +524,11 @@ static int no_more_nodes(const struct ubifs_info *c, void *buf, int len,
 	 * The area after the common header size is not empty, so the common
 	 * header must be intact. Check it.
 	 */
+<<<<<<< HEAD
 	if (ubifs_check_node(c, buf, lnum, offs, 1, 0) != -EUCLEAN) {
+=======
+	if (ubifs_check_node(c, buf, len, lnum, offs, 1, 0) != -EUCLEAN) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dbg_rcvry("unexpected bad common header at %d:%d", lnum, offs);
 		return 0;
 	}
@@ -555,8 +602,12 @@ static int fix_unclean_leb(struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 					ubifs_pad(c, buf, pad_len);
 				}
 			}
+<<<<<<< HEAD
 			err = ubifs_leb_change(c, lnum, sleb->buf, len,
 					       UBI_UNKNOWN);
+=======
+			err = ubifs_leb_change(c, lnum, sleb->buf, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err)
 				return err;
 		}
@@ -597,7 +648,10 @@ static void drop_last_group(struct ubifs_scan_leb *sleb, int *offs)
  * drop_last_node - drop the last node.
  * @sleb: scanned LEB information
  * @offs: offset of dropped nodes is returned here
+<<<<<<< HEAD
  * @grouped: non-zero if whole group of nodes have to be dropped
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is a helper function for 'ubifs_recover_leb()' which drops the last
  * node of the scanned LEB.
@@ -610,7 +664,12 @@ static void drop_last_node(struct ubifs_scan_leb *sleb, int *offs)
 		snod = list_entry(sleb->nodes.prev, struct ubifs_scan_node,
 				  list);
 
+<<<<<<< HEAD
 		dbg_rcvry("dropping last node at %d:%d", sleb->lnum, snod->offs);
+=======
+		dbg_rcvry("dropping last node at %d:%d",
+			  sleb->lnum, snod->offs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*offs = snod->offs;
 		list_del(&snod->list);
 		kfree(snod);
@@ -629,8 +688,13 @@ static void drop_last_node(struct ubifs_scan_leb *sleb, int *offs)
  *
  * This function does a scan of a LEB, but caters for errors that might have
  * been caused by the unclean unmount from which we are attempting to recover.
+<<<<<<< HEAD
  * Returns %0 in case of success, %-EUCLEAN if an unrecoverable corruption is
  * found, and a negative error code in case of failure.
+=======
+ * Returns the scanned information on success and a negative error code on
+ * failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ubifs_scan_leb *ubifs_recover_leb(struct ubifs_info *c, int lnum,
 					 int offs, void *sbuf, int jhead)
@@ -646,7 +710,11 @@ struct ubifs_scan_leb *ubifs_recover_leb(struct ubifs_info *c, int lnum,
 	if (IS_ERR(sleb))
 		return sleb;
 
+<<<<<<< HEAD
 	ubifs_assert(len >= 8);
+=======
+	ubifs_assert(c, len >= 8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (len >= 8) {
 		dbg_scan("look at LEB %d:%d (%d bytes left)",
 			 lnum, offs, len);
@@ -683,7 +751,11 @@ struct ubifs_scan_leb *ubifs_recover_leb(struct ubifs_info *c, int lnum,
 				  ret, lnum, offs);
 			break;
 		} else {
+<<<<<<< HEAD
 			dbg_err("unexpected return value %d", ret);
+=======
+			ubifs_err(c, "unexpected return value %d", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			goto error;
 		}
@@ -703,8 +775,13 @@ struct ubifs_scan_leb *ubifs_recover_leb(struct ubifs_info *c, int lnum,
 			 * See header comment for this file for more
 			 * explanations about the reasons we have this check.
 			 */
+<<<<<<< HEAD
 			ubifs_err("corrupt empty space LEB %d:%d, corruption "
 				  "starts at %d", lnum, offs, corruption);
+=======
+			ubifs_err(c, "corrupt empty space LEB %d:%d, corruption starts at %d",
+				  lnum, offs, corruption);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Make sure we dump interesting non-0xFF data */
 			offs += corruption;
 			buf += corruption;
@@ -789,13 +866,22 @@ struct ubifs_scan_leb *ubifs_recover_leb(struct ubifs_info *c, int lnum,
 
 corrupted_rescan:
 	/* Re-scan the corrupted data with verbose messages */
+<<<<<<< HEAD
 	dbg_err("corruptio %d", ret);
 	ubifs_scan_a_node(c, buf, len, lnum, offs, 1);
+=======
+	ubifs_err(c, "corruption %d", ret);
+	ubifs_scan_a_node(c, buf, len, lnum, offs, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 corrupted:
 	ubifs_scanned_corruption(c, lnum, offs, buf);
 	err = -EUCLEAN;
 error:
+<<<<<<< HEAD
 	ubifs_err("LEB %d scanning failed", lnum);
+=======
+	ubifs_err(c, "LEB %d scanning failed", lnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ubifs_scan_destroy(sleb);
 	return ERR_PTR(err);
 }
@@ -827,6 +913,7 @@ static int get_cs_sqnum(struct ubifs_info *c, int lnum, int offs,
 		goto out_free;
 	ret = ubifs_scan_a_node(c, cs_node, UBIFS_CS_NODE_SZ, lnum, offs, 0);
 	if (ret != SCANNED_A_NODE) {
+<<<<<<< HEAD
 		dbg_err("Not a valid node");
 		goto out_err;
 	}
@@ -838,6 +925,19 @@ static int get_cs_sqnum(struct ubifs_info *c, int lnum, int offs,
 		dbg_err("CS node cmt_no %llu != current cmt_no %llu",
 			(unsigned long long)le64_to_cpu(cs_node->cmt_no),
 			c->cmt_no);
+=======
+		ubifs_err(c, "Not a valid node");
+		goto out_err;
+	}
+	if (cs_node->ch.node_type != UBIFS_CS_NODE) {
+		ubifs_err(c, "Not a CS node, type is %d", cs_node->ch.node_type);
+		goto out_err;
+	}
+	if (le64_to_cpu(cs_node->cmt_no) != c->cmt_no) {
+		ubifs_err(c, "CS node cmt_no %llu != current cmt_no %llu",
+			  (unsigned long long)le64_to_cpu(cs_node->cmt_no),
+			  c->cmt_no);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_err;
 	}
 	*cs_sqnum = le64_to_cpu(cs_node->ch.sqnum);
@@ -848,7 +948,11 @@ static int get_cs_sqnum(struct ubifs_info *c, int lnum, int offs,
 out_err:
 	err = -EINVAL;
 out_free:
+<<<<<<< HEAD
 	ubifs_err("failed to get CS sqnum");
+=======
+	ubifs_err(c, "failed to get CS sqnum");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(cs_node);
 	return err;
 }
@@ -900,8 +1004,13 @@ struct ubifs_scan_leb *ubifs_recover_log_leb(struct ubifs_info *c, int lnum,
 				}
 			}
 			if (snod->sqnum > cs_sqnum) {
+<<<<<<< HEAD
 				ubifs_err("unrecoverable log corruption "
 					  "in LEB %d", lnum);
+=======
+				ubifs_err(c, "unrecoverable log corruption in LEB %d",
+					  lnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ubifs_scan_destroy(sleb);
 				return ERR_PTR(-EUCLEAN);
 			}
@@ -941,7 +1050,11 @@ static int recover_head(struct ubifs_info *c, int lnum, int offs, void *sbuf)
 		err = ubifs_leb_read(c, lnum, sbuf, 0, offs, 1);
 		if (err)
 			return err;
+<<<<<<< HEAD
 		return ubifs_leb_change(c, lnum, sbuf, offs, UBI_UNKNOWN);
+=======
+		return ubifs_leb_change(c, lnum, sbuf, offs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -968,7 +1081,11 @@ int ubifs_recover_inl_heads(struct ubifs_info *c, void *sbuf)
 {
 	int err;
 
+<<<<<<< HEAD
 	ubifs_assert(!c->ro_mount || c->remounting_rw);
+=======
+	ubifs_assert(c, !c->ro_mount || c->remounting_rw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg_rcvry("checking index head at %d:%d", c->ihead_lnum, c->ihead_offs);
 	err = recover_head(c, c->ihead_lnum, c->ihead_offs, sbuf);
@@ -976,11 +1093,16 @@ int ubifs_recover_inl_heads(struct ubifs_info *c, void *sbuf)
 		return err;
 
 	dbg_rcvry("checking LPT head at %d:%d", c->nhead_lnum, c->nhead_offs);
+<<<<<<< HEAD
 	err = recover_head(c, c->nhead_lnum, c->nhead_offs, sbuf);
 	if (err)
 		return err;
 
 	return 0;
+=======
+
+	return recover_head(c, c->nhead_lnum, c->nhead_offs, sbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1005,10 +1127,14 @@ static int clean_an_unclean_leb(struct ubifs_info *c,
 
 	if (len == 0) {
 		/* Nothing to read, just unmap it */
+<<<<<<< HEAD
 		err = ubifs_leb_unmap(c, lnum);
 		if (err)
 			return err;
 		return 0;
+=======
+		return ubifs_leb_unmap(c, lnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = ubifs_leb_read(c, lnum, buf, offs, len, 0);
@@ -1044,7 +1170,11 @@ static int clean_an_unclean_leb(struct ubifs_info *c,
 		}
 
 		if (ret == SCANNED_EMPTY_SPACE) {
+<<<<<<< HEAD
 			ubifs_err("unexpected empty space at %d:%d",
+=======
+			ubifs_err(c, "unexpected empty space at %d:%d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  lnum, offs);
 			return -EUCLEAN;
 		}
@@ -1071,7 +1201,11 @@ static int clean_an_unclean_leb(struct ubifs_info *c,
 	}
 
 	/* Write back the LEB atomically */
+<<<<<<< HEAD
 	err = ubifs_leb_change(c, lnum, sbuf, len, UBI_UNKNOWN);
+=======
+	err = ubifs_leb_change(c, lnum, sbuf, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -1138,9 +1272,15 @@ static int grab_empty_leb(struct ubifs_info *c)
 	 */
 	lnum = ubifs_find_free_leb_for_idx(c);
 	if (lnum < 0) {
+<<<<<<< HEAD
 		dbg_err("could not find an empty LEB");
 		dbg_dump_lprops(c);
 		dbg_dump_budg(c, &c->bi);
+=======
+		ubifs_err(c, "could not find an empty LEB");
+		ubifs_dump_lprops(c);
+		ubifs_dump_budg(c, &c->bi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return lnum;
 	}
 
@@ -1195,8 +1335,13 @@ int ubifs_rcvry_gc_commit(struct ubifs_info *c)
 		return grab_empty_leb(c);
 	}
 
+<<<<<<< HEAD
 	ubifs_assert(!(lp.flags & LPROPS_INDEX));
 	ubifs_assert(lp.free + lp.dirty >= wbuf->offs);
+=======
+	ubifs_assert(c, !(lp.flags & LPROPS_INDEX));
+	ubifs_assert(c, lp.free + lp.dirty >= wbuf->offs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We run the commit before garbage collection otherwise subsequent
@@ -1218,13 +1363,21 @@ int ubifs_rcvry_gc_commit(struct ubifs_info *c)
 	}
 	mutex_unlock(&wbuf->io_mutex);
 	if (err < 0) {
+<<<<<<< HEAD
 		dbg_err("GC failed, error %d", err);
+=======
+		ubifs_err(c, "GC failed, error %d", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err == -EAGAIN)
 			err = -EINVAL;
 		return err;
 	}
 
+<<<<<<< HEAD
 	ubifs_assert(err == LEB_RETAINED);
+=======
+	ubifs_assert(c, err == LEB_RETAINED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err != LEB_RETAINED)
 		return -EINVAL;
 
@@ -1335,6 +1488,7 @@ static void remove_ino(struct ubifs_info *c, ino_t inum)
  */
 void ubifs_destroy_size_tree(struct ubifs_info *c)
 {
+<<<<<<< HEAD
 	struct rb_node *this = c->size_tree.rb_node;
 	struct size_entry *e;
 
@@ -1358,6 +1512,15 @@ void ubifs_destroy_size_tree(struct ubifs_info *c)
 		}
 		kfree(e);
 	}
+=======
+	struct size_entry *e, *n;
+
+	rbtree_postorder_for_each_entry_safe(e, n, &c->size_tree, rb) {
+		iput(e->inode);
+		kfree(e);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->size_tree = RB_ROOT;
 }
 
@@ -1472,7 +1635,11 @@ static int fix_size_in_place(struct ubifs_info *c, struct size_entry *e)
 		len -= 1;
 	len = ALIGN(len + 1, c->min_io_size);
 	/* Atomically write the fixed LEB back again */
+<<<<<<< HEAD
 	err = ubifs_leb_change(c, lnum, c->sbuf, len, UBI_UNKNOWN);
+=======
+	err = ubifs_leb_change(c, lnum, c->sbuf, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 	dbg_rcvry("inode %lu at %d:%d size %lld -> %lld",
@@ -1480,21 +1647,100 @@ static int fix_size_in_place(struct ubifs_info *c, struct size_entry *e)
 	return 0;
 
 out:
+<<<<<<< HEAD
 	ubifs_warn("inode %lu failed to fix size %lld -> %lld error %d",
+=======
+	ubifs_warn(c, "inode %lu failed to fix size %lld -> %lld error %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   (unsigned long)e->inum, e->i_size, e->d_size, err);
 	return err;
 }
 
 /**
+<<<<<<< HEAD
  * ubifs_recover_size - recover inode size.
  * @c: UBIFS file-system description object
+=======
+ * inode_fix_size - fix inode size
+ * @c: UBIFS file-system description object
+ * @e: inode size information for recovery
+ */
+static int inode_fix_size(struct ubifs_info *c, struct size_entry *e)
+{
+	struct inode *inode;
+	struct ubifs_inode *ui;
+	int err;
+
+	if (c->ro_mount)
+		ubifs_assert(c, !e->inode);
+
+	if (e->inode) {
+		/* Remounting rw, pick up inode we stored earlier */
+		inode = e->inode;
+	} else {
+		inode = ubifs_iget(c->vfs_sb, e->inum);
+		if (IS_ERR(inode))
+			return PTR_ERR(inode);
+
+		if (inode->i_size >= e->d_size) {
+			/*
+			 * The original inode in the index already has a size
+			 * big enough, nothing to do
+			 */
+			iput(inode);
+			return 0;
+		}
+
+		dbg_rcvry("ino %lu size %lld -> %lld",
+			  (unsigned long)e->inum,
+			  inode->i_size, e->d_size);
+
+		ui = ubifs_inode(inode);
+
+		inode->i_size = e->d_size;
+		ui->ui_size = e->d_size;
+		ui->synced_i_size = e->d_size;
+
+		e->inode = inode;
+	}
+
+	/*
+	 * In readonly mode just keep the inode pinned in memory until we go
+	 * readwrite. In readwrite mode write the inode to the journal with the
+	 * fixed size.
+	 */
+	if (c->ro_mount)
+		return 0;
+
+	err = ubifs_jnl_write_inode(c, inode);
+
+	iput(inode);
+
+	if (err)
+		return err;
+
+	rb_erase(&e->rb, &c->size_tree);
+	kfree(e);
+
+	return 0;
+}
+
+/**
+ * ubifs_recover_size - recover inode size.
+ * @c: UBIFS file-system description object
+ * @in_place: If true, do a in-place size fixup
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function attempts to fix inode size discrepancies identified by the
  * 'ubifs_recover_size_accum()' function.
  *
  * This functions returns %0 on success and a negative error code on failure.
  */
+<<<<<<< HEAD
 int ubifs_recover_size(struct ubifs_info *c)
+=======
+int ubifs_recover_size(struct ubifs_info *c, bool in_place)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rb_node *this = rb_first(&c->size_tree);
 
@@ -1503,6 +1749,12 @@ int ubifs_recover_size(struct ubifs_info *c)
 		int err;
 
 		e = rb_entry(this, struct size_entry, rb);
+<<<<<<< HEAD
+=======
+
+		this = rb_next(this);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!e->exists) {
 			union ubifs_key key;
 
@@ -1526,6 +1778,7 @@ int ubifs_recover_size(struct ubifs_info *c)
 		}
 
 		if (e->exists && e->i_size < e->d_size) {
+<<<<<<< HEAD
 			if (c->ro_mount) {
 				/* Fix the inode size and pin it in memory */
 				struct inode *inode;
@@ -1561,6 +1814,28 @@ int ubifs_recover_size(struct ubifs_info *c)
 		}
 
 		this = rb_next(this);
+=======
+			ubifs_assert(c, !(c->ro_mount && in_place));
+
+			/*
+			 * We found data that is outside the found inode size,
+			 * fixup the inode size
+			 */
+
+			if (in_place) {
+				err = fix_size_in_place(c, e);
+				if (err)
+					return err;
+				iput(e->inode);
+			} else {
+				err = inode_fix_size(c, e);
+				if (err)
+					return err;
+				continue;
+			}
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rb_erase(&e->rb, &c->size_tree);
 		kfree(e);
 	}

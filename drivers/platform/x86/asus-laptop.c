@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 /*
  *  asus-laptop.c - Asus Laptop Support
  *
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  asus-laptop.c - Asus Laptop Support
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Copyright (C) 2002-2005 Julien Lerouge, 2003-2006 Karol Kozimor
  *  Copyright (C) 2006-2007 Corentin Chary
  *  Copyright (C) 2011 Wind River Systems
  *
+<<<<<<< HEAD
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
@@ -21,6 +29,8 @@
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  The development page for this driver is located at
  *  http://sourceforge.net/projects/acpi4asus/
  *
@@ -49,12 +59,20 @@
 #include <linux/uaccess.h>
 #include <linux/input.h>
 #include <linux/input/sparse-keymap.h>
+<<<<<<< HEAD
 #include <linux/input-polldev.h>
 #include <linux/rfkill.h>
 #include <linux/slab.h>
 #include <linux/dmi.h>
 #include <acpi/acpi_drivers.h>
 #include <acpi/acpi_bus.h>
+=======
+#include <linux/rfkill.h>
+#include <linux/slab.h>
+#include <linux/dmi.h>
+#include <linux/acpi.h>
+#include <acpi/video.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ASUS_LAPTOP_VERSION	"0.42"
 
@@ -85,7 +103,11 @@ static char *wled_type = "unknown";
 static char *bled_type = "unknown";
 
 module_param(wled_type, charp, 0444);
+<<<<<<< HEAD
 MODULE_PARM_DESC(wlan_status, "Set the wled type on boot "
+=======
+MODULE_PARM_DESC(wled_type, "Set the wled type on boot "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 "(unknown, led or rfkill). "
 		 "default is unknown");
 
@@ -128,10 +150,19 @@ MODULE_PARM_DESC(als_status, "Set the ALS status on boot "
 /*
  * Some events we use, same for all Asus
  */
+<<<<<<< HEAD
 #define ATKD_BR_UP	0x10	/* (event & ~ATKD_BR_UP) = brightness level */
 #define ATKD_BR_DOWN	0x20	/* (event & ~ATKD_BR_DOWN) = britghness level */
 #define ATKD_BR_MIN	ATKD_BR_UP
 #define ATKD_BR_MAX	(ATKD_BR_DOWN | 0xF)	/* 0x2f */
+=======
+#define ATKD_BRNUP_MIN		0x10
+#define ATKD_BRNUP_MAX		0x1f
+#define ATKD_BRNDOWN_MIN	0x20
+#define ATKD_BRNDOWN_MAX	0x2f
+#define ATKD_BRNDOWN		0x20
+#define ATKD_BRNUP		0x2f
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATKD_LCD_ON	0x33
 #define ATKD_LCD_OFF	0x34
 
@@ -257,7 +288,11 @@ struct asus_laptop {
 
 	struct input_dev *inputdev;
 	struct key_entry *keymap;
+<<<<<<< HEAD
 	struct input_polled_dev *pega_accel_poll;
+=======
+	struct input_dev *pega_accel_poll;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct asus_led wled;
 	struct asus_led bled;
@@ -301,6 +336,7 @@ static const struct key_entry asus_keymap[] = {
 	{KE_KEY, 0x17, { KEY_ZOOM } },
 	{KE_KEY, 0x1f, { KEY_BATTERY } },
 	/* End of Lenovo SL Specific keycodes */
+<<<<<<< HEAD
 	{KE_KEY, 0x30, { KEY_VOLUMEUP } },
 	{KE_KEY, 0x31, { KEY_VOLUMEDOWN } },
 	{KE_KEY, 0x32, { KEY_MUTE } },
@@ -335,6 +371,68 @@ static const struct key_entry asus_keymap[] = {
 	{KE_KEY, 0xc4, { KEY_KBDILLUMUP } },
 	{KE_KEY, 0xc5, { KEY_KBDILLUMDOWN } },
 	{KE_KEY, 0xb5, { KEY_CALC } },
+=======
+	{KE_KEY, ATKD_BRNDOWN, { KEY_BRIGHTNESSDOWN } },
+	{KE_KEY, ATKD_BRNUP, { KEY_BRIGHTNESSUP } },
+	{KE_KEY, 0x30, { KEY_VOLUMEUP } },
+	{KE_KEY, 0x31, { KEY_VOLUMEDOWN } },
+	{KE_KEY, 0x32, { KEY_MUTE } },
+	{KE_KEY, 0x33, { KEY_DISPLAYTOGGLE } }, /* LCD on */
+	{KE_KEY, 0x34, { KEY_DISPLAY_OFF } }, /* LCD off */
+	{KE_KEY, 0x40, { KEY_PREVIOUSSONG } },
+	{KE_KEY, 0x41, { KEY_NEXTSONG } },
+	{KE_KEY, 0x43, { KEY_STOPCD } }, /* Stop/Eject */
+	{KE_KEY, 0x45, { KEY_PLAYPAUSE } },
+	{KE_KEY, 0x4c, { KEY_MEDIA } }, /* WMP Key */
+	{KE_KEY, 0x50, { KEY_EMAIL } },
+	{KE_KEY, 0x51, { KEY_WWW } },
+	{KE_KEY, 0x55, { KEY_CALC } },
+	{KE_IGNORE, 0x57, },  /* Battery mode */
+	{KE_IGNORE, 0x58, },  /* AC mode */
+	{KE_KEY, 0x5C, { KEY_SCREENLOCK } },  /* Screenlock */
+	{KE_KEY, 0x5D, { KEY_WLAN } }, /* WLAN Toggle */
+	{KE_KEY, 0x5E, { KEY_WLAN } }, /* WLAN Enable */
+	{KE_KEY, 0x5F, { KEY_WLAN } }, /* WLAN Disable */
+	{KE_KEY, 0x60, { KEY_TOUCHPAD_ON } },
+	{KE_KEY, 0x61, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD only */
+	{KE_KEY, 0x62, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT only */
+	{KE_KEY, 0x63, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT */
+	{KE_KEY, 0x64, { KEY_SWITCHVIDEOMODE } }, /* SDSP TV */
+	{KE_KEY, 0x65, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + TV */
+	{KE_KEY, 0x66, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + TV */
+	{KE_KEY, 0x67, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + TV */
+	{KE_KEY, 0x6A, { KEY_TOUCHPAD_TOGGLE } }, /* Lock Touchpad Fn + F9 */
+	{KE_KEY, 0x6B, { KEY_TOUCHPAD_TOGGLE } }, /* Lock Touchpad */
+	{KE_KEY, 0x6C, { KEY_SLEEP } }, /* Suspend */
+	{KE_KEY, 0x6D, { KEY_SLEEP } }, /* Hibernate */
+	{KE_IGNORE, 0x6E, },  /* Low Battery notification */
+	{KE_KEY, 0x7D, { KEY_BLUETOOTH } }, /* Bluetooth Enable */
+	{KE_KEY, 0x7E, { KEY_BLUETOOTH } }, /* Bluetooth Disable */
+	{KE_KEY, 0x82, { KEY_CAMERA } },
+	{KE_KEY, 0x88, { KEY_RFKILL  } }, /* Radio Toggle Key */
+	{KE_KEY, 0x8A, { KEY_PROG1 } }, /* Color enhancement mode */
+	{KE_KEY, 0x8C, { KEY_SWITCHVIDEOMODE } }, /* SDSP DVI only */
+	{KE_KEY, 0x8D, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + DVI */
+	{KE_KEY, 0x8E, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + DVI */
+	{KE_KEY, 0x8F, { KEY_SWITCHVIDEOMODE } }, /* SDSP TV + DVI */
+	{KE_KEY, 0x90, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + DVI */
+	{KE_KEY, 0x91, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + TV + DVI */
+	{KE_KEY, 0x92, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + TV + DVI */
+	{KE_KEY, 0x93, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + TV + DVI */
+	{KE_KEY, 0x95, { KEY_MEDIA } },
+	{KE_KEY, 0x99, { KEY_PHONE } },
+	{KE_KEY, 0xA0, { KEY_SWITCHVIDEOMODE } }, /* SDSP HDMI only */
+	{KE_KEY, 0xA1, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + HDMI */
+	{KE_KEY, 0xA2, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + HDMI */
+	{KE_KEY, 0xA3, { KEY_SWITCHVIDEOMODE } }, /* SDSP TV + HDMI */
+	{KE_KEY, 0xA4, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + HDMI */
+	{KE_KEY, 0xA5, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + TV + HDMI */
+	{KE_KEY, 0xA6, { KEY_SWITCHVIDEOMODE } }, /* SDSP CRT + TV + HDMI */
+	{KE_KEY, 0xA7, { KEY_SWITCHVIDEOMODE } }, /* SDSP LCD + CRT + TV + HDMI */
+	{KE_KEY, 0xB5, { KEY_CALC } },
+	{KE_KEY, 0xC4, { KEY_KBDILLUMUP } },
+	{KE_KEY, 0xC5, { KEY_KBDILLUMDOWN } },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{KE_END, 0},
 };
 
@@ -433,9 +531,15 @@ static int pega_acc_axis(struct asus_laptop *asus, int curr, char *method)
 	return clamp_val((short)val, -PEGA_ACC_CLAMP, PEGA_ACC_CLAMP);
 }
 
+<<<<<<< HEAD
 static void pega_accel_poll(struct input_polled_dev *ipd)
 {
 	struct device *parent = ipd->input->dev.parent;
+=======
+static void pega_accel_poll(struct input_dev *input)
+{
+	struct device *parent = input->dev.parent;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct asus_laptop *asus = dev_get_drvdata(parent);
 
 	/* In some cases, the very first call to poll causes a
@@ -444,10 +548,17 @@ static void pega_accel_poll(struct input_polled_dev *ipd)
 	 * device, and perhaps a firmware bug. Fake the first report. */
 	if (!asus->pega_acc_live) {
 		asus->pega_acc_live = true;
+<<<<<<< HEAD
 		input_report_abs(ipd->input, ABS_X, 0);
 		input_report_abs(ipd->input, ABS_Y, 0);
 		input_report_abs(ipd->input, ABS_Z, 0);
 		input_sync(ipd->input);
+=======
+		input_report_abs(input, ABS_X, 0);
+		input_report_abs(input, ABS_Y, 0);
+		input_report_abs(input, ABS_Z, 0);
+		input_sync(input);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -458,25 +569,42 @@ static void pega_accel_poll(struct input_polled_dev *ipd)
 	/* Note transform, convert to "right/up/out" in the native
 	 * landscape orientation (i.e. the vector is the direction of
 	 * "real up" in the device's cartiesian coordinates). */
+<<<<<<< HEAD
 	input_report_abs(ipd->input, ABS_X, -asus->pega_acc_x);
 	input_report_abs(ipd->input, ABS_Y, -asus->pega_acc_y);
 	input_report_abs(ipd->input, ABS_Z,  asus->pega_acc_z);
 	input_sync(ipd->input);
+=======
+	input_report_abs(input, ABS_X, -asus->pega_acc_x);
+	input_report_abs(input, ABS_Y, -asus->pega_acc_y);
+	input_report_abs(input, ABS_Z,  asus->pega_acc_z);
+	input_sync(input);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pega_accel_exit(struct asus_laptop *asus)
 {
 	if (asus->pega_accel_poll) {
+<<<<<<< HEAD
 		input_unregister_polled_device(asus->pega_accel_poll);
 		input_free_polled_device(asus->pega_accel_poll);
 	}
 	asus->pega_accel_poll = NULL;
+=======
+		input_unregister_device(asus->pega_accel_poll);
+		asus->pega_accel_poll = NULL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pega_accel_init(struct asus_laptop *asus)
 {
 	int err;
+<<<<<<< HEAD
 	struct input_polled_dev *ipd;
+=======
+	struct input_dev *input;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!asus->is_pega_lucid)
 		return -ENODEV;
@@ -486,6 +614,7 @@ static int pega_accel_init(struct asus_laptop *asus)
 	    acpi_check_handle(asus->handle, METHOD_XLRZ, NULL))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	ipd = input_allocate_polled_device();
 	if (!ipd)
 		return -ENOMEM;
@@ -517,6 +646,41 @@ static int pega_accel_init(struct asus_laptop *asus)
 
 exit:
 	input_free_polled_device(ipd);
+=======
+	input = input_allocate_device();
+	if (!input)
+		return -ENOMEM;
+
+	input->name = PEGA_ACCEL_DESC;
+	input->phys = PEGA_ACCEL_NAME "/input0";
+	input->dev.parent = &asus->platform_device->dev;
+	input->id.bustype = BUS_HOST;
+
+	input_set_abs_params(input, ABS_X,
+			     -PEGA_ACC_CLAMP, PEGA_ACC_CLAMP, 0, 0);
+	input_set_abs_params(input, ABS_Y,
+			     -PEGA_ACC_CLAMP, PEGA_ACC_CLAMP, 0, 0);
+	input_set_abs_params(input, ABS_Z,
+			     -PEGA_ACC_CLAMP, PEGA_ACC_CLAMP, 0, 0);
+
+	err = input_setup_polling(input, pega_accel_poll);
+	if (err)
+		goto exit;
+
+	input_set_poll_interval(input, 125);
+	input_set_min_poll_interval(input, 50);
+	input_set_max_poll_interval(input, 2000);
+
+	err = input_register_device(input);
+	if (err)
+		goto exit;
+
+	asus->pega_accel_poll = input;
+	return 0;
+
+exit:
+	input_free_device(input);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -627,6 +791,7 @@ static enum led_brightness asus_kled_cdev_get(struct led_classdev *led_cdev)
 
 static void asus_led_exit(struct asus_laptop *asus)
 {
+<<<<<<< HEAD
 	if (!IS_ERR_OR_NULL(asus->wled.led.dev))
 		led_classdev_unregister(&asus->wled.led);
 	if (!IS_ERR_OR_NULL(asus->bled.led.dev))
@@ -643,6 +808,17 @@ static void asus_led_exit(struct asus_laptop *asus)
 		led_classdev_unregister(&asus->gled.led);
 	if (!IS_ERR_OR_NULL(asus->kled.led.dev))
 		led_classdev_unregister(&asus->kled.led);
+=======
+	led_classdev_unregister(&asus->wled.led);
+	led_classdev_unregister(&asus->bled.led);
+	led_classdev_unregister(&asus->mled.led);
+	led_classdev_unregister(&asus->tled.led);
+	led_classdev_unregister(&asus->pled.led);
+	led_classdev_unregister(&asus->rled.led);
+	led_classdev_unregister(&asus->gled.led);
+	led_classdev_unregister(&asus->kled.led);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (asus->led_workqueue) {
 		destroy_workqueue(asus->led_workqueue);
 		asus->led_workqueue = NULL;
@@ -743,12 +919,23 @@ static int asus_read_brightness(struct backlight_device *bd)
 {
 	struct asus_laptop *asus = bl_get_data(bd);
 	unsigned long long value;
+<<<<<<< HEAD
 	acpi_status rv = AE_OK;
 
 	rv = acpi_evaluate_integer(asus->handle, METHOD_BRIGHTNESS_GET,
 				   NULL, &value);
 	if (ACPI_FAILURE(rv))
 		pr_warn("Error reading brightness\n");
+=======
+	acpi_status rv;
+
+	rv = acpi_evaluate_integer(asus->handle, METHOD_BRIGHTNESS_GET,
+				   NULL, &value);
+	if (ACPI_FAILURE(rv)) {
+		pr_warn("Error reading brightness\n");
+		return 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return value;
 }
@@ -817,8 +1004,12 @@ static int asus_backlight_init(struct asus_laptop *asus)
 
 static void asus_backlight_exit(struct asus_laptop *asus)
 {
+<<<<<<< HEAD
 	if (asus->backlight_device)
 		backlight_device_unregister(asus->backlight_device);
+=======
+	backlight_device_unregister(asus->backlight_device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asus->backlight_device = NULL;
 }
 
@@ -831,14 +1022,23 @@ static void asus_backlight_exit(struct asus_laptop *asus)
  * than count bytes. We set eof to 1 if we handle those 2 values. We return the
  * number of bytes written in page
  */
+<<<<<<< HEAD
 static ssize_t show_infos(struct device *dev,
 			  struct device_attribute *attr, char *page)
+=======
+static ssize_t infos_show(struct device *dev, struct device_attribute *attr,
+			  char *page)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int len = 0;
 	unsigned long long temp;
 	char buf[16];		/* enough for all info */
+<<<<<<< HEAD
 	acpi_status rv = AE_OK;
+=======
+	acpi_status rv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We use the easy way, we don't care of off and count,
@@ -854,7 +1054,11 @@ static ssize_t show_infos(struct device *dev,
 	 * The significance of others is yet to be found.
 	 */
 	rv = acpi_evaluate_integer(asus->handle, "SFUN", NULL, &temp);
+<<<<<<< HEAD
 	if (!ACPI_FAILURE(rv))
+=======
+	if (ACPI_SUCCESS(rv))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len += sprintf(page + len, "SFUN value         : %#x\n",
 			       (uint) temp);
 	/*
@@ -866,7 +1070,11 @@ static ssize_t show_infos(struct device *dev,
 	 * takes several seconds to run on some systems.
 	 */
 	rv = acpi_evaluate_integer(asus->handle, "HWRS", NULL, &temp);
+<<<<<<< HEAD
 	if (!ACPI_FAILURE(rv))
+=======
+	if (ACPI_SUCCESS(rv))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len += sprintf(page + len, "HWRS value         : %#x\n",
 			       (uint) temp);
 	/*
@@ -877,7 +1085,11 @@ static ssize_t show_infos(struct device *dev,
 	 * silently ignored.
 	 */
 	rv = acpi_evaluate_integer(asus->handle, "ASYM", NULL, &temp);
+<<<<<<< HEAD
 	if (!ACPI_FAILURE(rv))
+=======
+	if (ACPI_SUCCESS(rv))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len += sprintf(page + len, "ASYM value         : %#x\n",
 			       (uint) temp);
 	if (asus->dsdt_info) {
@@ -901,6 +1113,7 @@ static ssize_t show_infos(struct device *dev,
 
 	return len;
 }
+<<<<<<< HEAD
 
 static int parse_arg(const char *buf, unsigned long count, int *val)
 {
@@ -912,12 +1125,16 @@ static int parse_arg(const char *buf, unsigned long count, int *val)
 		return -EINVAL;
 	return count;
 }
+=======
+static DEVICE_ATTR_RO(infos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t sysfs_acpi_set(struct asus_laptop *asus,
 			      const char *buf, size_t count,
 			      const char *method)
 {
 	int rv, value;
+<<<<<<< HEAD
 	int out = 0;
 
 	rv = parse_arg(buf, count, &value);
@@ -927,25 +1144,45 @@ static ssize_t sysfs_acpi_set(struct asus_laptop *asus,
 	if (write_acpi_int(asus->handle, method, value))
 		return -ENODEV;
 	return rv;
+=======
+
+	rv = kstrtoint(buf, 0, &value);
+	if (rv < 0)
+		return rv;
+
+	if (write_acpi_int(asus->handle, method, value))
+		return -ENODEV;
+	return count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * LEDD display
  */
+<<<<<<< HEAD
 static ssize_t show_ledd(struct device *dev,
 			 struct device_attribute *attr, char *buf)
+=======
+static ssize_t ledd_show(struct device *dev, struct device_attribute *attr,
+			 char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "0x%08x\n", asus->ledd_status);
 }
 
+<<<<<<< HEAD
 static ssize_t store_ledd(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t ledd_store(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  const char *buf, size_t count)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int rv, value;
 
+<<<<<<< HEAD
 	rv = parse_arg(buf, count, &value);
 	if (rv > 0) {
 		if (write_acpi_int(asus->handle, METHOD_LEDD, value)) {
@@ -956,6 +1193,21 @@ static ssize_t store_ledd(struct device *dev, struct device_attribute *attr,
 	}
 	return rv;
 }
+=======
+	rv = kstrtoint(buf, 0, &value);
+	if (rv < 0)
+		return rv;
+
+	if (write_acpi_int(asus->handle, METHOD_LEDD, value)) {
+		pr_warn("LED display write failed\n");
+		return -ENODEV;
+	}
+
+	asus->ledd_status = (u32) value;
+	return count;
+}
+static DEVICE_ATTR_RW(ledd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Wireless
@@ -989,21 +1241,34 @@ static int asus_wlan_set(struct asus_laptop *asus, int status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t show_wlan(struct device *dev,
 			 struct device_attribute *attr, char *buf)
+=======
+static ssize_t wlan_show(struct device *dev, struct device_attribute *attr,
+			 char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus_wireless_status(asus, WL_RSTS));
 }
 
+<<<<<<< HEAD
 static ssize_t store_wlan(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t wlan_store(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  const char *buf, size_t count)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sysfs_acpi_set(asus, buf, count, METHOD_WLAN);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RW(wlan);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*e
  * Bluetooth
@@ -1017,15 +1282,24 @@ static int asus_bluetooth_set(struct asus_laptop *asus, int status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t show_bluetooth(struct device *dev,
 			      struct device_attribute *attr, char *buf)
+=======
+static ssize_t bluetooth_show(struct device *dev, struct device_attribute *attr,
+			      char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus_wireless_status(asus, BT_RSTS));
 }
 
+<<<<<<< HEAD
 static ssize_t store_bluetooth(struct device *dev,
+=======
+static ssize_t bluetooth_store(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct device_attribute *attr, const char *buf,
 			       size_t count)
 {
@@ -1033,6 +1307,10 @@ static ssize_t store_bluetooth(struct device *dev,
 
 	return sysfs_acpi_set(asus, buf, count, METHOD_BLUETOOTH);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RW(bluetooth);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Wimax
@@ -1046,22 +1324,36 @@ static int asus_wimax_set(struct asus_laptop *asus, int status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t show_wimax(struct device *dev,
 			      struct device_attribute *attr, char *buf)
+=======
+static ssize_t wimax_show(struct device *dev, struct device_attribute *attr,
+			  char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus_wireless_status(asus, WM_RSTS));
 }
 
+<<<<<<< HEAD
 static ssize_t store_wimax(struct device *dev,
 			       struct device_attribute *attr, const char *buf,
 			       size_t count)
+=======
+static ssize_t wimax_store(struct device *dev, struct device_attribute *attr,
+			   const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sysfs_acpi_set(asus, buf, count, METHOD_WIMAX);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RW(wimax);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Wwan
@@ -1075,22 +1367,36 @@ static int asus_wwan_set(struct asus_laptop *asus, int status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t show_wwan(struct device *dev,
 			      struct device_attribute *attr, char *buf)
+=======
+static ssize_t wwan_show(struct device *dev, struct device_attribute *attr,
+			 char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus_wireless_status(asus, WW_RSTS));
 }
 
+<<<<<<< HEAD
 static ssize_t store_wwan(struct device *dev,
 			       struct device_attribute *attr, const char *buf,
 			       size_t count)
+=======
+static ssize_t wwan_store(struct device *dev, struct device_attribute *attr,
+			  const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sysfs_acpi_set(asus, buf, count, METHOD_WWAN);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RW(wwan);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Display
@@ -1110,17 +1416,33 @@ static void asus_set_display(struct asus_laptop *asus, int value)
  * displays hooked up simultaneously, so be warned. See the acpi4asus README
  * for more info.
  */
+<<<<<<< HEAD
 static ssize_t store_disp(struct device *dev, struct device_attribute *attr,
 			  const char *buf, size_t count)
+=======
+static ssize_t display_store(struct device *dev, struct device_attribute *attr,
+			     const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int rv, value;
 
+<<<<<<< HEAD
 	rv = parse_arg(buf, count, &value);
 	if (rv > 0)
 		asus_set_display(asus, value);
 	return rv;
 }
+=======
+	rv = kstrtoint(buf, 0, &value);
+	if (rv < 0)
+		return rv;
+
+	asus_set_display(asus, value);
+	return count;
+}
+static DEVICE_ATTR_WO(display);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Light Sens
@@ -1137,31 +1459,57 @@ static void asus_als_switch(struct asus_laptop *asus, int value)
 		ret = write_acpi_int(asus->handle, METHOD_ALS_CONTROL, value);
 	}
 	if (ret)
+<<<<<<< HEAD
 		pr_warning("Error setting light sensor switch\n");
+=======
+		pr_warn("Error setting light sensor switch\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	asus->light_switch = value;
 }
 
+<<<<<<< HEAD
 static ssize_t show_lssw(struct device *dev,
 			 struct device_attribute *attr, char *buf)
+=======
+static ssize_t ls_switch_show(struct device *dev, struct device_attribute *attr,
+			      char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus->light_switch);
 }
 
+<<<<<<< HEAD
 static ssize_t store_lssw(struct device *dev, struct device_attribute *attr,
 			  const char *buf, size_t count)
+=======
+static ssize_t ls_switch_store(struct device *dev,
+			       struct device_attribute *attr, const char *buf,
+			       size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int rv, value;
 
+<<<<<<< HEAD
 	rv = parse_arg(buf, count, &value);
 	if (rv > 0)
 		asus_als_switch(asus, value ? 1 : 0);
 
 	return rv;
 }
+=======
+	rv = kstrtoint(buf, 0, &value);
+	if (rv < 0)
+		return rv;
+
+	asus_als_switch(asus, value ? 1 : 0);
+	return count;
+}
+static DEVICE_ATTR_RW(ls_switch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void asus_als_level(struct asus_laptop *asus, int value)
 {
@@ -1170,20 +1518,31 @@ static void asus_als_level(struct asus_laptop *asus, int value)
 	asus->light_level = value;
 }
 
+<<<<<<< HEAD
 static ssize_t show_lslvl(struct device *dev,
 			  struct device_attribute *attr, char *buf)
+=======
+static ssize_t ls_level_show(struct device *dev, struct device_attribute *attr,
+			     char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus->light_level);
 }
 
+<<<<<<< HEAD
 static ssize_t store_lslvl(struct device *dev, struct device_attribute *attr,
 			   const char *buf, size_t count)
+=======
+static ssize_t ls_level_store(struct device *dev, struct device_attribute *attr,
+			      const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int rv, value;
 
+<<<<<<< HEAD
 	rv = parse_arg(buf, count, &value);
 	if (rv > 0) {
 		value = (0 < value) ? ((15 < value) ? 15 : value) : 0;
@@ -1193,6 +1552,19 @@ static ssize_t store_lslvl(struct device *dev, struct device_attribute *attr,
 
 	return rv;
 }
+=======
+	rv = kstrtoint(buf, 0, &value);
+	if (rv < 0)
+		return rv;
+
+	value = (0 < value) ? ((15 < value) ? 15 : value) : 0;
+	/* 0 <= value <= 15 */
+	asus_als_level(asus, value);
+
+	return count;
+}
+static DEVICE_ATTR_RW(ls_level);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int pega_int_read(struct asus_laptop *asus, int arg, int *result)
 {
@@ -1209,8 +1581,13 @@ static int pega_int_read(struct asus_laptop *asus, int arg, int *result)
 	return err;
 }
 
+<<<<<<< HEAD
 static ssize_t show_lsvalue(struct device *dev,
 			    struct device_attribute *attr, char *buf)
+=======
+static ssize_t ls_value_show(struct device *dev, struct device_attribute *attr,
+			     char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int err, hi, lo;
@@ -1222,6 +1599,10 @@ static ssize_t show_lsvalue(struct device *dev,
 		return sprintf(buf, "%d\n", 10 * hi + lo);
 	return err;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RO(ls_value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * GPS
@@ -1229,7 +1610,11 @@ static ssize_t show_lsvalue(struct device *dev,
 static int asus_gps_status(struct asus_laptop *asus)
 {
 	unsigned long long status;
+<<<<<<< HEAD
 	acpi_status rv = AE_OK;
+=======
+	acpi_status rv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rv = acpi_evaluate_integer(asus->handle, METHOD_GPS_STATUS,
 				   NULL, &status);
@@ -1249,30 +1634,51 @@ static int asus_gps_switch(struct asus_laptop *asus, int status)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t show_gps(struct device *dev,
 			struct device_attribute *attr, char *buf)
+=======
+static ssize_t gps_show(struct device *dev, struct device_attribute *attr,
+			char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d\n", asus_gps_status(asus));
 }
 
+<<<<<<< HEAD
 static ssize_t store_gps(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t gps_store(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 const char *buf, size_t count)
 {
 	struct asus_laptop *asus = dev_get_drvdata(dev);
 	int rv, value;
 	int ret;
 
+<<<<<<< HEAD
 	rv = parse_arg(buf, count, &value);
 	if (rv <= 0)
 		return -EINVAL;
+=======
+	rv = kstrtoint(buf, 0, &value);
+	if (rv < 0)
+		return rv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = asus_gps_switch(asus, !!value);
 	if (ret)
 		return ret;
 	rfkill_set_sw_state(asus->gps.rfkill, !value);
+<<<<<<< HEAD
 	return rv;
 }
+=======
+	return count;
+}
+static DEVICE_ATTR_RW(gps);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * rfkill
@@ -1467,10 +1873,16 @@ static int asus_input_init(struct asus_laptop *asus)
 	int error;
 
 	input = input_allocate_device();
+<<<<<<< HEAD
 	if (!input) {
 		pr_warn("Unable to allocate input device\n");
 		return -ENOMEM;
 	}
+=======
+	if (!input)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input->name = "Asus Laptop extra buttons";
 	input->phys = ASUS_LAPTOP_FILE "/input0";
 	input->id.bustype = BUS_HOST;
@@ -1484,14 +1896,21 @@ static int asus_input_init(struct asus_laptop *asus)
 	error = input_register_device(input);
 	if (error) {
 		pr_warn("Unable to register input device\n");
+<<<<<<< HEAD
 		goto err_free_keymap;
+=======
+		goto err_free_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	asus->inputdev = input;
 	return 0;
 
+<<<<<<< HEAD
 err_free_keymap:
 	sparse_keymap_free(input);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free_dev:
 	input_free_device(input);
 	return error;
@@ -1499,10 +1918,15 @@ err_free_dev:
 
 static void asus_input_exit(struct asus_laptop *asus)
 {
+<<<<<<< HEAD
 	if (asus->inputdev) {
 		sparse_keymap_free(asus->inputdev);
 		input_unregister_device(asus->inputdev);
 	}
+=======
+	if (asus->inputdev)
+		input_unregister_device(asus->inputdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asus->inputdev = NULL;
 }
 
@@ -1516,11 +1940,15 @@ static void asus_acpi_notify(struct acpi_device *device, u32 event)
 
 	/* TODO Find a better way to handle events count. */
 	count = asus->event_count[event % 128]++;
+<<<<<<< HEAD
 	acpi_bus_generate_proc_event(asus->device, event, count);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_bus_generate_netlink_event(asus->device->pnp.device_class,
 					dev_name(&asus->device->dev), event,
 					count);
 
+<<<<<<< HEAD
 	/* Brightness events are special */
 	if (event >= ATKD_BR_MIN && event <= ATKD_BR_MAX) {
 
@@ -1530,18 +1958,38 @@ static void asus_acpi_notify(struct acpi_device *device, u32 event)
 			asus_backlight_notify(asus);
 		}
 		return ;
+=======
+	if (event >= ATKD_BRNUP_MIN && event <= ATKD_BRNUP_MAX)
+		event = ATKD_BRNUP;
+	else if (event >= ATKD_BRNDOWN_MIN &&
+		 event <= ATKD_BRNDOWN_MAX)
+		event = ATKD_BRNDOWN;
+
+	/* Brightness events are special */
+	if (event == ATKD_BRNDOWN || event == ATKD_BRNUP) {
+		if (asus->backlight_device != NULL) {
+			/* Update the backlight device. */
+			asus_backlight_notify(asus);
+			return ;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Accelerometer "coarse orientation change" event */
 	if (asus->pega_accel_poll && event == 0xEA) {
+<<<<<<< HEAD
 		kobject_uevent(&asus->pega_accel_poll->input->dev.kobj,
 			       KOBJ_CHANGE);
+=======
+		kobject_uevent(&asus->pega_accel_poll->dev.kobj, KOBJ_CHANGE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ;
 	}
 
 	asus_input_notify(asus, event);
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(infos, S_IRUGO, show_infos, NULL);
 static DEVICE_ATTR(wlan, S_IRUGO | S_IWUSR, show_wlan, store_wlan);
 static DEVICE_ATTR(bluetooth, S_IRUGO | S_IWUSR,
@@ -1555,6 +2003,8 @@ static DEVICE_ATTR(ls_level, S_IRUGO | S_IWUSR, show_lslvl, store_lslvl);
 static DEVICE_ATTR(ls_switch, S_IRUGO | S_IWUSR, show_lssw, store_lssw);
 static DEVICE_ATTR(gps, S_IRUGO | S_IWUSR, show_gps, store_gps);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute *asus_attributes[] = {
 	&dev_attr_infos.attr,
 	&dev_attr_wlan.attr,
@@ -1574,9 +2024,14 @@ static umode_t asus_sysfs_is_visible(struct kobject *kobj,
 				    struct attribute *attr,
 				    int idx)
 {
+<<<<<<< HEAD
 	struct device *dev = container_of(kobj, struct device, kobj);
 	struct platform_device *pdev = to_platform_device(dev);
 	struct asus_laptop *asus = platform_get_drvdata(pdev);
+=======
+	struct device *dev = kobj_to_dev(kobj);
+	struct asus_laptop *asus = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_handle handle = asus->handle;
 	bool supported;
 
@@ -1589,7 +2044,11 @@ static umode_t asus_sysfs_is_visible(struct kobject *kobj,
 		else
 			goto normal;
 
+<<<<<<< HEAD
 		return supported;
+=======
+		return supported ? attr->mode : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 normal:
@@ -1639,7 +2098,11 @@ static int asus_platform_init(struct asus_laptop *asus)
 {
 	int result;
 
+<<<<<<< HEAD
 	asus->platform_device = platform_device_alloc(ASUS_LAPTOP_FILE, -1);
+=======
+	asus->platform_device = platform_device_alloc(ASUS_LAPTOP_FILE, PLATFORM_DEVID_NONE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!asus->platform_device)
 		return -ENOMEM;
 	platform_set_drvdata(asus->platform_device, asus);
@@ -1671,7 +2134,10 @@ static void asus_platform_exit(struct asus_laptop *asus)
 static struct platform_driver platform_driver = {
 	.driver = {
 		.name = ASUS_LAPTOP_FILE,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -1743,7 +2209,11 @@ static int asus_laptop_get_info(struct asus_laptop *asus)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	if (*string)
+=======
+	if (string)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_notice("  %s model detected\n", string);
 
 	if (!acpi_check_handle(asus->handle, METHOD_WL_STATUS, NULL))
@@ -1754,7 +2224,11 @@ static int asus_laptop_get_info(struct asus_laptop *asus)
 	return AE_OK;
 }
 
+<<<<<<< HEAD
 static int __devinit asus_acpi_init(struct asus_laptop *asus)
+=======
+static int asus_acpi_init(struct asus_laptop *asus)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result = 0;
 
@@ -1814,7 +2288,11 @@ static int __devinit asus_acpi_init(struct asus_laptop *asus)
 	return result;
 }
 
+<<<<<<< HEAD
 static void __devinit asus_dmi_check(void)
+=======
+static void asus_dmi_check(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *model;
 
@@ -1823,14 +2301,23 @@ static void __devinit asus_dmi_check(void)
 		return;
 
 	/* On L1400B WLED control the sound card, don't mess with it ... */
+<<<<<<< HEAD
 	if (strncmp(model, "L1400B", 6) == 0) {
 		wlan_status = -1;
 	}
+=======
+	if (strncmp(model, "L1400B", 6) == 0)
+		wlan_status = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool asus_device_present;
 
+<<<<<<< HEAD
 static int __devinit asus_acpi_add(struct acpi_device *device)
+=======
+static int asus_acpi_add(struct acpi_device *device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus;
 	int result;
@@ -1861,12 +2348,20 @@ static int __devinit asus_acpi_add(struct acpi_device *device)
 	if (result)
 		goto fail_platform;
 
+<<<<<<< HEAD
 	if (!acpi_video_backlight_support()) {
 		result = asus_backlight_init(asus);
 		if (result)
 			goto fail_backlight;
 	} else
 		pr_info("Backlight controlled by ACPI video driver\n");
+=======
+	if (acpi_video_get_backlight_type() == acpi_backlight_vendor) {
+		result = asus_backlight_init(asus);
+		if (result)
+			goto fail_backlight;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	result = asus_input_init(asus);
 	if (result)
@@ -1904,13 +2399,20 @@ fail_input:
 fail_backlight:
 	asus_platform_exit(asus);
 fail_platform:
+<<<<<<< HEAD
 	kfree(asus->name);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(asus);
 
 	return result;
 }
 
+<<<<<<< HEAD
 static int asus_acpi_remove(struct acpi_device *device, int type)
+=======
+static void asus_acpi_remove(struct acpi_device *device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asus_laptop *asus = acpi_driver_data(device);
 
@@ -1923,7 +2425,10 @@ static int asus_acpi_remove(struct acpi_device *device, int type)
 
 	kfree(asus->name);
 	kfree(asus);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct acpi_device_id asus_device_ids[] = {

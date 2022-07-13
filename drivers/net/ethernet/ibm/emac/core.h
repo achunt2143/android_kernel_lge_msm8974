@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/net/ethernet/ibm/emac/core.h
  *
@@ -15,25 +19,34 @@
  *      Armin Kuster <akuster@mvista.com>
  * 	Johnnie Peters <jpeters@mvista.com>
  *      Copyright 2000, 2001 MontaVista Softare Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __IBM_NEWEMAC_CORE_H
 #define __IBM_NEWEMAC_CORE_H
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
 #include <linux/netdevice.h>
 #include <linux/dma-mapping.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 #include <asm/io.h>
@@ -69,22 +82,34 @@ static inline int emac_rx_size(int mtu)
 		return mal_rx_size(ETH_DATA_LEN + EMAC_MTU_OVERHEAD);
 }
 
+<<<<<<< HEAD
 #define EMAC_DMA_ALIGN(x)		ALIGN((x), dma_get_cache_alignment())
 
 #define EMAC_RX_SKB_HEADROOM		\
 	EMAC_DMA_ALIGN(CONFIG_IBM_EMAC_RX_SKB_HEADROOM)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Size of RX skb for the given MTU */
 static inline int emac_rx_skb_size(int mtu)
 {
 	int size = max(mtu + EMAC_MTU_OVERHEAD, emac_rx_size(mtu));
+<<<<<<< HEAD
 	return EMAC_DMA_ALIGN(size + 2) + EMAC_RX_SKB_HEADROOM;
+=======
+
+	return SKB_DATA_ALIGN(size + NET_IP_ALIGN) + NET_SKB_PAD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* RX DMA sync size */
 static inline int emac_rx_sync_size(int mtu)
 {
+<<<<<<< HEAD
 	return EMAC_DMA_ALIGN(emac_rx_size(mtu) + 2);
+=======
+	return SKB_DATA_ALIGN(emac_rx_size(mtu) + NET_IP_ALIGN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Driver statistcs is split into two parts to make it more cache friendly:
@@ -168,7 +193,10 @@ struct emac_error_stats {
 
 struct emac_instance {
 	struct net_device		*ndev;
+<<<<<<< HEAD
 	struct resource			rsrc_regs;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct emac_regs		__iomem *emacp;
 	struct platform_device		*ofdev;
 	struct device_node		**blist; /* bootlist entry */
@@ -182,7 +210,11 @@ struct emac_instance {
 	struct mal_commac		commac;
 
 	/* PHY infos */
+<<<<<<< HEAD
 	u32				phy_mode;
+=======
+	phy_interface_t			phy_mode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32				phy_map;
 	u32				phy_address;
 	u32				phy_feat_exc;
@@ -200,6 +232,13 @@ struct emac_instance {
 	struct emac_instance		*mdio_instance;
 	struct mutex			mdio_lock;
 
+<<<<<<< HEAD
+=======
+	/* Device-tree based phy configuration */
+	struct mii_bus			*mii_bus;
+	struct phy_device		*phy_dev;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ZMII infos if any */
 	u32				zmii_ph;
 	u32				zmii_port;
@@ -262,7 +301,10 @@ struct emac_instance {
 	/* Stats
 	 */
 	struct emac_error_stats		estats;
+<<<<<<< HEAD
 	struct net_device_stats		nstats;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct emac_stats 		stats;
 
 	/* Misc
@@ -389,6 +431,12 @@ static inline int emac_has_feature(struct emac_instance *dev,
 #define	EMAC4SYNC_XAHT_SLOTS_SHIFT	8
 #define	EMAC4SYNC_XAHT_WIDTH_SHIFT	5
 
+<<<<<<< HEAD
+=======
+/* The largest span between slots and widths above is 3 */
+#define	EMAC_XAHT_MAX_REGS		(1 << 3)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	EMAC_XAHT_SLOTS(dev)         	(1 << (dev)->xaht_slots_shift)
 #define	EMAC_XAHT_WIDTH(dev)         	(1 << (dev)->xaht_width_shift)
 #define	EMAC_XAHT_REGS(dev)          	(1 << ((dev)->xaht_slots_shift - \
@@ -461,11 +509,17 @@ struct emac_ethtool_regs_subhdr {
 	u32 index;
 };
 
+<<<<<<< HEAD
 #define EMAC_ETHTOOL_REGS_VER		0
 #define EMAC_ETHTOOL_REGS_SIZE(dev) 	((dev)->rsrc_regs.end - \
 					 (dev)->rsrc_regs.start + 1)
 #define EMAC4_ETHTOOL_REGS_VER      	1
 #define EMAC4_ETHTOOL_REGS_SIZE(dev)	((dev)->rsrc_regs.end -	\
 					 (dev)->rsrc_regs.start + 1)
+=======
+#define EMAC_ETHTOOL_REGS_VER		3
+#define EMAC4_ETHTOOL_REGS_VER		4
+#define EMAC4SYNC_ETHTOOL_REGS_VER	5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __IBM_NEWEMAC_CORE_H */

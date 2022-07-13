@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ALSA SoC WL1273 codec driver
  *
  * Author:      Matti Aaltonen, <matti.j.aaltonen@nokia.com>
  *
  * Copyright:   (C) 2010, 2011 Nokia Corporation
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -19,6 +24,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mfd/wl1273-core.h>
@@ -172,10 +179,17 @@ out:
 static int snd_wl1273_get_audio_route(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wl1273_priv *wl1273 = snd_soc_codec_get_drvdata(codec);
 
 	ucontrol->value.integer.value[0] = wl1273->mode;
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wl1273_priv *wl1273 = snd_soc_component_get_drvdata(component);
+
+	ucontrol->value.enumerated.item[0] = wl1273->mode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -190,6 +204,7 @@ static const char * const wl1273_audio_route[] = { "Bt", "FmRx", "FmTx" };
 static int snd_wl1273_set_audio_route(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wl1273_priv *wl1273 = snd_soc_codec_get_drvdata(codec);
 
@@ -205,22 +220,51 @@ static int snd_wl1273_set_audio_route(struct snd_kcontrol *kcontrol,
 		return -EINVAL;
 
 	wl1273->mode = ucontrol->value.integer.value[0];
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wl1273_priv *wl1273 = snd_soc_component_get_drvdata(component);
+
+	if (wl1273->mode == ucontrol->value.enumerated.item[0])
+		return 0;
+
+	/* Do not allow changes while stream is running */
+	if (snd_soc_component_active(component))
+		return -EPERM;
+
+	if (ucontrol->value.enumerated.item[0] >=  ARRAY_SIZE(wl1273_audio_route))
+		return -EINVAL;
+
+	wl1273->mode = ucontrol->value.enumerated.item[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
 
+<<<<<<< HEAD
 static const struct soc_enum wl1273_enum =
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(wl1273_audio_route), wl1273_audio_route);
+=======
+static SOC_ENUM_SINGLE_EXT_DECL(wl1273_enum, wl1273_audio_route);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int snd_wl1273_fm_audio_get(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wl1273_priv *wl1273 = snd_soc_codec_get_drvdata(codec);
 
 	dev_dbg(codec->dev, "%s: enter.\n", __func__);
 
 	ucontrol->value.integer.value[0] = wl1273->core->audio_mode;
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wl1273_priv *wl1273 = snd_soc_component_get_drvdata(component);
+
+	dev_dbg(component->dev, "%s: enter.\n", __func__);
+
+	ucontrol->value.enumerated.item[0] = wl1273->core->audio_mode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -228,6 +272,7 @@ static int snd_wl1273_fm_audio_get(struct snd_kcontrol *kcontrol,
 static int snd_wl1273_fm_audio_put(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wl1273_priv *wl1273 = snd_soc_codec_get_drvdata(codec);
 	int val, r = 0;
@@ -235,6 +280,15 @@ static int snd_wl1273_fm_audio_put(struct snd_kcontrol *kcontrol,
 	dev_dbg(codec->dev, "%s: enter.\n", __func__);
 
 	val = ucontrol->value.integer.value[0];
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wl1273_priv *wl1273 = snd_soc_component_get_drvdata(component);
+	int val, r = 0;
+
+	dev_dbg(component->dev, "%s: enter.\n", __func__);
+
+	val = ucontrol->value.enumerated.item[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wl1273->core->audio_mode == val)
 		return 0;
 
@@ -247,17 +301,28 @@ static int snd_wl1273_fm_audio_put(struct snd_kcontrol *kcontrol,
 
 static const char * const wl1273_audio_strings[] = { "Digital", "Analog" };
 
+<<<<<<< HEAD
 static const struct soc_enum wl1273_audio_enum =
 	SOC_ENUM_SINGLE_EXT(ARRAY_SIZE(wl1273_audio_strings),
 			    wl1273_audio_strings);
+=======
+static SOC_ENUM_SINGLE_EXT_DECL(wl1273_audio_enum, wl1273_audio_strings);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int snd_wl1273_fm_volume_get(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wl1273_priv *wl1273 = snd_soc_codec_get_drvdata(codec);
 
 	dev_dbg(codec->dev, "%s: enter.\n", __func__);
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wl1273_priv *wl1273 = snd_soc_component_get_drvdata(component);
+
+	dev_dbg(component->dev, "%s: enter.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ucontrol->value.integer.value[0] = wl1273->core->volume;
 
@@ -267,11 +332,19 @@ static int snd_wl1273_fm_volume_get(struct snd_kcontrol *kcontrol,
 static int snd_wl1273_fm_volume_put(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wl1273_priv *wl1273 = snd_soc_codec_get_drvdata(codec);
 	int r;
 
 	dev_dbg(codec->dev, "%s: enter.\n", __func__);
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wl1273_priv *wl1273 = snd_soc_component_get_drvdata(component);
+	int r;
+
+	dev_dbg(component->dev, "%s: enter.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r = wl1273->core->set_volume(wl1273->core,
 				     ucontrol->value.integer.value[0]);
@@ -290,6 +363,7 @@ static const struct snd_kcontrol_new wl1273_controls[] = {
 		       snd_wl1273_fm_volume_get, snd_wl1273_fm_volume_put),
 };
 
+<<<<<<< HEAD
 static int wl1273_startup(struct snd_pcm_substream *substream,
 			  struct snd_soc_dai *dai)
 {
@@ -304,6 +378,32 @@ static int wl1273_startup(struct snd_pcm_substream *substream,
 					     8000, 8000);
 		snd_pcm_hw_constraint_minmax(substream->runtime,
 					     SNDRV_PCM_HW_PARAM_CHANNELS, 1, 1);
+=======
+static const struct snd_soc_dapm_widget wl1273_dapm_widgets[] = {
+	SND_SOC_DAPM_INPUT("RX"),
+
+	SND_SOC_DAPM_OUTPUT("TX"),
+};
+
+static const struct snd_soc_dapm_route wl1273_dapm_routes[] = {
+	{ "Capture", NULL, "RX" },
+
+	{ "TX", NULL, "Playback" },
+};
+
+static int wl1273_startup(struct snd_pcm_substream *substream,
+			  struct snd_soc_dai *dai)
+{
+	struct snd_soc_component *component = dai->component;
+	struct wl1273_priv *wl1273 = snd_soc_component_get_drvdata(component);
+
+	switch (wl1273->mode) {
+	case WL1273_MODE_BT:
+		snd_pcm_hw_constraint_single(substream->runtime,
+					     SNDRV_PCM_HW_PARAM_RATE, 8000);
+		snd_pcm_hw_constraint_single(substream->runtime,
+					     SNDRV_PCM_HW_PARAM_CHANNELS, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case WL1273_MODE_FM_RX:
 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
@@ -319,7 +419,10 @@ static int wl1273_startup(struct snd_pcm_substream *substream,
 		break;
 	default:
 		return -EINVAL;
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -329,6 +432,7 @@ static int wl1273_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct wl1273_priv *wl1273 = snd_soc_codec_get_drvdata(rtd->codec);
 	struct wl1273_core *core = wl1273->core;
@@ -336,6 +440,15 @@ static int wl1273_hw_params(struct snd_pcm_substream *substream,
 
 	if (params_format(params) != SNDRV_PCM_FORMAT_S16_LE) {
 		pr_err("Only SNDRV_PCM_FORMAT_S16_LE supported.\n");
+=======
+	struct wl1273_priv *wl1273 = snd_soc_component_get_drvdata(dai->component);
+	struct wl1273_core *core = wl1273->core;
+	unsigned int rate, width, r;
+
+	if (params_width(params) != 16) {
+		dev_err(dai->dev, "%d bits/sample not supported\n",
+			params_width(params));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -409,6 +522,7 @@ static struct snd_soc_dai_driver wl1273_dai = {
 };
 
 /* Audio interface format for the soc_card driver */
+<<<<<<< HEAD
 int wl1273_get_format(struct snd_soc_codec *codec, unsigned int *fmt)
 {
 	struct wl1273_priv *wl1273;
@@ -417,19 +531,37 @@ int wl1273_get_format(struct snd_soc_codec *codec, unsigned int *fmt)
 		return -EINVAL;
 
 	wl1273 = snd_soc_codec_get_drvdata(codec);
+=======
+int wl1273_get_format(struct snd_soc_component *component, unsigned int *fmt)
+{
+	struct wl1273_priv *wl1273;
+
+	if (component == NULL || fmt == NULL)
+		return -EINVAL;
+
+	wl1273 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (wl1273->mode) {
 	case WL1273_MODE_FM_RX:
 	case WL1273_MODE_FM_TX:
 		*fmt =	SND_SOC_DAIFMT_I2S |
 			SND_SOC_DAIFMT_NB_NF |
+<<<<<<< HEAD
 			SND_SOC_DAIFMT_CBM_CFM;
+=======
+			SND_SOC_DAIFMT_CBP_CFP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 	case WL1273_MODE_BT:
 		*fmt =	SND_SOC_DAIFMT_DSP_A |
 			SND_SOC_DAIFMT_IB_NF |
+<<<<<<< HEAD
 			SND_SOC_DAIFMT_CBM_CFM;
+=======
+			SND_SOC_DAIFMT_CBP_CFP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		break;
 	default:
@@ -440,6 +572,7 @@ int wl1273_get_format(struct snd_soc_codec *codec, unsigned int *fmt)
 }
 EXPORT_SYMBOL_GPL(wl1273_get_format);
 
+<<<<<<< HEAD
 static int wl1273_probe(struct snd_soc_codec *codec)
 {
 	struct wl1273_core **core = codec->dev->platform_data;
@@ -450,18 +583,35 @@ static int wl1273_probe(struct snd_soc_codec *codec)
 
 	if (!core) {
 		dev_err(codec->dev, "Platform data is missing.\n");
+=======
+static int wl1273_probe(struct snd_soc_component *component)
+{
+	struct wl1273_core **core = component->dev->platform_data;
+	struct wl1273_priv *wl1273;
+
+	dev_dbg(component->dev, "%s.\n", __func__);
+
+	if (!core) {
+		dev_err(component->dev, "Platform data is missing.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	wl1273 = kzalloc(sizeof(struct wl1273_priv), GFP_KERNEL);
+<<<<<<< HEAD
 	if (wl1273 == NULL) {
 		dev_err(codec->dev, "Cannot allocate memory.\n");
 		return -ENOMEM;
 	}
+=======
+	if (!wl1273)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wl1273->mode = WL1273_MODE_BT;
 	wl1273->core = *core;
 
+<<<<<<< HEAD
 	snd_soc_codec_set_drvdata(codec, wl1273);
 
 	r = snd_soc_add_codec_controls(codec, wl1273_controls,
@@ -478,10 +628,14 @@ static int wl1273_remove(struct snd_soc_codec *codec)
 
 	dev_dbg(codec->dev, "%s\n", __func__);
 	kfree(wl1273);
+=======
+	snd_soc_component_set_drvdata(component, wl1273);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_wl1273 = {
 	.probe = wl1273_probe,
 	.remove = wl1273_remove,
@@ -499,15 +653,51 @@ static int __devexit wl1273_platform_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+static void wl1273_remove(struct snd_soc_component *component)
+{
+	struct wl1273_priv *wl1273 = snd_soc_component_get_drvdata(component);
+
+	dev_dbg(component->dev, "%s\n", __func__);
+	kfree(wl1273);
+}
+
+static const struct snd_soc_component_driver soc_component_dev_wl1273 = {
+	.probe			= wl1273_probe,
+	.remove			= wl1273_remove,
+	.controls		= wl1273_controls,
+	.num_controls		= ARRAY_SIZE(wl1273_controls),
+	.dapm_widgets		= wl1273_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(wl1273_dapm_widgets),
+	.dapm_routes		= wl1273_dapm_routes,
+	.num_dapm_routes	= ARRAY_SIZE(wl1273_dapm_routes),
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+};
+
+static int wl1273_platform_probe(struct platform_device *pdev)
+{
+	return devm_snd_soc_register_component(&pdev->dev,
+				      &soc_component_dev_wl1273,
+				      &wl1273_dai, 1);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:wl1273-codec");
 
 static struct platform_driver wl1273_platform_driver = {
 	.driver		= {
 		.name	= "wl1273-codec",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= wl1273_platform_probe,
 	.remove		= __devexit_p(wl1273_platform_remove),
+=======
+	},
+	.probe		= wl1273_platform_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(wl1273_platform_driver);

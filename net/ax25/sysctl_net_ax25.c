@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 1996 Mike Shaver (shaver@zeroknowledge.com)
  */
@@ -29,6 +34,7 @@ static int min_proto[1],		max_proto[] = { AX25_PROTO_MAX };
 static int min_ds_timeout[1],		max_ds_timeout[] = {65535000};
 #endif
 
+<<<<<<< HEAD
 static struct ctl_table_header *ax25_table_header;
 
 static ctl_table *ax25_table;
@@ -41,6 +47,9 @@ static struct ctl_path ax25_path[] = {
 };
 
 static const ctl_table ax25_param_table[] = {
+=======
+static const struct ctl_table ax25_param_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "ip_default_mode",
 		.maxlen		= sizeof(int),
@@ -159,6 +168,7 @@ static const ctl_table ax25_param_table[] = {
 	{ }	/* that's all, folks! */
 };
 
+<<<<<<< HEAD
 void ax25_register_sysctl(void)
 {
 	ax25_dev *ax25_dev;
@@ -207,4 +217,40 @@ void ax25_unregister_sysctl(void)
 	for (p = ax25_table; p->procname; p++)
 		kfree(p->child);
 	kfree(ax25_table);
+=======
+int ax25_register_dev_sysctl(ax25_dev *ax25_dev)
+{
+	char path[sizeof("net/ax25/") + IFNAMSIZ];
+	int k;
+	struct ctl_table *table;
+
+	table = kmemdup(ax25_param_table, sizeof(ax25_param_table), GFP_KERNEL);
+	if (!table)
+		return -ENOMEM;
+
+	for (k = 0; k < AX25_MAX_VALUES; k++)
+		table[k].data = &ax25_dev->values[k];
+
+	snprintf(path, sizeof(path), "net/ax25/%s", ax25_dev->dev->name);
+	ax25_dev->sysheader = register_net_sysctl_sz(&init_net, path, table,
+						     ARRAY_SIZE(ax25_param_table));
+	if (!ax25_dev->sysheader) {
+		kfree(table);
+		return -ENOMEM;
+	}
+	return 0;
+}
+
+void ax25_unregister_dev_sysctl(ax25_dev *ax25_dev)
+{
+	struct ctl_table_header *header = ax25_dev->sysheader;
+	struct ctl_table *table;
+
+	if (header) {
+		ax25_dev->sysheader = NULL;
+		table = header->ctl_table_arg;
+		unregister_net_sysctl_table(header);
+		kfree(table);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

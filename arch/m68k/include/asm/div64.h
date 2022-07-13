@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _M68K_DIV64_H
 #define _M68K_DIV64_H
 
@@ -30,6 +34,12 @@
 	__rem;							\
 })
 
+<<<<<<< HEAD
+=======
+/* defining this stops the unused helper function from being built */
+#define __div64_32 __div64_32
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_CPU_HAS_NO_MULDIV64 */
 
 #endif /* _M68K_DIV64_H */

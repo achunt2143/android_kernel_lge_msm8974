@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	X.25 Packet Layer release 002
  *
@@ -7,12 +11,15 @@
  *
  *	This code REQUIRES 2.1.15 or higher
  *
+<<<<<<< HEAD
  *	This module:
  *		This module is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	History
  *	X.25 001	Jonathan Naylor	Started coding.
  *	X.25 002	Jonathan Naylor	New timer architecture.
@@ -77,7 +84,11 @@ int x25_output(struct sock *sk, struct sk_buff *skb)
 					kfree_skb(skb);
 					return sent;
 				}
+<<<<<<< HEAD
 				SOCK_DEBUG(sk, "x25_output: fragment alloc"
+=======
+				net_dbg_ratelimited("x25_output: fragment alloc"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       " failed, err=%d, %d bytes "
 					       "sent\n", err, sent);
 				return err;

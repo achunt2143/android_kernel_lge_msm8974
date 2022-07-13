@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sunhme.c: Sparc HME/BigMac 10/100baseT half/full duplex auto switching,
  *           auto carrier detecting ethernet driver.  Also known as the
  *           "Happy Meal Ethernet" found on SunSwift SBUS cards.
@@ -13,6 +17,7 @@
  *     argument : macaddr=0x00,0x10,0x20,0x30,0x40,0x50
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -43,10 +48,48 @@
 #ifdef CONFIG_SPARC
 #include <linux/of.h>
 #include <linux/of_device.h>
+=======
+#include <linux/bitops.h>
+#include <linux/crc32.h>
+#include <linux/delay.h>
+#include <linux/dma-mapping.h>
+#include <linux/errno.h>
+#include <linux/etherdevice.h>
+#include <linux/ethtool.h>
+#include <linux/fcntl.h>
+#include <linux/in.h>
+#include <linux/init.h>
+#include <linux/interrupt.h>
+#include <linux/io.h>
+#include <linux/ioport.h>
+#include <linux/kernel.h>
+#include <linux/mii.h>
+#include <linux/mm.h>
+#include <linux/module.h>
+#include <linux/netdevice.h>
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/pci.h>
+#include <linux/platform_device.h>
+#include <linux/random.h>
+#include <linux/skbuff.h>
+#include <linux/slab.h>
+#include <linux/string.h>
+#include <linux/types.h>
+#include <linux/uaccess.h>
+
+#include <asm/byteorder.h>
+#include <asm/dma.h>
+#include <asm/irq.h>
+
+#ifdef CONFIG_SPARC
+#include <asm/auxio.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/idprom.h>
 #include <asm/openprom.h>
 #include <asm/oplib.h>
 #include <asm/prom.h>
+<<<<<<< HEAD
 #include <asm/auxio.h>
 #endif
 #include <asm/uaccess.h>
@@ -56,11 +99,14 @@
 
 #ifdef CONFIG_PCI
 #include <linux/pci.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #include "sunhme.h"
 
 #define DRV_NAME	"sunhme"
+<<<<<<< HEAD
 #define DRV_VERSION	"3.10"
 #define DRV_RELDATE	"August 26, 2008"
 #define DRV_AUTHOR	"David S. Miller (davem@davemloft.net)"
@@ -70,6 +116,10 @@ static char version[] =
 
 MODULE_VERSION(DRV_VERSION);
 MODULE_AUTHOR(DRV_AUTHOR);
+=======
+
+MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Sun HappyMealEthernet(HME) 10/100baseT ethernet driver");
 MODULE_LICENSE("GPL");
 
@@ -87,6 +137,7 @@ static struct quattro *qfe_sbus_list;
 static struct quattro *qfe_pci_list;
 #endif
 
+<<<<<<< HEAD
 #undef HMEDEBUG
 #undef SXDEBUG
 #undef RXDEBUG
@@ -94,6 +145,19 @@ static struct quattro *qfe_pci_list;
 #undef TXLOGGING
 
 #ifdef TXLOGGING
+=======
+#define hme_debug(fmt, ...) pr_debug("%s: " fmt, __func__, ##__VA_ARGS__)
+#define HMD hme_debug
+
+/* "Auto Switch Debug" aka phy debug */
+#if 1
+#define ASD hme_debug
+#else
+#define ASD(...)
+#endif
+
+#if 0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hme_tx_logent {
 	unsigned int tstamp;
 	int tx_new, tx_old;
@@ -128,13 +192,18 @@ static __inline__ void tx_dump_log(void)
 
 	this = txlog_cur_entry;
 	for (i = 0; i < TX_LOG_LEN; i++) {
+<<<<<<< HEAD
 		printk("TXLOG[%d]: j[%08x] tx[N(%d)O(%d)] action[%08x] stat[%08x]\n", i,
+=======
+		pr_err("TXLOG[%d]: j[%08x] tx[N(%d)O(%d)] action[%08x] stat[%08x]\n", i,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       tx_log[this].tstamp,
 		       tx_log[this].tx_new, tx_log[this].tx_old,
 		       tx_log[this].action, tx_log[this].status);
 		this = (this + 1) & (TX_LOG_LEN - 1);
 	}
 }
+<<<<<<< HEAD
 static __inline__ void tx_dump_ring(struct happy_meal *hp)
 {
 	struct hmeal_init_block *hb = hp->happy_block;
@@ -168,6 +237,11 @@ static __inline__ void tx_dump_ring(struct happy_meal *hp)
 #define ASD(x)  printk x
 #else
 #define ASD(x)
+=======
+#else
+#define tx_add_log(hp, a, s)
+#define tx_dump_log()
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define DEFAULT_IPG0      16 /* For lance-mode only */
@@ -196,14 +270,22 @@ static u32 sbus_hme_read32(void __iomem *reg)
 static void sbus_hme_write_rxd(struct happy_meal_rxd *rxd, u32 flags, u32 addr)
 {
 	rxd->rx_addr = (__force hme32)addr;
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rxd->rx_flags = (__force hme32)flags;
 }
 
 static void sbus_hme_write_txd(struct happy_meal_txd *txd, u32 flags, u32 addr)
 {
 	txd->tx_addr = (__force hme32)addr;
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	txd->tx_flags = (__force hme32)flags;
 }
 
@@ -225,14 +307,22 @@ static u32 pci_hme_read32(void __iomem *reg)
 static void pci_hme_write_rxd(struct happy_meal_rxd *rxd, u32 flags, u32 addr)
 {
 	rxd->rx_addr = (__force hme32)cpu_to_le32(addr);
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rxd->rx_flags = (__force hme32)cpu_to_le32(flags);
 }
 
 static void pci_hme_write_txd(struct happy_meal_txd *txd, u32 flags, u32 addr)
 {
 	txd->tx_addr = (__force hme32)cpu_to_le32(addr);
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	txd->tx_flags = (__force hme32)cpu_to_le32(flags);
 }
 
@@ -251,6 +341,7 @@ static u32 pci_hme_read_desc32(hme32 *p)
 	((__hp)->write_txd((__txd), (__flags), (__addr)))
 #define hme_read_desc32(__hp, __p) \
 	((__hp)->read_desc32(__p))
+<<<<<<< HEAD
 #define hme_dma_map(__hp, __ptr, __size, __dir) \
 	((__hp)->dma_map((__hp)->dma_dev, (__ptr), (__size), (__dir)))
 #define hme_dma_unmap(__hp, __addr, __size, __dir) \
@@ -259,6 +350,8 @@ static u32 pci_hme_read_desc32(hme32 *p)
 	((__hp)->dma_sync_for_cpu((__hp)->dma_dev, (__addr), (__size), (__dir)))
 #define hme_dma_sync_for_device(__hp, __addr, __size, __dir) \
 	((__hp)->dma_sync_for_device((__hp)->dma_dev, (__addr), (__size), (__dir)))
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #ifdef CONFIG_SBUS
 /* SBUS only compilation */
@@ -268,11 +361,16 @@ static u32 pci_hme_read_desc32(hme32 *p)
 	sbus_readl(__reg)
 #define hme_write_rxd(__hp, __rxd, __flags, __addr) \
 do {	(__rxd)->rx_addr = (__force hme32)(u32)(__addr); \
+<<<<<<< HEAD
 	wmb(); \
+=======
+	dma_wmb(); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(__rxd)->rx_flags = (__force hme32)(u32)(__flags); \
 } while(0)
 #define hme_write_txd(__hp, __txd, __flags, __addr) \
 do {	(__txd)->tx_addr = (__force hme32)(u32)(__addr); \
+<<<<<<< HEAD
 	wmb(); \
 	(__txd)->tx_flags = (__force hme32)(u32)(__flags); \
 } while(0)
@@ -285,6 +383,12 @@ do {	(__txd)->tx_addr = (__force hme32)(u32)(__addr); \
 	dma_dma_sync_single_for_cpu((__hp)->dma_dev, (__addr), (__size), (__dir))
 #define hme_dma_sync_for_device(__hp, __addr, __size, __dir) \
 	dma_dma_sync_single_for_device((__hp)->dma_dev, (__addr), (__size), (__dir))
+=======
+	dma_wmb(); \
+	(__txd)->tx_flags = (__force hme32)(u32)(__flags); \
+} while(0)
+#define hme_read_desc32(__hp, __p)	((__force u32)(hme32)*(__p))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 /* PCI only compilation */
 #define hme_write32(__hp, __reg, __val) \
@@ -293,18 +397,27 @@ do {	(__txd)->tx_addr = (__force hme32)(u32)(__addr); \
 	readl(__reg)
 #define hme_write_rxd(__hp, __rxd, __flags, __addr) \
 do {	(__rxd)->rx_addr = (__force hme32)cpu_to_le32(__addr); \
+<<<<<<< HEAD
 	wmb(); \
+=======
+	dma_wmb(); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(__rxd)->rx_flags = (__force hme32)cpu_to_le32(__flags); \
 } while(0)
 #define hme_write_txd(__hp, __txd, __flags, __addr) \
 do {	(__txd)->tx_addr = (__force hme32)cpu_to_le32(__addr); \
+<<<<<<< HEAD
 	wmb(); \
+=======
+	dma_wmb(); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(__txd)->tx_flags = (__force hme32)cpu_to_le32(__flags); \
 } while(0)
 static inline u32 hme_read_desc32(struct happy_meal *hp, hme32 *p)
 {
 	return le32_to_cpup((__le32 *)p);
 }
+<<<<<<< HEAD
 #define hme_dma_map(__hp, __ptr, __size, __dir) \
 	pci_map_single((__hp)->dma_dev, (__ptr), (__size), (__dir))
 #define hme_dma_unmap(__hp, __addr, __size, __dir) \
@@ -313,6 +426,8 @@ static inline u32 hme_read_desc32(struct happy_meal *hp, hme32 *p)
 	pci_dma_sync_single_for_cpu((__hp)->dma_dev, (__addr), (__size), (__dir))
 #define hme_dma_sync_for_device(__hp, __addr, __size, __dir) \
 	pci_dma_sync_single_for_device((__hp)->dma_dev, (__addr), (__size), (__dir))
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #endif
 
@@ -367,8 +482,11 @@ static int happy_meal_bb_read(struct happy_meal *hp,
 	int retval = 0;
 	int i;
 
+<<<<<<< HEAD
 	ASD(("happy_meal_bb_read: reg=%d ", reg));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable the MIF BitBang outputs. */
 	hme_write32(hp, tregs + TCVR_BBOENAB, 1);
 
@@ -402,7 +520,11 @@ static int happy_meal_bb_read(struct happy_meal *hp,
 	(void) BB_GET_BIT2(hp, tregs, (hp->tcvr_type == internal));
 	(void) BB_GET_BIT2(hp, tregs, (hp->tcvr_type == internal));
 	(void) BB_GET_BIT2(hp, tregs, (hp->tcvr_type == internal));
+<<<<<<< HEAD
 	ASD(("value=%x\n", retval));
+=======
+	ASD("reg=%d value=%x\n", reg, retval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -413,7 +535,11 @@ static void happy_meal_bb_write(struct happy_meal *hp,
 	u32 tmp;
 	int i;
 
+<<<<<<< HEAD
 	ASD(("happy_meal_bb_write: reg=%d value=%x\n", reg, value));
+=======
+	ASD("reg=%d value=%x\n", reg, value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable the MIF BitBang outputs. */
 	hme_write32(hp, tregs + TCVR_BBOENAB, 1);
@@ -457,14 +583,23 @@ static int happy_meal_tcvr_read(struct happy_meal *hp,
 	int tries = TCVR_READ_TRIES;
 	int retval;
 
+<<<<<<< HEAD
 	ASD(("happy_meal_tcvr_read: reg=0x%02x ", reg));
 	if (hp->tcvr_type == none) {
 		ASD(("no transceiver, value=TCVR_FAILURE\n"));
+=======
+	if (hp->tcvr_type == none) {
+		ASD("no transceiver, value=TCVR_FAILURE\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return TCVR_FAILURE;
 	}
 
 	if (!(hp->happy_flags & HFLAG_FENABLE)) {
+<<<<<<< HEAD
 		ASD(("doing bit bang\n"));
+=======
+		ASD("doing bit bang\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return happy_meal_bb_read(hp, tregs, reg);
 	}
 
@@ -473,11 +608,19 @@ static int happy_meal_tcvr_read(struct happy_meal *hp,
 	while (!(hme_read32(hp, tregs + TCVR_FRAME) & 0x10000) && --tries)
 		udelay(20);
 	if (!tries) {
+<<<<<<< HEAD
 		printk(KERN_ERR "happy meal: Aieee, transceiver MIF read bolixed\n");
 		return TCVR_FAILURE;
 	}
 	retval = hme_read32(hp, tregs + TCVR_FRAME) & 0xffff;
 	ASD(("value=%04x\n", retval));
+=======
+		netdev_err(hp->dev, "Aieee, transceiver MIF read bolixed\n");
+		return TCVR_FAILURE;
+	}
+	retval = hme_read32(hp, tregs + TCVR_FRAME) & 0xffff;
+	ASD("reg=0x%02x value=%04x\n", reg, retval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -489,7 +632,11 @@ static void happy_meal_tcvr_write(struct happy_meal *hp,
 {
 	int tries = TCVR_WRITE_TRIES;
 
+<<<<<<< HEAD
 	ASD(("happy_meal_tcvr_write: reg=0x%02x value=%04x\n", reg, value));
+=======
+	ASD("reg=0x%02x value=%04x\n", reg, value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Welcome to Sun Microsystems, can I take your order please? */
 	if (!(hp->happy_flags & HFLAG_FENABLE)) {
@@ -506,7 +653,11 @@ static void happy_meal_tcvr_write(struct happy_meal *hp,
 
 	/* Anything else? */
 	if (!tries)
+<<<<<<< HEAD
 		printk(KERN_ERR "happy meal: Aieee, transceiver MIF write bolixed\n");
+=======
+		netdev_err(hp->dev, "Aieee, transceiver MIF write bolixed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fifty-two cents is your change, have a nice day. */
 }
@@ -569,6 +720,7 @@ static int try_next_permutation(struct happy_meal *hp, void __iomem *tregs)
 
 static void display_link_mode(struct happy_meal *hp, void __iomem *tregs)
 {
+<<<<<<< HEAD
 	printk(KERN_INFO "%s: Link is up using ", hp->dev->name);
 	if (hp->tcvr_type == external)
 		printk("external ");
@@ -587,10 +739,20 @@ static void display_link_mode(struct happy_meal *hp, void __iomem *tregs)
 		else
 			printk("10Mb/s, Half Duplex.\n");
 	}
+=======
+	hp->sw_lpa = happy_meal_tcvr_read(hp, tregs, MII_LPA);
+
+	netdev_info(hp->dev,
+		    "Link is up using %s transceiver at %dMb/s, %s Duplex.\n",
+		    hp->tcvr_type == external ? "external" : "internal",
+		    hp->sw_lpa & (LPA_100HALF | LPA_100FULL) ? 100 : 10,
+		    hp->sw_lpa & (LPA_100FULL | LPA_10FULL) ? "Full" : "Half");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void display_forced_link_mode(struct happy_meal *hp, void __iomem *tregs)
 {
+<<<<<<< HEAD
 	printk(KERN_INFO "%s: Link has been forced up using ", hp->dev->name);
 	if (hp->tcvr_type == external)
 		printk("external ");
@@ -606,6 +768,15 @@ static void display_forced_link_mode(struct happy_meal *hp, void __iomem *tregs)
 		printk("Full Duplex.\n");
 	else
 		printk("Half Duplex.\n");
+=======
+	hp->sw_bmcr = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
+
+	netdev_info(hp->dev,
+		    "Link has been forced up using %s transceiver at %dMb/s, %s Duplex.\n",
+		    hp->tcvr_type == external ? "external" : "internal",
+		    hp->sw_bmcr & BMCR_SPEED100 ? 100 : 10,
+		    hp->sw_bmcr & BMCR_FULLDPLX ? "Full" : "Half");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int set_happy_link_modes(struct happy_meal *hp, void __iomem *tregs)
@@ -668,8 +839,11 @@ no_response:
 	return 1;
 }
 
+<<<<<<< HEAD
 static int happy_meal_init(struct happy_meal *hp);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int is_lucent_phy(struct happy_meal *hp)
 {
 	void __iomem *tregs = hp->tcvregs;
@@ -685,9 +859,133 @@ static int is_lucent_phy(struct happy_meal *hp)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void happy_meal_timer(unsigned long data)
 {
 	struct happy_meal *hp = (struct happy_meal *) data;
+=======
+/* hp->happy_lock must be held */
+static void
+happy_meal_begin_auto_negotiation(struct happy_meal *hp,
+				  void __iomem *tregs,
+				  const struct ethtool_link_ksettings *ep)
+{
+	int timeout;
+
+	/* Read all of the registers we are interested in now. */
+	hp->sw_bmsr      = happy_meal_tcvr_read(hp, tregs, MII_BMSR);
+	hp->sw_bmcr      = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
+	hp->sw_physid1   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID1);
+	hp->sw_physid2   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID2);
+
+	/* XXX Check BMSR_ANEGCAPABLE, should not be necessary though. */
+
+	hp->sw_advertise = happy_meal_tcvr_read(hp, tregs, MII_ADVERTISE);
+	if (!ep || ep->base.autoneg == AUTONEG_ENABLE) {
+		/* Advertise everything we can support. */
+		if (hp->sw_bmsr & BMSR_10HALF)
+			hp->sw_advertise |= (ADVERTISE_10HALF);
+		else
+			hp->sw_advertise &= ~(ADVERTISE_10HALF);
+
+		if (hp->sw_bmsr & BMSR_10FULL)
+			hp->sw_advertise |= (ADVERTISE_10FULL);
+		else
+			hp->sw_advertise &= ~(ADVERTISE_10FULL);
+		if (hp->sw_bmsr & BMSR_100HALF)
+			hp->sw_advertise |= (ADVERTISE_100HALF);
+		else
+			hp->sw_advertise &= ~(ADVERTISE_100HALF);
+		if (hp->sw_bmsr & BMSR_100FULL)
+			hp->sw_advertise |= (ADVERTISE_100FULL);
+		else
+			hp->sw_advertise &= ~(ADVERTISE_100FULL);
+		happy_meal_tcvr_write(hp, tregs, MII_ADVERTISE, hp->sw_advertise);
+
+		/* XXX Currently no Happy Meal cards I know off support 100BaseT4,
+		 * XXX and this is because the DP83840 does not support it, changes
+		 * XXX would need to be made to the tx/rx logic in the driver as well
+		 * XXX so I completely skip checking for it in the BMSR for now.
+		 */
+
+		ASD("Advertising [ %s%s%s%s]\n",
+		    hp->sw_advertise & ADVERTISE_10HALF ? "10H " : "",
+		    hp->sw_advertise & ADVERTISE_10FULL ? "10F " : "",
+		    hp->sw_advertise & ADVERTISE_100HALF ? "100H " : "",
+		    hp->sw_advertise & ADVERTISE_100FULL ? "100F " : "");
+
+		/* Enable Auto-Negotiation, this is usually on already... */
+		hp->sw_bmcr |= BMCR_ANENABLE;
+		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
+
+		/* Restart it to make sure it is going. */
+		hp->sw_bmcr |= BMCR_ANRESTART;
+		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
+
+		/* BMCR_ANRESTART self clears when the process has begun. */
+
+		timeout = 64;  /* More than enough. */
+		while (--timeout) {
+			hp->sw_bmcr = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
+			if (!(hp->sw_bmcr & BMCR_ANRESTART))
+				break; /* got it. */
+			udelay(10);
+		}
+		if (!timeout) {
+			netdev_err(hp->dev,
+				   "Happy Meal would not start auto negotiation BMCR=0x%04x\n",
+				   hp->sw_bmcr);
+			netdev_notice(hp->dev,
+				      "Performing force link detection.\n");
+			goto force_link;
+		} else {
+			hp->timer_state = arbwait;
+		}
+	} else {
+force_link:
+		/* Force the link up, trying first a particular mode.
+		 * Either we are here at the request of ethtool or
+		 * because the Happy Meal would not start to autoneg.
+		 */
+
+		/* Disable auto-negotiation in BMCR, enable the duplex and
+		 * speed setting, init the timer state machine, and fire it off.
+		 */
+		if (!ep || ep->base.autoneg == AUTONEG_ENABLE) {
+			hp->sw_bmcr = BMCR_SPEED100;
+		} else {
+			if (ep->base.speed == SPEED_100)
+				hp->sw_bmcr = BMCR_SPEED100;
+			else
+				hp->sw_bmcr = 0;
+			if (ep->base.duplex == DUPLEX_FULL)
+				hp->sw_bmcr |= BMCR_FULLDPLX;
+		}
+		happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
+
+		if (!is_lucent_phy(hp)) {
+			/* OK, seems we need do disable the transceiver for the first
+			 * tick to make sure we get an accurate link state at the
+			 * second tick.
+			 */
+			hp->sw_csconfig = happy_meal_tcvr_read(hp, tregs,
+							       DP83840_CSCONFIG);
+			hp->sw_csconfig &= ~(CSCONFIG_TCVDISAB);
+			happy_meal_tcvr_write(hp, tregs, DP83840_CSCONFIG,
+					      hp->sw_csconfig);
+		}
+		hp->timer_state = ltrywait;
+	}
+
+	hp->timer_ticks = 0;
+	hp->happy_timer.expires = jiffies + (12 * HZ)/10;  /* 1.2 sec. */
+	add_timer(&hp->happy_timer);
+}
+
+static void happy_meal_timer(struct timer_list *t)
+{
+	struct happy_meal *hp = from_timer(hp, t, happy_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *tregs = hp->tcvregs;
 	int restart_timer = 0;
 
@@ -703,8 +1001,13 @@ static void happy_meal_timer(unsigned long data)
 			/* Enter force mode. */
 	do_force_mode:
 			hp->sw_bmcr = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
+<<<<<<< HEAD
 			printk(KERN_NOTICE "%s: Auto-Negotiation unsuccessful, trying force link mode\n",
 			       hp->dev->name);
+=======
+			netdev_notice(hp->dev,
+				      "Auto-Negotiation unsuccessful, trying force link mode\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hp->sw_bmcr = BMCR_SPEED100;
 			happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
 
@@ -763,8 +1066,13 @@ static void happy_meal_timer(unsigned long data)
 			restart_timer = 0;
 		} else {
 			if (hp->timer_ticks >= 10) {
+<<<<<<< HEAD
 				printk(KERN_NOTICE "%s: Auto negotiation successful, link still "
 				       "not completely up.\n", hp->dev->name);
+=======
+				netdev_notice(hp->dev,
+					      "Auto negotiation successful, link still not completely up.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				hp->timer_ticks = 0;
 				restart_timer = 1;
 			} else {
@@ -819,6 +1127,7 @@ static void happy_meal_timer(unsigned long data)
 					 */
 
 					/* Let the user know... */
+<<<<<<< HEAD
 					printk(KERN_NOTICE "%s: Link down, cable problem?\n",
 					       hp->dev->name);
 
@@ -828,6 +1137,12 @@ static void happy_meal_timer(unsigned long data)
 						printk(KERN_ERR "%s: Error, cannot re-init the "
 						       "Happy Meal.\n", hp->dev->name);
 					}
+=======
+					netdev_notice(hp->dev,
+						      "Link down, cable problem?\n");
+
+					happy_meal_begin_auto_negotiation(hp, tregs, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto out;
 				}
 				if (!is_lucent_phy(hp)) {
@@ -848,8 +1163,13 @@ static void happy_meal_timer(unsigned long data)
 	case asleep:
 	default:
 		/* Can't happens.... */
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Aieee, link timer is asleep but we got one anyways!\n",
 		       hp->dev->name);
+=======
+		netdev_err(hp->dev,
+			   "Aieee, link timer is asleep but we got one anyways!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		restart_timer = 0;
 		hp->timer_ticks = 0;
 		hp->timer_state = asleep; /* foo on you */
@@ -873,7 +1193,11 @@ static void happy_meal_tx_reset(struct happy_meal *hp, void __iomem *bregs)
 {
 	int tries = TX_RESET_TRIES;
 
+<<<<<<< HEAD
 	HMD(("happy_meal_tx_reset: reset, "));
+=======
+	HMD("reset...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Would you like to try our SMCC Delux? */
 	hme_write32(hp, bregs + BMAC_TXSWRESET, 0);
@@ -882,10 +1206,17 @@ static void happy_meal_tx_reset(struct happy_meal *hp, void __iomem *bregs)
 
 	/* Lettuce, tomato, buggy hardware (no extra charge)? */
 	if (!tries)
+<<<<<<< HEAD
 		printk(KERN_ERR "happy meal: Transceiver BigMac ATTACK!");
 
 	/* Take care. */
 	HMD(("done\n"));
+=======
+		netdev_err(hp->dev, "Transceiver BigMac ATTACK!");
+
+	/* Take care. */
+	HMD("done\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* hp->happy_lock must be held */
@@ -893,7 +1224,11 @@ static void happy_meal_rx_reset(struct happy_meal *hp, void __iomem *bregs)
 {
 	int tries = RX_RESET_TRIES;
 
+<<<<<<< HEAD
 	HMD(("happy_meal_rx_reset: reset, "));
+=======
+	HMD("reset...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We have a special on GNU/Viking hardware bugs today. */
 	hme_write32(hp, bregs + BMAC_RXSWRESET, 0);
@@ -902,10 +1237,17 @@ static void happy_meal_rx_reset(struct happy_meal *hp, void __iomem *bregs)
 
 	/* Will that be all? */
 	if (!tries)
+<<<<<<< HEAD
 		printk(KERN_ERR "happy meal: Receiver BigMac ATTACK!");
 
 	/* Don't forget your vik_1137125_wa.  Have a nice day. */
 	HMD(("done\n"));
+=======
+		netdev_err(hp->dev, "Receiver BigMac ATTACK!\n");
+
+	/* Don't forget your vik_1137125_wa.  Have a nice day. */
+	HMD("done\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define STOP_TRIES         16
@@ -915,7 +1257,11 @@ static void happy_meal_stop(struct happy_meal *hp, void __iomem *gregs)
 {
 	int tries = STOP_TRIES;
 
+<<<<<<< HEAD
 	HMD(("happy_meal_stop: reset, "));
+=======
+	HMD("reset...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We're consolidating our STB products, it's your lucky day. */
 	hme_write32(hp, gregs + GREG_SWRESET, GREG_RESET_ALL);
@@ -924,16 +1270,27 @@ static void happy_meal_stop(struct happy_meal *hp, void __iomem *gregs)
 
 	/* Come back next week when we are "Sun Microelectronics". */
 	if (!tries)
+<<<<<<< HEAD
 		printk(KERN_ERR "happy meal: Fry guys.");
 
 	/* Remember: "Different name, same old buggy as shit hardware." */
 	HMD(("done\n"));
+=======
+		netdev_err(hp->dev, "Fry guys.\n");
+
+	/* Remember: "Different name, same old buggy as shit hardware." */
+	HMD("done\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* hp->happy_lock must be held */
 static void happy_meal_get_counters(struct happy_meal *hp, void __iomem *bregs)
 {
+<<<<<<< HEAD
 	struct net_device_stats *stats = &hp->net_stats;
+=======
+	struct net_device_stats *stats = &hp->dev->stats;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	stats->rx_crc_errors += hme_read32(hp, bregs + BMAC_RCRCECTR);
 	hme_write32(hp, bregs + BMAC_RCRCECTR, 0);
@@ -953,6 +1310,7 @@ static void happy_meal_get_counters(struct happy_meal *hp, void __iomem *bregs)
 	hme_write32(hp, bregs + BMAC_LTCTR, 0);
 }
 
+<<<<<<< HEAD
 /* hp->happy_lock must be held */
 static void happy_meal_poll_stop(struct happy_meal *hp, void __iomem *tregs)
 {
@@ -982,6 +1340,8 @@ static void happy_meal_poll_stop(struct happy_meal *hp, void __iomem *tregs)
 	ASD(("done\n"));
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Only Sun can take such nice parts and fuck up the programming interface
  * like this.  Good job guys...
  */
@@ -995,6 +1355,7 @@ static int happy_meal_tcvr_reset(struct happy_meal *hp, void __iomem *tregs)
 	int result, tries = TCVR_RESET_TRIES;
 
 	tconfig = hme_read32(hp, tregs + TCVR_CFG);
+<<<<<<< HEAD
 	ASD(("happy_meal_tcvr_reset: tcfg<%08lx> ", tconfig));
 	if (hp->tcvr_type == external) {
 		ASD(("external<"));
@@ -1002,37 +1363,66 @@ static int happy_meal_tcvr_reset(struct happy_meal *hp, void __iomem *tregs)
 		hp->tcvr_type = internal;
 		hp->paddr = TCV_PADDR_ITX;
 		ASD(("ISOLATE,"));
+=======
+	ASD("tcfg=%08x\n", tconfig);
+	if (hp->tcvr_type == external) {
+		hme_write32(hp, tregs + TCVR_CFG, tconfig & ~(TCV_CFG_PSELECT));
+		hp->tcvr_type = internal;
+		hp->paddr = TCV_PADDR_ITX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		happy_meal_tcvr_write(hp, tregs, MII_BMCR,
 				      (BMCR_LOOPBACK|BMCR_PDOWN|BMCR_ISOLATE));
 		result = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
 		if (result == TCVR_FAILURE) {
+<<<<<<< HEAD
 			ASD(("phyread_fail>\n"));
 			return -1;
 		}
 		ASD(("phyread_ok,PSELECT>"));
+=======
+			ASD("phyread_fail\n");
+			return -1;
+		}
+		ASD("external: ISOLATE, phyread_ok, PSELECT\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hme_write32(hp, tregs + TCVR_CFG, tconfig | TCV_CFG_PSELECT);
 		hp->tcvr_type = external;
 		hp->paddr = TCV_PADDR_ETX;
 	} else {
 		if (tconfig & TCV_CFG_MDIO1) {
+<<<<<<< HEAD
 			ASD(("internal<PSELECT,"));
 			hme_write32(hp, tregs + TCVR_CFG, (tconfig | TCV_CFG_PSELECT));
 			ASD(("ISOLATE,"));
+=======
+			hme_write32(hp, tregs + TCVR_CFG, (tconfig | TCV_CFG_PSELECT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			happy_meal_tcvr_write(hp, tregs, MII_BMCR,
 					      (BMCR_LOOPBACK|BMCR_PDOWN|BMCR_ISOLATE));
 			result = happy_meal_tcvr_read(hp, tregs, MII_BMCR);
 			if (result == TCVR_FAILURE) {
+<<<<<<< HEAD
 				ASD(("phyread_fail>\n"));
 				return -1;
 			}
 			ASD(("phyread_ok,~PSELECT>"));
+=======
+				ASD("phyread_fail>\n");
+				return -1;
+			}
+			ASD("internal: PSELECT, ISOLATE, phyread_ok, ~PSELECT\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hme_write32(hp, tregs + TCVR_CFG, (tconfig & ~(TCV_CFG_PSELECT)));
 			hp->tcvr_type = internal;
 			hp->paddr = TCV_PADDR_ITX;
 		}
 	}
 
+<<<<<<< HEAD
 	ASD(("BMCR_RESET "));
+=======
+	ASD("BMCR_RESET...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	happy_meal_tcvr_write(hp, tregs, MII_BMCR, BMCR_RESET);
 
 	while (--tries) {
@@ -1045,10 +1435,17 @@ static int happy_meal_tcvr_reset(struct happy_meal *hp, void __iomem *tregs)
 		udelay(20);
 	}
 	if (!tries) {
+<<<<<<< HEAD
 		ASD(("BMCR RESET FAILED!\n"));
 		return -1;
 	}
 	ASD(("RESET_OK\n"));
+=======
+		ASD("BMCR RESET FAILED!\n");
+		return -1;
+	}
+	ASD("RESET_OK\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get fresh copies of the PHY registers. */
 	hp->sw_bmsr      = happy_meal_tcvr_read(hp, tregs, MII_BMSR);
@@ -1056,7 +1453,11 @@ static int happy_meal_tcvr_reset(struct happy_meal *hp, void __iomem *tregs)
 	hp->sw_physid2   = happy_meal_tcvr_read(hp, tregs, MII_PHYSID2);
 	hp->sw_advertise = happy_meal_tcvr_read(hp, tregs, MII_ADVERTISE);
 
+<<<<<<< HEAD
 	ASD(("UNISOLATE"));
+=======
+	ASD("UNISOLATE...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hp->sw_bmcr &= ~(BMCR_ISOLATE);
 	happy_meal_tcvr_write(hp, tregs, MII_BMCR, hp->sw_bmcr);
 
@@ -1070,10 +1471,17 @@ static int happy_meal_tcvr_reset(struct happy_meal *hp, void __iomem *tregs)
 		udelay(20);
 	}
 	if (!tries) {
+<<<<<<< HEAD
 		ASD((" FAILED!\n"));
 		return -1;
 	}
 	ASD((" SUCCESS and CSCONFIG_DFBYPASS\n"));
+=======
+		ASD("UNISOLATE FAILED!\n");
+		return -1;
+	}
+	ASD("SUCCESS and CSCONFIG_DFBYPASS\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!is_lucent_phy(hp)) {
 		result = happy_meal_tcvr_read(hp, tregs,
 					      DP83840_CSCONFIG);
@@ -1090,6 +1498,7 @@ static int happy_meal_tcvr_reset(struct happy_meal *hp, void __iomem *tregs)
 static void happy_meal_transceiver_check(struct happy_meal *hp, void __iomem *tregs)
 {
 	unsigned long tconfig = hme_read32(hp, tregs + TCVR_CFG);
+<<<<<<< HEAD
 
 	ASD(("happy_meal_transceiver_check: tcfg=%08lx ", tconfig));
 	if (hp->happy_flags & HFLAG_POLL) {
@@ -1146,6 +1555,28 @@ static void happy_meal_transceiver_check(struct happy_meal *hp, void __iomem *tr
 				hp->tcvr_type = none; /* Grrr... */
 				ASD(("<none>\n"));
 			}
+=======
+	u32 reread = hme_read32(hp, tregs + TCVR_CFG);
+
+	ASD("tcfg=%08lx\n", tconfig);
+	if (reread & TCV_CFG_MDIO1) {
+		hme_write32(hp, tregs + TCVR_CFG, tconfig | TCV_CFG_PSELECT);
+		hp->paddr = TCV_PADDR_ETX;
+		hp->tcvr_type = external;
+		ASD("not polling, external\n");
+	} else {
+		if (reread & TCV_CFG_MDIO0) {
+			hme_write32(hp, tregs + TCVR_CFG,
+				    tconfig & ~(TCV_CFG_PSELECT));
+			hp->paddr = TCV_PADDR_ITX;
+			hp->tcvr_type = internal;
+			ASD("not polling, internal\n");
+		} else {
+			netdev_err(hp->dev,
+				   "Transceiver and a coke please.");
+			hp->tcvr_type = none; /* Grrr... */
+			ASD("not polling, none\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -1249,6 +1680,7 @@ static void happy_meal_clean_rings(struct happy_meal *hp)
 static void happy_meal_init_rings(struct happy_meal *hp)
 {
 	struct hmeal_init_block *hb = hp->happy_block;
+<<<<<<< HEAD
 	struct net_device *dev = hp->dev;
 	int i;
 
@@ -1263,6 +1695,21 @@ static void happy_meal_init_rings(struct happy_meal *hp)
 	HMD(("init rxring, "));
 	for (i = 0; i < RX_RING_SIZE; i++) {
 		struct sk_buff *skb;
+=======
+	int i;
+
+	HMD("counters to zero\n");
+	hp->rx_new = hp->rx_old = hp->tx_new = hp->tx_old = 0;
+
+	/* Free any skippy bufs left around in the rings. */
+	happy_meal_clean_rings(hp);
+
+	/* Now get new skippy bufs for the receive ring. */
+	HMD("init rxring\n");
+	for (i = 0; i < RX_RING_SIZE; i++) {
+		struct sk_buff *skb;
+		u32 mapping;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		skb = happy_meal_alloc_skb(RX_BUF_ALLOC_SIZE, GFP_ATOMIC);
 		if (!skb) {
@@ -1270,6 +1717,7 @@ static void happy_meal_init_rings(struct happy_meal *hp)
 			continue;
 		}
 		hp->rx_skbs[i] = skb;
+<<<<<<< HEAD
 		skb->dev = dev;
 
 		/* Because we reserve afterwards. */
@@ -1410,30 +1858,69 @@ force_link:
 	hp->happy_timer.data = (unsigned long) hp;
 	hp->happy_timer.function = happy_meal_timer;
 	add_timer(&hp->happy_timer);
+=======
+
+		/* Because we reserve afterwards. */
+		skb_put(skb, (ETH_FRAME_LEN + RX_OFFSET + 4));
+		mapping = dma_map_single(hp->dma_dev, skb->data, RX_BUF_ALLOC_SIZE,
+					 DMA_FROM_DEVICE);
+		if (dma_mapping_error(hp->dma_dev, mapping)) {
+			dev_kfree_skb_any(skb);
+			hme_write_rxd(hp, &hb->happy_meal_rxd[i], 0, 0);
+			continue;
+		}
+		hme_write_rxd(hp, &hb->happy_meal_rxd[i],
+			      (RXFLAG_OWN | ((RX_BUF_ALLOC_SIZE - RX_OFFSET) << 16)),
+			      mapping);
+		skb_reserve(skb, RX_OFFSET);
+	}
+
+	HMD("init txring\n");
+	for (i = 0; i < TX_RING_SIZE; i++)
+		hme_write_txd(hp, &hb->happy_meal_txd[i], 0, 0);
+
+	HMD("done\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* hp->happy_lock must be held */
 static int happy_meal_init(struct happy_meal *hp)
 {
+<<<<<<< HEAD
+=======
+	const unsigned char *e = &hp->dev->dev_addr[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *gregs        = hp->gregs;
 	void __iomem *etxregs      = hp->etxregs;
 	void __iomem *erxregs      = hp->erxregs;
 	void __iomem *bregs        = hp->bigmacregs;
 	void __iomem *tregs        = hp->tcvregs;
+<<<<<<< HEAD
 	u32 regtmp, rxcfg;
 	unsigned char *e = &hp->dev->dev_addr[0];
+=======
+	const char *bursts = "64";
+	u32 regtmp, rxcfg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If auto-negotiation timer is running, kill it. */
 	del_timer(&hp->happy_timer);
 
+<<<<<<< HEAD
 	HMD(("happy_meal_init: happy_flags[%08x] ",
 	     hp->happy_flags));
 	if (!(hp->happy_flags & HFLAG_INIT)) {
 		HMD(("set HFLAG_INIT, "));
+=======
+	HMD("happy_flags[%08x]\n", hp->happy_flags);
+	if (!(hp->happy_flags & HFLAG_INIT)) {
+		HMD("set HFLAG_INIT\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hp->happy_flags |= HFLAG_INIT;
 		happy_meal_get_counters(hp, bregs);
 	}
 
+<<<<<<< HEAD
 	/* Stop polling. */
 	HMD(("to happy_meal_poll_stop\n"));
 	happy_meal_poll_stop(hp, tregs);
@@ -1460,11 +1947,31 @@ static int happy_meal_init(struct happy_meal *hp)
 	} else {
 		HMD(("use bitbang old[%08x], ",
 		     hme_read32(hp, tregs + TCVR_CFG)));
+=======
+	/* Stop transmitter and receiver. */
+	HMD("to happy_meal_stop\n");
+	happy_meal_stop(hp, gregs);
+
+	/* Alloc and reset the tx/rx descriptor chains. */
+	HMD("to happy_meal_init_rings\n");
+	happy_meal_init_rings(hp);
+
+	/* See if we can enable the MIF frame on this card to speak to the DP83840. */
+	if (hp->happy_flags & HFLAG_FENABLE) {
+		HMD("use frame old[%08x]\n",
+		    hme_read32(hp, tregs + TCVR_CFG));
+		hme_write32(hp, tregs + TCVR_CFG,
+			    hme_read32(hp, tregs + TCVR_CFG) & ~(TCV_CFG_BENABLE));
+	} else {
+		HMD("use bitbang old[%08x]\n",
+		    hme_read32(hp, tregs + TCVR_CFG));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hme_write32(hp, tregs + TCVR_CFG,
 			    hme_read32(hp, tregs + TCVR_CFG) | TCV_CFG_BENABLE);
 	}
 
 	/* Check the state of the transceiver. */
+<<<<<<< HEAD
 	HMD(("to happy_meal_transceiver_check\n"));
 	happy_meal_transceiver_check(hp, tregs);
 
@@ -1474,17 +1981,35 @@ static int happy_meal_init(struct happy_meal *hp)
 	case none:
 		/* Cannot operate if we don't know the transceiver type! */
 		HMD(("AAIEEE no transceiver type, EAGAIN"));
+=======
+	HMD("to happy_meal_transceiver_check\n");
+	happy_meal_transceiver_check(hp, tregs);
+
+	/* Put the Big Mac into a sane state. */
+	switch(hp->tcvr_type) {
+	case none:
+		/* Cannot operate if we don't know the transceiver type! */
+		HMD("AAIEEE no transceiver type, EAGAIN\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EAGAIN;
 
 	case internal:
 		/* Using the MII buffers. */
+<<<<<<< HEAD
 		HMD(("internal, using MII, "));
+=======
+		HMD("internal, using MII\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hme_write32(hp, bregs + BMAC_XIFCFG, 0);
 		break;
 
 	case external:
 		/* Not using the MII, disable it. */
+<<<<<<< HEAD
 		HMD(("external, disable MII, "));
+=======
+		HMD("external, disable MII\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hme_write32(hp, bregs + BMAC_XIFCFG, BIGMAC_XCFG_MIIDISAB);
 		break;
 	}
@@ -1493,18 +2018,28 @@ static int happy_meal_init(struct happy_meal *hp)
 		return -EAGAIN;
 
 	/* Reset the Happy Meal Big Mac transceiver and the receiver. */
+<<<<<<< HEAD
 	HMD(("tx/rx reset, "));
+=======
+	HMD("tx/rx reset\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	happy_meal_tx_reset(hp, bregs);
 	happy_meal_rx_reset(hp, bregs);
 
 	/* Set jam size and inter-packet gaps to reasonable defaults. */
+<<<<<<< HEAD
 	HMD(("jsize/ipg1/ipg2, "));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hme_write32(hp, bregs + BMAC_JSIZE, DEFAULT_JAMSIZE);
 	hme_write32(hp, bregs + BMAC_IGAP1, DEFAULT_IPG1);
 	hme_write32(hp, bregs + BMAC_IGAP2, DEFAULT_IPG2);
 
 	/* Load up the MAC address and random seed. */
+<<<<<<< HEAD
 	HMD(("rseed/macaddr, "));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The docs recommend to use the 10LSB of our MAC here. */
 	hme_write32(hp, bregs + BMAC_RSEED, ((e[5] | e[4]<<8)&0x3ff));
@@ -1513,7 +2048,10 @@ static int happy_meal_init(struct happy_meal *hp)
 	hme_write32(hp, bregs + BMAC_MACADDR1, ((e[2] << 8) | e[3]));
 	hme_write32(hp, bregs + BMAC_MACADDR0, ((e[0] << 8) | e[1]));
 
+<<<<<<< HEAD
 	HMD(("htable, "));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((hp->dev->flags & IFF_ALLMULTI) ||
 	    (netdev_mc_count(hp->dev) > 64)) {
 		hme_write32(hp, bregs + BMAC_HTABLE0, 0xffff);
@@ -1543,9 +2081,15 @@ static int happy_meal_init(struct happy_meal *hp)
 	}
 
 	/* Set the RX and TX ring ptrs. */
+<<<<<<< HEAD
 	HMD(("ring ptrs rxr[%08x] txr[%08x]\n",
 	     ((__u32)hp->hblock_dvma + hblock_offset(happy_meal_rxd, 0)),
 	     ((__u32)hp->hblock_dvma + hblock_offset(happy_meal_txd, 0))));
+=======
+	HMD("ring ptrs rxr[%08x] txr[%08x]\n",
+	    ((__u32)hp->hblock_dvma + hblock_offset(happy_meal_rxd, 0)),
+	    ((__u32)hp->hblock_dvma + hblock_offset(happy_meal_txd, 0)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hme_write32(hp, erxregs + ERX_RING,
 		    ((__u32)hp->hblock_dvma + hblock_offset(happy_meal_rxd, 0)));
 	hme_write32(hp, etxregs + ETX_RING,
@@ -1563,9 +2107,12 @@ static int happy_meal_init(struct happy_meal *hp)
 			    | 0x4);
 
 	/* Set the supported burst sizes. */
+<<<<<<< HEAD
 	HMD(("happy_meal_init: old[%08x] bursts<",
 	     hme_read32(hp, gregs + GREG_CFG)));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_SPARC
 	/* It is always PCI and can handle 64byte bursts. */
 	hme_write32(hp, gregs + GREG_CFG, GREG_CFG_BURST64);
@@ -1593,6 +2140,7 @@ static int happy_meal_init(struct happy_meal *hp)
 		}
 #endif
 
+<<<<<<< HEAD
 		HMD(("64>"));
 		hme_write32(hp, gregs + GREG_CFG, gcfg);
 	} else if (hp->happy_bursts & DMA_BURST32) {
@@ -1603,17 +2151,37 @@ static int happy_meal_init(struct happy_meal *hp)
 		hme_write32(hp, gregs + GREG_CFG, GREG_CFG_BURST16);
 	} else {
 		HMD(("XXX>"));
+=======
+		bursts = "64";
+		hme_write32(hp, gregs + GREG_CFG, gcfg);
+	} else if (hp->happy_bursts & DMA_BURST32) {
+		bursts = "32";
+		hme_write32(hp, gregs + GREG_CFG, GREG_CFG_BURST32);
+	} else if (hp->happy_bursts & DMA_BURST16) {
+		bursts = "16";
+		hme_write32(hp, gregs + GREG_CFG, GREG_CFG_BURST16);
+	} else {
+		bursts = "XXX";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hme_write32(hp, gregs + GREG_CFG, 0);
 	}
 #endif /* CONFIG_SPARC */
 
+<<<<<<< HEAD
 	/* Turn off interrupts we do not want to hear. */
 	HMD((", enable global interrupts, "));
+=======
+	HMD("old[%08x] bursts<%s>\n",
+	    hme_read32(hp, gregs + GREG_CFG), bursts);
+
+	/* Turn off interrupts we do not want to hear. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hme_write32(hp, gregs + GREG_IMASK,
 		    (GREG_IMASK_GOTFRAME | GREG_IMASK_RCNTEXP |
 		     GREG_IMASK_SENTFRAME | GREG_IMASK_TXPERR));
 
 	/* Set the transmit ring buffer size. */
+<<<<<<< HEAD
 	HMD(("tx rsize=%d oreg[%08x], ", (int)TX_RING_SIZE,
 	     hme_read32(hp, etxregs + ETX_RSIZE)));
 	hme_write32(hp, etxregs + ETX_RSIZE, (TX_RING_SIZE >> ETX_RSIZE_SHIFT) - 1);
@@ -1621,6 +2189,14 @@ static int happy_meal_init(struct happy_meal *hp)
 	/* Enable transmitter DVMA. */
 	HMD(("tx dma enable old[%08x], ",
 	     hme_read32(hp, etxregs + ETX_CFG)));
+=======
+	HMD("tx rsize=%d oreg[%08x]\n", (int)TX_RING_SIZE,
+	    hme_read32(hp, etxregs + ETX_RSIZE));
+	hme_write32(hp, etxregs + ETX_RSIZE, (TX_RING_SIZE >> ETX_RSIZE_SHIFT) - 1);
+
+	/* Enable transmitter DVMA. */
+	HMD("tx dma enable old[%08x]\n", hme_read32(hp, etxregs + ETX_CFG));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hme_write32(hp, etxregs + ETX_CFG,
 		    hme_read32(hp, etxregs + ETX_CFG) | ETX_CFG_DMAENABLE);
 
@@ -1629,21 +2205,39 @@ static int happy_meal_init(struct happy_meal *hp)
 	 * properly.  I cannot think of a sane way to provide complete
 	 * coverage for this hardware bug yet.
 	 */
+<<<<<<< HEAD
 	HMD(("erx regs bug old[%08x]\n",
 	     hme_read32(hp, erxregs + ERX_CFG)));
+=======
+	HMD("erx regs bug old[%08x]\n",
+	    hme_read32(hp, erxregs + ERX_CFG));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hme_write32(hp, erxregs + ERX_CFG, ERX_CFG_DEFAULT(RX_OFFSET));
 	regtmp = hme_read32(hp, erxregs + ERX_CFG);
 	hme_write32(hp, erxregs + ERX_CFG, ERX_CFG_DEFAULT(RX_OFFSET));
 	if (hme_read32(hp, erxregs + ERX_CFG) != ERX_CFG_DEFAULT(RX_OFFSET)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "happy meal: Eieee, rx config register gets greasy fries.\n");
 		printk(KERN_ERR "happy meal: Trying to set %08x, reread gives %08x\n",
 		       ERX_CFG_DEFAULT(RX_OFFSET), regtmp);
+=======
+		netdev_err(hp->dev,
+			   "Eieee, rx config register gets greasy fries.\n");
+		netdev_err(hp->dev,
+			   "Trying to set %08x, reread gives %08x\n",
+			   ERX_CFG_DEFAULT(RX_OFFSET), regtmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* XXX Should return failure here... */
 	}
 
 	/* Enable Big Mac hash table filter. */
+<<<<<<< HEAD
 	HMD(("happy_meal_init: enable hash rx_cfg_old[%08x], ",
 	     hme_read32(hp, bregs + BMAC_RXCFG)));
+=======
+	HMD("enable hash rx_cfg_old[%08x]\n",
+	    hme_read32(hp, bregs + BMAC_RXCFG));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rxcfg = BIGMAC_RXCFG_HENABLE | BIGMAC_RXCFG_REJME;
 	if (hp->dev->flags & IFF_PROMISC)
 		rxcfg |= BIGMAC_RXCFG_PMISC;
@@ -1653,7 +2247,11 @@ static int happy_meal_init(struct happy_meal *hp)
 	udelay(10);
 
 	/* Ok, configure the Big Mac transmitter. */
+<<<<<<< HEAD
 	HMD(("BIGMAC init, "));
+=======
+	HMD("BIGMAC init\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regtmp = 0;
 	if (hp->happy_flags & HFLAG_FULL)
 		regtmp |= BIGMAC_TXCFG_FULLDPLX;
@@ -1677,6 +2275,7 @@ static int happy_meal_init(struct happy_meal *hp)
 	if (hp->tcvr_type == external)
 		regtmp |= BIGMAC_XCFG_MIIDISAB;
 
+<<<<<<< HEAD
 	HMD(("XIF config old[%08x], ",
 	     hme_read32(hp, bregs + BMAC_XIFCFG)));
 	hme_write32(hp, bregs + BMAC_XIFCFG, regtmp);
@@ -1685,6 +2284,15 @@ static int happy_meal_init(struct happy_meal *hp)
 	HMD(("tx old[%08x] and rx [%08x] ON!\n",
 	     hme_read32(hp, bregs + BMAC_TXCFG),
 	     hme_read32(hp, bregs + BMAC_RXCFG)));
+=======
+	HMD("XIF config old[%08x]\n", hme_read32(hp, bregs + BMAC_XIFCFG));
+	hme_write32(hp, bregs + BMAC_XIFCFG, regtmp);
+
+	/* Start things up. */
+	HMD("tx old[%08x] and rx [%08x] ON!\n",
+	    hme_read32(hp, bregs + BMAC_TXCFG),
+	    hme_read32(hp, bregs + BMAC_RXCFG));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set larger TX/RX size to allow for 802.1q */
 	hme_write32(hp, bregs + BMAC_TXMAX, ETH_FRAME_LEN + 8);
@@ -1710,7 +2318,10 @@ static void happy_meal_set_initial_advertisement(struct happy_meal *hp)
 	void __iomem *gregs	= hp->gregs;
 
 	happy_meal_stop(hp, gregs);
+<<<<<<< HEAD
 	hme_write32(hp, tregs + TCVR_IMASK, 0xffff);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hp->happy_flags & HFLAG_FENABLE)
 		hme_write32(hp, tregs + TCVR_CFG,
 			    hme_read32(hp, tregs + TCVR_CFG) & ~(TCV_CFG_BENABLE));
@@ -1774,25 +2385,44 @@ static int happy_meal_is_not_so_happy(struct happy_meal *hp, u32 status)
 		      GREG_STAT_MIFIRQ | GREG_STAT_TXEACK | GREG_STAT_TXLERR |
 		      GREG_STAT_TXPERR | GREG_STAT_TXTERR | GREG_STAT_SLVERR |
 		      GREG_STAT_SLVPERR))
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Error interrupt for happy meal, status = %08x\n",
 		       hp->dev->name, status);
+=======
+		netdev_err(hp->dev,
+			   "Error interrupt for happy meal, status = %08x\n",
+			   status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (status & GREG_STAT_RFIFOVF) {
 		/* Receive FIFO overflow is harmless and the hardware will take
 		   care of it, just some packets are lost. Who cares. */
+<<<<<<< HEAD
 		printk(KERN_DEBUG "%s: Happy Meal receive FIFO overflow.\n", hp->dev->name);
+=======
+		netdev_dbg(hp->dev, "Happy Meal receive FIFO overflow.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (status & GREG_STAT_STSTERR) {
 		/* BigMAC SQE link test failed. */
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Happy Meal BigMAC SQE test failed.\n", hp->dev->name);
+=======
+		netdev_err(hp->dev, "Happy Meal BigMAC SQE test failed.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reset = 1;
 	}
 
 	if (status & GREG_STAT_TFIFO_UND) {
 		/* Transmit FIFO underrun, again DMA error likely. */
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Happy Meal transmitter FIFO underrun, DMA error.\n",
 		       hp->dev->name);
+=======
+		netdev_err(hp->dev,
+			   "Happy Meal transmitter FIFO underrun, DMA error.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reset = 1;
 	}
 
@@ -1800,7 +2430,11 @@ static int happy_meal_is_not_so_happy(struct happy_meal *hp, u32 status)
 		/* Driver error, tried to transmit something larger
 		 * than ethernet max mtu.
 		 */
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Happy Meal MAX Packet size error.\n", hp->dev->name);
+=======
+		netdev_err(hp->dev, "Happy Meal MAX Packet size error.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reset = 1;
 	}
 
@@ -1810,13 +2444,19 @@ static int happy_meal_is_not_so_happy(struct happy_meal *hp, u32 status)
 		 * faster than the interrupt handler could keep up
 		 * with.
 		 */
+<<<<<<< HEAD
 		printk(KERN_INFO "%s: Happy Meal out of receive "
 		       "descriptors, packet dropped.\n",
 		       hp->dev->name);
+=======
+		netdev_info(hp->dev,
+			    "Happy Meal out of receive descriptors, packet dropped.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (status & (GREG_STAT_RXERR|GREG_STAT_RXPERR|GREG_STAT_RXTERR)) {
 		/* All sorts of DMA receive errors. */
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Happy Meal rx DMA errors [ ", hp->dev->name);
 		if (status & GREG_STAT_RXERR)
 			printk("GenericError ");
@@ -1825,6 +2465,12 @@ static int happy_meal_is_not_so_happy(struct happy_meal *hp, u32 status)
 		if (status & GREG_STAT_RXTERR)
 			printk("RxTagBotch ");
 		printk("]\n");
+=======
+		netdev_err(hp->dev, "Happy Meal rx DMA errors [ %s%s%s]\n",
+			   status & GREG_STAT_RXERR ? "GenericError " : "",
+			   status & GREG_STAT_RXPERR ? "ParityError " : "",
+			   status & GREG_STAT_RXTERR ? "RxTagBotch " : "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reset = 1;
 	}
 
@@ -1832,19 +2478,29 @@ static int happy_meal_is_not_so_happy(struct happy_meal *hp, u32 status)
 		/* Driver bug, didn't set EOP bit in tx descriptor given
 		 * to the happy meal.
 		 */
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: EOP not set in happy meal transmit descriptor!\n",
 		       hp->dev->name);
+=======
+		netdev_err(hp->dev,
+			   "EOP not set in happy meal transmit descriptor!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reset = 1;
 	}
 
 	if (status & GREG_STAT_MIFIRQ) {
 		/* MIF signalled an interrupt, were we polling it? */
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Happy Meal MIF interrupt.\n", hp->dev->name);
+=======
+		netdev_err(hp->dev, "Happy Meal MIF interrupt.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (status &
 	    (GREG_STAT_TXEACK|GREG_STAT_TXLERR|GREG_STAT_TXPERR|GREG_STAT_TXTERR)) {
 		/* All sorts of transmit DMA errors. */
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Happy Meal tx DMA errors [ ", hp->dev->name);
 		if (status & GREG_STAT_TXEACK)
 			printk("GenericError ");
@@ -1855,6 +2511,13 @@ static int happy_meal_is_not_so_happy(struct happy_meal *hp, u32 status)
 		if (status & GREG_STAT_TXTERR)
 			printk("TagBotch ");
 		printk("]\n");
+=======
+		netdev_err(hp->dev, "Happy Meal tx DMA errors [ %s%s%s%s]\n",
+			   status & GREG_STAT_TXEACK ? "GenericError " : "",
+			   status & GREG_STAT_TXLERR ? "LateError " : "",
+			   status & GREG_STAT_TXPERR ? "ParityError " : "",
+			   status & GREG_STAT_TXTERR ? "TagBotch " : "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reset = 1;
 	}
 
@@ -1862,14 +2525,24 @@ static int happy_meal_is_not_so_happy(struct happy_meal *hp, u32 status)
 		/* Bus or parity error when cpu accessed happy meal registers
 		 * or it's internal FIFO's.  Should never see this.
 		 */
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Happy Meal register access SBUS slave (%s) error.\n",
 		       hp->dev->name,
 		       (status & GREG_STAT_SLVPERR) ? "parity" : "generic");
+=======
+		netdev_err(hp->dev,
+			   "Happy Meal register access SBUS slave (%s) error.\n",
+			   (status & GREG_STAT_SLVPERR) ? "parity" : "generic");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reset = 1;
 	}
 
 	if (reset) {
+<<<<<<< HEAD
 		printk(KERN_NOTICE "%s: Resetting...\n", hp->dev->name);
+=======
+		netdev_notice(hp->dev, "Resetting...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		happy_meal_init(hp);
 		return 1;
 	}
@@ -1877,6 +2550,7 @@ static int happy_meal_is_not_so_happy(struct happy_meal *hp, u32 status)
 }
 
 /* hp->happy_lock must be held */
+<<<<<<< HEAD
 static void happy_meal_mif_interrupt(struct happy_meal *hp)
 {
 	void __iomem *tregs = hp->tcvregs;
@@ -1911,6 +2585,8 @@ static void happy_meal_mif_interrupt(struct happy_meal *hp)
 #endif
 
 /* hp->happy_lock must be held */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void happy_meal_tx(struct happy_meal *hp)
 {
 	struct happy_meal_txd *txbase = &hp->happy_block->happy_meal_txd[0];
@@ -1919,13 +2595,20 @@ static void happy_meal_tx(struct happy_meal *hp)
 	int elem;
 
 	elem = hp->tx_old;
+<<<<<<< HEAD
 	TXD(("TX<"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (elem != hp->tx_new) {
 		struct sk_buff *skb;
 		u32 flags, dma_addr, dma_len;
 		int frag;
 
+<<<<<<< HEAD
 		TXD(("[%d]", elem));
+=======
+		netdev_vdbg(hp->dev, "TX[%d]\n", elem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		this = &txbase[elem];
 		flags = hme_read_desc32(hp, &this->tx_flags);
 		if (flags & TXFLAG_OWN)
@@ -1941,7 +2624,11 @@ static void happy_meal_tx(struct happy_meal *hp)
 				break;
 		}
 		hp->tx_skbs[elem] = NULL;
+<<<<<<< HEAD
 		hp->net_stats.tx_bytes += skb->len;
+=======
+		dev->stats.tx_bytes += skb->len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (frag = 0; frag <= skb_shinfo(skb)->nr_frags; frag++) {
 			dma_addr = hme_read_desc32(hp, &this->tx_addr);
@@ -1957,23 +2644,33 @@ static void happy_meal_tx(struct happy_meal *hp)
 			this = &txbase[elem];
 		}
 
+<<<<<<< HEAD
 		dev_kfree_skb_irq(skb);
 		hp->net_stats.tx_packets++;
 	}
 	hp->tx_old = elem;
 	TXD((">"));
+=======
+		dev_consume_skb_irq(skb);
+		dev->stats.tx_packets++;
+	}
+	hp->tx_old = elem;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_queue_stopped(dev) &&
 	    TX_BUFFS_AVAIL(hp) > (MAX_SKB_FRAGS + 1))
 		netif_wake_queue(dev);
 }
 
+<<<<<<< HEAD
 #ifdef RXDEBUG
 #define RXD(x) printk x
 #else
 #define RXD(x)
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Originally I used to handle the allocation failure by just giving back just
  * that one ring buffer to the happy meal.  Problem is that usually when that
  * condition is triggered, the happy meal expects you to do something reasonable
@@ -1990,7 +2687,10 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
 	int elem = hp->rx_new, drops = 0;
 	u32 flags;
 
+<<<<<<< HEAD
 	RXD(("RX<"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	this = &rxbase[elem];
 	while (!((flags = hme_read_desc32(hp, &this->rx_flags)) & RXFLAG_OWN)) {
 		struct sk_buff *skb;
@@ -1998,6 +2698,7 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
 		u16 csum = flags & RXFLAG_CSUM;
 		u32 dma_addr = hme_read_desc32(hp, &this->rx_addr);
 
+<<<<<<< HEAD
 		RXD(("[%d ", elem));
 
 		/* Check for errors. */
@@ -2009,11 +2710,26 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
 			if (len & (RXFLAG_OVERFLOW >> 16)) {
 				hp->net_stats.rx_over_errors++;
 				hp->net_stats.rx_fifo_errors++;
+=======
+		/* Check for errors. */
+		if ((len < ETH_ZLEN) || (flags & RXFLAG_OVERFLOW)) {
+			netdev_vdbg(dev, "RX[%d ERR(%08x)]", elem, flags);
+			dev->stats.rx_errors++;
+			if (len < ETH_ZLEN)
+				dev->stats.rx_length_errors++;
+			if (len & (RXFLAG_OVERFLOW >> 16)) {
+				dev->stats.rx_over_errors++;
+				dev->stats.rx_fifo_errors++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			/* Return it to the Happy meal. */
 	drop_it:
+<<<<<<< HEAD
 			hp->net_stats.rx_dropped++;
+=======
+			dev->stats.rx_dropped++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hme_write_rxd(hp, this,
 				      (RXFLAG_OWN|((RX_BUF_ALLOC_SIZE-RX_OFFSET)<<16)),
 				      dma_addr);
@@ -2022,6 +2738,10 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
 		skb = hp->rx_skbs[elem];
 		if (len > RX_COPY_THRESHOLD) {
 			struct sk_buff *new_skb;
+<<<<<<< HEAD
+=======
+			u32 mapping;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Now refill the entry, if we can. */
 			new_skb = happy_meal_alloc_skb(RX_BUF_ALLOC_SIZE, GFP_ATOMIC);
@@ -2029,6 +2749,7 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
 				drops++;
 				goto drop_it;
 			}
+<<<<<<< HEAD
 			dma_unmap_single(hp->dma_dev, dma_addr, RX_BUF_ALLOC_SIZE, DMA_FROM_DEVICE);
 			hp->rx_skbs[elem] = new_skb;
 			new_skb->dev = dev;
@@ -2037,6 +2758,23 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
 				      (RXFLAG_OWN|((RX_BUF_ALLOC_SIZE-RX_OFFSET)<<16)),
 				      dma_map_single(hp->dma_dev, new_skb->data, RX_BUF_ALLOC_SIZE,
 						     DMA_FROM_DEVICE));
+=======
+			skb_put(new_skb, (ETH_FRAME_LEN + RX_OFFSET + 4));
+			mapping = dma_map_single(hp->dma_dev, new_skb->data,
+						 RX_BUF_ALLOC_SIZE,
+						 DMA_FROM_DEVICE);
+			if (unlikely(dma_mapping_error(hp->dma_dev, mapping))) {
+				dev_kfree_skb_any(new_skb);
+				drops++;
+				goto drop_it;
+			}
+
+			dma_unmap_single(hp->dma_dev, dma_addr, RX_BUF_ALLOC_SIZE, DMA_FROM_DEVICE);
+			hp->rx_skbs[elem] = new_skb;
+			hme_write_rxd(hp, this,
+				      (RXFLAG_OWN|((RX_BUF_ALLOC_SIZE-RX_OFFSET)<<16)),
+				      mapping);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb_reserve(new_skb, RX_OFFSET);
 
 			/* Trim the original skb for the netif. */
@@ -2051,9 +2789,15 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
 
 			skb_reserve(copy_skb, 2);
 			skb_put(copy_skb, len);
+<<<<<<< HEAD
 			dma_sync_single_for_cpu(hp->dma_dev, dma_addr, len, DMA_FROM_DEVICE);
 			skb_copy_from_linear_data(skb, copy_skb->data, len);
 			dma_sync_single_for_device(hp->dma_dev, dma_addr, len, DMA_FROM_DEVICE);
+=======
+			dma_sync_single_for_cpu(hp->dma_dev, dma_addr, len + 2, DMA_FROM_DEVICE);
+			skb_copy_from_linear_data(skb, copy_skb->data, len);
+			dma_sync_single_for_device(hp->dma_dev, dma_addr, len + 2, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Reuse original ring buffer. */
 			hme_write_rxd(hp, this,
 				      (RXFLAG_OWN|((RX_BUF_ALLOC_SIZE-RX_OFFSET)<<16)),
@@ -2066,20 +2810,33 @@ static void happy_meal_rx(struct happy_meal *hp, struct net_device *dev)
 		skb->csum = csum_unfold(~(__force __sum16)htons(csum));
 		skb->ip_summed = CHECKSUM_COMPLETE;
 
+<<<<<<< HEAD
 		RXD(("len=%d csum=%4x]", len, csum));
 		skb->protocol = eth_type_trans(skb, dev);
 		netif_rx(skb);
 
 		hp->net_stats.rx_packets++;
 		hp->net_stats.rx_bytes += len;
+=======
+		netdev_vdbg(dev, "RX[%d len=%d csum=%4x]", elem, len, csum);
+		skb->protocol = eth_type_trans(skb, dev);
+		netif_rx(skb);
+
+		dev->stats.rx_packets++;
+		dev->stats.rx_bytes += len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	next:
 		elem = NEXT_RX(elem);
 		this = &rxbase[elem];
 	}
 	hp->rx_new = elem;
 	if (drops)
+<<<<<<< HEAD
 		printk(KERN_INFO "%s: Memory squeeze, deferring packet.\n", hp->dev->name);
 	RXD((">"));
+=======
+		netdev_info(hp->dev, "Memory squeeze, deferring packet.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t happy_meal_interrupt(int irq, void *dev_id)
@@ -2088,16 +2845,26 @@ static irqreturn_t happy_meal_interrupt(int irq, void *dev_id)
 	struct happy_meal *hp  = netdev_priv(dev);
 	u32 happy_status       = hme_read32(hp, hp->gregs + GREG_STAT);
 
+<<<<<<< HEAD
 	HMD(("happy_meal_interrupt: status=%08x ", happy_status));
+=======
+	HMD("status=%08x\n", happy_status);
+	if (!happy_status)
+		return IRQ_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&hp->happy_lock);
 
 	if (happy_status & GREG_STAT_ERRORS) {
+<<<<<<< HEAD
 		HMD(("ERRORS "));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (happy_meal_is_not_so_happy(hp, /* un- */ happy_status))
 			goto out;
 	}
 
+<<<<<<< HEAD
 	if (happy_status & GREG_STAT_MIFIRQ) {
 		HMD(("MIFIRQ "));
 		happy_meal_mif_interrupt(hp);
@@ -2114,12 +2881,22 @@ static irqreturn_t happy_meal_interrupt(int irq, void *dev_id)
 	}
 
 	HMD(("done\n"));
+=======
+	if (happy_status & GREG_STAT_TXALL)
+		happy_meal_tx(hp);
+
+	if (happy_status & GREG_STAT_RXTOHOST)
+		happy_meal_rx(hp, dev);
+
+	HMD("done\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	spin_unlock(&hp->happy_lock);
 
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SBUS
 static irqreturn_t quattro_sbus_interrupt(int irq, void *cookie)
 {
@@ -2171,11 +2948,14 @@ static irqreturn_t quattro_sbus_interrupt(int irq, void *cookie)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int happy_meal_open(struct net_device *dev)
 {
 	struct happy_meal *hp = netdev_priv(dev);
 	int res;
 
+<<<<<<< HEAD
 	HMD(("happy_meal_open: "));
 
 	/* On SBUS Quattro QFE cards, all hme interrupts are concentrated
@@ -2193,13 +2973,28 @@ static int happy_meal_open(struct net_device *dev)
 	}
 
 	HMD(("to happy_meal_init\n"));
+=======
+	res = request_irq(hp->irq, happy_meal_interrupt, IRQF_SHARED,
+			  dev->name, dev);
+	if (res) {
+		netdev_err(dev, "Can't order irq %d to go.\n", hp->irq);
+		return res;
+	}
+
+	HMD("to happy_meal_init\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&hp->happy_lock);
 	res = happy_meal_init(hp);
 	spin_unlock_irq(&hp->happy_lock);
 
+<<<<<<< HEAD
 	if (res && ((hp->happy_flags & (HFLAG_QUATTRO|HFLAG_PCI)) != HFLAG_QUATTRO))
 		free_irq(dev->irq, dev);
+=======
+	if (res)
+		free_irq(hp->irq, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
@@ -2216,16 +3011,21 @@ static int happy_meal_close(struct net_device *dev)
 
 	spin_unlock_irq(&hp->happy_lock);
 
+<<<<<<< HEAD
 	/* On Quattro QFE cards, all hme interrupts are concentrated
 	 * into a single source which we register handling at probe
 	 * time and never unregister.
 	 */
 	if ((hp->happy_flags & (HFLAG_QUATTRO|HFLAG_PCI)) != HFLAG_QUATTRO)
 		free_irq(dev->irq, dev);
+=======
+	free_irq(hp->irq, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef SXDEBUG
 #define SXD(x) printk x
 #else
@@ -2242,6 +3042,18 @@ static void happy_meal_tx_timeout(struct net_device *dev)
 		hme_read32(hp, hp->gregs + GREG_STAT),
 		hme_read32(hp, hp->etxregs + ETX_CFG),
 		hme_read32(hp, hp->bigmacregs + BMAC_TXCFG));
+=======
+static void happy_meal_tx_timeout(struct net_device *dev, unsigned int txqueue)
+{
+	struct happy_meal *hp = netdev_priv(dev);
+
+	netdev_err(dev, "transmit timed out, resetting\n");
+	tx_dump_log();
+	netdev_err(dev, "Happy Status %08x TX[%08x:%08x]\n",
+		   hme_read32(hp, hp->gregs + GREG_STAT),
+		   hme_read32(hp, hp->etxregs + ETX_CFG),
+		   hme_read32(hp, hp->bigmacregs + BMAC_TXCFG));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&hp->happy_lock);
 	happy_meal_init(hp);
@@ -2250,12 +3062,39 @@ static void happy_meal_tx_timeout(struct net_device *dev)
 	netif_wake_queue(dev);
 }
 
+<<<<<<< HEAD
+=======
+static void unmap_partial_tx_skb(struct happy_meal *hp, u32 first_mapping,
+				 u32 first_len, u32 first_entry, u32 entry)
+{
+	struct happy_meal_txd *txbase = &hp->happy_block->happy_meal_txd[0];
+
+	dma_unmap_single(hp->dma_dev, first_mapping, first_len, DMA_TO_DEVICE);
+
+	first_entry = NEXT_TX(first_entry);
+	while (first_entry != entry) {
+		struct happy_meal_txd *this = &txbase[first_entry];
+		u32 addr, len;
+
+		addr = hme_read_desc32(hp, &this->tx_addr);
+		len = hme_read_desc32(hp, &this->tx_flags);
+		len &= TXFLAG_SIZE;
+		dma_unmap_page(hp->dma_dev, addr, len, DMA_TO_DEVICE);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
 					 struct net_device *dev)
 {
 	struct happy_meal *hp = netdev_priv(dev);
+<<<<<<< HEAD
  	int entry;
  	u32 tx_flags;
+=======
+	int entry;
+	u32 tx_flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tx_flags = TXFLAG_OWN;
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
@@ -2269,16 +3108,27 @@ static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
 
 	spin_lock_irq(&hp->happy_lock);
 
+<<<<<<< HEAD
  	if (TX_BUFFS_AVAIL(hp) <= (skb_shinfo(skb)->nr_frags + 1)) {
 		netif_stop_queue(dev);
 		spin_unlock_irq(&hp->happy_lock);
 		printk(KERN_ERR "%s: BUG! Tx Ring full when queue awake!\n",
 		       dev->name);
+=======
+	if (TX_BUFFS_AVAIL(hp) <= (skb_shinfo(skb)->nr_frags + 1)) {
+		netif_stop_queue(dev);
+		spin_unlock_irq(&hp->happy_lock);
+		netdev_err(dev, "BUG! Tx Ring full when queue awake!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NETDEV_TX_BUSY;
 	}
 
 	entry = hp->tx_new;
+<<<<<<< HEAD
 	SXD(("SX<l[%d]e[%d]>", len, entry));
+=======
+	netdev_vdbg(dev, "SX<l[%d]e[%d]>\n", skb->len, entry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hp->tx_skbs[entry] = skb;
 
 	if (skb_shinfo(skb)->nr_frags == 0) {
@@ -2286,6 +3136,11 @@ static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
 
 		len = skb->len;
 		mapping = dma_map_single(hp->dma_dev, skb->data, len, DMA_TO_DEVICE);
+<<<<<<< HEAD
+=======
+		if (unlikely(dma_mapping_error(hp->dma_dev, mapping)))
+			goto out_dma_error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tx_flags |= (TXFLAG_SOP | TXFLAG_EOP);
 		hme_write_txd(hp, &hp->happy_block->happy_meal_txd[entry],
 			      (tx_flags | (len & TXFLAG_SIZE)),
@@ -2301,6 +3156,11 @@ static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
 		first_len = skb_headlen(skb);
 		first_mapping = dma_map_single(hp->dma_dev, skb->data, first_len,
 					       DMA_TO_DEVICE);
+<<<<<<< HEAD
+=======
+		if (unlikely(dma_mapping_error(hp->dma_dev, first_mapping)))
+			goto out_dma_error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		entry = NEXT_TX(entry);
 
 		for (frag = 0; frag < skb_shinfo(skb)->nr_frags; frag++) {
@@ -2310,6 +3170,14 @@ static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
 			len = skb_frag_size(this_frag);
 			mapping = skb_frag_dma_map(hp->dma_dev, this_frag,
 						   0, len, DMA_TO_DEVICE);
+<<<<<<< HEAD
+=======
+			if (unlikely(dma_mapping_error(hp->dma_dev, mapping))) {
+				unmap_partial_tx_skb(hp, first_mapping, first_len,
+						     first_entry, entry);
+				goto out_dma_error;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			this_txflags = tx_flags;
 			if (frag == skb_shinfo(skb)->nr_frags - 1)
 				this_txflags |= TXFLAG_EOP;
@@ -2335,6 +3203,17 @@ static netdev_tx_t happy_meal_start_xmit(struct sk_buff *skb,
 
 	tx_add_log(hp, TXLOG_ACTION_TXMIT, 0);
 	return NETDEV_TX_OK;
+<<<<<<< HEAD
+=======
+
+out_dma_error:
+	hp->tx_skbs[hp->tx_new] = NULL;
+	spin_unlock_irq(&hp->happy_lock);
+
+	dev_kfree_skb_any(skb);
+	dev->stats.tx_dropped++;
+	return NETDEV_TX_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct net_device_stats *happy_meal_get_stats(struct net_device *dev)
@@ -2345,7 +3224,11 @@ static struct net_device_stats *happy_meal_get_stats(struct net_device *dev)
 	happy_meal_get_counters(hp, hp->bigmacregs);
 	spin_unlock_irq(&hp->happy_lock);
 
+<<<<<<< HEAD
 	return &hp->net_stats;
+=======
+	return &dev->stats;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void happy_meal_set_multicast(struct net_device *dev)
@@ -2384,20 +3267,36 @@ static void happy_meal_set_multicast(struct net_device *dev)
 }
 
 /* Ethtool support... */
+<<<<<<< HEAD
 static int hme_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct happy_meal *hp = netdev_priv(dev);
 	u32 speed;
 
 	cmd->supported =
+=======
+static int hme_get_link_ksettings(struct net_device *dev,
+				  struct ethtool_link_ksettings *cmd)
+{
+	struct happy_meal *hp = netdev_priv(dev);
+	u32 speed;
+	u32 supported;
+
+	supported =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(SUPPORTED_10baseT_Half | SUPPORTED_10baseT_Full |
 		 SUPPORTED_100baseT_Half | SUPPORTED_100baseT_Full |
 		 SUPPORTED_Autoneg | SUPPORTED_TP | SUPPORTED_MII);
 
 	/* XXX hardcoded stuff for now */
+<<<<<<< HEAD
 	cmd->port = PORT_TP; /* XXX no MII support */
 	cmd->transceiver = XCVR_INTERNAL; /* XXX no external xcvr support */
 	cmd->phy_address = 0; /* XXX fixed PHYAD */
+=======
+	cmd->base.port = PORT_TP; /* XXX no MII support */
+	cmd->base.phy_address = 0; /* XXX fixed PHYAD */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Record PHY settings. */
 	spin_lock_irq(&hp->happy_lock);
@@ -2406,6 +3305,7 @@ static int hme_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 	spin_unlock_irq(&hp->happy_lock);
 
 	if (hp->sw_bmcr & BMCR_ANENABLE) {
+<<<<<<< HEAD
 		cmd->autoneg = AUTONEG_ENABLE;
 		speed = ((hp->sw_lpa & (LPA_100HALF | LPA_100FULL)) ?
 			 SPEED_100 : SPEED_10);
@@ -2429,10 +3329,40 @@ static int hme_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 }
 
 static int hme_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
+=======
+		cmd->base.autoneg = AUTONEG_ENABLE;
+		speed = ((hp->sw_lpa & (LPA_100HALF | LPA_100FULL)) ?
+			 SPEED_100 : SPEED_10);
+		if (speed == SPEED_100)
+			cmd->base.duplex =
+				(hp->sw_lpa & (LPA_100FULL)) ?
+				DUPLEX_FULL : DUPLEX_HALF;
+		else
+			cmd->base.duplex =
+				(hp->sw_lpa & (LPA_10FULL)) ?
+				DUPLEX_FULL : DUPLEX_HALF;
+	} else {
+		cmd->base.autoneg = AUTONEG_DISABLE;
+		speed = (hp->sw_bmcr & BMCR_SPEED100) ? SPEED_100 : SPEED_10;
+		cmd->base.duplex =
+			(hp->sw_bmcr & BMCR_FULLDPLX) ?
+			DUPLEX_FULL : DUPLEX_HALF;
+	}
+	cmd->base.speed = speed;
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
+						supported);
+
+	return 0;
+}
+
+static int hme_set_link_ksettings(struct net_device *dev,
+				  const struct ethtool_link_ksettings *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct happy_meal *hp = netdev_priv(dev);
 
 	/* Verify the settings we care about. */
+<<<<<<< HEAD
 	if (cmd->autoneg != AUTONEG_ENABLE &&
 	    cmd->autoneg != AUTONEG_DISABLE)
 		return -EINVAL;
@@ -2441,6 +3371,16 @@ static int hme_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 	      ethtool_cmd_speed(cmd) != SPEED_10) ||
 	     (cmd->duplex != DUPLEX_HALF &&
 	      cmd->duplex != DUPLEX_FULL)))
+=======
+	if (cmd->base.autoneg != AUTONEG_ENABLE &&
+	    cmd->base.autoneg != AUTONEG_DISABLE)
+		return -EINVAL;
+	if (cmd->base.autoneg == AUTONEG_DISABLE &&
+	    ((cmd->base.speed != SPEED_100 &&
+	      cmd->base.speed != SPEED_10) ||
+	     (cmd->base.duplex != DUPLEX_HALF &&
+	      cmd->base.duplex != DUPLEX_FULL)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* Ok, do it to it. */
@@ -2456,11 +3396,18 @@ static void hme_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info
 {
 	struct happy_meal *hp = netdev_priv(dev);
 
+<<<<<<< HEAD
 	strlcpy(info->driver, "sunhme", sizeof(info->driver));
 	strlcpy(info->version, "2.02", sizeof(info->version));
 	if (hp->happy_flags & HFLAG_PCI) {
 		struct pci_dev *pdev = hp->happy_dev;
 		strlcpy(info->bus_info, pci_name(pdev), sizeof(info->bus_info));
+=======
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	if (hp->happy_flags & HFLAG_PCI) {
+		struct pci_dev *pdev = hp->happy_dev;
+		strscpy(info->bus_info, pci_name(pdev), sizeof(info->bus_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #ifdef CONFIG_SBUS
 	else {
@@ -2487,6 +3434,7 @@ static u32 hme_get_link(struct net_device *dev)
 }
 
 static const struct ethtool_ops hme_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings		= hme_get_settings,
 	.set_settings		= hme_set_settings,
 	.get_drvinfo		= hme_get_drvinfo,
@@ -2495,19 +3443,32 @@ static const struct ethtool_ops hme_ethtool_ops = {
 
 static int hme_version_printed;
 
+=======
+	.get_drvinfo		= hme_get_drvinfo,
+	.get_link		= hme_get_link,
+	.get_link_ksettings	= hme_get_link_ksettings,
+	.set_link_ksettings	= hme_set_link_ksettings,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SBUS
 /* Given a happy meal sbus device, find it's quattro parent.
  * If none exist, allocate and return a new one.
  *
  * Return NULL on failure.
  */
+<<<<<<< HEAD
 static struct quattro * __devinit quattro_sbus_find(struct platform_device *child)
+=======
+static struct quattro *quattro_sbus_find(struct platform_device *child)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *parent = child->dev.parent;
 	struct platform_device *op;
 	struct quattro *qp;
 
 	op = to_platform_device(parent);
+<<<<<<< HEAD
 	qp = dev_get_drvdata(&op->dev);
 	if (qp)
 		return qp;
@@ -2588,12 +3549,42 @@ static struct quattro * __devinit quattro_pci_find(struct pci_dev *pdev)
 	struct quattro *qp;
 
 	if (!bdev) return NULL;
+=======
+	qp = platform_get_drvdata(op);
+	if (qp)
+		return qp;
+
+	qp = kzalloc(sizeof(*qp), GFP_KERNEL);
+	if (!qp)
+		return NULL;
+
+	qp->quattro_dev = child;
+	qp->next = qfe_sbus_list;
+	qfe_sbus_list = qp;
+
+	platform_set_drvdata(op, qp);
+	return qp;
+}
+#endif /* CONFIG_SBUS */
+
+#ifdef CONFIG_PCI
+static struct quattro *quattro_pci_find(struct pci_dev *pdev)
+{
+	int i;
+	struct pci_dev *bdev = pdev->bus->self;
+	struct quattro *qp;
+
+	if (!bdev)
+		return ERR_PTR(-ENODEV);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (qp = qfe_pci_list; qp != NULL; qp = qp->next) {
 		struct pci_dev *qpdev = qp->quattro_dev;
 
 		if (qpdev == bdev)
 			return qp;
 	}
+<<<<<<< HEAD
 	qp = kmalloc(sizeof(struct quattro), GFP_KERNEL);
 	if (qp != NULL) {
 		int i;
@@ -2608,6 +3599,22 @@ static struct quattro * __devinit quattro_pci_find(struct pci_dev *pdev)
 		/* No range tricks necessary on PCI. */
 		qp->nranges = 0;
 	}
+=======
+
+	qp = kmalloc(sizeof(struct quattro), GFP_KERNEL);
+	if (!qp)
+		return ERR_PTR(-ENOMEM);
+
+	for (i = 0; i < 4; i++)
+		qp->happy_meals[i] = NULL;
+
+	qp->quattro_dev = bdev;
+	qp->next = qfe_pci_list;
+	qfe_pci_list = qp;
+
+	/* No range tricks necessary on PCI. */
+	qp->nranges = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return qp;
 }
 #endif /* CONFIG_PCI */
@@ -2619,11 +3626,15 @@ static const struct net_device_ops hme_netdev_ops = {
 	.ndo_tx_timeout		= happy_meal_tx_timeout,
 	.ndo_get_stats		= happy_meal_get_stats,
 	.ndo_set_rx_mode	= happy_meal_set_multicast,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_SBUS
 static int __devinit happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
 {
@@ -2846,14 +3857,21 @@ err_out:
 
 #ifdef CONFIG_PCI
 #ifndef CONFIG_SPARC
+=======
+#ifdef CONFIG_PCI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int is_quattro_p(struct pci_dev *pdev)
 {
 	struct pci_dev *busdev = pdev->bus->self;
 	struct pci_dev *this_pdev;
 	int n_hmes;
 
+<<<<<<< HEAD
 	if (busdev == NULL ||
 	    busdev->vendor != PCI_VENDOR_ID_DEC ||
+=======
+	if (!busdev || busdev->vendor != PCI_VENDOR_ID_DEC ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    busdev->device != PCI_DEVICE_ID_DEC_21153)
 		return 0;
 
@@ -2890,9 +3908,13 @@ static int find_eth_addr_in_vpd(void __iomem *rom_base, int len, int index, unsi
 		p += 6;
 
 		if (index == 0) {
+<<<<<<< HEAD
 			int i;
 
 			for (i = 0; i < 6; i++)
+=======
+			for (int i = 0; i < 6; i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_addr[i] = readb(p + i);
 			return 1;
 		}
@@ -2901,11 +3923,21 @@ static int find_eth_addr_in_vpd(void __iomem *rom_base, int len, int index, unsi
 	return 0;
 }
 
+<<<<<<< HEAD
 static void get_hme_mac_nonsparc(struct pci_dev *pdev, unsigned char *dev_addr)
 {
 	size_t size;
 	void __iomem *p = pci_map_rom(pdev, &size);
 
+=======
+static void __maybe_unused get_hme_mac_nonsparc(struct pci_dev *pdev,
+						unsigned char *dev_addr)
+{
+	void __iomem *p;
+	size_t size;
+
+	p = pci_map_rom(pdev, &size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p) {
 		int index = 0;
 		int found;
@@ -2927,6 +3959,7 @@ static void get_hme_mac_nonsparc(struct pci_dev *pdev, unsigned char *dev_addr)
 	dev_addr[2] = 0x20;
 	get_random_bytes(&dev_addr[3], 3);
 }
+<<<<<<< HEAD
 #endif /* !(CONFIG_SPARC) */
 
 static int __devinit happy_meal_pci_probe(struct pci_dev *pdev,
@@ -2943,11 +3976,251 @@ static int __devinit happy_meal_pci_probe(struct pci_dev *pdev,
 	int i, qfe_slot = -1;
 	char prom_name[64];
 	int err;
+=======
+#endif
+
+static void happy_meal_addr_init(struct happy_meal *hp,
+				 struct device_node *dp, int qfe_slot)
+{
+	int i;
+
+	for (i = 0; i < 6; i++) {
+		if (macaddr[i] != 0)
+			break;
+	}
+
+	if (i < 6) { /* a mac address was given */
+		u8 addr[ETH_ALEN];
+
+		for (i = 0; i < 6; i++)
+			addr[i] = macaddr[i];
+		eth_hw_addr_set(hp->dev, addr);
+		macaddr[5]++;
+	} else {
+#ifdef CONFIG_SPARC
+		const unsigned char *addr;
+		int len;
+
+		/* If user did not specify a MAC address specifically, use
+		 * the Quattro local-mac-address property...
+		 */
+		if (qfe_slot != -1) {
+			addr = of_get_property(dp, "local-mac-address", &len);
+			if (addr && len == 6) {
+				eth_hw_addr_set(hp->dev, addr);
+				return;
+			}
+		}
+
+		eth_hw_addr_set(hp->dev, idprom->id_ethaddr);
+#else
+		u8 addr[ETH_ALEN];
+
+		get_hme_mac_nonsparc(hp->happy_dev, addr);
+		eth_hw_addr_set(hp->dev, addr);
+#endif
+	}
+}
+
+static int happy_meal_common_probe(struct happy_meal *hp,
+				   struct device_node *dp)
+{
+	struct net_device *dev = hp->dev;
+	int err;
+
+#ifdef CONFIG_SPARC
+	hp->hm_revision = of_getintprop_default(dp, "hm-rev", hp->hm_revision);
+#endif
+
+	/* Now enable the feature flags we can. */
+	if (hp->hm_revision == 0x20 || hp->hm_revision == 0x21)
+		hp->happy_flags |= HFLAG_20_21;
+	else if (hp->hm_revision != 0xa0)
+		hp->happy_flags |= HFLAG_NOT_A0;
+
+	hp->happy_block = dmam_alloc_coherent(hp->dma_dev, PAGE_SIZE,
+					      &hp->hblock_dvma, GFP_KERNEL);
+	if (!hp->happy_block)
+		return -ENOMEM;
+
+	/* Force check of the link first time we are brought up. */
+	hp->linkcheck = 0;
+
+	/* Force timer state to 'asleep' with count of zero. */
+	hp->timer_state = asleep;
+	hp->timer_ticks = 0;
+
+	timer_setup(&hp->happy_timer, happy_meal_timer, 0);
+
+	dev->netdev_ops = &hme_netdev_ops;
+	dev->watchdog_timeo = 5 * HZ;
+	dev->ethtool_ops = &hme_ethtool_ops;
+
+	/* Happy Meal can do it all... */
+	dev->hw_features = NETIF_F_SG | NETIF_F_HW_CSUM;
+	dev->features |= dev->hw_features | NETIF_F_RXCSUM;
+
+
+	/* Grrr, Happy Meal comes up by default not advertising
+	 * full duplex 100baseT capabilities, fix this.
+	 */
+	spin_lock_irq(&hp->happy_lock);
+	happy_meal_set_initial_advertisement(hp);
+	spin_unlock_irq(&hp->happy_lock);
+
+	err = devm_register_netdev(hp->dma_dev, dev);
+	if (err)
+		dev_err(hp->dma_dev, "Cannot register net device, aborting.\n");
+	return err;
+}
+
+#ifdef CONFIG_SBUS
+static int happy_meal_sbus_probe_one(struct platform_device *op, int is_qfe)
+{
+	struct device_node *dp = op->dev.of_node, *sbus_dp;
+	struct quattro *qp = NULL;
+	struct happy_meal *hp;
+	struct net_device *dev;
+	int qfe_slot = -1;
+	int err;
+
+	sbus_dp = op->dev.parent->of_node;
+
+	/* We can match PCI devices too, do not accept those here. */
+	if (!of_node_name_eq(sbus_dp, "sbus") && !of_node_name_eq(sbus_dp, "sbi"))
+		return -ENODEV;
+
+	if (is_qfe) {
+		qp = quattro_sbus_find(op);
+		if (qp == NULL)
+			return -ENODEV;
+		for (qfe_slot = 0; qfe_slot < 4; qfe_slot++)
+			if (qp->happy_meals[qfe_slot] == NULL)
+				break;
+		if (qfe_slot == 4)
+			return -ENODEV;
+	}
+
+	dev = devm_alloc_etherdev(&op->dev, sizeof(struct happy_meal));
+	if (!dev)
+		return -ENOMEM;
+	SET_NETDEV_DEV(dev, &op->dev);
+
+	hp = netdev_priv(dev);
+	hp->dev = dev;
+	hp->happy_dev = op;
+	hp->dma_dev = &op->dev;
+	happy_meal_addr_init(hp, dp, qfe_slot);
+
+	spin_lock_init(&hp->happy_lock);
+
+	if (qp != NULL) {
+		hp->qfe_parent = qp;
+		hp->qfe_ent = qfe_slot;
+		qp->happy_meals[qfe_slot] = dev;
+	}
+
+	hp->gregs = devm_platform_ioremap_resource(op, 0);
+	if (IS_ERR(hp->gregs)) {
+		dev_err(&op->dev, "Cannot map global registers.\n");
+		err = PTR_ERR(hp->gregs);
+		goto err_out_clear_quattro;
+	}
+
+	hp->etxregs = devm_platform_ioremap_resource(op, 1);
+	if (IS_ERR(hp->etxregs)) {
+		dev_err(&op->dev, "Cannot map MAC TX registers.\n");
+		err = PTR_ERR(hp->etxregs);
+		goto err_out_clear_quattro;
+	}
+
+	hp->erxregs = devm_platform_ioremap_resource(op, 2);
+	if (IS_ERR(hp->erxregs)) {
+		dev_err(&op->dev, "Cannot map MAC RX registers.\n");
+		err = PTR_ERR(hp->erxregs);
+		goto err_out_clear_quattro;
+	}
+
+	hp->bigmacregs = devm_platform_ioremap_resource(op, 3);
+	if (IS_ERR(hp->bigmacregs)) {
+		dev_err(&op->dev, "Cannot map BIGMAC registers.\n");
+		err = PTR_ERR(hp->bigmacregs);
+		goto err_out_clear_quattro;
+	}
+
+	hp->tcvregs = devm_platform_ioremap_resource(op, 4);
+	if (IS_ERR(hp->tcvregs)) {
+		dev_err(&op->dev, "Cannot map TCVR registers.\n");
+		err = PTR_ERR(hp->tcvregs);
+		goto err_out_clear_quattro;
+	}
+
+	hp->hm_revision = 0xa0;
+
+	if (qp != NULL)
+		hp->happy_flags |= HFLAG_QUATTRO;
+
+	hp->irq = op->archdata.irqs[0];
+
+	/* Get the supported DVMA burst sizes from our Happy SBUS. */
+	hp->happy_bursts = of_getintprop_default(sbus_dp,
+						 "burst-sizes", 0x00);
+
+#ifdef CONFIG_PCI
+	/* Hook up SBUS register/descriptor accessors. */
+	hp->read_desc32 = sbus_hme_read_desc32;
+	hp->write_txd = sbus_hme_write_txd;
+	hp->write_rxd = sbus_hme_write_rxd;
+	hp->read32 = sbus_hme_read32;
+	hp->write32 = sbus_hme_write32;
+#endif
+
+	err = happy_meal_common_probe(hp, dp);
+	if (err)
+		goto err_out_clear_quattro;
+
+	platform_set_drvdata(op, hp);
+
+	if (qfe_slot != -1)
+		netdev_info(dev,
+			    "Quattro HME slot %d (SBUS) 10/100baseT Ethernet %pM\n",
+			    qfe_slot, dev->dev_addr);
+	else
+		netdev_info(dev, "HAPPY MEAL (SBUS) 10/100baseT Ethernet %pM\n",
+			    dev->dev_addr);
+
+	return 0;
+
+err_out_clear_quattro:
+	if (qp)
+		qp->happy_meals[qfe_slot] = NULL;
+	return err;
+}
+#endif
+
+#ifdef CONFIG_PCI
+static int happy_meal_pci_probe(struct pci_dev *pdev,
+				const struct pci_device_id *ent)
+{
+	struct device_node *dp = NULL;
+	struct quattro *qp = NULL;
+	struct happy_meal *hp;
+	struct net_device *dev;
+	void __iomem *hpreg_base;
+	struct resource *hpreg_res;
+	char prom_name[64];
+	int qfe_slot = -1;
+	int err = -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Now make sure pci_dev cookie is there. */
 #ifdef CONFIG_SPARC
 	dp = pci_device_to_OF_node(pdev);
+<<<<<<< HEAD
 	strcpy(prom_name, dp->name);
+=======
+	snprintf(prom_name, sizeof(prom_name), "%pOFn", dp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	if (is_quattro_p(pdev))
 		strcpy(prom_name, "SUNW,qfe");
@@ -2955,14 +4228,21 @@ static int __devinit happy_meal_pci_probe(struct pci_dev *pdev,
 		strcpy(prom_name, "SUNW,hme");
 #endif
 
+<<<<<<< HEAD
 	err = -ENODEV;
 
 	if (pci_enable_device(pdev))
 		goto err_out;
+=======
+	err = pcim_enable_device(pdev);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_master(pdev);
 
 	if (!strcmp(prom_name, "SUNW,qfe") || !strcmp(prom_name, "qfe")) {
 		qp = quattro_pci_find(pdev);
+<<<<<<< HEAD
 		if (qp == NULL)
 			goto err_out;
 		for (qfe_slot = 0; qfe_slot < 4; qfe_slot++)
@@ -2985,6 +4265,26 @@ static int __devinit happy_meal_pci_probe(struct pci_dev *pdev,
 
 	hp = netdev_priv(dev);
 
+=======
+		if (IS_ERR(qp))
+			return PTR_ERR(qp);
+
+		for (qfe_slot = 0; qfe_slot < 4; qfe_slot++)
+			if (!qp->happy_meals[qfe_slot])
+				break;
+
+		if (qfe_slot == 4)
+			return -ENODEV;
+	}
+
+	dev = devm_alloc_etherdev(&pdev->dev, sizeof(struct happy_meal));
+	if (!dev)
+		return -ENOMEM;
+	SET_NETDEV_DEV(dev, &pdev->dev);
+
+	hp = netdev_priv(dev);
+	hp->dev = dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hp->happy_dev = pdev;
 	hp->dma_dev = &pdev->dev;
 
@@ -2996,6 +4296,7 @@ static int __devinit happy_meal_pci_probe(struct pci_dev *pdev,
 		qp->happy_meals[qfe_slot] = dev;
 	}
 
+<<<<<<< HEAD
 	hpreg_res = pci_resource_start(pdev, 0);
 	err = -ENODEV;
 	if ((pci_resource_flags(pdev, 0) & IORESOURCE_IO) != 0) {
@@ -3038,6 +4339,33 @@ static int __devinit happy_meal_pci_probe(struct pci_dev *pdev,
 		get_hme_mac_nonsparc(pdev, &dev->dev_addr[0]);
 #endif
 	}
+=======
+	err = -EINVAL;
+	if ((pci_resource_flags(pdev, 0) & IORESOURCE_IO) != 0) {
+		dev_err(&pdev->dev,
+			"Cannot find proper PCI device base address.\n");
+		goto err_out_clear_quattro;
+	}
+
+	hpreg_res = devm_request_mem_region(&pdev->dev,
+					    pci_resource_start(pdev, 0),
+					    pci_resource_len(pdev, 0),
+					    DRV_NAME);
+	if (!hpreg_res) {
+		err = -EBUSY;
+		dev_err(&pdev->dev, "Cannot obtain PCI resources, aborting.\n");
+		goto err_out_clear_quattro;
+	}
+
+	hpreg_base = pcim_iomap(pdev, 0, 0x8000);
+	if (!hpreg_base) {
+		err = -ENOMEM;
+		dev_err(&pdev->dev, "Unable to remap card memory.\n");
+		goto err_out_clear_quattro;
+	}
+
+	happy_meal_addr_init(hp, dp, qfe_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Layout registers. */
 	hp->gregs      = (hpreg_base + 0x0000UL);
@@ -3046,6 +4374,7 @@ static int __devinit happy_meal_pci_probe(struct pci_dev *pdev,
 	hp->bigmacregs = (hpreg_base + 0x6000UL);
 	hp->tcvregs    = (hpreg_base + 0x7000UL);
 
+<<<<<<< HEAD
 #ifdef CONFIG_SPARC
 	hp->hm_revision = of_getintprop_default(dp, "hm-rev", 0xff);
 	if (hp->hm_revision == 0xff)
@@ -3060,6 +4389,12 @@ static int __devinit happy_meal_pci_probe(struct pci_dev *pdev,
 		hp->happy_flags = HFLAG_20_21;
 	else if (hp->hm_revision != 0xa0 && hp->hm_revision != 0xc0)
 		hp->happy_flags = HFLAG_NOT_A0;
+=======
+	if (IS_ENABLED(CONFIG_SPARC))
+		hp->hm_revision = 0xc0 | (pdev->revision & 0x0f);
+	else
+		hp->hm_revision = 0x20;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (qp != NULL)
 		hp->happy_flags |= HFLAG_QUATTRO;
@@ -3071,6 +4406,7 @@ static int __devinit happy_meal_pci_probe(struct pci_dev *pdev,
 	/* Assume PCI happy meals can handle all burst sizes. */
 	hp->happy_bursts = DMA_BURSTBITS;
 #endif
+<<<<<<< HEAD
 
 	hp->happy_block = (struct hmeal_init_block *)
 		dma_alloc_coherent(&pdev->dev, PAGE_SIZE, &hp->hblock_dvma, GFP_KERNEL);
@@ -3099,6 +4435,11 @@ static int __devinit happy_meal_pci_probe(struct pci_dev *pdev,
 	dev->features |= dev->hw_features | NETIF_F_RXCSUM;
 
 #if defined(CONFIG_SBUS) && defined(CONFIG_PCI)
+=======
+	hp->irq = pdev->irq;
+
+#ifdef CONFIG_SBUS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Hook up PCI register/descriptor accessors. */
 	hp->read_desc32 = pci_hme_read_desc32;
 	hp->write_txd = pci_hme_write_txd;
@@ -3107,6 +4448,7 @@ static int __devinit happy_meal_pci_probe(struct pci_dev *pdev,
 	hp->write32 = pci_hme_write32;
 #endif
 
+<<<<<<< HEAD
 	/* Grrr, Happy Meal comes up by default not advertising
 	 * full duplex 100baseT capabilities, fix this.
 	 */
@@ -3122,6 +4464,13 @@ static int __devinit happy_meal_pci_probe(struct pci_dev *pdev,
 	}
 
 	dev_set_drvdata(&pdev->dev, hp);
+=======
+	err = happy_meal_common_probe(hp, dp);
+	if (err)
+		goto err_out_clear_quattro;
+
+	pci_set_drvdata(pdev, hp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!qfe_slot) {
 		struct pci_dev *qpdev = qp->quattro_dev;
@@ -3131,6 +4480,7 @@ static int __devinit happy_meal_pci_probe(struct pci_dev *pdev,
 			int i = simple_strtoul(dev->name + 3, NULL, 10);
 			sprintf(prom_name, "-%d", i + 3);
 		}
+<<<<<<< HEAD
 		printk(KERN_INFO "%s%s: Quattro HME (PCI/CheerIO) 10/100baseT Ethernet ", dev->name, prom_name);
 		if (qpdev->vendor == PCI_VENDOR_ID_DEC &&
 		    qpdev->device == PCI_DEVICE_ID_DEC_21153)
@@ -3185,6 +4535,31 @@ static void __devexit happy_meal_pci_remove(struct pci_dev *pdev)
 }
 
 static DEFINE_PCI_DEVICE_TABLE(happymeal_pci_ids) = {
+=======
+		netdev_info(dev,
+			    "%s: Quattro HME (PCI/CheerIO) 10/100baseT Ethernet bridge %04x.%04x\n",
+			    prom_name, qpdev->vendor, qpdev->device);
+	}
+
+	if (qfe_slot != -1)
+		netdev_info(dev,
+			    "Quattro HME slot %d (PCI/CheerIO) 10/100baseT Ethernet %pM\n",
+			    qfe_slot, dev->dev_addr);
+	else
+		netdev_info(dev,
+			    "HAPPY MEAL (PCI/CheerIO) 10/100BaseT Ethernet %pM\n",
+			    dev->dev_addr);
+
+	return 0;
+
+err_out_clear_quattro:
+	if (qp != NULL)
+		qp->happy_meals[qfe_slot] = NULL;
+	return err;
+}
+
+static const struct pci_device_id happymeal_pci_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_SUN, PCI_DEVICE_ID_SUN_HAPPYMEAL) },
 	{ }			/* Terminating entry */
 };
@@ -3195,7 +4570,10 @@ static struct pci_driver hme_pci_driver = {
 	.name		= "hme",
 	.id_table	= happymeal_pci_ids,
 	.probe		= happy_meal_pci_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(happy_meal_pci_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init happy_meal_pci_init(void)
@@ -3221,7 +4599,11 @@ static void happy_meal_pci_exit(void)
 
 #ifdef CONFIG_SBUS
 static const struct of_device_id hme_sbus_match[];
+<<<<<<< HEAD
 static int __devinit hme_sbus_probe(struct platform_device *op)
+=======
+static int hme_sbus_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct of_device_id *match;
 	struct device_node *dp = op->dev.of_node;
@@ -3239,6 +4621,7 @@ static int __devinit hme_sbus_probe(struct platform_device *op)
 	return happy_meal_sbus_probe_one(op, is_qfe);
 }
 
+<<<<<<< HEAD
 static int __devexit hme_sbus_remove(struct platform_device *op)
 {
 	struct happy_meal *hp = dev_get_drvdata(&op->dev);
@@ -3265,6 +4648,8 @@ static int __devexit hme_sbus_remove(struct platform_device *op)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct of_device_id hme_sbus_match[] = {
 	{
 		.name = "SUNW,hme",
@@ -3285,15 +4670,22 @@ MODULE_DEVICE_TABLE(of, hme_sbus_match);
 static struct platform_driver hme_sbus_driver = {
 	.driver = {
 		.name = "hme",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = hme_sbus_match,
 	},
 	.probe		= hme_sbus_probe,
 	.remove		= __devexit_p(hme_sbus_remove),
+=======
+		.of_match_table = hme_sbus_match,
+	},
+	.probe		= hme_sbus_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init happy_meal_sbus_init(void)
 {
+<<<<<<< HEAD
 	int err;
 
 	err = platform_driver_register(&hme_sbus_driver);
@@ -3301,12 +4693,18 @@ static int __init happy_meal_sbus_init(void)
 		err = quattro_sbus_register_irqs();
 
 	return err;
+=======
+	return platform_driver_register(&hme_sbus_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void happy_meal_sbus_exit(void)
 {
 	platform_driver_unregister(&hme_sbus_driver);
+<<<<<<< HEAD
 	quattro_sbus_free_irqs();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (qfe_sbus_list) {
 		struct quattro *qfe = qfe_sbus_list;

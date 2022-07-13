@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_RESOURCE_H
 #define _LINUX_RESOURCE_H
 
@@ -85,5 +86,17 @@ int do_prlimit(struct task_struct *tsk, unsigned int resource,
 		struct rlimit *new_rlim, struct rlimit *old_rlim);
 
 #endif /* __KERNEL__ */
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_RESOURCE_H
+#define _LINUX_RESOURCE_H
+
+#include <uapi/linux/resource.h>
+
+
+struct task_struct;
+
+void getrusage(struct task_struct *p, int who, struct rusage *ru);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

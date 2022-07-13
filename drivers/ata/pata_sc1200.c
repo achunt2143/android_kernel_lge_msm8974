@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * New ATA layer SC1200 driver		Alan Cox <alan@lxorguk.ukuu.org.uk>
  *
@@ -13,6 +17,7 @@
  *
  * Development of this chipset driver was funded
  * by the nice folks at National Semiconductor.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -27,12 +32,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -206,9 +216,16 @@ static int sc1200_qc_defer(struct ata_queued_cmd *qc)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct scsi_host_template sc1200_sht = {
 	ATA_BMDMA_SHT(DRV_NAME),
 	.sg_tablesize	= LIBATA_DUMB_MAX_PRD,
+=======
+static const struct scsi_host_template sc1200_sht = {
+	ATA_BASE_SHT(DRV_NAME),
+	.sg_tablesize	= LIBATA_DUMB_MAX_PRD,
+	.dma_boundary	= ATA_DMA_BOUNDARY,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ata_port_operations sc1200_port_ops = {
@@ -255,12 +272,17 @@ static struct pci_driver sc1200_pci_driver = {
 	.id_table	= sc1200,
 	.probe 		= sc1200_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= ata_pci_device_resume,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init sc1200_init(void)
 {
 	return pci_register_driver(&sc1200_pci_driver);
@@ -270,12 +292,18 @@ static void __exit sc1200_exit(void)
 {
 	pci_unregister_driver(&sc1200_pci_driver);
 }
+=======
+module_pci_driver(sc1200_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox, Mark Lord");
 MODULE_DESCRIPTION("low-level driver for the NS/AMD SC1200");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, sc1200);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(sc1200_init);
 module_exit(sc1200_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

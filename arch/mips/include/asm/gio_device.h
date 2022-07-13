@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/mod_devicetable.h>
 
@@ -6,6 +10,7 @@ struct gio_device_id {
 };
 
 struct gio_device {
+<<<<<<< HEAD
 	struct device   dev;
 	struct resource resource;
 	unsigned int    irq;
@@ -15,6 +20,17 @@ struct gio_device {
 	struct gio_device_id id;
 	unsigned        id32:1;
 	unsigned        gio64:1;
+=======
+	struct device	dev;
+	struct resource resource;
+	unsigned int	irq;
+	unsigned int	slotno;
+
+	const char	*name;
+	struct gio_device_id id;
+	unsigned	id32:1;
+	unsigned	gio64:1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define to_gio_device(d) container_of(d, struct gio_device, dev)
 
@@ -25,16 +41,22 @@ struct gio_driver {
 
 	int  (*probe)(struct gio_device *, const struct gio_device_id *);
 	void (*remove)(struct gio_device *);
+<<<<<<< HEAD
 	int  (*suspend)(struct gio_device *, pm_message_t);
 	int  (*resume)(struct gio_device *);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*shutdown)(struct gio_device *);
 
 	struct device_driver driver;
 };
 #define to_gio_driver(drv) container_of(drv, struct gio_driver, driver)
 
+<<<<<<< HEAD
 extern const struct gio_device_id *gio_match_device(const struct gio_device_id *,
 						    const struct gio_device *);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct gio_device *gio_dev_get(struct gio_device *);
 extern void gio_dev_put(struct gio_device *);
 
@@ -50,7 +72,12 @@ static inline void gio_device_free(struct gio_device *dev)
 extern int gio_register_driver(struct gio_driver *);
 extern void gio_unregister_driver(struct gio_driver *);
 
+<<<<<<< HEAD
 #define gio_get_drvdata(_dev)        drv_get_drvdata(&(_dev)->dev)
 #define gio_set_drvdata(_dev, data)  drv_set_drvdata(&(_dev)->dev, (data))
+=======
+#define gio_get_drvdata(_dev)	     dev_get_drvdata(&(_dev)->dev)
+#define gio_set_drvdata(_dev, data)  dev_set_drvdata(&(_dev)->dev, (data))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void gio_set_master(struct gio_device *);

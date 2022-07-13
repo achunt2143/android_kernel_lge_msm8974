@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Core driver for WM8400.
  *
  * Copyright 2008 Wolfson Microelectronics PLC.
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -13,6 +18,11 @@
  */
 
 #include <linux/module.h>
+=======
+ */
+
+#include <linux/init.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bug.h>
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -23,6 +33,7 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 static struct {
 	u16  readable;    /* Mask of readable bits */
 	u16  writable;    /* Mask of writable bits */
@@ -239,12 +250,33 @@ EXPORT_SYMBOL_GPL(wm8400_reset_codec_reg_cache);
 static int wm8400_register_codec(struct wm8400 *wm8400)
 {
 	struct mfd_cell cell = {
+=======
+static bool wm8400_volatile(struct device *dev, unsigned int reg)
+{
+	switch (reg) {
+	case WM8400_INTERRUPT_STATUS_1:
+	case WM8400_INTERRUPT_LEVELS:
+	case WM8400_SHUTDOWN_REASON:
+		return true;
+	default:
+		return false;
+	}
+}
+
+static int wm8400_register_codec(struct wm8400 *wm8400)
+{
+	const struct mfd_cell cell = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name = "wm8400-codec",
 		.platform_data = wm8400,
 		.pdata_size = sizeof(*wm8400),
 	};
 
+<<<<<<< HEAD
 	return mfd_add_devices(wm8400->dev, -1, &cell, 1, NULL, 0);
+=======
+	return devm_mfd_add_devices(wm8400->dev, -1, &cell, 1, NULL, 0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -257,6 +289,7 @@ static int wm8400_register_codec(struct wm8400 *wm8400)
 static int wm8400_init(struct wm8400 *wm8400,
 		       struct wm8400_platform_data *pdata)
 {
+<<<<<<< HEAD
 	u16 reg;
 	int ret, i;
 
@@ -266,10 +299,18 @@ static int wm8400_init(struct wm8400 *wm8400,
 
 	/* Check that this is actually a WM8400 */
 	ret = regmap_read(wm8400->regmap, WM8400_RESET_ID, &i);
+=======
+	unsigned int reg;
+	int ret;
+
+	/* Check that this is actually a WM8400 */
+	ret = regmap_read(wm8400->regmap, WM8400_RESET_ID, &reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0) {
 		dev_err(wm8400->dev, "Chip ID register read failed\n");
 		return -EIO;
 	}
+<<<<<<< HEAD
 	if (i != reg_data[WM8400_RESET_ID].default_val) {
 		dev_err(wm8400->dev, "Device is not a WM8400, ID is %x\n", i);
 		return -ENODEV;
@@ -295,6 +336,15 @@ static int wm8400_init(struct wm8400 *wm8400,
 				wm8400->reg_cache[i] = reg_data[i].default_val;
 
 	ret = wm8400_read(wm8400, WM8400_ID, 1, &reg);
+=======
+	if (reg != 0x6172) {
+		dev_err(wm8400->dev, "Device is not a WM8400, ID is %x\n",
+			reg);
+		return -ENODEV;
+	}
+
+	ret = regmap_read(wm8400->regmap, WM8400_ID, &reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0) {
 		dev_err(wm8400->dev, "ID register read failed: %d\n", ret);
 		return ret;
@@ -305,7 +355,11 @@ static int wm8400_init(struct wm8400 *wm8400,
 	ret = wm8400_register_codec(wm8400);
 	if (ret != 0) {
 		dev_err(wm8400->dev, "Failed to register codec\n");
+<<<<<<< HEAD
 		goto err_children;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (pdata && pdata->platform_init) {
@@ -313,12 +367,17 @@ static int wm8400_init(struct wm8400 *wm8400,
 		if (ret != 0) {
 			dev_err(wm8400->dev, "Platform init failed: %d\n",
 				ret);
+<<<<<<< HEAD
 			goto err_children;
+=======
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else
 		dev_warn(wm8400->dev, "No platform initialisation supplied\n");
 
 	return 0;
+<<<<<<< HEAD
 
 err_children:
 	mfd_remove_devices(wm8400->dev);
@@ -328,12 +387,15 @@ err_children:
 static void wm8400_release(struct wm8400 *wm8400)
 {
 	mfd_remove_devices(wm8400->dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct regmap_config wm8400_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 16,
 	.max_register = WM8400_REGISTER_COUNT - 1,
+<<<<<<< HEAD
 };
 
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
@@ -354,10 +416,43 @@ static int wm8400_i2c_probe(struct i2c_client *i2c,
 		ret = PTR_ERR(wm8400->regmap);
 		goto err;
 	}
+=======
+
+	.volatile_reg = wm8400_volatile,
+
+	.cache_type = REGCACHE_MAPLE,
+};
+
+/**
+ * wm8400_reset_codec_reg_cache - Reset cached codec registers to
+ * their default values.
+ *
+ * @wm8400: pointer to local driver data structure
+ */
+void wm8400_reset_codec_reg_cache(struct wm8400 *wm8400)
+{
+	regmap_reinit_cache(wm8400->regmap, &wm8400_regmap_config);
+}
+EXPORT_SYMBOL_GPL(wm8400_reset_codec_reg_cache);
+
+#if IS_ENABLED(CONFIG_I2C)
+static int wm8400_i2c_probe(struct i2c_client *i2c)
+{
+	struct wm8400 *wm8400;
+
+	wm8400 = devm_kzalloc(&i2c->dev, sizeof(struct wm8400), GFP_KERNEL);
+	if (!wm8400)
+		return -ENOMEM;
+
+	wm8400->regmap = devm_regmap_init_i2c(i2c, &wm8400_regmap_config);
+	if (IS_ERR(wm8400->regmap))
+		return PTR_ERR(wm8400->regmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wm8400->dev = &i2c->dev;
 	i2c_set_clientdata(i2c, wm8400);
 
+<<<<<<< HEAD
 	ret = wm8400_init(wm8400, i2c->dev.platform_data);
 	if (ret != 0)
 		goto err;
@@ -375,30 +470,49 @@ static int wm8400_i2c_remove(struct i2c_client *i2c)
 	wm8400_release(wm8400);
 
 	return 0;
+=======
+	return wm8400_init(wm8400, dev_get_platdata(&i2c->dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id wm8400_i2c_id[] = {
        { "wm8400", 0 },
        { }
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(i2c, wm8400_i2c_id);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct i2c_driver wm8400_i2c_driver = {
 	.driver = {
 		.name = "WM8400",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe    = wm8400_i2c_probe,
 	.remove   = wm8400_i2c_remove,
+=======
+	},
+	.probe = wm8400_i2c_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = wm8400_i2c_id,
 };
 #endif
 
+<<<<<<< HEAD
 static int __init wm8400_module_init(void)
 {
 	int ret = -ENODEV;
 
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+static int __init wm8400_driver_init(void)
+{
+	int ret = -ENODEV;
+
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = i2c_add_driver(&wm8400_i2c_driver);
 	if (ret != 0)
 		pr_err("Failed to register I2C driver: %d\n", ret);
@@ -406,6 +520,7 @@ static int __init wm8400_module_init(void)
 
 	return ret;
 }
+<<<<<<< HEAD
 subsys_initcall(wm8400_module_init);
 
 static void __exit wm8400_module_exit(void)
@@ -418,3 +533,6 @@ module_exit(wm8400_module_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
+=======
+subsys_initcall(wm8400_driver_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

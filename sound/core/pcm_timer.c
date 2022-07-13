@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Digital Audio (PCM) abstract layer
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Digital Audio (PCM) abstract layer
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/time.h>
@@ -25,6 +32,11 @@
 #include <sound/pcm.h>
 #include <sound/timer.h>
 
+<<<<<<< HEAD
+=======
+#include "pcm_local.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Timer functions
  */
@@ -33,8 +45,13 @@ void snd_pcm_timer_resolution_change(struct snd_pcm_substream *substream)
 {
 	unsigned long rate, mult, fsize, l, post;
 	struct snd_pcm_runtime *runtime = substream->runtime;
+<<<<<<< HEAD
 	
         mult = 1000000000;
+=======
+
+	mult = 1000000000;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rate = runtime->rate;
 	if (snd_BUG_ON(!rate))
 		return;
@@ -53,7 +70,13 @@ void snd_pcm_timer_resolution_change(struct snd_pcm_substream *substream)
 		post *= 2;
 	}
 	if (rate == 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "pcm timer resolution out of range (rate = %u, period_size = %lu)\n", runtime->rate, runtime->period_size);
+=======
+		pcm_err(substream->pcm,
+			"pcm timer resolution out of range (rate = %u, period_size = %lu)\n",
+			runtime->rate, runtime->period_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		runtime->timer_resolution = -1;
 		return;
 	}
@@ -63,7 +86,11 @@ void snd_pcm_timer_resolution_change(struct snd_pcm_substream *substream)
 static unsigned long snd_pcm_timer_resolution(struct snd_timer * timer)
 {
 	struct snd_pcm_substream *substream;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	substream = timer->private_data;
 	return substream->runtime ? substream->runtime->timer_resolution : 0;
 }
@@ -71,7 +98,11 @@ static unsigned long snd_pcm_timer_resolution(struct snd_timer * timer)
 static int snd_pcm_timer_start(struct snd_timer * timer)
 {
 	struct snd_pcm_substream *substream;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	substream = snd_timer_chip(timer);
 	substream->timer_running = 1;
 	return 0;
@@ -80,13 +111,21 @@ static int snd_pcm_timer_start(struct snd_timer * timer)
 static int snd_pcm_timer_stop(struct snd_timer * timer)
 {
 	struct snd_pcm_substream *substream;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	substream = snd_timer_chip(timer);
 	substream->timer_running = 0;
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_timer_hardware snd_pcm_timer =
+=======
+static const struct snd_timer_hardware snd_pcm_timer =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.flags =	SNDRV_TIMER_HW_AUTO | SNDRV_TIMER_HW_SLAVE,
 	.resolution =	0,
@@ -110,7 +149,11 @@ void snd_pcm_timer_init(struct snd_pcm_substream *substream)
 {
 	struct snd_timer_id tid;
 	struct snd_timer *timer;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tid.dev_sclass = SNDRV_TIMER_SCLASS_NONE;
 	tid.dev_class = SNDRV_TIMER_CLASS_PCM;
 	tid.card = substream->pcm->card->number;

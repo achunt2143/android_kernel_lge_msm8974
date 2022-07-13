@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/ext2/xattr_user.c
  * Handler for extended user attributes.
@@ -10,6 +14,7 @@
 #include "ext2.h"
 #include "xattr.h"
 
+<<<<<<< HEAD
 static size_t
 ext2_xattr_user_list(struct dentry *dentry, char *list, size_t list_size,
 		const char *name, size_t name_len, int type)
@@ -37,10 +42,27 @@ ext2_xattr_user_get(struct dentry *dentry, const char *name,
 	if (!test_opt(dentry->d_sb, XATTR_USER))
 		return -EOPNOTSUPP;
 	return ext2_xattr_get(dentry->d_inode, EXT2_XATTR_INDEX_USER,
+=======
+static bool
+ext2_xattr_user_list(struct dentry *dentry)
+{
+	return test_opt(dentry->d_sb, XATTR_USER);
+}
+
+static int
+ext2_xattr_user_get(const struct xattr_handler *handler,
+		    struct dentry *unused, struct inode *inode,
+		    const char *name, void *buffer, size_t size)
+{
+	if (!test_opt(inode->i_sb, XATTR_USER))
+		return -EOPNOTSUPP;
+	return ext2_xattr_get(inode, EXT2_XATTR_INDEX_USER,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      name, buffer, size);
 }
 
 static int
+<<<<<<< HEAD
 ext2_xattr_user_set(struct dentry *dentry, const char *name,
 		const void *value, size_t size, int flags, int type)
 {
@@ -50,6 +72,18 @@ ext2_xattr_user_set(struct dentry *dentry, const char *name,
 		return -EOPNOTSUPP;
 
 	return ext2_xattr_set(dentry->d_inode, EXT2_XATTR_INDEX_USER,
+=======
+ext2_xattr_user_set(const struct xattr_handler *handler,
+		    struct mnt_idmap *idmap,
+		    struct dentry *unused, struct inode *inode,
+		    const char *name, const void *value,
+		    size_t size, int flags)
+{
+	if (!test_opt(inode->i_sb, XATTR_USER))
+		return -EOPNOTSUPP;
+
+	return ext2_xattr_set(inode, EXT2_XATTR_INDEX_USER,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      name, value, size, flags);
 }
 

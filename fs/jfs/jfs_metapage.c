@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2005
  *   Portions Copyright (C) Christoph Hellwig, 2001-2002
@@ -15,6 +16,12 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *   Copyright (C) International Business Machines Corp., 2000-2005
+ *   Portions Copyright (C) Christoph Hellwig, 2001-2002
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -26,6 +33,10 @@
 #include <linux/buffer_head.h>
 #include <linux/mempool.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
+=======
+#include <linux/writeback.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "jfs_incore.h"
 #include "jfs_superblock.h"
 #include "jfs_filsys.h"
@@ -80,7 +91,11 @@ static inline void lock_metapage(struct metapage *mp)
 static struct kmem_cache *metapage_cache;
 static mempool_t *metapage_mempool;
 
+<<<<<<< HEAD
 #define MPS_PER_PAGE (PAGE_CACHE_SIZE >> L2PSIZE)
+=======
+#define MPS_PER_PAGE (PAGE_SIZE >> L2PSIZE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if MPS_PER_PAGE > 1
 
@@ -183,6 +198,7 @@ static inline void remove_metapage(struct page *page, struct metapage *mp)
 
 #endif
 
+<<<<<<< HEAD
 static void init_once(void *foo)
 {
 	struct metapage *mp = (struct metapage *)foo;
@@ -200,13 +216,31 @@ static void init_once(void *foo)
 static inline struct metapage *alloc_metapage(gfp_t gfp_mask)
 {
 	return mempool_alloc(metapage_mempool, gfp_mask);
+=======
+static inline struct metapage *alloc_metapage(gfp_t gfp_mask)
+{
+	struct metapage *mp = mempool_alloc(metapage_mempool, gfp_mask);
+
+	if (mp) {
+		mp->lid = 0;
+		mp->lsn = 0;
+		mp->data = NULL;
+		mp->clsn = 0;
+		mp->log = NULL;
+		init_waitqueue_head(&mp->wait);
+	}
+	return mp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void free_metapage(struct metapage *mp)
 {
+<<<<<<< HEAD
 	mp->flag = 0;
 	set_bit(META_free, &mp->flag);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mempool_free(mp, metapage_mempool);
 }
 
@@ -216,7 +250,11 @@ int __init metapage_init(void)
 	 * Allocate the metapage structures
 	 */
 	metapage_cache = kmem_cache_create("jfs_mp", sizeof(struct metapage),
+<<<<<<< HEAD
 					   0, 0, init_once);
+=======
+					   0, 0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (metapage_cache == NULL)
 		return -ENOMEM;
 
@@ -283,11 +321,19 @@ static void last_read_complete(struct page *page)
 	unlock_page(page);
 }
 
+<<<<<<< HEAD
 static void metapage_read_end_io(struct bio *bio, int err)
 {
 	struct page *page = bio->bi_private;
 
 	if (!test_bit(BIO_UPTODATE, &bio->bi_flags)) {
+=======
+static void metapage_read_end_io(struct bio *bio)
+{
+	struct page *page = bio->bi_private;
+
+	if (bio->bi_status) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "metapage_read_end_io: I/O error\n");
 		SetPageError(page);
 	}
@@ -323,7 +369,11 @@ static void last_write_complete(struct page *page)
 	struct metapage *mp;
 	unsigned int offset;
 
+<<<<<<< HEAD
 	for (offset = 0; offset < PAGE_CACHE_SIZE; offset += PSIZE) {
+=======
+	for (offset = 0; offset < PAGE_SIZE; offset += PSIZE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mp = page_to_mp(page, offset);
 		if (mp && test_bit(META_io, &mp->flag)) {
 			if (mp->lsn)
@@ -338,13 +388,21 @@ static void last_write_complete(struct page *page)
 	end_page_writeback(page);
 }
 
+<<<<<<< HEAD
 static void metapage_write_end_io(struct bio *bio, int err)
+=======
+static void metapage_write_end_io(struct bio *bio)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct page *page = bio->bi_private;
 
 	BUG_ON(!PagePrivate(page));
 
+<<<<<<< HEAD
 	if (! test_bit(BIO_UPTODATE, &bio->bi_flags)) {
+=======
+	if (bio->bi_status) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "metapage_write_end_io: I/O error\n");
 		SetPageError(page);
 	}
@@ -373,12 +431,20 @@ static int metapage_writepage(struct page *page, struct writeback_control *wbc)
 	int bad_blocks = 0;
 
 	page_start = (sector_t)page->index <<
+<<<<<<< HEAD
 		     (PAGE_CACHE_SHIFT - inode->i_blkbits);
+=======
+		     (PAGE_SHIFT - inode->i_blkbits);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(!PageLocked(page));
 	BUG_ON(PageWriteback(page));
 	set_page_writeback(page);
 
+<<<<<<< HEAD
 	for (offset = 0; offset < PAGE_CACHE_SIZE; offset += PSIZE) {
+=======
+	for (offset = 0; offset < PAGE_SIZE; offset += PSIZE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mp = page_to_mp(page, offset);
 
 		if (!mp || !test_bit(META_dirty, &mp->flag))
@@ -416,14 +482,24 @@ static int metapage_writepage(struct page *page, struct writeback_control *wbc)
 			 * count from hitting zero before we're through
 			 */
 			inc_io(page);
+<<<<<<< HEAD
 			if (!bio->bi_size)
 				goto dump_bio;
 			submit_bio(WRITE, bio);
+=======
+			if (!bio->bi_iter.bi_size)
+				goto dump_bio;
+			submit_bio(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nr_underway++;
 			bio = NULL;
 		} else
 			inc_io(page);
+<<<<<<< HEAD
 		xlen = (PAGE_CACHE_SIZE - offset) >> inode->i_blkbits;
+=======
+		xlen = (PAGE_SIZE - offset) >> inode->i_blkbits;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pblock = metapage_get_blocks(inode, lblock, &xlen);
 		if (!pblock) {
 			printk(KERN_ERR "JFS: metapage_get_blocks failed\n");
@@ -436,9 +512,14 @@ static int metapage_writepage(struct page *page, struct writeback_control *wbc)
 		}
 		len = min(xlen, (int)JFS_SBI(inode->i_sb)->nbperpage);
 
+<<<<<<< HEAD
 		bio = bio_alloc(GFP_NOFS, 1);
 		bio->bi_bdev = inode->i_sb->s_bdev;
 		bio->bi_sector = pblock << (inode->i_blkbits - 9);
+=======
+		bio = bio_alloc(inode->i_sb->s_bdev, 1, REQ_OP_WRITE, GFP_NOFS);
+		bio->bi_iter.bi_sector = pblock << (inode->i_blkbits - 9);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bio->bi_end_io = metapage_write_end_io;
 		bio->bi_private = page;
 
@@ -452,10 +533,17 @@ static int metapage_writepage(struct page *page, struct writeback_control *wbc)
 	if (bio) {
 		if (bio_add_page(bio, page, bio_bytes, bio_offset) < bio_bytes)
 				goto add_failed;
+<<<<<<< HEAD
 		if (!bio->bi_size)
 			goto dump_bio;
 
 		submit_bio(WRITE, bio);
+=======
+		if (!bio->bi_iter.bi_size)
+			goto dump_bio;
+
+		submit_bio(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nr_underway++;
 	}
 	if (redirty)
@@ -487,12 +575,22 @@ err_out:
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int metapage_readpage(struct file *fp, struct page *page)
 {
 	struct inode *inode = page->mapping->host;
 	struct bio *bio = NULL;
 	int block_offset;
 	int blocks_per_page = PAGE_CACHE_SIZE >> inode->i_blkbits;
+=======
+static int metapage_read_folio(struct file *fp, struct folio *folio)
+{
+	struct page *page = &folio->page;
+	struct inode *inode = page->mapping->host;
+	struct bio *bio = NULL;
+	int block_offset;
+	int blocks_per_page = i_blocks_per_page(inode, page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sector_t page_start;	/* address of page in fs blocks */
 	sector_t pblock;
 	int xlen;
@@ -501,7 +599,11 @@ static int metapage_readpage(struct file *fp, struct page *page)
 
 	BUG_ON(!PageLocked(page));
 	page_start = (sector_t)page->index <<
+<<<<<<< HEAD
 		     (PAGE_CACHE_SHIFT - inode->i_blkbits);
+=======
+		     (PAGE_SHIFT - inode->i_blkbits);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	block_offset = 0;
 	while (block_offset < blocks_per_page) {
@@ -513,11 +615,20 @@ static int metapage_readpage(struct file *fp, struct page *page)
 				insert_metapage(page, NULL);
 			inc_io(page);
 			if (bio)
+<<<<<<< HEAD
 				submit_bio(READ, bio);
 
 			bio = bio_alloc(GFP_NOFS, 1);
 			bio->bi_bdev = inode->i_sb->s_bdev;
 			bio->bi_sector = pblock << (inode->i_blkbits - 9);
+=======
+				submit_bio(bio);
+
+			bio = bio_alloc(inode->i_sb->s_bdev, 1, REQ_OP_READ,
+					GFP_NOFS);
+			bio->bi_iter.bi_sector =
+				pblock << (inode->i_blkbits - 9);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bio->bi_end_io = metapage_read_end_io;
 			bio->bi_private = page;
 			len = xlen << inode->i_blkbits;
@@ -529,7 +640,11 @@ static int metapage_readpage(struct file *fp, struct page *page)
 			block_offset++;
 	}
 	if (bio)
+<<<<<<< HEAD
 		submit_bio(READ, bio);
+=======
+		submit_bio(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		unlock_page(page);
 
@@ -542,6 +657,7 @@ add_failed:
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int metapage_releasepage(struct page *page, gfp_t gfp_mask)
 {
 	struct metapage *mp;
@@ -550,27 +666,50 @@ static int metapage_releasepage(struct page *page, gfp_t gfp_mask)
 
 	for (offset = 0; offset < PAGE_CACHE_SIZE; offset += PSIZE) {
 		mp = page_to_mp(page, offset);
+=======
+static bool metapage_release_folio(struct folio *folio, gfp_t gfp_mask)
+{
+	struct metapage *mp;
+	bool ret = true;
+	int offset;
+
+	for (offset = 0; offset < PAGE_SIZE; offset += PSIZE) {
+		mp = page_to_mp(&folio->page, offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!mp)
 			continue;
 
+<<<<<<< HEAD
 		jfs_info("metapage_releasepage: mp = 0x%p", mp);
+=======
+		jfs_info("metapage_release_folio: mp = 0x%p", mp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mp->count || mp->nohomeok ||
 		    test_bit(META_dirty, &mp->flag)) {
 			jfs_info("count = %ld, nohomeok = %d", mp->count,
 				 mp->nohomeok);
+<<<<<<< HEAD
 			ret = 0;
+=======
+			ret = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		if (mp->lsn)
 			remove_from_logsync(mp);
+<<<<<<< HEAD
 		remove_metapage(page, mp);
+=======
+		remove_metapage(&folio->page, mp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		INCREMENT(mpStat.pagefree);
 		free_metapage(mp);
 	}
 	return ret;
 }
 
+<<<<<<< HEAD
 static void metapage_invalidatepage(struct page *page, unsigned long offset)
 {
 	BUG_ON(offset);
@@ -586,6 +725,24 @@ const struct address_space_operations jfs_metapage_aops = {
 	.releasepage	= metapage_releasepage,
 	.invalidatepage	= metapage_invalidatepage,
 	.set_page_dirty	= __set_page_dirty_nobuffers,
+=======
+static void metapage_invalidate_folio(struct folio *folio, size_t offset,
+				    size_t length)
+{
+	BUG_ON(offset || length < folio_size(folio));
+
+	BUG_ON(folio_test_writeback(folio));
+
+	metapage_release_folio(folio, 0);
+}
+
+const struct address_space_operations jfs_metapage_aops = {
+	.read_folio	= metapage_read_folio,
+	.writepage	= metapage_writepage,
+	.release_folio	= metapage_release_folio,
+	.invalidate_folio = metapage_invalidate_folio,
+	.dirty_folio	= filemap_dirty_folio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct metapage *__get_metapage(struct inode *inode, unsigned long lblock,
@@ -604,10 +761,17 @@ struct metapage *__get_metapage(struct inode *inode, unsigned long lblock,
 		 inode->i_ino, lblock, absolute);
 
 	l2bsize = inode->i_blkbits;
+<<<<<<< HEAD
 	l2BlocksPerPage = PAGE_CACHE_SHIFT - l2bsize;
 	page_index = lblock >> l2BlocksPerPage;
 	page_offset = (lblock - (page_index << l2BlocksPerPage)) << l2bsize;
 	if ((page_offset + size) > PAGE_CACHE_SIZE) {
+=======
+	l2BlocksPerPage = PAGE_SHIFT - l2bsize;
+	page_index = lblock >> l2BlocksPerPage;
+	page_offset = (lblock - (page_index << l2BlocksPerPage)) << l2bsize;
+	if ((page_offset + size) > PAGE_SIZE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		jfs_err("MetaData crosses page boundary!!");
 		jfs_err("lblock = %lx, size  = %d", lblock, size);
 		dump_stack();
@@ -626,7 +790,11 @@ struct metapage *__get_metapage(struct inode *inode, unsigned long lblock,
 		mapping = inode->i_mapping;
 	}
 
+<<<<<<< HEAD
 	if (new && (PSIZE == PAGE_CACHE_SIZE)) {
+=======
+	if (new && (PSIZE == PAGE_SIZE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		page = grab_cache_page(mapping, page_index);
 		if (!page) {
 			jfs_err("grab_cache_page failed!");
@@ -635,7 +803,11 @@ struct metapage *__get_metapage(struct inode *inode, unsigned long lblock,
 		SetPageUptodate(page);
 	} else {
 		page = read_mapping_page(mapping, page_index, NULL);
+<<<<<<< HEAD
 		if (IS_ERR(page) || !PageUptodate(page)) {
+=======
+		if (IS_ERR(page)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			jfs_err("read_mapping_page failed!");
 			return NULL;
 		}
@@ -646,7 +818,11 @@ struct metapage *__get_metapage(struct inode *inode, unsigned long lblock,
 	if (mp) {
 		if (mp->logical_size != size) {
 			jfs_error(inode->i_sb,
+<<<<<<< HEAD
 				  "__get_metapage: mp->logical_size != size");
+=======
+				  "get_mp->logical_size != size\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			jfs_err("logical_size = %d, size = %d",
 				mp->logical_size, size);
 			dump_stack();
@@ -657,8 +833,12 @@ struct metapage *__get_metapage(struct inode *inode, unsigned long lblock,
 		if (test_bit(META_discard, &mp->flag)) {
 			if (!new) {
 				jfs_error(inode->i_sb,
+<<<<<<< HEAD
 					  "__get_metapage: using a "
 					  "discarded metapage");
+=======
+					  "using a discarded metapage\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				discard_metapage(mp);
 				goto unlock;
 			}
@@ -667,7 +847,14 @@ struct metapage *__get_metapage(struct inode *inode, unsigned long lblock,
 	} else {
 		INCREMENT(mpStat.pagealloc);
 		mp = alloc_metapage(GFP_NOFS);
+<<<<<<< HEAD
 		mp->page = page;
+=======
+		if (!mp)
+			goto unlock;
+		mp->page = page;
+		mp->sb = inode->i_sb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mp->flag = 0;
 		mp->xflag = COMMIT_PAGE;
 		mp->count = 1;
@@ -699,25 +886,71 @@ unlock:
 void grab_metapage(struct metapage * mp)
 {
 	jfs_info("grab_metapage: mp = 0x%p", mp);
+<<<<<<< HEAD
 	page_cache_get(mp->page);
+=======
+	get_page(mp->page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lock_page(mp->page);
 	mp->count++;
 	lock_metapage(mp);
 	unlock_page(mp->page);
 }
 
+<<<<<<< HEAD
+=======
+static int metapage_write_one(struct page *page)
+{
+	struct folio *folio = page_folio(page);
+	struct address_space *mapping = folio->mapping;
+	struct writeback_control wbc = {
+		.sync_mode = WB_SYNC_ALL,
+		.nr_to_write = folio_nr_pages(folio),
+	};
+	int ret = 0;
+
+	BUG_ON(!folio_test_locked(folio));
+
+	folio_wait_writeback(folio);
+
+	if (folio_clear_dirty_for_io(folio)) {
+		folio_get(folio);
+		ret = metapage_writepage(page, &wbc);
+		if (ret == 0)
+			folio_wait_writeback(folio);
+		folio_put(folio);
+	} else {
+		folio_unlock(folio);
+	}
+
+	if (!ret)
+		ret = filemap_check_errors(mapping);
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void force_metapage(struct metapage *mp)
 {
 	struct page *page = mp->page;
 	jfs_info("force_metapage: mp = 0x%p", mp);
 	set_bit(META_forcewrite, &mp->flag);
 	clear_bit(META_sync, &mp->flag);
+<<<<<<< HEAD
 	page_cache_get(page);
 	lock_page(page);
 	set_page_dirty(page);
 	write_one_page(page, 1);
 	clear_bit(META_forcewrite, &mp->flag);
 	page_cache_release(page);
+=======
+	get_page(page);
+	lock_page(page);
+	set_page_dirty(page);
+	if (metapage_write_one(page))
+		jfs_error(mp->sb, "metapage_write_one() failed\n");
+	clear_bit(META_forcewrite, &mp->flag);
+	put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void hold_metapage(struct metapage *mp)
@@ -732,7 +965,11 @@ void put_metapage(struct metapage *mp)
 		unlock_page(mp->page);
 		return;
 	}
+<<<<<<< HEAD
 	page_cache_get(mp->page);
+=======
+	get_page(mp->page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mp->count++;
 	lock_metapage(mp);
 	unlock_page(mp->page);
@@ -752,7 +989,11 @@ void release_metapage(struct metapage * mp)
 	assert(mp->count);
 	if (--mp->count || mp->nohomeok) {
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -760,8 +1001,14 @@ void release_metapage(struct metapage * mp)
 		set_page_dirty(page);
 		if (test_bit(META_sync, &mp->flag)) {
 			clear_bit(META_sync, &mp->flag);
+<<<<<<< HEAD
 			write_one_page(page, 1);
 			lock_page(page); /* write_one_page unlocks the page */
+=======
+			if (metapage_write_one(page))
+				jfs_error(mp->sb, "metapage_write_one() failed\n");
+			lock_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else if (mp->lsn)	/* discard_metapage doesn't remove it */
 		remove_from_logsync(mp);
@@ -770,13 +1017,21 @@ void release_metapage(struct metapage * mp)
 	drop_metapage(page, mp);
 
 	unlock_page(page);
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __invalidate_metapages(struct inode *ip, s64 addr, int len)
 {
 	sector_t lblock;
+<<<<<<< HEAD
 	int l2BlocksPerPage = PAGE_CACHE_SHIFT - ip->i_blkbits;
+=======
+	int l2BlocksPerPage = PAGE_SHIFT - ip->i_blkbits;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int BlocksPerPage = 1 << l2BlocksPerPage;
 	/* All callers are interested in block device's mapping */
 	struct address_space *mapping =
@@ -794,7 +1049,11 @@ void __invalidate_metapages(struct inode *ip, s64 addr, int len)
 		page = find_lock_page(mapping, lblock >> l2BlocksPerPage);
 		if (!page)
 			continue;
+<<<<<<< HEAD
 		for (offset = 0; offset < PAGE_CACHE_SIZE; offset += PSIZE) {
+=======
+		for (offset = 0; offset < PAGE_SIZE; offset += PSIZE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mp = page_to_mp(page, offset);
 			if (!mp)
 				continue;
@@ -809,12 +1068,20 @@ void __invalidate_metapages(struct inode *ip, s64 addr, int len)
 				remove_from_logsync(mp);
 		}
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 #ifdef CONFIG_JFS_STATISTICS
+<<<<<<< HEAD
 static int jfs_mpstat_proc_show(struct seq_file *m, void *v)
+=======
+int jfs_mpstat_proc_show(struct seq_file *m, void *v)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	seq_printf(m,
 		       "JFS Metapage statistics\n"
@@ -827,6 +1094,7 @@ static int jfs_mpstat_proc_show(struct seq_file *m, void *v)
 		       mpStat.lockwait);
 	return 0;
 }
+<<<<<<< HEAD
 
 static int jfs_mpstat_proc_open(struct inode *inode, struct file *file)
 {
@@ -840,4 +1108,6 @@ const struct file_operations jfs_mpstat_proc_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

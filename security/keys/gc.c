@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Key garbage collector
  *
  * Copyright (C) 2009-2011 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public Licence
@@ -10,6 +15,10 @@
  */
 
 #include <linux/module.h>
+=======
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/security.h>
 #include <keys/keyring-type.h>
@@ -29,10 +38,17 @@ DECLARE_WORK(key_gc_work, key_garbage_collector);
 /*
  * Reaper for links from keyrings to dead keys.
  */
+<<<<<<< HEAD
 static void key_gc_timer_func(unsigned long);
 static DEFINE_TIMER(key_gc_timer, key_gc_timer_func, 0, 0);
 
 static time_t key_gc_next_run = LONG_MAX;
+=======
+static void key_gc_timer_func(struct timer_list *);
+static DEFINE_TIMER(key_gc_timer, key_gc_timer_func);
+
+static time64_t key_gc_next_run = TIME64_MAX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct key_type *key_gc_dead_keytype;
 
 static unsigned long key_gc_flags;
@@ -53,6 +69,7 @@ struct key_type key_type_dead = {
  * Schedule a garbage collection run.
  * - time precision isn't particularly important
  */
+<<<<<<< HEAD
 void key_schedule_gc(time_t gc_at)
 {
 	unsigned long expires;
@@ -63,6 +80,18 @@ void key_schedule_gc(time_t gc_at)
 	if (gc_at <= now || test_bit(KEY_GC_REAP_KEYTYPE, &key_gc_flags)) {
 		kdebug("IMMEDIATE");
 		queue_work(system_nrt_wq, &key_gc_work);
+=======
+void key_schedule_gc(time64_t gc_at)
+{
+	unsigned long expires;
+	time64_t now = ktime_get_real_seconds();
+
+	kenter("%lld", gc_at - now);
+
+	if (gc_at <= now || test_bit(KEY_GC_REAP_KEYTYPE, &key_gc_flags)) {
+		kdebug("IMMEDIATE");
+		schedule_work(&key_gc_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (gc_at < key_gc_next_run) {
 		kdebug("DEFERRED");
 		key_gc_next_run = gc_at;
@@ -72,26 +101,54 @@ void key_schedule_gc(time_t gc_at)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Set the expiration time on a key.
+ */
+void key_set_expiry(struct key *key, time64_t expiry)
+{
+	key->expiry = expiry;
+	if (expiry != TIME64_MAX) {
+		if (!(key->type->flags & KEY_TYPE_INSTANT_REAP))
+			expiry += key_gc_delay;
+		key_schedule_gc(expiry);
+	}
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Schedule a dead links collection run.
  */
 void key_schedule_gc_links(void)
 {
 	set_bit(KEY_GC_KEY_EXPIRED, &key_gc_flags);
+<<<<<<< HEAD
 	queue_work(system_nrt_wq, &key_gc_work);
+=======
+	schedule_work(&key_gc_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Some key's cleanup time was met after it expired, so we need to get the
  * reaper to go through a cycle finding expired keys.
  */
+<<<<<<< HEAD
 static void key_gc_timer_func(unsigned long data)
 {
 	kenter("");
 	key_gc_next_run = LONG_MAX;
+=======
+static void key_gc_timer_func(struct timer_list *unused)
+{
+	kenter("");
+	key_gc_next_run = TIME64_MAX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key_schedule_gc_links();
 }
 
 /*
+<<<<<<< HEAD
  * wait_on_bit() sleep function for uninterruptible waiting
  */
 static int key_gc_wait_bit(void *flags)
@@ -101,6 +158,8 @@ static int key_gc_wait_bit(void *flags)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Reap keys of dead type.
  *
  * We use three flags to make sure we see three complete cycles of the garbage
@@ -120,10 +179,17 @@ void key_gc_keytype(struct key_type *ktype)
 	set_bit(KEY_GC_REAP_KEYTYPE, &key_gc_flags);
 
 	kdebug("schedule");
+<<<<<<< HEAD
 	queue_work(system_nrt_wq, &key_gc_work);
 
 	kdebug("sleep");
 	wait_on_bit(&key_gc_flags, KEY_GC_REAPING_KEYTYPE, key_gc_wait_bit,
+=======
+	schedule_work(&key_gc_work);
+
+	kdebug("sleep");
+	wait_on_bit(&key_gc_flags, KEY_GC_REAPING_KEYTYPE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    TASK_UNINTERRUPTIBLE);
 
 	key_gc_dead_keytype = NULL;
@@ -131,6 +197,7 @@ void key_gc_keytype(struct key_type *ktype)
 }
 
 /*
+<<<<<<< HEAD
  * Garbage collect pointers from a keyring.
  *
  * Not called with any locks held.  The keyring's key struct will not be
@@ -175,6 +242,8 @@ do_gc:
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Garbage collect a list of unreferenced, detached keys
  */
 static noinline void key_gc_unused_keys(struct list_head *keys)
@@ -182,15 +251,30 @@ static noinline void key_gc_unused_keys(struct list_head *keys)
 	while (!list_empty(keys)) {
 		struct key *key =
 			list_entry(keys->next, struct key, graveyard_link);
+<<<<<<< HEAD
+=======
+		short state = key->state;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del(&key->graveyard_link);
 
 		kdebug("- %u", key->serial);
 		key_check(key);
 
+<<<<<<< HEAD
 		/* Throw away the key data if the key is instantiated */
 		if (test_bit(KEY_FLAG_INSTANTIATED, &key->flags) &&
 		    !test_bit(KEY_FLAG_NEGATIVE, &key->flags) &&
 		    key->type->destroy)
+=======
+#ifdef CONFIG_KEY_NOTIFICATIONS
+		remove_watch_list(key->watchers, key->serial);
+		key->watchers = NULL;
+#endif
+
+		/* Throw away the key data if the key is instantiated */
+		if (state == KEY_IS_POSITIVE && key->type->destroy)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			key->type->destroy(key);
 
 		security_key_free(key);
@@ -204,6 +288,7 @@ static noinline void key_gc_unused_keys(struct list_head *keys)
 		}
 
 		atomic_dec(&key->user->nkeys);
+<<<<<<< HEAD
 		if (test_bit(KEY_FLAG_INSTANTIATED, &key->flags))
 			atomic_dec(&key->user->nikeys);
 
@@ -214,6 +299,16 @@ static noinline void key_gc_unused_keys(struct list_head *keys)
 #ifdef KEY_DEBUGGING
 		key->magic = KEY_DEBUG_MAGIC_X;
 #endif
+=======
+		if (state != KEY_IS_UNINSTANTIATED)
+			atomic_dec(&key->user->nikeys);
+
+		key_user_put(key->user);
+		key_put_tag(key->domain_tag);
+		kfree(key->description);
+
+		memzero_explicit(key, sizeof(*key));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kmem_cache_free(key_jar, key);
 	}
 }
@@ -231,7 +326,10 @@ static void key_garbage_collector(struct work_struct *work)
 	static u8 gc_state;		/* Internal persistent state */
 #define KEY_GC_REAP_AGAIN	0x01	/* - Need another cycle */
 #define KEY_GC_REAPING_LINKS	0x02	/* - We need to reap links */
+<<<<<<< HEAD
 #define KEY_GC_SET_TIMER	0x04	/* - We need to restart the timer */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KEY_GC_REAPING_DEAD_1	0x10	/* - We need to mark dead keys */
 #define KEY_GC_REAPING_DEAD_2	0x20	/* - We need to reap dead key links */
 #define KEY_GC_REAPING_DEAD_3	0x40	/* - We need to reap dead keys */
@@ -239,6 +337,7 @@ static void key_garbage_collector(struct work_struct *work)
 
 	struct rb_node *cursor;
 	struct key *key;
+<<<<<<< HEAD
 	time_t new_timer, limit;
 
 	kenter("[%lx,%x]", key_gc_flags, gc_state);
@@ -248,18 +347,33 @@ static void key_garbage_collector(struct work_struct *work)
 		limit -= key_gc_delay;
 	else
 		limit = key_gc_delay;
+=======
+	time64_t new_timer, limit, expiry;
+
+	kenter("[%lx,%x]", key_gc_flags, gc_state);
+
+	limit = ktime_get_real_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Work out what we're going to be doing in this pass */
 	gc_state &= KEY_GC_REAPING_DEAD_1 | KEY_GC_REAPING_DEAD_2;
 	gc_state <<= 1;
 	if (test_and_clear_bit(KEY_GC_KEY_EXPIRED, &key_gc_flags))
+<<<<<<< HEAD
 		gc_state |= KEY_GC_REAPING_LINKS | KEY_GC_SET_TIMER;
+=======
+		gc_state |= KEY_GC_REAPING_LINKS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_and_clear_bit(KEY_GC_REAP_KEYTYPE, &key_gc_flags))
 		gc_state |= KEY_GC_REAPING_DEAD_1;
 	kdebug("new pass %x", gc_state);
 
+<<<<<<< HEAD
 	new_timer = LONG_MAX;
+=======
+	new_timer = TIME64_MAX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* As only this function is permitted to remove things from the key
 	 * serial tree, if cursor is non-NULL then it will always point to a
@@ -273,7 +387,11 @@ continue_scanning:
 		key = rb_entry(cursor, struct key, serial_node);
 		cursor = rb_next(cursor);
 
+<<<<<<< HEAD
 		if (atomic_read(&key->usage) == 0)
+=======
+		if (refcount_read(&key->usage) == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto found_unreferenced_key;
 
 		if (unlikely(gc_state & KEY_GC_REAPING_DEAD_1)) {
@@ -282,12 +400,27 @@ continue_scanning:
 				set_bit(KEY_FLAG_DEAD, &key->flags);
 				key->perm = 0;
 				goto skip_dead_key;
+<<<<<<< HEAD
 			}
 		}
 
 		if (gc_state & KEY_GC_SET_TIMER) {
 			if (key->expiry > limit && key->expiry < new_timer) {
 				kdebug("will expire %x in %ld",
+=======
+			} else if (key->type == &key_type_keyring &&
+				   key->restrict_link) {
+				goto found_restricted_keyring;
+			}
+		}
+
+		expiry = key->expiry;
+		if (expiry != TIME64_MAX) {
+			if (!(key->type->flags & KEY_TYPE_INSTANT_REAP))
+				expiry += key_gc_delay;
+			if (expiry > limit && expiry < new_timer) {
+				kdebug("will expire %x in %lld",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       key_serial(key), key->expiry - limit);
 				new_timer = key->expiry;
 			}
@@ -328,7 +461,11 @@ maybe_resched:
 	 */
 	kdebug("pass complete");
 
+<<<<<<< HEAD
 	if (gc_state & KEY_GC_SET_TIMER && new_timer != (time_t)LONG_MAX) {
+=======
+	if (new_timer != TIME64_MAX) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		new_timer += key_gc_delay;
 		key_schedule_gc(new_timer);
 	}
@@ -371,7 +508,11 @@ maybe_resched:
 	}
 
 	if (gc_state & KEY_GC_REAP_AGAIN)
+<<<<<<< HEAD
 		queue_work(system_nrt_wq, &key_gc_work);
+=======
+		schedule_work(&key_gc_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kleave(" [end %x]", gc_state);
 	return;
 
@@ -387,6 +528,17 @@ found_unreferenced_key:
 	gc_state |= KEY_GC_REAP_AGAIN;
 	goto maybe_resched;
 
+<<<<<<< HEAD
+=======
+	/* We found a restricted keyring and need to update the restriction if
+	 * it is associated with the dead key type.
+	 */
+found_restricted_keyring:
+	spin_unlock(&key_serial_lock);
+	keyring_restriction_gc(key, key_gc_dead_keytype);
+	goto maybe_resched;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We found a keyring and we need to check the payload for links to
 	 * dead or expired keys.  We don't flag another reap immediately as we
 	 * have to wait for the old payload to be destroyed by RCU before we
@@ -394,8 +546,12 @@ found_unreferenced_key:
 	 */
 found_keyring:
 	spin_unlock(&key_serial_lock);
+<<<<<<< HEAD
 	kdebug("scan keyring %d", key->serial);
 	key_gc_keyring(key, limit);
+=======
+	keyring_gc(key, limit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto maybe_resched;
 
 	/* We found a dead key that is still referenced.  Reset its type and

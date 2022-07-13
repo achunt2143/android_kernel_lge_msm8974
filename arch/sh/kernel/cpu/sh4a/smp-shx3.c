@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SH-X3 SMP
  *
  *  Copyright (C) 2007 - 2010  Paul Mundt
  *  Copyright (C) 2007  Magnus Damm
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -73,6 +80,7 @@ static void shx3_prepare_cpus(unsigned int max_cpus)
 {
 	int i;
 
+<<<<<<< HEAD
 	local_timer_setup(0);
 
 	BUILD_BUG_ON(SMP_MSG_NR >= 8);
@@ -80,6 +88,14 @@ static void shx3_prepare_cpus(unsigned int max_cpus)
 	for (i = 0; i < SMP_MSG_NR; i++)
 		request_irq(104 + i, ipi_interrupt_handler,
 			    IRQF_PERCPU, "IPI", (void *)(long)i);
+=======
+	BUILD_BUG_ON(SMP_MSG_NR >= 8);
+
+	for (i = 0; i < SMP_MSG_NR; i++)
+		if (request_irq(104 + i, ipi_interrupt_handler,
+			    IRQF_PERCPU, "IPI", (void *)(long)i))
+			pr_err("Failed to request irq %d\n", i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < max_cpus; i++)
 		set_cpu_present(i, true);
@@ -124,6 +140,7 @@ static void shx3_update_boot_vector(unsigned int cpu)
 	__raw_writel(STBCR_RESET, STBCR_REG(cpu));
 }
 
+<<<<<<< HEAD
 static int __cpuinit
 shx3_cpu_callback(struct notifier_block *nfb, unsigned long action, void *hcpu)
 {
@@ -150,6 +167,18 @@ static struct notifier_block __cpuinitdata shx3_cpu_notifier = {
 static int __cpuinit register_shx3_cpu_notifier(void)
 {
 	register_hotcpu_notifier(&shx3_cpu_notifier);
+=======
+static int shx3_cpu_prepare(unsigned int cpu)
+{
+	shx3_update_boot_vector(cpu);
+	return 0;
+}
+
+static int register_shx3_cpu_notifier(void)
+{
+	cpuhp_setup_state_nocalls(CPUHP_SH_SH3X_PREPARE, "sh/shx3:prepare",
+				  shx3_cpu_prepare, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 late_initcall(register_shx3_cpu_notifier);

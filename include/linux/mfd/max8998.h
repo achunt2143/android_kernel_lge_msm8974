@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * max8998.h - Voltage regulator driver for the Maxim 8998
  *
  *  Copyright (C) 2009-2010 Samsung Electrnoics
  *  Kyungmin Park <kyungmin.park@samsung.com>
  *  Marek Szyprowski <m.szyprowski@samsung.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MFD_MAX8998_H
@@ -52,27 +59,44 @@ enum {
 	MAX8998_ENVICHG,
 	MAX8998_ESAFEOUT1,
 	MAX8998_ESAFEOUT2,
+<<<<<<< HEAD
+=======
+	MAX8998_CHARGER,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * max8998_regulator_data - regulator data
  * @id: regulator id
  * @initdata: regulator init data (contraints, supplies, ...)
+<<<<<<< HEAD
+=======
+ * @reg_node: DT node of regulator (unused on non-DT platforms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct max8998_regulator_data {
 	int				id;
 	struct regulator_init_data	*initdata;
+<<<<<<< HEAD
+=======
+	struct device_node		*reg_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct max8998_board - packages regulator init data
  * @regulators: array of defined regulators
+<<<<<<< HEAD
  * @num_regulators: number of regultors used
+=======
+ * @num_regulators: number of regulators used
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @irq_base: base IRQ number for max8998, required for IRQs
  * @ono: power onoff IRQ number for max8998
  * @buck_voltage_lock: Do NOT change the values of the following six
  *   registers set by buck?_voltage?. The voltage of BUCK1/2 cannot
  *   be other than the preset values.
+<<<<<<< HEAD
  * @buck1_voltage1: BUCK1 DVS mode 1 voltage register
  * @buck1_voltage2: BUCK1 DVS mode 2 voltage register
  * @buck1_voltage3: BUCK1 DVS mode 3 voltage register
@@ -83,6 +107,11 @@ struct max8998_regulator_data {
  * @buck1_set2: BUCK1 gpio pin 2 to set output voltage
  * @buck1_default_idx: Default for BUCK1 gpio pin 1, 2
  * @buck2_set3: BUCK2 gpio pin to set output voltage
+=======
+ * @buck1_voltage: BUCK1 DVS mode 1 voltage registers
+ * @buck2_voltage: BUCK2 DVS mode 2 voltage registers
+ * @buck1_default_idx: Default for BUCK1 gpio pin 1, 2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @buck2_default_idx: Default for BUCK2 gpio pin.
  * @wakeup: Allow to wake up from suspend
  * @rtc_delay: LP3974 RTC chip bug that requires delay after a register
@@ -100,6 +129,7 @@ struct max8998_regulator_data {
 struct max8998_platform_data {
 	struct max8998_regulator_data	*regulators;
 	int				num_regulators;
+<<<<<<< HEAD
 	int				irq_base;
 	int				ono;
 	bool				buck_voltage_lock;
@@ -113,6 +143,14 @@ struct max8998_platform_data {
 	int				buck1_set2;
 	int				buck1_default_idx;
 	int				buck2_set3;
+=======
+	unsigned int			irq_base;
+	int				ono;
+	bool				buck_voltage_lock;
+	int				buck1_voltage[4];
+	int				buck2_voltage[2];
+	int				buck1_default_idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int				buck2_default_idx;
 	bool				wakeup;
 	bool				rtc_delay;

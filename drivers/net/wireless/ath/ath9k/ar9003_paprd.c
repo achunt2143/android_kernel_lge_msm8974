@@ -21,7 +21,11 @@
 void ar9003_paprd_enable(struct ath_hw *ah, bool val)
 {
 	struct ath9k_channel *chan = ah->curchan;
+<<<<<<< HEAD
 	struct ar9300_eeprom *eep = &ah->eeprom.ar9300_eep;
+=======
+	bool is2ghz = IS_CHAN_2GHZ(chan);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * 3 bits for modalHeader5G.papdRateMaskHt20
@@ -36,6 +40,7 @@ void ar9003_paprd_enable(struct ath_hw *ah, bool val)
 	 * -- disable PAPRD for lower band 5GHz
 	 */
 
+<<<<<<< HEAD
 	if (IS_CHAN_5GHZ(chan)) {
 		if (chan->channel >= UPPER_5G_SUB_BAND_START) {
 			if (le32_to_cpu(eep->modalHeader5G.papdRateMaskHt20)
@@ -47,6 +52,19 @@ void ar9003_paprd_enable(struct ath_hw *ah, bool val)
 				val = false;
 		} else {
 			if (le32_to_cpu(eep->modalHeader5G.papdRateMaskHt20)
+=======
+	if (!is2ghz) {
+		if (chan->channel >= UPPER_5G_SUB_BAND_START) {
+			if (ar9003_get_paprd_rate_mask_ht20(ah, is2ghz)
+								  & BIT(30))
+				val = false;
+		} else if (chan->channel >= MID_5G_SUB_BAND_START) {
+			if (ar9003_get_paprd_rate_mask_ht20(ah, is2ghz)
+								  & BIT(29))
+				val = false;
+		} else {
+			if (ar9003_get_paprd_rate_mask_ht20(ah, is2ghz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 								  & BIT(28))
 				val = false;
 		}
@@ -74,6 +92,7 @@ static int ar9003_get_training_power_2g(struct ath_hw *ah)
 	unsigned int power, scale, delta;
 
 	scale = ar9003_get_paprd_scale_factor(ah, chan);
+<<<<<<< HEAD
 	power = REG_READ_FIELD(ah, AR_PHY_POWERTX_RATE5,
 			       AR_PHY_POWERTX_RATE5_POWERTXHT20_0);
 
@@ -83,6 +102,25 @@ static int ar9003_get_training_power_2g(struct ath_hw *ah)
 
 	if (delta < 4)
 		power -= 4 - delta;
+=======
+
+	if (AR_SREV_9330(ah) || AR_SREV_9340(ah) ||
+	    AR_SREV_9462(ah) || AR_SREV_9565(ah)) {
+		power = ah->paprd_target_power + 2;
+	} else if (AR_SREV_9485(ah)) {
+		power = 25;
+	} else {
+		power = REG_READ_FIELD(ah, AR_PHY_POWERTX_RATE5,
+				       AR_PHY_POWERTX_RATE5_POWERTXHT20_0);
+
+		delta = abs((int) ah->paprd_target_power - (int) power);
+		if (delta > scale)
+			return -1;
+
+		if (delta < 4)
+			power -= 4 - delta;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return power;
 }
@@ -142,6 +180,10 @@ static int ar9003_paprd_setup_single_table(struct ath_hw *ah)
 	};
 	int training_power;
 	int i, val;
+<<<<<<< HEAD
+=======
+	u32 am2pm_mask = ah->paprd_ratemask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_CHAN_2GHZ(ah->curchan))
 		training_power = ar9003_get_training_power_2g(ah);
@@ -158,6 +200,7 @@ static int ar9003_paprd_setup_single_table(struct ath_hw *ah)
 	}
 	ah->paprd_training_power = training_power;
 
+<<<<<<< HEAD
 	REG_RMW_FIELD(ah, AR_PHY_PAPRD_AM2AM, AR_PHY_PAPRD_AM2AM_MASK,
 		      ah->paprd_ratemask);
 	REG_RMW_FIELD(ah, AR_PHY_PAPRD_AM2PM, AR_PHY_PAPRD_AM2PM_MASK,
@@ -165,6 +208,21 @@ static int ar9003_paprd_setup_single_table(struct ath_hw *ah)
 	REG_RMW_FIELD(ah, AR_PHY_PAPRD_HT40, AR_PHY_PAPRD_HT40_MASK,
 		      ah->paprd_ratemask_ht40);
 
+=======
+	if (AR_SREV_9330(ah))
+		am2pm_mask = 0;
+
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_AM2AM, AR_PHY_PAPRD_AM2AM_MASK,
+		      ah->paprd_ratemask);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_AM2PM, AR_PHY_PAPRD_AM2PM_MASK,
+		      am2pm_mask);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_HT40, AR_PHY_PAPRD_HT40_MASK,
+		      ah->paprd_ratemask_ht40);
+
+	ath_dbg(common, CALIBRATE, "PAPRD HT20 mask: 0x%x, HT40 mask: 0x%x\n",
+		ah->paprd_ratemask, ah->paprd_ratemask_ht40);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ah->caps.max_txchains; i++) {
 		REG_RMW_FIELD(ah, ctrl0[i],
 			      AR_PHY_PAPRD_CTRL0_USE_SINGLE_TABLE_MASK, 1);
@@ -186,6 +244,7 @@ static int ar9003_paprd_setup_single_table(struct ath_hw *ah)
 
 	ar9003_paprd_enable(ah, false);
 
+<<<<<<< HEAD
 	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL1,
 		      AR_PHY_PAPRD_TRAINER_CNTL1_CF_PAPRD_LB_SKIP, 0x30);
 	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL1,
@@ -230,6 +289,74 @@ static int ar9003_paprd_setup_single_table(struct ath_hw *ah)
 	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL4,
 		      AR_PHY_PAPRD_TRAINER_CNTL4_CF_PAPRD_MIN_CORR, 400);
 	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL4,
+=======
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL1(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL1_CF_PAPRD_LB_SKIP, 0x30);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL1(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL1_CF_PAPRD_LB_ENABLE, 1);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL1(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL1_CF_PAPRD_TX_GAIN_FORCE, 1);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL1(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL1_CF_PAPRD_RX_BB_GAIN_FORCE, 0);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL1(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL1_CF_PAPRD_IQCORR_ENABLE, 0);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL1(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL1_CF_PAPRD_AGC2_SETTLING, 28);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL1(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL1_CF_CF_PAPRD_TRAIN_ENABLE, 1);
+
+	if (AR_SREV_9485(ah)) {
+		val = 148;
+	} else {
+		if (IS_CHAN_2GHZ(ah->curchan)) {
+			if (AR_SREV_9462(ah) || AR_SREV_9565(ah))
+				val = 145;
+			else
+				val = 147;
+		} else {
+			val = 137;
+		}
+	}
+
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL2(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL2_CF_PAPRD_INIT_RX_BB_GAIN, val);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL3(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_FINE_CORR_LEN, 4);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL3(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_COARSE_CORR_LEN, 4);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL3(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_NUM_CORR_STAGES, 7);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL3(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_MIN_LOOPBACK_DEL, 1);
+
+	if (AR_SREV_9485(ah) ||
+	    AR_SREV_9462(ah) ||
+	    AR_SREV_9565(ah) ||
+	    AR_SREV_9550(ah) ||
+	    AR_SREV_9330(ah) ||
+	    AR_SREV_9340(ah))
+		REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL3(ah),
+			      AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_QUICK_DROP, -3);
+	else
+		REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL3(ah),
+			      AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_QUICK_DROP, -6);
+
+	val = -10;
+
+	if (IS_CHAN_2GHZ(ah->curchan) && !AR_SREV_9462(ah) && !AR_SREV_9565(ah))
+		val = -15;
+
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL3(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_ADC_DESIRED_SIZE,
+		      val);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL3(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_BBTXMIX_DISABLE, 1);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL4(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL4_CF_PAPRD_SAFETY_DELTA, 0);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL4(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL4_CF_PAPRD_MIN_CORR, 400);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL4(ah),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      AR_PHY_PAPRD_TRAINER_CNTL4_CF_PAPRD_NUM_TRAIN_SAMPLES,
 		      100);
 	REG_RMW_FIELD(ah, AR_PHY_PAPRD_PRE_POST_SCALE_0_B0,
@@ -258,9 +385,12 @@ static void ar9003_paprd_get_gain_table(struct ath_hw *ah)
 	u32 reg = AR_PHY_TXGAIN_TABLE;
 	int i;
 
+<<<<<<< HEAD
 	memset(entry, 0, sizeof(ah->paprd_gain_table_entries));
 	memset(index, 0, sizeof(ah->paprd_gain_table_index));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < PAPRD_GAIN_TABLE_ENTRIES; i++) {
 		entry[i] = REG_READ(ah, reg);
 		index[i] = (entry[i] >> 24) & 0xff;
@@ -279,7 +409,11 @@ static unsigned int ar9003_get_desired_gain(struct ath_hw *ah, int chain,
 	int desired_scale, desired_gain = 0;
 	u32 reg_olpc  = 0, reg_cl_gain  = 0;
 
+<<<<<<< HEAD
 	REG_CLR_BIT(ah, AR_PHY_PAPRD_TRAINER_STAT1,
+=======
+	REG_CLR_BIT(ah, AR_PHY_PAPRD_TRAINER_STAT1(ah),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    AR_PHY_PAPRD_TRAINER_STAT1_PAPRD_TRAIN_DONE);
 	desired_scale = REG_READ_FIELD(ah, AR_PHY_TPC_12,
 				       AR_PHY_TPC_12_DESIRED_SCALE_HT40_5);
@@ -420,6 +554,11 @@ static bool create_pa_curve(u32 *data_L, u32 *data_U, u32 *pa_table, u16 *gain)
 		if (accum_cnt <= thresh_accum_cnt)
 			continue;
 
+<<<<<<< HEAD
+=======
+		max_index++;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* sum(tx amplitude) */
 		accum_tx = ((data_L[i] >> 16) & 0xffff) |
 		    ((data_U[i] & 0x7ff) << 16);
@@ -434,20 +573,37 @@ static bool create_pa_curve(u32 *data_L, u32 *data_U, u32 *pa_table, u16 *gain)
 
 		accum_tx <<= scale_factor;
 		accum_rx <<= scale_factor;
+<<<<<<< HEAD
 		x_est[i + 1] = (((accum_tx + accum_cnt) / accum_cnt) + 32) >>
 		    scale_factor;
 
 		Y[i + 1] = ((((accum_rx + accum_cnt) / accum_cnt) + 32) >>
 			    scale_factor) +
 			    (1 << scale_factor) * max_index + 16;
+=======
+		x_est[max_index] =
+			(((accum_tx + accum_cnt) / accum_cnt) + 32) >>
+			scale_factor;
+
+		Y[max_index] =
+			((((accum_rx + accum_cnt) / accum_cnt) + 32) >>
+			    scale_factor) +
+			(1 << scale_factor) * i + 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (accum_ang >= (1 << 26))
 			accum_ang -= 1 << 27;
 
+<<<<<<< HEAD
 		theta[i + 1] = ((accum_ang * (1 << scale_factor)) + accum_cnt) /
 		    accum_cnt;
 
 		max_index++;
+=======
+		theta[max_index] =
+			((accum_ang * (1 << scale_factor)) + accum_cnt) /
+			accum_cnt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -759,7 +915,11 @@ void ar9003_paprd_populate_single_table(struct ath_hw *ah,
 }
 EXPORT_SYMBOL(ar9003_paprd_populate_single_table);
 
+<<<<<<< HEAD
 int ar9003_paprd_setup_gain_table(struct ath_hw *ah, int chain)
+=======
+void ar9003_paprd_setup_gain_table(struct ath_hw *ah, int chain)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i, desired_gain, gain_index;
 	unsigned int train_power = ah->paprd_training_power;
@@ -775,6 +935,7 @@ int ar9003_paprd_setup_gain_table(struct ath_hw *ah, int chain)
 
 	ar9003_tx_force_gain(ah, gain_index);
 
+<<<<<<< HEAD
 	REG_CLR_BIT(ah, AR_PHY_PAPRD_TRAINER_STAT1,
 			AR_PHY_PAPRD_TRAINER_STAT1_PAPRD_TRAIN_DONE);
 
@@ -782,6 +943,109 @@ int ar9003_paprd_setup_gain_table(struct ath_hw *ah, int chain)
 }
 EXPORT_SYMBOL(ar9003_paprd_setup_gain_table);
 
+=======
+	REG_CLR_BIT(ah, AR_PHY_PAPRD_TRAINER_STAT1(ah),
+			AR_PHY_PAPRD_TRAINER_STAT1_PAPRD_TRAIN_DONE);
+}
+EXPORT_SYMBOL(ar9003_paprd_setup_gain_table);
+
+static bool ar9003_paprd_retrain_pa_in(struct ath_hw *ah,
+				       struct ath9k_hw_cal_data *caldata,
+				       int chain)
+{
+	u32 *pa_in = caldata->pa_table[chain];
+	int capdiv_offset, quick_drop_offset;
+	int capdiv2g, quick_drop;
+	int count = 0;
+	int i;
+
+	if (!AR_SREV_9485(ah) && !AR_SREV_9330(ah))
+		return false;
+
+	capdiv2g = REG_READ_FIELD(ah, AR_PHY_65NM_CH0_TXRF3,
+				  AR_PHY_65NM_CH0_TXRF3_CAPDIV2G);
+
+	quick_drop = REG_READ_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL3(ah),
+				    AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_QUICK_DROP);
+
+	if (quick_drop)
+		quick_drop -= 0x40;
+
+	for (i = 0; i < NUM_BIN + 1; i++) {
+		if (pa_in[i] == 1400)
+			count++;
+	}
+
+	if (AR_SREV_9485(ah)) {
+		if (pa_in[23] < 800) {
+			capdiv_offset = (int)((1000 - pa_in[23] + 75) / 150);
+			capdiv2g += capdiv_offset;
+			if (capdiv2g > 7) {
+				capdiv2g = 7;
+				if (pa_in[23] < 600) {
+					quick_drop++;
+					if (quick_drop > 0)
+						quick_drop = 0;
+				}
+			}
+		} else if (pa_in[23] == 1400) {
+			quick_drop_offset = min_t(int, count / 3, 2);
+			quick_drop += quick_drop_offset;
+			capdiv2g += quick_drop_offset / 2;
+
+			if (capdiv2g > 7)
+				capdiv2g = 7;
+
+			if (quick_drop > 0) {
+				quick_drop = 0;
+				capdiv2g -= quick_drop_offset;
+				if (capdiv2g < 0)
+					capdiv2g = 0;
+			}
+		} else {
+			return false;
+		}
+	} else if (AR_SREV_9330(ah)) {
+		if (pa_in[23] < 1000) {
+			capdiv_offset = (1000 - pa_in[23]) / 100;
+			capdiv2g += capdiv_offset;
+			if (capdiv_offset > 3) {
+				capdiv_offset = 1;
+				quick_drop--;
+			}
+
+			capdiv2g += capdiv_offset;
+			if (capdiv2g > 6)
+				capdiv2g = 6;
+			if (quick_drop < -4)
+				quick_drop = -4;
+		} else if (pa_in[23] == 1400) {
+			if (count > 3) {
+				quick_drop++;
+				capdiv2g -= count / 4;
+				if (quick_drop > -2)
+					quick_drop = -2;
+			} else {
+				capdiv2g--;
+			}
+
+			if (capdiv2g < 0)
+				capdiv2g = 0;
+		} else {
+			return false;
+		}
+	}
+
+	REG_RMW_FIELD(ah, AR_PHY_65NM_CH0_TXRF3,
+		      AR_PHY_65NM_CH0_TXRF3_CAPDIV2G, capdiv2g);
+	REG_RMW_FIELD(ah, AR_PHY_PAPRD_TRAINER_CNTL3(ah),
+		      AR_PHY_PAPRD_TRAINER_CNTL3_CF_PAPRD_QUICK_DROP,
+		      quick_drop);
+
+	return true;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ar9003_paprd_create_curve(struct ath_hw *ah,
 			      struct ath9k_hw_cal_data *caldata, int chain)
 {
@@ -794,21 +1058,33 @@ int ar9003_paprd_create_curve(struct ath_hw *ah,
 
 	memset(caldata->pa_table[chain], 0, sizeof(caldata->pa_table[chain]));
 
+<<<<<<< HEAD
 	buf = kmalloc(2 * 48 * sizeof(u32), GFP_ATOMIC);
+=======
+	buf = kmalloc_array(2 * 48, sizeof(u32), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buf)
 		return -ENOMEM;
 
 	data_L = &buf[0];
 	data_U = &buf[48];
 
+<<<<<<< HEAD
 	REG_CLR_BIT(ah, AR_PHY_CHAN_INFO_MEMORY,
+=======
+	REG_CLR_BIT(ah, AR_PHY_CHAN_INFO_MEMORY(ah),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    AR_PHY_CHAN_INFO_MEMORY_CHANINFOMEM_S2_READ);
 
 	reg = AR_PHY_CHAN_INFO_TAB_0;
 	for (i = 0; i < 48; i++)
 		data_L[i] = REG_READ(ah, reg + (i << 2));
 
+<<<<<<< HEAD
 	REG_SET_BIT(ah, AR_PHY_CHAN_INFO_MEMORY,
+=======
+	REG_SET_BIT(ah, AR_PHY_CHAN_INFO_MEMORY(ah),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    AR_PHY_CHAN_INFO_MEMORY_CHANINFOMEM_S2_READ);
 
 	for (i = 0; i < 48; i++)
@@ -817,7 +1093,14 @@ int ar9003_paprd_create_curve(struct ath_hw *ah,
 	if (!create_pa_curve(data_L, data_U, pa_table, small_signal_gain))
 		status = -2;
 
+<<<<<<< HEAD
 	REG_CLR_BIT(ah, AR_PHY_PAPRD_TRAINER_STAT1,
+=======
+	if (ar9003_paprd_retrain_pa_in(ah, caldata, chain))
+		status = -EINPROGRESS;
+
+	REG_CLR_BIT(ah, AR_PHY_PAPRD_TRAINER_STAT1(ah),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    AR_PHY_PAPRD_TRAINER_STAT1_PAPRD_TRAIN_DONE);
 
 	kfree(buf);
@@ -842,11 +1125,23 @@ EXPORT_SYMBOL(ar9003_paprd_init_table);
 bool ar9003_paprd_is_done(struct ath_hw *ah)
 {
 	int paprd_done, agc2_pwr;
+<<<<<<< HEAD
 	paprd_done = REG_READ_FIELD(ah, AR_PHY_PAPRD_TRAINER_STAT1,
 				AR_PHY_PAPRD_TRAINER_STAT1_PAPRD_TRAIN_DONE);
 
 	if (paprd_done == 0x1) {
 		agc2_pwr = REG_READ_FIELD(ah, AR_PHY_PAPRD_TRAINER_STAT1,
+=======
+
+	paprd_done = REG_READ_FIELD(ah, AR_PHY_PAPRD_TRAINER_STAT1(ah),
+				AR_PHY_PAPRD_TRAINER_STAT1_PAPRD_TRAIN_DONE);
+
+	if (AR_SREV_9485(ah))
+		goto exit;
+
+	if (paprd_done == 0x1) {
+		agc2_pwr = REG_READ_FIELD(ah, AR_PHY_PAPRD_TRAINER_STAT1(ah),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				AR_PHY_PAPRD_TRAINER_STAT1_PAPRD_AGC2_PWR);
 
 		ath_dbg(ath9k_hw_common(ah), CALIBRATE,
@@ -860,7 +1155,23 @@ bool ar9003_paprd_is_done(struct ath_hw *ah)
 		if (agc2_pwr <= PAPRD_IDEAL_AGC2_PWR_RANGE)
 			paprd_done = 0;
 	}
+<<<<<<< HEAD
 
 	return !!paprd_done;
 }
 EXPORT_SYMBOL(ar9003_paprd_is_done);
+=======
+exit:
+	return !!paprd_done;
+}
+EXPORT_SYMBOL(ar9003_paprd_is_done);
+
+bool ar9003_is_paprd_enabled(struct ath_hw *ah)
+{
+	if ((ah->caps.hw_caps & ATH9K_HW_CAP_PAPRD) && ah->config.enable_paprd)
+		return true;
+
+	return false;
+}
+EXPORT_SYMBOL(ar9003_is_paprd_enabled);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SDK7786 FPGA USRGPIR Support.
  *
  * Copyright (C) 2010  Paul Mundt
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
@@ -10,6 +15,12 @@
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/gpio.h>
+=======
+ */
+#include <linux/init.h>
+#include <linux/interrupt.h>
+#include <linux/gpio/driver.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/irq.h>
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
@@ -44,6 +55,10 @@ static struct gpio_chip usrgpir_gpio_chip = {
 
 static int __init usrgpir_gpio_setup(void)
 {
+<<<<<<< HEAD
 	return gpiochip_add(&usrgpir_gpio_chip);
+=======
+	return gpiochip_add_data(&usrgpir_gpio_chip, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 device_initcall(usrgpir_gpio_setup);

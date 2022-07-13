@@ -16,19 +16,30 @@
 #include <linux/stat.h>
 #include <linux/string.h>
 
+<<<<<<< HEAD
+=======
+#include <asm/byteorder.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "zorro.h"
 
 
 /* show configuration fields */
 #define zorro_config_attr(name, field, format_string)			\
+<<<<<<< HEAD
 static ssize_t								\
 show_##name(struct device *dev, struct device_attribute *attr, char *buf)				\
+=======
+static ssize_t name##_show(struct device *dev,				\
+			   struct device_attribute *attr, char *buf)	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {									\
 	struct zorro_dev *z;						\
 									\
 	z = to_zorro_dev(dev);						\
 	return sprintf(buf, format_string, z->field);			\
 }									\
+<<<<<<< HEAD
 static DEVICE_ATTR(name, S_IRUGO, show_##name, NULL);
 
 zorro_config_attr(id, id, "0x%08x\n");
@@ -38,6 +49,27 @@ zorro_config_attr(slotaddr, slotaddr, "0x%04x\n");
 zorro_config_attr(slotsize, slotsize, "0x%04x\n");
 
 static ssize_t zorro_show_resource(struct device *dev, struct device_attribute *attr, char *buf)
+=======
+static DEVICE_ATTR_RO(name);
+
+zorro_config_attr(id, id, "0x%08x\n");
+zorro_config_attr(type, rom.er_Type, "0x%02x\n");
+zorro_config_attr(slotaddr, slotaddr, "0x%04x\n");
+zorro_config_attr(slotsize, slotsize, "0x%04x\n");
+
+static ssize_t serial_show(struct device *dev, struct device_attribute *attr,
+			   char *buf)
+{
+	struct zorro_dev *z;
+
+	z = to_zorro_dev(dev);
+	return sprintf(buf, "0x%08x\n", be32_to_cpu(z->rom.er_SerialNumber));
+}
+static DEVICE_ATTR_RO(serial);
+
+static ssize_t resource_show(struct device *dev, struct device_attribute *attr,
+			     char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct zorro_dev *z = to_zorro_dev(dev);
 
@@ -46,24 +78,59 @@ static ssize_t zorro_show_resource(struct device *dev, struct device_attribute *
 		       (unsigned long)zorro_resource_end(z),
 		       zorro_resource_flags(z));
 }
+<<<<<<< HEAD
 
 static DEVICE_ATTR(resource, S_IRUGO, zorro_show_resource, NULL);
+=======
+static DEVICE_ATTR_RO(resource);
+
+static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
+			     char *buf)
+{
+	struct zorro_dev *z = to_zorro_dev(dev);
+
+	return sprintf(buf, ZORRO_DEVICE_MODALIAS_FMT "\n", z->id);
+}
+static DEVICE_ATTR_RO(modalias);
+
+static struct attribute *zorro_device_attrs[] = {
+	&dev_attr_id.attr,
+	&dev_attr_type.attr,
+	&dev_attr_serial.attr,
+	&dev_attr_slotaddr.attr,
+	&dev_attr_slotsize.attr,
+	&dev_attr_resource.attr,
+	&dev_attr_modalias.attr,
+	NULL
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t zorro_read_config(struct file *filp, struct kobject *kobj,
 				 struct bin_attribute *bin_attr,
 				 char *buf, loff_t off, size_t count)
 {
+<<<<<<< HEAD
 	struct zorro_dev *z = to_zorro_dev(container_of(kobj, struct device,
 					   kobj));
+=======
+	struct zorro_dev *z = to_zorro_dev(kobj_to_dev(kobj));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ConfigDev cd;
 
 	/* Construct a ConfigDev */
 	memset(&cd, 0, sizeof(cd));
 	cd.cd_Rom = z->rom;
+<<<<<<< HEAD
 	cd.cd_SlotAddr = z->slotaddr;
 	cd.cd_SlotSize = z->slotsize;
 	cd.cd_BoardAddr = (void *)zorro_resource_start(z);
 	cd.cd_BoardSize = zorro_resource_len(z);
+=======
+	cd.cd_SlotAddr = cpu_to_be16(z->slotaddr);
+	cd.cd_SlotSize = cpu_to_be16(z->slotsize);
+	cd.cd_BoardAddr = cpu_to_be32(zorro_resource_start(z));
+	cd.cd_BoardSize = cpu_to_be32(zorro_resource_len(z));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return memory_read_from_buffer(buf, count, &off, &cd, sizeof(cd));
 }
@@ -77,6 +144,7 @@ static struct bin_attribute zorro_config_attr = {
 	.read = zorro_read_config,
 };
 
+<<<<<<< HEAD
 static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
 			     char *buf)
 {
@@ -106,3 +174,19 @@ int zorro_create_sysfs_dev_files(struct zorro_dev *z)
 	return 0;
 }
 
+=======
+static struct bin_attribute *zorro_device_bin_attrs[] = {
+	&zorro_config_attr,
+	NULL
+};
+
+static const struct attribute_group zorro_device_attr_group = {
+	.attrs		= zorro_device_attrs,
+	.bin_attrs	= zorro_device_bin_attrs,
+};
+
+const struct attribute_group *zorro_device_attribute_groups[] = {
+	&zorro_device_attr_group,
+	NULL
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

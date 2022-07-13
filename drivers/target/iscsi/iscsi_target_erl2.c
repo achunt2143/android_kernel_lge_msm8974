@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  * This file contains error recovery level two functions used by
  * the iSCSI Target driver.
  *
+<<<<<<< HEAD
  * \u00a9 Copyright 2007-2011 RisingTide Systems LLC.
  *
  * Licensed to the Linux Foundation under the General Public License (GPL) version 2.
@@ -19,11 +24,24 @@
  * GNU General Public License for more details.
  ******************************************************************************/
 
+=======
+ * (c) Copyright 2007-2013 Datera, Inc.
+ *
+ * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
+ *
+ ******************************************************************************/
+
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/iscsi_proto.h>
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
 
+<<<<<<< HEAD
 #include "iscsi_target_core.h"
+=======
+#include <target/iscsi/iscsi_target_core.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iscsi_target_datain_values.h"
 #include "iscsi_target_util.h"
 #include "iscsi_target_erl0.h"
@@ -35,16 +53,28 @@
  *	FIXME: Does RData SNACK apply here as well?
  */
 void iscsit_create_conn_recovery_datain_values(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	u32 exp_data_sn)
 {
 	u32 data_sn = 0;
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd,
+	__be32 exp_data_sn)
+{
+	u32 data_sn = 0;
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd->next_burst_len = 0;
 	cmd->read_data_done = 0;
 
+<<<<<<< HEAD
 	while (exp_data_sn > data_sn) {
+=======
+	while (be32_to_cpu(exp_data_sn) > data_sn) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((cmd->next_burst_len +
 		     conn->conn_ops->MaxRecvDataSegmentLength) <
 		     conn->sess->sess_ops->MaxBurstLength) {
@@ -63,10 +93,17 @@ void iscsit_create_conn_recovery_datain_values(
 }
 
 void iscsit_create_conn_recovery_dataout_values(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd)
 {
 	u32 write_data_done = 0;
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd)
+{
+	u32 write_data_done = 0;
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd->data_sn = 0;
 	cmd->next_burst_len = 0;
@@ -83,7 +120,11 @@ void iscsit_create_conn_recovery_dataout_values(
 }
 
 static int iscsit_attach_active_connection_recovery_entry(
+<<<<<<< HEAD
 	struct iscsi_session *sess,
+=======
+	struct iscsit_session *sess,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_conn_recovery *cr)
 {
 	spin_lock(&sess->cr_a_lock);
@@ -94,7 +135,11 @@ static int iscsit_attach_active_connection_recovery_entry(
 }
 
 static int iscsit_attach_inactive_connection_recovery_entry(
+<<<<<<< HEAD
 	struct iscsi_session *sess,
+=======
+	struct iscsit_session *sess,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_conn_recovery *cr)
 {
 	spin_lock(&sess->cr_i_lock);
@@ -109,7 +154,11 @@ static int iscsit_attach_inactive_connection_recovery_entry(
 }
 
 struct iscsi_conn_recovery *iscsit_get_inactive_connection_recovery_entry(
+<<<<<<< HEAD
 	struct iscsi_session *sess,
+=======
+	struct iscsit_session *sess,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 cid)
 {
 	struct iscsi_conn_recovery *cr;
@@ -126,9 +175,15 @@ struct iscsi_conn_recovery *iscsit_get_inactive_connection_recovery_entry(
 	return NULL;
 }
 
+<<<<<<< HEAD
 void iscsit_free_connection_recovery_entires(struct iscsi_session *sess)
 {
 	struct iscsi_cmd *cmd, *cmd_tmp;
+=======
+void iscsit_free_connection_recovery_entries(struct iscsit_session *sess)
+{
+	struct iscsit_cmd *cmd, *cmd_tmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_conn_recovery *cr, *cr_tmp;
 
 	spin_lock(&sess->cr_a_lock);
@@ -138,12 +193,21 @@ void iscsit_free_connection_recovery_entires(struct iscsi_session *sess)
 
 		spin_lock(&cr->conn_recovery_cmd_lock);
 		list_for_each_entry_safe(cmd, cmd_tmp,
+<<<<<<< HEAD
 				&cr->conn_recovery_cmd_list, i_list) {
 
 			list_del(&cmd->i_list);
 			cmd->conn = NULL;
 			spin_unlock(&cr->conn_recovery_cmd_lock);
 			iscsit_free_cmd(cmd);
+=======
+				&cr->conn_recovery_cmd_list, i_conn_node) {
+
+			list_del_init(&cmd->i_conn_node);
+			cmd->conn = NULL;
+			spin_unlock(&cr->conn_recovery_cmd_lock);
+			iscsit_free_cmd(cmd, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_lock(&cr->conn_recovery_cmd_lock);
 		}
 		spin_unlock(&cr->conn_recovery_cmd_lock);
@@ -160,12 +224,21 @@ void iscsit_free_connection_recovery_entires(struct iscsi_session *sess)
 
 		spin_lock(&cr->conn_recovery_cmd_lock);
 		list_for_each_entry_safe(cmd, cmd_tmp,
+<<<<<<< HEAD
 				&cr->conn_recovery_cmd_list, i_list) {
 
 			list_del(&cmd->i_list);
 			cmd->conn = NULL;
 			spin_unlock(&cr->conn_recovery_cmd_lock);
 			iscsit_free_cmd(cmd);
+=======
+				&cr->conn_recovery_cmd_list, i_conn_node) {
+
+			list_del_init(&cmd->i_conn_node);
+			cmd->conn = NULL;
+			spin_unlock(&cr->conn_recovery_cmd_lock);
+			iscsit_free_cmd(cmd, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_lock(&cr->conn_recovery_cmd_lock);
 		}
 		spin_unlock(&cr->conn_recovery_cmd_lock);
@@ -178,7 +251,11 @@ void iscsit_free_connection_recovery_entires(struct iscsi_session *sess)
 
 int iscsit_remove_active_connection_recovery_entry(
 	struct iscsi_conn_recovery *cr,
+<<<<<<< HEAD
 	struct iscsi_session *sess)
+=======
+	struct iscsit_session *sess)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock(&sess->cr_a_lock);
 	list_del(&cr->cr_list);
@@ -193,23 +270,37 @@ int iscsit_remove_active_connection_recovery_entry(
 	return 0;
 }
 
+<<<<<<< HEAD
 int iscsit_remove_inactive_connection_recovery_entry(
 	struct iscsi_conn_recovery *cr,
 	struct iscsi_session *sess)
+=======
+static void iscsit_remove_inactive_connection_recovery_entry(
+	struct iscsi_conn_recovery *cr,
+	struct iscsit_session *sess)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock(&sess->cr_i_lock);
 	list_del(&cr->cr_list);
 	spin_unlock(&sess->cr_i_lock);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  *	Called with cr->conn_recovery_cmd_lock help.
  */
 int iscsit_remove_cmd_from_connection_recovery(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	struct iscsi_session *sess)
+=======
+	struct iscsit_cmd *cmd,
+	struct iscsit_session *sess)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_conn_recovery *cr;
 
@@ -220,7 +311,11 @@ int iscsit_remove_cmd_from_connection_recovery(
 	}
 	cr = cmd->cr;
 
+<<<<<<< HEAD
 	list_del(&cmd->i_list);
+=======
+	list_del_init(&cmd->i_conn_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return --cr->cmd_count;
 }
 
@@ -229,12 +324,21 @@ void iscsit_discard_cr_cmds_by_expstatsn(
 	u32 exp_statsn)
 {
 	u32 dropped_count = 0;
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd, *cmd_tmp;
 	struct iscsi_session *sess = cr->sess;
 
 	spin_lock(&cr->conn_recovery_cmd_lock);
 	list_for_each_entry_safe(cmd, cmd_tmp,
 			&cr->conn_recovery_cmd_list, i_list) {
+=======
+	struct iscsit_cmd *cmd, *cmd_tmp;
+	struct iscsit_session *sess = cr->sess;
+
+	spin_lock(&cr->conn_recovery_cmd_lock);
+	list_for_each_entry_safe(cmd, cmd_tmp,
+			&cr->conn_recovery_cmd_list, i_conn_node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (((cmd->deferred_i_state != ISTATE_SENT_STATUS) &&
 		     (cmd->deferred_i_state != ISTATE_REMOVE)) ||
@@ -250,7 +354,11 @@ void iscsit_discard_cr_cmds_by_expstatsn(
 		iscsit_remove_cmd_from_connection_recovery(cmd, sess);
 
 		spin_unlock(&cr->conn_recovery_cmd_lock);
+<<<<<<< HEAD
 		iscsit_free_cmd(cmd);
+=======
+		iscsit_free_cmd(cmd, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock(&cr->conn_recovery_cmd_lock);
 	}
 	spin_unlock(&cr->conn_recovery_cmd_lock);
@@ -274,12 +382,21 @@ void iscsit_discard_cr_cmds_by_expstatsn(
 	}
 }
 
+<<<<<<< HEAD
 int iscsit_discard_unacknowledged_ooo_cmdsns_for_conn(struct iscsi_conn *conn)
 {
 	u32 dropped_count = 0;
 	struct iscsi_cmd *cmd, *cmd_tmp;
 	struct iscsi_ooo_cmdsn *ooo_cmdsn, *ooo_cmdsn_tmp;
 	struct iscsi_session *sess = conn->sess;
+=======
+int iscsit_discard_unacknowledged_ooo_cmdsns_for_conn(struct iscsit_conn *conn)
+{
+	u32 dropped_count = 0;
+	struct iscsit_cmd *cmd, *cmd_tmp;
+	struct iscsi_ooo_cmdsn *ooo_cmdsn, *ooo_cmdsn_tmp;
+	struct iscsit_session *sess = conn->sess;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&sess->cmdsn_mutex);
 	list_for_each_entry_safe(ooo_cmdsn, ooo_cmdsn_tmp,
@@ -297,6 +414,7 @@ int iscsit_discard_unacknowledged_ooo_cmdsns_for_conn(struct iscsi_conn *conn)
 	mutex_unlock(&sess->cmdsn_mutex);
 
 	spin_lock_bh(&conn->cmd_lock);
+<<<<<<< HEAD
 	list_for_each_entry_safe(cmd, cmd_tmp, &conn->conn_cmd_list, i_list) {
 		if (!(cmd->cmd_flags & ICF_OOO_CMDSN))
 			continue;
@@ -305,6 +423,16 @@ int iscsit_discard_unacknowledged_ooo_cmdsns_for_conn(struct iscsi_conn *conn)
 
 		spin_unlock_bh(&conn->cmd_lock);
 		iscsit_free_cmd(cmd);
+=======
+	list_for_each_entry_safe(cmd, cmd_tmp, &conn->conn_cmd_list, i_conn_node) {
+		if (!(cmd->cmd_flags & ICF_OOO_CMDSN))
+			continue;
+
+		list_del_init(&cmd->i_conn_node);
+
+		spin_unlock_bh(&conn->cmd_lock);
+		iscsit_free_cmd(cmd, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_bh(&conn->cmd_lock);
 	}
 	spin_unlock_bh(&conn->cmd_lock);
@@ -315,16 +443,28 @@ int iscsit_discard_unacknowledged_ooo_cmdsns_for_conn(struct iscsi_conn *conn)
 	return 0;
 }
 
+<<<<<<< HEAD
 int iscsit_prepare_cmds_for_realligance(struct iscsi_conn *conn)
 {
 	u32 cmd_count = 0;
 	struct iscsi_cmd *cmd, *cmd_tmp;
+=======
+int iscsit_prepare_cmds_for_reallegiance(struct iscsit_conn *conn)
+{
+	u32 cmd_count = 0;
+	struct iscsit_cmd *cmd, *cmd_tmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_conn_recovery *cr;
 
 	/*
 	 * Allocate an struct iscsi_conn_recovery for this connection.
+<<<<<<< HEAD
 	 * Each struct iscsi_cmd contains an struct iscsi_conn_recovery pointer
 	 * (struct iscsi_cmd->cr) so we need to allocate this before preparing the
+=======
+	 * Each struct iscsit_cmd contains an struct iscsi_conn_recovery pointer
+	 * (struct iscsit_cmd->cr) so we need to allocate this before preparing the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * connection's command list for connection recovery.
 	 */
 	cr = kzalloc(sizeof(struct iscsi_conn_recovery), GFP_KERNEL);
@@ -339,25 +479,43 @@ int iscsit_prepare_cmds_for_realligance(struct iscsi_conn *conn)
 	/*
 	 * Only perform connection recovery on ISCSI_OP_SCSI_CMD or
 	 * ISCSI_OP_NOOP_OUT opcodes.  For all other opcodes call
+<<<<<<< HEAD
 	 * list_del(&cmd->i_list); to release the command to the
+=======
+	 * list_del_init(&cmd->i_conn_node); to release the command to the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * session pool and remove it from the connection's list.
 	 *
 	 * Also stop the DataOUT timer, which will be restarted after
 	 * sending the TMR response.
 	 */
 	spin_lock_bh(&conn->cmd_lock);
+<<<<<<< HEAD
 	list_for_each_entry_safe(cmd, cmd_tmp, &conn->conn_cmd_list, i_list) {
 
 		if ((cmd->iscsi_opcode != ISCSI_OP_SCSI_CMD) &&
 		    (cmd->iscsi_opcode != ISCSI_OP_NOOP_OUT)) {
 			pr_debug("Not performing realligence on"
+=======
+	list_for_each_entry_safe(cmd, cmd_tmp, &conn->conn_cmd_list, i_conn_node) {
+
+		if ((cmd->iscsi_opcode != ISCSI_OP_SCSI_CMD) &&
+		    (cmd->iscsi_opcode != ISCSI_OP_NOOP_OUT)) {
+			pr_debug("Not performing reallegiance on"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				" Opcode: 0x%02x, ITT: 0x%08x, CmdSN: 0x%08x,"
 				" CID: %hu\n", cmd->iscsi_opcode,
 				cmd->init_task_tag, cmd->cmd_sn, conn->cid);
 
+<<<<<<< HEAD
 			list_del(&cmd->i_list);
 			spin_unlock_bh(&conn->cmd_lock);
 			iscsit_free_cmd(cmd);
+=======
+			list_del_init(&cmd->i_conn_node);
+			spin_unlock_bh(&conn->cmd_lock);
+			iscsit_free_cmd(cmd, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_lock_bh(&conn->cmd_lock);
 			continue;
 		}
@@ -374,10 +532,17 @@ int iscsit_prepare_cmds_for_realligance(struct iscsi_conn *conn)
 		 * made generic here.
 		 */
 		if (!(cmd->cmd_flags & ICF_OOO_CMDSN) && !cmd->immediate_cmd &&
+<<<<<<< HEAD
 		     (cmd->cmd_sn >= conn->sess->exp_cmd_sn)) {
 			list_del(&cmd->i_list);
 			spin_unlock_bh(&conn->cmd_lock);
 			iscsit_free_cmd(cmd);
+=======
+		     iscsi_sna_gte(cmd->cmd_sn, conn->sess->exp_cmd_sn)) {
+			list_del_init(&cmd->i_conn_node);
+			spin_unlock_bh(&conn->cmd_lock);
+			iscsit_free_cmd(cmd, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_lock_bh(&conn->cmd_lock);
 			continue;
 		}
@@ -385,7 +550,11 @@ int iscsit_prepare_cmds_for_realligance(struct iscsi_conn *conn)
 		cmd_count++;
 		pr_debug("Preparing Opcode: 0x%02x, ITT: 0x%08x,"
 			" CmdSN: 0x%08x, StatSN: 0x%08x, CID: %hu for"
+<<<<<<< HEAD
 			" realligence.\n", cmd->iscsi_opcode,
+=======
+			" reallegiance.\n", cmd->iscsi_opcode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cmd->init_task_tag, cmd->cmd_sn, cmd->stat_sn,
 			conn->cid);
 
@@ -397,17 +566,28 @@ int iscsit_prepare_cmds_for_realligance(struct iscsi_conn *conn)
 
 		cmd->sess = conn->sess;
 
+<<<<<<< HEAD
 		list_del(&cmd->i_list);
+=======
+		list_del_init(&cmd->i_conn_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_bh(&conn->cmd_lock);
 
 		iscsit_free_all_datain_reqs(cmd);
 
 		transport_wait_for_tasks(&cmd->se_cmd);
 		/*
+<<<<<<< HEAD
 		 * Add the struct iscsi_cmd to the connection recovery cmd list
 		 */
 		spin_lock(&cr->conn_recovery_cmd_lock);
 		list_add_tail(&cmd->i_list, &cr->conn_recovery_cmd_list);
+=======
+		 * Add the struct iscsit_cmd to the connection recovery cmd list
+		 */
+		spin_lock(&cr->conn_recovery_cmd_lock);
+		list_add_tail(&cmd->i_conn_node, &cr->conn_recovery_cmd_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&cr->conn_recovery_cmd_lock);
 
 		spin_lock_bh(&conn->cmd_lock);
@@ -421,6 +601,10 @@ int iscsit_prepare_cmds_for_realligance(struct iscsi_conn *conn)
 	cr->cid = conn->cid;
 	cr->cmd_count = cmd_count;
 	cr->maxrecvdatasegmentlength = conn->conn_ops->MaxRecvDataSegmentLength;
+<<<<<<< HEAD
+=======
+	cr->maxxmitdatasegmentlength = conn->conn_ops->MaxXmitDataSegmentLength;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cr->sess = conn->sess;
 
 	iscsit_attach_inactive_connection_recovery_entry(conn->sess, cr);
@@ -428,7 +612,11 @@ int iscsit_prepare_cmds_for_realligance(struct iscsi_conn *conn)
 	return 0;
 }
 
+<<<<<<< HEAD
 int iscsit_connection_recovery_transport_reset(struct iscsi_conn *conn)
+=======
+int iscsit_connection_recovery_transport_reset(struct iscsit_conn *conn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	atomic_set(&conn->connection_recovery, 1);
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* atm.h - general ATM declarations */
  
 /* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */
@@ -237,6 +238,15 @@ struct atmif_sioc {
 };
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* atm.h - general ATM declarations */
+#ifndef _LINUX_ATM_H
+#define _LINUX_ATM_H
+
+#include <uapi/linux/atm.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_COMPAT
 #include <linux/compat.h>
 struct compat_atmif_sioc {
@@ -246,6 +256,9 @@ struct compat_atmif_sioc {
 };
 #endif
 #endif
+<<<<<<< HEAD
 
 typedef unsigned short atm_backend_t;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

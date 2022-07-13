@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/atm/suni.c - S/UNI PHY driver
  *
@@ -20,10 +24,16 @@
 #include <linux/timer.h>
 #include <linux/init.h>
 #include <linux/capability.h>
+<<<<<<< HEAD
 #include <linux/atm_suni.h>
 #include <linux/slab.h>
 #include <asm/param.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/slab.h>
+#include <asm/param.h>
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/atomic.h>
 
 #include "suni.h"
@@ -53,7 +63,11 @@ static DEFINE_SPINLOCK(sunis_lock);
     if (atomic_read(&stats->s) < 0) atomic_set(&stats->s,INT_MAX);
 
 
+<<<<<<< HEAD
 static void suni_hz(unsigned long from_timer)
+=======
+static void suni_hz(struct timer_list *timer)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct suni_priv *walk;
 	struct atm_dev *dev;
@@ -85,7 +99,11 @@ static void suni_hz(unsigned long from_timer)
 		    ((GET(TACP_TCC) & 0xff) << 8) |
 		    ((GET(TACP_TCCM) & 7) << 16));
 	}
+<<<<<<< HEAD
 	if (from_timer) mod_timer(&poll_timer,jiffies+HZ);
+=======
+	if (timer) mod_timer(&poll_timer,jiffies+HZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -177,7 +195,11 @@ static int set_loopback(struct atm_dev *dev,int mode)
 		default:
 			return -EINVAL;
 	}
+<<<<<<< HEAD
 	 dev->ops->phy_put(dev, control, reg);
+=======
+	dev->ops->phy_put(dev, control, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PRIV(dev)->loop_mode = mode;
 	return 0;
 }
@@ -322,6 +344,7 @@ static int suni_start(struct atm_dev *dev)
 		printk(KERN_WARNING "%s(itf %d): no signal\n",dev->type,
 		    dev->number);
 	PRIV(dev)->loop_mode = ATM_LM_NONE;
+<<<<<<< HEAD
 	suni_hz(0); /* clear SUNI counters */
 	(void) fetch_stats(dev,NULL,1); /* clear kernel counters */
 	if (first) {
@@ -329,6 +352,13 @@ static int suni_start(struct atm_dev *dev)
 		poll_timer.expires = jiffies+HZ;
 		poll_timer.function = suni_hz;
 		poll_timer.data = 1;
+=======
+	suni_hz(NULL); /* clear SUNI counters */
+	(void) fetch_stats(dev,NULL,1); /* clear kernel counters */
+	if (first) {
+		timer_setup(&poll_timer, suni_hz, 0);
+		poll_timer.expires = jiffies+HZ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if 0
 printk(KERN_DEBUG "[u] p=0x%lx,n=0x%lx\n",(unsigned long) poll_timer.list.prev,
     (unsigned long) poll_timer.list.next);
@@ -389,4 +419,8 @@ int suni_init(struct atm_dev *dev)
 
 EXPORT_SYMBOL(suni_init);
 
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("S/UNI PHY driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

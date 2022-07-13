@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* -*- linux-c -*- ------------------------------------------------------- *
  *   
  * linux/include/linux/auto_fs.h
@@ -10,10 +11,17 @@
  *
  * ----------------------------------------------------------------------- */
 
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright 1997 Transmeta Corporation - All Rights Reserved
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _LINUX_AUTO_FS_H
 #define _LINUX_AUTO_FS_H
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #ifdef __KERNEL__
 #include <linux/fs.h>
@@ -74,4 +82,9 @@ struct autofs_packet_expire {
 #define AUTOFS_IOC_SETTIMEOUT _IOWR(0x93,0x64,unsigned long)
 #define AUTOFS_IOC_EXPIRE     _IOR(0x93,0x65,struct autofs_packet_expire)
 
+=======
+#include <linux/fs.h>
+#include <linux/ioctl.h>
+#include <uapi/linux/auto_fs.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_AUTO_FS_H */

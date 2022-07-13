@@ -30,12 +30,20 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/dma-map-ops.h> /* for dma_default_coherent */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/syscore_ops.h>
 #include <asm/mach-au1x00/au1000.h>
 #include <asm/mach-au1x00/au1xxx_dbdma.h>
@@ -252,7 +260,11 @@ EXPORT_SYMBOL(au1xxx_ddma_del_device);
 u32 au1xxx_dbdma_chan_alloc(u32 srcid, u32 destid,
        void (*callback)(int, void *), void *callparam)
 {
+<<<<<<< HEAD
 	unsigned long   flags;
+=======
+	unsigned long	flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		used, chan;
 	u32		dcp;
 	int		i;
@@ -261,7 +273,11 @@ u32 au1xxx_dbdma_chan_alloc(u32 srcid, u32 destid,
 	au1x_dma_chan_t *cp;
 
 	/*
+<<<<<<< HEAD
 	 * We do the intialization on the first channel allocation.
+=======
+	 * We do the initialization on the first channel allocation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * We have to wait because of the interrupt handler initialization
 	 * which can't be done successfully during board set up.
 	 */
@@ -341,7 +357,11 @@ u32 au1xxx_dbdma_chan_alloc(u32 srcid, u32 destid,
 			(dtp->dev_flags & DEV_FLAGS_SYNC))
 				i |= DDMA_CFG_SYNC;
 		cp->ddma_cfg = i;
+<<<<<<< HEAD
 		au_sync();
+=======
+		wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Return a non-zero value that can be used to find the channel
@@ -411,8 +431,13 @@ u32 au1xxx_dbdma_ring_alloc(u32 chanid, int entries)
 	 * and if we try that first we are likely to not waste larger
 	 * slabs of memory.
 	 */
+<<<<<<< HEAD
 	desc_base = (u32)kmalloc(entries * sizeof(au1x_ddma_desc_t),
 				 GFP_KERNEL|GFP_DMA);
+=======
+	desc_base = (u32)kmalloc_array(entries, sizeof(au1x_ddma_desc_t),
+				       GFP_KERNEL|GFP_DMA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (desc_base == 0)
 		return 0;
 
@@ -512,7 +537,11 @@ u32 au1xxx_dbdma_ring_alloc(u32 chanid, int entries)
 		break;
 	}
 
+<<<<<<< HEAD
 	/* If source input is FIFO, set static address.	*/
+=======
+	/* If source input is FIFO, set static address. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (stp->dev_flags & DEV_FLAGS_IN) {
 		if (stp->dev_flags & DEV_FLAGS_BURSTABLE)
 			src1 |= DSCR_SRC1_SAM(DSCR_xAM_BURST);
@@ -574,7 +603,11 @@ u32 au1xxx_dbdma_ring_alloc(u32 chanid, int entries)
 		dp++;
 	}
 
+<<<<<<< HEAD
 	/* Make last descrptor point to the first. */
+=======
+	/* Make last descriptor point to the first. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dp--;
 	dp->dscr_nxtptr = DSCR_NXTPTR(virt_to_phys(ctp->chan_desc_base));
 	ctp->get_ptr = ctp->put_ptr = ctp->cur_ptr = ctp->chan_desc_base;
@@ -623,6 +656,7 @@ u32 au1xxx_dbdma_put_source(u32 chanid, dma_addr_t buf, int nbytes, u32 flags)
 		dp->dscr_cmd0 &= ~DSCR_CMD0_IE;
 
 	/*
+<<<<<<< HEAD
 	 * There is an errata on the Au1200/Au1550 parts that could result
 	 * in "stale" data being DMA'ed. It has to do with the snoop logic on
 	 * the cache eviction buffer.  DMA_NONCOHERENT is on by default for
@@ -636,6 +670,22 @@ u32 au1xxx_dbdma_put_source(u32 chanid, dma_addr_t buf, int nbytes, u32 flags)
 	ctp->chan_ptr->ddma_dbell = 0;
 
 	/* Get next descriptor pointer.	*/
+=======
+	 * There is an erratum on certain Au1200/Au1550 revisions that could
+	 * result in "stale" data being DMA'ed. It has to do with the snoop
+	 * logic on the cache eviction buffer.  dma_default_coherent is set
+	 * to false on these parts.
+	 */
+	if (!dma_default_coherent)
+		dma_cache_wback_inv(KSEG0ADDR(buf), nbytes);
+	dp->dscr_cmd0 |= DSCR_CMD0_V;	/* Let it rip */
+	wmb(); /* drain writebuffer */
+	dma_cache_wback_inv((unsigned long)dp, sizeof(*dp));
+	ctp->chan_ptr->ddma_dbell = 0;
+	wmb(); /* force doorbell write out to dma engine */
+
+	/* Get next descriptor pointer. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctp->put_ptr = phys_to_virt(DSCR_GET_NXTPTR(dp->dscr_nxtptr));
 
 	/* Return something non-zero. */
@@ -685,6 +735,7 @@ u32 au1xxx_dbdma_put_dest(u32 chanid, dma_addr_t buf, int nbytes, u32 flags)
 			  dp->dscr_source1, dp->dscr_dest0, dp->dscr_dest1);
 #endif
 	/*
+<<<<<<< HEAD
 	 * There is an errata on the Au1200/Au1550 parts that could result in
 	 * "stale" data being DMA'ed. It has to do with the snoop logic on the
 	 * cache eviction buffer.  DMA_NONCOHERENT is on by default for these
@@ -698,6 +749,22 @@ u32 au1xxx_dbdma_put_dest(u32 chanid, dma_addr_t buf, int nbytes, u32 flags)
 	ctp->chan_ptr->ddma_dbell = 0;
 
 	/* Get next descriptor pointer.	*/
+=======
+	 * There is an erratum on certain Au1200/Au1550 revisions that could
+	 * result in "stale" data being DMA'ed. It has to do with the snoop
+	 * logic on the cache eviction buffer.  dma_default_coherent is set
+	 * to false on these parts.
+	 */
+	if (!dma_default_coherent)
+		dma_cache_inv(KSEG0ADDR(buf), nbytes);
+	dp->dscr_cmd0 |= DSCR_CMD0_V;	/* Let it rip */
+	wmb(); /* drain writebuffer */
+	dma_cache_wback_inv((unsigned long)dp, sizeof(*dp));
+	ctp->chan_ptr->ddma_dbell = 0;
+	wmb(); /* force doorbell write out to dma engine */
+
+	/* Get next descriptor pointer. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctp->put_ptr = phys_to_virt(DSCR_GET_NXTPTR(dp->dscr_nxtptr));
 
 	/* Return something non-zero. */
@@ -742,7 +809,11 @@ u32 au1xxx_dbdma_get_dest(u32 chanid, void **buf, int *nbytes)
 	*nbytes = dp->dscr_cmd1;
 	rv = dp->dscr_stat;
 
+<<<<<<< HEAD
 	/* Get next descriptor pointer.	*/
+=======
+	/* Get next descriptor pointer. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctp->get_ptr = phys_to_virt(DSCR_GET_NXTPTR(dp->dscr_nxtptr));
 
 	/* Return something non-zero. */
@@ -760,7 +831,11 @@ void au1xxx_dbdma_stop(u32 chanid)
 
 	cp = ctp->chan_ptr;
 	cp->ddma_cfg &= ~DDMA_CFG_EN;	/* Disable channel */
+<<<<<<< HEAD
 	au_sync();
+=======
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (!(cp->ddma_stat & DDMA_STAT_H)) {
 		udelay(1);
 		halt_timeout++;
@@ -771,7 +846,11 @@ void au1xxx_dbdma_stop(u32 chanid)
 	}
 	/* clear current desc valid and doorbell */
 	cp->ddma_stat |= (DDMA_STAT_DB | DDMA_STAT_V);
+<<<<<<< HEAD
 	au_sync();
+=======
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(au1xxx_dbdma_stop);
 
@@ -789,9 +868,15 @@ void au1xxx_dbdma_start(u32 chanid)
 	cp = ctp->chan_ptr;
 	cp->ddma_desptr = virt_to_phys(ctp->cur_ptr);
 	cp->ddma_cfg |= DDMA_CFG_EN;	/* Enable channel */
+<<<<<<< HEAD
 	au_sync();
 	cp->ddma_dbell = 0;
 	au_sync();
+=======
+	wmb(); /* drain writebuffer */
+	cp->ddma_dbell = 0;
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(au1xxx_dbdma_start);
 
@@ -832,7 +917,11 @@ u32 au1xxx_get_dma_residue(u32 chanid)
 
 	/* This is only valid if the channel is stopped. */
 	rv = cp->ddma_bytecnt;
+<<<<<<< HEAD
 	au_sync();
+=======
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rv;
 }
@@ -868,7 +957,11 @@ static irqreturn_t dbdma_interrupt(int irq, void *dev_id)
 	au1x_dma_chan_t *cp;
 
 	intstat = dbdma_gptr->ddma_intstat;
+<<<<<<< HEAD
 	au_sync();
+=======
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chan_index = __ffs(intstat);
 
 	ctp = chan_tab_ptr[chan_index];
@@ -877,7 +970,11 @@ static irqreturn_t dbdma_interrupt(int irq, void *dev_id)
 
 	/* Reset interrupt. */
 	cp->ddma_irq = 0;
+<<<<<<< HEAD
 	au_sync();
+=======
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ctp->chan_callback)
 		ctp->chan_callback(irq, ctp->chan_callparam);
@@ -891,7 +988,11 @@ void au1xxx_dbdma_dump(u32 chanid)
 	chan_tab_t	 *ctp;
 	au1x_ddma_desc_t *dp;
 	dbdev_tab_t	 *stp, *dtp;
+<<<<<<< HEAD
 	au1x_dma_chan_t  *cp;
+=======
+	au1x_dma_chan_t	 *cp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 i		 = 0;
 
 	ctp = *((chan_tab_t **)chanid);
@@ -964,12 +1065,20 @@ u32 au1xxx_dbdma_put_dscr(u32 chanid, au1x_ddma_desc_t *dscr)
 	dp->dscr_source1 = dscr->dscr_source1;
 	dp->dscr_cmd1 = dscr->dscr_cmd1;
 	nbytes = dscr->dscr_cmd1;
+<<<<<<< HEAD
 	/* Allow the caller to specifiy if an interrupt is generated */
+=======
+	/* Allow the caller to specify if an interrupt is generated */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dp->dscr_cmd0 &= ~DSCR_CMD0_IE;
 	dp->dscr_cmd0 |= dscr->dscr_cmd0 | DSCR_CMD0_V;
 	ctp->chan_ptr->ddma_dbell = 0;
 
+<<<<<<< HEAD
 	/* Get next descriptor pointer.	*/
+=======
+	/* Get next descriptor pointer. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctp->put_ptr = phys_to_virt(DSCR_GET_NXTPTR(dp->dscr_nxtptr));
 
 	/* Return something non-zero. */
@@ -1050,7 +1159,11 @@ static int __init dbdma_setup(unsigned int irq, dbdev_tab_t *idtable)
 {
 	int ret;
 
+<<<<<<< HEAD
 	dbdev_tab = kzalloc(sizeof(dbdev_tab_t) * DBDEV_TAB_SIZE, GFP_KERNEL);
+=======
+	dbdev_tab = kcalloc(DBDEV_TAB_SIZE, sizeof(dbdev_tab_t), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dbdev_tab)
 		return -ENOMEM;
 
@@ -1061,7 +1174,11 @@ static int __init dbdma_setup(unsigned int irq, dbdev_tab_t *idtable)
 	dbdma_gptr->ddma_config = 0;
 	dbdma_gptr->ddma_throttle = 0;
 	dbdma_gptr->ddma_inten = 0xffff;
+<<<<<<< HEAD
 	au_sync();
+=======
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = request_irq(irq, dbdma_interrupt, 0, "dbdma", (void *)dbdma_gptr);
 	if (ret)

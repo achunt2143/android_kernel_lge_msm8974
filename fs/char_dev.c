@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/char_dev.c
  *
@@ -24,6 +28,7 @@
 
 #include "internal.h"
 
+<<<<<<< HEAD
 /*
  * capabilities for /dev/mem, /dev/kmem and similar directly mappable character
  * devices
@@ -49,6 +54,14 @@ static struct kobj_map *cdev_map;
 
 static DEFINE_MUTEX(chrdevs_lock);
 
+=======
+static struct kobj_map *cdev_map __ro_after_init;
+
+static DEFINE_MUTEX(chrdevs_lock);
+
+#define CHRDEV_MAJOR_HASH_SIZE 255
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct char_device_struct {
 	struct char_device_struct *next;
 	unsigned int major;
@@ -70,16 +83,26 @@ void chrdev_show(struct seq_file *f, off_t offset)
 {
 	struct char_device_struct *cd;
 
+<<<<<<< HEAD
 	if (offset < CHRDEV_MAJOR_HASH_SIZE) {
 		mutex_lock(&chrdevs_lock);
 		for (cd = chrdevs[offset]; cd; cd = cd->next)
 			seq_printf(f, "%3d %s\n", cd->major, cd->name);
 		mutex_unlock(&chrdevs_lock);
 	}
+=======
+	mutex_lock(&chrdevs_lock);
+	for (cd = chrdevs[major_to_index(offset)]; cd; cd = cd->next) {
+		if (cd->major == offset)
+			seq_printf(f, "%3d %s\n", cd->major, cd->name);
+	}
+	mutex_unlock(&chrdevs_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* CONFIG_PROC_FS */
 
+<<<<<<< HEAD
 /*
  * Register a single major with a specified minor range.
  *
@@ -90,21 +113,73 @@ void chrdev_show(struct seq_file *f, off_t offset)
  * minors and will return zero on success.
  *
  * Returns a -ve errno on failure.
+=======
+static int find_dynamic_major(void)
+{
+	int i;
+	struct char_device_struct *cd;
+
+	for (i = ARRAY_SIZE(chrdevs)-1; i >= CHRDEV_MAJOR_DYN_END; i--) {
+		if (chrdevs[i] == NULL)
+			return i;
+	}
+
+	for (i = CHRDEV_MAJOR_DYN_EXT_START;
+	     i >= CHRDEV_MAJOR_DYN_EXT_END; i--) {
+		for (cd = chrdevs[major_to_index(i)]; cd; cd = cd->next)
+			if (cd->major == i)
+				break;
+
+		if (cd == NULL)
+			return i;
+	}
+
+	return -EBUSY;
+}
+
+/*
+ * Register a single major with a specified minor range.
+ *
+ * If major == 0 this function will dynamically allocate an unused major.
+ * If major > 0 this function will attempt to reserve the range of minors
+ * with given major.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct char_device_struct *
 __register_chrdev_region(unsigned int major, unsigned int baseminor,
 			   int minorct, const char *name)
 {
+<<<<<<< HEAD
 	struct char_device_struct *cd, **cp;
 	int ret = 0;
 	int i;
 
+=======
+	struct char_device_struct *cd, *curr, *prev = NULL;
+	int ret;
+	int i;
+
+	if (major >= CHRDEV_MAJOR_MAX) {
+		pr_err("CHRDEV \"%s\" major requested (%u) is greater than the maximum (%u)\n",
+		       name, major, CHRDEV_MAJOR_MAX-1);
+		return ERR_PTR(-EINVAL);
+	}
+
+	if (minorct > MINORMASK + 1 - baseminor) {
+		pr_err("CHRDEV \"%s\" minor range requested (%u-%u) is out of range of maximum range (%u-%u) for a single major\n",
+			name, baseminor, baseminor + minorct - 1, 0, MINORMASK);
+		return ERR_PTR(-EINVAL);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cd = kzalloc(sizeof(struct char_device_struct), GFP_KERNEL);
 	if (cd == NULL)
 		return ERR_PTR(-ENOMEM);
 
 	mutex_lock(&chrdevs_lock);
 
+<<<<<<< HEAD
 	/* temporary */
 	if (major == 0) {
 		for (i = ARRAY_SIZE(chrdevs)-1; i > 0; i--) {
@@ -118,11 +193,40 @@ __register_chrdev_region(unsigned int major, unsigned int baseminor,
 		}
 		major = i;
 		ret = major;
+=======
+	if (major == 0) {
+		ret = find_dynamic_major();
+		if (ret < 0) {
+			pr_err("CHRDEV \"%s\" dynamic allocation region is full\n",
+			       name);
+			goto out;
+		}
+		major = ret;
+	}
+
+	ret = -EBUSY;
+	i = major_to_index(major);
+	for (curr = chrdevs[i]; curr; prev = curr, curr = curr->next) {
+		if (curr->major < major)
+			continue;
+
+		if (curr->major > major)
+			break;
+
+		if (curr->baseminor + curr->minorct <= baseminor)
+			continue;
+
+		if (curr->baseminor >= baseminor + minorct)
+			break;
+
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	cd->major = major;
 	cd->baseminor = baseminor;
 	cd->minorct = minorct;
+<<<<<<< HEAD
 	strlcpy(cd->name, name, sizeof(cd->name));
 
 	i = major_to_index(major);
@@ -156,6 +260,18 @@ __register_chrdev_region(unsigned int major, unsigned int baseminor,
 
 	cd->next = *cp;
 	*cp = cd;
+=======
+	strscpy(cd->name, name, sizeof(cd->name));
+
+	if (!prev) {
+		cd->next = curr;
+		chrdevs[i] = cd;
+	} else {
+		cd->next = prev->next;
+		prev->next = cd;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&chrdevs_lock);
 	return cd;
 out:
@@ -296,7 +412,11 @@ out2:
 }
 
 /**
+<<<<<<< HEAD
  * unregister_chrdev_region() - return a range of device numbers
+=======
+ * unregister_chrdev_region() - unregister a range of device numbers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @from: the first in the range of numbers to unregister
  * @count: the number of device numbers to unregister
  *
@@ -346,9 +466,15 @@ static struct kobject *cdev_get(struct cdev *p)
 	struct module *owner = p->owner;
 	struct kobject *kobj;
 
+<<<<<<< HEAD
 	if (owner && !try_module_get(owner))
 		return NULL;
 	kobj = kobject_get(&p->kobj);
+=======
+	if (!try_module_get(owner))
+		return NULL;
+	kobj = kobject_get_unless_zero(&p->kobj);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!kobj)
 		module_put(owner);
 	return kobj;
@@ -368,6 +494,10 @@ void cdev_put(struct cdev *p)
  */
 static int chrdev_open(struct inode *inode, struct file *filp)
 {
+<<<<<<< HEAD
+=======
+	const struct file_operations *fops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cdev *p;
 	struct cdev *new = NULL;
 	int ret = 0;
@@ -400,10 +530,18 @@ static int chrdev_open(struct inode *inode, struct file *filp)
 		return ret;
 
 	ret = -ENXIO;
+<<<<<<< HEAD
 	filp->f_op = fops_get(p->ops);
 	if (!filp->f_op)
 		goto out_cdev_put;
 
+=======
+	fops = fops_get(p->ops);
+	if (!fops)
+		goto out_cdev_put;
+
+	replace_fops(filp, fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (filp->f_op->open) {
 		ret = filp->f_op->open(inode, filp);
 		if (ret)
@@ -422,6 +560,10 @@ void cd_forget(struct inode *inode)
 	spin_lock(&cdev_lock);
 	list_del_init(&inode->i_devices);
 	inode->i_cdev = NULL;
+<<<<<<< HEAD
+=======
+	inode->i_mapping = &inode->i_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&cdev_lock);
 }
 
@@ -471,9 +613,114 @@ static int exact_lock(dev_t dev, void *data)
  */
 int cdev_add(struct cdev *p, dev_t dev, unsigned count)
 {
+<<<<<<< HEAD
 	p->dev = dev;
 	p->count = count;
 	return kobj_map(cdev_map, dev, count, NULL, exact_match, exact_lock, p);
+=======
+	int error;
+
+	p->dev = dev;
+	p->count = count;
+
+	if (WARN_ON(dev == WHITEOUT_DEV)) {
+		error = -EBUSY;
+		goto err;
+	}
+
+	error = kobj_map(cdev_map, dev, count, NULL,
+			 exact_match, exact_lock, p);
+	if (error)
+		goto err;
+
+	kobject_get(p->kobj.parent);
+
+	return 0;
+
+err:
+	kfree_const(p->kobj.name);
+	p->kobj.name = NULL;
+	return error;
+}
+
+/**
+ * cdev_set_parent() - set the parent kobject for a char device
+ * @p: the cdev structure
+ * @kobj: the kobject to take a reference to
+ *
+ * cdev_set_parent() sets a parent kobject which will be referenced
+ * appropriately so the parent is not freed before the cdev. This
+ * should be called before cdev_add.
+ */
+void cdev_set_parent(struct cdev *p, struct kobject *kobj)
+{
+	WARN_ON(!kobj->state_initialized);
+	p->kobj.parent = kobj;
+}
+
+/**
+ * cdev_device_add() - add a char device and it's corresponding
+ *	struct device, linkink
+ * @dev: the device structure
+ * @cdev: the cdev structure
+ *
+ * cdev_device_add() adds the char device represented by @cdev to the system,
+ * just as cdev_add does. It then adds @dev to the system using device_add
+ * The dev_t for the char device will be taken from the struct device which
+ * needs to be initialized first. This helper function correctly takes a
+ * reference to the parent device so the parent will not get released until
+ * all references to the cdev are released.
+ *
+ * This helper uses dev->devt for the device number. If it is not set
+ * it will not add the cdev and it will be equivalent to device_add.
+ *
+ * This function should be used whenever the struct cdev and the
+ * struct device are members of the same structure whose lifetime is
+ * managed by the struct device.
+ *
+ * NOTE: Callers must assume that userspace was able to open the cdev and
+ * can call cdev fops callbacks at any time, even if this function fails.
+ */
+int cdev_device_add(struct cdev *cdev, struct device *dev)
+{
+	int rc = 0;
+
+	if (dev->devt) {
+		cdev_set_parent(cdev, &dev->kobj);
+
+		rc = cdev_add(cdev, dev->devt, 1);
+		if (rc)
+			return rc;
+	}
+
+	rc = device_add(dev);
+	if (rc && dev->devt)
+		cdev_del(cdev);
+
+	return rc;
+}
+
+/**
+ * cdev_device_del() - inverse of cdev_device_add
+ * @dev: the device structure
+ * @cdev: the cdev structure
+ *
+ * cdev_device_del() is a helper function to call cdev_del and device_del.
+ * It should be used whenever cdev_device_add is used.
+ *
+ * If dev->devt is not set it will not remove the cdev and will be equivalent
+ * to device_del.
+ *
+ * NOTE: This guarantees that associated sysfs callbacks are not running
+ * or runnable, however any cdevs already open will remain and their fops
+ * will still be callable even after this function returns.
+ */
+void cdev_device_del(struct cdev *cdev, struct device *dev)
+{
+	device_del(dev);
+	if (dev->devt)
+		cdev_del(cdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cdev_unmap(dev_t dev, unsigned count)
@@ -487,6 +734,13 @@ static void cdev_unmap(dev_t dev, unsigned count)
  *
  * cdev_del() removes @p from the system, possibly freeing the structure
  * itself.
+<<<<<<< HEAD
+=======
+ *
+ * NOTE: This guarantees that cdev device will no longer be able to be
+ * opened, however any cdevs already open will remain and their fops will
+ * still be callable even after cdev_del returns.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void cdev_del(struct cdev *p)
 {
@@ -498,14 +752,29 @@ void cdev_del(struct cdev *p)
 static void cdev_default_release(struct kobject *kobj)
 {
 	struct cdev *p = container_of(kobj, struct cdev, kobj);
+<<<<<<< HEAD
 	cdev_purge(p);
+=======
+	struct kobject *parent = kobj->parent;
+
+	cdev_purge(p);
+	kobject_put(parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cdev_dynamic_release(struct kobject *kobj)
 {
 	struct cdev *p = container_of(kobj, struct cdev, kobj);
+<<<<<<< HEAD
 	cdev_purge(p);
 	kfree(p);
+=======
+	struct kobject *parent = kobj->parent;
+
+	cdev_purge(p);
+	kfree(p);
+	kobject_put(parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct kobj_type ktype_cdev_default = {
@@ -558,7 +827,10 @@ static struct kobject *base_probe(dev_t dev, int *part, void *data)
 void __init chrdev_init(void)
 {
 	cdev_map = kobj_map_init(base_probe, &chrdevs_lock);
+<<<<<<< HEAD
 	bdi_init(&directly_mappable_cdev_bdi);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -570,6 +842,14 @@ EXPORT_SYMBOL(cdev_init);
 EXPORT_SYMBOL(cdev_alloc);
 EXPORT_SYMBOL(cdev_del);
 EXPORT_SYMBOL(cdev_add);
+<<<<<<< HEAD
 EXPORT_SYMBOL(__register_chrdev);
 EXPORT_SYMBOL(__unregister_chrdev);
 EXPORT_SYMBOL(directly_mappable_cdev_bdi);
+=======
+EXPORT_SYMBOL(cdev_set_parent);
+EXPORT_SYMBOL(cdev_device_add);
+EXPORT_SYMBOL(cdev_device_del);
+EXPORT_SYMBOL(__register_chrdev);
+EXPORT_SYMBOL(__unregister_chrdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

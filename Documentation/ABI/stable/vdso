@@ -1,3 +1,12 @@
+<<<<<<< HEAD
+=======
+What:		vDSO
+Date:		July 2011
+KernelVersion:	3.0
+Contact:	Andy Lutomirski <luto@kernel.org>
+Description:
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 On some architectures, when the kernel loads any userspace program it
 maps an ELF DSO into that program's address space.  This DSO is called
 the vDSO and it often contains useful and highly-optimized alternatives
@@ -16,12 +25,24 @@ The vDSO uses symbol versioning; whenever you request a symbol from the
 vDSO, specify the version you are expecting.
 
 Programs that dynamically link to glibc will use the vDSO automatically.
+<<<<<<< HEAD
 Otherwise, you can use the reference parser in Documentation/vDSO/parse_vdso.c.
+=======
+Otherwise, you can use the reference parser in
+tools/testing/selftests/vDSO/parse_vdso.c.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Unless otherwise noted, the set of symbols with any given version and the
 ABI of those symbols is considered stable.  It may vary across architectures,
 though.
 
+<<<<<<< HEAD
 (As of this writing, this ABI documentation as been confirmed for x86_64.
  The maintainers of the other vDSO-using architectures should confirm
  that it is correct for their architecture.)
+=======
+Note:
+ As of this writing, this ABI documentation as been confirmed for x86_64.
+ The maintainers of the other vDSO-using architectures should confirm
+ that it is correct for their architecture.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

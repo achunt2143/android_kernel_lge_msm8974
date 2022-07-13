@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2011 Freescale Semiconductor, Inc. All Rights Reserved.
  *
@@ -14,14 +15,23 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (C) 2011 Freescale Semiconductor, Inc. All Rights Reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _MXS_PCM_H
 #define _MXS_PCM_H
 
+<<<<<<< HEAD
 struct mxs_pcm_dma_params {
 	int chan_irq;
 	int chan_num;
 };
+=======
+int mxs_pcm_platform_register(struct device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

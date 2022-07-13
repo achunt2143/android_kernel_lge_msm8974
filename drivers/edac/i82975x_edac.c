@@ -14,9 +14,14 @@
 #include <linux/pci.h>
 #include <linux/pci_ids.h>
 #include <linux/edac.h>
+<<<<<<< HEAD
 #include "edac_core.h"
 
 #define I82975X_REVISION	" Ver: 1.0.0"
+=======
+#include "edac_module.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EDAC_MOD_STR		"i82975x_edac"
 
 #define i82975x_printk(level, fmt, arg...) \
@@ -29,7 +34,12 @@
 #define PCI_DEVICE_ID_INTEL_82975_0	0x277c
 #endif				/* PCI_DEVICE_ID_INTEL_82975_0 */
 
+<<<<<<< HEAD
 #define I82975X_NR_CSROWS(nr_chans)		(8/(nr_chans))
+=======
+#define I82975X_NR_DIMMS		8
+#define I82975X_NR_CSROWS(nr_chans)	(I82975X_NR_DIMMS / (nr_chans))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Intel 82975X register addresses - device 0 function 0 - DRAM Controller */
 #define I82975X_EAP		0x58	/* Dram Error Address Pointer (32b)
@@ -104,7 +114,11 @@ NOTE: Only ONE of the three must be enabled
 					 *
 					 * 31:14 Base Addr of 16K memory-mapped
 					 *	configuration space
+<<<<<<< HEAD
 					 * 13:1  reserverd
+=======
+					 * 13:1  reserved
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 *  0    mem-mapped config space enable
 					 */
 
@@ -240,7 +254,11 @@ static void i82975x_get_error_info(struct mem_ctl_info *mci,
 {
 	struct pci_dev *pdev;
 
+<<<<<<< HEAD
 	pdev = to_pci_dev(mci->dev);
+=======
+	pdev = to_pci_dev(mci->pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This is a mess because there is no atomic way to read all the
@@ -287,7 +305,12 @@ static int i82975x_process_error_info(struct mem_ctl_info *mci,
 		return 1;
 
 	if ((info->errsts ^ info->errsts2) & 0x0003) {
+<<<<<<< HEAD
 		edac_mc_handle_ce_no_info(mci, "UE overwrote CE");
+=======
+		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1, 0, 0, 0,
+				     -1, -1, -1, "UE overwrote CE", "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->errsts = info->errsts2;
 	}
 
@@ -306,6 +329,7 @@ static int i82975x_process_error_info(struct mem_ctl_info *mci,
 			(info->xeap & 1) ? 1 : 0, info->eap, (unsigned int) page);
 		return 0;
 	}
+<<<<<<< HEAD
 	chan = (mci->csrows[row].nr_channels == 1) ? 0 : info->eap & 1;
 	offst = info->eap
 			& ((1 << PAGE_SHIFT) -
@@ -316,6 +340,23 @@ static int i82975x_process_error_info(struct mem_ctl_info *mci,
 	else
 		edac_mc_handle_ce(mci, page, offst, info->derrsyn, row,
 				chan, "i82975x CE");
+=======
+	chan = (mci->csrows[row]->nr_channels == 1) ? 0 : info->eap & 1;
+	offst = info->eap
+			& ((1 << PAGE_SHIFT) -
+			   (1 << mci->csrows[row]->channels[chan]->dimm->grain));
+
+	if (info->errsts & 0x0002)
+		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1,
+				     page, offst, 0,
+				     row, -1, -1,
+				     "i82975x UE", "");
+	else
+		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1,
+				     page, offst, info->derrsyn,
+				     row, chan ? chan : 0, -1,
+				     "i82975x CE", "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
@@ -324,7 +365,10 @@ static void i82975x_check(struct mem_ctl_info *mci)
 {
 	struct i82975x_error_info info;
 
+<<<<<<< HEAD
 	debugf1("MC%d: %s()\n", mci->mc_idx, __func__);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i82975x_get_error_info(mci, &info);
 	i82975x_process_error_info(mci, &info, 1);
 }
@@ -352,6 +396,7 @@ static int dual_channel_active(void __iomem *mch_window)
 	return dualch;
 }
 
+<<<<<<< HEAD
 static enum dev_type i82975x_dram_type(void __iomem *mch_window, int rank)
 {
 	/*
@@ -360,14 +405,22 @@ static enum dev_type i82975x_dram_type(void __iomem *mch_window, int rank)
 	return DEV_X8;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void i82975x_init_csrows(struct mem_ctl_info *mci,
 		struct pci_dev *pdev, void __iomem *mch_window)
 {
 	struct csrow_info *csrow;
 	unsigned long last_cumul_size;
 	u8 value;
+<<<<<<< HEAD
 	u32 cumul_size;
 	int index, chan;
+=======
+	u32 cumul_size, nr_pages;
+	int index, chan;
+	struct dimm_info *dimm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	last_cumul_size = 0;
 
@@ -381,7 +434,11 @@ static void i82975x_init_csrows(struct mem_ctl_info *mci,
 	 */
 
 	for (index = 0; index < mci->nr_csrows; index++) {
+<<<<<<< HEAD
 		csrow = &mci->csrows[index];
+=======
+		csrow = mci->csrows[index];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		value = readb(mch_window + I82975X_DRB + index +
 					((index >= 4) ? 0x80 : 0));
@@ -393,8 +450,16 @@ static void i82975x_init_csrows(struct mem_ctl_info *mci,
 		 */
 		if (csrow->nr_channels > 1)
 			cumul_size <<= 1;
+<<<<<<< HEAD
 		debugf3("%s(): (%d) cumul_size 0x%x\n", __func__, index,
 			cumul_size);
+=======
+		edac_dbg(3, "(%d) cumul_size 0x%x\n", index, cumul_size);
+
+		nr_pages = cumul_size - last_cumul_size;
+		if (!nr_pages)
+			continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Initialise dram labels
@@ -402,6 +467,7 @@ static void i82975x_init_csrows(struct mem_ctl_info *mci,
 		 *   [0-7] for single-channel; i.e. csrow->nr_channels = 1
 		 *   [0-3] for dual-channel; i.e. csrow->nr_channels = 2
 		 */
+<<<<<<< HEAD
 		for (chan = 0; chan < csrow->nr_channels; chan++)
 
 			snprintf(csrow->channels[chan].label, EDAC_MC_LABEL_LEN, "DIMM %c%d",
@@ -419,6 +485,28 @@ static void i82975x_init_csrows(struct mem_ctl_info *mci,
 		csrow->mtype = MEM_DDR2; /* I82975x supports only DDR2 */
 		csrow->dtype = i82975x_dram_type(mch_window, index);
 		csrow->edac_mode = EDAC_SECDED; /* only supported */
+=======
+		for (chan = 0; chan < csrow->nr_channels; chan++) {
+			dimm = mci->csrows[index]->channels[chan]->dimm;
+
+			dimm->nr_pages = nr_pages / csrow->nr_channels;
+
+			snprintf(csrow->channels[chan]->dimm->label, EDAC_MC_LABEL_LEN, "DIMM %c%d",
+				 (chan == 0) ? 'A' : 'B',
+				 index);
+			dimm->grain = 1 << 7;	/* 128Byte cache-line resolution */
+
+			/* ECC is possible on i92975x ONLY with DEV_X8.  */
+			dimm->dtype = DEV_X8;
+
+			dimm->mtype = MEM_DDR2; /* I82975x supports only DDR2 */
+			dimm->edac_mode = EDAC_SECDED; /* only supported */
+		}
+
+		csrow->first_page = last_cumul_size;
+		csrow->last_page = cumul_size - 1;
+		last_cumul_size = cumul_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -460,6 +548,10 @@ static int i82975x_probe1(struct pci_dev *pdev, int dev_idx)
 {
 	int rc = -ENODEV;
 	struct mem_ctl_info *mci;
+<<<<<<< HEAD
+=======
+	struct edac_mc_layer layers[2];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct i82975x_pvt *pvt;
 	void __iomem *mch_window;
 	u32 mchbar;
@@ -471,6 +563,7 @@ static int i82975x_probe1(struct pci_dev *pdev, int dev_idx)
 	u8 c1drb[4];
 #endif
 
+<<<<<<< HEAD
 	debugf0("%s()\n", __func__);
 
 	pci_read_config_dword(pdev, I82975X_MCHBAR, &mchbar);
@@ -480,6 +573,21 @@ static int i82975x_probe1(struct pci_dev *pdev, int dev_idx)
 	}
 	mchbar &= 0xffffc000;	/* bits 31:14 used for 16K window */
 	mch_window = ioremap_nocache(mchbar, 0x1000);
+=======
+	edac_dbg(0, "\n");
+
+	pci_read_config_dword(pdev, I82975X_MCHBAR, &mchbar);
+	if (!(mchbar & 1)) {
+		edac_dbg(3, "failed, MCHBAR disabled!\n");
+		goto fail0;
+	}
+	mchbar &= 0xffffc000;	/* bits 31:14 used for 16K window */
+	mch_window = ioremap(mchbar, 0x1000);
+	if (!mch_window) {
+		edac_dbg(3, "error ioremapping MCHBAR!\n");
+		goto fail0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef i82975x_DEBUG_IOMEM
 	i82975x_printk(KERN_INFO, "MCHBAR real = %0x, remapped = %p\n",
@@ -528,25 +636,47 @@ static int i82975x_probe1(struct pci_dev *pdev, int dev_idx)
 	chans = dual_channel_active(mch_window) + 1;
 
 	/* assuming only one controller, index thus is 0 */
+<<<<<<< HEAD
 	mci = edac_mc_alloc(sizeof(*pvt), I82975X_NR_CSROWS(chans),
 					chans, 0);
+=======
+	layers[0].type = EDAC_MC_LAYER_CHIP_SELECT;
+	layers[0].size = I82975X_NR_DIMMS;
+	layers[0].is_virt_csrow = true;
+	layers[1].type = EDAC_MC_LAYER_CHANNEL;
+	layers[1].size = I82975X_NR_CSROWS(chans);
+	layers[1].is_virt_csrow = false;
+	mci = edac_mc_alloc(0, ARRAY_SIZE(layers), layers, sizeof(*pvt));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mci) {
 		rc = -ENOMEM;
 		goto fail1;
 	}
 
+<<<<<<< HEAD
 	debugf3("%s(): init mci\n", __func__);
 	mci->dev = &pdev->dev;
+=======
+	edac_dbg(3, "init mci\n");
+	mci->pdev = &pdev->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mci->mtype_cap = MEM_FLAG_DDR2;
 	mci->edac_ctl_cap = EDAC_FLAG_NONE | EDAC_FLAG_SECDED;
 	mci->edac_cap = EDAC_FLAG_NONE | EDAC_FLAG_SECDED;
 	mci->mod_name = EDAC_MOD_STR;
+<<<<<<< HEAD
 	mci->mod_ver = I82975X_REVISION;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mci->ctl_name = i82975x_devs[dev_idx].ctl_name;
 	mci->dev_name = pci_name(pdev);
 	mci->edac_check = i82975x_check;
 	mci->ctl_page_to_phys = NULL;
+<<<<<<< HEAD
 	debugf3("%s(): init pvt\n", __func__);
+=======
+	edac_dbg(3, "init pvt\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pvt = (struct i82975x_pvt *) mci->pvt_info;
 	pvt->mch_window = mch_window;
 	i82975x_init_csrows(mci, pdev, mch_window);
@@ -555,12 +685,20 @@ static int i82975x_probe1(struct pci_dev *pdev, int dev_idx)
 
 	/* finalize this instance of memory controller with edac core */
 	if (edac_mc_add_mc(mci)) {
+<<<<<<< HEAD
 		debugf3("%s(): failed edac_mc_add_mc()\n", __func__);
+=======
+		edac_dbg(3, "failed edac_mc_add_mc()\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail2;
 	}
 
 	/* get this far and it's successful */
+<<<<<<< HEAD
 	debugf3("%s(): success\n", __func__);
+=======
+	edac_dbg(3, "success\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 fail2:
@@ -573,12 +711,21 @@ fail0:
 }
 
 /* returns count (>= 0), or negative on error */
+<<<<<<< HEAD
 static int __devinit i82975x_init_one(struct pci_dev *pdev,
 		const struct pci_device_id *ent)
 {
 	int rc;
 
 	debugf0("%s()\n", __func__);
+=======
+static int i82975x_init_one(struct pci_dev *pdev,
+			    const struct pci_device_id *ent)
+{
+	int rc;
+
+	edac_dbg(0, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci_enable_device(pdev) < 0)
 		return -EIO;
@@ -591,12 +738,20 @@ static int __devinit i82975x_init_one(struct pci_dev *pdev,
 	return rc;
 }
 
+<<<<<<< HEAD
 static void __devexit i82975x_remove_one(struct pci_dev *pdev)
+=======
+static void i82975x_remove_one(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mem_ctl_info *mci;
 	struct i82975x_pvt *pvt;
 
+<<<<<<< HEAD
 	debugf0("%s()\n", __func__);
+=======
+	edac_dbg(0, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mci = edac_mc_del_mc(&pdev->dev);
 	if (mci  == NULL)
@@ -609,7 +764,11 @@ static void __devexit i82975x_remove_one(struct pci_dev *pdev)
 	edac_mc_free(mci);
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(i82975x_pci_tbl) = {
+=======
+static const struct pci_device_id i82975x_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		PCI_VEND_DEV(INTEL, 82975_0), PCI_ANY_ID, PCI_ANY_ID, 0, 0,
 		I82975X
@@ -624,7 +783,11 @@ MODULE_DEVICE_TABLE(pci, i82975x_pci_tbl);
 static struct pci_driver i82975x_driver = {
 	.name = EDAC_MOD_STR,
 	.probe = i82975x_init_one,
+<<<<<<< HEAD
 	.remove = __devexit_p(i82975x_remove_one),
+=======
+	.remove = i82975x_remove_one,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = i82975x_pci_tbl,
 };
 
@@ -632,10 +795,17 @@ static int __init i82975x_init(void)
 {
 	int pci_rc;
 
+<<<<<<< HEAD
 	debugf3("%s()\n", __func__);
 
        /* Ensure that the OPSTATE is set correctly for POLL or NMI */
        opstate_init();
+=======
+	edac_dbg(3, "\n");
+
+	/* Ensure that the OPSTATE is set correctly for POLL or NMI */
+	opstate_init();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_rc = pci_register_driver(&i82975x_driver);
 	if (pci_rc < 0)
@@ -646,7 +816,11 @@ static int __init i82975x_init(void)
 				PCI_DEVICE_ID_INTEL_82975_0, NULL);
 
 		if (!mci_pdev) {
+<<<<<<< HEAD
 			debugf0("i82975x pci_get_device fail\n");
+=======
+			edac_dbg(0, "i82975x pci_get_device fail\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_rc = -ENODEV;
 			goto fail1;
 		}
@@ -654,7 +828,11 @@ static int __init i82975x_init(void)
 		pci_rc = i82975x_init_one(mci_pdev, i82975x_pci_tbl);
 
 		if (pci_rc < 0) {
+<<<<<<< HEAD
 			debugf0("i82975x init fail\n");
+=======
+			edac_dbg(0, "i82975x init fail\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pci_rc = -ENODEV;
 			goto fail1;
 		}
@@ -666,15 +844,23 @@ fail1:
 	pci_unregister_driver(&i82975x_driver);
 
 fail0:
+<<<<<<< HEAD
 	if (mci_pdev != NULL)
 		pci_dev_put(mci_pdev);
 
+=======
+	pci_dev_put(mci_pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pci_rc;
 }
 
 static void __exit i82975x_exit(void)
 {
+<<<<<<< HEAD
 	debugf3("%s()\n", __func__);
+=======
+	edac_dbg(3, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_unregister_driver(&i82975x_driver);
 

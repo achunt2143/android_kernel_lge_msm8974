@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/powerpc/sysdev/dart_iommu.c
  *
@@ -10,6 +14,7 @@
  * Copyright (C) 2004 Olof Johansson <olof@lixom.net>, IBM Corporation
  *
  * Dynamic DMA mapping support, Apple U3, U4 & IBM CPC925 "DART" iommu.
+<<<<<<< HEAD
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -25,6 +30,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -38,17 +45,27 @@
 #include <linux/suspend.h>
 #include <linux/memblock.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
 #include <asm/io.h>
 #include <asm/prom.h>
 #include <asm/iommu.h>
 #include <asm/pci-bridge.h>
 #include <asm/machdep.h>
 #include <asm/abs_addr.h>
+=======
+#include <linux/kmemleak.h>
+#include <linux/of_address.h>
+#include <asm/io.h>
+#include <asm/iommu.h>
+#include <asm/pci-bridge.h>
+#include <asm/machdep.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cacheflush.h>
 #include <asm/ppc-pci.h>
 
 #include "dart.h"
 
+<<<<<<< HEAD
 /* Physical base address and size of the DART table */
 unsigned long dart_tablebase; /* exported to htab_initialize */
 static unsigned long dart_tablesize;
@@ -59,6 +76,12 @@ static u32 *dart_vbase;
 static u32 *dart_copy;
 #endif
 
+=======
+/* DART table address and size */
+static u32 *dart_tablebase;
+static unsigned long dart_tablesize;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Mapped base address for the dart */
 static unsigned int __iomem *dart;
 
@@ -74,11 +97,22 @@ static int dart_is_u4;
 
 #define DBG(...)
 
+<<<<<<< HEAD
+=======
+static DEFINE_SPINLOCK(invalidate_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void dart_tlb_invalidate_all(void)
 {
 	unsigned long l = 0;
 	unsigned int reg, inv_bit;
 	unsigned long limit;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&invalidate_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DBG("dart: flush\n");
 
@@ -111,12 +145,23 @@ retry:
 			panic("DART: TLB did not flush after waiting a long "
 			      "time. Buggy U3 ?");
 	}
+<<<<<<< HEAD
+=======
+
+	spin_unlock_irqrestore(&invalidate_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void dart_tlb_invalidate_one(unsigned long bus_rpn)
 {
 	unsigned int reg;
 	unsigned int l, limit;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&invalidate_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	reg = DART_CNTL_U4_ENABLE | DART_CNTL_U4_IONE |
 		(bus_rpn & DART_CNTL_U4_IONE_MASK);
@@ -138,6 +183,39 @@ wait_more:
 			panic("DART: TLB did not flush after waiting a long "
 			      "time. Buggy U4 ?");
 	}
+<<<<<<< HEAD
+=======
+
+	spin_unlock_irqrestore(&invalidate_lock, flags);
+}
+
+static void dart_cache_sync(unsigned int *base, unsigned int count)
+{
+	/*
+	 * We add 1 to the number of entries to flush, following a
+	 * comment in Darwin indicating that the memory controller
+	 * can prefetch unmapped memory under some circumstances.
+	 */
+	unsigned long start = (unsigned long)base;
+	unsigned long end = start + (count + 1) * sizeof(unsigned int);
+	unsigned int tmp;
+
+	/* Perform a standard cache flush */
+	flush_dcache_range(start, end);
+
+	/*
+	 * Perform the sequence described in the CPC925 manual to
+	 * ensure all the data gets to a point the cache incoherent
+	 * DART hardware will see.
+	 */
+	asm volatile(" sync;"
+		     " isync;"
+		     " dcbf 0,%1;"
+		     " sync;"
+		     " isync;"
+		     " lwz %0,0(%1);"
+		     " isync" : "=r" (tmp) : "r" (end) : "memory");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dart_flush(struct iommu_table *tbl)
@@ -152,32 +230,50 @@ static void dart_flush(struct iommu_table *tbl)
 static int dart_build(struct iommu_table *tbl, long index,
 		       long npages, unsigned long uaddr,
 		       enum dma_data_direction direction,
+<<<<<<< HEAD
 		       struct dma_attrs *attrs)
 {
 	unsigned int *dp;
+=======
+		       unsigned long attrs)
+{
+	unsigned int *dp, *orig_dp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int rpn;
 	long l;
 
 	DBG("dart: build at: %lx, %lx, addr: %x\n", index, npages, uaddr);
 
+<<<<<<< HEAD
 	dp = ((unsigned int*)tbl->it_base) + index;
+=======
+	orig_dp = dp = ((unsigned int*)tbl->it_base) + index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* On U3, all memory is contiguous, so we can move this
 	 * out of the loop.
 	 */
 	l = npages;
 	while (l--) {
+<<<<<<< HEAD
 		rpn = virt_to_abs(uaddr) >> DART_PAGE_SHIFT;
+=======
+		rpn = __pa(uaddr) >> DART_PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		*(dp++) = DARTMAP_VALID | (rpn & DARTMAP_RPNMASK);
 
 		uaddr += DART_PAGE_SIZE;
 	}
+<<<<<<< HEAD
 
 	/* make sure all updates have reached memory */
 	mb();
 	in_be32((unsigned __iomem *)dp);
 	mb();
+=======
+	dart_cache_sync(orig_dp, npages);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dart_is_u4) {
 		rpn = index;
@@ -192,7 +288,12 @@ static int dart_build(struct iommu_table *tbl, long index,
 
 static void dart_free(struct iommu_table *tbl, long index, long npages)
 {
+<<<<<<< HEAD
 	unsigned int *dp;
+=======
+	unsigned int *dp, *orig_dp;
+	long orig_npages = npages;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We don't worry about flushing the TLB cache. The only drawback of
 	 * not doing it is that we won't catch buggy device drivers doing
@@ -201,6 +302,7 @@ static void dart_free(struct iommu_table *tbl, long index, long npages)
 
 	DBG("dart: free at: %lx, %lx\n", index, npages);
 
+<<<<<<< HEAD
 	dp  = ((unsigned int *)tbl->it_base) + index;
 
 	while (npages--)
@@ -229,20 +331,88 @@ static int __init dart_init(struct device_node *dart_node)
 	 */
 	flush_dcache_phys_range(dart_tablebase,
 				dart_tablebase + dart_tablesize);
+=======
+	orig_dp = dp  = ((unsigned int *)tbl->it_base) + index;
+
+	while (npages--)
+		*(dp++) = dart_emptyval;
+
+	dart_cache_sync(orig_dp, orig_npages);
+}
+
+static void __init allocate_dart(void)
+{
+	unsigned long tmp;
+
+	/* 512 pages (2MB) is max DART tablesize. */
+	dart_tablesize = 1UL << 21;
+
+	/*
+	 * 16MB (1 << 24) alignment. We allocate a full 16Mb chuck since we
+	 * will blow up an entire large page anyway in the kernel mapping.
+	 */
+	dart_tablebase = memblock_alloc_try_nid_raw(SZ_16M, SZ_16M,
+					MEMBLOCK_LOW_LIMIT, SZ_2G,
+					NUMA_NO_NODE);
+	if (!dart_tablebase)
+		panic("Failed to allocate 16MB below 2GB for DART table\n");
+
+	/* There is no point scanning the DART space for leaks*/
+	kmemleak_no_scan((void *)dart_tablebase);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Allocate a spare page to map all invalid DART pages. We need to do
 	 * that to work around what looks like a problem with the HT bridge
 	 * prefetching into invalid pages and corrupting data
 	 */
+<<<<<<< HEAD
 	tmp = memblock_alloc(DART_PAGE_SIZE, DART_PAGE_SIZE);
 	dart_emptyval = DARTMAP_VALID | ((tmp >> DART_PAGE_SHIFT) &
 					 DARTMAP_RPNMASK);
 
+=======
+	tmp = memblock_phys_alloc(DART_PAGE_SIZE, DART_PAGE_SIZE);
+	if (!tmp)
+		panic("DART: table allocation failed\n");
+
+	dart_emptyval = DARTMAP_VALID | ((tmp >> DART_PAGE_SHIFT) &
+					 DARTMAP_RPNMASK);
+
+	printk(KERN_INFO "DART table allocated at: %p\n", dart_tablebase);
+}
+
+static int __init dart_init(struct device_node *dart_node)
+{
+	unsigned int i;
+	unsigned long base, size;
+	struct resource r;
+
+	/* IOMMU disabled by the user ? bail out */
+	if (iommu_is_off)
+		return -ENODEV;
+
+	/*
+	 * Only use the DART if the machine has more than 1GB of RAM
+	 * or if requested with iommu=on on cmdline.
+	 *
+	 * 1GB of RAM is picked as limit because some default devices
+	 * (i.e. Airport Extreme) have 30 bit address range limits.
+	 */
+
+	if (!iommu_force_on && memblock_end_of_DRAM() <= 0x40000000ull)
+		return -ENODEV;
+
+	/* Get DART registers */
+	if (of_address_to_resource(dart_node, 0, &r))
+		panic("DART: can't get register base ! ");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Map in DART registers */
 	dart = ioremap(r.start, resource_size(&r));
 	if (dart == NULL)
 		panic("DART: Cannot map registers!");
 
+<<<<<<< HEAD
 	/* Map in DART table */
 	dart_vbase = ioremap(virt_to_abs(dart_tablebase), dart_tablesize);
 
@@ -252,6 +422,20 @@ static int __init dart_init(struct device_node *dart_node)
 
 	/* Initialize DART with table base and enable it. */
 	base = dart_tablebase >> DART_PAGE_SHIFT;
+=======
+	/* Allocate the DART and dummy page */
+	allocate_dart();
+
+	/* Fill initial table */
+	for (i = 0; i < dart_tablesize/4; i++)
+		dart_tablebase[i] = dart_emptyval;
+
+	/* Push to memory */
+	dart_cache_sync(dart_tablebase, dart_tablesize / sizeof(u32));
+
+	/* Initialize DART with table base and enable it. */
+	base = ((unsigned long)dart_tablebase) >> DART_PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size = dart_tablesize >> DART_PAGE_SHIFT;
 	if (dart_is_u4) {
 		size &= DART_SIZE_U4_SIZE_MASK;
@@ -275,18 +459,39 @@ static int __init dart_init(struct device_node *dart_node)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static struct iommu_table_ops iommu_dart_ops = {
+	.set = dart_build,
+	.clear = dart_free,
+	.flush = dart_flush,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void iommu_table_dart_setup(void)
 {
 	iommu_table_dart.it_busno = 0;
 	iommu_table_dart.it_offset = 0;
 	/* it_size is in number of entries */
 	iommu_table_dart.it_size = dart_tablesize / sizeof(u32);
+<<<<<<< HEAD
 
 	/* Initialize the common IOMMU code */
 	iommu_table_dart.it_base = (unsigned long)dart_vbase;
 	iommu_table_dart.it_index = 0;
 	iommu_table_dart.it_blocksize = 1;
 	iommu_init_table(&iommu_table_dart, -1);
+=======
+	iommu_table_dart.it_page_shift = IOMMU_PAGE_SHIFT_4K;
+
+	/* Initialize the common IOMMU code */
+	iommu_table_dart.it_base = (unsigned long)dart_tablebase;
+	iommu_table_dart.it_index = 0;
+	iommu_table_dart.it_blocksize = 1;
+	iommu_table_dart.it_ops = &iommu_dart_ops;
+	if (!iommu_init_table(&iommu_table_dart, -1, 0, 0))
+		panic("Failed to initialize iommu table");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reserve the last page of the DART to avoid possible prefetch
 	 * past the DART mapped area
@@ -294,6 +499,7 @@ static void iommu_table_dart_setup(void)
 	set_bit(iommu_table_dart.it_size - 1, iommu_table_dart.it_map);
 }
 
+<<<<<<< HEAD
 static void dma_dev_setup_dart(struct device *dev)
 {
 	/* We only have one iommu table on the mac for now, which makes
@@ -310,6 +516,8 @@ static void pci_dma_dev_setup_dart(struct pci_dev *dev)
 	dma_dev_setup_dart(&dev->dev);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pci_dma_bus_setup_dart(struct pci_bus *bus)
 {
 	if (!iommu_table_dart_inited) {
@@ -333,6 +541,7 @@ static bool dart_device_on_pcie(struct device *dev)
 	return false;
 }
 
+<<<<<<< HEAD
 static int dart_dma_set_mask(struct device *dev, u64 dma_mask)
 {
 	if (!dev->dma_mask || !dma_supported(dev, dma_mask))
@@ -358,6 +567,23 @@ static int dart_dma_set_mask(struct device *dev, u64 dma_mask)
 }
 
 void __init iommu_init_early_dart(void)
+=======
+static void pci_dma_dev_setup_dart(struct pci_dev *dev)
+{
+	if (dart_is_u4 && dart_device_on_pcie(&dev->dev))
+		dev->dev.archdata.dma_offset = DART_U4_BYPASS_BASE;
+	set_iommu_table_base(&dev->dev, &iommu_table_dart);
+}
+
+static bool iommu_bypass_supported_dart(struct pci_dev *dev, u64 mask)
+{
+	return dart_is_u4 &&
+		dart_device_on_pcie(&dev->dev) &&
+		mask >= DMA_BIT_MASK(40);
+}
+
+void __init iommu_init_early_dart(struct pci_controller_ops *controller_ops)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dn;
 
@@ -371,6 +597,7 @@ void __init iommu_init_early_dart(void)
 	}
 
 	/* Initialize the DART HW */
+<<<<<<< HEAD
 	if (dart_init(dn) != 0)
 		goto bail;
 
@@ -408,11 +635,37 @@ static void iommu_dart_save(void)
 static void iommu_dart_restore(void)
 {
 	memcpy(dart_vbase, dart_copy, 2*1024*1024);
+=======
+	if (dart_init(dn) != 0) {
+		of_node_put(dn);
+		return;
+	}
+	/*
+	 * U4 supports a DART bypass, we use it for 64-bit capable devices to
+	 * improve performance.  However, that only works for devices connected
+	 * to the U4 own PCIe interface, not bridged through hypertransport.
+	 * We need the device to support at least 40 bits of addresses.
+	 */
+	controller_ops->dma_dev_setup = pci_dma_dev_setup_dart;
+	controller_ops->dma_bus_setup = pci_dma_bus_setup_dart;
+	controller_ops->iommu_bypass_supported = iommu_bypass_supported_dart;
+
+	/* Setup pci_dma ops */
+	set_pci_dma_ops(&dma_iommu_ops);
+	of_node_put(dn);
+}
+
+#ifdef CONFIG_PM
+static void iommu_dart_restore(void)
+{
+	dart_cache_sync(dart_tablebase, dart_tablesize / sizeof(u32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dart_tlb_invalidate_all();
 }
 
 static int __init iommu_init_late_dart(void)
 {
+<<<<<<< HEAD
 	unsigned long tbasepfn;
 	struct page *p;
 
@@ -434,12 +687,18 @@ static int __init iommu_init_late_dart(void)
 	dart_copy = page_address(p);
 
 	ppc_md.iommu_save = iommu_dart_save;
+=======
+	if (!dart_tablebase)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ppc_md.iommu_restore = iommu_dart_restore;
 
 	return 0;
 }
 
 late_initcall(iommu_init_late_dart);
+<<<<<<< HEAD
 #endif
 
 void __init alloc_dart_table(void)
@@ -467,3 +726,6 @@ void __init alloc_dart_table(void)
 
 	printk(KERN_INFO "DART table allocated at: %lx\n", dart_tablebase);
 }
+=======
+#endif /* CONFIG_PM */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

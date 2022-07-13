@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/sysv/dir.c
  *
@@ -18,11 +22,16 @@
 #include <linux/swap.h>
 #include "sysv.h"
 
+<<<<<<< HEAD
 static int sysv_readdir(struct file *, void *, filldir_t);
+=======
+static int sysv_readdir(struct file *, struct dir_context *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const struct file_operations sysv_dir_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.readdir	= sysv_readdir,
 	.fsync		= generic_file_fsync,
 };
@@ -43,12 +52,23 @@ static int dir_commit_chunk(struct page *page, loff_t pos, unsigned len)
 	struct address_space *mapping = page->mapping;
 	struct inode *dir = mapping->host;
 	int err = 0;
+=======
+	.iterate_shared	= sysv_readdir,
+	.fsync		= generic_file_fsync,
+};
+
+static void dir_commit_chunk(struct page *page, loff_t pos, unsigned len)
+{
+	struct address_space *mapping = page->mapping;
+	struct inode *dir = mapping->host;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	block_write_end(NULL, mapping, pos, len, len, page, NULL);
 	if (pos+len > dir->i_size) {
 		i_size_write(dir, pos+len);
 		mark_inode_dirty(dir);
 	}
+<<<<<<< HEAD
 	if (IS_DIRSYNC(dir))
 		err = write_one_page(page, 1);
 	else
@@ -77,10 +97,58 @@ static int sysv_readdir(struct file * filp, void * dirent, filldir_t filldir)
 	pos = (pos + SYSV_DIRSIZE-1) & ~(SYSV_DIRSIZE-1);
 	if (pos >= inode->i_size)
 		goto done;
+=======
+	unlock_page(page);
+}
+
+static int sysv_handle_dirsync(struct inode *dir)
+{
+	int err;
+
+	err = filemap_write_and_wait(dir->i_mapping);
+	if (!err)
+		err = sync_inode_metadata(dir, 1);
+	return err;
+}
+
+/*
+ * Calls to dir_get_page()/unmap_and_put_page() must be nested according to the
+ * rules documented in mm/highmem.rst.
+ *
+ * NOTE: sysv_find_entry() and sysv_dotdot() act as calls to dir_get_page()
+ * and must be treated accordingly for nesting purposes.
+ */
+static void *dir_get_page(struct inode *dir, unsigned long n, struct page **p)
+{
+	struct address_space *mapping = dir->i_mapping;
+	struct page *page = read_mapping_page(mapping, n, NULL);
+	if (IS_ERR(page))
+		return ERR_CAST(page);
+	*p = page;
+	return kmap_local_page(page);
+}
+
+static int sysv_readdir(struct file *file, struct dir_context *ctx)
+{
+	unsigned long pos = ctx->pos;
+	struct inode *inode = file_inode(file);
+	struct super_block *sb = inode->i_sb;
+	unsigned long npages = dir_pages(inode);
+	unsigned offset;
+	unsigned long n;
+
+	ctx->pos = pos = (pos + SYSV_DIRSIZE-1) & ~(SYSV_DIRSIZE-1);
+	if (pos >= inode->i_size)
+		return 0;
+
+	offset = pos & ~PAGE_MASK;
+	n = pos >> PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for ( ; n < npages; n++, offset = 0) {
 		char *kaddr, *limit;
 		struct sysv_dir_entry *de;
+<<<<<<< HEAD
 		struct page *page = dir_get_page(inode, n);
 
 		if (IS_ERR(page))
@@ -91,10 +159,22 @@ static int sysv_readdir(struct file * filp, void * dirent, filldir_t filldir)
 		for ( ;(char*)de <= limit; de++) {
 			char *name = de->name;
 			int over;
+=======
+		struct page *page;
+
+		kaddr = dir_get_page(inode, n, &page);
+		if (IS_ERR(kaddr))
+			continue;
+		de = (struct sysv_dir_entry *)(kaddr+offset);
+		limit = kaddr + PAGE_SIZE - SYSV_DIRSIZE;
+		for ( ;(char*)de <= limit; de++, ctx->pos += sizeof(*de)) {
+			char *name = de->name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (!de->inode)
 				continue;
 
+<<<<<<< HEAD
 			offset = (char *)de - kaddr;
 
 			over = filldir(dirent, name, strnlen(name,SYSV_NAMELEN),
@@ -111,6 +191,17 @@ static int sysv_readdir(struct file * filp, void * dirent, filldir_t filldir)
 
 done:
 	filp->f_pos = ((loff_t)n << PAGE_CACHE_SHIFT) | offset;
+=======
+			if (!dir_emit(ctx, name, strnlen(name,SYSV_NAMELEN),
+					fs16_to_cpu(SYSV_SB(sb), de->inode),
+					DT_UNKNOWN)) {
+				unmap_and_put_page(page, kaddr);
+				return 0;
+			}
+		}
+		unmap_and_put_page(page, kaddr);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -132,12 +223,24 @@ static inline int namecompare(int len, int maxlen,
  * returns the cache buffer in which the entry was found, and the entry
  * itself (as a parameter - res_dir). It does NOT read the inode of the
  * entry - you'll have to do that yourself if you want to.
+<<<<<<< HEAD
+=======
+ *
+ * On Success unmap_and_put_page() should be called on *res_page.
+ *
+ * sysv_find_entry() acts as a call to dir_get_page() and must be treated
+ * accordingly for nesting purposes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct sysv_dir_entry *sysv_find_entry(struct dentry *dentry, struct page **res_page)
 {
 	const char * name = dentry->d_name.name;
 	int namelen = dentry->d_name.len;
+<<<<<<< HEAD
 	struct inode * dir = dentry->d_parent->d_inode;
+=======
+	struct inode * dir = d_inode(dentry->d_parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long start, n;
 	unsigned long npages = dir_pages(dir);
 	struct page *page = NULL;
@@ -151,12 +254,20 @@ struct sysv_dir_entry *sysv_find_entry(struct dentry *dentry, struct page **res_
 	n = start;
 
 	do {
+<<<<<<< HEAD
 		char *kaddr;
 		page = dir_get_page(dir, n);
 		if (!IS_ERR(page)) {
 			kaddr = (char*)page_address(page);
 			de = (struct sysv_dir_entry *) kaddr;
 			kaddr += PAGE_CACHE_SIZE - SYSV_DIRSIZE;
+=======
+		char *kaddr = dir_get_page(dir, n, &page);
+
+		if (!IS_ERR(kaddr)) {
+			de = (struct sysv_dir_entry *)kaddr;
+			kaddr += PAGE_SIZE - SYSV_DIRSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for ( ; (char *) de <= kaddr ; de++) {
 				if (!de->inode)
 					continue;
@@ -164,7 +275,11 @@ struct sysv_dir_entry *sysv_find_entry(struct dentry *dentry, struct page **res_
 							name, de->name))
 					goto found;
 			}
+<<<<<<< HEAD
 			dir_put_page(page);
+=======
+			unmap_and_put_page(page, kaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (++n >= npages)
@@ -181,7 +296,11 @@ found:
 
 int sysv_add_link(struct dentry *dentry, struct inode *inode)
 {
+<<<<<<< HEAD
 	struct inode *dir = dentry->d_parent->d_inode;
+=======
+	struct inode *dir = d_inode(dentry->d_parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char * name = dentry->d_name.name;
 	int namelen = dentry->d_name.len;
 	struct page *page = NULL;
@@ -194,6 +313,7 @@ int sysv_add_link(struct dentry *dentry, struct inode *inode)
 
 	/* We take care of directory expansion in the same loop */
 	for (n = 0; n <= npages; n++) {
+<<<<<<< HEAD
 		page = dir_get_page(dir, n);
 		err = PTR_ERR(page);
 		if (IS_ERR(page))
@@ -201,6 +321,13 @@ int sysv_add_link(struct dentry *dentry, struct inode *inode)
 		kaddr = (char*)page_address(page);
 		de = (struct sysv_dir_entry *)kaddr;
 		kaddr += PAGE_CACHE_SIZE - SYSV_DIRSIZE;
+=======
+		kaddr = dir_get_page(dir, n, &page);
+		if (IS_ERR(kaddr))
+			return PTR_ERR(kaddr);
+		de = (struct sysv_dir_entry *)kaddr;
+		kaddr += PAGE_SIZE - SYSV_DIRSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while ((char *)de <= kaddr) {
 			if (!de->inode)
 				goto got_it;
@@ -209,14 +336,22 @@ int sysv_add_link(struct dentry *dentry, struct inode *inode)
 				goto out_page;
 			de++;
 		}
+<<<<<<< HEAD
 		dir_put_page(page);
+=======
+		unmap_and_put_page(page, kaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	BUG();
 	return -EINVAL;
 
 got_it:
+<<<<<<< HEAD
 	pos = page_offset(page) +
 			(char*)de - (char*)page_address(page);
+=======
+	pos = page_offset(page) + offset_in_page(de);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lock_page(page);
 	err = sysv_prepare_chunk(page, pos, SYSV_DIRSIZE);
 	if (err)
@@ -224,12 +359,21 @@ got_it:
 	memcpy (de->name, name, namelen);
 	memset (de->name + namelen, 0, SYSV_DIRSIZE - namelen - 2);
 	de->inode = cpu_to_fs16(SYSV_SB(inode->i_sb), inode->i_ino);
+<<<<<<< HEAD
 	err = dir_commit_chunk(page, pos, SYSV_DIRSIZE);
 	dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
 	mark_inode_dirty(dir);
 out_page:
 	dir_put_page(page);
 out:
+=======
+	dir_commit_chunk(page, pos, SYSV_DIRSIZE);
+	inode_set_mtime_to_ts(dir, inode_set_ctime_current(dir));
+	mark_inode_dirty(dir);
+	err = sysv_handle_dirsync(dir);
+out_page:
+	unmap_and_put_page(page, kaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 out_unlock:
 	unlock_page(page);
@@ -239,12 +383,17 @@ out_unlock:
 int sysv_delete_entry(struct sysv_dir_entry *de, struct page *page)
 {
 	struct inode *inode = page->mapping->host;
+<<<<<<< HEAD
 	char *kaddr = (char*)page_address(page);
 	loff_t pos = page_offset(page) + (char *)de - kaddr;
+=======
+	loff_t pos = page_offset(page) + offset_in_page(de);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	lock_page(page);
 	err = sysv_prepare_chunk(page, pos, SYSV_DIRSIZE);
+<<<<<<< HEAD
 	BUG_ON(err);
 	de->inode = 0;
 	err = dir_commit_chunk(page, pos, SYSV_DIRSIZE);
@@ -252,6 +401,17 @@ int sysv_delete_entry(struct sysv_dir_entry *de, struct page *page)
 	inode->i_ctime = inode->i_mtime = CURRENT_TIME_SEC;
 	mark_inode_dirty(inode);
 	return err;
+=======
+	if (err) {
+		unlock_page(page);
+		return err;
+	}
+	de->inode = 0;
+	dir_commit_chunk(page, pos, SYSV_DIRSIZE);
+	inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
+	mark_inode_dirty(inode);
+	return sysv_handle_dirsync(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int sysv_make_empty(struct inode *inode, struct inode *dir)
@@ -268,10 +428,15 @@ int sysv_make_empty(struct inode *inode, struct inode *dir)
 		unlock_page(page);
 		goto fail;
 	}
+<<<<<<< HEAD
 	kmap(page);
 
 	base = (char*)page_address(page);
 	memset(base, 0, PAGE_CACHE_SIZE);
+=======
+	base = kmap_local_page(page);
+	memset(base, 0, PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	de = (struct sysv_dir_entry *) base;
 	de->inode = cpu_to_fs16(SYSV_SB(inode->i_sb), inode->i_ino);
@@ -280,10 +445,18 @@ int sysv_make_empty(struct inode *inode, struct inode *dir)
 	de->inode = cpu_to_fs16(SYSV_SB(inode->i_sb), dir->i_ino);
 	strcpy(de->name,"..");
 
+<<<<<<< HEAD
 	kunmap(page);
 	err = dir_commit_chunk(page, 0, 2 * SYSV_DIRSIZE);
 fail:
 	page_cache_release(page);
+=======
+	kunmap_local(base);
+	dir_commit_chunk(page, 0, 2 * SYSV_DIRSIZE);
+	err = sysv_handle_dirsync(inode);
+fail:
+	put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -295,6 +468,7 @@ int sysv_empty_dir(struct inode * inode)
 	struct super_block *sb = inode->i_sb;
 	struct page *page = NULL;
 	unsigned long i, npages = dir_pages(inode);
+<<<<<<< HEAD
 
 	for (i = 0; i < npages; i++) {
 		char *kaddr;
@@ -307,6 +481,19 @@ int sysv_empty_dir(struct inode * inode)
 		kaddr = (char *)page_address(page);
 		de = (struct sysv_dir_entry *)kaddr;
 		kaddr += PAGE_CACHE_SIZE-SYSV_DIRSIZE;
+=======
+	char *kaddr;
+
+	for (i = 0; i < npages; i++) {
+		struct sysv_dir_entry *de;
+
+		kaddr = dir_get_page(inode, i, &page);
+		if (IS_ERR(kaddr))
+			continue;
+
+		de = (struct sysv_dir_entry *)kaddr;
+		kaddr += PAGE_SIZE-SYSV_DIRSIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for ( ;(char *)de <= kaddr; de++) {
 			if (!de->inode)
@@ -323,26 +510,43 @@ int sysv_empty_dir(struct inode * inode)
 			if (de->name[1] != '.' || de->name[2])
 				goto not_empty;
 		}
+<<<<<<< HEAD
 		dir_put_page(page);
+=======
+		unmap_and_put_page(page, kaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 1;
 
 not_empty:
+<<<<<<< HEAD
 	dir_put_page(page);
+=======
+	unmap_and_put_page(page, kaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /* Releases the page */
+<<<<<<< HEAD
 void sysv_set_link(struct sysv_dir_entry *de, struct page *page,
 	struct inode *inode)
 {
 	struct inode *dir = page->mapping->host;
 	loff_t pos = page_offset(page) +
 			(char *)de-(char*)page_address(page);
+=======
+int sysv_set_link(struct sysv_dir_entry *de, struct page *page,
+	struct inode *inode)
+{
+	struct inode *dir = page->mapping->host;
+	loff_t pos = page_offset(page) + offset_in_page(de);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	lock_page(page);
 	err = sysv_prepare_chunk(page, pos, SYSV_DIRSIZE);
+<<<<<<< HEAD
 	BUG_ON(err);
 	de->inode = cpu_to_fs16(SYSV_SB(inode->i_sb), inode->i_ino);
 	err = dir_commit_chunk(page, pos, SYSV_DIRSIZE);
@@ -361,6 +565,34 @@ struct sysv_dir_entry * sysv_dotdot (struct inode *dir, struct page **p)
 		*p = page;
 	}
 	return de;
+=======
+	if (err) {
+		unlock_page(page);
+		return err;
+	}
+	de->inode = cpu_to_fs16(SYSV_SB(inode->i_sb), inode->i_ino);
+	dir_commit_chunk(page, pos, SYSV_DIRSIZE);
+	inode_set_mtime_to_ts(dir, inode_set_ctime_current(dir));
+	mark_inode_dirty(dir);
+	return sysv_handle_dirsync(inode);
+}
+
+/*
+ * Calls to dir_get_page()/unmap_and_put_page() must be nested according to the
+ * rules documented in mm/highmem.rst.
+ *
+ * sysv_dotdot() acts as a call to dir_get_page() and must be treated
+ * accordingly for nesting purposes.
+ */
+struct sysv_dir_entry *sysv_dotdot(struct inode *dir, struct page **p)
+{
+	struct sysv_dir_entry *de = dir_get_page(dir, 0, p);
+
+	if (IS_ERR(de))
+		return NULL;
+	/* ".." is the second directory entry */
+	return de + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 ino_t sysv_inode_by_name(struct dentry *dentry)
@@ -371,7 +603,11 @@ ino_t sysv_inode_by_name(struct dentry *dentry)
 	
 	if (de) {
 		res = fs16_to_cpu(SYSV_SB(dentry->d_sb), de->inode);
+<<<<<<< HEAD
 		dir_put_page(page);
+=======
+		unmap_and_put_page(page, de);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return res;
 }

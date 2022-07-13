@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2008 Nir Tzachar <nir.tzachar@gmail.com?
  * Released under the terms of the GNU GPL v2.0.
@@ -170,6 +171,131 @@ void print_in_middle(WINDOW *win,
 	(void) wattrset(win, color);
 	mvwprintw(win, y, x, "%s", string);
 	refresh();
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2008 Nir Tzachar <nir.tzachar@gmail.com>
+ *
+ * Derived from menuconfig.
+ */
+#include "nconf.h"
+#include "lkc.h"
+
+int attr_normal;
+int attr_main_heading;
+int attr_main_menu_box;
+int attr_main_menu_fore;
+int attr_main_menu_back;
+int attr_main_menu_grey;
+int attr_main_menu_heading;
+int attr_scrollwin_text;
+int attr_scrollwin_heading;
+int attr_scrollwin_box;
+int attr_dialog_text;
+int attr_dialog_menu_fore;
+int attr_dialog_menu_back;
+int attr_dialog_box;
+int attr_input_box;
+int attr_input_heading;
+int attr_input_text;
+int attr_input_field;
+int attr_function_text;
+int attr_function_highlight;
+
+#define COLOR_ATTR(_at, _fg, _bg, _hl) \
+	{ .attr = &(_at), .has_color = true, .color_fg = _fg, .color_bg = _bg, .highlight = _hl }
+#define NO_COLOR_ATTR(_at, _hl) \
+	{ .attr = &(_at), .has_color = false, .highlight = _hl }
+#define COLOR_DEFAULT		-1
+
+struct nconf_attr_param {
+	int *attr;
+	bool has_color;
+	int color_fg;
+	int color_bg;
+	int highlight;
+};
+
+static const struct nconf_attr_param color_theme_params[] = {
+	COLOR_ATTR(attr_normal,			COLOR_DEFAULT,	COLOR_DEFAULT,	A_NORMAL),
+	COLOR_ATTR(attr_main_heading,		COLOR_MAGENTA,	COLOR_DEFAULT,	A_BOLD | A_UNDERLINE),
+	COLOR_ATTR(attr_main_menu_box,		COLOR_YELLOW,	COLOR_DEFAULT,	A_NORMAL),
+	COLOR_ATTR(attr_main_menu_fore,		COLOR_DEFAULT,	COLOR_DEFAULT,	A_REVERSE),
+	COLOR_ATTR(attr_main_menu_back,		COLOR_DEFAULT,	COLOR_DEFAULT,	A_NORMAL),
+	COLOR_ATTR(attr_main_menu_grey,		COLOR_DEFAULT,	COLOR_DEFAULT,	A_NORMAL),
+	COLOR_ATTR(attr_main_menu_heading,	COLOR_GREEN,	COLOR_DEFAULT,	A_BOLD),
+	COLOR_ATTR(attr_scrollwin_text,		COLOR_DEFAULT,	COLOR_DEFAULT,	A_NORMAL),
+	COLOR_ATTR(attr_scrollwin_heading,	COLOR_GREEN,	COLOR_DEFAULT,	A_BOLD),
+	COLOR_ATTR(attr_scrollwin_box,		COLOR_YELLOW,	COLOR_DEFAULT,	A_BOLD),
+	COLOR_ATTR(attr_dialog_text,		COLOR_DEFAULT,	COLOR_DEFAULT,	A_BOLD),
+	COLOR_ATTR(attr_dialog_menu_fore,	COLOR_RED,	COLOR_DEFAULT,	A_STANDOUT),
+	COLOR_ATTR(attr_dialog_menu_back,	COLOR_YELLOW,	COLOR_DEFAULT,	A_NORMAL),
+	COLOR_ATTR(attr_dialog_box,		COLOR_YELLOW,	COLOR_DEFAULT,	A_BOLD),
+	COLOR_ATTR(attr_input_box,		COLOR_YELLOW,	COLOR_DEFAULT,	A_NORMAL),
+	COLOR_ATTR(attr_input_heading,		COLOR_GREEN,	COLOR_DEFAULT,	A_BOLD),
+	COLOR_ATTR(attr_input_text,		COLOR_DEFAULT,	COLOR_DEFAULT,	A_NORMAL),
+	COLOR_ATTR(attr_input_field,		COLOR_DEFAULT,	COLOR_DEFAULT,	A_UNDERLINE),
+	COLOR_ATTR(attr_function_text,		COLOR_YELLOW,	COLOR_DEFAULT,	A_REVERSE),
+	COLOR_ATTR(attr_function_highlight,	COLOR_DEFAULT,	COLOR_DEFAULT,	A_BOLD),
+	{ /* sentinel */ }
+};
+
+static const struct nconf_attr_param no_color_theme_params[] = {
+	NO_COLOR_ATTR(attr_normal,		A_NORMAL),
+	NO_COLOR_ATTR(attr_main_heading,	A_BOLD | A_UNDERLINE),
+	NO_COLOR_ATTR(attr_main_menu_box,	A_NORMAL),
+	NO_COLOR_ATTR(attr_main_menu_fore,	A_STANDOUT),
+	NO_COLOR_ATTR(attr_main_menu_back,	A_NORMAL),
+	NO_COLOR_ATTR(attr_main_menu_grey,	A_NORMAL),
+	NO_COLOR_ATTR(attr_main_menu_heading,	A_BOLD),
+	NO_COLOR_ATTR(attr_scrollwin_text,	A_NORMAL),
+	NO_COLOR_ATTR(attr_scrollwin_heading,	A_BOLD),
+	NO_COLOR_ATTR(attr_scrollwin_box,	A_BOLD),
+	NO_COLOR_ATTR(attr_dialog_text,		A_NORMAL),
+	NO_COLOR_ATTR(attr_dialog_menu_fore,	A_STANDOUT),
+	NO_COLOR_ATTR(attr_dialog_menu_back,	A_NORMAL),
+	NO_COLOR_ATTR(attr_dialog_box,		A_BOLD),
+	NO_COLOR_ATTR(attr_input_box,		A_BOLD),
+	NO_COLOR_ATTR(attr_input_heading,	A_BOLD),
+	NO_COLOR_ATTR(attr_input_text,		A_NORMAL),
+	NO_COLOR_ATTR(attr_input_field,		A_UNDERLINE),
+	NO_COLOR_ATTR(attr_function_text,	A_REVERSE),
+	NO_COLOR_ATTR(attr_function_highlight,	A_BOLD),
+	{ /* sentinel */ }
+};
+
+void set_colors(void)
+{
+	const struct nconf_attr_param *p;
+	int pair = 0;
+
+	if (has_colors()) {
+		start_color();
+		use_default_colors();
+		p = color_theme_params;
+	} else {
+		p = no_color_theme_params;
+	}
+
+	for (; p->attr; p++) {
+		int attr = p->highlight;
+
+		if (p->has_color) {
+			pair++;
+			init_pair(pair, p->color_fg, p->color_bg);
+			attr |= COLOR_PAIR(pair);
+		}
+
+		*p->attr = attr;
+	}
+}
+
+/* this changes the windows attributes !!! */
+void print_in_middle(WINDOW *win, int y, int width, const char *str, int attrs)
+{
+	wattrset(win, attrs);
+	mvwprintw(win, y, (width - strlen(str)) / 2, "%s", str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int get_line_no(const char *text)
@@ -192,7 +318,11 @@ const char *get_line(const char *text, int line_no)
 	int lines = 0;
 
 	if (!text)
+<<<<<<< HEAD
 		return 0;
+=======
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; text[i] != '\0' && lines < line_no; i++)
 		if (text[i] == '\n')
@@ -276,8 +406,13 @@ int btn_dialog(WINDOW *main_window, const char *msg, int btn_num, ...)
 
 	total_width = max(msg_width, btns_width);
 	/* place dialog in middle of screen */
+<<<<<<< HEAD
 	y = (LINES-(msg_lines+4))/2;
 	x = (COLS-(total_width+4))/2;
+=======
+	y = (getmaxy(stdscr)-(msg_lines+4))/2;
+	x = (getmaxx(stdscr)-(total_width+4))/2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	/* create the windows */
@@ -294,6 +429,7 @@ int btn_dialog(WINDOW *main_window, const char *msg, int btn_num, ...)
 	msg_win = derwin(win, win_rows-2, msg_width, 1,
 			1+(total_width+2-msg_width)/2);
 
+<<<<<<< HEAD
 	set_menu_fore(menu, attributes[DIALOG_MENU_FORE]);
 	set_menu_back(menu, attributes[DIALOG_MENU_BACK]);
 
@@ -302,6 +438,16 @@ int btn_dialog(WINDOW *main_window, const char *msg, int btn_num, ...)
 
 	/* print message */
 	(void) wattrset(msg_win, attributes[DIALOG_TEXT]);
+=======
+	set_menu_fore(menu, attr_dialog_menu_fore);
+	set_menu_back(menu, attr_dialog_menu_back);
+
+	wattrset(win, attr_dialog_box);
+	box(win, 0, 0);
+
+	/* print message */
+	wattrset(msg_win, attr_dialog_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fill_window(msg_win, msg);
 
 	set_menu_win(menu, win);
@@ -364,15 +510,27 @@ int dialog_inputbox(WINDOW *main_window,
 	WINDOW *prompt_win;
 	WINDOW *form_win;
 	PANEL *panel;
+<<<<<<< HEAD
 	int i, x, y;
+=======
+	int i, x, y, lines, columns, win_lines, win_cols;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res = -1;
 	int cursor_position = strlen(init);
 	int cursor_form_win;
 	char *result = *resultp;
 
+<<<<<<< HEAD
 	if (strlen(init)+1 > *result_len) {
 		*result_len = strlen(init)+1;
 		*resultp = result = realloc(result, *result_len);
+=======
+	getmaxyx(stdscr, lines, columns);
+
+	if (strlen(init)+1 > *result_len) {
+		*result_len = strlen(init)+1;
+		*resultp = result = xrealloc(result, *result_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* find the widest line of msg: */
@@ -386,28 +544,55 @@ int dialog_inputbox(WINDOW *main_window,
 	if (title)
 		prompt_width = max(prompt_width, strlen(title));
 
+<<<<<<< HEAD
 	/* place dialog in middle of screen */
 	y = (LINES-(prompt_lines+4))/2;
 	x = (COLS-(prompt_width+4))/2;
+=======
+	win_lines = min(prompt_lines+6, lines-2);
+	win_cols = min(prompt_width+7, columns-2);
+	prompt_lines = max(win_lines-6, 0);
+	prompt_width = max(win_cols-7, 0);
+
+	/* place dialog in middle of screen */
+	y = (lines-win_lines)/2;
+	x = (columns-win_cols)/2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strncpy(result, init, *result_len);
 
 	/* create the windows */
+<<<<<<< HEAD
 	win = newwin(prompt_lines+6, prompt_width+7, y, x);
+=======
+	win = newwin(win_lines, win_cols, y, x);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prompt_win = derwin(win, prompt_lines+1, prompt_width, 2, 2);
 	form_win = derwin(win, 1, prompt_width, prompt_lines+3, 2);
 	keypad(form_win, TRUE);
 
+<<<<<<< HEAD
 	(void) wattrset(form_win, attributes[INPUT_FIELD]);
 
 	(void) wattrset(win, attributes[INPUT_BOX]);
 	box(win, 0, 0);
 	(void) wattrset(win, attributes[INPUT_HEADING]);
+=======
+	wattrset(form_win, attr_input_field);
+
+	wattrset(win, attr_input_box);
+	box(win, 0, 0);
+	wattrset(win, attr_input_heading);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (title)
 		mvwprintw(win, 0, 3, "%s", title);
 
 	/* print message */
+<<<<<<< HEAD
 	(void) wattrset(prompt_win, attributes[INPUT_TEXT]);
+=======
+	wattrset(prompt_win, attr_input_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fill_window(prompt_win, prompt);
 
 	mvwprintw(form_win, 0, 0, "%*s", prompt_width, " ");
@@ -432,7 +617,12 @@ int dialog_inputbox(WINDOW *main_window,
 		case KEY_F(F_EXIT):
 		case KEY_F(F_BACK):
 			break;
+<<<<<<< HEAD
 		case 127:
+=======
+		case 8:   /* ^H */
+		case 127: /* ^? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case KEY_BACKSPACE:
 			if (cursor_position > 0) {
 				memmove(&result[cursor_position-1],
@@ -538,14 +728,31 @@ void refresh_all_windows(WINDOW *main_window)
 	refresh();
 }
 
+<<<<<<< HEAD
 /* layman's scrollable window... */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void show_scroll_win(WINDOW *main_window,
 		const char *title,
 		const char *text)
 {
+<<<<<<< HEAD
 	int res;
 	int total_lines = get_line_no(text);
 	int x, y;
+=======
+	(void)show_scroll_win_ext(main_window, title, (char *)text, NULL, NULL, NULL, NULL);
+}
+
+/* layman's scrollable window... */
+int show_scroll_win_ext(WINDOW *main_window, const char *title, char *text,
+			int *vscroll, int *hscroll,
+			extra_key_cb_fn extra_key_cb, void *data)
+{
+	int res;
+	int total_lines = get_line_no(text);
+	int x, y, lines, columns;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int start_x = 0, start_y = 0;
 	int text_lines = 0, text_cols = 0;
 	int total_cols = 0;
@@ -555,6 +762,17 @@ void show_scroll_win(WINDOW *main_window,
 	WINDOW *win;
 	WINDOW *pad;
 	PANEL *panel;
+<<<<<<< HEAD
+=======
+	bool done = false;
+
+	if (hscroll)
+		start_x = *hscroll;
+	if (vscroll)
+		start_y = *vscroll;
+
+	getmaxyx(stdscr, lines, columns);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* find the widest line of msg: */
 	total_lines = get_line_no(text);
@@ -566,47 +784,84 @@ void show_scroll_win(WINDOW *main_window,
 
 	/* create the pad */
 	pad = newpad(total_lines+10, total_cols+10);
+<<<<<<< HEAD
 	(void) wattrset(pad, attributes[SCROLLWIN_TEXT]);
 	fill_window(pad, text);
 
 	win_lines = min(total_lines+4, LINES-2);
 	win_cols = min(total_cols+2, COLS-2);
+=======
+	wattrset(pad, attr_scrollwin_text);
+	fill_window(pad, text);
+
+	win_lines = min(total_lines+4, lines-2);
+	win_cols = min(total_cols+2, columns-2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	text_lines = max(win_lines-4, 0);
 	text_cols = max(win_cols-2, 0);
 
 	/* place window in middle of screen */
+<<<<<<< HEAD
 	y = (LINES-win_lines)/2;
 	x = (COLS-win_cols)/2;
+=======
+	y = (lines-win_lines)/2;
+	x = (columns-win_cols)/2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	win = newwin(win_lines, win_cols, y, x);
 	keypad(win, TRUE);
 	/* show the help in the help window, and show the help panel */
+<<<<<<< HEAD
 	(void) wattrset(win, attributes[SCROLLWIN_BOX]);
 	box(win, 0, 0);
 	(void) wattrset(win, attributes[SCROLLWIN_HEADING]);
+=======
+	wattrset(win, attr_scrollwin_box);
+	box(win, 0, 0);
+	wattrset(win, attr_scrollwin_heading);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mvwprintw(win, 0, 3, " %s ", title);
 	panel = new_panel(win);
 
 	/* handle scrolling */
+<<<<<<< HEAD
 	do {
 
+=======
+	while (!done) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		copywin(pad, win, start_y, start_x, 2, 2, text_lines,
 				text_cols, 0);
 		print_in_middle(win,
 				text_lines+2,
+<<<<<<< HEAD
 				0,
 				text_cols,
 				"<OK>",
 				attributes[DIALOG_MENU_FORE]);
+=======
+				text_cols,
+				"<OK>",
+				attr_dialog_menu_fore);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wrefresh(win);
 
 		res = wgetch(win);
 		switch (res) {
 		case KEY_NPAGE:
 		case ' ':
+<<<<<<< HEAD
 			start_y += text_lines-2;
 			break;
 		case KEY_PPAGE:
+=======
+		case 'd':
+			start_y += text_lines-2;
+			break;
+		case KEY_PPAGE:
+		case 'u':
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start_y -= text_lines+2;
 			break;
 		case KEY_HOME:
@@ -631,11 +886,29 @@ void show_scroll_win(WINDOW *main_window,
 		case 'l':
 			start_x++;
 			break;
+<<<<<<< HEAD
 		}
 		if (res == 10 || res == 27 || res == 'q'
 		    || res == KEY_F(F_BACK) || res == KEY_F(F_EXIT)) {
 			break;
 		}
+=======
+		default:
+			if (extra_key_cb) {
+				size_t start = (get_line(text, start_y) - text);
+				size_t end = (get_line(text, start_y + text_lines) - text);
+
+				if (extra_key_cb(res, start, end, data)) {
+					done = true;
+					break;
+				}
+			}
+		}
+		if (res == 0 || res == 10 || res == 27 || res == 'q' ||
+			res == KEY_F(F_HELP) || res == KEY_F(F_BACK) ||
+			res == KEY_F(F_EXIT))
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (start_y < 0)
 			start_y = 0;
 		if (start_y >= total_lines-text_lines)
@@ -644,9 +917,22 @@ void show_scroll_win(WINDOW *main_window,
 			start_x = 0;
 		if (start_x >= total_cols-text_cols)
 			start_x = total_cols-text_cols;
+<<<<<<< HEAD
 	} while (res);
 
 	del_panel(panel);
 	delwin(win);
 	refresh_all_windows(main_window);
+=======
+	}
+
+	if (hscroll)
+		*hscroll = start_x;
+	if (vscroll)
+		*vscroll = start_y;
+	del_panel(panel);
+	delwin(win);
+	refresh_all_windows(main_window);
+	return res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

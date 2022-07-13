@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* bpf_jit.h: BPF JIT compiler for PPC64
  *
  * Copyright 2011 Matt Evans <matt@ozlabs.org>, IBM Corporation
@@ -6,10 +7,19 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * bpf_jit.h: BPF JIT compiler for PPC
+ *
+ * Copyright 2011 Matt Evans <matt@ozlabs.org>, IBM Corporation
+ * 	     2016 Naveen N. Rao <naveen.n.rao@linux.vnet.ibm.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _BPF_JIT_H
 #define _BPF_JIT_H
 
+<<<<<<< HEAD
 #define BPF_PPC_STACK_LOCALS	32
 #define BPF_PPC_STACK_BASIC	(48+64)
 #define BPF_PPC_STACK_SAVE	(18*8)
@@ -67,11 +77,26 @@ DECLARE_LOAD_FUNC(sk_load_byte_msh);
 #define IMM_HA(i)		(((uintptr_t)(i)>>16) +			      \
 				 (((uintptr_t)(i) & 0x8000) >> 15))
 #define IMM_L(i)		((uintptr_t)(i) & 0xffff)
+=======
+#ifndef __ASSEMBLY__
+
+#include <asm/types.h>
+#include <asm/ppc-opcode.h>
+
+#ifdef CONFIG_PPC64_ELF_ABI_V1
+#define FUNCTION_DESCR_SIZE	24
+#else
+#define FUNCTION_DESCR_SIZE	0
+#endif
+
+#define CTX_NIA(ctx) ((unsigned long)ctx->idx * 4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PLANT_INSTR(d, idx, instr)					      \
 	do { if (d) { (d)[idx] = instr; } idx++; } while (0)
 #define EMIT(instr)		PLANT_INSTR(image, ctx->idx, instr)
 
+<<<<<<< HEAD
 #define PPC_NOP()		EMIT(PPC_INST_NOP)
 #define PPC_BLR()		EMIT(PPC_INST_BLR)
 #define PPC_BLRL()		EMIT(PPC_INST_BLRL)
@@ -184,6 +209,65 @@ static inline bool is_nearbranch(int offset)
 {
 	return (offset < 32768) && (offset >= -32768);
 }
+=======
+/* Long jump; (unconditional 'branch') */
+#define PPC_JMP(dest)							      \
+	do {								      \
+		long offset = (long)(dest) - CTX_NIA(ctx);		      \
+		if ((dest) != 0 && !is_offset_in_branch_range(offset)) {		      \
+			pr_err_ratelimited("Branch offset 0x%lx (@%u) out of range\n", offset, ctx->idx);			\
+			return -ERANGE;					      \
+		}							      \
+		EMIT(PPC_RAW_BRANCH(offset));				      \
+	} while (0)
+
+/* "cond" here covers BO:BI fields. */
+#define PPC_BCC_SHORT(cond, dest)					      \
+	do {								      \
+		long offset = (long)(dest) - CTX_NIA(ctx);		      \
+		if ((dest) != 0 && !is_offset_in_cond_branch_range(offset)) {		      \
+			pr_err_ratelimited("Conditional branch offset 0x%lx (@%u) out of range\n", offset, ctx->idx);		\
+			return -ERANGE;					      \
+		}							      \
+		EMIT(PPC_INST_BRANCH_COND | (((cond) & 0x3ff) << 16) | (offset & 0xfffc));					\
+	} while (0)
+
+/* Sign-extended 32-bit immediate load */
+#define PPC_LI32(d, i)		do {					      \
+		if ((int)(uintptr_t)(i) >= -32768 &&			      \
+				(int)(uintptr_t)(i) < 32768)		      \
+			EMIT(PPC_RAW_LI(d, i));				      \
+		else {							      \
+			EMIT(PPC_RAW_LIS(d, IMM_H(i)));			      \
+			if (IMM_L(i))					      \
+				EMIT(PPC_RAW_ORI(d, d, IMM_L(i)));	      \
+		} } while(0)
+
+#ifdef CONFIG_PPC64
+#define PPC_LI64(d, i)		do {					      \
+		if ((long)(i) >= -2147483648 &&				      \
+				(long)(i) < 2147483648)			      \
+			PPC_LI32(d, i);					      \
+		else {							      \
+			if (!((uintptr_t)(i) & 0xffff800000000000ULL))	      \
+				EMIT(PPC_RAW_LI(d, ((uintptr_t)(i) >> 32) &   \
+						0xffff));		      \
+			else {						      \
+				EMIT(PPC_RAW_LIS(d, ((uintptr_t)(i) >> 48))); \
+				if ((uintptr_t)(i) & 0x0000ffff00000000ULL)   \
+					EMIT(PPC_RAW_ORI(d, d,		      \
+					  ((uintptr_t)(i) >> 32) & 0xffff));  \
+			}						      \
+			EMIT(PPC_RAW_SLDI(d, d, 32));			      \
+			if ((uintptr_t)(i) & 0x00000000ffff0000ULL)	      \
+				EMIT(PPC_RAW_ORIS(d, d,			      \
+					 ((uintptr_t)(i) >> 16) & 0xffff));   \
+			if ((uintptr_t)(i) & 0x000000000000ffffULL)	      \
+				EMIT(PPC_RAW_ORI(d, d, (uintptr_t)(i) &       \
+							0xffff));             \
+		} } while (0)
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The fly in the ointment of code size changing from pass to pass is
@@ -193,12 +277,21 @@ static inline bool is_nearbranch(int offset)
  * state.
  */
 #define PPC_BCC(cond, dest)	do {					      \
+<<<<<<< HEAD
 		if (is_nearbranch((dest) - (ctx->idx * 4))) {		      \
 			PPC_BCC_SHORT(cond, dest);			      \
 			PPC_NOP();					      \
 		} else {						      \
 			/* Flip the 'T or F' bit to invert comparison */      \
 			PPC_BCC_SHORT(cond ^ COND_CMP_TRUE, (ctx->idx+2)*4);  \
+=======
+		if (is_offset_in_cond_branch_range((long)(dest) - CTX_NIA(ctx))) {	\
+			PPC_BCC_SHORT(cond, dest);			      \
+			EMIT(PPC_RAW_NOP());				      \
+		} else {						      \
+			/* Flip the 'T or F' bit to invert comparison */      \
+			PPC_BCC_SHORT(cond ^ COND_CMP_TRUE, CTX_NIA(ctx) + 2*4);  \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			PPC_JMP(dest);					      \
 		} } while(0)
 
@@ -215,6 +308,7 @@ static inline bool is_nearbranch(int offset)
 #define COND_EQ		(CR0_EQ | COND_CMP_TRUE)
 #define COND_NE		(CR0_EQ | COND_CMP_FALSE)
 #define COND_LT		(CR0_LT | COND_CMP_TRUE)
+<<<<<<< HEAD
 
 #define SEEN_DATAREF 0x10000 /* might call external helpers */
 #define SEEN_XREG    0x20000 /* X reg is used */
@@ -228,6 +322,67 @@ struct codegen_context {
 	int pc_ret0; /* bpf index of first RET #0 instruction (if any) */
 };
 
+=======
+#define COND_LE		(CR0_GT | COND_CMP_FALSE)
+
+#define SEEN_FUNC	0x20000000 /* might call external helpers */
+#define SEEN_TAILCALL	0x40000000 /* uses tail calls */
+
+struct codegen_context {
+	/*
+	 * This is used to track register usage as well
+	 * as calls to external helpers.
+	 * - register usage is tracked with corresponding
+	 *   bits (r3-r31)
+	 * - rest of the bits can be used to track other
+	 *   things -- for now, we use bits 0 to 2
+	 *   encoded in SEEN_* macros above
+	 */
+	unsigned int seen;
+	unsigned int idx;
+	unsigned int stack_size;
+	int b2p[MAX_BPF_JIT_REG + 2];
+	unsigned int exentry_idx;
+	unsigned int alt_exit_addr;
+};
+
+#define bpf_to_ppc(r)	(ctx->b2p[r])
+
+#ifdef CONFIG_PPC32
+#define BPF_FIXUP_LEN	3 /* Three instructions => 12 bytes */
+#else
+#define BPF_FIXUP_LEN	2 /* Two instructions => 8 bytes */
+#endif
+
+static inline bool bpf_is_seen_register(struct codegen_context *ctx, int i)
+{
+	return ctx->seen & (1 << (31 - i));
+}
+
+static inline void bpf_set_seen_register(struct codegen_context *ctx, int i)
+{
+	ctx->seen |= 1 << (31 - i);
+}
+
+static inline void bpf_clear_seen_register(struct codegen_context *ctx, int i)
+{
+	ctx->seen &= ~(1 << (31 - i));
+}
+
+void bpf_jit_init_reg_mapping(struct codegen_context *ctx);
+int bpf_jit_emit_func_call_rel(u32 *image, u32 *fimage, struct codegen_context *ctx, u64 func);
+int bpf_jit_build_body(struct bpf_prog *fp, u32 *image, u32 *fimage, struct codegen_context *ctx,
+		       u32 *addrs, int pass, bool extra_pass);
+void bpf_jit_build_prologue(u32 *image, struct codegen_context *ctx);
+void bpf_jit_build_epilogue(u32 *image, struct codegen_context *ctx);
+void bpf_jit_realloc_regs(struct codegen_context *ctx);
+int bpf_jit_emit_exit_insn(u32 *image, struct codegen_context *ctx, int tmp_reg, long exit_addr);
+
+int bpf_add_extable_entry(struct bpf_prog *fp, u32 *image, u32 *fimage, int pass,
+			  struct codegen_context *ctx, int insn_idx,
+			  int jmp_off, int dst_reg);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif

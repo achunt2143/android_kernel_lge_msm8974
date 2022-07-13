@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  atlas_btns.c - Atlas Wallmount Touchscreen ACPI Extras
  *
  *  Copyright (C) 2006 Jaya Kumar
  *  Based on Toshiba ACPI by John Belmonte and ASUS ACPI
  *  This work was sponsored by CIS(M) Sdn Bhd.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,17 +24,26 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/input.h>
 #include <linux/types.h>
 #include <asm/uaccess.h>
 #include <acpi/acpi_drivers.h>
+=======
+#include <linux/input.h>
+#include <linux/types.h>
+#include <linux/acpi.h>
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_ATLAS_NAME		"Atlas ACPI"
 #define ACPI_ATLAS_CLASS	"Atlas"
@@ -121,7 +135,11 @@ static int atlas_acpi_button_add(struct acpi_device *device)
 	return err;
 }
 
+<<<<<<< HEAD
 static int atlas_acpi_button_remove(struct acpi_device *device, int type)
+=======
+static void atlas_acpi_button_remove(struct acpi_device *device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 
@@ -131,8 +149,11 @@ static int atlas_acpi_button_remove(struct acpi_device *device, int type)
 		pr_err("error removing addr spc handler\n");
 
 	input_unregister_device(input_dev);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct acpi_device_id atlas_device_ids[] = {
@@ -151,6 +172,7 @@ static struct acpi_driver atlas_acpi_driver = {
 		.remove	= atlas_acpi_button_remove,
 	},
 };
+<<<<<<< HEAD
 
 static int __init atlas_acpi_init(void)
 {
@@ -167,6 +189,9 @@ static void __exit atlas_acpi_exit(void)
 
 module_init(atlas_acpi_init);
 module_exit(atlas_acpi_exit);
+=======
+module_acpi_driver(atlas_acpi_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Jaya Kumar");
 MODULE_LICENSE("GPL");

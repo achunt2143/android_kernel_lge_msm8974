@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Freescale DMA ALSA SoC PCM driver
  *
@@ -13,6 +14,19 @@
  * the DMA controller on Freescale 83xx, 85xx, and 86xx SOCs. In ALSA terms,
  * the PCM driver is what handles the DMA buffer.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0
+//
+// Freescale DMA ALSA SoC PCM driver
+//
+// Author: Timur Tabi <timur@freescale.com>
+//
+// Copyright 2007-2010 Freescale Semiconductor, Inc.
+//
+// This driver implements ASoC support for the Elo DMA controller, which is
+// the DMA controller on Freescale 83xx, 85xx, and 86xx SOCs. In ALSA terms,
+// the PCM driver is what handles the DMA buffer.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -21,6 +35,11 @@
 #include <linux/interrupt.h>
 #include <linux/delay.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_platform.h>
 #include <linux/list.h>
 #include <linux/slab.h>
@@ -35,6 +54,11 @@
 #include "fsl_dma.h"
 #include "fsl_ssi.h"	/* For the offset of stx0 and srx0 */
 
+<<<<<<< HEAD
+=======
+#define DRV_NAME "fsl_dma"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The formats that the DMA controller supports, which is anything
  * that is 8, 16, or 32 bits.
@@ -53,19 +77,27 @@
 			    SNDRV_PCM_FMTBIT_S32_BE     | \
 			    SNDRV_PCM_FMTBIT_U32_LE     | \
 			    SNDRV_PCM_FMTBIT_U32_BE)
+<<<<<<< HEAD
 
 #define FSLDMA_PCM_RATES (SNDRV_PCM_RATE_5512 | SNDRV_PCM_RATE_8000_192000 | \
 			  SNDRV_PCM_RATE_CONTINUOUS)
 
 struct dma_object {
 	struct snd_soc_platform_driver dai;
+=======
+struct dma_object {
+	struct snd_soc_component_driver dai;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t ssi_stx_phys;
 	dma_addr_t ssi_srx_phys;
 	unsigned int ssi_fifo_depth;
 	struct ccsr_dma_channel __iomem *channel;
 	unsigned int irq;
 	bool assigned;
+<<<<<<< HEAD
 	char path[1];
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -138,9 +170,12 @@ static const struct snd_pcm_hardware fsl_dma_hardware = {
 				  SNDRV_PCM_INFO_JOINT_DUPLEX |
 				  SNDRV_PCM_INFO_PAUSE,
 	.formats		= FSLDMA_PCM_FORMATS,
+<<<<<<< HEAD
 	.rates  		= FSLDMA_PCM_RATES,
 	.rate_min       	= 5512,
 	.rate_max       	= 192000,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.period_bytes_min       = 512,  	/* A reasonable limit */
 	.period_bytes_max       = (u32) -1,
 	.periods_min    	= NUM_DMA_LINKS,
@@ -156,6 +191,7 @@ static const struct snd_pcm_hardware fsl_dma_hardware = {
  */
 static void fsl_dma_abort_stream(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	snd_pcm_stream_lock_irqsave(substream, flags);
@@ -164,12 +200,19 @@ static void fsl_dma_abort_stream(struct snd_pcm_substream *substream)
 		snd_pcm_stop(substream, SNDRV_PCM_STATE_XRUN);
 
 	snd_pcm_stream_unlock_irqrestore(substream, flags);
+=======
+	snd_pcm_stop_xrun(substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fsl_dma_update_pointers - update LD pointers to point to the next period
  *
+<<<<<<< HEAD
  * As each period is completed, this function changes the the link
+=======
+ * As each period is completed, this function changes the link
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * descriptor pointers for that period to point to the next period.
  */
 static void fsl_dma_update_pointers(struct fsl_dma_private *dma_private)
@@ -215,8 +258,13 @@ static irqreturn_t fsl_dma_isr(int irq, void *dev_id)
 {
 	struct fsl_dma_private *dma_private = dev_id;
 	struct snd_pcm_substream *substream = dma_private->substream;
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct device *dev = rtd->platform->dev;
+=======
+	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+	struct device *dev = rtd->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ccsr_dma_channel __iomem *dma_channel = dma_private->dma_channel;
 	irqreturn_t ret = IRQ_NONE;
 	u32 sr, sr2 = 0;
@@ -294,6 +342,7 @@ static irqreturn_t fsl_dma_isr(int irq, void *dev_id)
  * Regardless of where the memory is actually allocated, since the device can
  * technically DMA to any 36-bit address, we do need to set the DMA mask to 36.
  */
+<<<<<<< HEAD
 static int fsl_dma_new(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_card *card = rtd->card->snd_card;
@@ -333,6 +382,22 @@ static int fsl_dma_new(struct snd_soc_pcm_runtime *rtd)
 	}
 
 	return 0;
+=======
+static int fsl_dma_new(struct snd_soc_component *component,
+		       struct snd_soc_pcm_runtime *rtd)
+{
+	struct snd_card *card = rtd->card->snd_card;
+	struct snd_pcm *pcm = rtd->pcm;
+	int ret;
+
+	ret = dma_coerce_mask_and_coherent(card->dev, DMA_BIT_MASK(36));
+	if (ret)
+		return ret;
+
+	return snd_pcm_set_fixed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+					    card->dev,
+					    fsl_dma_hardware.buffer_bytes_max);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -397,6 +462,7 @@ static int fsl_dma_new(struct snd_soc_pcm_runtime *rtd)
  *    buffer, which is what ALSA expects.  We're just dividing it into
  *    contiguous parts, and creating a link descriptor for each one.
  */
+<<<<<<< HEAD
 static int fsl_dma_open(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -404,12 +470,24 @@ static int fsl_dma_open(struct snd_pcm_substream *substream)
 	struct device *dev = rtd->platform->dev;
 	struct dma_object *dma =
 		container_of(rtd->platform->driver, struct dma_object, dai);
+=======
+static int fsl_dma_open(struct snd_soc_component *component,
+			struct snd_pcm_substream *substream)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct device *dev = component->dev;
+	struct dma_object *dma =
+		container_of(component->driver, struct dma_object, dai);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fsl_dma_private *dma_private;
 	struct ccsr_dma_channel __iomem *dma_channel;
 	dma_addr_t ld_buf_phys;
 	u64 temp_link;  	/* Pointer to next link descriptor */
 	u32 mr;
+<<<<<<< HEAD
 	unsigned int channel;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 	unsigned int i;
 
@@ -425,8 +503,11 @@ static int fsl_dma_open(struct snd_pcm_substream *substream)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	channel = substream->stream == SNDRV_PCM_STREAM_PLAYBACK ? 0 : 1;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dma->assigned) {
 		dev_err(dev, "dma channel already assigned\n");
 		return -EBUSY;
@@ -460,9 +541,14 @@ static int fsl_dma_open(struct snd_pcm_substream *substream)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	dma->assigned = 1;
 
 	snd_pcm_set_runtime_buffer(substream, &substream->dma_buffer);
+=======
+	dma->assigned = true;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_soc_set_runtime_hwparams(substream, &fsl_dma_hardware);
 	runtime->private_data = dma_private;
 
@@ -549,6 +635,7 @@ static int fsl_dma_open(struct snd_pcm_substream *substream)
  * and 8 bytes at a time).  So we do not support packed 24-bit samples.
  * 24-bit data must be padded to 32 bits.
  */
+<<<<<<< HEAD
 static int fsl_dma_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *hw_params)
 {
@@ -556,6 +643,15 @@ static int fsl_dma_hw_params(struct snd_pcm_substream *substream,
 	struct fsl_dma_private *dma_private = runtime->private_data;
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct device *dev = rtd->platform->dev;
+=======
+static int fsl_dma_hw_params(struct snd_soc_component *component,
+			     struct snd_pcm_substream *substream,
+			     struct snd_pcm_hw_params *hw_params)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct fsl_dma_private *dma_private = runtime->private_data;
+	struct device *dev = component->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Number of bits per sample */
 	unsigned int sample_bits =
@@ -713,12 +809,21 @@ static int fsl_dma_hw_params(struct snd_pcm_substream *substream,
  * The base address of the buffer is stored in the source_addr field of the
  * first link descriptor.
  */
+<<<<<<< HEAD
 static snd_pcm_uframes_t fsl_dma_pointer(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct fsl_dma_private *dma_private = runtime->private_data;
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct device *dev = rtd->platform->dev;
+=======
+static snd_pcm_uframes_t fsl_dma_pointer(struct snd_soc_component *component,
+					 struct snd_pcm_substream *substream)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct fsl_dma_private *dma_private = runtime->private_data;
+	struct device *dev = component->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ccsr_dma_channel __iomem *dma_channel = dma_private->dma_channel;
 	dma_addr_t position;
 	snd_pcm_uframes_t frames;
@@ -777,7 +882,12 @@ static snd_pcm_uframes_t fsl_dma_pointer(struct snd_pcm_substream *substream)
  *
  * This function can be called multiple times.
  */
+<<<<<<< HEAD
 static int fsl_dma_hw_free(struct snd_pcm_substream *substream)
+=======
+static int fsl_dma_hw_free(struct snd_soc_component *component,
+			   struct snd_pcm_substream *substream)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct fsl_dma_private *dma_private = runtime->private_data;
@@ -810,6 +920,7 @@ static int fsl_dma_hw_free(struct snd_pcm_substream *substream)
 /**
  * fsl_dma_close: close the stream.
  */
+<<<<<<< HEAD
 static int fsl_dma_close(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -818,28 +929,46 @@ static int fsl_dma_close(struct snd_pcm_substream *substream)
 	struct device *dev = rtd->platform->dev;
 	struct dma_object *dma =
 		container_of(rtd->platform->driver, struct dma_object, dai);
+=======
+static int fsl_dma_close(struct snd_soc_component *component,
+			 struct snd_pcm_substream *substream)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct fsl_dma_private *dma_private = runtime->private_data;
+	struct device *dev = component->dev;
+	struct dma_object *dma =
+		container_of(component->driver, struct dma_object, dai);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dma_private) {
 		if (dma_private->irq)
 			free_irq(dma_private->irq, dma_private);
 
+<<<<<<< HEAD
 		if (dma_private->ld_buf_phys) {
 			dma_unmap_single(dev, dma_private->ld_buf_phys,
 					 sizeof(dma_private->link),
 					 DMA_TO_DEVICE);
 		}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Deallocate the fsl_dma_private structure */
 		dma_free_coherent(dev, sizeof(struct fsl_dma_private),
 				  dma_private, dma_private->ld_buf_phys);
 		substream->runtime->private_data = NULL;
 	}
 
+<<<<<<< HEAD
 	dma->assigned = 0;
+=======
+	dma->assigned = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Remove this PCM driver.
  */
@@ -860,6 +989,10 @@ static void fsl_dma_free_dma_buffers(struct snd_pcm *pcm)
 
 /**
  * find_ssi_node -- returns the SSI node that points to his DMA channel node
+=======
+/**
+ * find_ssi_node -- returns the SSI node that points to its DMA channel node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Although this DMA driver attempts to operate independently of the other
  * devices, it still needs to determine some information about the SSI device
@@ -891,6 +1024,7 @@ static struct device_node *find_ssi_node(struct device_node *dma_channel_np)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops fsl_dma_ops = {
 	.open   	= fsl_dma_open,
 	.close  	= fsl_dma_close,
@@ -902,6 +1036,10 @@ static struct snd_pcm_ops fsl_dma_ops = {
 
 static int __devinit fsl_soc_dma_probe(struct platform_device *pdev)
  {
+=======
+static int fsl_soc_dma_probe(struct platform_device *pdev)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dma_object *dma;
 	struct device_node *np = pdev->dev.of_node;
 	struct device_node *ssi_np;
@@ -918,19 +1056,30 @@ static int __devinit fsl_soc_dma_probe(struct platform_device *pdev)
 
 	ret = of_address_to_resource(ssi_np, 0, &res);
 	if (ret) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "could not determine resources for %s\n",
 			ssi_np->full_name);
+=======
+		dev_err(&pdev->dev, "could not determine resources for %pOF\n",
+			ssi_np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_node_put(ssi_np);
 		return ret;
 	}
 
+<<<<<<< HEAD
 	dma = kzalloc(sizeof(*dma) + strlen(np->full_name), GFP_KERNEL);
 	if (!dma) {
 		dev_err(&pdev->dev, "could not allocate dma object\n");
+=======
+	dma = kzalloc(sizeof(*dma), GFP_KERNEL);
+	if (!dma) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_node_put(ssi_np);
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	strcpy(dma->path, np->full_name);
 	dma->dai.ops = &fsl_dma_ops;
 	dma->dai.pcm_new = fsl_dma_new;
@@ -939,6 +1088,19 @@ static int __devinit fsl_soc_dma_probe(struct platform_device *pdev)
 	/* Store the SSI-specific information that we need */
 	dma->ssi_stx_phys = res.start + offsetof(struct ccsr_ssi, stx0);
 	dma->ssi_srx_phys = res.start + offsetof(struct ccsr_ssi, srx0);
+=======
+	dma->dai.name = DRV_NAME;
+	dma->dai.open = fsl_dma_open;
+	dma->dai.close = fsl_dma_close;
+	dma->dai.hw_params = fsl_dma_hw_params;
+	dma->dai.hw_free = fsl_dma_hw_free;
+	dma->dai.pointer = fsl_dma_pointer;
+	dma->dai.pcm_construct = fsl_dma_new;
+
+	/* Store the SSI-specific information that we need */
+	dma->ssi_stx_phys = res.start + REG_SSI_STX0;
+	dma->ssi_srx_phys = res.start + REG_SSI_SRX0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iprop = of_get_property(ssi_np, "fsl,fifo-depth", NULL);
 	if (iprop)
@@ -949,7 +1111,11 @@ static int __devinit fsl_soc_dma_probe(struct platform_device *pdev)
 
 	of_node_put(ssi_np);
 
+<<<<<<< HEAD
 	ret = snd_soc_register_platform(&pdev->dev, &dma->dai);
+=======
+	ret = devm_snd_soc_register_component(&pdev->dev, &dma->dai, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(&pdev->dev, "could not register platform\n");
 		kfree(dma);
@@ -964,6 +1130,7 @@ static int __devinit fsl_soc_dma_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit fsl_soc_dma_remove(struct platform_device *pdev)
 {
 	struct dma_object *dma = dev_get_drvdata(&pdev->dev);
@@ -974,6 +1141,15 @@ static int __devexit fsl_soc_dma_remove(struct platform_device *pdev)
 	kfree(dma);
 
 	return 0;
+=======
+static void fsl_soc_dma_remove(struct platform_device *pdev)
+{
+	struct dma_object *dma = dev_get_drvdata(&pdev->dev);
+
+	iounmap(dma->channel);
+	irq_dispose_mapping(dma->irq);
+	kfree(dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id fsl_soc_dma_ids[] = {
@@ -985,11 +1161,18 @@ MODULE_DEVICE_TABLE(of, fsl_soc_dma_ids);
 static struct platform_driver fsl_soc_dma_driver = {
 	.driver = {
 		.name = "fsl-pcm-audio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = fsl_soc_dma_ids,
 	},
 	.probe = fsl_soc_dma_probe,
 	.remove = __devexit_p(fsl_soc_dma_remove),
+=======
+		.of_match_table = fsl_soc_dma_ids,
+	},
+	.probe = fsl_soc_dma_probe,
+	.remove_new = fsl_soc_dma_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(fsl_soc_dma_driver);

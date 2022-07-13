@@ -1,12 +1,23 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SCSI_LOGGING_H
 #define _SCSI_LOGGING_H
 
 
 /*
+<<<<<<< HEAD
  * This defines the scsi logging feature.  It is a means by which the user
  * can select how much information they get about various goings on, and it
  * can be really useful for fault tracing.  The logging word is divided into
  * 8 nibbles, each of which describes a loglevel.  The division of things is
+=======
+ * This defines the scsi logging feature.  It is a means by which the user can
+ * select how much information they get about various goings on, and it can be
+ * really useful for fault tracing.  The logging word is divided into 10 3-bit
+ * bitfields, each of which describes a loglevel.  The division of things is
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * somewhat arbitrary, and the division of the word could be changed if it
  * were really needed for any reason.  The numbers below are the only place
  * where these are specified.  For a first go-around, 3 bits is more than
@@ -51,7 +62,12 @@ do {								\
 		} while (0);					\
 } while (0)
 #else
+<<<<<<< HEAD
 #define SCSI_CHECK_LOGGING(SHIFT, BITS, LEVEL, CMD)
+=======
+#define SCSI_LOG_LEVEL(SHIFT, BITS) 0
+#define SCSI_CHECK_LOGGING(SHIFT, BITS, LEVEL, CMD) do { } while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SCSI_LOGGING */
 
 /*

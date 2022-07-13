@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Faraday device configuration
 #
@@ -5,11 +9,17 @@
 config NET_VENDOR_FARADAY
 	bool "Faraday devices"
 	default y
+<<<<<<< HEAD
 	depends on ARM
 	---help---
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	depends on ARM || COMPILE_TEST
+	help
+	  If you have a network (Ethernet) card belonging to this class, say Y.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -20,6 +30,7 @@ if NET_VENDOR_FARADAY
 
 config FTMAC100
 	tristate "Faraday FTMAC100 10/100 Ethernet support"
+<<<<<<< HEAD
 	depends on ARM
 	select NET_CORE
 	select MII
@@ -36,5 +47,24 @@ config FTGMAC100
 	  This driver supports the FTGMAC100 Gigabit Ethernet controller
 	  from Faraday. It is used on Faraday A369, Andes AG102 and some
 	  other ARM/NDS32 SoC's.
+=======
+	depends on ARM || COMPILE_TEST
+	depends on !64BIT || BROKEN
+	select MII
+	help
+	  This driver supports the FTMAC100 10/100 Ethernet controller
+	  from Faraday. It is used on Faraday A320 and some other ARM SoC's.
+
+config FTGMAC100
+	tristate "Faraday FTGMAC100 Gigabit Ethernet support"
+	depends on ARM || COMPILE_TEST
+	depends on !64BIT || BROKEN
+	select PHYLIB
+	select MDIO_ASPEED if MACH_ASPEED_G6
+	select CRC32
+	help
+	  This driver supports the FTGMAC100 Gigabit Ethernet controller
+	  from Faraday. It is used on Faraday A369 and some other ARM SoC's.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif # NET_VENDOR_FARADAY

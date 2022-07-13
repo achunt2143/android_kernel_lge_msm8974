@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Common values for serpent algorithms
  */
@@ -21,7 +25,12 @@ int __serpent_setkey(struct serpent_ctx *ctx, const u8 *key,
 		     unsigned int keylen);
 int serpent_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int keylen);
 
+<<<<<<< HEAD
 void __serpent_encrypt(struct serpent_ctx *ctx, u8 *dst, const u8 *src);
 void __serpent_decrypt(struct serpent_ctx *ctx, u8 *dst, const u8 *src);
+=======
+void __serpent_encrypt(const void *ctx, u8 *dst, const u8 *src);
+void __serpent_decrypt(const void *ctx, u8 *dst, const u8 *src);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

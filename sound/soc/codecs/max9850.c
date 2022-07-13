@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * max9850.c  --  codec driver for max9850
  *
@@ -6,6 +10,7 @@
  * Author: Christian Glindkamp <christian.glindkamp@taskit.de>
  *
  * Initial development of this code was funded by
+<<<<<<< HEAD
  * MICRONIC Computer Systeme GmbH, http://www.mcsberlin.de/
  *
  * This program is free software; you can redistribute  it and/or modify it
@@ -13,11 +18,18 @@
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+ * MICRONIC Computer Systeme GmbH, https://www.mcsberlin.de/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
+=======
+#include <linux/regmap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -27,6 +39,7 @@
 #include "max9850.h"
 
 struct max9850_priv {
+<<<<<<< HEAD
 	unsigned int sysclk;
 };
 
@@ -39,10 +52,20 @@ static const u8 max9850_reg[MAX9850_CACHEREGNUM] = {
  * completeness */
 static int max9850_volatile_register(struct snd_soc_codec *codec,
 		unsigned int reg)
+=======
+	struct regmap *regmap;
+	unsigned int sysclk;
+};
+
+/* these registers are not used at the moment but provided for the sake of
+ * completeness */
+static bool max9850_volatile_register(struct device *dev, unsigned int reg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (reg) {
 	case MAX9850_STATUSA:
 	case MAX9850_STATUSB:
+<<<<<<< HEAD
 		return 1;
 	default:
 		return 0;
@@ -56,6 +79,29 @@ static const unsigned int max9850_tlv[] = {
 	0x34, 0x37, TLV_DB_SCALE_ITEM(-150, 100, 0),
 	0x38, 0x3f, TLV_DB_SCALE_ITEM(250, 50, 0),
 };
+=======
+		return true;
+	default:
+		return false;
+	}
+}
+
+static const struct regmap_config max9850_regmap = {
+	.reg_bits = 8,
+	.val_bits = 8,
+
+	.max_register = MAX9850_DIGITAL_AUDIO,
+	.volatile_reg = max9850_volatile_register,
+	.cache_type = REGCACHE_RBTREE,
+};
+
+static const DECLARE_TLV_DB_RANGE(max9850_tlv,
+	0x18, 0x1f, TLV_DB_SCALE_ITEM(-7450, 400, 0),
+	0x20, 0x33, TLV_DB_SCALE_ITEM(-4150, 200, 0),
+	0x34, 0x37, TLV_DB_SCALE_ITEM(-150, 100, 0),
+	0x38, 0x3f, TLV_DB_SCALE_ITEM(250, 50, 0)
+);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new max9850_controls[] = {
 SOC_SINGLE_TLV("Headphone Volume", MAX9850_VOLUME, 0, 0x3f, 1, max9850_tlv),
@@ -113,8 +159,13 @@ static int max9850_hw_params(struct snd_pcm_substream *substream,
 			     struct snd_pcm_hw_params *params,
 			     struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	struct max9850_priv *max9850 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct max9850_priv *max9850 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 lrclk_div;
 	u8 sf, da;
 
@@ -122,12 +173,17 @@ static int max9850_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 
 	/* lrclk_div = 2^22 * rate / iclk with iclk = mclk / sf */
+<<<<<<< HEAD
 	sf = (snd_soc_read(codec, MAX9850_CLOCK) >> 2) + 1;
+=======
+	sf = (snd_soc_component_read(component, MAX9850_CLOCK) >> 2) + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lrclk_div = (1 << 22);
 	lrclk_div *= params_rate(params);
 	lrclk_div *= sf;
 	do_div(lrclk_div, max9850->sysclk);
 
+<<<<<<< HEAD
 	snd_soc_write(codec, MAX9850_LRCLK_MSB, (lrclk_div >> 8) & 0x7f);
 	snd_soc_write(codec, MAX9850_LRCLK_LSB, lrclk_div & 0xff);
 
@@ -139,12 +195,29 @@ static int max9850_hw_params(struct snd_pcm_substream *substream,
 		da = 0x2;
 		break;
 	case SNDRV_PCM_FORMAT_S24_LE:
+=======
+	snd_soc_component_write(component, MAX9850_LRCLK_MSB, (lrclk_div >> 8) & 0x7f);
+	snd_soc_component_write(component, MAX9850_LRCLK_LSB, lrclk_div & 0xff);
+
+	switch (params_width(params)) {
+	case 16:
+		da = 0;
+		break;
+	case 20:
+		da = 0x2;
+		break;
+	case 24:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		da = 0x3;
 		break;
 	default:
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, MAX9850_DIGITAL_AUDIO, 0x3, da);
+=======
+	snd_soc_component_update_bits(component, MAX9850_DIGITAL_AUDIO, 0x3, da);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -152,6 +225,7 @@ static int max9850_hw_params(struct snd_pcm_substream *substream,
 static int max9850_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		int clk_id, unsigned int freq, int dir)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct max9850_priv *max9850 = snd_soc_codec_get_drvdata(codec);
 
@@ -162,6 +236,18 @@ static int max9850_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		snd_soc_write(codec, MAX9850_CLOCK, 0x4);
 	else if (freq <= 40000000)
 		snd_soc_write(codec, MAX9850_CLOCK, 0x8);
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	struct max9850_priv *max9850 = snd_soc_component_get_drvdata(component);
+
+	/* calculate mclk -> iclk divider */
+	if (freq <= 13000000)
+		snd_soc_component_write(component, MAX9850_CLOCK, 0x0);
+	else if (freq <= 26000000)
+		snd_soc_component_write(component, MAX9850_CLOCK, 0x4);
+	else if (freq <= 40000000)
+		snd_soc_component_write(component, MAX9850_CLOCK, 0x8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		return -EINVAL;
 
@@ -171,6 +257,7 @@ static int max9850_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 
 static int max9850_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	u8 da = 0;
 
@@ -180,6 +267,17 @@ static int max9850_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		da |= MAX9850_MASTER;
 		break;
 	case SND_SOC_DAIFMT_CBS_CFS:
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	u8 da = 0;
+
+	/* set clock provider for audio interface */
+	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
+	case SND_SOC_DAIFMT_CBP_CFP:
+		da |= MAX9850_MASTER;
+		break;
+	case SND_SOC_DAIFMT_CBC_CFC:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
@@ -217,14 +315,25 @@ static int max9850_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 	}
 
 	/* set da */
+<<<<<<< HEAD
 	snd_soc_write(codec, MAX9850_DIGITAL_AUDIO, da);
+=======
+	snd_soc_component_write(component, MAX9850_DIGITAL_AUDIO, da);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int max9850_set_bias_level(struct snd_soc_codec *codec,
 				  enum snd_soc_bias_level level)
 {
+=======
+static int max9850_set_bias_level(struct snd_soc_component *component,
+				  enum snd_soc_bias_level level)
+{
+	struct max9850_priv *max9850 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	switch (level) {
@@ -233,10 +342,17 @@ static int max9850_set_bias_level(struct snd_soc_codec *codec,
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
 			ret = snd_soc_cache_sync(codec);
 			if (ret) {
 				dev_err(codec->dev,
+=======
+		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
+			ret = regcache_sync(max9850->regmap);
+			if (ret) {
+				dev_err(component->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"Failed to sync cache: %d\n", ret);
 				return ret;
 			}
@@ -245,7 +361,10 @@ static int max9850_set_bias_level(struct snd_soc_codec *codec,
 	case SND_SOC_BIAS_OFF:
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -272,6 +391,7 @@ static struct snd_soc_dai_driver max9850_dai = {
 	.ops = &max9850_dai_ops,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int max9850_suspend(struct snd_soc_codec *codec)
 {
@@ -307,10 +427,21 @@ static int max9850_probe(struct snd_soc_codec *codec)
 	snd_soc_update_bits(codec, MAX9850_VOLUME, 0x40, 0x40);
 	/* set slew-rate 125ms */
 	snd_soc_update_bits(codec, MAX9850_CHARGE_PUMP, 0xff, 0xc0);
+=======
+static int max9850_probe(struct snd_soc_component *component)
+{
+	/* enable zero-detect */
+	snd_soc_component_update_bits(component, MAX9850_GENERAL_PURPOSE, 1, 1);
+	/* enable slew-rate control */
+	snd_soc_component_update_bits(component, MAX9850_VOLUME, 0x40, 0x40);
+	/* set slew-rate 125ms */
+	snd_soc_component_update_bits(component, MAX9850_CHARGE_PUMP, 0xff, 0xc0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_max9850 = {
 	.probe =	max9850_probe,
 	.suspend =	max9850_suspend,
@@ -331,6 +462,24 @@ static struct snd_soc_codec_driver soc_codec_dev_max9850 = {
 
 static int __devinit max9850_i2c_probe(struct i2c_client *i2c,
 		const struct i2c_device_id *id)
+=======
+static const struct snd_soc_component_driver soc_component_dev_max9850 = {
+	.probe			= max9850_probe,
+	.set_bias_level		= max9850_set_bias_level,
+	.controls		= max9850_controls,
+	.num_controls		= ARRAY_SIZE(max9850_controls),
+	.dapm_widgets		= max9850_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(max9850_dapm_widgets),
+	.dapm_routes		= max9850_dapm_routes,
+	.num_dapm_routes	= ARRAY_SIZE(max9850_dapm_routes),
+	.suspend_bias_off	= 1,
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+};
+
+static int max9850_i2c_probe(struct i2c_client *i2c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct max9850_priv *max9850;
 	int ret;
@@ -340,6 +489,7 @@ static int __devinit max9850_i2c_probe(struct i2c_client *i2c,
 	if (max9850 == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	i2c_set_clientdata(i2c, max9850);
 
 	ret = snd_soc_register_codec(&i2c->dev,
@@ -353,6 +503,19 @@ static __devexit int max9850_i2c_remove(struct i2c_client *client)
 	return 0;
 }
 
+=======
+	max9850->regmap = devm_regmap_init_i2c(i2c, &max9850_regmap);
+	if (IS_ERR(max9850->regmap))
+		return PTR_ERR(max9850->regmap);
+
+	i2c_set_clientdata(i2c, max9850);
+
+	ret = devm_snd_soc_register_component(&i2c->dev,
+			&soc_component_dev_max9850, &max9850_dai, 1);
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id max9850_i2c_id[] = {
 	{ "max9850", 0 },
 	{ }
@@ -362,6 +525,7 @@ MODULE_DEVICE_TABLE(i2c, max9850_i2c_id);
 static struct i2c_driver max9850_i2c_driver = {
 	.driver = {
 		.name = "max9850",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe = max9850_i2c_probe,
@@ -380,6 +544,14 @@ static void __exit max9850_exit(void)
 	i2c_del_driver(&max9850_i2c_driver);
 }
 module_exit(max9850_exit);
+=======
+	},
+	.probe = max9850_i2c_probe,
+	.id_table = max9850_i2c_id,
+};
+
+module_i2c_driver(max9850_i2c_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Christian Glindkamp <christian.glindkamp@taskit.de>");
 MODULE_DESCRIPTION("ASoC MAX9850 codec driver");

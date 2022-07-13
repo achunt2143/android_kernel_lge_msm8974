@@ -1,4 +1,10 @@
 /*
+<<<<<<< HEAD
+=======
+ * 8250 UART probe driver for the BCM47XX platforms
+ * Author: Aurelien Jarno
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
@@ -6,7 +12,10 @@
  * Copyright (C) 2007 Aurelien Jarno <aurelien@aurel32.net>
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/serial.h>
 #include <linux/serial_8250.h>
@@ -31,12 +40,22 @@ static int __init uart8250_init_ssb(void)
 
 	memset(&uart8250_data, 0,  sizeof(uart8250_data));
 
+<<<<<<< HEAD
 	for (i = 0; i < mcore->nr_serial_ports; i++) {
 		struct plat_serial8250_port *p = &(uart8250_data[i]);
 		struct ssb_serial_port *ssb_port = &(mcore->serial_ports[i]);
 
 		p->mapbase = (unsigned int) ssb_port->regs;
 		p->membase = (void *) ssb_port->regs;
+=======
+	for (i = 0; i < mcore->nr_serial_ports &&
+		    i < ARRAY_SIZE(uart8250_data) - 1; i++) {
+		struct plat_serial8250_port *p = &(uart8250_data[i]);
+		struct ssb_serial_port *ssb_port = &(mcore->serial_ports[i]);
+
+		p->mapbase = (unsigned int)ssb_port->regs;
+		p->membase = (void *)ssb_port->regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p->irq = ssb_port->irq + 2;
 		p->uartclk = ssb_port->baud_base;
 		p->regshift = ssb_port->reg_shift;
@@ -55,14 +74,25 @@ static int __init uart8250_init_bcma(void)
 
 	memset(&uart8250_data, 0,  sizeof(uart8250_data));
 
+<<<<<<< HEAD
 	for (i = 0; i < cc->nr_serial_ports; i++) {
+=======
+	for (i = 0; i < cc->nr_serial_ports &&
+		    i < ARRAY_SIZE(uart8250_data) - 1; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct plat_serial8250_port *p = &(uart8250_data[i]);
 		struct bcma_serial_port *bcma_port;
 		bcma_port = &(cc->serial_ports[i]);
 
+<<<<<<< HEAD
 		p->mapbase = (unsigned int) bcma_port->regs;
 		p->membase = (void *) bcma_port->regs;
 		p->irq = bcma_port->irq + 2;
+=======
+		p->mapbase = (unsigned int)bcma_port->regs;
+		p->membase = (void *)bcma_port->regs;
+		p->irq = bcma_port->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p->uartclk = bcma_port->baud_base;
 		p->regshift = bcma_port->reg_shift;
 		p->iotype = UPIO_MEM;
@@ -86,9 +116,13 @@ static int __init uart8250_init(void)
 	}
 	return -EINVAL;
 }
+<<<<<<< HEAD
 
 module_init(uart8250_init);
 
 MODULE_AUTHOR("Aurelien Jarno <aurelien@aurel32.net>");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("8250 UART probe driver for the BCM47XX platforms");
+=======
+device_initcall(uart8250_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -58,7 +58,11 @@ struct mthca_user_db_table {
 		u64                uvirt;
 		struct scatterlist mem;
 		int                refcount;
+<<<<<<< HEAD
 	}                page[0];
+=======
+	} page[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void mthca_free_icm_pages(struct mthca_dev *dev, struct mthca_icm_chunk *chunk)
@@ -66,8 +70,13 @@ static void mthca_free_icm_pages(struct mthca_dev *dev, struct mthca_icm_chunk *
 	int i;
 
 	if (chunk->nsg > 0)
+<<<<<<< HEAD
 		pci_unmap_sg(dev->pdev, chunk->mem, chunk->npages,
 			     PCI_DMA_BIDIRECTIONAL);
+=======
+		dma_unmap_sg(&dev->pdev->dev, chunk->mem, chunk->npages,
+			     DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < chunk->npages; ++i)
 		__free_pages(sg_page(&chunk->mem[i]),
@@ -184,9 +193,16 @@ struct mthca_icm *mthca_alloc_icm(struct mthca_dev *dev, int npages,
 			if (coherent)
 				++chunk->nsg;
 			else if (chunk->npages == MTHCA_ICM_CHUNK_LEN) {
+<<<<<<< HEAD
 				chunk->nsg = pci_map_sg(dev->pdev, chunk->mem,
 							chunk->npages,
 							PCI_DMA_BIDIRECTIONAL);
+=======
+				chunk->nsg =
+					dma_map_sg(&dev->pdev->dev, chunk->mem,
+						   chunk->npages,
+						   DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				if (chunk->nsg <= 0)
 					goto fail;
@@ -204,9 +220,14 @@ struct mthca_icm *mthca_alloc_icm(struct mthca_dev *dev, int npages,
 	}
 
 	if (!coherent && chunk) {
+<<<<<<< HEAD
 		chunk->nsg = pci_map_sg(dev->pdev, chunk->mem,
 					chunk->npages,
 					PCI_DMA_BIDIRECTIONAL);
+=======
+		chunk->nsg = dma_map_sg(&dev->pdev->dev, chunk->mem,
+					chunk->npages, DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (chunk->nsg <= 0)
 			goto fail;
@@ -367,7 +388,11 @@ struct mthca_icm_table *mthca_alloc_icm_table(struct mthca_dev *dev,
 	obj_per_chunk = MTHCA_TABLE_CHUNK_SIZE / obj_size;
 	num_icm = DIV_ROUND_UP(nobj, obj_per_chunk);
 
+<<<<<<< HEAD
 	table = kmalloc(sizeof *table + num_icm * sizeof *table->icm, GFP_KERNEL);
+=======
+	table = kmalloc(struct_size(table, icm, num_icm), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!table)
 		return NULL;
 
@@ -472,25 +497,43 @@ int mthca_map_user_db(struct mthca_dev *dev, struct mthca_uar *uar,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	ret = get_user_pages(current, current->mm, uaddr & PAGE_MASK, 1, 1, 0,
 			     pages, NULL);
+=======
+	ret = pin_user_pages_fast(uaddr & PAGE_MASK, 1,
+				  FOLL_WRITE | FOLL_LONGTERM, pages);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto out;
 
 	sg_set_page(&db_tab->page[i].mem, pages[0], MTHCA_ICM_PAGE_SIZE,
 			uaddr & ~PAGE_MASK);
 
+<<<<<<< HEAD
 	ret = pci_map_sg(dev->pdev, &db_tab->page[i].mem, 1, PCI_DMA_TODEVICE);
 	if (ret < 0) {
 		put_page(pages[0]);
+=======
+	ret = dma_map_sg(&dev->pdev->dev, &db_tab->page[i].mem, 1,
+			 DMA_TO_DEVICE);
+	if (ret < 0) {
+		unpin_user_page(pages[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	ret = mthca_MAP_ICM_page(dev, sg_dma_address(&db_tab->page[i].mem),
 				 mthca_uarc_virt(dev, uar, i));
 	if (ret) {
+<<<<<<< HEAD
 		pci_unmap_sg(dev->pdev, &db_tab->page[i].mem, 1, PCI_DMA_TODEVICE);
 		put_page(sg_page(&db_tab->page[i].mem));
+=======
+		dma_unmap_sg(&dev->pdev->dev, &db_tab->page[i].mem, 1,
+			     DMA_TO_DEVICE);
+		unpin_user_page(sg_page(&db_tab->page[i].mem));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -530,7 +573,11 @@ struct mthca_user_db_table *mthca_init_user_db_tab(struct mthca_dev *dev)
 		return NULL;
 
 	npages = dev->uar_table.uarc_size / MTHCA_ICM_PAGE_SIZE;
+<<<<<<< HEAD
 	db_tab = kmalloc(sizeof *db_tab + npages * sizeof *db_tab->page, GFP_KERNEL);
+=======
+	db_tab = kmalloc(struct_size(db_tab, page, npages), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!db_tab)
 		return ERR_PTR(-ENOMEM);
 
@@ -555,8 +602,14 @@ void mthca_cleanup_user_db_tab(struct mthca_dev *dev, struct mthca_uar *uar,
 	for (i = 0; i < dev->uar_table.uarc_size / MTHCA_ICM_PAGE_SIZE; ++i) {
 		if (db_tab->page[i].uvirt) {
 			mthca_UNMAP_ICM(dev, mthca_uarc_virt(dev, uar, i), 1);
+<<<<<<< HEAD
 			pci_unmap_sg(dev->pdev, &db_tab->page[i].mem, 1, PCI_DMA_TODEVICE);
 			put_page(sg_page(&db_tab->page[i].mem));
+=======
+			dma_unmap_sg(&dev->pdev->dev, &db_tab->page[i].mem, 1,
+				     DMA_TO_DEVICE);
+			unpin_user_page(sg_page(&db_tab->page[i].mem));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -624,13 +677,22 @@ int mthca_alloc_db(struct mthca_dev *dev, enum mthca_db_type type,
 	page = dev->db_tab->page + end;
 
 alloc:
+<<<<<<< HEAD
 	page->db_rec = dma_alloc_coherent(&dev->pdev->dev, MTHCA_ICM_PAGE_SIZE,
 					  &page->mapping, GFP_KERNEL);
+=======
+	page->db_rec = dma_alloc_coherent(&dev->pdev->dev,
+					  MTHCA_ICM_PAGE_SIZE, &page->mapping,
+					  GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!page->db_rec) {
 		ret = -ENOMEM;
 		goto out;
 	}
+<<<<<<< HEAD
 	memset(page->db_rec, 0, MTHCA_ICM_PAGE_SIZE);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = mthca_MAP_ICM_page(dev, page->mapping,
 				 mthca_uarc_virt(dev, &dev->driver_uar, i));
@@ -714,9 +776,15 @@ int mthca_init_db_tab(struct mthca_dev *dev)
 	dev->db_tab->max_group1 = 0;
 	dev->db_tab->min_group2 = dev->db_tab->npages - 1;
 
+<<<<<<< HEAD
 	dev->db_tab->page = kmalloc(dev->db_tab->npages *
 				    sizeof *dev->db_tab->page,
 				    GFP_KERNEL);
+=======
+	dev->db_tab->page = kmalloc_array(dev->db_tab->npages,
+					  sizeof(*dev->db_tab->page),
+					  GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev->db_tab->page) {
 		kfree(dev->db_tab);
 		return -ENOMEM;

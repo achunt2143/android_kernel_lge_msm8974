@@ -12,6 +12,7 @@
 
 #include <linux/futex.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
 #include <asm/barrier.h>
 #include <asm/errno.h>
 #include <asm/war.h>
@@ -33,6 +34,36 @@
 		"3:						\n"	\
 		"	.set	pop				\n"	\
 		"	.set	mips0				\n"	\
+=======
+#include <asm/asm-eva.h>
+#include <asm/barrier.h>
+#include <asm/compiler.h>
+#include <asm/errno.h>
+#include <asm/sync.h>
+
+#define arch_futex_atomic_op_inuser arch_futex_atomic_op_inuser
+#define futex_atomic_cmpxchg_inatomic futex_atomic_cmpxchg_inatomic
+#include <asm-generic/futex.h>
+
+#define __futex_atomic_op(op, insn, ret, oldval, uaddr, oparg)		\
+{									\
+	if (cpu_has_llsc && IS_ENABLED(CONFIG_WAR_R10000_LLSC)) {	\
+		__asm__ __volatile__(					\
+		"	.set	push				\n"	\
+		"	.set	noat				\n"	\
+		"	.set	push				\n"	\
+		"	.set	arch=r4000			\n"	\
+		"1:	ll	%1, %4	# __futex_atomic_op	\n"	\
+		"	.set	pop				\n"	\
+		"	" insn	"				\n"	\
+		"	.set	arch=r4000			\n"	\
+		"2:	sc	$1, %2				\n"	\
+		"	beqzl	$1, 1b				\n"	\
+		__stringify(__WEAK_LLSC_MB) "			\n"	\
+		"3:						\n"	\
+		"	.insn					\n"	\
+		"	.set	pop				\n"	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"	.section .fixup,\"ax\"			\n"	\
 		"4:	li	%0, %6				\n"	\
 		"	j	3b				\n"	\
@@ -41,13 +72,21 @@
 		"	"__UA_ADDR "\t1b, 4b			\n"	\
 		"	"__UA_ADDR "\t2b, 4b			\n"	\
 		"	.previous				\n"	\
+<<<<<<< HEAD
 		: "=r" (ret), "=&r" (oldval), "=R" (*uaddr)		\
 		: "0" (0), "R" (*uaddr), "Jr" (oparg), "i" (-EFAULT)	\
+=======
+		: "=r" (ret), "=&r" (oldval),				\
+		  "=" GCC_OFF_SMALL_ASM() (*uaddr)				\
+		: "0" (0), GCC_OFF_SMALL_ASM() (*uaddr), "Jr" (oparg),	\
+		  "i" (-EFAULT)						\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "memory");						\
 	} else if (cpu_has_llsc) {					\
 		__asm__ __volatile__(					\
 		"	.set	push				\n"	\
 		"	.set	noat				\n"	\
+<<<<<<< HEAD
 		"	.set	mips3				\n"	\
 		"1:	ll	%1, %4	# __futex_atomic_op	\n"	\
 		"	.set	mips0				\n"	\
@@ -59,6 +98,21 @@
 		"3:						\n"	\
 		"	.set	pop				\n"	\
 		"	.set	mips0				\n"	\
+=======
+		"	.set	push				\n"	\
+		"	.set	"MIPS_ISA_ARCH_LEVEL"		\n"	\
+		"	" __SYNC(full, loongson3_war) "		\n"	\
+		"1:	"user_ll("%1", "%4")" # __futex_atomic_op\n"	\
+		"	.set	pop				\n"	\
+		"	" insn	"				\n"	\
+		"	.set	"MIPS_ISA_ARCH_LEVEL"		\n"	\
+		"2:	"user_sc("$1", "%2")"			\n"	\
+		"	beqz	$1, 1b				\n"	\
+		__stringify(__WEAK_LLSC_MB) "			\n"	\
+		"3:						\n"	\
+		"	.insn					\n"	\
+		"	.set	pop				\n"	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"	.section .fixup,\"ax\"			\n"	\
 		"4:	li	%0, %6				\n"	\
 		"	j	3b				\n"	\
@@ -67,6 +121,7 @@
 		"	"__UA_ADDR "\t1b, 4b			\n"	\
 		"	"__UA_ADDR "\t2b, 4b			\n"	\
 		"	.previous				\n"	\
+<<<<<<< HEAD
 		: "=r" (ret), "=&r" (oldval), "=R" (*uaddr)		\
 		: "0" (0), "R" (*uaddr), "Jr" (oparg), "i" (-EFAULT)	\
 		: "memory");						\
@@ -110,11 +165,53 @@ futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 	case FUTEX_OP_XOR:
 		__futex_atomic_op("xor	$1, %1, %z5",
 		                  ret, oldval, uaddr, oparg);
+=======
+		: "=r" (ret), "=&r" (oldval),				\
+		  "=" GCC_OFF_SMALL_ASM() (*uaddr)				\
+		: "0" (0), GCC_OFF_SMALL_ASM() (*uaddr), "Jr" (oparg),	\
+		  "i" (-EFAULT)						\
+		: "memory");						\
+	} else {							\
+		/* fallback for non-SMP */				\
+		ret = futex_atomic_op_inuser_local(op, oparg, oval, uaddr);	\
+	}								\
+}
+
+static inline int
+arch_futex_atomic_op_inuser(int op, int oparg, int *oval, u32 __user *uaddr)
+{
+	int oldval = 0, ret;
+
+	if (!access_ok(uaddr, sizeof(u32)))
+		return -EFAULT;
+
+	switch (op) {
+	case FUTEX_OP_SET:
+		__futex_atomic_op(op, "move $1, %z5", ret, oldval, uaddr, oparg);
+		break;
+
+	case FUTEX_OP_ADD:
+		__futex_atomic_op(op, "addu $1, %1, %z5",
+				  ret, oldval, uaddr, oparg);
+		break;
+	case FUTEX_OP_OR:
+		__futex_atomic_op(op, "or	$1, %1, %z5",
+				  ret, oldval, uaddr, oparg);
+		break;
+	case FUTEX_OP_ANDN:
+		__futex_atomic_op(op, "and	$1, %1, %z5",
+				  ret, oldval, uaddr, ~oparg);
+		break;
+	case FUTEX_OP_XOR:
+		__futex_atomic_op(op, "xor	$1, %1, %z5",
+				  ret, oldval, uaddr, oparg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		ret = -ENOSYS;
 	}
 
+<<<<<<< HEAD
 	pagefault_enable();
 
 	if (!ret) {
@@ -128,6 +225,11 @@ futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 		default: ret = -ENOSYS;
 		}
 	}
+=======
+	if (!ret)
+		*oval = oldval;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -138,14 +240,22 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 	int ret = 0;
 	u32 val;
 
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_WRITE, uaddr, sizeof(u32)))
 		return -EFAULT;
 
 	if (cpu_has_llsc && R10000_LLSC_WAR) {
+=======
+	if (!access_ok(uaddr, sizeof(u32)))
+		return -EFAULT;
+
+	if (cpu_has_llsc && IS_ENABLED(CONFIG_WAR_R10000_LLSC)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__asm__ __volatile__(
 		"# futex_atomic_cmpxchg_inatomic			\n"
 		"	.set	push					\n"
 		"	.set	noat					\n"
+<<<<<<< HEAD
 		"	.set	mips3					\n"
 		"1:	ll	%1, %3					\n"
 		"	bne	%1, %z4, 3f				\n"
@@ -156,6 +266,20 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 		"	beqzl	$1, 1b					\n"
 		__WEAK_LLSC_MB
 		"3:							\n"
+=======
+		"	.set	push					\n"
+		"	.set	arch=r4000				\n"
+		"1:	ll	%1, %3					\n"
+		"	bne	%1, %z4, 3f				\n"
+		"	.set	pop					\n"
+		"	move	$1, %z5					\n"
+		"	.set	arch=r4000				\n"
+		"2:	sc	$1, %2					\n"
+		"	beqzl	$1, 1b					\n"
+		__stringify(__WEAK_LLSC_MB) "				\n"
+		"3:							\n"
+		"	.insn						\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"	.set	pop					\n"
 		"	.section .fixup,\"ax\"				\n"
 		"4:	li	%0, %6					\n"
@@ -165,14 +289,21 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 		"	"__UA_ADDR "\t1b, 4b				\n"
 		"	"__UA_ADDR "\t2b, 4b				\n"
 		"	.previous					\n"
+<<<<<<< HEAD
 		: "+r" (ret), "=&r" (val), "=R" (*uaddr)
 		: "R" (*uaddr), "Jr" (oldval), "Jr" (newval), "i" (-EFAULT)
+=======
+		: "+r" (ret), "=&r" (val), "=" GCC_OFF_SMALL_ASM() (*uaddr)
+		: GCC_OFF_SMALL_ASM() (*uaddr), "Jr" (oldval), "Jr" (newval),
+		  "i" (-EFAULT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "memory");
 	} else if (cpu_has_llsc) {
 		__asm__ __volatile__(
 		"# futex_atomic_cmpxchg_inatomic			\n"
 		"	.set	push					\n"
 		"	.set	noat					\n"
+<<<<<<< HEAD
 		"	.set	mips3					\n"
 		"1:	ll	%1, %3					\n"
 		"	bne	%1, %z4, 3f				\n"
@@ -183,6 +314,20 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 		"	beqz	$1, 1b					\n"
 		__WEAK_LLSC_MB
 		"3:							\n"
+=======
+		"	.set	push					\n"
+		"	.set	"MIPS_ISA_ARCH_LEVEL"			\n"
+		"	" __SYNC(full, loongson3_war) "			\n"
+		"1:	"user_ll("%1", "%3")"				\n"
+		"	bne	%1, %z4, 3f				\n"
+		"	.set	pop					\n"
+		"	move	$1, %z5					\n"
+		"	.set	"MIPS_ISA_ARCH_LEVEL"			\n"
+		"2:	"user_sc("$1", "%2")"				\n"
+		"	beqz	$1, 1b					\n"
+		"3:	" __SYNC_ELSE(full, loongson3_war, __WEAK_LLSC_MB) "\n"
+		"	.insn						\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"	.set	pop					\n"
 		"	.section .fixup,\"ax\"				\n"
 		"4:	li	%0, %6					\n"
@@ -192,11 +337,21 @@ futex_atomic_cmpxchg_inatomic(u32 *uval, u32 __user *uaddr,
 		"	"__UA_ADDR "\t1b, 4b				\n"
 		"	"__UA_ADDR "\t2b, 4b				\n"
 		"	.previous					\n"
+<<<<<<< HEAD
 		: "+r" (ret), "=&r" (val), "=R" (*uaddr)
 		: "R" (*uaddr), "Jr" (oldval), "Jr" (newval), "i" (-EFAULT)
 		: "memory");
 	} else
 		return -ENOSYS;
+=======
+		: "+r" (ret), "=&r" (val), "=" GCC_OFF_SMALL_ASM() (*uaddr)
+		: GCC_OFF_SMALL_ASM() (*uaddr), "Jr" (oldval), "Jr" (newval),
+		  "i" (-EFAULT)
+		: "memory");
+	} else {
+		return futex_atomic_cmpxchg_inatomic_local(uval, uaddr, oldval, newval);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*uval = val;
 	return ret;

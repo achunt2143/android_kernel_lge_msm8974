@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* module that allows mangling of the arp payload */
 #include <linux/module.h>
 #include <linux/netfilter.h>
@@ -16,7 +20,11 @@ target(struct sk_buff *skb, const struct xt_action_param *par)
 	unsigned char *arpptr;
 	int pln, hln;
 
+<<<<<<< HEAD
 	if (!skb_make_writable(skb, skb->len))
+=======
+	if (skb_ensure_writable(skb, skb->len))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NF_DROP;
 
 	arp = arp_hdr(skb);

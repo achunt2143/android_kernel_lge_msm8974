@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TCP HYBLA
  *
@@ -15,31 +19,54 @@
 
 /* Tcp Hybla structure. */
 struct hybla {
+<<<<<<< HEAD
 	u8    hybla_en;
+=======
+	bool  hybla_en;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32   snd_cwnd_cents; /* Keeps increment values when it is <1, <<7 */
 	u32   rho;	      /* Rho parameter, integer part  */
 	u32   rho2;	      /* Rho * Rho, integer part */
 	u32   rho_3ls;	      /* Rho parameter, <<3 */
 	u32   rho2_7ls;	      /* Rho^2, <<7	*/
+<<<<<<< HEAD
 	u32   minrtt;	      /* Minimum smoothed round trip time value seen */
 };
 
 /* Hybla reference round trip time (default= 1/40 sec = 25 ms),
    expressed in jiffies */
+=======
+	u32   minrtt_us;      /* Minimum smoothed round trip time value seen */
+};
+
+/* Hybla reference round trip time (default= 1/40 sec = 25 ms), in ms */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int rtt0 = 25;
 module_param(rtt0, int, 0644);
 MODULE_PARM_DESC(rtt0, "reference rout trip time (ms)");
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This is called to refresh values for hybla parameters */
 static inline void hybla_recalc_param (struct sock *sk)
 {
 	struct hybla *ca = inet_csk_ca(sk);
 
+<<<<<<< HEAD
 	ca->rho_3ls = max_t(u32, tcp_sk(sk)->srtt / msecs_to_jiffies(rtt0), 8);
 	ca->rho = ca->rho_3ls >> 3;
 	ca->rho2_7ls = (ca->rho_3ls * ca->rho_3ls) << 1;
 	ca->rho2 = ca->rho2_7ls >>7;
+=======
+	ca->rho_3ls = max_t(u32,
+			    tcp_sk(sk)->srtt_us / (rtt0 * USEC_PER_MSEC),
+			    8U);
+	ca->rho = ca->rho_3ls >> 3;
+	ca->rho2_7ls = (ca->rho_3ls * ca->rho_3ls) << 1;
+	ca->rho2 = ca->rho2_7ls >> 7;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hybla_init(struct sock *sk)
@@ -52,21 +79,35 @@ static void hybla_init(struct sock *sk)
 	ca->rho_3ls = 0;
 	ca->rho2_7ls = 0;
 	ca->snd_cwnd_cents = 0;
+<<<<<<< HEAD
 	ca->hybla_en = 1;
 	tp->snd_cwnd = 2;
+=======
+	ca->hybla_en = true;
+	tcp_snd_cwnd_set(tp, 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tp->snd_cwnd_clamp = 65535;
 
 	/* 1st Rho measurement based on initial srtt */
 	hybla_recalc_param(sk);
 
 	/* set minimum rtt as this is the 1st ever seen */
+<<<<<<< HEAD
 	ca->minrtt = tp->srtt;
 	tp->snd_cwnd = ca->rho;
+=======
+	ca->minrtt_us = tp->srtt_us;
+	tcp_snd_cwnd_set(tp, ca->rho);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hybla_state(struct sock *sk, u8 ca_state)
 {
 	struct hybla *ca = inet_csk_ca(sk);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ca->hybla_en = (ca_state == TCP_CA_Open);
 }
 
@@ -85,7 +126,11 @@ static inline u32 hybla_fraction(u32 odds)
  *     o Give cwnd a new value based on the model proposed
  *     o remember increments <1
  */
+<<<<<<< HEAD
 static void hybla_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
+=======
+static void hybla_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct hybla *ca = inet_csk_ca(sk);
@@ -93,6 +138,7 @@ static void hybla_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
 	int is_slowstart = 0;
 
 	/*  Recalculate rho only if this srtt is the lowest */
+<<<<<<< HEAD
 	if (tp->srtt < ca->minrtt){
 		hybla_recalc_param(sk);
 		ca->minrtt = tp->srtt;
@@ -103,6 +149,18 @@ static void hybla_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
 
 	if (!ca->hybla_en) {
 		tcp_reno_cong_avoid(sk, ack, in_flight);
+=======
+	if (tp->srtt_us < ca->minrtt_us) {
+		hybla_recalc_param(sk);
+		ca->minrtt_us = tp->srtt_us;
+	}
+
+	if (!tcp_is_cwnd_limited(sk))
+		return;
+
+	if (!ca->hybla_en) {
+		tcp_reno_cong_avoid(sk, ack, acked);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -111,7 +169,11 @@ static void hybla_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
 
 	rho_fractions = ca->rho_3ls - (ca->rho << 3);
 
+<<<<<<< HEAD
 	if (tp->snd_cwnd < tp->snd_ssthresh) {
+=======
+	if (tcp_in_slow_start(tp)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * slow start
 		 *      INC = 2^RHO - 1
@@ -135,37 +197,64 @@ static void hybla_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
 		 * as long as increment is estimated as (rho<<7)/window
 		 * it already is <<7 and we can easily count its fractions.
 		 */
+<<<<<<< HEAD
 		increment = ca->rho2_7ls / tp->snd_cwnd;
+=======
+		increment = ca->rho2_7ls / tcp_snd_cwnd(tp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (increment < 128)
 			tp->snd_cwnd_cnt++;
 	}
 
 	odd = increment % 128;
+<<<<<<< HEAD
 	tp->snd_cwnd += increment >> 7;
+=======
+	tcp_snd_cwnd_set(tp, tcp_snd_cwnd(tp) + (increment >> 7));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ca->snd_cwnd_cents += odd;
 
 	/* check when fractions goes >=128 and increase cwnd by 1. */
 	while (ca->snd_cwnd_cents >= 128) {
+<<<<<<< HEAD
 		tp->snd_cwnd++;
+=======
+		tcp_snd_cwnd_set(tp, tcp_snd_cwnd(tp) + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ca->snd_cwnd_cents -= 128;
 		tp->snd_cwnd_cnt = 0;
 	}
 	/* check when cwnd has not been incremented for a while */
+<<<<<<< HEAD
 	if (increment == 0 && odd == 0 && tp->snd_cwnd_cnt >= tp->snd_cwnd) {
 		tp->snd_cwnd++;
+=======
+	if (increment == 0 && odd == 0 && tp->snd_cwnd_cnt >= tcp_snd_cwnd(tp)) {
+		tcp_snd_cwnd_set(tp, tcp_snd_cwnd(tp) + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tp->snd_cwnd_cnt = 0;
 	}
 	/* clamp down slowstart cwnd to ssthresh value. */
 	if (is_slowstart)
+<<<<<<< HEAD
 		tp->snd_cwnd = min(tp->snd_cwnd, tp->snd_ssthresh);
 
 	tp->snd_cwnd = min_t(u32, tp->snd_cwnd, tp->snd_cwnd_clamp);
+=======
+		tcp_snd_cwnd_set(tp, min(tcp_snd_cwnd(tp), tp->snd_ssthresh));
+
+	tcp_snd_cwnd_set(tp, min(tcp_snd_cwnd(tp), tp->snd_cwnd_clamp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct tcp_congestion_ops tcp_hybla __read_mostly = {
 	.init		= hybla_init,
 	.ssthresh	= tcp_reno_ssthresh,
+<<<<<<< HEAD
 	.min_cwnd	= tcp_reno_min_cwnd,
+=======
+	.undo_cwnd	= tcp_reno_undo_cwnd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cong_avoid	= hybla_cong_avoid,
 	.set_state	= hybla_state,
 

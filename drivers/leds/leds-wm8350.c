@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LED driver for WM8350 driven LEDS.
  *
  * Copyright(C) 2007, 2008 Wolfson Microelectronics PLC.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -11,6 +16,11 @@
 
 #include <linux/kernel.h>
 #include <linux/init.h>
+=======
+ */
+
+#include <linux/kernel.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/leds.h>
 #include <linux/err.h>
@@ -90,23 +100,37 @@ static const int isink_cur[] = {
 #define to_wm8350_led(led_cdev) \
 	container_of(led_cdev, struct wm8350_led, cdev)
 
+<<<<<<< HEAD
 static void wm8350_led_enable(struct wm8350_led *led)
 {
 	int ret;
 
 	if (led->enabled)
 		return;
+=======
+static int wm8350_led_enable(struct wm8350_led *led)
+{
+	int ret = 0;
+
+	if (led->enabled)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = regulator_enable(led->isink);
 	if (ret != 0) {
 		dev_err(led->cdev.dev, "Failed to enable ISINK: %d\n", ret);
+<<<<<<< HEAD
 		return;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = regulator_enable(led->dcdc);
 	if (ret != 0) {
 		dev_err(led->cdev.dev, "Failed to enable DCDC: %d\n", ret);
 		regulator_disable(led->isink);
+<<<<<<< HEAD
 		return;
 	}
 
@@ -119,16 +143,37 @@ static void wm8350_led_disable(struct wm8350_led *led)
 
 	if (!led->enabled)
 		return;
+=======
+		return ret;
+	}
+
+	led->enabled = 1;
+
+	return ret;
+}
+
+static int wm8350_led_disable(struct wm8350_led *led)
+{
+	int ret = 0;
+
+	if (!led->enabled)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = regulator_disable(led->dcdc);
 	if (ret != 0) {
 		dev_err(led->cdev.dev, "Failed to disable DCDC: %d\n", ret);
+<<<<<<< HEAD
 		return;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = regulator_disable(led->isink);
 	if (ret != 0) {
 		dev_err(led->cdev.dev, "Failed to disable ISINK: %d\n", ret);
+<<<<<<< HEAD
 		regulator_enable(led->dcdc);
 		return;
 	}
@@ -144,13 +189,40 @@ static void led_work(struct work_struct *work)
 	unsigned long flags;
 
 	mutex_lock(&led->mutex);
+=======
+		ret = regulator_enable(led->dcdc);
+		if (ret != 0)
+			dev_err(led->cdev.dev, "Failed to reenable DCDC: %d\n",
+				ret);
+		return ret;
+	}
+
+	led->enabled = 0;
+
+	return ret;
+}
+
+static int wm8350_led_set(struct led_classdev *led_cdev,
+			   enum led_brightness value)
+{
+	struct wm8350_led *led = to_wm8350_led(led_cdev);
+	unsigned long flags;
+	int ret;
+	int uA;
+
+	led->value = value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&led->value_lock, flags);
 
 	if (led->value == LED_OFF) {
 		spin_unlock_irqrestore(&led->value_lock, flags);
+<<<<<<< HEAD
 		wm8350_led_disable(led);
 		goto out;
+=======
+		return wm8350_led_disable(led);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* This scales linearly into the index of valid current
@@ -164,6 +236,7 @@ static void led_work(struct work_struct *work)
 
 	ret = regulator_set_current_limit(led->isink, isink_cur[uA],
 					  isink_cur[uA]);
+<<<<<<< HEAD
 	if (ret != 0)
 		dev_err(led->cdev.dev, "Failed to set %duA: %d\n",
 			isink_cur[uA], ret);
@@ -184,24 +257,43 @@ static void wm8350_led_set(struct led_classdev *led_cdev,
 	led->value = value;
 	schedule_work(&led->work);
 	spin_unlock_irqrestore(&led->value_lock, flags);
+=======
+	if (ret != 0) {
+		dev_err(led->cdev.dev, "Failed to set %duA: %d\n",
+			isink_cur[uA], ret);
+		return ret;
+	}
+
+	return wm8350_led_enable(led);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void wm8350_led_shutdown(struct platform_device *pdev)
 {
 	struct wm8350_led *led = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	mutex_lock(&led->mutex);
 	led->value = LED_OFF;
 	wm8350_led_disable(led);
 	mutex_unlock(&led->mutex);
+=======
+	led->value = LED_OFF;
+	wm8350_led_disable(led);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int wm8350_led_probe(struct platform_device *pdev)
 {
 	struct regulator *isink, *dcdc;
 	struct wm8350_led *led;
+<<<<<<< HEAD
 	struct wm8350_led_platform_data *pdata = pdev->dev.platform_data;
 	int ret, i;
+=======
+	struct wm8350_led_platform_data *pdata = dev_get_platdata(&pdev->dev);
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdata == NULL) {
 		dev_err(&pdev->dev, "no platform data\n");
@@ -214,6 +306,7 @@ static int wm8350_led_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	isink = regulator_get(&pdev->dev, "led_isink");
 	if (IS_ERR(isink)) {
 		printk(KERN_ERR "%s: can't get ISINK\n", __func__);
@@ -234,6 +327,25 @@ static int wm8350_led_probe(struct platform_device *pdev)
 	}
 
 	led->cdev.brightness_set = wm8350_led_set;
+=======
+	isink = devm_regulator_get(&pdev->dev, "led_isink");
+	if (IS_ERR(isink)) {
+		dev_err(&pdev->dev, "%s: can't get ISINK\n", __func__);
+		return PTR_ERR(isink);
+	}
+
+	dcdc = devm_regulator_get(&pdev->dev, "led_vcc");
+	if (IS_ERR(dcdc)) {
+		dev_err(&pdev->dev, "%s: can't get DCDC\n", __func__);
+		return PTR_ERR(dcdc);
+	}
+
+	led = devm_kzalloc(&pdev->dev, sizeof(*led), GFP_KERNEL);
+	if (led == NULL)
+		return -ENOMEM;
+
+	led->cdev.brightness_set_blocking = wm8350_led_set;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	led->cdev.default_trigger = pdata->default_trigger;
 	led->cdev.name = pdata->name;
 	led->cdev.flags |= LED_CORE_SUSPENDRESUME;
@@ -252,6 +364,7 @@ static int wm8350_led_probe(struct platform_device *pdev)
 			 pdata->max_uA);
 
 	spin_lock_init(&led->value_lock);
+<<<<<<< HEAD
 	mutex_init(&led->mutex);
 	INIT_WORK(&led->work, led_work);
 	led->value = LED_OFF;
@@ -271,24 +384,43 @@ static int wm8350_led_probe(struct platform_device *pdev)
 }
 
 static int wm8350_led_remove(struct platform_device *pdev)
+=======
+	led->value = LED_OFF;
+	platform_set_drvdata(pdev, led);
+
+	return led_classdev_register(&pdev->dev, &led->cdev);
+}
+
+static void wm8350_led_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8350_led *led = platform_get_drvdata(pdev);
 
 	led_classdev_unregister(&led->cdev);
+<<<<<<< HEAD
 	flush_work_sync(&led->work);
 	wm8350_led_disable(led);
 	regulator_put(led->dcdc);
 	regulator_put(led->isink);
 	return 0;
+=======
+	wm8350_led_disable(led);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver wm8350_led_driver = {
 	.driver = {
 		   .name = "wm8350-led",
+<<<<<<< HEAD
 		   .owner = THIS_MODULE,
 		   },
 	.probe = wm8350_led_probe,
 	.remove = wm8350_led_remove,
+=======
+		   },
+	.probe = wm8350_led_probe,
+	.remove_new = wm8350_led_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown = wm8350_led_shutdown,
 };
 

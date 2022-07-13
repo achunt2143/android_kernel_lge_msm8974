@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Page management definitions for the Hexagon architecture
  *
@@ -16,6 +17,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Page management definitions for the Hexagon architecture
+ *
+ * Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_PAGE_H
@@ -26,27 +34,42 @@
 /*  This is probably not the most graceful way to handle this.  */
 
 #ifdef CONFIG_PAGE_SIZE_4KB
+<<<<<<< HEAD
 #define PAGE_SHIFT 12
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HEXAGON_L1_PTE_SIZE __HVM_PDE_S_4KB
 #endif
 
 #ifdef CONFIG_PAGE_SIZE_16KB
+<<<<<<< HEAD
 #define PAGE_SHIFT 14
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HEXAGON_L1_PTE_SIZE __HVM_PDE_S_16KB
 #endif
 
 #ifdef CONFIG_PAGE_SIZE_64KB
+<<<<<<< HEAD
 #define PAGE_SHIFT 16
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HEXAGON_L1_PTE_SIZE __HVM_PDE_S_64KB
 #endif
 
 #ifdef CONFIG_PAGE_SIZE_256KB
+<<<<<<< HEAD
 #define PAGE_SHIFT 18
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HEXAGON_L1_PTE_SIZE __HVM_PDE_S_256KB
 #endif
 
 #ifdef CONFIG_PAGE_SIZE_1MB
+<<<<<<< HEAD
 #define PAGE_SHIFT 20
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HEXAGON_L1_PTE_SIZE __HVM_PDE_S_1MB
 #endif
 
@@ -63,6 +86,10 @@
 #define HVM_HUGEPAGE_SIZE 0x5
 #endif
 
+<<<<<<< HEAD
+=======
+#define PAGE_SHIFT CONFIG_PAGE_SHIFT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PAGE_SIZE  (1UL << PAGE_SHIFT)
 #define PAGE_MASK  (~((1 << PAGE_SHIFT) - 1))
 
@@ -91,13 +118,24 @@ typedef struct page *pgtable_t;
 #define __pgd(x)       ((pgd_t) { (x) })
 #define __pgprot(x)    ((pgprot_t) { (x) })
 
+<<<<<<< HEAD
+=======
+/* Needed for PAGE_OFFSET used in the macro right below */
+#include <asm/mem-layout.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We need a __pa and a __va routine for kernel space.
  * MIPS says they're only used during mem_init.
  * also, check if we need a PHYS_OFFSET.
  */
+<<<<<<< HEAD
 #define __pa(x) ((unsigned long)(x) - PAGE_OFFSET)
 #define __va(x) ((void *)((unsigned long)(x) + PAGE_OFFSET))
+=======
+#define __pa(x) ((unsigned long)(x) - PAGE_OFFSET + PHYS_OFFSET)
+#define __va(x) ((void *)((unsigned long)(x) - PHYS_OFFSET + PAGE_OFFSET))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The "page frame" descriptor is defined in linux/mm.h */
 struct page;
@@ -106,10 +144,15 @@ struct page;
 #define virt_to_page(kaddr) pfn_to_page(PFN_DOWN(__pa(kaddr)))
 
 /* Default vm area behavior is non-executable.  */
+<<<<<<< HEAD
 #define VM_DATA_DEFAULT_FLAGS (VM_READ | VM_WRITE | \
 				VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
 
 #define pfn_valid(pfn) ((pfn) < max_mapnr)
+=======
+#define VM_DATA_DEFAULT_FLAGS	VM_DATA_FLAGS_NON_EXEC
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define virt_addr_valid(kaddr) pfn_valid(__pa(kaddr) >> PAGE_SHIFT)
 
 /*  Need to not use a define for linesize; may move this to another file.  */
@@ -140,6 +183,7 @@ static inline void clear_page(void *page)
  */
 #define page_to_phys(page)      (page_to_pfn(page) << PAGE_SHIFT)
 
+<<<<<<< HEAD
 /*
  * For port to Hexagon Virtual Machine, MAYBE we check for attempts
  * to reference reserved HVM space, but in any case, the VM will be
@@ -147,6 +191,16 @@ static inline void clear_page(void *page)
  */
 #define kern_addr_valid(addr)   (1)
 
+=======
+static inline unsigned long virt_to_pfn(const void *kaddr)
+{
+	return __pa(kaddr) >> PAGE_SHIFT;
+}
+
+#define page_to_virt(page)	__va(page_to_phys(page))
+
+#include <asm/mem-layout.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/memory_model.h>
 /* XXX Todo: implement assembly-optimized version of getorder. */
 #include <asm-generic/getorder.h>

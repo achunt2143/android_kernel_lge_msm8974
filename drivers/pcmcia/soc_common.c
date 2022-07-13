@@ -33,6 +33,10 @@
 
 #include <linux/cpufreq.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio/consumer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -42,10 +46,17 @@
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <linux/spinlock.h>
 #include <linux/timer.h>
 
 #include <mach/hardware.h>
+=======
+#include <linux/regulator/consumer.h>
+#include <linux/spinlock.h>
+#include <linux/timer.h>
+#include <linux/pci.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "soc_common.h"
 
@@ -79,6 +90,44 @@ EXPORT_SYMBOL(soc_pcmcia_debug);
 #define to_soc_pcmcia_socket(x)	\
 	container_of(x, struct soc_pcmcia_socket, socket)
 
+<<<<<<< HEAD
+=======
+int soc_pcmcia_regulator_set(struct soc_pcmcia_socket *skt,
+	struct soc_pcmcia_regulator *r, int v)
+{
+	bool on;
+	int ret;
+
+	if (!r->reg)
+		return 0;
+
+	on = v != 0;
+	if (r->on == on)
+		return 0;
+
+	if (on) {
+		ret = regulator_set_voltage(r->reg, v * 100000, v * 100000);
+		if (ret) {
+			int vout = regulator_get_voltage(r->reg) / 100000;
+
+			dev_warn(&skt->socket.dev,
+				 "CS requested %s=%u.%uV, applying %u.%uV\n",
+				 r == &skt->vcc ? "Vcc" : "Vpp",
+				 v / 10, v % 10, vout / 10, vout % 10);
+		}
+
+		ret = regulator_enable(r->reg);
+	} else {
+		ret = regulator_disable(r->reg);
+	}
+	if (ret == 0)
+		r->on = on;
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(soc_pcmcia_regulator_set);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned short
 calc_speed(unsigned short *spds, int num, unsigned short dflt)
 {
@@ -111,6 +160,7 @@ static void __soc_pcmcia_hw_shutdown(struct soc_pcmcia_socket *skt,
 {
 	unsigned int i;
 
+<<<<<<< HEAD
 	for (i = 0; i < nr; i++) {
 		if (skt->stat[i].irq)
 			free_irq(skt->stat[i].irq, skt);
@@ -120,6 +170,16 @@ static void __soc_pcmcia_hw_shutdown(struct soc_pcmcia_socket *skt,
 
 	if (skt->ops->hw_shutdown)
 		skt->ops->hw_shutdown(skt);
+=======
+	for (i = 0; i < nr; i++)
+		if (skt->stat[i].irq)
+			free_irq(skt->stat[i].irq, skt);
+
+	if (skt->ops->hw_shutdown)
+		skt->ops->hw_shutdown(skt);
+
+	clk_disable_unprepare(skt->clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void soc_pcmcia_hw_shutdown(struct soc_pcmcia_socket *skt)
@@ -127,33 +187,100 @@ static void soc_pcmcia_hw_shutdown(struct soc_pcmcia_socket *skt)
 	__soc_pcmcia_hw_shutdown(skt, ARRAY_SIZE(skt->stat));
 }
 
+<<<<<<< HEAD
+=======
+int soc_pcmcia_request_gpiods(struct soc_pcmcia_socket *skt)
+{
+	struct device *dev = skt->socket.dev.parent;
+	struct gpio_desc *desc;
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(skt->stat); i++) {
+		if (!skt->stat[i].name)
+			continue;
+
+		desc = devm_gpiod_get(dev, skt->stat[i].name, GPIOD_IN);
+		if (IS_ERR(desc)) {
+			dev_err(dev, "Failed to get GPIO for %s: %ld\n",
+				skt->stat[i].name, PTR_ERR(desc));
+			return PTR_ERR(desc);
+		}
+
+		skt->stat[i].desc = desc;
+	}
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(soc_pcmcia_request_gpiods);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int soc_pcmcia_hw_init(struct soc_pcmcia_socket *skt)
 {
 	int ret = 0, i;
 
+<<<<<<< HEAD
 	if (skt->ops->hw_init) {
 		ret = skt->ops->hw_init(skt);
 		if (ret)
 			return ret;
+=======
+	ret = clk_prepare_enable(skt->clk);
+	if (ret)
+		return ret;
+
+	if (skt->ops->hw_init) {
+		ret = skt->ops->hw_init(skt);
+		if (ret) {
+			clk_disable_unprepare(skt->clk);
+			return ret;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < ARRAY_SIZE(skt->stat); i++) {
 		if (gpio_is_valid(skt->stat[i].gpio)) {
+<<<<<<< HEAD
 			int irq;
 
 			ret = gpio_request_one(skt->stat[i].gpio, GPIOF_IN,
 					       skt->stat[i].name);
+=======
+			unsigned long flags = GPIOF_IN;
+
+			/* CD is active low by default */
+			if (i == SOC_STAT_CD)
+				flags |= GPIOF_ACTIVE_LOW;
+
+			ret = devm_gpio_request_one(skt->socket.dev.parent,
+						    skt->stat[i].gpio, flags,
+						    skt->stat[i].name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret) {
 				__soc_pcmcia_hw_shutdown(skt, i);
 				return ret;
 			}
 
+<<<<<<< HEAD
 			irq = gpio_to_irq(skt->stat[i].gpio);
 
 			if (i == SOC_STAT_RDY)
 				skt->socket.pci_irq = irq;
 			else
 				skt->stat[i].irq = irq;
+=======
+			skt->stat[i].desc = gpio_to_desc(skt->stat[i].gpio);
+		}
+
+		if (i < SOC_STAT_VS1 && skt->stat[i].desc) {
+			int irq = gpiod_to_irq(skt->stat[i].desc);
+
+			if (irq > 0) {
+				if (i == SOC_STAT_RDY)
+					skt->socket.pci_irq = irq;
+				else
+					skt->stat[i].irq = irq;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (skt->stat[i].irq) {
@@ -162,8 +289,11 @@ static int soc_pcmcia_hw_init(struct soc_pcmcia_socket *skt)
 					  IRQF_TRIGGER_NONE,
 					  skt->stat[i].name, skt);
 			if (ret) {
+<<<<<<< HEAD
 				if (gpio_is_valid(skt->stat[i].gpio))
 					gpio_free(skt->stat[i].gpio);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__soc_pcmcia_hw_shutdown(skt, i);
 				return ret;
 			}
@@ -193,6 +323,21 @@ static void soc_pcmcia_hw_disable(struct soc_pcmcia_socket *skt)
 			irq_set_irq_type(skt->stat[i].irq, IRQ_TYPE_NONE);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * The CF 3.0 specification says that cards tie VS1 to ground and leave
+ * VS2 open.  Many implementations do not wire up the VS signals, so we
+ * provide hard-coded values as per the CF 3.0 spec.
+ */
+void soc_common_cf_socket_state(struct soc_pcmcia_socket *skt,
+	struct pcmcia_state *state)
+{
+	state->vs_3v = 1;
+}
+EXPORT_SYMBOL_GPL(soc_common_cf_socket_state);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int soc_common_pcmcia_skt_state(struct soc_pcmcia_socket *skt)
 {
 	struct pcmcia_state state;
@@ -204,6 +349,7 @@ static unsigned int soc_common_pcmcia_skt_state(struct soc_pcmcia_socket *skt)
 	state.bvd1 = 1;
 	state.bvd2 = 1;
 
+<<<<<<< HEAD
 	/* CD is active low by default */
 	if (gpio_is_valid(skt->stat[SOC_STAT_CD].gpio))
 		state.detect = !gpio_get_value(skt->stat[SOC_STAT_CD].gpio);
@@ -215,6 +361,20 @@ static unsigned int soc_common_pcmcia_skt_state(struct soc_pcmcia_socket *skt)
 		state.bvd1 = !!gpio_get_value(skt->stat[SOC_STAT_BVD1].gpio);
 	if (gpio_is_valid(skt->stat[SOC_STAT_BVD2].gpio))
 		state.bvd2 = !!gpio_get_value(skt->stat[SOC_STAT_BVD2].gpio);
+=======
+	if (skt->stat[SOC_STAT_CD].desc)
+		state.detect = !!gpiod_get_value(skt->stat[SOC_STAT_CD].desc);
+	if (skt->stat[SOC_STAT_RDY].desc)
+		state.ready = !!gpiod_get_value(skt->stat[SOC_STAT_RDY].desc);
+	if (skt->stat[SOC_STAT_BVD1].desc)
+		state.bvd1 = !!gpiod_get_value(skt->stat[SOC_STAT_BVD1].desc);
+	if (skt->stat[SOC_STAT_BVD2].desc)
+		state.bvd2 = !!gpiod_get_value(skt->stat[SOC_STAT_BVD2].desc);
+	if (skt->stat[SOC_STAT_VS1].desc)
+		state.vs_3v = !!gpiod_get_value(skt->stat[SOC_STAT_VS1].desc);
+	if (skt->stat[SOC_STAT_VS2].desc)
+		state.vs_Xv = !!gpiod_get_value(skt->stat[SOC_STAT_VS2].desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skt->ops->socket_state(skt, &state);
 
@@ -231,7 +391,11 @@ static unsigned int soc_common_pcmcia_skt_state(struct soc_pcmcia_socket *skt)
 	stat |= skt->cs_state.Vcc ? SS_POWERON : 0;
 
 	if (skt->cs_state.flags & SS_IOCARD)
+<<<<<<< HEAD
 		stat |= state.bvd1 ? SS_STSCHG : 0;
+=======
+		stat |= state.bvd1 ? 0 : SS_STSCHG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		if (state.bvd1 == 0)
 			stat |= SS_BATDEAD;
@@ -253,7 +417,35 @@ static int soc_common_pcmcia_config_skt(
 	int ret;
 
 	ret = skt->ops->configure_socket(skt, state);
+<<<<<<< HEAD
 	if (ret == 0) {
+=======
+	if (ret < 0) {
+		pr_err("soc_common_pcmcia: unable to configure socket %d\n",
+		       skt->nr);
+		/* restore the previous state */
+		WARN_ON(skt->ops->configure_socket(skt, &skt->cs_state));
+		return ret;
+	}
+
+	if (ret == 0) {
+		struct gpio_desc *descs[2];
+		DECLARE_BITMAP(values, 2);
+		int n = 0;
+
+		if (skt->gpio_reset) {
+			descs[n] = skt->gpio_reset;
+			__assign_bit(n++, values, state->flags & SS_RESET);
+		}
+		if (skt->gpio_bus_enable) {
+			descs[n] = skt->gpio_bus_enable;
+			__assign_bit(n++, values, state->flags & SS_OUTPUT_ENA);
+		}
+
+		if (n)
+			gpiod_set_array_value_cansleep(n, descs, NULL, values);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * This really needs a better solution.  The IRQ
 		 * may or may not be claimed by the driver.
@@ -270,10 +462,13 @@ static int soc_common_pcmcia_config_skt(
 		skt->cs_state = *state;
 	}
 
+<<<<<<< HEAD
 	if (ret < 0)
 		printk(KERN_ERR "soc_common_pcmcia: unable to configure "
 		       "socket %d\n", skt->nr);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -353,9 +548,15 @@ static void soc_common_check_status(struct soc_pcmcia_socket *skt)
 }
 
 /* Let's poll for events in addition to IRQs since IRQ only is unreliable... */
+<<<<<<< HEAD
 static void soc_common_pcmcia_poll_event(unsigned long dummy)
 {
 	struct soc_pcmcia_socket *skt = (struct soc_pcmcia_socket *)dummy;
+=======
+static void soc_common_pcmcia_poll_event(struct timer_list *t)
+{
+	struct soc_pcmcia_socket *skt = from_timer(skt, t, poll_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	debug(skt, 4, "polling for events\n");
 
 	mod_timer(&skt->poll_timer, jiffies + SOC_PCMCIA_POLL_PERIOD);
@@ -633,6 +834,7 @@ static struct pccard_operations soc_common_pcmcia_operations = {
 };
 
 
+<<<<<<< HEAD
 static LIST_HEAD(soc_pcmcia_sockets);
 static DEFINE_MUTEX(soc_pcmcia_sockets_lock);
 
@@ -681,6 +883,21 @@ module_exit(soc_pcmcia_cpufreq_unregister);
 
 void soc_pcmcia_init_one(struct soc_pcmcia_socket *skt,
 	struct pcmcia_low_level *ops, struct device *dev)
+=======
+#ifdef CONFIG_CPU_FREQ
+static int soc_common_pcmcia_cpufreq_nb(struct notifier_block *nb,
+	unsigned long val, void *data)
+{
+	struct soc_pcmcia_socket *skt = container_of(nb, struct soc_pcmcia_socket, cpufreq_nb);
+	struct cpufreq_freqs *freqs = data;
+
+	return skt->ops->frequency_change(skt, val, freqs);
+}
+#endif
+
+void soc_pcmcia_init_one(struct soc_pcmcia_socket *skt,
+	const struct pcmcia_low_level *ops, struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -696,21 +913,37 @@ EXPORT_SYMBOL(soc_pcmcia_init_one);
 
 void soc_pcmcia_remove_one(struct soc_pcmcia_socket *skt)
 {
+<<<<<<< HEAD
 	mutex_lock(&soc_pcmcia_sockets_lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	del_timer_sync(&skt->poll_timer);
 
 	pcmcia_unregister_socket(&skt->socket);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_FREQ
+	if (skt->ops->frequency_change)
+		cpufreq_unregister_notifier(&skt->cpufreq_nb,
+					    CPUFREQ_TRANSITION_NOTIFIER);
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	soc_pcmcia_hw_shutdown(skt);
 
 	/* should not be required; violates some lowlevel drivers */
 	soc_common_pcmcia_config_skt(skt, &dead_socket);
 
+<<<<<<< HEAD
 	list_del(&skt->node);
 	mutex_unlock(&soc_pcmcia_sockets_lock);
 
 	iounmap(skt->virt_io);
 	skt->virt_io = NULL;
+=======
+	iounmap(PCI_IOBASE + skt->res_io_io.start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_resource(&skt->res_attr);
 	release_resource(&skt->res_mem);
 	release_resource(&skt->res_io);
@@ -722,9 +955,15 @@ int soc_pcmcia_add_one(struct soc_pcmcia_socket *skt)
 {
 	int ret;
 
+<<<<<<< HEAD
 	init_timer(&skt->poll_timer);
 	skt->poll_timer.function = soc_common_pcmcia_poll_event;
 	skt->poll_timer.data = (unsigned long)skt;
+=======
+	skt->cs_state = dead_socket;
+
+	timer_setup(&skt->poll_timer, soc_common_pcmcia_poll_event, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skt->poll_timer.expires = jiffies + SOC_PCMCIA_POLL_PERIOD;
 
 	ret = request_resource(&iomem_resource, &skt->res_skt);
@@ -743,6 +982,7 @@ int soc_pcmcia_add_one(struct soc_pcmcia_socket *skt)
 	if (ret)
 		goto out_err_4;
 
+<<<<<<< HEAD
 	skt->virt_io = ioremap(skt->res_io.start, 0x10000);
 	if (skt->virt_io == NULL) {
 		ret = -ENOMEM;
@@ -752,6 +992,14 @@ int soc_pcmcia_add_one(struct soc_pcmcia_socket *skt)
 	mutex_lock(&soc_pcmcia_sockets_lock);
 
 	list_add(&skt->node, &soc_pcmcia_sockets);
+=======
+	skt->res_io_io = (struct resource)
+		 DEFINE_RES_IO_NAMED(skt->nr * 0x1000 + 0x10000, 0x1000,
+				     "PCMCIA I/O");
+	ret = pci_remap_iospace(&skt->res_io_io, skt->res_io.start);
+	if (ret)
+		goto out_err_5;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We initialize default socket timing here, because
@@ -769,18 +1017,41 @@ int soc_pcmcia_add_one(struct soc_pcmcia_socket *skt)
 	skt->socket.resource_ops = &pccard_static_ops;
 	skt->socket.irq_mask = 0;
 	skt->socket.map_size = PAGE_SIZE;
+<<<<<<< HEAD
 	skt->socket.io_offset = (unsigned long)skt->virt_io;
 
 	skt->status = soc_common_pcmcia_skt_state(skt);
 
+=======
+	skt->socket.io_offset = (unsigned long)skt->res_io_io.start;
+
+	skt->status = soc_common_pcmcia_skt_state(skt);
+
+#ifdef CONFIG_CPU_FREQ
+	if (skt->ops->frequency_change) {
+		skt->cpufreq_nb.notifier_call = soc_common_pcmcia_cpufreq_nb;
+
+		ret = cpufreq_register_notifier(&skt->cpufreq_nb,
+						CPUFREQ_TRANSITION_NOTIFIER);
+		if (ret < 0)
+			dev_err(skt->socket.dev.parent,
+				"unable to register CPU frequency change notifier for PCMCIA (%d)\n",
+				ret);
+	}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = pcmcia_register_socket(&skt->socket);
 	if (ret)
 		goto out_err_7;
 
+<<<<<<< HEAD
 	add_timer(&skt->poll_timer);
 
 	mutex_unlock(&soc_pcmcia_sockets_lock);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = device_create_file(&skt->socket.dev, &dev_attr_status);
 	if (ret)
 		goto out_err_8;
@@ -788,16 +1059,23 @@ int soc_pcmcia_add_one(struct soc_pcmcia_socket *skt)
 	return ret;
 
  out_err_8:
+<<<<<<< HEAD
 	mutex_lock(&soc_pcmcia_sockets_lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	del_timer_sync(&skt->poll_timer);
 	pcmcia_unregister_socket(&skt->socket);
 
  out_err_7:
 	soc_pcmcia_hw_shutdown(skt);
  out_err_6:
+<<<<<<< HEAD
 	list_del(&skt->node);
 	mutex_unlock(&soc_pcmcia_sockets_lock);
 	iounmap(skt->virt_io);
+=======
+	iounmap(PCI_IOBASE + skt->res_io_io.start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out_err_5:
 	release_resource(&skt->res_attr);
  out_err_4:

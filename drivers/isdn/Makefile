@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Makefile for the kernel ISDN subsystem and device drivers.
 
 # Object files in subdirectories
 
+<<<<<<< HEAD
 obj-$(CONFIG_ISDN_I4L)			+= i4l/
 obj-$(CONFIG_ISDN_CAPI)			+= capi/
 obj-$(CONFIG_MISDN)			+= mISDN/
@@ -15,3 +20,8 @@ obj-$(CONFIG_ISDN_DRV_LOOP)		+= isdnloop/
 obj-$(CONFIG_ISDN_DRV_ACT2000)		+= act2000/
 obj-$(CONFIG_HYSDN)			+= hysdn/
 obj-$(CONFIG_ISDN_DRV_GIGASET)		+= gigaset/
+=======
+obj-$(CONFIG_BT_CMTP)			+= capi/
+obj-$(CONFIG_MISDN)			+= mISDN/
+obj-$(CONFIG_ISDN)			+= hardware/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

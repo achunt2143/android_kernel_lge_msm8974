@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SMS/SDRC (SDRAM controller) common code for OMAP2/3
  *
@@ -7,10 +11,13 @@
  * Tony Lindgren <tony@atomide.com>
  * Paul Walmsley
  * Richard Woodruff <r-woodruff2@ti.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #undef DEBUG
 
@@ -24,10 +31,14 @@
 #include <linux/io.h>
 
 #include "common.h"
+<<<<<<< HEAD
 #include <plat/clock.h>
 #include <plat/sram.h>
 
 #include <plat/sdrc.h>
+=======
+#include "clock.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "sdrc.h"
 
 static struct omap_sdrc_params *sdrc_init_params_cs0, *sdrc_init_params_cs1;
@@ -51,7 +62,11 @@ static struct omap2_sms_regs sms_context;
  *
  * Save SMS registers that need to be restored after off mode.
  */
+<<<<<<< HEAD
 void omap2_sms_save_context(void)
+=======
+static void omap2_sms_save_context(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sms_context.sms_sysconfig = sms_read_reg(SMS_SYSCONFIG);
 }
@@ -66,6 +81,7 @@ void omap2_sms_restore_context(void)
 	sms_write_reg(sms_context.sms_sysconfig, SMS_SYSCONFIG);
 }
 
+<<<<<<< HEAD
 /**
  * omap2_sdrc_get_params - return SDRC register values for a given clock rate
  * @r: SDRC clock rate (in Hz)
@@ -121,6 +137,12 @@ void __init omap2_set_globals_sdrc(struct omap_globals *omap2_globals)
 		omap2_sdrc_base = omap2_globals->sdrc;
 	if (omap2_globals->sms)
 		omap2_sms_base = omap2_globals->sms;
+=======
+void __init omap2_set_globals_sdrc(void __iomem *sdrc, void __iomem *sms)
+{
+	omap2_sdrc_base = sdrc;
+	omap2_sms_base = sms;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -160,6 +182,7 @@ void __init omap2_sdrc_init(struct omap_sdrc_params *sdrc_cs0,
 	sdrc_write_reg(l, SDRC_POWER);
 	omap2_sms_save_context();
 }
+<<<<<<< HEAD
 
 void omap2_sms_write_rot_control(u32 val, unsigned ctx)
 {
@@ -176,3 +199,5 @@ void omap2_sms_write_rot_physical_ba(u32 val, unsigned ctx)
 	sms_write_reg(val, SMS_ROT_PHYSICAL_BA(ctx));
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

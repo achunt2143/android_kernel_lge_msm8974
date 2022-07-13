@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *      FarSync X21 driver for Linux
  *
@@ -6,11 +10,14 @@
  *      Copyright (C) 2001 FarSite Communications Ltd.
  *      www.farsite.co.uk
  *
+<<<<<<< HEAD
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
  *      as published by the Free Software Foundation; either version
  *      2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *      Author: R.J.Dunlop      <bob.dunlop@farsite.co.uk>
  *
  *      For the most part this file only contains structures and information
@@ -47,7 +54,11 @@
  *      This version number is incremented with each official release of the
  *      package and is a simplified number for normal user reference.
  *      Individual files are tracked by the version control system and may
+<<<<<<< HEAD
  *      have individual versions (or IDs) that move much faster than the
+=======
+ *      have individual versions (or IDs) that move much faster than
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *      the release version as individual updates are tracked.
  */
 #define FST_USER_VERSION        "1.04"
@@ -69,7 +80,11 @@
 struct fstioc_write {
         unsigned int  size;
         unsigned int  offset;
+<<<<<<< HEAD
         unsigned char data[0];
+=======
+	unsigned char data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 

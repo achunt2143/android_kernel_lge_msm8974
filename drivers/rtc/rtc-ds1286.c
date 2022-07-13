@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DS1286 Real Time Clock interface for Linux
  *
@@ -5,17 +9,21 @@
  * Copyright (C) 2008 Thomas Bogendoerfer
  *
  * Based on code written by Paul Gortmaker.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/rtc.h>
 #include <linux/platform_device.h>
 #include <linux/bcd.h>
+<<<<<<< HEAD
 #include <linux/ds1286.h>
 #include <linux/io.h>
 #include <linux/slab.h>
@@ -27,6 +35,15 @@ struct ds1286_priv {
 	u32 __iomem *rtcregs;
 	size_t size;
 	unsigned long baseaddr;
+=======
+#include <linux/rtc/ds1286.h>
+#include <linux/io.h>
+#include <linux/slab.h>
+
+struct ds1286_priv {
+	struct rtc_device *rtc;
+	u32 __iomem *rtcregs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t lock;
 };
 
@@ -215,7 +232,11 @@ static int ds1286_read_time(struct device *dev, struct rtc_time *tm)
 
 	tm->tm_mon--;
 
+<<<<<<< HEAD
 	return rtc_valid_tm(tm);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ds1286_set_time(struct device *dev, struct rtc_time *tm)
@@ -270,7 +291,10 @@ static int ds1286_set_time(struct device *dev, struct rtc_time *tm)
 static int ds1286_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 {
 	struct ds1286_priv *priv = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	unsigned char cmd;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	/*
@@ -281,7 +305,11 @@ static int ds1286_read_alarm(struct device *dev, struct rtc_wkalrm *alm)
 	alm->time.tm_min = ds1286_rtc_read(priv, RTC_MINUTES_ALARM) & 0x7f;
 	alm->time.tm_hour = ds1286_rtc_read(priv, RTC_HOURS_ALARM)  & 0x1f;
 	alm->time.tm_wday = ds1286_rtc_read(priv, RTC_DAY_ALARM)    & 0x07;
+<<<<<<< HEAD
 	cmd = ds1286_rtc_read(priv, RTC_CMD);
+=======
+	ds1286_rtc_read(priv, RTC_CMD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&priv->lock, flags);
 
 	alm->time.tm_min = bcd2bin(alm->time.tm_min);
@@ -329,6 +357,7 @@ static const struct rtc_class_ops ds1286_ops = {
 	.alarm_irq_enable = ds1286_alarm_irq_enable,
 };
 
+<<<<<<< HEAD
 static int __devinit ds1286_probe(struct platform_device *pdev)
 {
 	struct rtc_device *rtc;
@@ -385,15 +414,43 @@ static int __devexit ds1286_remove(struct platform_device *pdev)
 	release_mem_region(priv->baseaddr, priv->size);
 	kfree(priv);
 	return 0;
+=======
+static int ds1286_probe(struct platform_device *pdev)
+{
+	struct rtc_device *rtc;
+	struct ds1286_priv *priv;
+
+	priv = devm_kzalloc(&pdev->dev, sizeof(struct ds1286_priv), GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+	priv->rtcregs = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(priv->rtcregs))
+		return PTR_ERR(priv->rtcregs);
+
+	spin_lock_init(&priv->lock);
+	platform_set_drvdata(pdev, priv);
+	rtc = devm_rtc_device_register(&pdev->dev, "ds1286", &ds1286_ops,
+					THIS_MODULE);
+	if (IS_ERR(rtc))
+		return PTR_ERR(rtc);
+	priv->rtc = rtc;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver ds1286_platform_driver = {
 	.driver		= {
 		.name	= "rtc-ds1286",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= ds1286_probe,
 	.remove		= __devexit_p(ds1286_remove),
+=======
+	},
+	.probe		= ds1286_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(ds1286_platform_driver);
@@ -401,5 +458,8 @@ module_platform_driver(ds1286_platform_driver);
 MODULE_AUTHOR("Thomas Bogendoerfer <tsbogend@alpha.franken.de>");
 MODULE_DESCRIPTION("DS1286 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:rtc-ds1286");

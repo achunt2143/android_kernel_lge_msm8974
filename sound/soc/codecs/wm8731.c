@@ -1,15 +1,26 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8731.c  --  WM8731 ALSA SoC Audio driver
  *
  * Copyright 2005 Openedhand Ltd.
+<<<<<<< HEAD
+=======
+ * Copyright 2006-12 Wolfson Microelectronics, plc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Author: Richard Purdie <richard@openedhand.com>
  *
  * Based on wm8753.c by Liam Girdwood
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -17,12 +28,19 @@
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/pm.h>
+<<<<<<< HEAD
 #include <linux/i2c.h>
 #include <linux/slab.h>
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
 #include <linux/spi/spi.h>
 #include <linux/of_device.h>
+=======
+#include <linux/slab.h>
+#include <linux/regmap.h>
+#include <linux/regulator/consumer.h>
+#include <linux/clk.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -32,7 +50,10 @@
 
 #include "wm8731.h"
 
+<<<<<<< HEAD
 #define WM8731_NUM_SUPPLIES 4
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *wm8731_supply_names[WM8731_NUM_SUPPLIES] = {
 	"AVDD",
 	"HPVDD",
@@ -40,6 +61,7 @@ static const char *wm8731_supply_names[WM8731_NUM_SUPPLIES] = {
 	"DBVDD",
 };
 
+<<<<<<< HEAD
 /* codec private data */
 struct wm8731_priv {
 	struct regmap *regmap;
@@ -51,6 +73,8 @@ struct wm8731_priv {
 };
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8731 register cache
  */
@@ -72,6 +96,7 @@ static bool wm8731_volatile(struct device *dev, unsigned int reg)
 	return reg == WM8731_RESET;
 }
 
+<<<<<<< HEAD
 static bool wm8731_writeable(struct device *dev, unsigned int reg)
 {
 	return reg <= WM8731_RESET;
@@ -89,6 +114,20 @@ static int wm8731_deemph[] = { 0, 32000, 44100, 48000 };
 static int wm8731_set_deemph(struct snd_soc_codec *codec)
 {
 	struct wm8731_priv *wm8731 = snd_soc_codec_get_drvdata(codec);
+=======
+#define wm8731_reset(m)	regmap_write(m, WM8731_RESET, 0)
+
+static const char *wm8731_input_select[] = {"Line In", "Mic"};
+
+static SOC_ENUM_SINGLE_DECL(wm8731_insel_enum,
+			    WM8731_APANA, 2, wm8731_input_select);
+
+static int wm8731_deemph[] = { 0, 32000, 44100, 48000 };
+
+static int wm8731_set_deemph(struct snd_soc_component *component)
+{
+	struct wm8731_priv *wm8731 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int val, i, best;
 
 	/* If we're using deemphasis select the nearest available sample
@@ -108,17 +147,29 @@ static int wm8731_set_deemph(struct snd_soc_codec *codec)
 		val = 0;
 	}
 
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "Set deemphasis %d (%dHz)\n",
 		best, wm8731_deemph[best]);
 
 	return snd_soc_update_bits(codec, WM8731_APDIGI, 0x6, val);
+=======
+	dev_dbg(component->dev, "Set deemphasis %d (%dHz)\n",
+		best, wm8731_deemph[best]);
+
+	return snd_soc_component_update_bits(component, WM8731_APDIGI, 0x6, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int wm8731_get_deemph(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wm8731_priv *wm8731 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wm8731_priv *wm8731 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ucontrol->value.integer.value[0] = wm8731->deemph;
 
@@ -128,14 +179,21 @@ static int wm8731_get_deemph(struct snd_kcontrol *kcontrol,
 static int wm8731_put_deemph(struct snd_kcontrol *kcontrol,
 			     struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct wm8731_priv *wm8731 = snd_soc_codec_get_drvdata(codec);
 	int deemph = ucontrol->value.integer.value[0];
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct wm8731_priv *wm8731 = snd_soc_component_get_drvdata(component);
+	unsigned int deemph = ucontrol->value.integer.value[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	if (deemph > 1)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	mutex_lock(&codec->mutex);
 	if (wm8731->deemph != deemph) {
 		wm8731->deemph = deemph;
@@ -145,6 +203,17 @@ static int wm8731_put_deemph(struct snd_kcontrol *kcontrol,
 		ret = 1;
 	}
 	mutex_unlock(&codec->mutex);
+=======
+	mutex_lock(&wm8731->lock);
+	if (wm8731->deemph != deemph) {
+		wm8731->deemph = deemph;
+
+		wm8731_set_deemph(component);
+
+		ret = 1;
+	}
+	mutex_unlock(&wm8731->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -212,7 +281,12 @@ SND_SOC_DAPM_INPUT("LLINEIN"),
 static int wm8731_check_osc(struct snd_soc_dapm_widget *source,
 			    struct snd_soc_dapm_widget *sink)
 {
+<<<<<<< HEAD
 	struct wm8731_priv *wm8731 = snd_soc_codec_get_drvdata(source->codec);
+=======
+	struct snd_soc_component *component = snd_soc_dapm_to_component(source->dapm);
+	struct wm8731_priv *wm8731 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return wm8731->sysclk_type == WM8731_SYSCLK_XTAL;
 }
@@ -289,6 +363,39 @@ static const struct _coeff_div coeff_div[] = {
 	{12000000, 88200, 136, 0xf, 0x1, 0x1},
 };
 
+<<<<<<< HEAD
+=======
+/* rates constraints */
+static const unsigned int wm8731_rates_12000000[] = {
+	8000, 32000, 44100, 48000, 96000, 88200,
+};
+
+static const unsigned int wm8731_rates_12288000_18432000[] = {
+	8000, 32000, 48000, 96000,
+};
+
+static const unsigned int wm8731_rates_11289600_16934400[] = {
+	8000, 44100, 88200,
+};
+
+static const struct snd_pcm_hw_constraint_list wm8731_constraints_12000000 = {
+	.list = wm8731_rates_12000000,
+	.count = ARRAY_SIZE(wm8731_rates_12000000),
+};
+
+static const
+struct snd_pcm_hw_constraint_list wm8731_constraints_12288000_18432000 = {
+	.list = wm8731_rates_12288000_18432000,
+	.count = ARRAY_SIZE(wm8731_rates_12288000_18432000),
+};
+
+static const
+struct snd_pcm_hw_constraint_list wm8731_constraints_11289600_16934400 = {
+	.list = wm8731_rates_11289600_16934400,
+	.count = ARRAY_SIZE(wm8731_rates_11289600_16934400),
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int get_coeff(int mclk, int rate)
 {
 	int i;
@@ -304,15 +411,22 @@ static int wm8731_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	struct wm8731_priv *wm8731 = snd_soc_codec_get_drvdata(codec);
 	u16 iface = snd_soc_read(codec, WM8731_IFACE) & 0xfff3;
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8731_priv *wm8731 = snd_soc_component_get_drvdata(component);
+	u16 iface = snd_soc_component_read(component, WM8731_IFACE) & 0xfff3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i = get_coeff(wm8731->sysclk, params_rate(params));
 	u16 srate = (coeff_div[i].sr << 2) |
 		(coeff_div[i].bosr << 1) | coeff_div[i].usb;
 
 	wm8731->playback_fs = params_rate(params);
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8731_SRATE, srate);
 
 	/* bit size */
@@ -342,18 +456,63 @@ static int wm8731_mute(struct snd_soc_dai *dai, int mute)
 		snd_soc_write(codec, WM8731_APDIGI, mute_reg | 0x8);
 	else
 		snd_soc_write(codec, WM8731_APDIGI, mute_reg);
+=======
+	snd_soc_component_write(component, WM8731_SRATE, srate);
+
+	/* bit size */
+	switch (params_width(params)) {
+	case 16:
+		break;
+	case 20:
+		iface |= 0x0004;
+		break;
+	case 24:
+		iface |= 0x0008;
+		break;
+	case 32:
+		iface |= 0x000c;
+		break;
+	}
+
+	wm8731_set_deemph(component);
+
+	snd_soc_component_write(component, WM8731_IFACE, iface);
+	return 0;
+}
+
+static int wm8731_mute(struct snd_soc_dai *dai, int mute, int direction)
+{
+	struct snd_soc_component *component = dai->component;
+	u16 mute_reg = snd_soc_component_read(component, WM8731_APDIGI) & 0xfff7;
+
+	if (mute)
+		snd_soc_component_write(component, WM8731_APDIGI, mute_reg | 0x8);
+	else
+		snd_soc_component_write(component, WM8731_APDIGI, mute_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int wm8731_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		int clk_id, unsigned int freq, int dir)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct wm8731_priv *wm8731 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
+	struct wm8731_priv *wm8731 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (clk_id) {
 	case WM8731_SYSCLK_XTAL:
 	case WM8731_SYSCLK_MCLK:
+<<<<<<< HEAD
+=======
+		if (wm8731->mclk && clk_set_rate(wm8731->mclk, freq))
+			return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wm8731->sysclk_type = clk_id;
 		break;
 	default:
@@ -361,18 +520,40 @@ static int wm8731_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	}
 
 	switch (freq) {
+<<<<<<< HEAD
 	case 11289600:
 	case 12000000:
 	case 12288000:
 	case 16934400:
 	case 18432000:
 		wm8731->sysclk = freq;
+=======
+	case 0:
+		wm8731->constraints = NULL;
+		break;
+	case 12000000:
+		wm8731->constraints = &wm8731_constraints_12000000;
+		break;
+	case 12288000:
+	case 18432000:
+		wm8731->constraints = &wm8731_constraints_12288000_18432000;
+		break;
+	case 16934400:
+	case 11289600:
+		wm8731->constraints = &wm8731_constraints_11289600_16934400;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	snd_soc_dapm_sync(&codec->dapm);
+=======
+	wm8731->sysclk = freq;
+
+	snd_soc_dapm_sync(dapm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -381,6 +562,7 @@ static int wm8731_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 static int wm8731_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	u16 iface = 0;
 
@@ -390,6 +572,16 @@ static int wm8731_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		iface |= 0x0040;
 		break;
 	case SND_SOC_DAIFMT_CBS_CFS:
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	u16 iface = 0;
+
+	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
+	case SND_SOC_DAIFMT_CBP_CFP:
+		iface |= 0x0040;
+		break;
+	case SND_SOC_DAIFMT_CBC_CFC:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
@@ -433,6 +625,7 @@ static int wm8731_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	}
 
 	/* set iface */
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8731_IFACE, iface);
 	return 0;
 }
@@ -441,16 +634,38 @@ static int wm8731_set_bias_level(struct snd_soc_codec *codec,
 				 enum snd_soc_bias_level level)
 {
 	struct wm8731_priv *wm8731 = snd_soc_codec_get_drvdata(codec);
+=======
+	snd_soc_component_write(component, WM8731_IFACE, iface);
+	return 0;
+}
+
+static int wm8731_set_bias_level(struct snd_soc_component *component,
+				 enum snd_soc_bias_level level)
+{
+	struct wm8731_priv *wm8731 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	u16 reg;
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
+<<<<<<< HEAD
+=======
+		if (wm8731->mclk) {
+			ret = clk_prepare_enable(wm8731->mclk);
+			if (ret)
+				return ret;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
+=======
+		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = regulator_bulk_enable(ARRAY_SIZE(wm8731->supplies),
 						    wm8731->supplies);
 			if (ret != 0)
@@ -460,23 +675,50 @@ static int wm8731_set_bias_level(struct snd_soc_codec *codec,
 		}
 
 		/* Clear PWROFF, gate CLKOUT, everything else as-is */
+<<<<<<< HEAD
 		reg = snd_soc_read(codec, WM8731_PWR) & 0xff7f;
 		snd_soc_write(codec, WM8731_PWR, reg | 0x0040);
 		break;
 	case SND_SOC_BIAS_OFF:
 		snd_soc_write(codec, WM8731_PWR, 0xffff);
+=======
+		reg = snd_soc_component_read(component, WM8731_PWR) & 0xff7f;
+		snd_soc_component_write(component, WM8731_PWR, reg | 0x0040);
+		break;
+	case SND_SOC_BIAS_OFF:
+		if (wm8731->mclk)
+			clk_disable_unprepare(wm8731->mclk);
+		snd_soc_component_write(component, WM8731_PWR, 0xffff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies),
 				       wm8731->supplies);
 		regcache_mark_dirty(wm8731->regmap);
 		break;
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+	return 0;
+}
+
+static int wm8731_startup(struct snd_pcm_substream *substream,
+	struct snd_soc_dai *dai)
+{
+	struct wm8731_priv *wm8731 = snd_soc_component_get_drvdata(dai->component);
+
+	if (wm8731->constraints)
+		snd_pcm_hw_constraint_list(substream->runtime, 0,
+					   SNDRV_PCM_HW_PARAM_RATE,
+					   wm8731->constraints);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 #define WM8731_RATES SNDRV_PCM_RATE_8000_96000
 
 #define WM8731_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE |\
+<<<<<<< HEAD
 	SNDRV_PCM_FMTBIT_S24_LE)
 
 static const struct snd_soc_dai_ops wm8731_dai_ops = {
@@ -484,6 +726,17 @@ static const struct snd_soc_dai_ops wm8731_dai_ops = {
 	.digital_mute	= wm8731_mute,
 	.set_sysclk	= wm8731_set_dai_sysclk,
 	.set_fmt	= wm8731_set_dai_fmt,
+=======
+	SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE)
+
+static const struct snd_soc_dai_ops wm8731_dai_ops = {
+	.startup	= wm8731_startup,
+	.hw_params	= wm8731_hw_params,
+	.mute_stream	= wm8731_mute,
+	.set_sysclk	= wm8731_set_dai_sysclk,
+	.set_fmt	= wm8731_set_dai_fmt,
+	.no_capture_mute = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver wm8731_dai = {
@@ -501,6 +754,7 @@ static struct snd_soc_dai_driver wm8731_dai = {
 		.rates = WM8731_RATES,
 		.formats = WM8731_FORMATS,},
 	.ops = &wm8731_dai_ops,
+<<<<<<< HEAD
 	.symmetric_rates = 1,
 };
 
@@ -542,12 +796,57 @@ static int wm8731_probe(struct snd_soc_codec *codec)
 				 wm8731->supplies);
 	if (ret != 0) {
 		dev_err(codec->dev, "Failed to request supplies: %d\n", ret);
+=======
+	.symmetric_rate = 1,
+};
+
+static const struct snd_soc_component_driver soc_component_dev_wm8731 = {
+	.set_bias_level		= wm8731_set_bias_level,
+	.controls		= wm8731_snd_controls,
+	.num_controls		= ARRAY_SIZE(wm8731_snd_controls),
+	.dapm_widgets		= wm8731_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(wm8731_dapm_widgets),
+	.dapm_routes		= wm8731_intercon,
+	.num_dapm_routes	= ARRAY_SIZE(wm8731_intercon),
+	.suspend_bias_off	= 1,
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+};
+
+int wm8731_init(struct device *dev, struct wm8731_priv *wm8731)
+{
+	int ret = 0, i;
+
+	wm8731->mclk = devm_clk_get(dev, "mclk");
+	if (IS_ERR(wm8731->mclk)) {
+		ret = PTR_ERR(wm8731->mclk);
+		if (ret == -ENOENT) {
+			wm8731->mclk = NULL;
+			dev_warn(dev, "Assuming static MCLK\n");
+		} else {
+			dev_err(dev, "Failed to get MCLK: %d\n", ret);
+			return ret;
+		}
+	}
+
+	mutex_init(&wm8731->lock);
+
+	for (i = 0; i < ARRAY_SIZE(wm8731->supplies); i++)
+		wm8731->supplies[i].supply = wm8731_supply_names[i];
+
+	ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(wm8731->supplies),
+				 wm8731->supplies);
+	if (ret != 0) {
+		dev_err(dev, "Failed to request supplies: %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	ret = regulator_bulk_enable(ARRAY_SIZE(wm8731->supplies),
 				    wm8731->supplies);
 	if (ret != 0) {
+<<<<<<< HEAD
 		dev_err(codec->dev, "Failed to enable supplies: %d\n", ret);
 		goto err_regulator_get;
 	}
@@ -571,10 +870,43 @@ static int wm8731_probe(struct snd_soc_codec *codec)
 
 	/* Regulators will have been enabled by bias management */
 	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
+=======
+		dev_err(dev, "Failed to enable supplies: %d\n", ret);
+		return ret;
+	}
+
+	ret = wm8731_reset(wm8731->regmap);
+	if (ret < 0) {
+		dev_err(dev, "Failed to issue reset: %d\n", ret);
+		goto err_regulator_enable;
+	}
+
+	/* Clear POWEROFF, keep everything else disabled */
+	regmap_write(wm8731->regmap, WM8731_PWR, 0x7f);
+
+	/* Latch the update bits */
+	regmap_update_bits(wm8731->regmap, WM8731_LOUT1V, 0x100, 0);
+	regmap_update_bits(wm8731->regmap, WM8731_ROUT1V, 0x100, 0);
+	regmap_update_bits(wm8731->regmap, WM8731_LINVOL, 0x100, 0);
+	regmap_update_bits(wm8731->regmap, WM8731_RINVOL, 0x100, 0);
+
+	/* Disable bypass path by default */
+	regmap_update_bits(wm8731->regmap, WM8731_APANA, 0x8, 0);
+
+	regcache_mark_dirty(wm8731->regmap);
+
+	ret = devm_snd_soc_register_component(dev,
+			&soc_component_dev_wm8731, &wm8731_dai, 1);
+	if (ret != 0) {
+		dev_err(dev, "Failed to register CODEC: %d\n", ret);
+		goto err_regulator_enable;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 err_regulator_enable:
+<<<<<<< HEAD
 	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
 err_regulator_get:
 	regulator_bulk_free(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
@@ -617,11 +949,22 @@ static const struct of_device_id wm8731_of_match[] = {
 MODULE_DEVICE_TABLE(of, wm8731_of_match);
 
 static const struct regmap_config wm8731_regmap = {
+=======
+	/* Regulators will be enabled by bias management */
+	regulator_bulk_disable(ARRAY_SIZE(wm8731->supplies), wm8731->supplies);
+
+	return ret;
+}
+EXPORT_SYMBOL_GPL(wm8731_init);
+
+const struct regmap_config wm8731_regmap = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reg_bits = 7,
 	.val_bits = 9,
 
 	.max_register = WM8731_RESET,
 	.volatile_reg = wm8731_volatile,
+<<<<<<< HEAD
 	.writeable_reg = wm8731_writeable,
 
 	.cache_type = REGCACHE_RBTREE,
@@ -781,6 +1124,14 @@ static void __exit wm8731_exit(void)
 #endif
 }
 module_exit(wm8731_exit);
+=======
+
+	.cache_type = REGCACHE_MAPLE,
+	.reg_defaults = wm8731_reg_defaults,
+	.num_reg_defaults = ARRAY_SIZE(wm8731_reg_defaults),
+};
+EXPORT_SYMBOL_GPL(wm8731_regmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ASoC WM8731 driver");
 MODULE_AUTHOR("Richard Purdie");

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *      MOTU Midi Timepiece ALSA Main routines
  *      Copyright by Michael T. Mayers (c) Jan 09, 2000
  *      mail: michael@tweakoz.com
  *      Thanks to John Galbraith
  *
+<<<<<<< HEAD
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +24,8 @@
  *      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *      This driver is for the 'Mark Of The Unicorn' (MOTU)
  *      MidiTimePiece AV multiport MIDI interface 
  *
@@ -39,7 +46,10 @@
  *      MIDI Synchronization to Video, ADAT, SMPTE and other Clock sources
  *      128 'scene' memories, recallable from MIDI program change
  *
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ChangeLog
  * Jun 11 2001	Takashi Iwai <tiwai@suse.de>
  *      - Recoded & debugged
@@ -47,7 +57,10 @@
  *      - hwports is between 1 and 8, which specifies the number of hardware ports.
  *        The three global ports, computer, adat and broadcast ports, are created
  *        always after h/w and remote ports.
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -69,7 +82,10 @@
 MODULE_AUTHOR("Michael T. Mayers");
 MODULE_DESCRIPTION("MOTU MidiTimePiece AV multiport MIDI");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{MOTU,MidiTimePiece AV multiport MIDI}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 // io resources
 #define MTPAV_IOBASE		0x378
@@ -86,9 +102,15 @@ module_param(index, int, 0444);
 MODULE_PARM_DESC(index, "Index value for MotuMTPAV MIDI.");
 module_param(id, charp, 0444);
 MODULE_PARM_DESC(id, "ID string for MotuMTPAV MIDI.");
+<<<<<<< HEAD
 module_param(port, long, 0444);
 MODULE_PARM_DESC(port, "Parallel port # for MotuMTPAV MIDI.");
 module_param(irq, int, 0444);
+=======
+module_param_hw(port, long, ioport, 0444);
+MODULE_PARM_DESC(port, "Parallel port # for MotuMTPAV MIDI.");
+module_param_hw(irq, int, irq, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(irq, "Parallel IRQ # for MotuMTPAV MIDI.");
 module_param(hwports, int, 0444);
 MODULE_PARM_DESC(hwports, "Hardware ports # for MotuMTPAV MIDI.");
@@ -406,16 +428,27 @@ static void snd_mtpav_input_trigger(struct snd_rawmidi_substream *substream, int
  * timer interrupt for outputs
  */
 
+<<<<<<< HEAD
 static void snd_mtpav_output_timer(unsigned long data)
 {
 	unsigned long flags;
 	struct mtpav *chip = (struct mtpav *)data;
+=======
+static void snd_mtpav_output_timer(struct timer_list *t)
+{
+	unsigned long flags;
+	struct mtpav *chip = from_timer(chip, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int p;
 
 	spin_lock_irqsave(&chip->spinlock, flags);
 	/* reprogram timer */
+<<<<<<< HEAD
 	chip->timer.expires = 1 + jiffies;
 	add_timer(&chip->timer);
+=======
+	mod_timer(&chip->timer, 1 + jiffies);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* process each port */
 	for (p = 0; p <= chip->num_ports * 2 + MTPAV_PIDX_BROADCAST; p++) {
 		struct mtpav_port *portp = &chip->ports[p];
@@ -428,8 +461,12 @@ static void snd_mtpav_output_timer(unsigned long data)
 /* spinlock held! */
 static void snd_mtpav_add_output_timer(struct mtpav *chip)
 {
+<<<<<<< HEAD
 	chip->timer.expires = 1 + jiffies;
 	add_timer(&chip->timer);
+=======
+	mod_timer(&chip->timer, 1 + jiffies);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* spinlock held! */
@@ -583,14 +620,27 @@ static irqreturn_t snd_mtpav_irqh(int irq, void *dev_id)
 /*
  * get ISA resources
  */
+<<<<<<< HEAD
 static int __devinit snd_mtpav_get_ISA(struct mtpav * mcard)
 {
 	if ((mcard->res_port = request_region(port, 3, "MotuMTPAV MIDI")) == NULL) {
+=======
+static int snd_mtpav_get_ISA(struct mtpav *mcard)
+{
+	mcard->res_port = devm_request_region(mcard->card->dev, port, 3,
+					      "MotuMTPAV MIDI");
+	if (!mcard->res_port) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR "MTVAP port 0x%lx is busy\n", port);
 		return -EBUSY;
 	}
 	mcard->port = port;
+<<<<<<< HEAD
 	if (request_irq(irq, snd_mtpav_irqh, 0, "MOTU MTPAV", mcard)) {
+=======
+	if (devm_request_irq(mcard->card->dev, irq, snd_mtpav_irqh, 0,
+			     "MOTU MTPAV", mcard)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR "MTVAP IRQ %d busy\n", irq);
 		return -EBUSY;
 	}
@@ -602,13 +652,21 @@ static int __devinit snd_mtpav_get_ISA(struct mtpav * mcard)
 /*
  */
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops snd_mtpav_output = {
+=======
+static const struct snd_rawmidi_ops snd_mtpav_output = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =		snd_mtpav_output_open,
 	.close =	snd_mtpav_output_close,
 	.trigger =	snd_mtpav_output_trigger,
 };
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops snd_mtpav_input = {
+=======
+static const struct snd_rawmidi_ops snd_mtpav_input = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =		snd_mtpav_input_open,
 	.close =	snd_mtpav_input_close,
 	.trigger =	snd_mtpav_input_trigger,
@@ -619,8 +677,13 @@ static struct snd_rawmidi_ops snd_mtpav_input = {
  * get RAWMIDI resources
  */
 
+<<<<<<< HEAD
 static void __devinit snd_mtpav_set_name(struct mtpav *chip,
 				      struct snd_rawmidi_substream *substream)
+=======
+static void snd_mtpav_set_name(struct mtpav *chip,
+			       struct snd_rawmidi_substream *substream)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (substream->number >= 0 && substream->number < chip->num_ports)
 		sprintf(substream->name, "MTP direct %d", (substream->number % chip->num_ports) + 1);
@@ -634,7 +697,11 @@ static void __devinit snd_mtpav_set_name(struct mtpav *chip,
 		strcpy(substream->name, "MTP broadcast");
 }
 
+<<<<<<< HEAD
 static int __devinit snd_mtpav_get_RAWMIDI(struct mtpav *mcard)
+=======
+static int snd_mtpav_get_RAWMIDI(struct mtpav *mcard)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rval;
 	struct snd_rawmidi *rawmidi;
@@ -647,10 +714,18 @@ static int __devinit snd_mtpav_get_RAWMIDI(struct mtpav *mcard)
 		hwports = 8;
 	mcard->num_ports = hwports;
 
+<<<<<<< HEAD
 	if ((rval = snd_rawmidi_new(mcard->card, "MotuMIDI", 0,
 				    mcard->num_ports * 2 + MTPAV_PIDX_BROADCAST + 1,
 				    mcard->num_ports * 2 + MTPAV_PIDX_BROADCAST + 1,
 				    &mcard->rmidi)) < 0)
+=======
+	rval = snd_rawmidi_new(mcard->card, "MotuMIDI", 0,
+			       mcard->num_ports * 2 + MTPAV_PIDX_BROADCAST + 1,
+			       mcard->num_ports * 2 + MTPAV_PIDX_BROADCAST + 1,
+			       &mcard->rmidi);
+	if (rval < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rval;
 	rawmidi = mcard->rmidi;
 	rawmidi->private_data = mcard;
@@ -684,31 +759,47 @@ static void snd_mtpav_free(struct snd_card *card)
 	if (crd->istimer > 0)
 		snd_mtpav_remove_output_timer(crd);
 	spin_unlock_irqrestore(&crd->spinlock, flags);
+<<<<<<< HEAD
 	if (crd->irq >= 0)
 		free_irq(crd->irq, (void *)crd);
 	release_and_free_resource(crd->res_port);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  */
+<<<<<<< HEAD
 static int __devinit snd_mtpav_probe(struct platform_device *dev)
+=======
+static int snd_mtpav_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	int err;
 	struct mtpav *mtp_card;
 
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE, sizeof(*mtp_card), &card);
+=======
+	err = snd_devm_card_new(&dev->dev, index, id, THIS_MODULE,
+				sizeof(*mtp_card), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
 	mtp_card = card->private_data;
 	spin_lock_init(&mtp_card->spinlock);
+<<<<<<< HEAD
 	init_timer(&mtp_card->timer);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtp_card->card = card;
 	mtp_card->irq = -1;
 	mtp_card->share_irq = 0;
 	mtp_card->inmidistate = 0;
 	mtp_card->outmidihwport = 0xffffffff;
+<<<<<<< HEAD
 	init_timer(&mtp_card->timer);
 	mtp_card->timer.function = snd_mtpav_output_timer;
 	mtp_card->timer.data = (unsigned long) mtp_card;
@@ -718,12 +809,23 @@ static int __devinit snd_mtpav_probe(struct platform_device *dev)
 	err = snd_mtpav_get_RAWMIDI(mtp_card);
 	if (err < 0)
 		goto __error;
+=======
+	timer_setup(&mtp_card->timer, snd_mtpav_output_timer, 0);
+
+	err = snd_mtpav_get_RAWMIDI(mtp_card);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mtp_card->inmidiport = mtp_card->num_ports + MTPAV_PIDX_BROADCAST;
 
 	err = snd_mtpav_get_ISA(mtp_card);
 	if (err < 0)
+<<<<<<< HEAD
 		goto __error;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->driver, "MTPAV");
 	strcpy(card->shortname, "MTPAV on parallel port");
@@ -732,14 +834,23 @@ static int __devinit snd_mtpav_probe(struct platform_device *dev)
 
 	snd_mtpav_portscan(mtp_card);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &dev->dev);
 	err = snd_card_register(mtp_card->card);
 	if (err < 0)
 		goto __error;
+=======
+	err = snd_card_register(mtp_card->card);
+	if (err < 0)
+		return err;
+
+	card->private_free = snd_mtpav_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(dev, card);
 	printk(KERN_INFO "Motu MidiTimePiece on parallel port irq: %d ioport: 0x%lx\n", irq, port);
 	return 0;
+<<<<<<< HEAD
 
  __error:
 	snd_card_free(card);
@@ -751,15 +862,22 @@ static int __devexit snd_mtpav_remove(struct platform_device *devptr)
 	snd_card_free(platform_get_drvdata(devptr));
 	platform_set_drvdata(devptr, NULL);
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define SND_MTPAV_DRIVER	"snd_mtpav"
 
 static struct platform_driver snd_mtpav_driver = {
 	.probe		= snd_mtpav_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_mtpav_remove),
 	.driver		= {
 		.name	= SND_MTPAV_DRIVER
+=======
+	.driver		= {
+		.name	= SND_MTPAV_DRIVER,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -767,7 +885,12 @@ static int __init alsa_card_mtpav_init(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	if ((err = platform_driver_register(&snd_mtpav_driver)) < 0)
+=======
+	err = platform_driver_register(&snd_mtpav_driver);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	device = platform_device_register_simple(SND_MTPAV_DRIVER, -1, NULL, 0);

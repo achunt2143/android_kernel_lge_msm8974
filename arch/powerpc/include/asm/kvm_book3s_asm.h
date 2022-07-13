@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
@@ -11,6 +12,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright SUSE Linux Products GmbH 2009
  *
@@ -20,6 +25,20 @@
 #ifndef __ASM_KVM_BOOK3S_ASM_H__
 #define __ASM_KVM_BOOK3S_ASM_H__
 
+<<<<<<< HEAD
+=======
+/* XICS ICP register offsets */
+#define XICS_XIRR		4
+#define XICS_MFRR		0xc
+#define XICS_IPI		2	/* interrupt source # for IPIs */
+
+/* Maximum number of threads per physical core */
+#define MAX_SMT_THREADS		8
+
+/* Maximum number of subcores per physical core */
+#define MAX_SUBCORES		4
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __ASSEMBLY__
 
 #ifdef CONFIG_KVM_BOOK3S_HANDLER
@@ -60,6 +79,22 @@ kvmppc_resume_\intno:
 
 #else  /*__ASSEMBLY__ */
 
+<<<<<<< HEAD
+=======
+struct kvmppc_vcore;
+
+/* Struct used for coordinating micro-threading (split-core) mode changes */
+struct kvm_split_mode {
+	unsigned long	rpr;
+	unsigned long	pmmar;
+	unsigned long	ldbar;
+	u8		subcore_size;
+	u8		do_nap;
+	u8		napped[MAX_SMT_THREADS];
+	struct kvmppc_vcore *vc[MAX_SUBCORES];
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This struct goes in the PACA on 64-bit processors.  It is used
  * to store host state that needs to be saved when we enter a guest
@@ -74,25 +109,56 @@ struct kvmppc_host_state {
 	ulong vmhandler;
 	ulong scratch0;
 	ulong scratch1;
+<<<<<<< HEAD
+=======
+	ulong scratch2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 in_guest;
 	u8 restore_hid5;
 	u8 napping;
 
+<<<<<<< HEAD
 #ifdef CONFIG_KVM_BOOK3S_64_HV
 	struct kvm_vcpu *kvm_vcpu;
 	struct kvmppc_vcore *kvm_vcore;
 	unsigned long xics_phys;
 	u64 dabr;
 	u64 host_mmcr[3];
+=======
+#ifdef CONFIG_KVM_BOOK3S_HV_POSSIBLE
+	u8 hwthread_req;
+	u8 hwthread_state;
+	u8 host_ipi;
+	u8 ptid;		/* thread number within subcore when split */
+	u8 fake_suspend;
+	struct kvm_vcpu *kvm_vcpu;
+	struct kvmppc_vcore *kvm_vcore;
+	void __iomem *xics_phys;
+	void __iomem *xive_tima_phys;
+	void __iomem *xive_tima_virt;
+	u32 saved_xirr;
+	u64 dabr;
+	u64 host_mmcr[7];	/* MMCR 0,1,A, SIAR, SDAR, MMCR2, SIER */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 host_pmc[8];
 	u64 host_purr;
 	u64 host_spurr;
 	u64 host_dscr;
 	u64 dec_expires;
+<<<<<<< HEAD
+=======
+	struct kvm_split_mode *kvm_split_mode;
+#endif
+#ifdef CONFIG_PPC_BOOK3S_64
+	u64 cfar;
+	u64 ppr;
+	u64 host_fscr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
 struct kvmppc_book3s_shadow_vcpu {
+<<<<<<< HEAD
 	ulong gpr[14];
 	u32 cr;
 	u32 xer;
@@ -104,6 +170,20 @@ struct kvmppc_book3s_shadow_vcpu {
 	ulong pc;
 	ulong shadow_srr1;
 	ulong fault_dar;
+=======
+	bool in_use;
+	ulong gpr[14];
+	u32 cr;
+	ulong xer;
+	ulong ctr;
+	ulong lr;
+	ulong pc;
+
+	ulong shadow_srr1;
+	ulong fault_dar;
+	u32 fault_dsisr;
+	u32 last_inst;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PPC_BOOK3S_32
 	u32     sr[16];			/* Guest SRs */
@@ -117,9 +197,21 @@ struct kvmppc_book3s_shadow_vcpu {
 		u64     esid;
 		u64     vsid;
 	} slb[64];			/* guest SLB */
+<<<<<<< HEAD
+=======
+	u64 shadow_fscr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
 #endif /*__ASSEMBLY__ */
 
+<<<<<<< HEAD
+=======
+/* Values for kvm_state */
+#define KVM_HWTHREAD_IN_KERNEL	0
+#define KVM_HWTHREAD_IN_IDLE	1
+#define KVM_HWTHREAD_IN_KVM	2
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_KVM_BOOK3S_ASM_H__ */

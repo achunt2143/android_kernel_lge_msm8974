@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Interrupt request handling routines. On the
  * Sparc the IRQs are basically 'cast in stone'
@@ -17,12 +21,17 @@
 
 #include <asm/cacheflush.h>
 #include <asm/cpudata.h>
+<<<<<<< HEAD
+=======
+#include <asm/setup.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pcic.h>
 #include <asm/leon.h>
 
 #include "kernel.h"
 #include "irq.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 #define SMP_NOP2 "nop; nop;\n\t"
 #define SMP_NOP3 "nop; nop; nop;\n\t"
@@ -33,6 +42,10 @@
 
 /* platform specific irq setup */
 struct sparc_irq_config sparc_irq_config;
+=======
+/* platform specific irq setup */
+struct sparc_config sparc_config;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned long arch_local_irq_save(void)
 {
@@ -41,7 +54,10 @@ unsigned long arch_local_irq_save(void)
 
 	__asm__ __volatile__(
 		"rd	%%psr, %0\n\t"
+<<<<<<< HEAD
 		SMP_NOP3	/* Sun4m + Cypress + SMP bug */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"or	%0, %2, %1\n\t"
 		"wr	%1, 0, %%psr\n\t"
 		"nop; nop; nop\n"
@@ -59,7 +75,10 @@ void arch_local_irq_enable(void)
 
 	__asm__ __volatile__(
 		"rd	%%psr, %0\n\t"
+<<<<<<< HEAD
 		SMP_NOP3	/* Sun4m + Cypress + SMP bug */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"andn	%0, %1, %0\n\t"
 		"wr	%0, 0, %%psr\n\t"
 		"nop; nop; nop\n"
@@ -76,7 +95,10 @@ void arch_local_irq_restore(unsigned long old_psr)
 	__asm__ __volatile__(
 		"rd	%%psr, %0\n\t"
 		"and	%2, %1, %2\n\t"
+<<<<<<< HEAD
 		SMP_NOP2	/* Sun4m + Cypress + SMP bug */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"andn	%0, %1, %0\n\t"
 		"wr	%0, %2, %%psr\n\t"
 		"nop; nop; nop\n"
@@ -175,7 +197,11 @@ void irq_link(unsigned int irq)
 
 	p = &irq_table[irq];
 	pil = p->pil;
+<<<<<<< HEAD
 	BUG_ON(pil > SUN4D_MAX_IRQ);
+=======
+	BUG_ON(pil >= SUN4D_MAX_IRQ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p->next = irq_map[pil];
 	irq_map[pil] = p;
 
@@ -192,7 +218,11 @@ void irq_unlink(unsigned int irq)
 	spin_lock_irqsave(&irq_map_lock, flags);
 
 	p = &irq_table[irq];
+<<<<<<< HEAD
 	BUG_ON(p->pil > SUN4D_MAX_IRQ);
+=======
+	BUG_ON(p->pil >= SUN4D_MAX_IRQ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnext = &irq_map[p->pil];
 	while (*pnext != p)
 		pnext = &(*pnext)->next;
@@ -252,9 +282,12 @@ int sparc_floppy_request_irq(unsigned int irq, irq_handler_t irq_handler)
 	unsigned int cpu_irq;
 	int err;
 
+<<<<<<< HEAD
 #if defined CONFIG_SMP && !defined CONFIG_SPARC_LEON
 	struct tt_entry *trap_table;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = request_irq(irq, irq_handler, 0, "floppy", NULL);
 	if (err)
@@ -275,6 +308,7 @@ int sparc_floppy_request_irq(unsigned int irq, irq_handler_t irq_handler)
 	table[SP_TRAP_IRQ1+(cpu_irq-1)].inst_four = SPARC_NOP;
 
 	INSTANTIATE(sparc_ttable)
+<<<<<<< HEAD
 #if defined CONFIG_SMP && !defined CONFIG_SPARC_LEON
 	trap_table = &trapbase_cpu1;
 	INSTANTIATE(trap_table)
@@ -282,6 +316,20 @@ int sparc_floppy_request_irq(unsigned int irq, irq_handler_t irq_handler)
 	INSTANTIATE(trap_table)
 	trap_table = &trapbase_cpu3;
 	INSTANTIATE(trap_table)
+=======
+
+#if defined CONFIG_SMP
+	if (sparc_cpu_model != sparc_leon) {
+		struct tt_entry *trap_table;
+
+		trap_table = &trapbase_cpu1[0];
+		INSTANTIATE(trap_table)
+		trap_table = &trapbase_cpu2[0];
+		INSTANTIATE(trap_table)
+		trap_table = &trapbase_cpu3[0];
+		INSTANTIATE(trap_table)
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #undef INSTANTIATE
 	/*
@@ -346,11 +394,14 @@ void sparc_floppy_irq(int irq, void *dev_id, struct pt_regs *regs)
 void __init init_IRQ(void)
 {
 	switch (sparc_cpu_model) {
+<<<<<<< HEAD
 	case sun4c:
 	case sun4:
 		sun4c_init_IRQ();
 		break;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case sun4m:
 		pcic_probe();
 		if (pcic_present())
@@ -371,6 +422,9 @@ void __init init_IRQ(void)
 		prom_printf("Cannot initialize IRQs on this Sun machine...");
 		break;
 	}
+<<<<<<< HEAD
 	btfixup();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * File: pep-gprs.c
  *
@@ -5,6 +9,7 @@
  *
  * Copyright (C) 2008 Nokia Corporation.
  *
+<<<<<<< HEAD
  * Author: Rémi Denis-Courmont <remi.denis-courmont@nokia.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -20,6 +25,9 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+ * Author: Rémi Denis-Courmont
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -32,12 +40,21 @@
 #include <net/tcp_states.h>
 #include <net/phonet/gprs.h>
 
+<<<<<<< HEAD
+=======
+#include <trace/events/sock.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GPRS_DEFAULT_MTU 1400
 
 struct gprs_dev {
 	struct sock		*sk;
 	void			(*old_state_change)(struct sock *);
+<<<<<<< HEAD
 	void			(*old_data_ready)(struct sock *, int);
+=======
+	void			(*old_data_ready)(struct sock *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void			(*old_write_space)(struct sock *);
 
 	struct net_device	*dev;
@@ -146,11 +163,20 @@ drop:
 	return err;
 }
 
+<<<<<<< HEAD
 static void gprs_data_ready(struct sock *sk, int len)
+=======
+static void gprs_data_ready(struct sock *sk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gprs_dev *gp = sk->sk_user_data;
 	struct sk_buff *skb;
 
+<<<<<<< HEAD
+=======
+	trace_sk_data_ready(sk);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while ((skb = pep_read(sk)) != NULL) {
 		skb_orphan(skb);
 		gprs_recv(gp, skb);
@@ -203,8 +229,12 @@ static netdev_tx_t gprs_xmit(struct sk_buff *skb, struct net_device *dev)
 	len = skb->len;
 	err = pep_write(sk, skb);
 	if (err) {
+<<<<<<< HEAD
 		LIMIT_NETDEBUG(KERN_WARNING"%s: TX error (%d)\n",
 				dev->name, err);
+=======
+		net_dbg_ratelimited("%s: TX error (%d)\n", dev->name, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->stats.tx_aborted_errors++;
 		dev->stats.tx_errors++;
 	} else {
@@ -218,6 +248,7 @@ static netdev_tx_t gprs_xmit(struct sk_buff *skb, struct net_device *dev)
 	return NETDEV_TX_OK;
 }
 
+<<<<<<< HEAD
 static int gprs_set_mtu(struct net_device *dev, int new_mtu)
 {
 	if ((new_mtu < 576) || (new_mtu > (PHONET_MAX_MTU - 11)))
@@ -227,11 +258,16 @@ static int gprs_set_mtu(struct net_device *dev, int new_mtu)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops gprs_netdev_ops = {
 	.ndo_open	= gprs_open,
 	.ndo_stop	= gprs_close,
 	.ndo_start_xmit	= gprs_xmit,
+<<<<<<< HEAD
 	.ndo_change_mtu	= gprs_set_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void gprs_setup(struct net_device *dev)
@@ -240,12 +276,21 @@ static void gprs_setup(struct net_device *dev)
 	dev->type		= ARPHRD_PHONET_PIPE;
 	dev->flags		= IFF_POINTOPOINT | IFF_NOARP;
 	dev->mtu		= GPRS_DEFAULT_MTU;
+<<<<<<< HEAD
+=======
+	dev->min_mtu		= 576;
+	dev->max_mtu		= (PHONET_MAX_MTU - 11);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->hard_header_len	= 0;
 	dev->addr_len		= 0;
 	dev->tx_queue_len	= 10;
 
 	dev->netdev_ops		= &gprs_netdev_ops;
+<<<<<<< HEAD
 	dev->destructor		= free_netdev;
+=======
+	dev->needs_free_netdev	= true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -267,7 +312,11 @@ int gprs_attach(struct sock *sk)
 		return -EINVAL; /* need packet boundaries */
 
 	/* Create net device */
+<<<<<<< HEAD
 	dev = alloc_netdev(sizeof(*gp), ifname, gprs_setup);
+=======
+	dev = alloc_netdev(sizeof(*gp), ifname, NET_NAME_UNKNOWN, gprs_setup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev)
 		return -ENOMEM;
 	gp = netdev_priv(dev);

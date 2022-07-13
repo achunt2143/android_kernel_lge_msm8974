@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sys32.S: I-cache tricks for 32-bit compatibility layer simple
  *          conversions.
@@ -12,6 +16,7 @@
 
 	.text
 
+<<<<<<< HEAD
 #define SIGN1(STUB,SYSCALL,REG1) \
 	.align	32; \
 	.globl	STUB; \
@@ -139,6 +144,8 @@ SIGN1(sys32_vmsplice, compat_sys_vmsplice, %o0)
 SIGN1(sys32_truncate, sys_truncate, %o1)
 SIGN1(sys32_ftruncate, sys_ftruncate, %o1)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.globl		sys32_mmap2
 sys32_mmap2:
 	sethi		%hi(sys_mmap), %g1
@@ -283,6 +290,7 @@ do_sys_shutdown: /* sys_shutdown(int, int) */
 	nop
 	nop
 	nop
+<<<<<<< HEAD
 do_sys_setsockopt: /* compat_sys_setsockopt(int, int, int, char *, int) */
 47:	ldswa		[%o1 + 0x0] %asi, %o0
 	sethi		%hi(compat_sys_setsockopt), %g1
@@ -299,6 +307,24 @@ do_sys_getsockopt: /* compat_sys_getsockopt(int, int, int, u32, u32) */
 54:	lduwa		[%o1 + 0xc] %asi, %o3
 55:	lduwa		[%o1 + 0x10] %asi, %o4
 	jmpl		%g1 + %lo(compat_sys_getsockopt), %g0
+=======
+do_sys_setsockopt: /* sys_setsockopt(int, int, int, char *, int) */
+47:	ldswa		[%o1 + 0x0] %asi, %o0
+	sethi		%hi(sys_setsockopt), %g1
+48:	ldswa		[%o1 + 0x8] %asi, %o2
+49:	lduwa		[%o1 + 0xc] %asi, %o3
+50:	ldswa		[%o1 + 0x10] %asi, %o4
+	jmpl		%g1 + %lo(sys_setsockopt), %g0
+51:	 ldswa		[%o1 + 0x4] %asi, %o1
+	nop
+do_sys_getsockopt: /* sys_getsockopt(int, int, int, u32, u32) */
+52:	ldswa		[%o1 + 0x0] %asi, %o0
+	sethi		%hi(sys_getsockopt), %g1
+53:	ldswa		[%o1 + 0x8] %asi, %o2
+54:	lduwa		[%o1 + 0xc] %asi, %o3
+55:	lduwa		[%o1 + 0x10] %asi, %o4
+	jmpl		%g1 + %lo(sys_getsockopt), %g0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 56:	 ldswa		[%o1 + 0x4] %asi, %o1
 	nop
 do_sys_sendmsg: /* compat_sys_sendmsg(int, struct compat_msghdr *, unsigned int) */
@@ -329,6 +355,7 @@ do_sys_accept4: /* sys_accept4(int, struct sockaddr *, int *, int) */
 	nop
 	nop
 
+<<<<<<< HEAD
 	.globl		sys32_fanotify_mark
 sys32_fanotify_mark:
 	sethi		%hi(sys_fanotify_mark), %g1
@@ -338,6 +365,8 @@ sys32_fanotify_mark:
 	jmpl		%g1 + %lo(sys_fanotify_mark), %g0
 	 mov		%o5, %o4
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.section	__ex_table,"a"
 	.align		4
 	.word		1b, __retl_efault, 2b, __retl_efault

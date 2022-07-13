@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Chip register definitions for PCILynx chipset.  Based on pcilynx.h
  * from the Linux 1394 drivers, but modified a bit so the names here

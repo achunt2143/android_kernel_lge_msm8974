@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  c 2001 PPC 64 Team, IBM Corp
  *
@@ -6,6 +7,12 @@
  *      as published by the Free Software Foundation; either version
  *      2 of the License, or (at your option) any later version.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  c 2001 PPC 64 Team, IBM Corp
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * /proc/powerpc/rtas/firmware_flash interface
  *
  * This file implements a firmware_flash interface to pump a firmware
@@ -19,9 +26,14 @@
 #include <linux/proc_fs.h>
 #include <linux/reboot.h>
 #include <asm/delay.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include <asm/rtas.h>
 #include <asm/abs_addr.h>
+=======
+#include <linux/uaccess.h>
+#include <asm/rtas.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MODULE_VERS "1.0"
 #define MODULE_NAME "rtas_flash"
@@ -58,6 +70,7 @@
 #define VALIDATE_READY	       -1001 /* Firmware image ready for validation */
 #define VALIDATE_PARAM_ERR     -3    /* RTAS Parameter Error */
 #define VALIDATE_HW_ERR        -1    /* RTAS Hardware Error */
+<<<<<<< HEAD
 #define VALIDATE_TMP_UPDATE    0     /* Validate Return Status */
 #define VALIDATE_FLASH_AUTH    1     /* Validate Return Status */
 #define VALIDATE_INVALID_IMG   2     /* Validate Return Status */
@@ -65,6 +78,33 @@
 #define VALIDATE_TMP_COMMIT_DL 4     /* Validate Return Status */
 #define VALIDATE_TMP_COMMIT    5     /* Validate Return Status */
 #define VALIDATE_TMP_UPDATE_DL 6     /* Validate Return Status */
+=======
+
+/* ibm,validate-flash-image update result tokens */
+#define VALIDATE_TMP_UPDATE    0     /* T side will be updated */
+#define VALIDATE_FLASH_AUTH    1     /* Partition does not have authority */
+#define VALIDATE_INVALID_IMG   2     /* Candidate image is not valid */
+#define VALIDATE_CUR_UNKNOWN   3     /* Current fixpack level is unknown */
+/*
+ * Current T side will be committed to P side before being replace with new
+ * image, and the new image is downlevel from current image
+ */
+#define VALIDATE_TMP_COMMIT_DL 4
+/*
+ * Current T side will be committed to P side before being replaced with new
+ * image
+ */
+#define VALIDATE_TMP_COMMIT    5
+/*
+ * T side will be updated with a downlevel image
+ */
+#define VALIDATE_TMP_UPDATE_DL 6
+/*
+ * The candidate image's release date is later than the system's firmware
+ * service entitlement date - service warranty period has expired
+ */
+#define VALIDATE_OUT_OF_WRNTY  7
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ibm,manage-flash-image operation tokens */
 #define RTAS_REJECT_TMP_IMG   0
@@ -72,6 +112,10 @@
 
 /* Array sizes */
 #define VALIDATE_BUF_SIZE 4096    
+<<<<<<< HEAD
+=======
+#define VALIDATE_MSG_LEN  256
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RTAS_MSG_MAXLEN   64
 
 /* Quirk - RTAS requires 4k list length and block size */
@@ -103,9 +147,16 @@ static struct kmem_cache *flash_block_cache = NULL;
 
 #define FLASH_BLOCK_LIST_VERSION (1UL)
 
+<<<<<<< HEAD
 /* Local copy of the flash block list.
  * We only allow one open of the flash proc file and create this
  * list as we go.  The rtas_firmware_flash_list varable will be
+=======
+/*
+ * Local copy of the flash block list.
+ *
+ * The rtas_firmware_flash_list variable will be
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * set once the data is fully read.
  *
  * For convenience as we build the list we use virtual addrs,
@@ -126,23 +177,39 @@ struct rtas_update_flash_t
 struct rtas_manage_flash_t
 {
 	int status;			/* Returned status */
+<<<<<<< HEAD
 	unsigned int op;		/* Reject or commit image */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Status int must be first member of struct */
 struct rtas_validate_flash_t
 {
 	int status;		 	/* Returned status */	
+<<<<<<< HEAD
 	char buf[VALIDATE_BUF_SIZE]; 	/* Candidate image buffer */
+=======
+	char *buf;			/* Candidate image buffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int buf_size;		/* Size of image buf */
 	unsigned int update_results;	/* Update results token */
 };
 
+<<<<<<< HEAD
 static DEFINE_SPINLOCK(flash_file_open_lock);
 static struct proc_dir_entry *firmware_flash_pde;
 static struct proc_dir_entry *firmware_update_pde;
 static struct proc_dir_entry *validate_pde;
 static struct proc_dir_entry *manage_pde;
+=======
+static struct rtas_update_flash_t rtas_update_flash_data;
+static struct rtas_manage_flash_t rtas_manage_flash_data;
+static struct rtas_validate_flash_t rtas_validate_flash_data;
+static DEFINE_MUTEX(rtas_update_flash_mutex);
+static DEFINE_MUTEX(rtas_manage_flash_mutex);
+static DEFINE_MUTEX(rtas_validate_flash_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Do simple sanity checks on the flash image. */
 static int flash_list_valid(struct flash_block_list *flist)
@@ -192,10 +259,17 @@ static void free_flash_list(struct flash_block_list *f)
 
 static int rtas_flash_release(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	struct proc_dir_entry *dp = PDE(file->f_path.dentry->d_inode);
 	struct rtas_update_flash_t *uf;
 	
 	uf = (struct rtas_update_flash_t *) dp->data;
+=======
+	struct rtas_update_flash_t *const uf = &rtas_update_flash_data;
+
+	mutex_lock(&rtas_update_flash_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (uf->flist) {    
 		/* File was opened in write mode for a new flash attempt */
 		/* Clear saved list */
@@ -215,6 +289,7 @@ static int rtas_flash_release(struct inode *inode, struct file *file)
 		uf->flist = NULL;
 	}
 
+<<<<<<< HEAD
 	atomic_dec(&dp->count);
 	return 0;
 }
@@ -222,6 +297,16 @@ static int rtas_flash_release(struct inode *inode, struct file *file)
 static void get_flash_status_msg(int status, char *buf)
 {
 	char *msg;
+=======
+	mutex_unlock(&rtas_update_flash_mutex);
+	return 0;
+}
+
+static size_t get_flash_status_msg(int status, char *buf)
+{
+	const char *msg;
+	size_t len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (status) {
 	case FLASH_AUTH:
@@ -243,6 +328,7 @@ static void get_flash_status_msg(int status, char *buf)
 		msg = "ready: firmware image ready for flash on reboot\n";
 		break;
 	default:
+<<<<<<< HEAD
 		sprintf(buf, "error: unexpected status value %d\n", status);
 		return;
 	}
@@ -273,6 +359,49 @@ static ssize_t rtas_flash_read(struct file *file, char __user *buf,
 void rtas_block_ctor(void *ptr)
 {
 	memset(ptr, 0, RTAS_BLK_SIZE);
+=======
+		return sprintf(buf, "error: unexpected status value %d\n",
+			       status);
+	}
+
+	len = strlen(msg);
+	memcpy(buf, msg, len + 1);
+	return len;
+}
+
+/* Reading the proc file will show status (not the firmware contents) */
+static ssize_t rtas_flash_read_msg(struct file *file, char __user *buf,
+				   size_t count, loff_t *ppos)
+{
+	struct rtas_update_flash_t *const uf = &rtas_update_flash_data;
+	char msg[RTAS_MSG_MAXLEN];
+	size_t len;
+	int status;
+
+	mutex_lock(&rtas_update_flash_mutex);
+	status = uf->status;
+	mutex_unlock(&rtas_update_flash_mutex);
+
+	/* Read as text message */
+	len = get_flash_status_msg(status, msg);
+	return simple_read_from_buffer(buf, count, ppos, msg, len);
+}
+
+static ssize_t rtas_flash_read_num(struct file *file, char __user *buf,
+				   size_t count, loff_t *ppos)
+{
+	struct rtas_update_flash_t *const uf = &rtas_update_flash_data;
+	char msg[RTAS_MSG_MAXLEN];
+	int status;
+
+	mutex_lock(&rtas_update_flash_mutex);
+	status = uf->status;
+	mutex_unlock(&rtas_update_flash_mutex);
+
+	/* Read as number */
+	sprintf(msg, "%d\n", status);
+	return simple_read_from_buffer(buf, count, ppos, msg, strlen(msg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* We could be much more efficient here.  But to keep this function
@@ -283,6 +412,7 @@ void rtas_block_ctor(void *ptr)
 static ssize_t rtas_flash_write(struct file *file, const char __user *buffer,
 				size_t count, loff_t *off)
 {
+<<<<<<< HEAD
 	struct proc_dir_entry *dp = PDE(file->f_path.dentry->d_inode);
 	struct rtas_update_flash_t *uf;
 	char *p;
@@ -293,15 +423,32 @@ static ssize_t rtas_flash_write(struct file *file, const char __user *buffer,
 
 	if (uf->status == FLASH_AUTH || count == 0)
 		return count;	/* discard data */
+=======
+	struct rtas_update_flash_t *const uf = &rtas_update_flash_data;
+	char *p;
+	int next_free, rc;
+	struct flash_block_list *fl;
+
+	mutex_lock(&rtas_update_flash_mutex);
+
+	if (uf->status == FLASH_AUTH || count == 0)
+		goto out;	/* discard data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* In the case that the image is not ready for flashing, the memory
 	 * allocated for the block list will be freed upon the release of the 
 	 * proc file
 	 */
 	if (uf->flist == NULL) {
+<<<<<<< HEAD
 		uf->flist = kmem_cache_alloc(flash_block_cache, GFP_KERNEL);
 		if (!uf->flist)
 			return -ENOMEM;
+=======
+		uf->flist = kmem_cache_zalloc(flash_block_cache, GFP_KERNEL);
+		if (!uf->flist)
+			goto nomem;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	fl = uf->flist;
@@ -310,15 +457,22 @@ static ssize_t rtas_flash_write(struct file *file, const char __user *buffer,
 	next_free = fl->num_blocks;
 	if (next_free == FLASH_BLOCKS_PER_NODE) {
 		/* Need to allocate another block_list */
+<<<<<<< HEAD
 		fl->next = kmem_cache_alloc(flash_block_cache, GFP_KERNEL);
 		if (!fl->next)
 			return -ENOMEM;
+=======
+		fl->next = kmem_cache_zalloc(flash_block_cache, GFP_KERNEL);
+		if (!fl->next)
+			goto nomem;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fl = fl->next;
 		next_free = 0;
 	}
 
 	if (count > RTAS_BLK_SIZE)
 		count = RTAS_BLK_SIZE;
+<<<<<<< HEAD
 	p = kmem_cache_alloc(flash_block_cache, GFP_KERNEL);
 	if (!p)
 		return -ENOMEM;
@@ -326,10 +480,21 @@ static ssize_t rtas_flash_write(struct file *file, const char __user *buffer,
 	if(copy_from_user(p, buffer, count)) {
 		kmem_cache_free(flash_block_cache, p);
 		return -EFAULT;
+=======
+	p = kmem_cache_zalloc(flash_block_cache, GFP_KERNEL);
+	if (!p)
+		goto nomem;
+	
+	if(copy_from_user(p, buffer, count)) {
+		kmem_cache_free(flash_block_cache, p);
+		rc = -EFAULT;
+		goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	fl->blocks[next_free].data = p;
 	fl->blocks[next_free].length = count;
 	fl->num_blocks++;
+<<<<<<< HEAD
 
 	return count;
 }
@@ -361,12 +526,34 @@ static int rtas_excl_release(struct inode *inode, struct file *file)
 }
 
 static void manage_flash(struct rtas_manage_flash_t *args_buf)
+=======
+out:
+	mutex_unlock(&rtas_update_flash_mutex);
+	return count;
+
+nomem:
+	rc = -ENOMEM;
+error:
+	mutex_unlock(&rtas_update_flash_mutex);
+	return rc;
+}
+
+/*
+ * Flash management routines.
+ */
+static void manage_flash(struct rtas_manage_flash_t *args_buf, unsigned int op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	s32 rc;
 
 	do {
+<<<<<<< HEAD
 		rc = rtas_call(rtas_token("ibm,manage-flash-image"), 1, 
 			       1, NULL, args_buf->op);
+=======
+		rc = rtas_call(rtas_function_token(RTAS_FN_IBM_MANAGE_FLASH_IMAGE), 1, 1,
+			       NULL, op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (rtas_busy_delay(rc));
 
 	args_buf->status = rc;
@@ -375,6 +562,7 @@ static void manage_flash(struct rtas_manage_flash_t *args_buf)
 static ssize_t manage_flash_read(struct file *file, char __user *buf,
 			       size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct proc_dir_entry *dp = PDE(file->f_path.dentry->d_inode);
 	struct rtas_manage_flash_t *args_buf;
 	char msg[RTAS_MSG_MAXLEN];
@@ -386,12 +574,24 @@ static ssize_t manage_flash_read(struct file *file, char __user *buf,
 
 	msglen = sprintf(msg, "%d\n", args_buf->status);
 
+=======
+	struct rtas_manage_flash_t *const args_buf = &rtas_manage_flash_data;
+	char msg[RTAS_MSG_MAXLEN];
+	int msglen, status;
+
+	mutex_lock(&rtas_manage_flash_mutex);
+	status = args_buf->status;
+	mutex_unlock(&rtas_manage_flash_mutex);
+
+	msglen = sprintf(msg, "%d\n", status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return simple_read_from_buffer(buf, count, ppos, msg, msglen);
 }
 
 static ssize_t manage_flash_write(struct file *file, const char __user *buf,
 				size_t count, loff_t *off)
 {
+<<<<<<< HEAD
 	struct proc_dir_entry *dp = PDE(file->f_path.dentry->d_inode);
 	struct rtas_manage_flash_t *args_buf;
 	const char reject_str[] = "0";
@@ -402,19 +602,38 @@ static ssize_t manage_flash_write(struct file *file, const char __user *buf,
 	args_buf = (struct rtas_manage_flash_t *) dp->data;
 	if ((args_buf->status == MANAGE_AUTH) || (count == 0))
 		return count;
+=======
+	struct rtas_manage_flash_t *const args_buf = &rtas_manage_flash_data;
+	static const char reject_str[] = "0";
+	static const char commit_str[] = "1";
+	char stkbuf[10];
+	int op, rc;
+
+	mutex_lock(&rtas_manage_flash_mutex);
+
+	if ((args_buf->status == MANAGE_AUTH) || (count == 0))
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		
 	op = -1;
 	if (buf) {
 		if (count > 9) count = 9;
+<<<<<<< HEAD
 		if (copy_from_user (stkbuf, buf, count)) {
 			return -EFAULT;
 		}
+=======
+		rc = -EFAULT;
+		if (copy_from_user (stkbuf, buf, count))
+			goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (strncmp(stkbuf, reject_str, strlen(reject_str)) == 0) 
 			op = RTAS_REJECT_TMP_IMG;
 		else if (strncmp(stkbuf, commit_str, strlen(commit_str)) == 0) 
 			op = RTAS_COMMIT_TMP_IMG;
 	}
 	
+<<<<<<< HEAD
 	if (op == -1)   /* buf is empty, or contains invalid string */
 		return -EINVAL;
 
@@ -427,6 +646,29 @@ static ssize_t manage_flash_write(struct file *file, const char __user *buf,
 static void validate_flash(struct rtas_validate_flash_t *args_buf)
 {
 	int token = rtas_token("ibm,validate-flash-image");
+=======
+	if (op == -1) {   /* buf is empty, or contains invalid string */
+		rc = -EINVAL;
+		goto error;
+	}
+
+	manage_flash(args_buf, op);
+out:
+	mutex_unlock(&rtas_manage_flash_mutex);
+	return count;
+
+error:
+	mutex_unlock(&rtas_manage_flash_mutex);
+	return rc;
+}
+
+/*
+ * Validation routines.
+ */
+static void validate_flash(struct rtas_validate_flash_t *args_buf)
+{
+	int token = rtas_function_token(RTAS_FN_IBM_VALIDATE_FLASH_IMAGE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int update_results;
 	s32 rc;	
 
@@ -445,7 +687,11 @@ static void validate_flash(struct rtas_validate_flash_t *args_buf)
 }
 
 static int get_validate_flash_msg(struct rtas_validate_flash_t *args_buf, 
+<<<<<<< HEAD
 		                   char *msg)
+=======
+		                   char *msg, int msglen)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int n;
 
@@ -453,7 +699,12 @@ static int get_validate_flash_msg(struct rtas_validate_flash_t *args_buf,
 		n = sprintf(msg, "%d\n", args_buf->update_results);
 		if ((args_buf->update_results >= VALIDATE_CUR_UNKNOWN) ||
 		    (args_buf->update_results == VALIDATE_TMP_UPDATE))
+<<<<<<< HEAD
 			n += sprintf(msg + n, "%s\n", args_buf->buf);
+=======
+			n += snprintf(msg + n, msglen - n, "%s\n",
+					args_buf->buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		n = sprintf(msg, "%d\n", args_buf->status);
 	}
@@ -463,6 +714,7 @@ static int get_validate_flash_msg(struct rtas_validate_flash_t *args_buf,
 static ssize_t validate_flash_read(struct file *file, char __user *buf,
 			       size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	struct proc_dir_entry *dp = PDE(file->f_path.dentry->d_inode);
 	struct rtas_validate_flash_t *args_buf;
 	char msg[RTAS_MSG_MAXLEN];
@@ -471,6 +723,16 @@ static ssize_t validate_flash_read(struct file *file, char __user *buf,
 	args_buf = dp->data;
 
 	msglen = get_validate_flash_msg(args_buf, msg);
+=======
+	struct rtas_validate_flash_t *const args_buf =
+		&rtas_validate_flash_data;
+	char msg[VALIDATE_MSG_LEN];
+	int msglen;
+
+	mutex_lock(&rtas_validate_flash_mutex);
+	msglen = get_validate_flash_msg(args_buf, msg, VALIDATE_MSG_LEN);
+	mutex_unlock(&rtas_validate_flash_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return simple_read_from_buffer(buf, count, ppos, msg, msglen);
 }
@@ -478,6 +740,7 @@ static ssize_t validate_flash_read(struct file *file, char __user *buf,
 static ssize_t validate_flash_write(struct file *file, const char __user *buf,
 				    size_t count, loff_t *off)
 {
+<<<<<<< HEAD
 	struct proc_dir_entry *dp = PDE(file->f_path.dentry->d_inode);
 	struct rtas_validate_flash_t *args_buf;
 	int rc;
@@ -490,12 +753,23 @@ static ssize_t validate_flash_write(struct file *file, const char __user *buf,
 		if (dp->data == NULL) 
 			return -ENOMEM;
 	}
+=======
+	struct rtas_validate_flash_t *const args_buf =
+		&rtas_validate_flash_data;
+	int rc;
+
+	mutex_lock(&rtas_validate_flash_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We are only interested in the first 4K of the
 	 * candidate image */
 	if ((*off >= VALIDATE_BUF_SIZE) || 
 		(args_buf->status == VALIDATE_AUTH)) {
 		*off += count;
+<<<<<<< HEAD
+=======
+		mutex_unlock(&rtas_validate_flash_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return count;
 	}
 
@@ -506,7 +780,11 @@ static ssize_t validate_flash_write(struct file *file, const char __user *buf,
 		args_buf->status = VALIDATE_INCOMPLETE;
 	}
 
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_READ, buf, count)) {
+=======
+	if (!access_ok(buf, count)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EFAULT;
 		goto done;
 	}
@@ -518,31 +796,52 @@ static ssize_t validate_flash_write(struct file *file, const char __user *buf,
 	*off += count;
 	rc = count;
 done:
+<<<<<<< HEAD
 	if (rc < 0) {
 		kfree(dp->data);
 		dp->data = NULL;
 	}
+=======
+	mutex_unlock(&rtas_validate_flash_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
 static int validate_flash_release(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	struct proc_dir_entry *dp = PDE(file->f_path.dentry->d_inode);
 	struct rtas_validate_flash_t *args_buf;
 
 	args_buf = (struct rtas_validate_flash_t *) dp->data;
+=======
+	struct rtas_validate_flash_t *const args_buf =
+		&rtas_validate_flash_data;
+
+	mutex_lock(&rtas_validate_flash_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (args_buf->status == VALIDATE_READY) {
 		args_buf->buf_size = VALIDATE_BUF_SIZE;
 		validate_flash(args_buf);
 	}
 
+<<<<<<< HEAD
 	/* The matching atomic_inc was in rtas_excl_open() */
 	atomic_dec(&dp->count);
 
 	return 0;
 }
 
+=======
+	mutex_unlock(&rtas_validate_flash_mutex);
+	return 0;
+}
+
+/*
+ * On-reboot flash update applicator.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rtas_flash_firmware(int reboot_type)
 {
 	unsigned long image_size;
@@ -559,7 +858,11 @@ static void rtas_flash_firmware(int reboot_type)
 		return;
 	}
 
+<<<<<<< HEAD
 	update_token = rtas_token("ibm,update-flash-64-and-reboot");
+=======
+	update_token = rtas_function_token(RTAS_FN_IBM_UPDATE_FLASH_64_AND_REBOOT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (update_token == RTAS_UNKNOWN_SERVICE) {
 		printk(KERN_ALERT "FLASH: ibm,update-flash-64-and-reboot "
 		       "is not available -- not a service partition?\n");
@@ -582,7 +885,11 @@ static void rtas_flash_firmware(int reboot_type)
 	flist = (struct flash_block_list *)&rtas_data_buf[0];
 	flist->num_blocks = 0;
 	flist->next = rtas_firmware_flash_list;
+<<<<<<< HEAD
 	rtas_block_list = virt_to_abs(flist);
+=======
+	rtas_block_list = __pa(flist);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rtas_block_list >= 4UL*1024*1024*1024) {
 		printk(KERN_ALERT "FLASH: kernel bug...flash list header addr above 4GB\n");
 		spin_unlock(&rtas_data_buf_lock);
@@ -596,17 +903,31 @@ static void rtas_flash_firmware(int reboot_type)
 	for (f = flist; f; f = next) {
 		/* Translate data addrs to absolute */
 		for (i = 0; i < f->num_blocks; i++) {
+<<<<<<< HEAD
 			f->blocks[i].data = (char *)virt_to_abs(f->blocks[i].data);
 			image_size += f->blocks[i].length;
+=======
+			f->blocks[i].data = (char *)cpu_to_be64(__pa(f->blocks[i].data));
+			image_size += f->blocks[i].length;
+			f->blocks[i].length = cpu_to_be64(f->blocks[i].length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		next = f->next;
 		/* Don't translate NULL pointer for last entry */
 		if (f->next)
+<<<<<<< HEAD
 			f->next = (struct flash_block_list *)virt_to_abs(f->next);
+=======
+			f->next = (struct flash_block_list *)cpu_to_be64(__pa(f->next));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			f->next = NULL;
 		/* make num_blocks into the version/length field */
 		f->num_blocks = (FLASH_BLOCK_LIST_VERSION << 56) | ((f->num_blocks+1)*16);
+<<<<<<< HEAD
+=======
+		f->num_blocks = cpu_to_be64(f->num_blocks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	printk(KERN_ALERT "FLASH: flash image is %ld bytes\n", image_size);
@@ -635,6 +956,7 @@ static void rtas_flash_firmware(int reboot_type)
 	spin_unlock(&rtas_data_buf_lock);
 }
 
+<<<<<<< HEAD
 static void remove_flash_pde(struct proc_dir_entry *dp)
 {
 	if (dp) {
@@ -701,10 +1023,59 @@ static const struct file_operations validate_flash_operations = {
 	.open		= rtas_excl_open,
 	.release	= validate_flash_release,
 	.llseek		= default_llseek,
+=======
+/*
+ * Manifest of proc files to create
+ */
+struct rtas_flash_file {
+	const char *filename;
+	const rtas_fn_handle_t handle;
+	int *status;
+	const struct proc_ops ops;
+};
+
+static const struct rtas_flash_file rtas_flash_files[] = {
+	{
+		.filename	= "powerpc/rtas/" FIRMWARE_FLASH_NAME,
+		.handle		= RTAS_FN_IBM_UPDATE_FLASH_64_AND_REBOOT,
+		.status		= &rtas_update_flash_data.status,
+		.ops.proc_read	= rtas_flash_read_msg,
+		.ops.proc_write	= rtas_flash_write,
+		.ops.proc_release = rtas_flash_release,
+		.ops.proc_lseek	= default_llseek,
+	},
+	{
+		.filename	= "powerpc/rtas/" FIRMWARE_UPDATE_NAME,
+		.handle		= RTAS_FN_IBM_UPDATE_FLASH_64_AND_REBOOT,
+		.status		= &rtas_update_flash_data.status,
+		.ops.proc_read	= rtas_flash_read_num,
+		.ops.proc_write	= rtas_flash_write,
+		.ops.proc_release = rtas_flash_release,
+		.ops.proc_lseek	= default_llseek,
+	},
+	{
+		.filename	= "powerpc/rtas/" VALIDATE_FLASH_NAME,
+		.handle		= RTAS_FN_IBM_VALIDATE_FLASH_IMAGE,
+		.status		= &rtas_validate_flash_data.status,
+		.ops.proc_read	= validate_flash_read,
+		.ops.proc_write	= validate_flash_write,
+		.ops.proc_release = validate_flash_release,
+		.ops.proc_lseek	= default_llseek,
+	},
+	{
+		.filename	= "powerpc/rtas/" MANAGE_FLASH_NAME,
+		.handle		= RTAS_FN_IBM_MANAGE_FLASH_IMAGE,
+		.status		= &rtas_manage_flash_data.status,
+		.ops.proc_read	= manage_flash_read,
+		.ops.proc_write	= manage_flash_write,
+		.ops.proc_lseek	= default_llseek,
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init rtas_flash_init(void)
 {
+<<<<<<< HEAD
 	int rc;
 
 	if (rtas_token("ibm,update-flash-64-and-reboot") ==
@@ -787,10 +1158,64 @@ cleanup:
 	remove_flash_pde(manage_pde);
 
 	return rc;
+=======
+	int i;
+
+	if (rtas_function_token(RTAS_FN_IBM_UPDATE_FLASH_64_AND_REBOOT) == RTAS_UNKNOWN_SERVICE) {
+		pr_info("rtas_flash: no firmware flash support\n");
+		return -EINVAL;
+	}
+
+	rtas_validate_flash_data.buf = kzalloc(VALIDATE_BUF_SIZE, GFP_KERNEL);
+	if (!rtas_validate_flash_data.buf)
+		return -ENOMEM;
+
+	flash_block_cache = kmem_cache_create_usercopy("rtas_flash_cache",
+						       RTAS_BLK_SIZE, RTAS_BLK_SIZE,
+						       0, 0, RTAS_BLK_SIZE, NULL);
+	if (!flash_block_cache) {
+		printk(KERN_ERR "%s: failed to create block cache\n",
+				__func__);
+		goto enomem_buf;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(rtas_flash_files); i++) {
+		const struct rtas_flash_file *f = &rtas_flash_files[i];
+		int token;
+
+		if (!proc_create(f->filename, 0600, NULL, &f->ops))
+			goto enomem;
+
+		/*
+		 * This code assumes that the status int is the first member of the
+		 * struct
+		 */
+		token = rtas_function_token(f->handle);
+		if (token == RTAS_UNKNOWN_SERVICE)
+			*f->status = FLASH_AUTH;
+		else
+			*f->status = FLASH_NO_OP;
+	}
+
+	rtas_flash_term_hook = rtas_flash_firmware;
+	return 0;
+
+enomem:
+	while (--i >= 0) {
+		const struct rtas_flash_file *f = &rtas_flash_files[i];
+		remove_proc_entry(f->filename, NULL);
+	}
+
+	kmem_cache_destroy(flash_block_cache);
+enomem_buf:
+	kfree(rtas_validate_flash_data.buf);
+	return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit rtas_flash_cleanup(void)
 {
+<<<<<<< HEAD
 	rtas_flash_term_hook = NULL;
 
 	if (flash_block_cache)
@@ -800,6 +1225,24 @@ static void __exit rtas_flash_cleanup(void)
 	remove_flash_pde(firmware_update_pde);
 	remove_flash_pde(validate_pde);
 	remove_flash_pde(manage_pde);
+=======
+	int i;
+
+	rtas_flash_term_hook = NULL;
+
+	if (rtas_firmware_flash_list) {
+		free_flash_list(rtas_firmware_flash_list);
+		rtas_firmware_flash_list = NULL;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(rtas_flash_files); i++) {
+		const struct rtas_flash_file *f = &rtas_flash_files[i];
+		remove_proc_entry(f->filename, NULL);
+	}
+
+	kmem_cache_destroy(flash_block_cache);
+	kfree(rtas_validate_flash_data.buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(rtas_flash_init);

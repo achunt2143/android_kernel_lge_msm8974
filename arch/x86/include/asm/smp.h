@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_SMP_H
 #define _ASM_X86_SMP_H
 #ifndef __ASSEMBLY__
 #include <linux/cpumask.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <asm/percpu.h>
 
@@ -61,6 +66,24 @@ DECLARE_EARLY_PER_CPU(int, x86_cpu_to_logical_apicid);
 
 /* Static state in head.S used to set up a CPU */
 extern unsigned long stack_start; /* Initial stack pointer address */
+=======
+
+#include <asm/cpumask.h>
+#include <asm/current.h>
+#include <asm/thread_info.h>
+
+DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_sibling_map);
+DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_core_map);
+DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_die_map);
+/* cpus sharing the last level cache: */
+DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_llc_shared_map);
+DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_l2c_shared_map);
+
+DECLARE_EARLY_PER_CPU_READ_MOSTLY(u32, x86_cpu_to_apicid);
+DECLARE_EARLY_PER_CPU_READ_MOSTLY(u32, x86_cpu_to_acpiid);
+
+struct task_struct;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct smp_ops {
 	void (*smp_prepare_boot_cpu)(void);
@@ -68,9 +91,18 @@ struct smp_ops {
 	void (*smp_cpus_done)(unsigned max_cpus);
 
 	void (*stop_other_cpus)(int wait);
+<<<<<<< HEAD
 	void (*smp_send_reschedule)(int cpu);
 
 	int (*cpu_up)(unsigned cpu);
+=======
+	void (*crash_stop_other_cpus)(void);
+	void (*smp_send_reschedule)(int cpu);
+
+	void (*cleanup_dead_cpu)(unsigned cpu);
+	void (*poll_sync_state)(void);
+	int (*kick_ap_alive)(unsigned cpu, struct task_struct *tidle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*cpu_disable)(void);
 	void (*cpu_die)(unsigned int cpu);
 	void (*play_dead)(void);
@@ -83,9 +115,12 @@ struct smp_ops {
 extern void set_cpu_sibling_map(int cpu);
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 #ifndef CONFIG_PARAVIRT
 #define startup_ipi_hook(phys_apicid, start_eip, start_esp) do { } while (0)
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct smp_ops smp_ops;
 
 static inline void smp_send_stop(void)
@@ -98,11 +133,14 @@ static inline void stop_other_cpus(void)
 	smp_ops.stop_other_cpus(1);
 }
 
+<<<<<<< HEAD
 static inline void smp_prepare_boot_cpu(void)
 {
 	smp_ops.smp_prepare_boot_cpu();
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void smp_prepare_cpus(unsigned int max_cpus)
 {
 	smp_ops.smp_prepare_cpus(max_cpus);
@@ -113,11 +151,14 @@ static inline void smp_cpus_done(unsigned int max_cpus)
 	smp_ops.smp_cpus_done(max_cpus);
 }
 
+<<<<<<< HEAD
 static inline int __cpu_up(unsigned int cpu)
 {
 	return smp_ops.cpu_up(cpu);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int __cpu_disable(void)
 {
 	return smp_ops.cpu_disable();
@@ -125,6 +166,7 @@ static inline int __cpu_disable(void)
 
 static inline void __cpu_die(unsigned int cpu)
 {
+<<<<<<< HEAD
 	smp_ops.cpu_die(cpu);
 }
 
@@ -134,6 +176,19 @@ static inline void play_dead(void)
 }
 
 static inline void smp_send_reschedule(int cpu)
+=======
+	if (smp_ops.cpu_die)
+		smp_ops.cpu_die(cpu);
+}
+
+static inline void __noreturn play_dead(void)
+{
+	smp_ops.play_dead();
+	BUG();
+}
+
+static inline void arch_smp_send_reschedule(int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	smp_ops.smp_send_reschedule(cpu);
 }
@@ -150,20 +205,37 @@ static inline void arch_send_call_function_ipi_mask(const struct cpumask *mask)
 
 void cpu_disable_common(void);
 void native_smp_prepare_boot_cpu(void);
+<<<<<<< HEAD
 void native_smp_prepare_cpus(unsigned int max_cpus);
 void native_smp_cpus_done(unsigned int max_cpus);
 int native_cpu_up(unsigned int cpunum);
 int native_cpu_disable(void);
 void native_cpu_die(unsigned int cpu);
+=======
+void smp_prepare_cpus_common(void);
+void native_smp_prepare_cpus(unsigned int max_cpus);
+void native_smp_cpus_done(unsigned int max_cpus);
+int common_cpu_up(unsigned int cpunum, struct task_struct *tidle);
+int native_kick_ap(unsigned int cpu, struct task_struct *tidle);
+int native_cpu_disable(void);
+void __noreturn hlt_play_dead(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void native_play_dead(void);
 void play_dead_common(void);
 void wbinvd_on_cpu(int cpu);
 int wbinvd_on_all_cpus(void);
 
+<<<<<<< HEAD
+=======
+void smp_kick_mwait_play_dead(void);
+
+void native_smp_send_reschedule(int cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void native_send_call_func_ipi(const struct cpumask *mask);
 void native_send_call_func_single_ipi(int cpu);
 
 void smp_store_cpu_info(int id);
+<<<<<<< HEAD
 #define cpu_physical_id(cpu)	per_cpu(x86_cpu_to_apicid, cpu)
 
 /* We don't mark CPUs online until __cpu_up(), so we need another measure */
@@ -171,6 +243,40 @@ static inline int num_booting_cpus(void)
 {
 	return cpumask_weight(cpu_callout_mask);
 }
+=======
+
+asmlinkage __visible void smp_reboot_interrupt(void);
+__visible void smp_reschedule_interrupt(struct pt_regs *regs);
+__visible void smp_call_function_interrupt(struct pt_regs *regs);
+__visible void smp_call_function_single_interrupt(struct pt_regs *r);
+
+#define cpu_physical_id(cpu)	per_cpu(x86_cpu_to_apicid, cpu)
+#define cpu_acpi_id(cpu)	per_cpu(x86_cpu_to_acpiid, cpu)
+
+/*
+ * This function is needed by all SMP systems. It must _always_ be valid
+ * from the initial startup.
+ */
+#define raw_smp_processor_id()  this_cpu_read(pcpu_hot.cpu_number)
+#define __smp_processor_id() __this_cpu_read(pcpu_hot.cpu_number)
+
+#ifdef CONFIG_X86_32
+extern int safe_smp_processor_id(void);
+#else
+# define safe_smp_processor_id()	smp_processor_id()
+#endif
+
+static inline struct cpumask *cpu_llc_shared_mask(int cpu)
+{
+	return per_cpu(cpu_llc_shared_map, cpu);
+}
+
+static inline struct cpumask *cpu_l2c_shared_mask(int cpu)
+{
+	return per_cpu(cpu_l2c_shared_map, cpu);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else /* !CONFIG_SMP */
 #define wbinvd_on_cpu(cpu)     wbinvd()
 static inline int wbinvd_on_all_cpus(void)
@@ -178,6 +284,7 @@ static inline int wbinvd_on_all_cpus(void)
 	wbinvd();
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_SMP */
 
 extern unsigned disabled_cpus __cpuinitdata;
@@ -224,6 +331,14 @@ extern int hard_smp_processor_id(void);
 # endif
 
 #endif /* CONFIG_X86_LOCAL_APIC */
+=======
+
+static inline struct cpumask *cpu_llc_shared_mask(int cpu)
+{
+	return (struct cpumask *)cpumask_of(0);
+}
+#endif /* CONFIG_SMP */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_DEBUG_NMI_SELFTEST
 extern void nmi_selftest(void);
@@ -231,5 +346,19 @@ extern void nmi_selftest(void);
 #define nmi_selftest() do { } while (0)
 #endif
 
+<<<<<<< HEAD
 #endif /* __ASSEMBLY__ */
+=======
+extern unsigned int smpboot_control;
+extern unsigned long apic_mmio_base;
+
+#endif /* !__ASSEMBLY__ */
+
+/* Control bits for startup_64 */
+#define STARTUP_READ_APICID	0x80000000
+
+/* Top 8 bits are reserved for control */
+#define STARTUP_PARALLEL_MASK	0xFF000000
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_SMP_H */

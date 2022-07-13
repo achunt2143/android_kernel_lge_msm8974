@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Date: 2006/02/07 04:21:54 $ $RCSfile: tp.c,v $ $Revision: 1.73 $ */
 #include "common.h"
 #include "regs.h"
@@ -55,7 +59,11 @@ void t1_tp_destroy(struct petp *tp)
 	kfree(tp);
 }
 
+<<<<<<< HEAD
 struct petp *__devinit t1_tp_create(adapter_t * adapter, struct tp_params *p)
+=======
+struct petp *t1_tp_create(adapter_t *adapter, struct tp_params *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct petp *tp = kzalloc(sizeof(*tp), GFP_KERNEL);
 

@@ -41,9 +41,12 @@
 
 #define VALIDATE_TID 1
 
+<<<<<<< HEAD
 void *cxgb_alloc_mem(unsigned long size);
 void cxgb_free_mem(void *addr);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Map an ATID or STID to their entries in the corresponding TID tables.
  */

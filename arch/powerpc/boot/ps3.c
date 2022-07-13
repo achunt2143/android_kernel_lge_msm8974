@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 bootwrapper support.
  *
  *  Copyright (C) 2007 Sony Computer Entertainment Inc.
  *  Copyright 2007 Sony Corp.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdarg.h>
@@ -33,6 +40,7 @@ extern int lv1_get_logical_ppe_id(u64 *out_1);
 extern int lv1_get_repository_node_value(u64 in_1, u64 in_2, u64 in_3,
 	u64 in_4, u64 in_5, u64 *out_1, u64 *out_2);
 
+<<<<<<< HEAD
 #ifdef DEBUG
 #define DBG(fmt...) printf(fmt)
 #else
@@ -40,6 +48,8 @@ static inline int __attribute__ ((format (printf, 1, 2))) DBG(
 	const char *fmt, ...) {return 0;}
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 BSS_STACK(4096);
 
 /* A buffer that may be edited by tools operating on a zImage binary so as to
@@ -47,13 +57,21 @@ BSS_STACK(4096);
  * The buffer is put in it's own section so that tools may locate it easier.
  */
 
+<<<<<<< HEAD
 static char cmdline[COMMAND_LINE_SIZE]
+=======
+static char cmdline[BOOT_COMMAND_LINE_SIZE]
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__attribute__((__section__("__builtin_cmdline")));
 
 static void prep_cmdline(void *chosen)
 {
 	if (cmdline[0] == '\0')
+<<<<<<< HEAD
 		getprop(chosen, "bootargs", cmdline, COMMAND_LINE_SIZE-1);
+=======
+		getprop(chosen, "bootargs", cmdline, BOOT_COMMAND_LINE_SIZE-1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		setprop_str(chosen, "bootargs", cmdline);
 
@@ -119,13 +137,20 @@ void ps3_copy_vectors(void)
 	flush_cache((void *)0x100, 512);
 }
 
+<<<<<<< HEAD
 void platform_init(unsigned long null_check)
+=======
+void platform_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const u32 heapsize = 0x1000000 - (u32)_end; /* 16MiB */
 	void *chosen;
 	unsigned long ft_addr;
 	u64 rm_size;
+<<<<<<< HEAD
 	unsigned long val;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	console_ops.write = ps3_console_write;
 	platform_ops.exit = ps3_exit;
@@ -140,7 +165,11 @@ void platform_init(unsigned long null_check)
 	ps3_repository_read_rm_size(&rm_size);
 	dt_fixup_memory(0, rm_size);
 
+<<<<<<< HEAD
 	if (_initrd_end > _initrd_start) {
+=======
+	if (&_initrd_end > &_initrd_start) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		setprop_val(chosen, "linux,initrd-start", (u32)(_initrd_start));
 		setprop_val(chosen, "linux,initrd-end", (u32)(_initrd_end));
 	}
@@ -153,11 +182,14 @@ void platform_init(unsigned long null_check)
 
 	printf(" flat tree at 0x%lx\n\r", ft_addr);
 
+<<<<<<< HEAD
 	val = *(unsigned long *)0;
 
 	if (val != null_check)
 		printf("null check failed: %lx != %lx\n\r", val, null_check);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	((kernel_entry_t)0)(ft_addr, 0, NULL);
 
 	ps3_exit();

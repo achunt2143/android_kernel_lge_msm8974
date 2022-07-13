@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cryptographic API.
  * Glue code for the SHA1 Secure Hash Algorithm assembler implementation
@@ -8,17 +12,21 @@
  * Copyright (c) Andrew McDonald <andrew@mcdonald.org.uk>
  * Copyright (c) Jean-Francois Dive <jef@linuxbe.org>
  * Copyright (c) Mathias Krause <minipli@googlemail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <crypto/internal/hash.h>
 #include <linux/init.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/cryptohash.h>
 #include <linux/types.h>
 #include <crypto/sha.h>
@@ -65,10 +73,22 @@ static int __sha1_update(struct sha1_state *sctx, const u8 *data,
 	return 0;
 }
 
+=======
+#include <linux/types.h>
+#include <crypto/sha1.h>
+#include <crypto/sha1_base.h>
+#include <asm/byteorder.h>
+
+#include "sha1.h"
+
+asmlinkage void sha1_block_data_order(struct sha1_state *digest,
+		const u8 *data, int rounds);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int sha1_update_arm(struct shash_desc *desc, const u8 *data,
 		    unsigned int len)
 {
+<<<<<<< HEAD
 	struct sha1_state *sctx = shash_desc_ctx(desc);
 	unsigned int partial = sctx->count % SHA1_BLOCK_SIZE;
 	int res;
@@ -143,11 +163,44 @@ static struct shash_alg alg = {
 	.import		=	sha1_import,
 	.descsize	=	sizeof(struct sha1_state),
 	.statesize	=	sizeof(struct sha1_state),
+=======
+	/* make sure signature matches sha1_block_fn() */
+	BUILD_BUG_ON(offsetof(struct sha1_state, state) != 0);
+
+	return sha1_base_do_update(desc, data, len, sha1_block_data_order);
+}
+EXPORT_SYMBOL_GPL(sha1_update_arm);
+
+static int sha1_final(struct shash_desc *desc, u8 *out)
+{
+	sha1_base_do_finalize(desc, sha1_block_data_order);
+	return sha1_base_finish(desc, out);
+}
+
+int sha1_finup_arm(struct shash_desc *desc, const u8 *data,
+		   unsigned int len, u8 *out)
+{
+	sha1_base_do_update(desc, data, len, sha1_block_data_order);
+	return sha1_final(desc, out);
+}
+EXPORT_SYMBOL_GPL(sha1_finup_arm);
+
+static struct shash_alg alg = {
+	.digestsize	=	SHA1_DIGEST_SIZE,
+	.init		=	sha1_base_init,
+	.update		=	sha1_update_arm,
+	.final		=	sha1_final,
+	.finup		=	sha1_finup_arm,
+	.descsize	=	sizeof(struct sha1_state),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.base		=	{
 		.cra_name	=	"sha1",
 		.cra_driver_name=	"sha1-asm",
 		.cra_priority	=	150,
+<<<<<<< HEAD
 		.cra_flags	=	CRYPTO_ALG_TYPE_SHASH,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.cra_blocksize	=	SHA1_BLOCK_SIZE,
 		.cra_module	=	THIS_MODULE,
 	}
@@ -171,5 +224,9 @@ module_exit(sha1_mod_fini);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("SHA1 Secure Hash Algorithm (ARM)");
+<<<<<<< HEAD
 MODULE_ALIAS("sha1");
+=======
+MODULE_ALIAS_CRYPTO("sha1");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("David McCullough <ucdevel@gmail.com>");

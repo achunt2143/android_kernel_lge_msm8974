@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000-2002 Vojtech Pavlik <vojtech@ucw.cz>
  *  Copyright (c) 2001-2002, 2007 Johann Deneux <johann.deneux@gmail.com>
@@ -5,6 +9,7 @@
  *  USB/RS232 I-Force joysticks and wheels.
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,10 +34,18 @@
 
 MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>, Johann Deneux <johann.deneux@gmail.com>");
 MODULE_DESCRIPTION("USB/RS232 I-Force joysticks and wheels driver");
+=======
+#include <asm/unaligned.h>
+#include "iforce.h"
+
+MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>, Johann Deneux <johann.deneux@gmail.com>");
+MODULE_DESCRIPTION("Core I-Force joysticks and wheels driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 static signed short btn_joystick[] =
 { BTN_TRIGGER, BTN_TOP, BTN_THUMB, BTN_TOP2, BTN_BASE,
+<<<<<<< HEAD
   BTN_BASE2, BTN_BASE3, BTN_BASE4, BTN_BASE5, BTN_A, BTN_B, BTN_C, -1 };
 
 static signed short btn_avb_pegasus[] =
@@ -48,6 +61,16 @@ static signed short btn_avb_tw[] =
   BTN_BASE2, BTN_BASE3, BTN_BASE4, -1 };
 
 static signed short btn_avb_wheel[] =
+=======
+  BTN_BASE2, BTN_BASE3, BTN_BASE4, BTN_BASE5, BTN_A,
+  BTN_B, BTN_C, BTN_DEAD, -1 };
+
+static signed short btn_joystick_avb[] =
+{ BTN_TRIGGER, BTN_THUMB, BTN_TOP, BTN_TOP2, BTN_BASE,
+  BTN_BASE2, BTN_BASE3, BTN_BASE4, BTN_DEAD, -1 };
+
+static signed short btn_wheel[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 { BTN_GEAR_DOWN, BTN_GEAR_UP, BTN_BASE, BTN_BASE2, BTN_BASE3,
   BTN_BASE4, BTN_BASE5, BTN_BASE6, -1 };
 
@@ -73,11 +96,21 @@ static struct iforce_device iforce_device[] = {
 	{ 0x044f, 0xa01c, "Thrustmaster Motor Sport GT",		btn_wheel, abs_wheel, ff_iforce },
 	{ 0x046d, 0xc281, "Logitech WingMan Force",			btn_joystick, abs_joystick, ff_iforce },
 	{ 0x046d, 0xc291, "Logitech WingMan Formula Force",		btn_wheel, abs_wheel, ff_iforce },
+<<<<<<< HEAD
 	{ 0x05ef, 0x020a, "AVB Top Shot Pegasus",			btn_avb_pegasus, abs_avb_pegasus, ff_iforce },
 	{ 0x05ef, 0x8884, "AVB Mag Turbo Force",			btn_avb_wheel, abs_wheel, ff_iforce },
 	{ 0x05ef, 0x8888, "AVB Top Shot Force Feedback Racing Wheel",	btn_avb_tw, abs_wheel, ff_iforce }, //?
 	{ 0x061c, 0xc0a4, "ACT LABS Force RS",                          btn_wheel, abs_wheel, ff_iforce }, //?
 	{ 0x061c, 0xc084, "ACT LABS Force RS",				btn_wheel, abs_wheel, ff_iforce },
+=======
+	{ 0x05ef, 0x020a, "AVB Top Shot Pegasus",			btn_joystick_avb, abs_avb_pegasus, ff_iforce },
+	{ 0x05ef, 0x8884, "AVB Mag Turbo Force",			btn_wheel, abs_wheel, ff_iforce },
+	{ 0x05ef, 0x8886, "Boeder Force Feedback Wheel",		btn_wheel, abs_wheel, ff_iforce },
+	{ 0x05ef, 0x8888, "AVB Top Shot Force Feedback Racing Wheel",	btn_wheel, abs_wheel, ff_iforce }, //?
+	{ 0x061c, 0xc0a4, "ACT LABS Force RS",                          btn_wheel, abs_wheel, ff_iforce }, //?
+	{ 0x061c, 0xc084, "ACT LABS Force RS",				btn_wheel, abs_wheel, ff_iforce },
+	{ 0x06a3, 0xff04, "Saitek R440 Force Wheel",			btn_wheel, abs_wheel, ff_iforce }, //?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x06f8, 0x0001, "Guillemot Race Leader Force Feedback",	btn_wheel, abs_wheel, ff_iforce }, //?
 	{ 0x06f8, 0x0001, "Guillemot Jet Leader Force Feedback",	btn_joystick, abs_joystick_rudder, ff_iforce },
 	{ 0x06f8, 0x0004, "Guillemot Force Feedback Racing Wheel",	btn_wheel, abs_wheel, ff_iforce }, //?
@@ -143,6 +176,7 @@ static int iforce_upload_effect(struct input_dev *dev, struct ff_effect *effect,
  * Upload the effect
  */
 	switch (effect->type) {
+<<<<<<< HEAD
 
 		case FF_PERIODIC:
 			ret = iforce_upload_periodic(iforce, effect, old);
@@ -159,6 +193,23 @@ static int iforce_upload_effect(struct input_dev *dev, struct ff_effect *effect,
 
 		default:
 			return -EINVAL;
+=======
+	case FF_PERIODIC:
+		ret = iforce_upload_periodic(iforce, effect, old);
+		break;
+
+	case FF_CONSTANT:
+		ret = iforce_upload_constant(iforce, effect, old);
+		break;
+
+	case FF_SPRING:
+	case FF_DAMPER:
+		ret = iforce_upload_condition(iforce, effect, old);
+		break;
+
+	default:
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ret == 0) {
@@ -196,6 +247,7 @@ static int iforce_open(struct input_dev *dev)
 {
 	struct iforce *iforce = input_get_drvdata(dev);
 
+<<<<<<< HEAD
 	switch (iforce->bus) {
 #ifdef CONFIG_JOYSTICK_IFORCE_USB
 		case IFORCE_USB:
@@ -205,6 +257,9 @@ static int iforce_open(struct input_dev *dev)
 			break;
 #endif
 	}
+=======
+	iforce->xport_ops->start_io(iforce);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_bit(EV_FF, dev->evbit)) {
 		/* Enable force feedback */
@@ -237,6 +292,7 @@ static void iforce_close(struct input_dev *dev)
 			!test_bit(IFORCE_XMIT_RUNNING, iforce->xmit_flags));
 	}
 
+<<<<<<< HEAD
 	switch (iforce->bus) {
 #ifdef CONFIG_JOYSTICK_IFORCE_USB
 	case IFORCE_USB:
@@ -258,6 +314,19 @@ int iforce_init_device(struct iforce *iforce)
 	struct input_dev *input_dev;
 	struct ff_device *ff;
 	unsigned char c[] = "CEOV";
+=======
+	iforce->xport_ops->stop_io(iforce);
+}
+
+int iforce_init_device(struct device *parent, u16 bustype,
+		       struct iforce *iforce)
+{
+	struct input_dev *input_dev;
+	struct ff_device *ff;
+	u8 c[] = "CEOV";
+	u8 buf[IFORCE_MAX_LENGTH];
+	size_t len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, error;
 	int ff_effects = 0;
 
@@ -275,6 +344,7 @@ int iforce_init_device(struct iforce *iforce)
  * Input device fields.
  */
 
+<<<<<<< HEAD
 	switch (iforce->bus) {
 #ifdef CONFIG_JOYSTICK_IFORCE_USB
 	case IFORCE_USB:
@@ -289,6 +359,10 @@ int iforce_init_device(struct iforce *iforce)
 		break;
 #endif
 	}
+=======
+	input_dev->id.bustype = bustype;
+	input_dev->dev.parent = parent;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_set_drvdata(input_dev, iforce);
 
@@ -313,11 +387,20 @@ int iforce_init_device(struct iforce *iforce)
  */
 
 	for (i = 0; i < 20; i++)
+<<<<<<< HEAD
 		if (!iforce_get_id_packet(iforce, "O"))
 			break;
 
 	if (i == 20) { /* 5 seconds */
 		err("Timeout waiting for response from device.");
+=======
+		if (!iforce_get_id_packet(iforce, 'O', buf, &len))
+			break;
+
+	if (i == 20) { /* 5 seconds */
+		dev_err(&input_dev->dev,
+			"Timeout waiting for response from device.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = -ENODEV;
 		goto fail;
 	}
@@ -326,6 +409,7 @@ int iforce_init_device(struct iforce *iforce)
  * Get device info.
  */
 
+<<<<<<< HEAD
 	if (!iforce_get_id_packet(iforce, "M"))
 		input_dev->id.vendor = (iforce->edata[2] << 8) | iforce->edata[1];
 	else
@@ -343,6 +427,25 @@ int iforce_init_device(struct iforce *iforce)
 
 	if (!iforce_get_id_packet(iforce, "N"))
 		ff_effects = iforce->edata[1];
+=======
+	if (!iforce_get_id_packet(iforce, 'M', buf, &len) && len >= 3)
+		input_dev->id.vendor = get_unaligned_le16(buf + 1);
+	else
+		dev_warn(&iforce->dev->dev, "Device does not respond to id packet M\n");
+
+	if (!iforce_get_id_packet(iforce, 'P', buf, &len) && len >= 3)
+		input_dev->id.product = get_unaligned_le16(buf + 1);
+	else
+		dev_warn(&iforce->dev->dev, "Device does not respond to id packet P\n");
+
+	if (!iforce_get_id_packet(iforce, 'B', buf, &len) && len >= 3)
+		iforce->device_memory.end = get_unaligned_le16(buf + 1);
+	else
+		dev_warn(&iforce->dev->dev, "Device does not respond to id packet B\n");
+
+	if (!iforce_get_id_packet(iforce, 'N', buf, &len) && len >= 2)
+		ff_effects = buf[1];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		dev_warn(&iforce->dev->dev, "Device does not respond to id packet N\n");
 
@@ -358,8 +461,14 @@ int iforce_init_device(struct iforce *iforce)
  */
 
 	for (i = 0; c[i]; i++)
+<<<<<<< HEAD
 		if (!iforce_get_id_packet(iforce, c + i))
 			iforce_dump_packet("info", iforce->ecmd, iforce->edata);
+=======
+		if (!iforce_get_id_packet(iforce, c[i], buf, &len))
+			iforce_dump_packet(iforce, "info",
+					   (FF_CMD_QUERY & 0xff00) | len, buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Disable spring, enable force feedback.
@@ -387,13 +496,17 @@ int iforce_init_device(struct iforce *iforce)
 
 	for (i = 0; iforce->type->btn[i] >= 0; i++)
 		set_bit(iforce->type->btn[i], input_dev->keybit);
+<<<<<<< HEAD
 	set_bit(BTN_DEAD, input_dev->keybit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; iforce->type->abs[i] >= 0; i++) {
 
 		signed short t = iforce->type->abs[i];
 
 		switch (t) {
+<<<<<<< HEAD
 
 			case ABS_X:
 			case ABS_Y:
@@ -422,6 +535,31 @@ int iforce_init_device(struct iforce *iforce)
 
 				input_set_abs_params(input_dev, t, -1, 1, 0, 0);
 				break;
+=======
+		case ABS_X:
+		case ABS_Y:
+		case ABS_WHEEL:
+			input_set_abs_params(input_dev, t, -1920, 1920, 16, 128);
+			set_bit(t, input_dev->ffbit);
+			break;
+
+		case ABS_THROTTLE:
+		case ABS_GAS:
+		case ABS_BRAKE:
+			input_set_abs_params(input_dev, t, 0, 255, 0, 0);
+			break;
+
+		case ABS_RUDDER:
+			input_set_abs_params(input_dev, t, -128, 127, 0, 0);
+			break;
+
+		case ABS_HAT0X:
+		case ABS_HAT0Y:
+		case ABS_HAT1X:
+		case ABS_HAT1Y:
+			input_set_abs_params(input_dev, t, -1, 1, 0, 0);
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -454,6 +592,7 @@ int iforce_init_device(struct iforce *iforce)
  fail:	input_free_device(input_dev);
 	return error;
 }
+<<<<<<< HEAD
 
 static int __init iforce_init(void)
 {
@@ -486,3 +625,6 @@ static void __exit iforce_exit(void)
 
 module_init(iforce_init);
 module_exit(iforce_exit);
+=======
+EXPORT_SYMBOL(iforce_init_device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

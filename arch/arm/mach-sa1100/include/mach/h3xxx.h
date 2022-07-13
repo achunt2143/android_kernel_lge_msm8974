@@ -1,18 +1,30 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definitions for Compaq iPAQ H3100 and H3600 handheld computers
  *
  * (c) 2000 Compaq Computer Corporation. (Author: Jamey Hicks)
  * (c) 2009 Dmitry Artamonow <mad_soft@inbox.ru>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _INCLUDE_H3XXX_H_
 #define _INCLUDE_H3XXX_H_
 
+<<<<<<< HEAD
+=======
+#include "hardware.h" /* Gives GPIO_MAX */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Physical memory regions corresponding to chip selects */
 #define H3600_EGPIO_PHYS	(SA1100_CS5_PHYS + 0x01000000)
 #define H3600_BANK_2_PHYS	SA1100_CS2_PHYS
@@ -77,6 +89,7 @@
 #define H3600_EGPIO_LCD_5V_ON		(H3XXX_EGPIO_BASE + 14) /* enable 5V to LCD. active high. */
 #define H3600_EGPIO_LVDD_ON		(H3XXX_EGPIO_BASE + 15) /* enable 9V and -6.5V to LCD. */
 
+<<<<<<< HEAD
 struct gpio_default_state {
 	int gpio;
 	int mode;
@@ -88,6 +101,8 @@ struct gpio_default_state {
 #define GPIO_MODE_OUT1	1
 
 void h3xxx_init_gpio(struct gpio_default_state *s, size_t n);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init h3xxx_map_io(void);
 void __init h3xxx_mach_init(void);
 

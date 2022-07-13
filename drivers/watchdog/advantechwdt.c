@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Advantech Single Board Computer WDT driver
  *
@@ -9,11 +13,14 @@
  *	(c) Copyright 1996 Alan Cox <alan@lxorguk.ukuu.org.uk>,
  *						All Rights Reserved.
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Neither Alan Cox nor CymruNet Ltd. admit liability nor provide
  *	warranty for any of this software. This material is provided
  *	"AS-IS" and at no charge.
@@ -181,7 +188,11 @@ static long advwdt_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (advwdt_set_heartbeat(new_timeout))
 			return -EINVAL;
 		advwdt_ping();
+<<<<<<< HEAD
 		/* Fall */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		return put_user(timeout, p);
 	default:
@@ -199,7 +210,11 @@ static int advwdt_open(struct inode *inode, struct file *file)
 	 */
 
 	advwdt_ping();
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int advwdt_close(struct inode *inode, struct file *file)
@@ -224,6 +239,10 @@ static const struct file_operations advwdt_fops = {
 	.llseek		= no_llseek,
 	.write		= advwdt_write,
 	.unlocked_ioctl	= advwdt_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= advwdt_open,
 	.release	= advwdt_close,
 };
@@ -238,7 +257,11 @@ static struct miscdevice advwdt_miscdev = {
  *	Init & exit routines
  */
 
+<<<<<<< HEAD
 static int __devinit advwdt_probe(struct platform_device *dev)
+=======
+static int __init advwdt_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -282,14 +305,21 @@ unreg_stop:
 	goto out;
 }
 
+<<<<<<< HEAD
 static int __devexit advwdt_remove(struct platform_device *dev)
+=======
+static void advwdt_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	misc_deregister(&advwdt_miscdev);
 	release_region(wdt_start, 1);
 	if (wdt_stop != wdt_start)
 		release_region(wdt_stop, 1);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void advwdt_shutdown(struct platform_device *dev)
@@ -299,11 +329,17 @@ static void advwdt_shutdown(struct platform_device *dev)
 }
 
 static struct platform_driver advwdt_driver = {
+<<<<<<< HEAD
 	.probe		= advwdt_probe,
 	.remove		= __devexit_p(advwdt_remove),
 	.shutdown	= advwdt_shutdown,
 	.driver		= {
 		.owner	= THIS_MODULE,
+=======
+	.remove_new	= advwdt_remove,
+	.shutdown	= advwdt_shutdown,
+	.driver		= {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name	= DRV_NAME,
 	},
 };
@@ -314,6 +350,7 @@ static int __init advwdt_init(void)
 
 	pr_info("WDT driver for Advantech single board computer initialising\n");
 
+<<<<<<< HEAD
 	err = platform_driver_register(&advwdt_driver);
 	if (err)
 		return err;
@@ -329,6 +366,21 @@ static int __init advwdt_init(void)
 
 unreg_platform_driver:
 	platform_driver_unregister(&advwdt_driver);
+=======
+	advwdt_platform_device = platform_device_register_simple(DRV_NAME,
+								-1, NULL, 0);
+	if (IS_ERR(advwdt_platform_device))
+		return PTR_ERR(advwdt_platform_device);
+
+	err = platform_driver_probe(&advwdt_driver, advwdt_probe);
+	if (err)
+		goto unreg_platform_device;
+
+	return 0;
+
+unreg_platform_device:
+	platform_device_unregister(advwdt_platform_device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -345,4 +397,7 @@ module_exit(advwdt_exit);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Marek Michalkiewicz <marekm@linux.org.pl>");
 MODULE_DESCRIPTION("Advantech Single Board Computer WDT driver");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

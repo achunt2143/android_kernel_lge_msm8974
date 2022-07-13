@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 #ifndef _PARISC_PSW_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _PARISC_PSW_H
+#define _PARISC_PSW_H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	PSW_I	0x00000001
 #define	PSW_D	0x00000002

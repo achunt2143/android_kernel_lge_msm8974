@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * fbif.h -- Xen virtual frame buffer device
  *
@@ -19,6 +20,12 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *
+=======
+/* SPDX-License-Identifier: MIT */
+/*
+ * fbif.h -- Xen virtual frame buffer device
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2005 Anthony Liguori <aliguori@us.ibm.com>
  * Copyright (C) 2006 Red Hat, Inc., Markus Armbruster <armbru@redhat.com>
  */

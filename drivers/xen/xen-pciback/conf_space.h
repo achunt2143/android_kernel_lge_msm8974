@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCI Backend - Common data structures for overriding the configuration space
  *
@@ -64,6 +68,14 @@ struct config_field_entry {
 	void *data;
 };
 
+<<<<<<< HEAD
+=======
+#define INTERRUPT_TYPE_NONE (0)
+#define INTERRUPT_TYPE_INTX (1<<0)
+#define INTERRUPT_TYPE_MSI  (1<<1)
+#define INTERRUPT_TYPE_MSIX (1<<2)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern bool xen_pcibk_permissive;
 
 #define OFFSET(cfg_entry) ((cfg_entry)->base_offset+(cfg_entry)->field->offset)
@@ -125,4 +137,9 @@ int xen_pcibk_config_capability_init(void);
 int xen_pcibk_config_header_add_fields(struct pci_dev *dev);
 int xen_pcibk_config_capability_add_fields(struct pci_dev *dev);
 
+<<<<<<< HEAD
+=======
+int xen_pcibk_get_interrupt_type(struct pci_dev *dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* __XEN_PCIBACK_CONF_SPACE_H__ */

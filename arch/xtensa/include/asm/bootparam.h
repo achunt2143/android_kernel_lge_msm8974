@@ -20,8 +20,14 @@
 #define BP_TAG_COMMAND_LINE	0x1001	/* command line (0-terminated string)*/
 #define BP_TAG_INITRD		0x1002	/* ramdisk addr and size (bp_meminfo) */
 #define BP_TAG_MEMORY		0x1003	/* memory addr and size (bp_meminfo) */
+<<<<<<< HEAD
 #define BP_TAG_SERIAL_BAUSRATE	0x1004	/* baud rate of current console. */
 #define BP_TAG_SERIAL_PORT	0x1005	/* serial device of current console */
+=======
+#define BP_TAG_SERIAL_BAUDRATE	0x1004	/* baud rate of current console. */
+#define BP_TAG_SERIAL_PORT	0x1005	/* serial device of current console */
+#define BP_TAG_FDT		0x1006	/* flat device tree addr */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BP_TAG_FIRST		0x7B0B  /* first tag with a version number */
 #define BP_TAG_LAST 		0x7E0B	/* last tag */
@@ -31,6 +37,7 @@
 /* All records are aligned to 4 bytes */
 
 typedef struct bp_tag {
+<<<<<<< HEAD
   unsigned short id;		/* tag id */
   unsigned short size;		/* size of this record excluding the structure*/
   unsigned long data[0];	/* data */
@@ -43,10 +50,23 @@ typedef struct meminfo {
 } meminfo_t;
 
 #define SYSMEM_BANKS_MAX 5
+=======
+	unsigned short id;	/* tag id */
+	unsigned short size;	/* size of this record excluding the structure*/
+	unsigned long data[];	/* data */
+} bp_tag_t;
+
+struct bp_meminfo {
+	unsigned long type;
+	unsigned long start;
+	unsigned long end;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MEMORY_TYPE_CONVENTIONAL	0x1000
 #define MEMORY_TYPE_NONE		0x2000
 
+<<<<<<< HEAD
 typedef struct sysmem_info {
   int nr_banks;
   meminfo_t bank[SYSMEM_BANKS_MAX];
@@ -59,3 +79,7 @@ extern sysmem_info_t sysmem;
 
 
 
+=======
+#endif
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

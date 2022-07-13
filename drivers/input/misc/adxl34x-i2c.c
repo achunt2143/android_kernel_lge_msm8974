@@ -1,15 +1,26 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ADLX345/346 Three-Axis Digital Accelerometers (I2C Interface)
  *
  * Enter bugs at http://blackfin.uclinux.org/
  *
  * Copyright (C) 2009 Michael Hennerich, Analog Devices Inc.
+<<<<<<< HEAD
  * Licensed under the GPL-2 or later.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/input.h>	/* BUS_I2C */
 #include <linux/i2c.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/pm.h>
 #include "adxl34x.h"
@@ -73,8 +84,12 @@ static const struct adxl34x_bus_ops adxl34x_i2c_bops = {
 	.read_block	= adxl34x_i2c_read_block,
 };
 
+<<<<<<< HEAD
 static int __devinit adxl34x_i2c_probe(struct i2c_client *client,
 				       const struct i2c_device_id *id)
+=======
+static int adxl34x_i2c_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adxl34x *ac;
 	int error;
@@ -98,6 +113,7 @@ static int __devinit adxl34x_i2c_probe(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit adxl34x_i2c_remove(struct i2c_client *client)
 {
 	struct adxl34x *ac = i2c_get_clientdata(client);
@@ -130,6 +146,15 @@ static int adxl34x_i2c_resume(struct device *dev)
 static SIMPLE_DEV_PM_OPS(adxl34x_i2c_pm, adxl34x_i2c_suspend,
 			 adxl34x_i2c_resume);
 
+=======
+static void adxl34x_i2c_remove(struct i2c_client *client)
+{
+	struct adxl34x *ac = i2c_get_clientdata(client);
+
+	adxl34x_remove(ac);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id adxl34x_id[] = {
 	{ "adxl34x", 0 },
 	{ }
@@ -137,6 +162,7 @@ static const struct i2c_device_id adxl34x_id[] = {
 
 MODULE_DEVICE_TABLE(i2c, adxl34x_id);
 
+<<<<<<< HEAD
 static struct i2c_driver adxl34x_driver = {
 	.driver = {
 		.name = "adxl34x",
@@ -145,6 +171,33 @@ static struct i2c_driver adxl34x_driver = {
 	},
 	.probe    = adxl34x_i2c_probe,
 	.remove   = __devexit_p(adxl34x_i2c_remove),
+=======
+static const struct of_device_id adxl34x_of_id[] = {
+	/*
+	 * The ADXL346 is backward-compatible with the ADXL345. Differences are
+	 * handled by runtime detection of the device model, there's thus no
+	 * need for listing the "adi,adxl346" compatible value explicitly.
+	 */
+	{ .compatible = "adi,adxl345", },
+	/*
+	 * Deprecated, DT nodes should use one or more of the device-specific
+	 * compatible values "adi,adxl345" and "adi,adxl346".
+	 */
+	{ .compatible = "adi,adxl34x", },
+	{ }
+};
+
+MODULE_DEVICE_TABLE(of, adxl34x_of_id);
+
+static struct i2c_driver adxl34x_driver = {
+	.driver = {
+		.name = "adxl34x",
+		.pm = pm_sleep_ptr(&adxl34x_pm),
+		.of_match_table = adxl34x_of_id,
+	},
+	.probe    = adxl34x_i2c_probe,
+	.remove   = adxl34x_i2c_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = adxl34x_id,
 };
 

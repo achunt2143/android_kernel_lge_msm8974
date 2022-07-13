@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The USB Monitor, inspired by Dave Harding's USBMon.
  *
@@ -8,12 +12,22 @@
 #include <linux/list.h>
 #include <linux/usb.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/time.h>
+=======
+#include <linux/sched/signal.h>
+#include <linux/time.h>
+#include <linux/ktime.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/mutex.h>
 #include <linux/debugfs.h>
 #include <linux/scatterlist.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "usb_mon.h"
 
@@ -82,6 +96,11 @@ struct mon_reader_text {
 
 	wait_queue_head_t wait;
 	int printf_size;
+<<<<<<< HEAD
+=======
+	size_t printf_offset;
+	size_t printf_togo;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *printf_buf;
 	struct mutex printf_lock;
 
@@ -176,12 +195,21 @@ static inline char mon_text_get_data(struct mon_event_text *ep, struct urb *urb,
 
 static inline unsigned int mon_get_timestamp(void)
 {
+<<<<<<< HEAD
 	struct timeval tval;
 	unsigned int stamp;
 
 	do_gettimeofday(&tval);
 	stamp = tval.tv_sec & 0xFFF;	/* 2^32 = 4294967296. Limit to 4096s. */
 	stamp = stamp * 1000000 + tval.tv_usec;
+=======
+	struct timespec64 now;
+	unsigned int stamp;
+
+	ktime_get_ts64(&now);
+	stamp = now.tv_sec & 0xFFF;  /* 2^32 = 4294967296. Limit to 4096s. */
+	stamp = stamp * USEC_PER_SEC + now.tv_nsec / NSEC_PER_USEC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return stamp;
 }
 
@@ -347,7 +375,11 @@ static int mon_text_open(struct inode *inode, struct file *file)
 	rp->r.rnf_error = mon_text_error;
 	rp->r.rnf_complete = mon_text_complete;
 
+<<<<<<< HEAD
 	snprintf(rp->slab_name, SLAB_NAME_SZ, "mon_text_%p", rp);
+=======
+	scnprintf(rp->slab_name, SLAB_NAME_SZ, "mon_text_%p", rp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rp->e_slab = kmem_cache_create(rp->slab_name,
 	    sizeof(struct mon_event_text), sizeof(long), 0,
 	    mon_text_ctor);
@@ -373,6 +405,7 @@ err_alloc:
 	return rc;
 }
 
+<<<<<<< HEAD
 /*
  * For simplicity, we read one record in one system call and throw out
  * what does not fit. This means that the following does not work:
@@ -408,10 +441,28 @@ static ssize_t mon_text_read_t(struct file *file, char __user *buf,
 
 static ssize_t mon_text_read_u(struct file *file, char __user *buf,
 				size_t nbytes, loff_t *ppos)
+=======
+static ssize_t mon_text_copy_to_user(struct mon_reader_text *rp,
+    char __user * const buf, const size_t nbytes)
+{
+	const size_t togo = min(nbytes, rp->printf_togo);
+
+	if (copy_to_user(buf, &rp->printf_buf[rp->printf_offset], togo))
+		return -EFAULT;
+	rp->printf_togo -= togo;
+	rp->printf_offset += togo;
+	return togo;
+}
+
+/* ppos is not advanced since the llseek operation is not permitted. */
+static ssize_t mon_text_read_t(struct file *file, char __user *buf,
+    size_t nbytes, loff_t *ppos)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mon_reader_text *rp = file->private_data;
 	struct mon_event_text *ep;
 	struct mon_text_ptr ptr;
+<<<<<<< HEAD
 
 	if (IS_ERR(ep = mon_text_read_wait(rp, file)))
 		return PTR_ERR(ep);
@@ -440,6 +491,86 @@ static ssize_t mon_text_read_u(struct file *file, char __user *buf,
 	mutex_unlock(&rp->printf_lock);
 	kmem_cache_free(rp->e_slab, ep);
 	return ptr.cnt;
+=======
+	ssize_t ret;
+
+	mutex_lock(&rp->printf_lock);
+
+	if (rp->printf_togo == 0) {
+
+		ep = mon_text_read_wait(rp, file);
+		if (IS_ERR(ep)) {
+			mutex_unlock(&rp->printf_lock);
+			return PTR_ERR(ep);
+		}
+		ptr.cnt = 0;
+		ptr.pbuf = rp->printf_buf;
+		ptr.limit = rp->printf_size;
+
+		mon_text_read_head_t(rp, &ptr, ep);
+		mon_text_read_statset(rp, &ptr, ep);
+		ptr.cnt += scnprintf(ptr.pbuf + ptr.cnt, ptr.limit - ptr.cnt,
+		    " %d", ep->length);
+		mon_text_read_data(rp, &ptr, ep);
+
+		rp->printf_togo = ptr.cnt;
+		rp->printf_offset = 0;
+
+		kmem_cache_free(rp->e_slab, ep);
+	}
+
+	ret = mon_text_copy_to_user(rp, buf, nbytes);
+	mutex_unlock(&rp->printf_lock);
+	return ret;
+}
+
+/* ppos is not advanced since the llseek operation is not permitted. */
+static ssize_t mon_text_read_u(struct file *file, char __user *buf,
+    size_t nbytes, loff_t *ppos)
+{
+	struct mon_reader_text *rp = file->private_data;
+	struct mon_event_text *ep;
+	struct mon_text_ptr ptr;
+	ssize_t ret;
+
+	mutex_lock(&rp->printf_lock);
+
+	if (rp->printf_togo == 0) {
+
+		ep = mon_text_read_wait(rp, file);
+		if (IS_ERR(ep)) {
+			mutex_unlock(&rp->printf_lock);
+			return PTR_ERR(ep);
+		}
+		ptr.cnt = 0;
+		ptr.pbuf = rp->printf_buf;
+		ptr.limit = rp->printf_size;
+
+		mon_text_read_head_u(rp, &ptr, ep);
+		if (ep->type == 'E') {
+			mon_text_read_statset(rp, &ptr, ep);
+		} else if (ep->xfertype == USB_ENDPOINT_XFER_ISOC) {
+			mon_text_read_isostat(rp, &ptr, ep);
+			mon_text_read_isodesc(rp, &ptr, ep);
+		} else if (ep->xfertype == USB_ENDPOINT_XFER_INT) {
+			mon_text_read_intstat(rp, &ptr, ep);
+		} else {
+			mon_text_read_statset(rp, &ptr, ep);
+		}
+		ptr.cnt += scnprintf(ptr.pbuf + ptr.cnt, ptr.limit - ptr.cnt,
+		    " %d", ep->length);
+		mon_text_read_data(rp, &ptr, ep);
+
+		rp->printf_togo = ptr.cnt;
+		rp->printf_offset = 0;
+
+		kmem_cache_free(rp->e_slab, ep);
+	}
+
+	ret = mon_text_copy_to_user(rp, buf, nbytes);
+	mutex_unlock(&rp->printf_lock);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct mon_event_text *mon_text_read_wait(struct mon_reader_text *rp,
@@ -485,7 +616,11 @@ static void mon_text_read_head_t(struct mon_reader_text *rp,
 	case USB_ENDPOINT_XFER_CONTROL:	utype = 'C'; break;
 	default: /* PIPE_BULK */  utype = 'B';
 	}
+<<<<<<< HEAD
 	p->cnt += snprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+=======
+	p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    "%lx %u %c %c%c:%03u:%02u",
 	    ep->id, ep->tstamp, ep->type,
 	    utype, udir, ep->devnum, ep->epnum);
@@ -503,7 +638,11 @@ static void mon_text_read_head_u(struct mon_reader_text *rp,
 	case USB_ENDPOINT_XFER_CONTROL:	utype = 'C'; break;
 	default: /* PIPE_BULK */  utype = 'B';
 	}
+<<<<<<< HEAD
 	p->cnt += snprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+=======
+	p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    "%lx %u %c %c%c:%d:%03u:%u",
 	    ep->id, ep->tstamp, ep->type,
 	    utype, udir, ep->busnum, ep->devnum, ep->epnum);
@@ -514,7 +653,11 @@ static void mon_text_read_statset(struct mon_reader_text *rp,
 {
 
 	if (ep->setup_flag == 0) {   /* Setup packet is present and captured */
+<<<<<<< HEAD
 		p->cnt += snprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+=======
+		p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    " s %02x %02x %04x %04x %04x",
 		    ep->setup[0],
 		    ep->setup[1],
@@ -522,10 +665,17 @@ static void mon_text_read_statset(struct mon_reader_text *rp,
 		    (ep->setup[5] << 8) | ep->setup[4],
 		    (ep->setup[7] << 8) | ep->setup[6]);
 	} else if (ep->setup_flag != '-') { /* Unable to capture setup packet */
+<<<<<<< HEAD
 		p->cnt += snprintf(p->pbuf + p->cnt, p->limit - p->cnt,
 		    " %c __ __ ____ ____ ____", ep->setup_flag);
 	} else {                     /* No setup for this kind of URB */
 		p->cnt += snprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+=======
+		p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+		    " %c __ __ ____ ____ ____", ep->setup_flag);
+	} else {                     /* No setup for this kind of URB */
+		p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    " %d", ep->status);
 	}
 }
@@ -533,7 +683,11 @@ static void mon_text_read_statset(struct mon_reader_text *rp,
 static void mon_text_read_intstat(struct mon_reader_text *rp,
 	struct mon_text_ptr *p, const struct mon_event_text *ep)
 {
+<<<<<<< HEAD
 	p->cnt += snprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+=======
+	p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    " %d:%d", ep->status, ep->interval);
 }
 
@@ -541,10 +695,17 @@ static void mon_text_read_isostat(struct mon_reader_text *rp,
 	struct mon_text_ptr *p, const struct mon_event_text *ep)
 {
 	if (ep->type == 'S') {
+<<<<<<< HEAD
 		p->cnt += snprintf(p->pbuf + p->cnt, p->limit - p->cnt,
 		    " %d:%d:%d", ep->status, ep->interval, ep->start_frame);
 	} else {
 		p->cnt += snprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+=======
+		p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+		    " %d:%d:%d", ep->status, ep->interval, ep->start_frame);
+	} else {
+		p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    " %d:%d:%d:%d",
 		    ep->status, ep->interval, ep->start_frame, ep->error_count);
 	}
@@ -557,7 +718,11 @@ static void mon_text_read_isodesc(struct mon_reader_text *rp,
 	int i;
 	const struct mon_iso_desc *dp;
 
+<<<<<<< HEAD
 	p->cnt += snprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+=======
+	p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    " %d", ep->numdesc);
 	ndesc = ep->numdesc;
 	if (ndesc > ISODESC_MAX)
@@ -566,7 +731,11 @@ static void mon_text_read_isodesc(struct mon_reader_text *rp,
 		ndesc = 0;
 	dp = ep->isodesc;
 	for (i = 0; i < ndesc; i++) {
+<<<<<<< HEAD
 		p->cnt += snprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+=======
+		p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    " %d:%u:%u", dp->status, dp->offset, dp->length);
 		dp++;
 	}
@@ -579,12 +748,17 @@ static void mon_text_read_data(struct mon_reader_text *rp,
 
 	if ((data_len = ep->length) > 0) {
 		if (ep->data_flag == 0) {
+<<<<<<< HEAD
 			p->cnt += snprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+=======
+			p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    " =");
 			if (data_len >= DATA_MAX)
 				data_len = DATA_MAX;
 			for (i = 0; i < data_len; i++) {
 				if (i % 4 == 0) {
+<<<<<<< HEAD
 					p->cnt += snprintf(p->pbuf + p->cnt,
 					    p->limit - p->cnt,
 					    " ");
@@ -601,6 +775,24 @@ static void mon_text_read_data(struct mon_reader_text *rp,
 		}
 	} else {
 		p->cnt += snprintf(p->pbuf + p->cnt, p->limit - p->cnt, "\n");
+=======
+					p->cnt += scnprintf(p->pbuf + p->cnt,
+					    p->limit - p->cnt,
+					    " ");
+				}
+				p->cnt += scnprintf(p->pbuf + p->cnt,
+				    p->limit - p->cnt,
+				    "%02x", ep->data[i]);
+			}
+			p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+			    "\n");
+		} else {
+			p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt,
+			    " %c\n", ep->data_flag);
+		}
+	} else {
+		p->cnt += scnprintf(p->pbuf + p->cnt, p->limit - p->cnt, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -665,16 +857,23 @@ static const struct file_operations mon_fops_text_u = {
 
 int mon_text_add(struct mon_bus *mbus, const struct usb_bus *ubus)
 {
+<<<<<<< HEAD
 	struct dentry *d;
 	enum { NAMESZ = 10 };
 	char name[NAMESZ];
 	int busnum = ubus? ubus->busnum: 0;
 	int rc;
+=======
+	enum { NAMESZ = 12 };
+	char name[NAMESZ];
+	int busnum = ubus? ubus->busnum: 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mon_dir == NULL)
 		return 0;
 
 	if (ubus != NULL) {
+<<<<<<< HEAD
 		rc = snprintf(name, NAMESZ, "%dt", busnum);
 		if (rc <= 0 || rc >= NAMESZ)
 			goto err_print_t;
@@ -716,13 +915,33 @@ err_print_u:
 err_create_t:
 err_print_t:
 	return 0;
+=======
+		scnprintf(name, NAMESZ, "%dt", busnum);
+		mbus->dent_t = debugfs_create_file(name, 0600, mon_dir, mbus,
+							     &mon_fops_text_t);
+	}
+
+	scnprintf(name, NAMESZ, "%du", busnum);
+	mbus->dent_u = debugfs_create_file(name, 0600, mon_dir, mbus,
+					   &mon_fops_text_u);
+
+	scnprintf(name, NAMESZ, "%ds", busnum);
+	mbus->dent_s = debugfs_create_file(name, 0600, mon_dir, mbus,
+					   &mon_fops_stat);
+
+	return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void mon_text_del(struct mon_bus *mbus)
 {
 	debugfs_remove(mbus->dent_u);
+<<<<<<< HEAD
 	if (mbus->dent_t != NULL)
 		debugfs_remove(mbus->dent_t);
+=======
+	debugfs_remove(mbus->dent_t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	debugfs_remove(mbus->dent_s);
 }
 
@@ -740,6 +959,7 @@ static void mon_text_ctor(void *mem)
 
 int __init mon_text_init(void)
 {
+<<<<<<< HEAD
 	struct dentry *mondir;
 
 	mondir = debugfs_create_dir("usbmon", usb_debug_root);
@@ -752,6 +972,9 @@ int __init mon_text_init(void)
 		return -ENOMEM;
 	}
 	mon_dir = mondir;
+=======
+	mon_dir = debugfs_create_dir("usbmon", usb_debug_root);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

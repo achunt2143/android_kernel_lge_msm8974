@@ -8,7 +8,11 @@
  *implementation for lzma.
  *Copyright (C) 2006  Aurelien Jacobs < aurel@gnuage.org >
  *
+<<<<<<< HEAD
  *Based on LzmaDecode.c from the LZMA SDK 4.22 (http://www.7-zip.org/)
+=======
+ *Based on LzmaDecode.c from the LZMA SDK 4.22 (https://www.7-zip.org/)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *Copyright (C) 1999-2005  Igor Pavlov
  *
  *Copyrights of the parts, see headers below.
@@ -56,7 +60,11 @@ static long long INIT read_int(unsigned char *ptr, int size)
 /* Small range coder implementation for lzma.
  *Copyright (C) 2006  Aurelien Jacobs < aurel@gnuage.org >
  *
+<<<<<<< HEAD
  *Based on LzmaDecode.c from the LZMA SDK 4.22 (http://www.7-zip.org/)
+=======
+ *Based on LzmaDecode.c from the LZMA SDK 4.22 (https://www.7-zip.org/)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *Copyright (c) 1999-2005  Igor Pavlov
  */
 
@@ -65,11 +73,19 @@ static long long INIT read_int(unsigned char *ptr, int size)
 #define LZMA_IOBUF_SIZE	0x10000
 
 struct rc {
+<<<<<<< HEAD
 	int (*fill)(void*, unsigned int);
 	uint8_t *ptr;
 	uint8_t *buffer;
 	uint8_t *buffer_end;
 	int buffer_size;
+=======
+	long (*fill)(void*, unsigned long);
+	uint8_t *ptr;
+	uint8_t *buffer;
+	uint8_t *buffer_end;
+	long buffer_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t code;
 	uint32_t range;
 	uint32_t bound;
@@ -82,7 +98,11 @@ struct rc {
 #define RC_MODEL_TOTAL_BITS 11
 
 
+<<<<<<< HEAD
 static int INIT nofill(void *buffer, unsigned int len)
+=======
+static long INIT nofill(void *buffer, unsigned long len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -1;
 }
@@ -99,8 +119,13 @@ static void INIT rc_read(struct rc *rc)
 
 /* Called once */
 static inline void INIT rc_init(struct rc *rc,
+<<<<<<< HEAD
 				       int (*fill)(void*, unsigned int),
 				       char *buffer, int buffer_size)
+=======
+				       long (*fill)(void*, unsigned long),
+				       char *buffer, long buffer_size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (fill)
 		rc->fill = fill;
@@ -213,7 +238,11 @@ rc_bit_tree_decode(struct rc *rc, uint16_t *p, int num_levels, int *symbol)
  * Small lzma deflate implementation.
  * Copyright (C) 2006  Aurelien Jacobs < aurel@gnuage.org >
  *
+<<<<<<< HEAD
  * Based on LzmaDecode.c from the LZMA SDK 4.22 (http://www.7-zip.org/)
+=======
+ * Based on LzmaDecode.c from the LZMA SDK 4.22 (https://www.7-zip.org/)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 1999-2005  Igor Pavlov
  */
 
@@ -280,7 +309,11 @@ struct writer {
 	size_t buffer_pos;
 	int bufsize;
 	size_t global_pos;
+<<<<<<< HEAD
 	int(*flush)(void*, unsigned int);
+=======
+	long (*flush)(void*, unsigned long);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lzma_header *header;
 };
 
@@ -391,7 +424,11 @@ static inline int INIT process_bit0(struct writer *wr, struct rc *rc,
 static inline int INIT process_bit1(struct writer *wr, struct rc *rc,
 					    struct cstate *cst, uint16_t *p,
 					    int pos_state, uint16_t *prob) {
+<<<<<<< HEAD
   int offset;
+=======
+	int offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t *prob_len;
 	int num_bits;
 	int len;
@@ -534,11 +571,19 @@ static inline int INIT process_bit1(struct writer *wr, struct rc *rc,
 
 
 
+<<<<<<< HEAD
 STATIC inline int INIT unlzma(unsigned char *buf, int in_len,
 			      int(*fill)(void*, unsigned int),
 			      int(*flush)(void*, unsigned int),
 			      unsigned char *output,
 			      int *posp,
+=======
+STATIC inline int INIT unlzma(unsigned char *buf, long in_len,
+			      long (*fill)(void*, unsigned long),
+			      long (*flush)(void*, unsigned long),
+			      unsigned char *output,
+			      long *posp,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      void(*error)(char *x)
 	)
 {
@@ -620,7 +665,11 @@ STATIC inline int INIT unlzma(unsigned char *buf, int in_len,
 
 	num_probs = LZMA_BASE_SIZE + (LZMA_LIT_SIZE << (lc + lp));
 	p = (uint16_t *) large_malloc(num_probs * sizeof(*p));
+<<<<<<< HEAD
 	if (p == 0)
+=======
+	if (p == NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit_2;
 	num_probs = LZMA_LITERAL + (LZMA_LIT_SIZE << (lc + lp));
 	for (i = 0; i < num_probs; i++)
@@ -667,6 +716,7 @@ exit_0:
 }
 
 #ifdef PREBOOT
+<<<<<<< HEAD
 STATIC int INIT decompress(unsigned char *buf, int in_len,
 			      int(*fill)(void*, unsigned int),
 			      int(*flush)(void*, unsigned int),
@@ -674,6 +724,14 @@ STATIC int INIT decompress(unsigned char *buf, int in_len,
 			      int *posp,
 			      void(*error)(char *x)
 	)
+=======
+STATIC int INIT __decompress(unsigned char *buf, long in_len,
+			      long (*fill)(void*, unsigned long),
+			      long (*flush)(void*, unsigned long),
+			      unsigned char *output, long out_len,
+			      long *posp,
+			      void (*error)(char *x))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return unlzma(buf, in_len - 4, fill, flush, output, posp, error);
 }

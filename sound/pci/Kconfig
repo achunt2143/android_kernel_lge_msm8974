@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # ALSA PCI drivers
 
 config SND_TEA575X
@@ -5,6 +6,11 @@ config SND_TEA575X
 	depends on SND_FM801_TEA575X_BOOL || SND_ES1968_RADIO || RADIO_SF16FMR2 || RADIO_MAXIRADIO
 	default SND_FM801 || SND_ES1968 || RADIO_SF16FMR2 || RADIO_MAXIRADIO
 
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+# ALSA PCI drivers
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 menuconfig SND_PCI
 	bool "PCI sound devices"
 	depends on PCI
@@ -30,7 +36,11 @@ config SND_ALS300
 	select SND_PCM
 	select SND_AC97_CODEC
 	select SND_OPL3_LIB
+<<<<<<< HEAD
 	select ZONE_DMA
+=======
+	depends on ZONE_DMA && HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say 'Y' or 'M' to include support for Avance Logic ALS300/ALS300+
 
@@ -40,6 +50,10 @@ config SND_ALS300
 config SND_ALS4000
 	tristate "Avance Logic ALS4000"
 	depends on ISA_DMA_API
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_OPL3_LIB
 	select SND_MPU401_UART
 	select SND_PCM
@@ -55,7 +69,11 @@ config SND_ALI5451
 	tristate "ALi M5451 PCI Audio Controller"
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
+<<<<<<< HEAD
 	select ZONE_DMA
+=======
+	depends on ZONE_DMA && HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for the integrated AC97 sound
 	  device on motherboards using the ALi M5451 Audio Controller
@@ -100,6 +118,10 @@ config SND_ATIIXP_MODEM
 
 config SND_AU8810
 	tristate "Aureal Advantage"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
 	help
@@ -114,6 +136,10 @@ config SND_AU8810
 
 config SND_AU8820
 	tristate "Aureal Vortex"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
 	help
@@ -127,6 +153,10 @@ config SND_AU8820
 
 config SND_AU8830
 	tristate "Aureal Vortex 2"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
 	help
@@ -160,7 +190,12 @@ config SND_AZT3328
 	select SND_PCM
 	select SND_RAWMIDI
 	select SND_AC97_CODEC
+<<<<<<< HEAD
 	select ZONE_DMA
+=======
+	select SND_TIMER
+	depends on ZONE_DMA && HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for Aztech AZF3328 (PCI168)
 	  soundcards.
@@ -179,7 +214,11 @@ config SND_BT87X
 	help
 	  If you want to record audio from TV cards based on
 	  Brooktree Bt878/Bt879 chips, say Y here and read
+<<<<<<< HEAD
 	  <file:Documentation/sound/alsa/Bt87x.txt>.
+=======
+	  <file:Documentation/sound/cards/bt87x.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called snd-bt87x.
@@ -196,6 +235,10 @@ config SND_BT87X_OVERCLOCK
 
 config SND_CA0106
 	tristate "SB Audigy LS / Live 24bit"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_AC97_CODEC
 	select SND_RAWMIDI
 	select SND_VMASTER
@@ -208,22 +251,38 @@ config SND_CA0106
 
 config SND_CMIPCI
 	tristate "C-Media 8338, 8738, 8768, 8770"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_OPL3_LIB
 	select SND_MPU401_UART
 	select SND_PCM
 	help
 	  If you want to use soundcards based on C-Media CMI8338, CMI8738,
 	  CMI8768 or CMI8770 chips, say Y here and read
+<<<<<<< HEAD
 	  <file:Documentation/sound/alsa/CMIPCI.txt>.
+=======
+	  <file:Documentation/sound/cards/cmipci.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called snd-cmipci.
 
 config SND_OXYGEN_LIB
+<<<<<<< HEAD
         tristate
 
 config SND_OXYGEN
 	tristate "C-Media 8786, 8787, 8788 (Oxygen)"
+=======
+	tristate
+
+config SND_OXYGEN
+	tristate "C-Media 8786, 8787, 8788 (Oxygen)"
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_OXYGEN_LIB
 	select SND_PCM
 	select SND_MPU401_UART
@@ -231,7 +290,11 @@ config SND_OXYGEN
 	  Say Y here to include support for sound cards based on the
 	  C-Media CMI8788 (Oxygen HD Audio) chip:
 	   * Asound A-8788
+<<<<<<< HEAD
 	   * Asus Xonar DG
+=======
+	   * Asus Xonar DG/DGX
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   * AuzenTech X-Meridian
 	   * AuzenTech X-Meridian 2G
 	   * Bgears b-Enspirer
@@ -249,6 +312,10 @@ config SND_OXYGEN
 
 config SND_CS4281
 	tristate "Cirrus Logic (Sound Fusion) CS4281"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_OPL3_LIB
 	select SND_RAWMIDI
 	select SND_AC97_CODEC
@@ -260,8 +327,15 @@ config SND_CS4281
 
 config SND_CS46XX
 	tristate "Cirrus Logic (Sound Fusion) CS4280/CS461x/CS462x/CS463x"
+<<<<<<< HEAD
 	select SND_RAWMIDI
 	select SND_AC97_CODEC
+=======
+	depends on HAS_IOPORT
+	select SND_RAWMIDI
+	select SND_AC97_CODEC
+	select FW_LOADER
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for Cirrus Logic CS4610/CS4612/
 	  CS4614/CS4615/CS4622/CS4624/CS4630/CS4280 chips.
@@ -280,7 +354,12 @@ config SND_CS46XX_NEW_DSP
 
 config SND_CS5530
 	tristate "CS5530 Audio"
+<<<<<<< HEAD
 	depends on ISA_DMA_API
+=======
+	depends on ISA_DMA_API && (X86_32 || COMPILE_TEST)
+	depends on !M68K
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_SB16_DSP
 	help
 	  Say Y here to include support for audio on Cyrix/NatSemi CS5530 chips.
@@ -290,6 +369,11 @@ config SND_CS5530
 
 config SND_CS5535AUDIO
 	tristate "CS5535/CS5536 Audio"
+<<<<<<< HEAD
+=======
+	depends on X86_32 || MIPS || COMPILE_TEST
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_PCM
 	select SND_AC97_CODEC
 	help
@@ -307,6 +391,10 @@ config SND_CS5535AUDIO
 
 config SND_CTXFI
 	tristate "Creative Sound Blaster X-Fi"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_PCM
 	help
 	  If you want to use soundcards based on Creative Sound Blastr X-Fi
@@ -461,11 +549,16 @@ config SND_INDIGODJX
 	  will be called snd-indigodjx
 
 config SND_EMU10K1
+<<<<<<< HEAD
 	tristate "Emu10k1 (SB Live!, Audigy, E-mu APS)"
+=======
+	tristate "Emu10k1 (SB Live!, Audigy, E-MU APS/0404/1010/1212/1616/1820)"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select FW_LOADER
 	select SND_HWDEP
 	select SND_RAWMIDI
 	select SND_AC97_CODEC
+<<<<<<< HEAD
 	select ZONE_DMA
 	help
 	  Say Y to include support for Sound Blaster PCI 512, Live!,
@@ -474,15 +567,41 @@ config SND_EMU10K1
 	  The confusing multitude of mixer controls is documented in
 	  <file:Documentation/sound/alsa/SB-Live-mixer.txt> and
 	  <file:Documentation/sound/alsa/Audigy-mixer.txt>.
+=======
+	select SND_TIMER
+	select SND_SEQ_DEVICE if SND_SEQUENCER != n
+	depends on ZONE_DMA && HAS_IOPORT
+	help
+	  Say Y to include support for Sound Blaster PCI 512, Live!,
+	  Audigy and E-MU APS/0404/1010/1212/1616/1820 soundcards.
+
+	  The confusing multitude of mixer controls is documented in
+	  <file:Documentation/sound/cards/sb-live-mixer.rst> and
+	  <file:Documentation/sound/cards/audigy-mixer.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called snd-emu10k1.
 
+<<<<<<< HEAD
+=======
+# select SEQ stuff to min(SND_SEQUENCER,SND_XXX)
+config SND_EMU10K1_SEQ
+	def_tristate SND_SEQUENCER && SND_EMU10K1
+	select SND_SEQ_MIDI_EMUL
+	select SND_SEQ_VIRMIDI
+	select SND_SYNTH_EMUX
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SND_EMU10K1X
 	tristate "Emu10k1X (Dell OEM Version)"
 	select SND_AC97_CODEC
 	select SND_RAWMIDI
+<<<<<<< HEAD
 	select ZONE_DMA
+=======
+	depends on ZONE_DMA && HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for the Dell OEM version of the
 	  Sound Blaster Live!.
@@ -492,6 +611,10 @@ config SND_EMU10K1X
 
 config SND_ENS1370
 	tristate "(Creative) Ensoniq AudioPCI 1370"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_RAWMIDI
 	select SND_PCM
 	help
@@ -502,6 +625,10 @@ config SND_ENS1370
 
 config SND_ENS1371
 	tristate "(Creative) Ensoniq AudioPCI 1371/1373"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_RAWMIDI
 	select SND_AC97_CODEC
 	help
@@ -516,7 +643,11 @@ config SND_ES1938
 	select SND_OPL3_LIB
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
+<<<<<<< HEAD
 	select ZONE_DMA
+=======
+	depends on ZONE_DMA && HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for soundcards based on ESS Solo-1
 	  (ES1938, ES1946, ES1969) chips.
@@ -528,7 +659,11 @@ config SND_ES1968
 	tristate "ESS ES1968/1978 (Maestro-1/2/2E)"
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
+<<<<<<< HEAD
 	select ZONE_DMA
+=======
+	depends on ZONE_DMA && HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for soundcards based on ESS Maestro
 	  1/2/2E chips.
@@ -549,13 +684,25 @@ config SND_ES1968_INPUT
 config SND_ES1968_RADIO
 	bool "Enable TEA5757 radio tuner support for es1968"
 	depends on SND_ES1968
+<<<<<<< HEAD
 	depends on VIDEO_V4L2=y || VIDEO_V4L2=SND_ES1968
+=======
+	depends on MEDIA_RADIO_SUPPORT
+	depends on VIDEO_DEV=y || VIDEO_DEV=SND_ES1968
+	select RADIO_ADAPTERS
+	select RADIO_TEA575X
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for TEA5757 radio tuner integrated on
 	  some MediaForte cards (e.g. SF64-PCE2).
 
 config SND_FM801
 	tristate "ForteMedia FM801"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_OPL3_LIB
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
@@ -569,16 +716,29 @@ config SND_FM801
 config SND_FM801_TEA575X_BOOL
 	bool "ForteMedia FM801 + TEA5757 tuner"
 	depends on SND_FM801
+<<<<<<< HEAD
 	depends on VIDEO_V4L2=y || VIDEO_V4L2=SND_FM801
+=======
+	depends on MEDIA_RADIO_SUPPORT
+	depends on VIDEO_DEV=y || VIDEO_DEV=SND_FM801
+	select RADIO_ADAPTERS
+	select RADIO_TEA575X
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for soundcards based on the ForteMedia
 	  FM801 chip with a TEA5757 tuner (MediaForte SF256-PCS, SF256-PCP and
 	  SF64-PCR) into the snd-fm801 driver.
 
+<<<<<<< HEAD
 source "sound/pci/hda/Kconfig"
 
 config SND_HDSP
 	tristate "RME Hammerfall DSP Audio"
+=======
+config SND_HDSP
+	tristate "RME Hammerfall DSP Audio"
+	select FW_LOADER
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_HWDEP
 	select SND_RAWMIDI
 	select SND_PCM
@@ -609,7 +769,11 @@ config SND_ICE1712
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
 	select BITREVERSE
+<<<<<<< HEAD
 	select ZONE_DMA
+=======
+	depends on ZONE_DMA && HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for soundcards based on the
 	  ICE1712 (Envy24) chip.
@@ -625,6 +789,10 @@ config SND_ICE1712
 
 config SND_ICE1724
 	tristate "ICE/VT1724/1720 (Envy24HT/PT)"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_RAWMIDI
 	select SND_AC97_CODEC
 	select SND_VMASTER
@@ -638,7 +806,11 @@ config SND_ICE1724
 	  AudioTrak Prodigy 192, 7.1 (HIFI/LT/XT), HD2; Hercules
 	  Fortissimo IV; ESI Juli@; Pontis MS300; EGO-SYS WaveTerminal
 	  192M; Albatron K8X800 Pro II; Chaintech ZNF3-150/250, 9CJS,
+<<<<<<< HEAD
 	  AV-710; Shuttle SN25P.
+=======
+	  AV-710; Shuttle SN25P; Philips PSC724 Ultimate Edge.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called snd-ice1724.
@@ -685,6 +857,10 @@ config SND_LOLA
 
 config SND_LX6464ES
 	tristate "Digigram LX6464ES"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT_MAP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_PCM
 	help
 	  Say Y here to include support for Digigram LX6464ES boards.
@@ -696,7 +872,11 @@ config SND_LX6464ES
 config SND_MAESTRO3
 	tristate "ESS Allegro/Maestro3"
 	select SND_AC97_CODEC
+<<<<<<< HEAD
 	select ZONE_DMA
+=======
+	depends on ZONE_DMA && HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for soundcards based on ESS Maestro 3
 	  (Allegro) chips.
@@ -716,11 +896,19 @@ config SND_MAESTRO3_INPUT
 
 config SND_MIXART
 	tristate "Digigram miXart"
+<<<<<<< HEAD
+=======
+	select FW_LOADER
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_HWDEP
 	select SND_PCM
 	help
 	  If you want to use Digigram miXart soundcards, say Y here and
+<<<<<<< HEAD
 	  read <file:Documentation/sound/alsa/MIXART.txt>.
+=======
+	  read <file:Documentation/sound/cards/mixart.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called snd-mixart.
@@ -736,6 +924,11 @@ config SND_NM256
 
 config SND_PCXHR
 	tristate "Digigram PCXHR"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+	select FW_LOADER
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_PCM
 	select SND_HWDEP
 	help
@@ -746,6 +939,10 @@ config SND_PCXHR
 
 config SND_RIPTIDE
 	tristate "Conexant Riptide"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select FW_LOADER
 	select SND_OPL3_LIB
 	select SND_MPU401_UART
@@ -787,11 +984,29 @@ config SND_RME9652
 	  To compile this driver as a module, choose M here: the module
 	  will be called snd-rme9652.
 
+<<<<<<< HEAD
 config SND_SIS7019
 	tristate "SiS 7019 Audio Accelerator"
 	depends on X86 && !X86_64
 	select SND_AC97_CODEC
 	select ZONE_DMA
+=======
+config SND_SE6X
+	tristate "Studio Evolution SE6X"
+	depends on SND_OXYGEN=n && SND_VIRTUOSO=n  # PCI ID conflict
+	depends on HAS_IOPORT
+	select SND_OXYGEN_LIB
+	select SND_PCM
+	select SND_MPU401_UART
+	help
+	  Say Y or M here only if you actually have this sound card.
+
+config SND_SIS7019
+	tristate "SiS 7019 Audio Accelerator"
+	depends on X86_32
+	select SND_AC97_CODEC
+	depends on ZONE_DMA
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for the SiS 7019 Audio Accelerator.
 
@@ -803,7 +1018,11 @@ config SND_SONICVIBES
 	select SND_OPL3_LIB
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
+<<<<<<< HEAD
 	select ZONE_DMA
+=======
+	depends on ZONE_DMA && HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for soundcards based on the S3
 	  SonicVibes chip.
@@ -815,7 +1034,11 @@ config SND_TRIDENT
 	tristate "Trident 4D-Wave DX/NX; SiS 7018"
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
+<<<<<<< HEAD
 	select ZONE_DMA
+=======
+	depends on ZONE_DMA && HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for soundcards based on Trident
 	  4D-Wave DX/NX or SiS 7018 chips.
@@ -825,6 +1048,10 @@ config SND_TRIDENT
 
 config SND_VIA82XX
 	tristate "VIA 82C686A/B, 8233/8235 AC97 Controller"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
 	help
@@ -836,6 +1063,10 @@ config SND_VIA82XX
 
 config SND_VIA82XX_MODEM
 	tristate "VIA 82C686A/B, 8233 based Modems"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_AC97_CODEC
 	help
 	  Say Y here to include support for the integrated MC97 modem on
@@ -846,6 +1077,7 @@ config SND_VIA82XX_MODEM
 
 config SND_VIRTUOSO
 	tristate "Asus Virtuoso 66/100/200 (Xonar)"
+<<<<<<< HEAD
 	select SND_OXYGEN_LIB
 	select SND_PCM
 	select SND_MPU401_UART
@@ -854,6 +1086,17 @@ config SND_VIRTUOSO
 	  Say Y here to include support for sound cards based on the
 	  Asus AV66/AV100/AV200 chips, i.e., Xonar D1, DX, D2, D2X, DS,
 	  Essence ST (Deluxe), and Essence STX.
+=======
+	depends on HAS_IOPORT
+	select SND_OXYGEN_LIB
+	select SND_PCM
+	select SND_MPU401_UART
+	select SND_JACK
+	help
+	  Say Y here to include support for sound cards based on the
+	  Asus AV66/AV100/AV200 chips, i.e., Xonar D1, DX, D2, D2X, DS, DSX,
+	  Essence ST (Deluxe), and Essence STX (II).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Support for the HDAV1.3 (Deluxe) and HDAV1.3 Slim is experimental;
 	  for the Xense, missing.
 
@@ -862,6 +1105,10 @@ config SND_VIRTUOSO
 
 config SND_VX222
 	tristate "Digigram VX222"
+<<<<<<< HEAD
+=======
+	depends on HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SND_VX_LIB
 	help
 	  Say Y here to include support for Digigram VX222 soundcards.
@@ -871,9 +1118,17 @@ config SND_VX222
 
 config SND_YMFPCI
 	tristate "Yamaha YMF724/740/744/754"
+<<<<<<< HEAD
 	select SND_OPL3_LIB
 	select SND_MPU401_UART
 	select SND_AC97_CODEC
+=======
+	depends on HAS_IOPORT
+	select SND_OPL3_LIB
+	select SND_MPU401_UART
+	select SND_AC97_CODEC
+	select SND_TIMER
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here to include support for Yamaha PCI audio chips -
 	  YMF724, YMF724F, YMF740, YMF740C, YMF744, YMF754.
@@ -882,3 +1137,8 @@ config SND_YMFPCI
 	  will be called snd-ymfpci.
 
 endif	# SND_PCI
+<<<<<<< HEAD
+=======
+
+source "sound/pci/hda/Kconfig"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -28,6 +28,10 @@
 #include "target.h"
 #include "debug.h"
 #include "cfg80211.h"
+<<<<<<< HEAD
+=======
+#include "trace.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ath6kl_sdio {
 	struct sdio_func *func;
@@ -74,6 +78,11 @@ struct ath6kl_sdio {
 #define CMD53_ARG_FIXED_ADDRESS 0
 #define CMD53_ARG_INCR_ADDRESS  1
 
+<<<<<<< HEAD
+=======
+static int ath6kl_sdio_config(struct ath6kl *ar);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct ath6kl_sdio *ath6kl_sdio_priv(struct ath6kl *ar)
 {
 	return ar->hif_priv;
@@ -179,6 +188,11 @@ static int ath6kl_sdio_io(struct sdio_func *func, u32 request, u32 addr,
 		   request & HIF_FIXED_ADDRESS ? " (fixed)" : "", buf, len);
 	ath6kl_dbg_dump(ATH6KL_DBG_SDIO_DUMP, NULL, "sdio ", buf, len);
 
+<<<<<<< HEAD
+=======
+	trace_ath6kl_sdio(addr, request, buf, len);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -309,6 +323,16 @@ static int ath6kl_sdio_scat_rw(struct ath6kl_sdio *ar_sdio,
 	sdio_claim_host(ar_sdio->func);
 
 	mmc_set_data_timeout(&data, ar_sdio->func->card);
+<<<<<<< HEAD
+=======
+
+	trace_ath6kl_sdio_scat(scat_req->addr,
+			       scat_req->req,
+			       scat_req->len,
+			       scat_req->scat_entries,
+			       scat_req->scat_list);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* synchronous call to process request */
 	mmc_wait_for_req(ar_sdio->func->card->host, &mmc_req);
 
@@ -335,6 +359,7 @@ static int ath6kl_sdio_alloc_prep_scat_req(struct ath6kl_sdio *ar_sdio,
 {
 	struct hif_scatter_req *s_req;
 	struct bus_request *bus_req;
+<<<<<<< HEAD
 	int i, scat_req_sz, scat_list_sz, sg_sz, buf_sz;
 	u8 *virt_buf;
 
@@ -346,6 +371,19 @@ static int ath6kl_sdio_alloc_prep_scat_req(struct ath6kl_sdio *ar_sdio,
 	else
 		buf_sz =  2 * L1_CACHE_BYTES +
 			  ATH6KL_MAX_TRANSFER_SIZE_PER_SCATTER;
+=======
+	int i, scat_req_sz, scat_list_sz, size;
+	u8 *virt_buf;
+
+	scat_list_sz = n_scat_entry * sizeof(struct hif_scatter_item);
+	scat_req_sz = sizeof(*s_req) + scat_list_sz;
+
+	if (!virt_scat)
+		size = sizeof(struct scatterlist) * n_scat_entry;
+	else
+		size =  2 * L1_CACHE_BYTES +
+			ATH6KL_MAX_TRANSFER_SIZE_PER_SCATTER;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < n_scat_req; i++) {
 		/* allocate the scatter request */
@@ -354,7 +392,11 @@ static int ath6kl_sdio_alloc_prep_scat_req(struct ath6kl_sdio *ar_sdio,
 			return -ENOMEM;
 
 		if (virt_scat) {
+<<<<<<< HEAD
 			virt_buf = kzalloc(buf_sz, GFP_KERNEL);
+=======
+			virt_buf = kzalloc(size, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!virt_buf) {
 				kfree(s_req);
 				return -ENOMEM;
@@ -364,7 +406,11 @@ static int ath6kl_sdio_alloc_prep_scat_req(struct ath6kl_sdio *ar_sdio,
 				(u8 *)L1_CACHE_ALIGN((unsigned long)virt_buf);
 		} else {
 			/* allocate sglist */
+<<<<<<< HEAD
 			s_req->sgentries = kzalloc(sg_sz, GFP_KERNEL);
+=======
+			s_req->sgentries = kzalloc(size, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (!s_req->sgentries) {
 				kfree(s_req);
@@ -415,8 +461,14 @@ static int ath6kl_sdio_read_write_sync(struct ath6kl *ar, u32 addr, u8 *buf,
 			memcpy(tbuf, buf, len);
 
 		bounced = true;
+<<<<<<< HEAD
 	} else
 		tbuf = buf;
+=======
+	} else {
+		tbuf = buf;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ath6kl_sdio_io(ar_sdio->func, request, addr, tbuf, len);
 	if ((request & HIF_READ) && bounced)
@@ -431,9 +483,15 @@ static int ath6kl_sdio_read_write_sync(struct ath6kl *ar, u32 addr, u8 *buf,
 static void __ath6kl_sdio_write_async(struct ath6kl_sdio *ar_sdio,
 				      struct bus_request *req)
 {
+<<<<<<< HEAD
 	if (req->scat_req)
 		ath6kl_sdio_scat_rw(ar_sdio, req);
 	else {
+=======
+	if (req->scat_req) {
+		ath6kl_sdio_scat_rw(ar_sdio, req);
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void *context;
 		int status;
 
@@ -515,8 +573,20 @@ static int ath6kl_sdio_power_on(struct ath6kl *ar)
 	 */
 	msleep(10);
 
+<<<<<<< HEAD
 	ar_sdio->is_disabled = false;
 
+=======
+	ret = ath6kl_sdio_config(ar);
+	if (ret) {
+		ath6kl_err("Failed to config sdio: %d\n", ret);
+		goto out;
+	}
+
+	ar_sdio->is_disabled = false;
+
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -552,7 +622,11 @@ static int ath6kl_sdio_write_async(struct ath6kl *ar, u32 address, u8 *buffer,
 
 	bus_req = ath6kl_sdio_alloc_busreq(ar_sdio);
 
+<<<<<<< HEAD
 	if (!bus_req)
+=======
+	if (WARN_ON_ONCE(!bus_req))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	bus_req->address = address;
@@ -646,7 +720,10 @@ static void ath6kl_sdio_scatter_req_add(struct ath6kl *ar,
 	list_add_tail(&s_req->list, &ar_sdio->scat_req);
 
 	spin_unlock_bh(&ar_sdio->scat_lock);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* scatter gather read write request */
@@ -664,9 +741,15 @@ static int ath6kl_sdio_async_rw_scatter(struct ath6kl *ar,
 		   "hif-scatter: total len: %d scatter entries: %d\n",
 		   scat_req->len, scat_req->scat_entries);
 
+<<<<<<< HEAD
 	if (request & HIF_SYNCHRONOUS)
 		status = ath6kl_sdio_scat_rw(ar_sdio, scat_req->busrequest);
 	else {
+=======
+	if (request & HIF_SYNCHRONOUS) {
+		status = ath6kl_sdio_scat_rw(ar_sdio, scat_req->busrequest);
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_bh(&ar_sdio->wr_async_lock);
 		list_add_tail(&scat_req->busrequest->list, &ar_sdio->wr_asyncq);
 		spin_unlock_bh(&ar_sdio->wr_async_lock);
@@ -693,8 +776,15 @@ static void ath6kl_sdio_cleanup_scatter(struct ath6kl *ar)
 		 * ath6kl_hif_rw_comp_handler() with status -ECANCELED so
 		 * that the packet is properly freed?
 		 */
+<<<<<<< HEAD
 		if (s_req->busrequest)
 			ath6kl_sdio_free_bus_req(ar_sdio, s_req->busrequest);
+=======
+		if (s_req->busrequest) {
+			s_req->busrequest->scat_req = NULL;
+			ath6kl_sdio_free_bus_req(ar_sdio, s_req->busrequest);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(s_req->virt_dma_buf);
 		kfree(s_req->sgentries);
 		kfree(s_req);
@@ -702,6 +792,11 @@ static void ath6kl_sdio_cleanup_scatter(struct ath6kl *ar)
 		spin_lock_bh(&ar_sdio->scat_lock);
 	}
 	spin_unlock_bh(&ar_sdio->scat_lock);
+<<<<<<< HEAD
+=======
+
+	ar_sdio->scatter_enabled = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* setup of HIF scatter resources */
@@ -709,7 +804,11 @@ static int ath6kl_sdio_enable_scatter(struct ath6kl *ar)
 {
 	struct ath6kl_sdio *ar_sdio = ath6kl_sdio_priv(ar);
 	struct htc_target *target = ar->htc_target;
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool virt_scat = false;
 
 	if (ar_sdio->scatter_enabled)
@@ -776,8 +875,12 @@ static int ath6kl_sdio_config(struct ath6kl *ar)
 
 	sdio_claim_host(func);
 
+<<<<<<< HEAD
 	if ((ar_sdio->id->device & MANUFACTURER_ID_ATH6KL_BASE_MASK) >=
 	    MANUFACTURER_ID_AR6003_BASE) {
+=======
+	if (ar_sdio->id->device >= SDIO_DEVICE_ID_ATHEROS_AR6003_00) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* enable 4-bit ASYNC interrupt on AR6003 or later */
 		ret = ath6kl_sdio_func0_cmd52_wr_byte(func->card,
 						CCCR_SDIO_IRQ_MODE_REG,
@@ -844,6 +947,7 @@ static int ath6kl_sdio_suspend(struct ath6kl *ar, struct cfg80211_wowlan *wow)
 	bool try_deepsleep = false;
 	int ret;
 
+<<<<<<< HEAD
 	if (ar->state == ATH6KL_STATE_SCHED_SCAN) {
 		ath6kl_dbg(ATH6KL_DBG_SUSPEND, "sched scan is in progress\n");
 
@@ -863,6 +967,10 @@ static int ath6kl_sdio_suspend(struct ath6kl *ar, struct cfg80211_wowlan *wow)
 	if (ar->suspend_mode == WLAN_POWER_STATE_WOW ||
 	    (!ar->suspend_mode && wow)) {
 
+=======
+	if (ar->suspend_mode == WLAN_POWER_STATE_WOW ||
+	    (!ar->suspend_mode && wow)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ath6kl_set_sdio_pm_caps(ar);
 		if (ret)
 			goto cut_pwr;
@@ -884,7 +992,10 @@ static int ath6kl_sdio_suspend(struct ath6kl *ar, struct cfg80211_wowlan *wow)
 
 	if (ar->suspend_mode == WLAN_POWER_STATE_DEEP_SLEEP ||
 	    !ar->suspend_mode || try_deepsleep) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flags = sdio_get_host_pm_caps(func);
 		if (!(flags & MMC_PM_KEEP_POWER))
 			goto cut_pwr;
@@ -915,6 +1026,12 @@ static int ath6kl_sdio_suspend(struct ath6kl *ar, struct cfg80211_wowlan *wow)
 	}
 
 cut_pwr:
+<<<<<<< HEAD
+=======
+	if (func->card && func->card->host)
+		func->card->host->pm_flags &= ~MMC_PM_KEEP_POWER;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ath6kl_cfg80211_suspend(ar, ATH6KL_CFG_SUSPEND_CUTPOWER, NULL);
 }
 
@@ -939,14 +1056,23 @@ static int ath6kl_sdio_resume(struct ath6kl *ar)
 	case ATH6KL_STATE_WOW:
 		break;
 
+<<<<<<< HEAD
 	case ATH6KL_STATE_SCHED_SCAN:
 		break;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATH6KL_STATE_SUSPENDING:
 		break;
 
 	case ATH6KL_STATE_RESUMING:
 		break;
+<<<<<<< HEAD
+=======
+
+	case ATH6KL_STATE_RECOVERY:
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ath6kl_cfg80211_resume(ar);
@@ -985,9 +1111,14 @@ static int ath6kl_set_addrwin_reg(struct ath6kl *ar, u32 reg_addr, u32 addr)
 	}
 
 	if (status) {
+<<<<<<< HEAD
 		ath6kl_err("%s: failed to write initial bytes of 0x%x "
 			   "to window reg: 0x%X\n", __func__,
 			   addr, reg_addr);
+=======
+		ath6kl_err("%s: failed to write initial bytes of 0x%x to window reg: 0x%X\n",
+			   __func__, addr, reg_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return status;
 	}
 
@@ -1065,7 +1196,10 @@ static int ath6kl_sdio_bmi_credits(struct ath6kl *ar)
 
 	timeout = jiffies + msecs_to_jiffies(BMI_COMMUNICATION_TIMEOUT);
 	while (time_before(jiffies, timeout) && !ar->bmi.cmd_credits) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Hit the credit counter with a 4-byte access, the first byte
 		 * read will hit the counter and cause a decrement, while the
@@ -1076,8 +1210,13 @@ static int ath6kl_sdio_bmi_credits(struct ath6kl *ar)
 					 (u8 *)&ar->bmi.cmd_credits, 4,
 					 HIF_RD_SYNC_BYTE_INC);
 		if (ret) {
+<<<<<<< HEAD
 			ath6kl_err("Unable to decrement the command credit "
 						"count register: %d\n", ret);
+=======
+			ath6kl_err("Unable to decrement the command credit count register: %d\n",
+				   ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ret;
 		}
 
@@ -1137,10 +1276,19 @@ static int ath6kl_sdio_bmi_write(struct ath6kl *ar, u8 *buf, u32 len)
 
 	ret = ath6kl_sdio_read_write_sync(ar, addr, buf, len,
 					  HIF_WR_SYNC_BYTE_INC);
+<<<<<<< HEAD
 	if (ret)
 		ath6kl_err("unable to send the bmi data to the device\n");
 
 	return ret;
+=======
+	if (ret) {
+		ath6kl_err("unable to send the bmi data to the device\n");
+		return ret;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath6kl_sdio_bmi_read(struct ath6kl *ar, u8 *buf, u32 len)
@@ -1178,7 +1326,11 @@ static int ath6kl_sdio_bmi_read(struct ath6kl *ar, u8 *buf, u32 len)
 	 *        Wait for first 4 bytes to be in FIFO
 	 *        If CONSERVATIVE_BMI_READ is enabled, also wait for
 	 *        a BMI command credit, which indicates that the ENTIRE
+<<<<<<< HEAD
 	 *        response is available in the the FIFO
+=======
+	 *        response is available in the FIFO
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 *  CASE 3: length > 128
 	 *        Wait for the first 4 bytes to be in FIFO
@@ -1362,7 +1514,11 @@ static int ath6kl_sdio_probe(struct sdio_func *func,
 		goto err_core_alloc;
 	}
 
+<<<<<<< HEAD
 	ret = ath6kl_core_init(ar);
+=======
+	ret = ath6kl_core_init(ar, ATH6KL_HTC_TYPE_MBOX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		ath6kl_err("Failed to init ath6kl core\n");
 		goto err_core_alloc;
@@ -1401,10 +1557,20 @@ static void ath6kl_sdio_remove(struct sdio_func *func)
 }
 
 static const struct sdio_device_id ath6kl_sdio_devices[] = {
+<<<<<<< HEAD
 	{SDIO_DEVICE(MANUFACTURER_CODE, (MANUFACTURER_ID_AR6003_BASE | 0x0))},
 	{SDIO_DEVICE(MANUFACTURER_CODE, (MANUFACTURER_ID_AR6003_BASE | 0x1))},
 	{SDIO_DEVICE(MANUFACTURER_CODE, (MANUFACTURER_ID_AR6004_BASE | 0x0))},
 	{SDIO_DEVICE(MANUFACTURER_CODE, (MANUFACTURER_ID_AR6004_BASE | 0x1))},
+=======
+	{SDIO_DEVICE(SDIO_VENDOR_ID_ATHEROS, SDIO_DEVICE_ID_ATHEROS_AR6003_00)},
+	{SDIO_DEVICE(SDIO_VENDOR_ID_ATHEROS, SDIO_DEVICE_ID_ATHEROS_AR6003_01)},
+	{SDIO_DEVICE(SDIO_VENDOR_ID_ATHEROS, SDIO_DEVICE_ID_ATHEROS_AR6004_00)},
+	{SDIO_DEVICE(SDIO_VENDOR_ID_ATHEROS, SDIO_DEVICE_ID_ATHEROS_AR6004_01)},
+	{SDIO_DEVICE(SDIO_VENDOR_ID_ATHEROS, SDIO_DEVICE_ID_ATHEROS_AR6004_02)},
+	{SDIO_DEVICE(SDIO_VENDOR_ID_ATHEROS, SDIO_DEVICE_ID_ATHEROS_AR6004_18)},
+	{SDIO_DEVICE(SDIO_VENDOR_ID_ATHEROS, SDIO_DEVICE_ID_ATHEROS_AR6004_19)},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{},
 };
 
@@ -1457,3 +1623,12 @@ MODULE_FIRMWARE(AR6004_HW_1_0_DEFAULT_BOARD_DATA_FILE);
 MODULE_FIRMWARE(AR6004_HW_1_1_FW_DIR "/" AR6004_HW_1_1_FIRMWARE_FILE);
 MODULE_FIRMWARE(AR6004_HW_1_1_BOARD_DATA_FILE);
 MODULE_FIRMWARE(AR6004_HW_1_1_DEFAULT_BOARD_DATA_FILE);
+<<<<<<< HEAD
+=======
+MODULE_FIRMWARE(AR6004_HW_1_2_FW_DIR "/" AR6004_HW_1_2_FIRMWARE_FILE);
+MODULE_FIRMWARE(AR6004_HW_1_2_BOARD_DATA_FILE);
+MODULE_FIRMWARE(AR6004_HW_1_2_DEFAULT_BOARD_DATA_FILE);
+MODULE_FIRMWARE(AR6004_HW_1_3_FW_DIR "/" AR6004_HW_1_3_FIRMWARE_FILE);
+MODULE_FIRMWARE(AR6004_HW_1_3_BOARD_DATA_FILE);
+MODULE_FIRMWARE(AR6004_HW_1_3_DEFAULT_BOARD_DATA_FILE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

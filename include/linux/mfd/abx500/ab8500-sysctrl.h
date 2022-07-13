@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson SA 2010
  * Author: Mattias Nilsson <mattias.i.nilsson@stericsson.com> for ST Ericsson.
  * License terms: GNU General Public License (GPL) version 2
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) ST-Ericsson SA 2010
+ * Author: Mattias Nilsson <mattias.i.nilsson@stericsson.com> for ST Ericsson.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __AB8500_SYSCTRL_H
 #define __AB8500_SYSCTRL_H
@@ -271,8 +278,13 @@ static inline int ab8500_sysctrl_clear(u16 reg, u8 bits)
 
 #define AB9540_SYSCLK12CONFCTRL_PLL26TO38ENA BIT(0)
 #define AB9540_SYSCLK12CONFCTRL_SYSCLK12USBMUXSEL BIT(1)
+<<<<<<< HEAD
 #define AB9540_SYSCLK12CONFCTRL_INT384MHZMUXSEL_MASK 0x0C
 #define AB9540_SYSCLK12CONFCTRL_INT384MHZMUXSEL_SHIFT 2
+=======
+#define AB9540_SYSCLK12CONFCTRL_INT384MHZMUXSEL0 BIT(2)
+#define AB9540_SYSCLK12CONFCTRL_INT384MHZMUXSEL1 BIT(3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AB9540_SYSCLK12CONFCTRL_SYSCLK12BUFMUX BIT(4)
 #define AB9540_SYSCLK12CONFCTRL_SYSCLK12PLLMUX BIT(5)
 #define AB9540_SYSCLK12CONFCTRL_SYSCLK2MUXVALID BIT(6)
@@ -294,4 +306,11 @@ static inline int ab8500_sysctrl_clear(u16 reg, u8 bits)
 #define AB9540_SYSCLK12BUF4VALID_SYSCLK12BUF4VALID_MASK 0xFF
 #define AB9540_SYSCLK12BUF4VALID_SYSCLK12BUF4VALID_SHIFT 0
 
+<<<<<<< HEAD
+=======
+#define AB8500_ENABLE_WD 0x1
+#define AB8500_KICK_WD 0x2
+#define AB8500_WD_RESTART_ON_EXPIRE 0x10
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __AB8500_SYSCTRL_H */

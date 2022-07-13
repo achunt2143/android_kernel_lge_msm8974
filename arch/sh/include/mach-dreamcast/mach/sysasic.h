@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 /* include/asm-sh/dreamcast/sysasic.h
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * include/asm-sh/dreamcast/sysasic.h
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Definitions for the Dreamcast System ASIC and related peripherals.
  *
@@ -6,9 +12,12 @@
  * Copyright (C) 2003 Paul Mundt <lethal@linux-sh.org>
  *
  * This file is part of the LinuxDC project (www.linuxdc.org)
+<<<<<<< HEAD
  *
  * Released under the terms of the GNU GPL v2.0.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_SH_DREAMCAST_SYSASIC_H
 #define __ASM_SH_DREAMCAST_SYSASIC_H
@@ -23,7 +32,11 @@
    takes.
 */
 
+<<<<<<< HEAD
 #define HW_EVENT_IRQ_BASE  48
+=======
+#define HW_EVENT_IRQ_BASE  (48 + 16)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* IRQ 13 */
 #define HW_EVENT_VSYNC     (HW_EVENT_IRQ_BASE +  5) /* VSync */
@@ -42,7 +55,10 @@
 /* arch/sh/boards/mach-dreamcast/irq.c */
 extern int systemasic_irq_demux(int);
 extern void systemasic_irq_init(void);
+<<<<<<< HEAD
 extern void aica_time_init(void);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_SH_DREAMCAST_SYSASIC_H */
 

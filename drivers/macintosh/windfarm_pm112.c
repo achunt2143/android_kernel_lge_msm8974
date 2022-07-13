@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Windfarm PowerMac thermal control.
  * Control loops for machines with SMU and PPC970MP processors.
  *
  * Copyright (C) 2005 Paul Mackerras, IBM Corp. <paulus@samba.org>
  * Copyright (C) 2006 Benjamin Herrenschmidt, IBM Corp.
+<<<<<<< HEAD
  *
  * Use and redistribute under the terms of the GNU GPL v2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -13,7 +20,13 @@
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+#include <linux/of.h>
+#include <linux/slab.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/smu.h>
 
 #include "windfarm.h"
@@ -96,14 +109,22 @@ static int cpu_last_target;
 static struct wf_pid_state backside_pid;
 static int backside_tick;
 static struct wf_pid_state slots_pid;
+<<<<<<< HEAD
 static int slots_started;
+=======
+static bool slots_started;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct wf_pid_state drive_bay_pid;
 static int drive_bay_tick;
 
 static int nr_cores;
 static int have_all_controls;
 static int have_all_sensors;
+<<<<<<< HEAD
 static int started;
+=======
+static bool started;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int failure_state;
 #define FAILURE_SENSOR		1
@@ -133,6 +154,7 @@ static int create_cpu_loop(int cpu)
 	s32 tmax;
 	int fmin;
 
+<<<<<<< HEAD
 	/* Get PID params from the appropriate SAT */
 	hdr = smu_sat_get_sdb_partition(chip, 0xC8 + core, NULL);
 	if (hdr == NULL) {
@@ -141,6 +163,8 @@ static int create_cpu_loop(int cpu)
 	}
 	piddata = (struct smu_sdbp_cpupiddata *)&hdr[1];
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get FVT params to get Tmax; if not found, assume default */
 	hdr = smu_sat_get_sdb_partition(chip, 0xC4 + core, NULL);
 	if (hdr) {
@@ -153,6 +177,19 @@ static int create_cpu_loop(int cpu)
 	if (tmax < cpu_all_tmax)
 		cpu_all_tmax = tmax;
 
+<<<<<<< HEAD
+=======
+	kfree(hdr);
+
+	/* Get PID params from the appropriate SAT */
+	hdr = smu_sat_get_sdb_partition(chip, 0xC8 + core, NULL);
+	if (hdr == NULL) {
+		printk(KERN_WARNING"windfarm: can't get CPU PID fan config\n");
+		return -EINVAL;
+	}
+	piddata = (struct smu_sdbp_cpupiddata *)&hdr[1];
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Darwin has a minimum fan speed of 1000 rpm for the 4-way and
 	 * 515 for the 2-way.  That appears to be overkill, so for now,
@@ -175,6 +212,12 @@ static int create_cpu_loop(int cpu)
 		pid.min = fmin;
 
 	wf_cpu_pid_init(&cpu_pid[cpu], &pid);
+<<<<<<< HEAD
+=======
+
+	kfree(hdr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -462,7 +505,11 @@ static void slots_fan_tick(void)
 		/* first time; initialize things */
 		printk(KERN_INFO "windfarm: Slots control loop started.\n");
 		wf_pid_init(&slots_pid, &slots_param);
+<<<<<<< HEAD
 		slots_started = 1;
+=======
+		slots_started = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = slots_power->ops->get_value(slots_power, &power);
@@ -506,7 +553,11 @@ static void pm112_tick(void)
 	int i, last_failure;
 
 	if (!started) {
+<<<<<<< HEAD
 		started = 1;
+=======
+		started = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_INFO "windfarm: CPUs control loops started.\n");
 		for (i = 0; i < nr_cores; ++i) {
 			if (create_cpu_loop(i) < 0) {
@@ -656,19 +707,31 @@ static int wf_pm112_probe(struct platform_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit wf_pm112_remove(struct platform_device *dev)
 {
 	wf_unregister_client(&pm112_events);
 	/* should release all sensors and controls */
 	return 0;
+=======
+static void wf_pm112_remove(struct platform_device *dev)
+{
+	wf_unregister_client(&pm112_events);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver wf_pm112_driver = {
 	.probe = wf_pm112_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(wf_pm112_remove),
 	.driver = {
 		.name = "windfarm",
 		.owner	= THIS_MODULE,
+=======
+	.remove_new = wf_pm112_remove,
+	.driver = {
+		.name = "windfarm",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -681,7 +744,11 @@ static int __init wf_pm112_init(void)
 
 	/* Count the number of CPU cores */
 	nr_cores = 0;
+<<<<<<< HEAD
 	for (cpu = NULL; (cpu = of_find_node_by_type(cpu, "cpu")) != NULL; )
+=======
+	for_each_node_by_type(cpu, "cpu")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		++nr_cores;
 
 	printk(KERN_INFO "windfarm: initializing for dual-core desktop G5\n");

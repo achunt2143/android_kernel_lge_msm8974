@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _X_TABLES_H
 #define _X_TABLES_H
 #include <linux/kernel.h>
@@ -186,6 +187,21 @@ struct xt_counters_info {
 #ifdef __KERNEL__
 
 #include <linux/netdevice.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _X_TABLES_H
+#define _X_TABLES_H
+
+
+#include <linux/netdevice.h>
+#include <linux/static_key.h>
+#include <linux/netfilter.h>
+#include <uapi/linux/netfilter/x_tables.h>
+
+/* Test a struct->invflags and a boolean for inequality */
+#define NF_INVF(ptr, flag, boolean)					\
+	((boolean) ^ !!((ptr)->invflags & (flag)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct xt_action_param - parameters for matches/targets
@@ -194,6 +210,7 @@ struct xt_counters_info {
  * @target:	the target extension
  * @matchinfo:	per-match data
  * @targetinfo:	per-target data
+<<<<<<< HEAD
  * @in:		input netdevice
  * @out:	output netdevice
  * @fragoff:	packet is a fragment, this is the data offset
@@ -201,11 +218,19 @@ struct xt_counters_info {
  * @hook:	hook number given packet came from
  * @family:	Actual NFPROTO_* through which the function is invoked
  * 		(helpful when match->family == NFPROTO_UNSPEC)
+=======
+ * @state:	pointer to hook state this packet came from
+ * @fragoff:	packet is a fragment, this is the data offset
+ * @thoff:	position of transport header relative to skb->data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Fields written to by extensions:
  *
  * @hotdrop:	drop packet if we had inspection problems
+<<<<<<< HEAD
  * Network namespace obtainable using dev_net(in/out)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct xt_action_param {
 	union {
@@ -215,6 +240,7 @@ struct xt_action_param {
 	union {
 		const void *matchinfo, *targinfo;
 	};
+<<<<<<< HEAD
 	const struct net_device *in, *out;
 	int fragoff;
 	unsigned int thoff;
@@ -223,6 +249,49 @@ struct xt_action_param {
 	bool hotdrop;
 };
 
+=======
+	const struct nf_hook_state *state;
+	unsigned int thoff;
+	u16 fragoff;
+	bool hotdrop;
+};
+
+static inline struct net *xt_net(const struct xt_action_param *par)
+{
+	return par->state->net;
+}
+
+static inline struct net_device *xt_in(const struct xt_action_param *par)
+{
+	return par->state->in;
+}
+
+static inline const char *xt_inname(const struct xt_action_param *par)
+{
+	return par->state->in->name;
+}
+
+static inline struct net_device *xt_out(const struct xt_action_param *par)
+{
+	return par->state->out;
+}
+
+static inline const char *xt_outname(const struct xt_action_param *par)
+{
+	return par->state->out->name;
+}
+
+static inline unsigned int xt_hooknum(const struct xt_action_param *par)
+{
+	return par->state->hook;
+}
+
+static inline u_int8_t xt_family(const struct xt_action_param *par)
+{
+	return par->state->pf;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct xt_mtchk_param - parameters for match extensions'
  * checkentry functions
@@ -244,6 +313,10 @@ struct xt_mtchk_param {
 	void *matchinfo;
 	unsigned int hook_mask;
 	u_int8_t family;
+<<<<<<< HEAD
+=======
+	bool nft_compat;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -274,6 +347,10 @@ struct xt_tgchk_param {
 	void *targinfo;
 	unsigned int hook_mask;
 	u_int8_t family;
+<<<<<<< HEAD
+=======
+	bool nft_compat;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Target destructor parameters */
@@ -303,7 +380,11 @@ struct xt_match {
 
 	/* Called when entry of this type deleted. */
 	void (*destroy)(const struct xt_mtdtor_param *);
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
+=======
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Called when userspace align differs from kernel space one */
 	void (*compat_from_user)(void *dst, const void *src);
 	int (*compat_to_user)(void __user *dst, const void *src);
@@ -313,7 +394,12 @@ struct xt_match {
 
 	const char *table;
 	unsigned int matchsize;
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
+=======
+	unsigned int usersize;
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int compatsize;
 #endif
 	unsigned int hooks;
@@ -343,7 +429,11 @@ struct xt_target {
 
 	/* Called when entry of this type deleted. */
 	void (*destroy)(const struct xt_tgdtor_param *);
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
+=======
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Called when userspace align differs from kernel space one */
 	void (*compat_from_user)(void *dst, const void *src);
 	int (*compat_to_user)(void __user *dst, const void *src);
@@ -353,7 +443,12 @@ struct xt_target {
 
 	const char *table;
 	unsigned int targetsize;
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
+=======
+	unsigned int usersize;
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int compatsize;
 #endif
 	unsigned int hooks;
@@ -372,6 +467,12 @@ struct xt_table {
 	/* Man behind the curtain... */
 	struct xt_table_info *private;
 
+<<<<<<< HEAD
+=======
+	/* hook ops that register the table with the netfilter core */
+	struct nf_hook_ops *ops;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set this to THIS_MODULE if you are a module, otherwise NULL */
 	struct module *me;
 
@@ -402,6 +503,7 @@ struct xt_table_info {
 	 * @stacksize jumps (number of user chains) can possibly be made.
 	 */
 	unsigned int stacksize;
+<<<<<<< HEAD
 	unsigned int __percpu *stackptr;
 	void ***jumpstack;
 	/* ipt_entry tables: one per CPU */
@@ -459,6 +561,84 @@ extern void xt_free_table_info(struct xt_table_info *info);
 /**
  * xt_recseq - recursive seqcount for netfilter use
  * 
+=======
+	void ***jumpstack;
+
+	unsigned char entries[] __aligned(8);
+};
+
+int xt_register_target(struct xt_target *target);
+void xt_unregister_target(struct xt_target *target);
+int xt_register_targets(struct xt_target *target, unsigned int n);
+void xt_unregister_targets(struct xt_target *target, unsigned int n);
+
+int xt_register_match(struct xt_match *target);
+void xt_unregister_match(struct xt_match *target);
+int xt_register_matches(struct xt_match *match, unsigned int n);
+void xt_unregister_matches(struct xt_match *match, unsigned int n);
+
+int xt_check_entry_offsets(const void *base, const char *elems,
+			   unsigned int target_offset,
+			   unsigned int next_offset);
+
+int xt_check_table_hooks(const struct xt_table_info *info, unsigned int valid_hooks);
+
+unsigned int *xt_alloc_entry_offsets(unsigned int size);
+bool xt_find_jump_offset(const unsigned int *offsets,
+			 unsigned int target, unsigned int size);
+
+int xt_check_proc_name(const char *name, unsigned int size);
+
+int xt_check_match(struct xt_mtchk_param *, unsigned int size, u16 proto,
+		   bool inv_proto);
+int xt_check_target(struct xt_tgchk_param *, unsigned int size, u16 proto,
+		    bool inv_proto);
+
+int xt_match_to_user(const struct xt_entry_match *m,
+		     struct xt_entry_match __user *u);
+int xt_target_to_user(const struct xt_entry_target *t,
+		      struct xt_entry_target __user *u);
+int xt_data_to_user(void __user *dst, const void *src,
+		    int usersize, int size, int aligned_size);
+
+void *xt_copy_counters(sockptr_t arg, unsigned int len,
+		       struct xt_counters_info *info);
+struct xt_counters *xt_counters_alloc(unsigned int counters);
+
+struct xt_table *xt_register_table(struct net *net,
+				   const struct xt_table *table,
+				   struct xt_table_info *bootstrap,
+				   struct xt_table_info *newinfo);
+void *xt_unregister_table(struct xt_table *table);
+
+struct xt_table_info *xt_replace_table(struct xt_table *table,
+				       unsigned int num_counters,
+				       struct xt_table_info *newinfo,
+				       int *error);
+
+struct xt_match *xt_find_match(u8 af, const char *name, u8 revision);
+struct xt_match *xt_request_find_match(u8 af, const char *name, u8 revision);
+struct xt_target *xt_request_find_target(u8 af, const char *name, u8 revision);
+int xt_find_revision(u8 af, const char *name, u8 revision, int target,
+		     int *err);
+
+struct xt_table *xt_find_table(struct net *net, u8 af, const char *name);
+struct xt_table *xt_find_table_lock(struct net *net, u_int8_t af,
+				    const char *name);
+struct xt_table *xt_request_find_table_lock(struct net *net, u_int8_t af,
+					    const char *name);
+void xt_table_unlock(struct xt_table *t);
+
+int xt_proto_init(struct net *net, u_int8_t af);
+void xt_proto_fini(struct net *net, u_int8_t af);
+
+struct xt_table_info *xt_alloc_table_info(unsigned int size);
+void xt_free_table_info(struct xt_table_info *info);
+
+/**
+ * xt_recseq - recursive seqcount for netfilter use
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Packet processing changes the seqcount only if no recursion happened
  * get_counters() can use read_seqcount_begin()/read_seqcount_retry(),
  * because we use the normal seqcount convention :
@@ -466,6 +646,15 @@ extern void xt_free_table_info(struct xt_table_info *info);
  */
 DECLARE_PER_CPU(seqcount_t, xt_recseq);
 
+<<<<<<< HEAD
+=======
+/* xt_tee_enabled - true if x_tables needs to handle reentrancy
+ *
+ * Enabled if current ip(6)tables ruleset has at least one -j TEE rule.
+ */
+extern struct static_key xt_tee_enabled;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * xt_write_recseq_begin - start of a write section
  *
@@ -492,7 +681,11 @@ static inline unsigned int xt_write_recseq_begin(void)
 	 * since addend is most likely 1
 	 */
 	__this_cpu_add(xt_recseq.sequence, addend);
+<<<<<<< HEAD
 	smp_wmb();
+=======
+	smp_mb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return addend;
 }
@@ -535,10 +728,46 @@ static inline unsigned long ifname_compare_aligned(const char *_a,
 	return ret;
 }
 
+<<<<<<< HEAD
 extern struct nf_hook_ops *xt_hook_link(const struct xt_table *, nf_hookfn *);
 extern void xt_hook_unlink(const struct xt_table *, struct nf_hook_ops *);
 
 #ifdef CONFIG_COMPAT
+=======
+struct xt_percpu_counter_alloc_state {
+	unsigned int off;
+	const char __percpu *mem;
+};
+
+bool xt_percpu_counter_alloc(struct xt_percpu_counter_alloc_state *state,
+			     struct xt_counters *counter);
+void xt_percpu_counter_free(struct xt_counters *cnt);
+
+static inline struct xt_counters *
+xt_get_this_cpu_counter(struct xt_counters *cnt)
+{
+	if (nr_cpu_ids > 1)
+		return this_cpu_ptr((void __percpu *) (unsigned long) cnt->pcnt);
+
+	return cnt;
+}
+
+static inline struct xt_counters *
+xt_get_per_cpu_counter(struct xt_counters *cnt, unsigned int cpu)
+{
+	if (nr_cpu_ids > 1)
+		return per_cpu_ptr((void __percpu *) (unsigned long) cnt->pcnt, cpu);
+
+	return cnt;
+}
+
+struct nf_hook_ops *xt_hook_ops_alloc(const struct xt_table *, nf_hookfn *);
+
+int xt_register_template(const struct xt_table *t, int(*table_init)(struct net *net));
+void xt_unregister_template(const struct xt_table *t);
+
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/compat.h>
 
 struct compat_xt_entry_match {
@@ -554,7 +783,11 @@ struct compat_xt_entry_match {
 		} kernel;
 		u_int16_t match_size;
 	} u;
+<<<<<<< HEAD
 	unsigned char data[0];
+=======
+	unsigned char data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct compat_xt_entry_target {
@@ -570,7 +803,11 @@ struct compat_xt_entry_target {
 		} kernel;
 		u_int16_t target_size;
 	} u;
+<<<<<<< HEAD
 	unsigned char data[0];
+=======
+	unsigned char data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* FIXME: this works only on 32 bit tasks
@@ -584,7 +821,11 @@ struct compat_xt_counters {
 struct compat_xt_counters_info {
 	char name[XT_TABLE_MAXNAMELEN];
 	compat_uint_t num_counters;
+<<<<<<< HEAD
 	struct compat_xt_counters counters[0];
+=======
+	struct compat_xt_counters counters[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct _compat_xt_align {
@@ -596,6 +837,7 @@ struct _compat_xt_align {
 
 #define COMPAT_XT_ALIGN(s) __ALIGN_KERNEL((s), __alignof__(struct _compat_xt_align))
 
+<<<<<<< HEAD
 extern void xt_compat_lock(u_int8_t af);
 extern void xt_compat_unlock(u_int8_t af);
 
@@ -619,4 +861,30 @@ extern int xt_compat_target_to_user(const struct xt_entry_target *t,
 #endif /* CONFIG_COMPAT */
 #endif /* __KERNEL__ */
 
+=======
+void xt_compat_lock(u_int8_t af);
+void xt_compat_unlock(u_int8_t af);
+
+int xt_compat_add_offset(u_int8_t af, unsigned int offset, int delta);
+void xt_compat_flush_offsets(u_int8_t af);
+int xt_compat_init_offsets(u8 af, unsigned int number);
+int xt_compat_calc_jump(u_int8_t af, unsigned int offset);
+
+int xt_compat_match_offset(const struct xt_match *match);
+void xt_compat_match_from_user(struct xt_entry_match *m, void **dstptr,
+			      unsigned int *size);
+int xt_compat_match_to_user(const struct xt_entry_match *m,
+			    void __user **dstptr, unsigned int *size);
+
+int xt_compat_target_offset(const struct xt_target *target);
+void xt_compat_target_from_user(struct xt_entry_target *t, void **dstptr,
+				unsigned int *size);
+int xt_compat_target_to_user(const struct xt_entry_target *t,
+			     void __user **dstptr, unsigned int *size);
+int xt_compat_check_entry_offsets(const void *base, const char *elems,
+				  unsigned int target_offset,
+				  unsigned int next_offset);
+
+#endif /* CONFIG_NETFILTER_XTABLES_COMPAT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _X_TABLES_H */

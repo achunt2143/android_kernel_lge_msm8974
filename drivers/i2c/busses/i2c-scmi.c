@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SMBus driver for ACPI SMBus CMI
  *
  * Copyright (C) 2009 Crane Cai <crane.cai@amd.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +26,18 @@
 
 ACPI_MODULE_NAME("smbus_cmi");
 
+=======
+ */
+
+#include <linux/module.h>
+#include <linux/platform_device.h>
+#include <linux/slab.h>
+#include <linux/kernel.h>
+#include <linux/stddef.h>
+#include <linux/i2c.h>
+#include <linux/acpi.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct smbus_methods_t {
 	char *mt_info;
 	char *mt_sbr;
@@ -33,7 +50,11 @@ struct acpi_smbus_cmi {
 	u8 cap_info:1;
 	u8 cap_read:1;
 	u8 cap_write:1;
+<<<<<<< HEAD
 	struct smbus_methods_t *methods;
+=======
+	const struct smbus_methods_t *methods;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct smbus_methods_t smbus_methods = {
@@ -52,6 +73,10 @@ static const struct smbus_methods_t ibm_smbus_methods = {
 static const struct acpi_device_id acpi_smbus_cmi_ids[] = {
 	{"SMBUS01", (kernel_ulong_t)&smbus_methods},
 	{ACPI_SMBUS_IBM_HID, (kernel_ulong_t)&ibm_smbus_methods},
+<<<<<<< HEAD
+=======
+	{ACPI_SMBUS_MS_HID, (kernel_ulong_t)&smbus_methods},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"", 0}
 };
 MODULE_DEVICE_TABLE(acpi, acpi_smbus_cmi_ids);
@@ -149,6 +174,10 @@ acpi_smbus_cmi_access(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 			mt_params[3].type = ACPI_TYPE_INTEGER;
 			mt_params[3].integer.value = len;
 			mt_params[4].type = ACPI_TYPE_BUFFER;
+<<<<<<< HEAD
+=======
+			mt_params[4].buffer.length = len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mt_params[4].buffer.pointer = data->block + 1;
 		}
 		break;
@@ -179,7 +208,12 @@ acpi_smbus_cmi_access(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 	status = acpi_evaluate_object(smbus_cmi->handle, method, &input,
 				      &buffer);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		ACPI_ERROR((AE_INFO, "Evaluating %s: %i", method, status));
+=======
+		acpi_handle_err(smbus_cmi->handle,
+				"Failed to evaluate %s: %i\n", method, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -187,19 +221,32 @@ acpi_smbus_cmi_access(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 	if (pkg && pkg->type == ACPI_TYPE_PACKAGE)
 		obj = pkg->package.elements;
 	else {
+<<<<<<< HEAD
 		ACPI_ERROR((AE_INFO, "Invalid argument type"));
+=======
+		acpi_handle_err(smbus_cmi->handle, "Invalid argument type\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = -EIO;
 		goto out;
 	}
 	if (obj == NULL || obj->type != ACPI_TYPE_INTEGER) {
+<<<<<<< HEAD
 		ACPI_ERROR((AE_INFO, "Invalid argument type"));
+=======
+		acpi_handle_err(smbus_cmi->handle, "Invalid argument type\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = -EIO;
 		goto out;
 	}
 
 	result = obj->integer.value;
+<<<<<<< HEAD
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO, "%s return status: %i\n",
 			  method, result));
+=======
+	acpi_handle_debug(smbus_cmi->handle,  "%s return status: %i\n", method,
+			  result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (result) {
 	case ACPI_SMBUS_STATUS_OK:
@@ -223,8 +270,13 @@ acpi_smbus_cmi_access(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 		goto out;
 
 	obj = pkg->package.elements + 1;
+<<<<<<< HEAD
 	if (obj == NULL || obj->type != ACPI_TYPE_INTEGER) {
 		ACPI_ERROR((AE_INFO, "Invalid argument type"));
+=======
+	if (obj->type != ACPI_TYPE_INTEGER) {
+		acpi_handle_err(smbus_cmi->handle, "Invalid argument type\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = -EIO;
 		goto out;
 	}
@@ -235,8 +287,14 @@ acpi_smbus_cmi_access(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 	case I2C_SMBUS_BYTE:
 	case I2C_SMBUS_BYTE_DATA:
 	case I2C_SMBUS_WORD_DATA:
+<<<<<<< HEAD
 		if (obj == NULL || obj->type != ACPI_TYPE_INTEGER) {
 			ACPI_ERROR((AE_INFO, "Invalid argument type"));
+=======
+		if (obj->type != ACPI_TYPE_INTEGER) {
+			acpi_handle_err(smbus_cmi->handle,
+					"Invalid argument type\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result = -EIO;
 			goto out;
 		}
@@ -246,8 +304,14 @@ acpi_smbus_cmi_access(struct i2c_adapter *adap, u16 addr, unsigned short flags,
 			data->byte = obj->integer.value;
 		break;
 	case I2C_SMBUS_BLOCK_DATA:
+<<<<<<< HEAD
 		if (obj == NULL || obj->type != ACPI_TYPE_BUFFER) {
 			ACPI_ERROR((AE_INFO, "Invalid argument type"));
+=======
+		if (obj->type != ACPI_TYPE_BUFFER) {
+			acpi_handle_err(smbus_cmi->handle,
+					"Invalid argument type\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result = -EIO;
 			goto out;
 		}
@@ -297,6 +361,10 @@ static int acpi_smbus_cmi_add_cap(struct acpi_smbus_cmi *smbus_cmi,
 				  const char *name)
 {
 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
+<<<<<<< HEAD
+=======
+	struct acpi_handle *handle = smbus_cmi->handle;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union acpi_object *obj;
 	acpi_status status;
 
@@ -305,8 +373,13 @@ static int acpi_smbus_cmi_add_cap(struct acpi_smbus_cmi *smbus_cmi,
 					smbus_cmi->methods->mt_info,
 					NULL, &buffer);
 		if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 			ACPI_ERROR((AE_INFO, "Evaluating %s: %i",
 				   smbus_cmi->methods->mt_info, status));
+=======
+			acpi_handle_err(handle, "Failed to evaluate %s: %i\n",
+					smbus_cmi->methods->mt_info, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 
@@ -314,18 +387,31 @@ static int acpi_smbus_cmi_add_cap(struct acpi_smbus_cmi *smbus_cmi,
 		if (obj && obj->type == ACPI_TYPE_PACKAGE)
 			obj = obj->package.elements;
 		else {
+<<<<<<< HEAD
 			ACPI_ERROR((AE_INFO, "Invalid argument type"));
+=======
+			acpi_handle_err(handle, "Invalid argument type\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(buffer.pointer);
 			return -EIO;
 		}
 
 		if (obj->type != ACPI_TYPE_INTEGER) {
+<<<<<<< HEAD
 			ACPI_ERROR((AE_INFO, "Invalid argument type"));
 			kfree(buffer.pointer);
 			return -EIO;
 		} else
 			ACPI_DEBUG_PRINT((ACPI_DB_INFO, "SMBus CMI Version %x"
 					  "\n", (int)obj->integer.value));
+=======
+			acpi_handle_err(handle, "Invalid argument type\n");
+			kfree(buffer.pointer);
+			return -EIO;
+		} else
+			acpi_handle_debug(handle, "SMBus CMI Version %x\n",
+					  (int)obj->integer.value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		kfree(buffer.pointer);
 		smbus_cmi->cap_info = 1;
@@ -334,8 +420,12 @@ static int acpi_smbus_cmi_add_cap(struct acpi_smbus_cmi *smbus_cmi,
 	else if (!strcmp(name, smbus_cmi->methods->mt_sbw))
 		smbus_cmi->cap_write = 1;
 	else
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT((ACPI_DB_INFO, "Unsupported CMI method: %s\n",
 				 name));
+=======
+		acpi_handle_debug(handle, "Unsupported CMI method: %s\n", name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -356,23 +446,40 @@ static acpi_status acpi_smbus_cmi_query_methods(acpi_handle handle, u32 level,
 	return AE_OK;
 }
 
+<<<<<<< HEAD
 static int acpi_smbus_cmi_add(struct acpi_device *device)
 {
 	struct acpi_smbus_cmi *smbus_cmi;
 	const struct acpi_device_id *id;
+=======
+static int smbus_cmi_probe(struct platform_device *device)
+{
+	struct device *dev = &device->dev;
+	struct acpi_smbus_cmi *smbus_cmi;
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	smbus_cmi = kzalloc(sizeof(struct acpi_smbus_cmi), GFP_KERNEL);
 	if (!smbus_cmi)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	smbus_cmi->handle = device->handle;
 	strcpy(acpi_device_name(device), ACPI_SMBUS_HC_DEVICE_NAME);
 	strcpy(acpi_device_class(device), ACPI_SMBUS_HC_CLASS);
 	device->driver_data = smbus_cmi;
+=======
+	smbus_cmi->handle = ACPI_HANDLE(dev);
+	smbus_cmi->methods = device_get_match_data(dev);
+
+	platform_set_drvdata(device, smbus_cmi);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smbus_cmi->cap_info = 0;
 	smbus_cmi->cap_read = 0;
 	smbus_cmi->cap_write = 0;
 
+<<<<<<< HEAD
 	for (id = acpi_smbus_cmi_ids; id->id[0]; id++)
 		if (!strcmp(id->id, acpi_device_hid(device)))
 			smbus_cmi->methods =
@@ -394,6 +501,26 @@ static int acpi_smbus_cmi_add(struct acpi_device *device)
 	smbus_cmi->adapter.dev.parent = &device->dev;
 
 	if (i2c_add_adapter(&smbus_cmi->adapter)) {
+=======
+	acpi_walk_namespace(ACPI_TYPE_METHOD, smbus_cmi->handle, 1,
+			    acpi_smbus_cmi_query_methods, NULL, smbus_cmi, NULL);
+
+	if (smbus_cmi->cap_info == 0) {
+		ret = -ENODEV;
+		goto err;
+	}
+
+	snprintf(smbus_cmi->adapter.name, sizeof(smbus_cmi->adapter.name),
+		 "SMBus CMI adapter %s", dev_name(dev));
+	smbus_cmi->adapter.owner = THIS_MODULE;
+	smbus_cmi->adapter.algo = &acpi_smbus_cmi_algorithm;
+	smbus_cmi->adapter.algo_data = smbus_cmi;
+	smbus_cmi->adapter.class = I2C_CLASS_HWMON;
+	smbus_cmi->adapter.dev.parent = &device->dev;
+
+	ret = i2c_add_adapter(&smbus_cmi->adapter);
+	if (ret) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&device->dev, "Couldn't register adapter!\n");
 		goto err;
 	}
@@ -402,6 +529,7 @@ static int acpi_smbus_cmi_add(struct acpi_device *device)
 
 err:
 	kfree(smbus_cmi);
+<<<<<<< HEAD
 	device->driver_data = NULL;
 	return -EIO;
 }
@@ -439,6 +567,28 @@ static void __exit acpi_smbus_cmi_exit(void)
 
 module_init(acpi_smbus_cmi_init);
 module_exit(acpi_smbus_cmi_exit);
+=======
+	return ret;
+}
+
+static void smbus_cmi_remove(struct platform_device *device)
+{
+	struct acpi_smbus_cmi *smbus_cmi = platform_get_drvdata(device);
+
+	i2c_del_adapter(&smbus_cmi->adapter);
+	kfree(smbus_cmi);
+}
+
+static struct platform_driver smbus_cmi_driver = {
+	.probe = smbus_cmi_probe,
+	.remove_new = smbus_cmi_remove,
+	.driver = {
+		.name   = "smbus_cmi",
+		.acpi_match_table = acpi_smbus_cmi_ids,
+	},
+};
+module_platform_driver(smbus_cmi_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Crane Cai <crane.cai@amd.com>");

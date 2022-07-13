@@ -42,11 +42,15 @@
  * $FreeBSD$
  */
 
+<<<<<<< HEAD
 #ifdef __linux__
 #include "../queue.h"
 #else
 #include <sys/queue.h>
 #endif
+=======
+#include "../queue.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef enum {
 	UNINITIALIZED,
@@ -112,7 +116,11 @@ struct macro_arg {
 	regex_t	arg_regex;
 	char   *replacement_text;
 };
+<<<<<<< HEAD
 STAILQ_HEAD(macro_arg_list, macro_arg) args;
+=======
+STAILQ_HEAD(macro_arg_list, macro_arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct macro_info {
 	struct macro_arg_list args;

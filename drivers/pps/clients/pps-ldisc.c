@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * pps-ldisc.c -- PPS line discipline
  *
@@ -17,6 +18,13 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * pps-ldisc.c -- PPS line discipline
+ *
+ * Copyright (C) 2008	Rodolfo Giometti <giometti@linux.it>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -25,6 +33,7 @@
 #include <linux/serial_core.h>
 #include <linux/tty.h>
 #include <linux/pps_kernel.h>
+<<<<<<< HEAD
 
 #define PPS_TTY_MAGIC		0x0001
 
@@ -41,6 +50,31 @@ static void pps_tty_dcd_change(struct tty_struct *tty, unsigned int status,
 
 	dev_dbg(pps->dev, "PPS %s at %lu\n",
 			status ? "assert" : "clear", jiffies);
+=======
+#include <linux/bug.h>
+
+static void pps_tty_dcd_change(struct tty_struct *tty, bool active)
+{
+	struct pps_device *pps;
+	struct pps_event_time ts;
+
+	pps_get_ts(&ts);
+
+	pps = pps_lookup_dev(tty);
+	/*
+	 * This should never fail, but the ldisc locking is very
+	 * convoluted, so don't crash just in case.
+	 */
+	if (WARN_ON_ONCE(pps == NULL))
+		return;
+
+	/* Now do the PPS event report */
+	pps_event(pps, &ts, active ? PPS_CAPTUREASSERT :
+			PPS_CAPTURECLEAR, NULL);
+
+	dev_dbg(pps->dev, "PPS %s at %lu\n",
+			active ? "assert" : "clear", jiffies);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int (*alias_n_tty_open)(struct tty_struct *tty);
@@ -63,9 +97,15 @@ static int pps_tty_open(struct tty_struct *tty)
 
 	pps = pps_register_source(&info, PPS_CAPTUREBOTH | \
 				PPS_OFFSETASSERT | PPS_OFFSETCLEAR);
+<<<<<<< HEAD
 	if (pps == NULL) {
 		pr_err("cannot register PPS source \"%s\"\n", info.path);
 		return -ENOMEM;
+=======
+	if (IS_ERR(pps)) {
+		pr_err("cannot register PPS source \"%s\"\n", info.path);
+		return PTR_ERR(pps);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pps->lookup_cookie = tty;
 
@@ -93,6 +133,12 @@ static void pps_tty_close(struct tty_struct *tty)
 
 	alias_n_tty_close(tty);
 
+<<<<<<< HEAD
+=======
+	if (WARN_ON(!pps))
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(pps->dev, "removed\n");
 	pps_unregister_source(pps);
 }
@@ -116,13 +162,21 @@ static int __init pps_tty_init(void)
 
 	/* Init PPS_TTY data */
 	pps_ldisc_ops.owner = THIS_MODULE;
+<<<<<<< HEAD
 	pps_ldisc_ops.magic = PPS_TTY_MAGIC;
+=======
+	pps_ldisc_ops.num = N_PPS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pps_ldisc_ops.name = "pps_tty";
 	pps_ldisc_ops.dcd_change = pps_tty_dcd_change;
 	pps_ldisc_ops.open = pps_tty_open;
 	pps_ldisc_ops.close = pps_tty_close;
 
+<<<<<<< HEAD
 	err = tty_register_ldisc(N_PPS, &pps_ldisc_ops);
+=======
+	err = tty_register_ldisc(&pps_ldisc_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		pr_err("can't register PPS line discipline\n");
 	else
@@ -133,6 +187,7 @@ static int __init pps_tty_init(void)
 
 static void __exit pps_tty_cleanup(void)
 {
+<<<<<<< HEAD
 	int err;
 
 	err = tty_unregister_ldisc(N_PPS);
@@ -140,6 +195,9 @@ static void __exit pps_tty_cleanup(void)
 		pr_err("can't unregister PPS line discipline\n");
 	else
 		pr_info("PPS line discipline removed\n");
+=======
+	tty_unregister_ldisc(&pps_ldisc_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(pps_tty_init);

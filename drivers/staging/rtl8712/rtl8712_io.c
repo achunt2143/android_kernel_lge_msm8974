@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * rtl8712_io.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,6 +22,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -36,6 +43,7 @@
 
 u8 r8712_read8(struct _adapter *adapter, u32 addr)
 {
+<<<<<<< HEAD
 	struct io_queue *pio_queue = (struct io_queue *)adapter->pio_queue;
 	struct intf_hdl *pintfhdl = &(pio_queue->intf);
 	u8 (*_read8)(struct intf_hdl *pintfhdl, u32 addr);
@@ -44,10 +52,16 @@ u8 r8712_read8(struct _adapter *adapter, u32 addr)
 	_read8 = pintfhdl->io_ops._read8;
 	r_val = _read8(pintfhdl, addr);
 	return r_val;
+=======
+	struct intf_hdl *hdl = &adapter->pio_queue->intf;
+
+	return hdl->io_ops._read8(hdl, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u16 r8712_read16(struct _adapter *adapter, u32 addr)
 {
+<<<<<<< HEAD
 	struct io_queue *pio_queue = (struct io_queue *)adapter->pio_queue;
 	struct intf_hdl *pintfhdl = &(pio_queue->intf);
 	u16 (*_read16)(struct intf_hdl *pintfhdl, u32 addr);
@@ -56,10 +70,16 @@ u16 r8712_read16(struct _adapter *adapter, u32 addr)
 	_read16 = pintfhdl->io_ops._read16;
 	r_val = _read16(pintfhdl, addr);
 	return r_val;
+=======
+	struct intf_hdl *hdl = &adapter->pio_queue->intf;
+
+	return hdl->io_ops._read16(hdl, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u32 r8712_read32(struct _adapter *adapter, u32 addr)
 {
+<<<<<<< HEAD
 	struct io_queue *pio_queue = (struct io_queue *)adapter->pio_queue;
 	struct intf_hdl *pintfhdl = &(pio_queue->intf);
 	u32 (*_read32)(struct intf_hdl *pintfhdl, u32 addr);
@@ -68,40 +88,64 @@ u32 r8712_read32(struct _adapter *adapter, u32 addr)
 	_read32 = pintfhdl->io_ops._read32;
 	r_val = _read32(pintfhdl, addr);
 	return r_val;
+=======
+	struct intf_hdl *hdl = &adapter->pio_queue->intf;
+
+	return hdl->io_ops._read32(hdl, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void r8712_write8(struct _adapter *adapter, u32 addr, u8 val)
 {
+<<<<<<< HEAD
 	struct io_queue *pio_queue = (struct io_queue *)adapter->pio_queue;
 	struct intf_hdl *pintfhdl = &(pio_queue->intf);
 	void (*_write8)(struct intf_hdl *pintfhdl, u32 addr, u8 val);
 
 	_write8 = pintfhdl->io_ops._write8;
 	_write8(pintfhdl, addr, val);
+=======
+	struct intf_hdl *hdl = &adapter->pio_queue->intf;
+
+	hdl->io_ops._write8(hdl, addr, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void r8712_write16(struct _adapter *adapter, u32 addr, u16 val)
 {
+<<<<<<< HEAD
 	struct io_queue *pio_queue = (struct io_queue *)adapter->pio_queue;
 	struct intf_hdl *pintfhdl = &(pio_queue->intf);
 
 	void (*_write16)(struct intf_hdl *pintfhdl, u32 addr, u16 val);
 	_write16 = pintfhdl->io_ops._write16;
 	_write16(pintfhdl, addr, val);
+=======
+	struct intf_hdl *hdl = &adapter->pio_queue->intf;
+
+	hdl->io_ops._write16(hdl, addr, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void r8712_write32(struct _adapter *adapter, u32 addr, u32 val)
 {
+<<<<<<< HEAD
 	struct io_queue *pio_queue = (struct io_queue *)adapter->pio_queue;
 	struct intf_hdl *pintfhdl = (struct intf_hdl *)(&(pio_queue->intf));
 
 	void (*_write32)(struct intf_hdl *pintfhdl, u32 addr, u32 val);
 	_write32 = pintfhdl->io_ops._write32;
 	_write32(pintfhdl, addr, val);
+=======
+	struct intf_hdl *hdl = &adapter->pio_queue->intf;
+
+	hdl->io_ops._write32(hdl, addr, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void r8712_read_mem(struct _adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 {
+<<<<<<< HEAD
 	struct io_queue *pio_queue = (struct io_queue *)adapter->pio_queue;
 	struct intf_hdl *pintfhdl = &(pio_queue->intf);
 
@@ -112,10 +156,19 @@ void r8712_read_mem(struct _adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 		return;
 	_read_mem = pintfhdl->io_ops._read_mem;
 	_read_mem(pintfhdl, addr, cnt, pmem);
+=======
+	struct intf_hdl *hdl = &adapter->pio_queue->intf;
+
+	if (adapter->driver_stopped || adapter->surprise_removed)
+		return;
+
+	hdl->io_ops._read_mem(hdl, addr, cnt, pmem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void r8712_write_mem(struct _adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 {
+<<<<<<< HEAD
 	struct io_queue *pio_queue = (struct io_queue *)adapter->pio_queue;
 	struct intf_hdl *pintfhdl = &(pio_queue->intf);
 	void (*_write_mem)(struct intf_hdl *pintfhdl, u32 addr, u32 cnt,
@@ -123,10 +176,16 @@ void r8712_write_mem(struct _adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 
 	_write_mem = pintfhdl->io_ops._write_mem;
 	_write_mem(pintfhdl, addr, cnt, pmem);
+=======
+	struct intf_hdl *hdl = &adapter->pio_queue->intf;
+
+	hdl->io_ops._write_mem(hdl, addr, cnt, pmem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void r8712_read_port(struct _adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 {
+<<<<<<< HEAD
 	struct io_queue *pio_queue = (struct io_queue *)adapter->pio_queue;
 	struct intf_hdl	*pintfhdl = &(pio_queue->intf);
 
@@ -137,10 +196,19 @@ void r8712_read_port(struct _adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 		return;
 	_read_port = pintfhdl->io_ops._read_port;
 	_read_port(pintfhdl, addr, cnt, pmem);
+=======
+	struct intf_hdl *hdl = &adapter->pio_queue->intf;
+
+	if (adapter->driver_stopped || adapter->surprise_removed)
+		return;
+
+	hdl->io_ops._read_port(hdl, addr, cnt, pmem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void r8712_write_port(struct _adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 {
+<<<<<<< HEAD
 	struct io_queue *pio_queue = (struct io_queue *)adapter->pio_queue;
 	struct intf_hdl *pintfhdl = &(pio_queue->intf);
 
@@ -148,4 +216,9 @@ void r8712_write_port(struct _adapter *adapter, u32 addr, u32 cnt, u8 *pmem)
 			   u8 *pmem);
 	_write_port = pintfhdl->io_ops._write_port;
 	_write_port(pintfhdl, addr, cnt, pmem);
+=======
+	struct intf_hdl *hdl = &adapter->pio_queue->intf;
+
+	hdl->io_ops._write_port(hdl, addr, cnt, pmem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

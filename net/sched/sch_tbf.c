@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * net/sched/sch_tbf.c	Token Bucket Filter queue.
  *
@@ -10,6 +11,15 @@
  *		Dmitry Torokhov <dtor@mail.ru> - allow attaching inner qdiscs -
  *						 original idea by Martin Devera
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * net/sched/sch_tbf.c	Token Bucket Filter queue.
+ *
+ * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
+ *		Dmitry Torokhov <dtor@mail.ru> - allow attaching inner qdiscs -
+ *						 original idea by Martin Devera
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -18,7 +28,14 @@
 #include <linux/string.h>
 #include <linux/errno.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <net/netlink.h>
+=======
+#include <net/gso.h>
+#include <net/netlink.h>
+#include <net/sch_generic.h>
+#include <net/pkt_cls.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/pkt_sched.h>
 
 
@@ -100,6 +117,7 @@
 struct tbf_sched_data {
 /* Parameters */
 	u32		limit;		/* Maximal length of backlog: bytes */
+<<<<<<< HEAD
 	u32		buffer;		/* Token bucket depth/rate: MUST BE >= MTU/B */
 	u32		mtu;
 	u32		max_size;
@@ -110,10 +128,23 @@ struct tbf_sched_data {
 	long	tokens;			/* Current number of B tokens */
 	long	ptokens;		/* Current number of P tokens */
 	psched_time_t	t_c;		/* Time check-point */
+=======
+	u32		max_size;
+	s64		buffer;		/* Token bucket depth/rate: MUST BE >= MTU/B */
+	s64		mtu;
+	struct psched_ratecfg rate;
+	struct psched_ratecfg peak;
+
+/* Variables */
+	s64	tokens;			/* Current number of B tokens */
+	s64	ptokens;		/* Current number of P tokens */
+	s64	t_c;			/* Time check-point */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Qdisc	*qdisc;		/* Inner qdisc, default - bfifo queue */
 	struct qdisc_watchdog watchdog;	/* Watchdog timer */
 };
 
+<<<<<<< HEAD
 #define L2T(q, L)   qdisc_l2t((q)->R_tab, L)
 #define L2T_P(q, L) qdisc_l2t((q)->P_tab, L)
 
@@ -132,10 +163,158 @@ static int tbf_enqueue(struct sk_buff *skb, struct Qdisc *sch)
 		return ret;
 	}
 
+=======
+
+/* Time to Length, convert time in ns to length in bytes
+ * to determinate how many bytes can be sent in given time.
+ */
+static u64 psched_ns_t2l(const struct psched_ratecfg *r,
+			 u64 time_in_ns)
+{
+	/* The formula is :
+	 * len = (time_in_ns * r->rate_bytes_ps) / NSEC_PER_SEC
+	 */
+	u64 len = time_in_ns * r->rate_bytes_ps;
+
+	do_div(len, NSEC_PER_SEC);
+
+	if (unlikely(r->linklayer == TC_LINKLAYER_ATM)) {
+		do_div(len, 53);
+		len = len * 48;
+	}
+
+	if (len > r->overhead)
+		len -= r->overhead;
+	else
+		len = 0;
+
+	return len;
+}
+
+static void tbf_offload_change(struct Qdisc *sch)
+{
+	struct tbf_sched_data *q = qdisc_priv(sch);
+	struct net_device *dev = qdisc_dev(sch);
+	struct tc_tbf_qopt_offload qopt;
+
+	if (!tc_can_offload(dev) || !dev->netdev_ops->ndo_setup_tc)
+		return;
+
+	qopt.command = TC_TBF_REPLACE;
+	qopt.handle = sch->handle;
+	qopt.parent = sch->parent;
+	qopt.replace_params.rate = q->rate;
+	qopt.replace_params.max_size = q->max_size;
+	qopt.replace_params.qstats = &sch->qstats;
+
+	dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TBF, &qopt);
+}
+
+static void tbf_offload_destroy(struct Qdisc *sch)
+{
+	struct net_device *dev = qdisc_dev(sch);
+	struct tc_tbf_qopt_offload qopt;
+
+	if (!tc_can_offload(dev) || !dev->netdev_ops->ndo_setup_tc)
+		return;
+
+	qopt.command = TC_TBF_DESTROY;
+	qopt.handle = sch->handle;
+	qopt.parent = sch->parent;
+	dev->netdev_ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TBF, &qopt);
+}
+
+static int tbf_offload_dump(struct Qdisc *sch)
+{
+	struct tc_tbf_qopt_offload qopt;
+
+	qopt.command = TC_TBF_STATS;
+	qopt.handle = sch->handle;
+	qopt.parent = sch->parent;
+	qopt.stats.bstats = &sch->bstats;
+	qopt.stats.qstats = &sch->qstats;
+
+	return qdisc_offload_dump_helper(sch, TC_SETUP_QDISC_TBF, &qopt);
+}
+
+static void tbf_offload_graft(struct Qdisc *sch, struct Qdisc *new,
+			      struct Qdisc *old, struct netlink_ext_ack *extack)
+{
+	struct tc_tbf_qopt_offload graft_offload = {
+		.handle		= sch->handle,
+		.parent		= sch->parent,
+		.child_handle	= new->handle,
+		.command	= TC_TBF_GRAFT,
+	};
+
+	qdisc_offload_graft_helper(qdisc_dev(sch), sch, new, old,
+				   TC_SETUP_QDISC_TBF, &graft_offload, extack);
+}
+
+/* GSO packet is too big, segment it so that tbf can transmit
+ * each segment in time
+ */
+static int tbf_segment(struct sk_buff *skb, struct Qdisc *sch,
+		       struct sk_buff **to_free)
+{
+	struct tbf_sched_data *q = qdisc_priv(sch);
+	struct sk_buff *segs, *nskb;
+	netdev_features_t features = netif_skb_features(skb);
+	unsigned int len = 0, prev_len = qdisc_pkt_len(skb);
+	int ret, nb;
+
+	segs = skb_gso_segment(skb, features & ~NETIF_F_GSO_MASK);
+
+	if (IS_ERR_OR_NULL(segs))
+		return qdisc_drop(skb, sch, to_free);
+
+	nb = 0;
+	skb_list_walk_safe(segs, segs, nskb) {
+		skb_mark_not_on_list(segs);
+		qdisc_skb_cb(segs)->pkt_len = segs->len;
+		len += segs->len;
+		ret = qdisc_enqueue(segs, q->qdisc, to_free);
+		if (ret != NET_XMIT_SUCCESS) {
+			if (net_xmit_drop_count(ret))
+				qdisc_qstats_drop(sch);
+		} else {
+			nb++;
+		}
+	}
+	sch->q.qlen += nb;
+	if (nb > 1)
+		qdisc_tree_reduce_backlog(sch, 1 - nb, prev_len - len);
+	consume_skb(skb);
+	return nb > 0 ? NET_XMIT_SUCCESS : NET_XMIT_DROP;
+}
+
+static int tbf_enqueue(struct sk_buff *skb, struct Qdisc *sch,
+		       struct sk_buff **to_free)
+{
+	struct tbf_sched_data *q = qdisc_priv(sch);
+	unsigned int len = qdisc_pkt_len(skb);
+	int ret;
+
+	if (qdisc_pkt_len(skb) > q->max_size) {
+		if (skb_is_gso(skb) &&
+		    skb_gso_validate_mac_len(skb, q->max_size))
+			return tbf_segment(skb, sch, to_free);
+		return qdisc_drop(skb, sch, to_free);
+	}
+	ret = qdisc_enqueue(skb, q->qdisc, to_free);
+	if (ret != NET_XMIT_SUCCESS) {
+		if (net_xmit_drop_count(ret))
+			qdisc_qstats_drop(sch);
+		return ret;
+	}
+
+	sch->qstats.backlog += len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sch->q.qlen++;
 	return NET_XMIT_SUCCESS;
 }
 
+<<<<<<< HEAD
 static unsigned int tbf_drop(struct Qdisc *sch)
 {
 	struct tbf_sched_data *q = qdisc_priv(sch);
@@ -146,6 +325,11 @@ static unsigned int tbf_drop(struct Qdisc *sch)
 		sch->qstats.drops++;
 	}
 	return len;
+=======
+static bool tbf_peak_present(const struct tbf_sched_data *q)
+{
+	return q->peak.rate_bytes_ps;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct sk_buff *tbf_dequeue(struct Qdisc *sch)
@@ -156,6 +340,7 @@ static struct sk_buff *tbf_dequeue(struct Qdisc *sch)
 	skb = q->qdisc->ops->peek(q->qdisc);
 
 	if (skb) {
+<<<<<<< HEAD
 		psched_time_t now;
 		long toks;
 		long ptoks = 0;
@@ -174,6 +359,26 @@ static struct sk_buff *tbf_dequeue(struct Qdisc *sch)
 		if (toks > (long)q->buffer)
 			toks = q->buffer;
 		toks -= L2T(q, len);
+=======
+		s64 now;
+		s64 toks;
+		s64 ptoks = 0;
+		unsigned int len = qdisc_pkt_len(skb);
+
+		now = ktime_get_ns();
+		toks = min_t(s64, now - q->t_c, q->buffer);
+
+		if (tbf_peak_present(q)) {
+			ptoks = toks + q->ptokens;
+			if (ptoks > q->mtu)
+				ptoks = q->mtu;
+			ptoks -= (s64) psched_l2t_ns(&q->peak, len);
+		}
+		toks += q->tokens;
+		if (toks > q->buffer)
+			toks = q->buffer;
+		toks -= (s64) psched_l2t_ns(&q->rate, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if ((toks|ptoks) >= 0) {
 			skb = qdisc_dequeue_peeked(q->qdisc);
@@ -183,14 +388,24 @@ static struct sk_buff *tbf_dequeue(struct Qdisc *sch)
 			q->t_c = now;
 			q->tokens = toks;
 			q->ptokens = ptoks;
+<<<<<<< HEAD
 			sch->q.qlen--;
 			qdisc_unthrottled(sch);
+=======
+			qdisc_qstats_backlog_dec(sch, skb);
+			sch->q.qlen--;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			qdisc_bstats_update(sch, skb);
 			return skb;
 		}
 
+<<<<<<< HEAD
 		qdisc_watchdog_schedule(&q->watchdog,
 					now + max_t(long, -toks, -ptoks));
+=======
+		qdisc_watchdog_schedule_ns(&q->watchdog,
+					   now + max_t(long, -toks, -ptoks));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Maybe we have a shorter packet in the queue,
 		   which can be sent now. It sounds cool,
@@ -203,7 +418,11 @@ static struct sk_buff *tbf_dequeue(struct Qdisc *sch)
 		   (cf. CSZ, HPFQ, HFSC)
 		 */
 
+<<<<<<< HEAD
 		sch->qstats.overlimits++;
+=======
+		qdisc_qstats_overlimit(sch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NULL;
 }
@@ -213,8 +432,12 @@ static void tbf_reset(struct Qdisc *sch)
 	struct tbf_sched_data *q = qdisc_priv(sch);
 
 	qdisc_reset(q->qdisc);
+<<<<<<< HEAD
 	sch->q.qlen = 0;
 	q->t_c = psched_get_time();
+=======
+	q->t_c = ktime_get_ns();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	q->tokens = q->buffer;
 	q->ptokens = q->mtu;
 	qdisc_watchdog_cancel(&q->watchdog);
@@ -224,6 +447,7 @@ static const struct nla_policy tbf_policy[TCA_TBF_MAX + 1] = {
 	[TCA_TBF_PARMS]	= { .len = sizeof(struct tc_tbf_qopt) },
 	[TCA_TBF_RTAB]	= { .type = NLA_BINARY, .len = TC_RTAB_SIZE },
 	[TCA_TBF_PTAB]	= { .type = NLA_BINARY, .len = TC_RTAB_SIZE },
+<<<<<<< HEAD
 };
 
 static int tbf_change(struct Qdisc *sch, struct nlattr *opt)
@@ -238,6 +462,31 @@ static int tbf_change(struct Qdisc *sch, struct nlattr *opt)
 	int max_size, n;
 
 	err = nla_parse_nested(tb, TCA_TBF_PTAB, opt, tbf_policy);
+=======
+	[TCA_TBF_RATE64]	= { .type = NLA_U64 },
+	[TCA_TBF_PRATE64]	= { .type = NLA_U64 },
+	[TCA_TBF_BURST] = { .type = NLA_U32 },
+	[TCA_TBF_PBURST] = { .type = NLA_U32 },
+};
+
+static int tbf_change(struct Qdisc *sch, struct nlattr *opt,
+		      struct netlink_ext_ack *extack)
+{
+	int err;
+	struct tbf_sched_data *q = qdisc_priv(sch);
+	struct nlattr *tb[TCA_TBF_MAX + 1];
+	struct tc_tbf_qopt *qopt;
+	struct Qdisc *child = NULL;
+	struct Qdisc *old = NULL;
+	struct psched_ratecfg rate;
+	struct psched_ratecfg peak;
+	u64 max_size;
+	s64 buffer, mtu;
+	u64 rate64 = 0, prate64 = 0;
+
+	err = nla_parse_nested_deprecated(tb, TCA_TBF_MAX, opt, tbf_policy,
+					  NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -246,6 +495,7 @@ static int tbf_change(struct Qdisc *sch, struct nlattr *opt)
 		goto done;
 
 	qopt = nla_data(tb[TCA_TBF_PARMS]);
+<<<<<<< HEAD
 	rtab = qdisc_get_rtab(&qopt->rate, tb[TCA_TBF_RTAB]);
 	if (rtab == NULL)
 		goto done;
@@ -273,21 +523,90 @@ static int tbf_change(struct Qdisc *sch, struct nlattr *opt)
 	}
 	if (max_size < 0)
 		goto done;
+=======
+	if (qopt->rate.linklayer == TC_LINKLAYER_UNAWARE)
+		qdisc_put_rtab(qdisc_get_rtab(&qopt->rate,
+					      tb[TCA_TBF_RTAB],
+					      NULL));
+
+	if (qopt->peakrate.linklayer == TC_LINKLAYER_UNAWARE)
+			qdisc_put_rtab(qdisc_get_rtab(&qopt->peakrate,
+						      tb[TCA_TBF_PTAB],
+						      NULL));
+
+	buffer = min_t(u64, PSCHED_TICKS2NS(qopt->buffer), ~0U);
+	mtu = min_t(u64, PSCHED_TICKS2NS(qopt->mtu), ~0U);
+
+	if (tb[TCA_TBF_RATE64])
+		rate64 = nla_get_u64(tb[TCA_TBF_RATE64]);
+	psched_ratecfg_precompute(&rate, &qopt->rate, rate64);
+
+	if (tb[TCA_TBF_BURST]) {
+		max_size = nla_get_u32(tb[TCA_TBF_BURST]);
+		buffer = psched_l2t_ns(&rate, max_size);
+	} else {
+		max_size = min_t(u64, psched_ns_t2l(&rate, buffer), ~0U);
+	}
+
+	if (qopt->peakrate.rate) {
+		if (tb[TCA_TBF_PRATE64])
+			prate64 = nla_get_u64(tb[TCA_TBF_PRATE64]);
+		psched_ratecfg_precompute(&peak, &qopt->peakrate, prate64);
+		if (peak.rate_bytes_ps <= rate.rate_bytes_ps) {
+			pr_warn_ratelimited("sch_tbf: peakrate %llu is lower than or equals to rate %llu !\n",
+					peak.rate_bytes_ps, rate.rate_bytes_ps);
+			err = -EINVAL;
+			goto done;
+		}
+
+		if (tb[TCA_TBF_PBURST]) {
+			u32 pburst = nla_get_u32(tb[TCA_TBF_PBURST]);
+			max_size = min_t(u32, max_size, pburst);
+			mtu = psched_l2t_ns(&peak, pburst);
+		} else {
+			max_size = min_t(u64, max_size, psched_ns_t2l(&peak, mtu));
+		}
+	} else {
+		memset(&peak, 0, sizeof(peak));
+	}
+
+	if (max_size < psched_mtu(qdisc_dev(sch)))
+		pr_warn_ratelimited("sch_tbf: burst %llu is lower than device %s mtu (%u) !\n",
+				    max_size, qdisc_dev(sch)->name,
+				    psched_mtu(qdisc_dev(sch)));
+
+	if (!max_size) {
+		err = -EINVAL;
+		goto done;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (q->qdisc != &noop_qdisc) {
 		err = fifo_set_limit(q->qdisc, qopt->limit);
 		if (err)
 			goto done;
 	} else if (qopt->limit > 0) {
+<<<<<<< HEAD
 		child = fifo_create_dflt(sch, &bfifo_qdisc_ops, qopt->limit);
+=======
+		child = fifo_create_dflt(sch, &bfifo_qdisc_ops, qopt->limit,
+					 extack);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(child)) {
 			err = PTR_ERR(child);
 			goto done;
 		}
+<<<<<<< HEAD
+=======
+
+		/* child is fifo, no need to check for noop_qdisc */
+		qdisc_hash_add(child, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sch_tree_lock(sch);
 	if (child) {
+<<<<<<< HEAD
 		qdisc_tree_decrease_qlen(q->qdisc, q->qdisc->q.qlen);
 		qdisc_destroy(q->qdisc);
 		q->qdisc = child;
@@ -324,6 +643,51 @@ static int tbf_init(struct Qdisc *sch, struct nlattr *opt)
 	q->qdisc = &noop_qdisc;
 
 	return tbf_change(sch, opt);
+=======
+		qdisc_tree_flush_backlog(q->qdisc);
+		old = q->qdisc;
+		q->qdisc = child;
+	}
+	q->limit = qopt->limit;
+	if (tb[TCA_TBF_PBURST])
+		q->mtu = mtu;
+	else
+		q->mtu = PSCHED_TICKS2NS(qopt->mtu);
+	q->max_size = max_size;
+	if (tb[TCA_TBF_BURST])
+		q->buffer = buffer;
+	else
+		q->buffer = PSCHED_TICKS2NS(qopt->buffer);
+	q->tokens = q->buffer;
+	q->ptokens = q->mtu;
+
+	memcpy(&q->rate, &rate, sizeof(struct psched_ratecfg));
+	memcpy(&q->peak, &peak, sizeof(struct psched_ratecfg));
+
+	sch_tree_unlock(sch);
+	qdisc_put(old);
+	err = 0;
+
+	tbf_offload_change(sch);
+done:
+	return err;
+}
+
+static int tbf_init(struct Qdisc *sch, struct nlattr *opt,
+		    struct netlink_ext_ack *extack)
+{
+	struct tbf_sched_data *q = qdisc_priv(sch);
+
+	qdisc_watchdog_init(&q->watchdog, sch);
+	q->qdisc = &noop_qdisc;
+
+	if (!opt)
+		return -EINVAL;
+
+	q->t_c = ktime_get_ns();
+
+	return tbf_change(sch, opt, extack);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void tbf_destroy(struct Qdisc *sch)
@@ -331,6 +695,7 @@ static void tbf_destroy(struct Qdisc *sch)
 	struct tbf_sched_data *q = qdisc_priv(sch);
 
 	qdisc_watchdog_cancel(&q->watchdog);
+<<<<<<< HEAD
 
 	if (q->P_tab)
 		qdisc_put_rtab(q->P_tab);
@@ -338,6 +703,10 @@ static void tbf_destroy(struct Qdisc *sch)
 		qdisc_put_rtab(q->R_tab);
 
 	qdisc_destroy(q->qdisc);
+=======
+	tbf_offload_destroy(sch);
+	qdisc_put(q->qdisc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int tbf_dump(struct Qdisc *sch, struct sk_buff *skb)
@@ -345,13 +714,24 @@ static int tbf_dump(struct Qdisc *sch, struct sk_buff *skb)
 	struct tbf_sched_data *q = qdisc_priv(sch);
 	struct nlattr *nest;
 	struct tc_tbf_qopt opt;
+<<<<<<< HEAD
 
 	sch->qstats.backlog = q->qdisc->qstats.backlog;
 	nest = nla_nest_start(skb, TCA_OPTIONS);
+=======
+	int err;
+
+	err = tbf_offload_dump(sch);
+	if (err)
+		return err;
+
+	nest = nla_nest_start_noflag(skb, TCA_OPTIONS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nest == NULL)
 		goto nla_put_failure;
 
 	opt.limit = q->limit;
+<<<<<<< HEAD
 	opt.rate = q->R_tab->rate;
 	if (q->P_tab)
 		opt.peakrate = q->P_tab->rate;
@@ -363,6 +743,28 @@ static int tbf_dump(struct Qdisc *sch, struct sk_buff *skb)
 
 	nla_nest_end(skb, nest);
 	return skb->len;
+=======
+	psched_ratecfg_getrate(&opt.rate, &q->rate);
+	if (tbf_peak_present(q))
+		psched_ratecfg_getrate(&opt.peakrate, &q->peak);
+	else
+		memset(&opt.peakrate, 0, sizeof(opt.peakrate));
+	opt.mtu = PSCHED_NS2TICKS(q->mtu);
+	opt.buffer = PSCHED_NS2TICKS(q->buffer);
+	if (nla_put(skb, TCA_TBF_PARMS, sizeof(opt), &opt))
+		goto nla_put_failure;
+	if (q->rate.rate_bytes_ps >= (1ULL << 32) &&
+	    nla_put_u64_64bit(skb, TCA_TBF_RATE64, q->rate.rate_bytes_ps,
+			      TCA_TBF_PAD))
+		goto nla_put_failure;
+	if (tbf_peak_present(q) &&
+	    q->peak.rate_bytes_ps >= (1ULL << 32) &&
+	    nla_put_u64_64bit(skb, TCA_TBF_PRATE64, q->peak.rate_bytes_ps,
+			      TCA_TBF_PAD))
+		goto nla_put_failure;
+
+	return nla_nest_end(skb, nest);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 nla_put_failure:
 	nla_nest_cancel(skb, nest);
@@ -381,13 +783,18 @@ static int tbf_dump_class(struct Qdisc *sch, unsigned long cl,
 }
 
 static int tbf_graft(struct Qdisc *sch, unsigned long arg, struct Qdisc *new,
+<<<<<<< HEAD
 		     struct Qdisc **old)
+=======
+		     struct Qdisc **old, struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tbf_sched_data *q = qdisc_priv(sch);
 
 	if (new == NULL)
 		new = &noop_qdisc;
 
+<<<<<<< HEAD
 	sch_tree_lock(sch);
 	*old = q->qdisc;
 	q->qdisc = new;
@@ -395,6 +802,11 @@ static int tbf_graft(struct Qdisc *sch, unsigned long arg, struct Qdisc *new,
 	qdisc_reset(*old);
 	sch_tree_unlock(sch);
 
+=======
+	*old = qdisc_replace(sch, new, &q->qdisc);
+
+	tbf_offload_graft(sch, new, *old, extack);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -404,11 +816,16 @@ static struct Qdisc *tbf_leaf(struct Qdisc *sch, unsigned long arg)
 	return q->qdisc;
 }
 
+<<<<<<< HEAD
 static unsigned long tbf_get(struct Qdisc *sch, u32 classid)
+=======
+static unsigned long tbf_find(struct Qdisc *sch, u32 classid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 1;
 }
 
+<<<<<<< HEAD
 static void tbf_put(struct Qdisc *sch, unsigned long arg)
 {
 }
@@ -422,14 +839,24 @@ static void tbf_walk(struct Qdisc *sch, struct qdisc_walker *walker)
 				return;
 			}
 		walker->count++;
+=======
+static void tbf_walk(struct Qdisc *sch, struct qdisc_walker *walker)
+{
+	if (!walker->stop) {
+		tc_qdisc_stats_dump(sch, 1, walker);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static const struct Qdisc_class_ops tbf_class_ops = {
 	.graft		=	tbf_graft,
 	.leaf		=	tbf_leaf,
+<<<<<<< HEAD
 	.get		=	tbf_get,
 	.put		=	tbf_put,
+=======
+	.find		=	tbf_find,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.walk		=	tbf_walk,
 	.dump		=	tbf_dump_class,
 };
@@ -442,7 +869,10 @@ static struct Qdisc_ops tbf_qdisc_ops __read_mostly = {
 	.enqueue	=	tbf_enqueue,
 	.dequeue	=	tbf_dequeue,
 	.peek		=	qdisc_peek_dequeued,
+<<<<<<< HEAD
 	.drop		=	tbf_drop,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init		=	tbf_init,
 	.reset		=	tbf_reset,
 	.destroy	=	tbf_destroy,
@@ -450,6 +880,10 @@ static struct Qdisc_ops tbf_qdisc_ops __read_mostly = {
 	.dump		=	tbf_dump,
 	.owner		=	THIS_MODULE,
 };
+<<<<<<< HEAD
+=======
+MODULE_ALIAS_NET_SCH("tbf");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init tbf_module_init(void)
 {
@@ -463,3 +897,7 @@ static void __exit tbf_module_exit(void)
 module_init(tbf_module_init)
 module_exit(tbf_module_exit)
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("Token Bucket Filter qdisc");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

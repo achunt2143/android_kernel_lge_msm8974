@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 #
 # Generated files
 #
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 *_mono.c
 *_vga16.c
 *_clut224.c
 *_gray256.c
+<<<<<<< HEAD
+=======
+pnmtologo
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

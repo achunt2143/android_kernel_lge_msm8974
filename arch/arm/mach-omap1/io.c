@@ -1,21 +1,33 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-omap1/io.c
  *
  * OMAP1 I/O mapping code
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/omap-dma.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/tlb.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <plat/mux.h>
 #include <plat/tc.h>
 
@@ -24,17 +36,27 @@
 #include "clock.h"
 
 extern void omap_check_revision(void);
+=======
+#include "tc.h"
+#include "iomap.h"
+#include "common.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The machine specific code may provide the extra mapping besides the
  * default mapping provided here.
  */
+<<<<<<< HEAD
 static struct map_desc omap_io_desc[] __initdata = {
+=======
+static struct map_desc omap1_io_desc[] __initdata = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.virtual	= OMAP1_IO_VIRT,
 		.pfn		= __phys_to_pfn(OMAP1_IO_PHYS),
 		.length		= OMAP1_IO_SIZE,
 		.type		= MT_DEVICE
+<<<<<<< HEAD
 	}
 };
 
@@ -85,10 +107,25 @@ static struct map_desc omap16xx_io_desc[] __initdata = {
 	}
 };
 #endif
+=======
+	}, {
+		.virtual	= OMAP1_DSP_BASE,
+		.pfn		= __phys_to_pfn(OMAP1_DSP_START),
+		.length		= OMAP1_DSP_SIZE,
+		.type		= MT_DEVICE
+	}, {
+		.virtual	= OMAP1_DSPREG_BASE,
+		.pfn		= __phys_to_pfn(OMAP1_DSPREG_START),
+		.length		= OMAP1_DSPREG_SIZE,
+		.type		= MT_DEVICE
+	}
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Maps common IO regions for omap1
  */
+<<<<<<< HEAD
 static void __init omap1_map_common_io(void)
 {
 	iotable_init(omap_io_desc, ARRAY_SIZE(omap_io_desc));
@@ -118,6 +155,13 @@ void __init omap16xx_map_io(void)
 }
 #endif
 
+=======
+void __init omap1_map_io(void)
+{
+	iotable_init(omap1_io_desc, ARRAY_SIZE(omap1_io_desc));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Common low-level hardware init for omap1.
  */
@@ -130,12 +174,20 @@ void __init omap1_init_early(void)
 	 */
 	omap_writew(0x0, MPU_PUBLIC_TIPB_CNTL);
 	omap_writew(0x0, MPU_PRIVATE_TIPB_CNTL);
+<<<<<<< HEAD
 
 	/* Must init clocks early to assure that timer interrupt works
 	 */
 	omap1_clk_init();
 	omap1_mux_init();
 	omap_init_consistent_dma_size();
+=======
+}
+
+void __init omap1_init_late(void)
+{
+	omap_serial_wakeup_init();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*

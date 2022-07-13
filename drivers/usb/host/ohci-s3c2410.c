@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-1.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OHCI HCD (Host Controller Driver) for USB.
  *
@@ -19,17 +23,42 @@
  * This file is licenced under the GPL.
 */
 
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/clk.h>
 #include <plat/usb-control.h>
+=======
+#include <linux/clk.h>
+#include <linux/io.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/platform_device.h>
+#include <linux/platform_data/usb-ohci-s3c2410.h>
+#include <linux/usb.h>
+#include <linux/usb/hcd.h>
+
+#include "ohci.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define valid_port(idx) ((idx) == 1 || (idx) == 2)
 
 /* clock device associated with the hcd */
 
+<<<<<<< HEAD
 static struct clk *clk;
 static struct clk *usb_clk;
 
+=======
+
+#define DRIVER_DESC "OHCI S3C2410 driver"
+
+static struct clk *clk;
+static struct clk *usb_clk;
+
+static struct hc_driver __read_mostly ohci_s3c2410_hc_driver;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* forward definitions */
 
 static void s3c2410_hcd_oc(struct s3c2410_hcd_info *info, int port_oc);
@@ -38,11 +67,16 @@ static void s3c2410_hcd_oc(struct s3c2410_hcd_info *info, int port_oc);
 
 static struct s3c2410_hcd_info *to_s3c2410_info(struct usb_hcd *hcd)
 {
+<<<<<<< HEAD
 	return hcd->self.controller->platform_data;
+=======
+	return dev_get_platdata(hcd->self.controller);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void s3c2410_start_hc(struct platform_device *dev, struct usb_hcd *hcd)
 {
+<<<<<<< HEAD
 	struct s3c2410_hcd_info *info = dev->dev.platform_data;
 
 	dev_dbg(&dev->dev, "s3c2410_start_hc:\n");
@@ -51,6 +85,16 @@ static void s3c2410_start_hc(struct platform_device *dev, struct usb_hcd *hcd)
 	mdelay(2);			/* let the bus clock stabilise */
 
 	clk_enable(clk);
+=======
+	struct s3c2410_hcd_info *info = dev_get_platdata(&dev->dev);
+
+	dev_dbg(&dev->dev, "s3c2410_start_hc:\n");
+
+	clk_prepare_enable(usb_clk);
+	mdelay(2);			/* let the bus clock stabilise */
+
+	clk_prepare_enable(clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info != NULL) {
 		info->hcd	= hcd;
@@ -63,7 +107,11 @@ static void s3c2410_start_hc(struct platform_device *dev, struct usb_hcd *hcd)
 
 static void s3c2410_stop_hc(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	struct s3c2410_hcd_info *info = dev->dev.platform_data;
+=======
+	struct s3c2410_hcd_info *info = dev_get_platdata(&dev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&dev->dev, "s3c2410_stop_hc:\n");
 
@@ -75,8 +123,13 @@ static void s3c2410_stop_hc(struct platform_device *dev)
 			(info->enable_oc)(info, 0);
 	}
 
+<<<<<<< HEAD
 	clk_disable(clk);
 	clk_disable(usb_clk);
+=======
+	clk_disable_unprepare(clk);
+	clk_disable_unprepare(usb_clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ohci_s3c2410_hub_status_data
@@ -93,7 +146,11 @@ ohci_s3c2410_hub_status_data(struct usb_hcd *hcd, char *buf)
 	int orig;
 	int portno;
 
+<<<<<<< HEAD
 	orig  = ohci_hub_status_data(hcd, buf);
+=======
+	orig = ohci_hub_status_data(hcd, buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info == NULL)
 		return orig;
@@ -236,14 +293,23 @@ static int ohci_s3c2410_hub_control(
 		 */
 
 		desc->wHubCharacteristics &= ~cpu_to_le16(HUB_CHAR_LPSM);
+<<<<<<< HEAD
 		desc->wHubCharacteristics |= cpu_to_le16(0x0001);
+=======
+		desc->wHubCharacteristics |= cpu_to_le16(
+			HUB_CHAR_INDV_PORT_LPSM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (info->enable_oc) {
 			desc->wHubCharacteristics &= ~cpu_to_le16(
 				HUB_CHAR_OCPM);
 			desc->wHubCharacteristics |=  cpu_to_le16(
+<<<<<<< HEAD
 				0x0008 |
 				0x0001);
+=======
+				HUB_CHAR_INDV_PORT_OCPM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		dev_dbg(hcd->self.controller, "wHubCharacteristics after 0x%04x\n",
@@ -277,7 +343,10 @@ static int ohci_s3c2410_hub_control(
 static void s3c2410_hcd_oc(struct s3c2410_hcd_info *info, int port_oc)
 {
 	struct s3c2410_hcd_port *port;
+<<<<<<< HEAD
 	struct usb_hcd *hcd;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int portno;
 
@@ -285,7 +354,10 @@ static void s3c2410_hcd_oc(struct s3c2410_hcd_info *info, int port_oc)
 		return;
 
 	port = &info->port[0];
+<<<<<<< HEAD
 	hcd = info->hcd;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local_irq_save(flags);
 
@@ -308,6 +380,7 @@ static void s3c2410_hcd_oc(struct s3c2410_hcd_info *info, int port_oc)
 /* may be called with controller, bus, and devices active */
 
 /*
+<<<<<<< HEAD
  * usb_hcd_s3c2410_remove - shutdown processing for HCD
  * @dev: USB Host Controller being removed
  * Context: !in_interrupt()
@@ -331,10 +404,37 @@ usb_hcd_s3c2410_remove(struct usb_hcd *hcd, struct platform_device *dev)
 /**
  * usb_hcd_s3c2410_probe - initialize S3C2410-based HCDs
  * Context: !in_interrupt()
+=======
+ * ohci_hcd_s3c2410_remove - shutdown processing for HCD
+ * @dev: USB Host Controller being removed
+ *
+ * Context: task context, might sleep
+ *
+ * Reverses the effect of ohci_hcd_3c2410_probe(), first invoking
+ * the HCD's stop() method.  It is always called from a thread
+ * context, normally "rmmod", "apmd", or something similar.
+ */
+static void
+ohci_hcd_s3c2410_remove(struct platform_device *dev)
+{
+	struct usb_hcd *hcd = platform_get_drvdata(dev);
+
+	usb_remove_hcd(hcd);
+	s3c2410_stop_hc(dev);
+	usb_put_hcd(hcd);
+}
+
+/*
+ * ohci_hcd_s3c2410_probe - initialize S3C2410-based HCDs
+ * @dev: USB Host Controller to be probed
+ *
+ * Context: task context, might sleep
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Allocates basic resources for this USB host controller, and
  * then invokes the start() method for the HCD associated with it
  * through the hotplug entry's driver_data.
+<<<<<<< HEAD
  *
  */
 static int usb_hcd_s3c2410_probe(const struct hc_driver *driver,
@@ -347,12 +447,26 @@ static int usb_hcd_s3c2410_probe(const struct hc_driver *driver,
 	s3c2410_usb_set_power(dev->dev.platform_data, 2, 1);
 
 	hcd = usb_create_hcd(driver, &dev->dev, "s3c24xx");
+=======
+ */
+static int ohci_hcd_s3c2410_probe(struct platform_device *dev)
+{
+	struct usb_hcd *hcd = NULL;
+	struct s3c2410_hcd_info *info = dev_get_platdata(&dev->dev);
+	int retval, irq;
+
+	s3c2410_usb_set_power(info, 1, 1);
+	s3c2410_usb_set_power(info, 2, 1);
+
+	hcd = usb_create_hcd(&ohci_s3c2410_hc_driver, &dev->dev, "s3c24xx");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hcd == NULL)
 		return -ENOMEM;
 
 	hcd->rsrc_start = dev->resource[0].start;
 	hcd->rsrc_len	= resource_size(&dev->resource[0]);
 
+<<<<<<< HEAD
 	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len, hcd_name)) {
 		dev_err(&dev->dev, "request_mem_region failed\n");
 		retval = -EBUSY;
@@ -371,10 +485,37 @@ static int usb_hcd_s3c2410_probe(const struct hc_driver *driver,
 		dev_err(&dev->dev, "cannot get usb-bus-host clock\n");
 		retval = PTR_ERR(usb_clk);
 		goto err_clk;
+=======
+	hcd->regs = devm_ioremap_resource(&dev->dev, &dev->resource[0]);
+	if (IS_ERR(hcd->regs)) {
+		retval = PTR_ERR(hcd->regs);
+		goto err_put;
+	}
+
+	clk = devm_clk_get(&dev->dev, "usb-host");
+	if (IS_ERR(clk)) {
+		dev_err(&dev->dev, "cannot get usb-host clock\n");
+		retval = PTR_ERR(clk);
+		goto err_put;
+	}
+
+	usb_clk = devm_clk_get(&dev->dev, "usb-bus-host");
+	if (IS_ERR(usb_clk)) {
+		dev_err(&dev->dev, "cannot get usb-bus-host clock\n");
+		retval = PTR_ERR(usb_clk);
+		goto err_put;
+	}
+
+	irq = platform_get_irq(dev, 0);
+	if (irq < 0) {
+		retval = irq;
+		goto err_put;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	s3c2410_start_hc(dev, hcd);
 
+<<<<<<< HEAD
 	hcd->regs = ioremap(hcd->rsrc_start, hcd->rsrc_len);
 	if (!hcd->regs) {
 		dev_err(&dev->dev, "ioremap failed\n");
@@ -388,10 +529,18 @@ static int usb_hcd_s3c2410_probe(const struct hc_driver *driver,
 	if (retval != 0)
 		goto err_ioremap;
 
+=======
+	retval = usb_add_hcd(hcd, irq, 0);
+	if (retval != 0)
+		goto err_ioremap;
+
+	device_wakeup_enable(hcd->self.controller);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  err_ioremap:
 	s3c2410_stop_hc(dev);
+<<<<<<< HEAD
 	iounmap(hcd->regs);
 	clk_put(usb_clk);
 
@@ -400,6 +549,8 @@ static int usb_hcd_s3c2410_probe(const struct hc_driver *driver,
 
  err_mem:
 	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  err_put:
 	usb_put_hcd(hcd);
@@ -408,6 +559,7 @@ static int usb_hcd_s3c2410_probe(const struct hc_driver *driver,
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int
 ohci_s3c2410_start(struct usb_hcd *hcd)
 {
@@ -486,10 +638,13 @@ static int __devexit ohci_hcd_s3c2410_drv_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 static int ohci_hcd_s3c2410_drv_suspend(struct device *dev)
 {
 	struct usb_hcd *hcd = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	struct ohci_hcd *ohci = hcd_to_ohci(hcd);
 	struct platform_device *pdev = to_platform_device(dev);
 	unsigned long flags;
@@ -512,6 +667,17 @@ static int ohci_hcd_s3c2410_drv_suspend(struct device *dev)
 	s3c2410_stop_hc(pdev);
 bail:
 	spin_unlock_irqrestore(&ohci->lock, flags);
+=======
+	struct platform_device *pdev = to_platform_device(dev);
+	bool do_wakeup = device_may_wakeup(dev);
+	int rc = 0;
+
+	rc = ohci_suspend(hcd, do_wakeup);
+	if (rc)
+		return rc;
+
+	s3c2410_stop_hc(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -523,8 +689,12 @@ static int ohci_hcd_s3c2410_drv_resume(struct device *dev)
 
 	s3c2410_start_hc(pdev, hcd);
 
+<<<<<<< HEAD
 	set_bit(HCD_FLAG_HW_ACCESSIBLE, &hcd->flags);
 	ohci_finish_controller_resume(hcd);
+=======
+	ohci_resume(hcd, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -538,6 +708,7 @@ static const struct dev_pm_ops ohci_hcd_s3c2410_pm_ops = {
 	.resume		= ohci_hcd_s3c2410_drv_resume,
 };
 
+<<<<<<< HEAD
 static struct platform_driver ohci_hcd_s3c2410_driver = {
 	.probe		= ohci_hcd_s3c2410_drv_probe,
 	.remove		= __devexit_p(ohci_hcd_s3c2410_drv_remove),
@@ -549,4 +720,55 @@ static struct platform_driver ohci_hcd_s3c2410_driver = {
 	},
 };
 
+=======
+static const struct of_device_id ohci_hcd_s3c2410_dt_ids[] = {
+	{ .compatible = "samsung,s3c2410-ohci" },
+	{ /* sentinel */ }
+};
+
+MODULE_DEVICE_TABLE(of, ohci_hcd_s3c2410_dt_ids);
+
+static struct platform_driver ohci_hcd_s3c2410_driver = {
+	.probe		= ohci_hcd_s3c2410_probe,
+	.remove_new	= ohci_hcd_s3c2410_remove,
+	.shutdown	= usb_hcd_platform_shutdown,
+	.driver		= {
+		.name	= "s3c2410-ohci",
+		.pm	= &ohci_hcd_s3c2410_pm_ops,
+		.of_match_table	= ohci_hcd_s3c2410_dt_ids,
+	},
+};
+
+static int __init ohci_s3c2410_init(void)
+{
+	if (usb_disabled())
+		return -ENODEV;
+
+	ohci_init_driver(&ohci_s3c2410_hc_driver, NULL);
+
+	/*
+	 * The Samsung HW has some unusual quirks, which require
+	 * Sumsung-specific workarounds. We override certain hc_driver
+	 * functions here to achieve that. We explicitly do not enhance
+	 * ohci_driver_overrides to allow this more easily, since this
+	 * is an unusual case, and we don't want to encourage others to
+	 * override these functions by making it too easy.
+	 */
+
+	ohci_s3c2410_hc_driver.hub_status_data	= ohci_s3c2410_hub_status_data;
+	ohci_s3c2410_hc_driver.hub_control	= ohci_s3c2410_hub_control;
+
+	return platform_driver_register(&ohci_hcd_s3c2410_driver);
+}
+module_init(ohci_s3c2410_init);
+
+static void __exit ohci_s3c2410_cleanup(void)
+{
+	platform_driver_unregister(&ohci_hcd_s3c2410_driver);
+}
+module_exit(ohci_s3c2410_cleanup);
+
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:s3c2410-ohci");

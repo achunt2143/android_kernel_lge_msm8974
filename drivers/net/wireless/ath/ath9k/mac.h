@@ -16,6 +16,10 @@
 
 #ifndef MAC_H
 #define MAC_H
+<<<<<<< HEAD
+=======
+#include <net/cfg80211.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define set11nTries(_series, _index) \
 	(SM((_series)[_index].Tries, AR_XmitDataTries##_index))
@@ -34,8 +38,15 @@
 	 |((_series)[_index].RateFlags & ATH9K_RATESERIES_HALFGI ?	\
 	   AR_GI##_index : 0)						\
 	 |((_series)[_index].RateFlags & ATH9K_RATESERIES_STBC ?	\
+<<<<<<< HEAD
 	   AR_STBC##_index : 0)						\
 	 |SM((_series)[_index].ChSel, AR_ChainSel##_index))
+=======
+	   AR_STBC##_index : 0))
+
+#define set11nChainSel(_series, _index)					\
+	(SM((_series)[_index].ChSel, AR_ChainSel##_index))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CCK_SIFS_TIME        10
 #define CCK_PREAMBLE_BITS   144
@@ -65,10 +76,13 @@
 #define INIT_SSH_RETRY  32
 #define INIT_SLG_RETRY  32
 
+<<<<<<< HEAD
 #define ATH9K_SLOT_TIME_6 6
 #define ATH9K_SLOT_TIME_9 9
 #define ATH9K_SLOT_TIME_20 20
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATH9K_TXERR_XRETRY         0x01
 #define ATH9K_TXERR_FILT           0x02
 #define ATH9K_TXERR_FIFO           0x04
@@ -116,11 +130,22 @@ struct ath_tx_status {
 	u8 qid;
 	u16 desc_id;
 	u8 tid;
+<<<<<<< HEAD
 	u32 ba_low;
 	u32 ba_high;
 	u32 evm0;
 	u32 evm1;
 	u32 evm2;
+=======
+	struct_group(ba,
+		u32 ba_low;
+		u32 ba_high;
+	);
+	u32 evm0;
+	u32 evm1;
+	u32 evm2;
+	u32 duration;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath_rx_status {
@@ -133,6 +158,7 @@ struct ath_rx_status {
 	u8 rs_rate;
 	u8 rs_antenna;
 	u8 rs_more;
+<<<<<<< HEAD
 	int8_t rs_rssi_ctl0;
 	int8_t rs_rssi_ctl1;
 	int8_t rs_rssi_ctl2;
@@ -140,6 +166,12 @@ struct ath_rx_status {
 	int8_t rs_rssi_ext1;
 	int8_t rs_rssi_ext2;
 	u8 rs_isaggr;
+=======
+	int8_t rs_rssi_ctl[3];
+	int8_t rs_rssi_ext[3];
+	u8 rs_isaggr;
+	u8 rs_firstaggr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 rs_moreaggr;
 	u8 rs_num_delims;
 	u8 rs_flags;
@@ -149,6 +181,11 @@ struct ath_rx_status {
 	u32 evm2;
 	u32 evm3;
 	u32 evm4;
+<<<<<<< HEAD
+=======
+	u16 enc_flags;
+	enum rate_info_bw bw;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath_htc_rx_status {
@@ -157,12 +194,17 @@ struct ath_htc_rx_status {
 	u8 rs_status;
 	u8 rs_phyerr;
 	int8_t rs_rssi;
+<<<<<<< HEAD
 	int8_t rs_rssi_ctl0;
 	int8_t rs_rssi_ctl1;
 	int8_t rs_rssi_ctl2;
 	int8_t rs_rssi_ext0;
 	int8_t rs_rssi_ext1;
 	int8_t rs_rssi_ext2;
+=======
+	int8_t rs_rssi_ctl[3];
+	int8_t rs_rssi_ext[3];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 rs_keyix;
 	u8 rs_rate;
 	u8 rs_antenna;
@@ -172,6 +214,10 @@ struct ath_htc_rx_status {
 	u8 rs_num_delims;
 	u8 rs_flags;
 	u8 rs_dummy;
+<<<<<<< HEAD
+=======
+	/* FIXME: evm* never used? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 evm0;
 	__be32 evm1;
 	__be32 evm2;
@@ -183,6 +229,10 @@ struct ath_htc_rx_status {
 #define ATH9K_RXERR_DECRYPT       0x08
 #define ATH9K_RXERR_MIC           0x10
 #define ATH9K_RXERR_KEYMISS       0x20
+<<<<<<< HEAD
+=======
+#define ATH9K_RXERR_CORRUPT_DESC  0x40
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ATH9K_RX_MORE             0x01
 #define ATH9K_RX_MORE_AGGR        0x02
@@ -212,6 +262,7 @@ enum ath9k_phyerr {
 	ATH9K_PHYERR_OFDM_POWER_DROP      = 21,
 	ATH9K_PHYERR_OFDM_SERVICE         = 22,
 	ATH9K_PHYERR_OFDM_RESTART         = 23,
+<<<<<<< HEAD
 	ATH9K_PHYERR_FALSE_RADAR_EXT      = 24,
 
 	ATH9K_PHYERR_CCK_TIMING           = 25,
@@ -227,6 +278,28 @@ enum ath9k_phyerr {
 	ATH9K_PHYERR_HT_RATE_ILLEGAL      = 36,
 
 	ATH9K_PHYERR_MAX                  = 37,
+=======
+
+	ATH9K_PHYERR_CCK_BLOCKER          = 24,
+	ATH9K_PHYERR_CCK_TIMING           = 25,
+	ATH9K_PHYERR_CCK_HEADER_CRC       = 26,
+	ATH9K_PHYERR_CCK_RATE_ILLEGAL     = 27,
+	ATH9K_PHYERR_CCK_LENGTH_ILLEGAL   = 28,
+	ATH9K_PHYERR_CCK_POWER_DROP       = 29,
+	ATH9K_PHYERR_CCK_SERVICE          = 30,
+	ATH9K_PHYERR_CCK_RESTART          = 31,
+
+	ATH9K_PHYERR_HT_CRC_ERROR         = 32,
+	ATH9K_PHYERR_HT_LENGTH_ILLEGAL    = 33,
+	ATH9K_PHYERR_HT_RATE_ILLEGAL      = 34,
+	ATH9K_PHYERR_HT_ZLF               = 35,
+
+	ATH9K_PHYERR_FALSE_RADAR_EXT      = 36,
+	ATH9K_PHYERR_GREEN_FIELD          = 37,
+	ATH9K_PHYERR_SPECTRAL             = 38,
+
+	ATH9K_PHYERR_MAX                  = 39,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath_desc {
@@ -349,8 +422,19 @@ struct ar5416_desc {
 #define AR_FrameLen         0x00000fff
 #define AR_VirtMoreFrag     0x00001000
 #define AR_TxCtlRsvd00      0x0000e000
+<<<<<<< HEAD
 #define AR_XmitPower        0x003f0000
 #define AR_XmitPower_S      16
+=======
+#define AR_XmitPower0       0x003f0000
+#define AR_XmitPower0_S     16
+#define AR_XmitPower1	    0x3f000000
+#define AR_XmitPower1_S     24
+#define AR_XmitPower2	    0x3f000000
+#define AR_XmitPower2_S     24
+#define AR_XmitPower3	    0x3f000000
+#define AR_XmitPower3_S     24
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_RTSEnable        0x00400000
 #define AR_VEOL             0x00800000
 #define AR_ClrDestMask      0x01000000
@@ -531,7 +615,12 @@ struct ar5416_desc {
 #define AR_2040             0x00000002
 #define AR_Parallel40       0x00000004
 #define AR_Parallel40_S     2
+<<<<<<< HEAD
 #define AR_RxStatusRsvd30   0x000000f8
+=======
+#define AR_STBC             0x00000008 /* on ar9280 and later */
+#define AR_RxStatusRsvd30   0x000000f0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_RxAntenna	    0xffffff00
 #define AR_RxAntenna_S	    8
 
@@ -565,6 +654,10 @@ struct ar5416_desc {
 #define AR_RxAggr           0x00020000
 #define AR_PostDelimCRCErr  0x00040000
 #define AR_RxStatusRsvd71   0x3ff80000
+<<<<<<< HEAD
+=======
+#define AR_RxFirstAggr      0x20000000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AR_DecryptBusyErr   0x40000000
 #define AR_KeyMiss          0x80000000
 
@@ -597,8 +690,11 @@ enum ath9k_tx_queue_flags {
 #define ATH9K_TXQ_USE_LOCKOUT_BKOFF_DIS 0x00000001
 
 #define ATH9K_DECOMP_MASK_SIZE     128
+<<<<<<< HEAD
 #define ATH9K_READY_TIME_LO_BOUND  50
 #define ATH9K_READY_TIME_HI_BOUND  96
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum ath9k_pkt_type {
 	ATH9K_PKT_TYPE_NORMAL = 0,
@@ -646,6 +742,10 @@ enum ath9k_rx_filter {
 	ATH9K_RX_FILTER_PHYRADAR = 0x00002000,
 	ATH9K_RX_FILTER_MCAST_BCAST_ALL = 0x00008000,
 	ATH9K_RX_FILTER_CONTROL_WRAPPER = 0x00080000,
+<<<<<<< HEAD
+=======
+	ATH9K_RX_FILTER_4ADDRESS = 0x00100000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define ATH9K_RATESERIES_RTS_CTS  0x0001
@@ -699,7 +799,11 @@ struct ath_tx_info {
 	enum ath9k_pkt_type type;
 	enum ath9k_key_type keytype;
 	u8 keyix;
+<<<<<<< HEAD
 	u8 txpower;
+=======
+	u8 txpower[4];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ath_hw;
@@ -731,12 +835,21 @@ void ath9k_hw_startpcureceive(struct ath_hw *ah, bool is_scanning);
 void ath9k_hw_abortpcurecv(struct ath_hw *ah);
 bool ath9k_hw_stopdmarecv(struct ath_hw *ah, bool *reset);
 int ath9k_hw_beaconq_setup(struct ath_hw *ah);
+<<<<<<< HEAD
+=======
+void ath9k_hw_set_tx_filter(struct ath_hw *ah, u8 destidx, bool set);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Interrupt Handling */
 bool ath9k_hw_intrpend(struct ath_hw *ah);
 void ath9k_hw_set_interrupts(struct ath_hw *ah);
 void ath9k_hw_enable_interrupts(struct ath_hw *ah);
 void ath9k_hw_disable_interrupts(struct ath_hw *ah);
+<<<<<<< HEAD
+=======
+void ath9k_hw_kill_interrupts(struct ath_hw *ah);
+void ath9k_hw_resume_interrupts(struct ath_hw *ah);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ar9002_hw_attach_mac_ops(struct ath_hw *ah);
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pmc - Driver implementation for power management functions
  * of Power Management Controller (PMC) on SPARCstation-Voyager.
  *
@@ -10,13 +14,23 @@
 #include <linux/init.h>
 #include <linux/pm.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 
 #include <asm/io.h>
 #include <asm/oplib.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include <asm/auxio.h>
+=======
+#include <linux/uaccess.h>
+#include <asm/auxio.h>
+#include <asm/processor.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Debug
  *
@@ -52,7 +66,11 @@ static void pmc_swift_idle(void)
 #endif
 }
 
+<<<<<<< HEAD
 static int __devinit pmc_probe(struct platform_device *op)
+=======
+static int pmc_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	regs = of_ioremap(&op->resource[0], 0,
 			  resource_size(&op->resource[0]), PMC_OBPNAME);
@@ -63,14 +81,22 @@ static int __devinit pmc_probe(struct platform_device *op)
 
 #ifndef PMC_NO_IDLE
 	/* Assign power management IDLE handler */
+<<<<<<< HEAD
 	pm_idle = pmc_swift_idle;
+=======
+	sparc_idle = pmc_swift_idle;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	printk(KERN_INFO "%s: power management initialized\n", PMC_DEVNAME);
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id pmc_match[] = {
+=======
+static const struct of_device_id pmc_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = PMC_OBPNAME,
 	},
@@ -81,7 +107,10 @@ MODULE_DEVICE_TABLE(of, pmc_match);
 static struct platform_driver pmc_driver = {
 	.driver = {
 		.name = "pmc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = pmc_match,
 	},
 	.probe		= pmc_probe,

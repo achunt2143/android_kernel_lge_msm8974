@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *	w1_family.c
  *
@@ -17,20 +18,40 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (c) 2004 Evgeniy Polyakov <zbr@ioremap.net>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/spinlock.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/sched.h>	/* schedule_timeout() */
 #include <linux/delay.h>
 #include <linux/export.h>
 
 #include "w1_family.h"
 #include "w1.h"
+=======
+#include <linux/sched/signal.h>
+#include <linux/delay.h>
+#include <linux/export.h>
+
+#include "w1_internal.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DEFINE_SPINLOCK(w1_flock);
 static LIST_HEAD(w1_families);
 
+<<<<<<< HEAD
+=======
+/**
+ * w1_register_family() - register a device family driver
+ * @newf:	family to register
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int w1_register_family(struct w1_family *newf)
 {
 	struct list_head *ent, *n;
@@ -58,7 +79,16 @@ int w1_register_family(struct w1_family *newf)
 
 	return ret;
 }
+<<<<<<< HEAD
 
+=======
+EXPORT_SYMBOL(w1_register_family);
+
+/**
+ * w1_unregister_family() - unregister a device family driver
+ * @fent:	family to unregister
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void w1_unregister_family(struct w1_family *fent)
 {
 	struct list_head *ent, *n;
@@ -79,13 +109,21 @@ void w1_unregister_family(struct w1_family *fent)
 	w1_reconnect_slaves(fent, 0);
 
 	while (atomic_read(&fent->refcnt)) {
+<<<<<<< HEAD
 		printk(KERN_INFO "Waiting for family %u to become free: refcnt=%d.\n",
+=======
+		pr_info("Waiting for family %u to become free: refcnt=%d.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				fent->fid, atomic_read(&fent->refcnt));
 
 		if (msleep_interruptible(1000))
 			flush_signals(current);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(w1_unregister_family);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Should be called under w1_flock held.
@@ -131,6 +169,7 @@ void w1_family_get(struct w1_family *f)
 
 void __w1_family_get(struct w1_family *f)
 {
+<<<<<<< HEAD
 	smp_mb__before_atomic_inc();
 	atomic_inc(&f->refcnt);
 	smp_mb__after_atomic_inc();
@@ -138,3 +177,9 @@ void __w1_family_get(struct w1_family *f)
 
 EXPORT_SYMBOL(w1_unregister_family);
 EXPORT_SYMBOL(w1_register_family);
+=======
+	smp_mb__before_atomic();
+	atomic_inc(&f->refcnt);
+	smp_mb__after_atomic();
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

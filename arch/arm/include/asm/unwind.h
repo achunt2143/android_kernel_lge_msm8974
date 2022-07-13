@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/include/asm/unwind.h
  *
  * Copyright (C) 2008 ARM Limited
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,6 +20,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_UNWIND_H
@@ -36,6 +43,10 @@ struct unwind_idx {
 
 struct unwind_table {
 	struct list_head list;
+<<<<<<< HEAD
+=======
+	struct list_head mod_list;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct unwind_idx *start;
 	const struct unwind_idx *origin;
 	const struct unwind_idx *stop;
@@ -48,7 +59,16 @@ extern struct unwind_table *unwind_table_add(unsigned long start,
 					     unsigned long text_addr,
 					     unsigned long text_size);
 extern void unwind_table_del(struct unwind_table *tab);
+<<<<<<< HEAD
 extern void unwind_backtrace(struct pt_regs *regs, struct task_struct *tsk);
+=======
+extern void unwind_backtrace(struct pt_regs *regs, struct task_struct *tsk,
+			     const char *loglvl);
+
+void __aeabi_unwind_cpp_pr0(void);
+void __aeabi_unwind_cpp_pr1(void);
+void __aeabi_unwind_cpp_pr2(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* !__ASSEMBLY__ */
 

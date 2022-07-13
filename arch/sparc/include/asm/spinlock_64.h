@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* spinlock.h: 64-bit Sparc spinlock support.
  *
  * Copyright (C) 1997 David S. Miller (davem@caip.rutgers.edu)
@@ -8,6 +12,7 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 /* To get debugging spinlocks which detect and catch
  * deadlock situations, set CONFIG_DEBUG_SPINLOCK
  * and rebuild your kernel.
@@ -219,6 +224,12 @@ static int inline arch_write_trylock(arch_rwlock_t *lock)
 #define arch_spin_relax(lock)	cpu_relax()
 #define arch_read_relax(lock)	cpu_relax()
 #define arch_write_relax(lock)	cpu_relax()
+=======
+#include <asm/processor.h>
+#include <asm/barrier.h>
+#include <asm/qspinlock.h>
+#include <asm/qrwlock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* !(__ASSEMBLY__) */
 

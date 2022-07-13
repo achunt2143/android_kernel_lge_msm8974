@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/div64.S
  *
@@ -6,6 +10,7 @@
  *  Author:	Nicolas Pitre
  *  Created:	Oct 5, 2003
  *  Copyright:	Monta Vista Software, Inc.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -13,6 +18,12 @@
  */
 
 #include <linux/linkage.h>
+=======
+ */
+
+#include <linux/linkage.h>
+#include <asm/assembler.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unwind.h>
 
 #ifdef __ARMEB__
@@ -87,8 +98,13 @@ UNWIND(.fnstart)
  	@ Break out early if dividend reaches 0.
 2:	cmp	xh, yl
 	orrcs	yh, yh, ip
+<<<<<<< HEAD
 	subcss	xh, xh, yl
 	movnes	ip, ip, lsr #1
+=======
+	subscs	xh, xh, yl
+	movsne	ip, ip, lsr #1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov	yl, yl, lsr #1
 	bne	2b
 
@@ -97,7 +113,11 @@ UNWIND(.fnstart)
 	mov	yl, #0
 	cmpeq	xl, r4
 	movlo	xh, xl
+<<<<<<< HEAD
 	movlo	pc, lr
+=======
+	retlo	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	@ The division loop for lower bit positions.
 	@ Here we shift remainer bits leftwards rather than moving the
@@ -111,14 +131,22 @@ UNWIND(.fnstart)
 	subcs	xh, xh, r4
 	movs	ip, ip, lsr #1
 	bne	4b
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	@ The top part of remainder became zero.  If carry is set
 	@ (the 33th bit) this is a false positive so resume the loop.
 	@ Otherwise, if lower part is also null then we are done.
 6:	bcs	5b
 	cmp	xl, #0
+<<<<<<< HEAD
 	moveq	pc, lr
+=======
+	reteq	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	@ We still have remainer bits in the low part.  Bring them up.
 
@@ -144,7 +172,11 @@ UNWIND(.fnstart)
 	movs	ip, ip, lsr #1
 	mov	xh, #1
 	bne	4b
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 8:	@ Division by a power of 2: determine what that divisor order is
 	@ then simply shift values around
@@ -184,13 +216,21 @@ UNWIND(.fnstart)
  THUMB(	orr	yl, yl, xh		)
 	mov	xh, xl, lsl ip
 	mov	xh, xh, lsr ip
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	@ eq -> division by 1: obvious enough...
 9:	moveq	yl, xl
 	moveq	yh, xh
 	moveq	xh, #0
+<<<<<<< HEAD
 	moveq	pc, lr
+=======
+	reteq	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 UNWIND(.fnend)
 
 UNWIND(.fnstart)

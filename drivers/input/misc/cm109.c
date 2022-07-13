@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for the VoIP USB phones with CM109 chipsets.
  *
  * Copyright (C) 2007 - 2008 Alfred E. Heggestad <aeh@db.org>
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License as
  *	published by the Free Software Foundation, version 2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -76,8 +83,13 @@ enum {
 
 	BUZZER_ON = 1 << 5,
 
+<<<<<<< HEAD
 	/* up to 256 normal keys, up to 16 special keys */
 	KEYMAP_SIZE = 256 + 16,
+=======
+	/* up to 256 normal keys, up to 15 special key combinations */
+	KEYMAP_SIZE = 256 + 15,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* CM109 protocol packet */
@@ -139,7 +151,11 @@ static unsigned short special_keymap(int code)
 {
 	if (code > 0xff) {
 		switch (code - 0xff) {
+<<<<<<< HEAD
 		case RECORD_MUTE:	return KEY_MUTE;
+=======
+		case RECORD_MUTE:	return KEY_MICMUTE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case PLAYBACK_MUTE:	return KEY_MUTE;
 		case VOLUME_DOWN:	return KEY_VOLUMEDOWN;
 		case VOLUME_UP:		return KEY_VOLUMEUP;
@@ -312,6 +328,35 @@ static void report_key(struct cm109_dev *dev, int key)
 	input_sync(idev);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Converts data of special key presses (volume, mute) into events
+ * for the input subsystem, sends press-n-release for mute keys.
+ */
+static void cm109_report_special(struct cm109_dev *dev)
+{
+	static const u8 autorelease = RECORD_MUTE | PLAYBACK_MUTE;
+	struct input_dev *idev = dev->idev;
+	u8 data = dev->irq_data->byte[HID_IR0];
+	unsigned short keycode;
+	int i;
+
+	for (i = 0; i < 4; i++) {
+		keycode = dev->keymap[0xff + BIT(i)];
+		if (keycode == KEY_RESERVED)
+			continue;
+
+		input_report_key(idev, keycode, data & BIT(i));
+		if (data & autorelease & BIT(i)) {
+			input_sync(idev);
+			input_report_key(idev, keycode, 0);
+		}
+	}
+	input_sync(idev);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * CM109 usb communication interface
  *****************************************************************************/
@@ -327,7 +372,13 @@ static void cm109_submit_buzz_toggle(struct cm109_dev *dev)
 
 	error = usb_submit_urb(dev->urb_ctl, GFP_ATOMIC);
 	if (error)
+<<<<<<< HEAD
 		err("%s: usb_submit_urb (urb_ctl) failed %d", __func__, error);
+=======
+		dev_err(&dev->intf->dev,
+			"%s: usb_submit_urb (urb_ctl) failed %d\n",
+			__func__, error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -338,8 +389,14 @@ static void cm109_urb_irq_callback(struct urb *urb)
 	struct cm109_dev *dev = urb->context;
 	const int status = urb->status;
 	int error;
+<<<<<<< HEAD
 
 	dev_dbg(&urb->dev->dev, "### URB IRQ: [0x%02x 0x%02x 0x%02x 0x%02x] keybit=0x%02x\n",
+=======
+	unsigned long flags;
+
+	dev_dbg(&dev->intf->dev, "### URB IRQ: [0x%02x 0x%02x 0x%02x 0x%02x] keybit=0x%02x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     dev->irq_data->byte[0],
 	     dev->irq_data->byte[1],
 	     dev->irq_data->byte[2],
@@ -349,6 +406,7 @@ static void cm109_urb_irq_callback(struct urb *urb)
 	if (status) {
 		if (status == -ESHUTDOWN)
 			return;
+<<<<<<< HEAD
 		err("%s: urb status %d", __func__, status);
 	}
 
@@ -357,6 +415,15 @@ static void cm109_urb_irq_callback(struct urb *urb)
 		const int code = (dev->irq_data->byte[HID_IR0] & 0x0f);
 		report_key(dev, dev->keymap[0xff + code]);
 	}
+=======
+		dev_err_ratelimited(&dev->intf->dev, "%s: urb status %d\n",
+				    __func__, status);
+		goto out;
+	}
+
+	/* Special keys */
+	cm109_report_special(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Scan key column */
 	if (dev->keybit == 0xf) {
@@ -377,7 +444,11 @@ static void cm109_urb_irq_callback(struct urb *urb)
 
  out:
 
+<<<<<<< HEAD
 	spin_lock(&dev->ctl_submit_lock);
+=======
+	spin_lock_irqsave(&dev->ctl_submit_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->irq_urb_pending = 0;
 
@@ -396,11 +467,20 @@ static void cm109_urb_irq_callback(struct urb *urb)
 
 		error = usb_submit_urb(dev->urb_ctl, GFP_ATOMIC);
 		if (error)
+<<<<<<< HEAD
 			err("%s: usb_submit_urb (urb_ctl) failed %d",
 				__func__, error);
 	}
 
 	spin_unlock(&dev->ctl_submit_lock);
+=======
+			dev_err(&dev->intf->dev,
+				"%s: usb_submit_urb (urb_ctl) failed %d\n",
+				__func__, error);
+	}
+
+	spin_unlock_irqrestore(&dev->ctl_submit_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cm109_urb_ctl_callback(struct urb *urb)
@@ -408,23 +488,44 @@ static void cm109_urb_ctl_callback(struct urb *urb)
 	struct cm109_dev *dev = urb->context;
 	const int status = urb->status;
 	int error;
+<<<<<<< HEAD
 
 	dev_dbg(&urb->dev->dev, "### URB CTL: [0x%02x 0x%02x 0x%02x 0x%02x]\n",
+=======
+	unsigned long flags;
+
+	dev_dbg(&dev->intf->dev, "### URB CTL: [0x%02x 0x%02x 0x%02x 0x%02x]\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     dev->ctl_data->byte[0],
 	     dev->ctl_data->byte[1],
 	     dev->ctl_data->byte[2],
 	     dev->ctl_data->byte[3]);
 
+<<<<<<< HEAD
 	if (status)
 		err("%s: urb status %d", __func__, status);
 
 	spin_lock(&dev->ctl_submit_lock);
+=======
+	if (status) {
+		if (status == -ESHUTDOWN)
+			return;
+		dev_err_ratelimited(&dev->intf->dev, "%s: urb status %d\n",
+				    __func__, status);
+	}
+
+	spin_lock_irqsave(&dev->ctl_submit_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->ctl_urb_pending = 0;
 
 	if (likely(!dev->shutdown)) {
 
+<<<<<<< HEAD
 		if (dev->buzzer_pending) {
+=======
+		if (dev->buzzer_pending || status) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev->buzzer_pending = 0;
 			dev->ctl_urb_pending = 1;
 			cm109_submit_buzz_toggle(dev);
@@ -433,12 +534,21 @@ static void cm109_urb_ctl_callback(struct urb *urb)
 			dev->irq_urb_pending = 1;
 			error = usb_submit_urb(dev->urb_irq, GFP_ATOMIC);
 			if (error)
+<<<<<<< HEAD
 				err("%s: usb_submit_urb (urb_irq) failed %d",
+=======
+				dev_err(&dev->intf->dev,
+					"%s: usb_submit_urb (urb_irq) failed %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					__func__, error);
 		}
 	}
 
+<<<<<<< HEAD
 	spin_unlock(&dev->ctl_submit_lock);
+=======
+	spin_unlock_irqrestore(&dev->ctl_submit_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cm109_toggle_buzzer_async(struct cm109_dev *dev)
@@ -476,7 +586,12 @@ static void cm109_toggle_buzzer_sync(struct cm109_dev *dev, int on)
 				dev->ctl_data,
 				USB_PKT_LEN, USB_CTRL_SET_TIMEOUT);
 	if (error < 0 && error != -EINTR)
+<<<<<<< HEAD
 		err("%s: usb_control_msg() failed %d", __func__, error);
+=======
+		dev_err(&dev->intf->dev, "%s: usb_control_msg() failed %d\n",
+			__func__, error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cm109_stop_traffic(struct cm109_dev *dev)
@@ -518,8 +633,13 @@ static int cm109_input_open(struct input_dev *idev)
 
 	error = usb_autopm_get_interface(dev->intf);
 	if (error < 0) {
+<<<<<<< HEAD
 		err("%s - cannot autoresume, result %d",
 		    __func__, error);
+=======
+		dev_err(&idev->dev, "%s - cannot autoresume, result %d\n",
+			__func__, error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return error;
 	}
 
@@ -535,11 +655,23 @@ static int cm109_input_open(struct input_dev *idev)
 	dev->ctl_data->byte[HID_OR2] = dev->keybit;
 	dev->ctl_data->byte[HID_OR3] = 0x00;
 
+<<<<<<< HEAD
 	error = usb_submit_urb(dev->urb_ctl, GFP_KERNEL);
 	if (error)
 		err("%s: usb_submit_urb (urb_ctl) failed %d", __func__, error);
 	else
 		dev->open = 1;
+=======
+	dev->ctl_urb_pending = 1;
+	error = usb_submit_urb(dev->urb_ctl, GFP_KERNEL);
+	if (error) {
+		dev->ctl_urb_pending = 0;
+		dev_err(&dev->intf->dev, "%s: usb_submit_urb (urb_ctl) failed %d\n",
+			__func__, error);
+	} else {
+		dev->open = 1;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&dev->pm_mutex);
 
@@ -573,7 +705,11 @@ static int cm109_input_ev(struct input_dev *idev, unsigned int type,
 {
 	struct cm109_dev *dev = input_get_drvdata(idev);
 
+<<<<<<< HEAD
 	dev_dbg(&dev->udev->dev,
+=======
+	dev_dbg(&dev->intf->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"input_ev: type=%u code=%u value=%d\n", type, code, value);
 
 	if (type != EV_SND)
@@ -629,12 +765,17 @@ static const struct usb_device_id cm109_usb_table[] = {
 static void cm109_usb_cleanup(struct cm109_dev *dev)
 {
 	kfree(dev->ctl_req);
+<<<<<<< HEAD
 	if (dev->ctl_data)
 		usb_free_coherent(dev->udev, USB_PKT_LEN,
 				  dev->ctl_data, dev->ctl_dma);
 	if (dev->irq_data)
 		usb_free_coherent(dev->udev, USB_PKT_LEN,
 				  dev->irq_data, dev->irq_dma);
+=======
+	usb_free_coherent(dev->udev, USB_PKT_LEN, dev->ctl_data, dev->ctl_dma);
+	usb_free_coherent(dev->udev, USB_PKT_LEN, dev->irq_data, dev->irq_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_free_urb(dev->urb_irq);	/* parameter validation in core/urb */
 	usb_free_urb(dev->urb_ctl);	/* parameter validation in core/urb */
@@ -663,6 +804,13 @@ static int cm109_usb_probe(struct usb_interface *intf,
 	int error = -ENOMEM;
 
 	interface = intf->cur_altsetting;
+<<<<<<< HEAD
+=======
+
+	if (interface->desc.bNumEndpoints < 1)
+		return -ENODEV;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	endpoint = &interface->endpoint[0].desc;
 
 	if (!usb_endpoint_is_int_in(endpoint))
@@ -708,9 +856,16 @@ static int cm109_usb_probe(struct usb_interface *intf,
 
 	/* get a handle to the interrupt data pipe */
 	pipe = usb_rcvintpipe(udev, endpoint->bEndpointAddress);
+<<<<<<< HEAD
 	ret = usb_maxpacket(udev, pipe, usb_pipeout(pipe));
 	if (ret != USB_PKT_LEN)
 		err("invalid payload size %d, expected %d", ret, USB_PKT_LEN);
+=======
+	ret = usb_maxpacket(udev, pipe);
+	if (ret != USB_PKT_LEN)
+		dev_err(&intf->dev, "invalid payload size %d, expected %d\n",
+			ret, USB_PKT_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* initialise irq urb */
 	usb_fill_int_urb(dev->urb_irq, udev, pipe, dev->irq_data,

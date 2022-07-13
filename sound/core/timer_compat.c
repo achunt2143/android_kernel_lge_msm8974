@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   32bit -> 64bit ioctl wrapper for timer API
  *   Copyright (c) by Takashi Iwai <tiwai@suse.de>
@@ -16,12 +17,34 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *   32bit -> 64bit ioctl wrapper for timer API
+ *   Copyright (c) by Takashi Iwai <tiwai@suse.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* This file included from timer.c */
 
 #include <linux/compat.h>
 
+<<<<<<< HEAD
+=======
+/*
+ * ILP32/LP64 has different size for 'long' type. Additionally, the size
+ * of storage alignment differs depending on architectures. Here, '__packed'
+ * qualifier is used so that the size of this structure is multiple of 4 and
+ * it fits to any architectures with 32 bit storage alignment.
+ */
+struct snd_timer_gparams32 {
+	struct snd_timer_id tid;
+	u32 period_num;
+	u32 period_den;
+	unsigned char reserved[32];
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct snd_timer_info32 {
 	u32 flags;
 	s32 card;
@@ -32,6 +55,22 @@ struct snd_timer_info32 {
 	unsigned char reserved[64];
 };
 
+<<<<<<< HEAD
+=======
+static int snd_timer_user_gparams_compat(struct file *file,
+					struct snd_timer_gparams32 __user *user)
+{
+	struct snd_timer_gparams gparams;
+
+	if (copy_from_user(&gparams.tid, &user->tid, sizeof(gparams.tid)) ||
+	    get_user(gparams.period_num, &user->period_num) ||
+	    get_user(gparams.period_den, &user->period_den))
+		return -EFAULT;
+
+	return timer_set_gparams(&gparams);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_timer_user_info_compat(struct file *file,
 				      struct snd_timer_info32 __user *_info)
 {
@@ -40,23 +79,37 @@ static int snd_timer_user_info_compat(struct file *file,
 	struct snd_timer *t;
 
 	tu = file->private_data;
+<<<<<<< HEAD
 	if (snd_BUG_ON(!tu->timeri))
 		return -ENXIO;
 	t = tu->timeri->timer;
 	if (snd_BUG_ON(!t))
 		return -ENXIO;
+=======
+	if (!tu->timeri)
+		return -EBADFD;
+	t = tu->timeri->timer;
+	if (!t)
+		return -EBADFD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(&info, 0, sizeof(info));
 	info.card = t->card ? t->card->number : -1;
 	if (t->hw.flags & SNDRV_TIMER_HW_SLAVE)
 		info.flags |= SNDRV_TIMER_FLG_SLAVE;
+<<<<<<< HEAD
 	strlcpy(info.id, t->id, sizeof(info.id));
 	strlcpy(info.name, t->name, sizeof(info.name));
+=======
+	strscpy(info.id, t->id, sizeof(info.id));
+	strscpy(info.name, t->name, sizeof(info.name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info.resolution = t->hw.resolution;
 	if (copy_to_user(_info, &info, sizeof(*_info)))
 		return -EFAULT;
 	return 0;
 }
 
+<<<<<<< HEAD
 struct snd_timer_status32 {
 	struct compat_timespec tstamp;
 	u32 resolution;
@@ -97,14 +150,31 @@ enum {
 };
 
 static long snd_timer_user_ioctl_compat(struct file *file, unsigned int cmd, unsigned long arg)
+=======
+enum {
+	SNDRV_TIMER_IOCTL_GPARAMS32 = _IOW('T', 0x04, struct snd_timer_gparams32),
+	SNDRV_TIMER_IOCTL_INFO32 = _IOR('T', 0x11, struct snd_timer_info32),
+	SNDRV_TIMER_IOCTL_STATUS_COMPAT32 = _IOW('T', 0x14, struct snd_timer_status32),
+	SNDRV_TIMER_IOCTL_STATUS_COMPAT64 = _IOW('T', 0x14, struct snd_timer_status64),
+};
+
+static long __snd_timer_user_ioctl_compat(struct file *file, unsigned int cmd,
+					  unsigned long arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __user *argp = compat_ptr(arg);
 
 	switch (cmd) {
 	case SNDRV_TIMER_IOCTL_PVERSION:
+<<<<<<< HEAD
 	case SNDRV_TIMER_IOCTL_TREAD:
 	case SNDRV_TIMER_IOCTL_GINFO:
 	case SNDRV_TIMER_IOCTL_GPARAMS:
+=======
+	case SNDRV_TIMER_IOCTL_TREAD_OLD:
+	case SNDRV_TIMER_IOCTL_TREAD64:
+	case SNDRV_TIMER_IOCTL_GINFO:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_TIMER_IOCTL_GSTATUS:
 	case SNDRV_TIMER_IOCTL_SELECT:
 	case SNDRV_TIMER_IOCTL_PARAMS:
@@ -117,6 +187,7 @@ static long snd_timer_user_ioctl_compat(struct file *file, unsigned int cmd, uns
 	case SNDRV_TIMER_IOCTL_PAUSE:
 	case SNDRV_TIMER_IOCTL_PAUSE_OLD:
 	case SNDRV_TIMER_IOCTL_NEXT_DEVICE:
+<<<<<<< HEAD
 		return snd_timer_user_ioctl(file, cmd, (unsigned long)argp);
 	case SNDRV_TIMER_IOCTL_INFO32:
 		return snd_timer_user_info_compat(file, argp);
@@ -125,3 +196,26 @@ static long snd_timer_user_ioctl_compat(struct file *file, unsigned int cmd, uns
 	}
 	return -ENOIOCTLCMD;
 }
+=======
+		return __snd_timer_user_ioctl(file, cmd, (unsigned long)argp, true);
+	case SNDRV_TIMER_IOCTL_GPARAMS32:
+		return snd_timer_user_gparams_compat(file, argp);
+	case SNDRV_TIMER_IOCTL_INFO32:
+		return snd_timer_user_info_compat(file, argp);
+	case SNDRV_TIMER_IOCTL_STATUS_COMPAT32:
+		return snd_timer_user_status32(file, argp);
+	case SNDRV_TIMER_IOCTL_STATUS_COMPAT64:
+		return snd_timer_user_status64(file, argp);
+	}
+	return -ENOIOCTLCMD;
+}
+
+static long snd_timer_user_ioctl_compat(struct file *file, unsigned int cmd,
+					unsigned long arg)
+{
+	struct snd_timer_user *tu = file->private_data;
+
+	guard(mutex)(&tu->ioctl_lock);
+	return __snd_timer_user_ioctl_compat(file, cmd, arg);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

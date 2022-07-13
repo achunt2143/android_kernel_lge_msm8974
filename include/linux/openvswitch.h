@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2007-2011 Nicira Networks.
  *
@@ -14,11 +15,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2007-2011 Nicira Networks.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LINUX_OPENVSWITCH_H
 #define _LINUX_OPENVSWITCH_H 1
 
+<<<<<<< HEAD
 #include <linux/types.h>
 
 /**
@@ -448,5 +455,13 @@ enum ovs_action_attr {
 };
 
 #define OVS_ACTION_ATTR_MAX (__OVS_ACTION_ATTR_MAX - 1)
+=======
+#include <uapi/linux/openvswitch.h>
+
+#define OVS_CLONE_ATTR_EXEC      0   /* Specify an u32 value. When nonzero,
+				      * actions in clone will not change flow
+				      * keys. False otherwise.
+				      */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_OPENVSWITCH_H */

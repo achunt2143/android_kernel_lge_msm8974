@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Copyright (C) 2005 Russell King.
  *  Data taken from include/asm-i386/serial.h
@@ -5,11 +6,18 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ *  Copyright (C) 2005 Russell King.
+ *  Data taken from include/asm-i386/serial.h
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/serial_8250.h>
 
+<<<<<<< HEAD
 #define PORT(_base,_irq)				\
 	{						\
 		.iobase		= _base,		\
@@ -22,6 +30,13 @@
 static struct plat_serial8250_port accent_data[] = {
 	PORT(0x330, 4),
 	PORT(0x338, 4),
+=======
+#include "8250.h"
+
+static struct plat_serial8250_port accent_data[] = {
+	SERIAL8250_PORT(0x330, 4),
+	SERIAL8250_PORT(0x338, 4),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ },
 };
 

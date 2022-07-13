@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef MVME147_H
 
 /* $Id: mvme147.h,v 1.4 1997/01/19 23:07:10 davem Exp $

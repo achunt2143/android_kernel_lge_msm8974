@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* parport.h: sparc64 specific parport initialization and dma.
  *
  * Copyright (C) 1999  Eddie C. Dost  (ecd@skynet.be)
@@ -251,3 +252,16 @@ static int parport_pc_find_nonpci_ports(int autoirq, int autodma)
 }
 
 #endif /* !(_ASM_SPARC64_PARPORT_H */
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef ___ASM_SPARC_PARPORT_H
+#define ___ASM_SPARC_PARPORT_H
+
+#if defined(__sparc__) && defined(__arch64__)
+#include <asm/parport_64.h>
+#else
+#include <asm-generic/parport.h>
+#endif
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

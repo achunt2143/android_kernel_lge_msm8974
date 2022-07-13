@@ -15,10 +15,14 @@
 #include <asm/asm.h>
 #include <asm/regdef.h>
 
+<<<<<<< HEAD
 	.set noreorder
 	.cprestore
 	LEAF(start)
 start:
+=======
+	LEAF(start)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Save boot rom start args */
 	move	s0, a0
 	move	s1, a1
@@ -28,6 +32,7 @@ start:
 	/* Clear BSS */
 	PTR_LA	a0, _edata
 	PTR_LA	a2, _end
+<<<<<<< HEAD
 1:	sw	zero, 0(a0)
 	bne	a2, a0, 1b
 	 addiu	a0, a0, 4
@@ -39,17 +44,38 @@ start:
 	PTR_LA	k0, decompress_kernel
 	jr	k0
 	 nop
+=======
+1:	PTR_S	zero, 0(a0)
+	PTR_ADDIU a0, a0, PTRSIZE
+	bne	a2, a0, 1b
+
+	PTR_LA	a0, (.heap)	     /* heap address */
+	PTR_LA	sp, (.stack + 8192)  /* stack address */
+
+	PTR_LA	t9, decompress_kernel
+	jalr	t9
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 2:
 	move	a0, s0
 	move	a1, s1
 	move	a2, s2
 	move	a3, s3
+<<<<<<< HEAD
 	PTR_LI	k0, KERNEL_ENTRY
 	jr	k0
 	 nop
 3:
 	b	3b
 	 nop
+=======
+	PTR_LI	t9, KERNEL_ENTRY
+	jalr	t9
+
+3:
+	b	3b
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	END(start)
 
 	.comm .heap,BOOT_HEAP_SIZE,4

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Low-level SPU handling
  *
  * (C) Copyright IBM Deutschland Entwicklung GmbH 2005
  *
  * Author: Arnd Bergmann <arndb@de.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +25,10 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 #include <linux/sched.h>
+=======
+ */
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 
 #include <asm/spu.h>
@@ -36,14 +45,18 @@
 static void spufs_handle_event(struct spu_context *ctx,
 				unsigned long ea, int type)
 {
+<<<<<<< HEAD
 	siginfo_t info;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ctx->flags & SPU_CREATE_EVENTS_ENABLED) {
 		ctx->event_return |= type;
 		wake_up_all(&ctx->stop_wq);
 		return;
 	}
 
+<<<<<<< HEAD
 	memset(&info, 0, sizeof(info));
 
 	switch (type) {
@@ -72,6 +85,27 @@ static void spufs_handle_event(struct spu_context *ctx,
 
 	if (info.si_signo)
 		force_sig_info(info.si_signo, &info, current);
+=======
+	switch (type) {
+	case SPE_EVENT_INVALID_DMA:
+		force_sig_fault(SIGBUS, BUS_OBJERR, NULL);
+		break;
+	case SPE_EVENT_SPE_DATA_STORAGE:
+		ctx->ops->restart_dma(ctx);
+		force_sig_fault(SIGSEGV, SEGV_ACCERR, (void __user *)ea);
+		break;
+	case SPE_EVENT_DMA_ALIGNMENT:
+		/* DAR isn't set for an alignment fault :( */
+		force_sig_fault(SIGBUS, BUS_ADRALN, NULL);
+		break;
+	case SPE_EVENT_SPE_ERROR:
+		force_sig_fault(
+			SIGILL, ILL_ILLOPC,
+			(void __user *)(unsigned long)
+			ctx->ops->npc_read(ctx) - 4);
+		break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int spufs_handle_class0(struct spu_context *ctx)
@@ -111,7 +145,11 @@ int spufs_handle_class1(struct spu_context *ctx)
 {
 	u64 ea, dsisr, access;
 	unsigned long flags;
+<<<<<<< HEAD
 	unsigned flt = 0;
+=======
+	vm_fault_t flt = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/*
@@ -138,6 +176,7 @@ int spufs_handle_class1(struct spu_context *ctx)
 	if (ctx->state == SPU_STATE_RUNNABLE)
 		ctx->spu->stats.hash_flt++;
 
+<<<<<<< HEAD
 	/* we must not hold the lock when entering spu_handle_mm_fault */
 	spu_release(ctx);
 
@@ -145,11 +184,24 @@ int spufs_handle_class1(struct spu_context *ctx)
 	access |= (dsisr & MFC_DSISR_ACCESS_PUT) ? _PAGE_RW : 0UL;
 	local_irq_save(flags);
 	ret = hash_page(ea, access, 0x300);
+=======
+	/* we must not hold the lock when entering copro_handle_mm_fault */
+	spu_release(ctx);
+
+	access = (_PAGE_PRESENT | _PAGE_READ);
+	access |= (dsisr & MFC_DSISR_ACCESS_PUT) ? _PAGE_WRITE : 0UL;
+	local_irq_save(flags);
+	ret = hash_page(ea, access, 0x300, dsisr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 
 	/* hashing failed, so try the actual fault handler */
 	if (ret)
+<<<<<<< HEAD
 		ret = spu_handle_mm_fault(current->mm, ea, dsisr, &flt);
+=======
+		ret = copro_handle_mm_fault(current->mm, ea, dsisr, &flt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This is nasty: we need the state_mutex for all the bookkeeping even

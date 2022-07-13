@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Advanced Linux Sound Architecture
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -20,11 +21,20 @@
  */
 
 #define SNDRV_MAIN_OBJECT_FILE
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Advanced Linux Sound Architecture
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <sound/core.h>
 
 static int __init alsa_sound_last_init(void)
 {
+<<<<<<< HEAD
 	int idx, ok = 0;
 	
 	printk(KERN_INFO "ALSA device list:\n");
@@ -33,6 +43,20 @@ static int __init alsa_sound_last_init(void)
 			printk(KERN_INFO "  #%i: %s\n", idx, snd_cards[idx]->longname);
 			ok++;
 		}
+=======
+	struct snd_card *card;
+	int idx, ok = 0;
+	
+	printk(KERN_INFO "ALSA device list:\n");
+	for (idx = 0; idx < SNDRV_CARDS; idx++) {
+		card = snd_card_ref(idx);
+		if (card) {
+			printk(KERN_INFO "  #%i: %s\n", idx, card->longname);
+			snd_card_unref(card);
+			ok++;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ok == 0)
 		printk(KERN_INFO "  No soundcards found.\n");
 	return 0;

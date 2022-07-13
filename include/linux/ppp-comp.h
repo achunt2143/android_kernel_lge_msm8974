@@ -1,15 +1,28 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ppp-comp.h - Definitions for doing PPP packet compression.
  *
  * Copyright 1994-1998 Paul Mackerras.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  version 2 as published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _NET_PPP_COMP_H
 #define _NET_PPP_COMP_H
 
+<<<<<<< HEAD
+=======
+#include <uapi/linux/ppp-comp.h>
+
+struct compstat;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct module;
 
 /*
@@ -98,6 +111,7 @@ struct compressor {
 #define DECOMP_ERROR		-1	/* error detected before decomp. */
 #define DECOMP_FATALERROR	-2	/* error detected after decomp. */
 
+<<<<<<< HEAD
 /*
  * CCP codes.
  */
@@ -181,4 +195,8 @@ extern int ppp_register_compressor(struct compressor *);
 extern void ppp_unregister_compressor(struct compressor *);
 #endif /* __KERNEL__ */
 
+=======
+extern int ppp_register_compressor(struct compressor *);
+extern void ppp_unregister_compressor(struct compressor *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _NET_PPP_COMP_H */

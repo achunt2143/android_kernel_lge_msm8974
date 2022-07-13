@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IEEE754 floating point arithmetic
  * double precision: common utilities
  */
 /*
  * MIPS floating point support
  * Copyright (C) 1994-2000 Algorithmics Ltd.
+<<<<<<< HEAD
  *
  * ########################################################################
  *
@@ -31,6 +36,22 @@ s64 ieee754dp_tlong(ieee754dp x)
 	COMPXDP;
 
 	CLEARCX;
+=======
+ */
+
+#include "ieee754dp.h"
+
+s64 ieee754dp_tlong(union ieee754dp x)
+{
+	u64 residue;
+	int round;
+	int sticky;
+	int odd;
+
+	COMPXDP;
+
+	ieee754_clearcx();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	EXPLODEXDP;
 	FLUSHXDP;
@@ -38,11 +59,24 @@ s64 ieee754dp_tlong(ieee754dp x)
 	switch (xc) {
 	case IEEE754_CLASS_SNAN:
 	case IEEE754_CLASS_QNAN:
+<<<<<<< HEAD
 	case IEEE754_CLASS_INF:
 		SETCX(IEEE754_INVALID_OPERATION);
 		return ieee754di_xcpt(ieee754di_indef(), "dp_tlong", x);
 	case IEEE754_CLASS_ZERO:
 		return 0;
+=======
+		ieee754_setcx(IEEE754_INVALID_OPERATION);
+		return ieee754di_indef();
+
+	case IEEE754_CLASS_INF:
+		ieee754_setcx(IEEE754_INVALID_OPERATION);
+		return ieee754di_overflow(xs);
+
+	case IEEE754_CLASS_ZERO:
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IEEE754_CLASS_DNORM:
 	case IEEE754_CLASS_NORM:
 		break;
@@ -53,6 +87,7 @@ s64 ieee754dp_tlong(ieee754dp x)
 			return -0x8000000000000000LL;
 		/* Set invalid. We will only use overflow for floating
 		   point overflow */
+<<<<<<< HEAD
 		SETCX(IEEE754_INVALID_OPERATION);
 		return ieee754di_xcpt(ieee754di_indef(), "dp_tlong", x);
 	}
@@ -65,6 +100,15 @@ s64 ieee754dp_tlong(ieee754dp x)
 		int sticky;
 		int odd;
 
+=======
+		ieee754_setcx(IEEE754_INVALID_OPERATION);
+		return ieee754di_overflow(xs);
+	}
+	/* oh gawd */
+	if (xe > DP_FBITS) {
+		xm <<= xe - DP_FBITS;
+	} else if (xe < DP_FBITS) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (xe < -1) {
 			residue = xm;
 			round = 0;
@@ -75,6 +119,7 @@ s64 ieee754dp_tlong(ieee754dp x)
 			* so we do it in two steps. Be aware that xe
 			* may be -1 */
 			residue = xm << (xe + 1);
+<<<<<<< HEAD
 			residue <<= 63 - DP_MBITS;
 			round = (residue >> 63) != 0;
 			sticky = (residue << 1) != 0;
@@ -93,23 +138,52 @@ s64 ieee754dp_tlong(ieee754dp x)
 				xm++;
 			break;
 		case IEEE754_RD:	/* toward -Infinity */
+=======
+			residue <<= 63 - DP_FBITS;
+			round = (residue >> 63) != 0;
+			sticky = (residue << 1) != 0;
+			xm >>= DP_FBITS - xe;
+		}
+		odd = (xm & 0x1) != 0x0;
+		switch (ieee754_csr.rm) {
+		case FPU_CSR_RN:
+			if (round && (sticky || odd))
+				xm++;
+			break;
+		case FPU_CSR_RZ:
+			break;
+		case FPU_CSR_RU:	/* toward +Infinity */
+			if ((round || sticky) && !xs)
+				xm++;
+			break;
+		case FPU_CSR_RD:	/* toward -Infinity */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((round || sticky) && xs)
 				xm++;
 			break;
 		}
 		if ((xm >> 63) != 0) {
 			/* This can happen after rounding */
+<<<<<<< HEAD
 			SETCX(IEEE754_INVALID_OPERATION);
 			return ieee754di_xcpt(ieee754di_indef(), "dp_tlong", x);
 		}
 		if (round || sticky)
 			SETCX(IEEE754_INEXACT);
+=======
+			ieee754_setcx(IEEE754_INVALID_OPERATION);
+			return ieee754di_overflow(xs);
+		}
+		if (round || sticky)
+			ieee754_setcx(IEEE754_INEXACT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (xs)
 		return -xm;
 	else
 		return xm;
 }
+<<<<<<< HEAD
 
 
 u64 ieee754dp_tulong(ieee754dp x)
@@ -123,3 +197,5 @@ u64 ieee754dp_tulong(ieee754dp x)
 	return (u64) ieee754dp_tlong(ieee754dp_sub(x, hb)) |
 	    (1ULL << 63);
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

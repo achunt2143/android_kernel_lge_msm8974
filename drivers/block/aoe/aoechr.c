@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /* Copyright (c) 2007 Coraid, Inc.  See COPYING for GPL terms. */
+=======
+/* Copyright (c) 2012 Coraid, Inc.  See COPYING for GPL terms. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * aoechr.c
  * AoE character device driver
@@ -39,12 +43,24 @@ struct ErrMsg {
 };
 
 static DEFINE_MUTEX(aoechr_mutex);
+<<<<<<< HEAD
+=======
+
+/* A ring buffer of error messages, to be read through
+ * "/dev/etherd/err".  When no messages are present,
+ * readers will block waiting for messages to appear.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ErrMsg emsgs[NMSG];
 static int emsgs_head_idx, emsgs_tail_idx;
 static struct completion emsgs_comp;
 static spinlock_t emsgs_lock;
 static int nblocked_emsgs_readers;
+<<<<<<< HEAD
 static struct class *aoe_class;
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct aoe_chardev chardevs[] = {
 	{ MINOR_ERR, "err" },
 	{ MINOR_DISCOVER, "discover" },
@@ -53,6 +69,19 @@ static struct aoe_chardev chardevs[] = {
 	{ MINOR_FLUSH, "flush" },
 };
 
+<<<<<<< HEAD
+=======
+static char *aoe_devnode(const struct device *dev, umode_t *mode)
+{
+	return kasprintf(GFP_KERNEL, "etherd/%s", dev_name(dev));
+}
+
+static const struct class aoe_class = {
+	.name = "aoe",
+	.devnode = aoe_devnode,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 discover(void)
 {
@@ -86,6 +115,7 @@ revalidate(const char __user *str, size_t size)
 	if (copy_from_user(buf, str, size))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	/* should be e%d.%d format */
 	n = sscanf(buf, "e%d.%d", &major, &minor);
 	if (n != 2) {
@@ -93,27 +123,50 @@ revalidate(const char __user *str, size_t size)
 		return -EINVAL;
 	}
 	d = aoedev_by_aoeaddr(major, minor);
+=======
+	n = sscanf(buf, "e%d.%d", &major, &minor);
+	if (n != 2) {
+		pr_err("aoe: invalid device specification %s\n", buf);
+		return -EINVAL;
+	}
+	d = aoedev_by_aoeaddr(major, minor, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!d)
 		return -EINVAL;
 	spin_lock_irqsave(&d->lock, flags);
 	aoecmd_cleanslate(d);
+<<<<<<< HEAD
+=======
+	aoecmd_cfg(major, minor);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 loop:
 	skb = aoecmd_ata_id(d);
 	spin_unlock_irqrestore(&d->lock, flags);
 	/* try again if we are able to sleep a bit,
 	 * otherwise give up this revalidation
 	 */
+<<<<<<< HEAD
 	if (!skb && !msleep_interruptible(200)) {
 		spin_lock_irqsave(&d->lock, flags);
 		goto loop;
 	}
+=======
+	if (!skb && !msleep_interruptible(250)) {
+		spin_lock_irqsave(&d->lock, flags);
+		goto loop;
+	}
+	aoedev_put(d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (skb) {
 		struct sk_buff_head queue;
 		__skb_queue_head_init(&queue);
 		__skb_queue_tail(&queue, skb);
 		aoenet_xmit(&queue);
 	}
+<<<<<<< HEAD
 	aoecmd_cfg(major, minor);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -134,6 +187,7 @@ bail:		spin_unlock_irqrestore(&emsgs_lock, flags);
 		return;
 	}
 
+<<<<<<< HEAD
 	mp = kmalloc(n, GFP_ATOMIC);
 	if (mp == NULL) {
 		printk(KERN_ERR "aoe: allocation failure, len=%ld\n", n);
@@ -141,6 +195,12 @@ bail:		spin_unlock_irqrestore(&emsgs_lock, flags);
 	}
 
 	memcpy(mp, msg, n);
+=======
+	mp = kmemdup(msg, n, GFP_ATOMIC);
+	if (!mp)
+		goto bail;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	em->msg = mp;
 	em->flags |= EMFL_VALID;
 	em->len = n;
@@ -174,6 +234,10 @@ aoechr_write(struct file *filp, const char __user *buf, size_t cnt, loff_t *offp
 		break;
 	case MINOR_FLUSH:
 		ret = aoedev_flush(buf, cnt);
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (ret == 0)
 		ret = cnt;
@@ -270,23 +334,31 @@ static const struct file_operations aoe_fops = {
 	.llseek = noop_llseek,
 };
 
+<<<<<<< HEAD
 static char *aoe_devnode(struct device *dev, umode_t *mode)
 {
 	return kasprintf(GFP_KERNEL, "etherd/%s", dev_name(dev));
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __init
 aoechr_init(void)
 {
 	int n, i;
 
 	n = register_chrdev(AOE_MAJOR, "aoechr", &aoe_fops);
+<<<<<<< HEAD
 	if (n < 0) { 
+=======
+	if (n < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "aoe: can't register char device\n");
 		return n;
 	}
 	init_completion(&emsgs_comp);
 	spin_lock_init(&emsgs_lock);
+<<<<<<< HEAD
 	aoe_class = class_create(THIS_MODULE, "aoe");
 	if (IS_ERR(aoe_class)) {
 		unregister_chrdev(AOE_MAJOR, "aoechr");
@@ -296,6 +368,16 @@ aoechr_init(void)
 
 	for (i = 0; i < ARRAY_SIZE(chardevs); ++i)
 		device_create(aoe_class, NULL,
+=======
+	n = class_register(&aoe_class);
+	if (n) {
+		unregister_chrdev(AOE_MAJOR, "aoechr");
+		return n;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(chardevs); ++i)
+		device_create(&aoe_class, NULL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      MKDEV(AOE_MAJOR, chardevs[i].minor), NULL,
 			      chardevs[i].name);
 
@@ -308,8 +390,13 @@ aoechr_exit(void)
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(chardevs); ++i)
+<<<<<<< HEAD
 		device_destroy(aoe_class, MKDEV(AOE_MAJOR, chardevs[i].minor));
 	class_destroy(aoe_class);
+=======
+		device_destroy(&aoe_class, MKDEV(AOE_MAJOR, chardevs[i].minor));
+	class_unregister(&aoe_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_chrdev(AOE_MAJOR, "aoechr");
 }
 

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_MPU401_H
 #define __SOUND_MPU401_H
 
 /*
  *  Header file for MPU-401 and compatible cards
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -23,6 +28,11 @@
  */
 
 #include "rawmidi.h"
+=======
+ */
+
+#include <sound/rawmidi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 
 #define MPU401_HW_MPU401		1	/* native MPU401 */

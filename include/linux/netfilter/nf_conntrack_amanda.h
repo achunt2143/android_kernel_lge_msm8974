@@ -1,7 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _NF_CONNTRACK_AMANDA_H
 #define _NF_CONNTRACK_AMANDA_H
 /* AMANDA tracking. */
 
+<<<<<<< HEAD
+=======
+#include <linux/netfilter.h>
+#include <linux/skbuff.h>
+#include <net/netfilter/nf_conntrack_expect.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned int (*nf_nat_amanda_hook)(struct sk_buff *skb,
 					  enum ip_conntrack_info ctinfo,
 					  unsigned int protoff,

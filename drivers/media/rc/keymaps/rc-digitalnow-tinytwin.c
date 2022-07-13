@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DigitalNow TinyTwin remote controller keytable
  *
  * Copyright (C) 2010 Antti Palosaari <crope@iki.fi>
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *    You should have received a copy of the GNU General Public License along
  *    with this program; if not, write to the Free Software Foundation, Inc.,
  *    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <media/rc-map.h>
@@ -25,6 +32,7 @@ static struct rc_map_table digitalnow_tinytwin[] = {
 	{ 0x0000, KEY_MUTE },            /* [symbol speaker] */
 	{ 0x0001, KEY_VOLUMEUP },
 	{ 0x0002, KEY_POWER2 },          /* TV [power button] */
+<<<<<<< HEAD
 	{ 0x0003, KEY_2 },
 	{ 0x0004, KEY_3 },
 	{ 0x0005, KEY_4 },
@@ -33,6 +41,16 @@ static struct rc_map_table digitalnow_tinytwin[] = {
 	{ 0x0008, KEY_8 },
 	{ 0x0009, KEY_NUMERIC_STAR },    /* [*] */
 	{ 0x000a, KEY_0 },
+=======
+	{ 0x0003, KEY_NUMERIC_2 },
+	{ 0x0004, KEY_NUMERIC_3 },
+	{ 0x0005, KEY_NUMERIC_4 },
+	{ 0x0006, KEY_NUMERIC_6 },
+	{ 0x0007, KEY_NUMERIC_7 },
+	{ 0x0008, KEY_NUMERIC_8 },
+	{ 0x0009, KEY_NUMERIC_STAR },    /* [*] */
+	{ 0x000a, KEY_NUMERIC_0 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x000b, KEY_NUMERIC_POUND },   /* [#] */
 	{ 0x000c, KEY_RIGHT },           /* [right arrow] */
 	{ 0x000d, KEY_HOMEPAGE },        /* [symbol home] Start */
@@ -49,10 +67,17 @@ static struct rc_map_table digitalnow_tinytwin[] = {
 	{ 0x0019, KEY_BLUE },            /* [blue] MyTV */
 	{ 0x001a, KEY_REWIND },          /* REW [<<] */
 	{ 0x001b, KEY_PLAY },            /* PLAY */
+<<<<<<< HEAD
 	{ 0x001c, KEY_5 },
 	{ 0x001d, KEY_9 },
 	{ 0x001e, KEY_VOLUMEDOWN },
 	{ 0x001f, KEY_1 },
+=======
+	{ 0x001c, KEY_NUMERIC_5 },
+	{ 0x001d, KEY_NUMERIC_9 },
+	{ 0x001e, KEY_VOLUMEDOWN },
+	{ 0x001f, KEY_NUMERIC_1 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0040, KEY_STOP },            /* STOP */
 	{ 0x0042, KEY_PAUSE },           /* PAUSE */
 	{ 0x0043, KEY_SCREEN },          /* Aspect */
@@ -75,10 +100,17 @@ static struct rc_map_table digitalnow_tinytwin[] = {
 
 static struct rc_map_list digitalnow_tinytwin_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = digitalnow_tinytwin,
 		.size    = ARRAY_SIZE(digitalnow_tinytwin),
 		.rc_type = RC_TYPE_NEC,
 		.name    = RC_MAP_DIGITALNOW_TINYTWIN,
+=======
+		.scan     = digitalnow_tinytwin,
+		.size     = ARRAY_SIZE(digitalnow_tinytwin),
+		.rc_proto = RC_PROTO_NEC,
+		.name     = RC_MAP_DIGITALNOW_TINYTWIN,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -97,3 +129,7 @@ module_exit(exit_rc_map_digitalnow_tinytwin)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Antti Palosaari <crope@iki.fi>");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("DigitalNow TinyTwin remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,13 @@
 #!/bin/bash
+<<<<<<< HEAD
 # Translate the bits making up a GFP mask
 # (c) 2009, Mel Gorman <mel@csn.ul.ie>
 # Licensed under the terms of the GNU GPL License version 2
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+# Translate the bits making up a GFP mask
+# (c) 2009, Mel Gorman <mel@csn.ul.ie>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SOURCE=
 GFPMASK=none
 
@@ -63,11 +69,19 @@ fi
 
 # Extract GFP flags from the kernel source
 TMPFILE=`mktemp -t gfptranslate-XXXXXX` || exit 1
+<<<<<<< HEAD
 grep -q ___GFP $SOURCE/include/linux/gfp.h
 if [ $? -eq 0 ]; then
 	grep "^#define ___GFP" $SOURCE/include/linux/gfp.h | sed -e 's/u$//' | grep -v GFP_BITS > $TMPFILE
 else
 	grep "^#define __GFP" $SOURCE/include/linux/gfp.h | sed -e 's/(__force gfp_t)//' | sed -e 's/u)/)/' | grep -v GFP_BITS | sed -e 's/)\//) \//' > $TMPFILE
+=======
+grep -q ___GFP $SOURCE/include/linux/gfp_types.h
+if [ $? -eq 0 ]; then
+	grep "^#define ___GFP" $SOURCE/include/linux/gfp_types.h | sed -e 's/u$//' | grep -v GFP_BITS > $TMPFILE
+else
+	grep "^#define __GFP" $SOURCE/include/linux/gfp_types.h | sed -e 's/(__force gfp_t)//' | sed -e 's/u)/)/' | grep -v GFP_BITS | sed -e 's/)\//) \//' > $TMPFILE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fi
 
 # Parse the flags

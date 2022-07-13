@@ -25,11 +25,16 @@
  *
  * Send feedback to <colpatch@us.ibm.com>
  */
+<<<<<<< HEAD
+=======
+#include <linux/interrupt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/nodemask.h>
 #include <linux/export.h>
 #include <linux/mmzone.h>
 #include <linux/init.h>
 #include <linux/smp.h>
+<<<<<<< HEAD
 #include <asm/cpu.h>
 
 static DEFINE_PER_CPU(struct x86_cpu, cpu_devices);
@@ -81,3 +86,15 @@ static int __init topology_init(void)
 	return 0;
 }
 subsys_initcall(topology_init);
+=======
+#include <linux/irq.h>
+#include <asm/io_apic.h>
+#include <asm/cpu.h>
+
+#ifdef CONFIG_HOTPLUG_CPU
+bool arch_cpu_is_hotpluggable(int cpu)
+{
+	return cpu > 0;
+}
+#endif /* CONFIG_HOTPLUG_CPU */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,17 +1,29 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ulpi.h -- ULPI defines and function prorotypes
  *
  * Copyright (C) 2010 Nokia Corporation
+<<<<<<< HEAD
  *
  * This software is distributed under the terms of the GNU General
  * Public License ("GPL") as published by the Free Software Foundation,
  * version 2 of that License.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_USB_ULPI_H
 #define __LINUX_USB_ULPI_H
 
 #include <linux/usb/otg.h>
+<<<<<<< HEAD
+=======
+#include <linux/ulpi/regs.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------*/
 
 /*
@@ -49,6 +61,7 @@
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 /*
  * Macros for Set and Clear
  * See ULPI 1.1 specification to find the registers with Set and Clear offsets
@@ -185,6 +198,30 @@
 struct usb_phy *otg_ulpi_create(struct usb_phy_io_ops *ops,
 					unsigned int flags);
 
+=======
+#if IS_ENABLED(CONFIG_USB_ULPI)
+struct usb_phy *otg_ulpi_create(struct usb_phy_io_ops *ops,
+					unsigned int flags);
+
+struct usb_phy *devm_otg_ulpi_create(struct device *dev,
+				     struct usb_phy_io_ops *ops,
+				     unsigned int flags);
+#else
+static inline struct usb_phy *otg_ulpi_create(struct usb_phy_io_ops *ops,
+					      unsigned int flags)
+{
+	return NULL;
+}
+
+static inline struct usb_phy *devm_otg_ulpi_create(struct device *dev,
+						   struct usb_phy_io_ops *ops,
+						   unsigned int flags)
+{
+	return NULL;
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_USB_ULPI_VIEWPORT
 /* access ops for controllers with a viewport register */
 extern struct usb_phy_io_ops ulpi_viewport_access_ops;

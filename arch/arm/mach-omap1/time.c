@@ -45,6 +45,7 @@
 #include <linux/io.h>
 #include <linux/sched_clock.h>
 
+<<<<<<< HEAD
 #include <asm/leds.h>
 #include <asm/irq.h>
 
@@ -54,6 +55,18 @@
 
 #include "iomap.h"
 #include "common.h"
+=======
+#include <asm/irq.h>
+
+#include <asm/mach/irq.h>
+#include <asm/mach/time.h>
+
+#include "hardware.h"
+#include "mux.h"
+#include "iomap.h"
+#include "common.h"
+#include "clock.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_OMAP_MPU_TIMER
 
@@ -125,6 +138,7 @@ static int omap_mpu_set_next_event(unsigned long cycles,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void omap_mpu_set_mode(enum clock_event_mode mode,
 			      struct clock_event_device *evt)
 {
@@ -149,6 +163,28 @@ static struct clock_event_device clockevent_mpu_timer1 = {
 	.shift		= 32,
 	.set_next_event	= omap_mpu_set_next_event,
 	.set_mode	= omap_mpu_set_mode,
+=======
+static int omap_mpu_set_oneshot(struct clock_event_device *evt)
+{
+	omap_mpu_timer_stop(0);
+	omap_mpu_remove_autoreset(0);
+	return 0;
+}
+
+static int omap_mpu_set_periodic(struct clock_event_device *evt)
+{
+	omap_mpu_set_autoreset(0);
+	return 0;
+}
+
+static struct clock_event_device clockevent_mpu_timer1 = {
+	.name			= "mpu_timer1",
+	.features		= CLOCK_EVT_FEAT_PERIODIC |
+				  CLOCK_EVT_FEAT_ONESHOT,
+	.set_next_event		= omap_mpu_set_next_event,
+	.set_state_periodic	= omap_mpu_set_periodic,
+	.set_state_oneshot	= omap_mpu_set_oneshot,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t omap_mpu_timer1_interrupt(int irq, void *dev_id)
@@ -160,6 +196,7 @@ static irqreturn_t omap_mpu_timer1_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static struct irqaction omap_mpu_timer1_irq = {
 	.name		= "mpu_timer1",
 	.flags		= IRQF_DISABLED | IRQF_TIMER | IRQF_IRQPOLL,
@@ -180,6 +217,18 @@ static __init void omap_init_mpu_timer(unsigned long rate)
 
 	clockevent_mpu_timer1.cpumask = cpumask_of(0);
 	clockevents_register_device(&clockevent_mpu_timer1);
+=======
+static __init void omap_init_mpu_timer(unsigned long rate)
+{
+	if (request_irq(INT_TIMER1, omap_mpu_timer1_interrupt,
+			IRQF_TIMER | IRQF_IRQPOLL, "mpu_timer1", NULL))
+		pr_err("Failed to request irq %d (mpu_timer1)\n", INT_TIMER1);
+	omap_mpu_timer_start(0, (rate / HZ) - 1, 1);
+
+	clockevent_mpu_timer1.cpumask = cpumask_of(0);
+	clockevents_config_and_register(&clockevent_mpu_timer1, rate,
+					1, -1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -189,7 +238,11 @@ static __init void omap_init_mpu_timer(unsigned long rate)
  * ---------------------------------------------------------------------------
  */
 
+<<<<<<< HEAD
 static u32 notrace omap_mpu_read_sched_clock(void)
+=======
+static u64 notrace omap_mpu_read_sched_clock(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return ~omap_mpu_timer_read(1);
 }
@@ -201,7 +254,11 @@ static void __init omap_init_clocksource(unsigned long rate)
 			"%s: can't register clocksource!\n";
 
 	omap_mpu_timer_start(1, ~0, 1);
+<<<<<<< HEAD
 	setup_sched_clock(omap_mpu_read_sched_clock, 32, rate);
+=======
+	sched_clock_register(omap_mpu_read_sched_clock, 32, rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (clocksource_mmio_init(&timer->read_tim, "mpu_timer2", rate,
 			300, 32, clocksource_mmio_readl_down))
@@ -232,6 +289,7 @@ static inline void omap_mpu_timer_init(void)
 }
 #endif	/* CONFIG_OMAP_MPU_TIMER */
 
+<<<<<<< HEAD
 static inline int omap_32k_timer_usable(void)
 {
 	int res = false;
@@ -246,11 +304,14 @@ static inline int omap_32k_timer_usable(void)
 	return res;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ---------------------------------------------------------------------------
  * Timer initialization
  * ---------------------------------------------------------------------------
  */
+<<<<<<< HEAD
 static void __init omap1_timer_init(void)
 {
 	if (!omap_32k_timer_usable())
@@ -260,3 +321,13 @@ static void __init omap1_timer_init(void)
 struct sys_timer omap1_timer = {
 	.init		= omap1_timer_init,
 };
+=======
+void __init omap1_timer_init(void)
+{
+	omap1_clk_init();
+	omap1_mux_init();
+
+	if (omap_32k_timer_init() != 0)
+		omap_mpu_timer_init();
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

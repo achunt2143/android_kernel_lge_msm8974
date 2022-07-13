@@ -1,16 +1,26 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Apple Onboard Audio GPIO definitions
  *
  * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
+<<<<<<< HEAD
  *
  * GPL v2, can be found in COPYING.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __AOA_GPIO_H
 #define __AOA_GPIO_H
 #include <linux/workqueue.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef void (*notify_func_t)(void *data);
 

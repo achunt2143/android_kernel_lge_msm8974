@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* ITE Generic remotes Version 2
  *
  * Copyright (C) 2012 Malcolm Priestley (tvboxspy@gmail.com)
@@ -6,6 +7,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/* ITE Generic remotes Version 2
+ *
+ * Copyright (C) 2012 Malcolm Priestley (tvboxspy@gmail.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <media/rc-map.h>
@@ -24,6 +31,7 @@ static struct rc_map_table it913x_v2_rc[] = {
 	{ 0x807f04, KEY_VOLUMEUP },	/* Volume- */
 	{ 0x807f05, KEY_SCREEN },	/* FullScreen */
 	{ 0x807f06, KEY_VOLUMEDOWN },	/* Volume- */
+<<<<<<< HEAD
 	{ 0x807f07, KEY_0 },		/* 0 */
 	{ 0x807f08, KEY_CHANNELDOWN },	/* Channel- */
 	{ 0x807f09, KEY_PREVIOUS },	/* Recall */
@@ -49,6 +57,33 @@ static struct rc_map_table it913x_v2_rc[] = {
 	{ 0x866b07, KEY_7 },
 	{ 0x866b08, KEY_8 },
 	{ 0x866b09, KEY_9 },
+=======
+	{ 0x807f07, KEY_NUMERIC_0 },	/* 0 */
+	{ 0x807f08, KEY_CHANNELDOWN },	/* Channel- */
+	{ 0x807f09, KEY_PREVIOUS },	/* Recall */
+	{ 0x807f0a, KEY_NUMERIC_1 },	/* 1 */
+	{ 0x807f1b, KEY_NUMERIC_2 },	/* 2 */
+	{ 0x807f1f, KEY_NUMERIC_3 },	/* 3 */
+	{ 0x807f0c, KEY_NUMERIC_4 },	/* 4 */
+	{ 0x807f0d, KEY_NUMERIC_5 },	/* 5 */
+	{ 0x807f0e, KEY_NUMERIC_6 },	/* 6 */
+	{ 0x807f00, KEY_NUMERIC_7 },	/* 7 */
+	{ 0x807f0f, KEY_NUMERIC_8 },	/* 8 */
+	{ 0x807f19, KEY_NUMERIC_9 },	/* 9 */
+
+	/* Type 2 */
+	/* keys stereo, snapshot unassigned */
+	{ 0x866b00, KEY_NUMERIC_0 },
+	{ 0x866b01, KEY_NUMERIC_1 },
+	{ 0x866b02, KEY_NUMERIC_2 },
+	{ 0x866b03, KEY_NUMERIC_3 },
+	{ 0x866b04, KEY_NUMERIC_4 },
+	{ 0x866b05, KEY_NUMERIC_5 },
+	{ 0x866b06, KEY_NUMERIC_6 },
+	{ 0x866b07, KEY_NUMERIC_7 },
+	{ 0x866b08, KEY_NUMERIC_8 },
+	{ 0x866b09, KEY_NUMERIC_9 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x866b12, KEY_POWER },
 	{ 0x866b13, KEY_MUTE },
 	{ 0x866b0a, KEY_PREVIOUS }, /* Recall */
@@ -70,10 +105,17 @@ static struct rc_map_table it913x_v2_rc[] = {
 
 static struct rc_map_list it913x_v2_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = it913x_v2_rc,
 		.size    = ARRAY_SIZE(it913x_v2_rc),
 		.rc_type = RC_TYPE_NEC,
 		.name    = RC_MAP_IT913X_V2,
+=======
+		.scan     = it913x_v2_rc,
+		.size     = ARRAY_SIZE(it913x_v2_rc),
+		.rc_proto = RC_PROTO_NECX,
+		.name     = RC_MAP_IT913X_V2,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -92,3 +134,7 @@ module_exit(exit_rc_it913x_v2_map)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Malcolm Priestley tvboxspy@gmail.com");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("it913x-v2 remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

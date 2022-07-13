@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fs/partitions/msdos.c
  *
@@ -17,11 +21,25 @@
  *  Check partition table on IDE disks for common CHS translations
  *
  *  Re-organised Feb 1998 Russell King
+<<<<<<< HEAD
  */
 #include <linux/msdos_fs.h>
 
 #include "check.h"
 #include "msdos.h"
+=======
+ *
+ *  BSD disklabel support by Yossi Gottlieb <yogo@math.tau.ac.il>
+ *  updated by Marc Espie <Marc.Espie@openbsd.org>
+ *
+ *  Unixware slices support by Andrzej Krzysztofowicz <ankry@mif.pg.gda.pl>
+ *  and Krzysztof G. Baranowski <kgb@knm.org.pl>
+ */
+#include <linux/msdos_fs.h>
+#include <linux/msdos_partition.h>
+
+#include "check.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "efi.h"
 
 /*
@@ -31,23 +49,39 @@
  */
 #include <asm/unaligned.h>
 
+<<<<<<< HEAD
 #define SYS_IND(p)	get_unaligned(&p->sys_ind)
 
 static inline sector_t nr_sects(struct partition *p)
+=======
+static inline sector_t nr_sects(struct msdos_partition *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (sector_t)get_unaligned_le32(&p->nr_sects);
 }
 
+<<<<<<< HEAD
 static inline sector_t start_sect(struct partition *p)
+=======
+static inline sector_t start_sect(struct msdos_partition *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (sector_t)get_unaligned_le32(&p->start_sect);
 }
 
+<<<<<<< HEAD
 static inline int is_extended_partition(struct partition *p)
 {
 	return (SYS_IND(p) == DOS_EXTENDED_PARTITION ||
 		SYS_IND(p) == WIN98_EXTENDED_PARTITION ||
 		SYS_IND(p) == LINUX_EXTENDED_PARTITION);
+=======
+static inline int is_extended_partition(struct msdos_partition *p)
+{
+	return (p->sys_ind == DOS_EXTENDED_PARTITION ||
+		p->sys_ind == WIN98_EXTENDED_PARTITION ||
+		p->sys_ind == LINUX_EXTENDED_PARTITION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define MSDOS_LABEL_MAGIC1	0x55
@@ -66,7 +100,11 @@ msdos_magic_present(unsigned char *p)
 #define AIX_LABEL_MAGIC4	0xC1
 static int aix_magic_present(struct parsed_partitions *state, unsigned char *p)
 {
+<<<<<<< HEAD
 	struct partition *pt = (struct partition *) (p + 0x1be);
+=======
+	struct msdos_partition *pt = (struct msdos_partition *) (p + 0x1be);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Sector sect;
 	unsigned char *d;
 	int slot, ret = 0;
@@ -76,6 +114,7 @@ static int aix_magic_present(struct parsed_partitions *state, unsigned char *p)
 		p[2] == AIX_LABEL_MAGIC3 &&
 		p[3] == AIX_LABEL_MAGIC4))
 		return 0;
+<<<<<<< HEAD
 	/* Assume the partition table is valid if Linux partitions exists */
 	for (slot = 1; slot <= 4; slot++, pt++) {
 		if (pt->sys_ind == LINUX_SWAP_PARTITION ||
@@ -83,6 +122,21 @@ static int aix_magic_present(struct parsed_partitions *state, unsigned char *p)
 			pt->sys_ind == LINUX_DATA_PARTITION ||
 			pt->sys_ind == LINUX_LVM_PARTITION ||
 			is_extended_partition(pt))
+=======
+
+	/*
+	 * Assume the partition table is valid if Linux partitions exists.
+	 * Note that old Solaris/x86 partitions use the same indicator as
+	 * Linux swap partitions, so we consider that a Linux partition as
+	 * well.
+	 */
+	for (slot = 1; slot <= 4; slot++, pt++) {
+		if (pt->sys_ind == SOLARIS_X86_PARTITION ||
+		    pt->sys_ind == LINUX_RAID_PARTITION ||
+		    pt->sys_ind == LINUX_DATA_PARTITION ||
+		    pt->sys_ind == LINUX_LVM_PARTITION ||
+		    is_extended_partition(pt))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 	}
 	d = read_part_sector(state, 7, &sect);
@@ -90,10 +144,28 @@ static int aix_magic_present(struct parsed_partitions *state, unsigned char *p)
 		if (d[0] == '_' && d[1] == 'L' && d[2] == 'V' && d[3] == 'M')
 			ret = 1;
 		put_dev_sector(sect);
+<<<<<<< HEAD
 	};
 	return ret;
 }
 
+=======
+	}
+	return ret;
+}
+
+static void set_info(struct parsed_partitions *state, int slot,
+		     u32 disksig)
+{
+	struct partition_meta_info *info = &state->parts[slot].info;
+
+	snprintf(info->uuid, sizeof(info->uuid), "%08x-%02x", disksig,
+		 slot);
+	info->volname[0] = 0;
+	state->parts[slot].has_info = true;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Create devices for each logical partition in an extended partition.
  * The logical partitions form a linked list, with each entry being
@@ -106,6 +178,7 @@ static int aix_magic_present(struct parsed_partitions *state, unsigned char *p)
  */
 
 static void parse_extended(struct parsed_partitions *state,
+<<<<<<< HEAD
 			   sector_t first_sector, sector_t first_size)
 {
 	struct partition *p;
@@ -113,10 +186,24 @@ static void parse_extended(struct parsed_partitions *state,
 	unsigned char *data;
 	sector_t this_sector, this_size;
 	sector_t sector_size = bdev_logical_block_size(state->bdev) / 512;
+=======
+			   sector_t first_sector, sector_t first_size,
+			   u32 disksig)
+{
+	struct msdos_partition *p;
+	Sector sect;
+	unsigned char *data;
+	sector_t this_sector, this_size;
+	sector_t sector_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int loopct = 0;		/* number of links followed
 				   without finding a data partition */
 	int i;
 
+<<<<<<< HEAD
+=======
+	sector_size = queue_logical_block_size(state->disk->queue) / 512;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	this_sector = first_sector;
 	this_size = first_size;
 
@@ -130,9 +217,15 @@ static void parse_extended(struct parsed_partitions *state,
 			return;
 
 		if (!msdos_magic_present(data + 510))
+<<<<<<< HEAD
 			goto done; 
 
 		p = (struct partition *) (data + 0x1be);
+=======
+			goto done;
+
+		p = (struct msdos_partition *) (data + 0x1be);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Usually, the first entry is the real data partition,
@@ -143,11 +236,20 @@ static void parse_extended(struct parsed_partitions *state,
 		 * and OS/2 seems to use all four entries.
 		 */
 
+<<<<<<< HEAD
 		/* 
 		 * First process the data partition(s)
 		 */
 		for (i=0; i<4; i++, p++) {
 			sector_t offs, size, next;
+=======
+		/*
+		 * First process the data partition(s)
+		 */
+		for (i = 0; i < 4; i++, p++) {
+			sector_t offs, size, next;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!nr_sects(p) || is_extended_partition(p))
 				continue;
 
@@ -166,7 +268,12 @@ static void parse_extended(struct parsed_partitions *state,
 			}
 
 			put_partition(state, state->next, next, size);
+<<<<<<< HEAD
 			if (SYS_IND(p) == LINUX_RAID_PARTITION)
+=======
+			set_info(state, state->next, disksig);
+			if (p->sys_ind == LINUX_RAID_PARTITION)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				state->parts[state->next].flags = ADDPART_FLAG_RAID;
 			loopct = 0;
 			if (++state->next == state->limit)
@@ -180,7 +287,11 @@ static void parse_extended(struct parsed_partitions *state,
 		 * It should be a link to the next logical partition.
 		 */
 		p -= 4;
+<<<<<<< HEAD
 		for (i=0; i<4; i++, p++)
+=======
+		for (i = 0; i < 4; i++, p++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (nr_sects(p) && is_extended_partition(p))
 				break;
 		if (i == 4)
@@ -194,6 +305,33 @@ done:
 	put_dev_sector(sect);
 }
 
+<<<<<<< HEAD
+=======
+#define SOLARIS_X86_NUMSLICE	16
+#define SOLARIS_X86_VTOC_SANE	(0x600DDEEEUL)
+
+struct solaris_x86_slice {
+	__le16 s_tag;		/* ID tag of partition */
+	__le16 s_flag;		/* permission flags */
+	__le32 s_start;		/* start sector no of partition */
+	__le32 s_size;		/* # of blocks in partition */
+};
+
+struct solaris_x86_vtoc {
+	unsigned int v_bootinfo[3];	/* info needed by mboot */
+	__le32 v_sanity;		/* to verify vtoc sanity */
+	__le32 v_version;		/* layout version */
+	char	v_volume[8];		/* volume name */
+	__le16	v_sectorsz;		/* sector size in bytes */
+	__le16	v_nparts;		/* number of partitions */
+	unsigned int v_reserved[10];	/* free space */
+	struct solaris_x86_slice
+		v_slice[SOLARIS_X86_NUMSLICE]; /* slice headers */
+	unsigned int timestamp[SOLARIS_X86_NUMSLICE]; /* timestamp */
+	char	v_asciilabel[128];	/* for compatibility */
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* james@bpgc.com: Solaris has a nasty indicator: 0x82 which also
    indicates linux swap.  Be careful before believing this is Solaris. */
 
@@ -229,8 +367,13 @@ static void parse_solaris_x86(struct parsed_partitions *state,
 		return;
 	}
 	/* Ensure we can handle previous case of VTOC with 8 entries gracefully */
+<<<<<<< HEAD
 	max_nparts = le16_to_cpu (v->v_nparts) > 8 ? SOLARIS_X86_NUMSLICE : 8;
 	for (i=0; i<max_nparts && state->next<state->limit; i++) {
+=======
+	max_nparts = le16_to_cpu(v->v_nparts) > 8 ? SOLARIS_X86_NUMSLICE : 8;
+	for (i = 0; i < max_nparts && state->next < state->limit; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct solaris_x86_slice *s = &v->v_slice[i];
 		char tmp[3 + 10 + 1 + 1];
 
@@ -249,8 +392,61 @@ static void parse_solaris_x86(struct parsed_partitions *state,
 #endif
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_BSD_DISKLABEL)
 /* 
+=======
+/* check against BSD src/sys/sys/disklabel.h for consistency */
+#define BSD_DISKMAGIC	(0x82564557UL)	/* The disk magic number */
+#define BSD_MAXPARTITIONS	16
+#define OPENBSD_MAXPARTITIONS	16
+#define BSD_FS_UNUSED		0 /* disklabel unused partition entry ID */
+struct bsd_disklabel {
+	__le32	d_magic;		/* the magic number */
+	__s16	d_type;			/* drive type */
+	__s16	d_subtype;		/* controller/d_type specific */
+	char	d_typename[16];		/* type name, e.g. "eagle" */
+	char	d_packname[16];		/* pack identifier */
+	__u32	d_secsize;		/* # of bytes per sector */
+	__u32	d_nsectors;		/* # of data sectors per track */
+	__u32	d_ntracks;		/* # of tracks per cylinder */
+	__u32	d_ncylinders;		/* # of data cylinders per unit */
+	__u32	d_secpercyl;		/* # of data sectors per cylinder */
+	__u32	d_secperunit;		/* # of data sectors per unit */
+	__u16	d_sparespertrack;	/* # of spare sectors per track */
+	__u16	d_sparespercyl;		/* # of spare sectors per cylinder */
+	__u32	d_acylinders;		/* # of alt. cylinders per unit */
+	__u16	d_rpm;			/* rotational speed */
+	__u16	d_interleave;		/* hardware sector interleave */
+	__u16	d_trackskew;		/* sector 0 skew, per track */
+	__u16	d_cylskew;		/* sector 0 skew, per cylinder */
+	__u32	d_headswitch;		/* head switch time, usec */
+	__u32	d_trkseek;		/* track-to-track seek, usec */
+	__u32	d_flags;		/* generic flags */
+#define NDDATA 5
+	__u32	d_drivedata[NDDATA];	/* drive-type specific information */
+#define NSPARE 5
+	__u32	d_spare[NSPARE];	/* reserved for future use */
+	__le32	d_magic2;		/* the magic number (again) */
+	__le16	d_checksum;		/* xor of data incl. partitions */
+
+			/* filesystem and partition information: */
+	__le16	d_npartitions;		/* number of partitions in following */
+	__le32	d_bbsize;		/* size of boot area at sn0, bytes */
+	__le32	d_sbsize;		/* max size of fs superblock, bytes */
+	struct	bsd_partition {		/* the partition table */
+		__le32	p_size;		/* number of sectors in partition */
+		__le32	p_offset;	/* starting sector */
+		__le32	p_fsize;	/* filesystem basic fragment size */
+		__u8	p_fstype;	/* filesystem type, see below */
+		__u8	p_frag;		/* filesystem fragments per block */
+		__le16	p_cpg;		/* filesystem cylinders per group */
+	} d_partitions[BSD_MAXPARTITIONS];	/* actually may be more */
+};
+
+#if defined(CONFIG_BSD_DISKLABEL)
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Create devices for BSD partitions listed in a disklabel, under a
  * dos-like partition. See parse_extended() for more information.
  */
@@ -281,10 +477,21 @@ static void parse_bsd(struct parsed_partitions *state,
 
 		if (state->next == state->limit)
 			break;
+<<<<<<< HEAD
 		if (p->p_fstype == BSD_FS_UNUSED) 
 			continue;
 		bsd_start = le32_to_cpu(p->p_offset);
 		bsd_size = le32_to_cpu(p->p_size);
+=======
+		if (p->p_fstype == BSD_FS_UNUSED)
+			continue;
+		bsd_start = le32_to_cpu(p->p_offset);
+		bsd_size = le32_to_cpu(p->p_size);
+		/* FreeBSD has relative offset if C partition offset is zero */
+		if (memcmp(flavour, "bsd\0", 4) == 0 &&
+		    le32_to_cpu(l->d_partitions[2].p_offset) == 0)
+			bsd_start += offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (offset == bsd_start && size == bsd_size)
 			/* full parent partition, we have it already */
 			continue;
@@ -329,6 +536,54 @@ static void parse_openbsd(struct parsed_partitions *state,
 #endif
 }
 
+<<<<<<< HEAD
+=======
+#define UNIXWARE_DISKMAGIC     (0xCA5E600DUL)	/* The disk magic number */
+#define UNIXWARE_DISKMAGIC2    (0x600DDEEEUL)	/* The slice table magic nr */
+#define UNIXWARE_NUMSLICE      16
+#define UNIXWARE_FS_UNUSED     0		/* Unused slice entry ID */
+
+struct unixware_slice {
+	__le16   s_label;	/* label */
+	__le16   s_flags;	/* permission flags */
+	__le32   start_sect;	/* starting sector */
+	__le32   nr_sects;	/* number of sectors in slice */
+};
+
+struct unixware_disklabel {
+	__le32	d_type;			/* drive type */
+	__le32	d_magic;		/* the magic number */
+	__le32	d_version;		/* version number */
+	char	d_serial[12];		/* serial number of the device */
+	__le32	d_ncylinders;		/* # of data cylinders per device */
+	__le32	d_ntracks;		/* # of tracks per cylinder */
+	__le32	d_nsectors;		/* # of data sectors per track */
+	__le32	d_secsize;		/* # of bytes per sector */
+	__le32	d_part_start;		/* # of first sector of this partition*/
+	__le32	d_unknown1[12];		/* ? */
+	__le32	d_alt_tbl;		/* byte offset of alternate table */
+	__le32	d_alt_len;		/* byte length of alternate table */
+	__le32	d_phys_cyl;		/* # of physical cylinders per device */
+	__le32	d_phys_trk;		/* # of physical tracks per cylinder */
+	__le32	d_phys_sec;		/* # of physical sectors per track */
+	__le32	d_phys_bytes;		/* # of physical bytes per sector */
+	__le32	d_unknown2;		/* ? */
+	__le32	d_unknown3;		/* ? */
+	__le32	d_pad[8];		/* pad */
+
+	struct unixware_vtoc {
+		__le32	v_magic;		/* the magic number */
+		__le32	v_version;		/* version number */
+		char	v_name[8];		/* volume name */
+		__le16	v_nslices;		/* # of slices */
+		__le16	v_unknown1;		/* ? */
+		__le32	v_reserved[10];		/* reserved */
+		struct unixware_slice
+			v_slice[UNIXWARE_NUMSLICE];	/* slice headers */
+	} vtoc;
+};  /* 408 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Create devices for Unixware partitions listed in a disklabel, under a
  * dos-like partition. See parse_extended() for more information.
@@ -372,6 +627,11 @@ static void parse_unixware(struct parsed_partitions *state,
 #endif
 }
 
+<<<<<<< HEAD
+=======
+#define MINIX_NR_SUBPARTITIONS  4
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Minix 2.0.0/2.0.2 subpartition support.
  * Anand Krishnamurthy <anandk@wiproge.med.ge.com>
@@ -383,20 +643,33 @@ static void parse_minix(struct parsed_partitions *state,
 #ifdef CONFIG_MINIX_SUBPARTITION
 	Sector sect;
 	unsigned char *data;
+<<<<<<< HEAD
 	struct partition *p;
+=======
+	struct msdos_partition *p;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	data = read_part_sector(state, offset, &sect);
 	if (!data)
 		return;
 
+<<<<<<< HEAD
 	p = (struct partition *)(data + 0x1be);
+=======
+	p = (struct msdos_partition *)(data + 0x1be);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The first sector of a Minix partition can have either
 	 * a secondary MBR describing its subpartitions, or
 	 * the normal boot sector. */
+<<<<<<< HEAD
 	if (msdos_magic_present (data + 510) &&
 	    SYS_IND(p) == MINIX_PARTITION) { /* subpartition table present */
+=======
+	if (msdos_magic_present(data + 510) &&
+	    p->sys_ind == MINIX_PARTITION) { /* subpartition table present */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		char tmp[1 + BDEVNAME_SIZE + 10 + 9 + 1];
 
 		snprintf(tmp, sizeof(tmp), " %s%d: <minix:", state->name, origin);
@@ -405,7 +678,11 @@ static void parse_minix(struct parsed_partitions *state,
 			if (state->next == state->limit)
 				break;
 			/* add each partition in use */
+<<<<<<< HEAD
 			if (SYS_IND(p) == MINIX_PARTITION)
+=======
+			if (p->sys_ind == MINIX_PARTITION)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				put_partition(state, state->next++,
 					      start_sect(p), nr_sects(p));
 		}
@@ -428,6 +705,7 @@ static struct {
 	{NEW_SOLARIS_X86_PARTITION, parse_solaris_x86},
 	{0, NULL},
 };
+<<<<<<< HEAD
  
 int msdos_partition(struct parsed_partitions *state)
 {
@@ -450,6 +728,41 @@ int msdos_partition(struct parsed_partitions *state)
 		put_dev_sector(sect);
 		strlcat(state->pp_buf, " [AIX]", PAGE_SIZE);
 		return 0;
+=======
+
+int msdos_partition(struct parsed_partitions *state)
+{
+	sector_t sector_size;
+	Sector sect;
+	unsigned char *data;
+	struct msdos_partition *p;
+	struct fat_boot_sector *fb;
+	int slot;
+	u32 disksig;
+
+	sector_size = queue_logical_block_size(state->disk->queue) / 512;
+	data = read_part_sector(state, 0, &sect);
+	if (!data)
+		return -1;
+
+	/*
+	 * Note order! (some AIX disks, e.g. unbootable kind,
+	 * have no MSDOS 55aa)
+	 */
+	if (aix_magic_present(state, data)) {
+		put_dev_sector(sect);
+#ifdef CONFIG_AIX_PARTITION
+		return aix_partition(state);
+#else
+		strlcat(state->pp_buf, " [AIX]", PAGE_SIZE);
+		return 0;
+#endif
+	}
+
+	if (!msdos_magic_present(data + 510)) {
+		put_dev_sector(sect);
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -458,11 +771,19 @@ int msdos_partition(struct parsed_partitions *state)
 	 * partition table. Reject this in case the boot indicator
 	 * is not 0 or 0x80.
 	 */
+<<<<<<< HEAD
 	p = (struct partition *) (data + 0x1be);
 	for (slot = 1; slot <= 4; slot++, p++) {
 		if (p->boot_ind != 0 && p->boot_ind != 0x80) {
 			/*
 			 * Even without a valid boot inidicator value
+=======
+	p = (struct msdos_partition *) (data + 0x1be);
+	for (slot = 1; slot <= 4; slot++, p++) {
+		if (p->boot_ind != 0 && p->boot_ind != 0x80) {
+			/*
+			 * Even without a valid boot indicator value
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * its still possible this is valid FAT filesystem
 			 * without a partition table.
 			 */
@@ -480,16 +801,29 @@ int msdos_partition(struct parsed_partitions *state)
 	}
 
 #ifdef CONFIG_EFI_PARTITION
+<<<<<<< HEAD
 	p = (struct partition *) (data + 0x1be);
 	for (slot = 1 ; slot <= 4 ; slot++, p++) {
 		/* If this is an EFI GPT disk, msdos should ignore it. */
 		if (SYS_IND(p) == EFI_PMBR_OSTYPE_EFI_GPT) {
+=======
+	p = (struct msdos_partition *) (data + 0x1be);
+	for (slot = 1 ; slot <= 4 ; slot++, p++) {
+		/* If this is an EFI GPT disk, msdos should ignore it. */
+		if (p->sys_ind == EFI_PMBR_OSTYPE_EFI_GPT) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			put_dev_sector(sect);
 			return 0;
 		}
 	}
 #endif
+<<<<<<< HEAD
 	p = (struct partition *) (data + 0x1be);
+=======
+	p = (struct msdos_partition *) (data + 0x1be);
+
+	disksig = le32_to_cpup((__le32 *)(data + 0x1b8));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Look for partitions in two passes:
@@ -501,6 +835,10 @@ int msdos_partition(struct parsed_partitions *state)
 	for (slot = 1 ; slot <= 4 ; slot++, p++) {
 		sector_t start = start_sect(p)*sector_size;
 		sector_t size = nr_sects(p)*sector_size;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!size)
 			continue;
 		if (is_extended_partition(p)) {
@@ -511,29 +849,52 @@ int msdos_partition(struct parsed_partitions *state)
 			 * sector, although it may not be enough/proper.
 			 */
 			sector_t n = 2;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			n = min(size, max(sector_size, n));
 			put_partition(state, slot, start, n);
 
 			strlcat(state->pp_buf, " <", PAGE_SIZE);
+<<<<<<< HEAD
 			parse_extended(state, start, size);
+=======
+			parse_extended(state, start, size, disksig);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			strlcat(state->pp_buf, " >", PAGE_SIZE);
 			continue;
 		}
 		put_partition(state, slot, start, size);
+<<<<<<< HEAD
 		if (SYS_IND(p) == LINUX_RAID_PARTITION)
 			state->parts[slot].flags = ADDPART_FLAG_RAID;
 		if (SYS_IND(p) == DM6_PARTITION)
 			strlcat(state->pp_buf, "[DM]", PAGE_SIZE);
 		if (SYS_IND(p) == EZD_PARTITION)
+=======
+		set_info(state, slot, disksig);
+		if (p->sys_ind == LINUX_RAID_PARTITION)
+			state->parts[slot].flags = ADDPART_FLAG_RAID;
+		if (p->sys_ind == DM6_PARTITION)
+			strlcat(state->pp_buf, "[DM]", PAGE_SIZE);
+		if (p->sys_ind == EZD_PARTITION)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			strlcat(state->pp_buf, "[EZD]", PAGE_SIZE);
 	}
 
 	strlcat(state->pp_buf, "\n", PAGE_SIZE);
 
 	/* second pass - output for each on a separate line */
+<<<<<<< HEAD
 	p = (struct partition *) (0x1be + data);
 	for (slot = 1 ; slot <= 4 ; slot++, p++) {
 		unsigned char id = SYS_IND(p);
+=======
+	p = (struct msdos_partition *) (0x1be + data);
+	for (slot = 1 ; slot <= 4 ; slot++, p++) {
+		unsigned char id = p->sys_ind;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int n;
 
 		if (!nr_sects(p))

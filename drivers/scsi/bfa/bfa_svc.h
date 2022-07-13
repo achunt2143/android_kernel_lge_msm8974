@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
@@ -13,6 +14,16 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __BFA_SVC_H__
@@ -97,10 +108,20 @@ struct bfa_fcxp_mod_s {
 	struct bfa_s      *bfa;		/* backpointer to BFA */
 	struct bfa_fcxp_s *fcxp_list;	/* array of FCXPs */
 	u16	num_fcxps;	/* max num FCXP requests */
+<<<<<<< HEAD
 	struct list_head  fcxp_free_q;	/* free FCXPs */
 	struct list_head  fcxp_active_q;	/* active FCXPs */
 	struct list_head  wait_q;		/* wait queue for free fcxp */
 	struct list_head fcxp_unused_q; /* unused fcxps */
+=======
+	struct list_head fcxp_req_free_q; /* free FCXPs used for sending req */
+	struct list_head fcxp_rsp_free_q; /* free FCXPs used for sending req */
+	struct list_head fcxp_active_q;	/* active FCXPs */
+	struct list_head req_wait_q;	/* wait queue for free req_fcxp */
+	struct list_head rsp_wait_q;	/* wait queue for free rsp_fcxp */
+	struct list_head fcxp_req_unused_q;	/* unused req_fcxps */
+	struct list_head fcxp_rsp_unused_q;	/* unused rsp_fcxps */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	req_pld_sz;
 	u32	rsp_pld_sz;
 	struct bfa_mem_dma_s dma_seg[BFA_FCXP_DMA_SEGS];
@@ -197,6 +218,10 @@ struct bfa_fcxp_s {
 	struct bfa_cb_qe_s    hcb_qe;	/*  comp: callback qelem */
 	struct bfa_reqq_wait_s	reqq_wqe;
 	bfa_boolean_t	reqq_waiting;
+<<<<<<< HEAD
+=======
+	bfa_boolean_t	req_rsp;	/* Used to track req/rsp fcxp */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct bfa_fcxp_wqe_s {
@@ -229,6 +254,7 @@ struct bfa_fcxp_wqe_s {
 
 void	bfa_fcxp_isr(struct bfa_s *bfa, struct bfi_msg_s *msg);
 
+<<<<<<< HEAD
 
 /*
  * RPORT related defines
@@ -245,6 +271,8 @@ enum bfa_rport_event {
 	BFA_RPORT_SM_QRESUME	= 9,	/*  space in requeue queue      */
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BFA_RPORT_MIN	4
 
 struct bfa_rport_mod_s {
@@ -288,11 +316,36 @@ struct bfa_rport_info_s {
 };
 
 /*
+<<<<<<< HEAD
+=======
+ * RPORT related defines
+ */
+enum bfa_rport_event {
+	BFA_RPORT_SM_CREATE	= 1,	/*  rport create event          */
+	BFA_RPORT_SM_DELETE	= 2,	/*  deleting an existing rport  */
+	BFA_RPORT_SM_ONLINE	= 3,	/*  rport is online             */
+	BFA_RPORT_SM_OFFLINE	= 4,	/*  rport is offline            */
+	BFA_RPORT_SM_FWRSP	= 5,	/*  firmware response           */
+	BFA_RPORT_SM_HWFAIL	= 6,	/*  IOC h/w failure             */
+	BFA_RPORT_SM_QOS_SCN	= 7,	/*  QoS SCN from firmware       */
+	BFA_RPORT_SM_SET_SPEED	= 8,	/*  Set Rport Speed             */
+	BFA_RPORT_SM_QRESUME	= 9,	/*  space in requeue queue      */
+};
+
+struct bfa_rport_s;
+typedef void (*bfa_rport_sm_t)(struct bfa_rport_s *, enum bfa_rport_event);
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * BFA rport data structure
  */
 struct bfa_rport_s {
 	struct list_head	qe;	/*  queue element		    */
+<<<<<<< HEAD
 	bfa_sm_t	sm;		/*  state machine		    */
+=======
+	bfa_rport_sm_t	sm;		/*  state machine		    */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_s	*bfa;		/*  backpointer to BFA		    */
 	void		*rport_drv;	/*  fcs/driver rport object	    */
 	u16	fw_handle;	/*  firmware rport handle	    */
@@ -381,12 +434,37 @@ void	bfa_uf_isr(struct bfa_s *bfa, struct bfi_msg_s *msg);
 void	bfa_uf_res_recfg(struct bfa_s *bfa, u16 num_uf_fw);
 
 /*
+<<<<<<< HEAD
+=======
+ *  lps_pvt BFA LPS private functions
+ */
+
+enum bfa_lps_event {
+	BFA_LPS_SM_LOGIN	= 1,	/* login request from user      */
+	BFA_LPS_SM_LOGOUT	= 2,	/* logout request from user     */
+	BFA_LPS_SM_FWRSP	= 3,	/* f/w response to login/logout */
+	BFA_LPS_SM_RESUME	= 4,	/* space present in reqq queue  */
+	BFA_LPS_SM_DELETE	= 5,	/* lps delete from user         */
+	BFA_LPS_SM_OFFLINE	= 6,	/* Link is offline              */
+	BFA_LPS_SM_RX_CVL	= 7,	/* Rx clear virtual link        */
+	BFA_LPS_SM_SET_N2N_PID  = 8,	/* Set assigned PID for n2n */
+};
+
+struct bfa_lps_s;
+typedef void (*bfa_lps_sm_t)(struct bfa_lps_s *, enum bfa_lps_event);
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LPS - bfa lport login/logout service interface
  */
 struct bfa_lps_s {
 	struct list_head	qe;	/*  queue element		*/
 	struct bfa_s	*bfa;		/*  parent bfa instance	*/
+<<<<<<< HEAD
 	bfa_sm_t	sm;		/*  finite state machine	*/
+=======
+	bfa_lps_sm_t	sm;		/*  finite state machine	*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8		bfa_tag;	/*  lport tag		*/
 	u8		fw_tag;		/*  lport fw tag                */
 	u8		reqq;		/*  lport request queue	*/
@@ -401,8 +479,11 @@ struct bfa_lps_s {
 	bfa_status_t	status;		/*  login status		*/
 	u16		pdusz;		/*  max receive PDU size	*/
 	u16		pr_bbcred;	/*  BB_CREDIT from peer		*/
+<<<<<<< HEAD
 	u8		pr_bbscn;	/*  BB_SCN from peer		*/
 	u8		bb_scn;		/*  local BB_SCN		*/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8		lsrjt_rsn;	/*  LSRJT reason		*/
 	u8		lsrjt_expl;	/*  LSRJT explanation		*/
 	u8		lun_mask;	/*  LUN mask flag		*/
@@ -445,11 +526,31 @@ void	bfa_lps_isr(struct bfa_s *bfa, struct bfi_msg_s *msg);
 #define BFA_FCPORT(_bfa)	(&((_bfa)->modules.port))
 
 /*
+<<<<<<< HEAD
+=======
+ * BFA port link notification state machine events
+ */
+
+enum bfa_fcport_ln_sm_event {
+	BFA_FCPORT_LN_SM_LINKUP		= 1,	/*  linkup event	*/
+	BFA_FCPORT_LN_SM_LINKDOWN	= 2,	/*  linkdown event	*/
+	BFA_FCPORT_LN_SM_NOTIFICATION	= 3	/*  done notification	*/
+};
+
+struct bfa_fcport_ln_s;
+typedef void (*bfa_fcport_ln_sm_t)(struct bfa_fcport_ln_s *, enum bfa_fcport_ln_sm_event);
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Link notification data structure
  */
 struct bfa_fcport_ln_s {
 	struct bfa_fcport_s	*fcport;
+<<<<<<< HEAD
 	bfa_sm_t		sm;
+=======
+	bfa_fcport_ln_sm_t	sm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_cb_qe_s	ln_qe;	/*  BFA callback queue elem for ln */
 	enum bfa_port_linkstate ln_event; /*  ln event for callback */
 };
@@ -459,19 +560,56 @@ struct bfa_fcport_trunk_s {
 };
 
 /*
+<<<<<<< HEAD
+=======
+ * BFA port state machine events
+ */
+enum bfa_fcport_sm_event {
+	BFA_FCPORT_SM_START	= 1,	/*  start port state machine	*/
+	BFA_FCPORT_SM_STOP	= 2,	/*  stop port state machine	*/
+	BFA_FCPORT_SM_ENABLE	= 3,	/*  enable port		*/
+	BFA_FCPORT_SM_DISABLE	= 4,	/*  disable port state machine */
+	BFA_FCPORT_SM_FWRSP	= 5,	/*  firmware enable/disable rsp */
+	BFA_FCPORT_SM_LINKUP	= 6,	/*  firmware linkup event	*/
+	BFA_FCPORT_SM_LINKDOWN	= 7,	/*  firmware linkup down	*/
+	BFA_FCPORT_SM_QRESUME	= 8,	/*  CQ space available	*/
+	BFA_FCPORT_SM_HWFAIL	= 9,	/*  IOC h/w failure		*/
+	BFA_FCPORT_SM_DPORTENABLE = 10, /*  enable dport      */
+	BFA_FCPORT_SM_DPORTDISABLE = 11,/*  disable dport     */
+	BFA_FCPORT_SM_FAA_MISCONFIG = 12,	/* FAA misconfiguratin */
+	BFA_FCPORT_SM_DDPORTENABLE  = 13,	/* enable ddport	*/
+	BFA_FCPORT_SM_DDPORTDISABLE = 14,	/* disable ddport	*/
+};
+
+struct bfa_fcport_s;
+typedef void (*bfa_fcport_sm_t)(struct bfa_fcport_s *, enum bfa_fcport_sm_event);
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * BFA FC port data structure
  */
 struct bfa_fcport_s {
 	struct bfa_s		*bfa;	/*  parent BFA instance */
+<<<<<<< HEAD
 	bfa_sm_t		sm;	/*  port state machine */
+=======
+	bfa_fcport_sm_t		sm;	/*  port state machine */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wwn_t			nwwn;	/*  node wwn of physical port */
 	wwn_t			pwwn;	/*  port wwn of physical oprt */
 	enum bfa_port_speed speed_sup;
 	/*  supported speeds */
 	enum bfa_port_speed speed;	/*  current speed */
 	enum bfa_port_topology topology;	/*  current topology */
+<<<<<<< HEAD
 	u8			myalpa;	/*  my ALPA in LOOP topology */
 	u8			rsvd[3];
+=======
+	u8			rsvd[3];
+	u8			myalpa;	/*  my ALPA in LOOP topology */
+	u8			alpabm_valid; /* alpa bitmap valid or not */
+	struct fc_alpabm_s	alpabm;	/* alpa bitmap */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_port_cfg_s	cfg;	/*  current port configuration */
 	bfa_boolean_t		use_flash_cfg; /* get port cfg from flash */
 	struct bfa_qos_attr_s  qos_attr;   /* QoS Attributes */
@@ -500,6 +638,7 @@ struct bfa_fcport_s {
 	struct list_head	stats_pending_q;
 	struct list_head	statsclr_pending_q;
 	bfa_boolean_t		stats_qfull;
+<<<<<<< HEAD
 	u32		stats_reset_time; /*  stats reset time stamp */
 	bfa_boolean_t		diag_busy; /*  diag busy status */
 	bfa_boolean_t		beacon; /*  port beacon status */
@@ -508,6 +647,18 @@ struct bfa_fcport_s {
 	struct bfa_fcport_trunk_s trunk;
 	u16		fcoe_vlan;
 	struct bfa_mem_dma_s	fcport_dma;
+=======
+	time64_t		stats_reset_time; /*  stats reset time stamp */
+	bfa_boolean_t		diag_busy; /*  diag busy status */
+	bfa_boolean_t		beacon; /*  port beacon status */
+	bfa_boolean_t		link_e2e_beacon; /*  link beacon status */
+	struct bfa_fcport_trunk_s trunk;
+	u16		fcoe_vlan;
+	struct bfa_mem_dma_s	fcport_dma;
+	bfa_boolean_t		stats_dma_ready;
+	struct bfa_bbcr_attr_s	bbcr_attr;
+	enum bfa_fec_state_s	fec_state;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define BFA_FCPORT_MOD(__bfa)	(&(__bfa)->modules.fcport)
@@ -530,6 +681,10 @@ enum bfa_port_speed bfa_fcport_get_speed(struct bfa_s *bfa);
 bfa_status_t bfa_fcport_cfg_topology(struct bfa_s *bfa,
 				     enum bfa_port_topology topo);
 enum bfa_port_topology bfa_fcport_get_topology(struct bfa_s *bfa);
+<<<<<<< HEAD
+=======
+enum bfa_port_topology bfa_fcport_get_cfg_topology(struct bfa_s *bfa);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_status_t bfa_fcport_cfg_hardalpa(struct bfa_s *bfa, u8 alpa);
 bfa_boolean_t bfa_fcport_get_hardalpa(struct bfa_s *bfa, u8 *alpa);
 u8 bfa_fcport_get_myalpa(struct bfa_s *bfa);
@@ -543,9 +698,19 @@ void bfa_fcport_event_register(struct bfa_s *bfa,
 			void (*event_cbfn) (void *cbarg,
 			enum bfa_port_linkstate event), void *event_cbarg);
 bfa_boolean_t bfa_fcport_is_disabled(struct bfa_s *bfa);
+<<<<<<< HEAD
 enum bfa_port_speed bfa_fcport_get_ratelim_speed(struct bfa_s *bfa);
 
 void bfa_fcport_set_tx_bbcredit(struct bfa_s *bfa, u16 tx_bbcredit, u8 bb_scn);
+=======
+bfa_boolean_t bfa_fcport_is_dport(struct bfa_s *bfa);
+bfa_boolean_t bfa_fcport_is_ddport(struct bfa_s *bfa);
+bfa_status_t bfa_fcport_set_qos_bw(struct bfa_s *bfa,
+				   struct bfa_qos_bw_s *qos_bw);
+enum bfa_port_speed bfa_fcport_get_ratelim_speed(struct bfa_s *bfa);
+
+void bfa_fcport_set_tx_bbcredit(struct bfa_s *bfa, u16 tx_bbcredit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_boolean_t     bfa_fcport_is_ratelim(struct bfa_s *bfa);
 void bfa_fcport_beacon(void *dev, bfa_boolean_t beacon,
 			bfa_boolean_t link_e2e_beacon);
@@ -556,8 +721,19 @@ bfa_status_t bfa_fcport_clear_stats(struct bfa_s *bfa,
 			struct bfa_cb_pending_q_s *cb);
 bfa_boolean_t bfa_fcport_is_qos_enabled(struct bfa_s *bfa);
 bfa_boolean_t bfa_fcport_is_trunk_enabled(struct bfa_s *bfa);
+<<<<<<< HEAD
 bfa_status_t bfa_fcport_is_pbcdisabled(struct bfa_s *bfa);
 void bfa_fcport_cfg_faa(struct bfa_s *bfa, u8 state);
+=======
+void bfa_fcport_dportenable(struct bfa_s *bfa);
+void bfa_fcport_dportdisable(struct bfa_s *bfa);
+bfa_status_t bfa_fcport_is_pbcdisabled(struct bfa_s *bfa);
+void bfa_fcport_cfg_faa(struct bfa_s *bfa, u8 state);
+bfa_status_t bfa_fcport_cfg_bbcr(struct bfa_s *bfa,
+			bfa_boolean_t on_off, u8 bb_scn);
+bfa_status_t bfa_fcport_get_bbcr_attr(struct bfa_s *bfa,
+			struct bfa_bbcr_attr_s *bbcr_attr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * bfa rport API functions
@@ -571,6 +747,12 @@ void bfa_cb_rport_offline(void *rport);
 void bfa_cb_rport_qos_scn_flowid(void *rport,
 				 struct bfa_rport_qos_attr_s old_qos_attr,
 				 struct bfa_rport_qos_attr_s new_qos_attr);
+<<<<<<< HEAD
+=======
+void bfa_cb_rport_scn_online(struct bfa_s *bfa);
+void bfa_cb_rport_scn_offline(struct bfa_s *bfa);
+void bfa_cb_rport_scn_no_dev(void *rp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bfa_cb_rport_qos_scn_prio(void *rport,
 			       struct bfa_rport_qos_attr_s old_qos_attr,
 			       struct bfa_rport_qos_attr_s new_qos_attr);
@@ -586,20 +768,35 @@ void	bfa_rport_unset_lunmask(struct bfa_s *bfa, struct bfa_rport_s *rp);
 /*
  * bfa fcxp API functions
  */
+<<<<<<< HEAD
 struct bfa_fcxp_s *bfa_fcxp_alloc(void *bfad_fcxp, struct bfa_s *bfa,
+=======
+struct bfa_fcxp_s *bfa_fcxp_req_rsp_alloc(void *bfad_fcxp, struct bfa_s *bfa,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  int nreq_sgles, int nrsp_sgles,
 				  bfa_fcxp_get_sgaddr_t get_req_sga,
 				  bfa_fcxp_get_sglen_t get_req_sglen,
 				  bfa_fcxp_get_sgaddr_t get_rsp_sga,
+<<<<<<< HEAD
 				  bfa_fcxp_get_sglen_t get_rsp_sglen);
 void bfa_fcxp_alloc_wait(struct bfa_s *bfa, struct bfa_fcxp_wqe_s *wqe,
+=======
+				  bfa_fcxp_get_sglen_t get_rsp_sglen,
+				  bfa_boolean_t req);
+void bfa_fcxp_req_rsp_alloc_wait(struct bfa_s *bfa, struct bfa_fcxp_wqe_s *wqe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				bfa_fcxp_alloc_cbfn_t alloc_cbfn,
 				void *cbarg, void *bfad_fcxp,
 				int nreq_sgles, int nrsp_sgles,
 				bfa_fcxp_get_sgaddr_t get_req_sga,
 				bfa_fcxp_get_sglen_t get_req_sglen,
 				bfa_fcxp_get_sgaddr_t get_rsp_sga,
+<<<<<<< HEAD
 				bfa_fcxp_get_sglen_t get_rsp_sglen);
+=======
+				bfa_fcxp_get_sglen_t get_rsp_sglen,
+				bfa_boolean_t req);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bfa_fcxp_walloc_cancel(struct bfa_s *bfa,
 			    struct bfa_fcxp_wqe_s *wqe);
 void bfa_fcxp_discard(struct bfa_fcxp_s *fcxp);
@@ -649,7 +846,11 @@ struct bfa_lps_s *bfa_lps_alloc(struct bfa_s *bfa);
 void bfa_lps_delete(struct bfa_lps_s *lps);
 void bfa_lps_flogi(struct bfa_lps_s *lps, void *uarg, u8 alpa,
 		   u16 pdusz, wwn_t pwwn, wwn_t nwwn,
+<<<<<<< HEAD
 		   bfa_boolean_t auth_en, u8 bb_scn);
+=======
+		   bfa_boolean_t auth_en);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bfa_lps_fdisc(struct bfa_lps_s *lps, void *uarg, u16 pdusz,
 		   wwn_t pwwn, wwn_t nwwn);
 void bfa_lps_fdisclogo(struct bfa_lps_s *lps);
@@ -658,6 +859,10 @@ u8 bfa_lps_get_fwtag(struct bfa_s *bfa, u8 lp_tag);
 u32 bfa_lps_get_base_pid(struct bfa_s *bfa);
 u8 bfa_lps_get_tag_from_pid(struct bfa_s *bfa, u32 pid);
 void bfa_cb_lps_flogi_comp(void *bfad, void *uarg, bfa_status_t status);
+<<<<<<< HEAD
+=======
+void bfa_cb_lps_flogo_comp(void *bfad, void *uarg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bfa_cb_lps_fdisc_comp(void *bfad, void *uarg, bfa_status_t status);
 void bfa_cb_lps_fdisclogo_comp(void *bfad, void *uarg);
 void bfa_cb_lps_cvl_event(void *bfad, void *uarg);
@@ -690,11 +895,52 @@ struct bfa_fcdiag_lb_s {
 	u32        status;
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * BFA DPORT state machine events
+ */
+enum bfa_dport_sm_event {
+	BFA_DPORT_SM_ENABLE	= 1,	/* dport enable event         */
+	BFA_DPORT_SM_DISABLE    = 2,    /* dport disable event        */
+	BFA_DPORT_SM_FWRSP      = 3,    /* fw enable/disable rsp      */
+	BFA_DPORT_SM_QRESUME    = 4,    /* CQ space available         */
+	BFA_DPORT_SM_HWFAIL     = 5,    /* IOC h/w failure            */
+	BFA_DPORT_SM_START	= 6,	/* re-start dport test        */
+	BFA_DPORT_SM_REQFAIL	= 7,	/* request failure            */
+	BFA_DPORT_SM_SCN	= 8,	/* state change notify frm fw */
+};
+
+struct bfa_dport_s;
+typedef void (*bfa_dport_sm_t)(struct bfa_dport_s *, enum bfa_dport_sm_event);
+
+struct bfa_dport_s {
+	struct bfa_s	*bfa;		/* Back pointer to BFA	*/
+	bfa_dport_sm_t	sm;		/* finite state machine */
+	struct bfa_reqq_wait_s reqq_wait;
+	bfa_cb_diag_t	cbfn;
+	void		*cbarg;
+	union bfi_diag_dport_msg_u i2hmsg;
+	u8		test_state;	/* enum dport_test_state  */
+	u8		dynamic;	/* boolean_t  */
+	u8		rsvd[2];
+	u32		lpcnt;
+	u32		payload;	/* user defined payload pattern */
+	wwn_t		rp_pwwn;
+	wwn_t		rp_nwwn;
+	struct bfa_diag_dport_result_s result;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfa_fcdiag_s {
 	struct bfa_s    *bfa;           /* Back pointer to BFA */
 	struct bfa_trc_mod_s   *trcmod;
 	struct bfa_fcdiag_lb_s lb;
 	struct bfa_fcdiag_qtest_s qtest;
+<<<<<<< HEAD
+=======
+	struct bfa_dport_s	dport;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define BFA_FCDIAG_MOD(__bfa)	(&(__bfa)->modules.fcdiag)
@@ -710,5 +956,16 @@ bfa_status_t	bfa_fcdiag_queuetest(struct bfa_s *bfa, u32 ignore,
 			u32 queue, struct bfa_diag_qtest_result_s *result,
 			bfa_cb_diag_t cbfn, void *cbarg);
 bfa_status_t	bfa_fcdiag_lb_is_running(struct bfa_s *bfa);
+<<<<<<< HEAD
+=======
+bfa_status_t	bfa_dport_enable(struct bfa_s *bfa, u32 lpcnt, u32 pat,
+					bfa_cb_diag_t cbfn, void *cbarg);
+bfa_status_t	bfa_dport_disable(struct bfa_s *bfa, bfa_cb_diag_t cbfn,
+				  void *cbarg);
+bfa_status_t	bfa_dport_start(struct bfa_s *bfa, u32 lpcnt, u32 pat,
+				bfa_cb_diag_t cbfn, void *cbarg);
+bfa_status_t	bfa_dport_show(struct bfa_s *bfa,
+				struct bfa_diag_dport_result_s *result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __BFA_SVC_H__ */

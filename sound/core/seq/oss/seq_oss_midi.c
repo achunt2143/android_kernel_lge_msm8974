@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OSS compatible sequencer driver
  *
  * MIDI device handlers
  *
  * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <sound/asoundef.h>
@@ -29,6 +36,10 @@
 #include "../seq_lock.h"
 #include <linux/init.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -49,6 +60,10 @@ struct seq_oss_midi {
 	struct snd_midi_event *coder;	/* MIDI event coder */
 	struct seq_oss_devinfo *devinfo;	/* assigned OSSseq device */
 	snd_use_lock_t use_lock;
+<<<<<<< HEAD
+=======
+	struct mutex open_mutex;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -72,6 +87,7 @@ static int send_midi_event(struct seq_oss_devinfo *dp, struct snd_seq_event *ev,
  * look up the existing ports
  * this looks a very exhausting job.
  */
+<<<<<<< HEAD
 int __init
 snd_seq_oss_midi_lookup_ports(int client)
 {
@@ -85,6 +101,18 @@ snd_seq_oss_midi_lookup_ports(int client)
 		kfree(pinfo);
 		return -ENOMEM;
 	}
+=======
+int
+snd_seq_oss_midi_lookup_ports(int client)
+{
+	struct snd_seq_client_info *clinfo __free(kfree) = NULL;
+	struct snd_seq_port_info *pinfo __free(kfree) = NULL;
+
+	clinfo = kzalloc(sizeof(*clinfo), GFP_KERNEL);
+	pinfo = kzalloc(sizeof(*pinfo), GFP_KERNEL);
+	if (!clinfo || !pinfo)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clinfo->client = -1;
 	while (snd_seq_kernel_client_ctl(client, SNDRV_SEQ_IOCTL_QUERY_NEXT_CLIENT, clinfo) == 0) {
 		if (clinfo->client == client)
@@ -94,8 +122,11 @@ snd_seq_oss_midi_lookup_ports(int client)
 		while (snd_seq_kernel_client_ctl(client, SNDRV_SEQ_IOCTL_QUERY_NEXT_PORT, pinfo) == 0)
 			snd_seq_oss_midi_check_new_port(pinfo);
 	}
+<<<<<<< HEAD
 	kfree(clinfo);
 	kfree(pinfo);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -153,7 +184,10 @@ snd_seq_oss_midi_check_new_port(struct snd_seq_port_info *pinfo)
 	struct seq_oss_midi *mdev;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	debug_printk(("check for MIDI client %d port %d\n", pinfo->addr.client, pinfo->addr.port));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* the port must include generic midi */
 	if (! (pinfo->type & SNDRV_SEQ_PORT_TYPE_MIDI_GENERIC))
 		return 0;
@@ -165,7 +199,12 @@ snd_seq_oss_midi_check_new_port(struct snd_seq_port_info *pinfo)
 	/*
 	 * look for the identical slot
 	 */
+<<<<<<< HEAD
 	if ((mdev = find_slot(pinfo->addr.client, pinfo->addr.port)) != NULL) {
+=======
+	mdev = find_slot(pinfo->addr.client, pinfo->addr.port);
+	if (mdev) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* already exists */
 		snd_use_lock_free(&mdev->use_lock);
 		return 0;
@@ -174,10 +213,16 @@ snd_seq_oss_midi_check_new_port(struct snd_seq_port_info *pinfo)
 	/*
 	 * allocate midi info record
 	 */
+<<<<<<< HEAD
 	if ((mdev = kzalloc(sizeof(*mdev), GFP_KERNEL)) == NULL) {
 		snd_printk(KERN_ERR "can't malloc midi info\n");
 		return -ENOMEM;
 	}
+=======
+	mdev = kzalloc(sizeof(*mdev), GFP_KERNEL);
+	if (!mdev)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* copy the port information */
 	mdev->client = pinfo->addr.client;
@@ -185,6 +230,7 @@ snd_seq_oss_midi_check_new_port(struct snd_seq_port_info *pinfo)
 	mdev->flags = pinfo->capability;
 	mdev->opened = 0;
 	snd_use_lock_init(&mdev->use_lock);
+<<<<<<< HEAD
 
 	/* copy and truncate the name of synth device */
 	strlcpy(mdev->name, pinfo->name, sizeof(mdev->name));
@@ -192,6 +238,16 @@ snd_seq_oss_midi_check_new_port(struct snd_seq_port_info *pinfo)
 	/* create MIDI coder */
 	if (snd_midi_event_new(MAX_MIDI_EVENT_BUF, &mdev->coder) < 0) {
 		snd_printk(KERN_ERR "can't malloc midi coder\n");
+=======
+	mutex_init(&mdev->open_mutex);
+
+	/* copy and truncate the name of synth device */
+	strscpy(mdev->name, pinfo->name, sizeof(mdev->name));
+
+	/* create MIDI coder */
+	if (snd_midi_event_new(MAX_MIDI_EVENT_BUF, &mdev->coder) < 0) {
+		pr_err("ALSA: seq_oss: can't malloc midi coder\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(mdev);
 		return -ENOMEM;
 	}
@@ -232,14 +288,23 @@ snd_seq_oss_midi_check_exit_port(int client, int port)
 	unsigned long flags;
 	int index;
 
+<<<<<<< HEAD
 	if ((mdev = find_slot(client, port)) != NULL) {
+=======
+	mdev = find_slot(client, port);
+	if (mdev) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&register_lock, flags);
 		midi_devs[mdev->seq_device] = NULL;
 		spin_unlock_irqrestore(&register_lock, flags);
 		snd_use_lock_free(&mdev->use_lock);
 		snd_use_lock_sync(&mdev->use_lock);
+<<<<<<< HEAD
 		if (mdev->coder)
 			snd_midi_event_free(mdev->coder);
+=======
+		snd_midi_event_free(mdev->coder);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(mdev);
 	}
 	spin_lock_irqsave(&register_lock, flags);
@@ -265,9 +330,15 @@ snd_seq_oss_midi_clear_all(void)
 
 	spin_lock_irqsave(&register_lock, flags);
 	for (i = 0; i < max_midi_devs; i++) {
+<<<<<<< HEAD
 		if ((mdev = midi_devs[i]) != NULL) {
 			if (mdev->coder)
 				snd_midi_event_free(mdev->coder);
+=======
+		mdev = midi_devs[i];
+		if (mdev) {
+			snd_midi_event_free(mdev->coder);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(mdev);
 			midi_devs[i] = NULL;
 		}
@@ -283,7 +354,13 @@ snd_seq_oss_midi_clear_all(void)
 void
 snd_seq_oss_midi_setup(struct seq_oss_devinfo *dp)
 {
+<<<<<<< HEAD
 	dp->max_mididev = max_midi_devs;
+=======
+	spin_lock_irq(&register_lock);
+	dp->max_mididev = max_midi_devs;
+	spin_unlock_irq(&register_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -319,6 +396,10 @@ get_mididev(struct seq_oss_devinfo *dp, int dev)
 {
 	if (dev < 0 || dev >= dp->max_mididev)
 		return NULL;
+<<<<<<< HEAD
+=======
+	dev = array_index_nospec(dev, dp->max_mididev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return get_mdev(dev);
 }
 
@@ -332,6 +413,7 @@ snd_seq_oss_midi_open(struct seq_oss_devinfo *dp, int dev, int fmode)
 	int perm;
 	struct seq_oss_midi *mdev;
 	struct snd_seq_port_subscribe subs;
+<<<<<<< HEAD
 
 	if ((mdev = get_mididev(dp, dev)) == NULL)
 		return -ENODEV;
@@ -340,6 +422,19 @@ snd_seq_oss_midi_open(struct seq_oss_devinfo *dp, int dev, int fmode)
 	if (mdev->opened && mdev->devinfo != dp) {
 		snd_use_lock_free(&mdev->use_lock);
 		return -EBUSY;
+=======
+	int err;
+
+	mdev = get_mididev(dp, dev);
+	if (!mdev)
+		return -ENODEV;
+
+	mutex_lock(&mdev->open_mutex);
+	/* already used? */
+	if (mdev->opened && mdev->devinfo != dp) {
+		err = -EBUSY;
+		goto unlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	perm = 0;
@@ -349,14 +444,24 @@ snd_seq_oss_midi_open(struct seq_oss_devinfo *dp, int dev, int fmode)
 		perm |= PERM_READ;
 	perm &= mdev->flags;
 	if (perm == 0) {
+<<<<<<< HEAD
 		snd_use_lock_free(&mdev->use_lock);
 		return -ENXIO;
+=======
+		err = -ENXIO;
+		goto unlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* already opened? */
 	if ((mdev->opened & perm) == perm) {
+<<<<<<< HEAD
 		snd_use_lock_free(&mdev->use_lock);
 		return 0;
+=======
+		err = 0;
+		goto unlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	perm &= ~mdev->opened;
@@ -381,6 +486,7 @@ snd_seq_oss_midi_open(struct seq_oss_devinfo *dp, int dev, int fmode)
 	}
 
 	if (! mdev->opened) {
+<<<<<<< HEAD
 		snd_use_lock_free(&mdev->use_lock);
 		return -ENXIO;
 	}
@@ -388,6 +494,19 @@ snd_seq_oss_midi_open(struct seq_oss_devinfo *dp, int dev, int fmode)
 	mdev->devinfo = dp;
 	snd_use_lock_free(&mdev->use_lock);
 	return 0;
+=======
+		err = -ENXIO;
+		goto unlock;
+	}
+
+	mdev->devinfo = dp;
+	err = 0;
+
+ unlock:
+	mutex_unlock(&mdev->open_mutex);
+	snd_use_lock_free(&mdev->use_lock);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -399,6 +518,7 @@ snd_seq_oss_midi_close(struct seq_oss_devinfo *dp, int dev)
 	struct seq_oss_midi *mdev;
 	struct snd_seq_port_subscribe subs;
 
+<<<<<<< HEAD
 	if ((mdev = get_mididev(dp, dev)) == NULL)
 		return -ENODEV;
 	if (! mdev->opened || mdev->devinfo != dp) {
@@ -407,6 +527,15 @@ snd_seq_oss_midi_close(struct seq_oss_devinfo *dp, int dev)
 	}
 
 	debug_printk(("closing client %d port %d mode %d\n", mdev->client, mdev->port, mdev->opened));
+=======
+	mdev = get_mididev(dp, dev);
+	if (!mdev)
+		return -ENODEV;
+	mutex_lock(&mdev->open_mutex);
+	if (!mdev->opened || mdev->devinfo != dp)
+		goto unlock;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(&subs, 0, sizeof(subs));
 	if (mdev->opened & PERM_WRITE) {
 		subs.sender = dp->addr;
@@ -424,6 +553,11 @@ snd_seq_oss_midi_close(struct seq_oss_devinfo *dp, int dev)
 	mdev->opened = 0;
 	mdev->devinfo = NULL;
 
+<<<<<<< HEAD
+=======
+ unlock:
+	mutex_unlock(&mdev->open_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_use_lock_free(&mdev->use_lock);
 	return 0;
 }
@@ -437,7 +571,12 @@ snd_seq_oss_midi_filemode(struct seq_oss_devinfo *dp, int dev)
 	struct seq_oss_midi *mdev;
 	int mode;
 
+<<<<<<< HEAD
 	if ((mdev = get_mididev(dp, dev)) == NULL)
+=======
+	mdev = get_mididev(dp, dev);
+	if (!mdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	mode = 0;
@@ -459,7 +598,12 @@ snd_seq_oss_midi_reset(struct seq_oss_devinfo *dp, int dev)
 {
 	struct seq_oss_midi *mdev;
 
+<<<<<<< HEAD
 	if ((mdev = get_mididev(dp, dev)) == NULL)
+=======
+	mdev = get_mididev(dp, dev);
+	if (!mdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	if (! mdev->opened) {
 		snd_use_lock_free(&mdev->use_lock);
@@ -470,7 +614,10 @@ snd_seq_oss_midi_reset(struct seq_oss_devinfo *dp, int dev)
 		struct snd_seq_event ev;
 		int c;
 
+<<<<<<< HEAD
 		debug_printk(("resetting client %d port %d\n", mdev->client, mdev->port));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(&ev, 0, sizeof(ev));
 		ev.dest.client = mdev->client;
 		ev.dest.port = mdev->port;
@@ -508,7 +655,12 @@ snd_seq_oss_midi_get_addr(struct seq_oss_devinfo *dp, int dev, struct snd_seq_ad
 {
 	struct seq_oss_midi *mdev;
 
+<<<<<<< HEAD
 	if ((mdev = get_mididev(dp, dev)) == NULL)
+=======
+	mdev = get_mididev(dp, dev);
+	if (!mdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	addr->client = mdev->client;
 	addr->port = mdev->port;
@@ -528,7 +680,12 @@ snd_seq_oss_midi_input(struct snd_seq_event *ev, int direct, void *private_data)
 
 	if (dp->readq == NULL)
 		return 0;
+<<<<<<< HEAD
 	if ((mdev = find_slot(ev->source.client, ev->source.port)) == NULL)
+=======
+	mdev = find_slot(ev->source.client, ev->source.port);
+	if (!mdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	if (! (mdev->opened & PERM_READ)) {
 		snd_use_lock_free(&mdev->use_lock);
@@ -618,9 +775,14 @@ send_midi_event(struct seq_oss_devinfo *dp, struct snd_seq_event *ev, struct seq
 	if (!dp->timer->running)
 		len = snd_seq_oss_timer_start(dp->timer);
 	if (ev->type == SNDRV_SEQ_EVENT_SYSEX) {
+<<<<<<< HEAD
 		if ((ev->flags & SNDRV_SEQ_EVENT_LENGTH_MASK) == SNDRV_SEQ_EVENT_LENGTH_VARIABLE)
 			snd_seq_oss_readq_puts(dp->readq, mdev->seq_device,
 					       ev->data.ext.ptr, ev->data.ext.len);
+=======
+		snd_seq_oss_readq_sysex(dp->readq, mdev->seq_device, ev);
+		snd_midi_event_reset_decode(mdev->coder);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		len = snd_midi_event_decode(mdev->coder, msg, sizeof(msg), ev);
 		if (len > 0)
@@ -641,9 +803,16 @@ snd_seq_oss_midi_putc(struct seq_oss_devinfo *dp, int dev, unsigned char c, stru
 {
 	struct seq_oss_midi *mdev;
 
+<<<<<<< HEAD
 	if ((mdev = get_mididev(dp, dev)) == NULL)
 		return -ENODEV;
 	if (snd_midi_event_encode_byte(mdev->coder, c, ev) > 0) {
+=======
+	mdev = get_mididev(dp, dev);
+	if (!mdev)
+		return -ENODEV;
+	if (snd_midi_event_encode_byte(mdev->coder, c, ev)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_seq_oss_fill_addr(dp, ev, mdev->client, mdev->port);
 		snd_use_lock_free(&mdev->use_lock);
 		return 0;
@@ -660,18 +829,31 @@ snd_seq_oss_midi_make_info(struct seq_oss_devinfo *dp, int dev, struct midi_info
 {
 	struct seq_oss_midi *mdev;
 
+<<<<<<< HEAD
 	if ((mdev = get_mididev(dp, dev)) == NULL)
+=======
+	mdev = get_mididev(dp, dev);
+	if (!mdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	inf->device = dev;
 	inf->dev_type = 0; /* FIXME: ?? */
 	inf->capabilities = 0; /* FIXME: ?? */
+<<<<<<< HEAD
 	strlcpy(inf->name, mdev->name, sizeof(inf->name));
+=======
+	strscpy(inf->name, mdev->name, sizeof(inf->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_use_lock_free(&mdev->use_lock);
 	return 0;
 }
 
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * proc interface
  */
@@ -711,4 +893,8 @@ snd_seq_oss_midi_info_read(struct snd_info_buffer *buf)
 		snd_use_lock_free(&mdev->use_lock);
 	}
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PROC_FS */
+=======
+#endif /* CONFIG_SND_PROC_FS */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

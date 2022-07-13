@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Intel & MS High Precision Event Timer Implementation.
  *
@@ -5,6 +9,7 @@
  *	Venki Pallipadi
  * (c) Copyright 2004 Hewlett-Packard Development Company, L.P.
  *	Bob Picco <robert.picco@hp.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -13,6 +18,11 @@
 
 #include <linux/interrupt.h>
 #include <linux/module.h>
+=======
+ */
+
+#include <linux/interrupt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/miscdevice.h>
@@ -20,12 +30,20 @@
 #include <linux/ioport.h>
 #include <linux/fcntl.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/io-64-nonatomic-lo-hi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/poll.h>
 #include <linux/mm.h>
 #include <linux/proc_fs.h>
 #include <linux/spinlock.h>
 #include <linux/sysctl.h>
 #include <linux/wait.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bcd.h>
 #include <linux/seq_file.h>
 #include <linux/bitops.h>
@@ -34,11 +52,17 @@
 #include <linux/uaccess.h>
 #include <linux/slab.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/acpi.h>
+#include <linux/hpet.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/current.h>
 #include <asm/irq.h>
 #include <asm/div64.h>
 
+<<<<<<< HEAD
 #include <linux/acpi.h>
 #include <acpi/acpi_bus.h>
 #include <linux/hpet.h>
@@ -47,6 +71,12 @@
  * The High Precision Event Timer driver.
  * This driver is closely modelled after the rtc.c driver.
  * http://www.intel.com/hardwaredesign/hpetspec_1.pdf
+=======
+/*
+ * The High Precision Event Timer driver.
+ * This driver is closely modelled after the rtc.c driver.
+ * See HPET spec revision 1.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define	HPET_USER_FREQ	(64)
 #define	HPET_DRIFT	(500)
@@ -69,6 +99,7 @@
 static DEFINE_MUTEX(hpet_mutex); /* replaces BKL */
 static u32 hpet_nhpet, hpet_max_freq = HPET_USER_FREQ;
 
+<<<<<<< HEAD
 /* This clocksource driver currently only works on ia64 */
 #ifdef CONFIG_IA64
 static void __iomem *hpet_mctr;
@@ -88,6 +119,8 @@ static struct clocksource clocksource_hpet = {
 static struct clocksource *hpet_clocksource;
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* A lock for concurrent access by app and isr hpet activity. */
 static DEFINE_SPINLOCK(hpet_lock);
 
@@ -111,12 +144,19 @@ struct hpets {
 	struct hpets *hp_next;
 	struct hpet __iomem *hp_hpet;
 	unsigned long hp_hpet_phys;
+<<<<<<< HEAD
 	struct clocksource *hp_clocksource;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long long hp_tick_freq;
 	unsigned long hp_delta;
 	unsigned int hp_ntimer;
 	unsigned int hp_which;
+<<<<<<< HEAD
 	struct hpet_dev hp_dev[1];
+=======
+	struct hpet_dev hp_dev[] __counted_by(hp_ntimer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct hpets *hpets;
@@ -126,6 +166,7 @@ static struct hpets *hpets;
 #define	HPET_PERIODIC		0x0004
 #define	HPET_SHARED_IRQ		0x0008
 
+<<<<<<< HEAD
 
 #ifndef readq
 static inline unsigned long long readq(void __iomem *addr)
@@ -142,6 +183,8 @@ static inline void writeq(unsigned long long v, void __iomem *addr)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t hpet_interrupt(int irq, void *data)
 {
 	struct hpet_dev *devp;
@@ -162,12 +205,20 @@ static irqreturn_t hpet_interrupt(int irq, void *data)
 	 * This has the effect of treating non-periodic like periodic.
 	 */
 	if ((devp->hd_flags & (HPET_IE | HPET_PERIODIC)) == HPET_IE) {
+<<<<<<< HEAD
 		unsigned long m, t, mc, base, k;
+=======
+		unsigned long t, mc, base, k;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct hpet __iomem *hpet = devp->hd_hpet;
 		struct hpets *hpetp = devp->hd_hpets;
 
 		t = devp->hd_ireqfreq;
+<<<<<<< HEAD
 		m = read_counter(&devp->hd_timer->hpet_compare);
+=======
+		read_counter(&devp->hd_timer->hpet_compare);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mc = read_counter(&hpet->hpet_mc);
 		/* The time for the next interrupt would logically be t + m,
 		 * however, if we are very unlucky and the interrupt is delayed
@@ -274,9 +325,15 @@ static int hpet_open(struct inode *inode, struct file *file)
 
 	for (devp = NULL, hpetp = hpets; hpetp && !devp; hpetp = hpetp->hp_next)
 		for (i = 0; i < hpetp->hp_ntimer; i++)
+<<<<<<< HEAD
 			if (hpetp->hp_dev[i].hd_flags & HPET_OPEN)
 				continue;
 			else {
+=======
+			if (hpetp->hp_dev[i].hd_flags & HPET_OPEN) {
+				continue;
+			} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				devp = &hpetp->hp_dev[i];
 				break;
 			}
@@ -323,9 +380,15 @@ hpet_read(struct file *file, char __user *buf, size_t count, loff_t * ppos)
 		devp->hd_irqdata = 0;
 		spin_unlock_irq(&hpet_lock);
 
+<<<<<<< HEAD
 		if (data)
 			break;
 		else if (file->f_flags & O_NONBLOCK) {
+=======
+		if (data) {
+			break;
+		} else if (file->f_flags & O_NONBLOCK) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retval = -EAGAIN;
 			goto out;
 		} else if (signal_pending(current)) {
@@ -345,7 +408,11 @@ out:
 	return retval;
 }
 
+<<<<<<< HEAD
 static unsigned int hpet_poll(struct file *file, poll_table * wait)
+=======
+static __poll_t hpet_poll(struct file *file, poll_table * wait)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long v;
 	struct hpet_dev *devp;
@@ -362,17 +429,47 @@ static unsigned int hpet_poll(struct file *file, poll_table * wait)
 	spin_unlock_irq(&hpet_lock);
 
 	if (v != 0)
+<<<<<<< HEAD
 		return POLLIN | POLLRDNORM;
+=======
+		return EPOLLIN | EPOLLRDNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int hpet_mmap(struct file *file, struct vm_area_struct *vma)
 {
 #ifdef	CONFIG_HPET_MMAP
 	struct hpet_dev *devp;
 	unsigned long addr;
 
+=======
+#ifdef CONFIG_HPET_MMAP
+#ifdef CONFIG_HPET_MMAP_DEFAULT
+static int hpet_mmap_enabled = 1;
+#else
+static int hpet_mmap_enabled = 0;
+#endif
+
+static __init int hpet_mmap_enable(char *str)
+{
+	get_option(&str, &hpet_mmap_enabled);
+	pr_info("HPET mmap %s\n", hpet_mmap_enabled ? "enabled" : "disabled");
+	return 1;
+}
+__setup("hpet_mmap=", hpet_mmap_enable);
+
+static int hpet_mmap(struct file *file, struct vm_area_struct *vma)
+{
+	struct hpet_dev *devp;
+	unsigned long addr;
+
+	if (!hpet_mmap_enabled)
+		return -EACCES;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	devp = file->private_data;
 	addr = devp->hd_hpets->hp_hpet_phys;
 
@@ -381,10 +478,20 @@ static int hpet_mmap(struct file *file, struct vm_area_struct *vma)
 
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);
 	return vm_iomap_memory(vma, addr, PAGE_SIZE);
+<<<<<<< HEAD
 #else
 	return -ENOSYS;
 #endif
 }
+=======
+}
+#else
+static int hpet_mmap(struct file *file, struct vm_area_struct *vma)
+{
+	return -ENOSYS;
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int hpet_fasync(int fd, struct file *file, int on)
 {
@@ -486,8 +593,12 @@ static int hpet_ioctl_ieon(struct hpet_dev *devp)
 		}
 
 		sprintf(devp->hd_name, "hpet%d", (int)(devp - hpetp->hp_dev));
+<<<<<<< HEAD
 		irq_flags = devp->hd_flags & HPET_SHARED_IRQ
 						? IRQF_SHARED : IRQF_DISABLED;
+=======
+		irq_flags = devp->hd_flags & HPET_SHARED_IRQ ? IRQF_SHARED : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (request_irq(irq, hpet_interrupt, irq_flags,
 				devp->hd_name, (void *)devp)) {
 			printk(KERN_ERR "hpet: IRQ %d is not free\n", irq);
@@ -554,6 +665,7 @@ static inline unsigned long hpet_time_div(struct hpets *hpets,
 	unsigned long long m;
 
 	m = hpets->hp_tick_freq + (dis >> 1);
+<<<<<<< HEAD
 	do_div(m, dis);
 	return (unsigned long)m;
 }
@@ -564,6 +676,16 @@ hpet_ioctl_common(struct hpet_dev *devp, int cmd, unsigned long arg,
 {
 	struct hpet_timer __iomem *timer;
 	struct hpet __iomem *hpet;
+=======
+	return div64_ul(m, dis);
+}
+
+static int
+hpet_ioctl_common(struct hpet_dev *devp, unsigned int cmd, unsigned long arg,
+		  struct hpet_info *info)
+{
+	struct hpet_timer __iomem *timer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hpets *hpetp;
 	int err;
 	unsigned long v;
@@ -575,7 +697,10 @@ hpet_ioctl_common(struct hpet_dev *devp, int cmd, unsigned long arg,
 	case HPET_DPI:
 	case HPET_IRQFREQ:
 		timer = devp->hd_timer;
+<<<<<<< HEAD
 		hpet = devp->hd_hpet;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hpetp = devp->hd_hpets;
 		break;
 	case HPET_IE_ON:
@@ -725,7 +850,11 @@ static int hpet_is_known(struct hpet_data *hdp)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ctl_table hpet_table[] = {
+=======
+static struct ctl_table hpet_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	 .procname = "max-user-freq",
 	 .data = &hpet_max_freq,
@@ -733,6 +862,7 @@ static ctl_table hpet_table[] = {
 	 .mode = 0644,
 	 .proc_handler = proc_dointvec,
 	 },
+<<<<<<< HEAD
 	{}
 };
 
@@ -754,6 +884,8 @@ static ctl_table dev_root[] = {
 	 .child = hpet_root,
 	 },
 	{}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ctl_table_header *sysctl_header;
@@ -804,7 +936,11 @@ static unsigned long __hpet_calibrate(struct hpets *hpetp)
 
 static unsigned long hpet_calibrate(struct hpets *hpetp)
 {
+<<<<<<< HEAD
 	unsigned long ret = -1;
+=======
+	unsigned long ret = ~0UL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long tmp;
 
 	/*
@@ -828,7 +964,10 @@ int hpet_alloc(struct hpet_data *hdp)
 	struct hpet_dev *devp;
 	u32 i, ntimer;
 	struct hpets *hpetp;
+<<<<<<< HEAD
 	size_t siz;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hpet __iomem *hpet;
 	static struct hpets *last;
 	unsigned long period;
@@ -846,10 +985,15 @@ int hpet_alloc(struct hpet_data *hdp)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	siz = sizeof(struct hpets) + ((hdp->hd_nirqs - 1) *
 				      sizeof(struct hpet_dev));
 
 	hpetp = kzalloc(siz, GFP_KERNEL);
+=======
+	hpetp = kzalloc(struct_size(hpetp, hp_dev, hdp->hd_nirqs),
+			GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!hpetp)
 		return -ENOMEM;
@@ -935,6 +1079,7 @@ int hpet_alloc(struct hpet_data *hdp)
 
 	hpetp->hp_delta = hpet_calibrate(hpetp);
 
+<<<<<<< HEAD
 /* This clocksource driver currently only works on ia64 */
 #ifdef CONFIG_IA64
 	if (!hpet_clocksource) {
@@ -946,6 +1091,8 @@ int hpet_alloc(struct hpet_data *hdp)
 	}
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -960,8 +1107,15 @@ static acpi_status hpet_resources(struct acpi_resource *res, void *data)
 	status = acpi_resource_to_address64(res, &addr);
 
 	if (ACPI_SUCCESS(status)) {
+<<<<<<< HEAD
 		hdp->hd_phys_address = addr.minimum;
 		hdp->hd_address = ioremap(addr.minimum, addr.address_length);
+=======
+		hdp->hd_phys_address = addr.address.minimum;
+		hdp->hd_address = ioremap(addr.address.minimum, addr.address.address_length);
+		if (!hdp->hd_address)
+			return AE_ERROR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (hpet_is_known(hdp)) {
 			iounmap(hdp->hd_address);
@@ -971,12 +1125,20 @@ static acpi_status hpet_resources(struct acpi_resource *res, void *data)
 		struct acpi_resource_fixed_memory32 *fixmem32;
 
 		fixmem32 = &res->data.fixed_memory32;
+<<<<<<< HEAD
 		if (!fixmem32)
 			return AE_NO_MEMORY;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hdp->hd_phys_address = fixmem32->address;
 		hdp->hd_address = ioremap(fixmem32->address,
 						HPET_RANGE_SIZE);
+<<<<<<< HEAD
+=======
+		if (!hdp->hd_address)
+			return AE_ERROR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (hpet_is_known(hdp)) {
 			iounmap(hdp->hd_address);
@@ -989,8 +1151,17 @@ static acpi_status hpet_resources(struct acpi_resource *res, void *data)
 		irqp = &res->data.extended_irq;
 
 		for (i = 0; i < irqp->interrupt_count; i++) {
+<<<<<<< HEAD
 			irq = acpi_register_gsi(NULL, irqp->interrupts[i],
 				      irqp->triggering, irqp->polarity);
+=======
+			if (hdp->hd_nirqs >= HPET_MAX_TIMERS)
+				break;
+
+			irq = acpi_register_gsi(NULL, irqp->interrupts[i],
+						irqp->triggering,
+						irqp->polarity);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (irq < 0)
 				return AE_ERROR;
 
@@ -1026,24 +1197,33 @@ static int hpet_acpi_add(struct acpi_device *device)
 	return hpet_alloc(&data);
 }
 
+<<<<<<< HEAD
 static int hpet_acpi_remove(struct acpi_device *device, int type)
 {
 	/* XXX need to unregister clocksource, dealloc mem, etc */
 	return -EINVAL;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct acpi_device_id hpet_device_ids[] = {
 	{"PNP0103", 0},
 	{"", 0},
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(acpi, hpet_device_ids);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct acpi_driver hpet_acpi_driver = {
 	.name = "hpet",
 	.ids = hpet_device_ids,
 	.ops = {
 		.add = hpet_acpi_add,
+<<<<<<< HEAD
 		.remove = hpet_acpi_remove,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 };
 
@@ -1057,7 +1237,11 @@ static int __init hpet_init(void)
 	if (result < 0)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	sysctl_header = register_sysctl_table(dev_root);
+=======
+	sysctl_header = register_sysctl("dev/hpet", hpet_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	result = acpi_bus_register_driver(&hpet_acpi_driver);
 	if (result < 0) {
@@ -1069,6 +1253,7 @@ static int __init hpet_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static void __exit hpet_exit(void)
 {
@@ -1085,3 +1270,11 @@ module_init(hpet_init);
 module_exit(hpet_exit);
 MODULE_AUTHOR("Bob Picco <Robert.Picco@hp.com>");
 MODULE_LICENSE("GPL");
+=======
+device_initcall(hpet_init);
+
+/*
+MODULE_AUTHOR("Bob Picco <Robert.Picco@hp.com>");
+MODULE_LICENSE("GPL");
+*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP4 PRCM definitions
  *
@@ -6,10 +10,13 @@
  *
  * Paul Walmsley
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file contains macros and functions that are common to all of
  * the PRM/CM/PRCM blocks on the OMAP4 devices: PRM, CM1, CM2,
  * PRCM_MPU, SCRM
@@ -32,6 +39,20 @@
 #define OMAP4430_SCRM_PARTITION			4
 #define OMAP4430_PRCM_MPU_PARTITION		5
 
+<<<<<<< HEAD
+=======
+#define OMAP54XX_PRM_PARTITION			1
+#define OMAP54XX_CM_CORE_AON_PARTITION		2
+#define OMAP54XX_CM_CORE_PARTITION		3
+#define OMAP54XX_SCRM_PARTITION			4
+#define OMAP54XX_PRCM_MPU_PARTITION		5
+
+#define DRA7XX_PRM_PARTITION                   1
+#define DRA7XX_CM_CORE_AON_PARTITION           2
+#define DRA7XX_CM_CORE_PARTITION               3
+#define DRA7XX_MPU_PRCM_PARTITION              5
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP4_MAX_PRCM_PARTITIONS: set to the highest value of the PRCM partition
  * IDs, plus one

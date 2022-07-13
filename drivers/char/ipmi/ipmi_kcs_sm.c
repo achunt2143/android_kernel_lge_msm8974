@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ipmi_kcs_sm.c
  *
@@ -8,6 +12,7 @@
  *         source@mvista.com
  *
  * Copyright 2002 MontaVista Software Inc.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License as published by the
@@ -29,6 +34,8 @@
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -37,6 +44,11 @@
  * that document.
  */
 
+<<<<<<< HEAD
+=======
+#define DEBUG /* So dev_dbg() is always available. */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h> /* For printk. */
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -118,8 +130,13 @@ enum kcs_states {
 #define MAX_KCS_WRITE_SIZE IPMI_MAX_MSG_LENGTH
 
 /* Timeouts in microseconds. */
+<<<<<<< HEAD
 #define IBF_RETRY_TIMEOUT 5000000
 #define OBF_RETRY_TIMEOUT 5000000
+=======
+#define IBF_RETRY_TIMEOUT (5*USEC_PER_SEC)
+#define OBF_RETRY_TIMEOUT (5*USEC_PER_SEC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_ERROR_RETRIES 10
 #define ERROR0_OBF_WAIT_JIFFIES (2*HZ)
 
@@ -140,10 +157,17 @@ struct si_sm_data {
 	unsigned long  error0_timeout;
 };
 
+<<<<<<< HEAD
 static unsigned int init_kcs_data(struct si_sm_data *kcs,
 				  struct si_sm_io *io)
 {
 	kcs->state = KCS_IDLE;
+=======
+static unsigned int init_kcs_data_with_state(struct si_sm_data *kcs,
+				  struct si_sm_io *io, enum kcs_states state)
+{
+	kcs->state = state;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kcs->io = io;
 	kcs->write_pos = 0;
 	kcs->write_count = 0;
@@ -158,6 +182,15 @@ static unsigned int init_kcs_data(struct si_sm_data *kcs,
 	return 2;
 }
 
+<<<<<<< HEAD
+=======
+static unsigned int init_kcs_data(struct si_sm_data *kcs,
+				  struct si_sm_io *io)
+{
+	return init_kcs_data_with_state(kcs, io, KCS_IDLE);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned char read_status(struct si_sm_data *kcs)
 {
 	return kcs->io->inputb(kcs->io, 1);
@@ -207,8 +240,13 @@ static inline void start_error_recovery(struct si_sm_data *kcs, char *reason)
 	(kcs->error_retries)++;
 	if (kcs->error_retries > MAX_ERROR_RETRIES) {
 		if (kcs_debug & KCS_DEBUG_ENABLE)
+<<<<<<< HEAD
 			printk(KERN_DEBUG "ipmi_kcs_sm: kcs hosed: %s\n",
 			       reason);
+=======
+			dev_dbg(kcs->io->dev, "ipmi_kcs_sm: kcs hosed: %s\n",
+				reason);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kcs->state = KCS_HOSED;
 	} else {
 		kcs->error0_timeout = jiffies + ERROR0_OBF_WAIT_JIFFIES;
@@ -288,6 +326,7 @@ static int start_kcs_transaction(struct si_sm_data *kcs, unsigned char *data,
 	if (size > MAX_KCS_WRITE_SIZE)
 		return IPMI_REQ_LEN_EXCEEDED_ERR;
 
+<<<<<<< HEAD
 	if ((kcs->state != KCS_IDLE) && (kcs->state != KCS_HOSED))
 		return IPMI_NOT_IN_MY_STATE_ERR;
 
@@ -296,6 +335,18 @@ static int start_kcs_transaction(struct si_sm_data *kcs, unsigned char *data,
 		for (i = 0; i < size; i++)
 			printk(" %02x", (unsigned char) (data [i]));
 		printk("\n");
+=======
+	if (kcs->state != KCS_IDLE) {
+		dev_warn(kcs->io->dev, "KCS in invalid state %d\n", kcs->state);
+		return IPMI_NOT_IN_MY_STATE_ERR;
+	}
+
+	if (kcs_debug & KCS_DEBUG_MSG) {
+		dev_dbg(kcs->io->dev, "%s -", __func__);
+		for (i = 0; i < size; i++)
+			pr_cont(" %02x", data[i]);
+		pr_cont("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	kcs->error_retries = 0;
 	memcpy(kcs->write_data, data, size);
@@ -351,7 +402,12 @@ static enum si_sm_result kcs_event(struct si_sm_data *kcs, long time)
 	status = read_status(kcs);
 
 	if (kcs_debug & KCS_DEBUG_STATES)
+<<<<<<< HEAD
 		printk(KERN_DEBUG "KCS: State = %d, %x\n", kcs->state, status);
+=======
+		dev_dbg(kcs->io->dev,
+			"KCS: State = %d, %x\n", kcs->state, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* All states wait for ibf, so just do it here. */
 	if (!check_ibf(kcs, status, time))
@@ -510,7 +566,11 @@ static enum si_sm_result kcs_event(struct si_sm_data *kcs, long time)
 	}
 
 	if (kcs->state == KCS_HOSED) {
+<<<<<<< HEAD
 		init_kcs_data(kcs, kcs->io);
+=======
+		init_kcs_data_with_state(kcs, kcs->io, KCS_ERROR0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SI_SM_HOSED;
 	}
 
@@ -540,7 +600,11 @@ static void kcs_cleanup(struct si_sm_data *kcs)
 {
 }
 
+<<<<<<< HEAD
 struct si_sm_handlers kcs_smi_handlers = {
+=======
+const struct si_sm_handlers kcs_smi_handlers = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_data         = init_kcs_data,
 	.start_transaction = start_kcs_transaction,
 	.get_result        = get_kcs_result,

@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file contains sleep low-level functions for PowerBook G3.
  *    Copyright (C) 1999 Benjamin Herrenschmidt (benh@kernel.crashing.org)
  *    and Paul Mackerras (paulus@samba.org).
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/processor.h>
@@ -18,6 +25,10 @@
 #include <asm/thread_info.h>
 #include <asm/asm-offsets.h>
 #include <asm/mmu.h>
+<<<<<<< HEAD
+=======
+#include <asm/feature-fixups.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAGIC	0x4c617273	/* 'Lars' */
 
@@ -37,10 +48,26 @@
 #define SL_IBAT2	0x48
 #define SL_DBAT3	0x50
 #define SL_IBAT3	0x58
+<<<<<<< HEAD
 #define SL_TB		0x60
 #define SL_R2		0x68
 #define SL_CR		0x6c
 #define SL_R12		0x70	/* r12 to r31 */
+=======
+#define SL_DBAT4	0x60
+#define SL_IBAT4	0x68
+#define SL_DBAT5	0x70
+#define SL_IBAT5	0x78
+#define SL_DBAT6	0x80
+#define SL_IBAT6	0x88
+#define SL_DBAT7	0x90
+#define SL_IBAT7	0x98
+#define SL_TB		0xa0
+#define SL_R2		0xa8
+#define SL_CR		0xac
+#define SL_LR		0xb0
+#define SL_R12		0xb4	/* r12 to r31 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SL_SIZE		(SL_R12 + 80)
 
 	.section .text
@@ -55,6 +82,7 @@
  * vector that will be called by the ROM on wakeup
  */
 _GLOBAL(low_sleep_handler)
+<<<<<<< HEAD
 #ifndef CONFIG_6xx
 	blr
 #else
@@ -77,12 +105,39 @@ _GLOBAL(low_sleep_handler)
 	stw	r4,SL_TB(r1)
 	mftb	r5
 	stw	r5,SL_TB+4(r1)
+=======
+#ifndef CONFIG_PPC_BOOK3S_32
+	blr
+#else
+	mflr	r0
+	lis	r11,sleep_storage@ha
+	addi	r11,r11,sleep_storage@l
+	stw	r0,SL_LR(r11)
+	mfcr	r0
+	stw	r0,SL_CR(r11)
+	stw	r1,SL_SP(r11)
+	stw	r2,SL_R2(r11)
+	stmw	r12,SL_R12(r11)
+
+	/* Save MSR & SDR1 */
+	mfmsr	r4
+	stw	r4,SL_MSR(r11)
+	mfsdr1	r4
+	stw	r4,SL_SDR1(r11)
+
+	/* Get a stable timebase and save it */
+1:	mftbu	r4
+	stw	r4,SL_TB(r11)
+	mftb	r5
+	stw	r5,SL_TB+4(r11)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mftbu	r3
 	cmpw	r3,r4
 	bne	1b
 
 	/* Save SPRGs */
 	mfsprg	r4,0
+<<<<<<< HEAD
 	stw	r4,SL_SPRG0(r1)
 	mfsprg	r4,1
 	stw	r4,SL_SPRG0+4(r1)
@@ -124,6 +179,84 @@ _GLOBAL(low_sleep_handler)
 	stw	r4,SL_IBAT3(r1)
 	mfibatl	r4,3
 	stw	r4,SL_IBAT3+4(r1)
+=======
+	stw	r4,SL_SPRG0(r11)
+	mfsprg	r4,1
+	stw	r4,SL_SPRG0+4(r11)
+	mfsprg	r4,2
+	stw	r4,SL_SPRG0+8(r11)
+	mfsprg	r4,3
+	stw	r4,SL_SPRG0+12(r11)
+
+	/* Save BATs */
+	mfdbatu	r4,0
+	stw	r4,SL_DBAT0(r11)
+	mfdbatl	r4,0
+	stw	r4,SL_DBAT0+4(r11)
+	mfdbatu	r4,1
+	stw	r4,SL_DBAT1(r11)
+	mfdbatl	r4,1
+	stw	r4,SL_DBAT1+4(r11)
+	mfdbatu	r4,2
+	stw	r4,SL_DBAT2(r11)
+	mfdbatl	r4,2
+	stw	r4,SL_DBAT2+4(r11)
+	mfdbatu	r4,3
+	stw	r4,SL_DBAT3(r11)
+	mfdbatl	r4,3
+	stw	r4,SL_DBAT3+4(r11)
+	mfibatu	r4,0
+	stw	r4,SL_IBAT0(r11)
+	mfibatl	r4,0
+	stw	r4,SL_IBAT0+4(r11)
+	mfibatu	r4,1
+	stw	r4,SL_IBAT1(r11)
+	mfibatl	r4,1
+	stw	r4,SL_IBAT1+4(r11)
+	mfibatu	r4,2
+	stw	r4,SL_IBAT2(r11)
+	mfibatl	r4,2
+	stw	r4,SL_IBAT2+4(r11)
+	mfibatu	r4,3
+	stw	r4,SL_IBAT3(r11)
+	mfibatl	r4,3
+	stw	r4,SL_IBAT3+4(r11)
+
+BEGIN_MMU_FTR_SECTION
+	mfspr	r4,SPRN_DBAT4U
+	stw	r4,SL_DBAT4(r11)
+	mfspr	r4,SPRN_DBAT4L
+	stw	r4,SL_DBAT4+4(r11)
+	mfspr	r4,SPRN_DBAT5U
+	stw	r4,SL_DBAT5(r11)
+	mfspr	r4,SPRN_DBAT5L
+	stw	r4,SL_DBAT5+4(r11)
+	mfspr	r4,SPRN_DBAT6U
+	stw	r4,SL_DBAT6(r11)
+	mfspr	r4,SPRN_DBAT6L
+	stw	r4,SL_DBAT6+4(r11)
+	mfspr	r4,SPRN_DBAT7U
+	stw	r4,SL_DBAT7(r11)
+	mfspr	r4,SPRN_DBAT7L
+	stw	r4,SL_DBAT7+4(r11)
+	mfspr	r4,SPRN_IBAT4U
+	stw	r4,SL_IBAT4(r11)
+	mfspr	r4,SPRN_IBAT4L
+	stw	r4,SL_IBAT4+4(r11)
+	mfspr	r4,SPRN_IBAT5U
+	stw	r4,SL_IBAT5(r11)
+	mfspr	r4,SPRN_IBAT5L
+	stw	r4,SL_IBAT5+4(r11)
+	mfspr	r4,SPRN_IBAT6U
+	stw	r4,SL_IBAT6(r11)
+	mfspr	r4,SPRN_IBAT6L
+	stw	r4,SL_IBAT6+4(r11)
+	mfspr	r4,SPRN_IBAT7U
+	stw	r4,SL_IBAT7(r11)
+	mfspr	r4,SPRN_IBAT7L
+	stw	r4,SL_IBAT7+4(r11)
+END_MMU_FTR_SECTION_IFSET(MMU_FTR_USE_HIGH_BATS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Backup various CPU config stuffs */
 	bl	__save_cpu_setup
@@ -141,9 +274,15 @@ _GLOBAL(low_sleep_handler)
 	lis	r5,grackle_wake_up@ha
 	addi	r5,r5,grackle_wake_up@l
 	tophys(r5,r5)
+<<<<<<< HEAD
 	stw	r5,SL_PC(r1)
 	lis	r4,KERNELBASE@h
 	tophys(r5,r1)
+=======
+	stw	r5,SL_PC(r11)
+	lis	r4,KERNELBASE@h
+	tophys(r5,r11)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	r5,r5,SL_PC
 	lis	r6,MAGIC@ha
 	addi	r6,r6,MAGIC@l
@@ -155,6 +294,7 @@ _GLOBAL(low_sleep_handler)
 	tophys(r3,r3)
 	stw	r3,0x80(r4)
 	stw	r5,0x84(r4)
+<<<<<<< HEAD
 	/* Store a pointer to our backup storage into
 	 * a kernel global
 	 */
@@ -164,6 +304,11 @@ _GLOBAL(low_sleep_handler)
 
 	.globl	low_cpu_die
 low_cpu_die:
+=======
+
+	.globl	low_cpu_offline_self
+low_cpu_offline_self:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Flush & disable all caches */
 	bl	flush_disable_caches
 
@@ -205,7 +350,11 @@ END_FTR_SECTION_IFSET(CPU_FTR_SPEC7450)
 	mtmsr	r2
 	isync
 	b	1b
+<<<<<<< HEAD
 
+=======
+_ASM_NOKPROBE_SYMBOL(low_cpu_offline_self)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Here is the resume code.
  */
@@ -240,9 +389,16 @@ _GLOBAL(core99_wake_up)
 	lis	r3,sleep_storage@ha
 	addi	r3,r3,sleep_storage@l
 	tophys(r3,r3)
+<<<<<<< HEAD
 	lwz	r1,0(r3)
 
 	/* Pass thru to older resume code ... */
+=======
+	addi	r1,r3,SL_PC
+
+	/* Pass thru to older resume code ... */
+_ASM_NOKPROBE_SYMBOL(core99_wake_up)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Here is the resume code for older machines.
  * r1 has the physical address of SL_PC(sp).
@@ -254,6 +410,7 @@ grackle_wake_up:
 	 * we do any r1 memory access as we are not sure they
 	 * are in a sane state above the first 256Mb region
 	 */
+<<<<<<< HEAD
 	li	r0,16		/* load up segment register values */
 	mtctr	r0		/* for context 0 */
 	lis	r3,0x2000	/* Ku = 1, VSID = 0 */
@@ -262,6 +419,9 @@ grackle_wake_up:
 	addi	r3,r3,0x111	/* increment VSID */
 	addis	r4,r4,0x1000	/* address of next segment */
 	bdnz	3b
+=======
+	bl	load_segment_registers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sync
 	isync
 
@@ -325,6 +485,7 @@ grackle_wake_up:
 	mtibatl	3,r4
 
 BEGIN_MMU_FTR_SECTION
+<<<<<<< HEAD
 	li	r4,0
 	mtspr	SPRN_DBAT4U,r4
 	mtspr	SPRN_DBAT4L,r4
@@ -341,6 +502,39 @@ BEGIN_MMU_FTR_SECTION
 	mtspr	SPRN_IBAT6U,r4
 	mtspr	SPRN_IBAT6L,r4
 	mtspr	SPRN_IBAT7U,r4
+=======
+	lwz	r4,SL_DBAT4(r1)
+	mtspr	SPRN_DBAT4U,r4
+	lwz	r4,SL_DBAT4+4(r1)
+	mtspr	SPRN_DBAT4L,r4
+	lwz	r4,SL_DBAT5(r1)
+	mtspr	SPRN_DBAT5U,r4
+	lwz	r4,SL_DBAT5+4(r1)
+	mtspr	SPRN_DBAT5L,r4
+	lwz	r4,SL_DBAT6(r1)
+	mtspr	SPRN_DBAT6U,r4
+	lwz	r4,SL_DBAT6+4(r1)
+	mtspr	SPRN_DBAT6L,r4
+	lwz	r4,SL_DBAT7(r1)
+	mtspr	SPRN_DBAT7U,r4
+	lwz	r4,SL_DBAT7+4(r1)
+	mtspr	SPRN_DBAT7L,r4
+	lwz	r4,SL_IBAT4(r1)
+	mtspr	SPRN_IBAT4U,r4
+	lwz	r4,SL_IBAT4+4(r1)
+	mtspr	SPRN_IBAT4L,r4
+	lwz	r4,SL_IBAT5(r1)
+	mtspr	SPRN_IBAT5U,r4
+	lwz	r4,SL_IBAT5+4(r1)
+	mtspr	SPRN_IBAT5L,r4
+	lwz	r4,SL_IBAT6(r1)
+	mtspr	SPRN_IBAT6U,r4
+	lwz	r4,SL_IBAT6+4(r1)
+	mtspr	SPRN_IBAT6L,r4
+	lwz	r4,SL_IBAT7(r1)
+	mtspr	SPRN_IBAT7U,r4
+	lwz	r4,SL_IBAT7+4(r1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtspr	SPRN_IBAT7L,r4
 END_MMU_FTR_SECTION_IFSET(MMU_FTR_USE_HIGH_BATS)
 
@@ -351,6 +545,7 @@ END_MMU_FTR_SECTION_IFSET(MMU_FTR_USE_HIGH_BATS)
 	blt	1b
 	sync
 
+<<<<<<< HEAD
 	/* restore the MSR and turn on the MMU */
 	lwz	r3,SL_MSR(r1)
 	bl	turn_on_mmu
@@ -358,6 +553,8 @@ END_MMU_FTR_SECTION_IFSET(MMU_FTR_USE_HIGH_BATS)
 	/* get back the stack pointer */
 	tovirt(r1,r1)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Restore TB */
 	li	r3,0
 	mttbl	r3
@@ -371,6 +568,7 @@ END_MMU_FTR_SECTION_IFSET(MMU_FTR_USE_HIGH_BATS)
 	mtcr	r0
 	lwz	r2,SL_R2(r1)
 	lmw	r12,SL_R12(r1)
+<<<<<<< HEAD
 	addi	r1,r1,SL_SIZE
 	lwz	r0,4(r1)
 	mtlr	r0
@@ -379,11 +577,19 @@ END_MMU_FTR_SECTION_IFSET(MMU_FTR_USE_HIGH_BATS)
 turn_on_mmu:
 	mflr	r4
 	tovirt(r4,r4)
+=======
+
+	/* restore the MSR and SP and turn on the MMU and return */
+	lwz	r3,SL_MSR(r1)
+	lwz	r4,SL_LR(r1)
+	lwz	r1,SL_SP(r1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mtsrr0	r4
 	mtsrr1	r3
 	sync
 	isync
 	rfi
+<<<<<<< HEAD
 
 #endif /* defined(CONFIG_PM) || defined(CONFIG_CPU_FREQ) */
 
@@ -394,4 +600,17 @@ sleep_storage:
 	.balign	L1_CACHE_BYTES, 0
 
 #endif /* CONFIG_6xx */
+=======
+_ASM_NOKPROBE_SYMBOL(grackle_wake_up)
+
+#endif /* defined(CONFIG_PM) || defined(CONFIG_CPU_FREQ) */
+
+	.section .bss
+	.balign	L1_CACHE_BYTES
+sleep_storage:
+	.space SL_SIZE
+	.balign	L1_CACHE_BYTES, 0
+
+#endif /* CONFIG_PPC_BOOK3S_32 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.section .text

@@ -1,12 +1,23 @@
+<<<<<<< HEAD
 config MEGARAID_NEWGEN
 	bool "LSI Logic New Generation RAID Device Drivers"
 	depends on PCI && SCSI
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config MEGARAID_NEWGEN
+	bool "LSI Logic New Generation RAID Device Drivers"
+	depends on PCI && HAS_IOPORT && SCSI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	LSI Logic RAID Device Drivers
 
 config MEGARAID_MM
 	tristate "LSI Logic Management Module (New Driver)"
+<<<<<<< HEAD
 	depends on PCI && SCSI && MEGARAID_NEWGEN
+=======
+	depends on PCI && HAS_IOPORT && SCSI && MEGARAID_NEWGEN
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	Management Module provides ioctl, sysfs support for LSI Logic
 	RAID controllers.
@@ -66,7 +77,11 @@ config MEGARAID_MAILBOX
 
 config MEGARAID_LEGACY
 	tristate "LSI Logic Legacy MegaRAID Driver"
+<<<<<<< HEAD
 	depends on PCI && SCSI
+=======
+	depends on PCI && HAS_IOPORT && SCSI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	This driver supports the LSI MegaRAID 418, 428, 438, 466, 762, 490
 	and 467 SCSI host adapters. This driver also support the all U320
@@ -78,6 +93,10 @@ config MEGARAID_LEGACY
 config MEGARAID_SAS
 	tristate "LSI Logic MegaRAID SAS RAID Module"
 	depends on PCI && SCSI
+<<<<<<< HEAD
+=======
+	select IRQ_POLL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	Module for LSI Logic's SAS based RAID controllers.
 	To compile this driver as a module, choose 'm' here.

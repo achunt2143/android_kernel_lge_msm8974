@@ -1,13 +1,21 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2002-2005 Roman Zippel <zippel@linux-m68k.org>
  * Copyright (C) 2002-2005 Sam Ravnborg <sam@ravnborg.org>
  *
  * Released under the terms of the GNU GPL v2.0.
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2002-2005 Roman Zippel <zippel@linux-m68k.org>
+ * Copyright (C) 2002-2005 Sam Ravnborg <sam@ravnborg.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
+<<<<<<< HEAD
 #include "lkc.h"
 
 /* file already present in list? If not add it */
@@ -77,17 +85,70 @@ int file_write_dep(const char *name)
 }
 
 
+=======
+
+#include "hashtable.h"
+#include "lkc.h"
+
+unsigned int strhash(const char *s)
+{
+	/* fnv32 hash */
+	unsigned int hash = 2166136261U;
+
+	for (; *s; s++)
+		hash = (hash ^ *s) * 0x01000193;
+	return hash;
+}
+
+/* hash table of all parsed Kconfig files */
+static HASHTABLE_DEFINE(file_hashtable, 1U << 11);
+
+struct file {
+	struct hlist_node node;
+	char name[];
+};
+
+/* file already present in list? If not add it */
+const char *file_lookup(const char *name)
+{
+	struct file *file;
+	size_t len;
+	int hash = strhash(name);
+
+	hash_for_each_possible(file_hashtable, file, node, hash)
+		if (!strcmp(name, file->name))
+			return file->name;
+
+	len = strlen(name);
+	file = xmalloc(sizeof(*file) + len + 1);
+	memset(file, 0, sizeof(*file));
+	memcpy(file->name, name, len);
+	file->name[len] = '\0';
+
+	hash_add(file_hashtable, &file->node, hash);
+
+	str_printf(&autoconf_cmd, "\t%s \\\n", name);
+
+	return file->name;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Allocate initial growable string */
 struct gstr str_new(void)
 {
 	struct gstr gs;
+<<<<<<< HEAD
 	gs.s = malloc(sizeof(char) * 64);
+=======
+	gs.s = xmalloc(sizeof(char) * 64);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gs.len = 64;
 	gs.max_width = 0;
 	strcpy(gs.s, "\0");
 	return gs;
 }
 
+<<<<<<< HEAD
 /* Allocate and assign growable string */
 struct gstr str_assign(const char *s)
 {
@@ -103,6 +164,12 @@ void str_free(struct gstr *gs)
 {
 	if (gs->s)
 		free(gs->s);
+=======
+/* Free storage for growable string */
+void str_free(struct gstr *gs)
+{
+	free(gs->s);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gs->s = NULL;
 	gs->len = 0;
 }
@@ -114,7 +181,11 @@ void str_append(struct gstr *gs, const char *s)
 	if (s) {
 		l = strlen(gs->s) + strlen(s) + 1;
 		if (l > gs->len) {
+<<<<<<< HEAD
 			gs->s   = realloc(gs->s, l);
+=======
+			gs->s = xrealloc(gs->s, l);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			gs->len = l;
 		}
 		strcat(gs->s, s);
@@ -133,8 +204,63 @@ void str_printf(struct gstr *gs, const char *fmt, ...)
 }
 
 /* Retrieve value of growable string */
+<<<<<<< HEAD
 const char *str_get(struct gstr *gs)
+=======
+char *str_get(struct gstr *gs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return gs->s;
 }
 
+<<<<<<< HEAD
+=======
+void *xmalloc(size_t size)
+{
+	void *p = malloc(size);
+	if (p)
+		return p;
+	fprintf(stderr, "Out of memory.\n");
+	exit(1);
+}
+
+void *xcalloc(size_t nmemb, size_t size)
+{
+	void *p = calloc(nmemb, size);
+	if (p)
+		return p;
+	fprintf(stderr, "Out of memory.\n");
+	exit(1);
+}
+
+void *xrealloc(void *p, size_t size)
+{
+	p = realloc(p, size);
+	if (p)
+		return p;
+	fprintf(stderr, "Out of memory.\n");
+	exit(1);
+}
+
+char *xstrdup(const char *s)
+{
+	char *p;
+
+	p = strdup(s);
+	if (p)
+		return p;
+	fprintf(stderr, "Out of memory.\n");
+	exit(1);
+}
+
+char *xstrndup(const char *s, size_t n)
+{
+	char *p;
+
+	p = strndup(s, n);
+	if (p)
+		return p;
+	fprintf(stderr, "Out of memory.\n");
+	exit(1);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

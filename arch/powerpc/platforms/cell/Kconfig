@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 config PPC_CELL
 	bool
 	default n
+=======
+# SPDX-License-Identifier: GPL-2.0
+config PPC_CELL
+	select PPC_64S_HASH_MMU if PPC64
+	bool
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PPC_CELL_COMMON
 	bool
@@ -8,7 +15,11 @@ config PPC_CELL_COMMON
 	select PPC_DCR_MMIO
 	select PPC_INDIRECT_PIO
 	select PPC_INDIRECT_MMIO
+<<<<<<< HEAD
 	select PPC_NATIVE
+=======
+	select PPC_HASH_MMU_NATIVE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select PPC_RTAS
 	select IRQ_EDGE_EOI_HANDLER
 
@@ -17,6 +28,7 @@ config PPC_CELL_NATIVE
 	select PPC_CELL_COMMON
 	select MPIC
 	select PPC_IO_WORKAROUNDS
+<<<<<<< HEAD
 	select IBM_EMAC_EMAC4
 	select IBM_EMAC_RGMII
 	select IBM_EMAC_ZMII #test only
@@ -29,10 +41,24 @@ config PPC_IBM_CELL_BLADE
 	select PPC_CELL_NATIVE
 	select PPC_OF_PLATFORM_PCI
 	select PCI
+=======
+	select IBM_EMAC_EMAC4 if IBM_EMAC
+	select IBM_EMAC_RGMII if IBM_EMAC
+	select IBM_EMAC_ZMII if IBM_EMAC #test only
+	select IBM_EMAC_TAH if IBM_EMAC  #test only
+
+config PPC_IBM_CELL_BLADE
+	bool "IBM Cell Blade"
+	depends on PPC64 && PPC_BOOK3S && CPU_BIG_ENDIAN
+	select PPC_CELL_NATIVE
+	select PPC_OF_PLATFORM_PCI
+	select FORCE_PCI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select MMIO_NVRAM
 	select PPC_UDBG_16550
 	select UDBG_RTAS_CONSOLE
 
+<<<<<<< HEAD
 config PPC_CELLEB
 	bool "Toshiba's Cell Reference Set 'Celleb' Architecture"
 	depends on PPC64 && PPC_BOOK3S
@@ -52,6 +78,12 @@ config PPC_CELL_QPACE
 config AXON_MSI
 	bool
 	depends on PPC_IBM_CELL_BLADE && PCI_MSI
+=======
+config AXON_MSI
+	bool
+	depends on PPC_IBM_CELL_BLADE && PCI_MSI
+	select IRQ_DOMAIN_NOMAP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default y
 
 menu "Cell Broadband Engine options"
@@ -61,13 +93,19 @@ config SPU_FS
 	tristate "SPU file system"
 	default m
 	depends on PPC_CELL
+<<<<<<< HEAD
 	select SPU_BASE
 	select MEMORY_HOTPLUG
+=======
+	depends on COREDUMP
+	select SPU_BASE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The SPU file system is used to access Synergistic Processing
 	  Units on machines implementing the Broadband Processor
 	  Architecture.
 
+<<<<<<< HEAD
 config SPU_FS_64K_LS
 	bool "Use 64K pages to map SPE local  store"
 	# we depend on PPC_MM_SLICES for now rather than selecting
@@ -86,6 +124,11 @@ config SPU_FS_64K_LS
 config SPU_BASE
 	bool
 	default n
+=======
+config SPU_BASE
+	bool
+	select PPC_COPRO_BASE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config CBE_RAS
 	bool "RAS features for bare metal Cell BE"
@@ -113,6 +156,7 @@ config CBE_THERM
 	default m
 	depends on CBE_RAS && SPU_BASE
 
+<<<<<<< HEAD
 config CBE_CPUFREQ
 	tristate "CBE frequency scaling"
 	depends on CBE_RAS && CPU_FREQ
@@ -141,6 +185,12 @@ config PPC_PMI
 	tristate
 	default y
 	depends on CBE_CPUFREQ_PMI || PPC_IBM_CELL_POWERBUTTON
+=======
+config PPC_PMI
+	tristate
+	default y
+	depends on CPU_FREQ_CBE_PMI || PPC_IBM_CELL_POWERBUTTON
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  PMI (Platform Management Interrupt) is a way to
 	  communicate with the BMC (Baseboard Management Controller).
@@ -156,8 +206,11 @@ config CBE_CPUFREQ_SPU_GOVERNOR
 	  the minimal possible frequency.
 
 endmenu
+<<<<<<< HEAD
 
 config OPROFILE_CELL
 	def_bool y
 	depends on PPC_CELL_NATIVE && (OPROFILE = m || OPROFILE = y) && SPU_BASE
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

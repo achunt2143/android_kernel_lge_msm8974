@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-omap1/mux.c
  *
@@ -6,6 +10,7 @@
  * Copyright (C) 2003 - 2008 Nokia Corporation
  *
  * Written by Tony Lindgren
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,20 +26,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 
 #include <mach/hardware.h>
 
 #include <plat/mux.h>
+=======
+#include <linux/soc/ti/omap1-io.h>
+
+#include "hardware.h"
+#include "mux.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_OMAP_MUX
 
 static struct omap_mux_cfg arch_mux_cfg;
 
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_OMAP730) || defined(CONFIG_ARCH_OMAP850)
 static struct pin_config __initdata_or_module omap7xx_pins[] = {
 MUX_CFG_7XX("E2_7XX_KBR0",        12,   21,    0,   20,   1, 0)
@@ -83,6 +98,10 @@ MUX_CFG_7XX("UART_7XX_2",          8,    1,    6,    0,   0, 0)
 
 #if defined(CONFIG_ARCH_OMAP15XX) || defined(CONFIG_ARCH_OMAP16XX)
 static struct pin_config __initdata_or_module omap1xxx_pins[] = {
+=======
+#if defined(CONFIG_ARCH_OMAP15XX) || defined(CONFIG_ARCH_OMAP16XX)
+static struct pin_config omap1xxx_pins[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	 description		mux  mode   mux	 pull pull  pull  pu_pd	 pu  dbg
  *				reg  offset mode reg  bit   ena	  reg
@@ -343,7 +362,11 @@ MUX_CFG("Y14_1610_CCP_DATAM",	 9,   21,    6,   2,   3,   1,    2,     0,  0)
 #define OMAP1XXX_PINS_SZ	0
 #endif	/* CONFIG_ARCH_OMAP15XX || CONFIG_ARCH_OMAP16XX */
 
+<<<<<<< HEAD
 static int __init_or_module omap1_cfg_reg(const struct pin_config *cfg)
+=======
+static int omap1_cfg_reg(const struct pin_config *cfg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static DEFINE_SPINLOCK(mux_spin_lock);
 	unsigned long flags;
@@ -451,6 +474,7 @@ static int __init_or_module omap1_cfg_reg(const struct pin_config *cfg)
 #endif
 }
 
+<<<<<<< HEAD
 int __init omap1_mux_init(void)
 {
 	if (cpu_is_omap7xx()) {
@@ -459,6 +483,60 @@ int __init omap1_mux_init(void)
 		arch_mux_cfg.cfg_reg	= omap1_cfg_reg;
 	}
 
+=======
+static struct omap_mux_cfg *mux_cfg;
+
+int __init omap_mux_register(struct omap_mux_cfg *arch_mux_cfg)
+{
+	if (!arch_mux_cfg || !arch_mux_cfg->pins || arch_mux_cfg->size == 0
+			|| !arch_mux_cfg->cfg_reg) {
+		printk(KERN_ERR "Invalid pin table\n");
+		return -EINVAL;
+	}
+
+	mux_cfg = arch_mux_cfg;
+
+	return 0;
+}
+
+/*
+ * Sets the Omap MUX and PULL_DWN registers based on the table
+ */
+int omap_cfg_reg(const unsigned long index)
+{
+	struct pin_config *reg;
+
+	if (!cpu_class_is_omap1()) {
+		printk(KERN_ERR "mux: Broken omap_cfg_reg(%lu) entry\n",
+				index);
+		WARN_ON(1);
+		return -EINVAL;
+	}
+
+	if (mux_cfg == NULL) {
+		printk(KERN_ERR "Pin mux table not initialized\n");
+		return -ENODEV;
+	}
+
+	if (index >= mux_cfg->size) {
+		printk(KERN_ERR "Invalid pin mux index: %lu (%lu)\n",
+		       index, mux_cfg->size);
+		dump_stack();
+		return -ENODEV;
+	}
+
+	reg = &mux_cfg->pins[index];
+
+	if (!mux_cfg->cfg_reg)
+		return -ENODEV;
+
+	return mux_cfg->cfg_reg(reg);
+}
+EXPORT_SYMBOL(omap_cfg_reg);
+
+int __init omap1_mux_init(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cpu_is_omap15xx() || cpu_is_omap16xx()) {
 		arch_mux_cfg.pins	= omap1xxx_pins;
 		arch_mux_cfg.size	= OMAP1XXX_PINS_SZ;
@@ -468,4 +546,12 @@ int __init omap1_mux_init(void)
 	return omap_mux_register(&arch_mux_cfg);
 }
 
+<<<<<<< HEAD
 #endif
+=======
+#else
+#define omap_mux_init() do {} while(0)
+#define omap_cfg_reg(x)	do {} while(0)
+#endif	/* CONFIG_OMAP_MUX */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

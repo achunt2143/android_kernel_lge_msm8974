@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/alpha/kernel/signal.c
  *
@@ -6,7 +10,12 @@
  *  1997-11-02  Modified for POSIX.1b signals by Richard Henderson
  */
 
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/signal.h>
 #include <linux/errno.h>
@@ -20,9 +29,15 @@
 #include <linux/binfmts.h>
 #include <linux/bitops.h>
 #include <linux/syscalls.h>
+<<<<<<< HEAD
 #include <linux/tracehook.h>
 
 #include <asm/uaccess.h>
+=======
+#include <linux/resume_user_mode.h>
+
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sigcontext.h>
 #include <asm/ucontext.h>
 
@@ -34,9 +49,12 @@
 #define _BLOCKABLE (~(sigmask(SIGKILL) | sigmask(SIGSTOP)))
 
 asmlinkage void ret_from_sys_call(void);
+<<<<<<< HEAD
 static void do_signal(struct pt_regs *, struct switch_stack *,
 		      unsigned long, unsigned long);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The OSF/1 sigprocmask calling sequence is different from the
@@ -66,7 +84,11 @@ SYSCALL_DEFINE3(osf_sigaction, int, sig,
 
 	if (act) {
 		old_sigset_t mask;
+<<<<<<< HEAD
 		if (!access_ok(VERIFY_READ, act, sizeof(*act)) ||
+=======
+		if (!access_ok(act, sizeof(*act)) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    __get_user(new_ka.sa.sa_handler, &act->sa_handler) ||
 		    __get_user(new_ka.sa.sa_flags, &act->sa_flags) ||
 		    __get_user(mask, &act->sa_mask))
@@ -78,7 +100,11 @@ SYSCALL_DEFINE3(osf_sigaction, int, sig,
 	ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
 
 	if (!ret && oact) {
+<<<<<<< HEAD
 		if (!access_ok(VERIFY_WRITE, oact, sizeof(*oact)) ||
+=======
+		if (!access_ok(oact, sizeof(*oact)) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    __put_user(old_ka.sa.sa_handler, &oact->sa_handler) ||
 		    __put_user(old_ka.sa.sa_flags, &oact->sa_flags) ||
 		    __put_user(old_ka.sa.sa_mask.sig[0], &oact->sa_mask))
@@ -116,6 +142,7 @@ SYSCALL_DEFINE5(rt_sigaction, int, sig, const struct sigaction __user *, act,
 }
 
 /*
+<<<<<<< HEAD
  * Atomically swap in the new signal mask, and wait for a signal.
  */
 SYSCALL_DEFINE1(sigsuspend, old_sigset_t, mask)
@@ -141,6 +168,8 @@ sys_sigaltstack(const stack_t __user *uss, stack_t __user *uoss)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Do a signal return; undo the signal stack.
  */
 
@@ -172,6 +201,7 @@ extern char compile_time_assert
 #define INSN_CALLSYS		0x00000083
 
 static long
+<<<<<<< HEAD
 restore_sigcontext(struct sigcontext __user *sc, struct pt_regs *regs,
 		   struct switch_stack *sw)
 {
@@ -179,6 +209,16 @@ restore_sigcontext(struct sigcontext __user *sc, struct pt_regs *regs,
 	long i, err = __get_user(regs->pc, &sc->sc_pc);
 
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+restore_sigcontext(struct sigcontext __user *sc, struct pt_regs *regs)
+{
+	unsigned long usp;
+	struct switch_stack *sw = (struct switch_stack *)regs - 1;
+	long err = __get_user(regs->pc, &sc->sc_pc);
+
+	current->restart_block.fn = do_no_restart_syscall;
+	current_thread_info()->status |= TS_SAVED_FP | TS_RESTORE_FP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sw->r26 = (unsigned long) ret_from_sys_call;
 
@@ -215,9 +255,15 @@ restore_sigcontext(struct sigcontext __user *sc, struct pt_regs *regs,
 	err |= __get_user(usp, sc->sc_regs+30);
 	wrusp(usp);
 
+<<<<<<< HEAD
 	for (i = 0; i < 31; i++)
 		err |= __get_user(sw->fp[i], sc->sc_fpregs+i);
 	err |= __get_user(sw->fp[31], &sc->sc_fpcr);
+=======
+	err |= __copy_from_user(current_thread_info()->fp,
+				sc->sc_fpregs, 31 * 8);
+	err |= __get_user(current_thread_info()->fp[31], &sc->sc_fpcr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -227,6 +273,7 @@ restore_sigcontext(struct sigcontext __user *sc, struct pt_regs *regs,
    registers and transfer control from userland.  */
 
 asmlinkage void
+<<<<<<< HEAD
 do_sigreturn(struct sigcontext __user *sc, struct pt_regs *regs,
 	     struct switch_stack *sw)
 {
@@ -234,18 +281,34 @@ do_sigreturn(struct sigcontext __user *sc, struct pt_regs *regs,
 
 	/* Verify that it's a good sigcontext before using it */
 	if (!access_ok(VERIFY_READ, sc, sizeof(*sc)))
+=======
+do_sigreturn(struct sigcontext __user *sc)
+{
+	struct pt_regs *regs = current_pt_regs();
+	sigset_t set;
+
+	/* Verify that it's a good sigcontext before using it */
+	if (!access_ok(sc, sizeof(*sc)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto give_sigsegv;
 	if (__get_user(set.sig[0], &sc->sc_mask))
 		goto give_sigsegv;
 
+<<<<<<< HEAD
 	sigdelsetmask(&set, ~_BLOCKABLE);
 	set_current_blocked(&set);
 
 	if (restore_sigcontext(sc, regs, sw))
+=======
+	set_current_blocked(&set);
+
+	if (restore_sigcontext(sc, regs))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto give_sigsegv;
 
 	/* Send SIGTRAP if we're single-stepping: */
 	if (ptrace_cancel_bpt (current)) {
+<<<<<<< HEAD
 		siginfo_t info;
 
 		info.si_signo = SIGTRAP;
@@ -254,10 +317,15 @@ do_sigreturn(struct sigcontext __user *sc, struct pt_regs *regs,
 		info.si_addr = (void __user *) regs->pc;
 		info.si_trapno = 0;
 		send_sig_info(SIGTRAP, &info, current);
+=======
+		send_sig_fault(SIGTRAP, TRAP_BRKPT, (void __user *) regs->pc,
+			       current);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return;
 
 give_sigsegv:
+<<<<<<< HEAD
 	force_sig(SIGSEGV, current);
 }
 
@@ -269,18 +337,38 @@ do_rt_sigreturn(struct rt_sigframe __user *frame, struct pt_regs *regs,
 
 	/* Verify that it's a good ucontext_t before using it */
 	if (!access_ok(VERIFY_READ, &frame->uc, sizeof(frame->uc)))
+=======
+	force_sig(SIGSEGV);
+}
+
+asmlinkage void
+do_rt_sigreturn(struct rt_sigframe __user *frame)
+{
+	struct pt_regs *regs = current_pt_regs();
+	sigset_t set;
+
+	/* Verify that it's a good ucontext_t before using it */
+	if (!access_ok(&frame->uc, sizeof(frame->uc)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto give_sigsegv;
 	if (__copy_from_user(&set, &frame->uc.uc_sigmask, sizeof(set)))
 		goto give_sigsegv;
 
+<<<<<<< HEAD
 	sigdelsetmask(&set, ~_BLOCKABLE);
 	set_current_blocked(&set);
 
 	if (restore_sigcontext(&frame->uc.uc_mcontext, regs, sw))
+=======
+	set_current_blocked(&set);
+
+	if (restore_sigcontext(&frame->uc.uc_mcontext, regs))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto give_sigsegv;
 
 	/* Send SIGTRAP if we're single-stepping: */
 	if (ptrace_cancel_bpt (current)) {
+<<<<<<< HEAD
 		siginfo_t info;
 
 		info.si_signo = SIGTRAP;
@@ -289,11 +377,19 @@ do_rt_sigreturn(struct rt_sigframe __user *frame, struct pt_regs *regs,
 		info.si_addr = (void __user *) regs->pc;
 		info.si_trapno = 0;
 		send_sig_info(SIGTRAP, &info, current);
+=======
+		send_sig_fault(SIGTRAP, TRAP_BRKPT, (void __user *) regs->pc,
+			       current);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return;
 
 give_sigsegv:
+<<<<<<< HEAD
 	force_sig(SIGSEGV, current);
+=======
+	force_sig(SIGSEGV);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -302,19 +398,32 @@ give_sigsegv:
  */
 
 static inline void __user *
+<<<<<<< HEAD
 get_sigframe(struct k_sigaction *ka, unsigned long sp, size_t frame_size)
 {
 	if ((ka->sa.sa_flags & SA_ONSTACK) != 0 && ! sas_ss_flags(sp))
 		sp = current->sas_ss_sp + current->sas_ss_size;
 
 	return (void __user *)((sp - frame_size) & -32ul);
+=======
+get_sigframe(struct ksignal *ksig, unsigned long sp, size_t frame_size)
+{
+	return (void __user *)((sigsp(sp, ksig) - frame_size) & -32ul);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static long
 setup_sigcontext(struct sigcontext __user *sc, struct pt_regs *regs, 
+<<<<<<< HEAD
 		 struct switch_stack *sw, unsigned long mask, unsigned long sp)
 {
 	long i, err = 0;
+=======
+		 unsigned long mask, unsigned long sp)
+{
+	struct switch_stack *sw = (struct switch_stack *)regs - 1;
+	long err = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err |= __put_user(on_sig_stack((unsigned long)sc), &sc->sc_onstack);
 	err |= __put_user(mask, &sc->sc_mask);
@@ -354,10 +463,17 @@ setup_sigcontext(struct sigcontext __user *sc, struct pt_regs *regs,
 	err |= __put_user(sp, sc->sc_regs+30);
 	err |= __put_user(0, sc->sc_regs+31);
 
+<<<<<<< HEAD
 	for (i = 0; i < 31; i++)
 		err |= __put_user(sw->fp[i], sc->sc_fpregs+i);
 	err |= __put_user(0, sc->sc_fpregs+31);
 	err |= __put_user(sw->fp[31], &sc->sc_fpcr);
+=======
+	err |= __copy_to_user(sc->sc_fpregs,
+			      current_thread_info()->fp, 31 * 8);
+	err |= __put_user(0, sc->sc_fpregs+31);
+	err |= __put_user(current_thread_info()->fp[31], &sc->sc_fpcr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err |= __put_user(regs->trap_a0, &sc->sc_traparg_a0);
 	err |= __put_user(regs->trap_a1, &sc->sc_traparg_a1);
@@ -367,13 +483,18 @@ setup_sigcontext(struct sigcontext __user *sc, struct pt_regs *regs,
 }
 
 static int
+<<<<<<< HEAD
 setup_frame(int sig, struct k_sigaction *ka, sigset_t *set,
 	    struct pt_regs *regs, struct switch_stack * sw)
+=======
+setup_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long oldsp, r26, err = 0;
 	struct sigframe __user *frame;
 
 	oldsp = rdusp();
+<<<<<<< HEAD
 	frame = get_sigframe(ka, oldsp, sizeof(*frame));
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
 		goto give_sigsegv;
@@ -387,6 +508,20 @@ setup_frame(int sig, struct k_sigaction *ka, sigset_t *set,
 	if (ka->ka_restorer) {
 		r26 = (unsigned long) ka->ka_restorer;
 	} else {
+=======
+	frame = get_sigframe(ksig, oldsp, sizeof(*frame));
+	if (!access_ok(frame, sizeof(*frame)))
+		return -EFAULT;
+
+	err |= setup_sigcontext(&frame->sc, regs, set->sig[0], oldsp);
+	if (err)
+		return -EFAULT;
+
+	/* Set up to return from userspace.  If provided, use a stub
+	   already in userspace.  */
+	r26 = (unsigned long) ksig->ka.ka_restorer;
+	if (!r26) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err |= __put_user(INSN_MOV_R30_R16, frame->retcode+0);
 		err |= __put_user(INSN_LDI_R0+__NR_sigreturn, frame->retcode+1);
 		err |= __put_user(INSN_CALLSYS, frame->retcode+2);
@@ -396,12 +531,21 @@ setup_frame(int sig, struct k_sigaction *ka, sigset_t *set,
 
 	/* Check that everything was written properly.  */
 	if (err)
+<<<<<<< HEAD
 		goto give_sigsegv;
 
 	/* "Return" to the handler */
 	regs->r26 = r26;
 	regs->r27 = regs->pc = (unsigned long) ka->sa.sa_handler;
 	regs->r16 = sig;			/* a0: signal number */
+=======
+		return err;
+
+	/* "Return" to the handler */
+	regs->r26 = r26;
+	regs->r27 = regs->pc = (unsigned long) ksig->ka.sa.sa_handler;
+	regs->r16 = ksig->sig;			/* a0: signal number */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regs->r17 = 0;				/* a1: exception code */
 	regs->r18 = (unsigned long) &frame->sc;	/* a2: sigcontext pointer */
 	wrusp((unsigned long) frame);
@@ -410,6 +554,7 @@ setup_frame(int sig, struct k_sigaction *ka, sigset_t *set,
 	printk("SIG deliver (%s:%d): sp=%p pc=%p ra=%p\n",
 		current->comm, current->pid, frame, regs->pc, regs->r26);
 #endif
+<<<<<<< HEAD
 
 	return 0;
 
@@ -421,21 +566,37 @@ give_sigsegv:
 static int
 setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	       sigset_t *set, struct pt_regs *regs, struct switch_stack * sw)
+=======
+	return 0;
+}
+
+static int
+setup_rt_frame(struct ksignal *ksig, sigset_t *set, struct pt_regs *regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long oldsp, r26, err = 0;
 	struct rt_sigframe __user *frame;
 
 	oldsp = rdusp();
+<<<<<<< HEAD
 	frame = get_sigframe(ka, oldsp, sizeof(*frame));
 	if (!access_ok(VERIFY_WRITE, frame, sizeof(*frame)))
 		goto give_sigsegv;
 
 	err |= copy_siginfo_to_user(&frame->info, info);
+=======
+	frame = get_sigframe(ksig, oldsp, sizeof(*frame));
+	if (!access_ok(frame, sizeof(*frame)))
+		return -EFAULT;
+
+	err |= copy_siginfo_to_user(&frame->info, &ksig->info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create the ucontext.  */
 	err |= __put_user(0, &frame->uc.uc_flags);
 	err |= __put_user(0, &frame->uc.uc_link);
 	err |= __put_user(set->sig[0], &frame->uc.uc_osf_sigmask);
+<<<<<<< HEAD
 	err |= __put_user(current->sas_ss_sp, &frame->uc.uc_stack.ss_sp);
 	err |= __put_user(sas_ss_flags(oldsp), &frame->uc.uc_stack.ss_flags);
 	err |= __put_user(current->sas_ss_size, &frame->uc.uc_stack.ss_size);
@@ -450,6 +611,19 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	if (ka->ka_restorer) {
 		r26 = (unsigned long) ka->ka_restorer;
 	} else {
+=======
+	err |= __save_altstack(&frame->uc.uc_stack, oldsp);
+	err |= setup_sigcontext(&frame->uc.uc_mcontext, regs, 
+				set->sig[0], oldsp);
+	err |= __copy_to_user(&frame->uc.uc_sigmask, set, sizeof(*set));
+	if (err)
+		return -EFAULT;
+
+	/* Set up to return from userspace.  If provided, use a stub
+	   already in userspace.  */
+	r26 = (unsigned long) ksig->ka.ka_restorer;
+	if (!r26) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err |= __put_user(INSN_MOV_R30_R16, frame->retcode+0);
 		err |= __put_user(INSN_LDI_R0+__NR_rt_sigreturn,
 				  frame->retcode+1);
@@ -459,12 +633,21 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 	}
 
 	if (err)
+<<<<<<< HEAD
 		goto give_sigsegv;
 
 	/* "Return" to the handler */
 	regs->r26 = r26;
 	regs->r27 = regs->pc = (unsigned long) ka->sa.sa_handler;
 	regs->r16 = sig;			  /* a0: signal number */
+=======
+		return -EFAULT;
+
+	/* "Return" to the handler */
+	regs->r26 = r26;
+	regs->r27 = regs->pc = (unsigned long) ksig->ka.sa.sa_handler;
+	regs->r16 = ksig->sig;			  /* a0: signal number */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regs->r17 = (unsigned long) &frame->info; /* a1: siginfo pointer */
 	regs->r18 = (unsigned long) &frame->uc;	  /* a2: ucontext pointer */
 	wrusp((unsigned long) frame);
@@ -475,16 +658,20 @@ setup_rt_frame(int sig, struct k_sigaction *ka, siginfo_t *info,
 #endif
 
 	return 0;
+<<<<<<< HEAD
 
 give_sigsegv:
 	force_sigsegv(sig, current);
 	return -EFAULT;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /*
  * OK, we're invoking a handler.
  */
+<<<<<<< HEAD
 static inline int
 handle_signal(int sig, struct k_sigaction *ka, siginfo_t *info,
 	      sigset_t *oldset, struct pt_regs * regs, struct switch_stack *sw)
@@ -500,6 +687,20 @@ handle_signal(int sig, struct k_sigaction *ka, siginfo_t *info,
 		block_sigmask(ka, sig);
 
 	return ret;
+=======
+static inline void
+handle_signal(struct ksignal *ksig, struct pt_regs *regs)
+{
+	sigset_t *oldset = sigmask_to_save();
+	int ret;
+
+	if (ksig->ka.sa.sa_flags & SA_SIGINFO)
+		ret = setup_rt_frame(ksig, oldset, regs);
+	else
+		ret = setup_frame(ksig, oldset, regs);
+
+	signal_setup_done(ret, ksig, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void
@@ -513,7 +714,11 @@ syscall_restart(unsigned long r0, unsigned long r19,
 			regs->r0 = EINTR;
 			break;
 		}
+<<<<<<< HEAD
 		/* fallthrough */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ERESTARTNOINTR:
 		regs->r0 = r0;	/* reset v0 and a3 and replay syscall */
 		regs->r19 = r19;
@@ -540,6 +745,7 @@ syscall_restart(unsigned long r0, unsigned long r19,
  * all (if we get here from anything but a syscall return, it will be 0)
  */
 static void
+<<<<<<< HEAD
 do_signal(struct pt_regs * regs, struct switch_stack * sw,
 	  unsigned long r0, unsigned long r19)
 {
@@ -601,11 +807,48 @@ do_signal(struct pt_regs * regs, struct switch_stack * sw,
 		sigprocmask(SIG_SETMASK, &current->saved_sigmask, NULL);
 	}
 
+=======
+do_signal(struct pt_regs *regs, unsigned long r0, unsigned long r19)
+{
+	unsigned long single_stepping = ptrace_cancel_bpt(current);
+	struct ksignal ksig;
+
+	/* This lets the debugger run, ... */
+	if (get_signal(&ksig)) {
+		/* ... so re-check the single stepping. */
+		single_stepping |= ptrace_cancel_bpt(current);
+		/* Whee!  Actually deliver the signal.  */
+		if (r0)
+			syscall_restart(r0, r19, regs, &ksig.ka);
+		handle_signal(&ksig, regs);
+	} else {
+		single_stepping |= ptrace_cancel_bpt(current);
+		if (r0) {
+			switch (regs->r0) {
+			case ERESTARTNOHAND:
+			case ERESTARTSYS:
+			case ERESTARTNOINTR:
+				/* Reset v0 and a3 and replay syscall.  */
+				regs->r0 = r0;
+				regs->r19 = r19;
+				regs->pc -= 4;
+				break;
+			case ERESTART_RESTARTBLOCK:
+				/* Set v0 to the restart_syscall and replay */
+				regs->r0 = __NR_restart_syscall;
+				regs->pc -= 4;
+				break;
+			}
+		}
+		restore_saved_sigmask();
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (single_stepping)
 		ptrace_set_bpt(current);	/* re-set breakpoint */
 }
 
 void
+<<<<<<< HEAD
 do_notify_resume(struct pt_regs *regs, struct switch_stack *sw,
 		 unsigned long thread_info_flags,
 		 unsigned long r0, unsigned long r19)
@@ -619,4 +862,27 @@ do_notify_resume(struct pt_regs *regs, struct switch_stack *sw,
 		if (current->replacement_session_keyring)
 			key_replace_session_keyring();
 	}
+=======
+do_work_pending(struct pt_regs *regs, unsigned long thread_flags,
+		 unsigned long r0, unsigned long r19)
+{
+	do {
+		if (thread_flags & _TIF_NEED_RESCHED) {
+			schedule();
+		} else {
+			local_irq_enable();
+			if (thread_flags & (_TIF_SIGPENDING|_TIF_NOTIFY_SIGNAL)) {
+				preempt_disable();
+				save_fpu();
+				preempt_enable();
+				do_signal(regs, r0, r19);
+				r0 = 0;
+			} else {
+				resume_user_mode_work(regs);
+			}
+		}
+		local_irq_disable();
+		thread_flags = read_thread_flags();
+	} while (thread_flags & _TIF_WORK_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

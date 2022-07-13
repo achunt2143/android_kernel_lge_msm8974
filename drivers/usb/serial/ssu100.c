@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * usb-serial driver for Quatech SSU-100
  *
@@ -6,7 +10,10 @@
  */
 
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -46,10 +53,13 @@
 #define FULLPWRBIT          0x00000080
 #define NEXT_BOARD_POWER_BIT        0x00000004
 
+<<<<<<< HEAD
 static bool debug;
 
 /* Version Information */
 #define DRIVER_VERSION "v0.1"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_DESC "Quatech SSU-100 USB to Serial Driver"
 
 #define	USB_VENDOR_ID_QUATECH	0x061d	/* Quatech VID */
@@ -59,6 +69,7 @@ static const struct usb_device_id id_table[] = {
 	{USB_DEVICE(USB_VENDOR_ID_QUATECH, QUATECH_SSU100)},
 	{}			/* Terminating entry */
 };
+<<<<<<< HEAD
 
 MODULE_DEVICE_TABLE(usb, id_table);
 
@@ -73,10 +84,15 @@ static struct usb_driver ssu100_driver = {
 	.supports_autosuspend	       = 1,
 };
 
+=======
+MODULE_DEVICE_TABLE(usb, id_table);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ssu100_port_private {
 	spinlock_t status_lock;
 	u8 shadowLSR;
 	u8 shadowMSR;
+<<<<<<< HEAD
 	struct async_icount icount;
 };
 
@@ -88,6 +104,10 @@ static void ssu100_release(struct usb_serial *serial)
 	kfree(priv);
 }
 
+=======
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int ssu100_control_msg(struct usb_device *dev,
 				     u8 request, u16 data, u16 index)
 {
@@ -106,9 +126,23 @@ static inline int ssu100_setdevice(struct usb_device *dev, u8 *data)
 
 static inline int ssu100_getdevice(struct usb_device *dev, u8 *data)
 {
+<<<<<<< HEAD
 	return usb_control_msg(dev, usb_rcvctrlpipe(dev, 0),
 			       QT_SET_GET_DEVICE, 0xc0, 0, 0,
 			       data, 3, 300);
+=======
+	int ret;
+
+	ret = usb_control_msg(dev, usb_rcvctrlpipe(dev, 0),
+			      QT_SET_GET_DEVICE, 0xc0, 0, 0,
+			      data, 3, 300);
+	if (ret < 3) {
+		if (ret >= 0)
+			ret = -EIO;
+	}
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int ssu100_getregister(struct usb_device *dev,
@@ -116,10 +150,24 @@ static inline int ssu100_getregister(struct usb_device *dev,
 				     unsigned short reg,
 				     u8 *data)
 {
+<<<<<<< HEAD
 	return usb_control_msg(dev, usb_rcvctrlpipe(dev, 0),
 			       QT_SET_GET_REGISTER, 0xc0, reg,
 			       uart, data, sizeof(*data), 300);
 
+=======
+	int ret;
+
+	ret = usb_control_msg(dev, usb_rcvctrlpipe(dev, 0),
+			      QT_SET_GET_REGISTER, 0xc0, reg,
+			      uart, data, sizeof(*data), 300);
+	if (ret < (int)sizeof(*data)) {
+		if (ret >= 0)
+			ret = -EIO;
+	}
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -147,7 +195,11 @@ static inline int update_mctrl(struct usb_device *dev, unsigned int set,
 	int result;
 
 	if (((set | clear) & (TIOCM_DTR | TIOCM_RTS)) == 0) {
+<<<<<<< HEAD
 		dbg("%s - DTR|RTS not being set|cleared", __func__);
+=======
+		dev_dbg(&dev->dev, "%s - DTR|RTS not being set|cleared\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;	/* no change */
 	}
 
@@ -160,7 +212,11 @@ static inline int update_mctrl(struct usb_device *dev, unsigned int set,
 
 	result = ssu100_setregister(dev, 0, UART_MCR, urb_value);
 	if (result < 0)
+<<<<<<< HEAD
 		dbg("%s Error from MODEM_CTRL urb", __func__);
+=======
+		dev_dbg(&dev->dev, "%s Error from MODEM_CTRL urb\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return result;
 }
@@ -170,15 +226,22 @@ static int ssu100_initdevice(struct usb_device *dev)
 	u8 *data;
 	int result = 0;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data = kzalloc(3, GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
 
 	result = ssu100_getdevice(dev, data);
 	if (result < 0) {
+<<<<<<< HEAD
 		dbg("%s - get_device failed %i", __func__, result);
+=======
+		dev_dbg(&dev->dev, "%s - get_device failed %i\n", __func__, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -186,25 +249,41 @@ static int ssu100_initdevice(struct usb_device *dev)
 
 	result = ssu100_setdevice(dev, data);
 	if (result < 0) {
+<<<<<<< HEAD
 		dbg("%s - setdevice failed %i", __func__, result);
+=======
+		dev_dbg(&dev->dev, "%s - setdevice failed %i\n", __func__, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	result = ssu100_control_msg(dev, QT_GET_SET_PREBUF_TRIG_LVL, 128, 0);
 	if (result < 0) {
+<<<<<<< HEAD
 		dbg("%s - set prebuffer level failed %i", __func__, result);
+=======
+		dev_dbg(&dev->dev, "%s - set prebuffer level failed %i\n", __func__, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	result = ssu100_control_msg(dev, QT_SET_ATF, ATC_DISABLED, 0);
 	if (result < 0) {
+<<<<<<< HEAD
 		dbg("%s - set ATFprebuffer level failed %i", __func__, result);
+=======
+		dev_dbg(&dev->dev, "%s - set ATFprebuffer level failed %i\n", __func__, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	result = ssu100_getdevice(dev, data);
 	if (result < 0) {
+<<<<<<< HEAD
 		dbg("%s - get_device failed %i", __func__, result);
+=======
+		dev_dbg(&dev->dev, "%s - get_device failed %i\n", __func__, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -215,7 +294,11 @@ static int ssu100_initdevice(struct usb_device *dev)
 
 	result = ssu100_setdevice(dev, data);
 	if (result < 0) {
+<<<<<<< HEAD
 		dbg("%s - setdevice failed %i", __func__, result);
+=======
+		dev_dbg(&dev->dev, "%s - setdevice failed %i\n", __func__, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -226,18 +309,29 @@ out:	kfree(data);
 
 
 static void ssu100_set_termios(struct tty_struct *tty,
+<<<<<<< HEAD
 			       struct usb_serial_port *port,
 			       struct ktermios *old_termios)
 {
 	struct usb_device *dev = port->serial->dev;
 	struct ktermios *termios = tty->termios;
+=======
+		               struct usb_serial_port *port,
+		               const struct ktermios *old_termios)
+{
+	struct usb_device *dev = port->serial->dev;
+	struct ktermios *termios = &tty->termios;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 baud, divisor, remainder;
 	unsigned int cflag = termios->c_cflag;
 	u16 urb_value = 0; /* will hold the new flags */
 	int result;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cflag & PARENB) {
 		if (cflag & PARODD)
 			urb_value |= UART_LCR_PARITY;
@@ -245,6 +339,7 @@ static void ssu100_set_termios(struct tty_struct *tty,
 			urb_value |= SERIAL_EVEN_PARITY;
 	}
 
+<<<<<<< HEAD
 	switch (cflag & CSIZE) {
 	case CS5:
 		urb_value |= UART_LCR_WLEN5;
@@ -260,12 +355,19 @@ static void ssu100_set_termios(struct tty_struct *tty,
 		urb_value |= UART_LCR_WLEN8;
 		break;
 	}
+=======
+	urb_value |= UART_LCR_WLEN(tty_get_char_size(cflag));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	baud = tty_get_baud_rate(tty);
 	if (!baud)
 		baud = 9600;
 
+<<<<<<< HEAD
 	dbg("%s - got baud = %d\n", __func__, baud);
+=======
+	dev_dbg(&port->dev, "%s - got baud = %d\n", __func__, baud);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	divisor = MAX_BAUD_RATE / baud;
@@ -277,7 +379,11 @@ static void ssu100_set_termios(struct tty_struct *tty,
 
 	result = ssu100_control_msg(dev, QT_GET_SET_UART, divisor, urb_value);
 	if (result < 0)
+<<<<<<< HEAD
 		dbg("%s - set uart failed", __func__);
+=======
+		dev_dbg(&port->dev, "%s - set uart failed\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cflag & CRTSCTS)
 		result = ssu100_control_msg(dev, QT_HW_FLOW_CONTROL_MASK,
@@ -286,7 +392,11 @@ static void ssu100_set_termios(struct tty_struct *tty,
 		result = ssu100_control_msg(dev, QT_HW_FLOW_CONTROL_MASK,
 					    0, 0);
 	if (result < 0)
+<<<<<<< HEAD
 		dbg("%s - set HW flow control failed", __func__);
+=======
+		dev_dbg(&port->dev, "%s - set HW flow control failed\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (I_IXOFF(tty) || I_IXON(tty)) {
 		u16 x = ((u16)(START_CHAR(tty) << 8) | (u16)(STOP_CHAR(tty)));
@@ -298,7 +408,11 @@ static void ssu100_set_termios(struct tty_struct *tty,
 					    0, 0);
 
 	if (result < 0)
+<<<<<<< HEAD
 		dbg("%s - set SW flow control failed", __func__);
+=======
+		dev_dbg(&port->dev, "%s - set SW flow control failed\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 }
 
@@ -311,8 +425,11 @@ static int ssu100_open(struct tty_struct *tty, struct usb_serial_port *port)
 	int result;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	dbg("%s - port %d", __func__, port->number);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data = kzalloc(2, GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
@@ -321,8 +438,15 @@ static int ssu100_open(struct tty_struct *tty, struct usb_serial_port *port)
 				 QT_OPEN_CLOSE_CHANNEL,
 				 QT_TRANSFER_IN, 0x01,
 				 0, data, 2, 300);
+<<<<<<< HEAD
 	if (result < 0) {
 		dbg("%s - open failed %i", __func__, result);
+=======
+	if (result < 2) {
+		dev_dbg(&port->dev, "%s - open failed %i\n", __func__, result);
+		if (result >= 0)
+			result = -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(data);
 		return result;
 	}
@@ -337,14 +461,22 @@ static int ssu100_open(struct tty_struct *tty, struct usb_serial_port *port)
 /* set to 9600 */
 	result = ssu100_control_msg(dev, QT_GET_SET_UART, 0x30, 0x0300);
 	if (result < 0)
+<<<<<<< HEAD
 		dbg("%s - set uart failed", __func__);
 
 	if (tty)
 		ssu100_set_termios(tty, port, tty->termios);
+=======
+		dev_dbg(&port->dev, "%s - set uart failed\n", __func__);
+
+	if (tty)
+		ssu100_set_termios(tty, port, &tty->termios);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return usb_serial_generic_open(tty, port);
 }
 
+<<<<<<< HEAD
 static void ssu100_close(struct usb_serial_port *port)
 {
 	dbg("%s", __func__);
@@ -483,6 +615,34 @@ static int ssu100_attach(struct usb_serial *serial)
 	usb_set_serial_port_data(port, priv);
 
 	return ssu100_initdevice(serial->dev);
+=======
+static int ssu100_attach(struct usb_serial *serial)
+{
+	return ssu100_initdevice(serial->dev);
+}
+
+static int ssu100_port_probe(struct usb_serial_port *port)
+{
+	struct ssu100_port_private *priv;
+
+	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+	spin_lock_init(&priv->status_lock);
+
+	usb_set_serial_port_data(port, priv);
+
+	return 0;
+}
+
+static void ssu100_port_remove(struct usb_serial_port *port)
+{
+	struct ssu100_port_private *priv;
+
+	priv = usb_get_serial_port_data(port);
+	kfree(priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ssu100_tiocmget(struct tty_struct *tty)
@@ -492,8 +652,11 @@ static int ssu100_tiocmget(struct tty_struct *tty)
 	u8 *d;
 	int r;
 
+<<<<<<< HEAD
 	dbg("%s\n", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	d = kzalloc(2, GFP_KERNEL);
 	if (!d)
 		return -ENOMEM;
@@ -524,7 +687,10 @@ static int ssu100_tiocmset(struct tty_struct *tty,
 	struct usb_serial_port *port = tty->driver_data;
 	struct usb_device *dev = port->serial->dev;
 
+<<<<<<< HEAD
 	dbg("%s\n", __func__);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return update_mctrl(dev, set, clear);
 }
 
@@ -532,8 +698,11 @@ static void ssu100_dtr_rts(struct usb_serial_port *port, int on)
 {
 	struct usb_device *dev = port->serial->dev;
 
+<<<<<<< HEAD
 	dbg("%s\n", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Disable flow control */
 	if (!on) {
 		if (ssu100_setregister(dev, 0, UART_MCR, 0) < 0)
@@ -558,6 +727,7 @@ static void ssu100_update_msr(struct usb_serial_port *port, u8 msr)
 	if (msr & UART_MSR_ANY_DELTA) {
 		/* update input line counters */
 		if (msr & UART_MSR_DCTS)
+<<<<<<< HEAD
 			priv->icount.cts++;
 		if (msr & UART_MSR_DDSR)
 			priv->icount.dsr++;
@@ -566,6 +736,16 @@ static void ssu100_update_msr(struct usb_serial_port *port, u8 msr)
 		if (msr & UART_MSR_TERI)
 			priv->icount.rng++;
 		wake_up_interruptible(&port->delta_msr_wait);
+=======
+			port->icount.cts++;
+		if (msr & UART_MSR_DDSR)
+			port->icount.dsr++;
+		if (msr & UART_MSR_DDCD)
+			port->icount.dcd++;
+		if (msr & UART_MSR_TERI)
+			port->icount.rng++;
+		wake_up_interruptible(&port->port.delta_msr_wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -584,41 +764,68 @@ static void ssu100_update_lsr(struct usb_serial_port *port, u8 lsr,
 		/* we always want to update icount, but we only want to
 		 * update tty_flag for one case */
 		if (lsr & UART_LSR_BI) {
+<<<<<<< HEAD
 			priv->icount.brk++;
+=======
+			port->icount.brk++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*tty_flag = TTY_BREAK;
 			usb_serial_handle_break(port);
 		}
 		if (lsr & UART_LSR_PE) {
+<<<<<<< HEAD
 			priv->icount.parity++;
+=======
+			port->icount.parity++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (*tty_flag == TTY_NORMAL)
 				*tty_flag = TTY_PARITY;
 		}
 		if (lsr & UART_LSR_FE) {
+<<<<<<< HEAD
 			priv->icount.frame++;
+=======
+			port->icount.frame++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (*tty_flag == TTY_NORMAL)
 				*tty_flag = TTY_FRAME;
 		}
 		if (lsr & UART_LSR_OE) {
+<<<<<<< HEAD
 			priv->icount.overrun++;
 			tty_insert_flip_char(tty_port_tty_get(&port->port),
 					0, TTY_OVERRUN);
+=======
+			port->icount.overrun++;
+			tty_insert_flip_char(&port->port, 0, TTY_OVERRUN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 }
 
+<<<<<<< HEAD
 static int ssu100_process_packet(struct urb *urb,
 				 struct tty_struct *tty)
 {
 	struct usb_serial_port *port = urb->context;
 	char *packet = (char *)urb->transfer_buffer;
+=======
+static void ssu100_process_read_urb(struct urb *urb)
+{
+	struct usb_serial_port *port = urb->context;
+	char *packet = urb->transfer_buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char flag = TTY_NORMAL;
 	u32 len = urb->actual_length;
 	int i;
 	char *ch;
 
+<<<<<<< HEAD
 	dbg("%s - port %d", __func__, port->number);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((len >= 4) &&
 	    (packet[0] == 0x1b) && (packet[1] == 0x1b) &&
 	    ((packet[2] == 0x00) || (packet[2] == 0x01))) {
@@ -633,6 +840,7 @@ static int ssu100_process_packet(struct urb *urb,
 		ch = packet;
 
 	if (!len)
+<<<<<<< HEAD
 		return 0;	/* status only */
 
 	if (port->port.console && port->sysrq) {
@@ -663,6 +871,20 @@ static void ssu100_process_read_urb(struct urb *urb)
 	if (count)
 		tty_flip_buffer_push(tty);
 	tty_kref_put(tty);
+=======
+		return;	/* status only */
+
+	if (port->sysrq) {
+		for (i = 0; i < len; i++, ch++) {
+			if (!usb_serial_handle_sysrq_char(port, *ch))
+				tty_insert_flip_char(&port->port, *ch, flag);
+		}
+	} else {
+		tty_insert_flip_string_fixed_flag(&port->port, ch, flag, len);
+	}
+
+	tty_flip_buffer_push(&port->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct usb_serial_driver ssu100_device = {
@@ -674,23 +896,36 @@ static struct usb_serial_driver ssu100_device = {
 	.id_table	     = id_table,
 	.num_ports	     = 1,
 	.open		     = ssu100_open,
+<<<<<<< HEAD
 	.close		     = ssu100_close,
 	.attach              = ssu100_attach,
 	.release             = ssu100_release,
+=======
+	.attach              = ssu100_attach,
+	.port_probe          = ssu100_port_probe,
+	.port_remove         = ssu100_port_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dtr_rts             = ssu100_dtr_rts,
 	.process_read_urb    = ssu100_process_read_urb,
 	.tiocmget            = ssu100_tiocmget,
 	.tiocmset            = ssu100_tiocmset,
+<<<<<<< HEAD
 	.get_icount	     = ssu100_get_icount,
 	.ioctl               = ssu100_ioctl,
 	.set_termios         = ssu100_set_termios,
 	.disconnect          = usb_serial_generic_disconnect,
+=======
+	.tiocmiwait          = usb_serial_generic_tiocmiwait,
+	.get_icount	     = usb_serial_generic_get_icount,
+	.set_termios         = ssu100_set_termios,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct usb_serial_driver * const serial_drivers[] = {
 	&ssu100_device, NULL
 };
 
+<<<<<<< HEAD
 module_usb_serial_driver(ssu100_driver, serial_drivers);
 
 MODULE_DESCRIPTION(DRIVER_DESC);
@@ -698,3 +933,9 @@ MODULE_LICENSE("GPL");
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug enabled or not");
+=======
+module_usb_serial_driver(serial_drivers, id_table);
+
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

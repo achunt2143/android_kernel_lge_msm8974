@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/topology.h>
@@ -11,6 +15,7 @@
 
 #include "bus_numa.h"
 
+<<<<<<< HEAD
 /*
  * This discovers the pcibus <-> node mapping on AMD K8.
  * also get peer root bus resource for io,mmio
@@ -42,6 +47,64 @@ static int __init early_fill_mp_bus_info(void)
 {
 	int i;
 	int j;
+=======
+#define AMD_NB_F0_NODE_ID			0x60
+#define AMD_NB_F0_UNIT_ID			0x64
+#define AMD_NB_F1_CONFIG_MAP_REG		0xe0
+
+#define RANGE_NUM				16
+#define AMD_NB_F1_CONFIG_MAP_RANGES		4
+
+struct amd_hostbridge {
+	u32 bus;
+	u32 slot;
+	u32 device;
+};
+
+/*
+ * IMPORTANT NOTE:
+ * hb_probes[] and early_root_info_init() is in maintenance mode.
+ * It only supports K8, Fam10h, Fam11h, and Fam15h_00h-0fh .
+ * Future processor will rely on information in ACPI.
+ */
+static struct amd_hostbridge hb_probes[] __initdata = {
+	{ 0, 0x18, 0x1100 }, /* K8 */
+	{ 0, 0x18, 0x1200 }, /* Family10h */
+	{ 0xff, 0, 0x1200 }, /* Family10h */
+	{ 0, 0x18, 0x1300 }, /* Family11h */
+	{ 0, 0x18, 0x1600 }, /* Family15h */
+};
+
+static struct pci_root_info __init *find_pci_root_info(int node, int link)
+{
+	struct pci_root_info *info;
+
+	/* find the position */
+	list_for_each_entry(info, &pci_root_infos, list)
+		if (info->node == node && info->link == link)
+			return info;
+
+	return NULL;
+}
+
+static inline resource_size_t cap_resource(u64 val)
+{
+	if (val > RESOURCE_SIZE_MAX)
+		return RESOURCE_SIZE_MAX;
+
+	return val;
+}
+
+/**
+ * early_root_info_init()
+ * called before pcibios_scan_root and pci_scan_bus
+ * fills the mp_bus_to_cpumask array based according
+ * to the LDT Bus Number Registers found in the northbridge.
+ */
+static int __init early_root_info_init(void)
+{
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned bus;
 	unsigned slot;
 	int node;
@@ -50,7 +113,10 @@ static int __init early_fill_mp_bus_info(void)
 	int def_link;
 	struct pci_root_info *info;
 	u32 reg;
+<<<<<<< HEAD
 	struct resource *res;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 start;
 	u64 end;
 	struct range range[RANGE_NUM];
@@ -65,11 +131,16 @@ static int __init early_fill_mp_bus_info(void)
 		return -1;
 
 	found = false;
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(pci_probes); i++) {
+=======
+	for (i = 0; i < ARRAY_SIZE(hb_probes); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 id;
 		u16 device;
 		u16 vendor;
 
+<<<<<<< HEAD
 		bus = pci_probes[i].bus;
 		slot = pci_probes[i].slot;
 		id = read_pci_config(bus, slot, 0, PCI_VENDOR_ID);
@@ -78,6 +149,19 @@ static int __init early_fill_mp_bus_info(void)
 		device = (id>>16) & 0xffff;
 		if (pci_probes[i].vendor == vendor &&
 		    pci_probes[i].device == device) {
+=======
+		bus = hb_probes[i].bus;
+		slot = hb_probes[i].slot;
+		id = read_pci_config(bus, slot, 0, PCI_VENDOR_ID);
+		vendor = id & 0xffff;
+		device = (id>>16) & 0xffff;
+
+		if (vendor != PCI_VENDOR_ID_AMD &&
+		    vendor != PCI_VENDOR_ID_HYGON)
+			continue;
+
+		if (hb_probes[i].device == device) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			found = true;
 			break;
 		}
@@ -86,11 +170,24 @@ static int __init early_fill_mp_bus_info(void)
 	if (!found)
 		return 0;
 
+<<<<<<< HEAD
 	pci_root_num = 0;
 	for (i = 0; i < 4; i++) {
 		int min_bus;
 		int max_bus;
 		reg = read_pci_config(bus, slot, 1, 0xe0 + (i << 2));
+=======
+	/*
+	 * We should learn topology and routing information from _PXM and
+	 * _CRS methods in the ACPI namespace.  We extract node numbers
+	 * here to work around BIOSes that don't supply _PXM.
+	 */
+	for (i = 0; i < AMD_NB_F1_CONFIG_MAP_RANGES; i++) {
+		int min_bus;
+		int max_bus;
+		reg = read_pci_config(bus, slot, 1,
+				AMD_NB_F1_CONFIG_MAP_REG + (i << 2));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Check if that register is enabled for bus range */
 		if ((reg & 7) != 3)
@@ -99,6 +196,7 @@ static int __init early_fill_mp_bus_info(void)
 		min_bus = (reg >> 16) & 0xff;
 		max_bus = (reg >> 24) & 0xff;
 		node = (reg >> 4) & 0x07;
+<<<<<<< HEAD
 #ifdef CONFIG_NUMA
 		for (j = min_bus; j <= max_bus; j++)
 			set_mp_bus_to_node(j, node);
@@ -118,6 +216,28 @@ static int __init early_fill_mp_bus_info(void)
 	reg = read_pci_config(bus, slot, 0, 0x60);
 	def_node = (reg >> 8) & 0x07;
 	reg = read_pci_config(bus, slot, 0, 0x64);
+=======
+		link = (reg >> 8) & 0x03;
+
+		alloc_pci_root_info(min_bus, max_bus, node, link);
+	}
+
+	/*
+	 * The following code extracts routing information for use on old
+	 * systems where Linux doesn't automatically use host bridge _CRS
+	 * methods (or when the user specifies "pci=nocrs").
+	 *
+	 * We only do this through Fam11h, because _CRS should be enough on
+	 * newer systems.
+	 */
+	if (boot_cpu_data.x86 > 0x11)
+		return 0;
+
+	/* get the default node and link for left over res */
+	reg = read_pci_config(bus, slot, 0, AMD_NB_F0_NODE_ID);
+	def_node = (reg >> 8) & 0x07;
+	reg = read_pci_config(bus, slot, 0, AMD_NB_F0_UNIT_ID);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	def_link = (reg >> 8) & 0x03;
 
 	memset(range, 0, sizeof(range));
@@ -134,6 +254,7 @@ static int __init early_fill_mp_bus_info(void)
 		link = (reg >> 4) & 0x03;
 		end = (reg & 0xfff000) | 0xfff;
 
+<<<<<<< HEAD
 		/* find the position */
 		for (j = 0; j < pci_root_num; j++) {
 			info = &pci_root_info[j];
@@ -144,6 +265,12 @@ static int __init early_fill_mp_bus_info(void)
 			continue; /* not found */
 
 		info = &pci_root_info[j];
+=======
+		info = find_pci_root_info(node, link);
+		if (!info)
+			continue; /* not found */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_DEBUG "node %d link %d: io port [%llx, %llx]\n",
 		       node, link, start, end);
 
@@ -155,6 +282,7 @@ static int __init early_fill_mp_bus_info(void)
 	}
 	/* add left over io port range to def node/link, [0, 0xffff] */
 	/* find the position */
+<<<<<<< HEAD
 	for (j = 0; j < pci_root_num; j++) {
 		info = &pci_root_info[j];
 		if (info->node == def_node && info->link == def_link)
@@ -162,6 +290,10 @@ static int __init early_fill_mp_bus_info(void)
 	}
 	if (j < pci_root_num) {
 		info = &pci_root_info[j];
+=======
+	info = find_pci_root_info(def_node, def_link);
+	if (info) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < RANGE_NUM; i++) {
 			if (!range[i].end)
 				continue;
@@ -214,6 +346,7 @@ static int __init early_fill_mp_bus_info(void)
 		end <<= 8;
 		end |= 0xffff;
 
+<<<<<<< HEAD
 		/* find the position */
 		for (j = 0; j < pci_root_num; j++) {
 			info = &pci_root_info[j];
@@ -224,6 +357,12 @@ static int __init early_fill_mp_bus_info(void)
 			continue; /* not found */
 
 		info = &pci_root_info[j];
+=======
+		info = find_pci_root_info(node, link);
+
+		if (!info)
+			continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		printk(KERN_DEBUG "node %d link %d: mmio [%llx, %llx]",
 		       node, link, start, end);
@@ -275,7 +414,11 @@ static int __init early_fill_mp_bus_info(void)
 
 	/* need to take out [4G, TOM2) for RAM*/
 	/* SYS_CFG */
+<<<<<<< HEAD
 	address = MSR_K8_SYSCFG;
+=======
+	address = MSR_AMD64_SYSCFG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdmsrl(address, val);
 	/* TOP_MEM2 is enabled? */
 	if (val & (1<<21)) {
@@ -291,6 +434,7 @@ static int __init early_fill_mp_bus_info(void)
 	 * add left over mmio range to def node/link ?
 	 * that is tricky, just record range in from start_min to 4G
 	 */
+<<<<<<< HEAD
 	for (j = 0; j < pci_root_num; j++) {
 		info = &pci_root_info[j];
 		if (info->node == def_node && info->link == def_link)
@@ -299,6 +443,10 @@ static int __init early_fill_mp_bus_info(void)
 	if (j < pci_root_num) {
 		info = &pci_root_info[j];
 
+=======
+	info = find_pci_root_info(def_node, def_link);
+	if (info) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < RANGE_NUM; i++) {
 			if (!range[i].end)
 				continue;
@@ -309,6 +457,7 @@ static int __init early_fill_mp_bus_info(void)
 		}
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < pci_root_num; i++) {
 		int res_num;
 		int busnum;
@@ -323,6 +472,18 @@ static int __init early_fill_mp_bus_info(void)
 			printk(KERN_DEBUG "bus: %02x index %x %pR\n",
 				       busnum, j, res);
 		}
+=======
+	list_for_each_entry(info, &pci_root_infos, list) {
+		int busnum;
+		struct pci_root_res *root_res;
+
+		busnum = info->busn.start;
+		printk(KERN_DEBUG "bus: %pR on node %x link %x\n",
+		       &info->busn, info->node, info->link);
+		list_for_each_entry(root_res, &info->resources, list)
+			printk(KERN_DEBUG "bus: %02x %pR\n",
+				       busnum, &root_res->res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -330,14 +491,22 @@ static int __init early_fill_mp_bus_info(void)
 
 #define ENABLE_CF8_EXT_CFG      (1ULL << 46)
 
+<<<<<<< HEAD
 static void __cpuinit enable_pci_io_ecs(void *unused)
 {
 	u64 reg;
+=======
+static int amd_bus_cpu_online(unsigned int cpu)
+{
+	u64 reg;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdmsrl(MSR_AMD64_NB_CFG, reg);
 	if (!(reg & ENABLE_CF8_EXT_CFG)) {
 		reg |= ENABLE_CF8_EXT_CFG;
 		wrmsrl(MSR_AMD64_NB_CFG, reg);
 	}
+<<<<<<< HEAD
 }
 
 static int __cpuinit amd_cpu_notify(struct notifier_block *self,
@@ -359,6 +528,11 @@ static struct notifier_block __cpuinitdata amd_cpu_notifier = {
 	.notifier_call	= amd_cpu_notify,
 };
 
+=======
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init pci_enable_pci_io_ecs(void)
 {
 #ifdef CONFIG_AMD_NB
@@ -388,20 +562,34 @@ static void __init pci_enable_pci_io_ecs(void)
 
 static int __init pci_io_ecs_init(void)
 {
+<<<<<<< HEAD
 	int cpu;
 
 	/* assume all cpus from fam10h have IO ECS */
         if (boot_cpu_data.x86 < 0x10)
+=======
+	int ret;
+
+	/* assume all cpus from fam10h have IO ECS */
+	if (boot_cpu_data.x86 < 0x10)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* Try the PCI method first. */
 	if (early_pci_allowed())
 		pci_enable_pci_io_ecs();
 
+<<<<<<< HEAD
 	register_cpu_notifier(&amd_cpu_notifier);
 	for_each_online_cpu(cpu)
 		amd_cpu_notify(&amd_cpu_notifier, (unsigned long)CPU_ONLINE,
 			       (void *)(long)cpu);
+=======
+	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "pci/amd_bus:online",
+				amd_bus_cpu_online, NULL);
+	WARN_ON(ret < 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_probe |= PCI_HAS_IO_ECS;
 
 	return 0;
@@ -409,10 +597,18 @@ static int __init pci_io_ecs_init(void)
 
 static int __init amd_postcore_init(void)
 {
+<<<<<<< HEAD
 	if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD)
 		return 0;
 
 	early_fill_mp_bus_info();
+=======
+	if (boot_cpu_data.x86_vendor != X86_VENDOR_AMD &&
+	    boot_cpu_data.x86_vendor != X86_VENDOR_HYGON)
+		return 0;
+
+	early_root_info_init();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_io_ecs_init();
 
 	return 0;

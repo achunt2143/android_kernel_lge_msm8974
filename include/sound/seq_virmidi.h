@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_SEQ_VIRMIDI_H
 #define __SOUND_SEQ_VIRMIDI_H
 
@@ -5,6 +9,7 @@
  *  Virtual Raw MIDI client on Sequencer
  *  Copyright (c) 2000 by Takashi Iwai <tiwai@suse.de>,
  *                        Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,6 +29,12 @@
 
 #include "rawmidi.h"
 #include "seq_midi_event.h"
+=======
+ */
+
+#include <sound/rawmidi.h>
+#include <sound/seq_midi_event.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * device file instance:
@@ -36,11 +47,19 @@ struct snd_virmidi {
 	int seq_mode;
 	int client;
 	int port;
+<<<<<<< HEAD
 	unsigned int trigger: 1;
+=======
+	bool trigger;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_midi_event *parser;
 	struct snd_seq_event event;
 	struct snd_virmidi_dev *rdev;
 	struct snd_rawmidi_substream *substream;
+<<<<<<< HEAD
+=======
+	struct work_struct output_work;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define SNDRV_VIRMIDI_SUBSCRIBE		(1<<0)
@@ -60,6 +79,10 @@ struct snd_virmidi_dev {
 	int port;			/* created/attached port */
 	unsigned int flags;		/* SNDRV_VIRMIDI_* */
 	rwlock_t filelist_lock;
+<<<<<<< HEAD
+=======
+	struct rw_semaphore filelist_sem;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head filelist;
 };
 

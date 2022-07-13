@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram VXpocket soundcards
  *
  * VX-pocket mixer
  *
  * Copyright (c) 2002 by Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <sound/core.h>
@@ -43,7 +50,11 @@ static int vx_mic_level_info(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_
 static int vx_mic_level_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
 {
 	struct vx_core *_chip = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ucontrol->value.integer.value[0] = chip->mic_level;
 	return 0;
 }
@@ -51,7 +62,11 @@ static int vx_mic_level_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_v
 static int vx_mic_level_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
 {
 	struct vx_core *_chip = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int val = ucontrol->value.integer.value[0];
 
 	if (val > MIC_LEVEL_MAX)
@@ -69,7 +84,11 @@ static int vx_mic_level_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_v
 
 static const DECLARE_TLV_DB_SCALE(db_scale_mic, -21, 3, 0);
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_mic_level = {
+=======
+static const struct snd_kcontrol_new vx_control_mic_level = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.access =	(SNDRV_CTL_ELEM_ACCESS_READWRITE |
 			 SNDRV_CTL_ELEM_ACCESS_TLV_READ),
@@ -88,7 +107,11 @@ static struct snd_kcontrol_new vx_control_mic_level = {
 static int vx_mic_boost_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
 {
 	struct vx_core *_chip = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ucontrol->value.integer.value[0] = chip->mic_level;
 	return 0;
 }
@@ -96,7 +119,11 @@ static int vx_mic_boost_get(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_v
 static int vx_mic_boost_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
 {
 	struct vx_core *_chip = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int val = !!ucontrol->value.integer.value[0];
 	mutex_lock(&_chip->mixer_mutex);
 	if (chip->mic_level != val) {
@@ -109,7 +136,11 @@ static int vx_mic_boost_put(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_v
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new vx_control_mic_boost = {
+=======
+static const struct snd_kcontrol_new vx_control_mic_boost = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name =		"Mic Boost",
 	.info =		vx_mic_boost_info,
@@ -120,7 +151,11 @@ static struct snd_kcontrol_new vx_control_mic_boost = {
 
 int vxp_add_mic_controls(struct vx_core *_chip)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	/* mute input levels */
@@ -137,11 +172,21 @@ int vxp_add_mic_controls(struct vx_core *_chip)
 	/* mic level */
 	switch (_chip->type) {
 	case VX_TYPE_VXPOCKET:
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(_chip->card, snd_ctl_new1(&vx_control_mic_level, chip))) < 0)
 			return err;
 		break;
 	case VX_TYPE_VXP440:
 		if ((err = snd_ctl_add(_chip->card, snd_ctl_new1(&vx_control_mic_boost, chip))) < 0)
+=======
+		err = snd_ctl_add(_chip->card, snd_ctl_new1(&vx_control_mic_level, chip));
+		if (err < 0)
+			return err;
+		break;
+	case VX_TYPE_VXP440:
+		err = snd_ctl_add(_chip->card, snd_ctl_new1(&vx_control_mic_boost, chip));
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		break;
 	}

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ext2/inode.c
  *
@@ -25,15 +29,29 @@
 #include <linux/time.h>
 #include <linux/highuid.h>
 #include <linux/pagemap.h>
+<<<<<<< HEAD
+=======
+#include <linux/dax.h>
+#include <linux/blkdev.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/quotaops.h>
 #include <linux/writeback.h>
 #include <linux/buffer_head.h>
 #include <linux/mpage.h>
 #include <linux/fiemap.h>
+<<<<<<< HEAD
 #include <linux/namei.h>
 #include "ext2.h"
 #include "acl.h"
 #include "xip.h"
+=======
+#include <linux/iomap.h>
+#include <linux/namei.h>
+#include <linux/uio.h>
+#include "ext2.h"
+#include "acl.h"
+#include "xattr.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __ext2_write_inode(struct inode *inode, int do_sync);
 
@@ -51,12 +69,20 @@ static inline int ext2_inode_is_fast_symlink(struct inode *inode)
 
 static void ext2_truncate_blocks(struct inode *inode, loff_t offset);
 
+<<<<<<< HEAD
 static void ext2_write_failed(struct address_space *mapping, loff_t to)
+=======
+void ext2_write_failed(struct address_space *mapping, loff_t to)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode = mapping->host;
 
 	if (to > inode->i_size) {
+<<<<<<< HEAD
 		truncate_pagecache(inode, to, inode->i_size);
+=======
+		truncate_pagecache(inode, inode->i_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ext2_truncate_blocks(inode, inode->i_size);
 	}
 }
@@ -76,21 +102,38 @@ void ext2_evict_inode(struct inode * inode)
 		dquot_drop(inode);
 	}
 
+<<<<<<< HEAD
 	truncate_inode_pages(&inode->i_data, 0);
 
 	if (want_delete) {
 		/* set dtime */
 		EXT2_I(inode)->i_dtime	= get_seconds();
+=======
+	truncate_inode_pages_final(&inode->i_data);
+
+	if (want_delete) {
+		sb_start_intwrite(inode->i_sb);
+		/* set dtime */
+		EXT2_I(inode)->i_dtime	= ktime_get_real_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mark_inode_dirty(inode);
 		__ext2_write_inode(inode, inode_needs_sync(inode));
 		/* truncate to 0 */
 		inode->i_size = 0;
 		if (inode->i_blocks)
 			ext2_truncate_blocks(inode, 0);
+<<<<<<< HEAD
 	}
 
 	invalidate_inode_buffers(inode);
 	end_writeback(inode);
+=======
+		ext2_xattr_delete_inode(inode);
+	}
+
+	invalidate_inode_buffers(inode);
+	clear_inode(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ext2_discard_reservation(inode);
 	rsv = EXT2_I(inode)->i_block_alloc_info;
@@ -98,8 +141,15 @@ void ext2_evict_inode(struct inode * inode)
 	if (unlikely(rsv))
 		kfree(rsv);
 
+<<<<<<< HEAD
 	if (want_delete)
 		ext2_free_inode(inode);
+=======
+	if (want_delete) {
+		ext2_free_inode(inode);
+		sb_end_intwrite(inode->i_sb);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 typedef struct {
@@ -346,8 +396,12 @@ static inline ext2_fsblk_t ext2_find_goal(struct inode *inode, long block,
  *	@blks: number of data blocks to be mapped.
  *	@blocks_to_boundary:  the offset in the indirect block
  *
+<<<<<<< HEAD
  *	return the total number of blocks to be allocate, including the
  *	direct and indirect blocks.
+=======
+ *	return the number of direct blocks to allocate.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 ext2_blks_to_allocate(Indirect * branch, int k, unsigned long blks,
@@ -377,6 +431,7 @@ ext2_blks_to_allocate(Indirect * branch, int k, unsigned long blks,
 }
 
 /**
+<<<<<<< HEAD
  *	ext2_alloc_blocks: multiple allocate blocks needed for a branch
  *	@indirect_blks: the number of blocks need to allocate for indirect
  *			blocks
@@ -385,6 +440,18 @@ ext2_blks_to_allocate(Indirect * branch, int k, unsigned long blks,
  *	the indirect blocks(if needed) and the first direct block,
  *	@blks:	on return it will store the total number of allocated
  *		direct blocks
+=======
+ * ext2_alloc_blocks: Allocate multiple blocks needed for a branch.
+ * @inode: Owner.
+ * @goal: Preferred place for allocation.
+ * @indirect_blks: The number of blocks needed to allocate for indirect blocks.
+ * @blks: The number of blocks need to allocate for direct blocks.
+ * @new_blocks: On return it will store the new block numbers for
+ *	the indirect blocks(if needed) and the first direct block.
+ * @err: Error pointer.
+ *
+ * Return: Number of blocks allocated.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int ext2_alloc_blocks(struct inode *inode,
 			ext2_fsblk_t goal, int indirect_blks, int blks,
@@ -409,7 +476,11 @@ static int ext2_alloc_blocks(struct inode *inode,
 	while (1) {
 		count = target;
 		/* allocating blocks for indirect blocks and direct blocks */
+<<<<<<< HEAD
 		current_block = ext2_new_blocks(inode,goal,&count,err);
+=======
+		current_block = ext2_new_blocks(inode, goal, &count, err, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (*err)
 			goto failed_out;
 
@@ -442,7 +513,13 @@ failed_out:
 /**
  *	ext2_alloc_branch - allocate and set up a chain of blocks.
  *	@inode: owner
+<<<<<<< HEAD
  *	@num: depth of the chain (number of blocks to allocate)
+=======
+ *	@indirect_blks: depth of the chain (number of blocks to allocate)
+ *	@blks: number of allocated direct blocks
+ *	@goal: preferred place for allocation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@offsets: offsets (in the blocks) to store the pointers to next.
  *	@branch: place to store the chain in.
  *
@@ -492,6 +569,13 @@ static int ext2_alloc_branch(struct inode *inode,
 		 * parent to disk.
 		 */
 		bh = sb_getblk(inode->i_sb, new_blocks[n-1]);
+<<<<<<< HEAD
+=======
+		if (unlikely(!bh)) {
+			err = -ENOMEM;
+			goto failed;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		branch[n].bh = bh;
 		lock_buffer(bh);
 		memset(bh->b_data, 0, blocksize);
@@ -520,6 +604,17 @@ static int ext2_alloc_branch(struct inode *inode,
 	}
 	*blks = num;
 	return err;
+<<<<<<< HEAD
+=======
+
+failed:
+	for (i = 1; i < n; i++)
+		bforget(branch[i].bh);
+	for (i = 0; i < indirect_blks; i++)
+		ext2_free_blocks(inode, new_blocks[i], 1);
+	ext2_free_blocks(inode, new_blocks[i], num);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -575,7 +670,11 @@ static void ext2_splice_branch(struct inode *inode,
 	if (where->bh)
 		mark_buffer_dirty_inode(where->bh, inode);
 
+<<<<<<< HEAD
 	inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode_set_ctime_current(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 }
 
@@ -599,10 +698,17 @@ static void ext2_splice_branch(struct inode *inode,
  */
 static int ext2_get_blocks(struct inode *inode,
 			   sector_t iblock, unsigned long maxblocks,
+<<<<<<< HEAD
 			   struct buffer_head *bh_result,
 			   int create)
 {
 	int err = -EIO;
+=======
+			   u32 *bno, bool *new, bool *boundary,
+			   int create)
+{
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int offsets[4];
 	Indirect chain[4];
 	Indirect *partial;
@@ -619,13 +725,20 @@ static int ext2_get_blocks(struct inode *inode,
 	depth = ext2_block_to_path(inode,iblock,offsets,&blocks_to_boundary);
 
 	if (depth == 0)
+<<<<<<< HEAD
 		return (err);
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	partial = ext2_get_branch(inode, depth, offsets, chain, &err);
 	/* Simplest case - block found, no allocation needed */
 	if (!partial) {
 		first_block = le32_to_cpu(chain[depth - 1].key);
+<<<<<<< HEAD
 		clear_buffer_new(bh_result); /* What's this do? */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count++;
 		/*map more blocks*/
 		while (count < maxblocks && count <= blocks_to_boundary) {
@@ -640,6 +753,10 @@ static int ext2_get_blocks(struct inode *inode,
 				 */
 				err = -EAGAIN;
 				count = 0;
+<<<<<<< HEAD
+=======
+				partial = chain + depth - 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 			blk = le32_to_cpu(*(chain[depth-1].p + count));
@@ -678,11 +795,21 @@ static int ext2_get_blocks(struct inode *inode,
 		if (!partial) {
 			count++;
 			mutex_unlock(&ei->truncate_mutex);
+<<<<<<< HEAD
 			if (err)
 				goto cleanup;
 			clear_buffer_new(bh_result);
 			goto got_it;
 		}
+=======
+			goto got_it;
+		}
+
+		if (err) {
+			mutex_unlock(&ei->truncate_mutex);
+			goto cleanup;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -697,7 +824,11 @@ static int ext2_get_blocks(struct inode *inode,
 	/* the number of blocks need to allocate for [d,t]indirect blocks */
 	indirect_blks = (chain + depth) - partial - 1;
 	/*
+<<<<<<< HEAD
 	 * Next look up the indirect map to count the totoal number of
+=======
+	 * Next look up the indirect map to count the total number of
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * direct blocks to allocate for this branch.
 	 */
 	count = ext2_blks_to_allocate(partial, indirect_blks,
@@ -713,17 +844,37 @@ static int ext2_get_blocks(struct inode *inode,
 		goto cleanup;
 	}
 
+<<<<<<< HEAD
 	if (ext2_use_xip(inode->i_sb)) {
 		/*
 		 * we need to clear the block
 		 */
 		err = ext2_clear_xip_target (inode,
 			le32_to_cpu(chain[depth-1].key));
+=======
+	if (IS_DAX(inode)) {
+		/*
+		 * We must unmap blocks before zeroing so that writeback cannot
+		 * overwrite zeros with stale data from block device page cache.
+		 */
+		clean_bdev_aliases(inode->i_sb->s_bdev,
+				   le32_to_cpu(chain[depth-1].key),
+				   count);
+		/*
+		 * block must be initialised before we put it in the tree
+		 * so that it's not found by another thread before it's
+		 * initialised
+		 */
+		err = sb_issue_zeroout(inode->i_sb,
+				le32_to_cpu(chain[depth-1].key), count,
+				GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			mutex_unlock(&ei->truncate_mutex);
 			goto cleanup;
 		}
 	}
+<<<<<<< HEAD
 
 	ext2_splice_branch(inode, iblock, partial, indirect_blks, count);
 	mutex_unlock(&ei->truncate_mutex);
@@ -732,6 +883,15 @@ got_it:
 	map_bh(bh_result, inode->i_sb, le32_to_cpu(chain[depth-1].key));
 	if (count > blocks_to_boundary)
 		set_buffer_boundary(bh_result);
+=======
+	*new = true;
+
+	ext2_splice_branch(inode, iblock, partial, indirect_blks, count);
+	mutex_unlock(&ei->truncate_mutex);
+got_it:
+	if (count > blocks_to_boundary)
+		*boundary = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = count;
 	/* Clean up and exit */
 	partial = chain + depth - 1;	/* the whole chain */
@@ -740,6 +900,7 @@ cleanup:
 		brelse(partial->bh);
 		partial--;
 	}
+<<<<<<< HEAD
 	return err;
 }
 
@@ -778,10 +939,150 @@ ext2_readpages(struct file *file, struct address_space *mapping,
 		struct list_head *pages, unsigned nr_pages)
 {
 	return mpage_readpages(mapping, pages, nr_pages, ext2_get_block);
+=======
+	if (err > 0)
+		*bno = le32_to_cpu(chain[depth-1].key);
+	return err;
+}
+
+int ext2_get_block(struct inode *inode, sector_t iblock,
+		struct buffer_head *bh_result, int create)
+{
+	unsigned max_blocks = bh_result->b_size >> inode->i_blkbits;
+	bool new = false, boundary = false;
+	u32 bno;
+	int ret;
+
+	ret = ext2_get_blocks(inode, iblock, max_blocks, &bno, &new, &boundary,
+			create);
+	if (ret <= 0)
+		return ret;
+
+	map_bh(bh_result, inode->i_sb, bno);
+	bh_result->b_size = (ret << inode->i_blkbits);
+	if (new)
+		set_buffer_new(bh_result);
+	if (boundary)
+		set_buffer_boundary(bh_result);
+	return 0;
+
+}
+
+static int ext2_iomap_begin(struct inode *inode, loff_t offset, loff_t length,
+		unsigned flags, struct iomap *iomap, struct iomap *srcmap)
+{
+	unsigned int blkbits = inode->i_blkbits;
+	unsigned long first_block = offset >> blkbits;
+	unsigned long max_blocks = (length + (1 << blkbits) - 1) >> blkbits;
+	struct ext2_sb_info *sbi = EXT2_SB(inode->i_sb);
+	bool new = false, boundary = false;
+	u32 bno;
+	int ret;
+	bool create = flags & IOMAP_WRITE;
+
+	/*
+	 * For writes that could fill holes inside i_size on a
+	 * DIO_SKIP_HOLES filesystem we forbid block creations: only
+	 * overwrites are permitted.
+	 */
+	if ((flags & IOMAP_DIRECT) &&
+	    (first_block << blkbits) < i_size_read(inode))
+		create = 0;
+
+	/*
+	 * Writes that span EOF might trigger an IO size update on completion,
+	 * so consider them to be dirty for the purposes of O_DSYNC even if
+	 * there is no other metadata changes pending or have been made here.
+	 */
+	if ((flags & IOMAP_WRITE) && offset + length > i_size_read(inode))
+		iomap->flags |= IOMAP_F_DIRTY;
+
+	ret = ext2_get_blocks(inode, first_block, max_blocks,
+			&bno, &new, &boundary, create);
+	if (ret < 0)
+		return ret;
+
+	iomap->flags = 0;
+	iomap->offset = (u64)first_block << blkbits;
+	if (flags & IOMAP_DAX)
+		iomap->dax_dev = sbi->s_daxdev;
+	else
+		iomap->bdev = inode->i_sb->s_bdev;
+
+	if (ret == 0) {
+		/*
+		 * Switch to buffered-io for writing to holes in a non-extent
+		 * based filesystem to avoid stale data exposure problem.
+		 */
+		if (!create && (flags & IOMAP_WRITE) && (flags & IOMAP_DIRECT))
+			return -ENOTBLK;
+		iomap->type = IOMAP_HOLE;
+		iomap->addr = IOMAP_NULL_ADDR;
+		iomap->length = 1 << blkbits;
+	} else {
+		iomap->type = IOMAP_MAPPED;
+		iomap->addr = (u64)bno << blkbits;
+		if (flags & IOMAP_DAX)
+			iomap->addr += sbi->s_dax_part_off;
+		iomap->length = (u64)ret << blkbits;
+		iomap->flags |= IOMAP_F_MERGED;
+	}
+
+	if (new)
+		iomap->flags |= IOMAP_F_NEW;
+	return 0;
+}
+
+static int
+ext2_iomap_end(struct inode *inode, loff_t offset, loff_t length,
+		ssize_t written, unsigned flags, struct iomap *iomap)
+{
+	/*
+	 * Switch to buffered-io in case of any error.
+	 * Blocks allocated can be used by the buffered-io path.
+	 */
+	if ((flags & IOMAP_DIRECT) && (flags & IOMAP_WRITE) && written == 0)
+		return -ENOTBLK;
+
+	if (iomap->type == IOMAP_MAPPED &&
+	    written < length &&
+	    (flags & IOMAP_WRITE))
+		ext2_write_failed(inode->i_mapping, offset + length);
+	return 0;
+}
+
+const struct iomap_ops ext2_iomap_ops = {
+	.iomap_begin		= ext2_iomap_begin,
+	.iomap_end		= ext2_iomap_end,
+};
+
+int ext2_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
+		u64 start, u64 len)
+{
+	int ret;
+
+	inode_lock(inode);
+	len = min_t(u64, len, i_size_read(inode));
+	ret = iomap_fiemap(inode, fieinfo, start, len, &ext2_iomap_ops);
+	inode_unlock(inode);
+
+	return ret;
+}
+
+static int ext2_read_folio(struct file *file, struct folio *folio)
+{
+	return mpage_read_folio(folio, ext2_get_block);
+}
+
+static void ext2_readahead(struct readahead_control *rac)
+{
+	mpage_readahead(rac, ext2_get_block);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 ext2_write_begin(struct file *file, struct address_space *mapping,
+<<<<<<< HEAD
 		loff_t pos, unsigned len, unsigned flags,
 		struct page **pagep, void **fsdata)
 {
@@ -789,6 +1090,13 @@ ext2_write_begin(struct file *file, struct address_space *mapping,
 
 	ret = block_write_begin(mapping, pos, len, flags, pagep,
 				ext2_get_block);
+=======
+		loff_t pos, unsigned len, struct page **pagep, void **fsdata)
+{
+	int ret;
+
+	ret = block_write_begin(mapping, pos, len, pagep, ext2_get_block);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		ext2_write_failed(mapping, pos + len);
 	return ret;
@@ -806,6 +1114,7 @@ static int ext2_write_end(struct file *file, struct address_space *mapping,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int
 ext2_nobh_write_begin(struct file *file, struct address_space *mapping,
 		loff_t pos, unsigned len, unsigned flags,
@@ -826,11 +1135,14 @@ static int ext2_nobh_writepage(struct page *page,
 	return nobh_writepage(page, ext2_get_block, wbc);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static sector_t ext2_bmap(struct address_space *mapping, sector_t block)
 {
 	return generic_block_bmap(mapping,block,ext2_get_block);
 }
 
+<<<<<<< HEAD
 static ssize_t
 ext2_direct_IO(int rw, struct kiocb *iocb, const struct iovec *iov,
 			loff_t offset, unsigned long nr_segs)
@@ -847,12 +1159,15 @@ ext2_direct_IO(int rw, struct kiocb *iocb, const struct iovec *iov,
 	return ret;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 ext2_writepages(struct address_space *mapping, struct writeback_control *wbc)
 {
 	return mpage_writepages(mapping, wbc, ext2_get_block);
 }
 
+<<<<<<< HEAD
 const struct address_space_operations ext2_aops = {
 	.readpage		= ext2_readpage,
 	.readpages		= ext2_readpages,
@@ -883,6 +1198,35 @@ const struct address_space_operations ext2_nobh_aops = {
 	.writepages		= ext2_writepages,
 	.migratepage		= buffer_migrate_page,
 	.error_remove_page	= generic_error_remove_page,
+=======
+static int
+ext2_dax_writepages(struct address_space *mapping, struct writeback_control *wbc)
+{
+	struct ext2_sb_info *sbi = EXT2_SB(mapping->host->i_sb);
+
+	return dax_writeback_mapping_range(mapping, sbi->s_daxdev, wbc);
+}
+
+const struct address_space_operations ext2_aops = {
+	.dirty_folio		= block_dirty_folio,
+	.invalidate_folio	= block_invalidate_folio,
+	.read_folio		= ext2_read_folio,
+	.readahead		= ext2_readahead,
+	.write_begin		= ext2_write_begin,
+	.write_end		= ext2_write_end,
+	.bmap			= ext2_bmap,
+	.direct_IO		= noop_direct_IO,
+	.writepages		= ext2_writepages,
+	.migrate_folio		= buffer_migrate_folio,
+	.is_partially_uptodate	= block_is_partially_uptodate,
+	.error_remove_folio	= generic_error_remove_folio,
+};
+
+static const struct address_space_operations ext2_dax_aops = {
+	.writepages		= ext2_dax_writepages,
+	.direct_IO		= noop_direct_IO,
+	.dirty_folio		= noop_dirty_folio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -993,8 +1337,13 @@ no_top:
  */
 static inline void ext2_free_data(struct inode *inode, __le32 *p, __le32 *q)
 {
+<<<<<<< HEAD
 	unsigned long block_to_free = 0, count = 0;
 	unsigned long nr;
+=======
+	ext2_fsblk_t block_to_free = 0, count = 0;
+	ext2_fsblk_t nr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for ( ; p < q ; p++) {
 		nr = le32_to_cpu(*p);
@@ -1034,7 +1383,11 @@ static inline void ext2_free_data(struct inode *inode, __le32 *p, __le32 *q)
 static void ext2_free_branches(struct inode *inode, __le32 *p, __le32 *q, int depth)
 {
 	struct buffer_head * bh;
+<<<<<<< HEAD
 	unsigned long nr;
+=======
+	ext2_fsblk_t nr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (depth--) {
 		int addr_per_block = EXT2_ADDR_PER_BLOCK(inode->i_sb);
@@ -1066,6 +1419,10 @@ static void ext2_free_branches(struct inode *inode, __le32 *p, __le32 *q, int de
 		ext2_free_data(inode, p, q);
 }
 
+<<<<<<< HEAD
+=======
+/* mapping->invalidate_lock must be held when calling this function */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __ext2_truncate_blocks(struct inode *inode, loff_t offset)
 {
 	__le32 *i_data = EXT2_I(inode)->i_data;
@@ -1081,6 +1438,13 @@ static void __ext2_truncate_blocks(struct inode *inode, loff_t offset)
 	blocksize = inode->i_sb->s_blocksize;
 	iblock = (offset + blocksize-1) >> EXT2_BLOCK_SIZE_BITS(inode->i_sb);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_FS_DAX
+	WARN_ON(!rwsem_is_locked(&inode->i_mapping->invalidate_lock));
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	n = ext2_block_to_path(inode, iblock, offsets, NULL);
 	if (n == 0)
 		return;
@@ -1126,6 +1490,10 @@ do_indirects:
 				mark_inode_dirty(inode);
 				ext2_free_branches(inode, &nr, &nr+1, 1);
 			}
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case EXT2_IND_BLOCK:
 			nr = i_data[EXT2_DIND_BLOCK];
 			if (nr) {
@@ -1133,6 +1501,10 @@ do_indirects:
 				mark_inode_dirty(inode);
 				ext2_free_branches(inode, &nr, &nr+1, 2);
 			}
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case EXT2_DIND_BLOCK:
 			nr = i_data[EXT2_TIND_BLOCK];
 			if (nr) {
@@ -1140,6 +1512,10 @@ do_indirects:
 				mark_inode_dirty(inode);
 				ext2_free_branches(inode, &nr, &nr+1, 3);
 			}
+<<<<<<< HEAD
+=======
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case EXT2_TIND_BLOCK:
 			;
 	}
@@ -1151,6 +1527,7 @@ do_indirects:
 
 static void ext2_truncate_blocks(struct inode *inode, loff_t offset)
 {
+<<<<<<< HEAD
 	/*
 	 * XXX: it seems like a bug here that we don't allow
 	 * IS_APPEND inode to have blocks-past-i_size trimmed off.
@@ -1159,14 +1536,23 @@ static void ext2_truncate_blocks(struct inode *inode, loff_t offset)
 	 * Also would be nice to be able to handle IO errors and such,
 	 * but that's probably too much to ask.
 	 */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(S_ISREG(inode->i_mode) || S_ISDIR(inode->i_mode) ||
 	    S_ISLNK(inode->i_mode)))
 		return;
 	if (ext2_inode_is_fast_symlink(inode))
 		return;
+<<<<<<< HEAD
 	if (IS_APPEND(inode) || IS_IMMUTABLE(inode))
 		return;
 	__ext2_truncate_blocks(inode, offset);
+=======
+
+	filemap_invalidate_lock(inode->i_mapping);
+	__ext2_truncate_blocks(inode, offset);
+	filemap_invalidate_unlock(inode->i_mapping);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ext2_setsize(struct inode *inode, loff_t newsize)
@@ -1183,21 +1569,36 @@ static int ext2_setsize(struct inode *inode, loff_t newsize)
 
 	inode_dio_wait(inode);
 
+<<<<<<< HEAD
 	if (mapping_is_xip(inode->i_mapping))
 		error = xip_truncate_page(inode->i_mapping, newsize);
 	else if (test_opt(inode->i_sb, NOBH))
 		error = nobh_truncate_page(inode->i_mapping,
 				newsize, ext2_get_block);
+=======
+	if (IS_DAX(inode))
+		error = dax_truncate_page(inode, newsize, NULL,
+					  &ext2_iomap_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		error = block_truncate_page(inode->i_mapping,
 				newsize, ext2_get_block);
 	if (error)
 		return error;
 
+<<<<<<< HEAD
 	truncate_setsize(inode, newsize);
 	__ext2_truncate_blocks(inode, newsize);
 
 	inode->i_mtime = inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	filemap_invalidate_lock(inode->i_mapping);
+	truncate_setsize(inode, newsize);
+	__ext2_truncate_blocks(inode, newsize);
+	filemap_invalidate_unlock(inode->i_mapping);
+
+	inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (inode_needs_sync(inode)) {
 		sync_mapping_buffers(inode->i_mapping);
 		sync_inode_metadata(inode, 1);
@@ -1255,7 +1656,12 @@ void ext2_set_inode_flags(struct inode *inode)
 {
 	unsigned int flags = EXT2_I(inode)->i_flags;
 
+<<<<<<< HEAD
 	inode->i_flags &= ~(S_SYNC|S_APPEND|S_IMMUTABLE|S_NOATIME|S_DIRSYNC);
+=======
+	inode->i_flags &= ~(S_SYNC | S_APPEND | S_IMMUTABLE | S_NOATIME |
+				S_DIRSYNC | S_DAX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (flags & EXT2_SYNC_FL)
 		inode->i_flags |= S_SYNC;
 	if (flags & EXT2_APPEND_FL)
@@ -1266,6 +1672,7 @@ void ext2_set_inode_flags(struct inode *inode)
 		inode->i_flags |= S_NOATIME;
 	if (flags & EXT2_DIRSYNC_FL)
 		inode->i_flags |= S_DIRSYNC;
+<<<<<<< HEAD
 }
 
 /* Propagate flags from i_flags to EXT2_I(inode)->i_flags */
@@ -1285,16 +1692,39 @@ void ext2_get_inode_flags(struct ext2_inode_info *ei)
 		ei->i_flags |= EXT2_NOATIME_FL;
 	if (flags & S_DIRSYNC)
 		ei->i_flags |= EXT2_DIRSYNC_FL;
+=======
+	if (test_opt(inode->i_sb, DAX) && S_ISREG(inode->i_mode))
+		inode->i_flags |= S_DAX;
+}
+
+void ext2_set_file_ops(struct inode *inode)
+{
+	inode->i_op = &ext2_file_inode_operations;
+	inode->i_fop = &ext2_file_operations;
+	if (IS_DAX(inode))
+		inode->i_mapping->a_ops = &ext2_dax_aops;
+	else
+		inode->i_mapping->a_ops = &ext2_aops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct inode *ext2_iget (struct super_block *sb, unsigned long ino)
 {
 	struct ext2_inode_info *ei;
+<<<<<<< HEAD
 	struct buffer_head * bh;
+=======
+	struct buffer_head * bh = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ext2_inode *raw_inode;
 	struct inode *inode;
 	long ret = -EIO;
 	int n;
+<<<<<<< HEAD
+=======
+	uid_t i_uid;
+	gid_t i_gid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inode = iget_locked(sb, ino);
 	if (!inode)
@@ -1312,6 +1742,7 @@ struct inode *ext2_iget (struct super_block *sb, unsigned long ino)
 	}
 
 	inode->i_mode = le16_to_cpu(raw_inode->i_mode);
+<<<<<<< HEAD
 	inode->i_uid = (uid_t)le16_to_cpu(raw_inode->i_uid_low);
 	inode->i_gid = (gid_t)le16_to_cpu(raw_inode->i_gid_low);
 	if (!(test_opt (inode->i_sb, NO_UID32))) {
@@ -1324,6 +1755,21 @@ struct inode *ext2_iget (struct super_block *sb, unsigned long ino)
 	inode->i_ctime.tv_sec = (signed)le32_to_cpu(raw_inode->i_ctime);
 	inode->i_mtime.tv_sec = (signed)le32_to_cpu(raw_inode->i_mtime);
 	inode->i_atime.tv_nsec = inode->i_mtime.tv_nsec = inode->i_ctime.tv_nsec = 0;
+=======
+	i_uid = (uid_t)le16_to_cpu(raw_inode->i_uid_low);
+	i_gid = (gid_t)le16_to_cpu(raw_inode->i_gid_low);
+	if (!(test_opt (inode->i_sb, NO_UID32))) {
+		i_uid |= le16_to_cpu(raw_inode->i_uid_high) << 16;
+		i_gid |= le16_to_cpu(raw_inode->i_gid_high) << 16;
+	}
+	i_uid_write(inode, i_uid);
+	i_gid_write(inode, i_gid);
+	set_nlink(inode, le16_to_cpu(raw_inode->i_links_count));
+	inode->i_size = le32_to_cpu(raw_inode->i_size);
+	inode_set_atime(inode, (signed)le32_to_cpu(raw_inode->i_atime), 0);
+	inode_set_ctime(inode, (signed)le32_to_cpu(raw_inode->i_ctime), 0);
+	inode_set_mtime(inode, (signed)le32_to_cpu(raw_inode->i_mtime), 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ei->i_dtime = le32_to_cpu(raw_inode->i_dtime);
 	/* We now have enough fields to check if the inode was active or not.
 	 * This is needed because nfsd might try to access dead inodes
@@ -1332,21 +1778,47 @@ struct inode *ext2_iget (struct super_block *sb, unsigned long ino)
 	 */
 	if (inode->i_nlink == 0 && (inode->i_mode == 0 || ei->i_dtime)) {
 		/* this inode is deleted */
+<<<<<<< HEAD
 		brelse (bh);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ESTALE;
 		goto bad_inode;
 	}
 	inode->i_blocks = le32_to_cpu(raw_inode->i_blocks);
 	ei->i_flags = le32_to_cpu(raw_inode->i_flags);
+<<<<<<< HEAD
+=======
+	ext2_set_inode_flags(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ei->i_faddr = le32_to_cpu(raw_inode->i_faddr);
 	ei->i_frag_no = raw_inode->i_frag;
 	ei->i_frag_size = raw_inode->i_fsize;
 	ei->i_file_acl = le32_to_cpu(raw_inode->i_file_acl);
 	ei->i_dir_acl = 0;
+<<<<<<< HEAD
+=======
+
+	if (ei->i_file_acl &&
+	    !ext2_data_block_valid(EXT2_SB(sb), ei->i_file_acl, 1)) {
+		ext2_error(sb, "ext2_iget", "bad extended attribute block %u",
+			   ei->i_file_acl);
+		ret = -EFSCORRUPTED;
+		goto bad_inode;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (S_ISREG(inode->i_mode))
 		inode->i_size |= ((__u64)le32_to_cpu(raw_inode->i_size_high)) << 32;
 	else
 		ei->i_dir_acl = le32_to_cpu(raw_inode->i_dir_acl);
+<<<<<<< HEAD
+=======
+	if (i_size_read(inode) < 0) {
+		ret = -EFSCORRUPTED;
+		goto bad_inode;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ei->i_dtime = 0;
 	inode->i_generation = le32_to_cpu(raw_inode->i_generation);
 	ei->i_state = 0;
@@ -1361,6 +1833,7 @@ struct inode *ext2_iget (struct super_block *sb, unsigned long ino)
 		ei->i_data[n] = raw_inode->i_block[n];
 
 	if (S_ISREG(inode->i_mode)) {
+<<<<<<< HEAD
 		inode->i_op = &ext2_file_inode_operations;
 		if (ext2_use_xip(inode->i_sb)) {
 			inode->i_mapping->a_ops = &ext2_aops_xip;
@@ -1381,15 +1854,30 @@ struct inode *ext2_iget (struct super_block *sb, unsigned long ino)
 			inode->i_mapping->a_ops = &ext2_aops;
 	} else if (S_ISLNK(inode->i_mode)) {
 		if (ext2_inode_is_fast_symlink(inode)) {
+=======
+		ext2_set_file_ops(inode);
+	} else if (S_ISDIR(inode->i_mode)) {
+		inode->i_op = &ext2_dir_inode_operations;
+		inode->i_fop = &ext2_dir_operations;
+		inode->i_mapping->a_ops = &ext2_aops;
+	} else if (S_ISLNK(inode->i_mode)) {
+		if (ext2_inode_is_fast_symlink(inode)) {
+			inode->i_link = (char *)ei->i_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			inode->i_op = &ext2_fast_symlink_inode_operations;
 			nd_terminate_link(ei->i_data, inode->i_size,
 				sizeof(ei->i_data) - 1);
 		} else {
 			inode->i_op = &ext2_symlink_inode_operations;
+<<<<<<< HEAD
 			if (test_opt(inode->i_sb, NOBH))
 				inode->i_mapping->a_ops = &ext2_nobh_aops;
 			else
 				inode->i_mapping->a_ops = &ext2_aops;
+=======
+			inode_nohighmem(inode);
+			inode->i_mapping->a_ops = &ext2_aops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		inode->i_op = &ext2_special_inode_operations;
@@ -1401,11 +1889,18 @@ struct inode *ext2_iget (struct super_block *sb, unsigned long ino)
 			   new_decode_dev(le32_to_cpu(raw_inode->i_block[1])));
 	}
 	brelse (bh);
+<<<<<<< HEAD
 	ext2_set_inode_flags(inode);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unlock_new_inode(inode);
 	return inode;
 	
 bad_inode:
+<<<<<<< HEAD
+=======
+	brelse(bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iget_failed(inode);
 	return ERR_PTR(ret);
 }
@@ -1415,8 +1910,13 @@ static int __ext2_write_inode(struct inode *inode, int do_sync)
 	struct ext2_inode_info *ei = EXT2_I(inode);
 	struct super_block *sb = inode->i_sb;
 	ino_t ino = inode->i_ino;
+<<<<<<< HEAD
 	uid_t uid = inode->i_uid;
 	gid_t gid = inode->i_gid;
+=======
+	uid_t uid = i_uid_read(inode);
+	gid_t gid = i_gid_read(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head * bh;
 	struct ext2_inode * raw_inode = ext2_get_inode(sb, ino, &bh);
 	int n;
@@ -1425,12 +1925,19 @@ static int __ext2_write_inode(struct inode *inode, int do_sync)
 	if (IS_ERR(raw_inode))
  		return -EIO;
 
+<<<<<<< HEAD
 	/* For fields not not tracking in the in-memory inode,
+=======
+	/* For fields not tracking in the in-memory inode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * initialise them to zero for new inodes. */
 	if (ei->i_state & EXT2_STATE_NEW)
 		memset(raw_inode, 0, EXT2_SB(sb)->s_inode_size);
 
+<<<<<<< HEAD
 	ext2_get_inode_flags(ei);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raw_inode->i_mode = cpu_to_le16(inode->i_mode);
 	if (!(test_opt(sb, NO_UID32))) {
 		raw_inode->i_uid_low = cpu_to_le16(low_16_bits(uid));
@@ -1454,9 +1961,15 @@ static int __ext2_write_inode(struct inode *inode, int do_sync)
 	}
 	raw_inode->i_links_count = cpu_to_le16(inode->i_nlink);
 	raw_inode->i_size = cpu_to_le32(inode->i_size);
+<<<<<<< HEAD
 	raw_inode->i_atime = cpu_to_le32(inode->i_atime.tv_sec);
 	raw_inode->i_ctime = cpu_to_le32(inode->i_ctime.tv_sec);
 	raw_inode->i_mtime = cpu_to_le32(inode->i_mtime.tv_sec);
+=======
+	raw_inode->i_atime = cpu_to_le32(inode_get_atime_sec(inode));
+	raw_inode->i_ctime = cpu_to_le32(inode_get_ctime_sec(inode));
+	raw_inode->i_mtime = cpu_to_le32(inode_get_mtime_sec(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	raw_inode->i_blocks = cpu_to_le32(inode->i_blocks);
 	raw_inode->i_dtime = cpu_to_le32(ei->i_dtime);
@@ -1482,7 +1995,11 @@ static int __ext2_write_inode(struct inode *inode, int do_sync)
 				EXT2_SET_RO_COMPAT_FEATURE(sb,
 					EXT2_FEATURE_RO_COMPAT_LARGE_FILE);
 				spin_unlock(&EXT2_SB(sb)->s_lock);
+<<<<<<< HEAD
 				ext2_write_super(sb);
+=======
+				ext2_sync_super(sb, EXT2_SB(sb)->s_es, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -1520,6 +2037,7 @@ int ext2_write_inode(struct inode *inode, struct writeback_control *wbc)
 	return __ext2_write_inode(inode, wbc->sync_mode == WB_SYNC_ALL);
 }
 
+<<<<<<< HEAD
 int ext2_setattr(struct dentry *dentry, struct iattr *iattr)
 {
 	struct inode *inode = dentry->d_inode;
@@ -1534,6 +2052,52 @@ int ext2_setattr(struct dentry *dentry, struct iattr *iattr)
 	if ((iattr->ia_valid & ATTR_UID && iattr->ia_uid != inode->i_uid) ||
 	    (iattr->ia_valid & ATTR_GID && iattr->ia_gid != inode->i_gid)) {
 		error = dquot_transfer(inode, iattr);
+=======
+int ext2_getattr(struct mnt_idmap *idmap, const struct path *path,
+		 struct kstat *stat, u32 request_mask, unsigned int query_flags)
+{
+	struct inode *inode = d_inode(path->dentry);
+	struct ext2_inode_info *ei = EXT2_I(inode);
+	unsigned int flags;
+
+	flags = ei->i_flags & EXT2_FL_USER_VISIBLE;
+	if (flags & EXT2_APPEND_FL)
+		stat->attributes |= STATX_ATTR_APPEND;
+	if (flags & EXT2_COMPR_FL)
+		stat->attributes |= STATX_ATTR_COMPRESSED;
+	if (flags & EXT2_IMMUTABLE_FL)
+		stat->attributes |= STATX_ATTR_IMMUTABLE;
+	if (flags & EXT2_NODUMP_FL)
+		stat->attributes |= STATX_ATTR_NODUMP;
+	stat->attributes_mask |= (STATX_ATTR_APPEND |
+			STATX_ATTR_COMPRESSED |
+			STATX_ATTR_ENCRYPTED |
+			STATX_ATTR_IMMUTABLE |
+			STATX_ATTR_NODUMP);
+
+	generic_fillattr(&nop_mnt_idmap, request_mask, inode, stat);
+	return 0;
+}
+
+int ext2_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
+		 struct iattr *iattr)
+{
+	struct inode *inode = d_inode(dentry);
+	int error;
+
+	error = setattr_prepare(&nop_mnt_idmap, dentry, iattr);
+	if (error)
+		return error;
+
+	if (is_quota_modification(&nop_mnt_idmap, inode, iattr)) {
+		error = dquot_initialize(inode);
+		if (error)
+			return error;
+	}
+	if (i_uid_needs_update(&nop_mnt_idmap, iattr, inode) ||
+	    i_gid_needs_update(&nop_mnt_idmap, iattr, inode)) {
+		error = dquot_transfer(&nop_mnt_idmap, inode, iattr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			return error;
 	}
@@ -1542,9 +2106,15 @@ int ext2_setattr(struct dentry *dentry, struct iattr *iattr)
 		if (error)
 			return error;
 	}
+<<<<<<< HEAD
 	setattr_copy(inode, iattr);
 	if (iattr->ia_valid & ATTR_MODE)
 		error = ext2_acl_chmod(inode);
+=======
+	setattr_copy(&nop_mnt_idmap, inode, iattr);
+	if (iattr->ia_valid & ATTR_MODE)
+		error = posix_acl_chmod(&nop_mnt_idmap, dentry, inode->i_mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 
 	return error;

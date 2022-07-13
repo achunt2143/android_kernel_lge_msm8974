@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * direct.h - NILFS direct block pointer.
  *
@@ -18,6 +19,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Koji Sato <koji@osrg.net>.
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * NILFS direct block pointer.
+ *
+ * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
+ *
+ * Written by Koji Sato.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _NILFS_DIRECT_H
@@ -28,6 +38,7 @@
 #include "bmap.h"
 
 
+<<<<<<< HEAD
 /**
  * struct nilfs_direct_node - direct node
  * @dn_flags: flags
@@ -38,6 +49,8 @@ struct nilfs_direct_node {
 	__u8 pad[7];
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NILFS_DIRECT_NBLOCKS	(NILFS_BMAP_SIZE / sizeof(__le64) - 1)
 #define NILFS_DIRECT_KEY_MIN	0
 #define NILFS_DIRECT_KEY_MAX	(NILFS_DIRECT_NBLOCKS - 1)

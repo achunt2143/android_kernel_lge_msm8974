@@ -1,20 +1,34 @@
+<<<<<<< HEAD
 /*
  * (C) 2013 Astaro GmbH & Co KG
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * (C) 2013 Astaro GmbH & Co KG
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/skbuff.h>
 #include <net/netfilter/nf_conntrack.h>
+<<<<<<< HEAD
+=======
+#include <net/netfilter/nf_conntrack_ecache.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netfilter/nf_conntrack_labels.h>
 #include <linux/netfilter/x_tables.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Florian Westphal <fw@strlen.de>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Xtables: add/match connection trackling labels");
+=======
+MODULE_DESCRIPTION("Xtables: add/match connection tracking labels");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("ipt_connlabel");
 MODULE_ALIAS("ip6t_connlabel");
 
@@ -23,10 +37,15 @@ connlabel_mt(const struct sk_buff *skb, struct xt_action_param *par)
 {
 	const struct xt_connlabel_mtinfo *info = par->matchinfo;
 	enum ip_conntrack_info ctinfo;
+<<<<<<< HEAD
+=======
+	struct nf_conn_labels *labels;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nf_conn *ct;
 	bool invert = info->options & XT_CONNLABEL_OP_INVERT;
 
 	ct = nf_ct_get(skb, &ctinfo);
+<<<<<<< HEAD
 	if (ct == NULL || nf_ct_is_untracked(ct))
 		return invert;
 
@@ -34,6 +53,26 @@ connlabel_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		return (nf_connlabel_set(ct, info->bit) == 0) ^ invert;
 
 	return nf_connlabel_match(ct, info->bit) ^ invert;
+=======
+	if (ct == NULL)
+		return invert;
+
+	labels = nf_ct_labels_find(ct);
+	if (!labels)
+		return invert;
+
+	if (test_bit(info->bit, labels->bits))
+		return !invert;
+
+	if (info->options & XT_CONNLABEL_OP_SET) {
+		if (!test_and_set_bit(info->bit, labels->bits))
+			nf_conntrack_event_cache(IPCT_LABEL, ct);
+
+		return !invert;
+	}
+
+	return invert;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int connlabel_mt_check(const struct xt_mtchk_param *par)
@@ -42,6 +81,7 @@ static int connlabel_mt_check(const struct xt_mtchk_param *par)
 			    XT_CONNLABEL_OP_SET;
 	struct xt_connlabel_mtinfo *info = par->matchinfo;
 	int ret;
+<<<<<<< HEAD
 	size_t words;
 
 	if (info->bit > XT_CONNLABEL_MAXBIT)
@@ -64,15 +104,39 @@ static int connlabel_mt_check(const struct xt_mtchk_param *par)
 	if (words > par->net->ct.label_words)
 		par->net->ct.label_words = words;
 
+=======
+
+	if (info->options & ~options) {
+		pr_info_ratelimited("Unknown options in mask %x\n",
+				    info->options);
+		return -EINVAL;
+	}
+
+	ret = nf_ct_netns_get(par->net, par->family);
+	if (ret < 0) {
+		pr_info_ratelimited("cannot load conntrack support for proto=%u\n",
+				    par->family);
+		return ret;
+	}
+
+	ret = nf_connlabels_get(par->net, info->bit);
+	if (ret < 0)
+		nf_ct_netns_put(par->net, par->family);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static void connlabel_mt_destroy(const struct xt_mtdtor_param *par)
 {
+<<<<<<< HEAD
 	par->net->ct.labels_used--;
 	if (par->net->ct.labels_used == 0)
 		par->net->ct.label_words = 0;
 	nf_ct_l3proto_module_put(par->family);
+=======
+	nf_connlabels_put(par->net);
+	nf_ct_netns_put(par->net, par->family);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xt_match connlabels_mt_reg __read_mostly = {

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/char/watchdog/pnx4008_wdt.c
  *
@@ -11,10 +15,13 @@
  * 2005-2006 (c) MontaVista Software, Inc.
  *
  * (C) 2012 Wolfram Sang, Pengutronix
+<<<<<<< HEAD
  *
  * This file is licensed under the terms of the GNU General Public License
  * version 2. This program is licensed "as is" without any warranty of any
  * kind, whether express or implied.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -23,16 +30,26 @@
 #include <linux/moduleparam.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/miscdevice.h>
 #include <linux/watchdog.h>
 #include <linux/init.h>
+=======
+#include <linux/watchdog.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/clk.h>
 #include <linux/spinlock.h>
 #include <linux/io.h>
 #include <linux/slab.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <mach/hardware.h>
+=======
+#include <linux/of.h>
+#include <linux/delay.h>
+#include <linux/reboot.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* WatchDog Timer - Chapter 23 Page 207 */
 
@@ -77,11 +94,19 @@
 #define WDOG_COUNTER_RATE 13000000	/*the counter clock is 13 MHz fixed */
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
+<<<<<<< HEAD
 static unsigned int heartbeat = DEFAULT_HEARTBEAT;
 
 static DEFINE_SPINLOCK(io_lock);
 static void __iomem	*wdt_base;
 struct clk		*wdt_clk;
+=======
+static unsigned int heartbeat;
+
+static DEFINE_SPINLOCK(io_lock);
+static void __iomem	*wdt_base;
+static struct clk	*wdt_clk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int pnx4008_wdt_start(struct watchdog_device *wdd)
 {
@@ -125,6 +150,44 @@ static int pnx4008_wdt_set_timeout(struct watchdog_device *wdd,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int pnx4008_restart_handler(struct watchdog_device *wdd,
+				   unsigned long mode, void *cmd)
+{
+	const char *boot_cmd = cmd;
+
+	/*
+	 * Verify if a "cmd" passed from the userspace program rebooting
+	 * the system; if available, handle it.
+	 * - For details, see the 'reboot' syscall in kernel/reboot.c
+	 * - If the received "cmd" is not supported, use the default mode.
+	 */
+	if (boot_cmd) {
+		if (boot_cmd[0] == 'h')
+			mode = REBOOT_HARD;
+		else if (boot_cmd[0] == 's')
+			mode = REBOOT_SOFT;
+	}
+
+	if (mode == REBOOT_SOFT) {
+		/* Force match output active */
+		writel(EXT_MATCH0, WDTIM_EMR(wdt_base));
+		/* Internal reset on match output (RESOUT_N not asserted) */
+		writel(M_RES1, WDTIM_MCTRL(wdt_base));
+	} else {
+		/* Instant assert of RESETOUT_N with pulse length 1mS */
+		writel(13000, WDTIM_PULSE(wdt_base));
+		writel(M_RES2 | RESFRC1 | RESFRC2, WDTIM_MCTRL(wdt_base));
+	}
+
+	/* Wait for watchdog to reset system */
+	mdelay(1000);
+
+	return NOTIFY_DONE;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct watchdog_info pnx4008_wdt_ident = {
 	.options = WDIOF_CARDRESET | WDIOF_MAGICCLOSE |
 	    WDIOF_SETTIMEOUT | WDIOF_KEEPALIVEPING,
@@ -136,15 +199,24 @@ static const struct watchdog_ops pnx4008_wdt_ops = {
 	.start = pnx4008_wdt_start,
 	.stop = pnx4008_wdt_stop,
 	.set_timeout = pnx4008_wdt_set_timeout,
+<<<<<<< HEAD
+=======
+	.restart = pnx4008_restart_handler,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct watchdog_device pnx4008_wdd = {
 	.info = &pnx4008_wdt_ident,
 	.ops = &pnx4008_wdt_ops,
+<<<<<<< HEAD
+=======
+	.timeout = DEFAULT_HEARTBEAT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.min_timeout = 1,
 	.max_timeout = MAX_HEARTBEAT,
 };
 
+<<<<<<< HEAD
 static int __devinit pnx4008_wdt_probe(struct platform_device *pdev)
 {
 	struct resource *r;
@@ -197,10 +269,42 @@ static int __devexit pnx4008_wdt_remove(struct platform_device *pdev)
 
 	clk_disable(wdt_clk);
 	clk_put(wdt_clk);
+=======
+static int pnx4008_wdt_probe(struct platform_device *pdev)
+{
+	struct device *dev = &pdev->dev;
+	int ret = 0;
+
+	watchdog_init_timeout(&pnx4008_wdd, heartbeat, dev);
+
+	wdt_base = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(wdt_base))
+		return PTR_ERR(wdt_base);
+
+	wdt_clk = devm_clk_get_enabled(dev, NULL);
+	if (IS_ERR(wdt_clk))
+		return PTR_ERR(wdt_clk);
+
+	pnx4008_wdd.bootstatus = (readl(WDTIM_RES(wdt_base)) & WDOG_RESET) ?
+			WDIOF_CARDRESET : 0;
+	pnx4008_wdd.parent = dev;
+	watchdog_set_nowayout(&pnx4008_wdd, nowayout);
+	watchdog_set_restart_priority(&pnx4008_wdd, 128);
+
+	if (readl(WDTIM_CTRL(wdt_base)) & COUNT_ENAB)
+		set_bit(WDOG_HW_RUNNING, &pnx4008_wdd.status);
+
+	ret = devm_watchdog_register_device(dev, &pnx4008_wdd);
+	if (ret < 0)
+		return ret;
+
+	dev_info(dev, "heartbeat %d sec\n", pnx4008_wdd.timeout);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct platform_driver platform_wdt_driver = {
 	.driver = {
 		.name = "pnx4008-watchdog",
@@ -208,12 +312,32 @@ static struct platform_driver platform_wdt_driver = {
 	},
 	.probe = pnx4008_wdt_probe,
 	.remove = __devexit_p(pnx4008_wdt_remove),
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id pnx4008_wdt_match[] = {
+	{ .compatible = "nxp,pnx4008-wdt" },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, pnx4008_wdt_match);
+#endif
+
+static struct platform_driver platform_wdt_driver = {
+	.driver = {
+		.name = "pnx4008-watchdog",
+		.of_match_table = of_match_ptr(pnx4008_wdt_match),
+	},
+	.probe = pnx4008_wdt_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(platform_wdt_driver);
 
 MODULE_AUTHOR("MontaVista Software, Inc. <source@mvista.com>");
+<<<<<<< HEAD
 MODULE_AUTHOR("Wolfram Sang <w.sang@pengutronix.de>");
+=======
+MODULE_AUTHOR("Wolfram Sang <kernel@pengutronix.de>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("PNX4008 Watchdog Driver");
 
 module_param(heartbeat, uint, 0);
@@ -227,5 +351,8 @@ MODULE_PARM_DESC(nowayout,
 		 "Set to 1 to keep watchdog running after device release");
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:pnx4008-watchdog");

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM signal
 
@@ -10,8 +14,12 @@
 
 #define TP_STORE_SIGINFO(__entry, info)				\
 	do {							\
+<<<<<<< HEAD
 		if (info == SEND_SIG_NOINFO ||			\
 		    info == SEND_SIG_FORCED) {			\
+=======
+		if (info == SEND_SIG_NOINFO) {			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__entry->errno	= 0;			\
 			__entry->code	= SI_USER;		\
 		} else if (info == SEND_SIG_PRIV) {		\
@@ -49,7 +57,11 @@ enum {
  */
 TRACE_EVENT(signal_generate,
 
+<<<<<<< HEAD
 	TP_PROTO(int sig, struct siginfo *info, struct task_struct *task,
+=======
+	TP_PROTO(int sig, struct kernel_siginfo *info, struct task_struct *task,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int group, int result),
 
 	TP_ARGS(sig, info, task, group, result),
@@ -95,7 +107,11 @@ TRACE_EVENT(signal_generate,
  */
 TRACE_EVENT(signal_deliver,
 
+<<<<<<< HEAD
 	TP_PROTO(int sig, struct siginfo *info, struct k_sigaction *ka),
+=======
+	TP_PROTO(int sig, struct kernel_siginfo *info, struct k_sigaction *ka),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_ARGS(sig, info, ka),
 

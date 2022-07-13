@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * dir.c
  *
@@ -5,11 +9,14 @@
  *  Directory handling routines for the OSTA-UDF(tm) filesystem.
  *
  * COPYRIGHT
+<<<<<<< HEAD
  *	This file is distributed under the terms of the GNU General Public
  *	License (GPL). Copies of the GPL can be obtained from:
  *		ftp://prep.ai.mit.edu/pub/gnu/GPL
  *	Each contributing author retains all rights to their own work.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  (C) 1998-2004 Ben Fennema
  *
  * HISTORY
@@ -30,11 +37,17 @@
 #include <linux/errno.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/buffer_head.h>
+=======
+#include <linux/bio.h>
+#include <linux/iversion.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "udf_i.h"
 #include "udf_sb.h"
 
+<<<<<<< HEAD
 static int do_udf_readdir(struct inode *dir, struct file *filp,
 			  filldir_t filldir, void *dirent)
 {
@@ -62,11 +75,50 @@ static int do_udf_readdir(struct inode *dir, struct file *filp,
 		goto out;
 
 	fname = kmalloc(UDF_NAME_LEN, GFP_NOFS);
+=======
+static int udf_readdir(struct file *file, struct dir_context *ctx)
+{
+	struct inode *dir = file_inode(file);
+	loff_t nf_pos, emit_pos = 0;
+	int flen;
+	unsigned char *fname = NULL;
+	int ret = 0;
+	struct super_block *sb = dir->i_sb;
+	bool pos_valid = false;
+	struct udf_fileident_iter iter;
+
+	if (ctx->pos == 0) {
+		if (!dir_emit_dot(file, ctx))
+			return 0;
+		ctx->pos = 1;
+	}
+	nf_pos = (ctx->pos - 1) << 2;
+	if (nf_pos >= dir->i_size)
+		goto out;
+
+	/*
+	 * Something changed since last readdir (either lseek was called or dir
+	 * changed)?  We need to verify the position correctly points at the
+	 * beginning of some dir entry so that the directory parsing code does
+	 * not get confused. Since UDF does not have any reliable way of
+	 * identifying beginning of dir entry (names are under user control),
+	 * we need to scan the directory from the beginning.
+	 */
+	if (!inode_eq_iversion(dir, file->f_version)) {
+		emit_pos = nf_pos;
+		nf_pos = 0;
+	} else {
+		pos_valid = true;
+	}
+
+	fname = kmalloc(UDF_NAME_LEN, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fname) {
 		ret = -ENOMEM;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (nf_pos == 0)
 		nf_pos = udf_ext0_offset(dir);
 
@@ -180,11 +232,64 @@ out:
 		brelse(fibh.ebh);
 	brelse(fibh.sbh);
 	brelse(epos.bh);
+=======
+	for (ret = udf_fiiter_init(&iter, dir, nf_pos);
+	     !ret && iter.pos < dir->i_size;
+	     ret = udf_fiiter_advance(&iter)) {
+		struct kernel_lb_addr tloc;
+		udf_pblk_t iblock;
+
+		/* Still not at offset where user asked us to read from? */
+		if (iter.pos < emit_pos)
+			continue;
+
+		/* Update file position only if we got past the current one */
+		pos_valid = true;
+		ctx->pos = (iter.pos >> 2) + 1;
+
+		if (iter.fi.fileCharacteristics & FID_FILE_CHAR_DELETED) {
+			if (!UDF_QUERY_FLAG(sb, UDF_FLAG_UNDELETE))
+				continue;
+		}
+
+		if (iter.fi.fileCharacteristics & FID_FILE_CHAR_HIDDEN) {
+			if (!UDF_QUERY_FLAG(sb, UDF_FLAG_UNHIDE))
+				continue;
+		}
+
+		if (iter.fi.fileCharacteristics & FID_FILE_CHAR_PARENT) {
+			if (!dir_emit_dotdot(file, ctx))
+				goto out_iter;
+			continue;
+		}
+
+		flen = udf_get_filename(sb, iter.name,
+				iter.fi.lengthFileIdent, fname, UDF_NAME_LEN);
+		if (flen < 0)
+			continue;
+
+		tloc = lelb_to_cpu(iter.fi.icb.extLocation);
+		iblock = udf_get_lb_pblock(sb, &tloc, 0);
+		if (!dir_emit(ctx, fname, flen, iblock, DT_UNKNOWN))
+			goto out_iter;
+	}
+
+	if (!ret) {
+		ctx->pos = (iter.pos >> 2) + 1;
+		pos_valid = true;
+	}
+out_iter:
+	udf_fiiter_release(&iter);
+out:
+	if (pos_valid)
+		file->f_version = inode_query_iversion(dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(fname);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int udf_readdir(struct file *filp, void *dirent, filldir_t filldir)
 {
 	struct inode *dir = filp->f_path.dentry->d_inode;
@@ -201,11 +306,17 @@ static int udf_readdir(struct file *filp, void *dirent, filldir_t filldir)
  	return result;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* readdir and lookup functions */
 const struct file_operations udf_dir_operations = {
 	.llseek			= generic_file_llseek,
 	.read			= generic_read_dir,
+<<<<<<< HEAD
 	.readdir		= udf_readdir,
+=======
+	.iterate_shared		= udf_readdir,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.unlocked_ioctl		= udf_ioctl,
 	.fsync			= generic_file_fsync,
 };

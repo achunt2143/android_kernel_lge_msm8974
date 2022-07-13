@@ -1,17 +1,30 @@
+<<<<<<< HEAD
 #include <linux/screen_info.h>
 #include <linux/init.h>
 
 #include <asm/bootparam.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/screen_info.h>
+#include <linux/init.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/setup.h>
 
 #include <xen/interface/xen.h>
 
 #include "xen-ops.h"
 
+<<<<<<< HEAD
 void __init xen_init_vga(const struct dom0_vga_console_info *info, size_t size)
 {
 	struct screen_info *screen_info = &boot_params.screen_info;
 
+=======
+void __init xen_init_vga(const struct dom0_vga_console_info *info, size_t size,
+			 struct screen_info *screen_info)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* This is drawn from a dump from vgacon:startup in
 	 * standard Linux. */
 	screen_info->orig_video_mode = 3;
@@ -35,6 +48,10 @@ void __init xen_init_vga(const struct dom0_vga_console_info *info, size_t size)
 			info->u.text_mode_3.font_height;
 		break;
 
+<<<<<<< HEAD
+=======
+	case XEN_VGATYPE_EFI_LFB:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case XEN_VGATYPE_VESA_LFB:
 		if (size < offsetof(struct dom0_vga_console_info,
 				    u.vesa_lfb.gbl_caps))
@@ -54,10 +71,27 @@ void __init xen_init_vga(const struct dom0_vga_console_info *info, size_t size)
 		screen_info->blue_pos = info->u.vesa_lfb.blue_pos;
 		screen_info->rsvd_size = info->u.vesa_lfb.rsvd_size;
 		screen_info->rsvd_pos = info->u.vesa_lfb.rsvd_pos;
+<<<<<<< HEAD
 		if (size >= offsetof(struct dom0_vga_console_info,
 				     u.vesa_lfb.gbl_caps)
 		    + sizeof(info->u.vesa_lfb.gbl_caps))
 			screen_info->capabilities = info->u.vesa_lfb.gbl_caps;
+=======
+
+		if (size >= offsetof(struct dom0_vga_console_info,
+				     u.vesa_lfb.ext_lfb_base)
+		    + sizeof(info->u.vesa_lfb.ext_lfb_base)
+		    && info->u.vesa_lfb.ext_lfb_base) {
+			screen_info->ext_lfb_base = info->u.vesa_lfb.ext_lfb_base;
+			screen_info->capabilities |= VIDEO_CAPABILITY_64BIT_BASE;
+		}
+
+		if (info->video_type == XEN_VGATYPE_EFI_LFB) {
+			screen_info->orig_video_isVGA = VIDEO_TYPE_EFI;
+			break;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (size >= offsetof(struct dom0_vga_console_info,
 				     u.vesa_lfb.mode_attrs)
 		    + sizeof(info->u.vesa_lfb.mode_attrs))

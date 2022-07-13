@@ -1,13 +1,24 @@
+<<<<<<< HEAD
 /*
  * Touch Screen driver for EETI's I2C connected touch screen panels
  *   Copyright (c) 2009 Daniel Mack <daniel@caiaq.de>
  *
  * See EETI's software guide for the protocol specification:
  *   http://home.eeti.com.tw/web20/eg/guide.htm
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Touch Screen driver for EETI's I2C connected touch screen panels
+ *   Copyright (c) 2009,2018 Daniel Mack <daniel@zonque.org>
+ *
+ * See EETI's software guide for the protocol specification:
+ *   http://home.eeti.com.tw/documentation.html
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Based on migor_ts.c
  *   Copyright (c) 2008 Magnus Damm
  *   Copyright (c) 2007 Ujjwal Pande <ujjwal@kenati.com>
+<<<<<<< HEAD
  *
  * This file is free software; you can redistribute it and/or
  * modify it under the terms of the GNU  General Public
@@ -49,11 +60,35 @@ struct eeti_ts_priv {
 	struct work_struct work;
 	struct mutex mutex;
 	int irq_gpio, irq, irq_active_high;
+=======
+ */
+
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/input.h>
+#include <linux/input/touchscreen.h>
+#include <linux/interrupt.h>
+#include <linux/i2c.h>
+#include <linux/timer.h>
+#include <linux/gpio/consumer.h>
+#include <linux/of.h>
+#include <linux/slab.h>
+#include <asm/unaligned.h>
+
+struct eeti_ts {
+	struct i2c_client *client;
+	struct input_dev *input;
+	struct gpio_desc *attn_gpio;
+	struct touchscreen_properties props;
+	struct mutex mutex;
+	bool running;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define EETI_TS_BITDEPTH	(11)
 #define EETI_MAXVAL		((1 << (EETI_TS_BITDEPTH + 1)) - 1)
 
+<<<<<<< HEAD
 #define REPORT_BIT_PRESSED	(1 << 0)
 #define REPORT_BIT_AD0		(1 << 1)
 #define REPORT_BIT_AD1		(1 << 2)
@@ -91,11 +126,29 @@ static void eeti_ts_read(struct work_struct *work)
 	res = REPORT_RES_BITS(buf[0] & (REPORT_BIT_AD0 | REPORT_BIT_AD1));
 	x = buf[2] | (buf[1] << 8);
 	y = buf[4] | (buf[3] << 8);
+=======
+#define REPORT_BIT_PRESSED	BIT(0)
+#define REPORT_BIT_AD0		BIT(1)
+#define REPORT_BIT_AD1		BIT(2)
+#define REPORT_BIT_HAS_PRESSURE	BIT(6)
+#define REPORT_RES_BITS(v)	(((v) >> 1) + EETI_TS_BITDEPTH)
+
+static void eeti_ts_report_event(struct eeti_ts *eeti, u8 *buf)
+{
+	unsigned int res;
+	u16 x, y;
+
+	res = REPORT_RES_BITS(buf[0] & (REPORT_BIT_AD0 | REPORT_BIT_AD1));
+
+	x = get_unaligned_be16(&buf[1]);
+	y = get_unaligned_be16(&buf[3]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* fix the range to 11 bits */
 	x >>= res - EETI_TS_BITDEPTH;
 	y >>= res - EETI_TS_BITDEPTH;
 
+<<<<<<< HEAD
 	if (flip_x)
 		x = EETI_MAXVAL - x;
 
@@ -112,10 +165,40 @@ static void eeti_ts_read(struct work_struct *work)
 
 out:
 	mutex_unlock(&priv->mutex);
+=======
+	if (buf[0] & REPORT_BIT_HAS_PRESSURE)
+		input_report_abs(eeti->input, ABS_PRESSURE, buf[5]);
+
+	touchscreen_report_pos(eeti->input, &eeti->props, x, y, false);
+	input_report_key(eeti->input, BTN_TOUCH, buf[0] & REPORT_BIT_PRESSED);
+	input_sync(eeti->input);
+}
+
+static int eeti_ts_read(struct eeti_ts *eeti)
+{
+	int len, error;
+	char buf[6];
+
+	len = i2c_master_recv(eeti->client, buf, sizeof(buf));
+	if (len != sizeof(buf)) {
+		error = len < 0 ? len : -EIO;
+		dev_err(&eeti->client->dev,
+			"failed to read touchscreen data: %d\n",
+			error);
+		return error;
+	}
+
+	/* Motion packet */
+	if (buf[0] & 0x80)
+		eeti_ts_report_event(eeti, buf);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t eeti_ts_isr(int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	struct eeti_ts_priv *priv = dev_id;
 
 	 /* postpone I2C transactions as we are atomic */
@@ -136,19 +219,82 @@ static void eeti_ts_stop(struct eeti_ts_priv *priv)
 {
 	disable_irq(priv->irq);
 	cancel_work_sync(&priv->work);
+=======
+	struct eeti_ts *eeti = dev_id;
+	int error;
+
+	mutex_lock(&eeti->mutex);
+
+	do {
+		/*
+		 * If we have attention GPIO, trust it. Otherwise we'll read
+		 * once and exit. We assume that in this case we are using
+		 * level triggered interrupt and it will get raised again
+		 * if/when there is more data.
+		 */
+		if (eeti->attn_gpio &&
+		    !gpiod_get_value_cansleep(eeti->attn_gpio)) {
+			break;
+		}
+
+		error = eeti_ts_read(eeti);
+		if (error)
+			break;
+
+	} while (eeti->running && eeti->attn_gpio);
+
+	mutex_unlock(&eeti->mutex);
+	return IRQ_HANDLED;
+}
+
+static void eeti_ts_start(struct eeti_ts *eeti)
+{
+	mutex_lock(&eeti->mutex);
+
+	eeti->running = true;
+	enable_irq(eeti->client->irq);
+
+	/*
+	 * Kick the controller in case we are using edge interrupt and
+	 * we missed our edge while interrupt was disabled. We expect
+	 * the attention GPIO to be wired in this case.
+	 */
+	if (eeti->attn_gpio && gpiod_get_value_cansleep(eeti->attn_gpio))
+		eeti_ts_read(eeti);
+
+	mutex_unlock(&eeti->mutex);
+}
+
+static void eeti_ts_stop(struct eeti_ts *eeti)
+{
+	/*
+	 * Not locking here, just setting a flag and expect that the
+	 * interrupt thread will notice the flag eventually.
+	 */
+	eeti->running = false;
+	wmb();
+	disable_irq(eeti->client->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int eeti_ts_open(struct input_dev *dev)
 {
+<<<<<<< HEAD
 	struct eeti_ts_priv *priv = input_get_drvdata(dev);
 
 	eeti_ts_start(priv);
+=======
+	struct eeti_ts *eeti = input_get_drvdata(dev);
+
+	eeti_ts_start(eeti);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static void eeti_ts_close(struct input_dev *dev)
 {
+<<<<<<< HEAD
 	struct eeti_ts_priv *priv = input_get_drvdata(dev);
 
 	eeti_ts_stop(priv);
@@ -162,6 +308,19 @@ static int __devinit eeti_ts_probe(struct i2c_client *client,
 	struct input_dev *input;
 	unsigned int irq_flags;
 	int err = -ENOMEM;
+=======
+	struct eeti_ts *eeti = input_get_drvdata(dev);
+
+	eeti_ts_stop(eeti);
+}
+
+static int eeti_ts_probe(struct i2c_client *client)
+{
+	struct device *dev = &client->dev;
+	struct eeti_ts *eeti;
+	struct input_dev *input;
+	int error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * In contrast to what's described in the datasheet, there seems
@@ -170,6 +329,7 @@ static int __devinit eeti_ts_probe(struct i2c_client *client,
 	 * for interrupts to occur.
 	 */
 
+<<<<<<< HEAD
 	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
 	if (!priv) {
 		dev_err(&client->dev, "failed to allocate driver data\n");
@@ -186,11 +346,29 @@ static int __devinit eeti_ts_probe(struct i2c_client *client,
 
 	input->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
 	input->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
+=======
+	eeti = devm_kzalloc(dev, sizeof(*eeti), GFP_KERNEL);
+	if (!eeti) {
+		dev_err(dev, "failed to allocate driver data\n");
+		return -ENOMEM;
+	}
+
+	mutex_init(&eeti->mutex);
+
+	input = devm_input_allocate_device(dev);
+	if (!input) {
+		dev_err(dev, "Failed to allocate input device.\n");
+		return -ENOMEM;
+	}
+
+	input_set_capability(input, EV_KEY, BTN_TOUCH);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_set_abs_params(input, ABS_X, 0, EETI_MAXVAL, 0, 0);
 	input_set_abs_params(input, ABS_Y, 0, EETI_MAXVAL, 0, 0);
 	input_set_abs_params(input, ABS_PRESSURE, 0, 0xff, 0, 0);
 
+<<<<<<< HEAD
 	input->name = client->name;
 	input->id.bustype = BUS_I2C;
 	input->dev.parent = &client->dev;
@@ -225,12 +403,40 @@ static int __devinit eeti_ts_probe(struct i2c_client *client,
 	if (err) {
 		dev_err(&client->dev, "Unable to request touchscreen IRQ.\n");
 		goto err3;
+=======
+	touchscreen_parse_properties(input, false, &eeti->props);
+
+	input->name = client->name;
+	input->id.bustype = BUS_I2C;
+	input->open = eeti_ts_open;
+	input->close = eeti_ts_close;
+
+	eeti->client = client;
+	eeti->input = input;
+
+	eeti->attn_gpio = devm_gpiod_get_optional(dev, "attn", GPIOD_IN);
+	if (IS_ERR(eeti->attn_gpio))
+		return PTR_ERR(eeti->attn_gpio);
+
+	i2c_set_clientdata(client, eeti);
+	input_set_drvdata(input, eeti);
+
+	error = devm_request_threaded_irq(dev, client->irq,
+					  NULL, eeti_ts_isr,
+					  IRQF_ONESHOT,
+					  client->name, eeti);
+	if (error) {
+		dev_err(dev, "Unable to request touchscreen IRQ: %d\n",
+			error);
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Disable the device for now. It will be enabled once the
 	 * input device is opened.
 	 */
+<<<<<<< HEAD
 	eeti_ts_stop(priv);
 
 	device_init_wakeup(&client->dev, 0);
@@ -261,10 +467,18 @@ static int __devexit eeti_ts_remove(struct i2c_client *client)
 
 	input_unregister_device(priv->input);
 	kfree(priv);
+=======
+	eeti_ts_stop(eeti);
+
+	error = input_register_device(input);
+	if (error)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int eeti_ts_suspend(struct device *dev)
 {
@@ -276,11 +490,27 @@ static int eeti_ts_suspend(struct device *dev)
 
 	if (input_dev->users)
 		eeti_ts_stop(priv);
+=======
+static int eeti_ts_suspend(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+	struct eeti_ts *eeti = i2c_get_clientdata(client);
+	struct input_dev *input_dev = eeti->input;
+
+	mutex_lock(&input_dev->mutex);
+
+	if (input_device_enabled(input_dev))
+		eeti_ts_stop(eeti);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&input_dev->mutex);
 
 	if (device_may_wakeup(&client->dev))
+<<<<<<< HEAD
 		enable_irq_wake(priv->irq);
+=======
+		enable_irq_wake(client->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -288,6 +518,7 @@ static int eeti_ts_suspend(struct device *dev)
 static int eeti_ts_resume(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
+<<<<<<< HEAD
 	struct eeti_ts_priv *priv = i2c_get_clientdata(client);
 	struct input_dev *input_dev = priv->input;
 
@@ -298,14 +529,30 @@ static int eeti_ts_resume(struct device *dev)
 
 	if (input_dev->users)
 		eeti_ts_start(priv);
+=======
+	struct eeti_ts *eeti = i2c_get_clientdata(client);
+	struct input_dev *input_dev = eeti->input;
+
+	if (device_may_wakeup(&client->dev))
+		disable_irq_wake(client->irq);
+
+	mutex_lock(&input_dev->mutex);
+
+	if (input_device_enabled(input_dev))
+		eeti_ts_start(eeti);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&input_dev->mutex);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static SIMPLE_DEV_PM_OPS(eeti_ts_pm, eeti_ts_suspend, eeti_ts_resume);
 #endif
+=======
+static DEFINE_SIMPLE_DEV_PM_OPS(eeti_ts_pm, eeti_ts_suspend, eeti_ts_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct i2c_device_id eeti_ts_id[] = {
 	{ "eeti_ts", 0 },
@@ -313,6 +560,7 @@ static const struct i2c_device_id eeti_ts_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, eeti_ts_id);
 
+<<<<<<< HEAD
 static struct i2c_driver eeti_ts_driver = {
 	.driver = {
 		.name = "eeti_ts",
@@ -322,11 +570,31 @@ static struct i2c_driver eeti_ts_driver = {
 	},
 	.probe = eeti_ts_probe,
 	.remove = __devexit_p(eeti_ts_remove),
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id of_eeti_ts_match[] = {
+	{ .compatible = "eeti,exc3000-i2c", },
+	{ }
+};
+#endif
+
+static struct i2c_driver eeti_ts_driver = {
+	.driver = {
+		.name = "eeti_ts",
+		.pm = pm_sleep_ptr(&eeti_ts_pm),
+		.of_match_table = of_match_ptr(of_eeti_ts_match),
+	},
+	.probe = eeti_ts_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = eeti_ts_id,
 };
 
 module_i2c_driver(eeti_ts_driver);
 
 MODULE_DESCRIPTION("EETI Touchscreen driver");
+<<<<<<< HEAD
 MODULE_AUTHOR("Daniel Mack <daniel@caiaq.de>");
+=======
+MODULE_AUTHOR("Daniel Mack <daniel@zonque.org>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

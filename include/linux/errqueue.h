@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_ERRQUEUE_H
 #define _LINUX_ERRQUEUE_H 1
 
@@ -23,11 +24,21 @@ struct sock_extended_err {
 #define SO_EE_OFFENDER(ee)	((struct sockaddr*)((ee)+1))
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_ERRQUEUE_H
+#define _LINUX_ERRQUEUE_H 1
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/ip.h>
 #if IS_ENABLED(CONFIG_IPV6)
 #include <linux/ipv6.h>
 #endif
+<<<<<<< HEAD
+=======
+#include <uapi/linux/errqueue.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SKB_EXT_ERR(skb) ((struct sock_exterr_skb *) ((skb)->cb))
 
@@ -41,8 +52,16 @@ struct sock_exterr_skb {
 	struct sock_extended_err	ee;
 	u16				addr_offset;
 	__be16				port;
+<<<<<<< HEAD
 };
 
 #endif
 
 #endif
+=======
+	u8				opt_stats:1,
+					unused:7;
+};
+
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

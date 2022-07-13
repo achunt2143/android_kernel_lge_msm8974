@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/kernel/kgdb.c
  *
@@ -12,6 +16,12 @@
 #include <linux/irq.h>
 #include <linux/kdebug.h>
 #include <linux/kgdb.h>
+<<<<<<< HEAD
+=======
+#include <linux/uaccess.h>
+
+#include <asm/patch.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/traps.h>
 
 struct dbg_reg_def_t dbg_reg_def[DBG_MAX_REG_NUM] =
@@ -71,7 +81,11 @@ int dbg_set_reg(int regno, void *mem, struct pt_regs *regs)
 void
 sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *task)
 {
+<<<<<<< HEAD
 	struct pt_regs *thread_regs;
+=======
+	struct thread_info *ti;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int regno;
 
 	/* Just making sure... */
@@ -83,6 +97,7 @@ sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *task)
 		gdb_regs[regno] = 0;
 
 	/* Otherwise, we have only some registers from switch_to() */
+<<<<<<< HEAD
 	thread_regs		= task_pt_regs(task);
 	gdb_regs[_R0]		= thread_regs->ARM_r0;
 	gdb_regs[_R1]		= thread_regs->ARM_r1;
@@ -101,6 +116,19 @@ sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *task)
 	gdb_regs[_LR]		= thread_regs->ARM_lr;
 	gdb_regs[_PC]		= thread_regs->ARM_pc;
 	gdb_regs[_CPSR]		= thread_regs->ARM_cpsr;
+=======
+	ti			= task_thread_info(task);
+	gdb_regs[_R4]		= ti->cpu_context.r4;
+	gdb_regs[_R5]		= ti->cpu_context.r5;
+	gdb_regs[_R6]		= ti->cpu_context.r6;
+	gdb_regs[_R7]		= ti->cpu_context.r7;
+	gdb_regs[_R8]		= ti->cpu_context.r8;
+	gdb_regs[_R9]		= ti->cpu_context.r9;
+	gdb_regs[_R10]		= ti->cpu_context.sl;
+	gdb_regs[_FP]		= ti->cpu_context.fp;
+	gdb_regs[_SPT]		= ti->cpu_context.sp;
+	gdb_regs[_PC]		= ti->cpu_context.pc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void kgdb_arch_set_pc(struct pt_regs *regs, unsigned long pc)
@@ -157,6 +185,7 @@ static int kgdb_compiled_brk_fn(struct pt_regs *regs, unsigned int instr)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct undef_hook kgdb_brkpt_hook = {
 	.instr_mask		= 0xffffffff,
 	.instr_val		= KGDB_BREAKINST,
@@ -180,6 +209,39 @@ void kgdb_roundup_cpus(unsigned long flags)
        smp_call_function(kgdb_call_nmi_hook, NULL, 0);
        local_irq_disable();
 }
+=======
+static struct undef_hook kgdb_brkpt_arm_hook = {
+	.instr_mask		= 0xffffffff,
+	.instr_val		= KGDB_BREAKINST,
+	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
+	.cpsr_val		= SVC_MODE,
+	.fn			= kgdb_brk_fn
+};
+
+static struct undef_hook kgdb_brkpt_thumb_hook = {
+	.instr_mask		= 0xffff,
+	.instr_val		= KGDB_BREAKINST & 0xffff,
+	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
+	.cpsr_val		= PSR_T_BIT | SVC_MODE,
+	.fn			= kgdb_brk_fn
+};
+
+static struct undef_hook kgdb_compiled_brkpt_arm_hook = {
+	.instr_mask		= 0xffffffff,
+	.instr_val		= KGDB_COMPILED_BREAK,
+	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
+	.cpsr_val		= SVC_MODE,
+	.fn			= kgdb_compiled_brk_fn
+};
+
+static struct undef_hook kgdb_compiled_brkpt_thumb_hook = {
+	.instr_mask		= 0xffff,
+	.instr_val		= KGDB_COMPILED_BREAK & 0xffff,
+	.cpsr_mask		= PSR_T_BIT | MODE_MASK,
+	.cpsr_val		= PSR_T_BIT | SVC_MODE,
+	.fn			= kgdb_compiled_brk_fn
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __kgdb_notify(struct die_args *args, unsigned long cmd)
 {
@@ -221,8 +283,15 @@ int kgdb_arch_init(void)
 	if (ret != 0)
 		return ret;
 
+<<<<<<< HEAD
 	register_undef_hook(&kgdb_brkpt_hook);
 	register_undef_hook(&kgdb_compiled_brkpt_hook);
+=======
+	register_undef_hook(&kgdb_brkpt_arm_hook);
+	register_undef_hook(&kgdb_brkpt_thumb_hook);
+	register_undef_hook(&kgdb_compiled_brkpt_arm_hook);
+	register_undef_hook(&kgdb_compiled_brkpt_thumb_hook);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -235,6 +304,7 @@ int kgdb_arch_init(void)
  */
 void kgdb_arch_exit(void)
 {
+<<<<<<< HEAD
 	unregister_undef_hook(&kgdb_brkpt_hook);
 	unregister_undef_hook(&kgdb_compiled_brkpt_hook);
 	unregister_die_notifier(&kgdb_notifier);
@@ -247,6 +317,49 @@ void kgdb_arch_exit(void)
  * handler.
  */
 struct kgdb_arch arch_kgdb_ops = {
+=======
+	unregister_undef_hook(&kgdb_brkpt_arm_hook);
+	unregister_undef_hook(&kgdb_brkpt_thumb_hook);
+	unregister_undef_hook(&kgdb_compiled_brkpt_arm_hook);
+	unregister_undef_hook(&kgdb_compiled_brkpt_thumb_hook);
+	unregister_die_notifier(&kgdb_notifier);
+}
+
+int kgdb_arch_set_breakpoint(struct kgdb_bkpt *bpt)
+{
+	int err;
+
+	/* patch_text() only supports int-sized breakpoints */
+	BUILD_BUG_ON(sizeof(int) != BREAK_INSTR_SIZE);
+
+	err = copy_from_kernel_nofault(bpt->saved_instr, (char *)bpt->bpt_addr,
+				BREAK_INSTR_SIZE);
+	if (err)
+		return err;
+
+	/* Machine is already stopped, so we can use __patch_text() directly */
+	__patch_text((void *)bpt->bpt_addr,
+		     *(unsigned int *)arch_kgdb_ops.gdb_bpt_instr);
+
+	return err;
+}
+
+int kgdb_arch_remove_breakpoint(struct kgdb_bkpt *bpt)
+{
+	/* Machine is already stopped, so we can use __patch_text() directly */
+	__patch_text((void *)bpt->bpt_addr, *(unsigned int *)bpt->saved_instr);
+
+	return 0;
+}
+
+/*
+ * Register our undef instruction hooks with ARM undef core.
+ * We register a hook specifically looking for the KGB break inst
+ * and we handle the normal undef case within the do_undefinstr
+ * handler.
+ */
+const struct kgdb_arch arch_kgdb_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ARMEB__
 	.gdb_bpt_instr		= {0xfe, 0xde, 0xff, 0xe7}
 #else /* ! __ARMEB__ */

@@ -1,15 +1,29 @@
+<<<<<<< HEAD
 /* bnx2i_hwi.c: Broadcom NetXtreme II iSCSI driver.
  *
  * Copyright (c) 2006 - 2011 Broadcom Corporation
  * Copyright (c) 2007, 2008 Red Hat, Inc.  All rights reserved.
  * Copyright (c) 2007, 2008 Mike Christie
+=======
+/* bnx2i_hwi.c: QLogic NetXtreme II iSCSI driver.
+ *
+ * Copyright (c) 2006 - 2013 Broadcom Corporation
+ * Copyright (c) 2007, 2008 Red Hat, Inc.  All rights reserved.
+ * Copyright (c) 2007, 2008 Mike Christie
+ * Copyright (c) 2014, QLogic Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation.
  *
  * Written by: Anil Veerabhadrappa (anilgv@broadcom.com)
+<<<<<<< HEAD
  * Maintained by: Eddie Wai (eddie.wai@broadcom.com)
+=======
+ * Previously Maintained by: Eddie Wai (eddie.wai@broadcom.com)
+ * Maintained by: QLogic-Storage-Upstream@qlogic.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/gfp.h>
@@ -61,7 +75,11 @@ static void bnx2i_adjust_qp_size(struct bnx2i_hba *hba)
 	 * yield integral num of page buffers
 	 */
 	/* adjust SQ */
+<<<<<<< HEAD
 	num_elements_per_pg = PAGE_SIZE / BNX2I_SQ_WQE_SIZE;
+=======
+	num_elements_per_pg = CNIC_PAGE_SIZE / BNX2I_SQ_WQE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hba->max_sqes < num_elements_per_pg)
 		hba->max_sqes = num_elements_per_pg;
 	else if (hba->max_sqes % num_elements_per_pg)
@@ -69,7 +87,11 @@ static void bnx2i_adjust_qp_size(struct bnx2i_hba *hba)
 				 ~(num_elements_per_pg - 1);
 
 	/* adjust CQ */
+<<<<<<< HEAD
 	num_elements_per_pg = PAGE_SIZE / BNX2I_CQE_SIZE;
+=======
+	num_elements_per_pg = CNIC_PAGE_SIZE / BNX2I_CQE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hba->max_cqes < num_elements_per_pg)
 		hba->max_cqes = num_elements_per_pg;
 	else if (hba->max_cqes % num_elements_per_pg)
@@ -77,7 +99,11 @@ static void bnx2i_adjust_qp_size(struct bnx2i_hba *hba)
 				 ~(num_elements_per_pg - 1);
 
 	/* adjust RQ */
+<<<<<<< HEAD
 	num_elements_per_pg = PAGE_SIZE / BNX2I_RQ_WQE_SIZE;
+=======
+	num_elements_per_pg = CNIC_PAGE_SIZE / BNX2I_RQ_WQE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hba->max_rqes < num_elements_per_pg)
 		hba->max_rqes = num_elements_per_pg;
 	else if (hba->max_rqes % num_elements_per_pg)
@@ -126,7 +152,11 @@ static void bnx2i_iscsi_license_error(struct bnx2i_hba *hba, u32 error_code)
 
 /**
  * bnx2i_arm_cq_event_coalescing - arms CQ to enable EQ notification
+<<<<<<< HEAD
  * @ep:		endpoint (transport indentifier) structure
+=======
+ * @ep:		endpoint (transport identifier) structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @action:	action, ARM or DISARM. For now only ARM_CQE is used
  *
  * Arm'ing CQ will enable chip to generate global EQ events inorder to interrupt
@@ -179,7 +209,11 @@ int bnx2i_arm_cq_event_coalescing(struct bnx2i_endpoint *ep, u8 action)
 
 /**
  * bnx2i_get_rq_buf - copy RQ buffer contents to driver buffer
+<<<<<<< HEAD
  * @conn:		iscsi connection on which RQ event occurred
+=======
+ * @bnx2i_conn:		iscsi connection on which RQ event occurred
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ptr:		driver buffer to which RQ buffer contents is to
  *			be copied
  * @len:		length of valid data inside RQ buf
@@ -221,7 +255,11 @@ static void bnx2i_ring_577xx_doorbell(struct bnx2i_conn *conn)
 
 /**
  * bnx2i_put_rq_buf - Replenish RQ buffer, if required ring on chip doorbell
+<<<<<<< HEAD
  * @conn:	iscsi connection on which event to post
+=======
+ * @bnx2i_conn:	iscsi connection on which event to post
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @count:	number of RQ buffer being posted to chip
  *
  * No need to ring hardware doorbell for 57710 family of devices
@@ -251,13 +289,20 @@ void bnx2i_put_rq_buf(struct bnx2i_conn *bnx2i_conn, int count)
 		writew(ep->qp.rq_prod_idx,
 		       ep->qp.ctx_base + CNIC_RECV_DOORBELL);
 	}
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /**
  * bnx2i_ring_sq_dbell - Ring SQ doorbell to wake-up the processing engine
+<<<<<<< HEAD
  * @conn: 		iscsi connection to which new SQ entries belong
+=======
+ * @bnx2i_conn:		iscsi connection to which new SQ entries belong
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @count: 		number of SQ WQEs to post
  *
  * SQ DB is updated in host memory and TX Doorbell is rung for 57710 family
@@ -277,14 +322,21 @@ static void bnx2i_ring_sq_dbell(struct bnx2i_conn *bnx2i_conn, int count)
 		bnx2i_ring_577xx_doorbell(bnx2i_conn);
 	} else
 		writew(count, ep->qp.ctx_base + CNIC_SEND_DOORBELL);
+<<<<<<< HEAD
 
 	mmiowb(); /* flush posted PCI writes */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /**
  * bnx2i_ring_dbell_update_sq_params - update SQ driver parameters
+<<<<<<< HEAD
  * @conn:	iscsi connection to which new SQ entries belong
+=======
+ * @bnx2i_conn:	iscsi connection to which new SQ entries belong
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @count:	number of SQ WQEs to post
  *
  * this routine will update SQ driver parameters and ring the doorbell
@@ -321,21 +373,33 @@ static void bnx2i_ring_dbell_update_sq_params(struct bnx2i_conn *bnx2i_conn,
 
 /**
  * bnx2i_send_iscsi_login - post iSCSI login request MP WQE to hardware
+<<<<<<< HEAD
  * @conn:	iscsi connection
  * @cmd:	driver command structure which is requesting
  *		a WQE to sent to chip for further processing
+=======
+ * @bnx2i_conn:	iscsi connection
+ * @task: transport layer's command structure pointer which is requesting
+ *	  a WQE to sent to chip for further processing
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * prepare and post an iSCSI Login request WQE to CNIC firmware
  */
 int bnx2i_send_iscsi_login(struct bnx2i_conn *bnx2i_conn,
 			   struct iscsi_task *task)
 {
+<<<<<<< HEAD
 	struct bnx2i_cmd *bnx2i_cmd;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bnx2i_login_request *login_wqe;
 	struct iscsi_login_req *login_hdr;
 	u32 dword;
 
+<<<<<<< HEAD
 	bnx2i_cmd = (struct bnx2i_cmd *)task->dd_data;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	login_hdr = (struct iscsi_login_req *)task->hdr;
 	login_wqe = (struct bnx2i_login_request *)
 						bnx2i_conn->ep->qp.sq_prod_qe;
@@ -376,7 +440,11 @@ int bnx2i_send_iscsi_login(struct bnx2i_conn *bnx2i_conn,
 
 /**
  * bnx2i_send_iscsi_tmf - post iSCSI task management request MP WQE to hardware
+<<<<<<< HEAD
  * @conn:	iscsi connection
+=======
+ * @bnx2i_conn:	iscsi connection
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @mtask:	driver command structure which is requesting
  *		a WQE to sent to chip for further processing
  *
@@ -389,12 +457,18 @@ int bnx2i_send_iscsi_tmf(struct bnx2i_conn *bnx2i_conn,
 	struct iscsi_tm *tmfabort_hdr;
 	struct scsi_cmnd *ref_sc;
 	struct iscsi_task *ctask;
+<<<<<<< HEAD
 	struct bnx2i_cmd *bnx2i_cmd;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bnx2i_tmf_request *tmfabort_wqe;
 	u32 dword;
 	u32 scsi_lun[2];
 
+<<<<<<< HEAD
 	bnx2i_cmd = (struct bnx2i_cmd *)mtask->dd_data;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmfabort_hdr = (struct iscsi_tm *)mtask->hdr;
 	tmfabort_wqe = (struct bnx2i_tmf_request *)
 						bnx2i_conn->ep->qp.sq_prod_qe;
@@ -452,7 +526,11 @@ int bnx2i_send_iscsi_tmf(struct bnx2i_conn *bnx2i_conn,
 
 /**
  * bnx2i_send_iscsi_text - post iSCSI text WQE to hardware
+<<<<<<< HEAD
  * @conn:	iscsi connection
+=======
+ * @bnx2i_conn:	iscsi connection
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @mtask:	driver command structure which is requesting
  *		a WQE to sent to chip for further processing
  *
@@ -461,12 +539,18 @@ int bnx2i_send_iscsi_tmf(struct bnx2i_conn *bnx2i_conn,
 int bnx2i_send_iscsi_text(struct bnx2i_conn *bnx2i_conn,
 			  struct iscsi_task *mtask)
 {
+<<<<<<< HEAD
 	struct bnx2i_cmd *bnx2i_cmd;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bnx2i_text_request *text_wqe;
 	struct iscsi_text *text_hdr;
 	u32 dword;
 
+<<<<<<< HEAD
 	bnx2i_cmd = (struct bnx2i_cmd *)mtask->dd_data;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	text_hdr = (struct iscsi_text *)mtask->hdr;
 	text_wqe = (struct bnx2i_text_request *) bnx2i_conn->ep->qp.sq_prod_qe;
 
@@ -502,7 +586,11 @@ int bnx2i_send_iscsi_text(struct bnx2i_conn *bnx2i_conn,
 
 /**
  * bnx2i_send_iscsi_scsicmd - post iSCSI scsicmd request WQE to hardware
+<<<<<<< HEAD
  * @conn:	iscsi connection
+=======
+ * @bnx2i_conn:	iscsi connection
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cmd:	driver command structure which is requesting
  *		a WQE to sent to chip for further processing
  *
@@ -524,9 +612,15 @@ int bnx2i_send_iscsi_scsicmd(struct bnx2i_conn *bnx2i_conn,
 
 /**
  * bnx2i_send_iscsi_nopout - post iSCSI NOPOUT request WQE to hardware
+<<<<<<< HEAD
  * @conn:		iscsi connection
  * @cmd:		driver command structure which is requesting
  *			a WQE to sent to chip for further processing
+=======
+ * @bnx2i_conn:		iscsi connection
+ * @task:		transport layer's command structure pointer which is
+ *                      requesting a WQE to sent to chip for further processing
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @datap:		payload buffer pointer
  * @data_len:		payload data length
  * @unsol:		indicated whether nopout pdu is unsolicited pdu or
@@ -539,11 +633,17 @@ int bnx2i_send_iscsi_nopout(struct bnx2i_conn *bnx2i_conn,
 			    char *datap, int data_len, int unsol)
 {
 	struct bnx2i_endpoint *ep = bnx2i_conn->ep;
+<<<<<<< HEAD
 	struct bnx2i_cmd *bnx2i_cmd;
 	struct bnx2i_nop_out_request *nopout_wqe;
 	struct iscsi_nopout *nopout_hdr;
 
 	bnx2i_cmd = (struct bnx2i_cmd *)task->dd_data;
+=======
+	struct bnx2i_nop_out_request *nopout_wqe;
+	struct iscsi_nopout *nopout_hdr;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nopout_hdr = (struct iscsi_nopout *)task->hdr;
 	nopout_wqe = (struct bnx2i_nop_out_request *)ep->qp.sq_prod_qe;
 
@@ -553,12 +653,18 @@ int bnx2i_send_iscsi_nopout(struct bnx2i_conn *bnx2i_conn,
 	nopout_wqe->op_attr = ISCSI_FLAG_CMD_FINAL;
 	memcpy(nopout_wqe->lun, &nopout_hdr->lun, 8);
 
+<<<<<<< HEAD
 	if (test_bit(BNX2I_NX2_DEV_57710, &ep->hba->cnic_dev_type)) {
 		u32 tmp = nopout_wqe->lun[0];
 		/* 57710 requires LUN field to be swapped */
 		nopout_wqe->lun[0] = nopout_wqe->lun[1];
 		nopout_wqe->lun[1] = tmp;
 	}
+=======
+	/* 57710 requires LUN field to be swapped */
+	if (test_bit(BNX2I_NX2_DEV_57710, &ep->hba->cnic_dev_type))
+		swap(nopout_wqe->lun[0], nopout_wqe->lun[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nopout_wqe->itt = ((u16)task->itt |
 			   (ISCSI_TASK_TYPE_MPATH <<
@@ -591,20 +697,32 @@ int bnx2i_send_iscsi_nopout(struct bnx2i_conn *bnx2i_conn,
 
 /**
  * bnx2i_send_iscsi_logout - post iSCSI logout request WQE to hardware
+<<<<<<< HEAD
  * @conn:	iscsi connection
  * @cmd:	driver command structure which is requesting
  *		a WQE to sent to chip for further processing
+=======
+ * @bnx2i_conn:	iscsi connection
+ * @task:	transport layer's command structure pointer which is
+ *		requesting a WQE to sent to chip for further processing
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * prepare and post logout request WQE to CNIC firmware
  */
 int bnx2i_send_iscsi_logout(struct bnx2i_conn *bnx2i_conn,
 			    struct iscsi_task *task)
 {
+<<<<<<< HEAD
 	struct bnx2i_cmd *bnx2i_cmd;
 	struct bnx2i_logout_request *logout_wqe;
 	struct iscsi_logout *logout_hdr;
 
 	bnx2i_cmd = (struct bnx2i_cmd *)task->dd_data;
+=======
+	struct bnx2i_logout_request *logout_wqe;
+	struct iscsi_logout *logout_hdr;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	logout_hdr = (struct iscsi_logout *)task->hdr;
 
 	logout_wqe = (struct bnx2i_logout_request *)
@@ -692,6 +810,7 @@ void bnx2i_update_iscsi_conn(struct iscsi_conn *conn)
 
 /**
  * bnx2i_ep_ofld_timer - post iSCSI logout request WQE to hardware
+<<<<<<< HEAD
  * @data:	endpoint (transport handle) structure pointer
  *
  * routine to handle connection offload/destroy request timeout
@@ -699,6 +818,16 @@ void bnx2i_update_iscsi_conn(struct iscsi_conn *conn)
 void bnx2i_ep_ofld_timer(unsigned long data)
 {
 	struct bnx2i_endpoint *ep = (struct bnx2i_endpoint *) data;
+=======
+ * @t:	timer context used to fetch the endpoint (transport
+ *	handle) structure pointer
+ *
+ * routine to handle connection offload/destroy request timeout
+ */
+void bnx2i_ep_ofld_timer(struct timer_list *t)
+{
+	struct bnx2i_endpoint *ep = from_timer(ep, t, ofld_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ep->state == EP_STATE_OFLD_START) {
 		printk(KERN_ALERT "ofld_timer: CONN_OFLD timeout\n");
@@ -756,7 +885,11 @@ void bnx2i_send_cmd_cleanup_req(struct bnx2i_hba *hba, struct bnx2i_cmd *cmd)
 /**
  * bnx2i_send_conn_destroy - initiates iscsi connection teardown process
  * @hba:	adapter structure pointer
+<<<<<<< HEAD
  * @ep:		endpoint (transport indentifier) structure
+=======
+ * @ep:		endpoint (transport identifier) structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * this routine prepares and posts CONN_OFLD_REQ1/2 KWQE to initiate
  * 	iscsi connection context clean-up process
@@ -791,7 +924,11 @@ int bnx2i_send_conn_destroy(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 /**
  * bnx2i_570x_send_conn_ofld_req - initiates iscsi conn context setup process
  * @hba: 		adapter structure pointer
+<<<<<<< HEAD
  * @ep: 		endpoint (transport indentifier) structure
+=======
+ * @ep: 		endpoint (transport identifier) structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * 5706/5708/5709 specific - prepares and posts CONN_OFLD_REQ1/2 KWQE
  */
@@ -851,7 +988,11 @@ static int bnx2i_570x_send_conn_ofld_req(struct bnx2i_hba *hba,
 /**
  * bnx2i_5771x_send_conn_ofld_req - initiates iscsi connection context creation
  * @hba: 		adapter structure pointer
+<<<<<<< HEAD
  * @ep: 		endpoint (transport indentifier) structure
+=======
+ * @ep: 		endpoint (transport identifier) structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * 57710 specific - prepares and posts CONN_OFLD_REQ1/2 KWQE
  */
@@ -920,7 +1061,11 @@ static int bnx2i_5771x_send_conn_ofld_req(struct bnx2i_hba *hba,
  * bnx2i_send_conn_ofld_req - initiates iscsi connection context setup process
  *
  * @hba: 		adapter structure pointer
+<<<<<<< HEAD
  * @ep: 		endpoint (transport indentifier) structure
+=======
+ * @ep: 		endpoint (transport identifier) structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * this routine prepares and posts CONN_OFLD_REQ1/2 KWQE
  */
@@ -939,7 +1084,11 @@ int bnx2i_send_conn_ofld_req(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 
 /**
  * setup_qp_page_tables - iscsi QP page table setup function
+<<<<<<< HEAD
  * @ep:		endpoint (transport indentifier) structure
+=======
+ * @ep:		endpoint (transport identifier) structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Sets up page tables for SQ/RQ/CQ, 1G/sec (5706/5708/5709) devices requires
  * 	64-bit address in big endian format. Whereas 10G/sec (57710) requires
@@ -959,7 +1108,11 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 
 	/* SQ page table */
 	memset(ep->qp.sq_pgtbl_virt, 0, ep->qp.sq_pgtbl_size);
+<<<<<<< HEAD
 	num_pages = ep->qp.sq_mem_size / PAGE_SIZE;
+=======
+	num_pages = ep->qp.sq_mem_size / CNIC_PAGE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	page = ep->qp.sq_phys;
 
 	if (cnic_dev_10g)
@@ -973,7 +1126,11 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 			ptbl++;
 			*ptbl = (u32) ((u64) page >> 32);
 			ptbl++;
+<<<<<<< HEAD
 			page += PAGE_SIZE;
+=======
+			page += CNIC_PAGE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/* PTE is written in big endian format for
 			 * 5706/5708/5709 devices */
@@ -981,13 +1138,21 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 			ptbl++;
 			*ptbl = (u32) page;
 			ptbl++;
+<<<<<<< HEAD
 			page += PAGE_SIZE;
+=======
+			page += CNIC_PAGE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* RQ page table */
 	memset(ep->qp.rq_pgtbl_virt, 0, ep->qp.rq_pgtbl_size);
+<<<<<<< HEAD
 	num_pages = ep->qp.rq_mem_size / PAGE_SIZE;
+=======
+	num_pages = ep->qp.rq_mem_size / CNIC_PAGE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	page = ep->qp.rq_phys;
 
 	if (cnic_dev_10g)
@@ -1001,7 +1166,11 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 			ptbl++;
 			*ptbl = (u32) ((u64) page >> 32);
 			ptbl++;
+<<<<<<< HEAD
 			page += PAGE_SIZE;
+=======
+			page += CNIC_PAGE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/* PTE is written in big endian format for
 			 * 5706/5708/5709 devices */
@@ -1009,13 +1178,21 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 			ptbl++;
 			*ptbl = (u32) page;
 			ptbl++;
+<<<<<<< HEAD
 			page += PAGE_SIZE;
+=======
+			page += CNIC_PAGE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* CQ page table */
 	memset(ep->qp.cq_pgtbl_virt, 0, ep->qp.cq_pgtbl_size);
+<<<<<<< HEAD
 	num_pages = ep->qp.cq_mem_size / PAGE_SIZE;
+=======
+	num_pages = ep->qp.cq_mem_size / CNIC_PAGE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	page = ep->qp.cq_phys;
 
 	if (cnic_dev_10g)
@@ -1029,7 +1206,11 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 			ptbl++;
 			*ptbl = (u32) ((u64) page >> 32);
 			ptbl++;
+<<<<<<< HEAD
 			page += PAGE_SIZE;
+=======
+			page += CNIC_PAGE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/* PTE is written in big endian format for
 			 * 5706/5708/5709 devices */
@@ -1037,7 +1218,11 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 			ptbl++;
 			*ptbl = (u32) page;
 			ptbl++;
+<<<<<<< HEAD
 			page += PAGE_SIZE;
+=======
+			page += CNIC_PAGE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -1046,7 +1231,11 @@ static void setup_qp_page_tables(struct bnx2i_endpoint *ep)
 /**
  * bnx2i_alloc_qp_resc - allocates required resources for QP.
  * @hba:	adapter structure pointer
+<<<<<<< HEAD
  * @ep:		endpoint (transport indentifier) structure
+=======
+ * @ep:		endpoint (transport identifier) structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Allocate QP (transport layer for iSCSI connection) resources, DMA'able
  *	memory for SQ/RQ/CQ and page tables. EP structure elements such
@@ -1064,11 +1253,19 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 	/* Allocate page table memory for SQ which is page aligned */
 	ep->qp.sq_mem_size = hba->max_sqes * BNX2I_SQ_WQE_SIZE;
 	ep->qp.sq_mem_size =
+<<<<<<< HEAD
 		(ep->qp.sq_mem_size + (PAGE_SIZE - 1)) & PAGE_MASK;
 	ep->qp.sq_pgtbl_size =
 		(ep->qp.sq_mem_size / PAGE_SIZE) * sizeof(void *);
 	ep->qp.sq_pgtbl_size =
 		(ep->qp.sq_pgtbl_size + (PAGE_SIZE - 1)) & PAGE_MASK;
+=======
+		(ep->qp.sq_mem_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
+	ep->qp.sq_pgtbl_size =
+		(ep->qp.sq_mem_size / CNIC_PAGE_SIZE) * sizeof(void *);
+	ep->qp.sq_pgtbl_size =
+		(ep->qp.sq_pgtbl_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ep->qp.sq_pgtbl_virt =
 		dma_alloc_coherent(&hba->pcidev->dev, ep->qp.sq_pgtbl_size,
@@ -1089,7 +1286,10 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 		goto mem_alloc_err;
 	}
 
+<<<<<<< HEAD
 	memset(ep->qp.sq_virt, 0x00, ep->qp.sq_mem_size);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ep->qp.sq_first_qe = ep->qp.sq_virt;
 	ep->qp.sq_prod_qe = ep->qp.sq_first_qe;
 	ep->qp.sq_cons_qe = ep->qp.sq_first_qe;
@@ -1101,11 +1301,19 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 	/* Allocate page table memory for CQ which is page aligned */
 	ep->qp.cq_mem_size = hba->max_cqes * BNX2I_CQE_SIZE;
 	ep->qp.cq_mem_size =
+<<<<<<< HEAD
 		(ep->qp.cq_mem_size + (PAGE_SIZE - 1)) & PAGE_MASK;
 	ep->qp.cq_pgtbl_size =
 		(ep->qp.cq_mem_size / PAGE_SIZE) * sizeof(void *);
 	ep->qp.cq_pgtbl_size =
 		(ep->qp.cq_pgtbl_size + (PAGE_SIZE - 1)) & PAGE_MASK;
+=======
+		(ep->qp.cq_mem_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
+	ep->qp.cq_pgtbl_size =
+		(ep->qp.cq_mem_size / CNIC_PAGE_SIZE) * sizeof(void *);
+	ep->qp.cq_pgtbl_size =
+		(ep->qp.cq_pgtbl_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ep->qp.cq_pgtbl_virt =
 		dma_alloc_coherent(&hba->pcidev->dev, ep->qp.cq_pgtbl_size,
@@ -1125,7 +1333,10 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 				  ep->qp.cq_mem_size);
 		goto mem_alloc_err;
 	}
+<<<<<<< HEAD
 	memset(ep->qp.cq_virt, 0x00, ep->qp.cq_mem_size);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ep->qp.cq_first_qe = ep->qp.cq_virt;
 	ep->qp.cq_prod_qe = ep->qp.cq_first_qe;
@@ -1144,11 +1355,19 @@ int bnx2i_alloc_qp_resc(struct bnx2i_hba *hba, struct bnx2i_endpoint *ep)
 	/* Allocate page table memory for RQ which is page aligned */
 	ep->qp.rq_mem_size = hba->max_rqes * BNX2I_RQ_WQE_SIZE;
 	ep->qp.rq_mem_size =
+<<<<<<< HEAD
 		(ep->qp.rq_mem_size + (PAGE_SIZE - 1)) & PAGE_MASK;
 	ep->qp.rq_pgtbl_size =
 		(ep->qp.rq_mem_size / PAGE_SIZE) * sizeof(void *);
 	ep->qp.rq_pgtbl_size =
 		(ep->qp.rq_pgtbl_size + (PAGE_SIZE - 1)) & PAGE_MASK;
+=======
+		(ep->qp.rq_mem_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
+	ep->qp.rq_pgtbl_size =
+		(ep->qp.rq_mem_size / CNIC_PAGE_SIZE) * sizeof(void *);
+	ep->qp.rq_pgtbl_size =
+		(ep->qp.rq_pgtbl_size + (CNIC_PAGE_SIZE - 1)) & CNIC_PAGE_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ep->qp.rq_pgtbl_virt =
 		dma_alloc_coherent(&hba->pcidev->dev, ep->qp.rq_pgtbl_size,
@@ -1191,7 +1410,11 @@ mem_alloc_err:
 /**
  * bnx2i_free_qp_resc - free memory resources held by QP
  * @hba:	adapter structure pointer
+<<<<<<< HEAD
  * @ep:	endpoint (transport indentifier) structure
+=======
+ * @ep:	endpoint (transport identifier) structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Free QP resources - SQ/RQ/CQ memory and page tables.
  */
@@ -1270,7 +1493,11 @@ int bnx2i_send_fw_iscsi_init_msg(struct bnx2i_hba *hba)
 	bnx2i_adjust_qp_size(hba);
 
 	iscsi_init.flags =
+<<<<<<< HEAD
 		ISCSI_PAGE_SIZE_4K << ISCSI_KWQE_INIT1_PAGE_SIZE_SHIFT;
+=======
+		(CNIC_PAGE_BITS - 8) << ISCSI_KWQE_INIT1_PAGE_SIZE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (en_tcp_dack)
 		iscsi_init.flags |= ISCSI_KWQE_INIT1_DELAYED_ACK_ENABLE;
 	iscsi_init.reserved0 = 0;
@@ -1288,6 +1515,7 @@ int bnx2i_send_fw_iscsi_init_msg(struct bnx2i_hba *hba)
 			((hba->num_ccell & 0xFFFF) | (hba->max_sqes << 16));
 	iscsi_init.num_ccells_per_conn = hba->num_ccell;
 	iscsi_init.num_tasks_per_conn = hba->max_sqes;
+<<<<<<< HEAD
 	iscsi_init.sq_wqes_per_page = PAGE_SIZE / BNX2I_SQ_WQE_SIZE;
 	iscsi_init.sq_num_wqes = hba->max_sqes;
 	iscsi_init.cq_log_wqes_per_page =
@@ -1297,6 +1525,17 @@ int bnx2i_send_fw_iscsi_init_msg(struct bnx2i_hba *hba)
 				   (PAGE_SIZE - 1)) / PAGE_SIZE;
 	iscsi_init.sq_num_pages = (hba->max_sqes * BNX2I_SQ_WQE_SIZE +
 				   (PAGE_SIZE - 1)) / PAGE_SIZE;
+=======
+	iscsi_init.sq_wqes_per_page = CNIC_PAGE_SIZE / BNX2I_SQ_WQE_SIZE;
+	iscsi_init.sq_num_wqes = hba->max_sqes;
+	iscsi_init.cq_log_wqes_per_page =
+		(u8) bnx2i_power_of2(CNIC_PAGE_SIZE / BNX2I_CQE_SIZE);
+	iscsi_init.cq_num_wqes = hba->max_cqes;
+	iscsi_init.cq_num_pages = (hba->max_cqes * BNX2I_CQE_SIZE +
+				   (CNIC_PAGE_SIZE - 1)) / CNIC_PAGE_SIZE;
+	iscsi_init.sq_num_pages = (hba->max_sqes * BNX2I_SQ_WQE_SIZE +
+				   (CNIC_PAGE_SIZE - 1)) / CNIC_PAGE_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iscsi_init.rq_buffer_size = BNX2I_RQ_WQE_SIZE;
 	iscsi_init.rq_num_wqes = hba->max_rqes;
 
@@ -1317,7 +1556,11 @@ int bnx2i_send_fw_iscsi_init_msg(struct bnx2i_hba *hba)
 		(1ULL << ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_LUN));
 	if (error_mask1) {
 		iscsi_init2.error_bit_map[0] = error_mask1;
+<<<<<<< HEAD
 		mask64 &= (u32)(~mask64);
+=======
+		mask64 ^= (u32)(mask64);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mask64 |= error_mask1;
 	} else
 		iscsi_init2.error_bit_map[0] = (u32) mask64;
@@ -1353,6 +1596,10 @@ int bnx2i_process_scsi_cmd_resp(struct iscsi_session *session,
 				struct cqe *cqe)
 {
 	struct iscsi_conn *conn = bnx2i_conn->cls_conn->dd_data;
+<<<<<<< HEAD
+=======
+	struct bnx2i_hba *hba = bnx2i_conn->hba;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bnx2i_cmd_response *resp_cqe;
 	struct bnx2i_cmd *bnx2i_cmd;
 	struct iscsi_task *task;
@@ -1360,7 +1607,11 @@ int bnx2i_process_scsi_cmd_resp(struct iscsi_session *session,
 	u32 datalen = 0;
 
 	resp_cqe = (struct bnx2i_cmd_response *)cqe;
+<<<<<<< HEAD
 	spin_lock_bh(&session->lock);
+=======
+	spin_lock_bh(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task = iscsi_itt_to_task(conn,
 				 resp_cqe->itt & ISCSI_CMD_RESPONSE_INDEX);
 	if (!task)
@@ -1370,6 +1621,7 @@ int bnx2i_process_scsi_cmd_resp(struct iscsi_session *session,
 
 	if (bnx2i_cmd->req.op_attr & ISCSI_CMD_REQUEST_READ) {
 		conn->datain_pdus_cnt +=
+<<<<<<< HEAD
 			resp_cqe->task_stat.read_stat.num_data_outs;
 		conn->rxdata_octets +=
 			bnx2i_cmd->req.total_data_transfer_length;
@@ -1380,6 +1632,28 @@ int bnx2i_process_scsi_cmd_resp(struct iscsi_session *session,
 			resp_cqe->task_stat.read_stat.num_r2ts;
 		conn->txdata_octets +=
 			bnx2i_cmd->req.total_data_transfer_length;
+=======
+			resp_cqe->task_stat.read_stat.num_data_ins;
+		conn->rxdata_octets +=
+			bnx2i_cmd->req.total_data_transfer_length;
+		ADD_STATS_64(hba, rx_pdus,
+			     resp_cqe->task_stat.read_stat.num_data_ins);
+		ADD_STATS_64(hba, rx_bytes,
+			     bnx2i_cmd->req.total_data_transfer_length);
+	} else {
+		conn->dataout_pdus_cnt +=
+			resp_cqe->task_stat.write_stat.num_data_outs;
+		conn->r2t_pdus_cnt +=
+			resp_cqe->task_stat.write_stat.num_r2ts;
+		conn->txdata_octets +=
+			bnx2i_cmd->req.total_data_transfer_length;
+		ADD_STATS_64(hba, tx_pdus,
+			     resp_cqe->task_stat.write_stat.num_data_outs);
+		ADD_STATS_64(hba, tx_bytes,
+			     bnx2i_cmd->req.total_data_transfer_length);
+		ADD_STATS_64(hba, rx_pdus,
+			     resp_cqe->task_stat.write_stat.num_r2ts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	bnx2i_iscsi_unmap_sg_list(bnx2i_cmd);
 
@@ -1421,7 +1695,11 @@ done:
 	__iscsi_complete_pdu(conn, (struct iscsi_hdr *)hdr,
 			     conn->data, datalen);
 fail:
+<<<<<<< HEAD
 	spin_unlock_bh(&session->lock);
+=======
+	spin_unlock_bh(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1446,7 +1724,11 @@ static int bnx2i_process_login_resp(struct iscsi_session *session,
 	int pad_len;
 
 	login = (struct bnx2i_login_response *) cqe;
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task = iscsi_itt_to_task(conn,
 				 login->itt & ISCSI_LOGIN_RESPONSE_INDEX);
 	if (!task)
@@ -1489,7 +1771,11 @@ static int bnx2i_process_login_resp(struct iscsi_session *session,
 		bnx2i_conn->gen_pdu.resp_buf,
 		bnx2i_conn->gen_pdu.resp_wr_ptr - bnx2i_conn->gen_pdu.resp_buf);
 done:
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1514,7 +1800,11 @@ static int bnx2i_process_text_resp(struct iscsi_session *session,
 	int pad_len;
 
 	text = (struct bnx2i_text_response *) cqe;
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task = iscsi_itt_to_task(conn, text->itt & ISCSI_LOGIN_RESPONSE_INDEX);
 	if (!task)
 		goto done;
@@ -1550,7 +1840,11 @@ static int bnx2i_process_text_resp(struct iscsi_session *session,
 			     bnx2i_conn->gen_pdu.resp_wr_ptr -
 			     bnx2i_conn->gen_pdu.resp_buf);
 done:
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1573,7 +1867,11 @@ static int bnx2i_process_tmf_resp(struct iscsi_session *session,
 	struct iscsi_tm_rsp *resp_hdr;
 
 	tmf_cqe = (struct bnx2i_tmf_response *)cqe;
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task = iscsi_itt_to_task(conn,
 				 tmf_cqe->itt & ISCSI_TMF_RESPONSE_INDEX);
 	if (!task)
@@ -1589,7 +1887,11 @@ static int bnx2i_process_tmf_resp(struct iscsi_session *session,
 
 	__iscsi_complete_pdu(conn, (struct iscsi_hdr *)resp_hdr, NULL, 0);
 done:
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1612,7 +1914,11 @@ static int bnx2i_process_logout_resp(struct iscsi_session *session,
 	struct iscsi_logout_rsp *resp_hdr;
 
 	logout = (struct bnx2i_logout_response *) cqe;
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task = iscsi_itt_to_task(conn,
 				 logout->itt & ISCSI_LOGOUT_RESPONSE_INDEX);
 	if (!task)
@@ -1636,7 +1942,11 @@ static int bnx2i_process_logout_resp(struct iscsi_session *session,
 
 	bnx2i_conn->ep->state = EP_STATE_LOGOUT_RESP_RCVD;
 done:
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1657,17 +1967,29 @@ static void bnx2i_process_nopin_local_cmpl(struct iscsi_session *session,
 	struct iscsi_task *task;
 
 	nop_in = (struct bnx2i_nop_in_msg *)cqe;
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task = iscsi_itt_to_task(conn,
 				 nop_in->itt & ISCSI_NOP_IN_MSG_INDEX);
 	if (task)
 		__iscsi_put_task(task);
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * bnx2i_unsol_pdu_adjust_rq - makes adjustments to RQ after unsol pdu is recvd
+<<<<<<< HEAD
  * @conn:	iscsi connection
+=======
+ * @bnx2i_conn:	iscsi connection
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Firmware advances RQ producer index for every unsolicited PDU even if
  *	payload data length is '0'. This function makes corresponding
@@ -1701,7 +2023,11 @@ static int bnx2i_process_nopin_mesg(struct iscsi_session *session,
 
 	nop_in = (struct bnx2i_nop_in_msg *)cqe;
 
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdr = (struct iscsi_nopin *)&bnx2i_conn->gen_pdu.resp_hdr;
 	memset(hdr, 0, sizeof(struct iscsi_hdr));
 	hdr->opcode = nop_in->op_code;
@@ -1727,7 +2053,11 @@ static int bnx2i_process_nopin_mesg(struct iscsi_session *session,
 	}
 done:
 	__iscsi_complete_pdu(conn, (struct iscsi_hdr *)hdr, NULL, 0);
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return tgt_async_nop;
 }
@@ -1760,7 +2090,11 @@ static void bnx2i_process_async_mesg(struct iscsi_session *session,
 		return;
 	}
 
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	resp_hdr = (struct iscsi_async *) &bnx2i_conn->gen_pdu.resp_hdr;
 	memset(resp_hdr, 0, sizeof(struct iscsi_hdr));
 	resp_hdr->opcode = async_cqe->op_code;
@@ -1779,7 +2113,11 @@ static void bnx2i_process_async_mesg(struct iscsi_session *session,
 
 	__iscsi_complete_pdu(bnx2i_conn->cls_conn->dd_data,
 			     (struct iscsi_hdr *)resp_hdr, NULL, 0);
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1806,7 +2144,11 @@ static void bnx2i_process_reject_mesg(struct iscsi_session *session,
 	} else
 		bnx2i_unsol_pdu_adjust_rq(bnx2i_conn);
 
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdr = (struct iscsi_reject *) &bnx2i_conn->gen_pdu.resp_hdr;
 	memset(hdr, 0, sizeof(struct iscsi_hdr));
 	hdr->opcode = reject->op_code;
@@ -1817,7 +2159,11 @@ static void bnx2i_process_reject_mesg(struct iscsi_session *session,
 	hdr->ffffffff = cpu_to_be32(RESERVED_ITT);
 	__iscsi_complete_pdu(conn, (struct iscsi_hdr *)hdr, conn->data,
 			     reject->data_length);
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1837,13 +2183,21 @@ static void bnx2i_process_cmd_cleanup_resp(struct iscsi_session *session,
 	struct iscsi_task *task;
 
 	cmd_clean_rsp = (struct bnx2i_cleanup_response *)cqe;
+<<<<<<< HEAD
 	spin_lock(&session->lock);
+=======
+	spin_lock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task = iscsi_itt_to_task(conn,
 			cmd_clean_rsp->itt & ISCSI_CLEANUP_RESPONSE_INDEX);
 	if (!task)
 		printk(KERN_ALERT "bnx2i: cmd clean ITT %x not active\n",
 			cmd_clean_rsp->itt & ISCSI_CLEANUP_RESPONSE_INDEX);
+<<<<<<< HEAD
 	spin_unlock(&session->lock);
+=======
+	spin_unlock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	complete(&bnx2i_conn->cmd_cleanup_cmpl);
 }
 
@@ -1859,7 +2213,11 @@ int bnx2i_percpu_io_thread(void *arg)
 	struct bnx2i_work *work, *tmp;
 	LIST_HEAD(work_list);
 
+<<<<<<< HEAD
 	set_user_nice(current, -20);
+=======
+	set_user_nice(current, MIN_NICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (!kthread_should_stop()) {
 		spin_lock_bh(&p->p_work_lock);
@@ -1890,7 +2248,13 @@ int bnx2i_percpu_io_thread(void *arg)
 
 /**
  * bnx2i_queue_scsi_cmd_resp - queue cmd completion to the percpu thread
+<<<<<<< HEAD
  * @bnx2i_conn:		bnx2i connection
+=======
+ * @session:		iscsi session
+ * @bnx2i_conn:		bnx2i connection
+ * @cqe:		pointer to newly DMA'ed CQE entry for processing
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * this function is called by generic KCQ handler to queue all pending cmd
  * completion CQEs
@@ -1908,6 +2272,7 @@ static int bnx2i_queue_scsi_cmd_resp(struct iscsi_session *session,
 	struct iscsi_task *task;
 	struct scsi_cmnd *sc;
 	int rc = 0;
+<<<<<<< HEAD
 	int cpu;
 
 	spin_lock(&session->lock);
@@ -1915,10 +2280,19 @@ static int bnx2i_queue_scsi_cmd_resp(struct iscsi_session *session,
 				 cqe->itt & ISCSI_CMD_RESPONSE_INDEX);
 	if (!task || !task->sc) {
 		spin_unlock(&session->lock);
+=======
+
+	spin_lock(&session->back_lock);
+	task = iscsi_itt_to_task(bnx2i_conn->cls_conn->dd_data,
+				 cqe->itt & ISCSI_CMD_RESPONSE_INDEX);
+	if (!task || !task->sc) {
+		spin_unlock(&session->back_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	sc = task->sc;
 
+<<<<<<< HEAD
 	if (!blk_rq_cpu_valid(sc->request))
 		cpu = smp_processor_id();
 	else
@@ -1927,6 +2301,11 @@ static int bnx2i_queue_scsi_cmd_resp(struct iscsi_session *session,
 	spin_unlock(&session->lock);
 
 	p = &per_cpu(bnx2i_percpu, cpu);
+=======
+	spin_unlock(&session->back_lock);
+
+	p = &per_cpu(bnx2i_percpu, blk_mq_rq_cpu(scsi_cmd_to_rq(sc)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&p->p_work_lock);
 	if (unlikely(!p->iothread)) {
 		rc = -EINVAL;
@@ -1964,6 +2343,10 @@ static int bnx2i_process_new_cqes(struct bnx2i_conn *bnx2i_conn)
 {
 	struct iscsi_conn *conn = bnx2i_conn->cls_conn->dd_data;
 	struct iscsi_session *session = conn->session;
+<<<<<<< HEAD
+=======
+	struct bnx2i_hba *hba = bnx2i_conn->hba;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qp_info *qp;
 	struct bnx2i_nop_in_msg *nopin;
 	int tgt_async_msg;
@@ -1976,7 +2359,11 @@ static int bnx2i_process_new_cqes(struct bnx2i_conn *bnx2i_conn)
 
 	if (!qp->cq_virt) {
 		printk(KERN_ALERT "bnx2i (%s): cq resr freed in bh execution!",
+<<<<<<< HEAD
 			bnx2i_conn->hba->netdev->name);
+=======
+		       hba->netdev->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	while (1) {
@@ -1984,6 +2371,7 @@ static int bnx2i_process_new_cqes(struct bnx2i_conn *bnx2i_conn)
 		if (nopin->cq_req_sn != qp->cqe_exp_seq_sn)
 			break;
 
+<<<<<<< HEAD
 		if (unlikely(test_bit(ISCSI_SUSPEND_BIT, &conn->suspend_rx))) {
 			if (nopin->op_code == ISCSI_OP_NOOP_IN &&
 			    nopin->itt == (u16) RESERVED_ITT) {
@@ -1991,6 +2379,15 @@ static int bnx2i_process_new_cqes(struct bnx2i_conn *bnx2i_conn)
 					"NOP-In detected for suspended "
 					"connection dev=%s!\n",
 					bnx2i_conn->hba->netdev->name);
+=======
+		if (unlikely(test_bit(ISCSI_CONN_FLAG_SUSPEND_RX, &conn->flags))) {
+			if (nopin->op_code == ISCSI_OP_NOOP_IN &&
+			    nopin->itt == (u16) RESERVED_ITT) {
+				printk(KERN_ALERT "bnx2i: Unsolicited "
+				       "NOP-In detected for suspended "
+				       "connection dev=%s!\n",
+				       hba->netdev->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				bnx2i_unsol_pdu_adjust_rq(bnx2i_conn);
 				goto cqe_out;
 			}
@@ -2004,7 +2401,11 @@ static int bnx2i_process_new_cqes(struct bnx2i_conn *bnx2i_conn)
 			/* Run the kthread engine only for data cmds
 			   All other cmds will be completed in this bh! */
 			bnx2i_queue_scsi_cmd_resp(session, bnx2i_conn, nopin);
+<<<<<<< HEAD
 			break;
+=======
+			goto done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ISCSI_OP_LOGIN_RSP:
 			bnx2i_process_login_resp(session, bnx2i_conn,
 						 qp->cq_cons_qe);
@@ -2047,11 +2448,22 @@ static int bnx2i_process_new_cqes(struct bnx2i_conn *bnx2i_conn)
 			printk(KERN_ALERT "bnx2i: unknown opcode 0x%x\n",
 					  nopin->op_code);
 		}
+<<<<<<< HEAD
+=======
+
+		ADD_STATS_64(hba, rx_pdus, 1);
+		ADD_STATS_64(hba, rx_bytes, nopin->data_length);
+done:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!tgt_async_msg) {
 			if (!atomic_read(&bnx2i_conn->ep->num_active_cmds))
 				printk(KERN_ALERT "bnx2i (%s): no active cmd! "
 				       "op 0x%x\n",
+<<<<<<< HEAD
 				       bnx2i_conn->hba->netdev->name,
+=======
+				       hba->netdev->name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       nopin->op_code);
 			else
 				atomic_dec(&bnx2i_conn->ep->num_active_cmds);
@@ -2209,10 +2621,15 @@ static void bnx2i_process_iscsi_error(struct bnx2i_hba *hba,
 {
 	struct bnx2i_conn *bnx2i_conn;
 	u32 iscsi_cid;
+<<<<<<< HEAD
 	char warn_notice[] = "iscsi_warning";
 	char error_notice[] = "iscsi_error";
 	char additional_notice[64];
 	char *message;
+=======
+	const char *additional_notice = "";
+	const char *message;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int need_recovery;
 	u64 err_mask64;
 
@@ -2227,14 +2644,22 @@ static void bnx2i_process_iscsi_error(struct bnx2i_hba *hba,
 
 	if (err_mask64 & iscsi_error_mask) {
 		need_recovery = 0;
+<<<<<<< HEAD
 		message = warn_notice;
 	} else {
 		need_recovery = 1;
 		message = error_notice;
+=======
+		message = "iscsi_warning";
+	} else {
+		need_recovery = 1;
+		message = "iscsi_error";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (iscsi_err->completion_status) {
 	case ISCSI_KCQE_COMPLETION_STATUS_HDR_DIG_ERR:
+<<<<<<< HEAD
 		strcpy(additional_notice, "hdr digest err");
 		break;
 	case ISCSI_KCQE_COMPLETION_STATUS_DATA_DIG_ERR:
@@ -2305,15 +2730,92 @@ static void bnx2i_process_iscsi_error(struct bnx2i_hba *hba,
 		break;
 	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_R2TSN:
 		strcpy(additional_notice, "invalid R2TSN field");
+=======
+		additional_notice = "hdr digest err";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_DATA_DIG_ERR:
+		additional_notice = "data digest err";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_OPCODE:
+		additional_notice = "wrong opcode rcvd";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_AHS_LEN:
+		additional_notice = "AHS len > 0 rcvd";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_ITT:
+		additional_notice = "invalid ITT rcvd";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_STATSN:
+		additional_notice = "wrong StatSN rcvd";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_EXP_DATASN:
+		additional_notice = "wrong DataSN rcvd";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_PEND_R2T:
+		additional_notice = "pend R2T violation";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_O_U_0:
+		additional_notice = "ERL0, UO";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_O_U_1:
+		additional_notice = "ERL0, U1";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_O_U_2:
+		additional_notice = "ERL0, U2";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_O_U_3:
+		additional_notice = "ERL0, U3";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_O_U_4:
+		additional_notice = "ERL0, U4";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_O_U_5:
+		additional_notice = "ERL0, U5";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_O_U_6:
+		additional_notice = "ERL0, U6";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_REMAIN_RCV_LEN:
+		additional_notice = "invalid resi len";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_MAX_RCV_PDU_LEN:
+		additional_notice = "MRDSL violation";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_F_BIT_ZERO:
+		additional_notice = "F-bit not set";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_TTT_NOT_RSRV:
+		additional_notice = "invalid TTT";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_DATASN:
+		additional_notice = "invalid DataSN";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_REMAIN_BURST_LEN:
+		additional_notice = "burst len violation";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_BUFFER_OFF:
+		additional_notice = "buf offset violation";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_LUN:
+		additional_notice = "invalid LUN field";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_R2TSN:
+		additional_notice = "invalid R2TSN field";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #define BNX2I_ERR_DESIRED_DATA_TRNS_LEN_0 	\
 	ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_DESIRED_DATA_TRNS_LEN_0
 	case BNX2I_ERR_DESIRED_DATA_TRNS_LEN_0:
+<<<<<<< HEAD
 		strcpy(additional_notice, "invalid cmd len1");
+=======
+		additional_notice = "invalid cmd len1";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #define BNX2I_ERR_DESIRED_DATA_TRNS_LEN_1 	\
 	ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_DESIRED_DATA_TRNS_LEN_1
 	case BNX2I_ERR_DESIRED_DATA_TRNS_LEN_1:
+<<<<<<< HEAD
 		strcpy(additional_notice, "invalid cmd len2");
 		break;
 	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_PEND_R2T_EXCEED:
@@ -2325,10 +2827,23 @@ static void bnx2i_process_iscsi_error(struct bnx2i_hba *hba,
 		break;
 	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_MAX_BURST_LEN:
 		strcpy(additional_notice, "MBL violation");
+=======
+		additional_notice = "invalid cmd len2";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_PEND_R2T_EXCEED:
+		additional_notice = "pend r2t exceeds MaxOutstandingR2T value";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_TTT_IS_RSRV:
+		additional_notice = "TTT is rsvd";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_MAX_BURST_LEN:
+		additional_notice = "MBL violation";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #define BNX2I_ERR_DATA_SEG_LEN_NOT_ZERO 	\
 	ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_DATA_SEG_LEN_NOT_ZERO
 	case BNX2I_ERR_DATA_SEG_LEN_NOT_ZERO:
+<<<<<<< HEAD
 		strcpy(additional_notice, "data seg len != 0");
 		break;
 	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_REJECT_PDU_LEN:
@@ -2339,10 +2854,23 @@ static void bnx2i_process_iscsi_error(struct bnx2i_hba *hba,
 		break;
 	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_NOPIN_PDU_LEN:
 		strcpy(additional_notice, "nopin pdu len error");
+=======
+		additional_notice = "data seg len != 0";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_REJECT_PDU_LEN:
+		additional_notice = "reject pdu len error";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_ASYNC_PDU_LEN:
+		additional_notice = "async pdu len error";
+		break;
+	case ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_NOPIN_PDU_LEN:
+		additional_notice = "nopin pdu len error";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #define BNX2_ERR_PEND_R2T_IN_CLEANUP			\
 	ISCSI_KCQE_COMPLETION_STATUS_PROTOCOL_ERR_PEND_R2T_IN_CLEANUP
 	case BNX2_ERR_PEND_R2T_IN_CLEANUP:
+<<<<<<< HEAD
 		strcpy(additional_notice, "pend r2t in cleanup");
 		break;
 
@@ -2354,6 +2882,19 @@ static void bnx2i_process_iscsi_error(struct bnx2i_hba *hba,
 		break;
 	case ISCI_KCQE_COMPLETION_STATUS_TCP_ERROR_URGENT_FLAG:
 		strcpy(additional_notice, "urgent flag error");
+=======
+		additional_notice = "pend r2t in cleanup";
+		break;
+
+	case ISCI_KCQE_COMPLETION_STATUS_TCP_ERROR_IP_FRAGMENT:
+		additional_notice = "IP fragments rcvd";
+		break;
+	case ISCI_KCQE_COMPLETION_STATUS_TCP_ERROR_IP_OPTIONS:
+		additional_notice = "IP options error";
+		break;
+	case ISCI_KCQE_COMPLETION_STATUS_TCP_ERROR_URGENT_FLAG:
+		additional_notice = "urgent flag error";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		printk(KERN_ALERT "iscsi_err - unknown err %x\n",
@@ -2399,12 +2940,20 @@ static void bnx2i_process_conn_destroy_cmpl(struct bnx2i_hba *hba,
 	ep = bnx2i_find_ep_in_destroy_list(hba, conn_destroy->iscsi_conn_id);
 	if (!ep) {
 		printk(KERN_ALERT "bnx2i_conn_destroy_cmpl: no pending "
+<<<<<<< HEAD
 				  "offload request, unexpected complection\n");
+=======
+				  "offload request, unexpected completion\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if (hba != ep->hba) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "conn destroy- error hba mis-match\n");
+=======
+		printk(KERN_ALERT "conn destroy- error hba mismatch\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -2430,7 +2979,10 @@ static void bnx2i_process_ofld_cmpl(struct bnx2i_hba *hba,
 {
 	u32 cid_addr;
 	struct bnx2i_endpoint *ep;
+<<<<<<< HEAD
 	u32 cid_num;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ep = bnx2i_find_ep_in_ofld_list(hba, ofld_kcqe->iscsi_conn_id);
 	if (!ep) {
@@ -2439,7 +2991,11 @@ static void bnx2i_process_ofld_cmpl(struct bnx2i_hba *hba,
 	}
 
 	if (hba != ep->hba) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "ofld_cmpl: error hba mis-match\n");
+=======
+		printk(KERN_ALERT "ofld_cmpl: error hba mismatch\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -2465,7 +3021,10 @@ static void bnx2i_process_ofld_cmpl(struct bnx2i_hba *hba,
 	} else {
 		ep->state = EP_STATE_OFLD_COMPL;
 		cid_addr = ofld_kcqe->iscsi_conn_context_id;
+<<<<<<< HEAD
 		cid_num = bnx2i_get_cid_num(ep);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ep->ep_cid = cid_addr;
 		ep->qp.ctx_base = NULL;
 	}
@@ -2474,8 +3033,14 @@ static void bnx2i_process_ofld_cmpl(struct bnx2i_hba *hba,
 
 /**
  * bnx2i_indicate_kcqe - process iscsi conn update completion KCQE
+<<<<<<< HEAD
  * @hba:		adapter structure pointer
  * @update_kcqe:	kcqe pointer
+=======
+ * @context:		adapter structure pointer
+ * @kcqe:		kcqe pointer
+ * @num_cqe:		number of kcqes to process
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Generic KCQ event handler/dispatcher
  */
@@ -2622,8 +3187,12 @@ static void bnx2i_cm_abort_cmpl(struct cnic_sock *cm_sk)
 
 /**
  * bnx2i_cm_remote_close - process received TCP FIN
+<<<<<<< HEAD
  * @hba:		adapter structure pointer
  * @update_kcqe:	kcqe pointer
+=======
+ * @cm_sk:	cnic sock structure pointer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * function callback exported via bnx2i - cnic driver interface to indicate
  *	async TCP events such as FIN
@@ -2639,8 +3208,12 @@ static void bnx2i_cm_remote_close(struct cnic_sock *cm_sk)
 
 /**
  * bnx2i_cm_remote_abort - process TCP RST and start conn cleanup
+<<<<<<< HEAD
  * @hba:		adapter structure pointer
  * @update_kcqe:	kcqe pointer
+=======
+ * @cm_sk:	cnic sock structure pointer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * function callback exported via bnx2i - cnic driver interface to
  *	indicate async TCP events (RST) sent by the peer.
@@ -2677,10 +3250,16 @@ static int bnx2i_send_nl_mesg(void *context, u32 msg_type,
 }
 
 
+<<<<<<< HEAD
 /**
  * bnx2i_cnic_cb - global template of bnx2i - cnic driver interface structure
  *			carrying callback function pointers
  *
+=======
+/*
+ * bnx2i_cnic_cb - global template of bnx2i - cnic driver interface structure
+ *			carrying callback function pointers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct cnic_ulp_ops bnx2i_cnic_cb = {
 	.cnic_init = bnx2i_ulp_init,
@@ -2695,6 +3274,10 @@ struct cnic_ulp_ops bnx2i_cnic_cb = {
 	.cm_remote_close = bnx2i_cm_remote_close,
 	.cm_remote_abort = bnx2i_cm_remote_abort,
 	.iscsi_nl_send_msg = bnx2i_send_nl_mesg,
+<<<<<<< HEAD
+=======
+	.cnic_get_stats = bnx2i_get_stats,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner = THIS_MODULE
 };
 
@@ -2721,6 +3304,7 @@ int bnx2i_map_ep_dbell_regs(struct bnx2i_endpoint *ep)
 	if (test_bit(BNX2I_NX2_DEV_57710, &ep->hba->cnic_dev_type)) {
 		reg_base = pci_resource_start(ep->hba->pcidev,
 					      BNX2X_DOORBELL_PCI_BAR);
+<<<<<<< HEAD
 		reg_off = BNX2I_5771X_DBELL_PAGE_SIZE * (cid_num & 0x1FFFF) +
 			  DPM_TRIGER_TYPE;
 		ep->qp.ctx_base = ioremap_nocache(reg_base + reg_off, 4);
@@ -2728,6 +3312,15 @@ int bnx2i_map_ep_dbell_regs(struct bnx2i_endpoint *ep)
 	}
 
 	reg_base = ep->hba->netdev->base_addr;
+=======
+		reg_off = (1 << BNX2X_DB_SHIFT) * (cid_num & 0x1FFFF);
+		ep->qp.ctx_base = ioremap(reg_base + reg_off, 4);
+		if (!ep->qp.ctx_base)
+			return -ENOMEM;
+		goto arm_cq;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((test_bit(BNX2I_NX2_DEV_5709, &ep->hba->cnic_dev_type)) &&
 	    (ep->hba->mail_queue_access == BNX2I_MQ_BIN_MODE)) {
 		config2 = REG_RD(ep->hba, BNX2_MQ_CONFIG2);
@@ -2743,7 +3336,11 @@ int bnx2i_map_ep_dbell_regs(struct bnx2i_endpoint *ep)
 		/* 5709 device in normal node and 5706/5708 devices */
 		reg_off = CTX_OFFSET + (MB_KERNEL_CTX_SIZE * cid_num);
 
+<<<<<<< HEAD
 	ep->qp.ctx_base = ioremap_nocache(reg_base + reg_off,
+=======
+	ep->qp.ctx_base = ioremap(ep->hba->reg_base + reg_off,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  MB_KERNEL_CTX_SIZE);
 	if (!ep->qp.ctx_base)
 		return -ENOMEM;

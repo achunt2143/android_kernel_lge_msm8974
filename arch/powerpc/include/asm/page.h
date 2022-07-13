@@ -1,17 +1,25 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_PAGE_H
 #define _ASM_POWERPC_PAGE_H
 
 /*
  * Copyright (C) 2001,2005 IBM Corporation.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASSEMBLY__
 #include <linux/types.h>
+<<<<<<< HEAD
 #else
 #include <asm/types.h>
 #endif
@@ -41,6 +49,34 @@
 extern unsigned int HPAGE_SHIFT;
 #else
 #define HPAGE_SHIFT PAGE_SHIFT
+=======
+#include <linux/kernel.h>
+#include <linux/bug.h>
+#else
+#include <asm/types.h>
+#endif
+#include <asm/asm-const.h>
+
+/*
+ * On regular PPC32 page size is 4K (but we support 4K/16K/64K/256K pages
+ * on PPC44x and 4K/16K on 8xx). For PPC64 we support either 4K or 64K software
+ * page size. When using 64K pages however, whether we are really supporting
+ * 64K pages in HW or not is irrelevant to those definitions.
+ */
+#define PAGE_SHIFT		CONFIG_PAGE_SHIFT
+#define PAGE_SIZE		(ASM_CONST(1) << PAGE_SHIFT)
+
+#ifndef __ASSEMBLY__
+#ifndef CONFIG_HUGETLB_PAGE
+#define HPAGE_SHIFT PAGE_SHIFT
+#elif defined(CONFIG_PPC_BOOK3S_64)
+extern unsigned int hpage_shift;
+#define HPAGE_SHIFT hpage_shift
+#elif defined(CONFIG_PPC_8xx)
+#define HPAGE_SHIFT		19	/* 512k pages */
+#elif defined(CONFIG_PPC_E500)
+#define HPAGE_SHIFT		22	/* 4M pages */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #define HPAGE_SIZE		((1UL) << HPAGE_SHIFT)
 #define HPAGE_MASK		(~(HPAGE_SIZE - 1))
@@ -48,9 +84,12 @@ extern unsigned int HPAGE_SHIFT;
 #define HUGE_MAX_HSTATE		(MMU_PAGE_COUNT-1)
 #endif
 
+<<<<<<< HEAD
 /* We do define AT_SYSINFO_EHDR but don't use the gate mechanism */
 #define __HAVE_ARCH_GATE_AREA		1
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Subtle: (1 << PAGE_SHIFT) is an int, not an unsigned long. So if we
  * assign PAGE_MASK to a larger type it gets extended the way we want
@@ -78,7 +117,11 @@ extern unsigned int HPAGE_SHIFT;
  *
  * Also, KERNELBASE >= PAGE_OFFSET and PHYSICAL_START >= MEMORY_START
  *
+<<<<<<< HEAD
  * There are two was to determine a physical address from a virtual one:
+=======
+ * There are two ways to determine a physical address from a virtual one:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * va = pa + PAGE_OFFSET - MEMORY_START
  * va = pa + KERNELBASE - PHYSICAL_START
  *
@@ -98,7 +141,11 @@ extern unsigned int HPAGE_SHIFT;
 extern phys_addr_t memstart_addr;
 extern phys_addr_t kernstart_addr;
 
+<<<<<<< HEAD
 #ifdef CONFIG_RELOCATABLE_PPC32
+=======
+#if defined(CONFIG_RELOCATABLE) && defined(CONFIG_PPC32)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern long long virt_phys_offset;
 #endif
 
@@ -110,12 +157,21 @@ extern long long virt_phys_offset;
 #endif
 
 /* See Description below for VIRT_PHYS_OFFSET */
+<<<<<<< HEAD
 #ifdef CONFIG_RELOCATABLE_PPC32
+=======
+#if defined(CONFIG_PPC32) && defined(CONFIG_BOOKE)
+#ifdef CONFIG_RELOCATABLE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VIRT_PHYS_OFFSET virt_phys_offset
 #else
 #define VIRT_PHYS_OFFSET (KERNELBASE - PHYSICAL_START)
 #endif
+<<<<<<< HEAD
 
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PPC64
 #define MEMORY_START	0UL
@@ -127,6 +183,7 @@ extern long long virt_phys_offset;
 
 #ifdef CONFIG_FLATMEM
 #define ARCH_PFN_OFFSET		((unsigned long)(MEMORY_START >> PAGE_SHIFT))
+<<<<<<< HEAD
 #define pfn_valid(pfn)		((pfn) >= ARCH_PFN_OFFSET && (pfn) < max_mapnr)
 #endif
 
@@ -134,14 +191,24 @@ extern long long virt_phys_offset;
 #define pfn_to_kaddr(pfn)	__va((pfn) << PAGE_SHIFT)
 #define virt_addr_valid(kaddr)	pfn_valid(__pa(kaddr) >> PAGE_SHIFT)
 
+=======
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * On Book-E parts we need __va to parse the device tree and we can't
  * determine MEMORY_START until then.  However we can determine PHYSICAL_START
  * from information at hand (program counter, TLB lookup).
  *
+<<<<<<< HEAD
  * On BookE with RELOCATABLE (RELOCATABLE_PPC32)
  *
  *   With RELOCATABLE_PPC32,  we support loading the kernel at any physical 
+=======
+ * On BookE with RELOCATABLE && PPC32
+ *
+ *   With RELOCATABLE && PPC32,  we support loading the kernel at any physical
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   address without any restriction on the page alignment.
  *
  *   We find the runtime address of _stext and relocate ourselves based on 
@@ -207,6 +274,7 @@ extern long long virt_phys_offset;
  * On non-Book-E PPC64 PAGE_OFFSET and MEMORY_START are constants so use
  * the other definitions for __va & __pa.
  */
+<<<<<<< HEAD
 #ifdef CONFIG_BOOKE
 #define __va(x) ((void *)(unsigned long)((phys_addr_t)(x) + VIRT_PHYS_OFFSET))
 #define __pa(x) ((unsigned long)(x) - VIRT_PHYS_OFFSET)
@@ -218,6 +286,32 @@ extern long long virt_phys_offset;
  */
 #define __va(x) ((void *)(unsigned long)((phys_addr_t)(x) | PAGE_OFFSET))
 #define __pa(x) ((unsigned long)(x) & 0x0fffffffffffffffUL)
+=======
+#if defined(CONFIG_PPC32) && defined(CONFIG_BOOKE)
+#define __va(x) ((void *)(unsigned long)((phys_addr_t)(x) + VIRT_PHYS_OFFSET))
+#define __pa(x) ((phys_addr_t)(unsigned long)(x) - VIRT_PHYS_OFFSET)
+#else
+#ifdef CONFIG_PPC64
+
+#define VIRTUAL_WARN_ON(x)	WARN_ON(IS_ENABLED(CONFIG_DEBUG_VIRTUAL) && (x))
+
+/*
+ * gcc miscompiles (unsigned long)(&static_var) - PAGE_OFFSET
+ * with -mcmodel=medium, so we use & and | instead of - and + on 64-bit.
+ * This also results in better code generation.
+ */
+#define __va(x)								\
+({									\
+	VIRTUAL_WARN_ON((unsigned long)(x) >= PAGE_OFFSET);		\
+	(void *)(unsigned long)((phys_addr_t)(x) | PAGE_OFFSET);	\
+})
+
+#define __pa(x)								\
+({									\
+	VIRTUAL_WARN_ON((unsigned long)(x) < PAGE_OFFSET);		\
+	(unsigned long)(x) & 0x0fffffffffffffffUL;			\
+})
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else /* 32-bit, non book E */
 #define __va(x) ((void *)(unsigned long)((phys_addr_t)(x) + PAGE_OFFSET - MEMORY_START))
@@ -225,16 +319,43 @@ extern long long virt_phys_offset;
 #endif
 #endif
 
+<<<<<<< HEAD
+=======
+#ifndef __ASSEMBLY__
+static inline unsigned long virt_to_pfn(const void *kaddr)
+{
+	return __pa(kaddr) >> PAGE_SHIFT;
+}
+
+static inline const void *pfn_to_kaddr(unsigned long pfn)
+{
+	return __va(pfn << PAGE_SHIFT);
+}
+#endif
+
+#define virt_to_page(kaddr)	pfn_to_page(virt_to_pfn(kaddr))
+#define virt_addr_valid(vaddr)	({					\
+	unsigned long _addr = (unsigned long)vaddr;			\
+	_addr >= PAGE_OFFSET && _addr < (unsigned long)high_memory &&	\
+	pfn_valid(virt_to_pfn((void *)_addr));				\
+})
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Unfortunately the PLT is in the BSS in the PPC32 ELF ABI,
  * and needs to be executable.  This means the whole heap ends
  * up being executable.
  */
+<<<<<<< HEAD
 #define VM_DATA_DEFAULT_FLAGS32	(VM_READ | VM_WRITE | VM_EXEC | \
 				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
 
 #define VM_DATA_DEFAULT_FLAGS64	(VM_READ | VM_WRITE | \
 				 VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC)
+=======
+#define VM_DATA_DEFAULT_FLAGS32	VM_DATA_FLAGS_TSK_EXEC
+#define VM_DATA_DEFAULT_FLAGS64	VM_DATA_FLAGS_NON_EXEC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __powerpc64__
 #include <asm/page_64.h>
@@ -242,6 +363,7 @@ extern long long virt_phys_offset;
 #include <asm/page_32.h>
 #endif
 
+<<<<<<< HEAD
 /* align addr on a size boundary - adjust address up/down if needed */
 #define _ALIGN_UP(addr,size)	(((addr)+((size)-1))&(~((size)-1)))
 #define _ALIGN_DOWN(addr,size)	((addr)&(~((size)-1)))
@@ -249,16 +371,28 @@ extern long long virt_phys_offset;
 /* align addr on a size boundary - adjust address up if needed */
 #define _ALIGN(addr,size)     _ALIGN_UP(addr,size)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Don't compare things with KERNELBASE or PAGE_OFFSET to test for
  * "kernelness", use is_kernel_addr() - it should do what you want.
  */
 #ifdef CONFIG_PPC_BOOK3E_64
 #define is_kernel_addr(x)	((x) >= 0x8000000000000000ul)
+<<<<<<< HEAD
 #else
 #define is_kernel_addr(x)	((x) >= PAGE_OFFSET)
 #endif
 
+=======
+#elif defined(CONFIG_PPC_BOOK3S_64)
+#define is_kernel_addr(x)	((x) >= PAGE_OFFSET)
+#else
+#define is_kernel_addr(x)	((x) >= TASK_SIZE)
+#endif
+
+#ifndef CONFIG_PPC_BOOK3S_64
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Use the top bit of the higher-level page table entries to indicate whether
  * the entries we point to contain hugepages.  This works because we know that
@@ -266,11 +400,16 @@ extern long long virt_phys_offset;
  * page tables at arbitrary addresses, this breaks and will have to change.
  */
 #ifdef CONFIG_PPC64
+<<<<<<< HEAD
 #define PD_HUGE 0x8000000000000000
+=======
+#define PD_HUGE 0x8000000000000000UL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define PD_HUGE 0x80000000
 #endif
 
+<<<<<<< HEAD
 /*
  * Some number of bits at the level of the page table that points to
  * a hugepte are used to encode the size.  This masks those bits.
@@ -374,11 +513,43 @@ static inline int hugepd_ok(hugepd_t hpd)
 #define is_hugepd(pdep)			0
 #endif /* CONFIG_HUGETLB_PAGE */
 
+=======
+#else	/* CONFIG_PPC_BOOK3S_64 */
+/*
+ * Book3S 64 stores real addresses in the hugepd entries to
+ * avoid overlaps with _PAGE_PRESENT and _PAGE_PTE.
+ */
+#define HUGEPD_ADDR_MASK	(0x0ffffffffffffffful & ~HUGEPD_SHIFT_MASK)
+#endif /* CONFIG_PPC_BOOK3S_64 */
+
+/*
+ * Some number of bits at the level of the page table that points to
+ * a hugepte are used to encode the size.  This masks those bits.
+ * On 8xx, HW assistance requires 4k alignment for the hugepte.
+ */
+#ifdef CONFIG_PPC_8xx
+#define HUGEPD_SHIFT_MASK     0xfff
+#else
+#define HUGEPD_SHIFT_MASK     0x3f
+#endif
+
+#ifndef __ASSEMBLY__
+
+#ifdef CONFIG_PPC_BOOK3S_64
+#include <asm/pgtable-be-types.h>
+#else
+#include <asm/pgtable-types.h>
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct page;
 extern void clear_user_page(void *page, unsigned long vaddr, struct page *pg);
 extern void copy_user_page(void *to, void *from, unsigned long vaddr,
 		struct page *p);
+<<<<<<< HEAD
 extern int page_is_ram(unsigned long pfn);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int devmem_is_allowed(unsigned long pfn);
 
 #ifdef CONFIG_PPC_SMLPAR
@@ -388,7 +559,16 @@ void arch_free_page(struct page *page, int order);
 
 struct vm_area_struct;
 
+<<<<<<< HEAD
 typedef struct page *pgtable_t;
+=======
+extern unsigned long kernstart_virt_addr;
+
+static inline unsigned long kaslr_offset(void)
+{
+	return kernstart_virt_addr - KERNELBASE;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm-generic/memory_model.h>
 #endif /* __ASSEMBLY__ */

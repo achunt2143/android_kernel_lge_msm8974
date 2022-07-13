@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     A Davicom DM9102/DM9102A/DM9102A+DM9801/DM9102A+DM9802 NIC fast
     ethernet driver for Linux.
     Copyright (C) 1997  Sten Wang
 
+<<<<<<< HEAD
     This program is free software; you can redistribute it and/or
     modify it under the terms of the GNU General Public License
     as published by the Free Software Foundation; either version 2
@@ -12,6 +17,8 @@
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     DAVICOM Web-Site: www.davicom.com.tw
 
@@ -64,8 +71,11 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #define DRV_NAME	"dmfe"
+<<<<<<< HEAD
 #define DRV_VERSION	"1.36.4"
 #define DRV_RELDATE	"2002-01-17"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -90,7 +100,11 @@
 #include <asm/processor.h>
 #include <asm/io.h>
 #include <asm/dma.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 
 #ifdef CONFIG_TULIP_DM910X
@@ -150,6 +164,15 @@
 #define DMFE_TX_TIMEOUT ((3*HZ)/2)	/* tx packet time-out time 1.5 s" */
 #define DMFE_TX_KICK 	(HZ/2)	/* tx packet Kick-out time 0.5 s" */
 
+<<<<<<< HEAD
+=======
+#define dw32(reg, val)	iowrite32(val, ioaddr + (reg))
+#define dw16(reg, val)	iowrite16(val, ioaddr + (reg))
+#define dr32(reg)	ioread32(ioaddr + (reg))
+#define dr16(reg)	ioread16(ioaddr + (reg))
+#define dr8(reg)	ioread8(ioaddr + (reg))
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DMFE_DBUG(dbug_now, msg, value)			\
 	do {						\
 		if (dmfe_debug || (dbug_now))		\
@@ -178,6 +201,7 @@
 
 #define SROM_V41_CODE   0x14
 
+<<<<<<< HEAD
 #define SROM_CLK_WRITE(data, ioaddr) \
 	outl(data|CR9_SROM_READ|CR9_SRCS,ioaddr); \
 	udelay(5); \
@@ -186,6 +210,8 @@
 	outl(data|CR9_SROM_READ|CR9_SRCS,ioaddr); \
 	udelay(5);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __CHK_IO_SIZE(pci_id, dev_rev) \
  (( ((pci_id)==PCI_DM9132_ID) || ((dev_rev) >= 0x30) ) ? \
 	DM9102A_IO_SIZE: DM9102_IO_SIZE)
@@ -194,9 +220,12 @@
 	(__CHK_IO_SIZE(((pci_dev)->device << 16) | (pci_dev)->vendor, \
 	(pci_dev)->revision))
 
+<<<<<<< HEAD
 /* Sten Check */
 #define DEVICE net_device
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Structure/enum declaration ------------------------------- */
 struct tx_desc {
         __le32 tdes0, tdes1, tdes2, tdes3; /* Data for the card */
@@ -213,11 +242,19 @@ struct rx_desc {
 struct dmfe_board_info {
 	u32 chip_id;			/* Chip vendor/Device ID */
 	u8 chip_revision;		/* Chip revision */
+<<<<<<< HEAD
 	struct DEVICE *next_dev;	/* next device */
 	struct pci_dev *pdev;		/* PCI device */
 	spinlock_t lock;
 
 	long ioaddr;			/* I/O base address */
+=======
+	struct net_device *next_dev;	/* next device */
+	struct pci_dev *pdev;		/* PCI device */
+	spinlock_t lock;
+
+	void __iomem *ioaddr;		/* I/O base address */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 cr0_data;
 	u32 cr5_data;
 	u32 cr6_data;
@@ -293,10 +330,13 @@ enum dmfe_CR6_bits {
 };
 
 /* Global variable declaration ----------------------------- */
+<<<<<<< HEAD
 static int __devinitdata printed_version;
 static const char version[] __devinitconst =
 	"Davicom DM9xxx net driver, version " DRV_VERSION " (" DRV_RELDATE ")";
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int dmfe_debug;
 static unsigned char dmfe_media_mode = DMFE_AUTO;
 static u32 dmfe_cr6_user_set;
@@ -315,16 +355,26 @@ static u8 SF_mode;		/* Special Function: 1:VLAN, 2:RX Flow Control
 
 
 /* function declaration ------------------------------------- */
+<<<<<<< HEAD
 static int dmfe_open(struct DEVICE *);
 static netdev_tx_t dmfe_start_xmit(struct sk_buff *, struct DEVICE *);
 static int dmfe_stop(struct DEVICE *);
 static void dmfe_set_filter_mode(struct DEVICE *);
 static const struct ethtool_ops netdev_ethtool_ops;
 static u16 read_srom_word(long ,int);
+=======
+static int dmfe_open(struct net_device *);
+static netdev_tx_t dmfe_start_xmit(struct sk_buff *, struct net_device *);
+static int dmfe_stop(struct net_device *);
+static void dmfe_set_filter_mode(struct net_device *);
+static const struct ethtool_ops netdev_ethtool_ops;
+static u16 read_srom_word(void __iomem *, int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t dmfe_interrupt(int , void *);
 #ifdef CONFIG_NET_POLL_CONTROLLER
 static void poll_dmfe (struct net_device *dev);
 #endif
+<<<<<<< HEAD
 static void dmfe_descriptor_init(struct net_device *, unsigned long);
 static void allocate_rx_buffer(struct net_device *);
 static void update_cr6(u32, unsigned long);
@@ -344,6 +394,27 @@ static void dmfe_reuse_skb(struct dmfe_board_info *, struct sk_buff *);
 static void dmfe_dynamic_reset(struct DEVICE *);
 static void dmfe_free_rxbuffer(struct dmfe_board_info *);
 static void dmfe_init_dm910x(struct DEVICE *);
+=======
+static void dmfe_descriptor_init(struct net_device *);
+static void allocate_rx_buffer(struct net_device *);
+static void update_cr6(u32, void __iomem *);
+static void send_filter_frame(struct net_device *);
+static void dm9132_id_table(struct net_device *);
+static u16 dmfe_phy_read(void __iomem *, u8, u8, u32);
+static void dmfe_phy_write(void __iomem *, u8, u8, u16, u32);
+static void dmfe_phy_write_1bit(void __iomem *, u32);
+static u16 dmfe_phy_read_1bit(void __iomem *);
+static u8 dmfe_sense_speed(struct dmfe_board_info *);
+static void dmfe_process_mode(struct dmfe_board_info *);
+static void dmfe_timer(struct timer_list *);
+static inline u32 cal_CRC(unsigned char *, unsigned int, u8);
+static void dmfe_rx_packet(struct net_device *, struct dmfe_board_info *);
+static void dmfe_free_tx_pkt(struct net_device *, struct dmfe_board_info *);
+static void dmfe_reuse_skb(struct dmfe_board_info *, struct sk_buff *);
+static void dmfe_dynamic_reset(struct net_device *);
+static void dmfe_free_rxbuffer(struct dmfe_board_info *);
+static void dmfe_init_dm910x(struct net_device *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dmfe_parse_srom(struct dmfe_board_info *);
 static void dmfe_program_DM9801(struct dmfe_board_info *, int);
 static void dmfe_program_DM9802(struct dmfe_board_info *);
@@ -357,7 +428,10 @@ static const struct net_device_ops netdev_ops = {
 	.ndo_stop		= dmfe_stop,
 	.ndo_start_xmit		= dmfe_start_xmit,
 	.ndo_set_rx_mode	= dmfe_set_filter_mode,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -369,8 +443,12 @@ static const struct net_device_ops netdev_ops = {
  *	Search DM910X board ,allocate space and register it
  */
 
+<<<<<<< HEAD
 static int __devinit dmfe_init_one (struct pci_dev *pdev,
 				    const struct pci_device_id *ent)
+=======
+static int dmfe_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dmfe_board_info *db;	/* board information structure */
 	struct net_device *dev;
@@ -379,9 +457,12 @@ static int __devinit dmfe_init_one (struct pci_dev *pdev,
 
 	DMFE_DBUG(0, "dmfe_init_one()", 0);
 
+<<<<<<< HEAD
 	if (!printed_version++)
 		pr_info("%s\n", version);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	SPARC on-board DM910x chips should be handled by the main
 	 *	tulip driver, except for early DM9100s.
@@ -404,7 +485,11 @@ static int __devinit dmfe_init_one (struct pci_dev *pdev,
 		return -ENOMEM;
 	SET_NETDEV_DEV(dev, &pdev->dev);
 
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
+=======
+	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_warn("32-bit PCI DMA not available\n");
 		err = -ENODEV;
 		goto err_out_free;
@@ -446,6 +531,7 @@ static int __devinit dmfe_init_one (struct pci_dev *pdev,
 	db = netdev_priv(dev);
 
 	/* Allocate Tx/Rx descriptor memory */
+<<<<<<< HEAD
 	db->desc_pool_ptr = pci_alloc_consistent(pdev, sizeof(struct tx_desc) *
 			DESC_ALL_CNT + 0x20, &db->desc_pool_dma_ptr);
 	if (!db->desc_pool_ptr)
@@ -455,6 +541,23 @@ static int __devinit dmfe_init_one (struct pci_dev *pdev,
 			TX_DESC_CNT + 4, &db->buf_pool_dma_ptr);
 	if (!db->buf_pool_ptr)
 		goto err_out_free_desc;
+=======
+	db->desc_pool_ptr = dma_alloc_coherent(&pdev->dev,
+					       sizeof(struct tx_desc) * DESC_ALL_CNT + 0x20,
+					       &db->desc_pool_dma_ptr, GFP_KERNEL);
+	if (!db->desc_pool_ptr) {
+		err = -ENOMEM;
+		goto err_out_res;
+	}
+
+	db->buf_pool_ptr = dma_alloc_coherent(&pdev->dev,
+					      TX_BUF_ALLOC * TX_DESC_CNT + 4,
+					      &db->buf_pool_dma_ptr, GFP_KERNEL);
+	if (!db->buf_pool_ptr) {
+		err = -ENOMEM;
+		goto err_out_free_desc;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	db->first_tx_desc = (struct tx_desc *) db->desc_pool_ptr;
 	db->first_tx_desc_dma = db->desc_pool_dma_ptr;
@@ -462,14 +565,27 @@ static int __devinit dmfe_init_one (struct pci_dev *pdev,
 	db->buf_pool_dma_start = db->buf_pool_dma_ptr;
 
 	db->chip_id = ent->driver_data;
+<<<<<<< HEAD
 	db->ioaddr = pci_resource_start(pdev, 0);
+=======
+	/* IO type range. */
+	db->ioaddr = pci_iomap(pdev, 0, 0);
+	if (!db->ioaddr) {
+		err = -ENOMEM;
+		goto err_out_free_buf;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	db->chip_revision = pdev->revision;
 	db->wol_mode = 0;
 
 	db->pdev = pdev;
 
+<<<<<<< HEAD
 	dev->base_addr = db->ioaddr;
 	dev->irq = pdev->irq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_drvdata(pdev, dev);
 	dev->netdev_ops = &netdev_ops;
 	dev->ethtool_ops = &netdev_ethtool_ops;
@@ -484,6 +600,7 @@ static int __devinit dmfe_init_one (struct pci_dev *pdev,
 		db->chip_type = 0;
 
 	/* read 64 word srom data */
+<<<<<<< HEAD
 	for (i = 0; i < 64; i++)
 		((__le16 *) db->srom)[i] =
 			cpu_to_le16(read_srom_word(db->ioaddr, i));
@@ -499,36 +616,73 @@ static int __devinit dmfe_init_one (struct pci_dev *pdev,
 	dev_info(&dev->dev, "Davicom DM%04lx at pci%s, %pM, irq %d\n",
 		 ent->driver_data >> 16,
 		 pci_name(pdev), dev->dev_addr, dev->irq);
+=======
+	for (i = 0; i < 64; i++) {
+		((__le16 *) db->srom)[i] =
+			cpu_to_le16(read_srom_word(db->ioaddr, i));
+	}
+
+	/* Set Node address */
+	eth_hw_addr_set(dev, &db->srom[20]);
+
+	err = register_netdev (dev);
+	if (err)
+		goto err_out_unmap;
+
+	dev_info(&dev->dev, "Davicom DM%04lx at pci%s, %pM, irq %d\n",
+		 ent->driver_data >> 16,
+		 pci_name(pdev), dev->dev_addr, pdev->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_master(pdev);
 
 	return 0;
 
+<<<<<<< HEAD
 err_out_free_buf:
 	pci_free_consistent(pdev, TX_BUF_ALLOC * TX_DESC_CNT + 4,
 			    db->buf_pool_ptr, db->buf_pool_dma_ptr);
 err_out_free_desc:
 	pci_free_consistent(pdev, sizeof(struct tx_desc) * DESC_ALL_CNT + 0x20,
 			    db->desc_pool_ptr, db->desc_pool_dma_ptr);
+=======
+err_out_unmap:
+	pci_iounmap(pdev, db->ioaddr);
+err_out_free_buf:
+	dma_free_coherent(&pdev->dev, TX_BUF_ALLOC * TX_DESC_CNT + 4,
+			  db->buf_pool_ptr, db->buf_pool_dma_ptr);
+err_out_free_desc:
+	dma_free_coherent(&pdev->dev,
+			  sizeof(struct tx_desc) * DESC_ALL_CNT + 0x20,
+			  db->desc_pool_ptr, db->desc_pool_dma_ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_res:
 	pci_release_regions(pdev);
 err_out_disable:
 	pci_disable_device(pdev);
 err_out_free:
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_netdev(dev);
 
 	return err;
 }
 
 
+<<<<<<< HEAD
 static void __devexit dmfe_remove_one (struct pci_dev *pdev)
+=======
+static void dmfe_remove_one(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 	struct dmfe_board_info *db = netdev_priv(dev);
 
 	DMFE_DBUG(0, "dmfe_remove_one()", 0);
 
+<<<<<<< HEAD
  	if (dev) {
 
 		unregister_netdev(dev);
@@ -542,6 +696,20 @@ static void __devexit dmfe_remove_one (struct pci_dev *pdev)
 		free_netdev(dev);	/* free board information */
 
 		pci_set_drvdata(pdev, NULL);
+=======
+	if (dev) {
+
+		unregister_netdev(dev);
+		pci_iounmap(db->pdev, db->ioaddr);
+		dma_free_coherent(&db->pdev->dev,
+				  sizeof(struct tx_desc) * DESC_ALL_CNT + 0x20,
+				  db->desc_pool_ptr, db->desc_pool_dma_ptr);
+		dma_free_coherent(&db->pdev->dev,
+				  TX_BUF_ALLOC * TX_DESC_CNT + 4,
+				  db->buf_pool_ptr, db->buf_pool_dma_ptr);
+		pci_release_regions(pdev);
+		free_netdev(dev);	/* free board information */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	DMFE_DBUG(0, "dmfe_remove_one() exit", 0);
@@ -553,6 +721,7 @@ static void __devexit dmfe_remove_one (struct pci_dev *pdev)
  *	The interface is opened whenever "ifconfig" actives it.
  */
 
+<<<<<<< HEAD
 static int dmfe_open(struct DEVICE *dev)
 {
 	int ret;
@@ -562,6 +731,17 @@ static int dmfe_open(struct DEVICE *dev)
 
 	ret = request_irq(dev->irq, dmfe_interrupt,
 			  IRQF_SHARED, dev->name, dev);
+=======
+static int dmfe_open(struct net_device *dev)
+{
+	struct dmfe_board_info *db = netdev_priv(dev);
+	const int irq = db->pdev->irq;
+	int ret;
+
+	DMFE_DBUG(0, "dmfe_open", 0);
+
+	ret = request_irq(irq, dmfe_interrupt, IRQF_SHARED, dev->name, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -579,10 +759,17 @@ static int dmfe_open(struct DEVICE *dev)
 	/* CR6 operation mode decision */
 	if ( !chkmode || (db->chip_id == PCI_DM9132_ID) ||
 		(db->chip_revision >= 0x30) ) {
+<<<<<<< HEAD
     		db->cr6_data |= DMFE_TXTH_256;
 		db->cr0_data = CR0_DEFAULT;
 		db->dm910x_chk_mode=4;		/* Enter the normal mode */
  	} else {
+=======
+		db->cr6_data |= DMFE_TXTH_256;
+		db->cr0_data = CR0_DEFAULT;
+		db->dm910x_chk_mode=4;		/* Enter the normal mode */
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		db->cr6_data |= CR6_SFT;	/* Store & Forward mode */
 		db->cr0_data = 0;
 		db->dm910x_chk_mode = 1;	/* Enter the check mode */
@@ -595,10 +782,15 @@ static int dmfe_open(struct DEVICE *dev)
 	netif_wake_queue(dev);
 
 	/* set and active a timer process */
+<<<<<<< HEAD
 	init_timer(&db->timer);
 	db->timer.expires = DMFE_TIMER_WUT + HZ * 2;
 	db->timer.data = (unsigned long)dev;
 	db->timer.function = dmfe_timer;
+=======
+	timer_setup(&db->timer, dmfe_timer, 0);
+	db->timer.expires = DMFE_TIMER_WUT + HZ * 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_timer(&db->timer);
 
 	return 0;
@@ -612,17 +804,30 @@ static int dmfe_open(struct DEVICE *dev)
  *	Enable Tx/Rx machine
  */
 
+<<<<<<< HEAD
 static void dmfe_init_dm910x(struct DEVICE *dev)
 {
 	struct dmfe_board_info *db = netdev_priv(dev);
 	unsigned long ioaddr = db->ioaddr;
+=======
+static void dmfe_init_dm910x(struct net_device *dev)
+{
+	struct dmfe_board_info *db = netdev_priv(dev);
+	void __iomem *ioaddr = db->ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DMFE_DBUG(0, "dmfe_init_dm910x()", 0);
 
 	/* Reset DM910x MAC controller */
+<<<<<<< HEAD
 	outl(DM910X_RESET, ioaddr + DCR0);	/* RESET MAC */
 	udelay(100);
 	outl(db->cr0_data, ioaddr + DCR0);
+=======
+	dw32(DCR0, DM910X_RESET);	/* RESET MAC */
+	udelay(100);
+	dw32(DCR0, db->cr0_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udelay(5);
 
 	/* Phy addr : DM910(A)2/DM9132/9801, phy address = 1 */
@@ -633,12 +838,21 @@ static void dmfe_init_dm910x(struct DEVICE *dev)
 	db->media_mode = dmfe_media_mode;
 
 	/* RESET Phyxcer Chip by GPR port bit 7 */
+<<<<<<< HEAD
 	outl(0x180, ioaddr + DCR12);		/* Let bit 7 output port */
 	if (db->chip_id == PCI_DM9009_ID) {
 		outl(0x80, ioaddr + DCR12);	/* Issue RESET signal */
 		mdelay(300);			/* Delay 300 ms */
 	}
 	outl(0x0, ioaddr + DCR12);	/* Clear RESET signal */
+=======
+	dw32(DCR12, 0x180);		/* Let bit 7 output port */
+	if (db->chip_id == PCI_DM9009_ID) {
+		dw32(DCR12, 0x80);	/* Issue RESET signal */
+		mdelay(300);			/* Delay 300 ms */
+	}
+	dw32(DCR12, 0x0);	/* Clear RESET signal */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Process Phyxcer Media Mode */
 	if ( !(db->media_mode & 0x10) )	/* Force 1M mode */
@@ -648,8 +862,13 @@ static void dmfe_init_dm910x(struct DEVICE *dev)
 	if ( !(db->media_mode & DMFE_AUTO) )
 		db->op_mode = db->media_mode; 	/* Force Mode */
 
+<<<<<<< HEAD
 	/* Initialize Transmit/Receive decriptor and CR3/4 */
 	dmfe_descriptor_init(dev, ioaddr);
+=======
+	/* Initialize Transmit/Receive descriptor and CR3/4 */
+	dmfe_descriptor_init(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Init CR6 to program DM910x operation */
 	update_cr6(db->cr6_data, ioaddr);
@@ -662,10 +881,17 @@ static void dmfe_init_dm910x(struct DEVICE *dev)
 
 	/* Init CR7, interrupt active bit */
 	db->cr7_data = CR7_DEFAULT;
+<<<<<<< HEAD
 	outl(db->cr7_data, ioaddr + DCR7);
 
 	/* Init CR15, Tx jabber and Rx watchdog timer */
 	outl(db->cr15_data, ioaddr + DCR15);
+=======
+	dw32(DCR7, db->cr7_data);
+
+	/* Init CR15, Tx jabber and Rx watchdog timer */
+	dw32(DCR15, db->cr15_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable DM910X Tx/Rx function */
 	db->cr6_data |= CR6_RXSC | CR6_TXSC | 0x40000;
@@ -679,9 +905,16 @@ static void dmfe_init_dm910x(struct DEVICE *dev)
  */
 
 static netdev_tx_t dmfe_start_xmit(struct sk_buff *skb,
+<<<<<<< HEAD
 					 struct DEVICE *dev)
 {
 	struct dmfe_board_info *db = netdev_priv(dev);
+=======
+					 struct net_device *dev)
+{
+	struct dmfe_board_info *db = netdev_priv(dev);
+	void __iomem *ioaddr = db->ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tx_desc *txptr;
 	unsigned long flags;
 
@@ -690,7 +923,11 @@ static netdev_tx_t dmfe_start_xmit(struct sk_buff *skb,
 	/* Too large packet check */
 	if (skb->len > MAX_PACKET_SIZE) {
 		pr_err("big packet = %d\n", (u16)skb->len);
+<<<<<<< HEAD
 		dev_kfree_skb(skb);
+=======
+		dev_kfree_skb_any(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NETDEV_TX_OK;
 	}
 
@@ -707,7 +944,11 @@ static netdev_tx_t dmfe_start_xmit(struct sk_buff *skb,
 	}
 
 	/* Disable NIC interrupt */
+<<<<<<< HEAD
 	outl(0, dev->base_addr + DCR7);
+=======
+	dw32(DCR7, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* transmit this packet */
 	txptr = db->tx_insert_ptr;
@@ -721,11 +962,19 @@ static netdev_tx_t dmfe_start_xmit(struct sk_buff *skb,
 	if ( (!db->tx_queue_cnt) && (db->tx_packet_cnt < TX_MAX_SEND_CNT) ) {
 		txptr->tdes0 = cpu_to_le32(0x80000000);	/* Set owner bit */
 		db->tx_packet_cnt++;			/* Ready to send */
+<<<<<<< HEAD
 		outl(0x1, dev->base_addr + DCR1);	/* Issue Tx polling */
 		dev->trans_start = jiffies;		/* saved time stamp */
 	} else {
 		db->tx_queue_cnt++;			/* queue TX packet */
 		outl(0x1, dev->base_addr + DCR1);	/* Issue Tx polling */
+=======
+		dw32(DCR1, 0x1);			/* Issue Tx polling */
+		netif_trans_update(dev);		/* saved time stamp */
+	} else {
+		db->tx_queue_cnt++;			/* queue TX packet */
+		dw32(DCR1, 0x1);			/* Issue Tx polling */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Tx resource check */
@@ -734,10 +983,17 @@ static netdev_tx_t dmfe_start_xmit(struct sk_buff *skb,
 
 	/* Restore CR7 to enable interrupt */
 	spin_unlock_irqrestore(&db->lock, flags);
+<<<<<<< HEAD
 	outl(db->cr7_data, dev->base_addr + DCR7);
 
 	/* free this SKB */
 	dev_kfree_skb(skb);
+=======
+	dw32(DCR7, db->cr7_data);
+
+	/* free this SKB */
+	dev_consume_skb_any(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NETDEV_TX_OK;
 }
@@ -748,10 +1004,17 @@ static netdev_tx_t dmfe_start_xmit(struct sk_buff *skb,
  *	The interface is stopped when it is brought.
  */
 
+<<<<<<< HEAD
 static int dmfe_stop(struct DEVICE *dev)
 {
 	struct dmfe_board_info *db = netdev_priv(dev);
 	unsigned long ioaddr = dev->base_addr;
+=======
+static int dmfe_stop(struct net_device *dev)
+{
+	struct dmfe_board_info *db = netdev_priv(dev);
+	void __iomem *ioaddr = db->ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DMFE_DBUG(0, "dmfe_stop", 0);
 
@@ -762,12 +1025,21 @@ static int dmfe_stop(struct DEVICE *dev)
 	del_timer_sync(&db->timer);
 
 	/* Reset & stop DM910X board */
+<<<<<<< HEAD
 	outl(DM910X_RESET, ioaddr + DCR0);
 	udelay(5);
 	phy_write(db->ioaddr, db->phy_addr, 0, 0x8000, db->chip_id);
 
 	/* free interrupt */
 	free_irq(dev->irq, dev);
+=======
+	dw32(DCR0, DM910X_RESET);
+	udelay(100);
+	dmfe_phy_write(ioaddr, db->phy_addr, 0, 0x8000, db->chip_id);
+
+	/* free interrupt */
+	free_irq(db->pdev->irq, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* free allocated rx buffer */
 	dmfe_free_rxbuffer(db);
@@ -792,9 +1064,15 @@ static int dmfe_stop(struct DEVICE *dev)
 
 static irqreturn_t dmfe_interrupt(int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	struct DEVICE *dev = dev_id;
 	struct dmfe_board_info *db = netdev_priv(dev);
 	unsigned long ioaddr = dev->base_addr;
+=======
+	struct net_device *dev = dev_id;
+	struct dmfe_board_info *db = netdev_priv(dev);
+	void __iomem *ioaddr = db->ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	DMFE_DBUG(0, "dmfe_interrupt()", 0);
@@ -802,15 +1080,24 @@ static irqreturn_t dmfe_interrupt(int irq, void *dev_id)
 	spin_lock_irqsave(&db->lock, flags);
 
 	/* Got DM910X status */
+<<<<<<< HEAD
 	db->cr5_data = inl(ioaddr + DCR5);
 	outl(db->cr5_data, ioaddr + DCR5);
+=======
+	db->cr5_data = dr32(DCR5);
+	dw32(DCR5, db->cr5_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ( !(db->cr5_data & 0xc1) ) {
 		spin_unlock_irqrestore(&db->lock, flags);
 		return IRQ_HANDLED;
 	}
 
 	/* Disable all interrupt in CR7 to solve the interrupt edge problem */
+<<<<<<< HEAD
 	outl(0, ioaddr + DCR7);
+=======
+	dw32(DCR7, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check system status */
 	if (db->cr5_data & 0x2000) {
@@ -838,11 +1125,19 @@ static irqreturn_t dmfe_interrupt(int irq, void *dev_id)
 	if (db->dm910x_chk_mode & 0x2) {
 		db->dm910x_chk_mode = 0x4;
 		db->cr6_data |= 0x100;
+<<<<<<< HEAD
 		update_cr6(db->cr6_data, db->ioaddr);
 	}
 
 	/* Restore CR7 to enable interrupt mask */
 	outl(db->cr7_data, ioaddr + DCR7);
+=======
+		update_cr6(db->cr6_data, ioaddr);
+	}
+
+	/* Restore CR7 to enable interrupt mask */
+	dw32(DCR7, db->cr7_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&db->lock, flags);
 	return IRQ_HANDLED;
@@ -858,11 +1153,22 @@ static irqreturn_t dmfe_interrupt(int irq, void *dev_id)
 
 static void poll_dmfe (struct net_device *dev)
 {
+<<<<<<< HEAD
 	/* disable_irq here is not very nice, but with the lockless
 	   interrupt handler we have no other choice. */
 	disable_irq(dev->irq);
 	dmfe_interrupt (dev->irq, dev);
 	enable_irq(dev->irq);
+=======
+	struct dmfe_board_info *db = netdev_priv(dev);
+	const int irq = db->pdev->irq;
+
+	/* disable_irq here is not very nice, but with the lockless
+	   interrupt handler we have no other choice. */
+	disable_irq(irq);
+	dmfe_interrupt (irq, dev);
+	enable_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -870,10 +1176,17 @@ static void poll_dmfe (struct net_device *dev)
  *	Free TX resource after TX complete
  */
 
+<<<<<<< HEAD
 static void dmfe_free_tx_pkt(struct DEVICE *dev, struct dmfe_board_info * db)
 {
 	struct tx_desc *txptr;
 	unsigned long ioaddr = dev->base_addr;
+=======
+static void dmfe_free_tx_pkt(struct net_device *dev, struct dmfe_board_info *db)
+{
+	struct tx_desc *txptr;
+	void __iomem *ioaddr = db->ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tdes0;
 
 	txptr = db->tx_remove_ptr;
@@ -897,7 +1210,11 @@ static void dmfe_free_tx_pkt(struct DEVICE *dev, struct dmfe_board_info * db)
 					db->tx_fifo_underrun++;
 					if ( !(db->cr6_data & CR6_SFT) ) {
 						db->cr6_data = db->cr6_data | CR6_SFT;
+<<<<<<< HEAD
 						update_cr6(db->cr6_data, db->ioaddr);
+=======
+						update_cr6(db->cr6_data, ioaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 				}
 				if (tdes0 & 0x0100)
@@ -913,7 +1230,11 @@ static void dmfe_free_tx_pkt(struct DEVICE *dev, struct dmfe_board_info * db)
 			}
 		}
 
+<<<<<<< HEAD
     		txptr = txptr->next_tx_desc;
+=======
+		txptr = txptr->next_tx_desc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}/* End of while */
 
 	/* Update TX remove pointer to next */
@@ -924,8 +1245,13 @@ static void dmfe_free_tx_pkt(struct DEVICE *dev, struct dmfe_board_info * db)
 		txptr->tdes0 = cpu_to_le32(0x80000000);	/* Set owner bit */
 		db->tx_packet_cnt++;			/* Ready to send */
 		db->tx_queue_cnt--;
+<<<<<<< HEAD
 		outl(0x1, ioaddr + DCR1);		/* Issue Tx polling */
 		dev->trans_start = jiffies;		/* saved time stamp */
+=======
+		dw32(DCR1, 0x1);			/* Issue Tx polling */
+		netif_trans_update(dev);		/* saved time stamp */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Resource available check */
@@ -952,7 +1278,11 @@ static inline u32 cal_CRC(unsigned char * Data, unsigned int Len, u8 flag)
  *	Receive the come packet and pass to upper layer
  */
 
+<<<<<<< HEAD
 static void dmfe_rx_packet(struct DEVICE *dev, struct dmfe_board_info * db)
+=======
+static void dmfe_rx_packet(struct net_device *dev, struct dmfe_board_info *db)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rx_desc *rxptr;
 	struct sk_buff *skb, *newskb;
@@ -969,8 +1299,13 @@ static void dmfe_rx_packet(struct DEVICE *dev, struct dmfe_board_info * db)
 		db->rx_avail_cnt--;
 		db->interval_rx_cnt++;
 
+<<<<<<< HEAD
 		pci_unmap_single(db->pdev, le32_to_cpu(rxptr->rdes2),
 				 RX_ALLOC_SIZE, PCI_DMA_FROMDEVICE);
+=======
+		dma_unmap_single(&db->pdev->dev, le32_to_cpu(rxptr->rdes2),
+				 RX_ALLOC_SIZE, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if ( (rdes0 & 0x300) != 0x300) {
 			/* A packet without First/Last flag */
@@ -1043,7 +1378,11 @@ static void dmfe_rx_packet(struct DEVICE *dev, struct dmfe_board_info * db)
  * Set DM910X multicast address
  */
 
+<<<<<<< HEAD
 static void dmfe_set_filter_mode(struct DEVICE * dev)
+=======
+static void dmfe_set_filter_mode(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dmfe_board_info *db = netdev_priv(dev);
 	unsigned long flags;
@@ -1085,6 +1424,7 @@ static void dmfe_ethtool_get_drvinfo(struct net_device *dev,
 {
 	struct dmfe_board_info *np = netdev_priv(dev);
 
+<<<<<<< HEAD
 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
 	if (np->pdev)
@@ -1093,6 +1433,10 @@ static void dmfe_ethtool_get_drvinfo(struct net_device *dev,
 	else
 		sprintf(info->bus_info, "EISA 0x%lx %d",
 			dev->base_addr, dev->irq);
+=======
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	strscpy(info->bus_info, pci_name(np->pdev), sizeof(info->bus_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dmfe_ethtool_set_wol(struct net_device *dev,
@@ -1130,6 +1474,7 @@ static const struct ethtool_ops netdev_ethtool_ops = {
  *	Dynamic media sense, allocate Rx buffer...
  */
 
+<<<<<<< HEAD
 static void dmfe_timer(unsigned long data)
 {
 	u32 tmp_cr8;
@@ -1137,6 +1482,16 @@ static void dmfe_timer(unsigned long data)
 	struct DEVICE *dev = (struct DEVICE *) data;
 	struct dmfe_board_info *db = netdev_priv(dev);
  	unsigned long flags;
+=======
+static void dmfe_timer(struct timer_list *t)
+{
+	struct dmfe_board_info *db = from_timer(db, t, timer);
+	struct net_device *dev = pci_get_drvdata(db->pdev);
+	void __iomem *ioaddr = db->ioaddr;
+	u32 tmp_cr8;
+	unsigned char tmp_cr12;
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int link_ok, link_ok_phy;
 
@@ -1148,11 +1503,18 @@ static void dmfe_timer(unsigned long data)
 		db->first_in_callback = 1;
 		if (db->chip_type && (db->chip_id==PCI_DM9102_ID)) {
 			db->cr6_data &= ~0x40000;
+<<<<<<< HEAD
 			update_cr6(db->cr6_data, db->ioaddr);
 			phy_write(db->ioaddr,
 				  db->phy_addr, 0, 0x1000, db->chip_id);
 			db->cr6_data |= 0x40000;
 			update_cr6(db->cr6_data, db->ioaddr);
+=======
+			update_cr6(db->cr6_data, ioaddr);
+			dmfe_phy_write(ioaddr, db->phy_addr, 0, 0x1000, db->chip_id);
+			db->cr6_data |= 0x40000;
+			update_cr6(db->cr6_data, ioaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			db->timer.expires = DMFE_TIMER_WUT + HZ * 2;
 			add_timer(&db->timer);
 			spin_unlock_irqrestore(&db->lock, flags);
@@ -1167,7 +1529,11 @@ static void dmfe_timer(unsigned long data)
 		db->dm910x_chk_mode = 0x4;
 
 	/* Dynamic reset DM910X : system error or transmit time-out */
+<<<<<<< HEAD
 	tmp_cr8 = inl(db->ioaddr + DCR8);
+=======
+	tmp_cr8 = dr32(DCR8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ( (db->interval_rx_cnt==0) && (tmp_cr8) ) {
 		db->reset_cr8++;
 		db->wait_reset = 1;
@@ -1177,7 +1543,11 @@ static void dmfe_timer(unsigned long data)
 	/* TX polling kick monitor */
 	if ( db->tx_packet_cnt &&
 	     time_after(jiffies, dev_trans_start(dev) + DMFE_TX_KICK) ) {
+<<<<<<< HEAD
 		outl(0x1, dev->base_addr + DCR1);   /* Tx polling again */
+=======
+		dw32(DCR1, 0x1);   /* Tx polling again */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* TX Timeout */
 		if (time_after(jiffies, dev_trans_start(dev) + DMFE_TX_TIMEOUT) ) {
@@ -1200,9 +1570,15 @@ static void dmfe_timer(unsigned long data)
 
 	/* Link status check, Dynamic media type change */
 	if (db->chip_id == PCI_DM9132_ID)
+<<<<<<< HEAD
 		tmp_cr12 = inb(db->ioaddr + DCR9 + 3);	/* DM9132 */
 	else
 		tmp_cr12 = inb(db->ioaddr + DCR12);	/* DM9102/DM9102A */
+=======
+		tmp_cr12 = dr8(DCR9 + 3);	/* DM9132 */
+	else
+		tmp_cr12 = dr8(DCR12);		/* DM9102/DM9102A */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ( ((db->chip_id == PCI_DM9102_ID) &&
 		(db->chip_revision == 0x30)) ||
@@ -1226,14 +1602,24 @@ static void dmfe_timer(unsigned long data)
 	*/
 
 	/* need a dummy read because of PHY's register latch*/
+<<<<<<< HEAD
 	phy_read (db->ioaddr, db->phy_addr, 1, db->chip_id);
 	link_ok_phy = (phy_read (db->ioaddr,
 		       db->phy_addr, 1, db->chip_id) & 0x4) ? 1 : 0;
+=======
+	dmfe_phy_read (db->ioaddr, db->phy_addr, 1, db->chip_id);
+	link_ok_phy = (dmfe_phy_read (db->ioaddr,
+				      db->phy_addr, 1, db->chip_id) & 0x4) ? 1 : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (link_ok_phy != link_ok) {
 		DMFE_DBUG (0, "PHY and chip report different link status", 0);
 		link_ok = link_ok | link_ok_phy;
+<<<<<<< HEAD
  	}
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ( !link_ok && netif_carrier_ok(dev)) {
 		/* Link Failed */
@@ -1243,15 +1629,24 @@ static void dmfe_timer(unsigned long data)
 		/* For Force 10/100M Half/Full mode: Enable Auto-Nego mode */
 		/* AUTO or force 1M Homerun/Longrun don't need */
 		if ( !(db->media_mode & 0x38) )
+<<<<<<< HEAD
 			phy_write(db->ioaddr, db->phy_addr,
 				  0, 0x1000, db->chip_id);
+=======
+			dmfe_phy_write(db->ioaddr, db->phy_addr,
+				       0, 0x1000, db->chip_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* AUTO mode, if INT phyxcer link failed, select EXT device */
 		if (db->media_mode & DMFE_AUTO) {
 			/* 10/100M link failed, used 1M Home-Net */
 			db->cr6_data|=0x00040000;	/* bit18=1, MII */
 			db->cr6_data&=~0x00000200;	/* bit9=0, HD mode */
+<<<<<<< HEAD
 			update_cr6(db->cr6_data, db->ioaddr);
+=======
+			update_cr6(db->cr6_data, ioaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else if (!netif_carrier_ok(dev)) {
 
@@ -1288,17 +1683,30 @@ static void dmfe_timer(unsigned long data)
  *	Re-initialize DM910X board
  */
 
+<<<<<<< HEAD
 static void dmfe_dynamic_reset(struct DEVICE *dev)
 {
 	struct dmfe_board_info *db = netdev_priv(dev);
+=======
+static void dmfe_dynamic_reset(struct net_device *dev)
+{
+	struct dmfe_board_info *db = netdev_priv(dev);
+	void __iomem *ioaddr = db->ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DMFE_DBUG(0, "dmfe_dynamic_reset()", 0);
 
 	/* Sopt MAC controller */
 	db->cr6_data &= ~(CR6_RXSC | CR6_TXSC);	/* Disable Tx/Rx */
+<<<<<<< HEAD
 	update_cr6(db->cr6_data, dev->base_addr);
 	outl(0, dev->base_addr + DCR7);		/* Disable Interrupt */
 	outl(inl(dev->base_addr + DCR5), dev->base_addr + DCR5);
+=======
+	update_cr6(db->cr6_data, ioaddr);
+	dw32(DCR7, 0);				/* Disable Interrupt */
+	dw32(DCR5, dr32(DCR5));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable upper layer interface */
 	netif_stop_queue(dev);
@@ -1348,8 +1756,13 @@ static void dmfe_reuse_skb(struct dmfe_board_info *db, struct sk_buff * skb)
 
 	if (!(rxptr->rdes0 & cpu_to_le32(0x80000000))) {
 		rxptr->rx_skb_ptr = skb;
+<<<<<<< HEAD
 		rxptr->rdes2 = cpu_to_le32( pci_map_single(db->pdev,
 			    skb->data, RX_ALLOC_SIZE, PCI_DMA_FROMDEVICE) );
+=======
+		rxptr->rdes2 = cpu_to_le32(dma_map_single(&db->pdev->dev, skb->data,
+							  RX_ALLOC_SIZE, DMA_FROM_DEVICE));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wmb();
 		rxptr->rdes0 = cpu_to_le32(0x80000000);
 		db->rx_avail_cnt++;
@@ -1364,9 +1777,16 @@ static void dmfe_reuse_skb(struct dmfe_board_info *db, struct sk_buff * skb)
  *	Using Chain structure, and allocate Tx/Rx buffer
  */
 
+<<<<<<< HEAD
 static void dmfe_descriptor_init(struct net_device *dev, unsigned long ioaddr)
 {
 	struct dmfe_board_info *db = netdev_priv(dev);
+=======
+static void dmfe_descriptor_init(struct net_device *dev)
+{
+	struct dmfe_board_info *db = netdev_priv(dev);
+	void __iomem *ioaddr = db->ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tx_desc *tmp_tx;
 	struct rx_desc *tmp_rx;
 	unsigned char *tmp_buf;
@@ -1379,7 +1799,11 @@ static void dmfe_descriptor_init(struct net_device *dev, unsigned long ioaddr)
 	/* tx descriptor start pointer */
 	db->tx_insert_ptr = db->first_tx_desc;
 	db->tx_remove_ptr = db->first_tx_desc;
+<<<<<<< HEAD
 	outl(db->first_tx_desc_dma, ioaddr + DCR4);     /* TX DESC address */
+=======
+	dw32(DCR4, db->first_tx_desc_dma);     /* TX DESC address */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* rx descriptor start pointer */
 	db->first_rx_desc = (void *)db->first_tx_desc +
@@ -1389,7 +1813,11 @@ static void dmfe_descriptor_init(struct net_device *dev, unsigned long ioaddr)
 			sizeof(struct tx_desc) * TX_DESC_CNT;
 	db->rx_insert_ptr = db->first_rx_desc;
 	db->rx_ready_ptr = db->first_rx_desc;
+<<<<<<< HEAD
 	outl(db->first_rx_desc_dma, ioaddr + DCR3);	/* RX DESC address */
+=======
+	dw32(DCR3, db->first_rx_desc_dma);		/* RX DESC address */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Init Transmit chain */
 	tmp_buf = db->buf_pool_start;
@@ -1431,14 +1859,24 @@ static void dmfe_descriptor_init(struct net_device *dev, unsigned long ioaddr)
  *	Firstly stop DM910X , then written value and start
  */
 
+<<<<<<< HEAD
 static void update_cr6(u32 cr6_data, unsigned long ioaddr)
+=======
+static void update_cr6(u32 cr6_data, void __iomem *ioaddr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 cr6_tmp;
 
 	cr6_tmp = cr6_data & ~0x2002;           /* stop Tx/Rx */
+<<<<<<< HEAD
 	outl(cr6_tmp, ioaddr + DCR6);
 	udelay(5);
 	outl(cr6_data, ioaddr + DCR6);
+=======
+	dw32(DCR6, cr6_tmp);
+	udelay(5);
+	dw32(DCR6, cr6_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udelay(5);
 }
 
@@ -1448,6 +1886,7 @@ static void update_cr6(u32 cr6_data, unsigned long ioaddr)
  *	This setup frame initialize DM910X address filter mode
 */
 
+<<<<<<< HEAD
 static void dm9132_id_table(struct DEVICE *dev)
 {
 	struct netdev_hw_addr *ha;
@@ -1466,6 +1905,21 @@ static void dm9132_id_table(struct DEVICE *dev)
 	ioaddr += 4;
 	outw(addrptr[2], ioaddr);
 	ioaddr += 4;
+=======
+static void dm9132_id_table(struct net_device *dev)
+{
+	const u16 *addrptr = (const u16 *)dev->dev_addr;
+	struct dmfe_board_info *db = netdev_priv(dev);
+	void __iomem *ioaddr = db->ioaddr + 0xc0;
+	struct netdev_hw_addr *ha;
+	u16 i, hash_table[4];
+
+	/* Node address */
+	for (i = 0; i < 3; i++) {
+		dw16(0, addrptr[i]);
+		ioaddr += 4;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear Hash Table */
 	memset(hash_table, 0, sizeof(hash_table));
@@ -1475,13 +1929,22 @@ static void dm9132_id_table(struct DEVICE *dev)
 
 	/* the multicast address in Hash Table : 64 bits */
 	netdev_for_each_mc_addr(ha, dev) {
+<<<<<<< HEAD
 		hash_val = cal_CRC((char *) ha->addr, 6, 0) & 0x3f;
+=======
+		u32 hash_val = cal_CRC((char *)ha->addr, 6, 0) & 0x3f;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hash_table[hash_val / 16] |= (u16) 1 << (hash_val % 16);
 	}
 
 	/* Write the hash table to MAC MD table */
 	for (i = 0; i < 4; i++, ioaddr += 4)
+<<<<<<< HEAD
 		outw(hash_table[i], ioaddr);
+=======
+		dw16(0, hash_table[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1490,12 +1953,20 @@ static void dm9132_id_table(struct DEVICE *dev)
  *	This setup frame initialize DM910X address filter mode
  */
 
+<<<<<<< HEAD
 static void send_filter_frame(struct DEVICE *dev)
+=======
+static void send_filter_frame(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dmfe_board_info *db = netdev_priv(dev);
 	struct netdev_hw_addr *ha;
 	struct tx_desc *txptr;
+<<<<<<< HEAD
 	u16 * addrptr;
+=======
+	const u16 * addrptr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 * suptr;
 	int i;
 
@@ -1505,7 +1976,11 @@ static void send_filter_frame(struct DEVICE *dev)
 	suptr = (u32 *) txptr->tx_buf_ptr;
 
 	/* Node address */
+<<<<<<< HEAD
 	addrptr = (u16 *) dev->dev_addr;
+=======
+	addrptr = (const u16 *) dev->dev_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*suptr++ = addrptr[0];
 	*suptr++ = addrptr[1];
 	*suptr++ = addrptr[2];
@@ -1535,6 +2010,7 @@ static void send_filter_frame(struct DEVICE *dev)
 
 	/* Resource Check and Send the setup packet */
 	if (!db->tx_packet_cnt) {
+<<<<<<< HEAD
 		/* Resource Empty */
 		db->tx_packet_cnt++;
 		txptr->tdes0 = cpu_to_le32(0x80000000);
@@ -1542,6 +2018,17 @@ static void send_filter_frame(struct DEVICE *dev)
 		outl(0x1, dev->base_addr + DCR1);	/* Issue Tx polling */
 		update_cr6(db->cr6_data, dev->base_addr);
 		dev->trans_start = jiffies;
+=======
+		void __iomem *ioaddr = db->ioaddr;
+
+		/* Resource Empty */
+		db->tx_packet_cnt++;
+		txptr->tdes0 = cpu_to_le32(0x80000000);
+		update_cr6(db->cr6_data | 0x2000, ioaddr);
+		dw32(DCR1, 0x1);	/* Issue Tx polling */
+		update_cr6(db->cr6_data, ioaddr);
+		netif_trans_update(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		db->tx_queue_cnt++;	/* Put in TX queue */
 }
@@ -1564,8 +2051,13 @@ static void allocate_rx_buffer(struct net_device *dev)
 		if ( ( skb = netdev_alloc_skb(dev, RX_ALLOC_SIZE) ) == NULL )
 			break;
 		rxptr->rx_skb_ptr = skb; /* FIXME (?) */
+<<<<<<< HEAD
 		rxptr->rdes2 = cpu_to_le32( pci_map_single(db->pdev, skb->data,
 				    RX_ALLOC_SIZE, PCI_DMA_FROMDEVICE) );
+=======
+		rxptr->rdes2 = cpu_to_le32(dma_map_single(&db->pdev->dev, skb->data,
+							  RX_ALLOC_SIZE, DMA_FROM_DEVICE));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wmb();
 		rxptr->rdes0 = cpu_to_le32(0x80000000);
 		rxptr = rxptr->next_rx_desc;
@@ -1575,10 +2067,28 @@ static void allocate_rx_buffer(struct net_device *dev)
 	db->rx_insert_ptr = rxptr;
 }
 
+<<<<<<< HEAD
+=======
+static void srom_clk_write(void __iomem *ioaddr, u32 data)
+{
+	static const u32 cmd[] = {
+		CR9_SROM_READ | CR9_SRCS,
+		CR9_SROM_READ | CR9_SRCS | CR9_SRCLK,
+		CR9_SROM_READ | CR9_SRCS
+	};
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(cmd); i++) {
+		dw32(DCR9, data | cmd[i]);
+		udelay(5);
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Read one word data from the serial ROM
  */
+<<<<<<< HEAD
 
 static u16 read_srom_word(long ioaddr, int offset)
 {
@@ -1593,10 +2103,27 @@ static u16 read_srom_word(long ioaddr, int offset)
 	SROM_CLK_WRITE(SROM_DATA_1, cr9_ioaddr);
 	SROM_CLK_WRITE(SROM_DATA_1, cr9_ioaddr);
 	SROM_CLK_WRITE(SROM_DATA_0, cr9_ioaddr);
+=======
+static u16 read_srom_word(void __iomem *ioaddr, int offset)
+{
+	u16 srom_data;
+	int i;
+
+	dw32(DCR9, CR9_SROM_READ);
+	udelay(5);
+	dw32(DCR9, CR9_SROM_READ | CR9_SRCS);
+	udelay(5);
+
+	/* Send the Read Command 110b */
+	srom_clk_write(ioaddr, SROM_DATA_1);
+	srom_clk_write(ioaddr, SROM_DATA_1);
+	srom_clk_write(ioaddr, SROM_DATA_0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Send the offset */
 	for (i = 5; i >= 0; i--) {
 		srom_data = (offset & (1 << i)) ? SROM_DATA_1 : SROM_DATA_0;
+<<<<<<< HEAD
 		SROM_CLK_WRITE(srom_data, cr9_ioaddr);
 	}
 
@@ -1612,6 +2139,25 @@ static u16 read_srom_word(long ioaddr, int offset)
 	}
 
 	outl(CR9_SROM_READ, cr9_ioaddr);
+=======
+		srom_clk_write(ioaddr, srom_data);
+	}
+
+	dw32(DCR9, CR9_SROM_READ | CR9_SRCS);
+	udelay(5);
+
+	for (i = 16; i > 0; i--) {
+		dw32(DCR9, CR9_SROM_READ | CR9_SRCS | CR9_SRCLK);
+		udelay(5);
+		srom_data = (srom_data << 1) |
+				((dr32(DCR9) & CR9_CRDOUT) ? 1 : 0);
+		dw32(DCR9, CR9_SROM_READ | CR9_SRCS);
+		udelay(5);
+	}
+
+	dw32(DCR9, CR9_SROM_READ);
+	udelay(5);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return srom_data;
 }
 
@@ -1620,12 +2166,19 @@ static u16 read_srom_word(long ioaddr, int offset)
  *	Auto sense the media mode
  */
 
+<<<<<<< HEAD
 static u8 dmfe_sense_speed(struct dmfe_board_info * db)
 {
+=======
+static u8 dmfe_sense_speed(struct dmfe_board_info *db)
+{
+	void __iomem *ioaddr = db->ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 ErrFlag = 0;
 	u16 phy_mode;
 
 	/* CR6 bit18=0, select 10/100M */
+<<<<<<< HEAD
 	update_cr6( (db->cr6_data & ~0x40000), db->ioaddr);
 
 	phy_mode = phy_read(db->ioaddr, db->phy_addr, 1, db->chip_id);
@@ -1638,6 +2191,20 @@ static u8 dmfe_sense_speed(struct dmfe_board_info * db)
 		else 				/* DM9102/DM9102A */
 			phy_mode = phy_read(db->ioaddr,
 				    db->phy_addr, 17, db->chip_id) & 0xf000;
+=======
+	update_cr6(db->cr6_data & ~0x40000, ioaddr);
+
+	phy_mode = dmfe_phy_read(db->ioaddr, db->phy_addr, 1, db->chip_id);
+	phy_mode = dmfe_phy_read(db->ioaddr, db->phy_addr, 1, db->chip_id);
+
+	if ( (phy_mode & 0x24) == 0x24 ) {
+		if (db->chip_id == PCI_DM9132_ID)	/* DM9132 */
+			phy_mode = dmfe_phy_read(db->ioaddr,
+						 db->phy_addr, 7, db->chip_id) & 0xf000;
+		else 				/* DM9102/DM9102A */
+			phy_mode = dmfe_phy_read(db->ioaddr,
+						 db->phy_addr, 17, db->chip_id) & 0xf000;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (phy_mode) {
 		case 0x1000: db->op_mode = DMFE_10MHF; break;
 		case 0x2000: db->op_mode = DMFE_10MFD; break;
@@ -1665,10 +2232,15 @@ static u8 dmfe_sense_speed(struct dmfe_board_info * db)
 
 static void dmfe_set_phyxcer(struct dmfe_board_info *db)
 {
+<<<<<<< HEAD
+=======
+	void __iomem *ioaddr = db->ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 phy_reg;
 
 	/* Select 10/100M phyxcer */
 	db->cr6_data &= ~0x40000;
+<<<<<<< HEAD
 	update_cr6(db->cr6_data, db->ioaddr);
 
 	/* DM9009 Chip: Phyxcer reg18 bit12=0 */
@@ -1682,6 +2254,21 @@ static void dmfe_set_phyxcer(struct dmfe_board_info *db)
 
 	/* Phyxcer capability setting */
 	phy_reg = phy_read(db->ioaddr, db->phy_addr, 4, db->chip_id) & ~0x01e0;
+=======
+	update_cr6(db->cr6_data, ioaddr);
+
+	/* DM9009 Chip: Phyxcer reg18 bit12=0 */
+	if (db->chip_id == PCI_DM9009_ID) {
+		phy_reg = dmfe_phy_read(db->ioaddr,
+					db->phy_addr, 18, db->chip_id) & ~0x1000;
+
+		dmfe_phy_write(db->ioaddr,
+			       db->phy_addr, 18, phy_reg, db->chip_id);
+	}
+
+	/* Phyxcer capability setting */
+	phy_reg = dmfe_phy_read(db->ioaddr, db->phy_addr, 4, db->chip_id) & ~0x01e0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (db->media_mode & DMFE_AUTO) {
 		/* AUTO Mode */
@@ -1697,11 +2284,16 @@ static void dmfe_set_phyxcer(struct dmfe_board_info *db)
 		if (db->chip_id == PCI_DM9009_ID) phy_reg &= 0x61;
 	}
 
+<<<<<<< HEAD
   	/* Write new capability to Phyxcer Reg4 */
+=======
+	/* Write new capability to Phyxcer Reg4 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ( !(phy_reg & 0x01e0)) {
 		phy_reg|=db->PHY_reg4;
 		db->media_mode|=DMFE_AUTO;
 	}
+<<<<<<< HEAD
 	phy_write(db->ioaddr, db->phy_addr, 4, phy_reg, db->chip_id);
 
  	/* Restart Auto-Negotiation */
@@ -1709,6 +2301,15 @@ static void dmfe_set_phyxcer(struct dmfe_board_info *db)
 		phy_write(db->ioaddr, db->phy_addr, 0, 0x1800, db->chip_id);
 	if ( !db->chip_type )
 		phy_write(db->ioaddr, db->phy_addr, 0, 0x1200, db->chip_id);
+=======
+	dmfe_phy_write(db->ioaddr, db->phy_addr, 4, phy_reg, db->chip_id);
+
+	/* Restart Auto-Negotiation */
+	if ( db->chip_type && (db->chip_id == PCI_DM9102_ID) )
+		dmfe_phy_write(db->ioaddr, db->phy_addr, 0, 0x1800, db->chip_id);
+	if ( !db->chip_type )
+		dmfe_phy_write(db->ioaddr, db->phy_addr, 0, 0x1200, db->chip_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1740,7 +2341,11 @@ static void dmfe_process_mode(struct dmfe_board_info *db)
 	/* 10/100M phyxcer force mode need */
 	if ( !(db->media_mode & 0x18)) {
 		/* Forece Mode */
+<<<<<<< HEAD
 		phy_reg = phy_read(db->ioaddr, db->phy_addr, 6, db->chip_id);
+=======
+		phy_reg = dmfe_phy_read(db->ioaddr, db->phy_addr, 6, db->chip_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ( !(phy_reg & 0x1) ) {
 			/* parter without N-Way capability */
 			phy_reg = 0x0;
@@ -1750,12 +2355,21 @@ static void dmfe_process_mode(struct dmfe_board_info *db)
 			case DMFE_100MHF: phy_reg = 0x2000; break;
 			case DMFE_100MFD: phy_reg = 0x2100; break;
 			}
+<<<<<<< HEAD
 			phy_write(db->ioaddr,
 				  db->phy_addr, 0, phy_reg, db->chip_id);
        			if ( db->chip_type && (db->chip_id == PCI_DM9102_ID) )
 				mdelay(20);
 			phy_write(db->ioaddr,
 				  db->phy_addr, 0, phy_reg, db->chip_id);
+=======
+			dmfe_phy_write(db->ioaddr,
+				       db->phy_addr, 0, phy_reg, db->chip_id);
+			if ( db->chip_type && (db->chip_id == PCI_DM9102_ID) )
+				mdelay(20);
+			dmfe_phy_write(db->ioaddr,
+				       db->phy_addr, 0, phy_reg, db->chip_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -1765,6 +2379,7 @@ static void dmfe_process_mode(struct dmfe_board_info *db)
  *	Write a word to Phy register
  */
 
+<<<<<<< HEAD
 static void phy_write(unsigned long iobase, u8 phy_addr, u8 offset,
 		      u16 phy_data, u32 chip_id)
 {
@@ -1808,6 +2423,48 @@ static void phy_write(unsigned long iobase, u8 phy_addr, u8 offset,
 		for ( i = 0x8000; i > 0; i >>= 1)
 			phy_write_1bit(ioaddr,
 				       phy_data & i ? PHY_DATA_1 : PHY_DATA_0);
+=======
+static void dmfe_phy_write(void __iomem *ioaddr, u8 phy_addr, u8 offset,
+			   u16 phy_data, u32 chip_id)
+{
+	u16 i;
+
+	if (chip_id == PCI_DM9132_ID) {
+		dw16(0x80 + offset * 4, phy_data);
+	} else {
+		/* DM9102/DM9102A Chip */
+
+		/* Send 33 synchronization clock to Phy controller */
+		for (i = 0; i < 35; i++)
+			dmfe_phy_write_1bit(ioaddr, PHY_DATA_1);
+
+		/* Send start command(01) to Phy */
+		dmfe_phy_write_1bit(ioaddr, PHY_DATA_0);
+		dmfe_phy_write_1bit(ioaddr, PHY_DATA_1);
+
+		/* Send write command(01) to Phy */
+		dmfe_phy_write_1bit(ioaddr, PHY_DATA_0);
+		dmfe_phy_write_1bit(ioaddr, PHY_DATA_1);
+
+		/* Send Phy address */
+		for (i = 0x10; i > 0; i = i >> 1)
+			dmfe_phy_write_1bit(ioaddr,
+					    phy_addr & i ? PHY_DATA_1 : PHY_DATA_0);
+
+		/* Send register address */
+		for (i = 0x10; i > 0; i = i >> 1)
+			dmfe_phy_write_1bit(ioaddr,
+					    offset & i ? PHY_DATA_1 : PHY_DATA_0);
+
+		/* written trasnition */
+		dmfe_phy_write_1bit(ioaddr, PHY_DATA_1);
+		dmfe_phy_write_1bit(ioaddr, PHY_DATA_0);
+
+		/* Write a word data to PHY controller */
+		for ( i = 0x8000; i > 0; i >>= 1)
+			dmfe_phy_write_1bit(ioaddr,
+					    phy_data & i ? PHY_DATA_1 : PHY_DATA_0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1816,6 +2473,7 @@ static void phy_write(unsigned long iobase, u8 phy_addr, u8 offset,
  *	Read a word data from phy register
  */
 
+<<<<<<< HEAD
 static u16 phy_read(unsigned long iobase, u8 phy_addr, u8 offset, u32 chip_id)
 {
 	int i;
@@ -1854,11 +2512,52 @@ static u16 phy_read(unsigned long iobase, u8 phy_addr, u8 offset, u32 chip_id)
 
 		/* Skip transition state */
 		phy_read_1bit(ioaddr);
+=======
+static u16 dmfe_phy_read(void __iomem *ioaddr, u8 phy_addr, u8 offset, u32 chip_id)
+{
+	int i;
+	u16 phy_data;
+
+	if (chip_id == PCI_DM9132_ID) {
+		/* DM9132 Chip */
+		phy_data = dr16(0x80 + offset * 4);
+	} else {
+		/* DM9102/DM9102A Chip */
+
+		/* Send 33 synchronization clock to Phy controller */
+		for (i = 0; i < 35; i++)
+			dmfe_phy_write_1bit(ioaddr, PHY_DATA_1);
+
+		/* Send start command(01) to Phy */
+		dmfe_phy_write_1bit(ioaddr, PHY_DATA_0);
+		dmfe_phy_write_1bit(ioaddr, PHY_DATA_1);
+
+		/* Send read command(10) to Phy */
+		dmfe_phy_write_1bit(ioaddr, PHY_DATA_1);
+		dmfe_phy_write_1bit(ioaddr, PHY_DATA_0);
+
+		/* Send Phy address */
+		for (i = 0x10; i > 0; i = i >> 1)
+			dmfe_phy_write_1bit(ioaddr,
+					    phy_addr & i ? PHY_DATA_1 : PHY_DATA_0);
+
+		/* Send register address */
+		for (i = 0x10; i > 0; i = i >> 1)
+			dmfe_phy_write_1bit(ioaddr,
+					    offset & i ? PHY_DATA_1 : PHY_DATA_0);
+
+		/* Skip transition state */
+		dmfe_phy_read_1bit(ioaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* read 16bit data */
 		for (phy_data = 0, i = 0; i < 16; i++) {
 			phy_data <<= 1;
+<<<<<<< HEAD
 			phy_data |= phy_read_1bit(ioaddr);
+=======
+			phy_data |= dmfe_phy_read_1bit(ioaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1870,6 +2569,7 @@ static u16 phy_read(unsigned long iobase, u8 phy_addr, u8 offset, u32 chip_id)
  *	Write one bit data to Phy Controller
  */
 
+<<<<<<< HEAD
 static void phy_write_1bit(unsigned long ioaddr, u32 phy_data)
 {
 	outl(phy_data, ioaddr);			/* MII Clock Low */
@@ -1877,6 +2577,15 @@ static void phy_write_1bit(unsigned long ioaddr, u32 phy_data)
 	outl(phy_data | MDCLKH, ioaddr);	/* MII Clock High */
 	udelay(1);
 	outl(phy_data, ioaddr);			/* MII Clock Low */
+=======
+static void dmfe_phy_write_1bit(void __iomem *ioaddr, u32 phy_data)
+{
+	dw32(DCR9, phy_data);		/* MII Clock Low */
+	udelay(1);
+	dw32(DCR9, phy_data | MDCLKH);	/* MII Clock High */
+	udelay(1);
+	dw32(DCR9, phy_data);		/* MII Clock Low */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udelay(1);
 }
 
@@ -1885,6 +2594,7 @@ static void phy_write_1bit(unsigned long ioaddr, u32 phy_data)
  *	Read one bit phy data from PHY controller
  */
 
+<<<<<<< HEAD
 static u16 phy_read_1bit(unsigned long ioaddr)
 {
 	u16 phy_data;
@@ -1893,6 +2603,16 @@ static u16 phy_read_1bit(unsigned long ioaddr)
 	udelay(1);
 	phy_data = ( inl(ioaddr) >> 19 ) & 0x1;
 	outl(0x40000, ioaddr);
+=======
+static u16 dmfe_phy_read_1bit(void __iomem *ioaddr)
+{
+	u16 phy_data;
+
+	dw32(DCR9, 0x50000);
+	udelay(1);
+	phy_data = (dr32(DCR9) >> 19) & 0x1;
+	dw32(DCR9, 0x40000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udelay(1);
 
 	return phy_data;
@@ -1978,12 +2698,21 @@ static void dmfe_parse_srom(struct dmfe_board_info * db)
 
 	/* Check DM9801 or DM9802 present or not */
 	db->HPNA_present = 0;
+<<<<<<< HEAD
 	update_cr6(db->cr6_data|0x40000, db->ioaddr);
 	tmp_reg = phy_read(db->ioaddr, db->phy_addr, 3, db->chip_id);
 	if ( ( tmp_reg & 0xfff0 ) == 0xb900 ) {
 		/* DM9801 or DM9802 present */
 		db->HPNA_timer = 8;
 		if ( phy_read(db->ioaddr, db->phy_addr, 31, db->chip_id) == 0x4404) {
+=======
+	update_cr6(db->cr6_data | 0x40000, db->ioaddr);
+	tmp_reg = dmfe_phy_read(db->ioaddr, db->phy_addr, 3, db->chip_id);
+	if ( ( tmp_reg & 0xfff0 ) == 0xb900 ) {
+		/* DM9801 or DM9802 present */
+		db->HPNA_timer = 8;
+		if ( dmfe_phy_read(db->ioaddr, db->phy_addr, 31, db->chip_id) == 0x4404) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* DM9801 HomeRun */
 			db->HPNA_present = 1;
 			dmfe_program_DM9801(db, tmp_reg);
@@ -2009,6 +2738,7 @@ static void dmfe_program_DM9801(struct dmfe_board_info * db, int HPNA_rev)
 	switch(HPNA_rev) {
 	case 0xb900: /* DM9801 E3 */
 		db->HPNA_command |= 0x1000;
+<<<<<<< HEAD
 		reg25 = phy_read(db->ioaddr, db->phy_addr, 24, db->chip_id);
 		reg25 = ( (reg25 + HPNA_NoiseFloor) & 0xff) | 0xf000;
 		reg17 = phy_read(db->ioaddr, db->phy_addr, 17, db->chip_id);
@@ -2017,12 +2747,23 @@ static void dmfe_program_DM9801(struct dmfe_board_info * db, int HPNA_rev)
 		reg25 = phy_read(db->ioaddr, db->phy_addr, 25, db->chip_id);
 		reg25 = (reg25 & 0xff00) + HPNA_NoiseFloor;
 		reg17 = phy_read(db->ioaddr, db->phy_addr, 17, db->chip_id);
+=======
+		reg25 = dmfe_phy_read(db->ioaddr, db->phy_addr, 24, db->chip_id);
+		reg25 = ( (reg25 + HPNA_NoiseFloor) & 0xff) | 0xf000;
+		reg17 = dmfe_phy_read(db->ioaddr, db->phy_addr, 17, db->chip_id);
+		break;
+	case 0xb901: /* DM9801 E4 */
+		reg25 = dmfe_phy_read(db->ioaddr, db->phy_addr, 25, db->chip_id);
+		reg25 = (reg25 & 0xff00) + HPNA_NoiseFloor;
+		reg17 = dmfe_phy_read(db->ioaddr, db->phy_addr, 17, db->chip_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg17 = (reg17 & 0xfff0) + HPNA_NoiseFloor + 3;
 		break;
 	case 0xb902: /* DM9801 E5 */
 	case 0xb903: /* DM9801 E6 */
 	default:
 		db->HPNA_command |= 0x1000;
+<<<<<<< HEAD
 		reg25 = phy_read(db->ioaddr, db->phy_addr, 25, db->chip_id);
 		reg25 = (reg25 & 0xff00) + HPNA_NoiseFloor - 5;
 		reg17 = phy_read(db->ioaddr, db->phy_addr, 17, db->chip_id);
@@ -2032,6 +2773,17 @@ static void dmfe_program_DM9801(struct dmfe_board_info * db, int HPNA_rev)
 	phy_write(db->ioaddr, db->phy_addr, 16, db->HPNA_command, db->chip_id);
 	phy_write(db->ioaddr, db->phy_addr, 17, reg17, db->chip_id);
 	phy_write(db->ioaddr, db->phy_addr, 25, reg25, db->chip_id);
+=======
+		reg25 = dmfe_phy_read(db->ioaddr, db->phy_addr, 25, db->chip_id);
+		reg25 = (reg25 & 0xff00) + HPNA_NoiseFloor - 5;
+		reg17 = dmfe_phy_read(db->ioaddr, db->phy_addr, 17, db->chip_id);
+		reg17 = (reg17 & 0xfff0) + HPNA_NoiseFloor;
+		break;
+	}
+	dmfe_phy_write(db->ioaddr, db->phy_addr, 16, db->HPNA_command, db->chip_id);
+	dmfe_phy_write(db->ioaddr, db->phy_addr, 17, reg17, db->chip_id);
+	dmfe_phy_write(db->ioaddr, db->phy_addr, 25, reg25, db->chip_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -2044,10 +2796,17 @@ static void dmfe_program_DM9802(struct dmfe_board_info * db)
 	uint phy_reg;
 
 	if ( !HPNA_NoiseFloor ) HPNA_NoiseFloor = DM9802_NOISE_FLOOR;
+<<<<<<< HEAD
 	phy_write(db->ioaddr, db->phy_addr, 16, db->HPNA_command, db->chip_id);
 	phy_reg = phy_read(db->ioaddr, db->phy_addr, 25, db->chip_id);
 	phy_reg = ( phy_reg & 0xff00) + HPNA_NoiseFloor;
 	phy_write(db->ioaddr, db->phy_addr, 25, phy_reg, db->chip_id);
+=======
+	dmfe_phy_write(db->ioaddr, db->phy_addr, 16, db->HPNA_command, db->chip_id);
+	phy_reg = dmfe_phy_read(db->ioaddr, db->phy_addr, 25, db->chip_id);
+	phy_reg = ( phy_reg & 0xff00) + HPNA_NoiseFloor;
+	dmfe_phy_write(db->ioaddr, db->phy_addr, 25, phy_reg, db->chip_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -2061,7 +2820,11 @@ static void dmfe_HPNA_remote_cmd_chk(struct dmfe_board_info * db)
 	uint phy_reg;
 
 	/* Got remote device status */
+<<<<<<< HEAD
 	phy_reg = phy_read(db->ioaddr, db->phy_addr, 17, db->chip_id) & 0x60;
+=======
+	phy_reg = dmfe_phy_read(db->ioaddr, db->phy_addr, 17, db->chip_id) & 0x60;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch(phy_reg) {
 	case 0x00: phy_reg = 0x0a00;break; /* LP/LS */
 	case 0x20: phy_reg = 0x0900;break; /* LP/HS */
@@ -2071,8 +2834,13 @@ static void dmfe_HPNA_remote_cmd_chk(struct dmfe_board_info * db)
 
 	/* Check remote device status match our setting ot not */
 	if ( phy_reg != (db->HPNA_command & 0x0f00) ) {
+<<<<<<< HEAD
 		phy_write(db->ioaddr, db->phy_addr, 16, db->HPNA_command,
 			  db->chip_id);
+=======
+		dmfe_phy_write(db->ioaddr, db->phy_addr, 16, db->HPNA_command,
+			       db->chip_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		db->HPNA_timer=8;
 	} else
 		db->HPNA_timer=600;	/* Match, every 10 minutes, check */
@@ -2080,7 +2848,11 @@ static void dmfe_HPNA_remote_cmd_chk(struct dmfe_board_info * db)
 
 
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(dmfe_pci_tbl) = {
+=======
+static const struct pci_device_id dmfe_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x1282, 0x9132, PCI_ANY_ID, PCI_ANY_ID, 0, 0, PCI_DM9132_ID },
 	{ 0x1282, 0x9102, PCI_ANY_ID, PCI_ANY_ID, 0, 0, PCI_DM9102_ID },
 	{ 0x1282, 0x9100, PCI_ANY_ID, PCI_ANY_ID, 0, 0, PCI_DM9100_ID },
@@ -2089,6 +2861,7 @@ static DEFINE_PCI_DEVICE_TABLE(dmfe_pci_tbl) = {
 };
 MODULE_DEVICE_TABLE(pci, dmfe_pci_tbl);
 
+<<<<<<< HEAD
 
 #ifdef CONFIG_PM
 static int dmfe_suspend(struct pci_dev *pci_dev, pm_message_t state)
@@ -2096,22 +2869,38 @@ static int dmfe_suspend(struct pci_dev *pci_dev, pm_message_t state)
 	struct net_device *dev = pci_get_drvdata(pci_dev);
 	struct dmfe_board_info *db = netdev_priv(dev);
 	u32 tmp;
+=======
+static int __maybe_unused dmfe_suspend(struct device *dev_d)
+{
+	struct net_device *dev = dev_get_drvdata(dev_d);
+	struct dmfe_board_info *db = netdev_priv(dev);
+	void __iomem *ioaddr = db->ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable upper layer interface */
 	netif_device_detach(dev);
 
 	/* Disable Tx/Rx */
 	db->cr6_data &= ~(CR6_RXSC | CR6_TXSC);
+<<<<<<< HEAD
 	update_cr6(db->cr6_data, dev->base_addr);
 
 	/* Disable Interrupt */
 	outl(0, dev->base_addr + DCR7);
 	outl(inl (dev->base_addr + DCR5), dev->base_addr + DCR5);
+=======
+	update_cr6(db->cr6_data, ioaddr);
+
+	/* Disable Interrupt */
+	dw32(DCR7, 0);
+	dw32(DCR5, dr32(DCR5));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fre RX buffers */
 	dmfe_free_rxbuffer(db);
 
 	/* Enable WOL */
+<<<<<<< HEAD
 	pci_read_config_dword(pci_dev, 0x40, &tmp);
 	tmp &= ~(DMFE_WOL_LINKCHANGE|DMFE_WOL_MAGICPACKET);
 
@@ -2128,10 +2917,14 @@ static int dmfe_suspend(struct pci_dev *pci_dev, pm_message_t state)
 	/* Power down device*/
 	pci_save_state(pci_dev);
 	pci_set_power_state(pci_dev, pci_choose_state (pci_dev, state));
+=======
+	device_wakeup_enable(dev_d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dmfe_resume(struct pci_dev *pci_dev)
 {
 	struct net_device *dev = pci_get_drvdata(pci_dev);
@@ -2139,11 +2932,17 @@ static int dmfe_resume(struct pci_dev *pci_dev)
 
 	pci_set_power_state(pci_dev, PCI_D0);
 	pci_restore_state(pci_dev);
+=======
+static int __maybe_unused dmfe_resume(struct device *dev_d)
+{
+	struct net_device *dev = dev_get_drvdata(dev_d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Re-initialize DM910X board */
 	dmfe_init_dm910x(dev);
 
 	/* Disable WOL */
+<<<<<<< HEAD
 	pci_read_config_dword(pci_dev, 0x40, &tmp);
 
 	tmp &= ~(DMFE_WOL_LINKCHANGE | DMFE_WOL_MAGICPACKET);
@@ -2151,30 +2950,46 @@ static int dmfe_resume(struct pci_dev *pci_dev)
 
 	pci_enable_wake(pci_dev, PCI_D3hot, 0);
 	pci_enable_wake(pci_dev, PCI_D3cold, 0);
+=======
+	device_wakeup_disable(dev_d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Restart upper layer interface */
 	netif_device_attach(dev);
 
 	return 0;
 }
+<<<<<<< HEAD
 #else
 #define dmfe_suspend NULL
 #define dmfe_resume NULL
 #endif
+=======
+
+static SIMPLE_DEV_PM_OPS(dmfe_pm_ops, dmfe_suspend, dmfe_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver dmfe_driver = {
 	.name		= "dmfe",
 	.id_table	= dmfe_pci_tbl,
 	.probe		= dmfe_init_one,
+<<<<<<< HEAD
 	.remove		= __devexit_p(dmfe_remove_one),
 	.suspend        = dmfe_suspend,
 	.resume         = dmfe_resume
+=======
+	.remove		= dmfe_remove_one,
+	.driver.pm	= &dmfe_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 MODULE_AUTHOR("Sten Wang, sten_wang@davicom.com.tw");
 MODULE_DESCRIPTION("Davicom DM910X fast ethernet driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(debug, int, 0);
 module_param(mode, byte, 0);
@@ -2201,9 +3016,12 @@ static int __init dmfe_init_module(void)
 {
 	int rc;
 
+<<<<<<< HEAD
 	pr_info("%s\n", version);
 	printed_version = 1;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DMFE_DBUG(0, "init_module() ", debug);
 
 	if (debug)
@@ -2211,15 +3029,25 @@ static int __init dmfe_init_module(void)
 	if (cr6set)
 		dmfe_cr6_user_set = cr6set;
 
+<<<<<<< HEAD
  	switch(mode) {
    	case DMFE_10MHF:
+=======
+	switch (mode) {
+	case DMFE_10MHF:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DMFE_100MHF:
 	case DMFE_10MFD:
 	case DMFE_100MFD:
 	case DMFE_1M_HPNA:
 		dmfe_media_mode = mode;
 		break;
+<<<<<<< HEAD
 	default:dmfe_media_mode = DMFE_AUTO;
+=======
+	default:
+		dmfe_media_mode = DMFE_AUTO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -2248,7 +3076,11 @@ static int __init dmfe_init_module(void)
 
 static void __exit dmfe_cleanup_module(void)
 {
+<<<<<<< HEAD
 	DMFE_DBUG(0, "dmfe_clean_module() ", debug);
+=======
+	DMFE_DBUG(0, "dmfe_cleanup_module() ", debug);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_unregister_driver(&dmfe_driver);
 }
 

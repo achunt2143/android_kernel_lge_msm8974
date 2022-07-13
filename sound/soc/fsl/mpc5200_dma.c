@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Freescale MPC5200 PSC DMA
  * ALSA SoC Platform driver
@@ -16,10 +17,37 @@
 
 #include <sysdev/bestcomm/bestcomm.h>
 #include <sysdev/bestcomm/gen_bd.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+//
+// Freescale MPC5200 PSC DMA
+// ALSA SoC Platform driver
+//
+// Copyright (C) 2008 Secret Lab Technologies Ltd.
+// Copyright (C) 2009 Jon Smirl, Digispeaker
+
+#include <linux/module.h>
+#include <linux/dma-mapping.h>
+#include <linux/slab.h>
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+#include <linux/platform_device.h>
+
+#include <sound/soc.h>
+
+#include <linux/fsl/bestcomm/bestcomm.h>
+#include <linux/fsl/bestcomm/gen_bd.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mpc52xx_psc.h>
 
 #include "mpc5200_dma.h"
 
+<<<<<<< HEAD
+=======
+#define DRV_NAME "mpc5200_dma"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Interrupt handlers
  */
@@ -94,6 +122,7 @@ static irqreturn_t psc_dma_bcom_irq(int irq, void *_psc_dma_stream)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int psc_dma_hw_free(struct snd_pcm_substream *substream)
 {
 	snd_pcm_set_runtime_buffer(substream, NULL);
@@ -102,14 +131,29 @@ static int psc_dma_hw_free(struct snd_pcm_substream *substream)
 
 /**
  * psc_dma_trigger: start and stop the DMA transfer.
+=======
+/**
+ * psc_dma_trigger: start and stop the DMA transfer.
+ * @component: triggered component
+ * @substream: triggered substream
+ * @cmd: triggered command
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function is called by ALSA to start, stop, pause, and resume the DMA
  * transfer of data.
  */
+<<<<<<< HEAD
 static int psc_dma_trigger(struct snd_pcm_substream *substream, int cmd)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct psc_dma *psc_dma = snd_soc_dai_get_drvdata(rtd->cpu_dai);
+=======
+static int psc_dma_trigger(struct snd_soc_component *component,
+			   struct snd_pcm_substream *substream, int cmd)
+{
+	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+	struct psc_dma *psc_dma = snd_soc_dai_get_drvdata(snd_soc_rtd_to_cpu(rtd, 0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct psc_dma_stream *s = to_psc_dma_stream(substream, psc_dma);
 	struct mpc52xx_psc __iomem *regs = psc_dma->psc_regs;
@@ -198,10 +242,13 @@ static const struct snd_pcm_hardware psc_dma_hardware = {
 		SNDRV_PCM_INFO_BATCH,
 	.formats = SNDRV_PCM_FMTBIT_S8 | SNDRV_PCM_FMTBIT_S16_BE |
 		SNDRV_PCM_FMTBIT_S24_BE | SNDRV_PCM_FMTBIT_S32_BE,
+<<<<<<< HEAD
 	.rate_min = 8000,
 	.rate_max = 48000,
 	.channels_min = 1,
 	.channels_max = 2,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.period_bytes_max	= 1024 * 1024,
 	.period_bytes_min	= 32,
 	.periods_min		= 2,
@@ -210,11 +257,20 @@ static const struct snd_pcm_hardware psc_dma_hardware = {
 	.fifo_size		= 512,
 };
 
+<<<<<<< HEAD
 static int psc_dma_open(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct psc_dma *psc_dma = snd_soc_dai_get_drvdata(rtd->cpu_dai);
+=======
+static int psc_dma_open(struct snd_soc_component *component,
+			struct snd_pcm_substream *substream)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+	struct psc_dma *psc_dma = snd_soc_dai_get_drvdata(snd_soc_rtd_to_cpu(rtd, 0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psc_dma_stream *s;
 	int rc;
 
@@ -238,10 +294,18 @@ static int psc_dma_open(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int psc_dma_close(struct snd_pcm_substream *substream)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct psc_dma *psc_dma = snd_soc_dai_get_drvdata(rtd->cpu_dai);
+=======
+static int psc_dma_close(struct snd_soc_component *component,
+			 struct snd_pcm_substream *substream)
+{
+	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+	struct psc_dma *psc_dma = snd_soc_dai_get_drvdata(snd_soc_rtd_to_cpu(rtd, 0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psc_dma_stream *s;
 
 	dev_dbg(psc_dma->dev, "psc_dma_close(substream=%p)\n", substream);
@@ -263,10 +327,18 @@ static int psc_dma_close(struct snd_pcm_substream *substream)
 }
 
 static snd_pcm_uframes_t
+<<<<<<< HEAD
 psc_dma_pointer(struct snd_pcm_substream *substream)
 {
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct psc_dma *psc_dma = snd_soc_dai_get_drvdata(rtd->cpu_dai);
+=======
+psc_dma_pointer(struct snd_soc_component *component,
+		struct snd_pcm_substream *substream)
+{
+	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+	struct psc_dma *psc_dma = snd_soc_dai_get_drvdata(snd_soc_rtd_to_cpu(rtd, 0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psc_dma_stream *s;
 	dma_addr_t count;
 
@@ -280,6 +352,7 @@ psc_dma_pointer(struct snd_pcm_substream *substream)
 	return bytes_to_frames(substream->runtime, count);
 }
 
+<<<<<<< HEAD
 static int
 psc_dma_hw_params(struct snd_pcm_substream *substream,
 			 struct snd_pcm_hw_params *params)
@@ -371,6 +444,38 @@ static struct snd_soc_platform_driver mpc5200_audio_dma_platform = {
 };
 
 static int mpc5200_hpcd_probe(struct platform_device *op)
+=======
+static int psc_dma_new(struct snd_soc_component *component,
+		       struct snd_soc_pcm_runtime *rtd)
+{
+	struct snd_card *card = rtd->card->snd_card;
+	struct snd_soc_dai *dai = snd_soc_rtd_to_cpu(rtd, 0);
+	struct snd_pcm *pcm = rtd->pcm;
+	size_t size = psc_dma_hardware.buffer_bytes_max;
+	int rc;
+
+	dev_dbg(component->dev, "psc_dma_new(card=%p, dai=%p, pcm=%p)\n",
+		card, dai, pcm);
+
+	rc = dma_coerce_mask_and_coherent(card->dev, DMA_BIT_MASK(32));
+	if (rc)
+		return rc;
+
+	return snd_pcm_set_fixed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV, card->dev,
+					    size);
+}
+
+static const struct snd_soc_component_driver mpc5200_audio_dma_component = {
+	.name		= DRV_NAME,
+	.open		= psc_dma_open,
+	.close		= psc_dma_close,
+	.pointer	= psc_dma_pointer,
+	.trigger	= psc_dma_trigger,
+	.pcm_construct	= psc_dma_new,
+};
+
+int mpc5200_audio_dma_create(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	phys_addr_t fifo;
 	struct psc_dma *psc_dma;
@@ -415,7 +520,11 @@ static int mpc5200_hpcd_probe(struct platform_device *op)
 	psc_dma->dev = &op->dev;
 	psc_dma->playback.psc_dma = psc_dma;
 	psc_dma->capture.psc_dma = psc_dma;
+<<<<<<< HEAD
 	snprintf(psc_dma->name, sizeof psc_dma->name, "PSC%u", psc_dma->id);
+=======
+	snprintf(psc_dma->name, sizeof(psc_dma->name), "PSC%d", psc_dma->id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Find the address of the fifo data registers and setup the
 	 * DMA tasks */
@@ -476,7 +585,12 @@ static int mpc5200_hpcd_probe(struct platform_device *op)
 	dev_set_drvdata(&op->dev, psc_dma);
 
 	/* Tell the ASoC OF helpers about it */
+<<<<<<< HEAD
 	return snd_soc_register_platform(&op->dev, &mpc5200_audio_dma_platform);
+=======
+	return devm_snd_soc_register_component(&op->dev,
+					&mpc5200_audio_dma_component, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_irq:
 	free_irq(psc_dma->irq, psc_dma);
 	free_irq(psc_dma->capture.irq, &psc_dma->capture);
@@ -487,15 +601,24 @@ out_unmap:
 	iounmap(regs);
 	return ret;
 }
+<<<<<<< HEAD
 
 static int mpc5200_hpcd_remove(struct platform_device *op)
+=======
+EXPORT_SYMBOL_GPL(mpc5200_audio_dma_create);
+
+int mpc5200_audio_dma_destroy(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct psc_dma *psc_dma = dev_get_drvdata(&op->dev);
 
 	dev_dbg(&op->dev, "mpc5200_audio_dma_destroy()\n");
 
+<<<<<<< HEAD
 	snd_soc_unregister_platform(&op->dev);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bcom_gen_bd_rx_release(psc_dma->capture.bcom_task);
 	bcom_gen_bd_tx_release(psc_dma->playback.bcom_task);
 
@@ -510,6 +633,7 @@ static int mpc5200_hpcd_remove(struct platform_device *op)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static struct of_device_id mpc5200_hpcd_match[] = {
 	{ .compatible = "fsl,mpc5200-pcm", },
@@ -528,6 +652,9 @@ static struct platform_driver mpc5200_hpcd_of_driver = {
 };
 
 module_platform_driver(mpc5200_hpcd_of_driver);
+=======
+EXPORT_SYMBOL_GPL(mpc5200_audio_dma_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Grant Likely <grant.likely@secretlab.ca>");
 MODULE_DESCRIPTION("Freescale MPC5200 PSC in DMA mode ASoC Driver");

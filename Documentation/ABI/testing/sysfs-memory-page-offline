@@ -10,7 +10,11 @@ Description:
 		dropping it if possible. The kernel will then be placed
 		on the bad page list and never be reused.
 
+<<<<<<< HEAD
 		The offlining is done in kernel specific granuality.
+=======
+		The offlining is done in kernel specific granularity.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		Normally it's the base page size of the kernel, but
 		this might change.
 
@@ -35,7 +39,11 @@ Description:
 		to access this page assuming it's poisoned by the
 		hardware.
 
+<<<<<<< HEAD
 		The offlining is done in kernel specific granuality.
+=======
+		The offlining is done in kernel specific granularity.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		Normally it's the base page size of the kernel, but
 		this might change.
 

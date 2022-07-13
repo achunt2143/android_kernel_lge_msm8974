@@ -57,8 +57,17 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
  * THE POSSIBILITY OF SUCH DAMAGES.
  */
+<<<<<<< HEAD
 #include <linux/export.h>
 #include <linux/moduleparam.h>
+=======
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/export.h>
+#include <linux/moduleparam.h>
+#include <linux/vmalloc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/seq_file.h>
 #include <linux/list.h>
@@ -157,13 +166,18 @@ static int reg_show(struct seq_file *seq, void *p)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct seq_operations register_seq_ops = {
+=======
+static const struct seq_operations registers_sops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start = reg_start,
 	.next  = reg_next,
 	.stop  = reg_stop,
 	.show  = reg_show
 };
 
+<<<<<<< HEAD
 static int open_file_registers(struct inode *inode, struct file *file)
 {
 	struct seq_file *s;
@@ -184,6 +198,9 @@ static const struct file_operations fops_registers = {
 	.owner = THIS_MODULE,
 };
 
+=======
+DEFINE_SEQ_ATTRIBUTE(registers);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* debugfs: beacons */
 
@@ -197,11 +214,16 @@ static ssize_t read_file_beacon(struct file *file, char __user *user_buf,
 	u64 tsf;
 
 	v = ath5k_hw_reg_read(ah, AR5K_BEACON);
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len,
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"%-24s0x%08x\tintval: %d\tTIM: 0x%x\n",
 		"AR5K_BEACON", v, v & AR5K_BEACON_PERIOD,
 		(v & AR5K_BEACON_TIM) >> AR5K_BEACON_TIM_S);
 
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len, "%-24s0x%08x\n",
 		"AR5K_LAST_TSTP", ath5k_hw_reg_read(ah, AR5K_LAST_TSTP));
 
@@ -226,6 +248,32 @@ static ssize_t read_file_beacon(struct file *file, char __user *user_buf,
 
 	tsf = ath5k_hw_get_tsf64(ah);
 	len += snprintf(buf + len, sizeof(buf) - len,
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len, "%-24s0x%08x\n",
+		"AR5K_LAST_TSTP", ath5k_hw_reg_read(ah, AR5K_LAST_TSTP));
+
+	len += scnprintf(buf + len, sizeof(buf) - len, "%-24s0x%08x\n\n",
+		"AR5K_BEACON_CNT", ath5k_hw_reg_read(ah, AR5K_BEACON_CNT));
+
+	v = ath5k_hw_reg_read(ah, AR5K_TIMER0);
+	len += scnprintf(buf + len, sizeof(buf) - len, "%-24s0x%08x\tTU: %08x\n",
+		"AR5K_TIMER0 (TBTT)", v, v);
+
+	v = ath5k_hw_reg_read(ah, AR5K_TIMER1);
+	len += scnprintf(buf + len, sizeof(buf) - len, "%-24s0x%08x\tTU: %08x\n",
+		"AR5K_TIMER1 (DMA)", v, v >> 3);
+
+	v = ath5k_hw_reg_read(ah, AR5K_TIMER2);
+	len += scnprintf(buf + len, sizeof(buf) - len, "%-24s0x%08x\tTU: %08x\n",
+		"AR5K_TIMER2 (SWBA)", v, v >> 3);
+
+	v = ath5k_hw_reg_read(ah, AR5K_TIMER3);
+	len += scnprintf(buf + len, sizeof(buf) - len, "%-24s0x%08x\tTU: %08x\n",
+		"AR5K_TIMER3 (ATIM)", v, v);
+
+	tsf = ath5k_hw_get_tsf64(ah);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"TSF\t\t0x%016llx\tTU: %08x\n",
 		(unsigned long long)tsf, TSF_TO_TU(tsf));
 
@@ -242,6 +290,7 @@ static ssize_t write_file_beacon(struct file *file,
 	struct ath5k_hw *ah = file->private_data;
 	char buf[20];
 
+<<<<<<< HEAD
 	if (copy_from_user(buf, userbuf, min(count, sizeof(buf))))
 		return -EFAULT;
 
@@ -251,6 +300,19 @@ static ssize_t write_file_beacon(struct file *file,
 	} else if (strncmp(buf, "enable", 6) == 0) {
 		AR5K_REG_ENABLE_BITS(ah, AR5K_BEACON, AR5K_BEACON_ENABLE);
 		printk(KERN_INFO "debugfs enable beacons\n");
+=======
+	count = min_t(size_t, count, sizeof(buf) - 1);
+	if (copy_from_user(buf, userbuf, count))
+		return -EFAULT;
+
+	buf[count] = '\0';
+	if (strncmp(buf, "disable", 7) == 0) {
+		AR5K_REG_DISABLE_BITS(ah, AR5K_BEACON, AR5K_BEACON_ENABLE);
+		pr_info("debugfs disable beacons\n");
+	} else if (strncmp(buf, "enable", 6) == 0) {
+		AR5K_REG_ENABLE_BITS(ah, AR5K_BEACON, AR5K_BEACON_ENABLE);
+		pr_info("debugfs enable beacons\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return count;
 }
@@ -314,16 +376,28 @@ static ssize_t read_file_debug(struct file *file, char __user *user_buf,
 	unsigned int len = 0;
 	unsigned int i;
 
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len,
 		"DEBUG LEVEL: 0x%08x\n\n", ah->debug.level);
 
 	for (i = 0; i < ARRAY_SIZE(dbg_info) - 1; i++) {
 		len += snprintf(buf + len, sizeof(buf) - len,
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len,
+		"DEBUG LEVEL: 0x%08x\n\n", ah->debug.level);
+
+	for (i = 0; i < ARRAY_SIZE(dbg_info) - 1; i++) {
+		len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"%10s %c 0x%08x - %s\n", dbg_info[i].name,
 			ah->debug.level & dbg_info[i].level ? '+' : ' ',
 			dbg_info[i].level, dbg_info[i].desc);
 	}
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len,
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"%10s %c 0x%08x - %s\n", dbg_info[i].name,
 		ah->debug.level == dbg_info[i].level ? '+' : ' ',
 		dbg_info[i].level, dbg_info[i].desc);
@@ -342,9 +416,17 @@ static ssize_t write_file_debug(struct file *file,
 	unsigned int i;
 	char buf[20];
 
+<<<<<<< HEAD
 	if (copy_from_user(buf, userbuf, min(count, sizeof(buf))))
 		return -EFAULT;
 
+=======
+	count = min_t(size_t, count, sizeof(buf) - 1);
+	if (copy_from_user(buf, userbuf, count))
+		return -EFAULT;
+
+	buf[count] = '\0';
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ARRAY_SIZE(dbg_info); i++) {
 		if (strncmp(buf, dbg_info[i].name,
 					strlen(dbg_info[i].name)) == 0) {
@@ -375,6 +457,7 @@ static ssize_t read_file_antenna(struct file *file, char __user *user_buf,
 	unsigned int i;
 	unsigned int v;
 
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len, "antenna mode\t%d\n",
 		ah->ah_ant_mode);
 	len += snprintf(buf + len, sizeof(buf) - len, "default antenna\t%d\n",
@@ -406,29 +489,81 @@ static ssize_t read_file_antenna(struct file *file, char __user *user_buf,
 		"AR5K_STA_ID1_RTS_DEF_ANTENNA\t%d\n",
 		(v & AR5K_STA_ID1_RTS_DEF_ANTENNA) != 0);
 	len += snprintf(buf + len, sizeof(buf) - len,
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len, "antenna mode\t%d\n",
+		ah->ah_ant_mode);
+	len += scnprintf(buf + len, sizeof(buf) - len, "default antenna\t%d\n",
+		ah->ah_def_ant);
+	len += scnprintf(buf + len, sizeof(buf) - len, "tx antenna\t%d\n",
+		ah->ah_tx_ant);
+
+	len += scnprintf(buf + len, sizeof(buf) - len, "\nANTENNA\t\tRX\tTX\n");
+	for (i = 1; i < ARRAY_SIZE(ah->stats.antenna_rx); i++) {
+		len += scnprintf(buf + len, sizeof(buf) - len,
+			"[antenna %d]\t%d\t%d\n",
+			i, ah->stats.antenna_rx[i], ah->stats.antenna_tx[i]);
+	}
+	len += scnprintf(buf + len, sizeof(buf) - len, "[invalid]\t%d\t%d\n",
+			ah->stats.antenna_rx[0], ah->stats.antenna_tx[0]);
+
+	v = ath5k_hw_reg_read(ah, AR5K_DEFAULT_ANTENNA);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"\nAR5K_DEFAULT_ANTENNA\t0x%08x\n", v);
+
+	v = ath5k_hw_reg_read(ah, AR5K_STA_ID1);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+		"AR5K_STA_ID1_DEFAULT_ANTENNA\t%d\n",
+		(v & AR5K_STA_ID1_DEFAULT_ANTENNA) != 0);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+		"AR5K_STA_ID1_DESC_ANTENNA\t%d\n",
+		(v & AR5K_STA_ID1_DESC_ANTENNA) != 0);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+		"AR5K_STA_ID1_RTS_DEF_ANTENNA\t%d\n",
+		(v & AR5K_STA_ID1_RTS_DEF_ANTENNA) != 0);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"AR5K_STA_ID1_SELFGEN_DEF_ANT\t%d\n",
 		(v & AR5K_STA_ID1_SELFGEN_DEF_ANT) != 0);
 
 	v = ath5k_hw_reg_read(ah, AR5K_PHY_AGCCTL);
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len,
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"\nAR5K_PHY_AGCCTL_OFDM_DIV_DIS\t%d\n",
 		(v & AR5K_PHY_AGCCTL_OFDM_DIV_DIS) != 0);
 
 	v = ath5k_hw_reg_read(ah, AR5K_PHY_RESTART);
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len,
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"AR5K_PHY_RESTART_DIV_GC\t\t%x\n",
 		(v & AR5K_PHY_RESTART_DIV_GC) >> AR5K_PHY_RESTART_DIV_GC_S);
 
 	v = ath5k_hw_reg_read(ah, AR5K_PHY_FAST_ANT_DIV);
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len,
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"AR5K_PHY_FAST_ANT_DIV_EN\t%d\n",
 		(v & AR5K_PHY_FAST_ANT_DIV_EN) != 0);
 
 	v = ath5k_hw_reg_read(ah, AR5K_PHY_ANT_SWITCH_TABLE_0);
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len,
 			"\nAR5K_PHY_ANT_SWITCH_TABLE_0\t0x%08x\n", v);
 	v = ath5k_hw_reg_read(ah, AR5K_PHY_ANT_SWITCH_TABLE_1);
 	len += snprintf(buf + len, sizeof(buf) - len,
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"\nAR5K_PHY_ANT_SWITCH_TABLE_0\t0x%08x\n", v);
+	v = ath5k_hw_reg_read(ah, AR5K_PHY_ANT_SWITCH_TABLE_1);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"AR5K_PHY_ANT_SWITCH_TABLE_1\t0x%08x\n", v);
 
 	if (len > sizeof(buf))
@@ -445,6 +580,7 @@ static ssize_t write_file_antenna(struct file *file,
 	unsigned int i;
 	char buf[20];
 
+<<<<<<< HEAD
 	if (copy_from_user(buf, userbuf, min(count, sizeof(buf))))
 		return -EFAULT;
 
@@ -457,12 +593,32 @@ static ssize_t write_file_antenna(struct file *file,
 	} else if (strncmp(buf, "fixed-b", 7) == 0) {
 		ath5k_hw_set_antenna_mode(ah, AR5K_ANTMODE_FIXED_B);
 		printk(KERN_INFO "ath5k debug: fixed antenna B\n");
+=======
+	count = min_t(size_t, count, sizeof(buf) - 1);
+	if (copy_from_user(buf, userbuf, count))
+		return -EFAULT;
+
+	buf[count] = '\0';
+	if (strncmp(buf, "diversity", 9) == 0) {
+		ath5k_hw_set_antenna_mode(ah, AR5K_ANTMODE_DEFAULT);
+		pr_info("debug: enable diversity\n");
+	} else if (strncmp(buf, "fixed-a", 7) == 0) {
+		ath5k_hw_set_antenna_mode(ah, AR5K_ANTMODE_FIXED_A);
+		pr_info("debug: fixed antenna A\n");
+	} else if (strncmp(buf, "fixed-b", 7) == 0) {
+		ath5k_hw_set_antenna_mode(ah, AR5K_ANTMODE_FIXED_B);
+		pr_info("debug: fixed antenna B\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (strncmp(buf, "clear", 5) == 0) {
 		for (i = 0; i < ARRAY_SIZE(ah->stats.antenna_rx); i++) {
 			ah->stats.antenna_rx[i] = 0;
 			ah->stats.antenna_tx[i] = 0;
 		}
+<<<<<<< HEAD
 		printk(KERN_INFO "ath5k debug: cleared antenna stats\n");
+=======
+		pr_info("debug: cleared antenna stats\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return count;
 }
@@ -485,6 +641,7 @@ static ssize_t read_file_misc(struct file *file, char __user *user_buf,
 	unsigned int len = 0;
 	u32 filt = ath5k_hw_get_rx_filter(ah);
 
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len, "bssid-mask: %pM\n",
 			ah->bssidmask);
 	len += snprintf(buf + len, sizeof(buf) - len, "filter-flags: 0x%x ",
@@ -515,6 +672,38 @@ static ssize_t read_file_misc(struct file *file, char __user *user_buf,
 		len += snprintf(buf + len, sizeof(buf) - len, " RADARERR-5211");
 
 	len += snprintf(buf + len, sizeof(buf) - len, "\nopmode: %s (%d)\n",
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len, "bssid-mask: %pM\n",
+			ah->bssidmask);
+	len += scnprintf(buf + len, sizeof(buf) - len, "filter-flags: 0x%x ",
+			filt);
+	if (filt & AR5K_RX_FILTER_UCAST)
+		len += scnprintf(buf + len, sizeof(buf) - len, " UCAST");
+	if (filt & AR5K_RX_FILTER_MCAST)
+		len += scnprintf(buf + len, sizeof(buf) - len, " MCAST");
+	if (filt & AR5K_RX_FILTER_BCAST)
+		len += scnprintf(buf + len, sizeof(buf) - len, " BCAST");
+	if (filt & AR5K_RX_FILTER_CONTROL)
+		len += scnprintf(buf + len, sizeof(buf) - len, " CONTROL");
+	if (filt & AR5K_RX_FILTER_BEACON)
+		len += scnprintf(buf + len, sizeof(buf) - len, " BEACON");
+	if (filt & AR5K_RX_FILTER_PROM)
+		len += scnprintf(buf + len, sizeof(buf) - len, " PROM");
+	if (filt & AR5K_RX_FILTER_XRPOLL)
+		len += scnprintf(buf + len, sizeof(buf) - len, " XRPOLL");
+	if (filt & AR5K_RX_FILTER_PROBEREQ)
+		len += scnprintf(buf + len, sizeof(buf) - len, " PROBEREQ");
+	if (filt & AR5K_RX_FILTER_PHYERR_5212)
+		len += scnprintf(buf + len, sizeof(buf) - len, " PHYERR-5212");
+	if (filt & AR5K_RX_FILTER_RADARERR_5212)
+		len += scnprintf(buf + len, sizeof(buf) - len, " RADARERR-5212");
+	if (filt & AR5K_RX_FILTER_PHYERR_5211)
+		snprintf(buf + len, sizeof(buf) - len, " PHYERR-5211");
+	if (filt & AR5K_RX_FILTER_RADARERR_5211)
+		len += scnprintf(buf + len, sizeof(buf) - len, " RADARERR-5211");
+
+	len += scnprintf(buf + len, sizeof(buf) - len, "\nopmode: %s (%d)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ath_opmode_to_string(ah->opmode), ah->opmode);
 
 	if (len > sizeof(buf))
@@ -541,6 +730,7 @@ static ssize_t read_file_frameerrors(struct file *file, char __user *user_buf,
 	unsigned int len = 0;
 	int i;
 
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len,
 			"RX\n---------------------\n");
 	len += snprintf(buf + len, sizeof(buf) - len, "CRC\t%u\t(%u%%)\n",
@@ -548,16 +738,30 @@ static ssize_t read_file_frameerrors(struct file *file, char __user *user_buf,
 			st->rx_all_count > 0 ?
 				st->rxerr_crc * 100 / st->rx_all_count : 0);
 	len += snprintf(buf + len, sizeof(buf) - len, "PHY\t%u\t(%u%%)\n",
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"RX\n---------------------\n");
+	len += scnprintf(buf + len, sizeof(buf) - len, "CRC\t%u\t(%u%%)\n",
+			st->rxerr_crc,
+			st->rx_all_count > 0 ?
+				st->rxerr_crc * 100 / st->rx_all_count : 0);
+	len += scnprintf(buf + len, sizeof(buf) - len, "PHY\t%u\t(%u%%)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			st->rxerr_phy,
 			st->rx_all_count > 0 ?
 				st->rxerr_phy * 100 / st->rx_all_count : 0);
 	for (i = 0; i < 32; i++) {
 		if (st->rxerr_phy_code[i])
+<<<<<<< HEAD
 			len += snprintf(buf + len, sizeof(buf) - len,
+=======
+			len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				" phy_err[%u]\t%u\n",
 				i, st->rxerr_phy_code[i]);
 	}
 
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len, "FIFO\t%u\t(%u%%)\n",
 			st->rxerr_fifo,
 			st->rx_all_count > 0 ?
@@ -600,6 +804,50 @@ static ssize_t read_file_frameerrors(struct file *file, char __user *user_buf,
 	len += snprintf(buf + len, sizeof(buf) - len, "[TX all\t%u]\n",
 			st->tx_all_count);
 	len += snprintf(buf + len, sizeof(buf) - len, "TX-all-bytes\t%u\n",
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len, "FIFO\t%u\t(%u%%)\n",
+			st->rxerr_fifo,
+			st->rx_all_count > 0 ?
+				st->rxerr_fifo * 100 / st->rx_all_count : 0);
+	len += scnprintf(buf + len, sizeof(buf) - len, "decrypt\t%u\t(%u%%)\n",
+			st->rxerr_decrypt,
+			st->rx_all_count > 0 ?
+				st->rxerr_decrypt * 100 / st->rx_all_count : 0);
+	len += scnprintf(buf + len, sizeof(buf) - len, "MIC\t%u\t(%u%%)\n",
+			st->rxerr_mic,
+			st->rx_all_count > 0 ?
+				st->rxerr_mic * 100 / st->rx_all_count : 0);
+	len += scnprintf(buf + len, sizeof(buf) - len, "process\t%u\t(%u%%)\n",
+			st->rxerr_proc,
+			st->rx_all_count > 0 ?
+				st->rxerr_proc * 100 / st->rx_all_count : 0);
+	len += scnprintf(buf + len, sizeof(buf) - len, "jumbo\t%u\t(%u%%)\n",
+			st->rxerr_jumbo,
+			st->rx_all_count > 0 ?
+				st->rxerr_jumbo * 100 / st->rx_all_count : 0);
+	len += scnprintf(buf + len, sizeof(buf) - len, "[RX all\t%u]\n",
+			st->rx_all_count);
+	len += scnprintf(buf + len, sizeof(buf) - len, "RX-all-bytes\t%u\n",
+			st->rx_bytes_count);
+
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"\nTX\n---------------------\n");
+	len += scnprintf(buf + len, sizeof(buf) - len, "retry\t%u\t(%u%%)\n",
+			st->txerr_retry,
+			st->tx_all_count > 0 ?
+				st->txerr_retry * 100 / st->tx_all_count : 0);
+	len += scnprintf(buf + len, sizeof(buf) - len, "FIFO\t%u\t(%u%%)\n",
+			st->txerr_fifo,
+			st->tx_all_count > 0 ?
+				st->txerr_fifo * 100 / st->tx_all_count : 0);
+	len += scnprintf(buf + len, sizeof(buf) - len, "filter\t%u\t(%u%%)\n",
+			st->txerr_filt,
+			st->tx_all_count > 0 ?
+				st->txerr_filt * 100 / st->tx_all_count : 0);
+	len += scnprintf(buf + len, sizeof(buf) - len, "[TX all\t%u]\n",
+			st->tx_all_count);
+	len += scnprintf(buf + len, sizeof(buf) - len, "TX-all-bytes\t%u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			st->tx_bytes_count);
 
 	if (len > sizeof(buf))
@@ -616,9 +864,17 @@ static ssize_t write_file_frameerrors(struct file *file,
 	struct ath5k_statistics *st = &ah->stats;
 	char buf[20];
 
+<<<<<<< HEAD
 	if (copy_from_user(buf, userbuf, min(count, sizeof(buf))))
 		return -EFAULT;
 
+=======
+	count = min_t(size_t, count, sizeof(buf) - 1);
+	if (copy_from_user(buf, userbuf, count))
+		return -EFAULT;
+
+	buf[count] = '\0';
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (strncmp(buf, "clear", 5) == 0) {
 		st->rxerr_crc = 0;
 		st->rxerr_phy = 0;
@@ -632,7 +888,11 @@ static ssize_t write_file_frameerrors(struct file *file,
 		st->txerr_fifo = 0;
 		st->txerr_filt = 0;
 		st->tx_all_count = 0;
+<<<<<<< HEAD
 		printk(KERN_INFO "ath5k debug: cleared frameerrors stats\n");
+=======
+		pr_info("debug: cleared frameerrors stats\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return count;
 }
@@ -658,6 +918,7 @@ static ssize_t read_file_ani(struct file *file, char __user *user_buf,
 	char buf[700];
 	unsigned int len = 0;
 
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len,
 			"HW has PHY error counters:\t%s\n",
 			ah->ah_capabilities.cap_has_phyerr_counters ?
@@ -710,12 +971,67 @@ static ssize_t read_file_ani(struct file *file, char __user *user_buf,
 	len += snprintf(buf + len, sizeof(buf) - len,
 			"beacon RSSI average:\t%d\n",
 			(int)ewma_read(&ah->ah_beacon_rssi_avg));
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"HW has PHY error counters:\t%s\n",
+			ah->ah_capabilities.cap_has_phyerr_counters ?
+			"yes" : "no");
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"HW max spur immunity level:\t%d\n",
+			as->max_spur_level);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+		"\nANI state\n--------------------------------------------\n");
+	len += scnprintf(buf + len, sizeof(buf) - len, "operating mode:\t\t\t");
+	switch (as->ani_mode) {
+	case ATH5K_ANI_MODE_OFF:
+		len += scnprintf(buf + len, sizeof(buf) - len, "OFF\n");
+		break;
+	case ATH5K_ANI_MODE_MANUAL_LOW:
+		len += scnprintf(buf + len, sizeof(buf) - len,
+			"MANUAL LOW\n");
+		break;
+	case ATH5K_ANI_MODE_MANUAL_HIGH:
+		len += scnprintf(buf + len, sizeof(buf) - len,
+			"MANUAL HIGH\n");
+		break;
+	case ATH5K_ANI_MODE_AUTO:
+		len += scnprintf(buf + len, sizeof(buf) - len, "AUTO\n");
+		break;
+	default:
+		len += scnprintf(buf + len, sizeof(buf) - len,
+			"??? (not good)\n");
+		break;
+	}
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"noise immunity level:\t\t%d\n",
+			as->noise_imm_level);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"spur immunity level:\t\t%d\n",
+			as->spur_level);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"firstep level:\t\t\t%d\n",
+			as->firstep_level);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"OFDM weak signal detection:\t%s\n",
+			as->ofdm_weak_sig ? "on" : "off");
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"CCK weak signal detection:\t%s\n",
+			as->cck_weak_sig ? "on" : "off");
+
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"\nMIB INTERRUPTS:\t\t%u\n",
+			st->mib_intr);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"beacon RSSI average:\t%d\n",
+			(int)ewma_beacon_rssi_read(&ah->ah_beacon_rssi_avg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CC_PRINT(_struct, _field) \
 	_struct._field, \
 	_struct.cycles > 0 ? \
 	_struct._field * 100 / _struct.cycles : 0
 
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len,
 			"profcnt tx\t\t%u\t(%d%%)\n",
 			CC_PRINT(as->last_cc, tx_frame));
@@ -740,11 +1056,41 @@ static ssize_t read_file_ani(struct file *file, char __user *user_buf,
 			as->cck_errors, as->last_cck_errors,
 			as->sum_cck_errors);
 	len += snprintf(buf + len, sizeof(buf) - len,
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"profcnt tx\t\t%u\t(%d%%)\n",
+			CC_PRINT(as->last_cc, tx_frame));
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"profcnt rx\t\t%u\t(%d%%)\n",
+			CC_PRINT(as->last_cc, rx_frame));
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"profcnt busy\t\t%u\t(%d%%)\n",
+			CC_PRINT(as->last_cc, rx_busy));
+#undef CC_PRINT
+	len += scnprintf(buf + len, sizeof(buf) - len, "profcnt cycles\t\t%u\n",
+			as->last_cc.cycles);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"listen time\t\t%d\tlast: %d\n",
+			as->listen_time, as->last_listen);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"OFDM errors\t\t%u\tlast: %u\tsum: %u\n",
+			as->ofdm_errors, as->last_ofdm_errors,
+			as->sum_ofdm_errors);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+			"CCK errors\t\t%u\tlast: %u\tsum: %u\n",
+			as->cck_errors, as->last_cck_errors,
+			as->sum_cck_errors);
+	len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"AR5K_PHYERR_CNT1\t%x\t(=%d)\n",
 			ath5k_hw_reg_read(ah, AR5K_PHYERR_CNT1),
 			ATH5K_ANI_OFDM_TRIG_HIGH - (ATH5K_PHYERR_CNT_MAX -
 			ath5k_hw_reg_read(ah, AR5K_PHYERR_CNT1)));
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len,
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"AR5K_PHYERR_CNT2\t%x\t(=%d)\n",
 			ath5k_hw_reg_read(ah, AR5K_PHYERR_CNT2),
 			ATH5K_ANI_CCK_TRIG_HIGH - (ATH5K_PHYERR_CNT_MAX -
@@ -763,9 +1109,17 @@ static ssize_t write_file_ani(struct file *file,
 	struct ath5k_hw *ah = file->private_data;
 	char buf[20];
 
+<<<<<<< HEAD
 	if (copy_from_user(buf, userbuf, min(count, sizeof(buf))))
 		return -EFAULT;
 
+=======
+	count = min_t(size_t, count, sizeof(buf) - 1);
+	if (copy_from_user(buf, userbuf, count))
+		return -EFAULT;
+
+	buf[count] = '\0';
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (strncmp(buf, "sens-low", 8) == 0) {
 		ath5k_ani_init(ah, ATH5K_ANI_MODE_MANUAL_HIGH);
 	} else if (strncmp(buf, "sens-high", 9) == 0) {
@@ -822,13 +1176,21 @@ static ssize_t read_file_queue(struct file *file, char __user *user_buf,
 	struct ath5k_buf *bf, *bf0;
 	int i, n;
 
+<<<<<<< HEAD
 	len += snprintf(buf + len, sizeof(buf) - len,
+=======
+	len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"available txbuffers: %d\n", ah->txbuf_len);
 
 	for (i = 0; i < ARRAY_SIZE(ah->txqs); i++) {
 		txq = &ah->txqs[i];
 
+<<<<<<< HEAD
 		len += snprintf(buf + len, sizeof(buf) - len,
+=======
+		len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"%02d: %ssetup\n", i, txq->setup ? "" : "not ");
 
 		if (!txq->setup)
@@ -840,9 +1202,15 @@ static ssize_t read_file_queue(struct file *file, char __user *user_buf,
 			n++;
 		spin_unlock_bh(&txq->lock);
 
+<<<<<<< HEAD
 		len += snprintf(buf + len, sizeof(buf) - len,
 				"  len: %d bufs: %d\n", txq->txq_len, n);
 		len += snprintf(buf + len, sizeof(buf) - len,
+=======
+		len += scnprintf(buf + len, sizeof(buf) - len,
+				"  len: %d bufs: %d\n", txq->txq_len, n);
+		len += scnprintf(buf + len, sizeof(buf) - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"  stuck: %d\n", txq->txq_stuck);
 	}
 
@@ -859,9 +1227,17 @@ static ssize_t write_file_queue(struct file *file,
 	struct ath5k_hw *ah = file->private_data;
 	char buf[20];
 
+<<<<<<< HEAD
 	if (copy_from_user(buf, userbuf, min(count, sizeof(buf))))
 		return -EFAULT;
 
+=======
+	count = min_t(size_t, count, sizeof(buf) - 1);
+	if (copy_from_user(buf, userbuf, count))
+		return -EFAULT;
+
+	buf[count] = '\0';
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (strncmp(buf, "start", 5) == 0)
 		ieee80211_wake_queues(ah->hw);
 	else if (strncmp(buf, "stop", 4) == 0)
@@ -879,6 +1255,106 @@ static const struct file_operations fops_queue = {
 	.llseek = default_llseek,
 };
 
+<<<<<<< HEAD
+=======
+/* debugfs: eeprom */
+
+struct eeprom_private {
+	u16 *buf;
+	int len;
+};
+
+static int open_file_eeprom(struct inode *inode, struct file *file)
+{
+	struct eeprom_private *ep;
+	struct ath5k_hw *ah = inode->i_private;
+	bool res;
+	int i, ret;
+	u32 eesize;	/* NB: in 16-bit words */
+	u16 val, *buf;
+
+	/* Get eeprom size */
+
+	res = ath5k_hw_nvram_read(ah, AR5K_EEPROM_SIZE_UPPER, &val);
+	if (!res)
+		return -EACCES;
+
+	if (val == 0) {
+		eesize = AR5K_EEPROM_INFO_MAX + AR5K_EEPROM_INFO_BASE;
+	} else {
+		eesize = (val & AR5K_EEPROM_SIZE_UPPER_MASK) <<
+			AR5K_EEPROM_SIZE_ENDLOC_SHIFT;
+		ath5k_hw_nvram_read(ah, AR5K_EEPROM_SIZE_LOWER, &val);
+		eesize = eesize | val;
+	}
+
+	if (eesize > 4096)
+		return -EINVAL;
+
+	/* Create buffer and read in eeprom */
+
+	buf = vmalloc(array_size(eesize, 2));
+	if (!buf) {
+		ret = -ENOMEM;
+		goto err;
+	}
+
+	for (i = 0; i < eesize; ++i) {
+		if (!ath5k_hw_nvram_read(ah, i, &val)) {
+			ret = -EIO;
+			goto freebuf;
+		}
+		buf[i] = val;
+	}
+
+	/* Create private struct and assign to file */
+
+	ep = kmalloc(sizeof(*ep), GFP_KERNEL);
+	if (!ep) {
+		ret = -ENOMEM;
+		goto freebuf;
+	}
+
+	ep->buf = buf;
+	ep->len = eesize * 2;
+
+	file->private_data = (void *)ep;
+
+	return 0;
+
+freebuf:
+	vfree(buf);
+err:
+	return ret;
+
+}
+
+static ssize_t read_file_eeprom(struct file *file, char __user *user_buf,
+				   size_t count, loff_t *ppos)
+{
+	struct eeprom_private *ep = file->private_data;
+
+	return simple_read_from_buffer(user_buf, count, ppos, ep->buf, ep->len);
+}
+
+static int release_file_eeprom(struct inode *inode, struct file *file)
+{
+	struct eeprom_private *ep = file->private_data;
+
+	vfree(ep->buf);
+	kfree(ep);
+
+	return 0;
+}
+
+static const struct file_operations fops_eeprom = {
+	.open = open_file_eeprom,
+	.read = read_file_eeprom,
+	.release = release_file_eeprom,
+	.owner = THIS_MODULE,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void
 ath5k_debug_init_device(struct ath5k_hw *ah)
@@ -888,6 +1364,7 @@ ath5k_debug_init_device(struct ath5k_hw *ah)
 	ah->debug.level = ath5k_debug;
 
 	phydir = debugfs_create_dir("ath5k", ah->hw->wiphy->debugfsdir);
+<<<<<<< HEAD
 	if (!phydir)
 		return;
 
@@ -915,6 +1392,20 @@ ath5k_debug_init_device(struct ath5k_hw *ah)
 			    &fops_queue);
 
 	debugfs_create_bool("32khz_clock", S_IWUSR | S_IRUSR, phydir,
+=======
+
+	debugfs_create_file("debug", 0600, phydir, ah, &fops_debug);
+	debugfs_create_file("registers", 0400, phydir, ah, &registers_fops);
+	debugfs_create_file("beacon", 0600, phydir, ah, &fops_beacon);
+	debugfs_create_file("reset", 0200, phydir, ah, &fops_reset);
+	debugfs_create_file("antenna", 0600, phydir, ah, &fops_antenna);
+	debugfs_create_file("misc", 0400, phydir, ah, &fops_misc);
+	debugfs_create_file("eeprom", 0400, phydir, ah, &fops_eeprom);
+	debugfs_create_file("frameerrors", 0600, phydir, ah, &fops_frameerrors);
+	debugfs_create_file("ani", 0600, phydir, ah, &fops_ani);
+	debugfs_create_file("queue", 0600, phydir, ah, &fops_queue);
+	debugfs_create_bool("32khz_clock", 0600, phydir,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    &ah->ah_use_32khz_clock);
 }
 
@@ -928,6 +1419,7 @@ ath5k_debug_dump_bands(struct ath5k_hw *ah)
 	if (likely(!(ah->debug.level & ATH5K_DEBUG_DUMPBANDS)))
 		return;
 
+<<<<<<< HEAD
 	BUG_ON(!ah->sbands);
 
 	for (b = 0; b < IEEE80211_NUM_BANDS; b++) {
@@ -938,6 +1430,16 @@ ath5k_debug_dump_bands(struct ath5k_hw *ah)
 			strcpy(bname, "2 GHz");
 			break;
 		case IEEE80211_BAND_5GHZ:
+=======
+	for (b = 0; b < NUM_NL80211_BANDS; b++) {
+		struct ieee80211_supported_band *band = &ah->sbands[b];
+		char bname[6];
+		switch (band->band) {
+		case NL80211_BAND_2GHZ:
+			strcpy(bname, "2 GHz");
+			break;
+		case NL80211_BAND_5GHZ:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			strcpy(bname, "5 GHz");
 			break;
 		default:

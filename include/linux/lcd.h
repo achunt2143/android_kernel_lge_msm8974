@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LCD Lowlevel Control Abstraction
  *
@@ -102,7 +106,16 @@ static inline void lcd_set_power(struct lcd_device *ld, int power)
 
 extern struct lcd_device *lcd_device_register(const char *name,
 	struct device *parent, void *devdata, struct lcd_ops *ops);
+<<<<<<< HEAD
 extern void lcd_device_unregister(struct lcd_device *ld);
+=======
+extern struct lcd_device *devm_lcd_device_register(struct device *dev,
+	const char *name, struct device *parent,
+	void *devdata, struct lcd_ops *ops);
+extern void lcd_device_unregister(struct lcd_device *ld);
+extern void devm_lcd_device_unregister(struct device *dev,
+	struct lcd_device *ld);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define to_lcd_device(obj) container_of(obj, struct lcd_device, dev)
 

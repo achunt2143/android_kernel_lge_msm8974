@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PC-Speaker driver for Linux
  *
@@ -13,14 +17,22 @@
 #include <sound/pcm.h>
 #include <linux/input.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <asm/bitops.h>
+=======
+#include <linux/bitops.h>
+#include <linux/mm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "pcsp_input.h"
 #include "pcsp.h"
 
 MODULE_AUTHOR("Stas Sergeev <stsp@users.sourceforge.net>");
 MODULE_DESCRIPTION("PC-Speaker driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{PC-Speaker, pcsp}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:pcspkr");
 
 static int index = SNDRV_DEFAULT_IDX1;	/* Index 0-MAX */
@@ -39,6 +51,7 @@ MODULE_PARM_DESC(nopcm, "Disable PC-Speaker PCM sound. Only beeps remain.");
 
 struct snd_pcsp pcsp_chip;
 
+<<<<<<< HEAD
 static int __devinit snd_pcsp_create(struct snd_card *card)
 {
 	static struct snd_device_ops ops = { };
@@ -51,6 +64,17 @@ static int __devinit snd_pcsp_create(struct snd_card *card)
 		if (tp.tv_sec || tp.tv_nsec > PCSP_MAX_PERIOD_NS) {
 			printk(KERN_ERR "PCSP: Timer resolution is not sufficient "
 				"(%linS)\n", tp.tv_nsec);
+=======
+static int snd_pcsp_create(struct snd_card *card)
+{
+	unsigned int resolution = hrtimer_resolution;
+	int div, min_div, order;
+
+	if (!nopcm) {
+		if (resolution > PCSP_MAX_PERIOD_NS) {
+			printk(KERN_ERR "PCSP: Timer resolution is not sufficient "
+				"(%unS)\n", resolution);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_ERR "PCSP: Make sure you have HPET and ACPI "
 				"enabled.\n");
 			printk(KERN_ERR "PCSP: Turned into nopcm mode.\n");
@@ -58,13 +82,22 @@ static int __devinit snd_pcsp_create(struct snd_card *card)
 		}
 	}
 
+<<<<<<< HEAD
 	if (loops_per_jiffy >= PCSP_MIN_LPJ && tp.tv_nsec <= PCSP_MIN_PERIOD_NS)
+=======
+	if (loops_per_jiffy >= PCSP_MIN_LPJ && resolution <= PCSP_MIN_PERIOD_NS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		min_div = MIN_DIV;
 	else
 		min_div = MAX_DIV;
 #if PCSP_DEBUG
+<<<<<<< HEAD
 	printk(KERN_DEBUG "PCSP: lpj=%li, min_div=%i, res=%li\n",
 	       loops_per_jiffy, min_div, tp.tv_nsec);
+=======
+	printk(KERN_DEBUG "PCSP: lpj=%li, min_div=%i, res=%u\n",
+	       loops_per_jiffy, min_div, resolution);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	div = MAX_DIV / min_div;
@@ -84,16 +117,31 @@ static int __devinit snd_pcsp_create(struct snd_card *card)
 	pcsp_chip.port = 0x61;
 	pcsp_chip.irq = -1;
 	pcsp_chip.dma = -1;
+<<<<<<< HEAD
 
 	/* Register device */
 	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, &pcsp_chip, &ops);
 	if (err < 0)
 		return err;
+=======
+	card->private_data = &pcsp_chip;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_card_pcsp_probe(int devnum, struct device *dev)
+=======
+static void pcsp_stop_beep(struct snd_pcsp *chip);
+
+static void alsa_card_pcsp_free(struct snd_card *card)
+{
+	pcsp_stop_beep(card->private_data);
+}
+
+static int snd_card_pcsp_probe(int devnum, struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	int err;
@@ -104,11 +152,16 @@ static int __devinit snd_card_pcsp_probe(int devnum, struct device *dev)
 	hrtimer_init(&pcsp_chip.timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	pcsp_chip.timer.function = pcsp_do_timer;
 
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
+=======
+	err = snd_devm_card_new(dev, index, id, THIS_MODULE, 0, &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
 	err = snd_pcsp_create(card);
+<<<<<<< HEAD
 	if (err < 0) {
 		snd_card_free(card);
 		return err;
@@ -127,6 +180,19 @@ static int __devinit snd_card_pcsp_probe(int devnum, struct device *dev)
 	}
 
 	snd_card_set_dev(pcsp_chip.card, dev);
+=======
+	if (err < 0)
+		return err;
+
+	if (!nopcm) {
+		err = snd_pcsp_new_pcm(&pcsp_chip);
+		if (err < 0)
+			return err;
+	}
+	err = snd_pcsp_new_mixer(&pcsp_chip, nopcm);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->driver, "PC-Speaker");
 	strcpy(card->shortname, "pcsp");
@@ -134,15 +200,25 @@ static int __devinit snd_card_pcsp_probe(int devnum, struct device *dev)
 		pcsp_chip.port);
 
 	err = snd_card_register(card);
+<<<<<<< HEAD
 	if (err < 0) {
 		snd_card_free(card);
 		return err;
 	}
+=======
+	if (err < 0)
+		return err;
+	card->private_free = alsa_card_pcsp_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit alsa_card_pcsp_init(struct device *dev)
+=======
+static int alsa_card_pcsp_init(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -152,21 +228,33 @@ static int __devinit alsa_card_pcsp_init(struct device *dev)
 		return err;
 	}
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_PAGEALLOC
 	/* Well, CONFIG_DEBUG_PAGEALLOC makes the sound horrible. Lets alert */
 	printk(KERN_WARNING "PCSP: CONFIG_DEBUG_PAGEALLOC is enabled, "
 	       "which may make the sound noisy.\n");
 #endif
+=======
+	/* Well, CONFIG_DEBUG_PAGEALLOC makes the sound horrible. Lets alert */
+	if (debug_pagealloc_enabled()) {
+		printk(KERN_WARNING "PCSP: CONFIG_DEBUG_PAGEALLOC is enabled, "
+		       "which may make the sound noisy.\n");
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit alsa_card_pcsp_exit(struct snd_pcsp *chip)
 {
 	snd_card_free(chip->card);
 }
 
 static int __devinit pcsp_probe(struct platform_device *dev)
+=======
+static int pcsp_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -175,15 +263,21 @@ static int __devinit pcsp_probe(struct platform_device *dev)
 		return err;
 
 	err = alsa_card_pcsp_init(&dev->dev);
+<<<<<<< HEAD
 	if (err < 0) {
 		pcspkr_input_remove(pcsp_chip.input_dev);
 		return err;
 	}
+=======
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(dev, &pcsp_chip);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit pcsp_remove(struct platform_device *dev)
 {
 	struct snd_pcsp *chip = platform_get_drvdata(dev);
@@ -193,12 +287,15 @@ static int __devexit pcsp_remove(struct platform_device *dev)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pcsp_stop_beep(struct snd_pcsp *chip)
 {
 	pcsp_sync_stop(chip);
 	pcspkr_stop_sound();
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int pcsp_suspend(struct platform_device *dev, pm_message_t state)
 {
@@ -210,6 +307,16 @@ static int pcsp_suspend(struct platform_device *dev, pm_message_t state)
 #else
 #define pcsp_suspend NULL
 #endif	/* CONFIG_PM */
+=======
+static int pcsp_suspend(struct device *dev)
+{
+	struct snd_pcsp *chip = dev_get_drvdata(dev);
+	pcsp_stop_beep(chip);
+	return 0;
+}
+
+static DEFINE_SIMPLE_DEV_PM_OPS(pcsp_pm, pcsp_suspend, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void pcsp_shutdown(struct platform_device *dev)
 {
@@ -220,11 +327,17 @@ static void pcsp_shutdown(struct platform_device *dev)
 static struct platform_driver pcsp_platform_driver = {
 	.driver		= {
 		.name	= "pcspkr",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= pcsp_probe,
 	.remove		= __devexit_p(pcsp_remove),
 	.suspend	= pcsp_suspend,
+=======
+		.pm	= &pcsp_pm,
+	},
+	.probe		= pcsp_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown	= pcsp_shutdown,
 };
 

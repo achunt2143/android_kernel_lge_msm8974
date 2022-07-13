@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2011 Marvell International Ltd. All rights reserved.
  *
@@ -5,11 +6,17 @@
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (C) 2011 Marvell International Ltd. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MV_PLATFORM_USB_H
 #define __MV_PLATFORM_USB_H
 
+<<<<<<< HEAD
 enum pxa_ehci_type {
 	EHCI_UNDEFINED = 0,
 	PXA_U2OEHCI,	/* pxa 168, 9xx */
@@ -18,6 +25,8 @@ enum pxa_ehci_type {
 	MMP3_FSIC,	/* mmp3 fsic */
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	MV_USB_MODE_OTG,
 	MV_USB_MODE_HOST,
@@ -34,8 +43,11 @@ struct mv_usb_addon_irq {
 };
 
 struct mv_usb_platform_data {
+<<<<<<< HEAD
 	unsigned int		clknum;
 	char			**clkname;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mv_usb_addon_irq	*id;	/* Only valid for OTG. ID pin change*/
 	struct mv_usb_addon_irq	*vbus;	/* valid for OTG/UDC. VBUS change*/
 
@@ -50,6 +62,7 @@ struct mv_usb_platform_data {
 	int	(*phy_init)(void __iomem *regbase);
 	void	(*phy_deinit)(void __iomem *regbase);
 	int	(*set_vbus)(unsigned int vbus);
+<<<<<<< HEAD
 	int     (*private_init)(void __iomem *opregs, void __iomem *phyregs);
 };
 
@@ -61,4 +74,7 @@ struct mv_usb_platform_data {
 #define clk_disable(clock)     do {} while (0)
 #endif
 
+=======
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

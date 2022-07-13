@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * manager.c - Resource Management, Conflict Resolution, Activation and Disabling of Devices
  *
@@ -18,11 +22,34 @@
 
 DEFINE_MUTEX(pnp_res_mutex);
 
+<<<<<<< HEAD
+=======
+static struct resource *pnp_find_resource(struct pnp_dev *dev,
+					  unsigned char rule,
+					  unsigned long type,
+					  unsigned int bar)
+{
+	struct resource *res = pnp_get_resource(dev, type, bar);
+
+	/* when the resource already exists, set its resource bits from rule */
+	if (res) {
+		res->flags &= ~IORESOURCE_BITS;
+		res->flags |= rule & IORESOURCE_BITS;
+	}
+
+	return res;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pnp_assign_port(struct pnp_dev *dev, struct pnp_port *rule, int idx)
 {
 	struct resource *res, local_res;
 
+<<<<<<< HEAD
 	res = pnp_get_resource(dev, IORESOURCE_IO, idx);
+=======
+	res = pnp_find_resource(dev, rule->flags, IORESOURCE_IO, idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res) {
 		pnp_dbg(&dev->dev, "  io %d already set to %#llx-%#llx "
 			"flags %#lx\n", idx, (unsigned long long) res->start,
@@ -65,7 +92,11 @@ static int pnp_assign_mem(struct pnp_dev *dev, struct pnp_mem *rule, int idx)
 {
 	struct resource *res, local_res;
 
+<<<<<<< HEAD
 	res = pnp_get_resource(dev, IORESOURCE_MEM, idx);
+=======
+	res = pnp_find_resource(dev, rule->flags, IORESOURCE_MEM, idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res) {
 		pnp_dbg(&dev->dev, "  mem %d already set to %#llx-%#llx "
 			"flags %#lx\n", idx, (unsigned long long) res->start,
@@ -78,10 +109,16 @@ static int pnp_assign_mem(struct pnp_dev *dev, struct pnp_mem *rule, int idx)
 	res->start = 0;
 	res->end = 0;
 
+<<<<<<< HEAD
 	if (!(rule->flags & IORESOURCE_MEM_WRITEABLE))
 		res->flags |= IORESOURCE_READONLY;
 	if (rule->flags & IORESOURCE_MEM_CACHEABLE)
 		res->flags |= IORESOURCE_CACHEABLE;
+=======
+	/* ??? rule->flags restricted to 8 bits, all tests bogus ??? */
+	if (!(rule->flags & IORESOURCE_MEM_WRITEABLE))
+		res->flags |= IORESOURCE_READONLY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rule->flags & IORESOURCE_MEM_RANGELENGTH)
 		res->flags |= IORESOURCE_RANGELENGTH;
 	if (rule->flags & IORESOURCE_MEM_SHADOWABLE)
@@ -123,7 +160,11 @@ static int pnp_assign_irq(struct pnp_dev *dev, struct pnp_irq *rule, int idx)
 		5, 10, 11, 12, 9, 14, 15, 7, 3, 4, 13, 0, 1, 6, 8, 2
 	};
 
+<<<<<<< HEAD
 	res = pnp_get_resource(dev, IORESOURCE_IRQ, idx);
+=======
+	res = pnp_find_resource(dev, rule->flags, IORESOURCE_IRQ, idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res) {
 		pnp_dbg(&dev->dev, "  irq %d already set to %d flags %#lx\n",
 			idx, (int) res->start, res->flags);
@@ -182,7 +223,11 @@ static int pnp_assign_dma(struct pnp_dev *dev, struct pnp_dma *rule, int idx)
 		1, 3, 5, 6, 7, 0, 2, 4
 	};
 
+<<<<<<< HEAD
 	res = pnp_get_resource(dev, IORESOURCE_DMA, idx);
+=======
+	res = pnp_find_resource(dev, rule->flags, IORESOURCE_DMA, idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res) {
 		pnp_dbg(&dev->dev, "  dma %d already set to %d flags %#lx\n",
 			idx, (int) res->start, res->flags);
@@ -194,6 +239,15 @@ static int pnp_assign_dma(struct pnp_dev *dev, struct pnp_dma *rule, int idx)
 	res->start = -1;
 	res->end = -1;
 
+<<<<<<< HEAD
+=======
+	if (!rule->map) {
+		res->flags |= IORESOURCE_DISABLED;
+		pnp_dbg(&dev->dev, "  dma %d disabled\n", idx);
+		goto __add;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 8; i++) {
 		if (rule->map & (1 << xtab[i])) {
 			res->start = res->end = xtab[i];
@@ -201,11 +255,17 @@ static int pnp_assign_dma(struct pnp_dev *dev, struct pnp_dma *rule, int idx)
 				goto __add;
 		}
 	}
+<<<<<<< HEAD
 #ifdef MAX_DMA_CHANNELS
 	res->start = res->end = MAX_DMA_CHANNELS;
 #endif
 	res->flags |= IORESOURCE_DISABLED;
 	pnp_dbg(&dev->dev, "  disable dma %d\n", idx);
+=======
+
+	pnp_dbg(&dev->dev, "  couldn't assign dma %d\n", idx);
+	return -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 __add:
 	pnp_add_dma_resource(dev, res->start, res->flags);
@@ -330,6 +390,10 @@ int pnp_start_dev(struct pnp_dev *dev)
 	dev_info(&dev->dev, "activated\n");
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(pnp_start_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pnp_stop_dev - low-level disable of the PnP device
@@ -351,6 +415,10 @@ int pnp_stop_dev(struct pnp_dev *dev)
 	dev_info(&dev->dev, "disabled\n");
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(pnp_stop_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pnp_activate_dev - activates a PnP device for use
@@ -376,6 +444,10 @@ int pnp_activate_dev(struct pnp_dev *dev)
 	dev->active = 1;
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(pnp_activate_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * pnp_disable_dev - disables device
@@ -403,8 +475,11 @@ int pnp_disable_dev(struct pnp_dev *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(pnp_start_dev);
 EXPORT_SYMBOL(pnp_stop_dev);
 EXPORT_SYMBOL(pnp_activate_dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(pnp_disable_dev);

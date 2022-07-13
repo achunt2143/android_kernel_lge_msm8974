@@ -10,11 +10,19 @@
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
 #include <linux/signal.h>
 #include <linux/perf_event.h>
 
 #include <asm/uaccess.h>
+=======
+#include <linux/sched/signal.h>
+#include <linux/signal.h>
+#include <linux/perf_event.h>
+
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/processor.h>
 #include <asm/io.h>
 
@@ -51,8 +59,13 @@
 #define Rn	(regs->regs[n])
 #define Rm	(regs->regs[m])
 
+<<<<<<< HEAD
 #define WRITE(d,a)	({if(put_user(d, (typeof (d)*)a)) return -EFAULT;})
 #define READ(d,a)	({if(get_user(d, (typeof (d)*)a)) return -EFAULT;})
+=======
+#define MWRITE(d,a)	({if(put_user(d, (typeof (d) __user *)a)) return -EFAULT;})
+#define MREAD(d,a)	({if(get_user(d, (typeof (d) __user *)a)) return -EFAULT;})
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PACK_S(r,f)	FP_PACK_SP(&r,f)
 #define UNPACK_S(f,r)	FP_UNPACK_SP(f,&r)
@@ -157,11 +170,19 @@ fmov_idx_reg(struct sh_fpu_soft_struct *fregs, struct pt_regs *regs, int m,
 {
 	if (FPSCR_SZ) {
 		FMOV_EXT(n);
+<<<<<<< HEAD
 		READ(FRn, Rm + R0 + 4);
 		n++;
 		READ(FRn, Rm + R0);
 	} else {
 		READ(FRn, Rm + R0);
+=======
+		MREAD(FRn, Rm + R0 + 4);
+		n++;
+		MREAD(FRn, Rm + R0);
+	} else {
+		MREAD(FRn, Rm + R0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -173,11 +194,19 @@ fmov_mem_reg(struct sh_fpu_soft_struct *fregs, struct pt_regs *regs, int m,
 {
 	if (FPSCR_SZ) {
 		FMOV_EXT(n);
+<<<<<<< HEAD
 		READ(FRn, Rm + 4);
 		n++;
 		READ(FRn, Rm);
 	} else {
 		READ(FRn, Rm);
+=======
+		MREAD(FRn, Rm + 4);
+		n++;
+		MREAD(FRn, Rm);
+	} else {
+		MREAD(FRn, Rm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -189,12 +218,21 @@ fmov_inc_reg(struct sh_fpu_soft_struct *fregs, struct pt_regs *regs, int m,
 {
 	if (FPSCR_SZ) {
 		FMOV_EXT(n);
+<<<<<<< HEAD
 		READ(FRn, Rm + 4);
 		n++;
 		READ(FRn, Rm);
 		Rm += 8;
 	} else {
 		READ(FRn, Rm);
+=======
+		MREAD(FRn, Rm + 4);
+		n++;
+		MREAD(FRn, Rm);
+		Rm += 8;
+	} else {
+		MREAD(FRn, Rm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		Rm += 4;
 	}
 
@@ -207,11 +245,19 @@ fmov_reg_idx(struct sh_fpu_soft_struct *fregs, struct pt_regs *regs, int m,
 {
 	if (FPSCR_SZ) {
 		FMOV_EXT(m);
+<<<<<<< HEAD
 		WRITE(FRm, Rn + R0 + 4);
 		m++;
 		WRITE(FRm, Rn + R0);
 	} else {
 		WRITE(FRm, Rn + R0);
+=======
+		MWRITE(FRm, Rn + R0 + 4);
+		m++;
+		MWRITE(FRm, Rn + R0);
+	} else {
+		MWRITE(FRm, Rn + R0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -223,11 +269,19 @@ fmov_reg_mem(struct sh_fpu_soft_struct *fregs, struct pt_regs *regs, int m,
 {
 	if (FPSCR_SZ) {
 		FMOV_EXT(m);
+<<<<<<< HEAD
 		WRITE(FRm, Rn + 4);
 		m++;
 		WRITE(FRm, Rn);
 	} else {
 		WRITE(FRm, Rn);
+=======
+		MWRITE(FRm, Rn + 4);
+		m++;
+		MWRITE(FRm, Rn);
+	} else {
+		MWRITE(FRm, Rn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -240,12 +294,21 @@ fmov_reg_dec(struct sh_fpu_soft_struct *fregs, struct pt_regs *regs, int m,
 	if (FPSCR_SZ) {
 		FMOV_EXT(m);
 		Rn -= 8;
+<<<<<<< HEAD
 		WRITE(FRm, Rn + 4);
 		m++;
 		WRITE(FRm, Rn);
 	} else {
 		Rn -= 4;
 		WRITE(FRm, Rn);
+=======
+		MWRITE(FRm, Rn + 4);
+		m++;
+		MWRITE(FRm, Rn);
+	} else {
+		Rn -= 4;
+		MWRITE(FRm, Rn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -445,11 +508,19 @@ id_sys(struct sh_fpu_soft_struct *fregs, struct pt_regs *regs, u16 code)
 	case 0x4052:
 	case 0x4062:
 		Rn -= 4;
+<<<<<<< HEAD
 		WRITE(*reg, Rn);
 		break;
 	case 0x4056:
 	case 0x4066:
 		READ(*reg, Rn);
+=======
+		MWRITE(*reg, Rn);
+		break;
+	case 0x4056:
+	case 0x4066:
+		MREAD(*reg, Rn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		Rn += 4;
 		break;
 	default:
@@ -468,6 +539,7 @@ static int fpu_emulate(u16 code, struct sh_fpu_soft_struct *fregs, struct pt_reg
 }
 
 /**
+<<<<<<< HEAD
  *	denormal_to_double - Given denormalized float number,
  *	                     store double float
  *
@@ -593,6 +665,8 @@ asmlinkage void do_fpu_error(unsigned long r4, unsigned long r5,
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fpu_init - Initialize FPU registers
  * @fpu: Pointer to software emulated FPU registers.
  */

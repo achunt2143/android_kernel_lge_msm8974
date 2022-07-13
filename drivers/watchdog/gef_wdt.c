@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * GE watchdog userspace interface
  *
@@ -5,11 +9,14 @@
  *
  * Copyright 2008 GE Intelligent Platforms Embedded Systems, Inc.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based on: mv64x60_wdt.c (MV64X60 watchdog userspace interface)
  *   Author: James Chapman <jchapman@katalix.com>
  */
@@ -34,7 +41,12 @@
 #include <linux/watchdog.h>
 #include <linux/fs.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+#include <linux/of_address.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/uaccess.h>
 
@@ -204,7 +216,11 @@ static long gef_wdt_ioctl(struct file *file, unsigned int cmd,
 		if (get_user(timeout, (int __user *)argp))
 			return -EFAULT;
 		gef_wdt_set_timeout(timeout);
+<<<<<<< HEAD
 		/* Fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case WDIOC_GETTIMEOUT:
 		if (put_user(gef_wdt_timeout, (int __user *)argp))
@@ -228,7 +244,11 @@ static int gef_wdt_open(struct inode *inode, struct file *file)
 
 	gef_wdt_handler_enable();
 
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int gef_wdt_release(struct inode *inode, struct file *file)
@@ -251,6 +271,10 @@ static const struct file_operations gef_wdt_fops = {
 	.llseek = no_llseek,
 	.write = gef_wdt_write,
 	.unlocked_ioctl = gef_wdt_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open = gef_wdt_open,
 	.release = gef_wdt_release,
 };
@@ -262,7 +286,11 @@ static struct miscdevice gef_wdt_miscdev = {
 };
 
 
+<<<<<<< HEAD
 static int __devinit gef_wdt_probe(struct platform_device *dev)
+=======
+static int gef_wdt_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int timeout = 10;
 	u32 freq;
@@ -285,15 +313,22 @@ static int __devinit gef_wdt_probe(struct platform_device *dev)
 	return misc_register(&gef_wdt_miscdev);
 }
 
+<<<<<<< HEAD
 static int __devexit gef_wdt_remove(struct platform_device *dev)
+=======
+static void gef_wdt_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	misc_deregister(&gef_wdt_miscdev);
 
 	gef_wdt_handler_disable();
 
 	iounmap(gef_wdt_regs);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id gef_wdt_ids[] = {
@@ -302,14 +337,25 @@ static const struct of_device_id gef_wdt_ids[] = {
 	},
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, gef_wdt_ids);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver gef_wdt_driver = {
 	.driver = {
 		.name = "gef_wdt",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = gef_wdt_ids,
 	},
 	.probe		= gef_wdt_probe,
+=======
+		.of_match_table = gef_wdt_ids,
+	},
+	.probe		= gef_wdt_probe,
+	.remove_new	= gef_wdt_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init gef_wdt_init(void)
@@ -329,5 +375,8 @@ module_exit(gef_wdt_exit);
 MODULE_AUTHOR("Martyn Welch <martyn.welch@ge.com>");
 MODULE_DESCRIPTION("GE watchdog driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:gef_wdt");

@@ -11,12 +11,18 @@
 #include <linux/slab.h>
 #include <linux/ctype.h>
 
+<<<<<<< HEAD
 #include "edac_core.h"
 #include "edac_module.h"
 
 /* Turn off this whole feature if PCI is not configured */
 #ifdef CONFIG_PCI
 
+=======
+#include "edac_pci.h"
+#include "edac_module.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EDAC_PCI_SYMLINK	"device"
 
 /* data variables exported via sysfs */
@@ -78,7 +84,11 @@ static void edac_pci_instance_release(struct kobject *kobj)
 {
 	struct edac_pci_ctl_info *pci;
 
+<<<<<<< HEAD
 	debugf0("%s()\n", __func__);
+=======
+	edac_dbg(0, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Form pointer to containing struct, the pci control struct */
 	pci = to_instance(kobj);
@@ -138,17 +148,30 @@ INSTANCE_ATTR(pe_count, S_IRUGO, instance_pe_count_show, NULL);
 INSTANCE_ATTR(npe_count, S_IRUGO, instance_npe_count_show, NULL);
 
 /* pci instance attributes */
+<<<<<<< HEAD
 static struct instance_attribute *pci_instance_attr[] = {
 	&attr_instance_pe_count,
 	&attr_instance_npe_count,
 	NULL
 };
+=======
+static struct attribute *pci_instance_attrs[] = {
+	&attr_instance_pe_count.attr,
+	&attr_instance_npe_count.attr,
+	NULL
+};
+ATTRIBUTE_GROUPS(pci_instance);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* the ktype for a pci instance */
 static struct kobj_type ktype_pci_instance = {
 	.release = edac_pci_instance_release,
 	.sysfs_ops = &pci_instance_ops,
+<<<<<<< HEAD
 	.default_attrs = (struct attribute **)pci_instance_attr,
+=======
+	.default_groups = pci_instance_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -161,7 +184,11 @@ static int edac_pci_create_instance_kobj(struct edac_pci_ctl_info *pci, int idx)
 	struct kobject *main_kobj;
 	int err;
 
+<<<<<<< HEAD
 	debugf0("%s()\n", __func__);
+=======
+	edac_dbg(0, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* First bump the ref count on the top main kobj, which will
 	 * track the number of PCI instances we have, and thus nest
@@ -177,14 +204,22 @@ static int edac_pci_create_instance_kobj(struct edac_pci_ctl_info *pci, int idx)
 	err = kobject_init_and_add(&pci->kobj, &ktype_pci_instance,
 				   edac_pci_top_main_kobj, "pci%d", idx);
 	if (err != 0) {
+<<<<<<< HEAD
 		debugf2("%s() failed to register instance pci%d\n",
 			__func__, idx);
+=======
+		edac_dbg(2, "failed to register instance pci%d\n", idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kobject_put(edac_pci_top_main_kobj);
 		goto error_out;
 	}
 
 	kobject_uevent(&pci->kobj, KOBJ_ADD);
+<<<<<<< HEAD
 	debugf1("%s() Register instance 'pci%d' kobject\n", __func__, idx);
+=======
+	edac_dbg(1, "Register instance 'pci%d' kobject\n", idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -201,7 +236,11 @@ error_out:
 static void edac_pci_unregister_sysfs_instance_kobj(
 			struct edac_pci_ctl_info *pci)
 {
+<<<<<<< HEAD
 	debugf0("%s()\n", __func__);
+=======
+	edac_dbg(0, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Unregister the instance kobject and allow its release
 	 * function release the main reference count and then
@@ -296,6 +335,7 @@ EDAC_PCI_ATTR(pci_parity_count, S_IRUGO, edac_pci_int_show, NULL);
 EDAC_PCI_ATTR(pci_nonparity_count, S_IRUGO, edac_pci_int_show, NULL);
 
 /* Base Attributes of the memory ECC object */
+<<<<<<< HEAD
 static struct edac_pci_dev_attribute *edac_pci_attr[] = {
 	&edac_pci_attr_check_pci_errors,
 	&edac_pci_attr_edac_pci_log_pe,
@@ -305,6 +345,18 @@ static struct edac_pci_dev_attribute *edac_pci_attr[] = {
 	&edac_pci_attr_pci_nonparity_count,
 	NULL,
 };
+=======
+static struct attribute *edac_pci_attrs[] = {
+	&edac_pci_attr_check_pci_errors.attr,
+	&edac_pci_attr_edac_pci_log_pe.attr,
+	&edac_pci_attr_edac_pci_log_npe.attr,
+	&edac_pci_attr_edac_pci_panic_on_pe.attr,
+	&edac_pci_attr_pci_parity_count.attr,
+	&edac_pci_attr_pci_nonparity_count.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(edac_pci);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * edac_pci_release_main_kobj
@@ -317,7 +369,11 @@ static struct edac_pci_dev_attribute *edac_pci_attr[] = {
  */
 static void edac_pci_release_main_kobj(struct kobject *kobj)
 {
+<<<<<<< HEAD
 	debugf0("%s() here to module_put(THIS_MODULE)\n", __func__);
+=======
+	edac_dbg(0, "here to module_put(THIS_MODULE)\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(kobj);
 
@@ -331,6 +387,7 @@ static void edac_pci_release_main_kobj(struct kobject *kobj)
 static struct kobj_type ktype_edac_pci_main_kobj = {
 	.release = edac_pci_release_main_kobj,
 	.sysfs_ops = &edac_pci_sysfs_ops,
+<<<<<<< HEAD
 	.default_attrs = (struct attribute **)edac_pci_attr,
 };
 
@@ -346,6 +403,21 @@ static int edac_pci_main_kobj_setup(void)
 	struct bus_type *edac_subsys;
 
 	debugf0("%s()\n", __func__);
+=======
+	.default_groups = edac_pci_groups,
+};
+
+/**
+ * edac_pci_main_kobj_setup: Setup the sysfs for EDAC PCI attributes.
+ */
+static int edac_pci_main_kobj_setup(void)
+{
+	int err = -ENODEV;
+	const struct bus_type *edac_subsys;
+	struct device *dev_root;
+
+	edac_dbg(0, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check and count if we have already created the main kobject */
 	if (atomic_inc_return(&edac_pci_sysfs_refcount) != 1)
@@ -355,35 +427,59 @@ static int edac_pci_main_kobj_setup(void)
 	 * controls and attributes
 	 */
 	edac_subsys = edac_get_sysfs_subsys();
+<<<<<<< HEAD
 	if (edac_subsys == NULL) {
 		debugf1("%s() no edac_subsys\n", __func__);
 		err = -ENODEV;
 		goto decrement_count_fail;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Bump the reference count on this module to ensure the
 	 * modules isn't unloaded until we deconstruct the top
 	 * level main kobj for EDAC PCI
 	 */
 	if (!try_module_get(THIS_MODULE)) {
+<<<<<<< HEAD
 		debugf1("%s() try_module_get() failed\n", __func__);
 		err = -ENODEV;
 		goto mod_get_fail;
+=======
+		edac_dbg(1, "try_module_get() failed\n");
+		goto decrement_count_fail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	edac_pci_top_main_kobj = kzalloc(sizeof(struct kobject), GFP_KERNEL);
 	if (!edac_pci_top_main_kobj) {
+<<<<<<< HEAD
 		debugf1("Failed to allocate\n");
+=======
+		edac_dbg(1, "Failed to allocate\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		goto kzalloc_fail;
 	}
 
 	/* Instanstiate the pci object */
+<<<<<<< HEAD
 	err = kobject_init_and_add(edac_pci_top_main_kobj,
 				   &ktype_edac_pci_main_kobj,
 				   &edac_subsys->dev_root->kobj, "pci");
 	if (err) {
 		debugf1("Failed to register '.../edac/pci'\n");
+=======
+	dev_root = bus_get_dev_root(edac_subsys);
+	if (dev_root) {
+		err = kobject_init_and_add(edac_pci_top_main_kobj,
+					   &ktype_edac_pci_main_kobj,
+					   &dev_root->kobj, "pci");
+		put_device(dev_root);
+	}
+	if (err) {
+		edac_dbg(1, "Failed to register '.../edac/pci'\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto kobject_init_and_add_fail;
 	}
 
@@ -392,20 +488,31 @@ static int edac_pci_main_kobj_setup(void)
 	 * must be used, for resources to be cleaned up properly
 	 */
 	kobject_uevent(edac_pci_top_main_kobj, KOBJ_ADD);
+<<<<<<< HEAD
 	debugf1("Registered '.../edac/pci' kobject\n");
+=======
+	edac_dbg(1, "Registered '.../edac/pci' kobject\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 	/* Error unwind statck */
 kobject_init_and_add_fail:
+<<<<<<< HEAD
 	kfree(edac_pci_top_main_kobj);
+=======
+	kobject_put(edac_pci_top_main_kobj);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 kzalloc_fail:
 	module_put(THIS_MODULE);
 
+<<<<<<< HEAD
 mod_get_fail:
 	edac_put_sysfs_subsys();
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 decrement_count_fail:
 	/* if are on this error exit, nothing to tear down */
 	atomic_dec(&edac_pci_sysfs_refcount);
@@ -421,13 +528,18 @@ decrement_count_fail:
  */
 static void edac_pci_main_kobj_teardown(void)
 {
+<<<<<<< HEAD
 	debugf0("%s()\n", __func__);
+=======
+	edac_dbg(0, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Decrement the count and only if no more controller instances
 	 * are connected perform the unregisteration of the top level
 	 * main kobj
 	 */
 	if (atomic_dec_return(&edac_pci_sysfs_refcount) == 0) {
+<<<<<<< HEAD
 		debugf0("%s() called kobject_put on main kobj\n",
 			__func__);
 		kobject_put(edac_pci_top_main_kobj);
@@ -441,12 +553,23 @@ static void edac_pci_main_kobj_teardown(void)
  *
  *	Create the controls/attributes for the specified EDAC PCI device
  */
+=======
+		edac_dbg(0, "called kobject_put on main kobj\n");
+		kobject_put(edac_pci_top_main_kobj);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int edac_pci_create_sysfs(struct edac_pci_ctl_info *pci)
 {
 	int err;
 	struct kobject *edac_kobj = &pci->kobj;
 
+<<<<<<< HEAD
 	debugf0("%s() idx=%d\n", __func__, pci->pci_idx);
+=======
+	edac_dbg(0, "idx=%d\n", pci->pci_idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* create the top main EDAC PCI kobject, IF needed */
 	err = edac_pci_main_kobj_setup();
@@ -460,8 +583,12 @@ int edac_pci_create_sysfs(struct edac_pci_ctl_info *pci)
 
 	err = sysfs_create_link(edac_kobj, &pci->dev->kobj, EDAC_PCI_SYMLINK);
 	if (err) {
+<<<<<<< HEAD
 		debugf0("%s() sysfs_create_link() returned err= %d\n",
 			__func__, err);
+=======
+		edac_dbg(0, "sysfs_create_link() returned err= %d\n", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto symlink_fail;
 	}
 
@@ -477,6 +604,7 @@ unregister_cleanup:
 	return err;
 }
 
+<<<<<<< HEAD
 /*
  * edac_pci_remove_sysfs
  *
@@ -485,6 +613,11 @@ unregister_cleanup:
 void edac_pci_remove_sysfs(struct edac_pci_ctl_info *pci)
 {
 	debugf0("%s() index=%d\n", __func__, pci->pci_idx);
+=======
+void edac_pci_remove_sysfs(struct edac_pci_ctl_info *pci)
+{
+	edac_dbg(0, "index=%d\n", pci->pci_idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Remove the symlink */
 	sysfs_remove_link(&pci->kobj, EDAC_PCI_SYMLINK);
@@ -496,7 +629,11 @@ void edac_pci_remove_sysfs(struct edac_pci_ctl_info *pci)
 	 * if this 'pci' is the last instance.
 	 * If it is, the main kobject will be unregistered as a result
 	 */
+<<<<<<< HEAD
 	debugf0("%s() calling edac_pci_main_kobj_teardown()\n", __func__);
+=======
+	edac_dbg(0, "calling edac_pci_main_kobj_teardown()\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	edac_pci_main_kobj_teardown();
 }
 
@@ -544,7 +681,11 @@ static void edac_pci_dev_parity_clear(struct pci_dev *dev)
 	/* read the device TYPE, looking for bridges */
 	pci_read_config_byte(dev, PCI_HEADER_TYPE, &header_type);
 
+<<<<<<< HEAD
 	if ((header_type & 0x7F) == PCI_HEADER_TYPE_BRIDGE)
+=======
+	if ((header_type & PCI_HEADER_TYPE_MASK) == PCI_HEADER_TYPE_BRIDGE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		get_pci_parity_status(dev, 1);
 }
 
@@ -572,7 +713,11 @@ static void edac_pci_dev_parity_test(struct pci_dev *dev)
 
 	local_irq_restore(flags);
 
+<<<<<<< HEAD
 	debugf4("PCI STATUS= 0x%04x %s\n", status, dev_name(&dev->dev));
+=======
+	edac_dbg(4, "PCI STATUS= 0x%04x %s\n", status, dev_name(&dev->dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* check the status reg for errors on boards NOT marked as broken
 	 * if broken, we cannot trust any of the status bits
@@ -603,6 +748,7 @@ static void edac_pci_dev_parity_test(struct pci_dev *dev)
 	}
 
 
+<<<<<<< HEAD
 	debugf4("PCI HEADER TYPE= 0x%02x %s\n", header_type, dev_name(&dev->dev));
 
 	if ((header_type & 0x7F) == PCI_HEADER_TYPE_BRIDGE) {
@@ -610,6 +756,17 @@ static void edac_pci_dev_parity_test(struct pci_dev *dev)
 		status = get_pci_parity_status(dev, 1);
 
 		debugf4("PCI SEC_STATUS= 0x%04x %s\n", status, dev_name(&dev->dev));
+=======
+	edac_dbg(4, "PCI HEADER TYPE= 0x%02x %s\n",
+		 header_type, dev_name(&dev->dev));
+
+	if ((header_type & PCI_HEADER_TYPE_MASK) == PCI_HEADER_TYPE_BRIDGE) {
+		/* On bridges, need to examine secondary status register  */
+		status = get_pci_parity_status(dev, 1);
+
+		edac_dbg(4, "PCI SEC_STATUS= 0x%04x %s\n",
+			 status, dev_name(&dev->dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* check the secondary status reg for errors,
 		 * on NOT broken boards
@@ -646,13 +803,20 @@ typedef void (*pci_parity_check_fn_t) (struct pci_dev *dev);
 
 /*
  * pci_dev parity list iterator
+<<<<<<< HEAD
  *	Scan the PCI device list for one pass, looking for SERRORs
  *	Master Parity ERRORS or Parity ERRORs on primary or secondary devices
+=======
+ *
+ *	Scan the PCI device list looking for SERRORs, Master Parity ERRORS or
+ *	Parity ERRORs on primary or secondary devices.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void edac_pci_dev_parity_iterator(pci_parity_check_fn_t fn)
 {
 	struct pci_dev *dev = NULL;
 
+<<<<<<< HEAD
 	/* request for kernel access to the next PCI device, if any,
 	 * and while we are looking at it have its reference count
 	 * bumped until we are done with it
@@ -660,6 +824,10 @@ static inline void edac_pci_dev_parity_iterator(pci_parity_check_fn_t fn)
 	while ((dev = pci_get_device(PCI_ANY_ID, PCI_ANY_ID, dev)) != NULL) {
 		fn(dev);
 	}
+=======
+	for_each_pci_dev(dev)
+		fn(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -671,7 +839,11 @@ void edac_pci_do_parity_check(void)
 {
 	int before_count;
 
+<<<<<<< HEAD
 	debugf3("%s()\n", __func__);
+=======
+	edac_dbg(3, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* if policy has PCI check off, leave now */
 	if (!check_pci_errors)
@@ -766,5 +938,8 @@ MODULE_PARM_DESC(check_pci_errors,
 module_param(edac_pci_panic_on_pe, int, 0644);
 MODULE_PARM_DESC(edac_pci_panic_on_pe,
 		 "Panic on PCI Bus Parity error: 0=off 1=on");
+<<<<<<< HEAD
 
 #endif				/* CONFIG_PCI */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

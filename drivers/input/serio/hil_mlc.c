@@ -74,10 +74,17 @@ EXPORT_SYMBOL(hil_mlc_unregister);
 static LIST_HEAD(hil_mlcs);
 static DEFINE_RWLOCK(hil_mlcs_lock);
 static struct timer_list	hil_mlcs_kicker;
+<<<<<<< HEAD
 static int			hil_mlcs_probe;
 
 static void hil_mlcs_process(unsigned long unused);
 static DECLARE_TASKLET_DISABLED(hil_mlcs_tasklet, hil_mlcs_process, 0);
+=======
+static int			hil_mlcs_probe, hil_mlc_stop;
+
+static void hil_mlcs_process(unsigned long unused);
+static DECLARE_TASKLET_DISABLED_OLD(hil_mlcs_tasklet, hil_mlcs_process);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* #define HIL_MLC_DEBUG */
@@ -274,6 +281,7 @@ static int hilse_match(hil_mlc *mlc, int unused)
 /* An LCV used to prevent runaway loops, forces 5 second sleep when reset. */
 static int hilse_init_lcv(hil_mlc *mlc, int unused)
 {
+<<<<<<< HEAD
 	struct timeval tv;
 
 	do_gettimeofday(&tv);
@@ -282,6 +290,14 @@ static int hilse_init_lcv(hil_mlc *mlc, int unused)
 		return -1;
 
 	mlc->lcv_tv = tv;
+=======
+	time64_t now = ktime_get_seconds();
+
+	if (mlc->lcv && (now - mlc->lcv_time) < 5)
+		return -1;
+
+	mlc->lcv_time = now;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlc->lcv = 0;
 
 	return 0;
@@ -604,8 +620,13 @@ static inline void hilse_setup_input(hil_mlc *mlc, const struct hilse_node *node
 		BUG();
 	}
 	mlc->istarted = 1;
+<<<<<<< HEAD
 	mlc->intimeout = node->arg;
 	do_gettimeofday(&(mlc->instart));
+=======
+	mlc->intimeout = usecs_to_jiffies(node->arg);
+	mlc->instart = jiffies;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mlc->icount = 15;
 	memset(mlc->ipacket, 0, 16 * sizeof(hil_packet));
 	BUG_ON(down_trylock(&mlc->isem));
@@ -686,6 +707,7 @@ static int hilse_donode(hil_mlc *mlc)
 		write_lock_irqsave(&mlc->lock, flags);
 		pack = node->object.packet;
 	out:
+<<<<<<< HEAD
 		if (mlc->istarted)
 			goto out2;
 		/* Prepare to receive input */
@@ -693,6 +715,14 @@ static int hilse_donode(hil_mlc *mlc)
 			hilse_setup_input(mlc, node + 1);
 
 	out2:
+=======
+		if (!mlc->istarted) {
+			/* Prepare to receive input */
+			if ((node + 1)->act & HILSE_IN)
+				hilse_setup_input(mlc, node + 1);
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		write_unlock_irqrestore(&mlc->lock, flags);
 
 		if (down_trylock(&mlc->osem)) {
@@ -705,6 +735,7 @@ static int hilse_donode(hil_mlc *mlc)
 		if (!mlc->ostarted) {
 			mlc->ostarted = 1;
 			mlc->opacket = pack;
+<<<<<<< HEAD
 			mlc->out(mlc);
 			nextidx = HILSEN_DOZE;
 			write_unlock_irqrestore(&mlc->lock, flags);
@@ -712,14 +743,37 @@ static int hilse_donode(hil_mlc *mlc)
 		}
 		mlc->ostarted = 0;
 		do_gettimeofday(&(mlc->instart));
+=======
+			rc = mlc->out(mlc);
+			nextidx = HILSEN_DOZE;
+			write_unlock_irqrestore(&mlc->lock, flags);
+			if (rc) {
+				hil_mlc_stop = 1;
+				return 1;
+			}
+			break;
+		}
+		mlc->ostarted = 0;
+		mlc->instart = jiffies;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		write_unlock_irqrestore(&mlc->lock, flags);
 		nextidx = HILSEN_NEXT;
 		break;
 
 	case HILSE_CTS:
 		write_lock_irqsave(&mlc->lock, flags);
+<<<<<<< HEAD
 		nextidx = mlc->cts(mlc) ? node->bad : node->good;
 		write_unlock_irqrestore(&mlc->lock, flags);
+=======
+		rc = mlc->cts(mlc);
+		nextidx = rc ? node->bad : node->good;
+		write_unlock_irqrestore(&mlc->lock, flags);
+		if (rc) {
+			hil_mlc_stop = 1;
+			return 1;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -732,11 +786,16 @@ static int hilse_donode(hil_mlc *mlc)
 #endif
 
 	while (nextidx & HILSEN_SCHED) {
+<<<<<<< HEAD
 		struct timeval tv;
+=======
+		unsigned long now = jiffies;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!sched_long)
 			goto sched;
 
+<<<<<<< HEAD
 		do_gettimeofday(&tv);
 		tv.tv_usec += USEC_PER_SEC * (tv.tv_sec - mlc->instart.tv_sec);
 		tv.tv_usec -= mlc->instart.tv_usec;
@@ -744,6 +803,11 @@ static int hilse_donode(hil_mlc *mlc)
 		tv.tv_usec = (mlc->intimeout - tv.tv_usec) * HZ / USEC_PER_SEC;
 		if (!tv.tv_usec) goto sched;
 		mod_timer(&hil_mlcs_kicker, jiffies + tv.tv_usec);
+=======
+		if (time_after(now, mlc->instart + mlc->intimeout))
+			 goto sched;
+		mod_timer(&hil_mlcs_kicker, mlc->instart + mlc->intimeout);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	sched:
 		tasklet_schedule(&hil_mlcs_tasklet);
@@ -785,8 +849,19 @@ static void hil_mlcs_process(unsigned long unused)
 
 /************************* Keepalive timer task *********************/
 
+<<<<<<< HEAD
 static void hil_mlcs_timer(unsigned long data)
 {
+=======
+static void hil_mlcs_timer(struct timer_list *unused)
+{
+	if (hil_mlc_stop) {
+		/* could not send packet - stop immediately. */
+		pr_warn(PREFIX "HIL seems stuck - Disabling HIL MLC.\n");
+		return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hil_mlcs_probe = 1;
 	tasklet_schedule(&hil_mlcs_tasklet);
 	/* Re-insert the periodic task. */
@@ -999,7 +1074,11 @@ int hil_mlc_unregister(hil_mlc *mlc)
 
 static int __init hil_mlc_init(void)
 {
+<<<<<<< HEAD
 	setup_timer(&hil_mlcs_kicker, &hil_mlcs_timer, 0);
+=======
+	timer_setup(&hil_mlcs_kicker, &hil_mlcs_timer, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mod_timer(&hil_mlcs_kicker, jiffies + HZ);
 
 	tasklet_enable(&hil_mlcs_tasklet);
@@ -1010,8 +1089,11 @@ static int __init hil_mlc_init(void)
 static void __exit hil_mlc_exit(void)
 {
 	del_timer_sync(&hil_mlcs_kicker);
+<<<<<<< HEAD
 
 	tasklet_disable(&hil_mlcs_tasklet);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tasklet_kill(&hil_mlcs_tasklet);
 }
 

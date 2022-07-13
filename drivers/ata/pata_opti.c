@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata_opti.c 	- ATI PATA for new ATA layer
  *			  (C) 2005 Red Hat Inc
@@ -26,7 +30,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -69,7 +76,11 @@ static int opti_pre_reset(struct ata_link *link, unsigned long deadline)
 /**
  *	opti_write_reg		-	control register setup
  *	@ap: ATA port
+<<<<<<< HEAD
  *	@value: value
+=======
+ *	@val: value
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@reg: control register number
  *
  *	The Opti uses magic 'trapdoor' register accesses to do configuration
@@ -148,7 +159,11 @@ static void opti_set_piomode(struct ata_port *ap, struct ata_device *adev)
 	opti_write_reg(ap, 0x85, CNTRL_REG);
 }
 
+<<<<<<< HEAD
 static struct scsi_host_template opti_sht = {
+=======
+static const struct scsi_host_template opti_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_PIO_SHT(DRV_NAME),
 };
 
@@ -185,12 +200,17 @@ static struct pci_driver opti_pci_driver = {
 	.id_table	= opti,
 	.probe 		= opti_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= ata_pci_device_resume,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init opti_init(void)
 {
 	return pci_register_driver(&opti_pci_driver);
@@ -201,12 +221,18 @@ static void __exit opti_exit(void)
 	pci_unregister_driver(&opti_pci_driver);
 }
 
+=======
+module_pci_driver(opti_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for Opti 621/621X");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, opti);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(opti_init);
 module_exit(opti_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

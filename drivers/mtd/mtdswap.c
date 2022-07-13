@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Swap block device support for MTDs
  * Turns an MTD device into a swap device with block wear leveling
@@ -8,6 +12,7 @@
  *
  * Based on Richard Purdie's earlier implementation in 2007. Background
  * support and lock-less operation written by Adrian Hunter.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -22,6 +27,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -32,7 +39,11 @@
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <linux/genhd.h>
+=======
+#include <linux/blkdev.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/swap.h>
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
@@ -50,7 +61,11 @@
  * Number of free eraseblocks below which GC can also collect low frag
  * blocks.
  */
+<<<<<<< HEAD
 #define LOW_FRAG_GC_TRESHOLD	5
+=======
+#define LOW_FRAG_GC_THRESHOLD	5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Wear level cost amortization. We want to do wear leveling on the background
@@ -138,14 +153,21 @@ struct mtdswap_dev {
 
 	char *page_buf;
 	char *oob_buf;
+<<<<<<< HEAD
 
 	struct dentry *debugfs_root;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mtdswap_oobdata {
 	__le16 magic;
 	__le32 count;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MTDSWAP_MAGIC_CLEAN	0x2095
 #define MTDSWAP_MAGIC_DIRTY	(MTDSWAP_MAGIC_CLEAN + 1)
@@ -338,7 +360,11 @@ static int mtdswap_read_markers(struct mtdswap_dev *d, struct swap_eb *eb)
 	struct mtdswap_oobdata *data, *data2;
 	int ret;
 	loff_t offset;
+<<<<<<< HEAD
 	struct mtd_oob_ops ops;
+=======
+	struct mtd_oob_ops ops = { };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	offset = mtdswap_eb_offset(d, eb);
 
@@ -346,7 +372,11 @@ static int mtdswap_read_markers(struct mtdswap_dev *d, struct swap_eb *eb)
 	if (mtd_can_have_bb(d->mtd) && mtd_block_isbad(d->mtd, offset))
 		return MTDSWAP_SCANNED_BAD;
 
+<<<<<<< HEAD
 	ops.ooblen = 2 * d->mtd->ecclayout->oobavail;
+=======
+	ops.ooblen = 2 * d->mtd->oobavail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ops.oobbuf = d->oob_buf;
 	ops.ooboffs = 0;
 	ops.datbuf = NULL;
@@ -359,7 +389,11 @@ static int mtdswap_read_markers(struct mtdswap_dev *d, struct swap_eb *eb)
 
 	data = (struct mtdswap_oobdata *)d->oob_buf;
 	data2 = (struct mtdswap_oobdata *)
+<<<<<<< HEAD
 		(d->oob_buf + d->mtd->ecclayout->oobavail);
+=======
+		(d->oob_buf + d->mtd->oobavail);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (le16_to_cpu(data->magic) == MTDSWAP_MAGIC_CLEAN) {
 		eb->erase_count = le32_to_cpu(data->count);
@@ -385,7 +419,11 @@ static int mtdswap_write_marker(struct mtdswap_dev *d, struct swap_eb *eb,
 	struct mtdswap_oobdata n;
 	int ret;
 	loff_t offset;
+<<<<<<< HEAD
 	struct mtd_oob_ops ops;
+=======
+	struct mtd_oob_ops ops = { };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ops.ooboffs = 0;
 	ops.oobbuf = (uint8_t *)&n;
@@ -538,6 +576,7 @@ static void mtdswap_store_eb(struct mtdswap_dev *d, struct swap_eb *eb)
 		mtdswap_rb_add(d, eb, MTDSWAP_HIFRAG);
 }
 
+<<<<<<< HEAD
 
 static void mtdswap_erase_callback(struct erase_info *done)
 {
@@ -545,11 +584,16 @@ static void mtdswap_erase_callback(struct erase_info *done)
 	wake_up(wait_q);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mtdswap_erase_block(struct mtdswap_dev *d, struct swap_eb *eb)
 {
 	struct mtd_info *mtd = d->mtd;
 	struct erase_info erase;
+<<<<<<< HEAD
 	wait_queue_head_t wq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int retries = 0;
 	int ret;
 
@@ -558,6 +602,7 @@ static int mtdswap_erase_block(struct mtdswap_dev *d, struct swap_eb *eb)
 		d->max_erase_count = eb->erase_count;
 
 retry:
+<<<<<<< HEAD
 	init_waitqueue_head(&wq);
 	memset(&erase, 0, sizeof(struct erase_info));
 
@@ -566,6 +611,11 @@ retry:
 	erase.addr	= mtdswap_eb_offset(d, eb);
 	erase.len	= mtd->erasesize;
 	erase.priv	= (u_long)&wq;
+=======
+	memset(&erase, 0, sizeof(struct erase_info));
+	erase.addr	= mtdswap_eb_offset(d, eb);
+	erase.len	= mtd->erasesize;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = mtd_erase(mtd, &erase);
 	if (ret) {
@@ -584,6 +634,7 @@ retry:
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	ret = wait_event_interruptible(wq, erase.state == MTD_ERASE_DONE ||
 					   erase.state == MTD_ERASE_FAILED);
 	if (ret) {
@@ -605,6 +656,8 @@ retry:
 		return -EIO;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -765,7 +818,10 @@ retry:
 		return ret;
 	}
 
+<<<<<<< HEAD
 	eb = d->eb_data + *newblock / d->pages_per_eblk;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	d->page_data[page] = *newblock;
 	d->revmap[oldblock] = PAGE_UNDEF;
 	eb = d->eb_data + oldblock / d->pages_per_eblk;
@@ -807,7 +863,11 @@ static int __mtdswap_choose_gc_tree(struct mtdswap_dev *d)
 {
 	int idx, stopat;
 
+<<<<<<< HEAD
 	if (TREE_COUNT(d, CLEAN) < LOW_FRAG_GC_TRESHOLD)
+=======
+	if (TREE_COUNT(d, CLEAN) < LOW_FRAG_GC_THRESHOLD)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stopat = MTDSWAP_LOWFRAG;
 	else
 		stopat = MTDSWAP_HIFRAG;
@@ -928,12 +988,20 @@ static unsigned int mtdswap_eblk_passes(struct mtdswap_dev *d,
 	loff_t base, pos;
 	unsigned int *p1 = (unsigned int *)d->page_buf;
 	unsigned char *p2 = (unsigned char *)d->oob_buf;
+<<<<<<< HEAD
 	struct mtd_oob_ops ops;
+=======
+	struct mtd_oob_ops ops = { };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ops.mode = MTD_OPS_AUTO_OOB;
 	ops.len = mtd->writesize;
+<<<<<<< HEAD
 	ops.ooblen = mtd->ecclayout->oobavail;
+=======
+	ops.ooblen = mtd->oobavail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ops.ooboffs = 0;
 	ops.datbuf = d->page_buf;
 	ops.oobbuf = d->oob_buf;
@@ -945,7 +1013,11 @@ static unsigned int mtdswap_eblk_passes(struct mtdswap_dev *d,
 		for (i = 0; i < mtd_pages; i++) {
 			patt = mtdswap_test_patt(test + i);
 			memset(d->page_buf, patt, mtd->writesize);
+<<<<<<< HEAD
 			memset(d->oob_buf, patt, mtd->ecclayout->oobavail);
+=======
+			memset(d->oob_buf, patt, mtd->oobavail);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = mtd_write_oob(mtd, pos, &ops);
 			if (ret)
 				goto error;
@@ -964,7 +1036,11 @@ static unsigned int mtdswap_eblk_passes(struct mtdswap_dev *d,
 				if (p1[j] != patt)
 					goto error;
 
+<<<<<<< HEAD
 			for (j = 0; j < mtd->ecclayout->oobavail; j++)
+=======
+			for (j = 0; j < mtd->oobavail; j++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (p2[j] != (unsigned char)patt)
 					goto error;
 
@@ -1102,7 +1178,10 @@ static int mtdswap_writesect(struct mtd_blktrans_dev *dev,
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	eb = d->eb_data + (newblock / d->pages_per_eblk);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	d->page_data[page] = newblock;
 
 	return 0;
@@ -1225,8 +1304,14 @@ static int mtdswap_show(struct seq_file *s, void *data)
 	unsigned int max[MTDSWAP_TREE_CNT];
 	unsigned int i, cw = 0, cwp = 0, cwecount = 0, bb_cnt, mapped, pages;
 	uint64_t use_size;
+<<<<<<< HEAD
 	char *name[] = {"clean", "used", "low", "high", "dirty", "bitflip",
 			"failing"};
+=======
+	static const char * const name[] = {
+		"clean", "used", "low", "high", "dirty", "bitflip", "failing"
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&d->mbd_dev->lock);
 
@@ -1235,10 +1320,15 @@ static int mtdswap_show(struct seq_file *s, void *data)
 
 		if (root->rb_node) {
 			count[i] = d->trees[i].count;
+<<<<<<< HEAD
 			min[i] = rb_entry(rb_first(root), struct swap_eb,
 					rb)->erase_count;
 			max[i] = rb_entry(rb_last(root), struct swap_eb,
 					rb)->erase_count;
+=======
+			min[i] = MTDSWAP_ECNT_MIN(root);
+			max[i] = MTDSWAP_ECNT_MAX(root);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			count[i] = 0;
 	}
@@ -1287,7 +1377,11 @@ static int mtdswap_show(struct seq_file *s, void *data)
 
 	seq_printf(s, "total erasures: %lu\n", sum);
 
+<<<<<<< HEAD
 	seq_printf(s, "\n");
+=======
+	seq_puts(s, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	seq_printf(s, "mtdswap_readsect count: %llu\n", d->sect_read_count);
 	seq_printf(s, "mtdswap_writesect count: %llu\n", d->sect_write_count);
@@ -1296,12 +1390,17 @@ static int mtdswap_show(struct seq_file *s, void *data)
 	seq_printf(s, "mtd write count: %llu\n", d->mtd_write_count);
 	seq_printf(s, "discarded pages count: %llu\n", d->discard_page_count);
 
+<<<<<<< HEAD
 	seq_printf(s, "\n");
+=======
+	seq_puts(s, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_printf(s, "total pages: %u\n", pages);
 	seq_printf(s, "pages mapped: %u\n", mapped);
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static int mtdswap_open(struct inode *inode, struct file *file)
 {
@@ -1342,6 +1441,21 @@ static int mtdswap_add_debugfs(struct mtdswap_dev *d)
 		d->debugfs_root = NULL;
 		return -1;
 	}
+=======
+DEFINE_SHOW_ATTRIBUTE(mtdswap);
+
+static int mtdswap_add_debugfs(struct mtdswap_dev *d)
+{
+	struct dentry *root = d->mtd->dbg.dfs_dir;
+
+	if (!IS_ENABLED(CONFIG_DEBUG_FS))
+		return 0;
+
+	if (IS_ERR_OR_NULL(root))
+		return -1;
+
+	debugfs_create_file("mtdswap_stats", S_IRUSR, root, d, &mtdswap_fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1364,11 +1478,19 @@ static int mtdswap_init(struct mtdswap_dev *d, unsigned int eblocks,
 	for (i = 0; i < MTDSWAP_TREE_CNT; i++)
 		d->trees[i].root = RB_ROOT;
 
+<<<<<<< HEAD
 	d->page_data = vmalloc(sizeof(int)*pages);
 	if (!d->page_data)
 		goto page_data_fail;
 
 	d->revmap = vmalloc(sizeof(int)*blocks);
+=======
+	d->page_data = vmalloc(array_size(pages, sizeof(int)));
+	if (!d->page_data)
+		goto page_data_fail;
+
+	d->revmap = vmalloc(array_size(blocks, sizeof(int)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!d->revmap)
 		goto revmap_fail;
 
@@ -1387,7 +1509,11 @@ static int mtdswap_init(struct mtdswap_dev *d, unsigned int eblocks,
 	if (!d->page_buf)
 		goto page_buf_fail;
 
+<<<<<<< HEAD
 	d->oob_buf = kmalloc(2 * mtd->ecclayout->oobavail, GFP_KERNEL);
+=======
+	d->oob_buf = kmalloc_array(2, mtd->oobavail, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!d->oob_buf)
 		goto oob_buf_fail;
 
@@ -1417,7 +1543,10 @@ static void mtdswap_add_mtd(struct mtd_blktrans_ops *tr, struct mtd_info *mtd)
 	unsigned long part;
 	unsigned int eblocks, eavailable, bad_blocks, spare_cnt;
 	uint64_t swap_size, use_size, size_limit;
+<<<<<<< HEAD
 	struct nand_ecclayout *oinfo;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	parts = &partitions[0];
@@ -1425,7 +1554,11 @@ static void mtdswap_add_mtd(struct mtd_blktrans_ops *tr, struct mtd_info *mtd)
 		return;
 
 	while ((this_opt = strsep(&parts, ",")) != NULL) {
+<<<<<<< HEAD
 		if (strict_strtoul(this_opt, 0, &part) < 0)
+=======
+		if (kstrtoul(this_opt, 0, &part) < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 
 		if (mtd->index == part)
@@ -1447,6 +1580,7 @@ static void mtdswap_add_mtd(struct mtd_blktrans_ops *tr, struct mtd_info *mtd)
 		return;
 	}
 
+<<<<<<< HEAD
 	oinfo = mtd->ecclayout;
 	if (!oinfo) {
 		printk(KERN_ERR "%s: mtd%d does not have OOB\n",
@@ -1458,6 +1592,12 @@ static void mtdswap_add_mtd(struct mtd_blktrans_ops *tr, struct mtd_info *mtd)
 		printk(KERN_ERR "%s: Not enough free bytes in OOB, "
 			"%d available, %zu needed.\n",
 			MTDSWAP_PREFIX, oinfo->oobavail, MTDSWAP_OOBSIZE);
+=======
+	if (!mtd->oobsize || mtd->oobavail < MTDSWAP_OOBSIZE) {
+		printk(KERN_ERR "%s: Not enough free bytes in OOB, "
+			"%d available, %zu needed.\n",
+			MTDSWAP_PREFIX, mtd->oobavail, MTDSWAP_OOBSIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1474,7 +1614,11 @@ static void mtdswap_add_mtd(struct mtd_blktrans_ops *tr, struct mtd_info *mtd)
 	}
 
 	eblocks = mtd_div_by_eb(use_size, mtd);
+<<<<<<< HEAD
 	use_size = eblocks * mtd->erasesize;
+=======
+	use_size = (uint64_t)eblocks * mtd->erasesize;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bad_blocks = mtdswap_badblocks(mtd, use_size);
 	eavailable = eblocks - bad_blocks;
 
@@ -1550,7 +1694,10 @@ static void mtdswap_remove_dev(struct mtd_blktrans_dev *dev)
 {
 	struct mtdswap_dev *d = MTDSWAP_MBD_TO_MTDSWAP(dev);
 
+<<<<<<< HEAD
 	debugfs_remove_recursive(d->debugfs_root);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	del_mtd_blktrans_dev(dev);
 	mtdswap_cleanup(d);
 	kfree(d);
@@ -1571,6 +1718,7 @@ static struct mtd_blktrans_ops mtdswap_ops = {
 	.owner		= THIS_MODULE,
 };
 
+<<<<<<< HEAD
 static int __init mtdswap_modinit(void)
 {
 	return register_mtd_blktrans(&mtdswap_ops);
@@ -1584,6 +1732,9 @@ static void __exit mtdswap_modexit(void)
 module_init(mtdswap_modinit);
 module_exit(mtdswap_modexit);
 
+=======
+module_mtd_blktrans(mtdswap_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jarkko Lavinen <jarkko.lavinen@nokia.com>");

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* drivers/video/backlight/vgg2432a4.c
  *
  * VGG2432A4 (ILI9320) LCD controller driver.
@@ -5,10 +9,13 @@
  * Copyright 2007 Simtec Electronics
  *	http://armlinux.simtec.co.uk/
  *	Ben Dooks <ben@simtec.co.uk>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/delay.h>
@@ -26,7 +33,11 @@
 
 /* Device initialisation sequences */
 
+<<<<<<< HEAD
 static struct ili9320_reg vgg_init1[] = {
+=======
+static const struct ili9320_reg vgg_init1[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.address = ILI9320_POWER1,
 		.value	 = ILI9320_POWER1_AP(0) | ILI9320_POWER1_BT(0),
@@ -43,7 +54,11 @@ static struct ili9320_reg vgg_init1[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct ili9320_reg vgg_init2[] = {
+=======
+static const struct ili9320_reg vgg_init2[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.address = ILI9320_POWER1,
 		.value   = (ILI9320_POWER1_AP(3) | ILI9320_POWER1_APE |
@@ -54,7 +69,11 @@ static struct ili9320_reg vgg_init2[] = {
 	}
 };
 
+<<<<<<< HEAD
 static struct ili9320_reg vgg_gamma[] = {
+=======
+static const struct ili9320_reg vgg_gamma[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.address = ILI9320_GAMMA1,
 		.value	 = 0x0000,
@@ -89,7 +108,11 @@ static struct ili9320_reg vgg_gamma[] = {
 
 };
 
+<<<<<<< HEAD
 static struct ili9320_reg vgg_init0[] = {
+=======
+static const struct ili9320_reg vgg_init0[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0]	= {
 		/* set direction and scan mode gate */
 		.address = ILI9320_DRIVER,
@@ -205,6 +228,7 @@ static int vgg2432a4_lcd_init(struct ili9320 *lcd,
 	return ret;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int vgg2432a4_suspend(struct spi_device *spi, pm_message_t state)
 {
@@ -218,6 +242,17 @@ static int vgg2432a4_resume(struct spi_device *spi)
 #else
 #define vgg2432a4_suspend	NULL
 #define vgg2432a4_resume 	NULL
+=======
+#ifdef CONFIG_PM_SLEEP
+static int vgg2432a4_suspend(struct device *dev)
+{
+	return ili9320_suspend(dev_get_drvdata(dev));
+}
+static int vgg2432a4_resume(struct device *dev)
+{
+	return ili9320_resume(dev_get_drvdata(dev));
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static struct ili9320_client vgg2432a4_client = {
@@ -227,7 +262,11 @@ static struct ili9320_client vgg2432a4_client = {
 
 /* Device probe */
 
+<<<<<<< HEAD
 static int __devinit vgg2432a4_probe(struct spi_device *spi)
+=======
+static int vgg2432a4_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -240,13 +279,20 @@ static int __devinit vgg2432a4_probe(struct spi_device *spi)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit vgg2432a4_remove(struct spi_device *spi)
 {
 	return ili9320_remove(dev_get_drvdata(&spi->dev));
+=======
+static void vgg2432a4_remove(struct spi_device *spi)
+{
+	ili9320_remove(spi_get_drvdata(spi));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void vgg2432a4_shutdown(struct spi_device *spi)
 {
+<<<<<<< HEAD
 	ili9320_shutdown(dev_get_drvdata(&spi->dev));
 }
 
@@ -260,6 +306,21 @@ static struct spi_driver vgg2432a4_driver = {
 	.shutdown	= vgg2432a4_shutdown,
 	.suspend	= vgg2432a4_suspend,
 	.resume		= vgg2432a4_resume,
+=======
+	ili9320_shutdown(spi_get_drvdata(spi));
+}
+
+static SIMPLE_DEV_PM_OPS(vgg2432a4_pm_ops, vgg2432a4_suspend, vgg2432a4_resume);
+
+static struct spi_driver vgg2432a4_driver = {
+	.driver = {
+		.name		= "VGG2432A4",
+		.pm		= &vgg2432a4_pm_ops,
+	},
+	.probe		= vgg2432a4_probe,
+	.remove		= vgg2432a4_remove,
+	.shutdown	= vgg2432a4_shutdown,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(vgg2432a4_driver);

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright IBM Corp. 2008
  *
@@ -6,6 +10,7 @@
  * Author(s): Martin Schwidefsky <schwidefsky@de.ibm.com>
  */
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -71,11 +76,20 @@ static inline void set_page_unstable(struct page *page, int order)
 			     : "a" (page_to_phys(page + i)),
 			       "i" (ESSA_SET_UNUSED));
 }
+=======
+#include <linux/mm.h>
+#include <asm/page-states.h>
+#include <asm/sections.h>
+#include <asm/page.h>
+
+int __bootdata_preserved(cmma_flag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void arch_free_page(struct page *page, int order)
 {
 	if (!cmma_flag)
 		return;
+<<<<<<< HEAD
 	set_page_unstable(page, order);
 }
 
@@ -88,12 +102,16 @@ static inline void set_page_stable(struct page *page, int order)
 			     : "=&d" (rc)
 			     : "a" (page_to_phys(page + i)),
 			       "i" (ESSA_SET_STABLE));
+=======
+	__set_page_unused(page_to_virt(page), 1UL << order);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void arch_alloc_page(struct page *page, int order)
 {
 	if (!cmma_flag)
 		return;
+<<<<<<< HEAD
 	set_page_stable(page, order);
 }
 
@@ -121,4 +139,10 @@ void arch_set_page_states(int make_stable)
 		}
 		spin_unlock_irqrestore(&zone->lock, flags);
 	}
+=======
+	if (cmma_flag < 2)
+		__set_page_stable_dat(page_to_virt(page), 1UL << order);
+	else
+		__set_page_stable_nodat(page_to_virt(page), 1UL << order);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

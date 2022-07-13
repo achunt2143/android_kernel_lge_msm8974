@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: exresop - AML Interpreter operand/object resolution
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -42,6 +47,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "amlcode.h"
@@ -87,12 +98,21 @@ acpi_ex_check_object_type(acpi_object_type type_needed,
 	if (type_needed == ACPI_TYPE_LOCAL_REFERENCE) {
 		/*
 		 * Allow the AML "Constant" opcodes (Zero, One, etc.) to be reference
+<<<<<<< HEAD
 		 * objects and thus allow them to be targets.  (As per the ACPI
 		 * specification, a store to a constant is a noop.)
 		 */
 		if ((this_type == ACPI_TYPE_INTEGER) &&
 		    (((union acpi_operand_object *)object)->common.
 		     flags & AOPOBJ_AML_CONSTANT)) {
+=======
+		 * objects and thus allow them to be targets. (As per the ACPI
+		 * specification, a store to a constant is a noop.)
+		 */
+		if ((this_type == ACPI_TYPE_INTEGER) &&
+		    (((union acpi_operand_object *)object)->common.flags &
+		     AOPOBJ_AML_CONSTANT)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return (AE_OK);
 		}
 	}
@@ -113,7 +133,11 @@ acpi_ex_check_object_type(acpi_object_type type_needed,
  *
  * FUNCTION:    acpi_ex_resolve_operands
  *
+<<<<<<< HEAD
  * PARAMETERS:  Opcode              - Opcode being interpreted
+=======
+ * PARAMETERS:  opcode              - Opcode being interpreted
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              stack_ptr           - Pointer to the operand stack to be
  *                                    resolved
  *              walk_state          - Current state
@@ -132,8 +156,13 @@ acpi_ex_check_object_type(acpi_object_type type_needed,
 
 acpi_status
 acpi_ex_resolve_operands(u16 opcode,
+<<<<<<< HEAD
 			 union acpi_operand_object ** stack_ptr,
 			 struct acpi_walk_state * walk_state)
+=======
+			 union acpi_operand_object **stack_ptr,
+			 struct acpi_walk_state *walk_state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union acpi_operand_object *obj_desc;
 	acpi_status status = AE_OK;
@@ -197,10 +226,17 @@ acpi_ex_resolve_operands(u16 opcode,
 			 * thus, the attached object is always the aliased namespace node
 			 */
 			if (object_type == ACPI_TYPE_LOCAL_ALIAS) {
+<<<<<<< HEAD
 				obj_desc =
 				    acpi_ns_get_attached_object((struct
 								 acpi_namespace_node
 								 *)obj_desc);
+=======
+				obj_desc = acpi_ns_get_attached_object((struct
+									acpi_namespace_node
+									*)
+								       obj_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				*stack_ptr = obj_desc;
 				object_type =
 				    ((struct acpi_namespace_node *)obj_desc)->
@@ -233,7 +269,11 @@ acpi_ex_resolve_operands(u16 opcode,
 
 					target_op = AML_DEBUG_OP;
 
+<<<<<<< HEAD
 					/*lint -fallthrough */
+=======
+					ACPI_FALLTHROUGH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				case ACPI_REFCLASS_ARG:
 				case ACPI_REFCLASS_LOCAL:
@@ -286,8 +326,13 @@ acpi_ex_resolve_operands(u16 opcode,
 		case ARGI_REF_OR_STRING:	/* Can be a String or Reference */
 
 			if ((ACPI_GET_DESCRIPTOR_TYPE(obj_desc) ==
+<<<<<<< HEAD
 			     ACPI_DESC_TYPE_OPERAND)
 			    && (obj_desc->common.type == ACPI_TYPE_STRING)) {
+=======
+			     ACPI_DESC_TYPE_OPERAND) &&
+			    (obj_desc->common.type == ACPI_TYPE_STRING)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * String found - the string references a named object and
 				 * must be resolved to a node
@@ -299,7 +344,11 @@ acpi_ex_resolve_operands(u16 opcode,
 			 * Else not a string - fall through to the normal Reference
 			 * case below
 			 */
+<<<<<<< HEAD
 			/*lint -fallthrough */
+=======
+			ACPI_FALLTHROUGH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case ARGI_REFERENCE:	/* References: */
 		case ARGI_INTEGER_REF:
@@ -307,7 +356,12 @@ acpi_ex_resolve_operands(u16 opcode,
 		case ARGI_DEVICE_REF:
 		case ARGI_TARGETREF:	/* Allows implicit conversion rules before store */
 		case ARGI_FIXED_TARGET:	/* No implicit conversion before store to target */
+<<<<<<< HEAD
 		case ARGI_SIMPLE_TARGET:	/* Name, Local, or Arg - no implicit conversion  */
+=======
+		case ARGI_SIMPLE_TARGET:	/* Name, Local, or arg - no implicit conversion  */
+		case ARGI_STORE_TARGET:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * Need an operand of type ACPI_TYPE_LOCAL_REFERENCE
@@ -327,7 +381,10 @@ acpi_ex_resolve_operands(u16 opcode,
 			goto next_operand;
 
 		case ARGI_DATAREFOBJ:	/* Store operator only */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * We don't want to resolve index_op reference objects during
 			 * a store because this would be an implicit de_ref_of operation.
@@ -337,13 +394,24 @@ acpi_ex_resolve_operands(u16 opcode,
 			if ((opcode == AML_STORE_OP) &&
 			    ((*stack_ptr)->common.type ==
 			     ACPI_TYPE_LOCAL_REFERENCE)
+<<<<<<< HEAD
 			    && ((*stack_ptr)->reference.class == ACPI_REFCLASS_INDEX)) {
+=======
+			    && ((*stack_ptr)->reference.class ==
+				ACPI_REFCLASS_INDEX)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto next_operand;
 			}
 			break;
 
 		default:
+<<<<<<< HEAD
 			/* All cases covered above */
+=======
+
+			/* All cases covered above */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -408,12 +476,22 @@ acpi_ex_resolve_operands(u16 opcode,
 		case ARGI_INTEGER:
 
 			/*
+<<<<<<< HEAD
 			 * Need an operand of type ACPI_TYPE_INTEGER,
 			 * But we can implicitly convert from a STRING or BUFFER
 			 * Aka - "Implicit Source Operand Conversion"
 			 */
 			status =
 			    acpi_ex_convert_to_integer(obj_desc, stack_ptr, 16);
+=======
+			 * Need an operand of type ACPI_TYPE_INTEGER, but we can
+			 * implicitly convert from a STRING or BUFFER.
+			 *
+			 * Known as "Implicit Source Operand Conversion"
+			 */
+			status = acpi_ex_convert_to_integer(obj_desc, stack_ptr,
+							    ACPI_IMPLICIT_CONVERSION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ACPI_FAILURE(status)) {
 				if (status == AE_TYPE) {
 					ACPI_ERROR((AE_INFO,
@@ -433,11 +511,18 @@ acpi_ex_resolve_operands(u16 opcode,
 			goto next_operand;
 
 		case ARGI_BUFFER:
+<<<<<<< HEAD
 
 			/*
 			 * Need an operand of type ACPI_TYPE_BUFFER,
 			 * But we can implicitly convert from a STRING or INTEGER
 			 * Aka - "Implicit Source Operand Conversion"
+=======
+			/*
+			 * Need an operand of type ACPI_TYPE_BUFFER,
+			 * But we can implicitly convert from a STRING or INTEGER
+			 * aka - "Implicit Source Operand Conversion"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			status = acpi_ex_convert_to_buffer(obj_desc, stack_ptr);
 			if (ACPI_FAILURE(status)) {
@@ -459,6 +544,7 @@ acpi_ex_resolve_operands(u16 opcode,
 			goto next_operand;
 
 		case ARGI_STRING:
+<<<<<<< HEAD
 
 			/*
 			 * Need an operand of type ACPI_TYPE_STRING,
@@ -467,6 +553,16 @@ acpi_ex_resolve_operands(u16 opcode,
 			 */
 			status = acpi_ex_convert_to_string(obj_desc, stack_ptr,
 							   ACPI_IMPLICIT_CONVERT_HEX);
+=======
+			/*
+			 * Need an operand of type ACPI_TYPE_STRING,
+			 * But we can implicitly convert from a BUFFER or INTEGER
+			 * aka - "Implicit Source Operand Conversion"
+			 */
+			status =
+			    acpi_ex_convert_to_string(obj_desc, stack_ptr,
+						      ACPI_IMPLICIT_CONVERT_HEX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ACPI_FAILURE(status)) {
 				if (status == AE_TYPE) {
 					ACPI_ERROR((AE_INFO,
@@ -562,6 +658,10 @@ acpi_ex_resolve_operands(u16 opcode,
 				break;
 
 			default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ACPI_ERROR((AE_INFO,
 					    "Needed [Buffer/String/Package/Reference], found [%s] %p",
 					    acpi_ut_get_object_type_name
@@ -584,6 +684,10 @@ acpi_ex_resolve_operands(u16 opcode,
 				break;
 
 			default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ACPI_ERROR((AE_INFO,
 					    "Needed [Buffer/String/Package], found [%s] %p",
 					    acpi_ut_get_object_type_name
@@ -595,8 +699,15 @@ acpi_ex_resolve_operands(u16 opcode,
 
 		case ARGI_REGION_OR_BUFFER:	/* Used by Load() only */
 
+<<<<<<< HEAD
 			/* Need an operand of type REGION or a BUFFER (which could be a resolved region field) */
 
+=======
+			/*
+			 * Need an operand of type REGION or a BUFFER
+			 * (which could be a resolved region field)
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (obj_desc->common.type) {
 			case ACPI_TYPE_BUFFER:
 			case ACPI_TYPE_REGION:
@@ -605,6 +716,10 @@ acpi_ex_resolve_operands(u16 opcode,
 				break;
 
 			default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ACPI_ERROR((AE_INFO,
 					    "Needed [Region/Buffer], found [%s] %p",
 					    acpi_ut_get_object_type_name
@@ -637,9 +752,15 @@ acpi_ex_resolve_operands(u16 opcode,
 
 				if (acpi_gbl_enable_interpreter_slack) {
 					/*
+<<<<<<< HEAD
 					 * Enable original behavior of Store(), allowing any and all
 					 * objects as the source operand.  The ACPI spec does not
 					 * allow this, however.
+=======
+					 * Enable original behavior of Store(), allowing any
+					 * and all objects as the source operand. The ACPI
+					 * spec does not allow this, however.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 */
 					break;
 				}
@@ -652,7 +773,12 @@ acpi_ex_resolve_operands(u16 opcode,
 				}
 
 				ACPI_ERROR((AE_INFO,
+<<<<<<< HEAD
 					    "Needed Integer/Buffer/String/Package/Ref/Ddb], found [%s] %p",
+=======
+					    "Needed Integer/Buffer/String/Package/Ref/Ddb]"
+					    ", found [%s] %p",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    acpi_ut_get_object_type_name
 					    (obj_desc), obj_desc));
 
@@ -675,14 +801,25 @@ acpi_ex_resolve_operands(u16 opcode,
 		 * Make sure that the original object was resolved to the
 		 * required object type (Simple cases only).
 		 */
+<<<<<<< HEAD
 		status = acpi_ex_check_object_type(type_needed,
 						   (*stack_ptr)->common.type,
 						   *stack_ptr);
+=======
+		status =
+		    acpi_ex_check_object_type(type_needed,
+					      (*stack_ptr)->common.type,
+					      *stack_ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}
 
+<<<<<<< HEAD
 	      next_operand:
+=======
+next_operand:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If more operands needed, decrement stack_ptr to point
 		 * to next operand on stack

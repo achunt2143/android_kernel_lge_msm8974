@@ -1,10 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AimsLab RadioTrack (aka RadioVeveal) driver
  *
  * Copyright 1997 M. Kirkwood
  *
  * Converted to the radio-isa framework by Hans Verkuil <hans.verkuil@cisco.com>
+<<<<<<< HEAD
  * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@infradead.org>
+=======
+ * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Converted to new API by Alan Cox <alan@lxorguk.ukuu.org.uk>
  * Various bugfixes and enhancements by Russell Kroll <rkroll@exploits.org>
  *
@@ -26,7 +34,11 @@
  * Fully tested with the Keene USB FM Transmitter and the v4l2-compliance tool.
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>	/* Modules 			*/
+=======
+#include <linux/module.h>	/* Modules			*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>		/* Initdata			*/
 #include <linux/ioport.h>	/* request_region		*/
 #include <linux/delay.h>	/* msleep			*/
@@ -37,6 +49,10 @@
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-ctrls.h>
 #include "radio-isa.h"
+<<<<<<< HEAD
+=======
+#include "lm7000.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("M. Kirkwood");
 MODULE_DESCRIPTION("A driver for the RadioTrack/RadioReveal radio card.");
@@ -72,6 +88,7 @@ static struct radio_isa_card *rtrack_alloc(void)
 	return rt ? &rt->isa : NULL;
 }
 
+<<<<<<< HEAD
 /* The 128+64 on these outb's is to keep the volume stable while tuning.
  * Without them, the volume _will_ creep up with each frequency change
  * and bit 4 (+16) is to keep the signal strength meter enabled.
@@ -89,10 +106,39 @@ static void send_1_byte(struct radio_isa_card *isa, int on)
 	outb_p(128+64+16+on+4+1, isa->io);	/* wr-enable+data high */
 	outb_p(128+64+16+on+4+2+1, isa->io);	/* clock */
 	msleep(1);
+=======
+#define AIMS_BIT_TUN_CE		(1 << 0)
+#define AIMS_BIT_TUN_CLK	(1 << 1)
+#define AIMS_BIT_TUN_DATA	(1 << 2)
+#define AIMS_BIT_VOL_CE		(1 << 3)
+#define AIMS_BIT_TUN_STRQ	(1 << 4)
+/* bit 5 is not connected */
+#define AIMS_BIT_VOL_UP		(1 << 6)	/* active low */
+#define AIMS_BIT_VOL_DN		(1 << 7)	/* active low */
+
+static void rtrack_set_pins(void *handle, u8 pins)
+{
+	struct radio_isa_card *isa = handle;
+	struct rtrack *rt = container_of(isa, struct rtrack, isa);
+	u8 bits = AIMS_BIT_VOL_DN | AIMS_BIT_VOL_UP | AIMS_BIT_TUN_STRQ;
+
+	if (!v4l2_ctrl_g_ctrl(rt->isa.mute))
+		bits |= AIMS_BIT_VOL_CE;
+
+	if (pins & LM7000_DATA)
+		bits |= AIMS_BIT_TUN_DATA;
+	if (pins & LM7000_CLK)
+		bits |= AIMS_BIT_TUN_CLK;
+	if (pins & LM7000_CE)
+		bits |= AIMS_BIT_TUN_CE;
+
+	outb_p(bits, rt->isa.io);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rtrack_s_frequency(struct radio_isa_card *isa, u32 freq)
 {
+<<<<<<< HEAD
 	int on = v4l2_ctrl_g_ctrl(isa->mute) ? 0 : 8;
 	int i;
 
@@ -121,6 +167,10 @@ static int rtrack_s_frequency(struct radio_isa_card *isa, u32 freq)
 	send_1_byte(isa, on);		/* 23: AM/FM (FM = 1, always) */
 
 	outb(0xd0 + on, isa->io);	/* volume steady + sigstr */
+=======
+	lm7000_set_freq(freq, isa, rtrack_set_pins);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -145,11 +195,19 @@ static int rtrack_s_mute_volume(struct radio_isa_card *isa, bool mute, int vol)
 	} else if (curvol < vol) {
 		outb(0x98, isa->io);	/* volume up + sigstr + on	*/
 		for (; curvol < vol; curvol++)
+<<<<<<< HEAD
 			udelay(3000);
 	} else if (curvol > vol) {
 		outb(0x58, isa->io);	/* volume down + sigstr + on	*/
 		for (; curvol > vol; curvol--)
 			udelay(3000);
+=======
+			mdelay(3);
+	} else if (curvol > vol) {
+		outb(0x58, isa->io);	/* volume down + sigstr + on	*/
+		for (; curvol > vol; curvol--)
+			mdelay(3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	outb(0xd8, isa->io);		/* volume steady + sigstr + on	*/
 	rt->curvol = vol;

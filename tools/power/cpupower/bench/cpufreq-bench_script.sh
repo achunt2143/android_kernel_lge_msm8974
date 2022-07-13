@@ -1,4 +1,5 @@
 #!/bin/bash
+<<<<<<< HEAD
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -14,6 +15,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
 # 02110-1301, USA.
+=======
+# SPDX-License-Identifier: GPL-2.0-or-later
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Author/Copyright(c): 2009, Thomas Renninger <trenn@suse.de>, Novell Inc.
 
@@ -98,4 +103,8 @@ function create_plots()
 }
 
 measure
+<<<<<<< HEAD
 create_plots
+=======
+create_plots
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

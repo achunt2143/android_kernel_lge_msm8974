@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	IT8712F "Smart Guardian" Watchdog support
  *
@@ -10,11 +14,14 @@
  *	IT8712F EC-LPC I/O Preliminary Specification 0.8.2
  *	IT8712F EC-LPC I/O Preliminary Specification 0.9.3
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License as
  *	published by the Free Software Foundation; either version 2 of the
  *	License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The author(s) of this software shall not be held liable for damages
  *	of any nature resulting due to the use of this software. This
  *	software is provided AS-IS with no warranties.
@@ -35,13 +42,19 @@
 #include <linux/io.h>
 #include <linux/ioport.h>
 
+<<<<<<< HEAD
 #define DEBUG
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NAME "it8712f_wdt"
 
 MODULE_AUTHOR("Jorge Boncompte - DTI2 <jorge@dti2.net>");
 MODULE_DESCRIPTION("IT8712F Watchdog Driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int max_units = 255;
 static int margin = 60;		/* in seconds */
@@ -308,7 +321,11 @@ static long it8712f_wdt_ioctl(struct file *file, unsigned int cmd,
 
 		superio_exit();
 		it8712f_wdt_ping();
+<<<<<<< HEAD
 		/* Fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		if (put_user(margin, p))
 			return -EFAULT;
@@ -328,7 +345,11 @@ static int it8712f_wdt_open(struct inode *inode, struct file *file)
 	ret = it8712f_wdt_enable();
 	if (ret)
 		return ret;
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int it8712f_wdt_release(struct inode *inode, struct file *file)
@@ -350,6 +371,10 @@ static const struct file_operations it8712f_wdt_fops = {
 	.llseek = no_llseek,
 	.write = it8712f_wdt_write,
 	.unlocked_ioctl = it8712f_wdt_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl = compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open = it8712f_wdt_open,
 	.release = it8712f_wdt_release,
 };

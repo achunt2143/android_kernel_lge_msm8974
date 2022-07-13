@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_RENESAS_R7780RP_H
 #define __ASM_SH_RENESAS_R7780RP_H
 
@@ -17,7 +21,11 @@
 #define PA_IRLPRI4      (PA_BCR+0x000a) /* Interrupt Priorty 4 */
 #define PA_RSTCTL       (PA_BCR+0x000c) /* Reset Control */
 #define PA_PCIBD        (PA_BCR+0x000e) /* PCI Board detect control */
+<<<<<<< HEAD
 #define PA_PCICD        (PA_BCR+0x0010) /* PCI Conector detect control */
+=======
+#define PA_PCICD        (PA_BCR+0x0010) /* PCI Connector detect control */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PA_EXTGIO       (PA_BCR+0x0016) /* Extension GPIO Control */
 #define PA_IVDRMON      (PA_BCR+0x0018) /* iVDR Moniter control */
 #define PA_IVDRCTL      (PA_BCR+0x001a) /* iVDR control */
@@ -79,7 +87,11 @@
 #define	PA_SDPOW	(PA_BCR+0x0004)	/* SD Power control */
 #define	PA_RSTCTL	(PA_BCR+0x0006)	/* Device Reset control */
 #define	PA_PCIBD	(PA_BCR+0x0008)	/* PCI Board detect control */
+<<<<<<< HEAD
 #define	PA_PCICD	(PA_BCR+0x000a)	/* PCI Conector detect control */
+=======
+#define	PA_PCICD	(PA_BCR+0x000a)	/* PCI Connector detect control */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	PA_ZIGIO1	(PA_BCR+0x000c)	/* Zigbee IO control 1 */
 #define	PA_ZIGIO2	(PA_BCR+0x000e)	/* Zigbee IO control 2 */
 #define	PA_ZIGIO3	(PA_BCR+0x0010)	/* Zigbee IO control 3 */
@@ -175,7 +187,11 @@
 #define IVDR_CK_ON	4		/* iVDR Clock ON */
 #endif
 
+<<<<<<< HEAD
 #define HL_FPGA_IRQ_BASE	200
+=======
+#define HL_FPGA_IRQ_BASE	(200 + 16)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HL_NR_IRL		15
 
 #define IRQ_AX88796		(HL_FPGA_IRQ_BASE + 0)

@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/cacheflush.h
  *
  *  Copyright (C) 1999-2002 Russell King
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ASMARM_CACHEFLUSH_H
 #define _ASMARM_CACHEFLUSH_H
@@ -35,7 +42,11 @@
  *	Start addresses are inclusive and end addresses are exclusive;
  *	start addresses should be rounded down, end addresses up.
  *
+<<<<<<< HEAD
  *	See Documentation/cachetlb.txt for more information.
+=======
+ *	See Documentation/core-api/cachetlb.rst for more information.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Please note that the implementation of these, and the required
  *	effects are cache-type (VIVT/VIPT/PIPT) specific.
  *
@@ -94,6 +105,7 @@
  *	DMA Cache Coherency
  *	===================
  *
+<<<<<<< HEAD
  *	dma_inv_range(start, end)
  *
  *		Invalidate (discard) the specified virtual address range.
@@ -109,6 +121,8 @@
  *		- start  - virtual start address
  *		- end    - virtual end address
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	dma_flush_range(start, end)
  *
  *		Clean and invalidate the specified virtual address range.
@@ -124,16 +138,25 @@ struct cpu_cache_fns {
 	void (*flush_user_range)(unsigned long, unsigned long, unsigned int);
 
 	void (*coherent_kern_range)(unsigned long, unsigned long);
+<<<<<<< HEAD
 	void (*coherent_user_range)(unsigned long, unsigned long);
+=======
+	int  (*coherent_user_range)(unsigned long, unsigned long);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*flush_kern_dcache_area)(void *, size_t);
 
 	void (*dma_map_area)(const void *, size_t, int);
 	void (*dma_unmap_area)(const void *, size_t, int);
 
+<<<<<<< HEAD
 	void (*dma_inv_range)(const void *, const void *);
 	void (*dma_clean_range)(const void *, const void *);
 	void (*dma_flush_range)(const void *, const void *);
 };
+=======
+	void (*dma_flush_range)(const void *, const void *);
+} __no_randomize_layout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Select the calling method
@@ -157,10 +180,13 @@ extern struct cpu_cache_fns cpu_cache;
  * is visible to DMA, or data written by DMA to system memory is
  * visible to the CPU.
  */
+<<<<<<< HEAD
 #define dmac_map_area			cpu_cache.dma_map_area
 #define dmac_unmap_area			cpu_cache.dma_unmap_area
 #define dmac_inv_range			cpu_cache.dma_inv_range
 #define dmac_clean_range		cpu_cache.dma_clean_range
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define dmac_flush_range		cpu_cache.dma_flush_range
 
 #else
@@ -171,7 +197,11 @@ extern void __cpuc_flush_kern_louis(void);
 extern void __cpuc_flush_user_all(void);
 extern void __cpuc_flush_user_range(unsigned long, unsigned long, unsigned int);
 extern void __cpuc_coherent_kern_range(unsigned long, unsigned long);
+<<<<<<< HEAD
 extern void __cpuc_coherent_user_range(unsigned long, unsigned long);
+=======
+extern int  __cpuc_coherent_user_range(unsigned long, unsigned long);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void __cpuc_flush_dcache_area(void *, size_t);
 
 /*
@@ -180,10 +210,13 @@ extern void __cpuc_flush_dcache_area(void *, size_t);
  * is visible to DMA, or data written by DMA to system memory is
  * visible to the CPU.
  */
+<<<<<<< HEAD
 extern void dmac_map_area(const void *, size_t, int);
 extern void dmac_unmap_area(const void *, size_t, int);
 extern void dmac_inv_range(const void *, const void *);
 extern void dmac_clean_range(const void *, const void *);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void dmac_flush_range(const void *, const void *);
 
 #endif
@@ -233,7 +266,11 @@ extern void copy_to_user_page(struct vm_area_struct *, struct page *,
 static inline void __flush_icache_all(void)
 {
 	__flush_icache_preferred();
+<<<<<<< HEAD
 	dsb();
+=======
+	dsb(ishst);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -259,14 +296,24 @@ vivt_flush_cache_range(struct vm_area_struct *vma, unsigned long start, unsigned
 					vma->vm_flags);
 }
 
+<<<<<<< HEAD
 static inline void
 vivt_flush_cache_page(struct vm_area_struct *vma, unsigned long user_addr, unsigned long pfn)
+=======
+static inline void vivt_flush_cache_pages(struct vm_area_struct *vma,
+		unsigned long user_addr, unsigned long pfn, unsigned int nr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mm_struct *mm = vma->vm_mm;
 
 	if (!mm || cpumask_test_cpu(smp_processor_id(), mm_cpumask(mm))) {
 		unsigned long addr = user_addr & PAGE_MASK;
+<<<<<<< HEAD
 		__cpuc_flush_user_range(addr, addr + PAGE_SIZE, vma->vm_flags);
+=======
+		__cpuc_flush_user_range(addr, addr + nr * PAGE_SIZE,
+				vma->vm_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -275,6 +322,7 @@ vivt_flush_cache_page(struct vm_area_struct *vma, unsigned long user_addr, unsig
 		vivt_flush_cache_mm(mm)
 #define flush_cache_range(vma,start,end) \
 		vivt_flush_cache_range(vma,start,end)
+<<<<<<< HEAD
 #define flush_cache_page(vma,addr,pfn) \
 		vivt_flush_cache_page(vma,addr,pfn)
 #else
@@ -292,6 +340,26 @@ extern void flush_cache_page(struct vm_area_struct *vma, unsigned long user_addr
  */
 #define flush_cache_user_range(start,end) \
 	__cpuc_coherent_user_range((start) & PAGE_MASK, PAGE_ALIGN(end))
+=======
+#define flush_cache_pages(vma, addr, pfn, nr) \
+		vivt_flush_cache_pages(vma, addr, pfn, nr)
+#else
+void flush_cache_mm(struct mm_struct *mm);
+void flush_cache_range(struct vm_area_struct *vma, unsigned long start, unsigned long end);
+void flush_cache_pages(struct vm_area_struct *vma, unsigned long user_addr,
+		unsigned long pfn, unsigned int nr);
+#endif
+
+#define flush_cache_dup_mm(mm) flush_cache_mm(mm)
+#define flush_cache_page(vma, addr, pfn) flush_cache_pages(vma, addr, pfn, 1)
+
+/*
+ * flush_icache_user_range is used when we want to ensure that the
+ * Harvard caches are synchronised for the user space address range.
+ * This is used for the ARM private sys_cacheflush system call.
+ */
+#define flush_icache_user_range(s,e)	__cpuc_coherent_user_range(s,e)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Perform necessary cache operations to ensure that data previously
@@ -318,8 +386,16 @@ extern void flush_cache_page(struct vm_area_struct *vma, unsigned long user_addr
  * See update_mmu_cache for the user space part.
  */
 #define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 1
+<<<<<<< HEAD
 extern void flush_dcache_page(struct page *);
 
+=======
+void flush_dcache_page(struct page *);
+void flush_dcache_folio(struct folio *folio);
+#define flush_dcache_folio flush_dcache_folio
+
+#define ARCH_IMPLEMENTS_FLUSH_KERNEL_VMAP_RANGE 1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void flush_kernel_vmap_range(void *addr, int size)
 {
 	if ((cache_is_vivt() || cache_is_vipt_aliasing()))
@@ -341,6 +417,7 @@ static inline void flush_anon_page(struct vm_area_struct *vma,
 		__flush_anon_page(vma, page, vmaddr);
 }
 
+<<<<<<< HEAD
 #define ARCH_HAS_FLUSH_KERNEL_DCACHE_PAGE
 extern void flush_kernel_dcache_page(struct page *);
 
@@ -357,6 +434,10 @@ extern void flush_kernel_dcache_page(struct page *);
  * duplicate cache flushing elsewhere performed by flush_dcache_page().
  */
 #define flush_icache_page(vma,page)	do { } while (0)
+=======
+#define flush_dcache_mmap_lock(mapping)		xa_lock_irq(&mapping->i_pages)
+#define flush_dcache_mmap_unlock(mapping)	xa_unlock_irq(&mapping->i_pages)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * flush_cache_vmap() is used when creating mappings (eg, via vmap,
@@ -374,15 +455,24 @@ static inline void flush_cache_vmap(unsigned long start, unsigned long end)
 		 * set_pte_at() called from vmap_pte_range() does not
 		 * have a DSB after cleaning the cache line.
 		 */
+<<<<<<< HEAD
 		dsb();
 }
 
+=======
+		dsb(ishst);
+}
+
+#define flush_cache_vmap_early(start, end)	do { } while (0)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void flush_cache_vunmap(unsigned long start, unsigned long end)
 {
 	if (!cache_is_vipt_nonaliasing())
 		flush_cache_all();
 }
 
+<<<<<<< HEAD
 int set_memory_ro(unsigned long addr, int numpages);
 int set_memory_rw(unsigned long addr, int numpages);
 int set_memory_x(unsigned long addr, int numpages);
@@ -394,6 +484,131 @@ int set_memory_nx(unsigned long addr, int numpages);
 #else
 #define mark_addr_rdonly(a)
 #define mark_addr_rdwrite(a)
+=======
+/*
+ * Memory synchronization helpers for mixed cached vs non cached accesses.
+ *
+ * Some synchronization algorithms have to set states in memory with the
+ * cache enabled or disabled depending on the code path.  It is crucial
+ * to always ensure proper cache maintenance to update main memory right
+ * away in that case.
+ *
+ * Any cached write must be followed by a cache clean operation.
+ * Any cached read must be preceded by a cache invalidate operation.
+ * Yet, in the read case, a cache flush i.e. atomic clean+invalidate
+ * operation is needed to avoid discarding possible concurrent writes to the
+ * accessed memory.
+ *
+ * Also, in order to prevent a cached writer from interfering with an
+ * adjacent non-cached writer, each state variable must be located to
+ * a separate cache line.
+ */
+
+/*
+ * This needs to be >= the max cache writeback size of all
+ * supported platforms included in the current kernel configuration.
+ * This is used to align state variables to their own cache lines.
+ */
+#define __CACHE_WRITEBACK_ORDER 6  /* guessed from existing platforms */
+#define __CACHE_WRITEBACK_GRANULE (1 << __CACHE_WRITEBACK_ORDER)
+
+/*
+ * There is no __cpuc_clean_dcache_area but we use it anyway for
+ * code intent clarity, and alias it to __cpuc_flush_dcache_area.
+ */
+#define __cpuc_clean_dcache_area __cpuc_flush_dcache_area
+
+/*
+ * Ensure preceding writes to *p by this CPU are visible to
+ * subsequent reads by other CPUs:
+ */
+static inline void __sync_cache_range_w(volatile void *p, size_t size)
+{
+	char *_p = (char *)p;
+
+	__cpuc_clean_dcache_area(_p, size);
+	outer_clean_range(__pa(_p), __pa(_p + size));
+}
+
+/*
+ * Ensure preceding writes to *p by other CPUs are visible to
+ * subsequent reads by this CPU.  We must be careful not to
+ * discard data simultaneously written by another CPU, hence the
+ * usage of flush rather than invalidate operations.
+ */
+static inline void __sync_cache_range_r(volatile void *p, size_t size)
+{
+	char *_p = (char *)p;
+
+#ifdef CONFIG_OUTER_CACHE
+	if (outer_cache.flush_range) {
+		/*
+		 * Ensure dirty data migrated from other CPUs into our cache
+		 * are cleaned out safely before the outer cache is cleaned:
+		 */
+		__cpuc_clean_dcache_area(_p, size);
+
+		/* Clean and invalidate stale data for *p from outer ... */
+		outer_flush_range(__pa(_p), __pa(_p + size));
+	}
+#endif
+
+	/* ... and inner cache: */
+	__cpuc_flush_dcache_area(_p, size);
+}
+
+#define sync_cache_w(ptr) __sync_cache_range_w(ptr, sizeof *(ptr))
+#define sync_cache_r(ptr) __sync_cache_range_r(ptr, sizeof *(ptr))
+
+/*
+ * Disabling cache access for one CPU in an ARMv7 SMP system is tricky.
+ * To do so we must:
+ *
+ * - Clear the SCTLR.C bit to prevent further cache allocations
+ * - Flush the desired level of cache
+ * - Clear the ACTLR "SMP" bit to disable local coherency
+ *
+ * ... and so without any intervening memory access in between those steps,
+ * not even to the stack.
+ *
+ * WARNING -- After this has been called:
+ *
+ * - No ldrex/strex (and similar) instructions must be used.
+ * - The CPU is obviously no longer coherent with the other CPUs.
+ * - This is unlikely to work as expected if Linux is running non-secure.
+ *
+ * Note:
+ *
+ * - This is known to apply to several ARMv7 processor implementations,
+ *   however some exceptions may exist.  Caveat emptor.
+ *
+ * - The clobber list is dictated by the call to v7_flush_dcache_*.
+ */
+#define v7_exit_coherency_flush(level) \
+	asm volatile( \
+	".arch	armv7-a \n\t" \
+	"mrc	p15, 0, r0, c1, c0, 0	@ get SCTLR \n\t" \
+	"bic	r0, r0, #"__stringify(CR_C)" \n\t" \
+	"mcr	p15, 0, r0, c1, c0, 0	@ set SCTLR \n\t" \
+	"isb	\n\t" \
+	"bl	v7_flush_dcache_"__stringify(level)" \n\t" \
+	"mrc	p15, 0, r0, c1, c0, 1	@ get ACTLR \n\t" \
+	"bic	r0, r0, #(1 << 6)	@ disable local coherency \n\t" \
+	"mcr	p15, 0, r0, c1, c0, 1	@ set ACTLR \n\t" \
+	"isb	\n\t" \
+	"dsb" \
+	: : : "r0","r1","r2","r3","r4","r5","r6", \
+	      "r9","r10","ip","lr","memory" )
+
+void flush_uprobe_xol_access(struct page *page, unsigned long uaddr,
+			     void *kaddr, unsigned long len);
+
+
+#ifdef CONFIG_CPU_ICACHE_MISMATCH_WORKAROUND
+void check_cpu_icache_size(int cpuid);
+#else
+static inline void check_cpu_icache_size(int cpuid) { }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1998-2005 Vojtech Pavlik
  */
@@ -6,6 +10,7 @@
  * Microsoft SideWinder joystick family driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,11 +31,16 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/input.h>
 #include <linux/gameport.h>
 #include <linux/jiffies.h>
@@ -240,7 +250,11 @@ static __u64 sw_get_bits(unsigned char *buf, int pos, int num, char bits)
 
 static void sw_init_digital(struct gameport *gameport)
 {
+<<<<<<< HEAD
 	int seq[] = { 140, 140+725, 140+300, 0 };
+=======
+	static const int seq[] = { 140, 140+725, 140+300, 0 };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int i, t;
 
@@ -674,15 +688,29 @@ static int sw_connect(struct gameport *gameport, struct gameport_driver *drv)
 			switch (i * m) {
 				case 60:
 					sw->number++;
+<<<<<<< HEAD
 				case 45:				/* Ambiguous packet length */
 					if (j <= 40) {			/* ID length less or eq 40 -> FSP */
+=======
+					fallthrough;
+				case 45:				/* Ambiguous packet length */
+					if (j <= 40) {			/* ID length less or eq 40 -> FSP */
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				case 43:
 						sw->type = SW_ID_FSP;
 						break;
 					}
 					sw->number++;
+<<<<<<< HEAD
 				case 30:
 					sw->number++;
+=======
+					fallthrough;
+				case 30:
+					sw->number++;
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				case 15:
 					sw->type = SW_ID_GP;
 					break;
@@ -699,8 +727,15 @@ static int sw_connect(struct gameport *gameport, struct gameport_driver *drv)
 					break;
 				case 66:
 					sw->bits = 3;
+<<<<<<< HEAD
 				case 198:
 					sw->length = 22;
+=======
+					fallthrough;
+				case 198:
+					sw->length = 22;
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				case 64:
 					sw->type = SW_ID_3DP;
 					if (j == 160)
@@ -820,6 +855,7 @@ static struct gameport_driver sw_drv = {
 	.disconnect	= sw_disconnect,
 };
 
+<<<<<<< HEAD
 static int __init sw_init(void)
 {
 	return gameport_register_driver(&sw_drv);
@@ -832,3 +868,6 @@ static void __exit sw_exit(void)
 
 module_init(sw_init);
 module_exit(sw_exit);
+=======
+module_gameport_driver(sw_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

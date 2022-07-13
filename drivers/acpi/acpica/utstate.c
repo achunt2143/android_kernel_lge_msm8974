@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: utstate - state object support procedures
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -41,6 +46,8 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 
@@ -49,6 +56,7 @@ ACPI_MODULE_NAME("utstate")
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ut_create_pkg_state_and_push
  *
  * PARAMETERS:  Object          - Object to be added to the new state
@@ -86,25 +94,42 @@ acpi_ut_create_pkg_state_and_push(void *internal_object,
  *
  * PARAMETERS:  list_head           - Head of the state stack
  *              State               - State object to push
+=======
+ * FUNCTION:    acpi_ut_push_generic_state
+ *
+ * PARAMETERS:  list_head           - Head of the state stack
+ *              state               - State object to push
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
  * DESCRIPTION: Push a state object onto a state stack
  *
  ******************************************************************************/
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 acpi_ut_push_generic_state(union acpi_generic_state **list_head,
 			   union acpi_generic_state *state)
 {
+<<<<<<< HEAD
 	ACPI_FUNCTION_TRACE(ut_push_generic_state);
+=======
+	ACPI_FUNCTION_ENTRY();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Push the state object onto the front of the list (stack) */
 
 	state->common.next = *list_head;
 	*list_head = state;
+<<<<<<< HEAD
 
 	return_VOID;
+=======
+	return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
@@ -124,7 +149,11 @@ union acpi_generic_state *acpi_ut_pop_generic_state(union acpi_generic_state
 {
 	union acpi_generic_state *state;
 
+<<<<<<< HEAD
 	ACPI_FUNCTION_TRACE(ut_pop_generic_state);
+=======
+	ACPI_FUNCTION_ENTRY();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Remove the state object at the head of the list (stack) */
 
@@ -136,7 +165,11 @@ union acpi_generic_state *acpi_ut_pop_generic_state(union acpi_generic_state
 		*list_head = state->common.next;
 	}
 
+<<<<<<< HEAD
 	return_PTR(state);
+=======
+	return (state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
@@ -147,7 +180,11 @@ union acpi_generic_state *acpi_ut_pop_generic_state(union acpi_generic_state
  *
  * RETURN:      The new state object. NULL on failure.
  *
+<<<<<<< HEAD
  * DESCRIPTION: Create a generic state object.  Attempt to obtain one from
+=======
+ * DESCRIPTION: Create a generic state object. Attempt to obtain one from
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              the global state cache;  If none available, create a new one.
  *
  ******************************************************************************/
@@ -162,7 +199,10 @@ union acpi_generic_state *acpi_ut_create_generic_state(void)
 	if (state) {
 
 		/* Initialize */
+<<<<<<< HEAD
 		memset(state, 0, sizeof(union acpi_generic_state));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		state->common.descriptor_type = ACPI_DESC_TYPE_STATE;
 	}
 
@@ -186,13 +226,21 @@ struct acpi_thread_state *acpi_ut_create_thread_state(void)
 {
 	union acpi_generic_state *state;
 
+<<<<<<< HEAD
 	ACPI_FUNCTION_TRACE(ut_create_thread_state);
+=======
+	ACPI_FUNCTION_ENTRY();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create the generic state object */
 
 	state = acpi_ut_create_generic_state();
 	if (!state) {
+<<<<<<< HEAD
 		return_PTR(NULL);
+=======
+		return (NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Init fields specific to the update struct */
@@ -207,15 +255,24 @@ struct acpi_thread_state *acpi_ut_create_thread_state(void)
 		state->thread.thread_id = (acpi_thread_id) 1;
 	}
 
+<<<<<<< HEAD
 	return_PTR((struct acpi_thread_state *)state);
+=======
+	return ((struct acpi_thread_state *)state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_create_update_state
  *
+<<<<<<< HEAD
  * PARAMETERS:  Object          - Initial Object to be installed in the state
  *              Action          - Update action to be performed
+=======
+ * PARAMETERS:  object          - Initial Object to be installed in the state
+ *              action          - Update action to be performed
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      New state object, null on failure
  *
@@ -230,13 +287,21 @@ union acpi_generic_state *acpi_ut_create_update_state(union acpi_operand_object
 {
 	union acpi_generic_state *state;
 
+<<<<<<< HEAD
 	ACPI_FUNCTION_TRACE_PTR(ut_create_update_state, object);
+=======
+	ACPI_FUNCTION_ENTRY();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create the generic state object */
 
 	state = acpi_ut_create_generic_state();
 	if (!state) {
+<<<<<<< HEAD
 		return_PTR(NULL);
+=======
+		return (NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Init fields specific to the update struct */
@@ -244,16 +309,25 @@ union acpi_generic_state *acpi_ut_create_update_state(union acpi_operand_object
 	state->common.descriptor_type = ACPI_DESC_TYPE_STATE_UPDATE;
 	state->update.object = object;
 	state->update.value = action;
+<<<<<<< HEAD
 
 	return_PTR(state);
+=======
+	return (state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_create_pkg_state
  *
+<<<<<<< HEAD
  * PARAMETERS:  Object          - Initial Object to be installed in the state
  *              Action          - Update action to be performed
+=======
+ * PARAMETERS:  object          - Initial Object to be installed in the state
+ *              action          - Update action to be performed
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      New state object, null on failure
  *
@@ -263,17 +337,29 @@ union acpi_generic_state *acpi_ut_create_update_state(union acpi_operand_object
 
 union acpi_generic_state *acpi_ut_create_pkg_state(void *internal_object,
 						   void *external_object,
+<<<<<<< HEAD
 						   u16 index)
 {
 	union acpi_generic_state *state;
 
 	ACPI_FUNCTION_TRACE_PTR(ut_create_pkg_state, internal_object);
+=======
+						   u32 index)
+{
+	union acpi_generic_state *state;
+
+	ACPI_FUNCTION_ENTRY();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create the generic state object */
 
 	state = acpi_ut_create_generic_state();
 	if (!state) {
+<<<<<<< HEAD
 		return_PTR(NULL);
+=======
+		return (NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Init fields specific to the update struct */
@@ -284,7 +370,11 @@ union acpi_generic_state *acpi_ut_create_pkg_state(void *internal_object,
 	state->pkg.index = index;
 	state->pkg.num_packages = 1;
 
+<<<<<<< HEAD
 	return_PTR(state);
+=======
+	return (state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
@@ -304,13 +394,21 @@ union acpi_generic_state *acpi_ut_create_control_state(void)
 {
 	union acpi_generic_state *state;
 
+<<<<<<< HEAD
 	ACPI_FUNCTION_TRACE(ut_create_control_state);
+=======
+	ACPI_FUNCTION_ENTRY();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create the generic state object */
 
 	state = acpi_ut_create_generic_state();
 	if (!state) {
+<<<<<<< HEAD
 		return_PTR(NULL);
+=======
+		return (NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Init fields specific to the control struct */
@@ -318,14 +416,22 @@ union acpi_generic_state *acpi_ut_create_control_state(void)
 	state->common.descriptor_type = ACPI_DESC_TYPE_STATE_CONTROL;
 	state->common.state = ACPI_CONTROL_CONDITIONAL_EXECUTING;
 
+<<<<<<< HEAD
 	return_PTR(state);
+=======
+	return (state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_delete_generic_state
  *
+<<<<<<< HEAD
  * PARAMETERS:  State               - The state object to be deleted
+=======
+ * PARAMETERS:  state               - The state object to be deleted
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -336,12 +442,21 @@ union acpi_generic_state *acpi_ut_create_control_state(void)
 
 void acpi_ut_delete_generic_state(union acpi_generic_state *state)
 {
+<<<<<<< HEAD
 	ACPI_FUNCTION_TRACE(ut_delete_generic_state);
+=======
+	ACPI_FUNCTION_ENTRY();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Ignore null state */
 
 	if (state) {
 		(void)acpi_os_release_object(acpi_gbl_state_cache, state);
 	}
+<<<<<<< HEAD
 	return_VOID;
+=======
+
+	return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/acorn/scsi/fas216.h
  *
  *  Copyright (C) 1997-2000 Russell King
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  FAS216 generic driver
  */
 #ifndef FAS216_H
@@ -313,6 +320,23 @@ typedef struct {
 	unsigned long		magic_end;
 } FAS216_Info;
 
+<<<<<<< HEAD
+=======
+/* driver-private data per SCSI command. */
+struct fas216_cmd_priv {
+	/*
+	 * @scsi_pointer must be the first member. See also arm_scsi_pointer().
+	 */
+	struct scsi_pointer scsi_pointer;
+	void (*scsi_done)(struct scsi_cmnd *cmd);
+};
+
+static inline struct fas216_cmd_priv *fas216_cmd_priv(struct scsi_cmnd *cmd)
+{
+	return scsi_cmd_priv(cmd);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Function: int fas216_init (struct Scsi_Host *instance)
  * Purpose : initialise FAS/NCR/AMD SCSI structures.
  * Params  : instance - a driver-specific filled-out structure
@@ -358,9 +382,15 @@ extern void fas216_remove (struct Scsi_Host *instance);
  */
 extern void fas216_release (struct Scsi_Host *instance);
 
+<<<<<<< HEAD
 extern int fas216_print_host(FAS216_Info *info, char *buffer);
 extern int fas216_print_stats(FAS216_Info *info, char *buffer);
 extern int fas216_print_devices(FAS216_Info *info, char *buffer);
+=======
+extern void fas216_print_host(FAS216_Info *info, struct seq_file *m);
+extern void fas216_print_stats(FAS216_Info *info, struct seq_file *m);
+extern void fas216_print_devices(FAS216_Info *info, struct seq_file *m);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Function: int fas216_eh_abort(struct scsi_cmnd *SCpnt)
  * Purpose : abort this command

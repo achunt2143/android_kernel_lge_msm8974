@@ -1,11 +1,18 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
  * Released under the terms of the GNU GPL v2.0.
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef LKC_H
 #define LKC_H
 
+<<<<<<< HEAD
 #include "expr.h"
 
 #ifndef KBUILD_NO_NLS
@@ -16,11 +23,19 @@ static inline void textdomain(const char *domainname) {}
 static inline void bindtextdomain(const char *name, const char *dir) {}
 static inline char *bind_textdomain_codeset(const char *dn, char *c) { return c; }
 #endif
+=======
+#include <assert.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "expr.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+<<<<<<< HEAD
 #define P(name,type,arg)	extern type name arg
 #include "lkc_proto.h"
 #undef P
@@ -66,11 +81,29 @@ struct kconf_id {
 extern int zconfdebug;
 
 int zconfparse(void);
+=======
+#include "lkc_proto.h"
+
+#define SRCTREE "srctree"
+
+#ifndef CONFIG_
+#define CONFIG_ "CONFIG_"
+#endif
+static inline const char *CONFIG_prefix(void)
+{
+	return getenv( "CONFIG_" ) ?: CONFIG_;
+}
+#undef CONFIG_
+#define CONFIG_ CONFIG_prefix()
+
+extern int yylineno;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void zconfdump(FILE *out);
 void zconf_starthelp(void);
 FILE *zconf_fopen(const char *name);
 void zconf_initscan(const char *name);
 void zconf_nextfile(const char *name);
+<<<<<<< HEAD
 int zconf_lineno(void);
 const char *zconf_curname(void);
 
@@ -86,6 +119,13 @@ struct conf_printer {
 	void (*print_symbol)(FILE *, struct symbol *, const char *, void *);
 	void (*print_comment)(FILE *, const char *, void *);
 };
+=======
+
+/* confdata.c */
+extern struct gstr autoconf_cmd;
+const char *conf_get_configname(void);
+void set_all_choice_values(struct symbol *csym);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* confdata.c and expr.c */
 static inline void xfwrite(const void *str, size_t len, size_t count, FILE *out)
@@ -96,6 +136,7 @@ static inline void xfwrite(const void *str, size_t len, size_t count, FILE *out)
 		fprintf(stderr, "Error in writing or end of file.\n");
 }
 
+<<<<<<< HEAD
 /* menu.c */
 void _menu_init(void);
 void menu_warn(struct menu *menu, const char *fmt, ...);
@@ -116,6 +157,19 @@ void menu_set_type(int type);
 /* util.c */
 struct file *file_lookup(const char *name);
 int file_write_dep(const char *name);
+=======
+/* util.c */
+unsigned int strhash(const char *s);
+const char *file_lookup(const char *name);
+void *xmalloc(size_t size);
+void *xcalloc(size_t nmemb, size_t size);
+void *xrealloc(void *p, size_t size);
+char *xstrdup(const char *s);
+char *xstrndup(const char *s, size_t n);
+
+/* lexer.l */
+int yylex(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct gstr {
 	size_t len;
@@ -127,6 +181,7 @@ struct gstr {
 	int max_width;
 };
 struct gstr str_new(void);
+<<<<<<< HEAD
 struct gstr str_assign(const char *s);
 void str_free(struct gstr *gs);
 void str_append(struct gstr *gs, const char *s);
@@ -146,6 +201,45 @@ struct symbol *sym_check_deps(struct symbol *sym);
 struct property *prop_alloc(enum prop_type type, struct symbol *sym);
 struct symbol *prop_get_symbol(struct property *prop);
 struct property *sym_get_env_prop(struct symbol *sym);
+=======
+void str_free(struct gstr *gs);
+void str_append(struct gstr *gs, const char *s);
+void str_printf(struct gstr *gs, const char *fmt, ...);
+char *str_get(struct gstr *gs);
+
+/* menu.c */
+void _menu_init(void);
+void menu_warn(struct menu *menu, const char *fmt, ...);
+struct menu *menu_add_menu(void);
+void menu_end_menu(void);
+void menu_add_entry(struct symbol *sym);
+void menu_add_dep(struct expr *dep);
+void menu_add_visibility(struct expr *dep);
+struct property *menu_add_prompt(enum prop_type type, char *prompt, struct expr *dep);
+void menu_add_expr(enum prop_type type, struct expr *expr, struct expr *dep);
+void menu_add_symbol(enum prop_type type, struct symbol *sym, struct expr *dep);
+void menu_finalize(void);
+void menu_set_type(int type);
+
+extern struct menu rootmenu;
+
+bool menu_is_empty(struct menu *menu);
+bool menu_is_visible(struct menu *menu);
+bool menu_has_prompt(struct menu *menu);
+const char *menu_get_prompt(struct menu *menu);
+struct menu *menu_get_parent_menu(struct menu *menu);
+int get_jump_key_char(void);
+struct gstr get_relations_str(struct symbol **sym_arr, struct list_head *head);
+void menu_get_ext_help(struct menu *menu, struct gstr *help);
+
+/* symbol.c */
+void sym_clear_all_valid(void);
+struct symbol *sym_choice_default(struct symbol *sym);
+struct property *sym_get_range_prop(struct symbol *sym);
+const char *sym_get_string_default(struct symbol *sym);
+struct symbol *sym_check_deps(struct symbol *sym);
+struct symbol *prop_get_symbol(struct property *prop);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline tristate sym_get_tristate_value(struct symbol *sym)
 {
@@ -158,11 +252,14 @@ static inline struct symbol *sym_get_choice_value(struct symbol *sym)
 	return (struct symbol *)sym->curr.val;
 }
 
+<<<<<<< HEAD
 static inline bool sym_set_choice_value(struct symbol *ch, struct symbol *chval)
 {
 	return sym_set_tristate_value(chval, yes);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool sym_is_choice(struct symbol *sym)
 {
 	return sym->flags & SYMBOL_CHOICE ? true : false;

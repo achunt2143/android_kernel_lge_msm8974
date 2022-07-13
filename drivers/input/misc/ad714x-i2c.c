@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AD714X CapTouch Programmable Controller driver (I2C bus)
  *
  * Copyright 2009-2011 Analog Devices Inc.
+<<<<<<< HEAD
  *
  * Licensed under the GPL-2 or later.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/input.h>	/* BUS_I2C */
@@ -13,6 +20,7 @@
 #include <linux/pm.h>
 #include "ad714x.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int ad714x_i2c_suspend(struct device *dev)
 {
@@ -27,6 +35,8 @@ static int ad714x_i2c_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(ad714x_i2c_pm, ad714x_i2c_suspend, ad714x_i2c_resume);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ad714x_i2c_write(struct ad714x_chip *chip,
 			    unsigned short reg, unsigned short data)
 {
@@ -72,8 +82,12 @@ static int ad714x_i2c_read(struct ad714x_chip *chip,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit ad714x_i2c_probe(struct i2c_client *client,
 					const struct i2c_device_id *id)
+=======
+static int ad714x_i2c_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ad714x_chip *chip;
 
@@ -87,6 +101,7 @@ static int __devinit ad714x_i2c_probe(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit ad714x_i2c_remove(struct i2c_client *client)
 {
 	struct ad714x_chip *chip = i2c_get_clientdata(client);
@@ -96,6 +111,8 @@ static int __devexit ad714x_i2c_remove(struct i2c_client *client)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id ad714x_id[] = {
 	{ "ad7142_captouch", 0 },
 	{ "ad7143_captouch", 0 },
@@ -109,10 +126,16 @@ MODULE_DEVICE_TABLE(i2c, ad714x_id);
 static struct i2c_driver ad714x_i2c_driver = {
 	.driver = {
 		.name = "ad714x_captouch",
+<<<<<<< HEAD
 		.pm   = &ad714x_i2c_pm,
 	},
 	.probe    = ad714x_i2c_probe,
 	.remove   = __devexit_p(ad714x_i2c_remove),
+=======
+		.pm   = pm_sleep_ptr(&ad714x_pm),
+	},
+	.probe = ad714x_i2c_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = ad714x_id,
 };
 

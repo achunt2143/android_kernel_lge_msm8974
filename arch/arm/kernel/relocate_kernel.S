@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * relocate_kernel.S - put the kernel image in place to boot
  */
 
+<<<<<<< HEAD
 #include <asm/kexec.h>
 
 	.globl relocate_new_kernel
@@ -9,6 +14,20 @@ relocate_new_kernel:
 
 	ldr	r0,kexec_indirection_page
 	ldr	r1,kexec_start_address
+=======
+#include <linux/linkage.h>
+#include <asm/assembler.h>
+#include <asm/asm-offsets.h>
+#include <asm/kexec.h>
+
+	.align	3	/* not needed for this code, but keeps fncpy() happy */
+
+ENTRY(relocate_new_kernel)
+
+	adr	r7, relocate_new_kernel_end
+	ldr	r0, [r7, #KEXEC_INDIR_PAGE]
+	ldr	r1, [r7, #KEXEC_START_ADDR]
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If there is no indirection page (we are doing crashdumps)
@@ -21,26 +40,42 @@ relocate_new_kernel:
 	ldr	r3, [r0],#4
 
 	/* Is it a destination page. Put destination address to r4 */
+<<<<<<< HEAD
 	tst	r3,#1,0
+=======
+	tst	r3,#1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	beq	1f
 	bic	r4,r3,#1
 	b	0b
 1:
 	/* Is it an indirection page */
+<<<<<<< HEAD
 	tst	r3,#2,0
+=======
+	tst	r3,#2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	beq	1f
 	bic	r0,r3,#2
 	b	0b
 1:
 
 	/* are we done ? */
+<<<<<<< HEAD
 	tst	r3,#4,0
+=======
+	tst	r3,#4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	beq	1f
 	b	2f
 
 1:
 	/* is it source ? */
+<<<<<<< HEAD
 	tst	r3,#8,0
+=======
+	tst	r3,#8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	beq	0b
 	bic r3,r3,#8
 	mov r6,#1024
@@ -53,6 +88,7 @@ relocate_new_kernel:
 
 2:
 	/* Jump to relocated kernel */
+<<<<<<< HEAD
 	mov lr,r1
 	mov r0,#0
 	ldr r1,kexec_mach_type
@@ -79,6 +115,18 @@ kexec_mach_type:
 kexec_boot_atags:
 	.long	0x0
 
+=======
+	mov	lr, r1
+	mov	r0, #0
+	ldr	r1, [r7, #KEXEC_MACH_TYPE]
+	ldr	r2, [r7, #KEXEC_R2]
+ ARM(	ret	lr	)
+ THUMB(	bx	lr	)
+
+ENDPROC(relocate_new_kernel)
+
+	.align	3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 relocate_new_kernel_end:
 
 	.globl relocate_new_kernel_size

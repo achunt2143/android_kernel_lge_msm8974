@@ -1,9 +1,16 @@
+<<<<<<< HEAD
 /*
  * relocate_kernel.S - put the kernel image in place to boot
  * Copyright (C) 2002-2005 Eric Biederman  <ebiederm@xmission.com>
  *
  * This source code is licensed under the GNU General Public License,
  * Version 2.  See the file COPYING for more details.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * relocate_kernel.S - put the kernel image in place to boot
+ * Copyright (C) 2002-2005 Eric Biederman  <ebiederm@xmission.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/linkage.h>
@@ -11,9 +18,18 @@
 #include <asm/kexec.h>
 #include <asm/processor-flags.h>
 #include <asm/pgtable_types.h>
+<<<<<<< HEAD
 
 /*
  * Must be relocatable PIC code callable as a C function
+=======
+#include <asm/nospec-branch.h>
+#include <asm/unwind_hints.h>
+
+/*
+ * Must be relocatable PIC code callable as a C function, in particular
+ * there must be a plain RET and not jump to return thunk.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define PTR(x) (x << 3)
@@ -40,13 +56,24 @@
 	.text
 	.align PAGE_SIZE
 	.code64
+<<<<<<< HEAD
 	.globl relocate_kernel
 relocate_kernel:
+=======
+SYM_CODE_START_NOALIGN(relocate_range)
+SYM_CODE_START_NOALIGN(relocate_kernel)
+	UNWIND_HINT_END_OF_STACK
+	ANNOTATE_NOENDBR
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * %rdi indirection_page
 	 * %rsi page_list
 	 * %rdx start address
 	 * %rcx preserve_context
+<<<<<<< HEAD
+=======
+	 * %r8  host_mem_enc_active
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	/* Save the CPU context, used for jumping back */
@@ -67,10 +94,22 @@ relocate_kernel:
 	movq	%cr4, %rax
 	movq	%rax, CR4(%r11)
 
+<<<<<<< HEAD
+=======
+	/* Save CR4. Required to enable the right paging mode later. */
+	movq	%rax, %r13
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* zero out flags, and disable interrupts */
 	pushq $0
 	popfq
 
+<<<<<<< HEAD
+=======
+	/* Save SME active flag */
+	movq	%r8, %r12
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * get physical address of control page now
 	 * this is impossible after page table switch
@@ -97,22 +136,47 @@ relocate_kernel:
 	/* jump to identity mapped page */
 	addq	$(identity_mapped - relocate_kernel), %r8
 	pushq	%r8
+<<<<<<< HEAD
 	ret
 
 identity_mapped:
+=======
+	ANNOTATE_UNRET_SAFE
+	ret
+	int3
+SYM_CODE_END(relocate_kernel)
+
+SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
+	UNWIND_HINT_END_OF_STACK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set return address to 0 if not preserving context */
 	pushq	$0
 	/* store the start address on the stack */
 	pushq   %rdx
 
 	/*
+<<<<<<< HEAD
+=======
+	 * Clear X86_CR4_CET (if it was set) such that we can clear CR0_WP
+	 * below.
+	 */
+	movq	%cr4, %rax
+	andq	$~(X86_CR4_CET), %rax
+	movq	%rax, %cr4
+
+	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Set cr0 to a known state:
 	 *  - Paging enabled
 	 *  - Alignment check disabled
 	 *  - Write protect disabled
 	 *  - No task switch
 	 *  - Don't do FP software emulation.
+<<<<<<< HEAD
 	 *  - Proctected mode enabled
+=======
+	 *  - Protected mode enabled
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	movq	%cr0, %rax
 	andq	$~(X86_CR0_AM | X86_CR0_WP | X86_CR0_TS | X86_CR0_EM), %rax
@@ -122,8 +186,18 @@ identity_mapped:
 	/*
 	 * Set cr4 to a known state:
 	 *  - physical address extension enabled
+<<<<<<< HEAD
 	 */
 	movq	$X86_CR4_PAE, %rax
+=======
+	 *  - 5-level paging, if it was enabled before
+	 */
+	movl	$X86_CR4_PAE, %eax
+	testq	$X86_CR4_LA57, %r13
+	jz	1f
+	orl	$X86_CR4_LA57, %eax
+1:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movq	%rax, %cr4
 
 	jmp 1f
@@ -132,6 +206,19 @@ identity_mapped:
 	/* Flush the TLB (needed?) */
 	movq	%r9, %cr3
 
+<<<<<<< HEAD
+=======
+	/*
+	 * If SME is active, there could be old encrypted cache line
+	 * entries that will conflict with the now unencrypted memory
+	 * used by kexec. Flush the caches before copying the kernel.
+	 */
+	testq	%r12, %r12
+	jz 1f
+	wbinvd
+1:
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movq	%rcx, %r11
 	call	swap_pages
 
@@ -151,6 +238,7 @@ identity_mapped:
 
 	testq	%r11, %r11
 	jnz 1f
+<<<<<<< HEAD
 	xorq	%rax, %rax
 	xorq	%rbx, %rbx
 	xorq    %rcx, %rcx
@@ -168,18 +256,47 @@ identity_mapped:
 	xorq	%r15, %r15
 
 	ret
+=======
+	xorl	%eax, %eax
+	xorl	%ebx, %ebx
+	xorl    %ecx, %ecx
+	xorl    %edx, %edx
+	xorl    %esi, %esi
+	xorl    %edi, %edi
+	xorl    %ebp, %ebp
+	xorl	%r8d, %r8d
+	xorl	%r9d, %r9d
+	xorl	%r10d, %r10d
+	xorl	%r11d, %r11d
+	xorl	%r12d, %r12d
+	xorl	%r13d, %r13d
+	xorl	%r14d, %r14d
+	xorl	%r15d, %r15d
+
+	ANNOTATE_UNRET_SAFE
+	ret
+	int3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 1:
 	popq	%rdx
 	leaq	PAGE_SIZE(%r10), %rsp
+<<<<<<< HEAD
+=======
+	ANNOTATE_RETPOLINE_SAFE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	call	*%rdx
 
 	/* get the re-entry point of the peer system */
 	movq	0(%rsp), %rbp
+<<<<<<< HEAD
 	call	1f
 1:
 	popq	%r8
 	subq	$(1b - relocate_kernel), %r8
+=======
+	leaq	relocate_kernel(%rip), %r8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movq	CP_PA_SWAP_PAGE(%r8), %r10
 	movq	CP_PA_BACKUP_PAGES_MAP(%r8), %rdi
 	movq	CP_PA_TABLE_PAGE(%r8), %rax
@@ -188,9 +305,20 @@ identity_mapped:
 	call	swap_pages
 	movq	$virtual_mapped, %rax
 	pushq	%rax
+<<<<<<< HEAD
 	ret
 
 virtual_mapped:
+=======
+	ANNOTATE_UNRET_SAFE
+	ret
+	int3
+SYM_CODE_END(identity_mapped)
+
+SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
+	UNWIND_HINT_END_OF_STACK
+	ANNOTATE_NOENDBR // RET target, above
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movq	RSP(%r8), %rsp
 	movq	CR4(%r8), %rax
 	movq	%rax, %cr4
@@ -207,6 +335,7 @@ virtual_mapped:
 	popq	%r12
 	popq	%rbp
 	popq	%rbx
+<<<<<<< HEAD
 	ret
 
 	/* Do the copies */
@@ -214,6 +343,19 @@ swap_pages:
 	movq	%rdi, %rcx 	/* Put the page_list in %rcx */
 	xorq	%rdi, %rdi
 	xorq	%rsi, %rsi
+=======
+	ANNOTATE_UNRET_SAFE
+	ret
+	int3
+SYM_CODE_END(virtual_mapped)
+
+	/* Do the copies */
+SYM_CODE_START_LOCAL_NOALIGN(swap_pages)
+	UNWIND_HINT_END_OF_STACK
+	movq	%rdi, %rcx	/* Put the page_list in %rcx */
+	xorl	%edi, %edi
+	xorl	%esi, %esi
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jmp	1f
 
 0:	/* top, read another word for the indirection page */
@@ -221,23 +363,39 @@ swap_pages:
 	movq	(%rbx), %rcx
 	addq	$8,	%rbx
 1:
+<<<<<<< HEAD
 	testq	$0x1,	%rcx  /* is it a destination page? */
+=======
+	testb	$0x1,	%cl   /* is it a destination page? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jz	2f
 	movq	%rcx,	%rdi
 	andq	$0xfffffffffffff000, %rdi
 	jmp	0b
 2:
+<<<<<<< HEAD
 	testq	$0x2,	%rcx  /* is it an indirection page? */
+=======
+	testb	$0x2,	%cl   /* is it an indirection page? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jz	2f
 	movq	%rcx,   %rbx
 	andq	$0xfffffffffffff000, %rbx
 	jmp	0b
 2:
+<<<<<<< HEAD
 	testq	$0x4,	%rcx  /* is it the done indicator? */
 	jz	2f
 	jmp	3f
 2:
 	testq	$0x8,	%rcx  /* is it the source indicator? */
+=======
+	testb	$0x4,	%cl   /* is it the done indicator? */
+	jz	2f
+	jmp	3f
+2:
+	testb	$0x8,	%cl   /* is it the source indicator? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jz	0b	      /* Ignore it otherwise */
 	movq	%rcx,   %rsi  /* For ever source page do a copy */
 	andq	$0xfffffffffffff000, %rsi
@@ -246,23 +404,45 @@ swap_pages:
 	movq	%rsi, %rax
 
 	movq	%r10, %rdi
+<<<<<<< HEAD
 	movq	$512,   %rcx
+=======
+	movl	$512, %ecx
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rep ; movsq
 
 	movq	%rax, %rdi
 	movq	%rdx, %rsi
+<<<<<<< HEAD
 	movq	$512,   %rcx
+=======
+	movl	$512, %ecx
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rep ; movsq
 
 	movq	%rdx, %rdi
 	movq	%r10, %rsi
+<<<<<<< HEAD
 	movq	$512,   %rcx
+=======
+	movl	$512, %ecx
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rep ; movsq
 
 	lea	PAGE_SIZE(%rax), %rsi
 	jmp	0b
 3:
+<<<<<<< HEAD
 	ret
 
 	.globl kexec_control_code_size
 .set kexec_control_code_size, . - relocate_kernel
+=======
+	ANNOTATE_UNRET_SAFE
+	ret
+	int3
+SYM_CODE_END(swap_pages)
+
+	.skip KEXEC_CONTROL_CODE_MAX_SIZE - (. - relocate_kernel), 0xcc
+SYM_CODE_END(relocate_range);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

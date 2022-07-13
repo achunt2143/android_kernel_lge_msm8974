@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/i2c/chips/lm8323.c
  *
@@ -7,6 +11,7 @@
  *            Timo O. Karjalainen <timo.o.karjalainen@nokia.com>
  *
  * Updated by Felipe Balbi <felipe.balbi@nokia.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -30,8 +37,13 @@
 #include <linux/delay.h>
 #include <linux/input.h>
 #include <linux/leds.h>
+<<<<<<< HEAD
 #include <linux/pm.h>
 #include <linux/i2c/lm8323.h>
+=======
+#include <linux/platform_data/lm8323.h>
+#include <linux/pm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 /* Commands to send to the chip. */
@@ -398,7 +410,11 @@ static irqreturn_t lm8323_irq(int irq, void *_lm)
 			lm8323_configure(lm);
 		}
 		for (i = 0; i < LM8323_NUM_PWMS; i++) {
+<<<<<<< HEAD
 			if (ints & (1 << (INT_PWM1 + i))) {
+=======
+			if (ints & (INT_PWM1 << i)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_vdbg(&lm->client->dev,
 					 "pwm%d engine completed\n", i);
 				pwm_done(&lm->pwm[i]);
@@ -558,10 +574,23 @@ static ssize_t lm8323_pwm_store_time(struct device *dev,
 }
 static DEVICE_ATTR(time, 0644, lm8323_pwm_show_time, lm8323_pwm_store_time);
 
+<<<<<<< HEAD
+=======
+static struct attribute *lm8323_pwm_attrs[] = {
+	&dev_attr_time.attr,
+	NULL
+};
+ATTRIBUTE_GROUPS(lm8323_pwm);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int init_pwm(struct lm8323_chip *lm, int id, struct device *dev,
 		    const char *name)
 {
 	struct lm8323_pwm *pwm;
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(id > 3);
 
@@ -580,6 +609,7 @@ static int init_pwm(struct lm8323_chip *lm, int id, struct device *dev,
 	if (name) {
 		pwm->cdev.name = name;
 		pwm->cdev.brightness_set = lm8323_pwm_set_brightness;
+<<<<<<< HEAD
 		if (led_classdev_register(dev, &pwm->cdev) < 0) {
 			dev_err(dev, "couldn't register PWM %d\n", id);
 			return -1;
@@ -589,6 +619,14 @@ static int init_pwm(struct lm8323_chip *lm, int id, struct device *dev,
 			dev_err(dev, "couldn't register time attribute\n");
 			led_classdev_unregister(&pwm->cdev);
 			return -1;
+=======
+		pwm->cdev.groups = lm8323_pwm_groups;
+
+		err = devm_led_classdev_register(dev, &pwm->cdev);
+		if (err) {
+			dev_err(dev, "couldn't register PWM %d: %d\n", id, err);
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		pwm->enabled = true;
 	}
@@ -596,8 +634,11 @@ static int init_pwm(struct lm8323_chip *lm, int id, struct device *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct i2c_driver lm8323_i2c_driver;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t lm8323_show_disable(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
@@ -615,6 +656,11 @@ static ssize_t lm8323_set_disable(struct device *dev,
 	unsigned int i;
 
 	ret = kstrtouint(buf, 10, &i);
+<<<<<<< HEAD
+=======
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&lm->lock);
 	lm->kp_enabled = !i;
@@ -624,10 +670,22 @@ static ssize_t lm8323_set_disable(struct device *dev,
 }
 static DEVICE_ATTR(disable_kp, 0644, lm8323_show_disable, lm8323_set_disable);
 
+<<<<<<< HEAD
 static int __devinit lm8323_probe(struct i2c_client *client,
 				  const struct i2c_device_id *id)
 {
 	struct lm8323_platform_data *pdata = client->dev.platform_data;
+=======
+static struct attribute *lm8323_attrs[] = {
+	&dev_attr_disable_kp.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(lm8323);
+
+static int lm8323_probe(struct i2c_client *client)
+{
+	struct lm8323_platform_data *pdata = dev_get_platdata(&client->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct input_dev *idev;
 	struct lm8323_chip *lm;
 	int pwm;
@@ -652,12 +710,22 @@ static int __devinit lm8323_probe(struct i2c_client *client,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	lm = kzalloc(sizeof *lm, GFP_KERNEL);
 	idev = input_allocate_device();
 	if (!lm || !idev) {
 		err = -ENOMEM;
 		goto fail1;
 	}
+=======
+	lm = devm_kzalloc(&client->dev, sizeof(*lm), GFP_KERNEL);
+	if (!lm)
+		return -ENOMEM;
+
+	idev = devm_input_allocate_device(&client->dev);
+	if (!idev)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lm->client = client;
 	lm->idev = idev;
@@ -673,8 +741,15 @@ static int __devinit lm8323_probe(struct i2c_client *client,
 
 	lm8323_reset(lm);
 
+<<<<<<< HEAD
 	/* Nothing's set up to service the IRQ yet, so just spin for max.
 	 * 100ms until we can configure. */
+=======
+	/*
+	 * Nothing's set up to service the IRQ yet, so just spin for max.
+	 * 100ms until we can configure.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmo = jiffies + msecs_to_jiffies(100);
 	while (lm8323_read(lm, LM8323_CMD_READ_INT, data, 1) == 1) {
 		if (data[0] & INT_NOINIT)
@@ -694,13 +769,18 @@ static int __devinit lm8323_probe(struct i2c_client *client,
 	/* If a true probe check the device */
 	if (lm8323_read_id(lm, data) != 0) {
 		dev_err(&client->dev, "device not found\n");
+<<<<<<< HEAD
 		err = -ENODEV;
 		goto fail1;
+=======
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (pwm = 0; pwm < LM8323_NUM_PWMS; pwm++) {
 		err = init_pwm(lm, pwm + 1, &client->dev,
 			       pdata->pwm_names[pwm]);
+<<<<<<< HEAD
 		if (err < 0)
 			goto fail2;
 	}
@@ -709,6 +789,13 @@ static int __devinit lm8323_probe(struct i2c_client *client,
 	err = device_create_file(&client->dev, &dev_attr_disable_kp);
 	if (err < 0)
 		goto fail2;
+=======
+		if (err)
+			return err;
+	}
+
+	lm->kp_enabled = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	idev->name = pdata->name ? : "LM8323 keypad";
 	snprintf(lm->phys, sizeof(lm->phys),
@@ -729,6 +816,7 @@ static int __devinit lm8323_probe(struct i2c_client *client,
 	err = input_register_device(idev);
 	if (err) {
 		dev_dbg(&client->dev, "error registering input device\n");
+<<<<<<< HEAD
 		goto fail3;
 	}
 
@@ -737,6 +825,18 @@ static int __devinit lm8323_probe(struct i2c_client *client,
 	if (err) {
 		dev_err(&client->dev, "could not get IRQ %d\n", client->irq);
 		goto fail4;
+=======
+		return err;
+	}
+
+	err = devm_request_threaded_irq(&client->dev, client->irq,
+					NULL, lm8323_irq,
+					IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+					"lm8323", lm);
+	if (err) {
+		dev_err(&client->dev, "could not get IRQ %d\n", client->irq);
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	i2c_set_clientdata(client, lm);
@@ -745,6 +845,7 @@ static int __devinit lm8323_probe(struct i2c_client *client,
 	enable_irq_wake(client->irq);
 
 	return 0;
+<<<<<<< HEAD
 
 fail4:
 	input_unregister_device(idev);
@@ -788,6 +889,10 @@ static int __devexit lm8323_remove(struct i2c_client *client)
 }
 
 #ifdef CONFIG_PM_SLEEP
+=======
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We don't need to explicitly suspend the chip, as it already switches off
  * when there's no activity.
@@ -831,9 +936,14 @@ static int lm8323_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static SIMPLE_DEV_PM_OPS(lm8323_pm_ops, lm8323_suspend, lm8323_resume);
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(lm8323_pm_ops, lm8323_suspend, lm8323_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct i2c_device_id lm8323_id[] = {
 	{ "lm8323", 0 },
@@ -842,11 +952,19 @@ static const struct i2c_device_id lm8323_id[] = {
 
 static struct i2c_driver lm8323_i2c_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.name	= "lm8323",
 		.pm	= &lm8323_pm_ops,
 	},
 	.probe		= lm8323_probe,
 	.remove		= __devexit_p(lm8323_remove),
+=======
+		.name		= "lm8323",
+		.pm		= pm_sleep_ptr(&lm8323_pm_ops),
+		.dev_groups	= lm8323_groups,
+	},
+	.probe		= lm8323_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= lm8323_id,
 };
 MODULE_DEVICE_TABLE(i2c, lm8323_id);

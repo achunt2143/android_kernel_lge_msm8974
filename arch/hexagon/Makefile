@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #  Makefile for the Hexagon arch
 
 KBUILD_DEFCONFIG = comet_defconfig
@@ -9,6 +13,7 @@ LDFLAGS_vmlinux += -G0
 # Do not use single-byte enums; these will overflow.
 KBUILD_CFLAGS += -fno-short-enums
 
+<<<<<<< HEAD
 # Modules must use either long-calls, or use pic/plt.
 # Use long-calls for now, it's easier.  And faster.
 # CFLAGS_MODULE += -fPIC
@@ -35,12 +40,31 @@ KBUILD_AFLAGS += $(aflags-y)
 
 #  no KBUILD_LDFLAGS?
 LDFLAGS += $(ldflags-y)
+=======
+# We must use long-calls:
+KBUILD_CFLAGS += -mlong-calls
+
+# Modules must use either long-calls, or use pic/plt.
+# Use long-calls for now, it's easier.  And faster.
+# KBUILD_CFLAGS_MODULE += -fPIC
+# KBUILD_LDFLAGS_MODULE += -shared
+KBUILD_CFLAGS_MODULE += -mlong-calls
+
+cflags-y += $(call cc-option,-mv${CONFIG_HEXAGON_ARCH_VERSION})
+aflags-y += $(call cc-option,-mv${CONFIG_HEXAGON_ARCH_VERSION})
+ldflags-y += $(call cc-option,-mv${CONFIG_HEXAGON_ARCH_VERSION})
+
+KBUILD_CFLAGS += $(cflags-y)
+KBUILD_AFLAGS += $(aflags-y)
+KBUILD_LDFLAGS += $(ldflags-y)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Thread-info register will be r19.  This value is not configureable;
 # it is hard-coded in several files.
 TIR_NAME := r19
 KBUILD_CFLAGS += -ffixed-$(TIR_NAME) -DTHREADINFO_REG=$(TIR_NAME) -D__linux__
 KBUILD_AFLAGS += -DTHREADINFO_REG=$(TIR_NAME)
+<<<<<<< HEAD
 
 LIBGCC := $(shell $(CC) $(KBUILD_CFLAGS) -print-libgcc-file-name)
 libs-y += $(LIBGCC)
@@ -56,3 +80,5 @@ core-y += arch/hexagon/kernel/ \
 #
 #core-$(CONFIG_HEXAGON_COMET)		+= arch/hexagon/platform/comet/
 #machine-$(CONFIG_HEXAGON_COMET)		:= comet
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

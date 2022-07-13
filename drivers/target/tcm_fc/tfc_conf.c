@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  * Filename:  tcm_fc.c
  *
@@ -10,6 +14,7 @@
  *
  * Copyright (c) 2009,2010 Nicholas A. Bellinger <nab@linux-iscsi.org>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +24,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ****************************************************************************/
 
 #include <linux/module.h>
@@ -34,14 +41,18 @@
 #include <linux/kernel.h>
 #include <linux/ctype.h>
 #include <asm/unaligned.h>
+<<<<<<< HEAD
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_device.h>
 #include <scsi/scsi_cmnd.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/libfc.h>
 
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
+<<<<<<< HEAD
 #include <target/target_core_fabric_configfs.h>
 #include <target/target_core_configfs.h>
 #include <target/configfs_macros.h>
@@ -51,6 +62,12 @@
 struct target_fabric_configfs *ft_configfs;
 
 LIST_HEAD(ft_lport_list);
+=======
+
+#include "tcm_fc.h"
+
+static LIST_HEAD(ft_wwn_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DEFINE_MUTEX(ft_lport_lock);
 
 unsigned int ft_debug_logging;
@@ -138,55 +155,113 @@ static ssize_t ft_wwn_store(void *arg, const char *buf, size_t len)
  * ACL auth ops.
  */
 
+<<<<<<< HEAD
 static ssize_t ft_nacl_show_port_name(
 	struct se_node_acl *se_nacl,
 	char *page)
 {
+=======
+static ssize_t ft_nacl_port_name_show(struct config_item *item, char *page)
+{
+	struct se_node_acl *se_nacl = acl_to_nacl(item);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ft_node_acl *acl = container_of(se_nacl,
 			struct ft_node_acl, se_node_acl);
 
 	return ft_wwn_show(&acl->node_auth.port_name, page);
 }
 
+<<<<<<< HEAD
 static ssize_t ft_nacl_store_port_name(
 	struct se_node_acl *se_nacl,
 	const char *page,
 	size_t count)
 {
+=======
+static ssize_t ft_nacl_port_name_store(struct config_item *item,
+		const char *page, size_t count)
+{
+	struct se_node_acl *se_nacl = acl_to_nacl(item);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ft_node_acl *acl = container_of(se_nacl,
 			struct ft_node_acl, se_node_acl);
 
 	return ft_wwn_store(&acl->node_auth.port_name, page, count);
 }
 
+<<<<<<< HEAD
 TF_NACL_BASE_ATTR(ft, port_name, S_IRUGO | S_IWUSR);
 
 static ssize_t ft_nacl_show_node_name(
 	struct se_node_acl *se_nacl,
 	char *page)
 {
+=======
+static ssize_t ft_nacl_node_name_show(struct config_item *item,
+		char *page)
+{
+	struct se_node_acl *se_nacl = acl_to_nacl(item);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ft_node_acl *acl = container_of(se_nacl,
 			struct ft_node_acl, se_node_acl);
 
 	return ft_wwn_show(&acl->node_auth.node_name, page);
 }
 
+<<<<<<< HEAD
 static ssize_t ft_nacl_store_node_name(
 	struct se_node_acl *se_nacl,
 	const char *page,
 	size_t count)
 {
+=======
+static ssize_t ft_nacl_node_name_store(struct config_item *item,
+		const char *page, size_t count)
+{
+	struct se_node_acl *se_nacl = acl_to_nacl(item);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ft_node_acl *acl = container_of(se_nacl,
 			struct ft_node_acl, se_node_acl);
 
 	return ft_wwn_store(&acl->node_auth.node_name, page, count);
 }
 
+<<<<<<< HEAD
 TF_NACL_BASE_ATTR(ft, node_name, S_IRUGO | S_IWUSR);
 
 static struct configfs_attribute *ft_nacl_base_attrs[] = {
 	&ft_nacl_port_name.attr,
 	&ft_nacl_node_name.attr,
+=======
+CONFIGFS_ATTR(ft_nacl_, node_name);
+CONFIGFS_ATTR(ft_nacl_, port_name);
+
+static ssize_t ft_nacl_tag_show(struct config_item *item,
+		char *page)
+{
+	return snprintf(page, PAGE_SIZE, "%s", acl_to_nacl(item)->acl_tag);
+}
+
+static ssize_t ft_nacl_tag_store(struct config_item *item,
+		const char *page, size_t count)
+{
+	struct se_node_acl *se_nacl = acl_to_nacl(item);
+	int ret;
+
+	ret = core_tpg_set_initiator_node_tag(se_nacl->se_tpg, se_nacl, page);
+
+	if (ret < 0)
+		return ret;
+	return count;
+}
+
+CONFIGFS_ATTR(ft_nacl_, tag);
+
+static struct configfs_attribute *ft_nacl_base_attrs[] = {
+	&ft_nacl_attr_port_name,
+	&ft_nacl_attr_node_name,
+	&ft_nacl_attr_tag,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL,
 };
 
@@ -198,6 +273,7 @@ static struct configfs_attribute *ft_nacl_base_attrs[] = {
  * Add ACL for an initiator.  The ACL is named arbitrarily.
  * The port_name and/or node_name are attributes.
  */
+<<<<<<< HEAD
 static struct se_node_acl *ft_add_acl(
 	struct se_portal_group *se_tpg,
 	struct config_group *group,
@@ -288,17 +364,36 @@ static void ft_tpg_release_fabric_acl(struct se_portal_group *se_tpg,
 
 	pr_debug("acl %p\n", acl);
 	kfree(acl);
+=======
+static int ft_init_nodeacl(struct se_node_acl *nacl, const char *name)
+{
+	struct ft_node_acl *acl =
+		container_of(nacl, struct ft_node_acl, se_node_acl);
+	u64 wwpn;
+
+	if (ft_parse_wwn(name, &wwpn, 1) < 0)
+		return -EINVAL;
+
+	acl->node_auth.port_name = wwpn;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * local_port port_group (tpg) ops.
  */
+<<<<<<< HEAD
 static struct se_portal_group *ft_add_tpg(
 	struct se_wwn *wwn,
 	struct config_group *group,
 	const char *name)
 {
 	struct ft_lport_acl *lacl;
+=======
+static struct se_portal_group *ft_add_tpg(struct se_wwn *wwn, const char *name)
+{
+	struct ft_lport_wwn *ft_wwn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ft_tpg *tpg;
 	struct workqueue_struct *wq;
 	unsigned long index;
@@ -311,15 +406,35 @@ static struct se_portal_group *ft_add_tpg(
 	 */
 	if (strstr(name, "tpgt_") != name)
 		return NULL;
+<<<<<<< HEAD
 	if (strict_strtoul(name + 5, 10, &index) || index > UINT_MAX)
 		return NULL;
 
 	lacl = container_of(wwn, struct ft_lport_acl, fc_lport_wwn);
+=======
+
+	ret = kstrtoul(name + 5, 10, &index);
+	if (ret)
+		return NULL;
+	if (index > UINT_MAX)
+		return NULL;
+
+	if ((index != 1)) {
+		pr_err("Error, a single TPG=1 is used for HW port mappings\n");
+		return ERR_PTR(-ENOSYS);
+	}
+
+	ft_wwn = container_of(wwn, struct ft_lport_wwn, se_wwn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tpg = kzalloc(sizeof(*tpg), GFP_KERNEL);
 	if (!tpg)
 		return NULL;
 	tpg->index = index;
+<<<<<<< HEAD
 	tpg->lport_acl = lacl;
+=======
+	tpg->lport_wwn = ft_wwn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&tpg->lun_list);
 
 	wq = alloc_workqueue("tcm_fc", 0, 1);
@@ -328,8 +443,12 @@ static struct se_portal_group *ft_add_tpg(
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	ret = core_tpg_register(&ft_configfs->tf_ops, wwn, &tpg->se_tpg,
 				tpg, TRANSPORT_TPG_TYPE_NORMAL);
+=======
+	ret = core_tpg_register(wwn, &tpg->se_tpg, SCSI_PROTOCOL_FCP);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		destroy_workqueue(wq);
 		kfree(tpg);
@@ -338,7 +457,11 @@ static struct se_portal_group *ft_add_tpg(
 	tpg->workqueue = wq;
 
 	mutex_lock(&ft_lport_lock);
+<<<<<<< HEAD
 	list_add_tail(&tpg->list, &lacl->tpg_list);
+=======
+	ft_wwn->tpg = tpg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&ft_lport_lock);
 
 	return &tpg->se_tpg;
@@ -347,6 +470,10 @@ static struct se_portal_group *ft_add_tpg(
 static void ft_del_tpg(struct se_portal_group *se_tpg)
 {
 	struct ft_tpg *tpg = container_of(se_tpg, struct ft_tpg, se_tpg);
+<<<<<<< HEAD
+=======
+	struct ft_lport_wwn *ft_wwn = tpg->lport_wwn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("del tpg %s\n",
 		    config_item_name(&tpg->se_tpg.tpg_group.cg_item));
@@ -357,7 +484,11 @@ static void ft_del_tpg(struct se_portal_group *se_tpg)
 	synchronize_rcu();
 
 	mutex_lock(&ft_lport_lock);
+<<<<<<< HEAD
 	list_del(&tpg->list);
+=======
+	ft_wwn->tpg = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tpg->tport) {
 		tpg->tport->tpg = NULL;
 		tpg->tport = NULL;
@@ -376,6 +507,7 @@ static void ft_del_tpg(struct se_portal_group *se_tpg)
  */
 struct ft_tpg *ft_lport_find_tpg(struct fc_lport *lport)
 {
+<<<<<<< HEAD
 	struct ft_lport_acl *lacl;
 	struct ft_tpg *tpg;
 
@@ -385,6 +517,13 @@ struct ft_tpg *ft_lport_find_tpg(struct fc_lport *lport)
 				return tpg; /* XXX for now return first entry */
 			return NULL;
 		}
+=======
+	struct ft_lport_wwn *ft_wwn;
+
+	list_for_each_entry(ft_wwn, &ft_wwn_list, ft_wwn_node) {
+		if (ft_wwn->wwpn == lport->wwpn)
+			return ft_wwn->tpg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NULL;
 }
@@ -397,11 +536,16 @@ struct ft_tpg *ft_lport_find_tpg(struct fc_lport *lport)
  * Add lport to allowed config.
  * The name is the WWPN in lower-case ASCII, colon-separated bytes.
  */
+<<<<<<< HEAD
 static struct se_wwn *ft_add_lport(
+=======
+static struct se_wwn *ft_add_wwn(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct target_fabric_configfs *tf,
 	struct config_group *group,
 	const char *name)
 {
+<<<<<<< HEAD
 	struct ft_lport_acl *lacl;
 	struct ft_lport_acl *old_lacl;
 	u64 wwpn;
@@ -446,11 +590,55 @@ static void ft_del_lport(struct se_wwn *wwn)
 static ssize_t ft_wwn_show_attr_version(
 	struct target_fabric_configfs *tf,
 	char *page)
+=======
+	struct ft_lport_wwn *ft_wwn;
+	struct ft_lport_wwn *old_ft_wwn;
+	u64 wwpn;
+
+	pr_debug("add wwn %s\n", name);
+	if (ft_parse_wwn(name, &wwpn, 1) < 0)
+		return NULL;
+	ft_wwn = kzalloc(sizeof(*ft_wwn), GFP_KERNEL);
+	if (!ft_wwn)
+		return NULL;
+	ft_wwn->wwpn = wwpn;
+
+	mutex_lock(&ft_lport_lock);
+	list_for_each_entry(old_ft_wwn, &ft_wwn_list, ft_wwn_node) {
+		if (old_ft_wwn->wwpn == wwpn) {
+			mutex_unlock(&ft_lport_lock);
+			kfree(ft_wwn);
+			return NULL;
+		}
+	}
+	list_add_tail(&ft_wwn->ft_wwn_node, &ft_wwn_list);
+	ft_format_wwn(ft_wwn->name, sizeof(ft_wwn->name), wwpn);
+	mutex_unlock(&ft_lport_lock);
+
+	return &ft_wwn->se_wwn;
+}
+
+static void ft_del_wwn(struct se_wwn *wwn)
+{
+	struct ft_lport_wwn *ft_wwn = container_of(wwn,
+				struct ft_lport_wwn, se_wwn);
+
+	pr_debug("del wwn %s\n", ft_wwn->name);
+	mutex_lock(&ft_lport_lock);
+	list_del(&ft_wwn->ft_wwn_node);
+	mutex_unlock(&ft_lport_lock);
+
+	kfree(ft_wwn);
+}
+
+static ssize_t ft_wwn_version_show(struct config_item *item, char *page)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sprintf(page, "TCM FC " FT_VERSION " on %s/%s on "
 		""UTS_RELEASE"\n",  utsname()->sysname, utsname()->machine);
 }
 
+<<<<<<< HEAD
 TF_WWN_ATTR_RO(ft, version);
 
 static struct configfs_attribute *ft_wwn_attrs[] = {
@@ -461,23 +649,43 @@ static struct configfs_attribute *ft_wwn_attrs[] = {
 static char *ft_get_fabric_name(void)
 {
 	return "fc";
+=======
+CONFIGFS_ATTR_RO(ft_wwn_, version);
+
+static struct configfs_attribute *ft_wwn_attrs[] = {
+	&ft_wwn_attr_version,
+	NULL,
+};
+
+static inline struct ft_tpg *ft_tpg(struct se_portal_group *se_tpg)
+{
+	return container_of(se_tpg, struct ft_tpg, se_tpg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static char *ft_get_fabric_wwn(struct se_portal_group *se_tpg)
 {
+<<<<<<< HEAD
 	struct ft_tpg *tpg = se_tpg->se_tpg_fabric_ptr;
 
 	return tpg->lport_acl->name;
+=======
+	return ft_tpg(se_tpg)->lport_wwn->name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u16 ft_get_tag(struct se_portal_group *se_tpg)
 {
+<<<<<<< HEAD
 	struct ft_tpg *tpg = se_tpg->se_tpg_fabric_ptr;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * This tag is used when forming SCSI Name identifier in EVPD=1 0x83
 	 * to represent the SCSI Target Port.
 	 */
+<<<<<<< HEAD
 	return tpg->index;
 }
 
@@ -503,10 +711,14 @@ static u16 ft_get_fabric_sense_len(void)
 static u16 ft_set_fabric_sense_len(struct se_cmd *se_cmd, u32 sense_len)
 {
 	return 0;
+=======
+	return ft_tpg(se_tpg)->index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 ft_tpg_get_inst_index(struct se_portal_group *se_tpg)
 {
+<<<<<<< HEAD
 	struct ft_tpg *tpg = se_tpg->se_tpg_fabric_ptr;
 
 	return tpg->index;
@@ -531,10 +743,25 @@ static struct target_core_fabric_ops ft_fabric_ops = {
 	.check_stop_free =		ft_check_stop_free,
 	.release_cmd =			ft_release_cmd,
 	.shutdown_session =		ft_sess_shutdown,
+=======
+	return ft_tpg(se_tpg)->index;
+}
+
+static const struct target_core_fabric_ops ft_fabric_ops = {
+	.module =			THIS_MODULE,
+	.fabric_name =			"fc",
+	.node_acl_size =		sizeof(struct ft_node_acl),
+	.tpg_get_wwn =			ft_get_fabric_wwn,
+	.tpg_get_tag =			ft_get_tag,
+	.tpg_get_inst_index =		ft_tpg_get_inst_index,
+	.check_stop_free =		ft_check_stop_free,
+	.release_cmd =			ft_release_cmd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.close_session =		ft_sess_close,
 	.sess_get_index =		ft_sess_get_index,
 	.sess_get_initiator_sid =	NULL,
 	.write_pending =		ft_write_pending,
+<<<<<<< HEAD
 	.write_pending_status =		ft_write_pending_status,
 	.set_default_node_attributes =	ft_set_default_node_attr,
 	.get_task_tag =			ft_get_task_tag,
@@ -544,10 +771,17 @@ static struct target_core_fabric_ops ft_fabric_ops = {
 	.queue_tm_rsp =			ft_queue_tm_resp,
 	.get_fabric_sense_len =		ft_get_fabric_sense_len,
 	.set_fabric_sense_len =		ft_set_fabric_sense_len,
+=======
+	.queue_data_in =		ft_queue_data_in,
+	.queue_status =			ft_queue_status,
+	.queue_tm_rsp =			ft_queue_tm_resp,
+	.aborted_task =			ft_aborted_task,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Setup function pointers for generic logic in
 	 * target_core_fabric_configfs.c
 	 */
+<<<<<<< HEAD
 	.fabric_make_wwn =		&ft_add_lport,
 	.fabric_drop_wwn =		&ft_del_lport,
 	.fabric_make_tpg =		&ft_add_tpg,
@@ -618,12 +852,28 @@ void ft_deregister_configfs(void)
 	ft_configfs = NULL;
 }
 
+=======
+	.fabric_make_wwn =		&ft_add_wwn,
+	.fabric_drop_wwn =		&ft_del_wwn,
+	.fabric_make_tpg =		&ft_add_tpg,
+	.fabric_drop_tpg =		&ft_del_tpg,
+	.fabric_init_nodeacl =		&ft_init_nodeacl,
+
+	.tfc_wwn_attrs			= ft_wwn_attrs,
+	.tfc_tpg_nacl_base_attrs	= ft_nacl_base_attrs,
+
+	.default_submit_type		= TARGET_DIRECT_SUBMIT,
+	.direct_submit_supp		= 1,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct notifier_block ft_notifier = {
 	.notifier_call = ft_lport_notify
 };
 
 static int __init ft_init(void)
 {
+<<<<<<< HEAD
 	if (ft_register_configfs())
 		return -1;
 	if (fc_fc4_register_provider(FC_TYPE_FCP, &ft_prov)) {
@@ -633,6 +883,26 @@ static int __init ft_init(void)
 	blocking_notifier_chain_register(&fc_lport_notifier_head, &ft_notifier);
 	fc_lport_iterate(ft_lport_add, NULL);
 	return 0;
+=======
+	int ret;
+
+	ret = target_register_template(&ft_fabric_ops);
+	if (ret)
+		goto out;
+
+	ret = fc_fc4_register_provider(FC_TYPE_FCP, &ft_prov);
+	if (ret)
+		goto out_unregister_template;
+
+	blocking_notifier_chain_register(&fc_lport_notifier_head, &ft_notifier);
+	fc_lport_iterate(ft_lport_add, NULL);
+	return 0;
+
+out_unregister_template:
+	target_unregister_template(&ft_fabric_ops);
+out:
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit ft_exit(void)
@@ -641,7 +911,11 @@ static void __exit ft_exit(void)
 					   &ft_notifier);
 	fc_fc4_deregister_provider(FC_TYPE_FCP, &ft_prov);
 	fc_lport_iterate(ft_lport_del, NULL);
+<<<<<<< HEAD
 	ft_deregister_configfs();
+=======
+	target_unregister_template(&ft_fabric_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	synchronize_rcu();
 }
 

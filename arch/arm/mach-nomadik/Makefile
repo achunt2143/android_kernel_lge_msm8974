@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux kernel.
 #
@@ -7,6 +11,7 @@
 
 # Object file lists.
 
+<<<<<<< HEAD
 obj-y			+= clock.o
 
 # Cpu revision
@@ -17,3 +22,7 @@ obj-$(CONFIG_MACH_NOMADIK_8815NHK) += board-nhk8815.o
 
 # Nomadik extra devices
 obj-$(CONFIG_I2C_BITBANG_8815NHK) += i2c-8815nhk.o
+=======
+# Cpu revision
+obj-$(CONFIG_NOMADIK_8815) += cpu-8815.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

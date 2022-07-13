@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/proc-mohawk.S: MMU functions for Marvell PJ1 core
  *
  *  PJ1 (codename Mohawk) is a hybrid of the xscale3 and Marvell's own core.
  *
  *  Heavily based on proc-arm926.S and proc-xsc3.S
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,14 +23,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/linkage.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <asm/assembler.h>
 #include <asm/hwcap.h>
 #include <asm/pgtable-hwdef.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/pgtable.h>
+#include <asm/assembler.h>
+#include <asm/hwcap.h>
+#include <asm/pgtable-hwdef.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm/ptrace.h>
 #include "proc-macros.S"
@@ -45,7 +59,11 @@
  * cpu_mohawk_proc_init()
  */
 ENTRY(cpu_mohawk_proc_init)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_mohawk_proc_fin()
@@ -55,7 +73,11 @@ ENTRY(cpu_mohawk_proc_fin)
 	bic	r0, r0, #0x1800			@ ...iz...........
 	bic	r0, r0, #0x0006			@ .............ca.
 	mcr	p15, 0, r0, c1, c0, 0		@ disable caches
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_mohawk_reset(loc)
@@ -79,7 +101,11 @@ ENTRY(cpu_mohawk_reset)
 	bic	ip, ip, #0x0007			@ .............cam
 	bic	ip, ip, #0x1100			@ ...i...s........
 	mcr	p15, 0, ip, c1, c0, 0		@ ctrl register
+<<<<<<< HEAD
 	mov	pc, r0
+=======
+	ret	r0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(cpu_mohawk_reset)
 	.popsection
 
@@ -93,7 +119,11 @@ ENTRY(cpu_mohawk_do_idle)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c10, 4		@ drain write buffer
 	mcr	p15, 0, r0, c7, c0, 4		@ wait for interrupt
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	flush_icache_all()
@@ -103,7 +133,11 @@ ENTRY(cpu_mohawk_do_idle)
 ENTRY(mohawk_flush_icache_all)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(mohawk_flush_icache_all)
 
 /*
@@ -128,7 +162,11 @@ __flush_whole_cache:
 	tst	r2, #VM_EXEC
 	mcrne	p15, 0, ip, c7, c5, 0		@ invalidate I cache
 	mcrne	p15, 0, ip, c7, c10, 0		@ drain write buffer
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	flush_user_cache_range(start, end, flags)
@@ -158,7 +196,11 @@ ENTRY(mohawk_flush_user_cache_range)
 	blo	1b
 	tst	r2, #VM_EXEC
 	mcrne	p15, 0, ip, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	coherent_kern_range(start, end)
@@ -193,7 +235,12 @@ ENTRY(mohawk_coherent_user_range)
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	mov	r0, #0
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	flush_kern_dcache_area(void *addr, size_t size)
@@ -213,7 +260,11 @@ ENTRY(mohawk_flush_kern_dcache_area)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_inv_range(start, end)
@@ -239,7 +290,11 @@ mohawk_dma_inv_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_clean_range(start, end)
@@ -258,7 +313,11 @@ mohawk_dma_clean_range:
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_flush_range(start, end)
@@ -276,7 +335,11 @@ ENTRY(mohawk_dma_flush_range)
 	cmp	r0, r1
 	blo	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_map_area(start, size, dir)
@@ -299,7 +362,11 @@ ENDPROC(mohawk_dma_map_area)
  *	- dir	- DMA direction
  */
 ENTRY(mohawk_dma_unmap_area)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(mohawk_dma_unmap_area)
 
 	.globl	mohawk_flush_kern_cache_louis
@@ -314,7 +381,11 @@ ENTRY(cpu_mohawk_dcache_clean_area)
 	subs	r1, r1, #CACHE_DLINESIZE
 	bhi	1b
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_mohawk_switch_mm(pgd)
@@ -332,7 +403,11 @@ ENTRY(cpu_mohawk_switch_mm)
 	orr	r0, r0, #0x18			@ cache the page table in L2
 	mcr	p15, 0, r0, c2, c0, 0		@ load page table pointer
 	mcr	p15, 0, ip, c8, c7, 0		@ invalidate I & D TLBs
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_mohawk_set_pte_ext(ptep, pte, ext)
@@ -341,13 +416,57 @@ ENTRY(cpu_mohawk_switch_mm)
  */
 	.align	5
 ENTRY(cpu_mohawk_set_pte_ext)
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MMU
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	armv3_set_pte_ext
 	mov	r0, r0
 	mcr	p15, 0, r0, c7, c10, 1		@ clean D entry
 	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
 
 	__CPUINIT
+=======
+	ret	lr
+#endif
+
+.globl	cpu_mohawk_suspend_size
+.equ	cpu_mohawk_suspend_size, 4 * 6
+#ifdef CONFIG_ARM_CPU_SUSPEND
+ENTRY(cpu_mohawk_do_suspend)
+	stmfd	sp!, {r4 - r9, lr}
+	mrc	p14, 0, r4, c6, c0, 0	@ clock configuration, for turbo mode
+	mrc	p15, 0, r5, c15, c1, 0	@ CP access reg
+	mrc	p15, 0, r6, c13, c0, 0	@ PID
+	mrc 	p15, 0, r7, c3, c0, 0	@ domain ID
+	mrc	p15, 0, r8, c1, c0, 1	@ auxiliary control reg
+	mrc 	p15, 0, r9, c1, c0, 0	@ control reg
+	bic	r4, r4, #2		@ clear frequency change bit
+	stmia	r0, {r4 - r9}		@ store cp regs
+	ldmia	sp!, {r4 - r9, pc}
+ENDPROC(cpu_mohawk_do_suspend)
+
+ENTRY(cpu_mohawk_do_resume)
+	ldmia	r0, {r4 - r9}		@ load cp regs
+	mov	ip, #0
+	mcr	p15, 0, ip, c7, c7, 0	@ invalidate I & D caches, BTB
+	mcr	p15, 0, ip, c7, c10, 4	@ drain write (&fill) buffer
+	mcr	p15, 0, ip, c7, c5, 4	@ flush prefetch buffer
+	mcr	p15, 0, ip, c8, c7, 0	@ invalidate I & D TLBs
+	mcr	p14, 0, r4, c6, c0, 0	@ clock configuration, turbo mode.
+	mcr	p15, 0, r5, c15, c1, 0	@ CP access reg
+	mcr	p15, 0, r6, c13, c0, 0	@ PID
+	mcr	p15, 0, r7, c3, c0, 0	@ domain ID
+	orr	r1, r1, #0x18		@ cache the page table in L2
+	mcr	p15, 0, r1, c2, c0, 0	@ translation table base addr
+	mcr	p15, 0, r8, c1, c0, 1	@ auxiliary control reg
+	mov	r0, r9			@ control register
+	b	cpu_resume_mmu
+ENDPROC(cpu_mohawk_do_resume)
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.type	__mohawk_setup, #function
 __mohawk_setup:
@@ -366,7 +485,11 @@ __mohawk_setup:
 	mrc	p15, 0, r0, c1, c0		@ get control register
 	bic	r0, r0, r5
 	orr	r0, r0, r6
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.size	__mohawk_setup, . - __mohawk_setup
 
@@ -393,7 +516,11 @@ mohawk_crval:
 
 	.align
 
+<<<<<<< HEAD
 	.section ".proc.info.init", #alloc, #execinstr
+=======
+	.section ".proc.info.init", "a"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.type	__88sv331x_proc_info,#object
 __88sv331x_proc_info:
@@ -409,7 +536,11 @@ __88sv331x_proc_info:
 		PMD_BIT4 | \
 		PMD_SECT_AP_WRITE | \
 		PMD_SECT_AP_READ
+<<<<<<< HEAD
 	b	__mohawk_setup
+=======
+	initfn	__mohawk_setup, __88sv331x_proc_info
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP|HWCAP_HALF|HWCAP_THUMB|HWCAP_FAST_MULT|HWCAP_EDSP

@@ -1,7 +1,10 @@
 /*
    BlueZ - Bluetooth protocol stack for Linux
    Copyright (C) 2000-2001 Qualcomm Incorporated
+<<<<<<< HEAD
    Copyright (c) 2011, The Linux Foundation. All rights reserved.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    Written 2000,2001 by Maxim Krasnyansky <maxk@qualcomm.com>
 
@@ -28,18 +31,24 @@
 
 /* SCO defaults */
 #define SCO_DEFAULT_MTU		500
+<<<<<<< HEAD
 #define SCO_DEFAULT_FLUSH_TO	0xFFFF
 
 #define SCO_CONN_TIMEOUT	(HZ * 40)
 #define SCO_DISCONN_TIMEOUT	(HZ * 20)
 #define SCO_CONN_IDLE_TIMEOUT	(HZ * 60)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SCO socket address */
 struct sockaddr_sco {
 	sa_family_t	sco_family;
 	bdaddr_t	sco_bdaddr;
+<<<<<<< HEAD
 	__u16		sco_pkt_type;
 	__s8		is_wbs;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* SCO socket options */
@@ -54,6 +63,7 @@ struct sco_conninfo {
 	__u8  dev_class[3];
 };
 
+<<<<<<< HEAD
 /* ---- SCO connections ---- */
 struct sco_conn {
 	struct hci_conn	*hcon;
@@ -80,4 +90,6 @@ struct sco_pinfo {
 	struct sco_conn	*conn;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __SCO_H */

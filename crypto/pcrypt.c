@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pcrypt - Parallel crypto wrapper.
  *
  * Copyright (C) 2009 secunet Security Networks AG
  * Copyright (C) 2009 Steffen Klassert <steffen.klassert@secunet.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -16,19 +21,29 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <crypto/algapi.h>
 #include <crypto/internal/aead.h>
+<<<<<<< HEAD
+=======
+#include <linux/atomic.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/notifier.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kobject.h>
 #include <linux/cpu.h>
 #include <crypto/pcrypt.h>
 
+<<<<<<< HEAD
 struct padata_pcrypt {
 	struct padata_instance *pinst;
 	struct workqueue_struct *wq;
@@ -62,6 +77,17 @@ static struct kset           *pcrypt_kset;
 struct pcrypt_instance_ctx {
 	struct crypto_spawn spawn;
 	unsigned int tfm_count;
+=======
+static struct padata_instance *pencrypt;
+static struct padata_instance *pdecrypt;
+static struct kset           *pcrypt_kset;
+
+struct pcrypt_instance_ctx {
+	struct crypto_aead_spawn spawn;
+	struct padata_shell *psenc;
+	struct padata_shell *psdec;
+	atomic_t tfm_count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct pcrypt_aead_ctx {
@@ -69,6 +95,7 @@ struct pcrypt_aead_ctx {
 	unsigned int cb_cpu;
 };
 
+<<<<<<< HEAD
 static int pcrypt_do_parallel(struct padata_priv *padata, unsigned int *cb_cpu,
 			      struct padata_pcrypt *pcrypt)
 {
@@ -96,6 +123,12 @@ static int pcrypt_do_parallel(struct padata_priv *padata, unsigned int *cb_cpu,
 out:
 	rcu_read_unlock_bh();
 	return padata_do_parallel(pcrypt->pinst, padata, cpu);
+=======
+static inline struct pcrypt_instance_ctx *pcrypt_tfm_ictx(
+	struct crypto_aead *tfm)
+{
+	return aead_instance_ctx(aead_alg_instance(tfm));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcrypt_aead_setkey(struct crypto_aead *parent,
@@ -122,6 +155,7 @@ static void pcrypt_aead_serial(struct padata_priv *padata)
 	aead_request_complete(req->base.data, padata->info);
 }
 
+<<<<<<< HEAD
 static void pcrypt_aead_giv_serial(struct padata_priv *padata)
 {
 	struct pcrypt_request *preq = pcrypt_padata_request(padata);
@@ -133,11 +167,19 @@ static void pcrypt_aead_giv_serial(struct padata_priv *padata)
 static void pcrypt_aead_done(struct crypto_async_request *areq, int err)
 {
 	struct aead_request *req = areq->data;
+=======
+static void pcrypt_aead_done(void *data, int err)
+{
+	struct aead_request *req = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pcrypt_request *preq = aead_request_ctx(req);
 	struct padata_priv *padata = pcrypt_request_padata(preq);
 
 	padata->info = err;
+<<<<<<< HEAD
 	req->base.flags &= ~CRYPTO_TFM_REQ_MAY_SLEEP;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	padata_do_serial(padata);
 }
@@ -146,12 +188,23 @@ static void pcrypt_aead_enc(struct padata_priv *padata)
 {
 	struct pcrypt_request *preq = pcrypt_padata_request(padata);
 	struct aead_request *req = pcrypt_request_ctx(preq);
+<<<<<<< HEAD
 
 	padata->info = crypto_aead_encrypt(req);
 
 	if (padata->info == -EINPROGRESS)
 		return;
 
+=======
+	int ret;
+
+	ret = crypto_aead_encrypt(req);
+
+	if (ret == -EINPROGRESS)
+		return;
+
+	padata->info = ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	padata_do_serial(padata);
 }
 
@@ -164,6 +217,12 @@ static int pcrypt_aead_encrypt(struct aead_request *req)
 	struct crypto_aead *aead = crypto_aead_reqtfm(req);
 	struct pcrypt_aead_ctx *ctx = crypto_aead_ctx(aead);
 	u32 flags = aead_request_flags(req);
+<<<<<<< HEAD
+=======
+	struct pcrypt_instance_ctx *ictx;
+
+	ictx = pcrypt_tfm_ictx(aead);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(padata, 0, sizeof(struct padata_priv));
 
@@ -175,11 +234,21 @@ static int pcrypt_aead_encrypt(struct aead_request *req)
 				  pcrypt_aead_done, req);
 	aead_request_set_crypt(creq, req->src, req->dst,
 			       req->cryptlen, req->iv);
+<<<<<<< HEAD
 	aead_request_set_assoc(creq, req->assoc, req->assoclen);
 
 	err = pcrypt_do_parallel(padata, &ctx->cb_cpu, &pencrypt);
 	if (!err)
 		return -EINPROGRESS;
+=======
+	aead_request_set_ad(creq, req->assoclen);
+
+	err = padata_do_parallel(ictx->psenc, padata, &ctx->cb_cpu);
+	if (!err)
+		return -EINPROGRESS;
+	if (err == -EBUSY)
+		return -EAGAIN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -188,12 +257,23 @@ static void pcrypt_aead_dec(struct padata_priv *padata)
 {
 	struct pcrypt_request *preq = pcrypt_padata_request(padata);
 	struct aead_request *req = pcrypt_request_ctx(preq);
+<<<<<<< HEAD
 
 	padata->info = crypto_aead_decrypt(req);
 
 	if (padata->info == -EINPROGRESS)
 		return;
 
+=======
+	int ret;
+
+	ret = crypto_aead_decrypt(req);
+
+	if (ret == -EINPROGRESS)
+		return;
+
+	padata->info = ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	padata_do_serial(padata);
 }
 
@@ -206,6 +286,12 @@ static int pcrypt_aead_decrypt(struct aead_request *req)
 	struct crypto_aead *aead = crypto_aead_reqtfm(req);
 	struct pcrypt_aead_ctx *ctx = crypto_aead_ctx(aead);
 	u32 flags = aead_request_flags(req);
+<<<<<<< HEAD
+=======
+	struct pcrypt_instance_ctx *ictx;
+
+	ictx = pcrypt_tfm_ictx(aead);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(padata, 0, sizeof(struct padata_priv));
 
@@ -217,15 +303,26 @@ static int pcrypt_aead_decrypt(struct aead_request *req)
 				  pcrypt_aead_done, req);
 	aead_request_set_crypt(creq, req->src, req->dst,
 			       req->cryptlen, req->iv);
+<<<<<<< HEAD
 	aead_request_set_assoc(creq, req->assoc, req->assoclen);
 
 	err = pcrypt_do_parallel(padata, &ctx->cb_cpu, &pdecrypt);
 	if (!err)
 		return -EINPROGRESS;
+=======
+	aead_request_set_ad(creq, req->assoclen);
+
+	err = padata_do_parallel(ictx->psdec, padata, &ctx->cb_cpu);
+	if (!err)
+		return -EINPROGRESS;
+	if (err == -EBUSY)
+		return -EAGAIN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
+<<<<<<< HEAD
 static void pcrypt_aead_givenc(struct padata_priv *padata)
 {
 	struct pcrypt_request *preq = pcrypt_padata_request(padata);
@@ -281,31 +378,60 @@ static int pcrypt_aead_init_tfm(struct crypto_tfm *tfm)
 	ictx->tfm_count++;
 
 	cpu_index = ictx->tfm_count % cpumask_weight(cpu_online_mask);
+=======
+static int pcrypt_aead_init_tfm(struct crypto_aead *tfm)
+{
+	int cpu, cpu_index;
+	struct aead_instance *inst = aead_alg_instance(tfm);
+	struct pcrypt_instance_ctx *ictx = aead_instance_ctx(inst);
+	struct pcrypt_aead_ctx *ctx = crypto_aead_ctx(tfm);
+	struct crypto_aead *cipher;
+
+	cpu_index = (unsigned int)atomic_inc_return(&ictx->tfm_count) %
+		    cpumask_weight(cpu_online_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctx->cb_cpu = cpumask_first(cpu_online_mask);
 	for (cpu = 0; cpu < cpu_index; cpu++)
 		ctx->cb_cpu = cpumask_next(ctx->cb_cpu, cpu_online_mask);
 
+<<<<<<< HEAD
 	cipher = crypto_spawn_aead(crypto_instance_ctx(inst));
+=======
+	cipher = crypto_spawn_aead(&ictx->spawn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_ERR(cipher))
 		return PTR_ERR(cipher);
 
 	ctx->child = cipher;
+<<<<<<< HEAD
 	tfm->crt_aead.reqsize = sizeof(struct pcrypt_request)
 		+ sizeof(struct aead_givcrypt_request)
 		+ crypto_aead_reqsize(cipher);
+=======
+	crypto_aead_set_reqsize(tfm, sizeof(struct pcrypt_request) +
+				     sizeof(struct aead_request) +
+				     crypto_aead_reqsize(cipher));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void pcrypt_aead_exit_tfm(struct crypto_tfm *tfm)
 {
 	struct pcrypt_aead_ctx *ctx = crypto_tfm_ctx(tfm);
+=======
+static void pcrypt_aead_exit_tfm(struct crypto_aead *tfm)
+{
+	struct pcrypt_aead_ctx *ctx = crypto_aead_ctx(tfm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	crypto_free_aead(ctx->child);
 }
 
+<<<<<<< HEAD
 static struct crypto_instance *pcrypt_alloc_instance(struct crypto_alg *alg)
 {
 	struct crypto_instance *inst;
@@ -331,10 +457,32 @@ static struct crypto_instance *pcrypt_alloc_instance(struct crypto_alg *alg)
 	if (err)
 		goto out_free_inst;
 
+=======
+static void pcrypt_free(struct aead_instance *inst)
+{
+	struct pcrypt_instance_ctx *ctx = aead_instance_ctx(inst);
+
+	crypto_drop_aead(&ctx->spawn);
+	padata_free_shell(ctx->psdec);
+	padata_free_shell(ctx->psenc);
+	kfree(inst);
+}
+
+static int pcrypt_init_instance(struct crypto_instance *inst,
+				struct crypto_alg *alg)
+{
+	if (snprintf(inst->alg.cra_driver_name, CRYPTO_MAX_ALG_NAME,
+		     "pcrypt(%s)", alg->cra_driver_name) >= CRYPTO_MAX_ALG_NAME)
+		return -ENAMETOOLONG;
+
+	memcpy(inst->alg.cra_name, alg->cra_name, CRYPTO_MAX_ALG_NAME);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inst->alg.cra_priority = alg->cra_priority + 100;
 	inst->alg.cra_blocksize = alg->cra_blocksize;
 	inst->alg.cra_alignmask = alg->cra_alignmask;
 
+<<<<<<< HEAD
 out:
 	return inst;
 
@@ -382,11 +530,77 @@ out_put_alg:
 }
 
 static struct crypto_instance *pcrypt_alloc(struct rtattr **tb)
+=======
+	return 0;
+}
+
+static int pcrypt_create_aead(struct crypto_template *tmpl, struct rtattr **tb,
+			      struct crypto_attr_type *algt)
+{
+	struct pcrypt_instance_ctx *ctx;
+	struct aead_instance *inst;
+	struct aead_alg *alg;
+	u32 mask = crypto_algt_inherited_mask(algt);
+	int err;
+
+	inst = kzalloc(sizeof(*inst) + sizeof(*ctx), GFP_KERNEL);
+	if (!inst)
+		return -ENOMEM;
+
+	err = -ENOMEM;
+
+	ctx = aead_instance_ctx(inst);
+	ctx->psenc = padata_alloc_shell(pencrypt);
+	if (!ctx->psenc)
+		goto err_free_inst;
+
+	ctx->psdec = padata_alloc_shell(pdecrypt);
+	if (!ctx->psdec)
+		goto err_free_inst;
+
+	err = crypto_grab_aead(&ctx->spawn, aead_crypto_instance(inst),
+			       crypto_attr_alg_name(tb[1]), 0, mask);
+	if (err)
+		goto err_free_inst;
+
+	alg = crypto_spawn_aead_alg(&ctx->spawn);
+	err = pcrypt_init_instance(aead_crypto_instance(inst), &alg->base);
+	if (err)
+		goto err_free_inst;
+
+	inst->alg.base.cra_flags |= CRYPTO_ALG_ASYNC;
+
+	inst->alg.ivsize = crypto_aead_alg_ivsize(alg);
+	inst->alg.maxauthsize = crypto_aead_alg_maxauthsize(alg);
+
+	inst->alg.base.cra_ctxsize = sizeof(struct pcrypt_aead_ctx);
+
+	inst->alg.init = pcrypt_aead_init_tfm;
+	inst->alg.exit = pcrypt_aead_exit_tfm;
+
+	inst->alg.setkey = pcrypt_aead_setkey;
+	inst->alg.setauthsize = pcrypt_aead_setauthsize;
+	inst->alg.encrypt = pcrypt_aead_encrypt;
+	inst->alg.decrypt = pcrypt_aead_decrypt;
+
+	inst->free = pcrypt_free;
+
+	err = aead_register_instance(tmpl, inst);
+	if (err) {
+err_free_inst:
+		pcrypt_free(inst);
+	}
+	return err;
+}
+
+static int pcrypt_create(struct crypto_template *tmpl, struct rtattr **tb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct crypto_attr_type *algt;
 
 	algt = crypto_get_attr_type(tb);
 	if (IS_ERR(algt))
+<<<<<<< HEAD
 		return ERR_CAST(algt);
 
 	switch (algt->type & algt->mask & CRYPTO_ALG_TYPE_MASK) {
@@ -433,6 +647,16 @@ static int pcrypt_cpumask_change_notify(struct notifier_block *self,
 	free_cpumask_var(old_mask->mask);
 	kfree(old_mask);
 	return 0;
+=======
+		return PTR_ERR(algt);
+
+	switch (algt->type & algt->mask & CRYPTO_ALG_TYPE_MASK) {
+	case CRYPTO_ALG_TYPE_AEAD:
+		return pcrypt_create_aead(tmpl, tb, algt);
+	}
+
+	return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcrypt_sysfs_add(struct padata_instance *pinst, const char *name)
@@ -440,13 +664,18 @@ static int pcrypt_sysfs_add(struct padata_instance *pinst, const char *name)
 	int ret;
 
 	pinst->kobj.kset = pcrypt_kset;
+<<<<<<< HEAD
 	ret = kobject_add(&pinst->kobj, NULL, name);
+=======
+	ret = kobject_add(&pinst->kobj, NULL, "%s", name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret)
 		kobject_uevent(&pinst->kobj, KOBJ_ADD);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int pcrypt_init_padata(struct padata_pcrypt *pcrypt,
 			      const char *name)
 {
@@ -512,12 +741,31 @@ static void pcrypt_fini_padata(struct padata_pcrypt *pcrypt)
 	padata_unregister_cpumask_notifier(pcrypt->pinst, &pcrypt->nblock);
 	destroy_workqueue(pcrypt->wq);
 	padata_free(pcrypt->pinst);
+=======
+static int pcrypt_init_padata(struct padata_instance **pinst, const char *name)
+{
+	int ret = -ENOMEM;
+
+	*pinst = padata_alloc(name);
+	if (!*pinst)
+		return ret;
+
+	ret = pcrypt_sysfs_add(*pinst, name);
+	if (ret)
+		padata_free(*pinst);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct crypto_template pcrypt_tmpl = {
 	.name = "pcrypt",
+<<<<<<< HEAD
 	.alloc = pcrypt_alloc,
 	.free = pcrypt_free,
+=======
+	.create = pcrypt_create,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module = THIS_MODULE,
 };
 
@@ -537,6 +785,7 @@ static int __init pcrypt_init(void)
 	if (err)
 		goto err_deinit_pencrypt;
 
+<<<<<<< HEAD
 	padata_start(pencrypt.pinst);
 	padata_start(pdecrypt.pinst);
 
@@ -544,6 +793,12 @@ static int __init pcrypt_init(void)
 
 err_deinit_pencrypt:
 	pcrypt_fini_padata(&pencrypt);
+=======
+	return crypto_register_template(&pcrypt_tmpl);
+
+err_deinit_pencrypt:
+	padata_free(pencrypt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_unreg_kset:
 	kset_unregister(pcrypt_kset);
 err:
@@ -552,6 +807,7 @@ err:
 
 static void __exit pcrypt_exit(void)
 {
+<<<<<<< HEAD
 	pcrypt_fini_padata(&pencrypt);
 	pcrypt_fini_padata(&pdecrypt);
 
@@ -560,8 +816,23 @@ static void __exit pcrypt_exit(void)
 }
 
 module_init(pcrypt_init);
+=======
+	crypto_unregister_template(&pcrypt_tmpl);
+
+	padata_free(pencrypt);
+	padata_free(pdecrypt);
+
+	kset_unregister(pcrypt_kset);
+}
+
+subsys_initcall(pcrypt_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(pcrypt_exit);
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Steffen Klassert <steffen.klassert@secunet.com>");
 MODULE_DESCRIPTION("Parallel crypto wrapper");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS_CRYPTO("pcrypt");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

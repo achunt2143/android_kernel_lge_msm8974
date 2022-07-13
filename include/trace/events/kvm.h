@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if !defined(_TRACE_KVM_MAIN_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_KVM_MAIN_H
 
@@ -13,7 +17,14 @@
 	ERSN(DEBUG), ERSN(HLT), ERSN(MMIO), ERSN(IRQ_WINDOW_OPEN),	\
 	ERSN(SHUTDOWN), ERSN(FAIL_ENTRY), ERSN(INTR), ERSN(SET_TPR),	\
 	ERSN(TPR_ACCESS), ERSN(S390_SIEIC), ERSN(S390_RESET), ERSN(DCR),\
+<<<<<<< HEAD
 	ERSN(NMI), ERSN(INTERNAL_ERROR), ERSN(OSI)
+=======
+	ERSN(NMI), ERSN(INTERNAL_ERROR), ERSN(OSI), ERSN(PAPR_HCALL),	\
+	ERSN(S390_UCONTROL), ERSN(WATCHDOG), ERSN(S390_TSCH), ERSN(EPR),\
+	ERSN(SYSTEM_EVENT), ERSN(S390_STSI), ERSN(IOAPIC_EOI),          \
+	ERSN(HYPERV), ERSN(ARM_NISV), ERSN(X86_RDMSR), ERSN(X86_WRMSR)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 TRACE_EVENT(kvm_userspace_exit,
 	    TP_PROTO(__u32 reason, int errno),
@@ -36,7 +47,33 @@ TRACE_EVENT(kvm_userspace_exit,
 		  __entry->errno < 0 ? -__entry->errno : __entry->reason)
 );
 
+<<<<<<< HEAD
 #if defined(__KVM_HAVE_IOAPIC)
+=======
+TRACE_EVENT(kvm_vcpu_wakeup,
+	    TP_PROTO(__u64 ns, bool waited, bool valid),
+	    TP_ARGS(ns, waited, valid),
+
+	TP_STRUCT__entry(
+		__field(	__u64,		ns		)
+		__field(	bool,		waited		)
+		__field(	bool,		valid		)
+	),
+
+	TP_fast_assign(
+		__entry->ns		= ns;
+		__entry->waited		= waited;
+		__entry->valid		= valid;
+	),
+
+	TP_printk("%s time %lld ns, polling %s",
+		  __entry->waited ? "wait" : "poll",
+		  __entry->ns,
+		  __entry->valid ? "valid" : "invalid")
+);
+
+#if defined(CONFIG_HAVE_KVM_IRQCHIP)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT(kvm_set_irq,
 	TP_PROTO(unsigned int gsi, int level, int irq_source_id),
 	TP_ARGS(gsi, level, irq_source_id),
@@ -56,7 +93,13 @@ TRACE_EVENT(kvm_set_irq,
 	TP_printk("gsi %u level %d source %d",
 		  __entry->gsi, __entry->level, __entry->irq_source_id)
 );
+<<<<<<< HEAD
 
+=======
+#endif /* defined(CONFIG_HAVE_KVM_IRQCHIP) */
+
+#if defined(__KVM_HAVE_IOAPIC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define kvm_deliver_mode		\
 	{0x0, "Fixed"},			\
 	{0x1, "LowPrio"},		\
@@ -83,7 +126,11 @@ TRACE_EVENT(kvm_ioapic_set_irq,
 		__entry->coalesced	= coalesced;
 	),
 
+<<<<<<< HEAD
 	TP_printk("pin %u dst %x vec=%u (%s|%s|%s%s)%s",
+=======
+	TP_printk("pin %u dst %x vec %u (%s|%s|%s%s)%s",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __entry->pin, (u8)(__entry->e >> 56), (u8)__entry->e,
 		  __print_symbolic((__entry->e >> 8 & 0x7), kvm_deliver_mode),
 		  (__entry->e & (1<<11)) ? "logical" : "physical",
@@ -92,6 +139,29 @@ TRACE_EVENT(kvm_ioapic_set_irq,
 		  __entry->coalesced ? " (coalesced)" : "")
 );
 
+<<<<<<< HEAD
+=======
+TRACE_EVENT(kvm_ioapic_delayed_eoi_inj,
+	    TP_PROTO(__u64 e),
+	    TP_ARGS(e),
+
+	TP_STRUCT__entry(
+		__field(	__u64,		e		)
+	),
+
+	TP_fast_assign(
+		__entry->e		= e;
+	),
+
+	TP_printk("dst %x vec %u (%s|%s|%s%s)",
+		  (u8)(__entry->e >> 56), (u8)__entry->e,
+		  __print_symbolic((__entry->e >> 8 & 0x7), kvm_deliver_mode),
+		  (__entry->e & (1<<11)) ? "logical" : "physical",
+		  (__entry->e & (1<<15)) ? "level" : "edge",
+		  (__entry->e & (1<<16)) ? "|masked" : "")
+);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT(kvm_msi_set_irq,
 	    TP_PROTO(__u64 address, __u64 data),
 	    TP_ARGS(address, data),
@@ -106,8 +176,14 @@ TRACE_EVENT(kvm_msi_set_irq,
 		__entry->data		= data;
 	),
 
+<<<<<<< HEAD
 	TP_printk("dst %u vec %x (%s|%s|%s%s)",
 		  (u8)(__entry->address >> 12), (u8)__entry->data,
+=======
+	TP_printk("dst %llx vec %u (%s|%s|%s%s)",
+		  (u8)(__entry->address >> 12) | ((__entry->address >> 32) & 0xffffff00),
+		  (u8)__entry->data,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __print_symbolic((__entry->data >> 8 & 0x7), kvm_deliver_mode),
 		  (__entry->address & (1<<2)) ? "logical" : "physical",
 		  (__entry->data & (1<<15)) ? "level" : "edge",
@@ -119,6 +195,21 @@ TRACE_EVENT(kvm_msi_set_irq,
 	{KVM_IRQCHIP_PIC_SLAVE,		"PIC slave"},		\
 	{KVM_IRQCHIP_IOAPIC,		"IOAPIC"}
 
+<<<<<<< HEAD
+=======
+#endif /* defined(__KVM_HAVE_IOAPIC) */
+
+#if defined(CONFIG_HAVE_KVM_IRQCHIP)
+
+#ifdef kvm_irqchips
+#define kvm_ack_irq_string "irqchip %s pin %u"
+#define kvm_ack_irq_parm  __print_symbolic(__entry->irqchip, kvm_irqchips), __entry->pin
+#else
+#define kvm_ack_irq_string "irqchip %d pin %u"
+#define kvm_ack_irq_parm  __entry->irqchip, __entry->pin
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TRACE_EVENT(kvm_ack_irq,
 	TP_PROTO(unsigned int irqchip, unsigned int pin),
 	TP_ARGS(irqchip, pin),
@@ -133,6 +224,7 @@ TRACE_EVENT(kvm_ack_irq,
 		__entry->pin		= pin;
 	),
 
+<<<<<<< HEAD
 	TP_printk("irqchip %s pin %u",
 		  __print_symbolic(__entry->irqchip, kvm_irqchips),
 		 __entry->pin)
@@ -141,6 +233,14 @@ TRACE_EVENT(kvm_ack_irq,
 
 
 #endif /* defined(__KVM_HAVE_IOAPIC) */
+=======
+	TP_printk(kvm_ack_irq_string, kvm_ack_irq_parm)
+);
+
+#endif /* defined(CONFIG_HAVE_KVM_IRQCHIP) */
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define KVM_TRACE_MMIO_READ_UNSATISFIED 0
 #define KVM_TRACE_MMIO_READ 1
@@ -152,7 +252,11 @@ TRACE_EVENT(kvm_ack_irq,
 	{ KVM_TRACE_MMIO_WRITE, "write" }
 
 TRACE_EVENT(kvm_mmio,
+<<<<<<< HEAD
 	TP_PROTO(int type, int len, u64 gpa, u64 val),
+=======
+	TP_PROTO(int type, int len, u64 gpa, void *val),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TP_ARGS(type, len, gpa, val),
 
 	TP_STRUCT__entry(
@@ -166,7 +270,14 @@ TRACE_EVENT(kvm_mmio,
 		__entry->type		= type;
 		__entry->len		= len;
 		__entry->gpa		= gpa;
+<<<<<<< HEAD
 		__entry->val		= val;
+=======
+		__entry->val		= 0;
+		if (val)
+			memcpy(&__entry->val, val,
+			       min_t(u32, sizeof(__entry->val), len));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_printk("mmio %s len %u gpa 0x%llx val 0x%llx",
@@ -193,6 +304,7 @@ TRACE_EVENT(kvm_fpu,
 	TP_printk("%s", __print_symbolic(__entry->load, kvm_fpu_load_symbol))
 );
 
+<<<<<<< HEAD
 TRACE_EVENT(kvm_age_page,
 	TP_PROTO(ulong hva, struct kvm_memory_slot *slot, int ref),
 	TP_ARGS(hva, slot, ref),
@@ -215,6 +327,8 @@ TRACE_EVENT(kvm_age_page,
 		  __entry->referenced ? "YOUNG" : "OLD")
 );
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_KVM_ASYNC_PF
 DECLARE_EVENT_CLASS(kvm_async_get_page_class,
 
@@ -242,7 +356,11 @@ DEFINE_EVENT(kvm_async_get_page_class, kvm_try_async_get_page,
 	TP_ARGS(gva, gfn)
 );
 
+<<<<<<< HEAD
 DEFINE_EVENT(kvm_async_get_page_class, kvm_async_pf_doublefault,
+=======
+DEFINE_EVENT(kvm_async_get_page_class, kvm_async_pf_repeated_fault,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	TP_PROTO(u64 gva, u64 gfn),
 
@@ -285,27 +403,206 @@ DEFINE_EVENT(kvm_async_pf_nopresent_ready, kvm_async_pf_ready,
 
 TRACE_EVENT(
 	kvm_async_pf_completed,
+<<<<<<< HEAD
 	TP_PROTO(unsigned long address, struct page *page, u64 gva),
 	TP_ARGS(address, page, gva),
 
 	TP_STRUCT__entry(
 		__field(unsigned long, address)
 		__field(pfn_t, pfn)
+=======
+	TP_PROTO(unsigned long address, u64 gva),
+	TP_ARGS(address, gva),
+
+	TP_STRUCT__entry(
+		__field(unsigned long, address)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__field(u64, gva)
 		),
 
 	TP_fast_assign(
 		__entry->address = address;
+<<<<<<< HEAD
 		__entry->pfn = page ? page_to_pfn(page) : 0;
 		__entry->gva = gva;
 		),
 
 	TP_printk("gva %#llx address %#lx pfn %#llx",  __entry->gva,
 		  __entry->address, __entry->pfn)
+=======
+		__entry->gva = gva;
+		),
+
+	TP_printk("gva %#llx address %#lx",  __entry->gva,
+		  __entry->address)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 #endif
 
+<<<<<<< HEAD
+=======
+TRACE_EVENT(kvm_halt_poll_ns,
+	TP_PROTO(bool grow, unsigned int vcpu_id, unsigned int new,
+		 unsigned int old),
+	TP_ARGS(grow, vcpu_id, new, old),
+
+	TP_STRUCT__entry(
+		__field(bool, grow)
+		__field(unsigned int, vcpu_id)
+		__field(unsigned int, new)
+		__field(unsigned int, old)
+	),
+
+	TP_fast_assign(
+		__entry->grow           = grow;
+		__entry->vcpu_id        = vcpu_id;
+		__entry->new            = new;
+		__entry->old            = old;
+	),
+
+	TP_printk("vcpu %u: halt_poll_ns %u (%s %u)",
+			__entry->vcpu_id,
+			__entry->new,
+			__entry->grow ? "grow" : "shrink",
+			__entry->old)
+);
+
+#define trace_kvm_halt_poll_ns_grow(vcpu_id, new, old) \
+	trace_kvm_halt_poll_ns(true, vcpu_id, new, old)
+#define trace_kvm_halt_poll_ns_shrink(vcpu_id, new, old) \
+	trace_kvm_halt_poll_ns(false, vcpu_id, new, old)
+
+TRACE_EVENT(kvm_dirty_ring_push,
+	TP_PROTO(struct kvm_dirty_ring *ring, u32 slot, u64 offset),
+	TP_ARGS(ring, slot, offset),
+
+	TP_STRUCT__entry(
+		__field(int, index)
+		__field(u32, dirty_index)
+		__field(u32, reset_index)
+		__field(u32, slot)
+		__field(u64, offset)
+	),
+
+	TP_fast_assign(
+		__entry->index          = ring->index;
+		__entry->dirty_index    = ring->dirty_index;
+		__entry->reset_index    = ring->reset_index;
+		__entry->slot           = slot;
+		__entry->offset         = offset;
+	),
+
+	TP_printk("ring %d: dirty 0x%x reset 0x%x "
+		  "slot %u offset 0x%llx (used %u)",
+		  __entry->index, __entry->dirty_index,
+		  __entry->reset_index,  __entry->slot, __entry->offset,
+		  __entry->dirty_index - __entry->reset_index)
+);
+
+TRACE_EVENT(kvm_dirty_ring_reset,
+	TP_PROTO(struct kvm_dirty_ring *ring),
+	TP_ARGS(ring),
+
+	TP_STRUCT__entry(
+		__field(int, index)
+		__field(u32, dirty_index)
+		__field(u32, reset_index)
+	),
+
+	TP_fast_assign(
+		__entry->index          = ring->index;
+		__entry->dirty_index    = ring->dirty_index;
+		__entry->reset_index    = ring->reset_index;
+	),
+
+	TP_printk("ring %d: dirty 0x%x reset 0x%x (used %u)",
+		  __entry->index, __entry->dirty_index, __entry->reset_index,
+		  __entry->dirty_index - __entry->reset_index)
+);
+
+TRACE_EVENT(kvm_dirty_ring_exit,
+	TP_PROTO(struct kvm_vcpu *vcpu),
+	TP_ARGS(vcpu),
+
+	TP_STRUCT__entry(
+	    __field(int, vcpu_id)
+	),
+
+	TP_fast_assign(
+	    __entry->vcpu_id = vcpu->vcpu_id;
+	),
+
+	TP_printk("vcpu %d", __entry->vcpu_id)
+);
+
+TRACE_EVENT(kvm_unmap_hva_range,
+	TP_PROTO(unsigned long start, unsigned long end),
+	TP_ARGS(start, end),
+
+	TP_STRUCT__entry(
+		__field(	unsigned long,	start		)
+		__field(	unsigned long,	end		)
+	),
+
+	TP_fast_assign(
+		__entry->start		= start;
+		__entry->end		= end;
+	),
+
+	TP_printk("mmu notifier unmap range: %#016lx -- %#016lx",
+		  __entry->start, __entry->end)
+);
+
+TRACE_EVENT(kvm_set_spte_hva,
+	TP_PROTO(unsigned long hva),
+	TP_ARGS(hva),
+
+	TP_STRUCT__entry(
+		__field(	unsigned long,	hva		)
+	),
+
+	TP_fast_assign(
+		__entry->hva		= hva;
+	),
+
+	TP_printk("mmu notifier set pte hva: %#016lx", __entry->hva)
+);
+
+TRACE_EVENT(kvm_age_hva,
+	TP_PROTO(unsigned long start, unsigned long end),
+	TP_ARGS(start, end),
+
+	TP_STRUCT__entry(
+		__field(	unsigned long,	start		)
+		__field(	unsigned long,	end		)
+	),
+
+	TP_fast_assign(
+		__entry->start		= start;
+		__entry->end		= end;
+	),
+
+	TP_printk("mmu notifier age hva: %#016lx -- %#016lx",
+		  __entry->start, __entry->end)
+);
+
+TRACE_EVENT(kvm_test_age_hva,
+	TP_PROTO(unsigned long hva),
+	TP_ARGS(hva),
+
+	TP_STRUCT__entry(
+		__field(	unsigned long,	hva		)
+	),
+
+	TP_fast_assign(
+		__entry->hva		= hva;
+	),
+
+	TP_printk("mmu notifier test age hva: %#016lx", __entry->hva)
+);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _TRACE_KVM_MAIN_H */
 
 /* This part must be outside protection */

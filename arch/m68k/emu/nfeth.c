@@ -39,7 +39,11 @@ enum {
 #define MAX_UNIT	8
 
 /* These identify the driver base version and may not be removed. */
+<<<<<<< HEAD
 static const char version[] __devinitconst =
+=======
+static const char version[] __maybe_unused =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	KERN_INFO KBUILD_MODNAME ".c:v" DRV_VERSION " " DRV_RELDATE
 	" S.Opichal, M.Jurik, P.Stehlik\n"
 	KERN_INFO " http://aranym.org/\n";
@@ -47,10 +51,13 @@ static const char version[] __devinitconst =
 MODULE_AUTHOR("Milan Jurik");
 MODULE_DESCRIPTION("Atari NFeth driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 /*
 MODULE_PARM(nfeth_debug, "i");
 MODULE_PARM_DESC(nfeth_debug, "nfeth_debug level (1-2)");
 */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static long nfEtherID;
@@ -124,7 +131,10 @@ static inline void recv_packet(struct net_device *dev)
 
 	skb->protocol = eth_type_trans(skb, dev);
 	netif_rx(skb);
+<<<<<<< HEAD
 	dev->last_rx = jiffies;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->stats.rx_packets++;
 	dev->stats.rx_bytes += pktlen;
 
@@ -172,7 +182,11 @@ static int nfeth_xmit(struct sk_buff *skb, struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void nfeth_tx_timeout(struct net_device *dev)
+=======
+static void nfeth_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dev->stats.tx_errors++;
 	netif_wake_queue(dev);
@@ -184,7 +198,10 @@ static const struct net_device_ops nfeth_netdev_ops = {
 	.ndo_start_xmit		= nfeth_xmit,
 	.ndo_tx_timeout		= nfeth_tx_timeout,
 	.ndo_validate_addr	= eth_validate_addr,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address	= eth_mac_addr,
 };
 
@@ -195,7 +212,12 @@ static struct net_device * __init nfeth_probe(int unit)
 	char mac[ETH_ALEN], host_ip[32], local_ip[32];
 	int err;
 
+<<<<<<< HEAD
 	if (!nf_call(nfEtherID + XIF_GET_MAC, unit, mac, ETH_ALEN))
+=======
+	if (!nf_call(nfEtherID + XIF_GET_MAC, unit, virt_to_phys(mac),
+		     ETH_ALEN))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	dev = alloc_etherdev(sizeof(struct nfeth_private));
@@ -205,7 +227,11 @@ static struct net_device * __init nfeth_probe(int unit)
 	dev->irq = nfEtherIRQ;
 	dev->netdev_ops = &nfeth_netdev_ops;
 
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, mac, ETH_ALEN);
+=======
+	eth_hw_addr_set(dev, mac);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv = netdev_priv(dev);
 	priv->ethX = unit;
@@ -217,9 +243,15 @@ static struct net_device * __init nfeth_probe(int unit)
 	}
 
 	nf_call(nfEtherID + XIF_GET_IPHOST, unit,
+<<<<<<< HEAD
 		host_ip, sizeof(host_ip));
 	nf_call(nfEtherID + XIF_GET_IPATARI, unit,
 		local_ip, sizeof(local_ip));
+=======
+		virt_to_phys(host_ip), sizeof(host_ip));
+	nf_call(nfEtherID + XIF_GET_IPATARI, unit,
+		virt_to_phys(local_ip), sizeof(local_ip));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev_info(dev, KBUILD_MODNAME " addr:%s (%s) HWaddr:%pM\n", host_ip,
 		    local_ip, mac);
@@ -259,8 +291,13 @@ static void __exit nfeth_cleanup(void)
 
 	for (i = 0; i < MAX_UNIT; i++) {
 		if (nfeth_dev[i]) {
+<<<<<<< HEAD
 			unregister_netdev(nfeth_dev[0]);
 			free_netdev(nfeth_dev[0]);
+=======
+			unregister_netdev(nfeth_dev[i]);
+			free_netdev(nfeth_dev[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	free_irq(nfEtherIRQ, nfeth_interrupt);

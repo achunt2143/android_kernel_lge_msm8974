@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support for emulating SAT (ata pass through) on devices based
  *       on the Cypress USB/ATA bridge supporting ATACB.
  *
  * Copyright (c) 2008 Matthieu Castet (castet.matthieu@free.fr)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -17,6 +22,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -30,9 +37,18 @@
 #include "scsiglue.h"
 #include "debug.h"
 
+<<<<<<< HEAD
 MODULE_DESCRIPTION("SAT support for Cypress USB/ATA bridges with ATACB");
 MODULE_AUTHOR("Matthieu Castet <castet.matthieu@free.fr>");
 MODULE_LICENSE("GPL");
+=======
+#define DRV_NAME "ums-cypress"
+
+MODULE_DESCRIPTION("SAT support for Cypress USB/ATA bridges with ATACB");
+MODULE_AUTHOR("Matthieu Castet <castet.matthieu@free.fr>");
+MODULE_LICENSE("GPL");
+MODULE_IMPORT_NS(USB_STORAGE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The table of devices
@@ -41,7 +57,11 @@ MODULE_LICENSE("GPL");
 		    vendorName, productName, useProtocol, useTransport, \
 		    initFunction, flags) \
 { USB_DEVICE_VER(id_vendor, id_product, bcdDeviceMin, bcdDeviceMax), \
+<<<<<<< HEAD
   .driver_info = (flags)|(USB_US_TYPE_STOR<<24) }
+=======
+  .driver_info = (flags) }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct usb_device_id cypress_usb_ids[] = {
 #	include "unusual_cypress.h"
@@ -96,6 +116,7 @@ static void cypress_atacb_passthrough(struct scsi_cmnd *srb, struct us_data *us)
 	if (save_cmnd[1] >> 5) /* MULTIPLE_COUNT */
 		goto invalid_fld;
 	/* check protocol */
+<<<<<<< HEAD
 	switch((save_cmnd[1] >> 1) & 0xf) {
 		case 3: /*no DATA */
 		case 4: /* PIO in */
@@ -103,11 +124,21 @@ static void cypress_atacb_passthrough(struct scsi_cmnd *srb, struct us_data *us)
 			break;
 		default:
 			goto invalid_fld;
+=======
+	switch ((save_cmnd[1] >> 1) & 0xf) {
+	case 3: /*no DATA */
+	case 4: /* PIO in */
+	case 5: /* PIO out */
+		break;
+	default:
+		goto invalid_fld;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* first build the ATACB command */
 	srb->cmd_len = 16;
 
+<<<<<<< HEAD
 	srb->cmnd[0] = 0x24; /* bVSCBSignature : vendor-specific command
 	                        this value can change, but most(all ?) manufacturers
 							keep the cypress default : 0x24 */
@@ -115,6 +146,19 @@ static void cypress_atacb_passthrough(struct scsi_cmnd *srb, struct us_data *us)
 
 	srb->cmnd[3] = 0xff - 1; /* features, sector count, lba low, lba med
 								lba high, device, command are valid */
+=======
+	srb->cmnd[0] = 0x24; /*
+			      * bVSCBSignature : vendor-specific command
+			      * this value can change, but most(all ?) manufacturers
+			      * keep the cypress default : 0x24
+			      */
+	srb->cmnd[1] = 0x24; /* bVSCBSubCommand : 0x24 for ATACB */
+
+	srb->cmnd[3] = 0xff - 1; /*
+				  * features, sector count, lba low, lba med
+				  * lba high, device, command are valid
+				  */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	srb->cmnd[4] = 1; /* TransferBlockCount : 512 */
 
 	if (save_cmnd[0] == ATA_16) {
@@ -132,8 +176,12 @@ static void cypress_atacb_passthrough(struct scsi_cmnd *srb, struct us_data *us)
 					|| save_cmnd[11])
 				goto invalid_fld;
 		}
+<<<<<<< HEAD
 	}
 	else { /* ATA12 */
+=======
+	} else { /* ATA12 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		srb->cmnd[ 6] = save_cmnd[3]; /* features */
 		srb->cmnd[ 7] = save_cmnd[4]; /* sector count */
 		srb->cmnd[ 8] = save_cmnd[5]; /* lba low */
@@ -154,6 +202,7 @@ static void cypress_atacb_passthrough(struct scsi_cmnd *srb, struct us_data *us)
 
 	usb_stor_transparent_scsi_command(srb, us);
 
+<<<<<<< HEAD
 	/* if the device doesn't support ATACB
 	 */
 	if (srb->result == SAM_STAT_CHECK_CONDITION &&
@@ -164,6 +213,18 @@ static void cypress_atacb_passthrough(struct scsi_cmnd *srb, struct us_data *us)
 	}
 
 	/* if ck_cond flags is set, and there wasn't critical error,
+=======
+	/* if the device doesn't support ATACB */
+	if (srb->result == SAM_STAT_CHECK_CONDITION &&
+			memcmp(srb->sense_buffer, usb_stor_sense_invalidCDB,
+				sizeof(usb_stor_sense_invalidCDB)) == 0) {
+		usb_stor_dbg(us, "cypress atacb not supported ???\n");
+		goto end;
+	}
+
+	/*
+	 * if ck_cond flags is set, and there wasn't critical error,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * build the special sense
 	 */
 	if ((srb->result != (DID_ERROR << 16) &&
@@ -175,16 +236,27 @@ static void cypress_atacb_passthrough(struct scsi_cmnd *srb, struct us_data *us)
 		unsigned char *desc = sb + 8;
 		int tmp_result;
 
+<<<<<<< HEAD
 		/* build the command for
 		 * reading the ATA registers */
 		scsi_eh_prep_cmnd(srb, &ses, NULL, 0, sizeof(regs));
 
 		/* we use the same command as before, but we set
+=======
+		/* build the command for reading the ATA registers */
+		scsi_eh_prep_cmnd(srb, &ses, NULL, 0, sizeof(regs));
+
+		/*
+		 * we use the same command as before, but we set
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * the read taskfile bit, for not executing atacb command,
 		 * but reading register selected in srb->cmnd[4]
 		 */
 		srb->cmd_len = 16;
+<<<<<<< HEAD
 		srb->cmnd = ses.cmnd;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		srb->cmnd[2] = 1;
 
 		usb_stor_transparent_scsi_command(srb, us);
@@ -203,10 +275,18 @@ static void cypress_atacb_passthrough(struct scsi_cmnd *srb, struct us_data *us)
 		sb[2] = 0; /* ATA PASS THROUGH INFORMATION AVAILABLE */
 		sb[3] = 0x1D;
 
+<<<<<<< HEAD
 		/* XXX we should generate sk, asc, ascq from status and error
 		 * regs
 		 * (see 11.1 Error translation ATA device error to SCSI error
 		 *  map, and ata_to_sense_error from libata.)
+=======
+		/*
+		 * XXX we should generate sk, asc, ascq from status and error
+		 * regs
+		 * (see 11.1 Error translation ATA device error to SCSI error
+		 * map, and ata_to_sense_error from libata.)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 
 		/* Sense data is current and format is descriptor. */
@@ -227,11 +307,19 @@ static void cypress_atacb_passthrough(struct scsi_cmnd *srb, struct us_data *us)
 		desc[12] = regs[6];  /* device */
 		desc[13] = regs[7];  /* command */
 
+<<<<<<< HEAD
 		srb->result = (DRIVER_SENSE << 24) | SAM_STAT_CHECK_CONDITION;
 	}
 	goto end;
 invalid_fld:
 	srb->result = (DRIVER_SENSE << 24) | SAM_STAT_CHECK_CONDITION;
+=======
+		srb->result = SAM_STAT_CHECK_CONDITION;
+	}
+	goto end;
+invalid_fld:
+	srb->result = SAM_STAT_CHECK_CONDITION;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(srb->sense_buffer,
 			usb_stor_sense_invalidCDB,
@@ -242,6 +330,10 @@ end:
 		srb->cmd_len = 12;
 }
 
+<<<<<<< HEAD
+=======
+static struct scsi_host_template cypress_host_template;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int cypress_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
@@ -251,11 +343,21 @@ static int cypress_probe(struct usb_interface *intf,
 	struct usb_device *device;
 
 	result = usb_stor_probe1(&us, intf, id,
+<<<<<<< HEAD
 			(id - cypress_usb_ids) + cypress_unusual_dev_list);
 	if (result)
 		return result;
 
 	/* Among CY7C68300 chips, the A revision does not support Cypress ATACB
+=======
+			(id - cypress_usb_ids) + cypress_unusual_dev_list,
+			&cypress_host_template);
+	if (result)
+		return result;
+
+	/*
+	 * Among CY7C68300 chips, the A revision does not support Cypress ATACB
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Filter out this revision from EEPROM default descriptor values
 	 */
 	device = interface_to_usbdev(intf);
@@ -274,7 +376,11 @@ static int cypress_probe(struct usb_interface *intf,
 }
 
 static struct usb_driver cypress_driver = {
+<<<<<<< HEAD
 	.name =		"ums-cypress",
+=======
+	.name =		DRV_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe =	cypress_probe,
 	.disconnect =	usb_stor_disconnect,
 	.suspend =	usb_stor_suspend,
@@ -287,4 +393,8 @@ static struct usb_driver cypress_driver = {
 	.no_dynamic_id = 1,
 };
 
+<<<<<<< HEAD
 module_usb_driver(cypress_driver);
+=======
+module_usb_stor_driver(cypress_driver, cypress_host_template, DRV_NAME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

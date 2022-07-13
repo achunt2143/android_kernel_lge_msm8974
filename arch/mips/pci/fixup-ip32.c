@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/pci.h>
@@ -21,6 +25,7 @@
 #define INTB   MACEPCI_SHARED0_IRQ
 #define INTC   MACEPCI_SHARED1_IRQ
 #define INTD   MACEPCI_SHARED2_IRQ
+<<<<<<< HEAD
 static char irq_tab_mace[][5] __initdata = {
       /* Dummy  INT#A  INT#B  INT#C  INT#D */
 	{0,         0,     0,     0,     0}, /* This is placeholder row - never used */
@@ -29,6 +34,16 @@ static char irq_tab_mace[][5] __initdata = {
 	{0,     INTA0,  INTB,  INTC,  INTD},
 	{0,     INTA1,  INTC,  INTD,  INTB},
 	{0,     INTA2,  INTD,  INTB,  INTC},
+=======
+static char irq_tab_mace[][5] = {
+      /* Dummy	INT#A  INT#B  INT#C  INT#D */
+	{0,	    0,	   0,	  0,	 0}, /* This is placeholder row - never used */
+	{0,	SCSI0, SCSI0, SCSI0, SCSI0},
+	{0,	SCSI1, SCSI1, SCSI1, SCSI1},
+	{0,	INTA0,	INTB,  INTC,  INTD},
+	{0,	INTA1,	INTC,  INTD,  INTB},
+	{0,	INTA2,	INTD,  INTB,  INTC},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -39,7 +54,11 @@ static char irq_tab_mace[][5] __initdata = {
  * irqs.  I suppose a device without a pin A will thank us for doing it
  * right if there exists such a broken piece of crap.
  */
+<<<<<<< HEAD
 int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+=======
+int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return irq_tab_mace[slot][pin];
 }

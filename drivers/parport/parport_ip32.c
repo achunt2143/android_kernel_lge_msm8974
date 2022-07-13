@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Low-level parallel port routines for built-in port on SGI IP32
  *
  * Author: Arnaud Giersch <arnaud.giersch@free.fr>
@@ -9,6 +13,7 @@
  * Thanks to Ilya A. Volynets-Evenbakh for his help.
  *
  * Copyright (C) 2005, 2006 Arnaud Giersch.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -23,6 +28,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Current status:
@@ -102,7 +109,11 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/parport.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/stddef.h>
@@ -138,7 +149,11 @@ static unsigned int features =	~0U;
 static bool verbose_probing =	DEFAULT_VERBOSE_PROBING;
 
 /* We do not support more than one port. */
+<<<<<<< HEAD
 static struct parport *this_port = NULL;
+=======
+static struct parport *this_port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Timing constants for FIFO modes.  */
 #define FIFO_NFAULT_TIMEOUT	100	/* milliseconds */
@@ -341,6 +356,7 @@ static void parport_ip32_dump_state(struct parport *p, char *str,
 						     "TST", "CFG"};
 		unsigned int ecr = readb(priv->regs.ecr);
 		printk(KERN_DEBUG PPIP32 "    ecr=0x%02x", ecr);
+<<<<<<< HEAD
 		printk(" %s",
 		       ecr_modes[(ecr & ECR_MODE_MASK) >> ECR_MODE_SHIFT]);
 		if (ecr & ECR_nERRINTR)
@@ -354,6 +370,21 @@ static void parport_ip32_dump_state(struct parport *p, char *str,
 		if (ecr & ECR_F_EMPTY)
 			printk(",f_empty");
 		printk("\n");
+=======
+		pr_cont(" %s",
+			ecr_modes[(ecr & ECR_MODE_MASK) >> ECR_MODE_SHIFT]);
+		if (ecr & ECR_nERRINTR)
+			pr_cont(",nErrIntrEn");
+		if (ecr & ECR_DMAEN)
+			pr_cont(",dmaEn");
+		if (ecr & ECR_SERVINTR)
+			pr_cont(",serviceIntr");
+		if (ecr & ECR_F_FULL)
+			pr_cont(",f_full");
+		if (ecr & ECR_F_EMPTY)
+			pr_cont(",f_empty");
+		pr_cont("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (show_ecp_config) {
 		unsigned int oecr, cnfgA, cnfgB;
@@ -365,6 +396,7 @@ static void parport_ip32_dump_state(struct parport *p, char *str,
 		writeb(ECR_MODE_PS2, priv->regs.ecr);
 		writeb(oecr, priv->regs.ecr);
 		printk(KERN_DEBUG PPIP32 "    cnfgA=0x%02x", cnfgA);
+<<<<<<< HEAD
 		printk(" ISA-%s", (cnfgA & CNFGA_IRQ) ? "Level" : "Pulses");
 		switch (cnfgA & CNFGA_ID_MASK) {
 		case CNFGA_ID_8:
@@ -394,11 +426,44 @@ static void parport_ip32_dump_state(struct parport *p, char *str,
 		if (cnfgB & CNFGB_COMPRESS)
 			printk(",compress");
 		printk("\n");
+=======
+		pr_cont(" ISA-%s", (cnfgA & CNFGA_IRQ) ? "Level" : "Pulses");
+		switch (cnfgA & CNFGA_ID_MASK) {
+		case CNFGA_ID_8:
+			pr_cont(",8 bits");
+			break;
+		case CNFGA_ID_16:
+			pr_cont(",16 bits");
+			break;
+		case CNFGA_ID_32:
+			pr_cont(",32 bits");
+			break;
+		default:
+			pr_cont(",unknown ID");
+			break;
+		}
+		if (!(cnfgA & CNFGA_nBYTEINTRANS))
+			pr_cont(",ByteInTrans");
+		if ((cnfgA & CNFGA_ID_MASK) != CNFGA_ID_8)
+			pr_cont(",%d byte%s left",
+				cnfgA & CNFGA_PWORDLEFT,
+				((cnfgA & CNFGA_PWORDLEFT) > 1) ? "s" : "");
+		pr_cont("\n");
+		printk(KERN_DEBUG PPIP32 "    cnfgB=0x%02x", cnfgB);
+		pr_cont(" irq=%u,dma=%u",
+			(cnfgB & CNFGB_IRQ_MASK) >> CNFGB_IRQ_SHIFT,
+			(cnfgB & CNFGB_DMA_MASK) >> CNFGB_DMA_SHIFT);
+		pr_cont(",intrValue=%d", !!(cnfgB & CNFGB_INTRVAL));
+		if (cnfgB & CNFGB_COMPRESS)
+			pr_cont(",compress");
+		pr_cont("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	for (i = 0; i < 2; i++) {
 		unsigned int dcr = i ? priv->dcr_cache : readb(priv->regs.dcr);
 		printk(KERN_DEBUG PPIP32 "    dcr(%s)=0x%02x",
 		       i ? "soft" : "hard", dcr);
+<<<<<<< HEAD
 		printk(" %s", (dcr & DCR_DIR) ? "rev" : "fwd");
 		if (dcr & DCR_IRQ)
 			printk(",ackIntEn");
@@ -411,6 +476,20 @@ static void parport_ip32_dump_state(struct parport *p, char *str,
 		if (!(dcr & DCR_STROBE))
 			printk(",nStrobe");
 		printk("\n");
+=======
+		pr_cont(" %s", (dcr & DCR_DIR) ? "rev" : "fwd");
+		if (dcr & DCR_IRQ)
+			pr_cont(",ackIntEn");
+		if (!(dcr & DCR_SELECT))
+			pr_cont(",nSelectIn");
+		if (dcr & DCR_nINIT)
+			pr_cont(",nInit");
+		if (!(dcr & DCR_AUTOFD))
+			pr_cont(",nAutoFD");
+		if (!(dcr & DCR_STROBE))
+			pr_cont(",nStrobe");
+		pr_cont("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #define sep (f++ ? ',' : ' ')
 	{
@@ -418,6 +497,7 @@ static void parport_ip32_dump_state(struct parport *p, char *str,
 		unsigned int dsr = readb(priv->regs.dsr);
 		printk(KERN_DEBUG PPIP32 "    dsr=0x%02x", dsr);
 		if (!(dsr & DSR_nBUSY))
+<<<<<<< HEAD
 			printk("%cBusy", sep);
 		if (dsr & DSR_nACK)
 			printk("%cnAck", sep);
@@ -432,6 +512,22 @@ static void parport_ip32_dump_state(struct parport *p, char *str,
 		if (dsr & DSR_TIMEOUT)
 			printk("%cTimeout", sep);
 		printk("\n");
+=======
+			pr_cont("%cBusy", sep);
+		if (dsr & DSR_nACK)
+			pr_cont("%cnAck", sep);
+		if (dsr & DSR_PERROR)
+			pr_cont("%cPError", sep);
+		if (dsr & DSR_SELECT)
+			pr_cont("%cSelect", sep);
+		if (dsr & DSR_nFAULT)
+			pr_cont("%cnFault", sep);
+		if (!(dsr & DSR_nPRINT))
+			pr_cont("%c(Print)", sep);
+		if (dsr & DSR_TIMEOUT)
+			pr_cont("%cTimeout", sep);
+		pr_cont("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #undef sep
 }
@@ -568,6 +664,10 @@ static irqreturn_t parport_ip32_merr_interrupt(int irq, void *dev_id)
 
 /**
  * parport_ip32_dma_start - begins a DMA transfer
+<<<<<<< HEAD
+=======
+ * @p:		partport to work on
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dir:	DMA direction: DMA_TO_DEVICE or DMA_FROM_DEVICE
  * @addr:	pointer to data buffer
  * @count:	buffer size
@@ -575,8 +675,13 @@ static irqreturn_t parport_ip32_merr_interrupt(int irq, void *dev_id)
  * Calls to parport_ip32_dma_start() and parport_ip32_dma_stop() must be
  * correctly balanced.
  */
+<<<<<<< HEAD
 static int parport_ip32_dma_start(enum dma_data_direction dir,
 				  void *addr, size_t count)
+=======
+static int parport_ip32_dma_start(struct parport *p,
+		enum dma_data_direction dir, void *addr, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int limit;
 	u64 ctrl;
@@ -601,7 +706,11 @@ static int parport_ip32_dma_start(enum dma_data_direction dir,
 
 	/* Prepare DMA pointers */
 	parport_ip32_dma.dir = dir;
+<<<<<<< HEAD
 	parport_ip32_dma.buf = dma_map_single(NULL, addr, count, dir);
+=======
+	parport_ip32_dma.buf = dma_map_single(&p->bus_dev, addr, count, dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parport_ip32_dma.len = count;
 	parport_ip32_dma.next = parport_ip32_dma.buf;
 	parport_ip32_dma.left = parport_ip32_dma.len;
@@ -625,11 +734,19 @@ static int parport_ip32_dma_start(enum dma_data_direction dir,
 
 /**
  * parport_ip32_dma_stop - ends a running DMA transfer
+<<<<<<< HEAD
+=======
+ * @p:		partport to work on
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Calls to parport_ip32_dma_start() and parport_ip32_dma_stop() must be
  * correctly balanced.
  */
+<<<<<<< HEAD
 static void parport_ip32_dma_stop(void)
+=======
+static void parport_ip32_dma_stop(struct parport *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 ctx_a;
 	u64 ctx_b;
@@ -685,8 +802,13 @@ static void parport_ip32_dma_stop(void)
 	enable_irq(MACEISA_PAR_CTXB_IRQ);
 	parport_ip32_dma.irq_on = 1;
 
+<<<<<<< HEAD
 	dma_unmap_single(NULL, parport_ip32_dma.buf, parport_ip32_dma.len,
 			 parport_ip32_dma.dir);
+=======
+	dma_unmap_single(&p->bus_dev, parport_ip32_dma.buf,
+			 parport_ip32_dma.len, parport_ip32_dma.dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1331,7 +1453,11 @@ static unsigned int parport_ip32_fwp_wait_interrupt(struct parport *p)
 			break;
 
 		/* Initialize mutex used to take interrupts into account */
+<<<<<<< HEAD
 		INIT_COMPLETION(priv->irq_complete);
+=======
+		reinit_completion(&priv->irq_complete);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Enable serviceIntr */
 		parport_ip32_frob_econtrol(p, ECR_SERVINTR, 0);
@@ -1348,9 +1474,14 @@ static unsigned int parport_ip32_fwp_wait_interrupt(struct parport *p)
 			ecr = parport_ip32_read_econtrol(p);
 			if ((ecr & ECR_F_EMPTY) && !(ecr & ECR_SERVINTR)
 			    && !lost_interrupt) {
+<<<<<<< HEAD
 				printk(KERN_WARNING PPIP32
 				       "%s: lost interrupt in %s\n",
 				       p->name, __func__);
+=======
+				pr_warn(PPIP32 "%s: lost interrupt in %s\n",
+					p->name, __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				lost_interrupt = 1;
 			}
 		}
@@ -1445,8 +1576,13 @@ static size_t parport_ip32_fifo_write_block_dma(struct parport *p,
 
 	priv->irq_mode = PARPORT_IP32_IRQ_HERE;
 
+<<<<<<< HEAD
 	parport_ip32_dma_start(DMA_TO_DEVICE, (void *)buf, len);
 	INIT_COMPLETION(priv->irq_complete);
+=======
+	parport_ip32_dma_start(p, DMA_TO_DEVICE, (void *)buf, len);
+	reinit_completion(&priv->irq_complete);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parport_ip32_frob_econtrol(p, ECR_DMAEN | ECR_SERVINTR, ECR_DMAEN);
 
 	nfault_timeout = min((unsigned long)physport->cad->timeout,
@@ -1461,7 +1597,11 @@ static size_t parport_ip32_fifo_write_block_dma(struct parport *p,
 		if (ecr & ECR_SERVINTR)
 			break;	/* DMA transfer just finished */
 	}
+<<<<<<< HEAD
 	parport_ip32_dma_stop();
+=======
+	parport_ip32_dma_stop(p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	written = len - parport_ip32_dma_get_residue();
 
 	priv->irq_mode = PARPORT_IP32_IRQ_FWD;
@@ -1654,8 +1794,13 @@ static size_t parport_ip32_compat_write_data(struct parport *p,
 				       DSR_nBUSY | DSR_nFAULT)) {
 		/* Avoid to flood the logs */
 		if (ready_before)
+<<<<<<< HEAD
 			printk(KERN_INFO PPIP32 "%s: not ready in %s\n",
 			       p->name, __func__);
+=======
+			pr_info(PPIP32 "%s: not ready in %s\n",
+				p->name, __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ready_before = 0;
 		goto stop;
 	}
@@ -1715,7 +1860,11 @@ static size_t parport_ip32_ecp_write_data(struct parport *p,
 
 		/* Event 49: PError goes high. */
 		if (parport_wait_peripheral(p, DSR_PERROR, DSR_PERROR)) {
+<<<<<<< HEAD
 			printk(KERN_DEBUG PPIP32 "%s: PError timeout in %s",
+=======
+			printk(KERN_DEBUG PPIP32 "%s: PError timeout in %s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       p->name, __func__);
 			physport->ieee1284.phase = IEEE1284_PH_ECP_DIR_UNKNOWN;
 			return 0;
@@ -1735,8 +1884,13 @@ static size_t parport_ip32_ecp_write_data(struct parport *p,
 				       DSR_nBUSY | DSR_nFAULT)) {
 		/* Avoid to flood the logs */
 		if (ready_before)
+<<<<<<< HEAD
 			printk(KERN_INFO PPIP32 "%s: not ready in %s\n",
 			       p->name, __func__);
+=======
+			pr_info(PPIP32 "%s: not ready in %s\n",
+				p->name, __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ready_before = 0;
 		goto stop;
 	}
@@ -1769,7 +1923,11 @@ stop:
 
 /*--- Default parport operations ---------------------------------------*/
 
+<<<<<<< HEAD
 static __initdata struct parport_operations parport_ip32_ops = {
+=======
+static const struct parport_operations parport_ip32_ops __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write_data		= parport_ip32_write_data,
 	.read_data		= parport_ip32_read_data,
 
@@ -2075,8 +2233,12 @@ static __init struct parport *parport_ip32_probe_port(void)
 	p->modes |= PARPORT_MODE_TRISTATE;
 
 	if (!parport_ip32_fifo_supported(p)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING PPIP32
 		       "%s: error: FIFO disabled\n", p->name);
+=======
+		pr_warn(PPIP32 "%s: error: FIFO disabled\n", p->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Disable hardware modes depending on a working FIFO. */
 		features &= ~PARPORT_IP32_ENABLE_SPP;
 		features &= ~PARPORT_IP32_ENABLE_ECP;
@@ -2088,8 +2250,12 @@ static __init struct parport *parport_ip32_probe_port(void)
 	if (features & PARPORT_IP32_ENABLE_IRQ) {
 		int irq = MACEISA_PARALLEL_IRQ;
 		if (request_irq(irq, parport_ip32_interrupt, 0, p->name, p)) {
+<<<<<<< HEAD
 			printk(KERN_WARNING PPIP32
 			       "%s: error: IRQ disabled\n", p->name);
+=======
+			pr_warn(PPIP32 "%s: error: IRQ disabled\n", p->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* DMA cannot work without interrupts. */
 			features &= ~PARPORT_IP32_ENABLE_DMA;
 		} else {
@@ -2102,8 +2268,12 @@ static __init struct parport *parport_ip32_probe_port(void)
 	/* Allocate DMA resources */
 	if (features & PARPORT_IP32_ENABLE_DMA) {
 		if (parport_ip32_dma_register())
+<<<<<<< HEAD
 			printk(KERN_WARNING PPIP32
 			       "%s: error: DMA disabled\n", p->name);
+=======
+			pr_warn(PPIP32 "%s: error: DMA disabled\n", p->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {
 			pr_probe(p, "DMA support enabled\n");
 			p->dma = 0; /* arbitrary value != PARPORT_DMA_NONE */
@@ -2145,6 +2315,7 @@ static __init struct parport *parport_ip32_probe_port(void)
 	parport_ip32_dump_state(p, "end init", 0);
 
 	/* Print out what we found */
+<<<<<<< HEAD
 	printk(KERN_INFO "%s: SGI IP32 at 0x%lx (0x%lx)",
 	       p->name, p->base, p->base_hi);
 	if (p->irq != PARPORT_IRQ_NONE)
@@ -2152,6 +2323,17 @@ static __init struct parport *parport_ip32_probe_port(void)
 	printk(" [");
 #define printmode(x)	if (p->modes & PARPORT_MODE_##x)		\
 				printk("%s%s", f++ ? "," : "", #x)
+=======
+	pr_info("%s: SGI IP32 at 0x%lx (0x%lx)", p->name, p->base, p->base_hi);
+	if (p->irq != PARPORT_IRQ_NONE)
+		pr_cont(", irq %d", p->irq);
+	pr_cont(" [");
+#define printmode(x)							\
+do {									\
+	if (p->modes & PARPORT_MODE_##x)				\
+		pr_cont("%s%s", f++ ? "," : "", #x);			\
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		unsigned int f = 0;
 		printmode(PCSPP);
@@ -2162,7 +2344,11 @@ static __init struct parport *parport_ip32_probe_port(void)
 		printmode(DMA);
 	}
 #undef printmode
+<<<<<<< HEAD
 	printk("]\n");
+=======
+	pr_cont("]\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	parport_announce_port(p);
 	return p;
@@ -2204,7 +2390,11 @@ static int __init parport_ip32_init(void)
 {
 	pr_info(PPIP32 "SGI IP32 built-in parallel port driver v0.6\n");
 	this_port = parport_ip32_probe_port();
+<<<<<<< HEAD
 	return IS_ERR(this_port) ? PTR_ERR(this_port) : 0;
+=======
+	return PTR_ERR_OR_ZERO(this_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2236,6 +2426,7 @@ MODULE_PARM_DESC(features,
 		 ", bit 2: hardware SPP mode"
 		 ", bit 3: hardware EPP mode"
 		 ", bit 4: hardware ECP mode");
+<<<<<<< HEAD
 
 /*--- Inform (X)Emacs about preferred coding style ---------------------*/
 /*
@@ -2248,3 +2439,5 @@ MODULE_PARM_DESC(features,
  * ispell-local-dictionary: "american"
  * End:
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

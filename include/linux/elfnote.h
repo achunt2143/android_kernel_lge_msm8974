@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_ELFNOTE_H
 #define _LINUX_ELFNOTE_H
 /*
@@ -53,12 +57,20 @@
 .popsection				;
 
 #define ELFNOTE(name, type, desc)		\
+<<<<<<< HEAD
 	ELFNOTE_START(name, type, "")		\
+=======
+	ELFNOTE_START(name, type, "a")		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		desc			;	\
 	ELFNOTE_END
 
 #else	/* !__ASSEMBLER__ */
+<<<<<<< HEAD
 #include <linux/elf.h>
+=======
+#include <uapi/linux/elf.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Use an anonymous structure which matches the shape of
  * Elf{32,64}_Nhdr, but includes the name and desc data.  The size and

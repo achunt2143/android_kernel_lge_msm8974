@@ -1,19 +1,31 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/csumpartialcopy.S
  *
  *  Copyright (C) 1995-1998 Russell King
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/linkage.h>
 #include <asm/assembler.h>
 
 		.text
 
+<<<<<<< HEAD
 /* Function: __u32 csum_partial_copy_nocheck(const char *src, char *dst, int len, __u32 sum)
  * Params  : r0 = src, r1 = dst, r2 = len, r3 = checksum
+=======
+/* Function: __u32 csum_partial_copy_nocheck(const char *src, char *dst, int len)
+ * Params  : r0 = src, r1 = dst, r2 = len
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns : r0 = new checksum
  */
 

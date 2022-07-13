@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sample kfifo byte stream implementation
  *
  * Copyright (C) 2010 Stefani Seibold <stefani@seibold.net>
+<<<<<<< HEAD
  *
  * Released under the GPL version 2 only.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -24,10 +31,17 @@
 #define	PROC_FIFO	"bytestream-fifo"
 
 /* lock for procfs read access */
+<<<<<<< HEAD
 static DEFINE_MUTEX(read_lock);
 
 /* lock for procfs write access */
 static DEFINE_MUTEX(write_lock);
+=======
+static DEFINE_MUTEX(read_access);
+
+/* lock for procfs write access */
+static DEFINE_MUTEX(write_access);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * define DYNAMIC in this example for a dynamically allocated fifo.
@@ -64,7 +78,11 @@ static int __init testfunc(void)
 
 	/* put values into the fifo */
 	for (i = 0; i != 10; i++)
+<<<<<<< HEAD
 		kfifo_put(&test, &i);
+=======
+		kfifo_put(&test, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* show the number of used elements */
 	printk(KERN_INFO "fifo len: %u\n", kfifo_len(&test));
@@ -85,7 +103,11 @@ static int __init testfunc(void)
 	kfifo_skip(&test);
 
 	/* put values into the fifo until is full */
+<<<<<<< HEAD
 	for (i = 20; kfifo_put(&test, &i); i++)
+=======
+	for (i = 20; kfifo_put(&test, i); i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		;
 
 	printk(KERN_INFO "queue len: %u\n", kfifo_len(&test));
@@ -118,14 +140,26 @@ static ssize_t fifo_write(struct file *file, const char __user *buf,
 	int ret;
 	unsigned int copied;
 
+<<<<<<< HEAD
 	if (mutex_lock_interruptible(&write_lock))
+=======
+	if (mutex_lock_interruptible(&write_access))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERESTARTSYS;
 
 	ret = kfifo_from_user(&test, buf, count, &copied);
 
+<<<<<<< HEAD
 	mutex_unlock(&write_lock);
 
 	return ret ? ret : copied;
+=======
+	mutex_unlock(&write_access);
+	if (ret)
+		return ret;
+
+	return copied;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t fifo_read(struct file *file, char __user *buf,
@@ -134,11 +168,16 @@ static ssize_t fifo_read(struct file *file, char __user *buf,
 	int ret;
 	unsigned int copied;
 
+<<<<<<< HEAD
 	if (mutex_lock_interruptible(&read_lock))
+=======
+	if (mutex_lock_interruptible(&read_access))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERESTARTSYS;
 
 	ret = kfifo_to_user(&test, buf, count, &copied);
 
+<<<<<<< HEAD
 	mutex_unlock(&read_lock);
 
 	return ret ? ret : copied;
@@ -149,6 +188,19 @@ static const struct file_operations fifo_fops = {
 	.read		= fifo_read,
 	.write		= fifo_write,
 	.llseek		= noop_llseek,
+=======
+	mutex_unlock(&read_access);
+	if (ret)
+		return ret;
+
+	return copied;
+}
+
+static const struct proc_ops fifo_proc_ops = {
+	.proc_read	= fifo_read,
+	.proc_write	= fifo_write,
+	.proc_lseek	= noop_llseek,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init example_init(void)
@@ -171,7 +223,11 @@ static int __init example_init(void)
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	if (proc_create(PROC_FIFO, 0, NULL, &fifo_fops) == NULL) {
+=======
+	if (proc_create(PROC_FIFO, 0, NULL, &fifo_proc_ops) == NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DYNAMIC
 		kfifo_free(&test);
 #endif

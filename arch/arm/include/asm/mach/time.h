@@ -1,15 +1,23 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/include/asm/mach/time.h
  *
  * Copyright (C) 2004 MontaVista Software, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_ARM_MACH_TIME_H
 #define __ASM_ARM_MACH_TIME_H
 
+<<<<<<< HEAD
 /*
  * This is our kernel timer structure.
  *
@@ -41,5 +49,9 @@ struct sys_timer {
 };
 
 extern void timer_tick(void);
+=======
+typedef void (*clock_access_fn)(struct timespec64 *);
+extern int register_persistent_clock(clock_access_fn read_persistent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # USB device configuration
 #
 
+<<<<<<< HEAD
 # many non-PCI SOC chips embed OHCI
 config USB_ARCH_HAS_OHCI
 	boolean
@@ -55,17 +60,46 @@ config USB_ARCH_HAS_XHCI
 	boolean
 	default y if ARCH_MSM8974
 	default PCI
+=======
+config USB_OHCI_BIG_ENDIAN_DESC
+	bool
+
+config USB_OHCI_BIG_ENDIAN_MMIO
+	bool
+
+config USB_OHCI_LITTLE_ENDIAN
+	bool
+	default n if PPC_MPC52xx
+	default y
+
+config USB_EHCI_BIG_ENDIAN_MMIO
+	bool
+
+config USB_EHCI_BIG_ENDIAN_DESC
+	bool
+
+config USB_UHCI_BIG_ENDIAN_MMIO
+	bool
+
+config USB_UHCI_BIG_ENDIAN_DESC
+	bool
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 menuconfig USB_SUPPORT
 	bool "USB support"
 	depends on HAS_IOMEM
 	default y
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This option adds core support for Universal Serial Bus (USB).
 	  You will also need drivers from the following menu to make use of it.
 
 if USB_SUPPORT
 
+<<<<<<< HEAD
 config USB_COMMON
 	tristate
 	default y
@@ -91,6 +125,20 @@ config USB
 	depends on USB_ARCH_HAS_HCD
 	select NLS  # for UTF-8 strings
 	---help---
+=======
+source "drivers/usb/common/Kconfig"
+
+config USB_ARCH_HAS_HCD
+	def_bool y
+
+config USB
+	tristate "Support for Host-side USB"
+	depends on USB_ARCH_HAS_HCD
+	select GENERIC_ALLOCATOR
+	select USB_COMMON
+	select NLS  # for UTF-8 strings
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Universal Serial Bus (USB) is a specification for a serial bus
 	  subsystem which offers higher speeds and more features than the
 	  traditional PC serial port.  The bus supplies power to peripherals
@@ -117,11 +165,16 @@ config USB
 	  After choosing your HCD, then select drivers for the USB peripherals
 	  you'll be using.  You may want to check out the information provided
 	  in <file:Documentation/usb/> and especially the links given in
+<<<<<<< HEAD
 	  <file:Documentation/usb/usb-help.txt>.
+=======
+	  <file:Documentation/usb/usb-help.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called usbcore.
 
+<<<<<<< HEAD
 source "drivers/usb/core/Kconfig"
 
 source "drivers/usb/dwc3/Kconfig"
@@ -134,6 +187,38 @@ source "drivers/usb/host/Kconfig"
 
 source "drivers/usb/musb/Kconfig"
 
+=======
+config USB_PCI
+	bool "PCI based USB host interface"
+	depends on PCI
+	default y
+	help
+	  Many embedded system SOCs (e.g. freescale T2080) have both
+	  PCI and USB modules with the USB module directly controlled by
+	  registers and having no relationship to the PCI module.
+
+	  If you have such a device you may say N here and PCI related code
+	  will not be built in the USB driver.
+
+config USB_PCI_AMD
+	bool "AMD PCI USB host support"
+	depends on USB_PCI && HAS_IOPORT
+	default X86 || MACH_LOONGSON64 || PPC_PASEMI
+	help
+	  Enable workarounds for USB implementation quirks in SB600/SB700/SB800
+	  and later south bridge implementations. These are common on x86 PCs
+	  with AMD CPUs but rarely used elsewhere, with the exception of a few
+	  powerpc and mips desktop machines.
+
+if USB
+
+source "drivers/usb/core/Kconfig"
+
+source "drivers/usb/mon/Kconfig"
+
+source "drivers/usb/host/Kconfig"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "drivers/usb/renesas_usbhs/Kconfig"
 
 source "drivers/usb/class/Kconfig"
@@ -142,6 +227,7 @@ source "drivers/usb/storage/Kconfig"
 
 source "drivers/usb/image/Kconfig"
 
+<<<<<<< HEAD
 comment "USB port drivers"
 	depends on USB
 
@@ -173,6 +259,33 @@ config USB_USS720
 
 	  To compile this driver as a module, choose M here: the
 	  module will be called uss720.
+=======
+source "drivers/usb/usbip/Kconfig"
+
+endif
+
+comment "USB dual-mode controller drivers"
+
+source "drivers/usb/cdns3/Kconfig"
+
+source "drivers/usb/fotg210/Kconfig"
+
+source "drivers/usb/mtu3/Kconfig"
+
+source "drivers/usb/musb/Kconfig"
+
+source "drivers/usb/dwc3/Kconfig"
+
+source "drivers/usb/dwc2/Kconfig"
+
+source "drivers/usb/chipidea/Kconfig"
+
+source "drivers/usb/isp1760/Kconfig"
+
+comment "USB port drivers"
+
+if USB
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 source "drivers/usb/serial/Kconfig"
 
@@ -180,8 +293,20 @@ source "drivers/usb/misc/Kconfig"
 
 source "drivers/usb/atm/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/usb/gadget/Kconfig"
 
 source "drivers/usb/otg/Kconfig"
+=======
+endif # USB
+
+source "drivers/usb/phy/Kconfig"
+
+source "drivers/usb/gadget/Kconfig"
+
+source "drivers/usb/typec/Kconfig"
+
+source "drivers/usb/roles/Kconfig"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif # USB_SUPPORT

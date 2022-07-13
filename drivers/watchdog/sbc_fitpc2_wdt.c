@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Watchdog driver for SBC-FITPC2 board
  *
@@ -5,9 +9,12 @@
  *
  * Adapted from the IXP2000 watchdog driver by Deepak Saxena.
  *
+<<<<<<< HEAD
  * This file is licensed under  the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME " WATCHDOG: " fmt
@@ -75,10 +82,17 @@ static int fitpc2_wdt_open(struct inode *inode, struct file *file)
 
 	wdt_enable();
 
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
 }
 
 static ssize_t fitpc2_wdt_write(struct file *file, const char *data,
+=======
+	return stream_open(inode, file);
+}
+
+static ssize_t fitpc2_wdt_write(struct file *file, const char __user *data,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						size_t len, loff_t *ppos)
 {
 	size_t i;
@@ -125,16 +139,28 @@ static long fitpc2_wdt_ioctl(struct file *file, unsigned int cmd,
 
 	switch (cmd) {
 	case WDIOC_GETSUPPORT:
+<<<<<<< HEAD
 		ret = copy_to_user((struct watchdog_info *)arg, &ident,
+=======
+		ret = copy_to_user((struct watchdog_info __user *)arg, &ident,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   sizeof(ident)) ? -EFAULT : 0;
 		break;
 
 	case WDIOC_GETSTATUS:
+<<<<<<< HEAD
 		ret = put_user(0, (int *)arg);
 		break;
 
 	case WDIOC_GETBOOTSTATUS:
 		ret = put_user(0, (int *)arg);
+=======
+		ret = put_user(0, (int __user *)arg);
+		break;
+
+	case WDIOC_GETBOOTSTATUS:
+		ret = put_user(0, (int __user *)arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case WDIOC_KEEPALIVE:
@@ -143,7 +169,11 @@ static long fitpc2_wdt_ioctl(struct file *file, unsigned int cmd,
 		break;
 
 	case WDIOC_SETTIMEOUT:
+<<<<<<< HEAD
 		ret = get_user(time, (int *)arg);
+=======
+		ret = get_user(time, (int __user *)arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			break;
 
@@ -154,10 +184,17 @@ static long fitpc2_wdt_ioctl(struct file *file, unsigned int cmd,
 
 		margin = time;
 		wdt_enable();
+<<<<<<< HEAD
 		/* Fall through */
 
 	case WDIOC_GETTIMEOUT:
 		ret = put_user(margin, (int *)arg);
+=======
+		fallthrough;
+
+	case WDIOC_GETTIMEOUT:
+		ret = put_user(margin, (int __user *)arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -186,6 +223,10 @@ static const struct file_operations fitpc2_wdt_fops = {
 	.llseek		= no_llseek,
 	.write		= fitpc2_wdt_write,
 	.unlocked_ioctl	= fitpc2_wdt_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= fitpc2_wdt_open,
 	.release	= fitpc2_wdt_release,
 };
@@ -263,5 +304,8 @@ module_param(nowayout, bool, 0);
 MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started");
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

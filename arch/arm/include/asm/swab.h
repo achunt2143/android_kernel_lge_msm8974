@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/byteorder.h
  *
@@ -15,6 +19,7 @@
 #ifndef __ASM_ARM_SWAB_H
 #define __ASM_ARM_SWAB_H
 
+<<<<<<< HEAD
 #include <linux/compiler.h>
 #include <linux/types.h>
 
@@ -23,6 +28,10 @@
 #endif
 
 #if defined(__KERNEL__)
+=======
+#include <uapi/asm/swab.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if __LINUX_ARM_ARCH__ >= 6
 
 static inline __attribute_const__ __u32 __arch_swahb32(__u32 x)
@@ -42,6 +51,7 @@ static inline __attribute_const__ __u32 __arch_swab32(__u32 x)
 
 #endif
 #endif
+<<<<<<< HEAD
 
 #if !defined(__KERNEL__) || __LINUX_ARM_ARCH__ < 6
 static inline __attribute_const__ __u32 __arch_swab32(__u32 x)
@@ -71,3 +81,5 @@ static inline __attribute_const__ __u32 __arch_swab32(__u32 x)
 #endif
 
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

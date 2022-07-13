@@ -1,9 +1,16 @@
+<<<<<<< HEAD
 /*
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License version 2 as published
  *  by the Free Software Foundation.
  *
  *  Copyright (C) 2010 John Crispin <blogic@openwrt.org>
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ *
+ *  Copyright (C) 2010 John Crispin <john@phrozen.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LANTIQ_XWAY_IRQ_H__
@@ -17,6 +24,7 @@
 #define INT_NUM_IM4_IRL0	(INT_NUM_IRQ0 + 128)
 #define INT_NUM_IM_OFFSET	(INT_NUM_IM1_IRL0 - INT_NUM_IM0_IRL0)
 
+<<<<<<< HEAD
 #define LTQ_ASC_TIR(x)		(INT_NUM_IM3_IRL0 + (x * 8))
 #define LTQ_ASC_RIR(x)		(INT_NUM_IM3_IRL0 + (x * 8) + 1)
 #define LTQ_ASC_EIR(x)		(INT_NUM_IM3_IRL0 + (x * 8) + 2)
@@ -62,5 +70,10 @@
 #define LTQ_PPE_MBOX_INT	(INT_NUM_IM2_IRL0 + 24)
 
 #define INT_NUM_IM4_IRL14	(INT_NUM_IM4_IRL0 + 14)
+=======
+#define LTQ_DMA_CH0_INT		(INT_NUM_IM2_IRL0)
+
+#define MAX_IM			5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

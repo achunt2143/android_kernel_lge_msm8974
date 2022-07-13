@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
  * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
@@ -5,6 +6,12 @@
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License version 2.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
+ * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __EATTR_DOT_H__
@@ -53,6 +60,7 @@ struct gfs2_ea_location {
 	struct gfs2_ea_header *el_prev;
 };
 
+<<<<<<< HEAD
 extern int __gfs2_xattr_set(struct inode *inode, const char *name,
 			    const void *value, size_t size,
 			    int flags, int type);
@@ -63,5 +71,16 @@ extern int gfs2_ea_dealloc(struct gfs2_inode *ip);
 
 extern int gfs2_xattr_acl_get(struct gfs2_inode *ip, const char *name, char **data);
 extern int gfs2_xattr_acl_chmod(struct gfs2_inode *ip, struct iattr *attr, char *data);
+=======
+int __gfs2_xattr_set(struct inode *inode, const char *name,
+		     const void *value, size_t size,
+		     int flags, int type);
+ssize_t gfs2_listxattr(struct dentry *dentry, char *buffer, size_t size);
+int gfs2_ea_dealloc(struct gfs2_inode *ip);
+
+/* Exported to acl.c */
+
+int gfs2_xattr_acl_get(struct gfs2_inode *ip, const char *name, char **data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __EATTR_DOT_H__ */

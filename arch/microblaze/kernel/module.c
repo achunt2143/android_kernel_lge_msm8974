@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2007-2009 Michal Simek <monstr@monstr.eu>
  * Copyright (C) 2007-2009 PetaLogix
@@ -8,14 +9,28 @@
  */
 
 #include <linux/module.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2007-2009 Michal Simek <monstr@monstr.eu>
+ * Copyright (C) 2007-2009 PetaLogix
+ */
+
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/moduleloader.h>
 #include <linux/kernel.h>
 #include <linux/elf.h>
 #include <linux/vmalloc.h>
 #include <linux/fs.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 
 #include <asm/pgtable.h>
+=======
+#include <linux/pgtable.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cacheflush.h>
 
 int apply_relocate_add(Elf32_Shdr *sechdrs, const char *strtab,
@@ -27,9 +42,12 @@ int apply_relocate_add(Elf32_Shdr *sechdrs, const char *strtab,
 	Elf32_Sym *sym;
 	unsigned long int *location;
 	unsigned long int value;
+<<<<<<< HEAD
 #if __GNUC__ < 4
 	unsigned long int old_value;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("Applying add relocation section %u to %u\n",
 		relsec, sechdrs[relsec].sh_info);
@@ -52,6 +70,7 @@ int apply_relocate_add(Elf32_Shdr *sechdrs, const char *strtab,
 		 */
 
 		case R_MICROBLAZE_32:
+<<<<<<< HEAD
 #if __GNUC__ < 4
 			old_value = *location;
 			*location = value + old_value;
@@ -70,10 +89,17 @@ int apply_relocate_add(Elf32_Shdr *sechdrs, const char *strtab,
 					(location[1] & 0x0000FFFF);
 			value += old_value;
 #endif
+=======
+			*location = value;
+			break;
+
+		case R_MICROBLAZE_64:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			location[0] = (location[0] & 0xFFFF0000) |
 					(value >> 16);
 			location[1] = (location[1] & 0xFFFF0000) |
 					(value & 0xFFFF);
+<<<<<<< HEAD
 #if __GNUC__ < 4
 			pr_debug("R_MICROBLAZE_64 (%08lx->%08lx)\n",
 				old_value, value);
@@ -86,6 +112,11 @@ int apply_relocate_add(Elf32_Shdr *sechdrs, const char *strtab,
 				(location[1] & 0xFFFF);
 			value -= old_value;
 #endif
+=======
+			break;
+
+		case R_MICROBLAZE_64_PCREL:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			value -= (unsigned long int)(location) + 4;
 			location[0] = (location[0] & 0xFFFF0000) |
 					(value >> 16);
@@ -108,8 +139,12 @@ int apply_relocate_add(Elf32_Shdr *sechdrs, const char *strtab,
 			break;
 
 		default:
+<<<<<<< HEAD
 			printk(KERN_ERR "module %s: "
 				"Unknown relocation: %u\n",
+=======
+			pr_err("module %s: Unknown relocation: %u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				module->name,
 				ELF32_R_TYPE(rela[i].r_info));
 			return -ENOEXEC;

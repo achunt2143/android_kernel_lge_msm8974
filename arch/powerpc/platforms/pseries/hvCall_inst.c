@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006 Mike Kravetz IBM Corporation
  *
  * Hypervisor Call Instrumentation
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -27,8 +34,24 @@
 #include <asm/firmware.h>
 #include <asm/cputable.h>
 #include <asm/trace.h>
+<<<<<<< HEAD
 
 DEFINE_PER_CPU(struct hcall_stats[HCALL_STAT_ARRAY_SIZE], hcall_stats);
+=======
+#include <asm/machdep.h>
+
+/* For hcall instrumentation. One structure per-hcall, per-CPU */
+struct hcall_stats {
+	unsigned long	num_calls;	/* number of calls (on this CPU) */
+	unsigned long	tb_total;	/* total wall time (mftb) of calls. */
+	unsigned long	purr_total;	/* total cpu time (PURR) of calls. */
+	unsigned long	tb_start;
+	unsigned long	purr_start;
+};
+#define HCALL_STAT_ARRAY_SIZE	((MAX_HCALL_OPCODE >> 2) + 1)
+
+static DEFINE_PER_CPU(struct hcall_stats[HCALL_STAT_ARRAY_SIZE], hcall_stats);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Routines for displaying the statistics in debugfs
@@ -72,13 +95,18 @@ static int hc_show(struct seq_file *m, void *p)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct seq_operations hcall_inst_seq_ops = {
+=======
+static const struct seq_operations hcall_inst_sops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         .start = hc_start,
         .next  = hc_next,
         .stop  = hc_stop,
         .show  = hc_show
 };
 
+<<<<<<< HEAD
 static int hcall_inst_seq_open(struct inode *inode, struct file *file)
 {
 	int rc;
@@ -97,6 +125,9 @@ static const struct file_operations hcall_inst_seq_fops = {
 	.llseek = seq_lseek,
 	.release = seq_release,
 };
+=======
+DEFINE_SEQ_ATTRIBUTE(hcall_inst);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	HCALL_ROOT_DIR		"hcall_inst"
 #define CPU_NAME_BUF_SIZE	32
@@ -109,12 +140,20 @@ static void probe_hcall_entry(void *ignored, unsigned long opcode, unsigned long
 	if (opcode > MAX_HCALL_OPCODE)
 		return;
 
+<<<<<<< HEAD
 	h = &__get_cpu_var(hcall_stats)[opcode / 4];
+=======
+	h = this_cpu_ptr(&hcall_stats[opcode / 4]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h->tb_start = mftb();
 	h->purr_start = mfspr(SPRN_PURR);
 }
 
+<<<<<<< HEAD
 static void probe_hcall_exit(void *ignored, unsigned long opcode, unsigned long retval,
+=======
+static void probe_hcall_exit(void *ignored, unsigned long opcode, long retval,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     unsigned long *retbuf)
 {
 	struct hcall_stats *h;
@@ -122,7 +161,11 @@ static void probe_hcall_exit(void *ignored, unsigned long opcode, unsigned long 
 	if (opcode > MAX_HCALL_OPCODE)
 		return;
 
+<<<<<<< HEAD
 	h = &__get_cpu_var(hcall_stats)[opcode / 4];
+=======
+	h = this_cpu_ptr(&hcall_stats[opcode / 4]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h->num_calls++;
 	h->tb_total += mftb() - h->tb_start;
 	h->purr_total += mfspr(SPRN_PURR) - h->purr_start;
@@ -131,7 +174,10 @@ static void probe_hcall_exit(void *ignored, unsigned long opcode, unsigned long 
 static int __init hcall_inst_init(void)
 {
 	struct dentry *hcall_root;
+<<<<<<< HEAD
 	struct dentry *hcall_file;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char cpu_name_buf[CPU_NAME_BUF_SIZE];
 	int cpu;
 
@@ -147,6 +193,7 @@ static int __init hcall_inst_init(void)
 	}
 
 	hcall_root = debugfs_create_dir(HCALL_ROOT_DIR, NULL);
+<<<<<<< HEAD
 	if (!hcall_root)
 		return -ENOMEM;
 
@@ -158,8 +205,20 @@ static int __init hcall_inst_init(void)
 						 &hcall_inst_seq_fops);
 		if (!hcall_file)
 			return -ENOMEM;
+=======
+
+	for_each_possible_cpu(cpu) {
+		snprintf(cpu_name_buf, CPU_NAME_BUF_SIZE, "cpu%d", cpu);
+		debugfs_create_file(cpu_name_buf, 0444, hcall_root,
+				    per_cpu(hcall_stats, cpu),
+				    &hcall_inst_fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
+<<<<<<< HEAD
 __initcall(hcall_inst_init);
+=======
+machine_device_initcall(pseries, hcall_inst_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

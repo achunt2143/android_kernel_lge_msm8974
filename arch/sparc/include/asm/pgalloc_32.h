@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SPARC_PGALLOC_H
 #define _SPARC_PGALLOC_H
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 
 #include <asm/page.h>
 #include <asm/btfixup.h>
@@ -30,10 +35,31 @@ BTFIXUPDEF_CALL(pgd_t *, get_pgd_fast, void)
 
 BTFIXUPDEF_CALL(void, free_pgd_fast, pgd_t *)
 #define free_pgd_fast(pgd)	BTFIXUP_CALL(free_pgd_fast)(pgd)
+=======
+#include <linux/pgtable.h>
+
+#include <asm/pgtsrmmu.h>
+#include <asm/vaddrs.h>
+#include <asm/page.h>
+
+struct page;
+
+void *srmmu_get_nocache(int size, int align);
+void srmmu_free_nocache(void *addr, int size);
+
+extern struct resource sparc_iomap;
+
+pgd_t *get_pgd_fast(void);
+static inline void free_pgd_fast(pgd_t *pgd)
+{
+	srmmu_free_nocache(pgd, SRMMU_PGD_TABLE_SIZE);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pgd_free(mm, pgd)	free_pgd_fast(pgd)
 #define pgd_alloc(mm)	get_pgd_fast()
 
+<<<<<<< HEAD
 BTFIXUPDEF_CALL(void, pgd_set, pgd_t *, pmd_t *)
 #define pgd_set(pgdp,pmdp) BTFIXUP_CALL(pgd_set)(pgdp,pmdp)
 #define pgd_populate(MM, PGD, PMD)      pgd_set(PGD, PMD)
@@ -43,10 +69,33 @@ BTFIXUPDEF_CALL(pmd_t *, pmd_alloc_one, struct mm_struct *, unsigned long)
 
 BTFIXUPDEF_CALL(void, free_pmd_fast, pmd_t *)
 #define free_pmd_fast(pmd)	BTFIXUP_CALL(free_pmd_fast)(pmd)
+=======
+static inline void pud_set(pud_t * pudp, pmd_t * pmdp)
+{
+	unsigned long pa = __nocache_pa(pmdp);
+
+	set_pte((pte_t *)pudp, __pte((SRMMU_ET_PTD | (pa >> 4))));
+}
+
+#define pud_populate(MM, PGD, PMD)      pud_set(PGD, PMD)
+
+static inline pmd_t *pmd_alloc_one(struct mm_struct *mm,
+				   unsigned long address)
+{
+	return srmmu_get_nocache(SRMMU_PMD_TABLE_SIZE,
+				 SRMMU_PMD_TABLE_SIZE);
+}
+
+static inline void free_pmd_fast(pmd_t * pmd)
+{
+	srmmu_free_nocache(pmd, SRMMU_PMD_TABLE_SIZE);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pmd_free(mm, pmd)		free_pmd_fast(pmd)
 #define __pmd_free_tlb(tlb, pmd, addr)	pmd_free((tlb)->mm, pmd)
 
+<<<<<<< HEAD
 BTFIXUPDEF_CALL(void, pmd_populate, pmd_t *, struct page *)
 #define pmd_populate(MM, PMD, PTE)        BTFIXUP_CALL(pmd_populate)(PMD, PTE)
 #define pmd_pgtable(pmd) pmd_page(pmd)
@@ -63,6 +112,30 @@ BTFIXUPDEF_CALL(void, free_pte_fast, pte_t *)
 
 BTFIXUPDEF_CALL(void, pte_free, pgtable_t )
 #define pte_free(mm, pte)		BTFIXUP_CALL(pte_free)(pte)
+=======
+#define pmd_populate(mm, pmd, pte)	pmd_set(pmd, pte)
+
+void pmd_set(pmd_t *pmdp, pte_t *ptep);
+#define pmd_populate_kernel		pmd_populate
+
+pgtable_t pte_alloc_one(struct mm_struct *mm);
+
+static inline pte_t *pte_alloc_one_kernel(struct mm_struct *mm)
+{
+	return srmmu_get_nocache(SRMMU_PTE_TABLE_SIZE,
+				 SRMMU_PTE_TABLE_SIZE);
+}
+
+
+static inline void free_pte_fast(pte_t *pte)
+{
+	srmmu_free_nocache(pte, SRMMU_PTE_TABLE_SIZE);
+}
+
+#define pte_free_kernel(mm, pte)	free_pte_fast(pte)
+
+void pte_free(struct mm_struct * mm, pgtable_t pte);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __pte_free_tlb(tlb, pte, addr)	pte_free((tlb)->mm, pte)
 
 #endif /* _SPARC_PGALLOC_H */

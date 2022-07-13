@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CB710_CORE
 	tristate "ENE CB710/720 Flash memory card reader support"
 	depends on PCI
@@ -14,7 +18,10 @@ config CB710_CORE
 config CB710_DEBUG
 	bool "Enable driver debugging"
 	depends on CB710_CORE != n
+<<<<<<< HEAD
 	default n
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This is an option for use by developers; most people should
 	  say N here.  This adds a lot of debugging output to dmesg.

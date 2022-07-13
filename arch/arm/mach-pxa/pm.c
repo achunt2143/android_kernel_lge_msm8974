@@ -16,7 +16,11 @@
 #include <linux/errno.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #include <mach/pm.h>
+=======
+#include "pm.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct pxa_cpu_pm_fns *pxa_cpu_pm_fns;
 static unsigned long *sleep_save;
@@ -51,8 +55,11 @@ int pxa_pm_enter(suspend_state_t state)
 		/* if invalid, display message and wait for a hardware reset */
 		if (checksum != sleep_save_checksum) {
 
+<<<<<<< HEAD
 			lubbock_set_hexled(0xbadbadc5);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			while (1)
 				pxa_cpu_pm_fns->enter(state);
 		}
@@ -104,12 +111,20 @@ static int __init pxa_pm_init(void)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	sleep_save = kmalloc(pxa_cpu_pm_fns->save_count * sizeof(unsigned long),
 			     GFP_KERNEL);
 	if (!sleep_save) {
 		printk(KERN_ERR "failed to alloc memory for pm save\n");
 		return -ENOMEM;
 	}
+=======
+	sleep_save = kmalloc_array(pxa_cpu_pm_fns->save_count,
+				   sizeof(*sleep_save),
+				   GFP_KERNEL);
+	if (!sleep_save)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	suspend_set_ops(&pxa_pm_ops);
 	return 0;

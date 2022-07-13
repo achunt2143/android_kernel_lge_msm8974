@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * C-Media CMI8788 driver - helper functions
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
+<<<<<<< HEAD
  *
  *
  *  This driver is free software; you can redistribute it and/or modify
@@ -15,14 +20,22 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this driver; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
 #include <linux/sched.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <sound/core.h>
 #include <sound/mpu401.h>
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+#include <sound/core.h>
+#include <sound/mpu401.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "oxygen.h"
 
 u8 oxygen_read8(struct oxygen *chip, unsigned int reg)
@@ -147,7 +160,11 @@ void oxygen_write_ac97(struct oxygen *chip, unsigned int codec,
 			return;
 		}
 	}
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "AC'97 write timeout\n");
+=======
+	dev_err(chip->card->dev, "AC'97 write timeout\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(oxygen_write_ac97);
 
@@ -179,7 +196,11 @@ u16 oxygen_read_ac97(struct oxygen *chip, unsigned int codec,
 			reg ^= 0xffff;
 		}
 	}
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "AC'97 read timeout on codec %u\n", codec);
+=======
+	dev_err(chip->card->dev, "AC'97 read timeout on codec %u\n", codec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(oxygen_read_ac97);
@@ -194,6 +215,7 @@ void oxygen_write_ac97_masked(struct oxygen *chip, unsigned int codec,
 }
 EXPORT_SYMBOL(oxygen_write_ac97_masked);
 
+<<<<<<< HEAD
 void oxygen_write_spi(struct oxygen *chip, u8 control, unsigned int data)
 {
 	unsigned int count;
@@ -206,11 +228,41 @@ void oxygen_write_spi(struct oxygen *chip, u8 control, unsigned int data)
 		--count;
 	}
 
+=======
+static int oxygen_wait_spi(struct oxygen *chip)
+{
+	unsigned int count;
+
+	/*
+	 * Higher timeout to be sure: 200 us;
+	 * actual transaction should not need more than 40 us.
+	 */
+	for (count = 50; count > 0; count--) {
+		udelay(4);
+		if ((oxygen_read8(chip, OXYGEN_SPI_CONTROL) &
+						OXYGEN_SPI_BUSY) == 0)
+			return 0;
+	}
+	dev_err(chip->card->dev, "oxygen: SPI wait timeout\n");
+	return -EIO;
+}
+
+int oxygen_write_spi(struct oxygen *chip, u8 control, unsigned int data)
+{
+	/*
+	 * We need to wait AFTER initiating the SPI transaction,
+	 * otherwise read operations will not work.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	oxygen_write8(chip, OXYGEN_SPI_DATA1, data);
 	oxygen_write8(chip, OXYGEN_SPI_DATA2, data >> 8);
 	if (control & OXYGEN_SPI_DATA_LENGTH_3)
 		oxygen_write8(chip, OXYGEN_SPI_DATA3, data >> 16);
 	oxygen_write8(chip, OXYGEN_SPI_CONTROL, control);
+<<<<<<< HEAD
+=======
+	return oxygen_wait_spi(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(oxygen_write_spi);
 
@@ -275,5 +327,9 @@ void oxygen_write_eeprom(struct oxygen *chip, unsigned int index, u16 value)
 		      & OXYGEN_EEPROM_BUSY))
 			return;
 	}
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "EEPROM write timeout\n");
+=======
+	dev_err(chip->card->dev, "EEPROM write timeout\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

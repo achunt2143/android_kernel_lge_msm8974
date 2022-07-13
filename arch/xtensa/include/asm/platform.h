@@ -12,8 +12,11 @@
 #define _XTENSA_PLATFORM_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/bootparam.h>
 
 /*
@@ -30,6 +33,7 @@ extern void platform_init(bp_tag_t*);
 extern void platform_setup (char **);
 
 /*
+<<<<<<< HEAD
  * platform_init_irq is called from init_IRQ.
  */
 extern void platform_init_irq (void);
@@ -50,11 +54,14 @@ extern void platform_halt (void);
 extern void platform_power_off (void);
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * platform_idle is called from the idle function.
  */
 extern void platform_idle (void);
 
 /*
+<<<<<<< HEAD
  * platform_heartbeat is called every HZ
  */
 extern void platform_heartbeat (void);
@@ -70,9 +77,21 @@ extern void platform_pcibios_init (void);
 extern int platform_pcibios_fixup (void);
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * platform_calibrate_ccount calibrates cpu clock freq (CONFIG_XTENSA_CALIBRATE)
  */
 extern void platform_calibrate_ccount (void);
 
+<<<<<<< HEAD
 #endif	/* _XTENSA_PLATFORM_H */
 
+=======
+/*
+ * Flush and reset the mmu, simulate a processor reset, and
+ * jump to the reset vector.
+ */
+void cpu_reset(void) __attribute__((noreturn));
+
+#endif	/* _XTENSA_PLATFORM_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

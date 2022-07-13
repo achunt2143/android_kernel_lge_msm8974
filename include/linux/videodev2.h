@@ -1,7 +1,11 @@
 /*
  *  Video for Linux Two header file
  *
+<<<<<<< HEAD
  *  Copyright (C) 1999-2007 the contributors
+=======
+ *  Copyright (C) 1999-2012 the contributors
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -46,7 +50,11 @@
  * All kernel-specific stuff were moved to media/v4l2-dev.h, so
  * no #if __KERNEL tests are allowed here
  *
+<<<<<<< HEAD
  *	See http://linuxtv.org for more info
+=======
+ *	See https://linuxtv.org for more info
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Author: Bill Dirks <bill@thedirks.org>
  *		Justin Schoeman
@@ -56,6 +64,7 @@
 #ifndef __LINUX_VIDEODEV2_H
 #define __LINUX_VIDEODEV2_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 #include <linux/time.h>     /* need struct timeval */
 #else
@@ -2743,5 +2752,10 @@ struct v4l2_create_buffers {
    drivers/media/video/v4l2-compat-ioctl32.c as well! */
 
 #define BASE_VIDIOC_PRIVATE	192		/* 192-255 are private */
+=======
+#include <linux/time.h>     /* need struct timeval */
+#include <linux/kernel.h>
+#include <uapi/linux/videodev2.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __LINUX_VIDEODEV2_H */

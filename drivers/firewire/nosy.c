@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * nosy - Snoop mode driver for TI PCILynx 1394 controllers
  * Copyright (C) 2002-2007 Kristian Høgsberg
@@ -15,6 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * nosy - Snoop mode driver for TI PCILynx 1394 controllers
+ * Copyright (C) 2002-2007 Kristian Høgsberg
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -33,6 +40,10 @@
 #include <linux/sched.h> /* required for linux/wait.h */
 #include <linux/slab.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <linux/time64.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/timex.h>
 #include <linux/uaccess.h>
 #include <linux/wait.h>
@@ -64,7 +75,11 @@ struct pcl {
 
 struct packet {
 	unsigned int length;
+<<<<<<< HEAD
 	char data[0];
+=======
+	char data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct packet_buffer {
@@ -160,10 +175,19 @@ packet_buffer_get(struct client *client, char __user *data, size_t user_length)
 	if (atomic_read(&buffer->size) == 0)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	/* FIXME: Check length <= user_length. */
 
 	end = buffer->data + buffer->capacity;
 	length = buffer->head->length;
+=======
+	length = buffer->head->length;
+
+	if (length > user_length)
+		return 0;
+
+	end = buffer->data + buffer->capacity;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (&buffer->head->data[length] < end) {
 		if (copy_to_user(data, buffer->head->data, length))
@@ -302,7 +326,11 @@ nosy_open(struct inode *inode, struct file *file)
 
 	file->private_data = client;
 
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail:
 	kfree(client);
 	lynx_put(lynx);
@@ -327,19 +355,34 @@ nosy_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned int
 nosy_poll(struct file *file, poll_table *pt)
 {
 	struct client *client = file->private_data;
 	unsigned int ret = 0;
+=======
+static __poll_t
+nosy_poll(struct file *file, poll_table *pt)
+{
+	struct client *client = file->private_data;
+	__poll_t ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	poll_wait(file, &client->buffer.wait, pt);
 
 	if (atomic_read(&client->buffer.size) > 0)
+<<<<<<< HEAD
 		ret = POLLIN | POLLRDNORM;
 
 	if (list_empty(&client->lynx->link))
 		ret |= POLLHUP;
+=======
+		ret = EPOLLIN | EPOLLRDNORM;
+
+	if (list_empty(&client->lynx->link))
+		ret |= EPOLLHUP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -358,6 +401,10 @@ nosy_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	struct client *client = file->private_data;
 	spinlock_t *client_list_lock = &client->lynx->client_list_lock;
 	struct nosy_stats stats;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case NOSY_IOC_GET_STATS:
@@ -372,11 +419,23 @@ nosy_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 			return 0;
 
 	case NOSY_IOC_START:
+<<<<<<< HEAD
 		spin_lock_irq(client_list_lock);
 		list_add_tail(&client->link, &client->lynx->client_list);
 		spin_unlock_irq(client_list_lock);
 
 		return 0;
+=======
+		ret = -EBUSY;
+		spin_lock_irq(client_list_lock);
+		if (list_empty(&client->link)) {
+			list_add_tail(&client->link, &client->lynx->client_list);
+			ret = 0;
+		}
+		spin_unlock_irq(client_list_lock);
+
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case NOSY_IOC_STOP:
 		spin_lock_irq(client_list_lock);
@@ -413,17 +472,29 @@ static void
 packet_irq_handler(struct pcilynx *lynx)
 {
 	struct client *client;
+<<<<<<< HEAD
 	u32 tcode_mask, tcode;
 	size_t length;
 	struct timeval tv;
+=======
+	u32 tcode_mask, tcode, timestamp;
+	size_t length;
+	struct timespec64 ts64;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME: Also report rcv_speed. */
 
 	length = __le32_to_cpu(lynx->rcv_pcl->pcl_status) & 0x00001fff;
 	tcode  = __le32_to_cpu(lynx->rcv_buffer[1]) >> 4 & 0xf;
 
+<<<<<<< HEAD
 	do_gettimeofday(&tv);
 	lynx->rcv_buffer[0] = (__force __le32)tv.tv_usec;
+=======
+	ktime_get_real_ts64(&ts64);
+	timestamp = ts64.tv_nsec / NSEC_PER_USEC;
+	lynx->rcv_buffer[0] = (__force __le32)timestamp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (length == PHY_PACKET_SIZE)
 		tcode_mask = 1 << TCODE_PHY_PACKET;
@@ -444,14 +515,26 @@ static void
 bus_reset_irq_handler(struct pcilynx *lynx)
 {
 	struct client *client;
+<<<<<<< HEAD
 	struct timeval tv;
 
 	do_gettimeofday(&tv);
+=======
+	struct timespec64 ts64;
+	u32    timestamp;
+
+	ktime_get_real_ts64(&ts64);
+	timestamp = ts64.tv_nsec / NSEC_PER_USEC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&lynx->client_list_lock);
 
 	list_for_each_entry(client, &lynx->client_list, link)
+<<<<<<< HEAD
 		packet_buffer_put(&client->buffer, &tv.tv_usec, 4);
+=======
+		packet_buffer_put(&client->buffer, &timestamp, 4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock(&lynx->client_list_lock);
 }
@@ -515,12 +598,21 @@ remove_card(struct pci_dev *dev)
 		wake_up_interruptible(&client->buffer.wait);
 	spin_unlock_irq(&lynx->client_list_lock);
 
+<<<<<<< HEAD
 	pci_free_consistent(lynx->pci_device, sizeof(struct pcl),
 			    lynx->rcv_start_pcl, lynx->rcv_start_pcl_bus);
 	pci_free_consistent(lynx->pci_device, sizeof(struct pcl),
 			    lynx->rcv_pcl, lynx->rcv_pcl_bus);
 	pci_free_consistent(lynx->pci_device, PAGE_SIZE,
 			    lynx->rcv_buffer, lynx->rcv_buffer_bus);
+=======
+	dma_free_coherent(&lynx->pci_device->dev, sizeof(struct pcl),
+			  lynx->rcv_start_pcl, lynx->rcv_start_pcl_bus);
+	dma_free_coherent(&lynx->pci_device->dev, sizeof(struct pcl),
+			  lynx->rcv_pcl, lynx->rcv_pcl_bus);
+	dma_free_coherent(&lynx->pci_device->dev, PAGE_SIZE, lynx->rcv_buffer,
+			  lynx->rcv_buffer_bus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iounmap(lynx->registers);
 	pci_disable_device(dev);
@@ -529,14 +621,22 @@ remove_card(struct pci_dev *dev)
 
 #define RCV_BUFFER_SIZE (16 * 1024)
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 add_card(struct pci_dev *dev, const struct pci_device_id *unused)
 {
 	struct pcilynx *lynx;
 	u32 p, end;
 	int ret, i;
 
+<<<<<<< HEAD
 	if (pci_set_dma_mask(dev, DMA_BIT_MASK(32))) {
+=======
+	if (dma_set_mask(&dev->dev, DMA_BIT_MASK(32))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&dev->dev,
 		    "DMA address limits not supported for PCILynx hardware\n");
 		return -ENXIO;
@@ -560,6 +660,7 @@ add_card(struct pci_dev *dev, const struct pci_device_id *unused)
 	INIT_LIST_HEAD(&lynx->client_list);
 	kref_init(&lynx->kref);
 
+<<<<<<< HEAD
 	lynx->registers = ioremap_nocache(pci_resource_start(dev, 0),
 					  PCILYNX_MAX_REGISTER);
 
@@ -569,12 +670,36 @@ add_card(struct pci_dev *dev, const struct pci_device_id *unused)
 				sizeof(struct pcl), &lynx->rcv_pcl_bus);
 	lynx->rcv_buffer = pci_alloc_consistent(lynx->pci_device,
 				RCV_BUFFER_SIZE, &lynx->rcv_buffer_bus);
+=======
+	lynx->registers = ioremap(pci_resource_start(dev, 0),
+					  PCILYNX_MAX_REGISTER);
+	if (lynx->registers == NULL) {
+		dev_err(&dev->dev, "Failed to map registers\n");
+		ret = -ENOMEM;
+		goto fail_deallocate_lynx;
+	}
+
+	lynx->rcv_start_pcl = dma_alloc_coherent(&lynx->pci_device->dev,
+						 sizeof(struct pcl),
+						 &lynx->rcv_start_pcl_bus,
+						 GFP_KERNEL);
+	lynx->rcv_pcl = dma_alloc_coherent(&lynx->pci_device->dev,
+					   sizeof(struct pcl),
+					   &lynx->rcv_pcl_bus, GFP_KERNEL);
+	lynx->rcv_buffer = dma_alloc_coherent(&lynx->pci_device->dev,
+					      RCV_BUFFER_SIZE,
+					      &lynx->rcv_buffer_bus, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lynx->rcv_start_pcl == NULL ||
 	    lynx->rcv_pcl == NULL ||
 	    lynx->rcv_buffer == NULL) {
 		dev_err(&dev->dev, "Failed to allocate receive buffer\n");
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto fail_deallocate;
+=======
+		goto fail_deallocate_buffers;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	lynx->rcv_start_pcl->next	= cpu_to_le32(lynx->rcv_pcl_bus);
 	lynx->rcv_pcl->next		= cpu_to_le32(PCL_NEXT_INVALID);
@@ -637,7 +762,11 @@ add_card(struct pci_dev *dev, const struct pci_device_id *unused)
 		dev_err(&dev->dev,
 			"Failed to allocate shared interrupt %d\n", dev->irq);
 		ret = -EIO;
+<<<<<<< HEAD
 		goto fail_deallocate;
+=======
+		goto fail_deallocate_buffers;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	lynx->misc.parent = &dev->dev;
@@ -664,6 +793,7 @@ fail_free_irq:
 	reg_write(lynx, PCI_INT_ENABLE, 0);
 	free_irq(lynx->pci_device->irq, lynx);
 
+<<<<<<< HEAD
 fail_deallocate:
 	if (lynx->rcv_start_pcl)
 		pci_free_consistent(lynx->pci_device, sizeof(struct pcl),
@@ -675,6 +805,22 @@ fail_deallocate:
 		pci_free_consistent(lynx->pci_device, PAGE_SIZE,
 				lynx->rcv_buffer, lynx->rcv_buffer_bus);
 	iounmap(lynx->registers);
+=======
+fail_deallocate_buffers:
+	if (lynx->rcv_start_pcl)
+		dma_free_coherent(&lynx->pci_device->dev, sizeof(struct pcl),
+				  lynx->rcv_start_pcl,
+				  lynx->rcv_start_pcl_bus);
+	if (lynx->rcv_pcl)
+		dma_free_coherent(&lynx->pci_device->dev, sizeof(struct pcl),
+				  lynx->rcv_pcl, lynx->rcv_pcl_bus);
+	if (lynx->rcv_buffer)
+		dma_free_coherent(&lynx->pci_device->dev, PAGE_SIZE,
+				  lynx->rcv_buffer, lynx->rcv_buffer_bus);
+	iounmap(lynx->registers);
+
+fail_deallocate_lynx:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(lynx);
 
 fail_disable:
@@ -683,7 +829,11 @@ fail_disable:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct pci_device_id pci_table[] __devinitdata = {
+=======
+static struct pci_device_id pci_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.vendor =    PCI_VENDOR_ID_TI,
 		.device =    PCI_DEVICE_ID_TI_PCILYNX,
@@ -693,6 +843,11 @@ static struct pci_device_id pci_table[] __devinitdata = {
 	{ }	/* Terminating entry */
 };
 
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(pci, pci_table);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver lynx_pci_driver = {
 	.name =		driver_name,
 	.id_table =	pci_table,
@@ -700,6 +855,7 @@ static struct pci_driver lynx_pci_driver = {
 	.remove =	remove_card,
 };
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Kristian Hoegsberg");
 MODULE_DESCRIPTION("Snoop mode driver for TI pcilynx 1394 controllers");
 MODULE_LICENSE("GPL");
@@ -719,3 +875,10 @@ static void __exit nosy_cleanup(void)
 
 module_init(nosy_init);
 module_exit(nosy_cleanup);
+=======
+module_pci_driver(lynx_pci_driver);
+
+MODULE_AUTHOR("Kristian Hoegsberg");
+MODULE_DESCRIPTION("Snoop mode driver for TI pcilynx 1394 controllers");
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

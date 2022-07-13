@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Acorn RiscPC mouse driver for Linux/ARM
  *
  *  Copyright (c) 2000-2002 Vojtech Pavlik
  *  Copyright (C) 1996-2002 Russell King
+<<<<<<< HEAD
  *
  */
 
@@ -10,6 +15,11 @@
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
+=======
+ */
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This handles the Acorn RiscPCs mouse.  We basically have a couple of
  * hardware registers that track the sensor count for the X-Y movement and
@@ -42,7 +52,11 @@ static irqreturn_t rpcmouse_irq(int irq, void *dev_id)
 
 	x = (short) iomd_readl(IOMD_MOUSEX);
 	y = (short) iomd_readl(IOMD_MOUSEY);
+<<<<<<< HEAD
 	b = (short) (__raw_readl(0xe0310000) ^ 0x70);
+=======
+	b = (short) (__raw_readl(IOMEM(0xe0310000)) ^ 0x70);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dx = x - rpcmouse_lastx;
 	dy = y - rpcmouse_lasty;

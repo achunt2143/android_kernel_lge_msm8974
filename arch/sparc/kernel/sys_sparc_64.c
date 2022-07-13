@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* linux/arch/sparc64/kernel/sys_sparc.c
  *
  * This file contains various random system calls that
@@ -7,7 +11,13 @@
 
 #include <linux/errno.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+#include <linux/sched/mm.h>
+#include <linux/sched/debug.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/file.h>
 #include <linux/mm.h>
@@ -24,24 +34,42 @@
 #include <linux/personality.h>
 #include <linux/random.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
+=======
+#include <linux/context_tracking.h>
+#include <linux/timex.h>
+#include <linux/uaccess.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/utrap.h>
 #include <asm/unistd.h>
 
 #include "entry.h"
+<<<<<<< HEAD
+=======
+#include "kernel.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "systbls.h"
 
 /* #define DEBUG_UNIMP_SYSCALL */
 
+<<<<<<< HEAD
 asmlinkage unsigned long sys_getpagesize(void)
+=======
+SYSCALL_DEFINE0(getpagesize)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return PAGE_SIZE;
 }
 
+<<<<<<< HEAD
 #define VA_EXCLUDE_START (0x0000080000000000UL - (1UL << 32UL))
 #define VA_EXCLUDE_END   (0xfffff80000000000UL + (1UL << 32UL))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Does addr --> addr+len fall within 4GB of the VA-space hole or
  * overflow past the end of the 64-bit address space?
  */
@@ -66,6 +94,7 @@ static inline int invalid_64bit_range(unsigned long addr, unsigned long len)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* Does start,end straddle the VA-space hole?  */
 static inline int straddles_64bit_va_hole(unsigned long start, unsigned long end)
 {
@@ -83,6 +112,8 @@ static inline int straddles_64bit_va_hole(unsigned long start, unsigned long end
 	return 1;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* These functions differ from the default implementations in
  * mm/mmap.c in two ways:
  *
@@ -92,7 +123,11 @@ static inline int straddles_64bit_va_hole(unsigned long start, unsigned long end
  *    the spitfire/niagara VA-hole.
  */
 
+<<<<<<< HEAD
 static inline unsigned long COLOUR_ALIGN(unsigned long addr,
+=======
+static inline unsigned long COLOR_ALIGN(unsigned long addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 unsigned long pgoff)
 {
 	unsigned long base = (addr+SHMLBA-1)&~(SHMLBA-1);
@@ -101,6 +136,7 @@ static inline unsigned long COLOUR_ALIGN(unsigned long addr,
 	return base + off;
 }
 
+<<<<<<< HEAD
 static inline unsigned long COLOUR_ALIGN_DOWN(unsigned long addr,
 					      unsigned long pgoff)
 {
@@ -112,13 +148,20 @@ static inline unsigned long COLOUR_ALIGN_DOWN(unsigned long addr,
 	return base - off;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned long arch_get_unmapped_area(struct file *filp, unsigned long addr, unsigned long len, unsigned long pgoff, unsigned long flags)
 {
 	struct mm_struct *mm = current->mm;
 	struct vm_area_struct * vma;
 	unsigned long task_size = TASK_SIZE;
+<<<<<<< HEAD
 	unsigned long start_addr, vm_start;
 	int do_color_align;
+=======
+	int do_color_align;
+	struct vm_unmapped_area_info info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (flags & MAP_FIXED) {
 		/* We do not accept a shared mapping if it would violate
@@ -141,7 +184,11 @@ unsigned long arch_get_unmapped_area(struct file *filp, unsigned long addr, unsi
 
 	if (addr) {
 		if (do_color_align)
+<<<<<<< HEAD
 			addr = COLOUR_ALIGN(addr, pgoff);
+=======
+			addr = COLOR_ALIGN(addr, pgoff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			addr = PAGE_ALIGN(addr);
 
@@ -151,6 +198,7 @@ unsigned long arch_get_unmapped_area(struct file *filp, unsigned long addr, unsi
 			return addr;
 	}
 
+<<<<<<< HEAD
 	if (len > mm->cached_hole_size) {
 	        start_addr = addr = mm->free_area_cache;
 	} else {
@@ -197,6 +245,24 @@ full_search:
 		if (do_color_align)
 			addr = COLOUR_ALIGN(addr, pgoff);
 	}
+=======
+	info.flags = 0;
+	info.length = len;
+	info.low_limit = TASK_UNMAPPED_BASE;
+	info.high_limit = min(task_size, VA_EXCLUDE_START);
+	info.align_mask = do_color_align ? (PAGE_MASK & (SHMLBA - 1)) : 0;
+	info.align_offset = pgoff << PAGE_SHIFT;
+	addr = vm_unmapped_area(&info);
+
+	if ((addr & ~PAGE_MASK) && task_size > VA_EXCLUDE_END) {
+		VM_BUG_ON(addr != -ENOMEM);
+		info.low_limit = VA_EXCLUDE_END;
+		info.high_limit = task_size;
+		addr = vm_unmapped_area(&info);
+	}
+
+	return addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 unsigned long
@@ -207,8 +273,14 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 	struct vm_area_struct *vma;
 	struct mm_struct *mm = current->mm;
 	unsigned long task_size = STACK_TOP32;
+<<<<<<< HEAD
 	unsigned long addr = addr0, vm_start;
 	int do_color_align;
+=======
+	unsigned long addr = addr0;
+	int do_color_align;
+	struct vm_unmapped_area_info info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This should only ever run for 32-bit processes.  */
 	BUG_ON(!test_thread_flag(TIF_32BIT));
@@ -233,7 +305,11 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 	/* requesting a specific address */
 	if (addr) {
 		if (do_color_align)
+<<<<<<< HEAD
 			addr = COLOUR_ALIGN(addr, pgoff);
+=======
+			addr = COLOR_ALIGN(addr, pgoff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			addr = PAGE_ALIGN(addr);
 
@@ -243,6 +319,7 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 			return addr;
 	}
 
+<<<<<<< HEAD
 	/* check if free_area_cache is useful for us */
 	if (len <= mm->cached_hole_size) {
  	        mm->cached_hole_size = 0;
@@ -298,12 +375,23 @@ arch_get_unmapped_area_topdown(struct file *filp, const unsigned long addr0,
 	} while (likely(len < vm_start));
 
 bottomup:
+=======
+	info.flags = VM_UNMAPPED_AREA_TOPDOWN;
+	info.length = len;
+	info.low_limit = PAGE_SIZE;
+	info.high_limit = mm->mmap_base;
+	info.align_mask = do_color_align ? (PAGE_MASK & (SHMLBA - 1)) : 0;
+	info.align_offset = pgoff << PAGE_SHIFT;
+	addr = vm_unmapped_area(&info);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * A failed mmap() very likely causes application failure,
 	 * so fall back to the bottom-up function here. This scenario
 	 * can happen with large stack limits and large mmap()
 	 * allocations.
 	 */
+<<<<<<< HEAD
 	mm->cached_hole_size = ~0UL;
   	mm->free_area_cache = TASK_UNMAPPED_BASE;
 	addr = arch_get_unmapped_area(filp, addr0, len, pgoff, flags);
@@ -312,6 +400,15 @@ bottomup:
 	 */
 	mm->free_area_cache = mm->mmap_base;
 	mm->cached_hole_size = ~0UL;
+=======
+	if (addr & ~PAGE_MASK) {
+		VM_BUG_ON(addr != -ENOMEM);
+		info.flags = 0;
+		info.low_limit = TASK_UNMAPPED_BASE;
+		info.high_limit = STACK_TOP32;
+		addr = vm_unmapped_area(&info);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return addr;
 }
@@ -379,7 +476,11 @@ static unsigned long mmap_rnd(void)
 	return rnd << PAGE_SHIFT;
 }
 
+<<<<<<< HEAD
 void arch_pick_mmap_layout(struct mm_struct *mm)
+=======
+void arch_pick_mmap_layout(struct mm_struct *mm, struct rlimit *rlim_stack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long random_factor = mmap_rnd();
 	unsigned long gap;
@@ -388,14 +489,21 @@ void arch_pick_mmap_layout(struct mm_struct *mm)
 	 * Fall back to the standard layout if the personality
 	 * bit is set, or if the expected stack growth is unlimited:
 	 */
+<<<<<<< HEAD
 	gap = rlimit(RLIMIT_STACK);
+=======
+	gap = rlim_stack->rlim_cur;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!test_thread_flag(TIF_32BIT) ||
 	    (current->personality & ADDR_COMPAT_LAYOUT) ||
 	    gap == RLIM_INFINITY ||
 	    sysctl_legacy_va_layout) {
 		mm->mmap_base = TASK_UNMAPPED_BASE + random_factor;
 		mm->get_unmapped_area = arch_get_unmapped_area;
+<<<<<<< HEAD
 		mm->unmap_area = arch_unmap_area;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* We know it's 32-bit */
 		unsigned long task_size = STACK_TOP32;
@@ -407,7 +515,10 @@ void arch_pick_mmap_layout(struct mm_struct *mm)
 
 		mm->mmap_base = PAGE_ALIGN(task_size - gap - random_factor);
 		mm->get_unmapped_area = arch_get_unmapped_area_topdown;
+<<<<<<< HEAD
 		mm->unmap_area = arch_unmap_area_topdown;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -415,7 +526,11 @@ void arch_pick_mmap_layout(struct mm_struct *mm)
  * sys_pipe() is the normal C calling standard for creating
  * a pipe. It's not the way unix traditionally does this, though.
  */
+<<<<<<< HEAD
 SYSCALL_DEFINE1(sparc_pipe_real, struct pt_regs *, regs)
+=======
+SYSCALL_DEFINE0(sparc_pipe)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int fd[2];
 	int error;
@@ -423,7 +538,11 @@ SYSCALL_DEFINE1(sparc_pipe_real, struct pt_regs *, regs)
 	error = do_pipe_flags(fd, 0);
 	if (error)
 		goto out;
+<<<<<<< HEAD
 	regs->u_regs[UREG_I1] = fd[1];
+=======
+	current_pt_regs()->u_regs[UREG_I1] = fd[1];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = fd[0];
 out:
 	return error;
@@ -440,6 +559,7 @@ SYSCALL_DEFINE6(sparc_ipc, unsigned int, call, int, first, unsigned long, second
 {
 	long err;
 
+<<<<<<< HEAD
 	/* No need for backward compatibility. We can start fresh... */
 	if (call <= SEMCTL) {
 		switch (call) {
@@ -459,6 +579,30 @@ SYSCALL_DEFINE6(sparc_ipc, unsigned int, call, int, first, unsigned long, second
 			err = sys_semctl(first, second,
 					 (int)third | IPC_64,
 					 (union semun) ptr);
+=======
+	if (!IS_ENABLED(CONFIG_SYSVIPC))
+		return -ENOSYS;
+
+	/* No need for backward compatibility. We can start fresh... */
+	if (call <= SEMTIMEDOP) {
+		switch (call) {
+		case SEMOP:
+			err = ksys_semtimedop(first, ptr,
+					      (unsigned int)second, NULL);
+			goto out;
+		case SEMTIMEDOP:
+			err = ksys_semtimedop(first, ptr, (unsigned int)second,
+				(const struct __kernel_timespec __user *)
+					      (unsigned long) fifth);
+			goto out;
+		case SEMGET:
+			err = ksys_semget(first, (int)second, (int)third);
+			goto out;
+		case SEMCTL: {
+			err = ksys_old_semctl(first, second,
+					      (int)third | IPC_64,
+					      (unsigned long) ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 		default:
@@ -469,6 +613,7 @@ SYSCALL_DEFINE6(sparc_ipc, unsigned int, call, int, first, unsigned long, second
 	if (call <= MSGCTL) {
 		switch (call) {
 		case MSGSND:
+<<<<<<< HEAD
 			err = sys_msgsnd(first, ptr, (size_t)second,
 					 (int)third);
 			goto out;
@@ -481,6 +626,20 @@ SYSCALL_DEFINE6(sparc_ipc, unsigned int, call, int, first, unsigned long, second
 			goto out;
 		case MSGCTL:
 			err = sys_msgctl(first, (int)second | IPC_64, ptr);
+=======
+			err = ksys_msgsnd(first, ptr, (size_t)second,
+					 (int)third);
+			goto out;
+		case MSGRCV:
+			err = ksys_msgrcv(first, ptr, (size_t)second, fifth,
+					 (int)third);
+			goto out;
+		case MSGGET:
+			err = ksys_msgget((key_t)first, (int)second);
+			goto out;
+		case MSGCTL:
+			err = ksys_old_msgctl(first, (int)second | IPC_64, ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		default:
 			err = -ENOSYS;
@@ -491,7 +650,11 @@ SYSCALL_DEFINE6(sparc_ipc, unsigned int, call, int, first, unsigned long, second
 		switch (call) {
 		case SHMAT: {
 			ulong raddr;
+<<<<<<< HEAD
 			err = do_shmat(first, ptr, (int)second, &raddr);
+=======
+			err = do_shmat(first, ptr, (int)second, &raddr, SHMLBA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!err) {
 				if (put_user(raddr,
 					     (ulong __user *) third))
@@ -500,6 +663,7 @@ SYSCALL_DEFINE6(sparc_ipc, unsigned int, call, int, first, unsigned long, second
 			goto out;
 		}
 		case SHMDT:
+<<<<<<< HEAD
 			err = sys_shmdt(ptr);
 			goto out;
 		case SHMGET:
@@ -507,6 +671,15 @@ SYSCALL_DEFINE6(sparc_ipc, unsigned int, call, int, first, unsigned long, second
 			goto out;
 		case SHMCTL:
 			err = sys_shmctl(first, (int)second | IPC_64, ptr);
+=======
+			err = ksys_shmdt(ptr);
+			goto out;
+		case SHMGET:
+			err = ksys_shmget(first, (size_t)second, (int)third);
+			goto out;
+		case SHMCTL:
+			err = ksys_old_shmctl(first, (int)second | IPC_64, ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		default:
 			err = -ENOSYS;
@@ -521,7 +694,11 @@ out:
 
 SYSCALL_DEFINE1(sparc64_personality, unsigned long, personality)
 {
+<<<<<<< HEAD
 	int ret;
+=======
+	long ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (personality(current->personality) == PER_LINUX32 &&
 	    personality(personality) == PER_LINUX)
@@ -563,7 +740,11 @@ SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
 		goto out;
 	if (off & ~PAGE_MASK)
 		goto out;
+<<<<<<< HEAD
 	retval = sys_mmap_pgoff(addr, len, prot, flags, fd, off >> PAGE_SHIFT);
+=======
+	retval = ksys_mmap_pgoff(addr, len, prot, flags, fd, off >> PAGE_SHIFT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return retval;
 }
@@ -575,15 +756,19 @@ SYSCALL_DEFINE2(64_munmap, unsigned long, addr, size_t, len)
 
 	return vm_munmap(addr, len);
 }
+<<<<<<< HEAD
 
 extern unsigned long do_mremap(unsigned long addr,
 	unsigned long old_len, unsigned long new_len,
 	unsigned long flags, unsigned long new_addr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 
 SYSCALL_DEFINE5(64_mremap, unsigned long, addr,	unsigned long, old_len,
 		unsigned long, new_len, unsigned long, flags,
 		unsigned long, new_addr)
 {
+<<<<<<< HEAD
 	unsigned long ret = -EINVAL;
 
 	if (test_thread_flag(TIF_32BIT))
@@ -600,6 +785,17 @@ out:
 asmlinkage unsigned long c_sys_nis_syscall(struct pt_regs *regs)
 {
 	static int count;
+=======
+	if (test_thread_flag(TIF_32BIT))
+		return -EINVAL;
+	return sys_mremap(addr, old_len, new_len, flags, new_addr);
+}
+
+SYSCALL_DEFINE0(nis_syscall)
+{
+	static int count;
+	struct pt_regs *regs = current_pt_regs();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	/* Don't make the system unusable, if someone goes stuck */
 	if (count++ > 5)
@@ -617,7 +813,11 @@ asmlinkage unsigned long c_sys_nis_syscall(struct pt_regs *regs)
 
 asmlinkage void sparc_breakpoint(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	siginfo_t info;
+=======
+	enum ctx_state prev_state = exception_enter();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_thread_flag(TIF_32BIT)) {
 		regs->tpc &= 0xffffffff;
@@ -626,6 +826,7 @@ asmlinkage void sparc_breakpoint(struct pt_regs *regs)
 #ifdef DEBUG_SPARC_BREAKPOINT
         printk ("TRAP: Entering kernel PC=%lx, nPC=%lx\n", regs->tpc, regs->tnpc);
 #endif
+<<<<<<< HEAD
 	info.si_signo = SIGTRAP;
 	info.si_errno = 0;
 	info.si_code = TRAP_BRKPT;
@@ -642,10 +843,24 @@ extern void check_pending(int signum);
 SYSCALL_DEFINE2(getdomainname, char __user *, name, int, len)
 {
         int nlen, err;
+=======
+	force_sig_fault(SIGTRAP, TRAP_BRKPT, (void __user *)regs->tpc);
+#ifdef DEBUG_SPARC_BREAKPOINT
+	printk ("TRAP: Returning to space: PC=%lx nPC=%lx\n", regs->tpc, regs->tnpc);
+#endif
+	exception_exit(prev_state);
+}
+
+SYSCALL_DEFINE2(getdomainname, char __user *, name, int, len)
+{
+	int nlen, err;
+	char tmp[__NEW_UTS_LEN + 1];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len < 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
  	down_read(&uts_sem);
  	
 	nlen = strlen(utsname()->domainname) + 1;
@@ -658,10 +873,87 @@ SYSCALL_DEFINE2(getdomainname, char __user *, name, int, len)
 		err = 0;
 
 out:
+=======
+	down_read(&uts_sem);
+
+	nlen = strlen(utsname()->domainname) + 1;
+	err = -EINVAL;
+	if (nlen > len)
+		goto out_unlock;
+	memcpy(tmp, utsname()->domainname, nlen);
+
+	up_read(&uts_sem);
+
+	if (copy_to_user(name, tmp, nlen))
+		return -EFAULT;
+	return 0;
+
+out_unlock:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_read(&uts_sem);
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+SYSCALL_DEFINE1(sparc_adjtimex, struct __kernel_timex __user *, txc_p)
+{
+	struct __kernel_timex txc;
+	struct __kernel_old_timeval *tv = (void *)&txc.time;
+	int ret;
+
+	/* Copy the user data space into the kernel copy
+	 * structure. But bear in mind that the structures
+	 * may change
+	 */
+	if (copy_from_user(&txc, txc_p, sizeof(txc)))
+		return -EFAULT;
+
+	/*
+	 * override for sparc64 specific timeval type: tv_usec
+	 * is 32 bit wide instead of 64-bit in __kernel_timex
+	 */
+	txc.time.tv_usec = tv->tv_usec;
+	ret = do_adjtimex(&txc);
+	tv->tv_usec = txc.time.tv_usec;
+
+	return copy_to_user(txc_p, &txc, sizeof(txc)) ? -EFAULT : ret;
+}
+
+SYSCALL_DEFINE2(sparc_clock_adjtime, const clockid_t, which_clock,
+		struct __kernel_timex __user *, txc_p)
+{
+	struct __kernel_timex txc;
+	struct __kernel_old_timeval *tv = (void *)&txc.time;
+	int ret;
+
+	if (!IS_ENABLED(CONFIG_POSIX_TIMERS)) {
+		pr_err_once("process %d (%s) attempted a POSIX timer syscall "
+		    "while CONFIG_POSIX_TIMERS is not set\n",
+		    current->pid, current->comm);
+
+		return -ENOSYS;
+	}
+
+	/* Copy the user data space into the kernel copy
+	 * structure. But bear in mind that the structures
+	 * may change
+	 */
+	if (copy_from_user(&txc, txc_p, sizeof(txc)))
+		return -EFAULT;
+
+	/*
+	 * override for sparc64 specific timeval type: tv_usec
+	 * is 32 bit wide instead of 64-bit in __kernel_timex
+	 */
+	txc.time.tv_usec = tv->tv_usec;
+	ret = do_clock_adjtime(which_clock, &txc);
+	tv->tv_usec = txc.time.tv_usec;
+
+	return copy_to_user(txc_p, &txc, sizeof(txc)) ? -EFAULT : ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SYSCALL_DEFINE5(utrap_install, utrap_entry_t, type,
 		utrap_handler_t, new_p, utrap_handler_t, new_d,
 		utrap_handler_t __user *, old_p,
@@ -687,7 +979,12 @@ SYSCALL_DEFINE5(utrap_install, utrap_entry_t, type,
 	}
 	if (!current_thread_info()->utraps) {
 		current_thread_info()->utraps =
+<<<<<<< HEAD
 			kzalloc((UT_TRAP_INSTRUCTION_31+1)*sizeof(long), GFP_KERNEL);
+=======
+			kcalloc(UT_TRAP_INSTRUCTION_31 + 1, sizeof(long),
+				GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!current_thread_info()->utraps)
 			return -ENOMEM;
 		current_thread_info()->utraps[0] = 1;
@@ -697,8 +994,14 @@ SYSCALL_DEFINE5(utrap_install, utrap_entry_t, type,
 			unsigned long *p = current_thread_info()->utraps;
 
 			current_thread_info()->utraps =
+<<<<<<< HEAD
 				kmalloc((UT_TRAP_INSTRUCTION_31+1)*sizeof(long),
 					GFP_KERNEL);
+=======
+				kmalloc_array(UT_TRAP_INSTRUCTION_31 + 1,
+					      sizeof(long),
+					      GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!current_thread_info()->utraps) {
 				current_thread_info()->utraps = p;
 				return -ENOMEM;
@@ -722,9 +1025,15 @@ SYSCALL_DEFINE5(utrap_install, utrap_entry_t, type,
 	return 0;
 }
 
+<<<<<<< HEAD
 asmlinkage long sparc_memory_ordering(unsigned long model,
 				      struct pt_regs *regs)
 {
+=======
+SYSCALL_DEFINE1(memory_ordering, unsigned long, model)
+{
+	struct pt_regs *regs = current_pt_regs();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (model >= 3)
 		return -EINVAL;
 	regs->tstate = (regs->tstate & ~TSTATE_MM) | (model << 14);
@@ -758,6 +1067,7 @@ SYSCALL_DEFINE5(rt_sigaction, int, sig, const struct sigaction __user *, act,
 	return ret;
 }
 
+<<<<<<< HEAD
 /*
  * Do a system call from kernel instead of calling sys_execve so we
  * end up with proper pt_regs.
@@ -778,4 +1088,9 @@ int kernel_execve(const char *filename,
 		      : "1" (__o0), "r" (__o1), "r" (__o2), "r" (__g1)
 		      : "cc");
 	return __res;
+=======
+SYSCALL_DEFINE0(kern_features)
+{
+	return KERN_FEATURE_MIXED_MODE_STACK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Performance counter callchain support - powerpc architecture code
  *
  * Copyright © 2009 Paul Mackerras, IBM Corporation.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -15,6 +22,7 @@
 #include <linux/uaccess.h>
 #include <linux/mm.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/sigcontext.h>
 #include <asm/ucontext.h>
@@ -23,6 +31,14 @@
 #include "../kernel/ppc32.h"
 #endif
 
+=======
+#include <asm/sigcontext.h>
+#include <asm/ucontext.h>
+#include <asm/vdso.h>
+#include <asm/pte-walk.h>
+
+#include "callchain.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Is sp valid as the address of the next kernel stack frame after prev_sp?
@@ -33,9 +49,15 @@ static int valid_next_sp(unsigned long sp, unsigned long prev_sp)
 {
 	if (sp & 0xf)
 		return 0;		/* must be 16-byte aligned */
+<<<<<<< HEAD
 	if (!validate_sp(sp, current, STACK_FRAME_OVERHEAD))
 		return 0;
 	if (sp >= prev_sp + STACK_FRAME_OVERHEAD)
+=======
+	if (!validate_sp(sp, current))
+		return 0;
+	if (sp >= prev_sp + STACK_FRAME_MIN_SIZE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	/*
 	 * sp could decrease when we jump off an interrupt stack
@@ -46,8 +68,13 @@ static int valid_next_sp(unsigned long sp, unsigned long prev_sp)
 	return 0;
 }
 
+<<<<<<< HEAD
 void
 perf_callchain_kernel(struct perf_callchain_entry *entry, struct pt_regs *regs)
+=======
+void __no_sanitize_address
+perf_callchain_kernel(struct perf_callchain_entry_ctx *entry, struct pt_regs *regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long sp, next_sp;
 	unsigned long next_ip;
@@ -57,9 +84,15 @@ perf_callchain_kernel(struct perf_callchain_entry *entry, struct pt_regs *regs)
 
 	lr = regs->link;
 	sp = regs->gpr[1];
+<<<<<<< HEAD
 	perf_callchain_store(entry, regs->nip);
 
 	if (!validate_sp(sp, current, STACK_FRAME_OVERHEAD))
+=======
+	perf_callchain_store(entry, perf_instruction_pointer(regs));
+
+	if (!validate_sp(sp, current))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	for (;;) {
@@ -67,16 +100,29 @@ perf_callchain_kernel(struct perf_callchain_entry *entry, struct pt_regs *regs)
 		next_sp = fp[0];
 
 		if (next_sp == sp + STACK_INT_FRAME_SIZE &&
+<<<<<<< HEAD
 		    fp[STACK_FRAME_MARKER] == STACK_FRAME_REGS_MARKER) {
+=======
+		    validate_sp_size(sp, current, STACK_INT_FRAME_SIZE) &&
+		    fp[STACK_INT_FRAME_MARKER_LONGS] == STACK_FRAME_REGS_MARKER) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * This looks like an interrupt frame for an
 			 * interrupt that occurred in the kernel
 			 */
+<<<<<<< HEAD
 			regs = (struct pt_regs *)(sp + STACK_FRAME_OVERHEAD);
 			next_ip = regs->nip;
 			lr = regs->link;
 			level = 0;
 			perf_callchain_store(entry, PERF_CONTEXT_KERNEL);
+=======
+			regs = (struct pt_regs *)(sp + STACK_INT_FRAME_REGS);
+			next_ip = regs->nip;
+			lr = regs->link;
+			level = 0;
+			perf_callchain_store_context(entry, PERF_CONTEXT_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		} else {
 			if (level == 0)
@@ -105,6 +151,7 @@ perf_callchain_kernel(struct perf_callchain_entry *entry, struct pt_regs *regs)
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC64
 /*
  * On 64-bit we don't want to invoke hash_page on user addresses from
@@ -486,6 +533,12 @@ void
 perf_callchain_user(struct perf_callchain_entry *entry, struct pt_regs *regs)
 {
 	if (current_is_64bit())
+=======
+void
+perf_callchain_user(struct perf_callchain_entry_ctx *entry, struct pt_regs *regs)
+{
+	if (!is_32bit_task())
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		perf_callchain_user_64(entry, regs);
 	else
 		perf_callchain_user_32(entry, regs);

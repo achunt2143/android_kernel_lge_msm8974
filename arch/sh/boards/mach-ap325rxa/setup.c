@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas - AP-325RXA
  * (Compatible with Algo System ., LTD. - AP-320A)
  *
  * Copyright (C) 2008 Renesas Solutions Corp.
  * Author : Yusuke Goda <goda.yuske@renesas.com>
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
@@ -32,6 +37,51 @@
 #include <asm/clock.h>
 #include <asm/suspend.h>
 #include <cpu/sh7723.h>
+=======
+ */
+
+#include <asm/clock.h>
+#include <asm/io.h>
+#include <asm/suspend.h>
+
+#include <cpu/sh7723.h>
+
+#include <linux/dma-map-ops.h>
+#include <linux/clkdev.h>
+#include <linux/delay.h>
+#include <linux/device.h>
+#include <linux/gpio.h>
+#include <linux/gpio/consumer.h>
+#include <linux/gpio/machine.h>
+#include <linux/i2c.h>
+#include <linux/init.h>
+#include <linux/interrupt.h>
+#include <linux/memblock.h>
+#include <linux/mfd/tmio.h>
+#include <linux/mmc/host.h>
+#include <linux/mtd/physmap.h>
+#include <linux/mtd/sh_flctl.h>
+#include <linux/platform_device.h>
+#include <linux/regulator/fixed.h>
+#include <linux/regulator/machine.h>
+#include <linux/sh_intc.h>
+#include <linux/smsc911x.h>
+#include <linux/videodev2.h>
+
+#include <media/drv-intf/renesas-ceu.h>
+#include <media/i2c/ov772x.h>
+
+#include <video/sh_mobile_lcdc.h>
+
+#define CEU_BUFFER_MEMORY_SIZE		(4 << 20)
+static phys_addr_t ceu_dma_membase;
+
+/* Dummy supplies, where voltage doesn't matter */
+static struct regulator_consumer_supply dummy_supplies[] = {
+	REGULATOR_SUPPLY("vddvario", "smsc911x"),
+	REGULATOR_SUPPLY("vdd33a", "smsc911x"),
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct smsc911x_platform_config smsc911x_config = {
 	.phy_interface	= PHY_INTERFACE_MODE_MII,
@@ -47,8 +97,13 @@ static struct resource smsc9118_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.start	= 35,
 		.end	= 35,
+=======
+		.start	= evt2irq(0x660),
+		.end	= evt2irq(0x660),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	}
 };
@@ -166,6 +221,7 @@ static int ap320_wvga_set_brightness(int brightness)
 		__raw_writew(0, FPGA_BKLREG);
 		gpio_set_value(GPIO_PTS3, 1);
 	}
+<<<<<<< HEAD
 	
 	return 0;
 }
@@ -173,6 +229,10 @@ static int ap320_wvga_set_brightness(int brightness)
 static int ap320_wvga_get_brightness(void)
 {
 	return gpio_get_value(GPIO_PTS3);
+=======
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ap320_wvga_power_on(void)
@@ -223,7 +283,10 @@ static struct sh_mobile_lcdc_info lcdc_info = {
 			.name = "sh_mobile_lcdc_bl",
 			.max_brightness = 1,
 			.set_brightness = ap320_wvga_set_brightness,
+<<<<<<< HEAD
 			.get_brightness = ap320_wvga_get_brightness,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 	}
 };
@@ -236,7 +299,11 @@ static struct resource lcdc_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.start	= 28,
+=======
+		.start	= evt2irq(0x580),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
@@ -250,6 +317,7 @@ static struct platform_device lcdc_device = {
 	},
 };
 
+<<<<<<< HEAD
 static void camera_power(int val)
 {
 	gpio_set_value(GPIO_PTZ5, val); /* RST_CAM/RSTB */
@@ -394,6 +462,27 @@ static int ov7725_power(struct device *dev, int mode)
 
 static struct sh_mobile_ceu_info sh_mobile_ceu_info = {
 	.flags = SH_CEU_FLAG_USE_8BIT_BUS,
+=======
+/* Powerdown/reset gpios for CEU image sensors */
+static struct gpiod_lookup_table ov7725_gpios = {
+	.dev_id		= "0-0021",
+	.table		= {
+		GPIO_LOOKUP("sh7723_pfc", GPIO_PTZ5, "reset", GPIO_ACTIVE_LOW),
+	},
+};
+
+static struct ceu_platform_data ceu0_pdata = {
+	.num_subdevs			= 1,
+	.subdevs = {
+		{ /* [0] = ov7725  */
+			.flags		= 0,
+			.bus_width	= 8,
+			.bus_shift	= 0,
+			.i2c_adapter_id	= 0,
+			.i2c_address	= 0x21,
+		},
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource ceu_resources[] = {
@@ -404,6 +493,7 @@ static struct resource ceu_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.start  = 52,
 		.flags  = IORESOURCE_IRQ,
 	},
@@ -422,6 +512,32 @@ static struct platform_device ceu_device = {
 	},
 };
 
+=======
+		.start  = evt2irq(0x880),
+		.flags  = IORESOURCE_IRQ,
+	},
+};
+
+static struct platform_device ap325rxa_ceu_device = {
+	.name		= "renesas-ceu",
+	.id             = 0, /* "ceu.0" clock */
+	.num_resources	= ARRAY_SIZE(ceu_resources),
+	.resource	= ceu_resources,
+	.dev		= {
+		.platform_data	= &ceu0_pdata,
+	},
+};
+
+/* Fixed 3.3V regulators to be used by SDHI0, SDHI1 */
+static struct regulator_consumer_supply fixed3v3_power_consumers[] =
+{
+	REGULATOR_SUPPLY("vmmc", "sh_mobile_sdhi.0"),
+	REGULATOR_SUPPLY("vqmmc", "sh_mobile_sdhi.0"),
+	REGULATOR_SUPPLY("vmmc", "sh_mobile_sdhi.1"),
+	REGULATOR_SUPPLY("vqmmc", "sh_mobile_sdhi.1"),
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource sdhi0_cn3_resources[] = {
 	[0] = {
 		.name	= "SDHI0",
@@ -430,13 +546,22 @@ static struct resource sdhi0_cn3_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.start	= 100,
+=======
+		.start	= evt2irq(0xe80),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
 
+<<<<<<< HEAD
 static struct sh_mobile_sdhi_info sdhi0_cn3_data = {
 	.tmio_caps      = MMC_CAP_SDIO_IRQ,
+=======
+static struct tmio_mmc_data sdhi0_cn3_data = {
+	.capabilities	= MMC_CAP_SDIO_IRQ,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device sdhi0_cn3_device = {
@@ -457,13 +582,22 @@ static struct resource sdhi1_cn7_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.start	= 23,
+=======
+		.start	= evt2irq(0x4e0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
 
+<<<<<<< HEAD
 static struct sh_mobile_sdhi_info sdhi1_cn7_data = {
 	.tmio_caps      = MMC_CAP_SDIO_IRQ,
+=======
+static struct tmio_mmc_data sdhi1_cn7_data = {
+	.capabilities	= MMC_CAP_SDIO_IRQ,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device sdhi1_cn7_device = {
@@ -476,6 +610,7 @@ static struct platform_device sdhi1_cn7_device = {
 	},
 };
 
+<<<<<<< HEAD
 static struct i2c_board_info __initdata ap325rxa_i2c_devices[] = {
 	{
 		I2C_BOARD_INFO("pcf8563", 0x51),
@@ -488,11 +623,14 @@ static struct i2c_board_info ap325rxa_i2c_camera[] = {
 	},
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ov772x_camera_info ov7725_info = {
 	.flags		= OV772X_FLAG_VFLIP | OV772X_FLAG_HFLIP,
 	.edgectrl	= OV772X_AUTO_EDGECTRL(0xf, 0),
 };
 
+<<<<<<< HEAD
 static struct soc_camera_link ov7725_link = {
 	.bus_id		= 0,
 	.power		= ov7725_power,
@@ -514,6 +652,15 @@ static struct platform_device ap325rxa_camera[] = {
 		.dev	= {
 			.platform_data = &camera_link,
 		},
+=======
+static struct i2c_board_info ap325rxa_i2c_devices[] __initdata = {
+	{
+		I2C_BOARD_INFO("pcf8563", 0x51),
+	},
+	{
+		I2C_BOARD_INFO("ov772x", 0x21),
+		.platform_data = &ov7725_info,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -521,12 +668,18 @@ static struct platform_device *ap325rxa_devices[] __initdata = {
 	&smsc9118_device,
 	&ap325rxa_nor_flash_device,
 	&lcdc_device,
+<<<<<<< HEAD
 	&ceu_device,
 	&nand_flash_device,
 	&sdhi0_cn3_device,
 	&sdhi1_cn7_device,
 	&ap325rxa_camera[0],
 	&ap325rxa_camera[1],
+=======
+	&nand_flash_device,
+	&sdhi0_cn3_device,
+	&sdhi1_cn7_device,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern char ap325rxa_sdram_enter_start;
@@ -543,6 +696,7 @@ static int __init ap325rxa_devices_setup(void)
 					&ap325rxa_sdram_leave_start,
 					&ap325rxa_sdram_leave_end);
 
+<<<<<<< HEAD
 	/* LD3 and LD4 LEDs */
 	gpio_request(GPIO_PTX5, NULL); /* RUN */
 	gpio_direction_output(GPIO_PTX5, 1);
@@ -551,11 +705,29 @@ static int __init ap325rxa_devices_setup(void)
 	gpio_request(GPIO_PTX4, NULL); /* INDICATOR */
 	gpio_direction_output(GPIO_PTX4, 0);
 	gpio_export(GPIO_PTX4, 0);
+=======
+	regulator_register_always_on(0, "fixed-3.3V", fixed3v3_power_consumers,
+				     ARRAY_SIZE(fixed3v3_power_consumers), 3300000);
+	regulator_register_fixed(1, dummy_supplies, ARRAY_SIZE(dummy_supplies));
+
+	/* LD3 and LD4 LEDs */
+	gpio_request(GPIO_PTX5, NULL); /* RUN */
+	gpio_direction_output(GPIO_PTX5, 1);
+	gpiod_export(gpio_to_desc(GPIO_PTX5), 0);
+
+	gpio_request(GPIO_PTX4, NULL); /* INDICATOR */
+	gpio_direction_output(GPIO_PTX4, 0);
+	gpiod_export(gpio_to_desc(GPIO_PTX4), 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SW1 input */
 	gpio_request(GPIO_PTF7, NULL); /* MODE */
 	gpio_direction_input(GPIO_PTF7);
+<<<<<<< HEAD
 	gpio_export(GPIO_PTF7, 0);
+=======
+	gpiod_export(gpio_to_desc(GPIO_PTF7), 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* LCDC */
 	gpio_request(GPIO_FN_LCDD15, NULL);
@@ -633,8 +805,11 @@ static int __init ap325rxa_devices_setup(void)
 	__raw_writew(0xFFFF, PORT_DRVCRA);
 	__raw_writew(0xFFFF, PORT_DRVCRB);
 
+<<<<<<< HEAD
 	platform_resource_setup_memory(&ceu_device, "ceu", 4 << 20);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* SDHI0 - CN3 - SD CARD */
 	gpio_request(GPIO_FN_SDHI0CD_PTD, NULL);
 	gpio_request(GPIO_FN_SDHI0WP_PTD, NULL);
@@ -654,9 +829,29 @@ static int __init ap325rxa_devices_setup(void)
 	gpio_request(GPIO_FN_SDHI1CMD, NULL);
 	gpio_request(GPIO_FN_SDHI1CLK, NULL);
 
+<<<<<<< HEAD
 	i2c_register_board_info(0, ap325rxa_i2c_devices,
 				ARRAY_SIZE(ap325rxa_i2c_devices));
 
+=======
+	/* Add a clock alias for ov7725 xclk source. */
+	clk_add_alias(NULL, "0-0021", "video_clk", NULL);
+
+	/* Register RSTB gpio for ov7725 camera sensor. */
+	gpiod_add_lookup_table(&ov7725_gpios);
+
+	i2c_register_board_info(0, ap325rxa_i2c_devices,
+				ARRAY_SIZE(ap325rxa_i2c_devices));
+
+	/* Initialize CEU platform device separately to map memory first */
+	device_initialize(&ap325rxa_ceu_device.dev);
+	dma_declare_coherent_memory(&ap325rxa_ceu_device.dev,
+			ceu_dma_membase, ceu_dma_membase,
+			CEU_BUFFER_MEMORY_SIZE);
+
+	platform_device_add(&ap325rxa_ceu_device);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return platform_add_devices(ap325rxa_devices,
 				ARRAY_SIZE(ap325rxa_devices));
 }
@@ -673,7 +868,30 @@ static int ap325rxa_mode_pins(void)
 	return MODE_PIN5 | MODE_PIN8;
 }
 
+<<<<<<< HEAD
 static struct sh_machine_vector mv_ap325rxa __initmv = {
 	.mv_name = "AP-325RXA",
 	.mv_mode_pins = ap325rxa_mode_pins,
+=======
+/* Reserve a portion of memory for CEU buffers */
+static void __init ap325rxa_mv_mem_reserve(void)
+{
+	phys_addr_t phys;
+	phys_addr_t size = CEU_BUFFER_MEMORY_SIZE;
+
+	phys = memblock_phys_alloc(size, PAGE_SIZE);
+	if (!phys)
+		panic("Failed to allocate CEU memory\n");
+
+	memblock_phys_free(phys, size);
+	memblock_remove(phys, size);
+
+	ceu_dma_membase = phys;
+}
+
+static struct sh_machine_vector mv_ap325rxa __initmv = {
+	.mv_name = "AP-325RXA",
+	.mv_mode_pins = ap325rxa_mode_pins,
+	.mv_mem_reserve	= ap325rxa_mv_mem_reserve,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

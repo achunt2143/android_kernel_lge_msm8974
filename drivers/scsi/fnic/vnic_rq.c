@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
@@ -14,6 +15,12 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
+ * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -27,12 +34,18 @@
 static int vnic_rq_alloc_bufs(struct vnic_rq *rq)
 {
 	struct vnic_rq_buf *buf;
+<<<<<<< HEAD
 	struct vnic_dev *vdev;
 	unsigned int i, j, count = rq->ring.desc_count;
 	unsigned int blks = VNIC_RQ_BUF_BLKS_NEEDED(count);
 
 	vdev = rq->vdev;
 
+=======
+	unsigned int i, j, count = rq->ring.desc_count;
+	unsigned int blks = VNIC_RQ_BUF_BLKS_NEEDED(count);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < blks; i++) {
 		rq->bufs[i] = kzalloc(VNIC_RQ_BUF_BLK_SZ, GFP_ATOMIC);
 		if (!rq->bufs[i]) {
@@ -171,7 +184,11 @@ void vnic_rq_clean(struct vnic_rq *rq,
 	struct vnic_rq_buf *buf;
 	u32 fetch_index;
 
+<<<<<<< HEAD
 	BUG_ON(ioread32(&rq->ctrl->enable));
+=======
+	WARN_ON(ioread32(&rq->ctrl->enable));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf = rq->to_clean;
 
@@ -194,4 +211,7 @@ void vnic_rq_clean(struct vnic_rq *rq,
 
 	vnic_dev_clear_desc_ring(&rq->ring);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

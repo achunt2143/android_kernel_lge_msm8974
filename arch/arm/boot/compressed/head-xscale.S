@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/boot/compressed/head-xscale.S
  *
@@ -32,6 +36,7 @@ __XScale_start:
 		bic	r0, r0, #0x1000		@ clear Icache
 		mcr	p15, 0, r0, c1, c0, 0
 
+<<<<<<< HEAD
 #ifdef CONFIG_ARCH_IXP2000
 		mov	r1, #-1
 		mov	r0, #0xd6000000
@@ -39,3 +44,5 @@ __XScale_start:
 		str	r1, [r0, #0x18]
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

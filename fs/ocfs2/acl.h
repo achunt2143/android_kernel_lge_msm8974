@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
@@ -13,6 +14,13 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * acl.h
+ *
+ * Copyright (C) 2004, 2008 Oracle.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef OCFS2_ACL_H
@@ -26,8 +34,15 @@ struct ocfs2_acl_entry {
 	__le32 e_id;
 };
 
+<<<<<<< HEAD
 struct posix_acl *ocfs2_iop_get_acl(struct inode *inode, int type);
 extern int ocfs2_acl_chmod(struct inode *);
+=======
+struct posix_acl *ocfs2_iop_get_acl(struct inode *inode, int type, bool rcu);
+int ocfs2_iop_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
+		      struct posix_acl *acl, int type);
+extern int ocfs2_acl_chmod(struct inode *, struct buffer_head *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int ocfs2_init_acl(handle_t *, struct inode *, struct inode *,
 			  struct buffer_head *, struct buffer_head *,
 			  struct ocfs2_alloc_context *,

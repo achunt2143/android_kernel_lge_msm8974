@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ams369fg06 AMOLED LCD panel driver.
  *
@@ -5,6 +9,7 @@
  * Author: Jingoo Han  <jg1.han@samsung.com>
  *
  * Derived from drivers/video/s6e63m0.c
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -29,6 +34,17 @@
 #include <linux/spi/spi.h>
 #include <linux/lcd.h>
 #include <linux/backlight.h>
+=======
+ */
+
+#include <linux/backlight.h>
+#include <linux/delay.h>
+#include <linux/fb.h>
+#include <linux/lcd.h>
+#include <linux/module.h>
+#include <linux/spi/spi.h>
+#include <linux/wait.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SLEEPMSEC		0x1000
 #define ENDDEF			0x2000
@@ -210,8 +226,14 @@ static int ams369fg06_panel_send_sequence(struct ams369fg06 *lcd,
 			ret = ams369fg06_spi_write(lcd, wbuf[i], wbuf[i+1]);
 			if (ret)
 				break;
+<<<<<<< HEAD
 		} else
 			mdelay(wbuf[i+1]);
+=======
+		} else {
+			msleep(wbuf[i+1]);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i += 2;
 	}
 
@@ -313,12 +335,17 @@ static int ams369fg06_ldi_disable(struct ams369fg06 *lcd)
 
 static int ams369fg06_power_is_on(int power)
 {
+<<<<<<< HEAD
 	return ((power) <= FB_BLANK_NORMAL);
+=======
+	return power <= FB_BLANK_NORMAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ams369fg06_power_on(struct ams369fg06 *lcd)
 {
 	int ret = 0;
+<<<<<<< HEAD
 	struct lcd_platform_data *pd = NULL;
 	struct backlight_device *bd = NULL;
 
@@ -340,16 +367,36 @@ static int ams369fg06_power_on(struct ams369fg06 *lcd)
 	} else {
 		pd->power_on(lcd->ld, 1);
 		mdelay(pd->power_on_delay);
+=======
+	struct lcd_platform_data *pd;
+	struct backlight_device *bd;
+
+	pd = lcd->lcd_pd;
+	bd = lcd->bd;
+
+	if (pd->power_on) {
+		pd->power_on(lcd->ld, 1);
+		msleep(pd->power_on_delay);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!pd->reset) {
 		dev_err(lcd->dev, "reset is NULL.\n");
+<<<<<<< HEAD
 		return -EFAULT;
 	} else {
 		pd->reset(lcd->ld);
 		mdelay(pd->reset_delay);
 	}
 
+=======
+		return -EINVAL;
+	}
+
+	pd->reset(lcd->ld);
+	msleep(pd->reset_delay);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ams369fg06_ldi_init(lcd);
 	if (ret) {
 		dev_err(lcd->dev, "failed to initialize ldi.\n");
@@ -374,6 +421,7 @@ static int ams369fg06_power_on(struct ams369fg06 *lcd)
 
 static int ams369fg06_power_off(struct ams369fg06 *lcd)
 {
+<<<<<<< HEAD
 	int ret = 0;
 	struct lcd_platform_data *pd = NULL;
 
@@ -382,6 +430,12 @@ static int ams369fg06_power_off(struct ams369fg06 *lcd)
 		dev_err(lcd->dev, "platform data is NULL\n");
 		return -EFAULT;
 	}
+=======
+	int ret;
+	struct lcd_platform_data *pd;
+
+	pd = lcd->lcd_pd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = ams369fg06_ldi_disable(lcd);
 	if (ret) {
@@ -389,12 +443,18 @@ static int ams369fg06_power_off(struct ams369fg06 *lcd)
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	mdelay(pd->power_off_delay);
 
 	if (!pd->power_on) {
 		dev_err(lcd->dev, "power_on is NULL.\n");
 		return -EFAULT;
 	} else
+=======
+	msleep(pd->power_off_delay);
+
+	if (pd->power_on)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pd->power_on(lcd->ld, 0);
 
 	return 0;
@@ -437,16 +497,23 @@ static int ams369fg06_set_power(struct lcd_device *ld, int power)
 	return ams369fg06_power(lcd, power);
 }
 
+<<<<<<< HEAD
 static int ams369fg06_get_brightness(struct backlight_device *bd)
 {
 	return bd->props.brightness;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ams369fg06_set_brightness(struct backlight_device *bd)
 {
 	int ret = 0;
 	int brightness = bd->props.brightness;
+<<<<<<< HEAD
 	struct ams369fg06 *lcd = dev_get_drvdata(&bd->dev);
+=======
+	struct ams369fg06 *lcd = bl_get_data(bd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (brightness < MIN_BRIGHTNESS ||
 		brightness > bd->props.max_brightness) {
@@ -470,11 +537,18 @@ static struct lcd_ops ams369fg06_lcd_ops = {
 };
 
 static const struct backlight_ops ams369fg06_backlight_ops = {
+<<<<<<< HEAD
 	.get_brightness = ams369fg06_get_brightness,
 	.update_status = ams369fg06_set_brightness,
 };
 
 static int __devinit ams369fg06_probe(struct spi_device *spi)
+=======
+	.update_status = ams369fg06_set_brightness,
+};
+
+static int ams369fg06_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	struct ams369fg06 *lcd = NULL;
@@ -482,7 +556,11 @@ static int __devinit ams369fg06_probe(struct spi_device *spi)
 	struct backlight_device *bd = NULL;
 	struct backlight_properties props;
 
+<<<<<<< HEAD
 	lcd = kzalloc(sizeof(struct ams369fg06), GFP_KERNEL);
+=======
+	lcd = devm_kzalloc(&spi->dev, sizeof(struct ams369fg06), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lcd)
 		return -ENOMEM;
 
@@ -492,12 +570,17 @@ static int __devinit ams369fg06_probe(struct spi_device *spi)
 	ret = spi_setup(spi);
 	if (ret < 0) {
 		dev_err(&spi->dev, "spi setup failed.\n");
+<<<<<<< HEAD
 		goto out_free_lcd;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	lcd->spi = spi;
 	lcd->dev = &spi->dev;
 
+<<<<<<< HEAD
 	lcd->lcd_pd = spi->dev.platform_data;
 	if (!lcd->lcd_pd) {
 		dev_err(&spi->dev, "platform data is NULL\n");
@@ -510,6 +593,18 @@ static int __devinit ams369fg06_probe(struct spi_device *spi)
 		ret = PTR_ERR(ld);
 		goto out_free_lcd;
 	}
+=======
+	lcd->lcd_pd = dev_get_platdata(&spi->dev);
+	if (!lcd->lcd_pd) {
+		dev_err(&spi->dev, "platform data is NULL\n");
+		return -EINVAL;
+	}
+
+	ld = devm_lcd_device_register(&spi->dev, "ams369fg06", &spi->dev, lcd,
+					&ams369fg06_lcd_ops);
+	if (IS_ERR(ld))
+		return PTR_ERR(ld);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lcd->ld = ld;
 
@@ -517,12 +612,20 @@ static int __devinit ams369fg06_probe(struct spi_device *spi)
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = MAX_BRIGHTNESS;
 
+<<<<<<< HEAD
 	bd = backlight_device_register("ams369fg06-bl", &spi->dev, lcd,
 		&ams369fg06_backlight_ops, &props);
 	if (IS_ERR(bd)) {
 		ret =  PTR_ERR(bd);
 		goto out_lcd_unregister;
 	}
+=======
+	bd = devm_backlight_device_register(&spi->dev, "ams369fg06-bl",
+					&spi->dev, lcd,
+					&ams369fg06_backlight_ops, &props);
+	if (IS_ERR(bd))
+		return PTR_ERR(bd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bd->props.brightness = DEFAULT_BRIGHTNESS;
 	lcd->bd = bd;
@@ -536,14 +639,23 @@ static int __devinit ams369fg06_probe(struct spi_device *spi)
 		lcd->power = FB_BLANK_POWERDOWN;
 
 		ams369fg06_power(lcd, FB_BLANK_UNBLANK);
+<<<<<<< HEAD
 	} else
 		lcd->power = FB_BLANK_UNBLANK;
 
 	dev_set_drvdata(&spi->dev, lcd);
+=======
+	} else {
+		lcd->power = FB_BLANK_UNBLANK;
+	}
+
+	spi_set_drvdata(spi, lcd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(&spi->dev, "ams369fg06 panel driver has been probed.\n");
 
 	return 0;
+<<<<<<< HEAD
 
 out_lcd_unregister:
 	lcd_device_unregister(ld);
@@ -575,11 +687,29 @@ static int ams369fg06_suspend(struct spi_device *spi, pm_message_t mesg)
 	dev_dbg(&spi->dev, "lcd->power = %d\n", lcd->power);
 
 	before_power = lcd->power;
+=======
+}
+
+static void ams369fg06_remove(struct spi_device *spi)
+{
+	struct ams369fg06 *lcd = spi_get_drvdata(spi);
+
+	ams369fg06_power(lcd, FB_BLANK_POWERDOWN);
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int ams369fg06_suspend(struct device *dev)
+{
+	struct ams369fg06 *lcd = dev_get_drvdata(dev);
+
+	dev_dbg(dev, "lcd->power = %d\n", lcd->power);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * when lcd panel is suspend, lcd panel becomes off
 	 * regardless of status.
 	 */
+<<<<<<< HEAD
 	ret = ams369fg06_power(lcd, FB_BLANK_POWERDOWN);
 
 	return ret;
@@ -612,6 +742,27 @@ static int ams369fg06_resume(struct spi_device *spi)
 static void ams369fg06_shutdown(struct spi_device *spi)
 {
 	struct ams369fg06 *lcd = dev_get_drvdata(&spi->dev);
+=======
+	return ams369fg06_power(lcd, FB_BLANK_POWERDOWN);
+}
+
+static int ams369fg06_resume(struct device *dev)
+{
+	struct ams369fg06 *lcd = dev_get_drvdata(dev);
+
+	lcd->power = FB_BLANK_POWERDOWN;
+
+	return ams369fg06_power(lcd, FB_BLANK_UNBLANK);
+}
+#endif
+
+static SIMPLE_DEV_PM_OPS(ams369fg06_pm_ops, ams369fg06_suspend,
+			ams369fg06_resume);
+
+static void ams369fg06_shutdown(struct spi_device *spi)
+{
+	struct ams369fg06 *lcd = spi_get_drvdata(spi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ams369fg06_power(lcd, FB_BLANK_POWERDOWN);
 }
@@ -619,6 +770,7 @@ static void ams369fg06_shutdown(struct spi_device *spi)
 static struct spi_driver ams369fg06_driver = {
 	.driver = {
 		.name	= "ams369fg06",
+<<<<<<< HEAD
 		.bus	= &spi_bus_type,
 		.owner	= THIS_MODULE,
 	},
@@ -627,6 +779,13 @@ static struct spi_driver ams369fg06_driver = {
 	.shutdown	= ams369fg06_shutdown,
 	.suspend	= ams369fg06_suspend,
 	.resume		= ams369fg06_resume,
+=======
+		.pm	= &ams369fg06_pm_ops,
+	},
+	.probe		= ams369fg06_probe,
+	.remove		= ams369fg06_remove,
+	.shutdown	= ams369fg06_shutdown,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(ams369fg06_driver);

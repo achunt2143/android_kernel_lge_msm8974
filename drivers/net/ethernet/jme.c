@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * JMicron JMC2x0 series PCIe Ethernet Linux Device Driver
  *
  * Copyright 2008 JMicron Technology Corporation
+<<<<<<< HEAD
  * http://www.jmicron.com/
  * Copyright (c) 2009 - 2010 Guo-Fu Tseng <cooldavid@cooldavid.org>
  *
@@ -20,6 +25,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+ * https://www.jmicron.com/
+ * Copyright (c) 2009 - 2010 Guo-Fu Tseng <cooldavid@cooldavid.org>
+ *
+ * Author: Guo-Fu Tseng <cooldavid@cooldavid.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -41,6 +52,10 @@
 #include <linux/udp.h>
 #include <linux/if_vlan.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/jiffies.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/ip6_checksum.h>
 #include "jme.h"
 
@@ -221,7 +236,11 @@ jme_clear_ghc_reset(struct jme_adapter *jme)
 	jwrite32f(jme, JME_GHC, jme->reg_ghc);
 }
 
+<<<<<<< HEAD
 static inline void
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 jme_reset_mac_processor(struct jme_adapter *jme)
 {
 	static const u32 mask[WAKEUP_FRAME_MASK_DWNR] = {0, 0, 0, 0};
@@ -269,11 +288,24 @@ jme_reset_mac_processor(struct jme_adapter *jme)
 }
 
 static inline void
+<<<<<<< HEAD
 jme_clear_pm(struct jme_adapter *jme)
+=======
+jme_clear_pm_enable_wol(struct jme_adapter *jme)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	jwrite32(jme, JME_PMCS, PMCS_STMASK | jme->reg_pmcs);
 }
 
+<<<<<<< HEAD
+=======
+static inline void
+jme_clear_pm_disable_wol(struct jme_adapter *jme)
+{
+	jwrite32(jme, JME_PMCS, PMCS_STMASK);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 jme_reload_eeprom(struct jme_adapter *jme)
 {
@@ -308,7 +340,11 @@ static void
 jme_load_macaddr(struct net_device *netdev)
 {
 	struct jme_adapter *jme = netdev_priv(netdev);
+<<<<<<< HEAD
 	unsigned char macaddr[6];
+=======
+	unsigned char macaddr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 val;
 
 	spin_lock_bh(&jme->macaddr_lock);
@@ -320,7 +356,11 @@ jme_load_macaddr(struct net_device *netdev)
 	val = jread32(jme, JME_RXUMA_HI);
 	macaddr[4] = (val >>  0) & 0xFF;
 	macaddr[5] = (val >>  8) & 0xFF;
+<<<<<<< HEAD
 	memcpy(netdev->dev_addr, macaddr, 6);
+=======
+	eth_hw_addr_set(netdev, macaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_bh(&jme->macaddr_lock);
 }
 
@@ -582,6 +622,7 @@ jme_setup_tx_resources(struct jme_adapter *jme)
 	atomic_set(&txring->next_to_clean, 0);
 	atomic_set(&txring->nr_free, jme->tx_ring_size);
 
+<<<<<<< HEAD
 	txring->bufinf		= kmalloc(sizeof(struct jme_buffer_info) *
 					jme->tx_ring_size, GFP_ATOMIC);
 	if (unlikely(!(txring->bufinf)))
@@ -594,6 +635,14 @@ jme_setup_tx_resources(struct jme_adapter *jme)
 	memset(txring->bufinf, 0,
 		sizeof(struct jme_buffer_info) * jme->tx_ring_size);
 
+=======
+	txring->bufinf		= kcalloc(jme->tx_ring_size,
+						sizeof(struct jme_buffer_info),
+						GFP_ATOMIC);
+	if (unlikely(!(txring->bufinf)))
+		goto err_free_txring;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_free_txring:
@@ -686,6 +735,7 @@ jme_enable_tx_engine(struct jme_adapter *jme)
 }
 
 static inline void
+<<<<<<< HEAD
 jme_restart_tx_engine(struct jme_adapter *jme)
 {
 	/*
@@ -697,6 +747,8 @@ jme_restart_tx_engine(struct jme_adapter *jme)
 }
 
 static inline void
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 jme_disable_tx_engine(struct jme_adapter *jme)
 {
 	int i;
@@ -758,17 +810,29 @@ jme_make_new_rx_buf(struct jme_adapter *jme, int i)
 	if (unlikely(!skb))
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	mapping = pci_map_page(jme->pdev, virt_to_page(skb->data),
 			       offset_in_page(skb->data), skb_tailroom(skb),
 			       PCI_DMA_FROMDEVICE);
 	if (unlikely(pci_dma_mapping_error(jme->pdev, mapping))) {
+=======
+	mapping = dma_map_page(&jme->pdev->dev, virt_to_page(skb->data),
+			       offset_in_page(skb->data), skb_tailroom(skb),
+			       DMA_FROM_DEVICE);
+	if (unlikely(dma_mapping_error(&jme->pdev->dev, mapping))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb(skb);
 		return -ENOMEM;
 	}
 
 	if (likely(rxbi->mapping))
+<<<<<<< HEAD
 		pci_unmap_page(jme->pdev, rxbi->mapping,
 			       rxbi->len, PCI_DMA_FROMDEVICE);
+=======
+		dma_unmap_page(&jme->pdev->dev, rxbi->mapping, rxbi->len,
+			       DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rxbi->skb = skb;
 	rxbi->len = skb_tailroom(skb);
@@ -784,10 +848,15 @@ jme_free_rx_buf(struct jme_adapter *jme, int i)
 	rxbi += i;
 
 	if (rxbi->skb) {
+<<<<<<< HEAD
 		pci_unmap_page(jme->pdev,
 				 rxbi->mapping,
 				 rxbi->len,
 				 PCI_DMA_FROMDEVICE);
+=======
+		dma_unmap_page(&jme->pdev->dev, rxbi->mapping, rxbi->len,
+			       DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb(rxbi->skb);
 		rxbi->skb = NULL;
 		rxbi->mapping = 0;
@@ -844,16 +913,25 @@ jme_setup_rx_resources(struct jme_adapter *jme)
 	rxring->next_to_use	= 0;
 	atomic_set(&rxring->next_to_clean, 0);
 
+<<<<<<< HEAD
 	rxring->bufinf		= kmalloc(sizeof(struct jme_buffer_info) *
 					jme->rx_ring_size, GFP_ATOMIC);
+=======
+	rxring->bufinf		= kcalloc(jme->rx_ring_size,
+						sizeof(struct jme_buffer_info),
+						GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!(rxring->bufinf)))
 		goto err_free_rxring;
 
 	/*
 	 * Initiallize Receive Descriptors
 	 */
+<<<<<<< HEAD
 	memset(rxring->bufinf, 0,
 		sizeof(struct jme_buffer_info) * jme->rx_ring_size);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0 ; i < jme->rx_ring_size ; ++i) {
 		if (unlikely(jme_make_new_rx_buf(jme, i))) {
 			jme_free_rx_resources(jme);
@@ -1030,6 +1108,7 @@ jme_alloc_and_feed_skb(struct jme_adapter *jme, int idx)
 	rxbi += idx;
 
 	skb = rxbi->skb;
+<<<<<<< HEAD
 	pci_dma_sync_single_for_cpu(jme->pdev,
 					rxbi->mapping,
 					rxbi->len,
@@ -1040,6 +1119,14 @@ jme_alloc_and_feed_skb(struct jme_adapter *jme, int idx)
 						rxbi->mapping,
 						rxbi->len,
 						PCI_DMA_FROMDEVICE);
+=======
+	dma_sync_single_for_cpu(&jme->pdev->dev, rxbi->mapping, rxbi->len,
+				DMA_FROM_DEVICE);
+
+	if (unlikely(jme_make_new_rx_buf(jme, idx))) {
+		dma_sync_single_for_device(&jme->pdev->dev, rxbi->mapping,
+					   rxbi->len, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		++(NET_STAT(jme).rx_dropped);
 	} else {
@@ -1058,7 +1145,11 @@ jme_alloc_and_feed_skb(struct jme_adapter *jme, int idx)
 		if (rxdesc->descwb.flags & cpu_to_le16(RXWBFLAG_TAGON)) {
 			u16 vid = le16_to_cpu(rxdesc->descwb.vlan);
 
+<<<<<<< HEAD
 			__vlan_hwaccel_put_tag(skb, vid);
+=======
+			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			NET_STAT(jme).rx_bytes += 4;
 		}
 		jme->jme_rx(skb);
@@ -1079,7 +1170,11 @@ static int
 jme_process_receive(struct jme_adapter *jme, int limit)
 {
 	struct jme_ring *rxring = &(jme->rxring[0]);
+<<<<<<< HEAD
 	struct rxdesc *rxdesc = rxring->desc;
+=======
+	struct rxdesc *rxdesc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, j, ccnt, desccnt, mask = jme->rx_ring_mask;
 
 	if (unlikely(!atomic_dec_and_test(&jme->rx_cleaning)))
@@ -1212,9 +1307,15 @@ jme_shutdown_nic(struct jme_adapter *jme)
 }
 
 static void
+<<<<<<< HEAD
 jme_pcc_tasklet(unsigned long arg)
 {
 	struct jme_adapter *jme = (struct jme_adapter *)arg;
+=======
+jme_pcc_tasklet(struct tasklet_struct *t)
+{
+	struct jme_adapter *jme = from_tasklet(jme, t, pcc_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *netdev = jme->dev;
 
 	if (unlikely(test_bit(JME_FLAG_SHUTDOWN, &jme->flags))) {
@@ -1290,10 +1391,16 @@ jme_stop_shutdown_timer(struct jme_adapter *jme)
 	jwrite32f(jme, JME_APMC, apmc);
 }
 
+<<<<<<< HEAD
 static void
 jme_link_change_tasklet(unsigned long arg)
 {
 	struct jme_adapter *jme = (struct jme_adapter *)arg;
+=======
+static void jme_link_change_work(struct work_struct *work)
+{
+	struct jme_adapter *jme = container_of(work, struct jme_adapter, linkch_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *netdev = jme->dev;
 	int rc;
 
@@ -1363,16 +1470,27 @@ err_out_free_rx_resources:
 	jme_free_rx_resources(jme);
 out_enable_tasklet:
 	tasklet_enable(&jme->txclean_task);
+<<<<<<< HEAD
 	tasklet_hi_enable(&jme->rxclean_task);
 	tasklet_hi_enable(&jme->rxempty_task);
+=======
+	tasklet_enable(&jme->rxclean_task);
+	tasklet_enable(&jme->rxempty_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	atomic_inc(&jme->link_changing);
 }
 
 static void
+<<<<<<< HEAD
 jme_rx_clean_tasklet(unsigned long arg)
 {
 	struct jme_adapter *jme = (struct jme_adapter *)arg;
+=======
+jme_rx_clean_tasklet(struct tasklet_struct *t)
+{
+	struct jme_adapter *jme = from_tasklet(jme, t, rxclean_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dynpcc_info *dpi = &(jme->dpi);
 
 	jme_process_receive(jme, jme->rx_ring_size);
@@ -1405,9 +1523,15 @@ jme_poll(JME_NAPI_HOLDER(holder), JME_NAPI_WEIGHT(budget))
 }
 
 static void
+<<<<<<< HEAD
 jme_rx_empty_tasklet(unsigned long arg)
 {
 	struct jme_adapter *jme = (struct jme_adapter *)arg;
+=======
+jme_rx_empty_tasklet(struct tasklet_struct *t)
+{
+	struct jme_adapter *jme = from_tasklet(jme, t, rxempty_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(atomic_read(&jme->link_changing) != 1))
 		return;
@@ -1417,7 +1541,11 @@ jme_rx_empty_tasklet(unsigned long arg)
 
 	netif_info(jme, rx_status, jme->dev, "RX Queue Full!\n");
 
+<<<<<<< HEAD
 	jme_rx_clean_tasklet(arg);
+=======
+	jme_rx_clean_tasklet(&jme->rxclean_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (atomic_read(&jme->rx_empty) > 0) {
 		atomic_dec(&jme->rx_empty);
@@ -1441,10 +1569,16 @@ jme_wake_queue_if_stopped(struct jme_adapter *jme)
 
 }
 
+<<<<<<< HEAD
 static void
 jme_tx_clean_tasklet(unsigned long arg)
 {
 	struct jme_adapter *jme = (struct jme_adapter *)arg;
+=======
+static void jme_tx_clean_tasklet(struct tasklet_struct *t)
+{
+	struct jme_adapter *jme = from_tasklet(jme, t, txclean_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct jme_ring *txring = &(jme->txring[0]);
 	struct txdesc *txdesc = txring->desc;
 	struct jme_buffer_info *txbi = txring->bufinf, *ctxbi, *ttxbi;
@@ -1480,10 +1614,16 @@ jme_tx_clean_tasklet(unsigned long arg)
 				ttxbi = txbi + ((i + j) & (mask));
 				txdesc[(i + j) & (mask)].dw[0] = 0;
 
+<<<<<<< HEAD
 				pci_unmap_page(jme->pdev,
 						 ttxbi->mapping,
 						 ttxbi->len,
 						 PCI_DMA_TODEVICE);
+=======
+				dma_unmap_page(&jme->pdev->dev,
+					       ttxbi->mapping, ttxbi->len,
+					       DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				ttxbi->mapping = 0;
 				ttxbi->len = 0;
@@ -1537,7 +1677,11 @@ jme_intr_msi(struct jme_adapter *jme, u32 intrstat)
 		 * all other events are ignored
 		 */
 		jwrite32(jme, JME_IEVE, intrstat);
+<<<<<<< HEAD
 		tasklet_schedule(&jme->linkch_task);
+=======
+		schedule_work(&jme->linkch_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_reenable;
 	}
 
@@ -1856,6 +2000,7 @@ jme_open(struct net_device *netdev)
 	struct jme_adapter *jme = netdev_priv(netdev);
 	int rc;
 
+<<<<<<< HEAD
 	jme_clear_pm(jme);
 	JME_NAPI_ENABLE(jme);
 
@@ -1863,6 +2008,14 @@ jme_open(struct net_device *netdev)
 	tasklet_enable(&jme->txclean_task);
 	tasklet_hi_enable(&jme->rxclean_task);
 	tasklet_hi_enable(&jme->rxempty_task);
+=======
+	jme_clear_pm_disable_wol(jme);
+	JME_NAPI_ENABLE(jme);
+
+	tasklet_setup(&jme->txclean_task, jme_tx_clean_tasklet);
+	tasklet_setup(&jme->rxclean_task, jme_rx_clean_tasklet);
+	tasklet_setup(&jme->rxempty_task, jme_rx_empty_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = jme_request_irq(jme);
 	if (rc)
@@ -1872,7 +2025,11 @@ jme_open(struct net_device *netdev)
 
 	jme_phy_on(jme);
 	if (test_bit(JME_FLAG_SSET, &jme->flags))
+<<<<<<< HEAD
 		jme_set_settings(netdev, &jme->old_ecmd);
+=======
+		jme_set_link_ksettings(netdev, &jme->old_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		jme_reset_phy_processor(jme);
 	jme_phy_calibration(jme);
@@ -1913,10 +2070,17 @@ jme_wait_link(struct jme_adapter *jme)
 {
 	u32 phylink, to = JME_WAIT_LINK_TIME;
 
+<<<<<<< HEAD
 	mdelay(1000);
 	phylink = jme_linkstat_from_phy(jme);
 	while (!(phylink & PHY_LINK_UP) && (to -= 10) > 0) {
 		mdelay(10);
+=======
+	msleep(1000);
+	phylink = jme_linkstat_from_phy(jme);
+	while (!(phylink & PHY_LINK_UP) && (to -= 10) > 0) {
+		usleep_range(10000, 11000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phylink = jme_linkstat_from_phy(jme);
 	}
 }
@@ -1924,11 +2088,19 @@ jme_wait_link(struct jme_adapter *jme)
 static void
 jme_powersave_phy(struct jme_adapter *jme)
 {
+<<<<<<< HEAD
 	if (jme->reg_pmcs) {
 		jme_set_100m_half(jme);
 		if (jme->reg_pmcs & (PMCS_LFEN | PMCS_LREN))
 			jme_wait_link(jme);
 		jme_clear_pm(jme);
+=======
+	if (jme->reg_pmcs && device_may_wakeup(&jme->pdev->dev)) {
+		jme_set_100m_half(jme);
+		if (jme->reg_pmcs & (PMCS_LFEN | PMCS_LREN))
+			jme_wait_link(jme);
+		jme_clear_pm_enable_wol(jme);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		jme_phy_off(jme);
 	}
@@ -1947,10 +2119,17 @@ jme_close(struct net_device *netdev)
 
 	JME_NAPI_DISABLE(jme);
 
+<<<<<<< HEAD
 	tasklet_disable(&jme->linkch_task);
 	tasklet_disable(&jme->txclean_task);
 	tasklet_disable(&jme->rxclean_task);
 	tasklet_disable(&jme->rxempty_task);
+=======
+	cancel_work_sync(&jme->linkch_task);
+	tasklet_kill(&jme->txclean_task);
+	tasklet_kill(&jme->rxclean_task);
+	tasklet_kill(&jme->rxempty_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	jme_disable_rx_engine(jme);
 	jme_disable_tx_engine(jme);
@@ -1983,7 +2162,11 @@ jme_alloc_txdesc(struct jme_adapter *jme,
 	return idx;
 }
 
+<<<<<<< HEAD
 static void
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 jme_fill_tx_map(struct pci_dev *pdev,
 		struct txdesc *txdesc,
 		struct jme_buffer_info *txbi,
@@ -1994,6 +2177,7 @@ jme_fill_tx_map(struct pci_dev *pdev,
 {
 	dma_addr_t dmaaddr;
 
+<<<<<<< HEAD
 	dmaaddr = pci_map_page(pdev,
 				page,
 				page_offset,
@@ -2004,6 +2188,15 @@ jme_fill_tx_map(struct pci_dev *pdev,
 				       dmaaddr,
 				       len,
 				       PCI_DMA_TODEVICE);
+=======
+	dmaaddr = dma_map_page(&pdev->dev, page, page_offset, len,
+			       DMA_TO_DEVICE);
+
+	if (unlikely(dma_mapping_error(&pdev->dev, dmaaddr)))
+		return -EINVAL;
+
+	dma_sync_single_for_device(&pdev->dev, dmaaddr, len, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	txdesc->dw[0] = 0;
 	txdesc->dw[1] = 0;
@@ -2016,9 +2209,33 @@ jme_fill_tx_map(struct pci_dev *pdev,
 
 	txbi->mapping = dmaaddr;
 	txbi->len = len;
+<<<<<<< HEAD
 }
 
 static void
+=======
+	return 0;
+}
+
+static void jme_drop_tx_map(struct jme_adapter *jme, int startidx, int count)
+{
+	struct jme_ring *txring = &(jme->txring[0]);
+	struct jme_buffer_info *txbi = txring->bufinf, *ctxbi;
+	int mask = jme->tx_ring_mask;
+	int j;
+
+	for (j = 0 ; j < count ; j++) {
+		ctxbi = txbi + ((startidx + j + 2) & (mask));
+		dma_unmap_page(&jme->pdev->dev, ctxbi->mapping, ctxbi->len,
+			       DMA_TO_DEVICE);
+
+		ctxbi->mapping = 0;
+		ctxbi->len = 0;
+	}
+}
+
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 jme_map_tx_skb(struct jme_adapter *jme, struct sk_buff *skb, int idx)
 {
 	struct jme_ring *txring = &(jme->txring[0]);
@@ -2027,6 +2244,7 @@ jme_map_tx_skb(struct jme_adapter *jme, struct sk_buff *skb, int idx)
 	bool hidma = jme->dev->features & NETIF_F_HIGHDMA;
 	int i, nr_frags = skb_shinfo(skb)->nr_frags;
 	int mask = jme->tx_ring_mask;
+<<<<<<< HEAD
 	const struct skb_frag_struct *frag;
 	u32 len;
 
@@ -2038,11 +2256,30 @@ jme_map_tx_skb(struct jme_adapter *jme, struct sk_buff *skb, int idx)
 		jme_fill_tx_map(jme->pdev, ctxdesc, ctxbi,
 				skb_frag_page(frag),
 				frag->page_offset, skb_frag_size(frag), hidma);
+=======
+	u32 len;
+	int ret = 0;
+
+	for (i = 0 ; i < nr_frags ; ++i) {
+		const skb_frag_t *frag = &skb_shinfo(skb)->frags[i];
+
+		ctxdesc = txdesc + ((idx + i + 2) & (mask));
+		ctxbi = txbi + ((idx + i + 2) & (mask));
+
+		ret = jme_fill_tx_map(jme->pdev, ctxdesc, ctxbi,
+				      skb_frag_page(frag), skb_frag_off(frag),
+				      skb_frag_size(frag), hidma);
+		if (ret) {
+			jme_drop_tx_map(jme, idx, i);
+			goto out;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	len = skb_is_nonlinear(skb) ? skb_headlen(skb) : skb->len;
 	ctxdesc = txdesc + ((idx + 1) & (mask));
 	ctxbi = txbi + ((idx + 1) & (mask));
+<<<<<<< HEAD
 	jme_fill_tx_map(jme->pdev, ctxdesc, ctxbi, virt_to_page(skb->data),
 			offset_in_page(skb->data), len, hidma);
 
@@ -2060,6 +2297,18 @@ jme_expand_header(struct jme_adapter *jme, struct sk_buff *skb)
 
 	return 0;
 }
+=======
+	ret = jme_fill_tx_map(jme->pdev, ctxdesc, ctxbi, virt_to_page(skb->data),
+			offset_in_page(skb->data), len, hidma);
+	if (ret)
+		jme_drop_tx_map(jme, idx, i);
+
+out:
+	return ret;
+
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int
 jme_tx_tso(struct sk_buff *skb, __le16 *mss, u8 *flags)
@@ -2077,12 +2326,16 @@ jme_tx_tso(struct sk_buff *skb, __le16 *mss, u8 *flags)
 								IPPROTO_TCP,
 								0);
 		} else {
+<<<<<<< HEAD
 			struct ipv6hdr *ip6h = ipv6_hdr(skb);
 
 			tcp_hdr(skb)->check = ~csum_ipv6_magic(&ip6h->saddr,
 								&ip6h->daddr, 0,
 								IPPROTO_TCP,
 								0);
+=======
+			tcp_v6_gso_csum_prep(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		return 0;
@@ -2126,9 +2379,15 @@ jme_tx_csum(struct jme_adapter *jme, struct sk_buff *skb, u8 *flags)
 static inline void
 jme_tx_vlan(struct sk_buff *skb, __le16 *vlan, u8 *flags)
 {
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb)) {
 		*flags |= TXFLAG_TAGON;
 		*vlan = cpu_to_le16(vlan_tx_tag_get(skb));
+=======
+	if (skb_vlan_tag_present(skb)) {
+		*flags |= TXFLAG_TAGON;
+		*vlan = cpu_to_le16(skb_vlan_tag_get(skb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2139,6 +2398,10 @@ jme_fill_tx_desc(struct jme_adapter *jme, struct sk_buff *skb, int idx)
 	struct txdesc *txdesc;
 	struct jme_buffer_info *txbi;
 	u8 flags;
+<<<<<<< HEAD
+=======
+	int ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	txdesc = (struct txdesc *)txring->desc + idx;
 	txbi = txring->bufinf + idx;
@@ -2163,7 +2426,14 @@ jme_fill_tx_desc(struct jme_adapter *jme, struct sk_buff *skb, int idx)
 	if (jme_tx_tso(skb, &txdesc->desc1.mss, &flags))
 		jme_tx_csum(jme, skb, &flags);
 	jme_tx_vlan(skb, &txdesc->desc1.vlan, &flags);
+<<<<<<< HEAD
 	jme_map_tx_skb(jme, skb, idx);
+=======
+	ret = jme_map_tx_skb(jme, skb, idx);
+	if (ret)
+		return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	txdesc->desc1.flags = flags;
 	/*
 	 * Set tx buffer info after telling NIC to send
@@ -2202,7 +2472,11 @@ jme_stop_queue_if_full(struct jme_adapter *jme)
 	}
 
 	if (unlikely(txbi->start_xmit &&
+<<<<<<< HEAD
 			(jiffies - txbi->start_xmit) >= TX_TIMEOUT &&
+=======
+			time_is_before_eq_jiffies(txbi->start_xmit + TX_TIMEOUT) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			txbi->skb)) {
 		netif_stop_queue(jme->dev);
 		netif_info(jme, tx_queued, jme->dev,
@@ -2220,7 +2494,12 @@ jme_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 	struct jme_adapter *jme = netdev_priv(netdev);
 	int idx;
 
+<<<<<<< HEAD
 	if (unlikely(jme_expand_header(jme, skb))) {
+=======
+	if (unlikely(skb_is_gso(skb) && skb_cow_head(skb, 0))) {
+		dev_kfree_skb_any(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		++(NET_STAT(jme).tx_dropped);
 		return NETDEV_TX_OK;
 	}
@@ -2235,7 +2514,12 @@ jme_start_xmit(struct sk_buff *skb, struct net_device *netdev)
 		return NETDEV_TX_BUSY;
 	}
 
+<<<<<<< HEAD
 	jme_fill_tx_desc(jme, skb, idx);
+=======
+	if (jme_fill_tx_desc(jme, skb, idx))
+		return NETDEV_TX_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	jwrite32(jme, JME_TXCS, jme->reg_txcs |
 				TXCS_SELECT_QUEUE0 |
@@ -2275,7 +2559,11 @@ jme_set_macaddr(struct net_device *netdev, void *p)
 		return -EBUSY;
 
 	spin_lock_bh(&jme->macaddr_lock);
+<<<<<<< HEAD
 	memcpy(netdev->dev_addr, addr->sa_data, netdev->addr_len);
+=======
+	eth_hw_addr_set(netdev, addr->sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jme_set_unicastaddr(netdev);
 	spin_unlock_bh(&jme->macaddr_lock);
 
@@ -2321,6 +2609,7 @@ jme_change_mtu(struct net_device *netdev, int new_mtu)
 {
 	struct jme_adapter *jme = netdev_priv(netdev);
 
+<<<<<<< HEAD
 	if (new_mtu == jme->old_mtu)
 		return 0;
 
@@ -2329,6 +2618,8 @@ jme_change_mtu(struct net_device *netdev, int new_mtu)
 		return -EINVAL;
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netdev->mtu = new_mtu;
 	netdev_update_features(netdev);
 
@@ -2339,14 +2630,22 @@ jme_change_mtu(struct net_device *netdev, int new_mtu)
 }
 
 static void
+<<<<<<< HEAD
 jme_tx_timeout(struct net_device *netdev)
+=======
+jme_tx_timeout(struct net_device *netdev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jme_adapter *jme = netdev_priv(netdev);
 
 	jme->phylink = 0;
 	jme_reset_phy_processor(jme);
 	if (test_bit(JME_FLAG_SSET, &jme->flags))
+<<<<<<< HEAD
 		jme_set_settings(netdev, &jme->old_ecmd);
+=======
+		jme_set_link_ksettings(netdev, &jme->old_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Force to Reset the link again
@@ -2354,6 +2653,7 @@ jme_tx_timeout(struct net_device *netdev)
 	jme_reset_link(jme);
 }
 
+<<<<<<< HEAD
 static inline void jme_pause_rx(struct jme_adapter *jme)
 {
 	atomic_dec(&jme->link_changing);
@@ -2385,15 +2685,23 @@ static inline void jme_resume_rx(struct jme_adapter *jme)
 	atomic_inc(&jme->link_changing);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 jme_get_drvinfo(struct net_device *netdev,
 		     struct ethtool_drvinfo *info)
 {
 	struct jme_adapter *jme = netdev_priv(netdev);
 
+<<<<<<< HEAD
 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
 	strlcpy(info->bus_info, pci_name(jme->pdev), sizeof(info->bus_info));
+=======
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	strscpy(info->version, DRV_VERSION, sizeof(info->version));
+	strscpy(info->bus_info, pci_name(jme->pdev), sizeof(info->bus_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -2445,8 +2753,15 @@ jme_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *p)
 	mdio_memcpy(jme, p32, JME_PHY_REG_NR);
 }
 
+<<<<<<< HEAD
 static int
 jme_get_coalesce(struct net_device *netdev, struct ethtool_coalesce *ecmd)
+=======
+static int jme_get_coalesce(struct net_device *netdev,
+			    struct ethtool_coalesce *ecmd,
+			    struct kernel_ethtool_coalesce *kernel_coal,
+			    struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jme_adapter *jme = netdev_priv(netdev);
 
@@ -2482,8 +2797,15 @@ jme_get_coalesce(struct net_device *netdev, struct ethtool_coalesce *ecmd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 jme_set_coalesce(struct net_device *netdev, struct ethtool_coalesce *ecmd)
+=======
+static int jme_set_coalesce(struct net_device *netdev,
+			    struct ethtool_coalesce *ecmd,
+			    struct kernel_ethtool_coalesce *kernel_coal,
+			    struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jme_adapter *jme = netdev_priv(netdev);
 	struct dynpcc_info *dpi = &(jme->dpi);
@@ -2616,13 +2938,17 @@ jme_set_wol(struct net_device *netdev,
 	if (wol->wolopts & WAKE_MAGIC)
 		jme->reg_pmcs |= PMCS_MFEN;
 
+<<<<<<< HEAD
 	jwrite32(jme, JME_PMCS, jme->reg_pmcs);
 	device_set_wakeup_enable(&jme->pdev->dev, !!(jme->reg_pmcs));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int
+<<<<<<< HEAD
 jme_get_settings(struct net_device *netdev,
 		     struct ethtool_cmd *ecmd)
 {
@@ -2638,12 +2964,33 @@ jme_get_settings(struct net_device *netdev,
 static int
 jme_set_settings(struct net_device *netdev,
 		     struct ethtool_cmd *ecmd)
+=======
+jme_get_link_ksettings(struct net_device *netdev,
+		       struct ethtool_link_ksettings *cmd)
+{
+	struct jme_adapter *jme = netdev_priv(netdev);
+
+	spin_lock_bh(&jme->phy_lock);
+	mii_ethtool_get_link_ksettings(&jme->mii_if, cmd);
+	spin_unlock_bh(&jme->phy_lock);
+	return 0;
+}
+
+static int
+jme_set_link_ksettings(struct net_device *netdev,
+		       const struct ethtool_link_ksettings *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jme_adapter *jme = netdev_priv(netdev);
 	int rc, fdc = 0;
 
+<<<<<<< HEAD
 	if (ethtool_cmd_speed(ecmd) == SPEED_1000
 	    && ecmd->autoneg != AUTONEG_ENABLE)
+=======
+	if (cmd->base.speed == SPEED_1000 &&
+	    cmd->base.autoneg != AUTONEG_ENABLE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/*
@@ -2651,18 +2998,31 @@ jme_set_settings(struct net_device *netdev,
 	 * Hardware would not generate link change interrupt.
 	 */
 	if (jme->mii_if.force_media &&
+<<<<<<< HEAD
 	ecmd->autoneg != AUTONEG_ENABLE &&
 	(jme->mii_if.full_duplex != ecmd->duplex))
 		fdc = 1;
 
 	spin_lock_bh(&jme->phy_lock);
 	rc = mii_ethtool_sset(&(jme->mii_if), ecmd);
+=======
+	    cmd->base.autoneg != AUTONEG_ENABLE &&
+	    (jme->mii_if.full_duplex != cmd->base.duplex))
+		fdc = 1;
+
+	spin_lock_bh(&jme->phy_lock);
+	rc = mii_ethtool_set_link_ksettings(&jme->mii_if, cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_bh(&jme->phy_lock);
 
 	if (!rc) {
 		if (fdc)
 			jme_reset_link(jme);
+<<<<<<< HEAD
 		jme->old_ecmd = *ecmd;
+=======
+		jme->old_cmd = *cmd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(JME_FLAG_SSET, &jme->flags);
 	}
 
@@ -2691,7 +3051,11 @@ jme_ioctl(struct net_device *netdev, struct ifreq *rq, int cmd)
 	if (!rc && (cmd == SIOCSMIIREG)) {
 		if (duplex_chg)
 			jme_reset_link(jme);
+<<<<<<< HEAD
 		jme_get_settings(netdev, &jme->old_ecmd);
+=======
+		jme_get_link_ksettings(netdev, &jme->old_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(JME_FLAG_SSET, &jme->flags);
 	}
 
@@ -2723,7 +3087,11 @@ static netdev_features_t
 jme_fix_features(struct net_device *netdev, netdev_features_t features)
 {
 	if (netdev->mtu > 1900)
+<<<<<<< HEAD
 		features &= ~(NETIF_F_ALL_TSO | NETIF_F_ALL_CSUM);
+=======
+		features &= ~(NETIF_F_ALL_TSO | NETIF_F_CSUM_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return features;
 }
 
@@ -2743,6 +3111,20 @@ jme_set_features(struct net_device *netdev, netdev_features_t features)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NET_POLL_CONTROLLER
+static void jme_netpoll(struct net_device *dev)
+{
+	unsigned long flags;
+
+	local_irq_save(flags);
+	jme_intr(dev->irq, dev);
+	local_irq_restore(flags);
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 jme_nway_reset(struct net_device *netdev)
 {
@@ -2870,6 +3252,12 @@ jme_set_eeprom(struct net_device *netdev,
 }
 
 static const struct ethtool_ops jme_ethtool_ops = {
+<<<<<<< HEAD
+=======
+	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+				     ETHTOOL_COALESCE_MAX_FRAMES |
+				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo            = jme_get_drvinfo,
 	.get_regs_len		= jme_get_regs_len,
 	.get_regs		= jme_get_regs,
@@ -2879,8 +3267,11 @@ static const struct ethtool_ops jme_ethtool_ops = {
 	.set_pauseparam		= jme_set_pauseparam,
 	.get_wol		= jme_get_wol,
 	.set_wol		= jme_set_wol,
+<<<<<<< HEAD
 	.get_settings		= jme_get_settings,
 	.set_settings		= jme_set_settings,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_link		= jme_get_link,
 	.get_msglevel           = jme_get_msglevel,
 	.set_msglevel           = jme_set_msglevel,
@@ -2888,12 +3279,18 @@ static const struct ethtool_ops jme_ethtool_ops = {
 	.get_eeprom_len		= jme_get_eeprom_len,
 	.get_eeprom		= jme_get_eeprom,
 	.set_eeprom		= jme_set_eeprom,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings	= jme_get_link_ksettings,
+	.set_link_ksettings	= jme_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int
 jme_pci_dma64(struct pci_dev *pdev)
 {
 	if (pdev->device == PCI_DEVICE_ID_JMICRON_JMC250 &&
+<<<<<<< HEAD
 	    !pci_set_dma_mask(pdev, DMA_BIT_MASK(64)))
 		if (!pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64)))
 			return 1;
@@ -2906,6 +3303,17 @@ jme_pci_dma64(struct pci_dev *pdev)
 	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32)))
 		if (!pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32)))
 			return 0;
+=======
+	    !dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64)))
+		return 1;
+
+	if (pdev->device == PCI_DEVICE_ID_JMICRON_JMC250 &&
+	    !dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(40)))
+		return 1;
+
+	if (!dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32)))
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -1;
 }
@@ -2936,7 +3344,11 @@ static const struct net_device_ops jme_netdev_ops = {
 	.ndo_open		= jme_open,
 	.ndo_stop		= jme_close,
 	.ndo_validate_addr	= eth_validate_addr,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= jme_ioctl,
+=======
+	.ndo_eth_ioctl		= jme_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_start_xmit		= jme_start_xmit,
 	.ndo_set_mac_address	= jme_set_macaddr,
 	.ndo_set_rx_mode	= jme_set_multi,
@@ -2944,9 +3356,18 @@ static const struct net_device_ops jme_netdev_ops = {
 	.ndo_tx_timeout		= jme_tx_timeout,
 	.ndo_fix_features       = jme_fix_features,
 	.ndo_set_features       = jme_set_features,
+<<<<<<< HEAD
 };
 
 static int __devinit
+=======
+#ifdef CONFIG_NET_POLL_CONTROLLER
+	.ndo_poll_controller	= jme_netpoll,
+#endif
+};
+
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 jme_init_one(struct pci_dev *pdev,
 	     const struct pci_device_id *ent)
 {
@@ -2959,6 +3380,12 @@ jme_init_one(struct pci_dev *pdev,
 	/*
 	 * set up PCI device basics
 	 */
+<<<<<<< HEAD
+=======
+	pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S | PCIE_LINK_STATE_L1 |
+			       PCIE_LINK_STATE_CLKPM);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = pci_enable_device(pdev);
 	if (rc) {
 		pr_err("Cannot enable PCI device\n");
@@ -3008,11 +3435,23 @@ jme_init_one(struct pci_dev *pdev,
 						NETIF_F_SG |
 						NETIF_F_TSO |
 						NETIF_F_TSO6 |
+<<<<<<< HEAD
 						NETIF_F_HW_VLAN_TX |
 						NETIF_F_HW_VLAN_RX;
 	if (using_dac)
 		netdev->features	|=	NETIF_F_HIGHDMA;
 
+=======
+						NETIF_F_HW_VLAN_CTAG_TX |
+						NETIF_F_HW_VLAN_CTAG_RX;
+	if (using_dac)
+		netdev->features	|=	NETIF_F_HIGHDMA;
+
+	/* MTU range: 1280 - 9202*/
+	netdev->min_mtu = IPV6_MIN_MTU;
+	netdev->max_mtu = MAX_ETHERNET_JUMBO_PACKET_SIZE - ETH_HLEN;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SET_NETDEV_DEV(netdev, &pdev->dev);
 	pci_set_drvdata(pdev, netdev);
 
@@ -3047,7 +3486,11 @@ jme_init_one(struct pci_dev *pdev,
 		jwrite32(jme, JME_APMC, apmc);
 	}
 
+<<<<<<< HEAD
 	NETIF_NAPI_SET(netdev, &jme->napi, jme_poll, jme->rx_ring_size >> 2)
+=======
+	netif_napi_add(netdev, &jme->napi, jme_poll);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&jme->phy_lock);
 	spin_lock_init(&jme->macaddr_lock);
@@ -3058,6 +3501,7 @@ jme_init_one(struct pci_dev *pdev,
 	atomic_set(&jme->tx_cleaning, 1);
 	atomic_set(&jme->rx_empty, 1);
 
+<<<<<<< HEAD
 	tasklet_init(&jme->pcc_task,
 		     jme_pcc_tasklet,
 		     (unsigned long) jme);
@@ -3077,6 +3521,10 @@ jme_init_one(struct pci_dev *pdev,
 	tasklet_disable_nosync(&jme->txclean_task);
 	tasklet_disable_nosync(&jme->rxclean_task);
 	tasklet_disable_nosync(&jme->rxempty_task);
+=======
+	tasklet_setup(&jme->pcc_task, jme_pcc_tasklet);
+	INIT_WORK(&jme->linkch_task, jme_link_change_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jme->dpi.cur = PCC_P1;
 
 	jme->reg_ghc = 0;
@@ -3141,9 +3589,14 @@ jme_init_one(struct pci_dev *pdev,
 	jme->mii_if.mdio_read = jme_mdio_read;
 	jme->mii_if.mdio_write = jme_mdio_write;
 
+<<<<<<< HEAD
 	jme_clear_pm(jme);
 	pci_set_power_state(jme->pdev, PCI_D0);
 	device_set_wakeup_enable(&pdev->dev, true);
+=======
+	jme_clear_pm_disable_wol(jme);
+	device_init_wakeup(&pdev->dev, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	jme_set_phyfifo_5level(jme);
 	jme->pcirev = pdev->revision;
@@ -3187,7 +3640,10 @@ jme_init_one(struct pci_dev *pdev,
 err_out_unmap:
 	iounmap(jme->regs);
 err_out_free_netdev:
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_netdev(netdev);
 err_out_release_regions:
 	pci_release_regions(pdev);
@@ -3197,7 +3653,11 @@ err_out:
 	return rc;
 }
 
+<<<<<<< HEAD
 static void __devexit
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 jme_remove_one(struct pci_dev *pdev)
 {
 	struct net_device *netdev = pci_get_drvdata(pdev);
@@ -3205,7 +3665,10 @@ jme_remove_one(struct pci_dev *pdev)
 
 	unregister_netdev(netdev);
 	iounmap(jme->regs);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_netdev(netdev);
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
@@ -3226,8 +3689,12 @@ jme_shutdown(struct pci_dev *pdev)
 static int
 jme_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pdev = to_pci_dev(dev);
 	struct net_device *netdev = pci_get_drvdata(pdev);
+=======
+	struct net_device *netdev = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct jme_adapter *jme = netdev_priv(netdev);
 
 	if (!netif_running(netdev))
@@ -3258,8 +3725,13 @@ jme_suspend(struct device *dev)
 	}
 
 	tasklet_enable(&jme->txclean_task);
+<<<<<<< HEAD
 	tasklet_hi_enable(&jme->rxclean_task);
 	tasklet_hi_enable(&jme->rxempty_task);
+=======
+	tasklet_enable(&jme->rxclean_task);
+	tasklet_enable(&jme->rxempty_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	jme_powersave_phy(jme);
 
@@ -3269,28 +3741,47 @@ jme_suspend(struct device *dev)
 static int
 jme_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pdev = to_pci_dev(dev);
 	struct net_device *netdev = pci_get_drvdata(pdev);
+=======
+	struct net_device *netdev = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct jme_adapter *jme = netdev_priv(netdev);
 
 	if (!netif_running(netdev))
 		return 0;
 
+<<<<<<< HEAD
 	jme_clear_pm(jme);
 	jme_phy_on(jme);
 	if (test_bit(JME_FLAG_SSET, &jme->flags))
 		jme_set_settings(netdev, &jme->old_ecmd);
+=======
+	jme_clear_pm_disable_wol(jme);
+	jme_phy_on(jme);
+	if (test_bit(JME_FLAG_SSET, &jme->flags))
+		jme_set_link_ksettings(netdev, &jme->old_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		jme_reset_phy_processor(jme);
 	jme_phy_calibration(jme);
 	jme_phy_setEA(jme);
+<<<<<<< HEAD
 	jme_start_irq(jme);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_device_attach(netdev);
 
 	atomic_inc(&jme->link_changing);
 
 	jme_reset_link(jme);
 
+<<<<<<< HEAD
+=======
+	jme_start_irq(jme);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3302,7 +3793,11 @@ static SIMPLE_DEV_PM_OPS(jme_pm_ops, jme_suspend, jme_resume);
 #define JME_PM_OPS NULL
 #endif
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(jme_pci_tbl) = {
+=======
+static const struct pci_device_id jme_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(JMICRON, PCI_DEVICE_ID_JMICRON_JMC250) },
 	{ PCI_VDEVICE(JMICRON, PCI_DEVICE_ID_JMICRON_JMC260) },
 	{ }
@@ -3312,7 +3807,11 @@ static struct pci_driver jme_driver = {
 	.name           = DRV_NAME,
 	.id_table       = jme_pci_tbl,
 	.probe          = jme_init_one,
+<<<<<<< HEAD
 	.remove         = __devexit_p(jme_remove_one),
+=======
+	.remove         = jme_remove_one,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown       = jme_shutdown,
 	.driver.pm	= JME_PM_OPS,
 };

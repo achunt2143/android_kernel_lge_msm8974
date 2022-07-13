@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/io-readsw-armv4.S
  *
  *  Copyright (C) 1995-2000 Russell King
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/linkage.h>
 #include <asm/assembler.h>
@@ -26,7 +33,11 @@
 
 ENTRY(__raw_readsw)
 		teq	r2, #0
+<<<<<<< HEAD
 		moveq	pc, lr
+=======
+		reteq	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tst	r1, #3
 		bne	.Linsw_align
 
@@ -76,8 +87,13 @@ ENTRY(__raw_readsw)
 		pack	r3, r3, ip
 		str	r3, [r1], #4
 
+<<<<<<< HEAD
 .Lno_insw_2:	ldrneh	r3, [r0]
 		strneh	r3, [r1]
+=======
+.Lno_insw_2:	ldrhne	r3, [r0]
+		strhne	r3, [r1]
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ldmfd	sp!, {r4, r5, pc}
 
@@ -94,7 +110,11 @@ ENTRY(__raw_readsw)
 #endif
 
 .Linsw_noalign:	stmfd	sp!, {r4, lr}
+<<<<<<< HEAD
 		ldrccb	ip, [r1, #-1]!
+=======
+		ldrbcc	ip, [r1, #-1]!
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bcc	1f
 
 		ldrh	ip, [r0]
@@ -121,11 +141,20 @@ ENTRY(__raw_readsw)
 
 3:		tst	r2, #1
 		strb	ip, [r1], #1
+<<<<<<< HEAD
 		ldrneh	ip, [r0]
    _BE_ONLY_(	movne	ip, ip, ror #8		)
 		strneb	ip, [r1], #1
    _LE_ONLY_(	movne	ip, ip, lsr #8		)
    _BE_ONLY_(	movne	ip, ip, lsr #24		)
 		strneb	ip, [r1]
+=======
+		ldrhne	ip, [r0]
+   _BE_ONLY_(	movne	ip, ip, ror #8		)
+		strbne	ip, [r1], #1
+   _LE_ONLY_(	movne	ip, ip, lsr #8		)
+   _BE_ONLY_(	movne	ip, ip, lsr #24		)
+		strbne	ip, [r1]
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ldmfd	sp!, {r4, pc}
 ENDPROC(__raw_readsw)

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- *
  *
  * ALSA driver for the digigram lx6464es interface
  *
  * Copyright (c) 2009 Tim Blechmann <tim@klingt.org>
+<<<<<<< HEAD
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -20,6 +25,8 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef LX6464ES_H
@@ -71,6 +78,7 @@ struct lx6464es {
 
 	u8			mac_address[6];
 
+<<<<<<< HEAD
 	spinlock_t		lock;        /* interrupt spinlock */
 	struct mutex            setup_mutex; /* mutex used in hw_params, open
 					      * and close */
@@ -79,6 +87,12 @@ struct lx6464es {
 	struct tasklet_struct   tasklet_capture;
 	struct tasklet_struct   tasklet_playback;
 
+=======
+	struct mutex		lock;        /* interrupt lock */
+	struct mutex            setup_mutex; /* mutex used in hw_params, open
+					      * and close */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* ports */
 	unsigned long		port_plx;	   /* io port (size=256) */
 	void __iomem           *port_plx_remapped; /* remapped plx port */
@@ -87,8 +101,14 @@ struct lx6464es {
 						    * size=8K) */
 
 	/* messaging */
+<<<<<<< HEAD
 	spinlock_t		msg_lock;          /* message spinlock */
 	struct lx_rmh           rmh;
+=======
+	struct mutex		msg_lock;          /* message lock */
+	struct lx_rmh           rmh;
+	u32			irqsrc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* configuration */
 	uint			freq_ratio : 2;

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -16,6 +21,8 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Artem Bityutskiy (Битюцкий Артём)
  *          Adrian Hunter
  */
@@ -25,6 +32,75 @@
 #include "ubifs.h"
 
 /**
+<<<<<<< HEAD
+=======
+ * ubifs_compare_master_node - compare two UBIFS master nodes
+ * @c: UBIFS file-system description object
+ * @m1: the first node
+ * @m2: the second node
+ *
+ * This function compares two UBIFS master nodes. Returns 0 if they are equal
+ * and nonzero if not.
+ */
+int ubifs_compare_master_node(struct ubifs_info *c, void *m1, void *m2)
+{
+	int ret;
+	int behind;
+	int hmac_offs = offsetof(struct ubifs_mst_node, hmac);
+
+	/*
+	 * Do not compare the common node header since the sequence number and
+	 * hence the CRC are different.
+	 */
+	ret = memcmp(m1 + UBIFS_CH_SZ, m2 + UBIFS_CH_SZ,
+		     hmac_offs - UBIFS_CH_SZ);
+	if (ret)
+		return ret;
+
+	/*
+	 * Do not compare the embedded HMAC as well which also must be different
+	 * due to the different common node header.
+	 */
+	behind = hmac_offs + UBIFS_MAX_HMAC_LEN;
+
+	if (UBIFS_MST_NODE_SZ > behind)
+		return memcmp(m1 + behind, m2 + behind, UBIFS_MST_NODE_SZ - behind);
+
+	return 0;
+}
+
+/* mst_node_check_hash - Check hash of a master node
+ * @c: UBIFS file-system description object
+ * @mst: The master node
+ * @expected: The expected hash of the master node
+ *
+ * This checks the hash of a master node against a given expected hash.
+ * Note that we have two master nodes on a UBIFS image which have different
+ * sequence numbers and consequently different CRCs. To be able to match
+ * both master nodes we exclude the common node header containing the sequence
+ * number and CRC from the hash.
+ *
+ * Returns 0 if the hashes are equal, a negative error code otherwise.
+ */
+static int mst_node_check_hash(const struct ubifs_info *c,
+			       const struct ubifs_mst_node *mst,
+			       const u8 *expected)
+{
+	u8 calc[UBIFS_MAX_HASH_LEN];
+	const void *node = mst;
+
+	crypto_shash_tfm_digest(c->hash_tfm, node + sizeof(struct ubifs_ch),
+				UBIFS_MST_NODE_SZ - sizeof(struct ubifs_ch),
+				calc);
+
+	if (ubifs_check_hash(c, expected, calc))
+		return -EPERM;
+
+	return 0;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * scan_for_master - search the valid master node.
  * @c: UBIFS file-system description object
  *
@@ -37,7 +113,11 @@ static int scan_for_master(struct ubifs_info *c)
 {
 	struct ubifs_scan_leb *sleb;
 	struct ubifs_scan_node *snod;
+<<<<<<< HEAD
 	int lnum, offs = 0, nodes_cnt;
+=======
+	int lnum, offs = 0, nodes_cnt, err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lnum = UBIFS_MST_LNUM;
 
@@ -69,12 +149,40 @@ static int scan_for_master(struct ubifs_info *c)
 		goto out_dump;
 	if (snod->offs != offs)
 		goto out;
+<<<<<<< HEAD
 	if (memcmp((void *)c->mst_node + UBIFS_CH_SZ,
 		   (void *)snod->node + UBIFS_CH_SZ,
 		   UBIFS_MST_NODE_SZ - UBIFS_CH_SZ))
 		goto out;
 	c->mst_offs = offs;
 	ubifs_scan_destroy(sleb);
+=======
+	if (ubifs_compare_master_node(c, c->mst_node, snod->node))
+		goto out;
+
+	c->mst_offs = offs;
+	ubifs_scan_destroy(sleb);
+
+	if (!ubifs_authenticated(c))
+		return 0;
+
+	if (ubifs_hmac_zero(c, c->mst_node->hmac)) {
+		err = mst_node_check_hash(c, c->mst_node,
+					  c->sup_node->hash_mst);
+		if (err)
+			ubifs_err(c, "Failed to verify master node hash");
+	} else {
+		err = ubifs_node_verify_hmac(c, c->mst_node,
+					sizeof(struct ubifs_mst_node),
+					offsetof(struct ubifs_mst_node, hmac));
+		if (err)
+			ubifs_err(c, "Failed to verify master node HMAC");
+	}
+
+	if (err)
+		return -EPERM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 out:
@@ -82,7 +190,11 @@ out:
 	return -EUCLEAN;
 
 out_dump:
+<<<<<<< HEAD
 	ubifs_err("unexpected node type %d master LEB %d:%d",
+=======
+	ubifs_err(c, "unexpected node type %d master LEB %d:%d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  snod->type, lnum, snod->offs);
 	ubifs_scan_destroy(sleb);
 	return -EINVAL;
@@ -240,8 +352,13 @@ static int validate_master(const struct ubifs_info *c)
 	return 0;
 
 out:
+<<<<<<< HEAD
 	ubifs_err("bad master node at offset %d error %d", c->mst_offs, err);
 	dbg_dump_node(c, c->mst_node);
+=======
+	ubifs_err(c, "bad master node at offset %d error %d", c->mst_offs, err);
+	ubifs_dump_node(c, c->mst_node, c->mst_node_alsz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
@@ -305,6 +422,11 @@ int ubifs_read_master(struct ubifs_info *c)
 	c->lst.total_dead  = le64_to_cpu(c->mst_node->total_dead);
 	c->lst.total_dark  = le64_to_cpu(c->mst_node->total_dark);
 
+<<<<<<< HEAD
+=======
+	ubifs_copy_hash(c, c->mst_node->hash_root_idx, c->zroot.hash);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->calc_idx_sz = c->bi.old_idx_sz;
 
 	if (c->mst_node->flags & cpu_to_le32(UBIFS_MST_NO_ORPHS))
@@ -316,8 +438,13 @@ int ubifs_read_master(struct ubifs_info *c)
 
 		if (c->leb_cnt < old_leb_cnt ||
 		    c->leb_cnt < UBIFS_MIN_LEB_CNT) {
+<<<<<<< HEAD
 			ubifs_err("bad leb_cnt on master node");
 			dbg_dump_node(c, c->mst_node);
+=======
+			ubifs_err(c, "bad leb_cnt on master node");
+			ubifs_dump_node(c, c->mst_node, c->mst_node_alsz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -360,7 +487,11 @@ int ubifs_write_master(struct ubifs_info *c)
 {
 	int err, lnum, offs, len;
 
+<<<<<<< HEAD
 	ubifs_assert(!c->ro_media && !c->ro_mount);
+=======
+	ubifs_assert(c, !c->ro_media && !c->ro_mount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (c->ro_error)
 		return -EROFS;
 
@@ -378,7 +509,13 @@ int ubifs_write_master(struct ubifs_info *c)
 	c->mst_offs = offs;
 	c->mst_node->highest_inum = cpu_to_le64(c->highest_inum);
 
+<<<<<<< HEAD
 	err = ubifs_write_node(c, c->mst_node, len, lnum, offs, UBI_SHORTTERM);
+=======
+	ubifs_copy_hash(c, c->zroot.hash, c->mst_node->hash_root_idx);
+	err = ubifs_write_node_hmac(c, c->mst_node, len, lnum, offs,
+				    offsetof(struct ubifs_mst_node, hmac));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -389,7 +526,12 @@ int ubifs_write_master(struct ubifs_info *c)
 		if (err)
 			return err;
 	}
+<<<<<<< HEAD
 	err = ubifs_write_node(c, c->mst_node, len, lnum, offs, UBI_SHORTTERM);
+=======
+	err = ubifs_write_node_hmac(c, c->mst_node, len, lnum, offs,
+				    offsetof(struct ubifs_mst_node, hmac));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Nuvoton Technology Corporation w83667hg/w83677hg-i CIR
  *
@@ -8,6 +12,7 @@
  * sample code upon which portions of this driver are based. Indirect
  * thanks also to Maxim Levitsky, whose ene_ir driver this driver is
  * modeled after.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,6 +28,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/spinlock.h>
@@ -35,9 +42,12 @@
 static int debug;
 
 
+<<<<<<< HEAD
 #define nvt_pr(level, text, ...) \
 	printk(level KBUILD_MODNAME ": " text, ## __VA_ARGS__)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define nvt_dbg(text, ...) \
 	if (debug) \
 		printk(KERN_DEBUG \
@@ -54,6 +64,7 @@ static int debug;
 			KBUILD_MODNAME ": " text "\n" , ## __VA_ARGS__)
 
 
+<<<<<<< HEAD
 /*
  * Original lirc driver said min value of 76, and recommended value of 256
  * for the buffer length, but then used 2048. Never mind that the size of the
@@ -69,11 +80,36 @@ struct nvt_dev {
 	struct rc_dev *rdev;
 
 	spinlock_t nvt_lock;
+=======
+#define RX_BUF_LEN 32
+
+#define SIO_ID_MASK 0xfff0
+
+enum nvt_chip_ver {
+	NVT_UNKNOWN	= 0,
+	NVT_W83667HG	= 0xa510,
+	NVT_6775F	= 0xb470,
+	NVT_6776F	= 0xc330,
+	NVT_6779D	= 0xc560,
+	NVT_INVALID	= 0xffff,
+};
+
+struct nvt_chip {
+	const char *name;
+	enum nvt_chip_ver chip_ver;
+};
+
+struct nvt_dev {
+	struct rc_dev *rdev;
+
+	spinlock_t lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* for rx */
 	u8 buf[RX_BUF_LEN];
 	unsigned int pkts;
 
+<<<<<<< HEAD
 	struct {
 		spinlock_t lock;
 		u8 buf[TX_BUF_LEN];
@@ -86,17 +122,28 @@ struct nvt_dev {
 	/* EFER Config register index/data pair */
 	u8 cr_efir;
 	u8 cr_efdr;
+=======
+	/* EFER Config register index/data pair */
+	u32 cr_efir;
+	u32 cr_efdr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* hardware I/O settings */
 	unsigned long cir_addr;
 	unsigned long cir_wake_addr;
 	int cir_irq;
+<<<<<<< HEAD
 	int cir_wake_irq;
 
+=======
+
+	enum nvt_chip_ver chip_ver;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* hardware id */
 	u8 chip_major;
 	u8 chip_minor;
 
+<<<<<<< HEAD
 	/* hardware features */
 	bool hw_learning_capable;
 	bool hw_tx_capable;
@@ -109,10 +156,13 @@ struct nvt_dev {
 	u8 wake_state;
 	/* for study */
 	u8 study_state;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* carrier period = 1 / frequency */
 	u32 carrier;
 };
 
+<<<<<<< HEAD
 /* study states */
 #define ST_STUDY_NONE      0x0
 #define ST_STUDY_START     0x1
@@ -134,6 +184,8 @@ struct nvt_dev {
 #define ST_TX_REQUEST	0x2
 #define ST_TX_REPLY	0x4
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* buffer packet constants */
 #define BUF_PULSE_BIT	0x80
 #define BUF_LEN_MASK	0x7f
@@ -145,8 +197,13 @@ struct nvt_dev {
 /* total length of CIR and CIR WAKE */
 #define CIR_IOREG_LENGTH	0x0f
 
+<<<<<<< HEAD
 /* RX limit length, 8 high bits for SLCH, 8 low bits for SLCL (0x7d0 = 2000) */
 #define CIR_RX_LIMIT_COUNT	0x7d0
+=======
+/* RX limit length, 8 high bits for SLCH, 8 low bits for SLCL */
+#define CIR_RX_LIMIT_COUNT  (IR_DEFAULT_TIMEOUT / SAMPLE_PERIOD)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CIR Regs */
 #define CIR_IRCON	0x00
@@ -280,10 +337,14 @@ struct nvt_dev {
 #define CIR_WAKE_IREN_RTR		0x40
 #define CIR_WAKE_IREN_PE		0x20
 #define CIR_WAKE_IREN_RFO		0x10
+<<<<<<< HEAD
 #define CIR_WAKE_IREN_TE		0x08
 #define CIR_WAKE_IREN_TTR		0x04
 #define CIR_WAKE_IREN_TFU		0x02
 #define CIR_WAKE_IREN_GH		0x01
+=======
+#define CIR_WAKE_IREN_GH		0x08
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CIR WAKE FIFOCON settings */
 #define CIR_WAKE_FIFOCON_RXFIFOCLR	0x08
@@ -327,6 +388,7 @@ struct nvt_dev {
 #define EFER_EFM_ENABLE		0x87
 #define EFER_EFM_DISABLE	0xaa
 
+<<<<<<< HEAD
 /* Chip IDs found in CR_CHIP_ID_{HI,LO} */
 #define CHIP_ID_HIGH_667	0xa5
 #define CHIP_ID_HIGH_677B	0xb4
@@ -336,6 +398,8 @@ struct nvt_dev {
 #define CHIP_ID_LOW_677B3	0x73
 #define CHIP_ID_LOW_677C	0x33
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Config regs we need to care about */
 #define CR_SOFTWARE_RESET	0x02
 #define CR_LOGICAL_DEV_SEL	0x07
@@ -364,7 +428,10 @@ struct nvt_dev {
 #define LOGICAL_DEV_ENABLE	0x01
 
 #define CIR_WAKE_ENABLE_BIT	0x08
+<<<<<<< HEAD
 #define CIR_INTR_MOUSE_IRQ_BIT	0x80
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PME_INTR_CIR_PASS_BIT	0x08
 
 /* w83677hg CIR pin config */
@@ -417,3 +484,9 @@ struct nvt_dev {
 /* as VISTA MCE definition, valid carrier value */
 #define MAX_CARRIER 60000
 #define MIN_CARRIER 30000
+<<<<<<< HEAD
+=======
+
+/* max wakeup sequence length */
+#define WAKEUP_MAX_SIZE 65
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

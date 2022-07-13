@@ -1,13 +1,25 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* clear_page.S: UltraSparc optimized clear page.
  *
  * Copyright (C) 1996, 1998, 1999, 2000, 2004 David S. Miller (davem@redhat.com)
  * Copyright (C) 1997 Jakub Jelinek (jakub@redhat.com)
  */
 
+<<<<<<< HEAD
 #include <asm/visasm.h>
 #include <asm/thread_info.h>
 #include <asm/page.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/export.h>
+#include <linux/pgtable.h>
+#include <asm/visasm.h>
+#include <asm/thread_info.h>
+#include <asm/page.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/spitfire.h>
 #include <asm/head.h>
 
@@ -26,6 +38,10 @@
 	.text
 
 	.globl		_clear_page
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(_clear_page)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 _clear_page:		/* %o0=dest */
 	ba,pt		%xcc, clear_page_common
 	 clr		%o4
@@ -35,12 +51,22 @@ _clear_page:		/* %o0=dest */
 	 */
 	.align		32
 	.globl		clear_user_page
+<<<<<<< HEAD
 clear_user_page:	/* %o0=dest, %o1=vaddr */
 	lduw		[%g6 + TI_PRE_COUNT], %o2
 	sethi		%uhi(PAGE_OFFSET), %g2
 	sethi		%hi(PAGE_SIZE), %o4
 
 	sllx		%g2, 32, %g2
+=======
+	EXPORT_SYMBOL(clear_user_page)
+clear_user_page:	/* %o0=dest, %o1=vaddr */
+	lduw		[%g6 + TI_PRE_COUNT], %o2
+	sethi		%hi(PAGE_OFFSET), %g2
+	sethi		%hi(PAGE_SIZE), %o4
+
+	ldx		[%g2 + %lo(PAGE_OFFSET)], %g2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sethi		%hi(PAGE_KERNEL_LOCKED), %g3
 
 	ldx		[%g3 + %lo(PAGE_KERNEL_LOCKED)], %g3

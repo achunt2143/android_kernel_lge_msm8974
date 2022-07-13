@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Au1000/Au1500/Au1100 AC97C controller driver for ASoC
  *
@@ -91,8 +95,13 @@ static unsigned short au1xac97c_ac97_read(struct snd_ac97 *ac97,
 	do {
 		mutex_lock(&ctx->lock);
 
+<<<<<<< HEAD
 		tmo = 5;
 		while ((RD(ctx, AC97_STATUS) & STAT_CP) && tmo--)
+=======
+		tmo = 6;
+		while ((RD(ctx, AC97_STATUS) & STAT_CP) && --tmo)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			udelay(21);	/* wait an ac97 frame time */
 		if (!tmo) {
 			pr_debug("ac97rd timeout #1\n");
@@ -105,7 +114,11 @@ static unsigned short au1xac97c_ac97_read(struct snd_ac97 *ac97,
 		 * poll, Forrest, poll...
 		 */
 		tmo = 0x10000;
+<<<<<<< HEAD
 		while ((RD(ctx, AC97_STATUS) & STAT_CP) && tmo--)
+=======
+		while ((RD(ctx, AC97_STATUS) & STAT_CP) && --tmo)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			asm volatile ("nop");
 		data = RD(ctx, AC97_CMDRESP);
 
@@ -179,13 +192,20 @@ static void au1xac97c_ac97_cold_reset(struct snd_ac97 *ac97)
 }
 
 /* AC97 controller operations */
+<<<<<<< HEAD
 struct snd_ac97_bus_ops soc_ac97_ops = {
+=======
+static struct snd_ac97_bus_ops ac97c_bus_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read		= au1xac97c_ac97_read,
 	.write		= au1xac97c_ac97_write,
 	.reset		= au1xac97c_ac97_cold_reset,
 	.warm_reset	= au1xac97c_ac97_warm_reset,
 };
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(soc_ac97_ops);	/* globals be gone! */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int alchemy_ac97c_startup(struct snd_pcm_substream *substream,
 				 struct snd_soc_dai *dai)
@@ -195,19 +215,32 @@ static int alchemy_ac97c_startup(struct snd_pcm_substream *substream,
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct snd_soc_dai_ops alchemy_ac97c_ops = {
 	.startup		= alchemy_ac97c_startup,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int au1xac97c_dai_probe(struct snd_soc_dai *dai)
 {
 	return ac97c_workdata ? 0 : -ENODEV;
 }
 
+<<<<<<< HEAD
 static struct snd_soc_dai_driver au1xac97c_dai_driver = {
 	.name			= "alchemy-ac97c",
 	.ac97_control		= 1,
 	.probe			= au1xac97c_dai_probe,
+=======
+static const struct snd_soc_dai_ops alchemy_ac97c_ops = {
+	.probe			= au1xac97c_dai_probe,
+	.startup		= alchemy_ac97c_startup,
+};
+
+static struct snd_soc_dai_driver au1xac97c_dai_driver = {
+	.name			= "alchemy-ac97c",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.playback = {
 		.rates		= AC97_RATES,
 		.formats	= AC97_FMTS,
@@ -223,7 +256,16 @@ static struct snd_soc_dai_driver au1xac97c_dai_driver = {
 	.ops			= &alchemy_ac97c_ops,
 };
 
+<<<<<<< HEAD
 static int __devinit au1xac97c_drvprobe(struct platform_device *pdev)
+=======
+static const struct snd_soc_component_driver au1xac97c_component = {
+	.name			= "au1xac97c",
+	.legacy_dai_naming	= 1,
+};
+
+static int au1xac97c_drvprobe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct resource *iores, *dmares;
@@ -244,7 +286,11 @@ static int __devinit au1xac97c_drvprobe(struct platform_device *pdev)
 				     pdev->name))
 		return -EBUSY;
 
+<<<<<<< HEAD
 	ctx->mmio = devm_ioremap_nocache(&pdev->dev, iores->start,
+=======
+	ctx->mmio = devm_ioremap(&pdev->dev, iores->start,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 resource_size(iores));
 	if (!ctx->mmio)
 		return -EBUSY;
@@ -268,7 +314,16 @@ static int __devinit au1xac97c_drvprobe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, ctx);
 
+<<<<<<< HEAD
 	ret = snd_soc_register_dai(&pdev->dev, &au1xac97c_dai_driver);
+=======
+	ret = snd_soc_set_ac97_ops(&ac97c_bus_ops);
+	if (ret)
+		return ret;
+
+	ret = snd_soc_register_component(&pdev->dev, &au1xac97c_component,
+					 &au1xac97c_dai_driver, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -276,17 +331,28 @@ static int __devinit au1xac97c_drvprobe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit au1xac97c_drvremove(struct platform_device *pdev)
 {
 	struct au1xpsc_audio_data *ctx = platform_get_drvdata(pdev);
 
 	snd_soc_unregister_dai(&pdev->dev);
+=======
+static void au1xac97c_drvremove(struct platform_device *pdev)
+{
+	struct au1xpsc_audio_data *ctx = platform_get_drvdata(pdev);
+
+	snd_soc_unregister_component(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WR(ctx, AC97_ENABLE, EN_D);	/* clock off, disable */
 
 	ac97c_workdata = NULL;	/* MDEV */
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -326,6 +392,7 @@ static const struct dev_pm_ops au1xpscac97_pmops = {
 static struct platform_driver au1xac97c_driver = {
 	.driver	= {
 		.name	= "alchemy-ac97c",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= AU1XPSCAC97_PMOPS,
 	},
@@ -346,6 +413,15 @@ static void __exit au1xac97c_unload(void)
 
 module_init(au1xac97c_load);
 module_exit(au1xac97c_unload);
+=======
+		.pm	= AU1XPSCAC97_PMOPS,
+	},
+	.probe		= au1xac97c_drvprobe,
+	.remove_new	= au1xac97c_drvremove,
+};
+
+module_platform_driver(au1xac97c_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Au1000/1500/1100 AC97C ASoC driver");

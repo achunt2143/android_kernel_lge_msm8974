@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.file	"wm_sqrt.S"
 /*---------------------------------------------------------------------------+
  |  wm_sqrt.S                                                                |
@@ -74,7 +78,11 @@ FPU_fsqrt_arg_0:
 
 
 .text
+<<<<<<< HEAD
 ENTRY(wm_sqrt)
+=======
+SYM_FUNC_START(wm_sqrt)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl	%ebp
 	movl	%esp,%ebp
 #ifndef NON_REENTRANT_FPU
@@ -208,7 +216,11 @@ sqrt_stage_2_finish:
 
 #ifdef PARANOID
 /* It should be possible to get here only if the arg is ffff....ffff */
+<<<<<<< HEAD
 	cmp	$0xffffffff,FPU_fsqrt_arg_1
+=======
+	cmpl	$0xffffffff,FPU_fsqrt_arg_1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jnz	sqrt_stage_2_error
 #endif /* PARANOID */
 
@@ -468,3 +480,7 @@ sqrt_more_prec_large:
 /* Our estimate is too large */
 	movl	$0x7fffff00,%eax
 	jmp	sqrt_round_result
+<<<<<<< HEAD
+=======
+SYM_FUNC_END(wm_sqrt)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

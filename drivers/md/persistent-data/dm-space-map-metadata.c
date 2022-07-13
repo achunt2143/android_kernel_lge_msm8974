@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Red Hat, Inc.
  *
@@ -11,12 +15,68 @@
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/device-mapper.h>
+<<<<<<< HEAD
+=======
+#include <linux/kernel.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DM_MSG_PREFIX "space map metadata"
 
 /*----------------------------------------------------------------*/
 
 /*
+<<<<<<< HEAD
+=======
+ * An edge triggered threshold.
+ */
+struct threshold {
+	bool threshold_set;
+	bool value_set;
+	dm_block_t threshold;
+	dm_block_t current_value;
+	dm_sm_threshold_fn fn;
+	void *context;
+};
+
+static void threshold_init(struct threshold *t)
+{
+	t->threshold_set = false;
+	t->value_set = false;
+}
+
+static void set_threshold(struct threshold *t, dm_block_t value,
+			  dm_sm_threshold_fn fn, void *context)
+{
+	t->threshold_set = true;
+	t->threshold = value;
+	t->fn = fn;
+	t->context = context;
+}
+
+static bool below_threshold(struct threshold *t, dm_block_t value)
+{
+	return t->threshold_set && value <= t->threshold;
+}
+
+static bool threshold_already_triggered(struct threshold *t)
+{
+	return t->value_set && below_threshold(t, t->current_value);
+}
+
+static void check_threshold(struct threshold *t, dm_block_t value)
+{
+	if (below_threshold(t, value) &&
+	    !threshold_already_triggered(t))
+		t->fn(t->context);
+
+	t->value_set = true;
+	t->current_value = value;
+}
+
+/*----------------------------------------------------------------*/
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Space map interface.
  *
  * The low level disk format is written using the standard btree and
@@ -39,9 +99,87 @@ enum block_op_type {
 
 struct block_op {
 	enum block_op_type type;
+<<<<<<< HEAD
 	dm_block_t block;
 };
 
+=======
+	dm_block_t b;
+	dm_block_t e;
+};
+
+struct bop_ring_buffer {
+	unsigned int begin;
+	unsigned int end;
+	struct block_op bops[MAX_RECURSIVE_ALLOCATIONS + 1];
+};
+
+static void brb_init(struct bop_ring_buffer *brb)
+{
+	brb->begin = 0;
+	brb->end = 0;
+}
+
+static bool brb_empty(struct bop_ring_buffer *brb)
+{
+	return brb->begin == brb->end;
+}
+
+static unsigned int brb_next(struct bop_ring_buffer *brb, unsigned int old)
+{
+	unsigned int r = old + 1;
+
+	return r >= ARRAY_SIZE(brb->bops) ? 0 : r;
+}
+
+static int brb_push(struct bop_ring_buffer *brb,
+		    enum block_op_type type, dm_block_t b, dm_block_t e)
+{
+	struct block_op *bop;
+	unsigned int next = brb_next(brb, brb->end);
+
+	/*
+	 * We don't allow the last bop to be filled, this way we can
+	 * differentiate between full and empty.
+	 */
+	if (next == brb->begin)
+		return -ENOMEM;
+
+	bop = brb->bops + brb->end;
+	bop->type = type;
+	bop->b = b;
+	bop->e = e;
+
+	brb->end = next;
+
+	return 0;
+}
+
+static int brb_peek(struct bop_ring_buffer *brb, struct block_op *result)
+{
+	struct block_op *bop;
+
+	if (brb_empty(brb))
+		return -ENODATA;
+
+	bop = brb->bops + brb->begin;
+	memcpy(result, bop, sizeof(*result));
+	return 0;
+}
+
+static int brb_pop(struct bop_ring_buffer *brb)
+{
+	if (brb_empty(brb))
+		return -ENODATA;
+
+	brb->begin = brb_next(brb, brb->begin);
+
+	return 0;
+}
+
+/*----------------------------------------------------------------*/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sm_metadata {
 	struct dm_space_map sm;
 
@@ -50,6 +188,7 @@ struct sm_metadata {
 
 	dm_block_t begin;
 
+<<<<<<< HEAD
 	unsigned recursion_count;
 	unsigned allocated_this_transaction;
 	unsigned nr_uncommitted;
@@ -61,20 +200,38 @@ static int add_bop(struct sm_metadata *smm, enum block_op_type type, dm_block_t 
 	struct block_op *op;
 
 	if (smm->nr_uncommitted == MAX_RECURSIVE_ALLOCATIONS) {
+=======
+	unsigned int recursion_count;
+	unsigned int allocated_this_transaction;
+	struct bop_ring_buffer uncommitted;
+
+	struct threshold threshold;
+};
+
+static int add_bop(struct sm_metadata *smm, enum block_op_type type, dm_block_t b, dm_block_t e)
+{
+	int r = brb_push(&smm->uncommitted, type, b, e);
+
+	if (r) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		DMERR("too many recursive allocations");
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	op = smm->uncommitted + smm->nr_uncommitted++;
 	op->type = type;
 	op->block = b;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int commit_bop(struct sm_metadata *smm, struct block_op *op)
 {
 	int r = 0;
+<<<<<<< HEAD
 	enum allocation_event ev;
 
 	switch (op->type) {
@@ -84,6 +241,17 @@ static int commit_bop(struct sm_metadata *smm, struct block_op *op)
 
 	case BOP_DEC:
 		r = sm_ll_dec(&smm->ll, op->block, &ev);
+=======
+	int32_t nr_allocations;
+
+	switch (op->type) {
+	case BOP_INC:
+		r = sm_ll_inc(&smm->ll, op->b, op->e, &nr_allocations);
+		break;
+
+	case BOP_DEC:
+		r = sm_ll_dec(&smm->ll, op->b, op->e, &nr_allocations);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -95,6 +263,32 @@ static void in(struct sm_metadata *smm)
 	smm->recursion_count++;
 }
 
+<<<<<<< HEAD
+=======
+static int apply_bops(struct sm_metadata *smm)
+{
+	int r = 0;
+
+	while (!brb_empty(&smm->uncommitted)) {
+		struct block_op bop;
+
+		r = brb_peek(&smm->uncommitted, &bop);
+		if (r) {
+			DMERR("bug in bop ring buffer");
+			break;
+		}
+
+		r = commit_bop(smm, &bop);
+		if (r)
+			break;
+
+		brb_pop(&smm->uncommitted);
+	}
+
+	return r;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int out(struct sm_metadata *smm)
 {
 	int r = 0;
@@ -107,6 +301,7 @@ static int out(struct sm_metadata *smm)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	if (smm->recursion_count == 1 && smm->nr_uncommitted) {
 		while (smm->nr_uncommitted && !r) {
 			smm->nr_uncommitted--;
@@ -116,6 +311,10 @@ static int out(struct sm_metadata *smm)
 				break;
 		}
 	}
+=======
+	if (smm->recursion_count == 1)
+		r = apply_bops(smm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	smm->recursion_count--;
 
@@ -144,12 +343,15 @@ static void sm_metadata_destroy(struct dm_space_map *sm)
 	kfree(smm);
 }
 
+<<<<<<< HEAD
 static int sm_metadata_extend(struct dm_space_map *sm, dm_block_t extra_blocks)
 {
 	DMERR("doesn't support extend");
 	return -EINVAL;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sm_metadata_get_nr_blocks(struct dm_space_map *sm, dm_block_t *count)
 {
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
@@ -172,18 +374,34 @@ static int sm_metadata_get_nr_free(struct dm_space_map *sm, dm_block_t *count)
 static int sm_metadata_get_count(struct dm_space_map *sm, dm_block_t b,
 				 uint32_t *result)
 {
+<<<<<<< HEAD
 	int r, i;
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 	unsigned adjustment = 0;
+=======
+	int r;
+	unsigned int i;
+	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
+	unsigned int adjustment = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We may have some uncommitted adjustments to add.  This list
 	 * should always be really short.
 	 */
+<<<<<<< HEAD
 	for (i = 0; i < smm->nr_uncommitted; i++) {
 		struct block_op *op = smm->uncommitted + i;
 
 		if (op->block != b)
+=======
+	for (i = smm->uncommitted.begin;
+	     i != smm->uncommitted.end;
+	     i = brb_next(&smm->uncommitted, i)) {
+		struct block_op *op = smm->uncommitted.bops + i;
+
+		if (b < op->b || b >= op->e)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		switch (op->type) {
@@ -209,7 +427,12 @@ static int sm_metadata_get_count(struct dm_space_map *sm, dm_block_t b,
 static int sm_metadata_count_is_more_than_one(struct dm_space_map *sm,
 					      dm_block_t b, int *result)
 {
+<<<<<<< HEAD
 	int r, i, adjustment = 0;
+=======
+	int r, adjustment = 0;
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 	uint32_t rc;
 
@@ -217,10 +440,20 @@ static int sm_metadata_count_is_more_than_one(struct dm_space_map *sm,
 	 * We may have some uncommitted adjustments to add.  This list
 	 * should always be really short.
 	 */
+<<<<<<< HEAD
 	for (i = 0; i < smm->nr_uncommitted; i++) {
 		struct block_op *op = smm->uncommitted + i;
 
 		if (op->block != b)
+=======
+	for (i = smm->uncommitted.begin;
+	     i != smm->uncommitted.end;
+	     i = brb_next(&smm->uncommitted, i)) {
+
+		struct block_op *op = smm->uncommitted.bops + i;
+
+		if (b < op->b || b >= op->e)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		switch (op->type) {
@@ -258,7 +491,11 @@ static int sm_metadata_set_count(struct dm_space_map *sm, dm_block_t b,
 				 uint32_t count)
 {
 	int r, r2;
+<<<<<<< HEAD
 	enum allocation_event ev;
+=======
+	int32_t nr_allocations;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 
 	if (smm->recursion_count) {
@@ -267,12 +504,17 @@ static int sm_metadata_set_count(struct dm_space_map *sm, dm_block_t b,
 	}
 
 	in(smm);
+<<<<<<< HEAD
 	r = sm_ll_insert(&smm->ll, b, count, &ev);
+=======
+	r = sm_ll_insert(&smm->ll, b, count, &nr_allocations);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r2 = out(smm);
 
 	return combine_errors(r, r2);
 }
 
+<<<<<<< HEAD
 static int sm_metadata_inc_block(struct dm_space_map *sm, dm_block_t b)
 {
 	int r, r2 = 0;
@@ -284,12 +526,28 @@ static int sm_metadata_inc_block(struct dm_space_map *sm, dm_block_t b)
 	else {
 		in(smm);
 		r = sm_ll_inc(&smm->ll, b, &ev);
+=======
+static int sm_metadata_inc_blocks(struct dm_space_map *sm, dm_block_t b, dm_block_t e)
+{
+	int r, r2 = 0;
+	int32_t nr_allocations;
+	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
+
+	if (recursing(smm)) {
+		r = add_bop(smm, BOP_INC, b, e);
+		if (r)
+			return r;
+	} else {
+		in(smm);
+		r = sm_ll_inc(&smm->ll, b, e, &nr_allocations);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r2 = out(smm);
 	}
 
 	return combine_errors(r, r2);
 }
 
+<<<<<<< HEAD
 static int sm_metadata_dec_block(struct dm_space_map *sm, dm_block_t b)
 {
 	int r, r2 = 0;
@@ -301,6 +559,19 @@ static int sm_metadata_dec_block(struct dm_space_map *sm, dm_block_t b)
 	else {
 		in(smm);
 		r = sm_ll_dec(&smm->ll, b, &ev);
+=======
+static int sm_metadata_dec_blocks(struct dm_space_map *sm, dm_block_t b, dm_block_t e)
+{
+	int r, r2 = 0;
+	int32_t nr_allocations;
+	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
+
+	if (recursing(smm))
+		r = add_bop(smm, BOP_DEC, b, e);
+	else {
+		in(smm);
+		r = sm_ll_dec(&smm->ll, b, e, &nr_allocations);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r2 = out(smm);
 	}
 
@@ -310,20 +581,45 @@ static int sm_metadata_dec_block(struct dm_space_map *sm, dm_block_t b)
 static int sm_metadata_new_block_(struct dm_space_map *sm, dm_block_t *b)
 {
 	int r, r2 = 0;
+<<<<<<< HEAD
 	enum allocation_event ev;
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 
 	r = sm_ll_find_free_block(&smm->old_ll, smm->begin, smm->old_ll.nr_blocks, b);
+=======
+	int32_t nr_allocations;
+	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
+
+	/*
+	 * Any block we allocate has to be free in both the old and current ll.
+	 */
+	r = sm_ll_find_common_free_block(&smm->old_ll, &smm->ll, smm->begin, smm->ll.nr_blocks, b);
+	if (r == -ENOSPC) {
+		/*
+		 * There's no free block between smm->begin and the end of the metadata device.
+		 * We search before smm->begin in case something has been freed.
+		 */
+		r = sm_ll_find_common_free_block(&smm->old_ll, &smm->ll, 0, smm->begin, b);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r)
 		return r;
 
 	smm->begin = *b + 1;
 
 	if (recursing(smm))
+<<<<<<< HEAD
 		r = add_bop(smm, BOP_INC, *b);
 	else {
 		in(smm);
 		r = sm_ll_inc(&smm->ll, *b, &ev);
+=======
+		r = add_bop(smm, BOP_INC, *b, *b + 1);
+	else {
+		in(smm);
+		r = sm_ll_inc(&smm->ll, *b, *b + 1, &nr_allocations);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r2 = out(smm);
 	}
 
@@ -335,9 +631,30 @@ static int sm_metadata_new_block_(struct dm_space_map *sm, dm_block_t *b)
 
 static int sm_metadata_new_block(struct dm_space_map *sm, dm_block_t *b)
 {
+<<<<<<< HEAD
 	int r = sm_metadata_new_block_(sm, b);
 	if (r)
 		DMERR("out of metadata space");
+=======
+	dm_block_t count;
+	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
+
+	int r = sm_metadata_new_block_(sm, b);
+
+	if (r) {
+		DMERR_LIMIT("unable to allocate new metadata block");
+		return r;
+	}
+
+	r = sm_metadata_get_nr_free(sm, &count);
+	if (r) {
+		DMERR_LIMIT("couldn't get free block count");
+		return r;
+	}
+
+	check_threshold(&smm->threshold, count);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
@@ -351,12 +668,30 @@ static int sm_metadata_commit(struct dm_space_map *sm)
 		return r;
 
 	memcpy(&smm->old_ll, &smm->ll, sizeof(smm->old_ll));
+<<<<<<< HEAD
 	smm->begin = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smm->allocated_this_transaction = 0;
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int sm_metadata_register_threshold_callback(struct dm_space_map *sm,
+						   dm_block_t threshold,
+						   dm_sm_threshold_fn fn,
+						   void *context)
+{
+	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
+
+	set_threshold(&smm->threshold, threshold, fn, context);
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sm_metadata_root_size(struct dm_space_map *sm, size_t *result)
 {
 	*result = sizeof(struct disk_sm_root);
@@ -382,7 +717,13 @@ static int sm_metadata_copy_root(struct dm_space_map *sm, void *where_le, size_t
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dm_space_map ops = {
+=======
+static int sm_metadata_extend(struct dm_space_map *sm, dm_block_t extra_blocks);
+
+static const struct dm_space_map ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.destroy = sm_metadata_destroy,
 	.extend = sm_metadata_extend,
 	.get_nr_blocks = sm_metadata_get_nr_blocks,
@@ -390,12 +731,22 @@ static struct dm_space_map ops = {
 	.get_count = sm_metadata_get_count,
 	.count_is_more_than_one = sm_metadata_count_is_more_than_one,
 	.set_count = sm_metadata_set_count,
+<<<<<<< HEAD
 	.inc_block = sm_metadata_inc_block,
 	.dec_block = sm_metadata_dec_block,
 	.new_block = sm_metadata_new_block,
 	.commit = sm_metadata_commit,
 	.root_size = sm_metadata_root_size,
 	.copy_root = sm_metadata_copy_root
+=======
+	.inc_blocks = sm_metadata_inc_blocks,
+	.dec_blocks = sm_metadata_dec_blocks,
+	.new_block = sm_metadata_new_block,
+	.commit = sm_metadata_commit,
+	.root_size = sm_metadata_root_size,
+	.copy_root = sm_metadata_copy_root,
+	.register_threshold_callback = sm_metadata_register_threshold_callback
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*----------------------------------------------------------------*/
@@ -410,7 +761,11 @@ static void sm_bootstrap_destroy(struct dm_space_map *sm)
 
 static int sm_bootstrap_extend(struct dm_space_map *sm, dm_block_t extra_blocks)
 {
+<<<<<<< HEAD
 	DMERR("boostrap doesn't support extend");
+=======
+	DMERR("bootstrap doesn't support extend");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -EINVAL;
 }
@@ -419,7 +774,13 @@ static int sm_bootstrap_get_nr_blocks(struct dm_space_map *sm, dm_block_t *count
 {
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 
+<<<<<<< HEAD
 	return smm->ll.nr_blocks;
+=======
+	*count = smm->ll.nr_blocks;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sm_bootstrap_get_nr_free(struct dm_space_map *sm, dm_block_t *count)
@@ -436,7 +797,13 @@ static int sm_bootstrap_get_count(struct dm_space_map *sm, dm_block_t b,
 {
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 
+<<<<<<< HEAD
 	return b < smm->begin ? 1 : 0;
+=======
+	*result = (b < smm->begin) ? 1 : 0;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sm_bootstrap_count_is_more_than_one(struct dm_space_map *sm,
@@ -450,7 +817,11 @@ static int sm_bootstrap_count_is_more_than_one(struct dm_space_map *sm,
 static int sm_bootstrap_set_count(struct dm_space_map *sm, dm_block_t b,
 				  uint32_t count)
 {
+<<<<<<< HEAD
 	DMERR("boostrap doesn't support set_count");
+=======
+	DMERR("bootstrap doesn't support set_count");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -EINVAL;
 }
@@ -470,6 +841,7 @@ static int sm_bootstrap_new_block(struct dm_space_map *sm, dm_block_t *b)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int sm_bootstrap_inc_block(struct dm_space_map *sm, dm_block_t b)
 {
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
@@ -482,6 +854,30 @@ static int sm_bootstrap_dec_block(struct dm_space_map *sm, dm_block_t b)
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 
 	return add_bop(smm, BOP_DEC, b);
+=======
+static int sm_bootstrap_inc_blocks(struct dm_space_map *sm, dm_block_t b, dm_block_t e)
+{
+	int r;
+	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
+
+	r = add_bop(smm, BOP_INC, b, e);
+	if (r)
+		return r;
+
+	return 0;
+}
+
+static int sm_bootstrap_dec_blocks(struct dm_space_map *sm, dm_block_t b, dm_block_t e)
+{
+	int r;
+	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
+
+	r = add_bop(smm, BOP_DEC, b, e);
+	if (r)
+		return r;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sm_bootstrap_commit(struct dm_space_map *sm)
@@ -491,7 +887,11 @@ static int sm_bootstrap_commit(struct dm_space_map *sm)
 
 static int sm_bootstrap_root_size(struct dm_space_map *sm, size_t *result)
 {
+<<<<<<< HEAD
 	DMERR("boostrap doesn't support root_size");
+=======
+	DMERR("bootstrap doesn't support root_size");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -EINVAL;
 }
@@ -499,12 +899,20 @@ static int sm_bootstrap_root_size(struct dm_space_map *sm, size_t *result)
 static int sm_bootstrap_copy_root(struct dm_space_map *sm, void *where,
 				  size_t max)
 {
+<<<<<<< HEAD
 	DMERR("boostrap doesn't support copy_root");
+=======
+	DMERR("bootstrap doesn't support copy_root");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static struct dm_space_map bootstrap_ops = {
+=======
+static const struct dm_space_map bootstrap_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.destroy = sm_bootstrap_destroy,
 	.extend = sm_bootstrap_extend,
 	.get_nr_blocks = sm_bootstrap_get_nr_blocks,
@@ -512,16 +920,81 @@ static struct dm_space_map bootstrap_ops = {
 	.get_count = sm_bootstrap_get_count,
 	.count_is_more_than_one = sm_bootstrap_count_is_more_than_one,
 	.set_count = sm_bootstrap_set_count,
+<<<<<<< HEAD
 	.inc_block = sm_bootstrap_inc_block,
 	.dec_block = sm_bootstrap_dec_block,
 	.new_block = sm_bootstrap_new_block,
 	.commit = sm_bootstrap_commit,
 	.root_size = sm_bootstrap_root_size,
 	.copy_root = sm_bootstrap_copy_root
+=======
+	.inc_blocks = sm_bootstrap_inc_blocks,
+	.dec_blocks = sm_bootstrap_dec_blocks,
+	.new_block = sm_bootstrap_new_block,
+	.commit = sm_bootstrap_commit,
+	.root_size = sm_bootstrap_root_size,
+	.copy_root = sm_bootstrap_copy_root,
+	.register_threshold_callback = NULL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*----------------------------------------------------------------*/
 
+<<<<<<< HEAD
+=======
+static int sm_metadata_extend(struct dm_space_map *sm, dm_block_t extra_blocks)
+{
+	int r;
+	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
+	dm_block_t old_len = smm->ll.nr_blocks;
+
+	/*
+	 * Flick into a mode where all blocks get allocated in the new area.
+	 */
+	smm->begin = old_len;
+	memcpy(sm, &bootstrap_ops, sizeof(*sm));
+
+	/*
+	 * Extend.
+	 */
+	r = sm_ll_extend(&smm->ll, extra_blocks);
+	if (r)
+		goto out;
+
+	/*
+	 * We repeatedly increment then commit until the commit doesn't
+	 * allocate any new blocks.
+	 */
+	do {
+		r = add_bop(smm, BOP_INC, old_len, smm->begin);
+		if (r)
+			goto out;
+
+		old_len = smm->begin;
+
+		r = apply_bops(smm);
+		if (r) {
+			DMERR("%s: apply_bops failed", __func__);
+			goto out;
+		}
+
+		r = sm_ll_commit(&smm->ll);
+		if (r)
+			goto out;
+
+	} while (old_len != smm->begin);
+
+out:
+	/*
+	 * Switch back to normal behaviour.
+	 */
+	memcpy(sm, &ops, sizeof(*sm));
+	return r;
+}
+
+/*----------------------------------------------------------------*/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dm_space_map *dm_sm_metadata_init(void)
 {
 	struct sm_metadata *smm;
@@ -541,18 +1014,27 @@ int dm_sm_metadata_create(struct dm_space_map *sm,
 			  dm_block_t superblock)
 {
 	int r;
+<<<<<<< HEAD
 	dm_block_t i;
 	enum allocation_event ev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sm_metadata *smm = container_of(sm, struct sm_metadata, sm);
 
 	smm->begin = superblock + 1;
 	smm->recursion_count = 0;
 	smm->allocated_this_transaction = 0;
+<<<<<<< HEAD
 	smm->nr_uncommitted = 0;
+=======
+	brb_init(&smm->uncommitted);
+	threshold_init(&smm->threshold);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(&smm->sm, &bootstrap_ops, sizeof(smm->sm));
 
 	r = sm_ll_new_metadata(&smm->ll, tm);
+<<<<<<< HEAD
 	if (r)
 		return r;
 
@@ -561,17 +1043,40 @@ int dm_sm_metadata_create(struct dm_space_map *sm,
 		return r;
 
 	memcpy(&smm->sm, &ops, sizeof(smm->sm));
+=======
+	if (!r) {
+		if (nr_blocks > DM_SM_METADATA_MAX_BLOCKS)
+			nr_blocks = DM_SM_METADATA_MAX_BLOCKS;
+		r = sm_ll_extend(&smm->ll, nr_blocks);
+	}
+	memcpy(&smm->sm, &ops, sizeof(smm->sm));
+	if (r)
+		return r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Now we need to update the newly created data structures with the
 	 * allocated blocks that they were built from.
 	 */
+<<<<<<< HEAD
 	for (i = superblock; !r && i < smm->begin; i++)
 		r = sm_ll_inc(&smm->ll, i, &ev);
 
 	if (r)
 		return r;
 
+=======
+	r = add_bop(smm, BOP_INC, superblock, smm->begin);
+	if (r)
+		return r;
+
+	r = apply_bops(smm);
+	if (r) {
+		DMERR("%s: apply_bops failed", __func__);
+		return r;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sm_metadata_commit(sm);
 }
 
@@ -589,7 +1094,12 @@ int dm_sm_metadata_open(struct dm_space_map *sm,
 	smm->begin = 0;
 	smm->recursion_count = 0;
 	smm->allocated_this_transaction = 0;
+<<<<<<< HEAD
 	smm->nr_uncommitted = 0;
+=======
+	brb_init(&smm->uncommitted);
+	threshold_init(&smm->threshold);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(&smm->old_ll, &smm->ll, sizeof(smm->old_ll));
 	return 0;

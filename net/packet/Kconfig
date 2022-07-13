@@ -1,10 +1,18 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Packet configuration
 #
 
 config PACKET
 	tristate "Packet socket"
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  The Packet protocol is used by applications which communicate
 	  directly with network devices without an intermediate network
 	  protocol implemented in the kernel, e.g. tcpdump.  If you want them
@@ -14,3 +22,14 @@ config PACKET
 	  be called af_packet.
 
 	  If unsure, say Y.
+<<<<<<< HEAD
+=======
+
+config PACKET_DIAG
+	tristate "Packet: sockets monitoring interface"
+	depends on PACKET
+	default n
+	help
+	  Support for PF_PACKET sockets monitoring interface used by the ss tool.
+	  If unsure, say Y.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
  *
@@ -14,6 +15,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_CHECKSUM_H
@@ -23,6 +29,7 @@
 unsigned int do_csum(const void *voidptr, int len);
 
 /*
+<<<<<<< HEAD
  * the same as csum_partial, but copies from src while it
  * checksums
  *
@@ -34,16 +41,27 @@ __wsum csum_partial_copy_nocheck(const void *src, void *dst,
 					int len, __wsum sum);
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * computes the checksum of the TCP/UDP pseudo-header
  * returns a 16-bit checksum, already complemented
  */
 #define csum_tcpudp_nofold csum_tcpudp_nofold
+<<<<<<< HEAD
 __wsum csum_tcpudp_nofold(unsigned long saddr, unsigned long daddr,
 	unsigned short len, unsigned short proto, __wsum sum);
 
 #define csum_tcpudp_magic csum_tcpudp_magic
 __sum16 csum_tcpudp_magic(unsigned long saddr, unsigned long daddr,
 	unsigned short len, unsigned short proto, __wsum sum);
+=======
+__wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
+			  __u32 len, __u8 proto, __wsum sum);
+
+#define csum_tcpudp_magic csum_tcpudp_magic
+__sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
+			  __u32 len, __u8 proto, __wsum sum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm-generic/checksum.h>
 

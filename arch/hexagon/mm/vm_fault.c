@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Memory fault handling for Hexagon
  *
@@ -16,6 +17,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Memory fault handling for Hexagon
+ *
+ * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -24,6 +32,7 @@
  * execptions.
  */
 
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/traps.h>
 #include <asm/uaccess.h>
@@ -31,6 +40,17 @@
 #include <linux/signal.h>
 #include <linux/module.h>
 #include <linux/hardirq.h>
+=======
+#include <asm/traps.h>
+#include <asm/vm_fault.h>
+#include <linux/uaccess.h>
+#include <linux/mm.h>
+#include <linux/sched/signal.h>
+#include <linux/signal.h>
+#include <linux/extable.h>
+#include <linux/hardirq.h>
+#include <linux/perf_event.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Decode of hardware exception sends us to one of several
@@ -45,6 +65,7 @@
 /*
  * Canonical page fault handler
  */
+<<<<<<< HEAD
 void do_page_fault(unsigned long address, long cause, struct pt_regs *regs)
 {
 	struct vm_area_struct *vma;
@@ -53,6 +74,17 @@ void do_page_fault(unsigned long address, long cause, struct pt_regs *regs)
 	int si_code = SEGV_MAPERR;
 	int fault;
 	const struct exception_table_entry *fixup;
+=======
+static void do_page_fault(unsigned long address, long cause, struct pt_regs *regs)
+{
+	struct vm_area_struct *vma;
+	struct mm_struct *mm = current->mm;
+	int si_signo;
+	int si_code = SEGV_MAPERR;
+	vm_fault_t fault;
+	const struct exception_table_entry *fixup;
+	unsigned int flags = FAULT_FLAG_DEFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we're in an interrupt or have no user context,
@@ -63,6 +95,7 @@ void do_page_fault(unsigned long address, long cause, struct pt_regs *regs)
 
 	local_irq_enable();
 
+<<<<<<< HEAD
 	down_read(&mm->mmap_sem);
 	vma = find_vma(mm, address);
 	if (!vma)
@@ -78,6 +111,17 @@ void do_page_fault(unsigned long address, long cause, struct pt_regs *regs)
 		goto bad_area;
 
 good_area:
+=======
+	if (user_mode(regs))
+		flags |= FAULT_FLAG_USER;
+
+	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
+retry:
+	vma = lock_mm_and_find_vma(mm, address, regs);
+	if (unlikely(!vma))
+		goto bad_area_nosemaphore;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Address space is OK.  Now check access rights. */
 	si_code = SEGV_ACCERR;
 
@@ -93,6 +137,7 @@ good_area:
 	case FLT_STORE:
 		if (!(vma->vm_flags & VM_WRITE))
 			goto bad_area;
+<<<<<<< HEAD
 		break;
 	}
 
@@ -110,6 +155,36 @@ good_area:
 	}
 
 	up_read(&mm->mmap_sem);
+=======
+		flags |= FAULT_FLAG_WRITE;
+		break;
+	}
+
+	fault = handle_mm_fault(vma, address, flags, regs);
+
+	if (fault_signal_pending(fault, regs)) {
+		if (!user_mode(regs))
+			goto no_context;
+		return;
+	}
+
+	/* The fault is fully completed (including releasing mmap lock) */
+	if (fault & VM_FAULT_COMPLETED)
+		return;
+
+	/* The most common case -- we are done. */
+	if (likely(!(fault & VM_FAULT_ERROR))) {
+		if (fault & VM_FAULT_RETRY) {
+			flags |= FAULT_FLAG_TRIED;
+			goto retry;
+		}
+
+		mmap_read_unlock(mm);
+		return;
+	}
+
+	mmap_read_unlock(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Handle copyin/out exception cases */
 	if (!user_mode(regs))
@@ -124,6 +199,7 @@ good_area:
 	 * unable to fix up the page fault.
 	 */
 	if (fault & VM_FAULT_SIGBUS) {
+<<<<<<< HEAD
 		info.si_signo = SIGBUS;
 		info.si_code = BUS_ADRERR;
 	}
@@ -146,6 +222,25 @@ bad_area:
 		info.si_code = si_code;
 		info.si_addr = (void *)address;
 		force_sig_info(SIGSEGV, &info, current);
+=======
+		si_signo = SIGBUS;
+		si_code = BUS_ADRERR;
+	}
+	/* Address is not in the memory map */
+	else {
+		si_signo = SIGSEGV;
+		si_code  = SEGV_ACCERR;
+	}
+	force_sig_fault(si_signo, si_code, (void __user *)address);
+	return;
+
+bad_area:
+	mmap_read_unlock(mm);
+
+bad_area_nosemaphore:
+	if (user_mode(regs)) {
+		force_sig_fault(SIGSEGV, si_code, (void __user *)address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	/* Kernel-mode fault falls through */

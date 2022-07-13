@@ -2,7 +2,14 @@
 # Lantiq
 #
 
+<<<<<<< HEAD
 platform-$(CONFIG_LANTIQ)	+= lantiq/
 cflags-$(CONFIG_LANTIQ)		+= -I$(srctree)/arch/mips/include/asm/mach-lantiq
 load-$(CONFIG_LANTIQ)		= 0xffffffff80002000
 cflags-$(CONFIG_SOC_TYPE_XWAY)	+= -I$(srctree)/arch/mips/include/asm/mach-lantiq/xway
+=======
+cflags-$(CONFIG_LANTIQ)		+= -I$(srctree)/arch/mips/include/asm/mach-lantiq
+load-$(CONFIG_LANTIQ)		= 0xffffffff80002000
+cflags-$(CONFIG_SOC_TYPE_XWAY)	+= -I$(srctree)/arch/mips/include/asm/mach-lantiq/xway
+cflags-$(CONFIG_SOC_FALCON)	+= -I$(srctree)/arch/mips/include/asm/mach-lantiq/falcon
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

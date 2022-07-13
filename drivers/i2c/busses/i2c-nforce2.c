@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     SMBus driver for nVidia nForce2 MCP
 
@@ -8,6 +12,7 @@
     SMBus 2.0 driver for AMD-8111 IO-Hub
     Copyright (c) 2002 Vojtech Pavlik
 
+<<<<<<< HEAD
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -21,6 +26,8 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 /*
@@ -51,7 +58,10 @@
 #include <linux/kernel.h>
 #include <linux/stddef.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/i2c.h>
 #include <linux/delay.h>
 #include <linux/dmi.h>
@@ -60,7 +70,11 @@
 #include <linux/io.h>
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR ("Hans-Frieder Vogt <hfvogt@gmx.net>");
+=======
+MODULE_AUTHOR("Hans-Frieder Vogt <hfvogt@gmx.net>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("nForce2/3/4/5xx SMBus driver");
 
 
@@ -117,7 +131,11 @@ struct nforce2_smbus {
 #define MAX_TIMEOUT	100
 
 /* We disable the second SMBus channel on these boards */
+<<<<<<< HEAD
 static struct dmi_system_id __devinitdata nforce2_dmi_blacklist2[] = {
+=======
+static const struct dmi_system_id nforce2_dmi_blacklist2[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.ident = "DFI Lanparty NF4 Expert",
 		.matches = {
@@ -132,7 +150,11 @@ static struct pci_driver nforce2_driver;
 
 /* For multiplexing support, we need a global reference to the 1st
    SMBus channel */
+<<<<<<< HEAD
 #if defined CONFIG_I2C_NFORCE2_S4985 || defined CONFIG_I2C_NFORCE2_S4985_MODULE
+=======
+#if IS_ENABLED(CONFIG_I2C_NFORCE2_S4985)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct i2c_adapter *nforce2_smbus;
 EXPORT_SYMBOL_GPL(nforce2_smbus);
 
@@ -188,9 +210,15 @@ static int nforce2_check_status(struct i2c_adapter *adap)
 }
 
 /* Return negative errno on error */
+<<<<<<< HEAD
 static s32 nforce2_access(struct i2c_adapter * adap, u16 addr,
 		unsigned short flags, char read_write,
 		u8 command, int size, union i2c_smbus_data * data)
+=======
+static s32 nforce2_access(struct i2c_adapter *adap, u16 addr,
+		unsigned short flags, char read_write,
+		u8 command, int size, union i2c_smbus_data *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nforce2_smbus *smbus = adap->algo_data;
 	unsigned char protocol, pec;
@@ -202,6 +230,7 @@ static s32 nforce2_access(struct i2c_adapter * adap, u16 addr,
 	pec = (flags & I2C_CLIENT_PEC) ? NVIDIA_SMB_PRTCL_PEC : 0;
 
 	switch (size) {
+<<<<<<< HEAD
 
 		case I2C_SMBUS_QUICK:
 			protocol |= NVIDIA_SMB_PRTCL_QUICK;
@@ -252,6 +281,56 @@ static s32 nforce2_access(struct i2c_adapter * adap, u16 addr,
 		default:
 			dev_err(&adap->dev, "Unsupported transaction %d\n", size);
 			return -EOPNOTSUPP;
+=======
+	case I2C_SMBUS_QUICK:
+		protocol |= NVIDIA_SMB_PRTCL_QUICK;
+		read_write = I2C_SMBUS_WRITE;
+		break;
+
+	case I2C_SMBUS_BYTE:
+		if (read_write == I2C_SMBUS_WRITE)
+			outb_p(command, NVIDIA_SMB_CMD);
+		protocol |= NVIDIA_SMB_PRTCL_BYTE;
+		break;
+
+	case I2C_SMBUS_BYTE_DATA:
+		outb_p(command, NVIDIA_SMB_CMD);
+		if (read_write == I2C_SMBUS_WRITE)
+			outb_p(data->byte, NVIDIA_SMB_DATA);
+		protocol |= NVIDIA_SMB_PRTCL_BYTE_DATA;
+		break;
+
+	case I2C_SMBUS_WORD_DATA:
+		outb_p(command, NVIDIA_SMB_CMD);
+		if (read_write == I2C_SMBUS_WRITE) {
+			outb_p(data->word, NVIDIA_SMB_DATA);
+			outb_p(data->word >> 8, NVIDIA_SMB_DATA + 1);
+		}
+		protocol |= NVIDIA_SMB_PRTCL_WORD_DATA | pec;
+		break;
+
+	case I2C_SMBUS_BLOCK_DATA:
+		outb_p(command, NVIDIA_SMB_CMD);
+		if (read_write == I2C_SMBUS_WRITE) {
+			len = data->block[0];
+			if ((len == 0) || (len > I2C_SMBUS_BLOCK_MAX)) {
+				dev_err(&adap->dev,
+					"Transaction failed (requested block size: %d)\n",
+					len);
+				return -EINVAL;
+			}
+			outb_p(len, NVIDIA_SMB_BCNT);
+			for (i = 0; i < I2C_SMBUS_BLOCK_MAX; i++)
+				outb_p(data->block[i + 1],
+				       NVIDIA_SMB_DATA + i);
+		}
+		protocol |= NVIDIA_SMB_PRTCL_BLOCK_DATA | pec;
+		break;
+
+	default:
+		dev_err(&adap->dev, "Unsupported transaction %d\n", size);
+		return -EOPNOTSUPP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	outb_p((addr & 0x7f) << 1, NVIDIA_SMB_ADDR);
@@ -265,6 +344,7 @@ static s32 nforce2_access(struct i2c_adapter * adap, u16 addr,
 		return 0;
 
 	switch (size) {
+<<<<<<< HEAD
 
 		case I2C_SMBUS_BYTE:
 		case I2C_SMBUS_BYTE_DATA:
@@ -287,6 +367,30 @@ static s32 nforce2_access(struct i2c_adapter * adap, u16 addr,
 				data->block[i+1] = inb_p(NVIDIA_SMB_DATA + i);
 			data->block[0] = len;
 			break;
+=======
+	case I2C_SMBUS_BYTE:
+	case I2C_SMBUS_BYTE_DATA:
+		data->byte = inb_p(NVIDIA_SMB_DATA);
+		break;
+
+	case I2C_SMBUS_WORD_DATA:
+		data->word = inb_p(NVIDIA_SMB_DATA) |
+			     (inb_p(NVIDIA_SMB_DATA + 1) << 8);
+		break;
+
+	case I2C_SMBUS_BLOCK_DATA:
+		len = inb_p(NVIDIA_SMB_BCNT);
+		if ((len <= 0) || (len > I2C_SMBUS_BLOCK_MAX)) {
+			dev_err(&adap->dev,
+				"Transaction failed (received block size: 0x%02x)\n",
+				len);
+			return -EPROTO;
+		}
+		for (i = 0; i < len; i++)
+			data->block[i + 1] = inb_p(NVIDIA_SMB_DATA + i);
+		data->block[0] = len;
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -299,17 +403,29 @@ static u32 nforce2_func(struct i2c_adapter *adapter)
 	return I2C_FUNC_SMBUS_QUICK | I2C_FUNC_SMBUS_BYTE |
 	       I2C_FUNC_SMBUS_BYTE_DATA | I2C_FUNC_SMBUS_WORD_DATA |
 	       I2C_FUNC_SMBUS_PEC |
+<<<<<<< HEAD
 	       (((struct nforce2_smbus*)adapter->algo_data)->blockops ?
 		I2C_FUNC_SMBUS_BLOCK_DATA : 0);
 }
 
 static struct i2c_algorithm smbus_algorithm = {
+=======
+	       (((struct nforce2_smbus *)adapter->algo_data)->blockops ?
+		I2C_FUNC_SMBUS_BLOCK_DATA : 0);
+}
+
+static const struct i2c_algorithm smbus_algorithm = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.smbus_xfer	= nforce2_access,
 	.functionality	= nforce2_func,
 };
 
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(nforce2_ids) = {
+=======
+static const struct pci_device_id nforce2_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_NFORCE2_SMBUS) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_NFORCE2S_SMBUS) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_NFORCE3_SMBUS) },
@@ -327,11 +443,19 @@ static DEFINE_PCI_DEVICE_TABLE(nforce2_ids) = {
 	{ 0 }
 };
 
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE (pci, nforce2_ids);
 
 
 static int __devinit nforce2_probe_smb (struct pci_dev *dev, int bar,
 	int alt_reg, struct nforce2_smbus *smbus, const char *name)
+=======
+MODULE_DEVICE_TABLE(pci, nforce2_ids);
+
+
+static int nforce2_probe_smb(struct pci_dev *dev, int bar, int alt_reg,
+			     struct nforce2_smbus *smbus, const char *name)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 
@@ -342,8 +466,13 @@ static int __devinit nforce2_probe_smb (struct pci_dev *dev, int bar,
 		/* Older incarnations of the device used non-standard BARs */
 		u16 iobase;
 
+<<<<<<< HEAD
 		if (pci_read_config_word(dev, alt_reg, &iobase)
 		    != PCIBIOS_SUCCESSFUL) {
+=======
+		error = pci_read_config_word(dev, alt_reg, &iobase);
+		if (error != PCIBIOS_SUCCESSFUL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_err(&dev->dev, "Error reading PCI config for %s\n",
 				name);
 			return -EIO;
@@ -364,7 +493,11 @@ static int __devinit nforce2_probe_smb (struct pci_dev *dev, int bar,
 		return -EBUSY;
 	}
 	smbus->adapter.owner = THIS_MODULE;
+<<<<<<< HEAD
 	smbus->adapter.class = I2C_CLASS_HWMON | I2C_CLASS_SPD;
+=======
+	smbus->adapter.class = I2C_CLASS_HWMON;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smbus->adapter.algo = &smbus_algorithm;
 	smbus->adapter.algo_data = smbus;
 	smbus->adapter.dev.parent = &dev->dev;
@@ -373,26 +506,47 @@ static int __devinit nforce2_probe_smb (struct pci_dev *dev, int bar,
 
 	error = i2c_add_adapter(&smbus->adapter);
 	if (error) {
+<<<<<<< HEAD
 		dev_err(&smbus->adapter.dev, "Failed to register adapter.\n");
 		release_region(smbus->base, smbus->size);
 		return error;
 	}
 	dev_info(&smbus->adapter.dev, "nForce2 SMBus adapter at %#x\n", smbus->base);
+=======
+		release_region(smbus->base, smbus->size);
+		return error;
+	}
+	dev_info(&smbus->adapter.dev, "nForce2 SMBus adapter at %#x\n",
+		smbus->base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
+<<<<<<< HEAD
 static int __devinit nforce2_probe(struct pci_dev *dev, const struct pci_device_id *id)
+=======
+static int nforce2_probe(struct pci_dev *dev, const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nforce2_smbus *smbuses;
 	int res1, res2;
 
 	/* we support 2 SMBus adapters */
+<<<<<<< HEAD
 	if (!(smbuses = kzalloc(2*sizeof(struct nforce2_smbus), GFP_KERNEL)))
 		return -ENOMEM;
 	pci_set_drvdata(dev, smbuses);
 
 	switch(dev->device) {
+=======
+	smbuses = kcalloc(2, sizeof(struct nforce2_smbus), GFP_KERNEL);
+	if (!smbuses)
+		return -ENOMEM;
+	pci_set_drvdata(dev, smbuses);
+
+	switch (dev->device) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PCI_DEVICE_ID_NVIDIA_NFORCE2_SMBUS:
 	case PCI_DEVICE_ID_NVIDIA_NFORCE_MCP51_SMBUS:
 	case PCI_DEVICE_ID_NVIDIA_NFORCE_MCP55_SMBUS:
@@ -430,7 +584,11 @@ static int __devinit nforce2_probe(struct pci_dev *dev, const struct pci_device_
 }
 
 
+<<<<<<< HEAD
 static void __devexit nforce2_remove(struct pci_dev *dev)
+=======
+static void nforce2_remove(struct pci_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nforce2_smbus *smbuses = pci_get_drvdata(dev);
 
@@ -450,6 +608,7 @@ static struct pci_driver nforce2_driver = {
 	.name		= "nForce2_smbus",
 	.id_table	= nforce2_ids,
 	.probe		= nforce2_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(nforce2_remove),
 };
 
@@ -466,3 +625,9 @@ static void __exit nforce2_exit(void)
 module_init(nforce2_init);
 module_exit(nforce2_exit);
 
+=======
+	.remove		= nforce2_remove,
+};
+
+module_pci_driver(nforce2_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

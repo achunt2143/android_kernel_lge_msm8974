@@ -42,6 +42,7 @@
  * $Id: //depot/aic7xxx/aic7xxx/aic7xxx_pci.c#79 $
  */
 
+<<<<<<< HEAD
 #ifdef __linux__
 #include "aic7xxx_osm.h"
 #include "aic7xxx_inline.h"
@@ -52,6 +53,11 @@
 #include <dev/aic7xxx/aic7xxx_93cx6.h>
 #endif
 
+=======
+#include "aic7xxx_osm.h"
+#include "aic7xxx_inline.h"
+#include "aic7xxx_93cx6.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "aic7xxx_pci.h"
 
 static inline uint64_t
@@ -601,8 +607,13 @@ static const u_int ahc_num_pci_devs = ARRAY_SIZE(ahc_pci_ident_table);
 #define STA	0x08
 #define DPR	0x01
 
+<<<<<<< HEAD
 static int ahc_9005_subdevinfo_valid(uint16_t vendor, uint16_t device,
 				     uint16_t subvendor, uint16_t subdevice);
+=======
+static int ahc_9005_subdevinfo_valid(uint16_t device, uint16_t vendor,
+				     uint16_t subdevice, uint16_t subvendor);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ahc_ext_scbram_present(struct ahc_softc *ahc);
 static void ahc_scbram_config(struct ahc_softc *ahc, int enable,
 				  int pcheck, int fast, int large);
@@ -680,8 +691,13 @@ ahc_find_pci_device(ahc_dev_softc_t pci)
 
 	vendor = ahc_pci_read_config(pci, PCIR_DEVVENDOR, /*bytes*/2);
 	device = ahc_pci_read_config(pci, PCIR_DEVICE, /*bytes*/2);
+<<<<<<< HEAD
 	subvendor = ahc_pci_read_config(pci, PCIR_SUBVEND_0, /*bytes*/2);
 	subdevice = ahc_pci_read_config(pci, PCIR_SUBDEV_0, /*bytes*/2);
+=======
+	subvendor = ahc_pci_read_config(pci, PCI_SUBSYSTEM_VENDOR_ID, /*bytes*/2);
+	subdevice = ahc_pci_read_config(pci, PCI_SUBSYSTEM_ID, /*bytes*/2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	full_id = ahc_compose_id(device, vendor, subdevice, subvendor);
 
 	/*
@@ -692,7 +708,11 @@ ahc_find_pci_device(ahc_dev_softc_t pci)
 	 * ID as valid.
 	 */
 	if (ahc_get_pci_function(pci) > 0
+<<<<<<< HEAD
 	 && ahc_9005_subdevinfo_valid(vendor, device, subvendor, subdevice)
+=======
+	 && ahc_9005_subdevinfo_valid(device, vendor, subdevice, subvendor)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 && SUBID_9005_MFUNCENB(subdevice) == 0)
 		return (NULL);
 
@@ -2015,8 +2035,12 @@ ahc_pci_chip_init(struct ahc_softc *ahc)
 	return (ahc_chip_init(ahc));
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 void
+=======
+void __maybe_unused
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ahc_pci_resume(struct ahc_softc *ahc)
 {
 	/*
@@ -2047,7 +2071,10 @@ ahc_pci_resume(struct ahc_softc *ahc)
 		ahc_release_seeprom(&sd);
 	}
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int
 ahc_aic785X_setup(struct ahc_softc *ahc)

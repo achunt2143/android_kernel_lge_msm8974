@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* nommu.c: mmu-less memory info files
  *
  * Copyright (C) 2004 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -25,8 +32,11 @@
 #include <linux/seq_file.h>
 #include <linux/hugetlb.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/tlb.h>
 #include <asm/div64.h>
 #include "internal.h"
@@ -45,7 +55,11 @@ static int nommu_region_show(struct seq_file *m, struct vm_region *region)
 	file = region->vm_file;
 
 	if (file) {
+<<<<<<< HEAD
 		struct inode *inode = region->vm_file->f_path.dentry->d_inode;
+=======
+		struct inode *inode = file_inode(region->vm_file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev = inode->i_sb->s_dev;
 		ino = inode->i_ino;
 	}
@@ -64,7 +78,11 @@ static int nommu_region_show(struct seq_file *m, struct vm_region *region)
 
 	if (file) {
 		seq_pad(m, ' ');
+<<<<<<< HEAD
 		seq_path(m, &file->f_path, "");
+=======
+		seq_path(m, file_user_path(file), "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	seq_putc(m, '\n');
@@ -113,6 +131,7 @@ static const struct seq_operations proc_nommu_region_list_seqop = {
 	.show	= nommu_region_list_show
 };
 
+<<<<<<< HEAD
 static int proc_nommu_region_list_open(struct inode *inode, struct file *file)
 {
 	return seq_open(file, &proc_nommu_region_list_seqop);
@@ -132,3 +151,12 @@ static int __init proc_nommu_init(void)
 }
 
 module_init(proc_nommu_init);
+=======
+static int __init proc_nommu_init(void)
+{
+	proc_create_seq("maps", S_IRUGO, NULL, &proc_nommu_region_list_seqop);
+	return 0;
+}
+
+fs_initcall(proc_nommu_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

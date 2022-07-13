@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM skb
 
@@ -8,11 +12,24 @@
 #include <linux/netdevice.h>
 #include <linux/tracepoint.h>
 
+<<<<<<< HEAD
+=======
+#undef FN
+#define FN(reason)	TRACE_DEFINE_ENUM(SKB_DROP_REASON_##reason);
+DEFINE_DROP_REASON(FN, FN)
+
+#undef FN
+#undef FNe
+#define FN(reason)	{ SKB_DROP_REASON_##reason, #reason },
+#define FNe(reason)	{ SKB_DROP_REASON_##reason, #reason }
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Tracepoint for free an sk_buff:
  */
 TRACE_EVENT(kfree_skb,
 
+<<<<<<< HEAD
 	TP_PROTO(struct sk_buff *skb, void *location),
 
 	TP_ARGS(skb, location),
@@ -21,12 +38,25 @@ TRACE_EVENT(kfree_skb,
 		__field(	void *,		skbaddr		)
 		__field(	void *,		location	)
 		__field(	unsigned short,	protocol	)
+=======
+	TP_PROTO(struct sk_buff *skb, void *location,
+		 enum skb_drop_reason reason),
+
+	TP_ARGS(skb, location, reason),
+
+	TP_STRUCT__entry(
+		__field(void *,		skbaddr)
+		__field(void *,		location)
+		__field(unsigned short,	protocol)
+		__field(enum skb_drop_reason,	reason)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->skbaddr = skb;
 		__entry->location = location;
 		__entry->protocol = ntohs(skb->protocol);
+<<<<<<< HEAD
 	),
 
 	TP_printk("skbaddr=%p protocol=%u location=%p",
@@ -41,13 +71,43 @@ TRACE_EVENT(consume_skb,
 
 	TP_STRUCT__entry(
 		__field(	void *,	skbaddr	)
+=======
+		__entry->reason = reason;
+	),
+
+	TP_printk("skbaddr=%p protocol=%u location=%pS reason: %s",
+		  __entry->skbaddr, __entry->protocol, __entry->location,
+		  __print_symbolic(__entry->reason,
+				   DEFINE_DROP_REASON(FN, FNe)))
+);
+
+#undef FN
+#undef FNe
+
+TRACE_EVENT(consume_skb,
+
+	TP_PROTO(struct sk_buff *skb, void *location),
+
+	TP_ARGS(skb, location),
+
+	TP_STRUCT__entry(
+		__field(	void *,	skbaddr)
+		__field(	void *,	location)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	),
 
 	TP_fast_assign(
 		__entry->skbaddr = skb;
+<<<<<<< HEAD
 	),
 
 	TP_printk("skbaddr=%p", __entry->skbaddr)
+=======
+		__entry->location = location;
+	),
+
+	TP_printk("skbaddr=%p location=%pS", __entry->skbaddr, __entry->location)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 );
 
 TRACE_EVENT(skb_copy_datagram_iovec,

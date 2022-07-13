@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/cio/device.c
  *  bus driver for ccw devices
  *
  *    Copyright IBM Corp. 2002,2008
+=======
+// SPDX-License-Identifier: GPL-1.0+
+/*
+ *  bus driver for ccw devices
+ *
+ *    Copyright IBM Corp. 2002, 2008
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Arnd Bergmann (arndb@de.ibm.com)
  *		 Cornelia Huck (cornelia.huck@de.ibm.com)
  *		 Martin Schwidefsky (schwidefsky@de.ibm.com)
@@ -11,7 +19,11 @@
 #define KMSG_COMPONENT "cio"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/spinlock.h>
 #include <linux/errno.h>
@@ -20,8 +32,16 @@
 #include <linux/list.h>
 #include <linux/device.h>
 #include <linux/workqueue.h>
+<<<<<<< HEAD
 #include <linux/timer.h>
 #include <linux/kernel_stat.h>
+=======
+#include <linux/delay.h>
+#include <linux/timer.h>
+#include <linux/kernel_stat.h>
+#include <linux/sched/signal.h>
+#include <linux/dma-mapping.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/ccwdev.h>
 #include <asm/cio.h>
@@ -44,6 +64,13 @@ static DEFINE_SPINLOCK(recovery_lock);
 static int recovery_phase;
 static const unsigned long recovery_delay[] = { 3, 30, 300 };
 
+<<<<<<< HEAD
+=======
+static atomic_t ccw_device_init_count = ATOMIC_INIT(0);
+static DECLARE_WAIT_QUEUE_HEAD(ccw_device_init_wq);
+static const struct bus_type ccw_bus_type;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************* bus type handling ***********************/
 
 /* The Linux driver model distinguishes between a bus type and
@@ -73,7 +100,11 @@ ccw_bus_match (struct device * dev, struct device_driver * drv)
  * specified size. Return length of resulting string (excluding trailing '\0')
  * even if string doesn't fit buffer (snprintf semantics). */
 static int snprint_alias(char *buf, size_t size,
+<<<<<<< HEAD
 			 struct ccw_device_id *id, const char *suffix)
+=======
+			 const struct ccw_device_id *id, const char *suffix)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len;
 
@@ -94,10 +125,17 @@ static int snprint_alias(char *buf, size_t size,
 
 /* Set up environment variables for ccw device uevent. Return 0 on success,
  * non-zero otherwise. */
+<<<<<<< HEAD
 static int ccw_uevent(struct device *dev, struct kobj_uevent_env *env)
 {
 	struct ccw_device *cdev = to_ccwdev(dev);
 	struct ccw_device_id *id = &(cdev->id);
+=======
+static int ccw_uevent(const struct device *dev, struct kobj_uevent_env *env)
+{
+	const struct ccw_device *cdev = to_ccwdev(dev);
+	const struct ccw_device_id *id = &(cdev->id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	char modalias_buf[30];
 
@@ -128,23 +166,34 @@ static int ccw_uevent(struct device *dev, struct kobj_uevent_env *env)
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct bus_type ccw_bus_type;
 
 static void io_subchannel_irq(struct subchannel *);
 static int io_subchannel_probe(struct subchannel *);
 static int io_subchannel_remove(struct subchannel *);
+=======
+static void io_subchannel_irq(struct subchannel *);
+static int io_subchannel_probe(struct subchannel *);
+static void io_subchannel_remove(struct subchannel *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void io_subchannel_shutdown(struct subchannel *);
 static int io_subchannel_sch_event(struct subchannel *, int);
 static int io_subchannel_chp_event(struct subchannel *, struct chp_link *,
 				   int);
+<<<<<<< HEAD
 static void recovery_func(unsigned long data);
 wait_queue_head_t ccw_device_init_wq;
 atomic_t ccw_device_init_count;
+=======
+static void recovery_func(struct timer_list *unused);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct css_device_id io_subchannel_ids[] = {
 	{ .match_flags = 0x1, .type = SUBCHANNEL_TYPE_IO, },
 	{ /* end of list */ },
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(css, io_subchannel_ids);
 
 static int io_subchannel_prepare(struct subchannel *sch)
@@ -159,6 +208,8 @@ static int io_subchannel_prepare(struct subchannel *sch)
 		return -EAGAIN;
 	return 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int io_subchannel_settle(void)
 {
@@ -184,7 +235,10 @@ static struct css_driver io_subchannel_driver = {
 	.probe = io_subchannel_probe,
 	.remove = io_subchannel_remove,
 	.shutdown = io_subchannel_shutdown,
+<<<<<<< HEAD
 	.prepare = io_subchannel_prepare,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.settle = io_subchannel_settle,
 };
 
@@ -192,10 +246,14 @@ int __init io_subchannel_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	init_waitqueue_head(&ccw_device_init_wq);
 	atomic_set(&ccw_device_init_count, 0);
 	setup_timer(&recovery_timer, recovery_func, 0);
 
+=======
+	timer_setup(&recovery_timer, recovery_func, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = bus_register(&ccw_bus_type);
 	if (ret)
 		return ret;
@@ -209,6 +267,7 @@ int __init io_subchannel_init(void)
 
 /************************ device handling **************************/
 
+<<<<<<< HEAD
 /*
  * A ccw_device has some interfaces in sysfs in addition to the
  * standard ones.
@@ -247,6 +306,8 @@ pimpampom_show (struct device * dev, struct device_attribute *attr, char * buf)
 			pmcw->pim, pmcw->pam, pmcw->pom);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 devtype_show (struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -297,10 +358,19 @@ int ccw_device_is_orphan(struct ccw_device *cdev)
 
 static void ccw_device_unregister(struct ccw_device *cdev)
 {
+<<<<<<< HEAD
+=======
+	mutex_lock(&cdev->reg_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (device_is_registered(&cdev->dev)) {
 		/* Undo device_add(). */
 		device_del(&cdev->dev);
 	}
+<<<<<<< HEAD
+=======
+	mutex_unlock(&cdev->reg_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cdev->private->flags.initialized) {
 		cdev->private->flags.initialized = 0;
 		/* Release reference from device_initialize(). */
@@ -336,9 +406,15 @@ int ccw_device_set_offline(struct ccw_device *cdev)
 		if (ret != 0)
 			return ret;
 	}
+<<<<<<< HEAD
 	cdev->online = 0;
 	spin_lock_irq(cdev->ccwlock);
 	sch = to_subchannel(cdev->dev.parent);
+=======
+	spin_lock_irq(cdev->ccwlock);
+	sch = to_subchannel(cdev->dev.parent);
+	cdev->online = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Wait until a final state or DISCONNECTED is reached */
 	while (!dev_fsm_final_state(cdev) &&
 	       cdev->private->state != DEV_STATE_DISCONNECTED) {
@@ -367,11 +443,19 @@ int ccw_device_set_offline(struct ccw_device *cdev)
 		   cdev->private->state == DEV_STATE_DISCONNECTED));
 	/* Inform the user if set offline failed. */
 	if (cdev->private->state == DEV_STATE_BOXED) {
+<<<<<<< HEAD
 		pr_warning("%s: The device entered boxed state while "
 			   "being set offline\n", dev_name(&cdev->dev));
 	} else if (cdev->private->state == DEV_STATE_NOT_OPER) {
 		pr_warning("%s: The device stopped operating while "
 			   "being set offline\n", dev_name(&cdev->dev));
+=======
+		pr_warn("%s: The device entered boxed state while being set offline\n",
+			dev_name(&cdev->dev));
+	} else if (cdev->private->state == DEV_STATE_NOT_OPER) {
+		pr_warn("%s: The device stopped operating while being set offline\n",
+			dev_name(&cdev->dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Give up reference from ccw_device_set_online(). */
 	put_device(&cdev->dev);
@@ -413,10 +497,15 @@ int ccw_device_set_online(struct ccw_device *cdev)
 
 	spin_lock_irq(cdev->ccwlock);
 	ret = ccw_device_online(cdev);
+<<<<<<< HEAD
 	spin_unlock_irq(cdev->ccwlock);
 	if (ret == 0)
 		wait_event(cdev->private->wait_q, dev_fsm_final_state(cdev));
 	else {
+=======
+	if (ret) {
+		spin_unlock_irq(cdev->ccwlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		CIO_MSG_EVENT(0, "ccw_device_online returned %d, "
 			      "device 0.%x.%04x\n",
 			      ret, cdev->private->dev_id.ssid,
@@ -425,13 +514,23 @@ int ccw_device_set_online(struct ccw_device *cdev)
 		put_device(&cdev->dev);
 		return ret;
 	}
+<<<<<<< HEAD
 	spin_lock_irq(cdev->ccwlock);
+=======
+	/* Wait until a final state is reached */
+	while (!dev_fsm_final_state(cdev)) {
+		spin_unlock_irq(cdev->ccwlock);
+		wait_event(cdev->private->wait_q, dev_fsm_final_state(cdev));
+		spin_lock_irq(cdev->ccwlock);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check if online processing was successful */
 	if ((cdev->private->state != DEV_STATE_ONLINE) &&
 	    (cdev->private->state != DEV_STATE_W4SENSE)) {
 		spin_unlock_irq(cdev->ccwlock);
 		/* Inform the user that set online failed. */
 		if (cdev->private->state == DEV_STATE_BOXED) {
+<<<<<<< HEAD
 			pr_warning("%s: Setting the device online failed "
 				   "because it is boxed\n",
 				   dev_name(&cdev->dev));
@@ -439,6 +538,13 @@ int ccw_device_set_online(struct ccw_device *cdev)
 			pr_warning("%s: Setting the device online failed "
 				   "because it is not operational\n",
 				   dev_name(&cdev->dev));
+=======
+			pr_warn("%s: Setting the device online failed because it is boxed\n",
+				dev_name(&cdev->dev));
+		} else if (cdev->private->state == DEV_STATE_NOT_OPER) {
+			pr_warn("%s: Setting the device online failed because it is not operational\n",
+				dev_name(&cdev->dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* Give up online reference since onlining failed. */
 		put_device(&cdev->dev);
@@ -449,7 +555,14 @@ int ccw_device_set_online(struct ccw_device *cdev)
 		ret = cdev->drv->set_online(cdev);
 	if (ret)
 		goto rollback;
+<<<<<<< HEAD
 	cdev->online = 1;
+=======
+
+	spin_lock_irq(cdev->ccwlock);
+	cdev->online = 1;
+	spin_unlock_irq(cdev->ccwlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 rollback:
@@ -549,17 +662,25 @@ static ssize_t online_store (struct device *dev, struct device_attribute *attr,
 	if (!dev_fsm_final_state(cdev) &&
 	    cdev->private->state != DEV_STATE_DISCONNECTED) {
 		ret = -EAGAIN;
+<<<<<<< HEAD
 		goto out_onoff;
+=======
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Prevent conflict between pending work and on-/offline processing.*/
 	if (work_pending(&cdev->private->todo_work)) {
 		ret = -EAGAIN;
+<<<<<<< HEAD
 		goto out_onoff;
 	}
 
 	if (cdev->drv && !try_module_get(cdev->drv->driver.owner)) {
 		ret = -EINVAL;
 		goto out_onoff;
+=======
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!strncmp(buf, "force\n", count)) {
 		force = 1;
@@ -567,10 +688,19 @@ static ssize_t online_store (struct device *dev, struct device_attribute *attr,
 		ret = 0;
 	} else {
 		force = 0;
+<<<<<<< HEAD
 		ret = strict_strtoul(buf, 16, &i);
 	}
 	if (ret)
 		goto out;
+=======
+		ret = kstrtoul(buf, 16, &i);
+	}
+	if (ret)
+		goto out;
+
+	device_lock(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (i) {
 	case 0:
 		ret = online_store_handle_offline(cdev);
@@ -581,10 +711,16 @@ static ssize_t online_store (struct device *dev, struct device_attribute *attr,
 	default:
 		ret = -EINVAL;
 	}
+<<<<<<< HEAD
 out:
 	if (cdev->drv)
 		module_put(cdev->drv->driver.owner);
 out_onoff:
+=======
+	device_unlock(dev);
+
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_set(&cdev->private->onoff, 0);
 	return (ret < 0) ? ret : count;
 }
@@ -623,9 +759,14 @@ initiate_logging(struct device *dev, struct device_attribute *attr,
 
 	rc = chsc_siosl(sch->schid);
 	if (rc < 0) {
+<<<<<<< HEAD
 		pr_warning("Logging for subchannel 0.%x.%04x failed with "
 			   "errno=%d\n",
 			   sch->schid.ssid, sch->schid.sch_no, rc);
+=======
+		pr_warn("Logging for subchannel 0.%x.%04x failed with errno=%d\n",
+			sch->schid.ssid, sch->schid.sch_no, rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 	pr_notice("Logging for subchannel 0.%x.%04x was triggered\n",
@@ -633,6 +774,7 @@ initiate_logging(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(chpids, 0444, chpids_show, NULL);
 static DEVICE_ATTR(pimpampom, 0444, pimpampom_show, NULL);
 static DEVICE_ATTR(devtype, 0444, devtype_show, NULL);
@@ -650,6 +792,31 @@ static struct attribute *io_subchannel_attrs[] = {
 };
 
 static struct attribute_group io_subchannel_attr_group = {
+=======
+static ssize_t vpm_show(struct device *dev, struct device_attribute *attr,
+			char *buf)
+{
+	struct subchannel *sch = to_subchannel(dev);
+
+	return sprintf(buf, "%02x\n", sch->vpm);
+}
+
+static DEVICE_ATTR_RO(devtype);
+static DEVICE_ATTR_RO(cutype);
+static DEVICE_ATTR_RO(modalias);
+static DEVICE_ATTR_RW(online);
+static DEVICE_ATTR(availability, 0444, available_show, NULL);
+static DEVICE_ATTR(logging, 0200, NULL, initiate_logging);
+static DEVICE_ATTR_RO(vpm);
+
+static struct attribute *io_subchannel_attrs[] = {
+	&dev_attr_logging.attr,
+	&dev_attr_vpm.attr,
+	NULL,
+};
+
+static const struct attribute_group io_subchannel_attr_group = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = io_subchannel_attrs,
 };
 
@@ -663,7 +830,11 @@ static struct attribute * ccwdev_attrs[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static struct attribute_group ccwdev_attr_group = {
+=======
+static const struct attribute_group ccwdev_attr_group = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = ccwdev_attrs,
 };
 
@@ -672,6 +843,7 @@ static const struct attribute_group *ccwdev_attr_groups[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 /* this is a simple abstraction for device_register that sets the
  * correct bus type and adds the bus specific files */
 static int ccw_device_register(struct ccw_device *cdev)
@@ -691,11 +863,31 @@ static int match_dev_id(struct device *dev, void *data)
 {
 	struct ccw_device *cdev = to_ccwdev(dev);
 	struct ccw_dev_id *dev_id = data;
+=======
+static int match_dev_id(struct device *dev, const void *data)
+{
+	struct ccw_device *cdev = to_ccwdev(dev);
+	struct ccw_dev_id *dev_id = (void *)data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ccw_dev_id_is_equal(&cdev->private->dev_id, dev_id);
 }
 
+<<<<<<< HEAD
 static struct ccw_device *get_ccwdev_by_dev_id(struct ccw_dev_id *dev_id)
+=======
+/**
+ * get_ccwdev_by_dev_id() - obtain device from a ccw device id
+ * @dev_id: id of the device to be searched
+ *
+ * This function searches all devices attached to the ccw bus for a device
+ * matching @dev_id.
+ * Returns:
+ *  If a device is found its reference count is increased and returned;
+ *  else %NULL is returned.
+ */
+struct ccw_device *get_ccwdev_by_dev_id(struct ccw_dev_id *dev_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev;
 
@@ -703,16 +895,28 @@ static struct ccw_device *get_ccwdev_by_dev_id(struct ccw_dev_id *dev_id)
 
 	return dev ? to_ccwdev(dev) : NULL;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(get_ccwdev_by_dev_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ccw_device_do_unbind_bind(struct ccw_device *cdev)
 {
 	int ret;
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&cdev->reg_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (device_is_registered(&cdev->dev)) {
 		device_release_driver(&cdev->dev);
 		ret = device_attach(&cdev->dev);
 		WARN_ON(ret == -ENODEV);
 	}
+<<<<<<< HEAD
+=======
+	mutex_unlock(&cdev->reg_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -721,6 +925,12 @@ ccw_device_release(struct device *dev)
 	struct ccw_device *cdev;
 
 	cdev = to_ccwdev(dev);
+<<<<<<< HEAD
+=======
+	cio_gp_dma_free(cdev->private->dma_pool, cdev->private->dma_area,
+			sizeof(*cdev->private->dma_area));
+	cio_gp_dma_destroy(cdev->private->dma_pool, &cdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Release reference of parent subchannel. */
 	put_device(cdev->dev.parent);
 	kfree(cdev->private);
@@ -730,6 +940,7 @@ ccw_device_release(struct device *dev)
 static struct ccw_device * io_subchannel_allocate_dev(struct subchannel *sch)
 {
 	struct ccw_device *cdev;
+<<<<<<< HEAD
 
 	cdev  = kzalloc(sizeof(*cdev), GFP_KERNEL);
 	if (cdev) {
@@ -740,6 +951,50 @@ static struct ccw_device * io_subchannel_allocate_dev(struct subchannel *sch)
 	}
 	kfree(cdev);
 	return ERR_PTR(-ENOMEM);
+=======
+	struct gen_pool *dma_pool;
+	int ret;
+
+	cdev  = kzalloc(sizeof(*cdev), GFP_KERNEL);
+	if (!cdev) {
+		ret = -ENOMEM;
+		goto err_cdev;
+	}
+	cdev->private = kzalloc(sizeof(struct ccw_device_private),
+				GFP_KERNEL | GFP_DMA);
+	if (!cdev->private) {
+		ret = -ENOMEM;
+		goto err_priv;
+	}
+
+	cdev->dev.dma_mask = sch->dev.dma_mask;
+	ret = dma_set_coherent_mask(&cdev->dev, sch->dev.coherent_dma_mask);
+	if (ret)
+		goto err_coherent_mask;
+
+	dma_pool = cio_gp_dma_create(&cdev->dev, 1);
+	if (!dma_pool) {
+		ret = -ENOMEM;
+		goto err_dma_pool;
+	}
+	cdev->private->dma_pool = dma_pool;
+	cdev->private->dma_area = cio_gp_dma_zalloc(dma_pool, &cdev->dev,
+					sizeof(*cdev->private->dma_area));
+	if (!cdev->private->dma_area) {
+		ret = -ENOMEM;
+		goto err_dma_area;
+	}
+	return cdev;
+err_dma_area:
+	cio_gp_dma_destroy(dma_pool, &cdev->dev);
+err_dma_pool:
+err_coherent_mask:
+	kfree(cdev->private);
+err_priv:
+	kfree(cdev);
+err_cdev:
+	return ERR_PTR(ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ccw_device_todo(struct work_struct *work);
@@ -747,6 +1002,7 @@ static void ccw_device_todo(struct work_struct *work);
 static int io_subchannel_initialize_dev(struct subchannel *sch,
 					struct ccw_device *cdev)
 {
+<<<<<<< HEAD
 	cdev->private->cdev = cdev;
 	cdev->private->int_class = IOINT_CIO;
 	atomic_set(&cdev->private->onoff, 0);
@@ -763,6 +1019,49 @@ static int io_subchannel_initialize_dev(struct subchannel *sch,
 	}
 	cdev->private->flags.initialized = 1;
 	return 0;
+=======
+	struct ccw_device_private *priv = cdev->private;
+	int ret;
+
+	priv->cdev = cdev;
+	priv->int_class = IRQIO_CIO;
+	priv->state = DEV_STATE_NOT_OPER;
+	priv->dev_id.devno = sch->schib.pmcw.dev;
+	priv->dev_id.ssid = sch->schid.ssid;
+
+	INIT_WORK(&priv->todo_work, ccw_device_todo);
+	INIT_LIST_HEAD(&priv->cmb_list);
+	init_waitqueue_head(&priv->wait_q);
+	timer_setup(&priv->timer, ccw_device_timeout, 0);
+	mutex_init(&cdev->reg_mutex);
+
+	atomic_set(&priv->onoff, 0);
+	cdev->ccwlock = &sch->lock;
+	cdev->dev.parent = &sch->dev;
+	cdev->dev.release = ccw_device_release;
+	cdev->dev.bus = &ccw_bus_type;
+	cdev->dev.groups = ccwdev_attr_groups;
+	/* Do first half of device_register. */
+	device_initialize(&cdev->dev);
+	ret = dev_set_name(&cdev->dev, "0.%x.%04x", cdev->private->dev_id.ssid,
+			   cdev->private->dev_id.devno);
+	if (ret)
+		goto out_put;
+	if (!get_device(&sch->dev)) {
+		ret = -ENODEV;
+		goto out_put;
+	}
+	priv->flags.initialized = 1;
+	spin_lock_irq(&sch->lock);
+	sch_set_cdev(sch, cdev);
+	spin_unlock_irq(&sch->lock);
+	return 0;
+
+out_put:
+	/* Release reference from device_initialize(). */
+	put_device(&cdev->dev);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct ccw_device * io_subchannel_create_ccwdev(struct subchannel *sch)
@@ -821,6 +1120,10 @@ static void io_subchannel_register(struct ccw_device *cdev)
 	 * be registered). We need to reprobe since we may now have sense id
 	 * information.
 	 */
+<<<<<<< HEAD
+=======
+	mutex_lock(&cdev->reg_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (device_is_registered(&cdev->dev)) {
 		if (!cdev->drv) {
 			ret = device_reprobe(&cdev->dev);
@@ -834,6 +1137,7 @@ static void io_subchannel_register(struct ccw_device *cdev)
 		adjust_init_count = 0;
 		goto out;
 	}
+<<<<<<< HEAD
 	/*
 	 * Now we know this subchannel will stay, we can throw
 	 * our delayed uevent.
@@ -842,25 +1146,41 @@ static void io_subchannel_register(struct ccw_device *cdev)
 	kobject_uevent(&sch->dev.kobj, KOBJ_ADD);
 	/* make it known to the system */
 	ret = ccw_device_register(cdev);
+=======
+	/* make it known to the system */
+	ret = device_add(&cdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		CIO_MSG_EVENT(0, "Could not register ccw dev 0.%x.%04x: %d\n",
 			      cdev->private->dev_id.ssid,
 			      cdev->private->dev_id.devno, ret);
+<<<<<<< HEAD
 		spin_lock_irqsave(sch->lock, flags);
 		sch_set_cdev(sch, NULL);
 		spin_unlock_irqrestore(sch->lock, flags);
+=======
+		spin_lock_irqsave(&sch->lock, flags);
+		sch_set_cdev(sch, NULL);
+		spin_unlock_irqrestore(&sch->lock, flags);
+		mutex_unlock(&cdev->reg_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Release initial device reference. */
 		put_device(&cdev->dev);
 		goto out_err;
 	}
 out:
 	cdev->private->flags.recog_done = 1;
+<<<<<<< HEAD
+=======
+	mutex_unlock(&cdev->reg_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up(&cdev->private->wait_q);
 out_err:
 	if (adjust_init_count && atomic_dec_and_test(&ccw_device_init_count))
 		wake_up(&ccw_device_init_wq);
 }
 
+<<<<<<< HEAD
 static void ccw_device_call_sch_unregister(struct ccw_device *cdev)
 {
 	struct subchannel *sch;
@@ -874,6 +1194,8 @@ static void ccw_device_call_sch_unregister(struct ccw_device *cdev)
 	put_device(&sch->dev);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * subchannel recognition done. Called from the state machine.
  */
@@ -895,7 +1217,11 @@ io_subchannel_recog_done(struct ccw_device *cdev)
 			wake_up(&ccw_device_init_wq);
 		break;
 	case DEV_STATE_OFFLINE:
+<<<<<<< HEAD
 		/* 
+=======
+		/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * We can't register the device in interrupt context so
 		 * we schedule a work item.
 		 */
@@ -906,6 +1232,7 @@ io_subchannel_recog_done(struct ccw_device *cdev)
 
 static void io_subchannel_recog(struct ccw_device *cdev, struct subchannel *sch)
 {
+<<<<<<< HEAD
 	struct ccw_device_private *priv;
 
 	cdev->ccwlock = sch->lock;
@@ -920,14 +1247,22 @@ static void io_subchannel_recog(struct ccw_device *cdev, struct subchannel *sch)
 	init_waitqueue_head(&priv->wait_q);
 	init_timer(&priv->timer);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Increase counter of devices currently in recognition. */
 	atomic_inc(&ccw_device_init_count);
 
 	/* Start async. device sensing. */
+<<<<<<< HEAD
 	spin_lock_irq(sch->lock);
 	sch_set_cdev(sch, cdev);
 	ccw_device_recognition(cdev);
 	spin_unlock_irq(sch->lock);
+=======
+	spin_lock_irq(&sch->lock);
+	ccw_device_recognition(cdev);
+	spin_unlock_irq(&sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ccw_device_move_to_sch(struct ccw_device *cdev,
@@ -942,12 +1277,20 @@ static int ccw_device_move_to_sch(struct ccw_device *cdev,
 		return -ENODEV;
 
 	if (!sch_is_pseudo_sch(old_sch)) {
+<<<<<<< HEAD
 		spin_lock_irq(old_sch->lock);
+=======
+		spin_lock_irq(&old_sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		old_enabled = old_sch->schib.pmcw.ena;
 		rc = 0;
 		if (old_enabled)
 			rc = cio_disable_subchannel(old_sch);
+<<<<<<< HEAD
 		spin_unlock_irq(old_sch->lock);
+=======
+		spin_unlock_irq(&old_sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc == -EBUSY) {
 			/* Release child reference for new parent. */
 			put_device(&sch->dev);
@@ -964,10 +1307,17 @@ static int ccw_device_move_to_sch(struct ccw_device *cdev,
 			      cdev->private->dev_id.devno, sch->schid.ssid,
 			      sch->schib.pmcw.dev, rc);
 		if (old_enabled) {
+<<<<<<< HEAD
 			/* Try to reenable the old subchannel. */
 			spin_lock_irq(old_sch->lock);
 			cio_enable_subchannel(old_sch, (u32)(addr_t)old_sch);
 			spin_unlock_irq(old_sch->lock);
+=======
+			/* Try to re-enable the old subchannel. */
+			spin_lock_irq(&old_sch->lock);
+			cio_enable_subchannel(old_sch, (u32)virt_to_phys(old_sch));
+			spin_unlock_irq(&old_sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* Release child reference for new parent. */
 		put_device(&sch->dev);
@@ -975,20 +1325,34 @@ static int ccw_device_move_to_sch(struct ccw_device *cdev,
 	}
 	/* Clean up old subchannel. */
 	if (!sch_is_pseudo_sch(old_sch)) {
+<<<<<<< HEAD
 		spin_lock_irq(old_sch->lock);
 		sch_set_cdev(old_sch, NULL);
 		spin_unlock_irq(old_sch->lock);
+=======
+		spin_lock_irq(&old_sch->lock);
+		sch_set_cdev(old_sch, NULL);
+		spin_unlock_irq(&old_sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		css_schedule_eval(old_sch->schid);
 	}
 	/* Release child reference for old parent. */
 	put_device(&old_sch->dev);
 	/* Initialize new subchannel. */
+<<<<<<< HEAD
 	spin_lock_irq(sch->lock);
 	cdev->private->schid = sch->schid;
 	cdev->ccwlock = sch->lock;
 	if (!sch_is_pseudo_sch(sch))
 		sch_set_cdev(sch, cdev);
 	spin_unlock_irq(sch->lock);
+=======
+	spin_lock_irq(&sch->lock);
+	cdev->ccwlock = &sch->lock;
+	if (!sch_is_pseudo_sch(sch))
+		sch_set_cdev(sch, cdev);
+	spin_unlock_irq(&sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sch_is_pseudo_sch(sch))
 		css_update_ssd_info(sch);
 	return 0;
@@ -1013,7 +1377,11 @@ static void io_subchannel_irq(struct subchannel *sch)
 	if (cdev)
 		dev_fsm_event(cdev, DEV_EVENT_INTERRUPT);
 	else
+<<<<<<< HEAD
 		kstat_cpu(smp_processor_id()).irqs[IOINT_CIO]++;
+=======
+		inc_irq_stat(IRQIO_CIO);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void io_subchannel_init_config(struct subchannel *sch)
@@ -1059,6 +1427,7 @@ static int io_subchannel_probe(struct subchannel *sch)
 				      "0.%x.%04x (rc=%d)\n",
 				      sch->schid.ssid, sch->schid.sch_no, rc);
 		/*
+<<<<<<< HEAD
 		 * The console subchannel already has an associated ccw_device.
 		 * Throw the delayed uevent for the subchannel, register
 		 * the ccw_device and exit.
@@ -1079,6 +1448,20 @@ static int io_subchannel_probe(struct subchannel *sch)
 		    cdev->private->state != DEV_STATE_OFFLINE &&
 		    cdev->private->state != DEV_STATE_BOXED)
 			get_device(&cdev->dev);
+=======
+		* The console subchannel already has an associated ccw_device.
+		* Register it and exit.
+		*/
+		cdev = sch_get_cdev(sch);
+		rc = device_add(&cdev->dev);
+		if (rc) {
+			/* Release online reference. */
+			put_device(&cdev->dev);
+			goto out_schedule;
+		}
+		if (atomic_dec_and_test(&ccw_device_init_count))
+			wake_up(&ccw_device_init_wq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	io_subchannel_init_fields(sch);
@@ -1094,11 +1477,23 @@ static int io_subchannel_probe(struct subchannel *sch)
 	if (!io_priv)
 		goto out_schedule;
 
+<<<<<<< HEAD
+=======
+	io_priv->dma_area = dma_alloc_coherent(&sch->dev,
+				sizeof(*io_priv->dma_area),
+				&io_priv->dma_area_dma, GFP_KERNEL);
+	if (!io_priv->dma_area) {
+		kfree(io_priv);
+		goto out_schedule;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_io_private(sch, io_priv);
 	css_schedule_eval(sch->schid);
 	return 0;
 
 out_schedule:
+<<<<<<< HEAD
 	spin_lock_irq(sch->lock);
 	css_sched_sch_todo(sch, SCH_TODO_UNREG);
 	spin_unlock_irq(sch->lock);
@@ -1107,6 +1502,15 @@ out_schedule:
 
 static int
 io_subchannel_remove (struct subchannel *sch)
+=======
+	spin_lock_irq(&sch->lock);
+	css_sched_sch_todo(sch, SCH_TODO_UNREG);
+	spin_unlock_irq(&sch->lock);
+	return 0;
+}
+
+static void io_subchannel_remove(struct subchannel *sch)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct io_subchannel_private *io_priv = to_io_private(sch);
 	struct ccw_device *cdev;
@@ -1114,6 +1518,7 @@ io_subchannel_remove (struct subchannel *sch)
 	cdev = sch_get_cdev(sch);
 	if (!cdev)
 		goto out_free;
+<<<<<<< HEAD
 	io_subchannel_quiesce(sch);
 	/* Set ccw device to not operational and drop reference. */
 	spin_lock_irq(cdev->ccwlock);
@@ -1126,6 +1531,19 @@ out_free:
 	kfree(io_priv);
 	sysfs_remove_group(&sch->dev.kobj, &io_subchannel_attr_group);
 	return 0;
+=======
+
+	ccw_device_unregister(cdev);
+	spin_lock_irq(&sch->lock);
+	sch_set_cdev(sch, NULL);
+	set_io_private(sch, NULL);
+	spin_unlock_irq(&sch->lock);
+out_free:
+	dma_free_coherent(&sch->dev, sizeof(*io_priv->dma_area),
+			  io_priv->dma_area, io_priv->dma_area_dma);
+	kfree(io_priv);
+	sysfs_remove_group(&sch->dev.kobj, &io_subchannel_attr_group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void io_subchannel_verify(struct subchannel *sch)
@@ -1135,6 +1553,11 @@ static void io_subchannel_verify(struct subchannel *sch)
 	cdev = sch_get_cdev(sch);
 	if (cdev)
 		dev_fsm_event(cdev, DEV_EVENT_VERIFY);
+<<<<<<< HEAD
+=======
+	else
+		css_schedule_eval(sch->schid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void io_subchannel_terminate_path(struct subchannel *sch, u8 mask)
@@ -1168,7 +1591,12 @@ static int io_subchannel_chp_event(struct subchannel *sch,
 				   struct chp_link *link, int event)
 {
 	struct ccw_device *cdev = sch_get_cdev(sch);
+<<<<<<< HEAD
 	int mask;
+=======
+	int mask, chpid, valid_bit;
+	int path_event[8];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mask = chp_ssd_get_mask(&sch->ssd_info, link);
 	if (!mask)
@@ -1203,6 +1631,21 @@ static int io_subchannel_chp_event(struct subchannel *sch,
 			cdev->private->path_new_mask |= mask;
 		io_subchannel_verify(sch);
 		break;
+<<<<<<< HEAD
+=======
+	case CHP_FCES_EVENT:
+		/* Forward Endpoint Security event */
+		for (chpid = 0, valid_bit = 0x80; chpid < 8; chpid++,
+				valid_bit >>= 1) {
+			if (mask & valid_bit)
+				path_event[chpid] = PE_PATH_FCES_EVENT;
+			else
+				path_event[chpid] = PE_NONE;
+		}
+		if (cdev && cdev->drv && cdev->drv->path_event)
+			cdev->drv->path_event(cdev, path_event);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1212,7 +1655,11 @@ static void io_subchannel_quiesce(struct subchannel *sch)
 	struct ccw_device *cdev;
 	int ret;
 
+<<<<<<< HEAD
 	spin_lock_irq(sch->lock);
+=======
+	spin_lock_irq(&sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cdev = sch_get_cdev(sch);
 	if (cio_is_console(sch->schid))
 		goto out_unlock;
@@ -1229,15 +1676,26 @@ static void io_subchannel_quiesce(struct subchannel *sch)
 		ret = ccw_device_cancel_halt_clear(cdev);
 		if (ret == -EBUSY) {
 			ccw_device_set_timeout(cdev, HZ/10);
+<<<<<<< HEAD
 			spin_unlock_irq(sch->lock);
 			wait_event(cdev->private->wait_q,
 				   cdev->private->state != DEV_STATE_QUIESCE);
 			spin_lock_irq(sch->lock);
+=======
+			spin_unlock_irq(&sch->lock);
+			wait_event(cdev->private->wait_q,
+				   cdev->private->state != DEV_STATE_QUIESCE);
+			spin_lock_irq(&sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		ret = cio_disable_subchannel(sch);
 	}
 out_unlock:
+<<<<<<< HEAD
 	spin_unlock_irq(sch->lock);
+=======
+	spin_unlock_irq(&sch->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void io_subchannel_shutdown(struct subchannel *sch)
@@ -1256,10 +1714,22 @@ static int device_is_disconnected(struct ccw_device *cdev)
 static int recovery_check(struct device *dev, void *data)
 {
 	struct ccw_device *cdev = to_ccwdev(dev);
+<<<<<<< HEAD
+=======
+	struct subchannel *sch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int *redo = data;
 
 	spin_lock_irq(cdev->ccwlock);
 	switch (cdev->private->state) {
+<<<<<<< HEAD
+=======
+	case DEV_STATE_ONLINE:
+		sch = to_subchannel(cdev->dev.parent);
+		if ((sch->schib.pmcw.pam & sch->opm) == sch->vpm)
+			break;
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DEV_STATE_DISCONNECTED:
 		CIO_MSG_EVENT(3, "recovery: trigger 0.%x.%04x\n",
 			      cdev->private->dev_id.ssid,
@@ -1291,12 +1761,20 @@ static void recovery_work_func(struct work_struct *unused)
 		}
 		spin_unlock_irq(&recovery_lock);
 	} else
+<<<<<<< HEAD
 		CIO_MSG_EVENT(4, "recovery: end\n");
+=======
+		CIO_MSG_EVENT(3, "recovery: end\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DECLARE_WORK(recovery_work, recovery_work_func);
 
+<<<<<<< HEAD
 static void recovery_func(unsigned long data)
+=======
+static void recovery_func(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * We can't do our recovery in softirq context and it's not
@@ -1305,11 +1783,19 @@ static void recovery_func(unsigned long data)
 	schedule_work(&recovery_work);
 }
 
+<<<<<<< HEAD
 static void ccw_device_schedule_recovery(void)
 {
 	unsigned long flags;
 
 	CIO_MSG_EVENT(4, "recovery: schedule\n");
+=======
+void ccw_device_schedule_recovery(void)
+{
+	unsigned long flags;
+
+	CIO_MSG_EVENT(3, "recovery: schedule\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&recovery_lock, flags);
 	if (!timer_pending(&recovery_timer) || (recovery_phase != 0)) {
 		recovery_phase = 0;
@@ -1322,6 +1808,10 @@ static int purge_fn(struct device *dev, void *data)
 {
 	struct ccw_device *cdev = to_ccwdev(dev);
 	struct ccw_dev_id *id = &cdev->private->dev_id;
+<<<<<<< HEAD
+=======
+	struct subchannel *sch = to_subchannel(cdev->dev.parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(cdev->ccwlock);
 	if (is_blacklisted(id->ssid, id->devno) &&
@@ -1330,6 +1820,10 @@ static int purge_fn(struct device *dev, void *data)
 		CIO_MSG_EVENT(3, "ccw: purging 0.%x.%04x\n", id->ssid,
 			      id->devno);
 		ccw_device_sched_todo(cdev, CDEV_TODO_UNREG);
+<<<<<<< HEAD
+=======
+		css_sched_sch_todo(sch, SCH_TODO_UNREG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_set(&cdev->private->onoff, 0);
 	}
 	spin_unlock_irq(cdev->ccwlock);
@@ -1377,6 +1871,10 @@ void ccw_device_set_notoper(struct ccw_device *cdev)
 enum io_sch_action {
 	IO_SCH_UNREG,
 	IO_SCH_ORPH_UNREG,
+<<<<<<< HEAD
+=======
+	IO_SCH_UNREG_CDEV,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	IO_SCH_ATTACH,
 	IO_SCH_UNREG_ATTACH,
 	IO_SCH_ORPH_ATTACH,
@@ -1409,13 +1907,22 @@ static enum io_sch_action sch_get_action(struct subchannel *sch)
 	}
 	if ((sch->schib.pmcw.pam & sch->opm) == 0) {
 		if (ccw_device_notify(cdev, CIO_NO_PATH) != NOTIFY_OK)
+<<<<<<< HEAD
 			return IO_SCH_UNREG;
+=======
+			return IO_SCH_UNREG_CDEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return IO_SCH_DISC;
 	}
 	if (device_is_disconnected(cdev))
 		return IO_SCH_REPROBE;
 	if (cdev->online)
 		return IO_SCH_VERIFY;
+<<<<<<< HEAD
+=======
+	if (cdev->private->state == DEV_STATE_NOT_OPER)
+		return IO_SCH_UNREG_ATTACH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IO_SCH_NOP;
 }
 
@@ -1437,7 +1944,11 @@ static int io_subchannel_sch_event(struct subchannel *sch, int process)
 	enum io_sch_action action;
 	int rc = -EAGAIN;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(sch->lock, flags);
+=======
+	spin_lock_irqsave(&sch->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!device_is_registered(&sch->dev))
 		goto out_unlock;
 	if (work_pending(&sch->todo_work))
@@ -1457,12 +1968,15 @@ static int io_subchannel_sch_event(struct subchannel *sch, int process)
 		rc = 0;
 		goto out_unlock;
 	case IO_SCH_VERIFY:
+<<<<<<< HEAD
 		if (cdev->private->flags.resuming == 1) {
 			if (cio_enable_subchannel(sch, (u32)(addr_t)sch)) {
 				ccw_device_set_notoper(cdev);
 				break;
 			}
 		}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Trigger path verification. */
 		io_subchannel_verify(sch);
 		rc = 0;
@@ -1475,6 +1989,10 @@ static int io_subchannel_sch_event(struct subchannel *sch, int process)
 	case IO_SCH_ORPH_ATTACH:
 		ccw_device_set_disconnected(cdev);
 		break;
+<<<<<<< HEAD
+=======
+	case IO_SCH_UNREG_CDEV:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IO_SCH_UNREG_ATTACH:
 	case IO_SCH_UNREG:
 		if (!cdev)
@@ -1495,7 +2013,11 @@ static int io_subchannel_sch_event(struct subchannel *sch, int process)
 	default:
 		break;
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(sch->lock, flags);
+=======
+	spin_unlock_irqrestore(&sch->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* All other actions require process context. */
 	if (!process)
 		goto out;
@@ -1508,12 +2030,20 @@ static int io_subchannel_sch_event(struct subchannel *sch, int process)
 		if (rc)
 			goto out;
 		break;
+<<<<<<< HEAD
 	case IO_SCH_UNREG_ATTACH:
 		if (cdev->private->flags.resuming) {
 			/* Device will be handled later. */
 			rc = 0;
 			goto out;
 		}
+=======
+	case IO_SCH_UNREG_CDEV:
+	case IO_SCH_UNREG_ATTACH:
+		spin_lock_irqsave(&sch->lock, flags);
+		sch_set_cdev(sch, NULL);
+		spin_unlock_irqrestore(&sch->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Unregister ccw device. */
 		ccw_device_unregister(cdev);
 		break;
@@ -1524,8 +2054,12 @@ static int io_subchannel_sch_event(struct subchannel *sch, int process)
 	switch (action) {
 	case IO_SCH_ORPH_UNREG:
 	case IO_SCH_UNREG:
+<<<<<<< HEAD
 		if (!cdev || !cdev->private->flags.resuming)
 			css_sch_device_unregister(sch);
+=======
+		css_sch_device_unregister(sch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case IO_SCH_ORPH_ATTACH:
 	case IO_SCH_UNREG_ATTACH:
@@ -1543,9 +2077,15 @@ static int io_subchannel_sch_event(struct subchannel *sch, int process)
 			put_device(&cdev->dev);
 			goto out;
 		}
+<<<<<<< HEAD
 		spin_lock_irqsave(sch->lock, flags);
 		ccw_device_trigger_reprobe(cdev);
 		spin_unlock_irqrestore(sch->lock, flags);
+=======
+		spin_lock_irqsave(&sch->lock, flags);
+		ccw_device_trigger_reprobe(cdev);
+		spin_unlock_irqrestore(&sch->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Release reference from get_ccwdev_by_dev_id() */
 		put_device(&cdev->dev);
 		break;
@@ -1555,11 +2095,16 @@ static int io_subchannel_sch_event(struct subchannel *sch, int process)
 	return 0;
 
 out_unlock:
+<<<<<<< HEAD
 	spin_unlock_irqrestore(sch->lock, flags);
+=======
+	spin_unlock_irqrestore(&sch->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return rc;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_CCW_CONSOLE
 static struct ccw_device console_cdev;
 static struct ccw_device_private console_private;
@@ -1581,18 +2126,45 @@ static int ccw_device_console_enable(struct ccw_device *cdev,
 	/* Attach subchannel private data. */
 	memset(io_priv, 0, sizeof(*io_priv));
 	set_io_private(sch, io_priv);
+=======
+static void ccw_device_set_int_class(struct ccw_device *cdev)
+{
+	struct ccw_driver *cdrv = cdev->drv;
+
+	/* Note: we interpret class 0 in this context as an uninitialized
+	 * field since it translates to a non-I/O interrupt class. */
+	if (cdrv->int_class != 0)
+		cdev->private->int_class = cdrv->int_class;
+	else
+		cdev->private->int_class = IRQIO_CIO;
+}
+
+#ifdef CONFIG_CCW_CONSOLE
+int __init ccw_device_enable_console(struct ccw_device *cdev)
+{
+	struct subchannel *sch = to_subchannel(cdev->dev.parent);
+	int rc;
+
+	if (!cdev->drv || !cdev->handler)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	io_subchannel_init_fields(sch);
 	rc = cio_commit_config(sch);
 	if (rc)
 		return rc;
 	sch->driver = &io_subchannel_driver;
+<<<<<<< HEAD
 	/* Initialize the ccw_device structure. */
 	cdev->dev.parent= &sch->dev;
 	sch_set_cdev(sch, cdev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	io_subchannel_recog(cdev, sch);
 	/* Now wait for the async. recognition to come to an end. */
 	spin_lock_irq(cdev->ccwlock);
 	while (!dev_fsm_final_state(cdev))
+<<<<<<< HEAD
 		wait_cons_dev();
 	rc = -EIO;
 	if (cdev->private->state != DEV_STATE_OFFLINE)
@@ -1660,6 +2232,102 @@ __ccwdev_check_busid(struct device *dev, void *id)
 	return (strcmp(bus_id, dev_name(dev)) == 0);
 }
 
+=======
+		ccw_device_wait_idle(cdev);
+
+	/* Hold on to an extra reference while device is online. */
+	get_device(&cdev->dev);
+	rc = ccw_device_online(cdev);
+	if (rc)
+		goto out_unlock;
+
+	while (!dev_fsm_final_state(cdev))
+		ccw_device_wait_idle(cdev);
+
+	if (cdev->private->state == DEV_STATE_ONLINE)
+		cdev->online = 1;
+	else
+		rc = -EIO;
+out_unlock:
+	spin_unlock_irq(cdev->ccwlock);
+	if (rc) /* Give up online reference since onlining failed. */
+		put_device(&cdev->dev);
+	return rc;
+}
+
+struct ccw_device * __init ccw_device_create_console(struct ccw_driver *drv)
+{
+	struct io_subchannel_private *io_priv;
+	struct ccw_device *cdev;
+	struct subchannel *sch;
+
+	sch = cio_probe_console();
+	if (IS_ERR(sch))
+		return ERR_CAST(sch);
+
+	io_priv = kzalloc(sizeof(*io_priv), GFP_KERNEL | GFP_DMA);
+	if (!io_priv)
+		goto err_priv;
+	io_priv->dma_area = dma_alloc_coherent(&sch->dev,
+				sizeof(*io_priv->dma_area),
+				&io_priv->dma_area_dma, GFP_KERNEL);
+	if (!io_priv->dma_area)
+		goto err_dma_area;
+	set_io_private(sch, io_priv);
+	cdev = io_subchannel_create_ccwdev(sch);
+	if (IS_ERR(cdev)) {
+		dma_free_coherent(&sch->dev, sizeof(*io_priv->dma_area),
+				  io_priv->dma_area, io_priv->dma_area_dma);
+		set_io_private(sch, NULL);
+		put_device(&sch->dev);
+		kfree(io_priv);
+		return cdev;
+	}
+	cdev->drv = drv;
+	ccw_device_set_int_class(cdev);
+	return cdev;
+
+err_dma_area:
+	kfree(io_priv);
+err_priv:
+	put_device(&sch->dev);
+	return ERR_PTR(-ENOMEM);
+}
+
+void __init ccw_device_destroy_console(struct ccw_device *cdev)
+{
+	struct subchannel *sch = to_subchannel(cdev->dev.parent);
+	struct io_subchannel_private *io_priv = to_io_private(sch);
+
+	set_io_private(sch, NULL);
+	dma_free_coherent(&sch->dev, sizeof(*io_priv->dma_area),
+			  io_priv->dma_area, io_priv->dma_area_dma);
+	put_device(&sch->dev);
+	put_device(&cdev->dev);
+	kfree(io_priv);
+}
+
+/**
+ * ccw_device_wait_idle() - busy wait for device to become idle
+ * @cdev: ccw device
+ *
+ * Poll until activity control is zero, that is, no function or data
+ * transfer is pending/active.
+ * Called with device lock being held.
+ */
+void ccw_device_wait_idle(struct ccw_device *cdev)
+{
+	struct subchannel *sch = to_subchannel(cdev->dev.parent);
+
+	while (1) {
+		cio_tsch(sch);
+		if (sch->schib.scsw.cmd.actl == 0)
+			break;
+		udelay(100);
+	}
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * get_ccwdev_by_busid() - obtain device from a bus id
@@ -1677,8 +2345,12 @@ struct ccw_device *get_ccwdev_by_busid(struct ccw_driver *cdrv,
 {
 	struct device *dev;
 
+<<<<<<< HEAD
 	dev = driver_find_device(&cdrv->driver, NULL, (void *)bus_id,
 				 __ccwdev_check_busid);
+=======
+	dev = driver_find_device_by_name(&cdrv->driver, bus_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return dev ? to_ccwdev(dev) : NULL;
 }
@@ -1701,6 +2373,7 @@ ccw_device_probe (struct device *dev)
 	int ret;
 
 	cdev->drv = cdrv; /* to let the driver call _set_online */
+<<<<<<< HEAD
 	/* Note: we interpret class 0 in this context as an uninitialized
 	 * field since it translates to a non-I/O interrupt class. */
 	if (cdrv->int_class != 0)
@@ -1713,24 +2386,46 @@ ccw_device_probe (struct device *dev)
 	if (ret) {
 		cdev->drv = NULL;
 		cdev->private->int_class = IOINT_CIO;
+=======
+	ccw_device_set_int_class(cdev);
+	ret = cdrv->probe ? cdrv->probe(cdev) : -ENODEV;
+	if (ret) {
+		cdev->drv = NULL;
+		cdev->private->int_class = IRQIO_CIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 ccw_device_remove (struct device *dev)
 {
 	struct ccw_device *cdev = to_ccwdev(dev);
 	struct ccw_driver *cdrv = cdev->drv;
+=======
+static void ccw_device_remove(struct device *dev)
+{
+	struct ccw_device *cdev = to_ccwdev(dev);
+	struct ccw_driver *cdrv = cdev->drv;
+	struct subchannel *sch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (cdrv->remove)
 		cdrv->remove(cdev);
+<<<<<<< HEAD
 	if (cdev->online) {
 		cdev->online = 0;
 		spin_lock_irq(cdev->ccwlock);
+=======
+
+	spin_lock_irq(cdev->ccwlock);
+	if (cdev->online) {
+		cdev->online = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ccw_device_offline(cdev);
 		spin_unlock_irq(cdev->ccwlock);
 		if (ret == 0)
@@ -1743,11 +2438,23 @@ ccw_device_remove (struct device *dev)
 				      cdev->private->dev_id.devno);
 		/* Give up reference obtained in ccw_device_set_online(). */
 		put_device(&cdev->dev);
+<<<<<<< HEAD
 	}
 	ccw_device_set_timeout(cdev, 0);
 	cdev->drv = NULL;
 	cdev->private->int_class = IOINT_CIO;
 	return 0;
+=======
+		spin_lock_irq(cdev->ccwlock);
+	}
+	ccw_device_set_timeout(cdev, 0);
+	cdev->drv = NULL;
+	cdev->private->int_class = IRQIO_CIO;
+	sch = to_subchannel(cdev->dev.parent);
+	spin_unlock_irq(cdev->ccwlock);
+	io_subchannel_quiesce(sch);
+	__disable_cmf(cdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ccw_device_shutdown(struct device *dev)
@@ -1757,6 +2464,7 @@ static void ccw_device_shutdown(struct device *dev)
 	cdev = to_ccwdev(dev);
 	if (cdev->drv && cdev->drv->shutdown)
 		cdev->drv->shutdown(cdev);
+<<<<<<< HEAD
 	disable_cmf(cdev);
 }
 
@@ -1990,13 +2698,22 @@ static const struct dev_pm_ops ccw_pm_ops = {
 };
 
 static struct bus_type ccw_bus_type = {
+=======
+	__disable_cmf(cdev);
+}
+
+static const struct bus_type ccw_bus_type = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name   = "ccw",
 	.match  = ccw_bus_match,
 	.uevent = ccw_uevent,
 	.probe  = ccw_device_probe,
 	.remove = ccw_device_remove,
 	.shutdown = ccw_device_shutdown,
+<<<<<<< HEAD
 	.pm = &ccw_pm_ops,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -2027,6 +2744,7 @@ void ccw_driver_unregister(struct ccw_driver *cdriver)
 	driver_unregister(&cdriver->driver);
 }
 
+<<<<<<< HEAD
 /* Helper func for qdio. */
 struct subchannel_id
 ccw_device_get_subchannel_id(struct ccw_device *cdev)
@@ -2037,6 +2755,8 @@ ccw_device_get_subchannel_id(struct ccw_device *cdev)
 	return sch->schid;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ccw_device_todo(struct work_struct *work)
 {
 	struct ccw_device_private *priv;
@@ -2068,12 +2788,21 @@ static void ccw_device_todo(struct work_struct *work)
 	case CDEV_TODO_UNREG_EVAL:
 		if (!sch_is_pseudo_sch(sch))
 			css_schedule_eval(sch->schid);
+<<<<<<< HEAD
 		/* fall-through */
 	case CDEV_TODO_UNREG:
 		if (sch_is_pseudo_sch(sch))
 			ccw_device_unregister(cdev);
 		else
 			ccw_device_call_sch_unregister(cdev);
+=======
+		fallthrough;
+	case CDEV_TODO_UNREG:
+		spin_lock_irq(&sch->lock);
+		sch_set_cdev(sch, NULL);
+		spin_unlock_irq(&sch->lock);
+		ccw_device_unregister(cdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
@@ -2123,10 +2852,16 @@ int ccw_device_siosl(struct ccw_device *cdev)
 }
 EXPORT_SYMBOL_GPL(ccw_device_siosl);
 
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(ccw_device_set_online);
 EXPORT_SYMBOL(ccw_device_set_offline);
 EXPORT_SYMBOL(ccw_driver_register);
 EXPORT_SYMBOL(ccw_driver_unregister);
 EXPORT_SYMBOL(get_ccwdev_by_busid);
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(ccw_device_get_subchannel_id);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

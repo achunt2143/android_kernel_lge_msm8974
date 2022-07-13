@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	i6300esb:	Watchdog timer driver for Intel 6300ESB chipset
  *
  *	(c) Copyright 2004 Google Inc.
  *	(c) Copyright 2005 David Härdeman <david@2gen.com>
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	based on i810-tco.c which is in turn based on softdog.c
  *
  *	The timer is implemented in the following I/O controller hubs:
@@ -21,14 +28,23 @@
  *	Version 0.02
  *  20050210 David Härdeman <david@2gen.com>
  *	Ported driver to kernel 2.6
+<<<<<<< HEAD
+=======
+ *  20171016 Radu Rendec <rrendec@arista.com>
+ *	Change driver to use the watchdog subsystem
+ *	Add support for multiple 6300ESB devices
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  *      Includes, defines, variables, module parameters, ...
  */
 
+<<<<<<< HEAD
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -36,26 +52,40 @@
 #include <linux/mm.h>
 #include <linux/miscdevice.h>
 #include <linux/watchdog.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/ioport.h>
 #include <linux/uaccess.h>
 #include <linux/io.h>
 
 /* Module and version information */
+<<<<<<< HEAD
 #define ESB_VERSION "0.05"
 #define ESB_MODULE_NAME "i6300ESB timer"
 #define ESB_DRIVER_NAME ESB_MODULE_NAME ", v" ESB_VERSION
+=======
+#define ESB_MODULE_NAME "i6300ESB timer"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PCI configuration registers */
 #define ESB_CONFIG_REG  0x60            /* Config register                   */
 #define ESB_LOCK_REG    0x68            /* WDT lock register                 */
 
 /* Memory mapped registers */
+<<<<<<< HEAD
 #define ESB_TIMER1_REG (BASEADDR + 0x00)/* Timer1 value after each reset     */
 #define ESB_TIMER2_REG (BASEADDR + 0x04)/* Timer2 value after each reset     */
 #define ESB_GINTSR_REG (BASEADDR + 0x08)/* General Interrupt Status Register */
 #define ESB_RELOAD_REG (BASEADDR + 0x0c)/* Reload register                   */
+=======
+#define ESB_TIMER1_REG(w) ((w)->base + 0x00)/* Timer1 value after each reset */
+#define ESB_TIMER2_REG(w) ((w)->base + 0x04)/* Timer2 value after each reset */
+#define ESB_GINTSR_REG(w) ((w)->base + 0x08)/* General Interrupt Status Reg  */
+#define ESB_RELOAD_REG(w) ((w)->base + 0x0c)/* Reload register               */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Lock register bits */
 #define ESB_WDT_FUNC    (0x01 << 2)   /* Watchdog functionality            */
@@ -75,6 +105,7 @@
 #define ESB_UNLOCK1     0x80            /* Step 1 to unlock reset registers  */
 #define ESB_UNLOCK2     0x86            /* Step 2 to unlock reset registers  */
 
+<<<<<<< HEAD
 /* internal variables */
 static void __iomem *BASEADDR;
 static DEFINE_SPINLOCK(esb_lock); /* Guards the hardware */
@@ -94,6 +125,20 @@ module_param(heartbeat, int, 0);
 MODULE_PARM_DESC(heartbeat,
 		"Watchdog heartbeat in seconds. (1<heartbeat<2046, default="
 				__MODULE_STRING(WATCHDOG_HEARTBEAT) ")");
+=======
+/* module parameters */
+/* 30 sec default heartbeat (1 < heartbeat < 2*1023) */
+#define ESB_HEARTBEAT_MIN	1
+#define ESB_HEARTBEAT_MAX	2046
+#define ESB_HEARTBEAT_DEFAULT	30
+#define ESB_HEARTBEAT_RANGE __MODULE_STRING(ESB_HEARTBEAT_MIN) \
+	"<heartbeat<" __MODULE_STRING(ESB_HEARTBEAT_MAX)
+static int heartbeat; /* in seconds */
+module_param(heartbeat, int, 0);
+MODULE_PARM_DESC(heartbeat,
+	"Watchdog heartbeat in seconds. (" ESB_HEARTBEAT_RANGE
+	", default=" __MODULE_STRING(ESB_HEARTBEAT_DEFAULT) ")");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
 module_param(nowayout, bool, 0);
@@ -101,6 +146,18 @@ MODULE_PARM_DESC(nowayout,
 		"Watchdog cannot be stopped once started (default="
 				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 
+<<<<<<< HEAD
+=======
+/* internal variables */
+struct esb_dev {
+	struct watchdog_device wdd;
+	void __iomem *base;
+	struct pci_dev *pdev;
+};
+
+#define to_esb_dev(wptr) container_of(wptr, struct esb_dev, wdd)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Some i6300ESB specific functions
  */
@@ -111,6 +168,7 @@ MODULE_PARM_DESC(nowayout,
  * reload register. After this the appropriate registers can be written
  * to once before they need to be unlocked again.
  */
+<<<<<<< HEAD
 static inline void esb_unlock_registers(void)
 {
 	writew(ESB_UNLOCK1, ESB_RELOAD_REG);
@@ -143,11 +201,45 @@ static int esb_timer_stop(void)
 	pci_write_config_byte(esb_pci, ESB_LOCK_REG, 0x0);
 	pci_read_config_byte(esb_pci, ESB_LOCK_REG, &val);
 	spin_unlock(&esb_lock);
+=======
+static inline void esb_unlock_registers(struct esb_dev *edev)
+{
+	writew(ESB_UNLOCK1, ESB_RELOAD_REG(edev));
+	writew(ESB_UNLOCK2, ESB_RELOAD_REG(edev));
+}
+
+static int esb_timer_start(struct watchdog_device *wdd)
+{
+	struct esb_dev *edev = to_esb_dev(wdd);
+	int _wdd_nowayout = test_bit(WDOG_NO_WAY_OUT, &wdd->status);
+	u8 val;
+
+	esb_unlock_registers(edev);
+	writew(ESB_WDT_RELOAD, ESB_RELOAD_REG(edev));
+	/* Enable or Enable + Lock? */
+	val = ESB_WDT_ENABLE | (_wdd_nowayout ? ESB_WDT_LOCK : 0x00);
+	pci_write_config_byte(edev->pdev, ESB_LOCK_REG, val);
+	return 0;
+}
+
+static int esb_timer_stop(struct watchdog_device *wdd)
+{
+	struct esb_dev *edev = to_esb_dev(wdd);
+	u8 val;
+
+	/* First, reset timers as suggested by the docs */
+	esb_unlock_registers(edev);
+	writew(ESB_WDT_RELOAD, ESB_RELOAD_REG(edev));
+	/* Then disable the WDT */
+	pci_write_config_byte(edev->pdev, ESB_LOCK_REG, 0x0);
+	pci_read_config_byte(edev->pdev, ESB_LOCK_REG, &val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Returns 0 if the timer was disabled, non-zero otherwise */
 	return val & ESB_WDT_ENABLE;
 }
 
+<<<<<<< HEAD
 static void esb_timer_keepalive(void)
 {
 	spin_lock(&esb_lock);
@@ -166,6 +258,24 @@ static int esb_timer_set_heartbeat(int time)
 
 	spin_lock(&esb_lock);
 
+=======
+static int esb_timer_keepalive(struct watchdog_device *wdd)
+{
+	struct esb_dev *edev = to_esb_dev(wdd);
+
+	esb_unlock_registers(edev);
+	writew(ESB_WDT_RELOAD, ESB_RELOAD_REG(edev));
+	/* FIXME: Do we need to flush anything here? */
+	return 0;
+}
+
+static int esb_timer_set_heartbeat(struct watchdog_device *wdd,
+		unsigned int time)
+{
+	struct esb_dev *edev = to_esb_dev(wdd);
+	u32 val;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We shift by 9, so if we are passed a value of 1 sec,
 	 * val will be 1 << 9 = 512, then write that to two
 	 * timers => 2 * 512 = 1024 (which is decremented at 1KHz)
@@ -173,6 +283,7 @@ static int esb_timer_set_heartbeat(int time)
 	val = time << 9;
 
 	/* Write timer 1 */
+<<<<<<< HEAD
 	esb_unlock_registers();
 	writel(val, ESB_TIMER1_REG);
 
@@ -183,16 +294,33 @@ static int esb_timer_set_heartbeat(int time)
 	/* Reload */
 	esb_unlock_registers();
 	writew(ESB_WDT_RELOAD, ESB_RELOAD_REG);
+=======
+	esb_unlock_registers(edev);
+	writel(val, ESB_TIMER1_REG(edev));
+
+	/* Write timer 2 */
+	esb_unlock_registers(edev);
+	writel(val, ESB_TIMER2_REG(edev));
+
+	/* Reload */
+	esb_unlock_registers(edev);
+	writew(ESB_WDT_RELOAD, ESB_RELOAD_REG(edev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME: Do we need to flush everything out? */
 
 	/* Done */
+<<<<<<< HEAD
 	heartbeat = time;
 	spin_unlock(&esb_lock);
+=======
+	wdd->timeout = time;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /*
+<<<<<<< HEAD
  *	/dev/watchdog handling
  */
 
@@ -329,12 +457,32 @@ static struct miscdevice esb_miscdev = {
 	.minor = WATCHDOG_MINOR,
 	.name = "watchdog",
 	.fops = &esb_fops,
+=======
+ * Watchdog Subsystem Interfaces
+ */
+
+static struct watchdog_info esb_info = {
+	.identity = ESB_MODULE_NAME,
+	.options = WDIOF_SETTIMEOUT | WDIOF_KEEPALIVEPING | WDIOF_MAGICCLOSE,
+};
+
+static const struct watchdog_ops esb_ops = {
+	.owner = THIS_MODULE,
+	.start = esb_timer_start,
+	.stop = esb_timer_stop,
+	.set_timeout = esb_timer_set_heartbeat,
+	.ping = esb_timer_keepalive,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Data for PCI driver interface
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(esb_pci_tbl) = {
+=======
+static const struct pci_device_id esb_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_ESB_9), },
 	{ 0, },                 /* End of list */
 };
@@ -344,6 +492,7 @@ MODULE_DEVICE_TABLE(pci, esb_pci_tbl);
  *      Init & exit routines
  */
 
+<<<<<<< HEAD
 static unsigned char __devinit esb_getdevice(struct pci_dev *pdev)
 {
 	if (pci_enable_device(pdev)) {
@@ -360,10 +509,29 @@ static unsigned char __devinit esb_getdevice(struct pci_dev *pdev)
 	if (BASEADDR == NULL) {
 		/* Something's wrong here, BASEADDR has to be set */
 		pr_err("failed to get BASEADDR\n");
+=======
+static unsigned char esb_getdevice(struct esb_dev *edev)
+{
+	if (pci_enable_device(edev->pdev)) {
+		dev_err(&edev->pdev->dev, "failed to enable device\n");
+		goto err_devput;
+	}
+
+	if (pci_request_region(edev->pdev, 0, ESB_MODULE_NAME)) {
+		dev_err(&edev->pdev->dev, "failed to request region\n");
+		goto err_disable;
+	}
+
+	edev->base = pci_ioremap_bar(edev->pdev, 0);
+	if (edev->base == NULL) {
+		/* Something's wrong here, BASEADDR has to be set */
+		dev_err(&edev->pdev->dev, "failed to get BASEADDR\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_release;
 	}
 
 	/* Done */
+<<<<<<< HEAD
 	esb_pci = pdev;
 	return 1;
 
@@ -371,11 +539,24 @@ err_release:
 	pci_release_region(pdev, 0);
 err_disable:
 	pci_disable_device(pdev);
+=======
+	dev_set_drvdata(&edev->pdev->dev, edev);
+	return 1;
+
+err_release:
+	pci_release_region(edev->pdev, 0);
+err_disable:
+	pci_disable_device(edev->pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_devput:
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devinit esb_initdevice(void)
+=======
+static void esb_initdevice(struct esb_dev *edev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 val1;
 	u16 val2;
@@ -392,6 +573,7 @@ static void __devinit esb_initdevice(void)
 	 * any interrupts as there is not much we can do with it
 	 * right now.
 	 */
+<<<<<<< HEAD
 	pci_write_config_word(esb_pci, ESB_CONFIG_REG, 0x0003);
 
 	/* Check that the WDT isn't already locked */
@@ -482,12 +664,90 @@ static void __devexit esb_remove(struct pci_dev *pdev)
 static void esb_shutdown(struct pci_dev *pdev)
 {
 	esb_timer_stop();
+=======
+	pci_write_config_word(edev->pdev, ESB_CONFIG_REG, 0x0003);
+
+	/* Check that the WDT isn't already locked */
+	pci_read_config_byte(edev->pdev, ESB_LOCK_REG, &val1);
+	if (val1 & ESB_WDT_LOCK)
+		dev_warn(&edev->pdev->dev, "nowayout already set\n");
+
+	/* Set the timer to watchdog mode and disable it for now */
+	pci_write_config_byte(edev->pdev, ESB_LOCK_REG, 0x00);
+
+	/* Check if the watchdog was previously triggered */
+	esb_unlock_registers(edev);
+	val2 = readw(ESB_RELOAD_REG(edev));
+	if (val2 & ESB_WDT_TIMEOUT)
+		edev->wdd.bootstatus = WDIOF_CARDRESET;
+
+	/* Reset WDT_TIMEOUT flag and timers */
+	esb_unlock_registers(edev);
+	writew((ESB_WDT_TIMEOUT | ESB_WDT_RELOAD), ESB_RELOAD_REG(edev));
+
+	/* And set the correct timeout value */
+	esb_timer_set_heartbeat(&edev->wdd, edev->wdd.timeout);
+}
+
+static int esb_probe(struct pci_dev *pdev,
+		const struct pci_device_id *ent)
+{
+	struct esb_dev *edev;
+	int ret;
+
+	edev = devm_kzalloc(&pdev->dev, sizeof(*edev), GFP_KERNEL);
+	if (!edev)
+		return -ENOMEM;
+
+	/* Check whether or not the hardware watchdog is there */
+	edev->pdev = pdev;
+	if (!esb_getdevice(edev))
+		return -ENODEV;
+
+	/* Initialize the watchdog and make sure it does not run */
+	edev->wdd.info = &esb_info;
+	edev->wdd.ops = &esb_ops;
+	edev->wdd.min_timeout = ESB_HEARTBEAT_MIN;
+	edev->wdd.max_timeout = ESB_HEARTBEAT_MAX;
+	edev->wdd.timeout = ESB_HEARTBEAT_DEFAULT;
+	watchdog_init_timeout(&edev->wdd, heartbeat, NULL);
+	watchdog_set_nowayout(&edev->wdd, nowayout);
+	watchdog_stop_on_reboot(&edev->wdd);
+	watchdog_stop_on_unregister(&edev->wdd);
+	esb_initdevice(edev);
+
+	/* Register the watchdog so that userspace has access to it */
+	ret = watchdog_register_device(&edev->wdd);
+	if (ret != 0)
+		goto err_unmap;
+	dev_info(&pdev->dev,
+		"initialized. heartbeat=%d sec (nowayout=%d)\n",
+		edev->wdd.timeout, nowayout);
+	return 0;
+
+err_unmap:
+	iounmap(edev->base);
+	pci_release_region(edev->pdev, 0);
+	pci_disable_device(edev->pdev);
+	return ret;
+}
+
+static void esb_remove(struct pci_dev *pdev)
+{
+	struct esb_dev *edev = dev_get_drvdata(&pdev->dev);
+
+	watchdog_unregister_device(&edev->wdd);
+	iounmap(edev->base);
+	pci_release_region(edev->pdev, 0);
+	pci_disable_device(edev->pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pci_driver esb_driver = {
 	.name		= ESB_MODULE_NAME,
 	.id_table	= esb_pci_tbl,
 	.probe          = esb_probe,
+<<<<<<< HEAD
 	.remove         = __devexit_p(esb_remove),
 	.shutdown       = esb_shutdown,
 };
@@ -505,8 +765,17 @@ static void __exit watchdog_cleanup(void)
 
 module_init(watchdog_init);
 module_exit(watchdog_cleanup);
+=======
+	.remove         = esb_remove,
+};
+
+module_pci_driver(esb_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Ross Biro and David Härdeman");
 MODULE_DESCRIPTION("Watchdog driver for Intel 6300ESB chipsets");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/m68k/mm/memory.c
  *
@@ -14,13 +18,18 @@
 #include <linux/gfp.h>
 
 #include <asm/setup.h>
+<<<<<<< HEAD
 #include <asm/segment.h>
 #include <asm/page.h>
 #include <asm/pgalloc.h>
+=======
+#include <asm/page.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/traps.h>
 #include <asm/machdep.h>
 
 
+<<<<<<< HEAD
 /* ++andreas: {get,free}_pointer_table rewritten to use unused fields from
    struct page instead of separately kmalloced struct.  Stolen from
    arch/sparc/mm/srmmu.c ... */
@@ -126,6 +135,8 @@ int free_pointer_table (pmd_t *ptable)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* invalidate page in both caches */
 static inline void clear040(unsigned long paddr)
 {
@@ -203,7 +214,11 @@ static inline void pushcl040(unsigned long paddr)
 void cache_clear (unsigned long paddr, int len)
 {
     if (CPU_IS_COLDFIRE) {
+<<<<<<< HEAD
 	flush_cf_bcache(0, DCACHE_MAX_ADDR);
+=======
+	clear_cf_bcache(0, DCACHE_MAX_ADDR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     } else if (CPU_IS_040_OR_060) {
 	int tmp;
 

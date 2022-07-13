@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 if ATH79
 
 menu "Atheros AR71XX/AR724X/AR913X machine selection"
@@ -82,6 +83,37 @@ config ATH79_DEV_USB
 
 config ATH79_DEV_WMAC
 	depends on (SOC_AR913X || SOC_AR933X)
+=======
+# SPDX-License-Identifier: GPL-2.0
+if ATH79
+
+config SOC_AR71XX
+	select HAVE_PCI
+	def_bool n
+
+config SOC_AR724X
+	select HAVE_PCI
+	select PCI_AR724X if PCI
+	def_bool n
+
+config SOC_AR913X
+	def_bool n
+
+config SOC_AR933X
+	def_bool n
+
+config SOC_AR934X
+	select HAVE_PCI
+	select PCI_AR724X if PCI
+	def_bool n
+
+config SOC_QCA955X
+	select HAVE_PCI
+	select PCI_AR724X if PCI
+	def_bool n
+
+config PCI_AR724X
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	def_bool n
 
 endif

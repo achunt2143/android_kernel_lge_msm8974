@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/cpu/init.c
  *
@@ -5,10 +9,13 @@
  *
  * Copyright (C) 2002 - 2009  Paul Mundt
  * Copyright (C) 2003  Richard Curnow
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -16,7 +23,11 @@
 #include <linux/log2.h>
 #include <asm/mmu_context.h>
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm/cacheflush.h>
 #include <asm/cache.h>
@@ -43,9 +54,15 @@
  * peripherals (nofpu, nodsp, and so forth).
  */
 #define onchip_setup(x)					\
+<<<<<<< HEAD
 static int x##_disabled __cpuinitdata = !cpu_has_##x;	\
 							\
 static int __cpuinit x##_setup(char *opts)			\
+=======
+static int x##_disabled = !cpu_has_##x;			\
+							\
+static int x##_setup(char *opts)			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {							\
 	x##_disabled = 1;				\
 	return 1;					\
@@ -59,7 +76,11 @@ onchip_setup(dsp);
 #define CPUOPM		0xff2f0000
 #define CPUOPM_RABD	(1 << 5)
 
+<<<<<<< HEAD
 static void __cpuinit speculative_execution_init(void)
+=======
+static void speculative_execution_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Clear RABD */
 	__raw_writel(__raw_readl(CPUOPM) & ~CPUOPM_RABD, CPUOPM);
@@ -78,7 +99,11 @@ static void __cpuinit speculative_execution_init(void)
 #define EXPMASK_BRDSSLP		(1 << 1)
 #define EXPMASK_MMCAW		(1 << 4)
 
+<<<<<<< HEAD
 static void __cpuinit expmask_init(void)
+=======
+static void expmask_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long expmask = __raw_readl(EXPMASK);
 
@@ -106,13 +131,21 @@ void __attribute__ ((weak)) l2_cache_init(void)
 /*
  * Generic first-level cache init
  */
+<<<<<<< HEAD
 #ifdef CONFIG_SUPERH32
+=======
+#if !defined(CONFIG_CPU_J2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void cache_init(void)
 {
 	unsigned long ccr, flags;
 
 	jump_to_uncached();
+<<<<<<< HEAD
 	ccr = __raw_readl(CCR);
+=======
+	ccr = __raw_readl(SH_CCR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * At this point we don't know whether the cache is enabled or not - a
@@ -189,7 +222,11 @@ static void cache_init(void)
 
 	l2_cache_init();
 
+<<<<<<< HEAD
 	__raw_writel(flags, CCR);
+=======
+	__raw_writel(flags, SH_CCR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	back_to_cached();
 }
 #else
@@ -217,7 +254,11 @@ static void detect_cache_shape(void)
 		l2_cache_shape = -1; /* No S-cache */
 }
 
+<<<<<<< HEAD
 static void __cpuinit fpu_init(void)
+=======
+static void fpu_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Disable the FPU */
 	if (fpu_disabled && (current_cpu_data.flags & CPU_HAS_FPU)) {
@@ -230,7 +271,11 @@ static void __cpuinit fpu_init(void)
 }
 
 #ifdef CONFIG_SH_DSP
+<<<<<<< HEAD
 static void __cpuinit release_dsp(void)
+=======
+static void release_dsp(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long sr;
 
@@ -244,7 +289,11 @@ static void __cpuinit release_dsp(void)
 	);
 }
 
+<<<<<<< HEAD
 static void __cpuinit dsp_init(void)
+=======
+static void dsp_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long sr;
 
@@ -276,7 +325,11 @@ static void __cpuinit dsp_init(void)
 	release_dsp();
 }
 #else
+<<<<<<< HEAD
 static inline void __cpuinit dsp_init(void) { }
+=======
+static inline void dsp_init(void) { }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SH_DSP */
 
 /**
@@ -295,7 +348,11 @@ static inline void __cpuinit dsp_init(void) { }
  * Each processor family is still responsible for doing its own probing
  * and cache configuration in cpu_probe().
  */
+<<<<<<< HEAD
 asmlinkage void __cpuinit cpu_init(void)
+=======
+asmlinkage void cpu_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	current_thread_info()->cpu = hard_smp_processor_id();
 
@@ -323,9 +380,19 @@ asmlinkage void __cpuinit cpu_init(void)
 	cache_init();
 
 	if (raw_smp_processor_id() == 0) {
+<<<<<<< HEAD
 		shm_align_mask = max_t(unsigned long,
 				       current_cpu_data.dcache.way_size - 1,
 				       PAGE_SIZE - 1);
+=======
+#ifdef CONFIG_MMU
+		shm_align_mask = max_t(unsigned long,
+				       current_cpu_data.dcache.way_size - 1,
+				       PAGE_SIZE - 1);
+#else
+		shm_align_mask = PAGE_SIZE - 1;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Boot CPU sets the cache shape */
 		detect_cache_shape();

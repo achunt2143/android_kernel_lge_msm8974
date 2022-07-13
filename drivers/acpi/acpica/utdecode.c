@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: utdecode - Utility decoding routines (value-to-string)
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -45,10 +50,21 @@
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+#include <acpi/acpi.h>
+#include "accommon.h"
+#include "acnamesp.h"
+#include "amlcode.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_UTILITIES
 ACPI_MODULE_NAME("utdecode")
 
+<<<<<<< HEAD
 /*******************************************************************************
  *
  * FUNCTION:    acpi_format_exception
@@ -84,6 +100,8 @@ const char *acpi_format_exception(acpi_status status)
 
 ACPI_EXPORT_SYMBOL(acpi_format_exception)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Properties of the ACPI Object Types, both internal and external.
  * The table is indexed by values of acpi_object_type
@@ -124,6 +142,7 @@ const u8 acpi_gbl_ns_properties[ACPI_NUM_NS_TYPES] = {
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ut_hex_to_ascii_char
  *
  * PARAMETERS:  Integer             - Contains the hex digit
@@ -151,6 +170,8 @@ char acpi_ut_hex_to_ascii_char(u64 integer, u32 position)
 
 /*******************************************************************************
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FUNCTION:    acpi_ut_get_region_name
  *
  * PARAMETERS:  Space ID            - ID for the region
@@ -164,6 +185,7 @@ char acpi_ut_hex_to_ascii_char(u64 integer, u32 position)
 /* Region type decoding */
 
 const char *acpi_gbl_region_types[ACPI_NUM_PREDEFINED_REGIONS] = {
+<<<<<<< HEAD
 	"SystemMemory",
 	"SystemIO",
 	"PCI_Config",
@@ -177,6 +199,23 @@ const char *acpi_gbl_region_types[ACPI_NUM_PREDEFINED_REGIONS] = {
 };
 
 char *acpi_ut_get_region_name(u8 space_id)
+=======
+	"SystemMemory",		/* 0x00 */
+	"SystemIO",		/* 0x01 */
+	"PCI_Config",		/* 0x02 */
+	"EmbeddedControl",	/* 0x03 */
+	"SMBus",		/* 0x04 */
+	"SystemCMOS",		/* 0x05 */
+	"PCIBARTarget",		/* 0x06 */
+	"IPMI",			/* 0x07 */
+	"GeneralPurposeIo",	/* 0x08 */
+	"GenericSerialBus",	/* 0x09 */
+	"PCC",			/* 0x0A */
+	"PlatformRtMechanism"	/* 0x0B */
+};
+
+const char *acpi_ut_get_region_name(u8 space_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	if (space_id >= ACPI_USER_REGION_BEGIN) {
@@ -189,7 +228,11 @@ char *acpi_ut_get_region_name(u8 space_id)
 		return ("InvalidSpaceId");
 	}
 
+<<<<<<< HEAD
 	return (ACPI_CAST_PTR(char, acpi_gbl_region_types[space_id]));
+=======
+	return (acpi_gbl_region_types[space_id]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
@@ -214,21 +257,33 @@ static const char *acpi_gbl_event_types[ACPI_NUM_FIXED_EVENTS] = {
 	"RealTimeClock",
 };
 
+<<<<<<< HEAD
 char *acpi_ut_get_event_name(u32 event_id)
+=======
+const char *acpi_ut_get_event_name(u32 event_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	if (event_id > ACPI_EVENT_MAX) {
 		return ("InvalidEventID");
 	}
 
+<<<<<<< HEAD
 	return (ACPI_CAST_PTR(char, acpi_gbl_event_types[event_id]));
+=======
+	return (acpi_gbl_event_types[event_id]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_get_type_name
  *
+<<<<<<< HEAD
  * PARAMETERS:  Type                - An ACPI object type
+=======
+ * PARAMETERS:  type                - An ACPI object type
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Decoded ACPI object type name
  *
@@ -242,7 +297,12 @@ char *acpi_ut_get_event_name(u32 event_id)
  *
  * The type ACPI_TYPE_ANY (Untyped) is used as a "don't care" when searching;
  * when stored in a table it really means that we have thus far seen no
+<<<<<<< HEAD
  * evidence to indicate what type is actually going to be stored for this entry.
+=======
+ * evidence to indicate what type is actually going to be stored for this
+ & entry.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static const char acpi_gbl_bad_type[] = "UNDEFINED";
 
@@ -282,6 +342,7 @@ static const char *acpi_gbl_ns_type_names[] = {
 	/* 30 */ "Invalid"
 };
 
+<<<<<<< HEAD
 char *acpi_ut_get_type_name(acpi_object_type type)
 {
 
@@ -300,13 +361,52 @@ char *acpi_ut_get_object_type_name(union acpi_operand_object *obj_desc)
 	}
 
 	return (acpi_ut_get_type_name(obj_desc->common.type));
+=======
+const char *acpi_ut_get_type_name(acpi_object_type type)
+{
+
+	if (type > ACPI_TYPE_INVALID) {
+		return (acpi_gbl_bad_type);
+	}
+
+	return (acpi_gbl_ns_type_names[type]);
+}
+
+const char *acpi_ut_get_object_type_name(union acpi_operand_object *obj_desc)
+{
+	ACPI_FUNCTION_TRACE(ut_get_object_type_name);
+
+	if (!obj_desc) {
+		ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "Null Object Descriptor\n"));
+		return_STR("[NULL Object Descriptor]");
+	}
+
+	/* These descriptor types share a common area */
+
+	if ((ACPI_GET_DESCRIPTOR_TYPE(obj_desc) != ACPI_DESC_TYPE_OPERAND) &&
+	    (ACPI_GET_DESCRIPTOR_TYPE(obj_desc) != ACPI_DESC_TYPE_NAMED)) {
+		ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
+				  "Invalid object descriptor type: 0x%2.2X [%s] (%p)\n",
+				  ACPI_GET_DESCRIPTOR_TYPE(obj_desc),
+				  acpi_ut_get_descriptor_name(obj_desc),
+				  obj_desc));
+
+		return_STR("Invalid object");
+	}
+
+	return_STR(acpi_ut_get_type_name(obj_desc->common.type));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_get_node_name
  *
+<<<<<<< HEAD
  * PARAMETERS:  Object               - A namespace node
+=======
+ * PARAMETERS:  object               - A namespace node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      ASCII name of the node
  *
@@ -314,11 +414,19 @@ char *acpi_ut_get_object_type_name(union acpi_operand_object *obj_desc)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 char *acpi_ut_get_node_name(void *object)
 {
 	struct acpi_namespace_node *node = (struct acpi_namespace_node *)object;
 
 	/* Must return a string of exactly 4 characters == ACPI_NAME_SIZE */
+=======
+const char *acpi_ut_get_node_name(void *object)
+{
+	struct acpi_namespace_node *node = (struct acpi_namespace_node *)object;
+
+	/* Must return a string of exactly 4 characters == ACPI_NAMESEG_SIZE */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!object) {
 		return ("NULL");
@@ -351,7 +459,11 @@ char *acpi_ut_get_node_name(void *object)
  *
  * FUNCTION:    acpi_ut_get_descriptor_name
  *
+<<<<<<< HEAD
  * PARAMETERS:  Object               - An ACPI object
+=======
+ * PARAMETERS:  object               - An ACPI object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Decoded name of the descriptor type
  *
@@ -363,7 +475,11 @@ char *acpi_ut_get_node_name(void *object)
 
 static const char *acpi_gbl_desc_type_names[] = {
 	/* 00 */ "Not a Descriptor",
+<<<<<<< HEAD
 	/* 01 */ "Cached",
+=======
+	/* 01 */ "Cached Object",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 02 */ "State-Generic",
 	/* 03 */ "State-Update",
 	/* 04 */ "State-Package",
@@ -374,6 +490,7 @@ static const char *acpi_gbl_desc_type_names[] = {
 	/* 09 */ "State-Result",
 	/* 10 */ "State-Notify",
 	/* 11 */ "State-Thread",
+<<<<<<< HEAD
 	/* 12 */ "Walk",
 	/* 13 */ "Parser",
 	/* 14 */ "Operand",
@@ -381,6 +498,15 @@ static const char *acpi_gbl_desc_type_names[] = {
 };
 
 char *acpi_ut_get_descriptor_name(void *object)
+=======
+	/* 12 */ "Tree Walk State",
+	/* 13 */ "Parse Tree Op",
+	/* 14 */ "Operand Object",
+	/* 15 */ "Namespace Node"
+};
+
+const char *acpi_ut_get_descriptor_name(void *object)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	if (!object) {
@@ -391,17 +517,25 @@ char *acpi_ut_get_descriptor_name(void *object)
 		return ("Not a Descriptor");
 	}
 
+<<<<<<< HEAD
 	return (ACPI_CAST_PTR(char,
 			      acpi_gbl_desc_type_names[ACPI_GET_DESCRIPTOR_TYPE
 						       (object)]));
 
+=======
+	return (acpi_gbl_desc_type_names[ACPI_GET_DESCRIPTOR_TYPE(object)]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_get_reference_name
  *
+<<<<<<< HEAD
  * PARAMETERS:  Object               - An ACPI reference object
+=======
+ * PARAMETERS:  object               - An ACPI reference object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Decoded name of the type of reference
  *
@@ -443,11 +577,14 @@ const char *acpi_ut_get_reference_name(union acpi_operand_object *object)
 	return (acpi_gbl_ref_class_names[object->reference.class]);
 }
 
+<<<<<<< HEAD
 #if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
 /*
  * Strings and procedures used for debug only
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_get_mutex_name
@@ -462,18 +599,28 @@ const char *acpi_ut_get_reference_name(union acpi_operand_object *object)
 
 /* Names for internal mutex objects, used for debug output */
 
+<<<<<<< HEAD
 static char *acpi_gbl_mutex_names[ACPI_NUM_MUTEX] = {
+=======
+static const char *acpi_gbl_mutex_names[ACPI_NUM_MUTEX] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"ACPI_MTX_Interpreter",
 	"ACPI_MTX_Namespace",
 	"ACPI_MTX_Tables",
 	"ACPI_MTX_Events",
 	"ACPI_MTX_Caches",
 	"ACPI_MTX_Memory",
+<<<<<<< HEAD
 	"ACPI_MTX_CommandComplete",
 	"ACPI_MTX_CommandReady"
 };
 
 char *acpi_ut_get_mutex_name(u32 mutex_id)
+=======
+};
+
+const char *acpi_ut_get_mutex_name(u32 mutex_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	if (mutex_id > ACPI_MAX_MUTEX) {
@@ -483,6 +630,15 @@ char *acpi_ut_get_mutex_name(u32 mutex_id)
 	return (acpi_gbl_mutex_names[mutex_id]);
 }
 
+<<<<<<< HEAD
+=======
+#if defined(ACPI_DEBUG_OUTPUT) || defined(ACPI_DEBUGGER)
+
+/*
+ * Strings and procedures used for debug only
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_get_notify_name
@@ -497,7 +653,11 @@ char *acpi_ut_get_mutex_name(u32 mutex_id)
 
 /* Names for Notify() values, used for debug output */
 
+<<<<<<< HEAD
 static const char *acpi_gbl_notify_value_names[ACPI_NOTIFY_MAX + 1] = {
+=======
+static const char *acpi_gbl_generic_notify[ACPI_GENERIC_NOTIFY_MAX + 1] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 00 */ "Bus Check",
 	/* 01 */ "Device Check",
 	/* 02 */ "Device Wake",
@@ -508,6 +668,7 @@ static const char *acpi_gbl_notify_value_names[ACPI_NOTIFY_MAX + 1] = {
 	/* 07 */ "Power Fault",
 	/* 08 */ "Capabilities Check",
 	/* 09 */ "Device PLD Check",
+<<<<<<< HEAD
 	/* 10 */ "Reserved",
 	/* 11 */ "System Locality Update",
 	/* 12 */ "Shutdown Request"
@@ -526,13 +687,146 @@ const char *acpi_ut_get_notify_name(u32 notify_value)
 		return ("Hardware Specific");
 	}
 }
+=======
+	/* 0A */ "Reserved",
+	/* 0B */ "System Locality Update",
+								/* 0C */ "Reserved (was previously Shutdown Request)",
+								/* Reserved in ACPI 6.0 */
+	/* 0D */ "System Resource Affinity Update",
+								/* 0E */ "Heterogeneous Memory Attributes Update",
+								/* ACPI 6.2 */
+						/* 0F */ "Error Disconnect Recover"
+						/* ACPI 6.3 */
+};
+
+static const char *acpi_gbl_device_notify[5] = {
+	/* 80 */ "Status Change",
+	/* 81 */ "Information Change",
+	/* 82 */ "Device-Specific Change",
+	/* 83 */ "Device-Specific Change",
+	/* 84 */ "Reserved"
+};
+
+static const char *acpi_gbl_processor_notify[5] = {
+	/* 80 */ "Performance Capability Change",
+	/* 81 */ "C-State Change",
+	/* 82 */ "Throttling Capability Change",
+	/* 83 */ "Guaranteed Change",
+	/* 84 */ "Minimum Excursion"
+};
+
+static const char *acpi_gbl_thermal_notify[5] = {
+	/* 80 */ "Thermal Status Change",
+	/* 81 */ "Thermal Trip Point Change",
+	/* 82 */ "Thermal Device List Change",
+	/* 83 */ "Thermal Relationship Change",
+	/* 84 */ "Reserved"
+};
+
+const char *acpi_ut_get_notify_name(u32 notify_value, acpi_object_type type)
+{
+
+	/* 00 - 0F are "common to all object types" (from ACPI Spec) */
+
+	if (notify_value <= ACPI_GENERIC_NOTIFY_MAX) {
+		return (acpi_gbl_generic_notify[notify_value]);
+	}
+
+	/* 10 - 7F are reserved */
+
+	if (notify_value <= ACPI_MAX_SYS_NOTIFY) {
+		return ("Reserved");
+	}
+
+	/* 80 - 84 are per-object-type */
+
+	if (notify_value <= ACPI_SPECIFIC_NOTIFY_MAX) {
+		switch (type) {
+		case ACPI_TYPE_ANY:
+		case ACPI_TYPE_DEVICE:
+			return (acpi_gbl_device_notify[notify_value - 0x80]);
+
+		case ACPI_TYPE_PROCESSOR:
+			return (acpi_gbl_processor_notify[notify_value - 0x80]);
+
+		case ACPI_TYPE_THERMAL:
+			return (acpi_gbl_thermal_notify[notify_value - 0x80]);
+
+		default:
+			return ("Target object type does not support notifies");
+		}
+	}
+
+	/* 84 - BF are device-specific */
+
+	if (notify_value <= ACPI_MAX_DEVICE_SPECIFIC_NOTIFY) {
+		return ("Device-Specific");
+	}
+
+	/* C0 and above are hardware-specific */
+
+	return ("Hardware-Specific");
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_ut_get_argument_type_name
+ *
+ * PARAMETERS:  arg_type            - an ARGP_* parser argument type
+ *
+ * RETURN:      Decoded ARGP_* type
+ *
+ * DESCRIPTION: Decode an ARGP_* parser type, as defined in the amlcode.h file,
+ *              and used in the acopcode.h file. For example, ARGP_TERMARG.
+ *              Used for debug only.
+ *
+ ******************************************************************************/
+
+static const char *acpi_gbl_argument_type[20] = {
+	/* 00 */ "Unknown ARGP",
+	/* 01 */ "ByteData",
+	/* 02 */ "ByteList",
+	/* 03 */ "CharList",
+	/* 04 */ "DataObject",
+	/* 05 */ "DataObjectList",
+	/* 06 */ "DWordData",
+	/* 07 */ "FieldList",
+	/* 08 */ "Name",
+	/* 09 */ "NameString",
+	/* 0A */ "ObjectList",
+	/* 0B */ "PackageLength",
+	/* 0C */ "SuperName",
+	/* 0D */ "Target",
+	/* 0E */ "TermArg",
+	/* 0F */ "TermList",
+	/* 10 */ "WordData",
+	/* 11 */ "QWordData",
+	/* 12 */ "SimpleName",
+	/* 13 */ "NameOrRef"
+};
+
+const char *acpi_ut_get_argument_type_name(u32 arg_type)
+{
+
+	if (arg_type > ARGP_MAX) {
+		return ("Unknown ARGP");
+	}
+
+	return (acpi_gbl_argument_type[arg_type]);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_valid_object_type
  *
+<<<<<<< HEAD
  * PARAMETERS:  Type            - Object type to be validated
+=======
+ * PARAMETERS:  type            - Object type to be validated
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      TRUE if valid object type, FALSE otherwise
  *

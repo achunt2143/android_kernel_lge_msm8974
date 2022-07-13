@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 	IEEE 802.1Q GARP VLAN Registration Protocol (GVRP)
  *
  * 	Copyright (c) 2008 Patrick McHardy <kaber@trash.net>
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	version 2 as published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/types.h>
 #include <linux/if_vlan.h>
@@ -32,6 +39,11 @@ int vlan_gvrp_request_join(const struct net_device *dev)
 	const struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
 	__be16 vlan_id = htons(vlan->vlan_id);
 
+<<<<<<< HEAD
+=======
+	if (vlan->vlan_proto != htons(ETH_P_8021Q))
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return garp_request_join(vlan->real_dev, &vlan_gvrp_app,
 				 &vlan_id, sizeof(vlan_id), GVRP_ATTR_VID);
 }
@@ -41,6 +53,11 @@ void vlan_gvrp_request_leave(const struct net_device *dev)
 	const struct vlan_dev_priv *vlan = vlan_dev_priv(dev);
 	__be16 vlan_id = htons(vlan->vlan_id);
 
+<<<<<<< HEAD
+=======
+	if (vlan->vlan_proto != htons(ETH_P_8021Q))
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	garp_request_leave(vlan->real_dev, &vlan_gvrp_app,
 			   &vlan_id, sizeof(vlan_id), GVRP_ATTR_VID);
 }

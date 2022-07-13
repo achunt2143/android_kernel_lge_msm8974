@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Aic94xx SAS/SATA driver initialization.
  *
  * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
  * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
+<<<<<<< HEAD
  *
  * This file is licensed under GPLv2.
  *
@@ -22,6 +27,8 @@
  * along with the aic94xx driver; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -49,6 +56,7 @@ MODULE_PARM_DESC(use_msi, "\n"
 	"\tEnable(1) or disable(0) using PCI MSI.\n"
 	"\tDefault: 0");
 
+<<<<<<< HEAD
 static int lldd_max_execute_num = 0;
 module_param_named(collector, lldd_max_execute_num, int, S_IRUGO);
 MODULE_PARM_DESC(collector, "\n"
@@ -57,20 +65,31 @@ MODULE_PARM_DESC(collector, "\n"
 	"\tThe aic94xx SAS LLDD supports both modes.\n"
 	"\tDefault: 0 (Direct Mode).\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct scsi_transport_template *aic94xx_transport_template;
 static int asd_scan_finished(struct Scsi_Host *, unsigned long);
 static void asd_scan_start(struct Scsi_Host *);
 
+<<<<<<< HEAD
 static struct scsi_host_template aic94xx_sht = {
+=======
+static const struct scsi_host_template aic94xx_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module			= THIS_MODULE,
 	/* .name is initialized */
 	.name			= "aic94xx",
 	.queuecommand		= sas_queuecommand,
+<<<<<<< HEAD
+=======
+	.dma_need_drain		= ata_scsi_dma_need_drain,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.target_alloc		= sas_target_alloc,
 	.slave_configure	= sas_slave_configure,
 	.scan_finished		= asd_scan_finished,
 	.scan_start		= asd_scan_start,
 	.change_queue_depth	= sas_change_queue_depth,
+<<<<<<< HEAD
 	.change_queue_type	= sas_change_queue_type,
 	.bios_param		= sas_bios_param,
 	.can_queue		= 1,
@@ -86,6 +105,25 @@ static struct scsi_host_template aic94xx_sht = {
 };
 
 static int __devinit asd_map_memio(struct asd_ha_struct *asd_ha)
+=======
+	.bios_param		= sas_bios_param,
+	.can_queue		= 1,
+	.this_id		= -1,
+	.sg_tablesize		= SG_ALL,
+	.max_sectors		= SCSI_DEFAULT_MAX_SECTORS,
+	.eh_device_reset_handler	= sas_eh_device_reset_handler,
+	.eh_target_reset_handler	= sas_eh_target_reset_handler,
+	.slave_alloc		= sas_slave_alloc,
+	.target_destroy		= sas_target_destroy,
+	.ioctl			= sas_ioctl,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl		= sas_ioctl,
+#endif
+	.track_queue_depth	= 1,
+};
+
+static int asd_map_memio(struct asd_ha_struct *asd_ha)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err, i;
 	struct asd_ha_addrspace *io_handle;
@@ -108,6 +146,7 @@ static int __devinit asd_map_memio(struct asd_ha_struct *asd_ha)
 				   pci_name(asd_ha->pcidev));
 			goto Err;
 		}
+<<<<<<< HEAD
 		if (io_handle->flags & IORESOURCE_CACHEABLE)
 			io_handle->addr = ioremap(io_handle->start,
 						  io_handle->len);
@@ -117,6 +156,13 @@ static int __devinit asd_map_memio(struct asd_ha_struct *asd_ha)
 		if (!io_handle->addr) {
 			asd_printk("couldn't map MBAR%d of %s\n", i==0?0:1,
 				   pci_name(asd_ha->pcidev));
+=======
+		io_handle->addr = ioremap(io_handle->start, io_handle->len);
+		if (!io_handle->addr) {
+			asd_printk("couldn't map MBAR%d of %s\n", i==0?0:1,
+				   pci_name(asd_ha->pcidev));
+			err = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto Err_unreq;
 		}
 	}
@@ -146,7 +192,11 @@ static void asd_unmap_memio(struct asd_ha_struct *asd_ha)
 	pci_release_region(asd_ha->pcidev, 0);
 }
 
+<<<<<<< HEAD
 static int __devinit asd_map_ioport(struct asd_ha_struct *asd_ha)
+=======
+static int asd_map_ioport(struct asd_ha_struct *asd_ha)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i = PCI_IOBAR_OFFSET, err;
 	struct asd_ha_addrspace *io_handle = &asd_ha->io_handle[0];
@@ -175,7 +225,11 @@ static void asd_unmap_ioport(struct asd_ha_struct *asd_ha)
 	pci_release_region(asd_ha->pcidev, PCI_IOBAR_OFFSET);
 }
 
+<<<<<<< HEAD
 static int __devinit asd_map_ha(struct asd_ha_struct *asd_ha)
+=======
+static int asd_map_ha(struct asd_ha_struct *asd_ha)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	u16 cmd_reg;
@@ -221,7 +275,11 @@ static const char *asd_dev_rev[30] = {
 	[8] = "B0",
 };
 
+<<<<<<< HEAD
 static int __devinit asd_common_setup(struct asd_ha_struct *asd_ha)
+=======
+static int asd_common_setup(struct asd_ha_struct *asd_ha)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err, i;
 
@@ -257,7 +315,11 @@ Err:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devinit asd_aic9410_setup(struct asd_ha_struct *asd_ha)
+=======
+static int asd_aic9410_setup(struct asd_ha_struct *asd_ha)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = asd_common_setup(asd_ha);
 
@@ -272,7 +334,11 @@ static int __devinit asd_aic9410_setup(struct asd_ha_struct *asd_ha)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit asd_aic9405_setup(struct asd_ha_struct *asd_ha)
+=======
+static int asd_aic9405_setup(struct asd_ha_struct *asd_ha)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = asd_common_setup(asd_ha);
 
@@ -294,7 +360,11 @@ static ssize_t asd_show_dev_rev(struct device *dev,
 	return snprintf(buf, PAGE_SIZE, "%s\n",
 			asd_dev_rev[asd_ha->revision_id]);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(revision, S_IRUGO, asd_show_dev_rev, NULL);
+=======
+static DEVICE_ATTR(aic_revision, S_IRUGO, asd_show_dev_rev, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t asd_show_dev_bios_build(struct device *dev,
 				       struct device_attribute *attr,char *buf)
@@ -363,7 +433,11 @@ static ssize_t asd_store_update_bios(struct device *dev,
 	int flash_command = FLASH_CMD_NONE;
 	int err = 0;
 
+<<<<<<< HEAD
 	cmd_ptr = kzalloc(count*2, GFP_KERNEL);
+=======
+	cmd_ptr = kcalloc(count, 2, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!cmd_ptr) {
 		err = FAIL_OUT_MEMORY;
@@ -491,7 +565,11 @@ static int asd_create_dev_attrs(struct asd_ha_struct *asd_ha)
 {
 	int err;
 
+<<<<<<< HEAD
 	err = device_create_file(&asd_ha->pcidev->dev, &dev_attr_revision);
+=======
+	err = device_create_file(&asd_ha->pcidev->dev, &dev_attr_aic_revision);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -513,13 +591,21 @@ err_update_bios:
 err_biosb:
 	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_bios_build);
 err_rev:
+<<<<<<< HEAD
 	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_revision);
+=======
+	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_aic_revision);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static void asd_remove_dev_attrs(struct asd_ha_struct *asd_ha)
 {
+<<<<<<< HEAD
 	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_revision);
+=======
+	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_aic_revision);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_bios_build);
 	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_pcba_sn);
 	device_remove_file(&asd_ha->pcidev->dev, &dev_attr_update_bios);
@@ -531,7 +617,11 @@ static void asd_remove_dev_attrs(struct asd_ha_struct *asd_ha)
 static const struct asd_pcidev_struct {
 	const char * name;
 	int (*setup)(struct asd_ha_struct *asd_ha);
+<<<<<<< HEAD
 } asd_pcidev_data[] __devinitconst = {
+=======
+} asd_pcidev_data[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Id 0 is used for dynamic ids. */
 	{ .name  = "Adaptec AIC-94xx SAS/SATA Host Adapter",
 	  .setup = asd_aic9410_setup
@@ -558,7 +648,11 @@ static int asd_create_ha_caches(struct asd_ha_struct *asd_ha)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * asd_free_edbs -- free empty data buffers
  * asd_ha: pointer to host adapter structure
  */
@@ -597,8 +691,12 @@ static void asd_destroy_ha_caches(struct asd_ha_struct *asd_ha)
 	if (asd_ha->hw_prof.scb_ext)
 		asd_free_coherent(asd_ha, asd_ha->hw_prof.scb_ext);
 
+<<<<<<< HEAD
 	if (asd_ha->hw_prof.ddb_bitmap)
 		kfree(asd_ha->hw_prof.ddb_bitmap);
+=======
+	kfree(asd_ha->hw_prof.ddb_bitmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asd_ha->hw_prof.ddb_bitmap = NULL;
 
 	for (i = 0; i < ASD_MAX_PHYS; i++) {
@@ -673,12 +771,19 @@ Err:
 
 static void asd_destroy_global_caches(void)
 {
+<<<<<<< HEAD
 	if (asd_dma_token_cache)
 		kmem_cache_destroy(asd_dma_token_cache);
 	asd_dma_token_cache = NULL;
 
 	if (asd_ascb_cache)
 		kmem_cache_destroy(asd_ascb_cache);
+=======
+	kmem_cache_destroy(asd_dma_token_cache);
+	asd_dma_token_cache = NULL;
+
+	kmem_cache_destroy(asd_ascb_cache);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asd_ascb_cache = NULL;
 }
 
@@ -697,7 +802,10 @@ static int asd_register_sas_ha(struct asd_ha_struct *asd_ha)
 	}
 
 	asd_ha->sas_ha.sas_ha_name = (char *) asd_ha->name;
+<<<<<<< HEAD
 	asd_ha->sas_ha.lldd_module = THIS_MODULE;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	asd_ha->sas_ha.sas_addr = &asd_ha->hw_prof.sas_addr[0];
 
 	for (i = 0; i < ASD_MAX_PHYS; i++) {
@@ -709,9 +817,12 @@ static int asd_register_sas_ha(struct asd_ha_struct *asd_ha)
 	asd_ha->sas_ha.sas_port= sas_ports;
 	asd_ha->sas_ha.num_phys= ASD_MAX_PHYS;
 
+<<<<<<< HEAD
 	asd_ha->sas_ha.lldd_queue_size = asd_ha->seq.can_queue;
 	asd_ha->sas_ha.lldd_max_execute_num = lldd_max_execute_num;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sas_register_ha(&asd_ha->sas_ha);
 }
 
@@ -721,9 +832,14 @@ static int asd_unregister_sas_ha(struct asd_ha_struct *asd_ha)
 
 	err = sas_unregister_ha(&asd_ha->sas_ha);
 
+<<<<<<< HEAD
 	sas_remove_host(asd_ha->sas_ha.core.shost);
 	scsi_remove_host(asd_ha->sas_ha.core.shost);
 	scsi_host_put(asd_ha->sas_ha.core.shost);
+=======
+	sas_remove_host(asd_ha->sas_ha.shost);
+	scsi_host_put(asd_ha->sas_ha.shost);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(asd_ha->sas_ha.sas_phy);
 	kfree(asd_ha->sas_ha.sas_port);
@@ -731,8 +847,12 @@ static int asd_unregister_sas_ha(struct asd_ha_struct *asd_ha)
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devinit asd_pci_probe(struct pci_dev *dev,
 				   const struct pci_device_id *id)
+=======
+static int asd_pci_probe(struct pci_dev *dev, const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct asd_pcidev_struct *asd_dev;
 	unsigned asd_id = (unsigned) id->driver_data;
@@ -774,7 +894,11 @@ static int __devinit asd_pci_probe(struct pci_dev *dev,
 	asd_printk("found %s, device %s\n", asd_ha->name, pci_name(dev));
 
 	SHOST_TO_SAS_HA(shost) = &asd_ha->sas_ha;
+<<<<<<< HEAD
 	asd_ha->sas_ha.core.shost = shost;
+=======
+	asd_ha->sas_ha.shost = shost;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	shost->transportt = aic94xx_transport_template;
 	shost->max_id = ~0;
 	shost->max_lun = ~0;
@@ -788,6 +912,7 @@ static int __devinit asd_pci_probe(struct pci_dev *dev,
 	if (err)
 		goto Err_remove;
 
+<<<<<<< HEAD
 	err = -ENODEV;
 	if (!pci_set_dma_mask(dev, DMA_BIT_MASK(64))
 	    && !pci_set_consistent_dma_mask(dev, DMA_BIT_MASK(64)))
@@ -796,6 +921,13 @@ static int __devinit asd_pci_probe(struct pci_dev *dev,
 		 && !pci_set_consistent_dma_mask(dev, DMA_BIT_MASK(32)))
 		;
 	else {
+=======
+	err = dma_set_mask_and_coherent(&dev->dev, DMA_BIT_MASK(64));
+	if (err)
+		err = dma_set_mask_and_coherent(&dev->dev, DMA_BIT_MASK(32));
+	if (err) {
+		err = -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		asd_printk("no suitable DMA mask for %s\n", pci_name(dev));
 		goto Err_remove;
 	}
@@ -924,7 +1056,11 @@ static void asd_turn_off_leds(struct asd_ha_struct *asd_ha)
 	}
 }
 
+<<<<<<< HEAD
 static void __devexit asd_pci_remove(struct pci_dev *dev)
+=======
+static void asd_pci_remove(struct pci_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asd_ha_struct *asd_ha = pci_get_drvdata(dev);
 
@@ -974,11 +1110,19 @@ static int asd_scan_finished(struct Scsi_Host *shost, unsigned long time)
 	return 1;
 }
 
+<<<<<<< HEAD
 static ssize_t asd_version_show(struct device_driver *driver, char *buf)
 {
 	return snprintf(buf, PAGE_SIZE, "%s\n", ASD_DRIVER_VERSION);
 }
 static DRIVER_ATTR(version, S_IRUGO, asd_version_show, NULL);
+=======
+static ssize_t version_show(struct device_driver *driver, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%s\n", ASD_DRIVER_VERSION);
+}
+static DRIVER_ATTR_RO(version);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int asd_create_driver_attrs(struct device_driver *driver)
 {
@@ -998,7 +1142,10 @@ static struct sas_domain_function_template aic94xx_transport_functions = {
 
 	.lldd_abort_task	= asd_abort_task,
 	.lldd_abort_task_set	= asd_abort_task_set,
+<<<<<<< HEAD
 	.lldd_clear_aca		= asd_clear_aca,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.lldd_clear_task_set	= asd_clear_task_set,
 	.lldd_I_T_nexus_reset	= asd_I_T_nexus_reset,
 	.lldd_lu_reset		= asd_lu_reset,
@@ -1012,7 +1159,11 @@ static struct sas_domain_function_template aic94xx_transport_functions = {
 	.lldd_ata_set_dmamode	= asd_set_dmamode,
 };
 
+<<<<<<< HEAD
 static const struct pci_device_id aic94xx_pci_table[] __devinitdata = {
+=======
+static const struct pci_device_id aic94xx_pci_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_DEVICE(PCI_VENDOR_ID_ADAPTEC2, 0x410),0, 0, 1},
 	{PCI_DEVICE(PCI_VENDOR_ID_ADAPTEC2, 0x412),0, 0, 1},
 	{PCI_DEVICE(PCI_VENDOR_ID_ADAPTEC2, 0x416),0, 0, 1},
@@ -1031,7 +1182,11 @@ static struct pci_driver aic94xx_pci_driver = {
 	.name		= ASD_DRIVER_NAME,
 	.id_table	= aic94xx_pci_table,
 	.probe		= asd_pci_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(asd_pci_remove),
+=======
+	.remove		= asd_pci_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init aic94xx_init(void)
@@ -1048,8 +1203,15 @@ static int __init aic94xx_init(void)
 
 	aic94xx_transport_template =
 		sas_domain_attach_transport(&aic94xx_transport_functions);
+<<<<<<< HEAD
 	if (!aic94xx_transport_template)
 		goto out_destroy_caches;
+=======
+	if (!aic94xx_transport_template) {
+		err = -ENOMEM;
+		goto out_destroy_caches;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = pci_register_driver(&aic94xx_pci_driver);
 	if (err)

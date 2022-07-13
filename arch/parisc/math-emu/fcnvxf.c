@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux/PA-RISC Project (http://www.parisc-linux.org/)
  *
  * Floating-point emulation code
  *  Copyright (C) 2001 Hewlett-Packard (Paul Bame) <bame@debian.org>
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * BEGIN_DESC
@@ -31,10 +38,17 @@
  *	Double Fixed-point to Double Floating-point 
  *
  *  External Interfaces:
+<<<<<<< HEAD
  *	dbl_to_dbl_fcnvxf(srcptr,nullptr,dstptr,status)
  *	dbl_to_sgl_fcnvxf(srcptr,nullptr,dstptr,status)
  *	sgl_to_dbl_fcnvxf(srcptr,nullptr,dstptr,status)
  *	sgl_to_sgl_fcnvxf(srcptr,nullptr,dstptr,status)
+=======
+ *	dbl_to_dbl_fcnvxf(srcptr,_nullptr,dstptr,status)
+ *	dbl_to_sgl_fcnvxf(srcptr,_nullptr,dstptr,status)
+ *	sgl_to_dbl_fcnvxf(srcptr,_nullptr,dstptr,status)
+ *	sgl_to_sgl_fcnvxf(srcptr,_nullptr,dstptr,status)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Internal Interfaces:
  *
@@ -57,7 +71,11 @@
 int
 sgl_to_sgl_fcnvxf(
 		    int *srcptr,
+<<<<<<< HEAD
 		    unsigned int *nullptr,
+=======
+		    unsigned int *_nullptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    sgl_floating_point *dstptr,
 		    unsigned int *status)
 {
@@ -128,7 +146,11 @@ sgl_to_sgl_fcnvxf(
 int
 sgl_to_dbl_fcnvxf(
 		    int *srcptr,
+<<<<<<< HEAD
 		    unsigned int *nullptr,
+=======
+		    unsigned int *_nullptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    dbl_floating_point *dstptr,
 		    unsigned int *status)
 {
@@ -179,7 +201,11 @@ sgl_to_dbl_fcnvxf(
 int
 dbl_to_sgl_fcnvxf(
 			dbl_integer *srcptr,
+<<<<<<< HEAD
 			unsigned int *nullptr,
+=======
+			unsigned int *_nullptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sgl_floating_point *dstptr,
 			unsigned int *status)
 {
@@ -284,7 +310,11 @@ dbl_to_sgl_fcnvxf(
 int
 dbl_to_dbl_fcnvxf(
 		    dbl_integer *srcptr,
+<<<<<<< HEAD
 		    unsigned int *nullptr,
+=======
+		    unsigned int *_nullptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    dbl_floating_point *dstptr,
 		    unsigned int *status)
 {

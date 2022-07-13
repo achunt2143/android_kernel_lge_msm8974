@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* OLPC machine specific definitions */
 
 #ifndef _ASM_X86_OLPC_H
@@ -8,12 +12,18 @@
 struct olpc_platform_t {
 	int flags;
 	uint32_t boardrev;
+<<<<<<< HEAD
 	int ecver;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define OLPC_F_PRESENT		0x01
 #define OLPC_F_DCON		0x02
+<<<<<<< HEAD
 #define OLPC_F_EC_WIDE_SCI	0x04
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_OLPC
 
@@ -63,6 +73,7 @@ static inline int olpc_board_at_least(uint32_t rev)
 	return olpc_platform_info.boardrev >= rev;
 }
 
+<<<<<<< HEAD
 extern void olpc_ec_wakeup_set(u16 value);
 extern void olpc_ec_wakeup_clear(u16 value);
 extern bool olpc_ec_wakeup_available(void);
@@ -70,6 +81,8 @@ extern bool olpc_ec_wakeup_available(void);
 extern int olpc_ec_mask_write(u16 bits);
 extern int olpc_ec_sci_query(u16 *sci_value);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 
 static inline int machine_is_olpc(void)
@@ -82,6 +95,7 @@ static inline int olpc_has_dcon(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void olpc_ec_wakeup_set(u16 value) { }
 static inline void olpc_ec_wakeup_clear(u16 value) { }
 
@@ -90,6 +104,8 @@ static inline bool olpc_ec_wakeup_available(void)
 	return false;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_OLPC_XO1_PM
@@ -100,6 +116,7 @@ extern void olpc_xo1_pm_wakeup_clear(u16 value);
 
 extern int pci_olpc_init(void);
 
+<<<<<<< HEAD
 /* EC related functions */
 
 extern int olpc_ec_cmd(unsigned char cmd, unsigned char *inbuf, size_t inlen,
@@ -133,6 +150,8 @@ extern int olpc_ec_cmd(unsigned char cmd, unsigned char *inbuf, size_t inlen,
 #define EC_SCI_SRC_GPWAKE	0x100	/* XO-1.5 only */
 #define EC_SCI_SRC_ALL		0x1FF
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* GPIO assignments */
 
 #define OLPC_GPIO_MIC_AC	1

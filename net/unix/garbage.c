@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NET3:	Garbage Collector For AF_UNIX sockets
  *
  * Garbage Collector:
  *	Copyright (C) Barak A. Pearlmutter.
+<<<<<<< HEAD
  *	Released under the GPL version 2 or later.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Chopped about by Alan Cox 22/3/96 to make it fit the AF_UNIX socket problem.
  * If it doesn't work blame me, it worked when Barak sent it.
@@ -24,11 +31,14 @@
  *
  *  - don't just push entire root set; process in place
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Fixes:
  *	Alan Cox	07 Sept	1997	Vmalloc internal stack as needed.
  *					Cope with changing max_files.
@@ -86,6 +96,7 @@
 #include <net/scm.h>
 #include <net/tcp_states.h>
 
+<<<<<<< HEAD
 /* Internal data structures and random procedures: */
 
 static LIST_HEAD(gc_inflight_list);
@@ -156,6 +167,80 @@ void unix_notinflight(struct user_struct *user, struct file *fp)
 		unix_tot_inflight--;
 	}
 	user->unix_inflight--;
+=======
+struct unix_sock *unix_get_socket(struct file *filp)
+{
+	struct inode *inode = file_inode(filp);
+
+	/* Socket ? */
+	if (S_ISSOCK(inode->i_mode) && !(filp->f_mode & FMODE_PATH)) {
+		struct socket *sock = SOCKET_I(inode);
+		const struct proto_ops *ops;
+		struct sock *sk = sock->sk;
+
+		ops = READ_ONCE(sock->ops);
+
+		/* PF_UNIX ? */
+		if (sk && ops && ops->family == PF_UNIX)
+			return unix_sk(sk);
+	}
+
+	return NULL;
+}
+
+DEFINE_SPINLOCK(unix_gc_lock);
+unsigned int unix_tot_inflight;
+static LIST_HEAD(gc_candidates);
+static LIST_HEAD(gc_inflight_list);
+
+/* Keep the number of times in flight count for the file
+ * descriptor if it is for an AF_UNIX socket.
+ */
+void unix_inflight(struct user_struct *user, struct file *filp)
+{
+	struct unix_sock *u = unix_get_socket(filp);
+
+	spin_lock(&unix_gc_lock);
+
+	if (u) {
+		if (!u->inflight) {
+			WARN_ON_ONCE(!list_empty(&u->link));
+			list_add_tail(&u->link, &gc_inflight_list);
+		} else {
+			WARN_ON_ONCE(list_empty(&u->link));
+		}
+		u->inflight++;
+
+		/* Paired with READ_ONCE() in wait_for_unix_gc() */
+		WRITE_ONCE(unix_tot_inflight, unix_tot_inflight + 1);
+	}
+
+	WRITE_ONCE(user->unix_inflight, user->unix_inflight + 1);
+
+	spin_unlock(&unix_gc_lock);
+}
+
+void unix_notinflight(struct user_struct *user, struct file *filp)
+{
+	struct unix_sock *u = unix_get_socket(filp);
+
+	spin_lock(&unix_gc_lock);
+
+	if (u) {
+		WARN_ON_ONCE(!u->inflight);
+		WARN_ON_ONCE(list_empty(&u->link));
+
+		u->inflight--;
+		if (!u->inflight)
+			list_del_init(&u->link);
+
+		/* Paired with READ_ONCE() in wait_for_unix_gc() */
+		WRITE_ONCE(unix_tot_inflight, unix_tot_inflight - 1);
+	}
+
+	WRITE_ONCE(user->unix_inflight, user->unix_inflight - 1);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&unix_gc_lock);
 }
 
@@ -167,6 +252,7 @@ static void scan_inflight(struct sock *x, void (*func)(struct unix_sock *),
 
 	spin_lock(&x->sk_receive_queue.lock);
 	skb_queue_walk_safe(&x->sk_receive_queue, skb, next) {
+<<<<<<< HEAD
 		/*
 		 *	Do we have file descriptors ?
 		 */
@@ -195,6 +281,26 @@ static void scan_inflight(struct sock *x, void (*func)(struct unix_sock *),
 						hit = true;
 						func(u);
 					}
+=======
+		/* Do we have file descriptors ? */
+		if (UNIXCB(skb).fp) {
+			bool hit = false;
+			/* Process the descriptors of this socket */
+			int nfd = UNIXCB(skb).fp->count;
+			struct file **fp = UNIXCB(skb).fp->fp;
+
+			while (nfd--) {
+				/* Get the socket the fd matches if it indeed does so */
+				struct unix_sock *u = unix_get_socket(*fp++);
+
+				/* Ignore non-candidates, they could have been added
+				 * to the queues after starting the garbage collection
+				 */
+				if (u && test_bit(UNIX_GC_CANDIDATE, &u->gc_flags)) {
+					hit = true;
+
+					func(u);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 			if (hit && hitlist != NULL) {
@@ -209,27 +315,44 @@ static void scan_inflight(struct sock *x, void (*func)(struct unix_sock *),
 static void scan_children(struct sock *x, void (*func)(struct unix_sock *),
 			  struct sk_buff_head *hitlist)
 {
+<<<<<<< HEAD
 	if (x->sk_state != TCP_LISTEN)
 		scan_inflight(x, func, hitlist);
 	else {
+=======
+	if (x->sk_state != TCP_LISTEN) {
+		scan_inflight(x, func, hitlist);
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct sk_buff *skb;
 		struct sk_buff *next;
 		struct unix_sock *u;
 		LIST_HEAD(embryos);
 
+<<<<<<< HEAD
 		/*
 		 * For a listening socket collect the queued embryos
+=======
+		/* For a listening socket collect the queued embryos
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * and perform a scan on them as well.
 		 */
 		spin_lock(&x->sk_receive_queue.lock);
 		skb_queue_walk_safe(&x->sk_receive_queue, skb, next) {
 			u = unix_sk(skb->sk);
 
+<<<<<<< HEAD
 			/*
 			 * An embryo cannot be in-flight, so it's safe
 			 * to use the list link.
 			 */
 			BUG_ON(!list_empty(&u->link));
+=======
+			/* An embryo cannot be in-flight, so it's safe
+			 * to use the list link.
+			 */
+			WARN_ON_ONCE(!list_empty(&u->link));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_add_tail(&u->link, &embryos);
 		}
 		spin_unlock(&x->sk_receive_queue.lock);
@@ -244,19 +367,33 @@ static void scan_children(struct sock *x, void (*func)(struct unix_sock *),
 
 static void dec_inflight(struct unix_sock *usk)
 {
+<<<<<<< HEAD
 	atomic_long_dec(&usk->inflight);
+=======
+	usk->inflight--;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void inc_inflight(struct unix_sock *usk)
 {
+<<<<<<< HEAD
 	atomic_long_inc(&usk->inflight);
+=======
+	usk->inflight++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void inc_inflight_move_tail(struct unix_sock *u)
 {
+<<<<<<< HEAD
 	atomic_long_inc(&u->inflight);
 	/*
 	 * If this still might be part of a cycle, move it to the end
+=======
+	u->inflight++;
+
+	/* If this still might be part of a cycle, move it to the end
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * of the list, so that it's checked even if it was already
 	 * passed over
 	 */
@@ -264,6 +401,7 @@ static void inc_inflight_move_tail(struct unix_sock *u)
 		list_move_tail(&u->link, &gc_candidates);
 }
 
+<<<<<<< HEAD
 static bool gc_in_progress = false;
 #define UNIX_INFLIGHT_TRIGGER_GC 16000
 
@@ -296,6 +434,20 @@ void unix_gc(void)
 	gc_in_progress = true;
 	/*
 	 * First, select candidates for garbage collection.  Only
+=======
+static bool gc_in_progress;
+
+static void __unix_gc(struct work_struct *work)
+{
+	struct sk_buff_head hitlist;
+	struct unix_sock *u, *next;
+	LIST_HEAD(not_cycle_list);
+	struct list_head cursor;
+
+	spin_lock(&unix_gc_lock);
+
+	/* First, select candidates for garbage collection.  Only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * in-flight sockets are considered, and from those only ones
 	 * which don't have any external reference.
 	 *
@@ -309,6 +461,7 @@ void unix_gc(void)
 	 * receive queues.  Other, non candidate sockets _can_ be
 	 * added to queue, so we must make sure only to touch
 	 * candidates.
+<<<<<<< HEAD
 	 */
 	list_for_each_entry_safe(u, next, &gc_inflight_list, link) {
 		long total_refs;
@@ -328,13 +481,51 @@ void unix_gc(void)
 
 	/*
 	 * Now remove all internal in-flight reference to children of
+=======
+	 *
+	 * Embryos, though never candidates themselves, affect which
+	 * candidates are reachable by the garbage collector.  Before
+	 * being added to a listener's queue, an embryo may already
+	 * receive data carrying SCM_RIGHTS, potentially making the
+	 * passed socket a candidate that is not yet reachable by the
+	 * collector.  It becomes reachable once the embryo is
+	 * enqueued.  Therefore, we must ensure that no SCM-laden
+	 * embryo appears in a (candidate) listener's queue between
+	 * consecutive scan_children() calls.
+	 */
+	list_for_each_entry_safe(u, next, &gc_inflight_list, link) {
+		struct sock *sk = &u->sk;
+		long total_refs;
+
+		total_refs = file_count(sk->sk_socket->file);
+
+		WARN_ON_ONCE(!u->inflight);
+		WARN_ON_ONCE(total_refs < u->inflight);
+		if (total_refs == u->inflight) {
+			list_move_tail(&u->link, &gc_candidates);
+			__set_bit(UNIX_GC_CANDIDATE, &u->gc_flags);
+			__set_bit(UNIX_GC_MAYBE_CYCLE, &u->gc_flags);
+
+			if (sk->sk_state == TCP_LISTEN) {
+				unix_state_lock_nested(sk, U_LOCK_GC_LISTENER);
+				unix_state_unlock(sk);
+			}
+		}
+	}
+
+	/* Now remove all internal in-flight reference to children of
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the candidates.
 	 */
 	list_for_each_entry(u, &gc_candidates, link)
 		scan_children(&u->sk, dec_inflight, NULL);
 
+<<<<<<< HEAD
 	/*
 	 * Restore the references for children of all candidates,
+=======
+	/* Restore the references for children of all candidates,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * which have remaining references.  Do this recursively, so
 	 * only those remain, which form cyclic references.
 	 *
@@ -348,7 +539,11 @@ void unix_gc(void)
 		/* Move cursor to after the current position. */
 		list_move(&cursor, &u->link);
 
+<<<<<<< HEAD
 		if (atomic_long_read(&u->inflight) > 0) {
+=======
+		if (u->inflight) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_move_tail(&u->link, &not_cycle_list);
 			__clear_bit(UNIX_GC_MAYBE_CYCLE, &u->gc_flags);
 			scan_children(&u->sk, inc_inflight_move_tail, NULL);
@@ -356,8 +551,28 @@ void unix_gc(void)
 	}
 	list_del(&cursor);
 
+<<<<<<< HEAD
 	/*
 	 * not_cycle_list contains those sockets which do not make up a
+=======
+	/* Now gc_candidates contains only garbage.  Restore original
+	 * inflight counters for these as well, and remove the skbuffs
+	 * which are creating the cycle(s).
+	 */
+	skb_queue_head_init(&hitlist);
+	list_for_each_entry(u, &gc_candidates, link) {
+		scan_children(&u->sk, inc_inflight, &hitlist);
+
+#if IS_ENABLED(CONFIG_AF_UNIX_OOB)
+		if (u->oob_skb) {
+			kfree_skb(u->oob_skb);
+			u->oob_skb = NULL;
+		}
+#endif
+	}
+
+	/* not_cycle_list contains those sockets which do not make up a
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * cycle.  Restore these to the inflight list.
 	 */
 	while (!list_empty(&not_cycle_list)) {
@@ -366,6 +581,7 @@ void unix_gc(void)
 		list_move_tail(&u->link, &gc_inflight_list);
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Now gc_candidates contains only garbage.  Restore original
 	 * inflight counters for these as well, and remove the skbuffs
@@ -375,6 +591,8 @@ void unix_gc(void)
 	list_for_each_entry(u, &gc_candidates, link)
 	scan_children(&u->sk, inc_inflight, &hitlist);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&unix_gc_lock);
 
 	/* Here we are. Hitlist is filled. Die. */
@@ -383,6 +601,7 @@ void unix_gc(void)
 	spin_lock(&unix_gc_lock);
 
 	/* All candidates should have been detached by now. */
+<<<<<<< HEAD
 	BUG_ON(!list_empty(&gc_candidates));
 	gc_in_progress = false;
 	wake_up(&unix_gc_wait);
@@ -390,3 +609,46 @@ void unix_gc(void)
  out:
 	spin_unlock(&unix_gc_lock);
 }
+=======
+	WARN_ON_ONCE(!list_empty(&gc_candidates));
+
+	/* Paired with READ_ONCE() in wait_for_unix_gc(). */
+	WRITE_ONCE(gc_in_progress, false);
+
+	spin_unlock(&unix_gc_lock);
+}
+
+static DECLARE_WORK(unix_gc_work, __unix_gc);
+
+void unix_gc(void)
+{
+	WRITE_ONCE(gc_in_progress, true);
+	queue_work(system_unbound_wq, &unix_gc_work);
+}
+
+#define UNIX_INFLIGHT_TRIGGER_GC 16000
+#define UNIX_INFLIGHT_SANE_USER (SCM_MAX_FD * 8)
+
+void wait_for_unix_gc(struct scm_fp_list *fpl)
+{
+	/* If number of inflight sockets is insane,
+	 * force a garbage collect right now.
+	 *
+	 * Paired with the WRITE_ONCE() in unix_inflight(),
+	 * unix_notinflight(), and __unix_gc().
+	 */
+	if (READ_ONCE(unix_tot_inflight) > UNIX_INFLIGHT_TRIGGER_GC &&
+	    !READ_ONCE(gc_in_progress))
+		unix_gc();
+
+	/* Penalise users who want to send AF_UNIX sockets
+	 * but whose sockets have not been received yet.
+	 */
+	if (!fpl || !fpl->count_unix ||
+	    READ_ONCE(fpl->user->unix_inflight) < UNIX_INFLIGHT_SANE_USER)
+		return;
+
+	if (READ_ONCE(gc_in_progress))
+		flush_work(&unix_gc_work);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

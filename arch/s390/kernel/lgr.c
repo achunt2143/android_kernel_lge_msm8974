@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux Guest Relocation (LGR) detection
  *
@@ -5,7 +9,12 @@
  * Author(s): Michael Holzheu <holzheu@linux.vnet.ibm.com>
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/timer.h>
 #include <linux/slab.h>
 #include <asm/facility.h>
@@ -45,12 +54,17 @@ struct lgr_info {
 /*
  * LGR globals
  */
+<<<<<<< HEAD
 static void *lgr_page;
+=======
+static char lgr_page[PAGE_SIZE] __aligned(PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct lgr_info lgr_info_last;
 static struct lgr_info lgr_info_cur;
 static struct debug_info *lgr_dbf;
 
 /*
+<<<<<<< HEAD
  * Return number of valid stsi levels
  */
 static inline int stsi_0(void)
@@ -61,6 +75,8 @@ static inline int stsi_0(void)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copy buffer and then convert it to ASCII
  */
 static void cpascii(char *dst, char *src, int size)
@@ -74,9 +90,15 @@ static void cpascii(char *dst, char *src, int size)
  */
 static void lgr_stsi_1_1_1(struct lgr_info *lgr_info)
 {
+<<<<<<< HEAD
 	struct sysinfo_1_1_1 *si = lgr_page;
 
 	if (stsi(si, 1, 1, 1) == -ENOSYS)
+=======
+	struct sysinfo_1_1_1 *si = (void *) lgr_page;
+
+	if (stsi(si, 1, 1, 1))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	cpascii(lgr_info->manufacturer, si->manufacturer,
 		sizeof(si->manufacturer));
@@ -91,6 +113,7 @@ static void lgr_stsi_1_1_1(struct lgr_info *lgr_info)
  */
 static void lgr_stsi_2_2_2(struct lgr_info *lgr_info)
 {
+<<<<<<< HEAD
 	struct sysinfo_2_2_2 *si = lgr_page;
 
 	if (stsi(si, 2, 2, 2) == -ENOSYS)
@@ -98,6 +121,14 @@ static void lgr_stsi_2_2_2(struct lgr_info *lgr_info)
 	cpascii(lgr_info->name, si->name, sizeof(si->name));
 	memcpy(&lgr_info->lpar_number, &si->lpar_number,
 	       sizeof(lgr_info->lpar_number));
+=======
+	struct sysinfo_2_2_2 *si = (void *) lgr_page;
+
+	if (stsi(si, 2, 2, 2))
+		return;
+	cpascii(lgr_info->name, si->name, sizeof(si->name));
+	lgr_info->lpar_number = si->lpar_number;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -105,10 +136,17 @@ static void lgr_stsi_2_2_2(struct lgr_info *lgr_info)
  */
 static void lgr_stsi_3_2_2(struct lgr_info *lgr_info)
 {
+<<<<<<< HEAD
 	struct sysinfo_3_2_2 *si = lgr_page;
 	int i;
 
 	if (stsi(si, 3, 2, 2) == -ENOSYS)
+=======
+	struct sysinfo_3_2_2 *si = (void *) lgr_page;
+	int i;
+
+	if (stsi(si, 3, 2, 2))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	for (i = 0; i < min_t(u8, si->count, VM_LEVEL_MAX); i++) {
 		cpascii(lgr_info->vm[i].name, si->vm[i].name,
@@ -124,6 +162,7 @@ static void lgr_stsi_3_2_2(struct lgr_info *lgr_info)
  */
 static void lgr_info_get(struct lgr_info *lgr_info)
 {
+<<<<<<< HEAD
 	memset(lgr_info, 0, sizeof(*lgr_info));
 	stfle(lgr_info->stfle_fac_list, ARRAY_SIZE(lgr_info->stfle_fac_list));
 	lgr_info->level = stsi_0();
@@ -134,6 +173,19 @@ static void lgr_info_get(struct lgr_info *lgr_info)
 	if (lgr_info->level >= 2)
 		lgr_stsi_2_2_2(lgr_info);
 	if (lgr_info->level >= 3)
+=======
+	int level;
+
+	memset(lgr_info, 0, sizeof(*lgr_info));
+	stfle(lgr_info->stfle_fac_list, ARRAY_SIZE(lgr_info->stfle_fac_list));
+	level = stsi(NULL, 0, 0, 0);
+	lgr_info->level = level;
+	if (level >= 1)
+		lgr_stsi_1_1_1(lgr_info);
+	if (level >= 2)
+		lgr_stsi_2_2_2(lgr_info);
+	if (level >= 3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lgr_stsi_3_2_2(lgr_info);
 }
 
@@ -161,21 +213,33 @@ static void lgr_timer_set(void);
 /*
  * LGR timer callback
  */
+<<<<<<< HEAD
 static void lgr_timer_fn(unsigned long ignored)
+=======
+static void lgr_timer_fn(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	lgr_info_log();
 	lgr_timer_set();
 }
 
+<<<<<<< HEAD
 static struct timer_list lgr_timer =
 	TIMER_DEFERRED_INITIALIZER(lgr_timer_fn, 0, 0);
+=======
+static struct timer_list lgr_timer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Setup next LGR timer
  */
 static void lgr_timer_set(void)
 {
+<<<<<<< HEAD
 	mod_timer(&lgr_timer, jiffies + LGR_TIMER_INTERVAL_SECS * HZ);
+=======
+	mod_timer(&lgr_timer, jiffies + msecs_to_jiffies(LGR_TIMER_INTERVAL_SECS * MSEC_PER_SEC));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -183,6 +247,7 @@ static void lgr_timer_set(void)
  */
 static int __init lgr_init(void)
 {
+<<<<<<< HEAD
 	lgr_page = (void *) __get_free_pages(GFP_KERNEL, 0);
 	if (!lgr_page)
 		return -ENOMEM;
@@ -198,3 +263,16 @@ static int __init lgr_init(void)
 	return 0;
 }
 module_init(lgr_init);
+=======
+	lgr_dbf = debug_register("lgr", 1, 1, sizeof(struct lgr_info));
+	if (!lgr_dbf)
+		return -ENOMEM;
+	debug_register_view(lgr_dbf, &debug_hex_ascii_view);
+	lgr_info_get(&lgr_info_last);
+	debug_event(lgr_dbf, 1, &lgr_info_last, sizeof(lgr_info_last));
+	timer_setup(&lgr_timer, lgr_timer_fn, TIMER_DEFERRABLE);
+	lgr_timer_set();
+	return 0;
+}
+device_initcall(lgr_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

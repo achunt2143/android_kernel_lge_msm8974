@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * devices.c
  * (C) Copyright 1999 Randy Dunlap.
@@ -5,6 +9,7 @@
  *     (proc file per device)
  * (C) Copyright 1999 Deti Fliegl (new USB architecture)
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -19,12 +24,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *************************************************************
  *
  * <mountpoint>/devices contains USB topology, device, config, class,
  * interface, & endpoint data.
  *
+<<<<<<< HEAD
  * I considered using /proc/bus/usb/devices/device# for each device
+=======
+ * I considered using /dev/bus/usb/device# for each device
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * as it is attached or detached, but I didn't like this for some
  * reason -- maybe it's just too deep of a directory structure.
  * I also don't like looking in multiple places to gather and view
@@ -40,7 +51,11 @@
  *   Converted the whole proc stuff to real
  *   read methods. Now not the whole device list needs to fit
  *   into one page, only the device list for one bus.
+<<<<<<< HEAD
  *   Added a poll method to /proc/bus/usb/devices, to wake
+=======
+ *   Added a poll method to /sys/kernel/debug/usb/devices, to wake
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   up an eventual usbd
  * 2000-01-04: Thomas Sailer <sailer@ife.ee.ethz.ch>
  *   Turned into its own filesystem
@@ -52,7 +67,10 @@
 #include <linux/fs.h>
 #include <linux/mm.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
 #include <linux/poll.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/usb.h>
 #include <linux/usbdevice_fs.h>
 #include <linux/usb/hcd.h>
@@ -110,6 +128,7 @@ static const char format_endpt[] =
 /* E:  Ad=xx(s) Atr=xx(ssss) MxPS=dddd Ivl=D?s */
   "E:  Ad=%02x(%c) Atr=%02x(%-4s) MxPS=%4d Ivl=%d%cs\n";
 
+<<<<<<< HEAD
 
 /*
  * Need access to the driver and USB bus lists.
@@ -133,6 +152,8 @@ static struct device_connect_event {
 	.wait = __WAIT_QUEUE_HEAD_INITIALIZER(device_event.wait)
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct class_info {
 	int class;
 	char *class_name;
@@ -153,6 +174,13 @@ static const struct class_info clas_info[] = {
 	{USB_CLASS_CSCID,		"scard"},
 	{USB_CLASS_CONTENT_SEC,		"c-sec"},
 	{USB_CLASS_VIDEO,		"video"},
+<<<<<<< HEAD
+=======
+	{USB_CLASS_PERSONAL_HEALTHCARE,	"perhc"},
+	{USB_CLASS_AUDIO_VIDEO,		"av"},
+	{USB_CLASS_BILLBOARD,		"blbrd"},
+	{USB_CLASS_USB_TYPE_C_BRIDGE,	"bridg"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{USB_CLASS_WIRELESS_CONTROLLER,	"wlcon"},
 	{USB_CLASS_MISC,		"misc"},
 	{USB_CLASS_APP_SPEC,		"app."},
@@ -162,12 +190,15 @@ static const struct class_info clas_info[] = {
 
 /*****************************************************************/
 
+<<<<<<< HEAD
 void usbfs_conn_disc_event(void)
 {
 	atomic_add(2, &device_event.count);
 	wake_up(&device_event.wait);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *class_decode(const int class)
 {
 	int ix;
@@ -189,6 +220,7 @@ static char *usb_dump_endpoint_descriptor(int speed, char *start, char *end,
 
 	dir = usb_endpoint_dir_in(desc) ? 'I' : 'O';
 
+<<<<<<< HEAD
 	if (speed == USB_SPEED_HIGH) {
 		switch (usb_endpoint_maxp(desc) & (0x03 << 11)) {
 		case 1 << 11:
@@ -197,19 +229,27 @@ static char *usb_dump_endpoint_descriptor(int speed, char *start, char *end,
 			bandwidth = 3; break;
 		}
 	}
+=======
+	if (speed == USB_SPEED_HIGH)
+		bandwidth = usb_endpoint_maxp_mult(desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* this isn't checking for illegal values */
 	switch (usb_endpoint_type(desc)) {
 	case USB_ENDPOINT_XFER_CONTROL:
 		type = "Ctrl";
+<<<<<<< HEAD
 		if (speed == USB_SPEED_HIGH)	/* uframes per NAK */
 			interval = desc->bInterval;
 		else
 			interval = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dir = 'B';			/* ctrl is bidirectional */
 		break;
 	case USB_ENDPOINT_XFER_ISOC:
 		type = "Isoc";
+<<<<<<< HEAD
 		interval = 1 << (desc->bInterval - 1);
 		break;
 	case USB_ENDPOINT_XFER_BULK:
@@ -225,22 +265,42 @@ static char *usb_dump_endpoint_descriptor(int speed, char *start, char *end,
 			interval = 1 << (desc->bInterval - 1);
 		else
 			interval = desc->bInterval;
+=======
+		break;
+	case USB_ENDPOINT_XFER_BULK:
+		type = "Bulk";
+		break;
+	case USB_ENDPOINT_XFER_INT:
+		type = "Int.";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:	/* "can't happen" */
 		return start;
 	}
+<<<<<<< HEAD
 	interval *= (speed == USB_SPEED_HIGH ||
 		     speed == USB_SPEED_SUPER) ? 125 : 1000;
 	if (interval % 1000)
 		unit = 'u';
 	else {
+=======
+
+	interval = usb_decode_interval(desc, speed);
+	if (interval % 1000) {
+		unit = 'u';
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unit = 'm';
 		interval /= 1000;
 	}
 
 	start += sprintf(start, format_endpt, desc->bEndpointAddress, dir,
 			 desc->bmAttributes, type,
+<<<<<<< HEAD
 			 (usb_endpoint_maxp(desc) & 0x07ff) *
+=======
+			 usb_endpoint_maxp(desc) *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 bandwidth,
 			 interval, unit);
 	return start;
@@ -286,8 +346,11 @@ static char *usb_dump_interface(int speed, char *start, char *end,
 
 	start = usb_dump_interface_descriptor(start, end, intfc, iface, setno);
 	for (i = 0; i < desc->desc.bNumEndpoints; i++) {
+<<<<<<< HEAD
 		if (start > end)
 			return start;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		start = usb_dump_endpoint_descriptor(speed,
 				start, end, &desc->endpoint[i].desc);
 	}
@@ -316,17 +379,34 @@ static char *usb_dump_iad_descriptor(char *start, char *end,
  */
 static char *usb_dump_config_descriptor(char *start, char *end,
 				const struct usb_config_descriptor *desc,
+<<<<<<< HEAD
 				int active)
 {
 	if (start > end)
 		return start;
+=======
+				int active, int speed)
+{
+	int mul;
+
+	if (start > end)
+		return start;
+	if (speed >= USB_SPEED_SUPER)
+		mul = 8;
+	else
+		mul = 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	start += sprintf(start, format_config,
 			 /* mark active/actual/current cfg. */
 			 active ? '*' : ' ',
 			 desc->bNumInterfaces,
 			 desc->bConfigurationValue,
 			 desc->bmAttributes,
+<<<<<<< HEAD
 			 desc->bMaxPower * 2);
+=======
+			 desc->bMaxPower * mul);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return start;
 }
 
@@ -342,7 +422,12 @@ static char *usb_dump_config(int speed, char *start, char *end,
 	if (!config)
 		/* getting these some in 2.3.7; none in 2.3.6 */
 		return start + sprintf(start, "(null Cfg. desc.)\n");
+<<<<<<< HEAD
 	start = usb_dump_config_descriptor(start, end, &config->desc, active);
+=======
+	start = usb_dump_config_descriptor(start, end, &config->desc, active,
+			speed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < USB_MAXIADS; i++) {
 		if (config->intf_assoc[i] == NULL)
 			break;
@@ -353,8 +438,11 @@ static char *usb_dump_config(int speed, char *start, char *end,
 		intfc = config->intf_cache[i];
 		interface = config->interface[i];
 		for (j = 0; j < intfc->num_altsetting; j++) {
+<<<<<<< HEAD
 			if (start > end)
 				return start;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start = usb_dump_interface(speed,
 				start, end, intfc, interface, j);
 		}
@@ -420,6 +508,7 @@ static char *usb_dump_desc(char *start, char *end, struct usb_device *dev)
 {
 	int i;
 
+<<<<<<< HEAD
 	if (start > end)
 		return start;
 
@@ -433,6 +522,13 @@ static char *usb_dump_desc(char *start, char *end, struct usb_device *dev)
 	for (i = 0; i < dev->descriptor.bNumConfigurations; i++) {
 		if (start > end)
 			return start;
+=======
+	start = usb_dump_device_descriptor(start, end, &dev->descriptor);
+
+	start = usb_dump_device_strings(start, end, dev);
+
+	for (i = 0; i < dev->descriptor.bNumConfigurations; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		start = usb_dump_config(dev->speed,
 				start, end, dev->config + i,
 				/* active ? */
@@ -441,6 +537,7 @@ static char *usb_dump_desc(char *start, char *end, struct usb_device *dev)
 	return start;
 }
 
+<<<<<<< HEAD
 
 #ifdef PROC_EXTRA /* TBD: may want to add this code later */
 
@@ -476,6 +573,8 @@ static char *usb_dump_string(char *start, char *end,
 
 #endif /* PROC_EXTRA */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************/
 
 /* This is a recursive function. Parameters:
@@ -496,6 +595,10 @@ static ssize_t usb_device_dump(char __user **buffer, size_t *nbytes,
 	char *pages_start, *data_end, *speed;
 	unsigned int length;
 	ssize_t total_written = 0;
+<<<<<<< HEAD
+=======
+	struct usb_device *childdev = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* don't bother with anything else if we're not writing any data */
 	if (*nbytes <= 0)
@@ -521,11 +624,19 @@ static ssize_t usb_device_dump(char __user **buffer, size_t *nbytes,
 	case USB_SPEED_UNKNOWN:		/* usb 1.1 root hub code */
 	case USB_SPEED_FULL:
 		speed = "12"; break;
+<<<<<<< HEAD
 	case USB_SPEED_WIRELESS:	/* Wireless has no real fixed speed */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case USB_SPEED_HIGH:
 		speed = "480"; break;
 	case USB_SPEED_SUPER:
 		speed = "5000"; break;
+<<<<<<< HEAD
+=======
+	case USB_SPEED_SUPER_PLUS:
+		speed = "10000"; break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		speed = "??";
 	}
@@ -545,7 +656,11 @@ static ssize_t usb_device_dump(char __user **buffer, size_t *nbytes,
 
 		/* super/high speed reserves 80%, full/low reserves 90% */
 		if (usbdev->speed == USB_SPEED_HIGH ||
+<<<<<<< HEAD
 		    usbdev->speed == USB_SPEED_SUPER)
+=======
+		    usbdev->speed >= USB_SPEED_SUPER)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			max = 800;
 		else
 			max = FRAME_TIME_MAX_USECS_ALLOC;
@@ -589,6 +704,7 @@ static ssize_t usb_device_dump(char __user **buffer, size_t *nbytes,
 	free_pages((unsigned long)pages_start, 1);
 
 	/* Now look at all of this device's children. */
+<<<<<<< HEAD
 	for (chix = 0; chix < usbdev->maxchild; chix++) {
 		struct usb_device *childdev = usbdev->children[chix];
 
@@ -602,6 +718,17 @@ static ssize_t usb_device_dump(char __user **buffer, size_t *nbytes,
 				return total_written;
 			total_written += ret;
 		}
+=======
+	usb_hub_for_each_child(usbdev, chix, childdev) {
+		usb_lock_device(childdev);
+		ret = usb_device_dump(buffer, nbytes, skip_bytes,
+				      file_offset, childdev, bus,
+				      level + 1, chix - 1, ++cnt);
+		usb_unlock_device(childdev);
+		if (ret == -EFAULT)
+			return total_written;
+		total_written += ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return total_written;
 }
@@ -612,17 +739,28 @@ static ssize_t usb_device_read(struct file *file, char __user *buf,
 	struct usb_bus *bus;
 	ssize_t ret, total_written = 0;
 	loff_t skip_bytes = *ppos;
+<<<<<<< HEAD
+=======
+	int id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (*ppos < 0)
 		return -EINVAL;
 	if (nbytes <= 0)
 		return 0;
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_WRITE, buf, nbytes))
 		return -EFAULT;
 
 	mutex_lock(&usb_bus_list_lock);
 	/* print devices for all busses */
 	list_for_each_entry(bus, &usb_bus_list, bus_list) {
+=======
+
+	mutex_lock(&usb_bus_idr_lock);
+	/* print devices for all busses */
+	idr_for_each_entry(&usb_bus_idr, bus, id) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* recurse through all children of the root hub */
 		if (!bus_to_hcd(bus)->rh_registered)
 			continue;
@@ -631,11 +769,16 @@ static ssize_t usb_device_read(struct file *file, char __user *buf,
 				      bus->root_hub, bus, 0, 0, 0);
 		usb_unlock_device(bus->root_hub);
 		if (ret < 0) {
+<<<<<<< HEAD
 			mutex_unlock(&usb_bus_list_lock);
+=======
+			mutex_unlock(&usb_bus_idr_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ret;
 		}
 		total_written += ret;
 	}
+<<<<<<< HEAD
 	mutex_unlock(&usb_bus_list_lock);
 	return total_written;
 }
@@ -685,4 +828,13 @@ const struct file_operations usbfs_devices_fops = {
 	.llseek =	usb_device_lseek,
 	.read =		usb_device_read,
 	.poll =		usb_device_poll,
+=======
+	mutex_unlock(&usb_bus_idr_lock);
+	return total_written;
+}
+
+const struct file_operations usbfs_devices_fops = {
+	.llseek =	no_seek_end_llseek,
+	.read =		usb_device_read,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

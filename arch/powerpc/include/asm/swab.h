@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_POWERPC_SWAB_H
 #define _ASM_POWERPC_SWAB_H
 
@@ -86,5 +87,14 @@ static inline __attribute_const__ __u32 __arch_swab32(__u32 value)
 #endif /* __KERNEL__ */
 
 #endif /* __GNUC__ */
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ */
+#ifndef _ASM_POWERPC_SWAB_H
+#define _ASM_POWERPC_SWAB_H
+
+#include <uapi/asm/swab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_POWERPC_SWAB_H */

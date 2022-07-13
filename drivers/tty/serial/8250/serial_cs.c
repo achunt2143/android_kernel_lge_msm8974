@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: (GPL-2.0 OR MPL-1.1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*======================================================================
 
     A driver for PCMCIA serial devices
@@ -28,13 +32,20 @@
     and other provisions required by the GPL.  If you do not delete
     the provisions above, a recipient may use your version of this
     file under either the MPL or the GPL.
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ======================================================================*/
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ptrace.h>
 #include <linux/slab.h>
 #include <linux/string.h>
@@ -73,7 +84,11 @@ struct serial_quirk {
 	unsigned int prodid;
 	int multi;		/* 1 = multifunction, > 1 = # ports */
 	void (*config)(struct pcmcia_device *);
+<<<<<<< HEAD
 	void (*setup)(struct pcmcia_device *, struct uart_port *);
+=======
+	void (*setup)(struct pcmcia_device *, struct uart_8250_port *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*wakeup)(struct pcmcia_device *);
 	int (*post)(struct pcmcia_device *);
 };
@@ -90,12 +105,15 @@ struct serial_info {
 	const struct serial_quirk *quirk;
 };
 
+<<<<<<< HEAD
 struct serial_cfg_mem {
 	tuple_t tuple;
 	cisparse_t parse;
 	u_char buf[256];
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * vers_1 5.0, "Brain Boxes", "2-Port RS232 card", "r6"
  * manfid 0x0160, 0x0104
@@ -105,9 +123,15 @@ struct serial_cfg_mem {
  * Elan VPU16551 UART with 14.7456MHz oscillator
  * manfid 0x015D, 0x4C45
  */
+<<<<<<< HEAD
 static void quirk_setup_brainboxes_0104(struct pcmcia_device *link, struct uart_port *port)
 {
 	port->uartclk = 14745600;
+=======
+static void quirk_setup_brainboxes_0104(struct pcmcia_device *link, struct uart_8250_port *uart)
+{
+	uart->port.uartclk = 14745600;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int quirk_post_ibm(struct pcmcia_device *link)
@@ -258,7 +282,11 @@ static const struct serial_quirk quirks[] = {
 };
 
 
+<<<<<<< HEAD
 static int serial_config(struct pcmcia_device * link);
+=======
+static int serial_config(struct pcmcia_device *link);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static void serial_remove(struct pcmcia_device *link)
@@ -306,11 +334,19 @@ static int serial_resume(struct pcmcia_device *link)
 static int serial_probe(struct pcmcia_device *link)
 {
 	struct serial_info *info;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&link->dev, "serial_attach()\n");
 
 	/* Create new serial device */
+<<<<<<< HEAD
 	info = kzalloc(sizeof (*info), GFP_KERNEL);
+=======
+	info = kzalloc(sizeof(*info), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info)
 		return -ENOMEM;
 	info->p_dev = link;
@@ -320,7 +356,19 @@ static int serial_probe(struct pcmcia_device *link)
 	if (do_sound)
 		link->config_flags |= CONF_ENABLE_SPKR;
 
+<<<<<<< HEAD
 	return serial_config(link);
+=======
+	ret = serial_config(link);
+	if (ret)
+		goto free_info;
+
+	return 0;
+
+free_info:
+	kfree(info);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void serial_detach(struct pcmcia_device *link)
@@ -340,6 +388,7 @@ static void serial_detach(struct pcmcia_device *link)
 
 /*====================================================================*/
 
+<<<<<<< HEAD
 static int setup_serial(struct pcmcia_device *handle, struct serial_info * info,
 			unsigned int iobase, int irq)
 {
@@ -362,6 +411,30 @@ static int setup_serial(struct pcmcia_device *handle, struct serial_info * info,
 	if (line < 0) {
 		printk(KERN_NOTICE "serial_cs: serial8250_register_port() at "
 		       "0x%04lx, irq %d failed\n", (u_long)iobase, irq);
+=======
+static int setup_serial(struct pcmcia_device *handle, struct serial_info *info,
+			unsigned int iobase, int irq)
+{
+	struct uart_8250_port uart;
+	int line;
+
+	memset(&uart, 0, sizeof(uart));
+	uart.port.iobase = iobase;
+	uart.port.irq = irq;
+	uart.port.flags = UPF_BOOT_AUTOCONF | UPF_SKIP_TEST | UPF_SHARE_IRQ;
+	uart.port.uartclk = 1843200;
+	uart.port.dev = &handle->dev;
+	if (buggy_uart)
+		uart.port.flags |= UPF_BUGGY_UART;
+
+	if (info->quirk && info->quirk->setup)
+		info->quirk->setup(handle, &uart);
+
+	line = serial8250_register_8250_port(&uart);
+	if (line < 0) {
+		pr_err("serial_cs: serial8250_register_8250_port() at 0x%04lx, irq %d failed\n",
+							(unsigned long)iobase, irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -440,15 +513,25 @@ static int simple_config_check_notpicky(struct pcmcia_device *p_dev,
 static int simple_config(struct pcmcia_device *link)
 {
 	struct serial_info *info = link->priv;
+<<<<<<< HEAD
 	int i = -ENODEV, try;
 
 	/* First pass: look for a config entry that looks normal.
 	 * Two tries: without IO aliases, then with aliases */
+=======
+	int ret, try;
+
+	/*
+	 * First pass: look for a config entry that looks normal.
+	 * Two tries: without IO aliases, then with aliases.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	link->config_flags |= CONF_AUTO_SET_VPP;
 	for (try = 0; try < 4; try++)
 		if (!pcmcia_loop_config(link, simple_config_check, &try))
 			goto found_port;
 
+<<<<<<< HEAD
 	/* Second pass: try to find an entry that isn't picky about
 	   its base address, then try to grab any standard serial port
 	   address, and finally try to get any free port. */
@@ -457,6 +540,18 @@ static int simple_config(struct pcmcia_device *link)
 
 	dev_warn(&link->dev, "no usable port range found, giving up\n");
 	return -1;
+=======
+	/*
+	 * Second pass: try to find an entry that isn't picky about
+	 * its base address, then try to grab any standard serial port
+	 * address, and finally try to get any free port.
+	 */
+	ret = pcmcia_loop_config(link, simple_config_check_notpicky, NULL);
+	if (ret) {
+		dev_warn(&link->dev, "no usable port range found, giving up\n");
+		return ret;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 found_port:
 	if (info->multi && (info->manfid == MANFID_3COM))
@@ -468,9 +563,15 @@ found_port:
 	if (info->quirk && info->quirk->config)
 		info->quirk->config(link);
 
+<<<<<<< HEAD
 	i = pcmcia_enable_device(link);
 	if (i != 0)
 		return -1;
+=======
+	ret = pcmcia_enable_device(link);
+	if (ret != 0)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return setup_serial(link, info, link->resource[0]->start, link->irq);
 }
 
@@ -481,8 +582,15 @@ static int multi_config_check(struct pcmcia_device *p_dev, void *priv_data)
 	if (p_dev->resource[1]->end)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* The quad port cards have bad CIS's, so just look for a
 	   window larger than 8 ports and assume it will be right */
+=======
+	/*
+	 * The quad port cards have bad CIS's, so just look for a
+	 * window larger than 8 ports and assume it will be right.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p_dev->resource[0]->end <= 8)
 		return -EINVAL;
 
@@ -528,8 +636,13 @@ static int multi_config(struct pcmcia_device *link)
 		info->multi = 2;
 		if (pcmcia_loop_config(link, multi_config_check_notpicky,
 				       &base2)) {
+<<<<<<< HEAD
 			dev_warn(&link->dev, "no usable port range "
 			       "found, giving up\n");
+=======
+			dev_warn(&link->dev,
+				 "no usable port range found, giving up\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 		}
 	}
@@ -553,6 +666,7 @@ static int multi_config(struct pcmcia_device *link)
 	 */
 	if (info->manfid == MANFID_OXSEMI || (info->manfid == MANFID_POSSIO &&
 				info->prodid == PRODID_POSSIO_GCC)) {
+<<<<<<< HEAD
 		int err;
 
 		if (link->config_index == 1 ||
@@ -563,6 +677,15 @@ static int multi_config(struct pcmcia_device *link)
 		} else {
 			err = setup_serial(link, info, link->resource[0]->start,
 					link->irq);
+=======
+		if (link->config_index == 1 ||
+		    link->config_index == 3) {
+			setup_serial(link, info, base2, link->irq);
+			base2 = link->resource[0]->start;
+		} else {
+			setup_serial(link, info, link->resource[0]->start,
+				     link->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		info->c950ctrl = base2;
 
@@ -601,7 +724,11 @@ static int serial_check_for_multi(struct pcmcia_device *p_dev,  void *priv_data)
 }
 
 
+<<<<<<< HEAD
 static int serial_config(struct pcmcia_device * link)
+=======
+static int serial_config(struct pcmcia_device *link)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct serial_info *info = link->priv;
 	int i;
@@ -624,14 +751,28 @@ static int serial_config(struct pcmcia_device * link)
 			break;
 		}
 
+<<<<<<< HEAD
 	/* Another check for dual-serial cards: look for either serial or
 	   multifunction cards that ask for appropriate IO port ranges */
+=======
+	/*
+	 * Another check for dual-serial cards: look for either serial or
+	 * multifunction cards that ask for appropriate IO port ranges.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((info->multi == 0) &&
 	    (link->has_func_id) &&
 	    (link->socket->pcmcia_pfc == 0) &&
 	    ((link->func_id == CISTPL_FUNCID_MULTI) ||
+<<<<<<< HEAD
 	     (link->func_id == CISTPL_FUNCID_SERIAL)))
 		pcmcia_loop_config(link, serial_check_for_multi, info);
+=======
+	     (link->func_id == CISTPL_FUNCID_SERIAL))) {
+		if (pcmcia_loop_config(link, serial_check_for_multi, info))
+			goto failed;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Apply any multi-port quirk.
@@ -702,7 +843,11 @@ static const struct pcmcia_device_id serial_ids[] = {
 	PCMCIA_PFC_DEVICE_PROD_ID12(1, "LINKSYS", "PCMLM336", 0xf7cb0b07, 0x7a821b58),
 	PCMCIA_PFC_DEVICE_PROD_ID12(1, "MEGAHERTZ", "XJEM1144/CCEM1144", 0xf510db04, 0x52d21e1e),
 	PCMCIA_PFC_DEVICE_PROD_ID12(1, "MICRO RESEARCH", "COMBO-L/M-336", 0xb2ced065, 0x3ced0555),
+<<<<<<< HEAD
 	PCMCIA_PFC_DEVICE_PROD_ID12(1, "NEC", "PK-UG-J001" ,0x18df0ba0 ,0x831b1064),
+=======
+	PCMCIA_PFC_DEVICE_PROD_ID12(1, "NEC", "PK-UG-J001", 0x18df0ba0, 0x831b1064),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PCMCIA_PFC_DEVICE_PROD_ID12(1, "Ositech", "Trumpcard:Jack of Diamonds Modem+Ethernet", 0xc2f80cd, 0x656947b9),
 	PCMCIA_PFC_DEVICE_PROD_ID12(1, "Ositech", "Trumpcard:Jack of Hearts Modem+Ethernet", 0xc2f80cd, 0xdc9ba5ed),
 	PCMCIA_PFC_DEVICE_PROD_ID12(1, "PCMCIAs", "ComboCard", 0xdcfe12d3, 0xcd8906cc),
@@ -770,6 +915,10 @@ static const struct pcmcia_device_id serial_ids[] = {
 	PCMCIA_DEVICE_PROD_ID12("Multi-Tech", "MT2834LT", 0x5f73be51, 0x4cd7c09e),
 	PCMCIA_DEVICE_PROD_ID12("OEM      ", "C288MX     ", 0xb572d360, 0xd2385b7a),
 	PCMCIA_DEVICE_PROD_ID12("Option International", "V34bis GSM/PSTN Data/Fax Modem", 0x9d7cd6f5, 0x5cb8bf41),
+<<<<<<< HEAD
+=======
+	PCMCIA_DEVICE_PROD_ID12("Option International", "GSM-Ready 56K/ISDN", 0x9d7cd6f5, 0xb23844aa),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PCMCIA_DEVICE_PROD_ID12("PCMCIA   ", "C336MX     ", 0x99bcafe9, 0xaa25bcab),
 	PCMCIA_DEVICE_PROD_ID12("Quatech Inc", "PCMCIA Dual RS-232 Serial Port Card", 0xc4420b35, 0x92abc92f),
 	PCMCIA_DEVICE_PROD_ID12("Quatech Inc", "Dual RS-232 Serial Port PC Card", 0xc4420b35, 0x031a380d),
@@ -797,6 +946,7 @@ static const struct pcmcia_device_id serial_ids[] = {
 	PCMCIA_DEVICE_CIS_PROD_ID12("ADVANTECH", "COMpad-32/85B-4", 0x96913a85, 0xcec8f102, "cis/COMpad4.cis"),
 	PCMCIA_DEVICE_CIS_PROD_ID123("ADVANTECH", "COMpad-32/85", "1.0", 0x96913a85, 0x8fbe92ae, 0x0877b627, "cis/COMpad2.cis"),
 	PCMCIA_DEVICE_CIS_PROD_ID2("RS-COM 2P", 0xad20b156, "cis/RS-COM-2P.cis"),
+<<<<<<< HEAD
 	PCMCIA_DEVICE_CIS_MANF_CARD(0x0013, 0x0000, "cis/GLOBETROTTER.cis"),
 	PCMCIA_DEVICE_PROD_ID12("ELAN DIGITAL SYSTEMS LTD, c1997.","SERIAL CARD: SL100  1.00.",0x19ca78af,0xf964f42b),
 	PCMCIA_DEVICE_PROD_ID12("ELAN DIGITAL SYSTEMS LTD, c1997.","SERIAL CARD: SL100",0x19ca78af,0x71d98e83),
@@ -822,6 +972,32 @@ static const struct pcmcia_device_id serial_ids[] = {
 	PCMCIA_MFC_DEVICE_PROD_ID12(1,"Elan","Serial Port: SL432",0x3beb8cf2,0x1cce7ac4),
 	PCMCIA_MFC_DEVICE_PROD_ID12(2,"Elan","Serial Port: SL432",0x3beb8cf2,0x1cce7ac4),
 	PCMCIA_MFC_DEVICE_PROD_ID12(3,"Elan","Serial Port: SL432",0x3beb8cf2,0x1cce7ac4),
+=======
+	PCMCIA_DEVICE_PROD_ID12("ELAN DIGITAL SYSTEMS LTD, c1997.", "SERIAL CARD: SL100  1.00.", 0x19ca78af, 0xf964f42b),
+	PCMCIA_DEVICE_PROD_ID12("ELAN DIGITAL SYSTEMS LTD, c1997.", "SERIAL CARD: SL100", 0x19ca78af, 0x71d98e83),
+	PCMCIA_DEVICE_PROD_ID12("ELAN DIGITAL SYSTEMS LTD, c1997.", "SERIAL CARD: SL232  1.00.", 0x19ca78af, 0x69fb7490),
+	PCMCIA_DEVICE_PROD_ID12("ELAN DIGITAL SYSTEMS LTD, c1997.", "SERIAL CARD: SL232", 0x19ca78af, 0xb6bc0235),
+	PCMCIA_DEVICE_PROD_ID12("ELAN DIGITAL SYSTEMS LTD, c2000.", "SERIAL CARD: CF232", 0x63f2e0bd, 0xb9e175d3),
+	PCMCIA_DEVICE_PROD_ID12("ELAN DIGITAL SYSTEMS LTD, c2000.", "SERIAL CARD: CF232-5", 0x63f2e0bd, 0xfce33442),
+	PCMCIA_DEVICE_PROD_ID12("Elan", "Serial Port: CF232", 0x3beb8cf2, 0x171e7190),
+	PCMCIA_DEVICE_PROD_ID12("Elan", "Serial Port: CF232-5", 0x3beb8cf2, 0x20da4262),
+	PCMCIA_DEVICE_PROD_ID12("Elan", "Serial Port: CF428", 0x3beb8cf2, 0xea5dd57d),
+	PCMCIA_DEVICE_PROD_ID12("Elan", "Serial Port: CF500", 0x3beb8cf2, 0xd77255fa),
+	PCMCIA_DEVICE_PROD_ID12("Elan", "Serial Port: IC232", 0x3beb8cf2, 0x6a709903),
+	PCMCIA_DEVICE_PROD_ID12("Elan", "Serial Port: SL232", 0x3beb8cf2, 0x18430676),
+	PCMCIA_DEVICE_PROD_ID12("Elan", "Serial Port: XL232", 0x3beb8cf2, 0x6f933767),
+	PCMCIA_MFC_DEVICE_PROD_ID12(0, "Elan", "Serial Port: CF332", 0x3beb8cf2, 0x16dc1ba7),
+	PCMCIA_MFC_DEVICE_PROD_ID12(0, "Elan", "Serial Port: SL332", 0x3beb8cf2, 0x19816c41),
+	PCMCIA_MFC_DEVICE_PROD_ID12(0, "Elan", "Serial Port: SL385", 0x3beb8cf2, 0x64112029),
+	PCMCIA_MFC_DEVICE_PROD_ID12(0, "Elan", "Serial Port: SL432", 0x3beb8cf2, 0x1cce7ac4),
+	PCMCIA_MFC_DEVICE_PROD_ID12(0, "Elan", "Serial+Parallel Port: SP230", 0x3beb8cf2, 0xdb9e58bc),
+	PCMCIA_MFC_DEVICE_PROD_ID12(1, "Elan", "Serial Port: CF332", 0x3beb8cf2, 0x16dc1ba7),
+	PCMCIA_MFC_DEVICE_PROD_ID12(1, "Elan", "Serial Port: SL332", 0x3beb8cf2, 0x19816c41),
+	PCMCIA_MFC_DEVICE_PROD_ID12(1, "Elan", "Serial Port: SL385", 0x3beb8cf2, 0x64112029),
+	PCMCIA_MFC_DEVICE_PROD_ID12(1, "Elan", "Serial Port: SL432", 0x3beb8cf2, 0x1cce7ac4),
+	PCMCIA_MFC_DEVICE_PROD_ID12(2, "Elan", "Serial Port: SL432", 0x3beb8cf2, 0x1cce7ac4),
+	PCMCIA_MFC_DEVICE_PROD_ID12(3, "Elan", "Serial Port: SL432", 0x3beb8cf2, 0x1cce7ac4),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PCMCIA_DEVICE_MANF_CARD(0x0279, 0x950b),
 	/* too generic */
 	/* PCMCIA_MFC_DEVICE_MANF_CARD(0, 0x0160, 0x0002), */
@@ -852,6 +1028,7 @@ static struct pcmcia_driver serial_cs_driver = {
 	.suspend	= serial_suspend,
 	.resume		= serial_resume,
 };
+<<<<<<< HEAD
 
 static int __init init_serial_cs(void)
 {
@@ -865,5 +1042,8 @@ static void __exit exit_serial_cs(void)
 
 module_init(init_serial_cs);
 module_exit(exit_serial_cs);
+=======
+module_pcmcia_driver(serial_cs_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");

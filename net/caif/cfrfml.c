@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson AB 2010
  * Author:	Sjur Brendeland/sjur.brandeland@stericsson.com
  * License terms: GNU General Public License (GPL) version 2
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) ST-Ericsson AB 2010
+ * Author:	Sjur Brendeland
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
@@ -43,7 +50,11 @@ static void cfrfml_release(struct cflayer *layer)
 }
 
 struct cflayer *cfrfml_create(u8 channel_id, struct dev_info *dev_info,
+<<<<<<< HEAD
 					int mtu_size)
+=======
+			      int mtu_size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int tmp;
 	struct cfrfml *this = kzalloc(sizeof(struct cfrfml), GFP_ATOMIC);
@@ -69,7 +80,11 @@ struct cflayer *cfrfml_create(u8 channel_id, struct dev_info *dev_info,
 }
 
 static struct cfpkt *rfm_append(struct cfrfml *rfml, char *seghead,
+<<<<<<< HEAD
 			struct cfpkt *pkt, int *err)
+=======
+				struct cfpkt *pkt, int *err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cfpkt *tmppkt;
 	*err = -EPROTO;
@@ -116,7 +131,11 @@ static int cfrfml_receive(struct cflayer *layr, struct cfpkt *pkt)
 	if (segmented) {
 		if (rfml->incomplete_frm == NULL) {
 			/* Initial Segment */
+<<<<<<< HEAD
 			if (cfpkt_peek_head(pkt, rfml->seghead, 6) < 0)
+=======
+			if (cfpkt_peek_head(pkt, rfml->seghead, 6) != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out;
 
 			rfml->pdu_size = get_unaligned_le16(rfml->seghead+4);
@@ -159,7 +178,11 @@ static int cfrfml_receive(struct cflayer *layr, struct cfpkt *pkt)
 		tmppkt = NULL;
 
 		/* Verify that length is correct */
+<<<<<<< HEAD
 		err = EPROTO;
+=======
+		err = -EPROTO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rfml->pdu_size != cfpkt_getlen(pkt) - RFM_HEAD_SIZE + 1)
 			goto out;
 	}
@@ -233,7 +256,11 @@ static int cfrfml_transmit(struct cflayer *layr, struct cfpkt *pkt)
 	if (cfpkt_getlen(pkt) > rfml->fragment_size + RFM_HEAD_SIZE)
 		err = cfpkt_peek_head(pkt, head, 6);
 
+<<<<<<< HEAD
 	if (err < 0)
+=======
+	if (err != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	while (cfpkt_getlen(frontpkt) > rfml->fragment_size + RFM_HEAD_SIZE) {
@@ -264,9 +291,12 @@ static int cfrfml_transmit(struct cflayer *layr, struct cfpkt *pkt)
 		frontpkt = rearpkt;
 		rearpkt = NULL;
 
+<<<<<<< HEAD
 		err = -ENOMEM;
 		if (frontpkt == NULL)
 			goto out;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EPROTO;
 		if (cfpkt_add_head(frontpkt, head, 6) < 0)
 			goto out;

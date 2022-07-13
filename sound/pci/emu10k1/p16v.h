@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Copyright (c) by James Courtier-Dutton <James@superbug.demon.co.uk>
  *  Driver p16v chips
@@ -80,6 +81,19 @@
 
 /********************************************************************************************************/
 /* Audigy2 P16V pointer-offset register set, accessed through the PTR2 and DATA2 registers                     */
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *  Copyright (c) by James Courtier-Dutton <James@superbug.demon.co.uk>
+ *  Driver p16v chips
+ *
+ *  This code was initially based on code from ALSA's emu10k1x.c which is:
+ *  Copyright (c) by Francisco Moraes <fmoraes@nc.rr.com>
+ */
+
+/********************************************************************************************************/
+/* Audigy2 P16V pointer-offset register set, accessed through the PTR2 and DATA2 registers              */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /********************************************************************************************************/
                                                                                                                            
 /* The sample rate of the SPDIF outputs is set by modifying a register in the EMU10K2 PTR register A_SPDIF_SAMPLERATE.

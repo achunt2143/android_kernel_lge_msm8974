@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SMC 37C93X initialization code
  */
@@ -10,7 +14,10 @@
 
 #include <asm/hwrpb.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/segment.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SMC_DEBUG 0
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -8,6 +12,7 @@
 #include <linux/highmem.h>
 #include <linux/pagemap.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 
 #include <asm/pgtable.h>
@@ -17,6 +22,16 @@
 #include <asm/tlb.h>
 #include <asm/tlbflush.h>
 #include <asm/io.h>
+=======
+
+#include <asm/cpu_entry_area.h>
+#include <asm/fixmap.h>
+#include <asm/e820/api.h>
+#include <asm/tlb.h>
+#include <asm/tlbflush.h>
+#include <asm/io.h>
+#include <linux/vmalloc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned int __VMALLOC_RESERVE = 128 << 20;
 
@@ -27,6 +42,10 @@ unsigned int __VMALLOC_RESERVE = 128 << 20;
 void set_pte_vaddr(unsigned long vaddr, pte_t pteval)
 {
 	pgd_t *pgd;
+<<<<<<< HEAD
+=======
+	p4d_t *p4d;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pud_t *pud;
 	pmd_t *pmd;
 	pte_t *pte;
@@ -36,7 +55,16 @@ void set_pte_vaddr(unsigned long vaddr, pte_t pteval)
 		BUG();
 		return;
 	}
+<<<<<<< HEAD
 	pud = pud_offset(pgd, vaddr);
+=======
+	p4d = p4d_offset(pgd, vaddr);
+	if (p4d_none(*p4d)) {
+		BUG();
+		return;
+	}
+	pud = pud_offset(p4d, vaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pud_none(*pud)) {
 		BUG();
 		return;
@@ -47,7 +75,11 @@ void set_pte_vaddr(unsigned long vaddr, pte_t pteval)
 		return;
 	}
 	pte = pte_offset_kernel(pmd, vaddr);
+<<<<<<< HEAD
 	if (pte_val(pteval))
+=======
+	if (!pte_none(pteval))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_pte_at(&init_mm, vaddr, pte, pteval);
 	else
 		pte_clear(&init_mm, vaddr, pte);
@@ -56,6 +88,7 @@ void set_pte_vaddr(unsigned long vaddr, pte_t pteval)
 	 * It's enough to flush this one mapping.
 	 * (PGE mappings get flushed as well)
 	 */
+<<<<<<< HEAD
 	__flush_tlb_one(vaddr);
 }
 
@@ -92,6 +125,9 @@ void set_pmd_pfn(unsigned long vaddr, unsigned long pfn, pgprot_t flags)
 	 * (PGE mappings get flushed as well)
 	 */
 	__flush_tlb_one(vaddr);
+=======
+	flush_tlb_one_kernel(vaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 unsigned long __FIXADDR_TOP = 0xfffff000;
@@ -127,7 +163,11 @@ static int __init parse_reservetop(char *arg)
 
 	address = memparse(arg, &arg);
 	reserve_top_address(address);
+<<<<<<< HEAD
 	fixup_early_ioremap();
+=======
+	early_ioremap_init();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 early_param("reservetop", parse_reservetop);

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**********************************************************************
  * Author: Cavium Networks
  *
@@ -24,6 +25,14 @@
  * This file may also be available under a different license from Cavium.
  * Contact Cavium Networks for more information
 *********************************************************************/
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * This file is based on code from OCTEON SDK by Cavium Networks.
+ *
+ * Copyright (c) 2003-2007 Cavium Networks
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * cvm_oct_get_buffer_ptr - convert packet data address to pointer
@@ -38,13 +47,18 @@ static inline void *cvm_oct_get_buffer_ptr(union cvmx_buf_ptr packet_ptr)
 }
 
 /**
+<<<<<<< HEAD
  * INTERFACE - convert IPD port to locgical interface
+=======
+ * INTERFACE - convert IPD port to logical interface
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ipd_port: Port to check
  *
  * Returns Logical interface
  */
 static inline int INTERFACE(int ipd_port)
 {
+<<<<<<< HEAD
 	if (ipd_port < 32)	/* Interface 0 or 1 for RGMII,GMII,SPI, etc */
 		return ipd_port >> 4;
 	else if (ipd_port < 36)	/* Interface 2 for NPI */
@@ -55,6 +69,16 @@ static inline int INTERFACE(int ipd_port)
 		return 4;
 	else
 		panic("Illegal ipd_port %d passed to INTERFACE\n", ipd_port);
+=======
+	int interface;
+
+	if (ipd_port == CVMX_PIP_NUM_INPUT_PORTS)
+		return 10;
+	interface = cvmx_helper_get_interface_num(ipd_port);
+	if (interface >= 0)
+		return interface;
+	panic("Illegal ipd_port %d passed to %s\n", ipd_port, __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -65,8 +89,12 @@ static inline int INTERFACE(int ipd_port)
  */
 static inline int INDEX(int ipd_port)
 {
+<<<<<<< HEAD
 	if (ipd_port < 32)
 		return ipd_port & 15;
 	else
 		return ipd_port & 3;
+=======
+	return cvmx_helper_get_interface_index_num(ipd_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

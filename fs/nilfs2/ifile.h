@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * ifile.h - NILFS inode file
  *
@@ -19,6 +20,16 @@
  *
  * Written by Amagai Yoshiji <amagai@osrg.net>
  * Revised by Ryusuke Konishi <ryusuke@osrg.net>
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * NILFS inode file
+ *
+ * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
+ *
+ * Written by Amagai Yoshiji.
+ * Revised by Ryusuke Konishi.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -27,7 +38,10 @@
 
 #include <linux/fs.h>
 #include <linux/buffer_head.h>
+<<<<<<< HEAD
 #include <linux/nilfs2_fs.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "mdt.h"
 #include "alloc.h"
 
@@ -35,6 +49,7 @@
 static inline struct nilfs_inode *
 nilfs_ifile_map_inode(struct inode *ifile, ino_t ino, struct buffer_head *ibh)
 {
+<<<<<<< HEAD
 	void *kaddr = kmap(ibh->b_page);
 	return nilfs_palloc_block_get_entry(ifile, ino, ibh, kaddr);
 }
@@ -43,14 +58,31 @@ static inline void nilfs_ifile_unmap_inode(struct inode *ifile, ino_t ino,
 					   struct buffer_head *ibh)
 {
 	kunmap(ibh->b_page);
+=======
+	void *kaddr = kmap_local_page(ibh->b_page);
+
+	return nilfs_palloc_block_get_entry(ifile, ino, ibh, kaddr);
+}
+
+static inline void nilfs_ifile_unmap_inode(struct nilfs_inode *raw_inode)
+{
+	kunmap_local(raw_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int nilfs_ifile_create_inode(struct inode *, ino_t *, struct buffer_head **);
 int nilfs_ifile_delete_inode(struct inode *, ino_t);
 int nilfs_ifile_get_inode_block(struct inode *, ino_t, struct buffer_head **);
 
+<<<<<<< HEAD
 int nilfs_ifile_read(struct super_block *sb, struct nilfs_root *root,
 		     size_t inode_size, struct nilfs_inode *raw_inode,
 		     struct inode **inodep);
+=======
+int nilfs_ifile_count_free_inodes(struct inode *, u64 *, u64 *);
+
+int nilfs_ifile_read(struct super_block *sb, struct nilfs_root *root,
+		     __u64 cno, size_t inode_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* _NILFS_IFILE_H */

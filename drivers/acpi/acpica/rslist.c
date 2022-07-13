@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: rslist - Linked list utilities
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -41,6 +46,8 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acresrc.h"
@@ -89,6 +96,7 @@ acpi_rs_convert_aml_to_resources(u8 * aml,
 	/* Get the appropriate conversion info table */
 
 	aml_resource = ACPI_CAST_PTR(union aml_resource, aml);
+<<<<<<< HEAD
 	if (acpi_ut_get_resource_type(aml) == ACPI_RESOURCE_NAME_SERIAL_BUS) {
 		if (aml_resource->common_serial_bus.type >
 		    AML_RESOURCE_MAX_SERIALBUSTYPE) {
@@ -99,6 +107,25 @@ acpi_rs_convert_aml_to_resources(u8 * aml,
 			conversion_table =
 			    acpi_gbl_convert_resource_serial_bus_dispatch
 			    [aml_resource->common_serial_bus.type];
+=======
+
+	if (acpi_ut_get_resource_type(aml) == ACPI_RESOURCE_NAME_SERIAL_BUS) {
+
+		/* Avoid undefined behavior: member access within misaligned address */
+
+		struct aml_resource_common_serialbus common_serial_bus;
+		memcpy(&common_serial_bus, aml_resource,
+		       sizeof(common_serial_bus));
+
+		if (common_serial_bus.type > AML_RESOURCE_MAX_SERIALBUSTYPE) {
+			conversion_table = NULL;
+		} else {
+			/* This is an I2C, SPI, UART, or CSI2 serial_bus descriptor */
+
+			conversion_table =
+			    acpi_gbl_convert_resource_serial_bus_dispatch
+			    [common_serial_bus.type];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		conversion_table =
@@ -109,7 +136,11 @@ acpi_rs_convert_aml_to_resources(u8 * aml,
 		ACPI_ERROR((AE_INFO,
 			    "Invalid/unsupported resource descriptor: Type 0x%2.2X",
 			    resource_index));
+<<<<<<< HEAD
 		return (AE_AML_INVALID_RESOURCE_TYPE);
+=======
+		return_ACPI_STATUS(AE_AML_INVALID_RESOURCE_TYPE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Convert the AML byte stream resource to a local resource struct */
@@ -124,6 +155,14 @@ acpi_rs_convert_aml_to_resources(u8 * aml,
 		return_ACPI_STATUS(status);
 	}
 
+<<<<<<< HEAD
+=======
+	if (!resource->length) {
+		ACPI_EXCEPTION((AE_INFO, status,
+				"Zero-length resource returned from RsConvertAmlToResource"));
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_DEBUG_PRINT((ACPI_DB_RESOURCES,
 			  "Type %.2X, AmlLength %.2X InternalLength %.2X\n",
 			  acpi_ut_get_resource_type(aml), length,
@@ -139,7 +178,11 @@ acpi_rs_convert_aml_to_resources(u8 * aml,
  *
  * FUNCTION:    acpi_rs_convert_resources_to_aml
  *
+<<<<<<< HEAD
  * PARAMETERS:  Resource            - Pointer to the resource linked list
+=======
+ * PARAMETERS:  resource            - Pointer to the resource linked list
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              aml_size_needed     - Calculated size of the byte stream
  *                                    needed from calling acpi_rs_get_aml_length()
  *                                    The size of the output_buffer is
@@ -178,6 +221,17 @@ acpi_rs_convert_resources_to_aml(struct acpi_resource *resource,
 			return_ACPI_STATUS(AE_BAD_DATA);
 		}
 
+<<<<<<< HEAD
+=======
+		/* Sanity check the length. It must not be zero, or we loop forever */
+
+		if (!resource->length) {
+			ACPI_ERROR((AE_INFO,
+				    "Invalid zero length descriptor in resource list\n"));
+			return_ACPI_STATUS(AE_AML_BAD_RESOURCE_LENGTH);
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Perform the conversion */
 
 		if (resource->type == ACPI_RESOURCE_TYPE_SERIAL_BUS) {
@@ -185,7 +239,11 @@ acpi_rs_convert_resources_to_aml(struct acpi_resource *resource,
 			    AML_RESOURCE_MAX_SERIALBUSTYPE) {
 				conversion_table = NULL;
 			} else {
+<<<<<<< HEAD
 				/* This is an I2C, SPI, or UART serial_bus descriptor */
+=======
+				/* This is an I2C, SPI, UART or CSI2 serial_bus descriptor */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				conversion_table =
 				    acpi_gbl_convert_resource_serial_bus_dispatch
@@ -200,7 +258,11 @@ acpi_rs_convert_resources_to_aml(struct acpi_resource *resource,
 			ACPI_ERROR((AE_INFO,
 				    "Invalid/unsupported resource descriptor: Type 0x%2.2X",
 				    resource->type));
+<<<<<<< HEAD
 			return (AE_AML_INVALID_RESOURCE_TYPE);
+=======
+			return_ACPI_STATUS(AE_AML_INVALID_RESOURCE_TYPE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		status = acpi_rs_convert_resource_to_aml(resource,
@@ -218,8 +280,14 @@ acpi_rs_convert_resources_to_aml(struct acpi_resource *resource,
 		/* Perform final sanity check on the new AML resource descriptor */
 
 		status =
+<<<<<<< HEAD
 		    acpi_ut_validate_resource(ACPI_CAST_PTR
 					      (union aml_resource, aml), NULL);
+=======
+		    acpi_ut_validate_resource(NULL,
+					      ACPI_CAST_PTR(union aml_resource,
+							    aml), NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 device registration routines.
  *
  *  Copyright (C) 2007 Sony Computer Entertainment Inc.
  *  Copyright 2007 Sony Corp.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -25,6 +32,10 @@
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
+=======
+#include <linux/rcuwait.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/firmware.h>
 #include <asm/lv1call.h>
@@ -62,7 +73,11 @@ static int __init ps3_register_lpm_devices(void)
 		&dev->lpm.rights);
 
 	if (result) {
+<<<<<<< HEAD
 		pr_debug("%s:%d: ps3_repository_read_lpm_privleges failed \n",
+=======
+		pr_debug("%s:%d: ps3_repository_read_lpm_privileges failed\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, __LINE__);
 		goto fail_read_repo;
 	}
@@ -189,7 +204,11 @@ fail_malloc:
 	return result;
 }
 
+<<<<<<< HEAD
 static int __init_refok ps3_setup_uhc_device(
+=======
+static int __ref ps3_setup_uhc_device(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct ps3_repository_device *repo, enum ps3_match_id match_id,
 	enum ps3_interrupt_type interrupt_type, enum ps3_reg_type reg_type)
 {
@@ -354,9 +373,13 @@ static int ps3_setup_storage_dev(const struct ps3_repository_device *repo,
 		 repo->dev_index, repo->dev_type, port, blk_size, num_blocks,
 		 num_regions);
 
+<<<<<<< HEAD
 	p = kzalloc(sizeof(struct ps3_storage_device) +
 		    num_regions * sizeof(struct ps3_storage_region),
 		    GFP_KERNEL);
+=======
+	p = kzalloc(struct_size(p, regions, num_regions), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!p) {
 		result = -ENOMEM;
 		goto fail_malloc;
@@ -663,8 +686,13 @@ static void ps3_find_and_add_device(u64 bus_id, u64 dev_id)
 		if (rem)
 			break;
 	}
+<<<<<<< HEAD
 	pr_warning("%s:%u: device %llu:%llu not found\n", __func__, __LINE__,
 		   bus_id, dev_id);
+=======
+	pr_warn("%s:%u: device %llu:%llu not found\n",
+		__func__, __LINE__, bus_id, dev_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 found:
@@ -684,7 +712,12 @@ struct ps3_notification_device {
 	spinlock_t lock;
 	u64 tag;
 	u64 lv1_status;
+<<<<<<< HEAD
 	struct completion done;
+=======
+	struct rcuwait wait;
+	bool done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum ps3_notify_type {
@@ -726,7 +759,12 @@ static irqreturn_t ps3_notification_interrupt(int irq, void *data)
 		pr_debug("%s:%u: completed, status 0x%llx\n", __func__,
 			 __LINE__, status);
 		dev->lv1_status = status;
+<<<<<<< HEAD
 		complete(&dev->done);
+=======
+		dev->done = true;
+		rcuwait_wake_up(&dev->wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock(&dev->lock);
 	return IRQ_HANDLED;
@@ -739,12 +777,19 @@ static int ps3_notification_read_write(struct ps3_notification_device *dev,
 	unsigned long flags;
 	int res;
 
+<<<<<<< HEAD
 	init_completion(&dev->done);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&dev->lock, flags);
 	res = write ? lv1_storage_write(dev->sbd.dev_id, 0, 0, 1, 0, lpar,
 					&dev->tag)
 		    : lv1_storage_read(dev->sbd.dev_id, 0, 0, 1, 0, lpar,
 				       &dev->tag);
+<<<<<<< HEAD
+=======
+	dev->done = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&dev->lock, flags);
 	if (res) {
 		pr_err("%s:%u: %s failed %d\n", __func__, __LINE__, op, res);
@@ -752,6 +797,7 @@ static int ps3_notification_read_write(struct ps3_notification_device *dev,
 	}
 	pr_debug("%s:%u: notification %s issued\n", __func__, __LINE__, op);
 
+<<<<<<< HEAD
 	res = wait_event_interruptible(dev->done.wait,
 				       dev->done.done || kthread_should_stop());
 	if (kthread_should_stop())
@@ -760,6 +806,12 @@ static int ps3_notification_read_write(struct ps3_notification_device *dev,
 		pr_debug("%s:%u: interrupted %s\n", __func__, __LINE__, op);
 		return res;
 	}
+=======
+	rcuwait_wait_event(&dev->wait, dev->done || kthread_should_stop(), TASK_IDLE);
+
+	if (kthread_should_stop())
+		res = -EINTR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->lv1_status) {
 		pr_err("%s:%u: %s not completed, status 0x%llx\n", __func__,
@@ -824,6 +876,10 @@ static int ps3_probe_thread(void *data)
 	}
 
 	spin_lock_init(&dev.lock);
+<<<<<<< HEAD
+=======
+	rcuwait_init(&dev.wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = request_irq(irq, ps3_notification_interrupt, 0,
 			  "ps3_notification", &dev);
@@ -841,6 +897,10 @@ static int ps3_probe_thread(void *data)
 	if (res)
 		goto fail_free_irq;
 
+<<<<<<< HEAD
+=======
+	set_freezable();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Loop here processing the requested notification events. */
 	do {
 		try_to_freeze();
@@ -859,11 +919,17 @@ static int ps3_probe_thread(void *data)
 
 		if (notify_event->event_type != notify_region_probe ||
 		    notify_event->bus_id != dev.sbd.bus_id) {
+<<<<<<< HEAD
 			pr_warning("%s:%u: bad notify_event: event %llu, "
 				   "dev_id %llu, dev_type %llu\n",
 				   __func__, __LINE__, notify_event->event_type,
 				   notify_event->dev_id,
 				   notify_event->dev_type);
+=======
+			pr_warn("%s:%u: bad notify_event: event %llu, dev_id %llu, dev_type %llu\n",
+				__func__, __LINE__, notify_event->event_type,
+				notify_event->dev_id, notify_event->dev_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 

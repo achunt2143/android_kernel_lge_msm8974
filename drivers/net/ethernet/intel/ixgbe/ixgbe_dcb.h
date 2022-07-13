@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel 10 Gigabit PCI Express Linux driver
@@ -25,6 +26,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Copyright(c) 1999 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _DCB_CONFIG_H_
 #define _DCB_CONFIG_H_
@@ -146,6 +151,7 @@ void ixgbe_dcb_unpack_max(struct ixgbe_dcb_config *, u16 *);
 void ixgbe_dcb_unpack_bwgid(struct ixgbe_dcb_config *, int, u8 *);
 void ixgbe_dcb_unpack_prio(struct ixgbe_dcb_config *, int, u8 *);
 void ixgbe_dcb_unpack_map(struct ixgbe_dcb_config *, int, u8 *);
+<<<<<<< HEAD
 
 /* DCB credits calculation */
 s32 ixgbe_dcb_calculate_tc_credits(struct ixgbe_hw *,
@@ -157,6 +163,22 @@ s32 ixgbe_dcb_hw_ets_config(struct ixgbe_hw *hw, u16 *refill, u16 *max,
 			    u8 *bwg_id, u8 *prio_type, u8 *tc_prio);
 s32 ixgbe_dcb_hw_pfc_config(struct ixgbe_hw *hw, u8 pfc_en, u8 *tc_prio);
 s32 ixgbe_dcb_hw_config(struct ixgbe_hw *, struct ixgbe_dcb_config *);
+=======
+u8 ixgbe_dcb_get_tc_from_up(struct ixgbe_dcb_config *, int, u8);
+
+/* DCB credits calculation */
+int ixgbe_dcb_calculate_tc_credits(struct ixgbe_hw *,
+				   struct ixgbe_dcb_config *, int, u8);
+
+/* DCB hw initialization */
+int ixgbe_dcb_hw_ets(struct ixgbe_hw *hw, struct ieee_ets *ets, int max);
+int ixgbe_dcb_hw_ets_config(struct ixgbe_hw *hw, u16 *refill, u16 *max,
+			    u8 *bwg_id, u8 *prio_type, u8 *tc_prio);
+int ixgbe_dcb_hw_pfc_config(struct ixgbe_hw *hw, u8 pfc_en, u8 *tc_prio);
+int ixgbe_dcb_hw_config(struct ixgbe_hw *, struct ixgbe_dcb_config *);
+
+void ixgbe_dcb_read_rtrup2tc(struct ixgbe_hw *hw, u8 *map);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* DCB definitions for credit calculation */
 #define DCB_CREDIT_QUANTUM	64   /* DCB Quantum */

@@ -37,7 +37,10 @@
  *    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/seq_file.h>
@@ -46,7 +49,11 @@
 #include "cmd.h"
 
 #define ADD(buf, off, max, fmt, args...)				\
+<<<<<<< HEAD
 	off += snprintf(&buf[off], max - off, fmt, ##args);
+=======
+	off += scnprintf(&buf[off], max - off, fmt, ##args)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 struct carl9170_debugfs_fops {
@@ -76,7 +83,12 @@ static ssize_t carl9170_debugfs_read(struct file *file, char __user *userbuf,
 
 	if (!ar)
 		return -ENODEV;
+<<<<<<< HEAD
 	dfops = container_of(file->f_op, struct carl9170_debugfs_fops, fops);
+=======
+	dfops = container_of(debugfs_real_fops(file),
+			     struct carl9170_debugfs_fops, fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dfops->read)
 		return -ENOSYS;
@@ -128,7 +140,12 @@ static ssize_t carl9170_debugfs_write(struct file *file,
 
 	if (!ar)
 		return -ENODEV;
+<<<<<<< HEAD
 	dfops = container_of(file->f_op, struct carl9170_debugfs_fops, fops);
+=======
+	dfops = container_of(debugfs_real_fops(file),
+			     struct carl9170_debugfs_fops, fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dfops->write)
 		return -ENOSYS;
@@ -186,21 +203,37 @@ static const struct carl9170_debugfs_fops carl_debugfs_##name ##_ops = {\
 
 #define DEBUGFS_DECLARE_RO_FILE(name, _read_bufsize)			\
 	DEBUGFS_DECLARE_FILE(name, carl9170_debugfs_##name ##_read,	\
+<<<<<<< HEAD
 			     NULL, _read_bufsize, S_IRUSR)
 
 #define DEBUGFS_DECLARE_WO_FILE(name)					\
 	DEBUGFS_DECLARE_FILE(name, NULL, carl9170_debugfs_##name ##_write,\
 			     0, S_IWUSR)
+=======
+			     NULL, _read_bufsize, 0400)
+
+#define DEBUGFS_DECLARE_WO_FILE(name)					\
+	DEBUGFS_DECLARE_FILE(name, NULL, carl9170_debugfs_##name ##_write,\
+			     0, 0200)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DEBUGFS_DECLARE_RW_FILE(name, _read_bufsize)			\
 	DEBUGFS_DECLARE_FILE(name, carl9170_debugfs_##name ##_read,	\
 			     carl9170_debugfs_##name ##_write,		\
+<<<<<<< HEAD
 			     _read_bufsize, S_IRUSR | S_IWUSR)
+=======
+			     _read_bufsize, 0600)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __DEBUGFS_DECLARE_RW_FILE(name, _read_bufsize, _dstate)		\
 	__DEBUGFS_DECLARE_FILE(name, carl9170_debugfs_##name ##_read,	\
 			     carl9170_debugfs_##name ##_write,		\
+<<<<<<< HEAD
 			     _read_bufsize, S_IRUSR | S_IWUSR, _dstate)
+=======
+			     _read_bufsize, 0600, _dstate)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DEBUGFS_READONLY_FILE(name, _read_bufsize, fmt, value...)	\
 static char *carl9170_debugfs_ ##name ## _read(struct ar9170 *ar,	\
@@ -215,6 +248,7 @@ DEBUGFS_DECLARE_RO_FILE(name, _read_bufsize)
 static char *carl9170_debugfs_mem_usage_read(struct ar9170 *ar, char *buf,
 					     size_t bufsize, ssize_t *len)
 {
+<<<<<<< HEAD
 	ADD(buf, *len, bufsize, "jar: [");
 
 	spin_lock_bh(&ar->mem_lock);
@@ -223,6 +257,12 @@ static char *carl9170_debugfs_mem_usage_read(struct ar9170 *ar, char *buf,
 				  ar->mem_bitmap, ar->fw.mem_blocks);
 
 	ADD(buf, *len, bufsize, "]\n");
+=======
+	spin_lock_bh(&ar->mem_lock);
+
+	ADD(buf, *len, bufsize, "jar: [%*pb]\n",
+	    ar->fw.mem_blocks, ar->mem_bitmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ADD(buf, *len, bufsize, "cookies: used:%3d / total:%3d, allocs:%d\n",
 	    bitmap_weight(ar->mem_bitmap, ar->fw.mem_blocks),
@@ -317,17 +357,25 @@ static char *carl9170_debugfs_ampdu_state_read(struct ar9170 *ar, char *buf,
 		    cnt, iter->tid, iter->bsn, iter->snx, iter->hsn,
 		    iter->max, iter->state, iter->counter);
 
+<<<<<<< HEAD
 		ADD(buf, *len, bufsize, "\tWindow:  [");
 
 		*len += bitmap_scnprintf(&buf[*len], bufsize - *len,
 			iter->bitmap, CARL9170_BAW_BITS);
+=======
+		ADD(buf, *len, bufsize, "\tWindow:  [%*pb,W]\n",
+		    CARL9170_BAW_BITS, iter->bitmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BM_STR_OFF(offset)					\
 	((CARL9170_BAW_BITS - (offset) - 1) / 4 +		\
 	 (CARL9170_BAW_BITS - (offset) - 1) / 32 + 1)
 
+<<<<<<< HEAD
 		ADD(buf, *len, bufsize, ",W]\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		offset = BM_STR_OFF(0);
 		ADD(buf, *len, bufsize, "\tBase Seq: %*s\n", offset, "T");
 
@@ -449,12 +497,17 @@ static char *carl9170_debugfs_vif_dump_read(struct ar9170 *ar, char *buf,
 	ADD(buf, *len, bufsize, "registered VIFs:%d \\ %d\n",
 	    ar->vifs, ar->fw.vif_num);
 
+<<<<<<< HEAD
 	ADD(buf, *len, bufsize, "VIF bitmap: [");
 
 	*len += bitmap_scnprintf(&buf[*len], bufsize - *len,
 				 &ar->vif_bitmap, ar->fw.vif_num);
 
 	ADD(buf, *len, bufsize, "]\n");
+=======
+	ADD(buf, *len, bufsize, "VIF bitmap: [%*pb]\n",
+	    ar->fw.vif_num, &ar->vif_bitmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
 	list_for_each_entry_rcu(iter, &ar->vif_list, list) {
@@ -654,8 +707,13 @@ static ssize_t carl9170_debugfs_bug_write(struct ar9170 *ar, const char *buf,
 		goto out;
 
 	case 'P':
+<<<<<<< HEAD
 		err = carl9170_set_channel(ar, ar->hw->conf.channel,
 			ar->hw->conf.channel_type, CARL9170_RFI_COLD);
+=======
+		err = carl9170_set_channel(ar, ar->hw->conf.chandef.chan,
+			cfg80211_get_chandef_type(&ar->hw->conf.chandef));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			count = err;
 
@@ -829,7 +887,11 @@ void carl9170_debugfs_register(struct ar9170 *ar)
 #define DEBUGFS_ADD(name)						\
 	debugfs_create_file(#name, carl_debugfs_##name ##_ops.attr,	\
 			    ar->debug_dir, ar,				\
+<<<<<<< HEAD
 			    &carl_debugfs_##name ## _ops.fops);
+=======
+			    &carl_debugfs_##name ## _ops.fops)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DEBUGFS_ADD(usb_tx_anch_urbs);
 	DEBUGFS_ADD(usb_rx_pool_urbs);

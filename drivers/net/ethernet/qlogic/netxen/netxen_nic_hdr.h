@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2003 - 2009 NetXen, Inc.
  * Copyright (C) 2009 - QLogic Corporation.
  * All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +26,8 @@
  * The full GNU General Public License is included in this distribution
  * in the file called "COPYING".
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __NETXEN_NIC_HDR_H_
@@ -734,6 +741,12 @@ enum {
 #define NIC_CRB_BASE_2		(NETXEN_CAM_RAM(0x700))
 #define NETXEN_NIC_REG(X)	(NIC_CRB_BASE+(X))
 #define NETXEN_NIC_REG_2(X)	(NIC_CRB_BASE_2+(X))
+<<<<<<< HEAD
+=======
+#define NETXEN_INTR_MODE_REG	NETXEN_NIC_REG(0x44)
+#define NETXEN_MSI_MODE		0x1
+#define NETXEN_INTX_MODE	0x2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NX_CDRP_CRB_OFFSET		(NETXEN_NIC_REG(0x18))
 #define NX_ARG1_CRB_OFFSET		(NETXEN_NIC_REG(0x1c))
@@ -776,6 +789,10 @@ enum {
 #define CRB_SW_INT_MASK_3		(NETXEN_NIC_REG(0x1e8))
 
 #define CRB_FW_CAPABILITIES_1		(NETXEN_CAM_RAM(0x128))
+<<<<<<< HEAD
+=======
+#define CRB_FW_CAPABILITIES_2		(NETXEN_CAM_RAM(0x12c))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CRB_MAC_BLOCK_START		(NETXEN_CAM_RAM(0x1c0))
 
 /*
@@ -954,6 +971,35 @@ enum {
 #define NETXEN_PEG_HALT_STATUS2 	(NETXEN_CAM_RAM(0xac))
 #define NX_CRB_DEV_REF_COUNT		(NETXEN_CAM_RAM(0x138))
 #define NX_CRB_DEV_STATE		(NETXEN_CAM_RAM(0x140))
+<<<<<<< HEAD
+=======
+#define NETXEN_ULA_KEY			(NETXEN_CAM_RAM(0x178))
+
+/* MiniDIMM related macros */
+#define NETXEN_DIMM_CAPABILITY		(NETXEN_CAM_RAM(0x258))
+#define NETXEN_DIMM_PRESENT			0x1
+#define NETXEN_DIMM_MEMTYPE_DDR2_SDRAM	0x2
+#define NETXEN_DIMM_SIZE			0x4
+#define NETXEN_DIMM_MEMTYPE(VAL)		((VAL >> 3) & 0xf)
+#define	NETXEN_DIMM_NUMROWS(VAL)		((VAL >> 7) & 0xf)
+#define	NETXEN_DIMM_NUMCOLS(VAL)		((VAL >> 11) & 0xf)
+#define	NETXEN_DIMM_NUMRANKS(VAL)		((VAL >> 15) & 0x3)
+#define NETXEN_DIMM_DATAWIDTH(VAL)		((VAL >> 18) & 0x3)
+#define NETXEN_DIMM_NUMBANKS(VAL)		((VAL >> 21) & 0xf)
+#define NETXEN_DIMM_TYPE(VAL)		((VAL >> 25) & 0x3f)
+#define NETXEN_DIMM_VALID_FLAG		0x80000000
+
+#define NETXEN_DIMM_MEM_DDR2_SDRAM	0x8
+
+#define NETXEN_DIMM_STD_MEM_SIZE	512
+
+#define NETXEN_DIMM_TYPE_RDIMM	0x1
+#define NETXEN_DIMM_TYPE_UDIMM	0x2
+#define NETXEN_DIMM_TYPE_SO_DIMM	0x4
+#define NETXEN_DIMM_TYPE_Micro_DIMM	0x8
+#define NETXEN_DIMM_TYPE_Mini_RDIMM	0x10
+#define NETXEN_DIMM_TYPE_Mini_UDIMM	0x20
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Device State */
 #define NX_DEV_COLD		1

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * abituguru.c Copyright (c) 2005-2006 Hans de Goede <hdegoede@redhat.com>
  *
@@ -14,6 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * abituguru.c Copyright (c) 2005-2006 Hans de Goede <hdegoede@redhat.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * This driver supports the sensor part of the first and second revision of
@@ -96,9 +102,18 @@
 #define ABIT_UGURU_MAX_TIMEOUTS			2
 /* utility macros */
 #define ABIT_UGURU_NAME				"abituguru"
+<<<<<<< HEAD
 #define ABIT_UGURU_DEBUG(level, format, arg...)				\
 	if (level <= verbose)						\
 		printk(KERN_DEBUG ABIT_UGURU_NAME ": "	format , ## arg)
+=======
+#define ABIT_UGURU_DEBUG(level, format, arg...)		\
+	do {						\
+		if (level <= verbose)			\
+			pr_debug(format , ## arg);	\
+	} while (0)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Macros to help calculate the sysfs_names array length */
 /*
  * sum of strlen of: in??_input\0, in??_{min,max}\0, in??_{min,max}_alarm\0,
@@ -161,7 +176,11 @@ static const u8 abituguru_bank2_max_threshold = 50;
 static const int abituguru_pwm_settings_multiplier[5] = { 0, 1, 1, 1000, 1000 };
 /*
  * Min / Max allowed values for pwm_settings. Note: pwm1 (CPU fan) is a
+<<<<<<< HEAD
  * special case the minium allowed pwm% setting for this is 30% (77) on
+=======
+ * special case the minimum allowed pwm% setting for this is 30% (77) on
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * some MB's this special case is handled in the code!
  */
 static const u8 abituguru_pwm_min[5] = { 0, 170, 170, 25, 25 };
@@ -478,7 +497,11 @@ static int abituguru_write(struct abituguru_data *data,
  * alarm for sensor type X and then enabling the sensor as sensor type
  * X, if we then get an alarm it is a sensor of type X.
  */
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 abituguru_detect_bank1_sensor_type(struct abituguru_data *data,
 				   u8 sensor_addr)
 {
@@ -514,7 +537,11 @@ abituguru_detect_bank1_sensor_type(struct abituguru_data *data,
 
 	ABIT_UGURU_DEBUG(2, "testing bank1 sensor %d\n", (int)sensor_addr);
 	/*
+<<<<<<< HEAD
 	 * Volt sensor test, enable volt low alarm, set min value ridicously
+=======
+	 * Volt sensor test, enable volt low alarm, set min value ridiculously
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * high, or vica versa if the reading is very high. If its a volt
 	 * sensor this should always give us an alarm.
 	 */
@@ -561,7 +588,11 @@ abituguru_detect_bank1_sensor_type(struct abituguru_data *data,
 
 	/*
 	 * Temp sensor test, enable sensor as a temp sensor, set beep value
+<<<<<<< HEAD
 	 * ridicously low (but not too low, otherwise uguru ignores it).
+=======
+	 * ridiculously low (but not too low, otherwise uguru ignores it).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * If its a temp sensor this should always give us an alarm.
 	 */
 	buf[0] = ABIT_UGURU_TEMP_HIGH_ALARM_ENABLE;
@@ -635,7 +666,11 @@ abituguru_detect_bank1_sensor_type_exit:
  * read/write test would be feasible because of the reaction above, I've
  * however opted to stay on the safe side.
  */
+<<<<<<< HEAD
 static void __devinit
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 abituguru_detect_no_bank2_sensors(struct abituguru_data *data)
 {
 	int i;
@@ -691,7 +726,11 @@ abituguru_detect_no_bank2_sensors(struct abituguru_data *data)
 		(int)data->bank2_sensors);
 }
 
+<<<<<<< HEAD
 static void __devinit
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 abituguru_detect_no_pwms(struct abituguru_data *data)
 {
 	int i, j;
@@ -1264,7 +1303,11 @@ static struct sensor_device_attribute_2 abituguru_sysfs_attr[] = {
 	SENSOR_ATTR_2(name, 0444, show_name, NULL, 0, 0),
 };
 
+<<<<<<< HEAD
 static int __devinit abituguru_probe(struct platform_device *pdev)
+=======
+static int abituguru_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct abituguru_data *data;
 	int i, j, used, sysfs_names_free, sysfs_attr_i, res = -ENODEV;
@@ -1274,11 +1317,20 @@ static int __devinit abituguru_probe(struct platform_device *pdev)
 	 * El weirdo probe order, to keep the sysfs order identical to the
 	 * BIOS and window-appliction listing order.
 	 */
+<<<<<<< HEAD
 	const u8 probe_order[ABIT_UGURU_MAX_BANK1_SENSORS] = {
 		0x00, 0x01, 0x03, 0x04, 0x0A, 0x08, 0x0E, 0x02,
 		0x09, 0x06, 0x05, 0x0B, 0x0F, 0x0D, 0x07, 0x0C };
 
 	data = kzalloc(sizeof(struct abituguru_data), GFP_KERNEL);
+=======
+	static const u8 probe_order[ABIT_UGURU_MAX_BANK1_SENSORS] = {
+		0x00, 0x01, 0x03, 0x04, 0x0A, 0x08, 0x0E, 0x02,
+		0x09, 0x06, 0x05, 0x0B, 0x0F, 0x0D, 0x07, 0x0C };
+
+	data = devm_kzalloc(&pdev->dev, sizeof(struct abituguru_data),
+			    GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data)
 		return -ENOMEM;
 
@@ -1434,12 +1486,19 @@ abituguru_probe_error:
 	for (i = 0; i < ARRAY_SIZE(abituguru_sysfs_attr); i++)
 		device_remove_file(&pdev->dev,
 			&abituguru_sysfs_attr[i].dev_attr);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 	kfree(data);
 	return res;
 }
 
 static int __devexit abituguru_remove(struct platform_device *pdev)
+=======
+	return res;
+}
+
+static void abituguru_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct abituguru_data *data = platform_get_drvdata(pdev);
@@ -1450,10 +1509,13 @@ static int __devexit abituguru_remove(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(abituguru_sysfs_attr); i++)
 		device_remove_file(&pdev->dev,
 			&abituguru_sysfs_attr[i].dev_attr);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 	kfree(data);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct abituguru_data *abituguru_update_device(struct device *dev)
@@ -1517,10 +1579,16 @@ LEAVE_UPDATE:
 		return NULL;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int abituguru_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	struct abituguru_data *data = platform_get_drvdata(pdev);
+=======
+static int abituguru_suspend(struct device *dev)
+{
+	struct abituguru_data *data = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * make sure all communications with the uguru are done and no new
 	 * ones are started
@@ -1529,15 +1597,22 @@ static int abituguru_suspend(struct platform_device *pdev, pm_message_t state)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int abituguru_resume(struct platform_device *pdev)
 {
 	struct abituguru_data *data = platform_get_drvdata(pdev);
+=======
+static int abituguru_resume(struct device *dev)
+{
+	struct abituguru_data *data = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* See if the uGuru is still ready */
 	if (inb_p(data->addr + ABIT_UGURU_DATA) != ABIT_UGURU_STATUS_INPUT)
 		data->uguru_ready = 0;
 	mutex_unlock(&data->update_lock);
 	return 0;
 }
+<<<<<<< HEAD
 #else
 #define abituguru_suspend	NULL
 #define abituguru_resume	NULL
@@ -1552,6 +1627,18 @@ static struct platform_driver abituguru_driver = {
 	.remove		= __devexit_p(abituguru_remove),
 	.suspend	= abituguru_suspend,
 	.resume		= abituguru_resume,
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(abituguru_pm, abituguru_suspend, abituguru_resume);
+
+static struct platform_driver abituguru_driver = {
+	.driver = {
+		.name	= ABIT_UGURU_NAME,
+		.pm	= pm_sleep_ptr(&abituguru_pm),
+	},
+	.probe		= abituguru_probe,
+	.remove_new	= abituguru_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init abituguru_detect(void)

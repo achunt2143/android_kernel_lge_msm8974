@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * uda1380.c - Philips UDA1380 ALSA SoC audio driver
  *
@@ -5,6 +6,12 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * uda1380.c - Philips UDA1380 ALSA SoC audio driver
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2007-2009 Philipp Zabel <philipp.zabel@gmail.com>
  *
  * Modified by Richard Purdie <richard@openedhand.com> to fit into SoC
@@ -34,10 +41,18 @@
 
 /* codec private data */
 struct uda1380_priv {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec;
 	unsigned int dac_clk;
 	struct work_struct work;
 	void *control_data;
+=======
+	struct snd_soc_component *component;
+	unsigned int dac_clk;
+	struct work_struct work;
+	struct i2c_client *i2c;
+	u16 *reg_cache;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -60,10 +75,19 @@ static unsigned long uda1380_cache_dirty;
 /*
  * read uda1380 register cache
  */
+<<<<<<< HEAD
 static inline unsigned int uda1380_read_reg_cache(struct snd_soc_codec *codec,
 	unsigned int reg)
 {
 	u16 *cache = codec->reg_cache;
+=======
+static inline unsigned int uda1380_read_reg_cache(struct snd_soc_component *component,
+	unsigned int reg)
+{
+	struct uda1380_priv *uda1380 = snd_soc_component_get_drvdata(component);
+	u16 *cache = uda1380->reg_cache;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (reg == UDA1380_RESET)
 		return 0;
 	if (reg >= UDA1380_CACHEREGNUM)
@@ -74,10 +98,18 @@ static inline unsigned int uda1380_read_reg_cache(struct snd_soc_codec *codec,
 /*
  * write uda1380 register cache
  */
+<<<<<<< HEAD
 static inline void uda1380_write_reg_cache(struct snd_soc_codec *codec,
 	u16 reg, unsigned int value)
 {
 	u16 *cache = codec->reg_cache;
+=======
+static inline void uda1380_write_reg_cache(struct snd_soc_component *component,
+	u16 reg, unsigned int value)
+{
+	struct uda1380_priv *uda1380 = snd_soc_component_get_drvdata(component);
+	u16 *cache = uda1380->reg_cache;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (reg >= UDA1380_CACHEREGNUM)
 		return;
@@ -89,9 +121,16 @@ static inline void uda1380_write_reg_cache(struct snd_soc_codec *codec,
 /*
  * write to the UDA1380 register space
  */
+<<<<<<< HEAD
 static int uda1380_write(struct snd_soc_codec *codec, unsigned int reg,
 	unsigned int value)
 {
+=======
+static int uda1380_write(struct snd_soc_component *component, unsigned int reg,
+	unsigned int value)
+{
+	struct uda1380_priv *uda1380 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 data[3];
 
 	/* data is
@@ -103,11 +142,16 @@ static int uda1380_write(struct snd_soc_codec *codec, unsigned int reg,
 	data[1] = (value & 0xff00) >> 8;
 	data[2] = value & 0x00ff;
 
+<<<<<<< HEAD
 	uda1380_write_reg_cache(codec, reg, value);
+=======
+	uda1380_write_reg_cache(component, reg, value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* the interpolator & decimator regs must only be written when the
 	 * codec DAI is active.
 	 */
+<<<<<<< HEAD
 	if (!codec->active && (reg >= UDA1380_MVOL))
 		return 0;
 	pr_debug("uda1380: hw write %x val %x\n", reg, value);
@@ -115,6 +159,15 @@ static int uda1380_write(struct snd_soc_codec *codec, unsigned int reg,
 		unsigned int val;
 		i2c_master_send(codec->control_data, data, 1);
 		i2c_master_recv(codec->control_data, data, 2);
+=======
+	if (!snd_soc_component_active(component) && (reg >= UDA1380_MVOL))
+		return 0;
+	pr_debug("uda1380: hw write %x val %x\n", reg, value);
+	if (i2c_master_send(uda1380->i2c, data, 3) == 3) {
+		unsigned int val;
+		i2c_master_send(uda1380->i2c, data, 1);
+		i2c_master_recv(uda1380->i2c, data, 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = (data[0]<<8) | data[1];
 		if (val != value) {
 			pr_debug("uda1380: READ BACK VAL %x\n",
@@ -128,26 +181,47 @@ static int uda1380_write(struct snd_soc_codec *codec, unsigned int reg,
 		return -EIO;
 }
 
+<<<<<<< HEAD
 static void uda1380_sync_cache(struct snd_soc_codec *codec)
 {
 	int reg;
 	u8 data[3];
 	u16 *cache = codec->reg_cache;
+=======
+static void uda1380_sync_cache(struct snd_soc_component *component)
+{
+	struct uda1380_priv *uda1380 = snd_soc_component_get_drvdata(component);
+	int reg;
+	u8 data[3];
+	u16 *cache = uda1380->reg_cache;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Sync reg_cache with the hardware */
 	for (reg = 0; reg < UDA1380_MVOL; reg++) {
 		data[0] = reg;
 		data[1] = (cache[reg] & 0xff00) >> 8;
 		data[2] = cache[reg] & 0x00ff;
+<<<<<<< HEAD
 		if (codec->hw_write(codec->control_data, data, 3) != 3)
 			dev_err(codec->dev, "%s: write to reg 0x%x failed\n",
+=======
+		if (i2c_master_send(uda1380->i2c, data, 3) != 3)
+			dev_err(component->dev, "%s: write to reg 0x%x failed\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__func__, reg);
 	}
 }
 
+<<<<<<< HEAD
 static int uda1380_reset(struct snd_soc_codec *codec)
 {
 	struct uda1380_platform_data *pdata = codec->dev->platform_data;
+=======
+static int uda1380_reset(struct snd_soc_component *component)
+{
+	struct uda1380_platform_data *pdata = component->dev->platform_data;
+	struct uda1380_priv *uda1380 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (gpio_is_valid(pdata->gpio_reset)) {
 		gpio_set_value(pdata->gpio_reset, 1);
@@ -160,8 +234,13 @@ static int uda1380_reset(struct snd_soc_codec *codec)
 		data[1] = 0;
 		data[2] = 0;
 
+<<<<<<< HEAD
 		if (codec->hw_write(codec->control_data, data, 3) != 3) {
 			dev_err(codec->dev, "%s: failed\n", __func__);
+=======
+		if (i2c_master_send(uda1380->i2c, data, 3) != 3) {
+			dev_err(component->dev, "%s: failed\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 	}
@@ -172,15 +251,25 @@ static int uda1380_reset(struct snd_soc_codec *codec)
 static void uda1380_flush_work(struct work_struct *work)
 {
 	struct uda1380_priv *uda1380 = container_of(work, struct uda1380_priv, work);
+<<<<<<< HEAD
 	struct snd_soc_codec *uda1380_codec = uda1380->codec;
+=======
+	struct snd_soc_component *uda1380_component = uda1380->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int bit, reg;
 
 	for_each_set_bit(bit, &uda1380_cache_dirty, UDA1380_CACHEREGNUM - 0x10) {
 		reg = 0x10 + bit;
 		pr_debug("uda1380: flush reg %x val %x:\n", reg,
+<<<<<<< HEAD
 				uda1380_read_reg_cache(uda1380_codec, reg));
 		uda1380_write(uda1380_codec, reg,
 				uda1380_read_reg_cache(uda1380_codec, reg));
+=======
+				uda1380_read_reg_cache(uda1380_component, reg));
+		uda1380_write(uda1380_component, reg,
+				uda1380_read_reg_cache(uda1380_component, reg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clear_bit(bit, &uda1380_cache_dirty);
 	}
 
@@ -237,6 +326,7 @@ static const char *uda1380_os_setting[] = {
 };
 
 static const struct soc_enum uda1380_deemp_enum[] = {
+<<<<<<< HEAD
 	SOC_ENUM_SINGLE(UDA1380_DEEMP, 8, 5, uda1380_deemp),
 	SOC_ENUM_SINGLE(UDA1380_DEEMP, 0, 5, uda1380_deemp),
 };
@@ -256,6 +346,29 @@ static const struct soc_enum uda1380_sdet_enum =
 	SOC_ENUM_SINGLE(UDA1380_MIXER, 4, 4, uda1380_sdet_setting);	/* SD_VALUE */
 static const struct soc_enum uda1380_os_enum =
 	SOC_ENUM_SINGLE(UDA1380_MIXER, 0, 3, uda1380_os_setting);	/* OS */
+=======
+	SOC_ENUM_SINGLE(UDA1380_DEEMP, 8, ARRAY_SIZE(uda1380_deemp),
+			uda1380_deemp),
+	SOC_ENUM_SINGLE(UDA1380_DEEMP, 0, ARRAY_SIZE(uda1380_deemp),
+			uda1380_deemp),
+};
+static SOC_ENUM_SINGLE_DECL(uda1380_input_sel_enum,
+			    UDA1380_ADC, 2, uda1380_input_sel);		/* SEL_MIC, SEL_LNA */
+static SOC_ENUM_SINGLE_DECL(uda1380_output_sel_enum,
+			    UDA1380_PM, 7, uda1380_output_sel);		/* R02_EN_AVC */
+static SOC_ENUM_SINGLE_DECL(uda1380_spf_enum,
+			    UDA1380_MODE, 14, uda1380_spf_mode);		/* M */
+static SOC_ENUM_SINGLE_DECL(uda1380_capture_sel_enum,
+			    UDA1380_IFACE, 6, uda1380_capture_sel);	/* SEL_SOURCE */
+static SOC_ENUM_SINGLE_DECL(uda1380_sel_ns_enum,
+			    UDA1380_MIXER, 14, uda1380_sel_ns);		/* SEL_NS */
+static SOC_ENUM_SINGLE_DECL(uda1380_mix_enum,
+			    UDA1380_MIXER, 12, uda1380_mix_control);	/* MIX, MIX_POS */
+static SOC_ENUM_SINGLE_DECL(uda1380_sdet_enum,
+			    UDA1380_MIXER, 4, uda1380_sdet_setting);	/* SD_VALUE */
+static SOC_ENUM_SINGLE_DECL(uda1380_os_enum,
+			    UDA1380_MIXER, 0, uda1380_os_setting);	/* OS */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * from -48 dB in 1.5 dB steps (mute instead of -49.5 dB)
@@ -267,12 +380,20 @@ static DECLARE_TLV_DB_SCALE(amix_tlv, -4950, 150, 1);
  * from -66 dB in 0.5 dB steps (2 dB steps, really) and
  * from -52 dB in 0.25 dB steps
  */
+<<<<<<< HEAD
 static const unsigned int mvol_tlv[] = {
 	TLV_DB_RANGE_HEAD(3),
 	0, 15, TLV_DB_SCALE_ITEM(-8200, 100, 1),
 	16, 43, TLV_DB_SCALE_ITEM(-6600, 50, 0),
 	44, 252, TLV_DB_SCALE_ITEM(-5200, 25, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(mvol_tlv,
+	0, 15, TLV_DB_SCALE_ITEM(-8200, 100, 1),
+	16, 43, TLV_DB_SCALE_ITEM(-6600, 50, 0),
+	44, 252, TLV_DB_SCALE_ITEM(-5200, 25, 0)
+);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * from -72 dB in 1.5 dB steps (6 dB steps really),
@@ -280,6 +401,7 @@ static const unsigned int mvol_tlv[] = {
  * from -60 dB in 0.5 dB steps (2 dB steps really) and
  * from -46 dB in 0.25 dB steps
  */
+<<<<<<< HEAD
 static const unsigned int vc_tlv[] = {
 	TLV_DB_RANGE_HEAD(4),
 	0, 7, TLV_DB_SCALE_ITEM(-7800, 150, 1),
@@ -287,6 +409,14 @@ static const unsigned int vc_tlv[] = {
 	16, 43, TLV_DB_SCALE_ITEM(-6000, 50, 0),
 	44, 228, TLV_DB_SCALE_ITEM(-4600, 25, 0),
 };
+=======
+static const DECLARE_TLV_DB_RANGE(vc_tlv,
+	0, 7, TLV_DB_SCALE_ITEM(-7800, 150, 1),
+	8, 15, TLV_DB_SCALE_ITEM(-6600, 75, 0),
+	16, 43, TLV_DB_SCALE_ITEM(-6000, 50, 0),
+	44, 228, TLV_DB_SCALE_ITEM(-4600, 25, 0)
+);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* from 0 to 6 dB in 2 dB steps if SPF mode != flat */
 static DECLARE_TLV_DB_SCALE(tr_tlv, 0, 200, 0);
@@ -413,11 +543,19 @@ static const struct snd_soc_dapm_route uda1380_dapm_routes[] = {
 static int uda1380_set_dai_fmt_both(struct snd_soc_dai *codec_dai,
 		unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	int iface;
 
 	/* set up DAI based upon fmt */
 	iface = uda1380_read_reg_cache(codec, UDA1380_IFACE);
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	int iface;
+
+	/* set up DAI based upon fmt */
+	iface = uda1380_read_reg_cache(component, UDA1380_IFACE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iface &= ~(R01_SFORI_MASK | R01_SIM | R01_SFORO_MASK);
 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
@@ -431,11 +569,19 @@ static int uda1380_set_dai_fmt_both(struct snd_soc_dai *codec_dai,
 		iface |= R01_SFORI_MSB | R01_SFORO_MSB;
 	}
 
+<<<<<<< HEAD
 	/* DATAI is slave only, so in single-link mode, this has to be slave */
 	if ((fmt & SND_SOC_DAIFMT_MASTER_MASK) != SND_SOC_DAIFMT_CBS_CFS)
 		return -EINVAL;
 
 	uda1380_write(codec, UDA1380_IFACE, iface);
+=======
+	/* DATAI is consumer only */
+	if ((fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) != SND_SOC_DAIFMT_CBC_CFC)
+		return -EINVAL;
+
+	uda1380_write_reg_cache(component, UDA1380_IFACE, iface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -443,11 +589,19 @@ static int uda1380_set_dai_fmt_both(struct snd_soc_dai *codec_dai,
 static int uda1380_set_dai_fmt_playback(struct snd_soc_dai *codec_dai,
 		unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	int iface;
 
 	/* set up DAI based upon fmt */
 	iface = uda1380_read_reg_cache(codec, UDA1380_IFACE);
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	int iface;
+
+	/* set up DAI based upon fmt */
+	iface = uda1380_read_reg_cache(component, UDA1380_IFACE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iface &= ~R01_SFORI_MASK;
 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
@@ -461,11 +615,19 @@ static int uda1380_set_dai_fmt_playback(struct snd_soc_dai *codec_dai,
 		iface |= R01_SFORI_MSB;
 	}
 
+<<<<<<< HEAD
 	/* DATAI is slave only, so this has to be slave */
 	if ((fmt & SND_SOC_DAIFMT_MASTER_MASK) != SND_SOC_DAIFMT_CBS_CFS)
 		return -EINVAL;
 
 	uda1380_write(codec, UDA1380_IFACE, iface);
+=======
+	/* DATAI is consumer only */
+	if ((fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) != SND_SOC_DAIFMT_CBC_CFC)
+		return -EINVAL;
+
+	uda1380_write(component, UDA1380_IFACE, iface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -473,11 +635,19 @@ static int uda1380_set_dai_fmt_playback(struct snd_soc_dai *codec_dai,
 static int uda1380_set_dai_fmt_capture(struct snd_soc_dai *codec_dai,
 		unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	int iface;
 
 	/* set up DAI based upon fmt */
 	iface = uda1380_read_reg_cache(codec, UDA1380_IFACE);
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	int iface;
+
+	/* set up DAI based upon fmt */
+	iface = uda1380_read_reg_cache(component, UDA1380_IFACE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iface &= ~(R01_SIM | R01_SFORO_MASK);
 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
@@ -491,10 +661,17 @@ static int uda1380_set_dai_fmt_capture(struct snd_soc_dai *codec_dai,
 		iface |= R01_SFORO_MSB;
 	}
 
+<<<<<<< HEAD
 	if ((fmt & SND_SOC_DAIFMT_MASTER_MASK) == SND_SOC_DAIFMT_CBM_CFM)
 		iface |= R01_SIM;
 
 	uda1380_write(codec, UDA1380_IFACE, iface);
+=======
+	if ((fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) == SND_SOC_DAIFMT_CBP_CFP)
+		iface |= R01_SIM;
+
+	uda1380_write(component, UDA1380_IFACE, iface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -502,21 +679,35 @@ static int uda1380_set_dai_fmt_capture(struct snd_soc_dai *codec_dai,
 static int uda1380_trigger(struct snd_pcm_substream *substream, int cmd,
 		struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
 	struct uda1380_priv *uda1380 = snd_soc_codec_get_drvdata(codec);
 	int mixer = uda1380_read_reg_cache(codec, UDA1380_MIXER);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct uda1380_priv *uda1380 = snd_soc_component_get_drvdata(component);
+	int mixer = uda1380_read_reg_cache(component, UDA1380_MIXER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+<<<<<<< HEAD
 		uda1380_write_reg_cache(codec, UDA1380_MIXER,
+=======
+		uda1380_write_reg_cache(component, UDA1380_MIXER,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					mixer & ~R14_SILENCE);
 		schedule_work(&uda1380->work);
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+<<<<<<< HEAD
 		uda1380_write_reg_cache(codec, UDA1380_MIXER,
+=======
+		uda1380_write_reg_cache(component, UDA1380_MIXER,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					mixer | R14_SILENCE);
 		schedule_work(&uda1380->work);
 		break;
@@ -528,14 +719,23 @@ static int uda1380_pcm_hw_params(struct snd_pcm_substream *substream,
 				 struct snd_pcm_hw_params *params,
 				 struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
 	u16 clk = uda1380_read_reg_cache(codec, UDA1380_CLK);
+=======
+	struct snd_soc_component *component = dai->component;
+	u16 clk = uda1380_read_reg_cache(component, UDA1380_CLK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set WSPLL power and divider if running from this clock */
 	if (clk & R00_DAC_CLK) {
 		int rate = params_rate(params);
+<<<<<<< HEAD
 		u16 pm = uda1380_read_reg_cache(codec, UDA1380_PM);
+=======
+		u16 pm = uda1380_read_reg_cache(component, UDA1380_PM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clk &= ~0x3; /* clear SEL_LOOP_DIV */
 		switch (rate) {
 		case 6250 ... 12500:
@@ -551,7 +751,11 @@ static int uda1380_pcm_hw_params(struct snd_pcm_substream *substream,
 			clk |= 0x3;
 			break;
 		}
+<<<<<<< HEAD
 		uda1380_write(codec, UDA1380_PM, R02_PON_PLL | pm);
+=======
+		uda1380_write(component, UDA1380_PM, R02_PON_PLL | pm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
@@ -559,13 +763,18 @@ static int uda1380_pcm_hw_params(struct snd_pcm_substream *substream,
 	else
 		clk |= R00_EN_ADC | R00_EN_DEC;
 
+<<<<<<< HEAD
 	uda1380_write(codec, UDA1380_CLK, clk);
+=======
+	uda1380_write(component, UDA1380_CLK, clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void uda1380_pcm_shutdown(struct snd_pcm_substream *substream,
 				 struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
 	u16 clk = uda1380_read_reg_cache(codec, UDA1380_CLK);
@@ -574,6 +783,15 @@ static void uda1380_pcm_shutdown(struct snd_pcm_substream *substream,
 	if (clk & R00_DAC_CLK) {
 		u16 pm = uda1380_read_reg_cache(codec, UDA1380_PM);
 		uda1380_write(codec, UDA1380_PM, ~R02_PON_PLL & pm);
+=======
+	struct snd_soc_component *component = dai->component;
+	u16 clk = uda1380_read_reg_cache(component, UDA1380_CLK);
+
+	/* shut down WSPLL power if running from this clock */
+	if (clk & R00_DAC_CLK) {
+		u16 pm = uda1380_read_reg_cache(component, UDA1380_PM);
+		uda1380_write(component, UDA1380_PM, ~R02_PON_PLL & pm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
@@ -581,6 +799,7 @@ static void uda1380_pcm_shutdown(struct snd_pcm_substream *substream,
 	else
 		clk &= ~(R00_EN_ADC | R00_EN_DEC);
 
+<<<<<<< HEAD
 	uda1380_write(codec, UDA1380_CLK, clk);
 }
 
@@ -593,11 +812,23 @@ static int uda1380_set_bias_level(struct snd_soc_codec *codec,
 
 	if (codec->dapm.bias_level == level)
 		return 0;
+=======
+	uda1380_write(component, UDA1380_CLK, clk);
+}
+
+static int uda1380_set_bias_level(struct snd_soc_component *component,
+	enum snd_soc_bias_level level)
+{
+	int pm = uda1380_read_reg_cache(component, UDA1380_PM);
+	int reg;
+	struct uda1380_platform_data *pdata = component->dev->platform_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 	case SND_SOC_BIAS_PREPARE:
 		/* ADC, DAC on */
+<<<<<<< HEAD
 		uda1380_write(codec, UDA1380_PM, R02_PON_BIAS | pm);
 		break;
 	case SND_SOC_BIAS_STANDBY:
@@ -611,6 +842,21 @@ static int uda1380_set_bias_level(struct snd_soc_codec *codec,
 			uda1380_sync_cache(codec);
 		}
 		uda1380_write(codec, UDA1380_PM, 0x0);
+=======
+		uda1380_write(component, UDA1380_PM, R02_PON_BIAS | pm);
+		break;
+	case SND_SOC_BIAS_STANDBY:
+		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
+			if (gpio_is_valid(pdata->gpio_power)) {
+				gpio_set_value(pdata->gpio_power, 1);
+				mdelay(1);
+				uda1380_reset(component);
+			}
+
+			uda1380_sync_cache(component);
+		}
+		uda1380_write(component, UDA1380_PM, 0x0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SND_SOC_BIAS_OFF:
 		if (!gpio_is_valid(pdata->gpio_power))
@@ -624,7 +870,10 @@ static int uda1380_set_bias_level(struct snd_soc_codec *codec,
 		for (reg = UDA1380_MVOL; reg < UDA1380_CACHEREGNUM; reg++)
 			set_bit(reg - 0x10, &uda1380_cache_dirty);
 	}
+<<<<<<< HEAD
 	codec->dapm.bias_level = level;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -694,6 +943,7 @@ static struct snd_soc_dai_driver uda1380_dai[] = {
 },
 };
 
+<<<<<<< HEAD
 static int uda1380_suspend(struct snd_soc_codec *codec)
 {
 	uda1380_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -736,10 +986,25 @@ static int uda1380_probe(struct snd_soc_codec *codec)
 		ret = uda1380_reset(codec);
 		if (ret)
 			goto err_free_gpio;
+=======
+static int uda1380_probe(struct snd_soc_component *component)
+{
+	struct uda1380_platform_data *pdata =component->dev->platform_data;
+	struct uda1380_priv *uda1380 = snd_soc_component_get_drvdata(component);
+	int ret;
+
+	uda1380->component = component;
+
+	if (!gpio_is_valid(pdata->gpio_power)) {
+		ret = uda1380_reset(component);
+		if (ret)
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	INIT_WORK(&uda1380->work, uda1380_flush_work);
 
+<<<<<<< HEAD
 	/* power on device */
 	uda1380_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 	/* set clock input */
@@ -749,11 +1014,21 @@ static int uda1380_probe(struct snd_soc_codec *codec)
 		break;
 	case UDA1380_DAC_CLK_WSPLL:
 		uda1380_write_reg_cache(codec, UDA1380_CLK,
+=======
+	/* set clock input */
+	switch (pdata->dac_clk) {
+	case UDA1380_DAC_CLK_SYSCLK:
+		uda1380_write_reg_cache(component, UDA1380_CLK, 0);
+		break;
+	case UDA1380_DAC_CLK_WSPLL:
+		uda1380_write_reg_cache(component, UDA1380_CLK,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			R00_DAC_CLK);
 		break;
 	}
 
 	return 0;
+<<<<<<< HEAD
 
 err_free_gpio:
 	if (gpio_is_valid(pdata->gpio_reset))
@@ -803,11 +1078,42 @@ static __devinit int uda1380_i2c_probe(struct i2c_client *i2c,
 	struct uda1380_priv *uda1380;
 	int ret;
 
+=======
+}
+
+static const struct snd_soc_component_driver soc_component_dev_uda1380 = {
+	.probe			= uda1380_probe,
+	.read			= uda1380_read_reg_cache,
+	.write			= uda1380_write,
+	.set_bias_level		= uda1380_set_bias_level,
+	.controls		= uda1380_snd_controls,
+	.num_controls		= ARRAY_SIZE(uda1380_snd_controls),
+	.dapm_widgets		= uda1380_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(uda1380_dapm_widgets),
+	.dapm_routes		= uda1380_dapm_routes,
+	.num_dapm_routes	= ARRAY_SIZE(uda1380_dapm_routes),
+	.suspend_bias_off	= 1,
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+};
+
+static int uda1380_i2c_probe(struct i2c_client *i2c)
+{
+	struct uda1380_platform_data *pdata = i2c->dev.platform_data;
+	struct uda1380_priv *uda1380;
+	int ret;
+
+	if (!pdata)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uda1380 = devm_kzalloc(&i2c->dev, sizeof(struct uda1380_priv),
 			       GFP_KERNEL);
 	if (uda1380 == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	i2c_set_clientdata(i2c, uda1380);
 	uda1380->control_data = i2c;
 
@@ -822,12 +1128,44 @@ static int __devexit uda1380_i2c_remove(struct i2c_client *i2c)
 	return 0;
 }
 
+=======
+	if (gpio_is_valid(pdata->gpio_reset)) {
+		ret = devm_gpio_request_one(&i2c->dev, pdata->gpio_reset,
+			GPIOF_OUT_INIT_LOW, "uda1380 reset");
+		if (ret)
+			return ret;
+	}
+
+	if (gpio_is_valid(pdata->gpio_power)) {
+		ret = devm_gpio_request_one(&i2c->dev, pdata->gpio_power,
+			GPIOF_OUT_INIT_LOW, "uda1380 power");
+		if (ret)
+			return ret;
+	}
+
+	uda1380->reg_cache = devm_kmemdup(&i2c->dev,
+					uda1380_reg,
+					ARRAY_SIZE(uda1380_reg) * sizeof(u16),
+					GFP_KERNEL);
+	if (!uda1380->reg_cache)
+		return -ENOMEM;
+
+	i2c_set_clientdata(i2c, uda1380);
+	uda1380->i2c = i2c;
+
+	ret = devm_snd_soc_register_component(&i2c->dev,
+			&soc_component_dev_uda1380, uda1380_dai, ARRAY_SIZE(uda1380_dai));
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id uda1380_i2c_id[] = {
 	{ "uda1380", 0 },
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, uda1380_i2c_id);
 
+<<<<<<< HEAD
 static struct i2c_driver uda1380_i2c_driver = {
 	.driver = {
 		.name =  "uda1380-codec",
@@ -858,6 +1196,24 @@ static void __exit uda1380_exit(void)
 #endif
 }
 module_exit(uda1380_exit);
+=======
+static const struct of_device_id uda1380_of_match[] = {
+	{ .compatible = "nxp,uda1380", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, uda1380_of_match);
+
+static struct i2c_driver uda1380_i2c_driver = {
+	.driver = {
+		.name =  "uda1380-codec",
+		.of_match_table = uda1380_of_match,
+	},
+	.probe = uda1380_i2c_probe,
+	.id_table = uda1380_i2c_id,
+};
+
+module_i2c_driver(uda1380_i2c_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Giorgio Padrin");
 MODULE_DESCRIPTION("Audio support for codec Philips UDA1380");

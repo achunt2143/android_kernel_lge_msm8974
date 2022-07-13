@@ -32,10 +32,13 @@ static struct smatch mach_table[] = {
 		.liname		= "SGI Indy",
 		.flags		= PROM_FLAG_ARCS,
 	}, {
+<<<<<<< HEAD
 		.arcname	= "SGI-IP27",
 		.liname		= "SGI Origin",
 		.flags		= PROM_FLAG_ARCS,
 	}, {
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.arcname	= "SGI-IP28",
 		.liname		= "SGI IP28",
 		.flags		= PROM_FLAG_ARCS,
@@ -87,6 +90,14 @@ const char *get_system_type(void)
 	return system_type;
 }
 
+<<<<<<< HEAD
+=======
+static pcomponent * __init ArcGetChild(pcomponent *Current)
+{
+	return (pcomponent *) ARC_CALL1(child_component, Current);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init prom_identify_arch(void)
 {
 	pcomponent *p;
@@ -98,6 +109,7 @@ void __init prom_identify_arch(void)
 	 */
 	p = ArcGetChild(PROM_NULL_COMPONENT);
 	if (p == NULL) {
+<<<<<<< HEAD
 #ifdef CONFIG_SGI_IP27
 		/* IP27 PROM misbehaves, seems to not implement ARC
 		   GetChild().  So we just assume it's an IP27.  */
@@ -105,6 +117,9 @@ void __init prom_identify_arch(void)
 #else
 		iname = "Unknown";
 #endif
+=======
+		iname = "Unknown";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		iname = (char *) (long) p->iname;
 

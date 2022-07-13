@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sata_mv.c - Marvell SATA support
  *
@@ -9,6 +13,7 @@
  * Extensive overhaul and enhancement by Mark Lord <mlord@pobox.com>.
  *
  * Please ALWAYS copy linux-ide@vger.kernel.org on emails.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +28,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -60,11 +67,20 @@
 #include <linux/dma-mapping.h>
 #include <linux/device.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
+=======
+#include <linux/phy/phy.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/ata_platform.h>
 #include <linux/mbus.h>
 #include <linux/bitops.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
@@ -77,8 +93,13 @@
  * module options
  */
 
+<<<<<<< HEAD
 static int msi;
 #ifdef CONFIG_PCI
+=======
+#ifdef CONFIG_PCI
+static int msi;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(msi, int, S_IRUGO);
 MODULE_PARM_DESC(msi, "Enable use of PCI MSI (0=off, 1=on)");
 #endif
@@ -302,6 +323,15 @@ enum {
 	MV5_LTMODE		= 0x30,
 	MV5_PHY_CTL		= 0x0C,
 	SATA_IFCFG		= 0x050,
+<<<<<<< HEAD
+=======
+	LP_PHY_CTL		= 0x058,
+	LP_PHY_CTL_PIN_PU_PLL   = (1 << 0),
+	LP_PHY_CTL_PIN_PU_RX    = (1 << 1),
+	LP_PHY_CTL_PIN_PU_TX    = (1 << 2),
+	LP_PHY_CTL_GEN_TX_3G    = (1 << 5),
+	LP_PHY_CTL_GEN_RX_3G    = (1 << 9),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	MV_M2_PREAMP_MASK	= 0x7e0,
 
@@ -429,6 +459,10 @@ enum {
 	MV_HP_CUT_THROUGH	= (1 << 10),	/* can use EDMA cut-through */
 	MV_HP_FLAG_SOC		= (1 << 11),	/* SystemOnChip, no PCI */
 	MV_HP_QUIRK_LED_BLINK_EN = (1 << 12),	/* is led blinking enabled? */
+<<<<<<< HEAD
+=======
+	MV_HP_FIX_LP_PHY_CTL	= (1 << 13),	/* fix speed in LP_PHY_CTL ? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Port private flags (pp_flags) */
 	MV_PP_FLAG_EDMA_EN	= (1 << 0),	/* is EDMA engine enabled? */
@@ -551,9 +585,27 @@ struct mv_host_priv {
 	u32			irq_mask_offset;
 	u32			unmask_all_irqs;
 
+<<<<<<< HEAD
 #if defined(CONFIG_HAVE_CLK)
 	struct clk		*clk;
 #endif
+=======
+	/*
+	 * Needed on some devices that require their clocks to be enabled.
+	 * These are optional: if the platform device does not have any
+	 * clocks, they won't be used.  Also, if the underlying hardware
+	 * does not support the common clock framework (CONFIG_HAVE_CLK=n),
+	 * all the clock operations become no-ops (see clk.h).
+	 */
+	struct clk		*clk;
+	struct clk              **port_clks;
+	/*
+	 * Some devices have a SATA PHY which can be enabled/disabled
+	 * in order to save power. These are optional: if the platform
+	 * devices does not have any phy, they won't be used.
+	 */
+	struct phy		**port_phys;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * These consistent DMA memory pools give us guaranteed
 	 * alignment for hardware-accessed data structures,
@@ -570,7 +622,11 @@ struct mv_hw_ops {
 	void (*enable_leds)(struct mv_host_priv *hpriv, void __iomem *mmio);
 	void (*read_preamp)(struct mv_host_priv *hpriv, int idx,
 			   void __iomem *mmio);
+<<<<<<< HEAD
 	int (*reset_hc)(struct mv_host_priv *hpriv, void __iomem *mmio,
+=======
+	int (*reset_hc)(struct ata_host *host, void __iomem *mmio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int n_hc);
 	void (*reset_flash)(struct mv_host_priv *hpriv, void __iomem *mmio);
 	void (*reset_bus)(struct ata_host *host, void __iomem *mmio);
@@ -583,8 +639,13 @@ static int mv5_scr_write(struct ata_link *link, unsigned int sc_reg_in, u32 val)
 static int mv_port_start(struct ata_port *ap);
 static void mv_port_stop(struct ata_port *ap);
 static int mv_qc_defer(struct ata_queued_cmd *qc);
+<<<<<<< HEAD
 static void mv_qc_prep(struct ata_queued_cmd *qc);
 static void mv_qc_prep_iie(struct ata_queued_cmd *qc);
+=======
+static enum ata_completion_errors mv_qc_prep(struct ata_queued_cmd *qc);
+static enum ata_completion_errors mv_qc_prep_iie(struct ata_queued_cmd *qc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int mv_qc_issue(struct ata_queued_cmd *qc);
 static int mv_hardreset(struct ata_link *link, unsigned int *class,
 			unsigned long deadline);
@@ -597,7 +658,11 @@ static void mv5_phy_errata(struct mv_host_priv *hpriv, void __iomem *mmio,
 static void mv5_enable_leds(struct mv_host_priv *hpriv, void __iomem *mmio);
 static void mv5_read_preamp(struct mv_host_priv *hpriv, int idx,
 			   void __iomem *mmio);
+<<<<<<< HEAD
 static int mv5_reset_hc(struct mv_host_priv *hpriv, void __iomem *mmio,
+=======
+static int mv5_reset_hc(struct ata_host *host, void __iomem *mmio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int n_hc);
 static void mv5_reset_flash(struct mv_host_priv *hpriv, void __iomem *mmio);
 static void mv5_reset_bus(struct ata_host *host, void __iomem *mmio);
@@ -607,14 +672,22 @@ static void mv6_phy_errata(struct mv_host_priv *hpriv, void __iomem *mmio,
 static void mv6_enable_leds(struct mv_host_priv *hpriv, void __iomem *mmio);
 static void mv6_read_preamp(struct mv_host_priv *hpriv, int idx,
 			   void __iomem *mmio);
+<<<<<<< HEAD
 static int mv6_reset_hc(struct mv_host_priv *hpriv, void __iomem *mmio,
+=======
+static int mv6_reset_hc(struct ata_host *host, void __iomem *mmio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int n_hc);
 static void mv6_reset_flash(struct mv_host_priv *hpriv, void __iomem *mmio);
 static void mv_soc_enable_leds(struct mv_host_priv *hpriv,
 				      void __iomem *mmio);
 static void mv_soc_read_preamp(struct mv_host_priv *hpriv, int idx,
 				      void __iomem *mmio);
+<<<<<<< HEAD
 static int mv_soc_reset_hc(struct mv_host_priv *hpriv,
+=======
+static int mv_soc_reset_hc(struct ata_host *host,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  void __iomem *mmio, unsigned int n_hc);
 static void mv_soc_reset_flash(struct mv_host_priv *hpriv,
 				      void __iomem *mmio);
@@ -649,17 +722,35 @@ static u8 mv_sff_check_status(struct ata_port *ap);
  * because we have to allow room for worst case splitting of
  * PRDs for 64K boundaries in mv_fill_sg().
  */
+<<<<<<< HEAD
 static struct scsi_host_template mv5_sht = {
+=======
+#ifdef CONFIG_PCI
+static const struct scsi_host_template mv5_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BASE_SHT(DRV_NAME),
 	.sg_tablesize		= MV_MAX_SG_CT / 2,
 	.dma_boundary		= MV_DMA_BOUNDARY,
 };
+<<<<<<< HEAD
 
 static struct scsi_host_template mv6_sht = {
 	ATA_NCQ_SHT(DRV_NAME),
 	.can_queue		= MV_MAX_Q_DEPTH - 1,
 	.sg_tablesize		= MV_MAX_SG_CT / 2,
 	.dma_boundary		= MV_DMA_BOUNDARY,
+=======
+#endif
+static const struct scsi_host_template mv6_sht = {
+	__ATA_BASE_SHT(DRV_NAME),
+	.can_queue		= MV_MAX_Q_DEPTH - 1,
+	.sg_tablesize		= MV_MAX_SG_CT / 2,
+	.dma_boundary		= MV_DMA_BOUNDARY,
+	.sdev_groups		= ata_ncq_sdev_groups,
+	.change_queue_depth	= ata_scsi_change_queue_depth,
+	.tag_alloc_policy	= BLK_TAG_ALLOC_RR,
+	.slave_configure	= ata_scsi_slave_config
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct ata_port_operations mv5_ops = {
@@ -773,6 +864,7 @@ static const struct ata_port_info mv_port_info[] = {
 	},
 };
 
+<<<<<<< HEAD
 static const struct pci_device_id mv_pci_tbl[] = {
 	{ PCI_VDEVICE(MARVELL, 0x5040), chip_504x },
 	{ PCI_VDEVICE(MARVELL, 0x5041), chip_504x },
@@ -804,6 +896,8 @@ static const struct pci_device_id mv_pci_tbl[] = {
 	{ }			/* terminate list */
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct mv_hw_ops mv5xxx_ops = {
 	.phy_errata		= mv5_phy_errata,
 	.enable_leds		= mv5_enable_leds,
@@ -963,7 +1057,11 @@ static inline void mv_write_cached_reg(void __iomem *addr, u32 *old, u32 new)
 		 * Looks like a lot of fuss, but it avoids an unnecessary
 		 * +1 usec read-after-write delay for unaffected registers.
 		 */
+<<<<<<< HEAD
 		laddr = (long)addr & 0xffff;
+=======
+		laddr = (unsigned long)addr & 0xffff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (laddr >= 0x300 && laddr <= 0x33c) {
 			laddr &= 0x000f;
 			if (laddr == 0x4 || laddr == 0xc) {
@@ -1136,9 +1234,14 @@ static void mv_set_irq_coalescing(struct ata_host *host,
 	spin_unlock_irqrestore(&host->lock, flags);
 }
 
+<<<<<<< HEAD
 /**
  *      mv_start_edma - Enable eDMA engine
  *      @base: port base address
+=======
+/*
+ *      mv_start_edma - Enable eDMA engine
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *      @pp: port private data
  *
  *      Verify the local cache of the eDMA state is accurate with a
@@ -1235,6 +1338,7 @@ static int mv_stop_edma(struct ata_port *ap)
 	return err;
 }
 
+<<<<<<< HEAD
 #ifdef ATA_DEBUG
 static void mv_dump_mem(void __iomem *start, unsigned bytes)
 {
@@ -1309,6 +1413,76 @@ static void mv_dump_all_regs(void __iomem *mmio_base, int port,
 		mv_dump_mem(port_base+0x300, 0x60);
 	}
 #endif
+=======
+static void mv_dump_mem(struct device *dev, void __iomem *start, unsigned bytes)
+{
+	int b, w, o;
+	unsigned char linebuf[38];
+
+	for (b = 0; b < bytes; ) {
+		for (w = 0, o = 0; b < bytes && w < 4; w++) {
+			o += scnprintf(linebuf + o, sizeof(linebuf) - o,
+				       "%08x ", readl(start + b));
+			b += sizeof(u32);
+		}
+		dev_dbg(dev, "%s: %p: %s\n",
+			__func__, start + b, linebuf);
+	}
+}
+
+static void mv_dump_pci_cfg(struct pci_dev *pdev, unsigned bytes)
+{
+	int b, w, o;
+	u32 dw = 0;
+	unsigned char linebuf[38];
+
+	for (b = 0; b < bytes; ) {
+		for (w = 0, o = 0; b < bytes && w < 4; w++) {
+			(void) pci_read_config_dword(pdev, b, &dw);
+			o += snprintf(linebuf + o, sizeof(linebuf) - o,
+				      "%08x ", dw);
+			b += sizeof(u32);
+		}
+		dev_dbg(&pdev->dev, "%s: %02x: %s\n",
+			__func__, b, linebuf);
+	}
+}
+
+static void mv_dump_all_regs(void __iomem *mmio_base,
+			     struct pci_dev *pdev)
+{
+	void __iomem *hc_base;
+	void __iomem *port_base;
+	int start_port, num_ports, p, start_hc, num_hcs, hc;
+
+	start_hc = start_port = 0;
+	num_ports = 8;		/* should be benign for 4 port devs */
+	num_hcs = 2;
+	dev_dbg(&pdev->dev,
+		"%s: All registers for port(s) %u-%u:\n", __func__,
+		start_port, num_ports > 1 ? num_ports - 1 : start_port);
+
+	dev_dbg(&pdev->dev, "%s: PCI config space regs:\n", __func__);
+	mv_dump_pci_cfg(pdev, 0x68);
+
+	dev_dbg(&pdev->dev, "%s: PCI regs:\n", __func__);
+	mv_dump_mem(&pdev->dev, mmio_base+0xc00, 0x3c);
+	mv_dump_mem(&pdev->dev, mmio_base+0xd00, 0x34);
+	mv_dump_mem(&pdev->dev, mmio_base+0xf00, 0x4);
+	mv_dump_mem(&pdev->dev, mmio_base+0x1d00, 0x6c);
+	for (hc = start_hc; hc < start_hc + num_hcs; hc++) {
+		hc_base = mv_hc_base(mmio_base, hc);
+		dev_dbg(&pdev->dev, "%s: HC regs (HC %i):\n", __func__, hc);
+		mv_dump_mem(&pdev->dev, hc_base, 0x1c);
+	}
+	for (p = start_port; p < start_port + num_ports; p++) {
+		port_base = mv_port_base(mmio_base, p);
+		dev_dbg(&pdev->dev, "%s: EDMA regs (port %i):\n", __func__, p);
+		mv_dump_mem(&pdev->dev, port_base, 0x54);
+		dev_dbg(&pdev->dev, "%s: SATA regs (port %i):\n", __func__, p);
+		mv_dump_mem(&pdev->dev, port_base+0x300, 0x60);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int mv_scr_offset(unsigned int sc_reg_in)
@@ -1348,6 +1522,10 @@ static int mv_scr_write(struct ata_link *link, unsigned int sc_reg_in, u32 val)
 
 	if (ofs != 0xffffffffU) {
 		void __iomem *addr = mv_ap_base(link->ap) + ofs;
+<<<<<<< HEAD
+=======
+		struct mv_host_priv *hpriv = link->ap->host->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sc_reg_in == SCR_CONTROL) {
 			/*
 			 * Workaround for 88SX60x1 FEr SATA#26:
@@ -1364,6 +1542,28 @@ static int mv_scr_write(struct ata_link *link, unsigned int sc_reg_in, u32 val)
 			 */
 			if ((val & 0xf) == 1 || (readl(addr) & 0xf) == 1)
 				val |= 0xf000;
+<<<<<<< HEAD
+=======
+
+			if (hpriv->hp_flags & MV_HP_FIX_LP_PHY_CTL) {
+				void __iomem *lp_phy_addr =
+					mv_ap_base(link->ap) + LP_PHY_CTL;
+				/*
+				 * Set PHY speed according to SControl speed.
+				 */
+				u32 lp_phy_val =
+					LP_PHY_CTL_PIN_PU_PLL |
+					LP_PHY_CTL_PIN_PU_RX  |
+					LP_PHY_CTL_PIN_PU_TX;
+
+				if ((val & 0xf0) != 0x10)
+					lp_phy_val |=
+						LP_PHY_CTL_GEN_TX_3G |
+						LP_PHY_CTL_GEN_RX_3G;
+
+				writelfl(lp_phy_val, lp_phy_addr);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		writelfl(val, addr);
 		return 0;
@@ -1488,7 +1688,11 @@ static void mv_60x1_errata_sata25(struct ata_port *ap, int want_ncq)
 		writel(new, hpriv->base + GPIO_PORT_CTL);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	mv_bmdma_enable - set a magic bit on GEN_IIE to allow bmdma
  *	@ap: Port being initialized
  *
@@ -1683,6 +1887,7 @@ static int mv_port_start(struct ata_port *ap)
 		return -ENOMEM;
 	ap->private_data = pp;
 
+<<<<<<< HEAD
 	pp->crqb = dma_pool_alloc(hpriv->crqb_pool, GFP_KERNEL, &pp->crqb_dma);
 	if (!pp->crqb)
 		return -ENOMEM;
@@ -1692,6 +1897,15 @@ static int mv_port_start(struct ata_port *ap)
 	if (!pp->crpb)
 		goto out_port_free_dma_mem;
 	memset(pp->crpb, 0, MV_CRPB_Q_SZ);
+=======
+	pp->crqb = dma_pool_zalloc(hpriv->crqb_pool, GFP_KERNEL, &pp->crqb_dma);
+	if (!pp->crqb)
+		return -ENOMEM;
+
+	pp->crpb = dma_pool_zalloc(hpriv->crpb_pool, GFP_KERNEL, &pp->crpb_dma);
+	if (!pp->crpb)
+		goto out_port_free_dma_mem;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 6041/6081 Rev. "C0" (and newer) are okay with async notify */
 	if (hpriv->hp_flags & MV_HP_ERRATA_60X1C0)
@@ -1760,7 +1974,11 @@ static void mv_fill_sg(struct ata_queued_cmd *qc)
 	struct mv_sg *mv_sg, *last_sg = NULL;
 	unsigned int si;
 
+<<<<<<< HEAD
 	mv_sg = pp->sg_tbl[qc->tag];
+=======
+	mv_sg = pp->sg_tbl[qc->hw_tag];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for_each_sg(qc->sg, sg, qc->n_elem, si) {
 		dma_addr_t addr = sg_dma_address(sg);
 		u32 sg_len = sg_dma_len(sg);
@@ -1861,9 +2079,15 @@ static void mv_bmdma_setup(struct ata_queued_cmd *qc)
 	writel(0, port_mmio + BMDMA_CMD);
 
 	/* load PRD table addr. */
+<<<<<<< HEAD
 	writel((pp->sg_tbl_dma[qc->tag] >> 16) >> 16,
 		port_mmio + BMDMA_PRD_HIGH);
 	writelfl(pp->sg_tbl_dma[qc->tag],
+=======
+	writel((pp->sg_tbl_dma[qc->hw_tag] >> 16) >> 16,
+		port_mmio + BMDMA_PRD_HIGH);
+	writelfl(pp->sg_tbl_dma[qc->hw_tag],
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		port_mmio + BMDMA_PRD_LOW);
 
 	/* issue r/w command */
@@ -1889,8 +2113,13 @@ static void mv_bmdma_start(struct ata_queued_cmd *qc)
 }
 
 /**
+<<<<<<< HEAD
  *	mv_bmdma_stop - Stop BMDMA transfer
  *	@qc: queued command to stop DMA on.
+=======
+ *	mv_bmdma_stop_ap - Stop BMDMA transfer
+ *	@ap: port to stop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Clears the ATA_DMA_START flag in the bmdma control register
  *
@@ -1981,7 +2210,11 @@ static void mv_rw_multi_errata_sata24(struct ata_queued_cmd *qc)
 				break;
 			case ATA_CMD_WRITE_MULTI_FUA_EXT:
 				tf->flags &= ~ATA_TFLAG_FUA; /* ugh */
+<<<<<<< HEAD
 				/* fall through */
+=======
+				fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case ATA_CMD_WRITE_MULTI_EXT:
 				tf->command = ATA_CMD_PIO_WRITE_EXT;
 				break;
@@ -2002,7 +2235,11 @@ static void mv_rw_multi_errata_sata24(struct ata_queued_cmd *qc)
  *      LOCKING:
  *      Inherited from caller.
  */
+<<<<<<< HEAD
 static void mv_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors mv_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_port *ap = qc->ap;
 	struct mv_port_priv *pp = ap->private_data;
@@ -2014,32 +2251,54 @@ static void mv_qc_prep(struct ata_queued_cmd *qc)
 	switch (tf->protocol) {
 	case ATA_PROT_DMA:
 		if (tf->command == ATA_CMD_DSM)
+<<<<<<< HEAD
 			return;
 		/* fall-thru */
+=======
+			return AC_ERR_OK;
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATA_PROT_NCQ:
 		break;	/* continue below */
 	case ATA_PROT_PIO:
 		mv_rw_multi_errata_sata24(qc);
+<<<<<<< HEAD
 		return;
 	default:
 		return;
+=======
+		return AC_ERR_OK;
+	default:
+		return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Fill in command request block
 	 */
 	if (!(tf->flags & ATA_TFLAG_WRITE))
 		flags |= CRQB_FLAG_READ;
+<<<<<<< HEAD
 	WARN_ON(MV_MAX_Q_DEPTH <= qc->tag);
 	flags |= qc->tag << CRQB_TAG_SHIFT;
+=======
+	WARN_ON(MV_MAX_Q_DEPTH <= qc->hw_tag);
+	flags |= qc->hw_tag << CRQB_TAG_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flags |= (qc->dev->link->pmp & 0xf) << CRQB_PMP_SHIFT;
 
 	/* get current queue index from software */
 	in_index = pp->req_idx;
 
 	pp->crqb[in_index].sg_addr =
+<<<<<<< HEAD
 		cpu_to_le32(pp->sg_tbl_dma[qc->tag] & 0xffffffff);
 	pp->crqb[in_index].sg_addr_hi =
 		cpu_to_le32((pp->sg_tbl_dma[qc->tag] >> 16) >> 16);
+=======
+		cpu_to_le32(pp->sg_tbl_dma[qc->hw_tag] & 0xffffffff);
+	pp->crqb[in_index].sg_addr_hi =
+		cpu_to_le32((pp->sg_tbl_dma[qc->hw_tag] >> 16) >> 16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pp->crqb[in_index].ctrl_flags = cpu_to_le16(flags);
 
 	cw = &pp->crqb[in_index].ata_cmd[0];
@@ -2069,12 +2328,19 @@ static void mv_qc_prep(struct ata_queued_cmd *qc)
 		 * non-NCQ mode are: [RW] STREAM DMA and W DMA FUA EXT, none
 		 * of which are defined/used by Linux.  If we get here, this
 		 * driver needs work.
+<<<<<<< HEAD
 		 *
 		 * FIXME: modify libata to give qc_prep a return value and
 		 * return error here.
 		 */
 		BUG_ON(tf->command);
 		break;
+=======
+		 */
+		ata_port_err(ap, "%s: unsupported command: %.2x\n", __func__,
+				tf->command);
+		return AC_ERR_INVALID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mv_crqb_pack_cmd(cw++, tf->nsect, ATA_REG_NSECT, 0);
 	mv_crqb_pack_cmd(cw++, tf->hob_lbal, ATA_REG_LBAL, 0);
@@ -2087,8 +2353,15 @@ static void mv_qc_prep(struct ata_queued_cmd *qc)
 	mv_crqb_pack_cmd(cw++, tf->command, ATA_REG_CMD, 1);	/* last */
 
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
+<<<<<<< HEAD
 		return;
 	mv_fill_sg(qc);
+=======
+		return AC_ERR_OK;
+	mv_fill_sg(qc);
+
+	return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2103,7 +2376,11 @@ static void mv_qc_prep(struct ata_queued_cmd *qc)
  *      LOCKING:
  *      Inherited from caller.
  */
+<<<<<<< HEAD
 static void mv_qc_prep_iie(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors mv_qc_prep_iie(struct ata_queued_cmd *qc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_port *ap = qc->ap;
 	struct mv_port_priv *pp = ap->private_data;
@@ -2114,25 +2391,42 @@ static void mv_qc_prep_iie(struct ata_queued_cmd *qc)
 
 	if ((tf->protocol != ATA_PROT_DMA) &&
 	    (tf->protocol != ATA_PROT_NCQ))
+<<<<<<< HEAD
 		return;
 	if (tf->command == ATA_CMD_DSM)
 		return;  /* use bmdma for this */
+=======
+		return AC_ERR_OK;
+	if (tf->command == ATA_CMD_DSM)
+		return AC_ERR_OK;  /* use bmdma for this */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fill in Gen IIE command request block */
 	if (!(tf->flags & ATA_TFLAG_WRITE))
 		flags |= CRQB_FLAG_READ;
 
+<<<<<<< HEAD
 	WARN_ON(MV_MAX_Q_DEPTH <= qc->tag);
 	flags |= qc->tag << CRQB_TAG_SHIFT;
 	flags |= qc->tag << CRQB_HOSTQ_SHIFT;
+=======
+	WARN_ON(MV_MAX_Q_DEPTH <= qc->hw_tag);
+	flags |= qc->hw_tag << CRQB_TAG_SHIFT;
+	flags |= qc->hw_tag << CRQB_HOSTQ_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flags |= (qc->dev->link->pmp & 0xf) << CRQB_PMP_SHIFT;
 
 	/* get current queue index from software */
 	in_index = pp->req_idx;
 
 	crqb = (struct mv_crqb_iie *) &pp->crqb[in_index];
+<<<<<<< HEAD
 	crqb->addr = cpu_to_le32(pp->sg_tbl_dma[qc->tag] & 0xffffffff);
 	crqb->addr_hi = cpu_to_le32((pp->sg_tbl_dma[qc->tag] >> 16) >> 16);
+=======
+	crqb->addr = cpu_to_le32(pp->sg_tbl_dma[qc->hw_tag] & 0xffffffff);
+	crqb->addr_hi = cpu_to_le32((pp->sg_tbl_dma[qc->hw_tag] >> 16) >> 16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	crqb->flags = cpu_to_le32(flags);
 
 	crqb->ata_cmd[0] = cpu_to_le32(
@@ -2157,8 +2451,15 @@ static void mv_qc_prep_iie(struct ata_queued_cmd *qc)
 		);
 
 	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
+<<<<<<< HEAD
 		return;
 	mv_fill_sg(qc);
+=======
+		return AC_ERR_OK;
+	mv_fill_sg(qc);
+
+	return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2190,6 +2491,10 @@ static u8 mv_sff_check_status(struct ata_port *ap)
 
 /**
  *	mv_send_fis - Send a FIS, using the "Vendor-Unique FIS" register
+<<<<<<< HEAD
+=======
+ *	@ap: ATA port to send a FIS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@fis: fis to be sent
  *	@nwords: number of 32-bit words in the fis
  */
@@ -2265,7 +2570,11 @@ static unsigned int mv_qc_issue_fis(struct ata_queued_cmd *qc)
 	switch (qc->tf.protocol) {
 	case ATAPI_PROT_PIO:
 		pp->pp_flags |= MV_PP_FLAG_FAKE_ATA_BUSY;
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATAPI_PROT_NODATA:
 		ap->hsm_task_state = HSM_ST_FIRST;
 		break;
@@ -2316,7 +2625,11 @@ static unsigned int mv_qc_issue(struct ata_queued_cmd *qc)
 				return AC_ERR_OTHER;
 			break;  /* use bmdma for this */
 		}
+<<<<<<< HEAD
 		/* fall thru */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATA_PROT_NCQ:
 		mv_start_edma(ap, port_mmio, pp, qc->tf.protocol);
 		pp->req_idx = (pp->req_idx + 1) & MV_MAX_Q_DEPTH_MASK;
@@ -2345,7 +2658,11 @@ static unsigned int mv_qc_issue(struct ata_queued_cmd *qc)
 				      ": attempting PIO w/multiple DRQ: "
 				      "this may fail due to h/w errata\n");
 		}
+<<<<<<< HEAD
 		/* drop through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATA_PROT_NODATA:
 	case ATAPI_PROT_PIO:
 	case ATAPI_PROT_NODATA:
@@ -2436,20 +2753,32 @@ static unsigned int mv_get_err_pmp_map(struct ata_port *ap)
 
 static void mv_pmp_eh_prep(struct ata_port *ap, unsigned int pmp_map)
 {
+<<<<<<< HEAD
 	struct ata_eh_info *ehi;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int pmp;
 
 	/*
 	 * Initialize EH info for PMPs which saw device errors
 	 */
+<<<<<<< HEAD
 	ehi = &ap->link.eh_info;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (pmp = 0; pmp_map != 0; pmp++) {
 		unsigned int this_pmp = (1 << pmp);
 		if (pmp_map & this_pmp) {
 			struct ata_link *link = &ap->pmp_link[pmp];
+<<<<<<< HEAD
 
 			pmp_map &= ~this_pmp;
 			ehi = &link->eh_info;
+=======
+			struct ata_eh_info *ehi = &link->eh_info;
+
+			pmp_map &= ~this_pmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ata_ehi_clear_desc(ehi);
 			ata_ehi_push_desc(ehi, "dev err");
 			ehi->err_mask |= AC_ERR_DEV;
@@ -2499,7 +2828,11 @@ static int mv_handle_fbs_ncq_dev_err(struct ata_port *ap)
 	failed_links = hweight16(new_map);
 
 	ata_port_info(ap,
+<<<<<<< HEAD
 		      "%s: pmp_map=%04x qc_map=%04x failed_links=%d nr_active_links=%d\n",
+=======
+		      "%s: pmp_map=%04x qc_map=%04llx failed_links=%d nr_active_links=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      __func__, pp->delayed_eh_pmp_map,
 		      ap->qc_active, failed_links,
 		      ap->nr_active_links);
@@ -2800,7 +3133,11 @@ static void mv_process_crpb_entries(struct ata_port *ap, struct mv_port_priv *pp
 	}
 
 	if (work_done) {
+<<<<<<< HEAD
 		ata_qc_complete_multiple(ap, ap->qc_active ^ done_mask);
+=======
+		ata_qc_complete_multiple(ap, ata_qc_get_active(ap) ^ done_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Update the software queue position index in hardware */
 		writelfl((pp->crpb_dma & EDMA_RSP_Q_BASE_LO_MASK) |
@@ -2929,8 +3266,13 @@ static int mv_pci_error(struct ata_host *host, void __iomem *mmio)
 
 	dev_err(host->dev, "PCI ERROR; PCI IRQ cause=0x%08x\n", err_cause);
 
+<<<<<<< HEAD
 	DPRINTK("All regs @ PCI error\n");
 	mv_dump_all_regs(mmio, -1, to_pci_dev(host->dev));
+=======
+	dev_dbg(host->dev, "%s: All regs @ PCI error\n", __func__);
+	mv_dump_all_regs(mmio, to_pci_dev(host->dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writelfl(0, mmio + hpriv->irq_cause_offset);
 
@@ -3168,9 +3510,16 @@ static void mv5_reset_one_hc(struct mv_host_priv *hpriv, void __iomem *mmio,
 }
 #undef ZERO
 
+<<<<<<< HEAD
 static int mv5_reset_hc(struct mv_host_priv *hpriv, void __iomem *mmio,
 			unsigned int n_hc)
 {
+=======
+static int mv5_reset_hc(struct ata_host *host, void __iomem *mmio,
+			unsigned int n_hc)
+{
+	struct mv_host_priv *hpriv = host->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int hc, port;
 
 	for (hc = 0; hc < n_hc; hc++) {
@@ -3220,7 +3569,11 @@ static void mv6_reset_flash(struct mv_host_priv *hpriv, void __iomem *mmio)
 	writel(tmp, mmio + GPIO_PORT_CTL);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *      mv6_reset_hc - Perform the 6xxx global soft reset
  *      @mmio: base address of the HBA
  *
@@ -3229,7 +3582,11 @@ static void mv6_reset_flash(struct mv_host_priv *hpriv, void __iomem *mmio)
  *      LOCKING:
  *      Inherited from caller.
  */
+<<<<<<< HEAD
 static int mv6_reset_hc(struct mv_host_priv *hpriv, void __iomem *mmio,
+=======
+static int mv6_reset_hc(struct ata_host *host, void __iomem *mmio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int n_hc)
 {
 	void __iomem *reg = mmio + PCI_MAIN_CMD_STS;
@@ -3249,7 +3606,11 @@ static int mv6_reset_hc(struct mv_host_priv *hpriv, void __iomem *mmio,
 			break;
 	}
 	if (!(PCI_MASTER_EMPTY & t)) {
+<<<<<<< HEAD
 		printk(KERN_ERR DRV_NAME ": PCI master won't flush\n");
+=======
+		dev_err(host->dev, "PCI master won't flush\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = 1;
 		goto done;
 	}
@@ -3263,7 +3624,11 @@ static int mv6_reset_hc(struct mv_host_priv *hpriv, void __iomem *mmio,
 	} while (!(GLOB_SFT_RST & t) && (i-- > 0));
 
 	if (!(GLOB_SFT_RST & t)) {
+<<<<<<< HEAD
 		printk(KERN_ERR DRV_NAME ": can't set global reset\n");
+=======
+		dev_err(host->dev, "can't set global reset\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = 1;
 		goto done;
 	}
@@ -3277,7 +3642,11 @@ static int mv6_reset_hc(struct mv_host_priv *hpriv, void __iomem *mmio,
 	} while ((GLOB_SFT_RST & t) && (i-- > 0));
 
 	if (GLOB_SFT_RST & t) {
+<<<<<<< HEAD
 		printk(KERN_ERR DRV_NAME ": can't clear global reset\n");
+=======
+		dev_err(host->dev, "can't clear global reset\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = 1;
 	}
 done:
@@ -3446,9 +3815,16 @@ static void mv_soc_reset_one_hc(struct mv_host_priv *hpriv,
 
 #undef ZERO
 
+<<<<<<< HEAD
 static int mv_soc_reset_hc(struct mv_host_priv *hpriv,
 				  void __iomem *mmio, unsigned int n_hc)
 {
+=======
+static int mv_soc_reset_hc(struct ata_host *host,
+				  void __iomem *mmio, unsigned int n_hc)
+{
+	struct mv_host_priv *hpriv = host->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int port;
 
 	for (port = 0; port < hpriv->n_ports; port++)
@@ -3501,7 +3877,11 @@ static void mv_soc_65n_phy_errata(struct mv_host_priv *hpriv,
 	writel(reg, port_mmio + PHY_MODE9_GEN1);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	soc_is_65 - check if the soc is 65 nano device
  *
  *	Detect the type of the SoC, this is done by reading the PHYCFG_OFS
@@ -3556,7 +3936,11 @@ static void mv_reset_channel(struct mv_host_priv *hpriv, void __iomem *mmio,
 	hpriv->ops->phy_errata(hpriv, mmio, port_no);
 
 	if (IS_GEN_I(hpriv))
+<<<<<<< HEAD
 		mdelay(1);
+=======
+		usleep_range(500, 1000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mv_pmp_select(struct ata_port *ap, int pmp)
@@ -3605,7 +3989,11 @@ static int mv_hardreset(struct ata_link *link, unsigned int *class,
 
 	/* Workaround for errata FEr SATA#10 (part 2) */
 	do {
+<<<<<<< HEAD
 		const unsigned long *timing =
+=======
+		const unsigned int *timing =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sata_ehc_deb_timing(&link->eh_context);
 
 		rc = sata_link_hardreset(link, timing, deadline + extra,
@@ -3690,11 +4078,14 @@ static void mv_port_init(struct ata_ioports *port,  void __iomem *port_mmio)
 
 	/* unmask all non-transient EDMA error interrupts */
 	writelfl(~EDMA_ERR_IRQ_TRANSIENT, port_mmio + EDMA_ERR_IRQ_MASK);
+<<<<<<< HEAD
 
 	VPRINTK("EDMA cfg=0x%08x EDMA IRQ err cause/mask=0x%08x/0x%08x\n",
 		readl(port_mmio + EDMA_CFG),
 		readl(port_mmio + EDMA_ERR_IRQ_CAUSE),
 		readl(port_mmio + EDMA_ERR_IRQ_MASK));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int mv_in_pcix_mode(struct ata_host *host)
@@ -3826,16 +4217,28 @@ static int mv_chip_id(struct ata_host *host, unsigned int board_idx)
 			 *
 			 * Warn the user, lest they think we're just buggy.
 			 */
+<<<<<<< HEAD
 			printk(KERN_WARNING DRV_NAME ": Highpoint RocketRAID"
 				" BIOS CORRUPTS DATA on all attached drives,"
 				" regardless of if/how they are configured."
 				" BEWARE!\n");
 			printk(KERN_WARNING DRV_NAME ": For data safety, do not"
+=======
+			dev_warn(&pdev->dev, "Highpoint RocketRAID"
+				" BIOS CORRUPTS DATA on all attached drives,"
+				" regardless of if/how they are configured."
+				" BEWARE!\n");
+			dev_warn(&pdev->dev, "For data safety, do not"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				" use sectors 8-9 on \"Legacy\" drives,"
 				" and avoid the final two gigabytes on"
 				" all RocketRAID BIOS initialized drives.\n");
 		}
+<<<<<<< HEAD
 		/* drop through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case chip_6042:
 		hpriv->ops = &mv6xxx_ops;
 		hp_flags |= MV_HP_GEN_IIE;
@@ -3863,8 +4266,13 @@ static int mv_chip_id(struct ata_host *host, unsigned int board_idx)
 		break;
 
 	default:
+<<<<<<< HEAD
 		dev_err(host->dev, "BUG: invalid board index %u\n", board_idx);
 		return 1;
+=======
+		dev_alert(host->dev, "BUG: invalid board index %u\n", board_idx);
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hpriv->hp_flags = hp_flags;
@@ -3921,7 +4329,11 @@ static int mv_init_host(struct ata_host *host)
 		if (hpriv->ops->read_preamp)
 			hpriv->ops->read_preamp(hpriv, port, mmio);
 
+<<<<<<< HEAD
 	rc = hpriv->ops->reset_hc(hpriv, mmio, n_hc);
+=======
+	rc = hpriv->ops->reset_hc(host, mmio, n_hc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto done;
 
@@ -3939,7 +4351,11 @@ static int mv_init_host(struct ata_host *host)
 	for (hc = 0; hc < n_hc; hc++) {
 		void __iomem *hc_mmio = mv_hc_base(mmio, hc);
 
+<<<<<<< HEAD
 		VPRINTK("HC%i: HC config=0x%08x HC IRQ cause "
+=======
+		dev_dbg(host->dev, "HC%i: HC config=0x%08x HC IRQ cause "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"(before clear)=0x%08x\n", hc,
 			readl(hc_mmio + HC_CFG),
 			readl(hc_mmio + HC_IRQ_CAUSE));
@@ -4025,15 +4441,25 @@ static int mv_platform_probe(struct platform_device *pdev)
 	struct ata_host *host;
 	struct mv_host_priv *hpriv;
 	struct resource *res;
+<<<<<<< HEAD
 	int n_ports = 0;
 	int rc;
+=======
+	int n_ports = 0, irq = 0;
+	int rc;
+	int port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ata_print_version_once(&pdev->dev, DRV_VERSION);
 
 	/*
 	 * Simple resource validation ..
 	 */
+<<<<<<< HEAD
 	if (unlikely(pdev->num_resources != 2)) {
+=======
+	if (unlikely(pdev->num_resources != 1)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "invalid number of resources\n");
 		return -EINVAL;
 	}
@@ -4046,21 +4472,64 @@ static int mv_platform_probe(struct platform_device *pdev)
 		return -EINVAL;
 
 	/* allocate host */
+<<<<<<< HEAD
 	mv_platform_data = pdev->dev.platform_data;
 	n_ports = mv_platform_data->n_ports;
+=======
+	if (pdev->dev.of_node) {
+		rc = of_property_read_u32(pdev->dev.of_node, "nr-ports",
+					   &n_ports);
+		if (rc) {
+			dev_err(&pdev->dev,
+				"error parsing nr-ports property: %d\n", rc);
+			return rc;
+		}
+
+		if (n_ports <= 0) {
+			dev_err(&pdev->dev, "nr-ports must be positive: %d\n",
+				n_ports);
+			return -EINVAL;
+		}
+
+		irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
+	} else {
+		mv_platform_data = dev_get_platdata(&pdev->dev);
+		n_ports = mv_platform_data->n_ports;
+		irq = platform_get_irq(pdev, 0);
+	}
+	if (irq < 0)
+		return irq;
+	if (!irq)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host = ata_host_alloc_pinfo(&pdev->dev, ppi, n_ports);
 	hpriv = devm_kzalloc(&pdev->dev, sizeof(*hpriv), GFP_KERNEL);
 
 	if (!host || !hpriv)
 		return -ENOMEM;
+<<<<<<< HEAD
 	host->private_data = hpriv;
 	hpriv->n_ports = n_ports;
+=======
+	hpriv->port_clks = devm_kcalloc(&pdev->dev,
+					n_ports, sizeof(struct clk *),
+					GFP_KERNEL);
+	if (!hpriv->port_clks)
+		return -ENOMEM;
+	hpriv->port_phys = devm_kcalloc(&pdev->dev,
+					n_ports, sizeof(struct phy *),
+					GFP_KERNEL);
+	if (!hpriv->port_phys)
+		return -ENOMEM;
+	host->private_data = hpriv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpriv->board_idx = chip_soc;
 
 	host->iomap = NULL;
 	hpriv->base = devm_ioremap(&pdev->dev, res->start,
 				   resource_size(res));
+<<<<<<< HEAD
 	hpriv->base -= SATAHC0_REG_BASE;
 
 #if defined(CONFIG_HAVE_CLK)
@@ -4070,6 +4539,47 @@ static int mv_platform_probe(struct platform_device *pdev)
 	else
 		clk_enable(hpriv->clk);
 #endif
+=======
+	if (!hpriv->base)
+		return -ENOMEM;
+
+	hpriv->base -= SATAHC0_REG_BASE;
+
+	hpriv->clk = clk_get(&pdev->dev, NULL);
+	if (IS_ERR(hpriv->clk)) {
+		dev_notice(&pdev->dev, "cannot get optional clkdev\n");
+	} else {
+		rc = clk_prepare_enable(hpriv->clk);
+		if (rc)
+			goto err;
+	}
+
+	for (port = 0; port < n_ports; port++) {
+		char port_number[16];
+		sprintf(port_number, "%d", port);
+		hpriv->port_clks[port] = clk_get(&pdev->dev, port_number);
+		if (!IS_ERR(hpriv->port_clks[port]))
+			clk_prepare_enable(hpriv->port_clks[port]);
+
+		sprintf(port_number, "port%d", port);
+		hpriv->port_phys[port] = devm_phy_optional_get(&pdev->dev,
+							       port_number);
+		if (IS_ERR(hpriv->port_phys[port])) {
+			rc = PTR_ERR(hpriv->port_phys[port]);
+			hpriv->port_phys[port] = NULL;
+			if (rc != -EPROBE_DEFER)
+				dev_warn(&pdev->dev, "error getting phy %d", rc);
+
+			/* Cleanup only the initialized ports */
+			hpriv->n_ports = port;
+			goto err;
+		} else
+			phy_power_on(hpriv->port_phys[port]);
+	}
+
+	/* All the ports have been initialized */
+	hpriv->n_ports = n_ports;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * (Re-)program MBUS remapping windows if we are asked to.
@@ -4082,6 +4592,18 @@ static int mv_platform_probe(struct platform_device *pdev)
 	if (rc)
 		goto err;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * To allow disk hotplug on Armada 370/XP SoCs, the PHY speed must be
+	 * updated in the LP_PHY_CTL register.
+	 */
+	if (pdev->dev.of_node &&
+		of_device_is_compatible(pdev->dev.of_node,
+					"marvell,armada-370-sata"))
+		hpriv->hp_flags |= MV_HP_FIX_LP_PHY_CTL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* initialize adapter */
 	rc = mv_init_host(host);
 	if (rc)
@@ -4090,18 +4612,36 @@ static int mv_platform_probe(struct platform_device *pdev)
 	dev_info(&pdev->dev, "slots %u ports %d\n",
 		 (unsigned)MV_MAX_Q_DEPTH, host->n_ports);
 
+<<<<<<< HEAD
 	rc = ata_host_activate(host, platform_get_irq(pdev, 0), mv_interrupt,
 			       IRQF_SHARED, &mv6_sht);
+=======
+	rc = ata_host_activate(host, irq, mv_interrupt, IRQF_SHARED, &mv6_sht);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rc)
 		return 0;
 
 err:
+<<<<<<< HEAD
 #if defined(CONFIG_HAVE_CLK)
 	if (!IS_ERR(hpriv->clk)) {
 		clk_disable(hpriv->clk);
 		clk_put(hpriv->clk);
 	}
 #endif
+=======
+	if (!IS_ERR(hpriv->clk)) {
+		clk_disable_unprepare(hpriv->clk);
+		clk_put(hpriv->clk);
+	}
+	for (port = 0; port < hpriv->n_ports; port++) {
+		if (!IS_ERR(hpriv->port_clks[port])) {
+			clk_disable_unprepare(hpriv->port_clks[port]);
+			clk_put(hpriv->port_clks[port]);
+		}
+		phy_power_off(hpriv->port_phys[port]);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -4114,6 +4654,7 @@ err:
  *      A platform bus SATA device has been unplugged. Perform the needed
  *      cleanup. Also called on module unload for any active devices.
  */
+<<<<<<< HEAD
 static int __devexit mv_platform_remove(struct platform_device *pdev)
 {
 	struct ata_host *host = platform_get_drvdata(pdev);
@@ -4139,6 +4680,36 @@ static int mv_platform_suspend(struct platform_device *pdev, pm_message_t state)
 		return ata_host_suspend(host, state);
 	else
 		return 0;
+=======
+static void mv_platform_remove(struct platform_device *pdev)
+{
+	struct ata_host *host = platform_get_drvdata(pdev);
+	struct mv_host_priv *hpriv = host->private_data;
+	int port;
+	ata_host_detach(host);
+
+	if (!IS_ERR(hpriv->clk)) {
+		clk_disable_unprepare(hpriv->clk);
+		clk_put(hpriv->clk);
+	}
+	for (port = 0; port < host->n_ports; port++) {
+		if (!IS_ERR(hpriv->port_clks[port])) {
+			clk_disable_unprepare(hpriv->port_clks[port]);
+			clk_put(hpriv->port_clks[port]);
+		}
+		phy_power_off(hpriv->port_phys[port]);
+	}
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int mv_platform_suspend(struct platform_device *pdev, pm_message_t state)
+{
+	struct ata_host *host = platform_get_drvdata(pdev);
+
+	if (host)
+		ata_host_suspend(host, state);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mv_platform_resume(struct platform_device *pdev)
@@ -4160,7 +4731,11 @@ static int mv_platform_resume(struct platform_device *pdev)
 		/* initialize adapter */
 		ret = mv_init_host(host);
 		if (ret) {
+<<<<<<< HEAD
 			printk(KERN_ERR DRV_NAME ": Error during HW init\n");
+=======
+			dev_err(&pdev->dev, "Error during HW init\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ret;
 		}
 		ata_host_resume(host);
@@ -4173,6 +4748,7 @@ static int mv_platform_resume(struct platform_device *pdev)
 #define mv_platform_resume NULL
 #endif
 
+<<<<<<< HEAD
 static struct platform_driver mv_platform_driver = {
 	.probe			= mv_platform_probe,
 	.remove			= __devexit_p(mv_platform_remove),
@@ -4182,28 +4758,90 @@ static struct platform_driver mv_platform_driver = {
 				   .name = DRV_NAME,
 				   .owner = THIS_MODULE,
 				  },
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id mv_sata_dt_ids[] = {
+	{ .compatible = "marvell,armada-370-sata", },
+	{ .compatible = "marvell,orion-sata", },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, mv_sata_dt_ids);
+#endif
+
+static struct platform_driver mv_platform_driver = {
+	.probe		= mv_platform_probe,
+	.remove_new	= mv_platform_remove,
+	.suspend	= mv_platform_suspend,
+	.resume		= mv_platform_resume,
+	.driver		= {
+		.name = DRV_NAME,
+		.of_match_table = of_match_ptr(mv_sata_dt_ids),
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
 #ifdef CONFIG_PCI
 static int mv_pci_init_one(struct pci_dev *pdev,
 			   const struct pci_device_id *ent);
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int mv_pci_device_resume(struct pci_dev *pdev);
 #endif
 
+=======
+#ifdef CONFIG_PM_SLEEP
+static int mv_pci_device_resume(struct pci_dev *pdev);
+#endif
+
+static const struct pci_device_id mv_pci_tbl[] = {
+	{ PCI_VDEVICE(MARVELL, 0x5040), chip_504x },
+	{ PCI_VDEVICE(MARVELL, 0x5041), chip_504x },
+	{ PCI_VDEVICE(MARVELL, 0x5080), chip_5080 },
+	{ PCI_VDEVICE(MARVELL, 0x5081), chip_508x },
+	/* RocketRAID 1720/174x have different identifiers */
+	{ PCI_VDEVICE(TTI, 0x1720), chip_6042 },
+	{ PCI_VDEVICE(TTI, 0x1740), chip_6042 },
+	{ PCI_VDEVICE(TTI, 0x1742), chip_6042 },
+
+	{ PCI_VDEVICE(MARVELL, 0x6040), chip_604x },
+	{ PCI_VDEVICE(MARVELL, 0x6041), chip_604x },
+	{ PCI_VDEVICE(MARVELL, 0x6042), chip_6042 },
+	{ PCI_VDEVICE(MARVELL, 0x6080), chip_608x },
+	{ PCI_VDEVICE(MARVELL, 0x6081), chip_608x },
+
+	{ PCI_VDEVICE(ADAPTEC2, 0x0241), chip_604x },
+
+	/* Adaptec 1430SA */
+	{ PCI_VDEVICE(ADAPTEC2, 0x0243), chip_7042 },
+
+	/* Marvell 7042 support */
+	{ PCI_VDEVICE(MARVELL, 0x7042), chip_7042 },
+
+	/* Highpoint RocketRAID PCIe series */
+	{ PCI_VDEVICE(TTI, 0x2300), chip_7042 },
+	{ PCI_VDEVICE(TTI, 0x2310), chip_7042 },
+
+	{ }			/* terminate list */
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver mv_pci_driver = {
 	.name			= DRV_NAME,
 	.id_table		= mv_pci_tbl,
 	.probe			= mv_pci_init_one,
 	.remove			= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= mv_pci_device_resume,
 #endif
 
 };
+<<<<<<< HEAD
 
 /* move to PCI layer or libata core? */
 static int pci_go_64(struct pci_dev *pdev)
@@ -4236,6 +4874,9 @@ static int pci_go_64(struct pci_dev *pdev)
 
 	return rc;
 }
+=======
+MODULE_DEVICE_TABLE(pci, mv_pci_tbl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *      mv_print_info - Dump key info to kernel log for perusal.
@@ -4321,9 +4962,17 @@ static int mv_pci_init_one(struct pci_dev *pdev,
 	host->iomap = pcim_iomap_table(pdev);
 	hpriv->base = host->iomap[MV_PRIMARY_BAR];
 
+<<<<<<< HEAD
 	rc = pci_go_64(pdev);
 	if (rc)
 		return rc;
+=======
+	rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+	if (rc) {
+		dev_err(&pdev->dev, "DMA enable failed\n");
+		return rc;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = mv_create_dma_pools(hpriv, &pdev->dev);
 	if (rc)
@@ -4356,7 +5005,11 @@ static int mv_pci_init_one(struct pci_dev *pdev,
 				 IS_GEN_I(hpriv) ? &mv5_sht : &mv6_sht);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mv_pci_device_resume(struct pci_dev *pdev)
 {
 	struct ata_host *host = pci_get_drvdata(pdev);
@@ -4378,9 +5031,12 @@ static int mv_pci_device_resume(struct pci_dev *pdev)
 #endif
 #endif
 
+<<<<<<< HEAD
 static int mv_platform_probe(struct platform_device *pdev);
 static int __devexit mv_platform_remove(struct platform_device *pdev);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init mv_init(void)
 {
 	int rc = -ENODEV;
@@ -4408,8 +5064,12 @@ static void __exit mv_exit(void)
 
 MODULE_AUTHOR("Brett Russ");
 MODULE_DESCRIPTION("SCSI low-level driver for Marvell SATA controllers");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, mv_pci_tbl);
+=======
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_VERSION(DRV_VERSION);
 MODULE_ALIAS("platform:" DRV_NAME);
 

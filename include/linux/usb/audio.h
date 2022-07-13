@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * <linux/usb/audio.h> -- USB Audio definitions.
  *
@@ -5,9 +9,12 @@
  * Developed for Thumtronics by Grey Innovation
  * Ben Williamson <ben.williamson@greyinnovation.com>
  *
+<<<<<<< HEAD
  * This software is distributed under the terms of the GNU General Public
  * License ("GPL") version 2, as published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file holds USB constants and structures defined
  * by the USB Device Class Definition for Audio Devices.
  * Comments below reference relevant sections of that document:
@@ -17,6 +24,7 @@
  * Types and defines in this file are either specific to version 1.0 of
  * this standard or common for newer versions.
  */
+<<<<<<< HEAD
 
 #ifndef __LINUX_USB_AUDIO_H
 #define __LINUX_USB_AUDIO_H
@@ -546,6 +554,13 @@ struct uac1_status_word {
 } __attribute__((packed));
 
 #ifdef __KERNEL__
+=======
+#ifndef __LINUX_USB_AUDIO_H
+#define __LINUX_USB_AUDIO_H
+
+#include <uapi/linux/usb/audio.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct usb_audio_control {
 	struct list_head list;
@@ -565,6 +580,9 @@ struct usb_audio_control_selector {
 	struct usb_descriptor_header *desc;
 };
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_USB_AUDIO_H */

@@ -1,12 +1,18 @@
+<<<<<<< HEAD
 #ifndef __SOUND_AC97_CODEC_H
 #define __SOUND_AC97_CODEC_H
 
 /*
+=======
+/* SPDX-License-Identifier: GPL-2.0+
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  Universal interface for Audio Codec '97
  *
  *  For more details look to AC '97 component specification revision 2.1
  *  by Intel Corporation (http://developer.intel.com).
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -31,10 +37,25 @@
 #include "pcm.h"
 #include "control.h"
 #include "info.h"
+=======
+ */
+
+#ifndef __SOUND_AC97_CODEC_H
+#define __SOUND_AC97_CODEC_H
+
+#include <linux/bitops.h>
+#include <linux/device.h>
+#include <linux/workqueue.h>
+#include <sound/ac97/regs.h>
+#include <sound/pcm.h>
+#include <sound/control.h>
+#include <sound/info.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* maximum number of devices on the AC97 bus */
 #define	AC97_BUS_MAX_DEVICES	4
 
+<<<<<<< HEAD
 /*
  *  AC'97 codec registers
  */
@@ -273,6 +294,8 @@
 #define AC97_GPIO_LINE2_PULSE   0x4000  /* Opt./ Pulse Dial Line2 (out) */
 #define AC97_GPIO_LINE2_HL1R    0x8000  /* Opt./ Handset to Line2 relay control (out) */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* specific - SigmaTel */
 #define AC97_SIGMATEL_OUTSEL	0x64	/* Output Select, STAC9758 */
 #define AC97_SIGMATEL_INSEL	0x66	/* Input Select, STAC9758 */
@@ -417,11 +440,20 @@
 #define AC97_RATES_MIC_ADC	4
 #define AC97_RATES_SPDIF	5
 
+<<<<<<< HEAD
+=======
+#define AC97_NUM_GPIOS		16
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  */
 
 struct snd_ac97;
+<<<<<<< HEAD
+=======
+struct snd_ac97_gpio_priv;
+struct snd_pcm_chmap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct snd_ac97_build_ops {
 	int (*build_3d) (struct snd_ac97 *ac97);
@@ -446,7 +478,11 @@ struct snd_ac97_bus_ops {
 
 struct snd_ac97_bus {
 	/* -- lowlevel (hardware) driver specific -- */
+<<<<<<< HEAD
 	struct snd_ac97_bus_ops *ops;
+=======
+	const struct snd_ac97_bus_ops *ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *private_data;
 	void (*private_free) (struct snd_ac97_bus *bus);
 	/* --- */
@@ -528,6 +564,12 @@ struct snd_ac97 {
 	struct delayed_work power_work;
 #endif
 	struct device dev;
+<<<<<<< HEAD
+=======
+	struct snd_ac97_gpio_priv *gpio_priv;
+
+	struct snd_pcm_chmap *chmaps[2]; /* channel-maps (optional) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define to_ac97_t(d) container_of(d, struct snd_ac97, dev)
@@ -556,7 +598,12 @@ static inline int ac97_can_spdif(struct snd_ac97 * ac97)
 
 /* functions */
 /* create new AC97 bus */
+<<<<<<< HEAD
 int snd_ac97_bus(struct snd_card *card, int num, struct snd_ac97_bus_ops *ops,
+=======
+int snd_ac97_bus(struct snd_card *card, int num,
+		 const struct snd_ac97_bus_ops *ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 void *private_data, struct snd_ac97_bus **rbus);
 /* create mixer controls */
 int snd_ac97_mixer(struct snd_ac97_bus *bus, struct snd_ac97_template *template,
@@ -580,7 +627,16 @@ static inline int snd_ac97_update_power(struct snd_ac97 *ac97, int reg,
 #ifdef CONFIG_PM
 void snd_ac97_suspend(struct snd_ac97 *ac97);
 void snd_ac97_resume(struct snd_ac97 *ac97);
+<<<<<<< HEAD
 #endif
+=======
+#else
+static inline void snd_ac97_suspend(struct snd_ac97 *ac97) {}
+static inline void snd_ac97_resume(struct snd_ac97 *ac97) {}
+#endif
+int snd_ac97_reset(struct snd_ac97 *ac97, bool try_warm, unsigned int id,
+	unsigned int id_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* quirk types */
 enum {
@@ -605,7 +661,13 @@ struct ac97_quirk {
 	int type;		/* quirk type above */
 };
 
+<<<<<<< HEAD
 int snd_ac97_tune_hardware(struct snd_ac97 *ac97, struct ac97_quirk *quirk, const char *override);
+=======
+int snd_ac97_tune_hardware(struct snd_ac97 *ac97,
+			   const struct ac97_quirk *quirk,
+			   const char *override);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_ac97_set_rate(struct snd_ac97 *ac97, int reg, unsigned int rate);
 
 /*
@@ -648,7 +710,11 @@ int snd_ac97_pcm_close(struct ac97_pcm *pcm);
 int snd_ac97_pcm_double_rate_rules(struct snd_pcm_runtime *runtime);
 
 /* ad hoc AC97 device driver access */
+<<<<<<< HEAD
 extern struct bus_type ac97_bus_type;
+=======
+extern const struct bus_type ac97_bus_type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* AC97 platform_data adding function */
 static inline void snd_ac97_dev_add_pdata(struct snd_ac97 *ac97, void *data)

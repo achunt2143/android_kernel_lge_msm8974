@@ -1,7 +1,11 @@
 /*
    3w-sas.c -- LSI 3ware SAS/SATA-RAID Controller device driver for Linux.
 
+<<<<<<< HEAD
    Written By: Adam Radford <linuxraid@lsi.com>
+=======
+   Written By: Adam Radford <aradford@gmail.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    Copyright (C) 2009 LSI Corporation.
 
@@ -43,10 +47,14 @@
    LSI 3ware 9750 6Gb/s SAS/SATA-RAID
 
    Bugs/Comments/Suggestions should be mailed to:
+<<<<<<< HEAD
    linuxraid@lsi.com
 
    For more information, goto:
    http://www.lsi.com
+=======
+   aradford@gmail.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    History
    -------
@@ -67,7 +75,11 @@
 #include <linux/slab.h>
 #include <asm/io.h>
 #include <asm/irq.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_tcq.h>
@@ -123,7 +135,11 @@ static struct bin_attribute twl_sysfs_aen_read_attr = {
 	.attr = {
 		.name = "3ware_aen_read",
 		.mode = S_IRUSR,
+<<<<<<< HEAD
 	}, 
+=======
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size = 0,
 	.read = twl_sysfs_aen_read
 };
@@ -154,7 +170,11 @@ static struct bin_attribute twl_sysfs_compat_info_attr = {
 	.attr = {
 		.name = "3ware_compat_info",
 		.mode = S_IRUSR,
+<<<<<<< HEAD
 	}, 
+=======
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size = 0,
 	.read = twl_sysfs_compat_info
 };
@@ -169,6 +189,7 @@ static ssize_t twl_show_stats(struct device *dev,
 	ssize_t len;
 
 	spin_lock_irqsave(tw_dev->host->host_lock, flags);
+<<<<<<< HEAD
 	len = snprintf(buf, PAGE_SIZE, "3w-sas Driver version: %s\n"
 		       "Current commands posted:   %4d\n"
 		       "Max commands posted:       %4d\n"
@@ -187,10 +208,31 @@ static ssize_t twl_show_stats(struct device *dev,
 		       tw_dev->max_sector_count,
 		       tw_dev->num_resets,
 		       tw_dev->aen_count);
+=======
+	len = sysfs_emit(buf, "3w-sas Driver version: %s\n"
+			 "Current commands posted:   %4d\n"
+			 "Max commands posted:       %4d\n"
+			 "Last sgl length:           %4d\n"
+			 "Max sgl length:            %4d\n"
+			 "Last sector count:         %4d\n"
+			 "Max sector count:          %4d\n"
+			 "SCSI Host Resets:          %4d\n"
+			 "AEN's:                     %4d\n",
+			 TW_DRIVER_VERSION,
+			 tw_dev->posted_request_count,
+			 tw_dev->max_posted_request_count,
+			 tw_dev->sgl_entries,
+			 tw_dev->max_sgl_entries,
+			 tw_dev->sector_count,
+			 tw_dev->max_sector_count,
+			 tw_dev->num_resets,
+			 tw_dev->aen_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(tw_dev->host->host_lock, flags);
 	return len;
 } /* End twl_show_stats() */
 
+<<<<<<< HEAD
 /* This function will set a devices queue depth */
 static int twl_change_queue_depth(struct scsi_device *sdev, int queue_depth,
 				  int reason)
@@ -208,17 +250,33 @@ static int twl_change_queue_depth(struct scsi_device *sdev, int queue_depth,
 static struct device_attribute twl_host_stats_attr = {
 	.attr = {
 		.name = 	"3ware_stats",
+=======
+/* stats sysfs attribute initializer */
+static struct device_attribute twl_host_stats_attr = {
+	.attr = {
+		.name =		"3ware_stats",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mode =		S_IRUGO,
 	},
 	.show = twl_show_stats
 };
 
 /* Host attributes initializer */
+<<<<<<< HEAD
 static struct device_attribute *twl_host_attrs[] = {
 	&twl_host_stats_attr,
 	NULL,
 };
 
+=======
+static struct attribute *twl_host_attrs[] = {
+	&twl_host_stats_attr.attr,
+	NULL,
+};
+
+ATTRIBUTE_GROUPS(twl_host);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This function will look up an AEN severity string */
 static char *twl_aen_severity_lookup(unsigned char severity_code)
 {
@@ -237,7 +295,10 @@ out:
 static void twl_aen_queue_event(TW_Device_Extension *tw_dev, TW_Command_Apache_Header *header)
 {
 	u32 local_time;
+<<<<<<< HEAD
 	struct timeval time;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TW_Event *event;
 	unsigned short aen;
 	char host[16];
@@ -256,8 +317,13 @@ static void twl_aen_queue_event(TW_Device_Extension *tw_dev, TW_Command_Apache_H
 	memset(event, 0, sizeof(TW_Event));
 
 	event->severity = TW_SEV_OUT(header->status_block.severity__reserved);
+<<<<<<< HEAD
 	do_gettimeofday(&time);
 	local_time = (u32)(time.tv_sec - (sys_tz.tz_minuteswest * 60));
+=======
+	/* event->time_stamp_sec overflows in y2106 */
+	local_time = (u32)(ktime_get_real_seconds() - (sys_tz.tz_minuteswest * 60));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	event->time_stamp_sec = local_time;
 	event->aen_code = aen;
 	event->retrieved = TW_AEN_NOT_RETRIEVED;
@@ -304,12 +370,19 @@ static int twl_post_command_packet(TW_Device_Extension *tw_dev, int request_id)
 } /* End twl_post_command_packet() */
 
 /* This function hands scsi cdb's to the firmware */
+<<<<<<< HEAD
 static int twl_scsiop_execute_scsi(TW_Device_Extension *tw_dev, int request_id, char *cdb, int use_sg, TW_SG_Entry_ISO *sglistarg)
+=======
+static int twl_scsiop_execute_scsi(TW_Device_Extension *tw_dev, int request_id,
+				   unsigned char *cdb, int use_sg,
+				   TW_SG_Entry_ISO *sglistarg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	TW_Command_Full *full_command_packet;
 	TW_Command_Apache *command_packet;
 	int i, sg_count;
 	struct scsi_cmnd *srb = NULL;
+<<<<<<< HEAD
 	struct scatterlist *sglist = NULL, *sg;
 	int retval = 1;
 
@@ -318,6 +391,13 @@ static int twl_scsiop_execute_scsi(TW_Device_Extension *tw_dev, int request_id, 
 		if (scsi_sglist(srb))
 			sglist = scsi_sglist(srb);
 	}
+=======
+	struct scatterlist *sg;
+	int retval = 1;
+
+	if (tw_dev->srb[request_id])
+		srb = tw_dev->srb[request_id];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize command packet */
 	full_command_packet = tw_dev->command_packet_virt[request_id];
@@ -389,7 +469,11 @@ out:
 /* This function will read the aen queue from the isr */
 static int twl_aen_read_queue(TW_Device_Extension *tw_dev, int request_id)
 {
+<<<<<<< HEAD
 	char cdb[TW_MAX_CDB_LEN];
+=======
+	unsigned char cdb[TW_MAX_CDB_LEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TW_SG_Entry_ISO sglist[1];
 	TW_Command_Full *full_command_packet;
 	int retval = 1;
@@ -424,11 +508,18 @@ out:
 static void twl_aen_sync_time(TW_Device_Extension *tw_dev, int request_id)
 {
 	u32 schedulertime;
+<<<<<<< HEAD
 	struct timeval utc;
 	TW_Command_Full *full_command_packet;
 	TW_Command *command_packet;
 	TW_Param_Apache *param;
 	u32 local_time;
+=======
+	TW_Command_Full *full_command_packet;
+	TW_Command *command_packet;
+	TW_Param_Apache *param;
+	time64_t local_time;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Fill out the command packet */
 	full_command_packet = tw_dev->command_packet_virt[request_id];
@@ -448,12 +539,20 @@ static void twl_aen_sync_time(TW_Device_Extension *tw_dev, int request_id)
 	param->parameter_id = cpu_to_le16(0x3); /* SchedulerTime */
 	param->parameter_size_bytes = cpu_to_le16(4);
 
+<<<<<<< HEAD
 	/* Convert system time in UTC to local time seconds since last 
            Sunday 12:00AM */
 	do_gettimeofday(&utc);
 	local_time = (u32)(utc.tv_sec - (sys_tz.tz_minuteswest * 60));
 	schedulertime = local_time - (3 * 86400);
 	schedulertime = cpu_to_le32(schedulertime % 604800);
+=======
+	/* Convert system time in UTC to local time seconds since last
+           Sunday 12:00AM */
+	local_time = (ktime_get_real_seconds() - (sys_tz.tz_minuteswest * 60));
+	div_u64_rem(local_time - (3 * 86400), 604800, &schedulertime);
+	schedulertime = cpu_to_le32(schedulertime);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(param->data, &schedulertime, sizeof(u32));
 
@@ -500,7 +599,11 @@ static int twl_aen_complete(TW_Device_Extension *tw_dev, int request_id)
 		/* Keep reading the queue in case there are more aen's */
 		if (twl_aen_read_queue(tw_dev, request_id))
 			goto out2;
+<<<<<<< HEAD
 	        else {
+=======
+		else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retval = 0;
 			goto out;
 		}
@@ -565,7 +668,11 @@ static int twl_poll_response(TW_Device_Extension *tw_dev, int request_id, int se
 		msleep(50);
 	}
 	retval = 0;
+<<<<<<< HEAD
 out: 
+=======
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 } /* End twl_poll_response() */
 
@@ -573,7 +680,11 @@ out:
 static int twl_aen_drain_queue(TW_Device_Extension *tw_dev, int no_check_reset)
 {
 	int request_id = 0;
+<<<<<<< HEAD
 	char cdb[TW_MAX_CDB_LEN];
+=======
+	unsigned char cdb[TW_MAX_CDB_LEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TW_SG_Entry_ISO sglist[1];
 	int finished = 0, count = 0;
 	TW_Command_Full *full_command_packet;
@@ -663,14 +774,23 @@ static int twl_allocate_memory(TW_Device_Extension *tw_dev, int size, int which)
 	unsigned long *cpu_addr;
 	int retval = 1;
 
+<<<<<<< HEAD
 	cpu_addr = pci_alloc_consistent(tw_dev->tw_pci_dev, size*TW_Q_LENGTH, &dma_handle);
+=======
+	cpu_addr = dma_alloc_coherent(&tw_dev->tw_pci_dev->dev,
+				      size * TW_Q_LENGTH, &dma_handle,
+				      GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cpu_addr) {
 		TW_PRINTK(tw_dev->host, TW_DRIVER, 0x5, "Memory allocation failed");
 		goto out;
 	}
 
+<<<<<<< HEAD
 	memset(cpu_addr, 0, size*TW_Q_LENGTH);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < TW_Q_LENGTH; i++) {
 		switch(which) {
 		case 0:
@@ -708,7 +828,11 @@ static void twl_load_sgl(TW_Device_Extension *tw_dev, TW_Command_Full *full_comm
 		newcommand->request_id__lunl =
 			cpu_to_le16(TW_REQ_LUN_IN(TW_LUN_OUT(newcommand->request_id__lunl), request_id));
 		if (length) {
+<<<<<<< HEAD
 			newcommand->sg_list[0].address = TW_CPU_TO_SGL(dma_handle + sizeof(TW_Ioctl_Buf_Apache) - 1);
+=======
+			newcommand->sg_list[0].address = TW_CPU_TO_SGL(dma_handle + sizeof(TW_Ioctl_Buf_Apache));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			newcommand->sg_list[0].length = TW_CPU_TO_SGL(length);
 		}
 		newcommand->sgl_entries__lunh =
@@ -720,7 +844,11 @@ static void twl_load_sgl(TW_Device_Extension *tw_dev, TW_Command_Full *full_comm
 		if (TW_SGL_OUT(oldcommand->opcode__sgloffset)) {
 			/* Load the sg list */
 			sgl = (TW_SG_Entry_ISO *)((u32 *)oldcommand+oldcommand->size - (sizeof(TW_SG_Entry_ISO)/4) + pae + (sizeof(dma_addr_t) > 4 ? 1 : 0));
+<<<<<<< HEAD
 			sgl->address = TW_CPU_TO_SGL(dma_handle + sizeof(TW_Ioctl_Buf_Apache) - 1);
+=======
+			sgl->address = TW_CPU_TO_SGL(dma_handle + sizeof(TW_Ioctl_Buf_Apache));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sgl->length = TW_CPU_TO_SGL(length);
 			oldcommand->size += pae;
 			oldcommand->size += sizeof(dma_addr_t) > 4 ? 1 : 0;
@@ -737,7 +865,11 @@ static long twl_chrdev_ioctl(struct file *file, unsigned int cmd, unsigned long 
 	dma_addr_t dma_handle;
 	int request_id = 0;
 	TW_Ioctl_Driver_Command driver_command;
+<<<<<<< HEAD
 	struct inode *inode = file->f_dentry->d_inode;
+=======
+	struct inode *inode = file_inode(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TW_Ioctl_Buf_Apache *tw_ioctl;
 	TW_Command_Full *full_command_packet;
 	TW_Device_Extension *tw_dev = twl_device_extension_list[iminor(inode)];
@@ -766,7 +898,11 @@ static long twl_chrdev_ioctl(struct file *file, unsigned int cmd, unsigned long 
 	data_buffer_length_adjusted = (driver_command.buffer_length + 511) & ~511;
 
 	/* Now allocate ioctl buf memory */
+<<<<<<< HEAD
 	cpu_addr = dma_alloc_coherent(&tw_dev->tw_pci_dev->dev, data_buffer_length_adjusted+sizeof(TW_Ioctl_Buf_Apache) - 1, &dma_handle, GFP_KERNEL);
+=======
+	cpu_addr = dma_alloc_coherent(&tw_dev->tw_pci_dev->dev, data_buffer_length_adjusted + sizeof(TW_Ioctl_Buf_Apache), &dma_handle, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cpu_addr) {
 		retval = -ENOMEM;
 		goto out2;
@@ -775,7 +911,11 @@ static long twl_chrdev_ioctl(struct file *file, unsigned int cmd, unsigned long 
 	tw_ioctl = (TW_Ioctl_Buf_Apache *)cpu_addr;
 
 	/* Now copy down the entire ioctl */
+<<<<<<< HEAD
 	if (copy_from_user(tw_ioctl, argp, driver_command.buffer_length + sizeof(TW_Ioctl_Buf_Apache) - 1))
+=======
+	if (copy_from_user(tw_ioctl, argp, driver_command.buffer_length + sizeof(TW_Ioctl_Buf_Apache)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out3;
 
 	/* See which ioctl we are doing */
@@ -819,7 +959,11 @@ static long twl_chrdev_ioctl(struct file *file, unsigned int cmd, unsigned long 
 
 		/* Now copy in the command packet response */
 		memcpy(&(tw_ioctl->firmware_command), tw_dev->command_packet_virt[request_id], sizeof(TW_Command_Full));
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Now complete the io */
 		spin_lock_irqsave(tw_dev->host->host_lock, flags);
 		tw_dev->posted_request_count--;
@@ -833,11 +977,19 @@ static long twl_chrdev_ioctl(struct file *file, unsigned int cmd, unsigned long 
 	}
 
 	/* Now copy the entire response to userspace */
+<<<<<<< HEAD
 	if (copy_to_user(argp, tw_ioctl, sizeof(TW_Ioctl_Buf_Apache) + driver_command.buffer_length - 1) == 0)
 		retval = 0;
 out3:
 	/* Now free ioctl buf memory */
 	dma_free_coherent(&tw_dev->tw_pci_dev->dev, data_buffer_length_adjusted+sizeof(TW_Ioctl_Buf_Apache) - 1, cpu_addr, dma_handle);
+=======
+	if (copy_to_user(argp, tw_ioctl, sizeof(TW_Ioctl_Buf_Apache) + driver_command.buffer_length) == 0)
+		retval = 0;
+out3:
+	/* Now free ioctl buf memory */
+	dma_free_coherent(&tw_dev->tw_pci_dev->dev, data_buffer_length_adjusted + sizeof(TW_Ioctl_Buf_Apache), cpu_addr, dma_handle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out2:
 	mutex_unlock(&tw_dev->ioctl_lock);
 out:
@@ -880,7 +1032,10 @@ static int twl_fill_sense(TW_Device_Extension *tw_dev, int i, int request_id, in
 	TW_Command_Full *full_command_packet;
 	unsigned short error;
 	char *error_str;
+<<<<<<< HEAD
 	int retval = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	header = tw_dev->sense_buffer_virt[i];
 	full_command_packet = tw_dev->command_packet_virt[request_id];
@@ -896,7 +1051,11 @@ static int twl_fill_sense(TW_Device_Extension *tw_dev, int i, int request_id, in
 			       tw_dev->host->host_no,
 			       TW_MESSAGE_SOURCE_CONTROLLER_ERROR,
 			       header->status_block.error,
+<<<<<<< HEAD
 			       error_str, 
+=======
+			       error_str,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       header->err_specific_desc);
 		else
 			printk(KERN_WARNING "3w-sas: ERROR: (0x%02X:0x%04X): %s:%s.\n",
@@ -912,26 +1071,42 @@ static int twl_fill_sense(TW_Device_Extension *tw_dev, int i, int request_id, in
 		goto out;
 	}
 out:
+<<<<<<< HEAD
 	return retval;
+=======
+	return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } /* End twl_fill_sense() */
 
 /* This function will free up device extension resources */
 static void twl_free_device_extension(TW_Device_Extension *tw_dev)
 {
 	if (tw_dev->command_packet_virt[0])
+<<<<<<< HEAD
 		pci_free_consistent(tw_dev->tw_pci_dev,
+=======
+		dma_free_coherent(&tw_dev->tw_pci_dev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    sizeof(TW_Command_Full)*TW_Q_LENGTH,
 				    tw_dev->command_packet_virt[0],
 				    tw_dev->command_packet_phys[0]);
 
 	if (tw_dev->generic_buffer_virt[0])
+<<<<<<< HEAD
 		pci_free_consistent(tw_dev->tw_pci_dev,
+=======
+		dma_free_coherent(&tw_dev->tw_pci_dev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    TW_SECTOR_SIZE*TW_Q_LENGTH,
 				    tw_dev->generic_buffer_virt[0],
 				    tw_dev->generic_buffer_phys[0]);
 
 	if (tw_dev->sense_buffer_virt[0])
+<<<<<<< HEAD
 		pci_free_consistent(tw_dev->tw_pci_dev,
+=======
+		dma_free_coherent(&tw_dev->tw_pci_dev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    sizeof(TW_Command_Apache_Header)*
 				    TW_Q_LENGTH,
 				    tw_dev->sense_buffer_virt[0],
@@ -954,8 +1129,13 @@ static void *twl_get_param(TW_Device_Extension *tw_dev, int request_id, int tabl
 	command_packet = &full_command_packet->command.oldcommand;
 
 	command_packet->opcode__sgloffset = TW_OPSGL_IN(2, TW_OP_GET_PARAM);
+<<<<<<< HEAD
 	command_packet->size              = TW_COMMAND_SIZE;
 	command_packet->request_id        = request_id;
+=======
+	command_packet->size		  = TW_COMMAND_SIZE;
+	command_packet->request_id	  = request_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	command_packet->byte6_offset.block_count = cpu_to_le16(1);
 
 	/* Now setup the param */
@@ -985,6 +1165,7 @@ static void *twl_get_param(TW_Device_Extension *tw_dev, int request_id, int tabl
 
 /* This function will send an initconnection command to controller */
 static int twl_initconnection(TW_Device_Extension *tw_dev, int message_credits,
+<<<<<<< HEAD
  			      u32 set_features, unsigned short current_fw_srl, 
 			      unsigned short current_fw_arch_id, 
 			      unsigned short current_fw_branch, 
@@ -993,6 +1174,16 @@ static int twl_initconnection(TW_Device_Extension *tw_dev, int message_credits,
 			      unsigned short *fw_on_ctlr_arch_id, 
 			      unsigned short *fw_on_ctlr_branch, 
 			      unsigned short *fw_on_ctlr_build, 
+=======
+			      u32 set_features, unsigned short current_fw_srl,
+			      unsigned short current_fw_arch_id,
+			      unsigned short current_fw_branch,
+			      unsigned short current_fw_build,
+			      unsigned short *fw_on_ctlr_srl,
+			      unsigned short *fw_on_ctlr_arch_id,
+			      unsigned short *fw_on_ctlr_branch,
+			      unsigned short *fw_on_ctlr_build,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      u32 *init_connect_result)
 {
 	TW_Command_Full *full_command_packet;
@@ -1003,7 +1194,11 @@ static int twl_initconnection(TW_Device_Extension *tw_dev, int message_credits,
 	full_command_packet = tw_dev->command_packet_virt[request_id];
 	memset(full_command_packet, 0, sizeof(TW_Command_Full));
 	full_command_packet->header.header_desc.size_header = 128;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tw_initconnect = (TW_Initconnect *)&full_command_packet->command.oldcommand;
 	tw_initconnect->opcode__reserved = TW_OPRES_IN(0, TW_OP_INIT_CONNECTION);
 	tw_initconnect->request_id = request_id;
@@ -1021,7 +1216,11 @@ static int twl_initconnection(TW_Device_Extension *tw_dev, int message_credits,
 		tw_initconnect->fw_arch_id = cpu_to_le16(current_fw_arch_id);
 		tw_initconnect->fw_branch = cpu_to_le16(current_fw_branch);
 		tw_initconnect->fw_build = cpu_to_le16(current_fw_build);
+<<<<<<< HEAD
 	} else 
+=======
+	} else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tw_initconnect->size = TW_INIT_COMMAND_PACKET_SIZE;
 
 	/* Send command packet to the board */
@@ -1228,7 +1427,11 @@ static irqreturn_t twl_interrupt(int irq, void *dev_instance)
 
 			if (!error)
 				cmd->result = (DID_OK << 16);
+<<<<<<< HEAD
 			
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Report residual bytes for single sgl */
 			if ((scsi_sg_count(cmd) <= 1) && (full_command_packet->command.newcommand.status == 0)) {
 				if (full_command_packet->command.newcommand.sg_list[0].length < scsi_bufflen(tw_dev->srb[request_id]))
@@ -1237,7 +1440,11 @@ static irqreturn_t twl_interrupt(int irq, void *dev_instance)
 
 			/* Now complete the io */
 			scsi_dma_unmap(cmd);
+<<<<<<< HEAD
 			cmd->scsi_done(cmd);
+=======
+			scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tw_dev->state[request_id] = TW_S_COMPLETED;
 			twl_free_request_id(tw_dev, request_id);
 			tw_dev->posted_request_count--;
@@ -1262,7 +1469,11 @@ static int twl_poll_register(TW_Device_Extension *tw_dev, void *reg, u32 value, 
 	reg_value = readl(reg);
 	before = jiffies;
 
+<<<<<<< HEAD
         while ((reg_value & value) != result) {
+=======
+	while ((reg_value & value) != result) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg_value = readl(reg);
 		if (time_after(jiffies, before + HZ * seconds))
 			goto out;
@@ -1345,7 +1556,12 @@ static int twl_reset_sequence(TW_Device_Extension *tw_dev, int soft_reset)
 		}
 
 		/* Load rest of compatibility struct */
+<<<<<<< HEAD
 		strncpy(tw_dev->tw_compat_info.driver_version, TW_DRIVER_VERSION, strlen(TW_DRIVER_VERSION));
+=======
+		strscpy(tw_dev->tw_compat_info.driver_version, TW_DRIVER_VERSION,
+			sizeof(tw_dev->tw_compat_info.driver_version));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tw_dev->tw_compat_info.driver_srl_high = TW_CURRENT_DRIVER_SRL;
 		tw_dev->tw_compat_info.driver_branch_high = TW_CURRENT_DRIVER_BRANCH;
 		tw_dev->tw_compat_info.driver_build_high = TW_CURRENT_DRIVER_BUILD;
@@ -1390,7 +1606,11 @@ static int twl_reset_device_extension(TW_Device_Extension *tw_dev, int ioctl_res
 			if (cmd) {
 				cmd->result = (DID_RESET << 16);
 				scsi_dma_unmap(cmd);
+<<<<<<< HEAD
 				cmd->scsi_done(cmd);
+=======
+				scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -1425,9 +1645,12 @@ out:
 static int twl_scsi_biosparam(struct scsi_device *sdev, struct block_device *bdev, sector_t capacity, int geom[])
 {
 	int heads, sectors;
+<<<<<<< HEAD
 	TW_Device_Extension *tw_dev;
 
 	tw_dev = (TW_Device_Extension *)sdev->host->hostdata;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (capacity >= 0x200000) {
 		heads = 255;
@@ -1474,8 +1697,14 @@ out:
 } /* End twl_scsi_eh_reset() */
 
 /* This is the main scsi queue function to handle scsi opcodes */
+<<<<<<< HEAD
 static int twl_scsi_queue_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_cmnd *))
 {
+=======
+static int twl_scsi_queue_lck(struct scsi_cmnd *SCpnt)
+{
+	void (*done)(struct scsi_cmnd *) = scsi_done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int request_id, retval;
 	TW_Device_Extension *tw_dev = (TW_Device_Extension *)SCpnt->device->host->hostdata;
 
@@ -1485,9 +1714,12 @@ static int twl_scsi_queue_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_
 		goto out;
 	}
 
+<<<<<<< HEAD
 	/* Save done function into scsi_cmnd struct */
 	SCpnt->scsi_done = done;
 		
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Get a free request id */
 	twl_get_request_id(tw_dev, &request_id);
 
@@ -1541,7 +1773,11 @@ static void twl_shutdown(struct pci_dev *pdev)
 
 	tw_dev = (TW_Device_Extension *)host->hostdata;
 
+<<<<<<< HEAD
 	if (tw_dev->online) 
+=======
+	if (tw_dev->online)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__twl_shutdown(tw_dev);
 } /* End twl_shutdown() */
 
@@ -1554,20 +1790,29 @@ static int twl_slave_configure(struct scsi_device *sdev)
 	return 0;
 } /* End twl_slave_configure() */
 
+<<<<<<< HEAD
 /* scsi_host_template initializer */
 static struct scsi_host_template driver_template = {
+=======
+static const struct scsi_host_template driver_template = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module			= THIS_MODULE,
 	.name			= "3w-sas",
 	.queuecommand		= twl_scsi_queue,
 	.eh_host_reset_handler	= twl_scsi_eh_reset,
 	.bios_param		= twl_scsi_biosparam,
+<<<<<<< HEAD
 	.change_queue_depth	= twl_change_queue_depth,
+=======
+	.change_queue_depth	= scsi_change_queue_depth,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.can_queue		= TW_Q_LENGTH-2,
 	.slave_configure	= twl_slave_configure,
 	.this_id		= -1,
 	.sg_tablesize		= TW_LIBERATOR_MAX_SGL_LENGTH,
 	.max_sectors		= TW_MAX_SECTORS,
 	.cmd_per_lun		= TW_MAX_CMDS_PER_LUN,
+<<<<<<< HEAD
 	.use_clustering		= ENABLE_CLUSTERING,
 	.shost_attrs		= twl_host_attrs,
 	.emulated		= 1
@@ -1575,6 +1820,15 @@ static struct scsi_host_template driver_template = {
 
 /* This function will probe and initialize a card */
 static int __devinit twl_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
+=======
+	.shost_groups		= twl_host_groups,
+	.emulated		= 1,
+	.no_write_same		= 1,
+};
+
+/* This function will probe and initialize a card */
+static int twl_probe(struct pci_dev *pdev, const struct pci_device_id *dev_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host = NULL;
 	TW_Device_Extension *tw_dev;
@@ -1590,6 +1844,7 @@ static int __devinit twl_probe(struct pci_dev *pdev, const struct pci_device_id 
 	pci_set_master(pdev);
 	pci_try_set_mwi(pdev);
 
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(64))
 	    || pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64)))
 		if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32))
@@ -1598,6 +1853,14 @@ static int __devinit twl_probe(struct pci_dev *pdev, const struct pci_device_id 
 			retval = -ENODEV;
 			goto out_disable_device;
 		}
+=======
+	retval = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+	if (retval) {
+		TW_PRINTK(host, TW_DRIVER, 0x18, "Failed to set dma mask");
+		retval = -ENODEV;
+		goto out_disable_device;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host = scsi_host_alloc(&driver_template, sizeof(TW_Device_Extension));
 	if (!host) {
@@ -1613,6 +1876,10 @@ static int __devinit twl_probe(struct pci_dev *pdev, const struct pci_device_id 
 
 	if (twl_initialize_device_extension(tw_dev)) {
 		TW_PRINTK(tw_dev->host, TW_DRIVER, 0x1a, "Failed to initialize device extension");
+<<<<<<< HEAD
+=======
+		retval = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_device_extension;
 	}
 
@@ -1627,6 +1894,10 @@ static int __devinit twl_probe(struct pci_dev *pdev, const struct pci_device_id 
 	tw_dev->base_addr = pci_iomap(pdev, 1, 0);
 	if (!tw_dev->base_addr) {
 		TW_PRINTK(tw_dev->host, TW_DRIVER, 0x1c, "Failed to ioremap");
+<<<<<<< HEAD
+=======
+		retval = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_release_mem_region;
 	}
 
@@ -1636,6 +1907,10 @@ static int __devinit twl_probe(struct pci_dev *pdev, const struct pci_device_id 
 	/* Initialize the card */
 	if (twl_reset_sequence(tw_dev, 0)) {
 		TW_PRINTK(tw_dev->host, TW_DRIVER, 0x1d, "Controller reset failed during probe");
+<<<<<<< HEAD
+=======
+		retval = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_iounmap;
 	}
 
@@ -1689,7 +1964,11 @@ static int __devinit twl_probe(struct pci_dev *pdev, const struct pci_device_id 
 
 	/* Re-enable interrupts on the card */
 	TWL_UNMASK_INTERRUPTS(tw_dev);
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Finally, scan the host */
 	scsi_scan_host(host);
 
@@ -1770,11 +2049,18 @@ static void twl_remove(struct pci_dev *pdev)
 	twl_device_extension_count--;
 } /* End twl_remove() */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 /* This function is called on PCI suspend */
 static int twl_suspend(struct pci_dev *pdev, pm_message_t state)
 {
 	struct Scsi_Host *host = pci_get_drvdata(pdev);
+=======
+/* This function is called on PCI suspend */
+static int __maybe_unused twl_suspend(struct device *dev)
+{
+	struct Scsi_Host *host = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TW_Device_Extension *tw_dev = (TW_Device_Extension *)host->hostdata;
 
 	printk(KERN_WARNING "3w-sas: Suspending host %d.\n", tw_dev->host->host_no);
@@ -1793,21 +2079,32 @@ static int twl_suspend(struct pci_dev *pdev, pm_message_t state)
 	/* Clear doorbell interrupt */
 	TWL_CLEAR_DB_INTERRUPT(tw_dev);
 
+<<<<<<< HEAD
 	pci_save_state(pdev);
 	pci_disable_device(pdev);
 	pci_set_power_state(pdev, pci_choose_state(pdev, state));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 } /* End twl_suspend() */
 
 /* This function is called on PCI resume */
+<<<<<<< HEAD
 static int twl_resume(struct pci_dev *pdev)
 {
 	int retval = 0;
+=======
+static int __maybe_unused twl_resume(struct device *dev)
+{
+	int retval = 0;
+	struct pci_dev *pdev = to_pci_dev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *host = pci_get_drvdata(pdev);
 	TW_Device_Extension *tw_dev = (TW_Device_Extension *)host->hostdata;
 
 	printk(KERN_WARNING "3w-sas: Resuming host %d.\n", tw_dev->host->host_no);
+<<<<<<< HEAD
 	pci_set_power_state(pdev, PCI_D0);
 	pci_enable_wake(pdev, PCI_D0, 0);
 	pci_restore_state(pdev);
@@ -1829,6 +2126,16 @@ static int twl_resume(struct pci_dev *pdev)
 			retval = -ENODEV;
 			goto out_disable_device;
 		}
+=======
+	pci_try_set_mwi(pdev);
+
+	retval = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+	if (retval) {
+		TW_PRINTK(host, TW_DRIVER, 0x25, "Failed to set dma mask during resume");
+		retval = -ENODEV;
+		goto out_disable_device;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the card */
 	if (twl_reset_sequence(tw_dev, 0)) {
@@ -1856,6 +2163,7 @@ static int twl_resume(struct pci_dev *pdev)
 
 out_disable_device:
 	scsi_remove_host(host);
+<<<<<<< HEAD
 	pci_disable_device(pdev);
 
 	return retval;
@@ -1864,21 +2172,38 @@ out_disable_device:
 
 /* PCI Devices supported by this driver */
 static struct pci_device_id twl_pci_tbl[] __devinitdata = {
+=======
+
+	return retval;
+} /* End twl_resume() */
+
+/* PCI Devices supported by this driver */
+static struct pci_device_id twl_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(3WARE, PCI_DEVICE_ID_3WARE_9750) },
 	{ }
 };
 MODULE_DEVICE_TABLE(pci, twl_pci_tbl);
 
+<<<<<<< HEAD
+=======
+static SIMPLE_DEV_PM_OPS(twl_pm_ops, twl_suspend, twl_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pci_driver initializer */
 static struct pci_driver twl_driver = {
 	.name		= "3w-sas",
 	.id_table	= twl_pci_tbl,
 	.probe		= twl_probe,
 	.remove		= twl_remove,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	.suspend	= twl_suspend,
 	.resume		= twl_resume,
 #endif
+=======
+	.driver.pm	= &twl_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown	= twl_shutdown
 };
 

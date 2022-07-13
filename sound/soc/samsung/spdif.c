@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* sound/soc/samsung/spdif.c
  *
  * ALSA SoC Audio Layer - Samsung S/PDIF Controller driver
@@ -9,6 +10,14 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0
+//
+// ALSA SoC Audio Layer - Samsung S/PDIF Controller driver
+//
+// Copyright (c) 2010 Samsung Electronics Co. Ltd
+//		http://www.samsung.com/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -17,8 +26,12 @@
 #include <sound/soc.h>
 #include <sound/pcm_params.h>
 
+<<<<<<< HEAD
 #include <plat/audio.h>
 #include <mach/dma.h>
+=======
+#include <linux/platform_data/asoc-s3c.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dma.h"
 #include "spdif.h"
@@ -76,9 +89,15 @@
  * @clk_rate: Current clock rate for calcurate ratio.
  * @pclk: The peri-clock pointer for spdif master operation.
  * @sclk: The source clock pointer for making sync signals.
+<<<<<<< HEAD
  * @save_clkcon: Backup clkcon reg. in suspend.
  * @save_con: Backup con reg. in suspend.
  * @save_cstas: Backup cstas reg. in suspend.
+=======
+ * @saved_clkcon: Backup clkcon reg. in suspend.
+ * @saved_con: Backup con reg. in suspend.
+ * @saved_cstas: Backup cstas reg. in suspend.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dma_playback: DMA information for playback channel.
  */
 struct samsung_spdif_info {
@@ -91,6 +110,7 @@ struct samsung_spdif_info {
 	u32		saved_clkcon;
 	u32		saved_con;
 	u32		saved_cstas;
+<<<<<<< HEAD
 	struct s3c_dma_params	*dma_playback;
 };
 
@@ -101,6 +121,20 @@ static struct s3c2410_dma_client spdif_dma_client_out = {
 static struct s3c_dma_params spdif_stereo_out;
 static struct samsung_spdif_info spdif_info;
 
+=======
+	struct snd_dmaengine_dai_dma_data *dma_playback;
+};
+
+static struct snd_dmaengine_dai_dma_data spdif_stereo_out;
+static struct samsung_spdif_info spdif_info;
+
+static inline struct samsung_spdif_info
+*component_to_info(struct snd_soc_component *component)
+{
+	return snd_soc_component_get_drvdata(component);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct samsung_spdif_info *to_info(struct snd_soc_dai *cpu_dai)
 {
 	return snd_soc_dai_get_drvdata(cpu_dai);
@@ -145,8 +179,13 @@ static int spdif_set_sysclk(struct snd_soc_dai *cpu_dai,
 static int spdif_trigger(struct snd_pcm_substream *substream, int cmd,
 				struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct samsung_spdif_info *spdif = to_info(rtd->cpu_dai);
+=======
+	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+	struct samsung_spdif_info *spdif = to_info(snd_soc_rtd_to_cpu(rtd, 0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	dev_dbg(spdif->dev, "Entered %s\n", __func__);
@@ -181,10 +220,17 @@ static int spdif_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params,
 				struct snd_soc_dai *socdai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct samsung_spdif_info *spdif = to_info(rtd->cpu_dai);
 	void __iomem *regs = spdif->regs;
 	struct s3c_dma_params *dma_data;
+=======
+	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+	struct samsung_spdif_info *spdif = to_info(snd_soc_rtd_to_cpu(rtd, 0));
+	void __iomem *regs = spdif->regs;
+	struct snd_dmaengine_dai_dma_data *dma_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 con, clkcon, cstas;
 	unsigned long flags;
 	int i, ratio;
@@ -198,7 +244,11 @@ static int spdif_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	snd_soc_dai_set_dma_data(rtd->cpu_dai, substream, dma_data);
+=======
+	snd_soc_dai_set_dma_data(snd_soc_rtd_to_cpu(rtd, 0), substream, dma_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&spdif->lock, flags);
 
@@ -212,8 +262,13 @@ static int spdif_hw_params(struct snd_pcm_substream *substream,
 	con |= CON_PCM_DATA;
 
 	con &= ~CON_PCM_MASK;
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
+=======
+	switch (params_width(params)) {
+	case 16:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		con |= CON_PCM_16BIT;
 		break;
 	default:
@@ -283,8 +338,13 @@ err:
 static void spdif_shutdown(struct snd_pcm_substream *substream,
 				struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct samsung_spdif_info *spdif = to_info(rtd->cpu_dai);
+=======
+	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+	struct samsung_spdif_info *spdif = to_info(snd_soc_rtd_to_cpu(rtd, 0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *regs = spdif->regs;
 	u32 con, clkcon;
 
@@ -300,9 +360,15 @@ static void spdif_shutdown(struct snd_pcm_substream *substream,
 }
 
 #ifdef CONFIG_PM
+<<<<<<< HEAD
 static int spdif_suspend(struct snd_soc_dai *cpu_dai)
 {
 	struct samsung_spdif_info *spdif = to_info(cpu_dai);
+=======
+static int spdif_suspend(struct snd_soc_component *component)
+{
+	struct samsung_spdif_info *spdif = component_to_info(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 con = spdif->saved_con;
 
 	dev_dbg(spdif->dev, "Entered %s\n", __func__);
@@ -317,9 +383,15 @@ static int spdif_suspend(struct snd_soc_dai *cpu_dai)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int spdif_resume(struct snd_soc_dai *cpu_dai)
 {
 	struct samsung_spdif_info *spdif = to_info(cpu_dai);
+=======
+static int spdif_resume(struct snd_soc_component *component)
+{
+	struct samsung_spdif_info *spdif = component_to_info(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(spdif->dev, "Entered %s\n", __func__);
 
@@ -353,6 +425,7 @@ static struct snd_soc_dai_driver samsung_spdif_dai = {
 				SNDRV_PCM_RATE_96000),
 		.formats = SNDRV_PCM_FMTBIT_S16_LE, },
 	.ops = &spdif_dai_ops,
+<<<<<<< HEAD
 	.suspend = spdif_suspend,
 	.resume = spdif_resume,
 };
@@ -362,18 +435,38 @@ static __devinit int spdif_probe(struct platform_device *pdev)
 	struct s3c_audio_pdata *spdif_pdata;
 	struct resource *mem_res, *dma_res;
 	struct samsung_spdif_info *spdif;
+=======
+};
+
+static const struct snd_soc_component_driver samsung_spdif_component = {
+	.name			= "samsung-spdif",
+	.suspend		= spdif_suspend,
+	.resume			= spdif_resume,
+	.legacy_dai_naming	= 1,
+};
+
+static int spdif_probe(struct platform_device *pdev)
+{
+	struct s3c_audio_pdata *spdif_pdata;
+	struct resource *mem_res;
+	struct samsung_spdif_info *spdif;
+	dma_filter_fn filter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	spdif_pdata = pdev->dev.platform_data;
 
 	dev_dbg(&pdev->dev, "Entered %s\n", __func__);
 
+<<<<<<< HEAD
 	dma_res = platform_get_resource(pdev, IORESOURCE_DMA, 0);
 	if (!dma_res) {
 		dev_err(&pdev->dev, "Unable to get dma resource.\n");
 		return -ENXIO;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!mem_res) {
 		dev_err(&pdev->dev, "Unable to get register resource.\n");
@@ -391,21 +484,39 @@ static __devinit int spdif_probe(struct platform_device *pdev)
 
 	spin_lock_init(&spdif->lock);
 
+<<<<<<< HEAD
 	spdif->pclk = clk_get(&pdev->dev, "spdif");
+=======
+	spdif->pclk = devm_clk_get(&pdev->dev, "spdif");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(spdif->pclk)) {
 		dev_err(&pdev->dev, "failed to get peri-clock\n");
 		ret = -ENOENT;
 		goto err0;
 	}
+<<<<<<< HEAD
 	clk_enable(spdif->pclk);
 
 	spdif->sclk = clk_get(&pdev->dev, "sclk_spdif");
+=======
+	ret = clk_prepare_enable(spdif->pclk);
+	if (ret)
+		goto err0;
+
+	spdif->sclk = devm_clk_get(&pdev->dev, "sclk_spdif");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(spdif->sclk)) {
 		dev_err(&pdev->dev, "failed to get internal source clock\n");
 		ret = -ENOENT;
 		goto err1;
 	}
+<<<<<<< HEAD
 	clk_enable(spdif->sclk);
+=======
+	ret = clk_prepare_enable(spdif->sclk);
+	if (ret)
+		goto err1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Request S/PDIF Register's memory region */
 	if (!request_mem_region(mem_res->start,
@@ -422,14 +533,38 @@ static __devinit int spdif_probe(struct platform_device *pdev)
 		goto err3;
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, spdif);
 
 	ret = snd_soc_register_dai(&pdev->dev, &samsung_spdif_dai);
+=======
+	spdif_stereo_out.addr_width = 2;
+	spdif_stereo_out.addr = mem_res->start + DATA_OUTBUF;
+	filter = NULL;
+	if (spdif_pdata) {
+		spdif_stereo_out.filter_data = spdif_pdata->dma_playback;
+		filter = spdif_pdata->dma_filter;
+	}
+	spdif->dma_playback = &spdif_stereo_out;
+
+	ret = samsung_asoc_dma_platform_register(&pdev->dev, filter,
+						 NULL, NULL, NULL);
+	if (ret) {
+		dev_err(&pdev->dev, "failed to register DMA: %d\n", ret);
+		goto err4;
+	}
+
+	dev_set_drvdata(&pdev->dev, spdif);
+
+	ret = devm_snd_soc_register_component(&pdev->dev,
+			&samsung_spdif_component, &samsung_spdif_dai, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0) {
 		dev_err(&pdev->dev, "fail to register dai\n");
 		goto err4;
 	}
 
+<<<<<<< HEAD
 	spdif_stereo_out.dma_size = 2;
 	spdif_stereo_out.client = &spdif_dma_client_out;
 	spdif_stereo_out.dma_addr = mem_res->start + DATA_OUTBUF;
@@ -439,25 +574,39 @@ static __devinit int spdif_probe(struct platform_device *pdev)
 
 	return 0;
 
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err4:
 	iounmap(spdif->regs);
 err3:
 	release_mem_region(mem_res->start, resource_size(mem_res));
 err2:
+<<<<<<< HEAD
 	clk_disable(spdif->sclk);
 	clk_put(spdif->sclk);
 err1:
 	clk_disable(spdif->pclk);
 	clk_put(spdif->pclk);
+=======
+	clk_disable_unprepare(spdif->sclk);
+err1:
+	clk_disable_unprepare(spdif->pclk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err0:
 	return ret;
 }
 
+<<<<<<< HEAD
 static __devexit int spdif_remove(struct platform_device *pdev)
+=======
+static void spdif_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct samsung_spdif_info *spdif = &spdif_info;
 	struct resource *mem_res;
 
+<<<<<<< HEAD
 	snd_soc_unregister_dai(&pdev->dev);
 
 	iounmap(spdif->regs);
@@ -472,14 +621,29 @@ static __devexit int spdif_remove(struct platform_device *pdev)
 	clk_put(spdif->pclk);
 
 	return 0;
+=======
+	iounmap(spdif->regs);
+
+	mem_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	release_mem_region(mem_res->start, resource_size(mem_res));
+
+	clk_disable_unprepare(spdif->sclk);
+	clk_disable_unprepare(spdif->pclk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver samsung_spdif_driver = {
 	.probe	= spdif_probe,
+<<<<<<< HEAD
 	.remove	= __devexit_p(spdif_remove),
 	.driver	= {
 		.name	= "samsung-spdif",
 		.owner	= THIS_MODULE,
+=======
+	.remove_new = spdif_remove,
+	.driver	= {
+		.name	= "samsung-spdif",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

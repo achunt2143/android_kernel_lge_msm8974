@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	nv_tco:	TCO timer driver for nVidia chipsets.
  *
@@ -8,12 +12,16 @@
  *
  *	(c) Copyright 2000 kernel concepts <nils@kernelconcepts.de>, All Rights
  *	Reserved.
+<<<<<<< HEAD
  *				http://www.kernelconcepts.de
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
+=======
+ *				https://www.kernelconcepts.de
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Neither kernel concepts nor Nils Faerber admit liability nor provide
  *	warranty for any of this software. This material is provided

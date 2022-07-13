@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MUSB OTG driver register defines
  *
  * Copyright 2005 Mentor Graphics Corporation
  * Copyright (C) 2005-2006 by Texas Instruments
  * Copyright (C) 2006-2007 Nokia Corporation
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,6 +35,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MUSB_REGS_H__
@@ -72,6 +79,15 @@
 #define MUSB_DEVCTL_HR		0x02
 #define MUSB_DEVCTL_SESSION	0x01
 
+<<<<<<< HEAD
+=======
+/* BABBLE_CTL */
+#define MUSB_BABBLE_FORCE_TXIDLE	0x80
+#define MUSB_BABBLE_SW_SESSION_CTRL	0x40
+#define MUSB_BABBLE_STUCK_J		0x20
+#define MUSB_BABBLE_RCV_DISABLE		0x04
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* MUSB ULPI VBUSCONTROL */
 #define MUSB_ULPI_USE_EXTVBUS	0x01
 #define MUSB_ULPI_USE_EXTVBUSIND 0x02
@@ -214,8 +230,11 @@
 #define MUSB_HUBADDR_MULTI_TT		0x80
 
 
+<<<<<<< HEAD
 #ifndef CONFIG_BLACKFIN
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Common USB registers
  */
@@ -233,6 +252,7 @@
 #define MUSB_INDEX		0x0E	/* 8 bit */
 #define MUSB_TESTMODE		0x0F	/* 8 bit */
 
+<<<<<<< HEAD
 /* Get offset for a given FIFO from musb->mregs */
 #if defined(CONFIG_USB_MUSB_TUSB6010) ||	\
 	defined(CONFIG_USB_MUSB_TUSB6010_MODULE)
@@ -241,11 +261,17 @@
 #define MUSB_FIFO_OFFSET(epnum)	(0x20 + ((epnum) * 4))
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Additional Control Registers
  */
 
 #define MUSB_DEVCTL		0x60	/* 8 bit */
+<<<<<<< HEAD
+=======
+#define MUSB_BABBLE_CTL		0x61	/* 8 bit */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* These are always controlled through the INDEX register */
 #define MUSB_TXFIFOSZ		0x62	/* 8-bit (see masks) */
@@ -288,6 +314,7 @@
 #define MUSB_FIFOSIZE		0x0F
 #define MUSB_CONFIGDATA		MUSB_FIFOSIZE	/* Re-used for EP0 */
 
+<<<<<<< HEAD
 /* Offsets to endpoint registers in indexed model (using INDEX register) */
 #define MUSB_INDEXED_OFFSET(_epnum, _offset)	\
 	(0x10 + (_offset))
@@ -303,6 +330,9 @@
 	(0x10 + _offset)
 #include "tusb6010.h"		/* Needed "only" for TUSB_EP0_CONF */
 #endif
+=======
+#include "tusb6010.h"		/* Needed "only" for TUSB_EP0_CONF */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MUSB_TXCSR_MODE			0x2000
 
@@ -315,6 +345,7 @@
 #define MUSB_RXHUBADDR		0x06
 #define MUSB_RXHUBPORT		0x07
 
+<<<<<<< HEAD
 #define MUSB_BUSCTL_OFFSET(_epnum, _offset) \
 	(0x80 + (8*(_epnum)) + (_offset))
 
@@ -368,12 +399,15 @@ static inline u8 musb_read_ulpi_buscontrol(void __iomem *mbase)
 	return musb_readb(mbase, MUSB_ULPI_BUSCONTROL);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u8 musb_read_configdata(void __iomem *mbase)
 {
 	musb_writeb(mbase, MUSB_INDEX, 0);
 	return musb_readb(mbase, 0x10 + MUSB_CONFIGDATA);
 }
 
+<<<<<<< HEAD
 static inline u16 musb_read_hwvers(void __iomem *mbase)
 {
 	return musb_readw(mbase, MUSB_HWVERS);
@@ -642,4 +676,86 @@ static inline u8 musb_read_txhubport(void __iomem *mbase, u8 epnum)
 
 #endif /* CONFIG_BLACKFIN */
 
+=======
+static inline void musb_write_rxfunaddr(struct musb *musb, u8 epnum,
+		u8 qh_addr_reg)
+{
+	musb_writeb(musb->mregs,
+		    musb->io.busctl_offset(epnum, MUSB_RXFUNCADDR),
+		    qh_addr_reg);
+}
+
+static inline void musb_write_rxhubaddr(struct musb *musb, u8 epnum,
+		u8 qh_h_addr_reg)
+{
+	musb_writeb(musb->mregs, musb->io.busctl_offset(epnum, MUSB_RXHUBADDR),
+			qh_h_addr_reg);
+}
+
+static inline void musb_write_rxhubport(struct musb *musb, u8 epnum,
+		u8 qh_h_port_reg)
+{
+	musb_writeb(musb->mregs, musb->io.busctl_offset(epnum, MUSB_RXHUBPORT),
+			qh_h_port_reg);
+}
+
+static inline void musb_write_txfunaddr(struct musb *musb, u8 epnum,
+		u8 qh_addr_reg)
+{
+	musb_writeb(musb->mregs,
+		    musb->io.busctl_offset(epnum, MUSB_TXFUNCADDR),
+		    qh_addr_reg);
+}
+
+static inline void musb_write_txhubaddr(struct musb *musb, u8 epnum,
+		u8 qh_addr_reg)
+{
+	musb_writeb(musb->mregs, musb->io.busctl_offset(epnum, MUSB_TXHUBADDR),
+			qh_addr_reg);
+}
+
+static inline void musb_write_txhubport(struct musb *musb, u8 epnum,
+		u8 qh_h_port_reg)
+{
+	musb_writeb(musb->mregs, musb->io.busctl_offset(epnum, MUSB_TXHUBPORT),
+			qh_h_port_reg);
+}
+
+static inline u8 musb_read_rxfunaddr(struct musb *musb, u8 epnum)
+{
+	return musb_readb(musb->mregs,
+			  musb->io.busctl_offset(epnum, MUSB_RXFUNCADDR));
+}
+
+static inline u8 musb_read_rxhubaddr(struct musb *musb, u8 epnum)
+{
+	return musb_readb(musb->mregs,
+			  musb->io.busctl_offset(epnum, MUSB_RXHUBADDR));
+}
+
+static inline u8 musb_read_rxhubport(struct musb *musb, u8 epnum)
+{
+	return musb_readb(musb->mregs,
+			  musb->io.busctl_offset(epnum, MUSB_RXHUBPORT));
+}
+
+static inline u8 musb_read_txfunaddr(struct musb *musb, u8 epnum)
+{
+	return musb_readb(musb->mregs,
+			  musb->io.busctl_offset(epnum, MUSB_TXFUNCADDR));
+}
+
+static inline u8 musb_read_txhubaddr(struct musb *musb, u8 epnum)
+{
+	return musb_readb(musb->mregs,
+			  musb->io.busctl_offset(epnum, MUSB_TXHUBADDR));
+}
+
+static inline u8 musb_read_txhubport(struct musb *musb, u8 epnum)
+{
+	return musb_readb(musb->mregs,
+			  musb->io.busctl_offset(epnum, MUSB_TXHUBPORT));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* __MUSB_REGS_H__ */

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Authentication token and access key management
  *
  * Copyright (C) 2004, 2007 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
@@ -10,6 +15,9 @@
  *
  *
  * See Documentation/security/keys.txt for information on keys/keyrings.
+=======
+ * See Documentation/security/keys/core.rst for information on keys/keyrings.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LINUX_KEY_H
@@ -22,8 +30,17 @@
 #include <linux/sysctl.h>
 #include <linux/rwsem.h>
 #include <linux/atomic.h>
+<<<<<<< HEAD
 
 #ifdef __KERNEL__
+=======
+#include <linux/assoc_array.h>
+#include <linux/refcount.h>
+#include <linux/time64.h>
+
+#ifdef __KERNEL__
+#include <linux/uidgid.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* key handle serial number */
 typedef int32_t key_serial_t;
@@ -32,6 +49,10 @@ typedef int32_t key_serial_t;
 typedef uint32_t key_perm_t;
 
 struct key;
+<<<<<<< HEAD
+=======
+struct net;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_KEYS
 
@@ -71,6 +92,32 @@ struct key;
 
 #define KEY_PERM_UNDEF	0xffffffff
 
+<<<<<<< HEAD
+=======
+/*
+ * The permissions required on a key that we're looking up.
+ */
+enum key_need_perm {
+	KEY_NEED_UNSPECIFIED,	/* Needed permission unspecified */
+	KEY_NEED_VIEW,		/* Require permission to view attributes */
+	KEY_NEED_READ,		/* Require permission to read content */
+	KEY_NEED_WRITE,		/* Require permission to update / modify */
+	KEY_NEED_SEARCH,	/* Require permission to search (keyring) or find (key) */
+	KEY_NEED_LINK,		/* Require permission to link */
+	KEY_NEED_SETATTR,	/* Require permission to change attributes */
+	KEY_NEED_UNLINK,	/* Require permission to unlink key */
+	KEY_SYSADMIN_OVERRIDE,	/* Special: override by CAP_SYS_ADMIN */
+	KEY_AUTHTOKEN_OVERRIDE,	/* Special: override by possession of auth token */
+	KEY_DEFER_PERM_CHECK,	/* Special: permission check is deferred */
+};
+
+enum key_lookup_flag {
+	KEY_LOOKUP_CREATE = 0x01,
+	KEY_LOOKUP_PARTIAL = 0x02,
+	KEY_LOOKUP_ALL = (KEY_LOOKUP_CREATE | KEY_LOOKUP_PARTIAL),
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct seq_file;
 struct user_struct;
 struct signal_struct;
@@ -78,9 +125,47 @@ struct cred;
 
 struct key_type;
 struct key_owner;
+<<<<<<< HEAD
 struct keyring_list;
 struct keyring_name;
 
+=======
+struct key_tag;
+struct keyring_list;
+struct keyring_name;
+
+struct key_tag {
+	struct rcu_head		rcu;
+	refcount_t		usage;
+	bool			removed;	/* T when subject removed */
+};
+
+struct keyring_index_key {
+	/* [!] If this structure is altered, the union in struct key must change too! */
+	unsigned long		hash;			/* Hash value */
+	union {
+		struct {
+#ifdef __LITTLE_ENDIAN /* Put desc_len at the LSB of x */
+			u16	desc_len;
+			char	desc[sizeof(long) - 2];	/* First few chars of description */
+#else
+			char	desc[sizeof(long) - 2];	/* First few chars of description */
+			u16	desc_len;
+#endif
+		};
+		unsigned long x;
+	};
+	struct key_type		*type;
+	struct key_tag		*domain_tag;	/* Domain of operation */
+	const char		*description;
+};
+
+union key_payload {
+	void __rcu		*rcu_data0;
+	void			*data[4];
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************/
 /*
  * key reference with possession attribute handling
@@ -98,7 +183,11 @@ struct keyring_name;
 typedef struct __key_reference_with_attributes *key_ref_t;
 
 static inline key_ref_t make_key_ref(const struct key *key,
+<<<<<<< HEAD
 				     unsigned long possession)
+=======
+				     bool possession)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (key_ref_t) ((unsigned long) key | possession);
 }
@@ -108,11 +197,34 @@ static inline struct key *key_ref_to_ptr(const key_ref_t key_ref)
 	return (struct key *) ((unsigned long) key_ref & ~1UL);
 }
 
+<<<<<<< HEAD
 static inline unsigned long is_key_possessed(const key_ref_t key_ref)
+=======
+static inline bool is_key_possessed(const key_ref_t key_ref)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (unsigned long) key_ref & 1UL;
 }
 
+<<<<<<< HEAD
+=======
+typedef int (*key_restrict_link_func_t)(struct key *dest_keyring,
+					const struct key_type *type,
+					const union key_payload *payload,
+					struct key *restriction_key);
+
+struct key_restriction {
+	key_restrict_link_func_t check;
+	struct key *key;
+	struct key_type *keytype;
+};
+
+enum key_state {
+	KEY_IS_UNINSTANTIATED,
+	KEY_IS_POSITIVE,		/* Positively instantiated */
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************/
 /*
  * authentication token / access credential / keyring
@@ -122,32 +234,56 @@ static inline unsigned long is_key_possessed(const key_ref_t key_ref)
  *   - Kerberos TGTs and tickets
  */
 struct key {
+<<<<<<< HEAD
 	atomic_t		usage;		/* number of references */
+=======
+	refcount_t		usage;		/* number of references */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key_serial_t		serial;		/* key serial number */
 	union {
 		struct list_head graveyard_link;
 		struct rb_node	serial_node;
 	};
+<<<<<<< HEAD
 	struct key_type		*type;		/* type of key */
+=======
+#ifdef CONFIG_KEY_NOTIFICATIONS
+	struct watch_list	*watchers;	/* Entities watching this key for changes */
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rw_semaphore	sem;		/* change vs change sem */
 	struct key_user		*user;		/* owner of this key */
 	void			*security;	/* security data for this key */
 	union {
+<<<<<<< HEAD
 		time_t		expiry;		/* time at which key expires (or 0) */
 		time_t		revoked_at;	/* time at which key was revoked */
 	};
 	uid_t			uid;
 	gid_t			gid;
+=======
+		time64_t	expiry;		/* time at which key expires (or 0) */
+		time64_t	revoked_at;	/* time at which key was revoked */
+	};
+	time64_t		last_used_at;	/* last time used for LRU keyring discard */
+	kuid_t			uid;
+	kgid_t			gid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key_perm_t		perm;		/* access permissions */
 	unsigned short		quotalen;	/* length added to quota */
 	unsigned short		datalen;	/* payload data length
 						 * - may not match RCU dereferenced payload
 						 * - payload should contain own length
 						 */
+<<<<<<< HEAD
+=======
+	short			state;		/* Key state (+) or rejection error (-) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef KEY_DEBUGGING
 	unsigned		magic;
 #define KEY_DEBUG_MAGIC		0x18273645u
+<<<<<<< HEAD
 #define KEY_DEBUG_MAGIC_X	0xf8e9dacbu
 #endif
 
@@ -177,21 +313,76 @@ struct key {
 		void			*p[2];
 		int			reject_error;
 	} type_data;
+=======
+#endif
+
+	unsigned long		flags;		/* status flags (change with bitops) */
+#define KEY_FLAG_DEAD		0	/* set if key type has been deleted */
+#define KEY_FLAG_REVOKED	1	/* set if key had been revoked */
+#define KEY_FLAG_IN_QUOTA	2	/* set if key consumes quota */
+#define KEY_FLAG_USER_CONSTRUCT	3	/* set if key is being constructed in userspace */
+#define KEY_FLAG_ROOT_CAN_CLEAR	4	/* set if key can be cleared by root without permission */
+#define KEY_FLAG_INVALIDATED	5	/* set if key has been invalidated */
+#define KEY_FLAG_BUILTIN	6	/* set if key is built in to the kernel */
+#define KEY_FLAG_ROOT_CAN_INVAL	7	/* set if key can be invalidated by root without permission */
+#define KEY_FLAG_KEEP		8	/* set if key should not be removed */
+#define KEY_FLAG_UID_KEYRING	9	/* set if key is a user or user session keyring */
+
+	/* the key type and key description string
+	 * - the desc is used to match a key against search criteria
+	 * - it should be a printable string
+	 * - eg: for krb5 AFS, this might be "afs@REDHAT.COM"
+	 */
+	union {
+		struct keyring_index_key index_key;
+		struct {
+			unsigned long	hash;
+			unsigned long	len_desc;
+			struct key_type	*type;		/* type of key */
+			struct key_tag	*domain_tag;	/* Domain of operation */
+			char		*description;
+		};
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* key data
 	 * - this is used to hold the data actually used in cryptography or
 	 *   whatever
 	 */
 	union {
+<<<<<<< HEAD
 		unsigned long		value;
 		void __rcu		*rcudata;
 		void			*data;
 		struct keyring_list __rcu *subscriptions;
 	} payload;
+=======
+		union key_payload payload;
+		struct {
+			/* Keyring bits */
+			struct list_head name_link;
+			struct assoc_array keys;
+		};
+	};
+
+	/* This is set on a keyring to restrict the addition of a link to a key
+	 * to it.  If this structure isn't provided then it is assumed that the
+	 * keyring is open to any addition.  It is ignored for non-keyring
+	 * keys. Only set this value using keyring_restrict(), keyring_alloc(),
+	 * or key_alloc().
+	 *
+	 * This is intended for use with rings of trusted keys whereby addition
+	 * to the keyring needs to be controlled.  KEY_ALLOC_BYPASS_RESTRICTION
+	 * overrides this, allowing the kernel to add extra keys without
+	 * restriction.
+	 */
+	struct key_restriction *restrict_link;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct key *key_alloc(struct key_type *type,
 			     const char *desc,
+<<<<<<< HEAD
 			     uid_t uid, gid_t gid,
 			     const struct cred *cred,
 			     key_perm_t perm,
@@ -201,16 +392,47 @@ extern struct key *key_alloc(struct key_type *type,
 #define KEY_ALLOC_IN_QUOTA	0x0000	/* add to quota, reject if would overrun */
 #define KEY_ALLOC_QUOTA_OVERRUN	0x0001	/* add to quota, permit even if overrun */
 #define KEY_ALLOC_NOT_IN_QUOTA	0x0002	/* not in quota */
+=======
+			     kuid_t uid, kgid_t gid,
+			     const struct cred *cred,
+			     key_perm_t perm,
+			     unsigned long flags,
+			     struct key_restriction *restrict_link);
+
+
+#define KEY_ALLOC_IN_QUOTA		0x0000	/* add to quota, reject if would overrun */
+#define KEY_ALLOC_QUOTA_OVERRUN		0x0001	/* add to quota, permit even if overrun */
+#define KEY_ALLOC_NOT_IN_QUOTA		0x0002	/* not in quota */
+#define KEY_ALLOC_BUILT_IN		0x0004	/* Key is built into kernel */
+#define KEY_ALLOC_BYPASS_RESTRICTION	0x0008	/* Override the check on restricted keyrings */
+#define KEY_ALLOC_UID_KEYRING		0x0010	/* allocating a user or user session keyring */
+#define KEY_ALLOC_SET_KEEP		0x0020	/* Set the KEEP flag on the key/keyring */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void key_revoke(struct key *key);
 extern void key_invalidate(struct key *key);
 extern void key_put(struct key *key);
+<<<<<<< HEAD
 
 static inline struct key *key_get(struct key *key)
 {
 	if (key)
 		atomic_inc(&key->usage);
 	return key;
+=======
+extern bool key_put_tag(struct key_tag *tag);
+extern void key_remove_domain(struct key_tag *domain_tag);
+
+static inline struct key *__key_get(struct key *key)
+{
+	refcount_inc(&key->usage);
+	return key;
+}
+
+static inline struct key *key_get(struct key *key)
+{
+	return key ? __key_get(key) : key;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void key_ref_put(key_ref_t key_ref)
@@ -218,16 +440,32 @@ static inline void key_ref_put(key_ref_t key_ref)
 	key_put(key_ref_to_ptr(key_ref));
 }
 
+<<<<<<< HEAD
 extern struct key *request_key(struct key_type *type,
 			       const char *description,
 			       const char *callout_info);
 
 extern struct key *request_key_with_auxdata(struct key_type *type,
 					    const char *description,
+=======
+extern struct key *request_key_tag(struct key_type *type,
+				   const char *description,
+				   struct key_tag *domain_tag,
+				   const char *callout_info);
+
+extern struct key *request_key_rcu(struct key_type *type,
+				   const char *description,
+				   struct key_tag *domain_tag);
+
+extern struct key *request_key_with_auxdata(struct key_type *type,
+					    const char *description,
+					    struct key_tag *domain_tag,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    const void *callout_info,
 					    size_t callout_len,
 					    void *aux);
 
+<<<<<<< HEAD
 extern struct key *request_key_async(struct key_type *type,
 				     const char *description,
 				     const void *callout_info,
@@ -242,6 +480,66 @@ extern struct key *request_key_async_with_auxdata(struct key_type *type,
 extern int wait_for_key_construction(struct key *key, bool intr);
 
 extern int key_validate(struct key *key);
+=======
+/**
+ * request_key - Request a key and wait for construction
+ * @type: Type of key.
+ * @description: The searchable description of the key.
+ * @callout_info: The data to pass to the instantiation upcall (or NULL).
+ *
+ * As for request_key_tag(), but with the default global domain tag.
+ */
+static inline struct key *request_key(struct key_type *type,
+				      const char *description,
+				      const char *callout_info)
+{
+	return request_key_tag(type, description, NULL, callout_info);
+}
+
+#ifdef CONFIG_NET
+/**
+ * request_key_net - Request a key for a net namespace and wait for construction
+ * @type: Type of key.
+ * @description: The searchable description of the key.
+ * @net: The network namespace that is the key's domain of operation.
+ * @callout_info: The data to pass to the instantiation upcall (or NULL).
+ *
+ * As for request_key() except that it does not add the returned key to a
+ * keyring if found, new keys are always allocated in the user's quota, the
+ * callout_info must be a NUL-terminated string and no auxiliary data can be
+ * passed.  Only keys that operate the specified network namespace are used.
+ *
+ * Furthermore, it then works as wait_for_key_construction() to wait for the
+ * completion of keys undergoing construction with a non-interruptible wait.
+ */
+#define request_key_net(type, description, net, callout_info) \
+	request_key_tag(type, description, net->key_domain, callout_info)
+
+/**
+ * request_key_net_rcu - Request a key for a net namespace under RCU conditions
+ * @type: Type of key.
+ * @description: The searchable description of the key.
+ * @net: The network namespace that is the key's domain of operation.
+ *
+ * As for request_key_rcu() except that only keys that operate the specified
+ * network namespace are used.
+ */
+#define request_key_net_rcu(type, description, net) \
+	request_key_rcu(type, description, net->key_domain)
+#endif /* CONFIG_NET */
+
+extern int wait_for_key_construction(struct key *key, bool intr);
+
+extern int key_validate(const struct key *key);
+
+extern key_ref_t key_create(key_ref_t keyring,
+			    const char *type,
+			    const char *description,
+			    const void *payload,
+			    size_t plen,
+			    key_perm_t perm,
+			    unsigned long flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern key_ref_t key_create_or_update(key_ref_t keyring,
 				      const char *type,
@@ -258,6 +556,7 @@ extern int key_update(key_ref_t key,
 extern int key_link(struct key *keyring,
 		    struct key *key);
 
+<<<<<<< HEAD
 extern int key_unlink(struct key *keyring,
 		      struct key *key);
 
@@ -266,15 +565,48 @@ extern struct key *keyring_alloc(const char *description, uid_t uid, gid_t gid,
 				 unsigned long flags,
 				 struct key *dest);
 
+=======
+extern int key_move(struct key *key,
+		    struct key *from_keyring,
+		    struct key *to_keyring,
+		    unsigned int flags);
+
+extern int key_unlink(struct key *keyring,
+		      struct key *key);
+
+extern struct key *keyring_alloc(const char *description, kuid_t uid, kgid_t gid,
+				 const struct cred *cred,
+				 key_perm_t perm,
+				 unsigned long flags,
+				 struct key_restriction *restrict_link,
+				 struct key *dest);
+
+extern int restrict_link_reject(struct key *keyring,
+				const struct key_type *type,
+				const union key_payload *payload,
+				struct key *restriction_key);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int keyring_clear(struct key *keyring);
 
 extern key_ref_t keyring_search(key_ref_t keyring,
 				struct key_type *type,
+<<<<<<< HEAD
 				const char *description);
+=======
+				const char *description,
+				bool recurse);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int keyring_add_key(struct key *keyring,
 			   struct key *key);
 
+<<<<<<< HEAD
+=======
+extern int keyring_restrict(key_ref_t keyring, const char *type,
+			    const char *restriction);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct key *key_lookup(key_serial_t id);
 
 static inline key_serial_t key_serial(const struct key *key)
@@ -284,13 +616,29 @@ static inline key_serial_t key_serial(const struct key *key)
 
 extern void key_set_timeout(struct key *, unsigned);
 
+<<<<<<< HEAD
 /**
  * key_is_instantiated - Determine if a key has been positively instantiated
+=======
+extern key_ref_t lookup_user_key(key_serial_t id, unsigned long flags,
+				 enum key_need_perm need_perm);
+extern void key_free_user_ns(struct user_namespace *);
+
+static inline short key_read_state(const struct key *key)
+{
+	/* Barrier versus mark_key_instantiated(). */
+	return smp_load_acquire(&key->state);
+}
+
+/**
+ * key_is_positive - Determine if a key has been positively instantiated
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @key: The key to check.
  *
  * Return true if the specified key has been positively instantiated, false
  * otherwise.
  */
+<<<<<<< HEAD
 static inline bool key_is_instantiated(const struct key *key)
 {
 	return test_bit(KEY_FLAG_INSTANTIATED, &key->flags) &&
@@ -309,13 +657,41 @@ extern ctl_table key_sysctls[];
 #endif
 
 extern void key_replace_session_keyring(void);
+=======
+static inline bool key_is_positive(const struct key *key)
+{
+	return key_read_state(key) == KEY_IS_POSITIVE;
+}
+
+static inline bool key_is_negative(const struct key *key)
+{
+	return key_read_state(key) < 0;
+}
+
+#define dereference_key_rcu(KEY)					\
+	(rcu_dereference((KEY)->payload.rcu_data0))
+
+#define dereference_key_locked(KEY)					\
+	(rcu_dereference_protected((KEY)->payload.rcu_data0,		\
+				   rwsem_is_locked(&((struct key *)(KEY))->sem)))
+
+#define rcu_assign_keypointer(KEY, PAYLOAD)				\
+do {									\
+	rcu_assign_pointer((KEY)->payload.rcu_data0, (PAYLOAD));	\
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * the userspace interface
  */
 extern int install_thread_keyring_to_cred(struct cred *cred);
+<<<<<<< HEAD
 extern void key_fsuid_changed(struct task_struct *tsk);
 extern void key_fsgid_changed(struct task_struct *tsk);
+=======
+extern void key_fsuid_changed(struct cred *new_cred);
+extern void key_fsgid_changed(struct cred *new_cred);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void key_init(void);
 
 #else /* CONFIG_KEYS */
@@ -330,10 +706,19 @@ extern void key_init(void);
 #define make_key_ref(k, p)		NULL
 #define key_ref_to_ptr(k)		NULL
 #define is_key_possessed(k)		0
+<<<<<<< HEAD
 #define key_fsuid_changed(t)		do { } while(0)
 #define key_fsgid_changed(t)		do { } while(0)
 #define key_init()			do { } while(0)
 #define key_replace_session_keyring()	do { } while(0)
+=======
+#define key_fsuid_changed(c)		do { } while(0)
+#define key_fsgid_changed(c)		do { } while(0)
+#define key_init()			do { } while(0)
+#define key_free_user_ns(ns)		do { } while(0)
+#define key_remove_domain(d)		do { } while(0)
+#define key_lookup(k)			NULL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_KEYS */
 #endif /* __KERNEL__ */

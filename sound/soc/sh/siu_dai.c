@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * siu_dai.c - ALSA SoC driver for Renesas SH7343, SH7722 SIU peripheral.
  *
@@ -18,6 +19,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+//
+// siu_dai.c - ALSA SoC driver for Renesas SH7343, SH7722 SIU peripheral.
+//
+// Copyright (C) 2009-2010 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+// Copyright (C) 2006 Carlos Munoz <carlos@kenati.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/delay.h>
 #include <linux/firmware.h>
@@ -333,7 +342,11 @@ static void siu_dai_spbstop(struct siu_port *port_info)
 /*		API functions		*/
 
 /* Playback and capture hardware properties are identical */
+<<<<<<< HEAD
 static struct snd_pcm_hardware siu_dai_pcm_hw = {
+=======
+static const struct snd_pcm_hardware siu_dai_pcm_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info			= SNDRV_PCM_INFO_INTERLEAVED,
 	.formats		= SNDRV_PCM_FMTBIT_S16,
 	.rates			= SNDRV_PCM_RATE_8000_48000,
@@ -441,7 +454,11 @@ static int siu_dai_put_volume(struct snd_kcontrol *kctrl,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new playback_controls = {
+=======
+static const struct snd_kcontrol_new playback_controls = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface		= SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name		= "PCM Playback Volume",
 	.index		= 0,
@@ -451,7 +468,11 @@ static struct snd_kcontrol_new playback_controls = {
 	.private_value	= VOLUME_PLAYBACK,
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new capture_controls = {
+=======
+static const struct snd_kcontrol_new capture_controls = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface		= SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name		= "PCM Capture Volume",
 	.index		= 0,
@@ -543,7 +564,12 @@ static void siu_dai_shutdown(struct snd_pcm_substream *substream,
 	/* Stop the siu if the other stream is not using it */
 	if (!port_info->play_cap) {
 		/* during stmread or stmwrite ? */
+<<<<<<< HEAD
 		BUG_ON(port_info->playback.rw_flg || port_info->capture.rw_flg);
+=======
+		if (WARN_ON(port_info->playback.rw_flg || port_info->capture.rw_flg))
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		siu_dai_spbstop(port_info);
 		siu_dai_stop(port_info);
 	}
@@ -726,14 +752,22 @@ static struct snd_soc_dai_driver siu_i2s_dai = {
 	.ops = &siu_dai_ops,
 };
 
+<<<<<<< HEAD
 static int __devinit siu_probe(struct platform_device *pdev)
+=======
+static int siu_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct firmware *fw_entry;
 	struct resource *res, *region;
 	struct siu_info *info;
 	int ret;
 
+<<<<<<< HEAD
 	info = kmalloc(sizeof(*info), GFP_KERNEL);
+=======
+	info = devm_kmalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info)
 		return -ENOMEM;
 	siu_i2s_data = info;
@@ -741,7 +775,11 @@ static int __devinit siu_probe(struct platform_device *pdev)
 
 	ret = request_firmware(&fw_entry, "siu_spb.bin", &pdev->dev);
 	if (ret)
+<<<<<<< HEAD
 		goto ereqfw;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Loaded firmware is "const" - read only, but we have to modify it in
@@ -752,6 +790,7 @@ static int __devinit siu_probe(struct platform_device *pdev)
 	release_firmware(fw_entry);
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 	if (!res) {
 		ret = -ENODEV;
 		goto egetres;
@@ -779,10 +818,38 @@ static int __devinit siu_probe(struct platform_device *pdev)
 			    REG_OFFSET);
 	if (!info->reg)
 		goto emapreg;
+=======
+	if (!res)
+		return -ENODEV;
+
+	region = devm_request_mem_region(&pdev->dev, res->start,
+					 resource_size(res), pdev->name);
+	if (!region) {
+		dev_err(&pdev->dev, "SIU region already claimed\n");
+		return -EBUSY;
+	}
+
+	info->pram = devm_ioremap(&pdev->dev, res->start, PRAM_SIZE);
+	if (!info->pram)
+		return -ENOMEM;
+	info->xram = devm_ioremap(&pdev->dev, res->start + XRAM_OFFSET,
+				  XRAM_SIZE);
+	if (!info->xram)
+		return -ENOMEM;
+	info->yram = devm_ioremap(&pdev->dev, res->start + YRAM_OFFSET,
+				  YRAM_SIZE);
+	if (!info->yram)
+		return -ENOMEM;
+	info->reg = devm_ioremap(&pdev->dev, res->start + REG_OFFSET,
+			    resource_size(res) - REG_OFFSET);
+	if (!info->reg)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_set_drvdata(&pdev->dev, info);
 
 	/* register using ARRAY version so we can keep dai name */
+<<<<<<< HEAD
 	ret = snd_soc_register_dais(&pdev->dev, &siu_i2s_dai, 1);
 	if (ret < 0)
 		goto edaiinit;
@@ -844,6 +911,29 @@ static struct platform_driver siu_driver = {
 	},
 	.probe		= siu_probe,
 	.remove		= __devexit_p(siu_remove),
+=======
+	ret = devm_snd_soc_register_component(&pdev->dev, &siu_component,
+					      &siu_i2s_dai, 1);
+	if (ret < 0)
+		return ret;
+
+	pm_runtime_enable(&pdev->dev);
+
+	return 0;
+}
+
+static void siu_remove(struct platform_device *pdev)
+{
+	pm_runtime_disable(&pdev->dev);
+}
+
+static struct platform_driver siu_driver = {
+	.driver 	= {
+		.name	= "siu-pcm-audio",
+	},
+	.probe		= siu_probe,
+	.remove_new	= siu_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(siu_driver);
@@ -851,3 +941,8 @@ module_platform_driver(siu_driver);
 MODULE_AUTHOR("Carlos Munoz <carlos@kenati.com>");
 MODULE_DESCRIPTION("ALSA SoC SH7722 SIU driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+
+MODULE_FIRMWARE("siu_spb.bin");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

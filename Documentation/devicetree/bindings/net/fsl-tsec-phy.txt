@@ -6,9 +6,28 @@ the definition of the PHY node in booting-without-of.txt for an example
 of how to define a PHY.
 
 Required properties:
+<<<<<<< HEAD
   - reg : Offset and length of the register set for the device
   - compatible : Should define the compatible device type for the
     mdio.  Currently, this is most likely to be "fsl,gianfar-mdio"
+=======
+  - reg : Offset and length of the register set for the device, and optionally
+          the offset and length of the TBIPA register (TBI PHY address
+	  register).  If TBIPA register is not specified, the driver will
+	  attempt to infer it from the register set specified (your mileage may
+	  vary).
+  - compatible : Should define the compatible device type for the
+    mdio. Currently supported strings/devices are:
+	- "fsl,gianfar-tbi"
+	- "fsl,gianfar-mdio"
+	- "fsl,etsec2-tbi"
+	- "fsl,etsec2-mdio"
+	- "fsl,ucc-mdio"
+	- "fsl,fman-mdio"
+    When device_type is "mdio", the following strings are also considered:
+	- "gianfar"
+	- "ucc_geth_phy"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Example:
 
@@ -38,6 +57,7 @@ Properties:
   - model : Model of the device.  Can be "TSEC", "eTSEC", or "FEC"
   - compatible : Should be "gianfar"
   - reg : Offset and length of the register set for the device
+<<<<<<< HEAD
   - local-mac-address : List of bytes representing the ethernet address of
     this controller
   - interrupts : For FEC devices, the first interrupt is the device's
@@ -56,6 +76,22 @@ Properties:
     hardware.
   - fsl,magic-packet : If present, indicates that the hardware supports
     waking up via magic packet.
+=======
+  - interrupts : For FEC devices, the first interrupt is the device's
+    interrupt.  For TSEC and eTSEC devices, the first interrupt is
+    transmit, the second is receive, and the third is error.
+  - phy-handle : See ethernet.txt file in the same directory.
+  - fixed-link : See fixed-link.txt in the same directory.
+  - phy-connection-type : See ethernet.txt file in the same directory.
+    This property is only really needed if the connection is of type
+    "rgmii-id", as all other connection types are detected by hardware.
+  - fsl,magic-packet : If present, indicates that the hardware supports
+    waking up via magic packet.
+  - fsl,wake-on-filer : If present, indicates that the hardware supports
+    waking up by Filer General Purpose Interrupt (FGPI) asserted on the
+    Rx int line.  This is an advanced power management capability allowing
+    certain packet types (user) defined by filer rules to wake up the system.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   - bd-stash : If present, indicates that the hardware supports stashing
     buffer descriptors in the L2.
   - rx-stash-len : Denotes the number of bytes of a received buffer to stash
@@ -77,6 +113,7 @@ Example:
 
 * Gianfar PTP clock nodes
 
+<<<<<<< HEAD
 General Properties:
 
   - compatible   Should be "fsl,etsec-ptp"
@@ -128,3 +165,6 @@ Example:
 		fsl,tmr-fiper2  = <0x00018696>;
 		fsl,max-adj     = <659999998>;
 	};
+=======
+Refer to Documentation/devicetree/bindings/ptp/ptp-qoriq.txt
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

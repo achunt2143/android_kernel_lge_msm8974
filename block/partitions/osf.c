@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fs/partitions/osf.c
  *
@@ -8,9 +12,15 @@
  */
 
 #include "check.h"
+<<<<<<< HEAD
 #include "osf.h"
 
 #define MAX_OSF_PARTITIONS 18
+=======
+
+#define MAX_OSF_PARTITIONS 18
+#define DISKLABELMAGIC (0x82564557UL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int osf_partition(struct parsed_partitions *state)
 {

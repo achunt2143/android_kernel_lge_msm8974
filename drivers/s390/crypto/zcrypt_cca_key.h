@@ -1,14 +1,21 @@
+<<<<<<< HEAD
 /*
  *  linux/drivers/s390/crypto/zcrypt_cca_key.h
  *
  *  zcrypt 2.1.0
  *
  *  Copyright (C)  2001, 2006 IBM Corporation
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ *  Copyright IBM Corp. 2001, 2006
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Author(s): Robert Burroughs
  *	       Eric Rossman (edrossma@us.ibm.com)
  *
  *  Hotplug & misc device support: Jochen Roehrig (roehrig@de.ibm.com)
  *  Major cleanup & driver split: Martin Schwidefsky <schwidefsky@de.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,12 +30,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ZCRYPT_CCA_KEY_H_
 #define _ZCRYPT_CCA_KEY_H_
 
+<<<<<<< HEAD
 struct T6_keyBlock_hdr {
+=======
+struct t6_keyblock_hdr {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short blen;
 	unsigned short ulen;
 	unsigned short flags;
@@ -46,6 +59,7 @@ struct cca_token_hdr {
 	unsigned char  version;
 	unsigned short token_length;
 	unsigned char  reserved[4];
+<<<<<<< HEAD
 } __attribute__((packed));
 
 #define CCA_TKN_HDR_ID_EXT 0x1E
@@ -70,6 +84,12 @@ struct cca_private_ext_ME_sec {
 	unsigned char  modulus[128];
 } __attribute__((packed));
 
+=======
+} __packed;
+
+#define CCA_TKN_HDR_ID_EXT 0x1E
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CCA_PVT_USAGE_ALL 0x80
 
 /**
@@ -86,7 +106,11 @@ struct cca_public_sec {
 	unsigned short exponent_len;
 	unsigned short modulus_bit_len;
 	unsigned short modulus_byte_len;    /* In a private key, this is 0 */
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * mapping for the cca private CRT key 'token'
@@ -100,7 +124,11 @@ struct cca_public_sec {
  * complement of the residue modulo 8 of the sum of
  * (p_len + q_len + dp_len + dq_len + u_len).
  */
+<<<<<<< HEAD
 struct cca_pvt_ext_CRT_sec {
+=======
+struct cca_pvt_ext_crt_sec {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char  section_identifier;
 	unsigned char  version;
 	unsigned short section_length;
@@ -120,19 +148,27 @@ struct cca_pvt_ext_CRT_sec {
 	unsigned short pad_len;
 	unsigned char  reserved4[52];
 	unsigned char  confounder[8];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CCA_PVT_EXT_CRT_SEC_ID_PVT 0x08
 #define CCA_PVT_EXT_CRT_SEC_FMT_CL 0x40
 
 /**
  * Set up private key fields of a type6 MEX message.
+<<<<<<< HEAD
  * Note that all numerics in the key token are big-endian,
  * while the entries in the key block header are little-endian.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @mex: pointer to user input data
  * @p: pointer to memory area for the key
  *
+<<<<<<< HEAD
  * Returns the size of the key area or -EFAULT
  */
 static inline int zcrypt_type6_mex_key_de(struct ica_rsa_modexpo *mex,
@@ -209,6 +245,11 @@ static inline int zcrypt_type6_mex_key_de(struct ica_rsa_modexpo *mex,
  */
 static inline int zcrypt_type6_mex_key_en(struct ica_rsa_modexpo *mex,
 					  void *p, int big_endian)
+=======
+ * Returns the size of the key area or negative errno value.
+ */
+static inline int zcrypt_type6_mex_key_en(struct ica_rsa_modexpo *mex, void *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static struct cca_token_hdr static_pub_hdr = {
 		.token_identifier	=  0x1E,
@@ -217,6 +258,7 @@ static inline int zcrypt_type6_mex_key_en(struct ica_rsa_modexpo *mex,
 		.section_identifier	=  0x04,
 	};
 	struct {
+<<<<<<< HEAD
 		struct T6_keyBlock_hdr t6_hdr;
 		struct cca_token_hdr pubHdr;
 		struct cca_public_sec pubSec;
@@ -261,20 +303,70 @@ static inline int zcrypt_type6_mex_key_en(struct ica_rsa_modexpo *mex,
 		key->t6_hdr.blen = cpu_to_le16(key->pubHdr.token_length + 6);
 	}
 	return sizeof(*key) + 2*mex->inputdatalength - i;
+=======
+		struct t6_keyblock_hdr t6_hdr;
+		struct cca_token_hdr pubhdr;
+		struct cca_public_sec pubsec;
+		char exponent[];
+	} __packed *key = p;
+	unsigned char *ptr;
+
+	/*
+	 * The inputdatalength was a selection criteria in the dispatching
+	 * function zcrypt_rsa_modexpo(). However, do a plausibility check
+	 * here to make sure the following copy_from_user() can't be utilized
+	 * to compromise the system.
+	 */
+	if (WARN_ON_ONCE(mex->inputdatalength > 512))
+		return -EINVAL;
+
+	memset(key, 0, sizeof(*key));
+
+	key->pubhdr = static_pub_hdr;
+	key->pubsec = static_pub_sec;
+
+	/* key parameter block */
+	ptr = key->exponent;
+	if (copy_from_user(ptr, mex->b_key, mex->inputdatalength))
+		return -EFAULT;
+	ptr += mex->inputdatalength;
+	/* modulus */
+	if (copy_from_user(ptr, mex->n_modulus, mex->inputdatalength))
+		return -EFAULT;
+
+	key->pubsec.modulus_bit_len = 8 * mex->inputdatalength;
+	key->pubsec.modulus_byte_len = mex->inputdatalength;
+	key->pubsec.exponent_len = mex->inputdatalength;
+	key->pubsec.section_length = sizeof(key->pubsec) +
+					2 * mex->inputdatalength;
+	key->pubhdr.token_length =
+		key->pubsec.section_length + sizeof(key->pubhdr);
+	key->t6_hdr.ulen = key->pubhdr.token_length + 4;
+	key->t6_hdr.blen = key->pubhdr.token_length + 6;
+
+	return sizeof(*key) + 2 * mex->inputdatalength;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * Set up private key fields of a type6 CRT message.
+<<<<<<< HEAD
  * Note that all numerics in the key token are big-endian,
  * while the entries in the key block header are little-endian.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @mex: pointer to user input data
  * @p: pointer to memory area for the key
  *
  * Returns the size of the key area or -EFAULT
  */
+<<<<<<< HEAD
 static inline int zcrypt_type6_crt_key(struct ica_rsa_modexpo_crt *crt,
 				       void *p, int big_endian)
+=======
+static inline int zcrypt_type6_crt_key(struct ica_rsa_modexpo_crt *crt, void *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static struct cca_public_sec static_cca_pub_sec = {
 		.section_identifier = 4,
@@ -283,6 +375,7 @@ static inline int zcrypt_type6_crt_key(struct ica_rsa_modexpo_crt *crt,
 	};
 	static char pk_exponent[3] = { 0x01, 0x00, 0x01 };
 	struct {
+<<<<<<< HEAD
 		struct T6_keyBlock_hdr t6_hdr;
 		struct cca_token_hdr token;
 		struct cca_pvt_ext_CRT_sec pvt;
@@ -307,6 +400,36 @@ static inline int zcrypt_type6_crt_key(struct ica_rsa_modexpo_crt *crt,
 		key->t6_hdr.blen = cpu_to_le16(size);
 		key->t6_hdr.ulen = cpu_to_le16(size - 2);
 	}
+=======
+		struct t6_keyblock_hdr t6_hdr;
+		struct cca_token_hdr token;
+		struct cca_pvt_ext_crt_sec pvt;
+		char key_parts[];
+	} __packed *key = p;
+	struct cca_public_sec *pub;
+	int short_len, long_len, pad_len, key_len, size;
+
+	/*
+	 * The inputdatalength was a selection criteria in the dispatching
+	 * function zcrypt_rsa_crt(). However, do a plausibility check
+	 * here to make sure the following copy_from_user() can't be utilized
+	 * to compromise the system.
+	 */
+	if (WARN_ON_ONCE(crt->inputdatalength > 512))
+		return -EINVAL;
+
+	memset(key, 0, sizeof(*key));
+
+	short_len = (crt->inputdatalength + 1) / 2;
+	long_len = short_len + 8;
+	pad_len = -(3 * long_len + 2 * short_len) & 7;
+	key_len = 3 * long_len + 2 * short_len + pad_len + crt->inputdatalength;
+	size = sizeof(*key) + key_len + sizeof(*pub) + 3;
+
+	/* parameter block.key block */
+	key->t6_hdr.blen = size;
+	key->t6_hdr.ulen = size - 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* key token header */
 	key->token.token_identifier = CCA_TKN_HDR_ID_EXT;
@@ -325,6 +448,7 @@ static inline int zcrypt_type6_crt_key(struct ica_rsa_modexpo_crt *crt,
 	/* key parts */
 	if (copy_from_user(key->key_parts, crt->np_prime, long_len) ||
 	    copy_from_user(key->key_parts + long_len,
+<<<<<<< HEAD
 					crt->nq_prime, short_len) ||
 	    copy_from_user(key->key_parts + long_len + short_len,
 					crt->bp_key, long_len) ||
@@ -334,6 +458,17 @@ static inline int zcrypt_type6_crt_key(struct ica_rsa_modexpo_crt *crt,
 					crt->u_mult_inv, long_len))
 		return -EFAULT;
 	memset(key->key_parts + 3*long_len + 2*short_len + pad_len,
+=======
+			   crt->nq_prime, short_len) ||
+	    copy_from_user(key->key_parts + long_len + short_len,
+			   crt->bp_key, long_len) ||
+	    copy_from_user(key->key_parts + 2 * long_len + short_len,
+			   crt->bq_key, short_len) ||
+	    copy_from_user(key->key_parts + 2 * long_len + 2 * short_len,
+			   crt->u_mult_inv, long_len))
+		return -EFAULT;
+	memset(key->key_parts + 3 * long_len + 2 * short_len + pad_len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       0xff, crt->inputdatalength);
 	pub = (struct cca_public_sec *)(key->key_parts + key_len);
 	*pub = static_cca_pub_sec;
@@ -343,7 +478,12 @@ static inline int zcrypt_type6_crt_key(struct ica_rsa_modexpo_crt *crt,
 	 * section. So, an arbitrary public exponent of 0x010001 will be
 	 * used.
 	 */
+<<<<<<< HEAD
 	memcpy((char *) (pub + 1), pk_exponent, 3);
+=======
+	memcpy((char *)(pub + 1), pk_exponent, 3);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return size;
 }
 

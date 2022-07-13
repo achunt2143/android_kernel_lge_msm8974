@@ -1,7 +1,15 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * UniNorth AGPGART routines.
  */
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/slab.h>
 #include <linux/init.h>
@@ -10,7 +18,10 @@
 #include <linux/delay.h>
 #include <linux/vmalloc.h>
 #include <asm/uninorth.h>
+<<<<<<< HEAD
 #include <asm/pci-bridge.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/prom.h>
 #include <asm/pmac_feature.h>
 #include "agp.h"
@@ -196,7 +207,11 @@ static int uninorth_insert_memory(struct agp_memory *mem, off_t pg_start, int ty
 	return 0;
 }
 
+<<<<<<< HEAD
 int uninorth_remove_memory(struct agp_memory *mem, off_t pg_start, int type)
+=======
+static int uninorth_remove_memory(struct agp_memory *mem, off_t pg_start, int type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	size_t i;
 	u32 *gp;
@@ -361,6 +376,13 @@ static int agp_uninorth_resume(struct pci_dev *pdev)
 }
 #endif /* CONFIG_PM */
 
+<<<<<<< HEAD
+=======
+static struct {
+	struct page **pages_arr;
+} uninorth_priv;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int uninorth_create_gatt_table(struct agp_bridge_data *bridge)
 {
 	char *table;
@@ -371,7 +393,10 @@ static int uninorth_create_gatt_table(struct agp_bridge_data *bridge)
 	int i;
 	void *temp;
 	struct page *page;
+<<<<<<< HEAD
 	struct page **pages;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We can't handle 2 level gatt's */
 	if (bridge->driver->size_type == LVL2_APER_SIZE)
@@ -400,8 +425,15 @@ static int uninorth_create_gatt_table(struct agp_bridge_data *bridge)
 	if (table == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	pages = kmalloc((1 << page_order) * sizeof(struct page*), GFP_KERNEL);
 	if (pages == NULL)
+=======
+	uninorth_priv.pages_arr = kmalloc_array(1 << page_order,
+						sizeof(struct page *),
+						GFP_KERNEL);
+	if (uninorth_priv.pages_arr == NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto enomem;
 
 	table_end = table + ((PAGE_SIZE * (1 << page_order)) - 1);
@@ -409,14 +441,22 @@ static int uninorth_create_gatt_table(struct agp_bridge_data *bridge)
 	for (page = virt_to_page(table), i = 0; page <= virt_to_page(table_end);
 	     page++, i++) {
 		SetPageReserved(page);
+<<<<<<< HEAD
 		pages[i] = page;
+=======
+		uninorth_priv.pages_arr[i] = page;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	bridge->gatt_table_real = (u32 *) table;
 	/* Need to clear out any dirty data still sitting in caches */
 	flush_dcache_range((unsigned long)table,
 			   (unsigned long)table_end + 1);
+<<<<<<< HEAD
 	bridge->gatt_table = vmap(pages, (1 << page_order), 0, PAGE_KERNEL_NCG);
+=======
+	bridge->gatt_table = vmap(uninorth_priv.pages_arr, (1 << page_order), 0, PAGE_KERNEL_NCG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bridge->gatt_table == NULL)
 		goto enomem;
@@ -434,7 +474,11 @@ static int uninorth_create_gatt_table(struct agp_bridge_data *bridge)
 	return 0;
 
 enomem:
+<<<<<<< HEAD
 	kfree(pages);
+=======
+	kfree(uninorth_priv.pages_arr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (table)
 		free_pages((unsigned long)table, page_order);
 	return -ENOMEM;
@@ -456,6 +500,10 @@ static int uninorth_free_gatt_table(struct agp_bridge_data *bridge)
 	 */
 
 	vunmap(bridge->gatt_table);
+<<<<<<< HEAD
+=======
+	kfree(uninorth_priv.pages_arr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	table = (char *) bridge->gatt_table_real;
 	table_end = table + ((PAGE_SIZE * (1 << page_order)) - 1);
 
@@ -467,7 +515,11 @@ static int uninorth_free_gatt_table(struct agp_bridge_data *bridge)
 	return 0;
 }
 
+<<<<<<< HEAD
 void null_cache_flush(void)
+=======
+static void null_cache_flush(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mb();
 }
@@ -557,7 +609,11 @@ const struct agp_bridge_driver u3_agp_driver = {
 	.needs_scratch_page	= true,
 };
 
+<<<<<<< HEAD
 static struct agp_device_ids uninorth_agp_device_ids[] __devinitdata = {
+=======
+static struct agp_device_ids uninorth_agp_device_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.device_id	= PCI_DEVICE_ID_APPLE_UNI_N_AGP,
 		.chipset_name	= "UniNorth",
@@ -592,8 +648,13 @@ static struct agp_device_ids uninorth_agp_device_ids[] __devinitdata = {
 	},
 };
 
+<<<<<<< HEAD
 static int __devinit agp_uninorth_probe(struct pci_dev *pdev,
 					const struct pci_device_id *ent)
+=======
+static int agp_uninorth_probe(struct pci_dev *pdev,
+			      const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct agp_device_ids *devs = uninorth_agp_device_ids;
 	struct agp_bridge_data *bridge;
@@ -663,7 +724,11 @@ static int __devinit agp_uninorth_probe(struct pci_dev *pdev,
 	return agp_add_bridge(bridge);
 }
 
+<<<<<<< HEAD
 static void __devexit agp_uninorth_remove(struct pci_dev *pdev)
+=======
+static void agp_uninorth_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct agp_bridge_data *bridge = pci_get_drvdata(pdev);
 
@@ -676,7 +741,11 @@ static void __devexit agp_uninorth_remove(struct pci_dev *pdev)
 	agp_put_bridge(bridge);
 }
 
+<<<<<<< HEAD
 static struct pci_device_id agp_uninorth_pci_table[] = {
+=======
+static const struct pci_device_id agp_uninorth_pci_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	.class		= (PCI_CLASS_BRIDGE_HOST << 8),
 	.class_mask	= ~0,

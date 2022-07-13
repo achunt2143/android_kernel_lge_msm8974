@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Aic94xx SAS/SATA Tasks
  *
  * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
  * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
+<<<<<<< HEAD
  *
  * This file is licensed under GPLv2.
  *
@@ -22,6 +27,8 @@
  * along with the aic94xx driver; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/spinlock.h>
@@ -42,6 +49,7 @@ static void asd_can_dequeue(struct asd_ha_struct *asd_ha, int num)
 	spin_unlock_irqrestore(&asd_ha->seq.pend_q_lock, flags);
 }
 
+<<<<<<< HEAD
 /* PCI_DMA_... to our direction translation.
  */
 static const u8 data_dir_flags[] = {
@@ -49,6 +57,15 @@ static const u8 data_dir_flags[] = {
 	[PCI_DMA_TODEVICE]      = DATA_DIR_OUT, /* OUTBOUND */
 	[PCI_DMA_FROMDEVICE]    = DATA_DIR_IN, /* INBOUND */
 	[PCI_DMA_NONE]          = DATA_DIR_NONE, /* NO TRANSFER */
+=======
+/* DMA_... to our direction translation.
+ */
+static const u8 data_dir_flags[] = {
+	[DMA_BIDIRECTIONAL]	= DATA_DIR_BYRECIPIENT,	/* UNSPECIFIED */
+	[DMA_TO_DEVICE]		= DATA_DIR_OUT,		/* OUTBOUND */
+	[DMA_FROM_DEVICE]	= DATA_DIR_IN,		/* INBOUND */
+	[DMA_NONE]		= DATA_DIR_NONE,	/* NO TRANSFER */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int asd_map_scatterlist(struct sas_task *task,
@@ -60,14 +77,27 @@ static int asd_map_scatterlist(struct sas_task *task,
 	struct scatterlist *sc;
 	int num_sg, res;
 
+<<<<<<< HEAD
 	if (task->data_dir == PCI_DMA_NONE)
+=======
+	if (task->data_dir == DMA_NONE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (task->num_scatter == 0) {
 		void *p = task->scatter;
+<<<<<<< HEAD
 		dma_addr_t dma = pci_map_single(asd_ha->pcidev, p,
 						task->total_xfer_len,
 						task->data_dir);
+=======
+		dma_addr_t dma = dma_map_single(&asd_ha->pcidev->dev, p,
+						task->total_xfer_len,
+						task->data_dir);
+		if (dma_mapping_error(&asd_ha->pcidev->dev, dma))
+			return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sg_arr[0].bus_addr = cpu_to_le64((u64)dma);
 		sg_arr[0].size = cpu_to_le32(task->total_xfer_len);
 		sg_arr[0].flags |= ASD_SG_EL_LIST_EOL;
@@ -79,7 +109,11 @@ static int asd_map_scatterlist(struct sas_task *task,
 	if (sas_protocol_ata(task->task_proto))
 		num_sg = task->num_scatter;
 	else
+<<<<<<< HEAD
 		num_sg = pci_map_sg(asd_ha->pcidev, task->scatter,
+=======
+		num_sg = dma_map_sg(&asd_ha->pcidev->dev, task->scatter,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    task->num_scatter, task->data_dir);
 	if (num_sg == 0)
 		return -ENOMEM;
@@ -126,8 +160,13 @@ static int asd_map_scatterlist(struct sas_task *task,
 	return 0;
 err_unmap:
 	if (sas_protocol_ata(task->task_proto))
+<<<<<<< HEAD
 		pci_unmap_sg(asd_ha->pcidev, task->scatter, task->num_scatter,
 			     task->data_dir);
+=======
+		dma_unmap_sg(&asd_ha->pcidev->dev, task->scatter,
+			     task->num_scatter, task->data_dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
@@ -136,21 +175,35 @@ static void asd_unmap_scatterlist(struct asd_ascb *ascb)
 	struct asd_ha_struct *asd_ha = ascb->ha;
 	struct sas_task *task = ascb->uldd_task;
 
+<<<<<<< HEAD
 	if (task->data_dir == PCI_DMA_NONE)
+=======
+	if (task->data_dir == DMA_NONE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (task->num_scatter == 0) {
 		dma_addr_t dma = (dma_addr_t)
 		       le64_to_cpu(ascb->scb->ssp_task.sg_element[0].bus_addr);
+<<<<<<< HEAD
 		pci_unmap_single(ascb->ha->pcidev, dma, task->total_xfer_len,
 				 task->data_dir);
+=======
+		dma_unmap_single(&ascb->ha->pcidev->dev, dma,
+				 task->total_xfer_len, task->data_dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	asd_free_coherent(asd_ha, ascb->sg_arr);
 	if (task->task_proto != SAS_PROTOCOL_STP)
+<<<<<<< HEAD
 		pci_unmap_sg(asd_ha->pcidev, task->scatter, task->num_scatter,
 			     task->data_dir);
+=======
+		dma_unmap_sg(&asd_ha->pcidev->dev, task->scatter,
+			     task->num_scatter, task->data_dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ---------- Task complete tasklet ---------- */
@@ -223,7 +276,11 @@ Again:
 	switch (opcode) {
 	case TC_NO_ERROR:
 		ts->resp = SAS_TASK_COMPLETE;
+<<<<<<< HEAD
 		ts->stat = SAM_STAT_GOOD;
+=======
+		ts->stat = SAS_SAM_STAT_GOOD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case TC_UNDERRUN:
 		ts->resp = SAS_TASK_COMPLETE;
@@ -287,7 +344,10 @@ Again:
 	case TA_I_T_NEXUS_LOSS:
 		opcode = dl->status_block[0];
 		goto Again;
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case TF_INV_CONN_HANDLE:
 		ts->resp = SAS_TASK_UNDELIVERED;
 		ts->stat = SAS_DEVICE_UNKNOWN;
@@ -334,13 +394,20 @@ Again:
 		break;
 	case SAS_PROTOCOL_SSP:
 		asd_unbuild_ssp_ascb(ascb);
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
 
 	spin_lock_irqsave(&task->task_state_lock, flags);
 	task->task_state_flags &= ~SAS_TASK_STATE_PENDING;
+<<<<<<< HEAD
 	task->task_state_flags &= ~SAS_TASK_AT_INITIATOR;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task->task_state_flags |= SAS_TASK_STATE_DONE;
 	if (unlikely((task->task_state_flags & SAS_TASK_STATE_ABORTED))) {
 		struct completion *completion = ascb->completion;
@@ -373,10 +440,17 @@ static int asd_build_ata_ascb(struct asd_ascb *ascb, struct sas_task *task,
 
 	if (unlikely(task->ata_task.device_control_reg_update))
 		scb->header.opcode = CONTROL_ATA_DEV;
+<<<<<<< HEAD
 	else if (dev->sata_dev.command_set == ATA_COMMAND_SET)
 		scb->header.opcode = INITIATE_ATA_TASK;
 	else
 		scb->header.opcode = INITIATE_ATAPI_TASK;
+=======
+	else if (dev->sata_dev.class == ATA_DEV_ATAPI)
+		scb->header.opcode = INITIATE_ATAPI_TASK;
+	else
+		scb->header.opcode = INITIATE_ATA_TASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scb->ata_task.proto_conn_rate = (1 << 5); /* STP */
 	if (dev->port->oob_mode == SAS_OOB_MODE)
@@ -387,7 +461,11 @@ static int asd_build_ata_ascb(struct asd_ascb *ascb, struct sas_task *task,
 	if (likely(!task->ata_task.device_control_reg_update))
 		scb->ata_task.fis.flags |= 0x80; /* C=1: update ATA cmd reg */
 	scb->ata_task.fis.flags &= 0xF0; /* PM_PORT field shall be 0 */
+<<<<<<< HEAD
 	if (dev->sata_dev.command_set == ATAPI_COMMAND_SET)
+=======
+	if (dev->sata_dev.class == ATA_DEV_ATAPI)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(scb->ata_task.atapi_packet, task->ata_task.atapi_packet,
 		       16);
 	scb->ata_task.sister_scb = cpu_to_le16(0xFFFF);
@@ -399,11 +477,16 @@ static int asd_build_ata_ascb(struct asd_ascb *ascb, struct sas_task *task,
 		if (task->ata_task.dma_xfer)
 			flags |= DATA_XFER_MODE_DMA;
 		if (task->ata_task.use_ncq &&
+<<<<<<< HEAD
 		    dev->sata_dev.command_set != ATAPI_COMMAND_SET)
+=======
+		    dev->sata_dev.class != ATA_DEV_ATAPI)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			flags |= ATA_Q_TYPE_NCQ;
 		flags |= data_dir_flags[task->data_dir];
 		scb->ata_task.ata_flags = flags;
 
+<<<<<<< HEAD
 		scb->ata_task.retry_count = task->ata_task.retry_count;
 
 		flags = 0;
@@ -412,6 +495,11 @@ static int asd_build_ata_ascb(struct asd_ascb *ascb, struct sas_task *task,
 		if (task->ata_task.stp_affil_pol)
 			flags |= STP_AFFIL_POLICY;
 		scb->ata_task.flags = flags;
+=======
+		scb->ata_task.retry_count = 0;
+
+		scb->ata_task.flags = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ascb->tasklet_complete = asd_task_tasklet_complete;
 
@@ -436,10 +524,17 @@ static int asd_build_smp_ascb(struct asd_ascb *ascb, struct sas_task *task,
 	struct domain_device *dev = task->dev;
 	struct scb *scb;
 
+<<<<<<< HEAD
 	pci_map_sg(asd_ha->pcidev, &task->smp_task.smp_req, 1,
 		   PCI_DMA_TODEVICE);
 	pci_map_sg(asd_ha->pcidev, &task->smp_task.smp_resp, 1,
 		   PCI_DMA_FROMDEVICE);
+=======
+	dma_map_sg(&asd_ha->pcidev->dev, &task->smp_task.smp_req, 1,
+		   DMA_TO_DEVICE);
+	dma_map_sg(&asd_ha->pcidev->dev, &task->smp_task.smp_resp, 1,
+		   DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scb = ascb->scb;
 
@@ -471,10 +566,17 @@ static void asd_unbuild_smp_ascb(struct asd_ascb *a)
 	struct sas_task *task = a->uldd_task;
 
 	BUG_ON(!task);
+<<<<<<< HEAD
 	pci_unmap_sg(a->ha->pcidev, &task->smp_task.smp_req, 1,
 		     PCI_DMA_TODEVICE);
 	pci_unmap_sg(a->ha->pcidev, &task->smp_task.smp_resp, 1,
 		     PCI_DMA_FROMDEVICE);
+=======
+	dma_unmap_sg(&a->ha->pcidev->dev, &task->smp_task.smp_req, 1,
+		     DMA_TO_DEVICE);
+	dma_unmap_sg(&a->ha->pcidev->dev, &task->smp_task.smp_resp, 1,
+		     DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ---------- SSP ---------- */
@@ -501,11 +603,17 @@ static int asd_build_ssp_ascb(struct asd_ascb *ascb, struct sas_task *task,
 	scb->ssp_task.ssp_frame.tptt = cpu_to_be16(0xFFFF);
 
 	memcpy(scb->ssp_task.ssp_cmd.lun, task->ssp_task.LUN, 8);
+<<<<<<< HEAD
 	if (task->ssp_task.enable_first_burst)
 		scb->ssp_task.ssp_cmd.efb_prio_attr |= EFB_MASK;
 	scb->ssp_task.ssp_cmd.efb_prio_attr |= (task->ssp_task.task_prio << 3);
 	scb->ssp_task.ssp_cmd.efb_prio_attr |= (task->ssp_task.task_attr & 7);
 	memcpy(scb->ssp_task.ssp_cmd.cdb, task->ssp_task.cdb, 16);
+=======
+	scb->ssp_task.ssp_cmd.efb_prio_attr |= (task->ssp_task.task_attr & 7);
+	memcpy(scb->ssp_task.ssp_cmd.cdb, task->ssp_task.cmd->cmnd,
+	       task->ssp_task.cmd->cmd_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scb->ssp_task.sister_scb = cpu_to_le16(0xFFFF);
 	scb->ssp_task.conn_handle = cpu_to_le16(
@@ -542,14 +650,19 @@ static int asd_can_queue(struct asd_ha_struct *asd_ha, int num)
 	return res;
 }
 
+<<<<<<< HEAD
 int asd_execute_task(struct sas_task *task, const int num,
 		     gfp_t gfp_flags)
+=======
+int asd_execute_task(struct sas_task *task, gfp_t gfp_flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int res = 0;
 	LIST_HEAD(alist);
 	struct sas_task *t = task;
 	struct asd_ascb *ascb = NULL, *a;
 	struct asd_ha_struct *asd_ha = task->dev->port->ha->lldd_ha;
+<<<<<<< HEAD
 	unsigned long flags;
 
 	res = asd_can_queue(asd_ha, num);
@@ -557,6 +670,14 @@ int asd_execute_task(struct sas_task *task, const int num,
 		return res;
 
 	res = num;
+=======
+
+	res = asd_can_queue(asd_ha, 1);
+	if (res)
+		return res;
+
+	res = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ascb = asd_ascb_alloc_list(asd_ha, &res, gfp_flags);
 	if (res) {
 		res = -ENOMEM;
@@ -567,7 +688,11 @@ int asd_execute_task(struct sas_task *task, const int num,
 	list_for_each_entry(a, &alist, list) {
 		a->uldd_task = t;
 		t->lldd_task = a;
+<<<<<<< HEAD
 		t = list_entry(t->list.next, struct sas_task, list);
+=======
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	list_for_each_entry(a, &alist, list) {
 		t = a->uldd_task;
@@ -593,6 +718,7 @@ int asd_execute_task(struct sas_task *task, const int num,
 		}
 		if (res)
 			goto out_err_unmap;
+<<<<<<< HEAD
 
 		spin_lock_irqsave(&t->task_state_lock, flags);
 		t->task_state_flags |= SAS_TASK_AT_INITIATOR;
@@ -601,6 +727,12 @@ int asd_execute_task(struct sas_task *task, const int num,
 	list_del_init(&alist);
 
 	res = asd_post_ascb_list(asd_ha, ascb, num);
+=======
+	}
+	list_del_init(&alist);
+
+	res = asd_post_ascb_list(asd_ha, ascb, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(res)) {
 		a = NULL;
 		__list_add(&alist, ascb->list.prev, &ascb->list);
@@ -615,9 +747,12 @@ out_err_unmap:
 			if (a == b)
 				break;
 			t = a->uldd_task;
+<<<<<<< HEAD
 			spin_lock_irqsave(&t->task_state_lock, flags);
 			t->task_state_flags &= ~SAS_TASK_AT_INITIATOR;
 			spin_unlock_irqrestore(&t->task_state_lock, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (t->task_proto) {
 			case SAS_PROTOCOL_SATA:
 			case SAS_PROTOCOL_STP:
@@ -628,6 +763,10 @@ out_err_unmap:
 				break;
 			case SAS_PROTOCOL_SSP:
 				asd_unbuild_ssp_ascb(a);
+<<<<<<< HEAD
+=======
+				break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			default:
 				break;
 			}
@@ -638,6 +777,10 @@ out_err_unmap:
 out_err:
 	if (ascb)
 		asd_ascb_free_list(ascb);
+<<<<<<< HEAD
 	asd_can_dequeue(asd_ha, num);
+=======
+	asd_can_dequeue(asd_ha, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }

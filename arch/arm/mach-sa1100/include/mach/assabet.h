@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-sa1100/include/mach/assabet.h
  *
@@ -39,8 +43,13 @@ extern unsigned long SCR_value;
 
 #define ASSABET_BCR_CF_PWR	(1<<0)	/* Compact Flash Power (1 = 3.3v, 0 = off) */
 #define ASSABET_BCR_CF_RST	(1<<1)	/* Compact Flash Reset (1 = power up reset) */
+<<<<<<< HEAD
 #define ASSABET_BCR_GFX_RST	(1<<1)	/* Graphics Accelerator Reset (0 = hold reset) */
 #define ASSABET_BCR_CODEC_RST	(1<<2)	/* 0 = Holds UCB1300, ADI7171, and UDA1341 in reset */
+=======
+#define ASSABET_BCR_NGFX_RST	(1<<1)	/* Graphics Accelerator Reset (0 = hold reset) */
+#define ASSABET_BCR_NCODEC_RST	(1<<2)	/* 0 = Holds UCB1300, ADI7171, and UDA1341 in reset */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ASSABET_BCR_IRDA_FSEL	(1<<3)	/* IRDA Frequency select (0 = SIR, 1 = MIR/ FIR) */
 #define ASSABET_BCR_IRDA_MD0	(1<<4)	/* Range/Power select */
 #define ASSABET_BCR_IRDA_MD1	(1<<5)	/* Range/Power select */
@@ -69,6 +78,11 @@ extern void ASSABET_BCR_frob(unsigned int mask, unsigned int set);
 #define ASSABET_BCR_frob(x,y)	do { } while (0)
 #endif
 
+<<<<<<< HEAD
+=======
+extern void assabet_uda1341_reset(int set);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ASSABET_BCR_set(x)	ASSABET_BCR_frob((x), (x))
 #define ASSABET_BCR_clear(x)	ASSABET_BCR_frob((x), 0)
 
@@ -93,10 +107,13 @@ extern void ASSABET_BCR_frob(unsigned int mask, unsigned int set);
 #define ASSABET_GPIO_BATT_LOW		GPIO_GPIO (26)	/* Low battery */
 #define ASSABET_GPIO_RCLK		GPIO_GPIO (26)	/* CCLK/2  */
 
+<<<<<<< HEAD
 /* These are gpiolib GPIO numbers, not bitmasks */
 #define ASSABET_GPIO_CF_IRQ		21	/* CF IRQ */
 #define ASSABET_GPIO_CF_CD		22	/* CF CD  */
 #define ASSABET_GPIO_CF_BVD2		24	/* CF BVD / IOSPKR */
 #define ASSABET_GPIO_CF_BVD1		25	/* CF BVD / IOSTSCHG */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

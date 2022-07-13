@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MFD driver for twl6040
  *
@@ -5,6 +9,7 @@
  *              Misael Lopez Cruz <misael.lopez@ti.com>
  *
  * Copyright:   (C) 2011 Texas Instruments, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -20,6 +25,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __TWL6040_CODEC_H__
@@ -27,6 +34,11 @@
 
 #include <linux/interrupt.h>
 #include <linux/mfd/core.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/consumer.h>
+#include <linux/clk.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TWL6040_REG_ASICID		0x01
 #define TWL6040_REG_ASICREV		0x02
@@ -124,8 +136,21 @@
 
 #define TWL6040_HSDACENA		(1 << 0)
 #define TWL6040_HSDACMODE		(1 << 1)
+<<<<<<< HEAD
 #define TWL6040_HSDRVMODE		(1 << 3)
 
+=======
+#define TWL6040_HSDRVENA		(1 << 2)
+#define TWL6040_HSDRVMODE		(1 << 3)
+
+/* HFLCTL/R (0x14/0x16) fields */
+
+#define TWL6040_HFDACENA		(1 << 0)
+#define TWL6040_HFPGAENA		(1 << 1)
+#define TWL6040_HFDRVENA		(1 << 4)
+#define TWL6040_HFSWENA			(1 << 6)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* VIBCTLL/R (0x18/0x1A) fields */
 
 #define TWL6040_VIBENA			(1 << 0)
@@ -142,13 +167,21 @@
 
 #define TWL6040_GPO1			0x01
 #define TWL6040_GPO2			0x02
+<<<<<<< HEAD
 #define TWL6040_GPO3			0x03
+=======
+#define TWL6040_GPO3			0x04
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ACCCTL (0x2D) fields */
 
 #define TWL6040_I2CSEL			0x01
 #define TWL6040_RESETSPLIT		0x04
 #define TWL6040_INTCLRMODE		0x08
+<<<<<<< HEAD
+=======
+#define TWL6040_I2CMODE(x)		((x & 0x3) << 4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* STATUS (0x2E) fields */
 
@@ -157,11 +190,20 @@
 #define TWL6040_VIBROCDET		0x20
 #define TWL6040_TSHUTDET                0x40
 
+<<<<<<< HEAD
 #define TWL6040_CELLS			2
 
 #define TWL6040_REV_ES1_0		0x00
 #define TWL6040_REV_ES1_1		0x01
 #define TWL6040_REV_ES1_2		0x02
+=======
+#define TWL6040_CELLS			4
+
+#define TWL6040_REV_ES1_0		0x00
+#define TWL6040_REV_ES1_1		0x01 /* Rev ES1.1 and ES1.2 */
+#define TWL6040_REV_ES1_3		0x02
+#define TWL6041_REV_ES2_0		0x10
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TWL6040_IRQ_TH			0
 #define TWL6040_IRQ_PLUG		1
@@ -174,6 +216,7 @@
 #define TWL6040_SYSCLK_SEL_LPPLL	0
 #define TWL6040_SYSCLK_SEL_HPPLL	1
 
+<<<<<<< HEAD
 struct twl6040_codec_data {
 	u16 hs_left_step;
 	u16 hs_right_step;
@@ -199,16 +242,32 @@ struct twl6040_platform_data {
 };
 
 struct regmap;
+=======
+#define TWL6040_GPO_MAX	3
+
+struct gpio_desc;
+struct regmap;
+struct regmap_irq_chips_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct twl6040 {
 	struct device *dev;
 	struct regmap *regmap;
+<<<<<<< HEAD
 	struct mutex mutex;
 	struct mutex io_mutex;
+=======
+	struct regmap_irq_chip_data *irq_data;
+	struct regulator_bulk_data supplies[2]; /* supplies for vio, v2v1 */
+	struct clk *clk32k;
+	struct clk *mclk;
+	struct mutex mutex;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex irq_mutex;
 	struct mfd_cell cells[TWL6040_CELLS];
 	struct completion ready;
 
+<<<<<<< HEAD
 	int audpwron;
 	int power_count;
 	int rev;
@@ -223,6 +282,20 @@ struct twl6040 {
 	unsigned int irq_base;
 	u8 irq_masks_cur;
 	u8 irq_masks_cache;
+=======
+	struct gpio_desc *audpwron;
+	int power_count;
+	int rev;
+
+	/* PLL configuration */
+	int pll;
+	unsigned int sysclk_rate;
+	unsigned int mclk_rate;
+
+	unsigned int irq;
+	unsigned int irq_ready;
+	unsigned int irq_th;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int twl6040_reg_read(struct twl6040 *twl6040, unsigned int reg);
@@ -237,8 +310,12 @@ int twl6040_set_pll(struct twl6040 *twl6040, int pll_id,
 		    unsigned int freq_in, unsigned int freq_out);
 int twl6040_get_pll(struct twl6040 *twl6040);
 unsigned int twl6040_get_sysclk(struct twl6040 *twl6040);
+<<<<<<< HEAD
 int twl6040_irq_init(struct twl6040 *twl6040);
 void twl6040_irq_exit(struct twl6040 *twl6040);
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Get the combined status of the vibra control register */
 int twl6040_get_vibralr_status(struct twl6040 *twl6040);
 

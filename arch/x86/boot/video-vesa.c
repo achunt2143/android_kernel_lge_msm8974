@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright (C) 1991, 1992 Linus Torvalds
  *   Copyright 2007 rPath, Inc. - All Rights Reserved
  *   Copyright 2009 Intel Corporation; author H. Peter Anvin
  *
+<<<<<<< HEAD
  *   This file is part of the Linux kernel, and is made available under
  *   the terms of the GNU General Public License version 2.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -16,6 +23,10 @@
 #include "boot.h"
 #include "video.h"
 #include "vesa.h"
+<<<<<<< HEAD
+=======
+#include "string.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* VESA information */
 static struct vesa_general_info vginfo;
@@ -61,7 +72,11 @@ static int vesa_probe(void)
 		if (mode & ~0x1ff)
 			continue;
 
+<<<<<<< HEAD
 		memset(&vminfo, 0, sizeof vminfo); /* Just in case... */
+=======
+		memset(&vminfo, 0, sizeof(vminfo)); /* Just in case... */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ireg.ax = 0x4f01;
 		ireg.cx = mode;
@@ -84,7 +99,11 @@ static int vesa_probe(void)
 			   (vminfo.memory_layout == 4 ||
 			    vminfo.memory_layout == 6) &&
 			   vminfo.memory_planes == 1) {
+<<<<<<< HEAD
 #ifdef CONFIG_FB_BOOT_VESA_SUPPORT
+=======
+#ifdef CONFIG_BOOT_VESA_SUPPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Graphics mode, color, linear frame buffer
 			   supported.  Only register the mode if
 			   if framebuffer is configured, however,
@@ -108,7 +127,11 @@ static int vesa_set_mode(struct mode_info *mode)
 	int is_graphic;
 	u16 vesa_mode = mode->mode - VIDEO_FIRST_VESA;
 
+<<<<<<< HEAD
 	memset(&vminfo, 0, sizeof vminfo); /* Just in case... */
+=======
+	memset(&vminfo, 0, sizeof(vminfo)); /* Just in case... */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	initregs(&ireg);
 	ireg.ax = 0x4f01;
@@ -122,7 +145,11 @@ static int vesa_set_mode(struct mode_info *mode)
 	if ((vminfo.mode_attr & 0x15) == 0x05) {
 		/* It's a supported text mode */
 		is_graphic = 0;
+<<<<<<< HEAD
 #ifdef CONFIG_FB_BOOT_VESA_SUPPORT
+=======
+#ifdef CONFIG_BOOT_VESA_SUPPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if ((vminfo.mode_attr & 0x99) == 0x99) {
 		/* It's a graphics mode with linear frame buffer */
 		is_graphic = 1;
@@ -240,7 +267,11 @@ void vesa_store_edid(void)
 	struct biosregs ireg, oreg;
 
 	/* Apparently used as a nonsense token... */
+<<<<<<< HEAD
 	memset(&boot_params.edid_info, 0x13, sizeof boot_params.edid_info);
+=======
+	memset(&boot_params.edid_info, 0x13, sizeof(boot_params.edid_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (vginfo.version < 0x0200)
 		return;		/* EDID requires VBE 2.0+ */

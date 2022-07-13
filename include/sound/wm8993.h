@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/sound/wm8993.h -- Platform data for WM8993
  *
  * Copyright 2009 Wolfson Microelectronics. PLC.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_SND_WM8993_H
@@ -32,6 +39,13 @@ struct wm8993_platform_data {
 	unsigned int lineout1fb:1;
 	unsigned int lineout2fb:1;
 
+<<<<<<< HEAD
+=======
+	/* Delay to add for microphones to stabalise after power up */
+	int micbias1_delay;
+	int micbias2_delay;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Microphone biases: 0=0.9*AVDD1 1=0.65*AVVD1 */
 	unsigned int micbias1_lvl:1;
 	unsigned int micbias2_lvl:1;

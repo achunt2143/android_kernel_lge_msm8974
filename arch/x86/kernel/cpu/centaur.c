@@ -1,14 +1,26 @@
+<<<<<<< HEAD
 #include <linux/bitops.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
 
 #include <asm/processor.h>
 #include <asm/e820.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+
+#include <linux/sched.h>
+#include <linux/sched/clock.h>
+
+#include <asm/cpu.h>
+#include <asm/cpufeature.h>
+#include <asm/e820/api.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mtrr.h>
 #include <asm/msr.h>
 
 #include "cpu.h"
 
+<<<<<<< HEAD
 #ifdef CONFIG_X86_OOSTORE
 
 static u32 __cpuinit power2(u32 x)
@@ -239,6 +251,8 @@ static void __cpuinit winchip2_protect_mcr(void)
 }
 #endif /* CONFIG_X86_OOSTORE */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACE_PRESENT	(1 << 6)
 #define ACE_ENABLED	(1 << 7)
 #define ACE_FCR		(1 << 28)	/* MSR_VIA_FCR */
@@ -247,7 +261,11 @@ static void __cpuinit winchip2_protect_mcr(void)
 #define RNG_ENABLED	(1 << 3)
 #define RNG_ENABLE	(1 << 6)	/* MSR_VIA_RNG */
 
+<<<<<<< HEAD
 static void __cpuinit init_c3(struct cpuinfo_x86 *c)
+=======
+static void init_c3(struct cpuinfo_x86 *c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32  lo, hi;
 
@@ -260,7 +278,11 @@ static void __cpuinit init_c3(struct cpuinfo_x86 *c)
 			rdmsr(MSR_VIA_FCR, lo, hi);
 			lo |= ACE_FCR;		/* enable ACE unit */
 			wrmsr(MSR_VIA_FCR, lo, hi);
+<<<<<<< HEAD
 			printk(KERN_INFO "CPU: Enabled ACE h/w crypto\n");
+=======
+			pr_info("CPU: Enabled ACE h/w crypto\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* enable RNG unit, if present and disabled */
@@ -268,13 +290,21 @@ static void __cpuinit init_c3(struct cpuinfo_x86 *c)
 			rdmsr(MSR_VIA_RNG, lo, hi);
 			lo |= RNG_ENABLE;	/* enable RNG unit */
 			wrmsr(MSR_VIA_RNG, lo, hi);
+<<<<<<< HEAD
 			printk(KERN_INFO "CPU: Enabled h/w RNG\n");
+=======
+			pr_info("CPU: Enabled h/w RNG\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* store Centaur Extended Feature Flags as
 		 * word 5 of the CPU capability bit array
 		 */
+<<<<<<< HEAD
 		c->x86_capability[5] = cpuid_edx(0xC0000001);
+=======
+		c->x86_capability[CPUID_C000_0001_EDX] = cpuid_edx(0xC0000001);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #ifdef CONFIG_X86_32
 	/* Cyrix III family needs CX8 & PGE explicitly enabled. */
@@ -294,7 +324,12 @@ static void __cpuinit init_c3(struct cpuinfo_x86 *c)
 		set_cpu_cap(c, X86_FEATURE_REP_GOOD);
 	}
 
+<<<<<<< HEAD
 	cpu_detect_cache_sizes(c);
+=======
+	if (c->x86 >= 7)
+		set_cpu_cap(c, X86_FEATURE_REP_GOOD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 enum {
@@ -318,6 +353,7 @@ enum {
 		EAMD3D		= 1<<20,
 };
 
+<<<<<<< HEAD
 static void __cpuinit early_init_centaur(struct cpuinfo_x86 *c)
 {
 	switch (c->x86) {
@@ -338,6 +374,29 @@ static void __cpuinit early_init_centaur(struct cpuinfo_x86 *c)
 }
 
 static void __cpuinit init_centaur(struct cpuinfo_x86 *c)
+=======
+static void early_init_centaur(struct cpuinfo_x86 *c)
+{
+#ifdef CONFIG_X86_32
+	/* Emulate MTRRs using Centaur's MCR. */
+	if (c->x86 == 5)
+		set_cpu_cap(c, X86_FEATURE_CENTAUR_MCR);
+#endif
+	if ((c->x86 == 6 && c->x86_model >= 0xf) ||
+	    (c->x86 >= 7))
+		set_cpu_cap(c, X86_FEATURE_CONSTANT_TSC);
+
+#ifdef CONFIG_X86_64
+	set_cpu_cap(c, X86_FEATURE_SYSENTER32);
+#endif
+	if (c->x86_power & (1 << 8)) {
+		set_cpu_cap(c, X86_FEATURE_CONSTANT_TSC);
+		set_cpu_cap(c, X86_FEATURE_NONSTOP_TSC);
+	}
+}
+
+static void init_centaur(struct cpuinfo_x86 *c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_X86_32
 	char *name;
@@ -353,14 +412,34 @@ static void __cpuinit init_centaur(struct cpuinfo_x86 *c)
 	clear_cpu_cap(c, 0*32+31);
 #endif
 	early_init_centaur(c);
+<<<<<<< HEAD
 	switch (c->x86) {
 #ifdef CONFIG_X86_32
 	case 5:
+=======
+	init_intel_cacheinfo(c);
+
+	if (c->cpuid_level > 9) {
+		unsigned int eax = cpuid_eax(10);
+
+		/*
+		 * Check for version and the number of counters
+		 * Version(eax[7:0]) can't be 0;
+		 * Counters(eax[15:8]) should be greater than 1;
+		 */
+		if ((eax & 0xff) && (((eax >> 8) & 0xff) > 1))
+			set_cpu_cap(c, X86_FEATURE_ARCH_PERFMON);
+	}
+
+#ifdef CONFIG_X86_32
+	if (c->x86 == 5) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (c->x86_model) {
 		case 4:
 			name = "C6";
 			fcr_set = ECX8|DSMC|EDCTLB|EMMX|ERETSTK;
 			fcr_clr = DPDC;
+<<<<<<< HEAD
 			printk(KERN_NOTICE "Disabling bugged TSC.\n");
 			clear_cpu_cap(c, X86_FEATURE_TSC);
 #ifdef CONFIG_X86_OOSTORE
@@ -380,6 +459,13 @@ static void __cpuinit init_centaur(struct cpuinfo_x86 *c)
 			break;
 		case 8:
 			switch (c->x86_mask) {
+=======
+			pr_notice("Disabling bugged TSC.\n");
+			clear_cpu_cap(c, X86_FEATURE_TSC);
+			break;
+		case 8:
+			switch (c->x86_stepping) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			default:
 			name = "2";
 				break;
@@ -393,6 +479,7 @@ static void __cpuinit init_centaur(struct cpuinfo_x86 *c)
 			fcr_set = ECX8|DSMC|DTLOCK|EMMX|EBRPRED|ERETSTK|
 				  E2MMX|EAMD3D;
 			fcr_clr = DPDC;
+<<<<<<< HEAD
 #ifdef CONFIG_X86_OOSTORE
 			winchip2_unprotect_mcr();
 			winchip2_create_optimal_mcr();
@@ -407,12 +494,15 @@ static void __cpuinit init_centaur(struct cpuinfo_x86 *c)
 			wrmsr(MSR_IDT_MCR_CTRL, lo, hi);
 			winchip2_protect_mcr();
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 9:
 			name = "3";
 			fcr_set = ECX8|DSMC|DTLOCK|EMMX|EBRPRED|ERETSTK|
 				  E2MMX|EAMD3D;
 			fcr_clr = DPDC;
+<<<<<<< HEAD
 #ifdef CONFIG_X86_OOSTORE
 			winchip2_unprotect_mcr();
 			winchip2_create_optimal_mcr();
@@ -427,6 +517,8 @@ static void __cpuinit init_centaur(struct cpuinfo_x86 *c)
 			wrmsr(MSR_IDT_MCR_CTRL, lo, hi);
 			winchip2_protect_mcr();
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			name = "??";
@@ -436,11 +528,19 @@ static void __cpuinit init_centaur(struct cpuinfo_x86 *c)
 		newlo = (lo|fcr_set) & (~fcr_clr);
 
 		if (newlo != lo) {
+<<<<<<< HEAD
 			printk(KERN_INFO "Centaur FCR was 0x%X now 0x%X\n",
 				lo, newlo);
 			wrmsr(MSR_IDT_FCR1, newlo, hi);
 		} else {
 			printk(KERN_INFO "Centaur FCR is 0x%X\n", lo);
+=======
+			pr_info("Centaur FCR was 0x%X now 0x%X\n",
+				lo, newlo);
+			wrmsr(MSR_IDT_FCR1, newlo, hi);
+		} else {
+			pr_info("Centaur FCR is 0x%X\n", lo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* Emulate MTRRs using Centaur's MCR. */
 		set_cpu_cap(c, X86_FEATURE_CENTAUR_MCR);
@@ -457,6 +557,7 @@ static void __cpuinit init_centaur(struct cpuinfo_x86 *c)
 			c->x86_cache_size = (cc>>24)+(dd>>24);
 		}
 		sprintf(c->x86_model_id, "WinChip %s", name);
+<<<<<<< HEAD
 		break;
 #endif
 	case 6:
@@ -472,6 +573,23 @@ static unsigned int __cpuinit
 centaur_size_cache(struct cpuinfo_x86 *c, unsigned int size)
 {
 #ifdef CONFIG_X86_32
+=======
+	}
+#endif
+	if (c->x86 == 6 || c->x86 >= 7)
+		init_c3(c);
+#ifdef CONFIG_X86_64
+	set_cpu_cap(c, X86_FEATURE_LFENCE_RDTSC);
+#endif
+
+	init_ia32_feat_ctl(c);
+}
+
+#ifdef CONFIG_X86_32
+static unsigned int
+centaur_size_cache(struct cpuinfo_x86 *c, unsigned int size)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* VIA C3 CPUs (670-68F) need further shifting. */
 	if ((c->x86 == 6) && ((c->x86_model == 7) || (c->x86_model == 8)))
 		size >>= 8;
@@ -482,6 +600,7 @@ centaur_size_cache(struct cpuinfo_x86 *c, unsigned int size)
 	 *  - Note, it seems this may only be in engineering samples.
 	 */
 	if ((c->x86 == 6) && (c->x86_model == 9) &&
+<<<<<<< HEAD
 				(c->x86_mask == 1) && (size == 65))
 		size -= 1;
 #endif
@@ -489,11 +608,26 @@ centaur_size_cache(struct cpuinfo_x86 *c, unsigned int size)
 }
 
 static const struct cpu_dev __cpuinitconst centaur_cpu_dev = {
+=======
+				(c->x86_stepping == 1) && (size == 65))
+		size -= 1;
+	return size;
+}
+#endif
+
+static const struct cpu_dev centaur_cpu_dev = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.c_vendor	= "Centaur",
 	.c_ident	= { "CentaurHauls" },
 	.c_early_init	= early_init_centaur,
 	.c_init		= init_centaur,
+<<<<<<< HEAD
 	.c_size_cache	= centaur_size_cache,
+=======
+#ifdef CONFIG_X86_32
+	.legacy_cache_size = centaur_size_cache,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.c_x86_vendor	= X86_VENDOR_CENTAUR,
 };
 

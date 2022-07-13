@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * VISsave.S: Code for saving FPU register state for
  *            VIS routines. One should not call this directly,
@@ -6,24 +10,39 @@
  * Copyright (C) 1998 Jakub Jelinek (jj@ultra.linux.cz)
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+#include <linux/linkage.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/asi.h>
 #include <asm/page.h>
 #include <asm/ptrace.h>
 #include <asm/visasm.h>
 #include <asm/thread_info.h>
 
+<<<<<<< HEAD
 	.text
 	.globl		VISenter, VISenterhalf
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* On entry: %o5=current FPRS value, %g7 is callers address */
 	/* May clobber %o5, %g1, %g2, %g3, %g7, %icc, %xcc */
 
 	/* Nothing special need be done here to handle pre-emption, this
 	 * FPU save/restore mechanism is already preemption safe.
 	 */
+<<<<<<< HEAD
 
 	.align		32
 VISenter:
+=======
+	.text
+	.align		32
+ENTRY(VISenter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldub		[%g6 + TI_FPDEPTH], %g1
 	brnz,a,pn	%g1, 1f
 	 cmp		%g1, 1
@@ -44,9 +63,14 @@ vis1:	ldub		[%g6 + TI_FPSAVED], %g3
 
 	 stx		%g3, [%g6 + TI_GSR]
 2:	add		%g6, %g1, %g3
+<<<<<<< HEAD
 	cmp		%o5, FPRS_DU
 	be,pn		%icc, 6f
 	 sll		%g1, 3, %g1
+=======
+	mov		FPRS_DU | FPRS_DL | FPRS_FEF, %o5
+	sll		%g1, 3, %g1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stb		%o5, [%g3 + TI_FPSAVED]
 	rd		%gsr, %g2
 	add		%g6, %g1, %g3
@@ -80,6 +104,7 @@ vis1:	ldub		[%g6 + TI_FPSAVED], %g3
 	.align		32
 80:	jmpl		%g7 + %g0, %g0
 	 nop
+<<<<<<< HEAD
 
 6:	ldub		[%g3 + TI_FPSAVED], %o5
 	or		%o5, FPRS_DU, %o5
@@ -142,3 +167,7 @@ VISenterhalf:
 4:	and		%o5, FPRS_DU, %o5
 	jmpl		%g7 + %g0, %g0
 	 wr		%o5, FPRS_FEF, %fprs
+=======
+ENDPROC(VISenter)
+EXPORT_SYMBOL(VISenter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

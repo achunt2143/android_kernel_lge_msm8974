@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_SEQ_MIDI_EMUL_H
 #define __SOUND_SEQ_MIDI_EMUL_H
 
@@ -5,6 +9,7 @@
  *  Midi channel definition for optional channel management.
  *
  *  Copyright (C) 1999 Steve Ratcliffe
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -23,6 +28,11 @@
  */
 
 #include "seq_kernel.h"
+=======
+ */
+
+#include <sound/seq_kernel.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This structure is used to keep track of the current state on each
@@ -188,7 +198,12 @@ enum {
 };
 
 /* Prototypes for midi_process.c */
+<<<<<<< HEAD
 void snd_midi_process_event(struct snd_midi_op *ops, struct snd_seq_event *ev,
+=======
+void snd_midi_process_event(const struct snd_midi_op *ops,
+			    struct snd_seq_event *ev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    struct snd_midi_channel_set *chanset);
 void snd_midi_channel_set_clear(struct snd_midi_channel_set *chset);
 struct snd_midi_channel_set *snd_midi_channel_alloc_set(int n);

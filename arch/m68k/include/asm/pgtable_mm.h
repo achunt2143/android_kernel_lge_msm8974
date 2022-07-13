@@ -1,7 +1,20 @@
+<<<<<<< HEAD
 #ifndef _M68K_PGTABLE_H
 #define _M68K_PGTABLE_H
 
 #include <asm-generic/4level-fixup.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _M68K_PGTABLE_H
+#define _M68K_PGTABLE_H
+
+
+#if defined(CONFIG_SUN3) || defined(CONFIG_COLDFIRE)
+#include <asm-generic/pgtable-nopmd.h>
+#else
+#include <asm-generic/pgtable-nopud.h>
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/setup.h>
 
@@ -25,6 +38,7 @@
 	do{							\
 		*(pteptr) = (pteval);				\
 	} while(0)
+<<<<<<< HEAD
 #define set_pte_at(mm,addr,ptep,pteval) set_pte(ptep,pteval)
 
 
@@ -33,6 +47,12 @@
 #define PMD_SHIFT       17
 #else
 #define PMD_SHIFT	22
+=======
+
+/* PMD_SHIFT determines the size of the area a second-level page table can map */
+#if CONFIG_PGTABLE_LEVELS == 3
+#define PMD_SHIFT	18
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #define PMD_SIZE	(1UL << PMD_SHIFT)
 #define PMD_MASK	(~(PMD_SIZE-1))
@@ -54,10 +74,15 @@
  */
 #ifdef CONFIG_SUN3
 #define PTRS_PER_PTE   16
+<<<<<<< HEAD
+=======
+#define __PAGETABLE_PMD_FOLDED 1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PTRS_PER_PMD   1
 #define PTRS_PER_PGD   2048
 #elif defined(CONFIG_COLDFIRE)
 #define PTRS_PER_PTE	512
+<<<<<<< HEAD
 #define PTRS_PER_PMD	1
 #define PTRS_PER_PGD	1024
 #else
@@ -75,6 +100,28 @@
 #elif defined(CONFIG_COLDFIRE)
 #define KMAP_START	0xe0000000
 #define KMAP_END	0xf0000000
+=======
+#define __PAGETABLE_PMD_FOLDED 1
+#define PTRS_PER_PMD	1
+#define PTRS_PER_PGD	1024
+#else
+#define PTRS_PER_PTE	64
+#define PTRS_PER_PMD	128
+#define PTRS_PER_PGD	128
+#endif
+#define USER_PTRS_PER_PGD	(TASK_SIZE/PGDIR_SIZE)
+
+/* Virtual address region for use by kernel_map() */
+#ifdef CONFIG_SUN3
+#define KMAP_START	0x0dc00000
+#define KMAP_END	0x0e000000
+#elif defined(CONFIG_COLDFIRE)
+#define KMAP_START	0xe0000000
+#define KMAP_END	0xf0000000
+#elif defined(CONFIG_VIRT)
+#define	KMAP_START	0xdf000000
+#define	KMAP_END	0xff000000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define	KMAP_START	0xd0000000
 #define	KMAP_END	0xf0000000
@@ -87,6 +134,13 @@ extern unsigned long m68k_vmalloc_end;
 #elif defined(CONFIG_COLDFIRE)
 #define VMALLOC_START	0xd0000000
 #define VMALLOC_END	0xe0000000
+<<<<<<< HEAD
+=======
+#elif defined(CONFIG_VIRT)
+#define VMALLOC_OFFSET	PAGE_SIZE
+#define VMALLOC_START (((unsigned long) high_memory + VMALLOC_OFFSET) & ~(VMALLOC_OFFSET-1))
+#define VMALLOC_END     KMAP_START
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 /* Just any arbitrary offset to the start of the vmalloc VM area: the
  * current 8MB value just means that there will be a 8MB "hole" after the
@@ -126,6 +180,7 @@ extern void kernel_set_cachemode(void *addr, unsigned long size, int cmode);
  * tables contain all the necessary information.  The Sun3 does, but
  * they are updated on demand.
  */
+<<<<<<< HEAD
 static inline void update_mmu_cache(struct vm_area_struct *vma,
 				    unsigned long address, pte_t *ptep)
 {
@@ -138,6 +193,19 @@ static inline void update_mmu_cache(struct vm_area_struct *vma,
 #define io_remap_pfn_range(vma, vaddr, pfn, size, prot)		\
 		remap_pfn_range(vma, vaddr, pfn, size, prot)
 
+=======
+static inline void update_mmu_cache_range(struct vm_fault *vmf,
+		struct vm_area_struct *vma, unsigned long address,
+		pte_t *ptep, unsigned int nr)
+{
+}
+
+#define update_mmu_cache(vma, addr, ptep) \
+	update_mmu_cache_range(NULL, vma, addr, ptep, 1)
+
+#endif /* !__ASSEMBLY__ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* MMU-specific headers */
 
 #ifdef CONFIG_SUN3
@@ -169,6 +237,7 @@ static inline void update_mmu_cache(struct vm_area_struct *vma,
 	    ? (__pgprot((pgprot_val(prot) & _CACHEMASK040) | _PAGE_NOCACHE_S))	\
 	    : (prot)))
 
+<<<<<<< HEAD
 #endif /* CONFIG_COLDFIRE */
 #include <asm-generic/pgtable.h>
 #endif /* !__ASSEMBLY__ */
@@ -180,4 +249,12 @@ static inline void update_mmu_cache(struct vm_area_struct *vma,
 
 #define check_pgt_cache()	do { } while (0)
 
+=======
+pgprot_t pgprot_dmacoherent(pgprot_t prot);
+#define pgprot_dmacoherent(prot)	pgprot_dmacoherent(prot)
+
+#endif /* CONFIG_COLDFIRE */
+#endif /* !__ASSEMBLY__ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _M68K_PGTABLE_H */

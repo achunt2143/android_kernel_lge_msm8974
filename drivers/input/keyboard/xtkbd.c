@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999-2001 Vojtech Pavlik
  */
@@ -6,6 +10,7 @@
  * XT keyboard driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +35,11 @@
 #include <linux/module.h>
 #include <linux/input.h>
 #include <linux/init.h>
+=======
+#include <linux/slab.h>
+#include <linux/module.h>
+#include <linux/input.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serio.h>
 
 #define DRIVER_DESC	"XT keyboard driver"
@@ -146,7 +156,11 @@ static void xtkbd_disconnect(struct serio *serio)
 	kfree(xtkbd);
 }
 
+<<<<<<< HEAD
 static struct serio_device_id xtkbd_serio_ids[] = {
+=======
+static const struct serio_device_id xtkbd_serio_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_XT,
 		.proto	= SERIO_ANY,
@@ -169,6 +183,7 @@ static struct serio_driver xtkbd_drv = {
 	.disconnect	= xtkbd_disconnect,
 };
 
+<<<<<<< HEAD
 static int __init xtkbd_init(void)
 {
 	return serio_register_driver(&xtkbd_drv);
@@ -181,3 +196,6 @@ static void __exit xtkbd_exit(void)
 
 module_init(xtkbd_init);
 module_exit(xtkbd_exit);
+=======
+module_serio_driver(xtkbd_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

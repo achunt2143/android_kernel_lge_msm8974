@@ -21,10 +21,17 @@
 #include <linux/device.h>
 #include <linux/delay.h>
 
+<<<<<<< HEAD
 #include <linux/fs_enet_pd.h>
 #include <linux/fs_uart_pd.h>
 #include <linux/fsl_devices.h>
 #include <linux/mii.h>
+=======
+#include <linux/fsl_devices.h>
+#include <linux/mii.h>
+#include <linux/of_address.h>
+#include <linux/of_fdt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_platform.h>
 
 #include <asm/delay.h>
@@ -33,14 +40,20 @@
 #include <asm/page.h>
 #include <asm/processor.h>
 #include <asm/time.h>
+<<<<<<< HEAD
 #include <asm/mpc8xx.h>
 #include <asm/8xx_immap.h>
 #include <asm/cpm1.h>
 #include <asm/fs_pd.h>
+=======
+#include <asm/8xx_immap.h>
+#include <asm/cpm1.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/udbg.h>
 
 #include "mpc885ads.h"
 #include "mpc8xx.h"
+<<<<<<< HEAD
 
 static u32 __iomem *bcsr, *bcsr5;
 
@@ -99,6 +112,12 @@ static int pcmcia_set_voltage(int slot, int vcc, int vpp)
 }
 #endif
 
+=======
+#include "pic.h"
+
+static u32 __iomem *bcsr, *bcsr5;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cpm_pin {
 	int port, pin, flags;
 };
@@ -243,6 +262,7 @@ static void __init mpc885ads_setup_arch(void)
 		of_detach_node(np);
 		of_node_put(np);
 	}
+<<<<<<< HEAD
 
 #ifdef CONFIG_PCMCIA_M8XX
 	/* Set up board specific hook-ups.*/
@@ -258,6 +278,11 @@ static int __init mpc885ads_probe(void)
 }
 
 static struct of_device_id __initdata of_bus_ids[] = {
+=======
+}
+
+static const struct of_device_id of_bus_ids[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .name = "soc", },
 	{ .name = "cpm", },
 	{ .name = "localbus", },
@@ -275,6 +300,7 @@ machine_device_initcall(mpc885_ads, declare_of_platform_devices);
 
 define_machine(mpc885_ads) {
 	.name			= "Freescale MPC885 ADS",
+<<<<<<< HEAD
 	.probe			= mpc885ads_probe,
 	.setup_arch		= mpc885ads_setup_arch,
 	.init_IRQ		= mpc8xx_pics_init,
@@ -283,5 +309,13 @@ define_machine(mpc885_ads) {
 	.calibrate_decr		= mpc8xx_calibrate_decr,
 	.set_rtc_time		= mpc8xx_set_rtc_time,
 	.get_rtc_time		= mpc8xx_get_rtc_time,
+=======
+	.compatible		= "fsl,mpc885ads",
+	.setup_arch		= mpc885ads_setup_arch,
+	.init_IRQ		= mpc8xx_pic_init,
+	.get_irq		= mpc8xx_get_irq,
+	.restart		= mpc8xx_restart,
+	.calibrate_decr		= mpc8xx_calibrate_decr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= udbg_progress,
 };

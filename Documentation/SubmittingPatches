@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 	How to Get Your Change Into the Linux Kernel
 		or
@@ -734,3 +735,6 @@ Andi Kleen, "On submitting kernel patches"
   http://halobates.de/on-submitting-patches.pdf
 
 --
+=======
+This file has moved to process/submitting-patches.rst
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

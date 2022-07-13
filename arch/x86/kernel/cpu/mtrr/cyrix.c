@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/mm.h>
@@ -97,6 +101,10 @@ cyrix_get_free_region(unsigned long base, unsigned long size, int replace_reg)
 	case 7:
 		if (size < 0x40)
 			break;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 6:
 	case 5:
 	case 4:
@@ -137,9 +145,15 @@ static void prepare_set(void)
 	u32 cr0;
 
 	/*  Save value of CR4 and clear Page Global Enable (bit 7)  */
+<<<<<<< HEAD
 	if (cpu_has_pge) {
 		cr4 = read_cr4();
 		write_cr4(cr4 & ~X86_CR4_PGE);
+=======
+	if (boot_cpu_has(X86_FEATURE_PGE)) {
+		cr4 = __read_cr4();
+		__write_cr4(cr4 & ~X86_CR4_PGE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -167,11 +181,19 @@ static void post_set(void)
 	setCx86(CX86_CCR3, ccr3);
 
 	/* Enable caches */
+<<<<<<< HEAD
 	write_cr0(read_cr0() & 0xbfffffff);
 
 	/* Restore value of CR4 */
 	if (cpu_has_pge)
 		write_cr4(cr4);
+=======
+	write_cr0(read_cr0() & ~X86_CR0_CD);
+
+	/* Restore value of CR4 */
+	if (boot_cpu_has(X86_FEATURE_PGE))
+		__write_cr4(cr4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cyrix_set_arr(unsigned int reg, unsigned long base,
@@ -232,6 +254,7 @@ static void cyrix_set_arr(unsigned int reg, unsigned long base,
 	post_set();
 }
 
+<<<<<<< HEAD
 typedef struct {
 	unsigned long	base;
 	unsigned long	size;
@@ -268,15 +291,22 @@ static void cyrix_set_all(void)
 static const struct mtrr_ops cyrix_mtrr_ops = {
 	.vendor            = X86_VENDOR_CYRIX,
 	.set_all	   = cyrix_set_all,
+=======
+const struct mtrr_ops cyrix_mtrr_ops = {
+	.var_regs          = 8,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set               = cyrix_set_arr,
 	.get               = cyrix_get_arr,
 	.get_free_region   = cyrix_get_free_region,
 	.validate_add_page = generic_validate_add_page,
 	.have_wrcomb       = positive_have_wrcomb,
 };
+<<<<<<< HEAD
 
 int __init cyrix_init_mtrr(void)
 {
 	set_mtrr_ops(&cyrix_mtrr_ops);
 	return 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

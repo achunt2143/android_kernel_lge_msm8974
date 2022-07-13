@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
  * Released under the terms of the GNU GPL v2.0.
@@ -28,16 +29,49 @@ class ConfigView;
 class ConfigList;
 class ConfigItem;
 class ConfigLineEdit;
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
+ */
+
+#include <QCheckBox>
+#include <QDialog>
+#include <QHeaderView>
+#include <QLineEdit>
+#include <QMainWindow>
+#include <QPushButton>
+#include <QSettings>
+#include <QSplitter>
+#include <QStyledItemDelegate>
+#include <QTextBrowser>
+#include <QTreeWidget>
+
+#include "expr.h"
+
+class ConfigList;
+class ConfigItem;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 class ConfigMainWindow;
 
 class ConfigSettings : public QSettings {
 public:
+<<<<<<< HEAD
 	Q3ValueList<int> readSizes(const QString& key, bool *ok);
 	bool writeSizes(const QString& key, const Q3ValueList<int>& value);
 };
 
 enum colIdx {
 	promptColIdx, nameColIdx, noColIdx, modColIdx, yesColIdx, dataColIdx, colNr
+=======
+	ConfigSettings();
+	QList<int> readSizes(const QString& key, bool *ok);
+	bool writeSizes(const QString& key, const QList<int>& value);
+};
+
+enum colIdx {
+	promptColIdx, nameColIdx, dataColIdx
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 enum listMode {
 	singleMode, menuMode, symbolMode, fullMode, listMode
@@ -46,6 +80,7 @@ enum optionMode {
 	normalOpt = 0, allOpt, promptOpt
 };
 
+<<<<<<< HEAD
 class ConfigList : public Q3ListView {
 	Q_OBJECT
 	typedef class Q3ListView Parent;
@@ -64,27 +99,68 @@ protected:
 	void contentsMouseReleaseEvent(QMouseEvent *e);
 	void contentsMouseMoveEvent(QMouseEvent *e);
 	void contentsMouseDoubleClickEvent(QMouseEvent *e);
+=======
+class ConfigList : public QTreeWidget {
+	Q_OBJECT
+	typedef class QTreeWidget Parent;
+public:
+	ConfigList(QWidget *parent, const char *name = 0);
+	~ConfigList();
+	void reinit(void);
+	ConfigItem* findConfigItem(struct menu *);
+	void setSelected(QTreeWidgetItem *item, bool enable) {
+		for (int i = 0; i < selectedItems().size(); i++)
+			selectedItems().at(i)->setSelected(false);
+
+		item->setSelected(enable);
+	}
+
+protected:
+	void keyPressEvent(QKeyEvent *e);
+	void mousePressEvent(QMouseEvent *e);
+	void mouseReleaseEvent(QMouseEvent *e);
+	void mouseMoveEvent(QMouseEvent *e);
+	void mouseDoubleClickEvent(QMouseEvent *e);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void focusInEvent(QFocusEvent *e);
 	void contextMenuEvent(QContextMenuEvent *e);
 
 public slots:
 	void setRootMenu(struct menu *menu);
 
+<<<<<<< HEAD
 	void updateList(ConfigItem *item);
+=======
+	void updateList();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void setValue(ConfigItem* item, tristate val);
 	void changeValue(ConfigItem* item);
 	void updateSelection(void);
 	void saveSettings(void);
+<<<<<<< HEAD
 signals:
 	void menuChanged(struct menu *menu);
 	void menuSelected(struct menu *menu);
 	void parentSelected(void);
 	void gotFocus(struct menu *);
+=======
+	void setOptionMode(QAction *action);
+	void setShowName(bool on);
+
+signals:
+	void menuChanged(struct menu *menu);
+	void menuSelected(struct menu *menu);
+	void itemSelected(struct menu *menu);
+	void parentSelected(void);
+	void gotFocus(struct menu *);
+	void showNameChanged(bool on);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 public:
 	void updateListAll(void)
 	{
 		updateAll = true;
+<<<<<<< HEAD
 		updateList(NULL);
 		updateAll = false;
 	}
@@ -113,11 +189,17 @@ public:
 			colRevMap[col] = colMap[idx] = -1;
 		}
 	}
+=======
+		updateList();
+		updateAll = false;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void setAllOpen(bool open);
 	void setParentMenu(void);
 
 	bool menuSkip(struct menu *);
 
+<<<<<<< HEAD
 	template <class P>
 	void updateMenuList(P*, struct menu*);
 
@@ -145,26 +227,66 @@ class ConfigItem : public Q3ListViewItem {
 public:
 	ConfigItem(Q3ListView *parent, ConfigItem *after, struct menu *m, bool v)
 	: Parent(parent, after), menu(m), visible(v), goParent(false)
+=======
+	void updateMenuList(ConfigItem *parent, struct menu*);
+	void updateMenuList(struct menu *menu);
+
+	bool updateAll;
+
+	bool showName;
+	enum listMode mode;
+	enum optionMode optMode;
+	struct menu *rootEntry;
+	QPalette disabledColorGroup;
+	QPalette inactivedColorGroup;
+	QMenu* headerPopup;
+
+	static QList<ConfigList *> allLists;
+	static void updateListForAll();
+	static void updateListAllForAll();
+
+	static QAction *showNormalAction, *showAllAction, *showPromptAction;
+};
+
+class ConfigItem : public QTreeWidgetItem {
+	typedef class QTreeWidgetItem Parent;
+public:
+	ConfigItem(ConfigList *parent, ConfigItem *after, struct menu *m, bool v)
+	: Parent(parent, after), nextItem(0), menu(m), visible(v), goParent(false)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		init();
 	}
 	ConfigItem(ConfigItem *parent, ConfigItem *after, struct menu *m, bool v)
+<<<<<<< HEAD
 	: Parent(parent, after), menu(m), visible(v), goParent(false)
 	{
 		init();
 	}
 	ConfigItem(Q3ListView *parent, ConfigItem *after, bool v)
 	: Parent(parent, after), menu(0), visible(v), goParent(true)
+=======
+	: Parent(parent, after), nextItem(0), menu(m), visible(v), goParent(false)
+	{
+		init();
+	}
+	ConfigItem(ConfigList *parent, ConfigItem *after, bool v)
+	: Parent(parent, after), nextItem(0), menu(0), visible(v), goParent(true)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		init();
 	}
 	~ConfigItem(void);
 	void init(void);
+<<<<<<< HEAD
 	void okRename(int col);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void updateMenu(void);
 	void testUpdateMenu(bool v);
 	ConfigList* listView() const
 	{
+<<<<<<< HEAD
 		return (ConfigList*)Parent::listView();
 	}
 	ConfigItem* firstChild() const
@@ -192,11 +314,35 @@ public:
 		return Parent::pixmap(listView()->mapIdx(idx));
 	}
 	void paintCell(QPainter* p, const QColorGroup& cg, int column, int width, int align);
+=======
+		return (ConfigList*)Parent::treeWidget();
+	}
+	ConfigItem* firstChild() const
+	{
+		return (ConfigItem *)Parent::child(0);
+	}
+	ConfigItem* nextSibling()
+	{
+		ConfigItem *ret = NULL;
+		ConfigItem *_parent = (ConfigItem *)parent();
+
+		if(_parent) {
+			ret = (ConfigItem *)_parent->child(_parent->indexOfChild(this)+1);
+		} else {
+			QTreeWidget *_treeWidget = treeWidget();
+			ret = (ConfigItem *)_treeWidget->topLevelItem(_treeWidget->indexOfTopLevelItem(this)+1);
+		}
+
+		return ret;
+	}
+	// TODO: Implement paintCell
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ConfigItem* nextItem;
 	struct menu *menu;
 	bool visible;
 	bool goParent;
+<<<<<<< HEAD
 };
 
 class ConfigLineEdit : public QLineEdit {
@@ -251,6 +397,32 @@ public:
 class ConfigInfoView : public Q3TextBrowser {
 	Q_OBJECT
 	typedef class Q3TextBrowser Parent;
+=======
+
+	static QIcon symbolYesIcon, symbolModIcon, symbolNoIcon;
+	static QIcon choiceYesIcon, choiceNoIcon;
+	static QIcon menuIcon, menubackIcon;
+};
+
+class ConfigItemDelegate : public QStyledItemDelegate
+{
+private:
+	struct menu *menu;
+public:
+	ConfigItemDelegate(QObject *parent = nullptr)
+		: QStyledItemDelegate(parent) {}
+	QWidget *createEditor(QWidget *parent,
+			      const QStyleOptionViewItem &option,
+			      const QModelIndex &index) const override;
+	void setModelData(QWidget *editor, QAbstractItemModel *model,
+			  const QModelIndex &index) const override;
+};
+
+class ConfigInfoView : public QTextBrowser {
+	Q_OBJECT
+	typedef class QTextBrowser Parent;
+	QMenu *contextMenu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 public:
 	ConfigInfoView(QWidget* parent, const char *name = 0);
 	bool showDebug(void) const { return _showDebug; }
@@ -259,6 +431,10 @@ public slots:
 	void setInfo(struct menu *menu);
 	void saveSettings(void);
 	void setShowDebug(bool);
+<<<<<<< HEAD
+=======
+	void clicked (const QUrl &url);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 signals:
 	void showDebugChanged(bool);
@@ -270,8 +446,12 @@ protected:
 	QString debug_info(struct symbol *sym);
 	static QString print_filter(const QString &str);
 	static void expr_print_help(void *data, struct symbol *sym, const char *str);
+<<<<<<< HEAD
 	Q3PopupMenu* createPopupMenu(const QPoint& pos);
 	void contentsContextMenuEvent(QContextMenuEvent *e);
+=======
+	void contextMenuEvent(QContextMenuEvent *event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct symbol *sym;
 	struct menu *_menu;
@@ -282,7 +462,11 @@ class ConfigSearchWindow : public QDialog {
 	Q_OBJECT
 	typedef class QDialog Parent;
 public:
+<<<<<<< HEAD
 	ConfigSearchWindow(ConfigMainWindow* parent, const char *name = 0);
+=======
+	ConfigSearchWindow(ConfigMainWindow *parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 public slots:
 	void saveSettings(void);
@@ -292,21 +476,37 @@ protected:
 	QLineEdit* editField;
 	QPushButton* searchButton;
 	QSplitter* split;
+<<<<<<< HEAD
 	ConfigView* list;
+=======
+	ConfigList *list;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ConfigInfoView* info;
 
 	struct symbol **result;
 };
 
+<<<<<<< HEAD
 class ConfigMainWindow : public Q3MainWindow {
 	Q_OBJECT
 
 	static Q3Action *saveAction;
+=======
+class ConfigMainWindow : public QMainWindow {
+	Q_OBJECT
+
+	char *configname;
+	static QAction *saveAction;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static void conf_changed(void);
 public:
 	ConfigMainWindow(void);
 public slots:
 	void changeMenu(struct menu *);
+<<<<<<< HEAD
+=======
+	void changeItens(struct menu *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void setMenuLink(struct menu *);
 	void listFocusChanged(void);
 	void goBack(void);
@@ -325,6 +525,7 @@ protected:
 	void closeEvent(QCloseEvent *e);
 
 	ConfigSearchWindow *searchWindow;
+<<<<<<< HEAD
 	ConfigView *menuView;
 	ConfigList *menuList;
 	ConfigView *configView;
@@ -334,4 +535,15 @@ protected:
 	Q3Action *backAction;
 	QSplitter* split1;
 	QSplitter* split2;
+=======
+	ConfigList *menuList;
+	ConfigList *configList;
+	ConfigInfoView *helpText;
+	QAction *backAction;
+	QAction *singleViewAction;
+	QAction *splitViewAction;
+	QAction *fullViewAction;
+	QSplitter *split1;
+	QSplitter *split2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

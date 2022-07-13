@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * File: af_phonet.c
  *
@@ -5,6 +9,7 @@
  *
  * Copyright (C) 2008 Nokia Corporation.
  *
+<<<<<<< HEAD
  * Contact: Remi Denis-Courmont <remi.denis-courmont@nokia.com>
  * Original author: Sakari Ailus <sakari.ailus@nokia.com>
  *
@@ -21,6 +26,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+ * Authors: Sakari Ailus <sakari.ailus@nokia.com>
+ *          Rémi Denis-Courmont
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -35,11 +44,19 @@
 #include <net/phonet/pn_dev.h>
 
 /* Transport protocol registration */
+<<<<<<< HEAD
 static struct phonet_protocol *proto_tab[PHONET_NPROTO] __read_mostly;
 
 static struct phonet_protocol *phonet_proto_get(unsigned int protocol)
 {
 	struct phonet_protocol *pp;
+=======
+static const struct phonet_protocol *proto_tab[PHONET_NPROTO] __read_mostly;
+
+static const struct phonet_protocol *phonet_proto_get(unsigned int protocol)
+{
+	const struct phonet_protocol *pp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (protocol >= PHONET_NPROTO)
 		return NULL;
@@ -53,7 +70,11 @@ static struct phonet_protocol *phonet_proto_get(unsigned int protocol)
 	return pp;
 }
 
+<<<<<<< HEAD
 static inline void phonet_proto_put(struct phonet_protocol *pp)
+=======
+static inline void phonet_proto_put(const struct phonet_protocol *pp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	module_put(pp->prot->owner);
 }
@@ -65,7 +86,11 @@ static int pn_socket_create(struct net *net, struct socket *sock, int protocol,
 {
 	struct sock *sk;
 	struct pn_sock *pn;
+<<<<<<< HEAD
 	struct phonet_protocol *pnp;
+=======
+	const struct phonet_protocol *pnp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (!capable(CAP_SYS_ADMIN))
@@ -97,7 +122,11 @@ static int pn_socket_create(struct net *net, struct socket *sock, int protocol,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_PHONET, GFP_KERNEL, pnp->prot);
+=======
+	sk = sk_alloc(net, PF_PHONET, GFP_KERNEL, pnp->prot, kern);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sk == NULL) {
 		err = -ENOMEM;
 		goto out;
@@ -129,7 +158,11 @@ static const struct net_proto_family phonet_proto_family = {
 /* Phonet device header operations */
 static int pn_header_create(struct sk_buff *skb, struct net_device *dev,
 				unsigned short type, const void *daddr,
+<<<<<<< HEAD
 				const void *saddr, unsigned len)
+=======
+				const void *saddr, unsigned int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 *media = skb_push(skb, 1);
 
@@ -149,7 +182,11 @@ static int pn_header_parse(const struct sk_buff *skb, unsigned char *haddr)
 	return 1;
 }
 
+<<<<<<< HEAD
 struct header_ops phonet_header_ops = {
+=======
+const struct header_ops phonet_header_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.create = pn_header_create,
 	.parse = pn_header_parse,
 };
@@ -159,7 +196,11 @@ EXPORT_SYMBOL(phonet_header_ops);
  * Prepends an ISI header and sends a datagram.
  */
 static int pn_send(struct sk_buff *skb, struct net_device *dev,
+<<<<<<< HEAD
 			u16 dst, u16 src, u8 res, u8 irq)
+=======
+			u16 dst, u16 src, u8 res)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct phonethdr *ph;
 	int err;
@@ -195,7 +236,11 @@ static int pn_send(struct sk_buff *skb, struct net_device *dev,
 	if (skb->pkt_type == PACKET_LOOPBACK) {
 		skb_reset_mac_header(skb);
 		skb_orphan(skb);
+<<<<<<< HEAD
 		err = (irq ? netif_rx(skb) : netif_rx_ni(skb)) ? -ENOBUFS : 0;
+=======
+		err = netif_rx(skb) ? -ENOBUFS : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		err = dev_hard_header(skb, dev, ntohs(skb->protocol),
 					NULL, NULL, skb->len);
@@ -227,7 +272,11 @@ static int pn_raw_send(const void *data, int len, struct net_device *dev,
 	skb_reserve(skb, MAX_PHONET_HEADER);
 	__skb_put(skb, len);
 	skb_copy_to_linear_data(skb, data, len);
+<<<<<<< HEAD
 	return pn_send(skb, dev, dst, src, res, 1);
+=======
+	return pn_send(skb, dev, dst, src, res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -282,14 +331,22 @@ int pn_skb_send(struct sock *sk, struct sk_buff *skb,
 	if (!pn_addr(src))
 		src = pn_object(saddr, pn_obj(src));
 
+<<<<<<< HEAD
 	err = pn_send(skb, dev, dst, src, res, 0);
+=======
+	err = pn_send(skb, dev, dst, src, res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_put(dev);
 	return err;
 
 drop:
 	kfree_skb(skb);
+<<<<<<< HEAD
 	if (dev)
 		dev_put(dev);
+=======
+	dev_put(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL(pn_skb_send);
@@ -377,6 +434,13 @@ static int phonet_rcv(struct sk_buff *skb, struct net_device *dev,
 	struct sockaddr_pn sa;
 	u16 len;
 
+<<<<<<< HEAD
+=======
+	skb = skb_share_check(skb, GFP_ATOMIC);
+	if (!skb)
+		return NET_RX_DROP;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* check we have at least a full Phonet header */
 	if (!pskb_pull(skb, sizeof(struct phonethdr)))
 		goto out;
@@ -426,16 +490,27 @@ static int phonet_rcv(struct sk_buff *skb, struct net_device *dev,
 
 		out_dev = phonet_route_output(net, pn_sockaddr_get_addr(&sa));
 		if (!out_dev) {
+<<<<<<< HEAD
 			LIMIT_NETDEBUG(KERN_WARNING"No Phonet route to %02X\n",
 					pn_sockaddr_get_addr(&sa));
+=======
+			net_dbg_ratelimited("No Phonet route to %02X\n",
+					    pn_sockaddr_get_addr(&sa));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
 		__skb_push(skb, sizeof(struct phonethdr));
 		skb->dev = out_dev;
 		if (out_dev == dev) {
+<<<<<<< HEAD
 			LIMIT_NETDEBUG(KERN_ERR"Phonet loop to %02X on %s\n",
 					pn_sockaddr_get_addr(&sa), dev->name);
+=======
+			net_dbg_ratelimited("Phonet loop to %02X on %s\n",
+					    pn_sockaddr_get_addr(&sa),
+					    dev->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_dev;
 		}
 		/* Some drivers (e.g. TUN) do not allocate HW header space */
@@ -465,7 +540,11 @@ static struct packet_type phonet_packet_type __read_mostly = {
 static DEFINE_MUTEX(proto_tab_lock);
 
 int __init_or_module phonet_proto_register(unsigned int protocol,
+<<<<<<< HEAD
 						struct phonet_protocol *pp)
+=======
+				const struct phonet_protocol *pp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 
@@ -487,7 +566,12 @@ int __init_or_module phonet_proto_register(unsigned int protocol,
 }
 EXPORT_SYMBOL(phonet_proto_register);
 
+<<<<<<< HEAD
 void phonet_proto_unregister(unsigned int protocol, struct phonet_protocol *pp)
+=======
+void phonet_proto_unregister(unsigned int protocol,
+			const struct phonet_protocol *pp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&proto_tab_lock);
 	BUG_ON(proto_tab[protocol] != pp);

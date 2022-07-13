@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 PHY nodes
 
 Required properties:
@@ -23,3 +24,6 @@ ethernet-phy@0 {
 	reg = <0>;
 	device_type = "ethernet-phy";
 };
+=======
+This file has moved to ethernet-phy.yaml.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

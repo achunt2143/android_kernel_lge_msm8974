@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/pci.h>
 #include <asm/pci-direct.h>
@@ -56,6 +60,7 @@ int early_pci_allowed(void)
 			PCI_PROBE_CONF1;
 }
 
+<<<<<<< HEAD
 void early_dump_pci_device(u8 bus, u8 slot, u8 func)
 {
 	int i;
@@ -109,3 +114,5 @@ void early_dump_pci_devices(void)
 		}
 	}
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

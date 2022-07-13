@@ -1,10 +1,25 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PPTP constants and structs */
 #ifndef _NF_CONNTRACK_PPTP_H
 #define _NF_CONNTRACK_PPTP_H
 
+<<<<<<< HEAD
 #include <linux/netfilter/nf_conntrack_common.h>
 
 extern const char *const pptp_msg_name[];
+=======
+#include <linux/netfilter.h>
+#include <linux/skbuff.h>
+#include <linux/types.h>
+#include <linux/netfilter/nf_conntrack_common.h>
+#include <net/netfilter/nf_conntrack_expect.h>
+#include <uapi/linux/netfilter/nf_conntrack_tuple_common.h>
+
+const char *pptp_msg_name(u_int16_t msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* state of the control session */
 enum pptp_ctrlsess_state {
@@ -44,8 +59,11 @@ struct nf_nat_pptp {
 	__be16 pac_call_id;			/* NAT'ed PAC call id */
 };
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PPTP_CONTROL_PORT	1723
 
 #define PPTP_PACKET_CONTROL	1
@@ -296,6 +314,7 @@ union pptp_ctrl_union {
 	struct PptpSetLinkInfo		setlink;
 };
 
+<<<<<<< HEAD
 /* crap needed for nf_conntrack_compat.h */
 struct nf_conn;
 struct nf_conntrack_expect;
@@ -323,4 +342,24 @@ extern void
 			     struct nf_conntrack_expect *exp);
 
 #endif /* __KERNEL__ */
+=======
+struct nf_nat_pptp_hook {
+	int (*outbound)(struct sk_buff *skb,
+			struct nf_conn *ct, enum ip_conntrack_info ctinfo,
+			unsigned int protoff,
+			struct PptpControlHeader *ctlh,
+			union pptp_ctrl_union *pptpReq);
+	int (*inbound)(struct sk_buff *skb,
+		       struct nf_conn *ct, enum ip_conntrack_info ctinfo,
+		       unsigned int protoff,
+		       struct PptpControlHeader *ctlh,
+		       union pptp_ctrl_union *pptpReq);
+	void (*exp_gre)(struct nf_conntrack_expect *exp_orig,
+			struct nf_conntrack_expect *exp_reply);
+	void (*expectfn)(struct nf_conn *ct,
+			 struct nf_conntrack_expect *exp);
+};
+
+extern const struct nf_nat_pptp_hook __rcu *nf_nat_pptp_hook;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _NF_CONNTRACK_PPTP_H */

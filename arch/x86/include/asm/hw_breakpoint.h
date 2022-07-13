@@ -1,7 +1,16 @@
+<<<<<<< HEAD
 #ifndef	_I386_HW_BREAKPOINT_H
 #define	_I386_HW_BREAKPOINT_H
 
 #ifdef	__KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef	_I386_HW_BREAKPOINT_H
+#define	_I386_HW_BREAKPOINT_H
+
+#include <uapi/asm/hw_breakpoint.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	__ARCH_HW_BREAKPOINT_H
 
 /*
@@ -11,6 +20,10 @@
  */
 struct arch_hw_breakpoint {
 	unsigned long	address;
+<<<<<<< HEAD
+=======
+	unsigned long	mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8		len;
 	u8		type;
 };
@@ -41,6 +54,7 @@ struct arch_hw_breakpoint {
 /* Total number of available HW breakpoint registers */
 #define HBP_NUM 4
 
+<<<<<<< HEAD
 static inline int hw_breakpoint_slots(int type)
 {
 	return HBP_NUM;
@@ -51,6 +65,18 @@ struct pmu;
 
 extern int arch_check_bp_in_kernelspace(struct perf_event *bp);
 extern int arch_validate_hwbkpt_settings(struct perf_event *bp);
+=======
+#define hw_breakpoint_slots(type) (HBP_NUM)
+
+struct perf_event_attr;
+struct perf_event;
+struct pmu;
+
+extern int arch_check_bp_in_kernelspace(struct arch_hw_breakpoint *hw);
+extern int hw_breakpoint_arch_parse(struct perf_event *bp,
+				    const struct perf_event_attr *attr,
+				    struct arch_hw_breakpoint *hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int hw_breakpoint_exceptions_notify(struct notifier_block *unused,
 					   unsigned long val, void *data);
 
@@ -71,6 +97,10 @@ extern int arch_bp_generic_fields(int x86_len, int x86_type,
 
 extern struct pmu perf_ops_bp;
 
+<<<<<<< HEAD
 #endif	/* __KERNEL__ */
 #endif	/* _I386_HW_BREAKPOINT_H */
 
+=======
+#endif	/* _I386_HW_BREAKPOINT_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

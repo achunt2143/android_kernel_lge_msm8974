@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NinjaSCSI-32Bi Cardbus, NinjaSCSI-32UDE PCI/CardBus SCSI driver
  * Copyright (C) 2001, 2002, 2003
  *      YOKOTA Hiroshi <yokota@netlab.is.tsukuba.ac.jp>
  *      GOTO Masanori <gotom@debian.or.jp>, <gotom@debian.org>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
@@ -15,6 +20,8 @@
  * GNU General Public License for more details.
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Revision History:
  *   1.0: Initial Release.
  *   1.1: Add /proc SDTR status.
@@ -76,7 +83,11 @@ static const char *nsp32_release_version = "1.2";
 /****************************************************************************
  * Supported hardware
  */
+<<<<<<< HEAD
 static struct pci_device_id nsp32_pci_table[] __devinitdata = {
+=======
+static struct pci_device_id nsp32_pci_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.vendor      = PCI_VENDOR_ID_IODATA,
 		.device      = PCI_DEVICE_ID_NINJASCSI_32BI_CBSC_II,
@@ -186,6 +197,7 @@ static nsp32_sync_table nsp32_sync_table_pci[] = {
  * function declaration
  */
 /* module entry point */
+<<<<<<< HEAD
 static int  __devinit nsp32_probe (struct pci_dev *, const struct pci_device_id *);
 static void __devexit nsp32_remove(struct pci_dev *);
 static int  __init    init_nsp32  (void);
@@ -203,22 +215,54 @@ static int         nsp32_release     (struct Scsi_Host *);
 static int         nsp32_eh_abort     (struct scsi_cmnd *);
 static int         nsp32_eh_bus_reset (struct scsi_cmnd *);
 static int         nsp32_eh_host_reset(struct scsi_cmnd *);
+=======
+static int nsp32_probe (struct pci_dev *, const struct pci_device_id *);
+static void nsp32_remove(struct pci_dev *);
+static int  __init init_nsp32  (void);
+static void __exit exit_nsp32  (void);
+
+/* struct struct scsi_host_template */
+static int	   nsp32_show_info   (struct seq_file *, struct Scsi_Host *);
+
+static int	   nsp32_detect      (struct pci_dev *pdev);
+static int	   nsp32_queuecommand(struct Scsi_Host *, struct scsi_cmnd *);
+static const char *nsp32_info	     (struct Scsi_Host *);
+static int	   nsp32_release     (struct Scsi_Host *);
+
+/* SCSI error handler */
+static int	   nsp32_eh_abort     (struct scsi_cmnd *);
+static int	   nsp32_eh_host_reset(struct scsi_cmnd *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* generate SCSI message */
 static void nsp32_build_identify(struct scsi_cmnd *);
 static void nsp32_build_nop     (struct scsi_cmnd *);
 static void nsp32_build_reject  (struct scsi_cmnd *);
+<<<<<<< HEAD
 static void nsp32_build_sdtr    (struct scsi_cmnd *, unsigned char, unsigned char);
+=======
+static void nsp32_build_sdtr    (struct scsi_cmnd *, unsigned char,
+				 unsigned char);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SCSI message handler */
 static int  nsp32_busfree_occur(struct scsi_cmnd *, unsigned short);
 static void nsp32_msgout_occur (struct scsi_cmnd *);
+<<<<<<< HEAD
 static void nsp32_msgin_occur  (struct scsi_cmnd *, unsigned long, unsigned short);
+=======
+static void nsp32_msgin_occur  (struct scsi_cmnd *, unsigned long,
+				unsigned short);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int  nsp32_setup_sg_table    (struct scsi_cmnd *);
 static int  nsp32_selection_autopara(struct scsi_cmnd *);
 static int  nsp32_selection_autoscsi(struct scsi_cmnd *);
+<<<<<<< HEAD
 static void nsp32_scsi_done         (struct scsi_cmnd *);
+=======
+static void nsp32_scsi_done	    (struct scsi_cmnd *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int  nsp32_arbitration       (struct scsi_cmnd *, unsigned int);
 static int  nsp32_reselection       (struct scsi_cmnd *, unsigned char);
 static void nsp32_adjust_busfree    (struct scsi_cmnd *, unsigned int);
@@ -226,10 +270,20 @@ static void nsp32_restart_autoscsi  (struct scsi_cmnd *, unsigned short);
 
 /* SCSI SDTR */
 static void nsp32_analyze_sdtr       (struct scsi_cmnd *);
+<<<<<<< HEAD
 static int  nsp32_search_period_entry(nsp32_hw_data *, nsp32_target *, unsigned char);
 static void nsp32_set_async          (nsp32_hw_data *, nsp32_target *);
 static void nsp32_set_max_sync       (nsp32_hw_data *, nsp32_target *, unsigned char *, unsigned char *);
 static void nsp32_set_sync_entry     (nsp32_hw_data *, nsp32_target *, int, unsigned char);
+=======
+static int  nsp32_search_period_entry(nsp32_hw_data *, nsp32_target *,
+				      unsigned char);
+static void nsp32_set_async	     (nsp32_hw_data *, nsp32_target *);
+static void nsp32_set_max_sync       (nsp32_hw_data *, nsp32_target *,
+				      unsigned char *, unsigned char *);
+static void nsp32_set_sync_entry     (nsp32_hw_data *, nsp32_target *,
+				      int, unsigned char);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SCSI bus status handler */
 static void nsp32_wait_req    (nsp32_hw_data *, int);
@@ -245,6 +299,7 @@ static irqreturn_t do_nsp32_isr(int, void *);
 static int  nsp32hw_init(nsp32_hw_data *);
 
 /* EEPROM handler */
+<<<<<<< HEAD
 static        int  nsp32_getprom_param (nsp32_hw_data *);
 static        int  nsp32_getprom_at24  (nsp32_hw_data *);
 static        int  nsp32_getprom_c16   (nsp32_hw_data *);
@@ -255,6 +310,18 @@ static        int  nsp32_prom_read_bit (nsp32_hw_data *);
 static        void nsp32_prom_write_bit(nsp32_hw_data *, int);
 static        void nsp32_prom_set      (nsp32_hw_data *, int, int);
 static        int  nsp32_prom_get      (nsp32_hw_data *, int);
+=======
+static int  nsp32_getprom_param (nsp32_hw_data *);
+static int  nsp32_getprom_at24  (nsp32_hw_data *);
+static int  nsp32_getprom_c16   (nsp32_hw_data *);
+static void nsp32_prom_start    (nsp32_hw_data *);
+static void nsp32_prom_stop     (nsp32_hw_data *);
+static int  nsp32_prom_read     (nsp32_hw_data *, int);
+static int  nsp32_prom_read_bit (nsp32_hw_data *);
+static void nsp32_prom_write_bit(nsp32_hw_data *, int);
+static void nsp32_prom_set      (nsp32_hw_data *, int, int);
+static int  nsp32_prom_get      (nsp32_hw_data *, int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* debug/warning/info message */
 static void nsp32_message (const char *, int, char *, char *, ...);
@@ -265,15 +332,23 @@ static void nsp32_dmessage(const char *, int, int,    char *, ...);
 /*
  * max_sectors is currently limited up to 128.
  */
+<<<<<<< HEAD
 static struct scsi_host_template nsp32_template = {
 	.proc_name			= "nsp32",
 	.name				= "Workbit NinjaSCSI-32Bi/UDE",
 	.proc_info			= nsp32_proc_info,
+=======
+static const struct scsi_host_template nsp32_template = {
+	.proc_name			= "nsp32",
+	.name				= "Workbit NinjaSCSI-32Bi/UDE",
+	.show_info			= nsp32_show_info,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info				= nsp32_info,
 	.queuecommand			= nsp32_queuecommand,
 	.can_queue			= 1,
 	.sg_tablesize			= NSP32_SG_SIZE,
 	.max_sectors			= 128,
+<<<<<<< HEAD
 	.cmd_per_lun			= 1,
 	.this_id			= NSP32_HOST_SCSIID,
 	.use_clustering			= DISABLE_CLUSTERING,
@@ -281,6 +356,14 @@ static struct scsi_host_template nsp32_template = {
 	.eh_bus_reset_handler		= nsp32_eh_bus_reset,
 	.eh_host_reset_handler		= nsp32_eh_host_reset,
 /*	.highmem_io			= 1, */
+=======
+	.this_id			= NSP32_HOST_SCSIID,
+	.dma_boundary			= PAGE_SIZE - 1,
+	.eh_abort_handler		= nsp32_eh_abort,
+	.eh_host_reset_handler		= nsp32_eh_host_reset,
+/*	.highmem_io			= 1, */
+	.cmd_size			= sizeof(struct nsp32_cmd_priv),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #include "nsp32_io.h"
@@ -322,6 +405,10 @@ static struct scsi_host_template nsp32_template = {
 
 #define NSP32_DEBUG_BUF_LEN		100
 
+<<<<<<< HEAD
+=======
+__printf(4, 5)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void nsp32_message(const char *func, int line, char *type, char *fmt, ...)
 {
 	va_list args;
@@ -368,8 +455,13 @@ static void nsp32_dmessage(const char *func, int line, int mask, char *fmt, ...)
 static void nsp32_build_identify(struct scsi_cmnd *SCpnt)
 {
 	nsp32_hw_data *data = (nsp32_hw_data *)SCpnt->device->host->hostdata;
+<<<<<<< HEAD
 	int pos             = data->msgout_len;
 	int mode            = FALSE;
+=======
+	int pos		    = data->msgout_len;
+	int mode	    = FALSE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* XXX: Auto DiscPriv detection is progressing... */
 	if (disc_priv == 0) {
@@ -389,13 +481,22 @@ static void nsp32_build_sdtr(struct scsi_cmnd    *SCpnt,
 			     unsigned char offset)
 {
 	nsp32_hw_data *data = (nsp32_hw_data *)SCpnt->device->host->hostdata;
+<<<<<<< HEAD
 	int pos             = data->msgout_len;
+=======
+	int pos = data->msgout_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->msgoutbuf[pos] = EXTENDED_MESSAGE;  pos++;
 	data->msgoutbuf[pos] = EXTENDED_SDTR_LEN; pos++;
 	data->msgoutbuf[pos] = EXTENDED_SDTR;     pos++;
+<<<<<<< HEAD
 	data->msgoutbuf[pos] = period;            pos++;
 	data->msgoutbuf[pos] = offset;            pos++;
+=======
+	data->msgoutbuf[pos] = period;		  pos++;
+	data->msgoutbuf[pos] = offset;		  pos++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->msgout_len = pos;
 }
@@ -406,7 +507,11 @@ static void nsp32_build_sdtr(struct scsi_cmnd    *SCpnt,
 static void nsp32_build_nop(struct scsi_cmnd *SCpnt)
 {
 	nsp32_hw_data *data = (nsp32_hw_data *)SCpnt->device->host->hostdata;
+<<<<<<< HEAD
 	int            pos  = data->msgout_len;
+=======
+	int pos  = data->msgout_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pos != 0) {
 		nsp32_msg(KERN_WARNING,
@@ -424,12 +529,20 @@ static void nsp32_build_nop(struct scsi_cmnd *SCpnt)
 static void nsp32_build_reject(struct scsi_cmnd *SCpnt)
 {
 	nsp32_hw_data *data = (nsp32_hw_data *)SCpnt->device->host->hostdata;
+<<<<<<< HEAD
 	int            pos  = data->msgout_len;
+=======
+	int pos  = data->msgout_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->msgoutbuf[pos] = MESSAGE_REJECT; pos++;
 	data->msgout_len = pos;
 }
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * timer
  */
@@ -462,7 +575,11 @@ static int nsp32_selection_autopara(struct scsi_cmnd *SCpnt)
 	unsigned char	phase;
 	int		i, ret;
 	unsigned int	msgout;
+<<<<<<< HEAD
 	u16_le	        s;
+=======
+	u16_le		s;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nsp32_dbg(NSP32_DEBUG_AUTOSCSI, "in");
 
@@ -494,7 +611,11 @@ static int nsp32_selection_autopara(struct scsi_cmnd *SCpnt)
 			 * the sending order of the message is:
 			 *  MCNT 3: MSG#0 -> MSG#1 -> MSG#2
 			 *  MCNT 2:          MSG#1 -> MSG#2
+<<<<<<< HEAD
 			 *  MCNT 1:                   MSG#2    
+=======
+			 *  MCNT 1:                   MSG#2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			msgout >>= 8;
 			msgout |= ((unsigned int)(data->msgoutbuf[i]) << 24);
@@ -506,7 +627,12 @@ static int nsp32_selection_autopara(struct scsi_cmnd *SCpnt)
 		msgout = 0;
 	}
 
+<<<<<<< HEAD
 	// nsp_dbg(NSP32_DEBUG_AUTOSCSI, "sel time out=0x%x\n", nsp32_read2(base, SEL_TIME_OUT));
+=======
+	// nsp_dbg(NSP32_DEBUG_AUTOSCSI, "sel time out=0x%x\n",
+	// nsp32_read2(base, SEL_TIME_OUT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	// nsp32_write2(base, SEL_TIME_OUT,   SEL_TIMEOUT_TIME);
 
 	/*
@@ -532,10 +658,17 @@ static int nsp32_selection_autopara(struct scsi_cmnd *SCpnt)
 
 	/* command control */
 	param->command_control = cpu_to_le16(CLEAR_CDB_FIFO_POINTER |
+<<<<<<< HEAD
 					     AUTOSCSI_START         |
 					     AUTO_MSGIN_00_OR_04    |
 					     AUTO_MSGIN_02          |
 					     AUTO_ATN               );
+=======
+					     AUTOSCSI_START |
+					     AUTO_MSGIN_00_OR_04 |
+					     AUTO_MSGIN_02 |
+					     AUTO_ATN );
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	/* transfer control */
@@ -567,9 +700,15 @@ static int nsp32_selection_autopara(struct scsi_cmnd *SCpnt)
 	/*
 	 * transfer parameter to ASIC
 	 */
+<<<<<<< HEAD
 	nsp32_write4(base, SGT_ADR,         data->auto_paddr);
 	nsp32_write2(base, COMMAND_CONTROL, CLEAR_CDB_FIFO_POINTER |
 		                            AUTO_PARAMETER         );
+=======
+	nsp32_write4(base, SGT_ADR, data->auto_paddr);
+	nsp32_write2(base, COMMAND_CONTROL,
+		     CLEAR_CDB_FIFO_POINTER | AUTO_PARAMETER );
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check arbitration
@@ -593,7 +732,10 @@ static int nsp32_selection_autoscsi(struct scsi_cmnd *SCpnt)
 	int		status;
 	unsigned short	command	= 0;
 	unsigned int	msgout  = 0;
+<<<<<<< HEAD
 	unsigned short	execph;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		i;
 
 	nsp32_dbg(NSP32_DEBUG_AUTOSCSI, "in");
@@ -607,17 +749,29 @@ static int nsp32_selection_autoscsi(struct scsi_cmnd *SCpnt)
 	 * check bus line
 	 */
 	phase = nsp32_read1(base, SCSI_BUS_MONITOR);
+<<<<<<< HEAD
 	if(((phase & BUSMON_BSY) == 1) || (phase & BUSMON_SEL) == 1) {
+=======
+	if ((phase & BUSMON_BSY) || (phase & BUSMON_SEL)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nsp32_msg(KERN_WARNING, "bus busy");
 		SCpnt->result = DID_BUS_BUSY << 16;
 		status = 1;
 		goto out;
+<<<<<<< HEAD
         }
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * clear execph
 	 */
+<<<<<<< HEAD
 	execph = nsp32_read2(base, SCSI_EXECUTE_PHASE);
+=======
+	nsp32_read2(base, SCSI_EXECUTE_PHASE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * clear FIFO counter to set CDBs
@@ -629,13 +783,22 @@ static int nsp32_selection_autoscsi(struct scsi_cmnd *SCpnt)
 	 */
 	for (i = 0; i < SCpnt->cmd_len; i++) {
 		nsp32_write1(base, COMMAND_DATA, SCpnt->cmnd[i]);
+<<<<<<< HEAD
         }
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nsp32_dbg(NSP32_DEBUG_CDB_CONTENTS, "CDB[0]=[0x%x]", SCpnt->cmnd[0]);
 
 	/*
 	 * set SCSIOUT LATCH(initiator)/TARGET(target) (OR-ed) ID
 	 */
+<<<<<<< HEAD
 	nsp32_write1(base, SCSI_OUT_LATCH_TARGET_ID, BIT(host_id) | BIT(target));
+=======
+	nsp32_write1(base, SCSI_OUT_LATCH_TARGET_ID,
+		     BIT(host_id) | BIT(target));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * set SCSI MSGOUT REG
@@ -655,7 +818,11 @@ static int nsp32_selection_autoscsi(struct scsi_cmnd *SCpnt)
 			 * the sending order of the message is:
 			 *  MCNT 3: MSG#0 -> MSG#1 -> MSG#2
 			 *  MCNT 2:          MSG#1 -> MSG#2
+<<<<<<< HEAD
 			 *  MCNT 1:                   MSG#2    
+=======
+			 *  MCNT 1:                   MSG#2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			msgout >>= 8;
 			msgout |= ((unsigned int)(data->msgoutbuf[i]) << 24);
@@ -675,7 +842,11 @@ static int nsp32_selection_autoscsi(struct scsi_cmnd *SCpnt)
 
 	/*
 	 * set SREQ hazard killer sampling rate
+<<<<<<< HEAD
 	 * 
+=======
+	 *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * TODO: sample_rate (BASE+0F) is 0 when internal clock = 40MHz.
 	 *      check other internal clock!
 	 */
@@ -700,7 +871,12 @@ static int nsp32_selection_autoscsi(struct scsi_cmnd *SCpnt)
 	nsp32_dbg(NSP32_DEBUG_AUTOSCSI,
 		  "syncreg=0x%x, ackwidth=0x%x, sgtpaddr=0x%x, id=0x%x",
 		  nsp32_read1(base, SYNC_REG), nsp32_read1(base, ACK_WIDTH),
+<<<<<<< HEAD
 		  nsp32_read4(base, SGT_ADR), nsp32_read1(base, SCSI_OUT_LATCH_TARGET_ID));
+=======
+		  nsp32_read4(base, SGT_ADR),
+		  nsp32_read1(base, SCSI_OUT_LATCH_TARGET_ID));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nsp32_dbg(NSP32_DEBUG_AUTOSCSI, "msgout_len=%d, msgout=0x%x",
 		  data->msgout_len, msgout);
 
@@ -729,10 +905,17 @@ static int nsp32_selection_autoscsi(struct scsi_cmnd *SCpnt)
 	 * start AUTO SCSI, kick off arbitration
 	 */
 	command = (CLEAR_CDB_FIFO_POINTER |
+<<<<<<< HEAD
 		   AUTOSCSI_START         |
 		   AUTO_MSGIN_00_OR_04    |
 		   AUTO_MSGIN_02          |
 		   AUTO_ATN                );
+=======
+		   AUTOSCSI_START	  |
+		   AUTO_MSGIN_00_OR_04    |
+		   AUTO_MSGIN_02	  |
+		   AUTO_ATN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nsp32_write2(base, COMMAND_CONTROL, command);
 
 	/*
@@ -752,9 +935,15 @@ static int nsp32_selection_autoscsi(struct scsi_cmnd *SCpnt)
 
 /*
  * Arbitration Status Check
+<<<<<<< HEAD
  *	
  * Note: Arbitration counter is waited during ARBIT_GO is not lifting.
  *	 Using udelay(1) consumes CPU time and system time, but 
+=======
+ *
+ * Note: Arbitration counter is waited during ARBIT_GO is not lifting.
+ *	 Using udelay(1) consumes CPU time and system time, but
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	 arbitration delay time is defined minimal 2.4us in SCSI
  *	 specification, thus udelay works as coarse grained wait timer.
  */
@@ -789,7 +978,11 @@ static int nsp32_arbitration(struct scsi_cmnd *SCpnt, unsigned int base)
 		nsp32_dbg(NSP32_DEBUG_AUTOSCSI, "arbit timeout");
 		SCpnt->result = DID_NO_CONNECT << 16;
 		status = FALSE;
+<<<<<<< HEAD
         }
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * clear Arbit
@@ -835,7 +1028,12 @@ static int nsp32_reselection(struct scsi_cmnd *SCpnt, unsigned char newlun)
 	 * or current nexus is not existed, unexpected
 	 * reselection is occurred. Send reject message.
 	 */
+<<<<<<< HEAD
 	if (newid >= ARRAY_SIZE(data->lunt) || newlun >= ARRAY_SIZE(data->lunt[0])) {
+=======
+	if (newid >= ARRAY_SIZE(data->lunt) ||
+	    newlun >= ARRAY_SIZE(data->lunt[0])) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nsp32_msg(KERN_WARNING, "unknown id/lun");
 		return FALSE;
 	} else if(data->lunt[newid][newlun].SCpnt == NULL) {
@@ -889,7 +1087,12 @@ static int nsp32_setup_sg_table(struct scsi_cmnd *SCpnt)
 
 			if (le32_to_cpu(sgt[i].len) > 0x10000) {
 				nsp32_msg(KERN_ERR,
+<<<<<<< HEAD
 					"can't transfer over 64KB at a time, size=0x%lx", le32_to_cpu(sgt[i].len));
+=======
+					"can't transfer over 64KB at a time, "
+					"size=0x%x", le32_to_cpu(sgt[i].len));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return FALSE;
 			}
 			nsp32_dbg(NSP32_DEBUG_SGLIST,
@@ -907,18 +1110,32 @@ static int nsp32_setup_sg_table(struct scsi_cmnd *SCpnt)
 	return TRUE;
 }
 
+<<<<<<< HEAD
 static int nsp32_queuecommand_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_cmnd *))
 {
+=======
+static int nsp32_queuecommand_lck(struct scsi_cmnd *SCpnt)
+{
+	void (*done)(struct scsi_cmnd *) = scsi_done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nsp32_hw_data *data = (nsp32_hw_data *)SCpnt->device->host->hostdata;
 	nsp32_target *target;
 	nsp32_lunt   *cur_lunt;
 	int ret;
 
 	nsp32_dbg(NSP32_DEBUG_QUEUECOMMAND,
+<<<<<<< HEAD
 		  "enter. target: 0x%x LUN: 0x%x cmnd: 0x%x cmndlen: 0x%x "
 		  "use_sg: 0x%x reqbuf: 0x%lx reqlen: 0x%x",
 		  SCpnt->device->id, SCpnt->device->lun, SCpnt->cmnd[0], SCpnt->cmd_len,
 		  scsi_sg_count(SCpnt), scsi_sglist(SCpnt), scsi_bufflen(SCpnt));
+=======
+		  "enter. target: 0x%x LUN: 0x%llx cmnd: 0x%x cmndlen: 0x%x "
+		  "use_sg: 0x%x reqbuf: 0x%lx reqlen: 0x%x",
+		  SCpnt->device->id, SCpnt->device->lun, SCpnt->cmnd[0],
+		  SCpnt->cmd_len, scsi_sg_count(SCpnt), scsi_sglist(SCpnt),
+		  scsi_bufflen(SCpnt));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (data->CurrentSC != NULL) {
 		nsp32_msg(KERN_ERR, "Currentsc != NULL. Cancel this command request");
@@ -930,7 +1147,11 @@ static int nsp32_queuecommand_lck(struct scsi_cmnd *SCpnt, void (*done)(struct s
 
 	/* check target ID is not same as this initiator ID */
 	if (scmd_id(SCpnt) == SCpnt->device->host->this_id) {
+<<<<<<< HEAD
 		nsp32_dbg(NSP32_DEBUG_QUEUECOMMAND, "terget==host???");
+=======
+		nsp32_dbg(NSP32_DEBUG_QUEUECOMMAND, "target==host???");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SCpnt->result = DID_BAD_TARGET << 16;
 		done(SCpnt);
 		return 0;
@@ -946,6 +1167,7 @@ static int nsp32_queuecommand_lck(struct scsi_cmnd *SCpnt, void (*done)(struct s
 
 	show_command(SCpnt);
 
+<<<<<<< HEAD
 	SCpnt->scsi_done     = done;
 	data->CurrentSC      = SCpnt;
 	SCpnt->SCp.Status    = CHECK_CONDITION;
@@ -957,6 +1179,12 @@ static int nsp32_queuecommand_lck(struct scsi_cmnd *SCpnt, void (*done)(struct s
 	SCpnt->SCp.buffer	    = NULL;
 	SCpnt->SCp.buffers_residual = 0;
 
+=======
+	data->CurrentSC      = SCpnt;
+	nsp32_priv(SCpnt)->status = SAM_STAT_CHECK_CONDITION;
+	scsi_set_resid(SCpnt, scsi_bufflen(SCpnt));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* initialize data */
 	data->msgout_len	= 0;
 	data->msgin_len		= 0;
@@ -979,7 +1207,11 @@ static int nsp32_queuecommand_lck(struct scsi_cmnd *SCpnt, void (*done)(struct s
 	/* Build IDENTIFY */
 	nsp32_build_identify(SCpnt);
 
+<<<<<<< HEAD
 	/* 
+=======
+	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * If target is the first time to transfer after the reset
 	 * (target don't have SDTR_DONE and SDTR_INITIATOR), sync
 	 * message SDTR is needed to do synchronous transfer.
@@ -1064,9 +1296,15 @@ static int nsp32hw_init(nsp32_hw_data *data)
 		nsp32_index_write2(base, CFG_LATE_CACHE, lc_reg & 0xffff);
 	}
 
+<<<<<<< HEAD
 	nsp32_write2(base, IRQ_CONTROL,        IRQ_CONTROL_ALL_IRQ_MASK);
 	nsp32_write2(base, TRANSFER_CONTROL,   0);
 	nsp32_write4(base, BM_CNT,             0);
+=======
+	nsp32_write2(base, IRQ_CONTROL, IRQ_CONTROL_ALL_IRQ_MASK);
+	nsp32_write2(base, TRANSFER_CONTROL, 0);
+	nsp32_write4(base, BM_CNT, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nsp32_write2(base, SCSI_EXECUTE_PHASE, 0);
 
 	do {
@@ -1094,12 +1332,21 @@ static int nsp32hw_init(nsp32_hw_data *data)
 		  nsp32_index_read1(base, FIFO_EMPTY_SHLD_COUNT));
 
 	nsp32_index_write1(base, CLOCK_DIV, data->clock);
+<<<<<<< HEAD
 	nsp32_index_write1(base, BM_CYCLE,  MEMRD_CMD1 | SGT_AUTO_PARA_MEMED_CMD);
+=======
+	nsp32_index_write1(base, BM_CYCLE,
+			   MEMRD_CMD1 | SGT_AUTO_PARA_MEMED_CMD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nsp32_write1(base, PARITY_CONTROL, 0);	/* parity check is disable */
 
 	/*
 	 * initialize MISC_WRRD register
+<<<<<<< HEAD
 	 * 
+=======
+	 *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Note: Designated parameters is obeyed as following:
 	 *	MISC_SCSI_DIRECTION_DETECTOR_SELECT: It must be set.
 	 *	MISC_MASTER_TERMINATION_SELECT:      It must be set.
@@ -1114,10 +1361,17 @@ static int nsp32hw_init(nsp32_hw_data *data)
 	 */
 	nsp32_index_write2(base, MISC_WR,
 			   (SCSI_DIRECTION_DETECTOR_SELECT |
+<<<<<<< HEAD
 			    DELAYED_BMSTART                |
 			    MASTER_TERMINATION_SELECT      |
 			    BMREQ_NEGATE_TIMING_SEL        |
 			    AUTOSEL_TIMING_SEL             |
+=======
+			    DELAYED_BMSTART |
+			    MASTER_TERMINATION_SELECT |
+			    BMREQ_NEGATE_TIMING_SEL |
+			    AUTOSEL_TIMING_SEL |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    BMSTOP_CHANGE2_NONDATA_PHASE));
 
 	nsp32_index_write1(base, TERM_PWR_CONTROL, 0);
@@ -1138,6 +1392,7 @@ static int nsp32hw_init(nsp32_hw_data *data)
 	 * enable to select designated IRQ (except for
 	 * IRQSELECT_SERR, IRQSELECT_PERR, IRQSELECT_BMCNTERR)
 	 */
+<<<<<<< HEAD
 	nsp32_index_write2(base, IRQ_SELECT, IRQSELECT_TIMER_IRQ         |
 			                     IRQSELECT_SCSIRESET_IRQ     |
 			                     IRQSELECT_FIFO_SHLD_IRQ     |
@@ -1147,6 +1402,18 @@ static int nsp32hw_init(nsp32_hw_data *data)
 			                  //   IRQSELECT_BMCNTERR_IRQ      |
 			                     IRQSELECT_TARGET_ABORT_IRQ  |
 			                     IRQSELECT_MASTER_ABORT_IRQ );
+=======
+	nsp32_index_write2(base, IRQ_SELECT,
+			   IRQSELECT_TIMER_IRQ |
+			   IRQSELECT_SCSIRESET_IRQ |
+			   IRQSELECT_FIFO_SHLD_IRQ |
+			   IRQSELECT_RESELECT_IRQ |
+			   IRQSELECT_PHASE_CHANGE_IRQ |
+			   IRQSELECT_AUTO_SCSI_SEQ_IRQ |
+			   //   IRQSELECT_BMCNTERR_IRQ      |
+			   IRQSELECT_TARGET_ABORT_IRQ |
+			   IRQSELECT_MASTER_ABORT_IRQ );
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nsp32_write2(base, IRQ_CONTROL, 0);
 
 	/* PCI LED off */
@@ -1176,11 +1443,20 @@ static irqreturn_t do_nsp32_isr(int irq, void *dev_id)
 	 * IRQ check, then enable IRQ mask
 	 */
 	irq_stat = nsp32_read2(base, IRQ_STATUS);
+<<<<<<< HEAD
 	nsp32_dbg(NSP32_DEBUG_INTR, 
 		  "enter IRQ: %d, IRQstatus: 0x%x", irq, irq_stat);
 	/* is this interrupt comes from Ninja asic? */
 	if ((irq_stat & IRQSTATUS_ANY_IRQ) == 0) {
 		nsp32_dbg(NSP32_DEBUG_INTR, "shared interrupt: irq other 0x%x", irq_stat);
+=======
+	nsp32_dbg(NSP32_DEBUG_INTR,
+		  "enter IRQ: %d, IRQstatus: 0x%x", irq, irq_stat);
+	/* is this interrupt comes from Ninja asic? */
+	if ((irq_stat & IRQSTATUS_ANY_IRQ) == 0) {
+		nsp32_dbg(NSP32_DEBUG_INTR,
+			  "shared interrupt: irq other 0x%x", irq_stat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out2;
 	}
 	handled = 1;
@@ -1220,7 +1496,12 @@ static irqreturn_t do_nsp32_isr(int irq, void *dev_id)
 
 	if (SCpnt == NULL) {
 		nsp32_msg(KERN_WARNING, "SCpnt==NULL this can't be happened");
+<<<<<<< HEAD
 		nsp32_msg(KERN_WARNING, "irq_stat=0x%x trans_stat=0x%x", irq_stat, trans_stat);
+=======
+		nsp32_msg(KERN_WARNING, "irq_stat=0x%x trans_stat=0x%x",
+			  irq_stat, trans_stat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -1260,7 +1541,11 @@ static irqreturn_t do_nsp32_isr(int irq, void *dev_id)
 				 *   ---> AutoSCSI with MSGOUTreg is processed.
 				 */
 				data->msgout_len = 0;
+<<<<<<< HEAD
 			};
+=======
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			nsp32_dbg(NSP32_DEBUG_INTR, "MsgOut phase processed");
 		}
@@ -1278,6 +1563,7 @@ static irqreturn_t do_nsp32_isr(int irq, void *dev_id)
 				  "Data in/out phase processed");
 
 			/* read BMCNT, SGT pointer addr */
+<<<<<<< HEAD
 			nsp32_dbg(NSP32_DEBUG_INTR, "BMCNT=0x%lx", 
 				    nsp32_read4(base, BM_CNT));
 			nsp32_dbg(NSP32_DEBUG_INTR, "addr=0x%lx", 
@@ -1285,6 +1571,15 @@ static irqreturn_t do_nsp32_isr(int irq, void *dev_id)
 			nsp32_dbg(NSP32_DEBUG_INTR, "SACK=0x%lx", 
 				    nsp32_read4(base, SACK_CNT));
 			nsp32_dbg(NSP32_DEBUG_INTR, "SSACK=0x%lx", 
+=======
+			nsp32_dbg(NSP32_DEBUG_INTR, "BMCNT=0x%lx",
+				    nsp32_read4(base, BM_CNT));
+			nsp32_dbg(NSP32_DEBUG_INTR, "addr=0x%lx",
+				    nsp32_read4(base, SGT_ADR));
+			nsp32_dbg(NSP32_DEBUG_INTR, "SACK=0x%lx",
+				    nsp32_read4(base, SACK_CNT));
+			nsp32_dbg(NSP32_DEBUG_INTR, "SSACK=0x%lx",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    nsp32_read4(base, SAVED_SACK_CNT));
 
 			scsi_set_resid(SCpnt, 0); /* all data transferred! */
@@ -1319,7 +1614,11 @@ static irqreturn_t do_nsp32_isr(int irq, void *dev_id)
 			 * Read CSB and substitute CSB for SCpnt->result
 			 * to save status phase stutas byte.
 			 * scsi error handler checks host_byte (DID_*:
+<<<<<<< HEAD
 			 * low level driver to indicate status), then checks 
+=======
+			 * low level driver to indicate status), then checks
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * status_byte (SCSI status byte).
 			 */
 			SCpnt->result =	(int)nsp32_read1(base, SCSI_CSB_IN);
@@ -1327,7 +1626,11 @@ static irqreturn_t do_nsp32_isr(int irq, void *dev_id)
 
 		if (auto_stat & ILLEGAL_PHASE) {
 			/* Illegal phase is detected. SACK is not back. */
+<<<<<<< HEAD
 			nsp32_msg(KERN_WARNING, 
+=======
+			nsp32_msg(KERN_WARNING,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  "AUTO SCSI ILLEGAL PHASE OCCUR!!!!");
 
 			/* TODO: currently we don't have any action... bus reset? */
@@ -1375,12 +1678,21 @@ static irqreturn_t do_nsp32_isr(int irq, void *dev_id)
 		case BUSPHASE_STATUS:
 			nsp32_dbg(NSP32_DEBUG_INTR, "fifo/status");
 
+<<<<<<< HEAD
 			SCpnt->SCp.Status = nsp32_read1(base, SCSI_CSB_IN);
+=======
+			nsp32_priv(SCpnt)->status = nsp32_read1(base, SCSI_CSB_IN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			break;
 		default:
 			nsp32_dbg(NSP32_DEBUG_INTR, "fifo/other phase");
+<<<<<<< HEAD
 			nsp32_dbg(NSP32_DEBUG_INTR, "irq_stat=0x%x trans_stat=0x%x", irq_stat, trans_stat);
+=======
+			nsp32_dbg(NSP32_DEBUG_INTR, "irq_stat=0x%x trans_stat=0x%x",
+				  irq_stat, trans_stat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			show_busphase(busphase);
 			break;
 		}
@@ -1441,6 +1753,7 @@ static irqreturn_t do_nsp32_isr(int irq, void *dev_id)
 	return IRQ_RETVAL(handled);
 }
 
+<<<<<<< HEAD
 #undef SPRINTF
 #define SPRINTF(args...) \
 	do { \
@@ -1467,11 +1780,24 @@ static int nsp32_proc_info(struct Scsi_Host *host, char *buffer, char **start,
 	if (inout == TRUE) {
 		return -EINVAL;
 	}
+=======
+
+static int nsp32_show_info(struct seq_file *m, struct Scsi_Host *host)
+{
+	unsigned long     flags;
+	nsp32_hw_data    *data;
+	int		  hostno;
+	unsigned int      base;
+	unsigned char     mode_reg;
+	int		  id, speed;
+	long		  model;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hostno = host->host_no;
 	data = (nsp32_hw_data *)host->hostdata;
 	base = host->io_port;
 
+<<<<<<< HEAD
 	SPRINTF("NinjaSCSI-32 status\n\n");
 	SPRINTF("Driver version:        %s, $Revision: 1.33 $\n", nsp32_release_version);
 	SPRINTF("SCSI host No.:         %d\n",		hostno);
@@ -1480,11 +1806,27 @@ static int nsp32_proc_info(struct Scsi_Host *host, char *buffer, char **start,
 	SPRINTF("MMIO(virtual address): 0x%lx-0x%lx\n",	host->base, host->base + data->MmioLength - 1);
 	SPRINTF("sg_tablesize:          %d\n",		host->sg_tablesize);
 	SPRINTF("Chip revision:         0x%x\n",       	(nsp32_read2(base, INDEX_REG) >> 8) & 0xff);
+=======
+	seq_puts(m, "NinjaSCSI-32 status\n\n");
+	seq_printf(m, "Driver version:        %s, $Revision: 1.33 $\n",
+		   nsp32_release_version);
+	seq_printf(m, "SCSI host No.:         %d\n", hostno);
+	seq_printf(m, "IRQ:                   %d\n", host->irq);
+	seq_printf(m, "IO:                    0x%lx-0x%lx\n",
+		   host->io_port, host->io_port + host->n_io_port - 1);
+	seq_printf(m, "MMIO(virtual address): 0x%lx-0x%lx\n",
+		   host->base, host->base + data->MmioLength - 1);
+	seq_printf(m, "sg_tablesize:          %d\n",
+		   host->sg_tablesize);
+	seq_printf(m, "Chip revision:         0x%x\n",
+		   (nsp32_read2(base, INDEX_REG) >> 8) & 0xff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mode_reg = nsp32_index_read1(base, CHIP_MODE);
 	model    = data->pci_devid->driver_data;
 
 #ifdef CONFIG_PM
+<<<<<<< HEAD
 	SPRINTF("Power Management:      %s\n",          (mode_reg & OPTF) ? "yes" : "no");
 #endif
 	SPRINTF("OEM:                   %ld, %s\n",     (mode_reg & (OEM0|OEM1)), nsp32_model[model]);
@@ -1501,10 +1843,31 @@ static int nsp32_proc_info(struct Scsi_Host *host, char *buffer, char **start,
 
 		if (id == host->this_id) {
 			SPRINTF("----- NinjaSCSI-32 host adapter\n");
+=======
+	seq_printf(m, "Power Management:      %s\n",
+		   (mode_reg & OPTF) ? "yes" : "no");
+#endif
+	seq_printf(m, "OEM:                   %ld, %s\n",
+		   (mode_reg & (OEM0|OEM1)), nsp32_model[model]);
+
+	spin_lock_irqsave(&(data->Lock), flags);
+	seq_printf(m, "CurrentSC:             0x%p\n\n",      data->CurrentSC);
+	spin_unlock_irqrestore(&(data->Lock), flags);
+
+
+	seq_puts(m, "SDTR status\n");
+	for (id = 0; id < ARRAY_SIZE(data->target); id++) {
+
+		seq_printf(m, "id %d: ", id);
+
+		if (id == host->this_id) {
+			seq_puts(m, "----- NinjaSCSI-32 host adapter\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
 		if (data->target[id].sync_flag == SDTR_DONE) {
+<<<<<<< HEAD
 			if (data->target[id].period == 0            &&
 			    data->target[id].offset == ASYNC_OFFSET ) {
 				SPRINTF("async");
@@ -1513,18 +1876,33 @@ static int nsp32_proc_info(struct Scsi_Host *host, char *buffer, char **start,
 			}
 		} else {
 			SPRINTF(" none");
+=======
+			if (data->target[id].period == 0 &&
+			    data->target[id].offset == ASYNC_OFFSET ) {
+				seq_puts(m, "async");
+			} else {
+				seq_puts(m, " sync");
+			}
+		} else {
+			seq_puts(m, " none");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (data->target[id].period != 0) {
 
 			speed = 1000000 / (data->target[id].period * 4);
 
+<<<<<<< HEAD
 			SPRINTF(" transfer %d.%dMB/s, offset %d",
+=======
+			seq_printf(m, " transfer %d.%dMB/s, offset %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				speed / 1000,
 				speed % 1000,
 				data->target[id].offset
 				);
 		}
+<<<<<<< HEAD
 		SPRINTF("\n");
 	}
 
@@ -1543,6 +1921,12 @@ static int nsp32_proc_info(struct Scsi_Host *host, char *buffer, char **start,
 	return thislength;
 }
 #undef SPRINTF
+=======
+		seq_putc(m, '\n');
+	}
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
@@ -1561,20 +1945,35 @@ static void nsp32_scsi_done(struct scsi_cmnd *SCpnt)
 	 * clear TRANSFERCONTROL_BM_START
 	 */
 	nsp32_write2(base, TRANSFER_CONTROL, 0);
+<<<<<<< HEAD
 	nsp32_write4(base, BM_CNT,           0);
+=======
+	nsp32_write4(base, BM_CNT, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * call scsi_done
 	 */
+<<<<<<< HEAD
 	(*SCpnt->scsi_done)(SCpnt);
+=======
+	scsi_done(SCpnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * reset parameters
 	 */
+<<<<<<< HEAD
 	data->cur_lunt->SCpnt = NULL;
 	data->cur_lunt        = NULL;
 	data->cur_target      = NULL;
 	data->CurrentSC      = NULL;
+=======
+	data->cur_lunt->SCpnt	= NULL;
+	data->cur_lunt		= NULL;
+	data->cur_target	= NULL;
+	data->CurrentSC		= NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1585,7 +1984,11 @@ static void nsp32_scsi_done(struct scsi_cmnd *SCpnt)
  * with ACK reply when below condition is matched:
  *	MsgIn 00: Command Complete.
  *	MsgIn 02: Save Data Pointer.
+<<<<<<< HEAD
  *	MsgIn 04: Diconnect.
+=======
+ *	MsgIn 04: Disconnect.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * In other case, unexpected BUSFREE is detected.
  */
 static int nsp32_busfree_occur(struct scsi_cmnd *SCpnt, unsigned short execph)
@@ -1596,7 +1999,11 @@ static int nsp32_busfree_occur(struct scsi_cmnd *SCpnt, unsigned short execph)
 	nsp32_dbg(NSP32_DEBUG_BUSFREE, "enter execph=0x%x", execph);
 	show_autophase(execph);
 
+<<<<<<< HEAD
 	nsp32_write4(base, BM_CNT,           0);
+=======
+	nsp32_write4(base, BM_CNT, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nsp32_write2(base, TRANSFER_CONTROL, 0);
 
 	/*
@@ -1604,7 +2011,11 @@ static int nsp32_busfree_occur(struct scsi_cmnd *SCpnt, unsigned short execph)
 	 *
 	 * VALID:
 	 *   Save Data Pointer is received. Adjust pointer.
+<<<<<<< HEAD
 	 *   
+=======
+	 *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * NO-VALID:
 	 *   SCSI-3 says if Save Data Pointer is not received, then we restart
 	 *   processing and we can't adjust any SCSI data pointer in next data
@@ -1617,7 +2028,11 @@ static int nsp32_busfree_occur(struct scsi_cmnd *SCpnt, unsigned short execph)
 		 * Check sack_cnt/saved_sack_cnt, then adjust sg table if
 		 * needed.
 		 */
+<<<<<<< HEAD
 		if (!(execph & MSGIN_00_VALID) && 
+=======
+		if (!(execph & MSGIN_00_VALID) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    ((execph & DATA_IN_PHASE) || (execph & DATA_OUT_PHASE))) {
 			unsigned int sacklen, s_sacklen;
 
@@ -1660,7 +2075,11 @@ static int nsp32_busfree_occur(struct scsi_cmnd *SCpnt, unsigned short execph)
 		 * no processing.
 		 */
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (execph & MSGIN_03_VALID) {
 		/* MsgIn03 was valid to be processed. No need processing. */
 	}
@@ -1682,7 +2101,11 @@ static int nsp32_busfree_occur(struct scsi_cmnd *SCpnt, unsigned short execph)
 		 * negotiating.
 		 */
 		if (execph & (MSGIN_00_VALID | MSGIN_04_VALID)) {
+<<<<<<< HEAD
 			/* 
+=======
+			/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * If valid message is received, then
 			 * negotiation is succeeded.
 			 */
@@ -1708,6 +2131,7 @@ static int nsp32_busfree_occur(struct scsi_cmnd *SCpnt, unsigned short execph)
 		/* MsgIn 00: Command Complete */
 		nsp32_dbg(NSP32_DEBUG_BUSFREE, "command complete");
 
+<<<<<<< HEAD
 		SCpnt->SCp.Status  = nsp32_read1(base, SCSI_CSB_IN);
 		SCpnt->SCp.Message = 0;
 		nsp32_dbg(NSP32_DEBUG_BUSFREE, 
@@ -1716,22 +2140,38 @@ static int nsp32_busfree_occur(struct scsi_cmnd *SCpnt, unsigned short execph)
 		SCpnt->result = (DID_OK             << 16) |
 			        (SCpnt->SCp.Message <<  8) |
 			        (SCpnt->SCp.Status  <<  0);
+=======
+		nsp32_priv(SCpnt)->status  = nsp32_read1(base, SCSI_CSB_IN);
+		nsp32_dbg(NSP32_DEBUG_BUSFREE,
+			  "normal end stat=0x%x resid=0x%x\n",
+			  nsp32_priv(SCpnt)->status, scsi_get_resid(SCpnt));
+		SCpnt->result = (DID_OK << 16) |
+			(nsp32_priv(SCpnt)->status << 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nsp32_scsi_done(SCpnt);
 		/* All operation is done */
 		return TRUE;
 	} else if (execph & MSGIN_04_VALID) {
 		/* MsgIn 04: Disconnect */
+<<<<<<< HEAD
 		SCpnt->SCp.Status  = nsp32_read1(base, SCSI_CSB_IN);
 		SCpnt->SCp.Message = 4;
 		
+=======
+		nsp32_priv(SCpnt)->status = nsp32_read1(base, SCSI_CSB_IN);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nsp32_dbg(NSP32_DEBUG_BUSFREE, "disconnect");
 		return TRUE;
 	} else {
 		/* Unexpected bus free */
 		nsp32_msg(KERN_WARNING, "unexpected bus free occurred");
 
+<<<<<<< HEAD
 		/* DID_ERROR? */
 		//SCpnt->result   = (DID_OK << 16) | (SCpnt->SCp.Message << 8) | (SCpnt->SCp.Status << 0);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SCpnt->result = DID_ERROR << 16;
 		nsp32_scsi_done(SCpnt);
 		return TRUE;
@@ -1749,12 +2189,21 @@ static int nsp32_busfree_occur(struct scsi_cmnd *SCpnt, unsigned short execph)
 static void nsp32_adjust_busfree(struct scsi_cmnd *SCpnt, unsigned int s_sacklen)
 {
 	nsp32_hw_data *data = (nsp32_hw_data *)SCpnt->device->host->hostdata;
+<<<<<<< HEAD
 	int                   old_entry = data->cur_entry;
 	int                   new_entry;
 	int                   sg_num = data->cur_lunt->sg_num;
 	nsp32_sgtable *sgt    = data->cur_lunt->sglun->sgt;
 	unsigned int          restlen, sentlen;
 	u32_le                len, addr;
+=======
+	int old_entry = data->cur_entry;
+	int new_entry;
+	int sg_num = data->cur_lunt->sg_num;
+	nsp32_sgtable *sgt = data->cur_lunt->sglun->sgt;
+	unsigned int restlen, sentlen;
+	u32_le len, addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nsp32_dbg(NSP32_DEBUG_SGLIST, "old resid=0x%x", scsi_get_resid(SCpnt));
 
@@ -1762,7 +2211,11 @@ static void nsp32_adjust_busfree(struct scsi_cmnd *SCpnt, unsigned int s_sacklen
 	s_sacklen -= le32_to_cpu(sgt[old_entry].addr) & 3;
 
 	/*
+<<<<<<< HEAD
 	 * calculate new_entry from sack count and each sgt[].len 
+=======
+	 * calculate new_entry from sack count and each sgt[].len
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * calculate the byte which is intent to send
 	 */
 	sentlen = 0;
@@ -1780,8 +2233,15 @@ static void nsp32_adjust_busfree(struct scsi_cmnd *SCpnt, unsigned int s_sacklen
 
 	if (sentlen == s_sacklen) {
 		/* XXX: confirm it's ok or not */
+<<<<<<< HEAD
 		/* In this case, it's ok because we are at 
 		   the head element of the sg. restlen is correctly calculated. */
+=======
+		/* In this case, it's ok because we are at
+		 * the head element of the sg. restlen is correctly
+		 * calculated.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* calculate the rest length for transferring */
@@ -1796,7 +2256,11 @@ static void nsp32_adjust_busfree(struct scsi_cmnd *SCpnt, unsigned int s_sacklen
 
 	/* set cur_entry with new_entry */
 	data->cur_entry = new_entry;
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
  last:
@@ -1823,10 +2287,15 @@ static void nsp32_msgout_occur(struct scsi_cmnd *SCpnt)
 {
 	nsp32_hw_data *data = (nsp32_hw_data *)SCpnt->device->host->hostdata;
 	unsigned int base   = SCpnt->device->host->io_port;
+<<<<<<< HEAD
 	//unsigned short command;
 	long new_sgtp;
 	int i;
 	
+=======
+	int i;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nsp32_dbg(NSP32_DEBUG_MSGOUTOCCUR,
 		  "enter: msgout_len: 0x%x", data->msgout_len);
 
@@ -1839,6 +2308,7 @@ static void nsp32_msgout_occur(struct scsi_cmnd *SCpnt)
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Set SGTP ADDR current entry for restarting AUTOSCSI, 
 	 * because SGTP is incremented next point.
 	 * There is few statement in the specification...
@@ -1847,6 +2317,8 @@ static void nsp32_msgout_occur(struct scsi_cmnd *SCpnt)
 		   (data->cur_lunt->cur_entry * sizeof(nsp32_sgtable));
 
 	/*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * send messages
 	 */
 	for (i = 0; i < data->msgout_len; i++) {
@@ -1868,10 +2340,17 @@ static void nsp32_msgout_occur(struct scsi_cmnd *SCpnt)
 			//nsp32_restart_autoscsi(SCpnt, command);
 			nsp32_write2(base, COMMAND_CONTROL,
 					 (CLEAR_CDB_FIFO_POINTER |
+<<<<<<< HEAD
 					  AUTO_COMMAND_PHASE     |
 					  AUTOSCSI_RESTART       |
 					  AUTO_MSGIN_00_OR_04    |
 					  AUTO_MSGIN_02          ));
+=======
+					  AUTO_COMMAND_PHASE |
+					  AUTOSCSI_RESTART |
+					  AUTO_MSGIN_00_OR_04 |
+					  AUTO_MSGIN_02 ));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/*
 		 * Write data with SACK, then wait sack is
@@ -1882,7 +2361,11 @@ static void nsp32_msgout_occur(struct scsi_cmnd *SCpnt)
 
 		nsp32_dbg(NSP32_DEBUG_MSGOUTOCCUR, "bus: 0x%x\n",
 			  nsp32_read1(base, SCSI_BUS_MONITOR));
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->msgout_len = 0;
 
@@ -1971,9 +2454,15 @@ static void nsp32_msgin_occur(struct scsi_cmnd     *SCpnt,
 	unsigned char  msgtype;
 	unsigned char  newlun;
 	unsigned short command  = 0;
+<<<<<<< HEAD
 	int            msgclear = TRUE;
 	long           new_sgtp;
 	int            ret;
+=======
+	int	       msgclear = TRUE;
+	long	       new_sgtp;
+	int	       ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * read first message
@@ -2013,7 +2502,11 @@ static void nsp32_msgin_occur(struct scsi_cmnd     *SCpnt,
 			goto reject;
 		}
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * processing messages except for IDENTIFY
 	 *
@@ -2029,10 +2522,17 @@ static void nsp32_msgin_occur(struct scsi_cmnd     *SCpnt,
 		 * These messages should not be occurred.
 		 * They should be processed on AutoSCSI sequencer.
 		 */
+<<<<<<< HEAD
 		nsp32_msg(KERN_WARNING, 
 			   "unexpected message of AutoSCSI MsgIn: 0x%x", msg);
 		break;
 		
+=======
+		nsp32_msg(KERN_WARNING,
+			   "unexpected message of AutoSCSI MsgIn: 0x%x", msg);
+		break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case RESTORE_POINTERS:
 		/*
 		 * AutoMsgIn03 is disabled, and HBA gets this message.
@@ -2058,7 +2558,11 @@ static void nsp32_msgin_occur(struct scsi_cmnd     *SCpnt,
 		/*
 		 * set new sg pointer
 		 */
+<<<<<<< HEAD
 		new_sgtp = data->cur_lunt->sglun_paddr + 
+=======
+		new_sgtp = data->cur_lunt->sglun_paddr +
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(data->cur_lunt->cur_entry * sizeof(nsp32_sgtable));
 		nsp32_write4(base, SGT_ADR, new_sgtp);
 
@@ -2069,6 +2573,7 @@ static void nsp32_msgin_occur(struct scsi_cmnd     *SCpnt,
 		 * These messages should not be occurred.
 		 * They should be processed on AutoSCSI sequencer.
 		 */
+<<<<<<< HEAD
 		nsp32_msg (KERN_WARNING, 
 			   "unexpected message of AutoSCSI MsgIn: SAVE_POINTERS");
 		
@@ -2076,6 +2581,15 @@ static void nsp32_msgin_occur(struct scsi_cmnd     *SCpnt,
 		
 	case MESSAGE_REJECT:
 		/* If previous message_out is sending SDTR, and get 
+=======
+		nsp32_msg (KERN_WARNING,
+			   "unexpected message of AutoSCSI MsgIn: SAVE_POINTERS");
+
+		break;
+
+	case MESSAGE_REJECT:
+		/* If previous message_out is sending SDTR, and get
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   message_reject from target, SDTR negotiation is failed */
 		if (data->cur_target->sync_flag &
 				(SDTR_INITIATOR | SDTR_TARGET)) {
@@ -2094,7 +2608,11 @@ static void nsp32_msgin_occur(struct scsi_cmnd     *SCpnt,
 	case LINKED_CMD_COMPLETE:
 	case LINKED_FLG_CMD_COMPLETE:
 		/* queue tag is not supported currently */
+<<<<<<< HEAD
 		nsp32_msg (KERN_WARNING, 
+=======
+		nsp32_msg (KERN_WARNING,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   "unsupported message: 0x%x", msgtype);
 		break;
 
@@ -2147,7 +2665,11 @@ static void nsp32_msgin_occur(struct scsi_cmnd     *SCpnt,
 		}
 
 		/*
+<<<<<<< HEAD
 		 * Reach here means regular length of each type of 
+=======
+		 * Reach here means regular length of each type of
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * extended messages.
 		 */
 		switch (data->msginbuf[2]) {
@@ -2182,12 +2704,20 @@ static void nsp32_msgin_occur(struct scsi_cmnd     *SCpnt,
 			goto reject; /* not implemented yet */
 
 			break;
+<<<<<<< HEAD
 			
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			goto reject;
 		}
 		break;
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		goto reject;
 	}
@@ -2203,7 +2733,11 @@ static void nsp32_msgin_occur(struct scsi_cmnd     *SCpnt,
 		 * AutoSCSI restart, at the same time MsgOutOccur should be
 		 * happened (however, such situation is really possible...?).
 		 */
+<<<<<<< HEAD
 		if (data->msgout_len > 0) {	
+=======
+		if (data->msgout_len > 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nsp32_write4(base, SCSI_MSG_OUT, 0);
 			command |= AUTO_ATN;
 		}
@@ -2245,7 +2779,11 @@ static void nsp32_msgin_occur(struct scsi_cmnd     *SCpnt,
 	return;
 
  reject:
+<<<<<<< HEAD
 	nsp32_msg(KERN_WARNING, 
+=======
+	nsp32_msg(KERN_WARNING,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  "invalid or unsupported MessageIn, rejected. "
 		  "current msg: 0x%x (len: 0x%x), processing msg: 0x%x",
 		  msg, data->msgin_len, msgtype);
@@ -2256,11 +2794,16 @@ static void nsp32_msgin_occur(struct scsi_cmnd     *SCpnt,
 }
 
 /*
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void nsp32_analyze_sdtr(struct scsi_cmnd *SCpnt)
 {
 	nsp32_hw_data   *data = (nsp32_hw_data *)SCpnt->device->host->hostdata;
+<<<<<<< HEAD
 	nsp32_target     *target     = data->cur_target;
 	nsp32_sync_table *synct;
 	unsigned char     get_period = data->msginbuf[3];
@@ -2273,20 +2816,39 @@ static void nsp32_analyze_sdtr(struct scsi_cmnd *SCpnt)
 	synct   = data->synct;
 	syncnum = data->syncnum;
 
+=======
+	nsp32_target    *target     = data->cur_target;
+	unsigned char    get_period = data->msginbuf[3];
+	unsigned char    get_offset = data->msginbuf[4];
+	int		 entry;
+
+	nsp32_dbg(NSP32_DEBUG_MSGINOCCUR, "enter");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If this inititor sent the SDTR message, then target responds SDTR,
 	 * initiator SYNCREG, ACKWIDTH from SDTR parameter.
 	 * Messages are not appropriate, then send back reject message.
+<<<<<<< HEAD
 	 * If initiator did not send the SDTR, but target sends SDTR, 
 	 * initiator calculator the appropriate parameter and send back SDTR.
 	 */	
+=======
+	 * If initiator did not send the SDTR, but target sends SDTR,
+	 * initiator calculator the appropriate parameter and send back SDTR.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (target->sync_flag & SDTR_INITIATOR) {
 		/*
 		 * Initiator sent SDTR, the target responds and
 		 * send back negotiation SDTR.
 		 */
 		nsp32_dbg(NSP32_DEBUG_MSGINOCCUR, "target responds SDTR");
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		target->sync_flag &= ~SDTR_INITIATOR;
 		target->sync_flag |= SDTR_DONE;
 
@@ -2300,7 +2862,11 @@ static void nsp32_analyze_sdtr(struct scsi_cmnd *SCpnt)
 			 */
 			goto reject;
 		}
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (get_offset == ASYNC_OFFSET) {
 			/*
 			 * Negotiation is succeeded, the target want
@@ -2331,7 +2897,11 @@ static void nsp32_analyze_sdtr(struct scsi_cmnd *SCpnt)
 
 		if (entry < 0) {
 			/*
+<<<<<<< HEAD
 			 * Target want to use long period which is not 
+=======
+			 * Target want to use long period which is not
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * acceptable NinjaSCSI-32Bi/UDE.
 			 */
 			goto reject;
@@ -2344,7 +2914,11 @@ static void nsp32_analyze_sdtr(struct scsi_cmnd *SCpnt)
 	} else {
 		/* Target send SDTR to initiator. */
 		nsp32_dbg(NSP32_DEBUG_MSGINOCCUR, "target send SDTR");
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		target->sync_flag |= SDTR_INITIATOR;
 
 		/* offset: */
@@ -2467,14 +3041,21 @@ static void nsp32_set_max_sync(nsp32_hw_data *data,
  */
 static void nsp32_set_sync_entry(nsp32_hw_data *data,
 				 nsp32_target  *target,
+<<<<<<< HEAD
 				 int            entry,
+=======
+				 int		entry,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 unsigned char  offset)
 {
 	unsigned char period, ackwidth, sample_rate;
 
 	period      = data->synct[entry].period_num;
 	ackwidth    = data->synct[entry].ackwidth;
+<<<<<<< HEAD
 	offset      = offset;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sample_rate = data->synct[entry].sample_rate;
 
 	target->syncreg    = TO_SYNCREG(period, offset);
@@ -2497,7 +3078,11 @@ static void nsp32_set_sync_entry(nsp32_hw_data *data,
 static void nsp32_wait_req(nsp32_hw_data *data, int state)
 {
 	unsigned int  base      = data->BaseAddress;
+<<<<<<< HEAD
 	int           wait_time = 0;
+=======
+	int	      wait_time = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char bus, req_bit;
 
 	if (!((state == ASSERT) || (state == NEGATE))) {
@@ -2509,7 +3094,11 @@ static void nsp32_wait_req(nsp32_hw_data *data, int state)
 	do {
 		bus = nsp32_read1(base, SCSI_BUS_MONITOR);
 		if ((bus & BUSMON_REQ) == req_bit) {
+<<<<<<< HEAD
 			nsp32_dbg(NSP32_DEBUG_WAIT, 
+=======
+			nsp32_dbg(NSP32_DEBUG_WAIT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  "wait_time: %d", wait_time);
 			return;
 		}
@@ -2526,7 +3115,11 @@ static void nsp32_wait_req(nsp32_hw_data *data, int state)
 static void nsp32_wait_sack(nsp32_hw_data *data, int state)
 {
 	unsigned int  base      = data->BaseAddress;
+<<<<<<< HEAD
 	int           wait_time = 0;
+=======
+	int	      wait_time = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char bus, ack_bit;
 
 	if (!((state == ASSERT) || (state == NEGATE))) {
@@ -2591,8 +3184,13 @@ static int nsp32_detect(struct pci_dev *pdev)
 	struct Scsi_Host *host;	/* registered host structure */
 	struct resource  *res;
 	nsp32_hw_data    *data;
+<<<<<<< HEAD
 	int               ret;
 	int               i, j;
+=======
+	int		  ret;
+	int		  i, j;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nsp32_dbg(NSP32_DEBUG_REGISTER, "enter");
 
@@ -2669,9 +3267,15 @@ static int nsp32_detect(struct pci_dev *pdev)
 	 */
 
 	/*
+<<<<<<< HEAD
 	 * setup DMA 
 	 */
 	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32)) != 0) {
+=======
+	 * setup DMA
+	 */
+	if (dma_set_mask(&pdev->dev, DMA_BIT_MASK(32)) != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nsp32_msg (KERN_ERR, "failed to set PCI DMA mask");
 		goto scsi_unregister;
 	}
@@ -2679,7 +3283,13 @@ static int nsp32_detect(struct pci_dev *pdev)
 	/*
 	 * allocate autoparam DMA resource.
 	 */
+<<<<<<< HEAD
 	data->autoparam = pci_alloc_consistent(pdev, sizeof(nsp32_autoparam), &(data->auto_paddr));
+=======
+	data->autoparam = dma_alloc_coherent(&pdev->dev,
+			sizeof(nsp32_autoparam), &(data->auto_paddr),
+			GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data->autoparam == NULL) {
 		nsp32_msg(KERN_ERR, "failed to allocate DMA memory");
 		goto scsi_unregister;
@@ -2688,8 +3298,13 @@ static int nsp32_detect(struct pci_dev *pdev)
 	/*
 	 * allocate scatter-gather DMA resource.
 	 */
+<<<<<<< HEAD
 	data->sg_list = pci_alloc_consistent(pdev, NSP32_SG_TABLE_SIZE,
 					     &(data->sg_paddr));
+=======
+	data->sg_list = dma_alloc_coherent(&pdev->dev, NSP32_SG_TABLE_SIZE,
+			&data->sg_paddr, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data->sg_list == NULL) {
 		nsp32_msg(KERN_ERR, "failed to allocate DMA memory");
 		goto free_autoparam;
@@ -2767,16 +3382,28 @@ static int nsp32_detect(struct pci_dev *pdev)
 		goto free_sg_list;
 	}
 
+<<<<<<< HEAD
         /*
+=======
+	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
          * PCI IO register
          */
 	res = request_region(host->io_port, host->n_io_port, "nsp32");
 	if (res == NULL) {
+<<<<<<< HEAD
 		nsp32_msg(KERN_ERR, 
 			  "I/O region 0x%lx+0x%lx is already used",
 			  data->BaseAddress, data->NumAddress);
 		goto free_irq;
         }
+=======
+		nsp32_msg(KERN_ERR,
+			  "I/O region 0x%x+0x%x is already used",
+			  data->BaseAddress, data->NumAddress);
+		goto free_irq;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = scsi_add_host(host, &pdev->dev);
 	if (ret) {
@@ -2794,6 +3421,7 @@ static int nsp32_detect(struct pci_dev *pdev)
 	free_irq(host->irq, data);
 
  free_sg_list:
+<<<<<<< HEAD
 	pci_free_consistent(pdev, NSP32_SG_TABLE_SIZE,
 			    data->sg_list, data->sg_paddr);
 
@@ -2801,6 +3429,15 @@ static int nsp32_detect(struct pci_dev *pdev)
 	pci_free_consistent(pdev, sizeof(nsp32_autoparam),
 			    data->autoparam, data->auto_paddr);
 	
+=======
+	dma_free_coherent(&pdev->dev, NSP32_SG_TABLE_SIZE,
+			    data->sg_list, data->sg_paddr);
+
+ free_autoparam:
+	dma_free_coherent(&pdev->dev, sizeof(nsp32_autoparam),
+			    data->autoparam, data->auto_paddr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  scsi_unregister:
 	scsi_host_put(host);
 
@@ -2813,12 +3450,20 @@ static int nsp32_release(struct Scsi_Host *host)
 	nsp32_hw_data *data = (nsp32_hw_data *)host->hostdata;
 
 	if (data->autoparam) {
+<<<<<<< HEAD
 		pci_free_consistent(data->Pci, sizeof(nsp32_autoparam),
+=======
+		dma_free_coherent(&data->Pci->dev, sizeof(nsp32_autoparam),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    data->autoparam, data->auto_paddr);
 	}
 
 	if (data->sg_list) {
+<<<<<<< HEAD
 		pci_free_consistent(data->Pci, NSP32_SG_TABLE_SIZE,
+=======
+		dma_free_coherent(&data->Pci->dev, NSP32_SG_TABLE_SIZE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    data->sg_list, data->sg_paddr);
 	}
 
@@ -2867,7 +3512,11 @@ static int nsp32_eh_abort(struct scsi_cmnd *SCpnt)
 	}
 
 	nsp32_write2(base, TRANSFER_CONTROL, 0);
+<<<<<<< HEAD
 	nsp32_write2(base, BM_CNT,           0);
+=======
+	nsp32_write2(base, BM_CNT, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SCpnt->result = DID_ABORT << 16;
 	nsp32_scsi_done(SCpnt);
@@ -2876,6 +3525,7 @@ static int nsp32_eh_abort(struct scsi_cmnd *SCpnt)
 	return SUCCESS;
 }
 
+<<<<<<< HEAD
 static int nsp32_eh_bus_reset(struct scsi_cmnd *SCpnt)
 {
 	nsp32_hw_data *data = (nsp32_hw_data *)SCpnt->device->host->hostdata;
@@ -2899,6 +3549,13 @@ static void nsp32_do_bus_reset(nsp32_hw_data *data)
 	unsigned int   base = data->BaseAddress;
 	unsigned short intrdat;
 	int i;
+=======
+static void nsp32_do_bus_reset(nsp32_hw_data *data)
+{
+	unsigned int   base = data->BaseAddress;
+	int i;
+	unsigned short __maybe_unused intrdat;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nsp32_dbg(NSP32_DEBUG_BUSRESET, "in");
 
@@ -2908,8 +3565,13 @@ static void nsp32_do_bus_reset(nsp32_hw_data *data)
 	 * clear counter
 	 */
 	nsp32_write2(base, TRANSFER_CONTROL, 0);
+<<<<<<< HEAD
 	nsp32_write4(base, BM_CNT,           0);
 	nsp32_write4(base, CLR_COUNTER,      CLRCOUNTER_ALLMASK);
+=======
+	nsp32_write4(base, BM_CNT, 0);
+	nsp32_write4(base, CLR_COUNTER, CLRCOUNTER_ALLMASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * fall back to asynchronous transfer mode
@@ -2931,7 +3593,11 @@ static void nsp32_do_bus_reset(nsp32_hw_data *data)
 	for(i = 0; i < 5; i++) {
 		intrdat = nsp32_read2(base, IRQ_STATUS); /* dummy read */
 		nsp32_dbg(NSP32_DEBUG_BUSRESET, "irq:1: 0x%x", intrdat);
+<<<<<<< HEAD
         }
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->CurrentSC = NULL;
 }
@@ -2942,7 +3608,11 @@ static int nsp32_eh_host_reset(struct scsi_cmnd *SCpnt)
 	unsigned int      base = SCpnt->device->host->io_port;
 	nsp32_hw_data    *data = (nsp32_hw_data *)host->hostdata;
 
+<<<<<<< HEAD
 	nsp32_msg(KERN_INFO, "Host Reset");	
+=======
+	nsp32_msg(KERN_INFO, "Host Reset");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nsp32_dbg(NSP32_DEBUG_BUSRESET, "SCpnt=0x%x", SCpnt);
 
 	spin_lock_irq(SCpnt->device->host->host_lock);
@@ -2968,7 +3638,12 @@ static int nsp32_getprom_param(nsp32_hw_data *data)
 {
 	int vendor = data->pci_devid->vendor;
 	int device = data->pci_devid->device;
+<<<<<<< HEAD
 	int ret, val, i;
+=======
+	int ret, i;
+	int __maybe_unused val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * EEPROM checking.
@@ -3016,13 +3691,21 @@ static int nsp32_getprom_param(nsp32_hw_data *data)
  * AT24C01A (Logitec: LHA-600S), AT24C02 (Melco Buffalo: IFC-USLP) data map:
  *
  *   ROMADDR
+<<<<<<< HEAD
  *   0x00 - 0x06 :  Device Synchronous Transfer Period (SCSI ID 0 - 6) 
+=======
+ *   0x00 - 0x06 :  Device Synchronous Transfer Period (SCSI ID 0 - 6)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *			Value 0x0: ASYNC, 0x0c: Ultra-20M, 0x19: Fast-10M
  *   0x07        :  HBA Synchronous Transfer Period
  *			Value 0: AutoSync, 1: Manual Setting
  *   0x08 - 0x0f :  Not Used? (0x0)
  *   0x10        :  Bus Termination
+<<<<<<< HEAD
  * 			Value 0: Auto[ON], 1: ON, 2: OFF
+=======
+ *			Value 0: Auto[ON], 1: ON, 2: OFF
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   0x11        :  Not Used? (0)
  *   0x12        :  Bus Reset Delay Time (0x03)
  *   0x13        :  Bootable CD Support
@@ -3030,7 +3713,11 @@ static int nsp32_getprom_param(nsp32_hw_data *data)
  *   0x14        :  Device Scan
  *			Bit   7  6  5  4  3  2  1  0
  *			      |  <----------------->
+<<<<<<< HEAD
  * 			      |    SCSI ID: Value 0: Skip, 1: YES
+=======
+ *			      |    SCSI ID: Value 0: Skip, 1: YES
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *			      |->  Value 0: ALL scan,  Value 1: Manual
  *   0x15 - 0x1b :  Not Used? (0)
  *   0x1c        :  Constant? (0x01) (clock div?)
@@ -3041,10 +3728,17 @@ static int nsp32_getprom_param(nsp32_hw_data *data)
  */
 static int nsp32_getprom_at24(nsp32_hw_data *data)
 {
+<<<<<<< HEAD
 	int           ret, i;
 	int           auto_sync;
 	nsp32_target *target;
 	int           entry;
+=======
+	int	      ret, i;
+	int	      auto_sync;
+	nsp32_target *target;
+	int	      entry;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Reset time which is designated by EEPROM.
@@ -3110,7 +3804,11 @@ static int nsp32_getprom_at24(nsp32_hw_data *data)
  * C16 110 (I-O Data: SC-NBD) data map:
  *
  *   ROMADDR
+<<<<<<< HEAD
  *   0x00 - 0x06 :  Device Synchronous Transfer Period (SCSI ID 0 - 6) 
+=======
+ *   0x00 - 0x06 :  Device Synchronous Transfer Period (SCSI ID 0 - 6)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *			Value 0x0: 20MB/S, 0x1: 10MB/S, 0x2: 5MB/S, 0x3: ASYNC
  *   0x07        :  0 (HBA Synchronous Transfer Period: Auto Sync)
  *   0x08 - 0x0f :  Not Used? (0x0)
@@ -3118,7 +3816,11 @@ static int nsp32_getprom_at24(nsp32_hw_data *data)
  *			Value 0: PIO, 1: Busmater
  *   0x11        :  Bus Reset Delay Time (0x00-0x20)
  *   0x12        :  Bus Termination
+<<<<<<< HEAD
  * 			Value 0: Disable, 1: Enable
+=======
+ *			Value 0: Disable, 1: Enable
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   0x13 - 0x19 :  Disconnection
  *			Value 0: Disable, 1: Enable
  *   0x1a - 0x7c :  Not Used? (0)
@@ -3128,9 +3830,15 @@ static int nsp32_getprom_at24(nsp32_hw_data *data)
  */
 static int nsp32_getprom_c16(nsp32_hw_data *data)
 {
+<<<<<<< HEAD
 	int           ret, i;
 	nsp32_target *target;
 	int           entry, val;
+=======
+	int	      ret, i;
+	nsp32_target *target;
+	int	      entry, val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Reset time which is designated by EEPROM.
@@ -3230,7 +3938,11 @@ static int nsp32_prom_read(nsp32_hw_data *data, int romaddr)
 	for (i = 7; i >= 0; i--) {
 		val += (nsp32_prom_read_bit(data) << i);
 	}
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* no ack */
 	nsp32_prom_write_bit(data, 1);
 
@@ -3338,7 +4050,12 @@ static int nsp32_suspend(struct pci_dev *pdev, pm_message_t state)
 {
 	struct Scsi_Host *host = pci_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	nsp32_msg(KERN_INFO, "pci-suspend: pdev=0x%p, state=%ld, slot=%s, host=0x%p", pdev, state, pci_name(pdev), host);
+=======
+	nsp32_msg(KERN_INFO, "pci-suspend: pdev=0x%p, state.event=%x, slot=%s, host=0x%p",
+		  pdev, state.event, pci_name(pdev), host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_save_state     (pdev);
 	pci_disable_device (pdev);
@@ -3354,7 +4071,12 @@ static int nsp32_resume(struct pci_dev *pdev)
 	nsp32_hw_data    *data = (nsp32_hw_data *)host->hostdata;
 	unsigned short    reg;
 
+<<<<<<< HEAD
 	nsp32_msg(KERN_INFO, "pci-resume: pdev=0x%p, slot=%s, host=0x%p", pdev, pci_name(pdev), host);
+=======
+	nsp32_msg(KERN_INFO, "pci-resume: pdev=0x%p, slot=%s, host=0x%p",
+		  pdev, pci_name(pdev), host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_power_state(pdev, PCI_D0);
 	pci_enable_wake    (pdev, PCI_D0, 0);
@@ -3382,20 +4104,32 @@ static int nsp32_resume(struct pci_dev *pdev)
 /************************************************************************
  * PCI/Cardbus probe/remove routine
  */
+<<<<<<< HEAD
 static int __devinit nsp32_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+=======
+static int nsp32_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	nsp32_hw_data *data = &nsp32_data_base;
 
 	nsp32_dbg(NSP32_DEBUG_REGISTER, "enter");
 
+<<<<<<< HEAD
         ret = pci_enable_device(pdev);
+=======
+	ret = pci_enable_device(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		nsp32_msg(KERN_ERR, "failed to enable pci device");
 		return ret;
 	}
 
+<<<<<<< HEAD
 	data->Pci         = pdev;
+=======
+	data->Pci	  = pdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->pci_devid   = id;
 	data->IrqNumber   = pdev->irq;
 	data->BaseAddress = pci_resource_start(pdev, 0);
@@ -3418,13 +4152,21 @@ static int __devinit nsp32_probe(struct pci_dev *pdev, const struct pci_device_i
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __devexit nsp32_remove(struct pci_dev *pdev)
+=======
+static void nsp32_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host = pci_get_drvdata(pdev);
 
 	nsp32_dbg(NSP32_DEBUG_REGISTER, "enter");
 
+<<<<<<< HEAD
         scsi_remove_host(host);
+=======
+	scsi_remove_host(host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nsp32_release(host);
 
@@ -3435,10 +4177,17 @@ static struct pci_driver nsp32_driver = {
 	.name		= "nsp32",
 	.id_table	= nsp32_pci_table,
 	.probe		= nsp32_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(nsp32_remove),
 #ifdef CONFIG_PM
 	.suspend	= nsp32_suspend, 
 	.resume		= nsp32_resume, 
+=======
+	.remove		= nsp32_remove,
+#ifdef CONFIG_PM
+	.suspend	= nsp32_suspend,
+	.resume		= nsp32_resume,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 

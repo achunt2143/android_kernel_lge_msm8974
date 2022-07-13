@@ -1,17 +1,30 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xfrm6_state.c: based on xfrm4_state.c
  *
  * Authors:
  *	Mitsuru KANDA @USAGI
+<<<<<<< HEAD
  * 	Kazunori MIYAZAWA @USAGI
  * 	Kunihiro Ishiguro <kunihiro@ipinfusion.com>
  * 		IPv6 support
  * 	YOSHIFUJI Hideaki @USAGI
  * 		Split up af-specific portion
+=======
+ *	Kazunori MIYAZAWA @USAGI
+ *	Kunihiro Ishiguro <kunihiro@ipinfusion.com>
+ *		IPv6 support
+ *	YOSHIFUJI Hideaki @USAGI
+ *		Split up af-specific portion
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
 #include <net/xfrm.h>
+<<<<<<< HEAD
 #include <linux/pfkeyv2.h>
 #include <linux/ipsec.h>
 #include <linux/netfilter_ipv6.h>
@@ -168,10 +181,13 @@ int xfrm6_extract_header(struct sk_buff *skb)
 
 	return 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct xfrm_state_afinfo xfrm6_state_afinfo = {
 	.family			= AF_INET6,
 	.proto			= IPPROTO_IPV6,
+<<<<<<< HEAD
 	.eth_proto		= htons(ETH_P_IPV6),
 	.owner			= THIS_MODULE,
 	.init_tempsel		= __xfrm6_init_tempsel,
@@ -183,6 +199,11 @@ static struct xfrm_state_afinfo xfrm6_state_afinfo = {
 	.extract_input		= xfrm6_extract_input,
 	.extract_output		= xfrm6_extract_output,
 	.transport_finish	= xfrm6_transport_finish,
+=======
+	.output			= xfrm6_output,
+	.transport_finish	= xfrm6_transport_finish,
+	.local_error		= xfrm6_local_error,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int __init xfrm6_state_init(void)
@@ -194,4 +215,7 @@ void xfrm6_state_fini(void)
 {
 	xfrm_state_unregister_afinfo(&xfrm6_state_afinfo);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

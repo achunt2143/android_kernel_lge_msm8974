@@ -6,7 +6,11 @@
  *
  * Spinlocks:               Mohamed Abbas           (abbas.mohamed@intel.com)
  * Lockless receive & send, fd based notify:
+<<<<<<< HEAD
  * 			    Manfred Spraul	    (manfred@colorfullife.com)
+=======
+ *			    Manfred Spraul	    (manfred@colorfullife.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Audit:                   George Wilson           (ltcgcw@us.ibm.com)
  *
@@ -18,12 +22,20 @@
 #include <linux/pagemap.h>
 #include <linux/file.h>
 #include <linux/mount.h>
+<<<<<<< HEAD
+=======
+#include <linux/fs_context.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/namei.h>
 #include <linux/sysctl.h>
 #include <linux/poll.h>
 #include <linux/mqueue.h>
 #include <linux/msg.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
+=======
+#include <linux/vmalloc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netlink.h>
 #include <linux/syscalls.h>
 #include <linux/audit.h>
@@ -34,10 +46,24 @@
 #include <linux/ipc_namespace.h>
 #include <linux/user_namespace.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/wake_q.h>
+#include <linux/sched/signal.h>
+#include <linux/sched/user.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/sock.h>
 #include "util.h"
 
+<<<<<<< HEAD
+=======
+struct mqueue_fs_context {
+	struct ipc_namespace	*ipc_ns;
+	bool			 newns;	/* Set if newly created ipc namespace */
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MQUEUE_MAGIC	0x19800202
 #define DIRENT_SIZE	20
 #define FILENT_SIZE	80
@@ -46,8 +72,78 @@
 #define RECV		1
 
 #define STATE_NONE	0
+<<<<<<< HEAD
 #define STATE_PENDING	1
 #define STATE_READY	2
+=======
+#define STATE_READY	1
+
+struct posix_msg_tree_node {
+	struct rb_node		rb_node;
+	struct list_head	msg_list;
+	int			priority;
+};
+
+/*
+ * Locking:
+ *
+ * Accesses to a message queue are synchronized by acquiring info->lock.
+ *
+ * There are two notable exceptions:
+ * - The actual wakeup of a sleeping task is performed using the wake_q
+ *   framework. info->lock is already released when wake_up_q is called.
+ * - The exit codepaths after sleeping check ext_wait_queue->state without
+ *   any locks. If it is STATE_READY, then the syscall is completed without
+ *   acquiring info->lock.
+ *
+ * MQ_BARRIER:
+ * To achieve proper release/acquire memory barrier pairing, the state is set to
+ * STATE_READY with smp_store_release(), and it is read with READ_ONCE followed
+ * by smp_acquire__after_ctrl_dep(). In addition, wake_q_add_safe() is used.
+ *
+ * This prevents the following races:
+ *
+ * 1) With the simple wake_q_add(), the task could be gone already before
+ *    the increase of the reference happens
+ * Thread A
+ *				Thread B
+ * WRITE_ONCE(wait.state, STATE_NONE);
+ * schedule_hrtimeout()
+ *				wake_q_add(A)
+ *				if (cmpxchg()) // success
+ *				   ->state = STATE_READY (reordered)
+ * <timeout returns>
+ * if (wait.state == STATE_READY) return;
+ * sysret to user space
+ * sys_exit()
+ *				get_task_struct() // UaF
+ *
+ * Solution: Use wake_q_add_safe() and perform the get_task_struct() before
+ * the smp_store_release() that does ->state = STATE_READY.
+ *
+ * 2) Without proper _release/_acquire barriers, the woken up task
+ *    could read stale data
+ *
+ * Thread A
+ *				Thread B
+ * do_mq_timedreceive
+ * WRITE_ONCE(wait.state, STATE_NONE);
+ * schedule_hrtimeout()
+ *				state = STATE_READY;
+ * <timeout returns>
+ * if (wait.state == STATE_READY) return;
+ * msg_ptr = wait.msg;		// Access to stale data!
+ *				receiver->msg = message; (reordered)
+ *
+ * Solution: use _release and _acquire barriers.
+ *
+ * 3) There is intentionally no barrier when setting current->state
+ *    to TASK_INTERRUPTIBLE: spin_unlock(&info->lock) provides the
+ *    release memory barrier, and the wakeup is triggered when holding
+ *    info->lock, i.e. spin_lock(&info->lock) provided a pairing
+ *    acquire memory barrier.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ext_wait_queue {		/* queue of sleeping tasks */
 	struct task_struct *task;
@@ -61,12 +157,25 @@ struct mqueue_inode_info {
 	struct inode vfs_inode;
 	wait_queue_head_t wait_q;
 
+<<<<<<< HEAD
 	struct msg_msg **messages;
 	struct mq_attr attr;
 
 	struct sigevent notify;
 	struct pid* notify_owner;
 	struct user_struct *user;	/* user who created, for accounting */
+=======
+	struct rb_root msg_tree;
+	struct rb_node *msg_tree_rightmost;
+	struct posix_msg_tree_node *node_cache;
+	struct mq_attr attr;
+
+	struct sigevent notify;
+	struct pid *notify_owner;
+	u32 notify_self_exec_id;
+	struct user_namespace *notify_user_ns;
+	struct ucounts *ucounts;	/* user who created, for accounting */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sock *notify_sock;
 	struct sk_buff *notify_cookie;
 
@@ -76,15 +185,26 @@ struct mqueue_inode_info {
 	unsigned long qsize; /* size of queue in memory (sum of all msgs) */
 };
 
+<<<<<<< HEAD
 static const struct inode_operations mqueue_dir_inode_operations;
 static const struct file_operations mqueue_file_operations;
 static const struct super_operations mqueue_super_ops;
+=======
+static struct file_system_type mqueue_fs_type;
+static const struct inode_operations mqueue_dir_inode_operations;
+static const struct file_operations mqueue_file_operations;
+static const struct super_operations mqueue_super_ops;
+static const struct fs_context_operations mqueue_fs_context_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void remove_notification(struct mqueue_inode_info *info);
 
 static struct kmem_cache *mqueue_inode_cachep;
 
+<<<<<<< HEAD
 static struct ctl_table_header * mq_sysctl_table;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct mqueue_inode_info *MQUEUE_I(struct inode *inode)
 {
 	return container_of(inode, struct mqueue_inode_info, vfs_inode);
@@ -108,11 +228,117 @@ static struct ipc_namespace *get_ns_from_inode(struct inode *inode)
 	return ns;
 }
 
+<<<<<<< HEAD
+=======
+/* Auxiliary functions to manipulate messages' list */
+static int msg_insert(struct msg_msg *msg, struct mqueue_inode_info *info)
+{
+	struct rb_node **p, *parent = NULL;
+	struct posix_msg_tree_node *leaf;
+	bool rightmost = true;
+
+	p = &info->msg_tree.rb_node;
+	while (*p) {
+		parent = *p;
+		leaf = rb_entry(parent, struct posix_msg_tree_node, rb_node);
+
+		if (likely(leaf->priority == msg->m_type))
+			goto insert_msg;
+		else if (msg->m_type < leaf->priority) {
+			p = &(*p)->rb_left;
+			rightmost = false;
+		} else
+			p = &(*p)->rb_right;
+	}
+	if (info->node_cache) {
+		leaf = info->node_cache;
+		info->node_cache = NULL;
+	} else {
+		leaf = kmalloc(sizeof(*leaf), GFP_ATOMIC);
+		if (!leaf)
+			return -ENOMEM;
+		INIT_LIST_HEAD(&leaf->msg_list);
+	}
+	leaf->priority = msg->m_type;
+
+	if (rightmost)
+		info->msg_tree_rightmost = &leaf->rb_node;
+
+	rb_link_node(&leaf->rb_node, parent, p);
+	rb_insert_color(&leaf->rb_node, &info->msg_tree);
+insert_msg:
+	info->attr.mq_curmsgs++;
+	info->qsize += msg->m_ts;
+	list_add_tail(&msg->m_list, &leaf->msg_list);
+	return 0;
+}
+
+static inline void msg_tree_erase(struct posix_msg_tree_node *leaf,
+				  struct mqueue_inode_info *info)
+{
+	struct rb_node *node = &leaf->rb_node;
+
+	if (info->msg_tree_rightmost == node)
+		info->msg_tree_rightmost = rb_prev(node);
+
+	rb_erase(node, &info->msg_tree);
+	if (info->node_cache)
+		kfree(leaf);
+	else
+		info->node_cache = leaf;
+}
+
+static inline struct msg_msg *msg_get(struct mqueue_inode_info *info)
+{
+	struct rb_node *parent = NULL;
+	struct posix_msg_tree_node *leaf;
+	struct msg_msg *msg;
+
+try_again:
+	/*
+	 * During insert, low priorities go to the left and high to the
+	 * right.  On receive, we want the highest priorities first, so
+	 * walk all the way to the right.
+	 */
+	parent = info->msg_tree_rightmost;
+	if (!parent) {
+		if (info->attr.mq_curmsgs) {
+			pr_warn_once("Inconsistency in POSIX message queue, "
+				     "no tree element, but supposedly messages "
+				     "should exist!\n");
+			info->attr.mq_curmsgs = 0;
+		}
+		return NULL;
+	}
+	leaf = rb_entry(parent, struct posix_msg_tree_node, rb_node);
+	if (unlikely(list_empty(&leaf->msg_list))) {
+		pr_warn_once("Inconsistency in POSIX message queue, "
+			     "empty leaf node but we haven't implemented "
+			     "lazy leaf delete!\n");
+		msg_tree_erase(leaf, info);
+		goto try_again;
+	} else {
+		msg = list_first_entry(&leaf->msg_list,
+				       struct msg_msg, m_list);
+		list_del(&msg->m_list);
+		if (list_empty(&leaf->msg_list)) {
+			msg_tree_erase(leaf, info);
+		}
+	}
+	info->attr.mq_curmsgs--;
+	info->qsize -= msg->m_ts;
+	return msg;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct inode *mqueue_get_inode(struct super_block *sb,
 		struct ipc_namespace *ipc_ns, umode_t mode,
 		struct mq_attr *attr)
 {
+<<<<<<< HEAD
 	struct user_struct *u = current_user();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *inode;
 	int ret = -ENOMEM;
 
@@ -124,11 +350,19 @@ static struct inode *mqueue_get_inode(struct super_block *sb,
 	inode->i_mode = mode;
 	inode->i_uid = current_fsuid();
 	inode->i_gid = current_fsgid();
+<<<<<<< HEAD
 	inode->i_mtime = inode->i_ctime = inode->i_atime = CURRENT_TIME;
 
 	if (S_ISREG(mode)) {
 		struct mqueue_inode_info *info;
 		unsigned long mq_bytes, mq_msg_tblsz;
+=======
+	simple_inode_init_ts(inode);
+
+	if (S_ISREG(mode)) {
+		struct mqueue_inode_info *info;
+		unsigned long mq_bytes, mq_treesize;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		inode->i_fop = &mqueue_file_operations;
 		inode->i_size = FILENT_SIZE;
@@ -139,15 +373,30 @@ static struct inode *mqueue_get_inode(struct super_block *sb,
 		INIT_LIST_HEAD(&info->e_wait_q[0].list);
 		INIT_LIST_HEAD(&info->e_wait_q[1].list);
 		info->notify_owner = NULL;
+<<<<<<< HEAD
 		info->qsize = 0;
 		info->user = NULL;	/* set when all is ok */
 		memset(&info->attr, 0, sizeof(info->attr));
 		info->attr.mq_maxmsg = ipc_ns->mq_msg_max;
 		info->attr.mq_msgsize = ipc_ns->mq_msgsize_max;
+=======
+		info->notify_user_ns = NULL;
+		info->qsize = 0;
+		info->ucounts = NULL;	/* set when all is ok */
+		info->msg_tree = RB_ROOT;
+		info->msg_tree_rightmost = NULL;
+		info->node_cache = NULL;
+		memset(&info->attr, 0, sizeof(info->attr));
+		info->attr.mq_maxmsg = min(ipc_ns->mq_msg_max,
+					   ipc_ns->mq_msg_default);
+		info->attr.mq_msgsize = min(ipc_ns->mq_msgsize_max,
+					    ipc_ns->mq_msgsize_default);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (attr) {
 			info->attr.mq_maxmsg = attr->mq_maxmsg;
 			info->attr.mq_msgsize = attr->mq_msgsize;
 		}
+<<<<<<< HEAD
 		mq_msg_tblsz = info->attr.mq_maxmsg * sizeof(struct msg_msg *);
 		info->messages = kmalloc(mq_msg_tblsz, GFP_KERNEL);
 		if (!info->messages)
@@ -169,6 +418,62 @@ static struct inode *mqueue_get_inode(struct super_block *sb,
 
 		/* all is ok */
 		info->user = get_uid(u);
+=======
+		/*
+		 * We used to allocate a static array of pointers and account
+		 * the size of that array as well as one msg_msg struct per
+		 * possible message into the queue size. That's no longer
+		 * accurate as the queue is now an rbtree and will grow and
+		 * shrink depending on usage patterns.  We can, however, still
+		 * account one msg_msg struct per message, but the nodes are
+		 * allocated depending on priority usage, and most programs
+		 * only use one, or a handful, of priorities.  However, since
+		 * this is pinned memory, we need to assume worst case, so
+		 * that means the min(mq_maxmsg, max_priorities) * struct
+		 * posix_msg_tree_node.
+		 */
+
+		ret = -EINVAL;
+		if (info->attr.mq_maxmsg <= 0 || info->attr.mq_msgsize <= 0)
+			goto out_inode;
+		if (capable(CAP_SYS_RESOURCE)) {
+			if (info->attr.mq_maxmsg > HARD_MSGMAX ||
+			    info->attr.mq_msgsize > HARD_MSGSIZEMAX)
+				goto out_inode;
+		} else {
+			if (info->attr.mq_maxmsg > ipc_ns->mq_msg_max ||
+					info->attr.mq_msgsize > ipc_ns->mq_msgsize_max)
+				goto out_inode;
+		}
+		ret = -EOVERFLOW;
+		/* check for overflow */
+		if (info->attr.mq_msgsize > ULONG_MAX/info->attr.mq_maxmsg)
+			goto out_inode;
+		mq_treesize = info->attr.mq_maxmsg * sizeof(struct msg_msg) +
+			min_t(unsigned int, info->attr.mq_maxmsg, MQ_PRIO_MAX) *
+			sizeof(struct posix_msg_tree_node);
+		mq_bytes = info->attr.mq_maxmsg * info->attr.mq_msgsize;
+		if (mq_bytes + mq_treesize < mq_bytes)
+			goto out_inode;
+		mq_bytes += mq_treesize;
+		info->ucounts = get_ucounts(current_ucounts());
+		if (info->ucounts) {
+			long msgqueue;
+
+			spin_lock(&mq_lock);
+			msgqueue = inc_rlimit_ucounts(info->ucounts, UCOUNT_RLIMIT_MSGQUEUE, mq_bytes);
+			if (msgqueue == LONG_MAX || msgqueue > rlimit(RLIMIT_MSGQUEUE)) {
+				dec_rlimit_ucounts(info->ucounts, UCOUNT_RLIMIT_MSGQUEUE, mq_bytes);
+				spin_unlock(&mq_lock);
+				put_ucounts(info->ucounts);
+				info->ucounts = NULL;
+				/* mqueue_evict_inode() releases info->messages */
+				ret = -EMFILE;
+				goto out_inode;
+			}
+			spin_unlock(&mq_lock);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (S_ISDIR(mode)) {
 		inc_nlink(inode);
 		/* Some things misbehave if size == 0 on a directory */
@@ -184,6 +489,7 @@ err:
 	return ERR_PTR(ret);
 }
 
+<<<<<<< HEAD
 static int mqueue_fill_super(struct super_block *sb, void *data, int silent)
 {
 	struct inode *inode;
@@ -191,6 +497,16 @@ static int mqueue_fill_super(struct super_block *sb, void *data, int silent)
 
 	sb->s_blocksize = PAGE_CACHE_SIZE;
 	sb->s_blocksize_bits = PAGE_CACHE_SHIFT;
+=======
+static int mqueue_fill_super(struct super_block *sb, struct fs_context *fc)
+{
+	struct inode *inode;
+	struct ipc_namespace *ns = sb->s_fs_info;
+
+	sb->s_iflags |= SB_I_NOEXEC | SB_I_NODEV;
+	sb->s_blocksize = PAGE_SIZE;
+	sb->s_blocksize_bits = PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb->s_magic = MQUEUE_MAGIC;
 	sb->s_op = &mqueue_super_ops;
 
@@ -204,6 +520,7 @@ static int mqueue_fill_super(struct super_block *sb, void *data, int silent)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dentry *mqueue_mount(struct file_system_type *fs_type,
 			 int flags, const char *dev_name,
 			 void *data)
@@ -211,11 +528,80 @@ static struct dentry *mqueue_mount(struct file_system_type *fs_type,
 	if (!(flags & MS_KERNMOUNT))
 		data = current->nsproxy->ipc_ns;
 	return mount_ns(fs_type, flags, data, mqueue_fill_super);
+=======
+static int mqueue_get_tree(struct fs_context *fc)
+{
+	struct mqueue_fs_context *ctx = fc->fs_private;
+
+	/*
+	 * With a newly created ipc namespace, we don't need to do a search
+	 * for an ipc namespace match, but we still need to set s_fs_info.
+	 */
+	if (ctx->newns) {
+		fc->s_fs_info = ctx->ipc_ns;
+		return get_tree_nodev(fc, mqueue_fill_super);
+	}
+	return get_tree_keyed(fc, mqueue_fill_super, ctx->ipc_ns);
+}
+
+static void mqueue_fs_context_free(struct fs_context *fc)
+{
+	struct mqueue_fs_context *ctx = fc->fs_private;
+
+	put_ipc_ns(ctx->ipc_ns);
+	kfree(ctx);
+}
+
+static int mqueue_init_fs_context(struct fs_context *fc)
+{
+	struct mqueue_fs_context *ctx;
+
+	ctx = kzalloc(sizeof(struct mqueue_fs_context), GFP_KERNEL);
+	if (!ctx)
+		return -ENOMEM;
+
+	ctx->ipc_ns = get_ipc_ns(current->nsproxy->ipc_ns);
+	put_user_ns(fc->user_ns);
+	fc->user_ns = get_user_ns(ctx->ipc_ns->user_ns);
+	fc->fs_private = ctx;
+	fc->ops = &mqueue_fs_context_ops;
+	return 0;
+}
+
+/*
+ * mq_init_ns() is currently the only caller of mq_create_mount().
+ * So the ns parameter is always a newly created ipc namespace.
+ */
+static struct vfsmount *mq_create_mount(struct ipc_namespace *ns)
+{
+	struct mqueue_fs_context *ctx;
+	struct fs_context *fc;
+	struct vfsmount *mnt;
+
+	fc = fs_context_for_mount(&mqueue_fs_type, SB_KERNMOUNT);
+	if (IS_ERR(fc))
+		return ERR_CAST(fc);
+
+	ctx = fc->fs_private;
+	ctx->newns = true;
+	put_ipc_ns(ctx->ipc_ns);
+	ctx->ipc_ns = get_ipc_ns(ns);
+	put_user_ns(fc->user_ns);
+	fc->user_ns = get_user_ns(ctx->ipc_ns->user_ns);
+
+	mnt = fc_mount(fc);
+	put_fs_context(fc);
+	return mnt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void init_once(void *foo)
 {
+<<<<<<< HEAD
 	struct mqueue_inode_info *p = (struct mqueue_inode_info *) foo;
+=======
+	struct mqueue_inode_info *p = foo;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inode_init_once(&p->vfs_inode);
 }
@@ -224,12 +610,17 @@ static struct inode *mqueue_alloc_inode(struct super_block *sb)
 {
 	struct mqueue_inode_info *ei;
 
+<<<<<<< HEAD
 	ei = kmem_cache_alloc(mqueue_inode_cachep, GFP_KERNEL);
+=======
+	ei = alloc_inode_sb(sb, mqueue_inode_cachep, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ei)
 		return NULL;
 	return &ei->vfs_inode;
 }
 
+<<<<<<< HEAD
 static void mqueue_i_callback(struct rcu_head *head)
 {
 	struct inode *inode = container_of(head, struct inode, i_rcu);
@@ -250,6 +641,21 @@ static void mqueue_evict_inode(struct inode *inode)
 	struct ipc_namespace *ipc_ns;
 
 	end_writeback(inode);
+=======
+static void mqueue_free_inode(struct inode *inode)
+{
+	kmem_cache_free(mqueue_inode_cachep, MQUEUE_I(inode));
+}
+
+static void mqueue_evict_inode(struct inode *inode)
+{
+	struct mqueue_inode_info *info;
+	struct ipc_namespace *ipc_ns;
+	struct msg_msg *msg, *nmsg;
+	LIST_HEAD(tmp_msg);
+
+	clear_inode(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (S_ISDIR(inode->i_mode))
 		return;
@@ -257,6 +663,7 @@ static void mqueue_evict_inode(struct inode *inode)
 	ipc_ns = get_ns_from_inode(inode);
 	info = MQUEUE_I(inode);
 	spin_lock(&info->lock);
+<<<<<<< HEAD
 	for (i = 0; i < info->attr.mq_curmsgs; i++)
 		free_msg(info->messages[i]);
 	kfree(info->messages);
@@ -269,6 +676,31 @@ static void mqueue_evict_inode(struct inode *inode)
 	if (user) {
 		spin_lock(&mq_lock);
 		user->mq_bytes -= mq_bytes;
+=======
+	while ((msg = msg_get(info)) != NULL)
+		list_add_tail(&msg->m_list, &tmp_msg);
+	kfree(info->node_cache);
+	spin_unlock(&info->lock);
+
+	list_for_each_entry_safe(msg, nmsg, &tmp_msg, m_list) {
+		list_del(&msg->m_list);
+		free_msg(msg);
+	}
+
+	if (info->ucounts) {
+		unsigned long mq_bytes, mq_treesize;
+
+		/* Total amount of bytes accounted for the mqueue */
+		mq_treesize = info->attr.mq_maxmsg * sizeof(struct msg_msg) +
+			min_t(unsigned int, info->attr.mq_maxmsg, MQ_PRIO_MAX) *
+			sizeof(struct posix_msg_tree_node);
+
+		mq_bytes = mq_treesize + (info->attr.mq_maxmsg *
+					  info->attr.mq_msgsize);
+
+		spin_lock(&mq_lock);
+		dec_rlimit_ucounts(info->ucounts, UCOUNT_RLIMIT_MSGQUEUE, mq_bytes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * get_ns_from_inode() ensures that the
 		 * (ipc_ns = sb->s_fs_info) is either a valid ipc_ns
@@ -278,17 +710,30 @@ static void mqueue_evict_inode(struct inode *inode)
 		if (ipc_ns)
 			ipc_ns->mq_queues_count--;
 		spin_unlock(&mq_lock);
+<<<<<<< HEAD
 		free_uid(user);
+=======
+		put_ucounts(info->ucounts);
+		info->ucounts = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (ipc_ns)
 		put_ipc_ns(ipc_ns);
 }
 
+<<<<<<< HEAD
 static int mqueue_create(struct inode *dir, struct dentry *dentry,
 				umode_t mode, bool excl)
 {
 	struct inode *inode;
 	struct mq_attr *attr = dentry->d_fsdata;
+=======
+static int mqueue_create_attr(struct dentry *dentry, umode_t mode, void *arg)
+{
+	struct inode *dir = dentry->d_parent->d_inode;
+	struct inode *inode;
+	struct mq_attr *attr = arg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 	struct ipc_namespace *ipc_ns;
 
@@ -298,8 +743,14 @@ static int mqueue_create(struct inode *dir, struct dentry *dentry,
 		error = -EACCES;
 		goto out_unlock;
 	}
+<<<<<<< HEAD
 	if (ipc_ns->mq_queues_count >= ipc_ns->mq_queues_max &&
 			!capable(CAP_SYS_RESOURCE)) {
+=======
+
+	if (ipc_ns->mq_queues_count >= ipc_ns->mq_queues_max &&
+	    !capable(CAP_SYS_RESOURCE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = -ENOSPC;
 		goto out_unlock;
 	}
@@ -316,7 +767,11 @@ static int mqueue_create(struct inode *dir, struct dentry *dentry,
 
 	put_ipc_ns(ipc_ns);
 	dir->i_size += DIRENT_SIZE;
+<<<<<<< HEAD
 	dir->i_ctime = dir->i_mtime = dir->i_atime = CURRENT_TIME;
+=======
+	simple_inode_init_ts(dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	d_instantiate(dentry, inode);
 	dget(dentry);
@@ -328,6 +783,7 @@ out_unlock:
 	return error;
 }
 
+<<<<<<< HEAD
 static int mqueue_unlink(struct inode *dir, struct dentry *dentry)
 {
   	struct inode *inode = dentry->d_inode;
@@ -337,6 +793,23 @@ static int mqueue_unlink(struct inode *dir, struct dentry *dentry)
   	drop_nlink(inode);
   	dput(dentry);
   	return 0;
+=======
+static int mqueue_create(struct mnt_idmap *idmap, struct inode *dir,
+			 struct dentry *dentry, umode_t mode, bool excl)
+{
+	return mqueue_create_attr(dentry, mode, NULL);
+}
+
+static int mqueue_unlink(struct inode *dir, struct dentry *dentry)
+{
+	struct inode *inode = d_inode(dentry);
+
+	simple_inode_init_ts(dir);
+	dir->i_size -= DIRENT_SIZE;
+	drop_nlink(inode);
+	dput(dentry);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -349,7 +822,12 @@ static int mqueue_unlink(struct inode *dir, struct dentry *dentry)
 static ssize_t mqueue_read_file(struct file *filp, char __user *u_data,
 				size_t count, loff_t *off)
 {
+<<<<<<< HEAD
 	struct mqueue_inode_info *info = MQUEUE_I(filp->f_path.dentry->d_inode);
+=======
+	struct inode *inode = file_inode(filp);
+	struct mqueue_inode_info *info = MQUEUE_I(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char buffer[FILENT_SIZE];
 	ssize_t ret;
 
@@ -370,13 +848,21 @@ static ssize_t mqueue_read_file(struct file *filp, char __user *u_data,
 	if (ret <= 0)
 		return ret;
 
+<<<<<<< HEAD
 	filp->f_path.dentry->d_inode->i_atime = filp->f_path.dentry->d_inode->i_ctime = CURRENT_TIME;
+=======
+	inode_set_atime_to_ts(inode, inode_set_ctime_current(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int mqueue_flush_file(struct file *filp, fl_owner_t id)
 {
+<<<<<<< HEAD
 	struct mqueue_inode_info *info = MQUEUE_I(filp->f_path.dentry->d_inode);
+=======
+	struct mqueue_inode_info *info = MQUEUE_I(file_inode(filp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&info->lock);
 	if (task_tgid(current) == info->notify_owner)
@@ -386,19 +872,33 @@ static int mqueue_flush_file(struct file *filp, fl_owner_t id)
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned int mqueue_poll_file(struct file *filp, struct poll_table_struct *poll_tab)
 {
 	struct mqueue_inode_info *info = MQUEUE_I(filp->f_path.dentry->d_inode);
 	int retval = 0;
+=======
+static __poll_t mqueue_poll_file(struct file *filp, struct poll_table_struct *poll_tab)
+{
+	struct mqueue_inode_info *info = MQUEUE_I(file_inode(filp));
+	__poll_t retval = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	poll_wait(filp, &info->wait_q, poll_tab);
 
 	spin_lock(&info->lock);
 	if (info->attr.mq_curmsgs)
+<<<<<<< HEAD
 		retval = POLLIN | POLLRDNORM;
 
 	if (info->attr.mq_curmsgs < info->attr.mq_maxmsg)
 		retval |= POLLOUT | POLLWRNORM;
+=======
+		retval = EPOLLIN | EPOLLRDNORM;
+
+	if (info->attr.mq_curmsgs < info->attr.mq_maxmsg)
+		retval |= EPOLLOUT | EPOLLWRNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&info->lock);
 
 	return retval;
@@ -410,10 +910,15 @@ static void wq_add(struct mqueue_inode_info *info, int sr,
 {
 	struct ext_wait_queue *walk;
 
+<<<<<<< HEAD
 	ewp->task = current;
 
 	list_for_each_entry(walk, &info->e_wait_q[sr].list, list) {
 		if (walk->task->static_prio <= current->static_prio) {
+=======
+	list_for_each_entry(walk, &info->e_wait_q[sr].list, list) {
+		if (walk->task->prio <= current->prio) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_add_tail(&ewp->list, &walk->list);
 			return;
 		}
@@ -428,6 +933,10 @@ static void wq_add(struct mqueue_inode_info *info, int sr,
  */
 static int wq_sleep(struct mqueue_inode_info *info, int sr,
 		    ktime_t *timeout, struct ext_wait_queue *ewp)
+<<<<<<< HEAD
+=======
+	__releases(&info->lock)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval;
 	signed long time;
@@ -435,21 +944,38 @@ static int wq_sleep(struct mqueue_inode_info *info, int sr,
 	wq_add(info, sr, ewp);
 
 	for (;;) {
+<<<<<<< HEAD
 		set_current_state(TASK_INTERRUPTIBLE);
+=======
+		/* memory barrier not required, we hold info->lock */
+		__set_current_state(TASK_INTERRUPTIBLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_unlock(&info->lock);
 		time = schedule_hrtimeout_range_clock(timeout, 0,
 			HRTIMER_MODE_ABS, CLOCK_REALTIME);
 
+<<<<<<< HEAD
 		while (ewp->state == STATE_PENDING)
 			cpu_relax();
 
 		if (ewp->state == STATE_READY) {
+=======
+		if (READ_ONCE(ewp->state) == STATE_READY) {
+			/* see MQ_BARRIER for purpose/pairing */
+			smp_acquire__after_ctrl_dep();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retval = 0;
 			goto out;
 		}
 		spin_lock(&info->lock);
+<<<<<<< HEAD
 		if (ewp->state == STATE_READY) {
+=======
+
+		/* we hold info->lock, so no memory barrier required */
+		if (READ_ONCE(ewp->state) == STATE_READY) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retval = 0;
 			goto out_unlock;
 		}
@@ -483,6 +1009,7 @@ static struct ext_wait_queue *wq_get_first_waiter(
 	return list_entry(ptr, struct ext_wait_queue, list);
 }
 
+<<<<<<< HEAD
 /* Auxiliary functions to manipulate messages' list */
 static void msg_insert(struct msg_msg *ptr, struct mqueue_inode_info *info)
 {
@@ -507,6 +1034,12 @@ static inline struct msg_msg *msg_get(struct mqueue_inode_info *info)
 static inline void set_cookie(struct sk_buff *skb, char code)
 {
 	((char*)skb->data)[NOTIFY_COOKIE_LEN-1] = code;
+=======
+
+static inline void set_cookie(struct sk_buff *skb, char code)
+{
+	((char *)skb->data)[NOTIFY_COOKIE_LEN-1] = code;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -521,6 +1054,7 @@ static void __do_notify(struct mqueue_inode_info *info)
 	 * synchronously. */
 	if (info->notify_owner &&
 	    info->attr.mq_curmsgs == 1) {
+<<<<<<< HEAD
 		struct siginfo sig_i;
 		switch (info->notify.sigev_notify) {
 		case SIGEV_NONE:
@@ -528,10 +1062,25 @@ static void __do_notify(struct mqueue_inode_info *info)
 		case SIGEV_SIGNAL:
 			/* sends signal */
 
+=======
+		switch (info->notify.sigev_notify) {
+		case SIGEV_NONE:
+			break;
+		case SIGEV_SIGNAL: {
+			struct kernel_siginfo sig_i;
+			struct task_struct *task;
+
+			/* do_mq_notify() accepts sigev_signo == 0, why?? */
+			if (!info->notify.sigev_signo)
+				break;
+
+			clear_siginfo(&sig_i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sig_i.si_signo = info->notify.sigev_signo;
 			sig_i.si_errno = 0;
 			sig_i.si_code = SI_MESGQ;
 			sig_i.si_value = info->notify.sigev_value;
+<<<<<<< HEAD
 			/* map current pid/uid into info->owner's namespaces */
 			rcu_read_lock();
 			sig_i.si_pid = task_tgid_nr_ns(current,
@@ -543,6 +1092,30 @@ static void __do_notify(struct mqueue_inode_info *info)
 			kill_pid_info(info->notify.sigev_signo,
 				      &sig_i, info->notify_owner);
 			break;
+=======
+			rcu_read_lock();
+			/* map current pid/uid into info->owner's namespaces */
+			sig_i.si_pid = task_tgid_nr_ns(current,
+						ns_of_pid(info->notify_owner));
+			sig_i.si_uid = from_kuid_munged(info->notify_user_ns,
+						current_uid());
+			/*
+			 * We can't use kill_pid_info(), this signal should
+			 * bypass check_kill_permission(). It is from kernel
+			 * but si_fromuser() can't know this.
+			 * We do check the self_exec_id, to avoid sending
+			 * signals to programs that don't expect them.
+			 */
+			task = pid_task(info->notify_owner, PIDTYPE_TGID);
+			if (task && task->self_exec_id ==
+						info->notify_self_exec_id) {
+				do_send_sig_info(info->notify.sigev_signo,
+						&sig_i, task, PIDTYPE_TGID);
+			}
+			rcu_read_unlock();
+			break;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SIGEV_THREAD:
 			set_cookie(info->notify_cookie, NOTIFY_WOKENUP);
 			netlink_sendskb(info->notify_sock, info->notify_cookie);
@@ -550,11 +1123,18 @@ static void __do_notify(struct mqueue_inode_info *info)
 		}
 		/* after notification unregisters process */
 		put_pid(info->notify_owner);
+<<<<<<< HEAD
 		info->notify_owner = NULL;
+=======
+		put_user_ns(info->notify_user_ns);
+		info->notify_owner = NULL;
+		info->notify_user_ns = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	wake_up(&info->wait_q);
 }
 
+<<<<<<< HEAD
 static int prepare_timeout(const struct timespec __user *u_abs_timeout,
 			   ktime_t *expires, struct timespec *ts)
 {
@@ -564,6 +1144,15 @@ static int prepare_timeout(const struct timespec __user *u_abs_timeout,
 		return -EINVAL;
 
 	*expires = timespec_to_ktime(*ts);
+=======
+static int prepare_timeout(const struct __kernel_timespec __user *u_abs_timeout,
+			   struct timespec64 *ts)
+{
+	if (get_timespec64(ts, u_abs_timeout))
+		return -EFAULT;
+	if (!timespec64_valid(ts))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -575,6 +1164,7 @@ static void remove_notification(struct mqueue_inode_info *info)
 		netlink_sendskb(info->notify_sock, info->notify_cookie);
 	}
 	put_pid(info->notify_owner);
+<<<<<<< HEAD
 	info->notify_owner = NULL;
 }
 
@@ -687,6 +1277,51 @@ SYSCALL_DEFINE4(mq_open, const char __user *, u_name, int, oflag, umode_t, mode,
 		return -EFAULT;
 
 	audit_mq_open(oflag, mode, u_attr ? &attr : NULL);
+=======
+	put_user_ns(info->notify_user_ns);
+	info->notify_owner = NULL;
+	info->notify_user_ns = NULL;
+}
+
+static int prepare_open(struct dentry *dentry, int oflag, int ro,
+			umode_t mode, struct filename *name,
+			struct mq_attr *attr)
+{
+	static const int oflag2acc[O_ACCMODE] = { MAY_READ, MAY_WRITE,
+						  MAY_READ | MAY_WRITE };
+	int acc;
+
+	if (d_really_is_negative(dentry)) {
+		if (!(oflag & O_CREAT))
+			return -ENOENT;
+		if (ro)
+			return ro;
+		audit_inode_parent_hidden(name, dentry->d_parent);
+		return vfs_mkobj(dentry, mode & ~current_umask(),
+				  mqueue_create_attr, attr);
+	}
+	/* it already existed */
+	audit_inode(name, dentry, 0);
+	if ((oflag & (O_CREAT|O_EXCL)) == (O_CREAT|O_EXCL))
+		return -EEXIST;
+	if ((oflag & O_ACCMODE) == (O_RDWR | O_WRONLY))
+		return -EINVAL;
+	acc = oflag2acc[oflag & O_ACCMODE];
+	return inode_permission(&nop_mnt_idmap, d_inode(dentry), acc);
+}
+
+static int do_mq_open(const char __user *u_name, int oflag, umode_t mode,
+		      struct mq_attr *attr)
+{
+	struct vfsmount *mnt = current->nsproxy->ipc_ns->mq_mnt;
+	struct dentry *root = mnt->mnt_root;
+	struct filename *name;
+	struct path path;
+	int fd, error;
+	int ro;
+
+	audit_mq_open(oflag, mode, attr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_ERR(name = getname(u_name)))
 		return PTR_ERR(name);
@@ -695,6 +1330,7 @@ SYSCALL_DEFINE4(mq_open, const char __user *, u_name, int, oflag, umode_t, mode,
 	if (fd < 0)
 		goto out_putname;
 
+<<<<<<< HEAD
 	mutex_lock(&ipc_ns->mq_mnt->mnt_root->d_inode->i_mutex);
 	dentry = lookup_one_len2(name->name, ipc_ns->mq_mnt, ipc_ns->mq_mnt->mnt_root, strlen(name));
 	if (IS_ERR(dentry)) {
@@ -741,11 +1377,51 @@ out_putfd:
 	fd = error;
 out_upsem:
 	mutex_unlock(&ipc_ns->mq_mnt->mnt_root->d_inode->i_mutex);
+=======
+	ro = mnt_want_write(mnt);	/* we'll drop it in any case */
+	inode_lock(d_inode(root));
+	path.dentry = lookup_one_len(name->name, root, strlen(name->name));
+	if (IS_ERR(path.dentry)) {
+		error = PTR_ERR(path.dentry);
+		goto out_putfd;
+	}
+	path.mnt = mntget(mnt);
+	error = prepare_open(path.dentry, oflag, ro, mode, name, attr);
+	if (!error) {
+		struct file *file = dentry_open(&path, oflag, current_cred());
+		if (!IS_ERR(file))
+			fd_install(fd, file);
+		else
+			error = PTR_ERR(file);
+	}
+	path_put(&path);
+out_putfd:
+	if (error) {
+		put_unused_fd(fd);
+		fd = error;
+	}
+	inode_unlock(d_inode(root));
+	if (!ro)
+		mnt_drop_write(mnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_putname:
 	putname(name);
 	return fd;
 }
 
+<<<<<<< HEAD
+=======
+SYSCALL_DEFINE4(mq_open, const char __user *, u_name, int, oflag, umode_t, mode,
+		struct mq_attr __user *, u_attr)
+{
+	struct mq_attr attr;
+	if (u_attr && copy_from_user(&attr, u_attr, sizeof(struct mq_attr)))
+		return -EFAULT;
+
+	return do_mq_open(u_name, oflag, mode, u_attr ? &attr : NULL);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SYSCALL_DEFINE1(mq_unlink, const char __user *, u_name)
 {
 	int err;
@@ -753,20 +1429,35 @@ SYSCALL_DEFINE1(mq_unlink, const char __user *, u_name)
 	struct dentry *dentry;
 	struct inode *inode = NULL;
 	struct ipc_namespace *ipc_ns = current->nsproxy->ipc_ns;
+<<<<<<< HEAD
+=======
+	struct vfsmount *mnt = ipc_ns->mq_mnt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	name = getname(u_name);
 	if (IS_ERR(name))
 		return PTR_ERR(name);
 
+<<<<<<< HEAD
 	mutex_lock_nested(&ipc_ns->mq_mnt->mnt_root->d_inode->i_mutex,
 			I_MUTEX_PARENT);
 	dentry = lookup_one_len2(name->name, ipc_ns->mq_mnt, ipc_ns->mq_mnt->mnt_root,
 			       strlen(name));
+=======
+	audit_inode_parent_hidden(name, mnt->mnt_root);
+	err = mnt_want_write(mnt);
+	if (err)
+		goto out_name;
+	inode_lock_nested(d_inode(mnt->mnt_root), I_MUTEX_PARENT);
+	dentry = lookup_one_len(name->name, mnt->mnt_root,
+				strlen(name->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(dentry)) {
 		err = PTR_ERR(dentry);
 		goto out_unlock;
 	}
 
+<<<<<<< HEAD
 	if (!dentry->d_inode) {
 		err = -ENOENT;
 		goto out_err;
@@ -788,6 +1479,24 @@ out_unlock:
 	putname(name);
 	if (inode)
 		iput(inode);
+=======
+	inode = d_inode(dentry);
+	if (!inode) {
+		err = -ENOENT;
+	} else {
+		ihold(inode);
+		err = vfs_unlink(&nop_mnt_idmap, d_inode(dentry->d_parent),
+				 dentry, NULL);
+	}
+	dput(dentry);
+
+out_unlock:
+	inode_unlock(d_inode(mnt->mnt_root));
+	iput(inode);
+	mnt_drop_write(mnt);
+out_name:
+	putname(name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -798,33 +1507,76 @@ out_unlock:
  * list of waiting receivers. A sender checks that list before adding the new
  * message into the message array. If there is a waiting receiver, then it
  * bypasses the message array and directly hands the message over to the
+<<<<<<< HEAD
  * receiver.
  * The receiver accepts the message and returns without grabbing the queue
  * spinlock. Therefore an intermediate STATE_PENDING state and memory barriers
  * are necessary. The same algorithm is used for sysv semaphores, see
  * ipc/sem.c for more details.
+=======
+ * receiver. The receiver accepts the message and returns without grabbing the
+ * queue spinlock:
+ *
+ * - Set pointer to message.
+ * - Queue the receiver task for later wakeup (without the info->lock).
+ * - Update its state to STATE_READY. Now the receiver can continue.
+ * - Wake up the process after the lock is dropped. Should the process wake up
+ *   before this wakeup (due to a timeout or a signal) it will either see
+ *   STATE_READY and continue or acquire the lock to check the state again.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The same algorithm is used for senders.
  */
 
+<<<<<<< HEAD
 /* pipelined_send() - send a message directly to the task waiting in
  * sys_mq_timedreceive() (without inserting message into a queue).
  */
 static inline void pipelined_send(struct mqueue_inode_info *info,
+=======
+static inline void __pipelined_op(struct wake_q_head *wake_q,
+				  struct mqueue_inode_info *info,
+				  struct ext_wait_queue *this)
+{
+	struct task_struct *task;
+
+	list_del(&this->list);
+	task = get_task_struct(this->task);
+
+	/* see MQ_BARRIER for purpose/pairing */
+	smp_store_release(&this->state, STATE_READY);
+	wake_q_add_safe(wake_q, task);
+}
+
+/* pipelined_send() - send a message directly to the task waiting in
+ * sys_mq_timedreceive() (without inserting message into a queue).
+ */
+static inline void pipelined_send(struct wake_q_head *wake_q,
+				  struct mqueue_inode_info *info,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct msg_msg *message,
 				  struct ext_wait_queue *receiver)
 {
 	receiver->msg = message;
+<<<<<<< HEAD
 	list_del(&receiver->list);
 	receiver->state = STATE_PENDING;
 	wake_up_process(receiver->task);
 	smp_wmb();
 	receiver->state = STATE_READY;
+=======
+	__pipelined_op(wake_q, info, receiver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* pipelined_receive() - if there is task waiting in sys_mq_timedsend()
  * gets its message and put to the queue (we have one free place for sure). */
+<<<<<<< HEAD
 static inline void pipelined_receive(struct mqueue_inode_info *info)
+=======
+static inline void pipelined_receive(struct wake_q_head *wake_q,
+				     struct mqueue_inode_info *info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ext_wait_queue *sender = wq_get_first_waiter(info, SEND);
 
@@ -833,6 +1585,7 @@ static inline void pipelined_receive(struct mqueue_inode_info *info)
 		wake_up_interruptible(&info->wait_q);
 		return;
 	}
+<<<<<<< HEAD
 	msg_insert(sender->msg, info);
 	list_del(&sender->list);
 	sender->state = STATE_PENDING;
@@ -846,12 +1599,26 @@ SYSCALL_DEFINE5(mq_timedsend, mqd_t, mqdes, const char __user *, u_msg_ptr,
 		const struct timespec __user *, u_abs_timeout)
 {
 	struct file *filp;
+=======
+	if (msg_insert(sender->msg, info))
+		return;
+
+	__pipelined_op(wake_q, info, sender);
+}
+
+static int do_mq_timedsend(mqd_t mqdes, const char __user *u_msg_ptr,
+		size_t msg_len, unsigned int msg_prio,
+		struct timespec64 *ts)
+{
+	struct fd f;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *inode;
 	struct ext_wait_queue wait;
 	struct ext_wait_queue *receiver;
 	struct msg_msg *msg_ptr;
 	struct mqueue_inode_info *info;
 	ktime_t expires, *timeout = NULL;
+<<<<<<< HEAD
 	struct timespec ts;
 	int ret;
 
@@ -861,27 +1628,55 @@ SYSCALL_DEFINE5(mq_timedsend, mqd_t, mqdes, const char __user *, u_msg_ptr,
 			return res;
 		timeout = &expires;
 	}
+=======
+	struct posix_msg_tree_node *new_leaf = NULL;
+	int ret = 0;
+	DEFINE_WAKE_Q(wake_q);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(msg_prio >= (unsigned long) MQ_PRIO_MAX))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	audit_mq_sendrecv(mqdes, msg_len, msg_prio, timeout ? &ts : NULL);
 
 	filp = fget(mqdes);
 	if (unlikely(!filp)) {
+=======
+	if (ts) {
+		expires = timespec64_to_ktime(*ts);
+		timeout = &expires;
+	}
+
+	audit_mq_sendrecv(mqdes, msg_len, msg_prio, ts);
+
+	f = fdget(mqdes);
+	if (unlikely(!f.file)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBADF;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	inode = filp->f_path.dentry->d_inode;
 	if (unlikely(filp->f_op != &mqueue_file_operations)) {
+=======
+	inode = file_inode(f.file);
+	if (unlikely(f.file->f_op != &mqueue_file_operations)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBADF;
 		goto out_fput;
 	}
 	info = MQUEUE_I(inode);
+<<<<<<< HEAD
 	audit_inode(NULL, filp->f_path.dentry);
 
 	if (unlikely(!(filp->f_mode & FMODE_WRITE))) {
+=======
+	audit_file(f.file);
+
+	if (unlikely(!(f.file->f_mode & FMODE_WRITE))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBADF;
 		goto out_fput;
 	}
@@ -901,15 +1696,40 @@ SYSCALL_DEFINE5(mq_timedsend, mqd_t, mqdes, const char __user *, u_msg_ptr,
 	msg_ptr->m_ts = msg_len;
 	msg_ptr->m_type = msg_prio;
 
+<<<<<<< HEAD
 	spin_lock(&info->lock);
 
 	if (info->attr.mq_curmsgs == info->attr.mq_maxmsg) {
 		if (filp->f_flags & O_NONBLOCK) {
 			spin_unlock(&info->lock);
+=======
+	/*
+	 * msg_insert really wants us to have a valid, spare node struct so
+	 * it doesn't have to kmalloc a GFP_ATOMIC allocation, but it will
+	 * fall back to that if necessary.
+	 */
+	if (!info->node_cache)
+		new_leaf = kmalloc(sizeof(*new_leaf), GFP_KERNEL);
+
+	spin_lock(&info->lock);
+
+	if (!info->node_cache && new_leaf) {
+		/* Save our speculative allocation into the cache */
+		INIT_LIST_HEAD(&new_leaf->msg_list);
+		info->node_cache = new_leaf;
+		new_leaf = NULL;
+	} else {
+		kfree(new_leaf);
+	}
+
+	if (info->attr.mq_curmsgs == info->attr.mq_maxmsg) {
+		if (f.file->f_flags & O_NONBLOCK) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EAGAIN;
 		} else {
 			wait.task = current;
 			wait.msg = (void *) msg_ptr;
+<<<<<<< HEAD
 			wait.state = STATE_NONE;
 			ret = wq_sleep(info, SEND, timeout, &wait);
 		}
@@ -931,10 +1751,44 @@ SYSCALL_DEFINE5(mq_timedsend, mqd_t, mqdes, const char __user *, u_msg_ptr,
 	}
 out_fput:
 	fput(filp);
+=======
+
+			/* memory barrier not required, we hold info->lock */
+			WRITE_ONCE(wait.state, STATE_NONE);
+			ret = wq_sleep(info, SEND, timeout, &wait);
+			/*
+			 * wq_sleep must be called with info->lock held, and
+			 * returns with the lock released
+			 */
+			goto out_free;
+		}
+	} else {
+		receiver = wq_get_first_waiter(info, RECV);
+		if (receiver) {
+			pipelined_send(&wake_q, info, msg_ptr, receiver);
+		} else {
+			/* adds message to the queue */
+			ret = msg_insert(msg_ptr, info);
+			if (ret)
+				goto out_unlock;
+			__do_notify(info);
+		}
+		simple_inode_init_ts(inode);
+	}
+out_unlock:
+	spin_unlock(&info->lock);
+	wake_up_q(&wake_q);
+out_free:
+	if (ret)
+		free_msg(msg_ptr);
+out_fput:
+	fdput(f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
 
+<<<<<<< HEAD
 SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes, char __user *, u_msg_ptr,
 		size_t, msg_len, unsigned int __user *, u_msg_prio,
 		const struct timespec __user *, u_abs_timeout)
@@ -942,10 +1796,20 @@ SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes, char __user *, u_msg_ptr,
 	ssize_t ret;
 	struct msg_msg *msg_ptr;
 	struct file *filp;
+=======
+static int do_mq_timedreceive(mqd_t mqdes, char __user *u_msg_ptr,
+		size_t msg_len, unsigned int __user *u_msg_prio,
+		struct timespec64 *ts)
+{
+	ssize_t ret;
+	struct msg_msg *msg_ptr;
+	struct fd f;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *inode;
 	struct mqueue_inode_info *info;
 	struct ext_wait_queue wait;
 	ktime_t expires, *timeout = NULL;
+<<<<<<< HEAD
 	struct timespec ts;
 
 	if (u_abs_timeout) {
@@ -959,19 +1823,43 @@ SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes, char __user *, u_msg_ptr,
 
 	filp = fget(mqdes);
 	if (unlikely(!filp)) {
+=======
+	struct posix_msg_tree_node *new_leaf = NULL;
+
+	if (ts) {
+		expires = timespec64_to_ktime(*ts);
+		timeout = &expires;
+	}
+
+	audit_mq_sendrecv(mqdes, msg_len, 0, ts);
+
+	f = fdget(mqdes);
+	if (unlikely(!f.file)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBADF;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	inode = filp->f_path.dentry->d_inode;
 	if (unlikely(filp->f_op != &mqueue_file_operations)) {
+=======
+	inode = file_inode(f.file);
+	if (unlikely(f.file->f_op != &mqueue_file_operations)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBADF;
 		goto out_fput;
 	}
 	info = MQUEUE_I(inode);
+<<<<<<< HEAD
 	audit_inode(NULL, filp->f_path.dentry);
 
 	if (unlikely(!(filp->f_mode & FMODE_READ))) {
+=======
+	audit_file(f.file);
+
+	if (unlikely(!(f.file->f_mode & FMODE_READ))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBADF;
 		goto out_fput;
 	}
@@ -982,18 +1870,48 @@ SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes, char __user *, u_msg_ptr,
 		goto out_fput;
 	}
 
+<<<<<<< HEAD
 	spin_lock(&info->lock);
 	if (info->attr.mq_curmsgs == 0) {
 		if (filp->f_flags & O_NONBLOCK) {
+=======
+	/*
+	 * msg_insert really wants us to have a valid, spare node struct so
+	 * it doesn't have to kmalloc a GFP_ATOMIC allocation, but it will
+	 * fall back to that if necessary.
+	 */
+	if (!info->node_cache)
+		new_leaf = kmalloc(sizeof(*new_leaf), GFP_KERNEL);
+
+	spin_lock(&info->lock);
+
+	if (!info->node_cache && new_leaf) {
+		/* Save our speculative allocation into the cache */
+		INIT_LIST_HEAD(&new_leaf->msg_list);
+		info->node_cache = new_leaf;
+	} else {
+		kfree(new_leaf);
+	}
+
+	if (info->attr.mq_curmsgs == 0) {
+		if (f.file->f_flags & O_NONBLOCK) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock(&info->lock);
 			ret = -EAGAIN;
 		} else {
 			wait.task = current;
+<<<<<<< HEAD
 			wait.state = STATE_NONE;
+=======
+
+			/* memory barrier not required, we hold info->lock */
+			WRITE_ONCE(wait.state, STATE_NONE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = wq_sleep(info, RECV, timeout, &wait);
 			msg_ptr = wait.msg;
 		}
 	} else {
+<<<<<<< HEAD
 		msg_ptr = msg_get(info);
 
 		inode->i_atime = inode->i_mtime = inode->i_ctime =
@@ -1002,6 +1920,18 @@ SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes, char __user *, u_msg_ptr,
 		/* There is now free space in queue. */
 		pipelined_receive(info);
 		spin_unlock(&info->lock);
+=======
+		DEFINE_WAKE_Q(wake_q);
+
+		msg_ptr = msg_get(info);
+
+		simple_inode_init_ts(inode);
+
+		/* There is now free space in queue. */
+		pipelined_receive(&wake_q, info);
+		spin_unlock(&info->lock);
+		wake_up_q(&wake_q);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = 0;
 	}
 	if (ret == 0) {
@@ -1014,16 +1944,52 @@ SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes, char __user *, u_msg_ptr,
 		free_msg(msg_ptr);
 	}
 out_fput:
+<<<<<<< HEAD
 	fput(filp);
+=======
+	fdput(f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+SYSCALL_DEFINE5(mq_timedsend, mqd_t, mqdes, const char __user *, u_msg_ptr,
+		size_t, msg_len, unsigned int, msg_prio,
+		const struct __kernel_timespec __user *, u_abs_timeout)
+{
+	struct timespec64 ts, *p = NULL;
+	if (u_abs_timeout) {
+		int res = prepare_timeout(u_abs_timeout, &ts);
+		if (res)
+			return res;
+		p = &ts;
+	}
+	return do_mq_timedsend(mqdes, u_msg_ptr, msg_len, msg_prio, p);
+}
+
+SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes, char __user *, u_msg_ptr,
+		size_t, msg_len, unsigned int __user *, u_msg_prio,
+		const struct __kernel_timespec __user *, u_abs_timeout)
+{
+	struct timespec64 ts, *p = NULL;
+	if (u_abs_timeout) {
+		int res = prepare_timeout(u_abs_timeout, &ts);
+		if (res)
+			return res;
+		p = &ts;
+	}
+	return do_mq_timedreceive(mqdes, u_msg_ptr, msg_len, u_msg_prio, p);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Notes: the case when user wants us to deregister (with NULL as pointer)
  * and he isn't currently owner of notification, will be silently discarded.
  * It isn't explicitly defined in the POSIX.
  */
+<<<<<<< HEAD
 SYSCALL_DEFINE2(mq_notify, mqd_t, mqdes,
 		const struct sigevent __user *, u_notification)
 {
@@ -1055,10 +2021,36 @@ SYSCALL_DEFINE2(mq_notify, mqd_t, mqdes,
 			return -EINVAL;
 		}
 		if (notification.sigev_notify == SIGEV_THREAD) {
+=======
+static int do_mq_notify(mqd_t mqdes, const struct sigevent *notification)
+{
+	int ret;
+	struct fd f;
+	struct sock *sock;
+	struct inode *inode;
+	struct mqueue_inode_info *info;
+	struct sk_buff *nc;
+
+	audit_mq_notify(mqdes, notification);
+
+	nc = NULL;
+	sock = NULL;
+	if (notification != NULL) {
+		if (unlikely(notification->sigev_notify != SIGEV_NONE &&
+			     notification->sigev_notify != SIGEV_SIGNAL &&
+			     notification->sigev_notify != SIGEV_THREAD))
+			return -EINVAL;
+		if (notification->sigev_notify == SIGEV_SIGNAL &&
+			!valid_signal(notification->sigev_signo)) {
+			return -EINVAL;
+		}
+		if (notification->sigev_notify == SIGEV_THREAD) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			long timeo;
 
 			/* create the notify skb */
 			nc = alloc_skb(NOTIFY_COOKIE_LEN, GFP_KERNEL);
+<<<<<<< HEAD
 			if (!nc) {
 				ret = -ENOMEM;
 				goto out;
@@ -1068,12 +2060,23 @@ SYSCALL_DEFINE2(mq_notify, mqd_t, mqdes,
 					NOTIFY_COOKIE_LEN)) {
 				ret = -EFAULT;
 				goto out;
+=======
+			if (!nc)
+				return -ENOMEM;
+
+			if (copy_from_user(nc->data,
+					notification->sigev_value.sival_ptr,
+					NOTIFY_COOKIE_LEN)) {
+				ret = -EFAULT;
+				goto free_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			/* TODO: add a header? */
 			skb_put(nc, NOTIFY_COOKIE_LEN);
 			/* and attach it to the socket */
 retry:
+<<<<<<< HEAD
 			filp = fget(notification.sigev_signo);
 			if (!filp) {
 				ret = -EBADF;
@@ -1085,10 +2088,23 @@ retry:
 				ret = PTR_ERR(sock);
 				sock = NULL;
 				goto out;
+=======
+			f = fdget(notification->sigev_signo);
+			if (!f.file) {
+				ret = -EBADF;
+				goto out;
+			}
+			sock = netlink_getsockbyfilp(f.file);
+			fdput(f);
+			if (IS_ERR(sock)) {
+				ret = PTR_ERR(sock);
+				goto free_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			timeo = MAX_SCHEDULE_TIMEOUT;
 			ret = netlink_attachskb(sock, nc, &timeo, NULL);
+<<<<<<< HEAD
 			if (ret == 1)
 				goto retry;
 			if (ret) {
@@ -1101,12 +2117,30 @@ retry:
 
 	filp = fget(mqdes);
 	if (!filp) {
+=======
+			if (ret == 1) {
+				sock = NULL;
+				goto retry;
+			}
+			if (ret)
+				return ret;
+		}
+	}
+
+	f = fdget(mqdes);
+	if (!f.file) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBADF;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	inode = filp->f_path.dentry->d_inode;
 	if (unlikely(filp->f_op != &mqueue_file_operations)) {
+=======
+	inode = file_inode(f.file);
+	if (unlikely(f.file->f_op != &mqueue_file_operations)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBADF;
 		goto out_fput;
 	}
@@ -1114,15 +2148,27 @@ retry:
 
 	ret = 0;
 	spin_lock(&info->lock);
+<<<<<<< HEAD
 	if (u_notification == NULL) {
 		if (info->notify_owner == task_tgid(current)) {
 			remove_notification(info);
 			inode->i_atime = inode->i_ctime = CURRENT_TIME;
+=======
+	if (notification == NULL) {
+		if (info->notify_owner == task_tgid(current)) {
+			remove_notification(info);
+			inode_set_atime_to_ts(inode,
+					      inode_set_ctime_current(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else if (info->notify_owner != NULL) {
 		ret = -EBUSY;
 	} else {
+<<<<<<< HEAD
 		switch (notification.sigev_notify) {
+=======
+		switch (notification->sigev_notify) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SIGEV_NONE:
 			info->notify.sigev_notify = SIGEV_NONE;
 			break;
@@ -1134,13 +2180,21 @@ retry:
 			info->notify.sigev_notify = SIGEV_THREAD;
 			break;
 		case SIGEV_SIGNAL:
+<<<<<<< HEAD
 			info->notify.sigev_signo = notification.sigev_signo;
 			info->notify.sigev_value = notification.sigev_value;
 			info->notify.sigev_notify = SIGEV_SIGNAL;
+=======
+			info->notify.sigev_signo = notification->sigev_signo;
+			info->notify.sigev_value = notification->sigev_value;
+			info->notify.sigev_notify = SIGEV_SIGNAL;
+			info->notify_self_exec_id = current->self_exec_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
 		info->notify_owner = get_pid(task_tgid(current));
+<<<<<<< HEAD
 		inode->i_atime = inode->i_ctime = CURRENT_TIME;
 	}
 	spin_unlock(&info->lock);
@@ -1155,12 +2209,87 @@ out:
 	return ret;
 }
 
+=======
+		info->notify_user_ns = get_user_ns(current_user_ns());
+		inode_set_atime_to_ts(inode, inode_set_ctime_current(inode));
+	}
+	spin_unlock(&info->lock);
+out_fput:
+	fdput(f);
+out:
+	if (sock)
+		netlink_detachskb(sock, nc);
+	else
+free_skb:
+		dev_kfree_skb(nc);
+
+	return ret;
+}
+
+SYSCALL_DEFINE2(mq_notify, mqd_t, mqdes,
+		const struct sigevent __user *, u_notification)
+{
+	struct sigevent n, *p = NULL;
+	if (u_notification) {
+		if (copy_from_user(&n, u_notification, sizeof(struct sigevent)))
+			return -EFAULT;
+		p = &n;
+	}
+	return do_mq_notify(mqdes, p);
+}
+
+static int do_mq_getsetattr(int mqdes, struct mq_attr *new, struct mq_attr *old)
+{
+	struct fd f;
+	struct inode *inode;
+	struct mqueue_inode_info *info;
+
+	if (new && (new->mq_flags & (~O_NONBLOCK)))
+		return -EINVAL;
+
+	f = fdget(mqdes);
+	if (!f.file)
+		return -EBADF;
+
+	if (unlikely(f.file->f_op != &mqueue_file_operations)) {
+		fdput(f);
+		return -EBADF;
+	}
+
+	inode = file_inode(f.file);
+	info = MQUEUE_I(inode);
+
+	spin_lock(&info->lock);
+
+	if (old) {
+		*old = info->attr;
+		old->mq_flags = f.file->f_flags & O_NONBLOCK;
+	}
+	if (new) {
+		audit_mq_getsetattr(mqdes, new);
+		spin_lock(&f.file->f_lock);
+		if (new->mq_flags & O_NONBLOCK)
+			f.file->f_flags |= O_NONBLOCK;
+		else
+			f.file->f_flags &= ~O_NONBLOCK;
+		spin_unlock(&f.file->f_lock);
+
+		inode_set_atime_to_ts(inode, inode_set_ctime_current(inode));
+	}
+
+	spin_unlock(&info->lock);
+	fdput(f);
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SYSCALL_DEFINE3(mq_getsetattr, mqd_t, mqdes,
 		const struct mq_attr __user *, u_mqstat,
 		struct mq_attr __user *, u_omqstat)
 {
 	int ret;
 	struct mq_attr mqstat, omqstat;
+<<<<<<< HEAD
 	struct file *filp;
 	struct inode *inode;
 	struct mqueue_inode_info *info;
@@ -1214,6 +2343,163 @@ out:
 	return ret;
 }
 
+=======
+	struct mq_attr *new = NULL, *old = NULL;
+
+	if (u_mqstat) {
+		new = &mqstat;
+		if (copy_from_user(new, u_mqstat, sizeof(struct mq_attr)))
+			return -EFAULT;
+	}
+	if (u_omqstat)
+		old = &omqstat;
+
+	ret = do_mq_getsetattr(mqdes, new, old);
+	if (ret || !old)
+		return ret;
+
+	if (copy_to_user(u_omqstat, old, sizeof(struct mq_attr)))
+		return -EFAULT;
+	return 0;
+}
+
+#ifdef CONFIG_COMPAT
+
+struct compat_mq_attr {
+	compat_long_t mq_flags;      /* message queue flags		     */
+	compat_long_t mq_maxmsg;     /* maximum number of messages	     */
+	compat_long_t mq_msgsize;    /* maximum message size		     */
+	compat_long_t mq_curmsgs;    /* number of messages currently queued  */
+	compat_long_t __reserved[4]; /* ignored for input, zeroed for output */
+};
+
+static inline int get_compat_mq_attr(struct mq_attr *attr,
+			const struct compat_mq_attr __user *uattr)
+{
+	struct compat_mq_attr v;
+
+	if (copy_from_user(&v, uattr, sizeof(*uattr)))
+		return -EFAULT;
+
+	memset(attr, 0, sizeof(*attr));
+	attr->mq_flags = v.mq_flags;
+	attr->mq_maxmsg = v.mq_maxmsg;
+	attr->mq_msgsize = v.mq_msgsize;
+	attr->mq_curmsgs = v.mq_curmsgs;
+	return 0;
+}
+
+static inline int put_compat_mq_attr(const struct mq_attr *attr,
+			struct compat_mq_attr __user *uattr)
+{
+	struct compat_mq_attr v;
+
+	memset(&v, 0, sizeof(v));
+	v.mq_flags = attr->mq_flags;
+	v.mq_maxmsg = attr->mq_maxmsg;
+	v.mq_msgsize = attr->mq_msgsize;
+	v.mq_curmsgs = attr->mq_curmsgs;
+	if (copy_to_user(uattr, &v, sizeof(*uattr)))
+		return -EFAULT;
+	return 0;
+}
+
+COMPAT_SYSCALL_DEFINE4(mq_open, const char __user *, u_name,
+		       int, oflag, compat_mode_t, mode,
+		       struct compat_mq_attr __user *, u_attr)
+{
+	struct mq_attr attr, *p = NULL;
+	if (u_attr && oflag & O_CREAT) {
+		p = &attr;
+		if (get_compat_mq_attr(&attr, u_attr))
+			return -EFAULT;
+	}
+	return do_mq_open(u_name, oflag, mode, p);
+}
+
+COMPAT_SYSCALL_DEFINE2(mq_notify, mqd_t, mqdes,
+		       const struct compat_sigevent __user *, u_notification)
+{
+	struct sigevent n, *p = NULL;
+	if (u_notification) {
+		if (get_compat_sigevent(&n, u_notification))
+			return -EFAULT;
+		if (n.sigev_notify == SIGEV_THREAD)
+			n.sigev_value.sival_ptr = compat_ptr(n.sigev_value.sival_int);
+		p = &n;
+	}
+	return do_mq_notify(mqdes, p);
+}
+
+COMPAT_SYSCALL_DEFINE3(mq_getsetattr, mqd_t, mqdes,
+		       const struct compat_mq_attr __user *, u_mqstat,
+		       struct compat_mq_attr __user *, u_omqstat)
+{
+	int ret;
+	struct mq_attr mqstat, omqstat;
+	struct mq_attr *new = NULL, *old = NULL;
+
+	if (u_mqstat) {
+		new = &mqstat;
+		if (get_compat_mq_attr(new, u_mqstat))
+			return -EFAULT;
+	}
+	if (u_omqstat)
+		old = &omqstat;
+
+	ret = do_mq_getsetattr(mqdes, new, old);
+	if (ret || !old)
+		return ret;
+
+	if (put_compat_mq_attr(old, u_omqstat))
+		return -EFAULT;
+	return 0;
+}
+#endif
+
+#ifdef CONFIG_COMPAT_32BIT_TIME
+static int compat_prepare_timeout(const struct old_timespec32 __user *p,
+				   struct timespec64 *ts)
+{
+	if (get_old_timespec32(ts, p))
+		return -EFAULT;
+	if (!timespec64_valid(ts))
+		return -EINVAL;
+	return 0;
+}
+
+SYSCALL_DEFINE5(mq_timedsend_time32, mqd_t, mqdes,
+		const char __user *, u_msg_ptr,
+		unsigned int, msg_len, unsigned int, msg_prio,
+		const struct old_timespec32 __user *, u_abs_timeout)
+{
+	struct timespec64 ts, *p = NULL;
+	if (u_abs_timeout) {
+		int res = compat_prepare_timeout(u_abs_timeout, &ts);
+		if (res)
+			return res;
+		p = &ts;
+	}
+	return do_mq_timedsend(mqdes, u_msg_ptr, msg_len, msg_prio, p);
+}
+
+SYSCALL_DEFINE5(mq_timedreceive_time32, mqd_t, mqdes,
+		char __user *, u_msg_ptr,
+		unsigned int, msg_len, unsigned int __user *, u_msg_prio,
+		const struct old_timespec32 __user *, u_abs_timeout)
+{
+	struct timespec64 ts, *p = NULL;
+	if (u_abs_timeout) {
+		int res = compat_prepare_timeout(u_abs_timeout, &ts);
+		if (res)
+			return res;
+		p = &ts;
+	}
+	return do_mq_timedreceive(mqdes, u_msg_ptr, msg_len, u_msg_prio, p);
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct inode_operations mqueue_dir_inode_operations = {
 	.lookup = simple_lookup,
 	.create = mqueue_create,
@@ -1229,23 +2515,46 @@ static const struct file_operations mqueue_file_operations = {
 
 static const struct super_operations mqueue_super_ops = {
 	.alloc_inode = mqueue_alloc_inode,
+<<<<<<< HEAD
 	.destroy_inode = mqueue_destroy_inode,
+=======
+	.free_inode = mqueue_free_inode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.evict_inode = mqueue_evict_inode,
 	.statfs = simple_statfs,
 };
 
+<<<<<<< HEAD
 static struct file_system_type mqueue_fs_type = {
 	.name = "mqueue",
 	.mount = mqueue_mount,
 	.kill_sb = kill_litter_super,
+=======
+static const struct fs_context_operations mqueue_fs_context_ops = {
+	.free		= mqueue_fs_context_free,
+	.get_tree	= mqueue_get_tree,
+};
+
+static struct file_system_type mqueue_fs_type = {
+	.name			= "mqueue",
+	.init_fs_context	= mqueue_init_fs_context,
+	.kill_sb		= kill_litter_super,
+	.fs_flags		= FS_USERNS_MOUNT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int mq_init_ns(struct ipc_namespace *ns)
 {
+<<<<<<< HEAD
+=======
+	struct vfsmount *m;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ns->mq_queues_count  = 0;
 	ns->mq_queues_max    = DFLT_QUEUESMAX;
 	ns->mq_msg_max       = DFLT_MSGMAX;
 	ns->mq_msgsize_max   = DFLT_MSGSIZEMAX;
+<<<<<<< HEAD
 
 	ns->mq_mnt = kern_mount_data(&mqueue_fs_type, ns);
 	if (IS_ERR(ns->mq_mnt)) {
@@ -1253,6 +2562,15 @@ int mq_init_ns(struct ipc_namespace *ns)
 		ns->mq_mnt = NULL;
 		return err;
 	}
+=======
+	ns->mq_msg_default   = DFLT_MSG;
+	ns->mq_msgsize_default  = DFLT_MSGSIZE;
+
+	m = mq_create_mount(ns);
+	if (IS_ERR(m))
+		return PTR_ERR(m);
+	ns->mq_mnt = m;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1261,23 +2579,38 @@ void mq_clear_sbinfo(struct ipc_namespace *ns)
 	ns->mq_mnt->mnt_sb->s_fs_info = NULL;
 }
 
+<<<<<<< HEAD
 void mq_put_mnt(struct ipc_namespace *ns)
 {
 	kern_unmount(ns->mq_mnt);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init init_mqueue_fs(void)
 {
 	int error;
 
 	mqueue_inode_cachep = kmem_cache_create("mqueue_inode_cache",
 				sizeof(struct mqueue_inode_info), 0,
+<<<<<<< HEAD
 				SLAB_HWCACHE_ALIGN, init_once);
 	if (mqueue_inode_cachep == NULL)
 		return -ENOMEM;
 
 	/* ignore failures - they are not fatal */
 	mq_sysctl_table = mq_register_sysctl_table();
+=======
+				SLAB_HWCACHE_ALIGN|SLAB_ACCOUNT, init_once);
+	if (mqueue_inode_cachep == NULL)
+		return -ENOMEM;
+
+	if (!setup_mq_sysctls(&init_ipc_ns)) {
+		pr_warn("sysctl registration failed\n");
+		error = -ENOMEM;
+		goto out_kmem;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = register_filesystem(&mqueue_fs_type);
 	if (error)
@@ -1294,10 +2627,19 @@ static int __init init_mqueue_fs(void)
 out_filesystem:
 	unregister_filesystem(&mqueue_fs_type);
 out_sysctl:
+<<<<<<< HEAD
 	if (mq_sysctl_table)
 		unregister_sysctl_table(mq_sysctl_table);
+=======
+	retire_mq_sysctls(&init_ipc_ns);
+out_kmem:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_destroy(mqueue_inode_cachep);
 	return error;
 }
 
+<<<<<<< HEAD
 __initcall(init_mqueue_fs);
+=======
+device_initcall(init_mqueue_fs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

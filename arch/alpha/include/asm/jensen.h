@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ALPHA_JENSEN_H
 #define __ALPHA_JENSEN_H
 
@@ -97,6 +101,10 @@ __EXTERN_INLINE void jensen_set_hae(unsigned long addr)
 }
 
 #define vuip	volatile unsigned int *
+<<<<<<< HEAD
+=======
+#define vulp	volatile unsigned long *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * IO functions
@@ -110,18 +118,30 @@ __EXTERN_INLINE void jensen_set_hae(unsigned long addr)
  * convinced that I need one of the newer machines.
  */
 
+<<<<<<< HEAD
 static inline unsigned int jensen_local_inb(unsigned long addr)
+=======
+__EXTERN_INLINE unsigned int jensen_local_inb(unsigned long addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0xff & *(vuip)((addr << 9) + EISA_VL82C106);
 }
 
+<<<<<<< HEAD
 static inline void jensen_local_outb(u8 b, unsigned long addr)
+=======
+__EXTERN_INLINE void jensen_local_outb(u8 b, unsigned long addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	*(vuip)((addr << 9) + EISA_VL82C106) = b;
 	mb();
 }
 
+<<<<<<< HEAD
 static inline unsigned int jensen_bus_inb(unsigned long addr)
+=======
+__EXTERN_INLINE unsigned int jensen_bus_inb(unsigned long addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long result;
 
@@ -130,7 +150,11 @@ static inline unsigned int jensen_bus_inb(unsigned long addr)
 	return __kernel_extbl(result, addr & 3);
 }
 
+<<<<<<< HEAD
 static inline void jensen_bus_outb(u8 b, unsigned long addr)
+=======
+__EXTERN_INLINE void jensen_bus_outb(u8 b, unsigned long addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	jensen_set_hae(0);
 	*(vuip)((addr << 7) + EISA_IO + 0x00) = b * 0x01010101;
@@ -182,6 +206,15 @@ __EXTERN_INLINE u32 jensen_inl(unsigned long addr)
 	return *(vuip) ((addr << 7) + EISA_IO + 0x60);
 }
 
+<<<<<<< HEAD
+=======
+__EXTERN_INLINE u64 jensen_inq(unsigned long addr)
+{
+	jensen_set_hae(0);
+	return *(vulp) ((addr << 7) + EISA_IO + 0x60);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __EXTERN_INLINE void jensen_outw(u16 b, unsigned long addr)
 {
 	jensen_set_hae(0);
@@ -196,6 +229,16 @@ __EXTERN_INLINE void jensen_outl(u32 b, unsigned long addr)
 	mb();
 }
 
+<<<<<<< HEAD
+=======
+__EXTERN_INLINE void jensen_outq(u64 b, unsigned long addr)
+{
+	jensen_set_hae(0);
+	*(vulp) ((addr << 7) + EISA_IO + 0x60) = b;
+	mb();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Memory functions.
  */
@@ -304,7 +347,11 @@ __EXTERN_INLINE int jensen_is_mmio(const volatile void __iomem *addr)
    that it doesn't make sense to merge them.  */
 
 #define IOPORT(OS, NS)							\
+<<<<<<< HEAD
 __EXTERN_INLINE unsigned int jensen_ioread##NS(void __iomem *xaddr)	\
+=======
+__EXTERN_INLINE u##NS jensen_ioread##NS(const void __iomem *xaddr)	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {									\
 	if (jensen_is_mmio(xaddr))					\
 		return jensen_read##OS(xaddr - 0x100000000ul);		\
@@ -322,10 +369,18 @@ __EXTERN_INLINE void jensen_iowrite##NS(u##NS b, void __iomem *xaddr)	\
 IOPORT(b, 8)
 IOPORT(w, 16)
 IOPORT(l, 32)
+<<<<<<< HEAD
+=======
+IOPORT(q, 64)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef IOPORT
 
 #undef vuip
+<<<<<<< HEAD
+=======
+#undef vulp
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef __IO_PREFIX
 #define __IO_PREFIX		jensen

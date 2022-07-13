@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Windfarm PowerMac thermal control. iMac G5 iSight
  *
@@ -6,6 +10,7 @@
  * Bits & pieces from windfarm_pm81.c by (c) Copyright 2005 Benjamin
  * Herrenschmidt, IBM Corp. <benh@kernel.crashing.org>
  *
+<<<<<<< HEAD
  * Released under the term of the GNU GPL v2.
  *
  *
@@ -14,6 +19,11 @@
  * ============
  *
  *
+=======
+ * PowerMac12,1
+ * ============
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The algorithm used is the PID control algorithm, used the same way
  * the published Darwin code does, using the same values that are
  * present in the Darwin 8.10 snapshot property lists (note however
@@ -25,7 +35,10 @@
  * controls with a tiny difference. The control-ids of hard-drive-fan
  * and cpu-fan is swapped.
  *
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Target Correction :
  *
  * controls have a target correction calculated as :
@@ -63,7 +76,10 @@
  *   offset		: -15650652
  *   slope		:  1565065
  *
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Target rubber-banding :
  *
  * Some controls have a target correction which depends on another
@@ -76,7 +92,10 @@
  *
  * new_target = max (new_target, new_min >> 16)
  *
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * # model_id : 2
  *   control	: cpu-fan
  *   ref	: optical-drive-fan
@@ -89,12 +108,18 @@
  *   offset	: -32768000
  *   slope	: 65536
  *
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * In order to have the moste efficient correction with those
  * dependencies, we must trigger HD loop before OD loop before CPU
  * loop.
  *
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The various control loops found in Darwin config file are:
  *
  * HD Fan control loop.
@@ -191,12 +216,18 @@
  *   sensors        : cpu-temp, cpu-power
  *   PID params     : from SDB partition
  *
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * CPU Slew control loop.
  *
  *   control        : cpufreq-clamp
  *   sensor         : cpu-temp
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef	DEBUG
@@ -212,7 +243,12 @@
 #include <linux/kmod.h>
 #include <linux/device.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+#include <linux/of.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/io.h>
 #include <asm/sections.h>
@@ -246,7 +282,12 @@ enum {
 static struct wf_control *controls[N_CONTROLS] = {};
 
 /* Set to kick the control loop into life */
+<<<<<<< HEAD
 static int pm121_all_controls_ok, pm121_all_sensors_ok, pm121_started;
+=======
+static int pm121_all_controls_ok, pm121_all_sensors_ok;
+static bool pm121_started;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	FAILURE_FAN		= 1 << 0,
@@ -276,6 +317,10 @@ static const char *loop_names[N_LOOPS] = {
 
 static unsigned int pm121_failure_state;
 static int pm121_readjust, pm121_skipping;
+<<<<<<< HEAD
+=======
+static bool pm121_overtemp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static s32 average_power;
 
 struct pm121_correction {
@@ -442,7 +487,11 @@ struct pm121_sys_state {
 	struct wf_pid_state	pid;
 };
 
+<<<<<<< HEAD
 struct pm121_sys_state *pm121_sys_state[N_LOOPS] = {};
+=======
+static struct pm121_sys_state *pm121_sys_state[N_LOOPS] = {};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ****** CPU Fans Control Loop ******
@@ -554,8 +603,23 @@ static void pm121_create_sys_fans(int loop_id)
 	pid_param.interval	= PM121_SYS_INTERVAL;
 	pid_param.history_len	= PM121_SYS_HISTORY_SIZE;
 	pid_param.itarget	= param->itarget;
+<<<<<<< HEAD
 	pid_param.min		= control->ops->get_min(control);
 	pid_param.max		= control->ops->get_max(control);
+=======
+	if(control)
+	{
+		pid_param.min		= control->ops->get_min(control);
+		pid_param.max		= control->ops->get_max(control);
+	} else {
+		/*
+		 * This is probably not the right!?
+		 * Perhaps goto fail  if control == NULL  above?
+		 */
+		pid_param.min		= 0;
+		pid_param.max		= 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wf_pid_init(&pm121_sys_state[loop_id]->pid, &pid_param);
 
@@ -570,7 +634,11 @@ static void pm121_create_sys_fans(int loop_id)
 	   control the same control */
 	printk(KERN_WARNING "pm121: failed to set up %s loop "
 	       "setting \"%s\" to max speed.\n",
+<<<<<<< HEAD
 	       loop_names[loop_id], control->name);
+=======
+	       loop_names[loop_id], control ? control->name : "uninitialized value");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (control)
 		wf_control_set_max(control);
@@ -649,7 +717,11 @@ static void pm121_create_cpu_fans(void)
 
 	/* First, locate the PID params in SMU SBD */
 	hdr = smu_get_sdb_partition(SMU_SDB_CPUPIDDATA_ID, NULL);
+<<<<<<< HEAD
 	if (hdr == 0) {
+=======
+	if (!hdr) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING "pm121: CPU PID fan config not found.\n");
 		goto fail;
 	}
@@ -698,7 +770,11 @@ static void pm121_create_cpu_fans(void)
 	wf_cpu_pid_init(&pm121_cpu_state->pid, &pid_param);
 
 	pr_debug("pm121: CPU Fan control initialized.\n");
+<<<<<<< HEAD
 	pr_debug("       ttarged=%d.%03d, tmax=%d.%03d, min=%d RPM, max=%d RPM,\n",
+=======
+	pr_debug("       ttarget=%d.%03d, tmax=%d.%03d, min=%d RPM, max=%d RPM,\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 FIX32TOPRINT(pid_param.ttarget), FIX32TOPRINT(pid_param.tmax),
 		 pid_param.min, pid_param.max);
 
@@ -795,7 +871,11 @@ static void pm121_tick(void)
 			pm121_create_sys_fans(i);
 
 		pm121_create_cpu_fans();
+<<<<<<< HEAD
 		pm121_started = 1;
+=======
+		pm121_started = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* skipping ticks */
@@ -847,6 +927,10 @@ static void pm121_tick(void)
 	if (new_failure & FAILURE_OVERTEMP) {
 		wf_set_overtemp();
 		pm121_skipping = 2;
+<<<<<<< HEAD
+=======
+		pm121_overtemp = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* We only clear the overtemp condition if overtemp is cleared
@@ -855,8 +939,15 @@ static void pm121_tick(void)
 	 * the control loop levels, but we don't want to keep it clear
 	 * here in this case
 	 */
+<<<<<<< HEAD
 	if (new_failure == 0 && last_failure & FAILURE_OVERTEMP)
 		wf_clear_overtemp();
+=======
+	if (!pm121_failure_state && pm121_overtemp) {
+		wf_clear_overtemp();
+		pm121_overtemp = false;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -965,7 +1056,11 @@ static int pm121_init_pm(void)
 	const struct smu_sdbp_header *hdr;
 
 	hdr = smu_get_sdb_partition(SMU_SDB_SENSORTREE_ID, NULL);
+<<<<<<< HEAD
 	if (hdr != 0) {
+=======
+	if (hdr) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct smu_sdbp_sensortree *st =
 			(struct smu_sdbp_sensortree *)&hdr[1];
 		pm121_mach_model = st->model_id;
@@ -987,15 +1082,25 @@ static int pm121_probe(struct platform_device *ddev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit pm121_remove(struct platform_device *ddev)
 {
 	wf_unregister_client(&pm121_events);
 	return 0;
+=======
+static void pm121_remove(struct platform_device *ddev)
+{
+	wf_unregister_client(&pm121_events);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver pm121_driver = {
 	.probe = pm121_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(pm121_remove),
+=======
+	.remove_new = pm121_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.name = "windfarm",
 		.bus = &platform_bus_type,

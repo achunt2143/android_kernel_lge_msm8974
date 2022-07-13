@@ -15,6 +15,10 @@
 #include <asm/octeon/cvmx-npi-defs.h>
 #include <asm/octeon/cvmx-pci-defs.h>
 #include <asm/octeon/cvmx-npei-defs.h>
+<<<<<<< HEAD
+=======
+#include <asm/octeon/cvmx-sli-defs.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/octeon/cvmx-pexp-defs.h>
 #include <asm/octeon/pci-octeon.h>
 
@@ -45,16 +49,28 @@ static DEFINE_SPINLOCK(msi_free_irq_bitmask_lock);
 static int msi_irq_size;
 
 /**
+<<<<<<< HEAD
  * Called when a driver request MSI interrupts instead of the
+=======
+ * arch_setup_msi_irq() - setup MSI IRQs for a device
+ * @dev:    Device requesting MSI interrupts
+ * @desc:   MSI descriptor
+ *
+ * Called when a driver requests MSI interrupts instead of the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * legacy INT A-D. This routine will allocate multiple interrupts
  * for MSI devices that support them. A device can override this by
  * programming the MSI control bits [6:4] before calling
  * pci_enable_msi().
  *
+<<<<<<< HEAD
  * @dev:    Device requesting MSI interrupts
  * @desc:   MSI descriptor
  *
  * Returns 0 on success.
+=======
+ * Return: %0 on success, non-%0 on error.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
 {
@@ -67,13 +83,23 @@ int arch_setup_msi_irq(struct pci_dev *dev, struct msi_desc *desc)
 	u64 search_mask;
 	int index;
 
+<<<<<<< HEAD
+=======
+	if (desc->pci.msi_attrib.is_msix)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Read the MSI config to figure out how many IRQs this device
 	 * wants.  Most devices only want 1, which will give
 	 * configured_private_bits and request_private_bits equal 0.
 	 */
+<<<<<<< HEAD
 	pci_read_config_word(dev, desc->msi_attrib.pos + PCI_MSI_FLAGS,
 			     &control);
+=======
+	pci_read_config_word(dev, dev->msi_cap + PCI_MSI_FLAGS, &control);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the number of private bits has been configured then use
@@ -150,6 +176,10 @@ msi_irq_allocated:
 		msg.address_lo =
 			((128ul << 20) + CVMX_PCI_MSI_RCV) & 0xffffffff;
 		msg.address_hi = ((128ul << 20) + CVMX_PCI_MSI_RCV) >> 32;
+<<<<<<< HEAD
+=======
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case OCTEON_DMA_BAR_TYPE_BIG:
 		/* When using big bar, Bar 0 is based at 0 */
 		msg.address_lo = (0 + CVMX_PCI_MSI_RCV) & 0xffffffff;
@@ -161,6 +191,14 @@ msi_irq_allocated:
 		msg.address_lo = (0 + CVMX_NPEI_PCIE_MSI_RCV) & 0xffffffff;
 		msg.address_hi = (0 + CVMX_NPEI_PCIE_MSI_RCV) >> 32;
 		break;
+<<<<<<< HEAD
+=======
+	case OCTEON_DMA_BAR_TYPE_PCIE2:
+		/* When using PCIe2, Bar 0 is based at 0 */
+		msg.address_lo = (0 + CVMX_SLI_PCIE_MSI_RCV) & 0xffffffff;
+		msg.address_hi = (0 + CVMX_SLI_PCIE_MSI_RCV) >> 32;
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		panic("arch_setup_msi_irq: Invalid octeon_dma_bar_type");
 	}
@@ -169,6 +207,7 @@ msi_irq_allocated:
 	/* Update the number of IRQs the device has available to it */
 	control &= ~PCI_MSI_FLAGS_QSIZE;
 	control |= request_private_bits << 4;
+<<<<<<< HEAD
 	pci_write_config_word(dev, desc->msi_attrib.pos + PCI_MSI_FLAGS,
 			      control);
 
@@ -203,14 +242,28 @@ int arch_setup_msi_irqs(struct pci_dev *dev, int nvec, int type)
 			return -ENOSPC;
 	}
 
+=======
+	pci_write_config_word(dev, dev->msi_cap + PCI_MSI_FLAGS, control);
+
+	irq_set_msi_desc(irq, desc);
+	pci_write_msi_msg(irq, &msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
+<<<<<<< HEAD
  * Called when a device no longer needs its MSI interrupts. All
  * MSI interrupts for the device are freed.
  *
  * @irq:    The devices first irq number. There may be multple in sequence.
+=======
+ * arch_teardown_msi_irq() - release MSI IRQs for a device
+ * @irq:    The devices first irq number. There may be multiple in sequence.
+ *
+ * Called when a device no longer needs its MSI interrupts. All
+ * MSI interrupts for the device are freed.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void arch_teardown_msi_irq(unsigned int irq)
 {
@@ -364,7 +417,13 @@ int __init octeon_msi_initialize(void)
 	int irq;
 	struct irq_chip *msi;
 
+<<<<<<< HEAD
 	if (octeon_dma_bar_type == OCTEON_DMA_BAR_TYPE_PCIE) {
+=======
+	if (octeon_dma_bar_type == OCTEON_DMA_BAR_TYPE_INVALID) {
+		return 0;
+	} else if (octeon_dma_bar_type == OCTEON_DMA_BAR_TYPE_PCIE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msi_rcv_reg[0] = CVMX_PEXP_NPEI_MSI_RCV0;
 		msi_rcv_reg[1] = CVMX_PEXP_NPEI_MSI_RCV1;
 		msi_rcv_reg[2] = CVMX_PEXP_NPEI_MSI_RCV2;

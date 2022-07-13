@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* net/atm/atmarp.h - RFC1577 ATM ARP */
  
 /* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */

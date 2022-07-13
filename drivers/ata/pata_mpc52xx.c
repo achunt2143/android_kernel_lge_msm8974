@@ -19,6 +19,7 @@
 #include <linux/gfp.h>
 #include <linux/delay.h>
 #include <linux/libata.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 #include <linux/types.h>
 
@@ -29,6 +30,20 @@
 #include <sysdev/bestcomm/bestcomm.h>
 #include <sysdev/bestcomm/bestcomm_priv.h>
 #include <sysdev/bestcomm/ata.h>
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+#include <linux/platform_device.h>
+#include <linux/types.h>
+
+#include <asm/cacheflush.h>
+#include <asm/mpc52xx.h>
+
+#include <linux/fsl/bestcomm/bestcomm.h>
+#include <linux/fsl/bestcomm/bestcomm_priv.h>
+#include <linux/fsl/bestcomm/ata.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRV_NAME	"mpc52xx_ata"
 
@@ -605,7 +620,11 @@ mpc52xx_ata_task_irq(int irq, void *vpriv)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static struct scsi_host_template mpc52xx_ata_sht = {
+=======
+static const struct scsi_host_template mpc52xx_ata_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_PIO_SHT(DRV_NAME),
 };
 
@@ -621,9 +640,16 @@ static struct ata_port_operations mpc52xx_ata_port_ops = {
 	.qc_prep		= ata_noop_qc_prep,
 };
 
+<<<<<<< HEAD
 static int __devinit
 mpc52xx_ata_init_one(struct device *dev, struct mpc52xx_ata_priv *priv,
 		     unsigned long raw_ata_regs, int mwdma_mask, int udma_mask)
+=======
+static int mpc52xx_ata_init_one(struct device *dev,
+				struct mpc52xx_ata_priv *priv,
+				unsigned long raw_ata_regs,
+				int mwdma_mask, int udma_mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_host *host;
 	struct ata_port *ap;
@@ -663,6 +689,7 @@ mpc52xx_ata_init_one(struct device *dev, struct mpc52xx_ata_priv *priv,
 				 &mpc52xx_ata_sht);
 }
 
+<<<<<<< HEAD
 static struct mpc52xx_ata_priv *
 mpc52xx_ata_remove_one(struct device *dev)
 {
@@ -675,12 +702,18 @@ mpc52xx_ata_remove_one(struct device *dev)
 }
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ======================================================================== */
 /* OF Platform driver                                                       */
 /* ======================================================================== */
 
+<<<<<<< HEAD
 static int __devinit
 mpc52xx_ata_probe(struct platform_device *op)
+=======
+static int mpc52xx_ata_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int ipb_freq;
 	struct resource res_mem;
@@ -694,7 +727,11 @@ mpc52xx_ata_probe(struct platform_device *op)
 	struct bcom_task *dmatsk;
 
 	/* Get ipb frequency */
+<<<<<<< HEAD
 	ipb_freq = mpc5xxx_get_bus_frequency(op->dev.of_node);
+=======
+	ipb_freq = mpc5xxx_get_bus_frequency(&op->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ipb_freq) {
 		dev_err(&op->dev, "could not determine IPB bus frequency\n");
 		return -ENODEV;
@@ -742,15 +779,24 @@ mpc52xx_ata_probe(struct platform_device *op)
 		udma_mask = ATA_UDMA2 & ((1 << (*prop + 1)) - 1);
 
 	ata_irq = irq_of_parse_and_map(op->dev.of_node, 0);
+<<<<<<< HEAD
 	if (ata_irq == NO_IRQ) {
+=======
+	if (!ata_irq) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&op->dev, "error mapping irq\n");
 		return -EINVAL;
 	}
 
 	/* Prepare our private structure */
+<<<<<<< HEAD
 	priv = devm_kzalloc(&op->dev, sizeof(*priv), GFP_ATOMIC);
 	if (!priv) {
 		dev_err(&op->dev, "error allocating private structure\n");
+=======
+	priv = devm_kzalloc(&op->dev, sizeof(*priv), GFP_KERNEL);
+	if (!priv) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rv = -ENOMEM;
 		goto err1;
 	}
@@ -812,6 +858,7 @@ mpc52xx_ata_probe(struct platform_device *op)
 	return rv;
 }
 
+<<<<<<< HEAD
 static int
 mpc52xx_ata_remove(struct platform_device *op)
 {
@@ -820,12 +867,23 @@ mpc52xx_ata_remove(struct platform_device *op)
 
 	/* Deregister the ATA interface */
 	priv = mpc52xx_ata_remove_one(&op->dev);
+=======
+static void mpc52xx_ata_remove(struct platform_device *op)
+{
+	struct ata_host *host = platform_get_drvdata(op);
+	struct mpc52xx_ata_priv *priv = host->private_data;
+	int task_irq;
+
+	/* Deregister the ATA interface */
+	ata_platform_remove_one(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clean up DMA */
 	task_irq = bcom_get_task_irq(priv->dmatsk);
 	irq_dispose_mapping(task_irq);
 	bcom_ata_release(priv->dmatsk);
 	irq_dispose_mapping(priv->ata_irq);
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -839,12 +897,28 @@ mpc52xx_ata_suspend(struct platform_device *op, pm_message_t state)
 	struct ata_host *host = dev_get_drvdata(&op->dev);
 
 	return ata_host_suspend(host, state);
+=======
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int
+mpc52xx_ata_suspend(struct platform_device *op, pm_message_t state)
+{
+	struct ata_host *host = platform_get_drvdata(op);
+
+	ata_host_suspend(host, state);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 mpc52xx_ata_resume(struct platform_device *op)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&op->dev);
+=======
+	struct ata_host *host = platform_get_drvdata(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mpc52xx_ata_priv *priv = host->private_data;
 	int rv;
 
@@ -858,6 +932,7 @@ mpc52xx_ata_resume(struct platform_device *op)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 #endif
 
@@ -866,19 +941,35 @@ static struct of_device_id mpc52xx_ata_of_match[] = {
 	{ .compatible = "fsl,mpc5200-ata", },
 	{ .compatible = "mpc5200-ata", },
 	{},
+=======
+#endif
+
+static const struct of_device_id mpc52xx_ata_of_match[] = {
+	{ .compatible = "fsl,mpc5200-ata", },
+	{ .compatible = "mpc5200-ata", },
+	{ /* sentinel */ }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
 static struct platform_driver mpc52xx_ata_of_platform_driver = {
 	.probe		= mpc52xx_ata_probe,
+<<<<<<< HEAD
 	.remove		= mpc52xx_ata_remove,
 #ifdef CONFIG_PM
+=======
+	.remove_new	= mpc52xx_ata_remove,
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= mpc52xx_ata_suspend,
 	.resume		= mpc52xx_ata_resume,
 #endif
 	.driver		= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = mpc52xx_ata_of_match,
 	},
 };

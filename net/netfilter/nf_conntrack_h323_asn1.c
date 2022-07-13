@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /****************************************************************************
  * ip_conntrack_helper_h323_asn1.c - BER and PER decoding library for H.323
  * 			      	     conntrack/NAT module.
@@ -9,6 +10,16 @@
  * See ip_conntrack_helper_h323_asn1.h for details.
  *
  ****************************************************************************/
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * BER and PER decoding library for H.323 conntrack/NAT module.
+ *
+ * Copyright (c) 2006 by Jing Min Zhao <zhaojingmin@users.sourceforge.net>
+ *
+ * See nf_conntrack_helper_h323_asn1.h for details.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __KERNEL__
 #include <linux/kernel.h>
@@ -91,18 +102,27 @@ typedef struct field_t {
 } field_t;
 
 /* Bit Stream */
+<<<<<<< HEAD
 typedef struct {
+=======
+struct bitstr {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *buf;
 	unsigned char *beg;
 	unsigned char *end;
 	unsigned char *cur;
 	unsigned int bit;
+<<<<<<< HEAD
 } bitstr_t;
+=======
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Tool Functions */
 #define INC_BIT(bs) if((++(bs)->bit)>7){(bs)->cur++;(bs)->bit=0;}
 #define INC_BITS(bs,b) if(((bs)->bit+=(b))>7){(bs)->cur+=(bs)->bit>>3;(bs)->bit&=7;}
 #define BYTE_ALIGN(bs) if((bs)->bit){(bs)->cur++;(bs)->bit=0;}
+<<<<<<< HEAD
 #define CHECK_BOUND(bs,n) if((bs)->cur+(n)>(bs)->end)return(H323_ERROR_BOUND)
 static unsigned int get_len(bitstr_t *bs);
 static unsigned int get_bit(bitstr_t *bs);
@@ -126,6 +146,30 @@ static int decode_choice(bitstr_t *bs, const struct field_t *f, char *base, int 
 
 /* Decoder Functions Vector */
 typedef int (*decoder_t)(bitstr_t *, const struct field_t *, char *, int);
+=======
+static unsigned int get_len(struct bitstr *bs);
+static unsigned int get_bit(struct bitstr *bs);
+static unsigned int get_bits(struct bitstr *bs, unsigned int b);
+static unsigned int get_bitmap(struct bitstr *bs, unsigned int b);
+static unsigned int get_uint(struct bitstr *bs, int b);
+
+/* Decoder Functions */
+static int decode_nul(struct bitstr *bs, const struct field_t *f, char *base, int level);
+static int decode_bool(struct bitstr *bs, const struct field_t *f, char *base, int level);
+static int decode_oid(struct bitstr *bs, const struct field_t *f, char *base, int level);
+static int decode_int(struct bitstr *bs, const struct field_t *f, char *base, int level);
+static int decode_enum(struct bitstr *bs, const struct field_t *f, char *base, int level);
+static int decode_bitstr(struct bitstr *bs, const struct field_t *f, char *base, int level);
+static int decode_numstr(struct bitstr *bs, const struct field_t *f, char *base, int level);
+static int decode_octstr(struct bitstr *bs, const struct field_t *f, char *base, int level);
+static int decode_bmpstr(struct bitstr *bs, const struct field_t *f, char *base, int level);
+static int decode_seq(struct bitstr *bs, const struct field_t *f, char *base, int level);
+static int decode_seqof(struct bitstr *bs, const struct field_t *f, char *base, int level);
+static int decode_choice(struct bitstr *bs, const struct field_t *f, char *base, int level);
+
+/* Decoder Functions Vector */
+typedef int (*decoder_t)(struct bitstr *, const struct field_t *, char *, int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const decoder_t Decoders[] = {
 	decode_nul,
 	decode_bool,
@@ -141,6 +185,7 @@ static const decoder_t Decoders[] = {
 	decode_choice,
 };
 
+<<<<<<< HEAD
 /****************************************************************************
  * H.323 Types
  ****************************************************************************/
@@ -151,6 +196,19 @@ static const decoder_t Decoders[] = {
  ****************************************************************************/
 /* Assume bs is aligned && v < 16384 */
 static unsigned int get_len(bitstr_t *bs)
+=======
+/*
+ * H.323 Types
+ */
+#include "nf_conntrack_h323_types.c"
+
+/*
+ * Functions
+ */
+
+/* Assume bs is aligned && v < 16384 */
+static unsigned int get_len(struct bitstr *bs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int v;
 
@@ -165,8 +223,25 @@ static unsigned int get_len(bitstr_t *bs)
 	return v;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
 static unsigned int get_bit(bitstr_t *bs)
+=======
+static int nf_h323_error_boundary(struct bitstr *bs, size_t bytes, size_t bits)
+{
+	bits += bs->bit;
+	bytes += bits / BITS_PER_BYTE;
+	if (bits % BITS_PER_BYTE > 0)
+		bytes++;
+
+	if (bs->cur + bytes > bs->end)
+		return 1;
+
+	return 0;
+}
+
+static unsigned int get_bit(struct bitstr *bs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int b = (*bs->cur) & (0x80 >> bs->bit);
 
@@ -175,9 +250,14 @@ static unsigned int get_bit(bitstr_t *bs)
 	return b;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
 /* Assume b <= 8 */
 static unsigned int get_bits(bitstr_t *bs, unsigned int b)
+=======
+/* Assume b <= 8 */
+static unsigned int get_bits(struct bitstr *bs, unsigned int b)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int v, l;
 
@@ -201,9 +281,14 @@ static unsigned int get_bits(bitstr_t *bs, unsigned int b)
 	return v;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
 /* Assume b <= 32 */
 static unsigned int get_bitmap(bitstr_t *bs, unsigned int b)
+=======
+/* Assume b <= 32 */
+static unsigned int get_bitmap(struct bitstr *bs, unsigned int b)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int v, l, shift, bytes;
 
@@ -239,10 +324,17 @@ static unsigned int get_bitmap(bitstr_t *bs, unsigned int b)
 	return v;
 }
 
+<<<<<<< HEAD
 /****************************************************************************
  * Assume bs is aligned and sizeof(unsigned int) == 4
  ****************************************************************************/
 static unsigned int get_uint(bitstr_t *bs, int b)
+=======
+/*
+ * Assume bs is aligned and sizeof(unsigned int) == 4
+ */
+static unsigned int get_uint(struct bitstr *bs, int b)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int v = 0;
 
@@ -250,12 +342,24 @@ static unsigned int get_uint(bitstr_t *bs, int b)
 	case 4:
 		v |= *bs->cur++;
 		v <<= 8;
+<<<<<<< HEAD
 	case 3:
 		v |= *bs->cur++;
 		v <<= 8;
 	case 2:
 		v |= *bs->cur++;
 		v <<= 8;
+=======
+		fallthrough;
+	case 3:
+		v |= *bs->cur++;
+		v <<= 8;
+		fallthrough;
+	case 2:
+		v |= *bs->cur++;
+		v <<= 8;
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:
 		v |= *bs->cur++;
 		break;
@@ -263,8 +367,12 @@ static unsigned int get_uint(bitstr_t *bs, int b)
 	return v;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
 static int decode_nul(bitstr_t *bs, const struct field_t *f,
+=======
+static int decode_nul(struct bitstr *bs, const struct field_t *f,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                       char *base, int level)
 {
 	PRINT("%*.s%s\n", level * TAB_SIZE, " ", f->name);
@@ -272,13 +380,18 @@ static int decode_nul(bitstr_t *bs, const struct field_t *f,
 	return H323_ERROR_NONE;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
 static int decode_bool(bitstr_t *bs, const struct field_t *f,
+=======
+static int decode_bool(struct bitstr *bs, const struct field_t *f,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                        char *base, int level)
 {
 	PRINT("%*.s%s\n", level * TAB_SIZE, " ", f->name);
 
 	INC_BIT(bs);
+<<<<<<< HEAD
 
 	CHECK_BOUND(bs, 0);
 	return H323_ERROR_NONE;
@@ -286,6 +399,14 @@ static int decode_bool(bitstr_t *bs, const struct field_t *f,
 
 /****************************************************************************/
 static int decode_oid(bitstr_t *bs, const struct field_t *f,
+=======
+	if (nf_h323_error_boundary(bs, 0, 0))
+		return H323_ERROR_BOUND;
+	return H323_ERROR_NONE;
+}
+
+static int decode_oid(struct bitstr *bs, const struct field_t *f,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                       char *base, int level)
 {
 	int len;
@@ -293,6 +414,7 @@ static int decode_oid(bitstr_t *bs, const struct field_t *f,
 	PRINT("%*.s%s\n", level * TAB_SIZE, " ", f->name);
 
 	BYTE_ALIGN(bs);
+<<<<<<< HEAD
 	CHECK_BOUND(bs, 1);
 	len = *bs->cur++;
 	bs->cur += len;
@@ -303,6 +425,20 @@ static int decode_oid(bitstr_t *bs, const struct field_t *f,
 
 /****************************************************************************/
 static int decode_int(bitstr_t *bs, const struct field_t *f,
+=======
+	if (nf_h323_error_boundary(bs, 1, 0))
+		return H323_ERROR_BOUND;
+
+	len = *bs->cur++;
+	bs->cur += len;
+	if (nf_h323_error_boundary(bs, 0, 0))
+		return H323_ERROR_BOUND;
+
+	return H323_ERROR_NONE;
+}
+
+static int decode_int(struct bitstr *bs, const struct field_t *f,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                       char *base, int level)
 {
 	unsigned int len;
@@ -319,6 +455,11 @@ static int decode_int(bitstr_t *bs, const struct field_t *f,
 		bs->cur += 2;
 		break;
 	case CONS:		/* 64K < Range < 4G */
+<<<<<<< HEAD
+=======
+		if (nf_h323_error_boundary(bs, 0, 2))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = get_bits(bs, 2) + 1;
 		BYTE_ALIGN(bs);
 		if (base && (f->attr & DECODE)) {	/* timeToLive */
@@ -330,7 +471,12 @@ static int decode_int(bitstr_t *bs, const struct field_t *f,
 		break;
 	case UNCO:
 		BYTE_ALIGN(bs);
+<<<<<<< HEAD
 		CHECK_BOUND(bs, 2);
+=======
+		if (nf_h323_error_boundary(bs, 2, 0))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = get_len(bs);
 		bs->cur += len;
 		break;
@@ -341,12 +487,21 @@ static int decode_int(bitstr_t *bs, const struct field_t *f,
 
 	PRINT("\n");
 
+<<<<<<< HEAD
 	CHECK_BOUND(bs, 0);
 	return H323_ERROR_NONE;
 }
 
 /****************************************************************************/
 static int decode_enum(bitstr_t *bs, const struct field_t *f,
+=======
+	if (nf_h323_error_boundary(bs, 0, 0))
+		return H323_ERROR_BOUND;
+	return H323_ERROR_NONE;
+}
+
+static int decode_enum(struct bitstr *bs, const struct field_t *f,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                        char *base, int level)
 {
 	PRINT("%*.s%s\n", level * TAB_SIZE, " ", f->name);
@@ -357,12 +512,21 @@ static int decode_enum(bitstr_t *bs, const struct field_t *f,
 		INC_BITS(bs, f->sz);
 	}
 
+<<<<<<< HEAD
 	CHECK_BOUND(bs, 0);
 	return H323_ERROR_NONE;
 }
 
 /****************************************************************************/
 static int decode_bitstr(bitstr_t *bs, const struct field_t *f,
+=======
+	if (nf_h323_error_boundary(bs, 0, 0))
+		return H323_ERROR_BOUND;
+	return H323_ERROR_NONE;
+}
+
+static int decode_bitstr(struct bitstr *bs, const struct field_t *f,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                          char *base, int level)
 {
 	unsigned int len;
@@ -375,12 +539,22 @@ static int decode_bitstr(bitstr_t *bs, const struct field_t *f,
 		len = f->lb;
 		break;
 	case WORD:		/* 2-byte length */
+<<<<<<< HEAD
 		CHECK_BOUND(bs, 2);
+=======
+		if (nf_h323_error_boundary(bs, 2, 0))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = (*bs->cur++) << 8;
 		len += (*bs->cur++) + f->lb;
 		break;
 	case SEMI:
+<<<<<<< HEAD
 		CHECK_BOUND(bs, 2);
+=======
+		if (nf_h323_error_boundary(bs, 2, 0))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = get_len(bs);
 		break;
 	default:
@@ -391,12 +565,21 @@ static int decode_bitstr(bitstr_t *bs, const struct field_t *f,
 	bs->cur += len >> 3;
 	bs->bit = len & 7;
 
+<<<<<<< HEAD
 	CHECK_BOUND(bs, 0);
 	return H323_ERROR_NONE;
 }
 
 /****************************************************************************/
 static int decode_numstr(bitstr_t *bs, const struct field_t *f,
+=======
+	if (nf_h323_error_boundary(bs, 0, 0))
+		return H323_ERROR_BOUND;
+	return H323_ERROR_NONE;
+}
+
+static int decode_numstr(struct bitstr *bs, const struct field_t *f,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                          char *base, int level)
 {
 	unsigned int len;
@@ -404,17 +587,31 @@ static int decode_numstr(bitstr_t *bs, const struct field_t *f,
 	PRINT("%*.s%s\n", level * TAB_SIZE, " ", f->name);
 
 	/* 2 <= Range <= 255 */
+<<<<<<< HEAD
+=======
+	if (nf_h323_error_boundary(bs, 0, f->sz))
+		return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	len = get_bits(bs, f->sz) + f->lb;
 
 	BYTE_ALIGN(bs);
 	INC_BITS(bs, (len << 2));
 
+<<<<<<< HEAD
 	CHECK_BOUND(bs, 0);
 	return H323_ERROR_NONE;
 }
 
 /****************************************************************************/
 static int decode_octstr(bitstr_t *bs, const struct field_t *f,
+=======
+	if (nf_h323_error_boundary(bs, 0, 0))
+		return H323_ERROR_BOUND;
+	return H323_ERROR_NONE;
+}
+
+static int decode_octstr(struct bitstr *bs, const struct field_t *f,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                          char *base, int level)
 {
 	unsigned int len;
@@ -440,15 +637,30 @@ static int decode_octstr(bitstr_t *bs, const struct field_t *f,
 		break;
 	case BYTE:		/* Range == 256 */
 		BYTE_ALIGN(bs);
+<<<<<<< HEAD
 		CHECK_BOUND(bs, 1);
+=======
+		if (nf_h323_error_boundary(bs, 1, 0))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = (*bs->cur++) + f->lb;
 		break;
 	case SEMI:
 		BYTE_ALIGN(bs);
+<<<<<<< HEAD
 		CHECK_BOUND(bs, 2);
 		len = get_len(bs) + f->lb;
 		break;
 	default:		/* 2 <= Range <= 255 */
+=======
+		if (nf_h323_error_boundary(bs, 2, 0))
+			return H323_ERROR_BOUND;
+		len = get_len(bs) + f->lb;
+		break;
+	default:		/* 2 <= Range <= 255 */
+		if (nf_h323_error_boundary(bs, 0, f->sz))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = get_bits(bs, f->sz) + f->lb;
 		BYTE_ALIGN(bs);
 		break;
@@ -458,12 +670,21 @@ static int decode_octstr(bitstr_t *bs, const struct field_t *f,
 
 	PRINT("\n");
 
+<<<<<<< HEAD
 	CHECK_BOUND(bs, 0);
 	return H323_ERROR_NONE;
 }
 
 /****************************************************************************/
 static int decode_bmpstr(bitstr_t *bs, const struct field_t *f,
+=======
+	if (nf_h323_error_boundary(bs, 0, 0))
+		return H323_ERROR_BOUND;
+	return H323_ERROR_NONE;
+}
+
+static int decode_bmpstr(struct bitstr *bs, const struct field_t *f,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                          char *base, int level)
 {
 	unsigned int len;
@@ -473,10 +694,20 @@ static int decode_bmpstr(bitstr_t *bs, const struct field_t *f,
 	switch (f->sz) {
 	case BYTE:		/* Range == 256 */
 		BYTE_ALIGN(bs);
+<<<<<<< HEAD
 		CHECK_BOUND(bs, 1);
 		len = (*bs->cur++) + f->lb;
 		break;
 	default:		/* 2 <= Range <= 255 */
+=======
+		if (nf_h323_error_boundary(bs, 1, 0))
+			return H323_ERROR_BOUND;
+		len = (*bs->cur++) + f->lb;
+		break;
+	default:		/* 2 <= Range <= 255 */
+		if (nf_h323_error_boundary(bs, 0, f->sz))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = get_bits(bs, f->sz) + f->lb;
 		BYTE_ALIGN(bs);
 		break;
@@ -484,12 +715,21 @@ static int decode_bmpstr(bitstr_t *bs, const struct field_t *f,
 
 	bs->cur += len << 1;
 
+<<<<<<< HEAD
 	CHECK_BOUND(bs, 0);
 	return H323_ERROR_NONE;
 }
 
 /****************************************************************************/
 static int decode_seq(bitstr_t *bs, const struct field_t *f,
+=======
+	if (nf_h323_error_boundary(bs, 0, 0))
+		return H323_ERROR_BOUND;
+	return H323_ERROR_NONE;
+}
+
+static int decode_seq(struct bitstr *bs, const struct field_t *f,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                       char *base, int level)
 {
 	unsigned int ext, bmp, i, opt, len = 0, bmp2, bmp2_len;
@@ -503,9 +743,21 @@ static int decode_seq(bitstr_t *bs, const struct field_t *f,
 	base = (base && (f->attr & DECODE)) ? base + f->offset : NULL;
 
 	/* Extensible? */
+<<<<<<< HEAD
 	ext = (f->attr & EXT) ? get_bit(bs) : 0;
 
 	/* Get fields bitmap */
+=======
+	if (nf_h323_error_boundary(bs, 0, 1))
+		return H323_ERROR_BOUND;
+	ext = (f->attr & EXT) ? get_bit(bs) : 0;
+
+	/* Get fields bitmap */
+	if (nf_h323_error_boundary(bs, 0, f->sz))
+		return H323_ERROR_BOUND;
+	if (f->sz > 32)
+		return H323_ERROR_RANGE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bmp = get_bitmap(bs, f->sz);
 	if (base)
 		*(unsigned int *)base = bmp;
@@ -525,9 +777,17 @@ static int decode_seq(bitstr_t *bs, const struct field_t *f,
 
 		/* Decode */
 		if (son->attr & OPEN) {	/* Open field */
+<<<<<<< HEAD
 			CHECK_BOUND(bs, 2);
 			len = get_len(bs);
 			CHECK_BOUND(bs, len);
+=======
+			if (nf_h323_error_boundary(bs, 2, 0))
+				return H323_ERROR_BOUND;
+			len = get_len(bs);
+			if (nf_h323_error_boundary(bs, len, 0))
+				return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!base || !(son->attr & DECODE)) {
 				PRINT("%*.s%s\n", (level + 1) * TAB_SIZE,
 				      " ", son->name);
@@ -555,8 +815,18 @@ static int decode_seq(bitstr_t *bs, const struct field_t *f,
 		return H323_ERROR_NONE;
 
 	/* Get the extension bitmap */
+<<<<<<< HEAD
 	bmp2_len = get_bits(bs, 7) + 1;
 	CHECK_BOUND(bs, (bmp2_len + 7) >> 3);
+=======
+	if (nf_h323_error_boundary(bs, 0, 7))
+		return H323_ERROR_BOUND;
+	bmp2_len = get_bits(bs, 7) + 1;
+	if (nf_h323_error_boundary(bs, 0, bmp2_len))
+		return H323_ERROR_BOUND;
+	if (bmp2_len > 32)
+		return H323_ERROR_RANGE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bmp2 = get_bitmap(bs, bmp2_len);
 	bmp |= bmp2 >> f->sz;
 	if (base)
@@ -567,9 +837,17 @@ static int decode_seq(bitstr_t *bs, const struct field_t *f,
 	for (opt = 0; opt < bmp2_len; opt++, i++, son++) {
 		/* Check Range */
 		if (i >= f->ub) {	/* Newer Version? */
+<<<<<<< HEAD
 			CHECK_BOUND(bs, 2);
 			len = get_len(bs);
 			CHECK_BOUND(bs, len);
+=======
+			if (nf_h323_error_boundary(bs, 2, 0))
+				return H323_ERROR_BOUND;
+			len = get_len(bs);
+			if (nf_h323_error_boundary(bs, len, 0))
+				return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bs->cur += len;
 			continue;
 		}
@@ -583,9 +861,17 @@ static int decode_seq(bitstr_t *bs, const struct field_t *f,
 		if (!((0x80000000 >> opt) & bmp2))	/* Not present */
 			continue;
 
+<<<<<<< HEAD
 		CHECK_BOUND(bs, 2);
 		len = get_len(bs);
 		CHECK_BOUND(bs, len);
+=======
+		if (nf_h323_error_boundary(bs, 2, 0))
+			return H323_ERROR_BOUND;
+		len = get_len(bs);
+		if (nf_h323_error_boundary(bs, len, 0))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!base || !(son->attr & DECODE)) {
 			PRINT("%*.s%s\n", (level + 1) * TAB_SIZE, " ",
 			      son->name);
@@ -605,8 +891,12 @@ static int decode_seq(bitstr_t *bs, const struct field_t *f,
 	return H323_ERROR_NONE;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
 static int decode_seqof(bitstr_t *bs, const struct field_t *f,
+=======
+static int decode_seqof(struct bitstr *bs, const struct field_t *f,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                         char *base, int level)
 {
 	unsigned int count, effective_count = 0, i, len = 0;
@@ -623,22 +913,42 @@ static int decode_seqof(bitstr_t *bs, const struct field_t *f,
 	switch (f->sz) {
 	case BYTE:
 		BYTE_ALIGN(bs);
+<<<<<<< HEAD
 		CHECK_BOUND(bs, 1);
+=======
+		if (nf_h323_error_boundary(bs, 1, 0))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count = *bs->cur++;
 		break;
 	case WORD:
 		BYTE_ALIGN(bs);
+<<<<<<< HEAD
 		CHECK_BOUND(bs, 2);
+=======
+		if (nf_h323_error_boundary(bs, 2, 0))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count = *bs->cur++;
 		count <<= 8;
 		count += *bs->cur++;
 		break;
 	case SEMI:
 		BYTE_ALIGN(bs);
+<<<<<<< HEAD
 		CHECK_BOUND(bs, 2);
 		count = get_len(bs);
 		break;
 	default:
+=======
+		if (nf_h323_error_boundary(bs, 2, 0))
+			return H323_ERROR_BOUND;
+		count = get_len(bs);
+		break;
+	default:
+		if (nf_h323_error_boundary(bs, 0, f->sz))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count = get_bits(bs, f->sz);
 		break;
 	}
@@ -658,8 +968,16 @@ static int decode_seqof(bitstr_t *bs, const struct field_t *f,
 	for (i = 0; i < count; i++) {
 		if (son->attr & OPEN) {
 			BYTE_ALIGN(bs);
+<<<<<<< HEAD
 			len = get_len(bs);
 			CHECK_BOUND(bs, len);
+=======
+			if (nf_h323_error_boundary(bs, 2, 0))
+				return H323_ERROR_BOUND;
+			len = get_len(bs);
+			if (nf_h323_error_boundary(bs, len, 0))
+				return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!base || !(son->attr & DECODE)) {
 				PRINT("%*.s%s\n", (level + 1) * TAB_SIZE,
 				      " ", son->name);
@@ -694,9 +1012,13 @@ static int decode_seqof(bitstr_t *bs, const struct field_t *f,
 	return H323_ERROR_NONE;
 }
 
+<<<<<<< HEAD
 
 /****************************************************************************/
 static int decode_choice(bitstr_t *bs, const struct field_t *f,
+=======
+static int decode_choice(struct bitstr *bs, const struct field_t *f,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                          char *base, int level)
 {
 	unsigned int type, ext, len = 0;
@@ -710,11 +1032,25 @@ static int decode_choice(bitstr_t *bs, const struct field_t *f,
 	base = (base && (f->attr & DECODE)) ? base + f->offset : NULL;
 
 	/* Decode the choice index number */
+<<<<<<< HEAD
 	if ((f->attr & EXT) && get_bit(bs)) {
 		ext = 1;
 		type = get_bits(bs, 7) + f->lb;
 	} else {
 		ext = 0;
+=======
+	if (nf_h323_error_boundary(bs, 0, 1))
+		return H323_ERROR_BOUND;
+	if ((f->attr & EXT) && get_bit(bs)) {
+		ext = 1;
+		if (nf_h323_error_boundary(bs, 0, 7))
+			return H323_ERROR_BOUND;
+		type = get_bits(bs, 7) + f->lb;
+	} else {
+		ext = 0;
+		if (nf_h323_error_boundary(bs, 0, f->sz))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		type = get_bits(bs, f->sz);
 		if (type >= f->lb)
 			return H323_ERROR_RANGE;
@@ -727,8 +1063,16 @@ static int decode_choice(bitstr_t *bs, const struct field_t *f,
 	/* Check Range */
 	if (type >= f->ub) {	/* Newer version? */
 		BYTE_ALIGN(bs);
+<<<<<<< HEAD
 		len = get_len(bs);
 		CHECK_BOUND(bs, len);
+=======
+		if (nf_h323_error_boundary(bs, 2, 0))
+			return H323_ERROR_BOUND;
+		len = get_len(bs);
+		if (nf_h323_error_boundary(bs, len, 0))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bs->cur += len;
 		return H323_ERROR_NONE;
 	}
@@ -742,8 +1086,16 @@ static int decode_choice(bitstr_t *bs, const struct field_t *f,
 
 	if (ext || (son->attr & OPEN)) {
 		BYTE_ALIGN(bs);
+<<<<<<< HEAD
 		len = get_len(bs);
 		CHECK_BOUND(bs, len);
+=======
+		if (nf_h323_error_boundary(bs, len, 0))
+			return H323_ERROR_BOUND;
+		len = get_len(bs);
+		if (nf_h323_error_boundary(bs, len, 0))
+			return H323_ERROR_BOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!base || !(son->attr & DECODE)) {
 			PRINT("%*.s%s\n", (level + 1) * TAB_SIZE, " ",
 			      son->name);
@@ -765,14 +1117,21 @@ static int decode_choice(bitstr_t *bs, const struct field_t *f,
 	return H323_ERROR_NONE;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int DecodeRasMessage(unsigned char *buf, size_t sz, RasMessage *ras)
 {
 	static const struct field_t ras_message = {
 		FNAME("RasMessage") CHOICE, 5, 24, 32, DECODE | EXT,
 		0, _RasMessage
 	};
+<<<<<<< HEAD
 	bitstr_t bs;
+=======
+	struct bitstr bs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bs.buf = bs.beg = bs.cur = buf;
 	bs.end = buf + sz;
@@ -781,7 +1140,10 @@ int DecodeRasMessage(unsigned char *buf, size_t sz, RasMessage *ras)
 	return decode_choice(&bs, &ras_message, (char *) ras, 0);
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int DecodeH323_UserInformation(unsigned char *buf, unsigned char *beg,
 				      size_t sz, H323_UserInformation *uuie)
 {
@@ -789,7 +1151,11 @@ static int DecodeH323_UserInformation(unsigned char *buf, unsigned char *beg,
 		FNAME("H323-UserInformation") SEQ, 1, 2, 2, DECODE | EXT,
 		0, _H323_UserInformation
 	};
+<<<<<<< HEAD
 	bitstr_t bs;
+=======
+	struct bitstr bs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bs.buf = buf;
 	bs.beg = bs.cur = beg;
@@ -799,7 +1165,10 @@ static int DecodeH323_UserInformation(unsigned char *buf, unsigned char *beg,
 	return decode_seq(&bs, &h323_userinformation, (char *) uuie, 0);
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int DecodeMultimediaSystemControlMessage(unsigned char *buf, size_t sz,
 					 MultimediaSystemControlMessage *
 					 mscm)
@@ -808,7 +1177,11 @@ int DecodeMultimediaSystemControlMessage(unsigned char *buf, size_t sz,
 		FNAME("MultimediaSystemControlMessage") CHOICE, 2, 4, 4,
 		DECODE | EXT, 0, _MultimediaSystemControlMessage
 	};
+<<<<<<< HEAD
 	bitstr_t bs;
+=======
+	struct bitstr bs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bs.buf = bs.beg = bs.cur = buf;
 	bs.end = buf + sz;
@@ -818,7 +1191,10 @@ int DecodeMultimediaSystemControlMessage(unsigned char *buf, size_t sz,
 			     (char *) mscm, 0);
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int DecodeQ931(unsigned char *buf, size_t sz, Q931 *q931)
 {
 	unsigned char *p = buf;
@@ -846,9 +1222,16 @@ int DecodeQ931(unsigned char *buf, size_t sz, Q931 *q931)
 	sz -= len;
 
 	/* Message Type */
+<<<<<<< HEAD
 	if (sz < 1)
 		return H323_ERROR_BOUND;
 	q931->MessageType = *p++;
+=======
+	if (sz < 2)
+		return H323_ERROR_BOUND;
+	q931->MessageType = *p++;
+	sz--;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PRINT("MessageType = %02X\n", q931->MessageType);
 	if (*p & 0x80) {
 		p++;
@@ -876,6 +1259,10 @@ int DecodeQ931(unsigned char *buf, size_t sz, Q931 *q931)
 		if (sz < 1)
 			break;
 		len = *p++;
+<<<<<<< HEAD
+=======
+		sz--;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sz < len)
 			break;
 		p += len;

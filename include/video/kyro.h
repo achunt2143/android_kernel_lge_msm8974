@@ -35,6 +35,7 @@ struct kyrofb_info {
 	/* Useful to hold depth here for Linux */
 	u8 PIXDEPTH;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MTRR
 	int mtrr_handle;
 #endif
@@ -52,6 +53,11 @@ extern unsigned int kyro_dev_regs_size(void);
 
 extern u32 kyro_dev_overlay_offset(void);
 
+=======
+	int wc_cookie;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * benedict.gaster@superh.com
  * Added the follow IOCTLS for the creation of overlay services...

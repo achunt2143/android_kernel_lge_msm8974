@@ -271,7 +271,11 @@ struct ar9170_tx_frame {
 
 	union {
 		struct ieee80211_hdr i3e;
+<<<<<<< HEAD
 		u8 payload[0];
+=======
+		DECLARE_FLEX_ARRAY(u8, payload);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} data;
 } __packed;
 
@@ -327,7 +331,11 @@ struct _carl9170_tx_superdesc {
 struct _carl9170_tx_superframe {
 	struct _carl9170_tx_superdesc s;
 	struct _ar9170_tx_hwdesc f;
+<<<<<<< HEAD
 	u8 frame_data[0];
+=======
+	u8 frame_data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed __aligned(4);
 
 #define	CARL9170_TX_SUPERDESC_LEN		24
@@ -367,6 +375,7 @@ struct ar9170_rx_macstatus {
 
 struct ar9170_rx_frame_single {
 	struct ar9170_rx_head phy_head;
+<<<<<<< HEAD
 	struct ieee80211_hdr i3e;
 	struct ar9170_rx_phystatus phy_tail;
 	struct ar9170_rx_macstatus macstatus;
@@ -388,6 +397,29 @@ struct ar9170_rx_frame_tail {
 	struct ar9170_rx_phystatus phy_tail;
 	struct ar9170_rx_macstatus macstatus;
 } __packed;
+=======
+	struct ieee80211_hdr i3e __packed __aligned(2);
+	struct ar9170_rx_phystatus phy_tail;
+	struct ar9170_rx_macstatus macstatus;
+};
+
+struct ar9170_rx_frame_head {
+	struct ar9170_rx_head phy_head;
+	struct ieee80211_hdr i3e __packed __aligned(2);
+	struct ar9170_rx_macstatus macstatus;
+};
+
+struct ar9170_rx_frame_middle {
+	struct ieee80211_hdr i3e __packed __aligned(2);
+	struct ar9170_rx_macstatus macstatus;
+};
+
+struct ar9170_rx_frame_tail {
+	struct ieee80211_hdr i3e __packed __aligned(2);
+	struct ar9170_rx_phystatus phy_tail;
+	struct ar9170_rx_macstatus macstatus;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ar9170_rx_frame {
 	union {
@@ -395,8 +427,13 @@ struct ar9170_rx_frame {
 		struct ar9170_rx_frame_head head;
 		struct ar9170_rx_frame_middle middle;
 		struct ar9170_rx_frame_tail tail;
+<<<<<<< HEAD
 	} __packed;
 } __packed;
+=======
+	};
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u8 ar9170_get_decrypt_type(struct ar9170_rx_macstatus *t)
 {

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_SPI_MMC_SPI_H
 #define __LINUX_SPI_MMC_SPI_H
 
@@ -21,6 +25,7 @@ struct mmc_spi_platform_data {
 		void *);
 	void (*exit)(struct device *, void *);
 
+<<<<<<< HEAD
 	/* sense switch on sd cards */
 	int (*get_ro)(struct device *);
 
@@ -32,6 +37,11 @@ struct mmc_spi_platform_data {
 
 	/* Capabilities to pass into mmc core (e.g. MMC_CAP_NEEDS_POLL). */
 	unsigned long caps;
+=======
+	/* Capabilities to pass into mmc core (e.g. MMC_CAP_NEEDS_POLL). */
+	unsigned long caps;
+	unsigned long caps2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* how long to debounce card detect, in msecs */
 	u16 detect_delay;
@@ -42,6 +52,7 @@ struct mmc_spi_platform_data {
 	void (*setpower)(struct device *, unsigned int maskval);
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 extern struct mmc_spi_platform_data *mmc_spi_get_pdata(struct spi_device *spi);
 extern void mmc_spi_put_pdata(struct spi_device *spi);
@@ -53,5 +64,9 @@ mmc_spi_get_pdata(struct spi_device *spi)
 }
 static inline void mmc_spi_put_pdata(struct spi_device *spi) {}
 #endif /* CONFIG_OF */
+=======
+extern struct mmc_spi_platform_data *mmc_spi_get_pdata(struct spi_device *spi);
+extern void mmc_spi_put_pdata(struct spi_device *spi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __LINUX_SPI_MMC_SPI_H */

@@ -53,7 +53,11 @@ Nintendo Wii device tree
   - compatible : should be "nintendo,flipper-pic"
   - interrupt-controller
 
+<<<<<<< HEAD
 1.c) The Digital Signal Procesor (DSP) node
+=======
+1.c) The Digital Signal Processor (DSP) node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   Represents the digital signal processor interface, designed to offload
   audio related tasks.
@@ -97,6 +101,7 @@ Nintendo Wii device tree
    - reg : should contain the EXI registers location and length
    - interrupts : should contain the EXI interrupt
 
+<<<<<<< HEAD
 1.g) The Open Host Controller Interface (OHCI) nodes
 
   Represent the USB 1.x Open Host Controller Interfaces.
@@ -107,6 +112,8 @@ Nintendo Wii device tree
    - reg : should contain the OHCI registers location and length
    - interrupts : should contain the OHCI interrupt
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1.h) The Enhanced Host Controller Interface (EHCI) node
 
   Represents the USB 2.0 Enhanced Host Controller Interface.
@@ -148,6 +155,7 @@ Nintendo Wii device tree
   - reg : should contain the controller registers location and length
   - interrupt-controller
   - interrupts : should contain the cascade interrupt of the "flipper" pic
+<<<<<<< HEAD
   - interrupt-parent: should contain the phandle of the "flipper" pic
 
 1.l) The General Purpose I/O (GPIO) controller node
@@ -160,6 +168,12 @@ Nintendo Wii device tree
   - compatible : should be "nintendo,hollywood-gpio"
   - reg : should contain the IPC registers location and length
   - gpio-controller
+=======
+
+1.l) The General Purpose I/O (GPIO) controller node
+
+  see Documentation/devicetree/bindings/gpio/nintendo,hollywood-gpio.txt
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 1.m) The control node
 

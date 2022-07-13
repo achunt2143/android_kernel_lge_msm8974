@@ -1,12 +1,23 @@
+<<<<<<< HEAD
 /*
  * drivers/base/power/sysfs.c - sysfs entries for device PM
  */
 
 #include <linux/device.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* sysfs entries for device PM */
+#include <linux/device.h>
+#include <linux/kobject.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/export.h>
 #include <linux/pm_qos.h>
 #include <linux/pm_runtime.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_wakeup.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/atomic.h>
 #include <linux/jiffies.h>
 #include "power.h"
@@ -92,6 +103,7 @@
  *	wakeup_count - Report the number of wakeup events related to the device
  */
 
+<<<<<<< HEAD
 static const char enabled[] = "enabled";
 static const char disabled[] = "disabled";
 
@@ -99,19 +111,30 @@ const char power_group_name[] = "power";
 EXPORT_SYMBOL_GPL(power_group_name);
 
 #ifdef CONFIG_PM_RUNTIME
+=======
+const char power_group_name[] = "power";
+EXPORT_SYMBOL_GPL(power_group_name);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char ctrl_auto[] = "auto";
 static const char ctrl_on[] = "on";
 
 static ssize_t control_show(struct device *dev, struct device_attribute *attr,
 			    char *buf)
 {
+<<<<<<< HEAD
 	return sprintf(buf, "%s\n",
 				dev->power.runtime_auto ? ctrl_auto : ctrl_on);
+=======
+	return sysfs_emit(buf, "%s\n",
+			  dev->power.runtime_auto ? ctrl_auto : ctrl_on);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t control_store(struct device * dev, struct device_attribute *attr,
 			     const char * buf, size_t n)
 {
+<<<<<<< HEAD
 	char *cp;
 	int len = n;
 
@@ -122,6 +145,12 @@ static ssize_t control_store(struct device * dev, struct device_attribute *attr,
 	if (len == sizeof ctrl_auto - 1 && strncmp(buf, ctrl_auto, len) == 0)
 		pm_runtime_allow(dev);
 	else if (len == sizeof ctrl_on - 1 && strncmp(buf, ctrl_on, len) == 0)
+=======
+	device_lock(dev);
+	if (sysfs_streq(buf, ctrl_auto))
+		pm_runtime_allow(dev);
+	else if (sysfs_streq(buf, ctrl_on))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pm_runtime_forbid(dev);
 	else
 		n = -EINVAL;
@@ -129,6 +158,7 @@ static ssize_t control_store(struct device * dev, struct device_attribute *attr,
 	return n;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(control, 0644, control_show, control_store);
 
 static ssize_t rtpm_active_time_show(struct device *dev,
@@ -180,11 +210,64 @@ static ssize_t rtpm_status_show(struct device *dev,
 			break;
 		case RPM_ACTIVE:
 			p = "active\n";
+=======
+static DEVICE_ATTR_RW(control);
+
+static ssize_t runtime_active_time_show(struct device *dev,
+					struct device_attribute *attr,
+					char *buf)
+{
+	u64 tmp = pm_runtime_active_time(dev);
+
+	do_div(tmp, NSEC_PER_MSEC);
+
+	return sysfs_emit(buf, "%llu\n", tmp);
+}
+
+static DEVICE_ATTR_RO(runtime_active_time);
+
+static ssize_t runtime_suspended_time_show(struct device *dev,
+					   struct device_attribute *attr,
+					   char *buf)
+{
+	u64 tmp = pm_runtime_suspended_time(dev);
+
+	do_div(tmp, NSEC_PER_MSEC);
+
+	return sysfs_emit(buf, "%llu\n", tmp);
+}
+
+static DEVICE_ATTR_RO(runtime_suspended_time);
+
+static ssize_t runtime_status_show(struct device *dev,
+				   struct device_attribute *attr, char *buf)
+{
+	const char *output;
+
+	if (dev->power.runtime_error) {
+		output = "error";
+	} else if (dev->power.disable_depth) {
+		output = "unsupported";
+	} else {
+		switch (dev->power.runtime_status) {
+		case RPM_SUSPENDED:
+			output = "suspended";
+			break;
+		case RPM_SUSPENDING:
+			output = "suspending";
+			break;
+		case RPM_RESUMING:
+			output = "resuming";
+			break;
+		case RPM_ACTIVE:
+			output = "active";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			return -EIO;
 		}
 	}
+<<<<<<< HEAD
 	return sprintf(buf, p);
 }
 
@@ -196,6 +279,21 @@ static ssize_t autosuspend_delay_ms_show(struct device *dev,
 	if (!dev->power.use_autosuspend)
 		return -EIO;
 	return sprintf(buf, "%d\n", dev->power.autosuspend_delay);
+=======
+	return sysfs_emit(buf, "%s\n", output);
+}
+
+static DEVICE_ATTR_RO(runtime_status);
+
+static ssize_t autosuspend_delay_ms_show(struct device *dev,
+					 struct device_attribute *attr,
+					 char *buf)
+{
+	if (!dev->power.use_autosuspend)
+		return -EIO;
+
+	return sysfs_emit(buf, "%d\n", dev->power.autosuspend_delay);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t autosuspend_delay_ms_store(struct device *dev,
@@ -206,7 +304,11 @@ static ssize_t autosuspend_delay_ms_store(struct device *dev,
 	if (!dev->power.use_autosuspend)
 		return -EIO;
 
+<<<<<<< HEAD
 	if (strict_strtol(buf, 10, &delay) != 0 || delay != (int) delay)
+=======
+	if (kstrtol(buf, 10, &delay) != 0 || delay != (int) delay)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	device_lock(dev);
@@ -215,6 +317,7 @@ static ssize_t autosuspend_delay_ms_store(struct device *dev,
 	return n;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(autosuspend_delay_ms, 0644, autosuspend_delay_ms_show,
 		autosuspend_delay_ms_store);
 
@@ -227,10 +330,32 @@ static ssize_t pm_qos_latency_show(struct device *dev,
 static ssize_t pm_qos_latency_store(struct device *dev,
 				    struct device_attribute *attr,
 				    const char *buf, size_t n)
+=======
+static DEVICE_ATTR_RW(autosuspend_delay_ms);
+
+static ssize_t pm_qos_resume_latency_us_show(struct device *dev,
+					     struct device_attribute *attr,
+					     char *buf)
+{
+	s32 value = dev_pm_qos_requested_resume_latency(dev);
+
+	if (value == 0)
+		return sysfs_emit(buf, "n/a\n");
+	if (value == PM_QOS_RESUME_LATENCY_NO_CONSTRAINT)
+		value = 0;
+
+	return sysfs_emit(buf, "%d\n", value);
+}
+
+static ssize_t pm_qos_resume_latency_us_store(struct device *dev,
+					      struct device_attribute *attr,
+					      const char *buf, size_t n)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	s32 value;
 	int ret;
 
+<<<<<<< HEAD
 	if (kstrtos32(buf, 0, &value))
 		return -EINVAL;
 
@@ -272,12 +397,124 @@ wake_store(struct device * dev, struct device_attribute *attr,
 		device_set_wakeup_enable(dev, 1);
 	else if (len == sizeof disabled - 1
 			&& strncmp(buf, disabled, sizeof disabled - 1) == 0)
+=======
+	if (!kstrtos32(buf, 0, &value)) {
+		/*
+		 * Prevent users from writing negative or "no constraint" values
+		 * directly.
+		 */
+		if (value < 0 || value == PM_QOS_RESUME_LATENCY_NO_CONSTRAINT)
+			return -EINVAL;
+
+		if (value == 0)
+			value = PM_QOS_RESUME_LATENCY_NO_CONSTRAINT;
+	} else if (sysfs_streq(buf, "n/a")) {
+		value = 0;
+	} else {
+		return -EINVAL;
+	}
+
+	ret = dev_pm_qos_update_request(dev->power.qos->resume_latency_req,
+					value);
+	return ret < 0 ? ret : n;
+}
+
+static DEVICE_ATTR_RW(pm_qos_resume_latency_us);
+
+static ssize_t pm_qos_latency_tolerance_us_show(struct device *dev,
+						struct device_attribute *attr,
+						char *buf)
+{
+	s32 value = dev_pm_qos_get_user_latency_tolerance(dev);
+
+	if (value < 0)
+		return sysfs_emit(buf, "%s\n", "auto");
+	if (value == PM_QOS_LATENCY_ANY)
+		return sysfs_emit(buf, "%s\n", "any");
+
+	return sysfs_emit(buf, "%d\n", value);
+}
+
+static ssize_t pm_qos_latency_tolerance_us_store(struct device *dev,
+						 struct device_attribute *attr,
+						 const char *buf, size_t n)
+{
+	s32 value;
+	int ret;
+
+	if (kstrtos32(buf, 0, &value) == 0) {
+		/* Users can't write negative values directly */
+		if (value < 0)
+			return -EINVAL;
+	} else {
+		if (sysfs_streq(buf, "auto"))
+			value = PM_QOS_LATENCY_TOLERANCE_NO_CONSTRAINT;
+		else if (sysfs_streq(buf, "any"))
+			value = PM_QOS_LATENCY_ANY;
+		else
+			return -EINVAL;
+	}
+	ret = dev_pm_qos_update_user_latency_tolerance(dev, value);
+	return ret < 0 ? ret : n;
+}
+
+static DEVICE_ATTR_RW(pm_qos_latency_tolerance_us);
+
+static ssize_t pm_qos_no_power_off_show(struct device *dev,
+					struct device_attribute *attr,
+					char *buf)
+{
+	return sysfs_emit(buf, "%d\n", !!(dev_pm_qos_requested_flags(dev)
+					  & PM_QOS_FLAG_NO_POWER_OFF));
+}
+
+static ssize_t pm_qos_no_power_off_store(struct device *dev,
+					 struct device_attribute *attr,
+					 const char *buf, size_t n)
+{
+	int ret;
+
+	if (kstrtoint(buf, 0, &ret))
+		return -EINVAL;
+
+	if (ret != 0 && ret != 1)
+		return -EINVAL;
+
+	ret = dev_pm_qos_update_flags(dev, PM_QOS_FLAG_NO_POWER_OFF, ret);
+	return ret < 0 ? ret : n;
+}
+
+static DEVICE_ATTR_RW(pm_qos_no_power_off);
+
+#ifdef CONFIG_PM_SLEEP
+static const char _enabled[] = "enabled";
+static const char _disabled[] = "disabled";
+
+static ssize_t wakeup_show(struct device *dev, struct device_attribute *attr,
+			   char *buf)
+{
+	return sysfs_emit(buf, "%s\n", device_can_wakeup(dev)
+			  ? (device_may_wakeup(dev) ? _enabled : _disabled)
+			  : "");
+}
+
+static ssize_t wakeup_store(struct device *dev, struct device_attribute *attr,
+			    const char *buf, size_t n)
+{
+	if (!device_can_wakeup(dev))
+		return -EINVAL;
+
+	if (sysfs_streq(buf, _enabled))
+		device_set_wakeup_enable(dev, 1);
+	else if (sysfs_streq(buf, _disabled))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		device_set_wakeup_enable(dev, 0);
 	else
 		return -EINVAL;
 	return n;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(wakeup, 0644, wake_show, wake_store);
 
 static ssize_t wakeup_count_show(struct device *dev,
@@ -319,6 +556,14 @@ static ssize_t wakeup_abort_count_show(struct device *dev,
 					char *buf)
 {
 	unsigned long count = 0;
+=======
+static DEVICE_ATTR_RW(wakeup);
+
+static ssize_t wakeup_count_show(struct device *dev,
+				 struct device_attribute *attr, char *buf)
+{
+	unsigned long count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool enabled = false;
 
 	spin_lock_irq(&dev->power.lock);
@@ -327,16 +572,72 @@ static ssize_t wakeup_abort_count_show(struct device *dev,
 		enabled = true;
 	}
 	spin_unlock_irq(&dev->power.lock);
+<<<<<<< HEAD
 	return enabled ? sprintf(buf, "%lu\n", count) : sprintf(buf, "\n");
 }
 
 static DEVICE_ATTR(wakeup_abort_count, 0444, wakeup_abort_count_show, NULL);
+=======
+
+	if (!enabled)
+		return sysfs_emit(buf, "\n");
+	return sysfs_emit(buf, "%lu\n", count);
+}
+
+static DEVICE_ATTR_RO(wakeup_count);
+
+static ssize_t wakeup_active_count_show(struct device *dev,
+					struct device_attribute *attr,
+					char *buf)
+{
+	unsigned long count;
+	bool enabled = false;
+
+	spin_lock_irq(&dev->power.lock);
+	if (dev->power.wakeup) {
+		count = dev->power.wakeup->active_count;
+		enabled = true;
+	}
+	spin_unlock_irq(&dev->power.lock);
+
+	if (!enabled)
+		return sysfs_emit(buf, "\n");
+	return sysfs_emit(buf, "%lu\n", count);
+}
+
+static DEVICE_ATTR_RO(wakeup_active_count);
+
+static ssize_t wakeup_abort_count_show(struct device *dev,
+				       struct device_attribute *attr,
+				       char *buf)
+{
+	unsigned long count;
+	bool enabled = false;
+
+	spin_lock_irq(&dev->power.lock);
+	if (dev->power.wakeup) {
+		count = dev->power.wakeup->wakeup_count;
+		enabled = true;
+	}
+	spin_unlock_irq(&dev->power.lock);
+
+	if (!enabled)
+		return sysfs_emit(buf, "\n");
+	return sysfs_emit(buf, "%lu\n", count);
+}
+
+static DEVICE_ATTR_RO(wakeup_abort_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t wakeup_expire_count_show(struct device *dev,
 					struct device_attribute *attr,
 					char *buf)
 {
+<<<<<<< HEAD
 	unsigned long count = 0;
+=======
+	unsigned long count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool enabled = false;
 
 	spin_lock_irq(&dev->power.lock);
@@ -345,6 +646,7 @@ static ssize_t wakeup_expire_count_show(struct device *dev,
 		enabled = true;
 	}
 	spin_unlock_irq(&dev->power.lock);
+<<<<<<< HEAD
 	return enabled ? sprintf(buf, "%lu\n", count) : sprintf(buf, "\n");
 }
 
@@ -354,6 +656,20 @@ static ssize_t wakeup_active_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
 	unsigned int active = 0;
+=======
+
+	if (!enabled)
+		return sysfs_emit(buf, "\n");
+	return sysfs_emit(buf, "%lu\n", count);
+}
+
+static DEVICE_ATTR_RO(wakeup_expire_count);
+
+static ssize_t wakeup_active_show(struct device *dev,
+				  struct device_attribute *attr, char *buf)
+{
+	unsigned int active;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool enabled = false;
 
 	spin_lock_irq(&dev->power.lock);
@@ -362,6 +678,7 @@ static ssize_t wakeup_active_show(struct device *dev,
 		enabled = true;
 	}
 	spin_unlock_irq(&dev->power.lock);
+<<<<<<< HEAD
 	return enabled ? sprintf(buf, "%u\n", active) : sprintf(buf, "\n");
 }
 
@@ -371,6 +688,21 @@ static ssize_t wakeup_total_time_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
 	s64 msec = 0;
+=======
+
+	if (!enabled)
+		return sysfs_emit(buf, "\n");
+	return sysfs_emit(buf, "%u\n", active);
+}
+
+static DEVICE_ATTR_RO(wakeup_active);
+
+static ssize_t wakeup_total_time_ms_show(struct device *dev,
+					 struct device_attribute *attr,
+					 char *buf)
+{
+	s64 msec;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool enabled = false;
 
 	spin_lock_irq(&dev->power.lock);
@@ -379,6 +711,7 @@ static ssize_t wakeup_total_time_show(struct device *dev,
 		enabled = true;
 	}
 	spin_unlock_irq(&dev->power.lock);
+<<<<<<< HEAD
 	return enabled ? sprintf(buf, "%lld\n", msec) : sprintf(buf, "\n");
 }
 
@@ -388,6 +721,20 @@ static ssize_t wakeup_max_time_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
 	s64 msec = 0;
+=======
+
+	if (!enabled)
+		return sysfs_emit(buf, "\n");
+	return sysfs_emit(buf, "%lld\n", msec);
+}
+
+static DEVICE_ATTR_RO(wakeup_total_time_ms);
+
+static ssize_t wakeup_max_time_ms_show(struct device *dev,
+				       struct device_attribute *attr, char *buf)
+{
+	s64 msec;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool enabled = false;
 
 	spin_lock_irq(&dev->power.lock);
@@ -396,6 +743,7 @@ static ssize_t wakeup_max_time_show(struct device *dev,
 		enabled = true;
 	}
 	spin_unlock_irq(&dev->power.lock);
+<<<<<<< HEAD
 	return enabled ? sprintf(buf, "%lld\n", msec) : sprintf(buf, "\n");
 }
 
@@ -405,6 +753,21 @@ static ssize_t wakeup_last_time_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
 {
 	s64 msec = 0;
+=======
+
+	if (!enabled)
+		return sysfs_emit(buf, "\n");
+	return sysfs_emit(buf, "%lld\n", msec);
+}
+
+static DEVICE_ATTR_RO(wakeup_max_time_ms);
+
+static ssize_t wakeup_last_time_ms_show(struct device *dev,
+					struct device_attribute *attr,
+					char *buf)
+{
+	s64 msec;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool enabled = false;
 
 	spin_lock_irq(&dev->power.lock);
@@ -413,6 +776,7 @@ static ssize_t wakeup_last_time_show(struct device *dev,
 		enabled = true;
 	}
 	spin_unlock_irq(&dev->power.lock);
+<<<<<<< HEAD
 	return enabled ? sprintf(buf, "%lld\n", msec) : sprintf(buf, "\n");
 }
 
@@ -424,6 +788,30 @@ static ssize_t wakeup_prevent_sleep_time_show(struct device *dev,
 					      char *buf)
 {
 	s64 msec = 0;
+=======
+
+	if (!enabled)
+		return sysfs_emit(buf, "\n");
+	return sysfs_emit(buf, "%lld\n", msec);
+}
+
+static inline int dpm_sysfs_wakeup_change_owner(struct device *dev, kuid_t kuid,
+						kgid_t kgid)
+{
+	if (dev->power.wakeup && dev->power.wakeup->dev)
+		return device_change_owner(dev->power.wakeup->dev, kuid, kgid);
+	return 0;
+}
+
+static DEVICE_ATTR_RO(wakeup_last_time_ms);
+
+#ifdef CONFIG_PM_AUTOSLEEP
+static ssize_t wakeup_prevent_sleep_time_ms_show(struct device *dev,
+						 struct device_attribute *attr,
+						 char *buf)
+{
+	s64 msec;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool enabled = false;
 
 	spin_lock_irq(&dev->power.lock);
@@ -432,6 +820,7 @@ static ssize_t wakeup_prevent_sleep_time_show(struct device *dev,
 		enabled = true;
 	}
 	spin_unlock_irq(&dev->power.lock);
+<<<<<<< HEAD
 	return enabled ? sprintf(buf, "%lld\n", msec) : sprintf(buf, "\n");
 }
 
@@ -479,11 +868,72 @@ static ssize_t async_show(struct device *dev, struct device_attribute *attr,
 {
 	return sprintf(buf, "%s\n",
 			device_async_suspend_enabled(dev) ? enabled : disabled);
+=======
+
+	if (!enabled)
+		return sysfs_emit(buf, "\n");
+	return sysfs_emit(buf, "%lld\n", msec);
+}
+
+static DEVICE_ATTR_RO(wakeup_prevent_sleep_time_ms);
+#endif /* CONFIG_PM_AUTOSLEEP */
+#else /* CONFIG_PM_SLEEP */
+static inline int dpm_sysfs_wakeup_change_owner(struct device *dev, kuid_t kuid,
+						kgid_t kgid)
+{
+	return 0;
+}
+#endif
+
+#ifdef CONFIG_PM_ADVANCED_DEBUG
+static ssize_t runtime_usage_show(struct device *dev,
+				  struct device_attribute *attr, char *buf)
+{
+	return sysfs_emit(buf, "%d\n", atomic_read(&dev->power.usage_count));
+}
+static DEVICE_ATTR_RO(runtime_usage);
+
+static ssize_t runtime_active_kids_show(struct device *dev,
+					struct device_attribute *attr,
+					char *buf)
+{
+	return sysfs_emit(buf, "%d\n", dev->power.ignore_children ?
+			  0 : atomic_read(&dev->power.child_count));
+}
+static DEVICE_ATTR_RO(runtime_active_kids);
+
+static ssize_t runtime_enabled_show(struct device *dev,
+				    struct device_attribute *attr, char *buf)
+{
+	const char *output;
+
+	if (dev->power.disable_depth && !dev->power.runtime_auto)
+		output = "disabled & forbidden";
+	else if (dev->power.disable_depth)
+		output = "disabled";
+	else if (!dev->power.runtime_auto)
+		output = "forbidden";
+	else
+		output = "enabled";
+
+	return sysfs_emit(buf, "%s\n", output);
+}
+static DEVICE_ATTR_RO(runtime_enabled);
+
+#ifdef CONFIG_PM_SLEEP
+static ssize_t async_show(struct device *dev, struct device_attribute *attr,
+			  char *buf)
+{
+	return sysfs_emit(buf, "%s\n",
+			  device_async_suspend_enabled(dev) ?
+			  _enabled : _disabled);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t async_store(struct device *dev, struct device_attribute *attr,
 			   const char *buf, size_t n)
 {
+<<<<<<< HEAD
 	char *cp;
 	int len = n;
 
@@ -493,13 +943,24 @@ static ssize_t async_store(struct device *dev, struct device_attribute *attr,
 	if (len == sizeof enabled - 1 && strncmp(buf, enabled, len) == 0)
 		device_enable_async_suspend(dev);
 	else if (len == sizeof disabled - 1 && strncmp(buf, disabled, len) == 0)
+=======
+	if (sysfs_streq(buf, _enabled))
+		device_enable_async_suspend(dev);
+	else if (sysfs_streq(buf, _disabled))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		device_disable_async_suspend(dev);
 	else
 		return -EINVAL;
 	return n;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(async, 0644, async_show, async_store);
+=======
+static DEVICE_ATTR_RW(async);
+
+#endif /* CONFIG_PM_SLEEP */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_PM_ADVANCED_DEBUG */
 
 static struct attribute *power_attrs[] = {
@@ -507,16 +968,26 @@ static struct attribute *power_attrs[] = {
 #ifdef CONFIG_PM_SLEEP
 	&dev_attr_async.attr,
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_runtime_status.attr,
 	&dev_attr_runtime_usage.attr,
 	&dev_attr_runtime_active_kids.attr,
 	&dev_attr_runtime_enabled.attr,
+<<<<<<< HEAD
 #endif
 #endif /* CONFIG_PM_ADVANCED_DEBUG */
 	NULL,
 };
 static struct attribute_group pm_attr_group = {
+=======
+#endif /* CONFIG_PM_ADVANCED_DEBUG */
+	NULL,
+};
+static const struct attribute_group pm_attr_group = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name	= power_group_name,
 	.attrs	= power_attrs,
 };
@@ -538,13 +1009,20 @@ static struct attribute *wakeup_attrs[] = {
 #endif
 	NULL,
 };
+<<<<<<< HEAD
 static struct attribute_group pm_wakeup_attr_group = {
+=======
+static const struct attribute_group pm_wakeup_attr_group = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name	= power_group_name,
 	.attrs	= wakeup_attrs,
 };
 
 static struct attribute *runtime_attrs[] = {
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_PM_ADVANCED_DEBUG
 	&dev_attr_runtime_status.attr,
 #endif
@@ -552,14 +1030,21 @@ static struct attribute *runtime_attrs[] = {
 	&dev_attr_runtime_suspended_time.attr,
 	&dev_attr_runtime_active_time.attr,
 	&dev_attr_autosuspend_delay_ms.attr,
+<<<<<<< HEAD
 #endif /* CONFIG_PM_RUNTIME */
 	NULL,
 };
 static struct attribute_group pm_runtime_attr_group = {
+=======
+	NULL,
+};
+static const struct attribute_group pm_runtime_attr_group = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name	= power_group_name,
 	.attrs	= runtime_attrs,
 };
 
+<<<<<<< HEAD
 static struct attribute *pm_qos_attrs[] = {
 #ifdef CONFIG_PM_RUNTIME
 	&dev_attr_pm_qos_resume_latency_us.attr,
@@ -569,21 +1054,60 @@ static struct attribute *pm_qos_attrs[] = {
 static struct attribute_group pm_qos_attr_group = {
 	.name	= power_group_name,
 	.attrs	= pm_qos_attrs,
+=======
+static struct attribute *pm_qos_resume_latency_attrs[] = {
+	&dev_attr_pm_qos_resume_latency_us.attr,
+	NULL,
+};
+static const struct attribute_group pm_qos_resume_latency_attr_group = {
+	.name	= power_group_name,
+	.attrs	= pm_qos_resume_latency_attrs,
+};
+
+static struct attribute *pm_qos_latency_tolerance_attrs[] = {
+	&dev_attr_pm_qos_latency_tolerance_us.attr,
+	NULL,
+};
+static const struct attribute_group pm_qos_latency_tolerance_attr_group = {
+	.name	= power_group_name,
+	.attrs	= pm_qos_latency_tolerance_attrs,
+};
+
+static struct attribute *pm_qos_flags_attrs[] = {
+	&dev_attr_pm_qos_no_power_off.attr,
+	NULL,
+};
+static const struct attribute_group pm_qos_flags_attr_group = {
+	.name	= power_group_name,
+	.attrs	= pm_qos_flags_attrs,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int dpm_sysfs_add(struct device *dev)
 {
 	int rc;
 
+<<<<<<< HEAD
+=======
+	/* No need to create PM sysfs if explicitly disabled. */
+	if (device_pm_not_required(dev))
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = sysfs_create_group(&dev->kobj, &pm_attr_group);
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	if (pm_runtime_callbacks_present(dev)) {
+=======
+	if (!pm_runtime_has_no_callbacks(dev)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = sysfs_merge_group(&dev->kobj, &pm_runtime_attr_group);
 		if (rc)
 			goto err_out;
 	}
+<<<<<<< HEAD
 
 	if (device_can_wakeup(dev)) {
 		rc = sysfs_merge_group(&dev->kobj, &pm_wakeup_attr_group);
@@ -596,19 +1120,94 @@ int dpm_sysfs_add(struct device *dev)
 	}
 	return 0;
 
+=======
+	if (device_can_wakeup(dev)) {
+		rc = sysfs_merge_group(&dev->kobj, &pm_wakeup_attr_group);
+		if (rc)
+			goto err_runtime;
+	}
+	if (dev->power.set_latency_tolerance) {
+		rc = sysfs_merge_group(&dev->kobj,
+				       &pm_qos_latency_tolerance_attr_group);
+		if (rc)
+			goto err_wakeup;
+	}
+	rc = pm_wakeup_source_sysfs_add(dev);
+	if (rc)
+		goto err_latency;
+	return 0;
+
+ err_latency:
+	sysfs_unmerge_group(&dev->kobj, &pm_qos_latency_tolerance_attr_group);
+ err_wakeup:
+	sysfs_unmerge_group(&dev->kobj, &pm_wakeup_attr_group);
+ err_runtime:
+	sysfs_unmerge_group(&dev->kobj, &pm_runtime_attr_group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_out:
 	sysfs_remove_group(&dev->kobj, &pm_attr_group);
 	return rc;
 }
 
+<<<<<<< HEAD
 int wakeup_sysfs_add(struct device *dev)
 {
 	return sysfs_merge_group(&dev->kobj, &pm_wakeup_attr_group);
+=======
+int dpm_sysfs_change_owner(struct device *dev, kuid_t kuid, kgid_t kgid)
+{
+	int rc;
+
+	if (device_pm_not_required(dev))
+		return 0;
+
+	rc = sysfs_group_change_owner(&dev->kobj, &pm_attr_group, kuid, kgid);
+	if (rc)
+		return rc;
+
+	if (!pm_runtime_has_no_callbacks(dev)) {
+		rc = sysfs_group_change_owner(
+			&dev->kobj, &pm_runtime_attr_group, kuid, kgid);
+		if (rc)
+			return rc;
+	}
+
+	if (device_can_wakeup(dev)) {
+		rc = sysfs_group_change_owner(&dev->kobj, &pm_wakeup_attr_group,
+					      kuid, kgid);
+		if (rc)
+			return rc;
+
+		rc = dpm_sysfs_wakeup_change_owner(dev, kuid, kgid);
+		if (rc)
+			return rc;
+	}
+
+	if (dev->power.set_latency_tolerance) {
+		rc = sysfs_group_change_owner(
+			&dev->kobj, &pm_qos_latency_tolerance_attr_group, kuid,
+			kgid);
+		if (rc)
+			return rc;
+	}
+	return 0;
+}
+
+int wakeup_sysfs_add(struct device *dev)
+{
+	int ret = sysfs_merge_group(&dev->kobj, &pm_wakeup_attr_group);
+
+	if (!ret)
+		kobject_uevent(&dev->kobj, KOBJ_CHANGE);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void wakeup_sysfs_remove(struct device *dev)
 {
 	sysfs_unmerge_group(&dev->kobj, &pm_wakeup_attr_group);
+<<<<<<< HEAD
 }
 
 int pm_qos_sysfs_add(struct device *dev)
@@ -619,6 +1218,40 @@ int pm_qos_sysfs_add(struct device *dev)
 void pm_qos_sysfs_remove(struct device *dev)
 {
 	sysfs_unmerge_group(&dev->kobj, &pm_qos_attr_group);
+=======
+	kobject_uevent(&dev->kobj, KOBJ_CHANGE);
+}
+
+int pm_qos_sysfs_add_resume_latency(struct device *dev)
+{
+	return sysfs_merge_group(&dev->kobj, &pm_qos_resume_latency_attr_group);
+}
+
+void pm_qos_sysfs_remove_resume_latency(struct device *dev)
+{
+	sysfs_unmerge_group(&dev->kobj, &pm_qos_resume_latency_attr_group);
+}
+
+int pm_qos_sysfs_add_flags(struct device *dev)
+{
+	return sysfs_merge_group(&dev->kobj, &pm_qos_flags_attr_group);
+}
+
+void pm_qos_sysfs_remove_flags(struct device *dev)
+{
+	sysfs_unmerge_group(&dev->kobj, &pm_qos_flags_attr_group);
+}
+
+int pm_qos_sysfs_add_latency_tolerance(struct device *dev)
+{
+	return sysfs_merge_group(&dev->kobj,
+				 &pm_qos_latency_tolerance_attr_group);
+}
+
+void pm_qos_sysfs_remove_latency_tolerance(struct device *dev)
+{
+	sysfs_unmerge_group(&dev->kobj, &pm_qos_latency_tolerance_attr_group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void rpm_sysfs_remove(struct device *dev)
@@ -628,6 +1261,13 @@ void rpm_sysfs_remove(struct device *dev)
 
 void dpm_sysfs_remove(struct device *dev)
 {
+<<<<<<< HEAD
+=======
+	if (device_pm_not_required(dev))
+		return;
+	sysfs_unmerge_group(&dev->kobj, &pm_qos_latency_tolerance_attr_group);
+	dev_pm_qos_constraints_destroy(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rpm_sysfs_remove(dev);
 	sysfs_unmerge_group(&dev->kobj, &pm_wakeup_attr_group);
 	sysfs_remove_group(&dev->kobj, &pm_attr_group);

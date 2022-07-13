@@ -1,12 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Implement primitive realloc(3) functionality.
  *
  * Author: Mark A. Greer <mgreer@mvista.com>
  *
+<<<<<<< HEAD
  * 2006 (c) MontaVista, Software, Inc.  This file is licensed under
  * the terms of the GNU General Public License version 2.  This program
  * is licensed "as is" without any warranty of any kind, whether express
  * or implied.
+=======
+ * 2006 (c) MontaVista, Software, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stddef.h>
@@ -114,8 +122,16 @@ static void *simple_realloc(void *ptr, unsigned long size)
 		return ptr;
 
 	new = simple_malloc(size);
+<<<<<<< HEAD
 	memcpy(new, ptr, p->size);
 	simple_free(ptr);
+=======
+	if (new) {
+		memcpy(new, ptr, p->size);
+		simple_free(ptr);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return new;
 }
 

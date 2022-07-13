@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-1.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OHCI HCD (Host Controller Driver) for USB.
  *
@@ -48,7 +52,11 @@ static const struct hc_driver ohci_sm501_hc_driver = {
 	 * generic hardware linkage
 	 */
 	.irq =			ohci_irq,
+<<<<<<< HEAD
 	.flags =		HCD_USB11 | HCD_MEMORY | HCD_LOCAL_MEM,
+=======
+	.flags =		HCD_USB11 | HCD_MEMORY,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * basic lifecycle operations
@@ -109,6 +117,7 @@ static int ohci_hcd_sm501_drv_probe(struct platform_device *pdev)
 		goto err0;
 	}
 
+<<<<<<< HEAD
 	/* The sm501 chip is equipped with local memory that may be used
 	 * by on-chip devices such as the video controller and the usb host.
 	 * This driver uses dma_declare_coherent_memory() to make sure
@@ -133,18 +142,28 @@ static int ohci_hcd_sm501_drv_probe(struct platform_device *pdev)
 		goto err1;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* allocate, reserve and remap resources for registers */
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (res == NULL) {
 		dev_err(dev, "no resource definition for registers\n");
 		retval = -ENOENT;
+<<<<<<< HEAD
 		goto err2;
+=======
+		goto err1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hcd = usb_create_hcd(driver, &pdev->dev, dev_name(&pdev->dev));
 	if (!hcd) {
 		retval = -ENOMEM;
+<<<<<<< HEAD
 		goto err2;
+=======
+		goto err1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hcd->rsrc_start = res->start;
@@ -165,9 +184,36 @@ static int ohci_hcd_sm501_drv_probe(struct platform_device *pdev)
 
 	ohci_hcd_init(hcd_to_ohci(hcd));
 
+<<<<<<< HEAD
 	retval = usb_add_hcd(hcd, irq, IRQF_SHARED);
 	if (retval)
 		goto err5;
+=======
+	/* The sm501 chip is equipped with local memory that may be used
+	 * by on-chip devices such as the video controller and the usb host.
+	 * This driver uses genalloc so that usb allocations with
+	 * gen_pool_dma_alloc() allocate from this local memory. The dma_handle
+	 * returned by gen_pool_dma_alloc() will be an offset starting from 0
+	 * for the first local memory byte.
+	 *
+	 * So as long as data is allocated using gen_pool_dma_alloc() all is
+	 * fine. This is however not always the case - buffers may be allocated
+	 * using kmalloc() - so the usb core needs to be told that it must copy
+	 * data into our local memory if the buffers happen to be placed in
+	 * regular memory. A non-null hcd->localmem_pool initialized by
+	 * the call to usb_hcd_setup_local_mem() below does just that.
+	 */
+
+	retval = usb_hcd_setup_local_mem(hcd, mem->start,
+					 mem->start - mem->parent->start,
+					 resource_size(mem));
+	if (retval < 0)
+		goto err5;
+	retval = usb_add_hcd(hcd, irq, IRQF_SHARED);
+	if (retval)
+		goto err5;
+	device_wakeup_enable(hcd->self.controller);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* enable power and unmask interrupts */
 
@@ -181,34 +227,52 @@ err4:
 	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
 err3:
 	usb_put_hcd(hcd);
+<<<<<<< HEAD
 err2:
 	dma_release_declared_memory(dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err1:
 	release_mem_region(mem->start, resource_size(mem));
 err0:
 	return retval;
 }
 
+<<<<<<< HEAD
 static int ohci_hcd_sm501_drv_remove(struct platform_device *pdev)
+=======
+static void ohci_hcd_sm501_drv_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(pdev);
 	struct resource	*mem;
 
 	usb_remove_hcd(hcd);
+<<<<<<< HEAD
 	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
 	usb_put_hcd(hcd);
 	dma_release_declared_memory(&pdev->dev);
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	if (mem)
 		release_mem_region(mem->start, resource_size(mem));
+=======
+	iounmap(hcd->regs);
+	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
+	usb_put_hcd(hcd);
+	mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+	release_mem_region(mem->start, resource_size(mem));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* mask interrupts and disable power */
 
 	sm501_modify_reg(pdev->dev.parent, SM501_IRQ_MASK, 0, 1 << 6);
 	sm501_unit_power(pdev->dev.parent, SM501_GATE_USB_HOST, 0);
+<<<<<<< HEAD
 
 	platform_set_drvdata(pdev, NULL);
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------*/
@@ -217,14 +281,30 @@ static int ohci_hcd_sm501_drv_remove(struct platform_device *pdev)
 static int ohci_sm501_suspend(struct platform_device *pdev, pm_message_t msg)
 {
 	struct device *dev = &pdev->dev;
+<<<<<<< HEAD
 	struct ohci_hcd	*ohci = hcd_to_ohci(platform_get_drvdata(pdev));
+=======
+	struct usb_hcd  *hcd = platform_get_drvdata(pdev);
+	struct ohci_hcd	*ohci = hcd_to_ohci(hcd);
+	bool do_wakeup = device_may_wakeup(dev);
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (time_before(jiffies, ohci->next_statechange))
 		msleep(5);
 	ohci->next_statechange = jiffies;
 
+<<<<<<< HEAD
 	sm501_unit_power(dev->parent, SM501_GATE_USB_HOST, 0);
 	return 0;
+=======
+	ret = ohci_suspend(hcd, do_wakeup);
+	if (ret)
+		return ret;
+
+	sm501_unit_power(dev->parent, SM501_GATE_USB_HOST, 0);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ohci_sm501_resume(struct platform_device *pdev)
@@ -238,7 +318,11 @@ static int ohci_sm501_resume(struct platform_device *pdev)
 	ohci->next_statechange = jiffies;
 
 	sm501_unit_power(dev->parent, SM501_GATE_USB_HOST, 1);
+<<<<<<< HEAD
 	ohci_finish_controller_resume(hcd);
+=======
+	ohci_resume(hcd, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 #else
@@ -253,12 +337,19 @@ static int ohci_sm501_resume(struct platform_device *pdev)
  */
 static struct platform_driver ohci_hcd_sm501_driver = {
 	.probe		= ohci_hcd_sm501_drv_probe,
+<<<<<<< HEAD
 	.remove		= ohci_hcd_sm501_drv_remove,
+=======
+	.remove_new	= ohci_hcd_sm501_drv_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown	= usb_hcd_platform_shutdown,
 	.suspend	= ohci_sm501_suspend,
 	.resume		= ohci_sm501_resume,
 	.driver		= {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name	= "sm501-usb",
 	},
 };

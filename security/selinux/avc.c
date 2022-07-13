@@ -1,17 +1,28 @@
+<<<<<<< HEAD
 /*
  * Implementation of the kernel access vector cache (AVC).
  *
  * Authors:  Stephen Smalley, <sds@epoch.ncsc.mil>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Implementation of the kernel access vector cache (AVC).
+ *
+ * Authors:  Stephen Smalley, <stephen.smalley.work@gmail.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	     James Morris <jmorris@redhat.com>
  *
  * Update:   KaiGai, Kohei <kaigai@ak.jp.nec.com>
  *	Replaced the avc_lock spinlock by RCU.
  *
  * Copyright (C) 2003 Red Hat, Inc., James Morris <jmorris@redhat.com>
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License version 2,
  *	as published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/types.h>
 #include <linux/stddef.h>
@@ -34,6 +45,12 @@
 #include "avc_ss.h"
 #include "classmap.h"
 
+<<<<<<< HEAD
+=======
+#define CREATE_TRACE_POINTS
+#include <trace/events/avc.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AVC_CACHE_SLOTS			512
 #define AVC_DEF_CACHE_THRESHOLD		512
 #define AVC_CACHE_RECLAIM		16
@@ -77,6 +94,7 @@ struct avc_cache {
 };
 
 struct avc_callback_node {
+<<<<<<< HEAD
 	int (*callback) (u32 event, u32 ssid, u32 tsid,
 			 u16 tclass, u32 perms,
 			 u32 *out_retained);
@@ -91,10 +109,18 @@ struct avc_callback_node {
 /* Exported via selinufs */
 unsigned int avc_cache_threshold = AVC_DEF_CACHE_THRESHOLD;
 
+=======
+	int (*callback) (u32 event);
+	u32 events;
+	struct avc_callback_node *next;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SECURITY_SELINUX_AVC_STATS
 DEFINE_PER_CPU(struct avc_cache_stats, avc_cache_stats) = { 0 };
 #endif
 
+<<<<<<< HEAD
 static struct avc_cache avc_cache;
 static struct avc_callback_node *avc_callbacks;
 static struct kmem_cache *avc_node_cachep;
@@ -103,11 +129,51 @@ static struct kmem_cache *avc_xperms_decision_cachep;
 static struct kmem_cache *avc_xperms_cachep;
 
 static inline int avc_hash(u32 ssid, u32 tsid, u16 tclass)
+=======
+struct selinux_avc {
+	unsigned int avc_cache_threshold;
+	struct avc_cache avc_cache;
+};
+
+static struct selinux_avc selinux_avc;
+
+void selinux_avc_init(void)
+{
+	int i;
+
+	selinux_avc.avc_cache_threshold = AVC_DEF_CACHE_THRESHOLD;
+	for (i = 0; i < AVC_CACHE_SLOTS; i++) {
+		INIT_HLIST_HEAD(&selinux_avc.avc_cache.slots[i]);
+		spin_lock_init(&selinux_avc.avc_cache.slots_lock[i]);
+	}
+	atomic_set(&selinux_avc.avc_cache.active_nodes, 0);
+	atomic_set(&selinux_avc.avc_cache.lru_hint, 0);
+}
+
+unsigned int avc_get_cache_threshold(void)
+{
+	return selinux_avc.avc_cache_threshold;
+}
+
+void avc_set_cache_threshold(unsigned int cache_threshold)
+{
+	selinux_avc.avc_cache_threshold = cache_threshold;
+}
+
+static struct avc_callback_node *avc_callbacks __ro_after_init;
+static struct kmem_cache *avc_node_cachep __ro_after_init;
+static struct kmem_cache *avc_xperms_data_cachep __ro_after_init;
+static struct kmem_cache *avc_xperms_decision_cachep __ro_after_init;
+static struct kmem_cache *avc_xperms_cachep __ro_after_init;
+
+static inline u32 avc_hash(u32 ssid, u32 tsid, u16 tclass)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (ssid ^ (tsid<<2) ^ (tclass<<4)) & (AVC_CACHE_SLOTS - 1);
 }
 
 /**
+<<<<<<< HEAD
  * avc_dump_av - Display an access vector in human-readable form.
  * @tclass: target security class
  * @av: access vector
@@ -175,12 +241,15 @@ static void avc_dump_query(struct audit_buffer *ab, u32 ssid, u32 tsid, u16 tcla
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * avc_init - Initialize the AVC.
  *
  * Initialize the access vector cache.
  */
 void __init avc_init(void)
 {
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; i < AVC_CACHE_SLOTS; i++) {
@@ -190,6 +259,8 @@ void __init avc_init(void)
 	atomic_set(&avc_cache.active_nodes, 0);
 	atomic_set(&avc_cache.lru_hint, 0);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	avc_node_cachep = kmem_cache_create("avc_node", sizeof(struct avc_node),
 					0, SLAB_PANIC, NULL);
 	avc_xperms_cachep = kmem_cache_create("avc_xperms_node",
@@ -202,8 +273,11 @@ void __init avc_init(void)
 	avc_xperms_data_cachep = kmem_cache_create("avc_xperms_data",
 					sizeof(struct extended_perms_data),
 					0, SLAB_PANIC, NULL);
+<<<<<<< HEAD
 
 	audit_log(current->audit_context, GFP_KERNEL, AUDIT_KERNEL, "AVC INITIALIZED\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int avc_get_hash_stats(char *page)
@@ -217,6 +291,7 @@ int avc_get_hash_stats(char *page)
 	slots_used = 0;
 	max_chain_len = 0;
 	for (i = 0; i < AVC_CACHE_SLOTS; i++) {
+<<<<<<< HEAD
 		head = &avc_cache.slots[i];
 		if (!hlist_empty(head)) {
 			struct hlist_node *next;
@@ -224,6 +299,13 @@ int avc_get_hash_stats(char *page)
 			slots_used++;
 			chain_len = 0;
 			hlist_for_each_entry_rcu(node, next, head, list)
+=======
+		head = &selinux_avc.avc_cache.slots[i];
+		if (!hlist_empty(head)) {
+			slots_used++;
+			chain_len = 0;
+			hlist_for_each_entry_rcu(node, head, list)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				chain_len++;
 			if (chain_len > max_chain_len)
 				max_chain_len = chain_len;
@@ -234,7 +316,11 @@ int avc_get_hash_stats(char *page)
 
 	return scnprintf(page, PAGE_SIZE, "entries: %d\nbuckets used: %d/%d\n"
 			 "longest chain: %d\n",
+<<<<<<< HEAD
 			 atomic_read(&avc_cache.active_nodes),
+=======
+			 atomic_read(&selinux_avc.avc_cache.active_nodes),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 slots_used, AVC_CACHE_SLOTS, max_chain_len);
 }
 
@@ -356,26 +442,42 @@ static struct avc_xperms_decision_node
 	struct extended_perms_decision *xpd;
 
 	xpd_node = kmem_cache_zalloc(avc_xperms_decision_cachep,
+<<<<<<< HEAD
 				GFP_ATOMIC | __GFP_NOMEMALLOC);
+=======
+				     GFP_NOWAIT | __GFP_NOWARN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!xpd_node)
 		return NULL;
 
 	xpd = &xpd_node->xpd;
 	if (which & XPERMS_ALLOWED) {
 		xpd->allowed = kmem_cache_zalloc(avc_xperms_data_cachep,
+<<<<<<< HEAD
 						GFP_ATOMIC | __GFP_NOMEMALLOC);
+=======
+						GFP_NOWAIT | __GFP_NOWARN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!xpd->allowed)
 			goto error;
 	}
 	if (which & XPERMS_AUDITALLOW) {
 		xpd->auditallow = kmem_cache_zalloc(avc_xperms_data_cachep,
+<<<<<<< HEAD
 						GFP_ATOMIC | __GFP_NOMEMALLOC);
+=======
+						GFP_NOWAIT | __GFP_NOWARN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!xpd->auditallow)
 			goto error;
 	}
 	if (which & XPERMS_DONTAUDIT) {
 		xpd->dontaudit = kmem_cache_zalloc(avc_xperms_data_cachep,
+<<<<<<< HEAD
 						GFP_ATOMIC | __GFP_NOMEMALLOC);
+=======
+						GFP_NOWAIT | __GFP_NOWARN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!xpd->dontaudit)
 			goto error;
 	}
@@ -403,8 +505,12 @@ static struct avc_xperms_node *avc_xperms_alloc(void)
 {
 	struct avc_xperms_node *xp_node;
 
+<<<<<<< HEAD
 	xp_node = kmem_cache_zalloc(avc_xperms_cachep,
 				GFP_ATOMIC|__GFP_NOMEMALLOC);
+=======
+	xp_node = kmem_cache_zalloc(avc_xperms_cachep, GFP_NOWAIT | __GFP_NOWARN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!xp_node)
 		return xp_node;
 	INIT_LIST_HEAD(&xp_node->xpd_head);
@@ -473,6 +579,25 @@ static inline u32 avc_xperms_audit_required(u32 requested,
 	return audited;
 }
 
+<<<<<<< HEAD
+=======
+static inline int avc_xperms_audit(u32 ssid, u32 tsid, u16 tclass,
+				   u32 requested, struct av_decision *avd,
+				   struct extended_perms_decision *xpd,
+				   u8 perm, int result,
+				   struct common_audit_data *ad)
+{
+	u32 audited, denied;
+
+	audited = avc_xperms_audit_required(
+			requested, avd, xpd, perm, result, &denied);
+	if (likely(!audited))
+		return 0;
+	return slow_avc_audit(ssid, tsid, tclass, requested,
+			audited, denied, result, ad);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void avc_node_free(struct rcu_head *rhead)
 {
 	struct avc_node *node = container_of(rhead, struct avc_node, rhead);
@@ -485,7 +610,11 @@ static void avc_node_delete(struct avc_node *node)
 {
 	hlist_del_rcu(&node->list);
 	call_rcu(&node->rhead, avc_node_free);
+<<<<<<< HEAD
 	atomic_dec(&avc_cache.active_nodes);
+=======
+	atomic_dec(&selinux_avc.avc_cache.active_nodes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void avc_node_kill(struct avc_node *node)
@@ -493,14 +622,22 @@ static void avc_node_kill(struct avc_node *node)
 	avc_xperms_free(node->ae.xp_node);
 	kmem_cache_free(avc_node_cachep, node);
 	avc_cache_stats_incr(frees);
+<<<<<<< HEAD
 	atomic_dec(&avc_cache.active_nodes);
+=======
+	atomic_dec(&selinux_avc.avc_cache.active_nodes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void avc_node_replace(struct avc_node *new, struct avc_node *old)
 {
 	hlist_replace_rcu(&old->list, &new->list);
 	call_rcu(&old->rhead, avc_node_free);
+<<<<<<< HEAD
 	atomic_dec(&avc_cache.active_nodes);
+=======
+	atomic_dec(&selinux_avc.avc_cache.active_nodes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int avc_reclaim_node(void)
@@ -509,6 +646,7 @@ static inline int avc_reclaim_node(void)
 	int hvalue, try, ecx;
 	unsigned long flags;
 	struct hlist_head *head;
+<<<<<<< HEAD
 	struct hlist_node *next;
 	spinlock_t *lock;
 
@@ -516,12 +654,25 @@ static inline int avc_reclaim_node(void)
 		hvalue = atomic_inc_return(&avc_cache.lru_hint) & (AVC_CACHE_SLOTS - 1);
 		head = &avc_cache.slots[hvalue];
 		lock = &avc_cache.slots_lock[hvalue];
+=======
+	spinlock_t *lock;
+
+	for (try = 0, ecx = 0; try < AVC_CACHE_SLOTS; try++) {
+		hvalue = atomic_inc_return(&selinux_avc.avc_cache.lru_hint) &
+			(AVC_CACHE_SLOTS - 1);
+		head = &selinux_avc.avc_cache.slots[hvalue];
+		lock = &selinux_avc.avc_cache.slots_lock[hvalue];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!spin_trylock_irqsave(lock, flags))
 			continue;
 
 		rcu_read_lock();
+<<<<<<< HEAD
 		hlist_for_each_entry(node, next, head, list) {
+=======
+		hlist_for_each_entry(node, head, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			avc_node_delete(node);
 			avc_cache_stats_incr(reclaims);
 			ecx++;
@@ -542,14 +693,23 @@ static struct avc_node *avc_alloc_node(void)
 {
 	struct avc_node *node;
 
+<<<<<<< HEAD
 	node = kmem_cache_zalloc(avc_node_cachep, GFP_ATOMIC);
+=======
+	node = kmem_cache_zalloc(avc_node_cachep, GFP_NOWAIT | __GFP_NOWARN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!node)
 		goto out;
 
 	INIT_HLIST_NODE(&node->list);
 	avc_cache_stats_incr(allocations);
 
+<<<<<<< HEAD
 	if (atomic_inc_return(&avc_cache.active_nodes) > avc_cache_threshold)
+=======
+	if (atomic_inc_return(&selinux_avc.avc_cache.active_nodes) >
+	    selinux_avc.avc_cache_threshold)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		avc_reclaim_node();
 
 out:
@@ -567,6 +727,7 @@ static void avc_node_populate(struct avc_node *node, u32 ssid, u32 tsid, u16 tcl
 static inline struct avc_node *avc_search_node(u32 ssid, u32 tsid, u16 tclass)
 {
 	struct avc_node *node, *ret = NULL;
+<<<<<<< HEAD
 	int hvalue;
 	struct hlist_head *head;
 	struct hlist_node *next;
@@ -574,6 +735,14 @@ static inline struct avc_node *avc_search_node(u32 ssid, u32 tsid, u16 tclass)
 	hvalue = avc_hash(ssid, tsid, tclass);
 	head = &avc_cache.slots[hvalue];
 	hlist_for_each_entry_rcu(node, next, head, list) {
+=======
+	u32 hvalue;
+	struct hlist_head *head;
+
+	hvalue = avc_hash(ssid, tsid, tclass);
+	head = &selinux_avc.avc_cache.slots[hvalue];
+	hlist_for_each_entry_rcu(node, head, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ssid == node->ae.ssid &&
 		    tclass == node->ae.tclass &&
 		    tsid == node->ae.tsid) {
@@ -611,7 +780,11 @@ static struct avc_node *avc_lookup(u32 ssid, u32 tsid, u16 tclass)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int avc_latest_notif_update(int seqno, int is_insert)
+=======
+static int avc_latest_notif_update(u32 seqno, int is_insert)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	static DEFINE_SPINLOCK(notif_lock);
@@ -619,6 +792,7 @@ static int avc_latest_notif_update(int seqno, int is_insert)
 
 	spin_lock_irqsave(&notif_lock, flag);
 	if (is_insert) {
+<<<<<<< HEAD
 		if (seqno < avc_cache.latest_notif) {
 			printk(KERN_WARNING "SELinux: avc:  seqno %d < latest_notif %d\n",
 			       seqno, avc_cache.latest_notif);
@@ -627,6 +801,16 @@ static int avc_latest_notif_update(int seqno, int is_insert)
 	} else {
 		if (seqno > avc_cache.latest_notif)
 			avc_cache.latest_notif = seqno;
+=======
+		if (seqno < selinux_avc.avc_cache.latest_notif) {
+			pr_warn("SELinux: avc:  seqno %d < latest_notif %d\n",
+			       seqno, selinux_avc.avc_cache.latest_notif);
+			ret = -EAGAIN;
+		}
+	} else {
+		if (seqno > selinux_avc.avc_cache.latest_notif)
+			selinux_avc.avc_cache.latest_notif = seqno;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&notif_lock, flag);
 
@@ -648,6 +832,7 @@ static int avc_latest_notif_update(int seqno, int is_insert)
  * response to a security_compute_av() call.  If the
  * sequence number @avd->seqno is not less than the latest
  * revocation notification, then the function copies
+<<<<<<< HEAD
  * the access vectors into a cache entry, returns
  * avc_node inserted. Otherwise, this function returns NULL.
  */
@@ -694,6 +879,47 @@ found:
 	}
 out:
 	return node;
+=======
+ * the access vectors into a cache entry.
+ */
+static void avc_insert(u32 ssid, u32 tsid, u16 tclass,
+		       struct av_decision *avd, struct avc_xperms_node *xp_node)
+{
+	struct avc_node *pos, *node = NULL;
+	u32 hvalue;
+	unsigned long flag;
+	spinlock_t *lock;
+	struct hlist_head *head;
+
+	if (avc_latest_notif_update(avd->seqno, 1))
+		return;
+
+	node = avc_alloc_node();
+	if (!node)
+		return;
+
+	avc_node_populate(node, ssid, tsid, tclass, avd);
+	if (avc_xperms_populate(node, xp_node)) {
+		avc_node_kill(node);
+		return;
+	}
+
+	hvalue = avc_hash(ssid, tsid, tclass);
+	head = &selinux_avc.avc_cache.slots[hvalue];
+	lock = &selinux_avc.avc_cache.slots_lock[hvalue];
+	spin_lock_irqsave(lock, flag);
+	hlist_for_each_entry(pos, head, list) {
+		if (pos->ae.ssid == ssid &&
+			pos->ae.tsid == tsid &&
+			pos->ae.tclass == tclass) {
+			avc_node_replace(node, pos);
+			goto found;
+		}
+	}
+	hlist_add_head_rcu(&node->list, head);
+found:
+	spin_unlock_irqrestore(lock, flag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -705,11 +931,44 @@ out:
 static void avc_audit_pre_callback(struct audit_buffer *ab, void *a)
 {
 	struct common_audit_data *ad = a;
+<<<<<<< HEAD
 	audit_log_format(ab, "avc:  %s ",
 			 ad->selinux_audit_data->slad->denied ? "denied" : "granted");
 	avc_dump_av(ab, ad->selinux_audit_data->slad->tclass,
 			ad->selinux_audit_data->slad->audited);
 	audit_log_format(ab, " for ");
+=======
+	struct selinux_audit_data *sad = ad->selinux_audit_data;
+	u32 av = sad->audited, perm;
+	const char *const *perms;
+	u32 i;
+
+	audit_log_format(ab, "avc:  %s ", sad->denied ? "denied" : "granted");
+
+	if (av == 0) {
+		audit_log_format(ab, " null");
+		return;
+	}
+
+	perms = secclass_map[sad->tclass-1].perms;
+
+	audit_log_format(ab, " {");
+	i = 0;
+	perm = 1;
+	while (i < (sizeof(av) * 8)) {
+		if ((perm & av) && perms[i]) {
+			audit_log_format(ab, " %s", perms[i]);
+			av &= ~perm;
+		}
+		i++;
+		perm <<= 1;
+	}
+
+	if (av)
+		audit_log_format(ab, " 0x%x", av);
+
+	audit_log_format(ab, " } for ");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -721,6 +980,7 @@ static void avc_audit_pre_callback(struct audit_buffer *ab, void *a)
 static void avc_audit_post_callback(struct audit_buffer *ab, void *a)
 {
 	struct common_audit_data *ad = a;
+<<<<<<< HEAD
 	audit_log_format(ab, " ");
 	avc_dump_query(ab, ad->selinux_audit_data->slad->ssid,
 			   ad->selinux_audit_data->slad->tsid,
@@ -767,10 +1027,97 @@ static noinline int slow_avc_audit(u32 ssid, u32 tsid, u16 tclass,
 	slad.result = result;
 
 	a->selinux_audit_data->slad = &slad;
+=======
+	struct selinux_audit_data *sad = ad->selinux_audit_data;
+	char *scontext = NULL;
+	char *tcontext = NULL;
+	const char *tclass = NULL;
+	u32 scontext_len;
+	u32 tcontext_len;
+	int rc;
+
+	rc = security_sid_to_context(sad->ssid, &scontext,
+				     &scontext_len);
+	if (rc)
+		audit_log_format(ab, " ssid=%d", sad->ssid);
+	else
+		audit_log_format(ab, " scontext=%s", scontext);
+
+	rc = security_sid_to_context(sad->tsid, &tcontext,
+				     &tcontext_len);
+	if (rc)
+		audit_log_format(ab, " tsid=%d", sad->tsid);
+	else
+		audit_log_format(ab, " tcontext=%s", tcontext);
+
+	tclass = secclass_map[sad->tclass-1].name;
+	audit_log_format(ab, " tclass=%s", tclass);
+
+	if (sad->denied)
+		audit_log_format(ab, " permissive=%u", sad->result ? 0 : 1);
+
+	trace_selinux_audited(sad, scontext, tcontext, tclass);
+	kfree(tcontext);
+	kfree(scontext);
+
+	/* in case of invalid context report also the actual context string */
+	rc = security_sid_to_context_inval(sad->ssid, &scontext,
+					   &scontext_len);
+	if (!rc && scontext) {
+		if (scontext_len && scontext[scontext_len - 1] == '\0')
+			scontext_len--;
+		audit_log_format(ab, " srawcon=");
+		audit_log_n_untrustedstring(ab, scontext, scontext_len);
+		kfree(scontext);
+	}
+
+	rc = security_sid_to_context_inval(sad->tsid, &scontext,
+					   &scontext_len);
+	if (!rc && scontext) {
+		if (scontext_len && scontext[scontext_len - 1] == '\0')
+			scontext_len--;
+		audit_log_format(ab, " trawcon=");
+		audit_log_n_untrustedstring(ab, scontext, scontext_len);
+		kfree(scontext);
+	}
+}
+
+/*
+ * This is the slow part of avc audit with big stack footprint.
+ * Note that it is non-blocking and can be called from under
+ * rcu_read_lock().
+ */
+noinline int slow_avc_audit(u32 ssid, u32 tsid, u16 tclass,
+			    u32 requested, u32 audited, u32 denied, int result,
+			    struct common_audit_data *a)
+{
+	struct common_audit_data stack_data;
+	struct selinux_audit_data sad;
+
+	if (WARN_ON(!tclass || tclass >= ARRAY_SIZE(secclass_map)))
+		return -EINVAL;
+
+	if (!a) {
+		a = &stack_data;
+		a->type = LSM_AUDIT_DATA_NONE;
+	}
+
+	sad.tclass = tclass;
+	sad.requested = requested;
+	sad.ssid = ssid;
+	sad.tsid = tsid;
+	sad.audited = audited;
+	sad.denied = denied;
+	sad.result = result;
+
+	a->selinux_audit_data = &sad;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	common_lsm_audit(a, avc_audit_pre_callback, avc_audit_post_callback);
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int avc_xperms_audit(u32 ssid, u32 tsid, u16 tclass,
 				u32 requested, struct av_decision *avd,
 				struct extended_perms_decision *xpd,
@@ -848,10 +1195,13 @@ inline int avc_audit(u32 ssid, u32 tsid,
 		a, flags);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * avc_add_callback - Register a callback for security events.
  * @callback: callback function
  * @events: security events
+<<<<<<< HEAD
  * @ssid: source security identifier or %SECSID_WILD
  * @tsid: target security identifier or %SECSID_WILD
  * @tclass: target security class
@@ -868,11 +1218,23 @@ int avc_add_callback(int (*callback)(u32 event, u32 ssid, u32 tsid,
 				     u32 *out_retained),
 		     u32 events, u32 ssid, u32 tsid,
 		     u16 tclass, u32 perms)
+=======
+ *
+ * Register a callback function for events in the set @events.
+ * Returns %0 on success or -%ENOMEM if insufficient memory
+ * exists to add the callback.
+ */
+int __init avc_add_callback(int (*callback)(u32 event), u32 events)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct avc_callback_node *c;
 	int rc = 0;
 
+<<<<<<< HEAD
 	c = kmalloc(sizeof(*c), GFP_ATOMIC);
+=======
+	c = kmalloc(sizeof(*c), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!c) {
 		rc = -ENOMEM;
 		goto out;
@@ -880,15 +1242,19 @@ int avc_add_callback(int (*callback)(u32 event, u32 ssid, u32 tsid,
 
 	c->callback = callback;
 	c->events = events;
+<<<<<<< HEAD
 	c->ssid = ssid;
 	c->tsid = tsid;
 	c->perms = perms;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->next = avc_callbacks;
 	avc_callbacks = c;
 out:
 	return rc;
 }
 
+<<<<<<< HEAD
 static inline int avc_sidcmp(u32 x, u32 y)
 {
 	return (x == y || x == SECSID_WILD || y == SECSID_WILD);
@@ -901,6 +1267,20 @@ static inline int avc_sidcmp(u32 x, u32 y)
  * @ssid,@tsid,@tclass : identifier of an AVC entry
  * @seqno : sequence number when decision was made
  * @xpd: extended_perms_decision to be added to the node
+=======
+/**
+ * avc_update_node - Update an AVC entry
+ * @event : Updating event
+ * @perms : Permission mask bits
+ * @driver: xperm driver information
+ * @xperm: xperm permissions
+ * @ssid: AVC entry source sid
+ * @tsid: AVC entry target sid
+ * @tclass : AVC entry target object class
+ * @seqno : sequence number when decision was made
+ * @xpd: extended_perms_decision to be added to the node
+ * @flags: the AVC_* flags, e.g. AVC_EXTENDED_PERMS, or 0.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * if a valid AVC entry doesn't exist,this function returns -ENOENT.
  * if kmalloc() called internal returns NULL, this function returns -ENOMEM.
@@ -908,6 +1288,7 @@ static inline int avc_sidcmp(u32 x, u32 y)
  * will release later by RCU.
  */
 static int avc_update_node(u32 event, u32 perms, u8 driver, u8 xperm, u32 ssid,
+<<<<<<< HEAD
 			u32 tsid, u16 tclass, u32 seqno,
 			struct extended_perms_decision *xpd,
 			u32 flags)
@@ -917,6 +1298,17 @@ static int avc_update_node(u32 event, u32 perms, u8 driver, u8 xperm, u32 ssid,
 	struct avc_node *pos, *node, *orig = NULL;
 	struct hlist_head *head;
 	struct hlist_node *next;
+=======
+			   u32 tsid, u16 tclass, u32 seqno,
+			   struct extended_perms_decision *xpd,
+			   u32 flags)
+{
+	u32 hvalue;
+	int rc = 0;
+	unsigned long flag;
+	struct avc_node *pos, *node, *orig = NULL;
+	struct hlist_head *head;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t *lock;
 
 	node = avc_alloc_node();
@@ -928,12 +1320,21 @@ static int avc_update_node(u32 event, u32 perms, u8 driver, u8 xperm, u32 ssid,
 	/* Lock the target slot */
 	hvalue = avc_hash(ssid, tsid, tclass);
 
+<<<<<<< HEAD
 	head = &avc_cache.slots[hvalue];
 	lock = &avc_cache.slots_lock[hvalue];
 
 	spin_lock_irqsave(lock, flag);
 
 	hlist_for_each_entry(pos, next, head, list) {
+=======
+	head = &selinux_avc.avc_cache.slots[hvalue];
+	lock = &selinux_avc.avc_cache.slots_lock[hvalue];
+
+	spin_lock_irqsave(lock, flag);
+
+	hlist_for_each_entry(pos, head, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ssid == pos->ae.ssid &&
 		    tsid == pos->ae.tsid &&
 		    tclass == pos->ae.tclass &&
@@ -958,7 +1359,11 @@ static int avc_update_node(u32 event, u32 perms, u8 driver, u8 xperm, u32 ssid,
 	if (orig->ae.xp_node) {
 		rc = avc_xperms_populate(node, orig->ae.xp_node);
 		if (rc) {
+<<<<<<< HEAD
 			kmem_cache_free(avc_node_cachep, node);
+=======
+			avc_node_kill(node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_unlock;
 		}
 	}
@@ -1002,15 +1407,23 @@ out:
 static void avc_flush(void)
 {
 	struct hlist_head *head;
+<<<<<<< HEAD
 	struct hlist_node *next;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct avc_node *node;
 	spinlock_t *lock;
 	unsigned long flag;
 	int i;
 
 	for (i = 0; i < AVC_CACHE_SLOTS; i++) {
+<<<<<<< HEAD
 		head = &avc_cache.slots[i];
 		lock = &avc_cache.slots_lock[i];
+=======
+		head = &selinux_avc.avc_cache.slots[i];
+		lock = &selinux_avc.avc_cache.slots_lock[i];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_lock_irqsave(lock, flag);
 		/*
@@ -1018,7 +1431,11 @@ static void avc_flush(void)
 		 * prevent RCU grace periods from ending.
 		 */
 		rcu_read_lock();
+<<<<<<< HEAD
 		hlist_for_each_entry(node, next, head, list)
+=======
+		hlist_for_each_entry(node, head, list)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			avc_node_delete(node);
 		rcu_read_unlock();
 		spin_unlock_irqrestore(lock, flag);
@@ -1038,8 +1455,12 @@ int avc_ss_reset(u32 seqno)
 
 	for (c = avc_callbacks; c; c = c->next) {
 		if (c->events & AVC_CALLBACK_RESET) {
+<<<<<<< HEAD
 			tmprc = c->callback(AVC_CALLBACK_RESET,
 					    0, 0, 0, 0, NULL);
+=======
+			tmprc = c->callback(AVC_CALLBACK_RESET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* save the first error encountered for the return
 			   value and continue processing the callbacks */
 			if (!rc)
@@ -1051,6 +1472,7 @@ int avc_ss_reset(u32 seqno)
 	return rc;
 }
 
+<<<<<<< HEAD
 /*
  * Slow-path helper function for avc_has_perm_noaudit,
  * when the avc_node lookup fails. We get called with
@@ -1075,15 +1497,51 @@ static noinline int avc_denied(u32 ssid, u32 tsid,
 				u16 tclass, u32 requested,
 				u8 driver, u8 xperm, unsigned flags,
 				struct av_decision *avd)
+=======
+/**
+ * avc_compute_av - Add an entry to the AVC based on the security policy
+ * @ssid: subject
+ * @tsid: object/target
+ * @tclass: object class
+ * @avd: access vector decision
+ * @xp_node: AVC extended permissions node
+ *
+ * Slow-path helper function for avc_has_perm_noaudit, when the avc_node lookup
+ * fails.  Don't inline this, since it's the slow-path and just results in a
+ * bigger stack frame.
+ */
+static noinline void avc_compute_av(u32 ssid, u32 tsid, u16 tclass,
+				    struct av_decision *avd,
+				    struct avc_xperms_node *xp_node)
+{
+	INIT_LIST_HEAD(&xp_node->xpd_head);
+	security_compute_av(ssid, tsid, tclass, avd, &xp_node->xp);
+	avc_insert(ssid, tsid, tclass, avd, xp_node);
+}
+
+static noinline int avc_denied(u32 ssid, u32 tsid,
+			       u16 tclass, u32 requested,
+			       u8 driver, u8 xperm, unsigned int flags,
+			       struct av_decision *avd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (flags & AVC_STRICT)
 		return -EACCES;
 
+<<<<<<< HEAD
 	if (selinux_enforcing && !(avd->flags & AVD_FLAGS_PERMISSIVE))
 		return -EACCES;
 
 	avc_update_node(AVC_CALLBACK_GRANT, requested, driver, xperm, ssid,
 				tsid, tclass, avd->seqno, NULL, flags);
+=======
+	if (enforcing_enabled() &&
+	    !(avd->flags & AVD_FLAGS_PERMISSIVE))
+		return -EACCES;
+
+	avc_update_node(AVC_CALLBACK_GRANT, requested, driver,
+			xperm, ssid, tsid, tclass, avd->seqno, NULL, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1095,7 +1553,11 @@ static noinline int avc_denied(u32 ssid, u32 tsid,
  * driver field is used to specify which set contains the permission.
  */
 int avc_has_extended_perms(u32 ssid, u32 tsid, u16 tclass, u32 requested,
+<<<<<<< HEAD
 			u8 driver, u8 xperm, struct common_audit_data *ad)
+=======
+			   u8 driver, u8 xperm, struct common_audit_data *ad)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct avc_node *node;
 	struct av_decision avd;
@@ -1110,13 +1572,22 @@ int avc_has_extended_perms(u32 ssid, u32 tsid, u16 tclass, u32 requested,
 	int rc = 0, rc2;
 
 	xp_node = &local_xp_node;
+<<<<<<< HEAD
 	BUG_ON(!requested);
+=======
+	if (WARN_ON(!requested))
+		return -EACCES;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
 
 	node = avc_lookup(ssid, tsid, tclass);
 	if (unlikely(!node)) {
+<<<<<<< HEAD
 		node = avc_compute_av(ssid, tsid, tclass, &avd, xp_node);
+=======
+		avc_compute_av(ssid, tsid, tclass, &avd, xp_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		memcpy(&avd, &node->ae.avd, sizeof(avd));
 		xp_node = node->ae.xp_node;
@@ -1140,11 +1611,20 @@ int avc_has_extended_perms(u32 ssid, u32 tsid, u16 tclass, u32 requested,
 			goto decision;
 		}
 		rcu_read_unlock();
+<<<<<<< HEAD
 		security_compute_xperms_decision(ssid, tsid, tclass, driver,
 						&local_xpd);
 		rcu_read_lock();
 		avc_update_node(AVC_CALLBACK_ADD_XPERMS, requested, driver, xperm,
 				ssid, tsid, tclass, avd.seqno, &local_xpd, 0);
+=======
+		security_compute_xperms_decision(ssid, tsid, tclass,
+						 driver, &local_xpd);
+		rcu_read_lock();
+		avc_update_node(AVC_CALLBACK_ADD_XPERMS, requested,
+				driver, xperm, ssid, tsid, tclass, avd.seqno,
+				&local_xpd, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		avc_quick_copy_xperms_decision(xperm, &local_xpd, xpd);
 	}
@@ -1156,8 +1636,13 @@ int avc_has_extended_perms(u32 ssid, u32 tsid, u16 tclass, u32 requested,
 decision:
 	denied = requested & ~(avd.allowed);
 	if (unlikely(denied))
+<<<<<<< HEAD
 		rc = avc_denied(ssid, tsid, tclass, requested, driver, xperm,
 				AVC_EXTENDED_PERMS, &avd);
+=======
+		rc = avc_denied(ssid, tsid, tclass, requested,
+				driver, xperm, AVC_EXTENDED_PERMS, &avd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_unlock();
 
@@ -1169,6 +1654,37 @@ decision:
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * avc_perm_nonode - Add an entry to the AVC
+ * @ssid: subject
+ * @tsid: object/target
+ * @tclass: object class
+ * @requested: requested permissions
+ * @flags: AVC flags
+ * @avd: access vector decision
+ *
+ * This is the "we have no node" part of avc_has_perm_noaudit(), which is
+ * unlikely and needs extra stack space for the new node that we generate, so
+ * don't inline it.
+ */
+static noinline int avc_perm_nonode(u32 ssid, u32 tsid, u16 tclass,
+				    u32 requested, unsigned int flags,
+				    struct av_decision *avd)
+{
+	u32 denied;
+	struct avc_xperms_node xp_node;
+
+	avc_compute_av(ssid, tsid, tclass, avd, &xp_node);
+	denied = requested & ~(avd->allowed);
+	if (unlikely(denied))
+		return avc_denied(ssid, tsid, tclass, requested, 0, 0,
+				  flags, avd);
+	return 0;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * avc_has_perm_noaudit - Check permissions but perform no auditing.
  * @ssid: source security identifier
  * @tsid: target security identifier
@@ -1189,6 +1705,7 @@ decision:
  * should be released for the auditing.
  */
 inline int avc_has_perm_noaudit(u32 ssid, u32 tsid,
+<<<<<<< HEAD
 			 u16 tclass, u32 requested,
 			 unsigned flags,
 			 struct av_decision *avd)
@@ -1214,6 +1731,33 @@ inline int avc_has_perm_noaudit(u32 ssid, u32 tsid,
 
 	rcu_read_unlock();
 	return rc;
+=======
+				u16 tclass, u32 requested,
+				unsigned int flags,
+				struct av_decision *avd)
+{
+	u32 denied;
+	struct avc_node *node;
+
+	if (WARN_ON(!requested))
+		return -EACCES;
+
+	rcu_read_lock();
+	node = avc_lookup(ssid, tsid, tclass);
+	if (unlikely(!node)) {
+		rcu_read_unlock();
+		return avc_perm_nonode(ssid, tsid, tclass, requested,
+				       flags, avd);
+	}
+	denied = requested & ~node->ae.avd.allowed;
+	memcpy(avd, &node->ae.avd, sizeof(*avd));
+	rcu_read_unlock();
+
+	if (unlikely(denied))
+		return avc_denied(ssid, tsid, tclass, requested, 0, 0,
+				  flags, avd);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1223,7 +1767,10 @@ inline int avc_has_perm_noaudit(u32 ssid, u32 tsid,
  * @tclass: target security class
  * @requested: requested permissions, interpreted based on @tclass
  * @auditdata: auxiliary audit data
+<<<<<<< HEAD
  * @flags: VFS walk flags
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Check the AVC to determine whether the @requested permissions are granted
  * for the SID pair (@ssid, @tsid), interpreting the permissions
@@ -1233,17 +1780,30 @@ inline int avc_has_perm_noaudit(u32 ssid, u32 tsid,
  * permissions are granted, -%EACCES if any permissions are denied, or
  * another -errno upon other errors.
  */
+<<<<<<< HEAD
 int avc_has_perm_flags(u32 ssid, u32 tsid, u16 tclass,
 		       u32 requested, struct common_audit_data *auditdata,
 		       unsigned flags)
+=======
+int avc_has_perm(u32 ssid, u32 tsid, u16 tclass,
+		 u32 requested, struct common_audit_data *auditdata)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct av_decision avd;
 	int rc, rc2;
 
+<<<<<<< HEAD
 	rc = avc_has_perm_noaudit(ssid, tsid, tclass, requested, 0, &avd);
 
 	rc2 = avc_audit(ssid, tsid, tclass, requested, &avd, rc, auditdata,
 			flags);
+=======
+	rc = avc_has_perm_noaudit(ssid, tsid, tclass, requested, 0,
+				  &avd);
+
+	rc2 = avc_audit(ssid, tsid, tclass, requested, &avd, rc,
+			auditdata);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc2)
 		return rc2;
 	return rc;
@@ -1251,6 +1811,7 @@ int avc_has_perm_flags(u32 ssid, u32 tsid, u16 tclass,
 
 u32 avc_policy_seqno(void)
 {
+<<<<<<< HEAD
 	return avc_cache.latest_notif;
 }
 
@@ -1271,4 +1832,7 @@ void avc_disable(void)
 		avc_flush();
 		/* kmem_cache_destroy(avc_node_cachep); */
 	}
+=======
+	return selinux_avc.avc_cache.latest_notif;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

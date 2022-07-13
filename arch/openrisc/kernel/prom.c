@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC prom.c
  *
@@ -8,6 +12,7 @@
  * Modifications for the OpenRISC architecture:
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
  *
+<<<<<<< HEAD
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
  *      as published by the Free Software Foundation; either version
@@ -104,3 +109,21 @@ void __init early_init_dt_setup_initrd_arch(unsigned long start,
 	initrd_below_start_ok = 1;
 }
 #endif
+=======
+ * Architecture specific procedures for creating, accessing and
+ * interpreting the device tree.
+ */
+
+#include <linux/init.h>
+#include <linux/types.h>
+#include <linux/memblock.h>
+#include <linux/of_fdt.h>
+
+#include <asm/page.h>
+
+void __init early_init_devtree(void *params)
+{
+	early_init_dt_scan(params);
+	memblock_allow_resize();
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 A simple common binding for matrix-connected key boards. Currently targeted at
 defining the keys in the scope of linux key codes since that is a stable and
 standardized interface at this time.
@@ -17,3 +18,6 @@ word for the modifier other from "Fn".
 Example:
 	linux,keymap = < 0x00030012
 			 0x0102003a >;
+=======
+This file has been moved to matrix-keymap.yaml
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

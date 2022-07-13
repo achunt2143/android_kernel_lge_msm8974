@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* multi_arith.h: multi-precision integer arithmetic functions, needed
    to do extended-precision floating point.
 
@@ -6,9 +10,13 @@
    Somewhat based on arch/alpha/math-emu/ieee-math.c, which is (c)
    David Mosberger-Tang.
 
+<<<<<<< HEAD
    You may copy, modify, and redistribute this file under the terms of
    the GNU General Public License, version 2, or any later version, at
    your convenience. */
+=======
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Note:
 
@@ -16,8 +24,15 @@
    implement the subset of integer arithmetic that we need in order to
    multiply, divide, and normalize 128-bit unsigned mantissae.  */
 
+<<<<<<< HEAD
 #ifndef MULTI_ARITH_H
 #define MULTI_ARITH_H
+=======
+#ifndef _MULTI_ARITH_H
+#define _MULTI_ARITH_H
+
+#include "fp_emu.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void fp_denormalize(struct fp_ext *reg, unsigned int cnt)
 {
@@ -286,4 +301,8 @@ static inline void fp_putmant128(struct fp_ext *dest, union fp_mant128 *src,
 	}
 }
 
+<<<<<<< HEAD
 #endif	/* MULTI_ARITH_H */
+=======
+#endif	/* _MULTI_ARITH_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

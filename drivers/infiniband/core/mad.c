@@ -3,6 +3,10 @@
  * Copyright (c) 2005 Intel Corporation.  All rights reserved.
  * Copyright (c) 2005 Mellanox Technologies Ltd.  All rights reserved.
  * Copyright (c) 2009 HNR Consulting. All rights reserved.
+<<<<<<< HEAD
+=======
+ * Copyright (c) 2014,2018 Intel Corporation.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -33,6 +37,7 @@
  * SOFTWARE.
  *
  */
+<<<<<<< HEAD
 #include <linux/dma-mapping.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -47,6 +52,45 @@ MODULE_LICENSE("Dual BSD/GPL");
 MODULE_DESCRIPTION("kernel IB MAD API");
 MODULE_AUTHOR("Hal Rosenstock");
 MODULE_AUTHOR("Sean Hefty");
+=======
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/dma-mapping.h>
+#include <linux/slab.h>
+#include <linux/module.h>
+#include <linux/security.h>
+#include <linux/xarray.h>
+#include <rdma/ib_cache.h>
+
+#include "mad_priv.h"
+#include "core_priv.h"
+#include "mad_rmpp.h"
+#include "smi.h"
+#include "opa_smi.h"
+#include "agent.h"
+
+#define CREATE_TRACE_POINTS
+#include <trace/events/ib_mad.h>
+
+#ifdef CONFIG_TRACEPOINTS
+static void create_mad_addr_info(struct ib_mad_send_wr_private *mad_send_wr,
+			  struct ib_mad_qp_info *qp_info,
+			  struct trace_event_raw_ib_mad_send_template *entry)
+{
+	struct ib_ud_wr *wr = &mad_send_wr->send_wr;
+	struct rdma_ah_attr attr = {};
+
+	rdma_query_ah(wr->ah, &attr);
+
+	/* These are common */
+	entry->sl = attr.sl;
+	entry->rqpn = wr->remote_qpn;
+	entry->rqkey = wr->remote_qkey;
+	entry->dlid = rdma_ah_get_dlid(&attr);
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int mad_sendq_size = IB_MAD_QP_SEND_SIZE;
 static int mad_recvq_size = IB_MAD_QP_RECV_SIZE;
@@ -56,10 +100,16 @@ MODULE_PARM_DESC(send_queue_size, "Size of send queue in number of work requests
 module_param_named(recv_queue_size, mad_recvq_size, int, 0444);
 MODULE_PARM_DESC(recv_queue_size, "Size of receive queue in number of work requests");
 
+<<<<<<< HEAD
 static struct kmem_cache *ib_mad_cache;
 
 static struct list_head ib_mad_port_list;
 static u32 ib_mad_client_id = 0;
+=======
+static DEFINE_XARRAY_ALLOC1(ib_mad_clients);
+static u32 ib_mad_client_next;
+static struct list_head ib_mad_port_list;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Port list lock */
 static DEFINE_SPINLOCK(ib_mad_port_list_lock);
@@ -70,7 +120,11 @@ static int method_in_use(struct ib_mad_mgmt_method_table **method,
 static void remove_mad_reg_req(struct ib_mad_agent_private *priv);
 static struct ib_mad_agent_private *find_mad_agent(
 					struct ib_mad_port_private *port_priv,
+<<<<<<< HEAD
 					struct ib_mad *mad);
+=======
+					const struct ib_mad_hdr *mad);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ib_mad_post_receive_mads(struct ib_mad_qp_info *qp_info,
 				    struct ib_mad_private *mad);
 static void cancel_mads(struct ib_mad_agent_private *mad_agent_priv);
@@ -81,13 +135,23 @@ static int add_nonoui_reg_req(struct ib_mad_reg_req *mad_reg_req,
 			      u8 mgmt_class);
 static int add_oui_reg_req(struct ib_mad_reg_req *mad_reg_req,
 			   struct ib_mad_agent_private *agent_priv);
+<<<<<<< HEAD
+=======
+static bool ib_mad_send_error(struct ib_mad_port_private *port_priv,
+			      struct ib_wc *wc);
+static void ib_mad_send_done(struct ib_cq *cq, struct ib_wc *wc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Returns a ib_mad_port_private structure or NULL for a device/port
  * Assumes ib_mad_port_list_lock is being held
  */
 static inline struct ib_mad_port_private *
+<<<<<<< HEAD
 __ib_get_mad_port(struct ib_device *device, int port_num)
+=======
+__ib_get_mad_port(struct ib_device *device, u32 port_num)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ib_mad_port_private *entry;
 
@@ -103,7 +167,11 @@ __ib_get_mad_port(struct ib_device *device, int port_num)
  * for a device/port
  */
 static inline struct ib_mad_port_private *
+<<<<<<< HEAD
 ib_get_mad_port(struct ib_device *device, int port_num)
+=======
+ib_get_mad_port(struct ib_device *device, u32 port_num)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ib_mad_port_private *entry;
 	unsigned long flags;
@@ -124,8 +192,12 @@ static inline u8 convert_mgmt_class(u8 mgmt_class)
 
 static int get_spl_qp_index(enum ib_qp_type qp_type)
 {
+<<<<<<< HEAD
 	switch (qp_type)
 	{
+=======
+	switch (qp_type) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IB_QPT_SMI:
 		return 0;
 	case IB_QPT_GSI:
@@ -176,26 +248,48 @@ static int is_vendor_method_in_use(
 	return 0;
 }
 
+<<<<<<< HEAD
 int ib_response_mad(struct ib_mad *mad)
 {
 	return ((mad->mad_hdr.method & IB_MGMT_METHOD_RESP) ||
 		(mad->mad_hdr.method == IB_MGMT_METHOD_TRAP_REPRESS) ||
 		((mad->mad_hdr.mgmt_class == IB_MGMT_CLASS_BM) &&
 		 (mad->mad_hdr.attr_mod & IB_BM_ATTR_MOD_RESP)));
+=======
+int ib_response_mad(const struct ib_mad_hdr *hdr)
+{
+	return ((hdr->method & IB_MGMT_METHOD_RESP) ||
+		(hdr->method == IB_MGMT_METHOD_TRAP_REPRESS) ||
+		((hdr->mgmt_class == IB_MGMT_CLASS_BM) &&
+		 (hdr->attr_mod & IB_BM_ATTR_MOD_RESP)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ib_response_mad);
 
 /*
  * ib_register_mad_agent - Register to send/receive MADs
+<<<<<<< HEAD
  */
 struct ib_mad_agent *ib_register_mad_agent(struct ib_device *device,
 					   u8 port_num,
+=======
+ *
+ * Context: Process context.
+ */
+struct ib_mad_agent *ib_register_mad_agent(struct ib_device *device,
+					   u32 port_num,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   enum ib_qp_type qp_type,
 					   struct ib_mad_reg_req *mad_reg_req,
 					   u8 rmpp_version,
 					   ib_mad_send_handler send_handler,
 					   ib_mad_recv_handler recv_handler,
+<<<<<<< HEAD
 					   void *context)
+=======
+					   void *context,
+					   u32 registration_flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ib_mad_port_private *port_priv;
 	struct ib_mad_agent *ret = ERR_PTR(-EINVAL);
@@ -206,6 +300,7 @@ struct ib_mad_agent *ib_register_mad_agent(struct ib_device *device,
 	struct ib_mad_mgmt_vendor_class *vendor_class;
 	struct ib_mad_mgmt_method_table *method;
 	int ret2, qpn;
+<<<<<<< HEAD
 	unsigned long flags;
 	u8 mgmt_class, vclass;
 
@@ -223,25 +318,78 @@ struct ib_mad_agent *ib_register_mad_agent(struct ib_device *device,
 			goto error1;
 		if (!recv_handler)
 			goto error1;
+=======
+	u8 mgmt_class, vclass;
+
+	if ((qp_type == IB_QPT_SMI && !rdma_cap_ib_smi(device, port_num)) ||
+	    (qp_type == IB_QPT_GSI && !rdma_cap_ib_cm(device, port_num)))
+		return ERR_PTR(-EPROTONOSUPPORT);
+
+	/* Validate parameters */
+	qpn = get_spl_qp_index(qp_type);
+	if (qpn == -1) {
+		dev_dbg_ratelimited(&device->dev, "%s: invalid QP Type %d\n",
+				    __func__, qp_type);
+		goto error1;
+	}
+
+	if (rmpp_version && rmpp_version != IB_MGMT_RMPP_VERSION) {
+		dev_dbg_ratelimited(&device->dev,
+				    "%s: invalid RMPP Version %u\n",
+				    __func__, rmpp_version);
+		goto error1;
+	}
+
+	/* Validate MAD registration request if supplied */
+	if (mad_reg_req) {
+		if (mad_reg_req->mgmt_class_version >= MAX_MGMT_VERSION) {
+			dev_dbg_ratelimited(&device->dev,
+					    "%s: invalid Class Version %u\n",
+					    __func__,
+					    mad_reg_req->mgmt_class_version);
+			goto error1;
+		}
+		if (!recv_handler) {
+			dev_dbg_ratelimited(&device->dev,
+					    "%s: no recv_handler\n", __func__);
+			goto error1;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mad_reg_req->mgmt_class >= MAX_MGMT_CLASS) {
 			/*
 			 * IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE is the only
 			 * one in this range currently allowed
 			 */
 			if (mad_reg_req->mgmt_class !=
+<<<<<<< HEAD
 			    IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)
 				goto error1;
+=======
+			    IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE) {
+				dev_dbg_ratelimited(&device->dev,
+					"%s: Invalid Mgmt Class 0x%x\n",
+					__func__, mad_reg_req->mgmt_class);
+				goto error1;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (mad_reg_req->mgmt_class == 0) {
 			/*
 			 * Class 0 is reserved in IBA and is used for
 			 * aliasing of IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE
 			 */
+<<<<<<< HEAD
+=======
+			dev_dbg_ratelimited(&device->dev,
+					    "%s: Invalid Mgmt Class 0\n",
+					    __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error1;
 		} else if (is_vendor_class(mad_reg_req->mgmt_class)) {
 			/*
 			 * If class is in "new" vendor range,
 			 * ensure supplied OUI is not zero
 			 */
+<<<<<<< HEAD
 			if (!is_vendor_oui(mad_reg_req->oui))
 				goto error1;
 		}
@@ -250,36 +398,93 @@ struct ib_mad_agent *ib_register_mad_agent(struct ib_device *device,
 			if (rmpp_version)
 				goto error1;
 		}
+=======
+			if (!is_vendor_oui(mad_reg_req->oui)) {
+				dev_dbg_ratelimited(&device->dev,
+					"%s: No OUI specified for class 0x%x\n",
+					__func__,
+					mad_reg_req->mgmt_class);
+				goto error1;
+			}
+		}
+		/* Make sure class supplied is consistent with RMPP */
+		if (!ib_is_mad_class_rmpp(mad_reg_req->mgmt_class)) {
+			if (rmpp_version) {
+				dev_dbg_ratelimited(&device->dev,
+					"%s: RMPP version for non-RMPP class 0x%x\n",
+					__func__, mad_reg_req->mgmt_class);
+				goto error1;
+			}
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Make sure class supplied is consistent with QP type */
 		if (qp_type == IB_QPT_SMI) {
 			if ((mad_reg_req->mgmt_class !=
 					IB_MGMT_CLASS_SUBN_LID_ROUTED) &&
 			    (mad_reg_req->mgmt_class !=
+<<<<<<< HEAD
 					IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE))
 				goto error1;
+=======
+					IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)) {
+				dev_dbg_ratelimited(&device->dev,
+					"%s: Invalid SM QP type: class 0x%x\n",
+					__func__, mad_reg_req->mgmt_class);
+				goto error1;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			if ((mad_reg_req->mgmt_class ==
 					IB_MGMT_CLASS_SUBN_LID_ROUTED) ||
 			    (mad_reg_req->mgmt_class ==
+<<<<<<< HEAD
 					IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE))
 				goto error1;
+=======
+					IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)) {
+				dev_dbg_ratelimited(&device->dev,
+					"%s: Invalid GS QP type: class 0x%x\n",
+					__func__, mad_reg_req->mgmt_class);
+				goto error1;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		/* No registration request supplied */
 		if (!send_handler)
 			goto error1;
+<<<<<<< HEAD
+=======
+		if (registration_flags & IB_MAD_USER_RMPP)
+			goto error1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Validate device and port */
 	port_priv = ib_get_mad_port(device, port_num);
 	if (!port_priv) {
+<<<<<<< HEAD
+=======
+		dev_dbg_ratelimited(&device->dev, "%s: Invalid port %u\n",
+				    __func__, port_num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ERR_PTR(-ENODEV);
 		goto error1;
 	}
 
+<<<<<<< HEAD
 	/* Verify the QP requested is supported.  For example, Ethernet devices
 	 * will not have QP0 */
 	if (!port_priv->qp_info[qpn].qp) {
+=======
+	/* Verify the QP requested is supported. For example, Ethernet devices
+	 * will not have QP0.
+	 */
+	if (!port_priv->qp_info[qpn].qp) {
+		dev_dbg_ratelimited(&device->dev, "%s: QP %d not supported\n",
+				    __func__, qpn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ERR_PTR(-EPROTONOSUPPORT);
 		goto error1;
 	}
@@ -291,6 +496,7 @@ struct ib_mad_agent *ib_register_mad_agent(struct ib_device *device,
 		goto error1;
 	}
 
+<<<<<<< HEAD
 	mad_agent_priv->agent.mr = ib_get_dma_mr(port_priv->qp_info[qpn].qp->pd,
 						 IB_ACCESS_LOCAL_WRITE);
 	if (IS_ERR(mad_agent_priv->agent.mr)) {
@@ -298,6 +504,8 @@ struct ib_mad_agent *ib_register_mad_agent(struct ib_device *device,
 		goto error2;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mad_reg_req) {
 		reg_req = kmemdup(mad_reg_req, sizeof *reg_req, GFP_KERNEL);
 		if (!reg_req) {
@@ -316,6 +524,10 @@ struct ib_mad_agent *ib_register_mad_agent(struct ib_device *device,
 	mad_agent_priv->agent.context = context;
 	mad_agent_priv->agent.qp = port_priv->qp_info[qpn].qp;
 	mad_agent_priv->agent.port_num = port_num;
+<<<<<<< HEAD
+=======
+	mad_agent_priv->agent.flags = registration_flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&mad_agent_priv->lock);
 	INIT_LIST_HEAD(&mad_agent_priv->send_list);
 	INIT_LIST_HEAD(&mad_agent_priv->wait_list);
@@ -324,16 +536,43 @@ struct ib_mad_agent *ib_register_mad_agent(struct ib_device *device,
 	INIT_DELAYED_WORK(&mad_agent_priv->timed_work, timeout_sends);
 	INIT_LIST_HEAD(&mad_agent_priv->local_list);
 	INIT_WORK(&mad_agent_priv->local_work, local_completions);
+<<<<<<< HEAD
 	atomic_set(&mad_agent_priv->refcount, 1);
 	init_completion(&mad_agent_priv->comp);
 
 	spin_lock_irqsave(&port_priv->reg_lock, flags);
 	mad_agent_priv->agent.hi_tid = ++ib_mad_client_id;
+=======
+	refcount_set(&mad_agent_priv->refcount, 1);
+	init_completion(&mad_agent_priv->comp);
+
+	ret2 = ib_mad_agent_security_setup(&mad_agent_priv->agent, qp_type);
+	if (ret2) {
+		ret = ERR_PTR(ret2);
+		goto error4;
+	}
+
+	/*
+	 * The mlx4 driver uses the top byte to distinguish which virtual
+	 * function generated the MAD, so we must avoid using it.
+	 */
+	ret2 = xa_alloc_cyclic(&ib_mad_clients, &mad_agent_priv->agent.hi_tid,
+			mad_agent_priv, XA_LIMIT(0, (1 << 24) - 1),
+			&ib_mad_client_next, GFP_KERNEL);
+	if (ret2 < 0) {
+		ret = ERR_PTR(ret2);
+		goto error5;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Make sure MAD registration (if supplied)
 	 * is non overlapping with any existing ones
 	 */
+<<<<<<< HEAD
+=======
+	spin_lock_irq(&port_priv->reg_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mad_reg_req) {
 		mgmt_class = convert_mgmt_class(mad_reg_req->mgmt_class);
 		if (!is_vendor_class(mgmt_class)) {
@@ -344,7 +583,11 @@ struct ib_mad_agent *ib_register_mad_agent(struct ib_device *device,
 				if (method) {
 					if (method_in_use(&method,
 							   mad_reg_req))
+<<<<<<< HEAD
 						goto error4;
+=======
+						goto error6;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 			ret2 = add_nonoui_reg_req(mad_reg_req, mad_agent_priv,
@@ -360,13 +603,18 @@ struct ib_mad_agent *ib_register_mad_agent(struct ib_device *device,
 					if (is_vendor_method_in_use(
 							vendor_class,
 							mad_reg_req))
+<<<<<<< HEAD
 						goto error4;
+=======
+						goto error6;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 			ret2 = add_oui_reg_req(mad_reg_req, mad_agent_priv);
 		}
 		if (ret2) {
 			ret = ERR_PTR(ret2);
+<<<<<<< HEAD
 			goto error4;
 		}
 	}
@@ -383,12 +631,30 @@ error4:
 error3:
 	ib_dereg_mr(mad_agent_priv->agent.mr);
 error2:
+=======
+			goto error6;
+		}
+	}
+	spin_unlock_irq(&port_priv->reg_lock);
+
+	trace_ib_mad_create_agent(mad_agent_priv);
+	return &mad_agent_priv->agent;
+error6:
+	spin_unlock_irq(&port_priv->reg_lock);
+	xa_erase(&ib_mad_clients, mad_agent_priv->agent.hi_tid);
+error5:
+	ib_mad_agent_security_cleanup(&mad_agent_priv->agent);
+error4:
+	kfree(reg_req);
+error3:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(mad_agent_priv);
 error1:
 	return ret;
 }
 EXPORT_SYMBOL(ib_register_mad_agent);
 
+<<<<<<< HEAD
 static inline int is_snooping_sends(int mad_snoop_flags)
 {
 	return (mad_snoop_flags &
@@ -521,6 +787,20 @@ static void unregister_mad_agent(struct ib_mad_agent_private *mad_agent_priv)
 	unsigned long flags;
 
 	/* Note that we could still be handling received MADs */
+=======
+static inline void deref_mad_agent(struct ib_mad_agent_private *mad_agent_priv)
+{
+	if (refcount_dec_and_test(&mad_agent_priv->refcount))
+		complete(&mad_agent_priv->comp);
+}
+
+static void unregister_mad_agent(struct ib_mad_agent_private *mad_agent_priv)
+{
+	struct ib_mad_port_private *port_priv;
+
+	/* Note that we could still be handling received MADs */
+	trace_ib_mad_unregister_agent(mad_agent_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Canceling all sends results in dropping received response
@@ -530,6 +810,7 @@ static void unregister_mad_agent(struct ib_mad_agent_private *mad_agent_priv)
 	port_priv = mad_agent_priv->qp_info->port_priv;
 	cancel_delayed_work(&mad_agent_priv->timed_work);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port_priv->reg_lock, flags);
 	remove_mad_reg_req(mad_agent_priv);
 	list_del(&mad_agent_priv->agent_list);
@@ -561,10 +842,28 @@ static void unregister_mad_snoop(struct ib_mad_snoop_private *mad_snoop_priv)
 	wait_for_completion(&mad_snoop_priv->comp);
 
 	kfree(mad_snoop_priv);
+=======
+	spin_lock_irq(&port_priv->reg_lock);
+	remove_mad_reg_req(mad_agent_priv);
+	spin_unlock_irq(&port_priv->reg_lock);
+	xa_erase(&ib_mad_clients, mad_agent_priv->agent.hi_tid);
+
+	flush_workqueue(port_priv->wq);
+
+	deref_mad_agent(mad_agent_priv);
+	wait_for_completion(&mad_agent_priv->comp);
+	ib_cancel_rmpp_recvs(mad_agent_priv);
+
+	ib_mad_agent_security_cleanup(&mad_agent_priv->agent);
+
+	kfree(mad_agent_priv->reg_req);
+	kfree_rcu(mad_agent_priv, rcu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * ib_unregister_mad_agent - Unregisters a client from using MAD services
+<<<<<<< HEAD
  */
 int ib_unregister_mad_agent(struct ib_mad_agent *mad_agent)
 {
@@ -584,6 +883,19 @@ int ib_unregister_mad_agent(struct ib_mad_agent *mad_agent)
 		unregister_mad_snoop(mad_snoop_priv);
 	}
 	return 0;
+=======
+ *
+ * Context: Process context.
+ */
+void ib_unregister_mad_agent(struct ib_mad_agent *mad_agent)
+{
+	struct ib_mad_agent_private *mad_agent_priv;
+
+	mad_agent_priv = container_of(mad_agent,
+				      struct ib_mad_agent_private,
+				      agent);
+	unregister_mad_agent(mad_agent_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ib_unregister_mad_agent);
 
@@ -592,7 +904,10 @@ static void dequeue_mad(struct ib_mad_list_head *mad_list)
 	struct ib_mad_queue *mad_queue;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	BUG_ON(!mad_list->mad_queue);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mad_queue = mad_list->mad_queue;
 	spin_lock_irqsave(&mad_queue->lock, flags);
 	list_del(&mad_list->list);
@@ -600,6 +915,7 @@ static void dequeue_mad(struct ib_mad_list_head *mad_list)
 	spin_unlock_irqrestore(&mad_queue->lock, flags);
 }
 
+<<<<<<< HEAD
 static void snoop_send(struct ib_mad_qp_info *qp_info,
 		       struct ib_mad_send_buf *send_buf,
 		       struct ib_mad_send_wc *mad_send_wc,
@@ -657,6 +973,13 @@ static void build_smp_wc(struct ib_qp *qp,
 {
 	memset(wc, 0, sizeof *wc);
 	wc->wr_id = wr_id;
+=======
+static void build_smp_wc(struct ib_qp *qp, struct ib_cqe *cqe, u16 slid,
+		u16 pkey_index, u32 port_num, struct ib_wc *wc)
+{
+	memset(wc, 0, sizeof *wc);
+	wc->wr_cqe = cqe;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wc->status = IB_WC_SUCCESS;
 	wc->opcode = IB_WC_RECV;
 	wc->pkey_index = pkey_index;
@@ -669,6 +992,35 @@ static void build_smp_wc(struct ib_qp *qp,
 	wc->port_num = port_num;
 }
 
+<<<<<<< HEAD
+=======
+static size_t mad_priv_size(const struct ib_mad_private *mp)
+{
+	return sizeof(struct ib_mad_private) + mp->mad_size;
+}
+
+static struct ib_mad_private *alloc_mad_private(size_t mad_size, gfp_t flags)
+{
+	size_t size = sizeof(struct ib_mad_private) + mad_size;
+	struct ib_mad_private *ret = kzalloc(size, flags);
+
+	if (ret)
+		ret->mad_size = mad_size;
+
+	return ret;
+}
+
+static size_t port_mad_size(const struct ib_mad_port_private *port_priv)
+{
+	return rdma_max_mad_size(port_priv->device, port_priv->port_num);
+}
+
+static size_t mad_priv_dma_size(const struct ib_mad_private *mp)
+{
+	return sizeof(struct ib_grh) + mp->mad_size;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Return 0 if SMP is to be sent
  * Return 1 if SMP was consumed locally (whether or not solicited)
@@ -679,12 +1031,17 @@ static int handle_outgoing_dr_smp(struct ib_mad_agent_private *mad_agent_priv,
 {
 	int ret = 0;
 	struct ib_smp *smp = mad_send_wr->send_buf.mad;
+<<<<<<< HEAD
+=======
+	struct opa_smp *opa_smp = (struct opa_smp *)smp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	struct ib_mad_local_private *local;
 	struct ib_mad_private *mad_priv;
 	struct ib_mad_port_private *port_priv;
 	struct ib_mad_agent_private *recv_mad_agent = NULL;
 	struct ib_device *device = mad_agent_priv->agent.device;
+<<<<<<< HEAD
 	u8 port_num;
 	struct ib_wc mad_wc;
 	struct ib_send_wr *send_wr = &mad_send_wr->send_wr;
@@ -692,6 +1049,20 @@ static int handle_outgoing_dr_smp(struct ib_mad_agent_private *mad_agent_priv,
 	if (device->node_type == RDMA_NODE_IB_SWITCH &&
 	    smp->mgmt_class == IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)
 		port_num = send_wr->wr.ud.port_num;
+=======
+	u32 port_num;
+	struct ib_wc mad_wc;
+	struct ib_ud_wr *send_wr = &mad_send_wr->send_wr;
+	size_t mad_size = port_mad_size(mad_agent_priv->qp_info->port_priv);
+	u16 out_mad_pkey_index = 0;
+	u16 drslid;
+	bool opa = rdma_cap_opa_mad(mad_agent_priv->qp_info->port_priv->device,
+				    mad_agent_priv->qp_info->port_priv->port_num);
+
+	if (rdma_cap_ib_switch(device) &&
+	    smp->mgmt_class == IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)
+		port_num = send_wr->port_num;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		port_num = mad_agent_priv->agent.port_num;
 
@@ -701,6 +1072,7 @@ static int handle_outgoing_dr_smp(struct ib_mad_agent_private *mad_agent_priv,
 	 * If we are at the start of the LID routed part, don't update the
 	 * hop_ptr or hop_cnt.  See section 14.2.2, Vol 1 IB spec.
 	 */
+<<<<<<< HEAD
 	if ((ib_get_smp_direction(smp) ? smp->dr_dlid : smp->dr_slid) ==
 	     IB_LID_PERMISSIVE &&
 	     smi_handle_dr_smp_send(smp, device->node_type, port_num) ==
@@ -714,24 +1086,83 @@ static int handle_outgoing_dr_smp(struct ib_mad_agent_private *mad_agent_priv,
 	if (smi_check_local_smp(smp, device) == IB_SMI_DISCARD &&
 	    smi_check_local_returning_smp(smp, device) == IB_SMI_DISCARD)
 		goto out;
+=======
+	if (opa && smp->class_version == OPA_SM_CLASS_VERSION) {
+		u32 opa_drslid;
+
+		trace_ib_mad_handle_out_opa_smi(opa_smp);
+
+		if ((opa_get_smp_direction(opa_smp)
+		     ? opa_smp->route.dr.dr_dlid : opa_smp->route.dr.dr_slid) ==
+		     OPA_LID_PERMISSIVE &&
+		     opa_smi_handle_dr_smp_send(opa_smp,
+						rdma_cap_ib_switch(device),
+						port_num) == IB_SMI_DISCARD) {
+			ret = -EINVAL;
+			dev_err(&device->dev, "OPA Invalid directed route\n");
+			goto out;
+		}
+		opa_drslid = be32_to_cpu(opa_smp->route.dr.dr_slid);
+		if (opa_drslid != be32_to_cpu(OPA_LID_PERMISSIVE) &&
+		    opa_drslid & 0xffff0000) {
+			ret = -EINVAL;
+			dev_err(&device->dev, "OPA Invalid dr_slid 0x%x\n",
+			       opa_drslid);
+			goto out;
+		}
+		drslid = (u16)(opa_drslid & 0x0000ffff);
+
+		/* Check to post send on QP or process locally */
+		if (opa_smi_check_local_smp(opa_smp, device) == IB_SMI_DISCARD &&
+		    opa_smi_check_local_returning_smp(opa_smp, device) == IB_SMI_DISCARD)
+			goto out;
+	} else {
+		trace_ib_mad_handle_out_ib_smi(smp);
+
+		if ((ib_get_smp_direction(smp) ? smp->dr_dlid : smp->dr_slid) ==
+		     IB_LID_PERMISSIVE &&
+		     smi_handle_dr_smp_send(smp, rdma_cap_ib_switch(device), port_num) ==
+		     IB_SMI_DISCARD) {
+			ret = -EINVAL;
+			dev_err(&device->dev, "Invalid directed route\n");
+			goto out;
+		}
+		drslid = be16_to_cpu(smp->dr_slid);
+
+		/* Check to post send on QP or process locally */
+		if (smi_check_local_smp(smp, device) == IB_SMI_DISCARD &&
+		    smi_check_local_returning_smp(smp, device) == IB_SMI_DISCARD)
+			goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local = kmalloc(sizeof *local, GFP_ATOMIC);
 	if (!local) {
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "No memory for ib_mad_local_private\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	local->mad_priv = NULL;
 	local->recv_mad_agent = NULL;
+<<<<<<< HEAD
 	mad_priv = kmem_cache_alloc(ib_mad_cache, GFP_ATOMIC);
 	if (!mad_priv) {
 		ret = -ENOMEM;
 		printk(KERN_ERR PFX "No memory for local response MAD\n");
+=======
+	mad_priv = alloc_mad_private(mad_size, GFP_ATOMIC);
+	if (!mad_priv) {
+		ret = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(local);
 		goto out;
 	}
 
 	build_smp_wc(mad_agent_priv->agent.qp,
+<<<<<<< HEAD
 		     send_wr->wr_id, be16_to_cpu(smp->dr_slid),
 		     send_wr->wr.ud.pkey_index,
 		     send_wr->wr.ud.port_num, &mad_wc);
@@ -744,6 +1175,26 @@ static int handle_outgoing_dr_smp(struct ib_mad_agent_private *mad_agent_priv,
 	{
 	case IB_MAD_RESULT_SUCCESS | IB_MAD_RESULT_REPLY:
 		if (ib_response_mad(&mad_priv->mad.mad) &&
+=======
+		     send_wr->wr.wr_cqe, drslid,
+		     send_wr->pkey_index,
+		     send_wr->port_num, &mad_wc);
+
+	if (opa && smp->base_version == OPA_MGMT_BASE_VERSION) {
+		mad_wc.byte_len = mad_send_wr->send_buf.hdr_len
+					+ mad_send_wr->send_buf.data_len
+					+ sizeof(struct ib_grh);
+	}
+
+	/* No GRH for DR SMP */
+	ret = device->ops.process_mad(device, 0, port_num, &mad_wc, NULL,
+				      (const struct ib_mad *)smp,
+				      (struct ib_mad *)mad_priv->mad, &mad_size,
+				      &out_mad_pkey_index);
+	switch (ret) {
+	case IB_MAD_RESULT_SUCCESS | IB_MAD_RESULT_REPLY:
+		if (ib_response_mad((const struct ib_mad_hdr *)mad_priv->mad) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    mad_agent_priv->agent.recv_handler) {
 			local->mad_priv = mad_priv;
 			local->recv_mad_agent = mad_agent_priv;
@@ -751,43 +1202,75 @@ static int handle_outgoing_dr_smp(struct ib_mad_agent_private *mad_agent_priv,
 			 * Reference MAD agent until receive
 			 * side of local completion handled
 			 */
+<<<<<<< HEAD
 			atomic_inc(&mad_agent_priv->refcount);
 		} else
 			kmem_cache_free(ib_mad_cache, mad_priv);
 		break;
 	case IB_MAD_RESULT_SUCCESS | IB_MAD_RESULT_CONSUMED:
 		kmem_cache_free(ib_mad_cache, mad_priv);
+=======
+			refcount_inc(&mad_agent_priv->refcount);
+		} else
+			kfree(mad_priv);
+		break;
+	case IB_MAD_RESULT_SUCCESS | IB_MAD_RESULT_CONSUMED:
+		kfree(mad_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case IB_MAD_RESULT_SUCCESS:
 		/* Treat like an incoming receive MAD */
 		port_priv = ib_get_mad_port(mad_agent_priv->agent.device,
 					    mad_agent_priv->agent.port_num);
 		if (port_priv) {
+<<<<<<< HEAD
 			memcpy(&mad_priv->mad.mad, smp, sizeof(struct ib_mad));
 			recv_mad_agent = find_mad_agent(port_priv,
 						        &mad_priv->mad.mad);
+=======
+			memcpy(mad_priv->mad, smp, mad_priv->mad_size);
+			recv_mad_agent = find_mad_agent(port_priv,
+						        (const struct ib_mad_hdr *)mad_priv->mad);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (!port_priv || !recv_mad_agent) {
 			/*
 			 * No receiving agent so drop packet and
 			 * generate send completion.
 			 */
+<<<<<<< HEAD
 			kmem_cache_free(ib_mad_cache, mad_priv);
+=======
+			kfree(mad_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		local->mad_priv = mad_priv;
 		local->recv_mad_agent = recv_mad_agent;
 		break;
 	default:
+<<<<<<< HEAD
 		kmem_cache_free(ib_mad_cache, mad_priv);
+=======
+		kfree(mad_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(local);
 		ret = -EINVAL;
 		goto out;
 	}
 
 	local->mad_send_wr = mad_send_wr;
+<<<<<<< HEAD
 	/* Reference MAD agent until send side of local completion handled */
 	atomic_inc(&mad_agent_priv->refcount);
+=======
+	if (opa) {
+		local->mad_send_wr->send_wr.pkey_index = out_mad_pkey_index;
+		local->return_wc_byte_len = mad_size;
+	}
+	/* Reference MAD agent until send side of local completion handled */
+	refcount_inc(&mad_agent_priv->refcount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Queue local completion to local list */
 	spin_lock_irqsave(&mad_agent_priv->lock, flags);
 	list_add_tail(&local->completion_list, &mad_agent_priv->local_list);
@@ -799,11 +1282,19 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int get_pad_size(int hdr_len, int data_len)
 {
 	int seg_size, pad;
 
 	seg_size = sizeof(struct ib_mad) - hdr_len;
+=======
+static int get_pad_size(int hdr_len, int data_len, size_t mad_size)
+{
+	int seg_size, pad;
+
+	seg_size = mad_size - hdr_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data_len && seg_size) {
 		pad = seg_size - data_len % seg_size;
 		return pad == seg_size ? 0 : pad;
@@ -822,24 +1313,38 @@ static void free_send_rmpp_list(struct ib_mad_send_wr_private *mad_send_wr)
 }
 
 static int alloc_send_rmpp_list(struct ib_mad_send_wr_private *send_wr,
+<<<<<<< HEAD
 				gfp_t gfp_mask)
+=======
+				size_t mad_size, gfp_t gfp_mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ib_mad_send_buf *send_buf = &send_wr->send_buf;
 	struct ib_rmpp_mad *rmpp_mad = send_buf->mad;
 	struct ib_rmpp_segment *seg = NULL;
 	int left, seg_size, pad;
 
+<<<<<<< HEAD
 	send_buf->seg_size = sizeof (struct ib_mad) - send_buf->hdr_len;
+=======
+	send_buf->seg_size = mad_size - send_buf->hdr_len;
+	send_buf->seg_rmpp_size = mad_size - IB_MGMT_RMPP_HDR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seg_size = send_buf->seg_size;
 	pad = send_wr->pad;
 
 	/* Allocate data segments. */
 	for (left = send_buf->data_len + pad; left > 0; left -= seg_size) {
+<<<<<<< HEAD
 		seg = kmalloc(sizeof (*seg) + seg_size, gfp_mask);
 		if (!seg) {
 			printk(KERN_ERR "alloc_send_rmpp_segs: RMPP mem "
 			       "alloc failed for len %zd, gfp %#x\n",
 			       sizeof (*seg) + seg_size, gfp_mask);
+=======
+		seg = kmalloc(sizeof(*seg) + seg_size, gfp_mask);
+		if (!seg) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			free_send_rmpp_list(send_wr);
 			return -ENOMEM;
 		}
@@ -862,16 +1367,31 @@ static int alloc_send_rmpp_list(struct ib_mad_send_wr_private *send_wr,
 	return 0;
 }
 
+<<<<<<< HEAD
 struct ib_mad_send_buf * ib_create_send_mad(struct ib_mad_agent *mad_agent,
 					    u32 remote_qpn, u16 pkey_index,
 					    int rmpp_active,
 					    int hdr_len, int data_len,
 					    gfp_t gfp_mask)
+=======
+int ib_mad_kernel_rmpp_agent(const struct ib_mad_agent *agent)
+{
+	return agent->rmpp_version && !(agent->flags & IB_MAD_USER_RMPP);
+}
+EXPORT_SYMBOL(ib_mad_kernel_rmpp_agent);
+
+struct ib_mad_send_buf *ib_create_send_mad(struct ib_mad_agent *mad_agent,
+					   u32 remote_qpn, u16 pkey_index,
+					   int rmpp_active, int hdr_len,
+					   int data_len, gfp_t gfp_mask,
+					   u8 base_version)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ib_mad_agent_private *mad_agent_priv;
 	struct ib_mad_send_wr_private *mad_send_wr;
 	int pad, message_size, ret, size;
 	void *buf;
+<<<<<<< HEAD
 
 	mad_agent_priv = container_of(mad_agent, struct ib_mad_agent_private,
 				      agent);
@@ -884,6 +1404,32 @@ struct ib_mad_send_buf * ib_create_send_mad(struct ib_mad_agent *mad_agent,
 		return ERR_PTR(-EINVAL);
 
 	size = rmpp_active ? hdr_len : sizeof(struct ib_mad);
+=======
+	size_t mad_size;
+	bool opa;
+
+	mad_agent_priv = container_of(mad_agent, struct ib_mad_agent_private,
+				      agent);
+
+	opa = rdma_cap_opa_mad(mad_agent->device, mad_agent->port_num);
+
+	if (opa && base_version == OPA_MGMT_BASE_VERSION)
+		mad_size = sizeof(struct opa_mad);
+	else
+		mad_size = sizeof(struct ib_mad);
+
+	pad = get_pad_size(hdr_len, data_len, mad_size);
+	message_size = hdr_len + data_len + pad;
+
+	if (ib_mad_kernel_rmpp_agent(mad_agent)) {
+		if (!rmpp_active && message_size > mad_size)
+			return ERR_PTR(-EINVAL);
+	} else
+		if (rmpp_active || message_size > mad_size)
+			return ERR_PTR(-EINVAL);
+
+	size = rmpp_active ? hdr_len : mad_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf = kzalloc(sizeof *mad_send_wr + size, gfp_mask);
 	if (!buf)
 		return ERR_PTR(-ENOMEM);
@@ -897,6 +1443,7 @@ struct ib_mad_send_buf * ib_create_send_mad(struct ib_mad_agent *mad_agent,
 
 	mad_send_wr->mad_agent_priv = mad_agent_priv;
 	mad_send_wr->sg_list[0].length = hdr_len;
+<<<<<<< HEAD
 	mad_send_wr->sg_list[0].lkey = mad_agent->mr->lkey;
 	mad_send_wr->sg_list[1].length = sizeof(struct ib_mad) - hdr_len;
 	mad_send_wr->sg_list[1].lkey = mad_agent->mr->lkey;
@@ -912,6 +1459,32 @@ struct ib_mad_send_buf * ib_create_send_mad(struct ib_mad_agent *mad_agent,
 
 	if (rmpp_active) {
 		ret = alloc_send_rmpp_list(mad_send_wr, gfp_mask);
+=======
+	mad_send_wr->sg_list[0].lkey = mad_agent->qp->pd->local_dma_lkey;
+
+	/* OPA MADs don't have to be the full 2048 bytes */
+	if (opa && base_version == OPA_MGMT_BASE_VERSION &&
+	    data_len < mad_size - hdr_len)
+		mad_send_wr->sg_list[1].length = data_len;
+	else
+		mad_send_wr->sg_list[1].length = mad_size - hdr_len;
+
+	mad_send_wr->sg_list[1].lkey = mad_agent->qp->pd->local_dma_lkey;
+
+	mad_send_wr->mad_list.cqe.done = ib_mad_send_done;
+
+	mad_send_wr->send_wr.wr.wr_cqe = &mad_send_wr->mad_list.cqe;
+	mad_send_wr->send_wr.wr.sg_list = mad_send_wr->sg_list;
+	mad_send_wr->send_wr.wr.num_sge = 2;
+	mad_send_wr->send_wr.wr.opcode = IB_WR_SEND;
+	mad_send_wr->send_wr.wr.send_flags = IB_SEND_SIGNALED;
+	mad_send_wr->send_wr.remote_qpn = remote_qpn;
+	mad_send_wr->send_wr.remote_qkey = IB_QP_SET_QKEY;
+	mad_send_wr->send_wr.pkey_index = pkey_index;
+
+	if (rmpp_active) {
+		ret = alloc_send_rmpp_list(mad_send_wr, mad_size, gfp_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			kfree(buf);
 			return ERR_PTR(ret);
@@ -919,7 +1492,11 @@ struct ib_mad_send_buf * ib_create_send_mad(struct ib_mad_agent *mad_agent,
 	}
 
 	mad_send_wr->send_buf.mad_agent = mad_agent;
+<<<<<<< HEAD
 	atomic_inc(&mad_agent_priv->refcount);
+=======
+	refcount_inc(&mad_agent_priv->refcount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return &mad_send_wr->send_buf;
 }
 EXPORT_SYMBOL(ib_create_send_mad);
@@ -1005,7 +1582,10 @@ int ib_send_mad(struct ib_mad_send_wr_private *mad_send_wr)
 {
 	struct ib_mad_qp_info *qp_info;
 	struct list_head *list;
+<<<<<<< HEAD
 	struct ib_send_wr *bad_send_wr;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ib_mad_agent *mad_agent;
 	struct ib_sge *sge;
 	unsigned long flags;
@@ -1013,8 +1593,14 @@ int ib_send_mad(struct ib_mad_send_wr_private *mad_send_wr)
 
 	/* Set WR ID to find mad_send_wr upon completion */
 	qp_info = mad_send_wr->mad_agent_priv->qp_info;
+<<<<<<< HEAD
 	mad_send_wr->send_wr.wr_id = (unsigned long)&mad_send_wr->mad_list;
 	mad_send_wr->mad_list.mad_queue = &qp_info->send_queue;
+=======
+	mad_send_wr->mad_list.mad_queue = &qp_info->send_queue;
+	mad_send_wr->mad_list.cqe.done = ib_mad_send_done;
+	mad_send_wr->send_wr.wr.wr_cqe = &mad_send_wr->mad_list.cqe;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mad_agent = mad_send_wr->send_buf.mad_agent;
 	sge = mad_send_wr->sg_list;
@@ -1022,18 +1608,39 @@ int ib_send_mad(struct ib_mad_send_wr_private *mad_send_wr)
 					mad_send_wr->send_buf.mad,
 					sge[0].length,
 					DMA_TO_DEVICE);
+<<<<<<< HEAD
+=======
+	if (unlikely(ib_dma_mapping_error(mad_agent->device, sge[0].addr)))
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mad_send_wr->header_mapping = sge[0].addr;
 
 	sge[1].addr = ib_dma_map_single(mad_agent->device,
 					ib_get_payload(mad_send_wr),
 					sge[1].length,
 					DMA_TO_DEVICE);
+<<<<<<< HEAD
+=======
+	if (unlikely(ib_dma_mapping_error(mad_agent->device, sge[1].addr))) {
+		ib_dma_unmap_single(mad_agent->device,
+				    mad_send_wr->header_mapping,
+				    sge[0].length, DMA_TO_DEVICE);
+		return -ENOMEM;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mad_send_wr->payload_mapping = sge[1].addr;
 
 	spin_lock_irqsave(&qp_info->send_queue.lock, flags);
 	if (qp_info->send_queue.count < qp_info->send_queue.max_active) {
+<<<<<<< HEAD
 		ret = ib_post_send(mad_agent->qp, &mad_send_wr->send_wr,
 				   &bad_send_wr);
+=======
+		trace_ib_mad_ib_send_mad(mad_send_wr, qp_info);
+		ret = ib_post_send(mad_agent->qp, &mad_send_wr->send_wr.wr,
+				   NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list = &qp_info->send_queue.list;
 	} else {
 		ret = 0;
@@ -1071,12 +1678,23 @@ int ib_post_send_mad(struct ib_mad_send_buf *send_buf,
 
 	/* Walk list of send WRs and post each on send list */
 	for (; send_buf; send_buf = next_send_buf) {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mad_send_wr = container_of(send_buf,
 					   struct ib_mad_send_wr_private,
 					   send_buf);
 		mad_agent_priv = mad_send_wr->mad_agent_priv;
 
+<<<<<<< HEAD
+=======
+		ret = ib_mad_enforce_security(mad_agent_priv,
+					      mad_send_wr->send_wr.pkey_index);
+		if (ret)
+			goto error;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!send_buf->mad_agent->send_handler ||
 		    (send_buf->timeout_ms &&
 		     !send_buf->mad_agent->recv_handler)) {
@@ -1097,7 +1715,11 @@ int ib_post_send_mad(struct ib_mad_send_buf *send_buf,
 		 * request associated with the completion
 		 */
 		next_send_buf = send_buf->next;
+<<<<<<< HEAD
 		mad_send_wr->send_wr.wr.ud.ah = send_buf->ah;
+=======
+		mad_send_wr->send_wr.ah = send_buf->ah;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (((struct ib_mad_hdr *) send_buf->mad)->mgmt_class ==
 		    IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE) {
@@ -1120,13 +1742,21 @@ int ib_post_send_mad(struct ib_mad_send_buf *send_buf,
 		mad_send_wr->status = IB_WC_SUCCESS;
 
 		/* Reference MAD agent until send completes */
+<<<<<<< HEAD
 		atomic_inc(&mad_agent_priv->refcount);
+=======
+		refcount_inc(&mad_agent_priv->refcount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&mad_agent_priv->lock, flags);
 		list_add_tail(&mad_send_wr->agent_list,
 			      &mad_agent_priv->send_list);
 		spin_unlock_irqrestore(&mad_agent_priv->lock, flags);
 
+<<<<<<< HEAD
 		if (mad_agent_priv->agent.rmpp_version) {
+=======
+		if (ib_mad_kernel_rmpp_agent(&mad_agent_priv->agent)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = ib_send_rmpp_mad(mad_send_wr);
 			if (ret >= 0 && ret != IB_RMPP_RESULT_CONSUMED)
 				ret = ib_send_mad(mad_send_wr);
@@ -1137,7 +1767,11 @@ int ib_post_send_mad(struct ib_mad_send_buf *send_buf,
 			spin_lock_irqsave(&mad_agent_priv->lock, flags);
 			list_del(&mad_send_wr->agent_list);
 			spin_unlock_irqrestore(&mad_agent_priv->lock, flags);
+<<<<<<< HEAD
 			atomic_dec(&mad_agent_priv->refcount);
+=======
+			deref_mad_agent(mad_agent_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error;
 		}
 	}
@@ -1172,11 +1806,16 @@ void ib_free_recv_mad(struct ib_mad_recv_wc *mad_recv_wc)
 					    recv_wc);
 		priv = container_of(mad_priv_hdr, struct ib_mad_private,
 				    header);
+<<<<<<< HEAD
 		kmem_cache_free(ib_mad_cache, priv);
+=======
+		kfree(priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 EXPORT_SYMBOL(ib_free_recv_mad);
 
+<<<<<<< HEAD
 struct ib_mad_agent *ib_redirect_mad_qp(struct ib_qp *qp,
 					u8 rmpp_version,
 					ib_mad_send_handler send_handler,
@@ -1195,6 +1834,8 @@ int ib_process_mad_wc(struct ib_mad_agent *mad_agent,
 }
 EXPORT_SYMBOL(ib_process_mad_wc);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int method_in_use(struct ib_mad_mgmt_method_table **method,
 			 struct ib_mad_reg_req *mad_reg_req)
 {
@@ -1202,7 +1843,11 @@ static int method_in_use(struct ib_mad_mgmt_method_table **method,
 
 	for_each_set_bit(i, mad_reg_req->method_mask, IB_MGMT_MAX_METHODS) {
 		if ((*method)->agent[i]) {
+<<<<<<< HEAD
 			printk(KERN_ERR PFX "Method %d already in use\n", i);
+=======
+			pr_err("Method %d already in use\n", i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 	}
@@ -1213,6 +1858,7 @@ static int allocate_method_table(struct ib_mad_mgmt_method_table **method)
 {
 	/* Allocate management method table */
 	*method = kzalloc(sizeof **method, GFP_ATOMIC);
+<<<<<<< HEAD
 	if (!*method) {
 		printk(KERN_ERR PFX "No memory for "
 		       "ib_mad_mgmt_method_table\n");
@@ -1220,6 +1866,9 @@ static int allocate_method_table(struct ib_mad_mgmt_method_table **method)
 	}
 
 	return 0;
+=======
+	return (*method) ? 0 : (-ENOMEM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1259,7 +1908,11 @@ static int check_vendor_class(struct ib_mad_mgmt_vendor_class *vendor_class)
 }
 
 static int find_vendor_oui(struct ib_mad_mgmt_vendor_class *vendor_class,
+<<<<<<< HEAD
 			   char *oui)
+=======
+			   const char *oui)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -1288,11 +1941,17 @@ static void remove_methods_mad_agent(struct ib_mad_mgmt_method_table *method,
 	int i;
 
 	/* Remove any methods for this mad agent */
+<<<<<<< HEAD
 	for (i = 0; i < IB_MGMT_MAX_METHODS; i++) {
 		if (method->agent[i] == agent) {
 			method->agent[i] = NULL;
 		}
 	}
+=======
+	for (i = 0; i < IB_MGMT_MAX_METHODS; i++)
+		if (method->agent[i] == agent)
+			method->agent[i] = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int add_nonoui_reg_req(struct ib_mad_reg_req *mad_reg_req,
@@ -1310,8 +1969,11 @@ static int add_nonoui_reg_req(struct ib_mad_reg_req *mad_reg_req,
 		/* Allocate management class table for "new" class version */
 		*class = kzalloc(sizeof **class, GFP_ATOMIC);
 		if (!*class) {
+<<<<<<< HEAD
 			printk(KERN_ERR PFX "No memory for "
 			       "ib_mad_mgmt_class_table\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -ENOMEM;
 			goto error1;
 		}
@@ -1376,22 +2038,32 @@ static int add_oui_reg_req(struct ib_mad_reg_req *mad_reg_req,
 	if (!*vendor_table) {
 		/* Allocate mgmt vendor class table for "new" class version */
 		vendor = kzalloc(sizeof *vendor, GFP_ATOMIC);
+<<<<<<< HEAD
 		if (!vendor) {
 			printk(KERN_ERR PFX "No memory for "
 			       "ib_mad_mgmt_vendor_class_table\n");
 			goto error1;
 		}
+=======
+		if (!vendor)
+			goto error1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		*vendor_table = vendor;
 	}
 	if (!(*vendor_table)->vendor_class[vclass]) {
 		/* Allocate table for this management vendor class */
 		vendor_class = kzalloc(sizeof *vendor_class, GFP_ATOMIC);
+<<<<<<< HEAD
 		if (!vendor_class) {
 			printk(KERN_ERR PFX "No memory for "
 			       "ib_mad_mgmt_vendor_class\n");
 			goto error2;
 		}
+=======
+		if (!vendor_class)
+			goto error2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		(*vendor_table)->vendor_class[vclass] = vendor_class;
 	}
@@ -1401,7 +2073,12 @@ static int add_oui_reg_req(struct ib_mad_reg_req *mad_reg_req,
 			    mad_reg_req->oui, 3)) {
 			method = &(*vendor_table)->vendor_class[
 						vclass]->method_table[i];
+<<<<<<< HEAD
 			BUG_ON(!*method);
+=======
+			if (!*method)
+				goto error3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto check_in_use;
 		}
 	}
@@ -1411,16 +2088,29 @@ static int add_oui_reg_req(struct ib_mad_reg_req *mad_reg_req,
 				vclass]->oui[i])) {
 			method = &(*vendor_table)->vendor_class[
 				vclass]->method_table[i];
+<<<<<<< HEAD
 			BUG_ON(*method);
 			/* Allocate method table for this OUI */
 			if ((ret = allocate_method_table(method)))
 				goto error3;
+=======
+			/* Allocate method table for this OUI */
+			if (!*method) {
+				ret = allocate_method_table(method);
+				if (ret)
+					goto error3;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy((*vendor_table)->vendor_class[vclass]->oui[i],
 			       mad_reg_req->oui, 3);
 			goto check_in_use;
 		}
 	}
+<<<<<<< HEAD
 	printk(KERN_ERR PFX "All OUI slots in use\n");
+=======
+	dev_err(&agent_priv->agent.device->dev, "All OUI slots in use\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto error3;
 
 check_in_use:
@@ -1472,9 +2162,14 @@ static void remove_mad_reg_req(struct ib_mad_agent_private *agent_priv)
 	 * Was MAD registration request supplied
 	 * with original registration ?
 	 */
+<<<<<<< HEAD
 	if (!agent_priv->reg_req) {
 		goto out;
 	}
+=======
+	if (!agent_priv->reg_req)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	port_priv = agent_priv->qp_info->port_priv;
 	mgmt_class = convert_mgmt_class(agent_priv->reg_req->mgmt_class);
@@ -1490,9 +2185,15 @@ static void remove_mad_reg_req(struct ib_mad_agent_private *agent_priv)
 		/* Now, check to see if there are any methods still in use */
 		if (!check_method_table(method)) {
 			/* If not, release management method table */
+<<<<<<< HEAD
 			 kfree(method);
 			 class->method_table[mgmt_class] = NULL;
 			 /* Any management classes left ? */
+=======
+			kfree(method);
+			class->method_table[mgmt_class] = NULL;
+			/* Any management classes left ? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!check_class_table(class)) {
 				/* If not, release management class table */
 				kfree(class);
@@ -1557,20 +2258,30 @@ out:
 
 static struct ib_mad_agent_private *
 find_mad_agent(struct ib_mad_port_private *port_priv,
+<<<<<<< HEAD
 	       struct ib_mad *mad)
+=======
+	       const struct ib_mad_hdr *mad_hdr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ib_mad_agent_private *mad_agent = NULL;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port_priv->reg_lock, flags);
 	if (ib_response_mad(mad)) {
 		u32 hi_tid;
 		struct ib_mad_agent_private *entry;
+=======
+	if (ib_response_mad(mad_hdr)) {
+		u32 hi_tid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Routing is based on high 32 bits of transaction ID
 		 * of MAD.
 		 */
+<<<<<<< HEAD
 		hi_tid = be64_to_cpu(mad->mad_hdr.tid) >> 32;
 		list_for_each_entry(entry, &port_priv->agent_list, agent_list) {
 			if (entry->agent.hi_tid == hi_tid) {
@@ -1578,18 +2289,34 @@ find_mad_agent(struct ib_mad_port_private *port_priv,
 				break;
 			}
 		}
+=======
+		hi_tid = be64_to_cpu(mad_hdr->tid) >> 32;
+		rcu_read_lock();
+		mad_agent = xa_load(&ib_mad_clients, hi_tid);
+		if (mad_agent && !refcount_inc_not_zero(&mad_agent->refcount))
+			mad_agent = NULL;
+		rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		struct ib_mad_mgmt_class_table *class;
 		struct ib_mad_mgmt_method_table *method;
 		struct ib_mad_mgmt_vendor_class_table *vendor;
 		struct ib_mad_mgmt_vendor_class *vendor_class;
+<<<<<<< HEAD
 		struct ib_vendor_mad *vendor_mad;
 		int index;
 
+=======
+		const struct ib_vendor_mad *vendor_mad;
+		int index;
+
+		spin_lock_irqsave(&port_priv->reg_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Routing is based on version, class, and method
 		 * For "newer" vendor MADs, also based on OUI
 		 */
+<<<<<<< HEAD
 		if (mad->mad_hdr.class_version >= MAX_MGMT_VERSION)
 			goto out;
 		if (!is_vendor_class(mad->mad_hdr.mgmt_class)) {
@@ -1616,11 +2343,40 @@ find_mad_agent(struct ib_mad_port_private *port_priv,
 				goto out;
 			/* Find matching OUI */
 			vendor_mad = (struct ib_vendor_mad *)mad;
+=======
+		if (mad_hdr->class_version >= MAX_MGMT_VERSION)
+			goto out;
+		if (!is_vendor_class(mad_hdr->mgmt_class)) {
+			class = port_priv->version[
+					mad_hdr->class_version].class;
+			if (!class)
+				goto out;
+			if (convert_mgmt_class(mad_hdr->mgmt_class) >=
+			    ARRAY_SIZE(class->method_table))
+				goto out;
+			method = class->method_table[convert_mgmt_class(
+							mad_hdr->mgmt_class)];
+			if (method)
+				mad_agent = method->agent[mad_hdr->method &
+							  ~IB_MGMT_METHOD_RESP];
+		} else {
+			vendor = port_priv->version[
+					mad_hdr->class_version].vendor;
+			if (!vendor)
+				goto out;
+			vendor_class = vendor->vendor_class[vendor_class_index(
+						mad_hdr->mgmt_class)];
+			if (!vendor_class)
+				goto out;
+			/* Find matching OUI */
+			vendor_mad = (const struct ib_vendor_mad *)mad_hdr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			index = find_vendor_oui(vendor_class, vendor_mad->oui);
 			if (index == -1)
 				goto out;
 			method = vendor_class->method_table[index];
 			if (method) {
+<<<<<<< HEAD
 				mad_agent = method->agent[mad->mad_hdr.method &
 							  ~IB_MGMT_METHOD_RESP];
 			}
@@ -1639,10 +2395,30 @@ find_mad_agent(struct ib_mad_port_private *port_priv,
 	}
 out:
 	spin_unlock_irqrestore(&port_priv->reg_lock, flags);
+=======
+				mad_agent = method->agent[mad_hdr->method &
+							  ~IB_MGMT_METHOD_RESP];
+			}
+		}
+		if (mad_agent)
+			refcount_inc(&mad_agent->refcount);
+out:
+		spin_unlock_irqrestore(&port_priv->reg_lock, flags);
+	}
+
+	if (mad_agent && !mad_agent->agent.recv_handler) {
+		dev_notice(&port_priv->device->dev,
+			   "No receive handler for client %p on port %u\n",
+			   &mad_agent->agent, port_priv->port_num);
+		deref_mad_agent(mad_agent);
+		mad_agent = NULL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mad_agent;
 }
 
+<<<<<<< HEAD
 static int validate_mad(struct ib_mad *mad, u32 qp_num)
 {
 	int valid = 0;
@@ -1651,15 +2427,42 @@ static int validate_mad(struct ib_mad *mad, u32 qp_num)
 	if (mad->mad_hdr.base_version != IB_MGMT_BASE_VERSION) {
 		printk(KERN_ERR PFX "MAD received with unsupported base "
 		       "version %d\n", mad->mad_hdr.base_version);
+=======
+static int validate_mad(const struct ib_mad_hdr *mad_hdr,
+			const struct ib_mad_qp_info *qp_info,
+			bool opa)
+{
+	int valid = 0;
+	u32 qp_num = qp_info->qp->qp_num;
+
+	/* Make sure MAD base version is understood */
+	if (mad_hdr->base_version != IB_MGMT_BASE_VERSION &&
+	    (!opa || mad_hdr->base_version != OPA_MGMT_BASE_VERSION)) {
+		pr_err("MAD received with unsupported base version %u %s\n",
+		       mad_hdr->base_version, opa ? "(opa)" : "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	/* Filter SMI packets sent to other than QP0 */
+<<<<<<< HEAD
 	if ((mad->mad_hdr.mgmt_class == IB_MGMT_CLASS_SUBN_LID_ROUTED) ||
 	    (mad->mad_hdr.mgmt_class == IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)) {
 		if (qp_num == 0)
 			valid = 1;
 	} else {
+=======
+	if ((mad_hdr->mgmt_class == IB_MGMT_CLASS_SUBN_LID_ROUTED) ||
+	    (mad_hdr->mgmt_class == IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)) {
+		if (qp_num == 0)
+			valid = 1;
+	} else {
+		/* CM attributes other than ClassPortInfo only use Send method */
+		if ((mad_hdr->mgmt_class == IB_MGMT_CLASS_CM) &&
+		    (mad_hdr->attr_id != IB_MGMT_CLASSPORTINFO_ATTR_ID) &&
+		    (mad_hdr->method != IB_MGMT_METHOD_SEND))
+			goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Filter GSI packets sent to QP0 */
 		if (qp_num != 0)
 			valid = 1;
@@ -1669,18 +2472,28 @@ out:
 	return valid;
 }
 
+<<<<<<< HEAD
 static int is_data_mad(struct ib_mad_agent_private *mad_agent_priv,
 		       struct ib_mad_hdr *mad_hdr)
+=======
+static int is_rmpp_data_mad(const struct ib_mad_agent_private *mad_agent_priv,
+			    const struct ib_mad_hdr *mad_hdr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ib_rmpp_mad *rmpp_mad;
 
 	rmpp_mad = (struct ib_rmpp_mad *)mad_hdr;
 	return !mad_agent_priv->agent.rmpp_version ||
+<<<<<<< HEAD
+=======
+		!ib_mad_kernel_rmpp_agent(&mad_agent_priv->agent) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		!(ib_get_rmpp_flags(&rmpp_mad->rmpp_hdr) &
 				    IB_MGMT_RMPP_FLAG_ACTIVE) ||
 		(rmpp_mad->rmpp_hdr.rmpp_type == IB_MGMT_RMPP_TYPE_DATA);
 }
 
+<<<<<<< HEAD
 static inline int rcv_has_same_class(struct ib_mad_send_wr_private *wr,
 				     struct ib_mad_recv_wc *rwc)
 {
@@ -1701,22 +2514,56 @@ static inline int rcv_has_same_gid(struct ib_mad_agent_private *mad_agent_priv,
 
 	send_resp = ib_response_mad((struct ib_mad *)wr->send_buf.mad);
 	rcv_resp = ib_response_mad(rwc->recv_buf.mad);
+=======
+static inline int rcv_has_same_class(const struct ib_mad_send_wr_private *wr,
+				     const struct ib_mad_recv_wc *rwc)
+{
+	return ((struct ib_mad_hdr *)(wr->send_buf.mad))->mgmt_class ==
+		rwc->recv_buf.mad->mad_hdr.mgmt_class;
+}
+
+static inline int
+rcv_has_same_gid(const struct ib_mad_agent_private *mad_agent_priv,
+		 const struct ib_mad_send_wr_private *wr,
+		 const struct ib_mad_recv_wc *rwc)
+{
+	struct rdma_ah_attr attr;
+	u8 send_resp, rcv_resp;
+	union ib_gid sgid;
+	struct ib_device *device = mad_agent_priv->agent.device;
+	u32 port_num = mad_agent_priv->agent.port_num;
+	u8 lmc;
+	bool has_grh;
+
+	send_resp = ib_response_mad((struct ib_mad_hdr *)wr->send_buf.mad);
+	rcv_resp = ib_response_mad(&rwc->recv_buf.mad->mad_hdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (send_resp == rcv_resp)
 		/* both requests, or both responses. GIDs different */
 		return 0;
 
+<<<<<<< HEAD
 	if (ib_query_ah(wr->send_buf.ah, &attr))
 		/* Assume not equal, to avoid false positives. */
 		return 0;
 
 	if (!!(attr.ah_flags & IB_AH_GRH) !=
 	    !!(rwc->wc->wc_flags & IB_WC_GRH))
+=======
+	if (rdma_query_ah(wr->send_buf.ah, &attr))
+		/* Assume not equal, to avoid false positives. */
+		return 0;
+
+	has_grh = !!(rdma_ah_get_ah_flags(&attr) & IB_AH_GRH);
+	if (has_grh != !!(rwc->wc->wc_flags & IB_WC_GRH))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* one has GID, other does not.  Assume different */
 		return 0;
 
 	if (!send_resp && rcv_resp) {
 		/* is request/response. */
+<<<<<<< HEAD
 		if (!(attr.ah_flags & IB_AH_GRH)) {
 			if (ib_get_cached_lmc(device, port_num, &lmc))
 				return 0;
@@ -1726,16 +2573,38 @@ static inline int rcv_has_same_gid(struct ib_mad_agent_private *mad_agent_priv,
 		} else {
 			if (ib_get_cached_gid(device, port_num,
 					      attr.grh.sgid_index, &sgid))
+=======
+		if (!has_grh) {
+			if (ib_get_cached_lmc(device, port_num, &lmc))
+				return 0;
+			return (!lmc || !((rdma_ah_get_path_bits(&attr) ^
+					   rwc->wc->dlid_path_bits) &
+					  ((1 << lmc) - 1)));
+		} else {
+			const struct ib_global_route *grh =
+					rdma_ah_read_grh(&attr);
+
+			if (rdma_query_gid(device, port_num,
+					   grh->sgid_index, &sgid))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			return !memcmp(sgid.raw, rwc->recv_buf.grh->dgid.raw,
 				       16);
 		}
 	}
 
+<<<<<<< HEAD
 	if (!(attr.ah_flags & IB_AH_GRH))
 		return attr.dlid == rwc->wc->slid;
 	else
 		return !memcmp(attr.grh.dgid.raw, rwc->recv_buf.grh->sgid.raw,
+=======
+	if (!has_grh)
+		return rdma_ah_get_dlid(&attr) == rwc->wc->slid;
+	else
+		return !memcmp(rdma_ah_read_grh(&attr)->dgid.raw,
+			       rwc->recv_buf.grh->sgid.raw,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       16);
 }
 
@@ -1745,6 +2614,7 @@ static inline int is_direct(u8 class)
 }
 
 struct ib_mad_send_wr_private*
+<<<<<<< HEAD
 ib_find_send_mad(struct ib_mad_agent_private *mad_agent_priv,
 		 struct ib_mad_recv_wc *wc)
 {
@@ -1755,12 +2625,28 @@ ib_find_send_mad(struct ib_mad_agent_private *mad_agent_priv,
 
 	list_for_each_entry(wr, &mad_agent_priv->wait_list, agent_list) {
 		if ((wr->tid == mad->mad_hdr.tid) &&
+=======
+ib_find_send_mad(const struct ib_mad_agent_private *mad_agent_priv,
+		 const struct ib_mad_recv_wc *wc)
+{
+	struct ib_mad_send_wr_private *wr;
+	const struct ib_mad_hdr *mad_hdr;
+
+	mad_hdr = &wc->recv_buf.mad->mad_hdr;
+
+	list_for_each_entry(wr, &mad_agent_priv->wait_list, agent_list) {
+		if ((wr->tid == mad_hdr->tid) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    rcv_has_same_class(wr, wc) &&
 		    /*
 		     * Don't check GID for direct routed MADs.
 		     * These might have permissive LIDs.
 		     */
+<<<<<<< HEAD
 		    (is_direct(wc->recv_buf.mad->mad_hdr.mgmt_class) ||
+=======
+		    (is_direct(mad_hdr->mgmt_class) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     rcv_has_same_gid(mad_agent_priv, wr, wc)))
 			return (wr->status == IB_WC_SUCCESS) ? wr : NULL;
 	}
@@ -1770,15 +2656,24 @@ ib_find_send_mad(struct ib_mad_agent_private *mad_agent_priv,
 	 * been notified that the send has completed
 	 */
 	list_for_each_entry(wr, &mad_agent_priv->send_list, agent_list) {
+<<<<<<< HEAD
 		if (is_data_mad(mad_agent_priv, wr->send_buf.mad) &&
 		    wr->tid == mad->mad_hdr.tid &&
+=======
+		if (is_rmpp_data_mad(mad_agent_priv, wr->send_buf.mad) &&
+		    wr->tid == mad_hdr->tid &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    wr->timeout &&
 		    rcv_has_same_class(wr, wc) &&
 		    /*
 		     * Don't check GID for direct routed MADs.
 		     * These might have permissive LIDs.
 		     */
+<<<<<<< HEAD
 		    (is_direct(wc->recv_buf.mad->mad_hdr.mgmt_class) ||
+=======
+		    (is_direct(mad_hdr->mgmt_class) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     rcv_has_same_gid(mad_agent_priv, wr, wc)))
 			/* Verify request has not been canceled */
 			return (wr->status == IB_WC_SUCCESS) ? wr : NULL;
@@ -1800,10 +2695,26 @@ static void ib_mad_complete_recv(struct ib_mad_agent_private *mad_agent_priv,
 	struct ib_mad_send_wr_private *mad_send_wr;
 	struct ib_mad_send_wc mad_send_wc;
 	unsigned long flags;
+<<<<<<< HEAD
 
 	INIT_LIST_HEAD(&mad_recv_wc->rmpp_list);
 	list_add(&mad_recv_wc->recv_buf.list, &mad_recv_wc->rmpp_list);
 	if (mad_agent_priv->agent.rmpp_version) {
+=======
+	int ret;
+
+	INIT_LIST_HEAD(&mad_recv_wc->rmpp_list);
+	ret = ib_mad_enforce_security(mad_agent_priv,
+				      mad_recv_wc->wc->pkey_index);
+	if (ret) {
+		ib_free_recv_mad(mad_recv_wc);
+		deref_mad_agent(mad_agent_priv);
+		return;
+	}
+
+	list_add(&mad_recv_wc->recv_buf.list, &mad_recv_wc->rmpp_list);
+	if (ib_mad_kernel_rmpp_agent(&mad_agent_priv->agent)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mad_recv_wc = ib_process_rmpp_recv_wc(mad_agent_priv,
 						      mad_recv_wc);
 		if (!mad_recv_wc) {
@@ -1813,11 +2724,16 @@ static void ib_mad_complete_recv(struct ib_mad_agent_private *mad_agent_priv,
 	}
 
 	/* Complete corresponding request */
+<<<<<<< HEAD
 	if (ib_response_mad(mad_recv_wc->recv_buf.mad)) {
+=======
+	if (ib_response_mad(&mad_recv_wc->recv_buf.mad->mad_hdr)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&mad_agent_priv->lock, flags);
 		mad_send_wr = ib_find_send_mad(mad_agent_priv, mad_recv_wc);
 		if (!mad_send_wr) {
 			spin_unlock_irqrestore(&mad_agent_priv->lock, flags);
+<<<<<<< HEAD
 			ib_free_recv_mad(mad_recv_wc);
 			deref_mad_agent(mad_agent_priv);
 			return;
@@ -1837,11 +2753,51 @@ static void ib_mad_complete_recv(struct ib_mad_agent_private *mad_agent_priv,
 		ib_mad_complete_send_wr(mad_send_wr, &mad_send_wc);
 	} else {
 		mad_agent_priv->agent.recv_handler(&mad_agent_priv->agent,
+=======
+			if (!ib_mad_kernel_rmpp_agent(&mad_agent_priv->agent)
+			   && ib_is_mad_class_rmpp(mad_recv_wc->recv_buf.mad->mad_hdr.mgmt_class)
+			   && (ib_get_rmpp_flags(&((struct ib_rmpp_mad *)mad_recv_wc->recv_buf.mad)->rmpp_hdr)
+					& IB_MGMT_RMPP_FLAG_ACTIVE)) {
+				/* user rmpp is in effect
+				 * and this is an active RMPP MAD
+				 */
+				mad_agent_priv->agent.recv_handler(
+						&mad_agent_priv->agent, NULL,
+						mad_recv_wc);
+				deref_mad_agent(mad_agent_priv);
+			} else {
+				/* not user rmpp, revert to normal behavior and
+				 * drop the mad
+				 */
+				ib_free_recv_mad(mad_recv_wc);
+				deref_mad_agent(mad_agent_priv);
+				return;
+			}
+		} else {
+			ib_mark_mad_done(mad_send_wr);
+			spin_unlock_irqrestore(&mad_agent_priv->lock, flags);
+
+			/* Defined behavior is to complete response before request */
+			mad_agent_priv->agent.recv_handler(
+					&mad_agent_priv->agent,
+					&mad_send_wr->send_buf,
+					mad_recv_wc);
+			deref_mad_agent(mad_agent_priv);
+
+			mad_send_wc.status = IB_WC_SUCCESS;
+			mad_send_wc.vendor_err = 0;
+			mad_send_wc.send_buf = &mad_send_wr->send_buf;
+			ib_mad_complete_send_wr(mad_send_wr, &mad_send_wc);
+		}
+	} else {
+		mad_agent_priv->agent.recv_handler(&mad_agent_priv->agent, NULL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   mad_recv_wc);
 		deref_mad_agent(mad_agent_priv);
 	}
 }
 
+<<<<<<< HEAD
 static bool generate_unmatched_resp(struct ib_mad_private *recv,
 				    struct ib_mad_private *response)
 {
@@ -1856,12 +2812,94 @@ static bool generate_unmatched_resp(struct ib_mad_private *recv,
 			cpu_to_be16(IB_MGMT_MAD_STATUS_UNSUPPORTED_METHOD_ATTRIB);
 		if (recv->mad.mad.mad_hdr.mgmt_class == IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)
 			response->mad.mad.mad_hdr.status |= IB_SMP_DIRECTION;
+=======
+static enum smi_action handle_ib_smi(const struct ib_mad_port_private *port_priv,
+				     const struct ib_mad_qp_info *qp_info,
+				     const struct ib_wc *wc,
+				     u32 port_num,
+				     struct ib_mad_private *recv,
+				     struct ib_mad_private *response)
+{
+	enum smi_forward_action retsmi;
+	struct ib_smp *smp = (struct ib_smp *)recv->mad;
+
+	trace_ib_mad_handle_ib_smi(smp);
+
+	if (smi_handle_dr_smp_recv(smp,
+				   rdma_cap_ib_switch(port_priv->device),
+				   port_num,
+				   port_priv->device->phys_port_cnt) ==
+				   IB_SMI_DISCARD)
+		return IB_SMI_DISCARD;
+
+	retsmi = smi_check_forward_dr_smp(smp);
+	if (retsmi == IB_SMI_LOCAL)
+		return IB_SMI_HANDLE;
+
+	if (retsmi == IB_SMI_SEND) { /* don't forward */
+		if (smi_handle_dr_smp_send(smp,
+					   rdma_cap_ib_switch(port_priv->device),
+					   port_num) == IB_SMI_DISCARD)
+			return IB_SMI_DISCARD;
+
+		if (smi_check_local_smp(smp, port_priv->device) == IB_SMI_DISCARD)
+			return IB_SMI_DISCARD;
+	} else if (rdma_cap_ib_switch(port_priv->device)) {
+		/* forward case for switches */
+		memcpy(response, recv, mad_priv_size(response));
+		response->header.recv_wc.wc = &response->header.wc;
+		response->header.recv_wc.recv_buf.mad = (struct ib_mad *)response->mad;
+		response->header.recv_wc.recv_buf.grh = &response->grh;
+
+		agent_send_response((const struct ib_mad_hdr *)response->mad,
+				    &response->grh, wc,
+				    port_priv->device,
+				    smi_get_fwd_port(smp),
+				    qp_info->qp->qp_num,
+				    response->mad_size,
+				    false);
+
+		return IB_SMI_DISCARD;
+	}
+	return IB_SMI_HANDLE;
+}
+
+static bool generate_unmatched_resp(const struct ib_mad_private *recv,
+				    struct ib_mad_private *response,
+				    size_t *resp_len, bool opa)
+{
+	const struct ib_mad_hdr *recv_hdr = (const struct ib_mad_hdr *)recv->mad;
+	struct ib_mad_hdr *resp_hdr = (struct ib_mad_hdr *)response->mad;
+
+	if (recv_hdr->method == IB_MGMT_METHOD_GET ||
+	    recv_hdr->method == IB_MGMT_METHOD_SET) {
+		memcpy(response, recv, mad_priv_size(response));
+		response->header.recv_wc.wc = &response->header.wc;
+		response->header.recv_wc.recv_buf.mad = (struct ib_mad *)response->mad;
+		response->header.recv_wc.recv_buf.grh = &response->grh;
+		resp_hdr->method = IB_MGMT_METHOD_GET_RESP;
+		resp_hdr->status = cpu_to_be16(IB_MGMT_MAD_STATUS_UNSUPPORTED_METHOD_ATTRIB);
+		if (recv_hdr->mgmt_class == IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)
+			resp_hdr->status |= IB_SMP_DIRECTION;
+
+		if (opa && recv_hdr->base_version == OPA_MGMT_BASE_VERSION) {
+			if (recv_hdr->mgmt_class ==
+			    IB_MGMT_CLASS_SUBN_LID_ROUTED ||
+			    recv_hdr->mgmt_class ==
+			    IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)
+				*resp_len = opa_get_smp_header_size(
+							(struct opa_smp *)recv->mad);
+			else
+				*resp_len = sizeof(struct ib_mad_hdr);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return true;
 	} else {
 		return false;
 	}
 }
+<<<<<<< HEAD
 static void ib_mad_recv_done_handler(struct ib_mad_port_private *port_priv,
 				     struct ib_wc *wc)
 {
@@ -1877,18 +2915,133 @@ static void ib_mad_recv_done_handler(struct ib_mad_port_private *port_priv,
 	qp_info = mad_list->mad_queue->qp_info;
 	dequeue_mad(mad_list);
 
+=======
+
+static enum smi_action
+handle_opa_smi(struct ib_mad_port_private *port_priv,
+	       struct ib_mad_qp_info *qp_info,
+	       struct ib_wc *wc,
+	       u32 port_num,
+	       struct ib_mad_private *recv,
+	       struct ib_mad_private *response)
+{
+	enum smi_forward_action retsmi;
+	struct opa_smp *smp = (struct opa_smp *)recv->mad;
+
+	trace_ib_mad_handle_opa_smi(smp);
+
+	if (opa_smi_handle_dr_smp_recv(smp,
+				   rdma_cap_ib_switch(port_priv->device),
+				   port_num,
+				   port_priv->device->phys_port_cnt) ==
+				   IB_SMI_DISCARD)
+		return IB_SMI_DISCARD;
+
+	retsmi = opa_smi_check_forward_dr_smp(smp);
+	if (retsmi == IB_SMI_LOCAL)
+		return IB_SMI_HANDLE;
+
+	if (retsmi == IB_SMI_SEND) { /* don't forward */
+		if (opa_smi_handle_dr_smp_send(smp,
+					   rdma_cap_ib_switch(port_priv->device),
+					   port_num) == IB_SMI_DISCARD)
+			return IB_SMI_DISCARD;
+
+		if (opa_smi_check_local_smp(smp, port_priv->device) ==
+		    IB_SMI_DISCARD)
+			return IB_SMI_DISCARD;
+
+	} else if (rdma_cap_ib_switch(port_priv->device)) {
+		/* forward case for switches */
+		memcpy(response, recv, mad_priv_size(response));
+		response->header.recv_wc.wc = &response->header.wc;
+		response->header.recv_wc.recv_buf.opa_mad =
+				(struct opa_mad *)response->mad;
+		response->header.recv_wc.recv_buf.grh = &response->grh;
+
+		agent_send_response((const struct ib_mad_hdr *)response->mad,
+				    &response->grh, wc,
+				    port_priv->device,
+				    opa_smi_get_fwd_port(smp),
+				    qp_info->qp->qp_num,
+				    recv->header.wc.byte_len,
+				    true);
+
+		return IB_SMI_DISCARD;
+	}
+
+	return IB_SMI_HANDLE;
+}
+
+static enum smi_action
+handle_smi(struct ib_mad_port_private *port_priv,
+	   struct ib_mad_qp_info *qp_info,
+	   struct ib_wc *wc,
+	   u32 port_num,
+	   struct ib_mad_private *recv,
+	   struct ib_mad_private *response,
+	   bool opa)
+{
+	struct ib_mad_hdr *mad_hdr = (struct ib_mad_hdr *)recv->mad;
+
+	if (opa && mad_hdr->base_version == OPA_MGMT_BASE_VERSION &&
+	    mad_hdr->class_version == OPA_SM_CLASS_VERSION)
+		return handle_opa_smi(port_priv, qp_info, wc, port_num, recv,
+				      response);
+
+	return handle_ib_smi(port_priv, qp_info, wc, port_num, recv, response);
+}
+
+static void ib_mad_recv_done(struct ib_cq *cq, struct ib_wc *wc)
+{
+	struct ib_mad_port_private *port_priv = cq->cq_context;
+	struct ib_mad_list_head *mad_list =
+		container_of(wc->wr_cqe, struct ib_mad_list_head, cqe);
+	struct ib_mad_qp_info *qp_info;
+	struct ib_mad_private_header *mad_priv_hdr;
+	struct ib_mad_private *recv, *response = NULL;
+	struct ib_mad_agent_private *mad_agent;
+	u32 port_num;
+	int ret = IB_MAD_RESULT_SUCCESS;
+	size_t mad_size;
+	u16 resp_mad_pkey_index = 0;
+	bool opa;
+
+	if (list_empty_careful(&port_priv->port_list))
+		return;
+
+	if (wc->status != IB_WC_SUCCESS) {
+		/*
+		 * Receive errors indicate that the QP has entered the error
+		 * state - error handling/shutdown code will cleanup
+		 */
+		return;
+	}
+
+	qp_info = mad_list->mad_queue->qp_info;
+	dequeue_mad(mad_list);
+
+	opa = rdma_cap_opa_mad(qp_info->port_priv->device,
+			       qp_info->port_priv->port_num);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mad_priv_hdr = container_of(mad_list, struct ib_mad_private_header,
 				    mad_list);
 	recv = container_of(mad_priv_hdr, struct ib_mad_private, header);
 	ib_dma_unmap_single(port_priv->device,
 			    recv->header.mapping,
+<<<<<<< HEAD
 			    sizeof(struct ib_mad_private) -
 			      sizeof(struct ib_mad_private_header),
+=======
+			    mad_priv_dma_size(recv),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    DMA_FROM_DEVICE);
 
 	/* Setup MAD receive work completion from "normal" work completion */
 	recv->header.wc = *wc;
 	recv->header.recv_wc.wc = &recv->header.wc;
+<<<<<<< HEAD
 	recv->header.recv_wc.mad_len = sizeof(struct ib_mad);
 	recv->header.recv_wc.recv_buf.mad = &recv->mad.mad;
 	recv->header.recv_wc.recv_buf.grh = &recv->grh;
@@ -1908,10 +3061,38 @@ static void ib_mad_recv_done_handler(struct ib_mad_port_private *port_priv,
 	}
 
 	if (port_priv->device->node_type == RDMA_NODE_IB_SWITCH)
+=======
+
+	if (opa && ((struct ib_mad_hdr *)(recv->mad))->base_version == OPA_MGMT_BASE_VERSION) {
+		recv->header.recv_wc.mad_len = wc->byte_len - sizeof(struct ib_grh);
+		recv->header.recv_wc.mad_seg_size = sizeof(struct opa_mad);
+	} else {
+		recv->header.recv_wc.mad_len = sizeof(struct ib_mad);
+		recv->header.recv_wc.mad_seg_size = sizeof(struct ib_mad);
+	}
+
+	recv->header.recv_wc.recv_buf.mad = (struct ib_mad *)recv->mad;
+	recv->header.recv_wc.recv_buf.grh = &recv->grh;
+
+	/* Validate MAD */
+	if (!validate_mad((const struct ib_mad_hdr *)recv->mad, qp_info, opa))
+		goto out;
+
+	trace_ib_mad_recv_done_handler(qp_info, wc,
+				       (struct ib_mad_hdr *)recv->mad);
+
+	mad_size = recv->mad_size;
+	response = alloc_mad_private(mad_size, GFP_KERNEL);
+	if (!response)
+		goto out;
+
+	if (rdma_cap_ib_switch(port_priv->device))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		port_num = wc->port_num;
 	else
 		port_num = port_priv->port_num;
 
+<<<<<<< HEAD
 	if (recv->mad.mad.mad_hdr.mgmt_class ==
 	    IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE) {
 		enum smi_forward_action retsmi;
@@ -1960,22 +3141,58 @@ local:
 						     wc, &recv->grh,
 						     &recv->mad.mad,
 						     &response->mad.mad);
+=======
+	if (((struct ib_mad_hdr *)recv->mad)->mgmt_class ==
+	    IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE) {
+		if (handle_smi(port_priv, qp_info, wc, port_num, recv,
+			       response, opa)
+		    == IB_SMI_DISCARD)
+			goto out;
+	}
+
+	/* Give driver "right of first refusal" on incoming MAD */
+	if (port_priv->device->ops.process_mad) {
+		ret = port_priv->device->ops.process_mad(
+			port_priv->device, 0, port_priv->port_num, wc,
+			&recv->grh, (const struct ib_mad *)recv->mad,
+			(struct ib_mad *)response->mad, &mad_size,
+			&resp_mad_pkey_index);
+
+		if (opa)
+			wc->pkey_index = resp_mad_pkey_index;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret & IB_MAD_RESULT_SUCCESS) {
 			if (ret & IB_MAD_RESULT_CONSUMED)
 				goto out;
 			if (ret & IB_MAD_RESULT_REPLY) {
+<<<<<<< HEAD
 				agent_send_response(&response->mad.mad,
 						    &recv->grh, wc,
 						    port_priv->device,
 						    port_num,
 						    qp_info->qp->qp_num);
+=======
+				agent_send_response((const struct ib_mad_hdr *)response->mad,
+						    &recv->grh, wc,
+						    port_priv->device,
+						    port_num,
+						    qp_info->qp->qp_num,
+						    mad_size, opa);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out;
 			}
 		}
 	}
 
+<<<<<<< HEAD
 	mad_agent = find_mad_agent(port_priv, &recv->mad.mad);
 	if (mad_agent) {
+=======
+	mad_agent = find_mad_agent(port_priv, (const struct ib_mad_hdr *)recv->mad);
+	if (mad_agent) {
+		trace_ib_mad_recv_done_agent(mad_agent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ib_mad_complete_recv(mad_agent, &recv->header.recv_wc);
 		/*
 		 * recv is freed up in error cases in ib_mad_complete_recv
@@ -1983,17 +3200,28 @@ local:
 		 */
 		recv = NULL;
 	} else if ((ret & IB_MAD_RESULT_SUCCESS) &&
+<<<<<<< HEAD
 		   generate_unmatched_resp(recv, response)) {
 		agent_send_response(&response->mad.mad, &recv->grh, wc,
 				    port_priv->device, port_num, qp_info->qp->qp_num);
+=======
+		   generate_unmatched_resp(recv, response, &mad_size, opa)) {
+		agent_send_response((const struct ib_mad_hdr *)response->mad, &recv->grh, wc,
+				    port_priv->device, port_num,
+				    qp_info->qp->qp_num, mad_size, opa);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
 	/* Post another receive request for this QP */
 	if (response) {
 		ib_mad_post_receive_mads(qp_info, response);
+<<<<<<< HEAD
 		if (recv)
 			kmem_cache_free(ib_mad_cache, recv);
+=======
+		kfree(recv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		ib_mad_post_receive_mads(qp_info, recv);
 }
@@ -2004,7 +3232,11 @@ static void adjust_timeout(struct ib_mad_agent_private *mad_agent_priv)
 	unsigned long delay;
 
 	if (list_empty(&mad_agent_priv->wait_list)) {
+<<<<<<< HEAD
 		__cancel_delayed_work(&mad_agent_priv->timed_work);
+=======
+		cancel_delayed_work(&mad_agent_priv->timed_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		mad_send_wr = list_entry(mad_agent_priv->wait_list.next,
 					 struct ib_mad_send_wr_private,
@@ -2013,6 +3245,7 @@ static void adjust_timeout(struct ib_mad_agent_private *mad_agent_priv)
 		if (time_after(mad_agent_priv->timeout,
 			       mad_send_wr->timeout)) {
 			mad_agent_priv->timeout = mad_send_wr->timeout;
+<<<<<<< HEAD
 			__cancel_delayed_work(&mad_agent_priv->timed_work);
 			delay = mad_send_wr->timeout - jiffies;
 			if ((long)delay <= 0)
@@ -2020,6 +3253,13 @@ static void adjust_timeout(struct ib_mad_agent_private *mad_agent_priv)
 			queue_delayed_work(mad_agent_priv->qp_info->
 					   port_priv->wq,
 					   &mad_agent_priv->timed_work, delay);
+=======
+			delay = mad_send_wr->timeout - jiffies;
+			if ((long)delay <= 0)
+				delay = 1;
+			mod_delayed_work(mad_agent_priv->qp_info->port_priv->wq,
+					 &mad_agent_priv->timed_work, delay);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -2046,6 +3286,7 @@ static void wait_for_response(struct ib_mad_send_wr_private *mad_send_wr)
 				       temp_mad_send_wr->timeout))
 				break;
 		}
+<<<<<<< HEAD
 	}
 	else
 		list_item = &mad_agent_priv->wait_list;
@@ -2061,6 +3302,22 @@ static void wait_for_response(struct ib_mad_send_wr_private *mad_send_wr)
 
 void ib_reset_mad_timeout(struct ib_mad_send_wr_private *mad_send_wr,
 			  int timeout_ms)
+=======
+	} else {
+		list_item = &mad_agent_priv->wait_list;
+	}
+
+	list_add(&mad_send_wr->agent_list, list_item);
+
+	/* Reschedule a work item if we have a shorter timeout */
+	if (mad_agent_priv->wait_list.next == &mad_send_wr->agent_list)
+		mod_delayed_work(mad_agent_priv->qp_info->port_priv->wq,
+				 &mad_agent_priv->timed_work, delay);
+}
+
+void ib_reset_mad_timeout(struct ib_mad_send_wr_private *mad_send_wr,
+			  unsigned long timeout_ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mad_send_wr->timeout = msecs_to_jiffies(timeout_ms);
 	wait_for_response(mad_send_wr);
@@ -2078,7 +3335,11 @@ void ib_mad_complete_send_wr(struct ib_mad_send_wr_private *mad_send_wr,
 
 	mad_agent_priv = mad_send_wr->mad_agent_priv;
 	spin_lock_irqsave(&mad_agent_priv->lock, flags);
+<<<<<<< HEAD
 	if (mad_agent_priv->agent.rmpp_version) {
+=======
+	if (ib_mad_kernel_rmpp_agent(&mad_agent_priv->agent)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ib_process_rmpp_send_wc(mad_send_wr, mad_send_wc);
 		if (ret == IB_RMPP_RESULT_CONSUMED)
 			goto done;
@@ -2104,7 +3365,11 @@ void ib_mad_complete_send_wr(struct ib_mad_send_wr_private *mad_send_wr,
 	adjust_timeout(mad_agent_priv);
 	spin_unlock_irqrestore(&mad_agent_priv->lock, flags);
 
+<<<<<<< HEAD
 	if (mad_send_wr->status != IB_WC_SUCCESS )
+=======
+	if (mad_send_wr->status != IB_WC_SUCCESS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mad_send_wc->status = mad_send_wr->status;
 	if (ret == IB_RMPP_RESULT_INTERNAL)
 		ib_rmpp_send_handler(mad_send_wc);
@@ -2119,6 +3384,7 @@ done:
 	spin_unlock_irqrestore(&mad_agent_priv->lock, flags);
 }
 
+<<<<<<< HEAD
 static void ib_mad_send_done_handler(struct ib_mad_port_private *port_priv,
 				     struct ib_wc *wc)
 {
@@ -2127,16 +3393,43 @@ static void ib_mad_send_done_handler(struct ib_mad_port_private *port_priv,
 	struct ib_mad_qp_info		*qp_info;
 	struct ib_mad_queue		*send_queue;
 	struct ib_send_wr		*bad_send_wr;
+=======
+static void ib_mad_send_done(struct ib_cq *cq, struct ib_wc *wc)
+{
+	struct ib_mad_port_private *port_priv = cq->cq_context;
+	struct ib_mad_list_head *mad_list =
+		container_of(wc->wr_cqe, struct ib_mad_list_head, cqe);
+	struct ib_mad_send_wr_private	*mad_send_wr, *queued_send_wr;
+	struct ib_mad_qp_info		*qp_info;
+	struct ib_mad_queue		*send_queue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ib_mad_send_wc		mad_send_wc;
 	unsigned long flags;
 	int ret;
 
+<<<<<<< HEAD
 	mad_list = (struct ib_mad_list_head *)(unsigned long)wc->wr_id;
+=======
+	if (list_empty_careful(&port_priv->port_list))
+		return;
+
+	if (wc->status != IB_WC_SUCCESS) {
+		if (!ib_mad_send_error(port_priv, wc))
+			return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mad_send_wr = container_of(mad_list, struct ib_mad_send_wr_private,
 				   mad_list);
 	send_queue = mad_list->mad_queue;
 	qp_info = send_queue->qp_info;
 
+<<<<<<< HEAD
+=======
+	trace_ib_mad_send_done_agent(mad_send_wr->mad_agent_priv);
+	trace_ib_mad_send_done_handler(mad_send_wr, wc);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 retry:
 	ib_dma_unmap_single(mad_send_wr->send_buf.mad_agent->device,
 			    mad_send_wr->header_mapping,
@@ -2162,6 +3455,7 @@ retry:
 	mad_send_wc.send_buf = &mad_send_wr->send_buf;
 	mad_send_wc.status = wc->status;
 	mad_send_wc.vendor_err = wc->vendor_err;
+<<<<<<< HEAD
 	if (atomic_read(&qp_info->snoop_count))
 		snoop_send(qp_info, &mad_send_wr->send_buf, &mad_send_wc,
 			   IB_MAD_SNOOP_SEND_COMPLETIONS);
@@ -2172,6 +3466,17 @@ retry:
 				   &bad_send_wr);
 		if (ret) {
 			printk(KERN_ERR PFX "ib_post_send failed: %d\n", ret);
+=======
+	ib_mad_complete_send_wr(mad_send_wr, &mad_send_wc);
+
+	if (queued_send_wr) {
+		trace_ib_mad_send_done_resend(queued_send_wr, qp_info);
+		ret = ib_post_send(qp_info->qp, &queued_send_wr->send_wr.wr,
+				   NULL);
+		if (ret) {
+			dev_err(&port_priv->device->dev,
+				"ib_post_send failed: %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mad_send_wr = queued_send_wr;
 			wc->status = IB_WC_LOC_QP_OP_ERR;
 			goto retry;
@@ -2195,6 +3500,7 @@ static void mark_sends_for_retry(struct ib_mad_qp_info *qp_info)
 	spin_unlock_irqrestore(&qp_info->send_queue.lock, flags);
 }
 
+<<<<<<< HEAD
 static void mad_error_handler(struct ib_mad_port_private *port_priv,
 			      struct ib_wc *wc)
 {
@@ -2213,6 +3519,17 @@ static void mad_error_handler(struct ib_mad_port_private *port_priv,
 		 */
 		return;
 
+=======
+static bool ib_mad_send_error(struct ib_mad_port_private *port_priv,
+		struct ib_wc *wc)
+{
+	struct ib_mad_list_head *mad_list =
+		container_of(wc->wr_cqe, struct ib_mad_list_head, cqe);
+	struct ib_mad_qp_info *qp_info = mad_list->mad_queue->qp_info;
+	struct ib_mad_send_wr_private *mad_send_wr;
+	int ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Send errors will transition the QP to SQE - move
 	 * QP to RTS and repost flushed work requests
@@ -2222,6 +3539,7 @@ static void mad_error_handler(struct ib_mad_port_private *port_priv,
 	if (wc->status == IB_WC_WR_FLUSH_ERR) {
 		if (mad_send_wr->retry) {
 			/* Repost send */
+<<<<<<< HEAD
 			struct ib_send_wr *bad_send_wr;
 
 			mad_send_wr->retry = 0;
@@ -2231,6 +3549,15 @@ static void mad_error_handler(struct ib_mad_port_private *port_priv,
 				ib_mad_send_done_handler(port_priv, wc);
 		} else
 			ib_mad_send_done_handler(port_priv, wc);
+=======
+			mad_send_wr->retry = 0;
+			trace_ib_mad_error_handler(mad_send_wr, qp_info);
+			ret = ib_post_send(qp_info->qp, &mad_send_wr->send_wr.wr,
+					   NULL);
+			if (!ret)
+				return false;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		struct ib_qp_attr *attr;
 
@@ -2243,6 +3570,7 @@ static void mad_error_handler(struct ib_mad_port_private *port_priv,
 					   IB_QP_STATE | IB_QP_CUR_STATE);
 			kfree(attr);
 			if (ret)
+<<<<<<< HEAD
 				printk(KERN_ERR PFX "mad_error_handler - "
 				       "ib_modify_qp to RTS : %d\n", ret);
 			else
@@ -2279,6 +3607,17 @@ static void ib_mad_completion_handler(struct work_struct *work)
 		} else
 			mad_error_handler(port_priv, &wc);
 	}
+=======
+				dev_err(&port_priv->device->dev,
+					"%s - ib_modify_qp to RTS: %d\n",
+					__func__, ret);
+			else
+				mark_sends_for_retry(qp_info);
+		}
+	}
+
+	return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cancel_mads(struct ib_mad_agent_private *mad_agent_priv)
@@ -2313,7 +3652,11 @@ static void cancel_mads(struct ib_mad_agent_private *mad_agent_priv)
 		list_del(&mad_send_wr->agent_list);
 		mad_agent_priv->agent.send_handler(&mad_agent_priv->agent,
 						   &mad_send_wc);
+<<<<<<< HEAD
 		atomic_dec(&mad_agent_priv->refcount);
+=======
+		deref_mad_agent(mad_agent_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2331,23 +3674,40 @@ find_send_wr(struct ib_mad_agent_private *mad_agent_priv,
 
 	list_for_each_entry(mad_send_wr, &mad_agent_priv->send_list,
 			    agent_list) {
+<<<<<<< HEAD
 		if (is_data_mad(mad_agent_priv, mad_send_wr->send_buf.mad) &&
+=======
+		if (is_rmpp_data_mad(mad_agent_priv,
+				     mad_send_wr->send_buf.mad) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    &mad_send_wr->send_buf == send_buf)
 			return mad_send_wr;
 	}
 	return NULL;
 }
 
+<<<<<<< HEAD
 int ib_modify_mad(struct ib_mad_agent *mad_agent,
 		  struct ib_mad_send_buf *send_buf, u32 timeout_ms)
+=======
+int ib_modify_mad(struct ib_mad_send_buf *send_buf, u32 timeout_ms)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ib_mad_agent_private *mad_agent_priv;
 	struct ib_mad_send_wr_private *mad_send_wr;
 	unsigned long flags;
 	int active;
 
+<<<<<<< HEAD
 	mad_agent_priv = container_of(mad_agent, struct ib_mad_agent_private,
 				      agent);
+=======
+	if (!send_buf)
+		return -EINVAL;
+
+	mad_agent_priv = container_of(send_buf->mad_agent,
+				      struct ib_mad_agent_private, agent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&mad_agent_priv->lock, flags);
 	mad_send_wr = find_send_wr(mad_agent_priv, send_buf);
 	if (!mad_send_wr || mad_send_wr->status != IB_WC_SUCCESS) {
@@ -2372,6 +3732,7 @@ int ib_modify_mad(struct ib_mad_agent *mad_agent,
 }
 EXPORT_SYMBOL(ib_modify_mad);
 
+<<<<<<< HEAD
 void ib_cancel_mad(struct ib_mad_agent *mad_agent,
 		   struct ib_mad_send_buf *send_buf)
 {
@@ -2379,6 +3740,8 @@ void ib_cancel_mad(struct ib_mad_agent *mad_agent,
 }
 EXPORT_SYMBOL(ib_cancel_mad);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void local_completions(struct work_struct *work)
 {
 	struct ib_mad_agent_private *mad_agent_priv;
@@ -2388,10 +3751,20 @@ static void local_completions(struct work_struct *work)
 	int free_mad;
 	struct ib_wc wc;
 	struct ib_mad_send_wc mad_send_wc;
+<<<<<<< HEAD
+=======
+	bool opa;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mad_agent_priv =
 		container_of(work, struct ib_mad_agent_private, local_work);
 
+<<<<<<< HEAD
+=======
+	opa = rdma_cap_opa_mad(mad_agent_priv->qp_info->port_priv->device,
+			       mad_agent_priv->qp_info->port_priv->port_num);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&mad_agent_priv->lock, flags);
 	while (!list_empty(&mad_agent_priv->local_list)) {
 		local = list_entry(mad_agent_priv->local_list.next,
@@ -2401,9 +3774,17 @@ static void local_completions(struct work_struct *work)
 		spin_unlock_irqrestore(&mad_agent_priv->lock, flags);
 		free_mad = 0;
 		if (local->mad_priv) {
+<<<<<<< HEAD
 			recv_mad_agent = local->recv_mad_agent;
 			if (!recv_mad_agent) {
 				printk(KERN_ERR PFX "No receive MAD agent for local completion\n");
+=======
+			u8 base_version;
+			recv_mad_agent = local->recv_mad_agent;
+			if (!recv_mad_agent) {
+				dev_err(&mad_agent_priv->agent.device->dev,
+					"No receive MAD agent for local completion\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				free_mad = 1;
 				goto local_send_completion;
 			}
@@ -2413,6 +3794,7 @@ static void local_completions(struct work_struct *work)
 			 * before request
 			 */
 			build_smp_wc(recv_mad_agent->agent.qp,
+<<<<<<< HEAD
 				     (unsigned long) local->mad_send_wr,
 				     be16_to_cpu(IB_LID_PERMISSIVE),
 				     0, recv_mad_agent->agent.port_num, &wc);
@@ -2420,11 +3802,30 @@ static void local_completions(struct work_struct *work)
 			local->mad_priv->header.recv_wc.wc = &wc;
 			local->mad_priv->header.recv_wc.mad_len =
 						sizeof(struct ib_mad);
+=======
+				     local->mad_send_wr->send_wr.wr.wr_cqe,
+				     be16_to_cpu(IB_LID_PERMISSIVE),
+				     local->mad_send_wr->send_wr.pkey_index,
+				     recv_mad_agent->agent.port_num, &wc);
+
+			local->mad_priv->header.recv_wc.wc = &wc;
+
+			base_version = ((struct ib_mad_hdr *)(local->mad_priv->mad))->base_version;
+			if (opa && base_version == OPA_MGMT_BASE_VERSION) {
+				local->mad_priv->header.recv_wc.mad_len = local->return_wc_byte_len;
+				local->mad_priv->header.recv_wc.mad_seg_size = sizeof(struct opa_mad);
+			} else {
+				local->mad_priv->header.recv_wc.mad_len = sizeof(struct ib_mad);
+				local->mad_priv->header.recv_wc.mad_seg_size = sizeof(struct ib_mad);
+			}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			INIT_LIST_HEAD(&local->mad_priv->header.recv_wc.rmpp_list);
 			list_add(&local->mad_priv->header.recv_wc.recv_buf.list,
 				 &local->mad_priv->header.recv_wc.rmpp_list);
 			local->mad_priv->header.recv_wc.recv_buf.grh = NULL;
 			local->mad_priv->header.recv_wc.recv_buf.mad =
+<<<<<<< HEAD
 						&local->mad_priv->mad.mad;
 			if (atomic_read(&recv_mad_agent->qp_info->snoop_count))
 				snoop_recv(recv_mad_agent->qp_info,
@@ -2435,6 +3836,15 @@ static void local_completions(struct work_struct *work)
 						&local->mad_priv->header.recv_wc);
 			spin_lock_irqsave(&recv_mad_agent->lock, flags);
 			atomic_dec(&recv_mad_agent->refcount);
+=======
+						(struct ib_mad *)local->mad_priv->mad;
+			recv_mad_agent->agent.recv_handler(
+						&recv_mad_agent->agent,
+						&local->mad_send_wr->send_buf,
+						&local->mad_priv->header.recv_wc);
+			spin_lock_irqsave(&recv_mad_agent->lock, flags);
+			deref_mad_agent(recv_mad_agent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock_irqrestore(&recv_mad_agent->lock, flags);
 		}
 
@@ -2443,17 +3853,26 @@ local_send_completion:
 		mad_send_wc.status = IB_WC_SUCCESS;
 		mad_send_wc.vendor_err = 0;
 		mad_send_wc.send_buf = &local->mad_send_wr->send_buf;
+<<<<<<< HEAD
 		if (atomic_read(&mad_agent_priv->qp_info->snoop_count))
 			snoop_send(mad_agent_priv->qp_info,
 				   &local->mad_send_wr->send_buf,
 				   &mad_send_wc, IB_MAD_SNOOP_SEND_COMPLETIONS);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mad_agent_priv->agent.send_handler(&mad_agent_priv->agent,
 						   &mad_send_wc);
 
 		spin_lock_irqsave(&mad_agent_priv->lock, flags);
+<<<<<<< HEAD
 		atomic_dec(&mad_agent_priv->refcount);
 		if (free_mad)
 			kmem_cache_free(ib_mad_cache, local->mad_priv);
+=======
+		deref_mad_agent(mad_agent_priv);
+		if (free_mad)
+			kfree(local->mad_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(local);
 	}
 	spin_unlock_irqrestore(&mad_agent_priv->lock, flags);
@@ -2471,7 +3890,11 @@ static int retry_send(struct ib_mad_send_wr_private *mad_send_wr)
 
 	mad_send_wr->timeout = msecs_to_jiffies(mad_send_wr->send_buf.timeout_ms);
 
+<<<<<<< HEAD
 	if (mad_send_wr->mad_agent_priv->agent.rmpp_version) {
+=======
+	if (ib_mad_kernel_rmpp_agent(&mad_send_wr->mad_agent_priv->agent)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = ib_retry_rmpp(mad_send_wr);
 		switch (ret) {
 		case IB_RMPP_RESULT_UNHANDLED:
@@ -2537,12 +3960,17 @@ static void timeout_sends(struct work_struct *work)
 		mad_agent_priv->agent.send_handler(&mad_agent_priv->agent,
 						   &mad_send_wc);
 
+<<<<<<< HEAD
 		atomic_dec(&mad_agent_priv->refcount);
+=======
+		deref_mad_agent(mad_agent_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&mad_agent_priv->lock, flags);
 	}
 	spin_unlock_irqrestore(&mad_agent_priv->lock, flags);
 }
 
+<<<<<<< HEAD
 static void ib_mad_thread_completion_handler(struct ib_cq *cq, void *arg)
 {
 	struct ib_mad_port_private *port_priv = cq->cq_context;
@@ -2554,6 +3982,8 @@ static void ib_mad_thread_completion_handler(struct ib_cq *cq, void *arg)
 	spin_unlock_irqrestore(&ib_mad_port_list_lock, flags);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Allocate receive MADs and post receive WRs for them
  */
@@ -2564,12 +3994,20 @@ static int ib_mad_post_receive_mads(struct ib_mad_qp_info *qp_info,
 	int post, ret;
 	struct ib_mad_private *mad_priv;
 	struct ib_sge sg_list;
+<<<<<<< HEAD
 	struct ib_recv_wr recv_wr, *bad_recv_wr;
 	struct ib_mad_queue *recv_queue = &qp_info->recv_queue;
 
 	/* Initialize common scatter list fields */
 	sg_list.length = sizeof *mad_priv - sizeof mad_priv->header;
 	sg_list.lkey = (*qp_info->port_priv->mr).lkey;
+=======
+	struct ib_recv_wr recv_wr;
+	struct ib_mad_queue *recv_queue = &qp_info->recv_queue;
+
+	/* Initialize common scatter list fields */
+	sg_list.lkey = qp_info->port_priv->pd->local_dma_lkey;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize common receive WR fields */
 	recv_wr.next = NULL;
@@ -2582,13 +4020,20 @@ static int ib_mad_post_receive_mads(struct ib_mad_qp_info *qp_info,
 			mad_priv = mad;
 			mad = NULL;
 		} else {
+<<<<<<< HEAD
 			mad_priv = kmem_cache_alloc(ib_mad_cache, GFP_KERNEL);
 			if (!mad_priv) {
 				printk(KERN_ERR PFX "No memory for receive buffer\n");
+=======
+			mad_priv = alloc_mad_private(port_mad_size(qp_info->port_priv),
+						     GFP_ATOMIC);
+			if (!mad_priv) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -ENOMEM;
 				break;
 			}
 		}
+<<<<<<< HEAD
 		sg_list.addr = ib_dma_map_single(qp_info->port_priv->device,
 						 &mad_priv->grh,
 						 sizeof *mad_priv -
@@ -2597,13 +4042,34 @@ static int ib_mad_post_receive_mads(struct ib_mad_qp_info *qp_info,
 		mad_priv->header.mapping = sg_list.addr;
 		recv_wr.wr_id = (unsigned long)&mad_priv->header.mad_list;
 		mad_priv->header.mad_list.mad_queue = recv_queue;
+=======
+		sg_list.length = mad_priv_dma_size(mad_priv);
+		sg_list.addr = ib_dma_map_single(qp_info->port_priv->device,
+						 &mad_priv->grh,
+						 mad_priv_dma_size(mad_priv),
+						 DMA_FROM_DEVICE);
+		if (unlikely(ib_dma_mapping_error(qp_info->port_priv->device,
+						  sg_list.addr))) {
+			kfree(mad_priv);
+			ret = -ENOMEM;
+			break;
+		}
+		mad_priv->header.mapping = sg_list.addr;
+		mad_priv->header.mad_list.mad_queue = recv_queue;
+		mad_priv->header.mad_list.cqe.done = ib_mad_recv_done;
+		recv_wr.wr_cqe = &mad_priv->header.mad_list.cqe;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Post receive WR */
 		spin_lock_irqsave(&recv_queue->lock, flags);
 		post = (++recv_queue->count < recv_queue->max_active);
 		list_add_tail(&mad_priv->header.mad_list.list, &recv_queue->list);
 		spin_unlock_irqrestore(&recv_queue->lock, flags);
+<<<<<<< HEAD
 		ret = ib_post_recv(qp_info->qp, &recv_wr, &bad_recv_wr);
+=======
+		ret = ib_post_recv(qp_info->qp, &recv_wr, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			spin_lock_irqsave(&recv_queue->lock, flags);
 			list_del(&mad_priv->header.mad_list.list);
@@ -2611,11 +4077,19 @@ static int ib_mad_post_receive_mads(struct ib_mad_qp_info *qp_info,
 			spin_unlock_irqrestore(&recv_queue->lock, flags);
 			ib_dma_unmap_single(qp_info->port_priv->device,
 					    mad_priv->header.mapping,
+<<<<<<< HEAD
 					    sizeof *mad_priv -
 					      sizeof mad_priv->header,
 					    DMA_FROM_DEVICE);
 			kmem_cache_free(ib_mad_cache, mad_priv);
 			printk(KERN_ERR PFX "ib_post_recv failed: %d\n", ret);
+=======
+					    mad_priv_dma_size(mad_priv),
+					    DMA_FROM_DEVICE);
+			kfree(mad_priv);
+			dev_err(&qp_info->port_priv->device->dev,
+				"ib_post_recv failed: %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	} while (post);
@@ -2650,10 +4124,16 @@ static void cleanup_recv_queue(struct ib_mad_qp_info *qp_info)
 
 		ib_dma_unmap_single(qp_info->port_priv->device,
 				    recv->header.mapping,
+<<<<<<< HEAD
 				    sizeof(struct ib_mad_private) -
 				      sizeof(struct ib_mad_private_header),
 				    DMA_FROM_DEVICE);
 		kmem_cache_free(ib_mad_cache, recv);
+=======
+				    mad_priv_dma_size(recv),
+				    DMA_FROM_DEVICE);
+		kfree(recv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	qp_info->recv_queue.count = 0;
@@ -2667,12 +4147,25 @@ static int ib_mad_port_start(struct ib_mad_port_private *port_priv)
 	int ret, i;
 	struct ib_qp_attr *attr;
 	struct ib_qp *qp;
+<<<<<<< HEAD
 
 	attr = kmalloc(sizeof *attr, GFP_KERNEL);
 	if (!attr) {
 		printk(KERN_ERR PFX "Couldn't kmalloc ib_qp_attr\n");
 		return -ENOMEM;
 	}
+=======
+	u16 pkey_index;
+
+	attr = kmalloc(sizeof *attr, GFP_KERNEL);
+	if (!attr)
+		return -ENOMEM;
+
+	ret = ib_find_pkey(port_priv->device, port_priv->port_num,
+			   IB_DEFAULT_PKEY_FULL, &pkey_index);
+	if (ret)
+		pkey_index = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < IB_MAD_QPS_CORE; i++) {
 		qp = port_priv->qp_info[i].qp;
@@ -2684,21 +4177,37 @@ static int ib_mad_port_start(struct ib_mad_port_private *port_priv)
 		 * one is needed for the Reset to Init transition
 		 */
 		attr->qp_state = IB_QPS_INIT;
+<<<<<<< HEAD
 		attr->pkey_index = 0;
+=======
+		attr->pkey_index = pkey_index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		attr->qkey = (qp->qp_num == 0) ? 0 : IB_QP1_QKEY;
 		ret = ib_modify_qp(qp, attr, IB_QP_STATE |
 					     IB_QP_PKEY_INDEX | IB_QP_QKEY);
 		if (ret) {
+<<<<<<< HEAD
 			printk(KERN_ERR PFX "Couldn't change QP%d state to "
 			       "INIT: %d\n", i, ret);
+=======
+			dev_err(&port_priv->device->dev,
+				"Couldn't change QP%d state to INIT: %d\n",
+				i, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
 		attr->qp_state = IB_QPS_RTR;
 		ret = ib_modify_qp(qp, attr, IB_QP_STATE);
 		if (ret) {
+<<<<<<< HEAD
 			printk(KERN_ERR PFX "Couldn't change QP%d state to "
 			       "RTR: %d\n", i, ret);
+=======
+			dev_err(&port_priv->device->dev,
+				"Couldn't change QP%d state to RTR: %d\n",
+				i, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 
@@ -2706,16 +4215,28 @@ static int ib_mad_port_start(struct ib_mad_port_private *port_priv)
 		attr->sq_psn = IB_MAD_SEND_Q_PSN;
 		ret = ib_modify_qp(qp, attr, IB_QP_STATE | IB_QP_SQ_PSN);
 		if (ret) {
+<<<<<<< HEAD
 			printk(KERN_ERR PFX "Couldn't change QP%d state to "
 			       "RTS: %d\n", i, ret);
+=======
+			dev_err(&port_priv->device->dev,
+				"Couldn't change QP%d state to RTS: %d\n",
+				i, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 	}
 
 	ret = ib_req_notify_cq(port_priv->cq, IB_CQ_NEXT_COMP);
 	if (ret) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "Failed to request completion "
 		       "notification: %d\n", ret);
+=======
+		dev_err(&port_priv->device->dev,
+			"Failed to request completion notification: %d\n",
+			ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -2725,7 +4246,12 @@ static int ib_mad_port_start(struct ib_mad_port_private *port_priv)
 
 		ret = ib_mad_post_receive_mads(&port_priv->qp_info[i], NULL);
 		if (ret) {
+<<<<<<< HEAD
 			printk(KERN_ERR PFX "Couldn't post receive WRs\n");
+=======
+			dev_err(&port_priv->device->dev,
+				"Couldn't post receive WRs\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 	}
@@ -2739,7 +4265,12 @@ static void qp_event_handler(struct ib_event *event, void *qp_context)
 	struct ib_mad_qp_info	*qp_info = qp_context;
 
 	/* It's worse than that! He's dead, Jim! */
+<<<<<<< HEAD
 	printk(KERN_ERR PFX "Fatal error (%d) on MAD QP (%d)\n",
+=======
+	dev_err(&qp_info->port_priv->device->dev,
+		"Fatal error (%d) on MAD QP (%u)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		event->event, qp_info->qp->qp_num);
 }
 
@@ -2759,10 +4290,13 @@ static void init_mad_qp(struct ib_mad_port_private *port_priv,
 	init_mad_queue(qp_info, &qp_info->send_queue);
 	init_mad_queue(qp_info, &qp_info->recv_queue);
 	INIT_LIST_HEAD(&qp_info->overflow_list);
+<<<<<<< HEAD
 	spin_lock_init(&qp_info->snoop_lock);
 	qp_info->snoop_table = NULL;
 	qp_info->snoop_table_size = 0;
 	atomic_set(&qp_info->snoop_count, 0);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int create_mad_qp(struct ib_mad_qp_info *qp_info,
@@ -2785,8 +4319,14 @@ static int create_mad_qp(struct ib_mad_qp_info *qp_info,
 	qp_init_attr.event_handler = qp_event_handler;
 	qp_info->qp = ib_create_qp(qp_info->port_priv->pd, &qp_init_attr);
 	if (IS_ERR(qp_info->qp)) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "Couldn't create ib_mad QP%d\n",
 		       get_spl_qp_index(qp_type));
+=======
+		dev_err(&qp_info->port_priv->device->dev,
+			"Couldn't create ib_mad QP%d\n",
+			get_spl_qp_index(qp_type));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = PTR_ERR(qp_info->qp);
 		goto error;
 	}
@@ -2805,7 +4345,10 @@ static void destroy_mad_qp(struct ib_mad_qp_info *qp_info)
 		return;
 
 	ib_destroy_qp(qp_info->qp);
+<<<<<<< HEAD
 	kfree(qp_info->snoop_table);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2813,7 +4356,11 @@ static void destroy_mad_qp(struct ib_mad_qp_info *qp_info)
  * Create the QP, PD, MR, and CQ if needed
  */
 static int ib_mad_port_open(struct ib_device *device,
+<<<<<<< HEAD
 			    int port_num)
+=======
+			    u32 port_num)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret, cq_size;
 	struct ib_mad_port_private *port_priv;
@@ -2821,21 +4368,39 @@ static int ib_mad_port_open(struct ib_device *device,
 	char name[sizeof "ib_mad123"];
 	int has_smi;
 
+<<<<<<< HEAD
 	/* Create new device info */
 	port_priv = kzalloc(sizeof *port_priv, GFP_KERNEL);
 	if (!port_priv) {
 		printk(KERN_ERR PFX "No memory for ib_mad_port_private\n");
 		return -ENOMEM;
 	}
+=======
+	if (WARN_ON(rdma_max_mad_size(device, port_num) < IB_MGMT_MAD_SIZE))
+		return -EFAULT;
+
+	if (WARN_ON(rdma_cap_opa_mad(device, port_num) &&
+		    rdma_max_mad_size(device, port_num) < OPA_MGMT_MAD_SIZE))
+		return -EFAULT;
+
+	/* Create new device info */
+	port_priv = kzalloc(sizeof *port_priv, GFP_KERNEL);
+	if (!port_priv)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	port_priv->device = device;
 	port_priv->port_num = port_num;
 	spin_lock_init(&port_priv->reg_lock);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&port_priv->agent_list);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_mad_qp(port_priv, &port_priv->qp_info[0]);
 	init_mad_qp(port_priv, &port_priv->qp_info[1]);
 
 	cq_size = mad_sendq_size + mad_recvq_size;
+<<<<<<< HEAD
 	has_smi = rdma_port_get_link_layer(device, port_num) == IB_LINK_LAYER_INFINIBAND;
 	if (has_smi)
 		cq_size *= 2;
@@ -2863,6 +4428,27 @@ static int ib_mad_port_open(struct ib_device *device,
 		goto error5;
 	}
 
+=======
+	has_smi = rdma_cap_ib_smi(device, port_num);
+	if (has_smi)
+		cq_size *= 2;
+
+	port_priv->pd = ib_alloc_pd(device, 0);
+	if (IS_ERR(port_priv->pd)) {
+		dev_err(&device->dev, "Couldn't create ib_mad PD\n");
+		ret = PTR_ERR(port_priv->pd);
+		goto error3;
+	}
+
+	port_priv->cq = ib_alloc_cq(port_priv->device, port_priv, cq_size, 0,
+			IB_POLL_UNBOUND_WORKQUEUE);
+	if (IS_ERR(port_priv->cq)) {
+		dev_err(&device->dev, "Couldn't create ib_mad CQ\n");
+		ret = PTR_ERR(port_priv->cq);
+		goto error4;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (has_smi) {
 		ret = create_mad_qp(&port_priv->qp_info[0], IB_QPT_SMI);
 		if (ret)
@@ -2872,13 +4458,21 @@ static int ib_mad_port_open(struct ib_device *device,
 	if (ret)
 		goto error7;
 
+<<<<<<< HEAD
 	snprintf(name, sizeof name, "ib_mad%d", port_num);
 	port_priv->wq = create_singlethread_workqueue(name);
+=======
+	snprintf(name, sizeof(name), "ib_mad%u", port_num);
+	port_priv->wq = alloc_ordered_workqueue(name, WQ_MEM_RECLAIM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!port_priv->wq) {
 		ret = -ENOMEM;
 		goto error8;
 	}
+<<<<<<< HEAD
 	INIT_WORK(&port_priv->work, ib_mad_completion_handler);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&ib_mad_port_list_lock, flags);
 	list_add_tail(&port_priv->port_list, &ib_mad_port_list);
@@ -2886,7 +4480,11 @@ static int ib_mad_port_open(struct ib_device *device,
 
 	ret = ib_mad_port_start(port_priv);
 	if (ret) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "Couldn't start port\n");
+=======
+		dev_err(&device->dev, "Couldn't start port\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error9;
 	}
 
@@ -2903,6 +4501,7 @@ error8:
 error7:
 	destroy_mad_qp(&port_priv->qp_info[0]);
 error6:
+<<<<<<< HEAD
 	ib_dereg_mr(port_priv->mr);
 error5:
 	ib_dealloc_pd(port_priv->pd);
@@ -2910,6 +4509,13 @@ error4:
 	ib_destroy_cq(port_priv->cq);
 	cleanup_recv_queue(&port_priv->qp_info[1]);
 	cleanup_recv_queue(&port_priv->qp_info[0]);
+=======
+	ib_free_cq(port_priv->cq);
+	cleanup_recv_queue(&port_priv->qp_info[1]);
+	cleanup_recv_queue(&port_priv->qp_info[0]);
+error4:
+	ib_dealloc_pd(port_priv->pd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error3:
 	kfree(port_priv);
 
@@ -2921,7 +4527,11 @@ error3:
  * If there are no classes using the port, free the port
  * resources (CQ, MR, PD, QP) and remove the port's info structure
  */
+<<<<<<< HEAD
 static int ib_mad_port_close(struct ib_device *device, int port_num)
+=======
+static int ib_mad_port_close(struct ib_device *device, u32 port_num)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ib_mad_port_private *port_priv;
 	unsigned long flags;
@@ -2930,7 +4540,11 @@ static int ib_mad_port_close(struct ib_device *device, int port_num)
 	port_priv = __ib_get_mad_port(device, port_num);
 	if (port_priv == NULL) {
 		spin_unlock_irqrestore(&ib_mad_port_list_lock, flags);
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "Port %d not found\n", port_num);
+=======
+		dev_err(&device->dev, "Port %u not found\n", port_num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	list_del_init(&port_priv->port_list);
@@ -2939,9 +4553,14 @@ static int ib_mad_port_close(struct ib_device *device, int port_num)
 	destroy_workqueue(port_priv->wq);
 	destroy_mad_qp(&port_priv->qp_info[1]);
 	destroy_mad_qp(&port_priv->qp_info[0]);
+<<<<<<< HEAD
 	ib_dereg_mr(port_priv->mr);
 	ib_dealloc_pd(port_priv->pd);
 	ib_destroy_cq(port_priv->cq);
+=======
+	ib_free_cq(port_priv->cq);
+	ib_dealloc_pd(port_priv->pd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cleanup_recv_queue(&port_priv->qp_info[1]);
 	cleanup_recv_queue(&port_priv->qp_info[0]);
 	/* XXX: Handle deallocation of MAD registration tables */
@@ -2951,6 +4570,7 @@ static int ib_mad_port_close(struct ib_device *device, int port_num)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void ib_mad_init_device(struct ib_device *device)
 {
 	int start, end, i;
@@ -3023,6 +4643,69 @@ static void ib_mad_remove_device(struct ib_device *device)
 		if (ib_mad_port_close(device, cur_port))
 			printk(KERN_ERR PFX "Couldn't close %s port %d\n",
 			       device->name, cur_port);
+=======
+static int ib_mad_init_device(struct ib_device *device)
+{
+	int start, i;
+	unsigned int count = 0;
+	int ret;
+
+	start = rdma_start_port(device);
+
+	for (i = start; i <= rdma_end_port(device); i++) {
+		if (!rdma_cap_ib_mad(device, i))
+			continue;
+
+		ret = ib_mad_port_open(device, i);
+		if (ret) {
+			dev_err(&device->dev, "Couldn't open port %d\n", i);
+			goto error;
+		}
+		ret = ib_agent_port_open(device, i);
+		if (ret) {
+			dev_err(&device->dev,
+				"Couldn't open port %d for agents\n", i);
+			goto error_agent;
+		}
+		count++;
+	}
+	if (!count)
+		return -EOPNOTSUPP;
+
+	return 0;
+
+error_agent:
+	if (ib_mad_port_close(device, i))
+		dev_err(&device->dev, "Couldn't close port %d\n", i);
+
+error:
+	while (--i >= start) {
+		if (!rdma_cap_ib_mad(device, i))
+			continue;
+
+		if (ib_agent_port_close(device, i))
+			dev_err(&device->dev,
+				"Couldn't close port %d for agents\n", i);
+		if (ib_mad_port_close(device, i))
+			dev_err(&device->dev, "Couldn't close port %d\n", i);
+	}
+	return ret;
+}
+
+static void ib_mad_remove_device(struct ib_device *device, void *client_data)
+{
+	unsigned int i;
+
+	rdma_for_each_port (device, i) {
+		if (!rdma_cap_ib_mad(device, i))
+			continue;
+
+		if (ib_agent_port_close(device, i))
+			dev_err(&device->dev,
+				"Couldn't close port %u for agents\n", i);
+		if (ib_mad_port_close(device, i))
+			dev_err(&device->dev, "Couldn't close port %u\n", i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -3032,16 +4715,22 @@ static struct ib_client mad_client = {
 	.remove = ib_mad_remove_device
 };
 
+<<<<<<< HEAD
 static int __init ib_mad_init_module(void)
 {
 	int ret;
 
+=======
+int ib_mad_init(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mad_recvq_size = min(mad_recvq_size, IB_MAD_QP_MAX_SIZE);
 	mad_recvq_size = max(mad_recvq_size, IB_MAD_QP_MIN_SIZE);
 
 	mad_sendq_size = min(mad_sendq_size, IB_MAD_QP_MAX_SIZE);
 	mad_sendq_size = max(mad_sendq_size, IB_MAD_QP_MIN_SIZE);
 
+<<<<<<< HEAD
 	ib_mad_cache = kmem_cache_create("ib_mad",
 					 sizeof(struct ib_mad_private),
 					 0,
@@ -3077,3 +4766,19 @@ static void __exit ib_mad_cleanup_module(void)
 
 module_init(ib_mad_init_module);
 module_exit(ib_mad_cleanup_module);
+=======
+	INIT_LIST_HEAD(&ib_mad_port_list);
+
+	if (ib_register_client(&mad_client)) {
+		pr_err("Couldn't register ib_mad client\n");
+		return -EINVAL;
+	}
+
+	return 0;
+}
+
+void ib_mad_cleanup(void)
+{
+	ib_unregister_client(&mad_client);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

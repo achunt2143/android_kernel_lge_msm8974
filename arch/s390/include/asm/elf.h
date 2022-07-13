@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 /*
  *  include/asm-s390/elf.h
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  S390 version
  *
  *  Derived from "include/asm-i386/elf.h"
@@ -92,6 +97,7 @@
 /* Keep this the last entry.  */
 #define R_390_NUM	61
 
+<<<<<<< HEAD
 /* Bits present in AT_HWCAP. */
 #define HWCAP_S390_ESAN3	1
 #define HWCAP_S390_ZARCH	2
@@ -103,10 +109,64 @@
 #define HWCAP_S390_HPAGE	128
 #define HWCAP_S390_ETF3EH	256
 #define HWCAP_S390_HIGH_GPRS	512
+=======
+enum {
+	HWCAP_NR_ESAN3		= 0,
+	HWCAP_NR_ZARCH		= 1,
+	HWCAP_NR_STFLE		= 2,
+	HWCAP_NR_MSA		= 3,
+	HWCAP_NR_LDISP		= 4,
+	HWCAP_NR_EIMM		= 5,
+	HWCAP_NR_DFP		= 6,
+	HWCAP_NR_HPAGE		= 7,
+	HWCAP_NR_ETF3EH		= 8,
+	HWCAP_NR_HIGH_GPRS	= 9,
+	HWCAP_NR_TE		= 10,
+	HWCAP_NR_VXRS		= 11,
+	HWCAP_NR_VXRS_BCD	= 12,
+	HWCAP_NR_VXRS_EXT	= 13,
+	HWCAP_NR_GS		= 14,
+	HWCAP_NR_VXRS_EXT2	= 15,
+	HWCAP_NR_VXRS_PDE	= 16,
+	HWCAP_NR_SORT		= 17,
+	HWCAP_NR_DFLT		= 18,
+	HWCAP_NR_VXRS_PDE2	= 19,
+	HWCAP_NR_NNPA		= 20,
+	HWCAP_NR_PCI_MIO	= 21,
+	HWCAP_NR_SIE		= 22,
+	HWCAP_NR_MAX
+};
+
+/* Bits present in AT_HWCAP. */
+#define HWCAP_ESAN3		BIT(HWCAP_NR_ESAN3)
+#define HWCAP_ZARCH		BIT(HWCAP_NR_ZARCH)
+#define HWCAP_STFLE		BIT(HWCAP_NR_STFLE)
+#define HWCAP_MSA		BIT(HWCAP_NR_MSA)
+#define HWCAP_LDISP		BIT(HWCAP_NR_LDISP)
+#define HWCAP_EIMM		BIT(HWCAP_NR_EIMM)
+#define HWCAP_DFP		BIT(HWCAP_NR_DFP)
+#define HWCAP_HPAGE		BIT(HWCAP_NR_HPAGE)
+#define HWCAP_ETF3EH		BIT(HWCAP_NR_ETF3EH)
+#define HWCAP_HIGH_GPRS		BIT(HWCAP_NR_HIGH_GPRS)
+#define HWCAP_TE		BIT(HWCAP_NR_TE)
+#define HWCAP_VXRS		BIT(HWCAP_NR_VXRS)
+#define HWCAP_VXRS_BCD		BIT(HWCAP_NR_VXRS_BCD)
+#define HWCAP_VXRS_EXT		BIT(HWCAP_NR_VXRS_EXT)
+#define HWCAP_GS		BIT(HWCAP_NR_GS)
+#define HWCAP_VXRS_EXT2		BIT(HWCAP_NR_VXRS_EXT2)
+#define HWCAP_VXRS_PDE		BIT(HWCAP_NR_VXRS_PDE)
+#define HWCAP_SORT		BIT(HWCAP_NR_SORT)
+#define HWCAP_DFLT		BIT(HWCAP_NR_DFLT)
+#define HWCAP_VXRS_PDE2		BIT(HWCAP_NR_VXRS_PDE2)
+#define HWCAP_NNPA		BIT(HWCAP_NR_NNPA)
+#define HWCAP_PCI_MIO		BIT(HWCAP_NR_PCI_MIO)
+#define HWCAP_SIE		BIT(HWCAP_NR_SIE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are used to set parameters in the core dumps.
  */
+<<<<<<< HEAD
 #ifndef __s390x__
 #define ELF_CLASS	ELFCLASS32
 #else /* __s390x__ */
@@ -115,11 +175,27 @@
 #define ELF_DATA	ELFDATA2MSB
 #define ELF_ARCH	EM_S390
 
+=======
+#define ELF_CLASS	ELFCLASS64
+#define ELF_DATA	ELFDATA2MSB
+#define ELF_ARCH	EM_S390
+
+/* s390 specific phdr types */
+#define PT_S390_PGSTE	0x70000000
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ELF register definitions..
  */
 
+<<<<<<< HEAD
 #include <asm/ptrace.h>
+=======
+#include <linux/compat.h>
+
+#include <asm/ptrace.h>
+#include <asm/syscall.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/user.h>
 
 typedef s390_fp_regs elf_fpregset_t;
@@ -128,6 +204,7 @@ typedef s390_regs elf_gregset_t;
 typedef s390_fp_regs compat_elf_fpregset_t;
 typedef s390_compat_regs compat_elf_gregset_t;
 
+<<<<<<< HEAD
 #include <linux/sched.h>	/* for task_struct */
 #include <asm/mmu_context.h>
 
@@ -135,6 +212,11 @@ typedef s390_compat_regs compat_elf_gregset_t;
 
 extern unsigned int vdso_enabled;
 
+=======
+#include <linux/sched/mm.h>	/* for task_struct */
+#include <asm/mmu_context.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is used to ensure we don't load something for the wrong architecture.
  */
@@ -146,6 +228,38 @@ extern unsigned int vdso_enabled;
 	 && (x)->e_ident[EI_CLASS] == ELF_CLASS)
 #define compat_start_thread	start_thread31
 
+<<<<<<< HEAD
+=======
+struct arch_elf_state {
+	int rc;
+};
+
+#define INIT_ARCH_ELF_STATE { .rc = 0 }
+
+#define arch_check_elf(ehdr, interp, interp_ehdr, state) (0)
+#ifdef CONFIG_PGSTE
+#define arch_elf_pt_proc(ehdr, phdr, elf, interp, state)	\
+({								\
+	struct arch_elf_state *_state = state;			\
+	if ((phdr)->p_type == PT_S390_PGSTE &&			\
+	    !page_table_allocate_pgste &&			\
+	    !test_thread_flag(TIF_PGSTE) &&			\
+	    !current->mm->context.alloc_pgste) {		\
+		set_thread_flag(TIF_PGSTE);			\
+		set_pt_regs_flag(task_pt_regs(current),		\
+				 PIF_EXECVE_PGSTE_RESTART);	\
+		_state->rc = -EAGAIN;				\
+	}							\
+	_state->rc;						\
+})
+#else
+#define arch_elf_pt_proc(ehdr, phdr, elf, interp, state)	\
+({								\
+	(state)->rc;						\
+})
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* For SVR4/S390 the function pointer to be registered with `atexit` is
    passed in R14. */
 #define ELF_PLAT_INIT(_r, load_addr) \
@@ -154,15 +268,27 @@ extern unsigned int vdso_enabled;
 	} while (0)
 
 #define CORE_DUMP_USE_REGSET
+<<<<<<< HEAD
 #define ELF_EXEC_PAGESIZE	4096
+=======
+#define ELF_EXEC_PAGESIZE	PAGE_SIZE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This is the location that an ET_DYN program is loaded if exec'ed.  Typical
    use of this is to invoke "./ld.so someprog" to test out a new version of
    the loader.  We need to make sure that it is out of the way of the program
+<<<<<<< HEAD
    that it will "exec", and that there is sufficient room for the brk.  */
 
 extern unsigned long randomize_et_dyn(unsigned long base);
 #define ELF_ET_DYN_BASE		(randomize_et_dyn(STACK_TOP / 3 * 2))
+=======
+   that it will "exec", and that there is sufficient room for the brk. 64-bit
+   tasks are aligned to 4GB. */
+#define ELF_ET_DYN_BASE (is_compat_task() ? \
+				(STACK_TOP / 3 * 2) : \
+				(STACK_TOP / 3 * 2) & ~((1UL << 32) - 1))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This yields a mask that user programs can use to figure out what
    instruction set this CPU supports. */
@@ -181,14 +307,26 @@ extern unsigned long elf_hwcap;
 extern char elf_platform[];
 #define ELF_PLATFORM (elf_platform)
 
+<<<<<<< HEAD
 #ifndef __s390x__
 #define SET_PERSONALITY(ex) set_personality(PER_LINUX)
 #else /* __s390x__ */
+=======
+#ifndef CONFIG_COMPAT
+#define SET_PERSONALITY(ex) \
+do {								\
+	set_personality(PER_LINUX |				\
+		(current->personality & (~PER_MASK)));		\
+	current->thread.sys_call_table = sys_call_table;	\
+} while (0)
+#else /* CONFIG_COMPAT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SET_PERSONALITY(ex)					\
 do {								\
 	if (personality(current->personality) != PER_LINUX32)	\
 		set_personality(PER_LINUX |			\
 			(current->personality & ~PER_MASK));	\
+<<<<<<< HEAD
 	if ((ex).e_ident[EI_CLASS] == ELFCLASS32)		\
 		set_thread_flag(TIF_31BIT);			\
 	else							\
@@ -203,6 +341,39 @@ do {									    \
 	if (vdso_enabled)						    \
 		NEW_AUX_ENT(AT_SYSINFO_EHDR,				    \
 			    (unsigned long)current->mm->context.vdso_base); \
+=======
+	if ((ex).e_ident[EI_CLASS] == ELFCLASS32) {		\
+		set_thread_flag(TIF_31BIT);			\
+		current->thread.sys_call_table =		\
+			sys_call_table_emu;			\
+	} else {						\
+		clear_thread_flag(TIF_31BIT);			\
+		current->thread.sys_call_table =		\
+			sys_call_table;				\
+	}							\
+} while (0)
+#endif /* CONFIG_COMPAT */
+
+/*
+ * Cache aliasing on the latest machines calls for a mapping granularity
+ * of 512KB for the anonymous mapping base. For 64-bit processes use a
+ * 512KB alignment and a randomization of up to 1GB. For 31-bit processes
+ * the virtual address space is limited, use no alignment and limit the
+ * randomization to 8MB.
+ * For the additional randomization of the program break use 32MB for
+ * 64-bit and 8MB for 31-bit.
+ */
+#define BRK_RND_MASK	(is_compat_task() ? 0x7ffUL : 0x1fffUL)
+#define MMAP_RND_MASK	(is_compat_task() ? 0x7ffUL : 0x3ff80UL)
+#define MMAP_ALIGN_MASK	(is_compat_task() ? 0 : 0x7fUL)
+#define STACK_RND_MASK	MMAP_RND_MASK
+
+/* update AT_VECTOR_SIZE_ARCH if the number of NEW_AUX_ENT entries changes */
+#define ARCH_DLINFO							\
+do {									\
+	NEW_AUX_ENT(AT_SYSINFO_EHDR,					\
+		    (unsigned long)current->mm->context.vdso_base);	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 
 struct linux_binprm;
@@ -210,7 +381,10 @@ struct linux_binprm;
 #define ARCH_HAS_SETUP_ADDITIONAL_PAGES 1
 int arch_setup_additional_pages(struct linux_binprm *, int);
 
+<<<<<<< HEAD
 extern unsigned long arch_randomize_brk(struct mm_struct *mm);
 #define arch_randomize_brk arch_randomize_brk
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

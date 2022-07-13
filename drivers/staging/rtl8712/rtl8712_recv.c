@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * rtl8712_recv.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,6 +22,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -28,16 +35,27 @@
 
 #define _RTL8712_RECV_C_
 
+<<<<<<< HEAD
+=======
+#include <linux/if_ether.h>
+#include <linux/ip.h>
+#include <net/cfg80211.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "osdep_service.h"
 #include "drv_types.h"
 #include "recv_osdep.h"
 #include "mlme_osdep.h"
+<<<<<<< HEAD
 #include "ip.h"
 #include "if_ether.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ethernet.h"
 #include "usb_ops.h"
 #include "wifi.h"
 
+<<<<<<< HEAD
 /* Bridge-Tunnel header (for EtherTypes ETH_P_AARP and ETH_P_IPX) */
 static u8 bridge_tunnel_header[] = {0xaa, 0xaa, 0x03, 0x00, 0x00, 0xf8};
 
@@ -51,12 +69,22 @@ int r8712_init_recv_priv(struct recv_priv *precvpriv, struct _adapter *padapter)
 	int i;
 	struct recv_buf *precvbuf;
 	int res = _SUCCESS;
+=======
+static void recv_tasklet(struct tasklet_struct *t);
+
+int r8712_init_recv_priv(struct recv_priv *precvpriv,
+			 struct _adapter *padapter)
+{
+	int i;
+	struct recv_buf *precvbuf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addr_t tmpaddr = 0;
 	int alignment = 0;
 	struct sk_buff *pskb = NULL;
 
 	/*init recv_buf*/
 	_init_queue(&precvpriv->free_recv_buf_queue);
+<<<<<<< HEAD
 	precvpriv->pallocated_recv_buf = _malloc(NR_RECVBUFF *
 					 sizeof(struct recv_buf) + 4);
 	if (precvpriv->pallocated_recv_buf == NULL)
@@ -82,6 +110,28 @@ int r8712_init_recv_priv(struct recv_priv *precvpriv, struct _adapter *padapter)
 	tasklet_init(&precvpriv->recv_tasklet,
 	     (void(*)(unsigned long))recv_tasklet,
 	     (unsigned long)padapter);
+=======
+	precvpriv->pallocated_recv_buf =
+		kzalloc(NR_RECVBUFF * sizeof(struct recv_buf) + 4, GFP_ATOMIC);
+	if (!precvpriv->pallocated_recv_buf)
+		return -ENOMEM;
+	precvpriv->precv_buf = precvpriv->pallocated_recv_buf + 4 -
+			      ((addr_t)(precvpriv->pallocated_recv_buf) & 3);
+	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
+	for (i = 0; i < NR_RECVBUFF; i++) {
+		INIT_LIST_HEAD(&precvbuf->list);
+		spin_lock_init(&precvbuf->recvbuf_lock);
+		if (r8712_os_recvbuf_resource_alloc(padapter, precvbuf))
+			break;
+		precvbuf->ref_cnt = 0;
+		precvbuf->adapter = padapter;
+		list_add_tail(&precvbuf->list,
+			      &precvpriv->free_recv_buf_queue.queue);
+		precvbuf++;
+	}
+	precvpriv->free_recv_buf_queue_cnt = NR_RECVBUFF;
+	tasklet_setup(&precvpriv->recv_tasklet, recv_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_queue_head_init(&precvpriv->rx_skb_queue);
 
 	skb_queue_head_init(&precvpriv->free_recv_skb_queue);
@@ -89,15 +139,24 @@ int r8712_init_recv_priv(struct recv_priv *precvpriv, struct _adapter *padapter)
 		pskb = netdev_alloc_skb(padapter->pnetdev, MAX_RECVBUF_SZ +
 		       RECVBUFF_ALIGN_SZ);
 		if (pskb) {
+<<<<<<< HEAD
 			pskb->dev = padapter->pnetdev;
 			tmpaddr = (addr_t)pskb->data;
 			alignment = tmpaddr & (RECVBUFF_ALIGN_SZ-1);
+=======
+			tmpaddr = (addr_t)pskb->data;
+			alignment = tmpaddr & (RECVBUFF_ALIGN_SZ - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb_reserve(pskb, (RECVBUFF_ALIGN_SZ - alignment));
 			skb_queue_tail(&precvpriv->free_recv_skb_queue, pskb);
 		}
 		pskb = NULL;
 	}
+<<<<<<< HEAD
 	return res;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void r8712_free_recv_priv(struct recv_priv *precvpriv)
@@ -107,13 +166,18 @@ void r8712_free_recv_priv(struct recv_priv *precvpriv)
 	struct _adapter *padapter = precvpriv->adapter;
 
 	precvbuf = (struct recv_buf *)precvpriv->precv_buf;
+<<<<<<< HEAD
 	for (i = 0; i < NR_RECVBUFF ; i++) {
+=======
+	for (i = 0; i < NR_RECVBUFF; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r8712_os_recvbuf_resource_free(padapter, precvbuf);
 		precvbuf++;
 	}
 	kfree(precvpriv->pallocated_recv_buf);
 	skb_queue_purge(&precvpriv->rx_skb_queue);
 	if (skb_queue_len(&precvpriv->rx_skb_queue))
+<<<<<<< HEAD
 		printk(KERN_WARNING "r8712u: rx_skb_queue not empty\n");
 	skb_queue_purge(&precvpriv->free_recv_skb_queue);
 	if (skb_queue_len(&precvpriv->free_recv_skb_queue))
@@ -125,6 +189,17 @@ int r8712_init_recvbuf(struct _adapter *padapter, struct recv_buf *precvbuf)
 {
 	int res = _SUCCESS;
 
+=======
+		netdev_warn(padapter->pnetdev, "r8712u: rx_skb_queue not empty\n");
+	skb_queue_purge(&precvpriv->free_recv_skb_queue);
+	if (skb_queue_len(&precvpriv->free_recv_skb_queue))
+		netdev_warn(padapter->pnetdev, "r8712u: free_recv_skb_queue not empty %d\n",
+			    skb_queue_len(&precvpriv->free_recv_skb_queue));
+}
+
+void r8712_init_recvbuf(struct _adapter *padapter, struct recv_buf *precvbuf)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	precvbuf->transfer_len = 0;
 	precvbuf->len = 0;
 	precvbuf->ref_cnt = 0;
@@ -134,11 +209,18 @@ int r8712_init_recvbuf(struct _adapter *padapter, struct recv_buf *precvbuf)
 		precvbuf->ptail = precvbuf->pbuf;
 		precvbuf->pend = precvbuf->pdata + MAX_RECVBUF_SZ;
 	}
+<<<<<<< HEAD
 	return res;
 }
 
 int r8712_free_recvframe(union recv_frame *precvframe,
 		   struct  __queue *pfree_recv_queue)
+=======
+}
+
+void r8712_free_recvframe(union recv_frame *precvframe,
+			  struct  __queue *pfree_recv_queue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long irqL;
 	struct _adapter *padapter = precvframe->u.hdr.adapter;
@@ -149,6 +231,7 @@ int r8712_free_recvframe(union recv_frame *precvframe,
 		precvframe->u.hdr.pkt = NULL;
 	}
 	spin_lock_irqsave(&pfree_recv_queue->lock, irqL);
+<<<<<<< HEAD
 	list_delete(&(precvframe->u.hdr.list));
 	list_insert_tail(&(precvframe->u.hdr.list),
 			 get_list_head(pfree_recv_queue));
@@ -174,6 +257,29 @@ static void update_recvframe_attrib_from_recvstat(struct rx_pkt_attrib *pattrib,
 	pattrib->bdecrypted = ((le32_to_cpu(prxstat->rxdw0) & BIT(27)) >> 27)
 				 ? 0 : 1;
 	pattrib->crc_err = ((le32_to_cpu(prxstat->rxdw0) & BIT(14)) >> 14);
+=======
+	list_del_init(&precvframe->u.hdr.list);
+	list_add_tail(&precvframe->u.hdr.list, &pfree_recv_queue->queue);
+	if (padapter) {
+		if (pfree_recv_queue == &precvpriv->free_recv_queue)
+			precvpriv->free_recvframe_cnt++;
+	}
+	spin_unlock_irqrestore(&pfree_recv_queue->lock, irqL);
+}
+
+static void update_recvframe_attrib_from_recvstat(struct rx_pkt_attrib *pattrib,
+						  struct recv_stat *prxstat)
+{
+	u16 drvinfo_sz;
+
+	drvinfo_sz = (le32_to_cpu(prxstat->rxdw0) & 0x000f0000) >> 16;
+	drvinfo_sz <<= 3;
+	/*TODO:
+	 * Offset 0
+	 */
+	pattrib->bdecrypted = (le32_to_cpu(prxstat->rxdw0) & BIT(27)) == 0;
+	pattrib->crc_err = (le32_to_cpu(prxstat->rxdw0) & BIT(14)) != 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*Offset 4*/
 	/*Offset 8*/
 	/*Offset 12*/
@@ -187,71 +293,125 @@ static void update_recvframe_attrib_from_recvstat(struct rx_pkt_attrib *pattrib,
 			pattrib->ip_chkrpt = 1; /* correct */
 		else
 			pattrib->ip_chkrpt = 0; /* incorrect */
+<<<<<<< HEAD
 	} else
 		pattrib->tcpchk_valid = 0; /* invalid */
+=======
+	} else {
+		pattrib->tcpchk_valid = 0; /* invalid */
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pattrib->mcs_rate = (u8)((le32_to_cpu(prxstat->rxdw3)) & 0x3f);
 	pattrib->htc = (u8)((le32_to_cpu(prxstat->rxdw3) >> 14) & 0x1);
 	/*Offset 16*/
 	/*Offset 20*/
 	/*phy_info*/
+<<<<<<< HEAD
 	if (drvinfo_sz) {
 		pphy_stat = (struct phy_stat *)(prxstat+1);
 		pphy_info = (u32 *)prxstat+1;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*perform defrag*/
 static union recv_frame *recvframe_defrag(struct _adapter *adapter,
+<<<<<<< HEAD
 				   struct  __queue *defrag_q)
 {
 	struct list_head *plist, *phead;
 	u8	*data, wlanhdr_offset;
+=======
+					  struct  __queue *defrag_q)
+{
+	struct list_head *plist, *phead;
+	u8 wlanhdr_offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	curfragnum;
 	struct recv_frame_hdr *pfhdr, *pnfhdr;
 	union recv_frame *prframe, *pnextrframe;
 	struct  __queue	*pfree_recv_queue;
 
 	pfree_recv_queue = &adapter->recvpriv.free_recv_queue;
+<<<<<<< HEAD
 	phead = get_list_head(defrag_q);
 	plist = get_next(phead);
 	prframe = LIST_CONTAINOR(plist, union recv_frame, u);
 	list_delete(&prframe->u.list);
+=======
+	phead = &defrag_q->queue;
+	plist = phead->next;
+	prframe = container_of(plist, union recv_frame, u.list);
+	list_del_init(&prframe->u.list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pfhdr = &prframe->u.hdr;
 	curfragnum = 0;
 	if (curfragnum != pfhdr->attrib.frag_num) {
 		/*the first fragment number must be 0
+<<<<<<< HEAD
 		 *free the whole queue*/
+=======
+		 *free the whole queue
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r8712_free_recvframe(prframe, pfree_recv_queue);
 		r8712_free_recvframe_queue(defrag_q, pfree_recv_queue);
 		return NULL;
 	}
 	curfragnum++;
+<<<<<<< HEAD
 	plist = get_list_head(defrag_q);
 	plist = get_next(plist);
 	data = get_recvframe_data(prframe);
 	while (end_of_queue_search(phead, plist) == false) {
 		pnextrframe = LIST_CONTAINOR(plist, union recv_frame, u);
+=======
+	plist = &defrag_q->queue;
+	plist = plist->next;
+	while (!end_of_queue_search(phead, plist)) {
+		pnextrframe = container_of(plist, union recv_frame, u.list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pnfhdr = &pnextrframe->u.hdr;
 		/*check the fragment sequence  (2nd ~n fragment frame) */
 		if (curfragnum != pnfhdr->attrib.frag_num) {
 			/* the fragment number must increase  (after decache)
+<<<<<<< HEAD
 			 * release the defrag_q & prframe */
+=======
+			 * release the defrag_q & prframe
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r8712_free_recvframe(prframe, pfree_recv_queue);
 			r8712_free_recvframe_queue(defrag_q, pfree_recv_queue);
 			return NULL;
 		}
 		curfragnum++;
 		/* copy the 2nd~n fragment frame's payload to the first fragment
+<<<<<<< HEAD
 		 * get the 2nd~last fragment frame's payload */
 		wlanhdr_offset = pnfhdr->attrib.hdrlen + pnfhdr->attrib.iv_len;
 		recvframe_pull(pnextrframe, wlanhdr_offset);
 		/* append  to first fragment frame's tail (if privacy frame,
 		 * pull the ICV) */
+=======
+		 * get the 2nd~last fragment frame's payload
+		 */
+		wlanhdr_offset = pnfhdr->attrib.hdrlen + pnfhdr->attrib.iv_len;
+		recvframe_pull(pnextrframe, wlanhdr_offset);
+		/* append  to first fragment frame's tail (if privacy frame,
+		 * pull the ICV)
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		recvframe_pull_tail(prframe, pfhdr->attrib.icv_len);
 		memcpy(pfhdr->rx_tail, pnfhdr->rx_data, pnfhdr->len);
 		recvframe_put(prframe, pnfhdr->len);
 		pfhdr->attrib.icv_len = pnfhdr->attrib.icv_len;
+<<<<<<< HEAD
 		plist = get_next(plist);
+=======
+		plist = plist->next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* free the defrag_q queue and return the prframe */
 	r8712_free_recvframe_queue(defrag_q, pfree_recv_queue);
@@ -267,7 +427,11 @@ union recv_frame *r8712_recvframe_chk_defrag(struct _adapter *padapter,
 	u8   *psta_addr;
 	struct recv_frame_hdr *pfhdr;
 	struct sta_info *psta;
+<<<<<<< HEAD
 	struct	sta_priv *pstapriv ;
+=======
+	struct	sta_priv *pstapriv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head *phead;
 	union recv_frame *prtnframe = NULL;
 	struct  __queue *pfree_recv_queue, *pdefrag_q;
@@ -280,7 +444,11 @@ union recv_frame *r8712_recvframe_chk_defrag(struct _adapter *padapter,
 	fragnum = pfhdr->attrib.frag_num;
 	psta_addr = pfhdr->attrib.ta;
 	psta = r8712_get_stainfo(pstapriv, psta_addr);
+<<<<<<< HEAD
 	if (psta == NULL)
+=======
+	if (!psta)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdefrag_q = NULL;
 	else
 		pdefrag_q = &psta->sta_recvpriv.defrag_q;
@@ -289,6 +457,7 @@ union recv_frame *r8712_recvframe_chk_defrag(struct _adapter *padapter,
 		prtnframe = precv_frame;/*isn't a fragment frame*/
 	if (ismfrag == 1) {
 		/* 0~(n-1) fragment frame
+<<<<<<< HEAD
 		 * enqueue to defraf_g */
 		if (pdefrag_q != NULL) {
 			if (fragnum == 0) {
@@ -317,17 +486,57 @@ union recv_frame *r8712_recvframe_chk_defrag(struct _adapter *padapter,
 		if (pdefrag_q != NULL) {
 			phead = get_list_head(pdefrag_q);
 			list_insert_tail(&pfhdr->list, phead);
+=======
+		 * enqueue to defraf_g
+		 */
+		if (pdefrag_q) {
+			if (fragnum == 0) {
+				/*the first fragment*/
+				if (!list_empty(&pdefrag_q->queue)) {
+					/*free current defrag_q */
+					r8712_free_recvframe_queue(pdefrag_q, pfree_recv_queue);
+				}
+			}
+			/* Then enqueue the 0~(n-1) fragment to the defrag_q */
+			phead = &pdefrag_q->queue;
+			list_add_tail(&pfhdr->list, phead);
+			prtnframe = NULL;
+		} else {
+			/* can't find this ta's defrag_queue, so free this
+			 * recv_frame
+			 */
+			r8712_free_recvframe(precv_frame, pfree_recv_queue);
+			prtnframe = NULL;
+		}
+	}
+	if ((ismfrag == 0) && (fragnum != 0)) {
+		/* the last fragment frame
+		 * enqueue the last fragment
+		 */
+		if (pdefrag_q) {
+			phead = &pdefrag_q->queue;
+			list_add_tail(&pfhdr->list, phead);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*call recvframe_defrag to defrag*/
 			precv_frame = recvframe_defrag(padapter, pdefrag_q);
 			prtnframe = precv_frame;
 		} else {
 			/* can't find this ta's defrag_queue, so free this
+<<<<<<< HEAD
 			 *  recv_frame */
+=======
+			 *  recv_frame
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r8712_free_recvframe(precv_frame, pfree_recv_queue);
 			prtnframe = NULL;
 		}
 	}
+<<<<<<< HEAD
 	if ((prtnframe != NULL) && (prtnframe->u.hdr.attrib.privacy)) {
+=======
+	if (prtnframe && (prtnframe->u.hdr.attrib.privacy)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* after defrag we must check tkip mic code */
 		if (r8712_recvframe_chkmic(padapter, prtnframe) == _FAIL) {
 			r8712_free_recvframe(prtnframe, pfree_recv_queue);
@@ -337,17 +546,29 @@ union recv_frame *r8712_recvframe_chk_defrag(struct _adapter *padapter,
 	return prtnframe;
 }
 
+<<<<<<< HEAD
 static int amsdu_to_msdu(struct _adapter *padapter, union recv_frame *prframe)
+=======
+static void amsdu_to_msdu(struct _adapter *padapter, union recv_frame *prframe)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int	a_len, padding_len;
 	u16	eth_type, nSubframe_Length;
 	u8	nr_subframes, i;
+<<<<<<< HEAD
 	unsigned char *data_ptr, *pdata;
 	struct rx_pkt_attrib *pattrib;
 	_pkt *sub_skb, *subframes[MAX_SUBFRAME_COUNT];
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 	struct  __queue *pfree_recv_queue = &(precvpriv->free_recv_queue);
 	int	ret = _SUCCESS;
+=======
+	unsigned char *pdata;
+	struct rx_pkt_attrib *pattrib;
+	_pkt *sub_skb, *subframes[MAX_SUBFRAME_COUNT];
+	struct recv_priv *precvpriv = &padapter->recvpriv;
+	struct  __queue *pfree_recv_queue = &precvpriv->free_recv_queue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nr_subframes = 0;
 	pattrib = &prframe->u.hdr.attrib;
@@ -363,9 +584,14 @@ static int amsdu_to_msdu(struct _adapter *padapter, union recv_frame *prframe)
 		nSubframe_Length = (nSubframe_Length >> 8) +
 				   (nSubframe_Length << 8);
 		if (a_len < (ETHERNET_HEADER_SIZE + nSubframe_Length)) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "r8712u: nRemain_Length is %d and"
 			    " nSubframe_Length is: %d\n",
 			    a_len, nSubframe_Length);
+=======
+			netdev_warn(padapter->pnetdev, "r8712u: nRemain_Length is %d and nSubframe_Length is: %d\n",
+				    a_len, nSubframe_Length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto exit;
 		}
 		/* move the data point to data content */
@@ -373,6 +599,7 @@ static int amsdu_to_msdu(struct _adapter *padapter, union recv_frame *prframe)
 		a_len -= ETH_HLEN;
 		/* Allocate new skb for releasing to upper layer */
 		sub_skb = dev_alloc_skb(nSubframe_Length + 12);
+<<<<<<< HEAD
 		skb_reserve(sub_skb, 12);
 		data_ptr = (u8 *)skb_put(sub_skb, nSubframe_Length);
 		memcpy(data_ptr, pdata, nSubframe_Length);
@@ -380,6 +607,15 @@ static int amsdu_to_msdu(struct _adapter *padapter, union recv_frame *prframe)
 		if (nr_subframes >= MAX_SUBFRAME_COUNT) {
 			printk(KERN_WARNING "r8712u: ParseSubframe(): Too"
 			    " many Subframes! Packets dropped!\n");
+=======
+		if (!sub_skb)
+			break;
+		skb_reserve(sub_skb, 12);
+		skb_put_data(sub_skb, pdata, nSubframe_Length);
+		subframes[nr_subframes++] = sub_skb;
+		if (nr_subframes >= MAX_SUBFRAME_COUNT) {
+			netdev_warn(padapter->pnetdev, "r8712u: ParseSubframe(): Too many Subframes! Packets dropped!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		pdata += nSubframe_Length;
@@ -399,6 +635,7 @@ static int amsdu_to_msdu(struct _adapter *padapter, union recv_frame *prframe)
 		/* convert hdr + possible LLC headers into Ethernet header */
 		eth_type = (sub_skb->data[6] << 8) | sub_skb->data[7];
 		if (sub_skb->len >= 8 &&
+<<<<<<< HEAD
 		   ((!memcmp(sub_skb->data, rfc1042_header, SNAP_SIZE) &&
 		   eth_type != ETH_P_AARP && eth_type != ETH_P_IPX) ||
 		   !memcmp(sub_skb->data, bridge_tunnel_header, SNAP_SIZE))) {
@@ -411,13 +648,34 @@ static int amsdu_to_msdu(struct _adapter *padapter, union recv_frame *prframe)
 				ETH_ALEN);
 		} else {
 			u16 len;
+=======
+		    ((!memcmp(sub_skb->data, rfc1042_header, SNAP_SIZE) &&
+		      eth_type != ETH_P_AARP && eth_type != ETH_P_IPX) ||
+		     !memcmp(sub_skb->data, bridge_tunnel_header, SNAP_SIZE))) {
+			/* remove RFC1042 or Bridge-Tunnel encapsulation and
+			 * replace EtherType
+			 */
+			skb_pull(sub_skb, SNAP_SIZE);
+			memcpy(skb_push(sub_skb, ETH_ALEN), pattrib->src,
+			       ETH_ALEN);
+			memcpy(skb_push(sub_skb, ETH_ALEN), pattrib->dst,
+			       ETH_ALEN);
+		} else {
+			__be16 len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Leave Ethernet header part of hdr and full payload */
 			len = htons(sub_skb->len);
 			memcpy(skb_push(sub_skb, 2), &len, 2);
 			memcpy(skb_push(sub_skb, ETH_ALEN), pattrib->src,
+<<<<<<< HEAD
 				ETH_ALEN);
 			memcpy(skb_push(sub_skb, ETH_ALEN), pattrib->dst,
 				ETH_ALEN);
+=======
+			       ETH_ALEN);
+			memcpy(skb_push(sub_skb, ETH_ALEN), pattrib->dst,
+			       ETH_ALEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* Indicate the packets to upper layer */
 		if (sub_skb) {
@@ -427,19 +685,29 @@ static int amsdu_to_msdu(struct _adapter *padapter, union recv_frame *prframe)
 			if ((pattrib->tcpchk_valid == 1) &&
 			    (pattrib->tcp_chkrpt == 1)) {
 				sub_skb->ip_summed = CHECKSUM_UNNECESSARY;
+<<<<<<< HEAD
 			} else
 				sub_skb->ip_summed = CHECKSUM_NONE;
+=======
+			} else {
+				sub_skb->ip_summed = CHECKSUM_NONE;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netif_rx(sub_skb);
 		}
 	}
 exit:
 	prframe->u.hdr.len = 0;
 	r8712_free_recvframe(prframe, pfree_recv_queue);
+<<<<<<< HEAD
 	return ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void r8712_rxcmd_event_hdl(struct _adapter *padapter, void *prxcmdbuf)
 {
+<<<<<<< HEAD
 	uint voffset;
 	u8 *poffset;
 	u16 pkt_len, cmd_len, drvinfo_sz;
@@ -462,6 +730,25 @@ void r8712_rxcmd_event_hdl(struct _adapter *padapter, void *prxcmdbuf)
 		poffset += (cmd_len + 8);/*8 bytes aligment*/
 	} while (le32_to_cpu(voffset) & BIT(31));
 
+=======
+	__le32 voffset;
+	u8 *poffset;
+	u16 cmd_len, drvinfo_sz;
+	struct recv_stat *prxstat;
+
+	poffset = prxcmdbuf;
+	voffset = *(__le32 *)poffset;
+	prxstat = prxcmdbuf;
+	drvinfo_sz = (le32_to_cpu(prxstat->rxdw0) & 0x000f0000) >> 16;
+	drvinfo_sz <<= 3;
+	poffset += RXDESC_SIZE + drvinfo_sz;
+	do {
+		voffset  = *(__le32 *)poffset;
+		cmd_len = (u16)(le32_to_cpu(voffset) & 0xffff);
+		r8712_event_handle(padapter, (__le32 *)poffset);
+		poffset += (cmd_len + 8);/*8 bytes alignment*/
+	} while (le32_to_cpu(voffset) & BIT(31));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int check_indicate_seq(struct recv_reorder_ctrl *preorder_ctrl,
@@ -495,7 +782,11 @@ static int check_indicate_seq(struct recv_reorder_ctrl *preorder_ctrl,
 }
 
 static int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl,
+<<<<<<< HEAD
 			      union recv_frame *prframe)
+=======
+				     union recv_frame *prframe)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct list_head *phead, *plist;
 	union recv_frame *pnextrframe;
@@ -504,6 +795,7 @@ static int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl,
 					&preorder_ctrl->pending_recvframe_queue;
 	struct rx_pkt_attrib *pattrib = &prframe->u.hdr.attrib;
 
+<<<<<<< HEAD
 	phead = get_list_head(ppending_recvframe_queue);
 	plist = get_next(phead);
 	while (end_of_queue_search(phead, plist) == false) {
@@ -518,17 +810,41 @@ static int enqueue_reorder_recvframe(struct recv_reorder_ctrl *preorder_ctrl,
 	}
 	list_delete(&(prframe->u.hdr.list));
 	list_insert_tail(&(prframe->u.hdr.list), plist);
+=======
+	phead = &ppending_recvframe_queue->queue;
+	plist = phead->next;
+	while (!end_of_queue_search(phead, plist)) {
+		pnextrframe = container_of(plist, union recv_frame, u.list);
+		pnextattrib = &pnextrframe->u.hdr.attrib;
+
+		if (SN_EQUAL(pnextattrib->seq_num, pattrib->seq_num))
+			return false;
+
+		if (SN_LESS(pnextattrib->seq_num, pattrib->seq_num))
+			plist = plist->next;
+		else
+			break;
+	}
+	list_del_init(&prframe->u.hdr.list);
+	list_add_tail(&prframe->u.hdr.list, plist);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
 int r8712_recv_indicatepkts_in_order(struct _adapter *padapter,
+<<<<<<< HEAD
 			       struct recv_reorder_ctrl *preorder_ctrl,
 			       int bforced)
+=======
+				     struct recv_reorder_ctrl *preorder_ctrl,
+				     int bforced)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct list_head *phead, *plist;
 	union recv_frame *prframe;
 	struct rx_pkt_attrib *pattrib;
 	int bPktInBuf = false;
+<<<<<<< HEAD
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 	struct  __queue *ppending_recvframe_queue =
 			 &preorder_ctrl->pending_recvframe_queue;
@@ -555,21 +871,57 @@ int r8712_recv_indicatepkts_in_order(struct _adapter *padapter,
 			list_delete(&(prframe->u.hdr.list));
 			if (SN_EQUAL(preorder_ctrl->indicate_seq,
 			    pattrib->seq_num))
+=======
+	struct  __queue *ppending_recvframe_queue =
+			 &preorder_ctrl->pending_recvframe_queue;
+
+	phead = &ppending_recvframe_queue->queue;
+	plist = phead->next;
+	/* Handling some condition for forced indicate case.*/
+	if (bforced) {
+		if (list_empty(phead))
+			return true;
+
+		prframe = container_of(plist, union recv_frame, u.list);
+		pattrib = &prframe->u.hdr.attrib;
+		preorder_ctrl->indicate_seq = pattrib->seq_num;
+	}
+	/* Prepare indication list and indication.
+	 * Check if there is any packet need indicate.
+	 */
+	while (!list_empty(phead)) {
+		prframe = container_of(plist, union recv_frame, u.list);
+		pattrib = &prframe->u.hdr.attrib;
+		if (!SN_LESS(preorder_ctrl->indicate_seq, pattrib->seq_num)) {
+			plist = plist->next;
+			list_del_init(&prframe->u.hdr.list);
+			if (SN_EQUAL(preorder_ctrl->indicate_seq,
+				     pattrib->seq_num))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				preorder_ctrl->indicate_seq =
 				  (preorder_ctrl->indicate_seq + 1) % 4096;
 			/*indicate this recv_frame*/
 			if (!pattrib->amsdu) {
+<<<<<<< HEAD
 				if ((padapter->bDriverStopped == false) &&
 				    (padapter->bSurpriseRemoved == false)) {
+=======
+				if (!padapter->driver_stopped &&
+				    !padapter->surprise_removed) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					/* indicate this recv_frame */
 					r8712_recv_indicatepkt(padapter,
 							       prframe);
 				}
 			} else if (pattrib->amsdu == 1) {
+<<<<<<< HEAD
 				if (amsdu_to_msdu(padapter, prframe) !=
 				    _SUCCESS)
 					r8712_free_recvframe(prframe,
 						   &precvpriv->free_recv_queue);
+=======
+				amsdu_to_msdu(padapter, prframe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			/* Update local variables. */
 			bPktInBuf = false;
@@ -582,7 +934,11 @@ int r8712_recv_indicatepkts_in_order(struct _adapter *padapter,
 }
 
 static int recv_indicatepkt_reorder(struct _adapter *padapter,
+<<<<<<< HEAD
 			     union recv_frame *prframe)
+=======
+				    union recv_frame *prframe)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long irql;
 	struct rx_pkt_attrib *pattrib = &prframe->u.hdr.attrib;
@@ -594,6 +950,7 @@ static int recv_indicatepkt_reorder(struct _adapter *padapter,
 		/* s1. */
 		r8712_wlanhdr_to_ethhdr(prframe);
 		if (pattrib->qos != 1) {
+<<<<<<< HEAD
 			if ((padapter->bDriverStopped == false) &&
 			   (padapter->bSurpriseRemoved == false)) {
 				r8712_recv_indicatepkt(padapter, prframe);
@@ -604,6 +961,19 @@ static int recv_indicatepkt_reorder(struct _adapter *padapter,
 	}
 	spin_lock_irqsave(&ppending_recvframe_queue->lock, irql);
 	/*s2. check if winstart_b(indicate_seq) needs to been updated*/
+=======
+			if (!padapter->driver_stopped &&
+			    !padapter->surprise_removed) {
+				r8712_recv_indicatepkt(padapter, prframe);
+				return 0;
+			} else {
+				return -EINVAL;
+			}
+		}
+	}
+	spin_lock_irqsave(&ppending_recvframe_queue->lock, irql);
+	/*s2. check if winstart_b(indicate_seq) needs to be updated*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!check_indicate_seq(preorder_ctrl, pattrib->seq_num))
 		goto _err_exit;
 	/*s3. Insert all packet into Reorder Queue to maintain its ordering.*/
@@ -620,6 +990,7 @@ static int recv_indicatepkt_reorder(struct _adapter *padapter,
 	 * 2. All packets with SeqNum larger than or equal to
 	 * WinStart => Buffer it.
 	 */
+<<<<<<< HEAD
 	if (r8712_recv_indicatepkts_in_order(padapter, preorder_ctrl, false) ==
 	    true) {
 		_set_timer(&preorder_ctrl->reordering_ctrl_timer,
@@ -633,18 +1004,40 @@ static int recv_indicatepkt_reorder(struct _adapter *padapter,
 _err_exit:
 	spin_unlock_irqrestore(&ppending_recvframe_queue->lock, irql);
 	return _FAIL;
+=======
+	if (r8712_recv_indicatepkts_in_order(padapter, preorder_ctrl, false)) {
+		mod_timer(&preorder_ctrl->reordering_ctrl_timer,
+			  jiffies + msecs_to_jiffies(REORDER_WAIT_TIME));
+		spin_unlock_irqrestore(&ppending_recvframe_queue->lock, irql);
+	} else {
+		spin_unlock_irqrestore(&ppending_recvframe_queue->lock, irql);
+		del_timer(&preorder_ctrl->reordering_ctrl_timer);
+	}
+	return 0;
+_err_exit:
+	spin_unlock_irqrestore(&ppending_recvframe_queue->lock, irql);
+	return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void r8712_reordering_ctrl_timeout_handler(void *pcontext)
 {
 	unsigned long irql;
+<<<<<<< HEAD
 	struct recv_reorder_ctrl *preorder_ctrl =
 				 (struct recv_reorder_ctrl *)pcontext;
+=======
+	struct recv_reorder_ctrl *preorder_ctrl = pcontext;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct _adapter *padapter = preorder_ctrl->padapter;
 	struct  __queue *ppending_recvframe_queue =
 				 &preorder_ctrl->pending_recvframe_queue;
 
+<<<<<<< HEAD
 	if (padapter->bDriverStopped || padapter->bSurpriseRemoved)
+=======
+	if (padapter->driver_stopped || padapter->surprise_removed)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	spin_lock_irqsave(&ppending_recvframe_queue->lock, irql);
 	r8712_recv_indicatepkts_in_order(padapter, preorder_ctrl, true);
@@ -652,21 +1045,33 @@ void r8712_reordering_ctrl_timeout_handler(void *pcontext)
 }
 
 static int r8712_process_recv_indicatepkts(struct _adapter *padapter,
+<<<<<<< HEAD
 			      union recv_frame *prframe)
+=======
+					   union recv_frame *prframe)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval = _SUCCESS;
 	struct mlme_priv *pmlmepriv = &padapter->mlmepriv;
 	struct ht_priv	*phtpriv = &pmlmepriv->htpriv;
 
 	if (phtpriv->ht_option == 1) { /*B/G/N Mode*/
+<<<<<<< HEAD
 		if (recv_indicatepkt_reorder(padapter, prframe) != _SUCCESS) {
 			/* including perform A-MPDU Rx Ordering Buffer Control*/
 			if ((padapter->bDriverStopped == false) &&
 			    (padapter->bSurpriseRemoved == false))
+=======
+		if (recv_indicatepkt_reorder(padapter, prframe)) {
+			/* including perform A-MPDU Rx Ordering Buffer Control*/
+			if (!padapter->driver_stopped &&
+			    !padapter->surprise_removed)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return _FAIL;
 		}
 	} else { /*B/G mode*/
 		retval = r8712_wlanhdr_to_ethhdr(prframe);
+<<<<<<< HEAD
 		if (retval != _SUCCESS)
 			return retval;
 		if ((padapter->bDriverStopped == false) &&
@@ -675,6 +1080,16 @@ static int r8712_process_recv_indicatepkts(struct _adapter *padapter,
 			r8712_recv_indicatepkt(padapter, prframe);
 		} else
 			return _FAIL;
+=======
+		if (retval)
+			return _FAIL;
+		if (!padapter->driver_stopped && !padapter->surprise_removed) {
+			/* indicate this recv_frame */
+			r8712_recv_indicatepkt(padapter, prframe);
+		} else {
+			return _FAIL;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return retval;
 }
@@ -694,6 +1109,7 @@ static u8 evm_db2percentage(s8 value)
 	/*
 	 * -33dB~0dB to 0%~99%
 	 */
+<<<<<<< HEAD
 	s8 ret_val;
 
 	ret_val = value;
@@ -705,6 +1121,13 @@ static u8 evm_db2percentage(s8 value)
 	ret_val *= 3;
 	if (ret_val == 99)
 		ret_val = 100;
+=======
+	s8 ret_val = clamp(-value, 0, 33) * 3;
+
+	if (ret_val == 99)
+		ret_val = 100;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret_val;
 }
 
@@ -762,17 +1185,30 @@ static void query_rx_phy_status(struct _adapter *padapter,
 		/* CCK Driver info Structure is not the same as OFDM packet.*/
 		pcck_buf = (struct phy_cck_rx_status *)pphy_stat;
 		/* (1)Hardware does not provide RSSI for CCK
+<<<<<<< HEAD
 		 * (2)PWDB, Average PWDB cacluated by hardware
+=======
+		 * (2)PWDB, Average PWDB calculated by hardware
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * (for rate adaptive)
 		 */
 		if (!cck_highpwr) {
 			report = pcck_buf->cck_agc_rpt & 0xc0;
+<<<<<<< HEAD
 			report = report >> 6;
+=======
+			report >>= 6;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (report) {
 			/* Modify the RF RNA gain value to -40, -20,
 			 * -2, 14 by Jenyu's suggestion
 			 * Note: different RF with the different
+<<<<<<< HEAD
 			 * RNA gain. */
+=======
+			 * RNA gain.
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 0x3:
 				rx_pwr_all = -40 - (pcck_buf->cck_agc_rpt &
 					     0x3e);
@@ -793,7 +1229,11 @@ static void query_rx_phy_status(struct _adapter *padapter,
 		} else {
 			report = ((u8)(le32_to_cpu(pphy_stat->phydw1) >> 8)) &
 				 0x60;
+<<<<<<< HEAD
 			report = report >> 5;
+=======
+			report >>= 5;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (report) {
 			case 0x3:
 				rx_pwr_all = -40 - ((pcck_buf->cck_agc_rpt &
@@ -831,16 +1271,26 @@ static void query_rx_phy_status(struct _adapter *padapter,
 		/*
 		 * (3) Get Signal Quality (EVM)
 		 */
+<<<<<<< HEAD
 		if (pwdb_all > 40)
 			sq = 100;
 		else {
+=======
+		if (pwdb_all > 40) {
+			sq = 100;
+		} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sq = pcck_buf->sq_rpt;
 			if (pcck_buf->sq_rpt > 64)
 				sq = 0;
 			else if (pcck_buf->sq_rpt < 20)
 				sq = 100;
 			else
+<<<<<<< HEAD
 				sq = ((64-sq) * 100) / 44;
+=======
+				sq = ((64 - sq) * 100) / 44;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		prframe->u.hdr.attrib.signal_qual = sq;
 		prframe->u.hdr.attrib.rx_mimo_signal_qual[0] = sq;
@@ -848,7 +1298,11 @@ static void query_rx_phy_status(struct _adapter *padapter,
 	} else {
 		/* (1)Get RSSI for HT rate */
 		for (i = 0; i < ((padapter->registrypriv.rf_config) &
+<<<<<<< HEAD
 			    0x0f) ; i++) {
+=======
+			    0x0f); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rf_rx_num++;
 			rx_pwr[i] = ((pphy_head[PHY_STAT_GAIN_TRSW_SHT + i]
 				    & 0x3F) * 2) - 110;
@@ -856,8 +1310,14 @@ static void query_rx_phy_status(struct _adapter *padapter,
 			rssi = query_rx_pwr_percentage(rx_pwr[i]);
 			total_rssi += rssi;
 		}
+<<<<<<< HEAD
 		/* (2)PWDB, Average PWDB cacluated by hardware (for
 		 * rate adaptive) */
+=======
+		/* (2)PWDB, Average PWDB calculated by hardware (for
+		 * rate adaptive)
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rx_pwr_all = (((pphy_head[PHY_STAT_PWDB_ALL_SHT]) >> 1) & 0x7f)
 			     - 106;
 		pwdb_all = query_rx_pwr_percentage(rx_pwr_all);
@@ -885,11 +1345,20 @@ static void query_rx_phy_status(struct _adapter *padapter,
 	}
 	/* UI BSS List signal strength(in percentage), make it good looking,
 	 * from 0~100. It is assigned to the BSS List in
+<<<<<<< HEAD
 	 * GetValueFromBeaconOrProbeRsp(). */
 	if (bcck_rate)
 		prframe->u.hdr.attrib.signal_strength =
 			 (u8)r8712_signal_scale_mapping(pwdb_all);
 	else {
+=======
+	 * GetValueFromBeaconOrProbeRsp().
+	 */
+	if (bcck_rate) {
+		prframe->u.hdr.attrib.signal_strength =
+			 (u8)r8712_signal_scale_mapping(pwdb_all);
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rf_rx_num != 0)
 			prframe->u.hdr.attrib.signal_strength =
 				 (u8)(r8712_signal_scale_mapping(total_rssi /=
@@ -902,14 +1371,21 @@ static void process_link_qual(struct _adapter *padapter,
 {
 	u32	last_evm = 0, tmpVal;
 	struct rx_pkt_attrib *pattrib;
+<<<<<<< HEAD
 
 	if (prframe == NULL || padapter == NULL)
+=======
+	struct smooth_rssi_data *sqd = &padapter->recvpriv.signal_qual_data;
+
+	if (!prframe || !padapter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	pattrib = &prframe->u.hdr.attrib;
 	if (pattrib->signal_qual != 0) {
 		/*
 		 * 1. Record the general EVM to the sliding window.
 		 */
+<<<<<<< HEAD
 		if (padapter->recvpriv.signal_qual_data.total_num++ >=
 				  PHY_LINKQUALITY_SLID_WIN_MAX) {
 			padapter->recvpriv.signal_qual_data.total_num =
@@ -931,6 +1407,20 @@ static void process_link_qual(struct _adapter *padapter,
 		/* <1> Showed on UI for user, in percentage. */
 		tmpVal = padapter->recvpriv.signal_qual_data.total_val /
 			 padapter->recvpriv.signal_qual_data.total_num;
+=======
+		if (sqd->total_num++ >= PHY_LINKQUALITY_SLID_WIN_MAX) {
+			sqd->total_num = PHY_LINKQUALITY_SLID_WIN_MAX;
+			last_evm = sqd->elements[sqd->index];
+			sqd->total_val -= last_evm;
+		}
+		sqd->total_val += pattrib->signal_qual;
+		sqd->elements[sqd->index++] = pattrib->signal_qual;
+		if (sqd->index >= PHY_LINKQUALITY_SLID_WIN_MAX)
+			sqd->index = 0;
+
+		/* <1> Showed on UI for user, in percentage. */
+		tmpVal = sqd->total_val / sqd->total_num;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		padapter->recvpriv.signal = (u8)tmpVal;
 	}
 }
@@ -939,6 +1429,7 @@ static void process_rssi(struct _adapter *padapter, union recv_frame *prframe)
 {
 	u32 last_rssi, tmp_val;
 	struct rx_pkt_attrib *pattrib = &prframe->u.hdr.attrib;
+<<<<<<< HEAD
 
 	if (padapter->recvpriv.signal_strength_data.total_num++ >=
 	    PHY_RSSI_SLID_WIN_MAX) {
@@ -958,6 +1449,20 @@ static void process_rssi(struct _adapter *padapter, union recv_frame *prframe)
 		padapter->recvpriv.signal_strength_data.index = 0;
 	tmp_val = padapter->recvpriv.signal_strength_data.total_val /
 		  padapter->recvpriv.signal_strength_data.total_num;
+=======
+	struct smooth_rssi_data *ssd = &padapter->recvpriv.signal_strength_data;
+
+	if (ssd->total_num++ >= PHY_RSSI_SLID_WIN_MAX) {
+		ssd->total_num = PHY_RSSI_SLID_WIN_MAX;
+		last_rssi = ssd->elements[ssd->index];
+		ssd->total_val -= last_rssi;
+	}
+	ssd->total_val += pattrib->signal_strength;
+	ssd->elements[ssd->index++] = pattrib->signal_strength;
+	if (ssd->index >= PHY_RSSI_SLID_WIN_MAX)
+		ssd->index = 0;
+	tmp_val = ssd->total_val / ssd->total_num;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	padapter->recvpriv.rssi = (s8)translate2dbm(padapter, (u8)tmp_val);
 }
 
@@ -977,15 +1482,26 @@ int recv_func(struct _adapter *padapter, void *pcontext)
 	struct  __queue *pfree_recv_queue = &padapter->recvpriv.free_recv_queue;
 	struct	mlme_priv	*pmlmepriv = &padapter->mlmepriv;
 
+<<<<<<< HEAD
 	prframe = (union recv_frame *)pcontext;
 	orig_prframe = prframe;
 	pattrib = &prframe->u.hdr.attrib;
 	if ((check_fwstate(pmlmepriv, WIFI_MP_STATE) == true)) {
+=======
+	prframe = pcontext;
+	orig_prframe = prframe;
+	pattrib = &prframe->u.hdr.attrib;
+	if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pattrib->crc_err == 1)
 			padapter->mppriv.rx_crcerrpktcount++;
 		else
 			padapter->mppriv.rx_pktcount++;
+<<<<<<< HEAD
 		if (check_fwstate(pmlmepriv, WIFI_MP_LPBK_STATE) == false) {
+=======
+		if (!check_fwstate(pmlmepriv, WIFI_MP_LPBK_STATE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* free this recv_frame */
 			r8712_free_recvframe(orig_prframe, pfree_recv_queue);
 			goto _exit_recv_func;
@@ -1000,15 +1516,26 @@ int recv_func(struct _adapter *padapter, void *pcontext)
 	}
 	process_phy_info(padapter, prframe);
 	prframe = r8712_decryptor(padapter, prframe);
+<<<<<<< HEAD
 	if (prframe == NULL) {
+=======
+	if (!prframe) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = _FAIL;
 		goto _exit_recv_func;
 	}
 	prframe = r8712_recvframe_chk_defrag(padapter, prframe);
+<<<<<<< HEAD
 	if (prframe == NULL)
 		goto _exit_recv_func;
 	prframe = r8712_portctrl(padapter, prframe);
 	if (prframe == NULL) {
+=======
+	if (!prframe)
+		goto _exit_recv_func;
+	prframe = r8712_portctrl(padapter, prframe);
+	if (!prframe) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = _FAIL;
 		goto _exit_recv_func;
 	}
@@ -1021,7 +1548,11 @@ _exit_recv_func:
 	return retval;
 }
 
+<<<<<<< HEAD
 static int recvbuf2recvframe(struct _adapter *padapter, struct sk_buff *pskb)
+=======
+static void recvbuf2recvframe(struct _adapter *padapter, struct sk_buff *pskb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 *pbuf, shift_sz = 0;
 	u8	frag, mf;
@@ -1034,6 +1565,7 @@ static int recvbuf2recvframe(struct _adapter *padapter, struct sk_buff *pskb)
 	union recv_frame *precvframe = NULL;
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 
+<<<<<<< HEAD
 	pfree_recv_queue = &(precvpriv->free_recv_queue);
 	pbuf = pskb->data;
 	prxstat = (struct recv_stat *)pbuf;
@@ -1051,19 +1583,47 @@ static int recvbuf2recvframe(struct _adapter *padapter, struct sk_buff *pskb)
 	do {
 		prxstat = (struct recv_stat *)pbuf;
 		pkt_len =  le32_to_cpu(prxstat->rxdw0)&0x00003fff;
+=======
+	pfree_recv_queue = &precvpriv->free_recv_queue;
+	pbuf = pskb->data;
+	prxstat = (struct recv_stat *)pbuf;
+	pkt_cnt = (le32_to_cpu(prxstat->rxdw2) >> 16) & 0xff;
+	pkt_len =  le32_to_cpu(prxstat->rxdw0) & 0x00003fff;
+	transfer_len = pskb->len;
+	/* Test throughput with Netgear 3700 (No security) with Chariot 3T3R
+	 * pairs. The packet count will be a big number so that the containing
+	 * packet will effect the Rx reordering.
+	 */
+	if (transfer_len < pkt_len) {
+		/* In this case, it means the MAX_RECVBUF_SZ is too small to
+		 * get the data from 8712u.
+		 */
+		return;
+	}
+	do {
+		prxstat = (struct recv_stat *)pbuf;
+		pkt_len =  le32_to_cpu(prxstat->rxdw0) & 0x00003fff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* more fragment bit */
 		mf = (le32_to_cpu(prxstat->rxdw1) >> 27) & 0x1;
 		/* ragmentation number */
 		frag = (le32_to_cpu(prxstat->rxdw2) >> 12) & 0xf;
 		/* uint 2^3 = 8 bytes */
 		drvinfo_sz = (le32_to_cpu(prxstat->rxdw0) & 0x000f0000) >> 16;
+<<<<<<< HEAD
 		drvinfo_sz = drvinfo_sz<<3;
 		if (pkt_len <= 0)
 			goto  _exit_recvbuf2recvframe;
+=======
+		drvinfo_sz <<= 3;
+		if (pkt_len <= 0)
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Qos data, wireless lan header length is 26 */
 		if ((le32_to_cpu(prxstat->rxdw0) >> 23) & 0x01)
 			shift_sz = 2;
 		precvframe = r8712_alloc_recvframe(pfree_recv_queue);
+<<<<<<< HEAD
 		if (precvframe == NULL)
 			goto  _exit_recvbuf2recvframe;
 		_init_listhead(&precvframe->u.hdr.list);
@@ -1073,12 +1633,25 @@ static int recvbuf2recvframe(struct _adapter *padapter, struct sk_buff *pskb)
 		pkt_offset = (u16)_RND128(tmp_len);
 		/* for first fragment packet, driver need allocate 1536 +
 		 * drvinfo_sz + RXDESC_SIZE to defrag packet. */
+=======
+		if (!precvframe)
+			return;
+		INIT_LIST_HEAD(&precvframe->u.hdr.list);
+		precvframe->u.hdr.precvbuf = NULL; /*can't access the precvbuf*/
+		precvframe->u.hdr.len = 0;
+		tmp_len = pkt_len + drvinfo_sz + RXDESC_SIZE;
+		pkt_offset = (u16)round_up(tmp_len, 128);
+		/* for first fragment packet, driver need allocate 1536 +
+		 * drvinfo_sz + RXDESC_SIZE to defrag packet.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((mf == 1) && (frag == 0))
 			/*1658+6=1664, 1664 is 128 alignment.*/
 			alloc_sz = max_t(u16, tmp_len, 1658);
 		else
 			alloc_sz = tmp_len;
 		/* 2 is for IP header 4 bytes alignment in QoS packet case.
+<<<<<<< HEAD
 		 * 4 is for skb->data 4 bytes alignment. */
 		alloc_sz += 6;
 		pkt_copy = netdev_alloc_skb(padapter->pnetdev, alloc_sz);
@@ -1099,6 +1672,24 @@ static int recvbuf2recvframe(struct _adapter *padapter, struct sk_buff *pskb)
 			precvframe->u.hdr.rx_tail = pbuf;
 			precvframe->u.hdr.rx_end = pbuf + alloc_sz;
 		}
+=======
+		 * 4 is for skb->data 4 bytes alignment.
+		 */
+		alloc_sz += 6;
+		pkt_copy = netdev_alloc_skb(padapter->pnetdev, alloc_sz);
+		if (!pkt_copy)
+			return;
+
+		precvframe->u.hdr.pkt = pkt_copy;
+		skb_reserve(pkt_copy, 4 - ((addr_t)(pkt_copy->data) % 4));
+		skb_reserve(pkt_copy, shift_sz);
+		memcpy(pkt_copy->data, pbuf, tmp_len);
+		precvframe->u.hdr.rx_head = pkt_copy->data;
+		precvframe->u.hdr.rx_data = pkt_copy->data;
+		precvframe->u.hdr.rx_tail = pkt_copy->data;
+		precvframe->u.hdr.rx_end = pkt_copy->data + alloc_sz;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		recvframe_put(precvframe, tmp_len);
 		recvframe_pull(precvframe, drvinfo_sz + RXDESC_SIZE);
 		/* because the endian issue, driver avoid reference to the
@@ -1113,6 +1704,7 @@ static int recvbuf2recvframe(struct _adapter *padapter, struct sk_buff *pskb)
 		precvframe = NULL;
 		pkt_copy = NULL;
 	} while ((transfer_len > 0) && pkt_cnt > 0);
+<<<<<<< HEAD
 _exit_recvbuf2recvframe:
 	return _SUCCESS;
 }
@@ -1121,6 +1713,15 @@ static void recv_tasklet(void *priv)
 {
 	struct sk_buff *pskb;
 	struct _adapter *padapter = (struct _adapter *)priv;
+=======
+}
+
+static void recv_tasklet(struct tasklet_struct *t)
+{
+	struct sk_buff *pskb;
+	struct _adapter *padapter = from_tasklet(padapter, t,
+						 recvpriv.recv_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct recv_priv *precvpriv = &padapter->recvpriv;
 
 	while (NULL != (pskb = skb_dequeue(&precvpriv->rx_skb_queue))) {

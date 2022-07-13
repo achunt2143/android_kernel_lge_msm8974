@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generic support for sparse keymaps
  *
@@ -7,10 +11,13 @@
  * Copyright (C) 2005 Miloslav Trmac <mitr@volny.cz>
  * Copyright (C) 2005 Bernhard Rosenkraenzer <bero@arklinux.org>
  * Copyright (C) 2005 Dmitry Torokhov <dtor@mail.ru>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/input.h>
@@ -21,7 +28,10 @@
 MODULE_AUTHOR("Dmitry Torokhov <dtor@mail.ru>");
 MODULE_DESCRIPTION("Generic support for sparse keymaps");
 MODULE_LICENSE("GPL v2");
+<<<<<<< HEAD
 MODULE_VERSION("0.1");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int sparse_keymap_get_key_index(struct input_dev *dev,
 						const struct key_entry *k)
@@ -160,12 +170,21 @@ static int sparse_keymap_setkeycode(struct input_dev *dev,
  * @keymap: Keymap in form of array of &key_entry structures ending
  *	with %KE_END type entry
  * @setup: Function that can be used to adjust keymap entries
+<<<<<<< HEAD
  *	depending on device's deeds, may be %NULL
  *
  * The function calculates size and allocates copy of the original
  * keymap after which sets up input device event bits appropriately.
  * Before destroying input device allocated keymap should be freed
  * with a call to sparse_keymap_free().
+=======
+ *	depending on device's needs, may be %NULL
+ *
+ * The function calculates size and allocates copy of the original
+ * keymap after which sets up input device event bits appropriately.
+ * The allocated copy of the keymap is automatically freed when it
+ * is no longer needed.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int sparse_keymap_setup(struct input_dev *dev,
 			const struct key_entry *keymap,
@@ -180,19 +199,31 @@ int sparse_keymap_setup(struct input_dev *dev,
 	for (e = keymap; e->type != KE_END; e++)
 		map_size++;
 
+<<<<<<< HEAD
 	map = kcalloc(map_size, sizeof (struct key_entry), GFP_KERNEL);
 	if (!map)
 		return -ENOMEM;
 
 	memcpy(map, keymap, map_size * sizeof (struct key_entry));
 
+=======
+	map = devm_kmemdup(&dev->dev, keymap, map_size * sizeof(*map),
+			   GFP_KERNEL);
+	if (!map)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < map_size; i++) {
 		entry = &map[i];
 
 		if (setup) {
 			error = setup(dev, entry);
 			if (error)
+<<<<<<< HEAD
 				goto err_out;
+=======
+				return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		switch (entry->type) {
@@ -221,14 +252,18 @@ int sparse_keymap_setup(struct input_dev *dev,
 	dev->setkeycode = sparse_keymap_setkeycode;
 
 	return 0;
+<<<<<<< HEAD
 
  err_out:
 	kfree(map);
 	return error;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(sparse_keymap_setup);
 
 /**
+<<<<<<< HEAD
  * sparse_keymap_free - free memory allocated for sparse keymap
  * @dev: Input device using sparse keymap
  *
@@ -259,6 +294,8 @@ void sparse_keymap_free(struct input_dev *dev)
 EXPORT_SYMBOL(sparse_keymap_free);
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * sparse_keymap_report_entry - report event corresponding to given key entry
  * @dev: Input device for which event should be reported
  * @ke: key entry describing event
@@ -286,10 +323,18 @@ void sparse_keymap_report_entry(struct input_dev *dev, const struct key_entry *k
 
 	case KE_SW:
 		value = ke->sw.value;
+<<<<<<< HEAD
 		/* fall through */
 
 	case KE_VSW:
 		input_report_switch(dev, ke->sw.code, value);
+=======
+		fallthrough;
+
+	case KE_VSW:
+		input_report_switch(dev, ke->sw.code, value);
+		input_sync(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }

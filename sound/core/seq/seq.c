@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  ALSA sequencer main module
  *  Copyright (c) 1998-1999 by Frank van de Pol <fvdpol@coil.demon.nl>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  ALSA sequencer main module
+ *  Copyright (c) 1998-1999 by Frank van de Pol <fvdpol@coil.demon.nl>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -47,8 +54,11 @@ int seq_default_timer_card = -1;
 int seq_default_timer_device =
 #ifdef CONFIG_SND_SEQ_HRTIMER_DEFAULT
 	SNDRV_TIMER_GLOBAL_HRTIMER
+<<<<<<< HEAD
 #elif defined(CONFIG_SND_SEQ_RTCTIMER_DEFAULT)
 	SNDRV_TIMER_GLOBAL_RTC
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	SNDRV_TIMER_GLOBAL_SYSTEM
 #endif
@@ -86,6 +96,7 @@ static int __init alsa_seq_init(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	snd_seq_autoload_lock();
 	if ((err = client_init_data()) < 0)
 		goto error;
@@ -112,6 +123,35 @@ static int __init alsa_seq_init(void)
 
  error:
 	snd_seq_autoload_unlock();
+=======
+	err = client_init_data();
+	if (err < 0)
+		goto error;
+
+	/* register sequencer device */
+	err = snd_sequencer_device_init();
+	if (err < 0)
+		goto error;
+
+	/* register proc interface */
+	err = snd_seq_info_init();
+	if (err < 0)
+		goto error_device;
+
+	/* register our internal client */
+	err = snd_seq_system_client_init();
+	if (err < 0)
+		goto error_info;
+
+	snd_seq_autoload_init();
+	return 0;
+
+ error_info:
+	snd_seq_info_done();
+ error_device:
+	snd_sequencer_device_done();
+ error:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -129,8 +169,12 @@ static void __exit alsa_seq_exit(void)
 	/* unregister sequencer device */
 	snd_sequencer_device_done();
 
+<<<<<<< HEAD
 	/* release event memory */
 	snd_sequencer_memory_done();
+=======
+	snd_seq_autoload_exit();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(alsa_seq_init)

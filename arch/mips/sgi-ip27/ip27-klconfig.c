@@ -1,8 +1,15 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1999, 2000 Ralf Baechle (ralf@gnu.org)
  * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/interrupt.h>
@@ -72,6 +79,7 @@ lboard_t *find_lboard_class(lboard_t *start, unsigned char brd_type)
 	/* Didn't find it. */
 	return (lboard_t *)NULL;
 }
+<<<<<<< HEAD
 
 cnodeid_t get_cpu_cnode(cpuid_t cpu)
 {
@@ -133,3 +141,5 @@ int get_cpu_slice(cpuid_t cpu)
 		return -1;
 	return acpu->cpu_info.physid;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * User space memory access functions
  *
@@ -25,6 +29,12 @@ do {								\
 	case 4:							\
 		__get_user_asm(x, ptr, retval, "l");		\
 		break;						\
+<<<<<<< HEAD
+=======
+	case 8:							\
+		__get_user_u64(x, ptr, retval);			\
+		break;						\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:						\
 		__get_user_unknown();				\
 		break;						\
@@ -65,6 +75,59 @@ do {							\
 
 extern void __get_user_unknown(void);
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_CPU_LITTLE_ENDIAN)
+#define __get_user_u64(x, addr, err) \
+({ \
+__asm__ __volatile__( \
+	"1:\n\t" \
+	"mov.l	%2,%R1\n\t" \
+	"mov.l	%T2,%S1\n\t" \
+	"2:\n" \
+	".section	.fixup,\"ax\"\n" \
+	"3:\n\t" \
+	"mov  #0,%R1\n\t"   \
+	"mov  #0,%S1\n\t"   \
+	"mov.l	4f, %0\n\t" \
+	"jmp	@%0\n\t" \
+	" mov	%3, %0\n\t" \
+	".balign	4\n" \
+	"4:	.long	2b\n\t" \
+	".previous\n" \
+	".section	__ex_table,\"a\"\n\t" \
+	".long	1b, 3b\n\t" \
+	".long	1b + 2, 3b\n\t" \
+	".previous" \
+	:"=&r" (err), "=&r" (x) \
+	:"m" (__m(addr)), "i" (-EFAULT), "0" (err)); })
+#else
+#define __get_user_u64(x, addr, err) \
+({ \
+__asm__ __volatile__( \
+	"1:\n\t" \
+	"mov.l	%2,%S1\n\t" \
+	"mov.l	%T2,%R1\n\t" \
+	"2:\n" \
+	".section	.fixup,\"ax\"\n" \
+	"3:\n\t" \
+	"mov  #0,%S1\n\t"   \
+	"mov  #0,%R1\n\t"   \
+	"mov.l	4f, %0\n\t" \
+	"jmp	@%0\n\t" \
+	" mov	%3, %0\n\t" \
+	".balign	4\n" \
+	"4:	.long	2b\n\t" \
+	".previous\n" \
+	".section	__ex_table,\"a\"\n\t" \
+	".long	1b, 3b\n\t" \
+	".long	1b + 2, 3b\n\t" \
+	".previous" \
+	:"=&r" (err), "=&r" (x) \
+	:"m" (__m(addr)), "i" (-EFAULT), "0" (err)); })
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __put_user_size(x,ptr,size,retval)		\
 do {							\
 	retval = 0;					\
@@ -170,6 +233,7 @@ __asm__ __volatile__( \
 
 extern void __put_user_unknown(void);
 
+<<<<<<< HEAD
 static inline int
 __strncpy_from_user(unsigned long __dest, unsigned long __user __src, int __count)
 {
@@ -245,4 +309,6 @@ static inline long __strnlen_user(const char __user *__s, long __n)
 	return res;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_UACCESS_32_H */

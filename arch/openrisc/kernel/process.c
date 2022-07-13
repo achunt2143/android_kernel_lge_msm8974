@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC process.c
  *
@@ -9,21 +13,35 @@
  * Copyright (C) 2003 Matjaz Breskvar <phoenix@bsemi.com>
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
  *
+<<<<<<< HEAD
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
  *      as published by the Free Software Foundation; either version
  *      2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file handles the architecture-dependent parts of process handling...
  */
 
 #define __KERNEL_SYSCALLS__
+<<<<<<< HEAD
 #include <stdarg.h>
 
 #include <linux/errno.h>
 #include <linux/sched.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+=======
+#include <linux/cpu.h>
+#include <linux/errno.h>
+#include <linux/sched.h>
+#include <linux/sched/debug.h>
+#include <linux/sched/task.h>
+#include <linux/sched/task_stack.h>
+#include <linux/kernel.h>
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/stddef.h>
 #include <linux/unistd.h>
@@ -35,12 +53,22 @@
 #include <linux/init_task.h>
 #include <linux/mqueue.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
 #include <asm/pgtable.h>
 #include <asm/io.h>
 #include <asm/processor.h>
 #include <asm/spr_defs.h>
+=======
+#include <linux/reboot.h>
+
+#include <linux/uaccess.h>
+#include <asm/io.h>
+#include <asm/processor.h>
+#include <asm/spr_defs.h>
+#include <asm/switch_to.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/smp.h>
 
@@ -51,9 +79,33 @@
  */
 struct thread_info *current_thread_info_set[NR_CPUS] = { &init_thread_info, };
 
+<<<<<<< HEAD
 void machine_restart(void)
 {
 	printk(KERN_INFO "*** MACHINE RESTART ***\n");
+=======
+void machine_restart(char *cmd)
+{
+	do_kernel_restart(cmd);
+
+	__asm__("l.nop 13");
+
+	/* Give a grace period for failure to restart of 1s */
+	mdelay(1000);
+
+	/* Whoops - the platform was unable to reboot. Tell the user! */
+	pr_emerg("Reboot failed -- System halted\n");
+	while (1);
+}
+
+/*
+ * This is used if pm_power_off has not been set by a power management
+ * driver, in this case we can assume we are on a simulator.  On
+ * OpenRISC simulators l.nop 1 will trigger the simulator exit.
+ */
+static void default_power_off(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__asm__("l.nop 1");
 }
 
@@ -72,10 +124,33 @@ void machine_halt(void)
 void machine_power_off(void)
 {
 	printk(KERN_INFO "*** MACHINE POWER OFF ***\n");
+<<<<<<< HEAD
 	__asm__("l.nop 1");
 }
 
 void (*pm_power_off) (void) = machine_power_off;
+=======
+	if (pm_power_off != NULL)
+		pm_power_off();
+	else
+		default_power_off();
+}
+
+/*
+ * Send the doze signal to the cpu if available.
+ * Make sure, that all interrupts are enabled
+ */
+void arch_cpu_idle(void)
+{
+	raw_local_irq_enable();
+	if (mfspr(SPR_UPR) & SPR_UPR_PMP)
+		mtspr(SPR_PMR, mfspr(SPR_PMR) | SPR_PMR_DME);
+	raw_local_irq_disable();
+}
+
+void (*pm_power_off)(void) = NULL;
+EXPORT_SYMBOL(pm_power_off);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * When a process does an "exec", machine state like FPU and debug
@@ -88,12 +163,17 @@ void flush_thread(void)
 
 void show_regs(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	extern void show_registers(struct pt_regs *regs);
 
+=======
+	show_regs_print_info(KERN_DEFAULT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* __PHX__ cleanup this mess */
 	show_registers(regs);
 }
 
+<<<<<<< HEAD
 unsigned long thread_saved_pc(struct task_struct *t)
 {
 	return (unsigned long)user_regs(t->stack)->pc;
@@ -103,12 +183,15 @@ void release_thread(struct task_struct *dead_task)
 {
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copy the thread-specific (arch specific) info from the current
  * process to the new one p
  */
 extern asmlinkage void ret_from_fork(void);
 
+<<<<<<< HEAD
 int
 copy_thread(unsigned long clone_flags, unsigned long usp,
 	    unsigned long unused, struct task_struct *p, struct pt_regs *regs)
@@ -117,10 +200,53 @@ copy_thread(unsigned long clone_flags, unsigned long usp,
 	struct pt_regs *kregs;
 	unsigned long sp = (unsigned long)task_stack_page(p) + THREAD_SIZE;
 	struct thread_info *ti;
+=======
+/*
+ * copy_thread
+ * @clone_flags: flags
+ * @usp: user stack pointer or fn for kernel thread
+ * @arg: arg to fn for kernel thread; always NULL for userspace thread
+ * @p: the newly created task
+ * @tls: the Thread Local Storage pointer for the new process
+ *
+ * At the top of a newly initialized kernel stack are two stacked pt_reg
+ * structures.  The first (topmost) is the userspace context of the thread.
+ * The second is the kernelspace context of the thread.
+ *
+ * A kernel thread will not be returning to userspace, so the topmost pt_regs
+ * struct can be uninitialized; it _does_ need to exist, though, because
+ * a kernel thread can become a userspace thread by doing a kernel_execve, in
+ * which case the topmost context will be initialized and used for 'returning'
+ * to userspace.
+ *
+ * The second pt_reg struct needs to be initialized to 'return' to
+ * ret_from_fork.  A kernel thread will need to set r20 to the address of
+ * a function to call into (with arg in r22); userspace threads need to set
+ * r20 to NULL in which case ret_from_fork will just continue a return to
+ * userspace.
+ *
+ * A kernel thread 'fn' may return; this is effectively what happens when
+ * kernel_execve is called.  In that case, the userspace pt_regs must have
+ * been initialized (which kernel_execve takes care of, see start_thread
+ * below); ret_from_fork will then continue its execution causing the
+ * 'kernel thread' to return to userspace as a userspace thread.
+ */
+
+int
+copy_thread(struct task_struct *p, const struct kernel_clone_args *args)
+{
+	unsigned long clone_flags = args->flags;
+	unsigned long usp = args->stack;
+	unsigned long tls = args->tls;
+	struct pt_regs *userregs;
+	struct pt_regs *kregs;
+	unsigned long sp = (unsigned long)task_stack_page(p) + THREAD_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long top_of_kernel_stack;
 
 	top_of_kernel_stack = sp;
 
+<<<<<<< HEAD
 	p->set_child_tid = p->clear_child_tid = NULL;
 
 	/* Copy registers */
@@ -169,6 +295,48 @@ copy_thread(unsigned long clone_flags, unsigned long usp,
 	kregs->gpr[10] = (unsigned long)task_thread_info(p);
 	kregs->gpr[9] = (unsigned long)ret_from_fork;
 
+=======
+	/* Locate userspace context on stack... */
+	sp -= STACK_FRAME_OVERHEAD;	/* redzone */
+	sp -= sizeof(struct pt_regs);
+	userregs = (struct pt_regs *) sp;
+
+	/* ...and kernel context */
+	sp -= STACK_FRAME_OVERHEAD;	/* redzone */
+	sp -= sizeof(struct pt_regs);
+	kregs = (struct pt_regs *)sp;
+
+	if (unlikely(args->fn)) {
+		memset(kregs, 0, sizeof(struct pt_regs));
+		kregs->gpr[20] = (unsigned long)args->fn;
+		kregs->gpr[22] = (unsigned long)args->fn_arg;
+	} else {
+		*userregs = *current_pt_regs();
+
+		if (usp)
+			userregs->sp = usp;
+
+		/*
+		 * For CLONE_SETTLS set "tp" (r10) to the TLS pointer.
+		 */
+		if (clone_flags & CLONE_SETTLS)
+			userregs->gpr[10] = tls;
+
+		userregs->gpr[11] = 0;	/* Result from fork() */
+
+		kregs->gpr[20] = 0;	/* Userspace thread */
+	}
+
+	/*
+	 * _switch wants the kernel stack page in pt_regs->sp so that it
+	 * can restore it to thread_info->ksp... see _switch for details.
+	 */
+	kregs->sp = top_of_kernel_stack;
+	kregs->gpr[9] = (unsigned long)ret_from_fork;
+
+	task_thread_info(p)->ksp = (unsigned long)kregs;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -177,14 +345,21 @@ copy_thread(unsigned long clone_flags, unsigned long usp,
  */
 void start_thread(struct pt_regs *regs, unsigned long pc, unsigned long sp)
 {
+<<<<<<< HEAD
 	unsigned long sr = regs->sr & ~SPR_SR_SM;
 
 	set_fs(USER_DS);
 	memset(regs->gpr, 0, sizeof(regs->gpr));
+=======
+	unsigned long sr = mfspr(SPR_SR) & ~SPR_SR_SM;
+
+	memset(regs, 0, sizeof(struct pt_regs));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	regs->pc = pc;
 	regs->sr = sr;
 	regs->sp = sp;
+<<<<<<< HEAD
 
 /*	printk("start thread, ksp = %lx\n", current_thread_info()->ksp);*/
 }
@@ -194,10 +369,16 @@ int dump_fpu(struct pt_regs *regs, elf_fpregset_t * fpu)
 {
 	/* TODO */
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 extern struct thread_info *_switch(struct thread_info *old_ti,
 				   struct thread_info *new_ti);
+<<<<<<< HEAD
+=======
+extern int lwa_flag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct task_struct *__switch_to(struct task_struct *old,
 				struct task_struct *new)
@@ -215,6 +396,11 @@ struct task_struct *__switch_to(struct task_struct *old,
 	new_ti = new->stack;
 	old_ti = old->stack;
 
+<<<<<<< HEAD
+=======
+	lwa_flag = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	current_thread_info_set[smp_processor_id()] = new_ti;
 	last = (_switch(old_ti, new_ti))->task;
 
@@ -237,6 +423,7 @@ void dump_elf_thread(elf_greg_t *dest, struct pt_regs* regs)
 	dest[35] = 0;
 }
 
+<<<<<<< HEAD
 extern void _kernel_thread_helper(void);
 
 void __noreturn kernel_thread_helper(int (*fn) (void *), void *arg)
@@ -287,11 +474,15 @@ out:
 }
 
 unsigned long get_wchan(struct task_struct *p)
+=======
+unsigned long __get_wchan(struct task_struct *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* TODO */
 
 	return 0;
 }
+<<<<<<< HEAD
 
 int kernel_execve(const char *filename, char *const argv[], char *const envp[])
 {
@@ -308,3 +499,5 @@ int kernel_execve(const char *filename, char *const argv[], char *const envp[])
 	__asm__ volatile ("l.nop");
 	return __res;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

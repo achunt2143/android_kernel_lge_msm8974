@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/parisc/gsc.h
  * Declarations for functions in gsc.c
  * Copyright (c) 2000-2002 Helge Deller, Matthew Wilcox
+<<<<<<< HEAD
  *
  * Distributed under the terms of the GPL, version 2
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/interrupt.h>
@@ -32,6 +39,10 @@ struct gsc_asic {
 	int version;
 	int type;
 	int eim;
+<<<<<<< HEAD
+=======
+	struct gsc_irq gsc_irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int global_irq[32];
 };
 

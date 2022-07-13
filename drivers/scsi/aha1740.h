@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _AHA1740_H
 
 /* $Id$
@@ -134,8 +138,13 @@ struct ecb {			/* Enhanced Control Block 6.1 */
 /* Hardware defined portion ends here, rest is driver defined */
 	u8 sense[MAX_SENSE];	/* Sense area */
 	u8 status[MAX_STATUS];	/* Status area */
+<<<<<<< HEAD
 	Scsi_Cmnd *SCpnt;	/* Link to the SCSI Command Block */
 	void (*done) (Scsi_Cmnd *);	/* Completion Function */
+=======
+	struct scsi_cmnd *SCpnt;	/* Link to the SCSI Command Block */
+	void (*done) (struct scsi_cmnd *);	/* Completion Function */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define	AHA1740CMD_NOP	 0x00	/* No OP */
@@ -149,6 +158,9 @@ struct ecb {			/* Enhanced Control Block 6.1 */
 
 #define AHA1740_ECBS 32
 #define AHA1740_SCATTER 16
+<<<<<<< HEAD
 #define AHA1740_CMDLUN 1
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 * OHCI HCD (Host Controller Driver) for USB.
 *
@@ -5,6 +9,7 @@
 * Deepak Sikri<deepak.sikri@st.com>
 *
 * Based on various ohci-*.c drivers
+<<<<<<< HEAD
 *
 * This file is licensed under the terms of the GNU General Public
 * License version 2. This program is licensed "as is" without any
@@ -89,12 +94,39 @@ static const struct hc_driver ohci_spear_hc_driver = {
 
 	.start_port_reset	= ohci_start_port_reset,
 };
+=======
+*/
+
+#include <linux/clk.h>
+#include <linux/dma-mapping.h>
+#include <linux/io.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/platform_device.h>
+#include <linux/signal.h>
+#include <linux/usb.h>
+#include <linux/usb/hcd.h>
+
+#include "ohci.h"
+
+#define DRIVER_DESC "OHCI SPEAr driver"
+
+struct spear_ohci {
+	struct clk *clk;
+};
+
+#define to_spear_ohci(hcd)     (struct spear_ohci *)(hcd_to_ohci(hcd)->priv)
+
+static struct hc_driver __read_mostly ohci_spear_hc_driver;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int spear_ohci_hcd_drv_probe(struct platform_device *pdev)
 {
 	const struct hc_driver *driver = &ohci_spear_hc_driver;
 	struct usb_hcd *hcd = NULL;
 	struct clk *usbh_clk;
+<<<<<<< HEAD
 	struct spear_ohci *ohci_p;
 	struct resource *res;
 	int retval, irq;
@@ -103,10 +135,16 @@ static int spear_ohci_hcd_drv_probe(struct platform_device *pdev)
 
 	if (pdata == NULL)
 		return -EFAULT;
+=======
+	struct spear_ohci *sohci_p;
+	struct resource *res;
+	int retval, irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		retval = irq;
+<<<<<<< HEAD
 		goto fail_irq_get;
 	}
 
@@ -118,11 +156,31 @@ static int spear_ohci_hcd_drv_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Error getting interface clock\n");
 		retval = PTR_ERR(usbh_clk);
 		goto fail_get_usbh_clk;
+=======
+		goto fail;
+	}
+
+	/*
+	 * Right now device-tree probed devices don't get dma_mask set.
+	 * Since shared usb code relies on it, set it here for now.
+	 * Once we have dma capability bindings this can go away.
+	 */
+	retval = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+	if (retval)
+		goto fail;
+
+	usbh_clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(usbh_clk)) {
+		dev_err(&pdev->dev, "Error getting interface clock\n");
+		retval = PTR_ERR(usbh_clk);
+		goto fail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hcd = usb_create_hcd(driver, &pdev->dev, dev_name(&pdev->dev));
 	if (!hcd) {
 		retval = -ENOMEM;
+<<<<<<< HEAD
 		goto fail_create_hcd;
 	}
 
@@ -166,11 +224,41 @@ fail_create_hcd:
 	clk_put(usbh_clk);
 fail_get_usbh_clk:
 fail_irq_get:
+=======
+		goto fail;
+	}
+
+	hcd->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
+	if (IS_ERR(hcd->regs)) {
+		retval = PTR_ERR(hcd->regs);
+		goto err_put_hcd;
+	}
+
+	hcd->rsrc_start = res->start;
+	hcd->rsrc_len = resource_size(res);
+
+	sohci_p = to_spear_ohci(hcd);
+	sohci_p->clk = usbh_clk;
+
+	clk_prepare_enable(sohci_p->clk);
+
+	retval = usb_add_hcd(hcd, irq, 0);
+	if (retval == 0) {
+		device_wakeup_enable(hcd->self.controller);
+		return retval;
+	}
+
+	clk_disable_unprepare(sohci_p->clk);
+err_put_hcd:
+	usb_put_hcd(hcd);
+fail:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_err(&pdev->dev, "init fail, %d\n", retval);
 
 	return retval;
 }
 
+<<<<<<< HEAD
 static int spear_ohci_hcd_drv_remove(struct platform_device *pdev)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(pdev);
@@ -197,43 +285,128 @@ static int spear_ohci_hcd_drv_suspend(struct platform_device *dev,
 	struct usb_hcd *hcd = platform_get_drvdata(dev);
 	struct ohci_hcd	*ohci = hcd_to_ohci(hcd);
 	struct spear_ohci *ohci_p = to_spear_ohci(hcd);
+=======
+static void spear_ohci_hcd_drv_remove(struct platform_device *pdev)
+{
+	struct usb_hcd *hcd = platform_get_drvdata(pdev);
+	struct spear_ohci *sohci_p = to_spear_ohci(hcd);
+
+	usb_remove_hcd(hcd);
+	if (sohci_p->clk)
+		clk_disable_unprepare(sohci_p->clk);
+
+	usb_put_hcd(hcd);
+}
+
+#if defined(CONFIG_PM)
+static int spear_ohci_hcd_drv_suspend(struct platform_device *pdev,
+		pm_message_t message)
+{
+	struct usb_hcd *hcd = platform_get_drvdata(pdev);
+	struct ohci_hcd	*ohci = hcd_to_ohci(hcd);
+	struct spear_ohci *sohci_p = to_spear_ohci(hcd);
+	bool do_wakeup = device_may_wakeup(&pdev->dev);
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (time_before(jiffies, ohci->next_statechange))
 		msleep(5);
 	ohci->next_statechange = jiffies;
 
+<<<<<<< HEAD
 	spear_stop_ohci(ohci_p);
 	return 0;
+=======
+	ret = ohci_suspend(hcd, do_wakeup);
+	if (ret)
+		return ret;
+
+	clk_disable_unprepare(sohci_p->clk);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int spear_ohci_hcd_drv_resume(struct platform_device *dev)
 {
 	struct usb_hcd *hcd = platform_get_drvdata(dev);
 	struct ohci_hcd	*ohci = hcd_to_ohci(hcd);
+<<<<<<< HEAD
 	struct spear_ohci *ohci_p = to_spear_ohci(hcd);
+=======
+	struct spear_ohci *sohci_p = to_spear_ohci(hcd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (time_before(jiffies, ohci->next_statechange))
 		msleep(5);
 	ohci->next_statechange = jiffies;
 
+<<<<<<< HEAD
 	spear_start_ohci(ohci_p);
 	ohci_finish_controller_resume(hcd);
+=======
+	clk_prepare_enable(sohci_p->clk);
+	ohci_resume(hcd, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 #endif
 
+<<<<<<< HEAD
 /* Driver definition to register with the platform bus */
 static struct platform_driver spear_ohci_hcd_driver = {
 	.probe =	spear_ohci_hcd_drv_probe,
 	.remove =	spear_ohci_hcd_drv_remove,
+=======
+static const struct of_device_id spear_ohci_id_table[] = {
+	{ .compatible = "st,spear600-ohci", },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, spear_ohci_id_table);
+
+/* Driver definition to register with the platform bus */
+static struct platform_driver spear_ohci_hcd_driver = {
+	.probe =	spear_ohci_hcd_drv_probe,
+	.remove_new =	spear_ohci_hcd_drv_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend =	spear_ohci_hcd_drv_suspend,
 	.resume =	spear_ohci_hcd_drv_resume,
 #endif
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.name = "spear-ohci",
 	},
 };
 
+=======
+		.name = "spear-ohci",
+		.of_match_table = spear_ohci_id_table,
+	},
+};
+
+static const struct ohci_driver_overrides spear_overrides __initconst = {
+	.extra_priv_size = sizeof(struct spear_ohci),
+};
+static int __init ohci_spear_init(void)
+{
+	if (usb_disabled())
+		return -ENODEV;
+
+	ohci_init_driver(&ohci_spear_hc_driver, &spear_overrides);
+	return platform_driver_register(&spear_ohci_hcd_driver);
+}
+module_init(ohci_spear_init);
+
+static void __exit ohci_spear_cleanup(void)
+{
+	platform_driver_unregister(&spear_ohci_hcd_driver);
+}
+module_exit(ohci_spear_cleanup);
+
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_AUTHOR("Deepak Sikri");
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:spear-ohci");

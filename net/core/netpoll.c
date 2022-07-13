@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Common framework for low-level network console, dump, and debugger code
  *
@@ -12,6 +16,10 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/moduleparam.h>
+<<<<<<< HEAD
+=======
+#include <linux/kernel.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/string.h>
@@ -26,10 +34,22 @@
 #include <linux/workqueue.h>
 #include <linux/slab.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <net/tcp.h>
 #include <net/udp.h>
 #include <asm/unaligned.h>
 #include <trace/events/napi.h>
+=======
+#include <linux/if_vlan.h>
+#include <net/tcp.h>
+#include <net/udp.h>
+#include <net/addrconf.h>
+#include <net/ndisc.h>
+#include <net/ip6_checksum.h>
+#include <asm/unaligned.h>
+#include <trace/events/napi.h>
+#include <linux/kconfig.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We maintain a small pool of fully-sized skbs, to make sure the
@@ -41,11 +61,17 @@
 
 static struct sk_buff_head skb_pool;
 
+<<<<<<< HEAD
 static atomic_t trapped;
 
 #define USEC_PER_POLL	50
 #define NETPOLL_RX_ENABLED  1
 #define NETPOLL_RX_DROP     2
+=======
+DEFINE_STATIC_SRCU(netpoll_srcu);
+
+#define USEC_PER_POLL	50
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_SKB_SIZE							\
 	(sizeof(struct ethhdr) +					\
@@ -54,7 +80,10 @@ static atomic_t trapped;
 	 MAX_UDP_CHUNK)
 
 static void zap_completion_queue(void);
+<<<<<<< HEAD
 static void arp_reply(struct sk_buff *skb);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int carrier_timeout = 4;
 module_param(carrier_timeout, uint, 0644);
@@ -66,6 +95,36 @@ module_param(carrier_timeout, uint, 0644);
 #define np_notice(np, fmt, ...)				\
 	pr_notice("%s: " fmt, np->name, ##__VA_ARGS__)
 
+<<<<<<< HEAD
+=======
+static netdev_tx_t netpoll_start_xmit(struct sk_buff *skb,
+				      struct net_device *dev,
+				      struct netdev_queue *txq)
+{
+	netdev_tx_t status = NETDEV_TX_OK;
+	netdev_features_t features;
+
+	features = netif_skb_features(skb);
+
+	if (skb_vlan_tag_present(skb) &&
+	    !vlan_hw_offload_capable(features, skb->vlan_proto)) {
+		skb = __vlan_hwaccel_push_inside(skb);
+		if (unlikely(!skb)) {
+			/* This is actually a packet drop, but we
+			 * don't want the code that calls this
+			 * function to try and operate on a NULL skb.
+			 */
+			goto out;
+		}
+	}
+
+	status = netdev_start_xmit(skb, dev, txq, false);
+
+out:
+	return status;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void queue_process(struct work_struct *work)
 {
 	struct netpoll_info *npinfo =
@@ -75,6 +134,7 @@ static void queue_process(struct work_struct *work)
 
 	while ((skb = skb_dequeue(&npinfo->txq))) {
 		struct net_device *dev = skb->dev;
+<<<<<<< HEAD
 		const struct net_device_ops *ops = dev->netdev_ops;
 		struct netdev_queue *txq;
 
@@ -91,16 +151,44 @@ static void queue_process(struct work_struct *work)
 		    ops->ndo_start_xmit(skb, dev) != NETDEV_TX_OK) {
 			skb_queue_head(&npinfo->txq, skb);
 			__netif_tx_unlock(txq);
+=======
+		struct netdev_queue *txq;
+		unsigned int q_index;
+
+		if (!netif_device_present(dev) || !netif_running(dev)) {
+			kfree_skb(skb);
+			continue;
+		}
+
+		local_irq_save(flags);
+		/* check if skb->queue_mapping is still valid */
+		q_index = skb_get_queue_mapping(skb);
+		if (unlikely(q_index >= dev->real_num_tx_queues)) {
+			q_index = q_index % dev->real_num_tx_queues;
+			skb_set_queue_mapping(skb, q_index);
+		}
+		txq = netdev_get_tx_queue(dev, q_index);
+		HARD_TX_LOCK(dev, txq, smp_processor_id());
+		if (netif_xmit_frozen_or_stopped(txq) ||
+		    !dev_xmit_complete(netpoll_start_xmit(skb, dev, txq))) {
+			skb_queue_head(&npinfo->txq, skb);
+			HARD_TX_UNLOCK(dev, txq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			local_irq_restore(flags);
 
 			schedule_delayed_work(&npinfo->tx_work, HZ/10);
 			return;
 		}
+<<<<<<< HEAD
 		__netif_tx_unlock(txq);
+=======
+		HARD_TX_UNLOCK(dev, txq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		local_irq_restore(flags);
 	}
 }
 
+<<<<<<< HEAD
 static __sum16 checksum_udp(struct sk_buff *skb, struct udphdr *uh,
 			    unsigned short ulen, __be32 saddr, __be32 daddr)
 {
@@ -160,11 +248,47 @@ static int poll_one_napi(struct netpoll_info *npinfo,
 	npinfo->rx_flags &= ~NETPOLL_RX_DROP;
 
 	return budget - work;
+=======
+static int netif_local_xmit_active(struct net_device *dev)
+{
+	int i;
+
+	for (i = 0; i < dev->num_tx_queues; i++) {
+		struct netdev_queue *txq = netdev_get_tx_queue(dev, i);
+
+		if (READ_ONCE(txq->xmit_lock_owner) == smp_processor_id())
+			return 1;
+	}
+
+	return 0;
+}
+
+static void poll_one_napi(struct napi_struct *napi)
+{
+	int work;
+
+	/* If we set this bit but see that it has already been set,
+	 * that indicates that napi has been disabled and we need
+	 * to abort this operation
+	 */
+	if (test_and_set_bit(NAPI_STATE_NPSVC, &napi->state))
+		return;
+
+	/* We explicilty pass the polling call a budget of 0 to
+	 * indicate that we are clearing the Tx path only.
+	 */
+	work = napi->poll(napi, 0);
+	WARN_ONCE(work, "%pS exceeded budget in poll\n", napi->poll);
+	trace_napi_poll(napi, work, 0);
+
+	clear_bit(NAPI_STATE_NPSVC, &napi->state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void poll_napi(struct net_device *dev)
 {
 	struct napi_struct *napi;
+<<<<<<< HEAD
 	int budget = 16;
 
 	list_for_each_entry(napi, &dev->napi_list, dev_list) {
@@ -175,10 +299,19 @@ static void poll_napi(struct net_device *dev)
 
 			if (!budget)
 				break;
+=======
+	int cpu = smp_processor_id();
+
+	list_for_each_entry_rcu(napi, &dev->napi_list, dev_list) {
+		if (cmpxchg(&napi->poll_owner, -1, cpu) == -1) {
+			poll_one_napi(napi);
+			smp_store_release(&napi->poll_owner, -1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
+<<<<<<< HEAD
 static void service_arp_queue(struct netpoll_info *npi)
 {
 	if (npi) {
@@ -220,6 +353,63 @@ static void netpoll_poll_dev(struct net_device *dev)
 
 	zap_completion_queue();
 }
+=======
+void netpoll_poll_dev(struct net_device *dev)
+{
+	struct netpoll_info *ni = rcu_dereference_bh(dev->npinfo);
+	const struct net_device_ops *ops;
+
+	/* Don't do any rx activity if the dev_lock mutex is held
+	 * the dev_open/close paths use this to block netpoll activity
+	 * while changing device state
+	 */
+	if (!ni || down_trylock(&ni->dev_lock))
+		return;
+
+	/* Some drivers will take the same locks in poll and xmit,
+	 * we can't poll if local CPU is already in xmit.
+	 */
+	if (!netif_running(dev) || netif_local_xmit_active(dev)) {
+		up(&ni->dev_lock);
+		return;
+	}
+
+	ops = dev->netdev_ops;
+	if (ops->ndo_poll_controller)
+		ops->ndo_poll_controller(dev);
+
+	poll_napi(dev);
+
+	up(&ni->dev_lock);
+
+	zap_completion_queue();
+}
+EXPORT_SYMBOL(netpoll_poll_dev);
+
+void netpoll_poll_disable(struct net_device *dev)
+{
+	struct netpoll_info *ni;
+	int idx;
+	might_sleep();
+	idx = srcu_read_lock(&netpoll_srcu);
+	ni = srcu_dereference(dev->npinfo, &netpoll_srcu);
+	if (ni)
+		down(&ni->dev_lock);
+	srcu_read_unlock(&netpoll_srcu, idx);
+}
+EXPORT_SYMBOL(netpoll_poll_disable);
+
+void netpoll_poll_enable(struct net_device *dev)
+{
+	struct netpoll_info *ni;
+	rcu_read_lock();
+	ni = rcu_dereference(dev->npinfo);
+	if (ni)
+		up(&ni->dev_lock);
+	rcu_read_unlock();
+}
+EXPORT_SYMBOL(netpoll_poll_enable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void refill_skbs(void)
 {
@@ -253,8 +443,13 @@ static void zap_completion_queue(void)
 		while (clist != NULL) {
 			struct sk_buff *skb = clist;
 			clist = clist->next;
+<<<<<<< HEAD
 			if (skb->destructor) {
 				atomic_inc(&skb->users);
+=======
+			if (!skb_irq_freeable(skb)) {
+				refcount_set(&skb->users, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_kfree_skb_any(skb); /* put this one back */
 			} else {
 				__kfree_skb(skb);
@@ -286,7 +481,11 @@ repeat:
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	atomic_set(&skb->users, 1);
+=======
+	refcount_set(&skb->users, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_reserve(skb, reserve);
 	return skb;
 }
@@ -295,13 +494,18 @@ static int netpoll_owner_active(struct net_device *dev)
 {
 	struct napi_struct *napi;
 
+<<<<<<< HEAD
 	list_for_each_entry(napi, &dev->napi_list, dev_list) {
+=======
+	list_for_each_entry_rcu(napi, &dev->napi_list, dev_list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (napi->poll_owner == smp_processor_id())
 			return 1;
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 void netpoll_send_skb_on_dev(struct netpoll *np, struct sk_buff *skb,
 			     struct net_device *dev)
 {
@@ -314,11 +518,31 @@ void netpoll_send_skb_on_dev(struct netpoll *np, struct sk_buff *skb,
 	if (!npinfo || !netif_running(dev) || !netif_device_present(dev)) {
 		__kfree_skb(skb);
 		return;
+=======
+/* call with IRQ disabled */
+static netdev_tx_t __netpoll_send_skb(struct netpoll *np, struct sk_buff *skb)
+{
+	netdev_tx_t status = NETDEV_TX_BUSY;
+	struct net_device *dev;
+	unsigned long tries;
+	/* It is up to the caller to keep npinfo alive. */
+	struct netpoll_info *npinfo;
+
+	lockdep_assert_irqs_disabled();
+
+	dev = np->dev;
+	npinfo = rcu_dereference_bh(dev->npinfo);
+
+	if (!npinfo || !netif_running(dev) || !netif_device_present(dev)) {
+		dev_kfree_skb_irq(skb);
+		return NET_XMIT_DROP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* don't get messages out of order, and no recursion */
 	if (skb_queue_len(&npinfo->txq) == 0 && !netpoll_owner_active(dev)) {
 		struct netdev_queue *txq;
+<<<<<<< HEAD
 		unsigned long flags;
 
 		txq = netdev_get_tx_queue(dev, skb_get_queue_mapping(skb));
@@ -336,6 +560,21 @@ void netpoll_send_skb_on_dev(struct netpoll *np, struct sk_buff *skb,
 				__netif_tx_unlock(txq);
 
 				if (status == NETDEV_TX_OK)
+=======
+
+		txq = netdev_core_pick_tx(dev, skb, NULL);
+
+		/* try until next clock tick */
+		for (tries = jiffies_to_usecs(1)/USEC_PER_POLL;
+		     tries > 0; --tries) {
+			if (HARD_TX_TRYLOCK(dev, txq)) {
+				if (!netif_xmit_stopped(txq))
+					status = netpoll_start_xmit(skb, dev, txq);
+
+				HARD_TX_UNLOCK(dev, txq);
+
+				if (dev_xmit_complete(status))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 
 			}
@@ -347,6 +586,7 @@ void netpoll_send_skb_on_dev(struct netpoll *np, struct sk_buff *skb,
 		}
 
 		WARN_ONCE(!irqs_disabled(),
+<<<<<<< HEAD
 			"netpoll_send_skb(): %s enabled interrupts in poll (%pF)\n",
 			dev->name, ops->ndo_start_xmit);
 
@@ -359,6 +599,36 @@ void netpoll_send_skb_on_dev(struct netpoll *np, struct sk_buff *skb,
 	}
 }
 EXPORT_SYMBOL(netpoll_send_skb_on_dev);
+=======
+			"netpoll_send_skb_on_dev(): %s enabled interrupts in poll (%pS)\n",
+			dev->name, dev->netdev_ops->ndo_start_xmit);
+
+	}
+
+	if (!dev_xmit_complete(status)) {
+		skb_queue_tail(&npinfo->txq, skb);
+		schedule_delayed_work(&npinfo->tx_work,0);
+	}
+	return NETDEV_TX_OK;
+}
+
+netdev_tx_t netpoll_send_skb(struct netpoll *np, struct sk_buff *skb)
+{
+	unsigned long flags;
+	netdev_tx_t ret;
+
+	if (unlikely(!np)) {
+		dev_kfree_skb_irq(skb);
+		ret = NET_XMIT_DROP;
+	} else {
+		local_irq_save(flags);
+		ret = __netpoll_send_skb(np, skb);
+		local_irq_restore(flags);
+	}
+	return ret;
+}
+EXPORT_SYMBOL(netpoll_send_skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void netpoll_send_udp(struct netpoll *np, const char *msg, int len)
 {
@@ -367,9 +637,24 @@ void netpoll_send_udp(struct netpoll *np, const char *msg, int len)
 	struct udphdr *udph;
 	struct iphdr *iph;
 	struct ethhdr *eth;
+<<<<<<< HEAD
 
 	udp_len = len + sizeof(*udph);
 	ip_len = udp_len + sizeof(*iph);
+=======
+	static atomic_t ip_ident;
+	struct ipv6hdr *ip6h;
+
+	if (!IS_ENABLED(CONFIG_PREEMPT_RT))
+		WARN_ON_ONCE(!irqs_disabled());
+
+	udp_len = len + sizeof(*udph);
+	if (np->ipv6)
+		ip_len = udp_len + sizeof(*ip6h);
+	else
+		ip_len = udp_len + sizeof(*iph);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	total_len = ip_len + LL_RESERVED_SPACE(np->dev);
 
 	skb = find_skb(np, total_len + np->dev->needed_tailroom,
@@ -386,6 +671,7 @@ void netpoll_send_udp(struct netpoll *np, const char *msg, int len)
 	udph->source = htons(np->local_port);
 	udph->dest = htons(np->remote_port);
 	udph->len = htons(udp_len);
+<<<<<<< HEAD
 	udph->check = 0;
 	udph->check = csum_tcpudp_magic(np->local_ip,
 					np->remote_ip,
@@ -416,6 +702,70 @@ void netpoll_send_udp(struct netpoll *np, const char *msg, int len)
 	skb->protocol = eth->h_proto = htons(ETH_P_IP);
 	memcpy(eth->h_source, np->dev->dev_addr, ETH_ALEN);
 	memcpy(eth->h_dest, np->remote_mac, ETH_ALEN);
+=======
+
+	if (np->ipv6) {
+		udph->check = 0;
+		udph->check = csum_ipv6_magic(&np->local_ip.in6,
+					      &np->remote_ip.in6,
+					      udp_len, IPPROTO_UDP,
+					      csum_partial(udph, udp_len, 0));
+		if (udph->check == 0)
+			udph->check = CSUM_MANGLED_0;
+
+		skb_push(skb, sizeof(*ip6h));
+		skb_reset_network_header(skb);
+		ip6h = ipv6_hdr(skb);
+
+		/* ip6h->version = 6; ip6h->priority = 0; */
+		*(unsigned char *)ip6h = 0x60;
+		ip6h->flow_lbl[0] = 0;
+		ip6h->flow_lbl[1] = 0;
+		ip6h->flow_lbl[2] = 0;
+
+		ip6h->payload_len = htons(sizeof(struct udphdr) + len);
+		ip6h->nexthdr = IPPROTO_UDP;
+		ip6h->hop_limit = 32;
+		ip6h->saddr = np->local_ip.in6;
+		ip6h->daddr = np->remote_ip.in6;
+
+		eth = skb_push(skb, ETH_HLEN);
+		skb_reset_mac_header(skb);
+		skb->protocol = eth->h_proto = htons(ETH_P_IPV6);
+	} else {
+		udph->check = 0;
+		udph->check = csum_tcpudp_magic(np->local_ip.ip,
+						np->remote_ip.ip,
+						udp_len, IPPROTO_UDP,
+						csum_partial(udph, udp_len, 0));
+		if (udph->check == 0)
+			udph->check = CSUM_MANGLED_0;
+
+		skb_push(skb, sizeof(*iph));
+		skb_reset_network_header(skb);
+		iph = ip_hdr(skb);
+
+		/* iph->version = 4; iph->ihl = 5; */
+		*(unsigned char *)iph = 0x45;
+		iph->tos      = 0;
+		put_unaligned(htons(ip_len), &(iph->tot_len));
+		iph->id       = htons(atomic_inc_return(&ip_ident));
+		iph->frag_off = 0;
+		iph->ttl      = 64;
+		iph->protocol = IPPROTO_UDP;
+		iph->check    = 0;
+		put_unaligned(np->local_ip.ip, &(iph->saddr));
+		put_unaligned(np->remote_ip.ip, &(iph->daddr));
+		iph->check    = ip_fast_csum((unsigned char *)iph, iph->ihl);
+
+		eth = skb_push(skb, ETH_HLEN);
+		skb_reset_mac_header(skb);
+		skb->protocol = eth->h_proto = htons(ETH_P_IP);
+	}
+
+	ether_addr_copy(eth->h_source, np->dev->dev_addr);
+	ether_addr_copy(eth->h_dest, np->remote_mac);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb->dev = np->dev;
 
@@ -423,6 +773,7 @@ void netpoll_send_udp(struct netpoll *np, const char *msg, int len)
 }
 EXPORT_SYMBOL(netpoll_send_udp);
 
+<<<<<<< HEAD
 static void arp_reply(struct sk_buff *skb)
 {
 	struct netpoll_info *npinfo = skb->dev->npinfo;
@@ -644,28 +995,88 @@ void netpoll_print_options(struct netpoll *np)
 	np_info(np, "interface '%s'\n", np->dev_name);
 	np_info(np, "remote port %d\n", np->remote_port);
 	np_info(np, "remote IP %pI4\n", &np->remote_ip);
+=======
+void netpoll_print_options(struct netpoll *np)
+{
+	np_info(np, "local port %d\n", np->local_port);
+	if (np->ipv6)
+		np_info(np, "local IPv6 address %pI6c\n", &np->local_ip.in6);
+	else
+		np_info(np, "local IPv4 address %pI4\n", &np->local_ip.ip);
+	np_info(np, "interface '%s'\n", np->dev_name);
+	np_info(np, "remote port %d\n", np->remote_port);
+	if (np->ipv6)
+		np_info(np, "remote IPv6 address %pI6c\n", &np->remote_ip.in6);
+	else
+		np_info(np, "remote IPv4 address %pI4\n", &np->remote_ip.ip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np_info(np, "remote ethernet address %pM\n", np->remote_mac);
 }
 EXPORT_SYMBOL(netpoll_print_options);
 
+<<<<<<< HEAD
 int netpoll_parse_options(struct netpoll *np, char *opt)
 {
 	char *cur=opt, *delim;
+=======
+static int netpoll_parse_ip_addr(const char *str, union inet_addr *addr)
+{
+	const char *end;
+
+	if (!strchr(str, ':') &&
+	    in4_pton(str, -1, (void *)addr, -1, &end) > 0) {
+		if (!*end)
+			return 0;
+	}
+	if (in6_pton(str, -1, addr->in6.s6_addr, -1, &end) > 0) {
+#if IS_ENABLED(CONFIG_IPV6)
+		if (!*end)
+			return 1;
+#else
+		return -1;
+#endif
+	}
+	return -1;
+}
+
+int netpoll_parse_options(struct netpoll *np, char *opt)
+{
+	char *cur=opt, *delim;
+	int ipv6;
+	bool ipversion_set = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (*cur != '@') {
 		if ((delim = strchr(cur, '@')) == NULL)
 			goto parse_failed;
 		*delim = 0;
+<<<<<<< HEAD
 		np->local_port = simple_strtol(cur, NULL, 10);
+=======
+		if (kstrtou16(cur, 10, &np->local_port))
+			goto parse_failed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cur = delim;
 	}
 	cur++;
 
 	if (*cur != '/') {
+<<<<<<< HEAD
 		if ((delim = strchr(cur, '/')) == NULL)
 			goto parse_failed;
 		*delim = 0;
 		np->local_ip = in_aton(cur);
+=======
+		ipversion_set = true;
+		if ((delim = strchr(cur, '/')) == NULL)
+			goto parse_failed;
+		*delim = 0;
+		ipv6 = netpoll_parse_ip_addr(cur, &np->local_ip);
+		if (ipv6 < 0)
+			goto parse_failed;
+		else
+			np->ipv6 = (bool)ipv6;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cur = delim;
 	}
 	cur++;
@@ -675,7 +1086,11 @@ int netpoll_parse_options(struct netpoll *np, char *opt)
 		if ((delim = strchr(cur, ',')) == NULL)
 			goto parse_failed;
 		*delim = 0;
+<<<<<<< HEAD
 		strlcpy(np->dev_name, cur, sizeof(np->dev_name));
+=======
+		strscpy(np->dev_name, cur, sizeof(np->dev_name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cur = delim;
 	}
 	cur++;
@@ -687,7 +1102,12 @@ int netpoll_parse_options(struct netpoll *np, char *opt)
 		*delim = 0;
 		if (*cur == ' ' || *cur == '\t')
 			np_info(np, "warning: whitespace is not allowed\n");
+<<<<<<< HEAD
 		np->remote_port = simple_strtol(cur, NULL, 10);
+=======
+		if (kstrtou16(cur, 10, &np->remote_port))
+			goto parse_failed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cur = delim;
 	}
 	cur++;
@@ -696,7 +1116,17 @@ int netpoll_parse_options(struct netpoll *np, char *opt)
 	if ((delim = strchr(cur, '/')) == NULL)
 		goto parse_failed;
 	*delim = 0;
+<<<<<<< HEAD
 	np->remote_ip = in_aton(cur);
+=======
+	ipv6 = netpoll_parse_ip_addr(cur, &np->remote_ip);
+	if (ipv6 < 0)
+		goto parse_failed;
+	else if (ipversion_set && np->ipv6 != (bool)ipv6)
+		goto parse_failed;
+	else
+		np->ipv6 = (bool)ipv6;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cur = delim + 1;
 
 	if (*cur != 0) {
@@ -715,6 +1145,7 @@ int netpoll_parse_options(struct netpoll *np, char *opt)
 }
 EXPORT_SYMBOL(netpoll_parse_options);
 
+<<<<<<< HEAD
 int __netpoll_setup(struct netpoll *np)
 {
 	struct net_device *ndev = np->dev;
@@ -725,6 +1156,18 @@ int __netpoll_setup(struct netpoll *np)
 
 	if ((ndev->priv_flags & IFF_DISABLE_NETPOLL) ||
 	    !ndev->netdev_ops->ndo_poll_controller) {
+=======
+int __netpoll_setup(struct netpoll *np, struct net_device *ndev)
+{
+	struct netpoll_info *npinfo;
+	const struct net_device_ops *ops;
+	int err;
+
+	np->dev = ndev;
+	strscpy(np->dev_name, ndev->name, IFNAMSIZ);
+
+	if (ndev->priv_flags & IFF_DISABLE_NETPOLL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np_err(np, "%s doesn't support polling, aborting\n",
 		       np->dev_name);
 		err = -ENOTSUPP;
@@ -738,6 +1181,7 @@ int __netpoll_setup(struct netpoll *np)
 			goto out;
 		}
 
+<<<<<<< HEAD
 		npinfo->rx_flags = 0;
 		INIT_LIST_HEAD(&npinfo->rx_np);
 
@@ -747,6 +1191,13 @@ int __netpoll_setup(struct netpoll *np)
 		INIT_DELAYED_WORK(&npinfo->tx_work, queue_process);
 
 		atomic_set(&npinfo->refcnt, 1);
+=======
+		sema_init(&npinfo->dev_lock, 1);
+		skb_queue_head_init(&npinfo->txq);
+		INIT_DELAYED_WORK(&npinfo->tx_work, queue_process);
+
+		refcount_set(&npinfo->refcnt, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ops = np->dev->netdev_ops;
 		if (ops->ndo_netpoll_setup) {
@@ -755,12 +1206,18 @@ int __netpoll_setup(struct netpoll *np)
 				goto free_npinfo;
 		}
 	} else {
+<<<<<<< HEAD
 		npinfo = ndev->npinfo;
 		atomic_inc(&npinfo->refcnt);
+=======
+		npinfo = rtnl_dereference(ndev->npinfo);
+		refcount_inc(&npinfo->refcnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	npinfo->netpoll = np;
 
+<<<<<<< HEAD
 	if (np->rx_hook) {
 		spin_lock_irqsave(&npinfo->rx_lock, flags);
 		npinfo->rx_flags |= NETPOLL_RX_ENABLED;
@@ -768,6 +1225,8 @@ int __netpoll_setup(struct netpoll *np)
 		spin_unlock_irqrestore(&npinfo->rx_lock, flags);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* last thing to do is link it to the net device structure */
 	rcu_assign_pointer(ndev->npinfo, npinfo);
 
@@ -786,6 +1245,7 @@ int netpoll_setup(struct netpoll *np)
 	struct in_device *in_dev;
 	int err;
 
+<<<<<<< HEAD
 	if (np->dev_name)
 		ndev = dev_get_by_name(&init_net, np->dev_name);
 	if (!ndev) {
@@ -794,12 +1254,28 @@ int netpoll_setup(struct netpoll *np)
 	}
 
 	if (ndev->master) {
+=======
+	rtnl_lock();
+	if (np->dev_name[0]) {
+		struct net *net = current->nsproxy->net_ns;
+		ndev = __dev_get_by_name(net, np->dev_name);
+	}
+	if (!ndev) {
+		np_err(np, "%s doesn't exist, aborting\n", np->dev_name);
+		err = -ENODEV;
+		goto unlock;
+	}
+	netdev_hold(ndev, &np->dev_tracker, GFP_KERNEL);
+
+	if (netdev_master_upper_dev_get(ndev)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np_err(np, "%s is a slave device, aborting\n", np->dev_name);
 		err = -EBUSY;
 		goto put;
 	}
 
 	if (!netif_running(ndev)) {
+<<<<<<< HEAD
 		unsigned long atmost, atleast;
 
 		np_info(np, "device %s not up yet, forcing it\n", np->dev_name);
@@ -807,13 +1283,24 @@ int netpoll_setup(struct netpoll *np)
 		rtnl_lock();
 		err = dev_open(ndev);
 		rtnl_unlock();
+=======
+		unsigned long atmost;
+
+		np_info(np, "device %s not up yet, forcing it\n", np->dev_name);
+
+		err = dev_open(ndev, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (err) {
 			np_err(np, "failed to open %s\n", ndev->name);
 			goto put;
 		}
 
+<<<<<<< HEAD
 		atleast = jiffies + HZ/10;
+=======
+		rtnl_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atmost = jiffies + carrier_timeout * HZ;
 		while (!netif_carrier_ok(ndev)) {
 			if (time_after(jiffies, atmost)) {
@@ -823,6 +1310,7 @@ int netpoll_setup(struct netpoll *np)
 			msleep(1);
 		}
 
+<<<<<<< HEAD
 		/* If carrier appears to come up instantly, we don't
 		 * trust it and pause so that we don't pump all our
 		 * queued console messages into the bitbucket.
@@ -867,6 +1355,78 @@ int netpoll_setup(struct netpoll *np)
 
 put:
 	dev_put(ndev);
+=======
+		rtnl_lock();
+	}
+
+	if (!np->local_ip.ip) {
+		if (!np->ipv6) {
+			const struct in_ifaddr *ifa;
+
+			in_dev = __in_dev_get_rtnl(ndev);
+			if (!in_dev)
+				goto put_noaddr;
+
+			ifa = rtnl_dereference(in_dev->ifa_list);
+			if (!ifa) {
+put_noaddr:
+				np_err(np, "no IP address for %s, aborting\n",
+				       np->dev_name);
+				err = -EDESTADDRREQ;
+				goto put;
+			}
+
+			np->local_ip.ip = ifa->ifa_local;
+			np_info(np, "local IP %pI4\n", &np->local_ip.ip);
+		} else {
+#if IS_ENABLED(CONFIG_IPV6)
+			struct inet6_dev *idev;
+
+			err = -EDESTADDRREQ;
+			idev = __in6_dev_get(ndev);
+			if (idev) {
+				struct inet6_ifaddr *ifp;
+
+				read_lock_bh(&idev->lock);
+				list_for_each_entry(ifp, &idev->addr_list, if_list) {
+					if (!!(ipv6_addr_type(&ifp->addr) & IPV6_ADDR_LINKLOCAL) !=
+					    !!(ipv6_addr_type(&np->remote_ip.in6) & IPV6_ADDR_LINKLOCAL))
+						continue;
+					np->local_ip.in6 = ifp->addr;
+					err = 0;
+					break;
+				}
+				read_unlock_bh(&idev->lock);
+			}
+			if (err) {
+				np_err(np, "no IPv6 address for %s, aborting\n",
+				       np->dev_name);
+				goto put;
+			} else
+				np_info(np, "local IPv6 %pI6c\n", &np->local_ip.in6);
+#else
+			np_err(np, "IPv6 is not supported %s, aborting\n",
+			       np->dev_name);
+			err = -EINVAL;
+			goto put;
+#endif
+		}
+	}
+
+	/* fill up the skb queue */
+	refill_skbs();
+
+	err = __netpoll_setup(np, ndev);
+	if (err)
+		goto put;
+	rtnl_unlock();
+	return 0;
+
+put:
+	netdev_put(ndev, &np->dev_tracker);
+unlock:
+	rtnl_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL(netpoll_setup);
@@ -878,6 +1438,7 @@ static int __init netpoll_init(void)
 }
 core_initcall(netpoll_init);
 
+<<<<<<< HEAD
 void __netpoll_cleanup(struct netpoll *np)
 {
 	struct netpoll_info *npinfo;
@@ -896,6 +1457,36 @@ void __netpoll_cleanup(struct netpoll *np)
 	}
 
 	if (atomic_dec_and_test(&npinfo->refcnt)) {
+=======
+static void rcu_cleanup_netpoll_info(struct rcu_head *rcu_head)
+{
+	struct netpoll_info *npinfo =
+			container_of(rcu_head, struct netpoll_info, rcu);
+
+	skb_queue_purge(&npinfo->txq);
+
+	/* we can't call cancel_delayed_work_sync here, as we are in softirq */
+	cancel_delayed_work(&npinfo->tx_work);
+
+	/* clean after last, unfinished work */
+	__skb_queue_purge(&npinfo->txq);
+	/* now cancel it again */
+	cancel_delayed_work(&npinfo->tx_work);
+	kfree(npinfo);
+}
+
+void __netpoll_cleanup(struct netpoll *np)
+{
+	struct netpoll_info *npinfo;
+
+	npinfo = rtnl_dereference(np->dev->npinfo);
+	if (!npinfo)
+		return;
+
+	synchronize_srcu(&netpoll_srcu);
+
+	if (refcount_dec_and_test(&npinfo->refcnt)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const struct net_device_ops *ops;
 
 		ops = np->dev->netdev_ops;
@@ -903,6 +1494,7 @@ void __netpoll_cleanup(struct netpoll *np)
 			ops->ndo_netpoll_cleanup(np->dev);
 
 		RCU_INIT_POINTER(np->dev->npinfo, NULL);
+<<<<<<< HEAD
 
 		/* avoid racing with NAPI reading npinfo */
 		synchronize_rcu_bh();
@@ -918,18 +1510,42 @@ void __netpoll_cleanup(struct netpoll *np)
 }
 EXPORT_SYMBOL_GPL(__netpoll_cleanup);
 
+=======
+		call_rcu(&npinfo->rcu, rcu_cleanup_netpoll_info);
+	} else
+		RCU_INIT_POINTER(np->dev->npinfo, NULL);
+}
+EXPORT_SYMBOL_GPL(__netpoll_cleanup);
+
+void __netpoll_free(struct netpoll *np)
+{
+	ASSERT_RTNL();
+
+	/* Wait for transmitting packets to finish before freeing. */
+	synchronize_rcu();
+	__netpoll_cleanup(np);
+	kfree(np);
+}
+EXPORT_SYMBOL_GPL(__netpoll_free);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void netpoll_cleanup(struct netpoll *np)
 {
 	rtnl_lock();
 	if (!np->dev)
 		goto out;
 	__netpoll_cleanup(np);
+<<<<<<< HEAD
 	dev_put(np->dev);
+=======
+	netdev_put(np->dev, &np->dev_tracker);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np->dev = NULL;
 out:
 	rtnl_unlock();
 }
 EXPORT_SYMBOL(netpoll_cleanup);
+<<<<<<< HEAD
 
 int netpoll_trap(void)
 {
@@ -945,3 +1561,5 @@ void netpoll_set_trap(int trap)
 		atomic_dec(&trapped);
 }
 EXPORT_SYMBOL(netpoll_set_trap);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

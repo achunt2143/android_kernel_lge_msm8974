@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _PPC_BOOT_PAGE_H
 #define _PPC_BOOT_PAGE_H
 /*
  * Copyright (C) 2001 PPC64 Team, IBM Corp
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifdef __ASSEMBLY__
@@ -22,8 +29,13 @@
 #define PAGE_MASK	(~(PAGE_SIZE-1))
 
 /* align addr on a size boundary - adjust address up/down if needed */
+<<<<<<< HEAD
 #define _ALIGN_UP(addr,size)	(((addr)+((size)-1))&(~((size)-1)))
 #define _ALIGN_DOWN(addr,size)	((addr)&(~((size)-1)))
+=======
+#define _ALIGN_UP(addr, size)	(((addr)+((size)-1))&(~((typeof(addr))(size)-1)))
+#define _ALIGN_DOWN(addr, size)	((addr)&(~((typeof(addr))(size)-1)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* align addr on a size boundary - adjust address up if needed */
 #define _ALIGN(addr,size)     _ALIGN_UP(addr,size)

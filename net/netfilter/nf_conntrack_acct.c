@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Accouting handling for netfilter. */
 
 /*
@@ -8,6 +9,17 @@
  * published by the Free Software Foundation.
  */
 
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/* Accounting handling for netfilter. */
+
+/*
+ * (C) 2008 Krzysztof Piotr Oledzki <ole@ans.pl>
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netfilter.h>
 #include <linux/slab.h>
 #include <linux/kernel.h>
@@ -23,6 +35,7 @@ static bool nf_ct_acct __read_mostly;
 module_param_named(acct, nf_ct_acct, bool, 0644);
 MODULE_PARM_DESC(acct, "Enable connection tracking flow accounting.");
 
+<<<<<<< HEAD
 #ifdef CONFIG_SYSCTL
 static struct ctl_table acct_sysctl_table[] = {
 	{
@@ -134,4 +147,9 @@ void nf_conntrack_acct_fini(struct net *net)
 	nf_conntrack_acct_fini_sysctl(net);
 	if (net_eq(net, &init_net))
 		nf_ct_extend_unregister(&acct_extend);
+=======
+void nf_conntrack_acct_pernet_init(struct net *net)
+{
+	net->ct.sysctl_acct = nf_ct_acct;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

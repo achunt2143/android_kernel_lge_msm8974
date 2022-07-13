@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	nv_tco 0.01:	TCO timer driver for NV chipsets
  *
@@ -6,12 +10,16 @@
  *	Based off i8xx_tco.c:
  *	(c) Copyright 2000 kernel concepts <nils@kernelconcepts.de>, All Rights
  *	Reserved.
+<<<<<<< HEAD
  *				http://www.kernelconcepts.de
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
+=======
+ *				https://www.kernelconcepts.de
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	TCO timer driver for NV chipsets
  *	based on softdog.c by Alan Cox <alan@redhat.com>
@@ -161,7 +169,11 @@ static int nv_tco_open(struct inode *inode, struct file *file)
 	/* Reload and activate timer */
 	tco_timer_keepalive();
 	tco_timer_start();
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int nv_tco_release(struct inode *inode, struct file *file)
@@ -254,7 +266,11 @@ static long nv_tco_ioctl(struct file *file, unsigned int cmd,
 		if (tco_timer_set_heartbeat(new_heartbeat))
 			return -EINVAL;
 		tco_timer_keepalive();
+<<<<<<< HEAD
 		/* Fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		return put_user(heartbeat, p);
 	default:
@@ -271,6 +287,10 @@ static const struct file_operations nv_tco_fops = {
 	.llseek =		no_llseek,
 	.write =		nv_tco_write,
 	.unlocked_ioctl =	nv_tco_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl =		compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =			nv_tco_open,
 	.release =		nv_tco_release,
 };
@@ -289,11 +309,22 @@ static struct miscdevice nv_tco_miscdev = {
  * register a pci_driver, because someone else might one day
  * want to register another driver on the same PCI id.
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(tco_pci_tbl) = {
+=======
+static const struct pci_device_id tco_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_NFORCE_MCP51_SMBUS,
 	  PCI_ANY_ID, PCI_ANY_ID, },
 	{ PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_NFORCE_MCP55_SMBUS,
 	  PCI_ANY_ID, PCI_ANY_ID, },
+<<<<<<< HEAD
+=======
+	{ PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_NFORCE_MCP78S_SMBUS,
+	  PCI_ANY_ID, PCI_ANY_ID, },
+	{ PCI_VENDOR_ID_NVIDIA, PCI_DEVICE_ID_NVIDIA_NFORCE_MCP79_SMBUS,
+	  PCI_ANY_ID, PCI_ANY_ID, },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, },			/* End of list */
 };
 MODULE_DEVICE_TABLE(pci, tco_pci_tbl);
@@ -302,7 +333,11 @@ MODULE_DEVICE_TABLE(pci, tco_pci_tbl);
  *	Init & exit routines
  */
 
+<<<<<<< HEAD
 static unsigned char __devinit nv_tco_getdevice(void)
+=======
+static unsigned char nv_tco_getdevice(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *dev = NULL;
 	u32 val;
@@ -376,7 +411,11 @@ out:
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit nv_tco_init(struct platform_device *dev)
+=======
+static int nv_tco_init(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -423,7 +462,11 @@ unreg_region:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __devexit nv_tco_cleanup(void)
+=======
+static void nv_tco_cleanup(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 val;
 
@@ -445,12 +488,19 @@ static void __devexit nv_tco_cleanup(void)
 	release_region(tcobase, 0x10);
 }
 
+<<<<<<< HEAD
 static int __devexit nv_tco_remove(struct platform_device *dev)
 {
 	if (tcobase)
 		nv_tco_cleanup();
 
 	return 0;
+=======
+static void nv_tco_remove(struct platform_device *dev)
+{
+	if (tcobase)
+		nv_tco_cleanup();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nv_tco_shutdown(struct platform_device *dev)
@@ -468,10 +518,16 @@ static void nv_tco_shutdown(struct platform_device *dev)
 
 static struct platform_driver nv_tco_driver = {
 	.probe		= nv_tco_init,
+<<<<<<< HEAD
 	.remove		= __devexit_p(nv_tco_remove),
 	.shutdown	= nv_tco_shutdown,
 	.driver		= {
 		.owner	= THIS_MODULE,
+=======
+	.remove_new	= nv_tco_remove,
+	.shutdown	= nv_tco_shutdown,
+	.driver		= {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name	= TCO_MODULE_NAME,
 	},
 };
@@ -513,4 +569,7 @@ module_exit(nv_tco_cleanup_module);
 MODULE_AUTHOR("Mike Waychison");
 MODULE_DESCRIPTION("TCO timer driver for NV chipsets");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -10,6 +10,7 @@
 #
 # Copyright (C) 1995-2002 Russell King
 #
+<<<<<<< HEAD
 
 ifneq ($(MACHINE),)
 include $(srctree)/$(MACHINE)/Makefile.boot
@@ -41,6 +42,37 @@ ifeq ($(CONFIG_XIP_KERNEL),y)
 $(obj)/xipImage: vmlinux FORCE
 	$(call if_changed,objcopy)
 	@echo '  Kernel: $@ is ready (physical address: $(CONFIG_XIP_PHYS_ADDR))'
+=======
+OBJCOPYFLAGS	:=-O binary -R .comment -S
+
+#   ZRELADDR == virt_to_phys(PAGE_OFFSET + TEXT_OFFSET)
+ifdef CONFIG_PHYS_OFFSET
+add_hex = $(shell printf 0x%x $$(( $(1) + $(2) )) )
+ZRELADDR    := $(call add_hex, $(CONFIG_PHYS_OFFSET), $(TEXT_OFFSET))
+endif
+
+PHYS_OFFSET := $(CONFIG_PHYS_OFFSET)
+export ZRELADDR PARAMS_PHYS PHYS_OFFSET
+
+targets := Image zImage xipImage bootpImage uImage
+
+ifeq ($(CONFIG_XIP_KERNEL),y)
+
+cmd_deflate_xip_data = $(CONFIG_SHELL) -c \
+	'$(srctree)/$(src)/deflate_xip_data.sh $< $@'
+
+ifeq ($(CONFIG_XIP_DEFLATED_DATA),y)
+quiet_cmd_mkxip = XIPZ    $@
+cmd_mkxip = $(cmd_objcopy) && $(cmd_deflate_xip_data)
+else
+quiet_cmd_mkxip = $(quiet_cmd_objcopy)
+cmd_mkxip = $(cmd_objcopy)
+endif
+
+$(obj)/xipImage: vmlinux FORCE
+	$(call if_changed,mkxip)
+	@$(kecho) '  Physical Address of xipImage: $(CONFIG_XIP_PHYS_ADDR)'
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 $(obj)/Image $(obj)/zImage: FORCE
 	@echo 'Kernel configured for XIP (CONFIG_XIP_KERNEL=y)'
@@ -55,13 +87,17 @@ $(obj)/xipImage: FORCE
 
 $(obj)/Image: vmlinux FORCE
 	$(call if_changed,objcopy)
+<<<<<<< HEAD
 	@echo '  Kernel: $@ is ready'
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 $(obj)/compressed/vmlinux: $(obj)/Image FORCE
 	$(Q)$(MAKE) $(build)=$(obj)/compressed $@
 
 $(obj)/zImage:	$(obj)/compressed/vmlinux FORCE
 	$(call if_changed,objcopy)
+<<<<<<< HEAD
 	@echo '  Kernel: $@ is ready'
 
 $(obj)/zImage-dtb:	$(obj)/zImage $(DTB_OBJS) FORCE
@@ -80,6 +116,11 @@ $(obj)/dtbs: $(DTB_OBJS)
 
 clean-files := *.dtb
 
+=======
+
+endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ifneq ($(LOADADDR),)
   UIMAGE_LOADADDR=$(LOADADDR)
 else
@@ -91,8 +132,13 @@ else
 endif
 
 check_for_multiple_loadaddr = \
+<<<<<<< HEAD
 if [ $(words $(UIMAGE_LOADADDR)) -gt 1 ]; then \
 	echo 'multiple load addresses: $(UIMAGE_LOADADDR)'; \
+=======
+if [ $(words $(UIMAGE_LOADADDR)) -ne 1 ]; then \
+	echo 'multiple (or no) load addresses: $(UIMAGE_LOADADDR)'; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	echo 'This is incompatible with uImages'; \
 	echo 'Specify LOADADDR on the commandline to build an uImage'; \
 	false; \
@@ -101,6 +147,7 @@ fi
 $(obj)/uImage:	$(obj)/zImage FORCE
 	@$(check_for_multiple_loadaddr)
 	$(call if_changed,uimage)
+<<<<<<< HEAD
 	@echo '  Image $@ is ready'
 
 $(obj)/bootp/bootp: $(obj)/zImage initrd FORCE
@@ -139,3 +186,13 @@ i:
 	$(obj)/Image System.map "$(INSTALL_PATH)"
 
 subdir-	    := bootp compressed
+=======
+
+$(obj)/bootp/bootp: $(obj)/zImage FORCE
+	$(Q)$(MAKE) $(build)=$(obj)/bootp $@
+
+$(obj)/bootpImage: $(obj)/bootp/bootp FORCE
+	$(call if_changed,objcopy)
+
+subdir-	    := bootp compressed dts
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

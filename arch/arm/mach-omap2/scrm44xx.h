@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP44xx SCRM registers and bitfields
  *
@@ -10,10 +14,13 @@
  * with the public linux-omap@vger.kernel.org mailing list and the
  * authors above to ensure that the autogeneration scripts are kept
  * up-to-date with the file contents.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ARCH_ARM_MACH_OMAP2_SCRM_44XX_H
@@ -25,6 +32,7 @@
 		OMAP2_L4_IO_ADDRESS(OMAP4_SCRM_BASE + (reg))
 
 /* Registers offset */
+<<<<<<< HEAD
 #define OMAP4_SCRM_REVISION_SCRM_OFFSET		0x0000
 #define OMAP4_SCRM_REVISION_SCRM		OMAP44XX_SCRM_REGADDR(0x0000)
 #define OMAP4_SCRM_CLKSETUPTIME_OFFSET		0x0100
@@ -91,6 +99,9 @@
 /* REVISION_SCRM */
 #define OMAP4_REV_SHIFT				0
 #define OMAP4_REV_MASK				(0xff << 0)
+=======
+#define OMAP4_SCRM_CLKSETUPTIME			OMAP44XX_SCRM_REGADDR(0x0100)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CLKSETUPTIME */
 #define OMAP4_DOWNTIME_SHIFT			16
@@ -98,6 +109,7 @@
 #define OMAP4_SETUPTIME_SHIFT			0
 #define OMAP4_SETUPTIME_MASK			(0xfff << 0)
 
+<<<<<<< HEAD
 /* PMICSETUPTIME */
 #define OMAP4_WAKEUPTIME_SHIFT			16
 #define OMAP4_WAKEUPTIME_MASK			(0x3f << 16)
@@ -172,4 +184,6 @@
 #define OMAP4_D2DWARMRSTST_SHIFT		3
 #define OMAP4_D2DWARMRSTST_MASK			(1 << 3)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

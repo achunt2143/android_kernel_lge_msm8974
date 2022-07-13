@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * User address space access functions.
  * The non inlined parts of asm-i386/uaccess.h are here.
@@ -5,6 +9,7 @@
  * Copyright 1997 Andi Kleen <ak@muc.de>
  * Copyright 1997 Linus Torvalds
  */
+<<<<<<< HEAD
 #include <linux/mm.h>
 #include <linux/highmem.h>
 #include <linux/blkdev.h>
@@ -13,6 +18,11 @@
 #include <linux/interrupt.h>
 #include <asm/uaccess.h>
 #include <asm/mmx.h>
+=======
+#include <linux/export.h>
+#include <linux/uaccess.h>
+#include <asm/asm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_X86_INTEL_USERCOPY
 /*
@@ -41,6 +51,7 @@ do {									\
 	int __d0;							\
 	might_fault();							\
 	__asm__ __volatile__(						\
+<<<<<<< HEAD
 		"0:	rep; stosl\n"					\
 		"	movl %2,%0\n"					\
 		"1:	rep; stosb\n"					\
@@ -51,39 +62,68 @@ do {									\
 		".previous\n"						\
 		_ASM_EXTABLE(0b,3b)					\
 		_ASM_EXTABLE(1b,2b)					\
+=======
+		ASM_STAC "\n"						\
+		"0:	rep; stosl\n"					\
+		"	movl %2,%0\n"					\
+		"1:	rep; stosb\n"					\
+		"2: " ASM_CLAC "\n"					\
+		_ASM_EXTABLE_TYPE_REG(0b, 2b, EX_TYPE_UCOPY_LEN4, %2)	\
+		_ASM_EXTABLE_UA(1b, 2b)					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=&c"(size), "=&D" (__d0)				\
 		: "r"(size & 3), "0"(size / 4), "1"(addr), "a"(0));	\
 } while (0)
 
 /**
+<<<<<<< HEAD
  * clear_user: - Zero a block of memory in user space.
+=======
+ * clear_user - Zero a block of memory in user space.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @to:   Destination address, in user space.
  * @n:    Number of bytes to zero.
  *
  * Zero a block of memory in user space.
  *
+<<<<<<< HEAD
  * Returns number of bytes that could not be cleared.
+=======
+ * Return: number of bytes that could not be cleared.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * On success, this will be zero.
  */
 unsigned long
 clear_user(void __user *to, unsigned long n)
 {
 	might_fault();
+<<<<<<< HEAD
 	if (access_ok(VERIFY_WRITE, to, n))
+=======
+	if (access_ok(to, n))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__do_clear_user(to, n);
 	return n;
 }
 EXPORT_SYMBOL(clear_user);
 
 /**
+<<<<<<< HEAD
  * __clear_user: - Zero a block of memory in user space, with less checking.
+=======
+ * __clear_user - Zero a block of memory in user space, with less checking.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @to:   Destination address, in user space.
  * @n:    Number of bytes to zero.
  *
  * Zero a block of memory in user space.  Caller must check
  * the specified block with access_ok() before calling this function.
  *
+<<<<<<< HEAD
  * Returns number of bytes that could not be cleared.
+=======
+ * Return: number of bytes that could not be cleared.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * On success, this will be zero.
  */
 unsigned long
@@ -94,6 +134,7 @@ __clear_user(void __user *to, unsigned long n)
 }
 EXPORT_SYMBOL(__clear_user);
 
+<<<<<<< HEAD
 /**
  * strnlen_user: - Get the size of a string in user space.
  * @s: The string to measure.
@@ -138,6 +179,8 @@ long strnlen_user(const char __user *s, long n)
 }
 EXPORT_SYMBOL(strnlen_user);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_X86_INTEL_USERCOPY
 static unsigned long
 __copy_user_intel(void __user *to, const void *from, unsigned long size)
@@ -195,6 +238,7 @@ __copy_user_intel(void __user *to, const void *from, unsigned long size)
 		       "36:    movl %%eax, %0\n"
 		       "37:    rep; movsb\n"
 		       "100:\n"
+<<<<<<< HEAD
 		       ".section .fixup,\"ax\"\n"
 		       "101:   lea 0(%%eax,%0,4),%0\n"
 		       "       jmp 100b\n"
@@ -240,12 +284,53 @@ __copy_user_intel(void __user *to, const void *from, unsigned long size)
 		       "       .long 37b,100b\n"
 		       "       .long 99b,101b\n"
 		       ".previous"
+=======
+		       _ASM_EXTABLE_UA(1b, 100b)
+		       _ASM_EXTABLE_UA(2b, 100b)
+		       _ASM_EXTABLE_UA(3b, 100b)
+		       _ASM_EXTABLE_UA(4b, 100b)
+		       _ASM_EXTABLE_UA(5b, 100b)
+		       _ASM_EXTABLE_UA(6b, 100b)
+		       _ASM_EXTABLE_UA(7b, 100b)
+		       _ASM_EXTABLE_UA(8b, 100b)
+		       _ASM_EXTABLE_UA(9b, 100b)
+		       _ASM_EXTABLE_UA(10b, 100b)
+		       _ASM_EXTABLE_UA(11b, 100b)
+		       _ASM_EXTABLE_UA(12b, 100b)
+		       _ASM_EXTABLE_UA(13b, 100b)
+		       _ASM_EXTABLE_UA(14b, 100b)
+		       _ASM_EXTABLE_UA(15b, 100b)
+		       _ASM_EXTABLE_UA(16b, 100b)
+		       _ASM_EXTABLE_UA(17b, 100b)
+		       _ASM_EXTABLE_UA(18b, 100b)
+		       _ASM_EXTABLE_UA(19b, 100b)
+		       _ASM_EXTABLE_UA(20b, 100b)
+		       _ASM_EXTABLE_UA(21b, 100b)
+		       _ASM_EXTABLE_UA(22b, 100b)
+		       _ASM_EXTABLE_UA(23b, 100b)
+		       _ASM_EXTABLE_UA(24b, 100b)
+		       _ASM_EXTABLE_UA(25b, 100b)
+		       _ASM_EXTABLE_UA(26b, 100b)
+		       _ASM_EXTABLE_UA(27b, 100b)
+		       _ASM_EXTABLE_UA(28b, 100b)
+		       _ASM_EXTABLE_UA(29b, 100b)
+		       _ASM_EXTABLE_UA(30b, 100b)
+		       _ASM_EXTABLE_UA(31b, 100b)
+		       _ASM_EXTABLE_UA(32b, 100b)
+		       _ASM_EXTABLE_UA(33b, 100b)
+		       _ASM_EXTABLE_UA(34b, 100b)
+		       _ASM_EXTABLE_UA(35b, 100b)
+		       _ASM_EXTABLE_UA(36b, 100b)
+		       _ASM_EXTABLE_UA(37b, 100b)
+		       _ASM_EXTABLE_TYPE_REG(99b, 100b, EX_TYPE_UCOPY_LEN4, %%eax)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       : "=&c"(size), "=&D" (d0), "=&S" (d1)
 		       :  "1"(to), "2"(from), "0"(size)
 		       : "eax", "edx", "memory");
 	return size;
 }
 
+<<<<<<< HEAD
 static unsigned long
 __copy_user_zeroing_intel(void *to, const void __user *from, unsigned long size)
 {
@@ -443,6 +528,8 @@ static unsigned long __copy_user_zeroing_intel_nocache(void *to,
 	return size;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long __copy_user_intel_nocache(void *to,
 				const void __user *from, unsigned long size)
 {
@@ -501,6 +588,7 @@ static unsigned long __copy_user_intel_nocache(void *to,
 	       "        movl %%eax,%0\n"
 	       "7:      rep; movsb\n"
 	       "8:\n"
+<<<<<<< HEAD
 	       ".section .fixup,\"ax\"\n"
 	       "9:      lea 0(%%eax,%0,4),%0\n"
 	       "16:     jmp 8b\n"
@@ -528,6 +616,28 @@ static unsigned long __copy_user_intel_nocache(void *to,
 	       "	.long 6b,9b\n"
 	       "        .long 7b,16b\n"
 	       ".previous"
+=======
+	       _ASM_EXTABLE_UA(0b, 8b)
+	       _ASM_EXTABLE_UA(1b, 8b)
+	       _ASM_EXTABLE_UA(2b, 8b)
+	       _ASM_EXTABLE_UA(21b, 8b)
+	       _ASM_EXTABLE_UA(3b, 8b)
+	       _ASM_EXTABLE_UA(31b, 8b)
+	       _ASM_EXTABLE_UA(4b, 8b)
+	       _ASM_EXTABLE_UA(41b, 8b)
+	       _ASM_EXTABLE_UA(10b, 8b)
+	       _ASM_EXTABLE_UA(51b, 8b)
+	       _ASM_EXTABLE_UA(11b, 8b)
+	       _ASM_EXTABLE_UA(61b, 8b)
+	       _ASM_EXTABLE_UA(12b, 8b)
+	       _ASM_EXTABLE_UA(71b, 8b)
+	       _ASM_EXTABLE_UA(13b, 8b)
+	       _ASM_EXTABLE_UA(81b, 8b)
+	       _ASM_EXTABLE_UA(14b, 8b)
+	       _ASM_EXTABLE_UA(91b, 8b)
+	       _ASM_EXTABLE_TYPE_REG(6b, 8b, EX_TYPE_UCOPY_LEN4, %%eax)
+	       _ASM_EXTABLE_UA(7b, 8b)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       : "=&c"(size), "=&D" (d0), "=&S" (d1)
 	       :  "1"(to), "2"(from), "0"(size)
 	       : "eax", "edx", "memory");
@@ -540,12 +650,17 @@ static unsigned long __copy_user_intel_nocache(void *to,
  * Leave these declared but undefined.  They should not be any references to
  * them
  */
+<<<<<<< HEAD
 unsigned long __copy_user_zeroing_intel(void *to, const void __user *from,
 					unsigned long size);
 unsigned long __copy_user_intel(void __user *to, const void *from,
 					unsigned long size);
 unsigned long __copy_user_zeroing_intel_nocache(void *to,
 				const void __user *from, unsigned long size);
+=======
+unsigned long __copy_user_intel(void __user *to, const void *from,
+					unsigned long size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_X86_INTEL_USERCOPY */
 
 /* Generic arbitrary sized copy.  */
@@ -568,6 +683,7 @@ do {									\
 		"	movl %3,%0\n"					\
 		"1:	rep; movsb\n"					\
 		"2:\n"							\
+<<<<<<< HEAD
 		".section .fixup,\"ax\"\n"				\
 		"5:	addl %3,%0\n"					\
 		"	jmp 2b\n"					\
@@ -580,11 +696,17 @@ do {									\
 		"	.long 0b,3b\n"					\
 		"	.long 1b,2b\n"					\
 		".previous"						\
+=======
+		_ASM_EXTABLE_TYPE_REG(4b, 2b, EX_TYPE_UCOPY_LEN1, %3)	\
+		_ASM_EXTABLE_TYPE_REG(0b, 2b, EX_TYPE_UCOPY_LEN4, %3)	\
+		_ASM_EXTABLE_UA(1b, 2b)					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=&c"(size), "=&D" (__d0), "=&S" (__d1), "=r"(__d2)	\
 		: "3"(size), "0"(size), "1"(to), "2"(from)		\
 		: "memory");						\
 } while (0)
 
+<<<<<<< HEAD
 #define __copy_user_zeroing(to, from, size)				\
 do {									\
 	int __d0, __d1, __d2;						\
@@ -687,10 +809,16 @@ survive:
 		return n;
 	}
 #endif
+=======
+unsigned long __copy_user_ll(void *to, const void *from, unsigned long n)
+{
+	__uaccess_begin_nospec();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (movsl_is_ok(to, from, n))
 		__copy_user(to, from, n);
 	else
 		n = __copy_user_intel(to, from, n);
+<<<<<<< HEAD
 	return n;
 }
 EXPORT_SYMBOL(__copy_to_user_ll);
@@ -732,18 +860,31 @@ unsigned long __copy_from_user_ll_nocache(void *to, const void __user *from,
 	return n;
 }
 EXPORT_SYMBOL(__copy_from_user_ll_nocache);
+=======
+	__uaccess_end();
+	return n;
+}
+EXPORT_SYMBOL(__copy_user_ll);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned long __copy_from_user_ll_nocache_nozero(void *to, const void __user *from,
 					unsigned long n)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_X86_INTEL_USERCOPY
 	if (n > 64 && cpu_has_xmm2)
+=======
+	__uaccess_begin_nospec();
+#ifdef CONFIG_X86_INTEL_USERCOPY
+	if (n > 64 && static_cpu_has(X86_FEATURE_XMM2))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		n = __copy_user_intel_nocache(to, from, n);
 	else
 		__copy_user(to, from, n);
 #else
 	__copy_user(to, from, n);
 #endif
+<<<<<<< HEAD
 	return n;
 }
 EXPORT_SYMBOL(__copy_from_user_ll_nocache_nozero);
@@ -802,3 +943,9 @@ void copy_from_user_overflow(void)
 	WARN(1, "Buffer overflow detected!\n");
 }
 EXPORT_SYMBOL(copy_from_user_overflow);
+=======
+	__uaccess_end();
+	return n;
+}
+EXPORT_SYMBOL(__copy_from_user_ll_nocache_nozero);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

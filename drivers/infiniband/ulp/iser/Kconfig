@@ -1,11 +1,22 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config INFINIBAND_ISER
 	tristate "iSCSI Extensions for RDMA (iSER)"
 	depends on SCSI && INET && INFINIBAND_ADDR_TRANS
 	select SCSI_ISCSI_ATTRS
+<<<<<<< HEAD
 	---help---
 	  Support for the iSCSI Extensions for RDMA (iSER) Protocol
           over InfiniBand. This allows you to access storage devices
           that speak iSCSI over iSER over InfiniBand.
+=======
+	help
+	  Support for the iSCSI Extensions for RDMA (iSER) Protocol
+	  over InfiniBand. This allows you to access storage devices
+	  that speak iSCSI over iSER over InfiniBand.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  The iSER protocol is defined by IETF.
 	  See <http://www.ietf.org/rfc/rfc5046.txt>

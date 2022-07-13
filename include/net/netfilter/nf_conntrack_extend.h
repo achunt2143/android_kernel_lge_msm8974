@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _NF_CONNTRACK_EXTEND_H
 #define _NF_CONNTRACK_EXTEND_H
 
@@ -7,16 +11,26 @@
 
 enum nf_ct_ext_id {
 	NF_CT_EXT_HELPER,
+<<<<<<< HEAD
 #if defined(CONFIG_NF_NAT) || defined(CONFIG_NF_NAT_MODULE)
 	NF_CT_EXT_NAT,
 #endif
+=======
+#if IS_ENABLED(CONFIG_NF_NAT)
+	NF_CT_EXT_NAT,
+#endif
+	NF_CT_EXT_SEQADJ,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NF_CT_EXT_ACCT,
 #ifdef CONFIG_NF_CONNTRACK_EVENTS
 	NF_CT_EXT_ECACHE,
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_NF_CONNTRACK_ZONES
 	NF_CT_EXT_ZONE,
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NF_CONNTRACK_TIMESTAMP
 	NF_CT_EXT_TSTAMP,
 #endif
@@ -26,6 +40,7 @@ enum nf_ct_ext_id {
 #ifdef CONFIG_NF_CONNTRACK_LABELS
 	NF_CT_EXT_LABELS,
 #endif
+<<<<<<< HEAD
 	NF_CT_EXT_NUM,
 };
 
@@ -44,6 +59,23 @@ struct nf_ct_ext {
 	u16 offset[NF_CT_EXT_NUM];
 	u16 len;
 	char data[0];
+=======
+#if IS_ENABLED(CONFIG_NETFILTER_SYNPROXY)
+	NF_CT_EXT_SYNPROXY,
+#endif
+#if IS_ENABLED(CONFIG_NET_ACT_CT)
+	NF_CT_EXT_ACT_CT,
+#endif
+	NF_CT_EXT_NUM,
+};
+
+/* Extensions: optional stuff which isn't permanently in struct. */
+struct nf_ct_ext {
+	u8 offset[NF_CT_EXT_NUM];
+	u8 len;
+	unsigned int gen_id;
+	char data[] __aligned(8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline bool __nf_ct_ext_exist(const struct nf_ct_ext *ext, u8 id)
@@ -56,6 +88,7 @@ static inline bool nf_ct_ext_exist(const struct nf_conn *ct, u8 id)
 	return (ct->ext && __nf_ct_ext_exist(ct->ext, id));
 }
 
+<<<<<<< HEAD
 static inline void *__nf_ct_ext_find(const struct nf_conn *ct, u8 id)
 {
 	if (!nf_ct_ext_exist(ct, id))
@@ -114,4 +147,30 @@ struct nf_ct_ext_type {
 
 int nf_ct_extend_register(struct nf_ct_ext_type *type);
 void nf_ct_extend_unregister(struct nf_ct_ext_type *type);
+=======
+void *__nf_ct_ext_find(const struct nf_ct_ext *ext, u8 id);
+
+static inline void *nf_ct_ext_find(const struct nf_conn *ct, u8 id)
+{
+	struct nf_ct_ext *ext = ct->ext;
+
+	if (!ext || !__nf_ct_ext_exist(ext, id))
+		return NULL;
+
+	if (unlikely(ext->gen_id))
+		return __nf_ct_ext_find(ext, id);
+
+	return (void *)ct->ext + ct->ext->offset[id];
+}
+
+/* Add this type, returns pointer to data or NULL. */
+void *nf_ct_ext_add(struct nf_conn *ct, enum nf_ct_ext_id id, gfp_t gfp);
+
+/* ext genid.  if ext->id != ext_genid, extensions cannot be used
+ * anymore unless conntrack has CONFIRMED bit set.
+ */
+extern atomic_t nf_conntrack_ext_genid;
+void nf_ct_ext_bump_genid(void);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _NF_CONNTRACK_EXTEND_H */

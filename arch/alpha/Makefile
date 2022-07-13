@@ -11,7 +11,11 @@
 NM := $(NM) -B
 
 LDFLAGS_vmlinux	:= -static -N #-relax
+<<<<<<< HEAD
 CHECKFLAGS	+= -D__alpha__ -m64
+=======
+CHECKFLAGS	+= -D__alpha__
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cflags-y	:= -pipe -mno-fp-regs -ffixed-8
 cflags-y	+= $(call cc-option, -fno-jump-tables)
 
@@ -36,11 +40,14 @@ cflags-y				+= $(cpuflags-y)
 # BWX is most important, but we don't really want any emulation ever.
 KBUILD_CFLAGS += $(cflags-y) -Wa,-mev6
 
+<<<<<<< HEAD
 head-y := arch/alpha/kernel/head.o
 
 core-y				+= arch/alpha/kernel/ arch/alpha/mm/
 core-$(CONFIG_MATHEMU)		+= arch/alpha/math-emu/
 drivers-$(CONFIG_OPROFILE)	+= arch/alpha/oprofile/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 libs-y				+= arch/alpha/lib/
 
 # export what is needed by arch/alpha/boot/Makefile
@@ -58,8 +65,13 @@ $(boot)/vmlinux.gz: vmlinux
 bootimage bootpfile bootpzfile: vmlinux
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
 
+<<<<<<< HEAD
 archclean:
 	$(Q)$(MAKE) $(clean)=$(boot)
+=======
+archheaders:
+	$(Q)$(MAKE) $(build)=arch/alpha/kernel/syscalls all
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 define archhelp
   echo '* boot		- Compressed kernel image (arch/alpha/boot/vmlinux.gz)'

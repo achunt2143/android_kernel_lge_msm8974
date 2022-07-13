@@ -11,6 +11,7 @@
 #ifndef _ASM_TYPES_H
 #define _ASM_TYPES_H
 
+<<<<<<< HEAD
 /*
  * We don't use int-l64.h for the kernel anymore but still use it for
  * userspace to avoid code changes.
@@ -43,5 +44,8 @@ typedef unsigned long phys_t;
 #endif /* __ASSEMBLY__ */
 
 #endif /* __KERNEL__ */
+=======
+#include <asm-generic/int-ll64.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_TYPES_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  *  Copyright (C) 1991, 1992  Linus Torvalds
@@ -7,6 +11,10 @@
  */
 
 .text
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/threads.h>
 #include <linux/init.h>
 #include <linux/linkage.h>
@@ -19,8 +27,17 @@
 #include <asm/setup.h>
 #include <asm/processor-flags.h>
 #include <asm/msr-index.h>
+<<<<<<< HEAD
 #include <asm/cpufeature.h>
 #include <asm/percpu.h>
+=======
+#include <asm/cpufeatures.h>
+#include <asm/percpu.h>
+#include <asm/nops.h>
+#include <asm/nospec-branch.h>
+#include <asm/bootparam.h>
+#include <asm/pgtable_32.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Physical address */
 #define pa(X) ((X) - __PAGE_OFFSET)
@@ -32,12 +49,17 @@
 #define X86		new_cpu_data+CPUINFO_x86
 #define X86_VENDOR	new_cpu_data+CPUINFO_x86_vendor
 #define X86_MODEL	new_cpu_data+CPUINFO_x86_model
+<<<<<<< HEAD
 #define X86_MASK	new_cpu_data+CPUINFO_x86_mask
+=======
+#define X86_STEPPING	new_cpu_data+CPUINFO_x86_stepping
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define X86_HARD_MATH	new_cpu_data+CPUINFO_hard_math
 #define X86_CPUID	new_cpu_data+CPUINFO_cpuid_level
 #define X86_CAPABILITY	new_cpu_data+CPUINFO_x86_capability
 #define X86_VENDOR_ID	new_cpu_data+CPUINFO_x86_vendor_id
 
+<<<<<<< HEAD
 /*
  * This is how much memory in addition to the memory covered up to
  * and including _end we need mapped initially.
@@ -65,6 +87,10 @@ LOWMEM_PAGES = (((1<<32) - __PAGE_OFFSET) >> PAGE_SHIFT)
 	
 /* Enough space to fit pagetables for the low memory linear map */
 MAPPING_BEYOND_END = PAGE_TABLE_SIZE(LOWMEM_PAGES) << PAGE_SHIFT
+=======
+
+#define SIZEOF_PTREGS 17*4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Worst-case size of the kernel mapping we need to make:
@@ -84,6 +110,7 @@ RESERVE_BRK(pagetables, INIT_MAP_SIZE)
  * can.
  */
 __HEAD
+<<<<<<< HEAD
 ENTRY(startup_32)
 	movl pa(stack_start),%ecx
 	
@@ -92,6 +119,11 @@ ENTRY(startup_32)
 	testb $(1<<6), BP_loadflags(%esi)
 	jnz 2f
 
+=======
+SYM_CODE_START(startup_32)
+	movl pa(initial_stack),%ecx
+	
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Set segments to known values.
  */
@@ -102,7 +134,10 @@ ENTRY(startup_32)
 	movl %eax,%fs
 	movl %eax,%gs
 	movl %eax,%ss
+<<<<<<< HEAD
 2:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	leal -__PAGE_OFFSET(%ecx),%esp
 
 /*
@@ -143,6 +178,7 @@ ENTRY(startup_32)
 	movl %eax, pa(olpc_ofw_pgd)
 #endif
 
+<<<<<<< HEAD
 /*
  * Initialize page tables.  This creates a PDE and a set of page
  * tables, which are located immediately beyond __brk_base.  The variable
@@ -264,6 +300,22 @@ num_subarch_entries = (. - subarch_entries) / 4
 #else
 	jmp default_entry
 #endif /* CONFIG_PARAVIRT */
+=======
+	/* Create early pagetables. */
+	call  mk_early_pgtbl_32
+
+	/* Do early initialization of the fixmap area */
+	movl $pa(initial_pg_fixmap)+PDE_IDENT_ATTR,%eax
+#ifdef  CONFIG_X86_PAE
+#define KPMDS (((-__PAGE_OFFSET) >> 30) & 3) /* Number of kernel PMDs */
+	movl %eax,pa(initial_pg_pmd+0x1000*KPMDS-8)
+#else
+	movl %eax,pa(initial_page_table+0xffc)
+#endif
+
+	jmp .Ldefault_entry
+SYM_CODE_END(startup_32)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Non-boot CPU entry point; entered from trampoline.S
@@ -273,17 +325,22 @@ num_subarch_entries = (. - subarch_entries) / 4
  * If cpu hotplug is not supported then this code can go in init section
  * which will be freed later
  */
+<<<<<<< HEAD
 
 __CPUINIT
 
 #ifdef CONFIG_SMP
 ENTRY(startup_32_smp)
+=======
+SYM_FUNC_START(startup_32_smp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cld
 	movl $(__BOOT_DS),%eax
 	movl %eax,%ds
 	movl %eax,%es
 	movl %eax,%fs
 	movl %eax,%gs
+<<<<<<< HEAD
 	movl pa(stack_start),%ecx
 	movl %eax,%ss
 	leal -__PAGE_OFFSET(%ecx),%esp
@@ -314,6 +371,56 @@ default_entry:
 
 	testb $X86_CR4_PAE, %al		# check if PAE is enabled
 	jz 6f
+=======
+	movl pa(initial_stack),%ecx
+	movl %eax,%ss
+	leal -__PAGE_OFFSET(%ecx),%esp
+
+.Ldefault_entry:
+	movl $(CR0_STATE & ~X86_CR0_PG),%eax
+	movl %eax,%cr0
+
+/*
+ * We want to start out with EFLAGS unambiguously cleared. Some BIOSes leave
+ * bits like NT set. This would confuse the debugger if this code is traced. So
+ * initialize them properly now before switching to protected mode. That means
+ * DF in particular (even though we have cleared it earlier after copying the
+ * command line) because GCC expects it.
+ */
+	pushl $0
+	popfl
+
+/*
+ * New page tables may be in 4Mbyte page mode and may be using the global pages.
+ *
+ * NOTE! If we are on a 486 we may have no cr4 at all! Specifically, cr4 exists
+ * if and only if CPUID exists and has flags other than the FPU flag set.
+ */
+	movl $-1,pa(X86_CPUID)		# preset CPUID level
+	movl $X86_EFLAGS_ID,%ecx
+	pushl %ecx
+	popfl				# set EFLAGS=ID
+	pushfl
+	popl %eax			# get EFLAGS
+	testl $X86_EFLAGS_ID,%eax	# did EFLAGS.ID remained set?
+	jz .Lenable_paging		# hw disallowed setting of ID bit
+					# which means no CPUID and no CR4
+
+	xorl %eax,%eax
+	cpuid
+	movl %eax,pa(X86_CPUID)		# save largest std CPUID function
+
+	movl $1,%eax
+	cpuid
+	andl $~1,%edx			# Ignore CPUID.FPU
+	jz .Lenable_paging		# No flags or only CPUID.FPU = no CR4
+
+	movl pa(mmu_cr4_features),%eax
+	movl %eax,%cr4
+
+	testb $X86_CR4_PAE, %al		# check if PAE is enabled
+	jz .Lenable_paging
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check if extended functions are implemented */
 	movl $0x80000000, %eax
@@ -321,7 +428,11 @@ default_entry:
 	/* Value must be in the range 0x80000001 to 0x8000ffff */
 	subl $0x80000001, %eax
 	cmpl $(0x8000ffff-0x80000001), %eax
+<<<<<<< HEAD
 	ja 6f
+=======
+	ja .Lenable_paging
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear bogus XD_DISABLE bits */
 	call verify_cpu
@@ -330,7 +441,11 @@ default_entry:
 	cpuid
 	/* Execute Disable bit supported? */
 	btl $(X86_FEATURE_NX & 31), %edx
+<<<<<<< HEAD
 	jnc 6f
+=======
+	jnc .Lenable_paging
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup EFER (Extended Feature Enable Register) */
 	movl $MSR_EFER, %ecx
@@ -340,15 +455,23 @@ default_entry:
 	/* Make changes effective */
 	wrmsr
 
+<<<<<<< HEAD
 6:
+=======
+.Lenable_paging:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Enable paging
  */
 	movl $pa(initial_page_table), %eax
 	movl %eax,%cr3		/* set the page table pointer.. */
+<<<<<<< HEAD
 	movl %cr0,%eax
 	orl  $X86_CR0_PG,%eax
+=======
+	movl $CR0_STATE,%eax
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl %eax,%cr0		/* ..and set paging (PG) bit */
 	ljmp $__BOOT_CS,$1f	/* Clear prefetch and normalize %eip */
 1:
@@ -356,6 +479,7 @@ default_entry:
 	addl $__PAGE_OFFSET, %esp
 
 /*
+<<<<<<< HEAD
  * Initialize eflags.  Some BIOS's leave bits like NT set.  This would
  * confuse the debugger if this code is traced.
  * XXX - best to initialize before switching to protected mode.
@@ -403,6 +527,13 @@ checkCPUtype:
 	movb $4,X86		# at least 486
 	testl $0x200000,%eax	# check if ID bit changed
 	je is486
+=======
+ * Check if it is 486
+ */
+	movb $4,X86			# at least 486
+	cmpl $-1,X86_CPUID
+	je .Lis486
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get vendor info */
 	xorl %eax,%eax			# call CPUID with 0 -> return vendor ID
@@ -413,7 +544,11 @@ checkCPUtype:
 	movl %ecx,X86_VENDOR_ID+8	# last 4 chars
 
 	orl %eax,%eax			# do we have processor info as well?
+<<<<<<< HEAD
 	je is486
+=======
+	je .Lis486
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	movl $1,%eax		# Use the CPUID instruction to get CPU type
 	cpuid
@@ -424,6 +559,7 @@ checkCPUtype:
 	shrb $4,%al
 	movb %al,X86_MODEL
 	andb $0x0f,%cl		# mask mask revision
+<<<<<<< HEAD
 	movb %cl,X86_MASK
 	movl %edx,X86_CAPABILITY
 
@@ -432,13 +568,25 @@ is486:	movl $0x50022,%ecx	# set AM, WP, NE and MP
 
 is386:	movl $2,%ecx		# set MP
 2:	movl %cr0,%eax
+=======
+	movb %cl,X86_STEPPING
+	movl %edx,X86_CAPABILITY
+
+.Lis486:
+	movl $0x50022,%ecx	# set AM, WP, NE and MP
+	movl %cr0,%eax
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	andl $0x80000011,%eax	# Save PG,PE,ET
 	orl %ecx,%eax
 	movl %eax,%cr0
 
+<<<<<<< HEAD
 	call check_x87
 	lgdt early_gdt_descr
 	lidt idt_descr
+=======
+	lgdt early_gdt_descr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ljmp $(__KERNEL_CS),$1f
 1:	movl $(__KERNEL_DS),%eax	# reload all the segment registers
 	movl %eax,%ss			# after changing gdt.
@@ -450,6 +598,7 @@ is386:	movl $2,%ecx		# set MP
 	movl $(__KERNEL_PERCPU), %eax
 	movl %eax,%fs			# set this cpu's percpu
 
+<<<<<<< HEAD
 #ifdef CONFIG_CC_STACKPROTECTOR
 	/*
 	 * The linker can't handle this by relocation.  Manually set
@@ -467,10 +616,15 @@ is386:	movl $2,%ecx		# set MP
 #endif
 	movl $(__KERNEL_STACK_CANARY),%eax
 	movl %eax,%gs
+=======
+	xorl %eax,%eax
+	movl %eax,%gs			# clear possible garbage in %gs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xorl %eax,%eax			# Clear LDT
 	lldt %ax
 
+<<<<<<< HEAD
 	cld			# gcc2 wants the direction flag cleared at all times
 	pushl $0		# fake return address for unwinder
 	movb $1, ready
@@ -581,6 +735,87 @@ hlt_loop:
 /* This is the default interrupt "handler" :-) */
 	ALIGN
 ignore_int:
+=======
+	call *(initial_code)
+1:	jmp 1b
+SYM_FUNC_END(startup_32_smp)
+
+#include "verify_cpu.S"
+
+__INIT
+SYM_FUNC_START(early_idt_handler_array)
+	# 36(%esp) %eflags
+	# 32(%esp) %cs
+	# 28(%esp) %eip
+	# 24(%rsp) error code
+	i = 0
+	.rept NUM_EXCEPTION_VECTORS
+	.if ((EXCEPTION_ERRCODE_MASK >> i) & 1) == 0
+	pushl $0		# Dummy error code, to make stack frame uniform
+	.endif
+	pushl $i		# 20(%esp) Vector number
+	jmp early_idt_handler_common
+	i = i + 1
+	.fill early_idt_handler_array + i*EARLY_IDT_HANDLER_SIZE - ., 1, 0xcc
+	.endr
+SYM_FUNC_END(early_idt_handler_array)
+	
+SYM_CODE_START_LOCAL(early_idt_handler_common)
+	/*
+	 * The stack is the hardware frame, an error code or zero, and the
+	 * vector number.
+	 */
+	cld
+
+	incl %ss:early_recursion_flag
+
+	/* The vector number is in pt_regs->gs */
+
+	cld
+	pushl	%fs		/* pt_regs->fs (__fsh varies by model) */
+	pushl	%es		/* pt_regs->es (__esh varies by model) */
+	pushl	%ds		/* pt_regs->ds (__dsh varies by model) */
+	pushl	%eax		/* pt_regs->ax */
+	pushl	%ebp		/* pt_regs->bp */
+	pushl	%edi		/* pt_regs->di */
+	pushl	%esi		/* pt_regs->si */
+	pushl	%edx		/* pt_regs->dx */
+	pushl	%ecx		/* pt_regs->cx */
+	pushl	%ebx		/* pt_regs->bx */
+
+	/* Fix up DS and ES */
+	movl	$(__KERNEL_DS), %ecx
+	movl	%ecx, %ds
+	movl	%ecx, %es
+
+	/* Load the vector number into EDX */
+	movl	PT_GS(%esp), %edx
+
+	/* Load GS into pt_regs->gs (and maybe clobber __gsh) */
+	movw	%gs, PT_GS(%esp)
+
+	movl	%esp, %eax	/* args are pt_regs (EAX), trapnr (EDX) */
+	call	early_fixup_exception
+
+	popl	%ebx		/* pt_regs->bx */
+	popl	%ecx		/* pt_regs->cx */
+	popl	%edx		/* pt_regs->dx */
+	popl	%esi		/* pt_regs->si */
+	popl	%edi		/* pt_regs->di */
+	popl	%ebp		/* pt_regs->bp */
+	popl	%eax		/* pt_regs->ax */
+	popl	%ds		/* pt_regs->ds (always ignores __dsh) */
+	popl	%es		/* pt_regs->es (always ignores __esh) */
+	popl	%fs		/* pt_regs->fs (always ignores __fsh) */
+	popl	%gs		/* pt_regs->gs (always ignores __gsh) */
+	decl	%ss:early_recursion_flag
+	addl	$4, %esp	/* pop pt_regs->orig_ax */
+	iret
+SYM_CODE_END(early_idt_handler_common)
+
+/* This is the default interrupt "handler" :-) */
+SYM_FUNC_START(early_ignore_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cld
 #ifdef CONFIG_PRINTK
 	pushl %eax
@@ -599,7 +834,11 @@ ignore_int:
 	pushl 32(%esp)
 	pushl 40(%esp)
 	pushl $int_msg
+<<<<<<< HEAD
 	call printk
+=======
+	call _printk
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	call dump_stack
 
@@ -612,6 +851,7 @@ ignore_int:
 #endif
 	iret
 
+<<<<<<< HEAD
 #include "verify_cpu.S"
 
 	__REFDATA
@@ -619,10 +859,33 @@ ignore_int:
 ENTRY(initial_code)
 	.long i386_start_kernel
 
+=======
+hlt_loop:
+	hlt
+	jmp hlt_loop
+SYM_FUNC_END(early_ignore_irq)
+
+__INITDATA
+	.align 4
+SYM_DATA(early_recursion_flag, .long 0)
+
+__REFDATA
+	.align 4
+SYM_DATA(initial_code,		.long i386_start_kernel)
+
+#ifdef CONFIG_MITIGATION_PAGE_TABLE_ISOLATION
+#define	PGD_ALIGN	(2 * PAGE_SIZE)
+#define PTI_USER_PGD_FILL	1024
+#else
+#define	PGD_ALIGN	(PAGE_SIZE)
+#define PTI_USER_PGD_FILL	0
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * BSS section
  */
 __PAGE_ALIGNED_BSS
+<<<<<<< HEAD
 	.align PAGE_SIZE
 #ifdef CONFIG_X86_PAE
 initial_pg_pmd:
@@ -637,6 +900,30 @@ ENTRY(empty_zero_page)
 	.fill 4096,1,0
 ENTRY(swapper_pg_dir)
 	.fill 1024,4,0
+=======
+	.align PGD_ALIGN
+#ifdef CONFIG_X86_PAE
+.globl initial_pg_pmd
+initial_pg_pmd:
+	.fill 1024*KPMDS,4,0
+#else
+.globl initial_page_table
+initial_page_table:
+	.fill 1024,4,0
+#endif
+	.align PGD_ALIGN
+initial_pg_fixmap:
+	.fill 1024,4,0
+.globl swapper_pg_dir
+	.align PGD_ALIGN
+swapper_pg_dir:
+	.fill 1024,4,0
+	.fill PTI_USER_PGD_FILL,4,0
+.globl empty_zero_page
+empty_zero_page:
+	.fill 4096,1,0
+EXPORT_SYMBOL(empty_zero_page)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This starts the data section.
@@ -644,8 +931,13 @@ ENTRY(swapper_pg_dir)
 #ifdef CONFIG_X86_PAE
 __PAGE_ALIGNED_DATA
 	/* Page-aligned for the benefit of paravirt? */
+<<<<<<< HEAD
 	.align PAGE_SIZE
 ENTRY(initial_page_table)
+=======
+	.align PGD_ALIGN
+SYM_DATA_START(initial_page_table)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	pa(initial_pg_pmd+PGD_IDENT_ATTR),0	/* low identity map */
 # if KPMDS == 3
 	.long	pa(initial_pg_pmd+PGD_IDENT_ATTR),0
@@ -663,10 +955,25 @@ ENTRY(initial_page_table)
 #  error "Kernel PMDs should be 1, 2 or 3"
 # endif
 	.align PAGE_SIZE		/* needs to be page-sized too */
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_MITIGATION_PAGE_TABLE_ISOLATION
+	/*
+	 * PTI needs another page so sync_initial_pagetable() works correctly
+	 * and does not scribble over the data which is placed behind the
+	 * actual initial_page_table. See clone_pgd_range().
+	 */
+	.fill 1024, 4, 0
+#endif
+
+SYM_DATA_END(initial_page_table)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 .data
 .balign 4
+<<<<<<< HEAD
 ENTRY(stack_start)
 	.long init_thread_union+THREAD_SIZE
 
@@ -690,6 +997,20 @@ fault_msg:
 	.ascii "       %p %p %p %p %p %p %p %p\n"
 	.asciz "       %p %p %p %p %p %p %p %p\n"
 
+=======
+/*
+ * The SIZEOF_PTREGS gap is a convention which helps the in-kernel unwinder
+ * reliably detect the end of the stack.
+ */
+SYM_DATA(initial_stack,
+		.long init_thread_union + THREAD_SIZE -
+		SIZEOF_PTREGS - TOP_OF_KERNEL_STACK_PADDING)
+
+__INITRODATA
+int_msg:
+	.asciz "Unknown interrupt or fault at: %p %p %p\n"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "../../x86/xen/xen-head.S"
 
 /*
@@ -699,6 +1020,7 @@ fault_msg:
  * segment size, and 32-bit linear address value:
  */
 
+<<<<<<< HEAD
 .globl boot_gdt_descr
 .globl idt_descr
 
@@ -719,13 +1041,38 @@ idt_descr:
 ENTRY(early_gdt_descr)
 	.word GDT_ENTRIES*8-1
 	.long gdt_page			/* Overwritten for secondary CPUs */
+=======
+	.data
+	ALIGN
+# early boot GDT descriptor (must use 1:1 address mapping)
+	.word 0				# 32 bit align gdt_desc.address
+SYM_DATA_START_LOCAL(boot_gdt_descr)
+	.word __BOOT_DS+7
+	.long boot_gdt - __PAGE_OFFSET
+SYM_DATA_END(boot_gdt_descr)
+
+# boot GDT descriptor (later on used by CPU#0):
+	.word 0				# 32 bit align gdt_desc.address
+SYM_DATA_START(early_gdt_descr)
+	.word GDT_ENTRIES*8-1
+	.long gdt_page			/* Overwritten for secondary CPUs */
+SYM_DATA_END(early_gdt_descr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The boot_gdt must mirror the equivalent in setup.S and is
  * used only for booting.
  */
 	.align L1_CACHE_BYTES
+<<<<<<< HEAD
 ENTRY(boot_gdt)
 	.fill GDT_ENTRY_BOOT_CS,8,0
 	.quad 0x00cf9a000000ffff	/* kernel 4GB code at 0x00000000 */
 	.quad 0x00cf92000000ffff	/* kernel 4GB data at 0x00000000 */
+=======
+SYM_DATA_START(boot_gdt)
+	.fill GDT_ENTRY_BOOT_CS,8,0
+	.quad 0x00cf9a000000ffff	/* kernel 4GB code at 0x00000000 */
+	.quad 0x00cf92000000ffff	/* kernel 4GB data at 0x00000000 */
+SYM_DATA_END(boot_gdt)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,12 +1,29 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Released under the GPLv2 only.
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/string.h>
 #include <linux/bitops.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/log2.h>
 #include <linux/usb.h>
 #include <linux/wait.h>
 #include <linux/usb/hcd.h>
+=======
+#include <linux/log2.h>
+#include <linux/kmsan.h>
+#include <linux/usb.h>
+#include <linux/wait.h>
+#include <linux/usb/hcd.h>
+#include <linux/scatterlist.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define to_urb(d) container_of(d, struct urb, kref)
 
@@ -40,6 +57,10 @@ void usb_init_urb(struct urb *urb)
 	if (urb) {
 		memset(urb, 0, sizeof(*urb));
 		kref_init(&urb->kref);
+<<<<<<< HEAD
+=======
+		INIT_LIST_HEAD(&urb->urb_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		INIT_LIST_HEAD(&urb->anchor_list);
 	}
 }
@@ -52,19 +73,29 @@ EXPORT_SYMBOL_GPL(usb_init_urb);
  *	valid options for this.
  *
  * Creates an urb for the USB driver to use, initializes a few internal
+<<<<<<< HEAD
  * structures, incrementes the usage counter, and returns a pointer to it.
  *
  * If no memory is available, NULL is returned.
+=======
+ * structures, increments the usage counter, and returns a pointer to it.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If the driver want to use this urb for interrupt, control, or bulk
  * endpoints, pass '0' as the number of iso packets.
  *
  * The driver must call usb_free_urb() when it is finished with the urb.
+<<<<<<< HEAD
+=======
+ *
+ * Return: A pointer to the new urb, or %NULL if no memory is available.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct urb *usb_alloc_urb(int iso_packets, gfp_t mem_flags)
 {
 	struct urb *urb;
 
+<<<<<<< HEAD
 	urb = kmalloc(sizeof(struct urb) +
 		iso_packets * sizeof(struct usb_iso_packet_descriptor),
 		mem_flags);
@@ -72,6 +103,12 @@ struct urb *usb_alloc_urb(int iso_packets, gfp_t mem_flags)
 		printk(KERN_ERR "alloc_urb: kmalloc failed\n");
 		return NULL;
 	}
+=======
+	urb = kmalloc(struct_size(urb, iso_frame_desc, iso_packets),
+		      mem_flags);
+	if (!urb)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_init_urb(urb);
 	return urb;
 }
@@ -102,7 +139,11 @@ EXPORT_SYMBOL_GPL(usb_free_urb);
  * host controller driver.  This allows proper reference counting to happen
  * for urbs.
  *
+<<<<<<< HEAD
  * A pointer to the urb with the incremented reference counter is returned.
+=======
+ * Return: A pointer to the urb with the incremented reference counter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct urb *usb_get_urb(struct urb *urb)
 {
@@ -129,21 +170,39 @@ void usb_anchor_urb(struct urb *urb, struct usb_anchor *anchor)
 	list_add_tail(&urb->anchor_list, &anchor->urb_list);
 	urb->anchor = anchor;
 
+<<<<<<< HEAD
 	if (unlikely(anchor->poisoned)) {
 		atomic_inc(&urb->reject);
 	}
+=======
+	if (unlikely(anchor->poisoned))
+		atomic_inc(&urb->reject);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&anchor->lock, flags);
 }
 EXPORT_SYMBOL_GPL(usb_anchor_urb);
 
+<<<<<<< HEAD
+=======
+static int usb_anchor_check_wakeup(struct usb_anchor *anchor)
+{
+	return atomic_read(&anchor->suspend_wakeups) == 0 &&
+		list_empty(&anchor->urb_list);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Callers must hold anchor->lock */
 static void __usb_unanchor_urb(struct urb *urb, struct usb_anchor *anchor)
 {
 	urb->anchor = NULL;
 	list_del(&urb->anchor_list);
 	usb_put_urb(urb);
+<<<<<<< HEAD
 	if (list_empty(&anchor->urb_list))
+=======
+	if (usb_anchor_check_wakeup(anchor))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up(&anchor->wait);
 }
 
@@ -179,6 +238,49 @@ EXPORT_SYMBOL_GPL(usb_unanchor_urb);
 
 /*-------------------------------------------------------------------*/
 
+<<<<<<< HEAD
+=======
+static const int pipetypes[4] = {
+	PIPE_CONTROL, PIPE_ISOCHRONOUS, PIPE_BULK, PIPE_INTERRUPT
+};
+
+/**
+ * usb_pipe_type_check - sanity check of a specific pipe for a usb device
+ * @dev: struct usb_device to be checked
+ * @pipe: pipe to check
+ *
+ * This performs a light-weight sanity check for the endpoint in the
+ * given usb device.  It returns 0 if the pipe is valid for the specific usb
+ * device, otherwise a negative error code.
+ */
+int usb_pipe_type_check(struct usb_device *dev, unsigned int pipe)
+{
+	const struct usb_host_endpoint *ep;
+
+	ep = usb_pipe_endpoint(dev, pipe);
+	if (!ep)
+		return -EINVAL;
+	if (usb_pipetype(pipe) != pipetypes[usb_endpoint_type(&ep->desc)])
+		return -EINVAL;
+	return 0;
+}
+EXPORT_SYMBOL_GPL(usb_pipe_type_check);
+
+/**
+ * usb_urb_ep_type_check - sanity check of endpoint in the given urb
+ * @urb: urb to be checked
+ *
+ * This performs a light-weight sanity check for the endpoint in the
+ * given urb.  It returns 0 if the urb contains a valid endpoint, otherwise
+ * a negative error code.
+ */
+int usb_urb_ep_type_check(const struct urb *urb)
+{
+	return usb_pipe_type_check(urb->dev, urb->pipe);
+}
+EXPORT_SYMBOL_GPL(usb_urb_ep_type_check);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * usb_submit_urb - issue an asynchronous transfer request for an endpoint
  * @urb: pointer to the urb describing the request
@@ -199,6 +301,7 @@ EXPORT_SYMBOL_GPL(usb_unanchor_urb);
  * the particular kind of transfer, although they will not initialize
  * any transfer flags.
  *
+<<<<<<< HEAD
  * Successful submissions return 0; otherwise this routine returns a
  * negative error number.  If the submission is successful, the complete()
  * callback from the URB will be called exactly once, when the USB core and
@@ -206,6 +309,14 @@ EXPORT_SYMBOL_GPL(usb_unanchor_urb);
  * function is called, control of the URB is returned to the device
  * driver which issued the request.  The completion handler may then
  * immediately free or reuse that URB.
+=======
+ * If the submission is successful, the complete() callback from the URB
+ * will be called exactly once, when the USB core and Host Controller Driver
+ * (HCD) are finished with the URB.  When the completion function is called,
+ * control of the URB is returned to the device driver which issued the
+ * request.  The completion handler may then immediately free or reuse that
+ * URB.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * With few exceptions, USB device drivers should never access URB fields
  * provided by usbcore or the HCD until its complete() is called.
@@ -214,9 +325,31 @@ EXPORT_SYMBOL_GPL(usb_unanchor_urb);
  * urb->interval is modified to reflect the actual transfer period used
  * (normally some power of two units).  And for isochronous urbs,
  * urb->start_frame is modified to reflect when the URB's transfers were
+<<<<<<< HEAD
  * scheduled to start.  Not all isochronous transfer scheduling policies
  * will work, but most host controller drivers should easily handle ISO
  * queues going from now until 10-200 msec into the future.
+=======
+ * scheduled to start.
+ *
+ * Not all isochronous transfer scheduling policies will work, but most
+ * host controller drivers should easily handle ISO queues going from now
+ * until 10-200 msec into the future.  Drivers should try to keep at
+ * least one or two msec of data in the queue; many controllers require
+ * that new transfers start at least 1 msec in the future when they are
+ * added.  If the driver is unable to keep up and the queue empties out,
+ * the behavior for new submissions is governed by the URB_ISO_ASAP flag.
+ * If the flag is set, or if the queue is idle, then the URB is always
+ * assigned to the first available (and not yet expired) slot in the
+ * endpoint's schedule.  If the flag is not set and the queue is active
+ * then the URB is always assigned to the next slot in the schedule
+ * following the end of the endpoint's previous URB, even if that slot is
+ * in the past.  When a packet is assigned in this way to a slot that has
+ * already expired, the packet is not transmitted and the corresponding
+ * usb_iso_packet_descriptor's status field will return -EXDEV.  If this
+ * would happen to all the packets in the URB, submission fails with a
+ * -EXDEV error code.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * For control endpoints, the synchronous usb_control_msg() call is
  * often used (in non-interrupt context) instead of this call.
@@ -224,6 +357,12 @@ EXPORT_SYMBOL_GPL(usb_unanchor_urb);
  * that are standardized in the USB 2.0 specification.  For bulk
  * endpoints, a synchronous usb_bulk_msg() call is available.
  *
+<<<<<<< HEAD
+=======
+ * Return:
+ * 0 on successful submissions. A negative error number otherwise.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Request Queuing:
  *
  * URBs may be submitted to endpoints before previous ones complete, to
@@ -256,7 +395,11 @@ EXPORT_SYMBOL_GPL(usb_unanchor_urb);
  *
  * Device drivers must explicitly request that repetition, by ensuring that
  * some URB is always on the endpoint's queue (except possibly for short
+<<<<<<< HEAD
  * periods during completion callacks).  When there is no longer an urb
+=======
+ * periods during completion callbacks).  When there is no longer an urb
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * queued, the endpoint's bandwidth reservation is canceled.  This means
  * drivers can use their completion handlers to ensure they keep bandwidth
  * they need, by reinitializing and resubmitting the just-completed urb
@@ -304,9 +447,21 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 	struct usb_device		*dev;
 	struct usb_host_endpoint	*ep;
 	int				is_out;
+<<<<<<< HEAD
 
 	if (!urb || urb->hcpriv || !urb->complete)
 		return -EINVAL;
+=======
+	unsigned int			allowed;
+
+	if (!urb || !urb->complete)
+		return -EINVAL;
+	if (urb->hcpriv) {
+		WARN_ONCE(1, "URB %pK submitted while active\n", urb);
+		return -EBUSY;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev = urb->dev;
 	if ((!dev) || (dev->state < USB_STATE_UNAUTHENTICATED))
 		return -ENODEV;
@@ -335,6 +490,18 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 			return -ENOEXEC;
 		is_out = !(setup->bRequestType & USB_DIR_IN) ||
 				!setup->wLength;
+<<<<<<< HEAD
+=======
+		dev_WARN_ONCE(&dev->dev, (usb_pipeout(urb->pipe) != is_out),
+				"BOGUS control dir, pipe %x doesn't match bRequestType %x\n",
+				urb->pipe, setup->bRequestType);
+		if (le16_to_cpu(setup->wLength) != urb->transfer_buffer_length) {
+			dev_dbg(&dev->dev, "BOGUS control len %d doesn't match transfer length %d\n",
+					le16_to_cpu(setup->wLength),
+					urb->transfer_buffer_length);
+			return -EBADR;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		is_out = usb_endpoint_dir_out(&ep->desc);
 	}
@@ -345,6 +512,10 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 			URB_SETUP_MAP_SINGLE | URB_SETUP_MAP_LOCAL |
 			URB_DMA_SG_COMBINED);
 	urb->transfer_flags |= (is_out ? URB_DIR_OUT : URB_DIR_IN);
+<<<<<<< HEAD
+=======
+	kmsan_handle_urb(urb, is_out);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (xfertype != USB_ENDPOINT_XFER_CONTROL &&
 			dev->state < USB_STATE_CONFIGURED)
@@ -369,13 +540,18 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 		/* SuperSpeed isoc endpoints have up to 16 bursts of up to
 		 * 3 packets each
 		 */
+<<<<<<< HEAD
 		if (dev->speed == USB_SPEED_SUPER) {
+=======
+		if (dev->speed >= USB_SPEED_SUPER) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int     burst = 1 + ep->ss_ep_comp.bMaxBurst;
 			int     mult = USB_SS_MULT(ep->ss_ep_comp.bmAttributes);
 			max *= burst;
 			max *= mult;
 		}
 
+<<<<<<< HEAD
 		/* "high bandwidth" mode, 1-3 packets/uframe? */
 		if (dev->speed == USB_SPEED_HIGH) {
 			int	mult = 1 + ((max >> 11) & 0x03);
@@ -383,6 +559,20 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 			max *= mult;
 		}
 
+=======
+		if (dev->speed == USB_SPEED_SUPER_PLUS &&
+		    USB_SS_SSP_ISOC_COMP(ep->ss_ep_comp.bmAttributes)) {
+			struct usb_ssp_isoc_ep_comp_descriptor *isoc_ep_comp;
+
+			isoc_ep_comp = &ep->ssp_isoc_ep_comp;
+			max = le32_to_cpu(isoc_ep_comp->dwBytesPerInterval);
+		}
+
+		/* "high bandwidth" mode, 1-3 packets/uframe? */
+		if (dev->speed == USB_SPEED_HIGH)
+			max *= usb_endpoint_maxp_mult(&ep->desc);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (urb->number_of_packets <= 0)
 			return -EINVAL;
 		for (n = 0; n < urb->number_of_packets; n++) {
@@ -392,12 +582,23 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 			urb->iso_frame_desc[n].status = -EXDEV;
 			urb->iso_frame_desc[n].actual_length = 0;
 		}
+<<<<<<< HEAD
+=======
+	} else if (urb->num_sgs && !urb->dev->bus->no_sg_constraint) {
+		struct scatterlist *sg;
+		int i;
+
+		for_each_sg(urb->sg, sg, urb->num_sgs - 1, i)
+			if (sg->length % max)
+				return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* the I/O buffer must be mapped/unmapped, except when length=0 */
 	if (urb->transfer_buffer_length > INT_MAX)
 		return -EMSGSIZE;
 
+<<<<<<< HEAD
 #ifdef DEBUG
 	/* stuff that drivers shouldn't do, but which shouldn't
 	 * cause problems in HCDs if they get it wrong.
@@ -410,6 +611,15 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 
 	/* Check that the pipe's type matches the endpoint's type */
 	if (usb_pipetype(urb->pipe) != pipetypes[xfertype])
+=======
+	/*
+	 * stuff that drivers shouldn't do, but which shouldn't
+	 * cause problems in HCDs if they get it wrong.
+	 */
+
+	/* Check that the pipe's type matches the endpoint's type */
+	if (usb_pipe_type_check(urb->dev, urb->pipe))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_WARN(&dev->dev, "BOGUS urb xfer, pipe %x != type %x\n",
 			usb_pipetype(urb->pipe), pipetypes[xfertype]);
 
@@ -418,12 +628,19 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 			URB_FREE_BUFFER);
 	switch (xfertype) {
 	case USB_ENDPOINT_XFER_BULK:
+<<<<<<< HEAD
 		if (is_out)
 			allowed |= URB_ZERO_PACKET;
 		/* FALLTHROUGH */
 	case USB_ENDPOINT_XFER_CONTROL:
 		allowed |= URB_NO_FSBR;	/* only affects UHCI */
 		/* FALLTHROUGH */
+=======
+	case USB_ENDPOINT_XFER_INT:
+		if (is_out)
+			allowed |= URB_ZERO_PACKET;
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:			/* all non-iso endpoints */
 		if (!is_out)
 			allowed |= URB_SHORT_NOT_OK;
@@ -438,8 +655,12 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 	if (allowed != urb->transfer_flags)
 		dev_WARN(&dev->dev, "BOGUS urb flags, %x --> %x\n",
 			urb->transfer_flags, allowed);
+<<<<<<< HEAD
 	}
 #endif
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Force periodic transfer intervals to be legal values that are
 	 * a power of two (so HCDs don't need to).
@@ -452,6 +673,7 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 	case USB_ENDPOINT_XFER_ISOC:
 	case USB_ENDPOINT_XFER_INT:
 		/* too small? */
+<<<<<<< HEAD
 		switch (dev->speed) {
 		case USB_SPEED_WIRELESS:
 			if (urb->interval < 6)
@@ -464,16 +686,27 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 		}
 		/* too big? */
 		switch (dev->speed) {
+=======
+		if (urb->interval <= 0)
+			return -EINVAL;
+
+		/* too big? */
+		switch (dev->speed) {
+		case USB_SPEED_SUPER_PLUS:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case USB_SPEED_SUPER:	/* units are 125us */
 			/* Handle up to 2^(16-1) microframes */
 			if (urb->interval > (1 << 15))
 				return -EINVAL;
 			max = 1 << 15;
 			break;
+<<<<<<< HEAD
 		case USB_SPEED_WIRELESS:
 			if (urb->interval > 16)
 				return -EINVAL;
 			break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case USB_SPEED_HIGH:	/* units are microframes */
 			/* NOTE usb handles 2^15 */
 			if (urb->interval > (1024 * 8))
@@ -497,10 +730,15 @@ int usb_submit_urb(struct urb *urb, gfp_t mem_flags)
 		default:
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		if (dev->speed != USB_SPEED_WIRELESS) {
 			/* Round down to a power of 2, no more than max */
 			urb->interval = min(max, 1 << ilog2(urb->interval));
 		}
+=======
+		/* Round down to a power of 2, no more than max */
+		urb->interval = min(max, 1 << ilog2(urb->interval));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return usb_hcd_submit_urb(urb, mem_flags);
@@ -543,6 +781,12 @@ EXPORT_SYMBOL_GPL(usb_submit_urb);
  * particular, when a driver calls this routine, it must insure that the
  * completion handler cannot deallocate the URB.
  *
+<<<<<<< HEAD
+=======
+ * Return: -EINPROGRESS on success. See description for other values on
+ * failure.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Unlinking and Endpoint Queues:
  *
  * [The behaviors and guarantees described below do not apply to virtual
@@ -624,6 +868,15 @@ void usb_kill_urb(struct urb *urb)
 	if (!(urb && urb->dev && urb->ep))
 		return;
 	atomic_inc(&urb->reject);
+<<<<<<< HEAD
+=======
+	/*
+	 * Order the write of urb->reject above before the read
+	 * of urb->use_count below.  Pairs with the barriers in
+	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
+	 */
+	smp_mb__after_atomic();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_hcd_unlink_urb(urb, -ENOENT);
 	wait_event(usb_kill_urb_queue, atomic_read(&urb->use_count) == 0);
@@ -662,9 +915,24 @@ EXPORT_SYMBOL_GPL(usb_kill_urb);
 void usb_poison_urb(struct urb *urb)
 {
 	might_sleep();
+<<<<<<< HEAD
 	if (!(urb && urb->dev && urb->ep))
 		return;
 	atomic_inc(&urb->reject);
+=======
+	if (!urb)
+		return;
+	atomic_inc(&urb->reject);
+	/*
+	 * Order the write of urb->reject above before the read
+	 * of urb->use_count below.  Pairs with the barriers in
+	 * __usb_hcd_giveback_urb() and usb_hcd_submit_urb().
+	 */
+	smp_mb__after_atomic();
+
+	if (!urb->dev || !urb->ep)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_hcd_unlink_urb(urb, -ENOENT);
 	wait_event(usb_kill_urb_queue, atomic_read(&urb->use_count) == 0);
@@ -702,11 +970,20 @@ void usb_block_urb(struct urb *urb)
 EXPORT_SYMBOL_GPL(usb_block_urb);
 
 /**
+<<<<<<< HEAD
  * usb_kill_anchored_urbs - cancel transfer requests en masse
  * @anchor: anchor the requests are bound to
  *
  * this allows all outstanding URBs to be killed starting
  * from the back of the queue
+=======
+ * usb_kill_anchored_urbs - kill all URBs associated with an anchor
+ * @anchor: anchor the requests are bound to
+ *
+ * This kills all outstanding URBs starting from the back of the queue,
+ * with guarantee that no completer callbacks will take place from the
+ * anchor after this function returns.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine should not be called by a driver after its disconnect
  * method has returned.
@@ -714,6 +991,7 @@ EXPORT_SYMBOL_GPL(usb_block_urb);
 void usb_kill_anchored_urbs(struct usb_anchor *anchor)
 {
 	struct urb *victim;
+<<<<<<< HEAD
 
 	spin_lock_irq(&anchor->lock);
 	while (!list_empty(&anchor->urb_list)) {
@@ -728,6 +1006,28 @@ void usb_kill_anchored_urbs(struct usb_anchor *anchor)
 		spin_lock_irq(&anchor->lock);
 	}
 	spin_unlock_irq(&anchor->lock);
+=======
+	int surely_empty;
+
+	do {
+		spin_lock_irq(&anchor->lock);
+		while (!list_empty(&anchor->urb_list)) {
+			victim = list_entry(anchor->urb_list.prev,
+					    struct urb, anchor_list);
+			/* make sure the URB isn't freed before we kill it */
+			usb_get_urb(victim);
+			spin_unlock_irq(&anchor->lock);
+			/* this will unanchor the URB */
+			usb_kill_urb(victim);
+			usb_put_urb(victim);
+			spin_lock_irq(&anchor->lock);
+		}
+		surely_empty = usb_anchor_check_wakeup(anchor);
+
+		spin_unlock_irq(&anchor->lock);
+		cpu_relax();
+	} while (!surely_empty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(usb_kill_anchored_urbs);
 
@@ -746,6 +1046,7 @@ EXPORT_SYMBOL_GPL(usb_kill_anchored_urbs);
 void usb_poison_anchored_urbs(struct usb_anchor *anchor)
 {
 	struct urb *victim;
+<<<<<<< HEAD
 
 	spin_lock_irq(&anchor->lock);
 	anchor->poisoned = 1;
@@ -761,6 +1062,29 @@ void usb_poison_anchored_urbs(struct usb_anchor *anchor)
 		spin_lock_irq(&anchor->lock);
 	}
 	spin_unlock_irq(&anchor->lock);
+=======
+	int surely_empty;
+
+	do {
+		spin_lock_irq(&anchor->lock);
+		anchor->poisoned = 1;
+		while (!list_empty(&anchor->urb_list)) {
+			victim = list_entry(anchor->urb_list.prev,
+					    struct urb, anchor_list);
+			/* make sure the URB isn't freed before we kill it */
+			usb_get_urb(victim);
+			spin_unlock_irq(&anchor->lock);
+			/* this will unanchor the URB */
+			usb_poison_urb(victim);
+			usb_put_urb(victim);
+			spin_lock_irq(&anchor->lock);
+		}
+		surely_empty = usb_anchor_check_wakeup(anchor);
+
+		spin_unlock_irq(&anchor->lock);
+		cpu_relax();
+	} while (!surely_empty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(usb_poison_anchored_urbs);
 
@@ -790,7 +1114,11 @@ EXPORT_SYMBOL_GPL(usb_unpoison_anchored_urbs);
  *
  * this allows all outstanding URBs to be unlinked starting
  * from the back of the queue. This function is asynchronous.
+<<<<<<< HEAD
  * The unlinking is just tiggered. It may happen after this
+=======
+ * The unlinking is just triggered. It may happen after this
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * function has returned.
  *
  * This routine should not be called by a driver after its disconnect
@@ -808,17 +1136,63 @@ void usb_unlink_anchored_urbs(struct usb_anchor *anchor)
 EXPORT_SYMBOL_GPL(usb_unlink_anchored_urbs);
 
 /**
+<<<<<<< HEAD
+=======
+ * usb_anchor_suspend_wakeups
+ * @anchor: the anchor you want to suspend wakeups on
+ *
+ * Call this to stop the last urb being unanchored from waking up any
+ * usb_wait_anchor_empty_timeout waiters. This is used in the hcd urb give-
+ * back path to delay waking up until after the completion handler has run.
+ */
+void usb_anchor_suspend_wakeups(struct usb_anchor *anchor)
+{
+	if (anchor)
+		atomic_inc(&anchor->suspend_wakeups);
+}
+EXPORT_SYMBOL_GPL(usb_anchor_suspend_wakeups);
+
+/**
+ * usb_anchor_resume_wakeups
+ * @anchor: the anchor you want to resume wakeups on
+ *
+ * Allow usb_wait_anchor_empty_timeout waiters to be woken up again, and
+ * wake up any current waiters if the anchor is empty.
+ */
+void usb_anchor_resume_wakeups(struct usb_anchor *anchor)
+{
+	if (!anchor)
+		return;
+
+	atomic_dec(&anchor->suspend_wakeups);
+	if (usb_anchor_check_wakeup(anchor))
+		wake_up(&anchor->wait);
+}
+EXPORT_SYMBOL_GPL(usb_anchor_resume_wakeups);
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * usb_wait_anchor_empty_timeout - wait for an anchor to be unused
  * @anchor: the anchor you want to become unused
  * @timeout: how long you are willing to wait in milliseconds
  *
  * Call this is you want to be sure all an anchor's
  * URBs have finished
+<<<<<<< HEAD
+=======
+ *
+ * Return: Non-zero if the anchor became unused. Zero on timeout.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int usb_wait_anchor_empty_timeout(struct usb_anchor *anchor,
 				  unsigned int timeout)
 {
+<<<<<<< HEAD
 	return wait_event_timeout(anchor->wait, list_empty(&anchor->urb_list),
+=======
+	return wait_event_timeout(anchor->wait,
+				  usb_anchor_check_wakeup(anchor),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  msecs_to_jiffies(timeout));
 }
 EXPORT_SYMBOL_GPL(usb_wait_anchor_empty_timeout);
@@ -827,8 +1201,16 @@ EXPORT_SYMBOL_GPL(usb_wait_anchor_empty_timeout);
  * usb_get_from_anchor - get an anchor's oldest urb
  * @anchor: the anchor whose urb you want
  *
+<<<<<<< HEAD
  * this will take the oldest urb from an anchor,
  * unanchor and return it
+=======
+ * This will take the oldest urb from an anchor,
+ * unanchor and return it
+ *
+ * Return: The oldest urb from @anchor, or %NULL if @anchor has no
+ * urbs associated with it.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct urb *usb_get_from_anchor(struct usb_anchor *anchor)
 {
@@ -861,6 +1243,7 @@ void usb_scuttle_anchored_urbs(struct usb_anchor *anchor)
 {
 	struct urb *victim;
 	unsigned long flags;
+<<<<<<< HEAD
 
 	spin_lock_irqsave(&anchor->lock, flags);
 	while (!list_empty(&anchor->urb_list)) {
@@ -869,6 +1252,22 @@ void usb_scuttle_anchored_urbs(struct usb_anchor *anchor)
 		__usb_unanchor_urb(victim, anchor);
 	}
 	spin_unlock_irqrestore(&anchor->lock, flags);
+=======
+	int surely_empty;
+
+	do {
+		spin_lock_irqsave(&anchor->lock, flags);
+		while (!list_empty(&anchor->urb_list)) {
+			victim = list_entry(anchor->urb_list.prev,
+					    struct urb, anchor_list);
+			__usb_unanchor_urb(victim, anchor);
+		}
+		surely_empty = usb_anchor_check_wakeup(anchor);
+
+		spin_unlock_irqrestore(&anchor->lock, flags);
+		cpu_relax();
+	} while (!surely_empty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL_GPL(usb_scuttle_anchored_urbs);
@@ -877,7 +1276,11 @@ EXPORT_SYMBOL_GPL(usb_scuttle_anchored_urbs);
  * usb_anchor_empty - is an anchor empty
  * @anchor: the anchor you want to query
  *
+<<<<<<< HEAD
  * returns 1 if the anchor has no urbs associated with it
+=======
+ * Return: 1 if the anchor has no urbs associated with it.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int usb_anchor_empty(struct usb_anchor *anchor)
 {

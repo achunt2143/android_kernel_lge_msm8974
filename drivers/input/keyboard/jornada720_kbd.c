@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/input/keyboard/jornada720_kbd.c
  *
@@ -9,16 +13,22 @@
 		Filip Zyzniewsk <Filip.Zyzniewski@tefnet.plX
  *     based on (C) 2004 jornada 720 kbd driver by
 		Alex Lange <chicken@handhelds.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/device.h>
 #include <linux/errno.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/input.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -26,8 +36,11 @@
 #include <linux/slab.h>
 
 #include <mach/jornada720.h>
+<<<<<<< HEAD
 #include <mach/hardware.h>
 #include <mach/irqs.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Kristoffer Ericson <Kristoffer.Ericson@gmail.com>");
 MODULE_DESCRIPTION("HP Jornada 710/720/728 keyboard driver");
@@ -67,10 +80,15 @@ static irqreturn_t jornada720_kbd_interrupt(int irq, void *dev_id)
 	jornada_ssp_start();
 
 	if (jornada_ssp_inout(GETSCANKEYCODE) != TXDUMMY) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG
 			"jornada720_kbd: "
 			"GetKeycode command failed with ETIMEDOUT, "
 			"flushed bus\n");
+=======
+		dev_dbg(&pdev->dev,
+			"GetKeycode command failed with ETIMEDOUT, flushed bus\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* How many keycodes are waiting for us? */
 		count = jornada_ssp_byte(TXDUMMY);
@@ -94,6 +112,7 @@ static irqreturn_t jornada720_kbd_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 };
 
+<<<<<<< HEAD
 static int __devinit jornada720_kbd_probe(struct platform_device *pdev)
 {
 	struct jornadakbd *jornadakbd;
@@ -106,6 +125,22 @@ static int __devinit jornada720_kbd_probe(struct platform_device *pdev)
 		err = -ENOMEM;
 		goto fail1;
 	}
+=======
+static int jornada720_kbd_probe(struct platform_device *pdev)
+{
+	struct jornadakbd *jornadakbd;
+	struct input_dev *input_dev;
+	int i, err, irq;
+
+	irq = platform_get_irq(pdev, 0);
+	if (irq <= 0)
+		return irq < 0 ? irq : -EINVAL;
+
+	jornadakbd = devm_kzalloc(&pdev->dev, sizeof(*jornadakbd), GFP_KERNEL);
+	input_dev = devm_input_allocate_device(&pdev->dev);
+	if (!jornadakbd || !input_dev)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(pdev, jornadakbd);
 
@@ -128,6 +163,7 @@ static int __devinit jornada720_kbd_probe(struct platform_device *pdev)
 
 	input_set_capability(input_dev, EV_MSC, MSC_SCAN);
 
+<<<<<<< HEAD
 	err = request_irq(IRQ_GPIO0,
 			  jornada720_kbd_interrupt,
 			  IRQF_TRIGGER_FALLING,
@@ -164,15 +200,32 @@ static int __devexit jornada720_kbd_remove(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+	err = devm_request_irq(&pdev->dev, irq, jornada720_kbd_interrupt,
+			       IRQF_TRIGGER_FALLING, "jornadakbd", pdev);
+	if (err) {
+		dev_err(&pdev->dev, "unable to grab IRQ%d: %d\n", irq, err);
+		return err;
+	}
+
+	return input_register_device(jornadakbd->input);
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* work with hotplug and coldplug */
 MODULE_ALIAS("platform:jornada720_kbd");
 
 static struct platform_driver jornada720_kbd_driver = {
 	.driver  = {
 		.name    = "jornada720_kbd",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	 },
 	.probe   = jornada720_kbd_probe,
 	.remove  = __devexit_p(jornada720_kbd_remove),
+=======
+	 },
+	.probe   = jornada720_kbd_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 module_platform_driver(jornada720_kbd_driver);

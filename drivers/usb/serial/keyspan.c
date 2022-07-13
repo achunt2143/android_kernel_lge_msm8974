@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
   Keyspan USB to Serial Converter driver
 
   (C) Copyright (C) 2000-2001	Hugh Blemings <hugh@blemings.org>
   (C) Copyright (C) 2002	Greg Kroah-Hartman <greg@kroah.com>
 
+<<<<<<< HEAD
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
   (at your option) any later version.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   See http://blemings.org/hugh/keyspan.html for more information.
 
   Code in this driver inspired by and in a number of places taken
@@ -31,13 +38,17 @@
 #include <linux/kernel.h>
 #include <linux/jiffies.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
 #include <linux/tty_flip.h>
 #include <linux/module.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <linux/firmware.h>
 #include <linux/ihex.h>
 #include <linux/uaccess.h>
@@ -57,23 +68,531 @@ static bool debug;
 #define INSTAT_BUFLEN	32
 #define GLOCONT_BUFLEN	64
 #define INDAT49W_BUFLEN	512
+=======
+#include <linux/uaccess.h>
+#include <linux/usb.h>
+#include <linux/usb/serial.h>
+#include <linux/usb/ezusb.h>
+
+#define DRIVER_AUTHOR "Hugh Blemings <hugh@misc.nu"
+#define DRIVER_DESC "Keyspan USB to Serial Converter Driver"
+
+static void keyspan_send_setup(struct usb_serial_port *port, int reset_port);
+
+static int keyspan_usa19_calc_baud(struct usb_serial_port *port,
+				   u32 baud_rate, u32 baudclk,
+				   u8 *rate_hi, u8 *rate_low,
+				   u8 *prescaler, int portnum);
+static int keyspan_usa19w_calc_baud(struct usb_serial_port *port,
+				    u32 baud_rate, u32 baudclk,
+				    u8 *rate_hi, u8 *rate_low,
+				    u8 *prescaler, int portnum);
+static int keyspan_usa28_calc_baud(struct usb_serial_port *port,
+				   u32 baud_rate, u32 baudclk,
+				   u8 *rate_hi, u8 *rate_low,
+				   u8 *prescaler, int portnum);
+static int keyspan_usa19hs_calc_baud(struct usb_serial_port *port,
+				     u32 baud_rate, u32 baudclk,
+				     u8 *rate_hi, u8 *rate_low,
+				     u8 *prescaler, int portnum);
+
+static int keyspan_usa28_send_setup(struct usb_serial *serial,
+				    struct usb_serial_port *port,
+				    int reset_port);
+static int keyspan_usa26_send_setup(struct usb_serial *serial,
+				    struct usb_serial_port *port,
+				    int reset_port);
+static int keyspan_usa49_send_setup(struct usb_serial *serial,
+				    struct usb_serial_port *port,
+				    int reset_port);
+static int keyspan_usa90_send_setup(struct usb_serial *serial,
+				    struct usb_serial_port *port,
+				    int reset_port);
+static int keyspan_usa67_send_setup(struct usb_serial *serial,
+				    struct usb_serial_port *port,
+				    int reset_port);
+
+/* Values used for baud rate calculation - device specific */
+#define KEYSPAN_INVALID_BAUD_RATE		(-1)
+#define KEYSPAN_BAUD_RATE_OK			(0)
+#define KEYSPAN_USA18X_BAUDCLK			(12000000L)	/* a guess */
+#define KEYSPAN_USA19_BAUDCLK			(12000000L)
+#define KEYSPAN_USA19W_BAUDCLK			(24000000L)
+#define KEYSPAN_USA19HS_BAUDCLK			(14769231L)
+#define KEYSPAN_USA28_BAUDCLK			(1843200L)
+#define KEYSPAN_USA28X_BAUDCLK			(12000000L)
+#define KEYSPAN_USA49W_BAUDCLK			(48000000L)
+
+/* Some constants used to characterise each device.  */
+#define KEYSPAN_MAX_NUM_PORTS			(4)
+#define KEYSPAN_MAX_FLIPS			(2)
+
+/*
+ * Device info for the Keyspan serial converter, used by the overall
+ * usb-serial probe function.
+ */
+#define KEYSPAN_VENDOR_ID			(0x06cd)
+
+/* Product IDs for the products supported, pre-renumeration */
+#define keyspan_usa18x_pre_product_id		0x0105
+#define keyspan_usa19_pre_product_id		0x0103
+#define keyspan_usa19qi_pre_product_id		0x010b
+#define keyspan_mpr_pre_product_id		0x011b
+#define keyspan_usa19qw_pre_product_id		0x0118
+#define keyspan_usa19w_pre_product_id		0x0106
+#define keyspan_usa28_pre_product_id		0x0101
+#define keyspan_usa28x_pre_product_id		0x0102
+#define keyspan_usa28xa_pre_product_id		0x0114
+#define keyspan_usa28xb_pre_product_id		0x0113
+#define keyspan_usa49w_pre_product_id		0x0109
+#define keyspan_usa49wlc_pre_product_id		0x011a
+
+/*
+ * Product IDs post-renumeration.  Note that the 28x and 28xb have the same
+ * id's post-renumeration but behave identically so it's not an issue. As
+ * such, the 28xb is not listed in any of the device tables.
+ */
+#define keyspan_usa18x_product_id		0x0112
+#define keyspan_usa19_product_id		0x0107
+#define keyspan_usa19qi_product_id		0x010c
+#define keyspan_usa19hs_product_id		0x0121
+#define keyspan_mpr_product_id			0x011c
+#define keyspan_usa19qw_product_id		0x0119
+#define keyspan_usa19w_product_id		0x0108
+#define keyspan_usa28_product_id		0x010f
+#define keyspan_usa28x_product_id		0x0110
+#define keyspan_usa28xa_product_id		0x0115
+#define keyspan_usa28xb_product_id		0x0110
+#define keyspan_usa28xg_product_id		0x0135
+#define keyspan_usa49w_product_id		0x010a
+#define keyspan_usa49wlc_product_id		0x012a
+#define keyspan_usa49wg_product_id		0x0131
+
+struct keyspan_device_details {
+	/* product ID value */
+	int	product_id;
+
+	enum	{msg_usa26, msg_usa28, msg_usa49, msg_usa90, msg_usa67} msg_format;
+
+		/* Number of physical ports */
+	int	num_ports;
+
+		/* 1 if endpoint flipping used on input, 0 if not */
+	int	indat_endp_flip;
+
+		/* 1 if endpoint flipping used on output, 0 if not */
+	int	outdat_endp_flip;
+
+		/*
+		 * Table mapping input data endpoint IDs to physical port
+		 * number and flip if used
+		 */
+	int	indat_endpoints[KEYSPAN_MAX_NUM_PORTS];
+
+		/* Same for output endpoints */
+	int	outdat_endpoints[KEYSPAN_MAX_NUM_PORTS];
+
+		/* Input acknowledge endpoints */
+	int	inack_endpoints[KEYSPAN_MAX_NUM_PORTS];
+
+		/* Output control endpoints */
+	int	outcont_endpoints[KEYSPAN_MAX_NUM_PORTS];
+
+		/* Endpoint used for input status */
+	int	instat_endpoint;
+
+		/* Endpoint used for input data 49WG only */
+	int	indat_endpoint;
+
+		/* Endpoint used for global control functions */
+	int	glocont_endpoint;
+
+	int	(*calculate_baud_rate)(struct usb_serial_port *port,
+				       u32 baud_rate, u32 baudclk,
+				       u8 *rate_hi, u8 *rate_low, u8 *prescaler,
+				       int portnum);
+	u32	baudclk;
+};
+
+/*
+ * Now for each device type we setup the device detail structure with the
+ * appropriate information (provided in Keyspan's documentation)
+ */
+
+static const struct keyspan_device_details usa18x_device_details = {
+	.product_id		= keyspan_usa18x_product_id,
+	.msg_format		= msg_usa26,
+	.num_ports		= 1,
+	.indat_endp_flip	= 0,
+	.outdat_endp_flip	= 1,
+	.indat_endpoints	= {0x81},
+	.outdat_endpoints	= {0x01},
+	.inack_endpoints	= {0x85},
+	.outcont_endpoints	= {0x05},
+	.instat_endpoint	= 0x87,
+	.indat_endpoint		= -1,
+	.glocont_endpoint	= 0x07,
+	.calculate_baud_rate	= keyspan_usa19w_calc_baud,
+	.baudclk		= KEYSPAN_USA18X_BAUDCLK,
+};
+
+static const struct keyspan_device_details usa19_device_details = {
+	.product_id		= keyspan_usa19_product_id,
+	.msg_format		= msg_usa28,
+	.num_ports		= 1,
+	.indat_endp_flip	= 1,
+	.outdat_endp_flip	= 1,
+	.indat_endpoints	= {0x81},
+	.outdat_endpoints	= {0x01},
+	.inack_endpoints	= {0x83},
+	.outcont_endpoints	= {0x03},
+	.instat_endpoint	= 0x84,
+	.indat_endpoint		= -1,
+	.glocont_endpoint	= -1,
+	.calculate_baud_rate	= keyspan_usa19_calc_baud,
+	.baudclk		= KEYSPAN_USA19_BAUDCLK,
+};
+
+static const struct keyspan_device_details usa19qi_device_details = {
+	.product_id		= keyspan_usa19qi_product_id,
+	.msg_format		= msg_usa28,
+	.num_ports		= 1,
+	.indat_endp_flip	= 1,
+	.outdat_endp_flip	= 1,
+	.indat_endpoints	= {0x81},
+	.outdat_endpoints	= {0x01},
+	.inack_endpoints	= {0x83},
+	.outcont_endpoints	= {0x03},
+	.instat_endpoint	= 0x84,
+	.indat_endpoint		= -1,
+	.glocont_endpoint	= -1,
+	.calculate_baud_rate	= keyspan_usa28_calc_baud,
+	.baudclk		= KEYSPAN_USA19_BAUDCLK,
+};
+
+static const struct keyspan_device_details mpr_device_details = {
+	.product_id		= keyspan_mpr_product_id,
+	.msg_format		= msg_usa28,
+	.num_ports		= 1,
+	.indat_endp_flip	= 1,
+	.outdat_endp_flip	= 1,
+	.indat_endpoints	= {0x81},
+	.outdat_endpoints	= {0x01},
+	.inack_endpoints	= {0x83},
+	.outcont_endpoints	= {0x03},
+	.instat_endpoint	= 0x84,
+	.indat_endpoint		= -1,
+	.glocont_endpoint	= -1,
+	.calculate_baud_rate	= keyspan_usa28_calc_baud,
+	.baudclk		= KEYSPAN_USA19_BAUDCLK,
+};
+
+static const struct keyspan_device_details usa19qw_device_details = {
+	.product_id		= keyspan_usa19qw_product_id,
+	.msg_format		= msg_usa26,
+	.num_ports		= 1,
+	.indat_endp_flip	= 0,
+	.outdat_endp_flip	= 1,
+	.indat_endpoints	= {0x81},
+	.outdat_endpoints	= {0x01},
+	.inack_endpoints	= {0x85},
+	.outcont_endpoints	= {0x05},
+	.instat_endpoint	= 0x87,
+	.indat_endpoint		= -1,
+	.glocont_endpoint	= 0x07,
+	.calculate_baud_rate	= keyspan_usa19w_calc_baud,
+	.baudclk		= KEYSPAN_USA19W_BAUDCLK,
+};
+
+static const struct keyspan_device_details usa19w_device_details = {
+	.product_id		= keyspan_usa19w_product_id,
+	.msg_format		= msg_usa26,
+	.num_ports		= 1,
+	.indat_endp_flip	= 0,
+	.outdat_endp_flip	= 1,
+	.indat_endpoints	= {0x81},
+	.outdat_endpoints	= {0x01},
+	.inack_endpoints	= {0x85},
+	.outcont_endpoints	= {0x05},
+	.instat_endpoint	= 0x87,
+	.indat_endpoint		= -1,
+	.glocont_endpoint	= 0x07,
+	.calculate_baud_rate	= keyspan_usa19w_calc_baud,
+	.baudclk		= KEYSPAN_USA19W_BAUDCLK,
+};
+
+static const struct keyspan_device_details usa19hs_device_details = {
+	.product_id		= keyspan_usa19hs_product_id,
+	.msg_format		= msg_usa90,
+	.num_ports		= 1,
+	.indat_endp_flip	= 0,
+	.outdat_endp_flip	= 0,
+	.indat_endpoints	= {0x81},
+	.outdat_endpoints	= {0x01},
+	.inack_endpoints	= {-1},
+	.outcont_endpoints	= {0x02},
+	.instat_endpoint	= 0x82,
+	.indat_endpoint		= -1,
+	.glocont_endpoint	= -1,
+	.calculate_baud_rate	= keyspan_usa19hs_calc_baud,
+	.baudclk		= KEYSPAN_USA19HS_BAUDCLK,
+};
+
+static const struct keyspan_device_details usa28_device_details = {
+	.product_id		= keyspan_usa28_product_id,
+	.msg_format		= msg_usa28,
+	.num_ports		= 2,
+	.indat_endp_flip	= 1,
+	.outdat_endp_flip	= 1,
+	.indat_endpoints	= {0x81, 0x83},
+	.outdat_endpoints	= {0x01, 0x03},
+	.inack_endpoints	= {0x85, 0x86},
+	.outcont_endpoints	= {0x05, 0x06},
+	.instat_endpoint	= 0x87,
+	.indat_endpoint		= -1,
+	.glocont_endpoint	= 0x07,
+	.calculate_baud_rate	= keyspan_usa28_calc_baud,
+	.baudclk		= KEYSPAN_USA28_BAUDCLK,
+};
+
+static const struct keyspan_device_details usa28x_device_details = {
+	.product_id		= keyspan_usa28x_product_id,
+	.msg_format		= msg_usa26,
+	.num_ports		= 2,
+	.indat_endp_flip	= 0,
+	.outdat_endp_flip	= 1,
+	.indat_endpoints	= {0x81, 0x83},
+	.outdat_endpoints	= {0x01, 0x03},
+	.inack_endpoints	= {0x85, 0x86},
+	.outcont_endpoints	= {0x05, 0x06},
+	.instat_endpoint	= 0x87,
+	.indat_endpoint		= -1,
+	.glocont_endpoint	= 0x07,
+	.calculate_baud_rate	= keyspan_usa19w_calc_baud,
+	.baudclk		= KEYSPAN_USA28X_BAUDCLK,
+};
+
+static const struct keyspan_device_details usa28xa_device_details = {
+	.product_id		= keyspan_usa28xa_product_id,
+	.msg_format		= msg_usa26,
+	.num_ports		= 2,
+	.indat_endp_flip	= 0,
+	.outdat_endp_flip	= 1,
+	.indat_endpoints	= {0x81, 0x83},
+	.outdat_endpoints	= {0x01, 0x03},
+	.inack_endpoints	= {0x85, 0x86},
+	.outcont_endpoints	= {0x05, 0x06},
+	.instat_endpoint	= 0x87,
+	.indat_endpoint		= -1,
+	.glocont_endpoint	= 0x07,
+	.calculate_baud_rate	= keyspan_usa19w_calc_baud,
+	.baudclk		= KEYSPAN_USA28X_BAUDCLK,
+};
+
+static const struct keyspan_device_details usa28xg_device_details = {
+	.product_id		= keyspan_usa28xg_product_id,
+	.msg_format		= msg_usa67,
+	.num_ports		= 2,
+	.indat_endp_flip	= 0,
+	.outdat_endp_flip	= 0,
+	.indat_endpoints	= {0x84, 0x88},
+	.outdat_endpoints	= {0x02, 0x06},
+	.inack_endpoints	= {-1, -1},
+	.outcont_endpoints	= {-1, -1},
+	.instat_endpoint	= 0x81,
+	.indat_endpoint		= -1,
+	.glocont_endpoint	= 0x01,
+	.calculate_baud_rate	= keyspan_usa19w_calc_baud,
+	.baudclk		= KEYSPAN_USA28X_BAUDCLK,
+};
+/*
+ * We don't need a separate entry for the usa28xb as it appears as a 28x
+ * anyway.
+ */
+
+static const struct keyspan_device_details usa49w_device_details = {
+	.product_id		= keyspan_usa49w_product_id,
+	.msg_format		= msg_usa49,
+	.num_ports		= 4,
+	.indat_endp_flip	= 0,
+	.outdat_endp_flip	= 0,
+	.indat_endpoints	= {0x81, 0x82, 0x83, 0x84},
+	.outdat_endpoints	= {0x01, 0x02, 0x03, 0x04},
+	.inack_endpoints	= {-1, -1, -1, -1},
+	.outcont_endpoints	= {-1, -1, -1, -1},
+	.instat_endpoint	= 0x87,
+	.indat_endpoint		= -1,
+	.glocont_endpoint	= 0x07,
+	.calculate_baud_rate	= keyspan_usa19w_calc_baud,
+	.baudclk		= KEYSPAN_USA49W_BAUDCLK,
+};
+
+static const struct keyspan_device_details usa49wlc_device_details = {
+	.product_id		= keyspan_usa49wlc_product_id,
+	.msg_format		= msg_usa49,
+	.num_ports		= 4,
+	.indat_endp_flip	= 0,
+	.outdat_endp_flip	= 0,
+	.indat_endpoints	= {0x81, 0x82, 0x83, 0x84},
+	.outdat_endpoints	= {0x01, 0x02, 0x03, 0x04},
+	.inack_endpoints	= {-1, -1, -1, -1},
+	.outcont_endpoints	= {-1, -1, -1, -1},
+	.instat_endpoint	= 0x87,
+	.indat_endpoint		= -1,
+	.glocont_endpoint	= 0x07,
+	.calculate_baud_rate	= keyspan_usa19w_calc_baud,
+	.baudclk		= KEYSPAN_USA19W_BAUDCLK,
+};
+
+static const struct keyspan_device_details usa49wg_device_details = {
+	.product_id		= keyspan_usa49wg_product_id,
+	.msg_format		= msg_usa49,
+	.num_ports		= 4,
+	.indat_endp_flip	= 0,
+	.outdat_endp_flip	= 0,
+	.indat_endpoints	= {-1, -1, -1, -1},	/* single 'global' data in EP */
+	.outdat_endpoints	= {0x01, 0x02, 0x04, 0x06},
+	.inack_endpoints	= {-1, -1, -1, -1},
+	.outcont_endpoints	= {-1, -1, -1, -1},
+	.instat_endpoint	= 0x81,
+	.indat_endpoint		= 0x88,
+	.glocont_endpoint	= 0x00,			/* uses control EP */
+	.calculate_baud_rate	= keyspan_usa19w_calc_baud,
+	.baudclk		= KEYSPAN_USA19W_BAUDCLK,
+};
+
+static const struct keyspan_device_details *keyspan_devices[] = {
+	&usa18x_device_details,
+	&usa19_device_details,
+	&usa19qi_device_details,
+	&mpr_device_details,
+	&usa19qw_device_details,
+	&usa19w_device_details,
+	&usa19hs_device_details,
+	&usa28_device_details,
+	&usa28x_device_details,
+	&usa28xa_device_details,
+	&usa28xg_device_details,
+	/* 28xb not required as it renumerates as a 28x */
+	&usa49w_device_details,
+	&usa49wlc_device_details,
+	&usa49wg_device_details,
+	NULL,
+};
+
+static const struct usb_device_id keyspan_ids_combined[] = {
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa18x_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19w_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19qi_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19qw_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_mpr_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28x_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28xa_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28xb_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa49w_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa49wlc_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa18x_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19w_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19qi_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19qw_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19hs_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_mpr_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28x_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28xa_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28xg_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa49w_product_id)},
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa49wlc_product_id)},
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa49wg_product_id)},
+	{ } /* Terminating entry */
+};
+
+MODULE_DEVICE_TABLE(usb, keyspan_ids_combined);
+
+/* usb_device_id table for the pre-firmware download keyspan devices */
+static const struct usb_device_id keyspan_pre_ids[] = {
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa18x_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19qi_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19qw_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19w_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_mpr_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28x_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28xa_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28xb_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa49w_pre_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa49wlc_pre_product_id) },
+	{ } /* Terminating entry */
+};
+
+static const struct usb_device_id keyspan_1port_ids[] = {
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa18x_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19qi_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19qw_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19w_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa19hs_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_mpr_product_id) },
+	{ } /* Terminating entry */
+};
+
+static const struct usb_device_id keyspan_2port_ids[] = {
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28x_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28xa_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa28xg_product_id) },
+	{ } /* Terminating entry */
+};
+
+static const struct usb_device_id keyspan_4port_ids[] = {
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa49w_product_id) },
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa49wlc_product_id)},
+	{ USB_DEVICE(KEYSPAN_VENDOR_ID, keyspan_usa49wg_product_id)},
+	{ } /* Terminating entry */
+};
+
+#define INSTAT_BUFLEN	32
+#define GLOCONT_BUFLEN	64
+#define INDAT49W_BUFLEN	512
+#define IN_BUFLEN	64
+#define OUT_BUFLEN	64
+#define INACK_BUFLEN	1
+#define OUTCONT_BUFLEN	64
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Per device and per port private data */
 struct keyspan_serial_private {
 	const struct keyspan_device_details	*device_details;
 
 	struct urb	*instat_urb;
+<<<<<<< HEAD
 	char		instat_buf[INSTAT_BUFLEN];
+=======
+	char		*instat_buf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* added to support 49wg, where data from all 4 ports comes in
 	   on 1 EP and high-speed supported */
 	struct urb	*indat_urb;
+<<<<<<< HEAD
 	char		indat_buf[INDAT49W_BUFLEN];
 
 	/* XXX this one probably will need a lock */
 	struct urb	*glocont_urb;
 	char		glocont_buf[GLOCONT_BUFLEN];
 	char		ctrl_buf[8];	/* for EP0 control message */
+=======
+	char		*indat_buf;
+
+	/* XXX this one probably will need a lock */
+	struct urb	*glocont_urb;
+	char		*glocont_buf;
+	char		*ctrl_buf;	/* for EP0 control message */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct keyspan_port_private {
@@ -88,6 +607,7 @@ struct keyspan_port_private {
 
 	/* Input endpoints and buffer for this port */
 	struct urb	*in_urbs[2];
+<<<<<<< HEAD
 	char		in_buffer[2][64];
 	/* Output endpoints and buffer for this port */
 	struct urb	*out_urbs[2];
@@ -100,6 +620,20 @@ struct keyspan_port_private {
 	/* Output control endpoint */
 	struct urb	*outcont_urb;
 	char		outcont_buffer[64];
+=======
+	char		*in_buffer[2];
+	/* Output endpoints and buffer for this port */
+	struct urb	*out_urbs[2];
+	char		*out_buffer[2];
+
+	/* Input ack endpoint */
+	struct urb	*inack_urb;
+	char		*inack_buffer;
+
+	/* Output control endpoint */
+	struct urb	*outcont_urb;
+	char		*outcont_buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Settings for the port */
 	int		baud;
@@ -130,15 +664,22 @@ struct keyspan_port_private {
 #include "keyspan_usa67msg.h"
 
 
+<<<<<<< HEAD
 module_usb_serial_driver(keyspan_driver, serial_drivers);
 
 static void keyspan_break_ctl(struct tty_struct *tty, int break_state)
+=======
+static int keyspan_break_ctl(struct tty_struct *tty, int break_state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_serial_port *port = tty->driver_data;
 	struct keyspan_port_private 	*p_priv;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p_priv = usb_get_serial_port_data(port);
 
 	if (break_state == -1)
@@ -146,33 +687,59 @@ static void keyspan_break_ctl(struct tty_struct *tty, int break_state)
 	else
 		p_priv->break_on = 0;
 
+<<<<<<< HEAD
 	keyspan_send_setup(port, 0);
+=======
+	/* FIXME: return errors */
+	keyspan_send_setup(port, 0);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static void keyspan_set_termios(struct tty_struct *tty,
+<<<<<<< HEAD
 		struct usb_serial_port *port, struct ktermios *old_termios)
+=======
+				struct usb_serial_port *port,
+				const struct ktermios *old_termios)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int				baud_rate, device_port;
 	struct keyspan_port_private 	*p_priv;
 	const struct keyspan_device_details	*d_details;
 	unsigned int 			cflag;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
 	p_priv = usb_get_serial_port_data(port);
 	d_details = p_priv->device_details;
 	cflag = tty->termios->c_cflag;
 	device_port = port->number - port->serial->minor;
+=======
+	p_priv = usb_get_serial_port_data(port);
+	d_details = p_priv->device_details;
+	cflag = tty->termios.c_cflag;
+	device_port = port->port_number;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Baud rate calculation takes baud rate as an integer
 	   so other rates can be generated if desired. */
 	baud_rate = tty_get_baud_rate(tty);
 	/* If no match or invalid, don't change */
+<<<<<<< HEAD
 	if (d_details->calculate_baud_rate(baud_rate, d_details->baudclk,
 				NULL, NULL, NULL, device_port) == KEYSPAN_BAUD_RATE_OK) {
 		/* FIXME - more to do here to ensure rate changes cleanly */
 		/* FIXME - calcuate exact rate from divisor ? */
+=======
+	if (d_details->calculate_baud_rate(port, baud_rate, d_details->baudclk,
+				NULL, NULL, NULL, device_port) == KEYSPAN_BAUD_RATE_OK) {
+		/* FIXME - more to do here to ensure rate changes cleanly */
+		/* FIXME - calculate exact rate from divisor ? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p_priv->baud = baud_rate;
 	} else
 		baud_rate = tty_termios_baud_rate(old_termios);
@@ -180,10 +747,17 @@ static void keyspan_set_termios(struct tty_struct *tty,
 	tty_encode_baud_rate(tty, baud_rate, baud_rate);
 	/* set CTS/RTS handshake etc. */
 	p_priv->cflag = cflag;
+<<<<<<< HEAD
 	p_priv->flow_control = (cflag & CRTSCTS)? flow_cts: flow_none;
 
 	/* Mark/Space not supported */
 	tty->termios->c_cflag &= ~CMSPAR;
+=======
+	p_priv->flow_control = (cflag & CRTSCTS) ? flow_cts : flow_none;
+
+	/* Mark/Space not supported */
+	tty->termios.c_cflag &= ~CMSPAR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	keyspan_send_setup(port, 0);
 }
@@ -245,8 +819,13 @@ static int keyspan_write(struct tty_struct *tty,
 		dataOffset = 1;
 	}
 
+<<<<<<< HEAD
 	dbg("%s - for port %d (%d chars), flip=%d",
 	    __func__, port->number, count, p_priv->out_flip);
+=======
+	dev_dbg(&port->dev, "%s - %d chars, flip=%d\n", __func__, count,
+		p_priv->out_flip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (left = count; left > 0; left -= todo) {
 		todo = left;
@@ -259,11 +838,19 @@ static int keyspan_write(struct tty_struct *tty,
 		this_urb = p_priv->out_urbs[flip];
 		if (this_urb == NULL) {
 			/* no bulk out, so return 0 bytes written */
+<<<<<<< HEAD
 			dbg("%s - no output urb :(", __func__);
 			return count;
 		}
 
 		dbg("%s - endpoint %d flip %d",
+=======
+			dev_dbg(&port->dev, "%s - no output urb :(\n", __func__);
+			return count;
+		}
+
+		dev_dbg(&port->dev, "%s - endpoint %x flip %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, usb_pipeendpoint(this_urb->pipe), flip);
 
 		if (this_urb->status == -EINPROGRESS) {
@@ -286,7 +873,11 @@ static int keyspan_write(struct tty_struct *tty,
 
 		err = usb_submit_urb(this_urb, GFP_ATOMIC);
 		if (err != 0)
+<<<<<<< HEAD
 			dbg("usb_submit_urb(write bulk) failed (%d)", err);
+=======
+			dev_dbg(&port->dev, "usb_submit_urb(write bulk) failed (%d)\n", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p_priv->tx_start_time[flip] = jiffies;
 
 		/* Flip for next time if usa26 or usa28 interface
@@ -302,6 +893,7 @@ static void	usa26_indat_callback(struct urb *urb)
 	int			i, err;
 	int			endpoint;
 	struct usb_serial_port	*port;
+<<<<<<< HEAD
 	struct tty_struct	*tty;
 	unsigned char 		*data = urb->transfer_buffer;
 	int status = urb->status;
@@ -313,17 +905,32 @@ static void	usa26_indat_callback(struct urb *urb)
 	if (status) {
 		dbg("%s - nonzero status: %x on endpoint %d.",
 		    __func__, status, endpoint);
+=======
+	unsigned char 		*data = urb->transfer_buffer;
+	int status = urb->status;
+
+	endpoint = usb_pipeendpoint(urb->pipe);
+
+	if (status) {
+		dev_dbg(&urb->dev->dev, "%s - nonzero status %d on endpoint %x\n",
+			__func__, status, endpoint);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	port =  urb->context;
+<<<<<<< HEAD
 	tty = tty_port_tty_get(&port->port);
 	if (tty && urb->actual_length) {
+=======
+	if (urb->actual_length) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* 0x80 bit is error flag */
 		if ((data[0] & 0x80) == 0) {
 			/* no errors on individual bytes, only
 			   possible overrun err */
 			if (data[0] & RXERROR_OVERRUN) {
+<<<<<<< HEAD
 				tty_insert_flip_char(tty, 0, TTY_OVERRUN);
 			}
 			for (i = 1; i < urb->actual_length ; ++i)
@@ -331,12 +938,27 @@ static void	usa26_indat_callback(struct urb *urb)
 		} else {
 			/* some bytes had errors, every byte has status */
 			dbg("%s - RX error!!!!", __func__);
+=======
+				tty_insert_flip_char(&port->port, 0,
+								TTY_OVERRUN);
+			}
+			for (i = 1; i < urb->actual_length ; ++i)
+				tty_insert_flip_char(&port->port, data[i],
+								TTY_NORMAL);
+		} else {
+			/* some bytes had errors, every byte has status */
+			dev_dbg(&port->dev, "%s - RX error!!!!\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (i = 0; i + 1 < urb->actual_length; i += 2) {
 				int stat = data[i];
 				int flag = TTY_NORMAL;
 
 				if (stat & RXERROR_OVERRUN) {
+<<<<<<< HEAD
 					tty_insert_flip_char(tty, 0,
+=======
+					tty_insert_flip_char(&port->port, 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 								TTY_OVERRUN);
 				}
 				/* XXX should handle break (0x10) */
@@ -345,17 +967,30 @@ static void	usa26_indat_callback(struct urb *urb)
 				else if (stat & RXERROR_FRAMING)
 					flag = TTY_FRAME;
 
+<<<<<<< HEAD
 				tty_insert_flip_char(tty, data[i+1], flag);
 			}
 		}
 		tty_flip_buffer_push(tty);
 	}
 	tty_kref_put(tty);
+=======
+				tty_insert_flip_char(&port->port, data[i+1],
+						flag);
+			}
+		}
+		tty_flip_buffer_push(&port->port);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Resubmit urb so we continue receiving */
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err != 0)
+<<<<<<< HEAD
 		dbg("%s - resubmit read urb failed. (%d)", __func__, err);
+=======
+		dev_dbg(&port->dev, "%s - resubmit read urb failed. (%d)\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Outdat handling is common for all devices */
@@ -366,15 +1001,22 @@ static void	usa2x_outdat_callback(struct urb *urb)
 
 	port =  urb->context;
 	p_priv = usb_get_serial_port_data(port);
+<<<<<<< HEAD
 	dbg("%s - urb %d", __func__, urb == p_priv->out_urbs[1]);
+=======
+	dev_dbg(&port->dev, "%s - urb %d\n", __func__, urb == p_priv->out_urbs[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_serial_port_softint(port);
 }
 
 static void	usa26_inack_callback(struct urb *urb)
 {
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void	usa26_outcont_callback(struct urb *urb)
@@ -386,7 +1028,11 @@ static void	usa26_outcont_callback(struct urb *urb)
 	p_priv = usb_get_serial_port_data(port);
 
 	if (p_priv->resend_cont) {
+<<<<<<< HEAD
 		dbg("%s - sending setup", __func__);
+=======
+		dev_dbg(&port->dev, "%s - sending setup\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		keyspan_usa26_send_setup(port->serial, port,
 						p_priv->resend_cont - 1);
 	}
@@ -399,23 +1045,36 @@ static void	usa26_instat_callback(struct urb *urb)
 	struct usb_serial			*serial;
 	struct usb_serial_port			*port;
 	struct keyspan_port_private	 	*p_priv;
+<<<<<<< HEAD
 	struct tty_struct			*tty;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int old_dcd_state, err;
 	int status = urb->status;
 
 	serial =  urb->context;
 
 	if (status) {
+<<<<<<< HEAD
 		dbg("%s - nonzero status: %x", __func__, status);
 		return;
 	}
 	if (urb->actual_length != 9) {
 		dbg("%s - %d byte report??", __func__, urb->actual_length);
+=======
+		dev_dbg(&urb->dev->dev, "%s - nonzero status: %d\n",
+				__func__, status);
+		return;
+	}
+	if (urb->actual_length != 9) {
+		dev_dbg(&urb->dev->dev, "%s - %d byte report??\n", __func__, urb->actual_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
 	msg = (struct keyspan_usa26_portStatusMessage *)data;
 
+<<<<<<< HEAD
 #if 0
 	dbg("%s - port status: port %d cts %d dcd %d dsr %d ri %d toff %d txoff %d rxen %d cr %d",
 	    __func__, msg->port, msg->hskia_cts, msg->gpia_dcd, msg->dsr, msg->ri, msg->_txOff,
@@ -428,10 +1087,20 @@ static void	usa26_instat_callback(struct urb *urb)
 	/* Check port number from message and retrieve private data */
 	if (msg->port >= serial->num_ports) {
 		dbg("%s - Unexpected port number %d", __func__, msg->port);
+=======
+	/* Check port number from message and retrieve private data */
+	if (msg->port >= serial->num_ports) {
+		dev_dbg(&urb->dev->dev, "%s - Unexpected port number %d\n", __func__, msg->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 	port = serial->port[msg->port];
 	p_priv = usb_get_serial_port_data(port);
+<<<<<<< HEAD
+=======
+	if (!p_priv)
+		goto resubmit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Update handshaking pin state information */
 	old_dcd_state = p_priv->dcd_state;
@@ -440,6 +1109,7 @@ static void	usa26_instat_callback(struct urb *urb)
 	p_priv->dcd_state = ((msg->gpia_dcd) ? 1 : 0);
 	p_priv->ri_state = ((msg->ri) ? 1 : 0);
 
+<<<<<<< HEAD
 	if (old_dcd_state != p_priv->dcd_state) {
 		tty = tty_port_tty_get(&port->port);
 		if (tty && !C_CLOCAL(tty))
@@ -451,12 +1121,24 @@ static void	usa26_instat_callback(struct urb *urb)
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err != 0)
 		dbg("%s - resubmit read urb failed. (%d)", __func__, err);
+=======
+	if (old_dcd_state != p_priv->dcd_state)
+		tty_port_tty_hangup(&port->port, true);
+resubmit:
+	/* Resubmit urb so we continue receiving */
+	err = usb_submit_urb(urb, GFP_ATOMIC);
+	if (err != 0)
+		dev_dbg(&port->dev, "%s - resubmit read urb failed. (%d)\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit: ;
 }
 
 static void	usa26_glocont_callback(struct urb *urb)
 {
+<<<<<<< HEAD
 	dbg("%s", __func__);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -464,24 +1146,37 @@ static void usa28_indat_callback(struct urb *urb)
 {
 	int                     err;
 	struct usb_serial_port  *port;
+<<<<<<< HEAD
 	struct tty_struct       *tty;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char           *data;
 	struct keyspan_port_private             *p_priv;
 	int status = urb->status;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
 	port =  urb->context;
 	p_priv = usb_get_serial_port_data(port);
 	data = urb->transfer_buffer;
+=======
+	port =  urb->context;
+	p_priv = usb_get_serial_port_data(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (urb != p_priv->in_urbs[p_priv->in_flip])
 		return;
 
 	do {
 		if (status) {
+<<<<<<< HEAD
 			dbg("%s - nonzero status: %x on endpoint %d.",
 			    __func__, status, usb_pipeendpoint(urb->pipe));
+=======
+			dev_dbg(&urb->dev->dev, "%s - nonzero status %d on endpoint %x\n",
+				__func__, status, usb_pipeendpoint(urb->pipe));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 
@@ -489,17 +1184,29 @@ static void usa28_indat_callback(struct urb *urb)
 		p_priv = usb_get_serial_port_data(port);
 		data = urb->transfer_buffer;
 
+<<<<<<< HEAD
 		tty =tty_port_tty_get(&port->port);
 		if (tty && urb->actual_length) {
 			tty_insert_flip_string(tty, data, urb->actual_length);
 			tty_flip_buffer_push(tty);
 		}
 		tty_kref_put(tty);
+=======
+		if (urb->actual_length) {
+			tty_insert_flip_string(&port->port, data,
+					urb->actual_length);
+			tty_flip_buffer_push(&port->port);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Resubmit urb so we continue receiving */
 		err = usb_submit_urb(urb, GFP_ATOMIC);
 		if (err != 0)
+<<<<<<< HEAD
 			dbg("%s - resubmit read urb failed. (%d)",
+=======
+			dev_dbg(&port->dev, "%s - resubmit read urb failed. (%d)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							__func__, err);
 		p_priv->in_flip ^= 1;
 
@@ -509,7 +1216,10 @@ static void usa28_indat_callback(struct urb *urb)
 
 static void	usa28_inack_callback(struct urb *urb)
 {
+<<<<<<< HEAD
 	dbg("%s", __func__);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void	usa28_outcont_callback(struct urb *urb)
@@ -521,7 +1231,11 @@ static void	usa28_outcont_callback(struct urb *urb)
 	p_priv = usb_get_serial_port_data(port);
 
 	if (p_priv->resend_cont) {
+<<<<<<< HEAD
 		dbg("%s - sending setup", __func__);
+=======
+		dev_dbg(&port->dev, "%s - sending setup\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		keyspan_usa28_send_setup(port->serial, port,
 						p_priv->resend_cont - 1);
 	}
@@ -535,18 +1249,27 @@ static void	usa28_instat_callback(struct urb *urb)
 	struct usb_serial			*serial;
 	struct usb_serial_port			*port;
 	struct keyspan_port_private	 	*p_priv;
+<<<<<<< HEAD
 	struct tty_struct			*tty;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int old_dcd_state;
 	int status = urb->status;
 
 	serial =  urb->context;
 
 	if (status) {
+<<<<<<< HEAD
 		dbg("%s - nonzero status: %x", __func__, status);
+=======
+		dev_dbg(&urb->dev->dev, "%s - nonzero status: %d\n",
+				__func__, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if (urb->actual_length != sizeof(struct keyspan_usa28_portStatusMessage)) {
+<<<<<<< HEAD
 		dbg("%s - bad length %d", __func__, urb->actual_length);
 		goto exit;
 	}
@@ -556,15 +1279,30 @@ static void	usa28_instat_callback(struct urb *urb)
 	    data[6], data[7], data[8], data[9], data[10], data[11]);*/
 
 	/* Now do something useful with the data */
+=======
+		dev_dbg(&urb->dev->dev, "%s - bad length %d\n", __func__, urb->actual_length);
+		goto exit;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msg = (struct keyspan_usa28_portStatusMessage *)data;
 
 	/* Check port number from message and retrieve private data */
 	if (msg->port >= serial->num_ports) {
+<<<<<<< HEAD
 		dbg("%s - Unexpected port number %d", __func__, msg->port);
+=======
+		dev_dbg(&urb->dev->dev, "%s - Unexpected port number %d\n", __func__, msg->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 	port = serial->port[msg->port];
 	p_priv = usb_get_serial_port_data(port);
+<<<<<<< HEAD
+=======
+	if (!p_priv)
+		goto resubmit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Update handshaking pin state information */
 	old_dcd_state = p_priv->dcd_state;
@@ -573,6 +1311,7 @@ static void	usa28_instat_callback(struct urb *urb)
 	p_priv->dcd_state = ((msg->dcd) ? 1 : 0);
 	p_priv->ri_state = ((msg->ri) ? 1 : 0);
 
+<<<<<<< HEAD
 	if( old_dcd_state != p_priv->dcd_state && old_dcd_state) {
 		tty = tty_port_tty_get(&port->port);
 		if (tty && !C_CLOCAL(tty)) 
@@ -584,12 +1323,24 @@ static void	usa28_instat_callback(struct urb *urb)
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err != 0)
 		dbg("%s - resubmit read urb failed. (%d)", __func__, err);
+=======
+	if (old_dcd_state != p_priv->dcd_state && old_dcd_state)
+		tty_port_tty_hangup(&port->port, true);
+resubmit:
+		/* Resubmit urb so we continue receiving */
+	err = usb_submit_urb(urb, GFP_ATOMIC);
+	if (err != 0)
+		dev_dbg(&port->dev, "%s - resubmit read urb failed. (%d)\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit: ;
 }
 
 static void	usa28_glocont_callback(struct urb *urb)
 {
+<<<<<<< HEAD
 	dbg("%s", __func__);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -600,15 +1351,26 @@ static void	usa49_glocont_callback(struct urb *urb)
 	struct keyspan_port_private *p_priv;
 	int i;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	serial =  urb->context;
 	for (i = 0; i < serial->num_ports; ++i) {
 		port = serial->port[i];
 		p_priv = usb_get_serial_port_data(port);
+<<<<<<< HEAD
 
 		if (p_priv->resend_cont) {
 			dbg("%s - sending setup", __func__);
+=======
+		if (!p_priv)
+			continue;
+
+		if (p_priv->resend_cont) {
+			dev_dbg(&port->dev, "%s - sending setup\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			keyspan_usa49_send_setup(serial, port,
 						p_priv->resend_cont - 1);
 			break;
@@ -629,17 +1391,26 @@ static void	usa49_instat_callback(struct urb *urb)
 	int old_dcd_state;
 	int status = urb->status;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
 	serial =  urb->context;
 
 	if (status) {
 		dbg("%s - nonzero status: %x", __func__, status);
+=======
+	serial =  urb->context;
+
+	if (status) {
+		dev_dbg(&urb->dev->dev, "%s - nonzero status: %d\n",
+				__func__, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if (urb->actual_length !=
 			sizeof(struct keyspan_usa49_portStatusMessage)) {
+<<<<<<< HEAD
 		dbg("%s - bad length %d", __func__, urb->actual_length);
 		goto exit;
 	}
@@ -649,16 +1420,32 @@ static void	usa49_instat_callback(struct urb *urb)
 	    data[6], data[7], data[8], data[9], data[10]);*/
 
 	/* Now do something useful with the data */
+=======
+		dev_dbg(&urb->dev->dev, "%s - bad length %d\n", __func__, urb->actual_length);
+		goto exit;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msg = (struct keyspan_usa49_portStatusMessage *)data;
 
 	/* Check port number from message and retrieve private data */
 	if (msg->portNumber >= serial->num_ports) {
+<<<<<<< HEAD
 		dbg("%s - Unexpected port number %d",
 					__func__, msg->portNumber);
+=======
+		dev_dbg(&urb->dev->dev, "%s - Unexpected port number %d\n",
+			__func__, msg->portNumber);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 	port = serial->port[msg->portNumber];
 	p_priv = usb_get_serial_port_data(port);
+<<<<<<< HEAD
+=======
+	if (!p_priv)
+		goto resubmit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Update handshaking pin state information */
 	old_dcd_state = p_priv->dcd_state;
@@ -667,6 +1454,7 @@ static void	usa49_instat_callback(struct urb *urb)
 	p_priv->dcd_state = ((msg->dcd) ? 1 : 0);
 	p_priv->ri_state = ((msg->ri) ? 1 : 0);
 
+<<<<<<< HEAD
 	if (old_dcd_state != p_priv->dcd_state && old_dcd_state) {
 		struct tty_struct *tty = tty_port_tty_get(&port->port);
 		if (tty && !C_CLOCAL(tty))
@@ -678,12 +1466,24 @@ static void	usa49_instat_callback(struct urb *urb)
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err != 0)
 		dbg("%s - resubmit read urb failed. (%d)", __func__, err);
+=======
+	if (old_dcd_state != p_priv->dcd_state && old_dcd_state)
+		tty_port_tty_hangup(&port->port, true);
+resubmit:
+	/* Resubmit urb so we continue receiving */
+	err = usb_submit_urb(urb, GFP_ATOMIC);
+	if (err != 0)
+		dev_dbg(&port->dev, "%s - resubmit read urb failed. (%d)\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit:	;
 }
 
 static void	usa49_inack_callback(struct urb *urb)
 {
+<<<<<<< HEAD
 	dbg("%s", __func__);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void	usa49_indat_callback(struct urb *urb)
@@ -691,6 +1491,7 @@ static void	usa49_indat_callback(struct urb *urb)
 	int			i, err;
 	int			endpoint;
 	struct usb_serial_port	*port;
+<<<<<<< HEAD
 	struct tty_struct	*tty;
 	unsigned char 		*data = urb->transfer_buffer;
 	int status = urb->status;
@@ -702,16 +1503,34 @@ static void	usa49_indat_callback(struct urb *urb)
 	if (status) {
 		dbg("%s - nonzero status: %x on endpoint %d.", __func__,
 		    status, endpoint);
+=======
+	unsigned char 		*data = urb->transfer_buffer;
+	int status = urb->status;
+
+	endpoint = usb_pipeendpoint(urb->pipe);
+
+	if (status) {
+		dev_dbg(&urb->dev->dev, "%s - nonzero status %d on endpoint %x\n",
+			__func__, status, endpoint);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	port =  urb->context;
+<<<<<<< HEAD
 	tty = tty_port_tty_get(&port->port);
 	if (tty && urb->actual_length) {
 		/* 0x80 bit is error flag */
 		if ((data[0] & 0x80) == 0) {
 			/* no error on any byte */
 			tty_insert_flip_string(tty, data + 1,
+=======
+	if (urb->actual_length) {
+		/* 0x80 bit is error flag */
+		if ((data[0] & 0x80) == 0) {
+			/* no error on any byte */
+			tty_insert_flip_string(&port->port, data + 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						urb->actual_length - 1);
 		} else {
 			/* some bytes had errors, every byte has status */
@@ -720,7 +1539,11 @@ static void	usa49_indat_callback(struct urb *urb)
 				int flag = TTY_NORMAL;
 
 				if (stat & RXERROR_OVERRUN) {
+<<<<<<< HEAD
 					tty_insert_flip_char(tty, 0,
+=======
+					tty_insert_flip_char(&port->port, 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 								TTY_OVERRUN);
 				}
 				/* XXX should handle break (0x10) */
@@ -729,17 +1552,30 @@ static void	usa49_indat_callback(struct urb *urb)
 				else if (stat & RXERROR_FRAMING)
 					flag = TTY_FRAME;
 
+<<<<<<< HEAD
 				tty_insert_flip_char(tty, data[i+1], flag);
 			}
 		}
 		tty_flip_buffer_push(tty);
 	}
 	tty_kref_put(tty);
+=======
+				tty_insert_flip_char(&port->port, data[i+1],
+						flag);
+			}
+		}
+		tty_flip_buffer_push(&port->port);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Resubmit urb so we continue receiving */
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err != 0)
+<<<<<<< HEAD
 		dbg("%s - resubmit read urb failed. (%d)", __func__, err);
+=======
+		dev_dbg(&port->dev, "%s - resubmit read urb failed. (%d)\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void usa49wg_indat_callback(struct urb *urb)
@@ -747,6 +1583,7 @@ static void usa49wg_indat_callback(struct urb *urb)
 	int			i, len, x, err;
 	struct usb_serial	*serial;
 	struct usb_serial_port	*port;
+<<<<<<< HEAD
 	struct tty_struct	*tty;
 	unsigned char 		*data = urb->transfer_buffer;
 	int status = urb->status;
@@ -757,6 +1594,16 @@ static void usa49wg_indat_callback(struct urb *urb)
 
 	if (status) {
 		dbg("%s - nonzero status: %x", __func__, status);
+=======
+	unsigned char 		*data = urb->transfer_buffer;
+	int status = urb->status;
+
+	serial = urb->context;
+
+	if (status) {
+		dev_dbg(&urb->dev->dev, "%s - nonzero status: %d\n",
+				__func__, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -764,6 +1611,7 @@ static void usa49wg_indat_callback(struct urb *urb)
 	i = 0;
 	len = 0;
 
+<<<<<<< HEAD
 	if (urb->actual_length) {
 		while (i < urb->actual_length) {
 
@@ -809,18 +1657,70 @@ static void usa49wg_indat_callback(struct urb *urb)
 			tty_flip_buffer_push(tty);
 			tty_kref_put(tty);
 		}
+=======
+	while (i < urb->actual_length) {
+
+		/* Check port number from message */
+		if (data[i] >= serial->num_ports) {
+			dev_dbg(&urb->dev->dev, "%s - Unexpected port number %d\n",
+				__func__, data[i]);
+			return;
+		}
+		port = serial->port[data[i++]];
+		len = data[i++];
+
+		/* 0x80 bit is error flag */
+		if ((data[i] & 0x80) == 0) {
+			/* no error on any byte */
+			i++;
+			for (x = 1; x < len && i < urb->actual_length; ++x)
+				tty_insert_flip_char(&port->port,
+						data[i++], 0);
+		} else {
+			/*
+			 * some bytes had errors, every byte has status
+			 */
+			for (x = 0; x + 1 < len &&
+				    i + 1 < urb->actual_length; x += 2) {
+				int stat = data[i];
+				int flag = TTY_NORMAL;
+
+				if (stat & RXERROR_OVERRUN) {
+					tty_insert_flip_char(&port->port, 0,
+								TTY_OVERRUN);
+				}
+				/* XXX should handle break (0x10) */
+				if (stat & RXERROR_PARITY)
+					flag = TTY_PARITY;
+				else if (stat & RXERROR_FRAMING)
+					flag = TTY_FRAME;
+
+				tty_insert_flip_char(&port->port, data[i+1],
+						     flag);
+				i += 2;
+			}
+		}
+		tty_flip_buffer_push(&port->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Resubmit urb so we continue receiving */
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err != 0)
+<<<<<<< HEAD
 		dbg("%s - resubmit read urb failed. (%d)", __func__, err);
+=======
+		dev_dbg(&urb->dev->dev, "%s - resubmit read urb failed. (%d)\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* not used, usa-49 doesn't have per-port control endpoints */
 static void usa49_outcont_callback(struct urb *urb)
 {
+<<<<<<< HEAD
 	dbg("%s", __func__);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void usa90_indat_callback(struct urb *urb)
@@ -829,6 +1729,7 @@ static void usa90_indat_callback(struct urb *urb)
 	int			endpoint;
 	struct usb_serial_port	*port;
 	struct keyspan_port_private	 	*p_priv;
+<<<<<<< HEAD
 	struct tty_struct	*tty;
 	unsigned char 		*data = urb->transfer_buffer;
 	int status = urb->status;
@@ -840,6 +1741,16 @@ static void usa90_indat_callback(struct urb *urb)
 	if (status) {
 		dbg("%s - nonzero status: %x on endpoint %d.",
 		    __func__, status, endpoint);
+=======
+	unsigned char 		*data = urb->transfer_buffer;
+	int status = urb->status;
+
+	endpoint = usb_pipeendpoint(urb->pipe);
+
+	if (status) {
+		dev_dbg(&urb->dev->dev, "%s - nonzero status %d on endpoint %x\n",
+			__func__, status, endpoint);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -847,18 +1758,27 @@ static void usa90_indat_callback(struct urb *urb)
 	p_priv = usb_get_serial_port_data(port);
 
 	if (urb->actual_length) {
+<<<<<<< HEAD
 		tty = tty_port_tty_get(&port->port);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* if current mode is DMA, looks like usa28 format
 		   otherwise looks like usa26 data format */
 
 		if (p_priv->baud > 57600)
+<<<<<<< HEAD
 			tty_insert_flip_string(tty, data, urb->actual_length);
+=======
+			tty_insert_flip_string(&port->port, data,
+					urb->actual_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {
 			/* 0x80 bit is error flag */
 			if ((data[0] & 0x80) == 0) {
 				/* no errors on individual bytes, only
 				   possible overrun err*/
 				if (data[0] & RXERROR_OVERRUN) {
+<<<<<<< HEAD
 					tty_insert_flip_char(tty, 0,
 								TTY_OVERRUN);
 				}
@@ -868,22 +1788,40 @@ static void usa90_indat_callback(struct urb *urb)
 			}  else {
 			/* some bytes had errors, every byte has status */
 				dbg("%s - RX error!!!!", __func__);
+=======
+					tty_insert_flip_char(&port->port, 0,
+								TTY_OVERRUN);
+				}
+				for (i = 1; i < urb->actual_length ; ++i)
+					tty_insert_flip_char(&port->port,
+							data[i], TTY_NORMAL);
+			}  else {
+			/* some bytes had errors, every byte has status */
+				dev_dbg(&port->dev, "%s - RX error!!!!\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				for (i = 0; i + 1 < urb->actual_length; i += 2) {
 					int stat = data[i];
 					int flag = TTY_NORMAL;
 
 					if (stat & RXERROR_OVERRUN) {
 						tty_insert_flip_char(
+<<<<<<< HEAD
 								tty, 0,
 								TTY_OVERRUN);
 					}
 
+=======
+								&port->port, 0,
+								TTY_OVERRUN);
+					}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					/* XXX should handle break (0x10) */
 					if (stat & RXERROR_PARITY)
 						flag = TTY_PARITY;
 					else if (stat & RXERROR_FRAMING)
 						flag = TTY_FRAME;
 
+<<<<<<< HEAD
 					tty_insert_flip_char(tty, data[i+1],
 									flag);
 				}
@@ -891,12 +1829,24 @@ static void usa90_indat_callback(struct urb *urb)
 		}
 		tty_flip_buffer_push(tty);
 		tty_kref_put(tty);
+=======
+					tty_insert_flip_char(&port->port,
+							data[i+1], flag);
+				}
+			}
+		}
+		tty_flip_buffer_push(&port->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Resubmit urb so we continue receiving */
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err != 0)
+<<<<<<< HEAD
 		dbg("%s - resubmit read urb failed. (%d)", __func__, err);
+=======
+		dev_dbg(&port->dev, "%s - resubmit read urb failed. (%d)\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -907,18 +1857,30 @@ static void	usa90_instat_callback(struct urb *urb)
 	struct usb_serial			*serial;
 	struct usb_serial_port			*port;
 	struct keyspan_port_private	 	*p_priv;
+<<<<<<< HEAD
 	struct tty_struct			*tty;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int old_dcd_state, err;
 	int status = urb->status;
 
 	serial =  urb->context;
 
 	if (status) {
+<<<<<<< HEAD
 		dbg("%s - nonzero status: %x", __func__, status);
 		return;
 	}
 	if (urb->actual_length < 14) {
 		dbg("%s - %d byte report??", __func__, urb->actual_length);
+=======
+		dev_dbg(&urb->dev->dev, "%s - nonzero status: %d\n",
+				__func__, status);
+		return;
+	}
+	if (urb->actual_length < 14) {
+		dev_dbg(&urb->dev->dev, "%s - %d byte report??\n", __func__, urb->actual_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	}
 
@@ -928,6 +1890,11 @@ static void	usa90_instat_callback(struct urb *urb)
 
 	port = serial->port[0];
 	p_priv = usb_get_serial_port_data(port);
+<<<<<<< HEAD
+=======
+	if (!p_priv)
+		goto resubmit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Update handshaking pin state information */
 	old_dcd_state = p_priv->dcd_state;
@@ -936,6 +1903,7 @@ static void	usa90_instat_callback(struct urb *urb)
 	p_priv->dcd_state = ((msg->dcd) ? 1 : 0);
 	p_priv->ri_state = ((msg->ri) ? 1 : 0);
 
+<<<<<<< HEAD
 	if (old_dcd_state != p_priv->dcd_state && old_dcd_state) {
 		tty = tty_port_tty_get(&port->port);
 		if (tty && !C_CLOCAL(tty))
@@ -947,6 +1915,15 @@ static void	usa90_instat_callback(struct urb *urb)
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err != 0)
 		dbg("%s - resubmit read urb failed. (%d)", __func__, err);
+=======
+	if (old_dcd_state != p_priv->dcd_state && old_dcd_state)
+		tty_port_tty_hangup(&port->port, true);
+resubmit:
+	/* Resubmit urb so we continue receiving */
+	err = usb_submit_urb(urb, GFP_ATOMIC);
+	if (err != 0)
+		dev_dbg(&port->dev, "%s - resubmit read urb failed. (%d)\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit:
 	;
 }
@@ -960,7 +1937,11 @@ static void	usa90_outcont_callback(struct urb *urb)
 	p_priv = usb_get_serial_port_data(port);
 
 	if (p_priv->resend_cont) {
+<<<<<<< HEAD
 		dbg("%s - sending setup", __func__);
+=======
+		dev_dbg(&urb->dev->dev, "%s - sending setup\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		keyspan_usa90_send_setup(port->serial, port,
 						p_priv->resend_cont - 1);
 	}
@@ -978,18 +1959,30 @@ static void	usa67_instat_callback(struct urb *urb)
 	int old_dcd_state;
 	int status = urb->status;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
 	serial = urb->context;
 
 	if (status) {
 		dbg("%s - nonzero status: %x", __func__, status);
+=======
+	serial = urb->context;
+
+	if (status) {
+		dev_dbg(&urb->dev->dev, "%s - nonzero status: %d\n",
+				__func__, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if (urb->actual_length !=
 			sizeof(struct keyspan_usa67_portStatusMessage)) {
+<<<<<<< HEAD
 		dbg("%s - bad length %d", __func__, urb->actual_length);
+=======
+		dev_dbg(&urb->dev->dev, "%s - bad length %d\n", __func__, urb->actual_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -999,18 +1992,28 @@ static void	usa67_instat_callback(struct urb *urb)
 
 	/* Check port number from message and retrieve private data */
 	if (msg->port >= serial->num_ports) {
+<<<<<<< HEAD
 		dbg("%s - Unexpected port number %d", __func__, msg->port);
+=======
+		dev_dbg(&urb->dev->dev, "%s - Unexpected port number %d\n", __func__, msg->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	port = serial->port[msg->port];
 	p_priv = usb_get_serial_port_data(port);
+<<<<<<< HEAD
+=======
+	if (!p_priv)
+		goto resubmit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Update handshaking pin state information */
 	old_dcd_state = p_priv->dcd_state;
 	p_priv->cts_state = ((msg->hskia_cts) ? 1 : 0);
 	p_priv->dcd_state = ((msg->gpia_dcd) ? 1 : 0);
 
+<<<<<<< HEAD
 	if (old_dcd_state != p_priv->dcd_state && old_dcd_state) {
 		struct tty_struct *tty = tty_port_tty_get(&port->port);
 		if (tty && !C_CLOCAL(tty))
@@ -1022,6 +2025,15 @@ static void	usa67_instat_callback(struct urb *urb)
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err != 0)
 		dbg("%s - resubmit read urb failed. (%d)", __func__, err);
+=======
+	if (old_dcd_state != p_priv->dcd_state && old_dcd_state)
+		tty_port_tty_hangup(&port->port, true);
+resubmit:
+	/* Resubmit urb so we continue receiving */
+	err = usb_submit_urb(urb, GFP_ATOMIC);
+	if (err != 0)
+		dev_dbg(&port->dev, "%s - resubmit read urb failed. (%d)\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void usa67_glocont_callback(struct urb *urb)
@@ -1031,15 +2043,26 @@ static void usa67_glocont_callback(struct urb *urb)
 	struct keyspan_port_private *p_priv;
 	int i;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	serial = urb->context;
 	for (i = 0; i < serial->num_ports; ++i) {
 		port = serial->port[i];
 		p_priv = usb_get_serial_port_data(port);
+<<<<<<< HEAD
 
 		if (p_priv->resend_cont) {
 			dbg("%s - sending setup", __func__);
+=======
+		if (!p_priv)
+			continue;
+
+		if (p_priv->resend_cont) {
+			dev_dbg(&port->dev, "%s - sending setup\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			keyspan_usa67_send_setup(serial, port,
 						p_priv->resend_cont - 1);
 			break;
@@ -1047,16 +2070,26 @@ static void usa67_glocont_callback(struct urb *urb)
 	}
 }
 
+<<<<<<< HEAD
 static int keyspan_write_room(struct tty_struct *tty)
+=======
+static unsigned int keyspan_write_room(struct tty_struct *tty)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_serial_port *port = tty->driver_data;
 	struct keyspan_port_private	*p_priv;
 	const struct keyspan_device_details	*d_details;
 	int				flip;
+<<<<<<< HEAD
 	int				data_len;
 	struct urb			*this_urb;
 
 	dbg("%s", __func__);
+=======
+	unsigned int			data_len;
+	struct urb			*this_urb;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p_priv = usb_get_serial_port_data(port);
 	d_details = p_priv->device_details;
 
@@ -1087,20 +2120,29 @@ static int keyspan_write_room(struct tty_struct *tty)
 static int keyspan_open(struct tty_struct *tty, struct usb_serial_port *port)
 {
 	struct keyspan_port_private 	*p_priv;
+<<<<<<< HEAD
 	struct keyspan_serial_private 	*s_priv;
 	struct usb_serial 		*serial = port->serial;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct keyspan_device_details	*d_details;
 	int				i, err;
 	int				baud_rate, device_port;
 	struct urb			*urb;
 	unsigned int			cflag = 0;
 
+<<<<<<< HEAD
 	s_priv = usb_get_serial_data(serial);
 	p_priv = usb_get_serial_port_data(port);
 	d_details = p_priv->device_details;
 
 	dbg("%s - port%d.", __func__, port->number);
 
+=======
+	p_priv = usb_get_serial_port_data(port);
+	d_details = p_priv->device_details;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set some sane defaults */
 	p_priv->rts_state = 1;
 	p_priv->dtr_state = 1;
@@ -1124,8 +2166,12 @@ static int keyspan_open(struct tty_struct *tty, struct usb_serial_port *port)
 		usb_clear_halt(urb->dev, urb->pipe);
 		err = usb_submit_urb(urb, GFP_KERNEL);
 		if (err != 0)
+<<<<<<< HEAD
 			dbg("%s - submit urb %d failed (%d)",
 							__func__, i, err);
+=======
+			dev_dbg(&port->dev, "%s - submit urb %d failed (%d)\n", __func__, i, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Reset low level data toggle on out endpoints */
@@ -1140,22 +2186,36 @@ static int keyspan_open(struct tty_struct *tty, struct usb_serial_port *port)
 	/* get the terminal config for the setup message now so we don't
 	 * need to send 2 of them */
 
+<<<<<<< HEAD
 	device_port = port->number - port->serial->minor;
 	if (tty) {
 		cflag = tty->termios->c_cflag;
+=======
+	device_port = port->port_number;
+	if (tty) {
+		cflag = tty->termios.c_cflag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Baud rate calculation takes baud rate as an integer
 		   so other rates can be generated if desired. */
 		baud_rate = tty_get_baud_rate(tty);
 		/* If no match or invalid, leave as default */
 		if (baud_rate >= 0
+<<<<<<< HEAD
 		    && d_details->calculate_baud_rate(baud_rate, d_details->baudclk,
+=======
+		    && d_details->calculate_baud_rate(port, baud_rate, d_details->baudclk,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					NULL, NULL, NULL, device_port) == KEYSPAN_BAUD_RATE_OK) {
 			p_priv->baud = baud_rate;
 		}
 	}
 	/* set CTS/RTS handshake etc. */
 	p_priv->cflag = cflag;
+<<<<<<< HEAD
 	p_priv->flow_control = (cflag & CRTSCTS)? flow_cts: flow_none;
+=======
+	p_priv->flow_control = (cflag & CRTSCTS) ? flow_cts : flow_none;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	keyspan_send_setup(port, 1);
 	/* mdelay(100); */
@@ -1164,12 +2224,15 @@ static int keyspan_open(struct tty_struct *tty, struct usb_serial_port *port)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void stop_urb(struct urb *urb)
 {
 	if (urb && urb->status == -EINPROGRESS)
 		usb_kill_urb(urb);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void keyspan_dtr_rts(struct usb_serial_port *port, int on)
 {
 	struct keyspan_port_private *p_priv = usb_get_serial_port_data(port);
@@ -1182,17 +2245,23 @@ static void keyspan_dtr_rts(struct usb_serial_port *port, int on)
 static void keyspan_close(struct usb_serial_port *port)
 {
 	int			i;
+<<<<<<< HEAD
 	struct usb_serial	*serial = port->serial;
 	struct keyspan_serial_private 	*s_priv;
 	struct keyspan_port_private 	*p_priv;
 
 	dbg("%s", __func__);
 	s_priv = usb_get_serial_data(serial);
+=======
+	struct keyspan_port_private 	*p_priv;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p_priv = usb_get_serial_port_data(port);
 
 	p_priv->rts_state = 0;
 	p_priv->dtr_state = 0;
 
+<<<<<<< HEAD
 	if (serial->dev) {
 		keyspan_send_setup(port, 2);
 		/* pilot-xfer seems to work best with this delay */
@@ -1203,10 +2272,16 @@ static void keyspan_close(struct usb_serial_port *port)
 	/*while (p_priv->outcont_urb->status == -EINPROGRESS) {
 		dbg("%s - urb in progress", __func__);
 	}*/
+=======
+	keyspan_send_setup(port, 2);
+	/* pilot-xfer seems to work best with this delay */
+	mdelay(100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p_priv->out_flip = 0;
 	p_priv->in_flip = 0;
 
+<<<<<<< HEAD
 	if (serial->dev) {
 		/* Stop reading/writing urbs */
 		stop_urb(p_priv->inack_urb);
@@ -1215,12 +2290,19 @@ static void keyspan_close(struct usb_serial_port *port)
 			stop_urb(p_priv->in_urbs[i]);
 			stop_urb(p_priv->out_urbs[i]);
 		}
+=======
+	usb_kill_urb(p_priv->inack_urb);
+	for (i = 0; i < 2; i++) {
+		usb_kill_urb(p_priv->in_urbs[i]);
+		usb_kill_urb(p_priv->out_urbs[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /* download the firmware to a pre-renumeration device */
 static int keyspan_fake_startup(struct usb_serial *serial)
 {
+<<<<<<< HEAD
 	int 				response;
 	const struct ihex_binrec 	*record;
 	char				*fw_name;
@@ -1233,6 +2315,17 @@ static int keyspan_fake_startup(struct usb_serial *serial)
 	if ((le16_to_cpu(serial->dev->descriptor.bcdDevice) & 0x8000)
 								!= 0x8000) {
 		dbg("Firmware already loaded.  Quitting.");
+=======
+	char	*fw_name;
+
+	dev_dbg(&serial->dev->dev, "Keyspan startup version %04x product %04x\n",
+		le16_to_cpu(serial->dev->descriptor.bcdDevice),
+		le16_to_cpu(serial->dev->descriptor.idProduct));
+
+	if ((le16_to_cpu(serial->dev->descriptor.bcdDevice) & 0x8000)
+								!= 0x8000) {
+		dev_dbg(&serial->dev->dev, "Firmware already loaded.  Quitting.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
@@ -1292,6 +2385,7 @@ static int keyspan_fake_startup(struct usb_serial *serial)
 		return 1;
 	}
 
+<<<<<<< HEAD
 	if (request_ihex_firmware(&fw, fw_name, &serial->dev->dev)) {
 		dev_err(&serial->dev->dev, "Required keyspan firmware image (%s) unavailable.\n", fw_name);
 		return(1);
@@ -1320,6 +2414,18 @@ static int keyspan_fake_startup(struct usb_serial *serial)
 		/* bring device out of reset. Renumeration will occur in a
 		   moment and the new device will bind to the real driver */
 	response = ezusb_set_reset(serial, 0);
+=======
+	dev_dbg(&serial->dev->dev, "Uploading Keyspan %s firmware.\n", fw_name);
+
+	if (ezusb_fx1_ihex_firmware_download(serial->dev, fw_name) < 0) {
+		dev_err(&serial->dev->dev, "failed to load firmware \"%s\"\n",
+			fw_name);
+		return -ENOENT;
+	}
+
+	/* after downloading firmware Renumeration will occur in a
+	  moment and the new device will bind to the real driver */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we don't want this device to have a driver assigned to it. */
 	return 1;
@@ -1339,8 +2445,13 @@ static struct usb_endpoint_descriptor const *find_ep(struct usb_serial const *se
 		if (ep->bEndpointAddress == endpoint)
 			return ep;
 	}
+<<<<<<< HEAD
 	dev_warn(&serial->interface->dev, "found no endpoint descriptor for "
 		 "endpoint %x\n", endpoint);
+=======
+	dev_warn(&serial->interface->dev, "found no endpoint descriptor for endpoint %x\n",
+			endpoint);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -1355,12 +2466,20 @@ static struct urb *keyspan_setup_urb(struct usb_serial *serial, int endpoint,
 	if (endpoint == -1)
 		return NULL;		/* endpoint not needed */
 
+<<<<<<< HEAD
 	dbg("%s - alloc for endpoint %d.", __func__, endpoint);
 	urb = usb_alloc_urb(0, GFP_KERNEL);		/* No ISO */
 	if (urb == NULL) {
 		dbg("%s - alloc for endpoint %d failed.", __func__, endpoint);
 		return NULL;
 	}
+=======
+	dev_dbg(&serial->interface->dev, "%s - alloc for endpoint %x\n",
+			__func__, endpoint);
+	urb = usb_alloc_urb(0, GFP_KERNEL);		/* No ISO */
+	if (!urb)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (endpoint == 0) {
 		/* control EP filled in when used */
@@ -1369,8 +2488,13 @@ static struct urb *keyspan_setup_urb(struct usb_serial *serial, int endpoint,
 
 	ep_desc = find_ep(serial, endpoint);
 	if (!ep_desc) {
+<<<<<<< HEAD
 		/* leak the urb, something's wrong and the callers don't care */
 		return urb;
+=======
+		usb_free_urb(urb);
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (usb_endpoint_xfer_int(ep_desc)) {
 		ep_type_name = "INT";
@@ -1391,7 +2515,11 @@ static struct urb *keyspan_setup_urb(struct usb_serial *serial, int endpoint,
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	dbg("%s - using urb %p for %s endpoint %x",
+=======
+	dev_dbg(&serial->interface->dev, "%s - using urb %p for %s endpoint %x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    __func__, urb, ep_type_name, endpoint);
 	return urb;
 }
@@ -1451,6 +2579,7 @@ static struct callbacks {
 	   data in device_details */
 static void keyspan_setup_urbs(struct usb_serial *serial)
 {
+<<<<<<< HEAD
 	int				i, j;
 	struct keyspan_serial_private 	*s_priv;
 	const struct keyspan_device_details	*d_details;
@@ -1460,6 +2589,11 @@ static void keyspan_setup_urbs(struct usb_serial *serial)
 	int				endp;
 
 	dbg("%s", __func__);
+=======
+	struct keyspan_serial_private 	*s_priv;
+	const struct keyspan_device_details	*d_details;
+	struct callbacks		*cback;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	s_priv = usb_get_serial_data(serial);
 	d_details = s_priv->device_details;
@@ -1483,6 +2617,7 @@ static void keyspan_setup_urbs(struct usb_serial *serial)
 		(serial, d_details->glocont_endpoint, USB_DIR_OUT,
 		 serial, s_priv->glocont_buf, GLOCONT_BUFLEN,
 		 cback->glocont_callback);
+<<<<<<< HEAD
 
 	/* Setup endpoints for each port specific thing */
 	for (i = 0; i < d_details->num_ports; i++) {
@@ -1526,13 +2661,24 @@ static void keyspan_setup_urbs(struct usb_serial *serial)
 
 /* usa19 function doesn't require prescaler */
 static int keyspan_usa19_calc_baud(u32 baud_rate, u32 baudclk, u8 *rate_hi,
+=======
+}
+
+/* usa19 function doesn't require prescaler */
+static int keyspan_usa19_calc_baud(struct usb_serial_port *port,
+				   u32 baud_rate, u32 baudclk, u8 *rate_hi,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   u8 *rate_low, u8 *prescaler, int portnum)
 {
 	u32 	b16,	/* baud rate times 16 (actual rate used internally) */
 		div,	/* divisor */
 		cnt;	/* inverse of divisor (programmed into 8051) */
 
+<<<<<<< HEAD
 	dbg("%s - %d.", __func__, baud_rate);
+=======
+	dev_dbg(&port->dev, "%s - %d.\n", __func__, baud_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* prevent divide by zero...  */
 	b16 = baud_rate * 16L;
@@ -1559,19 +2705,33 @@ static int keyspan_usa19_calc_baud(u32 baud_rate, u32 baudclk, u8 *rate_hi,
 	if (rate_hi)
 		*rate_hi = (u8) ((cnt >> 8) & 0xff);
 	if (rate_low && rate_hi)
+<<<<<<< HEAD
 		dbg("%s - %d %02x %02x.",
+=======
+		dev_dbg(&port->dev, "%s - %d %02x %02x.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__func__, baud_rate, *rate_hi, *rate_low);
 	return KEYSPAN_BAUD_RATE_OK;
 }
 
 /* usa19hs function doesn't require prescaler */
+<<<<<<< HEAD
 static int keyspan_usa19hs_calc_baud(u32 baud_rate, u32 baudclk, u8 *rate_hi,
 				   u8 *rate_low, u8 *prescaler, int portnum)
+=======
+static int keyspan_usa19hs_calc_baud(struct usb_serial_port *port,
+				     u32 baud_rate, u32 baudclk, u8 *rate_hi,
+				     u8 *rate_low, u8 *prescaler, int portnum)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 	b16,	/* baud rate times 16 (actual rate used internally) */
 			div;	/* divisor */
 
+<<<<<<< HEAD
 	dbg("%s - %d.", __func__, baud_rate);
+=======
+	dev_dbg(&port->dev, "%s - %d.\n", __func__, baud_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* prevent divide by zero...  */
 	b16 = baud_rate * 16L;
@@ -1594,13 +2754,22 @@ static int keyspan_usa19hs_calc_baud(u32 baud_rate, u32 baudclk, u8 *rate_hi,
 		*rate_hi = (u8) ((div >> 8) & 0xff);
 
 	if (rate_low && rate_hi)
+<<<<<<< HEAD
 		dbg("%s - %d %02x %02x.",
+=======
+		dev_dbg(&port->dev, "%s - %d %02x %02x.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, baud_rate, *rate_hi, *rate_low);
 
 	return KEYSPAN_BAUD_RATE_OK;
 }
 
+<<<<<<< HEAD
 static int keyspan_usa19w_calc_baud(u32 baud_rate, u32 baudclk, u8 *rate_hi,
+=======
+static int keyspan_usa19w_calc_baud(struct usb_serial_port *port,
+				    u32 baud_rate, u32 baudclk, u8 *rate_hi,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    u8 *rate_low, u8 *prescaler, int portnum)
 {
 	u32 	b16,	/* baud rate times 16 (actual rate used internally) */
@@ -1612,7 +2781,11 @@ static int keyspan_usa19w_calc_baud(u32 baud_rate, u32 baudclk, u8 *rate_hi,
 	u8	best_prescaler;
 	int	i;
 
+<<<<<<< HEAD
 	dbg("%s - %d.", __func__, baud_rate);
+=======
+	dev_dbg(&port->dev, "%s - %d.\n", __func__, baud_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* prevent divide by zero */
 	b16 = baud_rate * 16L;
@@ -1657,20 +2830,34 @@ static int keyspan_usa19w_calc_baud(u32 baud_rate, u32 baudclk, u8 *rate_hi,
 		*rate_hi = (u8) ((div >> 8) & 0xff);
 	if (prescaler) {
 		*prescaler = best_prescaler;
+<<<<<<< HEAD
 		/*  dbg("%s - %d %d", __func__, *prescaler, div); */
+=======
+		/*  dev_dbg(&port->dev, "%s - %d %d\n", __func__, *prescaler, div); */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return KEYSPAN_BAUD_RATE_OK;
 }
 
 	/* USA-28 supports different maximum baud rates on each port */
+<<<<<<< HEAD
 static int keyspan_usa28_calc_baud(u32 baud_rate, u32 baudclk, u8 *rate_hi,
 				    u8 *rate_low, u8 *prescaler, int portnum)
+=======
+static int keyspan_usa28_calc_baud(struct usb_serial_port *port,
+				   u32 baud_rate, u32 baudclk, u8 *rate_hi,
+				   u8 *rate_low, u8 *prescaler, int portnum)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 	b16,	/* baud rate times 16 (actual rate used internally) */
 		div,	/* divisor */
 		cnt;	/* inverse of divisor (programmed into 8051) */
 
+<<<<<<< HEAD
 	dbg("%s - %d.", __func__, baud_rate);
+=======
+	dev_dbg(&port->dev, "%s - %d.\n", __func__, baud_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* prevent divide by zero */
 	b16 = baud_rate * 16L;
@@ -1703,7 +2890,11 @@ static int keyspan_usa28_calc_baud(u32 baud_rate, u32 baudclk, u8 *rate_hi,
 		*rate_low = (u8) (cnt & 0xff);
 	if (rate_hi)
 		*rate_hi = (u8) ((cnt >> 8) & 0xff);
+<<<<<<< HEAD
 	dbg("%s - %d OK.", __func__, baud_rate);
+=======
+	dev_dbg(&port->dev, "%s - %d OK.\n", __func__, baud_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return KEYSPAN_BAUD_RATE_OK;
 }
 
@@ -1715,15 +2906,23 @@ static int keyspan_usa26_send_setup(struct usb_serial *serial,
 	struct keyspan_serial_private 		*s_priv;
 	struct keyspan_port_private 		*p_priv;
 	const struct keyspan_device_details	*d_details;
+<<<<<<< HEAD
 	int 					outcont_urb;
 	struct urb				*this_urb;
 	int 					device_port, err;
 
 	dbg("%s reset=%d", __func__, reset_port);
+=======
+	struct urb				*this_urb;
+	int 					device_port, err;
+
+	dev_dbg(&port->dev, "%s reset=%d\n", __func__, reset_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	s_priv = usb_get_serial_data(serial);
 	p_priv = usb_get_serial_port_data(port);
 	d_details = s_priv->device_details;
+<<<<<<< HEAD
 	device_port = port->number - port->serial->minor;
 
 	outcont_urb = d_details->outcont_endpoints[device_port];
@@ -1737,12 +2936,31 @@ static int keyspan_usa26_send_setup(struct usb_serial *serial,
 		return -1;
 	}
 
+=======
+	device_port = port->port_number;
+
+	this_urb = p_priv->outcont_urb;
+
+		/* Make sure we have an urb then send the message */
+	if (this_urb == NULL) {
+		dev_dbg(&port->dev, "%s - oops no urb.\n", __func__);
+		return -1;
+	}
+
+	dev_dbg(&port->dev, "%s - endpoint %x\n",
+			__func__, usb_pipeendpoint(this_urb->pipe));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Save reset port val for resend.
 	   Don't overwrite resend for open/close condition. */
 	if ((reset_port + 1) > p_priv->resend_cont)
 		p_priv->resend_cont = reset_port + 1;
 	if (this_urb->status == -EINPROGRESS) {
+<<<<<<< HEAD
 		/*  dbg("%s - already writing", __func__); */
+=======
+		/*  dev_dbg(&port->dev, "%s - already writing\n", __func__); */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdelay(5);
 		return -1;
 	}
@@ -1753,11 +2971,19 @@ static int keyspan_usa26_send_setup(struct usb_serial *serial,
 	if (p_priv->old_baud != p_priv->baud) {
 		p_priv->old_baud = p_priv->baud;
 		msg.setClocking = 0xff;
+<<<<<<< HEAD
 		if (d_details->calculate_baud_rate
 		    (p_priv->baud, d_details->baudclk, &msg.baudHi,
 		     &msg.baudLo, &msg.prescaler, device_port) == KEYSPAN_INVALID_BAUD_RATE) {
 			dbg("%s - Invalid baud rate %d requested, using 9600.",
 						__func__, p_priv->baud);
+=======
+		if (d_details->calculate_baud_rate(port, p_priv->baud, d_details->baudclk,
+						   &msg.baudHi, &msg.baudLo, &msg.prescaler,
+						   device_port) == KEYSPAN_INVALID_BAUD_RATE) {
+			dev_dbg(&port->dev, "%s - Invalid baud rate %d requested, using 9600.\n",
+				__func__, p_priv->baud);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg.baudLo = 0;
 			msg.baudHi = 125;	/* Values for 9600 baud */
 			msg.prescaler = 10;
@@ -1765,7 +2991,11 @@ static int keyspan_usa26_send_setup(struct usb_serial *serial,
 		msg.setPrescaler = 0xff;
 	}
 
+<<<<<<< HEAD
 	msg.lcr = (p_priv->cflag & CSTOPB)? STOPBITS_678_2: STOPBITS_5678_1;
+=======
+	msg.lcr = (p_priv->cflag & CSTOPB) ? STOPBITS_678_2 : STOPBITS_5678_1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (p_priv->cflag & CSIZE) {
 	case CS5:
 		msg.lcr |= USA_DATABITS_5;
@@ -1782,7 +3012,11 @@ static int keyspan_usa26_send_setup(struct usb_serial *serial,
 	}
 	if (p_priv->cflag & PARENB) {
 		/* note USA_PARITY_NONE == 0 */
+<<<<<<< HEAD
 		msg.lcr |= (p_priv->cflag & PARODD)?
+=======
+		msg.lcr |= (p_priv->cflag & PARODD) ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			USA_PARITY_ODD : USA_PARITY_EVEN;
 	}
 	msg.setLcr = 0xff;
@@ -1851,6 +3085,7 @@ static int keyspan_usa26_send_setup(struct usb_serial *serial,
 
 	err = usb_submit_urb(this_urb, GFP_ATOMIC);
 	if (err != 0)
+<<<<<<< HEAD
 		dbg("%s - usb_submit_urb(setup) failed (%d)", __func__, err);
 #if 0
 	else {
@@ -1860,6 +3095,9 @@ static int keyspan_usa26_send_setup(struct usb_serial *serial,
 	}
 #endif
 
+=======
+		dev_dbg(&port->dev, "%s - usb_submit_urb(setup) failed (%d)\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1874,17 +3112,28 @@ static int keyspan_usa28_send_setup(struct usb_serial *serial,
 	struct urb				*this_urb;
 	int 					device_port, err;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
 	s_priv = usb_get_serial_data(serial);
 	p_priv = usb_get_serial_port_data(port);
 	d_details = s_priv->device_details;
 	device_port = port->number - port->serial->minor;
+=======
+	s_priv = usb_get_serial_data(serial);
+	p_priv = usb_get_serial_port_data(port);
+	d_details = s_priv->device_details;
+	device_port = port->port_number;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* only do something if we have a bulk out endpoint */
 	this_urb = p_priv->outcont_urb;
 	if (this_urb == NULL) {
+<<<<<<< HEAD
 		dbg("%s - oops no urb.", __func__);
+=======
+		dev_dbg(&port->dev, "%s - oops no urb.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -1893,7 +3142,11 @@ static int keyspan_usa28_send_setup(struct usb_serial *serial,
 	if ((reset_port + 1) > p_priv->resend_cont)
 		p_priv->resend_cont = reset_port + 1;
 	if (this_urb->status == -EINPROGRESS) {
+<<<<<<< HEAD
 		dbg("%s already writing", __func__);
+=======
+		dev_dbg(&port->dev, "%s already writing\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdelay(5);
 		return -1;
 	}
@@ -1901,9 +3154,16 @@ static int keyspan_usa28_send_setup(struct usb_serial *serial,
 	memset(&msg, 0, sizeof(struct keyspan_usa28_portControlMessage));
 
 	msg.setBaudRate = 1;
+<<<<<<< HEAD
 	if (d_details->calculate_baud_rate(p_priv->baud, d_details->baudclk,
 		&msg.baudHi, &msg.baudLo, NULL, device_port) == KEYSPAN_INVALID_BAUD_RATE) {
 		dbg("%s - Invalid baud rate requested %d.",
+=======
+	if (d_details->calculate_baud_rate(port, p_priv->baud, d_details->baudclk,
+					   &msg.baudHi, &msg.baudLo, NULL,
+					   device_port) == KEYSPAN_INVALID_BAUD_RATE) {
+		dev_dbg(&port->dev, "%s - Invalid baud rate requested %d.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						__func__, p_priv->baud);
 		msg.baudLo = 0xff;
 		msg.baudHi = 0xb2;	/* Values for 9600 baud */
@@ -1978,6 +3238,7 @@ static int keyspan_usa28_send_setup(struct usb_serial *serial,
 
 	err = usb_submit_urb(this_urb, GFP_ATOMIC);
 	if (err != 0)
+<<<<<<< HEAD
 		dbg("%s - usb_submit_urb(setup) failed", __func__);
 #if 0
 	else {
@@ -1985,6 +3246,9 @@ static int keyspan_usa28_send_setup(struct usb_serial *serial,
 		    this_urb->transfer_buffer_length);
 	}
 #endif
+=======
+		dev_dbg(&port->dev, "%s - usb_submit_urb(setup) failed\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2001,8 +3265,11 @@ static int keyspan_usa49_send_setup(struct usb_serial *serial,
 	struct urb				*this_urb;
 	int 					err, device_port;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s_priv = usb_get_serial_data(serial);
 	p_priv = usb_get_serial_port_data(port);
 	d_details = s_priv->device_details;
@@ -2010,6 +3277,7 @@ static int keyspan_usa49_send_setup(struct usb_serial *serial,
 	this_urb = s_priv->glocont_urb;
 
 	/* Work out which port within the device is being setup */
+<<<<<<< HEAD
 	device_port = port->number - port->serial->minor;
 
 	/* Make sure we have an urb then send the message */
@@ -2021,6 +3289,18 @@ static int keyspan_usa49_send_setup(struct usb_serial *serial,
 	dbg("%s - endpoint %d port %d (%d)",
 			__func__, usb_pipeendpoint(this_urb->pipe),
 			port->number, device_port);
+=======
+	device_port = port->port_number;
+
+	/* Make sure we have an urb then send the message */
+	if (this_urb == NULL) {
+		dev_dbg(&port->dev, "%s - oops no urb for port.\n", __func__);
+		return -1;
+	}
+
+	dev_dbg(&port->dev, "%s - endpoint %x (%d)\n",
+		__func__, usb_pipeendpoint(this_urb->pipe), device_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Save reset port val for resend.
 	   Don't overwrite resend for open/close condition. */
@@ -2028,25 +3308,40 @@ static int keyspan_usa49_send_setup(struct usb_serial *serial,
 		p_priv->resend_cont = reset_port + 1;
 
 	if (this_urb->status == -EINPROGRESS) {
+<<<<<<< HEAD
 		/*  dbg("%s - already writing", __func__); */
+=======
+		/*  dev_dbg(&port->dev, "%s - already writing\n", __func__); */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdelay(5);
 		return -1;
 	}
 
 	memset(&msg, 0, sizeof(struct keyspan_usa49_portControlMessage));
 
+<<<<<<< HEAD
 	/*msg.portNumber = port->number;*/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msg.portNumber = device_port;
 
 	/* Only set baud rate if it's changed */
 	if (p_priv->old_baud != p_priv->baud) {
 		p_priv->old_baud = p_priv->baud;
 		msg.setClocking = 0xff;
+<<<<<<< HEAD
 		if (d_details->calculate_baud_rate
 		    (p_priv->baud, d_details->baudclk, &msg.baudHi,
 		     &msg.baudLo, &msg.prescaler, device_port) == KEYSPAN_INVALID_BAUD_RATE) {
 			dbg("%s - Invalid baud rate %d requested, using 9600.",
 						__func__, p_priv->baud);
+=======
+		if (d_details->calculate_baud_rate(port, p_priv->baud, d_details->baudclk,
+						   &msg.baudHi, &msg.baudLo, &msg.prescaler,
+						   device_port) == KEYSPAN_INVALID_BAUD_RATE) {
+			dev_dbg(&port->dev, "%s - Invalid baud rate %d requested, using 9600.\n",
+				__func__, p_priv->baud);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg.baudLo = 0;
 			msg.baudHi = 125;	/* Values for 9600 baud */
 			msg.prescaler = 10;
@@ -2054,7 +3349,11 @@ static int keyspan_usa49_send_setup(struct usb_serial *serial,
 		/* msg.setPrescaler = 0xff; */
 	}
 
+<<<<<<< HEAD
 	msg.lcr = (p_priv->cflag & CSTOPB)? STOPBITS_678_2: STOPBITS_5678_1;
+=======
+	msg.lcr = (p_priv->cflag & CSTOPB) ? STOPBITS_678_2 : STOPBITS_5678_1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (p_priv->cflag & CSIZE) {
 	case CS5:
 		msg.lcr |= USA_DATABITS_5;
@@ -2071,7 +3370,11 @@ static int keyspan_usa49_send_setup(struct usb_serial *serial,
 	}
 	if (p_priv->cflag & PARENB) {
 		/* note USA_PARITY_NONE == 0 */
+<<<<<<< HEAD
 		msg.lcr |= (p_priv->cflag & PARODD)?
+=======
+		msg.lcr |= (p_priv->cflag & PARODD) ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			USA_PARITY_ODD : USA_PARITY_EVEN;
 	}
 	msg.setLcr = 0xff;
@@ -2145,7 +3448,11 @@ static int keyspan_usa49_send_setup(struct usb_serial *serial,
 	if (d_details->product_id == keyspan_usa49wg_product_id) {
 		dr = (void *)(s_priv->ctrl_buf);
 		dr->bRequestType = USB_TYPE_VENDOR | USB_DIR_OUT;
+<<<<<<< HEAD
 		dr->bRequest = 0xB0;	/* 49wg control message */;
+=======
+		dr->bRequest = 0xB0;	/* 49wg control message */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dr->wValue = 0;
 		dr->wIndex = 0;
 		dr->wLength = cpu_to_le16(sizeof(msg));
@@ -2165,6 +3472,7 @@ static int keyspan_usa49_send_setup(struct usb_serial *serial,
 	}
 	err = usb_submit_urb(this_urb, GFP_ATOMIC);
 	if (err != 0)
+<<<<<<< HEAD
 		dbg("%s - usb_submit_urb(setup) failed (%d)", __func__, err);
 #if 0
 	else {
@@ -2173,6 +3481,9 @@ static int keyspan_usa49_send_setup(struct usb_serial *serial,
 			   usb_pipeendpoint(this_urb->pipe));
 	}
 #endif
+=======
+		dev_dbg(&port->dev, "%s - usb_submit_urb(setup) failed (%d)\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2189,8 +3500,11 @@ static int keyspan_usa90_send_setup(struct usb_serial *serial,
 	int 					err;
 	u8						prescaler;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s_priv = usb_get_serial_data(serial);
 	p_priv = usb_get_serial_port_data(port);
 	d_details = s_priv->device_details;
@@ -2198,7 +3512,11 @@ static int keyspan_usa90_send_setup(struct usb_serial *serial,
 	/* only do something if we have a bulk out endpoint */
 	this_urb = p_priv->outcont_urb;
 	if (this_urb == NULL) {
+<<<<<<< HEAD
 		dbg("%s - oops no urb.", __func__);
+=======
+		dev_dbg(&port->dev, "%s - oops no urb.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -2207,7 +3525,11 @@ static int keyspan_usa90_send_setup(struct usb_serial *serial,
 	if ((reset_port + 1) > p_priv->resend_cont)
 		p_priv->resend_cont = reset_port + 1;
 	if (this_urb->status == -EINPROGRESS) {
+<<<<<<< HEAD
 		dbg("%s already writing", __func__);
+=======
+		dev_dbg(&port->dev, "%s already writing\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdelay(5);
 		return -1;
 	}
@@ -2218,6 +3540,7 @@ static int keyspan_usa90_send_setup(struct usb_serial *serial,
 	if (p_priv->old_baud != p_priv->baud) {
 		p_priv->old_baud = p_priv->baud;
 		msg.setClocking = 0x01;
+<<<<<<< HEAD
 		if (d_details->calculate_baud_rate
 		    (p_priv->baud, d_details->baudclk, &msg.baudHi,
 		     &msg.baudLo, &prescaler, 0) == KEYSPAN_INVALID_BAUD_RATE) {
@@ -2225,6 +3548,14 @@ static int keyspan_usa90_send_setup(struct usb_serial *serial,
 						__func__, p_priv->baud);
 			p_priv->baud = 9600;
 			d_details->calculate_baud_rate(p_priv->baud, d_details->baudclk,
+=======
+		if (d_details->calculate_baud_rate(port, p_priv->baud, d_details->baudclk,
+						   &msg.baudHi, &msg.baudLo, &prescaler, 0) == KEYSPAN_INVALID_BAUD_RATE) {
+			dev_dbg(&port->dev, "%s - Invalid baud rate %d requested, using 9600.\n",
+				__func__, p_priv->baud);
+			p_priv->baud = 9600;
+			d_details->calculate_baud_rate(port, p_priv->baud, d_details->baudclk,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				&msg.baudHi, &msg.baudLo, &prescaler, 0);
 		}
 		msg.setRxMode = 1;
@@ -2240,7 +3571,11 @@ static int keyspan_usa90_send_setup(struct usb_serial *serial,
 		msg.txMode = TXMODE_BYHAND;
 	}
 
+<<<<<<< HEAD
 	msg.lcr = (p_priv->cflag & CSTOPB)? STOPBITS_678_2: STOPBITS_5678_1;
+=======
+	msg.lcr = (p_priv->cflag & CSTOPB) ? STOPBITS_678_2 : STOPBITS_5678_1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (p_priv->cflag & CSIZE) {
 	case CS5:
 		msg.lcr |= USA_DATABITS_5;
@@ -2257,7 +3592,11 @@ static int keyspan_usa90_send_setup(struct usb_serial *serial,
 	}
 	if (p_priv->cflag & PARENB) {
 		/* note USA_PARITY_NONE == 0 */
+<<<<<<< HEAD
 		msg.lcr |= (p_priv->cflag & PARODD)?
+=======
+		msg.lcr |= (p_priv->cflag & PARODD) ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			USA_PARITY_ODD : USA_PARITY_EVEN;
 	}
 	if (p_priv->old_cflag != p_priv->cflag) {
@@ -2306,7 +3645,11 @@ static int keyspan_usa90_send_setup(struct usb_serial *serial,
 
 	err = usb_submit_urb(this_urb, GFP_ATOMIC);
 	if (err != 0)
+<<<<<<< HEAD
 		dbg("%s - usb_submit_urb(setup) failed (%d)", __func__, err);
+=======
+		dev_dbg(&port->dev, "%s - usb_submit_urb(setup) failed (%d)\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2321,8 +3664,11 @@ static int keyspan_usa67_send_setup(struct usb_serial *serial,
 	struct urb				*this_urb;
 	int 					err, device_port;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s_priv = usb_get_serial_data(serial);
 	p_priv = usb_get_serial_port_data(port);
 	d_details = s_priv->device_details;
@@ -2330,12 +3676,20 @@ static int keyspan_usa67_send_setup(struct usb_serial *serial,
 	this_urb = s_priv->glocont_urb;
 
 	/* Work out which port within the device is being setup */
+<<<<<<< HEAD
 	device_port = port->number - port->serial->minor;
 
 	/* Make sure we have an urb then send the message */
 	if (this_urb == NULL) {
 		dbg("%s - oops no urb for port %d.", __func__,
 			port->number);
+=======
+	device_port = port->port_number;
+
+	/* Make sure we have an urb then send the message */
+	if (this_urb == NULL) {
+		dev_dbg(&port->dev, "%s - oops no urb for port.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -2344,7 +3698,11 @@ static int keyspan_usa67_send_setup(struct usb_serial *serial,
 	if ((reset_port + 1) > p_priv->resend_cont)
 		p_priv->resend_cont = reset_port + 1;
 	if (this_urb->status == -EINPROGRESS) {
+<<<<<<< HEAD
 		/*  dbg("%s - already writing", __func__); */
+=======
+		/*  dev_dbg(&port->dev, "%s - already writing\n", __func__); */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdelay(5);
 		return -1;
 	}
@@ -2357,11 +3715,19 @@ static int keyspan_usa67_send_setup(struct usb_serial *serial,
 	if (p_priv->old_baud != p_priv->baud) {
 		p_priv->old_baud = p_priv->baud;
 		msg.setClocking = 0xff;
+<<<<<<< HEAD
 		if (d_details->calculate_baud_rate
 		    (p_priv->baud, d_details->baudclk, &msg.baudHi,
 		     &msg.baudLo, &msg.prescaler, device_port) == KEYSPAN_INVALID_BAUD_RATE) {
 			dbg("%s - Invalid baud rate %d requested, using 9600.",
 						__func__, p_priv->baud);
+=======
+		if (d_details->calculate_baud_rate(port, p_priv->baud, d_details->baudclk,
+						   &msg.baudHi, &msg.baudLo, &msg.prescaler,
+						   device_port) == KEYSPAN_INVALID_BAUD_RATE) {
+			dev_dbg(&port->dev, "%s - Invalid baud rate %d requested, using 9600.\n",
+				__func__, p_priv->baud);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg.baudLo = 0;
 			msg.baudHi = 125;	/* Values for 9600 baud */
 			msg.prescaler = 10;
@@ -2386,7 +3752,11 @@ static int keyspan_usa67_send_setup(struct usb_serial *serial,
 	}
 	if (p_priv->cflag & PARENB) {
 		/* note USA_PARITY_NONE == 0 */
+<<<<<<< HEAD
 		msg.lcr |= (p_priv->cflag & PARODD)?
+=======
+		msg.lcr |= (p_priv->cflag & PARODD) ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					USA_PARITY_ODD : USA_PARITY_EVEN;
 	}
 	msg.setLcr = 0xff;
@@ -2452,8 +3822,12 @@ static int keyspan_usa67_send_setup(struct usb_serial *serial,
 
 	err = usb_submit_urb(this_urb, GFP_ATOMIC);
 	if (err != 0)
+<<<<<<< HEAD
 		dbg("%s - usb_submit_urb(setup) failed (%d)", __func__,
 				err);
+=======
+		dev_dbg(&port->dev, "%s - usb_submit_urb(setup) failed (%d)\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2463,8 +3837,11 @@ static void keyspan_send_setup(struct usb_serial_port *port, int reset_port)
 	struct keyspan_serial_private *s_priv;
 	const struct keyspan_device_details *d_details;
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s_priv = usb_get_serial_data(serial);
 	d_details = s_priv->device_details;
 
@@ -2493,6 +3870,7 @@ static void keyspan_send_setup(struct usb_serial_port *port, int reset_port)
 static int keyspan_startup(struct usb_serial *serial)
 {
 	int				i, err;
+<<<<<<< HEAD
 	struct usb_serial_port		*port;
 	struct keyspan_serial_private 	*s_priv;
 	struct keyspan_port_private	*p_priv;
@@ -2500,6 +3878,11 @@ static int keyspan_startup(struct usb_serial *serial)
 
 	dbg("%s", __func__);
 
+=======
+	struct keyspan_serial_private 	*s_priv;
+	const struct keyspan_device_details	*d_details;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; (d_details = keyspan_devices[i]) != NULL; ++i)
 		if (d_details->product_id ==
 				le16_to_cpu(serial->dev->descriptor.idProduct))
@@ -2512,15 +3895,37 @@ static int keyspan_startup(struct usb_serial *serial)
 
 	/* Setup private data for serial driver */
 	s_priv = kzalloc(sizeof(struct keyspan_serial_private), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!s_priv) {
 		dbg("%s - kmalloc for keyspan_serial_private failed.",
 								__func__);
 		return -ENOMEM;
 	}
+=======
+	if (!s_priv)
+		return -ENOMEM;
+
+	s_priv->instat_buf = kzalloc(INSTAT_BUFLEN, GFP_KERNEL);
+	if (!s_priv->instat_buf)
+		goto err_instat_buf;
+
+	s_priv->indat_buf = kzalloc(INDAT49W_BUFLEN, GFP_KERNEL);
+	if (!s_priv->indat_buf)
+		goto err_indat_buf;
+
+	s_priv->glocont_buf = kzalloc(GLOCONT_BUFLEN, GFP_KERNEL);
+	if (!s_priv->glocont_buf)
+		goto err_glocont_buf;
+
+	s_priv->ctrl_buf = kzalloc(sizeof(struct usb_ctrlrequest), GFP_KERNEL);
+	if (!s_priv->ctrl_buf)
+		goto err_ctrl_buf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	s_priv->device_details = d_details;
 	usb_set_serial_data(serial, s_priv);
 
+<<<<<<< HEAD
 	/* Now setup per port private data */
 	for (i = 0; i < serial->num_ports; i++) {
 		port = serial->port[i];
@@ -2534,26 +3939,51 @@ static int keyspan_startup(struct usb_serial *serial)
 		usb_set_serial_port_data(port, p_priv);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	keyspan_setup_urbs(serial);
 
 	if (s_priv->instat_urb != NULL) {
 		err = usb_submit_urb(s_priv->instat_urb, GFP_KERNEL);
 		if (err != 0)
+<<<<<<< HEAD
 			dbg("%s - submit instat urb failed %d", __func__,
 				err);
+=======
+			dev_dbg(&serial->dev->dev, "%s - submit instat urb failed %d\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (s_priv->indat_urb != NULL) {
 		err = usb_submit_urb(s_priv->indat_urb, GFP_KERNEL);
 		if (err != 0)
+<<<<<<< HEAD
 			dbg("%s - submit indat urb failed %d", __func__,
 				err);
 	}
 
 	return 0;
+=======
+			dev_dbg(&serial->dev->dev, "%s - submit indat urb failed %d\n", __func__, err);
+	}
+
+	return 0;
+
+err_ctrl_buf:
+	kfree(s_priv->glocont_buf);
+err_glocont_buf:
+	kfree(s_priv->indat_buf);
+err_indat_buf:
+	kfree(s_priv->instat_buf);
+err_instat_buf:
+	kfree(s_priv);
+
+	return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void keyspan_disconnect(struct usb_serial *serial)
 {
+<<<<<<< HEAD
 	int				i, j;
 	struct usb_serial_port		*port;
 	struct keyspan_serial_private 	*s_priv;
@@ -2592,10 +4022,20 @@ static void keyspan_disconnect(struct usb_serial *serial)
 			usb_free_urb(p_priv->out_urbs[j]);
 		}
 	}
+=======
+	struct keyspan_serial_private *s_priv;
+
+	s_priv = usb_get_serial_data(serial);
+
+	usb_kill_urb(s_priv->instat_urb);
+	usb_kill_urb(s_priv->glocont_urb);
+	usb_kill_urb(s_priv->indat_urb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void keyspan_release(struct usb_serial *serial)
 {
+<<<<<<< HEAD
 	int				i;
 	struct usb_serial_port		*port;
 	struct keyspan_serial_private 	*s_priv;
@@ -2615,6 +4055,245 @@ static void keyspan_release(struct usb_serial *serial)
 	}
 }
 
+=======
+	struct keyspan_serial_private *s_priv;
+
+	s_priv = usb_get_serial_data(serial);
+
+	/* Make sure to unlink the URBs submitted in attach. */
+	usb_kill_urb(s_priv->instat_urb);
+	usb_kill_urb(s_priv->indat_urb);
+
+	usb_free_urb(s_priv->instat_urb);
+	usb_free_urb(s_priv->indat_urb);
+	usb_free_urb(s_priv->glocont_urb);
+
+	kfree(s_priv->ctrl_buf);
+	kfree(s_priv->glocont_buf);
+	kfree(s_priv->indat_buf);
+	kfree(s_priv->instat_buf);
+
+	kfree(s_priv);
+}
+
+static int keyspan_port_probe(struct usb_serial_port *port)
+{
+	struct usb_serial *serial = port->serial;
+	struct keyspan_serial_private *s_priv;
+	struct keyspan_port_private *p_priv;
+	const struct keyspan_device_details *d_details;
+	struct callbacks *cback;
+	int endp;
+	int port_num;
+	int i;
+
+	s_priv = usb_get_serial_data(serial);
+	d_details = s_priv->device_details;
+
+	p_priv = kzalloc(sizeof(*p_priv), GFP_KERNEL);
+	if (!p_priv)
+		return -ENOMEM;
+
+	for (i = 0; i < ARRAY_SIZE(p_priv->in_buffer); ++i) {
+		p_priv->in_buffer[i] = kzalloc(IN_BUFLEN, GFP_KERNEL);
+		if (!p_priv->in_buffer[i])
+			goto err_free_in_buffer;
+	}
+
+	for (i = 0; i < ARRAY_SIZE(p_priv->out_buffer); ++i) {
+		p_priv->out_buffer[i] = kzalloc(OUT_BUFLEN, GFP_KERNEL);
+		if (!p_priv->out_buffer[i])
+			goto err_free_out_buffer;
+	}
+
+	p_priv->inack_buffer = kzalloc(INACK_BUFLEN, GFP_KERNEL);
+	if (!p_priv->inack_buffer)
+		goto err_free_out_buffer;
+
+	p_priv->outcont_buffer = kzalloc(OUTCONT_BUFLEN, GFP_KERNEL);
+	if (!p_priv->outcont_buffer)
+		goto err_free_inack_buffer;
+
+	p_priv->device_details = d_details;
+
+	/* Setup values for the various callback routines */
+	cback = &keyspan_callbacks[d_details->msg_format];
+
+	port_num = port->port_number;
+
+	/* Do indat endpoints first, once for each flip */
+	endp = d_details->indat_endpoints[port_num];
+	for (i = 0; i <= d_details->indat_endp_flip; ++i, ++endp) {
+		p_priv->in_urbs[i] = keyspan_setup_urb(serial, endp,
+						USB_DIR_IN, port,
+						p_priv->in_buffer[i],
+						IN_BUFLEN,
+						cback->indat_callback);
+	}
+	/* outdat endpoints also have flip */
+	endp = d_details->outdat_endpoints[port_num];
+	for (i = 0; i <= d_details->outdat_endp_flip; ++i, ++endp) {
+		p_priv->out_urbs[i] = keyspan_setup_urb(serial, endp,
+						USB_DIR_OUT, port,
+						p_priv->out_buffer[i],
+						OUT_BUFLEN,
+						cback->outdat_callback);
+	}
+	/* inack endpoint */
+	p_priv->inack_urb = keyspan_setup_urb(serial,
+					d_details->inack_endpoints[port_num],
+					USB_DIR_IN, port,
+					p_priv->inack_buffer,
+					INACK_BUFLEN,
+					cback->inack_callback);
+	/* outcont endpoint */
+	p_priv->outcont_urb = keyspan_setup_urb(serial,
+					d_details->outcont_endpoints[port_num],
+					USB_DIR_OUT, port,
+					p_priv->outcont_buffer,
+					OUTCONT_BUFLEN,
+					 cback->outcont_callback);
+
+	usb_set_serial_port_data(port, p_priv);
+
+	return 0;
+
+err_free_inack_buffer:
+	kfree(p_priv->inack_buffer);
+err_free_out_buffer:
+	for (i = 0; i < ARRAY_SIZE(p_priv->out_buffer); ++i)
+		kfree(p_priv->out_buffer[i]);
+err_free_in_buffer:
+	for (i = 0; i < ARRAY_SIZE(p_priv->in_buffer); ++i)
+		kfree(p_priv->in_buffer[i]);
+	kfree(p_priv);
+
+	return -ENOMEM;
+}
+
+static void keyspan_port_remove(struct usb_serial_port *port)
+{
+	struct keyspan_port_private *p_priv;
+	int i;
+
+	p_priv = usb_get_serial_port_data(port);
+
+	usb_kill_urb(p_priv->inack_urb);
+	usb_kill_urb(p_priv->outcont_urb);
+	for (i = 0; i < 2; i++) {
+		usb_kill_urb(p_priv->in_urbs[i]);
+		usb_kill_urb(p_priv->out_urbs[i]);
+	}
+
+	usb_free_urb(p_priv->inack_urb);
+	usb_free_urb(p_priv->outcont_urb);
+	for (i = 0; i < 2; i++) {
+		usb_free_urb(p_priv->in_urbs[i]);
+		usb_free_urb(p_priv->out_urbs[i]);
+	}
+
+	kfree(p_priv->outcont_buffer);
+	kfree(p_priv->inack_buffer);
+	for (i = 0; i < ARRAY_SIZE(p_priv->out_buffer); ++i)
+		kfree(p_priv->out_buffer[i]);
+	for (i = 0; i < ARRAY_SIZE(p_priv->in_buffer); ++i)
+		kfree(p_priv->in_buffer[i]);
+
+	kfree(p_priv);
+}
+
+/* Structs for the devices, pre and post renumeration. */
+static struct usb_serial_driver keyspan_pre_device = {
+	.driver = {
+		.owner		= THIS_MODULE,
+		.name		= "keyspan_no_firm",
+	},
+	.description		= "Keyspan - (without firmware)",
+	.id_table		= keyspan_pre_ids,
+	.num_ports		= 1,
+	.attach			= keyspan_fake_startup,
+};
+
+static struct usb_serial_driver keyspan_1port_device = {
+	.driver = {
+		.owner		= THIS_MODULE,
+		.name		= "keyspan_1",
+	},
+	.description		= "Keyspan 1 port adapter",
+	.id_table		= keyspan_1port_ids,
+	.num_ports		= 1,
+	.open			= keyspan_open,
+	.close			= keyspan_close,
+	.dtr_rts		= keyspan_dtr_rts,
+	.write			= keyspan_write,
+	.write_room		= keyspan_write_room,
+	.set_termios		= keyspan_set_termios,
+	.break_ctl		= keyspan_break_ctl,
+	.tiocmget		= keyspan_tiocmget,
+	.tiocmset		= keyspan_tiocmset,
+	.attach			= keyspan_startup,
+	.disconnect		= keyspan_disconnect,
+	.release		= keyspan_release,
+	.port_probe		= keyspan_port_probe,
+	.port_remove		= keyspan_port_remove,
+};
+
+static struct usb_serial_driver keyspan_2port_device = {
+	.driver = {
+		.owner		= THIS_MODULE,
+		.name		= "keyspan_2",
+	},
+	.description		= "Keyspan 2 port adapter",
+	.id_table		= keyspan_2port_ids,
+	.num_ports		= 2,
+	.open			= keyspan_open,
+	.close			= keyspan_close,
+	.dtr_rts		= keyspan_dtr_rts,
+	.write			= keyspan_write,
+	.write_room		= keyspan_write_room,
+	.set_termios		= keyspan_set_termios,
+	.break_ctl		= keyspan_break_ctl,
+	.tiocmget		= keyspan_tiocmget,
+	.tiocmset		= keyspan_tiocmset,
+	.attach			= keyspan_startup,
+	.disconnect		= keyspan_disconnect,
+	.release		= keyspan_release,
+	.port_probe		= keyspan_port_probe,
+	.port_remove		= keyspan_port_remove,
+};
+
+static struct usb_serial_driver keyspan_4port_device = {
+	.driver = {
+		.owner		= THIS_MODULE,
+		.name		= "keyspan_4",
+	},
+	.description		= "Keyspan 4 port adapter",
+	.id_table		= keyspan_4port_ids,
+	.num_ports		= 4,
+	.open			= keyspan_open,
+	.close			= keyspan_close,
+	.dtr_rts		= keyspan_dtr_rts,
+	.write			= keyspan_write,
+	.write_room		= keyspan_write_room,
+	.set_termios		= keyspan_set_termios,
+	.break_ctl		= keyspan_break_ctl,
+	.tiocmget		= keyspan_tiocmget,
+	.tiocmset		= keyspan_tiocmset,
+	.attach			= keyspan_startup,
+	.disconnect		= keyspan_disconnect,
+	.release		= keyspan_release,
+	.port_probe		= keyspan_port_probe,
+	.port_remove		= keyspan_port_remove,
+};
+
+static struct usb_serial_driver * const serial_drivers[] = {
+	&keyspan_pre_device, &keyspan_1port_device,
+	&keyspan_2port_device, &keyspan_4port_device, NULL
+};
+
+module_usb_serial_driver(serial_drivers, keyspan_ids_combined);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
@@ -2631,7 +4310,10 @@ MODULE_FIRMWARE("keyspan/usa18x.fw");
 MODULE_FIRMWARE("keyspan/usa19w.fw");
 MODULE_FIRMWARE("keyspan/usa49w.fw");
 MODULE_FIRMWARE("keyspan/usa49wlc.fw");
+<<<<<<< HEAD
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug enabled or not");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

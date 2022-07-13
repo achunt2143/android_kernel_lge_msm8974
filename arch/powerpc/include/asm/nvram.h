@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * NVRAM definitions and access functions.
  *
@@ -31,6 +32,52 @@
 #include <linux/list.h>
 
 #ifdef CONFIG_PPC_PSERIES
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * NVRAM definitions and access functions.
+ */
+#ifndef _ASM_POWERPC_NVRAM_H
+#define _ASM_POWERPC_NVRAM_H
+
+#include <linux/types.h>
+#include <linux/errno.h>
+#include <linux/list.h>
+#include <uapi/asm/nvram.h>
+
+/*
+ * Set oops header version to distinguish between old and new format header.
+ * lnx,oops-log partition max size is 4000, header version > 4000 will
+ * help in identifying new header.
+ */
+#define OOPS_HDR_VERSION 5000
+
+struct err_log_info {
+	__be32 error_type;
+	__be32 seq_num;
+};
+
+struct nvram_os_partition {
+	const char *name;
+	int req_size;	/* desired size, in bytes */
+	int min_size;	/* minimum acceptable size (0 means req_size) */
+	long size;	/* size of data portion (excluding err_log_info) */
+	long index;	/* offset of data portion of partition */
+	bool os_partition; /* partition initialized by OS, not FW */
+};
+
+struct oops_log_info {
+	__be16 version;
+	__be16 report_length;
+	__be64 timestamp;
+} __attribute__((packed));
+
+extern struct nvram_os_partition oops_log_partition;
+
+#ifdef CONFIG_PPC_PSERIES
+extern struct nvram_os_partition rtas_log_partition;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int nvram_write_error_log(char * buff, int length,
 					 unsigned int err_type, unsigned int err_seq);
 extern int nvram_read_error_log(char * buff, int length,
@@ -56,6 +103,7 @@ extern int nvram_remove_partition(const char *name, int sig,
 extern int nvram_get_partition_size(loff_t data_index);
 extern loff_t nvram_find_partition(const char *name, int sig, int *out_size);
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
 /* PowerMac specific nvram stuffs */
@@ -67,6 +115,8 @@ enum {
 };
 
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Return partition offset in nvram */
 extern int	pmac_get_partition(int partition);
 
@@ -74,6 +124,7 @@ extern int	pmac_get_partition(int partition);
 extern u8	pmac_xpram_read(int xpaddr);
 extern void	pmac_xpram_write(int xpaddr, u8 data);
 
+<<<<<<< HEAD
 /* Synchronize NVRAM */
 extern void	nvram_sync(void);
 
@@ -108,5 +159,23 @@ struct pmac_machine_location {
 
 #define IOC_NVRAM_GET_OFFSET	_IOWR('p', 0x42, int)	/* Get NVRAM partition offset */
 #define IOC_NVRAM_SYNC		_IO('p', 0x43)		/* Sync NVRAM image */
+=======
+/* Initialize NVRAM OS partition */
+extern int __init nvram_init_os_partition(struct nvram_os_partition *part);
+
+/* Initialize NVRAM oops partition */
+extern void __init nvram_init_oops_partition(int rtas_partition_exists);
+
+/* Read a NVRAM partition */
+extern int nvram_read_partition(struct nvram_os_partition *part, char *buff,
+				int length, unsigned int *err_type,
+				unsigned int *error_log_cnt);
+
+/* Write to NVRAM OS partition */
+extern int nvram_write_os_partition(struct nvram_os_partition *part,
+				    char *buff, int length,
+				    unsigned int err_type,
+				    unsigned int error_log_cnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_POWERPC_NVRAM_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-*-linux-c-*-*/
 
 /*
@@ -7,6 +11,7 @@
 
   Copyright (C) 2006 Lennart Poettering <mzxreary (at) 0pointer (dot) de>
 
+<<<<<<< HEAD
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; either version 2 of the License, or
@@ -21,6 +26,8 @@
   along with this program; if not, write to the Free Software
   Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
   02110-1301, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -82,7 +89,11 @@
 #include <linux/hwmon-sysfs.h>
 #include <linux/power_supply.h>
 #include <linux/fb.h>
+<<<<<<< HEAD
 
+=======
+#include <acpi/video.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ======= */
 /* Defines */
@@ -151,6 +162,11 @@
 #define BAT_STATUS2			0xF1
 #define BAT_STOP_CHARGE1		0xF2
 #define BAT_STOP_CHARGE2		0xF3
+<<<<<<< HEAD
+=======
+#define BAT_CHARGE_LIMIT		0x03
+#define BAT_CHARGE_LIMIT_MAX		100
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BAT_S0_DISCHARGE		(1 << 0)
 #define BAT_S0_DISCHRG_CRITICAL		(1 << 2)
@@ -173,12 +189,20 @@
 /* ======= */
 struct compal_data{
 	/* Fan control */
+<<<<<<< HEAD
 	struct device *hwmon_dev;
 	int pwm_enable; /* 0:full on, 1:set by pwm1, 2:control by moterboard */
 	unsigned char curr_pwm;
 
 	/* Power supply */
 	struct power_supply psy;
+=======
+	int pwm_enable; /* 0:full on, 1:set by pwm1, 2:control by motherboard */
+	unsigned char curr_pwm;
+
+	/* Power supply */
+	struct power_supply *psy;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct power_supply_info psy_info;
 	char bat_model_name[BAT_MODEL_NAME_LEN + 1];
 	char bat_manufacturer_name[BAT_MANUFACTURER_NAME_LEN + 1];
@@ -238,7 +262,11 @@ static const unsigned char pwm_lookup_table[256] = {
 /* General access */
 static u8 ec_read_u8(u8 addr)
 {
+<<<<<<< HEAD
 	u8 value;
+=======
+	u8 value = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ec_read(addr, &value);
 	return value;
 }
@@ -336,9 +364,13 @@ static int bl_update_status(struct backlight_device *b)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	set_backlight_state((b->props.power == FB_BLANK_UNBLANK)
 		&&    !(b->props.state & BL_CORE_SUSPENDED)
 		&&    !(b->props.state & BL_CORE_FBBLANK));
+=======
+	set_backlight_state(!backlight_is_blank(b));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -402,6 +434,7 @@ SIMPLE_MASKED_STORE_SHOW(wake_up_wlan,	WAKE_UP_ADDR, WAKE_UP_WLAN)
 SIMPLE_MASKED_STORE_SHOW(wake_up_key,	WAKE_UP_ADDR, WAKE_UP_KEY)
 SIMPLE_MASKED_STORE_SHOW(wake_up_mouse,	WAKE_UP_ADDR, WAKE_UP_MOUSE)
 
+<<<<<<< HEAD
 
 /* General hwmon interface */
 static ssize_t hwmon_name_show(struct device *dev,
@@ -411,6 +444,8 @@ static ssize_t hwmon_name_show(struct device *dev,
 }
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Fan control interface */
 static ssize_t pwm_enable_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
@@ -425,7 +460,12 @@ static ssize_t pwm_enable_store(struct device *dev,
 	struct compal_data *data = dev_get_drvdata(dev);
 	long val;
 	int err;
+<<<<<<< HEAD
 	err = strict_strtol(buf, 10, &val);
+=======
+
+	err = kstrtol(buf, 10, &val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 	if (val < 0)
@@ -463,7 +503,12 @@ static ssize_t pwm_store(struct device *dev, struct device_attribute *attr,
 	struct compal_data *data = dev_get_drvdata(dev);
 	long val;
 	int err;
+<<<<<<< HEAD
 	err = strict_strtol(buf, 10, &val);
+=======
+
+	err = kstrtol(buf, 10, &val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 	if (val < 0 || val > 255)
@@ -573,8 +618,12 @@ static int bat_get_property(struct power_supply *psy,
 				enum power_supply_property psp,
 				union power_supply_propval *val)
 {
+<<<<<<< HEAD
 	struct compal_data *data;
 	data = container_of(psy, struct compal_data, psy);
+=======
+	struct compal_data *data = power_supply_get_drvdata(psy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_STATUS:
@@ -610,6 +659,15 @@ static int bat_get_property(struct power_supply *psy,
 	case POWER_SUPPLY_PROP_CHARGE_NOW:
 		val->intval = ec_read_u16(BAT_CHARGE_NOW) * 1000;
 		break;
+<<<<<<< HEAD
+=======
+	case POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT:
+		val->intval = ec_read_u8(BAT_CHARGE_LIMIT);
+		break;
+	case POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT_MAX:
+		val->intval = BAT_CHARGE_LIMIT_MAX;
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case POWER_SUPPLY_PROP_CAPACITY:
 		val->intval = ec_read_u8(BAT_CAPACITY);
 		break;
@@ -643,6 +701,39 @@ static int bat_get_property(struct power_supply *psy,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int bat_set_property(struct power_supply *psy,
+				enum power_supply_property psp,
+				const union power_supply_propval *val)
+{
+	int level;
+
+	switch (psp) {
+	case POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT:
+		level = val->intval;
+		if (level < 0 || level > BAT_CHARGE_LIMIT_MAX)
+			return -EINVAL;
+		if (ec_write(BAT_CHARGE_LIMIT, level) < 0)
+			return -EIO;
+		break;
+	default:
+		break;
+	}
+	return 0;
+}
+
+static int bat_writeable_property(struct power_supply *psy,
+				enum power_supply_property psp)
+{
+	switch (psp) {
+	case POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT:
+		return 1;
+	default:
+		return 0;
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
@@ -650,6 +741,7 @@ static int bat_get_property(struct power_supply *psy,
 /* ============== */
 /* Driver Globals */
 /* ============== */
+<<<<<<< HEAD
 static DEVICE_ATTR(wake_up_pme,
 		0644, wake_up_pme_show,		wake_up_pme_store);
 static DEVICE_ATTR(wake_up_modem,
@@ -682,12 +774,40 @@ static SENSOR_DEVICE_ATTR(pwm1_enable,
 		S_IRUGO | S_IWUSR, pwm_enable_show, pwm_enable_store, 0);
 
 static struct attribute *compal_attributes[] = {
+=======
+static DEVICE_ATTR_RW(wake_up_pme);
+static DEVICE_ATTR_RW(wake_up_modem);
+static DEVICE_ATTR_RW(wake_up_lan);
+static DEVICE_ATTR_RW(wake_up_wlan);
+static DEVICE_ATTR_RW(wake_up_key);
+static DEVICE_ATTR_RW(wake_up_mouse);
+
+static DEVICE_ATTR(fan1_input,  S_IRUGO, fan_show,          NULL);
+static DEVICE_ATTR(temp1_input, S_IRUGO, temp_cpu,          NULL);
+static DEVICE_ATTR(temp2_input, S_IRUGO, temp_cpu_local,    NULL);
+static DEVICE_ATTR(temp3_input, S_IRUGO, temp_cpu_DTS,      NULL);
+static DEVICE_ATTR(temp4_input, S_IRUGO, temp_northbridge,  NULL);
+static DEVICE_ATTR(temp5_input, S_IRUGO, temp_vga,          NULL);
+static DEVICE_ATTR(temp6_input, S_IRUGO, temp_SKIN,         NULL);
+static DEVICE_ATTR(temp1_label, S_IRUGO, label_cpu,         NULL);
+static DEVICE_ATTR(temp2_label, S_IRUGO, label_cpu_local,   NULL);
+static DEVICE_ATTR(temp3_label, S_IRUGO, label_cpu_DTS,     NULL);
+static DEVICE_ATTR(temp4_label, S_IRUGO, label_northbridge, NULL);
+static DEVICE_ATTR(temp5_label, S_IRUGO, label_vga,         NULL);
+static DEVICE_ATTR(temp6_label, S_IRUGO, label_SKIN,        NULL);
+static DEVICE_ATTR(pwm1, S_IRUGO | S_IWUSR, pwm_show, pwm_store);
+static DEVICE_ATTR(pwm1_enable,
+		   S_IRUGO | S_IWUSR, pwm_enable_show, pwm_enable_store);
+
+static struct attribute *compal_platform_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_wake_up_pme.attr,
 	&dev_attr_wake_up_modem.attr,
 	&dev_attr_wake_up_lan.attr,
 	&dev_attr_wake_up_wlan.attr,
 	&dev_attr_wake_up_key.attr,
 	&dev_attr_wake_up_mouse.attr,
+<<<<<<< HEAD
 	/* Maybe put the sensor-stuff in a separate hwmon-driver? That way,
 	 * the hwmon sysfs won't be cluttered with the above files. */
 	&sensor_dev_attr_name.dev_attr.attr,
@@ -723,6 +843,33 @@ static struct platform_driver compal_driver = {
 	.probe	= compal_probe,
 	.remove	= __devexit_p(compal_remove)
 };
+=======
+	NULL
+};
+static const struct attribute_group compal_platform_attr_group = {
+	.attrs = compal_platform_attrs
+};
+
+static struct attribute *compal_hwmon_attrs[] = {
+	&dev_attr_pwm1_enable.attr,
+	&dev_attr_pwm1.attr,
+	&dev_attr_fan1_input.attr,
+	&dev_attr_temp1_input.attr,
+	&dev_attr_temp2_input.attr,
+	&dev_attr_temp3_input.attr,
+	&dev_attr_temp4_input.attr,
+	&dev_attr_temp5_input.attr,
+	&dev_attr_temp6_input.attr,
+	&dev_attr_temp1_label.attr,
+	&dev_attr_temp2_label.attr,
+	&dev_attr_temp3_label.attr,
+	&dev_attr_temp4_label.attr,
+	&dev_attr_temp5_label.attr,
+	&dev_attr_temp6_label.attr,
+	NULL
+};
+ATTRIBUTE_GROUPS(compal_hwmon);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static enum power_supply_property compal_bat_properties[] = {
 	POWER_SUPPLY_PROP_STATUS,
@@ -736,6 +883,11 @@ static enum power_supply_property compal_bat_properties[] = {
 	POWER_SUPPLY_PROP_POWER_NOW,
 	POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN,
 	POWER_SUPPLY_PROP_CHARGE_NOW,
+<<<<<<< HEAD
+=======
+	POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT,
+	POWER_SUPPLY_PROP_CHARGE_CONTROL_LIMIT_MAX,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	POWER_SUPPLY_PROP_CAPACITY,
 	POWER_SUPPLY_PROP_CAPACITY_LEVEL,
 	POWER_SUPPLY_PROP_TEMP,
@@ -775,7 +927,11 @@ static int dmi_check_cb_extra(const struct dmi_system_id *id)
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct dmi_system_id __initdata compal_dmi_table[] = {
+=======
+static const struct dmi_system_id compal_dmi_table[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.ident = "FL90/IFL90",
 		.matches = {
@@ -884,6 +1040,7 @@ static struct dmi_system_id __initdata compal_dmi_table[] = {
 };
 MODULE_DEVICE_TABLE(dmi, compal_dmi_table);
 
+<<<<<<< HEAD
 static void initialize_power_supply_data(struct compal_data *data)
 {
 	data->psy.name = DRIVER_NAME;
@@ -892,6 +1049,20 @@ static void initialize_power_supply_data(struct compal_data *data)
 	data->psy.num_properties = ARRAY_SIZE(compal_bat_properties);
 	data->psy.get_property = bat_get_property;
 
+=======
+static const struct power_supply_desc psy_bat_desc = {
+	.name		= DRIVER_NAME,
+	.type		= POWER_SUPPLY_TYPE_BATTERY,
+	.properties	= compal_bat_properties,
+	.num_properties	= ARRAY_SIZE(compal_bat_properties),
+	.get_property	= bat_get_property,
+	.set_property	= bat_set_property,
+	.property_is_writeable = bat_writeable_property,
+};
+
+static void initialize_power_supply_data(struct compal_data *data)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ec_read_sequence(BAT_MANUFACTURER_NAME_ADDR,
 					data->bat_manufacturer_name,
 					BAT_MANUFACTURER_NAME_LEN);
@@ -952,6 +1123,81 @@ err_wifi:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int compal_probe(struct platform_device *pdev)
+{
+	int err;
+	struct compal_data *data;
+	struct device *hwmon_dev;
+	struct power_supply_config psy_cfg = {};
+
+	if (!extra_features)
+		return 0;
+
+	/* Fan control */
+	data = devm_kzalloc(&pdev->dev, sizeof(struct compal_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	initialize_fan_control_data(data);
+
+	err = sysfs_create_group(&pdev->dev.kobj, &compal_platform_attr_group);
+	if (err)
+		return err;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(&pdev->dev,
+							   "compal", data,
+							   compal_hwmon_groups);
+	if (IS_ERR(hwmon_dev)) {
+		err = PTR_ERR(hwmon_dev);
+		goto remove;
+	}
+
+	/* Power supply */
+	initialize_power_supply_data(data);
+	psy_cfg.drv_data = data;
+	data->psy = power_supply_register(&compal_device->dev, &psy_bat_desc,
+					  &psy_cfg);
+	if (IS_ERR(data->psy)) {
+		err = PTR_ERR(data->psy);
+		goto remove;
+	}
+
+	platform_set_drvdata(pdev, data);
+
+	return 0;
+
+remove:
+	sysfs_remove_group(&pdev->dev.kobj, &compal_platform_attr_group);
+	return err;
+}
+
+static void compal_remove(struct platform_device *pdev)
+{
+	struct compal_data *data;
+
+	if (!extra_features)
+		return;
+
+	pr_info("Unloading: resetting fan control to motherboard\n");
+	pwm_disable_control();
+
+	data = platform_get_drvdata(pdev);
+	power_supply_unregister(data->psy);
+
+	sysfs_remove_group(&pdev->dev.kobj, &compal_platform_attr_group);
+}
+
+static struct platform_driver compal_driver = {
+	.driver = {
+		.name = DRIVER_NAME,
+	},
+	.probe	= compal_probe,
+	.remove_new = compal_remove,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init compal_init(void)
 {
 	int ret;
@@ -966,7 +1212,11 @@ static int __init compal_init(void)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	if (!acpi_video_backlight_support()) {
+=======
+	if (acpi_video_get_backlight_type() == acpi_backlight_vendor) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct backlight_properties props;
 		memset(&props, 0, sizeof(struct backlight_properties));
 		props.type = BACKLIGHT_PLATFORM;
@@ -983,7 +1233,11 @@ static int __init compal_init(void)
 	if (ret)
 		goto err_backlight;
 
+<<<<<<< HEAD
 	compal_device = platform_device_alloc(DRIVER_NAME, -1);
+=======
+	compal_device = platform_device_alloc(DRIVER_NAME, PLATFORM_DEVID_NONE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!compal_device) {
 		ret = -ENOMEM;
 		goto err_platform_driver;
@@ -1015,6 +1269,7 @@ err_backlight:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devinit compal_probe(struct platform_device *pdev)
 {
 	int err;
@@ -1060,6 +1315,8 @@ static int __devinit compal_probe(struct platform_device *pdev)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __exit compal_cleanup(void)
 {
 	platform_device_unregister(compal_device);
@@ -1073,6 +1330,7 @@ static void __exit compal_cleanup(void)
 	pr_info("Driver unloaded\n");
 }
 
+<<<<<<< HEAD
 static int __devexit compal_remove(struct platform_device *pdev)
 {
 	struct compal_data *data;
@@ -1096,11 +1354,17 @@ static int __devexit compal_remove(struct platform_device *pdev)
 }
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_init(compal_init);
 module_exit(compal_cleanup);
 
 MODULE_AUTHOR("Cezary Jackiewicz");
+<<<<<<< HEAD
 MODULE_AUTHOR("Roald Frederickx (roald.frederickx@gmail.com)");
+=======
+MODULE_AUTHOR("Roald Frederickx <roald.frederickx@gmail.com>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Compal Laptop Support");
 MODULE_VERSION(DRIVER_VERSION);
 MODULE_LICENSE("GPL");

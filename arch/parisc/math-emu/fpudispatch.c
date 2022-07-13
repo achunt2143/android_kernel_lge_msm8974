@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux/PA-RISC Project (http://www.parisc-linux.org/)
  *
  * Floating-point emulation code
  *  Copyright (C) 2001 Hewlett-Packard (Paul Bame) <bame@debian.org>
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * BEGIN_DESC
@@ -184,7 +191,11 @@ static void parisc_linux_get_fpu_type(u_int fpregs[])
 
 /*
  * this routine will decode the excepting floating point instruction and
+<<<<<<< HEAD
  * call the approiate emulation routine.
+=======
+ * call the appropriate emulation routine.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * It is called by decode_fpu with the following parameters:
  * fpudispatch(current_ir, unimplemented_code, 0, &Fpu_register)
  * where current_ir is the instruction to be emulated,
@@ -323,12 +334,23 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 					r1 &= ~3;
 					fpregs[t+3] = fpregs[r1+3];
 					fpregs[t+2] = fpregs[r1+2];
+<<<<<<< HEAD
 				    case 1: /* double */
 					fpregs[t+1] = fpregs[r1+1];
+=======
+					fallthrough;
+				    case 1: /* double */
+					fpregs[t+1] = fpregs[r1+1];
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    case 0: /* single */
 					fpregs[t] = fpregs[r1];
 					return(NOEXCEPTION);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 3: /* FABS */
 				switch (fmt) {
 				    case 2: /* illegal */
@@ -338,13 +360,24 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 					r1 &= ~3;
 					fpregs[t+3] = fpregs[r1+3];
 					fpregs[t+2] = fpregs[r1+2];
+<<<<<<< HEAD
 				    case 1: /* double */
 					fpregs[t+1] = fpregs[r1+1];
+=======
+					fallthrough;
+				    case 1: /* double */
+					fpregs[t+1] = fpregs[r1+1];
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    case 0: /* single */
 					/* copy and clear sign bit */
 					fpregs[t] = fpregs[r1] & 0x7fffffff;
 					return(NOEXCEPTION);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 6: /* FNEG */
 				switch (fmt) {
 				    case 2: /* illegal */
@@ -354,13 +387,24 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 					r1 &= ~3;
 					fpregs[t+3] = fpregs[r1+3];
 					fpregs[t+2] = fpregs[r1+2];
+<<<<<<< HEAD
 				    case 1: /* double */
 					fpregs[t+1] = fpregs[r1+1];
+=======
+					fallthrough;
+				    case 1: /* double */
+					fpregs[t+1] = fpregs[r1+1];
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    case 0: /* single */
 					/* copy and invert sign bit */
 					fpregs[t] = fpregs[r1] ^ 0x80000000;
 					return(NOEXCEPTION);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 7: /* FNEGABS */
 				switch (fmt) {
 				    case 2: /* illegal */
@@ -370,13 +414,24 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 					r1 &= ~3;
 					fpregs[t+3] = fpregs[r1+3];
 					fpregs[t+2] = fpregs[r1+2];
+<<<<<<< HEAD
 				    case 1: /* double */
 					fpregs[t+1] = fpregs[r1+1];
+=======
+					fallthrough;
+				    case 1: /* double */
+					fpregs[t+1] = fpregs[r1+1];
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    case 0: /* single */
 					/* copy and set sign bit */
 					fpregs[t] = fpregs[r1] | 0x80000000;
 					return(NOEXCEPTION);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 4: /* FSQRT */
 				switch (fmt) {
 				    case 0:
@@ -389,6 +444,10 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 				    case 3: /* quad not implemented */
 					return(MAJOR_0C_EXCP);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 5: /* FRND */
 				switch (fmt) {
 				    case 0:
@@ -402,7 +461,11 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 					return(MAJOR_0C_EXCP);
 				}
 		} /* end of switch (subop) */
+<<<<<<< HEAD
 
+=======
+		BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1: /* class 1 */
 		df = extru(ir,fpdfpos,2); /* get dest format */
 		if ((df & 2) || (fmt & 2)) {
@@ -432,6 +495,10 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 				    case 3: /* dbl/dbl */
 					return(MAJOR_0C_EXCP);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 1: /* FCNVXF */
 				switch(fmt) {
 				    case 0: /* sgl/sgl */
@@ -447,6 +514,10 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 					return(dbl_to_dbl_fcnvxf(&fpregs[r1],0,
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 2: /* FCNVFX */
 				switch(fmt) {
 				    case 0: /* sgl/sgl */
@@ -462,6 +533,10 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 					return(dbl_to_dbl_fcnvfx(&fpregs[r1],0,
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 3: /* FCNVFXT */
 				switch(fmt) {
 				    case 0: /* sgl/sgl */
@@ -477,6 +552,10 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 					return(dbl_to_dbl_fcnvfxt(&fpregs[r1],0,
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 5: /* FCNVUF (PA2.0 only) */
 				switch(fmt) {
 				    case 0: /* sgl/sgl */
@@ -492,6 +571,10 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 					return(dbl_to_dbl_fcnvuf(&fpregs[r1],0,
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 6: /* FCNVFU (PA2.0 only) */
 				switch(fmt) {
 				    case 0: /* sgl/sgl */
@@ -507,6 +590,10 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 					return(dbl_to_dbl_fcnvfu(&fpregs[r1],0,
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 7: /* FCNVFUT (PA2.0 only) */
 				switch(fmt) {
 				    case 0: /* sgl/sgl */
@@ -522,10 +609,18 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 					return(dbl_to_dbl_fcnvfut(&fpregs[r1],0,
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
 			case 4: /* undefined */
 				return(MAJOR_0C_EXCP);
 		} /* end of switch subop */
 
+=======
+				BUG();
+			case 4: /* undefined */
+				return(MAJOR_0C_EXCP);
+		} /* end of switch subop */
+		BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 2: /* class 2 */
 		fpu_type_flags=fpregs[FPU_TYPE_FLAG_POS];
 		r2 = extru(ir, fpr2pos, 5) * sizeof(double)/sizeof(u_int);
@@ -603,6 +698,10 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 				    case 3: /* quad not implemented */
 					return(MAJOR_0C_EXCP);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 1: /* FTEST */
 				switch (fmt) {
 				    case 0:
@@ -622,8 +721,15 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 				    case 3:
 					return(MAJOR_0C_EXCP);
 				}
+<<<<<<< HEAD
 		    } /* end of switch subop */
 		} /* end of else for PA1.0 & PA1.1 */
+=======
+				BUG();
+		    } /* end of switch subop */
+		} /* end of else for PA1.0 & PA1.1 */
+		BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 3: /* class 3 */
 		r2 = extru(ir,fpr2pos,5) * sizeof(double)/sizeof(u_int);
 		if (r2 == 0)
@@ -646,6 +752,10 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 				    case 3: /* quad not implemented */
 					return(MAJOR_0C_EXCP);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 1: /* FSUB */
 				switch (fmt) {
 				    case 0:
@@ -658,6 +768,10 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 				    case 3: /* quad not implemented */
 					return(MAJOR_0C_EXCP);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 2: /* FMPY */
 				switch (fmt) {
 				    case 0:
@@ -670,6 +784,10 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 				    case 3: /* quad not implemented */
 					return(MAJOR_0C_EXCP);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 3: /* FDIV */
 				switch (fmt) {
 				    case 0:
@@ -682,6 +800,10 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 				    case 3: /* quad not implemented */
 					return(MAJOR_0C_EXCP);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 4: /* FREM */
 				switch (fmt) {
 				    case 0:
@@ -694,6 +816,10 @@ decode_0c(u_int ir, u_int class, u_int subop, u_int fpregs[])
 				    case 3: /* quad not implemented */
 					return(MAJOR_0C_EXCP);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} /* end of class 3 switch */
 	} /* end of switch(class) */
 
@@ -749,10 +875,18 @@ u_int fpregs[];
 					return(MAJOR_0E_EXCP);
 				    case 1: /* double */
 					fpregs[t+1] = fpregs[r1+1];
+<<<<<<< HEAD
+=======
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    case 0: /* single */
 					fpregs[t] = fpregs[r1];
 					return(NOEXCEPTION);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 3: /* FABS */
 				switch (fmt) {
 				    case 2:
@@ -760,10 +894,18 @@ u_int fpregs[];
 					return(MAJOR_0E_EXCP);
 				    case 1: /* double */
 					fpregs[t+1] = fpregs[r1+1];
+<<<<<<< HEAD
+=======
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    case 0: /* single */
 					fpregs[t] = fpregs[r1] & 0x7fffffff;
 					return(NOEXCEPTION);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 6: /* FNEG */
 				switch (fmt) {
 				    case 2:
@@ -771,10 +913,18 @@ u_int fpregs[];
 					return(MAJOR_0E_EXCP);
 				    case 1: /* double */
 					fpregs[t+1] = fpregs[r1+1];
+<<<<<<< HEAD
+=======
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    case 0: /* single */
 					fpregs[t] = fpregs[r1] ^ 0x80000000;
 					return(NOEXCEPTION);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 7: /* FNEGABS */
 				switch (fmt) {
 				    case 2:
@@ -782,10 +932,18 @@ u_int fpregs[];
 					return(MAJOR_0E_EXCP);
 				    case 1: /* double */
 					fpregs[t+1] = fpregs[r1+1];
+<<<<<<< HEAD
+=======
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    case 0: /* single */
 					fpregs[t] = fpregs[r1] | 0x80000000;
 					return(NOEXCEPTION);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 4: /* FSQRT */
 				switch (fmt) {
 				    case 0:
@@ -798,6 +956,10 @@ u_int fpregs[];
 				    case 3:
 					return(MAJOR_0E_EXCP);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 5: /* FRMD */
 				switch (fmt) {
 				    case 0:
@@ -811,7 +973,11 @@ u_int fpregs[];
 					return(MAJOR_0E_EXCP);
 				}
 		} /* end of switch (subop */
+<<<<<<< HEAD
 	
+=======
+		BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1: /* class 1 */
 		df = extru(ir,fpdfpos,2); /* get dest format */
 		/*
@@ -839,6 +1005,10 @@ u_int fpregs[];
 				    case 3: /* dbl/dbl */
 					return(MAJOR_0E_EXCP);
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 1: /* FCNVXF */
 				switch(fmt) {
 				    case 0: /* sgl/sgl */
@@ -854,6 +1024,10 @@ u_int fpregs[];
 					return(dbl_to_dbl_fcnvxf(&fpregs[r1],0,
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 2: /* FCNVFX */
 				switch(fmt) {
 				    case 0: /* sgl/sgl */
@@ -869,6 +1043,10 @@ u_int fpregs[];
 					return(dbl_to_dbl_fcnvfx(&fpregs[r1],0,
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 3: /* FCNVFXT */
 				switch(fmt) {
 				    case 0: /* sgl/sgl */
@@ -884,6 +1062,10 @@ u_int fpregs[];
 					return(dbl_to_dbl_fcnvfxt(&fpregs[r1],0,
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 5: /* FCNVUF (PA2.0 only) */
 				switch(fmt) {
 				    case 0: /* sgl/sgl */
@@ -899,6 +1081,10 @@ u_int fpregs[];
 					return(dbl_to_dbl_fcnvuf(&fpregs[r1],0,
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 6: /* FCNVFU (PA2.0 only) */
 				switch(fmt) {
 				    case 0: /* sgl/sgl */
@@ -914,6 +1100,10 @@ u_int fpregs[];
 					return(dbl_to_dbl_fcnvfu(&fpregs[r1],0,
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 7: /* FCNVFUT (PA2.0 only) */
 				switch(fmt) {
 				    case 0: /* sgl/sgl */
@@ -929,9 +1119,17 @@ u_int fpregs[];
 					return(dbl_to_dbl_fcnvfut(&fpregs[r1],0,
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
 			case 4: /* undefined */
 				return(MAJOR_0C_EXCP);
 		} /* end of switch subop */
+=======
+				BUG();
+			case 4: /* undefined */
+				return(MAJOR_0C_EXCP);
+		} /* end of switch subop */
+		BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 2: /* class 2 */
 		/*
 		 * Be careful out there.
@@ -1007,6 +1205,10 @@ u_int fpregs[];
 				}
 		    } /* end of switch subop */
 		} /* end of else for PA1.0 & PA1.1 */
+<<<<<<< HEAD
+=======
+		BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 3: /* class 3 */
 		/*
 		 * Be careful out there.
@@ -1039,6 +1241,10 @@ u_int fpregs[];
 					return(dbl_fadd(&fpregs[r1],&fpregs[r2],
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 1: /* FSUB */
 				switch (fmt) {
 				    case 0:
@@ -1048,6 +1254,10 @@ u_int fpregs[];
 					return(dbl_fsub(&fpregs[r1],&fpregs[r2],
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 2: /* FMPY or XMPYU */
 				/*
 				 * check for integer multiply (x bit set)
@@ -1084,6 +1294,10 @@ u_int fpregs[];
 					       &fpregs[r2],&fpregs[t],status));
 				    }
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 3: /* FDIV */
 				switch (fmt) {
 				    case 0:
@@ -1093,6 +1307,10 @@ u_int fpregs[];
 					return(dbl_fdiv(&fpregs[r1],&fpregs[r2],
 						&fpregs[t],status));
 				}
+<<<<<<< HEAD
+=======
+				BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 4: /* FREM */
 				switch (fmt) {
 				    case 0:

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  iSCSI Transport BSG Interface
  *
  *  Copyright (C) 2009   James Smart, Emulex Corporation
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef SCSI_BSG_ISCSI_H
@@ -66,7 +73,11 @@ struct iscsi_bsg_host_vendor {
 	uint64_t vendor_id;
 
 	/* start of vendor command area */
+<<<<<<< HEAD
 	uint32_t vendor_cmd[0];
+=======
+	uint32_t vendor_cmd[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Response:
@@ -98,7 +109,11 @@ struct iscsi_bsg_reply {
 	 */
 	uint32_t result;
 
+<<<<<<< HEAD
 	/* If there was reply_payload, how much was recevied ? */
+=======
+	/* If there was reply_payload, how much was received ? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t reply_payload_rcv_len;
 
 	union {

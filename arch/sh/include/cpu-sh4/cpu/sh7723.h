@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH7723_H__
 #define __ASM_SH7723_H__
 
@@ -184,7 +188,11 @@ enum {
 	/* SIUA */
 	GPIO_FN_SIUAFCK, GPIO_FN_SIUAILR, GPIO_FN_SIUAIBT, GPIO_FN_SIUAISLD,
 	GPIO_FN_SIUAOLR, GPIO_FN_SIUAOBT, GPIO_FN_SIUAOSLD, GPIO_FN_SIUAMCK,
+<<<<<<< HEAD
 	GPIO_FN_SIUAISPD, GPIO_FN_SIUOSPD,
+=======
+	GPIO_FN_SIUAISPD, GPIO_FN_SIUAOSPD,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SIUB */
 	GPIO_FN_SIUBFCK, GPIO_FN_SIUBILR, GPIO_FN_SIUBIBT, GPIO_FN_SIUBISLD,

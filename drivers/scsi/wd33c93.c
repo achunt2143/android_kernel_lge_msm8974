@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 1996 John Shifflett, GeoLog Consulting
  *    john@geolog.com
  *    jshiffle@netcom.com
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,6 +17,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -171,6 +178,7 @@ module_param(setup_strings, charp, 0);
 
 static void wd33c93_execute(struct Scsi_Host *instance);
 
+<<<<<<< HEAD
 #ifdef CONFIG_WD33C93_PIO
 static inline uchar
 read_wd33c93(const wd33c93_regs regs, uchar reg_num)
@@ -230,6 +238,8 @@ write_wd33c93_cdb(const wd33c93_regs regs, uint len, uchar cmnd[])
 }
 
 #else /* CONFIG_WD33C93_PIO */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline uchar
 read_wd33c93(const wd33c93_regs regs, uchar reg_num)
 {
@@ -296,7 +306,10 @@ write_wd33c93_cdb(const wd33c93_regs regs, uint len, uchar cmnd[])
 	for (i = 0; i < len; i++)
 		*regs.SCMD = cmnd[i];
 }
+<<<<<<< HEAD
 #endif /* CONFIG_WD33C93_PIO */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline uchar
 read_1_byte(const wd33c93_regs regs)
@@ -371,10 +384,16 @@ calc_sync_msg(unsigned int period, unsigned int offset, unsigned int fast,
 	msg[1] = offset;
 }
 
+<<<<<<< HEAD
 static int
 wd33c93_queuecommand_lck(struct scsi_cmnd *cmd,
 		void (*done)(struct scsi_cmnd *))
 {
+=======
+static int wd33c93_queuecommand_lck(struct scsi_cmnd *cmd)
+{
+	struct scsi_pointer *scsi_pointer = WD33C93_scsi_pointer(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct WD33C93_hostdata *hostdata;
 	struct scsi_cmnd *tmp;
 
@@ -385,11 +404,17 @@ wd33c93_queuecommand_lck(struct scsi_cmnd *cmd,
 
 /* Set up a few fields in the scsi_cmnd structure for our own use:
  *  - host_scribble is the pointer to the next cmd in the input queue
+<<<<<<< HEAD
  *  - scsi_done points to the routine we call when a cmd is finished
  *  - result is what you'd expect
  */
 	cmd->host_scribble = NULL;
 	cmd->scsi_done = done;
+=======
+ *  - result is what you'd expect
+ */
+	cmd->host_scribble = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd->result = 0;
 
 /* We use the Scsi_Pointer structure that's included with each command
@@ -408,6 +433,7 @@ wd33c93_queuecommand_lck(struct scsi_cmnd *cmd,
  */
 
 	if (scsi_bufflen(cmd)) {
+<<<<<<< HEAD
 		cmd->SCp.buffer = scsi_sglist(cmd);
 		cmd->SCp.buffers_residual = scsi_sg_count(cmd) - 1;
 		cmd->SCp.ptr = sg_virt(cmd->SCp.buffer);
@@ -417,6 +443,17 @@ wd33c93_queuecommand_lck(struct scsi_cmnd *cmd,
 		cmd->SCp.buffers_residual = 0;
 		cmd->SCp.ptr = NULL;
 		cmd->SCp.this_residual = 0;
+=======
+		scsi_pointer->buffer = scsi_sglist(cmd);
+		scsi_pointer->buffers_residual = scsi_sg_count(cmd) - 1;
+		scsi_pointer->ptr = sg_virt(scsi_pointer->buffer);
+		scsi_pointer->this_residual = scsi_pointer->buffer->length;
+	} else {
+		scsi_pointer->buffer = NULL;
+		scsi_pointer->buffers_residual = 0;
+		scsi_pointer->ptr = NULL;
+		scsi_pointer->this_residual = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 /* WD docs state that at the conclusion of a "LEVEL2" command, the
@@ -436,7 +473,11 @@ wd33c93_queuecommand_lck(struct scsi_cmnd *cmd,
  * status byte is stored.
  */
 
+<<<<<<< HEAD
 	cmd->SCp.Status = ILLEGAL_STATUS_BYTE;
+=======
+	scsi_pointer->Status = ILLEGAL_STATUS_BYTE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Add the cmd to the end of 'input_Q'. Note that REQUEST SENSE
@@ -483,6 +524,10 @@ DEF_SCSI_QCMD(wd33c93_queuecommand)
 static void
 wd33c93_execute(struct Scsi_Host *instance)
 {
+<<<<<<< HEAD
+=======
+	struct scsi_pointer *scsi_pointer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct WD33C93_hostdata *hostdata =
 	    (struct WD33C93_hostdata *) instance->hostdata;
 	const wd33c93_regs regs = hostdata->regs;
@@ -502,7 +547,12 @@ wd33c93_execute(struct Scsi_Host *instance)
 	cmd = (struct scsi_cmnd *) hostdata->input_Q;
 	prev = NULL;
 	while (cmd) {
+<<<<<<< HEAD
 		if (!(hostdata->busy[cmd->device->id] & (1 << cmd->device->lun)))
+=======
+		if (!(hostdata->busy[cmd->device->id] &
+		      (1 << (cmd->device->lun & 0xff))))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		prev = cmd;
 		cmd = (struct scsi_cmnd *) cmd->host_scribble;
@@ -558,7 +608,12 @@ wd33c93_execute(struct Scsi_Host *instance)
  * to change around and experiment with for now.
  */
 
+<<<<<<< HEAD
 	cmd->SCp.phase = 0;	/* assume no disconnect */
+=======
+	scsi_pointer = WD33C93_scsi_pointer(cmd);
+	scsi_pointer->phase = 0;	/* assume no disconnect */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hostdata->disconnect == DIS_NEVER)
 		goto no;
 	if (hostdata->disconnect == DIS_ALWAYS)
@@ -575,7 +630,11 @@ wd33c93_execute(struct Scsi_Host *instance)
 		    (prev->device->lun != cmd->device->lun)) {
 			for (prev = (struct scsi_cmnd *) hostdata->input_Q; prev;
 			     prev = (struct scsi_cmnd *) prev->host_scribble)
+<<<<<<< HEAD
 				prev->SCp.phase = 1;
+=======
+				WD33C93_scsi_pointer(prev)->phase = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto yes;
 		}
 	}
@@ -583,7 +642,11 @@ wd33c93_execute(struct Scsi_Host *instance)
 	goto no;
 
  yes:
+<<<<<<< HEAD
 	cmd->SCp.phase = 1;
+=======
+	scsi_pointer->phase = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef PROC_STATISTICS
 	hostdata->disc_allowed_cnt[cmd->device->id]++;
@@ -591,12 +654,21 @@ wd33c93_execute(struct Scsi_Host *instance)
 
  no:
 
+<<<<<<< HEAD
 	write_wd33c93(regs, WD_SOURCE_ID, ((cmd->SCp.phase) ? SRCID_ER : 0));
 
 	write_wd33c93(regs, WD_TARGET_LUN, cmd->device->lun);
 	write_wd33c93(regs, WD_SYNCHRONOUS_TRANSFER,
 		      hostdata->sync_xfer[cmd->device->id]);
 	hostdata->busy[cmd->device->id] |= (1 << cmd->device->lun);
+=======
+	write_wd33c93(regs, WD_SOURCE_ID, scsi_pointer->phase ? SRCID_ER : 0);
+
+	write_wd33c93(regs, WD_TARGET_LUN, (u8)cmd->device->lun);
+	write_wd33c93(regs, WD_SYNCHRONOUS_TRANSFER,
+		      hostdata->sync_xfer[cmd->device->id]);
+	hostdata->busy[cmd->device->id] |= (1 << (cmd->device->lun & 0xFF));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((hostdata->level2 == L2_NONE) ||
 	    (hostdata->sync_stat[cmd->device->id] == SS_UNSET)) {
@@ -660,14 +732,22 @@ wd33c93_execute(struct Scsi_Host *instance)
 		 * up ahead of time.
 		 */
 
+<<<<<<< HEAD
 		if ((cmd->SCp.phase == 0) && (hostdata->no_dma == 0)) {
+=======
+		if (scsi_pointer->phase == 0 && hostdata->no_dma == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (hostdata->dma_setup(cmd,
 			    (cmd->sc_data_direction == DMA_TO_DEVICE) ?
 			     DATA_OUT_DIR : DATA_IN_DIR))
 				write_wd33c93_count(regs, 0);	/* guarantee a DATA_PHASE interrupt */
 			else {
 				write_wd33c93_count(regs,
+<<<<<<< HEAD
 						    cmd->SCp.this_residual);
+=======
+						scsi_pointer->this_residual);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				write_wd33c93(regs, WD_CONTROL,
 					      CTRL_IDI | CTRL_EDI | hostdata->dma_mode);
 				hostdata->dma = D_DMA_RUNNING;
@@ -687,7 +767,11 @@ wd33c93_execute(struct Scsi_Host *instance)
 	 */
 
 	DB(DB_EXECUTE,
+<<<<<<< HEAD
 	   printk("%s)EX-2 ", (cmd->SCp.phase) ? "d:" : ""))
+=======
+	   printk("%s)EX-2 ", scsi_pointer->phase ? "d:" : ""))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -729,6 +813,10 @@ static void
 transfer_bytes(const wd33c93_regs regs, struct scsi_cmnd *cmd,
 		int data_in_dir)
 {
+<<<<<<< HEAD
+=======
+	struct scsi_pointer *scsi_pointer = WD33C93_scsi_pointer(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct WD33C93_hostdata *hostdata;
 	unsigned long length;
 
@@ -742,6 +830,7 @@ transfer_bytes(const wd33c93_regs regs, struct scsi_cmnd *cmd,
  * now we need to setup the next scatter-gather buffer as the
  * source or destination for THIS transfer.
  */
+<<<<<<< HEAD
 	if (!cmd->SCp.this_residual && cmd->SCp.buffers_residual) {
 		++cmd->SCp.buffer;
 		--cmd->SCp.buffers_residual;
@@ -749,6 +838,15 @@ transfer_bytes(const wd33c93_regs regs, struct scsi_cmnd *cmd,
 		cmd->SCp.ptr = sg_virt(cmd->SCp.buffer);
 	}
 	if (!cmd->SCp.this_residual) /* avoid bogus setups */
+=======
+	if (!scsi_pointer->this_residual && scsi_pointer->buffers_residual) {
+		scsi_pointer->buffer = sg_next(scsi_pointer->buffer);
+		--scsi_pointer->buffers_residual;
+		scsi_pointer->this_residual = scsi_pointer->buffer->length;
+		scsi_pointer->ptr = sg_virt(scsi_pointer->buffer);
+	}
+	if (!scsi_pointer->this_residual) /* avoid bogus setups */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	write_wd33c93(regs, WD_SYNCHRONOUS_TRANSFER,
@@ -762,11 +860,20 @@ transfer_bytes(const wd33c93_regs regs, struct scsi_cmnd *cmd,
 #ifdef PROC_STATISTICS
 		hostdata->pio_cnt++;
 #endif
+<<<<<<< HEAD
 		transfer_pio(regs, (uchar *) cmd->SCp.ptr,
 			     cmd->SCp.this_residual, data_in_dir, hostdata);
 		length = cmd->SCp.this_residual;
 		cmd->SCp.this_residual = read_wd33c93_count(regs);
 		cmd->SCp.ptr += (length - cmd->SCp.this_residual);
+=======
+		transfer_pio(regs, (uchar *) scsi_pointer->ptr,
+			     scsi_pointer->this_residual, data_in_dir,
+			     hostdata);
+		length = scsi_pointer->this_residual;
+		scsi_pointer->this_residual = read_wd33c93_count(regs);
+		scsi_pointer->ptr += length - scsi_pointer->this_residual;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 /* We are able to do DMA (in fact, the Amiga hardware is
@@ -783,10 +890,17 @@ transfer_bytes(const wd33c93_regs regs, struct scsi_cmnd *cmd,
 		hostdata->dma_cnt++;
 #endif
 		write_wd33c93(regs, WD_CONTROL, CTRL_IDI | CTRL_EDI | hostdata->dma_mode);
+<<<<<<< HEAD
 		write_wd33c93_count(regs, cmd->SCp.this_residual);
 
 		if ((hostdata->level2 >= L2_DATA) ||
 		    (hostdata->level2 == L2_BASIC && cmd->SCp.phase == 0)) {
+=======
+		write_wd33c93_count(regs, scsi_pointer->this_residual);
+
+		if ((hostdata->level2 >= L2_DATA) ||
+		    (hostdata->level2 == L2_BASIC && scsi_pointer->phase == 0)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			write_wd33c93(regs, WD_COMMAND_PHASE, 0x45);
 			write_wd33c93_cmd(regs, WD_CMD_SEL_ATN_XFER);
 			hostdata->state = S_RUNNING_LEVEL2;
@@ -800,6 +914,10 @@ transfer_bytes(const wd33c93_regs regs, struct scsi_cmnd *cmd,
 void
 wd33c93_intr(struct Scsi_Host *instance)
 {
+<<<<<<< HEAD
+=======
+	struct scsi_pointer *scsi_pointer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct WD33C93_hostdata *hostdata =
 	    (struct WD33C93_hostdata *) instance->hostdata;
 	const wd33c93_regs regs = hostdata->regs;
@@ -818,6 +936,10 @@ wd33c93_intr(struct Scsi_Host *instance)
 #endif
 
 	cmd = (struct scsi_cmnd *) hostdata->connected;	/* assume we're connected */
+<<<<<<< HEAD
+=======
+	scsi_pointer = WD33C93_scsi_pointer(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sr = read_wd33c93(regs, WD_SCSI_STATUS);	/* clear the interrupt */
 	phs = read_wd33c93(regs, WD_COMMAND_PHASE);
 
@@ -839,6 +961,7 @@ wd33c93_intr(struct Scsi_Host *instance)
  */
 	    if (hostdata->dma == D_DMA_RUNNING) {
 		DB(DB_TRANSFER,
+<<<<<<< HEAD
 		   printk("[%p/%d:", cmd->SCp.ptr, cmd->SCp.this_residual))
 		    hostdata->dma_stop(cmd->device->host, cmd, 1);
 		hostdata->dma = D_DMA_OFF;
@@ -847,6 +970,16 @@ wd33c93_intr(struct Scsi_Host *instance)
 		cmd->SCp.ptr += (length - cmd->SCp.this_residual);
 		DB(DB_TRANSFER,
 		   printk("%p/%d]", cmd->SCp.ptr, cmd->SCp.this_residual))
+=======
+		   printk("[%p/%d:", scsi_pointer->ptr, scsi_pointer->this_residual))
+		    hostdata->dma_stop(cmd->device->host, cmd, 1);
+		hostdata->dma = D_DMA_OFF;
+		length = scsi_pointer->this_residual;
+		scsi_pointer->this_residual = read_wd33c93_count(regs);
+		scsi_pointer->ptr += length - scsi_pointer->this_residual;
+		DB(DB_TRANSFER,
+		   printk("%p/%d]", scsi_pointer->ptr, scsi_pointer->this_residual))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 /* Respond to the specific WD3393 interrupt - there are quite a few! */
@@ -862,9 +995,15 @@ wd33c93_intr(struct Scsi_Host *instance)
 		}
 
 		cmd->result = DID_NO_CONNECT << 16;
+<<<<<<< HEAD
 		hostdata->busy[cmd->device->id] &= ~(1 << cmd->device->lun);
 		hostdata->state = S_UNCONNECTED;
 		cmd->scsi_done(cmd);
+=======
+		hostdata->busy[cmd->device->id] &= ~(1 << (cmd->device->lun & 0xff));
+		hostdata->state = S_UNCONNECTED;
+		scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* From esp.c:
 		 * There is a window of time within the scsi_done() path
@@ -895,8 +1034,13 @@ wd33c93_intr(struct Scsi_Host *instance)
 
 		/* construct an IDENTIFY message with correct disconnect bit */
 
+<<<<<<< HEAD
 		hostdata->outgoing_msg[0] = (0x80 | 0x00 | cmd->device->lun);
 		if (cmd->SCp.phase)
+=======
+		hostdata->outgoing_msg[0] = IDENTIFY(0, cmd->device->lun);
+		if (scsi_pointer->phase)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hostdata->outgoing_msg[0] |= 0x40;
 
 		if (hostdata->sync_stat[cmd->device->id] == SS_FIRST) {
@@ -938,8 +1082,13 @@ wd33c93_intr(struct Scsi_Host *instance)
 	case CSR_UNEXP | PHS_DATA_IN:
 	case CSR_SRV_REQ | PHS_DATA_IN:
 		DB(DB_INTR,
+<<<<<<< HEAD
 		   printk("IN-%d.%d", cmd->SCp.this_residual,
 			  cmd->SCp.buffers_residual))
+=======
+		   printk("IN-%d.%d", scsi_pointer->this_residual,
+			  scsi_pointer->buffers_residual))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    transfer_bytes(regs, cmd, DATA_IN_DIR);
 		if (hostdata->state != S_RUNNING_LEVEL2)
 			hostdata->state = S_CONNECTED;
@@ -950,8 +1099,13 @@ wd33c93_intr(struct Scsi_Host *instance)
 	case CSR_UNEXP | PHS_DATA_OUT:
 	case CSR_SRV_REQ | PHS_DATA_OUT:
 		DB(DB_INTR,
+<<<<<<< HEAD
 		   printk("OUT-%d.%d", cmd->SCp.this_residual,
 			  cmd->SCp.buffers_residual))
+=======
+		   printk("OUT-%d.%d", scsi_pointer->this_residual,
+			  scsi_pointer->buffers_residual))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    transfer_bytes(regs, cmd, DATA_OUT_DIR);
 		if (hostdata->state != S_RUNNING_LEVEL2)
 			hostdata->state = S_CONNECTED;
@@ -974,8 +1128,13 @@ wd33c93_intr(struct Scsi_Host *instance)
 	case CSR_UNEXP | PHS_STATUS:
 	case CSR_SRV_REQ | PHS_STATUS:
 		DB(DB_INTR, printk("STATUS="))
+<<<<<<< HEAD
 		cmd->SCp.Status = read_1_byte(regs);
 		DB(DB_INTR, printk("%02x", cmd->SCp.Status))
+=======
+		scsi_pointer->Status = read_1_byte(regs);
+		DB(DB_INTR, printk("%02x", scsi_pointer->Status))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    if (hostdata->level2 >= L2_BASIC) {
 			sr = read_wd33c93(regs, WD_SCSI_STATUS);	/* clear interrupt */
 			udelay(7);
@@ -1003,7 +1162,11 @@ wd33c93_intr(struct Scsi_Host *instance)
 		else
 			hostdata->incoming_ptr = 0;
 
+<<<<<<< HEAD
 		cmd->SCp.Message = msg;
+=======
+		scsi_pointer->Message = msg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (msg) {
 
 		case COMMAND_COMPLETE:
@@ -1175,6 +1338,7 @@ wd33c93_intr(struct Scsi_Host *instance)
 		write_wd33c93(regs, WD_SOURCE_ID, SRCID_ER);
 		if (phs == 0x60) {
 			DB(DB_INTR, printk("SX-DONE"))
+<<<<<<< HEAD
 			    cmd->SCp.Message = COMMAND_COMPLETE;
 			lun = read_wd33c93(regs, WD_TARGET_LUN);
 			DB(DB_INTR, printk(":%d.%d", cmd->SCp.Status, lun))
@@ -1192,6 +1356,25 @@ wd33c93_intr(struct Scsi_Host *instance)
 				cmd->result =
 				    cmd->SCp.Status | (cmd->SCp.Message << 8);
 			cmd->scsi_done(cmd);
+=======
+			    scsi_pointer->Message = COMMAND_COMPLETE;
+			lun = read_wd33c93(regs, WD_TARGET_LUN);
+			DB(DB_INTR, printk(":%d.%d", scsi_pointer->Status, lun))
+			    hostdata->connected = NULL;
+			hostdata->busy[cmd->device->id] &= ~(1 << (cmd->device->lun & 0xff));
+			hostdata->state = S_UNCONNECTED;
+			if (scsi_pointer->Status == ILLEGAL_STATUS_BYTE)
+				scsi_pointer->Status = lun;
+			if (cmd->cmnd[0] == REQUEST_SENSE
+			    && scsi_pointer->Status != SAM_STAT_GOOD) {
+				set_host_byte(cmd, DID_ERROR);
+			} else {
+				set_host_byte(cmd, DID_OK);
+				scsi_msg_to_host_byte(cmd, scsi_pointer->Message);
+				set_status_byte(cmd, scsi_pointer->Status);
+			}
+			scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* We are no longer  connected to a target - check to see if
  * there are commands waiting to be executed.
@@ -1268,6 +1451,7 @@ wd33c93_intr(struct Scsi_Host *instance)
 		}
 		DB(DB_INTR, printk("UNEXP_DISC"))
 		    hostdata->connected = NULL;
+<<<<<<< HEAD
 		hostdata->busy[cmd->device->id] &= ~(1 << cmd->device->lun);
 		hostdata->state = S_UNCONNECTED;
 		if (cmd->cmnd[0] == REQUEST_SENSE && cmd->SCp.Status != GOOD)
@@ -1276,6 +1460,19 @@ wd33c93_intr(struct Scsi_Host *instance)
 		else
 			cmd->result = cmd->SCp.Status | (cmd->SCp.Message << 8);
 		cmd->scsi_done(cmd);
+=======
+		hostdata->busy[cmd->device->id] &= ~(1 << (cmd->device->lun & 0xff));
+		hostdata->state = S_UNCONNECTED;
+		if (cmd->cmnd[0] == REQUEST_SENSE &&
+		    scsi_pointer->Status != SAM_STAT_GOOD) {
+			set_host_byte(cmd, DID_ERROR);
+		} else {
+			set_host_byte(cmd, DID_OK);
+			scsi_msg_to_host_byte(cmd, scsi_pointer->Message);
+			set_status_byte(cmd, scsi_pointer->Status);
+		}
+		scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* We are no longer connected to a target - check to see if
  * there are commands waiting to be executed.
@@ -1300,6 +1497,7 @@ wd33c93_intr(struct Scsi_Host *instance)
 		switch (hostdata->state) {
 		case S_PRE_CMP_DISC:
 			hostdata->connected = NULL;
+<<<<<<< HEAD
 			hostdata->busy[cmd->device->id] &= ~(1 << cmd->device->lun);
 			hostdata->state = S_UNCONNECTED;
 			DB(DB_INTR, printk(":%d", cmd->SCp.Status))
@@ -1312,6 +1510,20 @@ wd33c93_intr(struct Scsi_Host *instance)
 				cmd->result =
 				    cmd->SCp.Status | (cmd->SCp.Message << 8);
 			cmd->scsi_done(cmd);
+=======
+			hostdata->busy[cmd->device->id] &= ~(1 << (cmd->device->lun & 0xff));
+			hostdata->state = S_UNCONNECTED;
+			DB(DB_INTR, printk(":%d", scsi_pointer->Status))
+			if (cmd->cmnd[0] == REQUEST_SENSE
+			    && scsi_pointer->Status != SAM_STAT_GOOD) {
+				set_host_byte(cmd, DID_ERROR);
+			} else {
+				set_host_byte(cmd, DID_OK);
+				scsi_msg_to_host_byte(cmd, scsi_pointer->Message);
+				set_status_byte(cmd, scsi_pointer->Status);
+			}
+			scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case S_PRE_TMP_DISC:
 		case S_RUNNING_LEVEL2:
@@ -1353,7 +1565,11 @@ wd33c93_intr(struct Scsi_Host *instance)
 			if (hostdata->selecting) {
 				cmd = (struct scsi_cmnd *) hostdata->selecting;
 				hostdata->selecting = NULL;
+<<<<<<< HEAD
 				hostdata->busy[cmd->device->id] &= ~(1 << cmd->device->lun);
+=======
+				hostdata->busy[cmd->device->id] &= ~(1 << (cmd->device->lun & 0xff));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cmd->host_scribble =
 				    (uchar *) hostdata->input_Q;
 				hostdata->input_Q = cmd;
@@ -1365,7 +1581,11 @@ wd33c93_intr(struct Scsi_Host *instance)
 			if (cmd) {
 				if (phs == 0x00) {
 					hostdata->busy[cmd->device->id] &=
+<<<<<<< HEAD
 					    ~(1 << cmd->device->lun);
+=======
+						~(1 << (cmd->device->lun & 0xff));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					cmd->host_scribble =
 					    (uchar *) hostdata->input_Q;
 					hostdata->input_Q = cmd;
@@ -1448,7 +1668,11 @@ wd33c93_intr(struct Scsi_Host *instance)
 		cmd = (struct scsi_cmnd *) hostdata->disconnected_Q;
 		patch = NULL;
 		while (cmd) {
+<<<<<<< HEAD
 			if (id == cmd->device->id && lun == cmd->device->lun)
+=======
+			if (id == cmd->device->id && lun == (u8)cmd->device->lun)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			patch = cmd;
 			cmd = (struct scsi_cmnd *) cmd->host_scribble;
@@ -1459,7 +1683,11 @@ wd33c93_intr(struct Scsi_Host *instance)
 		if (!cmd) {
 			printk
 			    ("---TROUBLE: target %d.%d not in disconnect queue---",
+<<<<<<< HEAD
 			     id, lun);
+=======
+			     id, (u8)lun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock_irqrestore(&hostdata->lock, flags);
 			return;
 		}
@@ -1577,6 +1805,10 @@ wd33c93_host_reset(struct scsi_cmnd * SCpnt)
 	int i;
 
 	instance = SCpnt->device->host;
+<<<<<<< HEAD
+=======
+	spin_lock_irq(instance->host_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hostdata = (struct WD33C93_hostdata *) instance->hostdata;
 
 	printk("scsi%d: reset. ", instance->host_no);
@@ -1602,6 +1834,10 @@ wd33c93_host_reset(struct scsi_cmnd * SCpnt)
 	reset_wd33c93(instance);
 	SCpnt->result = DID_RESET << 16;
 	enable_irq(instance->irq);
+<<<<<<< HEAD
+=======
+	spin_unlock_irq(instance->host_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return SUCCESS;
 }
 
@@ -1639,7 +1875,11 @@ wd33c93_abort(struct scsi_cmnd * cmd)
 			    ("scsi%d: Abort - removing command from input_Q. ",
 			     instance->host_no);
 			enable_irq(cmd->device->host->irq);
+<<<<<<< HEAD
 			cmd->scsi_done(cmd);
+=======
+			scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return SUCCESS;
 		}
 		prev = tmp;
@@ -1705,7 +1945,11 @@ wd33c93_abort(struct scsi_cmnd * cmd)
 		sr = read_wd33c93(regs, WD_SCSI_STATUS);
 		printk("asr=%02x, sr=%02x.", asr, sr);
 
+<<<<<<< HEAD
 		hostdata->busy[cmd->device->id] &= ~(1 << cmd->device->lun);
+=======
+		hostdata->busy[cmd->device->id] &= ~(1 << (cmd->device->lun & 0xff));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hostdata->connected = NULL;
 		hostdata->state = S_UNCONNECTED;
 		cmd->result = DID_ABORT << 16;
@@ -1714,7 +1958,11 @@ wd33c93_abort(struct scsi_cmnd * cmd)
 		wd33c93_execute(instance);
 
 		enable_irq(cmd->device->host->irq);
+<<<<<<< HEAD
 		cmd->scsi_done(cmd);
+=======
+		scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SUCCESS;
 	}
 
@@ -1860,6 +2108,10 @@ round_4(unsigned int x)
 		case 1: --x;
 			break;
 		case 2: ++x;
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 3: ++x;
 	}
 	return x;
@@ -2054,6 +2306,7 @@ wd33c93_init(struct Scsi_Host *instance, const wd33c93_regs regs,
 	printk("           Version %s - %s\n", WD33C93_VERSION, WD33C93_DATE);
 }
 
+<<<<<<< HEAD
 int
 wd33c93_proc_info(struct Scsi_Host *instance, char *buf, char **start, off_t off, int len, int in)
 {
@@ -2070,6 +2323,18 @@ wd33c93_proc_info(struct Scsi_Host *instance, char *buf, char **start, off_t off
 	hd = (struct WD33C93_hostdata *) instance->hostdata;
 
 /* If 'in' is TRUE we need to _read_ the proc file. We accept the following
+=======
+int wd33c93_write_info(struct Scsi_Host *instance, char *buf, int len)
+{
+#ifdef PROC_INTERFACE
+	char *bp;
+	struct WD33C93_hostdata *hd;
+	int x;
+
+	hd = (struct WD33C93_hostdata *) instance->hostdata;
+
+/* We accept the following
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * keywords (same format as command-line, but arguments are not optional):
  *    debug
  *    disconnect
@@ -2083,6 +2348,7 @@ wd33c93_proc_info(struct Scsi_Host *instance, char *buf, char **start, off_t off
  *    nosync
  */
 
+<<<<<<< HEAD
 	if (in) {
 		buf[len] = '\0';
 		for (bp = buf; *bp; ) {
@@ -2190,10 +2456,115 @@ wd33c93_proc_info(struct Scsi_Host *instance, char *buf, char **start, off_t off
 			sprintf(tbuf, " %d:%d(%02x)",
 				cmd->device->id, cmd->device->lun, cmd->cmnd[0]);
 			strcat(bp, tbuf);
+=======
+	buf[len] = '\0';
+	for (bp = buf; *bp; ) {
+		while (',' == *bp || ' ' == *bp)
+			++bp;
+	if (!strncmp(bp, "debug:", 6)) {
+			hd->args = simple_strtoul(bp+6, &bp, 0) & DB_MASK;
+	} else if (!strncmp(bp, "disconnect:", 11)) {
+			x = simple_strtoul(bp+11, &bp, 0);
+		if (x < DIS_NEVER || x > DIS_ALWAYS)
+			x = DIS_ADAPTIVE;
+		hd->disconnect = x;
+	} else if (!strncmp(bp, "period:", 7)) {
+		x = simple_strtoul(bp+7, &bp, 0);
+		hd->default_sx_per =
+			hd->sx_table[round_period((unsigned int) x,
+						  hd->sx_table)].period_ns;
+	} else if (!strncmp(bp, "resync:", 7)) {
+			set_resync(hd, (int)simple_strtoul(bp+7, &bp, 0));
+	} else if (!strncmp(bp, "proc:", 5)) {
+			hd->proc = simple_strtoul(bp+5, &bp, 0);
+	} else if (!strncmp(bp, "nodma:", 6)) {
+			hd->no_dma = simple_strtoul(bp+6, &bp, 0);
+	} else if (!strncmp(bp, "level2:", 7)) {
+			hd->level2 = simple_strtoul(bp+7, &bp, 0);
+		} else if (!strncmp(bp, "burst:", 6)) {
+			hd->dma_mode =
+				simple_strtol(bp+6, &bp, 0) ? CTRL_BURST:CTRL_DMA;
+		} else if (!strncmp(bp, "fast:", 5)) {
+			x = !!simple_strtol(bp+5, &bp, 0);
+			if (x != hd->fast)
+				set_resync(hd, 0xff);
+			hd->fast = x;
+		} else if (!strncmp(bp, "nosync:", 7)) {
+			x = simple_strtoul(bp+7, &bp, 0);
+			set_resync(hd, x ^ hd->no_sync);
+			hd->no_sync = x;
+		} else {
+			break; /* unknown keyword,syntax-error,... */
+		}
+	}
+	return len;
+#else
+	return 0;
+#endif
+}
+
+int
+wd33c93_show_info(struct seq_file *m, struct Scsi_Host *instance)
+{
+#ifdef PROC_INTERFACE
+	struct WD33C93_hostdata *hd;
+	struct scsi_cmnd *cmd;
+	int x;
+
+	hd = (struct WD33C93_hostdata *) instance->hostdata;
+
+	spin_lock_irq(&hd->lock);
+	if (hd->proc & PR_VERSION)
+		seq_printf(m, "\nVersion %s - %s.",
+			WD33C93_VERSION, WD33C93_DATE);
+
+	if (hd->proc & PR_INFO) {
+		seq_printf(m, "\nclock_freq=%02x no_sync=%02x no_dma=%d"
+			" dma_mode=%02x fast=%d",
+			hd->clock_freq, hd->no_sync, hd->no_dma, hd->dma_mode, hd->fast);
+		seq_puts(m, "\nsync_xfer[] =       ");
+		for (x = 0; x < 7; x++)
+			seq_printf(m, "\t%02x", hd->sync_xfer[x]);
+		seq_puts(m, "\nsync_stat[] =       ");
+		for (x = 0; x < 7; x++)
+			seq_printf(m, "\t%02x", hd->sync_stat[x]);
+	}
+#ifdef PROC_STATISTICS
+	if (hd->proc & PR_STATISTICS) {
+		seq_puts(m, "\ncommands issued:    ");
+		for (x = 0; x < 7; x++)
+			seq_printf(m, "\t%ld", hd->cmd_cnt[x]);
+		seq_puts(m, "\ndisconnects allowed:");
+		for (x = 0; x < 7; x++)
+			seq_printf(m, "\t%ld", hd->disc_allowed_cnt[x]);
+		seq_puts(m, "\ndisconnects done:   ");
+		for (x = 0; x < 7; x++)
+			seq_printf(m, "\t%ld", hd->disc_done_cnt[x]);
+		seq_printf(m,
+			"\ninterrupts: %ld, DATA_PHASE ints: %ld DMA, %ld PIO",
+			hd->int_cnt, hd->dma_cnt, hd->pio_cnt);
+	}
+#endif
+	if (hd->proc & PR_CONNECTED) {
+		seq_puts(m, "\nconnected:     ");
+		if (hd->connected) {
+			cmd = (struct scsi_cmnd *) hd->connected;
+			seq_printf(m, " %d:%llu(%02x)",
+				cmd->device->id, cmd->device->lun, cmd->cmnd[0]);
+		}
+	}
+	if (hd->proc & PR_INPUTQ) {
+		seq_puts(m, "\ninput_Q:       ");
+		cmd = (struct scsi_cmnd *) hd->input_Q;
+		while (cmd) {
+			seq_printf(m, " %d:%llu(%02x)",
+				cmd->device->id, cmd->device->lun, cmd->cmnd[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cmd = (struct scsi_cmnd *) cmd->host_scribble;
 		}
 	}
 	if (hd->proc & PR_DISCQ) {
+<<<<<<< HEAD
 		strcat(bp, "\ndisconnected_Q:");
 		cmd = (struct scsi_cmnd *) hd->disconnected_Q;
 		while (cmd) {
@@ -2222,6 +2593,20 @@ wd33c93_proc_info(struct Scsi_Host *instance, char *buf, char **start, off_t off
 
 #endif				/* PROC_INTERFACE */
 
+=======
+		seq_puts(m, "\ndisconnected_Q:");
+		cmd = (struct scsi_cmnd *) hd->disconnected_Q;
+		while (cmd) {
+			seq_printf(m, " %d:%llu(%02x)",
+				cmd->device->id, cmd->device->lun, cmd->cmnd[0]);
+			cmd = (struct scsi_cmnd *) cmd->host_scribble;
+		}
+	}
+	seq_putc(m, '\n');
+	spin_unlock_irq(&hd->lock);
+#endif				/* PROC_INTERFACE */
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL(wd33c93_host_reset);
@@ -2229,4 +2614,9 @@ EXPORT_SYMBOL(wd33c93_init);
 EXPORT_SYMBOL(wd33c93_abort);
 EXPORT_SYMBOL(wd33c93_queuecommand);
 EXPORT_SYMBOL(wd33c93_intr);
+<<<<<<< HEAD
 EXPORT_SYMBOL(wd33c93_proc_info);
+=======
+EXPORT_SYMBOL(wd33c93_show_info);
+EXPORT_SYMBOL(wd33c93_write_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

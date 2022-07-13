@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LINUX_BCMA_DRIVER_MIPS_H_
 #define LINUX_BCMA_DRIVER_MIPS_H_
 
@@ -28,6 +32,10 @@
 #define BCMA_MIPS_MIPS74K_GPIOEN	0x0048
 #define BCMA_MIPS_MIPS74K_CLKCTLST	0x01E0
 
+<<<<<<< HEAD
+=======
+#define BCMA_MIPS_OOBSELINA74		0x004
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BCMA_MIPS_OOBSELOUTA30		0x100
 
 struct bcma_device;
@@ -35,6 +43,7 @@ struct bcma_device;
 struct bcma_drv_mips {
 	struct bcma_device *core;
 	u8 setup_done:1;
+<<<<<<< HEAD
 	unsigned int assigned_irqs;
 };
 
@@ -48,4 +57,11 @@ extern u32 bcma_cpu_clock(struct bcma_drv_mips *mcore);
 
 extern unsigned int bcma_core_mips_irq(struct bcma_device *dev);
 
+=======
+	u8 early_setup_done:1;
+};
+
+extern u32 bcma_cpu_clock(struct bcma_drv_mips *mcore);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* LINUX_BCMA_DRIVER_MIPS_H_ */

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for SA11x0 serial ports
  *
  *  Based on drivers/char/serial.c, by Linus Torvalds, Theodore Ts'o.
  *
  *  Copyright (C) 2000 Deep Blue Solutions Ltd.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,11 +29,19 @@
 #define SUPPORT_SYSRQ
 #endif
 
+=======
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/ioport.h>
 #include <linux/init.h>
 #include <linux/console.h>
 #include <linux/sysrq.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_data/sa11x0-serial.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
@@ -39,7 +52,12 @@
 #include <asm/irq.h>
 #include <mach/hardware.h>
 #include <mach/irqs.h>
+<<<<<<< HEAD
 #include <asm/mach/serial_sa1100.h>
+=======
+
+#include "serial_mctrl_gpio.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* We've been assigned a range on the "Low-density serial ports" major */
 #define SERIAL_SA1100_MAJOR	204
@@ -90,6 +108,10 @@ struct sa1100_port {
 	struct uart_port	port;
 	struct timer_list	timer;
 	unsigned int		old_status;
+<<<<<<< HEAD
+=======
+	struct mctrl_gpios	*gpios;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -123,6 +145,7 @@ static void sa1100_mctrl_check(struct sa1100_port *sport)
  * This is our per-port timeout handler, for checking the
  * modem status signals.
  */
+<<<<<<< HEAD
 static void sa1100_timeout(unsigned long data)
 {
 	struct sa1100_port *sport = (struct sa1100_port *)data;
@@ -132,6 +155,17 @@ static void sa1100_timeout(unsigned long data)
 		spin_lock_irqsave(&sport->port.lock, flags);
 		sa1100_mctrl_check(sport);
 		spin_unlock_irqrestore(&sport->port.lock, flags);
+=======
+static void sa1100_timeout(struct timer_list *t)
+{
+	struct sa1100_port *sport = from_timer(sport, t, timer);
+	unsigned long flags;
+
+	if (sport->port.state) {
+		uart_port_lock_irqsave(&sport->port, &flags);
+		sa1100_mctrl_check(sport);
+		uart_port_unlock_irqrestore(&sport->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mod_timer(&sport->timer, jiffies + MCTRL_TIMEOUT);
 	}
@@ -142,7 +176,12 @@ static void sa1100_timeout(unsigned long data)
  */
 static void sa1100_stop_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct sa1100_port *sport = (struct sa1100_port *)port;
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 utcr3;
 
 	utcr3 = UART_GET_UTCR3(sport);
@@ -155,7 +194,12 @@ static void sa1100_stop_tx(struct uart_port *port)
  */
 static void sa1100_start_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct sa1100_port *sport = (struct sa1100_port *)port;
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 utcr3;
 
 	utcr3 = UART_GET_UTCR3(sport);
@@ -168,7 +212,12 @@ static void sa1100_start_tx(struct uart_port *port)
  */
 static void sa1100_stop_rx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct sa1100_port *sport = (struct sa1100_port *)port;
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 utcr3;
 
 	utcr3 = UART_GET_UTCR3(sport);
@@ -180,16 +229,30 @@ static void sa1100_stop_rx(struct uart_port *port)
  */
 static void sa1100_enable_ms(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct sa1100_port *sport = (struct sa1100_port *)port;
 
 	mod_timer(&sport->timer, jiffies);
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+
+	mod_timer(&sport->timer, jiffies);
+
+	mctrl_gpio_enable_ms(sport->gpios);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 sa1100_rx_chars(struct sa1100_port *sport)
 {
+<<<<<<< HEAD
 	struct tty_struct *tty = sport->port.state->port.tty;
 	unsigned int status, ch, flg;
+=======
+	unsigned int status;
+	u8 ch, flg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = UTSR1_TO_SM(UART_GET_UTSR1(sport)) |
 		 UTSR0_TO_SM(UART_GET_UTSR0(sport));
@@ -219,9 +282,13 @@ sa1100_rx_chars(struct sa1100_port *sport)
 			else if (status & UTSR1_TO_SM(UTSR1_FRE))
 				flg = TTY_FRAME;
 
+<<<<<<< HEAD
 #ifdef SUPPORT_SYSRQ
 			sport->port.sysrq = 0;
 #endif
+=======
+			sport->port.sysrq = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (uart_handle_sysrq_char(&sport->port, ch))
@@ -233,11 +300,17 @@ sa1100_rx_chars(struct sa1100_port *sport)
 		status = UTSR1_TO_SM(UART_GET_UTSR1(sport)) |
 			 UTSR0_TO_SM(UART_GET_UTSR0(sport));
 	}
+<<<<<<< HEAD
 	tty_flip_buffer_push(tty);
+=======
+
+	tty_flip_buffer_push(&sport->port.state->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sa1100_tx_chars(struct sa1100_port *sport)
 {
+<<<<<<< HEAD
 	struct circ_buf *xmit = &sport->port.state->xmit;
 
 	if (sport->port.x_char) {
@@ -246,6 +319,9 @@ static void sa1100_tx_chars(struct sa1100_port *sport)
 		sport->port.x_char = 0;
 		return;
 	}
+=======
+	u8 ch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check the modem control lines before
@@ -253,6 +329,7 @@ static void sa1100_tx_chars(struct sa1100_port *sport)
 	 */
 	sa1100_mctrl_check(sport);
 
+<<<<<<< HEAD
 	if (uart_circ_empty(xmit) || uart_tx_stopped(&sport->port)) {
 		sa1100_stop_tx(&sport->port);
 		return;
@@ -275,6 +352,11 @@ static void sa1100_tx_chars(struct sa1100_port *sport)
 
 	if (uart_circ_empty(xmit))
 		sa1100_stop_tx(&sport->port);
+=======
+	uart_port_tx(&sport->port, ch,
+			UART_GET_UTSR1(sport) & UTSR1_TNF,
+			UART_PUT_CHAR(sport, ch));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t sa1100_int(int irq, void *dev_id)
@@ -282,7 +364,11 @@ static irqreturn_t sa1100_int(int irq, void *dev_id)
 	struct sa1100_port *sport = dev_id;
 	unsigned int status, pass_counter = 0;
 
+<<<<<<< HEAD
 	spin_lock(&sport->port.lock);
+=======
+	uart_port_lock(&sport->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = UART_GET_UTSR0(sport);
 	status &= SM_TO_UTSR0(sport->port.read_status_mask) | ~UTSR0_TFS;
 	do {
@@ -311,7 +397,11 @@ static irqreturn_t sa1100_int(int irq, void *dev_id)
 		status &= SM_TO_UTSR0(sport->port.read_status_mask) |
 			  ~UTSR0_TFS;
 	} while (status & (UTSR0_TFS | UTSR0_RFS | UTSR0_RID));
+<<<<<<< HEAD
 	spin_unlock(&sport->port.lock);
+=======
+	uart_port_unlock(&sport->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -321,18 +411,40 @@ static irqreturn_t sa1100_int(int irq, void *dev_id)
  */
 static unsigned int sa1100_tx_empty(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct sa1100_port *sport = (struct sa1100_port *)port;
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return UART_GET_UTSR1(sport) & UTSR1_TBY ? 0 : TIOCSER_TEMT;
 }
 
 static unsigned int sa1100_get_mctrl(struct uart_port *port)
 {
+<<<<<<< HEAD
 	return TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+	int ret = TIOCM_CTS | TIOCM_DSR | TIOCM_CAR;
+
+	mctrl_gpio_get(sport->gpios, &ret);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sa1100_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
+<<<<<<< HEAD
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+
+	mctrl_gpio_set(sport->gpios, mctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -340,23 +452,41 @@ static void sa1100_set_mctrl(struct uart_port *port, unsigned int mctrl)
  */
 static void sa1100_break_ctl(struct uart_port *port, int break_state)
 {
+<<<<<<< HEAD
 	struct sa1100_port *sport = (struct sa1100_port *)port;
 	unsigned long flags;
 	unsigned int utcr3;
 
 	spin_lock_irqsave(&sport->port.lock, flags);
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+	unsigned long flags;
+	unsigned int utcr3;
+
+	uart_port_lock_irqsave(&sport->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	utcr3 = UART_GET_UTCR3(sport);
 	if (break_state == -1)
 		utcr3 |= UTCR3_BRK;
 	else
 		utcr3 &= ~UTCR3_BRK;
 	UART_PUT_UTCR3(sport, utcr3);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&sport->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&sport->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sa1100_startup(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct sa1100_port *sport = (struct sa1100_port *)port;
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval;
 
 	/*
@@ -376,16 +506,27 @@ static int sa1100_startup(struct uart_port *port)
 	/*
 	 * Enable modem status interrupts
 	 */
+<<<<<<< HEAD
 	spin_lock_irq(&sport->port.lock);
 	sa1100_enable_ms(&sport->port);
 	spin_unlock_irq(&sport->port.lock);
+=======
+	uart_port_lock_irq(&sport->port);
+	sa1100_enable_ms(&sport->port);
+	uart_port_unlock_irq(&sport->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static void sa1100_shutdown(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct sa1100_port *sport = (struct sa1100_port *)port;
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Stop our timer.
@@ -405,9 +546,16 @@ static void sa1100_shutdown(struct uart_port *port)
 
 static void
 sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
+<<<<<<< HEAD
 		   struct ktermios *old)
 {
 	struct sa1100_port *sport = (struct sa1100_port *)port;
+=======
+		   const struct ktermios *old)
+{
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	unsigned int utcr0, old_utcr3, baud, quot;
 	unsigned int old_csize = old ? old->c_cflag & CSIZE : CS8;
@@ -441,7 +589,13 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk/16); 
 	quot = uart_get_divisor(port, baud);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&sport->port.lock, flags);
+=======
+	del_timer_sync(&sport->timer);
+
+	uart_port_lock_irqsave(&sport->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sport->port.read_status_mask &= UTSR0_TO_SM(UTSR0_TFS);
 	sport->port.read_status_mask |= UTSR1_TO_SM(UTSR1_ROR);
@@ -471,8 +625,11 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
 				UTSR1_TO_SM(UTSR1_ROR);
 	}
 
+<<<<<<< HEAD
 	del_timer_sync(&sport->timer);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Update the per-port timeout.
 	 */
@@ -505,12 +662,21 @@ sa1100_set_termios(struct uart_port *port, struct ktermios *termios,
 	if (UART_ENABLE_MS(&sport->port, termios->c_cflag))
 		sa1100_enable_ms(&sport->port);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&sport->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&sport->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *sa1100_type(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct sa1100_port *sport = (struct sa1100_port *)port;
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sport->port.type == PORT_SA1100 ? "SA1100" : NULL;
 }
@@ -520,7 +686,12 @@ static const char *sa1100_type(struct uart_port *port)
  */
 static void sa1100_release_port(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct sa1100_port *sport = (struct sa1100_port *)port;
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	release_mem_region(sport->port.mapbase, UART_PORT_SIZE);
 }
@@ -530,7 +701,12 @@ static void sa1100_release_port(struct uart_port *port)
  */
 static int sa1100_request_port(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct sa1100_port *sport = (struct sa1100_port *)port;
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return request_mem_region(sport->port.mapbase, UART_PORT_SIZE,
 			"sa11x0-uart") != NULL ? 0 : -EBUSY;
@@ -541,7 +717,12 @@ static int sa1100_request_port(struct uart_port *port)
  */
 static void sa1100_config_port(struct uart_port *port, int flags)
 {
+<<<<<<< HEAD
 	struct sa1100_port *sport = (struct sa1100_port *)port;
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (flags & UART_CONFIG_TYPE &&
 	    sa1100_request_port(&sport->port) == 0)
@@ -556,7 +737,12 @@ static void sa1100_config_port(struct uart_port *port, int flags)
 static int
 sa1100_verify_port(struct uart_port *port, struct serial_struct *ser)
 {
+<<<<<<< HEAD
 	struct sa1100_port *sport = (struct sa1100_port *)port;
+=======
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	if (ser->type != PORT_UNKNOWN && ser->type != PORT_SA1100)
@@ -624,9 +810,13 @@ static void __init sa1100_init_ports(void)
 		sa1100_ports[i].port.fifosize  = 8;
 		sa1100_ports[i].port.line      = i;
 		sa1100_ports[i].port.iotype    = UPIO_MEM;
+<<<<<<< HEAD
 		init_timer(&sa1100_ports[i].timer);
 		sa1100_ports[i].timer.function = sa1100_timeout;
 		sa1100_ports[i].timer.data     = (unsigned long)&sa1100_ports[i];
+=======
+		timer_setup(&sa1100_ports[i].timer, sa1100_timeout, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -637,7 +827,11 @@ static void __init sa1100_init_ports(void)
 	PPSR |= PPC_TXD1 | PPC_TXD3;
 }
 
+<<<<<<< HEAD
 void __devinit sa1100_register_uart_fns(struct sa1100_port_fns *fns)
+=======
+void sa1100_register_uart_fns(struct sa1100_port_fns *fns)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (fns->get_mctrl)
 		sa1100_pops.get_mctrl = fns->get_mctrl;
@@ -645,7 +839,14 @@ void __devinit sa1100_register_uart_fns(struct sa1100_port_fns *fns)
 		sa1100_pops.set_mctrl = fns->set_mctrl;
 
 	sa1100_pops.pm       = fns->pm;
+<<<<<<< HEAD
 	sa1100_pops.set_wake = fns->set_wake;
+=======
+	/*
+	 * FIXME: fns->set_wake is unused - this should be called from
+	 * the suspend() callback if device_may_wakeup(dev)) is set.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init sa1100_register_uart(int idx, int port)
@@ -684,9 +885,16 @@ void __init sa1100_register_uart(int idx, int port)
 
 
 #ifdef CONFIG_SERIAL_SA1100_CONSOLE
+<<<<<<< HEAD
 static void sa1100_console_putchar(struct uart_port *port, int ch)
 {
 	struct sa1100_port *sport = (struct sa1100_port *)port;
+=======
+static void sa1100_console_putchar(struct uart_port *port, unsigned char ch)
+{
+	struct sa1100_port *sport =
+		container_of(port, struct sa1100_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (!(UART_GET_UTSR1(sport) & UTSR1_TNF))
 		barrier();
@@ -837,6 +1045,7 @@ static int sa1100_serial_resume(struct platform_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int sa1100_serial_probe(struct platform_device *dev)
 {
 	struct resource *res = dev->resource;
@@ -857,10 +1066,55 @@ static int sa1100_serial_probe(struct platform_device *dev)
 			break;
 		}
 	}
+=======
+static int sa1100_serial_add_one_port(struct sa1100_port *sport, struct platform_device *dev)
+{
+	sport->port.dev = &dev->dev;
+	sport->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_SA1100_CONSOLE);
+
+	// mctrl_gpio_init() requires that the GPIO driver supports interrupts,
+	// but we need to support GPIO drivers for hardware that has no such
+	// interrupts.  Use mctrl_gpio_init_noauto() instead.
+	sport->gpios = mctrl_gpio_init_noauto(sport->port.dev, 0);
+	if (IS_ERR(sport->gpios)) {
+		int err = PTR_ERR(sport->gpios);
+
+		dev_err(sport->port.dev, "failed to get mctrl gpios: %d\n",
+			err);
+
+		if (err == -EPROBE_DEFER)
+			return err;
+
+		sport->gpios = NULL;
+	}
+
+	platform_set_drvdata(dev, sport);
+
+	return uart_add_one_port(&sa1100_reg, &sport->port);
+}
+
+static int sa1100_serial_probe(struct platform_device *dev)
+{
+	struct resource *res;
+	int i;
+
+	res = platform_get_resource(dev, IORESOURCE_MEM, 0);
+	if (!res)
+		return -EINVAL;
+
+	for (i = 0; i < NR_PORTS; i++)
+		if (sa1100_ports[i].port.mapbase == res->start)
+			break;
+	if (i == NR_PORTS)
+		return -ENODEV;
+
+	sa1100_serial_add_one_port(&sa1100_ports[i], dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int sa1100_serial_remove(struct platform_device *pdev)
 {
 	struct sa1100_port *sport = platform_get_drvdata(pdev);
@@ -871,16 +1125,31 @@ static int sa1100_serial_remove(struct platform_device *pdev)
 		uart_remove_one_port(&sa1100_reg, &sport->port);
 
 	return 0;
+=======
+static void sa1100_serial_remove(struct platform_device *pdev)
+{
+	struct sa1100_port *sport = platform_get_drvdata(pdev);
+
+	if (sport)
+		uart_remove_one_port(&sa1100_reg, &sport->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver sa11x0_serial_driver = {
 	.probe		= sa1100_serial_probe,
+<<<<<<< HEAD
 	.remove		= sa1100_serial_remove,
+=======
+	.remove_new	= sa1100_serial_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= sa1100_serial_suspend,
 	.resume		= sa1100_serial_resume,
 	.driver		= {
 		.name	= "sa11x0-uart",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

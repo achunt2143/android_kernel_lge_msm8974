@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * attribute_container.h - a generic container for all classes
  *
  * Copyright (c) 2005 - James Bottomley <James.Bottomley@steeleye.com>
+<<<<<<< HEAD
  *
  * This file is licensed under GPLv2
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ATTRIBUTE_CONTAINER_H_
@@ -55,6 +62,16 @@ void attribute_container_device_trigger(struct device *dev,
 					int (*fn)(struct attribute_container *,
 						  struct device *,
 						  struct device *));
+<<<<<<< HEAD
+=======
+int attribute_container_device_trigger_safe(struct device *dev,
+					    int (*fn)(struct attribute_container *,
+						      struct device *,
+						      struct device *),
+					    int (*undo)(struct attribute_container *,
+							struct device *,
+							struct device *));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void attribute_container_trigger(struct device *dev, 
 				 int (*fn)(struct attribute_container *,
 					   struct device *));

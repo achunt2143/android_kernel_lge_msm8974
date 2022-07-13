@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Adaptec AIC7xxx device driver for Linux.
  *
@@ -145,6 +149,7 @@ static struct scsi_transport_template *ahc_linux_transport_template = NULL;
 #endif
 
 /*
+<<<<<<< HEAD
  * Control collection of SCSI transfer statistics for the /proc filesystem.
  *
  * NOTE: Do NOT enable this when running on kernels version 1.2.x and below.
@@ -155,6 +160,8 @@ static struct scsi_transport_template *ahc_linux_transport_template = NULL;
 #endif
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * To change the default number of tagged transactions allowed per-device,
  * add a line to the lilo.conf file like:
  * append="aic7xxx=verbose,tag_info:{{32,32,32,32},{32,32,32,32}}"
@@ -375,7 +382,12 @@ static void ahc_linux_queue_cmd_complete(struct ahc_softc *ahc,
 					 struct scsi_cmnd *cmd);
 static void ahc_linux_freeze_simq(struct ahc_softc *ahc);
 static void ahc_linux_release_simq(struct ahc_softc *ahc);
+<<<<<<< HEAD
 static int  ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag);
+=======
+static int  ahc_linux_queue_recovery_cmd(struct scsi_device *sdev,
+					 struct scsi_cmnd *cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ahc_linux_initialize_scsi_bus(struct ahc_softc *ahc);
 static u_int ahc_linux_user_tagdepth(struct ahc_softc *ahc,
 				     struct ahc_devinfo *devinfo);
@@ -462,7 +474,11 @@ ahc_insb(struct ahc_softc * ahc, long port, uint8_t *array, int count)
 static void ahc_linux_unmap_scb(struct ahc_softc*, struct scb*);
 
 static int ahc_linux_map_seg(struct ahc_softc *ahc, struct scb *scb,
+<<<<<<< HEAD
 		 		      struct ahc_dma_seg *sg,
+=======
+				      struct ahc_dma_seg *sg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      dma_addr_t addr, bus_size_t len);
 
 static void
@@ -527,8 +543,12 @@ ahc_linux_info(struct Scsi_Host *host)
 /*
  * Queue an SCB to the controller.
  */
+<<<<<<< HEAD
 static int
 ahc_linux_queue_lck(struct scsi_cmnd * cmd, void (*scsi_done) (struct scsi_cmnd *))
+=======
+static int ahc_linux_queue_lck(struct scsi_cmnd *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct	 ahc_softc *ahc;
 	struct	 ahc_linux_device *dev = scsi_transport_device_data(cmd->device);
@@ -539,7 +559,10 @@ ahc_linux_queue_lck(struct scsi_cmnd * cmd, void (*scsi_done) (struct scsi_cmnd 
 
 	ahc_lock(ahc, &flags);
 	if (ahc->platform_data->qfrozen == 0) {
+<<<<<<< HEAD
 		cmd->scsi_done = scsi_done;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmd->result = CAM_REQ_INPROG << 16;
 		rtn = ahc_linux_run_command(ahc, dev, cmd);
 	}
@@ -574,8 +597,11 @@ ahc_linux_target_alloc(struct scsi_target *starget)
 	struct scsi_target **ahc_targp = ahc_linux_target_in_softc(starget);
 	unsigned short scsirate;
 	struct ahc_devinfo devinfo;
+<<<<<<< HEAD
 	struct ahc_initiator_tinfo *tinfo;
 	struct ahc_tmode_tstate *tstate;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char channel = starget->channel + 'A';
 	unsigned int our_id = ahc->our_id;
 	unsigned int target_offset;
@@ -583,7 +609,11 @@ ahc_linux_target_alloc(struct scsi_target *starget)
 	target_offset = starget->id;
 	if (starget->channel != 0)
 		target_offset += 8;
+<<<<<<< HEAD
 	  
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (starget->channel)
 		our_id = ahc->our_id_b;
 
@@ -609,22 +639,35 @@ ahc_linux_target_alloc(struct scsi_target *starget)
 			ultra = 0;
 			flags &= ~CFXFER;
 		}
+<<<<<<< HEAD
 	    
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((ahc->features & AHC_ULTRA2) != 0) {
 			scsirate = (flags & CFXFER) | (ultra ? 0x8 : 0);
 		} else {
 			scsirate = (flags & CFXFER) << 4;
+<<<<<<< HEAD
 			maxsync = ultra ? AHC_SYNCRATE_ULTRA : 
+=======
+			maxsync = ultra ? AHC_SYNCRATE_ULTRA :
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				AHC_SYNCRATE_FAST;
 		}
 		spi_max_width(starget) = (flags & CFWIDEB) ? 1 : 0;
 		if (!(flags & CFSYNCH))
 			spi_max_offset(starget) = 0;
+<<<<<<< HEAD
 		spi_min_period(starget) = 
 			ahc_find_period(ahc, scsirate, maxsync);
 
 		tinfo = ahc_fetch_transinfo(ahc, channel, ahc->our_id,
 					    starget->id, &tstate);
+=======
+		spi_min_period(starget) =
+			ahc_find_period(ahc, scsirate, maxsync);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ahc_compile_devinfo(&devinfo, our_id, starget->id,
 			    CAM_LUN_WILDCARD, channel,
@@ -672,7 +715,11 @@ ahc_linux_slave_alloc(struct scsi_device *sdev)
 	 * a tagged queuing capable device.
 	 */
 	dev->maxtags = 0;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spi_period(starget) = 0;
 
 	return 0;
@@ -681,10 +728,13 @@ ahc_linux_slave_alloc(struct scsi_device *sdev)
 static int
 ahc_linux_slave_configure(struct scsi_device *sdev)
 {
+<<<<<<< HEAD
 	struct	ahc_softc *ahc;
 
 	ahc = *((struct ahc_softc **)sdev->host->hostdata);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bootverbose)
 		sdev_printk(KERN_INFO, sdev, "Slave Configure\n");
 
@@ -705,11 +755,17 @@ static int
 ahc_linux_biosparam(struct scsi_device *sdev, struct block_device *bdev,
 		    sector_t capacity, int geom[])
 {
+<<<<<<< HEAD
 	uint8_t *bh;
 	int	 heads;
 	int	 sectors;
 	int	 cylinders;
 	int	 ret;
+=======
+	int	 heads;
+	int	 sectors;
+	int	 cylinders;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	 extended;
 	struct	 ahc_softc *ahc;
 	u_int	 channel;
@@ -717,6 +773,7 @@ ahc_linux_biosparam(struct scsi_device *sdev, struct block_device *bdev,
 	ahc = *((struct ahc_softc **)sdev->host->hostdata);
 	channel = sdev_channel(sdev);
 
+<<<<<<< HEAD
 	bh = scsi_bios_ptable(bdev);
 	if (bh) {
 		ret = scsi_partsize(bh, capacity,
@@ -725,6 +782,11 @@ ahc_linux_biosparam(struct scsi_device *sdev, struct block_device *bdev,
 		if (ret != -1)
 			return (ret);
 	}
+=======
+	if (scsi_partsize(bdev, capacity, geom))
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	heads = 64;
 	sectors = 32;
 	cylinders = aic_sector_div(capacity, heads, sectors);
@@ -755,8 +817,13 @@ ahc_linux_abort(struct scsi_cmnd *cmd)
 {
 	int error;
 
+<<<<<<< HEAD
 	error = ahc_linux_queue_recovery_cmd(cmd, SCB_ABORT);
 	if (error != 0)
+=======
+	error = ahc_linux_queue_recovery_cmd(cmd->device, cmd);
+	if (error != SUCCESS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk("aic7xxx_abort returns 0x%x\n", error);
 	return (error);
 }
@@ -769,8 +836,13 @@ ahc_linux_dev_reset(struct scsi_cmnd *cmd)
 {
 	int error;
 
+<<<<<<< HEAD
 	error = ahc_linux_queue_recovery_cmd(cmd, SCB_DEVICE_RESET);
 	if (error != 0)
+=======
+	error = ahc_linux_queue_recovery_cmd(cmd->device, NULL);
+	if (error != SUCCESS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk("aic7xxx_dev_reset returns 0x%x\n", error);
 	return (error);
 }
@@ -803,7 +875,12 @@ struct scsi_host_template aic7xxx_driver_template = {
 	.module			= THIS_MODULE,
 	.name			= "aic7xxx",
 	.proc_name		= "aic7xxx",
+<<<<<<< HEAD
 	.proc_info		= ahc_linux_proc_info,
+=======
+	.show_info		= ahc_linux_show_info,
+	.write_info		= ahc_proc_write_seeprom,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info			= ahc_linux_info,
 	.queuecommand		= ahc_linux_queue,
 	.eh_abort_handler	= ahc_linux_abort,
@@ -816,7 +893,10 @@ struct scsi_host_template aic7xxx_driver_template = {
 	.this_id		= -1,
 	.max_sectors		= 8192,
 	.cmd_per_lun		= 2,
+<<<<<<< HEAD
 	.use_clustering		= ENABLE_CLUSTERING,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.slave_alloc		= ahc_linux_slave_alloc,
 	.slave_configure	= ahc_linux_slave_configure,
 	.target_alloc		= ahc_linux_target_alloc,
@@ -825,11 +905,26 @@ struct scsi_host_template aic7xxx_driver_template = {
 
 /**************************** Tasklet Handler *********************************/
 
+<<<<<<< HEAD
 /******************************** Macros **************************************/
 #define BUILD_SCSIID(ahc, cmd)						    \
 	((((cmd)->device->id << TID_SHIFT) & TID)			    \
 	| (((cmd)->device->channel == 0) ? (ahc)->our_id : (ahc)->our_id_b) \
 	| (((cmd)->device->channel == 0) ? 0 : TWIN_CHNLB))
+=======
+
+static inline unsigned int ahc_build_scsiid(struct ahc_softc *ahc,
+					    struct scsi_device *sdev)
+{
+	unsigned int scsiid = (sdev->id << TID_SHIFT) & TID;
+
+	if (sdev->channel == 0)
+		scsiid |= ahc->our_id;
+	else
+		scsiid |= ahc->our_id_b | TWIN_CHNLB;
+	return scsiid;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /******************************** Bus DMA *************************************/
 int
@@ -870,8 +965,13 @@ int
 ahc_dmamem_alloc(struct ahc_softc *ahc, bus_dma_tag_t dmat, void** vaddr,
 		 int flags, bus_dmamap_t *mapp)
 {
+<<<<<<< HEAD
 	*vaddr = pci_alloc_consistent(ahc->dev_softc,
 				      dmat->maxsize, mapp);
+=======
+	/* XXX: check if we really need the GFP_ATOMIC and unwind this mess! */
+	*vaddr = dma_alloc_coherent(ahc->dev, dmat->maxsize, mapp, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*vaddr == NULL)
 		return ENOMEM;
 	return 0;
@@ -881,8 +981,12 @@ void
 ahc_dmamem_free(struct ahc_softc *ahc, bus_dma_tag_t dmat,
 		void* vaddr, bus_dmamap_t map)
 {
+<<<<<<< HEAD
 	pci_free_consistent(ahc->dev_softc, dmat->maxsize,
 			    vaddr, map);
+=======
+	dma_free_coherent(ahc->dev, dmat->maxsize, vaddr, map);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int
@@ -1105,7 +1209,11 @@ ahc_linux_register_host(struct ahc_softc *ahc, struct scsi_host_template *templa
 	template->name = ahc->description;
 	host = scsi_host_alloc(template, sizeof(struct ahc_softc *));
 	if (host == NULL)
+<<<<<<< HEAD
 		return (ENOMEM);
+=======
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*((struct ahc_softc **)host->hostdata) = ahc;
 	ahc->platform_data->host = host;
@@ -1133,8 +1241,12 @@ ahc_linux_register_host(struct ahc_softc *ahc, struct scsi_host_template *templa
 
 	host->transportt = ahc_linux_transport_template;
 
+<<<<<<< HEAD
 	retval = scsi_add_host(host,
 			(ahc->dev_softc ? &ahc->dev_softc->dev : NULL));
+=======
+	retval = scsi_add_host(host, ahc->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval) {
 		printk(KERN_WARNING "aic7xxx: scsi_add_host failed\n");
 		scsi_host_put(host);
@@ -1150,7 +1262,11 @@ ahc_linux_register_host(struct ahc_softc *ahc, struct scsi_host_template *templa
  * or forcing transfer negotiations on the next command to any
  * target.
  */
+<<<<<<< HEAD
 void
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ahc_linux_initialize_scsi_bus(struct ahc_softc *ahc)
 {
 	int i;
@@ -1222,10 +1338,16 @@ ahc_platform_alloc(struct ahc_softc *ahc, void *platform_arg)
 {
 
 	ahc->platform_data =
+<<<<<<< HEAD
 	    kmalloc(sizeof(struct ahc_platform_data), GFP_ATOMIC);
 	if (ahc->platform_data == NULL)
 		return (ENOMEM);
 	memset(ahc->platform_data, 0, sizeof(struct ahc_platform_data));
+=======
+	    kzalloc(sizeof(struct ahc_platform_data), GFP_ATOMIC);
+	if (ahc->platform_data == NULL)
+		return (ENOMEM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahc->platform_data->irq = AHC_LINUX_NOIRQ;
 	ahc_lockinit(ahc);
 	ahc->seltime = (aic7xxx_seltime & 0x3) << 4;
@@ -1248,8 +1370,13 @@ ahc_platform_free(struct ahc_softc *ahc)
 			starget = ahc->platform_data->starget[i];
 			if (starget != NULL) {
 				ahc->platform_data->starget[i] = NULL;
+<<<<<<< HEAD
  			}
  		}
+=======
+			}
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ahc->platform_data->irq != AHC_LINUX_NOIRQ)
 			free_irq(ahc->platform_data->irq, ahc);
@@ -1296,7 +1423,11 @@ ahc_platform_set_tags(struct ahc_softc *ahc, struct scsi_device *sdev,
 	default:
 	case AHC_QUEUE_NONE:
 		now_queuing = 0;
+<<<<<<< HEAD
 		break; 
+=======
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case AHC_QUEUE_BASIC:
 		now_queuing = AHC_DEV_Q_BASIC;
 		break;
@@ -1343,12 +1474,18 @@ ahc_platform_set_tags(struct ahc_softc *ahc, struct scsi_device *sdev,
 	}
 	switch ((dev->flags & (AHC_DEV_Q_BASIC|AHC_DEV_Q_TAGGED))) {
 	case AHC_DEV_Q_BASIC:
+<<<<<<< HEAD
 		scsi_set_tag_type(sdev, MSG_SIMPLE_TAG);
 		scsi_activate_tcq(sdev, dev->openings + dev->active);
 		break;
 	case AHC_DEV_Q_TAGGED:
 		scsi_set_tag_type(sdev, MSG_ORDERED_TAG);
 		scsi_activate_tcq(sdev, dev->openings + dev->active);
+=======
+	case AHC_DEV_Q_TAGGED:
+		scsi_change_queue_depth(sdev,
+				dev->openings + dev->active);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		/*
@@ -1357,7 +1494,11 @@ ahc_platform_set_tags(struct ahc_softc *ahc, struct scsi_device *sdev,
 		 * serially on the controller/device.  This should
 		 * remove some latency.
 		 */
+<<<<<<< HEAD
 		scsi_deactivate_tcq(sdev, 2);
+=======
+		scsi_change_queue_depth(sdev, 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -1456,7 +1597,11 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 	 * we are storing a full busy target *lun*
 	 * table in SCB space.
 	 */
+<<<<<<< HEAD
 	if (!blk_rq_tagged(cmd->request)
+=======
+	if (!(cmd->flags & SCMD_TAGGED)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    && (ahc->features & AHC_SCB_BTT) == 0) {
 		int target_offset;
 
@@ -1490,7 +1635,11 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 	 * Fill out basics of the HSCB.
 	 */
 	hscb->control = 0;
+<<<<<<< HEAD
 	hscb->scsiid = BUILD_SCSIID(ahc, cmd);
+=======
+	hscb->scsiid = ahc_build_scsiid(ahc, cmd->device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hscb->lun = cmd->device->lun;
 	mask = SCB_GET_TARGET_MASK(ahc, scb);
 	tinfo = ahc_fetch_transinfo(ahc, SCB_GET_CHANNEL(ahc, scb),
@@ -1500,16 +1649,24 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 	hscb->scsioffset = tinfo->curr.offset;
 	if ((tstate->ultraenb & mask) != 0)
 		hscb->control |= ULTRAENB;
+<<<<<<< HEAD
 	
 	if ((ahc->user_discenable & mask) != 0)
 		hscb->control |= DISCENB;
 	
+=======
+
+	if ((ahc->user_discenable & mask) != 0)
+		hscb->control |= DISCENB;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((tstate->auto_negotiate & mask) != 0) {
 		scb->flags |= SCB_AUTO_NEGOTIATE;
 		scb->hscb->control |= MK_MESSAGE;
 	}
 
 	if ((dev->flags & (AHC_DEV_Q_TAGGED|AHC_DEV_Q_BASIC)) != 0) {
+<<<<<<< HEAD
 		int	msg_bytes;
 		uint8_t tag_msgs[2];
 		
@@ -1524,6 +1681,14 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 			dev->commands_since_idle_or_otag = 0;
 		} else {
 			hscb->control |= MSG_SIMPLE_TASK;
+=======
+		if (dev->commands_since_idle_or_otag == AHC_OTAG_THRESH
+				&& (dev->flags & AHC_DEV_Q_TAGGED) != 0) {
+			hscb->control |= ORDERED_QUEUE_TAG;
+			dev->commands_since_idle_or_otag = 0;
+		} else {
+			hscb->control |= SIMPLE_QUEUE_TAG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1571,7 +1736,11 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 		 */
 		scb->hscb->sgptr =
 			ahc_htole32(scb->sg_list_phys | SG_FULL_RESID);
+<<<<<<< HEAD
 		
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Copy the first SG into the "current"
 		 * data pointer area.
@@ -1591,7 +1760,11 @@ ahc_linux_run_command(struct ahc_softc *ahc, struct ahc_linux_device *dev,
 	dev->commands_issued++;
 	if ((dev->flags & AHC_DEV_PERIODIC_OTAG) != 0)
 		dev->commands_since_idle_or_otag++;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scb->flags |= SCB_ACTIVE;
 	if (untagged_q) {
 		TAILQ_INSERT_TAIL(untagged_q, scb, links.tqe);
@@ -1612,7 +1785,11 @@ ahc_linux_isr(int irq, void *dev_id)
 	int	ours;
 
 	ahc = (struct ahc_softc *) dev_id;
+<<<<<<< HEAD
 	ahc_lock(ahc, &flags); 
+=======
+	ahc_lock(ahc, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ours = ahc_intr(ahc);
 	ahc_unlock(ahc, &flags);
 	return IRQ_RETVAL(ours);
@@ -1631,10 +1808,14 @@ ahc_send_async(struct ahc_softc *ahc, char channel,
 	switch (code) {
 	case AC_TRANSFER_NEG:
 	{
+<<<<<<< HEAD
 		char	buf[80];
 		struct	scsi_target *starget;
 		struct	ahc_linux_target *targ;
 		struct	info_str info;
+=======
+		struct	scsi_target *starget;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct	ahc_initiator_tinfo *tinfo;
 		struct	ahc_tmode_tstate *tstate;
 		int	target_offset;
@@ -1642,10 +1823,13 @@ ahc_send_async(struct ahc_softc *ahc, char channel,
 
 		BUG_ON(target == CAM_TARGET_WILDCARD);
 
+<<<<<<< HEAD
 		info.buffer = buf;
 		info.length = sizeof(buf);
 		info.offset = 0;
 		info.pos = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tinfo = ahc_fetch_transinfo(ahc, channel,
 						channel == 'A' ? ahc->our_id
 							       : ahc->our_id_b,
@@ -1672,7 +1856,10 @@ ahc_send_async(struct ahc_softc *ahc, char channel,
 		starget = ahc->platform_data->starget[target_offset];
 		if (starget == NULL)
 			break;
+<<<<<<< HEAD
 		targ = scsi_transport_target_data(starget);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		target_ppr_options =
 			(spi_dt(starget) ? MSG_EXT_PPR_DT_REQ : 0)
@@ -1695,22 +1882,37 @@ ahc_send_async(struct ahc_softc *ahc, char channel,
 		spi_display_xfer_agreement(starget);
 		break;
 	}
+<<<<<<< HEAD
         case AC_SENT_BDR:
+=======
+	case AC_SENT_BDR:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		WARN_ON(lun != CAM_LUN_WILDCARD);
 		scsi_report_device_reset(ahc->platform_data->host,
 					 channel - 'A', target);
 		break;
 	}
+<<<<<<< HEAD
         case AC_BUS_RESET:
+=======
+	case AC_BUS_RESET:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ahc->platform_data->host != NULL) {
 			scsi_report_bus_reset(ahc->platform_data->host,
 					      channel - 'A');
 		}
+<<<<<<< HEAD
                 break;
         default:
                 panic("ahc_send_async: Unexpected async event");
         }
+=======
+		break;
+	default:
+		panic("ahc_send_async: Unexpected async event");
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1759,10 +1961,18 @@ ahc_done(struct ahc_softc *ahc, struct scb *scb)
 	 */
 	cmd->sense_buffer[0] = 0;
 	if (ahc_get_transaction_status(scb) == CAM_REQ_INPROG) {
+<<<<<<< HEAD
+=======
+#ifdef AHC_REPORT_UNDERFLOWS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint32_t amount_xferred;
 
 		amount_xferred =
 		    ahc_get_transfer_length(scb) - ahc_get_residual(scb);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((scb->flags & SCB_TRANSMISSION_ERROR) != 0) {
 #ifdef AHC_DEBUG
 			if ((ahc_debug & AHC_SHOW_MISC) != 0) {
@@ -1805,7 +2015,11 @@ ahc_done(struct ahc_softc *ahc, struct scb *scb)
 
 	if (dev->openings == 1
 	 && ahc_get_transaction_status(scb) == CAM_REQ_CMP
+<<<<<<< HEAD
 	 && ahc_get_scsi_status(scb) != SCSI_STATUS_QUEUE_FULL)
+=======
+	 && ahc_get_scsi_status(scb) != SAM_STAT_TASK_SET_FULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->tag_success_count++;
 	/*
 	 * Some devices deal with temporary internal resource
@@ -1848,7 +2062,11 @@ ahc_linux_handle_scsi_status(struct ahc_softc *ahc,
 			    sdev->sdev_target->id, sdev->lun,
 			    sdev->sdev_target->channel == 0 ? 'A' : 'B',
 			    ROLE_INITIATOR);
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We don't currently trust the mid-layer to
 	 * properly deal with queue full or busy.  So,
@@ -1862,8 +2080,13 @@ ahc_linux_handle_scsi_status(struct ahc_softc *ahc,
 	switch (ahc_get_scsi_status(scb)) {
 	default:
 		break;
+<<<<<<< HEAD
 	case SCSI_STATUS_CHECK_COND:
 	case SCSI_STATUS_CMD_TERMINATED:
+=======
+	case SAM_STAT_CHECK_CONDITION:
+	case SAM_STAT_COMMAND_TERMINATED:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		struct scsi_cmnd *cmd;
 
@@ -1883,7 +2106,10 @@ ahc_linux_handle_scsi_status(struct ahc_softc *ahc,
 			if (sense_size < SCSI_SENSE_BUFFERSIZE)
 				memset(&cmd->sense_buffer[sense_size], 0,
 				       SCSI_SENSE_BUFFERSIZE - sense_size);
+<<<<<<< HEAD
 			cmd->result |= (DRIVER_SENSE << 24);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef AHC_DEBUG
 			if (ahc_debug & AHC_SHOW_SENSE) {
 				int i;
@@ -1901,7 +2127,11 @@ ahc_linux_handle_scsi_status(struct ahc_softc *ahc,
 		}
 		break;
 	}
+<<<<<<< HEAD
 	case SCSI_STATUS_QUEUE_FULL:
+=======
+	case SAM_STAT_TASK_SET_FULL:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		/*
 		 * By the time the core driver has returned this
@@ -1945,7 +2175,11 @@ ahc_linux_handle_scsi_status(struct ahc_softc *ahc,
 				dev->last_queuefull_same_count = 0;
 			}
 			ahc_set_transaction_status(scb, CAM_REQUEUE_REQ);
+<<<<<<< HEAD
 			ahc_set_scsi_status(scb, SCSI_STATUS_OK);
+=======
+			ahc_set_scsi_status(scb, SAM_STAT_GOOD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ahc_platform_set_tags(ahc, sdev, &devinfo,
 				     (dev->flags & AHC_DEV_Q_BASIC)
 				   ? AHC_QUEUE_BASIC : AHC_QUEUE_TAGGED);
@@ -1956,7 +2190,11 @@ ahc_linux_handle_scsi_status(struct ahc_softc *ahc,
 		 * as if the target returned BUSY SCSI status.
 		 */
 		dev->openings = 1;
+<<<<<<< HEAD
 		ahc_set_scsi_status(scb, SCSI_STATUS_BUSY);
+=======
+		ahc_set_scsi_status(scb, SAM_STAT_BUSY);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ahc_platform_set_tags(ahc, sdev, &devinfo,
 			     (dev->flags & AHC_DEV_Q_BASIC)
 			   ? AHC_QUEUE_BASIC : AHC_QUEUE_TAGGED);
@@ -2032,7 +2270,11 @@ ahc_linux_queue_cmd_complete(struct ahc_softc *ahc, struct scsi_cmnd *cmd)
 		ahc_cmd_set_transaction_status(cmd, new_status);
 	}
 
+<<<<<<< HEAD
 	cmd->scsi_done(cmd);
+=======
+	scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -2077,11 +2319,20 @@ ahc_linux_release_simq(struct ahc_softc *ahc)
 }
 
 static int
+<<<<<<< HEAD
 ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 {
 	struct ahc_softc *ahc;
 	struct ahc_linux_device *dev;
 	struct scb *pending_scb;
+=======
+ahc_linux_queue_recovery_cmd(struct scsi_device *sdev,
+			     struct scsi_cmnd *cmd)
+{
+	struct ahc_softc *ahc;
+	struct ahc_linux_device *dev;
+	struct scb *pending_scb = NULL, *scb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u_int  saved_scbptr;
 	u_int  active_scb_index;
 	u_int  last_phase;
@@ -2094,6 +2345,7 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 	int    disconnected;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	pending_scb = NULL;
 	paused = FALSE;
 	wait = FALSE;
@@ -2106,6 +2358,21 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 	for (cdb_byte = 0; cdb_byte < cmd->cmd_len; cdb_byte++)
 		printk(" 0x%x", cmd->cmnd[cdb_byte]);
 	printk("\n");
+=======
+	paused = FALSE;
+	wait = FALSE;
+	ahc = *(struct ahc_softc **)sdev->host->hostdata;
+
+	sdev_printk(KERN_INFO, sdev, "Attempting to queue a%s message\n",
+	       cmd ? "n ABORT" : " TARGET RESET");
+
+	if (cmd) {
+		printk("CDB:");
+		for (cdb_byte = 0; cdb_byte < cmd->cmd_len; cdb_byte++)
+			printk(" 0x%x", cmd->cmnd[cdb_byte]);
+		printk("\n");
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ahc_lock(ahc, &flags);
 
@@ -2116,7 +2383,11 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 	 * at all, and the system wanted us to just abort the
 	 * command, return success.
 	 */
+<<<<<<< HEAD
 	dev = scsi_transport_device_data(cmd->device);
+=======
+	dev = scsi_transport_device_data(sdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev == NULL) {
 		/*
@@ -2124,12 +2395,17 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 		 * so we must not still own the command.
 		 */
 		printk("%s:%d:%d:%d: Is not an active device\n",
+<<<<<<< HEAD
 		       ahc_name(ahc), cmd->device->channel, cmd->device->id,
 		       cmd->device->lun);
+=======
+		       ahc_name(ahc), sdev->channel, sdev->id, (u8)sdev->lun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = SUCCESS;
 		goto no_cmd;
 	}
 
+<<<<<<< HEAD
 	if ((dev->flags & (AHC_DEV_Q_BASIC|AHC_DEV_Q_TAGGED)) == 0
 	 && ahc_search_untagged_queues(ahc, cmd, cmd->device->id,
 				       cmd->device->channel + 'A',
@@ -2138,6 +2414,16 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 		printk("%s:%d:%d:%d: Command found on untagged queue\n",
 		       ahc_name(ahc), cmd->device->channel, cmd->device->id,
 		       cmd->device->lun);
+=======
+	if (cmd && (dev->flags & (AHC_DEV_Q_BASIC|AHC_DEV_Q_TAGGED)) == 0
+	 && ahc_search_untagged_queues(ahc, cmd, cmd->device->id,
+				       cmd->device->channel + 'A',
+				       (u8)cmd->device->lun,
+				       CAM_REQ_ABORTED, SEARCH_COMPLETE) != 0) {
+		printk("%s:%d:%d:%d: Command found on untagged queue\n",
+		       ahc_name(ahc), cmd->device->channel, cmd->device->id,
+		       (u8)cmd->device->lun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = SUCCESS;
 		goto done;
 	}
@@ -2145,6 +2431,7 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 	/*
 	 * See if we can find a matching cmd in the pending list.
 	 */
+<<<<<<< HEAD
 	LIST_FOREACH(pending_scb, &ahc->pending_scbs, pending_links) {
 		if (pending_scb->io_ctx == cmd)
 			break;
@@ -2159,11 +2446,34 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 					  CAM_LUN_WILDCARD,
 					  SCB_LIST_NULL, ROLE_INITIATOR))
 				break;
+=======
+	if (cmd) {
+		LIST_FOREACH(scb, &ahc->pending_scbs, pending_links) {
+			if (scb->io_ctx == cmd) {
+				pending_scb = scb;
+				break;
+			}
+		}
+	} else {
+		/* Any SCB for this device will do for a target reset */
+		LIST_FOREACH(scb, &ahc->pending_scbs, pending_links) {
+			if (ahc_match_scb(ahc, scb, sdev->id,
+					  sdev->channel + 'A',
+					  CAM_LUN_WILDCARD,
+					  SCB_LIST_NULL, ROLE_INITIATOR)) {
+				pending_scb = scb;
+				break;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	if (pending_scb == NULL) {
+<<<<<<< HEAD
 		scmd_printk(KERN_INFO, cmd, "Command not found\n");
+=======
+		sdev_printk(KERN_INFO, sdev, "Command not found\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto no_cmd;
 	}
 
@@ -2194,14 +2504,22 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 	ahc_dump_card_state(ahc);
 
 	disconnected = TRUE;
+<<<<<<< HEAD
 	if (flag == SCB_ABORT) {
 		if (ahc_search_qinfifo(ahc, cmd->device->id,
 				       cmd->device->channel + 'A',
 				       cmd->device->lun,
+=======
+	if (cmd) {
+		if (ahc_search_qinfifo(ahc, sdev->id,
+				       sdev->channel + 'A',
+				       sdev->lun,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       pending_scb->hscb->tag,
 				       ROLE_INITIATOR, CAM_REQ_ABORTED,
 				       SEARCH_COMPLETE) > 0) {
 			printk("%s:%d:%d:%d: Cmd aborted from QINFIFO\n",
+<<<<<<< HEAD
 			       ahc_name(ahc), cmd->device->channel,
 					cmd->device->id, cmd->device->lun);
 			retval = SUCCESS;
@@ -2210,6 +2528,17 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 	} else if (ahc_search_qinfifo(ahc, cmd->device->id,
 				      cmd->device->channel + 'A',
 				      cmd->device->lun, pending_scb->hscb->tag,
+=======
+			       ahc_name(ahc), sdev->channel,
+			       sdev->id, (u8)sdev->lun);
+			retval = SUCCESS;
+			goto done;
+		}
+	} else if (ahc_search_qinfifo(ahc, sdev->id,
+				      sdev->channel + 'A',
+				      sdev->lun,
+				      pending_scb->hscb->tag,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      ROLE_INITIATOR, /*status*/0,
 				      SEARCH_COUNT) > 0) {
 		disconnected = FALSE;
@@ -2221,7 +2550,11 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 		bus_scb = ahc_lookup_scb(ahc, ahc_inb(ahc, SCB_TAG));
 		if (bus_scb == pending_scb)
 			disconnected = FALSE;
+<<<<<<< HEAD
 		else if (flag != SCB_ABORT
+=======
+		else if (!cmd
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      && ahc_inb(ahc, SAVED_SCSIID) == pending_scb->hscb->scsiid
 		      && ahc_inb(ahc, SAVED_LUN) == SCB_GET_LUN(pending_scb))
 			disconnected = FALSE;
@@ -2241,18 +2574,30 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 	saved_scsiid = ahc_inb(ahc, SAVED_SCSIID);
 	if (last_phase != P_BUSFREE
 	 && (pending_scb->hscb->tag == active_scb_index
+<<<<<<< HEAD
 	  || (flag == SCB_DEVICE_RESET
 	   && SCSIID_TARGET(ahc, saved_scsiid) == scmd_id(cmd)))) {
+=======
+	  || (!cmd && SCSIID_TARGET(ahc, saved_scsiid) == sdev->id))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * We're active on the bus, so assert ATN
 		 * and hope that the target responds.
 		 */
 		pending_scb = ahc_lookup_scb(ahc, active_scb_index);
+<<<<<<< HEAD
 		pending_scb->flags |= SCB_RECOVERY_SCB|flag;
 		ahc_outb(ahc, MSG_OUT, HOST_MSG);
 		ahc_outb(ahc, SCSISIGO, last_phase|ATNO);
 		scmd_printk(KERN_INFO, cmd, "Device is active, asserting ATN\n");
+=======
+		pending_scb->flags |= SCB_RECOVERY_SCB;
+		pending_scb->flags |= cmd ? SCB_ABORT : SCB_DEVICE_RESET;
+		ahc_outb(ahc, MSG_OUT, HOST_MSG);
+		ahc_outb(ahc, SCSISIGO, last_phase|ATNO);
+		sdev_printk(KERN_INFO, sdev, "Device is active, asserting ATN\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wait = TRUE;
 	} else if (disconnected) {
 
@@ -2273,7 +2618,12 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 		 * an unsolicited reselection occurred.
 		 */
 		pending_scb->hscb->control |= MK_MESSAGE|DISCONNECTED;
+<<<<<<< HEAD
 		pending_scb->flags |= SCB_RECOVERY_SCB|flag;
+=======
+		pending_scb->flags |= SCB_RECOVERY_SCB;
+		pending_scb->flags |= cmd ? SCB_ABORT : SCB_DEVICE_RESET;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Remove any cached copy of this SCB in the
@@ -2282,9 +2632,15 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 		 * same element in the SCB, SCB_NEXT, for
 		 * both the qinfifo and the disconnected list.
 		 */
+<<<<<<< HEAD
 		ahc_search_disc_list(ahc, cmd->device->id,
 				     cmd->device->channel + 'A',
 				     cmd->device->lun, pending_scb->hscb->tag,
+=======
+		ahc_search_disc_list(ahc, sdev->id,
+				     sdev->channel + 'A',
+				     sdev->lun, pending_scb->hscb->tag,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     /*stop_on_first*/TRUE,
 				     /*remove*/TRUE,
 				     /*save_state*/FALSE);
@@ -2307,9 +2663,15 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 		 * so we are the next SCB for this target
 		 * to run.
 		 */
+<<<<<<< HEAD
 		ahc_search_qinfifo(ahc, cmd->device->id,
 				   cmd->device->channel + 'A',
 				   cmd->device->lun, SCB_LIST_NULL,
+=======
+		ahc_search_qinfifo(ahc, sdev->id,
+				   sdev->channel + 'A',
+				   (u8)sdev->lun, SCB_LIST_NULL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   ROLE_INITIATOR, CAM_REQUEUE_REQ,
 				   SEARCH_COMPLETE);
 		ahc_qinfifo_requeue_tail(ahc, pending_scb);
@@ -2318,7 +2680,11 @@ ahc_linux_queue_recovery_cmd(struct scsi_cmnd *cmd, scb_flag flag)
 		printk("Device is disconnected, re-queuing SCB\n");
 		wait = TRUE;
 	} else {
+<<<<<<< HEAD
 		scmd_printk(KERN_INFO, cmd, "Unable to deliver message\n");
+=======
+		sdev_printk(KERN_INFO, sdev, "Unable to deliver message\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = FAILED;
 		goto done;
 	}
@@ -2355,11 +2721,14 @@ done:
 	return (retval);
 }
 
+<<<<<<< HEAD
 void
 ahc_platform_dump_card_state(struct ahc_softc *ahc)
 {
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ahc_linux_set_width(struct scsi_target *starget, int width)
 {
 	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
@@ -2379,7 +2748,11 @@ static void ahc_linux_set_period(struct scsi_target *starget, int period)
 	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
 	struct ahc_softc *ahc = *((struct ahc_softc **)shost->hostdata);
 	struct ahc_tmode_tstate *tstate;
+<<<<<<< HEAD
 	struct ahc_initiator_tinfo *tinfo 
+=======
+	struct ahc_initiator_tinfo *tinfo
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		= ahc_fetch_transinfo(ahc,
 				      starget->channel + 'A',
 				      shost->this_id, starget->id, &tstate);
@@ -2411,7 +2784,12 @@ static void ahc_linux_set_period(struct scsi_target *starget, int period)
 			ppr_options &= MSG_EXT_PPR_QAS_REQ;
 	}
 
+<<<<<<< HEAD
 	syncrate = ahc_find_syncrate(ahc, &period, &ppr_options, AHC_SYNCRATE_DT);
+=======
+	syncrate = ahc_find_syncrate(ahc, &period, &ppr_options,
+				     AHC_SYNCRATE_DT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahc_lock(ahc, &flags);
 	ahc_set_syncrate(ahc, &devinfo, syncrate, period, offset,
 			 ppr_options, AHC_TRANS_GOAL, FALSE);
@@ -2423,7 +2801,11 @@ static void ahc_linux_set_offset(struct scsi_target *starget, int offset)
 	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
 	struct ahc_softc *ahc = *((struct ahc_softc **)shost->hostdata);
 	struct ahc_tmode_tstate *tstate;
+<<<<<<< HEAD
 	struct ahc_initiator_tinfo *tinfo 
+=======
+	struct ahc_initiator_tinfo *tinfo
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		= ahc_fetch_transinfo(ahc,
 				      starget->channel + 'A',
 				      shost->this_id, starget->id, &tstate);
@@ -2436,7 +2818,12 @@ static void ahc_linux_set_offset(struct scsi_target *starget, int offset)
 	ahc_compile_devinfo(&devinfo, shost->this_id, starget->id, 0,
 			    starget->channel + 'A', ROLE_INITIATOR);
 	if (offset != 0) {
+<<<<<<< HEAD
 		syncrate = ahc_find_syncrate(ahc, &period, &ppr_options, AHC_SYNCRATE_DT);
+=======
+		syncrate = ahc_find_syncrate(ahc, &period, &ppr_options,
+					     AHC_SYNCRATE_DT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		period = tinfo->goal.period;
 		ppr_options = tinfo->goal.ppr_options;
 	}
@@ -2451,7 +2838,11 @@ static void ahc_linux_set_dt(struct scsi_target *starget, int dt)
 	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
 	struct ahc_softc *ahc = *((struct ahc_softc **)shost->hostdata);
 	struct ahc_tmode_tstate *tstate;
+<<<<<<< HEAD
 	struct ahc_initiator_tinfo *tinfo 
+=======
+	struct ahc_initiator_tinfo *tinfo
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		= ahc_fetch_transinfo(ahc,
 				      starget->channel + 'A',
 				      shost->this_id, starget->id, &tstate);
@@ -2472,7 +2863,12 @@ static void ahc_linux_set_dt(struct scsi_target *starget, int dt)
 
 	ahc_compile_devinfo(&devinfo, shost->this_id, starget->id, 0,
 			    starget->channel + 'A', ROLE_INITIATOR);
+<<<<<<< HEAD
 	syncrate = ahc_find_syncrate(ahc, &period, &ppr_options,AHC_SYNCRATE_DT);
+=======
+	syncrate = ahc_find_syncrate(ahc, &period, &ppr_options,
+				     AHC_SYNCRATE_DT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahc_lock(ahc, &flags);
 	ahc_set_syncrate(ahc, &devinfo, syncrate, period, tinfo->goal.offset,
 			 ppr_options, AHC_TRANS_GOAL, FALSE);
@@ -2489,7 +2885,11 @@ static void ahc_linux_set_qas(struct scsi_target *starget, int qas)
 	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
 	struct ahc_softc *ahc = *((struct ahc_softc **)shost->hostdata);
 	struct ahc_tmode_tstate *tstate;
+<<<<<<< HEAD
 	struct ahc_initiator_tinfo *tinfo 
+=======
+	struct ahc_initiator_tinfo *tinfo
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		= ahc_fetch_transinfo(ahc,
 				      starget->channel + 'A',
 				      shost->this_id, starget->id, &tstate);
@@ -2505,7 +2905,12 @@ static void ahc_linux_set_qas(struct scsi_target *starget, int qas)
 
 	ahc_compile_devinfo(&devinfo, shost->this_id, starget->id, 0,
 			    starget->channel + 'A', ROLE_INITIATOR);
+<<<<<<< HEAD
 	syncrate = ahc_find_syncrate(ahc, &period, &ppr_options, AHC_SYNCRATE_DT);
+=======
+	syncrate = ahc_find_syncrate(ahc, &period, &ppr_options,
+				     AHC_SYNCRATE_DT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahc_lock(ahc, &flags);
 	ahc_set_syncrate(ahc, &devinfo, syncrate, period, tinfo->goal.offset,
 			 ppr_options, AHC_TRANS_GOAL, FALSE);
@@ -2517,7 +2922,11 @@ static void ahc_linux_set_iu(struct scsi_target *starget, int iu)
 	struct Scsi_Host *shost = dev_to_shost(starget->dev.parent);
 	struct ahc_softc *ahc = *((struct ahc_softc **)shost->hostdata);
 	struct ahc_tmode_tstate *tstate;
+<<<<<<< HEAD
 	struct ahc_initiator_tinfo *tinfo 
+=======
+	struct ahc_initiator_tinfo *tinfo
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		= ahc_fetch_transinfo(ahc,
 				      starget->channel + 'A',
 				      shost->this_id, starget->id, &tstate);
@@ -2533,7 +2942,12 @@ static void ahc_linux_set_iu(struct scsi_target *starget, int iu)
 
 	ahc_compile_devinfo(&devinfo, shost->this_id, starget->id, 0,
 			    starget->channel + 'A', ROLE_INITIATOR);
+<<<<<<< HEAD
 	syncrate = ahc_find_syncrate(ahc, &period, &ppr_options, AHC_SYNCRATE_DT);
+=======
+	syncrate = ahc_find_syncrate(ahc, &period, &ppr_options,
+				     AHC_SYNCRATE_DT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahc_lock(ahc, &flags);
 	ahc_set_syncrate(ahc, &devinfo, syncrate, period, tinfo->goal.offset,
 			 ppr_options, AHC_TRANS_GOAL, FALSE);
@@ -2549,7 +2963,11 @@ static void ahc_linux_get_signalling(struct Scsi_Host *shost)
 
 	if (!(ahc->features & AHC_ULTRA2)) {
 		/* non-LVD chipset, may not have SBLKCTL reg */
+<<<<<<< HEAD
 		spi_signalling(shost) = 
+=======
+		spi_signalling(shost) =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ahc->features & AHC_HVD ?
 			SPI_SIGNAL_HVD :
 			SPI_SIGNAL_SE;

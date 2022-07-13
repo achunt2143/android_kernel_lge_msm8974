@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 /*
  * mmconfig-shared.c - Low-level direct PCI config space access via
  *                     MMCONFIG - common code between i386 and x86-64.
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Low-level direct PCI config space access via ECAM - common code between
+ * i386 and x86-64.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This code does:
  * - known chipset handling
@@ -10,6 +17,7 @@
  * themselves.
  */
 
+<<<<<<< HEAD
 #include <linux/pci.h>
 #include <linux/init.h>
 #include <linux/acpi.h>
@@ -29,6 +37,32 @@ static int __initdata pci_mmcfg_resources_inserted;
 LIST_HEAD(pci_mmcfg_list);
 
 static __init void pci_mmconfig_remove(struct pci_mmcfg_region *cfg)
+=======
+#define pr_fmt(fmt) "PCI: " fmt
+
+#include <linux/acpi.h>
+#include <linux/efi.h>
+#include <linux/pci.h>
+#include <linux/init.h>
+#include <linux/bitmap.h>
+#include <linux/dmi.h>
+#include <linux/slab.h>
+#include <linux/mutex.h>
+#include <linux/rculist.h>
+#include <asm/e820/api.h>
+#include <asm/pci_x86.h>
+#include <asm/acpi.h>
+
+/* Indicate if the ECAM resources have been placed into the resource table */
+static bool pci_mmcfg_running_state;
+static bool pci_mmcfg_arch_init_failed;
+static DEFINE_MUTEX(pci_mmcfg_lock);
+#define pci_mmcfg_lock_held() lock_is_held(&(pci_mmcfg_lock).dep_map)
+
+LIST_HEAD(pci_mmcfg_list);
+
+static void __init pci_mmconfig_remove(struct pci_mmcfg_region *cfg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (cfg->res.parent)
 		release_resource(&cfg->res);
@@ -36,7 +70,11 @@ static __init void pci_mmconfig_remove(struct pci_mmcfg_region *cfg)
 	kfree(cfg);
 }
 
+<<<<<<< HEAD
 static __init void free_all_mmcfg(void)
+=======
+static void __init free_all_mmcfg(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_mmcfg_region *cfg, *tmp;
 
@@ -45,11 +83,16 @@ static __init void free_all_mmcfg(void)
 		pci_mmconfig_remove(cfg);
 }
 
+<<<<<<< HEAD
 static __init void list_add_sorted(struct pci_mmcfg_region *new)
+=======
+static void list_add_sorted(struct pci_mmcfg_region *new)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_mmcfg_region *cfg;
 
 	/* keep list sorted by segment and starting bus number */
+<<<<<<< HEAD
 	list_for_each_entry(cfg, &pci_mmcfg_list, list) {
 		if (cfg->segment > new->segment ||
 		    (cfg->segment == new->segment &&
@@ -63,6 +106,21 @@ static __init void list_add_sorted(struct pci_mmcfg_region *new)
 
 static __init struct pci_mmcfg_region *pci_mmconfig_add(int segment, int start,
 							int end, u64 addr)
+=======
+	list_for_each_entry_rcu(cfg, &pci_mmcfg_list, list, pci_mmcfg_lock_held()) {
+		if (cfg->segment > new->segment ||
+		    (cfg->segment == new->segment &&
+		     cfg->start_bus >= new->start_bus)) {
+			list_add_tail_rcu(&new->list, &cfg->list);
+			return;
+		}
+	}
+	list_add_tail_rcu(&new->list, &pci_mmcfg_list);
+}
+
+static struct pci_mmcfg_region *pci_mmconfig_alloc(int segment, int start,
+						   int end, u64 addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_mmcfg_region *new;
 	struct resource *res;
@@ -79,19 +137,46 @@ static __init struct pci_mmcfg_region *pci_mmconfig_add(int segment, int start,
 	new->start_bus = start;
 	new->end_bus = end;
 
+<<<<<<< HEAD
 	list_add_sorted(new);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = &new->res;
 	res->start = addr + PCI_MMCFG_BUS_OFFSET(start);
 	res->end = addr + PCI_MMCFG_BUS_OFFSET(end + 1) - 1;
 	res->flags = IORESOURCE_MEM | IORESOURCE_BUSY;
 	snprintf(new->name, PCI_MMCFG_RESOURCE_NAME_LEN,
+<<<<<<< HEAD
 		 "PCI MMCONFIG %04x [bus %02x-%02x]", segment, start, end);
 	res->name = new->name;
 
 	printk(KERN_INFO PREFIX "MMCONFIG for domain %04x [bus %02x-%02x] at "
 	       "%pR (base %#lx)\n", segment, start, end, &new->res,
 	       (unsigned long) addr);
+=======
+		 "PCI ECAM %04x [bus %02x-%02x]", segment, start, end);
+	res->name = new->name;
+
+	return new;
+}
+
+struct pci_mmcfg_region *__init pci_mmconfig_add(int segment, int start,
+						 int end, u64 addr)
+{
+	struct pci_mmcfg_region *new;
+
+	new = pci_mmconfig_alloc(segment, start, end, addr);
+	if (!new)
+		return NULL;
+
+	mutex_lock(&pci_mmcfg_lock);
+	list_add_sorted(new);
+	mutex_unlock(&pci_mmcfg_lock);
+
+	pr_info("ECAM %pR (base %#lx) for domain %04x [bus %02x-%02x]\n",
+		&new->res, (unsigned long)addr, segment, start, end);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return new;
 }
@@ -100,7 +185,11 @@ struct pci_mmcfg_region *pci_mmconfig_lookup(int segment, int bus)
 {
 	struct pci_mmcfg_region *cfg;
 
+<<<<<<< HEAD
 	list_for_each_entry(cfg, &pci_mmcfg_list, list)
+=======
+	list_for_each_entry_rcu(cfg, &pci_mmcfg_list, list, pci_mmcfg_lock_held())
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cfg->segment == segment &&
 		    cfg->start_bus <= bus && bus <= cfg->end_bus)
 			return cfg;
@@ -108,7 +197,11 @@ struct pci_mmcfg_region *pci_mmconfig_lookup(int segment, int bus)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static const char __init *pci_mmcfg_e7520(void)
+=======
+static const char *__init pci_mmcfg_e7520(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 win;
 	raw_pci_ops->read(0, 0, PCI_DEVFN(0, 0), 0xce, 2, &win);
@@ -123,7 +216,11 @@ static const char __init *pci_mmcfg_e7520(void)
 	return "Intel Corporation E7520 Memory Controller Hub";
 }
 
+<<<<<<< HEAD
 static const char __init *pci_mmcfg_intel_945(void)
+=======
+static const char *__init pci_mmcfg_intel_945(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 pciexbar, mask = 0, len = 0;
 
@@ -167,7 +264,11 @@ static const char __init *pci_mmcfg_intel_945(void)
 	return "Intel Corporation 945G/GZ/P/PL Express Memory Controller Hub";
 }
 
+<<<<<<< HEAD
 static const char __init *pci_mmcfg_amd_fam10h(void)
+=======
+static const char *__init pci_mmcfg_amd_fam10h(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 low, high, address;
 	u64 base, msr;
@@ -185,7 +286,11 @@ static const char __init *pci_mmcfg_amd_fam10h(void)
 	msr <<= 32;
 	msr |= low;
 
+<<<<<<< HEAD
 	/* mmconfig is not enable */
+=======
+	/* ECAM is not enabled */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(msr & FAM10H_MMIO_CONF_ENABLE))
 		return NULL;
 
@@ -218,11 +323,16 @@ static const char __init *pci_mmcfg_amd_fam10h(void)
 }
 
 static bool __initdata mcp55_checked;
+<<<<<<< HEAD
 static const char __init *pci_mmcfg_nvidia_mcp55(void)
+=======
+static const char *__init pci_mmcfg_nvidia_mcp55(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int bus;
 	int mcp55_mmconf_found = 0;
 
+<<<<<<< HEAD
 	static const u32 extcfg_regnum		= 0x90;
 	static const u32 extcfg_regsize		= 4;
 	static const u32 extcfg_enable_mask	= 1<<31;
@@ -233,6 +343,22 @@ static const char __init *pci_mmcfg_nvidia_mcp55(void)
 	static const int extcfg_sizebus[]	= {0x100, 0x80, 0x40, 0x20};
 	static const u32 extcfg_base_mask[]	= {0x7ff8, 0x7ffc, 0x7ffe, 0x7fff};
 	static const int extcfg_base_lshift	= 25;
+=======
+	static const u32 extcfg_regnum __initconst	= 0x90;
+	static const u32 extcfg_regsize __initconst	= 4;
+	static const u32 extcfg_enable_mask __initconst	= 1 << 31;
+	static const u32 extcfg_start_mask __initconst	= 0xff << 16;
+	static const int extcfg_start_shift __initconst	= 16;
+	static const u32 extcfg_size_mask __initconst	= 0x3 << 28;
+	static const int extcfg_size_shift __initconst	= 28;
+	static const int extcfg_sizebus[] __initconst	= {
+		0x100, 0x80, 0x40, 0x20
+	};
+	static const u32 extcfg_base_mask[] __initconst	= {
+		0x7ff8, 0x7ffc, 0x7ffe, 0x7fff
+	};
+	static const int extcfg_base_lshift __initconst	= 25;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * do check if amd fam10h already took over
@@ -285,7 +411,11 @@ struct pci_mmcfg_hostbridge_probe {
 	const char *(*probe)(void);
 };
 
+<<<<<<< HEAD
 static struct pci_mmcfg_hostbridge_probe pci_mmcfg_probes[] __initdata = {
+=======
+static const struct pci_mmcfg_hostbridge_probe pci_mmcfg_probes[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, PCI_DEVFN(0, 0), PCI_VENDOR_ID_INTEL,
 	  PCI_DEVICE_ID_INTEL_E7520_MCH, pci_mmcfg_e7520 },
 	{ 0, PCI_DEVFN(0, 0), PCI_VENDOR_ID_INTEL,
@@ -343,8 +473,12 @@ static int __init pci_mmcfg_check_hostbridge(void)
 			name = pci_mmcfg_probes[i].probe();
 
 		if (name)
+<<<<<<< HEAD
 			printk(KERN_INFO PREFIX "%s with MMCONFIG support\n",
 			       name);
+=======
+			pr_info("%s with ECAM support\n", name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* some end_bus_number is crazy, fix it */
@@ -353,6 +487,7 @@ static int __init pci_mmcfg_check_hostbridge(void)
 	return !list_empty(&pci_mmcfg_list);
 }
 
+<<<<<<< HEAD
 static void __init pci_mmcfg_insert_resources(void)
 {
 	struct pci_mmcfg_region *cfg;
@@ -366,6 +501,9 @@ static void __init pci_mmcfg_insert_resources(void)
 
 static acpi_status __init check_mcfg_resource(struct acpi_resource *res,
 					      void *data)
+=======
+static acpi_status check_mcfg_resource(struct acpi_resource *res, void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *mcfg_res = data;
 	struct acpi_resource_address64 address;
@@ -389,20 +527,34 @@ static acpi_status __init check_mcfg_resource(struct acpi_resource *res,
 
 	status = acpi_resource_to_address64(res, &address);
 	if (ACPI_FAILURE(status) ||
+<<<<<<< HEAD
 	   (address.address_length <= 0) ||
 	   (address.resource_type != ACPI_MEMORY_RANGE))
 		return AE_OK;
 
 	if ((mcfg_res->start >= address.minimum) &&
 	    (mcfg_res->end < (address.minimum + address.address_length))) {
+=======
+	   (address.address.address_length <= 0) ||
+	   (address.resource_type != ACPI_MEMORY_RANGE))
+		return AE_OK;
+
+	if ((mcfg_res->start >= address.address.minimum) &&
+	    (mcfg_res->end < (address.address.minimum + address.address.address_length))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcfg_res->flags = 1;
 		return AE_CTRL_TERMINATE;
 	}
 	return AE_OK;
 }
 
+<<<<<<< HEAD
 static acpi_status __init find_mboard_resource(acpi_handle handle, u32 lvl,
 		void *context, void **rv)
+=======
+static acpi_status find_mboard_resource(acpi_handle handle, u32 lvl,
+					void *context, void **rv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *mcfg_res = context;
 
@@ -415,7 +567,11 @@ static acpi_status __init find_mboard_resource(acpi_handle handle, u32 lvl,
 	return AE_OK;
 }
 
+<<<<<<< HEAD
 static int __init is_acpi_reserved(u64 start, u64 end, unsigned not_used)
+=======
+static bool is_acpi_reserved(u64 start, u64 end, enum e820_type not_used)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource mcfg_res;
 
@@ -432,22 +588,60 @@ static int __init is_acpi_reserved(u64 start, u64 end, unsigned not_used)
 	return mcfg_res.flags;
 }
 
+<<<<<<< HEAD
 typedef int (*check_reserved_t)(u64 start, u64 end, unsigned type);
 
 static int __init is_mmconf_reserved(check_reserved_t is_reserved,
 				    struct pci_mmcfg_region *cfg, int with_e820)
+=======
+static bool is_efi_mmio(struct resource *res)
+{
+#ifdef CONFIG_EFI
+	u64 start = res->start;
+	u64 end = res->start + resource_size(res);
+	efi_memory_desc_t *md;
+	u64 size, mmio_start, mmio_end;
+
+	for_each_efi_memory_desc(md) {
+		if (md->type == EFI_MEMORY_MAPPED_IO) {
+			size = md->num_pages << EFI_PAGE_SHIFT;
+			mmio_start = md->phys_addr;
+			mmio_end = mmio_start + size;
+
+			if (mmio_start <= start && end <= mmio_end)
+				return true;
+		}
+	}
+#endif
+
+	return false;
+}
+
+typedef bool (*check_reserved_t)(u64 start, u64 end, enum e820_type type);
+
+static bool __ref is_mmconf_reserved(check_reserved_t is_reserved,
+				     struct pci_mmcfg_region *cfg,
+				     struct device *dev, const char *method)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 addr = cfg->res.start;
 	u64 size = resource_size(&cfg->res);
 	u64 old_size = size;
+<<<<<<< HEAD
 	int valid = 0, num_buses;
 
 	while (!is_reserved(addr, addr + size, E820_RESERVED)) {
+=======
+	int num_buses;
+
+	while (!is_reserved(addr, addr + size, E820_TYPE_RESERVED)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		size >>= 1;
 		if (size < (16UL<<20))
 			break;
 	}
 
+<<<<<<< HEAD
 	if (size >= (16UL<<20) || size == old_size) {
 		printk(KERN_INFO PREFIX "MMCONFIG at %pR reserved in %s\n",
 		       &cfg->res,
@@ -472,6 +666,87 @@ static int __init is_mmconf_reserved(check_reserved_t is_reserved,
 	}
 
 	return valid;
+=======
+	if (size < (16UL<<20) && size != old_size)
+		return false;
+
+	if (dev)
+		dev_info(dev, "ECAM %pR reserved as %s\n",
+			 &cfg->res, method);
+	else
+		pr_info("ECAM %pR reserved as %s\n", &cfg->res, method);
+
+	if (old_size != size) {
+		/* update end_bus */
+		cfg->end_bus = cfg->start_bus + ((size>>20) - 1);
+		num_buses = cfg->end_bus - cfg->start_bus + 1;
+		cfg->res.end = cfg->res.start +
+		    PCI_MMCFG_BUS_OFFSET(num_buses) - 1;
+		snprintf(cfg->name, PCI_MMCFG_RESOURCE_NAME_LEN,
+			 "PCI ECAM %04x [bus %02x-%02x]",
+			 cfg->segment, cfg->start_bus, cfg->end_bus);
+
+		if (dev)
+			dev_info(dev, "ECAM %pR (base %#lx) (size reduced!)\n",
+				 &cfg->res, (unsigned long) cfg->address);
+		else
+			pr_info("ECAM %pR (base %#lx) for %04x [bus%02x-%02x] (size reduced!)\n",
+				&cfg->res, (unsigned long) cfg->address,
+				cfg->segment, cfg->start_bus, cfg->end_bus);
+	}
+
+	return true;
+}
+
+static bool __ref pci_mmcfg_reserved(struct device *dev,
+				     struct pci_mmcfg_region *cfg, int early)
+{
+	struct resource *conflict;
+
+	if (!early && !acpi_disabled) {
+		if (is_mmconf_reserved(is_acpi_reserved, cfg, dev,
+				       "ACPI motherboard resource"))
+			return true;
+
+		if (dev)
+			dev_info(dev, FW_INFO "ECAM %pR not reserved in ACPI motherboard resources\n",
+				 &cfg->res);
+		else
+			pr_info(FW_INFO "ECAM %pR not reserved in ACPI motherboard resources\n",
+			        &cfg->res);
+
+		if (is_efi_mmio(&cfg->res)) {
+			pr_info("ECAM %pR is EfiMemoryMappedIO; assuming valid\n",
+				&cfg->res);
+			conflict = insert_resource_conflict(&iomem_resource,
+							    &cfg->res);
+			if (conflict)
+				pr_warn("ECAM %pR conflicts with %s %pR\n",
+					&cfg->res, conflict->name, conflict);
+			else
+				pr_info("ECAM %pR reserved to work around lack of ACPI motherboard _CRS\n",
+					&cfg->res);
+			return true;
+		}
+	}
+
+	/*
+	 * e820__mapped_all() is marked as __init.
+	 * All entries from ACPI MCFG table have been checked at boot time.
+	 * For MCFG information constructed from hotpluggable host bridge's
+	 * _CBA method, just assume it's reserved.
+	 */
+	if (pci_mmcfg_running_state)
+		return true;
+
+	/* Don't try to do this check unless configuration
+	   type 1 is available. how about type 2 ?*/
+	if (raw_pci_ops)
+		return is_mmconf_reserved(e820__mapped_all, cfg, dev,
+					  "E820 entry");
+
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init pci_mmcfg_reject_broken(int early)
@@ -479,6 +754,7 @@ static void __init pci_mmcfg_reject_broken(int early)
 	struct pci_mmcfg_region *cfg;
 
 	list_for_each_entry(cfg, &pci_mmcfg_list, list) {
+<<<<<<< HEAD
 		int valid = 0;
 
 		if (!early && !acpi_disabled) {
@@ -533,6 +809,33 @@ static int __init acpi_mcfg_check_entry(struct acpi_table_mcfg *mcfg,
 	       "is above 4GB, ignored\n", cfg->pci_segment,
 	       cfg->start_bus_number, cfg->end_bus_number, cfg->address);
 	return -EINVAL;
+=======
+		if (!pci_mmcfg_reserved(NULL, cfg, early)) {
+			pr_info("not using ECAM (%pR not reserved)\n",
+				&cfg->res);
+			free_all_mmcfg();
+			return;
+		}
+	}
+}
+
+static bool __init acpi_mcfg_valid_entry(struct acpi_table_mcfg *mcfg,
+					 struct acpi_mcfg_allocation *cfg)
+{
+	if (cfg->address < 0xFFFFFFFF)
+		return true;
+
+	if (!strncmp(mcfg->header.oem_id, "SGI", 3))
+		return true;
+
+	if ((mcfg->header.revision >= 1) && (dmi_get_bios_year() >= 2010))
+		return true;
+
+	pr_err("ECAM at %#llx for %04x [bus %02x-%02x] is above 4GB, ignored\n",
+	       cfg->address, cfg->pci_segment, cfg->start_bus_number,
+	       cfg->end_bus_number);
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init pci_parse_mcfg(struct acpi_table_header *header)
@@ -554,24 +857,38 @@ static int __init pci_parse_mcfg(struct acpi_table_header *header)
 	while (i >= sizeof(struct acpi_mcfg_allocation)) {
 		entries++;
 		i -= sizeof(struct acpi_mcfg_allocation);
+<<<<<<< HEAD
 	};
 	if (entries == 0) {
 		printk(KERN_ERR PREFIX "MMCONFIG has no entries\n");
+=======
+	}
+	if (entries == 0) {
+		pr_err("MCFG has no entries\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
 	cfg_table = (struct acpi_mcfg_allocation *) &mcfg[1];
 	for (i = 0; i < entries; i++) {
 		cfg = &cfg_table[i];
+<<<<<<< HEAD
 		if (acpi_mcfg_check_entry(mcfg, cfg)) {
+=======
+		if (!acpi_mcfg_valid_entry(mcfg, cfg)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			free_all_mmcfg();
 			return -ENODEV;
 		}
 
 		if (pci_mmconfig_add(cfg->pci_segment, cfg->start_bus_number,
 				   cfg->end_bus_number, cfg->address) == NULL) {
+<<<<<<< HEAD
 			printk(KERN_WARNING PREFIX
 			       "no memory for MCFG entries\n");
+=======
+			pr_warn("no memory for MCFG entries\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			free_all_mmcfg();
 			return -ENOMEM;
 		}
@@ -580,6 +897,7 @@ static int __init pci_parse_mcfg(struct acpi_table_header *header)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __init __pci_mmcfg_init(int early)
 {
 	/* MMCONFIG disabled */
@@ -604,6 +922,39 @@ static void __init __pci_mmcfg_init(int early)
 
 	pci_mmcfg_reject_broken(early);
 
+=======
+#ifdef CONFIG_ACPI_APEI
+extern int (*arch_apei_filter_addr)(int (*func)(__u64 start, __u64 size,
+				     void *data), void *data);
+
+static int pci_mmcfg_for_each_region(int (*func)(__u64 start, __u64 size,
+				     void *data), void *data)
+{
+	struct pci_mmcfg_region *cfg;
+	int rc;
+
+	if (list_empty(&pci_mmcfg_list))
+		return 0;
+
+	list_for_each_entry(cfg, &pci_mmcfg_list, list) {
+		rc = func(cfg->res.start, resource_size(&cfg->res), data);
+		if (rc)
+			return rc;
+	}
+
+	return 0;
+}
+#define set_apei_filter() (arch_apei_filter_addr = pci_mmcfg_for_each_region)
+#else
+#define set_apei_filter()
+#endif
+
+static void __init __pci_mmcfg_init(int early)
+{
+	pr_debug("%s(%s)\n", __func__, early ? "early" : "late");
+
+	pci_mmcfg_reject_broken(early);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (list_empty(&pci_mmcfg_list))
 		return;
 
@@ -620,6 +971,7 @@ static void __init __pci_mmcfg_init(int early)
 	if (pci_mmcfg_arch_init())
 		pci_probe = (pci_probe & ~PCI_PROBE_MASK) | PCI_PROBE_MMCONF;
 	else {
+<<<<<<< HEAD
 		/*
 		 * Signal not to attempt to insert mmcfg resources because
 		 * the architecture mmcfg setup could not initialize.
@@ -631,15 +983,55 @@ static void __init __pci_mmcfg_init(int early)
 void __init pci_mmcfg_early_init(void)
 {
 	__pci_mmcfg_init(1);
+=======
+		free_all_mmcfg();
+		pci_mmcfg_arch_init_failed = true;
+	}
+}
+
+static int __initdata known_bridge;
+
+void __init pci_mmcfg_early_init(void)
+{
+	pr_debug("%s() pci_probe %#x\n", __func__, pci_probe);
+
+	if (pci_probe & PCI_PROBE_MMCONF) {
+		if (pci_mmcfg_check_hostbridge())
+			known_bridge = 1;
+		else
+			acpi_table_parse(ACPI_SIG_MCFG, pci_parse_mcfg);
+		__pci_mmcfg_init(1);
+
+		set_apei_filter();
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init pci_mmcfg_late_init(void)
 {
+<<<<<<< HEAD
 	__pci_mmcfg_init(0);
+=======
+	pr_debug("%s() pci_probe %#x\n", __func__, pci_probe);
+
+	/* ECAM disabled */
+	if ((pci_probe & PCI_PROBE_MMCONF) == 0)
+		return;
+
+	if (known_bridge)
+		return;
+
+	/* ECAM hasn't been enabled yet, try again */
+	if (pci_probe & PCI_PROBE_MASK & ~PCI_PROBE_MMCONF) {
+		acpi_table_parse(ACPI_SIG_MCFG, pci_parse_mcfg);
+		__pci_mmcfg_init(0);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init pci_mmcfg_late_insert_resources(void)
 {
+<<<<<<< HEAD
 	/*
 	 * If resources are already inserted or we are not using MMCONFIG,
 	 * don't insert the resources.
@@ -647,6 +1039,16 @@ static int __init pci_mmcfg_late_insert_resources(void)
 	if ((pci_mmcfg_resources_inserted == 1) ||
 	    (pci_probe & PCI_PROBE_MMCONF) == 0 ||
 	    list_empty(&pci_mmcfg_list))
+=======
+	struct pci_mmcfg_region *cfg;
+
+	pci_mmcfg_running_state = true;
+
+	pr_debug("%s() pci_probe %#x\n", __func__, pci_probe);
+
+	/* If we are not using ECAM, don't insert the resources. */
+	if ((pci_probe & PCI_PROBE_MMCONF) == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	/*
@@ -654,14 +1056,128 @@ static int __init pci_mmcfg_late_insert_resources(void)
 	 * marked so it won't cause request errors when __request_region is
 	 * called.
 	 */
+<<<<<<< HEAD
 	pci_mmcfg_insert_resources();
+=======
+	list_for_each_entry(cfg, &pci_mmcfg_list, list) {
+		if (!cfg->res.parent) {
+			pr_debug("%s() insert %pR\n", __func__, &cfg->res);
+			insert_resource(&iomem_resource, &cfg->res);
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /*
+<<<<<<< HEAD
  * Perform MMCONFIG resource insertion after PCI initialization to allow for
+=======
+ * Perform ECAM resource insertion after PCI initialization to allow for
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * misprogrammed MCFG tables that state larger sizes but actually conflict
  * with other system resources.
  */
 late_initcall(pci_mmcfg_late_insert_resources);
+<<<<<<< HEAD
+=======
+
+/* Add ECAM information for host bridges */
+int pci_mmconfig_insert(struct device *dev, u16 seg, u8 start, u8 end,
+			phys_addr_t addr)
+{
+	int rc;
+	struct resource *tmp = NULL;
+	struct pci_mmcfg_region *cfg;
+
+	dev_dbg(dev, "%s(%04x [bus %02x-%02x])\n", __func__, seg, start, end);
+
+	if (!(pci_probe & PCI_PROBE_MMCONF) || pci_mmcfg_arch_init_failed)
+		return -ENODEV;
+
+	if (start > end)
+		return -EINVAL;
+
+	mutex_lock(&pci_mmcfg_lock);
+	cfg = pci_mmconfig_lookup(seg, start);
+	if (cfg) {
+		if (cfg->end_bus < end)
+			dev_info(dev, FW_INFO "ECAM %pR for domain %04x [bus %02x-%02x] only partially covers this bridge\n",
+				 &cfg->res, cfg->segment, cfg->start_bus,
+				 cfg->end_bus);
+		mutex_unlock(&pci_mmcfg_lock);
+		return -EEXIST;
+	}
+
+	/*
+	 * Don't move earlier; we must return -EEXIST, not -EINVAL, if
+	 * pci_mmconfig_lookup() finds something
+	 */
+	if (!addr) {
+		mutex_unlock(&pci_mmcfg_lock);
+		return -EINVAL;
+	}
+
+	rc = -EBUSY;
+	cfg = pci_mmconfig_alloc(seg, start, end, addr);
+	if (cfg == NULL) {
+		dev_warn(dev, "fail to add ECAM (out of memory)\n");
+		rc = -ENOMEM;
+	} else if (!pci_mmcfg_reserved(dev, cfg, 0)) {
+		dev_warn(dev, FW_BUG "ECAM %pR isn't reserved\n",
+			 &cfg->res);
+	} else {
+		/* Insert resource if it's not in boot stage */
+		if (pci_mmcfg_running_state)
+			tmp = insert_resource_conflict(&iomem_resource,
+						       &cfg->res);
+
+		if (tmp) {
+			dev_warn(dev, "ECAM %pR conflicts with %s %pR\n",
+				 &cfg->res, tmp->name, tmp);
+		} else if (pci_mmcfg_arch_map(cfg)) {
+			dev_warn(dev, "fail to map ECAM %pR\n", &cfg->res);
+		} else {
+			list_add_sorted(cfg);
+			dev_info(dev, "ECAM %pR (base %#lx)\n",
+				 &cfg->res, (unsigned long)addr);
+			cfg = NULL;
+			rc = 0;
+		}
+	}
+
+	if (cfg) {
+		if (cfg->res.parent)
+			release_resource(&cfg->res);
+		kfree(cfg);
+	}
+
+	mutex_unlock(&pci_mmcfg_lock);
+
+	return rc;
+}
+
+/* Delete ECAM information for host bridges */
+int pci_mmconfig_delete(u16 seg, u8 start, u8 end)
+{
+	struct pci_mmcfg_region *cfg;
+
+	mutex_lock(&pci_mmcfg_lock);
+	list_for_each_entry_rcu(cfg, &pci_mmcfg_list, list)
+		if (cfg->segment == seg && cfg->start_bus == start &&
+		    cfg->end_bus == end) {
+			list_del_rcu(&cfg->list);
+			synchronize_rcu();
+			pci_mmcfg_arch_unmap(cfg);
+			if (cfg->res.parent)
+				release_resource(&cfg->res);
+			mutex_unlock(&pci_mmcfg_lock);
+			kfree(cfg);
+			return 0;
+		}
+	mutex_unlock(&pci_mmcfg_lock);
+
+	return -ENOENT;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

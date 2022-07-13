@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2007 PA Semi, Inc
  *
  * Maintained by: Olof Johansson <olof@lixom.net>
  *
  * Based on drivers/pcmcia/omap_cf.c
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -30,6 +37,11 @@
 #include <linux/interrupt.h>
 #include <linux/mm.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_platform.h>
 #include <linux/slab.h>
 
@@ -46,14 +58,24 @@ struct electra_cf_socket {
 
 	struct platform_device	*ofdev;
 	unsigned long		mem_phys;
+<<<<<<< HEAD
 	void __iomem *		mem_base;
 	unsigned long		mem_size;
 	void __iomem *		io_virt;
+=======
+	void __iomem		*mem_base;
+	unsigned long		mem_size;
+	void __iomem		*io_virt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		io_base;
 	unsigned int		io_size;
 	u_int			irq;
 	struct resource		iomem;
+<<<<<<< HEAD
 	void __iomem *		gpio_base;
+=======
+	void __iomem		*gpio_base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			gpio_detect;
 	int			gpio_vsense;
 	int			gpio_3v;
@@ -77,9 +99,15 @@ static int electra_cf_ss_init(struct pcmcia_socket *s)
 }
 
 /* the timer is primarily to kick this socket's pccardd */
+<<<<<<< HEAD
 static void electra_cf_timer(unsigned long _cf)
 {
 	struct electra_cf_socket *cf = (void *) _cf;
+=======
+static void electra_cf_timer(struct timer_list *t)
+{
+	struct electra_cf_socket *cf = from_timer(cf, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int present = electra_cf_present(cf);
 
 	if (present != cf->present) {
@@ -93,7 +121,13 @@ static void electra_cf_timer(unsigned long _cf)
 
 static irqreturn_t electra_cf_irq(int irq, void *_cf)
 {
+<<<<<<< HEAD
 	electra_cf_timer((unsigned long)_cf);
+=======
+	struct electra_cf_socket *cf = _cf;
+
+	electra_cf_timer(&cf->timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -181,16 +215,26 @@ static struct pccard_operations electra_cf_ops = {
 	.set_mem_map		= electra_cf_set_mem_map,
 };
 
+<<<<<<< HEAD
 static int __devinit electra_cf_probe(struct platform_device *ofdev)
+=======
+static int electra_cf_probe(struct platform_device *ofdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *device = &ofdev->dev;
 	struct device_node *np = ofdev->dev.of_node;
 	struct electra_cf_socket   *cf;
 	struct resource mem, io;
+<<<<<<< HEAD
 	int status;
 	const unsigned int *prop;
 	int err;
 	struct vm_struct *area;
+=======
+	int status = -ENOMEM;
+	const unsigned int *prop;
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = of_address_to_resource(np, 0, &mem);
 	if (err)
@@ -200,17 +244,27 @@ static int __devinit electra_cf_probe(struct platform_device *ofdev)
 	if (err)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	cf = kzalloc(sizeof *cf, GFP_KERNEL);
 	if (!cf)
 		return -ENOMEM;
 
 	setup_timer(&cf->timer, electra_cf_timer, (unsigned long)cf);
 	cf->irq = NO_IRQ;
+=======
+	cf = kzalloc(sizeof(*cf), GFP_KERNEL);
+	if (!cf)
+		return -ENOMEM;
+
+	timer_setup(&cf->timer, electra_cf_timer, 0);
+	cf->irq = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cf->ofdev = ofdev;
 	cf->mem_phys = mem.start;
 	cf->mem_size = PAGE_ALIGN(resource_size(&mem));
 	cf->mem_base = ioremap(cf->mem_phys, cf->mem_size);
+<<<<<<< HEAD
 	cf->io_size = PAGE_ALIGN(resource_size(&io));
 
 	area = __get_vm_area(cf->io_size, 0, PHB_IO_BASE, PHB_IO_END);
@@ -233,6 +287,21 @@ static int __devinit electra_cf_probe(struct platform_device *ofdev)
 
 	cf->io_base = (unsigned long)cf->io_virt - VMALLOC_END;
 
+=======
+	if (!cf->mem_base)
+		goto out_free_cf;
+	cf->io_size = PAGE_ALIGN(resource_size(&io));
+	cf->io_virt = ioremap_phb(io.start, cf->io_size);
+	if (!cf->io_virt)
+		goto out_unmap_mem;
+
+	cf->gpio_base = ioremap(0xfc103000, 0x1000);
+	if (!cf->gpio_base)
+		goto out_unmap_virt;
+	dev_set_drvdata(device, cf);
+
+	cf->io_base = (unsigned long)cf->io_virt - VMALLOC_END;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cf->iomem.start = (unsigned long)cf->mem_base;
 	cf->iomem.end = (unsigned long)cf->mem_base + (mem.end - mem.start);
 	cf->iomem.flags = IORESOURCE_MEM;
@@ -248,6 +317,11 @@ static int __devinit electra_cf_probe(struct platform_device *ofdev)
 
 	cf->socket.pci_irq = cf->irq;
 
+<<<<<<< HEAD
+=======
+	status = -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prop = of_get_property(np, "card-detect-gpio", NULL);
 	if (!prop)
 		goto fail1;
@@ -301,7 +375,11 @@ static int __devinit electra_cf_probe(struct platform_device *ofdev)
 		 cf->mem_phys, io.start, cf->irq);
 
 	cf->active = 1;
+<<<<<<< HEAD
 	electra_cf_timer((unsigned long)cf);
+=======
+	electra_cf_timer(&cf->timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 fail3:
@@ -309,6 +387,7 @@ fail3:
 fail2:
 	release_mem_region(cf->mem_phys, cf->mem_size);
 fail1:
+<<<<<<< HEAD
 	if (cf->irq != NO_IRQ)
 		free_irq(cf->irq, cf);
 
@@ -319,12 +398,28 @@ fail1:
 	if (cf->gpio_base)
 		iounmap(cf->gpio_base);
 	device_init_wakeup(&ofdev->dev, 0);
+=======
+	if (cf->irq)
+		free_irq(cf->irq, cf);
+
+	iounmap(cf->gpio_base);
+out_unmap_virt:
+	device_init_wakeup(&ofdev->dev, 0);
+	iounmap(cf->io_virt);
+out_unmap_mem:
+	iounmap(cf->mem_base);
+out_free_cf:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(cf);
 	return status;
 
 }
 
+<<<<<<< HEAD
 static int __devexit electra_cf_remove(struct platform_device *ofdev)
+=======
+static void electra_cf_remove(struct platform_device *ofdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *device = &ofdev->dev;
 	struct electra_cf_socket *cf;
@@ -334,17 +429,26 @@ static int __devexit electra_cf_remove(struct platform_device *ofdev)
 	cf->active = 0;
 	pcmcia_unregister_socket(&cf->socket);
 	free_irq(cf->irq, cf);
+<<<<<<< HEAD
 	del_timer_sync(&cf->timer);
 
 	__iounmap_at(cf->io_virt, cf->io_size);
+=======
+	timer_shutdown_sync(&cf->timer);
+
+	iounmap(cf->io_virt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iounmap(cf->mem_base);
 	iounmap(cf->gpio_base);
 	release_mem_region(cf->mem_phys, cf->mem_size);
 	release_region(cf->io_base, cf->io_size);
 
 	kfree(cf);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id electra_cf_match[] = {
@@ -357,16 +461,28 @@ MODULE_DEVICE_TABLE(of, electra_cf_match);
 
 static struct platform_driver electra_cf_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.name = (char *)driver_name,
 		.owner = THIS_MODULE,
 		.of_match_table = electra_cf_match,
 	},
 	.probe	  = electra_cf_probe,
 	.remove   = electra_cf_remove,
+=======
+		.name = driver_name,
+		.of_match_table = electra_cf_match,
+	},
+	.probe	  = electra_cf_probe,
+	.remove_new = electra_cf_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(electra_cf_driver);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR ("Olof Johansson <olof@lixom.net>");
+=======
+MODULE_AUTHOR("Olof Johansson <olof@lixom.net>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("PA Semi Electra CF driver");

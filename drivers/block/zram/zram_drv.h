@@ -15,6 +15,7 @@
 #ifndef _ZRAM_DRV_H_
 #define _ZRAM_DRV_H_
 
+<<<<<<< HEAD
 #include <linux/spinlock.h>
 #include <linux/zsmalloc.h>
 
@@ -44,6 +45,14 @@ static const size_t max_zpage_size = PAGE_SIZE / 4 * 3;
 
 #define SECTOR_SHIFT		9
 #define SECTOR_SIZE		(1 << SECTOR_SHIFT)
+=======
+#include <linux/rwsem.h>
+#include <linux/zsmalloc.h>
+#include <linux/crypto.h>
+
+#include "zcomp.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SECTORS_PER_PAGE_SHIFT	(PAGE_SHIFT - SECTOR_SHIFT)
 #define SECTORS_PER_PAGE	(1 << SECTORS_PER_PAGE_SHIFT)
 #define ZRAM_LOGICAL_BLOCK_SHIFT 12
@@ -51,10 +60,41 @@ static const size_t max_zpage_size = PAGE_SIZE / 4 * 3;
 #define ZRAM_SECTOR_PER_LOGICAL_BLOCK	\
 	(1 << (ZRAM_LOGICAL_BLOCK_SHIFT - SECTOR_SHIFT))
 
+<<<<<<< HEAD
 /* Flags for zram pages (table[page_no].flags) */
 enum zram_pageflags {
 	/* Page consists entirely of zeros */
 	ZRAM_ZERO,
+=======
+
+/*
+ * ZRAM is mainly used for memory efficiency so we want to keep memory
+ * footprint small and thus squeeze size and zram pageflags into a flags
+ * member. The lower ZRAM_FLAG_SHIFT bits is for object size (excluding
+ * header), which cannot be larger than PAGE_SIZE (requiring PAGE_SHIFT
+ * bits), the higher bits are for zram_pageflags.
+ *
+ * We use BUILD_BUG_ON() to make sure that zram pageflags don't overflow.
+ */
+#define ZRAM_FLAG_SHIFT (PAGE_SHIFT + 1)
+
+/* Only 2 bits are allowed for comp priority index */
+#define ZRAM_COMP_PRIORITY_MASK	0x3
+
+/* Flags for zram pages (table[page_no].flags) */
+enum zram_pageflags {
+	/* zram slot is locked */
+	ZRAM_LOCK = ZRAM_FLAG_SHIFT,
+	ZRAM_SAME,	/* Page consists the same element */
+	ZRAM_WB,	/* page is stored on backing_device */
+	ZRAM_UNDER_WB,	/* page is under writeback */
+	ZRAM_HUGE,	/* Incompressible page */
+	ZRAM_IDLE,	/* not accessed page since last idle marking */
+	ZRAM_INCOMPRESSIBLE, /* none of the algorithms could compress it */
+
+	ZRAM_COMP_PRIORITY_BIT1, /* First bit of comp priority index */
+	ZRAM_COMP_PRIORITY_BIT2, /* Second bit of comp priority index */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__NR_ZRAM_PAGEFLAGS,
 };
@@ -62,6 +102,7 @@ enum zram_pageflags {
 /*-- Data structures */
 
 /* Allocated for each disk page */
+<<<<<<< HEAD
 struct table {
 	unsigned long handle;
 	u16 size;	/* object size (excluding header) */
@@ -95,12 +136,89 @@ struct zram {
 	/* Prevent concurrent execution of device init, reset and R/W request */
 	struct rw_semaphore init_lock;
 	/*
+=======
+struct zram_table_entry {
+	union {
+		unsigned long handle;
+		unsigned long element;
+	};
+	unsigned long flags;
+#ifdef CONFIG_ZRAM_TRACK_ENTRY_ACTIME
+	ktime_t ac_time;
+#endif
+};
+
+struct zram_stats {
+	atomic64_t compr_data_size;	/* compressed size of pages stored */
+	atomic64_t failed_reads;	/* can happen when memory is too low */
+	atomic64_t failed_writes;	/* can happen when memory is too low */
+	atomic64_t notify_free;	/* no. of swap slot free notifications */
+	atomic64_t same_pages;		/* no. of same element filled pages */
+	atomic64_t huge_pages;		/* no. of huge pages */
+	atomic64_t huge_pages_since;	/* no. of huge pages since zram set up */
+	atomic64_t pages_stored;	/* no. of pages currently stored */
+	atomic_long_t max_used_pages;	/* no. of maximum pages stored */
+	atomic64_t writestall;		/* no. of write slow paths */
+	atomic64_t miss_free;		/* no. of missed free */
+#ifdef	CONFIG_ZRAM_WRITEBACK
+	atomic64_t bd_count;		/* no. of pages in backing device */
+	atomic64_t bd_reads;		/* no. of reads from backing device */
+	atomic64_t bd_writes;		/* no. of writes from backing device */
+#endif
+};
+
+#ifdef CONFIG_ZRAM_MULTI_COMP
+#define ZRAM_PRIMARY_COMP	0U
+#define ZRAM_SECONDARY_COMP	1U
+#define ZRAM_MAX_COMPS	4U
+#else
+#define ZRAM_PRIMARY_COMP	0U
+#define ZRAM_SECONDARY_COMP	0U
+#define ZRAM_MAX_COMPS	1U
+#endif
+
+struct zram {
+	struct zram_table_entry *table;
+	struct zs_pool *mem_pool;
+	struct zcomp *comps[ZRAM_MAX_COMPS];
+	struct gendisk *disk;
+	/* Prevent concurrent execution of device init */
+	struct rw_semaphore init_lock;
+	/*
+	 * the number of pages zram can consume for storing compressed data
+	 */
+	unsigned long limit_pages;
+
+	struct zram_stats stats;
+	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * This is the limit on amount of *uncompressed* worth of data
 	 * we can store in a disk.
 	 */
 	u64 disksize;	/* bytes */
+<<<<<<< HEAD
 	int max_comp_streams;
 	struct zram_stats stats;
 	char compressor[10];
+=======
+	const char *comp_algs[ZRAM_MAX_COMPS];
+	s8 num_active_comps;
+	/*
+	 * zram is claimed so open request will be failed
+	 */
+	bool claim; /* Protected by disk->open_mutex */
+#ifdef CONFIG_ZRAM_WRITEBACK
+	struct file *backing_dev;
+	spinlock_t wb_limit_lock;
+	bool wb_limit_enable;
+	u64 bd_wb_limit;
+	struct file *bdev_file;
+	unsigned long *bitmap;
+	unsigned long nr_pages;
+#endif
+#ifdef CONFIG_ZRAM_MEMORY_TRACKING
+	struct dentry *debugfs_dir;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif

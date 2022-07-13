@@ -364,6 +364,7 @@ void jffs2_free_comprbuf(unsigned char *comprbuf, unsigned char *orig)
 
 int __init jffs2_compressors_init(void)
 {
+<<<<<<< HEAD
 /* Registering compressors */
 #ifdef CONFIG_JFFS2_ZLIB
 	jffs2_zlib_init();
@@ -378,6 +379,27 @@ int __init jffs2_compressors_init(void)
 #ifdef CONFIG_JFFS2_LZO
 	jffs2_lzo_init();
 #endif
+=======
+	int ret = 0;
+/* Registering compressors */
+	ret = jffs2_zlib_init();
+	if (ret)
+		goto exit;
+	ret = jffs2_rtime_init();
+	if (ret)
+		goto exit_zlib;
+	ret = jffs2_rubinmips_init();
+	if (ret)
+		goto exit_rtime;
+	ret = jffs2_dynrubin_init();
+	if (ret)
+		goto exit_runinmips;
+	ret = jffs2_lzo_init();
+	if (ret)
+		goto exit_dynrubin;
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Setting default compression mode */
 #ifdef CONFIG_JFFS2_CMODE_NONE
 	jffs2_compression_mode = JFFS2_COMPR_MODE_NONE;
@@ -396,11 +418,26 @@ int __init jffs2_compressors_init(void)
 #endif
 #endif
 	return 0;
+<<<<<<< HEAD
+=======
+
+exit_dynrubin:
+	jffs2_dynrubin_exit();
+exit_runinmips:
+	jffs2_rubinmips_exit();
+exit_rtime:
+	jffs2_rtime_exit();
+exit_zlib:
+	jffs2_zlib_exit();
+exit:
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int jffs2_compressors_exit(void)
 {
 /* Unregistering compressors */
+<<<<<<< HEAD
 #ifdef CONFIG_JFFS2_LZO
 	jffs2_lzo_exit();
 #endif
@@ -414,5 +451,12 @@ int jffs2_compressors_exit(void)
 #ifdef CONFIG_JFFS2_ZLIB
 	jffs2_zlib_exit();
 #endif
+=======
+	jffs2_lzo_exit();
+	jffs2_dynrubin_exit();
+	jffs2_rubinmips_exit();
+	jffs2_rtime_exit();
+	jffs2_zlib_exit();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

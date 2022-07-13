@@ -14,8 +14,13 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/vfs.h>
+<<<<<<< HEAD
 #include "hostfs.h"
 #include "os.h"
+=======
+#include <sys/syscall.h>
+#include "hostfs.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <utime.h>
 
 static void stat64_to_hostfs(const struct stat64 *buf, struct hostfs_stat *p)
@@ -36,6 +41,10 @@ static void stat64_to_hostfs(const struct stat64 *buf, struct hostfs_stat *p)
 	p->blocks = buf->st_blocks;
 	p->maj = os_major(buf->st_rdev);
 	p->min = os_minor(buf->st_rdev);
+<<<<<<< HEAD
+=======
+	p->dev = buf->st_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int stat_file(const char *path, struct hostfs_stat *p, int fd)
@@ -97,21 +106,39 @@ void *open_dir(char *path, int *err_out)
 	return dir;
 }
 
+<<<<<<< HEAD
 char *read_dir(void *stream, unsigned long long *pos,
+=======
+void seek_dir(void *stream, unsigned long long pos)
+{
+	DIR *dir = stream;
+
+	seekdir(dir, pos);
+}
+
+char *read_dir(void *stream, unsigned long long *pos_out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       unsigned long long *ino_out, int *len_out,
 	       unsigned int *type_out)
 {
 	DIR *dir = stream;
 	struct dirent *ent;
 
+<<<<<<< HEAD
 	seekdir(dir, *pos);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ent = readdir(dir);
 	if (ent == NULL)
 		return NULL;
 	*len_out = strlen(ent->d_name);
 	*ino_out = ent->d_ino;
 	*type_out = ent->d_type;
+<<<<<<< HEAD
 	*pos = telldir(dir);
+=======
+	*pos_out = ent->d_off;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ent->d_name;
 }
 
@@ -175,6 +202,7 @@ void close_dir(void *stream)
 	closedir(stream);
 }
 
+<<<<<<< HEAD
 int file_create(char *name, int ur, int uw, int ux, int gr,
 		int gw, int gx, int or, int ow, int ox)
 {
@@ -190,6 +218,12 @@ int file_create(char *name, int ur, int uw, int ux, int gr,
 	mode |= or ? S_IROTH : 0;
 	mode |= ow ? S_IWOTH : 0;
 	mode |= ox ? S_IXOTH : 0;
+=======
+int file_create(char *name, int mode)
+{
+	int fd;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fd = open64(name, O_CREAT | O_RDWR, mode);
 	if (fd < 0)
 		return -errno;
@@ -309,7 +343,11 @@ int do_mkdir(const char *file, int mode)
 	return 0;
 }
 
+<<<<<<< HEAD
 int do_rmdir(const char *file)
+=======
+int hostfs_do_rmdir(const char *file)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -361,6 +399,36 @@ int rename_file(char *from, char *to)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int rename2_file(char *from, char *to, unsigned int flags)
+{
+	int err;
+
+#ifndef SYS_renameat2
+#  ifdef __x86_64__
+#    define SYS_renameat2 316
+#  endif
+#  ifdef __i386__
+#    define SYS_renameat2 353
+#  endif
+#endif
+
+#ifdef SYS_renameat2
+	err = syscall(SYS_renameat2, AT_FDCWD, from, AT_FDCWD, to, flags);
+	if (err < 0) {
+		if (errno != ENOSYS)
+			return -errno;
+		else
+			return -EINVAL;
+	}
+	return 0;
+#else
+	return -EINVAL;
+#endif
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int do_statfs(char *root, long *bsize_out, long long *blocks_out,
 	      long long *bfree_out, long long *bavail_out,
 	      long long *files_out, long long *ffree_out,

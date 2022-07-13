@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/glue-proc.h
  *
  *  Copyright (C) 1997-1999 Russell King
  *  Copyright (C) 2000 Deep Blue Solutions Ltd
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef ASM_GLUE_PROC_H
 #define ASM_GLUE_PROC_H
@@ -23,6 +30,7 @@
  * CPU_NAME - the prefix for CPU related functions
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_ARM610
 # ifdef CPU_NAME
 #  undef  MULTI_CPU
@@ -32,6 +40,8 @@
 # endif
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CPU_ARM7TDMI
 # ifdef CPU_NAME
 #  undef  MULTI_CPU
@@ -41,6 +51,7 @@
 # endif
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_ARM710
 # ifdef CPU_NAME
 #  undef  MULTI_CPU
@@ -50,6 +61,8 @@
 # endif
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CPU_ARM720T
 # ifdef CPU_NAME
 #  undef  MULTI_CPU
@@ -239,15 +252,44 @@
 # endif
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_V7
+=======
+#ifdef CONFIG_CPU_V7M
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # ifdef CPU_NAME
 #  undef  MULTI_CPU
 #  define MULTI_CPU
 # else
+<<<<<<< HEAD
 #  define CPU_NAME cpu_v7
 # endif
 #endif
 
+=======
+#  define CPU_NAME cpu_v7m
+# endif
+#endif
+
+#ifdef CONFIG_CPU_PJ4B
+# ifdef CPU_NAME
+#  undef  MULTI_CPU
+#  define MULTI_CPU
+# else
+#  define CPU_NAME cpu_pj4b
+# endif
+#endif
+
+#ifdef CONFIG_CPU_V7
+/*
+ * Cortex-A9 needs a different suspend/resume function, so we need
+ * multiple CPU support for ARMv7 anyway.
+ */
+#  undef  MULTI_CPU
+#  define MULTI_CPU
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef MULTI_CPU
 #define cpu_proc_init			__glue(CPU_NAME,_proc_init)
 #define cpu_proc_fin			__glue(CPU_NAME,_proc_fin)

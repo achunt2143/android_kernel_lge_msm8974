@@ -40,6 +40,7 @@
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <scsi/scsi.h>
 #include <linux/major.h>
 #include <linux/blkdev.h>
@@ -47,6 +48,18 @@
 
 #include "scsi.h"
 #include <scsi/scsi_host.h>
+=======
+#include <linux/major.h>
+#include <linux/blkdev.h>
+
+#include <scsi/scsi.h>
+#include <scsi/scsi_cmnd.h>
+#include <scsi/scsi_device.h>
+#include <scsi/scsi_eh.h>
+#include <scsi/scsi_host.h>
+#include <scsi/scsi_ioctl.h>
+#include <scsi/scsi_tcq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "aha152x.h"
 
 #include <pcmcia/cistpl.h>
@@ -220,6 +233,7 @@ static struct pcmcia_driver aha152x_cs_driver = {
 	.id_table       = aha152x_ids,
 	.resume		= aha152x_resume,
 };
+<<<<<<< HEAD
 
 static int __init init_aha152x_cs(void)
 {
@@ -233,3 +247,6 @@ static void __exit exit_aha152x_cs(void)
 
 module_init(init_aha152x_cs);
 module_exit(exit_aha152x_cs);
+=======
+module_pcmcia_driver(aha152x_cs_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

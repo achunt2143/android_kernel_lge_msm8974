@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: hwtimer.c - ACPI Power Management Timer Interface
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -43,6 +48,14 @@
  */
 
 #include <linux/export.h>
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+#define EXPORT_ACPI_INTERFACES
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 
@@ -54,7 +67,11 @@ ACPI_MODULE_NAME("hwtimer")
  *
  * FUNCTION:    acpi_get_timer_resolution
  *
+<<<<<<< HEAD
  * PARAMETERS:  Resolution          - Where the resolution is returned
+=======
+ * PARAMETERS:  resolution          - Where the resolution is returned
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status and timer resolution
  *
@@ -84,7 +101,11 @@ ACPI_EXPORT_SYMBOL(acpi_get_timer_resolution)
  *
  * FUNCTION:    acpi_get_timer
  *
+<<<<<<< HEAD
  * PARAMETERS:  Ticks               - Where the timer value is returned
+=======
+ * PARAMETERS:  ticks               - Where the timer value is returned
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status and current timer value (ticks)
  *
@@ -94,6 +115,10 @@ ACPI_EXPORT_SYMBOL(acpi_get_timer_resolution)
 acpi_status acpi_get_timer(u32 * ticks)
 {
 	acpi_status status;
+<<<<<<< HEAD
+=======
+	u64 timer_value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE(acpi_get_timer);
 
@@ -101,8 +126,24 @@ acpi_status acpi_get_timer(u32 * ticks)
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
 	}
 
+<<<<<<< HEAD
 	status =
 	    acpi_hw_read(ticks, &acpi_gbl_FADT.xpm_timer_block);
+=======
+	/* ACPI 5.0A: PM Timer is optional */
+
+	if (!acpi_gbl_FADT.xpm_timer_block.address) {
+		return_ACPI_STATUS(AE_SUPPORT);
+	}
+
+	status = acpi_hw_read(&timer_value, &acpi_gbl_FADT.xpm_timer_block);
+	if (ACPI_SUCCESS(status)) {
+
+		/* ACPI PM Timer is defined to be 32 bits (PM_TMR_LEN) */
+
+		*ticks = (u32)timer_value;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return_ACPI_STATUS(status);
 }
@@ -129,7 +170,11 @@ ACPI_EXPORT_SYMBOL(acpi_get_timer)
  *              a versatile and accurate timer.
  *
  *              Note that this function accommodates only a single timer
+<<<<<<< HEAD
  *              rollover.  Thus for 24-bit timers, this function should only
+=======
+ *              rollover. Thus for 24-bit timers, this function should only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              be used for calculating durations less than ~4.6 seconds
  *              (~20 minutes for 32-bit timers) -- calculations below:
  *
@@ -138,10 +183,17 @@ ACPI_EXPORT_SYMBOL(acpi_get_timer)
  *
  ******************************************************************************/
 acpi_status
+<<<<<<< HEAD
 acpi_get_timer_duration(u32 start_ticks, u32 end_ticks, u32 * time_elapsed)
 {
 	acpi_status status;
 	u32 delta_ticks;
+=======
+acpi_get_timer_duration(u32 start_ticks, u32 end_ticks, u32 *time_elapsed)
+{
+	acpi_status status;
+	u64 delta_ticks;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 quotient;
 
 	ACPI_FUNCTION_TRACE(acpi_get_timer_duration);
@@ -150,6 +202,7 @@ acpi_get_timer_duration(u32 start_ticks, u32 end_ticks, u32 * time_elapsed)
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Compute Tick Delta:
 	 * Handle (max one) timer rollovers on 24-bit versus 32-bit timers.
@@ -171,11 +224,21 @@ acpi_get_timer_duration(u32 start_ticks, u32 end_ticks, u32 * time_elapsed)
 		}
 	} else {		/* start_ticks == end_ticks */
 
+=======
+	/* ACPI 5.0A: PM Timer is optional */
+
+	if (!acpi_gbl_FADT.xpm_timer_block.address) {
+		return_ACPI_STATUS(AE_SUPPORT);
+	}
+
+	if (start_ticks == end_ticks) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*time_elapsed = 0;
 		return_ACPI_STATUS(AE_OK);
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Compute Duration (Requires a 64-bit multiply and divide):
 	 *
 	 * time_elapsed = (delta_ticks * 1000000) / PM_TIMER_FREQUENCY;
@@ -184,6 +247,36 @@ acpi_get_timer_duration(u32 start_ticks, u32 end_ticks, u32 * time_elapsed)
 				      PM_TIMER_FREQUENCY, &quotient, NULL);
 
 	*time_elapsed = (u32) quotient;
+=======
+	 * Compute Tick Delta:
+	 * Handle (max one) timer rollovers on 24-bit versus 32-bit timers.
+	 */
+	delta_ticks = end_ticks;
+	if (start_ticks > end_ticks) {
+		if ((acpi_gbl_FADT.flags & ACPI_FADT_32BIT_TIMER) == 0) {
+
+			/* 24-bit Timer */
+
+			delta_ticks |= (u64)1 << 24;
+		} else {
+			/* 32-bit Timer */
+
+			delta_ticks |= (u64)1 << 32;
+		}
+	}
+	delta_ticks -= start_ticks;
+
+	/*
+	 * Compute Duration (Requires a 64-bit multiply and divide):
+	 *
+	 * time_elapsed (microseconds) =
+	 *  (delta_ticks * ACPI_USEC_PER_SEC) / ACPI_PM_TIMER_FREQUENCY;
+	 */
+	status = acpi_ut_short_divide(delta_ticks * ACPI_USEC_PER_SEC,
+				      ACPI_PM_TIMER_FREQUENCY, &quotient, NULL);
+
+	*time_elapsed = (u32)quotient;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 

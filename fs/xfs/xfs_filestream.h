@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2006-2007 Silicon Graphics, Inc.
  * All Rights Reserved.
@@ -14,10 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write the Free Software Foundation,
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2006-2007 Silicon Graphics, Inc.
+ * All Rights Reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __XFS_FILESTREAM_H__
 #define __XFS_FILESTREAM_H__
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
 struct xfs_mount;
@@ -60,10 +68,24 @@ int xfs_filestream_new_ag(struct xfs_bmalloca *ap, xfs_agnumber_t *agp);
 
 
 /* filestreams for the inode? */
+=======
+struct xfs_mount;
+struct xfs_inode;
+struct xfs_bmalloca;
+struct xfs_alloc_arg;
+
+int xfs_filestream_mount(struct xfs_mount *mp);
+void xfs_filestream_unmount(struct xfs_mount *mp);
+void xfs_filestream_deassociate(struct xfs_inode *ip);
+int xfs_filestream_select_ag(struct xfs_bmalloca *ap,
+		struct xfs_alloc_arg *args, xfs_extlen_t *blen);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int
 xfs_inode_is_filestream(
 	struct xfs_inode	*ip)
 {
+<<<<<<< HEAD
 	return (ip->i_mount->m_flags & XFS_MOUNT_FILESTREAMS) ||
 		xfs_iflags_test(ip, XFS_IFILESTREAM) ||
 		(ip->i_d.di_flags & XFS_DIFLAG_FILESTREAM);
@@ -71,4 +93,10 @@ xfs_inode_is_filestream(
 
 #endif /* __KERNEL__ */
 
+=======
+	return xfs_has_filestreams(ip->i_mount) ||
+		(ip->i_diflags & XFS_DIFLAG_FILESTREAM);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __XFS_FILESTREAM_H__ */

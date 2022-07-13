@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCMCIA high-level CIS access functions
  *
@@ -7,17 +11,24 @@
  *
  * Copyright (C) 1999	     David A. Hinds
  * Copyright (C) 2004-2010   Dominik Brodowski
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
+<<<<<<< HEAD
+=======
+#include <linux/etherdevice.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <pcmcia/cisreg.h>
 #include <pcmcia/cistpl.h>
@@ -44,7 +55,11 @@ int pccard_read_tuple(struct pcmcia_socket *s, unsigned int function,
 
 	buf = kmalloc(256, GFP_KERNEL);
 	if (buf == NULL) {
+<<<<<<< HEAD
 		dev_printk(KERN_WARNING, &s->dev, "no memory to read tuple\n");
+=======
+		dev_warn(&s->dev, "no memory to read tuple\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	tuple.DesiredTuple = code;
@@ -82,9 +97,15 @@ done:
  * calls the @loop_tuple function for each entry. If the call to @loop_tuple
  * returns 0, the loop exits. Returns 0 on success or errorcode otherwise.
  */
+<<<<<<< HEAD
 int pccard_loop_tuple(struct pcmcia_socket *s, unsigned int function,
 		      cisdata_t code, cisparse_t *parse, void *priv_data,
 		      int (*loop_tuple) (tuple_t *tuple,
+=======
+static int pccard_loop_tuple(struct pcmcia_socket *s, unsigned int function,
+			     cisdata_t code, cisparse_t *parse, void *priv_data,
+			     int (*loop_tuple) (tuple_t *tuple,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 cisparse_t *parse,
 					 void *priv_data))
 {
@@ -94,7 +115,11 @@ int pccard_loop_tuple(struct pcmcia_socket *s, unsigned int function,
 
 	buf = kzalloc(256, GFP_KERNEL);
 	if (buf == NULL) {
+<<<<<<< HEAD
 		dev_printk(KERN_WARNING, &s->dev, "no memory to read tuple\n");
+=======
+		dev_warn(&s->dev, "no memory to read tuple\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -126,7 +151,11 @@ next_entry:
 }
 
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pcmcia_io_cfg_data_width() - convert cfgtable to data path width parameter
  */
 static int pcmcia_io_cfg_data_width(unsigned int flags)
@@ -147,7 +176,11 @@ struct pcmcia_cfg_mem {
 	cistpl_cftable_entry_t dflt;
 };
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pcmcia_do_loop_config() - internal helper for pcmcia_loop_config()
  *
  * pcmcia_do_loop_config() is the internal callback for the call from
@@ -293,7 +326,11 @@ struct pcmcia_loop_mem {
 			   void *priv_data);
 };
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pcmcia_do_loop_tuple() - internal helper for pcmcia_loop_config()
  *
  * pcmcia_do_loop_tuple() is the internal callback for the call from
@@ -341,7 +378,11 @@ struct pcmcia_loop_get {
 	cisdata_t **buf;
 };
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pcmcia_do_get_tuple() - internal helper for pcmcia_get_tuple()
  *
  * pcmcia_do_get_tuple() is the internal callback for the call from
@@ -389,8 +430,13 @@ size_t pcmcia_get_tuple(struct pcmcia_device *p_dev, cisdata_t code,
 }
 EXPORT_SYMBOL(pcmcia_get_tuple);
 
+<<<<<<< HEAD
 
 /**
+=======
+#ifdef CONFIG_NET
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pcmcia_do_get_mac() - internal helper for pcmcia_get_mac_from_cis()
  *
  * pcmcia_do_get_mac() is the internal callback for the call from
@@ -402,7 +448,10 @@ static int pcmcia_do_get_mac(struct pcmcia_device *p_dev, tuple_t *tuple,
 			     void *priv)
 {
 	struct net_device *dev = priv;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tuple->TupleData[0] != CISTPL_FUNCE_LAN_NODE_ID)
 		return -EINVAL;
@@ -416,8 +465,12 @@ static int pcmcia_do_get_mac(struct pcmcia_device *p_dev, tuple_t *tuple,
 		dev_warn(&p_dev->dev, "Invalid header for LAN_NODE_ID\n");
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	for (i = 0; i < 6; i++)
 		dev->dev_addr[i] = tuple->TupleData[i+2];
+=======
+	eth_hw_addr_set(dev, &tuple->TupleData[2]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -436,3 +489,7 @@ int pcmcia_get_mac_from_cis(struct pcmcia_device *p_dev, struct net_device *dev)
 }
 EXPORT_SYMBOL(pcmcia_get_mac_from_cis);
 
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_NET */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

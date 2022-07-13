@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	vmlinux.lds.S -- master linker script for m68knommu arch
  *
@@ -44,6 +48,11 @@ SECTIONS {
 	.text : {
 		HEAD_TEXT
 		TEXT_TEXT
+<<<<<<< HEAD
+=======
+		IRQENTRY_TEXT
+		SOFTIRQENTRY_TEXT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SCHED_TEXT
 		LOCK_TEXT
 		*(.fixup)
@@ -56,12 +65,20 @@ SECTIONS {
 #endif
 
 	_sdata = .;
+<<<<<<< HEAD
 	RO_DATA_SECTION(PAGE_SIZE)
 	RW_DATA_SECTION(16, PAGE_SIZE, THREAD_SIZE)
 	_edata = .;
 
 	EXCEPTION_TABLE(16)
 	NOTES
+=======
+	RO_DATA(PAGE_SIZE)
+	RW_DATA(16, PAGE_SIZE, THREAD_SIZE)
+	_edata = .;
+
+	EXCEPTION_TABLE(16)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	. = ALIGN(PAGE_SIZE);
 	__init_begin = .;
@@ -78,14 +95,22 @@ SECTIONS {
 		__init_end = .;
 	}
 
+<<<<<<< HEAD
 	_sbss = .;
 	BSS_SECTION(0, 0, 0)
 	_ebss = .;
+=======
+	BSS_SECTION(4, 0, 4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	_end = .;
 
 	STABS_DEBUG
+<<<<<<< HEAD
 	.comment 0 : { *(.comment) }
+=======
+	ELF_DETAILS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Sections to be discarded */
 	DISCARDS

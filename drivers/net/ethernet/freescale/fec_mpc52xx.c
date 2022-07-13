@@ -14,6 +14,11 @@
  *
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dma-mapping.h>
 #include <linux/module.h>
 
@@ -27,9 +32,18 @@
 #include <linux/crc32.h>
 #include <linux/hardirq.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 #include <linux/of_mdio.h>
 #include <linux/of_platform.h>
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+#include <linux/of_mdio.h>
+#include <linux/of_net.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -40,8 +54,13 @@
 #include <asm/delay.h>
 #include <asm/mpc52xx.h>
 
+<<<<<<< HEAD
 #include <sysdev/bestcomm/bestcomm.h>
 #include <sysdev/bestcomm/fec.h>
+=======
+#include <linux/fsl/bestcomm/bestcomm.h>
+#include <linux/fsl/bestcomm/fec.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "fec_mpc52xx.h"
 
@@ -63,7 +82,10 @@ struct mpc52xx_fec_priv {
 	/* MDIO link details */
 	unsigned int mdio_speed;
 	struct device_node *phy_node;
+<<<<<<< HEAD
 	struct phy_device *phydev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum phy_state link;
 	int seven_wire_mode;
 };
@@ -72,6 +94,7 @@ struct mpc52xx_fec_priv {
 static irqreturn_t mpc52xx_fec_interrupt(int, void *);
 static irqreturn_t mpc52xx_fec_rx_interrupt(int, void *);
 static irqreturn_t mpc52xx_fec_tx_interrupt(int, void *);
+<<<<<<< HEAD
 static void mpc52xx_fec_stop(struct net_device *dev);
 static void mpc52xx_fec_start(struct net_device *dev);
 static void mpc52xx_fec_reset(struct net_device *dev);
@@ -80,13 +103,23 @@ static u8 mpc52xx_fec_mac_addr[6];
 module_param_array_named(mac, mpc52xx_fec_mac_addr, byte, NULL, 0);
 MODULE_PARM_DESC(mac, "six hex digits, ie. 0x1,0x2,0xc0,0x01,0xba,0xbe");
 
+=======
+static void mpc52xx_fec_stop(struct net_device *dev, bool may_sleep);
+static void mpc52xx_fec_start(struct net_device *dev);
+static void mpc52xx_fec_reset(struct net_device *dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MPC52xx_MESSAGES_DEFAULT ( NETIF_MSG_DRV | NETIF_MSG_PROBE | \
 		NETIF_MSG_LINK | NETIF_MSG_IFDOWN | NETIF_MSG_IFUP)
 static int debug = -1;	/* the above default */
 module_param(debug, int, 0);
 MODULE_PARM_DESC(debug, "debugging messages level");
 
+<<<<<<< HEAD
 static void mpc52xx_fec_tx_timeout(struct net_device *dev)
+=======
+static void mpc52xx_fec_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
 	unsigned long flags;
@@ -101,11 +134,16 @@ static void mpc52xx_fec_tx_timeout(struct net_device *dev)
 	netif_wake_queue(dev);
 }
 
+<<<<<<< HEAD
 static void mpc52xx_fec_set_paddr(struct net_device *dev, u8 *mac)
+=======
+static void mpc52xx_fec_set_paddr(struct net_device *dev, const u8 *mac)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
 	struct mpc52xx_fec __iomem *fec = priv->fec;
 
+<<<<<<< HEAD
 	out_be32(&fec->paddr1, *(u32 *)(&mac[0]));
 	out_be32(&fec->paddr2, (*(u16 *)(&mac[4]) << 16) | FEC_PADDR2_TYPE);
 }
@@ -117,13 +155,21 @@ static void mpc52xx_fec_get_paddr(struct net_device *dev, u8 *mac)
 
 	*(u32 *)(&mac[0]) = in_be32(&fec->paddr1);
 	*(u16 *)(&mac[4]) = in_be32(&fec->paddr2) >> 16;
+=======
+	out_be32(&fec->paddr1, *(const u32 *)(&mac[0]));
+	out_be32(&fec->paddr2, (*(const u16 *)(&mac[4]) << 16) | FEC_PADDR2_TYPE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mpc52xx_fec_set_mac_address(struct net_device *dev, void *addr)
 {
 	struct sockaddr *sock = addr;
 
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, sock->sa_data, dev->addr_len);
+=======
+	eth_hw_addr_set(dev, sock->sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpc52xx_fec_set_paddr(dev, sock->sa_data);
 	return 0;
@@ -175,7 +221,11 @@ static int mpc52xx_fec_alloc_rx_buffers(struct net_device *dev, struct bcom_task
 static void mpc52xx_fec_adjust_link(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phydev = priv->phydev;
+=======
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int new_state = 0;
 
 	if (phydev->link != PHY_DOWN) {
@@ -225,6 +275,7 @@ static void mpc52xx_fec_adjust_link(struct net_device *dev)
 static int mpc52xx_fec_open(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 	int err = -EBUSY;
 
 	if (priv->phy_node) {
@@ -235,6 +286,19 @@ static int mpc52xx_fec_open(struct net_device *dev)
 			return -ENODEV;
 		}
 		phy_start(priv->phydev);
+=======
+	struct phy_device *phydev = NULL;
+	int err = -EBUSY;
+
+	if (priv->phy_node) {
+		phydev = of_phy_connect(priv->ndev, priv->phy_node,
+					mpc52xx_fec_adjust_link, 0, 0);
+		if (!phydev) {
+			dev_err(&dev->dev, "of_phy_connect failed\n");
+			return -ENODEV;
+		}
+		phy_start(phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (request_irq(dev->irq, mpc52xx_fec_interrupt, IRQF_SHARED,
@@ -278,10 +342,16 @@ static int mpc52xx_fec_open(struct net_device *dev)
  free_ctrl_irq:
 	free_irq(dev->irq, dev);
  free_phy:
+<<<<<<< HEAD
 	if (priv->phydev) {
 		phy_stop(priv->phydev);
 		phy_disconnect(priv->phydev);
 		priv->phydev = NULL;
+=======
+	if (phydev) {
+		phy_stop(phydev);
+		phy_disconnect(phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
@@ -290,10 +360,18 @@ static int mpc52xx_fec_open(struct net_device *dev)
 static int mpc52xx_fec_close(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
+<<<<<<< HEAD
 
 	netif_stop_queue(dev);
 
 	mpc52xx_fec_stop(dev);
+=======
+	struct phy_device *phydev = dev->phydev;
+
+	netif_stop_queue(dev);
+
+	mpc52xx_fec_stop(dev, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpc52xx_fec_free_rx_buffers(dev, priv->rx_dmatsk);
 
@@ -301,11 +379,18 @@ static int mpc52xx_fec_close(struct net_device *dev)
 	free_irq(priv->r_irq, dev);
 	free_irq(priv->t_irq, dev);
 
+<<<<<<< HEAD
 	if (priv->phydev) {
 		/* power down phy */
 		phy_stop(priv->phydev);
 		phy_disconnect(priv->phydev);
 		priv->phydev = NULL;
+=======
+	if (phydev) {
+		/* power down phy */
+		phy_stop(phydev);
+		phy_disconnect(phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -316,7 +401,12 @@ static int mpc52xx_fec_close(struct net_device *dev)
  * invariant will hold if you make sure that the netif_*_queue()
  * calls are done at the proper times.
  */
+<<<<<<< HEAD
 static int mpc52xx_fec_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t
+mpc52xx_fec_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
 	struct bcom_fec_bd *bd;
@@ -379,7 +469,11 @@ static irqreturn_t mpc52xx_fec_tx_interrupt(int irq, void *dev_id)
 		dma_unmap_single(dev->dev.parent, bd->skb_pa, skb->len,
 				 DMA_TO_DEVICE);
 
+<<<<<<< HEAD
 		dev_kfree_skb_irq(skb);
+=======
+		dev_consume_skb_irq(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock(&priv->lock);
 
@@ -703,7 +797,11 @@ static void mpc52xx_fec_start(struct net_device *dev)
  *
  * stop all activity on fec and empty dma buffers
  */
+<<<<<<< HEAD
 static void mpc52xx_fec_stop(struct net_device *dev)
+=======
+static void mpc52xx_fec_stop(struct net_device *dev, bool may_sleep)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
 	struct mpc52xx_fec __iomem *fec = priv->fec;
@@ -716,7 +814,11 @@ static void mpc52xx_fec_stop(struct net_device *dev)
 	bcom_disable(priv->rx_dmatsk);
 
 	/* Wait for tx queue to drain, but only if we're in process context */
+<<<<<<< HEAD
 	if (!in_interrupt()) {
+=======
+	if (may_sleep) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		timeout = jiffies + msecs_to_jiffies(2000);
 		while (time_before(jiffies, timeout) &&
 				!bcom_queue_empty(priv->tx_dmatsk))
@@ -748,7 +850,11 @@ static void mpc52xx_fec_reset(struct net_device *dev)
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
 	struct mpc52xx_fec __iomem *fec = priv->fec;
 
+<<<<<<< HEAD
 	mpc52xx_fec_stop(dev);
+=======
+	mpc52xx_fec_stop(dev, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	out_be32(&fec->rfifo_status, in_be32(&fec->rfifo_status));
 	out_be32(&fec->reset_cntrl, FEC_RESET_CNTRL_RESET_FIFO);
@@ -773,6 +879,7 @@ static void mpc52xx_fec_reset(struct net_device *dev)
 
 /* ethtool interface */
 
+<<<<<<< HEAD
 static int mpc52xx_fec_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
@@ -793,6 +900,8 @@ static int mpc52xx_fec_set_settings(struct net_device *dev, struct ethtool_cmd *
 	return phy_ethtool_sset(priv->phydev, cmd);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 mpc52xx_fec_get_msglevel(struct net_device *dev)
 {
 	struct mpc52xx_fec_priv *priv = netdev_priv(dev);
@@ -806,6 +915,7 @@ static void mpc52xx_fec_set_msglevel(struct net_device *dev, u32 level)
 }
 
 static const struct ethtool_ops mpc52xx_fec_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings = mpc52xx_fec_get_settings,
 	.set_settings = mpc52xx_fec_set_settings,
 	.get_link = ethtool_op_get_link,
@@ -824,6 +934,17 @@ static int mpc52xx_fec_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 	return phy_mii_ioctl(priv->phydev, rq, cmd);
 }
 
+=======
+	.get_link = ethtool_op_get_link,
+	.get_msglevel = mpc52xx_fec_get_msglevel,
+	.set_msglevel = mpc52xx_fec_set_msglevel,
+	.get_ts_info = ethtool_op_get_ts_info,
+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+};
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops mpc52xx_fec_netdev_ops = {
 	.ndo_open = mpc52xx_fec_open,
 	.ndo_stop = mpc52xx_fec_close,
@@ -831,8 +952,12 @@ static const struct net_device_ops mpc52xx_fec_netdev_ops = {
 	.ndo_set_rx_mode = mpc52xx_fec_set_multicast_list,
 	.ndo_set_mac_address = mpc52xx_fec_set_mac_address,
 	.ndo_validate_addr = eth_validate_addr,
+<<<<<<< HEAD
 	.ndo_do_ioctl = mpc52xx_fec_ioctl,
 	.ndo_change_mtu = eth_change_mtu,
+=======
+	.ndo_eth_ioctl = phy_do_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout = mpc52xx_fec_tx_timeout,
 	.ndo_get_stats = mpc52xx_fec_get_stats,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -844,7 +969,11 @@ static const struct net_device_ops mpc52xx_fec_netdev_ops = {
 /* OF Driver                                                                */
 /* ======================================================================== */
 
+<<<<<<< HEAD
 static int __devinit mpc52xx_fec_probe(struct platform_device *op)
+=======
+static int mpc52xx_fec_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rv;
 	struct net_device *ndev;
@@ -852,6 +981,10 @@ static int __devinit mpc52xx_fec_probe(struct platform_device *op)
 	struct resource mem;
 	const u32 *prop;
 	int prop_size;
+<<<<<<< HEAD
+=======
+	struct device_node *np = op->dev.of_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	phys_addr_t rx_fifo;
 	phys_addr_t tx_fifo;
@@ -865,6 +998,7 @@ static int __devinit mpc52xx_fec_probe(struct platform_device *op)
 	priv->ndev = ndev;
 
 	/* Reserve FEC control zone */
+<<<<<<< HEAD
 	rv = of_address_to_resource(op->dev.of_node, 0, &mem);
 	if (rv) {
 		printk(KERN_ERR DRIVER_NAME ": "
@@ -874,6 +1008,15 @@ static int __devinit mpc52xx_fec_probe(struct platform_device *op)
 	if (resource_size(&mem) < sizeof(struct mpc52xx_fec)) {
 		printk(KERN_ERR DRIVER_NAME
 		       " - invalid resource size (%lx < %x), check mpc52xx_devices.c\n",
+=======
+	rv = of_address_to_resource(np, 0, &mem);
+	if (rv) {
+		pr_err("Error while parsing device node resource\n");
+		goto err_netdev;
+	}
+	if (resource_size(&mem) < sizeof(struct mpc52xx_fec)) {
+		pr_err("invalid resource size (%lx < %x), check mpc52xx_devices.c\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       (unsigned long)resource_size(&mem),
 		       sizeof(struct mpc52xx_fec));
 		rv = -EINVAL;
@@ -911,14 +1054,22 @@ static int __devinit mpc52xx_fec_probe(struct platform_device *op)
 	priv->tx_dmatsk = bcom_fec_tx_init(FEC_TX_NUM_BD, tx_fifo);
 
 	if (!priv->rx_dmatsk || !priv->tx_dmatsk) {
+<<<<<<< HEAD
 		printk(KERN_ERR DRIVER_NAME ": Can not init SDMA tasks\n" );
+=======
+		pr_err("Can not init SDMA tasks\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rv = -ENOMEM;
 		goto err_rx_tx_dmatsk;
 	}
 
 	/* Get the IRQ we need one by one */
 		/* Control */
+<<<<<<< HEAD
 	ndev->irq = irq_of_parse_and_map(op->dev.of_node, 0);
+=======
+	ndev->irq = irq_of_parse_and_map(np, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* RX */
 	priv->r_irq = bcom_get_task_irq(priv->rx_dmatsk);
@@ -926,11 +1077,41 @@ static int __devinit mpc52xx_fec_probe(struct platform_device *op)
 		/* TX */
 	priv->t_irq = bcom_get_task_irq(priv->tx_dmatsk);
 
+<<<<<<< HEAD
 	/* MAC address init */
 	if (!is_zero_ether_addr(mpc52xx_fec_mac_addr))
 		memcpy(ndev->dev_addr, mpc52xx_fec_mac_addr, 6);
 	else
 		mpc52xx_fec_get_paddr(ndev, ndev->dev_addr);
+=======
+	/*
+	 * MAC address init:
+	 *
+	 * First try to read MAC address from DT
+	 */
+	rv = of_get_ethdev_address(np, ndev);
+	if (rv) {
+		struct mpc52xx_fec __iomem *fec = priv->fec;
+		u8 addr[ETH_ALEN] __aligned(4);
+
+		/*
+		 * If the MAC addresse is not provided via DT then read
+		 * it back from the controller regs
+		 */
+		*(u32 *)(&addr[0]) = in_be32(&fec->paddr1);
+		*(u16 *)(&addr[4]) = in_be32(&fec->paddr2) >> 16;
+		eth_hw_addr_set(ndev, addr);
+	}
+
+	/*
+	 * Check if the MAC address is valid, if not get a random one
+	 */
+	if (!is_valid_ether_addr(ndev->dev_addr)) {
+		eth_hw_addr_random(ndev);
+		dev_warn(&ndev->dev, "using random MAC address %pM\n",
+			 ndev->dev_addr);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	priv->msg_enable = netif_msg_init(debug, MPC52xx_MESSAGES_DEFAULT);
 
@@ -941,20 +1122,34 @@ static int __devinit mpc52xx_fec_probe(struct platform_device *op)
 	/* Start with safe defaults for link connection */
 	priv->speed = 100;
 	priv->duplex = DUPLEX_HALF;
+<<<<<<< HEAD
 	priv->mdio_speed = ((mpc5xxx_get_bus_frequency(op->dev.of_node) >> 20) / 5) << 1;
 
 	/* The current speed preconfigures the speed of the MII link */
 	prop = of_get_property(op->dev.of_node, "current-speed", &prop_size);
+=======
+	priv->mdio_speed = ((mpc5xxx_get_bus_frequency(&op->dev) >> 20) / 5) << 1;
+
+	/* The current speed preconfigures the speed of the MII link */
+	prop = of_get_property(np, "current-speed", &prop_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (prop && (prop_size >= sizeof(u32) * 2)) {
 		priv->speed = prop[0];
 		priv->duplex = prop[1] ? DUPLEX_FULL : DUPLEX_HALF;
 	}
 
 	/* If there is a phy handle, then get the PHY node */
+<<<<<<< HEAD
 	priv->phy_node = of_parse_phandle(op->dev.of_node, "phy-handle", 0);
 
 	/* the 7-wire property means don't use MII mode */
 	if (of_find_property(op->dev.of_node, "fsl,7-wire-mode", NULL)) {
+=======
+	priv->phy_node = of_parse_phandle(np, "phy-handle", 0);
+
+	/* the 7-wire property means don't use MII mode */
+	if (of_property_read_bool(np, "fsl,7-wire-mode")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv->seven_wire_mode = 1;
 		dev_info(&ndev->dev, "using 7-wire PHY mode\n");
 	}
@@ -968,7 +1163,13 @@ static int __devinit mpc52xx_fec_probe(struct platform_device *op)
 		goto err_node;
 
 	/* We're done ! */
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, ndev);
+=======
+	platform_set_drvdata(op, ndev);
+	netdev_info(ndev, "%pOF MAC %pM\n",
+		    op->dev.of_node, ndev->dev_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -989,19 +1190,31 @@ err_netdev:
 	return rv;
 }
 
+<<<<<<< HEAD
 static int
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 mpc52xx_fec_remove(struct platform_device *op)
 {
 	struct net_device *ndev;
 	struct mpc52xx_fec_priv *priv;
 
+<<<<<<< HEAD
 	ndev = dev_get_drvdata(&op->dev);
+=======
+	ndev = platform_get_drvdata(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv = netdev_priv(ndev);
 
 	unregister_netdev(ndev);
 
+<<<<<<< HEAD
 	if (priv->phy_node)
 		of_node_put(priv->phy_node);
+=======
+	of_node_put(priv->phy_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->phy_node = NULL;
 
 	irq_dispose_mapping(ndev->irq);
@@ -1014,15 +1227,22 @@ mpc52xx_fec_remove(struct platform_device *op)
 	release_mem_region(ndev->base_addr, sizeof(struct mpc52xx_fec));
 
 	free_netdev(ndev);
+<<<<<<< HEAD
 
 	dev_set_drvdata(&op->dev, NULL);
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
 static int mpc52xx_fec_of_suspend(struct platform_device *op, pm_message_t state)
 {
+<<<<<<< HEAD
 	struct net_device *dev = dev_get_drvdata(&op->dev);
+=======
+	struct net_device *dev = platform_get_drvdata(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_running(dev))
 		mpc52xx_fec_close(dev);
@@ -1032,7 +1252,11 @@ static int mpc52xx_fec_of_suspend(struct platform_device *op, pm_message_t state
 
 static int mpc52xx_fec_of_resume(struct platform_device *op)
 {
+<<<<<<< HEAD
 	struct net_device *dev = dev_get_drvdata(&op->dev);
+=======
+	struct net_device *dev = platform_get_drvdata(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpc52xx_fec_hw_init(dev);
 	mpc52xx_fec_reset_stats(dev);
@@ -1044,7 +1268,11 @@ static int mpc52xx_fec_of_resume(struct platform_device *op)
 }
 #endif
 
+<<<<<<< HEAD
 static struct of_device_id mpc52xx_fec_match[] = {
+=======
+static const struct of_device_id mpc52xx_fec_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "fsl,mpc5200b-fec", },
 	{ .compatible = "fsl,mpc5200-fec", },
 	{ .compatible = "mpc5200-fec", },
@@ -1056,11 +1284,18 @@ MODULE_DEVICE_TABLE(of, mpc52xx_fec_match);
 static struct platform_driver mpc52xx_fec_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = mpc52xx_fec_match,
 	},
 	.probe		= mpc52xx_fec_probe,
 	.remove		= mpc52xx_fec_remove,
+=======
+		.of_match_table = mpc52xx_fec_match,
+	},
+	.probe		= mpc52xx_fec_probe,
+	.remove_new	= mpc52xx_fec_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= mpc52xx_fec_of_suspend,
 	.resume		= mpc52xx_fec_of_resume,
@@ -1072,6 +1307,7 @@ static struct platform_driver mpc52xx_fec_driver = {
 /* Module                                                                   */
 /* ======================================================================== */
 
+<<<<<<< HEAD
 static int __init
 mpc52xx_fec_init(void)
 {
@@ -1084,15 +1320,32 @@ mpc52xx_fec_init(void)
 	}
 #endif
 	return platform_driver_register(&mpc52xx_fec_driver);
+=======
+static struct platform_driver * const drivers[] = {
+#ifdef CONFIG_FEC_MPC52xx_MDIO
+	&mpc52xx_fec_mdio_driver,
+#endif
+	&mpc52xx_fec_driver,
+};
+
+static int __init
+mpc52xx_fec_init(void)
+{
+	return platform_register_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit
 mpc52xx_fec_exit(void)
 {
+<<<<<<< HEAD
 	platform_driver_unregister(&mpc52xx_fec_driver);
 #ifdef CONFIG_FEC_MPC52xx_MDIO
 	platform_driver_unregister(&mpc52xx_fec_mdio_driver);
 #endif
+=======
+	platform_unregister_drivers(drivers, ARRAY_SIZE(drivers));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 

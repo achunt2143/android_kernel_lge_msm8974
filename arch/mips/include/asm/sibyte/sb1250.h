@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000, 2001, 2002, 2003 Broadcom Corporation
  *
@@ -14,6 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (C) 2000, 2001, 2002, 2003 Broadcom Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_SIBYTE_SB1250_H
@@ -27,8 +33,13 @@
 
 #define SB1250_NR_IRQS 64
 
+<<<<<<< HEAD
 #define BCM1480_NR_IRQS                 128
 #define BCM1480_NR_IRQS_HALF            64
+=======
+#define BCM1480_NR_IRQS			128
+#define BCM1480_NR_IRQS_HALF		64
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SB1250_DUART_MINOR_BASE		64
 
@@ -45,7 +56,10 @@ extern unsigned int soc_type;
 extern unsigned int periph_rev;
 extern unsigned int zbbus_mhz;
 
+<<<<<<< HEAD
 extern void sb1250_time_init(void);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void sb1250_mask_irq(int cpu, int irq);
 extern void sb1250_unmask_irq(int cpu, int irq);
 

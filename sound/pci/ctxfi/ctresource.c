@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
  *
@@ -5,6 +6,12 @@
  * See the COPYING file included in the main directory of this source
  * distribution for the license terms and conditions.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @File	ctresource.c
  *
  * @Brief
@@ -12,7 +19,10 @@
  *
  * @Author	Liu Chun
  * @Date 	May 15 2008
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ctresource.h"
@@ -96,7 +106,11 @@ int mgr_put_resource(struct rsc_mgr *mgr, unsigned int n, unsigned int idx)
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned char offset_in_audio_slot_block[NUM_RSCTYP] = {
+=======
+static const unsigned char offset_in_audio_slot_block[NUM_RSCTYP] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* SRC channel is at Audio Ring slot 1 every 16 slots. */
 	[SRC]		= 0x1,
 	[AMIXER]	= 0x4,
@@ -113,12 +127,17 @@ static int audio_ring_slot(const struct rsc *rsc)
     return (rsc->conj << 4) + offset_in_audio_slot_block[rsc->type];
 }
 
+<<<<<<< HEAD
 static int rsc_next_conj(struct rsc *rsc)
+=======
+static void rsc_next_conj(struct rsc *rsc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 	for (i = 0; (i < 8) && (!(rsc->msr & (0x1 << i))); )
 		i++;
 	rsc->conj += (AUDIO_SLOT_BLOCK_NUM >> i);
+<<<<<<< HEAD
 	return rsc->conj;
 }
 
@@ -128,13 +147,28 @@ static int rsc_master(struct rsc *rsc)
 }
 
 static struct rsc_ops rsc_generic_ops = {
+=======
+}
+
+static void rsc_master(struct rsc *rsc)
+{
+	rsc->conj = rsc->idx;
+}
+
+static const struct rsc_ops rsc_generic_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.index		= rsc_index,
 	.output_slot	= audio_ring_slot,
 	.master		= rsc_master,
 	.next_conj	= rsc_next_conj,
 };
 
+<<<<<<< HEAD
 int rsc_init(struct rsc *rsc, u32 idx, enum RSCTYP type, u32 msr, void *hw)
+=======
+int
+rsc_init(struct rsc *rsc, u32 idx, enum RSCTYP type, u32 msr, struct hw *hw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 
@@ -151,25 +185,42 @@ int rsc_init(struct rsc *rsc, u32 idx, enum RSCTYP type, u32 msr, void *hw)
 
 	switch (type) {
 	case SRC:
+<<<<<<< HEAD
 		err = ((struct hw *)hw)->src_rsc_get_ctrl_blk(&rsc->ctrl_blk);
 		break;
 	case AMIXER:
 		err = ((struct hw *)hw)->
 				amixer_rsc_get_ctrl_blk(&rsc->ctrl_blk);
+=======
+		err = hw->src_rsc_get_ctrl_blk(&rsc->ctrl_blk);
+		break;
+	case AMIXER:
+		err = hw->amixer_rsc_get_ctrl_blk(&rsc->ctrl_blk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SRCIMP:
 	case SUM:
 	case DAIO:
 		break;
 	default:
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "ctxfi: Invalid resource type value %d!\n", type);
+=======
+		dev_err(((struct hw *)hw)->card->dev,
+			"Invalid resource type value %d!\n", type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "ctxfi: Failed to get resource control block!\n");
+=======
+		dev_err(((struct hw *)hw)->card->dev,
+			"Failed to get resource control block!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -181,19 +232,32 @@ int rsc_uninit(struct rsc *rsc)
 	if ((NULL != rsc->hw) && (NULL != rsc->ctrl_blk)) {
 		switch (rsc->type) {
 		case SRC:
+<<<<<<< HEAD
 			((struct hw *)rsc->hw)->
 				src_rsc_put_ctrl_blk(rsc->ctrl_blk);
 			break;
 		case AMIXER:
 			((struct hw *)rsc->hw)->
 				amixer_rsc_put_ctrl_blk(rsc->ctrl_blk);
+=======
+			rsc->hw->src_rsc_put_ctrl_blk(rsc->ctrl_blk);
+			break;
+		case AMIXER:
+			rsc->hw->amixer_rsc_put_ctrl_blk(rsc->ctrl_blk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case SUM:
 		case DAIO:
 			break;
 		default:
+<<<<<<< HEAD
 			printk(KERN_ERR "ctxfi: "
 			       "Invalid resource type value %d!\n", rsc->type);
+=======
+			dev_err(((struct hw *)rsc->hw)->card->dev,
+				"Invalid resource type value %d!\n",
+				rsc->type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -208,6 +272,7 @@ int rsc_uninit(struct rsc *rsc)
 }
 
 int rsc_mgr_init(struct rsc_mgr *mgr, enum RSCTYP type,
+<<<<<<< HEAD
 		 unsigned int amount, void *hw_obj)
 {
 	int err = 0;
@@ -216,6 +281,15 @@ int rsc_mgr_init(struct rsc_mgr *mgr, enum RSCTYP type,
 	mgr->type = NUM_RSCTYP;
 
 	mgr->rscs = kzalloc(((amount + 8 - 1) / 8), GFP_KERNEL);
+=======
+		 unsigned int amount, struct hw *hw)
+{
+	int err = 0;
+
+	mgr->type = NUM_RSCTYP;
+
+	mgr->rscs = kzalloc(DIV_ROUND_UP(amount, 8), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mgr->rscs)
 		return -ENOMEM;
 
@@ -235,15 +309,25 @@ int rsc_mgr_init(struct rsc_mgr *mgr, enum RSCTYP type,
 	case SUM:
 		break;
 	default:
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "ctxfi: Invalid resource type value %d!\n", type);
+=======
+		dev_err(hw->card->dev,
+			"Invalid resource type value %d!\n", type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto error;
 	}
 
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "ctxfi: Failed to get manager control block!\n");
+=======
+		dev_err(hw->card->dev,
+			"Failed to get manager control block!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
@@ -260,14 +344,20 @@ error:
 
 int rsc_mgr_uninit(struct rsc_mgr *mgr)
 {
+<<<<<<< HEAD
 	if (NULL != mgr->rscs) {
 		kfree(mgr->rscs);
 		mgr->rscs = NULL;
 	}
+=======
+	kfree(mgr->rscs);
+	mgr->rscs = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((NULL != mgr->hw) && (NULL != mgr->ctrl_blk)) {
 		switch (mgr->type) {
 		case SRC:
+<<<<<<< HEAD
 			((struct hw *)mgr->hw)->
 				src_mgr_put_ctrl_blk(mgr->ctrl_blk);
 			break;
@@ -282,12 +372,30 @@ int rsc_mgr_uninit(struct rsc_mgr *mgr)
 		case DAIO:
 			((struct hw *)mgr->hw)->
 				daio_mgr_put_ctrl_blk(mgr->ctrl_blk);
+=======
+			mgr->hw->src_mgr_put_ctrl_blk(mgr->ctrl_blk);
+			break;
+		case SRCIMP:
+			mgr->hw->srcimp_mgr_put_ctrl_blk(mgr->ctrl_blk);
+			break;
+		case AMIXER:
+			mgr->hw->amixer_mgr_put_ctrl_blk(mgr->ctrl_blk);
+			break;
+		case DAIO:
+			mgr->hw->daio_mgr_put_ctrl_blk(mgr->ctrl_blk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case SUM:
 			break;
 		default:
+<<<<<<< HEAD
 			printk(KERN_ERR "ctxfi: "
 			       "Invalid resource type value %d!\n", mgr->type);
+=======
+			dev_err(((struct hw *)mgr->hw)->card->dev,
+				"Invalid resource type value %d!\n",
+				mgr->type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 

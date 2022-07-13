@@ -1,18 +1,38 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/types.h>
 #include <linux/mm.h>
 #include <linux/fs.h>
 #include <linux/miscdevice.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/init.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/capability.h>
 
 #include <xen/xen.h>
 #include <xen/page.h>
+<<<<<<< HEAD
 #include <xen/xenbus_dev.h>
 
 #include "xenbus_comms.h"
 
 MODULE_LICENSE("GPL");
+=======
+#include <xen/xenbus.h>
+#include <xen/xenbus_dev.h>
+#include <xen/grant_table.h>
+#include <xen/events.h>
+#include <asm/xen/hypervisor.h>
+
+#include "xenbus.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int xenbus_backend_open(struct inode *inode, struct file *filp)
 {
@@ -22,12 +42,62 @@ static int xenbus_backend_open(struct inode *inode, struct file *filp)
 	return nonseekable_open(inode, filp);
 }
 
+<<<<<<< HEAD
 static long xenbus_backend_ioctl(struct file *file, unsigned int cmd, unsigned long data)
+=======
+static long xenbus_alloc(domid_t domid)
+{
+	struct evtchn_alloc_unbound arg;
+	int err = -EEXIST;
+
+	xs_suspend();
+
+	/* If xenstored_ready is nonzero, that means we have already talked to
+	 * xenstore and set up watches. These watches will be restored by
+	 * xs_resume, but that requires communication over the port established
+	 * below that is not visible to anyone until the ioctl returns.
+	 *
+	 * This can be resolved by splitting the ioctl into two parts
+	 * (postponing the resume until xenstored is active) but this is
+	 * unnecessarily complex for the intended use where xenstored is only
+	 * started once - so return -EEXIST if it's already running.
+	 */
+	if (xenstored_ready)
+		goto out_err;
+
+	gnttab_grant_foreign_access_ref(GNTTAB_RESERVED_XENSTORE, domid,
+			virt_to_gfn(xen_store_interface), 0 /* writable */);
+
+	arg.dom = DOMID_SELF;
+	arg.remote_dom = domid;
+
+	err = HYPERVISOR_event_channel_op(EVTCHNOP_alloc_unbound, &arg);
+	if (err)
+		goto out_err;
+
+	if (xen_store_evtchn > 0)
+		xb_deinit_comms();
+
+	xen_store_evtchn = arg.port;
+
+	xs_resume();
+
+	return arg.port;
+
+ out_err:
+	xs_suspend_cancel();
+	return err;
+}
+
+static long xenbus_backend_ioctl(struct file *file, unsigned int cmd,
+				 unsigned long data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
 	switch (cmd) {
+<<<<<<< HEAD
 		case IOCTL_XENBUS_BACKEND_EVTCHN:
 			if (xen_store_evtchn > 0)
 				return xen_store_evtchn;
@@ -35,6 +105,16 @@ static long xenbus_backend_ioctl(struct file *file, unsigned int cmd, unsigned l
 
 		default:
 			return -ENOTTY;
+=======
+	case IOCTL_XENBUS_BACKEND_EVTCHN:
+		if (xen_store_evtchn > 0)
+			return xen_store_evtchn;
+		return -ENODEV;
+	case IOCTL_XENBUS_BACKEND_SETUP:
+		return xenbus_alloc(data);
+	default:
+		return -ENOTTY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -56,7 +136,11 @@ static int xenbus_backend_mmap(struct file *file, struct vm_area_struct *vma)
 	return 0;
 }
 
+<<<<<<< HEAD
 const struct file_operations xenbus_backend_fops = {
+=======
+static const struct file_operations xenbus_backend_fops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open = xenbus_backend_open,
 	.mmap = xenbus_backend_mmap,
 	.unlocked_ioctl = xenbus_backend_ioctl,
@@ -77,6 +161,7 @@ static int __init xenbus_backend_init(void)
 
 	err = misc_register(&xenbus_backend_dev);
 	if (err)
+<<<<<<< HEAD
 		printk(KERN_ERR "Could not register xenbus backend device\n");
 	return err;
 }
@@ -88,3 +173,9 @@ static void __exit xenbus_backend_exit(void)
 
 module_init(xenbus_backend_init);
 module_exit(xenbus_backend_exit);
+=======
+		pr_err("Could not register xenbus backend device\n");
+	return err;
+}
+device_initcall(xenbus_backend_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

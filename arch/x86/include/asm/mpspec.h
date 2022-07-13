@@ -1,13 +1,24 @@
+<<<<<<< HEAD
 #ifndef _ASM_X86_MPSPEC_H
 #define _ASM_X86_MPSPEC_H
 
 #include <linux/init.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_X86_MPSPEC_H
+#define _ASM_X86_MPSPEC_H
+
+#include <linux/types.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mpspec_def.h>
 #include <asm/x86_init.h>
 #include <asm/apicdef.h>
 
+<<<<<<< HEAD
 extern int apic_version[];
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int pic_mode;
 
 #ifdef CONFIG_X86_32
@@ -24,6 +35,7 @@ extern int pic_mode;
 
 #define MAX_IRQ_SOURCES		256
 
+<<<<<<< HEAD
 extern unsigned int def_to_bigsmp;
 
 #ifdef CONFIG_X86_NUMAQ
@@ -32,6 +44,8 @@ extern int mp_bus_id_to_local[MAX_MP_BUSSES];
 extern int quad_local_to_mp_bus_id [NR_CPUS/4][4];
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else /* CONFIG_X86_64: */
 
 #define MAX_MP_BUSSES		256
@@ -40,16 +54,25 @@ extern int quad_local_to_mp_bus_id [NR_CPUS/4][4];
 
 #endif /* CONFIG_X86_64 */
 
+<<<<<<< HEAD
 #if defined(CONFIG_MCA) || defined(CONFIG_EISA)
+=======
+#ifdef CONFIG_EISA
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int mp_bus_id_to_type[MAX_MP_BUSSES];
 #endif
 
 extern DECLARE_BITMAP(mp_bus_not_pci, MAX_MP_BUSSES);
 
+<<<<<<< HEAD
 extern unsigned int boot_cpu_physical_apicid;
 extern unsigned int max_physical_apicid;
 extern int mpc_default_type;
 extern unsigned long mp_lapic_addr;
+=======
+extern u32 boot_cpu_physical_apicid;
+extern u8 boot_cpu_apic_version;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_X86_LOCAL_APIC
 extern int smp_found_config;
@@ -57,6 +80,7 @@ extern int smp_found_config;
 # define smp_found_config 0
 #endif
 
+<<<<<<< HEAD
 static inline void get_smp_config(void)
 {
 	x86_init.mpparse.get_smp_config(0);
@@ -172,4 +196,33 @@ extern int generic_mps_oem_check(struct mpc_table *, char *, char *);
 
 extern int default_acpi_madt_oem_check(char *, char *);
 
+=======
+#ifdef CONFIG_X86_MPPARSE
+extern void e820__memblock_alloc_reserved_mpc_new(void);
+extern int enable_update_mptable;
+extern void mpparse_find_mptable(void);
+extern void mpparse_parse_early_smp_config(void);
+extern void mpparse_parse_smp_config(void);
+#else
+static inline void e820__memblock_alloc_reserved_mpc_new(void) { }
+#define enable_update_mptable		0
+#define mpparse_find_mptable		x86_init_noop
+#define mpparse_parse_early_smp_config	x86_init_noop
+#define mpparse_parse_smp_config	x86_init_noop
+#endif
+
+extern DECLARE_BITMAP(phys_cpu_present_map, MAX_LOCAL_APIC);
+
+static inline void reset_phys_cpu_present_map(u32 apicid)
+{
+	bitmap_zero(phys_cpu_present_map, MAX_LOCAL_APIC);
+	set_bit(apicid, phys_cpu_present_map);
+}
+
+static inline void copy_phys_cpu_present_map(unsigned long *dst)
+{
+	bitmap_copy(dst, phys_cpu_present_map, MAX_LOCAL_APIC);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_MPSPEC_H */

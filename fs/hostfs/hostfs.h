@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 #ifndef __UM_FS_HOSTFS
 #define __UM_FS_HOSTFS
 
 #include "os.h"
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __UM_FS_HOSTFS
+#define __UM_FS_HOSTFS
+
+#include <os.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are exactly the same definitions as in fs.h, but the names are
@@ -18,7 +26,11 @@
 #define HOSTFS_ATTR_ATIME_SET	128
 #define HOSTFS_ATTR_MTIME_SET	256
 
+<<<<<<< HEAD
 /* These two are unused by hostfs. */
+=======
+/* This one is unused by hostfs. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HOSTFS_ATTR_FORCE	512	/* Not a change, but a change it */
 #define HOSTFS_ATTR_ATTR_FLAG	1024
 
@@ -36,6 +48,7 @@
  * is on, and remove the appropriate bits from attr->ia_mode (attr is a
  * "struct iattr *"). -BlaisorBlade
  */
+<<<<<<< HEAD
 
 struct hostfs_iattr {
 	unsigned int	ia_valid;
@@ -46,6 +59,22 @@ struct hostfs_iattr {
 	struct timespec	ia_atime;
 	struct timespec	ia_mtime;
 	struct timespec	ia_ctime;
+=======
+struct hostfs_timespec {
+	long long tv_sec;
+	long long tv_nsec;
+};
+
+struct hostfs_iattr {
+	unsigned int		ia_valid;
+	unsigned short		ia_mode;
+	uid_t			ia_uid;
+	gid_t			ia_gid;
+	loff_t			ia_size;
+	struct hostfs_timespec	ia_atime;
+	struct hostfs_timespec	ia_mtime;
+	struct hostfs_timespec	ia_ctime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct hostfs_stat {
@@ -55,18 +84,31 @@ struct hostfs_stat {
 	unsigned int uid;
 	unsigned int gid;
 	unsigned long long size;
+<<<<<<< HEAD
 	struct timespec atime, mtime, ctime;
+=======
+	struct hostfs_timespec atime, mtime, ctime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int blksize;
 	unsigned long long blocks;
 	unsigned int maj;
 	unsigned int min;
+<<<<<<< HEAD
+=======
+	dev_t dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern int stat_file(const char *path, struct hostfs_stat *p, int fd);
 extern int access_file(char *path, int r, int w, int x);
 extern int open_file(char *path, int r, int w, int append);
 extern void *open_dir(char *path, int *err_out);
+<<<<<<< HEAD
 extern char *read_dir(void *stream, unsigned long long *pos,
+=======
+extern void seek_dir(void *stream, unsigned long long pos);
+extern char *read_dir(void *stream, unsigned long long *pos_out,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      unsigned long long *ino_out, int *len_out,
 		      unsigned int *type_out);
 extern void close_file(void *stream);
@@ -77,18 +119,32 @@ extern int write_file(int fd, unsigned long long *offset, const char *buf,
 		      int len);
 extern int lseek_file(int fd, long long offset, int whence);
 extern int fsync_file(int fd, int datasync);
+<<<<<<< HEAD
 extern int file_create(char *name, int ur, int uw, int ux, int gr,
 		       int gw, int gx, int or, int ow, int ox);
+=======
+extern int file_create(char *name, int mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int set_attr(const char *file, struct hostfs_iattr *attrs, int fd);
 extern int make_symlink(const char *from, const char *to);
 extern int unlink_file(const char *file);
 extern int do_mkdir(const char *file, int mode);
+<<<<<<< HEAD
 extern int do_rmdir(const char *file);
 extern int do_mknod(const char *file, int mode, unsigned int major,
 		    unsigned int minor);
 extern int link_file(const char *from, const char *to);
 extern int hostfs_do_readlink(char *file, char *buf, int size);
 extern int rename_file(char *from, char *to);
+=======
+extern int hostfs_do_rmdir(const char *file);
+extern int do_mknod(const char *file, int mode, unsigned int major,
+		    unsigned int minor);
+extern int link_file(const char *to, const char *from);
+extern int hostfs_do_readlink(char *file, char *buf, int size);
+extern int rename_file(char *from, char *to);
+extern int rename2_file(char *from, char *to, unsigned int flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int do_statfs(char *root, long *bsize_out, long long *blocks_out,
 		     long long *bfree_out, long long *bavail_out,
 		     long long *files_out, long long *ffree_out,

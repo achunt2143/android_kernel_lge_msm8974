@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2000-2003 Silicon Graphics, Inc.
  * All Rights Reserved.
@@ -36,6 +37,27 @@
 #include "xfs_buf_item.h"
 #include "xfs_trans_priv.h"
 #include "xfs_qm.h"
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2000-2003 Silicon Graphics, Inc.
+ * All Rights Reserved.
+ */
+#include "xfs.h"
+#include "xfs_fs.h"
+#include "xfs_shared.h"
+#include "xfs_format.h"
+#include "xfs_log_format.h"
+#include "xfs_trans_resv.h"
+#include "xfs_mount.h"
+#include "xfs_inode.h"
+#include "xfs_quota.h"
+#include "xfs_trans.h"
+#include "xfs_buf_item.h"
+#include "xfs_trans_priv.h"
+#include "xfs_qm.h"
+#include "xfs_log.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct xfs_dq_logitem *DQUOT_ITEM(struct xfs_log_item *lip)
 {
@@ -45,6 +67,7 @@ static inline struct xfs_dq_logitem *DQUOT_ITEM(struct xfs_log_item *lip)
 /*
  * returns the number of iovecs needed to log the given dquot item.
  */
+<<<<<<< HEAD
 STATIC uint
 xfs_qm_dquot_logitem_size(
 	struct xfs_log_item	*lip)
@@ -53,6 +76,17 @@ xfs_qm_dquot_logitem_size(
 	 * we need only two iovecs, one for the format, one for the real thing
 	 */
 	return 2;
+=======
+STATIC void
+xfs_qm_dquot_logitem_size(
+	struct xfs_log_item	*lip,
+	int			*nvecs,
+	int			*nbytes)
+{
+	*nvecs += 2;
+	*nbytes += sizeof(struct xfs_dq_logformat) +
+		   sizeof(struct xfs_disk_dquot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -61,6 +95,7 @@ xfs_qm_dquot_logitem_size(
 STATIC void
 xfs_qm_dquot_logitem_format(
 	struct xfs_log_item	*lip,
+<<<<<<< HEAD
 	struct xfs_log_iovec	*logvec)
 {
 	struct xfs_dq_logitem	*qlip = DQUOT_ITEM(lip);
@@ -75,6 +110,28 @@ xfs_qm_dquot_logitem_format(
 
 	qlip->qli_format.qlf_size = 2;
 
+=======
+	struct xfs_log_vec	*lv)
+{
+	struct xfs_disk_dquot	ddq;
+	struct xfs_dq_logitem	*qlip = DQUOT_ITEM(lip);
+	struct xfs_log_iovec	*vecp = NULL;
+	struct xfs_dq_logformat	*qlf;
+
+	qlf = xlog_prepare_iovec(lv, &vecp, XLOG_REG_TYPE_QFORMAT);
+	qlf->qlf_type = XFS_LI_DQUOT;
+	qlf->qlf_size = 2;
+	qlf->qlf_id = qlip->qli_dquot->q_id;
+	qlf->qlf_blkno = qlip->qli_dquot->q_blkno;
+	qlf->qlf_len = 1;
+	qlf->qlf_boffset = qlip->qli_dquot->q_bufoffset;
+	xlog_finish_iovec(lv, vecp, sizeof(struct xfs_dq_logformat));
+
+	xfs_dquot_to_disk(&ddq, qlip->qli_dquot);
+
+	xlog_copy_iovec(lv, &vecp, XLOG_REG_TYPE_DQUOT, &ddq,
+			sizeof(struct xfs_disk_dquot));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -109,6 +166,7 @@ xfs_qm_dquot_logitem_unpin(
 }
 
 /*
+<<<<<<< HEAD
  * Given the logitem, this writes the corresponding dquot entry to disk
  * asynchronously. This is called with the dquot entry securely locked;
  * we simply get xfs_qm_dqflush() to do the work, and unlock the dquot
@@ -153,6 +211,8 @@ xfs_qm_dquot_logitem_committed(
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This is called to wait for the given dquot to be unpinned.
  * Most of these pin/unpin routines are plagiarized from inode code.
  */
@@ -171,6 +231,7 @@ xfs_qm_dqunpin_wait(
 	wait_event(dqp->q_pinwait, (atomic_read(&dqp->q_pincount) == 0));
 }
 
+<<<<<<< HEAD
 /*
  * This is called when IOP_TRYLOCK returns XFS_ITEM_PUSHBUF to indicate that
  * the dquot is locked by us, but the flush lock isn't. So, here we are
@@ -232,6 +293,19 @@ xfs_qm_dquot_logitem_trylock(
 	struct xfs_log_item	*lip)
 {
 	struct xfs_dquot	*dqp = DQUOT_ITEM(lip)->qli_dquot;
+=======
+STATIC uint
+xfs_qm_dquot_logitem_push(
+	struct xfs_log_item	*lip,
+	struct list_head	*buffer_list)
+		__releases(&lip->li_ailp->ail_lock)
+		__acquires(&lip->li_ailp->ail_lock)
+{
+	struct xfs_dquot	*dqp = DQUOT_ITEM(lip)->qli_dquot;
+	struct xfs_buf		*bp = lip->li_buf;
+	uint			rval = XFS_ITEM_SUCCESS;
+	int			error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (atomic_read(&dqp->q_pincount) > 0)
 		return XFS_ITEM_PINNED;
@@ -239,6 +313,7 @@ xfs_qm_dquot_logitem_trylock(
 	if (!xfs_dqlock_nowait(dqp))
 		return XFS_ITEM_LOCKED;
 
+<<<<<<< HEAD
 	if (!xfs_dqflock_nowait(dqp)) {
 		/*
 		 * dquot has already been flushed to the backing buffer,
@@ -259,6 +334,45 @@ xfs_qm_dquot_logitem_trylock(
  */
 STATIC void
 xfs_qm_dquot_logitem_unlock(
+=======
+	/*
+	 * Re-check the pincount now that we stabilized the value by
+	 * taking the quota lock.
+	 */
+	if (atomic_read(&dqp->q_pincount) > 0) {
+		rval = XFS_ITEM_PINNED;
+		goto out_unlock;
+	}
+
+	/*
+	 * Someone else is already flushing the dquot.  Nothing we can do
+	 * here but wait for the flush to finish and remove the item from
+	 * the AIL.
+	 */
+	if (!xfs_dqflock_nowait(dqp)) {
+		rval = XFS_ITEM_FLUSHING;
+		goto out_unlock;
+	}
+
+	spin_unlock(&lip->li_ailp->ail_lock);
+
+	error = xfs_qm_dqflush(dqp, &bp);
+	if (!error) {
+		if (!xfs_buf_delwri_queue(bp, buffer_list))
+			rval = XFS_ITEM_FLUSHING;
+		xfs_buf_relse(bp);
+	} else if (error == -EAGAIN)
+		rval = XFS_ITEM_LOCKED;
+
+	spin_lock(&lip->li_ailp->ail_lock);
+out_unlock:
+	xfs_dqunlock(dqp);
+	return rval;
+}
+
+STATIC void
+xfs_qm_dquot_logitem_release(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct xfs_log_item	*lip)
 {
 	struct xfs_dquot	*dqp = DQUOT_ITEM(lip)->qli_dquot;
@@ -266,11 +380,14 @@ xfs_qm_dquot_logitem_unlock(
 	ASSERT(XFS_DQ_IS_LOCKED(dqp));
 
 	/*
+<<<<<<< HEAD
 	 * Clear the transaction pointer in the dquot
 	 */
 	dqp->q_transp = NULL;
 
 	/*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * dquots are never 'held' from getting unlocked at the end of
 	 * a transaction.  Their locking and unlocking is hidden inside the
 	 * transaction layer, within trans_commit. Hence, no LI_HOLD flag
@@ -279,6 +396,7 @@ xfs_qm_dquot_logitem_unlock(
 	xfs_dqunlock(dqp);
 }
 
+<<<<<<< HEAD
 /*
  * this needs to stamp an lsn into the dquot, I think.
  * rpc's that look at user dquot's would then have to
@@ -294,17 +412,33 @@ xfs_qm_dquot_logitem_committing(
 /*
  * This is the ops vector for dquots
  */
+=======
+STATIC void
+xfs_qm_dquot_logitem_committing(
+	struct xfs_log_item	*lip,
+	xfs_csn_t		seq)
+{
+	return xfs_qm_dquot_logitem_release(lip);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct xfs_item_ops xfs_dquot_item_ops = {
 	.iop_size	= xfs_qm_dquot_logitem_size,
 	.iop_format	= xfs_qm_dquot_logitem_format,
 	.iop_pin	= xfs_qm_dquot_logitem_pin,
 	.iop_unpin	= xfs_qm_dquot_logitem_unpin,
+<<<<<<< HEAD
 	.iop_trylock	= xfs_qm_dquot_logitem_trylock,
 	.iop_unlock	= xfs_qm_dquot_logitem_unlock,
 	.iop_committed	= xfs_qm_dquot_logitem_committed,
 	.iop_push	= xfs_qm_dquot_logitem_push,
 	.iop_pushbuf	= xfs_qm_dquot_logitem_pushbuf,
 	.iop_committing = xfs_qm_dquot_logitem_committing
+=======
+	.iop_release	= xfs_qm_dquot_logitem_release,
+	.iop_committing	= xfs_qm_dquot_logitem_committing,
+	.iop_push	= xfs_qm_dquot_logitem_push,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -321,6 +455,7 @@ xfs_qm_dquot_logitem_init(
 	xfs_log_item_init(dqp->q_mount, &lp->qli_item, XFS_LI_DQUOT,
 					&xfs_dquot_item_ops);
 	lp->qli_dquot = dqp;
+<<<<<<< HEAD
 	lp->qli_format.qlf_type = XFS_LI_DQUOT;
 	lp->qli_format.qlf_id = be32_to_cpu(dqp->q_core.d_id);
 	lp->qli_format.qlf_blkno = dqp->q_blkno;
@@ -529,4 +664,6 @@ xfs_qm_qoff_logitem_init(
 	qf->qql_format.qf_flags = flags;
 	qf->qql_start_lip = start;
 	return qf;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

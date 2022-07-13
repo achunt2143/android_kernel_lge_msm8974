@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cryptographic API.
  *
@@ -5,6 +9,7 @@
  *
  * Copyright IBM Corp. 2007
  * Author(s): Jan Glauber (jang@de.ibm.com)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -14,18 +19,31 @@
  */
 #include <crypto/internal/hash.h>
 #include <crypto/sha.h>
+=======
+ */
+#include <crypto/internal/hash.h>
+#include <crypto/sha2.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
 #include "sha.h"
 #include "crypt_s390.h"
+=======
+#include <linux/cpufeature.h>
+#include <asm/cpacf.h>
+
+#include "sha.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int sha512_init(struct shash_desc *desc)
 {
 	struct s390_sha_ctx *ctx = shash_desc_ctx(desc);
 
+<<<<<<< HEAD
 	*(__u64 *)&ctx->state[0] = 0x6a09e667f3bcc908ULL;
 	*(__u64 *)&ctx->state[2] = 0xbb67ae8584caa73bULL;
 	*(__u64 *)&ctx->state[4] = 0x3c6ef372fe94f82bULL;
@@ -36,6 +54,18 @@ static int sha512_init(struct shash_desc *desc)
 	*(__u64 *)&ctx->state[14] = 0x5be0cd19137e2179ULL;
 	ctx->count = 0;
 	ctx->func = KIMD_SHA_512;
+=======
+	*(__u64 *)&ctx->state[0] = SHA512_H0;
+	*(__u64 *)&ctx->state[2] = SHA512_H1;
+	*(__u64 *)&ctx->state[4] = SHA512_H2;
+	*(__u64 *)&ctx->state[6] = SHA512_H3;
+	*(__u64 *)&ctx->state[8] = SHA512_H4;
+	*(__u64 *)&ctx->state[10] = SHA512_H5;
+	*(__u64 *)&ctx->state[12] = SHA512_H6;
+	*(__u64 *)&ctx->state[14] = SHA512_H7;
+	ctx->count = 0;
+	ctx->func = CPACF_KIMD_SHA_512;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -63,7 +93,11 @@ static int sha512_import(struct shash_desc *desc, const void *in)
 
 	memcpy(sctx->state, ictx->state, sizeof(ictx->state));
 	memcpy(sctx->buf, ictx->buf, sizeof(ictx->buf));
+<<<<<<< HEAD
 	sctx->func = KIMD_SHA_512;
+=======
+	sctx->func = CPACF_KIMD_SHA_512;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -79,19 +113,28 @@ static struct shash_alg sha512_alg = {
 	.base		=	{
 		.cra_name	=	"sha512",
 		.cra_driver_name=	"sha512-s390",
+<<<<<<< HEAD
 		.cra_priority	=	CRYPT_S390_PRIORITY,
 		.cra_flags	=	CRYPTO_ALG_TYPE_SHASH,
+=======
+		.cra_priority	=	300,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.cra_blocksize	=	SHA512_BLOCK_SIZE,
 		.cra_module	=	THIS_MODULE,
 	}
 };
 
+<<<<<<< HEAD
 MODULE_ALIAS("sha512");
+=======
+MODULE_ALIAS_CRYPTO("sha512");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int sha384_init(struct shash_desc *desc)
 {
 	struct s390_sha_ctx *ctx = shash_desc_ctx(desc);
 
+<<<<<<< HEAD
 	*(__u64 *)&ctx->state[0] = 0xcbbb9d5dc1059ed8ULL;
 	*(__u64 *)&ctx->state[2] = 0x629a292a367cd507ULL;
 	*(__u64 *)&ctx->state[4] = 0x9159015a3070dd17ULL;
@@ -102,6 +145,18 @@ static int sha384_init(struct shash_desc *desc)
 	*(__u64 *)&ctx->state[14] = 0x47b5481dbefa4fa4ULL;
 	ctx->count = 0;
 	ctx->func = KIMD_SHA_512;
+=======
+	*(__u64 *)&ctx->state[0] = SHA384_H0;
+	*(__u64 *)&ctx->state[2] = SHA384_H1;
+	*(__u64 *)&ctx->state[4] = SHA384_H2;
+	*(__u64 *)&ctx->state[6] = SHA384_H3;
+	*(__u64 *)&ctx->state[8] = SHA384_H4;
+	*(__u64 *)&ctx->state[10] = SHA384_H5;
+	*(__u64 *)&ctx->state[12] = SHA384_H6;
+	*(__u64 *)&ctx->state[14] = SHA384_H7;
+	ctx->count = 0;
+	ctx->func = CPACF_KIMD_SHA_512;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -118,22 +173,35 @@ static struct shash_alg sha384_alg = {
 	.base		=	{
 		.cra_name	=	"sha384",
 		.cra_driver_name=	"sha384-s390",
+<<<<<<< HEAD
 		.cra_priority	=	CRYPT_S390_PRIORITY,
 		.cra_flags	=	CRYPTO_ALG_TYPE_SHASH,
+=======
+		.cra_priority	=	300,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.cra_blocksize	=	SHA384_BLOCK_SIZE,
 		.cra_ctxsize	=	sizeof(struct s390_sha_ctx),
 		.cra_module	=	THIS_MODULE,
 	}
 };
 
+<<<<<<< HEAD
 MODULE_ALIAS("sha384");
+=======
+MODULE_ALIAS_CRYPTO("sha384");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	if (!crypt_s390_func_available(KIMD_SHA_512, CRYPT_S390_MSA))
 		return -EOPNOTSUPP;
+=======
+	if (!cpacf_query_func(CPACF_KIMD, CPACF_KIMD_SHA_512))
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((ret = crypto_register_shash(&sha512_alg)) < 0)
 		goto out;
 	if ((ret = crypto_register_shash(&sha384_alg)) < 0)
@@ -148,7 +216,11 @@ static void __exit fini(void)
 	crypto_unregister_shash(&sha384_alg);
 }
 
+<<<<<<< HEAD
 module_init(init);
+=======
+module_cpu_feature_match(S390_CPU_FEATURE_MSA, init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(fini);
 
 MODULE_LICENSE("GPL");

@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson AB 2010
  * Author:	Sjur Brendeland/sjur.brandeland@stericsson.com
  * License terms: GNU General Public License (GPL) version 2
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) ST-Ericsson AB 2010
+ * Author:	Sjur Brendeland
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
@@ -11,20 +18,35 @@
 #include <linux/errno.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <net/caif/caif_layer.h>
 #include <net/caif/cfsrvl.h>
 #include <net/caif/cfpkt.h>
+=======
+#include <linux/pkt_sched.h>
+#include <net/caif/caif_layer.h>
+#include <net/caif/cfsrvl.h>
+#include <net/caif/cfpkt.h>
+#include <net/caif/caif_dev.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SRVL_CTRL_PKT_SIZE 1
 #define SRVL_FLOW_OFF 0x81
 #define SRVL_FLOW_ON  0x80
 #define SRVL_SET_PIN  0x82
+<<<<<<< HEAD
 #define SRVL_CTRL_PKT_SIZE 1
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define container_obj(layr) container_of(layr, struct cfsrvl, layer)
 
 static void cfservl_ctrlcmd(struct cflayer *layr, enum caif_ctrlcmd ctrl,
+<<<<<<< HEAD
 				int phyid)
+=======
+			    int phyid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cfsrvl *service = container_obj(layr);
 
@@ -120,6 +142,10 @@ static int cfservl_modemcmd(struct cflayer *layr, enum caif_modemcmd ctrl)
 			info->channel_id = service->layer.id;
 			info->hdr_len = 1;
 			info->dev_info = &service->dev_info;
+<<<<<<< HEAD
+=======
+			cfpkt_set_prio(pkt, TC_PRIO_CONTROL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return layr->dn->transmit(layr->dn, pkt);
 		}
 	case CAIF_MODEMCMD_FLOW_OFF_REQ:
@@ -140,6 +166,10 @@ static int cfservl_modemcmd(struct cflayer *layr, enum caif_modemcmd ctrl)
 			info->channel_id = service->layer.id;
 			info->hdr_len = 1;
 			info->dev_info = &service->dev_info;
+<<<<<<< HEAD
+=======
+			cfpkt_set_prio(pkt, TC_PRIO_CONTROL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return layr->dn->transmit(layr->dn, pkt);
 		}
 	default:
@@ -155,10 +185,16 @@ static void cfsrvl_release(struct cflayer *layer)
 }
 
 void cfsrvl_init(struct cfsrvl *service,
+<<<<<<< HEAD
 			u8 channel_id,
 			struct dev_info *dev_info,
 			bool supports_flowctrl
 			)
+=======
+		 u8 channel_id,
+		 struct dev_info *dev_info,
+		 bool supports_flowctrl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	caif_assert(offsetof(struct cfsrvl, layer) == 0);
 	service->open = false;
@@ -204,6 +240,7 @@ void caif_free_client(struct cflayer *adap_layer)
 EXPORT_SYMBOL(caif_free_client);
 
 void caif_client_register_refcnt(struct cflayer *adapt_layer,
+<<<<<<< HEAD
 					void (*hold)(struct cflayer *lyr),
 					void (*put)(struct cflayer *lyr))
 {
@@ -211,6 +248,16 @@ void caif_client_register_refcnt(struct cflayer *adapt_layer,
 	service = container_of(adapt_layer->dn, struct cfsrvl, layer);
 
 	WARN_ON(adapt_layer == NULL || adapt_layer->dn == NULL);
+=======
+				 void (*hold)(struct cflayer *lyr),
+				 void (*put)(struct cflayer *lyr))
+{
+	struct cfsrvl *service;
+
+	if (WARN_ON(adapt_layer == NULL || adapt_layer->dn == NULL))
+		return;
+	service = container_of(adapt_layer->dn, struct cfsrvl, layer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	service->hold = hold;
 	service->put = put;
 }

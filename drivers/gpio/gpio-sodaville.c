@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  GPIO interface for Intel Sodaville SoCs.
  *
  *  Copyright (c) 2010, 2011 Intel Corporation
  *
+<<<<<<< HEAD
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License 2 as published
  *  by the Free Software Foundation.
@@ -21,6 +26,21 @@
 #include <linux/platform_device.h>
 #include <linux/of_irq.h>
 #include <linux/basic_mmio_gpio.h>
+=======
+ *  Author: Hans J. Koch <hjk@linutronix.de>
+ */
+
+#include <linux/errno.h>
+#include <linux/gpio/driver.h>
+#include <linux/init.h>
+#include <linux/interrupt.h>
+#include <linux/io.h>
+#include <linux/irq.h>
+#include <linux/kernel.h>
+#include <linux/of_irq.h>
+#include <linux/pci.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRV_NAME		"sdv_gpio"
 #define SDV_NUM_PUB_GPIOS	12
@@ -43,7 +63,11 @@ struct sdv_gpio_chip_data {
 	void __iomem *gpio_pub_base;
 	struct irq_domain *id;
 	struct irq_chip_generic *gc;
+<<<<<<< HEAD
 	struct bgpio_chip bgpio;
+=======
+	struct gpio_chip chip;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int sdv_gpio_pub_set_type(struct irq_data *d, unsigned int type)
@@ -80,18 +104,28 @@ static int sdv_gpio_pub_set_type(struct irq_data *d, unsigned int type)
 static irqreturn_t sdv_gpio_pub_irq_handler(int irq, void *data)
 {
 	struct sdv_gpio_chip_data *sd = data;
+<<<<<<< HEAD
 	u32 irq_stat = readl(sd->gpio_pub_base + GPSTR);
+=======
+	unsigned long irq_stat = readl(sd->gpio_pub_base + GPSTR);
+	int irq_bit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	irq_stat &= readl(sd->gpio_pub_base + GPIO_INT);
 	if (!irq_stat)
 		return IRQ_NONE;
 
+<<<<<<< HEAD
 	while (irq_stat) {
 		u32 irq_bit = __fls(irq_stat);
 
 		irq_stat &= ~BIT(irq_bit);
 		generic_handle_irq(irq_find_mapping(sd->id, irq_bit));
 	}
+=======
+	for_each_set_bit(irq_bit, &irq_stat, 32)
+		generic_handle_domain_irq(sd->id, irq_bit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -102,7 +136,11 @@ static int sdv_xlate(struct irq_domain *h, struct device_node *node,
 {
 	u32 line, type;
 
+<<<<<<< HEAD
 	if (node != h->of_node)
+=======
+	if (node != irq_domain_get_of_node(h))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (intsize < 2)
@@ -125,17 +163,30 @@ static int sdv_xlate(struct irq_domain *h, struct device_node *node,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irq_domain_ops irq_domain_sdv_ops = {
 	.xlate = sdv_xlate,
 };
 
 static __devinit int sdv_register_irqsupport(struct sdv_gpio_chip_data *sd,
+=======
+static const struct irq_domain_ops irq_domain_sdv_ops = {
+	.xlate = sdv_xlate,
+};
+
+static int sdv_register_irqsupport(struct sdv_gpio_chip_data *sd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct pci_dev *pdev)
 {
 	struct irq_chip_type *ct;
 	int ret;
 
+<<<<<<< HEAD
 	sd->irq_base = irq_alloc_descs(-1, 0, SDV_NUM_PUB_GPIOS, -1);
+=======
+	sd->irq_base = devm_irq_alloc_descs(&pdev->dev, -1, 0,
+					    SDV_NUM_PUB_GPIOS, -1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sd->irq_base < 0)
 		return sd->irq_base;
 
@@ -143,22 +194,39 @@ static __devinit int sdv_register_irqsupport(struct sdv_gpio_chip_data *sd,
 	writel(0, sd->gpio_pub_base + GPIO_INT);
 	writel((1 << 11) - 1, sd->gpio_pub_base + GPSTR);
 
+<<<<<<< HEAD
 	ret = request_irq(pdev->irq, sdv_gpio_pub_irq_handler, IRQF_SHARED,
 			"sdv_gpio", sd);
 	if (ret)
 		goto out_free_desc;
+=======
+	ret = devm_request_irq(&pdev->dev, pdev->irq,
+			       sdv_gpio_pub_irq_handler, IRQF_SHARED,
+			       "sdv_gpio", sd);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This gpio irq controller latches level irqs. Testing shows that if
 	 * we unmask & ACK the IRQ before the source of the interrupt is gone
 	 * then the interrupt is active again.
 	 */
+<<<<<<< HEAD
 	sd->gc = irq_alloc_generic_chip("sdv-gpio", 1, sd->irq_base,
 			sd->gpio_pub_base, handle_fasteoi_irq);
 	if (!sd->gc) {
 		ret = -ENOMEM;
 		goto out_free_irq;
 	}
+=======
+	sd->gc = devm_irq_alloc_generic_chip(&pdev->dev, "sdv-gpio", 1,
+					     sd->irq_base,
+					     sd->gpio_pub_base,
+					     handle_fasteoi_irq);
+	if (!sd->gc)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sd->gc->private = sd;
 	ct = sd->gc->chip_types;
@@ -177,6 +245,7 @@ static __devinit int sdv_register_irqsupport(struct sdv_gpio_chip_data *sd,
 	sd->id = irq_domain_add_legacy(pdev->dev.of_node, SDV_NUM_PUB_GPIOS,
 				sd->irq_base, 0, &irq_domain_sdv_ops, sd);
 	if (!sd->id)
+<<<<<<< HEAD
 		goto out_free_irq;
 	return 0;
 out_free_irq:
@@ -233,15 +302,68 @@ static int __devinit sdv_gpio_probe(struct pci_dev *pdev,
 	if (ret < 0) {
 		dev_err(&pdev->dev, "gpiochip_add() failed.\n");
 		goto unmap;
+=======
+		return -ENODEV;
+
+	return 0;
+}
+
+static int sdv_gpio_probe(struct pci_dev *pdev,
+					const struct pci_device_id *pci_id)
+{
+	struct sdv_gpio_chip_data *sd;
+	int ret;
+	u32 mux_val;
+
+	sd = devm_kzalloc(&pdev->dev, sizeof(*sd), GFP_KERNEL);
+	if (!sd)
+		return -ENOMEM;
+
+	ret = pcim_enable_device(pdev);
+	if (ret) {
+		dev_err(&pdev->dev, "can't enable device.\n");
+		return ret;
+	}
+
+	ret = pcim_iomap_regions(pdev, 1 << GPIO_BAR, DRV_NAME);
+	if (ret) {
+		dev_err(&pdev->dev, "can't alloc PCI BAR #%d\n", GPIO_BAR);
+		return ret;
+	}
+
+	sd->gpio_pub_base = pcim_iomap_table(pdev)[GPIO_BAR];
+
+	ret = of_property_read_u32(pdev->dev.of_node, "intel,muxctl", &mux_val);
+	if (!ret)
+		writel(mux_val, sd->gpio_pub_base + GPMUXCTL);
+
+	ret = bgpio_init(&sd->chip, &pdev->dev, 4,
+			sd->gpio_pub_base + GPINR, sd->gpio_pub_base + GPOUTR,
+			NULL, sd->gpio_pub_base + GPOER, NULL, 0);
+	if (ret)
+		return ret;
+
+	sd->chip.ngpio = SDV_NUM_PUB_GPIOS;
+
+	ret = devm_gpiochip_add_data(&pdev->dev, &sd->chip, sd);
+	if (ret < 0) {
+		dev_err(&pdev->dev, "gpiochip_add() failed.\n");
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ret = sdv_register_irqsupport(sd, pdev);
 	if (ret)
+<<<<<<< HEAD
 		goto unmap;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pdev, sd);
 	dev_info(&pdev->dev, "Sodaville GPIO driver registered.\n");
 	return 0;
+<<<<<<< HEAD
 
 unmap:
 	iounmap(sd->gpio_pub_base);
@@ -271,11 +393,17 @@ static void sdv_gpio_remove(struct pci_dev *pdev)
 }
 
 static struct pci_device_id sdv_gpio_pci_ids[] __devinitdata = {
+=======
+}
+
+static const struct pci_device_id sdv_gpio_pci_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_SDV_GPIO) },
 	{ 0, },
 };
 
 static struct pci_driver sdv_gpio_driver = {
+<<<<<<< HEAD
 	.name = DRV_NAME,
 	.id_table = sdv_gpio_pci_ids,
 	.probe = sdv_gpio_probe,
@@ -297,3 +425,13 @@ module_exit(sdv_gpio_exit);
 MODULE_AUTHOR("Hans J. Koch <hjk@linutronix.de>");
 MODULE_DESCRIPTION("GPIO interface for Intel Sodaville SoCs");
 MODULE_LICENSE("GPL v2");
+=======
+	.driver = {
+		.suppress_bind_attrs = true,
+	},
+	.name = DRV_NAME,
+	.id_table = sdv_gpio_pci_ids,
+	.probe = sdv_gpio_probe,
+};
+builtin_pci_driver(sdv_gpio_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

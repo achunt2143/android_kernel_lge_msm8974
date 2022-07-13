@@ -159,10 +159,14 @@ struct neofb_par {
 	unsigned char VCLK3NumeratorHigh;
 	unsigned char VCLK3Denominator;
 	unsigned char VerticalExt;
+<<<<<<< HEAD
 
 #ifdef CONFIG_MTRR
 	int mtrr;
 #endif
+=======
+	int wc_cookie;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 __iomem *mmio_vbase;
 	u8 cursorOff;
 	u8 *cursorPad;		/* Must die !! */

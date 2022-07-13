@@ -11,8 +11,11 @@
 #include <linux/mutex.h>
 #include <asm/ldt.h>
 
+<<<<<<< HEAD
 extern void ldt_host_info(void);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LDT_PAGES_MAX \
 	((LDT_ENTRIES * LDT_ENTRY_SIZE)/PAGE_SIZE)
 #define LDT_ENTRIES_PER_PAGE \

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * PCI Backend/Frontend Common Data Structures & Macros
  *
@@ -19,6 +20,12 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *
+=======
+/* SPDX-License-Identifier: MIT */
+/*
+ * PCI Backend/Frontend Common Data Structures & Macros
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   Author: Ryan Wilson <hap9@epoch.ncsc.mil>
  */
 #ifndef __XEN_PCI_COMMON_H__

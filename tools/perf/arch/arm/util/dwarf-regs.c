@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Mapping of DWARF debug register numbers into register names.
  *
  * Copyright (C) 2010 Will Deacon, ARM Ltd.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -12,6 +17,12 @@
 #ifndef __UCLIBC__
 #include <libio.h>
 #endif
+=======
+ */
+
+#include <stddef.h>
+#include <linux/stringify.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <dwarf-regs.h>
 
 struct pt_regs_dwarfnum {
@@ -19,10 +30,16 @@ struct pt_regs_dwarfnum {
 	unsigned int dwarfnum;
 };
 
+<<<<<<< HEAD
 #define STR(s) #s
 #define REG_DWARFNUM_NAME(r, num) {.name = r, .dwarfnum = num}
 #define GPR_DWARFNUM_NAME(num) \
 	{.name = STR(%r##num), .dwarfnum = num}
+=======
+#define REG_DWARFNUM_NAME(r, num) {.name = r, .dwarfnum = num}
+#define GPR_DWARFNUM_NAME(num) \
+	{.name = __stringify(%r##num), .dwarfnum = num}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define REG_DWARFNUM_END {.name = NULL, .dwarfnum = 0}
 
 /*

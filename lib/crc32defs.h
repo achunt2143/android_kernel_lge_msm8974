@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * There are multiple 16-bit CRC polynomials in common use, but this is
  * *the* standard CRC-32 polynomial, first popularized by Ethernet.
@@ -12,6 +13,9 @@
  * x^8+x^6+x^0
  */
 #define CRC32C_POLY_LE 0x82F63B78
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Try to choose an implementation variant via Kconfig */
 #ifdef CONFIG_CRC32_SLICEBY8

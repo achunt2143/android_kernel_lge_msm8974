@@ -1,18 +1,28 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/mfd/mcp-sa11x0.c
  *
  *  Copyright (C) 2001-2005 Russell King
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  SA11x0 MCP (Multimedia Communications Port) driver.
  *
  *  MCP read/write timeouts from Jordi Colomer, rehacked by rmk.
  */
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -24,7 +34,11 @@
 
 #include <mach/hardware.h>
 #include <asm/mach-types.h>
+<<<<<<< HEAD
 #include <mach/mcp.h>
+=======
+#include <linux/platform_data/mfd-mcp-sa11x0.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_NAME "sa11x0-mcp"
 
@@ -156,7 +170,11 @@ static struct mcp_ops mcp_sa11x0 = {
 
 static int mcp_sa11x0_probe(struct platform_device *dev)
 {
+<<<<<<< HEAD
 	struct mcp_plat_data *data = dev->dev.platform_data;
+=======
+	struct mcp_plat_data *data = dev_get_platdata(&dev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource *mem0, *mem1;
 	struct mcp_sa11x0 *m;
 	struct mcp *mcp;
@@ -218,15 +236,22 @@ static int mcp_sa11x0_probe(struct platform_device *dev)
 	 * rate.  This is the period for 3 64-bit frames.  Always
 	 * round this time up.
 	 */
+<<<<<<< HEAD
 	mcp->rw_timeout = (64 * 3 * 1000000 + mcp->sclk_rate - 1) /
 			  mcp->sclk_rate;
+=======
+	mcp->rw_timeout = DIV_ROUND_UP(64 * 3 * 1000000, mcp->sclk_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = mcp_host_add(mcp, data->codec_pdata);
 	if (ret == 0)
 		return 0;
 
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_ioremap:
 	iounmap(m->base1);
 	iounmap(m->base0);
@@ -239,7 +264,11 @@ static int mcp_sa11x0_probe(struct platform_device *dev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int mcp_sa11x0_remove(struct platform_device *dev)
+=======
+static void mcp_sa11x0_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mcp *mcp = platform_get_drvdata(dev);
 	struct mcp_sa11x0 *m = priv(mcp);
@@ -252,18 +281,26 @@ static int mcp_sa11x0_remove(struct platform_device *dev)
 	mem0 = platform_get_resource(dev, IORESOURCE_MEM, 0);
 	mem1 = platform_get_resource(dev, IORESOURCE_MEM, 1);
 
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcp_host_del(mcp);
 	iounmap(m->base1);
 	iounmap(m->base0);
 	mcp_host_free(mcp);
 	release_mem_region(mem1->start, resource_size(mem1));
 	release_mem_region(mem0->start, resource_size(mem0));
+<<<<<<< HEAD
 
 	return 0;
 }
 
 #ifdef CONFIG_PM_SLEEP
+=======
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mcp_sa11x0_suspend(struct device *dev)
 {
 	struct mcp_sa11x0 *m = priv(dev_get_drvdata(dev));
@@ -285,26 +322,41 @@ static int mcp_sa11x0_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static const struct dev_pm_ops mcp_sa11x0_pm_ops = {
 #ifdef CONFIG_PM_SLEEP
+=======
+
+static const struct dev_pm_ops mcp_sa11x0_pm_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend = mcp_sa11x0_suspend,
 	.freeze = mcp_sa11x0_suspend,
 	.poweroff = mcp_sa11x0_suspend,
 	.resume_noirq = mcp_sa11x0_resume,
 	.thaw_noirq = mcp_sa11x0_resume,
 	.restore_noirq = mcp_sa11x0_resume,
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_driver mcp_sa11x0_driver = {
 	.probe		= mcp_sa11x0_probe,
+<<<<<<< HEAD
 	.remove		= mcp_sa11x0_remove,
 	.driver		= {
 		.name	= DRIVER_NAME,
 		.owner	= THIS_MODULE,
 		.pm	= &mcp_sa11x0_pm_ops,
+=======
+	.remove_new	= mcp_sa11x0_remove,
+	.driver		= {
+		.name	= DRIVER_NAME,
+		.pm	= pm_sleep_ptr(&mcp_sa11x0_pm_ops),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

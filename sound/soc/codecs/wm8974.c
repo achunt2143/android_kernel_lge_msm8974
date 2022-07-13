@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8974.c  --  WM8974 ALSA Soc Audio driver
  *
  * Copyright 2006-2009 Wolfson Microelectronics PLC.
  *
  * Author: Liam Girdwood <Liam.Girdwood@wolfsonmicro.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -12,11 +17,20 @@
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
+=======
+ */
+
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/pm.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
+=======
+#include <linux/regmap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -27,6 +41,7 @@
 
 #include "wm8974.h"
 
+<<<<<<< HEAD
 static const u16 wm8974_reg[WM8974_CACHEREGNUM] = {
 	0x0000, 0x0000, 0x0000, 0x0000,
 	0x0050, 0x0000, 0x0140, 0x0000,
@@ -43,12 +58,39 @@ static const u16 wm8974_reg[WM8974_CACHEREGNUM] = {
 	0x0000, 0x0002, 0x0000, 0x0000,
 	0x0000, 0x0000, 0x0039, 0x0000,
 	0x0000,
+=======
+struct wm8974_priv {
+	unsigned int mclk;
+	unsigned int fs;
+};
+
+static const struct reg_default wm8974_reg_defaults[] = {
+	{  0, 0x0000 }, {  1, 0x0000 }, {  2, 0x0000 }, {  3, 0x0000 },
+	{  4, 0x0050 }, {  5, 0x0000 }, {  6, 0x0140 }, {  7, 0x0000 },
+	{  8, 0x0000 }, {  9, 0x0000 }, { 10, 0x0000 }, { 11, 0x00ff },
+	{ 12, 0x0000 }, { 13, 0x0000 }, { 14, 0x0100 }, { 15, 0x00ff },
+	{ 16, 0x0000 }, { 17, 0x0000 }, { 18, 0x012c }, { 19, 0x002c },
+	{ 20, 0x002c }, { 21, 0x002c }, { 22, 0x002c }, { 23, 0x0000 },
+	{ 24, 0x0032 }, { 25, 0x0000 }, { 26, 0x0000 }, { 27, 0x0000 },
+	{ 28, 0x0000 }, { 29, 0x0000 }, { 30, 0x0000 }, { 31, 0x0000 },
+	{ 32, 0x0038 }, { 33, 0x000b }, { 34, 0x0032 }, { 35, 0x0000 },
+	{ 36, 0x0008 }, { 37, 0x000c }, { 38, 0x0093 }, { 39, 0x00e9 },
+	{ 40, 0x0000 }, { 41, 0x0000 }, { 42, 0x0000 }, { 43, 0x0000 },
+	{ 44, 0x0003 }, { 45, 0x0010 }, { 46, 0x0000 }, { 47, 0x0000 },
+	{ 48, 0x0000 }, { 49, 0x0002 }, { 50, 0x0000 }, { 51, 0x0000 },
+	{ 52, 0x0000 }, { 53, 0x0000 }, { 54, 0x0039 }, { 55, 0x0000 },
+	{ 56, 0x0000 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define WM8974_POWER1_BIASEN  0x08
 #define WM8974_POWER1_BUFIOEN 0x04
 
+<<<<<<< HEAD
 #define wm8974_reset(c)	snd_soc_write(c, WM8974_RESET, 0)
+=======
+#define wm8974_reset(c)	snd_soc_component_write(c, WM8974_RESET, 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *wm8974_companding[] = {"Off", "NC", "u-law", "A-law" };
 static const char *wm8974_deemp[] = {"None", "32kHz", "44.1kHz", "48kHz" };
@@ -83,8 +125,13 @@ static const struct soc_enum wm8974_enum[] = {
 
 static const char *wm8974_auxmode_text[] = { "Buffer", "Mixer" };
 
+<<<<<<< HEAD
 static const struct soc_enum wm8974_auxmode =
 	SOC_ENUM_SINGLE(WM8974_INPUT,  3, 2, wm8974_auxmode_text);
+=======
+static SOC_ENUM_SINGLE_DECL(wm8974_auxmode,
+			    WM8974_INPUT,  3, wm8974_auxmode_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const DECLARE_TLV_DB_SCALE(digital_tlv, -12750, 50, 1);
 static const DECLARE_TLV_DB_SCALE(eq_tlv, -1200, 100, 0);
@@ -113,6 +160,7 @@ SOC_ENUM("Equaliser Function", wm8974_enum[3]),
 SOC_ENUM("EQ1 Cut Off", wm8974_enum[4]),
 SOC_SINGLE_TLV("EQ1 Volume", WM8974_EQ1,  0, 24, 1, eq_tlv),
 
+<<<<<<< HEAD
 SOC_ENUM("Equaliser EQ2 Bandwith", wm8974_enum[5]),
 SOC_ENUM("EQ2 Cut Off", wm8974_enum[6]),
 SOC_SINGLE_TLV("EQ2 Volume", WM8974_EQ2,  0, 24, 1, eq_tlv),
@@ -126,6 +174,21 @@ SOC_ENUM("EQ4 Cut Off", wm8974_enum[10]),
 SOC_SINGLE_TLV("EQ4 Volume", WM8974_EQ4,  0, 24, 1, eq_tlv),
 
 SOC_ENUM("Equaliser EQ5 Bandwith", wm8974_enum[11]),
+=======
+SOC_ENUM("Equaliser EQ2 Bandwidth", wm8974_enum[5]),
+SOC_ENUM("EQ2 Cut Off", wm8974_enum[6]),
+SOC_SINGLE_TLV("EQ2 Volume", WM8974_EQ2,  0, 24, 1, eq_tlv),
+
+SOC_ENUM("Equaliser EQ3 Bandwidth", wm8974_enum[7]),
+SOC_ENUM("EQ3 Cut Off", wm8974_enum[8]),
+SOC_SINGLE_TLV("EQ3 Volume", WM8974_EQ3,  0, 24, 1, eq_tlv),
+
+SOC_ENUM("Equaliser EQ4 Bandwidth", wm8974_enum[9]),
+SOC_ENUM("EQ4 Cut Off", wm8974_enum[10]),
+SOC_SINGLE_TLV("EQ4 Volume", WM8974_EQ4,  0, 24, 1, eq_tlv),
+
+SOC_ENUM("Equaliser EQ5 Bandwidth", wm8974_enum[11]),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 SOC_ENUM("EQ5 Cut Off", wm8974_enum[12]),
 SOC_SINGLE_TLV("EQ5 Volume", WM8974_EQ5,  0, 24, 1, eq_tlv),
 
@@ -184,7 +247,11 @@ SOC_DAPM_SINGLE("PCM Playback Switch", WM8974_MONOMIX, 0, 1, 0),
 
 /* Boost mixer */
 static const struct snd_kcontrol_new wm8974_boost_mixer[] = {
+<<<<<<< HEAD
 SOC_DAPM_SINGLE("Aux Switch", WM8974_INPPGA, 6, 1, 0),
+=======
+SOC_DAPM_SINGLE("PGA Switch", WM8974_INPPGA, 6, 1, 1),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Input PGA */
@@ -194,6 +261,7 @@ SOC_DAPM_SINGLE("MicN Switch", WM8974_INPUT, 1, 1, 0),
 SOC_DAPM_SINGLE("MicP Switch", WM8974_INPUT, 0, 1, 0),
 };
 
+<<<<<<< HEAD
 /* AUX Input boost vol */
 static const struct snd_kcontrol_new wm8974_aux_boost_controls =
 SOC_DAPM_SINGLE("Aux Volume", WM8974_ADCBOOST, 0, 7, 0);
@@ -202,6 +270,8 @@ SOC_DAPM_SINGLE("Aux Volume", WM8974_ADCBOOST, 0, 7, 0);
 static const struct snd_kcontrol_new wm8974_mic_boost_controls =
 SOC_DAPM_SINGLE("Mic Volume", WM8974_ADCBOOST, 4, 7, 0);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snd_soc_dapm_widget wm8974_dapm_widgets[] = {
 SND_SOC_DAPM_MIXER("Speaker Mixer", WM8974_POWER3, 2, 0,
 	&wm8974_speaker_mixer_controls[0],
@@ -252,8 +322,13 @@ static const struct snd_soc_dapm_route wm8974_dapm_routes[] = {
 
 	/* Boost Mixer */
 	{"ADC", NULL, "Boost Mixer"},
+<<<<<<< HEAD
 	{"Boost Mixer", "Aux Switch", "Aux Input"},
 	{"Boost Mixer", NULL, "Input PGA"},
+=======
+	{"Boost Mixer", NULL, "Aux Input"},
+	{"Boost Mixer", "PGA Switch", "Input PGA"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"Boost Mixer", NULL, "MICP"},
 
 	/* Input PGA */
@@ -318,23 +393,37 @@ static void pll_factors(struct pll_ *pll_div,
 static int wm8974_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 		int source, unsigned int freq_in, unsigned int freq_out)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
+=======
+	struct snd_soc_component *component = codec_dai->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pll_ pll_div;
 	u16 reg;
 
 	if (freq_in == 0 || freq_out == 0) {
 		/* Clock CODEC directly from MCLK */
+<<<<<<< HEAD
 		reg = snd_soc_read(codec, WM8974_CLOCK);
 		snd_soc_write(codec, WM8974_CLOCK, reg & 0x0ff);
 
 		/* Turn off PLL */
 		reg = snd_soc_read(codec, WM8974_POWER1);
 		snd_soc_write(codec, WM8974_POWER1, reg & 0x1df);
+=======
+		reg = snd_soc_component_read(component, WM8974_CLOCK);
+		snd_soc_component_write(component, WM8974_CLOCK, reg & 0x0ff);
+
+		/* Turn off PLL */
+		reg = snd_soc_component_read(component, WM8974_POWER1);
+		snd_soc_component_write(component, WM8974_POWER1, reg & 0x1df);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	pll_factors(&pll_div, freq_out, freq_in);
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8974_PLLN, (pll_div.pre_div << 4) | pll_div.n);
 	snd_soc_write(codec, WM8974_PLLK1, pll_div.k >> 18);
 	snd_soc_write(codec, WM8974_PLLK2, (pll_div.k >> 9) & 0x1ff);
@@ -345,6 +434,18 @@ static int wm8974_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 	/* Run CODEC from PLL instead of MCLK */
 	reg = snd_soc_read(codec, WM8974_CLOCK);
 	snd_soc_write(codec, WM8974_CLOCK, reg | 0x100);
+=======
+	snd_soc_component_write(component, WM8974_PLLN, (pll_div.pre_div << 4) | pll_div.n);
+	snd_soc_component_write(component, WM8974_PLLK1, pll_div.k >> 18);
+	snd_soc_component_write(component, WM8974_PLLK2, (pll_div.k >> 9) & 0x1ff);
+	snd_soc_component_write(component, WM8974_PLLK3, pll_div.k & 0x1ff);
+	reg = snd_soc_component_read(component, WM8974_POWER1);
+	snd_soc_component_write(component, WM8974_POWER1, reg | 0x020);
+
+	/* Run CODEC from PLL instead of MCLK */
+	reg = snd_soc_component_read(component, WM8974_CLOCK);
+	snd_soc_component_write(component, WM8974_CLOCK, reg | 0x100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -355,11 +456,16 @@ static int wm8974_set_dai_pll(struct snd_soc_dai *codec_dai, int pll_id,
 static int wm8974_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 		int div_id, int div)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
+=======
+	struct snd_soc_component *component = codec_dai->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 reg;
 
 	switch (div_id) {
 	case WM8974_OPCLKDIV:
+<<<<<<< HEAD
 		reg = snd_soc_read(codec, WM8974_GPIO) & 0x1cf;
 		snd_soc_write(codec, WM8974_GPIO, reg | div);
 		break;
@@ -370,6 +476,18 @@ static int wm8974_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 	case WM8974_BCLKDIV:
 		reg = snd_soc_read(codec, WM8974_CLOCK) & 0x1e3;
 		snd_soc_write(codec, WM8974_CLOCK, reg | div);
+=======
+		reg = snd_soc_component_read(component, WM8974_GPIO) & 0x1cf;
+		snd_soc_component_write(component, WM8974_GPIO, reg | div);
+		break;
+	case WM8974_MCLKDIV:
+		reg = snd_soc_component_read(component, WM8974_CLOCK) & 0x11f;
+		snd_soc_component_write(component, WM8974_CLOCK, reg | div);
+		break;
+	case WM8974_BCLKDIV:
+		reg = snd_soc_component_read(component, WM8974_CLOCK) & 0x1e3;
+		snd_soc_component_write(component, WM8974_CLOCK, reg | div);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
@@ -378,12 +496,94 @@ static int wm8974_set_dai_clkdiv(struct snd_soc_dai *codec_dai,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8974_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		unsigned int fmt)
 {
 	struct snd_soc_codec *codec = codec_dai->codec;
 	u16 iface = 0;
 	u16 clk = snd_soc_read(codec, WM8974_CLOCK) & 0x1fe;
+=======
+static unsigned int wm8974_get_mclkdiv(unsigned int f_in, unsigned int f_out,
+				       int *mclkdiv)
+{
+	unsigned int ratio = 2 * f_in / f_out;
+
+	if (ratio <= 2) {
+		*mclkdiv = WM8974_MCLKDIV_1;
+		ratio = 2;
+	} else if (ratio == 3) {
+		*mclkdiv = WM8974_MCLKDIV_1_5;
+	} else if (ratio == 4) {
+		*mclkdiv = WM8974_MCLKDIV_2;
+	} else if (ratio <= 6) {
+		*mclkdiv = WM8974_MCLKDIV_3;
+		ratio = 6;
+	} else if (ratio <= 8) {
+		*mclkdiv = WM8974_MCLKDIV_4;
+		ratio = 8;
+	} else if (ratio <= 12) {
+		*mclkdiv = WM8974_MCLKDIV_6;
+		ratio = 12;
+	} else if (ratio <= 16) {
+		*mclkdiv = WM8974_MCLKDIV_8;
+		ratio = 16;
+	} else {
+		*mclkdiv = WM8974_MCLKDIV_12;
+		ratio = 24;
+	}
+
+	return f_out * ratio / 2;
+}
+
+static int wm8974_update_clocks(struct snd_soc_dai *dai)
+{
+	struct snd_soc_component *component = dai->component;
+	struct wm8974_priv *priv = snd_soc_component_get_drvdata(component);
+	unsigned int fs256;
+	unsigned int fpll = 0;
+	unsigned int f;
+	int mclkdiv;
+
+	if (!priv->mclk || !priv->fs)
+		return 0;
+
+	fs256 = 256 * priv->fs;
+
+	f = wm8974_get_mclkdiv(priv->mclk, fs256, &mclkdiv);
+
+	if (f != priv->mclk) {
+		/* The PLL performs best around 90MHz */
+		fpll = wm8974_get_mclkdiv(22500000, fs256, &mclkdiv);
+	}
+
+	wm8974_set_dai_pll(dai, 0, 0, priv->mclk, fpll);
+	wm8974_set_dai_clkdiv(dai, WM8974_MCLKDIV, mclkdiv);
+
+	return 0;
+}
+
+static int wm8974_set_dai_sysclk(struct snd_soc_dai *dai, int clk_id,
+				 unsigned int freq, int dir)
+{
+	struct snd_soc_component *component = dai->component;
+	struct wm8974_priv *priv = snd_soc_component_get_drvdata(component);
+
+	if (dir != SND_SOC_CLOCK_IN)
+		return -EINVAL;
+
+	priv->mclk = freq;
+
+	return wm8974_update_clocks(dai);
+}
+
+static int wm8974_set_dai_fmt(struct snd_soc_dai *codec_dai,
+		unsigned int fmt)
+{
+	struct snd_soc_component *component = codec_dai->component;
+	u16 iface = 0;
+	u16 clk = snd_soc_component_read(component, WM8974_CLOCK) & 0x1fe;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set master/slave audio interface */
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
@@ -407,6 +607,13 @@ static int wm8974_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		iface |= 0x0008;
 		break;
 	case SND_SOC_DAIFMT_DSP_A:
+<<<<<<< HEAD
+=======
+		if ((fmt & SND_SOC_DAIFMT_INV_MASK) == SND_SOC_DAIFMT_IB_IF ||
+		    (fmt & SND_SOC_DAIFMT_INV_MASK) == SND_SOC_DAIFMT_NB_IF) {
+			return -EINVAL;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iface |= 0x00018;
 		break;
 	default:
@@ -430,8 +637,13 @@ static int wm8974_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8974_IFACE, iface);
 	snd_soc_write(codec, WM8974_CLOCK, clk);
+=======
+	snd_soc_component_write(component, WM8974_IFACE, iface);
+	snd_soc_component_write(component, WM8974_CLOCK, clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -439,6 +651,7 @@ static int wm8974_pcm_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params,
 				struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	u16 iface = snd_soc_read(codec, WM8974_IFACE) & 0x19f;
 	u16 adn = snd_soc_read(codec, WM8974_ADD) & 0x1f1;
@@ -454,6 +667,30 @@ static int wm8974_pcm_hw_params(struct snd_pcm_substream *substream,
 		iface |= 0x0040;
 		break;
 	case SNDRV_PCM_FORMAT_S32_LE:
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8974_priv *priv = snd_soc_component_get_drvdata(component);
+	u16 iface = snd_soc_component_read(component, WM8974_IFACE) & 0x19f;
+	u16 adn = snd_soc_component_read(component, WM8974_ADD) & 0x1f1;
+	int err;
+
+	priv->fs = params_rate(params);
+	err = wm8974_update_clocks(dai);
+	if (err)
+		return err;
+
+	/* bit size */
+	switch (params_width(params)) {
+	case 16:
+		break;
+	case 20:
+		iface |= 0x0020;
+		break;
+	case 24:
+		iface |= 0x0040;
+		break;
+	case 32:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iface |= 0x0060;
 		break;
 	}
@@ -480,6 +717,7 @@ static int wm8974_pcm_hw_params(struct snd_pcm_substream *substream,
 		break;
 	}
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8974_IFACE, iface);
 	snd_soc_write(codec, WM8974_ADD, adn);
 	return 0;
@@ -494,34 +732,70 @@ static int wm8974_mute(struct snd_soc_dai *dai, int mute)
 		snd_soc_write(codec, WM8974_DAC, mute_reg | 0x40);
 	else
 		snd_soc_write(codec, WM8974_DAC, mute_reg);
+=======
+	snd_soc_component_write(component, WM8974_IFACE, iface);
+	snd_soc_component_write(component, WM8974_ADD, adn);
+	return 0;
+}
+
+static int wm8974_mute(struct snd_soc_dai *dai, int mute, int direction)
+{
+	struct snd_soc_component *component = dai->component;
+	u16 mute_reg = snd_soc_component_read(component, WM8974_DAC) & 0xffbf;
+
+	if (mute)
+		snd_soc_component_write(component, WM8974_DAC, mute_reg | 0x40);
+	else
+		snd_soc_component_write(component, WM8974_DAC, mute_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /* liam need to make this lower power with dapm */
+<<<<<<< HEAD
 static int wm8974_set_bias_level(struct snd_soc_codec *codec,
 	enum snd_soc_bias_level level)
 {
 	u16 power1 = snd_soc_read(codec, WM8974_POWER1) & ~0x3;
+=======
+static int wm8974_set_bias_level(struct snd_soc_component *component,
+	enum snd_soc_bias_level level)
+{
+	u16 power1 = snd_soc_component_read(component, WM8974_POWER1) & ~0x3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 	case SND_SOC_BIAS_PREPARE:
 		power1 |= 0x1;  /* VMID 50k */
+<<<<<<< HEAD
 		snd_soc_write(codec, WM8974_POWER1, power1);
+=======
+		snd_soc_component_write(component, WM8974_POWER1, power1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SND_SOC_BIAS_STANDBY:
 		power1 |= WM8974_POWER1_BIASEN | WM8974_POWER1_BUFIOEN;
 
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF) {
 			snd_soc_cache_sync(codec);
 
 			/* Initial cap charge at VMID 5k */
 			snd_soc_write(codec, WM8974_POWER1, power1 | 0x3);
+=======
+		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
+			regcache_sync(dev_get_regmap(component->dev, NULL));
+
+			/* Initial cap charge at VMID 5k */
+			snd_soc_component_write(component, WM8974_POWER1, power1 | 0x3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mdelay(100);
 		}
 
 		power1 |= 0x2;  /* VMID 500k */
+<<<<<<< HEAD
 		snd_soc_write(codec, WM8974_POWER1, power1);
 		break;
 
@@ -533,6 +807,18 @@ static int wm8974_set_bias_level(struct snd_soc_codec *codec,
 	}
 
 	codec->dapm.bias_level = level;
+=======
+		snd_soc_component_write(component, WM8974_POWER1, power1);
+		break;
+
+	case SND_SOC_BIAS_OFF:
+		snd_soc_component_write(component, WM8974_POWER1, 0);
+		snd_soc_component_write(component, WM8974_POWER2, 0);
+		snd_soc_component_write(component, WM8974_POWER3, 0);
+		break;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -543,10 +829,19 @@ static int wm8974_set_bias_level(struct snd_soc_codec *codec,
 
 static const struct snd_soc_dai_ops wm8974_ops = {
 	.hw_params = wm8974_pcm_hw_params,
+<<<<<<< HEAD
 	.digital_mute = wm8974_mute,
 	.set_fmt = wm8974_set_dai_fmt,
 	.set_clkdiv = wm8974_set_dai_clkdiv,
 	.set_pll = wm8974_set_dai_pll,
+=======
+	.mute_stream = wm8974_mute,
+	.set_fmt = wm8974_set_dai_fmt,
+	.set_clkdiv = wm8974_set_dai_clkdiv,
+	.set_pll = wm8974_set_dai_pll,
+	.set_sysclk = wm8974_set_dai_sysclk,
+	.no_capture_mute = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver wm8974_dai = {
@@ -564,6 +859,7 @@ static struct snd_soc_dai_driver wm8974_dai = {
 		.rates = WM8974_RATES,
 		.formats = WM8974_FORMATS,},
 	.ops = &wm8974_ops,
+<<<<<<< HEAD
 	.symmetric_rates = 1,
 };
 
@@ -632,10 +928,72 @@ static __devinit int wm8974_i2c_probe(struct i2c_client *i2c,
 
 	ret = snd_soc_register_codec(&i2c->dev,
 			&soc_codec_dev_wm8974, &wm8974_dai, 1);
+=======
+	.symmetric_rate = 1,
+};
+
+static const struct regmap_config wm8974_regmap = {
+	.reg_bits = 7,
+	.val_bits = 9,
+
+	.max_register = WM8974_MONOMIX,
+	.reg_defaults = wm8974_reg_defaults,
+	.num_reg_defaults = ARRAY_SIZE(wm8974_reg_defaults),
+	.cache_type = REGCACHE_FLAT,
+};
+
+static int wm8974_probe(struct snd_soc_component *component)
+{
+	int ret = 0;
+
+	ret = wm8974_reset(component);
+	if (ret < 0) {
+		dev_err(component->dev, "Failed to issue reset\n");
+		return ret;
+	}
+
+	return 0;
+}
+
+static const struct snd_soc_component_driver soc_component_dev_wm8974 = {
+	.probe			= wm8974_probe,
+	.set_bias_level		= wm8974_set_bias_level,
+	.controls		= wm8974_snd_controls,
+	.num_controls		= ARRAY_SIZE(wm8974_snd_controls),
+	.dapm_widgets		= wm8974_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(wm8974_dapm_widgets),
+	.dapm_routes		= wm8974_dapm_routes,
+	.num_dapm_routes	= ARRAY_SIZE(wm8974_dapm_routes),
+	.suspend_bias_off	= 1,
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+};
+
+static int wm8974_i2c_probe(struct i2c_client *i2c)
+{
+	struct wm8974_priv *priv;
+	struct regmap *regmap;
+	int ret;
+
+	priv = devm_kzalloc(&i2c->dev, sizeof(*priv), GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+	i2c_set_clientdata(i2c, priv);
+
+	regmap = devm_regmap_init_i2c(i2c, &wm8974_regmap);
+	if (IS_ERR(regmap))
+		return PTR_ERR(regmap);
+
+	ret = devm_snd_soc_register_component(&i2c->dev,
+			&soc_component_dev_wm8974, &wm8974_dai, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static __devexit int wm8974_i2c_remove(struct i2c_client *client)
 {
 	snd_soc_unregister_codec(&client->dev);
@@ -643,12 +1001,15 @@ static __devexit int wm8974_i2c_remove(struct i2c_client *client)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id wm8974_i2c_id[] = {
 	{ "wm8974", 0 },
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, wm8974_i2c_id);
 
+<<<<<<< HEAD
 static struct i2c_driver wm8974_i2c_driver = {
 	.driver = {
 		.name = "wm8974",
@@ -676,6 +1037,24 @@ static void __exit wm8974_exit(void)
 	i2c_del_driver(&wm8974_i2c_driver);
 }
 module_exit(wm8974_exit);
+=======
+static const struct of_device_id wm8974_of_match[] = {
+       { .compatible = "wlf,wm8974", },
+       { }
+};
+MODULE_DEVICE_TABLE(of, wm8974_of_match);
+
+static struct i2c_driver wm8974_i2c_driver = {
+	.driver = {
+		.name = "wm8974",
+		.of_match_table = wm8974_of_match,
+	},
+	.probe = wm8974_i2c_probe,
+	.id_table = wm8974_i2c_id,
+};
+
+module_i2c_driver(wm8974_i2c_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ASoC WM8974 driver");
 MODULE_AUTHOR("Liam Girdwood");

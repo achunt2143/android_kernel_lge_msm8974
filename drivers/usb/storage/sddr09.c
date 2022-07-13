@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 /* Driver for SanDisk SDDR-09 SmartMedia reader
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Driver for SanDisk SDDR-09 SmartMedia reader
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   (c) 2000, 2001 Robert Baruch (autophile@starband.net)
  *   (c) 2002 Andries Brouwer (aeb@cwi.nl)
@@ -10,6 +16,7 @@
  * been programmed to obey a certain limited set of SCSI commands.
  * This driver translates the "real" SCSI commands to the SDDR-09 SCSI
  * commands.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -24,6 +31,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -52,10 +61,20 @@
 #include "transport.h"
 #include "protocol.h"
 #include "debug.h"
+<<<<<<< HEAD
+=======
+#include "scsiglue.h"
+
+#define DRV_NAME "ums-sddr09"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Driver for SanDisk SDDR-09 SmartMedia reader");
 MODULE_AUTHOR("Andries Brouwer <aeb@cwi.nl>, Robert Baruch <autophile@starband.net>");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_IMPORT_NS(USB_STORAGE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int usb_stor_sddr09_dpcm_init(struct us_data *us);
 static int sddr09_transport(struct scsi_cmnd *srb, struct us_data *us);
@@ -69,7 +88,11 @@ static int usb_stor_sddr09_init(struct us_data *us);
 		    vendorName, productName, useProtocol, useTransport, \
 		    initFunction, flags) \
 { USB_DEVICE_VER(id_vendor, id_product, bcdDeviceMin, bcdDeviceMax), \
+<<<<<<< HEAD
   .driver_info = (flags)|(USB_US_TYPE_STOR<<24) }
+=======
+  .driver_info = (flags) }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct usb_device_id sddr09_usb_ids[] = {
 #	include "unusual_sddr09.h"
@@ -105,8 +128,11 @@ static struct us_unusual_dev sddr09_unusual_dev_list[] = {
 #define LSB_of(s) ((s)&0xFF)
 #define MSB_of(s) ((s)>>8)
 
+<<<<<<< HEAD
 /* #define US_DEBUGP printk */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * First some stuff that does not belong here:
  * data on SmartMedia and other cards, completely
@@ -221,11 +247,15 @@ static void nand_init_ecc(void) {
 /* compute 3-byte ecc on 256 bytes */
 static void nand_compute_ecc(unsigned char *data, unsigned char *ecc) {
 	int i, j, a;
+<<<<<<< HEAD
 	unsigned char par, bit, bits[8];
 
 	par = 0;
 	for (j = 0; j < 8; j++)
 		bits[j] = 0;
+=======
+	unsigned char par = 0, bit, bits[8] = {0};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* collect 16 checksum bits */
 	for (i = 0; i < 256; i++) {
@@ -347,7 +377,11 @@ sddr09_test_unit_ready(struct us_data *us) {
 
 	result = sddr09_send_scsi_command(us, command, 6);
 
+<<<<<<< HEAD
 	US_DEBUGP("sddr09_test_unit_ready returns %d\n", result);
+=======
+	usb_stor_dbg(us, "sddr09_test_unit_ready returns %d\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return result;
 }
@@ -423,8 +457,13 @@ sddr09_readX(struct us_data *us, int x, unsigned long fromaddress,
 	result = sddr09_send_scsi_command(us, command, 12);
 
 	if (result) {
+<<<<<<< HEAD
 		US_DEBUGP("Result for send_control in sddr09_read2%d %d\n",
 			  x, result);
+=======
+		usb_stor_dbg(us, "Result for send_control in sddr09_read2%d %d\n",
+			     x, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return result;
 	}
 
@@ -432,8 +471,13 @@ sddr09_readX(struct us_data *us, int x, unsigned long fromaddress,
 				       buf, bulklen, use_sg, NULL);
 
 	if (result != USB_STOR_XFER_GOOD) {
+<<<<<<< HEAD
 		US_DEBUGP("Result for bulk_transfer in sddr09_read2%d %d\n",
 			  x, result);
+=======
+		usb_stor_dbg(us, "Result for bulk_transfer in sddr09_read2%d %d\n",
+			     x, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	return 0;
@@ -494,8 +538,12 @@ sddr09_read22(struct us_data *us, unsigned long fromaddress,
 	      int nr_of_pages, int pageshift, unsigned char *buf, int use_sg) {
 
 	int bulklen = (nr_of_pages << pageshift) + (nr_of_pages << CONTROL_SHIFT);
+<<<<<<< HEAD
 	US_DEBUGP("sddr09_read22: reading %d pages, %d bytes\n",
 		  nr_of_pages, bulklen);
+=======
+	usb_stor_dbg(us, "reading %d pages, %d bytes\n", nr_of_pages, bulklen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sddr09_readX(us, 2, fromaddress, nr_of_pages, bulklen,
 			    buf, use_sg);
 }
@@ -538,7 +586,11 @@ sddr09_erase(struct us_data *us, unsigned long Eaddress) {
 	unsigned char *command = us->iobuf;
 	int result;
 
+<<<<<<< HEAD
 	US_DEBUGP("sddr09_erase: erase address %lu\n", Eaddress);
+=======
+	usb_stor_dbg(us, "erase address %lu\n", Eaddress);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(command, 0, 12);
 	command[0] = 0xEA;
@@ -551,8 +603,13 @@ sddr09_erase(struct us_data *us, unsigned long Eaddress) {
 	result = sddr09_send_scsi_command(us, command, 12);
 
 	if (result)
+<<<<<<< HEAD
 		US_DEBUGP("Result for send_control in sddr09_erase %d\n",
 			  result);
+=======
+		usb_stor_dbg(us, "Result for send_control in sddr09_erase %d\n",
+			     result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return result;
 }
@@ -609,8 +666,13 @@ sddr09_writeX(struct us_data *us,
 	result = sddr09_send_scsi_command(us, command, 12);
 
 	if (result) {
+<<<<<<< HEAD
 		US_DEBUGP("Result for send_control in sddr09_writeX %d\n",
 			  result);
+=======
+		usb_stor_dbg(us, "Result for send_control in sddr09_writeX %d\n",
+			     result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return result;
 	}
 
@@ -618,8 +680,13 @@ sddr09_writeX(struct us_data *us,
 				       buf, bulklen, use_sg, NULL);
 
 	if (result != USB_STOR_XFER_GOOD) {
+<<<<<<< HEAD
 		US_DEBUGP("Result for bulk_transfer in sddr09_writeX %d\n",
 			  result);
+=======
+		usb_stor_dbg(us, "Result for bulk_transfer in sddr09_writeX %d\n",
+			     result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	return 0;
@@ -687,8 +754,13 @@ sddr09_read_sg_test_only(struct us_data *us) {
 	result = sddr09_send_scsi_command(us, command, 4*nsg+3);
 
 	if (result) {
+<<<<<<< HEAD
 		US_DEBUGP("Result for send_control in sddr09_read_sg %d\n",
 			  result);
+=======
+		usb_stor_dbg(us, "Result for send_control in sddr09_read_sg %d\n",
+			     result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return result;
 	}
 
@@ -700,8 +772,13 @@ sddr09_read_sg_test_only(struct us_data *us) {
 				       buf, bulklen, NULL);
 	kfree(buf);
 	if (result != USB_STOR_XFER_GOOD) {
+<<<<<<< HEAD
 		US_DEBUGP("Result for bulk_transfer in sddr09_read_sg %d\n",
 			  result);
+=======
+		usb_stor_dbg(us, "Result for bulk_transfer in sddr09_read_sg %d\n",
+			     result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -727,7 +804,11 @@ sddr09_read_status(struct us_data *us, unsigned char *status) {
 	unsigned char *data = us->iobuf;
 	int result;
 
+<<<<<<< HEAD
 	US_DEBUGP("Reading status...\n");
+=======
+	usb_stor_dbg(us, "Reading status...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(command, 0, 12);
 	command[0] = 0xEC;
@@ -769,10 +850,15 @@ sddr09_read_data(struct us_data *us,
 
 	len = min(sectors, (unsigned int) info->blocksize) * info->pagesize;
 	buffer = kmalloc(len, GFP_NOIO);
+<<<<<<< HEAD
 	if (buffer == NULL) {
 		printk(KERN_WARNING "sddr09_read_data: Out of memory\n");
 		return -ENOMEM;
 	}
+=======
+	if (!buffer)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	// This could be made much more efficient by checking for
 	// contiguous LBA's. Another exercise left to the student.
@@ -789,8 +875,13 @@ sddr09_read_data(struct us_data *us,
 
 		/* Not overflowing capacity? */
 		if (lba >= maxlba) {
+<<<<<<< HEAD
 			US_DEBUGP("Error: Requested lba %u exceeds "
 				  "maximum %u\n", lba, maxlba);
+=======
+			usb_stor_dbg(us, "Error: Requested lba %u exceeds maximum %u\n",
+				     lba, maxlba);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result = -EIO;
 			break;
 		}
@@ -800,6 +891,7 @@ sddr09_read_data(struct us_data *us,
 
 		if (pba == UNDEF) {	/* this lba was never written */
 
+<<<<<<< HEAD
 			US_DEBUGP("Read %d zero pages (LBA %d) page %d\n",
 				  pages, lba, page);
 
@@ -807,13 +899,29 @@ sddr09_read_data(struct us_data *us,
 			   that the block has never been written.
 			   Instead of returning an error
 			   it is better to return all zero data. */
+=======
+			usb_stor_dbg(us, "Read %d zero pages (LBA %d) page %d\n",
+				     pages, lba, page);
+
+			/*
+			 * This is not really an error. It just means
+			 * that the block has never been written.
+			 * Instead of returning an error
+			 * it is better to return all zero data.
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			memset(buffer, 0, len);
 
 		} else {
+<<<<<<< HEAD
 			US_DEBUGP("Read %d pages, from PBA %d"
 				  " (LBA %d) page %d\n",
 				  pages, pba, lba, page);
+=======
+			usb_stor_dbg(us, "Read %d pages, from PBA %d (LBA %d) page %d\n",
+				     pages, pba, lba, page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			address = ((pba << info->blockshift) + page) << 
 				info->pageshift;
@@ -874,13 +982,20 @@ sddr09_write_lba(struct us_data *us, unsigned int lba,
 	unsigned int pagelen;
 	unsigned char *bptr, *cptr, *xptr;
 	unsigned char ecc[3];
+<<<<<<< HEAD
 	int i, result, isnew;
+=======
+	int i, result;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lbap = ((lba % 1000) << 1) | 0x1000;
 	if (parity[MSB_of(lbap) ^ LSB_of(lbap)])
 		lbap ^= 1;
 	pba = info->lba_to_pba[lba];
+<<<<<<< HEAD
 	isnew = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pba == UNDEF) {
 		pba = sddr09_find_unused_pba(info, lba);
@@ -891,12 +1006,22 @@ sddr09_write_lba(struct us_data *us, unsigned int lba,
 		}
 		info->pba_to_lba[pba] = lba;
 		info->lba_to_pba[lba] = pba;
+<<<<<<< HEAD
 		isnew = 1;
 	}
 
 	if (pba == 1) {
 		/* Maybe it is impossible to write to PBA 1.
 		   Fake success, but don't do anything. */
+=======
+	}
+
+	if (pba == 1) {
+		/*
+		 * Maybe it is impossible to write to PBA 1.
+		 * Fake success, but don't do anything.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING "sddr09: avoid writing to pba 1\n");
 		return 0;
 	}
@@ -916,14 +1041,24 @@ sddr09_write_lba(struct us_data *us, unsigned int lba,
 		cptr = bptr + info->pagesize;
 		nand_compute_ecc(bptr, ecc);
 		if (!nand_compare_ecc(cptr+13, ecc)) {
+<<<<<<< HEAD
 			US_DEBUGP("Warning: bad ecc in page %d- of pba %d\n",
 				  i, pba);
+=======
+			usb_stor_dbg(us, "Warning: bad ecc in page %d- of pba %d\n",
+				     i, pba);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nand_store_ecc(cptr+13, ecc);
 		}
 		nand_compute_ecc(bptr+(info->pagesize / 2), ecc);
 		if (!nand_compare_ecc(cptr+8, ecc)) {
+<<<<<<< HEAD
 			US_DEBUGP("Warning: bad ecc in page %d+ of pba %d\n",
 				  i, pba);
+=======
+			usb_stor_dbg(us, "Warning: bad ecc in page %d+ of pba %d\n",
+				     i, pba);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nand_store_ecc(cptr+8, ecc);
 		}
 		cptr[6] = cptr[11] = MSB_of(lbap);
@@ -943,22 +1078,36 @@ sddr09_write_lba(struct us_data *us, unsigned int lba,
 		nand_store_ecc(cptr+8, ecc);
 	}
 
+<<<<<<< HEAD
 	US_DEBUGP("Rewrite PBA %d (LBA %d)\n", pba, lba);
+=======
+	usb_stor_dbg(us, "Rewrite PBA %d (LBA %d)\n", pba, lba);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	result = sddr09_write_inplace(us, address>>1, info->blocksize,
 				      info->pageshift, blockbuffer, 0);
 
+<<<<<<< HEAD
 	US_DEBUGP("sddr09_write_inplace returns %d\n", result);
+=======
+	usb_stor_dbg(us, "sddr09_write_inplace returns %d\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if 0
 	{
 		unsigned char status = 0;
 		int result2 = sddr09_read_status(us, &status);
 		if (result2)
+<<<<<<< HEAD
 			US_DEBUGP("sddr09_write_inplace: cannot read status\n");
 		else if (status != 0xc0)
 			US_DEBUGP("sddr09_write_inplace: status after write: 0x%x\n",
 				  status);
+=======
+			usb_stor_dbg(us, "cannot read status\n");
+		else if (status != 0xc0)
+			usb_stor_dbg(us, "status after write: 0x%x\n", status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 
@@ -985,22 +1134,39 @@ sddr09_write_data(struct us_data *us,
 	struct scatterlist *sg;
 	int result;
 
+<<<<<<< HEAD
 	// Figure out the initial LBA and page
+=======
+	/* Figure out the initial LBA and page */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lba = address >> info->blockshift;
 	page = (address & info->blockmask);
 	maxlba = info->capacity >> (info->pageshift + info->blockshift);
 	if (lba >= maxlba)
 		return -EIO;
 
+<<<<<<< HEAD
 	// blockbuffer is used for reading in the old data, overwriting
 	// with the new data, and performing ECC calculations
 
 	/* TODO: instead of doing kmalloc/kfree for each write,
 	   add a bufferpointer to the info structure */
+=======
+	/*
+	 * blockbuffer is used for reading in the old data, overwriting
+	 * with the new data, and performing ECC calculations
+	 */
+
+	/*
+	 * TODO: instead of doing kmalloc/kfree for each write,
+	 * add a bufferpointer to the info structure
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pagelen = (1 << info->pageshift) + (1 << CONTROL_SHIFT);
 	blocklen = (pagelen << info->blockshift);
 	blockbuffer = kmalloc(blocklen, GFP_NOIO);
+<<<<<<< HEAD
 	if (!blockbuffer) {
 		printk(KERN_WARNING "sddr09_write_data: Out of memory\n");
 		return -ENOMEM;
@@ -1014,6 +1180,20 @@ sddr09_write_data(struct us_data *us,
 	buffer = kmalloc(len, GFP_NOIO);
 	if (buffer == NULL) {
 		printk(KERN_WARNING "sddr09_write_data: Out of memory\n");
+=======
+	if (!blockbuffer)
+		return -ENOMEM;
+
+	/*
+	 * Since we don't write the user data directly to the device,
+	 * we have to create a bounce buffer and move the data a piece
+	 * at a time between the bounce buffer and the actual transfer buffer.
+	 */
+
+	len = min(sectors, (unsigned int) info->blocksize) * info->pagesize;
+	buffer = kmalloc(len, GFP_NOIO);
+	if (!buffer) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(blockbuffer);
 		return -ENOMEM;
 	}
@@ -1024,20 +1204,33 @@ sddr09_write_data(struct us_data *us,
 
 	while (sectors > 0) {
 
+<<<<<<< HEAD
 		// Write as many sectors as possible in this block
+=======
+		/* Write as many sectors as possible in this block */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pages = min(sectors, info->blocksize - page);
 		len = (pages << info->pageshift);
 
 		/* Not overflowing capacity? */
 		if (lba >= maxlba) {
+<<<<<<< HEAD
 			US_DEBUGP("Error: Requested lba %u exceeds "
 				  "maximum %u\n", lba, maxlba);
+=======
+			usb_stor_dbg(us, "Error: Requested lba %u exceeds maximum %u\n",
+				     lba, maxlba);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result = -EIO;
 			break;
 		}
 
+<<<<<<< HEAD
 		// Get the data from the transfer buffer
+=======
+		/* Get the data from the transfer buffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_stor_access_xfer_buf(buffer, len, us->srb,
 				&sg, &offset, FROM_XFER_BUF);
 
@@ -1064,8 +1257,13 @@ sddr09_read_control(struct us_data *us,
 		unsigned char *content,
 		int use_sg) {
 
+<<<<<<< HEAD
 	US_DEBUGP("Read control address %lu, blocks %d\n",
 		address, blocks);
+=======
+	usb_stor_dbg(us, "Read control address %lu, blocks %d\n",
+		     address, blocks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sddr09_read21(us, address, blocks,
 			     CONTROL_SHIFT, content, use_sg);
@@ -1108,6 +1306,7 @@ static int
 sddr09_get_wp(struct us_data *us, struct sddr09_card_info *info) {
 	int result;
 	unsigned char status;
+<<<<<<< HEAD
 
 	result = sddr09_read_status(us, &status);
 	if (result) {
@@ -1126,6 +1325,26 @@ sddr09_get_wp(struct us_data *us, struct sddr09_card_info *info) {
 	if (status & 0x1)
 		US_DEBUGP(" Error");
 	US_DEBUGP("\n");
+=======
+	const char *wp_fmt;
+
+	result = sddr09_read_status(us, &status);
+	if (result) {
+		usb_stor_dbg(us, "read_status fails\n");
+		return result;
+	}
+	if ((status & 0x80) == 0) {
+		info->flags |= SDDR09_WP;	/* write protected */
+		wp_fmt = " WP";
+	} else {
+		wp_fmt = "";
+	}
+	usb_stor_dbg(us, "status 0x%02X%s%s%s%s\n", status, wp_fmt,
+		     status & 0x40 ? " Ready" : "",
+		     status & LUNBITS ? " Suspended" : "",
+		     status & 0x01 ? " Error" : "");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1154,18 +1373,30 @@ sddr09_get_cardinfo(struct us_data *us, unsigned char flags) {
 	char blurbtxt[256];
 	int result;
 
+<<<<<<< HEAD
 	US_DEBUGP("Reading capacity...\n");
+=======
+	usb_stor_dbg(us, "Reading capacity...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	result = sddr09_read_deviceID(us, deviceID);
 
 	if (result) {
+<<<<<<< HEAD
 		US_DEBUGP("Result of read_deviceID is %d\n", result);
+=======
+		usb_stor_dbg(us, "Result of read_deviceID is %d\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING "sddr09: could not read card info\n");
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	sprintf(blurbtxt, "sddr09: Found Flash card, ID = %02X %02X %02X %02X",
 		deviceID[0], deviceID[1], deviceID[2], deviceID[3]);
+=======
+	sprintf(blurbtxt, "sddr09: Found Flash card, ID = %4ph", deviceID);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Byte 0 is the manufacturer */
 	sprintf(blurbtxt + strlen(blurbtxt),
@@ -1175,9 +1406,17 @@ sddr09_get_cardinfo(struct us_data *us, unsigned char flags) {
 	/* Byte 1 is the device type */
 	cardinfo = nand_find_id(deviceID[1]);
 	if (cardinfo) {
+<<<<<<< HEAD
 		/* MB or MiB? It is neither. A 16 MB card has
 		   17301504 raw bytes, of which 16384000 are
 		   usable for user data. */
+=======
+		/*
+		 * MB or MiB? It is neither. A 16 MB card has
+		 * 17301504 raw bytes, of which 16384000 are
+		 * usable for user data.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sprintf(blurbtxt + strlen(blurbtxt),
 			", %d MB", 1<<(cardinfo->chipshift - 20));
 	} else {
@@ -1218,6 +1457,7 @@ sddr09_read_map(struct us_data *us) {
 	if (!info->capacity)
 		return -1;
 
+<<<<<<< HEAD
 	// size of a block is 1 << (blockshift + pageshift) bytes
 	// divide into the total capacity to get the number of blocks
 
@@ -1226,13 +1466,31 @@ sddr09_read_map(struct us_data *us) {
 	// read 64 bytes for every block (actually 1 << CONTROL_SHIFT)
 	// but only use a 64 KB buffer
 	// buffer size used must be a multiple of (1 << CONTROL_SHIFT)
+=======
+	/*
+	 * size of a block is 1 << (blockshift + pageshift) bytes
+	 * divide into the total capacity to get the number of blocks
+	 */
+
+	numblocks = info->capacity >> (info->blockshift + info->pageshift);
+
+	/*
+	 * read 64 bytes for every block (actually 1 << CONTROL_SHIFT)
+	 * but only use a 64 KB buffer
+	 * buffer size used must be a multiple of (1 << CONTROL_SHIFT)
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SDDR09_READ_MAP_BUFSZ 65536
 
 	alloc_blocks = min(numblocks, SDDR09_READ_MAP_BUFSZ >> CONTROL_SHIFT);
 	alloc_len = (alloc_blocks << CONTROL_SHIFT);
 	buffer = kmalloc(alloc_len, GFP_NOIO);
+<<<<<<< HEAD
 	if (buffer == NULL) {
 		printk(KERN_WARNING "sddr09_read_map: out of memory\n");
+=======
+	if (!buffer) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = -1;
 		goto done;
 	}
@@ -1242,8 +1500,13 @@ sddr09_read_map(struct us_data *us) {
 
 	kfree(info->lba_to_pba);
 	kfree(info->pba_to_lba);
+<<<<<<< HEAD
 	info->lba_to_pba = kmalloc(numblocks*sizeof(int), GFP_NOIO);
 	info->pba_to_lba = kmalloc(numblocks*sizeof(int), GFP_NOIO);
+=======
+	info->lba_to_pba = kmalloc_array(numblocks, sizeof(int), GFP_NOIO);
+	info->pba_to_lba = kmalloc_array(numblocks, sizeof(int), GFP_NOIO);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->lba_to_pba == NULL || info->pba_to_lba == NULL) {
 		printk(KERN_WARNING "sddr09_read_map: out of memory\n");
@@ -1392,7 +1655,11 @@ sddr09_read_map(struct us_data *us) {
 		lbact += ct;
 	}
 	info->lbact = lbact;
+<<<<<<< HEAD
 	US_DEBUGP("Found %d LBA's\n", lbact);
+=======
+	usb_stor_dbg(us, "Found %d LBA's\n", lbact);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = 0;
 
  done:
@@ -1423,18 +1690,32 @@ sddr09_common_init(struct us_data *us) {
 
 	/* set the configuration -- STALL is an acceptable response here */
 	if (us->pusb_dev->actconfig->desc.bConfigurationValue != 1) {
+<<<<<<< HEAD
 		US_DEBUGP("active config #%d != 1 ??\n", us->pusb_dev
 				->actconfig->desc.bConfigurationValue);
+=======
+		usb_stor_dbg(us, "active config #%d != 1 ??\n",
+			     us->pusb_dev->actconfig->desc.bConfigurationValue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	result = usb_reset_configuration(us->pusb_dev);
+<<<<<<< HEAD
 	US_DEBUGP("Result of usb_reset_configuration is %d\n", result);
 	if (result == -EPIPE) {
 		US_DEBUGP("-- stall on control interface\n");
 	} else if (result != 0) {
 		/* it's not a stall, but another error -- time to bail */
 		US_DEBUGP("-- Unknown error.  Rejecting device\n");
+=======
+	usb_stor_dbg(us, "Result of usb_reset_configuration is %d\n", result);
+	if (result == -EPIPE) {
+		usb_stor_dbg(us, "-- stall on control interface\n");
+	} else if (result != 0) {
+		/* it's not a stall, but another error -- time to bail */
+		usb_stor_dbg(us, "-- Unknown error.  Rejecting device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1464,20 +1745,36 @@ usb_stor_sddr09_dpcm_init(struct us_data *us) {
 
 	result = sddr09_send_command(us, 0x01, USB_DIR_IN, data, 2);
 	if (result) {
+<<<<<<< HEAD
 		US_DEBUGP("sddr09_init: send_command fails\n");
 		return result;
 	}
 
 	US_DEBUGP("SDDR09init: %02X %02X\n", data[0], data[1]);
+=======
+		usb_stor_dbg(us, "send_command fails\n");
+		return result;
+	}
+
+	usb_stor_dbg(us, "%02X %02X\n", data[0], data[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	// get 07 02
 
 	result = sddr09_send_command(us, 0x08, USB_DIR_IN, data, 2);
 	if (result) {
+<<<<<<< HEAD
 		US_DEBUGP("sddr09_init: 2nd send_command fails\n");
 		return result;
 	}
 
 	US_DEBUGP("SDDR09init: %02X %02X\n", data[0], data[1]);
+=======
+		usb_stor_dbg(us, "2nd send_command fails\n");
+		return result;
+	}
+
+	usb_stor_dbg(us, "%02X %02X\n", data[0], data[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	// get 07 00
 
 	result = sddr09_request_sense(us, data, 18);
@@ -1507,7 +1804,11 @@ static int dpcm_transport(struct scsi_cmnd *srb, struct us_data *us)
 {
 	int ret;
 
+<<<<<<< HEAD
 	US_DEBUGP("dpcm_transport: LUN=%d\n", srb->device->lun);
+=======
+	usb_stor_dbg(us, "LUN=%d\n", (u8)srb->device->lun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (srb->device->lun) {
 	case 0:
@@ -1533,8 +1834,12 @@ static int dpcm_transport(struct scsi_cmnd *srb, struct us_data *us)
 		break;
 
 	default:
+<<<<<<< HEAD
 		US_DEBUGP("dpcm_transport: Invalid LUN %d\n",
 				srb->device->lun);
+=======
+	    usb_stor_dbg(us, "Invalid LUN %d\n", (u8)srb->device->lun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = USB_STOR_TRANSPORT_ERROR;
 		break;
 	}
@@ -1583,8 +1888,15 @@ static int sddr09_transport(struct scsi_cmnd *srb, struct us_data *us)
 
 	havefakesense = 1;
 
+<<<<<<< HEAD
 	/* Dummy up a response for INQUIRY since SDDR09 doesn't
 	   respond to INQUIRY commands */
+=======
+	/*
+	 * Dummy up a response for INQUIRY since SDDR09 doesn't
+	 * respond to INQUIRY commands
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (srb->cmnd[0] == INQUIRY) {
 		memcpy(ptr, inquiry_response, 8);
@@ -1636,12 +1948,23 @@ static int sddr09_transport(struct scsi_cmnd *srb, struct us_data *us)
 	if (srb->cmnd[0] == MODE_SENSE_10) {
 		int modepage = (srb->cmnd[2] & 0x3F);
 
+<<<<<<< HEAD
 		/* They ask for the Read/Write error recovery page,
 		   or for all pages. */
 		/* %% We should check DBD %% */
 		if (modepage == 0x01 || modepage == 0x3F) {
 			US_DEBUGP("SDDR09: Dummy up request for "
 				  "mode page 0x%x\n", modepage);
+=======
+		/*
+		 * They ask for the Read/Write error recovery page,
+		 * or for all pages.
+		 */
+		/* %% We should check DBD %% */
+		if (modepage == 0x01 || modepage == 0x3F) {
+			usb_stor_dbg(us, "Dummy up request for mode page 0x%x\n",
+				     modepage);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			memcpy(ptr, mode_page_01, sizeof(mode_page_01));
 			((__be16*)ptr)[0] = cpu_to_be16(sizeof(mode_page_01) - 2);
@@ -1667,8 +1990,13 @@ static int sddr09_transport(struct scsi_cmnd *srb, struct us_data *us)
 		page |= short_pack(srb->cmnd[5], srb->cmnd[4]);
 		pages = short_pack(srb->cmnd[8], srb->cmnd[7]);
 
+<<<<<<< HEAD
 		US_DEBUGP("READ_10: read page %d pagect %d\n",
 			  page, pages);
+=======
+		usb_stor_dbg(us, "READ_10: read page %d pagect %d\n",
+			     page, pages);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		result = sddr09_read_data(us, page, pages);
 		return (result == 0 ? USB_STOR_TRANSPORT_GOOD :
@@ -1682,15 +2010,25 @@ static int sddr09_transport(struct scsi_cmnd *srb, struct us_data *us)
 		page |= short_pack(srb->cmnd[5], srb->cmnd[4]);
 		pages = short_pack(srb->cmnd[8], srb->cmnd[7]);
 
+<<<<<<< HEAD
 		US_DEBUGP("WRITE_10: write page %d pagect %d\n",
 			  page, pages);
+=======
+		usb_stor_dbg(us, "WRITE_10: write page %d pagect %d\n",
+			     page, pages);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		result = sddr09_write_data(us, page, pages);
 		return (result == 0 ? USB_STOR_TRANSPORT_GOOD :
 				USB_STOR_TRANSPORT_ERROR);
 	}
 
+<<<<<<< HEAD
 	/* catch-all for all other commands, except
+=======
+	/*
+	 * catch-all for all other commands, except
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * pass TEST_UNIT_READY and REQUEST_SENSE through
 	 */
 	if (srb->cmnd[0] != TEST_UNIT_READY &&
@@ -1710,12 +2048,21 @@ static int sddr09_transport(struct scsi_cmnd *srb, struct us_data *us)
 	for (i=0; i<12; i++)
 		sprintf(ptr+strlen(ptr), "%02X ", srb->cmnd[i]);
 
+<<<<<<< HEAD
 	US_DEBUGP("SDDR09: Send control for command %s\n", ptr);
 
 	result = sddr09_send_scsi_command(us, srb->cmnd, 12);
 	if (result) {
 		US_DEBUGP("sddr09_transport: sddr09_send_scsi_command "
 			  "returns %d\n", result);
+=======
+	usb_stor_dbg(us, "Send control for command %s\n", ptr);
+
+	result = sddr09_send_scsi_command(us, srb->cmnd, 12);
+	if (result) {
+		usb_stor_dbg(us, "sddr09_send_scsi_command returns %d\n",
+			     result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return USB_STOR_TRANSPORT_ERROR;
 	}
 
@@ -1727,10 +2074,17 @@ static int sddr09_transport(struct scsi_cmnd *srb, struct us_data *us)
 		unsigned int pipe = (srb->sc_data_direction == DMA_TO_DEVICE)
 				? us->send_bulk_pipe : us->recv_bulk_pipe;
 
+<<<<<<< HEAD
 		US_DEBUGP("SDDR09: %s %d bytes\n",
 			  (srb->sc_data_direction == DMA_TO_DEVICE) ?
 			  "sending" : "receiving",
 			  scsi_bufflen(srb));
+=======
+		usb_stor_dbg(us, "%s %d bytes\n",
+			     (srb->sc_data_direction == DMA_TO_DEVICE) ?
+			     "sending" : "receiving",
+			     scsi_bufflen(srb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		result = usb_stor_bulk_srb(us, pipe, srb);
 
@@ -1749,6 +2103,11 @@ usb_stor_sddr09_init(struct us_data *us) {
 	return sddr09_common_init(us);
 }
 
+<<<<<<< HEAD
+=======
+static struct scsi_host_template sddr09_host_template;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sddr09_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
 {
@@ -1756,7 +2115,12 @@ static int sddr09_probe(struct usb_interface *intf,
 	int result;
 
 	result = usb_stor_probe1(&us, intf, id,
+<<<<<<< HEAD
 			(id - sddr09_usb_ids) + sddr09_unusual_dev_list);
+=======
+			(id - sddr09_usb_ids) + sddr09_unusual_dev_list,
+			&sddr09_host_template);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result)
 		return result;
 
@@ -1777,7 +2141,11 @@ static int sddr09_probe(struct usb_interface *intf,
 }
 
 static struct usb_driver sddr09_driver = {
+<<<<<<< HEAD
 	.name =		"ums-sddr09",
+=======
+	.name =		DRV_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe =	sddr09_probe,
 	.disconnect =	usb_stor_disconnect,
 	.suspend =	usb_stor_suspend,
@@ -1790,4 +2158,8 @@ static struct usb_driver sddr09_driver = {
 	.no_dynamic_id = 1,
 };
 
+<<<<<<< HEAD
 module_usb_driver(sddr09_driver);
+=======
+module_usb_stor_driver(sddr09_driver, sddr09_host_template, DRV_NAME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

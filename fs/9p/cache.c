@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * V9FS cache definitions.
  *
  *  Copyright (C) 2009 by Abhishek Kulkarni <adkulkar@umail.iu.edu>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2
@@ -18,6 +23,8 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02111-1301  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/jiffies.h>
@@ -31,6 +38,7 @@
 #include "v9fs.h"
 #include "cache.h"
 
+<<<<<<< HEAD
 #define CACHETAG_LEN  11
 
 struct fscache_netfs v9fs_cache_netfs = {
@@ -412,4 +420,63 @@ void __v9fs_fscache_wait_on_page_write(struct inode *inode, struct page *page)
 	p9_debug(P9_DEBUG_FSC, "inode %p page %p\n", inode, page);
 	if (PageFsCache(page))
 		fscache_wait_on_page_write(v9inode->fscache, page);
+=======
+int v9fs_cache_session_get_cookie(struct v9fs_session_info *v9ses,
+				  const char *dev_name)
+{
+	struct fscache_volume *vcookie;
+	char *name, *p;
+
+	name = kasprintf(GFP_KERNEL, "9p,%s,%s",
+			 dev_name, v9ses->cachetag ?: v9ses->aname);
+	if (!name)
+		return -ENOMEM;
+
+	for (p = name; *p; p++)
+		if (*p == '/')
+			*p = ';';
+
+	vcookie = fscache_acquire_volume(name, NULL, NULL, 0);
+	p9_debug(P9_DEBUG_FSC, "session %p get volume %p (%s)\n",
+		 v9ses, vcookie, name);
+	if (IS_ERR(vcookie)) {
+		if (vcookie != ERR_PTR(-EBUSY)) {
+			kfree(name);
+			return PTR_ERR(vcookie);
+		}
+		pr_err("Cache volume key already in use (%s)\n", name);
+		vcookie = NULL;
+	}
+	v9ses->fscache = vcookie;
+	kfree(name);
+	return 0;
+}
+
+void v9fs_cache_inode_get_cookie(struct inode *inode)
+{
+	struct v9fs_inode *v9inode = V9FS_I(inode);
+	struct v9fs_session_info *v9ses;
+	__le32 version;
+	__le64 path;
+
+	if (!S_ISREG(inode->i_mode))
+		return;
+	if (WARN_ON(v9fs_inode_cookie(v9inode)))
+		return;
+
+	version = cpu_to_le32(v9inode->qid.version);
+	path = cpu_to_le64(v9inode->qid.path);
+	v9ses = v9fs_inode2v9ses(inode);
+	v9inode->netfs.cache =
+		fscache_acquire_cookie(v9fs_session_cache(v9ses),
+				       0,
+				       &path, sizeof(path),
+				       &version, sizeof(version),
+				       i_size_read(&v9inode->netfs.inode));
+	if (v9inode->netfs.cache)
+		mapping_set_release_always(inode->i_mapping);
+
+	p9_debug(P9_DEBUG_FSC, "inode %p get cookie %p\n",
+		 inode, v9fs_inode_cookie(v9inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

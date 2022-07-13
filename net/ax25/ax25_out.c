@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) Alan Cox GW4PTS (alan@lxorguk.ukuu.org.uk)
  * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
@@ -24,16 +29,25 @@
 #include <linux/inet.h>
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/netfilter.h>
 #include <net/sock.h>
 #include <asm/uaccess.h>
+=======
+#include <net/sock.h>
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fcntl.h>
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 
 static DEFINE_SPINLOCK(ax25_frag_lock);
 
+<<<<<<< HEAD
 ax25_cb *ax25_send_frame(struct sk_buff *skb, int paclen, ax25_address *src, ax25_address *dest, ax25_digi *digi, struct net_device *dev)
+=======
+ax25_cb *ax25_send_frame(struct sk_buff *skb, int paclen, const ax25_address *src, ax25_address *dest, ax25_digi *digi, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ax25_dev *ax25_dev;
 	ax25_cb *ax25;
@@ -329,7 +343,10 @@ void ax25_kick(ax25_cb *ax25)
 
 void ax25_transmit_buffer(ax25_cb *ax25, struct sk_buff *skb, int type)
 {
+<<<<<<< HEAD
 	struct sk_buff *skbn;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *ptr;
 	int headroom;
 
@@ -340,6 +357,7 @@ void ax25_transmit_buffer(ax25_cb *ax25, struct sk_buff *skb, int type)
 
 	headroom = ax25_addr_size(ax25->digipeat);
 
+<<<<<<< HEAD
 	if (skb_headroom(skb) < headroom) {
 		if ((skbn = skb_realloc_headroom(skb, headroom)) == NULL) {
 			printk(KERN_CRIT "AX.25: ax25_transmit_buffer - out of memory\n");
@@ -352,6 +370,14 @@ void ax25_transmit_buffer(ax25_cb *ax25, struct sk_buff *skb, int type)
 
 		kfree_skb(skb);
 		skb = skbn;
+=======
+	if (unlikely(skb_headroom(skb) < headroom)) {
+		skb = skb_expand_head(skb, headroom);
+		if (!skb) {
+			printk(KERN_CRIT "AX.25: ax25_transmit_buffer - out of memory\n");
+			return;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ptr = skb_push(skb, headroom);
@@ -395,4 +421,7 @@ int ax25_check_iframes_acked(ax25_cb *ax25, unsigned short nr)
 	}
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

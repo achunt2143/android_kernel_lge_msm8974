@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/clk/clkdev.c
  *
  *  Copyright (C) 2008 Russell King.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Helper for the clk API to assist looking up a struct clk.
  */
 #include <linux/module.h>
@@ -19,6 +26,13 @@
 #include <linux/mutex.h>
 #include <linux/clk.h>
 #include <linux/clkdev.h>
+<<<<<<< HEAD
+=======
+#include <linux/clk-provider.h>
+#include <linux/of.h>
+
+#include "clk.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static LIST_HEAD(clocks);
 static DEFINE_MUTEX(clocks_mutex);
@@ -35,7 +49,18 @@ static DEFINE_MUTEX(clocks_mutex);
 static struct clk_lookup *clk_find(const char *dev_id, const char *con_id)
 {
 	struct clk_lookup *p, *cl = NULL;
+<<<<<<< HEAD
 	int match, best = 0;
+=======
+	int match, best_found = 0, best_possible = 0;
+
+	if (dev_id)
+		best_possible += 2;
+	if (con_id)
+		best_possible += 1;
+
+	lockdep_assert_held(&clocks_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(p, &clocks, node) {
 		match = 0;
@@ -50,10 +75,17 @@ static struct clk_lookup *clk_find(const char *dev_id, const char *con_id)
 			match += 1;
 		}
 
+<<<<<<< HEAD
 		if (match > best) {
 			cl = p;
 			if (match != 3)
 				best = match;
+=======
+		if (match > best_found) {
+			cl = p;
+			if (match != best_possible)
+				best_found = match;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else
 				break;
 		}
@@ -61,6 +93,7 @@ static struct clk_lookup *clk_find(const char *dev_id, const char *con_id)
 	return cl;
 }
 
+<<<<<<< HEAD
 struct clk *clk_get_sys(const char *dev_id, const char *con_id)
 {
 	struct clk_lookup *cl;
@@ -72,12 +105,40 @@ struct clk *clk_get_sys(const char *dev_id, const char *con_id)
 	mutex_unlock(&clocks_mutex);
 
 	return cl ? cl->clk : ERR_PTR(-ENOENT);
+=======
+struct clk_hw *clk_find_hw(const char *dev_id, const char *con_id)
+{
+	struct clk_lookup *cl;
+	struct clk_hw *hw = ERR_PTR(-ENOENT);
+
+	mutex_lock(&clocks_mutex);
+	cl = clk_find(dev_id, con_id);
+	if (cl)
+		hw = cl->clk_hw;
+	mutex_unlock(&clocks_mutex);
+
+	return hw;
+}
+
+static struct clk *__clk_get_sys(struct device *dev, const char *dev_id,
+				 const char *con_id)
+{
+	struct clk_hw *hw = clk_find_hw(dev_id, con_id);
+
+	return clk_hw_create_clk(dev, hw, dev_id, con_id);
+}
+
+struct clk *clk_get_sys(const char *dev_id, const char *con_id)
+{
+	return __clk_get_sys(NULL, dev_id, con_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(clk_get_sys);
 
 struct clk *clk_get(struct device *dev, const char *con_id)
 {
 	const char *dev_id = dev ? dev_name(dev) : NULL;
+<<<<<<< HEAD
 
 	return clk_get_sys(dev_id, con_id);
 }
@@ -107,6 +168,19 @@ struct clk *devm_clk_get(struct device *dev, const char *id)
 	return clk;
 }
 EXPORT_SYMBOL(devm_clk_get);
+=======
+	struct clk_hw *hw;
+
+	if (dev && dev->of_node) {
+		hw = of_clk_get_hw(dev->of_node, 0, con_id);
+		if (!IS_ERR(hw) || PTR_ERR(hw) == -EPROBE_DEFER)
+			return clk_hw_create_clk(dev, hw, dev_id, con_id);
+	}
+
+	return __clk_get_sys(dev, dev_id, con_id);
+}
+EXPORT_SYMBOL(clk_get);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void clk_put(struct clk *clk)
 {
@@ -114,25 +188,47 @@ void clk_put(struct clk *clk)
 }
 EXPORT_SYMBOL(clk_put);
 
+<<<<<<< HEAD
 void clkdev_add(struct clk_lookup *cl)
+=======
+static void __clkdev_add(struct clk_lookup *cl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&clocks_mutex);
 	list_add_tail(&cl->node, &clocks);
 	mutex_unlock(&clocks_mutex);
 }
+<<<<<<< HEAD
+=======
+
+void clkdev_add(struct clk_lookup *cl)
+{
+	if (!cl->clk_hw)
+		cl->clk_hw = __clk_get_hw(cl->clk);
+	__clkdev_add(cl);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(clkdev_add);
 
 void clkdev_add_table(struct clk_lookup *cl, size_t num)
 {
 	mutex_lock(&clocks_mutex);
 	while (num--) {
+<<<<<<< HEAD
+=======
+		cl->clk_hw = __clk_get_hw(cl->clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&cl->node, &clocks);
 		cl++;
 	}
 	mutex_unlock(&clocks_mutex);
 }
 
+<<<<<<< HEAD
 #define MAX_DEV_ID	20
+=======
+#define MAX_DEV_ID	24
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_CON_ID	16
 
 struct clk_lookup_alloc {
@@ -141,6 +237,7 @@ struct clk_lookup_alloc {
 	char	con_id[MAX_CON_ID];
 };
 
+<<<<<<< HEAD
 struct clk_lookup * __init_refok
 clkdev_alloc(struct clk *clk, const char *con_id, const char *dev_fmt, ...)
 {
@@ -153,37 +250,132 @@ clkdev_alloc(struct clk *clk, const char *con_id, const char *dev_fmt, ...)
 	cla->cl.clk = clk;
 	if (con_id) {
 		strlcpy(cla->con_id, con_id, sizeof(cla->con_id));
+=======
+static struct clk_lookup * __ref
+vclkdev_alloc(struct clk_hw *hw, const char *con_id, const char *dev_fmt,
+	va_list ap)
+{
+	struct clk_lookup_alloc *cla;
+
+	cla = kzalloc(sizeof(*cla), GFP_KERNEL);
+	if (!cla)
+		return NULL;
+
+	cla->cl.clk_hw = hw;
+	if (con_id) {
+		strscpy(cla->con_id, con_id, sizeof(cla->con_id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cla->cl.con_id = cla->con_id;
 	}
 
 	if (dev_fmt) {
+<<<<<<< HEAD
 		va_list ap;
 
 		va_start(ap, dev_fmt);
 		vscnprintf(cla->dev_id, sizeof(cla->dev_id), dev_fmt, ap);
 		cla->cl.dev_id = cla->dev_id;
 		va_end(ap);
+=======
+		vscnprintf(cla->dev_id, sizeof(cla->dev_id), dev_fmt, ap);
+		cla->cl.dev_id = cla->dev_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return &cla->cl;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(clkdev_alloc);
 
 int clk_add_alias(const char *alias, const char *alias_dev_name, char *id,
 	struct device *dev)
 {
 	struct clk *r = clk_get(dev, id);
+=======
+
+static struct clk_lookup *
+vclkdev_create(struct clk_hw *hw, const char *con_id, const char *dev_fmt,
+	va_list ap)
+{
+	struct clk_lookup *cl;
+
+	cl = vclkdev_alloc(hw, con_id, dev_fmt, ap);
+	if (cl)
+		__clkdev_add(cl);
+
+	return cl;
+}
+
+/**
+ * clkdev_create - allocate and add a clkdev lookup structure
+ * @clk: struct clk to associate with all clk_lookups
+ * @con_id: connection ID string on device
+ * @dev_fmt: format string describing device name
+ *
+ * Returns a clk_lookup structure, which can be later unregistered and
+ * freed.
+ */
+struct clk_lookup *clkdev_create(struct clk *clk, const char *con_id,
+	const char *dev_fmt, ...)
+{
+	struct clk_lookup *cl;
+	va_list ap;
+
+	va_start(ap, dev_fmt);
+	cl = vclkdev_create(__clk_get_hw(clk), con_id, dev_fmt, ap);
+	va_end(ap);
+
+	return cl;
+}
+EXPORT_SYMBOL_GPL(clkdev_create);
+
+/**
+ * clkdev_hw_create - allocate and add a clkdev lookup structure
+ * @hw: struct clk_hw to associate with all clk_lookups
+ * @con_id: connection ID string on device
+ * @dev_fmt: format string describing device name
+ *
+ * Returns a clk_lookup structure, which can be later unregistered and
+ * freed.
+ */
+struct clk_lookup *clkdev_hw_create(struct clk_hw *hw, const char *con_id,
+	const char *dev_fmt, ...)
+{
+	struct clk_lookup *cl;
+	va_list ap;
+
+	va_start(ap, dev_fmt);
+	cl = vclkdev_create(hw, con_id, dev_fmt, ap);
+	va_end(ap);
+
+	return cl;
+}
+EXPORT_SYMBOL_GPL(clkdev_hw_create);
+
+int clk_add_alias(const char *alias, const char *alias_dev_name,
+	const char *con_id, struct device *dev)
+{
+	struct clk *r = clk_get(dev, con_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct clk_lookup *l;
 
 	if (IS_ERR(r))
 		return PTR_ERR(r);
 
+<<<<<<< HEAD
 	l = clkdev_alloc(r, alias, alias_dev_name);
 	clk_put(r);
 	if (!l)
 		return -ENODEV;
 	clkdev_add(l);
 	return 0;
+=======
+	l = clkdev_create(r, alias, alias_dev_name ? "%s" : NULL,
+			  alias_dev_name);
+	clk_put(r);
+
+	return l ? 0 : -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(clk_add_alias);
 
@@ -198,3 +390,121 @@ void clkdev_drop(struct clk_lookup *cl)
 	kfree(cl);
 }
 EXPORT_SYMBOL(clkdev_drop);
+<<<<<<< HEAD
+=======
+
+static struct clk_lookup *__clk_register_clkdev(struct clk_hw *hw,
+						const char *con_id,
+						const char *dev_id, ...)
+{
+	struct clk_lookup *cl;
+	va_list ap;
+
+	va_start(ap, dev_id);
+	cl = vclkdev_create(hw, con_id, dev_id, ap);
+	va_end(ap);
+
+	return cl;
+}
+
+static int do_clk_register_clkdev(struct clk_hw *hw,
+	struct clk_lookup **cl, const char *con_id, const char *dev_id)
+{
+	if (IS_ERR(hw))
+		return PTR_ERR(hw);
+	/*
+	 * Since dev_id can be NULL, and NULL is handled specially, we must
+	 * pass it as either a NULL format string, or with "%s".
+	 */
+	if (dev_id)
+		*cl = __clk_register_clkdev(hw, con_id, "%s", dev_id);
+	else
+		*cl = __clk_register_clkdev(hw, con_id, NULL);
+
+	return *cl ? 0 : -ENOMEM;
+}
+
+/**
+ * clk_register_clkdev - register one clock lookup for a struct clk
+ * @clk: struct clk to associate with all clk_lookups
+ * @con_id: connection ID string on device
+ * @dev_id: string describing device name
+ *
+ * con_id or dev_id may be NULL as a wildcard, just as in the rest of
+ * clkdev.
+ *
+ * To make things easier for mass registration, we detect error clks
+ * from a previous clk_register() call, and return the error code for
+ * those.  This is to permit this function to be called immediately
+ * after clk_register().
+ */
+int clk_register_clkdev(struct clk *clk, const char *con_id,
+	const char *dev_id)
+{
+	struct clk_lookup *cl;
+
+	if (IS_ERR(clk))
+		return PTR_ERR(clk);
+
+	return do_clk_register_clkdev(__clk_get_hw(clk), &cl, con_id,
+					      dev_id);
+}
+EXPORT_SYMBOL(clk_register_clkdev);
+
+/**
+ * clk_hw_register_clkdev - register one clock lookup for a struct clk_hw
+ * @hw: struct clk_hw to associate with all clk_lookups
+ * @con_id: connection ID string on device
+ * @dev_id: format string describing device name
+ *
+ * con_id or dev_id may be NULL as a wildcard, just as in the rest of
+ * clkdev.
+ *
+ * To make things easier for mass registration, we detect error clk_hws
+ * from a previous clk_hw_register_*() call, and return the error code for
+ * those.  This is to permit this function to be called immediately
+ * after clk_hw_register_*().
+ */
+int clk_hw_register_clkdev(struct clk_hw *hw, const char *con_id,
+	const char *dev_id)
+{
+	struct clk_lookup *cl;
+
+	return do_clk_register_clkdev(hw, &cl, con_id, dev_id);
+}
+EXPORT_SYMBOL(clk_hw_register_clkdev);
+
+static void devm_clkdev_release(void *res)
+{
+	clkdev_drop(res);
+}
+
+/**
+ * devm_clk_hw_register_clkdev - managed clk lookup registration for clk_hw
+ * @dev: device this lookup is bound
+ * @hw: struct clk_hw to associate with all clk_lookups
+ * @con_id: connection ID string on device
+ * @dev_id: format string describing device name
+ *
+ * con_id or dev_id may be NULL as a wildcard, just as in the rest of
+ * clkdev.
+ *
+ * To make things easier for mass registration, we detect error clk_hws
+ * from a previous clk_hw_register_*() call, and return the error code for
+ * those.  This is to permit this function to be called immediately
+ * after clk_hw_register_*().
+ */
+int devm_clk_hw_register_clkdev(struct device *dev, struct clk_hw *hw,
+				const char *con_id, const char *dev_id)
+{
+	struct clk_lookup *cl;
+	int rval;
+
+	rval = do_clk_register_clkdev(hw, &cl, con_id, dev_id);
+	if (rval)
+		return rval;
+
+	return devm_add_action_or_reset(dev, devm_clkdev_release, cl);
+}
+EXPORT_SYMBOL(devm_clk_hw_register_clkdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

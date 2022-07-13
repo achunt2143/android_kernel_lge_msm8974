@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pSeries_reconfig.c - support for dynamic reconfiguration (including PCI
  * Hotplug and Dynamic Logical Partitioning on RPA platforms).
  *
  * Copyright (C) 2005 Nathan Lynch
  * Copyright (C) 2005 IBM Corporation
+<<<<<<< HEAD
  *
  *
  *	This program is free software; you can redistribute it and/or
@@ -116,6 +121,22 @@ int pSeries_reconfig_notify(unsigned long action, void *p)
 
 	return notifier_to_errno(err);
 }
+=======
+ */
+
+#include <linux/kernel.h>
+#include <linux/notifier.h>
+#include <linux/proc_fs.h>
+#include <linux/security.h>
+#include <linux/slab.h>
+#include <linux/of.h>
+
+#include <asm/machdep.h>
+#include <linux/uaccess.h>
+#include <asm/mmu.h>
+
+#include "of_helpers.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int pSeries_reconfig_add_node(const char *path, struct property *proplist)
 {
@@ -126,30 +147,47 @@ static int pSeries_reconfig_add_node(const char *path, struct property *proplist
 	if (!np)
 		goto out_err;
 
+<<<<<<< HEAD
 	np->full_name = kstrdup(path, GFP_KERNEL);
+=======
+	np->full_name = kstrdup(kbasename(path), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!np->full_name)
 		goto out_err;
 
 	np->properties = proplist;
 	of_node_set_flag(np, OF_DYNAMIC);
+<<<<<<< HEAD
 	kref_init(&np->kref);
 
 	np->parent = derive_parent(path);
+=======
+	of_node_init(np);
+
+	np->parent = pseries_of_derive_parent(path);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(np->parent)) {
 		err = PTR_ERR(np->parent);
 		goto out_err;
 	}
 
+<<<<<<< HEAD
 	err = pSeries_reconfig_notify(PSERIES_RECONFIG_ADD, np);
+=======
+	err = of_attach_node(np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		printk(KERN_ERR "Failed to add device node %s\n", path);
 		goto out_err;
 	}
 
+<<<<<<< HEAD
 	of_attach_node(np);
 
 	add_node_proc_entries(np);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	of_node_put(np->parent);
 
 	return 0;
@@ -177,6 +215,7 @@ static int pSeries_reconfig_remove_node(struct device_node *np)
 		return -EBUSY;
 	}
 
+<<<<<<< HEAD
 	remove_node_proc_entries(np);
 
 	pSeries_reconfig_notify(PSERIES_RECONFIG_REMOVE, np);
@@ -184,6 +223,10 @@ static int pSeries_reconfig_remove_node(struct device_node *np)
 
 	of_node_put(parent);
 	of_node_put(np); /* Must decrement the refcount */
+=======
+	of_detach_node(np);
+	of_node_put(parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -279,12 +322,19 @@ static struct property *new_property(const char *name, const int length,
 	if (!new)
 		return NULL;
 
+<<<<<<< HEAD
 	if (!(new->name = kmalloc(strlen(name) + 1, GFP_KERNEL)))
+=======
+	if (!(new->name = kstrdup(name, GFP_KERNEL)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto cleanup;
 	if (!(new->value = kmalloc(length + 1, GFP_KERNEL)))
 		goto cleanup;
 
+<<<<<<< HEAD
 	strcpy(new->name, name);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(new->value, value, length);
 	*(((char *)new->value) + length) = 0;
 	new->length = length;
@@ -396,7 +446,11 @@ static int do_add_property(char *buf, size_t bufsize)
 	if (!prop)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	prom_add_property(np, prop);
+=======
+	of_add_property(np, prop);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -405,7 +459,10 @@ static int do_remove_property(char *buf, size_t bufsize)
 {
 	struct device_node *np;
 	char *tmp;
+<<<<<<< HEAD
 	struct property *prop;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf = parse_node(buf, bufsize, &np);
 
 	if (!np)
@@ -418,9 +475,13 @@ static int do_remove_property(char *buf, size_t bufsize)
 	if (strlen(buf) == 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	prop = of_find_property(np, buf, NULL);
 
 	return prom_remove_property(np, prop);
+=======
+	return of_remove_property(np, of_find_property(np, buf, NULL));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int do_update_property(char *buf, size_t bufsize)
@@ -428,8 +489,13 @@ static int do_update_property(char *buf, size_t bufsize)
 	struct device_node *np;
 	unsigned char *value;
 	char *name, *end, *next_prop;
+<<<<<<< HEAD
 	int rc, length;
 	struct property *newprop, *oldprop;
+=======
+	int length;
+	struct property *newprop;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf = parse_node(buf, bufsize, &np);
 	end = buf + bufsize;
 
@@ -440,6 +506,12 @@ static int do_update_property(char *buf, size_t bufsize)
 	if (!next_prop)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	if (!strlen(name))
+		return -ENODEV;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	newprop = new_property(name, length, value, NULL);
 	if (!newprop)
 		return -ENOMEM;
@@ -447,6 +519,7 @@ static int do_update_property(char *buf, size_t bufsize)
 	if (!strcmp(name, "slb-size") || !strcmp(name, "ibm,slb-size"))
 		slb_set_size(*(int *)value);
 
+<<<<<<< HEAD
 	oldprop = of_find_property(np, name,NULL);
 	if (!oldprop) {
 		if (strlen(name))
@@ -485,6 +558,9 @@ static int do_update_property(char *buf, size_t bufsize)
 	}
 
 	return 0;
+=======
+	return of_update_property(np, newprop);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -502,6 +578,7 @@ static int do_update_property(char *buf, size_t bufsize)
 static ssize_t ofdt_write(struct file *file, const char __user *buf, size_t count,
 			  loff_t *off)
 {
+<<<<<<< HEAD
 	int rv = 0;
 	char *kbuf;
 	char *tmp;
@@ -516,6 +593,19 @@ static ssize_t ofdt_write(struct file *file, const char __user *buf, size_t coun
 	}
 
 	kbuf[count] = '\0';
+=======
+	int rv;
+	char *kbuf;
+	char *tmp;
+
+	rv = security_locked_down(LOCKDOWN_DEVICE_TREE);
+	if (rv)
+		return rv;
+
+	kbuf = memdup_user_nul(buf, count);
+	if (IS_ERR(kbuf))
+		return PTR_ERR(kbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tmp = strchr(kbuf, ' ');
 	if (!tmp) {
@@ -542,9 +632,15 @@ out:
 	return rv ? rv : count;
 }
 
+<<<<<<< HEAD
 static const struct file_operations ofdt_fops = {
 	.write = ofdt_write,
 	.llseek = noop_llseek,
+=======
+static const struct proc_ops ofdt_proc_ops = {
+	.proc_write	= ofdt_write,
+	.proc_lseek	= noop_llseek,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* create /proc/powerpc/ofdt write-only by root */
@@ -552,6 +648,7 @@ static int proc_ppc64_create_ofdt(void)
 {
 	struct proc_dir_entry *ent;
 
+<<<<<<< HEAD
 	if (!machine_is(pseries))
 		return 0;
 
@@ -562,3 +659,12 @@ static int proc_ppc64_create_ofdt(void)
 	return 0;
 }
 __initcall(proc_ppc64_create_ofdt);
+=======
+	ent = proc_create("powerpc/ofdt", 0200, NULL, &ofdt_proc_ops);
+	if (ent)
+		proc_set_size(ent, 0);
+
+	return 0;
+}
+machine_device_initcall(pseries, proc_ppc64_create_ofdt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

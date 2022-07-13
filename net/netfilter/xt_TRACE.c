@@ -1,15 +1,36 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This is a module which is used to mark packets for tracing.
  */
 #include <linux/module.h>
 #include <linux/skbuff.h>
 
 #include <linux/netfilter/x_tables.h>
+<<<<<<< HEAD
+=======
+#include <net/netfilter/nf_log.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Xtables: packet flow tracing");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ipt_TRACE");
 MODULE_ALIAS("ip6t_TRACE");
 
+<<<<<<< HEAD
+=======
+static int trace_tg_check(const struct xt_tgchk_param *par)
+{
+	return nf_logger_find_get(par->family, NF_LOG_TYPE_LOG);
+}
+
+static void trace_tg_destroy(const struct xt_tgdtor_param *par)
+{
+	nf_logger_put(par->family, NF_LOG_TYPE_LOG);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int
 trace_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
@@ -18,12 +39,23 @@ trace_tg(struct sk_buff *skb, const struct xt_action_param *par)
 }
 
 static struct xt_target trace_tg_reg __read_mostly = {
+<<<<<<< HEAD
 	.name       = "TRACE",
 	.revision   = 0,
 	.family     = NFPROTO_UNSPEC,
 	.table      = "raw",
 	.target     = trace_tg,
 	.me         = THIS_MODULE,
+=======
+	.name		= "TRACE",
+	.revision	= 0,
+	.family		= NFPROTO_UNSPEC,
+	.table		= "raw",
+	.target		= trace_tg,
+	.checkentry	= trace_tg_check,
+	.destroy	= trace_tg_destroy,
+	.me		= THIS_MODULE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init trace_tg_init(void)
@@ -38,3 +70,7 @@ static void __exit trace_tg_exit(void)
 
 module_init(trace_tg_init);
 module_exit(trace_tg_exit);
+<<<<<<< HEAD
+=======
+MODULE_SOFTDEP("pre: nf_log_syslog");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

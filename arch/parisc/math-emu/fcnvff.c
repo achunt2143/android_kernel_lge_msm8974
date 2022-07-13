@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux/PA-RISC Project (http://www.parisc-linux.org/)
  *
  * Floating-point emulation code
  *  Copyright (C) 2001 Hewlett-Packard (Paul Bame) <bame@debian.org>
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * BEGIN_DESC
@@ -29,8 +36,13 @@
  *	Double Floating-point to Single Floating-point
  *
  *  External Interfaces:
+<<<<<<< HEAD
  *	dbl_to_sgl_fcnvff(srcptr,nullptr,dstptr,status)
  *	sgl_to_dbl_fcnvff(srcptr,nullptr,dstptr,status)
+=======
+ *	dbl_to_sgl_fcnvff(srcptr,_nullptr,dstptr,status)
+ *	sgl_to_dbl_fcnvff(srcptr,_nullptr,dstptr,status)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Internal Interfaces:
  *
@@ -53,7 +65,11 @@
 int
 sgl_to_dbl_fcnvff(
 	    sgl_floating_point *srcptr,
+<<<<<<< HEAD
 	    unsigned int *nullptr,
+=======
+	    unsigned int *_nullptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    dbl_floating_point *dstptr,
 	    unsigned int *status)
 {
@@ -140,7 +156,11 @@ sgl_to_dbl_fcnvff(
 int
 dbl_to_sgl_fcnvff(
 		    dbl_floating_point *srcptr,
+<<<<<<< HEAD
 		    unsigned int *nullptr,
+=======
+		    unsigned int *_nullptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    sgl_floating_point *dstptr,
 		    unsigned int *status)
 {
@@ -148,7 +168,11 @@ dbl_to_sgl_fcnvff(
         register int src_exponent, dest_exponent, dest_mantissa;
         register boolean inexact = FALSE, guardbit = FALSE, stickybit = FALSE;
 	register boolean lsb_odd = FALSE;
+<<<<<<< HEAD
 	boolean is_tiny;
+=======
+	boolean is_tiny = FALSE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	Dbl_copyfromptr(srcptr,srcp1,srcp2);
         src_exponent = Dbl_exponent(srcp1);

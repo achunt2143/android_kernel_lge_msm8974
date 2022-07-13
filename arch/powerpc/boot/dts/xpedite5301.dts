@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2008 Extreme Engineering Solutions, Inc.
  * Based on MPC8572DS device tree from Freescale Semiconductor, Inc.
  *
  * XPedite5301 PMC/XMC module based on MPC8572E
+<<<<<<< HEAD
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /dts-v1/;
@@ -231,7 +238,11 @@
 			};
 
 			rtc@68 {
+<<<<<<< HEAD
 				compatible = "stm,m41t00",
+=======
+				compatible = "st,m41t00",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				             "dallas,ds1338";
 				reg = <0x68>;
 			};
@@ -547,14 +558,22 @@
 		tlu@2f000 {
 			compatible = "fsl,mpc8572-tlu", "fsl_tlu";
 			reg = <0x2f000 0x1000>;
+<<<<<<< HEAD
 			interupts = <61 2 >;
+=======
+			interrupts = <61 2>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			interrupt-parent = <&mpic>;
 		};
 
 		tlu@15000 {
 			compatible = "fsl,mpc8572-tlu", "fsl_tlu";
 			reg = <0x15000 0x1000>;
+<<<<<<< HEAD
 			interupts = <75 2>;
+=======
+			interrupts = <75 2>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			interrupt-parent = <&mpic>;
 		};
 	};

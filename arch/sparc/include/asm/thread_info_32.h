@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * thread_info.h: sparc low-level thread information
  * adapted from the ppc version by Pete Zaitcev, which was
@@ -15,7 +19,10 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 #include <asm/btfixup.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ptrace.h>
 #include <asm/page.h>
 
@@ -28,7 +35,10 @@
 struct thread_info {
 	unsigned long		uwinmask;
 	struct task_struct	*task;		/* main task structure */
+<<<<<<< HEAD
 	struct exec_domain	*exec_domain;	/* execution domain */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		flags;		/* low level flags */
 	int			cpu;		/* cpu we're on */
 	int			preempt_count;	/* 0 => preemptable,
@@ -36,6 +46,11 @@ struct thread_info {
 	int			softirq_count;
 	int			hardirq_count;
 
+<<<<<<< HEAD
+=======
+	u32 __unused;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Context switch saved kernel state. */
 	unsigned long ksp;	/* ... ksp __attribute__ ((aligned (8))); */
 	unsigned long kpc;
@@ -48,8 +63,11 @@ struct thread_info {
 	struct reg_window32	reg_window[NSWINS];	/* align for ldd! */
 	unsigned long		rwbuf_stkptrs[NSWINS];
 	unsigned long		w_saved;
+<<<<<<< HEAD
 
 	struct restart_block	restart_block;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -59,6 +77,7 @@ struct thread_info {
 {							\
 	.uwinmask	=	0,			\
 	.task		=	&tsk,			\
+<<<<<<< HEAD
 	.exec_domain	=	&default_exec_domain,	\
 	.flags		=	0,			\
 	.cpu		=	0,			\
@@ -71,6 +90,13 @@ struct thread_info {
 #define init_thread_info	(init_thread_union.thread_info)
 #define init_stack		(init_thread_union.stack)
 
+=======
+	.flags		=	0,			\
+	.cpu		=	0,			\
+	.preempt_count	=	INIT_PREEMPT_COUNT,	\
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* how to get the thread information struct from C */
 register struct thread_info *current_thread_info_reg asm("g6");
 #define current_thread_info()   (current_thread_info_reg)
@@ -78,6 +104,7 @@ register struct thread_info *current_thread_info_reg asm("g6");
 /*
  * thread information allocation
  */
+<<<<<<< HEAD
 #define THREAD_INFO_ORDER  1
 
 #define __HAVE_ARCH_THREAD_INFO_ALLOCATOR
@@ -95,6 +122,13 @@ BTFIXUPDEF_CALL(void, free_thread_info, struct thread_info *)
  * Observe the order of get_free_pages() in alloc_thread_info_node().
  * The sun4 has 8K stack too, because it's short on memory, and 16K is a waste.
  */
+=======
+#define THREAD_SIZE_ORDER  1
+
+#endif /* __ASSEMBLY__ */
+
+/* Size of kernel stack for each process */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define THREAD_SIZE		(2 * PAGE_SIZE)
 
 /*
@@ -103,12 +137,20 @@ BTFIXUPDEF_CALL(void, free_thread_info, struct thread_info *)
  */
 #define TI_UWINMASK	0x00	/* uwinmask */
 #define TI_TASK		0x04
+<<<<<<< HEAD
 #define TI_EXECDOMAIN	0x08	/* exec_domain */
 #define TI_FLAGS	0x0c
 #define TI_CPU		0x10
 #define TI_PREEMPT	0x14	/* preempt_count */
 #define TI_SOFTIRQ	0x18	/* softirq_count */
 #define TI_HARDIRQ	0x1c	/* hardirq_count */
+=======
+#define TI_FLAGS	0x08
+#define TI_CPU		0x0c
+#define TI_PREEMPT	0x10	/* preempt_count */
+#define TI_SOFTIRQ	0x14	/* softirq_count */
+#define TI_HARDIRQ	0x18	/* hardirq_count */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TI_KSP		0x20	/* ksp */
 #define TI_KPC		0x24	/* kpc (ldd'ed with kpc) */
 #define TI_KPSR		0x28	/* kpsr */
@@ -116,9 +158,12 @@ BTFIXUPDEF_CALL(void, free_thread_info, struct thread_info *)
 #define TI_REG_WINDOW	0x30
 #define TI_RWIN_SPTRS	0x230
 #define TI_W_SAVED	0x250
+<<<<<<< HEAD
 /* #define TI_RESTART_BLOCK 0x25n */ /* Nobody cares */
 
 #define PREEMPT_ACTIVE		0x4000000
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * thread information flag bit numbers
@@ -128,6 +173,10 @@ BTFIXUPDEF_CALL(void, free_thread_info, struct thread_info *)
 #define TIF_SIGPENDING		2	/* signal pending */
 #define TIF_NEED_RESCHED	3	/* rescheduling necessary */
 #define TIF_RESTORE_SIGMASK	4	/* restore signal mask in do_signal() */
+<<<<<<< HEAD
+=======
+#define TIF_NOTIFY_SIGNAL	5	/* signal notifications exist */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TIF_USEDFPU		8	/* FPU was used by this task
 					 * this quantum (SMP) */
 #define TIF_POLLING_NRFLAG	9	/* true if poll_idle() is polling
@@ -139,13 +188,23 @@ BTFIXUPDEF_CALL(void, free_thread_info, struct thread_info *)
 #define _TIF_NOTIFY_RESUME	(1<<TIF_NOTIFY_RESUME)
 #define _TIF_SIGPENDING		(1<<TIF_SIGPENDING)
 #define _TIF_NEED_RESCHED	(1<<TIF_NEED_RESCHED)
+<<<<<<< HEAD
 #define _TIF_RESTORE_SIGMASK	(1<<TIF_RESTORE_SIGMASK)
+=======
+#define _TIF_NOTIFY_SIGNAL	(1<<TIF_NOTIFY_SIGNAL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _TIF_USEDFPU		(1<<TIF_USEDFPU)
 #define _TIF_POLLING_NRFLAG	(1<<TIF_POLLING_NRFLAG)
 
 #define _TIF_DO_NOTIFY_RESUME_MASK	(_TIF_NOTIFY_RESUME | \
+<<<<<<< HEAD
 					 _TIF_SIGPENDING | \
 					 _TIF_RESTORE_SIGMASK)
+=======
+					 _TIF_SIGPENDING | _TIF_NOTIFY_SIGNAL)
+
+#define is_32bit_task()	(1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __KERNEL__ */
 

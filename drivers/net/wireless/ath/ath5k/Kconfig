@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 config ATH5K
 	tristate "Atheros 5xxx wireless cards support"
 	depends on (PCI || ATHEROS_AR231X) && MAC80211
@@ -8,6 +9,17 @@ config ATH5K
 	select ATH5K_AHB if (ATHEROS_AR231X && !PCI)
 	select ATH5K_PCI if (!ATHEROS_AR231X && PCI)
 	---help---
+=======
+# SPDX-License-Identifier: ISC
+config ATH5K
+	tristate "Atheros 5xxx wireless cards support"
+	depends on (PCI || ATH25) && MAC80211
+	select ATH_COMMON
+	select MAC80211_LEDS if LEDS_CLASS=y || LEDS_CLASS=MAC80211
+	select ATH5K_AHB if ATH25
+	select ATH5K_PCI if !ATH25
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This module adds support for wireless adapters based on
 	  Atheros 5xxx chipset.
 
@@ -24,7 +36,11 @@ config ATH5K
 config ATH5K_DEBUG
 	bool "Atheros 5xxx debugging"
 	depends on ATH5K
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Atheros 5xxx debugging messages.
 
 	  Say Y, if and you will get debug options for ath5k.
@@ -44,7 +60,11 @@ config ATH5K_TRACER
 	bool "Atheros 5xxx tracer"
 	depends on ATH5K
 	depends on EVENT_TRACING
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here to enable tracepoints for the ath5k driver
 	  using the kernel tracing infrastructure.  Select this
 	  option if you are interested in debugging the driver.
@@ -53,14 +73,34 @@ config ATH5K_TRACER
 
 config ATH5K_AHB
 	bool "Atheros 5xxx AHB bus support"
+<<<<<<< HEAD
 	depends on (ATHEROS_AR231X && !PCI)
 	---help---
+=======
+	depends on ATH25 && ATH5K
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This adds support for WiSoC type chipsets of the 5xxx Atheros
 	  family.
 
 config ATH5K_PCI
 	bool "Atheros 5xxx PCI bus support"
+<<<<<<< HEAD
 	depends on (!ATHEROS_AR231X && PCI)
 	---help---
 	  This adds support for PCI type chipsets of the 5xxx Atheros
 	  family.
+=======
+	depends on (!ATH25 && PCI)
+	help
+	  This adds support for PCI type chipsets of the 5xxx Atheros
+	  family.
+
+config ATH5K_TEST_CHANNELS
+	bool "Enables testing channels on ath5k"
+	depends on ATH5K && CFG80211_CERTIFICATION_ONUS
+	help
+	  This enables non-standard IEEE 802.11 channels on ath5k, which
+	  can be used for research purposes. This option should be disabled
+	  unless doing research.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

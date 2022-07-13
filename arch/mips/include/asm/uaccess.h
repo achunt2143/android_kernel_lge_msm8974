@@ -6,11 +6,16 @@
  * Copyright (C) 1996, 1997, 1998, 1999, 2000, 03, 04 by Ralf Baechle
  * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
  * Copyright (C) 2007  Maciej W. Rozycki
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2014, Imagination Technologies Ltd.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ASM_UACCESS_H
 #define _ASM_UACCESS_H
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/errno.h>
 #include <linux/thread_info.h>
 
@@ -24,6 +29,16 @@
 #ifdef CONFIG_32BIT
 
 #define __UA_LIMIT	0x80000000UL
+=======
+#include <linux/string.h>
+#include <asm/asm-eva.h>
+#include <asm/extable.h>
+
+#ifdef CONFIG_32BIT
+
+#define __UA_LIMIT 0x80000000UL
+#define TASK_SIZE_MAX	KSEG0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __UA_ADDR	".word"
 #define __UA_LA		"la"
@@ -38,6 +53,10 @@
 extern u64 __ua_limit;
 
 #define __UA_LIMIT	__ua_limit
+<<<<<<< HEAD
+=======
+#define TASK_SIZE_MAX	XKSSEG
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __UA_ADDR	".dword"
 #define __UA_LA		"dla"
@@ -47,6 +66,7 @@ extern u64 __ua_limit;
 
 #endif /* CONFIG_64BIT */
 
+<<<<<<< HEAD
 /*
  * USER_DS is a bitmask that has the bits set that may not be set in a valid
  * userspace address.  Note that we limit 32-bit userspace to 0x7fff8000 but
@@ -128,6 +148,17 @@ extern u64 __ua_limit;
  * @ptr: Destination address, in user space.
  *
  * Context: User context only.  This function may sleep.
+=======
+#include <asm-generic/access_ok.h>
+
+/*
+ * put_user: - Write a simple value into user space.
+ * @x:	 Value to copy to user space.
+ * @ptr: Destination address, in user space.
+ *
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This macro copies a single simple value from kernel space to user
  * space.  It supports simple types like char and int, but not larger
@@ -138,6 +169,7 @@ extern u64 __ua_limit;
  *
  * Returns zero on success, or -EFAULT on error.
  */
+<<<<<<< HEAD
 #define put_user(x,ptr)	\
 	__put_user_check((x), (ptr), sizeof(*(ptr)))
 
@@ -147,6 +179,23 @@ extern u64 __ua_limit;
  * @ptr: Source address, in user space.
  *
  * Context: User context only.  This function may sleep.
+=======
+#define put_user(x, ptr)						\
+({									\
+	__typeof__(*(ptr)) __user *__p = (ptr);				\
+									\
+	might_fault();							\
+	access_ok(__p, sizeof(*__p)) ? __put_user((x), __p) : -EFAULT;	\
+})
+
+/*
+ * get_user: - Get a simple variable from user space.
+ * @x:	 Variable to store result.
+ * @ptr: Source address, in user space.
+ *
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This macro copies a single simple variable from user space to kernel
  * space.  It supports simple types like char and int, but not larger
@@ -158,6 +207,7 @@ extern u64 __ua_limit;
  * Returns zero on success, or -EFAULT on error.
  * On error, the variable @x is set to zero.
  */
+<<<<<<< HEAD
 #define get_user(x,ptr) \
 	__get_user_check((x), (ptr), sizeof(*(ptr)))
 
@@ -167,6 +217,24 @@ extern u64 __ua_limit;
  * @ptr: Destination address, in user space.
  *
  * Context: User context only.  This function may sleep.
+=======
+#define get_user(x, ptr)						\
+({									\
+	const __typeof__(*(ptr)) __user *__p = (ptr);			\
+									\
+	might_fault();							\
+	access_ok(__p, sizeof(*__p)) ? __get_user((x), __p) :		\
+				       ((x) = 0, -EFAULT);		\
+})
+
+/*
+ * __put_user: - Write a simple value into user space, with less checking.
+ * @x:	 Value to copy to user space.
+ * @ptr: Destination address, in user space.
+ *
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This macro copies a single simple value from kernel space to user
  * space.  It supports simple types like char and int, but not larger
@@ -180,6 +248,7 @@ extern u64 __ua_limit;
  *
  * Returns zero on success, or -EFAULT on error.
  */
+<<<<<<< HEAD
 #define __put_user(x,ptr) \
 	__put_user_nocheck((x), (ptr), sizeof(*(ptr)))
 
@@ -189,6 +258,42 @@ extern u64 __ua_limit;
  * @ptr: Source address, in user space.
  *
  * Context: User context only.  This function may sleep.
+=======
+#define __put_user(x, ptr)						\
+({									\
+	__typeof__(*(ptr)) __user *__pu_ptr = (ptr);			\
+	__typeof__(*(ptr)) __pu_val = (x);				\
+	int __pu_err = 0;						\
+									\
+	__chk_user_ptr(__pu_ptr);					\
+	switch (sizeof(*__pu_ptr)) {					\
+	case 1:								\
+		__put_data_asm(user_sb, __pu_ptr);			\
+		break;							\
+	case 2:								\
+		__put_data_asm(user_sh, __pu_ptr);			\
+		break;							\
+	case 4:								\
+		__put_data_asm(user_sw, __pu_ptr);			\
+		break;							\
+	case 8:								\
+		__PUT_DW(user_sd, __pu_ptr);				\
+		break;							\
+	default:							\
+		BUILD_BUG();						\
+	}								\
+									\
+	__pu_err;							\
+})
+
+/*
+ * __get_user: - Get a simple variable from user space, with less checking.
+ * @x:	 Variable to store result.
+ * @ptr: Source address, in user space.
+ *
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This macro copies a single simple variable from user space to kernel
  * space.  It supports simple types like char and int, but not larger
@@ -203,12 +308,41 @@ extern u64 __ua_limit;
  * Returns zero on success, or -EFAULT on error.
  * On error, the variable @x is set to zero.
  */
+<<<<<<< HEAD
 #define __get_user(x,ptr) \
 	__get_user_nocheck((x), (ptr), sizeof(*(ptr)))
+=======
+#define __get_user(x, ptr)						\
+({									\
+	const __typeof__(*(ptr)) __user *__gu_ptr = (ptr);		\
+	int __gu_err = 0;						\
+									\
+	__chk_user_ptr(__gu_ptr);					\
+	switch (sizeof(*__gu_ptr)) {					\
+	case 1:								\
+		__get_data_asm((x), user_lb, __gu_ptr);			\
+		break;							\
+	case 2:								\
+		__get_data_asm((x), user_lh, __gu_ptr);			\
+		break;							\
+	case 4:								\
+		__get_data_asm((x), user_lw, __gu_ptr);			\
+		break;							\
+	case 8:								\
+		__GET_DW((x), user_ld, __gu_ptr);			\
+		break;							\
+	default:							\
+		BUILD_BUG();						\
+	}								\
+									\
+	__gu_err;							\
+})
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct __large_struct { unsigned long buf[100]; };
 #define __m(x) (*(struct __large_struct __user *)(x))
 
+<<<<<<< HEAD
 /*
  * Yuck.  We need two variants, one for 64bit operation and one
  * for 32 bit mode and old iron.
@@ -255,14 +389,33 @@ do {									\
 })
 
 #define __get_user_asm(val, insn, addr)					\
+=======
+#ifdef CONFIG_32BIT
+#define __GET_DW(val, insn, ptr) __get_data_asm_ll32(val, insn, ptr)
+#endif
+#ifdef CONFIG_64BIT
+#define __GET_DW(val, insn, ptr) __get_data_asm(val, insn, ptr)
+#endif
+
+#define __get_data_asm(val, insn, addr)					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {									\
 	long __gu_tmp;							\
 									\
 	__asm__ __volatile__(						\
+<<<<<<< HEAD
 	"1:	" insn "	%1, %3				\n"	\
 	"2:							\n"	\
 	"	.section .fixup,\"ax\"				\n"	\
 	"3:	li	%0, %4					\n"	\
+=======
+	"1:	"insn("%1", "%3")"				\n"	\
+	"2:							\n"	\
+	"	.insn						\n"	\
+	"	.section .fixup,\"ax\"				\n"	\
+	"3:	li	%0, %4					\n"	\
+	"	move	%1, $0					\n"	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"	j	2b					\n"	\
 	"	.previous					\n"	\
 	"	.section __ex_table,\"a\"			\n"	\
@@ -277,7 +430,11 @@ do {									\
 /*
  * Get a long long 64 using 32 bit registers.
  */
+<<<<<<< HEAD
 #define __get_user_asm_ll32(val, addr)					\
+=======
+#define __get_data_asm_ll32(val, insn, addr)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {									\
 	union {								\
 		unsigned long long	l;				\
@@ -285,9 +442,17 @@ do {									\
 	} __gu_tmp;							\
 									\
 	__asm__ __volatile__(						\
+<<<<<<< HEAD
 	"1:	lw	%1, (%3)				\n"	\
 	"2:	lw	%D1, 4(%3)				\n"	\
 	"3:	.section	.fixup,\"ax\"			\n"	\
+=======
+	"1:	" insn("%1", "(%3)")"				\n"	\
+	"2:	" insn("%D1", "4(%3)")"				\n"	\
+	"3:							\n"	\
+	"	.insn						\n"	\
+	"	.section	.fixup,\"ax\"			\n"	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"4:	li	%0, %4					\n"	\
 	"	move	%1, $0					\n"	\
 	"	move	%D1, $0					\n"	\
@@ -303,6 +468,7 @@ do {									\
 	(val) = __gu_tmp.t;						\
 }
 
+<<<<<<< HEAD
 /*
  * Yuck.  We need two variants, one for 64bit operation and one
  * for 32 bit mode and old iron.
@@ -565,12 +731,43 @@ do {									\
 	: "0" (0), "r" (addr), "i" (-EFAULT));				\
 	(val) = (__typeof__(*(addr))) __gu_tmp;				\
 }
+=======
+#define __get_kernel_nofault(dst, src, type, err_label)			\
+do {									\
+	int __gu_err;							\
+									\
+	switch (sizeof(type)) {						\
+	case 1:								\
+		__get_data_asm(*(type *)(dst), kernel_lb,		\
+			       (__force type *)(src));			\
+		break;							\
+	case 2:								\
+		__get_data_asm(*(type *)(dst), kernel_lh,		\
+			       (__force type *)(src));			\
+		break;							\
+	case 4:								\
+		 __get_data_asm(*(type *)(dst), kernel_lw,		\
+			       (__force type *)(src));			\
+		break;							\
+	case 8:								\
+		__GET_DW(*(type *)(dst), kernel_ld,			\
+			 (__force type *)(src));			\
+		break;							\
+	default:							\
+		BUILD_BUG();						\
+		break;							\
+	}								\
+	if (unlikely(__gu_err))						\
+		goto err_label;						\
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Yuck.  We need two variants, one for 64bit operation and one
  * for 32 bit mode and old iron.
  */
 #ifdef CONFIG_32BIT
+<<<<<<< HEAD
 #define __PUT_USER_UNALIGNED_DW(ptr) __put_user_unaligned_asm_ll32(ptr)
 #endif
 #ifdef CONFIG_64BIT
@@ -616,6 +813,20 @@ do {									\
 	__asm__ __volatile__(						\
 	"1:	" insn "	%z2, %3		# __put_user_unaligned_asm\n" \
 	"2:							\n"	\
+=======
+#define __PUT_DW(insn, ptr) __put_data_asm_ll32(insn, ptr)
+#endif
+#ifdef CONFIG_64BIT
+#define __PUT_DW(insn, ptr) __put_data_asm(insn, ptr)
+#endif
+
+#define __put_data_asm(insn, ptr)					\
+{									\
+	__asm__ __volatile__(						\
+	"1:	"insn("%z2", "%3")"	# __put_data_asm	\n"	\
+	"2:							\n"	\
+	"	.insn						\n"	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"	.section	.fixup,\"ax\"			\n"	\
 	"3:	li	%0, %4					\n"	\
 	"	j	2b					\n"	\
@@ -628,28 +839,72 @@ do {									\
 	  "i" (-EFAULT));						\
 }
 
+<<<<<<< HEAD
 #define __put_user_unaligned_asm_ll32(ptr)				\
 {									\
 	__asm__ __volatile__(						\
 	"1:	sw	%2, (%3)	# __put_user_unaligned_asm_ll32	\n" \
 	"2:	sw	%D2, 4(%3)				\n"	\
 	"3:							\n"	\
+=======
+#define __put_data_asm_ll32(insn, ptr)					\
+{									\
+	__asm__ __volatile__(						\
+	"1:	"insn("%2", "(%3)")"	# __put_data_asm_ll32	\n"	\
+	"2:	"insn("%D2", "4(%3)")"				\n"	\
+	"3:							\n"	\
+	"	.insn						\n"	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"	.section	.fixup,\"ax\"			\n"	\
 	"4:	li	%0, %4					\n"	\
 	"	j	3b					\n"	\
 	"	.previous					\n"	\
 	"	.section	__ex_table,\"a\"		\n"	\
 	"	" __UA_ADDR "	1b, 4b				\n"	\
+<<<<<<< HEAD
 	"	" __UA_ADDR "	1b + 4, 4b			\n"	\
 	"	" __UA_ADDR "	2b, 4b				\n"	\
 	"	" __UA_ADDR "	2b + 4, 4b			\n"	\
+=======
+	"	" __UA_ADDR "	2b, 4b				\n"	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"	.previous"						\
 	: "=r" (__pu_err)						\
 	: "0" (0), "r" (__pu_val), "r" (ptr),				\
 	  "i" (-EFAULT));						\
 }
 
+<<<<<<< HEAD
 extern void __put_user_unaligned_unknown(void);
+=======
+#define __put_kernel_nofault(dst, src, type, err_label)			\
+do {									\
+	type __pu_val;					\
+	int __pu_err = 0;						\
+									\
+	__pu_val = *(__force type *)(src);				\
+	switch (sizeof(type)) {						\
+	case 1:								\
+		__put_data_asm(kernel_sb, (type *)(dst));		\
+		break;							\
+	case 2:								\
+		__put_data_asm(kernel_sh, (type *)(dst));		\
+		break;							\
+	case 4:								\
+		__put_data_asm(kernel_sw, (type *)(dst))		\
+		break;							\
+	case 8:								\
+		__PUT_DW(kernel_sd, (type *)(dst));			\
+		break;							\
+	default:							\
+		BUILD_BUG();						\
+		break;							\
+	}								\
+	if (unlikely(__pu_err))						\
+		goto err_label;						\
+} while (0)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We're generating jump to subroutines which will be outside the range of
@@ -658,7 +913,11 @@ extern void __put_user_unaligned_unknown(void);
 #ifdef MODULE
 #define __MODULE_JAL(destination)					\
 	".set\tnoat\n\t"						\
+<<<<<<< HEAD
 	__UA_LA "\t$1, " #destination "\n\t" 				\
+=======
+	__UA_LA "\t$1, " #destination "\n\t"				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"jalr\t$1\n\t"							\
 	".set\tat\n\t"
 #else
@@ -666,6 +925,7 @@ extern void __put_user_unaligned_unknown(void);
 	"jal\t" #destination "\n\t"
 #endif
 
+<<<<<<< HEAD
 #ifndef CONFIG_CPU_DADDI_WORKAROUNDS
 #define DADDI_SCRATCH "$0"
 #else
@@ -927,6 +1187,74 @@ extern size_t __copy_user_inatomic(void *__to, const void *__from, size_t __n);
  * __clear_user: - Zero a block of memory in user space, with less checking.
  * @to:   Destination address, in user space.
  * @n:    Number of bytes to zero.
+=======
+#if defined(CONFIG_CPU_DADDI_WORKAROUNDS) || (defined(CONFIG_EVA) &&	\
+					      defined(CONFIG_CPU_HAS_PREFETCH))
+#define DADDI_SCRATCH "$3"
+#else
+#define DADDI_SCRATCH "$0"
+#endif
+
+extern size_t __raw_copy_from_user(void *__to, const void *__from, size_t __n);
+extern size_t __raw_copy_to_user(void *__to, const void *__from, size_t __n);
+
+static inline unsigned long
+raw_copy_from_user(void *to, const void __user *from, unsigned long n)
+{
+	register void *__cu_to_r __asm__("$4");
+	register const void __user *__cu_from_r __asm__("$5");
+	register long __cu_len_r __asm__("$6");
+
+	__cu_to_r = to;
+	__cu_from_r = from;
+	__cu_len_r = n;
+
+	__asm__ __volatile__(
+		".set\tnoreorder\n\t"
+		__MODULE_JAL(__raw_copy_from_user)
+		".set\tnoat\n\t"
+		__UA_ADDU "\t$1, %1, %2\n\t"
+		".set\tat\n\t"
+		".set\treorder"
+		: "+r" (__cu_to_r), "+r" (__cu_from_r), "+r" (__cu_len_r)
+		:
+		: "$8", "$9", "$10", "$11", "$12", "$14", "$15", "$24", "$31",
+		  DADDI_SCRATCH, "memory");
+
+	return __cu_len_r;
+}
+
+static inline unsigned long
+raw_copy_to_user(void __user *to, const void *from, unsigned long n)
+{
+	register void __user *__cu_to_r __asm__("$4");
+	register const void *__cu_from_r __asm__("$5");
+	register long __cu_len_r __asm__("$6");
+
+	__cu_to_r = (to);
+	__cu_from_r = (from);
+	__cu_len_r = (n);
+
+	__asm__ __volatile__(
+		__MODULE_JAL(__raw_copy_to_user)
+		: "+r" (__cu_to_r), "+r" (__cu_from_r), "+r" (__cu_len_r)
+		:
+		: "$8", "$9", "$10", "$11", "$12", "$14", "$15", "$24", "$31",
+		  DADDI_SCRATCH, "memory");
+
+	return __cu_len_r;
+}
+
+#define INLINE_COPY_FROM_USER
+#define INLINE_COPY_TO_USER
+
+extern __kernel_size_t __bzero(void __user *addr, __kernel_size_t size);
+
+/*
+ * __clear_user: - Zero a block of memory in user space, with less checking.
+ * @to:	  Destination address, in user space.
+ * @n:	  Number of bytes to zero.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Zero a block of memory in user space.  Caller must check
  * the specified block with access_ok() before calling this function.
@@ -939,6 +1267,16 @@ __clear_user(void __user *addr, __kernel_size_t size)
 {
 	__kernel_size_t res;
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_CPU_MICROMIPS
+/* micromips memset / bzero also clobbers t7 & t8 */
+#define bzero_clobbers "$4", "$5", "$6", __UA_t0, __UA_t1, "$15", "$24", "$31"
+#else
+#define bzero_clobbers "$4", "$5", "$6", __UA_t0, __UA_t1, "$31"
+#endif /* CONFIG_CPU_MICROMIPS */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	might_fault();
 	__asm__ __volatile__(
 		"move\t$4, %1\n\t"
@@ -948,7 +1286,11 @@ __clear_user(void __user *addr, __kernel_size_t size)
 		"move\t%0, $6"
 		: "=r" (res)
 		: "r" (addr), "r" (size)
+<<<<<<< HEAD
 		: "$4", "$5", "$6", __UA_t0, __UA_t1, "$31");
+=======
+		: bzero_clobbers);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return res;
 }
@@ -957,12 +1299,17 @@ __clear_user(void __user *addr, __kernel_size_t size)
 ({									\
 	void __user * __cl_addr = (addr);				\
 	unsigned long __cl_size = (n);					\
+<<<<<<< HEAD
 	if (__cl_size && access_ok(VERIFY_WRITE,			\
 					__cl_addr, __cl_size))		\
+=======
+	if (__cl_size && access_ok(__cl_addr, __cl_size))		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__cl_size = __clear_user(__cl_addr, __cl_size);		\
 	__cl_size;							\
 })
 
+<<<<<<< HEAD
 /*
  * __strncpy_from_user: - Copy a NUL terminated string from userspace, with less checking.
  * @dst:   Destination address, in kernel space.  This buffer must be at
@@ -1001,11 +1348,18 @@ __strncpy_from_user(char *__to, const char __user *__from, long __len)
 
 	return res;
 }
+=======
+extern long __strncpy_from_user_asm(char *__to, const char __user *__from, long __len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * strncpy_from_user: - Copy a NUL terminated string from userspace.
  * @dst:   Destination address, in kernel space.  This buffer must be at
+<<<<<<< HEAD
  *         least @count bytes long.
+=======
+ *	   least @count bytes long.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @src:   Source address, in user space.
  * @count: Maximum number of bytes to copy, including the trailing NUL.
  *
@@ -1025,6 +1379,12 @@ strncpy_from_user(char *__to, const char __user *__from, long __len)
 {
 	long res;
 
+<<<<<<< HEAD
+=======
+	if (!access_ok(__from, __len))
+		return -EFAULT;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	might_fault();
 	__asm__ __volatile__(
 		"move\t$4, %1\n\t"
@@ -1039,6 +1399,7 @@ strncpy_from_user(char *__to, const char __user *__from, long __len)
 	return res;
 }
 
+<<<<<<< HEAD
 /* Returns: 0 if bad, string length+1 (memory size) of string if ok */
 static inline long __strlen_user(const char __user *s)
 {
@@ -1061,11 +1422,22 @@ static inline long __strlen_user(const char __user *s)
  * @str: The string to measure.
  *
  * Context: User context only.  This function may sleep.
+=======
+extern long __strnlen_user_asm(const char __user *s, long n);
+
+/*
+ * strnlen_user: - Get the size of a string in user space.
+ * @str: The string to measure.
+ *
+ * Context: User context only. This function may sleep if pagefaults are
+ *          enabled.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Get the size of a NUL-terminated string in user space.
  *
  * Returns the size of the string INCLUDING the terminating NUL.
  * On exception, returns 0.
+<<<<<<< HEAD
  *
  * If there is a limit on the length of a valid string, you may wish to
  * consider using strnlen_user() instead.
@@ -1117,11 +1489,20 @@ static inline long __strnlen_user(const char __user *s, long n)
  *
  * If there is a limit on the length of a valid string, you may wish to
  * consider using strnlen_user() instead.
+=======
+ * If the string is too long, returns a value greater than @n.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline long strnlen_user(const char __user *s, long n)
 {
 	long res;
 
+<<<<<<< HEAD
+=======
+	if (!access_ok(s, 1))
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	might_fault();
 	__asm__ __volatile__(
 		"move\t$4, %1\n\t"
@@ -1135,6 +1516,7 @@ static inline long strnlen_user(const char __user *s, long n)
 	return res;
 }
 
+<<<<<<< HEAD
 struct exception_table_entry
 {
 	unsigned long insn;
@@ -1143,4 +1525,6 @@ struct exception_table_entry
 
 extern int fixup_exception(struct pt_regs *regs);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_UACCESS_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1995-2003 Russell King
  *               2001-2002 Keith Owens
@@ -5,23 +9,46 @@
  * Generate definitions needed by assembly language modules.
  * This code generates raw asm output which is post-processed to extract
  * and format the required data.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+=======
+ */
+#include <linux/compiler.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/mm.h>
 #include <linux/dma-mapping.h>
 #include <asm/cacheflush.h>
+<<<<<<< HEAD
+=======
+#include <asm/kexec-internal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/glue-df.h>
 #include <asm/glue-pf.h>
 #include <asm/mach/arch.h>
 #include <asm/thread_info.h>
+<<<<<<< HEAD
 #include <asm/memory.h>
 #include <asm/procinfo.h>
 #include <asm/hardware/cache-l2x0.h>
 #include <linux/kbuild.h>
+=======
+#include <asm/page.h>
+#include <asm/mpu.h>
+#include <asm/procinfo.h>
+#include <asm/suspend.h>
+#include <asm/hardware/cache-l2x0.h>
+#include <linux/kbuild.h>
+#include <linux/arm-smccc.h>
+
+#include <vdso/datapage.h>
+
+#include "signal.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Make sure that the compiler and target are compatible.
@@ -29,6 +56,7 @@
 #if defined(__APCS_26__)
 #error Sorry, your compiler targets APCS-26 but this kernel requires APCS-32
 #endif
+<<<<<<< HEAD
 /*
  * GCC 3.0, 3.1: general bad code generation.
  * GCC 3.2.0: incorrect function argument offset calculation.
@@ -40,16 +68,23 @@
 #error Your compiler is too buggy; it is known to miscompile kernels.
 #error    Known good compilers: 3.3
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int main(void)
 {
   DEFINE(TSK_ACTIVE_MM,		offsetof(struct task_struct, active_mm));
+<<<<<<< HEAD
 #ifdef CONFIG_CC_STACKPROTECTOR
+=======
+#ifdef CONFIG_STACKPROTECTOR
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   DEFINE(TSK_STACK_CANARY,	offsetof(struct task_struct, stack_canary));
 #endif
   BLANK();
   DEFINE(TI_FLAGS,		offsetof(struct thread_info, flags));
   DEFINE(TI_PREEMPT,		offsetof(struct thread_info, preempt_count));
+<<<<<<< HEAD
   DEFINE(TI_ADDR_LIMIT,		offsetof(struct thread_info, addr_limit));
   DEFINE(TI_TASK,		offsetof(struct thread_info, task));
   DEFINE(TI_EXEC_DOMAIN,	offsetof(struct thread_info, exec_domain));
@@ -59,19 +94,36 @@ int main(void)
   DEFINE(TI_USED_CP,		offsetof(struct thread_info, used_cp));
   DEFINE(TI_TP_VALUE,		offsetof(struct thread_info, tp_value));
   DEFINE(TI_FPSTATE,		offsetof(struct thread_info, fpstate));
+=======
+  DEFINE(TI_CPU,		offsetof(struct thread_info, cpu));
+  DEFINE(TI_CPU_DOMAIN,		offsetof(struct thread_info, cpu_domain));
+  DEFINE(TI_CPU_SAVE,		offsetof(struct thread_info, cpu_context));
+  DEFINE(TI_ABI_SYSCALL,	offsetof(struct thread_info, abi_syscall));
+  DEFINE(TI_TP_VALUE,		offsetof(struct thread_info, tp_value));
+  DEFINE(TI_FPSTATE,		offsetof(struct thread_info, fpstate));
+#ifdef CONFIG_VFP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   DEFINE(TI_VFPSTATE,		offsetof(struct thread_info, vfpstate));
 #ifdef CONFIG_SMP
   DEFINE(VFP_CPU,		offsetof(union vfp_state, hard.cpu));
 #endif
+<<<<<<< HEAD
+=======
+#endif
+  DEFINE(SOFTIRQ_DISABLE_OFFSET,SOFTIRQ_DISABLE_OFFSET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ARM_THUMBEE
   DEFINE(TI_THUMBEE_STATE,	offsetof(struct thread_info, thumbee_state));
 #endif
 #ifdef CONFIG_IWMMXT
   DEFINE(TI_IWMMXT_STATE,	offsetof(struct thread_info, fpstate.iwmmxt));
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_CRUNCH
   DEFINE(TI_CRUNCH_STATE,	offsetof(struct thread_info, crunchstate));
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   BLANK();
   DEFINE(S_R0,			offsetof(struct pt_regs, ARM_r0));
   DEFINE(S_R1,			offsetof(struct pt_regs, ARM_r1));
@@ -91,7 +143,16 @@ int main(void)
   DEFINE(S_PC,			offsetof(struct pt_regs, ARM_pc));
   DEFINE(S_PSR,			offsetof(struct pt_regs, ARM_cpsr));
   DEFINE(S_OLD_R0,		offsetof(struct pt_regs, ARM_ORIG_r0));
+<<<<<<< HEAD
   DEFINE(S_FRAME_SIZE,		sizeof(struct pt_regs));
+=======
+  DEFINE(PT_REGS_SIZE,		sizeof(struct pt_regs));
+  DEFINE(SVC_DACR,		offsetof(struct svc_pt_regs, dacr));
+  DEFINE(SVC_REGS_SIZE,		sizeof(struct svc_pt_regs));
+  BLANK();
+  DEFINE(SIGFRAME_RC3_OFFSET,	offsetof(struct sigframe, retcode[3]));
+  DEFINE(RT_SIGFRAME_RC3_OFFSET, offsetof(struct rt_sigframe, sig.retcode[3]));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   BLANK();
 #ifdef CONFIG_CACHE_L2X0
   DEFINE(L2X0_R_PHY_BASE,	offsetof(struct l2x0_regs, phy_base));
@@ -105,7 +166,11 @@ int main(void)
   BLANK();
 #endif
 #ifdef CONFIG_CPU_HAS_ASID
+<<<<<<< HEAD
   DEFINE(MM_CONTEXT_ID,		offsetof(struct mm_struct, context.id));
+=======
+  DEFINE(MM_CONTEXT_ID,		offsetof(struct mm_struct, context.id.counter));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   BLANK();
 #endif
   DEFINE(VMA_VM_MM,		offsetof(struct vm_area_struct, vm_mm));
@@ -140,9 +205,45 @@ int main(void)
 #ifdef MULTI_CACHE
   DEFINE(CACHE_FLUSH_KERN_ALL,	offsetof(struct cpu_cache_fns, flush_kern_all));
 #endif
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_ARM_CPU_SUSPEND
+  DEFINE(SLEEP_SAVE_SP_SZ,	sizeof(struct sleep_save_sp));
+  DEFINE(SLEEP_SAVE_SP_PHYS,	offsetof(struct sleep_save_sp, save_ptr_stash_phys));
+  DEFINE(SLEEP_SAVE_SP_VIRT,	offsetof(struct sleep_save_sp, save_ptr_stash));
+#endif
+  DEFINE(ARM_SMCCC_QUIRK_ID_OFFS,	offsetof(struct arm_smccc_quirk, id));
+  DEFINE(ARM_SMCCC_QUIRK_STATE_OFFS,	offsetof(struct arm_smccc_quirk, state));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   BLANK();
   DEFINE(DMA_BIDIRECTIONAL,	DMA_BIDIRECTIONAL);
   DEFINE(DMA_TO_DEVICE,		DMA_TO_DEVICE);
   DEFINE(DMA_FROM_DEVICE,	DMA_FROM_DEVICE);
+<<<<<<< HEAD
+=======
+  BLANK();
+  DEFINE(CACHE_WRITEBACK_ORDER, __CACHE_WRITEBACK_ORDER);
+  DEFINE(CACHE_WRITEBACK_GRANULE, __CACHE_WRITEBACK_GRANULE);
+  BLANK();
+#ifdef CONFIG_VDSO
+  DEFINE(VDSO_DATA_SIZE,	sizeof(union vdso_data_store));
+#endif
+  BLANK();
+#ifdef CONFIG_ARM_MPU
+  DEFINE(MPU_RNG_INFO_RNGS,	offsetof(struct mpu_rgn_info, rgns));
+  DEFINE(MPU_RNG_INFO_USED,	offsetof(struct mpu_rgn_info, used));
+
+  DEFINE(MPU_RNG_SIZE,		sizeof(struct mpu_rgn));
+  DEFINE(MPU_RGN_DRBAR,	offsetof(struct mpu_rgn, drbar));
+  DEFINE(MPU_RGN_DRSR,	offsetof(struct mpu_rgn, drsr));
+  DEFINE(MPU_RGN_DRACR,	offsetof(struct mpu_rgn, dracr));
+  DEFINE(MPU_RGN_PRBAR,	offsetof(struct mpu_rgn, prbar));
+  DEFINE(MPU_RGN_PRLAR,	offsetof(struct mpu_rgn, prlar));
+#endif
+  DEFINE(KEXEC_START_ADDR,	offsetof(struct kexec_relocate_data, kexec_start_address));
+  DEFINE(KEXEC_INDIR_PAGE,	offsetof(struct kexec_relocate_data, kexec_indirection_page));
+  DEFINE(KEXEC_MACH_TYPE,	offsetof(struct kexec_relocate_data, kexec_mach_type));
+  DEFINE(KEXEC_R2,		offsetof(struct kexec_relocate_data, kexec_r2));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   return 0; 
 }

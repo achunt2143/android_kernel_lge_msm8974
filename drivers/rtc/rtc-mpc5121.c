@@ -1,20 +1,33 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Real-time clock driver for MPC5121
  *
  * Copyright 2007, Domen Puncer <domen.puncer@telargo.com>
  * Copyright 2008, Freescale Semiconductor, Inc. All rights reserved.
  * Copyright 2011, Dmitry Eremin-Solenikov
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/rtc.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
+=======
+#include <linux/of.h>
+#include <linux/of_irq.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/slab.h>
 
@@ -67,7 +80,11 @@ struct mpc5121_rtc_regs {
 	u32 target_time;	/* RTC + 0x20 */
 	/*
 	 * actual_time:
+<<<<<<< HEAD
 	 * 	readonly time since VBAT_RTC was last connected
+=======
+	 *	readonly time since VBAT_RTC was last connected
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	u32 actual_time;	/* RTC + 0x24 */
 	u32 keep_alive;		/* RTC + 0x28 */
@@ -111,7 +128,11 @@ static int mpc5121_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	 */
 	now = in_be32(&regs->actual_time) + in_be32(&regs->target_time);
 
+<<<<<<< HEAD
 	rtc_time_to_tm(now, tm);
+=======
+	rtc_time64_to_tm(now, tm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * update second minute hour registers
@@ -119,23 +140,35 @@ static int mpc5121_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	 */
 	mpc5121_rtc_update_smh(regs, tm);
 
+<<<<<<< HEAD
 	return rtc_valid_tm(tm);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mpc5121_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct mpc5121_rtc_data *rtc = dev_get_drvdata(dev);
 	struct mpc5121_rtc_regs __iomem *regs = rtc->regs;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long now;
 
 	/*
 	 * The actual_time register is read only so we write the offset
 	 * between it and linux time to the target_time register.
 	 */
+<<<<<<< HEAD
 	ret = rtc_tm_to_time(tm, &now);
 	if (ret == 0)
 		out_be32(&regs->target_time, now - in_be32(&regs->actual_time));
+=======
+	now = rtc_tm_to_time64(tm);
+	out_be32(&regs->target_time, now - in_be32(&regs->actual_time));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * update second minute hour registers
@@ -212,6 +245,7 @@ static int mpc5121_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 	struct mpc5121_rtc_data *rtc = dev_get_drvdata(dev);
 	struct mpc5121_rtc_regs __iomem *regs = rtc->regs;
 
+<<<<<<< HEAD
 	/*
 	 * the alarm has no seconds so deal with it
 	 */
@@ -226,6 +260,8 @@ static int mpc5121_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alarm)
 		}
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	alarm->time.tm_mday = -1;
 	alarm->time.tm_mon = -1;
 	alarm->time.tm_year = -1;
@@ -306,11 +342,16 @@ static const struct rtc_class_ops mpc5200_rtc_ops = {
 	.alarm_irq_enable = mpc5121_rtc_alarm_irq_enable,
 };
 
+<<<<<<< HEAD
 static int __devinit mpc5121_rtc_probe(struct platform_device *op)
+=======
+static int mpc5121_rtc_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpc5121_rtc_data *rtc;
 	int err = 0;
 
+<<<<<<< HEAD
 	rtc = kzalloc(sizeof(*rtc), GFP_KERNEL);
 	if (!rtc)
 		return -ENOMEM;
@@ -320,15 +361,33 @@ static int __devinit mpc5121_rtc_probe(struct platform_device *op)
 		dev_err(&op->dev, "%s: couldn't map io space\n", __func__);
 		err = -ENOSYS;
 		goto out_free;
+=======
+	rtc = devm_kzalloc(&op->dev, sizeof(*rtc), GFP_KERNEL);
+	if (!rtc)
+		return -ENOMEM;
+
+	rtc->regs = devm_platform_ioremap_resource(op, 0);
+	if (IS_ERR(rtc->regs)) {
+		dev_err(&op->dev, "%s: couldn't map io space\n", __func__);
+		return PTR_ERR(rtc->regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	device_init_wakeup(&op->dev, 1);
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, rtc);
 
 	rtc->irq = irq_of_parse_and_map(op->dev.of_node, 1);
 	err = request_irq(rtc->irq, mpc5121_rtc_handler, 0,
 						"mpc5121-rtc", &op->dev);
+=======
+	platform_set_drvdata(op, rtc);
+
+	rtc->irq = irq_of_parse_and_map(op->dev.of_node, 1);
+	err = devm_request_irq(&op->dev, rtc->irq, mpc5121_rtc_handler, 0,
+			       "mpc5121-rtc", &op->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		dev_err(&op->dev, "%s: could not request irq: %i\n",
 							__func__, rtc->irq);
@@ -336,14 +395,35 @@ static int __devinit mpc5121_rtc_probe(struct platform_device *op)
 	}
 
 	rtc->irq_periodic = irq_of_parse_and_map(op->dev.of_node, 0);
+<<<<<<< HEAD
 	err = request_irq(rtc->irq_periodic, mpc5121_rtc_handler_upd,
 				0, "mpc5121-rtc_upd", &op->dev);
+=======
+	err = devm_request_irq(&op->dev, rtc->irq_periodic,
+			       mpc5121_rtc_handler_upd, 0, "mpc5121-rtc_upd",
+			       &op->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		dev_err(&op->dev, "%s: could not request irq: %i\n",
 						__func__, rtc->irq_periodic);
 		goto out_dispose2;
 	}
 
+<<<<<<< HEAD
+=======
+	rtc->rtc = devm_rtc_allocate_device(&op->dev);
+	if (IS_ERR(rtc->rtc)) {
+		err = PTR_ERR(rtc->rtc);
+		goto out_dispose2;
+	}
+
+	rtc->rtc->ops = &mpc5200_rtc_ops;
+	set_bit(RTC_FEATURE_ALARM_RES_MINUTE, rtc->rtc->features);
+	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, rtc->rtc->features);
+	rtc->rtc->range_min = RTC_TIMESTAMP_BEGIN_0000;
+	rtc->rtc->range_max = 65733206399ULL; /* 4052-12-31 23:59:59 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (of_device_is_compatible(op->dev.of_node, "fsl,mpc5121-rtc")) {
 		u32 ka;
 		ka = in_be32(&rtc->regs->keep_alive);
@@ -352,6 +432,7 @@ static int __devinit mpc5121_rtc_probe(struct platform_device *op)
 				"mpc5121-rtc: Battery or oscillator failure!\n");
 			out_be32(&rtc->regs->keep_alive, ka);
 		}
+<<<<<<< HEAD
 
 		rtc->rtc = rtc_device_register("mpc5121-rtc", &op->dev,
 						&mpc5121_rtc_ops, THIS_MODULE);
@@ -378,19 +459,48 @@ out_dispose:
 	iounmap(rtc->regs);
 out_free:
 	kfree(rtc);
+=======
+		rtc->rtc->ops = &mpc5121_rtc_ops;
+		/*
+		 * This is a limitation of the driver that abuses the target
+		 * time register, the actual maximum year for the mpc5121 is
+		 * also 4052.
+		 */
+		rtc->rtc->range_min = 0;
+		rtc->rtc->range_max = U32_MAX;
+	}
+
+	err = devm_rtc_register_device(rtc->rtc);
+	if (err)
+		goto out_dispose2;
+
+	return 0;
+
+out_dispose2:
+	irq_dispose_mapping(rtc->irq_periodic);
+out_dispose:
+	irq_dispose_mapping(rtc->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit mpc5121_rtc_remove(struct platform_device *op)
 {
 	struct mpc5121_rtc_data *rtc = dev_get_drvdata(&op->dev);
+=======
+static void mpc5121_rtc_remove(struct platform_device *op)
+{
+	struct mpc5121_rtc_data *rtc = platform_get_drvdata(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mpc5121_rtc_regs __iomem *regs = rtc->regs;
 
 	/* disable interrupt, so there are no nasty surprises */
 	out_8(&regs->alm_enable, 0);
 	out_8(&regs->int_enable, in_8(&regs->int_enable) & ~0x1);
 
+<<<<<<< HEAD
 	rtc_device_unregister(rtc->rtc);
 	iounmap(rtc->regs);
 	free_irq(rtc->irq, &op->dev);
@@ -404,19 +514,39 @@ static int __devexit mpc5121_rtc_remove(struct platform_device *op)
 }
 
 static struct of_device_id mpc5121_rtc_match[] __devinitdata = {
+=======
+	irq_dispose_mapping(rtc->irq);
+	irq_dispose_mapping(rtc->irq_periodic);
+}
+
+#ifdef CONFIG_OF
+static const struct of_device_id mpc5121_rtc_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "fsl,mpc5121-rtc", },
 	{ .compatible = "fsl,mpc5200-rtc", },
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, mpc5121_rtc_match);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver mpc5121_rtc_driver = {
 	.driver = {
 		.name = "mpc5121-rtc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = mpc5121_rtc_match,
 	},
 	.probe = mpc5121_rtc_probe,
 	.remove = __devexit_p(mpc5121_rtc_remove),
+=======
+		.of_match_table = of_match_ptr(mpc5121_rtc_match),
+	},
+	.probe = mpc5121_rtc_probe,
+	.remove_new = mpc5121_rtc_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(mpc5121_rtc_driver);

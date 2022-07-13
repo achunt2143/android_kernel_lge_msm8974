@@ -23,6 +23,12 @@
 #include <linux/export.h>
 #include <sound/core.h>
 #include <sound/pcm.h>
+<<<<<<< HEAD
+=======
+
+#include "pcm_local.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SND_PCM_FORMAT_UNKNOWN (-1)
 
 /* NOTE: "signed" prefix must be given below since the default char is
@@ -39,7 +45,16 @@ struct pcm_format_data {
 /* we do lots of calculations on snd_pcm_format_t; shut up sparse */
 #define INT	__force int
 
+<<<<<<< HEAD
 static struct pcm_format_data pcm_formats[(INT)SNDRV_PCM_FORMAT_LAST+1] = {
+=======
+static bool valid_format(snd_pcm_format_t format)
+{
+	return (INT)format >= 0 && (INT)format <= (INT)SNDRV_PCM_FORMAT_LAST;
+}
+
+static const struct pcm_format_data pcm_formats[(INT)SNDRV_PCM_FORMAT_LAST+1] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[SNDRV_PCM_FORMAT_S8] = {
 		.width = 8, .phys = 8, .le = -1, .signd = 1,
 		.silence = {},
@@ -140,18 +155,65 @@ static struct pcm_format_data pcm_formats[(INT)SNDRV_PCM_FORMAT_LAST+1] = {
 		.width = 5, .phys = 5, .le = -1, .signd = -1,
 		.silence = {},
 	},
+<<<<<<< HEAD
 	/* FIXME: the following three formats are not defined properly yet */
+=======
+	[SNDRV_PCM_FORMAT_DSD_U8] = {
+		.width = 8, .phys = 8, .le = 1, .signd = 0,
+		.silence = { 0x69 },
+	},
+	[SNDRV_PCM_FORMAT_DSD_U16_LE] = {
+		.width = 16, .phys = 16, .le = 1, .signd = 0,
+		.silence = { 0x69, 0x69 },
+	},
+	[SNDRV_PCM_FORMAT_DSD_U32_LE] = {
+		.width = 32, .phys = 32, .le = 1, .signd = 0,
+		.silence = { 0x69, 0x69, 0x69, 0x69 },
+	},
+	[SNDRV_PCM_FORMAT_DSD_U16_BE] = {
+		.width = 16, .phys = 16, .le = 0, .signd = 0,
+		.silence = { 0x69, 0x69 },
+	},
+	[SNDRV_PCM_FORMAT_DSD_U32_BE] = {
+		.width = 32, .phys = 32, .le = 0, .signd = 0,
+		.silence = { 0x69, 0x69, 0x69, 0x69 },
+	},
+	/* FIXME: the following two formats are not defined properly yet */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[SNDRV_PCM_FORMAT_MPEG] = {
 		.le = -1, .signd = -1,
 	},
 	[SNDRV_PCM_FORMAT_GSM] = {
 		.le = -1, .signd = -1,
 	},
+<<<<<<< HEAD
 	[SNDRV_PCM_FORMAT_SPECIAL] = {
 		/* set the width and phys same as S16_LE */
 		.width = 16, .phys = 16, .le = -1, .signd = -1,
 		.silence = {},
 	},
+=======
+	[SNDRV_PCM_FORMAT_S20_LE] = {
+		.width = 20, .phys = 32, .le = 1, .signd = 1,
+		.silence = {},
+	},
+	[SNDRV_PCM_FORMAT_S20_BE] = {
+		.width = 20, .phys = 32, .le = 0, .signd = 1,
+		.silence = {},
+	},
+	[SNDRV_PCM_FORMAT_U20_LE] = {
+		.width = 20, .phys = 32, .le = 1, .signd = 0,
+		.silence = { 0x00, 0x00, 0x08, 0x00 },
+	},
+	[SNDRV_PCM_FORMAT_U20_BE] = {
+		.width = 20, .phys = 32, .le = 0, .signd = 0,
+		.silence = { 0x00, 0x08, 0x00, 0x00 },
+	},
+	/* FIXME: the following format is not defined properly yet */
+	[SNDRV_PCM_FORMAT_SPECIAL] = {
+		.le = -1, .signd = -1,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[SNDRV_PCM_FORMAT_S24_3LE] = {
 		.width = 24, .phys = 24, .le = 1, .signd = 1,
 		.silence = {},
@@ -215,12 +277,17 @@ static struct pcm_format_data pcm_formats[(INT)SNDRV_PCM_FORMAT_LAST+1] = {
  * snd_pcm_format_signed - Check the PCM format is signed linear
  * @format: the format to check
  *
+<<<<<<< HEAD
  * Returns 1 if the given PCM format is signed linear, 0 if unsigned
+=======
+ * Return: 1 if the given PCM format is signed linear, 0 if unsigned
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * linear, and a negative error code for non-linear formats.
  */
 int snd_pcm_format_signed(snd_pcm_format_t format)
 {
 	int val;
+<<<<<<< HEAD
 	if ((INT)format < 0 || (INT)format > (INT)SNDRV_PCM_FORMAT_LAST)
 		return -EINVAL;
 	if ((val = pcm_formats[(INT)format].signd) < 0)
@@ -228,13 +295,26 @@ int snd_pcm_format_signed(snd_pcm_format_t format)
 	return val;
 }
 
+=======
+	if (!valid_format(format))
+		return -EINVAL;
+	val = pcm_formats[(INT)format].signd;
+	if (val < 0)
+		return -EINVAL;
+	return val;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_format_signed);
 
 /**
  * snd_pcm_format_unsigned - Check the PCM format is unsigned linear
  * @format: the format to check
  *
+<<<<<<< HEAD
  * Returns 1 if the given PCM format is unsigned linear, 0 if signed
+=======
+ * Return: 1 if the given PCM format is unsigned linear, 0 if signed
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * linear, and a negative error code for non-linear formats.
  */
 int snd_pcm_format_unsigned(snd_pcm_format_t format)
@@ -246,32 +326,47 @@ int snd_pcm_format_unsigned(snd_pcm_format_t format)
 		return val;
 	return !val;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_format_unsigned);
 
 /**
  * snd_pcm_format_linear - Check the PCM format is linear
  * @format: the format to check
  *
+<<<<<<< HEAD
  * Returns 1 if the given PCM format is linear, 0 if not.
+=======
+ * Return: 1 if the given PCM format is linear, 0 if not.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_format_linear(snd_pcm_format_t format)
 {
 	return snd_pcm_format_signed(format) >= 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_format_linear);
 
 /**
  * snd_pcm_format_little_endian - Check the PCM format is little-endian
  * @format: the format to check
  *
+<<<<<<< HEAD
  * Returns 1 if the given PCM format is little-endian, 0 if
+=======
+ * Return: 1 if the given PCM format is little-endian, 0 if
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * big-endian, or a negative error code if endian not specified.
  */
 int snd_pcm_format_little_endian(snd_pcm_format_t format)
 {
 	int val;
+<<<<<<< HEAD
 	if ((INT)format < 0 || (INT)format > (INT)SNDRV_PCM_FORMAT_LAST)
 		return -EINVAL;
 	if ((val = pcm_formats[(INT)format].le) < 0)
@@ -279,13 +374,26 @@ int snd_pcm_format_little_endian(snd_pcm_format_t format)
 	return val;
 }
 
+=======
+	if (!valid_format(format))
+		return -EINVAL;
+	val = pcm_formats[(INT)format].le;
+	if (val < 0)
+		return -EINVAL;
+	return val;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_format_little_endian);
 
 /**
  * snd_pcm_format_big_endian - Check the PCM format is big-endian
  * @format: the format to check
  *
+<<<<<<< HEAD
  * Returns 1 if the given PCM format is big-endian, 0 if
+=======
+ * Return: 1 if the given PCM format is big-endian, 0 if
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * little-endian, or a negative error code if endian not specified.
  */
 int snd_pcm_format_big_endian(snd_pcm_format_t format)
@@ -297,19 +405,27 @@ int snd_pcm_format_big_endian(snd_pcm_format_t format)
 		return val;
 	return !val;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_format_big_endian);
 
 /**
  * snd_pcm_format_width - return the bit-width of the format
  * @format: the format to check
  *
+<<<<<<< HEAD
  * Returns the bit-width of the format, or a negative error code
+=======
+ * Return: The bit-width of the format, or a negative error code
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * if unknown format.
  */
 int snd_pcm_format_width(snd_pcm_format_t format)
 {
 	int val;
+<<<<<<< HEAD
 	if ((INT)format < 0 || (INT)format > (INT)SNDRV_PCM_FORMAT_LAST)
 		return -EINVAL;
 	if ((val = pcm_formats[(INT)format].width) == 0)
@@ -317,18 +433,32 @@ int snd_pcm_format_width(snd_pcm_format_t format)
 	return val;
 }
 
+=======
+	if (!valid_format(format))
+		return -EINVAL;
+	val = pcm_formats[(INT)format].width;
+	if (!val)
+		return -EINVAL;
+	return val;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_format_width);
 
 /**
  * snd_pcm_format_physical_width - return the physical bit-width of the format
  * @format: the format to check
  *
+<<<<<<< HEAD
  * Returns the physical bit-width of the format, or a negative error code
+=======
+ * Return: The physical bit-width of the format, or a negative error code
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * if unknown format.
  */
 int snd_pcm_format_physical_width(snd_pcm_format_t format)
 {
 	int val;
+<<<<<<< HEAD
 	if ((INT)format < 0 || (INT)format > (INT)SNDRV_PCM_FORMAT_LAST)
 		return -EINVAL;
 	if ((val = pcm_formats[(INT)format].phys) == 0)
@@ -336,6 +466,15 @@ int snd_pcm_format_physical_width(snd_pcm_format_t format)
 	return val;
 }
 
+=======
+	if (!valid_format(format))
+		return -EINVAL;
+	val = pcm_formats[(INT)format].phys;
+	if (!val)
+		return -EINVAL;
+	return val;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_format_physical_width);
 
 /**
@@ -343,7 +482,11 @@ EXPORT_SYMBOL(snd_pcm_format_physical_width);
  * @format: the format to check
  * @samples: sampling rate
  *
+<<<<<<< HEAD
  * Returns the byte size of the given samples for the format, or a
+=======
+ * Return: The byte size of the given samples for the format, or a
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * negative error code if unknown format.
  */
 ssize_t snd_pcm_format_size(snd_pcm_format_t format, size_t samples)
@@ -353,24 +496,38 @@ ssize_t snd_pcm_format_size(snd_pcm_format_t format, size_t samples)
 		return -EINVAL;
 	return samples * phys_width / 8;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_format_size);
 
 /**
  * snd_pcm_format_silence_64 - return the silent data in 8 bytes array
  * @format: the format to check
  *
+<<<<<<< HEAD
  * Returns the format pattern to fill or NULL if error.
  */
 const unsigned char *snd_pcm_format_silence_64(snd_pcm_format_t format)
 {
 	if ((INT)format < 0 || (INT)format > (INT)SNDRV_PCM_FORMAT_LAST)
+=======
+ * Return: The format pattern to fill or %NULL if error.
+ */
+const unsigned char *snd_pcm_format_silence_64(snd_pcm_format_t format)
+{
+	if (!valid_format(format))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	if (! pcm_formats[(INT)format].phys)
 		return NULL;
 	return pcm_formats[(INT)format].silence;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_pcm_format_silence_64);
 
 /**
@@ -381,20 +538,35 @@ EXPORT_SYMBOL(snd_pcm_format_silence_64);
  *
  * Sets the silence data on the buffer for the given samples.
  *
+<<<<<<< HEAD
  * Returns zero if successful, or a negative error code on failure.
+=======
+ * Return: Zero if successful, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_pcm_format_set_silence(snd_pcm_format_t format, void *data, unsigned int samples)
 {
 	int width;
+<<<<<<< HEAD
 	unsigned char *dst, *pat;
 
 	if ((INT)format < 0 || (INT)format > (INT)SNDRV_PCM_FORMAT_LAST)
+=======
+	unsigned char *dst;
+	const unsigned char *pat;
+
+	if (!valid_format(format))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	if (samples == 0)
 		return 0;
 	width = pcm_formats[(INT)format].phys; /* physical width */
 	pat = pcm_formats[(INT)format].silence;
+<<<<<<< HEAD
 	if (! width)
+=======
+	if (!width || !pat)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	/* signed or 1 byte data */
 	if (pcm_formats[(INT)format].signd == 1 || width <= 8) {
@@ -441,6 +613,7 @@ int snd_pcm_format_set_silence(snd_pcm_format_t format, void *data, unsigned int
 #endif
 	return 0;
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(snd_pcm_format_set_silence);
 
@@ -459,25 +632,57 @@ int snd_pcm_limit_hw_rates(struct snd_pcm_runtime *runtime)
 	for (i = 0; i < (int)snd_pcm_known_rates.count; i++) {
 		if (runtime->hw.rates & (1 << i)) {
 			runtime->hw.rate_min = snd_pcm_known_rates.list[i];
+=======
+EXPORT_SYMBOL(snd_pcm_format_set_silence);
+
+/**
+ * snd_pcm_hw_limit_rates - determine rate_min/rate_max fields
+ * @hw: the pcm hw instance
+ *
+ * Determines the rate_min and rate_max fields from the rates bits of
+ * the given hw.
+ *
+ * Return: Zero if successful.
+ */
+int snd_pcm_hw_limit_rates(struct snd_pcm_hardware *hw)
+{
+	int i;
+	for (i = 0; i < (int)snd_pcm_known_rates.count; i++) {
+		if (hw->rates & (1 << i)) {
+			hw->rate_min = snd_pcm_known_rates.list[i];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 	for (i = (int)snd_pcm_known_rates.count - 1; i >= 0; i--) {
+<<<<<<< HEAD
 		if (runtime->hw.rates & (1 << i)) {
 			runtime->hw.rate_max = snd_pcm_known_rates.list[i];
+=======
+		if (hw->rates & (1 << i)) {
+			hw->rate_max = snd_pcm_known_rates.list[i];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 	return 0;
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(snd_pcm_limit_hw_rates);
+=======
+EXPORT_SYMBOL(snd_pcm_hw_limit_rates);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * snd_pcm_rate_to_rate_bit - converts sample rate to SNDRV_PCM_RATE_xxx bit
  * @rate: the sample rate to convert
  *
+<<<<<<< HEAD
  * Returns the SNDRV_PCM_RATE_xxx flag that corresponds to the given rate, or
+=======
+ * Return: The SNDRV_PCM_RATE_xxx flag that corresponds to the given rate, or
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SNDRV_PCM_RATE_KNOT for an unknown rate.
  */
 unsigned int snd_pcm_rate_to_rate_bit(unsigned int rate)
@@ -490,3 +695,93 @@ unsigned int snd_pcm_rate_to_rate_bit(unsigned int rate)
 	return SNDRV_PCM_RATE_KNOT;
 }
 EXPORT_SYMBOL(snd_pcm_rate_to_rate_bit);
+<<<<<<< HEAD
+=======
+
+/**
+ * snd_pcm_rate_bit_to_rate - converts SNDRV_PCM_RATE_xxx bit to sample rate
+ * @rate_bit: the rate bit to convert
+ *
+ * Return: The sample rate that corresponds to the given SNDRV_PCM_RATE_xxx flag
+ * or 0 for an unknown rate bit.
+ */
+unsigned int snd_pcm_rate_bit_to_rate(unsigned int rate_bit)
+{
+	unsigned int i;
+
+	for (i = 0; i < snd_pcm_known_rates.count; i++)
+		if ((1u << i) == rate_bit)
+			return snd_pcm_known_rates.list[i];
+	return 0;
+}
+EXPORT_SYMBOL(snd_pcm_rate_bit_to_rate);
+
+static unsigned int snd_pcm_rate_mask_sanitize(unsigned int rates)
+{
+	if (rates & SNDRV_PCM_RATE_CONTINUOUS)
+		return SNDRV_PCM_RATE_CONTINUOUS;
+	else if (rates & SNDRV_PCM_RATE_KNOT)
+		return SNDRV_PCM_RATE_KNOT;
+	return rates;
+}
+
+/**
+ * snd_pcm_rate_mask_intersect - computes the intersection between two rate masks
+ * @rates_a: The first rate mask
+ * @rates_b: The second rate mask
+ *
+ * This function computes the rates that are supported by both rate masks passed
+ * to the function. It will take care of the special handling of
+ * SNDRV_PCM_RATE_CONTINUOUS and SNDRV_PCM_RATE_KNOT.
+ *
+ * Return: A rate mask containing the rates that are supported by both rates_a
+ * and rates_b.
+ */
+unsigned int snd_pcm_rate_mask_intersect(unsigned int rates_a,
+	unsigned int rates_b)
+{
+	rates_a = snd_pcm_rate_mask_sanitize(rates_a);
+	rates_b = snd_pcm_rate_mask_sanitize(rates_b);
+
+	if (rates_a & SNDRV_PCM_RATE_CONTINUOUS)
+		return rates_b;
+	else if (rates_b & SNDRV_PCM_RATE_CONTINUOUS)
+		return rates_a;
+	else if (rates_a & SNDRV_PCM_RATE_KNOT)
+		return rates_b;
+	else if (rates_b & SNDRV_PCM_RATE_KNOT)
+		return rates_a;
+	return rates_a & rates_b;
+}
+EXPORT_SYMBOL_GPL(snd_pcm_rate_mask_intersect);
+
+/**
+ * snd_pcm_rate_range_to_bits - converts rate range to SNDRV_PCM_RATE_xxx bit
+ * @rate_min: the minimum sample rate
+ * @rate_max: the maximum sample rate
+ *
+ * This function has an implicit assumption: the rates in the given range have
+ * only the pre-defined rates like 44100 or 16000.
+ *
+ * Return: The SNDRV_PCM_RATE_xxx flag that corresponds to the given rate range,
+ * or SNDRV_PCM_RATE_KNOT for an unknown range.
+ */
+unsigned int snd_pcm_rate_range_to_bits(unsigned int rate_min,
+	unsigned int rate_max)
+{
+	unsigned int rates = 0;
+	int i;
+
+	for (i = 0; i < snd_pcm_known_rates.count; i++) {
+		if (snd_pcm_known_rates.list[i] >= rate_min
+			&& snd_pcm_known_rates.list[i] <= rate_max)
+			rates |= 1 << i;
+	}
+
+	if (!rates)
+		rates = SNDRV_PCM_RATE_KNOT;
+
+	return rates;
+}
+EXPORT_SYMBOL_GPL(snd_pcm_rate_range_to_bits);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Filtering ARP tables module.
  *
@@ -25,6 +29,7 @@ static const struct xt_table packet_filter = {
 	.priority	= NF_IP_PRI_FILTER,
 };
 
+<<<<<<< HEAD
 /* The work comes in here from netfilter.c */
 static unsigned int
 arptable_filter_hook(unsigned int hook, struct sk_buff *skb,
@@ -51,20 +56,50 @@ static int __net_init arptable_filter_net_init(struct net *net)
 	if (IS_ERR(net->ipv4.arptable_filter))
 		return PTR_ERR(net->ipv4.arptable_filter);
 	return 0;
+=======
+static struct nf_hook_ops *arpfilter_ops __read_mostly;
+
+static int arptable_filter_table_init(struct net *net)
+{
+	struct arpt_replace *repl;
+	int err;
+
+	repl = arpt_alloc_initial_table(&packet_filter);
+	if (repl == NULL)
+		return -ENOMEM;
+	err = arpt_register_table(net, &packet_filter, repl, arpfilter_ops);
+	kfree(repl);
+	return err;
+}
+
+static void __net_exit arptable_filter_net_pre_exit(struct net *net)
+{
+	arpt_unregister_table_pre_exit(net, "filter");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __net_exit arptable_filter_net_exit(struct net *net)
 {
+<<<<<<< HEAD
 	arpt_unregister_table(net->ipv4.arptable_filter);
 }
 
 static struct pernet_operations arptable_filter_net_ops = {
 	.init = arptable_filter_net_init,
 	.exit = arptable_filter_net_exit,
+=======
+	arpt_unregister_table(net, "filter");
+}
+
+static struct pernet_operations arptable_filter_net_ops = {
+	.exit = arptable_filter_net_exit,
+	.pre_exit = arptable_filter_net_pre_exit,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init arptable_filter_init(void)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = register_pernet_subsys(&arptable_filter_net_ops);
@@ -80,13 +115,40 @@ static int __init arptable_filter_init(void)
 
 cleanup_table:
 	unregister_pernet_subsys(&arptable_filter_net_ops);
+=======
+	int ret = xt_register_template(&packet_filter,
+				       arptable_filter_table_init);
+
+	if (ret < 0)
+		return ret;
+
+	arpfilter_ops = xt_hook_ops_alloc(&packet_filter, arpt_do_table);
+	if (IS_ERR(arpfilter_ops)) {
+		xt_unregister_template(&packet_filter);
+		return PTR_ERR(arpfilter_ops);
+	}
+
+	ret = register_pernet_subsys(&arptable_filter_net_ops);
+	if (ret < 0) {
+		xt_unregister_template(&packet_filter);
+		kfree(arpfilter_ops);
+		return ret;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static void __exit arptable_filter_fini(void)
 {
+<<<<<<< HEAD
 	xt_hook_unlink(&packet_filter, arpfilter_ops);
 	unregister_pernet_subsys(&arptable_filter_net_ops);
+=======
+	unregister_pernet_subsys(&arptable_filter_net_ops);
+	xt_unregister_template(&packet_filter);
+	kfree(arpfilter_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(arptable_filter_init);

@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * base MPC5200b Device Tree Source
  *
  * Copyright (C) 2010 SecretLab
  * Grant Likely <grant@secretlab.ca>
  * John Bonesio <bones@secretlab.ca>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /dts-v1/;
@@ -37,7 +44,11 @@
 		};
 	};
 
+<<<<<<< HEAD
 	memory: memory {
+=======
+	memory: memory@0 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		device_type = "memory";
 		reg = <0x00000000 0x04000000>;	// 64MB
 	};
@@ -64,6 +75,7 @@
 			reg = <0x500 0x80>;
 		};
 
+<<<<<<< HEAD
 		timer@600 {	// General Purpose Timer
 			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
 			reg = <0x600 0x10>;
@@ -72,42 +84,91 @@
 
 		timer@610 {	// General Purpose Timer
 			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+=======
+		gpt0: timer@600 {	// General Purpose Timer
+			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+			#gpio-cells = <2>;  // Add 'gpio-controller;' to enable gpio mode
+			reg = <0x600 0x10>;
+			interrupts = <1 9 0>;
+			// add 'fsl,has-wdt' to enable watchdog
+		};
+
+		gpt1: timer@610 {	// General Purpose Timer
+			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+			#gpio-cells = <2>;  // Add 'gpio-controller;' to enable gpio mode
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			reg = <0x610 0x10>;
 			interrupts = <1 10 0>;
 		};
 
+<<<<<<< HEAD
 		timer@620 {	// General Purpose Timer
 			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+=======
+		gpt2: timer@620 {	// General Purpose Timer
+			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+			#gpio-cells = <2>;  // Add 'gpio-controller;' to enable gpio mode
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			reg = <0x620 0x10>;
 			interrupts = <1 11 0>;
 		};
 
+<<<<<<< HEAD
 		timer@630 {	// General Purpose Timer
 			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+=======
+		gpt3: timer@630 {	// General Purpose Timer
+			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+			#gpio-cells = <2>;  // Add 'gpio-controller;' to enable gpio mode
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			reg = <0x630 0x10>;
 			interrupts = <1 12 0>;
 		};
 
+<<<<<<< HEAD
 		timer@640 {	// General Purpose Timer
 			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+=======
+		gpt4: timer@640 {	// General Purpose Timer
+			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+			#gpio-cells = <2>;  // Add 'gpio-controller;' to enable gpio mode
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			reg = <0x640 0x10>;
 			interrupts = <1 13 0>;
 		};
 
+<<<<<<< HEAD
 		timer@650 {	// General Purpose Timer
 			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+=======
+		gpt5: timer@650 {	// General Purpose Timer
+			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+			#gpio-cells = <2>;  // Add 'gpio-controller;' to enable gpio mode
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			reg = <0x650 0x10>;
 			interrupts = <1 14 0>;
 		};
 
+<<<<<<< HEAD
 		timer@660 {	// General Purpose Timer
 			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+=======
+		gpt6: timer@660 {	// General Purpose Timer
+			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+			#gpio-cells = <2>;  // Add 'gpio-controller;' to enable gpio mode
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			reg = <0x660 0x10>;
 			interrupts = <1 15 0>;
 		};
 
+<<<<<<< HEAD
 		timer@670 {	// General Purpose Timer
 			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+=======
+		gpt7: timer@670 {	// General Purpose Timer
+			compatible = "fsl,mpc5200b-gpt","fsl,mpc5200-gpt";
+			#gpio-cells = <2>;  // Add 'gpio-controller;' to enable gpio mode
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			reg = <0x670 0x10>;
 			interrupts = <1 16 0>;
 		};
@@ -231,6 +292,15 @@
 			interrupts = <2 7 0>;
 		};
 
+<<<<<<< HEAD
+=======
+		sclpc@3c00 {
+			compatible = "fsl,mpc5200-lpbfifo";
+			reg = <0x3c00 0x60>;
+			interrupts = <2 23 0>;
+		};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i2c@3d00 {
 			#address-cells = <1>;
 			#size-cells = <0>;
@@ -265,7 +335,13 @@
 		clock-frequency = <0>; // From boot loader
 		interrupts = <2 8 0 2 9 0 2 10 0>;
 		bus-range = <0 0>;
+<<<<<<< HEAD
 		// ranges = need to add
+=======
+		ranges = <0x42000000 0 0x80000000 0x80000000 0 0x10000000>,
+			 <0x02000000 0 0x90000000 0x90000000 0 0x10000000>,
+			 <0x01000000 0 0x00000000 0xa0000000 0 0x01000000>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	localbus: localbus {

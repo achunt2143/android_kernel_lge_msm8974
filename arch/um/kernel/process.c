@@ -1,7 +1,16 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Copyright 2003 PathScale, Inc.
  * Licensed under the GPL
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2015 Anton Ivanov (aivanov@{brocade.com,kot-begemot.co.uk})
+ * Copyright (C) 2015 Thomas Meyer (thomas@m3y3r.de)
+ * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+ * Copyright 2003 PathScale, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
@@ -15,6 +24,7 @@
 #include <linux/random.h>
 #include <linux/slab.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/seq_file.h>
 #include <linux/tick.h>
 #include <linux/threads.h>
@@ -26,6 +36,25 @@
 #include "kern_util.h"
 #include "os.h"
 #include "skas.h"
+=======
+#include <linux/sched/debug.h>
+#include <linux/sched/task.h>
+#include <linux/sched/task_stack.h>
+#include <linux/seq_file.h>
+#include <linux/tick.h>
+#include <linux/threads.h>
+#include <linux/resume_user_mode.h>
+#include <asm/current.h>
+#include <asm/mmu_context.h>
+#include <linux/uaccess.h>
+#include <as-layout.h>
+#include <kern_util.h>
+#include <os.h>
+#include <skas.h>
+#include <registers.h>
+#include <linux/time-internal.h>
+#include <linux/elfcore.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is a per-cpu array.  A processor only modifies its entry and it only
@@ -68,6 +97,7 @@ unsigned long alloc_stack(int order, int atomic)
 	return page;
 }
 
+<<<<<<< HEAD
 int kernel_thread(int (*fn)(void *), void * arg, unsigned long flags)
 {
 	int pid;
@@ -80,6 +110,8 @@ int kernel_thread(int (*fn)(void *), void * arg, unsigned long flags)
 }
 EXPORT_SYMBOL(kernel_thread);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void set_current(struct task_struct *task)
 {
 	cpu_tasks[task_thread_info(task)->cpu] = ((struct cpu_task)
@@ -93,6 +125,7 @@ void *__switch_to(struct task_struct *from, struct task_struct *to)
 	to->thread.prev_sched = from;
 	set_current(to);
 
+<<<<<<< HEAD
 	do {
 		current->thread.saved_task = NULL;
 
@@ -106,12 +139,17 @@ void *__switch_to(struct task_struct *from, struct task_struct *to)
 		to = current->thread.saved_task;
 		from = current;
 	} while (current->thread.saved_task);
+=======
+	switch_threads(&from->thread.switch_buf, &to->thread.switch_buf);
+	arch_switch_to(current);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return current->thread.prev_sched;
 }
 
 void interrupt_end(void)
 {
+<<<<<<< HEAD
 	if (need_resched())
 		schedule();
 	if (test_tsk_thread_flag(current, TIF_SIGPENDING))
@@ -120,6 +158,17 @@ void interrupt_end(void)
 
 void exit_thread(void)
 {
+=======
+	struct pt_regs *regs = &current->thread.regs;
+
+	if (need_resched())
+		schedule();
+	if (test_thread_flag(TIF_SIGPENDING) ||
+	    test_thread_flag(TIF_NOTIFY_SIGNAL))
+		do_signal(regs);
+	if (test_thread_flag(TIF_NOTIFY_RESUME))
+		resume_user_mode_work(regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int get_current_pid(void)
@@ -144,6 +193,7 @@ void new_thread_handler(void)
 	arg = current->thread.request.u.thread.arg;
 
 	/*
+<<<<<<< HEAD
 	 * The return value is 1 if the kernel thread execs a process,
 	 * 0 if it just exits
 	 */
@@ -154,6 +204,12 @@ void new_thread_handler(void)
 		userspace(&current->thread.regs.regs);
 	}
 	else do_exit(0);
+=======
+	 * callback returns only if the kernel thread execs a process
+	 */
+	n = fn(arg);
+	userspace(&current->thread.regs.regs, current_thread_info()->aux_fp_regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Called magically, see new_thread_handler above */
@@ -172,6 +228,7 @@ void fork_handler(void)
 
 	current->thread.prev_sched = NULL;
 
+<<<<<<< HEAD
 	/* Handle any immediate reschedules or signals */
 	interrupt_end();
 
@@ -182,38 +239,70 @@ int copy_thread(unsigned long clone_flags, unsigned long sp,
 		unsigned long stack_top, struct task_struct * p,
 		struct pt_regs *regs)
 {
+=======
+	userspace(&current->thread.regs.regs, current_thread_info()->aux_fp_regs);
+}
+
+int copy_thread(struct task_struct * p, const struct kernel_clone_args *args)
+{
+	unsigned long clone_flags = args->flags;
+	unsigned long sp = args->stack;
+	unsigned long tls = args->tls;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*handler)(void);
 	int ret = 0;
 
 	p->thread = (struct thread_struct) INIT_THREAD;
 
+<<<<<<< HEAD
 	if (current->thread.forking) {
 	  	memcpy(&p->thread.regs.regs, &regs->regs,
 		       sizeof(p->thread.regs.regs));
 		REGS_SET_SYSCALL_RETURN(p->thread.regs.regs.gp, 0);
+=======
+	if (!args->fn) {
+	  	memcpy(&p->thread.regs.regs, current_pt_regs(),
+		       sizeof(p->thread.regs.regs));
+		PT_REGS_SET_SYSCALL_RETURN(&p->thread.regs, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sp != 0)
 			REGS_SP(p->thread.regs.regs.gp) = sp;
 
 		handler = fork_handler;
 
 		arch_copy_thread(&current->thread.arch, &p->thread.arch);
+<<<<<<< HEAD
 	}
 	else {
 		get_safe_registers(p->thread.regs.regs.gp, p->thread.regs.regs.fp);
 		p->thread.request.u.thread = current->thread.request.u.thread;
+=======
+	} else {
+		get_safe_registers(p->thread.regs.regs.gp, p->thread.regs.regs.fp);
+		p->thread.request.u.thread.proc = args->fn;
+		p->thread.request.u.thread.arg = args->fn_arg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		handler = new_thread_handler;
 	}
 
 	new_thread(task_stack_page(p), &p->thread.switch_buf, handler);
 
+<<<<<<< HEAD
 	if (current->thread.forking) {
+=======
+	if (!args->fn) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clear_flushed_tls(p);
 
 		/*
 		 * Set a new TLS for the child thread?
 		 */
 		if (clone_flags & CLONE_SETTLS)
+<<<<<<< HEAD
 			ret = arch_copy_tls(p);
+=======
+			ret = arch_set_tls(p, tls);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
@@ -228,6 +317,7 @@ void initial_thread_cb(void (*proc)(void *), void *arg)
 	kmalloc_ok = save_kmalloc_ok;
 }
 
+<<<<<<< HEAD
 void default_idle(void)
 {
 	unsigned long long nsecs;
@@ -258,6 +348,23 @@ void cpu_idle(void)
 }
 
 int __cant_sleep(void) {
+=======
+void um_idle_sleep(void)
+{
+	if (time_travel_mode != TT_MODE_OFF)
+		time_travel_sleep();
+	else
+		os_idle_sleep();
+}
+
+void arch_cpu_idle(void)
+{
+	cpu_tasks[current_thread_info()->cpu].pid = os_getpid();
+	um_idle_sleep();
+}
+
+int __uml_cant_sleep(void) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return in_atomic() || irqs_disabled() || in_interrupt();
 	/* Is in_interrupt() really needed? */
 }
@@ -302,6 +409,7 @@ int clear_user_proc(void __user *buf, int size)
 	return clear_user(buf, size);
 }
 
+<<<<<<< HEAD
 int strlen_user_proc(char __user *str)
 {
 	return strlen_user(str);
@@ -323,6 +431,8 @@ int cpu(void)
 	return current_thread_info()->cpu;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static atomic_t using_sysemu = ATOMIC_INIT(0);
 int sysemu_supported;
 
@@ -363,6 +473,7 @@ static ssize_t sysemu_proc_write(struct file *file, const char __user *buf,
 	return count;
 }
 
+<<<<<<< HEAD
 static const struct file_operations sysemu_proc_fops = {
 	.owner		= THIS_MODULE,
 	.open		= sysemu_proc_open,
@@ -370,6 +481,14 @@ static const struct file_operations sysemu_proc_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 	.write		= sysemu_proc_write,
+=======
+static const struct proc_ops sysemu_proc_ops = {
+	.proc_open	= sysemu_proc_open,
+	.proc_read	= seq_read,
+	.proc_lseek	= seq_lseek,
+	.proc_release	= single_release,
+	.proc_write	= sysemu_proc_write,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int __init make_proc_sysemu(void)
@@ -378,7 +497,11 @@ int __init make_proc_sysemu(void)
 	if (!sysemu_supported)
 		return 0;
 
+<<<<<<< HEAD
 	ent = proc_create("sysemu", 0600, NULL, &sysemu_proc_fops);
+=======
+	ent = proc_create("sysemu", 0600, NULL, &sysemu_proc_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ent == NULL)
 	{
@@ -391,6 +514,7 @@ int __init make_proc_sysemu(void)
 
 late_initcall(make_proc_sysemu);
 
+<<<<<<< HEAD
 int singlestepping(void * t)
 {
 	struct task_struct *task = t ? t : current;
@@ -402,12 +526,21 @@ int singlestepping(void * t)
 		return 1;
 
 	return 2;
+=======
+int singlestepping(void)
+{
+	return test_thread_flag(TIF_SINGLESTEP);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Only x86 and x86_64 have an arch_align_stack().
  * All other arches have "#define arch_align_stack(x) (x)"
+<<<<<<< HEAD
  * in their asm/system.h
+=======
+ * in their asm/exec.h
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * As this is included in UML from asm-um/system-generic.h,
  * we can use it to behave as the subarch does.
  */
@@ -415,19 +548,30 @@ int singlestepping(void * t)
 unsigned long arch_align_stack(unsigned long sp)
 {
 	if (!(current->personality & ADDR_NO_RANDOMIZE) && randomize_va_space)
+<<<<<<< HEAD
 		sp -= get_random_int() % 8192;
+=======
+		sp -= get_random_u32_below(8192);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sp & ~0xf;
 }
 #endif
 
+<<<<<<< HEAD
 unsigned long get_wchan(struct task_struct *p)
+=======
+unsigned long __get_wchan(struct task_struct *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long stack_page, sp, ip;
 	bool seen_sched = 0;
 
+<<<<<<< HEAD
 	if ((p == NULL) || (p == current) || (p->state == TASK_RUNNING))
 		return 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stack_page = (unsigned long) task_stack_page(p);
 	/* Bail if the process has no kernel stack for some reason */
 	if (stack_page == 0)
@@ -455,10 +599,18 @@ unsigned long get_wchan(struct task_struct *p)
 	return 0;
 }
 
+<<<<<<< HEAD
 int elf_core_copy_fpregs(struct task_struct *t, elf_fpregset_t *fpu)
 {
 	int cpu = current_thread_info()->cpu;
 
 	return save_fp_registers(userspace_pid[cpu], (unsigned long *) fpu);
+=======
+int elf_core_copy_task_fpregs(struct task_struct *t, elf_fpregset_t *fpu)
+{
+	int cpu = current_thread_info()->cpu;
+
+	return save_i387_registers(userspace_pid[cpu], (unsigned long *) fpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

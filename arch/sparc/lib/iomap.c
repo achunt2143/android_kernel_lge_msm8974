@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Implement the sparc iomap interfaces
  */
@@ -18,8 +22,16 @@ void ioport_unmap(void __iomem *addr)
 EXPORT_SYMBOL(ioport_map);
 EXPORT_SYMBOL(ioport_unmap);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PCI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void pci_iounmap(struct pci_dev *dev, void __iomem * addr)
 {
 	/* nothing to do */
 }
 EXPORT_SYMBOL(pci_iounmap);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

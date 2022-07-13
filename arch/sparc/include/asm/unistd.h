@@ -1,6 +1,10 @@
+<<<<<<< HEAD
 #ifndef _SPARC_UNISTD_H
 #define _SPARC_UNISTD_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * System calls under the Sparc.
  *
@@ -14,6 +18,7 @@
  *
  * Copyright (C) 1995 Adrian M. Rodriguez (adrian@remus.rutgers.edu)
  */
+<<<<<<< HEAD
 #ifndef __32bit_syscall_numbers__
 #ifndef __arch64__
 #define __32bit_syscall_numbers__
@@ -410,6 +415,44 @@
 #define __NR_process_vm_writev	339
 
 #define NR_syscalls		340
+=======
+#ifndef _SPARC_UNISTD_H
+#define _SPARC_UNISTD_H
+
+#include <uapi/asm/unistd.h>
+
+#define NR_syscalls	__NR_syscalls
+
+#ifdef __32bit_syscall_numbers__
+#else
+#define __NR_time		231 /* Linux sparc32                               */
+#endif
+#define __ARCH_WANT_NEW_STAT
+#define __ARCH_WANT_OLD_READDIR
+#define __ARCH_WANT_STAT64
+#define __ARCH_WANT_SYS_ALARM
+#define __ARCH_WANT_SYS_GETHOSTNAME
+#define __ARCH_WANT_SYS_PAUSE
+#define __ARCH_WANT_SYS_SIGNAL
+#define __ARCH_WANT_SYS_TIME32
+#define __ARCH_WANT_SYS_UTIME32
+#define __ARCH_WANT_SYS_WAITPID
+#define __ARCH_WANT_SYS_SOCKETCALL
+#define __ARCH_WANT_SYS_FADVISE64
+#define __ARCH_WANT_SYS_GETPGRP
+#define __ARCH_WANT_SYS_NICE
+#define __ARCH_WANT_SYS_OLDUMOUNT
+#define __ARCH_WANT_SYS_SIGPENDING
+#define __ARCH_WANT_SYS_SIGPROCMASK
+#ifdef __32bit_syscall_numbers__
+#define __ARCH_WANT_SYS_IPC
+#else
+#define __ARCH_WANT_SYS_TIME
+#define __ARCH_WANT_SYS_UTIME
+#define __ARCH_WANT_COMPAT_SYS_SENDFILE
+#define __ARCH_WANT_COMPAT_STAT
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __32bit_syscall_numbers__
 /* Sparc 32-bit only has the "setresuid32", "getresuid32" variants,
@@ -422,6 +465,7 @@
 #define __IGNORE_getresgid
 #endif
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 #define __ARCH_WANT_IPC_PARSE_VERSION
 #define __ARCH_WANT_OLD_READDIR
@@ -459,4 +503,6 @@
 #define cond_syscall(x) asm(".weak\t" #x "\n\t.set\t" #x ",sys_ni_syscall")
 
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _SPARC_UNISTD_H */

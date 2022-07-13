@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Regulator Driver for Freescale MC13892 PMIC
  *
@@ -9,6 +10,15 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0
+//
+// Regulator Driver for Freescale MC13892 PMIC
+//
+// Copyright 2010 Yong Shen <yong.shen@linaro.org>
+//
+// Based on draft driver from Arnaud Patard <arnaud.patard@rtp-net.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mfd/mc13892.h>
 #include <linux/regulator/machine.h>
@@ -150,12 +160,20 @@
 #define MC13892_USB1				50
 #define MC13892_USB1_VUSBEN			(1<<3)
 
+<<<<<<< HEAD
 static const int mc13892_vcoincell[] = {
+=======
+static const unsigned int mc13892_vcoincell[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	2500000, 2700000, 2800000, 2900000, 3000000, 3100000,
 	3200000, 3300000,
 };
 
+<<<<<<< HEAD
 static const int mc13892_sw1[] = {
+=======
+static const unsigned int mc13892_sw1[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	600000,   625000,  650000,  675000,  700000,  725000,
 	750000,   775000,  800000,  825000,  850000,  875000,
 	900000,   925000,  950000,  975000, 1000000, 1025000,
@@ -164,7 +182,19 @@ static const int mc13892_sw1[] = {
 	1350000, 1375000
 };
 
+<<<<<<< HEAD
 static const int mc13892_sw[] = {
+=======
+/*
+ * Note: this table is used to derive SWxVSEL by index into
+ * the array. Offset the values by the index of 1100000uV
+ * to get the actual register value for that voltage selector
+ * if the HI bit is to be set as well.
+ */
+#define MC13892_SWxHI_SEL_OFFSET		20
+
+static const unsigned int mc13892_sw[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	600000,   625000,  650000,  675000,  700000,  725000,
 	750000,   775000,  800000,  825000,  850000,  875000,
 	900000,   925000,  950000,  975000, 1000000, 1025000,
@@ -176,6 +206,7 @@ static const int mc13892_sw[] = {
 	1800000, 1825000, 1850000, 1875000
 };
 
+<<<<<<< HEAD
 static const int mc13892_swbst[] = {
 	5000000,
 };
@@ -193,10 +224,30 @@ static const int mc13892_vdig[] = {
 };
 
 static const int mc13892_vsd[] = {
+=======
+static const unsigned int mc13892_swbst[] = {
+	5000000,
+};
+
+static const unsigned int mc13892_viohi[] = {
+	2775000,
+};
+
+static const unsigned int mc13892_vpll[] = {
+	1050000, 1250000, 1650000, 1800000,
+};
+
+static const unsigned int mc13892_vdig[] = {
+	1050000, 1250000, 1650000, 1800000,
+};
+
+static const unsigned int mc13892_vsd[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	1800000, 2000000, 2600000, 2700000,
 	2800000, 2900000, 3000000, 3150000,
 };
 
+<<<<<<< HEAD
 static const int mc13892_vusb2[] = {
 	2400000, 2600000, 2700000, 2775000,
 };
@@ -218,10 +269,34 @@ static const int mc13892_vgen1[] = {
 };
 
 static const int mc13892_vgen2[] = {
+=======
+static const unsigned int mc13892_vusb2[] = {
+	2400000, 2600000, 2700000, 2775000,
+};
+
+static const unsigned int mc13892_vvideo[] = {
+	2700000, 2775000, 2500000, 2600000,
+};
+
+static const unsigned int mc13892_vaudio[] = {
+	2300000, 2500000, 2775000, 3000000,
+};
+
+static const unsigned int mc13892_vcam[] = {
+	2500000, 2600000, 2750000, 3000000,
+};
+
+static const unsigned int mc13892_vgen1[] = {
+	1200000, 1500000, 2775000, 3150000,
+};
+
+static const unsigned int mc13892_vgen2[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	1200000, 1500000, 1600000, 1800000,
 	2700000, 2800000, 3000000, 3150000,
 };
 
+<<<<<<< HEAD
 static const int mc13892_vgen3[] = {
 	1800000, 2900000,
 };
@@ -294,6 +369,79 @@ static struct mc13xxx_regulator mc13892_regulators[] = {
 	MC13892_GPO_DEFINE(GPO4, POWERMISC, mc13892_gpo),
 	MC13892_GPO_DEFINE(PWGT1SPI, POWERMISC, mc13892_pwgtdrv),
 	MC13892_GPO_DEFINE(PWGT2SPI, POWERMISC, mc13892_pwgtdrv),
+=======
+static const unsigned int mc13892_vgen3[] = {
+	1800000, 2900000,
+};
+
+static const unsigned int mc13892_vusb[] = {
+	3300000,
+};
+
+static const unsigned int mc13892_gpo[] = {
+	2750000,
+};
+
+static const unsigned int mc13892_pwgtdrv[] = {
+	5000000,
+};
+
+static const struct regulator_ops mc13892_gpo_regulator_ops;
+static const struct regulator_ops mc13892_sw_regulator_ops;
+
+
+#define MC13892_FIXED_DEFINE(name, node, reg, voltages)			\
+	MC13xxx_FIXED_DEFINE(MC13892_, name, node, reg, voltages,	\
+			mc13xxx_fixed_regulator_ops)
+
+#define MC13892_GPO_DEFINE(name, node, reg, voltages)			\
+	MC13xxx_GPO_DEFINE(MC13892_, name, node, reg, voltages,		\
+			mc13892_gpo_regulator_ops)
+
+#define MC13892_SW_DEFINE(name, node, reg, vsel_reg, voltages)		\
+	MC13xxx_DEFINE(MC13892_, name, node, reg, vsel_reg, voltages,	\
+			mc13892_sw_regulator_ops)
+
+#define MC13892_DEFINE_REGU(name, node, reg, vsel_reg, voltages)	\
+	MC13xxx_DEFINE(MC13892_, name, node, reg, vsel_reg, voltages, \
+			mc13xxx_regulator_ops)
+
+static struct mc13xxx_regulator mc13892_regulators[] = {
+	MC13892_DEFINE_REGU(VCOINCELL, vcoincell, POWERCTL0, POWERCTL0, mc13892_vcoincell),
+	MC13892_SW_DEFINE(SW1, sw1, SWITCHERS0, SWITCHERS0, mc13892_sw1),
+	MC13892_SW_DEFINE(SW2, sw2, SWITCHERS1, SWITCHERS1, mc13892_sw),
+	MC13892_SW_DEFINE(SW3, sw3, SWITCHERS2, SWITCHERS2, mc13892_sw),
+	MC13892_SW_DEFINE(SW4, sw4, SWITCHERS3, SWITCHERS3, mc13892_sw),
+	MC13892_FIXED_DEFINE(SWBST, swbst, SWITCHERS5, mc13892_swbst),
+	MC13892_FIXED_DEFINE(VIOHI, viohi, REGULATORMODE0, mc13892_viohi),
+	MC13892_DEFINE_REGU(VPLL, vpll, REGULATORMODE0, REGULATORSETTING0,
+		mc13892_vpll),
+	MC13892_DEFINE_REGU(VDIG, vdig, REGULATORMODE0, REGULATORSETTING0,
+		mc13892_vdig),
+	MC13892_DEFINE_REGU(VSD, vsd, REGULATORMODE1, REGULATORSETTING1,
+		mc13892_vsd),
+	MC13892_DEFINE_REGU(VUSB2, vusb2, REGULATORMODE0, REGULATORSETTING0,
+		mc13892_vusb2),
+	MC13892_DEFINE_REGU(VVIDEO, vvideo, REGULATORMODE1, REGULATORSETTING1,
+		mc13892_vvideo),
+	MC13892_DEFINE_REGU(VAUDIO, vaudio, REGULATORMODE1, REGULATORSETTING1,
+		mc13892_vaudio),
+	MC13892_DEFINE_REGU(VCAM, vcam, REGULATORMODE1, REGULATORSETTING0,
+		mc13892_vcam),
+	MC13892_DEFINE_REGU(VGEN1, vgen1, REGULATORMODE0, REGULATORSETTING0,
+		mc13892_vgen1),
+	MC13892_DEFINE_REGU(VGEN2, vgen2, REGULATORMODE0, REGULATORSETTING0,
+		mc13892_vgen2),
+	MC13892_DEFINE_REGU(VGEN3, vgen3, REGULATORMODE1, REGULATORSETTING0,
+		mc13892_vgen3),
+	MC13892_FIXED_DEFINE(VUSB, vusb, USB1, mc13892_vusb),
+	MC13892_GPO_DEFINE(GPO1, gpo1, POWERMISC, mc13892_gpo),
+	MC13892_GPO_DEFINE(GPO2, gpo2, POWERMISC, mc13892_gpo),
+	MC13892_GPO_DEFINE(GPO3, gpo3, POWERMISC, mc13892_gpo),
+	MC13892_GPO_DEFINE(GPO4, gpo4, POWERMISC, mc13892_gpo),
+	MC13892_GPO_DEFINE(PWGT1SPI, pwgt1spi, POWERMISC, mc13892_pwgtdrv),
+	MC13892_GPO_DEFINE(PWGT2SPI, pwgt2spi, POWERMISC, mc13892_pwgtdrv),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int mc13892_powermisc_rmw(struct mc13xxx_regulator_priv *priv, u32 mask,
@@ -305,9 +453,16 @@ static int mc13892_powermisc_rmw(struct mc13xxx_regulator_priv *priv, u32 mask,
 
 	BUG_ON(val & ~mask);
 
+<<<<<<< HEAD
 	ret = mc13xxx_reg_read(mc13892, MC13892_POWERMISC, &valread);
 	if (ret)
 		return ret;
+=======
+	mc13xxx_lock(priv->mc13xxx);
+	ret = mc13xxx_reg_read(mc13892, MC13892_POWERMISC, &valread);
+	if (ret)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Update the stored state for Power Gates. */
 	priv->powermisc_pwgt_state =
@@ -320,14 +475,24 @@ static int mc13892_powermisc_rmw(struct mc13xxx_regulator_priv *priv, u32 mask,
 	valread = (valread & ~MC13892_POWERMISC_PWGTSPI_M) |
 		priv->powermisc_pwgt_state;
 
+<<<<<<< HEAD
 	return mc13xxx_reg_write(mc13892, MC13892_POWERMISC, valread);
+=======
+	ret = mc13xxx_reg_write(mc13892, MC13892_POWERMISC, valread);
+out:
+	mc13xxx_unlock(priv->mc13xxx);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mc13892_gpo_regulator_enable(struct regulator_dev *rdev)
 {
 	struct mc13xxx_regulator_priv *priv = rdev_get_drvdata(rdev);
 	int id = rdev_get_id(rdev);
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 en_val = mc13892_regulators[id].enable_bit;
 	u32 mask = mc13892_regulators[id].enable_bit;
 
@@ -340,18 +505,25 @@ static int mc13892_gpo_regulator_enable(struct regulator_dev *rdev)
 	if (id == MC13892_GPO4)
 		mask |= MC13892_POWERMISC_GPO4ADINEN;
 
+<<<<<<< HEAD
 	mc13xxx_lock(priv->mc13xxx);
 	ret = mc13892_powermisc_rmw(priv, mask, en_val);
 	mc13xxx_unlock(priv->mc13xxx);
 
 	return ret;
+=======
+	return mc13892_powermisc_rmw(priv, mask, en_val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mc13892_gpo_regulator_disable(struct regulator_dev *rdev)
 {
 	struct mc13xxx_regulator_priv *priv = rdev_get_drvdata(rdev);
 	int id = rdev_get_id(rdev);
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 dis_val = 0;
 
 	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
@@ -360,12 +532,17 @@ static int mc13892_gpo_regulator_disable(struct regulator_dev *rdev)
 	if (id == MC13892_PWGT1SPI || id == MC13892_PWGT2SPI)
 		dis_val = mc13892_regulators[id].enable_bit;
 
+<<<<<<< HEAD
 	mc13xxx_lock(priv->mc13xxx);
 	ret = mc13892_powermisc_rmw(priv, mc13892_regulators[id].enable_bit,
 		dis_val);
 	mc13xxx_unlock(priv->mc13xxx);
 
 	return ret;
+=======
+	return mc13892_powermisc_rmw(priv, mc13892_regulators[id].enable_bit,
+		dis_val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mc13892_gpo_regulator_is_enabled(struct regulator_dev *rdev)
@@ -390,6 +567,7 @@ static int mc13892_gpo_regulator_is_enabled(struct regulator_dev *rdev)
 }
 
 
+<<<<<<< HEAD
 static struct regulator_ops mc13892_gpo_regulator_ops = {
 	.enable = mc13892_gpo_regulator_enable,
 	.disable = mc13892_gpo_regulator_disable,
@@ -404,6 +582,21 @@ static int mc13892_sw_regulator_get_voltage(struct regulator_dev *rdev)
 	struct mc13xxx_regulator_priv *priv = rdev_get_drvdata(rdev);
 	int ret, id = rdev_get_id(rdev);
 	unsigned int val, hi;
+=======
+static const struct regulator_ops mc13892_gpo_regulator_ops = {
+	.enable = mc13892_gpo_regulator_enable,
+	.disable = mc13892_gpo_regulator_disable,
+	.is_enabled = mc13892_gpo_regulator_is_enabled,
+	.list_voltage = regulator_list_voltage_table,
+	.set_voltage = mc13xxx_fixed_regulator_set_voltage,
+};
+
+static int mc13892_sw_regulator_get_voltage_sel(struct regulator_dev *rdev)
+{
+	struct mc13xxx_regulator_priv *priv = rdev_get_drvdata(rdev);
+	int ret, id = rdev_get_id(rdev);
+	unsigned int val, selector;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
 
@@ -414,6 +607,7 @@ static int mc13892_sw_regulator_get_voltage(struct regulator_dev *rdev)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	hi  = val & MC13892_SWITCHERS0_SWxHI;
 	val = (val & mc13892_regulators[id].vsel_mask)
 		>> mc13892_regulators[id].vsel_shift;
@@ -472,16 +666,90 @@ static int mc13892_sw_regulator_set_voltage(struct regulator_dev *rdev,
 	ret = mc13xxx_reg_write(priv->mc13xxx, mc13892_regulators[id].vsel_reg,
 			valread);
 err:
+=======
+	/*
+	 * Figure out if the HI bit is set inside the switcher mode register
+	 * since this means the selector value we return is at a different
+	 * offset into the selector table.
+	 *
+	 * According to the MC13892 documentation note 59 (Table 47) the SW1
+	 * buck switcher does not support output range programming therefore
+	 * the HI bit must always remain 0. So do not do anything strange if
+	 * our register is MC13892_SWITCHERS0.
+	 */
+
+	selector = val & mc13892_regulators[id].vsel_mask;
+
+	if ((mc13892_regulators[id].vsel_reg != MC13892_SWITCHERS0) &&
+	    (val & MC13892_SWITCHERS0_SWxHI)) {
+		selector += MC13892_SWxHI_SEL_OFFSET;
+	}
+
+	dev_dbg(rdev_get_dev(rdev), "%s id: %d val: 0x%08x selector: %d\n",
+			__func__, id, val, selector);
+
+	return selector;
+}
+
+static int mc13892_sw_regulator_set_voltage_sel(struct regulator_dev *rdev,
+						unsigned selector)
+{
+	struct mc13xxx_regulator_priv *priv = rdev_get_drvdata(rdev);
+	int volt, mask, id = rdev_get_id(rdev);
+	u32 reg_value;
+	int ret;
+
+	volt = rdev->desc->volt_table[selector];
+	mask = mc13892_regulators[id].vsel_mask;
+	reg_value = selector;
+
+	/*
+	 * Don't mess with the HI bit or support HI voltage offsets for SW1.
+	 *
+	 * Since the get_voltage_sel callback has given a fudged value for
+	 * the selector offset, we need to back out that offset if HI is
+	 * to be set so we write the correct value to the register.
+	 *
+	 * The HI bit addition and selector offset handling COULD be more
+	 * complicated by shifting and masking off the voltage selector part
+	 * of the register then logical OR it back in, but since the selector
+	 * is at bits 4:0 there is very little point. This makes the whole
+	 * thing more readable and we do far less work.
+	 */
+
+	if (mc13892_regulators[id].vsel_reg != MC13892_SWITCHERS0) {
+		mask |= MC13892_SWITCHERS0_SWxHI;
+
+		if (volt > 1375000) {
+			reg_value -= MC13892_SWxHI_SEL_OFFSET;
+			reg_value |= MC13892_SWITCHERS0_SWxHI;
+		} else {
+			reg_value &= ~MC13892_SWITCHERS0_SWxHI;
+		}
+	}
+
+	mc13xxx_lock(priv->mc13xxx);
+	ret = mc13xxx_reg_rmw(priv->mc13xxx, mc13892_regulators[id].vsel_reg,
+			      mask, reg_value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mc13xxx_unlock(priv->mc13xxx);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct regulator_ops mc13892_sw_regulator_ops = {
 	.is_enabled = mc13xxx_sw_regulator_is_enabled,
 	.list_voltage = mc13xxx_regulator_list_voltage,
 	.set_voltage = mc13892_sw_regulator_set_voltage,
 	.get_voltage = mc13892_sw_regulator_get_voltage,
+=======
+static const struct regulator_ops mc13892_sw_regulator_ops = {
+	.list_voltage = regulator_list_voltage_table,
+	.map_voltage = regulator_map_voltage_ascend,
+	.set_voltage_sel = mc13892_sw_regulator_set_voltage_sel,
+	.get_voltage_sel = mc13892_sw_regulator_get_voltage_sel,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int mc13892_vcam_set_mode(struct regulator_dev *rdev, unsigned int mode)
@@ -520,27 +788,47 @@ static unsigned int mc13892_vcam_get_mode(struct regulator_dev *rdev)
 	return REGULATOR_MODE_NORMAL;
 }
 
+<<<<<<< HEAD
 
 static int __devinit mc13892_regulator_probe(struct platform_device *pdev)
+=======
+static struct regulator_ops mc13892_vcam_ops;
+
+static int mc13892_regulator_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mc13xxx_regulator_priv *priv;
 	struct mc13xxx *mc13892 = dev_get_drvdata(pdev->dev.parent);
 	struct mc13xxx_regulator_platform_data *pdata =
 		dev_get_platdata(&pdev->dev);
 	struct mc13xxx_regulator_init_data *mc13xxx_data;
+<<<<<<< HEAD
+=======
+	struct regulator_config config = { };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, ret;
 	int num_regulators = 0;
 	u32 val;
 
 	num_regulators = mc13xxx_get_num_regulators_dt(pdev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (num_regulators <= 0 && pdata)
 		num_regulators = pdata->num_regulators;
 	if (num_regulators <= 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv) +
 		num_regulators * sizeof(priv->regulators[0]),
 		GFP_KERNEL);
+=======
+	priv = devm_kzalloc(&pdev->dev,
+			    struct_size(priv, regulators, num_regulators),
+			    GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!priv)
 		return -ENOMEM;
 
@@ -554,7 +842,11 @@ static int __devinit mc13892_regulator_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_unlock;
 
+<<<<<<< HEAD
 	/* enable switch auto mode */
+=======
+	/* enable switch auto mode (on 2.0A silicon only) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((val & 0x0000FFFF) == 0x45d0) {
 		ret = mc13xxx_reg_rmw(mc13892, MC13892_SWITCHERS4,
 			MC13892_SWITCHERS4_SW1MODE_M |
@@ -574,6 +866,7 @@ static int __devinit mc13892_regulator_probe(struct platform_device *pdev)
 	}
 	mc13xxx_unlock(mc13892);
 
+<<<<<<< HEAD
 	mc13892_regulators[MC13892_VCAM].desc.ops->set_mode
 		= mc13892_vcam_set_mode;
 	mc13892_regulators[MC13892_VCAM].desc.ops->get_mode
@@ -582,6 +875,19 @@ static int __devinit mc13892_regulator_probe(struct platform_device *pdev)
 	mc13xxx_data = mc13xxx_parse_regulators_dt(pdev, mc13892_regulators,
 					ARRAY_SIZE(mc13892_regulators));
 	for (i = 0; i < num_regulators; i++) {
+=======
+	/* update mc13892_vcam ops */
+	memcpy(&mc13892_vcam_ops, mc13892_regulators[MC13892_VCAM].desc.ops,
+						sizeof(struct regulator_ops));
+	mc13892_vcam_ops.set_mode = mc13892_vcam_set_mode;
+	mc13892_vcam_ops.get_mode = mc13892_vcam_get_mode;
+	mc13892_regulators[MC13892_VCAM].desc.ops = &mc13892_vcam_ops;
+
+	mc13xxx_data = mc13xxx_parse_regulators_dt(pdev, mc13892_regulators,
+					ARRAY_SIZE(mc13892_regulators));
+
+	for (i = 0; i < priv->num_regulators; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct regulator_init_data *init_data;
 		struct regulator_desc *desc;
 		struct device_node *node = NULL;
@@ -597,6 +903,7 @@ static int __devinit mc13892_regulator_probe(struct platform_device *pdev)
 		}
 		desc = &mc13892_regulators[id].desc;
 
+<<<<<<< HEAD
 		priv->regulators[i] = regulator_register(
 			desc, &pdev->dev, init_data, priv, node);
 
@@ -605,20 +912,37 @@ static int __devinit mc13892_regulator_probe(struct platform_device *pdev)
 				mc13892_regulators[i].desc.name);
 			ret = PTR_ERR(priv->regulators[i]);
 			goto err;
+=======
+		config.dev = &pdev->dev;
+		config.init_data = init_data;
+		config.driver_data = priv;
+		config.of_node = node;
+
+		priv->regulators[i] = devm_regulator_register(&pdev->dev, desc,
+							      &config);
+		if (IS_ERR(priv->regulators[i])) {
+			dev_err(&pdev->dev, "failed to register regulator %s\n",
+				mc13892_regulators[i].desc.name);
+			return PTR_ERR(priv->regulators[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	return 0;
+<<<<<<< HEAD
 err:
 	while (--i >= 0)
 		regulator_unregister(priv->regulators[i]);
 	return ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_unlock:
 	mc13xxx_unlock(mc13892);
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit mc13892_regulator_remove(struct platform_device *pdev)
 {
 	struct mc13xxx_regulator_priv *priv = platform_get_drvdata(pdev);
@@ -638,6 +962,13 @@ static struct platform_driver mc13892_regulator_driver = {
 		.owner	= THIS_MODULE,
 	},
 	.remove	= __devexit_p(mc13892_regulator_remove),
+=======
+static struct platform_driver mc13892_regulator_driver = {
+	.driver	= {
+		.name	= "mc13892-regulator",
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe	= mc13892_regulator_probe,
 };
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2008 Per Dalen <per.dalen@cnw.se>
  *
@@ -15,6 +19,7 @@
  *   Copyright (c) 2002-2007 Volkswagen Group Electronic Research
  *   Copyright (c) 2003 Matthias Brukner, Trajet Gmbh, Rebenring 33,
  *   38106 Braunschweig, GERMANY
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the version 2 of the GNU General Public License
@@ -28,6 +33,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -45,7 +52,10 @@
 
 MODULE_AUTHOR("Per Dalen <per.dalen@cnw.se>");
 MODULE_DESCRIPTION("Socket-CAN driver for KVASER PCAN PCI cards");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("KVASER PCAN PCI CAN card");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL v2");
 
 #define MAX_NO_OF_CHANNELS        4 /* max no of channels on a single card */
@@ -108,7 +118,11 @@ struct kvaser_pci {
 #define KVASER_PCI_VENDOR_ID2     0x1a07    /* the PCI device and vendor IDs */
 #define KVASER_PCI_DEVICE_ID2     0x0008
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(kvaser_pci_tbl) = {
+=======
+static const struct pci_device_id kvaser_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{KVASER_PCI_VENDOR_ID1, KVASER_PCI_DEVICE_ID1, PCI_ANY_ID, PCI_ANY_ID,},
 	{KVASER_PCI_VENDOR_ID2, KVASER_PCI_DEVICE_ID2, PCI_ANY_ID, PCI_ANY_ID,},
 	{ 0,}
@@ -159,9 +173,15 @@ static int number_of_sja1000_chip(void __iomem *base_addr)
 	for (i = 0; i < MAX_NO_OF_CHANNELS; i++) {
 		/* reset chip */
 		iowrite8(MOD_RM, base_addr +
+<<<<<<< HEAD
 			 (i * KVASER_PCI_PORT_BYTES) + REG_MOD);
 		status = ioread8(base_addr +
 				 (i * KVASER_PCI_PORT_BYTES) + REG_MOD);
+=======
+			 (i * KVASER_PCI_PORT_BYTES) + SJA1000_MOD);
+		status = ioread8(base_addr +
+				 (i * KVASER_PCI_PORT_BYTES) + SJA1000_MOD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* check reset bit */
 		if (!(status & MOD_RM))
 			break;
@@ -215,7 +235,11 @@ static int kvaser_pci_add_chan(struct pci_dev *pdev, int channel,
 	struct net_device *dev;
 	struct sja1000_priv *priv;
 	struct kvaser_pci *board;
+<<<<<<< HEAD
 	int err, init_step;
+=======
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = alloc_sja1000dev(sizeof(struct kvaser_pci));
 	if (dev == NULL)
@@ -236,7 +260,10 @@ static int kvaser_pci_add_chan(struct pci_dev *pdev, int channel,
 	if (channel == 0) {
 		board->xilinx_ver =
 			ioread8(board->res_addr + XILINX_VERINT) >> 4;
+<<<<<<< HEAD
 		init_step = 2;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Assert PTADR# - we're in passive mode so the other bits are
 		   not important */
@@ -265,12 +292,19 @@ static int kvaser_pci_add_chan(struct pci_dev *pdev, int channel,
 	priv->irq_flags = IRQF_SHARED;
 	dev->irq = pdev->irq;
 
+<<<<<<< HEAD
 	init_step = 4;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(&pdev->dev, "reg_base=%p conf_addr=%p irq=%d\n",
 		 priv->reg_base, board->conf_addr, dev->irq);
 
 	SET_NETDEV_DEV(dev, &pdev->dev);
+<<<<<<< HEAD
+=======
+	dev->dev_id = channel;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Register SJA1000 device */
 	err = register_sja1000dev(dev);
@@ -290,8 +324,13 @@ failure:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devinit kvaser_pci_init_one(struct pci_dev *pdev,
 					 const struct pci_device_id *ent)
+=======
+static int kvaser_pci_init_one(struct pci_dev *pdev,
+			       const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	struct net_device *master_dev = NULL;
@@ -379,7 +418,11 @@ failure:
 
 }
 
+<<<<<<< HEAD
 static void __devexit kvaser_pci_remove_one(struct pci_dev *pdev)
+=======
+static void kvaser_pci_remove_one(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 
@@ -387,13 +430,17 @@ static void __devexit kvaser_pci_remove_one(struct pci_dev *pdev)
 
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pci_driver kvaser_pci_driver = {
 	.name = DRV_NAME,
 	.id_table = kvaser_pci_tbl,
 	.probe = kvaser_pci_init_one,
+<<<<<<< HEAD
 	.remove = __devexit_p(kvaser_pci_remove_one),
 };
 
@@ -409,3 +456,9 @@ static void __exit kvaser_pci_exit(void)
 
 module_init(kvaser_pci_init);
 module_exit(kvaser_pci_exit);
+=======
+	.remove = kvaser_pci_remove_one,
+};
+
+module_pci_driver(kvaser_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SPINLOCK_H
 #define __ASM_SPINLOCK_H
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
 /*
  * Simple spin lock operations.  
  *
@@ -295,5 +300,21 @@ static inline void arch_write_unlock(arch_rwlock_t *rw)
 #define arch_read_relax(lock)	__rw_yield(lock)
 #define arch_write_relax(lock)	__rw_yield(lock)
 
+=======
+#ifdef CONFIG_PPC_QUEUED_SPINLOCKS
+#include <asm/qspinlock.h>
+#include <asm/qrwlock.h>
+#else
+#include <asm/simple_spinlock.h>
+#endif
+
+/* See include/linux/spinlock.h */
+#define smp_mb__after_spinlock()	smp_mb()
+
+#ifndef CONFIG_PPC_QUEUED_SPINLOCKS
+static inline void pv_spinlocks_init(void) { }
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __KERNEL__ */
 #endif /* __ASM_SPINLOCK_H */

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Routines for control of the CS8427 via i2c bus
  *  IEC958 (S/PDIF) receiver & transmitter by Cirrus Logic
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -18,6 +23,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -65,7 +72,12 @@ int snd_cs8427_reg_write(struct snd_i2c_device *device, unsigned char reg,
 
 	buf[0] = reg & 0x7f;
 	buf[1] = val;
+<<<<<<< HEAD
 	if ((err = snd_i2c_sendbytes(device, buf, 2)) != 2) {
+=======
+	err = snd_i2c_sendbytes(device, buf, 2);
+	if (err != 2) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR "unable to send bytes 0x%02x:0x%02x "
 			   "to CS8427 (%i)\n", buf[0], buf[1], err);
 		return err < 0 ? err : -EIO;
@@ -80,12 +92,22 @@ static int snd_cs8427_reg_read(struct snd_i2c_device *device, unsigned char reg)
 	int err;
 	unsigned char buf;
 
+<<<<<<< HEAD
 	if ((err = snd_i2c_sendbytes(device, &reg, 1)) != 1) {
+=======
+	err = snd_i2c_sendbytes(device, &reg, 1);
+	if (err != 1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR "unable to send register 0x%x byte "
 			   "to CS8427\n", reg);
 		return err < 0 ? err : -EIO;
 	}
+<<<<<<< HEAD
 	if ((err = snd_i2c_readbytes(device, &buf, 1)) != 1) {
+=======
+	err = snd_i2c_readbytes(device, &buf, 1);
+	if (err != 1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR "unable to read register 0x%x byte "
 			   "from CS8427\n", reg);
 		return err < 0 ? err : -EIO;
@@ -118,12 +140,21 @@ static int snd_cs8427_send_corudata(struct snd_i2c_device *device,
 	struct cs8427 *chip = device->private_data;
 	char *hw_data = udata ?
 		chip->playback.hw_udata : chip->playback.hw_status;
+<<<<<<< HEAD
 	char data[32];
+=======
+	unsigned char data[32];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err, idx;
 
 	if (!memcmp(hw_data, ndata, count))
 		return 0;
+<<<<<<< HEAD
 	if ((err = snd_cs8427_select_corudata(device, udata)) < 0)
+=======
+	err = snd_cs8427_select_corudata(device, udata);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	memcpy(hw_data, ndata, count);
 	if (udata) {
@@ -150,10 +181,15 @@ static void snd_cs8427_free(struct snd_i2c_device *device)
 	kfree(device->private_data);
 }
 
+<<<<<<< HEAD
 int snd_cs8427_create(struct snd_i2c_bus *bus,
 		      unsigned char addr,
 		      unsigned int reset_timeout,
 		      struct snd_i2c_device **r_cs8427)
+=======
+int snd_cs8427_init(struct snd_i2c_bus *bus,
+		    struct snd_i2c_device *device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static unsigned char initvals1[] = {
 	  CS8427_REG_CONTROL1 | CS8427_REG_AUTOINC,
@@ -200,6 +236,7 @@ int snd_cs8427_create(struct snd_i2c_bus *bus,
 	     Inhibit E->F transfers. */
 	  CS8427_UD | CS8427_EFTUI | CS8427_DETUI,
 	};
+<<<<<<< HEAD
 	int err;
 	struct cs8427 *chip;
 	struct snd_i2c_device *device;
@@ -216,6 +253,12 @@ int snd_cs8427_create(struct snd_i2c_bus *bus,
 	}
 	device->private_free = snd_cs8427_free;
 	
+=======
+	struct cs8427 *chip = device->private_data;
+	int err;
+	unsigned char buf[24];
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_i2c_lock(bus);
 	err = snd_cs8427_reg_read(device, CS8427_REG_ID_AND_VER);
 	if (err != CS8427_VER8427A) {
@@ -238,7 +281,12 @@ int snd_cs8427_create(struct snd_i2c_bus *bus,
 		goto __fail;
 	/* send initial values */
 	memcpy(chip->regmap + (initvals1[0] & 0x7f), initvals1 + 1, 6);
+<<<<<<< HEAD
 	if ((err = snd_i2c_sendbytes(device, initvals1, 7)) != 7) {
+=======
+	err = snd_i2c_sendbytes(device, initvals1, 7);
+	if (err != 7) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = err < 0 ? err : -EIO;
 		goto __fail;
 	}
@@ -246,11 +294,21 @@ int snd_cs8427_create(struct snd_i2c_bus *bus,
 	memset(buf, 0, 7);
 	/* from address 9 to 15 */
 	buf[0] = 9;	/* register */
+<<<<<<< HEAD
 	if ((err = snd_i2c_sendbytes(device, buf, 7)) != 7)
 		goto __fail;
 	/* send transfer initialization sequence */
 	memcpy(chip->regmap + (initvals2[0] & 0x7f), initvals2 + 1, 3);
 	if ((err = snd_i2c_sendbytes(device, initvals2, 4)) != 4) {
+=======
+	err = snd_i2c_sendbytes(device, buf, 7);
+	if (err != 7)
+		goto __fail;
+	/* send transfer initialization sequence */
+	memcpy(chip->regmap + (initvals2[0] & 0x7f), initvals2 + 1, 3);
+	err = snd_i2c_sendbytes(device, initvals2, 4);
+	if (err != 4) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = err < 0 ? err : -EIO;
 		goto __fail;
 	}
@@ -264,10 +322,51 @@ int snd_cs8427_create(struct snd_i2c_bus *bus,
 	snd_i2c_unlock(bus);
 
 	/* turn on run bit and rock'n'roll */
+<<<<<<< HEAD
 	if (reset_timeout < 1)
 		reset_timeout = 1;
 	chip->reset_timeout = reset_timeout;
 	snd_cs8427_reset(device);
+=======
+	snd_cs8427_reset(device);
+
+	return 0;
+
+__fail:
+	snd_i2c_unlock(bus);
+
+	return err;
+}
+EXPORT_SYMBOL(snd_cs8427_init);
+
+int snd_cs8427_create(struct snd_i2c_bus *bus,
+		      unsigned char addr,
+		      unsigned int reset_timeout,
+		      struct snd_i2c_device **r_cs8427)
+{
+	int err;
+	struct cs8427 *chip;
+	struct snd_i2c_device *device;
+
+	err = snd_i2c_device_create(bus, "CS8427", CS8427_ADDR | (addr & 7),
+				    &device);
+	if (err < 0)
+		return err;
+	chip = device->private_data = kzalloc(sizeof(*chip), GFP_KERNEL);
+	if (chip == NULL) {
+		snd_i2c_device_free(device);
+		return -ENOMEM;
+	}
+	device->private_free = snd_cs8427_free;
+
+	if (reset_timeout < 1)
+		reset_timeout = 1;
+	chip->reset_timeout = reset_timeout;
+
+	err = snd_cs8427_init(bus, device);
+	if (err)
+		goto __fail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if 0	// it's nice for read tests
 	{
@@ -286,7 +385,10 @@ int snd_cs8427_create(struct snd_i2c_bus *bus,
 	return 0;
 
       __fail:
+<<<<<<< HEAD
       	snd_i2c_unlock(bus);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
       	snd_i2c_device_free(device);
       	return err < 0 ? err : -EIO;
 }
@@ -379,7 +481,12 @@ static int snd_cs8427_qsubcode_get(struct snd_kcontrol *kcontrol,
 	int err;
 
 	snd_i2c_lock(device->bus);
+<<<<<<< HEAD
 	if ((err = snd_i2c_sendbytes(device, &reg, 1)) != 1) {
+=======
+	err = snd_i2c_sendbytes(device, &reg, 1);
+	if (err != 1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR "unable to send register 0x%x byte "
 			   "to CS8427\n", reg);
 		snd_i2c_unlock(device->bus);
@@ -455,7 +562,11 @@ static int snd_cs8427_spdif_mask_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cs8427_iec958_controls[] = {
+=======
+static const struct snd_kcontrol_new snd_cs8427_iec958_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
 	.info =		snd_cs8427_in_status_info,
@@ -549,10 +660,20 @@ int snd_cs8427_iec958_active(struct snd_i2c_device *cs8427, int active)
 	if (snd_BUG_ON(!cs8427))
 		return -ENXIO;
 	chip = cs8427->private_data;
+<<<<<<< HEAD
 	if (active)
 		memcpy(chip->playback.pcm_status,
 		       chip->playback.def_status, 24);
 	chip->playback.pcm_ctl->vd[0].access &= ~SNDRV_CTL_ELEM_ACCESS_INACTIVE;
+=======
+	if (active) {
+		memcpy(chip->playback.pcm_status,
+		       chip->playback.def_status, 24);
+		chip->playback.pcm_ctl->vd[0].access &= ~SNDRV_CTL_ELEM_ACCESS_INACTIVE;
+	} else {
+		chip->playback.pcm_ctl->vd[0].access |= SNDRV_CTL_ELEM_ACCESS_INACTIVE;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_ctl_notify(cs8427->bus->card,
 		       SNDRV_CTL_EVENT_MASK_VALUE | SNDRV_CTL_EVENT_MASK_INFO,
 		       &chip->playback.pcm_ctl->id);
@@ -602,6 +723,7 @@ int snd_cs8427_iec958_pcm(struct snd_i2c_device *cs8427, unsigned int rate)
 }
 
 EXPORT_SYMBOL(snd_cs8427_iec958_pcm);
+<<<<<<< HEAD
 
 static int __init alsa_cs8427_module_init(void)
 {
@@ -614,3 +736,5 @@ static void __exit alsa_cs8427_module_exit(void)
 
 module_init(alsa_cs8427_module_init)
 module_exit(alsa_cs8427_module_exit)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

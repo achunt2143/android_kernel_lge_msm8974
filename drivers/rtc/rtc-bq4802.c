@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* rtc-bq4802.c: TI BQ4802 RTC driver.
  *
  * Copyright (C) 2008 David S. Miller <davem@davemloft.net>
@@ -48,8 +52,12 @@ static void bq4802_write_mem(struct bq4802 *p, int off, u8 val)
 
 static int bq4802_read_time(struct device *dev, struct rtc_time *tm)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct bq4802 *p = platform_get_drvdata(pdev);
+=======
+	struct bq4802 *p = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	unsigned int century;
 	u8 val;
@@ -91,8 +99,12 @@ static int bq4802_read_time(struct device *dev, struct rtc_time *tm)
 
 static int bq4802_set_time(struct device *dev, struct rtc_time *tm)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct bq4802 *p = platform_get_drvdata(pdev);
+=======
+	struct bq4802 *p = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 sec, min, hrs, day, mon, yrs, century, val;
 	unsigned long flags;
 	unsigned int year;
@@ -140,9 +152,15 @@ static const struct rtc_class_ops bq4802_ops = {
 	.set_time	= bq4802_set_time,
 };
 
+<<<<<<< HEAD
 static int __devinit bq4802_probe(struct platform_device *pdev)
 {
 	struct bq4802 *p = kzalloc(sizeof(*p), GFP_KERNEL);
+=======
+static int bq4802_probe(struct platform_device *pdev)
+{
+	struct bq4802 *p = devm_kzalloc(&pdev->dev, sizeof(*p), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = -ENOMEM;
 
 	if (!p)
@@ -155,34 +173,60 @@ static int __devinit bq4802_probe(struct platform_device *pdev)
 		p->r = platform_get_resource(pdev, IORESOURCE_IO, 0);
 		err = -EINVAL;
 		if (!p->r)
+<<<<<<< HEAD
 			goto out_free;
+=======
+			goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (p->r->flags & IORESOURCE_IO) {
 		p->ioport = p->r->start;
 		p->read = bq4802_read_io;
 		p->write = bq4802_write_io;
 	} else if (p->r->flags & IORESOURCE_MEM) {
+<<<<<<< HEAD
 		p->regs = ioremap(p->r->start, resource_size(p->r));
+=======
+		p->regs = devm_ioremap(&pdev->dev, p->r->start,
+					resource_size(p->r));
+		if (!p->regs){
+			err = -ENOMEM;
+			goto out;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p->read = bq4802_read_mem;
 		p->write = bq4802_write_mem;
 	} else {
 		err = -EINVAL;
+<<<<<<< HEAD
 		goto out_free;
+=======
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_set_drvdata(pdev, p);
 
+<<<<<<< HEAD
 	p->rtc = rtc_device_register("bq4802", &pdev->dev,
 				     &bq4802_ops, THIS_MODULE);
 	if (IS_ERR(p->rtc)) {
 		err = PTR_ERR(p->rtc);
 		goto out_iounmap;
+=======
+	p->rtc = devm_rtc_device_register(&pdev->dev, "bq4802",
+					&bq4802_ops, THIS_MODULE);
+	if (IS_ERR(p->rtc)) {
+		err = PTR_ERR(p->rtc);
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = 0;
 out:
 	return err;
 
+<<<<<<< HEAD
 out_iounmap:
 	if (p->r->flags & IORESOURCE_MEM)
 		iounmap(p->regs);
@@ -204,6 +248,8 @@ static int __devexit bq4802_remove(struct platform_device *pdev)
 	kfree(p);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* work with hotplug and coldplug */
@@ -212,10 +258,15 @@ MODULE_ALIAS("platform:rtc-bq4802");
 static struct platform_driver bq4802_driver = {
 	.driver		= {
 		.name	= "rtc-bq4802",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= bq4802_probe,
 	.remove		= __devexit_p(bq4802_remove),
+=======
+	},
+	.probe		= bq4802_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(bq4802_driver);

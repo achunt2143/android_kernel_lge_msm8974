@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*---------------------------------------------------------------------------+
  |  reg_norm.S                                                               |
  |                                                                           |
@@ -21,7 +25,11 @@
 
 
 .text
+<<<<<<< HEAD
 ENTRY(FPU_normalize)
+=======
+SYM_FUNC_START(FPU_normalize)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl	%ebp
 	movl	%esp,%ebp
 	pushl	%ebx
@@ -71,7 +79,11 @@ L_exit_valid:
 L_exit:
 	popl	%ebx
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 L_zero:
@@ -94,11 +106,19 @@ L_overflow:
 	call	arith_overflow
 	pop	%ebx
 	jmp	L_exit
+<<<<<<< HEAD
+=======
+SYM_FUNC_END(FPU_normalize)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
 /* Normalise without reporting underflow or overflow */
+<<<<<<< HEAD
 ENTRY(FPU_normalize_nuo)
+=======
+SYM_FUNC_START(FPU_normalize_nuo)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl	%ebp
 	movl	%esp,%ebp
 	pushl	%ebx
@@ -136,7 +156,11 @@ L_exit_nuo_valid:
 
 	popl	%ebx
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 L_exit_nuo_zero:
 	movl	TAG_Zero,%eax
@@ -144,4 +168,9 @@ L_exit_nuo_zero:
 
 	popl	%ebx
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+SYM_FUNC_END(FPU_normalize_nuo)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

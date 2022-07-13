@@ -1,17 +1,25 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas R0P7757LC0012RL Support.
  *
  * Copyright (C) 2009 - 2010  Renesas Solutions Corp.
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/gpio.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/spi/spi.h>
 #include <linux/spi/flash.h>
 #include <linux/io.h>
@@ -19,6 +27,18 @@
 #include <linux/mmc/sh_mmcif.h>
 #include <linux/mmc/sh_mobile_sdhi.h>
 #include <linux/sh_eth.h>
+=======
+#include <linux/regulator/fixed.h>
+#include <linux/regulator/machine.h>
+#include <linux/spi/spi.h>
+#include <linux/spi/flash.h>
+#include <linux/io.h>
+#include <linux/mfd/tmio.h>
+#include <linux/mmc/host.h>
+#include <linux/platform_data/sh_mmcif.h>
+#include <linux/sh_eth.h>
+#include <linux/sh_intc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/usb/renesas_usbhs.h>
 #include <cpu/sh7757.h>
 #include <asm/heartbeat.h>
@@ -65,21 +85,33 @@ static struct resource sh_eth0_resources[] = {
 		.end    = 0xfef001ff,
 		.flags  = IORESOURCE_MEM,
 	}, {
+<<<<<<< HEAD
 		.start  = 84,
 		.end    = 84,
+=======
+		.start  = evt2irq(0xc80),
+		.end    = evt2irq(0xc80),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
 
 static struct sh_eth_plat_data sh7757_eth0_pdata = {
 	.phy = 1,
+<<<<<<< HEAD
 	.edmac_endian = EDMAC_LITTLE_ENDIAN,
 	.register_type = SH_ETH_REG_FAST_SH4,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_mdio_gate = sh7757_eth_set_mdio_gate,
 };
 
 static struct platform_device sh7757_eth0_device = {
+<<<<<<< HEAD
 	.name		= "sh-eth",
+=======
+	.name		= "sh7757-ether",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.resource	= sh_eth0_resources,
 	.id		= 0,
 	.num_resources	= ARRAY_SIZE(sh_eth0_resources),
@@ -94,21 +126,33 @@ static struct resource sh_eth1_resources[] = {
 		.end    = 0xfef009ff,
 		.flags  = IORESOURCE_MEM,
 	}, {
+<<<<<<< HEAD
 		.start  = 84,
 		.end    = 84,
+=======
+		.start  = evt2irq(0xc80),
+		.end    = evt2irq(0xc80),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
 
 static struct sh_eth_plat_data sh7757_eth1_pdata = {
 	.phy = 1,
+<<<<<<< HEAD
 	.edmac_endian = EDMAC_LITTLE_ENDIAN,
 	.register_type = SH_ETH_REG_FAST_SH4,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_mdio_gate = sh7757_eth_set_mdio_gate,
 };
 
 static struct platform_device sh7757_eth1_device = {
+<<<<<<< HEAD
 	.name		= "sh-eth",
+=======
+	.name		= "sh7757-ether",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.resource	= sh_eth1_resources,
 	.id		= 1,
 	.num_resources	= ARRAY_SIZE(sh_eth1_resources),
@@ -139,22 +183,34 @@ static struct resource sh_eth_giga0_resources[] = {
 		.end    = 0xfee01fff,
 		.flags  = IORESOURCE_MEM,
 	}, {
+<<<<<<< HEAD
 		.start  = 315,
 		.end    = 315,
+=======
+		.start  = evt2irq(0x2960),
+		.end    = evt2irq(0x2960),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
 
 static struct sh_eth_plat_data sh7757_eth_giga0_pdata = {
 	.phy = 18,
+<<<<<<< HEAD
 	.edmac_endian = EDMAC_LITTLE_ENDIAN,
 	.register_type = SH_ETH_REG_GIGABIT,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_mdio_gate = sh7757_eth_giga_set_mdio_gate,
 	.phy_interface = PHY_INTERFACE_MODE_RGMII_ID,
 };
 
 static struct platform_device sh7757_eth_giga0_device = {
+<<<<<<< HEAD
 	.name		= "sh-eth",
+=======
+	.name		= "sh7757-gether",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.resource	= sh_eth_giga0_resources,
 	.id		= 2,
 	.num_resources	= ARRAY_SIZE(sh_eth_giga0_resources),
@@ -174,22 +230,34 @@ static struct resource sh_eth_giga1_resources[] = {
 		.end    = 0xfee01fff,
 		.flags  = IORESOURCE_MEM,
 	}, {
+<<<<<<< HEAD
 		.start  = 316,
 		.end    = 316,
+=======
+		.start  = evt2irq(0x2980),
+		.end    = evt2irq(0x2980),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
 
 static struct sh_eth_plat_data sh7757_eth_giga1_pdata = {
 	.phy = 19,
+<<<<<<< HEAD
 	.edmac_endian = EDMAC_LITTLE_ENDIAN,
 	.register_type = SH_ETH_REG_GIGABIT,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_mdio_gate = sh7757_eth_giga_set_mdio_gate,
 	.phy_interface = PHY_INTERFACE_MODE_RGMII_ID,
 };
 
 static struct platform_device sh7757_eth_giga1_device = {
+<<<<<<< HEAD
 	.name		= "sh-eth",
+=======
+	.name		= "sh7757-gether",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.resource	= sh_eth_giga1_resources,
 	.id		= 3,
 	.num_resources	= ARRAY_SIZE(sh_eth_giga1_resources),
@@ -198,6 +266,18 @@ static struct platform_device sh7757_eth_giga1_device = {
 	},
 };
 
+<<<<<<< HEAD
+=======
+/* Fixed 3.3V regulator to be used by SDHI0, MMCIF */
+static struct regulator_consumer_supply fixed3v3_power_consumers[] =
+{
+	REGULATOR_SUPPLY("vmmc", "sh_mobile_sdhi.0"),
+	REGULATOR_SUPPLY("vqmmc", "sh_mobile_sdhi.0"),
+	REGULATOR_SUPPLY("vmmc", "sh_mmcif.0"),
+	REGULATOR_SUPPLY("vqmmc", "sh_mmcif.0"),
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SH_MMCIF */
 static struct resource sh_mmcif_resources[] = {
 	[0] = {
@@ -206,11 +286,19 @@ static struct resource sh_mmcif_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.start	= 211,
 		.flags	= IORESOURCE_IRQ,
 	},
 	[2] = {
 		.start	= 212,
+=======
+		.start	= evt2irq(0x1c60),
+		.flags	= IORESOURCE_IRQ,
+	},
+	[2] = {
+		.start	= evt2irq(0x1c80),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
@@ -235,20 +323,35 @@ static struct platform_device sh_mmcif_device = {
 };
 
 /* SDHI0 */
+<<<<<<< HEAD
 static struct sh_mobile_sdhi_info sdhi_info = {
 	.dma_slave_tx	= SHDMA_SLAVE_SDHI_TX,
 	.dma_slave_rx	= SHDMA_SLAVE_SDHI_RX,
 	.tmio_caps	= MMC_CAP_SD_HIGHSPEED,
+=======
+static struct tmio_mmc_data sdhi_info = {
+	.chan_priv_tx	= (void *)SHDMA_SLAVE_SDHI_TX,
+	.chan_priv_rx	= (void *)SHDMA_SLAVE_SDHI_RX,
+	.capabilities	= MMC_CAP_SD_HIGHSPEED,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource sdhi_resources[] = {
 	[0] = {
 		.start  = 0xffe50000,
+<<<<<<< HEAD
 		.end    = 0xffe501ff,
 		.flags  = IORESOURCE_MEM,
 	},
 	[1] = {
 		.start  = 20,
+=======
+		.end    = 0xffe500ff,
+		.flags  = IORESOURCE_MEM,
+	},
+	[1] = {
+		.start  = evt2irq(0x480),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags  = IORESOURCE_IRQ,
 	},
 };
@@ -284,8 +387,13 @@ static struct resource usb0_resources[] = {
 		.flags	= IORESOURCE_MEM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.start	= 50,
 		.end	= 50,
+=======
+		.start	= evt2irq(0x840),
+		.end	= evt2irq(0x840),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags	= IORESOURCE_IRQ,
 	},
 };
@@ -328,6 +436,12 @@ static struct spi_board_info spi_board_info[] = {
 
 static int __init sh7757lcr_devices_setup(void)
 {
+<<<<<<< HEAD
+=======
+	regulator_register_always_on(0, "fixed-3.3V", fixed3v3_power_consumers,
+				     ARRAY_SIZE(fixed3v3_power_consumers), 3300000);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* RGMII (PTA) */
 	gpio_request(GPIO_FN_ET0_MDC, NULL);
 	gpio_request(GPIO_FN_ET0_MDIO, NULL);

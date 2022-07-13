@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999-2001 Vojtech Pavlik
  */
@@ -6,6 +10,7 @@
  * Magellan and Space Mouse 6dof controller driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +31,17 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/serio.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"Magellan and SpaceMouse 6dof controller driver"
 
@@ -199,7 +209,11 @@ static int magellan_connect(struct serio *serio, struct serio_driver *drv)
  * The serio driver structure.
  */
 
+<<<<<<< HEAD
 static struct serio_device_id magellan_serio_ids[] = {
+=======
+static const struct serio_device_id magellan_serio_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_MAGELLAN,
@@ -222,6 +236,7 @@ static struct serio_driver magellan_drv = {
 	.disconnect	= magellan_disconnect,
 };
 
+<<<<<<< HEAD
 /*
  * The functions for inserting/removing us as a module.
  */
@@ -238,3 +253,6 @@ static void __exit magellan_exit(void)
 
 module_init(magellan_init);
 module_exit(magellan_exit);
+=======
+module_serio_driver(magellan_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/kernel/systbls.S
  *
@@ -6,10 +10,15 @@
 
 #include <asm/unistd.h>
 
+<<<<<<< HEAD
+=======
+#define __SYSCALL(nr, entry) .quad entry
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.data
 	.align 3
 	.globl sys_call_table
 sys_call_table:
+<<<<<<< HEAD
 	.quad alpha_ni_syscall			/* 0 */
 	.quad sys_exit
 	.quad sys_fork
@@ -530,3 +539,6 @@ sys_call_table:
 .ifne (. - sys_call_table) - (NR_SYSCALLS * 8)
 .err
 .endif
+=======
+#include <asm/syscall_table.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

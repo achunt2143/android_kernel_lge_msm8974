@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * atxp1.c - kernel module for setting CPU VID and general purpose
  *	     I/Os using the Attansic ATXP1 chip.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,6 +21,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+ * The ATXP1 can reside on I2C addresses 0x37 or 0x4e. The chip is
+ * not auto-detected by the driver and must be instantiated explicitly.
+ * See Documentation/i2c/instantiating-devices.rst for more information.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -26,6 +36,10 @@
 #include <linux/hwmon.h>
 #include <linux/hwmon-vid.h>
 #include <linux/err.h>
+<<<<<<< HEAD
+=======
+#include <linux/kstrtox.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mutex.h>
 #include <linux/sysfs.h>
 #include <linux/slab.h>
@@ -43,6 +57,7 @@ MODULE_AUTHOR("Sebastian Witt <se.witt@gmx.net>");
 #define ATXP1_VIDMASK	0x1f
 #define ATXP1_GPIO1MASK	0x0f
 
+<<<<<<< HEAD
 static const unsigned short normal_i2c[] = { 0x37, 0x4e, I2C_CLIENT_END };
 
 static int atxp1_probe(struct i2c_client *client,
@@ -74,6 +89,13 @@ struct atxp1_data {
 	struct mutex update_lock;
 	unsigned long last_updated;
 	u8 valid;
+=======
+struct atxp1_data {
+	struct i2c_client *client;
+	struct mutex update_lock;
+	unsigned long last_updated;
+	bool valid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		u8 vid;		/* VID output register */
 		u8 cpu_vid; /* VID input from CPU */
@@ -85,11 +107,16 @@ struct atxp1_data {
 
 static struct atxp1_data *atxp1_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client;
 	struct atxp1_data *data;
 
 	client = to_i2c_client(dev);
 	data = i2c_get_clientdata(client);
+=======
+	struct atxp1_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->update_lock);
 
@@ -102,7 +129,11 @@ static struct atxp1_data *atxp1_update_device(struct device *dev)
 		data->reg.gpio1 = i2c_smbus_read_byte_data(client, ATXP1_GPIO1);
 		data->reg.gpio2 = i2c_smbus_read_byte_data(client, ATXP1_GPIO2);
 
+<<<<<<< HEAD
 		data->valid = 1;
+=======
+		data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&data->update_lock);
@@ -111,8 +142,13 @@ static struct atxp1_data *atxp1_update_device(struct device *dev)
 }
 
 /* sys file functions for cpu0_vid */
+<<<<<<< HEAD
 static ssize_t atxp1_showvcore(struct device *dev,
 			       struct device_attribute *attr, char *buf)
+=======
+static ssize_t cpu0_vid_show(struct device *dev,
+			     struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int size;
 	struct atxp1_data *data;
@@ -125,19 +161,31 @@ static ssize_t atxp1_showvcore(struct device *dev,
 	return size;
 }
 
+<<<<<<< HEAD
 static ssize_t atxp1_storevcore(struct device *dev,
 				struct device_attribute *attr,
 				const char *buf, size_t count)
 {
 	struct atxp1_data *data;
 	struct i2c_client *client;
+=======
+static ssize_t cpu0_vid_store(struct device *dev,
+			      struct device_attribute *attr, const char *buf,
+			      size_t count)
+{
+	struct atxp1_data *data = atxp1_update_device(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int vid, cvid;
 	unsigned long vcore;
 	int err;
 
+<<<<<<< HEAD
 	client = to_i2c_client(dev);
 	data = atxp1_update_device(dev);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = kstrtoul(buf, 10, &vcore);
 	if (err)
 		return err;
@@ -147,10 +195,16 @@ static ssize_t atxp1_storevcore(struct device *dev,
 
 	/* Calculate VID */
 	vid = vid_to_reg(vcore, data->vrm);
+<<<<<<< HEAD
 
 	if (vid < 0) {
 		dev_err(dev, "VID calculation failed.\n");
 		return -1;
+=======
+	if (vid < 0) {
+		dev_err(dev, "VID calculation failed.\n");
+		return vid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -179,7 +233,11 @@ static ssize_t atxp1_storevcore(struct device *dev,
 						ATXP1_VID, cvid | ATXP1_VIDENA);
 	}
 
+<<<<<<< HEAD
 	data->valid = 0;
+=======
+	data->valid = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return count;
 }
@@ -188,12 +246,20 @@ static ssize_t atxp1_storevcore(struct device *dev,
  * CPU core reference voltage
  * unit: millivolt
  */
+<<<<<<< HEAD
 static DEVICE_ATTR(cpu0_vid, S_IRUGO | S_IWUSR, atxp1_showvcore,
 		   atxp1_storevcore);
 
 /* sys file functions for GPIO1 */
 static ssize_t atxp1_showgpio1(struct device *dev,
 			       struct device_attribute *attr, char *buf)
+=======
+static DEVICE_ATTR_RW(cpu0_vid);
+
+/* sys file functions for GPIO1 */
+static ssize_t gpio1_show(struct device *dev, struct device_attribute *attr,
+			  char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int size;
 	struct atxp1_data *data;
@@ -205,6 +271,7 @@ static ssize_t atxp1_showgpio1(struct device *dev,
 	return size;
 }
 
+<<<<<<< HEAD
 static ssize_t atxp1_storegpio1(struct device *dev,
 				struct device_attribute *attr, const char *buf,
 				size_t count)
@@ -217,6 +284,16 @@ static ssize_t atxp1_storegpio1(struct device *dev,
 	client = to_i2c_client(dev);
 	data = atxp1_update_device(dev);
 
+=======
+static ssize_t gpio1_store(struct device *dev, struct device_attribute *attr,
+			   const char *buf, size_t count)
+{
+	struct atxp1_data *data = atxp1_update_device(dev);
+	struct i2c_client *client = data->client;
+	unsigned long value;
+	int err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = kstrtoul(buf, 16, &value);
 	if (err)
 		return err;
@@ -228,7 +305,11 @@ static ssize_t atxp1_storegpio1(struct device *dev,
 
 		i2c_smbus_write_byte_data(client, ATXP1_GPIO1, value);
 
+<<<<<<< HEAD
 		data->valid = 0;
+=======
+		data->valid = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return count;
@@ -238,11 +319,19 @@ static ssize_t atxp1_storegpio1(struct device *dev,
  * GPIO1 data register
  * unit: Four bit as hex (e.g. 0x0f)
  */
+<<<<<<< HEAD
 static DEVICE_ATTR(gpio1, S_IRUGO | S_IWUSR, atxp1_showgpio1, atxp1_storegpio1);
 
 /* sys file functions for GPIO2 */
 static ssize_t atxp1_showgpio2(struct device *dev,
 			       struct device_attribute *attr, char *buf)
+=======
+static DEVICE_ATTR_RW(gpio1);
+
+/* sys file functions for GPIO2 */
+static ssize_t gpio2_show(struct device *dev, struct device_attribute *attr,
+			  char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int size;
 	struct atxp1_data *data;
@@ -254,12 +343,20 @@ static ssize_t atxp1_showgpio2(struct device *dev,
 	return size;
 }
 
+<<<<<<< HEAD
 static ssize_t atxp1_storegpio2(struct device *dev,
 				struct device_attribute *attr,
 				const char *buf, size_t count)
 {
 	struct atxp1_data *data = atxp1_update_device(dev);
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+static ssize_t gpio2_store(struct device *dev, struct device_attribute *attr,
+			   const char *buf, size_t count)
+{
+	struct atxp1_data *data = atxp1_update_device(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long value;
 	int err;
 
@@ -273,7 +370,11 @@ static ssize_t atxp1_storegpio2(struct device *dev,
 
 		i2c_smbus_write_byte_data(client, ATXP1_GPIO2, value);
 
+<<<<<<< HEAD
 		data->valid = 0;
+=======
+		data->valid = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return count;
@@ -283,14 +384,21 @@ static ssize_t atxp1_storegpio2(struct device *dev,
  * GPIO2 data register
  * unit: Eight bit as hex (e.g. 0xff)
  */
+<<<<<<< HEAD
 static DEVICE_ATTR(gpio2, S_IRUGO | S_IWUSR, atxp1_showgpio2, atxp1_storegpio2);
 
 static struct attribute *atxp1_attributes[] = {
+=======
+static DEVICE_ATTR_RW(gpio2);
+
+static struct attribute *atxp1_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_gpio1.attr,
 	&dev_attr_gpio2.attr,
 	&dev_attr_cpu0_vid.attr,
 	NULL
 };
+<<<<<<< HEAD
 
 static const struct attribute_group atxp1_group = {
 	.attrs = atxp1_attributes,
@@ -393,6 +501,55 @@ static int atxp1_remove(struct i2c_client *client)
 	kfree(data);
 
 	return 0;
+=======
+ATTRIBUTE_GROUPS(atxp1);
+
+static int atxp1_probe(struct i2c_client *client)
+{
+	struct device *dev = &client->dev;
+	struct atxp1_data *data;
+	struct device *hwmon_dev;
+
+	data = devm_kzalloc(dev, sizeof(struct atxp1_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	/* Get VRM */
+	data->vrm = vid_which_vrm();
+	if (data->vrm != 90 && data->vrm != 91) {
+		dev_err(dev, "atxp1: Not supporting VRM %d.%d\n",
+			data->vrm / 10, data->vrm % 10);
+		return -ENODEV;
+	}
+
+	data->client = client;
+	mutex_init(&data->update_lock);
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data,
+							   atxp1_groups);
+	if (IS_ERR(hwmon_dev))
+		return PTR_ERR(hwmon_dev);
+
+	dev_info(dev, "Using VRM: %d.%d\n", data->vrm / 10, data->vrm % 10);
+
+	return 0;
+};
+
+static const struct i2c_device_id atxp1_id[] = {
+	{ "atxp1", 0 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, atxp1_id);
+
+static struct i2c_driver atxp1_driver = {
+	.class		= I2C_CLASS_HWMON,
+	.driver = {
+		.name	= "atxp1",
+	},
+	.probe		= atxp1_probe,
+	.id_table	= atxp1_id,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_i2c_driver(atxp1_driver);

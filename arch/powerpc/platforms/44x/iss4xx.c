@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PPC476 board specific routines
  *
@@ -12,11 +16,14 @@
  *
  *    Rewritten and ported to the merged powerpc tree:
  *    Copyright 2007 David Gibson <dwg@au1.ibm.com>, IBM Corporation.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -32,7 +39,11 @@
 #include <asm/mpic.h>
 #include <asm/mmu.h>
 
+<<<<<<< HEAD
 static __initdata struct of_device_id iss4xx_of_bus[] = {
+=======
+static const struct of_device_id iss4xx_of_bus[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "ibm,plb4", },
 	{ .compatible = "ibm,plb6", },
 	{ .compatible = "ibm,opb", },
@@ -56,7 +67,11 @@ static void __init iss4xx_init_irq(void)
 
 	/* Find top level interrupt controller */
 	for_each_node_with_property(np, "interrupt-controller") {
+<<<<<<< HEAD
 		if (of_get_property(np, "interrupts", NULL) == NULL)
+=======
+		if (!of_property_present(np, "interrupts"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 	if (np == NULL)
@@ -81,12 +96,20 @@ static void __init iss4xx_init_irq(void)
 }
 
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 static void __cpuinit smp_iss4xx_setup_cpu(int cpu)
+=======
+static void smp_iss4xx_setup_cpu(int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mpic_setup_this_cpu();
 }
 
+<<<<<<< HEAD
 static int __cpuinit smp_iss4xx_kick_cpu(int cpu)
+=======
+static int smp_iss4xx_kick_cpu(int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *cpunode = of_get_cpu_node(cpu, NULL);
 	const u64 *spin_table_addr_prop;
@@ -144,6 +167,7 @@ static void __init iss4xx_setup_arch(void)
 	iss4xx_smp_init();
 }
 
+<<<<<<< HEAD
 /*
  * Called very early, MMU is off, device-tree isn't unflattened
  */
@@ -160,9 +184,17 @@ static int __init iss4xx_probe(void)
 define_machine(iss4xx) {
 	.name			= "ISS-4xx",
 	.probe			= iss4xx_probe,
+=======
+define_machine(iss4xx) {
+	.name			= "ISS-4xx",
+	.compatible		= "ibm,iss-4xx",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= udbg_progress,
 	.init_IRQ		= iss4xx_init_irq,
 	.setup_arch		= iss4xx_setup_arch,
 	.restart		= ppc4xx_reset_system,
+<<<<<<< HEAD
 	.calibrate_decr		= generic_calibrate_decr,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

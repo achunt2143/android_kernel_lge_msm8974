@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Shared CARL9170 Header
  *
  * Firmware descriptor format
  *
  * Copyright 2009-2011 Christian Lamparter <chunkeey@googlemail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; see the file COPYING.  If not, see
  * http://www.gnu.org/licenses/.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __CARL9170_SHARED_FWDESC_H
@@ -78,6 +85,18 @@ enum carl9170fw_feature_list {
 	/* HW (ANI, CCA, MIB) tally counters */
 	CARL9170FW_HW_COUNTERS,
 
+<<<<<<< HEAD
+=======
+	/* Firmware will pass BA when BARs are queued */
+	CARL9170FW_RX_BA_FILTER,
+
+	/* Firmware has support to write a byte at a time */
+	CARL9170FW_HAS_WREGB_CMD,
+
+	/* Pattern generator */
+	CARL9170FW_PATTERN_GENERATOR,
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* KEEP LAST */
 	__CARL9170FW_FEATURE_NUM
 };
@@ -152,7 +171,11 @@ struct carl9170fw_fix_entry {
 
 struct carl9170fw_fix_desc {
 	struct carl9170fw_desc_head head;
+<<<<<<< HEAD
 	struct carl9170fw_fix_entry data[0];
+=======
+	struct carl9170fw_fix_entry data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 #define CARL9170FW_FIX_DESC_SIZE			\
 	(sizeof(struct carl9170fw_fix_desc))

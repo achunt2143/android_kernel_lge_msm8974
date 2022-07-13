@@ -42,6 +42,10 @@ static void (*llc_type_handlers[2])(struct llc_sap *sap,
 void llc_add_pack(int type, void (*handler)(struct llc_sap *sap,
 					    struct sk_buff *skb))
 {
+<<<<<<< HEAD
+=======
+	smp_wmb(); /* ensure initialisation is complete before it's called */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (type == LLC_DEST_SAP || type == LLC_DEST_CONN)
 		llc_type_handlers[type - 1] = handler;
 }
@@ -50,11 +54,26 @@ void llc_remove_pack(int type)
 {
 	if (type == LLC_DEST_SAP || type == LLC_DEST_CONN)
 		llc_type_handlers[type - 1] = NULL;
+<<<<<<< HEAD
+=======
+	synchronize_net();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void llc_set_station_handler(void (*handler)(struct sk_buff *skb))
 {
+<<<<<<< HEAD
 	llc_station_handler = handler;
+=======
+	/* Ensure initialisation is complete before it's called */
+	if (handler)
+		smp_wmb();
+
+	llc_station_handler = handler;
+
+	if (!handler)
+		synchronize_net();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -118,8 +137,19 @@ static inline int llc_fixup_skb(struct sk_buff *skb)
 	skb->transport_header += llc_len;
 	skb_pull(skb, llc_len);
 	if (skb->protocol == htons(ETH_P_802_2)) {
+<<<<<<< HEAD
 		__be16 pdulen = eth_hdr(skb)->h_proto;
 		s32 data_size = ntohs(pdulen) - llc_len;
+=======
+		__be16 pdulen;
+		s32 data_size;
+
+		if (skb->mac_len < ETH_HLEN)
+			return 0;
+
+		pdulen = eth_hdr(skb)->h_proto;
+		data_size = ntohs(pdulen) - llc_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (data_size < 0 ||
 		    !pskb_may_pull(skb, data_size))
@@ -135,6 +165,10 @@ static inline int llc_fixup_skb(struct sk_buff *skb)
  *	@skb: received pdu
  *	@dev: device that receive pdu
  *	@pt: packet type
+<<<<<<< HEAD
+=======
+ *	@orig_dev: the original receive net device
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	When the system receives a 802.2 frame this function is called. It
  *	checks SAP and connection of received pdu and passes frame to
@@ -150,9 +184,14 @@ int llc_rcv(struct sk_buff *skb, struct net_device *dev,
 	int dest;
 	int (*rcv)(struct sk_buff *, struct net_device *,
 		   struct packet_type *, struct net_device *);
+<<<<<<< HEAD
 
 	if (!net_eq(dev_net(dev), &init_net))
 		goto drop;
+=======
+	void (*sta_handler)(struct sk_buff *skb);
+	void (*sap_handler)(struct llc_sap *sap, struct sk_buff *skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * When the interface is in promisc. mode, drop all the crap that it
@@ -182,7 +221,12 @@ int llc_rcv(struct sk_buff *skb, struct net_device *dev,
 	 */
 	rcv = rcu_dereference(sap->rcv_func);
 	dest = llc_pdu_type(skb);
+<<<<<<< HEAD
 	if (unlikely(!dest || !llc_type_handlers[dest - 1])) {
+=======
+	sap_handler = dest ? READ_ONCE(llc_type_handlers[dest - 1]) : NULL;
+	if (unlikely(!sap_handler)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rcv)
 			rcv(skb, dev, pt, orig_dev);
 		else
@@ -193,7 +237,11 @@ int llc_rcv(struct sk_buff *skb, struct net_device *dev,
 			if (cskb)
 				rcv(cskb, dev, pt, orig_dev);
 		}
+<<<<<<< HEAD
 		llc_type_handlers[dest - 1](sap, skb);
+=======
+		sap_handler(sap, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	llc_sap_put(sap);
 out:
@@ -202,9 +250,16 @@ drop:
 	kfree_skb(skb);
 	goto out;
 handle_station:
+<<<<<<< HEAD
 	if (!llc_station_handler)
 		goto drop;
 	llc_station_handler(skb);
+=======
+	sta_handler = READ_ONCE(llc_station_handler);
+	if (!sta_handler)
+		goto drop;
+	sta_handler(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out;
 }
 

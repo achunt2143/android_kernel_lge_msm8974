@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * trace binary printk
  *
@@ -5,7 +9,11 @@
  *
  */
 #include <linux/seq_file.h>
+<<<<<<< HEAD
 #include <linux/debugfs.h>
+=======
+#include <linux/security.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/uaccess.h>
 #include <linux/kernel.h>
 #include <linux/ftrace.h>
@@ -15,7 +23,10 @@
 #include <linux/ctype.h>
 #include <linux/list.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/fs.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "trace.h"
 
@@ -38,6 +49,13 @@ struct trace_bprintk_fmt {
 static inline struct trace_bprintk_fmt *lookup_format(const char *fmt)
 {
 	struct trace_bprintk_fmt *pos;
+<<<<<<< HEAD
+=======
+
+	if (!fmt)
+		return ERR_PTR(-EINVAL);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(pos, &trace_bprintk_fmt_list, list) {
 		if (!strcmp(pos->fmt, fmt))
 			return pos;
@@ -51,11 +69,23 @@ void hold_module_trace_bprintk_format(const char **start, const char **end)
 	const char **iter;
 	char *fmt;
 
+<<<<<<< HEAD
+=======
+	/* allocate the trace_printk per cpu buffers */
+	if (start != end)
+		trace_printk_init_buffers();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&btrace_mutex);
 	for (iter = start; iter < end; iter++) {
 		struct trace_bprintk_fmt *tb_fmt = lookup_format(*iter);
 		if (tb_fmt) {
+<<<<<<< HEAD
 			*iter = tb_fmt->fmt;
+=======
+			if (!IS_ERR(tb_fmt))
+				*iter = tb_fmt->fmt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -87,7 +117,11 @@ static int module_trace_bprintk_format_notify(struct notifier_block *self,
 		if (val == MODULE_STATE_COMING)
 			hold_module_trace_bprintk_format(start, end);
 	}
+<<<<<<< HEAD
 	return 0;
+=======
+	return NOTIFY_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -107,7 +141,11 @@ static int module_trace_bprintk_format_notify(struct notifier_block *self,
  * section, then we need to read the link list pointers. The trick is
  * we pass the address of the string to the seq function just like
  * we do for the kernel core formats. To get back the structure that
+<<<<<<< HEAD
  * holds the format, we simply use containerof() and then go to the
+=======
+ * holds the format, we simply use container_of() and then go to the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * next format in the list.
  */
 static const char **
@@ -165,7 +203,11 @@ __init static int
 module_trace_bprintk_format_notify(struct notifier_block *self,
 		unsigned long val, void *data)
 {
+<<<<<<< HEAD
 	return 0;
+=======
+	return NOTIFY_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static inline const char **
 find_next_mod_format(int start_index, void *v, const char **fmt, loff_t *pos)
@@ -176,6 +218,15 @@ static inline void format_mod_start(void) { }
 static inline void format_mod_stop(void) { }
 #endif /* CONFIG_MODULES */
 
+<<<<<<< HEAD
+=======
+static bool __read_mostly trace_printk_enabled = true;
+
+void trace_printk_control(bool enabled)
+{
+	trace_printk_enabled = enabled;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 __initdata_or_module static
 struct notifier_block module_trace_bprintk_format_nb = {
@@ -183,14 +234,22 @@ struct notifier_block module_trace_bprintk_format_nb = {
 };
 
 int __trace_bprintk(unsigned long ip, const char *fmt, ...)
+<<<<<<< HEAD
  {
+=======
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	va_list ap;
 
 	if (unlikely(!fmt))
 		return 0;
 
+<<<<<<< HEAD
 	if (!(trace_flags & TRACE_ITER_PRINTK))
+=======
+	if (!trace_printk_enabled)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	va_start(ap, fmt);
@@ -201,11 +260,19 @@ int __trace_bprintk(unsigned long ip, const char *fmt, ...)
 EXPORT_SYMBOL_GPL(__trace_bprintk);
 
 int __ftrace_vbprintk(unsigned long ip, const char *fmt, va_list ap)
+<<<<<<< HEAD
  {
 	if (unlikely(!fmt))
 		return 0;
 
 	if (!(trace_flags & TRACE_ITER_PRINTK))
+=======
+{
+	if (unlikely(!fmt))
+		return 0;
+
+	if (!trace_printk_enabled)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return trace_vbprintk(ip, fmt, ap);
@@ -217,7 +284,11 @@ int __trace_printk(unsigned long ip, const char *fmt, ...)
 	int ret;
 	va_list ap;
 
+<<<<<<< HEAD
 	if (!(trace_flags & TRACE_ITER_PRINTK))
+=======
+	if (!trace_printk_enabled)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	va_start(ap, fmt);
@@ -229,23 +300,67 @@ EXPORT_SYMBOL_GPL(__trace_printk);
 
 int __ftrace_vprintk(unsigned long ip, const char *fmt, va_list ap)
 {
+<<<<<<< HEAD
 	if (!(trace_flags & TRACE_ITER_PRINTK))
+=======
+	if (!trace_printk_enabled)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return trace_vprintk(ip, fmt, ap);
 }
 EXPORT_SYMBOL_GPL(__ftrace_vprintk);
 
+<<<<<<< HEAD
+=======
+bool trace_is_tracepoint_string(const char *str)
+{
+	const char **ptr = __start___tracepoint_str;
+
+	for (ptr = __start___tracepoint_str; ptr < __stop___tracepoint_str; ptr++) {
+		if (str == *ptr)
+			return true;
+	}
+	return false;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char **find_next(void *v, loff_t *pos)
 {
 	const char **fmt = v;
 	int start_index;
+<<<<<<< HEAD
+=======
+	int last_index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	start_index = __stop___trace_bprintk_fmt - __start___trace_bprintk_fmt;
 
 	if (*pos < start_index)
 		return __start___trace_bprintk_fmt + *pos;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * The __tracepoint_str section is treated the same as the
+	 * __trace_printk_fmt section. The difference is that the
+	 * __trace_printk_fmt section should only be used by trace_printk()
+	 * in a debugging environment, as if anything exists in that section
+	 * the trace_prink() helper buffers are allocated, which would just
+	 * waste space in a production environment.
+	 *
+	 * The __tracepoint_str sections on the other hand are used by
+	 * tracepoints which need to map pointers to their strings to
+	 * the ASCII text for userspace.
+	 */
+	last_index = start_index;
+	start_index = __stop___tracepoint_str - __start___tracepoint_str;
+
+	if (*pos < last_index + start_index)
+		return __start___tracepoint_str + (*pos - last_index);
+
+	start_index += last_index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return find_next_mod_format(start_index, v, fmt, pos);
 }
 
@@ -285,7 +400,11 @@ static int t_show(struct seq_file *m, void *v)
 			seq_puts(m, "\\t");
 			break;
 		case '\\':
+<<<<<<< HEAD
 			seq_puts(m, "\\");
+=======
+			seq_putc(m, '\\');
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case '"':
 			seq_puts(m, "\\\"");
@@ -314,6 +433,15 @@ static const struct seq_operations show_format_seq_ops = {
 static int
 ftrace_formats_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
+=======
+	int ret;
+
+	ret = security_locked_down(LOCKDOWN_TRACEFS);
+	if (ret)
+		return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return seq_open(file, &show_format_seq_ops);
 }
 
@@ -326,6 +454,7 @@ static const struct file_operations ftrace_formats_fops = {
 
 static __init int init_trace_printk_function_export(void)
 {
+<<<<<<< HEAD
 	struct dentry *d_tracer;
 
 	d_tracer = tracing_init_dentry();
@@ -333,6 +462,15 @@ static __init int init_trace_printk_function_export(void)
 		return 0;
 
 	trace_create_file("printk_formats", 0444, d_tracer,
+=======
+	int ret;
+
+	ret = tracing_init_dentry();
+	if (ret)
+		return 0;
+
+	trace_create_file("printk_formats", TRACE_MODE_READ, NULL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    NULL, &ftrace_formats_fops);
 
 	return 0;

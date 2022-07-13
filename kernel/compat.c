@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/kernel/compat.c
  *
@@ -5,10 +9,13 @@
  *  on 64 bit kernels.
  *
  *  Copyright (C) 2002-2003 Stephen Rothwell, IBM Corporation
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/linkage.h>
@@ -20,7 +27,10 @@
 #include <linux/syscalls.h>
 #include <linux/unistd.h>
 #include <linux/security.h>
+<<<<<<< HEAD
 #include <linux/timex.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/migrate.h>
 #include <linux/posix-timers.h>
@@ -28,6 +38,7 @@
 #include <linux/ptrace.h>
 #include <linux/gfp.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 /*
@@ -369,6 +380,9 @@ asmlinkage long compat_sys_sigpending(compat_old_sigset_t __user *set)
 }
 
 #endif
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __ARCH_WANT_SYS_SIGPROCMASK
 
@@ -381,9 +395,15 @@ static inline void compat_sig_setmask(sigset_t *blocked, compat_sigset_word set)
 	memcpy(blocked->sig, &set, sizeof(set));
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_sigprocmask(int how,
 				       compat_old_sigset_t __user *nset,
 				       compat_old_sigset_t __user *oset)
+=======
+COMPAT_SYSCALL_DEFINE3(sigprocmask, int, how,
+		       compat_old_sigset_t __user *, nset,
+		       compat_old_sigset_t __user *, oset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	old_sigset_t old_set, new_set;
 	sigset_t new_blocked;
@@ -424,6 +444,7 @@ asmlinkage long compat_sys_sigprocmask(int how,
 
 #endif
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_setrlimit(unsigned int resource,
 		struct compat_rlimit __user *rlim)
 {
@@ -512,10 +533,36 @@ int put_compat_rusage(const struct rusage *r, struct compat_rusage __user *ru)
 	    __put_user(r->ru_nsignals, &ru->ru_nsignals) ||
 	    __put_user(r->ru_nvcsw, &ru->ru_nvcsw) ||
 	    __put_user(r->ru_nivcsw, &ru->ru_nivcsw))
+=======
+int put_compat_rusage(const struct rusage *r, struct compat_rusage __user *ru)
+{
+	struct compat_rusage r32;
+	memset(&r32, 0, sizeof(r32));
+	r32.ru_utime.tv_sec = r->ru_utime.tv_sec;
+	r32.ru_utime.tv_usec = r->ru_utime.tv_usec;
+	r32.ru_stime.tv_sec = r->ru_stime.tv_sec;
+	r32.ru_stime.tv_usec = r->ru_stime.tv_usec;
+	r32.ru_maxrss = r->ru_maxrss;
+	r32.ru_ixrss = r->ru_ixrss;
+	r32.ru_idrss = r->ru_idrss;
+	r32.ru_isrss = r->ru_isrss;
+	r32.ru_minflt = r->ru_minflt;
+	r32.ru_majflt = r->ru_majflt;
+	r32.ru_nswap = r->ru_nswap;
+	r32.ru_inblock = r->ru_inblock;
+	r32.ru_oublock = r->ru_oublock;
+	r32.ru_msgsnd = r->ru_msgsnd;
+	r32.ru_msgrcv = r->ru_msgrcv;
+	r32.ru_nsignals = r->ru_nsignals;
+	r32.ru_nvcsw = r->ru_nvcsw;
+	r32.ru_nivcsw = r->ru_nivcsw;
+	if (copy_to_user(ru, &r32, sizeof(r32)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	return 0;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_getrusage(int who, struct compat_rusage __user *ru)
 {
 	struct rusage r;
@@ -594,6 +641,8 @@ asmlinkage long compat_sys_waitid(int which, compat_pid_t pid,
 	return copy_siginfo_to_user32(uinfo, &info);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int compat_get_user_cpu_mask(compat_ulong_t __user *user_mask_ptr,
 				    unsigned len, struct cpumask *new_mask)
 {
@@ -608,9 +657,15 @@ static int compat_get_user_cpu_mask(compat_ulong_t __user *user_mask_ptr,
 	return compat_get_bitmap(k, user_mask_ptr, len * 8);
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_sched_setaffinity(compat_pid_t pid,
 					     unsigned int len,
 					     compat_ulong_t __user *user_mask_ptr)
+=======
+COMPAT_SYSCALL_DEFINE3(sched_setaffinity, compat_pid_t, pid,
+		       unsigned int, len,
+		       compat_ulong_t __user *, user_mask_ptr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	cpumask_var_t new_mask;
 	int retval;
@@ -628,8 +683,13 @@ out:
 	return retval;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_sched_getaffinity(compat_pid_t pid, unsigned int len,
 					     compat_ulong_t __user *user_mask_ptr)
+=======
+COMPAT_SYSCALL_DEFINE3(sched_getaffinity, compat_pid_t,  pid, unsigned int, len,
+		       compat_ulong_t __user *, user_mask_ptr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	cpumask_var_t mask;
@@ -639,12 +699,20 @@ asmlinkage long compat_sys_sched_getaffinity(compat_pid_t pid, unsigned int len,
 	if (len & (sizeof(compat_ulong_t)-1))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (!alloc_cpumask_var(&mask, GFP_KERNEL))
+=======
+	if (!zalloc_cpumask_var(&mask, GFP_KERNEL))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	ret = sched_getaffinity(pid, mask);
 	if (ret == 0) {
+<<<<<<< HEAD
 		size_t retlen = min_t(size_t, len, cpumask_size());
+=======
+		unsigned int retlen = min(len, cpumask_size());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (compat_put_bitmap(user_mask_ptr, cpumask_bits(mask), retlen * 8))
 			ret = -EFAULT;
@@ -656,6 +724,7 @@ asmlinkage long compat_sys_sched_getaffinity(compat_pid_t pid, unsigned int len,
 	return ret;
 }
 
+<<<<<<< HEAD
 int get_compat_itimerspec(struct itimerspec *dst,
 			  const struct compat_itimerspec __user *src)
 {
@@ -861,6 +930,8 @@ long compat_sys_clock_nanosleep(clockid_t which_clock, int flags,
 	return err;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We currently only need the following fields from the sigevent
  * structure: sigev_value, sigev_signo, sig_notify and (sometimes
@@ -872,7 +943,11 @@ int get_compat_sigevent(struct sigevent *event,
 		const struct compat_sigevent __user *u_event)
 {
 	memset(event, 0, sizeof(*event));
+<<<<<<< HEAD
 	return (!access_ok(VERIFY_READ, u_event, sizeof(*u_event)) ||
+=======
+	return (!access_ok(u_event, sizeof(*u_event)) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__get_user(event->sigev_value.sival_int,
 			&u_event->sigev_value.sival_int) ||
 		__get_user(event->sigev_signo, &u_event->sigev_signo) ||
@@ -885,13 +960,17 @@ int get_compat_sigevent(struct sigevent *event,
 long compat_get_bitmap(unsigned long *mask, const compat_ulong_t __user *umask,
 		       unsigned long bitmap_size)
 {
+<<<<<<< HEAD
 	int i, j;
 	unsigned long m;
 	compat_ulong_t um;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long nr_compat_longs;
 
 	/* align bitmap up to nearest compat_long_t boundary */
 	bitmap_size = ALIGN(bitmap_size, BITS_PER_COMPAT_LONG);
+<<<<<<< HEAD
 
 	if (!access_ok(VERIFY_READ, umask, bitmap_size / 8))
 		return -EFAULT;
@@ -921,18 +1000,44 @@ long compat_get_bitmap(unsigned long *mask, const compat_ulong_t __user *umask,
 	}
 
 	return 0;
+=======
+	nr_compat_longs = BITS_TO_COMPAT_LONGS(bitmap_size);
+
+	if (!user_read_access_begin(umask, bitmap_size / 8))
+		return -EFAULT;
+
+	while (nr_compat_longs > 1) {
+		compat_ulong_t l1, l2;
+		unsafe_get_user(l1, umask++, Efault);
+		unsafe_get_user(l2, umask++, Efault);
+		*mask++ = ((unsigned long)l2 << BITS_PER_COMPAT_LONG) | l1;
+		nr_compat_longs -= 2;
+	}
+	if (nr_compat_longs)
+		unsafe_get_user(*mask, umask++, Efault);
+	user_read_access_end();
+	return 0;
+
+Efault:
+	user_read_access_end();
+	return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 long compat_put_bitmap(compat_ulong_t __user *umask, unsigned long *mask,
 		       unsigned long bitmap_size)
 {
+<<<<<<< HEAD
 	int i, j;
 	unsigned long m;
 	compat_ulong_t um;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long nr_compat_longs;
 
 	/* align bitmap up to nearest compat_long_t boundary */
 	bitmap_size = ALIGN(bitmap_size, BITS_PER_COMPAT_LONG);
+<<<<<<< HEAD
 
 	if (!access_ok(VERIFY_WRITE, umask, bitmap_size / 8))
 		return -EFAULT;
@@ -1243,3 +1348,48 @@ void __user *compat_alloc_user_space(unsigned long len)
 	return ptr;
 }
 EXPORT_SYMBOL_GPL(compat_alloc_user_space);
+=======
+	nr_compat_longs = BITS_TO_COMPAT_LONGS(bitmap_size);
+
+	if (!user_write_access_begin(umask, bitmap_size / 8))
+		return -EFAULT;
+
+	while (nr_compat_longs > 1) {
+		unsigned long m = *mask++;
+		unsafe_put_user((compat_ulong_t)m, umask++, Efault);
+		unsafe_put_user(m >> BITS_PER_COMPAT_LONG, umask++, Efault);
+		nr_compat_longs -= 2;
+	}
+	if (nr_compat_longs)
+		unsafe_put_user((compat_ulong_t)*mask, umask++, Efault);
+	user_write_access_end();
+	return 0;
+Efault:
+	user_write_access_end();
+	return -EFAULT;
+}
+
+int
+get_compat_sigset(sigset_t *set, const compat_sigset_t __user *compat)
+{
+#ifdef __BIG_ENDIAN
+	compat_sigset_t v;
+	if (copy_from_user(&v, compat, sizeof(compat_sigset_t)))
+		return -EFAULT;
+	switch (_NSIG_WORDS) {
+	case 4: set->sig[3] = v.sig[6] | (((long)v.sig[7]) << 32 );
+		fallthrough;
+	case 3: set->sig[2] = v.sig[4] | (((long)v.sig[5]) << 32 );
+		fallthrough;
+	case 2: set->sig[1] = v.sig[2] | (((long)v.sig[3]) << 32 );
+		fallthrough;
+	case 1: set->sig[0] = v.sig[0] | (((long)v.sig[1]) << 32 );
+	}
+#else
+	if (copy_from_user(set, compat, sizeof(compat_sigset_t)))
+		return -EFAULT;
+#endif
+	return 0;
+}
+EXPORT_SYMBOL_GPL(get_compat_sigset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

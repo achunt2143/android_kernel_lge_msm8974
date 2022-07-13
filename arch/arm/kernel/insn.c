@@ -1,9 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bug.h>
 #include <linux/kernel.h>
 #include <asm/opcodes.h>
 
+<<<<<<< HEAD
 static unsigned long
 __arm_gen_branch_thumb2(unsigned long pc, unsigned long addr, bool link)
+=======
+static unsigned long __arm_gen_branch_thumb2(unsigned long pc,
+					     unsigned long addr, bool link,
+					     bool warn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long s, j1, j2, i1, i2, imm10, imm11;
 	unsigned long first, second;
@@ -11,7 +21,11 @@ __arm_gen_branch_thumb2(unsigned long pc, unsigned long addr, bool link)
 
 	offset = (long)addr - (long)(pc + 4);
 	if (offset < -16777216 || offset > 16777214) {
+<<<<<<< HEAD
 		WARN_ON_ONCE(1);
+=======
+		WARN_ON_ONCE(warn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -32,8 +46,13 @@ __arm_gen_branch_thumb2(unsigned long pc, unsigned long addr, bool link)
 	return __opcode_thumb32_compose(first, second);
 }
 
+<<<<<<< HEAD
 static unsigned long
 __arm_gen_branch_arm(unsigned long pc, unsigned long addr, bool link)
+=======
+static unsigned long __arm_gen_branch_arm(unsigned long pc, unsigned long addr,
+					  bool link, bool warn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long opcode = 0xea000000;
 	long offset;
@@ -43,7 +62,11 @@ __arm_gen_branch_arm(unsigned long pc, unsigned long addr, bool link)
 
 	offset = (long)addr - (long)(pc + 8);
 	if (unlikely(offset < -33554432 || offset > 33554428)) {
+<<<<<<< HEAD
 		WARN_ON_ONCE(1);
+=======
+		WARN_ON_ONCE(warn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -53,10 +76,19 @@ __arm_gen_branch_arm(unsigned long pc, unsigned long addr, bool link)
 }
 
 unsigned long
+<<<<<<< HEAD
 __arm_gen_branch(unsigned long pc, unsigned long addr, bool link)
 {
 	if (IS_ENABLED(CONFIG_THUMB2_KERNEL))
 		return __arm_gen_branch_thumb2(pc, addr, link);
 	else
 		return __arm_gen_branch_arm(pc, addr, link);
+=======
+__arm_gen_branch(unsigned long pc, unsigned long addr, bool link, bool warn)
+{
+	if (IS_ENABLED(CONFIG_THUMB2_KERNEL))
+		return __arm_gen_branch_thumb2(pc, addr, link, warn);
+	else
+		return __arm_gen_branch_arm(pc, addr, link, warn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

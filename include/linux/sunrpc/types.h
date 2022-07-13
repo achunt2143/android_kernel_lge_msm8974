@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/linux/sunrpc/types.h
  *
@@ -10,6 +14,10 @@
 #define _LINUX_SUNRPC_TYPES_H_
 
 #include <linux/timer.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/workqueue.h>
 #include <linux/sunrpc/debug.h>
 #include <linux/list.h>

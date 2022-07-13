@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  The driver for the EMU10K1 (SB Live!) based soundcards
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -21,6 +22,13 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
  * 
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  The driver for the EMU10K1 (SB Live!) based soundcards
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+ *                   James Courtier-Dutton <James@superbug.co.uk>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -34,10 +42,15 @@
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("EMU10K1");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Creative Labs,SB Live!/PCI512/E-mu APS},"
 	       "{Creative Labs,SB Audigy}}");
 
 #if defined(CONFIG_SND_SEQUENCER) || (defined(MODULE) && defined(CONFIG_SND_SEQUENCER_MODULE))
+=======
+
+#if IS_ENABLED(CONFIG_SND_SEQUENCER)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ENABLE_SYNTH
 #include <sound/emu10k1_synth.h>
 #endif
@@ -52,7 +65,10 @@ static int max_synth_voices[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 64};
 static int max_buffer_size[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 128};
 static bool enable_ir[SNDRV_CARDS];
 static uint subsystem[SNDRV_CARDS]; /* Force card subsystem model */
+<<<<<<< HEAD
 static uint delay_pcm_irq[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 2};
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_array(index, int, NULL, 0444);
 MODULE_PARM_DESC(index, "Index value for the EMU10K1 soundcard.");
@@ -74,18 +90,26 @@ module_param_array(enable_ir, bool, NULL, 0444);
 MODULE_PARM_DESC(enable_ir, "Enable IR.");
 module_param_array(subsystem, uint, NULL, 0444);
 MODULE_PARM_DESC(subsystem, "Force card subsystem model.");
+<<<<<<< HEAD
 module_param_array(delay_pcm_irq, uint, NULL, 0444);
 MODULE_PARM_DESC(delay_pcm_irq, "Delay PCM interrupt by specified number of samples (default 0).");
 /*
  * Class 0401: 1102:0008 (rev 00) Subsystem: 1102:1001 -> Audigy2 Value  Model:SB0400
  */
 static DEFINE_PCI_DEVICE_TABLE(snd_emu10k1_ids) = {
+=======
+/*
+ * Class 0401: 1102:0008 (rev 00) Subsystem: 1102:1001 -> Audigy2 Value  Model:SB0400
+ */
+static const struct pci_device_id snd_emu10k1_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(CREATIVE, 0x0002), 0 },	/* EMU10K1 */
 	{ PCI_VDEVICE(CREATIVE, 0x0004), 1 },	/* Audigy */
 	{ PCI_VDEVICE(CREATIVE, 0x0008), 1 },	/* Audigy 2 Value SB0400 */
 	{ 0, }
 };
 
+<<<<<<< HEAD
 /*
  * Audigy 2 Value notes:
  * A_IOCFG Input (GPIO)
@@ -101,6 +125,12 @@ MODULE_DEVICE_TABLE(pci, snd_emu10k1_ids);
 
 static int __devinit snd_card_emu10k1_probe(struct pci_dev *pci,
 					    const struct pci_device_id *pci_id)
+=======
+MODULE_DEVICE_TABLE(pci, snd_emu10k1_ids);
+
+static int snd_card_emu10k1_probe(struct pci_dev *pci,
+				  const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -117,13 +147,23 @@ static int __devinit snd_card_emu10k1_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
 	if (err < 0)
 		return err;
+=======
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(*emu), &card);
+	if (err < 0)
+		return err;
+	emu = card->private_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (max_buffer_size[dev] < 32)
 		max_buffer_size[dev] = 32;
 	else if (max_buffer_size[dev] > 1024)
 		max_buffer_size[dev] = 1024;
+<<<<<<< HEAD
 	if ((err = snd_emu10k1_create(card, pci, extin[dev], extout[dev],
 				      (long)max_buffer_size[dev] * 1024 * 1024,
 				      enable_ir[dev], subsystem[dev],
@@ -165,11 +205,70 @@ static int __devinit snd_card_emu10k1_probe(struct pci_dev *pci,
 	}
 	if ((err = snd_emu10k1_fx8010_new(emu, 0, NULL)) < 0)
 		goto error;
+=======
+	err = snd_emu10k1_create(card, pci, extin[dev], extout[dev],
+				 (long)max_buffer_size[dev] * 1024 * 1024,
+				 enable_ir[dev], subsystem[dev]);
+	if (err < 0)
+		return err;
+	err = snd_emu10k1_pcm(emu, 0);
+	if (err < 0)
+		return err;
+	if (emu->card_capabilities->ac97_chip) {
+		err = snd_emu10k1_pcm_mic(emu, 1);
+		if (err < 0)
+			return err;
+	}
+	err = snd_emu10k1_pcm_efx(emu, 2);
+	if (err < 0)
+		return err;
+	/* This stores the periods table. */
+	if (emu->card_capabilities->ca0151_chip) { /* P16V */	
+		emu->p16v_buffer =
+			snd_devm_alloc_pages(&pci->dev, SNDRV_DMA_TYPE_DEV, 1024);
+		if (!emu->p16v_buffer)
+			return -ENOMEM;
+	}
+
+	err = snd_emu10k1_mixer(emu, 0, 3);
+	if (err < 0)
+		return err;
+	
+	err = snd_emu10k1_timer(emu, 0);
+	if (err < 0)
+		return err;
+
+	err = snd_emu10k1_pcm_multi(emu, 3);
+	if (err < 0)
+		return err;
+	if (emu->card_capabilities->ca0151_chip) { /* P16V */
+		err = snd_p16v_pcm(emu, 4);
+		if (err < 0)
+			return err;
+	}
+	if (emu->audigy) {
+		err = snd_emu10k1_audigy_midi(emu);
+		if (err < 0)
+			return err;
+	} else {
+		err = snd_emu10k1_midi(emu);
+		if (err < 0)
+			return err;
+	}
+	err = snd_emu10k1_fx8010_new(emu, 0);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef ENABLE_SYNTH
 	if (snd_seq_device_new(card, 1, SNDRV_SEQ_DEV_ID_EMU10K1_SYNTH,
 			       sizeof(struct snd_emu10k1_synth_arg), &wave) < 0 ||
 	    wave == NULL) {
+<<<<<<< HEAD
 		snd_printk(KERN_WARNING "can't initialize Emu10k1 wavetable synth\n");
+=======
+		dev_warn(emu->card->dev,
+			 "can't initialize Emu10k1 wavetable synth\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		struct snd_emu10k1_synth_arg *arg;
 		arg = SNDRV_SEQ_DEVICE_ARGPTR(wave);
@@ -181,20 +280,33 @@ static int __devinit snd_card_emu10k1_probe(struct pci_dev *pci,
 	}
 #endif
  
+<<<<<<< HEAD
 	strlcpy(card->driver, emu->card_capabilities->driver,
 		sizeof(card->driver));
 	strlcpy(card->shortname, emu->card_capabilities->name,
+=======
+	strscpy(card->driver, emu->card_capabilities->driver,
+		sizeof(card->driver));
+	strscpy(card->shortname, emu->card_capabilities->name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(card->shortname));
 	snprintf(card->longname, sizeof(card->longname),
 		 "%s (rev.%d, serial:0x%x) at 0x%lx, irq %i",
 		 card->shortname, emu->revision, emu->serial, emu->port, emu->irq);
 
+<<<<<<< HEAD
 	if ((err = snd_card_register(card)) < 0)
 		goto error;
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pci, card);
 	dev++;
 	return 0;
+<<<<<<< HEAD
 
  error:
 	snd_card_free(card);
@@ -212,15 +324,29 @@ static void __devexit snd_card_emu10k1_remove(struct pci_dev *pci)
 static int snd_emu10k1_suspend(struct pci_dev *pci, pm_message_t state)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int snd_emu10k1_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu10k1 *emu = card->private_data;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 
+<<<<<<< HEAD
 	snd_pcm_suspend_all(emu->pcm);
 	snd_pcm_suspend_all(emu->pcm_mic);
 	snd_pcm_suspend_all(emu->pcm_efx);
 	snd_pcm_suspend_all(emu->pcm_multi);
 	snd_pcm_suspend_all(emu->pcm_p16v);
+=======
+	emu->suspend = 1;
+
+	cancel_work_sync(&emu->emu1010.work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_ac97_suspend(emu->ac97);
 
@@ -230,6 +356,7 @@ static int snd_emu10k1_suspend(struct pci_dev *pci, pm_message_t state)
 		snd_p16v_suspend(emu);
 
 	snd_emu10k1_done(emu);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
@@ -252,6 +379,16 @@ static int snd_emu10k1_resume(struct pci_dev *pci)
 	}
 	pci_set_master(pci);
 
+=======
+	return 0;
+}
+
+static int snd_emu10k1_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct snd_emu10k1 *emu = card->private_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_emu10k1_resume_init(emu);
 	snd_emu10k1_efx_resume(emu);
 	snd_ac97_resume(emu->ac97);
@@ -260,6 +397,7 @@ static int snd_emu10k1_resume(struct pci_dev *pci)
 	if (emu->card_capabilities->ca0151_chip)
 		snd_p16v_resume(emu);
 
+<<<<<<< HEAD
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
@@ -288,3 +426,28 @@ static void __exit alsa_card_emu10k1_exit(void)
 
 module_init(alsa_card_emu10k1_init)
 module_exit(alsa_card_emu10k1_exit)
+=======
+	emu->suspend = 0;
+
+	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
+
+	return 0;
+}
+
+static SIMPLE_DEV_PM_OPS(snd_emu10k1_pm, snd_emu10k1_suspend, snd_emu10k1_resume);
+#define SND_EMU10K1_PM_OPS	&snd_emu10k1_pm
+#else
+#define SND_EMU10K1_PM_OPS	NULL
+#endif /* CONFIG_PM_SLEEP */
+
+static struct pci_driver emu10k1_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_emu10k1_ids,
+	.probe = snd_card_emu10k1_probe,
+	.driver = {
+		.pm = SND_EMU10K1_PM_OPS,
+	},
+};
+
+module_pci_driver(emu10k1_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

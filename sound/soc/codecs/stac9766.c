@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * stac9766.c  --  ALSA SoC STAC9766 codec support
  *
  * Copyright 2009 Jon Smirl, Digispeaker
  * Author: Jon Smirl <jonsmirl@gmail.com>
  *
+<<<<<<< HEAD
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Features:-
  *
  *   o Support for AC97 Codec, S/PDIF
@@ -18,6 +25,10 @@
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/device.h>
+<<<<<<< HEAD
+=======
+#include <linux/regmap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/ac97_codec.h>
@@ -26,6 +37,7 @@
 #include <sound/soc.h>
 #include <sound/tlv.h>
 
+<<<<<<< HEAD
 #include "stac9766.h"
 
 #define STAC9766_VERSION "0.10"
@@ -50,6 +62,58 @@ static const u16 stac9766_reg[] = {
 	0x0000, 0x0000, 0x0000, 0x0000, /* 6e */
 	0x0000, 0x0000, 0x0000, 0x0006, /* 76 */
 	0x0000, 0x0000, 0x0000, 0x0000, /* 7e */
+=======
+#define STAC9766_VENDOR_ID 0x83847666
+#define STAC9766_VENDOR_ID_MASK 0xffffffff
+
+#define AC97_STAC_DA_CONTROL 0x6A
+#define AC97_STAC_ANALOG_SPECIAL 0x6E
+#define AC97_STAC_STEREO_MIC 0x78
+
+static const struct reg_default stac9766_reg_defaults[] = {
+	{ 0x02, 0x8000 },
+	{ 0x04, 0x8000 },
+	{ 0x06, 0x8000 },
+	{ 0x0a, 0x0000 },
+	{ 0x0c, 0x8008 },
+	{ 0x0e, 0x8008 },
+	{ 0x10, 0x8808 },
+	{ 0x12, 0x8808 },
+	{ 0x14, 0x8808 },
+	{ 0x16, 0x8808 },
+	{ 0x18, 0x8808 },
+	{ 0x1a, 0x0000 },
+	{ 0x1c, 0x8000 },
+	{ 0x20, 0x0000 },
+	{ 0x22, 0x0000 },
+	{ 0x28, 0x0a05 },
+	{ 0x2c, 0xbb80 },
+	{ 0x32, 0xbb80 },
+	{ 0x3a, 0x2000 },
+	{ 0x3e, 0x0100 },
+	{ 0x4c, 0x0300 },
+	{ 0x4e, 0xffff },
+	{ 0x50, 0x0000 },
+	{ 0x52, 0x0000 },
+	{ 0x54, 0x0000 },
+	{ 0x6a, 0x0000 },
+	{ 0x6e, 0x1000 },
+	{ 0x72, 0x0000 },
+	{ 0x78, 0x0000 },
+};
+
+static const struct regmap_config stac9766_regmap_config = {
+	.reg_bits = 16,
+	.reg_stride = 2,
+	.val_bits = 16,
+	.max_register = 0x78,
+	.cache_type = REGCACHE_MAPLE,
+
+	.volatile_reg = regmap_ac97_default_volatile,
+
+	.reg_defaults = stac9766_reg_defaults,
+	.num_reg_defaults = ARRAY_SIZE(stac9766_reg_defaults),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const char *stac9766_record_mux[] = {"Mic", "CD", "Video", "AUX",
@@ -64,6 +128,7 @@ static const char *stac9766_boost1[] = {"0dB", "10dB"};
 static const char *stac9766_boost2[] = {"0dB", "20dB"};
 static const char *stac9766_stereo_mic[] = {"Off", "On"};
 
+<<<<<<< HEAD
 static const struct soc_enum stac9766_record_enum =
 	SOC_ENUM_DOUBLE(AC97_REC_SEL, 8, 0, 8, stac9766_record_mux);
 static const struct soc_enum stac9766_mono_enum =
@@ -88,6 +153,32 @@ static const DECLARE_TLV_DB_LINEAR(master_tlv, -4600, 0);
 static const DECLARE_TLV_DB_LINEAR(record_tlv, 0, 2250);
 static const DECLARE_TLV_DB_LINEAR(beep_tlv, -4500, 0);
 static const DECLARE_TLV_DB_LINEAR(mix_tlv, -3450, 1200);
+=======
+static SOC_ENUM_DOUBLE_DECL(stac9766_record_enum,
+			    AC97_REC_SEL, 8, 0, stac9766_record_mux);
+static SOC_ENUM_SINGLE_DECL(stac9766_mono_enum,
+			    AC97_GENERAL_PURPOSE, 9, stac9766_mono_mux);
+static SOC_ENUM_SINGLE_DECL(stac9766_mic_enum,
+			    AC97_GENERAL_PURPOSE, 8, stac9766_mic_mux);
+static SOC_ENUM_SINGLE_DECL(stac9766_SPDIF_enum,
+			    AC97_STAC_DA_CONTROL, 1, stac9766_SPDIF_mux);
+static SOC_ENUM_SINGLE_DECL(stac9766_popbypass_enum,
+			    AC97_GENERAL_PURPOSE, 15, stac9766_popbypass_mux);
+static SOC_ENUM_SINGLE_DECL(stac9766_record_all_enum,
+			    AC97_STAC_ANALOG_SPECIAL, 12,
+			    stac9766_record_all_mux);
+static SOC_ENUM_SINGLE_DECL(stac9766_boost1_enum,
+			    AC97_MIC, 6, stac9766_boost1); /* 0/10dB */
+static SOC_ENUM_SINGLE_DECL(stac9766_boost2_enum,
+			    AC97_STAC_ANALOG_SPECIAL, 2, stac9766_boost2); /* 0/20dB */
+static SOC_ENUM_SINGLE_DECL(stac9766_stereo_mic_enum,
+			    AC97_STAC_STEREO_MIC, 2, stac9766_stereo_mic);
+
+static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(master_tlv, -4650, 150, 0);
+static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(record_tlv,     0, 150, 0);
+static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(beep_tlv,   -4500, 300, 0);
+static const SNDRV_CTL_TLVD_DECLARE_DB_SCALE(mix_tlv,    -3450, 150, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new stac9766_snd_ac97_controls[] = {
 	SOC_DOUBLE_TLV("Speaker Volume", AC97_MASTER, 8, 0, 31, 1, master_tlv),
@@ -138,6 +229,7 @@ static const struct snd_kcontrol_new stac9766_snd_ac97_controls[] = {
 	SOC_ENUM("Pop Bypass Mux", stac9766_popbypass_enum),
 };
 
+<<<<<<< HEAD
 static int stac9766_ac97_write(struct snd_soc_codec *codec, unsigned int reg,
 			       unsigned int val)
 {
@@ -194,18 +286,34 @@ static int ac97_analog_prepare(struct snd_pcm_substream *substream,
 	vra &= ~0x4; /* disable SPDIF output */
 
 	stac9766_ac97_write(codec, AC97_EXTENDED_STATUS, vra);
+=======
+static int ac97_analog_prepare(struct snd_pcm_substream *substream,
+			       struct snd_soc_dai *dai)
+{
+	struct snd_soc_component *component = dai->component;
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	unsigned short reg;
+
+	/* enable variable rate audio, disable SPDIF output */
+	snd_soc_component_update_bits(component, AC97_EXTENDED_STATUS, 0x5, 0x1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		reg = AC97_PCM_FRONT_DAC_RATE;
 	else
 		reg = AC97_PCM_LR_ADC_RATE;
 
+<<<<<<< HEAD
 	return stac9766_ac97_write(codec, reg, runtime->rate);
+=======
+	return snd_soc_component_write(component, reg, runtime->rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ac97_digital_prepare(struct snd_pcm_substream *substream,
 				struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	unsigned short reg, vra;
@@ -223,12 +331,30 @@ static int ac97_digital_prepare(struct snd_pcm_substream *substream,
 }
 
 static int stac9766_set_bias_level(struct snd_soc_codec *codec,
+=======
+	struct snd_soc_component *component = dai->component;
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	unsigned short reg;
+
+	snd_soc_component_write(component, AC97_SPDIF, 0x2002);
+
+	/* Enable VRA and SPDIF out */
+	snd_soc_component_update_bits(component, AC97_EXTENDED_STATUS, 0x5, 0x5);
+
+	reg = AC97_PCM_FRONT_DAC_RATE;
+
+	return snd_soc_component_write(component, reg, runtime->rate);
+}
+
+static int stac9766_set_bias_level(struct snd_soc_component *component,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   enum snd_soc_bias_level level)
 {
 	switch (level) {
 	case SND_SOC_BIAS_ON: /* full On */
 	case SND_SOC_BIAS_PREPARE: /* partial On */
 	case SND_SOC_BIAS_STANDBY: /* Off, with power */
+<<<<<<< HEAD
 		stac9766_ac97_write(codec, AC97_POWERDOWN, 0x0000);
 		break;
 	case SND_SOC_BIAS_OFF: /* Off, without power */
@@ -283,6 +409,24 @@ reset:
 	stac9766_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
 
 	return 0;
+=======
+		snd_soc_component_write(component, AC97_POWERDOWN, 0x0000);
+		break;
+	case SND_SOC_BIAS_OFF: /* Off, without power */
+		/* disable everything including AC link */
+		snd_soc_component_write(component, AC97_POWERDOWN, 0xffff);
+		break;
+	}
+	return 0;
+}
+
+static int stac9766_component_resume(struct snd_soc_component *component)
+{
+	struct snd_ac97 *ac97 = snd_soc_component_get_drvdata(component);
+
+	return snd_ac97_reset(ac97, true, STAC9766_VENDOR_ID,
+		STAC9766_VENDOR_ID_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct snd_soc_dai_ops stac9766_dai_ops_analog = {
@@ -296,7 +440,10 @@ static const struct snd_soc_dai_ops stac9766_dai_ops_digital = {
 static struct snd_soc_dai_driver stac9766_dai[] = {
 {
 	.name = "stac9766-hifi-analog",
+<<<<<<< HEAD
 	.ac97_control = 1,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* stream cababilities */
 	.playback = {
@@ -318,7 +465,10 @@ static struct snd_soc_dai_driver stac9766_dai[] = {
 },
 {
 	.name = "stac9766-hifi-IEC958",
+<<<<<<< HEAD
 	.ac97_control = 1,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* stream cababilities */
 	.playback = {
@@ -327,13 +477,18 @@ static struct snd_soc_dai_driver stac9766_dai[] = {
 		.channels_max = 2,
 		.rates = SNDRV_PCM_RATE_32000 | \
 			SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000,
+<<<<<<< HEAD
 		.formats = SNDRV_PCM_FORMAT_IEC958_SUBFRAME_BE,
+=======
+		.formats = SNDRV_PCM_FMTBIT_IEC958_SUBFRAME_BE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	/* alsa ops */
 	.ops = &stac9766_dai_ops_digital,
 }
 };
 
+<<<<<<< HEAD
 static int stac9766_codec_probe(struct snd_soc_codec *codec)
 {
 	int ret = 0;
@@ -395,16 +550,75 @@ static int __devexit stac9766_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_codec(&pdev->dev);
 	return 0;
+=======
+static int stac9766_component_probe(struct snd_soc_component *component)
+{
+	struct snd_ac97 *ac97;
+	struct regmap *regmap;
+	int ret;
+
+	ac97 = snd_soc_new_ac97_component(component, STAC9766_VENDOR_ID,
+			STAC9766_VENDOR_ID_MASK);
+	if (IS_ERR(ac97))
+		return PTR_ERR(ac97);
+
+	regmap = regmap_init_ac97(ac97, &stac9766_regmap_config);
+	if (IS_ERR(regmap)) {
+		ret = PTR_ERR(regmap);
+		goto err_free_ac97;
+	}
+
+	snd_soc_component_init_regmap(component, regmap);
+	snd_soc_component_set_drvdata(component, ac97);
+
+	return 0;
+err_free_ac97:
+	snd_soc_free_ac97_component(ac97);
+	return ret;
+}
+
+static void stac9766_component_remove(struct snd_soc_component *component)
+{
+	struct snd_ac97 *ac97 = snd_soc_component_get_drvdata(component);
+
+	snd_soc_component_exit_regmap(component);
+	snd_soc_free_ac97_component(ac97);
+}
+
+static const struct snd_soc_component_driver soc_component_dev_stac9766 = {
+	.controls		= stac9766_snd_ac97_controls,
+	.num_controls		= ARRAY_SIZE(stac9766_snd_ac97_controls),
+	.set_bias_level		= stac9766_set_bias_level,
+	.probe			= stac9766_component_probe,
+	.remove			= stac9766_component_remove,
+	.resume			= stac9766_component_resume,
+	.suspend_bias_off	= 1,
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+};
+
+static int stac9766_probe(struct platform_device *pdev)
+{
+	return devm_snd_soc_register_component(&pdev->dev,
+			&soc_component_dev_stac9766, stac9766_dai, ARRAY_SIZE(stac9766_dai));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver stac9766_codec_driver = {
 	.driver = {
 			.name = "stac9766-codec",
+<<<<<<< HEAD
 			.owner = THIS_MODULE,
 	},
 
 	.probe = stac9766_probe,
 	.remove = __devexit_p(stac9766_remove),
+=======
+	},
+
+	.probe = stac9766_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(stac9766_codec_driver);

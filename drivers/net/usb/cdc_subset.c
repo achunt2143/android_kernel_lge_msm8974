@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Simple "CDC Subset" USB Networking Links
  * Copyright (C) 2000-2005 by David Brownell
@@ -15,11 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Simple "CDC Subset" USB Networking Links
+ * Copyright (C) 2000-2005 by David Brownell
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/kmod.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -87,14 +97,38 @@ static int always_connected (struct usbnet *dev)
  *
  *-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static const struct driver_info	ali_m5632_info = {
 	.description =	"ALi M5632",
 	.flags       = FLAG_POINTTOPOINT,
+=======
+static void m5632_recover(struct usbnet *dev)
+{
+	struct usb_device	*udev = dev->udev;
+	struct usb_interface	*intf = dev->intf;
+	int r;
+
+	r = usb_lock_device_for_reset(udev, intf);
+	if (r < 0)
+		return;
+
+	usb_reset_device(udev);
+	usb_unlock_device(udev);
+}
+
+static const struct driver_info	ali_m5632_info = {
+	.description =	"ALi M5632",
+	.flags       = FLAG_POINTTOPOINT,
+	.recover     = m5632_recover,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef	CONFIG_USB_AN2720
 #define	HAVE_HARDWARE
 
@@ -120,7 +154,11 @@ static const struct driver_info	an2720_info = {
 
 #endif	/* CONFIG_USB_AN2720 */
 
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef	CONFIG_USB_BELKIN
 #define	HAVE_HARDWARE
 
@@ -140,7 +178,11 @@ static const struct driver_info	belkin_info = {
 #endif	/* CONFIG_USB_BELKIN */
 
 
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef	CONFIG_USB_EPSON2888
 #define	HAVE_HARDWARE
 
@@ -167,7 +209,11 @@ static const struct driver_info	epson2888_info = {
 
 #endif	/* CONFIG_USB_EPSON2888 */
 
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------
  *
  * info from Jonathan McDowell <noodles@earth.li>
@@ -181,7 +227,11 @@ static const struct driver_info kc2190_info = {
 };
 #endif /* CONFIG_USB_KC2190 */
 
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef	CONFIG_USB_ARMLINUX
 #define	HAVE_HARDWARE
 
@@ -222,7 +272,11 @@ static const struct driver_info	blob_info = {
 
 #endif	/* CONFIG_USB_ARMLINUX */
 
+<<<<<<< HEAD
 
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------------------------*/
 
 #ifndef	HAVE_HARDWARE
@@ -328,14 +382,34 @@ static const struct usb_device_id	products [] = {
 MODULE_DEVICE_TABLE(usb, products);
 
 /*-------------------------------------------------------------------------*/
+<<<<<<< HEAD
+=======
+static int dummy_prereset(struct usb_interface *intf)
+{
+        return 0;
+}
+
+static int dummy_postreset(struct usb_interface *intf)
+{
+        return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct usb_driver cdc_subset_driver = {
 	.name =		"cdc_subset",
 	.probe =	usbnet_probe,
 	.suspend =	usbnet_suspend,
 	.resume =	usbnet_resume,
+<<<<<<< HEAD
 	.disconnect =	usbnet_disconnect,
 	.id_table =	products,
+=======
+	.pre_reset =	dummy_prereset,
+	.post_reset =	dummy_postreset,
+	.disconnect =	usbnet_disconnect,
+	.id_table =	products,
+	.disable_hub_initiated_lpm = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(cdc_subset_driver);

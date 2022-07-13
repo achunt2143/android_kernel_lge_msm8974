@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: dswexec - Dispatcher method execution callbacks;
  *                        dispatch to interpreter.
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -42,6 +47,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acparser.h"
@@ -50,6 +61,12 @@
 #include "acinterp.h"
 #include "acnamesp.h"
 #include "acdebug.h"
+<<<<<<< HEAD
+=======
+#ifdef ACPI_EXEC_APP
+#include "aecommon.h"
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_DISPATCHER
 ACPI_MODULE_NAME("dswexec")
@@ -57,11 +74,19 @@ ACPI_MODULE_NAME("dswexec")
 /*
  * Dispatch table for opcode classes
  */
+<<<<<<< HEAD
 static ACPI_EXECUTE_OP acpi_gbl_op_type_dispatch[] = {
 	acpi_ex_opcode_0A_0T_1R,
 	acpi_ex_opcode_1A_0T_0R,
 	acpi_ex_opcode_1A_0T_1R,
 	acpi_ex_opcode_1A_1T_0R,
+=======
+static acpi_execute_op acpi_gbl_op_type_dispatch[] = {
+	acpi_ex_opcode_0A_0T_1R,
+	acpi_ex_opcode_1A_0T_0R,
+	acpi_ex_opcode_1A_0T_1R,
+	NULL,			/* Was: acpi_ex_opcode_1A_0T_0R (Was for Load operator) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_ex_opcode_1A_1T_1R,
 	acpi_ex_opcode_2A_0T_0R,
 	acpi_ex_opcode_2A_0T_1R,
@@ -133,7 +158,12 @@ acpi_ds_get_predicate_value(struct acpi_walk_state *walk_state,
 	 * Result of predicate evaluation must be an Integer
 	 * object. Implicitly convert the argument if necessary.
 	 */
+<<<<<<< HEAD
 	status = acpi_ex_convert_to_integer(obj_desc, &local_obj_desc, 16);
+=======
+	status = acpi_ex_convert_to_integer(obj_desc, &local_obj_desc,
+					    ACPI_IMPLICIT_CONVERSION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		goto cleanup;
 	}
@@ -149,7 +179,11 @@ acpi_ds_get_predicate_value(struct acpi_walk_state *walk_state,
 
 	/* Truncate the predicate to 32-bits if necessary */
 
+<<<<<<< HEAD
 	acpi_ex_truncate_for32bit_table(local_obj_desc);
+=======
+	(void)acpi_ex_truncate_for32bit_table(local_obj_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Save the result of the predicate evaluation on
@@ -170,16 +204,27 @@ acpi_ds_get_predicate_value(struct acpi_walk_state *walk_state,
 
 	(void)acpi_ds_do_implicit_return(local_obj_desc, walk_state, TRUE);
 
+<<<<<<< HEAD
       cleanup:
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "Completed a predicate eval=%X Op=%p\n",
+=======
+cleanup:
+
+	ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
+			  "Completed a predicate eval=%X Op=%p\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  walk_state->control_state->common.value,
 			  walk_state->op));
 
 	/* Break to debugger to display result */
 
+<<<<<<< HEAD
 	ACPI_DEBUGGER_EXEC(acpi_db_display_result_object
 			   (local_obj_desc, walk_state));
+=======
+	acpi_db_display_result_object(local_obj_desc, walk_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Delete the predicate result object (we know that
@@ -204,7 +249,11 @@ acpi_ds_get_predicate_value(struct acpi_walk_state *walk_state,
  * RETURN:      Status
  *
  * DESCRIPTION: Descending callback used during the execution of control
+<<<<<<< HEAD
  *              methods.  This is where most operators and operands are
+=======
+ *              methods. This is where most operators and operands are
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              dispatched to the interpreter.
  *
  ****************************************************************************/
@@ -264,8 +313,13 @@ acpi_ds_exec_begin_op(struct acpi_walk_state *walk_state,
 	    (walk_state->control_state->common.state ==
 	     ACPI_CONTROL_CONDITIONAL_EXECUTING)) {
 		ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
+<<<<<<< HEAD
 				  "Exec predicate Op=%p State=%p\n", op,
 				  walk_state));
+=======
+				  "Exec predicate Op=%p State=%p\n",
+				  op, walk_state));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		walk_state->control_state->common.state =
 		    ACPI_CONTROL_PREDICATE_EXECUTING;
@@ -297,7 +351,11 @@ acpi_ds_exec_begin_op(struct acpi_walk_state *walk_state,
 		if (walk_state->walk_type & ACPI_WALK_METHOD) {
 			/*
 			 * Found a named object declaration during method execution;
+<<<<<<< HEAD
 			 * we must enter this object into the namespace.  The created
+=======
+			 * we must enter this object into the namespace. The created
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * object is temporary and will be deleted upon completion of
 			 * the execution of this method.
 			 *
@@ -327,6 +385,10 @@ acpi_ds_exec_begin_op(struct acpi_walk_state *walk_state,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -334,7 +396,11 @@ acpi_ds_exec_begin_op(struct acpi_walk_state *walk_state,
 
 	return_ACPI_STATUS(status);
 
+<<<<<<< HEAD
       error_exit:
+=======
+error_exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = acpi_ds_method_error(status, walk_state);
 	return_ACPI_STATUS(status);
 }
@@ -348,7 +414,11 @@ acpi_ds_exec_begin_op(struct acpi_walk_state *walk_state,
  * RETURN:      Status
  *
  * DESCRIPTION: Ascending callback used during the execution of control
+<<<<<<< HEAD
  *              methods.  The only thing we really need to do here is to
+=======
+ *              methods. The only thing we really need to do here is to
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              notice the beginning of IF, ELSE, and WHILE blocks.
  *
  ****************************************************************************/
@@ -361,6 +431,13 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 	u32 op_class;
 	union acpi_parse_object *next_op;
 	union acpi_parse_object *first_arg;
+<<<<<<< HEAD
+=======
+#ifdef ACPI_EXEC_APP
+	char *namepath;
+	union acpi_operand_object *obj_desc;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE_PTR(ds_exec_end_op, walk_state);
 
@@ -385,11 +462,18 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 
 	/* Call debugger for single step support (DEBUG build only) */
 
+<<<<<<< HEAD
 	ACPI_DEBUGGER_EXEC(status =
 			   acpi_db_single_step(walk_state, op, op_class));
 	ACPI_DEBUGGER_EXEC(if (ACPI_FAILURE(status)) {
 			   return_ACPI_STATUS(status);}
 	) ;
+=======
+	status = acpi_db_single_step(walk_state, op, op_class);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Decode the Opcode Class */
 
@@ -415,9 +499,17 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 
 		/*
 		 * All opcodes require operand resolution, with the only exceptions
+<<<<<<< HEAD
 		 * being the object_type and size_of operators.
 		 */
 		if (!(walk_state->op_info->flags & AML_NO_OPERAND_RESOLVE)) {
+=======
+		 * being the object_type and size_of operators as well as opcodes that
+		 * take no arguments.
+		 */
+		if (!(walk_state->op_info->flags & AML_NO_OPERAND_RESOLVE) &&
+		    (walk_state->op_info->flags & AML_HAS_ARGS)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Resolve all operands */
 
@@ -432,7 +524,11 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 		if (ACPI_SUCCESS(status)) {
 			/*
 			 * Dispatch the request to the appropriate interpreter handler
+<<<<<<< HEAD
 			 * routine.  There is one routine per opcode "type" based upon the
+=======
+			 * routine. There is one routine per opcode "type" based upon the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * number of opcode arguments and return type.
 			 */
 			status =
@@ -488,7 +584,10 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 			break;
 
 		case AML_TYPE_METHOD_CALL:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * If the method is referenced from within a package
 			 * declaration, it is not a invocation of the method, just
@@ -497,14 +596,23 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 			if ((op->asl.parent) &&
 			    ((op->asl.parent->asl.aml_opcode == AML_PACKAGE_OP)
 			     || (op->asl.parent->asl.aml_opcode ==
+<<<<<<< HEAD
 				 AML_VAR_PACKAGE_OP))) {
+=======
+				 AML_VARIABLE_PACKAGE_OP))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ACPI_DEBUG_PRINT((ACPI_DB_DISPATCH,
 						  "Method Reference in a Package, Op=%p\n",
 						  op));
 
+<<<<<<< HEAD
 				op->common.node =
 				    (struct acpi_namespace_node *)op->asl.value.
 				    arg->asl.node;
+=======
+				op->common.node = (struct acpi_namespace_node *)
+				    op->asl.value.arg->asl.node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				acpi_ut_add_reference(op->asl.value.arg->asl.
 						      node->object);
 				return_ACPI_STATUS(AE_OK);
@@ -572,23 +680,66 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 
 			status =
 			    acpi_ds_eval_buffer_field_operands(walk_state, op);
+<<<<<<< HEAD
+=======
+			if (ACPI_FAILURE(status)) {
+				break;
+			}
+#ifdef ACPI_EXEC_APP
+			/*
+			 * acpi_exec support for namespace initialization file (initialize
+			 * buffer_fields in this code.)
+			 */
+			namepath =
+			    acpi_ns_get_external_pathname(op->common.node);
+			status = ae_lookup_init_file_entry(namepath, &obj_desc);
+			if (ACPI_SUCCESS(status)) {
+				status =
+				    acpi_ex_write_data_to_field(obj_desc,
+								op->common.
+								node->object,
+								NULL);
+				if (ACPI_FAILURE(status)) {
+					ACPI_EXCEPTION((AE_INFO, status,
+							"While writing to buffer field"));
+				}
+			}
+			ACPI_FREE(namepath);
+			status = AE_OK;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case AML_TYPE_CREATE_OBJECT:
 
 			ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
+<<<<<<< HEAD
 					  "Executing CreateObject (Buffer/Package) Op=%p\n",
 					  op));
 
 			switch (op->common.parent->common.aml_opcode) {
 			case AML_NAME_OP:
 
+=======
+					  "Executing CreateObject (Buffer/Package) Op=%p Child=%p ParentOpcode=%4.4X\n",
+					  op, op->named.value.arg,
+					  op->common.parent->common.
+					  aml_opcode));
+
+			switch (op->common.parent->common.aml_opcode) {
+			case AML_NAME_OP:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * Put the Node on the object stack (Contains the ACPI Name
 				 * of this object)
 				 */
+<<<<<<< HEAD
 				walk_state->operands[0] =
 				    (void *)op->common.parent->common.node;
+=======
+				walk_state->operands[0] = (void *)
+				    op->common.parent->common.node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				walk_state->num_operands = 1;
 
 				status = acpi_ds_create_node(walk_state,
@@ -599,8 +750,12 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 					break;
 				}
 
+<<<<<<< HEAD
 				/* Fall through */
 				/*lint -fallthrough */
+=======
+				ACPI_FALLTHROUGH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			case AML_INT_EVAL_SUBTREE_OP:
 
@@ -693,7 +848,12 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 		default:
 
 			ACPI_ERROR((AE_INFO,
+<<<<<<< HEAD
 				    "Unimplemented opcode, class=0x%X type=0x%X Opcode=-0x%X Op=%p",
+=======
+				    "Unimplemented opcode, class=0x%X "
+				    "type=0x%X Opcode=0x%X Op=%p",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    op_class, op_type, op->common.aml_opcode,
 				    op));
 
@@ -706,7 +866,11 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 	 * ACPI 2.0 support for 64-bit integers: Truncate numeric
 	 * result value if we are executing from a 32-bit ACPI table
 	 */
+<<<<<<< HEAD
 	acpi_ex_truncate_for32bit_table(walk_state->result_obj);
+=======
+	(void)acpi_ex_truncate_for32bit_table(walk_state->result_obj);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check if we just completed the evaluation of a
@@ -723,14 +887,23 @@ acpi_status acpi_ds_exec_end_op(struct acpi_walk_state *walk_state)
 		walk_state->result_obj = NULL;
 	}
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (walk_state->result_obj) {
 
 		/* Break to debugger to display result */
 
+<<<<<<< HEAD
 		ACPI_DEBUGGER_EXEC(acpi_db_display_result_object
 				   (walk_state->result_obj, walk_state));
+=======
+		acpi_db_display_result_object(walk_state->result_obj,
+					      walk_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Delete the result op if and only if:

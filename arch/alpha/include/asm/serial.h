@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/asm-alpha/serial.h
  */
@@ -13,12 +17,21 @@
 #define BASE_BAUD ( 1843200 / 16 )
 
 /* Standard COM flags (except for COM4, because of the 8514 problem) */
+<<<<<<< HEAD
 #ifdef CONFIG_SERIAL_DETECT_IRQ
 #define STD_COM_FLAGS (ASYNC_BOOT_AUTOCONF | ASYNC_SKIP_TEST | ASYNC_AUTO_IRQ)
 #define STD_COM4_FLAGS (ASYNC_BOOT_AUTOCONF | ASYNC_AUTO_IRQ)
 #else
 #define STD_COM_FLAGS (ASYNC_BOOT_AUTOCONF | ASYNC_SKIP_TEST)
 #define STD_COM4_FLAGS ASYNC_BOOT_AUTOCONF
+=======
+#ifdef CONFIG_SERIAL_8250_DETECT_IRQ
+#define STD_COM_FLAGS (UPF_BOOT_AUTOCONF | UPF_SKIP_TEST | UPF_AUTO_IRQ)
+#define STD_COM4_FLAGS (UPF_BOOT_AUTOCONF | UPF_AUTO_IRQ)
+#else
+#define STD_COM_FLAGS (UPF_BOOT_AUTOCONF | UPF_SKIP_TEST)
+#define STD_COM4_FLAGS UPF_BOOT_AUTOCONF
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define SERIAL_PORT_DFNS			\

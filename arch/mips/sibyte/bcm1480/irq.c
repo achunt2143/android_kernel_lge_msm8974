@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000,2001,2002,2003,2004 Broadcom Corporation
  *
@@ -14,6 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (C) 2000,2001,2002,2003,2004 Broadcom Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -95,7 +101,11 @@ static int bcm1480_set_affinity(struct irq_data *d, const struct cpumask *mask,
 	u64 cur_ints;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	i = cpumask_first(mask);
+=======
+	i = cpumask_first_and(mask, cpu_online_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Convert logical CPU to physical CPU */
 	cpu = cpu_logical_map(i);
@@ -283,10 +293,17 @@ void __init arch_init_irq(void)
 	for (cpu = 0; cpu < 4; cpu++) {
 		__raw_writeq(IMR_IP3_VAL, IOADDR(A_BCM1480_IMR_REGISTER(cpu, R_BCM1480_IMR_INTERRUPT_MAP_BASE_H) +
 						 (K_BCM1480_INT_MBOX_0_0 << 3)));
+<<<<<<< HEAD
         }
 
 
 	/* Clear the mailboxes.  The firmware may leave them dirty */
+=======
+	}
+
+
+	/* Clear the mailboxes.	 The firmware may leave them dirty */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (cpu = 0; cpu < 4; cpu++) {
 		__raw_writeq(0xffffffffffffffffULL,
 			     IOADDR(A_BCM1480_IMR_REGISTER(cpu, R_BCM1480_IMR_MAILBOX_0_CLR_CPU)));
@@ -307,7 +324,11 @@ void __init arch_init_irq(void)
 
 	/*
 	 * Note that the timer interrupts are also mapped, but this is
+<<<<<<< HEAD
 	 * done in bcm1480_time_init().  Also, the profiling driver
+=======
+	 * done in bcm1480_time_init().	 Also, the profiling driver
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * does its own management of IP7.
 	 */
 
@@ -325,7 +346,11 @@ static inline void dispatch_ip2(void)
 
 	/*
 	 * Default...we've hit an IP[2] interrupt, which means we've got to
+<<<<<<< HEAD
 	 * check the 1480 interrupt registers to figure out what to do.  Need
+=======
+	 * check the 1480 interrupt registers to figure out what to do.	 Need
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * to detect which CPU we're on, now that smp_affinity is supported.
 	 */
 	base = A_BCM1480_IMR_MAPPER(cpu);
@@ -347,6 +372,7 @@ asmlinkage void plat_irq_dispatch(void)
 	unsigned int cpu = smp_processor_id();
 	unsigned int pending;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SIBYTE_BCM1480_PROF
 	/* Set compare to count to silence count/compare timer interrupts */
 	write_c0_compare(read_c0_count());
@@ -360,6 +386,10 @@ asmlinkage void plat_irq_dispatch(void)
 	else
 #endif
 
+=======
+	pending = read_c0_cause() & read_c0_status();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pending & CAUSEF_IP4)
 		do_IRQ(K_BCM1480_INT_TIMER_0 + cpu);
 #ifdef CONFIG_SMP

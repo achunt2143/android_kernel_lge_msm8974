@@ -1,15 +1,26 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux kernel.
 #
 #
+<<<<<<< HEAD
 
 # Common objects
 obj-y 			:= time.o clock.o serial.o psc.o \
 			   dma.o usb.o common.o sram.o aemif.o
+=======
+#
+# Common objects
+obj-y 					:= common.o sram.o devices-da8xx.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_DAVINCI_MUX)		+= mux.o
 
 # Chip specific
+<<<<<<< HEAD
 obj-$(CONFIG_ARCH_DAVINCI_DM644x)       += dm644x.o devices.o
 obj-$(CONFIG_ARCH_DAVINCI_DM355)        += dm355.o devices.o
 obj-$(CONFIG_ARCH_DAVINCI_DM646x)       += dm646x.o devices.o
@@ -39,3 +50,16 @@ obj-$(CONFIG_MACH_OMAPL138_HAWKBOARD)	+= board-omapl138-hawk.o
 obj-$(CONFIG_CPU_FREQ)			+= cpufreq.o
 obj-$(CONFIG_CPU_IDLE)			+= cpuidle.o
 obj-$(CONFIG_SUSPEND)			+= pm.o sleep.o
+=======
+obj-$(CONFIG_ARCH_DAVINCI_DA830)	+= da830.o
+obj-$(CONFIG_ARCH_DAVINCI_DA850)	+= da850.o pdata-quirks.o
+
+obj-y					+= da8xx-dt.o
+
+# Power Management
+obj-$(CONFIG_CPU_IDLE)			+= cpuidle.o
+obj-$(CONFIG_HAVE_CLK)			+= pm_domain.o
+ifeq ($(CONFIG_SUSPEND),y)
+obj-$(CONFIG_ARCH_DAVINCI_DA850)	+= pm.o sleep.o
+endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

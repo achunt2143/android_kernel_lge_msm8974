@@ -1,14 +1,28 @@
+<<<<<<< HEAD
 /*
  * driver/s390/cio/qdio_setup.c
  *
  * qdio queue initialization
  *
  * Copyright (C) IBM Corp. 2008
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * qdio queue initialization
+ *
+ * Copyright IBM Corp. 2008
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author(s): Jan Glauber <jang@linux.vnet.ibm.com>
  */
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+
+#include <asm/ebcdic.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/qdio.h>
 
 #include "cio.h"
@@ -19,6 +33,7 @@
 #include "qdio.h"
 #include "qdio_debug.h"
 
+<<<<<<< HEAD
 static struct kmem_cache *qdio_q_cache;
 static struct kmem_cache *qdio_aob_cache;
 
@@ -84,6 +99,82 @@ output:
 			q->slib->slibe[j].parms =
 				output_slib_elements[i * QDIO_MAX_BUFFERS_PER_Q + j];
 	}
+=======
+#define QBUFF_PER_PAGE (PAGE_SIZE / sizeof(struct qdio_buffer))
+
+static struct kmem_cache *qdio_q_cache;
+
+/**
+ * qdio_free_buffers() - free qdio buffers
+ * @buf: array of pointers to qdio buffers
+ * @count: number of qdio buffers to free
+ */
+void qdio_free_buffers(struct qdio_buffer **buf, unsigned int count)
+{
+	int pos;
+
+	for (pos = 0; pos < count; pos += QBUFF_PER_PAGE)
+		free_page((unsigned long) buf[pos]);
+}
+EXPORT_SYMBOL_GPL(qdio_free_buffers);
+
+/**
+ * qdio_alloc_buffers() - allocate qdio buffers
+ * @buf: array of pointers to qdio buffers
+ * @count: number of qdio buffers to allocate
+ */
+int qdio_alloc_buffers(struct qdio_buffer **buf, unsigned int count)
+{
+	int pos;
+
+	for (pos = 0; pos < count; pos += QBUFF_PER_PAGE) {
+		buf[pos] = (void *) get_zeroed_page(GFP_KERNEL);
+		if (!buf[pos]) {
+			qdio_free_buffers(buf, count);
+			return -ENOMEM;
+		}
+	}
+	for (pos = 0; pos < count; pos++)
+		if (pos % QBUFF_PER_PAGE)
+			buf[pos] = buf[pos - 1] + 1;
+	return 0;
+}
+EXPORT_SYMBOL_GPL(qdio_alloc_buffers);
+
+/**
+ * qdio_reset_buffers() - reset qdio buffers
+ * @buf: array of pointers to qdio buffers
+ * @count: number of qdio buffers that will be zeroed
+ */
+void qdio_reset_buffers(struct qdio_buffer **buf, unsigned int count)
+{
+	int pos;
+
+	for (pos = 0; pos < count; pos++)
+		memset(buf[pos], 0, sizeof(struct qdio_buffer));
+}
+EXPORT_SYMBOL_GPL(qdio_reset_buffers);
+
+static void __qdio_free_queues(struct qdio_q **queues, unsigned int count)
+{
+	struct qdio_q *q;
+	unsigned int i;
+
+	for (i = 0; i < count; i++) {
+		q = queues[i];
+		free_page((unsigned long) q->slib);
+		kmem_cache_free(qdio_q_cache, q);
+	}
+}
+
+void qdio_free_queues(struct qdio_irq *irq_ptr)
+{
+	__qdio_free_queues(irq_ptr->input_qs, irq_ptr->max_input_qs);
+	irq_ptr->max_input_qs = 0;
+
+	__qdio_free_queues(irq_ptr->output_qs, irq_ptr->max_output_qs);
+	irq_ptr->max_output_qs = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __qdio_allocate_qs(struct qdio_q **irq_ptr_qs, int nr_queues)
@@ -92,13 +183,25 @@ static int __qdio_allocate_qs(struct qdio_q **irq_ptr_qs, int nr_queues)
 	int i;
 
 	for (i = 0; i < nr_queues; i++) {
+<<<<<<< HEAD
 		q = kmem_cache_alloc(qdio_q_cache, GFP_KERNEL);
 		if (!q)
 			return -ENOMEM;
+=======
+		q = kmem_cache_zalloc(qdio_q_cache, GFP_KERNEL);
+		if (!q) {
+			__qdio_free_queues(irq_ptr_qs, i);
+			return -ENOMEM;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		q->slib = (struct slib *) __get_free_page(GFP_KERNEL);
 		if (!q->slib) {
 			kmem_cache_free(qdio_q_cache, q);
+<<<<<<< HEAD
+=======
+			__qdio_free_queues(irq_ptr_qs, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 		irq_ptr_qs[i] = q;
@@ -113,8 +216,21 @@ int qdio_allocate_qs(struct qdio_irq *irq_ptr, int nr_input_qs, int nr_output_qs
 	rc = __qdio_allocate_qs(irq_ptr->input_qs, nr_input_qs);
 	if (rc)
 		return rc;
+<<<<<<< HEAD
 	rc = __qdio_allocate_qs(irq_ptr->output_qs, nr_output_qs);
 	return rc;
+=======
+
+	rc = __qdio_allocate_qs(irq_ptr->output_qs, nr_output_qs);
+	if (rc) {
+		__qdio_free_queues(irq_ptr->input_qs, nr_input_qs);
+		return rc;
+	}
+
+	irq_ptr->max_input_qs = nr_input_qs;
+	irq_ptr->max_output_qs = nr_output_qs;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void setup_queues_misc(struct qdio_q *q, struct qdio_irq *irq_ptr,
@@ -133,7 +249,11 @@ static void setup_queues_misc(struct qdio_q *q, struct qdio_irq *irq_ptr,
 }
 
 static void setup_storage_lists(struct qdio_q *q, struct qdio_irq *irq_ptr,
+<<<<<<< HEAD
 				void **sbals_array, int i)
+=======
+				struct qdio_buffer **sbals_array, int i)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qdio_q *prev;
 	int j;
@@ -142,10 +262,15 @@ static void setup_storage_lists(struct qdio_q *q, struct qdio_irq *irq_ptr,
 	q->sl = (struct sl *)((char *)q->slib + PAGE_SIZE / 2);
 
 	/* fill in sbal */
+<<<<<<< HEAD
 	for (j = 0; j < QDIO_MAX_BUFFERS_PER_Q; j++) {
 		q->sbal[j] = *sbals_array++;
 		BUG_ON((unsigned long)q->sbal[j] & 0xff);
 	}
+=======
+	for (j = 0; j < QDIO_MAX_BUFFERS_PER_Q; j++)
+		q->sbal[j] = *sbals_array++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* fill in slib */
 	if (i > 0) {
@@ -159,17 +284,24 @@ static void setup_storage_lists(struct qdio_q *q, struct qdio_irq *irq_ptr,
 
 	/* fill in sl */
 	for (j = 0; j < QDIO_MAX_BUFFERS_PER_Q; j++)
+<<<<<<< HEAD
 		q->sl->element[j].sbal = (unsigned long)q->sbal[j];
+=======
+		q->sl->element[j].sbal = virt_to_dma64(q->sbal[j]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void setup_queues(struct qdio_irq *irq_ptr,
 			 struct qdio_initialize *qdio_init)
 {
 	struct qdio_q *q;
+<<<<<<< HEAD
 	void **input_sbal_array = qdio_init->input_sbal_addr_array;
 	void **output_sbal_array = qdio_init->output_sbal_addr_array;
 	struct qdio_outbuf_state *output_sbal_state_array =
 				  qdio_init->output_sbal_state_array;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for_each_input_queue(irq_ptr, q, i) {
@@ -177,6 +309,7 @@ static void setup_queues(struct qdio_irq *irq_ptr,
 		setup_queues_misc(q, irq_ptr, qdio_init->input_handler, i);
 
 		q->is_input_q = 1;
+<<<<<<< HEAD
 		q->u.in.queue_start_poll = qdio_init->queue_start_poll_array ?
 				qdio_init->queue_start_poll_array[i] : NULL;
 
@@ -190,12 +323,18 @@ static void setup_queues(struct qdio_irq *irq_ptr,
 			tasklet_init(&q->tasklet, qdio_inbound_processing,
 				     (unsigned long) q);
 		}
+=======
+
+		setup_storage_lists(q, irq_ptr,
+				    qdio_init->input_sbal_addr_array[i], i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for_each_output_queue(irq_ptr, q, i) {
 		DBF_EVENT("outq:%1d", i);
 		setup_queues_misc(q, irq_ptr, qdio_init->output_handler, i);
 
+<<<<<<< HEAD
 		q->u.out.sbal_state = output_sbal_state_array;
 		output_sbal_state_array += QDIO_MAX_BUFFERS_PER_Q;
 
@@ -225,6 +364,14 @@ static void process_ac_flags(struct qdio_irq *irq_ptr, unsigned char qdioac)
 		irq_ptr->siga_flag.sync_out_after_pci = 1;
 }
 
+=======
+		q->is_input_q = 0;
+		setup_storage_lists(q, irq_ptr,
+				    qdio_init->output_sbal_addr_array[i], i);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void check_and_setup_qebsm(struct qdio_irq *irq_ptr,
 				  unsigned char qdioac, unsigned long token)
 {
@@ -258,6 +405,7 @@ int qdio_setup_get_ssqd(struct qdio_irq *irq_ptr,
 	int rc;
 
 	DBF_EVENT("getssqd:%4x", schid->sch_no);
+<<<<<<< HEAD
 	if (irq_ptr != NULL)
 		ssqd = (struct chsc_ssqd_area *)irq_ptr->chsc_page;
 	else
@@ -277,10 +425,24 @@ int qdio_setup_get_ssqd(struct qdio_irq *irq_ptr,
 	rc = chsc_error_from_response(ssqd->response.code);
 	if (rc)
 		return rc;
+=======
+	if (!irq_ptr) {
+		ssqd = (struct chsc_ssqd_area *)__get_free_page(GFP_KERNEL);
+		if (!ssqd)
+			return -ENOMEM;
+	} else {
+		ssqd = (struct chsc_ssqd_area *)irq_ptr->chsc_page;
+	}
+
+	rc = chsc_ssqd(*schid, ssqd);
+	if (rc)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(ssqd->qdio_ssqd.flags & CHSC_FLAG_QDIO_CAPABILITY) ||
 	    !(ssqd->qdio_ssqd.flags & CHSC_FLAG_VALIDITY) ||
 	    (ssqd->qdio_ssqd.sch != schid->sch_no))
+<<<<<<< HEAD
 		return -EINVAL;
 
 	if (irq_ptr != NULL)
@@ -292,6 +454,18 @@ int qdio_setup_get_ssqd(struct qdio_irq *irq_ptr,
 		free_page((unsigned long)ssqd);
 	}
 	return 0;
+=======
+		rc = -EINVAL;
+
+	if (!rc)
+		memcpy(data, &ssqd->qdio_ssqd, sizeof(*data));
+
+out:
+	if (!irq_ptr)
+		free_page((unsigned long)ssqd);
+
+	return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void qdio_setup_ssqd_info(struct qdio_irq *irq_ptr)
@@ -299,7 +473,11 @@ void qdio_setup_ssqd_info(struct qdio_irq *irq_ptr)
 	unsigned char qdioac;
 	int rc;
 
+<<<<<<< HEAD
 	rc = qdio_setup_get_ssqd(irq_ptr, &irq_ptr->schid, NULL);
+=======
+	rc = qdio_setup_get_ssqd(irq_ptr, &irq_ptr->schid, &irq_ptr->ssqd_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		DBF_ERROR("%4x ssqd ERR", irq_ptr->schid.sch_no);
 		DBF_ERROR("rc:%x", rc);
@@ -310,11 +488,16 @@ void qdio_setup_ssqd_info(struct qdio_irq *irq_ptr)
 		qdioac = irq_ptr->ssqd_desc.qdioac1;
 
 	check_and_setup_qebsm(irq_ptr, qdioac, irq_ptr->ssqd_desc.sch_token);
+<<<<<<< HEAD
 	process_ac_flags(irq_ptr, qdioac);
+=======
+	irq_ptr->qdioac1 = qdioac;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DBF_EVENT("ac 1:%2x 2:%4x", qdioac, irq_ptr->ssqd_desc.qdioac2);
 	DBF_EVENT("3:%4x qib:%4x", irq_ptr->ssqd_desc.qdioac3, irq_ptr->qib.ac);
 }
 
+<<<<<<< HEAD
 void qdio_release_memory(struct qdio_irq *irq_ptr)
 {
 	struct qdio_q *q;
@@ -373,19 +556,40 @@ static void __qdio_allocate_fill_qdr(struct qdio_irq *irq_ptr,
 	irq_ptr->qdr->qdf0[i + nr].bkey = PAGE_DEFAULT_KEY >> 4;
 	irq_ptr->qdr->qdf0[i + nr].ckey = PAGE_DEFAULT_KEY >> 4;
 	irq_ptr->qdr->qdf0[i + nr].dkey = PAGE_DEFAULT_KEY >> 4;
+=======
+static void qdio_fill_qdr_desc(struct qdesfmt0 *desc, struct qdio_q *queue)
+{
+	desc->sliba = virt_to_dma64(queue->slib);
+	desc->sla = virt_to_dma64(queue->sl);
+	desc->slsba = virt_to_dma64(&queue->slsb);
+
+	desc->akey = PAGE_DEFAULT_KEY >> 4;
+	desc->bkey = PAGE_DEFAULT_KEY >> 4;
+	desc->ckey = PAGE_DEFAULT_KEY >> 4;
+	desc->dkey = PAGE_DEFAULT_KEY >> 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void setup_qdr(struct qdio_irq *irq_ptr,
 		      struct qdio_initialize *qdio_init)
 {
+<<<<<<< HEAD
 	int i;
 
+=======
+	struct qdesfmt0 *desc = &irq_ptr->qdr->qdf0[0];
+	int i;
+
+	memset(irq_ptr->qdr, 0, sizeof(struct qdr));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq_ptr->qdr->qfmt = qdio_init->q_format;
 	irq_ptr->qdr->ac = qdio_init->qdr_ac;
 	irq_ptr->qdr->iqdcnt = qdio_init->no_input_qs;
 	irq_ptr->qdr->oqdcnt = qdio_init->no_output_qs;
 	irq_ptr->qdr->iqdsz = sizeof(struct qdesfmt0) / 4; /* size in words */
 	irq_ptr->qdr->oqdsz = sizeof(struct qdesfmt0) / 4;
+<<<<<<< HEAD
 	irq_ptr->qdr->qiba = (unsigned long)&irq_ptr->qib;
 	irq_ptr->qdr->qkey = PAGE_DEFAULT_KEY >> 4;
 
@@ -395,23 +599,46 @@ static void setup_qdr(struct qdio_irq *irq_ptr,
 	for (i = 0; i < qdio_init->no_output_qs; i++)
 		__qdio_allocate_fill_qdr(irq_ptr, irq_ptr->output_qs, i,
 					 qdio_init->no_input_qs);
+=======
+	irq_ptr->qdr->qiba = virt_to_dma64(&irq_ptr->qib);
+	irq_ptr->qdr->qkey = PAGE_DEFAULT_KEY >> 4;
+
+	for (i = 0; i < qdio_init->no_input_qs; i++)
+		qdio_fill_qdr_desc(desc++, irq_ptr->input_qs[i]);
+
+	for (i = 0; i < qdio_init->no_output_qs; i++)
+		qdio_fill_qdr_desc(desc++, irq_ptr->output_qs[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void setup_qib(struct qdio_irq *irq_ptr,
 		      struct qdio_initialize *init_data)
 {
+<<<<<<< HEAD
 	if (qebsm_possible())
 		irq_ptr->qib.rflags |= QIB_RFLAGS_ENABLE_QEBSM;
 
 	irq_ptr->qib.rflags |= init_data->qib_rflags;
 
 	irq_ptr->qib.qfmt = init_data->q_format;
+=======
+	memset(&irq_ptr->qib, 0, sizeof(irq_ptr->qib));
+
+	irq_ptr->qib.qfmt = init_data->q_format;
+	irq_ptr->qib.pfmt = init_data->qib_param_field_format;
+
+	irq_ptr->qib.rflags = init_data->qib_rflags;
+	if (css_general_characteristics.qebsm)
+		irq_ptr->qib.rflags |= QIB_RFLAGS_ENABLE_QEBSM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (init_data->no_input_qs)
 		irq_ptr->qib.isliba =
 			(unsigned long)(irq_ptr->input_qs[0]->slib);
 	if (init_data->no_output_qs)
 		irq_ptr->qib.osliba =
 			(unsigned long)(irq_ptr->output_qs[0]->slib);
+<<<<<<< HEAD
 	memcpy(irq_ptr->qib.ebcnam, init_data->adapter_name, 8);
 }
 
@@ -432,10 +659,33 @@ int qdio_setup_irq(struct qdio_initialize *init_data)
 
 	/* wipes qib.ac, required by ar7063 */
 	memset(irq_ptr->qdr, 0, sizeof(struct qdr));
+=======
+	memcpy(irq_ptr->qib.ebcnam, dev_name(&irq_ptr->cdev->dev), 8);
+	ASCEBC(irq_ptr->qib.ebcnam, 8);
+
+	if (init_data->qib_param_field)
+		memcpy(irq_ptr->qib.parm, init_data->qib_param_field,
+		       sizeof(irq_ptr->qib.parm));
+}
+
+void qdio_setup_irq(struct qdio_irq *irq_ptr, struct qdio_initialize *init_data)
+{
+	struct ccw_device *cdev = irq_ptr->cdev;
+
+	irq_ptr->qdioac1 = 0;
+	memset(&irq_ptr->ssqd_desc, 0, sizeof(irq_ptr->ssqd_desc));
+	memset(&irq_ptr->perf_stat, 0, sizeof(irq_ptr->perf_stat));
+
+	irq_ptr->debugfs_dev = NULL;
+	irq_ptr->sch_token = irq_ptr->perf_stat_enabled = 0;
+	irq_ptr->state = QDIO_IRQ_STATE_INACTIVE;
+	irq_ptr->error_handler = init_data->input_handler;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	irq_ptr->int_parm = init_data->int_parm;
 	irq_ptr->nr_input_qs = init_data->no_input_qs;
 	irq_ptr->nr_output_qs = init_data->no_output_qs;
+<<<<<<< HEAD
 
 	irq_ptr->schid = ccw_device_get_subchannel_id(init_data->cdev);
 	irq_ptr->cdev = init_data->cdev;
@@ -447,12 +697,22 @@ int qdio_setup_irq(struct qdio_initialize *init_data)
 			init_data->qib_param_field,
 			init_data->input_slib_elements,
 			init_data->output_slib_elements);
+=======
+	ccw_device_get_schid(cdev, &irq_ptr->schid);
+	setup_queues(irq_ptr, init_data);
+
+	irq_ptr->irq_poll = init_data->irq_poll;
+	set_bit(QDIO_IRQ_DISABLED, &irq_ptr->poll_state);
+
+	setup_qib(irq_ptr, init_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* fill input and output descriptors */
 	setup_qdr(irq_ptr, init_data);
 
 	/* qdr, qib, sls, slsbs, slibs, sbales are filled now */
 
+<<<<<<< HEAD
 	/* get qdio commands */
 	ciw = ccw_device_get_ciw(init_data->cdev, CIW_TYPE_EQUEUE);
 	if (!ciw) {
@@ -487,11 +747,36 @@ void qdio_print_subchannel_info(struct qdio_irq *irq_ptr,
 	snprintf(s, 80, "qdio: %s %s on SC %x using "
 		 "AI:%d QEBSM:%d PCI:%d TDD:%d SIGA:%s%s%s%s%s\n",
 		 dev_name(&cdev->dev),
+=======
+	/* set our IRQ handler */
+	spin_lock_irq(get_ccwdev_lock(cdev));
+	irq_ptr->orig_handler = cdev->handler;
+	cdev->handler = qdio_int_handler;
+	spin_unlock_irq(get_ccwdev_lock(cdev));
+}
+
+void qdio_shutdown_irq(struct qdio_irq *irq)
+{
+	struct ccw_device *cdev = irq->cdev;
+
+	/* restore IRQ handler */
+	spin_lock_irq(get_ccwdev_lock(cdev));
+	cdev->handler = irq->orig_handler;
+	cdev->private->intparm = 0;
+	spin_unlock_irq(get_ccwdev_lock(cdev));
+}
+
+void qdio_print_subchannel_info(struct qdio_irq *irq_ptr)
+{
+	dev_info(&irq_ptr->cdev->dev,
+		 "qdio: %s on SC %x using AI:%d QEBSM:%d PRI:%d TDD:%d SIGA:%s%s%s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 (irq_ptr->qib.qfmt == QDIO_QETH_QFMT) ? "OSA" :
 			((irq_ptr->qib.qfmt == QDIO_ZFCP_QFMT) ? "ZFCP" : "HS"),
 		 irq_ptr->schid.sch_no,
 		 is_thinint_irq(irq_ptr),
 		 (irq_ptr->sch_token) ? 1 : 0,
+<<<<<<< HEAD
 		 (irq_ptr->qib.ac & QIB_AC_OUTBOUND_PCI_SUPPORTED) ? 1 : 0,
 		 css_general_characteristics.aif_tdd,
 		 (irq_ptr->siga_flag.input) ? "R" : " ",
@@ -519,17 +804,28 @@ void qdio_disable_async_operation(struct qdio_output_q *q)
 	kfree(q->aobs);
 	q->aobs = NULL;
 	q->use_cq = 0;
+=======
+		 pci_out_supported(irq_ptr) ? 1 : 0,
+		 css_general_characteristics.aif_tdd,
+		 qdio_need_siga_in(irq_ptr) ? "R" : " ",
+		 qdio_need_siga_out(irq_ptr) ? "W" : " ",
+		 qdio_need_siga_sync(irq_ptr) ? "S" : " ");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __init qdio_setup_init(void)
 {
+<<<<<<< HEAD
 	int rc;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qdio_q_cache = kmem_cache_create("qdio_q", sizeof(struct qdio_q),
 					 256, 0, NULL);
 	if (!qdio_q_cache)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	qdio_aob_cache = kmem_cache_create("qdio_aob",
 					sizeof(struct qaob),
 					sizeof(struct qaob),
@@ -540,11 +836,14 @@ int __init qdio_setup_init(void)
 		goto free_qdio_q_cache;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check for OSA/FCP thin interrupts (bit 67). */
 	DBF_EVENT("thinint:%1d",
 		  (css_general_characteristics.aif_osa) ? 1 : 0);
 
 	/* Check for QEBSM support in general (bit 58). */
+<<<<<<< HEAD
 	DBF_EVENT("cssQEBSM:%1d", (qebsm_possible()) ? 1 : 0);
 	rc = 0;
 out:
@@ -552,10 +851,18 @@ out:
 free_qdio_q_cache:
 	kmem_cache_destroy(qdio_q_cache);
 	goto out;
+=======
+	DBF_EVENT("cssQEBSM:%1d", css_general_characteristics.qebsm);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void qdio_setup_exit(void)
 {
+<<<<<<< HEAD
 	kmem_cache_destroy(qdio_aob_cache);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_destroy(qdio_q_cache);
 }

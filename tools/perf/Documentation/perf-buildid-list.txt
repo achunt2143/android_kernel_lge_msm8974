@@ -33,6 +33,13 @@ OPTIONS
 -k::
 --kernel::
 	Show running kernel build id.
+<<<<<<< HEAD
+=======
+-m::
+--kernel-maps::
+	Show buildid, start/end text address, and path of running kernel and
+	its modules.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 -v::
 --verbose::
 	Be more verbose.

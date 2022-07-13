@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.file	"reg_u_add.S"
 /*---------------------------------------------------------------------------+
  |  reg_u_add.S                                                              |
@@ -31,7 +35,11 @@
 #include "control_w.h"
 
 .text
+<<<<<<< HEAD
 ENTRY(FPU_u_add)
+=======
+SYM_FUNC_START(FPU_u_add)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl	%ebp
 	movl	%esp,%ebp
 	pushl	%esi
@@ -163,5 +171,11 @@ L_exit:
 	popl	%edi
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
 #endif /* PARANOID */
+=======
+	RET
+#endif /* PARANOID */
+SYM_FUNC_END(FPU_u_add)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

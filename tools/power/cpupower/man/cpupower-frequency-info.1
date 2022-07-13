@@ -1,7 +1,11 @@
 .TH "CPUPOWER\-FREQUENCY\-INFO" "1" "0.1" "" "cpupower Manual"
 .SH "NAME"
 .LP 
+<<<<<<< HEAD
 cpupower frequency\-info \- Utility to retrieve cpufreq kernel information
+=======
+cpupower\-frequency\-info \- Utility to retrieve cpufreq kernel information
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .SH "SYNTAX"
 .LP 
 cpupower [ \-c cpulist ] frequency\-info [\fIoptions\fP]
@@ -32,7 +36,11 @@ Gets the currently used cpufreq policy.
 \fB\-g\fR \fB\-\-governors\fR
 Determines available cpufreq governors.
 .TP  
+<<<<<<< HEAD
 \fB\-a\fR \fB\-\-related\-cpus\fR
+=======
+\fB\-r\fR \fB\-\-related\-cpus\fR
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Determines which CPUs run at the same hardware frequency.
 .TP  
 \fB\-a\fR \fB\-\-affected\-cpus\fR
@@ -50,6 +58,15 @@ Prints out information like provided by the /proc/cpufreq interface in 2.4. and 
 \fB\-m\fR \fB\-\-human\fR
 human\-readable output for the \-f, \-w, \-s and \-y parameters.
 .TP  
+<<<<<<< HEAD
+=======
+\fB\-n\fR \fB\-\-no-rounding\fR
+Output frequencies and latencies without rounding off values.
+.TP  
+\fB\-c\fR \fB\-\-perf\fR
+Get performances and frequencies capabilities of CPPC, by reading it from hardware (only available on the hardware with CPPC).
+.TP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .SH "REMARKS"
 .LP 
 By default only values of core zero are displayed. How to display settings of

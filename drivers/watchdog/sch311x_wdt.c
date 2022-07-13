@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	sch311x_wdt.c - Driver for the SCH311x Super-I/O chips
  *			integrated watchdog.
  *
  *	(c) Copyright 2008 Wim Van Sebroeck <wim@iguana.be>.
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Neither Wim Van Sebroeck nor Iguana vzw. admit liability nor
  *	provide warranty for any of this software. This material is
  *	provided "AS-IS" and at no charge.
@@ -26,8 +33,12 @@
 #include <linux/types.h>		/* For standard types (like size_t) */
 #include <linux/errno.h>		/* For the -ENODEV/... values */
 #include <linux/kernel.h>		/* For printk/... */
+<<<<<<< HEAD
 #include <linux/miscdevice.h>		/* For MODULE_ALIAS_MISCDEV
 							(WATCHDOG_MINOR) */
+=======
+#include <linux/miscdevice.h>		/* For struct miscdevice */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/watchdog.h>		/* For the watchdog specific items */
 #include <linux/init.h>			/* For __init/__exit/... */
 #include <linux/fs.h>			/* For file operations */
@@ -41,7 +52,10 @@
 #define DRV_NAME	"sch311x_wdt"
 
 /* Runtime registers */
+<<<<<<< HEAD
 #define RESGEN			0x1d
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GP60			0x47
 #define WDT_TIME_OUT		0x65
 #define WDT_VAL			0x66
@@ -69,10 +83,13 @@ static unsigned short force_id;
 module_param(force_id, ushort, 0);
 MODULE_PARM_DESC(force_id, "Override the detected device ID");
 
+<<<<<<< HEAD
 static unsigned short therm_trip;
 module_param(therm_trip, ushort, 0);
 MODULE_PARM_DESC(therm_trip, "Should a ThermTrip trigger the reset generator");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WATCHDOG_TIMEOUT 60		/* 60 sec default timeout */
 static int timeout = WATCHDOG_TIMEOUT;	/* in seconds */
 module_param(timeout, int, 0);
@@ -141,6 +158,11 @@ static void sch311x_wdt_set_timeout(int t)
 
 static void sch311x_wdt_start(void)
 {
+<<<<<<< HEAD
+=======
+	unsigned char t;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&sch311x_wdt_data.io_lock);
 
 	/* set watchdog's timeout */
@@ -154,7 +176,12 @@ static void sch311x_wdt_start(void)
 	 * Bit 4-6  (Reserved)
 	 * Bit 7,   Output Type: 0 = Push Pull Bit, 1 = Open Drain
 	 */
+<<<<<<< HEAD
 	outb(0x0e, sch311x_wdt_data.runtime_reg + GP60);
+=======
+	t = inb(sch311x_wdt_data.runtime_reg + GP60);
+	outb((t & ~0x0d) | 0x0c, sch311x_wdt_data.runtime_reg + GP60);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock(&sch311x_wdt_data.io_lock);
 
@@ -162,10 +189,20 @@ static void sch311x_wdt_start(void)
 
 static void sch311x_wdt_stop(void)
 {
+<<<<<<< HEAD
 	spin_lock(&sch311x_wdt_data.io_lock);
 
 	/* stop the watchdog */
 	outb(0x01, sch311x_wdt_data.runtime_reg + GP60);
+=======
+	unsigned char t;
+
+	spin_lock(&sch311x_wdt_data.io_lock);
+
+	/* stop the watchdog */
+	t = inb(sch311x_wdt_data.runtime_reg + GP60);
+	outb((t & ~0x0d) | 0x01, sch311x_wdt_data.runtime_reg + GP60);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable timeout by setting it to 0 */
 	sch311x_wdt_set_timeout(0);
 
@@ -299,7 +336,11 @@ static long sch311x_wdt_ioctl(struct file *file, unsigned int cmd,
 		if (sch311x_wdt_set_heartbeat(new_timeout))
 			return -EINVAL;
 		sch311x_wdt_keepalive();
+<<<<<<< HEAD
 		/* Fall */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		return put_user(timeout, p);
 	default:
@@ -316,7 +357,11 @@ static int sch311x_wdt_open(struct inode *inode, struct file *file)
 	 *	Activate
 	 */
 	sch311x_wdt_start();
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sch311x_wdt_close(struct inode *inode, struct file *file)
@@ -341,6 +386,10 @@ static const struct file_operations sch311x_wdt_fops = {
 	.llseek		= no_llseek,
 	.write		= sch311x_wdt_write,
 	.unlocked_ioctl	= sch311x_wdt_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= sch311x_wdt_open,
 	.release	= sch311x_wdt_close,
 };
@@ -355,14 +404,21 @@ static struct miscdevice sch311x_wdt_miscdev = {
  *	Init & exit routines
  */
 
+<<<<<<< HEAD
 static int __devinit sch311x_wdt_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
 	unsigned char val;
+=======
+static int sch311x_wdt_probe(struct platform_device *pdev)
+{
+	struct device *dev = &pdev->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	spin_lock_init(&sch311x_wdt_data.io_lock);
 
+<<<<<<< HEAD
 	if (!request_region(sch311x_wdt_data.runtime_reg + RESGEN, 1,
 								DRV_NAME)) {
 		dev_err(dev, "Failed to request region 0x%04x-0x%04x.\n",
@@ -372,12 +428,18 @@ static int __devinit sch311x_wdt_probe(struct platform_device *pdev)
 		goto exit;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!request_region(sch311x_wdt_data.runtime_reg + GP60, 1, DRV_NAME)) {
 		dev_err(dev, "Failed to request region 0x%04x-0x%04x.\n",
 			sch311x_wdt_data.runtime_reg + GP60,
 			sch311x_wdt_data.runtime_reg + GP60);
 		err = -EBUSY;
+<<<<<<< HEAD
 		goto exit_release_region;
+=======
+		goto exit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!request_region(sch311x_wdt_data.runtime_reg + WDT_TIME_OUT, 4,
@@ -386,7 +448,11 @@ static int __devinit sch311x_wdt_probe(struct platform_device *pdev)
 			sch311x_wdt_data.runtime_reg + WDT_TIME_OUT,
 			sch311x_wdt_data.runtime_reg + WDT_CTRL);
 		err = -EBUSY;
+<<<<<<< HEAD
 		goto exit_release_region2;
+=======
+		goto exit_release_region;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Make sure that the watchdog is not running */
@@ -414,6 +480,7 @@ static int __devinit sch311x_wdt_probe(struct platform_device *pdev)
 	/* Get status at boot */
 	sch311x_wdt_get_status(&sch311x_wdt_data.boot_status);
 
+<<<<<<< HEAD
 	/* enable watchdog */
 	/* -- Reset Generator --
 	 * Bit 0   Enable Watchdog Timer Generation: 0* = Enabled, 1 = Disabled
@@ -425,13 +492,19 @@ static int __devinit sch311x_wdt_probe(struct platform_device *pdev)
 	val = therm_trip ? 0x06 : 0x04;
 	outb(val, sch311x_wdt_data.runtime_reg + RESGEN);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sch311x_wdt_miscdev.parent = dev;
 
 	err = misc_register(&sch311x_wdt_miscdev);
 	if (err != 0) {
 		dev_err(dev, "cannot register miscdev on minor=%d (err=%d)\n",
 							WATCHDOG_MINOR, err);
+<<<<<<< HEAD
 		goto exit_release_region3;
+=======
+		goto exit_release_region2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev_info(dev,
@@ -440,18 +513,29 @@ static int __devinit sch311x_wdt_probe(struct platform_device *pdev)
 
 	return 0;
 
+<<<<<<< HEAD
 exit_release_region3:
 	release_region(sch311x_wdt_data.runtime_reg + WDT_TIME_OUT, 4);
 exit_release_region2:
 	release_region(sch311x_wdt_data.runtime_reg + GP60, 1);
 exit_release_region:
 	release_region(sch311x_wdt_data.runtime_reg + RESGEN, 1);
+=======
+exit_release_region2:
+	release_region(sch311x_wdt_data.runtime_reg + WDT_TIME_OUT, 4);
+exit_release_region:
+	release_region(sch311x_wdt_data.runtime_reg + GP60, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sch311x_wdt_data.runtime_reg = 0;
 exit:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit sch311x_wdt_remove(struct platform_device *pdev)
+=======
+static void sch311x_wdt_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Stop the timer before we leave */
 	if (!nowayout)
@@ -461,9 +545,13 @@ static int __devexit sch311x_wdt_remove(struct platform_device *pdev)
 	misc_deregister(&sch311x_wdt_miscdev);
 	release_region(sch311x_wdt_data.runtime_reg + WDT_TIME_OUT, 4);
 	release_region(sch311x_wdt_data.runtime_reg + GP60, 1);
+<<<<<<< HEAD
 	release_region(sch311x_wdt_data.runtime_reg + RESGEN, 1);
 	sch311x_wdt_data.runtime_reg = 0;
 	return 0;
+=======
+	sch311x_wdt_data.runtime_reg = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sch311x_wdt_shutdown(struct platform_device *dev)
@@ -474,10 +562,16 @@ static void sch311x_wdt_shutdown(struct platform_device *dev)
 
 static struct platform_driver sch311x_wdt_driver = {
 	.probe		= sch311x_wdt_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(sch311x_wdt_remove),
 	.shutdown	= sch311x_wdt_shutdown,
 	.driver		= {
 		.owner = THIS_MODULE,
+=======
+	.remove_new	= sch311x_wdt_remove,
+	.shutdown	= sch311x_wdt_shutdown,
+	.driver		= {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name = DRV_NAME,
 	},
 };
@@ -568,5 +662,8 @@ module_exit(sch311x_wdt_exit);
 MODULE_AUTHOR("Wim Van Sebroeck <wim@iguana.be>");
 MODULE_DESCRIPTION("SMSC SCH311x WatchDog Timer Driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

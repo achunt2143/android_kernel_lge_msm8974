@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /// Find missing unlocks.  This semantic match considers the specific case
 /// where the unlock is missing from an if branch, and there is a lock
 /// before the if and an unlock after the if.  False positives are due to
@@ -6,12 +10,21 @@
 /// function call that releases the lock.
 ///
 // Confidence: Moderate
+<<<<<<< HEAD
 // Copyright: (C) 2010-2012 Nicolas Palix.  GPLv2.
 // Copyright: (C) 2010-2012 Julia Lawall, INRIA/LIP6.  GPLv2.
 // Copyright: (C) 2010-2012 Gilles Muller, INRIA/LiP6.  GPLv2.
 // URL: http://coccinelle.lip6.fr/
 // Comments:
 // Options: -no_includes -include_headers
+=======
+// Copyright: (C) 2010-2012 Nicolas Palix.
+// Copyright: (C) 2010-2012 Julia Lawall, INRIA/LIP6.
+// Copyright: (C) 2010-2012 Gilles Muller, INRIA/LiP6.
+// URL: https://coccinelle.gitlabpages.inria.fr/website
+// Comments:
+// Options: --no-includes --include-headers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 virtual context
 virtual org
@@ -67,12 +80,22 @@ identifier lock,unlock;
 @@
 
 *lock(E1@p,...);
+<<<<<<< HEAD
 <+... when != E1
+=======
+... when != E1
+    when any
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if (...) {
   ... when != E1
 *  return@r ...;
 }
+<<<<<<< HEAD
 ...+>
+=======
+... when != E1
+    when any
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 *unlock@up(E1,...);
 
 @script:python depends on org@

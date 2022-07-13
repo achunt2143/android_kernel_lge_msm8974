@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1996-2001 Vojtech Pavlik
  */
@@ -6,6 +10,7 @@
  * Analog joystick and gamepad driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +31,8 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -35,7 +42,13 @@
 #include <linux/input.h>
 #include <linux/gameport.h>
 #include <linux/jiffies.h>
+<<<<<<< HEAD
 #include <linux/timex.h>
+=======
+#include <linux/seq_buf.h>
+#include <linux/timex.h>
+#include <linux/timekeeping.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"Analog joystick and gamepad driver"
 
@@ -121,7 +134,10 @@ struct analog_port {
 	char cooked;
 	int bads;
 	int reads;
+<<<<<<< HEAD
 	int speed;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int loop;
 	int fuzz;
 	int axes[4];
@@ -131,6 +147,7 @@ struct analog_port {
 };
 
 /*
+<<<<<<< HEAD
  * Time macros.
  */
 
@@ -176,6 +193,8 @@ static unsigned long analog_faketime = 0;
 #endif
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * analog_decode() decodes analog joystick data and reports input events.
  */
 
@@ -230,17 +249,30 @@ static void analog_decode(struct analog *analog, int *axes, int *initial, int bu
 static int analog_cooked_read(struct analog_port *port)
 {
 	struct gameport *gameport = port->gameport;
+<<<<<<< HEAD
 	unsigned int time[4], start, loop, now, loopout, timeout;
+=======
+	ktime_t time[4], start, loop, now;
+	unsigned int loopout, timeout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char data[4], this, last;
 	unsigned long flags;
 	int i, j;
 
 	loopout = (ANALOG_LOOP_TIME * port->loop) / 1000;
+<<<<<<< HEAD
 	timeout = ANALOG_MAX_TIME * port->speed;
 
 	local_irq_save(flags);
 	gameport_trigger(gameport);
 	GET_TIME(now);
+=======
+	timeout = ANALOG_MAX_TIME * NSEC_PER_MSEC;
+
+	local_irq_save(flags);
+	gameport_trigger(gameport);
+	now = ktime_get();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 
 	start = now;
@@ -253,16 +285,27 @@ static int analog_cooked_read(struct analog_port *port)
 
 		local_irq_disable();
 		this = gameport_read(gameport) & port->mask;
+<<<<<<< HEAD
 		GET_TIME(now);
 		local_irq_restore(flags);
 
 		if ((last ^ this) && (DELTA(loop, now) < loopout)) {
+=======
+		now = ktime_get();
+		local_irq_restore(flags);
+
+		if ((last ^ this) && (ktime_sub(now, loop) < loopout)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			data[i] = last ^ this;
 			time[i] = now;
 			i++;
 		}
 
+<<<<<<< HEAD
 	} while (this && (i < 4) && (DELTA(start, now) < timeout));
+=======
+	} while (this && (i < 4) && (ktime_sub(now, start) < timeout));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	this <<= 4;
 
@@ -270,7 +313,11 @@ static int analog_cooked_read(struct analog_port *port)
 		this |= data[i];
 		for (j = 0; j < 4; j++)
 			if (data[i] & (1 << j))
+<<<<<<< HEAD
 				port->axes[j] = (DELTA(start, time[i]) << ANALOG_FUZZ_BITS) / port->loop;
+=======
+				port->axes[j] = ((u32)ktime_sub(time[i], start) << ANALOG_FUZZ_BITS) / port->loop;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return -(this != port->mask);
@@ -369,6 +416,7 @@ static void analog_close(struct input_dev *dev)
 static void analog_calibrate_timer(struct analog_port *port)
 {
 	struct gameport *gameport = port->gameport;
+<<<<<<< HEAD
 	unsigned int i, t, tx, t1, t2, t3;
 	unsigned long flags;
 
@@ -384,16 +432,34 @@ static void analog_calibrate_timer(struct analog_port *port)
 
 	port->speed = DELTA(t1, t2) - DELTA(t2, t3);
 
+=======
+	unsigned int i, t, tx;
+	ktime_t t1, t2, t3;
+	unsigned long flags;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tx = ~0;
 
 	for (i = 0; i < 50; i++) {
 		local_irq_save(flags);
+<<<<<<< HEAD
 		GET_TIME(t1);
 		for (t = 0; t < 50; t++) { gameport_read(gameport); GET_TIME(t2); }
 		GET_TIME(t3);
 		local_irq_restore(flags);
 		udelay(i);
 		t = DELTA(t1, t2) - DELTA(t2, t3);
+=======
+		t1 = ktime_get();
+		for (t = 0; t < 50; t++) {
+			gameport_read(gameport);
+			t2 = ktime_get();
+		}
+		t3 = ktime_get();
+		local_irq_restore(flags);
+		udelay(i);
+		t = ktime_sub(t2, t1) - ktime_sub(t3, t2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (t < tx) tx = t;
 	}
 
@@ -406,12 +472,20 @@ static void analog_calibrate_timer(struct analog_port *port)
 
 static void analog_name(struct analog *analog)
 {
+<<<<<<< HEAD
 	snprintf(analog->name, sizeof(analog->name), "Analog %d-axis %d-button",
+=======
+	struct seq_buf s;
+
+	seq_buf_init(&s, analog->name, sizeof(analog->name));
+	seq_buf_printf(&s, "Analog %d-axis %d-button",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 hweight8(analog->mask & ANALOG_AXES_STD),
 		 hweight8(analog->mask & ANALOG_BTNS_STD) + !!(analog->mask & ANALOG_BTNS_CHF) * 2 +
 		 hweight16(analog->mask & ANALOG_BTNS_GAMEPAD) + !!(analog->mask & ANALOG_HBTN_CHF) * 4);
 
 	if (analog->mask & ANALOG_HATS_ALL)
+<<<<<<< HEAD
 		snprintf(analog->name, sizeof(analog->name), "%s %d-hat",
 			 analog->name, hweight16(analog->mask & ANALOG_HATS_ALL));
 
@@ -423,6 +497,17 @@ static void analog_name(struct analog *analog)
 
 	strlcat(analog->name, (analog->mask & ANALOG_GAMEPAD) ? " gamepad": " joystick",
 		sizeof(analog->name));
+=======
+		seq_buf_printf(&s, " %d-hat",
+			       hweight16(analog->mask & ANALOG_HATS_ALL));
+
+	if (analog->mask & ANALOG_HAT_FCS)
+		seq_buf_printf(&s, " FCS");
+	if (analog->mask & ANALOG_ANY_CHF)
+		seq_buf_printf(&s, (analog->mask & ANALOG_SAITEK) ? " Saitek" : " CHF");
+
+	seq_buf_printf(&s, (analog->mask & ANALOG_GAMEPAD) ? " gamepad" : " joystick");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -598,7 +683,11 @@ static int analog_init_port(struct gameport *gameport, struct gameport_driver *d
 		t = gameport_read(gameport);
 		msleep(ANALOG_MAX_TIME);
 		port->mask = (gameport_read(gameport) ^ t) & t & 0xf;
+<<<<<<< HEAD
 		port->fuzz = (port->speed * ANALOG_FUZZ_MAGIC) / port->loop / 1000 + ANALOG_FUZZ_BITS;
+=======
+		port->fuzz = (NSEC_PER_MSEC * ANALOG_FUZZ_MAGIC) / port->loop / 1000 + ANALOG_FUZZ_BITS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (i = 0; i < ANALOG_INIT_RETRIES; i++) {
 			if (!analog_cooked_read(port))
@@ -652,7 +741,11 @@ static int analog_connect(struct gameport *gameport, struct gameport_driver *drv
 	int err;
 
 	if (!(port = kzalloc(sizeof(struct analog_port), GFP_KERNEL)))
+<<<<<<< HEAD
 		return - ENOMEM;
+=======
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = analog_init_port(gameport, drv, port);
 	if (err)

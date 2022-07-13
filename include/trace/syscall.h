@@ -1,9 +1,17 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _TRACE_SYSCALL_H
 #define _TRACE_SYSCALL_H
 
 #include <linux/tracepoint.h>
 #include <linux/unistd.h>
+<<<<<<< HEAD
 #include <linux/ftrace_event.h>
+=======
+#include <linux/trace_events.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/thread_info.h>
 
 #include <asm/ptrace.h>
@@ -17,6 +25,10 @@
  * @nb_args: number of parameters it takes
  * @types: list of types as strings
  * @args: list of args as strings (args[i] matches types[i])
+<<<<<<< HEAD
+=======
+ * @enter_fields: list of fields for syscall_enter trace event
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @enter_event: associated syscall_enter trace event
  * @exit_event: associated syscall_exit trace event
  */
@@ -28,6 +40,7 @@ struct syscall_metadata {
 	const char	**args;
 	struct list_head enter_fields;
 
+<<<<<<< HEAD
 	struct ftrace_event_call *enter_event;
 	struct ftrace_event_call *exit_event;
 };
@@ -62,6 +75,19 @@ static inline void syscall_tracepoint_update(struct task_struct *p)
 		set_tsk_thread_flag(p, TIF_SYSCALL_TRACEPOINT);
 	else
 		clear_tsk_thread_flag(p, TIF_SYSCALL_TRACEPOINT);
+=======
+	struct trace_event_call *enter_event;
+	struct trace_event_call *exit_event;
+};
+
+#if defined(CONFIG_TRACEPOINTS) && defined(CONFIG_HAVE_SYSCALL_TRACEPOINTS)
+static inline void syscall_tracepoint_update(struct task_struct *p)
+{
+	if (test_syscall_work(SYSCALL_TRACEPOINT))
+		set_task_syscall_work(p, SYSCALL_TRACEPOINT);
+	else
+		clear_task_syscall_work(p, SYSCALL_TRACEPOINT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 static inline void syscall_tracepoint_update(struct task_struct *p)

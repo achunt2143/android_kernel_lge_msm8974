@@ -12,20 +12,40 @@
 
 /*
  * This file essentially defines the interface between board
+<<<<<<< HEAD
  * specific PCI code and MIPS common PCI code.  Should potentially put
+=======
+ * specific PCI code and MIPS common PCI code.	Should potentially put
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * into include/asm/pci.h file.
  */
 
 #include <linux/ioport.h>
+<<<<<<< HEAD
 
 /*
  * Each pci channel is a top-level PCI bus seem by CPU.  A machine  with
+=======
+#include <linux/list.h>
+#include <linux/of.h>
+
+#ifdef CONFIG_PCI_DRIVERS_LEGACY
+
+/*
+ * Each PCI channel is a top-level PCI bus seem by CPU.	 A machine with
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * multiple PCI channels may have multiple PCI host controllers or a
  * single controller supporting multiple channels.
  */
 struct pci_controller {
+<<<<<<< HEAD
 	struct pci_controller *next;
 	struct pci_bus *bus;
+=======
+	struct list_head list;
+	struct pci_bus *bus;
+	struct device_node *of_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct pci_ops *pci_ops;
 	struct resource *mem_resource;
@@ -34,12 +54,20 @@ struct pci_controller {
 	unsigned long io_offset;
 	unsigned long io_map_base;
 
+<<<<<<< HEAD
+=======
+#ifndef CONFIG_PCI_DOMAINS_GENERIC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int index;
 	/* For compatibility with current (as of July 2003) pciutils
 	   and XFree86. Eventually will be removed. */
 	unsigned int need_domain_info;
+<<<<<<< HEAD
 
 	int iommu;
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Optional access methods for reading/writing the bus number
 	   of the PCI controller */
@@ -50,7 +78,10 @@ struct pci_controller {
 /*
  * Used by boards to register their PCI busses before the actual scanning.
  */
+<<<<<<< HEAD
 extern struct pci_controller * alloc_pci_controller(void);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void register_pci_controller(struct pci_controller *hose);
 
 /*
@@ -58,18 +89,58 @@ extern void register_pci_controller(struct pci_controller *hose);
  */
 extern int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin);
 
+<<<<<<< HEAD
+=======
+/* Do platform specific device initialization at pci_enable_device() time */
+extern int pcibios_plat_dev_init(struct pci_dev *dev);
+
+extern char * (*pcibios_plat_setup)(char *str);
+
+#ifdef CONFIG_OF
+/* this function parses memory ranges from a device node */
+extern void pci_load_of_ranges(struct pci_controller *hose,
+			       struct device_node *node);
+#else
+static inline void pci_load_of_ranges(struct pci_controller *hose,
+				      struct device_node *node) {}
+#endif
+
+#ifdef CONFIG_PCI_DOMAINS_GENERIC
+static inline void set_pci_need_domain_info(struct pci_controller *hose,
+					    int need_domain_info)
+{
+	/* nothing to do */
+}
+#elif defined(CONFIG_PCI_DOMAINS)
+static inline void set_pci_need_domain_info(struct pci_controller *hose,
+					    int need_domain_info)
+{
+	hose->need_domain_info = need_domain_info;
+}
+#endif /* CONFIG_PCI_DOMAINS */
+
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Can be used to override the logic in pci_scan_bus for skipping
    already-configured bus numbers - to be used for buggy BIOSes
    or architectures with incomplete PCI setup by the loader */
+<<<<<<< HEAD
 
 extern unsigned int pcibios_assign_all_busses(void);
+=======
+static inline unsigned int pcibios_assign_all_busses(void)
+{
+	return 1;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern unsigned long PCIBIOS_MIN_IO;
 extern unsigned long PCIBIOS_MIN_MEM;
 
 #define PCIBIOS_MIN_CARDBUS_IO	0x4000
 
+<<<<<<< HEAD
 extern void pcibios_set_master(struct pci_dev *dev);
 
 static inline void pcibios_penalize_isa_irq(int irq, int active)
@@ -81,6 +152,10 @@ static inline void pcibios_penalize_isa_irq(int irq, int active)
 
 extern int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 	enum pci_mmap_state mmap_state, int write_combine);
+=======
+#define HAVE_PCI_MMAP
+#define ARCH_GENERIC_PCI_MMAP_RESOURCE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Dynamic DMA mapping stuff.
@@ -89,6 +164,7 @@ extern int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 
 #include <linux/types.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/scatterlist.h>
 #include <linux/string.h>
 #include <asm/io.h>
@@ -113,6 +189,18 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 }
 #endif
 
+=======
+#include <linux/scatterlist.h>
+#include <linux/string.h>
+#include <asm/io.h>
+
+#ifdef CONFIG_PCI_DOMAINS_GENERIC
+static inline int pci_proc_domain(struct pci_bus *bus)
+{
+	return pci_domain_nr(bus);
+}
+#elif defined(CONFIG_PCI_DOMAINS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pci_domain_nr(bus) ((struct pci_controller *)(bus)->sysdata)->index
 
 static inline int pci_proc_domain(struct pci_bus *bus)
@@ -120,6 +208,7 @@ static inline int pci_proc_domain(struct pci_bus *bus)
 	struct pci_controller *hose = bus->sysdata;
 	return hose->need_domain_info;
 }
+<<<<<<< HEAD
 
 #endif /* __KERNEL__ */
 
@@ -142,4 +231,13 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 
 extern char * (*pcibios_plat_setup)(char *str);
 
+=======
+#endif /* CONFIG_PCI_DOMAINS */
+
+#endif /* __KERNEL__ */
+
+/* Do platform specific device initialization at pci_enable_device() time */
+extern int pcibios_plat_dev_init(struct pci_dev *dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_PCI_H */

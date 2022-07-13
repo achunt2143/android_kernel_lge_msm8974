@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_FCOE_FNIC) += fnic.o
 
 fnic-y	:= \
@@ -7,6 +11,11 @@ fnic-y	:= \
 	fnic_res.o \
 	fnic_fcs.o \
 	fnic_scsi.o \
+<<<<<<< HEAD
+=======
+	fnic_trace.o \
+	fnic_debugfs.o \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vnic_cq.o \
 	vnic_dev.o \
 	vnic_intr.o \

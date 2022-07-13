@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RapidIO sysfs attributes and support
  *
  * Copyright 2005 MontaVista Software, Inc.
  * Matt Porter <mporter@kernel.crashing.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -27,6 +34,10 @@ field##_show(struct device *dev, struct device_attribute *attr, char *buf)			\
 									\
 	return sprintf(buf, format_string, rdev->field);		\
 }									\
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RO(field);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 rio_config_attr(did, "0x%04x\n");
 rio_config_attr(vid, "0x%04x\n");
@@ -54,6 +65,10 @@ static ssize_t routes_show(struct device *dev, struct device_attribute *attr, ch
 
 	return (str - buf);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RO(routes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t lprev_show(struct device *dev,
 			  struct device_attribute *attr, char *buf)
@@ -63,6 +78,10 @@ static ssize_t lprev_show(struct device *dev,
 	return sprintf(buf, "%s\n",
 			(rdev->prev) ? rio_name(rdev->prev) : "root");
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR_RO(lprev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t lnext_show(struct device *dev,
 			  struct device_attribute *attr, char *buf)
@@ -83,6 +102,7 @@ static ssize_t lnext_show(struct device *dev,
 
 	return str - buf;
 }
+<<<<<<< HEAD
 
 struct device_attribute rio_dev_attrs[] = {
 	__ATTR_RO(did),
@@ -100,13 +120,49 @@ static DEVICE_ATTR(routes, S_IRUGO, routes_show, NULL);
 static DEVICE_ATTR(lnext, S_IRUGO, lnext_show, NULL);
 static DEVICE_ATTR(hopcount, S_IRUGO, hopcount_show, NULL);
 
+=======
+static DEVICE_ATTR_RO(lnext);
+
+static ssize_t modalias_show(struct device *dev,
+			     struct device_attribute *attr, char *buf)
+{
+	struct rio_dev *rdev = to_rio_dev(dev);
+
+	return sprintf(buf, "rapidio:v%04Xd%04Xav%04Xad%04X\n",
+		       rdev->vid, rdev->did, rdev->asm_vid, rdev->asm_did);
+}
+static DEVICE_ATTR_RO(modalias);
+
+static struct attribute *rio_dev_attrs[] = {
+	&dev_attr_did.attr,
+	&dev_attr_vid.attr,
+	&dev_attr_device_rev.attr,
+	&dev_attr_asm_did.attr,
+	&dev_attr_asm_vid.attr,
+	&dev_attr_asm_rev.attr,
+	&dev_attr_lprev.attr,
+	&dev_attr_destid.attr,
+	&dev_attr_modalias.attr,
+
+	/* Switch-only attributes */
+	&dev_attr_routes.attr,
+	&dev_attr_lnext.attr,
+	&dev_attr_hopcount.attr,
+	NULL,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 rio_read_config(struct file *filp, struct kobject *kobj,
 		struct bin_attribute *bin_attr,
 		char *buf, loff_t off, size_t count)
 {
+<<<<<<< HEAD
 	struct rio_dev *dev =
 	    to_rio_dev(container_of(kobj, struct device, kobj));
+=======
+	struct rio_dev *dev = to_rio_dev(kobj_to_dev(kobj));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int size = 0x100;
 	loff_t init_off = off;
 	u8 *data = (u8 *) buf;
@@ -177,8 +233,12 @@ rio_write_config(struct file *filp, struct kobject *kobj,
 		 struct bin_attribute *bin_attr,
 		 char *buf, loff_t off, size_t count)
 {
+<<<<<<< HEAD
 	struct rio_dev *dev =
 	    to_rio_dev(container_of(kobj, struct device, kobj));
+=======
+	struct rio_dev *dev = to_rio_dev(kobj_to_dev(kobj));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int size = count;
 	loff_t init_off = off;
 	u8 *data = (u8 *) buf;
@@ -241,6 +301,7 @@ static struct bin_attribute rio_config_attr = {
 	.write = rio_write_config,
 };
 
+<<<<<<< HEAD
 /**
  * rio_create_sysfs_dev_files - create RIO specific sysfs files
  * @rdev: device whose entries should be created
@@ -285,3 +346,118 @@ void rio_remove_sysfs_dev_files(struct rio_dev *rdev)
 			rdev->rswitch->sw_sysfs(rdev, RIO_SW_SYSFS_REMOVE);
 	}
 }
+=======
+static struct bin_attribute *rio_dev_bin_attrs[] = {
+	&rio_config_attr,
+	NULL,
+};
+
+static umode_t rio_dev_is_attr_visible(struct kobject *kobj,
+				       struct attribute *attr, int n)
+{
+	struct rio_dev *rdev = to_rio_dev(kobj_to_dev(kobj));
+	umode_t mode = attr->mode;
+
+	if (!(rdev->pef & RIO_PEF_SWITCH) &&
+	    (attr == &dev_attr_routes.attr ||
+	     attr == &dev_attr_lnext.attr ||
+	     attr == &dev_attr_hopcount.attr)) {
+		/*
+		 * Hide switch-specific attributes for a non-switch device.
+		 */
+		mode = 0;
+	}
+
+	return mode;
+}
+
+static const struct attribute_group rio_dev_group = {
+	.attrs		= rio_dev_attrs,
+	.is_visible	= rio_dev_is_attr_visible,
+	.bin_attrs	= rio_dev_bin_attrs,
+};
+
+const struct attribute_group *rio_dev_groups[] = {
+	&rio_dev_group,
+	NULL,
+};
+
+static ssize_t scan_store(const struct bus_type *bus, const char *buf, size_t count)
+{
+	long val;
+	int rc;
+
+	if (kstrtol(buf, 0, &val) < 0)
+		return -EINVAL;
+
+	if (val == RIO_MPORT_ANY) {
+		rc = rio_init_mports();
+		goto exit;
+	}
+
+	if (val < 0 || val >= RIO_MAX_MPORTS)
+		return -EINVAL;
+
+	rc = rio_mport_scan((int)val);
+exit:
+	if (!rc)
+		rc = count;
+
+	return rc;
+}
+static BUS_ATTR_WO(scan);
+
+static struct attribute *rio_bus_attrs[] = {
+	&bus_attr_scan.attr,
+	NULL,
+};
+
+static const struct attribute_group rio_bus_group = {
+	.attrs = rio_bus_attrs,
+};
+
+const struct attribute_group *rio_bus_groups[] = {
+	&rio_bus_group,
+	NULL,
+};
+
+static ssize_t
+port_destid_show(struct device *dev, struct device_attribute *attr,
+		 char *buf)
+{
+	struct rio_mport *mport = to_rio_mport(dev);
+
+	if (mport)
+		return sprintf(buf, "0x%04x\n", mport->host_deviceid);
+	else
+		return -ENODEV;
+}
+static DEVICE_ATTR_RO(port_destid);
+
+static ssize_t sys_size_show(struct device *dev, struct device_attribute *attr,
+			   char *buf)
+{
+	struct rio_mport *mport = to_rio_mport(dev);
+
+	if (mport)
+		return sprintf(buf, "%u\n", mport->sys_size);
+	else
+		return -ENODEV;
+}
+static DEVICE_ATTR_RO(sys_size);
+
+static struct attribute *rio_mport_attrs[] = {
+	&dev_attr_port_destid.attr,
+	&dev_attr_sys_size.attr,
+	NULL,
+};
+
+static const struct attribute_group rio_mport_group = {
+	.attrs = rio_mport_attrs,
+};
+
+const struct attribute_group *rio_mport_groups[] = {
+	&rio_mport_group,
+	NULL,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

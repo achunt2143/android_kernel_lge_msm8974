@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/nfs/dns_resolve.c
  *
@@ -6,6 +10,7 @@
  * Resolves DNS hostnames into valid ip addresses
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_NFS_USE_KERNEL_DNS
 
 #include <linux/sunrpc/clnt.h>
@@ -15,11 +20,32 @@
 ssize_t nfs_dns_resolve_name(struct net *net, char *name, size_t namelen,
 		struct sockaddr *sa, size_t salen)
 {
+=======
+#include <linux/module.h>
+#include <linux/sunrpc/clnt.h>
+#include <linux/sunrpc/addr.h>
+
+#include "dns_resolve.h"
+
+#ifdef CONFIG_NFS_USE_KERNEL_DNS
+
+#include <linux/dns_resolver.h>
+
+ssize_t nfs_dns_resolve_name(struct net *net, char *name, size_t namelen,
+		struct sockaddr_storage *ss, size_t salen)
+{
+	struct sockaddr *sa = (struct sockaddr *)ss;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t ret;
 	char *ip_addr = NULL;
 	int ip_len;
 
+<<<<<<< HEAD
 	ip_len = dns_query(NULL, name, namelen, NULL, &ip_addr, NULL);
+=======
+	ip_len = dns_query(net, NULL, name, namelen, NULL, &ip_addr, NULL,
+			   false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ip_len > 0)
 		ret = rpc_pton(net, ip_addr, ip_len, sa, salen);
 	else
@@ -34,6 +60,7 @@ ssize_t nfs_dns_resolve_name(struct net *net, char *name, size_t namelen,
 #include <linux/string.h>
 #include <linux/kmod.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/socket.h>
 #include <linux/seq_file.h>
@@ -44,6 +71,17 @@ ssize_t nfs_dns_resolve_name(struct net *net, char *name, size_t namelen,
 #include <linux/sunrpc/rpc_pipe_fs.h>
 
 #include "dns_resolve.h"
+=======
+#include <linux/socket.h>
+#include <linux/seq_file.h>
+#include <linux/inet.h>
+#include <linux/sunrpc/cache.h>
+#include <linux/sunrpc/svcauth.h>
+#include <linux/sunrpc/rpc_pipe_fs.h>
+#include <linux/nfs_fs.h>
+
+#include "nfs4_fs.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "cache_lib.h"
 #include "netns.h"
 
@@ -58,6 +96,10 @@ struct nfs_dns_ent {
 
 	struct sockaddr_storage addr;
 	size_t addrlen;
+<<<<<<< HEAD
+=======
+	struct rcu_head rcu_head;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -84,7 +126,11 @@ static void nfs_dns_ent_init(struct cache_head *cnew,
 	key = container_of(ckey, struct nfs_dns_ent, h);
 
 	kfree(new->hostname);
+<<<<<<< HEAD
 	new->hostname = kstrndup(key->hostname, key->namelen, GFP_KERNEL);
+=======
+	new->hostname = kmemdup_nul(key->hostname, key->namelen, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (new->hostname) {
 		new->namelen = key->namelen;
 		nfs_dns_ent_update(cnew, ckey);
@@ -94,13 +140,29 @@ static void nfs_dns_ent_init(struct cache_head *cnew,
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void nfs_dns_ent_free_rcu(struct rcu_head *head)
+{
+	struct nfs_dns_ent *item;
+
+	item = container_of(head, struct nfs_dns_ent, rcu_head);
+	kfree(item->hostname);
+	kfree(item);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void nfs_dns_ent_put(struct kref *ref)
 {
 	struct nfs_dns_ent *item;
 
 	item = container_of(ref, struct nfs_dns_ent, h.ref);
+<<<<<<< HEAD
 	kfree(item->hostname);
 	kfree(item);
+=======
+	call_rcu(&item->rcu_head, nfs_dns_ent_free_rcu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct cache_head *nfs_dns_ent_alloc(void)
@@ -135,12 +197,22 @@ static int nfs_dns_upcall(struct cache_detail *cd,
 		struct cache_head *ch)
 {
 	struct nfs_dns_ent *key = container_of(ch, struct nfs_dns_ent, h);
+<<<<<<< HEAD
 	int ret;
 
 	ret = nfs_cache_upcall(cd, key->hostname);
 	if (ret)
 		ret = sunrpc_cache_pipe_upcall(cd, ch, nfs_dns_request);
 	return ret;
+=======
+
+	if (test_and_set_bit(CACHE_PENDING, &ch->flags))
+		return 0;
+	if (!nfs_cache_upcall(cd, key->hostname))
+		return 0;
+	clear_bit(CACHE_PENDING, &ch->flags);
+	return sunrpc_cache_pipe_upcall_timeout(cd, ch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int nfs_dns_match(struct cache_head *ca,
@@ -188,7 +260,11 @@ static struct nfs_dns_ent *nfs_dns_lookup(struct cache_detail *cd,
 {
 	struct cache_head *ch;
 
+<<<<<<< HEAD
 	ch = sunrpc_cache_lookup(cd,
+=======
+	ch = sunrpc_cache_lookup_rcu(cd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&key->h,
 			nfs_dns_hash(key));
 	if (!ch)
@@ -324,7 +400,11 @@ out:
 }
 
 ssize_t nfs_dns_resolve_name(struct net *net, char *name,
+<<<<<<< HEAD
 		size_t namelen, struct sockaddr *sa, size_t salen)
+=======
+		size_t namelen, struct sockaddr_storage *ss, size_t salen)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nfs_dns_ent key = {
 		.hostname = name,
@@ -337,7 +417,11 @@ ssize_t nfs_dns_resolve_name(struct net *net, char *name,
 	ret = do_cache_lookup_wait(nn->nfs_dns_resolve, &key, &item);
 	if (ret == 0) {
 		if (salen >= item->addrlen) {
+<<<<<<< HEAD
 			memcpy(sa, &item->addr, item->addrlen);
+=======
+			memcpy(ss, &item->addr, item->addrlen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = item->addrlen;
 		} else
 			ret = -EOVERFLOW;
@@ -347,6 +431,7 @@ ssize_t nfs_dns_resolve_name(struct net *net, char *name,
 	return ret;
 }
 
+<<<<<<< HEAD
 int nfs_dns_resolver_cache_init(struct net *net)
 {
 	int err = -ENOMEM;
@@ -389,12 +474,47 @@ err_reg:
 err_tbl:
 	kfree(cd);
 err_cd:
+=======
+static struct cache_detail nfs_dns_resolve_template = {
+	.owner		= THIS_MODULE,
+	.hash_size	= NFS_DNS_HASHTBL_SIZE,
+	.name		= "dns_resolve",
+	.cache_put	= nfs_dns_ent_put,
+	.cache_upcall	= nfs_dns_upcall,
+	.cache_request	= nfs_dns_request,
+	.cache_parse	= nfs_dns_parse,
+	.cache_show	= nfs_dns_show,
+	.match		= nfs_dns_match,
+	.init		= nfs_dns_ent_init,
+	.update		= nfs_dns_ent_update,
+	.alloc		= nfs_dns_ent_alloc,
+};
+
+
+int nfs_dns_resolver_cache_init(struct net *net)
+{
+	int err;
+	struct nfs_net *nn = net_generic(net, nfs_net_id);
+
+	nn->nfs_dns_resolve = cache_create_net(&nfs_dns_resolve_template, net);
+	if (IS_ERR(nn->nfs_dns_resolve))
+		return PTR_ERR(nn->nfs_dns_resolve);
+
+	err = nfs_cache_register_net(net, nn->nfs_dns_resolve);
+	if (err)
+		goto err_reg;
+	return 0;
+
+err_reg:
+	cache_destroy_net(nn->nfs_dns_resolve, net);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 void nfs_dns_resolver_cache_destroy(struct net *net)
 {
 	struct nfs_net *nn = net_generic(net, nfs_net_id);
+<<<<<<< HEAD
 	struct cache_detail *cd = nn->nfs_dns_resolve;
 
 	nfs_cache_unregister_net(net, cd);
@@ -403,6 +523,28 @@ void nfs_dns_resolver_cache_destroy(struct net *net)
 	kfree(cd);
 }
 
+=======
+
+	nfs_cache_unregister_net(net, nn->nfs_dns_resolve);
+	cache_destroy_net(nn->nfs_dns_resolve, net);
+}
+
+static int nfs4_dns_net_init(struct net *net)
+{
+	return nfs_dns_resolver_cache_init(net);
+}
+
+static void nfs4_dns_net_exit(struct net *net)
+{
+	nfs_dns_resolver_cache_destroy(net);
+}
+
+static struct pernet_operations nfs4_dns_resolver_ops = {
+	.init = nfs4_dns_net_init,
+	.exit = nfs4_dns_net_exit,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int rpc_pipefs_event(struct notifier_block *nb, unsigned long event,
 			   void *ptr)
 {
@@ -439,11 +581,31 @@ static struct notifier_block nfs_dns_resolver_block = {
 
 int nfs_dns_resolver_init(void)
 {
+<<<<<<< HEAD
 	return rpc_pipefs_notifier_register(&nfs_dns_resolver_block);
+=======
+	int err;
+
+	err = register_pernet_subsys(&nfs4_dns_resolver_ops);
+	if (err < 0)
+		goto out;
+	err = rpc_pipefs_notifier_register(&nfs_dns_resolver_block);
+	if (err < 0)
+		goto out1;
+	return 0;
+out1:
+	unregister_pernet_subsys(&nfs4_dns_resolver_ops);
+out:
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nfs_dns_resolver_destroy(void)
 {
 	rpc_pipefs_notifier_unregister(&nfs_dns_resolver_block);
+<<<<<<< HEAD
+=======
+	unregister_pernet_subsys(&nfs4_dns_resolver_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif

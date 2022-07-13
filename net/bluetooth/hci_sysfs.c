@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Bluetooth HCI driver model support. */
 
 #include <linux/kernel.h>
@@ -6,11 +7,17 @@
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
 #include <linux/interrupt.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* Bluetooth HCI driver model support. */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
 
+<<<<<<< HEAD
 static struct class *bt_class;
 
 struct dentry *bt_debugfs;
@@ -74,10 +81,15 @@ static struct attribute_group bt_link_group = {
 static const struct attribute_group *bt_link_groups[] = {
 	&bt_link_group,
 	NULL
+=======
+static const struct class bt_class = {
+	.name = "bluetooth",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void bt_link_release(struct device *dev)
 {
+<<<<<<< HEAD
 	void *data = dev_get_drvdata(dev);
 	kfree(data);
 }
@@ -105,6 +117,17 @@ static void add_conn(struct work_struct *work)
 	hci_dev_hold(hdev);
 }
 
+=======
+	struct hci_conn *conn = to_hci_conn(dev);
+	kfree(conn);
+}
+
+static const struct device_type bt_link = {
+	.name    = "link",
+	.release = bt_link_release,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The rfcomm tty device will possibly retain even when conn
  * is down, and sysfs doesn't support move zombie device,
@@ -115,6 +138,7 @@ static int __match_tty(struct device *dev, void *data)
 	return !strncmp(dev_name(dev), "rfcomm", 6);
 }
 
+<<<<<<< HEAD
 static void del_conn(struct work_struct *work)
 {
 	struct hci_conn *conn = container_of(work, struct hci_conn, work_del);
@@ -123,6 +147,50 @@ static void del_conn(struct work_struct *work)
 	if (!device_is_registered(&conn->dev))
 		return;
 
+=======
+void hci_conn_init_sysfs(struct hci_conn *conn)
+{
+	struct hci_dev *hdev = conn->hdev;
+
+	bt_dev_dbg(hdev, "conn %p", conn);
+
+	conn->dev.type = &bt_link;
+	conn->dev.class = &bt_class;
+	conn->dev.parent = &hdev->dev;
+
+	device_initialize(&conn->dev);
+}
+
+void hci_conn_add_sysfs(struct hci_conn *conn)
+{
+	struct hci_dev *hdev = conn->hdev;
+
+	bt_dev_dbg(hdev, "conn %p", conn);
+
+	if (device_is_registered(&conn->dev))
+		return;
+
+	dev_set_name(&conn->dev, "%s:%d", hdev->name, conn->handle);
+
+	if (device_add(&conn->dev) < 0)
+		bt_dev_err(hdev, "failed to register connection device");
+}
+
+void hci_conn_del_sysfs(struct hci_conn *conn)
+{
+	struct hci_dev *hdev = conn->hdev;
+
+	bt_dev_dbg(hdev, "conn %p", conn);
+
+	if (!device_is_registered(&conn->dev)) {
+		/* If device_add() has *not* succeeded, use *only* put_device()
+		 * to drop the reference count.
+		 */
+		put_device(&conn->dev);
+		return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (1) {
 		struct device *dev;
 
@@ -133,6 +201,7 @@ static void del_conn(struct work_struct *work)
 		put_device(dev);
 	}
 
+<<<<<<< HEAD
 	device_del(&conn->dev);
 	put_device(&conn->dev);
 
@@ -557,10 +626,41 @@ void hci_unregister_sysfs(struct hci_dev *hdev)
 	debugfs_remove_recursive(hdev->debugfs);
 
 	device_del(&hdev->dev);
+=======
+	device_unregister(&conn->dev);
+}
+
+static void bt_host_release(struct device *dev)
+{
+	struct hci_dev *hdev = to_hci_dev(dev);
+
+	if (hci_dev_test_flag(hdev, HCI_UNREGISTER))
+		hci_release_dev(hdev);
+	else
+		kfree(hdev);
+	module_put(THIS_MODULE);
+}
+
+static const struct device_type bt_host = {
+	.name    = "host",
+	.release = bt_host_release,
+};
+
+void hci_init_sysfs(struct hci_dev *hdev)
+{
+	struct device *dev = &hdev->dev;
+
+	dev->type = &bt_host;
+	dev->class = &bt_class;
+
+	__module_get(THIS_MODULE);
+	device_initialize(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __init bt_sysfs_init(void)
 {
+<<<<<<< HEAD
 	bt_debugfs = debugfs_create_dir("bluetooth", NULL);
 
 	bt_class = class_create(THIS_MODULE, "bluetooth");
@@ -568,11 +668,18 @@ int __init bt_sysfs_init(void)
 		return PTR_ERR(bt_class);
 
 	return 0;
+=======
+	return class_register(&bt_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void bt_sysfs_cleanup(void)
 {
+<<<<<<< HEAD
 	class_destroy(bt_class);
 
 	debugfs_remove_recursive(bt_debugfs);
+=======
+	class_unregister(&bt_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,6 +1,10 @@
 /*
  * Linux ARCnet driver - COM20020 chipset support
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Written 1997 by David Woodhouse.
  * Written 1994-1999 by Avery Pennarun.
  * Written 1999-2000 by Martin Mares <mj@ucw.cz>.
@@ -25,6 +29,12 @@
  *
  * **********************
  */
+<<<<<<< HEAD
+=======
+
+#define pr_fmt(fmt) "arcnet:" KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/kernel.h>
@@ -35,6 +45,7 @@
 #include <linux/netdevice.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/arcdevice.h>
 #include <linux/com20020.h>
@@ -46,6 +57,15 @@
 
 /*
  * We cannot (yet) probe for an IO mapped card, although we can check that
+=======
+#include <linux/memblock.h>
+#include <linux/io.h>
+
+#include "arcdevice.h"
+#include "com20020.h"
+
+/* We cannot (yet) probe for an IO mapped card, although we can check that
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * it's where we were told it was, and even do autoirq.
  */
 static int __init com20020isa_probe(struct net_device *dev)
@@ -55,6 +75,7 @@ static int __init com20020isa_probe(struct net_device *dev)
 	struct arcnet_local *lp = netdev_priv(dev);
 	int err;
 
+<<<<<<< HEAD
 	BUGLVL(D_NORMAL) printk(VERSION);
 
 	ioaddr = dev->base_addr;
@@ -70,6 +91,23 @@ static int __init com20020isa_probe(struct net_device *dev)
 	}
 	if (ASTATUS() == 0xFF) {
 		BUGMSG(D_NORMAL, "IO address %x empty\n", ioaddr);
+=======
+	if (BUGLVL(D_NORMAL))
+		pr_info("%s\n", "COM20020 ISA support (by David Woodhouse et al.)");
+
+	ioaddr = dev->base_addr;
+	if (!ioaddr) {
+		arc_printk(D_NORMAL, dev, "No autoprobe (yet) for IO mapped cards; you must specify the base address!\n");
+		return -ENODEV;
+	}
+	if (!request_region(ioaddr, ARCNET_TOTAL_SIZE, "arcnet (COM20020)")) {
+		arc_printk(D_NORMAL, dev, "IO region %xh-%xh already allocated.\n",
+			   ioaddr, ioaddr + ARCNET_TOTAL_SIZE - 1);
+		return -ENXIO;
+	}
+	if (arcnet_inb(ioaddr, COM20020_REG_R_STATUS) == 0xFF) {
+		arc_printk(D_NORMAL, dev, "IO address %x empty\n", ioaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENODEV;
 		goto out;
 	}
@@ -83,6 +121,7 @@ static int __init com20020isa_probe(struct net_device *dev)
 		 * card has just reset and the NORXflag is on until
 		 * we tell it to start receiving.
 		 */
+<<<<<<< HEAD
 		BUGMSG(D_INIT_REASONS, "intmask was %02Xh\n", inb(_INTMASK));
 		outb(0, _INTMASK);
 		airqmask = probe_irq_on();
@@ -100,6 +139,26 @@ static int __init com20020isa_probe(struct net_device *dev)
 			dev->irq = probe_irq_off(airqmask);
 			if ((int)dev->irq <= 0) {
 				BUGMSG(D_NORMAL, "Autoprobe IRQ failed.\n");
+=======
+		arc_printk(D_INIT_REASONS, dev, "intmask was %02Xh\n",
+			   arcnet_inb(ioaddr, COM20020_REG_R_STATUS));
+		arcnet_outb(0, ioaddr, COM20020_REG_W_INTMASK);
+		airqmask = probe_irq_on();
+		arcnet_outb(NORXflag, ioaddr, COM20020_REG_W_INTMASK);
+		udelay(1);
+		arcnet_outb(0, ioaddr, COM20020_REG_W_INTMASK);
+		dev->irq = probe_irq_off(airqmask);
+
+		if ((int)dev->irq <= 0) {
+			arc_printk(D_INIT_REASONS, dev, "Autoprobe IRQ failed first time\n");
+			airqmask = probe_irq_on();
+			arcnet_outb(NORXflag, ioaddr, COM20020_REG_W_INTMASK);
+			udelay(5);
+			arcnet_outb(0, ioaddr, COM20020_REG_W_INTMASK);
+			dev->irq = probe_irq_off(airqmask);
+			if ((int)dev->irq <= 0) {
+				arc_printk(D_NORMAL, dev, "Autoprobe IRQ failed.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = -ENODEV;
 				goto out;
 			}
@@ -107,7 +166,13 @@ static int __init com20020isa_probe(struct net_device *dev)
 	}
 
 	lp->card_name = "ISA COM20020";
+<<<<<<< HEAD
 	if ((err = com20020_found(dev, 0)) != 0)
+=======
+
+	err = com20020_found(dev, 0);
+	if (err != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	return 0;
@@ -127,8 +192,13 @@ static int clockp = 0;
 static int clockm = 0;
 
 module_param(node, int, 0);
+<<<<<<< HEAD
 module_param(io, int, 0);
 module_param(irq, int, 0);
+=======
+module_param_hw(io, int, ioport, 0);
+module_param_hw(irq, int, irq, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_string(device, device, sizeof(device), 0);
 module_param(timeout, int, 0);
 module_param(backplane, int, 0);
@@ -149,7 +219,11 @@ static int __init com20020_init(void)
 		return -ENOMEM;
 
 	if (node && node != 0xff)
+<<<<<<< HEAD
 		dev->dev_addr[0] = node;
+=======
+		arcnet_set_addr(dev, node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->netdev_ops = &com20020_netdev_ops;
 
@@ -167,7 +241,11 @@ static int __init com20020_init(void)
 		dev->irq = 9;
 
 	if (com20020isa_probe(dev)) {
+<<<<<<< HEAD
 		free_netdev(dev);
+=======
+		free_arcdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -180,7 +258,11 @@ static void __exit com20020_exit(void)
 	unregister_netdev(my_dev);
 	free_irq(my_dev->irq, my_dev);
 	release_region(my_dev->base_addr, ARCNET_TOTAL_SIZE);
+<<<<<<< HEAD
 	free_netdev(my_dev);
+=======
+	free_arcdev(my_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifndef MODULE
@@ -194,6 +276,7 @@ static int __init com20020isa_setup(char *s)
 
 	switch (ints[0]) {
 	default:		/* ERROR */
+<<<<<<< HEAD
 		printk("com90xx: Too many arguments.\n");
 	case 6:		/* Timeout */
 		timeout = ints[6];
@@ -205,6 +288,25 @@ static int __init com20020isa_setup(char *s)
 		node = ints[3];
 	case 2:		/* IRQ */
 		irq = ints[2];
+=======
+		pr_info("Too many arguments\n");
+		fallthrough;
+	case 6:		/* Timeout */
+		timeout = ints[6];
+		fallthrough;
+	case 5:		/* CKP value */
+		clockp = ints[5];
+		fallthrough;
+	case 4:		/* Backplane flag */
+		backplane = ints[4];
+		fallthrough;
+	case 3:		/* Node ID */
+		node = ints[3];
+		fallthrough;
+	case 2:		/* IRQ */
+		irq = ints[2];
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:		/* IO address */
 		io = ints[1];
 	}

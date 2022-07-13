@@ -7,12 +7,22 @@
  * for more details.
  */
 
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/memblock.h>
 #include <linux/mm.h> /* mem_init */
 #include <linux/initrd.h>
+=======
+#include <linux/dma-map-ops.h>
+#include <linux/memblock.h>
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/mm.h> /* mem_init */
+#include <linux/initrd.h>
+#include <linux/of_fdt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pagemap.h>
 #include <linux/pfn.h>
 #include <linux/slab.h>
@@ -29,6 +39,7 @@
 /* Use for MMU and noMMU because of PCI generic code */
 int mem_init_done;
 
+<<<<<<< HEAD
 #ifndef CONFIG_MMU
 unsigned int __page_offset;
 EXPORT_SYMBOL(__page_offset);
@@ -37,6 +48,8 @@ EXPORT_SYMBOL(__page_offset);
 static int init_bootmem_done;
 #endif /* CONFIG_MMU */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 char *klimit = _end;
 
 /*
@@ -49,6 +62,7 @@ unsigned long memory_size;
 EXPORT_SYMBOL(memory_size);
 unsigned long lowmem_size;
 
+<<<<<<< HEAD
 #ifdef CONFIG_HIGHMEM
 pte_t *kmap_pte;
 EXPORT_SYMBOL(kmap_pte);
@@ -61,11 +75,18 @@ static inline pte_t *virt_to_kpte(unsigned long vaddr)
 			vaddr), vaddr);
 }
 
+=======
+EXPORT_SYMBOL(min_low_pfn);
+EXPORT_SYMBOL(max_low_pfn);
+
+#ifdef CONFIG_HIGHMEM
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init highmem_init(void)
 {
 	pr_debug("%x\n", (u32)PKMAP_BASE);
 	map_page(PKMAP_BASE, 0, 0);	/* XXX gross */
 	pkmap_page_table = virt_to_kpte(PKMAP_BASE);
+<<<<<<< HEAD
 
 	kmap_pte = virt_to_kpte(__fix_to_virt(FIX_KMAP_BEGIN));
 	kmap_prot = PAGE_KERNEL;
@@ -75,11 +96,19 @@ static unsigned long highmem_setup(void)
 {
 	unsigned long pfn;
 	unsigned long reservedpages = 0;
+=======
+}
+
+static void __meminit highmem_setup(void)
+{
+	unsigned long pfn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (pfn = max_low_pfn; pfn < max_pfn; ++pfn) {
 		struct page *page = pfn_to_page(pfn);
 
 		/* FIXME not sure about */
+<<<<<<< HEAD
 		if (memblock_is_reserved(pfn << PAGE_SHIFT))
 			continue;
 		ClearPageReserved(page);
@@ -93,6 +122,11 @@ static unsigned long highmem_setup(void)
 					totalhigh_pages << (PAGE_SHIFT-10));
 
 	return reservedpages;
+=======
+		if (!memblock_is_reserved(pfn << PAGE_SHIFT))
+			free_highmem_page(page);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_HIGHMEM */
 
@@ -102,13 +136,19 @@ static unsigned long highmem_setup(void)
 static void __init paging_init(void)
 {
 	unsigned long zones_size[MAX_NR_ZONES];
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int idx;
 
 	/* Setup fixmaps */
 	for (idx = 0; idx < __end_of_fixed_addresses; idx++)
 		clear_fixmap(idx);
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clean every zones */
 	memset(zones_size, 0, sizeof(zones_size));
@@ -123,11 +163,16 @@ static void __init paging_init(void)
 #endif
 
 	/* We don't have holes in memory map */
+<<<<<<< HEAD
 	free_area_init_nodes(zones_size);
+=======
+	free_area_init(zones_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init setup_memory(void)
 {
+<<<<<<< HEAD
 	unsigned long map_size;
 	struct memblock_region *reg;
 
@@ -163,6 +208,8 @@ void __init setup_memory(void)
 			+ kernel_align_size, kernel_align_size);
 	memblock_reserve(kernel_align_start, kernel_align_size);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Kernel:
 	 * start: base phys address of kernel - page align
@@ -171,12 +218,16 @@ void __init setup_memory(void)
 	 * min_low_pfn - the first page (mm/bootmem.c - node_boot_start)
 	 * max_low_pfn
 	 * max_mapnr - the first unused page (mm/bootmem.c - node_low_pfn)
+<<<<<<< HEAD
 	 * num_physpages - number of all pages
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	/* memory start is from the kernel end (aligned) to higher addr */
 	min_low_pfn = memory_start >> PAGE_SHIFT; /* minimum for allocation */
 	/* RAM is assumed contiguous */
+<<<<<<< HEAD
 	num_physpages = max_mapnr = memory_size >> PAGE_SHIFT;
 	max_low_pfn = ((u64)memory_start + (u64)lowmem_size) >> PAGE_SHIFT;
 	max_pfn = ((u64)memory_start + (u64)memory_size) >> PAGE_SHIFT;
@@ -335,6 +386,33 @@ int page_is_ram(unsigned long pfn)
 	return __range_ok(pfn, 0);
 }
 #else
+=======
+	max_mapnr = memory_size >> PAGE_SHIFT;
+	max_low_pfn = ((u64)memory_start + (u64)lowmem_size) >> PAGE_SHIFT;
+	max_pfn = ((u64)memory_start + (u64)memory_size) >> PAGE_SHIFT;
+
+	pr_info("%s: max_mapnr: %#lx\n", __func__, max_mapnr);
+	pr_info("%s: min_low_pfn: %#lx\n", __func__, min_low_pfn);
+	pr_info("%s: max_low_pfn: %#lx\n", __func__, max_low_pfn);
+	pr_info("%s: max_pfn: %#lx\n", __func__, max_pfn);
+
+	paging_init();
+}
+
+void __init mem_init(void)
+{
+	high_memory = (void *)__va(memory_start + lowmem_size - 1);
+
+	/* this will put all memory onto the freelists */
+	memblock_free_all();
+#ifdef CONFIG_HIGHMEM
+	highmem_setup();
+#endif
+
+	mem_init_done = 1;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int page_is_ram(unsigned long pfn)
 {
 	return pfn < max_low_pfn;
@@ -394,17 +472,29 @@ asmlinkage void __init mmu_init(void)
 	unsigned int kstart, ksize;
 
 	if (!memblock.reserved.cnt) {
+<<<<<<< HEAD
 		printk(KERN_EMERG "Error memory count\n");
+=======
+		pr_emerg("Error memory count\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		machine_restart(NULL);
 	}
 
 	if ((u32) memblock.memory.regions[0].size < 0x400000) {
+<<<<<<< HEAD
 		printk(KERN_EMERG "Memory must be greater than 4MB\n");
+=======
+		pr_emerg("Memory must be greater than 4MB\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		machine_restart(NULL);
 	}
 
 	if ((u32) memblock.memory.regions[0].size < kernel_tlb) {
+<<<<<<< HEAD
 		printk(KERN_EMERG "Kernel size is greater than memory node\n");
+=======
+		pr_emerg("Kernel size is greater than memory node\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		machine_restart(NULL);
 	}
 
@@ -432,10 +522,18 @@ asmlinkage void __init mmu_init(void)
 
 #if defined(CONFIG_BLK_DEV_INITRD)
 	/* Remove the init RAM disk from the available memory. */
+<<<<<<< HEAD
 /*	if (initrd_start) {
 		mem_pieces_remove(&phys_avail, __pa(initrd_start),
 				  initrd_end - initrd_start, 1);
 	}*/
+=======
+	if (initrd_start) {
+		unsigned long size;
+		size = initrd_end - initrd_start;
+		memblock_reserve(__virt_to_phys(initrd_start), size);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_BLK_DEV_INITRD */
 
 	/* Initialize the MMU hardware */
@@ -458,6 +556,7 @@ asmlinkage void __init mmu_init(void)
 	/* This will also cause that unflatten device tree will be allocated
 	 * inside 768MB limit */
 	memblock_set_current_limit(memory_start + lowmem_size - 1);
+<<<<<<< HEAD
 }
 
 /* This is only called until mem_init is done. */
@@ -500,3 +599,35 @@ void * __init_refok zalloc_maybe_bootmem(size_t size, gfp_t mask)
 	}
 	return p;
 }
+=======
+
+	parse_early_param();
+
+	early_init_fdt_scan_reserved_mem();
+
+	/* CMA initialization */
+	dma_contiguous_reserve(memory_start + lowmem_size - 1);
+
+	memblock_dump_all();
+}
+
+static const pgprot_t protection_map[16] = {
+	[VM_NONE]					= PAGE_NONE,
+	[VM_READ]					= PAGE_READONLY_X,
+	[VM_WRITE]					= PAGE_COPY,
+	[VM_WRITE | VM_READ]				= PAGE_COPY_X,
+	[VM_EXEC]					= PAGE_READONLY,
+	[VM_EXEC | VM_READ]				= PAGE_READONLY_X,
+	[VM_EXEC | VM_WRITE]				= PAGE_COPY,
+	[VM_EXEC | VM_WRITE | VM_READ]			= PAGE_COPY_X,
+	[VM_SHARED]					= PAGE_NONE,
+	[VM_SHARED | VM_READ]				= PAGE_READONLY_X,
+	[VM_SHARED | VM_WRITE]				= PAGE_SHARED,
+	[VM_SHARED | VM_WRITE | VM_READ]		= PAGE_SHARED_X,
+	[VM_SHARED | VM_EXEC]				= PAGE_READONLY,
+	[VM_SHARED | VM_EXEC | VM_READ]			= PAGE_READONLY_X,
+	[VM_SHARED | VM_EXEC | VM_WRITE]		= PAGE_SHARED,
+	[VM_SHARED | VM_EXEC | VM_WRITE | VM_READ]	= PAGE_SHARED_X
+};
+DECLARE_VM_GET_PAGE_PROT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

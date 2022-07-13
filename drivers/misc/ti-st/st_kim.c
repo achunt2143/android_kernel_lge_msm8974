@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Shared Transport Line discipline driver Core
  *	Init Manager module responsible for GPIO control
  *	and firmware download
  *  Copyright (C) 2009-2010 Texas Instruments
  *  Author: Pavan Savoy <pavan_savoy@ti.com>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -18,6 +23,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) "(stk) :" fmt
@@ -37,14 +44,21 @@
 #include <linux/ti_wilink_st.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_ST_DEVICES	3	/* Imagine 1 on each UART for now */
 static struct platform_device *st_kim_devices[MAX_ST_DEVICES];
 
 /**********************************************************************/
 /* internal functions */
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * st_get_plat_device -
  *	function which returns the reference to the platform device
  *	requested by id. As of now only 1 such device exists (id=0)
@@ -57,16 +71,44 @@ static struct platform_device *st_get_plat_device(int id)
 	return st_kim_devices[id];
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * validate_firmware_response -
  *	function to return whether the firmware response was proper
  *	in case of error don't complete so that waiting for proper
  *	response times out
  */
+<<<<<<< HEAD
 void validate_firmware_response(struct kim_data_s *kim_gdata)
 {
 	struct sk_buff *skb = kim_gdata->rx_skb;
 	if (unlikely(skb->data[5] != 0)) {
+=======
+static void validate_firmware_response(struct kim_data_s *kim_gdata)
+{
+	struct sk_buff *skb = kim_gdata->rx_skb;
+	if (!skb)
+		return;
+
+	/*
+	 * these magic numbers are the position in the response buffer which
+	 * allows us to distinguish whether the response is for the read
+	 * version info. command
+	 */
+	if (skb->data[2] == 0x01 && skb->data[3] == 0x01 &&
+			skb->data[4] == 0x10 && skb->data[5] == 0x00) {
+		/* fw version response */
+		memcpy(kim_gdata->resp_buffer,
+				kim_gdata->rx_skb->data,
+				kim_gdata->rx_skb->len);
+		kim_gdata->rx_state = ST_W4_PACKET_TYPE;
+		kim_gdata->rx_skb = NULL;
+		kim_gdata->rx_count = 0;
+	} else if (unlikely(skb->data[5] != 0)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("no proper response during fw download");
 		pr_err("data6 %x", skb->data[5]);
 		kfree_skb(skb);
@@ -77,7 +119,12 @@ void validate_firmware_response(struct kim_data_s *kim_gdata)
 	kfree_skb(skb);
 }
 
+<<<<<<< HEAD
 /* check for data len received inside kim_int_recv
+=======
+/*
+ * check for data len received inside kim_int_recv
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * most often hit the last case to update state to waiting for data
  */
 static inline int kim_check_data_len(struct kim_data_s *kim_gdata, int len)
@@ -89,14 +136,24 @@ static inline int kim_check_data_len(struct kim_data_s *kim_gdata, int len)
 	if (!len) {
 		validate_firmware_response(kim_gdata);
 	} else if (len > room) {
+<<<<<<< HEAD
 		/* Received packet's payload length is larger.
+=======
+		/*
+		 * Received packet's payload length is larger.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * We can't accommodate it in created skb.
 		 */
 		pr_err("Data length is too large len %d room %d", len,
 			   room);
 		kfree_skb(kim_gdata->rx_skb);
 	} else {
+<<<<<<< HEAD
 		/* Packet header has non-zero payload length and
+=======
+		/*
+		 * Packet header has non-zero payload length and
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * we have enough space in created skb. Lets read
 		 * payload data */
 		kim_gdata->rx_state = ST_W4_DATA;
@@ -104,8 +161,15 @@ static inline int kim_check_data_len(struct kim_data_s *kim_gdata, int len)
 		return len;
 	}
 
+<<<<<<< HEAD
 	/* Change ST LL state to continue to process next
 	 * packet */
+=======
+	/*
+	 * Change ST LL state to continue to process next
+	 * packet
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kim_gdata->rx_state = ST_W4_PACKET_TYPE;
 	kim_gdata->rx_skb = NULL;
 	kim_gdata->rx_count = 0;
@@ -113,21 +177,33 @@ static inline int kim_check_data_len(struct kim_data_s *kim_gdata, int len)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * kim_int_recv - receive function called during firmware download
  *	firmware download responses on different UART drivers
  *	have been observed to come in bursts of different
  *	tty_receive and hence the logic
  */
+<<<<<<< HEAD
 void kim_int_recv(struct kim_data_s *kim_gdata,
 	const unsigned char *data, long count)
 {
 	const unsigned char *ptr;
 	int len = 0, type = 0;
+=======
+static void kim_int_recv(struct kim_data_s *kim_gdata, const u8 *ptr,
+			 size_t count)
+{
+	int len = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *plen;
 
 	pr_debug("%s", __func__);
 	/* Decode received bytes here */
+<<<<<<< HEAD
 	ptr = data;
 	if (unlikely(ptr == NULL)) {
 		pr_err(" received null from TTY ");
@@ -138,6 +214,12 @@ void kim_int_recv(struct kim_data_s *kim_gdata,
 		if (kim_gdata->rx_count) {
 			len = min_t(unsigned int, kim_gdata->rx_count, count);
 			memcpy(skb_put(kim_gdata->rx_skb, len), ptr, len);
+=======
+	while (count) {
+		if (kim_gdata->rx_count) {
+			len = min_t(unsigned int, kim_gdata->rx_count, count);
+			skb_put_data(kim_gdata->rx_skb, ptr, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kim_gdata->rx_count -= len;
 			count -= len;
 			ptr += len;
@@ -168,7 +250,10 @@ void kim_int_recv(struct kim_data_s *kim_gdata,
 		case 0x04:
 			kim_gdata->rx_state = ST_W4_HEADER;
 			kim_gdata->rx_count = 2;
+<<<<<<< HEAD
 			type = *ptr;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			pr_info("unknown packet");
@@ -197,16 +282,26 @@ void kim_int_recv(struct kim_data_s *kim_gdata,
 static long read_local_version(struct kim_data_s *kim_gdata, char *bts_scr_name)
 {
 	unsigned short version = 0, chip = 0, min_ver = 0, maj_ver = 0;
+<<<<<<< HEAD
 	const char read_ver_cmd[] = { 0x01, 0x01, 0x10, 0x00 };
 
 	pr_debug("%s", __func__);
 
 	INIT_COMPLETION(kim_gdata->kim_rcvd);
+=======
+	static const char read_ver_cmd[] = { 0x01, 0x01, 0x10, 0x00 };
+	long timeout;
+
+	pr_debug("%s", __func__);
+
+	reinit_completion(&kim_gdata->kim_rcvd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (4 != st_int_write(kim_gdata->core_data, read_ver_cmd, 4)) {
 		pr_err("kim: couldn't write 4 bytes");
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	if (!wait_for_completion_timeout
 	    (&kim_gdata->kim_rcvd, msecs_to_jiffies(CMD_RESP_TIME))) {
 		pr_err(" waiting for ver info- timed out ");
@@ -217,6 +312,23 @@ static long read_local_version(struct kim_data_s *kim_gdata, char *bts_scr_name)
 	version =
 		MAKEWORD(kim_gdata->resp_buffer[13],
 				kim_gdata->resp_buffer[14]);
+=======
+	timeout = wait_for_completion_interruptible_timeout(
+		&kim_gdata->kim_rcvd, msecs_to_jiffies(CMD_RESP_TIME));
+	if (timeout <= 0) {
+		pr_err(" waiting for ver info- timed out or received signal");
+		return timeout ? -ERESTARTSYS : -ETIMEDOUT;
+	}
+	reinit_completion(&kim_gdata->kim_rcvd);
+	/*
+	 * the positions 12 & 13 in the response buffer provide with the
+	 * chip, major & minor numbers
+	 */
+
+	version =
+		MAKEWORD(kim_gdata->resp_buffer[12],
+				kim_gdata->resp_buffer[13]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip = (version & 0x7C00) >> 10;
 	min_ver = (version & 0x007F);
 	maj_ver = (version & 0x0380) >> 7;
@@ -224,7 +336,12 @@ static long read_local_version(struct kim_data_s *kim_gdata, char *bts_scr_name)
 	if (version & 0x8000)
 		maj_ver |= 0x0008;
 
+<<<<<<< HEAD
 	sprintf(bts_scr_name, "TIInit_%d.%d.%d.bts", chip, maj_ver, min_ver);
+=======
+	sprintf(bts_scr_name, "ti-connectivity/TIInit_%d.%d.%d.bts",
+		chip, maj_ver, min_ver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* to be accessed later via sysfs entry */
 	kim_gdata->version.full = version;
@@ -236,7 +353,11 @@ static long read_local_version(struct kim_data_s *kim_gdata, char *bts_scr_name)
 	return 0;
 }
 
+<<<<<<< HEAD
 void skip_change_remote_baud(unsigned char **ptr, long *len)
+=======
+static void skip_change_remote_baud(unsigned char **ptr, long *len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char *nxt_action, *cur_action;
 	cur_action = *ptr;
@@ -256,7 +377,11 @@ void skip_change_remote_baud(unsigned char **ptr, long *len)
 	}
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * download_firmware -
  *	internal function which parses through the .bts firmware
  *	script file intreprets SEND, DELAY actions only as of now
@@ -267,7 +392,11 @@ static long download_firmware(struct kim_data_s *kim_gdata)
 	long len = 0;
 	unsigned char *ptr = NULL;
 	unsigned char *action_ptr = NULL;
+<<<<<<< HEAD
 	unsigned char bts_scr_name[30] = { 0 };	/* 30 char long bts scr name? */
+=======
+	unsigned char bts_scr_name[40] = { 0 };	/* 40 char long bts scr name? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int wr_room_space;
 	int cmd_size;
 	unsigned long timeout;
@@ -288,7 +417,12 @@ static long download_firmware(struct kim_data_s *kim_gdata)
 	}
 	ptr = (void *)kim_gdata->fw_entry->data;
 	len = kim_gdata->fw_entry->size;
+<<<<<<< HEAD
 	/* bts_header to remove out magic number and
+=======
+	/*
+	 * bts_header to remove out magic number and
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * version
 	 */
 	ptr += sizeof(struct bts_header);
@@ -306,8 +440,15 @@ static long download_firmware(struct kim_data_s *kim_gdata)
 			if (unlikely
 			    (((struct hci_command *)action_ptr)->opcode ==
 			     0xFF36)) {
+<<<<<<< HEAD
 				/* ignore remote change
 				 * baud rate HCI VS command */
+=======
+				/*
+				 * ignore remote change
+				 * baud rate HCI VS command
+				 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pr_warn("change remote baud"
 				    " rate command in firmware");
 				skip_change_remote_baud(&ptr, &len);
@@ -339,10 +480,18 @@ static long download_firmware(struct kim_data_s *kim_gdata)
 				release_firmware(kim_gdata->fw_entry);
 				return -ETIMEDOUT;
 			}
+<<<<<<< HEAD
 			/* reinit completion before sending for the
 			 * relevant wait
 			 */
 			INIT_COMPLETION(kim_gdata->kim_rcvd);
+=======
+			/*
+			 * reinit completion before sending for the
+			 * relevant wait
+			 */
+			reinit_completion(&kim_gdata->kim_rcvd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * Free space found in uart buffer, call st_int_write
@@ -370,6 +519,7 @@ static long download_firmware(struct kim_data_s *kim_gdata)
 			break;
 		case ACTION_WAIT_EVENT:  /* wait */
 			pr_debug("W");
+<<<<<<< HEAD
 			if (!wait_for_completion_timeout
 					(&kim_gdata->kim_rcvd,
 					 msecs_to_jiffies(CMD_RESP_TIME))) {
@@ -379,6 +529,18 @@ static long download_firmware(struct kim_data_s *kim_gdata)
 				return -ETIMEDOUT;
 			}
 			INIT_COMPLETION(kim_gdata->kim_rcvd);
+=======
+			err = wait_for_completion_interruptible_timeout(
+					&kim_gdata->kim_rcvd,
+					msecs_to_jiffies(CMD_RESP_TIME));
+			if (err <= 0) {
+				pr_err("response timeout/signaled during fw download ");
+				/* timed out */
+				release_firmware(kim_gdata->fw_entry);
+				return err ? -ERESTARTSYS : -ETIMEDOUT;
+			}
+			reinit_completion(&kim_gdata->kim_rcvd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case ACTION_DELAY:	/* sleep */
 			pr_info("sleep command in scr");
@@ -405,11 +567,16 @@ static long download_firmware(struct kim_data_s *kim_gdata)
  * 1. response to read local version
  * 2. during send/recv's of firmware download
  */
+<<<<<<< HEAD
 void st_kim_recv(void *disc_data, const unsigned char *data, long count)
+=======
+void st_kim_recv(void *disc_data, const u8 *data, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct st_data_s	*st_gdata = (struct st_data_s *)disc_data;
 	struct kim_data_s	*kim_gdata = st_gdata->kim_data;
 
+<<<<<<< HEAD
 	/* copy to local buffer */
 	if (unlikely(data[4] == 0x01 && data[5] == 0x10 && data[0] == 0x04)) {
 		/* must be the read_ver_cmd */
@@ -424,6 +591,18 @@ void st_kim_recv(void *disc_data, const unsigned char *data, long count)
 }
 
 /* to signal completion of line discipline installation
+=======
+	/*
+	 * proceed to gather all data and distinguish read fw version response
+	 * from other fw responses when data gathering is complete
+	 */
+	kim_int_recv(kim_gdata, data, count);
+	return;
+}
+
+/*
+ * to signal completion of line discipline installation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * called from ST Core, upon tty_open
  */
 void st_kim_complete(void *kim_data)
@@ -432,7 +611,11 @@ void st_kim_complete(void *kim_data)
 	complete(&kim_gdata->ldisc_installed);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * st_kim_start - called from ST Core upon 1st registration
  *	This involves toggling the chip enable gpio, reading
  *	the firmware version from chip, forming the fw file name
@@ -455,23 +638,42 @@ long st_kim_start(void *kim_data)
 			pdata->chip_enable(kim_gdata);
 
 		/* Configure BT nShutdown to HIGH state */
+<<<<<<< HEAD
 		gpio_set_value(kim_gdata->nshutdown, GPIO_LOW);
 		mdelay(5);	/* FIXME: a proper toggle */
 		gpio_set_value(kim_gdata->nshutdown, GPIO_HIGH);
 		mdelay(100);
 		/* re-initialize the completion */
 		INIT_COMPLETION(kim_gdata->ldisc_installed);
+=======
+		gpio_set_value_cansleep(kim_gdata->nshutdown, GPIO_LOW);
+		mdelay(5);	/* FIXME: a proper toggle */
+		gpio_set_value_cansleep(kim_gdata->nshutdown, GPIO_HIGH);
+		mdelay(100);
+		/* re-initialize the completion */
+		reinit_completion(&kim_gdata->ldisc_installed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* send notification to UIM */
 		kim_gdata->ldisc_install = 1;
 		pr_info("ldisc_install = 1");
 		sysfs_notify(&kim_gdata->kim_pdev->dev.kobj,
 				NULL, "install");
 		/* wait for ldisc to be installed */
+<<<<<<< HEAD
 		err = wait_for_completion_timeout(&kim_gdata->ldisc_installed,
 				msecs_to_jiffies(LDISC_TIME));
 		if (!err) {
 			/* ldisc installation timeout,
 			 * flush uart, power cycle BT_EN */
+=======
+		err = wait_for_completion_interruptible_timeout(
+			&kim_gdata->ldisc_installed, msecs_to_jiffies(LDISC_TIME));
+		if (!err) {
+			/*
+			 * ldisc installation timeout,
+			 * flush uart, power cycle BT_EN
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_err("ldisc installation timeout");
 			err = st_kim_stop(kim_gdata);
 			continue;
@@ -480,8 +682,15 @@ long st_kim_start(void *kim_data)
 			pr_info("line discipline installed");
 			err = download_firmware(kim_gdata);
 			if (err != 0) {
+<<<<<<< HEAD
 				/* ldisc installed but fw download failed,
 				 * flush uart & power cycle BT_EN */
+=======
+				/*
+				 * ldisc installed but fw download failed,
+				 * flush uart & power cycle BT_EN
+				 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pr_err("download firmware failed");
 				err = st_kim_stop(kim_gdata);
 				continue;
@@ -493,7 +702,11 @@ long st_kim_start(void *kim_data)
 	return err;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * st_kim_stop - stop communication with chip.
  *	This can be called from ST Core/KIM, on the-
  *	(a) last un-register when chip need not be powered there-after,
@@ -511,13 +724,20 @@ long st_kim_stop(void *kim_data)
 		kim_gdata->kim_pdev->dev.platform_data;
 	struct tty_struct	*tty = kim_gdata->core_data->tty;
 
+<<<<<<< HEAD
 	INIT_COMPLETION(kim_gdata->ldisc_installed);
+=======
+	reinit_completion(&kim_gdata->ldisc_installed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tty) {	/* can be called before ldisc is installed */
 		/* Flush any pending characters in the driver and discipline. */
 		tty_ldisc_flush(tty);
 		tty_driver_flush_buffer(tty);
+<<<<<<< HEAD
 		tty->ops->flush_buffer(tty);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* send uninstall notification to UIM */
@@ -526,6 +746,7 @@ long st_kim_stop(void *kim_data)
 	sysfs_notify(&kim_gdata->kim_pdev->dev.kobj, NULL, "install");
 
 	/* wait for ldisc to be un-installed */
+<<<<<<< HEAD
 	err = wait_for_completion_timeout(&kim_gdata->ldisc_installed,
 			msecs_to_jiffies(LDISC_TIME));
 	if (!err) {		/* timeout */
@@ -539,6 +760,21 @@ long st_kim_stop(void *kim_data)
 	gpio_set_value(kim_gdata->nshutdown, GPIO_HIGH);
 	mdelay(1);
 	gpio_set_value(kim_gdata->nshutdown, GPIO_LOW);
+=======
+	err = wait_for_completion_interruptible_timeout(
+		&kim_gdata->ldisc_installed, msecs_to_jiffies(LDISC_TIME));
+	if (!err) {		/* timeout */
+		pr_err(" timed out waiting for ldisc to be un-installed");
+		err = -ETIMEDOUT;
+	}
+
+	/* By default configure BT nShutdown to LOW state */
+	gpio_set_value_cansleep(kim_gdata->nshutdown, GPIO_LOW);
+	mdelay(1);
+	gpio_set_value_cansleep(kim_gdata->nshutdown, GPIO_HIGH);
+	mdelay(1);
+	gpio_set_value_cansleep(kim_gdata->nshutdown, GPIO_LOW);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* platform specific disable */
 	if (pdata->chip_disable)
@@ -550,7 +786,11 @@ long st_kim_stop(void *kim_data)
 /* functions called from subsystems */
 /* called when debugfs entry is read from */
 
+<<<<<<< HEAD
 static int show_version(struct seq_file *s, void *unused)
+=======
+static int version_show(struct seq_file *s, void *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kim_data_s *kim_gdata = (struct kim_data_s *)s->private;
 	seq_printf(s, "%04X %d.%d.%d\n", kim_gdata->version.full,
@@ -559,7 +799,11 @@ static int show_version(struct seq_file *s, void *unused)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int show_list(struct seq_file *s, void *unused)
+=======
+static int list_show(struct seq_file *s, void *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kim_data_s *kim_gdata = (struct kim_data_s *)s->private;
 	kim_st_list_protocols(kim_gdata->core_data, s);
@@ -579,7 +823,11 @@ static ssize_t store_dev_name(struct device *dev,
 {
 	struct kim_data_s *kim_data = dev_get_drvdata(dev);
 	pr_debug("storing dev name >%s<", buf);
+<<<<<<< HEAD
 	strncpy(kim_data->dev_name, buf, count);
+=======
+	strscpy(kim_data->dev_name, buf, sizeof(kim_data->dev_name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("stored dev name >%s<", kim_data->dev_name);
 	return count;
 }
@@ -606,7 +854,11 @@ static ssize_t show_baud_rate(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
 	struct kim_data_s *kim_data = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	return sprintf(buf, "%ld\n", kim_data->baud_rate);
+=======
+	return sprintf(buf, "%d\n", kim_data->baud_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t show_flow_cntrl(struct device *dev,
@@ -645,11 +897,19 @@ static struct attribute *uim_attrs[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static struct attribute_group uim_attr_grp = {
 	.attrs = uim_attrs,
 };
 
 /**
+=======
+static const struct attribute_group uim_attr_grp = {
+	.attrs = uim_attrs,
+};
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * st_kim_ref - reference the core's data
  *	This references the per-ST platform device in the arch/xx/
  *	board-xx.c file.
@@ -662,6 +922,7 @@ void st_kim_ref(struct st_data_s **core_data, int id)
 	struct kim_data_s	*kim_gdata;
 	/* get kim_gdata reference from platform device */
 	pdev = st_get_plat_device(id);
+<<<<<<< HEAD
 	if (!pdev) {
 		*core_data = NULL;
 		return;
@@ -694,6 +955,22 @@ static const struct file_operations list_debugfs_fops = {
 	.llseek = seq_lseek,
 	.release = single_release,
 };
+=======
+	if (!pdev)
+		goto err;
+	kim_gdata = platform_get_drvdata(pdev);
+	if (!kim_gdata)
+		goto err;
+
+	*core_data = kim_gdata->core_data;
+	return;
+err:
+	*core_data = NULL;
+}
+
+DEFINE_SHOW_ATTRIBUTE(version);
+DEFINE_SHOW_ATTRIBUTE(list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**********************************************************************/
 /* functions called from platform device driver subsystem
@@ -701,12 +978,21 @@ static const struct file_operations list_debugfs_fops = {
  * board-*.c file
  */
 
+<<<<<<< HEAD
 struct dentry *kim_debugfs_dir;
 static int kim_probe(struct platform_device *pdev)
 {
 	long status;
 	struct kim_data_s	*kim_gdata;
 	struct ti_st_plat_data	*pdata = pdev->dev.platform_data;
+=======
+static struct dentry *kim_debugfs_dir;
+static int kim_probe(struct platform_device *pdev)
+{
+	struct kim_data_s	*kim_gdata;
+	struct ti_st_plat_data	*pdata = pdev->dev.platform_data;
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((pdev->id != -1) && (pdev->id < MAX_ST_DEVICES)) {
 		/* multiple devices could exist */
@@ -716,23 +1002,38 @@ static int kim_probe(struct platform_device *pdev)
 		st_kim_devices[0] = pdev;
 	}
 
+<<<<<<< HEAD
 	kim_gdata = kzalloc(sizeof(struct kim_data_s), GFP_ATOMIC);
+=======
+	kim_gdata = kzalloc(sizeof(struct kim_data_s), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!kim_gdata) {
 		pr_err("no mem to allocate");
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, kim_gdata);
 
 	status = st_core_init(&kim_gdata->core_data);
 	if (status != 0) {
 		pr_err(" ST core init failed");
 		return -EIO;
+=======
+	platform_set_drvdata(pdev, kim_gdata);
+
+	err = st_core_init(&kim_gdata->core_data);
+	if (err != 0) {
+		pr_err(" ST core init failed");
+		err = -EIO;
+		goto err_core_init;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* refer to itself */
 	kim_gdata->core_data->kim_data = kim_gdata;
 
 	/* Claim the chip enable nShutdown gpio from the system */
 	kim_gdata->nshutdown = pdata->nshutdown_gpio;
+<<<<<<< HEAD
 	status = gpio_request(kim_gdata->nshutdown, "kim");
 	if (unlikely(status)) {
 		pr_err(" gpio %ld request failed ", kim_gdata->nshutdown);
@@ -747,10 +1048,26 @@ static int kim_probe(struct platform_device *pdev)
 	}
 	/* get reference of pdev for request_firmware
 	 */
+=======
+	err = gpio_request(kim_gdata->nshutdown, "kim");
+	if (unlikely(err)) {
+		pr_err(" gpio %d request failed ", kim_gdata->nshutdown);
+		goto err_sysfs_group;
+	}
+
+	/* Configure nShutdown GPIO as output=0 */
+	err = gpio_direction_output(kim_gdata->nshutdown, 0);
+	if (unlikely(err)) {
+		pr_err(" unable to configure gpio %d", kim_gdata->nshutdown);
+		goto err_sysfs_group;
+	}
+	/* get reference of pdev for request_firmware */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kim_gdata->kim_pdev = pdev;
 	init_completion(&kim_gdata->kim_rcvd);
 	init_completion(&kim_gdata->ldisc_installed);
 
+<<<<<<< HEAD
 	status = sysfs_create_group(&pdev->dev.kobj, &uim_attr_grp);
 	if (status) {
 		pr_err("failed to create sysfs entries");
@@ -759,11 +1076,23 @@ static int kim_probe(struct platform_device *pdev)
 
 	/* copying platform data */
 	strncpy(kim_gdata->dev_name, pdata->dev_name, UART_DEV_NAME_LEN);
+=======
+	err = sysfs_create_group(&pdev->dev.kobj, &uim_attr_grp);
+	if (err) {
+		pr_err("failed to create sysfs entries");
+		goto err_sysfs_group;
+	}
+
+	/* copying platform data */
+	strscpy(kim_gdata->dev_name, pdata->dev_name,
+		sizeof(kim_gdata->dev_name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kim_gdata->flow_cntrl = pdata->flow_cntrl;
 	kim_gdata->baud_rate = pdata->baud_rate;
 	pr_info("sysfs entries created\n");
 
 	kim_debugfs_dir = debugfs_create_dir("ti-st", NULL);
+<<<<<<< HEAD
 	if (IS_ERR(kim_debugfs_dir)) {
 		pr_err(" debugfs entries creation failed ");
 		kim_debugfs_dir = NULL;
@@ -779,14 +1108,40 @@ static int kim_probe(struct platform_device *pdev)
 }
 
 static int kim_remove(struct platform_device *pdev)
+=======
+
+	debugfs_create_file("version", S_IRUGO, kim_debugfs_dir,
+				kim_gdata, &version_fops);
+	debugfs_create_file("protocols", S_IRUGO, kim_debugfs_dir,
+				kim_gdata, &list_fops);
+	return 0;
+
+err_sysfs_group:
+	st_core_exit(kim_gdata->core_data);
+
+err_core_init:
+	kfree(kim_gdata);
+
+	return err;
+}
+
+static void kim_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* free the GPIOs requested */
 	struct ti_st_plat_data	*pdata = pdev->dev.platform_data;
 	struct kim_data_s	*kim_gdata;
 
+<<<<<<< HEAD
 	kim_gdata = dev_get_drvdata(&pdev->dev);
 
 	/* Free the Bluetooth/FM/GPIO
+=======
+	kim_gdata = platform_get_drvdata(pdev);
+
+	/*
+	 * Free the Bluetooth/FM/GPIO
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * nShutdown gpio from the system
 	 */
 	gpio_free(pdata->nshutdown_gpio);
@@ -801,39 +1156,63 @@ static int kim_remove(struct platform_device *pdev)
 
 	kfree(kim_gdata);
 	kim_gdata = NULL;
+<<<<<<< HEAD
 	return 0;
 }
 
 int kim_suspend(struct platform_device *pdev, pm_message_t state)
+=======
+}
+
+static int kim_suspend(struct platform_device *pdev, pm_message_t state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ti_st_plat_data	*pdata = pdev->dev.platform_data;
 
 	if (pdata->suspend)
 		return pdata->suspend(pdev, state);
 
+<<<<<<< HEAD
 	return -EOPNOTSUPP;
 }
 
 int kim_resume(struct platform_device *pdev)
+=======
+	return 0;
+}
+
+static int kim_resume(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ti_st_plat_data	*pdata = pdev->dev.platform_data;
 
 	if (pdata->resume)
 		return pdata->resume(pdev);
 
+<<<<<<< HEAD
 	return -EOPNOTSUPP;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**********************************************************************/
 /* entry point for ST KIM module, called in from ST Core */
 static struct platform_driver kim_platform_driver = {
 	.probe = kim_probe,
+<<<<<<< HEAD
 	.remove = kim_remove,
+=======
+	.remove_new = kim_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend = kim_suspend,
 	.resume = kim_resume,
 	.driver = {
 		.name = "kim",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

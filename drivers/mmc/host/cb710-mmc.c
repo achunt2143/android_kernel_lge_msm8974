@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  cb710/mmc.c
  *
  *  Copyright by Michał Mirosław, 2008-2009
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -13,6 +20,11 @@
 #include <linux/delay.h>
 #include "cb710-mmc.h"
 
+<<<<<<< HEAD
+=======
+#define CB710_MMC_REQ_TIMEOUT_MS	2000
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const u8 cb710_clock_divider_log2[8] = {
 /*	1, 2, 4, 8, 16, 32, 128, 512 */
 	0, 1, 2, 3,  4,  5,   7,   9
@@ -566,6 +578,7 @@ static void cb710_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 	cb710_mmc_select_clock_divider(mmc, ios->clock);
 
+<<<<<<< HEAD
 	if (ios->power_mode != reader->last_power_mode)
 	switch (ios->power_mode) {
 	case MMC_POWER_ON:
@@ -590,6 +603,34 @@ static void cb710_mmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	case MMC_POWER_UP:
 	default:
 		/* ignore */;
+=======
+	if (ios->power_mode != reader->last_power_mode) {
+		switch (ios->power_mode) {
+		case MMC_POWER_ON:
+			err = cb710_mmc_powerup(slot);
+			if (err) {
+				dev_warn(cb710_slot_dev(slot),
+					"powerup failed (%d)- retrying\n", err);
+				cb710_mmc_powerdown(slot);
+				udelay(1);
+				err = cb710_mmc_powerup(slot);
+				if (err)
+					dev_warn(cb710_slot_dev(slot),
+						"powerup retry failed (%d) - expect errors\n",
+					err);
+			}
+			reader->last_power_mode = MMC_POWER_ON;
+			break;
+		case MMC_POWER_OFF:
+			cb710_mmc_powerdown(slot);
+			reader->last_power_mode = MMC_POWER_OFF;
+			break;
+		case MMC_POWER_UP:
+		default:
+			/* ignore */
+			break;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	cb710_mmc_enable_4bit_data(slot, ios->bus_width != MMC_BUS_WIDTH_1);
@@ -645,6 +686,7 @@ static int cb710_mmc_irq_handler(struct cb710_slot *slot)
 	return 1;
 }
 
+<<<<<<< HEAD
 static void cb710_mmc_finish_request_tasklet(unsigned long data)
 {
 	struct mmc_host *mmc = (void *)data;
@@ -653,6 +695,16 @@ static void cb710_mmc_finish_request_tasklet(unsigned long data)
 
 	reader->mrq = NULL;
 	mmc_request_done(mmc, mrq);
+=======
+static void cb710_mmc_finish_request_tasklet(struct tasklet_struct *t)
+{
+	struct cb710_mmc_reader *reader = from_tasklet(reader, t,
+						       finish_req_tasklet);
+	struct mmc_request *mrq = reader->mrq;
+
+	reader->mrq = NULL;
+	mmc_request_done(mmc_from_priv(reader), mrq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct mmc_host_ops cb710_mmc_host = {
@@ -667,12 +719,15 @@ static const struct mmc_host_ops cb710_mmc_host = {
 static int cb710_mmc_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	struct cb710_slot *slot = cb710_pdev_to_slot(pdev);
+<<<<<<< HEAD
 	struct mmc_host *mmc = cb710_slot_to_mmc(slot);
 	int err;
 
 	err = mmc_suspend_host(mmc);
 	if (err)
 		return err;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cb710_mmc_enable_irq(slot, 0, ~0);
 	return 0;
@@ -681,16 +736,26 @@ static int cb710_mmc_suspend(struct platform_device *pdev, pm_message_t state)
 static int cb710_mmc_resume(struct platform_device *pdev)
 {
 	struct cb710_slot *slot = cb710_pdev_to_slot(pdev);
+<<<<<<< HEAD
 	struct mmc_host *mmc = cb710_slot_to_mmc(slot);
 
 	cb710_mmc_enable_irq(slot, 0, ~0);
 
 	return mmc_resume_host(mmc);
+=======
+
+	cb710_mmc_enable_irq(slot, 0, ~0);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* CONFIG_PM */
 
+<<<<<<< HEAD
 static int __devinit cb710_mmc_init(struct platform_device *pdev)
+=======
+static int cb710_mmc_init(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cb710_slot *slot = cb710_pdev_to_slot(pdev);
 	struct cb710_chip *chip = cb710_slot_to_chip(slot);
@@ -703,7 +768,11 @@ static int __devinit cb710_mmc_init(struct platform_device *pdev)
 	if (!mmc)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, mmc);
+=======
+	platform_set_drvdata(pdev, mmc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* harmless (maybe) magic */
 	pci_read_config_dword(chip->pdev, 0x48, &val);
@@ -716,11 +785,25 @@ static int __devinit cb710_mmc_init(struct platform_device *pdev)
 	mmc->f_min = val >> cb710_clock_divider_log2[CB710_MAX_DIVIDER_IDX];
 	mmc->ocr_avail = MMC_VDD_32_33|MMC_VDD_33_34;
 	mmc->caps = MMC_CAP_4_BIT_DATA;
+<<<<<<< HEAD
 
 	reader = mmc_priv(mmc);
 
 	tasklet_init(&reader->finish_req_tasklet,
 		cb710_mmc_finish_request_tasklet, (unsigned long)mmc);
+=======
+	/*
+	 * In cb710_wait_for_event() we use a fixed timeout of ~2s, hence let's
+	 * inform the core about it. A future improvement should instead make
+	 * use of the cmd->busy_timeout.
+	 */
+	mmc->max_busy_timeout = CB710_MMC_REQ_TIMEOUT_MS;
+
+	reader = mmc_priv(mmc);
+
+	tasklet_setup(&reader->finish_req_tasklet,
+		      cb710_mmc_finish_request_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&reader->irq_lock);
 	cb710_dump_regs(chip, CB710_DUMP_REGS_MMC);
 
@@ -746,7 +829,11 @@ err_free_mmc:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit cb710_mmc_exit(struct platform_device *pdev)
+=======
+static void cb710_mmc_exit(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cb710_slot *slot = cb710_pdev_to_slot(pdev);
 	struct mmc_host *mmc = cb710_slot_to_mmc(slot);
@@ -767,13 +854,20 @@ static int __devexit cb710_mmc_exit(struct platform_device *pdev)
 	tasklet_kill(&reader->finish_req_tasklet);
 
 	mmc_free_host(mmc);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver cb710_mmc_driver = {
 	.driver.name = "cb710-mmc",
 	.probe = cb710_mmc_init,
+<<<<<<< HEAD
 	.remove = __devexit_p(cb710_mmc_exit),
+=======
+	.remove_new = cb710_mmc_exit,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend = cb710_mmc_suspend,
 	.resume = cb710_mmc_resume,

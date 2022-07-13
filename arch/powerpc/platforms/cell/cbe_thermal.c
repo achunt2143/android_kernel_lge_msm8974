@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * thermal support for the cell processor
  *
@@ -29,6 +33,7 @@
  * (C) Copyright IBM Deutschland Entwicklung GmbH 2005
  *
  * Author: Christian Krafft <krafft@de.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -43,15 +48,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/cpu.h>
+<<<<<<< HEAD
 #include <asm/spu.h>
 #include <asm/io.h>
 #include <asm/prom.h>
+=======
+#include <linux/stringify.h>
+#include <asm/spu.h>
+#include <asm/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cell-regs.h>
 
 #include "spu_priv1_mmio.h"
@@ -125,7 +138,11 @@ static ssize_t show_throttle(struct cbe_pmd_regs __iomem *pmd_regs, char *buf, i
 static ssize_t store_throttle(struct cbe_pmd_regs __iomem *pmd_regs, const char *buf, size_t size, int pos)
 {
 	u64 reg_value;
+<<<<<<< HEAD
 	int temp;
+=======
+	unsigned int temp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 new_value;
 	int ret;
 
@@ -267,7 +284,11 @@ static struct attribute *spu_attributes[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static struct attribute_group spu_attribute_group = {
+=======
+static const struct attribute_group spu_attribute_group = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name	= "thermal",
 	.attrs	= spu_attributes,
 };

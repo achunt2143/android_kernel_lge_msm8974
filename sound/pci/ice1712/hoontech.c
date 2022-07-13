@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for ICEnsemble ICE1712 (Envy24)
  *
  *   Lowlevel functions for Hoontech STDSP24
  *
  *	Copyright (c) 2000 Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,6 +27,10 @@
  */      
 
 #include <asm/io.h>
+=======
+ */      
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -40,7 +49,11 @@ struct hoontech_spec {
 	unsigned short boxconfig[4];
 };
 
+<<<<<<< HEAD
 static void __devinit snd_ice1712_stdsp24_gpio_write(struct snd_ice1712 *ice, unsigned char byte)
+=======
+static void snd_ice1712_stdsp24_gpio_write(struct snd_ice1712 *ice, unsigned char byte)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	byte |= ICE1712_STDSP24_CLOCK_BIT;
 	udelay(100);
@@ -53,7 +66,11 @@ static void __devinit snd_ice1712_stdsp24_gpio_write(struct snd_ice1712 *ice, un
 	snd_ice1712_write(ice, ICE1712_IREG_GPIO_DATA, byte);
 }
 
+<<<<<<< HEAD
 static void __devinit snd_ice1712_stdsp24_darear(struct snd_ice1712 *ice, int activate)
+=======
+static void snd_ice1712_stdsp24_darear(struct snd_ice1712 *ice, int activate)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hoontech_spec *spec = ice->spec;
 	mutex_lock(&ice->gpio_mutex);
@@ -62,7 +79,11 @@ static void __devinit snd_ice1712_stdsp24_darear(struct snd_ice1712 *ice, int ac
 	mutex_unlock(&ice->gpio_mutex);
 }
 
+<<<<<<< HEAD
 static void __devinit snd_ice1712_stdsp24_mute(struct snd_ice1712 *ice, int activate)
+=======
+static void snd_ice1712_stdsp24_mute(struct snd_ice1712 *ice, int activate)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hoontech_spec *spec = ice->spec;
 	mutex_lock(&ice->gpio_mutex);
@@ -71,7 +92,11 @@ static void __devinit snd_ice1712_stdsp24_mute(struct snd_ice1712 *ice, int acti
 	mutex_unlock(&ice->gpio_mutex);
 }
 
+<<<<<<< HEAD
 static void __devinit snd_ice1712_stdsp24_insel(struct snd_ice1712 *ice, int activate)
+=======
+static void snd_ice1712_stdsp24_insel(struct snd_ice1712 *ice, int activate)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hoontech_spec *spec = ice->spec;
 	mutex_lock(&ice->gpio_mutex);
@@ -80,7 +105,11 @@ static void __devinit snd_ice1712_stdsp24_insel(struct snd_ice1712 *ice, int act
 	mutex_unlock(&ice->gpio_mutex);
 }
 
+<<<<<<< HEAD
 static void __devinit snd_ice1712_stdsp24_box_channel(struct snd_ice1712 *ice, int box, int chn, int activate)
+=======
+static void snd_ice1712_stdsp24_box_channel(struct snd_ice1712 *ice, int box, int chn, int activate)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hoontech_spec *spec = ice->spec;
 
@@ -130,7 +159,11 @@ static void __devinit snd_ice1712_stdsp24_box_channel(struct snd_ice1712 *ice, i
 	mutex_unlock(&ice->gpio_mutex);
 }
 
+<<<<<<< HEAD
 static void __devinit snd_ice1712_stdsp24_box_midi(struct snd_ice1712 *ice, int box, int master)
+=======
+static void snd_ice1712_stdsp24_box_midi(struct snd_ice1712 *ice, int box, int master)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hoontech_spec *spec = ice->spec;
 
@@ -158,7 +191,11 @@ static void __devinit snd_ice1712_stdsp24_box_midi(struct snd_ice1712 *ice, int 
 	mutex_unlock(&ice->gpio_mutex);
 }
 
+<<<<<<< HEAD
 static void __devinit snd_ice1712_stdsp24_midi2(struct snd_ice1712 *ice, int activate)
+=======
+static void snd_ice1712_stdsp24_midi2(struct snd_ice1712 *ice, int activate)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hoontech_spec *spec = ice->spec;
 	mutex_lock(&ice->gpio_mutex);
@@ -167,7 +204,11 @@ static void __devinit snd_ice1712_stdsp24_midi2(struct snd_ice1712 *ice, int act
 	mutex_unlock(&ice->gpio_mutex);
 }
 
+<<<<<<< HEAD
 static int __devinit snd_ice1712_hoontech_init(struct snd_ice1712 *ice)
+=======
+static int hoontech_init(struct snd_ice1712 *ice, bool staudio)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hoontech_spec *spec;
 	int box, chn;
@@ -204,7 +245,14 @@ static int __devinit snd_ice1712_hoontech_init(struct snd_ice1712 *ice)
 	ICE1712_STDSP24_3_INSEL(spec->boxbits, 0);
 
 	/* let's go - activate only functions in first box */
+<<<<<<< HEAD
 	spec->config = 0;
+=======
+	if (staudio)
+		spec->config = ICE1712_STDSP24_MUTE;
+	else
+		spec->config = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    /* ICE1712_STDSP24_MUTE |
 			       ICE1712_STDSP24_INSEL |
 			       ICE1712_STDSP24_DAREAR; */
@@ -227,9 +275,22 @@ static int __devinit snd_ice1712_hoontech_init(struct snd_ice1712 *ice)
 				     ICE1712_STDSP24_BOX_CHN4 |
 				     ICE1712_STDSP24_BOX_MIDI1 |
 				     ICE1712_STDSP24_BOX_MIDI2;
+<<<<<<< HEAD
 	spec->boxconfig[1] = 
 	spec->boxconfig[2] = 
 	spec->boxconfig[3] = 0;
+=======
+	if (staudio) {
+		spec->boxconfig[1] =
+		spec->boxconfig[2] =
+		spec->boxconfig[3] = spec->boxconfig[0];
+	} else {
+		spec->boxconfig[1] =
+		spec->boxconfig[2] =
+		spec->boxconfig[3] = 0;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_ice1712_stdsp24_darear(ice,
 		(spec->config & ICE1712_STDSP24_DAREAR) ? 1 : 0);
 	snd_ice1712_stdsp24_mute(ice,
@@ -249,6 +310,19 @@ static int __devinit snd_ice1712_hoontech_init(struct snd_ice1712 *ice)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int snd_ice1712_hoontech_init(struct snd_ice1712 *ice)
+{
+	return hoontech_init(ice, false);
+}
+
+static int snd_ice1712_staudio_init(struct snd_ice1712 *ice)
+{
+	return hoontech_init(ice, true);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AK4524 access
  */
@@ -267,10 +341,17 @@ static void stdsp24_ak4524_lock(struct snd_akm4xxx *ak, int chip)
 	snd_ice1712_write(ice, ICE1712_IREG_GPIO_WRITE_MASK, ~tmp);
 }
 
+<<<<<<< HEAD
 static int __devinit snd_ice1712_value_init(struct snd_ice1712 *ice)
 {
 	/* Hoontech STDSP24 with modified hardware */
 	static struct snd_akm4xxx akm_stdsp24_mv __devinitdata = {
+=======
+static int snd_ice1712_value_init(struct snd_ice1712 *ice)
+{
+	/* Hoontech STDSP24 with modified hardware */
+	static const struct snd_akm4xxx akm_stdsp24_mv = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.num_adcs = 2,
 		.num_dacs = 2,
 		.type = SND_AK4524,
@@ -279,7 +360,11 @@ static int __devinit snd_ice1712_value_init(struct snd_ice1712 *ice)
 		}
 	};
 
+<<<<<<< HEAD
 	static struct snd_ak4xxx_private akm_stdsp24_mv_priv __devinitdata = {
+=======
+	static const struct snd_ak4xxx_private akm_stdsp24_mv_priv = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.caddr = 2,
 		.cif = 1, /* CIF high */
 		.data_mask = ICE1712_STDSP24_SERIAL_DATA,
@@ -310,6 +395,7 @@ static int __devinit snd_ice1712_value_init(struct snd_ice1712 *ice)
 		return err;
 
 	/* ak4524 controls */
+<<<<<<< HEAD
 	err = snd_ice1712_akm4xxx_build_controls(ice);
 	if (err < 0)
 		return err;
@@ -318,6 +404,12 @@ static int __devinit snd_ice1712_value_init(struct snd_ice1712 *ice)
 }
 
 static int __devinit snd_ice1712_ez8_init(struct snd_ice1712 *ice)
+=======
+	return snd_ice1712_akm4xxx_build_controls(ice);
+}
+
+static int snd_ice1712_ez8_init(struct snd_ice1712 *ice)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ice->gpio.write_mask = ice->eeprom.gpiomask;
 	ice->gpio.direction = ice->eeprom.gpiodir;
@@ -329,7 +421,11 @@ static int __devinit snd_ice1712_ez8_init(struct snd_ice1712 *ice)
 
 
 /* entry point */
+<<<<<<< HEAD
 struct snd_ice1712_card_info snd_ice1712_hoontech_cards[] __devinitdata = {
+=======
+struct snd_ice1712_card_info snd_ice1712_hoontech_cards[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.subvendor = ICE1712_SUBDEVICE_STDSP24,
 		.name = "Hoontech SoundTrack Audio DSP24",
@@ -356,5 +452,17 @@ struct snd_ice1712_card_info snd_ice1712_hoontech_cards[] __devinitdata = {
 		.model = "ez8",
 		.chip_init = snd_ice1712_ez8_init,
 	},
+<<<<<<< HEAD
+=======
+	{
+		/* STAudio ADCIII has the same SSID as Hoontech StA DSP24,
+		 * thus identified only via the explicit model option
+		 */
+		.subvendor = ICE1712_SUBDEVICE_STAUDIO_ADCIII,	/* a dummy id */
+		.name = "STAudio ADCIII",
+		.model = "staudio",
+		.chip_init = snd_ice1712_staudio_init,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ } /* terminator */
 };

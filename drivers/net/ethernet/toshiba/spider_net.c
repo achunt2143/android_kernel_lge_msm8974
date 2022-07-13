@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Network device driver for Cell Processor-Based Blade and Celleb platform
  *
@@ -6,6 +10,7 @@
  *
  * Authors : Utz Bacher <utz.bacher@de.ibm.com>
  *           Jens Osterkamp <Jens.Osterkamp@de.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/compiler.h>
@@ -48,7 +55,11 @@
 #include <linux/wait.h>
 #include <linux/workqueue.h>
 #include <linux/bitops.h>
+<<<<<<< HEAD
 #include <asm/pci-bridge.h>
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/checksum.h>
 
 #include "spider_net.h"
@@ -73,7 +84,11 @@ MODULE_PARM_DESC(tx_descriptors, "number of descriptors used " \
 
 char spider_net_driver_name[] = "spidernet";
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(spider_net_pci_tbl) = {
+=======
+static const struct pci_device_id spider_net_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_TOSHIBA_2, PCI_DEVICE_ID_TOSHIBA_SPIDER_NET,
 	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0UL },
 	{ 0, }
@@ -114,7 +129,12 @@ spider_net_write_reg(struct spider_net_card *card, u32 reg, u32 value)
 	out_be32(card->regs + reg, value);
 }
 
+<<<<<<< HEAD
 /** spider_net_write_phy - write to phy register
+=======
+/**
+ * spider_net_write_phy - write to phy register
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @netdev: adapter to be written to
  * @mii_id: id of MII
  * @reg: PHY register
@@ -137,7 +157,12 @@ spider_net_write_phy(struct net_device *netdev, int mii_id,
 	spider_net_write_reg(card, SPIDER_NET_GPCWOPCMD, writevalue);
 }
 
+<<<<<<< HEAD
 /** spider_net_read_phy - read from phy register
+=======
+/**
+ * spider_net_read_phy - read from phy register
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @netdev: network device to be read from
  * @mii_id: id of MII
  * @reg: PHY register
@@ -158,7 +183,12 @@ spider_net_read_phy(struct net_device *netdev, int mii_id, int reg)
 
 	/* we don't use semaphores to wait for an SPIDER_NET_GPROPCMPINT
 	 * interrupt, as we poll for the completion of the read operation
+<<<<<<< HEAD
 	 * in spider_net_read_phy. Should take about 50 us */
+=======
+	 * in spider_net_read_phy. Should take about 50 us
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		readvalue = spider_net_read_reg(card, SPIDER_NET_GPCROPCMD);
 	} while (readvalue & SPIDER_NET_GPREXEC);
@@ -265,6 +295,7 @@ spider_net_set_promisc(struct spider_net_card *card)
 }
 
 /**
+<<<<<<< HEAD
  * spider_net_get_mac_address - read mac address from spider card
  * @card: device structure
  *
@@ -295,6 +326,10 @@ spider_net_get_mac_address(struct net_device *netdev)
 /**
  * spider_net_get_descr_status -- returns the status of a descriptor
  * @descr: descriptor to look at
+=======
+ * spider_net_get_descr_status -- returns the status of a descriptor
+ * @hwdescr: descriptor to look at
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * returns the status as in the dmac_cmd_status field of the descriptor
  */
@@ -323,8 +358,13 @@ spider_net_free_chain(struct spider_net_card *card,
 		descr = descr->next;
 	} while (descr != chain->ring);
 
+<<<<<<< HEAD
 	dma_free_coherent(&card->pdev->dev, chain->num_desc,
 	    chain->hwring, chain->dma_addr);
+=======
+	dma_free_coherent(&card->pdev->dev, chain->num_desc * sizeof(struct spider_net_hw_descr),
+			  chain->hwring, chain->dma_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -350,6 +390,7 @@ spider_net_init_chain(struct spider_net_card *card,
 	alloc_size = chain->num_desc * sizeof(struct spider_net_hw_descr);
 
 	chain->hwring = dma_alloc_coherent(&card->pdev->dev, alloc_size,
+<<<<<<< HEAD
 		&chain->dma_addr, GFP_KERNEL);
 
 	if (!chain->hwring)
@@ -357,6 +398,12 @@ spider_net_init_chain(struct spider_net_card *card,
 
 	memset(chain->ring, 0, chain->num_desc * sizeof(struct spider_net_descr));
 
+=======
+					   &chain->dma_addr, GFP_KERNEL);
+	if (!chain->hwring)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set up the hardware pointers in each descriptor */
 	descr = chain->ring;
 	hwdescr = chain->hwring;
@@ -396,9 +443,16 @@ spider_net_free_rx_chain_contents(struct spider_net_card *card)
 	descr = card->rx_chain.head;
 	do {
 		if (descr->skb) {
+<<<<<<< HEAD
 			pci_unmap_single(card->pdev, descr->hwdescr->buf_addr,
 					 SPIDER_NET_MAX_FRAME,
 					 PCI_DMA_BIDIRECTIONAL);
+=======
+			dma_unmap_single(&card->pdev->dev,
+					 descr->hwdescr->buf_addr,
+					 SPIDER_NET_MAX_FRAME,
+					 DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(descr->skb);
 			descr->skb = NULL;
 		}
@@ -430,7 +484,12 @@ spider_net_prepare_rx_descr(struct spider_net_card *card,
 		(~(SPIDER_NET_RXBUF_ALIGN - 1));
 
 	/* and we need to have it 128 byte aligned, therefore we allocate a
+<<<<<<< HEAD
 	 * bit more */
+=======
+	 * bit more
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* allocate an skb */
 	descr->skb = netdev_alloc_skb(card->netdev,
 				      bufsize + SPIDER_NET_RXBUF_ALIGN - 1);
@@ -452,9 +511,15 @@ spider_net_prepare_rx_descr(struct spider_net_card *card,
 	if (offset)
 		skb_reserve(descr->skb, SPIDER_NET_RXBUF_ALIGN - offset);
 	/* iommu-map the skb */
+<<<<<<< HEAD
 	buf = pci_map_single(card->pdev, descr->skb->data,
 			SPIDER_NET_MAX_FRAME, PCI_DMA_FROMDEVICE);
 	if (pci_dma_mapping_error(card->pdev, buf)) {
+=======
+	buf = dma_map_single(&card->pdev->dev, descr->skb->data,
+			     SPIDER_NET_MAX_FRAME, DMA_FROM_DEVICE);
+	if (dma_mapping_error(&card->pdev->dev, buf)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_any(descr->skb);
 		descr->skb = NULL;
 		if (netif_msg_rx_err(card) && net_ratelimit())
@@ -531,7 +596,12 @@ spider_net_refill_rx_chain(struct spider_net_card *card)
 	/* one context doing the refill (and a second context seeing that
 	 * and omitting it) is ok. If called by NAPI, we'll be called again
 	 * as spider_net_decode_one_descr is called several times. If some
+<<<<<<< HEAD
 	 * interrupt calls us, the NAPI is about to clean up anyway. */
+=======
+	 * interrupt calls us, the NAPI is about to clean up anyway.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!spin_trylock_irqsave(&chain->lock, flags))
 		return;
 
@@ -566,14 +636,24 @@ spider_net_alloc_rx_skbs(struct spider_net_card *card)
 
 	/* Put at least one buffer into the chain. if this fails,
 	 * we've got a problem. If not, spider_net_refill_rx_chain
+<<<<<<< HEAD
 	 * will do the rest at the end of this function. */
+=======
+	 * will do the rest at the end of this function.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (spider_net_prepare_rx_descr(card, chain->head))
 		goto error;
 	else
 		chain->head = chain->head->next;
 
 	/* This will allocate the rest of the rx buffers;
+<<<<<<< HEAD
 	 * if not, it's business as usual later on. */
+=======
+	 * if not, it's business as usual later on.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spider_net_refill_rx_chain(card);
 	spider_net_enable_rxdmac(card);
 	return 0;
@@ -585,6 +665,10 @@ error:
 
 /**
  * spider_net_get_multicast_hash - generates hash for multicast filter table
+<<<<<<< HEAD
+=======
+ * @netdev: interface device structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @addr: multicast address
  *
  * returns the hash value.
@@ -631,12 +715,17 @@ spider_net_set_multi(struct net_device *netdev)
 	int i;
 	u32 reg;
 	struct spider_net_card *card = netdev_priv(netdev);
+<<<<<<< HEAD
 	unsigned long bitmask[SPIDER_NET_MULTICAST_HASHES / BITS_PER_LONG] =
 		{0, };
+=======
+	DECLARE_BITMAP(bitmask, SPIDER_NET_MULTICAST_HASHES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spider_net_set_promisc(card);
 
 	if (netdev->flags & IFF_ALLMULTI) {
+<<<<<<< HEAD
 		for (i = 0; i < SPIDER_NET_MULTICAST_HASHES; i++) {
 			set_bit(i, bitmask);
 		}
@@ -650,6 +739,21 @@ spider_net_set_multi(struct net_device *netdev)
 	netdev_for_each_mc_addr(ha, netdev) {
 		hash = spider_net_get_multicast_hash(netdev, ha->addr);
 		set_bit(hash, bitmask);
+=======
+		bitmap_fill(bitmask, SPIDER_NET_MULTICAST_HASHES);
+		goto write_hash;
+	}
+
+	bitmap_zero(bitmask, SPIDER_NET_MULTICAST_HASHES);
+
+	/* well, we know, what the broadcast hash value is: it's xfd
+	hash = spider_net_get_multicast_hash(netdev, netdev->broadcast); */
+	__set_bit(0xfd, bitmask);
+
+	netdev_for_each_mc_addr(ha, netdev) {
+		hash = spider_net_get_multicast_hash(netdev, ha->addr);
+		__set_bit(hash, bitmask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 write_hash:
@@ -691,8 +795,14 @@ spider_net_prepare_tx_descr(struct spider_net_card *card,
 	dma_addr_t buf;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	buf = pci_map_single(card->pdev, skb->data, skb->len, PCI_DMA_TODEVICE);
 	if (pci_dma_mapping_error(card->pdev, buf)) {
+=======
+	buf = dma_map_single(&card->pdev->dev, skb->data, skb->len,
+			     DMA_TO_DEVICE);
+	if (dma_mapping_error(&card->pdev->dev, buf)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (netif_msg_tx_err(card) && net_ratelimit())
 			dev_err(&card->netdev->dev, "could not iommu-map packet (%p, %i). "
 				  "Dropping packet\n", skb->data, skb->len);
@@ -704,7 +814,12 @@ spider_net_prepare_tx_descr(struct spider_net_card *card,
 	descr = card->tx_chain.head;
 	if (descr->next == chain->tail->prev) {
 		spin_unlock_irqrestore(&chain->lock, flags);
+<<<<<<< HEAD
 		pci_unmap_single(card->pdev, buf, skb->len, PCI_DMA_TODEVICE);
+=======
+		dma_unmap_single(&card->pdev->dev, buf, skb->len,
+				 DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	hwdescr = descr->hwdescr;
@@ -734,7 +849,11 @@ spider_net_prepare_tx_descr(struct spider_net_card *card,
 	wmb();
 	descr->prev->hwdescr->next_descr_addr = descr->bus_addr;
 
+<<<<<<< HEAD
 	card->netdev->trans_start = jiffies; /* set netdev watchdog timer */
+=======
+	netif_trans_update(card->netdev); /* set netdev watchdog timer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -749,7 +868,12 @@ spider_net_set_low_watermark(struct spider_net_card *card)
 	int i;
 
 	/* Measure the length of the queue. Measurement does not
+<<<<<<< HEAD
 	 * need to be precise -- does not need a lock. */
+=======
+	 * need to be precise -- does not need a lock.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (descr != card->tx_chain.head) {
 		status = descr->hwdescr->dmac_cmd_status & SPIDER_NET_DESCR_NOT_IN_USE;
 		if (status == SPIDER_NET_DESCR_NOT_IN_USE)
@@ -829,7 +953,13 @@ spider_net_release_tx_chain(struct spider_net_card *card, int brutal)
 
 			/* fallthrough, if we release the descriptors
 			 * brutally (then we don't care about
+<<<<<<< HEAD
 			 * SPIDER_NET_DESCR_CARDOWNED) */
+=======
+			 * SPIDER_NET_DESCR_CARDOWNED)
+			 */
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case SPIDER_NET_DESCR_RESPONSE_ERROR:
 		case SPIDER_NET_DESCR_PROTECTION_ERROR:
@@ -857,9 +987,15 @@ spider_net_release_tx_chain(struct spider_net_card *card, int brutal)
 
 		/* unmap the skb */
 		if (skb) {
+<<<<<<< HEAD
 			pci_unmap_single(card->pdev, buf_addr, skb->len,
 					PCI_DMA_TODEVICE);
 			dev_kfree_skb(skb);
+=======
+			dma_unmap_single(&card->pdev->dev, buf_addr, skb->len,
+					 DMA_TO_DEVICE);
+			dev_consume_skb_any(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return 0;
@@ -909,9 +1045,15 @@ out:
  * @skb: packet to send out
  * @netdev: interface device structure
  *
+<<<<<<< HEAD
  * returns 0 on success, !0 on failure
  */
 static int
+=======
+ * returns NETDEV_TX_OK on success, NETDEV_TX_BUSY on failure
+ */
+static netdev_tx_t
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 spider_net_xmit(struct sk_buff *skb, struct net_device *netdev)
 {
 	int cnt;
@@ -933,7 +1075,11 @@ spider_net_xmit(struct sk_buff *skb, struct net_device *netdev)
 
 /**
  * spider_net_cleanup_tx_ring - cleans up the TX ring
+<<<<<<< HEAD
  * @card: card structure
+=======
+ * @t: timer context used to obtain the pointer to net card data structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * spider_net_cleanup_tx_ring is called by either the tx_timer
  * or from the NAPI polling routine.
@@ -941,8 +1087,14 @@ spider_net_xmit(struct sk_buff *skb, struct net_device *netdev)
  * packets, including updating the queue tail pointer.
  */
 static void
+<<<<<<< HEAD
 spider_net_cleanup_tx_ring(struct spider_net_card *card)
 {
+=======
+spider_net_cleanup_tx_ring(struct timer_list *t)
+{
+	struct spider_net_card *card = from_timer(card, t, tx_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((spider_net_release_tx_chain(card, 0) != 0) &&
 	    (card->netdev->flags & IFF_UP)) {
 		spider_net_kick_tx_dma(card);
@@ -989,7 +1141,12 @@ spider_net_pass_skb_up(struct spider_net_descr *descr,
 	skb_put(skb, hwdescr->valid_size);
 
 	/* the card seems to add 2 bytes of junk in front
+<<<<<<< HEAD
 	 * of the ethernet frame */
+=======
+	 * of the ethernet frame
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SPIDER_MISALIGN		2
 	skb_pull(skb, SPIDER_MISALIGN);
 	skb->protocol = eth_type_trans(skb, netdev);
@@ -1105,6 +1262,10 @@ static void show_rx_chain(struct spider_net_card *card)
 
 /**
  * spider_net_resync_head_ptr - Advance head ptr past empty descrs
+<<<<<<< HEAD
+=======
+ * @card: card structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If the driver fails to keep up and empty the queue, then the
  * hardware wil run out of room to put incoming packets. This
@@ -1197,8 +1358,13 @@ spider_net_decode_one_descr(struct spider_net_card *card)
 	/* unmap descriptor */
 	hw_buf_addr = hwdescr->buf_addr;
 	hwdescr->buf_addr = 0xffffffff;
+<<<<<<< HEAD
 	pci_unmap_single(card->pdev, hw_buf_addr,
 			SPIDER_NET_MAX_FRAME, PCI_DMA_FROMDEVICE);
+=======
+	dma_unmap_single(&card->pdev->dev, hw_buf_addr, SPIDER_NET_MAX_FRAME,
+			 DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ( (status == SPIDER_NET_DESCR_RESPONSE_ERROR) ||
 	     (status == SPIDER_NET_DESCR_PROTECTION_ERROR) ||
@@ -1262,7 +1428,11 @@ bad_desc:
 
 /**
  * spider_net_poll - NAPI poll function called by the stack to return packets
+<<<<<<< HEAD
  * @netdev: interface device structure
+=======
+ * @napi: napi device structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @budget: number of packets we can pass to the stack at most
  *
  * returns 0 if no more packets available to the driver/stack. Returns 1,
@@ -1294,12 +1464,20 @@ static int spider_net_poll(struct napi_struct *napi, int budget)
 	spider_net_refill_rx_chain(card);
 	spider_net_enable_rxdmac(card);
 
+<<<<<<< HEAD
 	spider_net_cleanup_tx_ring(card);
+=======
+	spider_net_cleanup_tx_ring(&card->tx_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* if all packets are in the stack, enable interrupts and return 0 */
 	/* if not, return 1 */
 	if (packets_done < budget) {
+<<<<<<< HEAD
 		napi_complete(napi);
+=======
+		napi_complete_done(napi, packets_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spider_net_rx_irq_on(card);
 		card->ignore_rx_ramfull = 0;
 	}
@@ -1308,6 +1486,7 @@ static int spider_net_poll(struct napi_struct *napi, int budget)
 }
 
 /**
+<<<<<<< HEAD
  * spider_net_change_mtu - changes the MTU of an interface
  * @netdev: interface device structure
  * @new_mtu: new MTU value
@@ -1330,6 +1509,11 @@ spider_net_change_mtu(struct net_device *netdev, int new_mtu)
  * spider_net_set_mac - sets the MAC of an interface
  * @netdev: interface device structure
  * @ptr: pointer to new MAC address
+=======
+ * spider_net_set_mac - sets the MAC of an interface
+ * @netdev: interface device structure
+ * @p: pointer to new MAC address
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 0 on success, <0 on failure. Currently, we don't support this
  * and will always return EOPNOTSUPP.
@@ -1344,15 +1528,26 @@ spider_net_set_mac(struct net_device *netdev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
+<<<<<<< HEAD
+=======
+	eth_hw_addr_set(netdev, addr->sa_data);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* switch off GMACTPE and GMACRPE */
 	regvalue = spider_net_read_reg(card, SPIDER_NET_GMACOPEMD);
 	regvalue &= ~((1 << 5) | (1 << 6));
 	spider_net_write_reg(card, SPIDER_NET_GMACOPEMD, regvalue);
 
 	/* write mac */
+<<<<<<< HEAD
 	macu = (addr->sa_data[0]<<24) + (addr->sa_data[1]<<16) +
 		(addr->sa_data[2]<<8) + (addr->sa_data[3]);
 	macl = (addr->sa_data[4]<<8) + (addr->sa_data[5]);
+=======
+	macu = (netdev->dev_addr[0]<<24) + (netdev->dev_addr[1]<<16) +
+		(netdev->dev_addr[2]<<8) + (netdev->dev_addr[3]);
+	macl = (netdev->dev_addr[4]<<8) + (netdev->dev_addr[5]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spider_net_write_reg(card, SPIDER_NET_GMACUNIMACU, macu);
 	spider_net_write_reg(card, SPIDER_NET_GMACUNIMACL, macl);
 
@@ -1363,12 +1558,15 @@ spider_net_set_mac(struct net_device *netdev, void *p)
 
 	spider_net_set_promisc(card);
 
+<<<<<<< HEAD
 	/* look up, whether we have been successful */
 	if (spider_net_get_mac_address(netdev))
 		return -EADDRNOTAVAIL;
 	if (memcmp(netdev->dev_addr,addr->sa_data,netdev->addr_len))
 		return -EADDRNOTAVAIL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1405,6 +1603,11 @@ spider_net_link_reset(struct net_device *netdev)
  * spider_net_handle_error_irq - handles errors raised by an interrupt
  * @card: card structure
  * @status_reg: interrupt status register 0 (GHIINT0STS)
+<<<<<<< HEAD
+=======
+ * @error_reg1: interrupt status register 1 (GHIINT1STS)
+ * @error_reg2: interrupt status register 2 (GHIINT2STS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * spider_net_handle_error_irq treats or ignores all error conditions
  * found when an interrupt is presented
@@ -1443,7 +1646,12 @@ spider_net_handle_error_irq(struct spider_net_card *card, u32 status_reg,
 		/* PHY read operation completed */
 		/* we don't use semaphores, as we poll for the completion
 		 * of the read operation in spider_net_read_phy. Should take
+<<<<<<< HEAD
 		 * about 50 us */
+=======
+		 * about 50 us
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		show_error = 0;
 		break;
 	case SPIDER_NET_GPWFFINT:
@@ -1462,9 +1670,15 @@ spider_net_handle_error_irq(struct spider_net_card *card, u32 status_reg,
 		show_error = 0;
 		break;
 
+<<<<<<< HEAD
 	case SPIDER_NET_GDDDEN0INT: /* fallthrough */
 	case SPIDER_NET_GDCDEN0INT: /* fallthrough */
 	case SPIDER_NET_GDBDEN0INT: /* fallthrough */
+=======
+	case SPIDER_NET_GDDDEN0INT:
+	case SPIDER_NET_GDCDEN0INT:
+	case SPIDER_NET_GDBDEN0INT:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SPIDER_NET_GDADEN0INT:
 		/* someone has set RX_DMA_EN to 0 */
 		show_error = 0;
@@ -1511,6 +1725,7 @@ spider_net_handle_error_irq(struct spider_net_card *card, u32 status_reg,
 	{
 	case SPIDER_NET_GTMFLLINT:
 		/* TX RAM full may happen on a usual case.
+<<<<<<< HEAD
 		 * Logging is not needed. */
 		show_error = 0;
 		break;
@@ -1518,6 +1733,16 @@ spider_net_handle_error_irq(struct spider_net_card *card, u32 status_reg,
 	case SPIDER_NET_GRFCFLLINT: /* fallthrough */
 	case SPIDER_NET_GRFBFLLINT: /* fallthrough */
 	case SPIDER_NET_GRFAFLLINT: /* fallthrough */
+=======
+		 * Logging is not needed.
+		 */
+		show_error = 0;
+		break;
+	case SPIDER_NET_GRFDFLLINT:
+	case SPIDER_NET_GRFCFLLINT:
+	case SPIDER_NET_GRFBFLLINT:
+	case SPIDER_NET_GRFAFLLINT:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SPIDER_NET_GRMFLLINT:
 		/* Could happen when rx chain is full */
 		if (card->ignore_rx_ramfull == 0) {
@@ -1538,9 +1763,15 @@ spider_net_handle_error_irq(struct spider_net_card *card, u32 status_reg,
 		break;
 
 	/* chain end */
+<<<<<<< HEAD
 	case SPIDER_NET_GDDDCEINT: /* fallthrough */
 	case SPIDER_NET_GDCDCEINT: /* fallthrough */
 	case SPIDER_NET_GDBDCEINT: /* fallthrough */
+=======
+	case SPIDER_NET_GDDDCEINT:
+	case SPIDER_NET_GDCDCEINT:
+	case SPIDER_NET_GDBDCEINT:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SPIDER_NET_GDADCEINT:
 		spider_net_resync_head_ptr(card);
 		spider_net_refill_rx_chain(card);
@@ -1551,9 +1782,15 @@ spider_net_handle_error_irq(struct spider_net_card *card, u32 status_reg,
 		break;
 
 	/* invalid descriptor */
+<<<<<<< HEAD
 	case SPIDER_NET_GDDINVDINT: /* fallthrough */
 	case SPIDER_NET_GDCINVDINT: /* fallthrough */
 	case SPIDER_NET_GDBINVDINT: /* fallthrough */
+=======
+	case SPIDER_NET_GDDINVDINT:
+	case SPIDER_NET_GDCINVDINT:
+	case SPIDER_NET_GDBINVDINT:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SPIDER_NET_GDAINVDINT:
 		/* Could happen when rx chain is full */
 		spider_net_resync_head_ptr(card);
@@ -1678,7 +1915,11 @@ spider_net_interrupt(int irq, void *ptr)
  * spider_net_poll_controller - artificial interrupt for netconsole etc.
  * @netdev: interface device structure
  *
+<<<<<<< HEAD
  * see Documentation/networking/netconsole.txt
+=======
+ * see Documentation/networking/netconsole.rst
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void
 spider_net_poll_controller(struct net_device *netdev)
@@ -1755,7 +1996,12 @@ spider_net_enable_card(struct spider_net_card *card)
 {
 	int i;
 	/* the following array consists of (register),(value) pairs
+<<<<<<< HEAD
 	 * that are set in this function. A register of 0 ends the list */
+=======
+	 * that are set in this function. A register of 0 ends the list
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 regs[][2] = {
 		{ SPIDER_NET_GRESUMINTNUM, 0 },
 		{ SPIDER_NET_GREINTNUM, 0 },
@@ -1818,7 +2064,12 @@ spider_net_enable_card(struct spider_net_card *card)
 	spider_net_write_reg(card, SPIDER_NET_ECMODE, SPIDER_NET_ECMODE_VALUE);
 
 	/* set chain tail address for RX chains and
+<<<<<<< HEAD
 	 * enable DMA */
+=======
+	 * enable DMA
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spider_net_enable_rxchtails(card);
 	spider_net_enable_rxdmac(card);
 
@@ -1989,7 +2240,12 @@ spider_net_open(struct net_device *netdev)
 		goto alloc_rx_failed;
 
 	/* Allocate rx skbs */
+<<<<<<< HEAD
 	if (spider_net_alloc_rx_skbs(card))
+=======
+	result = spider_net_alloc_rx_skbs(card);
+	if (result)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto alloc_skbs_failed;
 
 	spider_net_set_multi(netdev);
@@ -2025,12 +2281,20 @@ init_firmware_failed:
 
 /**
  * spider_net_link_phy
+<<<<<<< HEAD
  * @data: used for pointer to card structure
  *
  */
 static void spider_net_link_phy(unsigned long data)
 {
 	struct spider_net_card *card = (struct spider_net_card *)data;
+=======
+ * @t: timer context used to obtain the pointer to net card data structure
+ */
+static void spider_net_link_phy(struct timer_list *t)
+{
+	struct spider_net_card *card = from_timer(card, t, aneg_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mii_phy *phy = &card->phy;
 
 	/* if link didn't come up after SPIDER_NET_ANEG_TIMEOUT tries, setup phy again */
@@ -2056,7 +2320,12 @@ static void spider_net_link_phy(unsigned long data)
 
 		case BCM54XX_UNKNOWN:
 			/* copper, fiber with and without failed,
+<<<<<<< HEAD
 			 * retry from beginning */
+=======
+			 * retry from beginning
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spider_net_setup_aneg(card);
 			card->medium = BCM54XX_COPPER;
 			break;
@@ -2204,7 +2473,11 @@ spider_net_stop(struct net_device *netdev)
 /**
  * spider_net_tx_timeout_task - task scheduled by the watchdog timeout
  * function (to be called not under interrupt status)
+<<<<<<< HEAD
  * @data: data, is interface device structure
+=======
+ * @work: work context used to obtain the pointer to net card data structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * called as task when tx hangs, resets interface (if interface is up)
  */
@@ -2238,11 +2511,19 @@ out:
 /**
  * spider_net_tx_timeout - called when the tx timeout watchdog kicks in.
  * @netdev: interface device structure
+<<<<<<< HEAD
+=======
+ * @txqueue: unused
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * called, if tx hangs. Schedules a task that resets the interface
  */
 static void
+<<<<<<< HEAD
 spider_net_tx_timeout(struct net_device *netdev)
+=======
+spider_net_tx_timeout(struct net_device *netdev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct spider_net_card *card;
 
@@ -2261,8 +2542,12 @@ static const struct net_device_ops spider_net_ops = {
 	.ndo_start_xmit		= spider_net_xmit,
 	.ndo_set_rx_mode	= spider_net_set_multi,
 	.ndo_set_mac_address	= spider_net_set_mac,
+<<<<<<< HEAD
 	.ndo_change_mtu		= spider_net_change_mtu,
 	.ndo_do_ioctl		= spider_net_do_ioctl,
+=======
+	.ndo_eth_ioctl		= spider_net_do_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout		= spider_net_tx_timeout,
 	.ndo_validate_addr	= eth_validate_addr,
 	/* HW VLAN */
@@ -2308,6 +2593,7 @@ spider_net_setup_netdev(struct spider_net_card *card)
 
 	pci_set_drvdata(card->pdev, netdev);
 
+<<<<<<< HEAD
 	init_timer(&card->tx_timer);
 	card->tx_timer.function =
 		(void (*)(unsigned long)) spider_net_cleanup_tx_ring;
@@ -2321,6 +2607,15 @@ spider_net_setup_netdev(struct spider_net_card *card)
 
 	netif_napi_add(netdev, &card->napi,
 		       spider_net_poll, SPIDER_NET_NAPI_WEIGHT);
+=======
+	timer_setup(&card->tx_timer, spider_net_cleanup_tx_ring, 0);
+	netdev->irq = card->pdev->irq;
+
+	card->aneg_count = 0;
+	timer_setup(&card->aneg_timer, spider_net_link_phy, 0);
+
+	netif_napi_add(netdev, &card->napi, spider_net_poll);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spider_net_setup_netdev_ops(netdev);
 
@@ -2328,8 +2623,18 @@ spider_net_setup_netdev(struct spider_net_card *card)
 	if (SPIDER_NET_RX_CSUM_DEFAULT)
 		netdev->features |= NETIF_F_RXCSUM;
 	netdev->features |= NETIF_F_IP_CSUM | NETIF_F_LLTX;
+<<<<<<< HEAD
 	/* some time: NETIF_F_HW_VLAN_TX | NETIF_F_HW_VLAN_RX |
 	 *		NETIF_F_HW_VLAN_FILTER */
+=======
+	/* some time: NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX |
+	 *		NETIF_F_HW_VLAN_CTAG_FILTER
+	 */
+
+	/* MTU range: 64 - 2294 */
+	netdev->min_mtu = SPIDER_NET_MIN_MTU;
+	netdev->max_mtu = SPIDER_NET_MAX_MTU;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev->irq = card->pdev->irq;
 	card->num_rx_ints = 0;
@@ -2375,11 +2680,17 @@ spider_net_alloc_card(void)
 {
 	struct net_device *netdev;
 	struct spider_net_card *card;
+<<<<<<< HEAD
 	size_t alloc_size;
 
 	alloc_size = sizeof(struct spider_net_card) +
 	   (tx_descriptors + rx_descriptors) * sizeof(struct spider_net_descr);
 	netdev = alloc_etherdev(alloc_size);
+=======
+
+	netdev = alloc_etherdev(struct_size(card, darray,
+					    size_add(tx_descriptors, rx_descriptors)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!netdev)
 		return NULL;
 
@@ -2476,7 +2787,10 @@ out_release_regions:
 	pci_release_regions(pdev);
 out_disable_dev:
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -2490,7 +2804,11 @@ out_disable_dev:
  * spider_net_probe initializes pdev and registers a net_device
  * structure for it. After that, the device can be ifconfig'ed up
  **/
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 spider_net_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	int err = -EIO;
@@ -2529,7 +2847,11 @@ out:
  * spider_net_remove is called to remove the device and unregisters the
  * net_device
  **/
+<<<<<<< HEAD
 static void __devexit
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 spider_net_remove(struct pci_dev *pdev)
 {
 	struct net_device *netdev;
@@ -2557,7 +2879,11 @@ static struct pci_driver spider_net_driver = {
 	.name		= spider_net_driver_name,
 	.id_table	= spider_net_pci_tbl,
 	.probe		= spider_net_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(spider_net_remove)
+=======
+	.remove		= spider_net_remove
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**

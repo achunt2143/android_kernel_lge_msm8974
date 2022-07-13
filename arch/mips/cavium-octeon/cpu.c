@@ -10,7 +10,13 @@
 #include <linux/irqflags.h>
 #include <linux/notifier.h>
 #include <linux/prefetch.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/ptrace.h>
+#include <linux/sched.h>
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/cop2.h>
 #include <asm/current.h>

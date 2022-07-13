@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006-2007 PA Semi, Inc
  *
@@ -6,6 +10,7 @@
  * Maintained by: Olof Johansson <olof@lixom.net>
  *
  * Based on drivers/net/fs_enet/mii-bitbang.c.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -19,6 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/io.h>
@@ -30,8 +37,14 @@
 #include <linux/ioport.h>
 #include <linux/interrupt.h>
 #include <linux/phy.h>
+<<<<<<< HEAD
 #include <linux/of_mdio.h>
 #include <linux/of_platform.h>
+=======
+#include <linux/of_address.h>
+#include <linux/of_mdio.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DELAY 1
 
@@ -40,7 +53,10 @@ static void __iomem *gpio_regs;
 struct gpio_priv {
 	int mdc_pin;
 	int mdio_pin;
+<<<<<<< HEAD
 	int mdio_irqs[PHY_MAX_ADDR];
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define MDC_PIN(bus)	(((struct gpio_priv *)bus->priv)->mdc_pin)
@@ -216,7 +232,11 @@ static int gpio_mdio_reset(struct mii_bus *bus)
 }
 
 
+<<<<<<< HEAD
 static int __devinit gpio_mdio_probe(struct platform_device *ofdev)
+=======
+static int gpio_mdio_probe(struct platform_device *ofdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev = &ofdev->dev;
 	struct device_node *np = ofdev->dev.of_node;
@@ -244,8 +264,11 @@ static int __devinit gpio_mdio_probe(struct platform_device *ofdev)
 	snprintf(new_bus->id, MII_BUS_ID_SIZE, "%x", *prop);
 	new_bus->priv = priv;
 
+<<<<<<< HEAD
 	new_bus->irq = priv->mdio_irqs;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prop = of_get_property(np, "mdc-pin", NULL);
 	priv->mdc_pin = *prop;
 
@@ -258,7 +281,11 @@ static int __devinit gpio_mdio_probe(struct platform_device *ofdev)
 	err = of_mdiobus_register(new_bus, np);
 
 	if (err != 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Cannot register as MDIO bus, err %d\n",
+=======
+		pr_err("%s: Cannot register as MDIO bus, err %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				new_bus->name, err);
 		goto out_free_irq;
 	}
@@ -274,7 +301,11 @@ out:
 }
 
 
+<<<<<<< HEAD
 static int gpio_mdio_remove(struct platform_device *dev)
+=======
+static void gpio_mdio_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mii_bus *bus = dev_get_drvdata(&dev->dev);
 
@@ -285,11 +316,17 @@ static int gpio_mdio_remove(struct platform_device *dev)
 	kfree(bus->priv);
 	bus->priv = NULL;
 	mdiobus_free(bus);
+<<<<<<< HEAD
 
 	return 0;
 }
 
 static struct of_device_id gpio_mdio_match[] =
+=======
+}
+
+static const struct of_device_id gpio_mdio_match[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{
 		.compatible      = "gpio-mdio",
@@ -301,15 +338,25 @@ MODULE_DEVICE_TABLE(of, gpio_mdio_match);
 static struct platform_driver gpio_mdio_driver =
 {
 	.probe		= gpio_mdio_probe,
+<<<<<<< HEAD
 	.remove		= gpio_mdio_remove,
 	.driver = {
 		.name = "gpio-mdio-bitbang",
 		.owner = THIS_MODULE,
+=======
+	.remove_new	= gpio_mdio_remove,
+	.driver = {
+		.name = "gpio-mdio-bitbang",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = gpio_mdio_match,
 	},
 };
 
+<<<<<<< HEAD
 int gpio_mdio_init(void)
+=======
+static int __init gpio_mdio_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *np;
 
@@ -329,7 +376,11 @@ int gpio_mdio_init(void)
 }
 module_init(gpio_mdio_init);
 
+<<<<<<< HEAD
 void gpio_mdio_exit(void)
+=======
+static void __exit gpio_mdio_exit(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	platform_driver_unregister(&gpio_mdio_driver);
 	if (gpio_regs)

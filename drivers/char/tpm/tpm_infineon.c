@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Description:
  * Device Driver for the Infineon Technologies
  * SLD 9630 TT 1.1 and SLB 9635 TT 1.2 Trusted Platform Module
  * Specifications at www.trustedcomputinggroup.org
  *
+<<<<<<< HEAD
  * Copyright (C) 2005, Marcel Selhorst <m.selhorst@sirrix.com>
  * Sirrix AG - security technologies, http://www.sirrix.com and
  * Applied Data Security Group, Ruhr-University Bochum, Germany
@@ -13,6 +18,12 @@
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, version 2 of the
  * License.
+=======
+ * Copyright (C) 2005, Marcel Selhorst <tpmdd@selhorst.net>
+ * Sirrix AG - security technologies <tpmdd@sirrix.com> and
+ * Applied Data Security Group, Ruhr-University Bochum, Germany
+ * Project-Homepage: http://www.trust.rub.de/projects/linux-device-driver-infineon-tpm/ 
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -191,6 +202,7 @@ static int wait(struct tpm_chip *chip, int wait_for_bit)
 		/* check the status-register if wait_for_bit is set */
 		if (status & 1 << wait_for_bit)
 			break;
+<<<<<<< HEAD
 		msleep(TPM_MSLEEP_TIME);
 	}
 	if (i == TPM_MAX_TRIES) {	/* timeout occurs */
@@ -198,6 +210,15 @@ static int wait(struct tpm_chip *chip, int wait_for_bit)
 			dev_err(chip->dev, "Timeout in wait(STAT_XFE)\n");
 		if (wait_for_bit == STAT_RDA)
 			dev_err(chip->dev, "Timeout in wait(STAT_RDA)\n");
+=======
+		tpm_msleep(TPM_MSLEEP_TIME);
+	}
+	if (i == TPM_MAX_TRIES) {	/* timeout occurs */
+		if (wait_for_bit == STAT_XFE)
+			dev_err(&chip->dev, "Timeout in wait(STAT_XFE)\n");
+		if (wait_for_bit == STAT_RDA)
+			dev_err(&chip->dev, "Timeout in wait(STAT_RDA)\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	return 0;
@@ -220,24 +241,40 @@ static void wait_and_send(struct tpm_chip *chip, u8 sendbyte)
 static void tpm_wtx(struct tpm_chip *chip)
 {
 	number_of_wtx++;
+<<<<<<< HEAD
 	dev_info(chip->dev, "Granting WTX (%02d / %02d)\n",
+=======
+	dev_info(&chip->dev, "Granting WTX (%02d / %02d)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 number_of_wtx, TPM_MAX_WTX_PACKAGES);
 	wait_and_send(chip, TPM_VL_VER);
 	wait_and_send(chip, TPM_CTRL_WTX);
 	wait_and_send(chip, 0x00);
 	wait_and_send(chip, 0x00);
+<<<<<<< HEAD
 	msleep(TPM_WTX_MSLEEP_TIME);
+=======
+	tpm_msleep(TPM_WTX_MSLEEP_TIME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void tpm_wtx_abort(struct tpm_chip *chip)
 {
+<<<<<<< HEAD
 	dev_info(chip->dev, "Aborting WTX\n");
+=======
+	dev_info(&chip->dev, "Aborting WTX\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_and_send(chip, TPM_VL_VER);
 	wait_and_send(chip, TPM_CTRL_WTX_ABORT);
 	wait_and_send(chip, 0x00);
 	wait_and_send(chip, 0x00);
 	number_of_wtx = 0;
+<<<<<<< HEAD
 	msleep(TPM_WTX_MSLEEP_TIME);
+=======
+	tpm_msleep(TPM_WTX_MSLEEP_TIME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int tpm_inf_recv(struct tpm_chip *chip, u8 * buf, size_t count)
@@ -257,7 +294,11 @@ recv_begin:
 	}
 
 	if (buf[0] != TPM_VL_VER) {
+<<<<<<< HEAD
 		dev_err(chip->dev,
+=======
+		dev_err(&chip->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Wrong transport protocol implementation!\n");
 		return -EIO;
 	}
@@ -272,7 +313,11 @@ recv_begin:
 		}
 
 		if ((size == 0x6D00) && (buf[1] == 0x80)) {
+<<<<<<< HEAD
 			dev_err(chip->dev, "Error handling on vendor layer!\n");
+=======
+			dev_err(&chip->dev, "Error handling on vendor layer!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 
@@ -284,7 +329,11 @@ recv_begin:
 	}
 
 	if (buf[1] == TPM_CTRL_WTX) {
+<<<<<<< HEAD
 		dev_info(chip->dev, "WTX-package received\n");
+=======
+		dev_info(&chip->dev, "WTX-package received\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (number_of_wtx < TPM_MAX_WTX_PACKAGES) {
 			tpm_wtx(chip);
 			goto recv_begin;
@@ -295,14 +344,24 @@ recv_begin:
 	}
 
 	if (buf[1] == TPM_CTRL_WTX_ABORT_ACK) {
+<<<<<<< HEAD
 		dev_info(chip->dev, "WTX-abort acknowledged\n");
+=======
+		dev_info(&chip->dev, "WTX-abort acknowledged\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return size;
 	}
 
 	if (buf[1] == TPM_CTRL_ERROR) {
+<<<<<<< HEAD
 		dev_err(chip->dev, "ERROR-package received:\n");
 		if (buf[4] == TPM_INF_NAK)
 			dev_err(chip->dev,
+=======
+		dev_err(&chip->dev, "ERROR-package received:\n");
+		if (buf[4] == TPM_INF_NAK)
+			dev_err(&chip->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"-> Negative acknowledgement"
 				" - retransmit command!\n");
 		return -EIO;
@@ -321,7 +380,11 @@ static int tpm_inf_send(struct tpm_chip *chip, u8 * buf, size_t count)
 
 	ret = empty_fifo(chip, 1);
 	if (ret) {
+<<<<<<< HEAD
 		dev_err(chip->dev, "Timeout while clearing FIFO\n");
+=======
+		dev_err(&chip->dev, "Timeout while clearing FIFO\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -354,7 +417,11 @@ static int tpm_inf_send(struct tpm_chip *chip, u8 * buf, size_t count)
 	for (i = 0; i < count; i++) {
 		wait_and_send(chip, buf[i]);
 	}
+<<<<<<< HEAD
 	return count;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void tpm_inf_cancel(struct tpm_chip *chip)
@@ -371,6 +438,7 @@ static u8 tpm_inf_status(struct tpm_chip *chip)
 	return tpm_data_in(STAT);
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(pubek, S_IRUGO, tpm_show_pubek, NULL);
 static DEVICE_ATTR(pcrs, S_IRUGO, tpm_show_pcrs, NULL);
 static DEVICE_ATTR(caps, S_IRUGO, tpm_show_caps, NULL);
@@ -396,14 +464,20 @@ static const struct file_operations inf_ops = {
 };
 
 static const struct tpm_vendor_specific tpm_inf = {
+=======
+static const struct tpm_class_ops tpm_inf = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.recv = tpm_inf_recv,
 	.send = tpm_inf_send,
 	.cancel = tpm_inf_cancel,
 	.status = tpm_inf_status,
 	.req_complete_mask = 0,
 	.req_complete_val = 0,
+<<<<<<< HEAD
 	.attr_group = &inf_attr_grp,
 	.miscdev = {.fops = &inf_ops,},
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct pnp_device_id tpm_inf_pnp_tbl[] = {
@@ -415,7 +489,11 @@ static const struct pnp_device_id tpm_inf_pnp_tbl[] = {
 
 MODULE_DEVICE_TABLE(pnp, tpm_inf_pnp_tbl);
 
+<<<<<<< HEAD
 static int __devinit tpm_inf_pnp_probe(struct pnp_dev *dev,
+=======
+static int tpm_inf_pnp_probe(struct pnp_dev *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       const struct pnp_device_id *dev_id)
 {
 	int rc = 0;
@@ -423,7 +501,11 @@ static int __devinit tpm_inf_pnp_probe(struct pnp_dev *dev,
 	int vendorid[2];
 	int version[2];
 	int productid[2];
+<<<<<<< HEAD
 	char chipname[20];
+=======
+	const char *chipname;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tpm_chip *chip;
 
 	/* read IO-ports through PnP */
@@ -514,6 +596,7 @@ static int __devinit tpm_inf_pnp_probe(struct pnp_dev *dev,
 
 	switch ((productid[0] << 8) | productid[1]) {
 	case 6:
+<<<<<<< HEAD
 		snprintf(chipname, sizeof(chipname), " (SLD 9630 TT 1.1)");
 		break;
 	case 11:
@@ -521,6 +604,15 @@ static int __devinit tpm_inf_pnp_probe(struct pnp_dev *dev,
 		break;
 	default:
 		snprintf(chipname, sizeof(chipname), " (unknown chip)");
+=======
+		chipname = " (SLD 9630 TT 1.1)";
+		break;
+	case 11:
+		chipname = " (SLB 9635 TT 1.2)";
+		break;
+	default:
+		chipname = " (unknown chip)";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -572,7 +664,18 @@ static int __devinit tpm_inf_pnp_probe(struct pnp_dev *dev,
 			 vendorid[0], vendorid[1],
 			 productid[0], productid[1], chipname);
 
+<<<<<<< HEAD
 		if (!(chip = tpm_register_hardware(&dev->dev, &tpm_inf)))
+=======
+		chip = tpmm_chip_alloc(&dev->dev, &tpm_inf);
+		if (IS_ERR(chip)) {
+			rc = PTR_ERR(chip);
+			goto err_release_region;
+		}
+
+		rc = tpm_chip_register(chip);
+		if (rc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_release_region;
 
 		return 0;
@@ -594,6 +697,7 @@ err_last:
 	return rc;
 }
 
+<<<<<<< HEAD
 static __devexit void tpm_inf_pnp_remove(struct pnp_dev *dev)
 {
 	struct tpm_chip *chip = pnp_get_drvdata(dev);
@@ -633,6 +737,26 @@ static int tpm_inf_pnp_suspend(struct pnp_dev *dev, pm_message_t pm_state)
 }
 
 static int tpm_inf_pnp_resume(struct pnp_dev *dev)
+=======
+static void tpm_inf_pnp_remove(struct pnp_dev *dev)
+{
+	struct tpm_chip *chip = pnp_get_drvdata(dev);
+
+	tpm_chip_unregister(chip);
+
+	if (tpm_dev.iotype == TPM_INF_IO_PORT) {
+		release_region(tpm_dev.data_regs, tpm_dev.data_size);
+		release_region(tpm_dev.config_port,
+			       tpm_dev.config_size);
+	} else {
+		iounmap(tpm_dev.mem_base);
+		release_mem_region(tpm_dev.map_base, tpm_dev.map_size);
+	}
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int tpm_inf_resume(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Re-configure TPM after suspending */
 	tpm_config_out(ENABLE_REGISTER_PAIR, TPM_INF_ADDR);
@@ -646,13 +770,21 @@ static int tpm_inf_pnp_resume(struct pnp_dev *dev)
 	tpm_config_out(DISABLE_REGISTER_PAIR, TPM_INF_ADDR);
 	/* disable RESET, LP and IRQC */
 	tpm_data_out(RESET_LP_IRQC_DISABLE, CMD);
+<<<<<<< HEAD
 	return tpm_pm_resume(&dev->dev);
 }
+=======
+	return tpm_pm_resume(dev);
+}
+#endif
+static SIMPLE_DEV_PM_OPS(tpm_inf_pm, tpm_pm_suspend, tpm_inf_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pnp_driver tpm_inf_pnp_driver = {
 	.name = "tpm_inf_pnp",
 	.id_table = tpm_inf_pnp_tbl,
 	.probe = tpm_inf_pnp_probe,
+<<<<<<< HEAD
 	.suspend = tpm_inf_pnp_suspend,
 	.resume = tpm_inf_pnp_resume,
 	.remove = __devexit_p(tpm_inf_pnp_remove)
@@ -672,6 +804,17 @@ module_init(init_inf);
 module_exit(cleanup_inf);
 
 MODULE_AUTHOR("Marcel Selhorst <m.selhorst@sirrix.com>");
+=======
+	.remove = tpm_inf_pnp_remove,
+	.driver = {
+		.pm = &tpm_inf_pm,
+	}
+};
+
+module_pnp_driver(tpm_inf_pnp_driver);
+
+MODULE_AUTHOR("Marcel Selhorst <tpmdd@sirrix.com>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Driver for Infineon TPM SLD 9630 TT 1.1 / SLB 9635 TT 1.2");
 MODULE_VERSION("1.9.2");
 MODULE_LICENSE("GPL");

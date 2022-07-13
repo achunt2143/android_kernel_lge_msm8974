@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OSS compatible sequencer driver
  *
  * synth device information
  *
  * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __SEQ_OSS_SYNTH_H
@@ -28,8 +35,13 @@
 #include <sound/seq_device.h>
 
 void snd_seq_oss_synth_init(void);
+<<<<<<< HEAD
 int snd_seq_oss_synth_register(struct snd_seq_device *dev);
 int snd_seq_oss_synth_unregister(struct snd_seq_device *dev);
+=======
+int snd_seq_oss_synth_probe(struct device *dev);
+int snd_seq_oss_synth_remove(struct device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void snd_seq_oss_synth_setup(struct seq_oss_devinfo *dp);
 void snd_seq_oss_synth_setup_midi(struct seq_oss_devinfo *dp);
 void snd_seq_oss_synth_cleanup(struct seq_oss_devinfo *dp);
@@ -37,7 +49,12 @@ void snd_seq_oss_synth_cleanup(struct seq_oss_devinfo *dp);
 void snd_seq_oss_synth_reset(struct seq_oss_devinfo *dp, int dev);
 int snd_seq_oss_synth_load_patch(struct seq_oss_devinfo *dp, int dev, int fmt,
 				 const char __user *buf, int p, int c);
+<<<<<<< HEAD
 int snd_seq_oss_synth_is_valid(struct seq_oss_devinfo *dp, int dev);
+=======
+struct seq_oss_synthinfo *snd_seq_oss_synth_info(struct seq_oss_devinfo *dp,
+						 int dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_seq_oss_synth_sysex(struct seq_oss_devinfo *dp, int dev, unsigned char *buf,
 			    struct snd_seq_event *ev);
 int snd_seq_oss_synth_addr(struct seq_oss_devinfo *dp, int dev, struct snd_seq_event *ev);

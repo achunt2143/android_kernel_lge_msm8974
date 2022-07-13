@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * inode.c - NILFS inode operations.
  *
@@ -18,6 +19,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Ryusuke Konishi <ryusuke@osrg.net>
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * NILFS inode operations.
+ *
+ * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
+ *
+ * Written by Ryusuke Konishi.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -27,6 +37,10 @@
 #include <linux/pagemap.h>
 #include <linux/writeback.h>
 #include <linux/uio.h>
+<<<<<<< HEAD
+=======
+#include <linux/fiemap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "nilfs.h"
 #include "btnode.h"
 #include "segment.h"
@@ -35,37 +49,78 @@
 #include "cpfile.h"
 #include "ifile.h"
 
+<<<<<<< HEAD
+=======
+/**
+ * struct nilfs_iget_args - arguments used during comparison between inodes
+ * @ino: inode number
+ * @cno: checkpoint number
+ * @root: pointer on NILFS root object (mounted checkpoint)
+ * @for_gc: inode for GC flag
+ * @for_btnc: inode for B-tree node cache flag
+ * @for_shadow: inode for shadowed page cache flag
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nilfs_iget_args {
 	u64 ino;
 	__u64 cno;
 	struct nilfs_root *root;
+<<<<<<< HEAD
 	int for_gc;
 };
 
+=======
+	bool for_gc;
+	bool for_btnc;
+	bool for_shadow;
+};
+
+static int nilfs_iget_test(struct inode *inode, void *opaque);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void nilfs_inode_add_blocks(struct inode *inode, int n)
 {
 	struct nilfs_root *root = NILFS_I(inode)->i_root;
 
+<<<<<<< HEAD
 	inode_add_bytes(inode, (1 << inode->i_blkbits) * n);
 	if (root)
 		atomic_add(n, &root->blocks_count);
+=======
+	inode_add_bytes(inode, i_blocksize(inode) * n);
+	if (root)
+		atomic64_add(n, &root->blocks_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nilfs_inode_sub_blocks(struct inode *inode, int n)
 {
 	struct nilfs_root *root = NILFS_I(inode)->i_root;
 
+<<<<<<< HEAD
 	inode_sub_bytes(inode, (1 << inode->i_blkbits) * n);
 	if (root)
 		atomic_sub(n, &root->blocks_count);
+=======
+	inode_sub_bytes(inode, i_blocksize(inode) * n);
+	if (root)
+		atomic64_sub(n, &root->blocks_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * nilfs_get_block() - get a file block on the filesystem (callback function)
+<<<<<<< HEAD
  * @inode - inode struct of the target file
  * @blkoff - file block number
  * @bh_result - buffer head to be mapped on
  * @create - indicate whether allocating the block or not when it has not
+=======
+ * @inode: inode struct of the target file
+ * @blkoff: file block number
+ * @bh_result: buffer head to be mapped on
+ * @create: indicate whether allocating the block or not when it has not
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *      been allocated yet.
  *
  * This function does not issue actual read request of the specified data
@@ -78,7 +133,11 @@ int nilfs_get_block(struct inode *inode, sector_t blkoff,
 	struct the_nilfs *nilfs = inode->i_sb->s_fs_info;
 	__u64 blknum = 0;
 	int err = 0, ret;
+<<<<<<< HEAD
 	unsigned maxblocks = bh_result->b_size >> inode->i_blkbits;
+=======
+	unsigned int maxblocks = bh_result->b_size >> inode->i_blkbits;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_read(&NILFS_MDT(nilfs->ns_dat)->mi_sem);
 	ret = nilfs_bmap_lookup_contig(ii->i_bmap, blkoff, &blknum, maxblocks);
@@ -97,7 +156,11 @@ int nilfs_get_block(struct inode *inode, sector_t blkoff,
 		err = nilfs_transaction_begin(inode->i_sb, &ti, 1);
 		if (unlikely(err))
 			goto out;
+<<<<<<< HEAD
 		err = nilfs_bmap_insert(ii->i_bmap, (unsigned long)blkoff,
+=======
+		err = nilfs_bmap_insert(ii->i_bmap, blkoff,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					(unsigned long)bh_result);
 		if (unlikely(err != 0)) {
 			if (err == -EEXIST) {
@@ -107,6 +170,7 @@ int nilfs_get_block(struct inode *inode, sector_t blkoff,
 				 * However, the page having this block must
 				 * be locked in this case.
 				 */
+<<<<<<< HEAD
 				printk(KERN_WARNING
 				       "nilfs_get_block: a race condition "
 				       "while inserting a data block. "
@@ -115,20 +179,42 @@ int nilfs_get_block(struct inode *inode, sector_t blkoff,
 				       inode->i_ino,
 				       (unsigned long long)blkoff);
 				err = 0;
+=======
+				nilfs_warn(inode->i_sb,
+					   "%s (ino=%lu): a race condition while inserting a data block at offset=%llu",
+					   __func__, inode->i_ino,
+					   (unsigned long long)blkoff);
+				err = -EAGAIN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			nilfs_transaction_abort(inode->i_sb);
 			goto out;
 		}
+<<<<<<< HEAD
 		nilfs_mark_inode_dirty(inode);
+=======
+		nilfs_mark_inode_dirty_sync(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nilfs_transaction_commit(inode->i_sb); /* never fails */
 		/* Error handling should be detailed */
 		set_buffer_new(bh_result);
 		set_buffer_delay(bh_result);
+<<<<<<< HEAD
 		map_bh(bh_result, inode->i_sb, 0); /* dbn must be changed
 						      to proper value */
 	} else if (ret == -ENOENT) {
 		/* not found is not error (e.g. hole); must return without
 		   the mapped state flag. */
+=======
+		map_bh(bh_result, inode->i_sb, 0);
+		/* Disk block number must be changed to proper value */
+
+	} else if (ret == -ENOENT) {
+		/*
+		 * not found is not error (e.g. hole); must return without
+		 * the mapped state flag.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		;
 	} else {
 		err = ret;
@@ -139,6 +225,7 @@ int nilfs_get_block(struct inode *inode, sector_t blkoff,
 }
 
 /**
+<<<<<<< HEAD
  * nilfs_readpage() - implement readpage() method of nilfs_aops {}
  * address_space_operations.
  * @file - file struct of the file to be read
@@ -161,6 +248,21 @@ static int nilfs_readpages(struct file *file, struct address_space *mapping,
 			   struct list_head *pages, unsigned nr_pages)
 {
 	return mpage_readpages(mapping, pages, nr_pages, nilfs_get_block);
+=======
+ * nilfs_read_folio() - implement read_folio() method of nilfs_aops {}
+ * address_space_operations.
+ * @file: file struct of the file to be read
+ * @folio: the folio to be read
+ */
+static int nilfs_read_folio(struct file *file, struct folio *folio)
+{
+	return mpage_read_folio(folio, nilfs_get_block);
+}
+
+static void nilfs_readahead(struct readahead_control *rac)
+{
+	mpage_readahead(rac, nilfs_get_block);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int nilfs_writepages(struct address_space *mapping,
@@ -169,6 +271,14 @@ static int nilfs_writepages(struct address_space *mapping,
 	struct inode *inode = mapping->host;
 	int err = 0;
 
+<<<<<<< HEAD
+=======
+	if (sb_rdonly(inode->i_sb)) {
+		nilfs_clear_dirty_pages(mapping, false);
+		return -EROFS;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wbc->sync_mode == WB_SYNC_ALL)
 		err = nilfs_construct_dsync_segment(inode->i_sb, inode,
 						    wbc->range_start,
@@ -178,11 +288,32 @@ static int nilfs_writepages(struct address_space *mapping,
 
 static int nilfs_writepage(struct page *page, struct writeback_control *wbc)
 {
+<<<<<<< HEAD
 	struct inode *inode = page->mapping->host;
 	int err;
 
 	redirty_page_for_writepage(wbc, page);
 	unlock_page(page);
+=======
+	struct folio *folio = page_folio(page);
+	struct inode *inode = folio->mapping->host;
+	int err;
+
+	if (sb_rdonly(inode->i_sb)) {
+		/*
+		 * It means that filesystem was remounted in read-only
+		 * mode because of error or metadata corruption. But we
+		 * have dirty pages that try to be flushed in background.
+		 * So, here we simply discard this dirty page.
+		 */
+		nilfs_clear_folio_dirty(folio, false);
+		folio_unlock(folio);
+		return -EROFS;
+	}
+
+	folio_redirty_for_writepage(wbc, folio);
+	folio_unlock(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (wbc->sync_mode == WB_SYNC_ALL) {
 		err = nilfs_construct_segment(inode->i_sb);
@@ -194,6 +325,7 @@ static int nilfs_writepage(struct page *page, struct writeback_control *wbc)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int nilfs_set_page_dirty(struct page *page)
 {
 	struct inode *inode = page->mapping->host;
@@ -211,6 +343,24 @@ static int nilfs_set_page_dirty(struct page *page)
 		 * by page lock.
 		 */
 		bh = head = page_buffers(page);
+=======
+static bool nilfs_dirty_folio(struct address_space *mapping,
+		struct folio *folio)
+{
+	struct inode *inode = mapping->host;
+	struct buffer_head *head;
+	unsigned int nr_dirty = 0;
+	bool ret = filemap_dirty_folio(mapping, folio);
+
+	/*
+	 * The page may not be locked, eg if called from try_to_unmap_one()
+	 */
+	spin_lock(&mapping->i_private_lock);
+	head = folio_buffers(folio);
+	if (head) {
+		struct buffer_head *bh = head;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		do {
 			/* Do not mark hole blocks dirty */
 			if (buffer_dirty(bh) || !buffer_mapped(bh))
@@ -219,6 +369,7 @@ static int nilfs_set_page_dirty(struct page *page)
 			set_buffer_dirty(bh);
 			nr_dirty++;
 		} while (bh = bh->b_this_page, bh != head);
+<<<<<<< HEAD
 
 		if (nr_dirty)
 			nilfs_set_file_dirty(inode, nr_dirty);
@@ -232,6 +383,30 @@ static int nilfs_set_page_dirty(struct page *page)
 
 static int nilfs_write_begin(struct file *file, struct address_space *mapping,
 			     loff_t pos, unsigned len, unsigned flags,
+=======
+	} else if (ret) {
+		nr_dirty = 1 << (folio_shift(folio) - inode->i_blkbits);
+	}
+	spin_unlock(&mapping->i_private_lock);
+
+	if (nr_dirty)
+		nilfs_set_file_dirty(inode, nr_dirty);
+	return ret;
+}
+
+void nilfs_write_failed(struct address_space *mapping, loff_t to)
+{
+	struct inode *inode = mapping->host;
+
+	if (to > inode->i_size) {
+		truncate_pagecache(inode, inode->i_size);
+		nilfs_truncate(inode);
+	}
+}
+
+static int nilfs_write_begin(struct file *file, struct address_space *mapping,
+			     loff_t pos, unsigned len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct page **pagep, void **fsdata)
 
 {
@@ -241,6 +416,7 @@ static int nilfs_write_begin(struct file *file, struct address_space *mapping,
 	if (unlikely(err))
 		return err;
 
+<<<<<<< HEAD
 	err = block_write_begin(mapping, pos, len, flags, pagep,
 				nilfs_get_block);
 	if (unlikely(err)) {
@@ -248,6 +424,11 @@ static int nilfs_write_begin(struct file *file, struct address_space *mapping,
 		if (pos + len > isize)
 			vmtruncate(mapping->host, isize);
 
+=======
+	err = block_write_begin(mapping, pos, len, pagep, nilfs_get_block);
+	if (unlikely(err)) {
+		nilfs_write_failed(mapping, pos + len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nilfs_transaction_abort(inode->i_sb);
 	}
 	return err;
@@ -258,8 +439,13 @@ static int nilfs_write_end(struct file *file, struct address_space *mapping,
 			   struct page *page, void *fsdata)
 {
 	struct inode *inode = mapping->host;
+<<<<<<< HEAD
 	unsigned start = pos & (PAGE_CACHE_SIZE - 1);
 	unsigned nr_dirty;
+=======
+	unsigned int start = pos & (PAGE_SIZE - 1);
+	unsigned int nr_dirty;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	nr_dirty = nilfs_page_count_clean_buffers(page, start,
@@ -272,6 +458,7 @@ static int nilfs_write_end(struct file *file, struct address_space *mapping,
 }
 
 static ssize_t
+<<<<<<< HEAD
 nilfs_direct_IO(int rw, struct kiocb *iocb, const struct iovec *iov,
 		loff_t offset, unsigned long nr_segs)
 {
@@ -299,10 +486,22 @@ nilfs_direct_IO(int rw, struct kiocb *iocb, const struct iovec *iov,
 	}
 
 	return size;
+=======
+nilfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
+{
+	struct inode *inode = file_inode(iocb->ki_filp);
+
+	if (iov_iter_rw(iter) == WRITE)
+		return 0;
+
+	/* Needs synchronization with the cleaner */
+	return blockdev_direct_IO(iocb, inode, iter, nilfs_get_block);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct address_space_operations nilfs_aops = {
 	.writepage		= nilfs_writepage,
+<<<<<<< HEAD
 	.readpage		= nilfs_readpage,
 	.writepages		= nilfs_writepages,
 	.set_page_dirty		= nilfs_set_page_dirty,
@@ -311,10 +510,34 @@ const struct address_space_operations nilfs_aops = {
 	.write_end		= nilfs_write_end,
 	/* .releasepage		= nilfs_releasepage, */
 	.invalidatepage		= block_invalidatepage,
+=======
+	.read_folio		= nilfs_read_folio,
+	.writepages		= nilfs_writepages,
+	.dirty_folio		= nilfs_dirty_folio,
+	.readahead		= nilfs_readahead,
+	.write_begin		= nilfs_write_begin,
+	.write_end		= nilfs_write_end,
+	.invalidate_folio	= block_invalidate_folio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.direct_IO		= nilfs_direct_IO,
 	.is_partially_uptodate  = block_is_partially_uptodate,
 };
 
+<<<<<<< HEAD
+=======
+static int nilfs_insert_inode_locked(struct inode *inode,
+				     struct nilfs_root *root,
+				     unsigned long ino)
+{
+	struct nilfs_iget_args args = {
+		.ino = ino, .root = root, .cno = 0, .for_gc = false,
+		.for_btnc = false, .for_shadow = false
+	};
+
+	return insert_inode_locked4(inode, ino, nilfs_iget_test, &args);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct inode *nilfs_new_inode(struct inode *dir, umode_t mode)
 {
 	struct super_block *sb = dir->i_sb;
@@ -322,6 +545,10 @@ struct inode *nilfs_new_inode(struct inode *dir, umode_t mode)
 	struct inode *inode;
 	struct nilfs_inode_info *ii;
 	struct nilfs_root *root;
+<<<<<<< HEAD
+=======
+	struct buffer_head *bh;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = -ENOMEM;
 	ino_t ino;
 
@@ -330,6 +557,7 @@ struct inode *nilfs_new_inode(struct inode *dir, umode_t mode)
 		goto failed;
 
 	mapping_set_gfp_mask(inode->i_mapping,
+<<<<<<< HEAD
 			     mapping_gfp_mask(inode->i_mapping) & ~__GFP_FS);
 
 	root = NILFS_I(dir)->i_root;
@@ -338,19 +566,54 @@ struct inode *nilfs_new_inode(struct inode *dir, umode_t mode)
 	ii->i_root = root;
 
 	err = nilfs_ifile_create_inode(root->ifile, &ino, &ii->i_bh);
+=======
+			   mapping_gfp_constraint(inode->i_mapping, ~__GFP_FS));
+
+	root = NILFS_I(dir)->i_root;
+	ii = NILFS_I(inode);
+	ii->i_state = BIT(NILFS_I_NEW);
+	ii->i_root = root;
+
+	err = nilfs_ifile_create_inode(root->ifile, &ino, &bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(err))
 		goto failed_ifile_create_inode;
 	/* reference count of i_bh inherits from nilfs_mdt_read_block() */
 
+<<<<<<< HEAD
 	atomic_inc(&root->inodes_count);
 	inode_init_owner(inode, dir, mode);
 	inode->i_ino = ino;
 	inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME;
+=======
+	if (unlikely(ino < NILFS_USER_INO)) {
+		nilfs_warn(sb,
+			   "inode bitmap is inconsistent for reserved inodes");
+		do {
+			brelse(bh);
+			err = nilfs_ifile_create_inode(root->ifile, &ino, &bh);
+			if (unlikely(err))
+				goto failed_ifile_create_inode;
+		} while (ino < NILFS_USER_INO);
+
+		nilfs_info(sb, "repaired inode bitmap for reserved inodes");
+	}
+	ii->i_bh = bh;
+
+	atomic64_inc(&root->inodes_count);
+	inode_init_owner(&nop_mnt_idmap, inode, dir, mode);
+	inode->i_ino = ino;
+	simple_inode_init_ts(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (S_ISREG(mode) || S_ISDIR(mode) || S_ISLNK(mode)) {
 		err = nilfs_bmap_read(ii->i_bmap, NULL);
 		if (err < 0)
+<<<<<<< HEAD
 			goto failed_bmap;
+=======
+			goto failed_after_creation;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		set_bit(NILFS_I_BMAP, &ii->i_state);
 		/* No lock is needed; iget() ensures it. */
@@ -366,6 +629,7 @@ struct inode *nilfs_new_inode(struct inode *dir, umode_t mode)
 	spin_lock(&nilfs->ns_next_gen_lock);
 	inode->i_generation = nilfs->ns_next_generation++;
 	spin_unlock(&nilfs->ns_next_gen_lock);
+<<<<<<< HEAD
 	insert_inode_hash(inode);
 
 	err = nilfs_init_acl(inode, dir);
@@ -381,12 +645,41 @@ struct inode *nilfs_new_inode(struct inode *dir, umode_t mode)
 	clear_nlink(inode);
 	iput(inode);  /* raw_inode will be deleted through
 			 generic_delete_inode() */
+=======
+	if (nilfs_insert_inode_locked(inode, root, ino) < 0) {
+		err = -EIO;
+		goto failed_after_creation;
+	}
+
+	err = nilfs_init_acl(inode, dir);
+	if (unlikely(err))
+		/*
+		 * Never occur.  When supporting nilfs_init_acl(),
+		 * proper cancellation of above jobs should be considered.
+		 */
+		goto failed_after_creation;
+
+	return inode;
+
+ failed_after_creation:
+	clear_nlink(inode);
+	if (inode->i_state & I_NEW)
+		unlock_new_inode(inode);
+	iput(inode);  /*
+		       * raw_inode will be deleted through
+		       * nilfs_evict_inode().
+		       */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto failed;
 
  failed_ifile_create_inode:
 	make_bad_inode(inode);
+<<<<<<< HEAD
 	iput(inode);  /* if i_nlink == 1, generic_forget_inode() will be
 			 called */
+=======
+	iput(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  failed:
 	return ERR_PTR(err);
 }
@@ -394,6 +687,7 @@ struct inode *nilfs_new_inode(struct inode *dir, umode_t mode)
 void nilfs_set_inode_flags(struct inode *inode)
 {
 	unsigned int flags = NILFS_I(inode)->i_flags;
+<<<<<<< HEAD
 
 	inode->i_flags &= ~(S_SYNC | S_APPEND | S_IMMUTABLE | S_NOATIME |
 			    S_DIRSYNC);
@@ -409,6 +703,22 @@ void nilfs_set_inode_flags(struct inode *inode)
 		inode->i_flags |= S_DIRSYNC;
 	mapping_set_gfp_mask(inode->i_mapping,
 			     mapping_gfp_mask(inode->i_mapping) & ~__GFP_FS);
+=======
+	unsigned int new_fl = 0;
+
+	if (flags & FS_SYNC_FL)
+		new_fl |= S_SYNC;
+	if (flags & FS_APPEND_FL)
+		new_fl |= S_APPEND;
+	if (flags & FS_IMMUTABLE_FL)
+		new_fl |= S_IMMUTABLE;
+	if (flags & FS_NOATIME_FL)
+		new_fl |= S_NOATIME;
+	if (flags & FS_DIRSYNC_FL)
+		new_fl |= S_DIRSYNC;
+	inode_set_flags(inode, new_fl, S_SYNC | S_APPEND | S_IMMUTABLE |
+			S_NOATIME | S_DIRSYNC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int nilfs_read_inode_common(struct inode *inode,
@@ -418,6 +728,7 @@ int nilfs_read_inode_common(struct inode *inode,
 	int err;
 
 	inode->i_mode = le16_to_cpu(raw_inode->i_mode);
+<<<<<<< HEAD
 	inode->i_uid = (uid_t)le32_to_cpu(raw_inode->i_uid);
 	inode->i_gid = (gid_t)le32_to_cpu(raw_inode->i_gid);
 	set_nlink(inode, le16_to_cpu(raw_inode->i_links_count));
@@ -430,6 +741,22 @@ int nilfs_read_inode_common(struct inode *inode,
 	inode->i_mtime.tv_nsec = le32_to_cpu(raw_inode->i_mtime_nsec);
 	if (inode->i_nlink == 0 && inode->i_mode == 0)
 		return -EINVAL; /* this inode is deleted */
+=======
+	i_uid_write(inode, le32_to_cpu(raw_inode->i_uid));
+	i_gid_write(inode, le32_to_cpu(raw_inode->i_gid));
+	set_nlink(inode, le16_to_cpu(raw_inode->i_links_count));
+	inode->i_size = le64_to_cpu(raw_inode->i_size);
+	inode_set_atime(inode, le64_to_cpu(raw_inode->i_mtime),
+			le32_to_cpu(raw_inode->i_mtime_nsec));
+	inode_set_ctime(inode, le64_to_cpu(raw_inode->i_ctime),
+			le32_to_cpu(raw_inode->i_ctime_nsec));
+	inode_set_mtime(inode, le64_to_cpu(raw_inode->i_mtime),
+			le32_to_cpu(raw_inode->i_mtime_nsec));
+	if (nilfs_is_metadata_file_inode(inode) && !S_ISREG(inode->i_mode))
+		return -EIO; /* this inode is for metadata and corrupted */
+	if (inode->i_nlink == 0)
+		return -ESTALE; /* this inode is deleted */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inode->i_blocks = le64_to_cpu(raw_inode->i_blocks);
 	ii->i_flags = le32_to_cpu(raw_inode->i_flags);
@@ -482,6 +809,10 @@ static int __nilfs_read_inode(struct super_block *sb,
 		inode->i_mapping->a_ops = &nilfs_aops;
 	} else if (S_ISLNK(inode->i_mode)) {
 		inode->i_op = &nilfs_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode->i_mapping->a_ops = &nilfs_aops;
 	} else {
 		inode->i_op = &nilfs_special_inode_operations;
@@ -489,6 +820,7 @@ static int __nilfs_read_inode(struct super_block *sb,
 			inode, inode->i_mode,
 			huge_decode_dev(le64_to_cpu(raw_inode->i_device_code)));
 	}
+<<<<<<< HEAD
 	nilfs_ifile_unmap_inode(root->ifile, ino, bh);
 	brelse(bh);
 	up_read(&NILFS_MDT(nilfs->ns_dat)->mi_sem);
@@ -497,6 +829,18 @@ static int __nilfs_read_inode(struct super_block *sb,
 
  failed_unmap:
 	nilfs_ifile_unmap_inode(root->ifile, ino, bh);
+=======
+	nilfs_ifile_unmap_inode(raw_inode);
+	brelse(bh);
+	up_read(&NILFS_MDT(nilfs->ns_dat)->mi_sem);
+	nilfs_set_inode_flags(inode);
+	mapping_set_gfp_mask(inode->i_mapping,
+			   mapping_gfp_constraint(inode->i_mapping, ~__GFP_FS));
+	return 0;
+
+ failed_unmap:
+	nilfs_ifile_unmap_inode(raw_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(bh);
 
  bad_inode:
@@ -513,6 +857,22 @@ static int nilfs_iget_test(struct inode *inode, void *opaque)
 		return 0;
 
 	ii = NILFS_I(inode);
+<<<<<<< HEAD
+=======
+	if (test_bit(NILFS_I_BTNC, &ii->i_state)) {
+		if (!args->for_btnc)
+			return 0;
+	} else if (args->for_btnc) {
+		return 0;
+	}
+	if (test_bit(NILFS_I_SHADOW, &ii->i_state)) {
+		if (!args->for_shadow)
+			return 0;
+	} else if (args->for_shadow) {
+		return 0;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!test_bit(NILFS_I_GCINODE, &ii->i_state))
 		return !args->for_gc;
 
@@ -524,6 +884,7 @@ static int nilfs_iget_set(struct inode *inode, void *opaque)
 	struct nilfs_iget_args *args = opaque;
 
 	inode->i_ino = args->ino;
+<<<<<<< HEAD
 	if (args->for_gc) {
 		NILFS_I(inode)->i_state = 1 << NILFS_I_GCINODE;
 		NILFS_I(inode)->i_cno = args->cno;
@@ -533,6 +894,19 @@ static int nilfs_iget_set(struct inode *inode, void *opaque)
 			nilfs_get_root(args->root);
 		NILFS_I(inode)->i_root = args->root;
 	}
+=======
+	NILFS_I(inode)->i_cno = args->cno;
+	NILFS_I(inode)->i_root = args->root;
+	if (args->root && args->ino == NILFS_ROOT_INO)
+		nilfs_get_root(args->root);
+
+	if (args->for_gc)
+		NILFS_I(inode)->i_state = BIT(NILFS_I_GCINODE);
+	if (args->for_btnc)
+		NILFS_I(inode)->i_state |= BIT(NILFS_I_BTNC);
+	if (args->for_shadow)
+		NILFS_I(inode)->i_state |= BIT(NILFS_I_SHADOW);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -540,7 +914,12 @@ struct inode *nilfs_ilookup(struct super_block *sb, struct nilfs_root *root,
 			    unsigned long ino)
 {
 	struct nilfs_iget_args args = {
+<<<<<<< HEAD
 		.ino = ino, .root = root, .cno = 0, .for_gc = 0
+=======
+		.ino = ino, .root = root, .cno = 0, .for_gc = false,
+		.for_btnc = false, .for_shadow = false
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	return ilookup5(sb, ino, nilfs_iget_test, &args);
@@ -550,7 +929,12 @@ struct inode *nilfs_iget_locked(struct super_block *sb, struct nilfs_root *root,
 				unsigned long ino)
 {
 	struct nilfs_iget_args args = {
+<<<<<<< HEAD
 		.ino = ino, .root = root, .cno = 0, .for_gc = 0
+=======
+		.ino = ino, .root = root, .cno = 0, .for_gc = false,
+		.for_btnc = false, .for_shadow = false
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	return iget5_locked(sb, ino, nilfs_iget_test, nilfs_iget_set, &args);
@@ -581,7 +965,12 @@ struct inode *nilfs_iget_for_gc(struct super_block *sb, unsigned long ino,
 				__u64 cno)
 {
 	struct nilfs_iget_args args = {
+<<<<<<< HEAD
 		.ino = ino, .root = NULL, .cno = cno, .for_gc = 1
+=======
+		.ino = ino, .root = NULL, .cno = cno, .for_gc = true,
+		.for_btnc = false, .for_shadow = false
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	struct inode *inode;
 	int err;
@@ -601,12 +990,135 @@ struct inode *nilfs_iget_for_gc(struct super_block *sb, unsigned long ino,
 	return inode;
 }
 
+<<<<<<< HEAD
 void nilfs_write_inode_common(struct inode *inode,
 			      struct nilfs_inode *raw_inode, int has_bmap)
+=======
+/**
+ * nilfs_attach_btree_node_cache - attach a B-tree node cache to the inode
+ * @inode: inode object
+ *
+ * nilfs_attach_btree_node_cache() attaches a B-tree node cache to @inode,
+ * or does nothing if the inode already has it.  This function allocates
+ * an additional inode to maintain page cache of B-tree nodes one-on-one.
+ *
+ * Return Value: On success, 0 is returned. On errors, one of the following
+ * negative error code is returned.
+ *
+ * %-ENOMEM - Insufficient memory available.
+ */
+int nilfs_attach_btree_node_cache(struct inode *inode)
+{
+	struct nilfs_inode_info *ii = NILFS_I(inode);
+	struct inode *btnc_inode;
+	struct nilfs_iget_args args;
+
+	if (ii->i_assoc_inode)
+		return 0;
+
+	args.ino = inode->i_ino;
+	args.root = ii->i_root;
+	args.cno = ii->i_cno;
+	args.for_gc = test_bit(NILFS_I_GCINODE, &ii->i_state) != 0;
+	args.for_btnc = true;
+	args.for_shadow = test_bit(NILFS_I_SHADOW, &ii->i_state) != 0;
+
+	btnc_inode = iget5_locked(inode->i_sb, inode->i_ino, nilfs_iget_test,
+				  nilfs_iget_set, &args);
+	if (unlikely(!btnc_inode))
+		return -ENOMEM;
+	if (btnc_inode->i_state & I_NEW) {
+		nilfs_init_btnc_inode(btnc_inode);
+		unlock_new_inode(btnc_inode);
+	}
+	NILFS_I(btnc_inode)->i_assoc_inode = inode;
+	NILFS_I(btnc_inode)->i_bmap = ii->i_bmap;
+	ii->i_assoc_inode = btnc_inode;
+
+	return 0;
+}
+
+/**
+ * nilfs_detach_btree_node_cache - detach the B-tree node cache from the inode
+ * @inode: inode object
+ *
+ * nilfs_detach_btree_node_cache() detaches the B-tree node cache and its
+ * holder inode bound to @inode, or does nothing if @inode doesn't have it.
+ */
+void nilfs_detach_btree_node_cache(struct inode *inode)
+{
+	struct nilfs_inode_info *ii = NILFS_I(inode);
+	struct inode *btnc_inode = ii->i_assoc_inode;
+
+	if (btnc_inode) {
+		NILFS_I(btnc_inode)->i_assoc_inode = NULL;
+		ii->i_assoc_inode = NULL;
+		iput(btnc_inode);
+	}
+}
+
+/**
+ * nilfs_iget_for_shadow - obtain inode for shadow mapping
+ * @inode: inode object that uses shadow mapping
+ *
+ * nilfs_iget_for_shadow() allocates a pair of inodes that holds page
+ * caches for shadow mapping.  The page cache for data pages is set up
+ * in one inode and the one for b-tree node pages is set up in the
+ * other inode, which is attached to the former inode.
+ *
+ * Return Value: On success, a pointer to the inode for data pages is
+ * returned. On errors, one of the following negative error code is returned
+ * in a pointer type.
+ *
+ * %-ENOMEM - Insufficient memory available.
+ */
+struct inode *nilfs_iget_for_shadow(struct inode *inode)
+{
+	struct nilfs_iget_args args = {
+		.ino = inode->i_ino, .root = NULL, .cno = 0, .for_gc = false,
+		.for_btnc = false, .for_shadow = true
+	};
+	struct inode *s_inode;
+	int err;
+
+	s_inode = iget5_locked(inode->i_sb, inode->i_ino, nilfs_iget_test,
+			       nilfs_iget_set, &args);
+	if (unlikely(!s_inode))
+		return ERR_PTR(-ENOMEM);
+	if (!(s_inode->i_state & I_NEW))
+		return inode;
+
+	NILFS_I(s_inode)->i_flags = 0;
+	memset(NILFS_I(s_inode)->i_bmap, 0, sizeof(struct nilfs_bmap));
+	mapping_set_gfp_mask(s_inode->i_mapping, GFP_NOFS);
+
+	err = nilfs_attach_btree_node_cache(s_inode);
+	if (unlikely(err)) {
+		iget_failed(s_inode);
+		return ERR_PTR(err);
+	}
+	unlock_new_inode(s_inode);
+	return s_inode;
+}
+
+/**
+ * nilfs_write_inode_common - export common inode information to on-disk inode
+ * @inode:     inode object
+ * @raw_inode: on-disk inode
+ *
+ * This function writes standard information from the on-memory inode @inode
+ * to @raw_inode on ifile, cpfile or a super root block.  Since inode bmap
+ * data is not exported, nilfs_bmap_write() must be called separately during
+ * log writing.
+ */
+void nilfs_write_inode_common(struct inode *inode,
+			      struct nilfs_inode *raw_inode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nilfs_inode_info *ii = NILFS_I(inode);
 
 	raw_inode->i_mode = cpu_to_le16(inode->i_mode);
+<<<<<<< HEAD
 	raw_inode->i_uid = cpu_to_le32(inode->i_uid);
 	raw_inode->i_gid = cpu_to_le32(inode->i_gid);
 	raw_inode->i_links_count = cpu_to_le16(inode->i_nlink);
@@ -615,11 +1127,22 @@ void nilfs_write_inode_common(struct inode *inode,
 	raw_inode->i_mtime = cpu_to_le64(inode->i_mtime.tv_sec);
 	raw_inode->i_ctime_nsec = cpu_to_le32(inode->i_ctime.tv_nsec);
 	raw_inode->i_mtime_nsec = cpu_to_le32(inode->i_mtime.tv_nsec);
+=======
+	raw_inode->i_uid = cpu_to_le32(i_uid_read(inode));
+	raw_inode->i_gid = cpu_to_le32(i_gid_read(inode));
+	raw_inode->i_links_count = cpu_to_le16(inode->i_nlink);
+	raw_inode->i_size = cpu_to_le64(inode->i_size);
+	raw_inode->i_ctime = cpu_to_le64(inode_get_ctime_sec(inode));
+	raw_inode->i_mtime = cpu_to_le64(inode_get_mtime_sec(inode));
+	raw_inode->i_ctime_nsec = cpu_to_le32(inode_get_ctime_nsec(inode));
+	raw_inode->i_mtime_nsec = cpu_to_le32(inode_get_mtime_nsec(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raw_inode->i_blocks = cpu_to_le64(inode->i_blocks);
 
 	raw_inode->i_flags = cpu_to_le32(ii->i_flags);
 	raw_inode->i_generation = cpu_to_le32(inode->i_generation);
 
+<<<<<<< HEAD
 	if (NILFS_ROOT_METADATA_FILE(inode->i_ino)) {
 		struct the_nilfs *nilfs = inode->i_sb->s_fs_info;
 
@@ -640,6 +1163,15 @@ void nilfs_write_inode_common(struct inode *inode,
 }
 
 void nilfs_update_inode(struct inode *inode, struct buffer_head *ibh)
+=======
+	/*
+	 * When extending inode, nilfs->ns_inode_size should be checked
+	 * for substitutions of appended fields.
+	 */
+}
+
+void nilfs_update_inode(struct inode *inode, struct buffer_head *ibh, int flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ino_t ino = inode->i_ino;
 	struct nilfs_inode_info *ii = NILFS_I(inode);
@@ -650,6 +1182,7 @@ void nilfs_update_inode(struct inode *inode, struct buffer_head *ibh)
 
 	if (test_and_clear_bit(NILFS_I_NEW, &ii->i_state))
 		memset(raw_inode, 0, NILFS_MDT(ifile)->mi_entry_size);
+<<<<<<< HEAD
 	set_bit(NILFS_I_INODE_DIRTY, &ii->i_state);
 
 	nilfs_write_inode_common(inode, raw_inode, 0);
@@ -657,6 +1190,18 @@ void nilfs_update_inode(struct inode *inode, struct buffer_head *ibh)
 		   deadlock of bmap. This delays update of i_bmap to just
 		   before writing */
 	nilfs_ifile_unmap_inode(ifile, ino, ibh);
+=======
+	if (flags & I_DIRTY_DATASYNC)
+		set_bit(NILFS_I_INODE_SYNC, &ii->i_state);
+
+	nilfs_write_inode_common(inode, raw_inode);
+
+	if (S_ISCHR(inode->i_mode) || S_ISBLK(inode->i_mode))
+		raw_inode->i_device_code =
+			cpu_to_le64(huge_encode_dev(inode->i_rdev));
+
+	nilfs_ifile_unmap_inode(raw_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define NILFS_MAX_TRUNCATE_BLOCKS	16384  /* 64MB for 4KB block */
@@ -664,7 +1209,11 @@ void nilfs_update_inode(struct inode *inode, struct buffer_head *ibh)
 static void nilfs_truncate_bmap(struct nilfs_inode_info *ii,
 				unsigned long from)
 {
+<<<<<<< HEAD
 	unsigned long b;
+=======
+	__u64 b;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (!test_bit(NILFS_I_BMAP, &ii->i_state))
@@ -679,7 +1228,11 @@ repeat:
 	if (b < from)
 		return;
 
+<<<<<<< HEAD
 	b -= min_t(unsigned long, NILFS_MAX_TRUNCATE_BLOCKS, b - from);
+=======
+	b -= min_t(__u64, NILFS_MAX_TRUNCATE_BLOCKS, b - from);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = nilfs_bmap_truncate(ii->i_bmap, b);
 	nilfs_relax_pressure_in_lock(ii->vfs_inode.i_sb);
 	if (!ret || (ret == -ENOMEM &&
@@ -687,9 +1240,14 @@ repeat:
 		goto repeat;
 
 failed:
+<<<<<<< HEAD
 	nilfs_warning(ii->vfs_inode.i_sb, __func__,
 		      "failed to truncate bmap (ino=%lu, err=%d)",
 		      ii->vfs_inode.i_ino, ret);
+=======
+	nilfs_warn(ii->vfs_inode.i_sb, "error %d truncating bmap (ino=%lu)",
+		   ret, ii->vfs_inode.i_ino);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nilfs_truncate(struct inode *inode)
@@ -713,21 +1271,35 @@ void nilfs_truncate(struct inode *inode)
 
 	nilfs_truncate_bmap(ii, blkoff);
 
+<<<<<<< HEAD
 	inode->i_mtime = inode->i_ctime = CURRENT_TIME;
+=======
+	inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_SYNC(inode))
 		nilfs_set_transaction_flag(NILFS_TI_SYNC);
 
 	nilfs_mark_inode_dirty(inode);
 	nilfs_set_file_dirty(inode, 0);
 	nilfs_transaction_commit(sb);
+<<<<<<< HEAD
 	/* May construct a logical segment and may fail in sync mode.
 	   But truncate has no return value. */
+=======
+	/*
+	 * May construct a logical segment and may fail in sync mode.
+	 * But truncate has no return value.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nilfs_clear_inode(struct inode *inode)
 {
 	struct nilfs_inode_info *ii = NILFS_I(inode);
+<<<<<<< HEAD
 	struct nilfs_mdt_info *mdi = NILFS_MDT(inode);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Free resources allocated in nilfs_read_inode(), here.
@@ -736,13 +1308,23 @@ static void nilfs_clear_inode(struct inode *inode)
 	brelse(ii->i_bh);
 	ii->i_bh = NULL;
 
+<<<<<<< HEAD
 	if (mdi && mdi->mi_palloc_cache)
 		nilfs_palloc_destroy_cache(inode);
+=======
+	if (nilfs_is_metadata_file_inode(inode))
+		nilfs_mdt_clear(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_bit(NILFS_I_BMAP, &ii->i_state))
 		nilfs_bmap_clear(ii->i_bmap);
 
+<<<<<<< HEAD
 	nilfs_btnode_cache_clear(&ii->i_btnode_cache);
+=======
+	if (!test_bit(NILFS_I_BTNC, &ii->i_state))
+		nilfs_detach_btree_node_cache(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ii->i_root && inode->i_ino == NILFS_ROOT_INO)
 		nilfs_put_root(ii->i_root);
@@ -753,34 +1335,73 @@ void nilfs_evict_inode(struct inode *inode)
 	struct nilfs_transaction_info ti;
 	struct super_block *sb = inode->i_sb;
 	struct nilfs_inode_info *ii = NILFS_I(inode);
+<<<<<<< HEAD
 	int ret;
 
 	if (inode->i_nlink || !ii->i_root || unlikely(is_bad_inode(inode))) {
 		if (inode->i_data.nrpages)
 			truncate_inode_pages(&inode->i_data, 0);
 		end_writeback(inode);
+=======
+	struct the_nilfs *nilfs;
+	int ret;
+
+	if (inode->i_nlink || !ii->i_root || unlikely(is_bad_inode(inode))) {
+		truncate_inode_pages_final(&inode->i_data);
+		clear_inode(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nilfs_clear_inode(inode);
 		return;
 	}
 	nilfs_transaction_begin(sb, &ti, 0); /* never fails */
 
+<<<<<<< HEAD
 	if (inode->i_data.nrpages)
 		truncate_inode_pages(&inode->i_data, 0);
+=======
+	truncate_inode_pages_final(&inode->i_data);
+
+	nilfs = sb->s_fs_info;
+	if (unlikely(sb_rdonly(sb) || !nilfs->ns_writer)) {
+		/*
+		 * If this inode is about to be disposed after the file system
+		 * has been degraded to read-only due to file system corruption
+		 * or after the writer has been detached, do not make any
+		 * changes that cause writes, just clear it.
+		 * Do this check after read-locking ns_segctor_sem by
+		 * nilfs_transaction_begin() in order to avoid a race with
+		 * the writer detach operation.
+		 */
+		clear_inode(inode);
+		nilfs_clear_inode(inode);
+		nilfs_transaction_abort(sb);
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* TODO: some of the following operations may fail.  */
 	nilfs_truncate_bmap(ii, 0);
 	nilfs_mark_inode_dirty(inode);
+<<<<<<< HEAD
 	end_writeback(inode);
 
 	ret = nilfs_ifile_delete_inode(ii->i_root->ifile, inode->i_ino);
 	if (!ret)
 		atomic_dec(&ii->i_root->inodes_count);
+=======
+	clear_inode(inode);
+
+	ret = nilfs_ifile_delete_inode(ii->i_root->ifile, inode->i_ino);
+	if (!ret)
+		atomic64_dec(&ii->i_root->inodes_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nilfs_clear_inode(inode);
 
 	if (IS_SYNC(inode))
 		nilfs_set_transaction_flag(NILFS_TI_SYNC);
 	nilfs_transaction_commit(sb);
+<<<<<<< HEAD
 	/* May construct a logical segment and may fail in sync mode.
 	   But delete_inode has no return value. */
 }
@@ -793,6 +1414,23 @@ int nilfs_setattr(struct dentry *dentry, struct iattr *iattr)
 	int err;
 
 	err = inode_change_ok(inode, iattr);
+=======
+	/*
+	 * May construct a logical segment and may fail in sync mode.
+	 * But delete_inode has no return value.
+	 */
+}
+
+int nilfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
+		  struct iattr *iattr)
+{
+	struct nilfs_transaction_info ti;
+	struct inode *inode = d_inode(dentry);
+	struct super_block *sb = inode->i_sb;
+	int err;
+
+	err = setattr_prepare(&nop_mnt_idmap, dentry, iattr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -803,6 +1441,7 @@ int nilfs_setattr(struct dentry *dentry, struct iattr *iattr)
 	if ((iattr->ia_valid & ATTR_SIZE) &&
 	    iattr->ia_size != i_size_read(inode)) {
 		inode_dio_wait(inode);
+<<<<<<< HEAD
 
 		err = vmtruncate(inode, iattr->ia_size);
 		if (unlikely(err))
@@ -810,6 +1449,13 @@ int nilfs_setattr(struct dentry *dentry, struct iattr *iattr)
 	}
 
 	setattr_copy(inode, iattr);
+=======
+		truncate_setsize(inode, iattr->ia_size);
+		nilfs_truncate(inode);
+	}
+
+	setattr_copy(&nop_mnt_idmap, inode, iattr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 
 	if (iattr->ia_valid & ATTR_MODE) {
@@ -825,14 +1471,26 @@ out_err:
 	return err;
 }
 
+<<<<<<< HEAD
 int nilfs_permission(struct inode *inode, int mask)
 {
 	struct nilfs_root *root = NILFS_I(inode)->i_root;
+=======
+int nilfs_permission(struct mnt_idmap *idmap, struct inode *inode,
+		     int mask)
+{
+	struct nilfs_root *root = NILFS_I(inode)->i_root;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((mask & MAY_WRITE) && root &&
 	    root->cno != NILFS_CPTREE_CURRENT_CNO)
 		return -EROFS; /* snapshot is not writable */
 
+<<<<<<< HEAD
 	return generic_permission(inode, mask);
+=======
+	return generic_permission(&nop_mnt_idmap, inode, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int nilfs_load_inode_block(struct inode *inode, struct buffer_head **pbh)
@@ -842,7 +1500,11 @@ int nilfs_load_inode_block(struct inode *inode, struct buffer_head **pbh)
 	int err;
 
 	spin_lock(&nilfs->ns_inode_lock);
+<<<<<<< HEAD
 	if (ii->i_bh == NULL) {
+=======
+	if (ii->i_bh == NULL || unlikely(!buffer_uptodate(ii->i_bh))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&nilfs->ns_inode_lock);
 		err = nilfs_ifile_get_inode_block(ii->i_root->ifile,
 						  inode->i_ino, pbh);
@@ -851,7 +1513,14 @@ int nilfs_load_inode_block(struct inode *inode, struct buffer_head **pbh)
 		spin_lock(&nilfs->ns_inode_lock);
 		if (ii->i_bh == NULL)
 			ii->i_bh = *pbh;
+<<<<<<< HEAD
 		else {
+=======
+		else if (unlikely(!buffer_uptodate(ii->i_bh))) {
+			__brelse(ii->i_bh);
+			ii->i_bh = *pbh;
+		} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			brelse(*pbh);
 			*pbh = ii->i_bh;
 		}
@@ -878,7 +1547,11 @@ int nilfs_inode_dirty(struct inode *inode)
 	return ret;
 }
 
+<<<<<<< HEAD
 int nilfs_set_file_dirty(struct inode *inode, unsigned nr_dirty)
+=======
+int nilfs_set_file_dirty(struct inode *inode, unsigned int nr_dirty)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nilfs_inode_info *ii = NILFS_I(inode);
 	struct the_nilfs *nilfs = inode->i_sb->s_fs_info;
@@ -891,6 +1564,7 @@ int nilfs_set_file_dirty(struct inode *inode, unsigned nr_dirty)
 	spin_lock(&nilfs->ns_inode_lock);
 	if (!test_bit(NILFS_I_QUEUED, &ii->i_state) &&
 	    !test_bit(NILFS_I_BUSY, &ii->i_state)) {
+<<<<<<< HEAD
 		/* Because this routine may race with nilfs_dispose_list(),
 		   we have to check NILFS_I_QUEUED here, too. */
 		if (list_empty(&ii->i_dirty) && igrab(inode) == NULL) {
@@ -902,6 +1576,25 @@ int nilfs_set_file_dirty(struct inode *inode, unsigned nr_dirty)
 			spin_unlock(&nilfs->ns_inode_lock);
 			return -EINVAL; /* NILFS_I_DIRTY may remain for
 					   freeing inode */
+=======
+		/*
+		 * Because this routine may race with nilfs_dispose_list(),
+		 * we have to check NILFS_I_QUEUED here, too.
+		 */
+		if (list_empty(&ii->i_dirty) && igrab(inode) == NULL) {
+			/*
+			 * This will happen when somebody is freeing
+			 * this inode.
+			 */
+			nilfs_warn(inode->i_sb,
+				   "cannot set file dirty (ino=%lu): the file is being freed",
+				   inode->i_ino);
+			spin_unlock(&nilfs->ns_inode_lock);
+			return -EINVAL; /*
+					 * NILFS_I_DIRTY may remain for
+					 * freeing inode.
+					 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		list_move_tail(&ii->i_dirty, &nilfs->ns_dirty_files);
 		set_bit(NILFS_I_QUEUED, &ii->i_state);
@@ -910,6 +1603,7 @@ int nilfs_set_file_dirty(struct inode *inode, unsigned nr_dirty)
 	return 0;
 }
 
+<<<<<<< HEAD
 int nilfs_mark_inode_dirty(struct inode *inode)
 {
 	struct buffer_head *ibh;
@@ -922,6 +1616,29 @@ int nilfs_mark_inode_dirty(struct inode *inode)
 		return err;
 	}
 	nilfs_update_inode(inode, ibh);
+=======
+int __nilfs_mark_inode_dirty(struct inode *inode, int flags)
+{
+	struct the_nilfs *nilfs = inode->i_sb->s_fs_info;
+	struct buffer_head *ibh;
+	int err;
+
+	/*
+	 * Do not dirty inodes after the log writer has been detached
+	 * and its nilfs_root struct has been freed.
+	 */
+	if (unlikely(nilfs_purging(nilfs)))
+		return 0;
+
+	err = nilfs_load_inode_block(inode, &ibh);
+	if (unlikely(err)) {
+		nilfs_warn(inode->i_sb,
+			   "cannot mark inode dirty (ino=%lu): error %d loading inode block",
+			   inode->i_ino, err);
+		return err;
+	}
+	nilfs_update_inode(inode, ibh, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_buffer_dirty(ibh);
 	nilfs_mdt_mark_dirty(NILFS_I(inode)->i_root->ifile);
 	brelse(ibh);
@@ -931,6 +1648,10 @@ int nilfs_mark_inode_dirty(struct inode *inode)
 /**
  * nilfs_dirty_inode - reflect changes on given inode to an inode block.
  * @inode: inode of the file to be registered.
+<<<<<<< HEAD
+=======
+ * @flags: flags to determine the dirty state of the inode
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * nilfs_dirty_inode() loads a inode block containing the specified
  * @inode and copies data from a nilfs_inode to a corresponding inode
@@ -944,8 +1665,13 @@ void nilfs_dirty_inode(struct inode *inode, int flags)
 	struct nilfs_mdt_info *mdi = NILFS_MDT(inode);
 
 	if (is_bad_inode(inode)) {
+<<<<<<< HEAD
 		nilfs_warning(inode->i_sb, __func__,
 			      "tried to mark bad_inode dirty. ignored.\n");
+=======
+		nilfs_warn(inode->i_sb,
+			   "tried to mark bad_inode dirty. ignored.");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dump_stack();
 		return;
 	}
@@ -954,7 +1680,11 @@ void nilfs_dirty_inode(struct inode *inode, int flags)
 		return;
 	}
 	nilfs_transaction_begin(inode->i_sb, &ti, 0);
+<<<<<<< HEAD
 	nilfs_mark_inode_dirty(inode);
+=======
+	__nilfs_mark_inode_dirty(inode, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nilfs_transaction_commit(inode->i_sb); /* never fails */
 }
 
@@ -971,11 +1701,19 @@ int nilfs_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
 	unsigned int blkbits = inode->i_blkbits;
 	int ret, n;
 
+<<<<<<< HEAD
 	ret = fiemap_check_flags(fieinfo, FIEMAP_FLAG_SYNC);
 	if (ret)
 		return ret;
 
 	mutex_lock(&inode->i_mutex);
+=======
+	ret = fiemap_prep(inode, fieinfo, start, &len, 0);
+	if (ret)
+		return ret;
+
+	inode_lock(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	isize = i_size_read(inode);
 
@@ -1085,6 +1823,10 @@ int nilfs_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
 	if (ret == 1)
 		ret = 0;
 
+<<<<<<< HEAD
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_unlock(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 
 (c) 2008 NetApp.  All Rights Reserved.
 
+<<<<<<< HEAD
 NetApp provides this source code under the GPL v2 License.
 The GPL v2 license is available at
 http://opensource.org/licenses/gpl-license.php.
@@ -17,6 +22,8 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ******************************************************************************/
 
@@ -37,6 +44,7 @@ struct rpc_buffer {
 	char	data[];
 };
 
+<<<<<<< HEAD
 static inline int rpc_reply_expected(struct rpc_task *task)
 {
 	return (task->tk_msg.rpc_proc != NULL) &&
@@ -51,3 +59,22 @@ int rpc_clients_notifier_register(void);
 void rpc_clients_notifier_unregister(void);
 #endif /* _NET_SUNRPC_SUNRPC_H */
 
+=======
+static inline int sock_is_loopback(struct sock *sk)
+{
+	struct dst_entry *dst;
+	int loopback = 0;
+	rcu_read_lock();
+	dst = rcu_dereference(sk->sk_dst_cache);
+	if (dst && dst->dev &&
+	    (dst->dev->features & NETIF_F_LOOPBACK))
+		loopback = 1;
+	rcu_read_unlock();
+	return loopback;
+}
+
+int rpc_clients_notifier_register(void);
+void rpc_clients_notifier_unregister(void);
+void auth_domain_cleanup(void);
+#endif /* _NET_SUNRPC_SUNRPC_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

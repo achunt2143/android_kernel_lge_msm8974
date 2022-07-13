@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  HID driver for Kensigton Slimblade Trackball
  *
@@ -5,10 +9,13 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -47,6 +54,7 @@ static struct hid_driver ks_driver = {
 	.id_table = ks_devices,
 	.input_mapping = ks_input_mapping,
 };
+<<<<<<< HEAD
 
 static int __init ks_init(void)
 {
@@ -60,4 +68,8 @@ static void __exit ks_exit(void)
 
 module_init(ks_init);
 module_exit(ks_exit);
+=======
+module_hid_driver(ks_driver);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

@@ -25,7 +25,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -48,16 +51,26 @@
  *	criticial.
  */
 
+<<<<<<< HEAD
 static unsigned long sil680_selreg(struct ata_port *ap, int r)
 {
 	unsigned long base = 0xA0 + r;
 	base += (ap->port_no << 4);
 	return base;
+=======
+static int sil680_selreg(struct ata_port *ap, int r)
+{
+	return 0xA0 + (ap->port_no << 4) + r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  *	sil680_seldev		-	return register base
  *	@ap: ATA interface
+<<<<<<< HEAD
+=======
+ *	@adev: ATA device
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@r: config offset
  *
  *	Turn a config register offset into the right address in PCI space
@@ -65,12 +78,18 @@ static unsigned long sil680_selreg(struct ata_port *ap, int r)
  *	the unit shift.
  */
 
+<<<<<<< HEAD
 static unsigned long sil680_seldev(struct ata_port *ap, struct ata_device *adev, int r)
 {
 	unsigned long base = 0xA0 + r;
 	base += (ap->port_no << 4);
 	base |= adev->devno ? 2 : 0;
 	return base;
+=======
+static int sil680_seldev(struct ata_port *ap, struct ata_device *adev, int r)
+{
+	return 0xA0 + (ap->port_no << 4) + r + (adev->devno << 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -85,8 +104,14 @@ static unsigned long sil680_seldev(struct ata_port *ap, struct ata_device *adev,
 static int sil680_cable_detect(struct ata_port *ap)
 {
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
+<<<<<<< HEAD
 	unsigned long addr = sil680_selreg(ap, 0);
 	u8 ata66;
+=======
+	int addr = sil680_selreg(ap, 0);
+	u8 ata66;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_read_config_byte(pdev, addr, &ata66);
 	if (ata66 & 1)
 		return ATA_CBL_PATA80;
@@ -113,9 +138,15 @@ static void sil680_set_piomode(struct ata_port *ap, struct ata_device *adev)
 		0x328A, 0x2283, 0x1281, 0x10C3, 0x10C1
 	};
 
+<<<<<<< HEAD
 	unsigned long tfaddr = sil680_selreg(ap, 0x02);
 	unsigned long addr = sil680_seldev(ap, adev, 0x04);
 	unsigned long addr_mask = 0x80 + 4 * ap->port_no;
+=======
+	int tfaddr = sil680_selreg(ap, 0x02);
+	int addr = sil680_seldev(ap, adev, 0x04);
+	int addr_mask = 0x80 + 4 * ap->port_no;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
 	int pio = adev->pio_mode - XFER_PIO_0;
 	int lowest_pio = pio;
@@ -165,9 +196,15 @@ static void sil680_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 	static const u16 dma_table[3] = { 0x2208, 0x10C2, 0x10C1 };
 
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
+<<<<<<< HEAD
 	unsigned long ma = sil680_seldev(ap, adev, 0x08);
 	unsigned long ua = sil680_seldev(ap, adev, 0x0C);
 	unsigned long addr_mask = 0x80 + 4 * ap->port_no;
+=======
+	int ma = sil680_seldev(ap, adev, 0x08);
+	int ua = sil680_seldev(ap, adev, 0x0C);
+	int addr_mask = 0x80 + 4 * ap->port_no;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int port_shift = adev->devno * 4;
 	u8 scsc, mode;
 	u16 multi, ultra;
@@ -212,7 +249,10 @@ static void sil680_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 static void sil680_sff_exec_command(struct ata_port *ap,
 				    const struct ata_taskfile *tf)
 {
+<<<<<<< HEAD
 	DPRINTK("ata%u: cmd 0x%X\n", ap->print_id, tf->command);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iowrite8(tf->command, ap->ioaddr.command_addr);
 	ioread8(ap->ioaddr.bmdma_addr + ATA_DMA_CMD);
 }
@@ -220,7 +260,11 @@ static void sil680_sff_exec_command(struct ata_port *ap,
 static bool sil680_sff_irq_check(struct ata_port *ap)
 {
 	struct pci_dev *pdev	= to_pci_dev(ap->host->dev);
+<<<<<<< HEAD
 	unsigned long addr	= sil680_selreg(ap, 1);
+=======
+	int addr		= sil680_selreg(ap, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 val;
 
 	pci_read_config_byte(pdev, addr, &val);
@@ -228,7 +272,11 @@ static bool sil680_sff_irq_check(struct ata_port *ap)
 	return val & 0x08;
 }
 
+<<<<<<< HEAD
 static struct scsi_host_template sil680_sht = {
+=======
+static const struct scsi_host_template sil680_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -245,6 +293,10 @@ static struct ata_port_operations sil680_port_ops = {
 /**
  *	sil680_init_chip		-	chip setup
  *	@pdev: PCI device
+<<<<<<< HEAD
+=======
+ *	@try_mmio: Indicates to caller whether MMIO should be attempted
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Perform all the chip setup which must be done both when the device
  *	is powered up on boot and when we resume in case we resumed from RAM.
@@ -308,6 +360,7 @@ static u8 sil680_init_chip(struct pci_dev *pdev, int *try_mmio)
 
 	switch (tmpbyte & 0x30) {
 	case 0x00:
+<<<<<<< HEAD
 		printk(KERN_INFO "sil680: 100MHz clock.\n");
 		break;
 	case 0x10:
@@ -319,12 +372,29 @@ static u8 sil680_init_chip(struct pci_dev *pdev, int *try_mmio)
 	/* This last case is _NOT_ ok */
 	case 0x30:
 		printk(KERN_ERR "sil680: Clock disabled ?\n");
+=======
+		dev_info(&pdev->dev, "sil680: 100MHz clock.\n");
+		break;
+	case 0x10:
+		dev_info(&pdev->dev, "sil680: 133MHz clock.\n");
+		break;
+	case 0x20:
+		dev_info(&pdev->dev, "sil680: Using PCI clock.\n");
+		break;
+	/* This last case is _NOT_ ok */
+	case 0x30:
+		dev_err(&pdev->dev, "sil680: Clock disabled ?\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return tmpbyte & 0x30;
 }
 
+<<<<<<< HEAD
 static int __devinit sil680_init_one(struct pci_dev *pdev,
 				     const struct pci_device_id *id)
+=======
+static int sil680_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const struct ata_port_info info = {
 		.flags = ATA_FLAG_SLAVE_POSS,
@@ -376,10 +446,14 @@ static int __devinit sil680_init_one(struct pci_dev *pdev,
 	host->iomap = pcim_iomap_table(pdev);
 
 	/* Setup DMA masks */
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pdev, ATA_DMA_MASK);
 	if (rc)
 		return rc;
 	rc = pci_set_consistent_dma_mask(pdev, ATA_DMA_MASK);
+=======
+	rc = dma_set_mask_and_coherent(&pdev->dev, ATA_DMA_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 	pci_set_master(pdev);
@@ -405,10 +479,17 @@ use_ioports:
 	return ata_pci_bmdma_init_one(pdev, ppi, &sil680_sht, NULL, 0);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int sil680_reinit_one(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int sil680_reinit_one(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int try_mmio, rc;
 
 	rc = ata_pci_device_do_resume(pdev);
@@ -431,12 +512,17 @@ static struct pci_driver sil680_pci_driver = {
 	.id_table	= sil680,
 	.probe 		= sil680_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= sil680_reinit_one,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init sil680_init(void)
 {
 	return pci_register_driver(&sil680_pci_driver);
@@ -446,12 +532,18 @@ static void __exit sil680_exit(void)
 {
 	pci_unregister_driver(&sil680_pci_driver);
 }
+=======
+module_pci_driver(sil680_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for SI680 PATA");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, sil680);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(sil680_init);
 module_exit(sil680_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

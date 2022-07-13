@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * cistpl.h
  *
@@ -5,6 +6,12 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * cistpl.h
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The initial developer of the original code is David A. Hinds
  * <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
  * are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.
@@ -164,7 +171,11 @@ typedef struct cistpl_funcid_t {
 
 typedef struct cistpl_funce_t {
     u_char	type;
+<<<<<<< HEAD
     u_char	data[0];
+=======
+    u_char	data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } cistpl_funce_t;
 
 /*======================================================================
@@ -258,7 +269,11 @@ typedef struct cistpl_data_serv_t {
     u_char	escape;
     u_char	encrypt;
     u_char	misc_features;
+<<<<<<< HEAD
     u_char	ccitt_code[0];
+=======
+    u_char	ccitt_code[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } cistpl_data_serv_t;
 
 typedef struct cistpl_fax_serv_t {
@@ -268,7 +283,11 @@ typedef struct cistpl_fax_serv_t {
     u_char	encrypt;
     u_char	features_0;
     u_char	features_1;
+<<<<<<< HEAD
     u_char	ccitt_code[0];
+=======
+    u_char	ccitt_code[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } cistpl_fax_serv_t;
 
 typedef struct cistpl_voice_serv_t {

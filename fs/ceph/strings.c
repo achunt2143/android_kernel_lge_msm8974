@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Ceph fs string constants
  */
@@ -15,6 +19,10 @@ const char *ceph_mds_state_name(int s)
 	case CEPH_MDS_STATE_BOOT:       return "up:boot";
 	case CEPH_MDS_STATE_STANDBY:    return "up:standby";
 	case CEPH_MDS_STATE_STANDBY_REPLAY:    return "up:standby-replay";
+<<<<<<< HEAD
+=======
+	case CEPH_MDS_STATE_REPLAYONCE: return "up:oneshot-replay";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CEPH_MDS_STATE_CREATING:   return "up:creating";
 	case CEPH_MDS_STATE_STARTING:   return "up:starting";
 		/* up and in */
@@ -40,6 +48,14 @@ const char *ceph_session_op_name(int op)
 	case CEPH_SESSION_RENEWCAPS: return "renewcaps";
 	case CEPH_SESSION_STALE: return "stale";
 	case CEPH_SESSION_RECALL_STATE: return "recall_state";
+<<<<<<< HEAD
+=======
+	case CEPH_SESSION_FLUSHMSG: return "flushmsg";
+	case CEPH_SESSION_FLUSHMSG_ACK: return "flushmsg_ack";
+	case CEPH_SESSION_FORCE_RO: return "force_ro";
+	case CEPH_SESSION_REJECT: return "reject";
+	case CEPH_SESSION_REQUEST_FLUSH_MDLOG: return "flush_mdlog";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return "???";
 }
@@ -50,10 +66,22 @@ const char *ceph_mds_op_name(int op)
 	case CEPH_MDS_OP_LOOKUP:  return "lookup";
 	case CEPH_MDS_OP_LOOKUPHASH:  return "lookuphash";
 	case CEPH_MDS_OP_LOOKUPPARENT:  return "lookupparent";
+<<<<<<< HEAD
 	case CEPH_MDS_OP_GETATTR:  return "getattr";
 	case CEPH_MDS_OP_SETXATTR: return "setxattr";
 	case CEPH_MDS_OP_SETATTR: return "setattr";
 	case CEPH_MDS_OP_RMXATTR: return "rmxattr";
+=======
+	case CEPH_MDS_OP_LOOKUPINO:  return "lookupino";
+	case CEPH_MDS_OP_LOOKUPNAME:  return "lookupname";
+	case CEPH_MDS_OP_GETATTR:  return "getattr";
+	case CEPH_MDS_OP_GETVXATTR:  return "getvxattr";
+	case CEPH_MDS_OP_SETXATTR: return "setxattr";
+	case CEPH_MDS_OP_SETATTR: return "setattr";
+	case CEPH_MDS_OP_RMXATTR: return "rmxattr";
+	case CEPH_MDS_OP_SETLAYOUT: return "setlayou";
+	case CEPH_MDS_OP_SETDIRLAYOUT: return "setdirlayout";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CEPH_MDS_OP_READDIR: return "readdir";
 	case CEPH_MDS_OP_MKNOD: return "mknod";
 	case CEPH_MDS_OP_LINK: return "link";
@@ -68,6 +96,10 @@ const char *ceph_mds_op_name(int op)
 	case CEPH_MDS_OP_LSSNAP: return "lssnap";
 	case CEPH_MDS_OP_MKSNAP: return "mksnap";
 	case CEPH_MDS_OP_RMSNAP: return "rmsnap";
+<<<<<<< HEAD
+=======
+	case CEPH_MDS_OP_RENAMESNAP: return "renamesnap";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CEPH_MDS_OP_SETFILELOCK: return "setfilelock";
 	case CEPH_MDS_OP_GETFILELOCK: return "getfilelock";
 	}

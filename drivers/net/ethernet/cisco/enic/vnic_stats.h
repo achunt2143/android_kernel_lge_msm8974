@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
@@ -15,6 +16,12 @@
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
+ * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _VNIC_STATS_H_
@@ -62,6 +69,14 @@ struct vnic_rx_stats {
 	u64 rsvd[16];
 };
 
+<<<<<<< HEAD
+=======
+/* Generic statistics */
+struct vnic_gen_stats {
+	u64 dma_map_error;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vnic_stats {
 	struct vnic_tx_stats tx;
 	struct vnic_rx_stats rx;

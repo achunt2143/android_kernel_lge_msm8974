@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Patch transfer callback for Emu10k1
  *
  *  Copyright (C) 2000 Takashi iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * All the code for loading in a patch.  There is very little that is
@@ -40,7 +47,12 @@ snd_emu10k1_sample_new(struct snd_emux *rec, struct snd_sf_sample *sp,
 		       const void __user *data, long count)
 {
 	int offset;
+<<<<<<< HEAD
 	int truesize, size, loopsize, blocksize;
+=======
+	int truesize, size, blocksize;
+	__maybe_unused int loopsize;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int loopend, sampleend;
 	unsigned int start_addr;
 	struct snd_emu10k1 *emu;
@@ -50,7 +62,12 @@ snd_emu10k1_sample_new(struct snd_emux *rec, struct snd_sf_sample *sp,
 		return -EINVAL;
 
 	if (sp->v.size == 0) {
+<<<<<<< HEAD
 		snd_printd("emu: rom font for sample %d\n", sp->v.sample);
+=======
+		dev_dbg(emu->card->dev,
+			"emu: rom font for sample %d\n", sp->v.sample);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -69,11 +86,16 @@ snd_emu10k1_sample_new(struct snd_emux *rec, struct snd_sf_sample *sp,
 		loopend = sampleend;
 
 	/* be sure loop points start < end */
+<<<<<<< HEAD
 	if (sp->v.loopstart >= sp->v.loopend) {
 		int tmp = sp->v.loopstart;
 		sp->v.loopstart = sp->v.loopend;
 		sp->v.loopend = tmp;
 	}
+=======
+	if (sp->v.loopstart >= sp->v.loopend)
+		swap(sp->v.loopstart, sp->v.loopend);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* compute true data size to be loaded */
 	truesize = sp->v.size + BLANK_HEAD_SIZE;
@@ -92,7 +114,12 @@ snd_emu10k1_sample_new(struct snd_emux *rec, struct snd_sf_sample *sp,
 		blocksize *= 2;
 	sp->block = snd_emu10k1_synth_alloc(emu, blocksize);
 	if (sp->block == NULL) {
+<<<<<<< HEAD
 		snd_printd("emu10k1: synth malloc failed (size=%d)\n", blocksize);
+=======
+		dev_dbg(emu->card->dev,
+			"synth malloc failed (size=%d)\n", blocksize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* not ENOMEM (for compatibility with OSS) */
 		return -ENOSPC;
 	}
@@ -123,7 +150,11 @@ snd_emu10k1_sample_new(struct snd_emux *rec, struct snd_sf_sample *sp,
 	offset += size;
 	data += size;
 
+<<<<<<< HEAD
 #if 0 /* not suppported yet */
+=======
+#if 0 /* not supported yet */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* handle reverse (or bidirectional) loop */
 	if (sp->v.mode_flags & (SNDRV_SFNT_SAMPLE_BIDIR_LOOP|SNDRV_SFNT_SAMPLE_REVERSE_LOOP)) {
 		/* copy loop in reverse */

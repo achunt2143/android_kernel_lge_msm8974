@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * IO definitions for the Hexagon architecture
  *
@@ -16,6 +17,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * IO definitions for the Hexagon architecture
+ *
+ * Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_IO_H
@@ -24,6 +32,7 @@
 #ifdef __KERNEL__
 
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
 #include <linux/vmalloc.h>
 #include <asm/string.h>
@@ -32,6 +41,11 @@
 #include <asm/page.h>
 #include <asm/cacheflush.h>
 #include <asm/tlbflush.h>
+=======
+#include <asm/iomap.h>
+#include <asm/page.h>
+#include <asm/cacheflush.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We don't have PCI yet.
@@ -40,11 +54,19 @@
 #define IO_SPACE_LIMIT 0xffff
 #define _IO_BASE ((void __iomem *)0xfe000000)
 
+<<<<<<< HEAD
 extern int remap_area_pages(unsigned long start, unsigned long phys_addr,
 				unsigned long end, unsigned long flags);
 
 extern void __iounmap(const volatile void __iomem *addr);
 
+=======
+#define IOMEM(x)        ((void __force __iomem *)(x))
+
+extern int remap_area_pages(unsigned long start, unsigned long phys_addr,
+				unsigned long end, unsigned long flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Defined in lib/io.c, needed for smc91x driver. */
 extern void __raw_readsw(const void __iomem *addr, void *data, int wordlen);
 extern void __raw_writesw(void __iomem *addr, const void *data, int wordlen);
@@ -77,6 +99,7 @@ static inline void *phys_to_virt(unsigned long address)
 }
 
 /*
+<<<<<<< HEAD
  * convert a physical pointer to a virtual kernel pointer for
  * /dev/mem access.
  */
@@ -84,6 +107,8 @@ static inline void *phys_to_virt(unsigned long address)
 #define xlate_dev_mem_ptr(p)    __va(p)
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * IO port access primitives.  Hexagon doesn't have special IO access
  * instructions; all I/O is memory mapped.
  *
@@ -176,6 +201,7 @@ static inline void writel(u32 data, volatile void __iomem *addr)
 #define __raw_readl readl
 
 /*
+<<<<<<< HEAD
  * Need an mtype somewhere in here, for cache type deals?
  * This is probably too long for an inline.
  */
@@ -190,6 +216,24 @@ static inline void iounmap(volatile void __iomem *addr)
 {
 	__iounmap(addr);
 }
+=======
+ * http://comments.gmane.org/gmane.linux.ports.arm.kernel/117626
+ */
+
+#define readb_relaxed __raw_readb
+#define readw_relaxed __raw_readw
+#define readl_relaxed __raw_readl
+
+#define writeb_relaxed __raw_writeb
+#define writew_relaxed __raw_writew
+#define writel_relaxed __raw_writel
+
+/*
+ * I/O memory mapping functions.
+ */
+#define _PAGE_IOREMAP (_PAGE_PRESENT | _PAGE_READ | _PAGE_WRITE | \
+		       (__HEXAGON_C_DEV << 6))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __raw_writel writel
 
@@ -205,6 +249,15 @@ static inline void memcpy_toio(volatile void __iomem *dst, const void *src,
 	memcpy((void *) dst, src, count);
 }
 
+<<<<<<< HEAD
+=======
+static inline void memset_io(volatile void __iomem *addr, int value,
+			     size_t size)
+{
+	memset((void __force *)addr, value, size);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_IO_ADDR	(volatile void __iomem *)
 
 /*
@@ -319,7 +372,34 @@ static inline void outsl(unsigned long port, const void *buffer, int count)
 	}
 }
 
+<<<<<<< HEAD
 #define flush_write_buffers() do { } while (0)
+=======
+/*
+ * These defines are necessary to use the generic io.h for filling in
+ * the missing parts of the API contract. This is because the platform
+ * uses (inline) functions rather than defines and the generic helper
+ * fills in the undefined.
+ */
+#define virt_to_phys virt_to_phys
+#define phys_to_virt phys_to_virt
+#define memset_io memset_io
+#define memcpy_fromio memcpy_fromio
+#define memcpy_toio memcpy_toio
+#define readb readb
+#define readw readw
+#define readl readl
+#define writeb writeb
+#define writew writew
+#define writel writel
+#define insb insb
+#define insw insw
+#define insl insl
+#define outsb outsb
+#define outsw outsw
+#define outsl outsl
+#include <asm-generic/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __KERNEL__ */
 

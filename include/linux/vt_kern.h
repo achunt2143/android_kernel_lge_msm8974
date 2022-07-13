@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _VT_KERN_H
 #define _VT_KERN_H
 
@@ -15,6 +19,7 @@
 #include <linux/consolemap.h>
 #include <linux/notifier.h>
 
+<<<<<<< HEAD
 /*
  * Presently, a lot of graphics programs do not restore the contents of
  * the higher font pages.  Defining this flag will avoid use of them, but
@@ -29,23 +34,41 @@
 
 extern void kd_mksound(unsigned int hz, unsigned int ticks);
 extern int kbd_rate(struct kbd_repeat *rep);
+=======
+void kd_mksound(unsigned int hz, unsigned int ticks);
+int kbd_rate(struct kbd_repeat *rep);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int fg_console, last_console, want_console;
 
 /* console.c */
 
 int vc_allocate(unsigned int console);
 int vc_cons_allocated(unsigned int console);
+<<<<<<< HEAD
 int vc_resize(struct vc_data *vc, unsigned int cols, unsigned int lines);
 void vc_deallocate(unsigned int console);
 void reset_palette(struct vc_data *vc);
 void do_blank_screen(int entering_gfx);
 void do_unblank_screen(int leaving_gfx);
 void unblank_screen(void);
+=======
+int __vc_resize(struct vc_data *vc, unsigned int cols, unsigned int lines,
+		bool from_user);
+struct vc_data *vc_deallocate(unsigned int console);
+void reset_palette(struct vc_data *vc);
+void do_blank_screen(int entering_gfx);
+void do_unblank_screen(int leaving_gfx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void poke_blanked_console(void);
 int con_font_op(struct vc_data *vc, struct console_font_op *op);
 int con_set_cmap(unsigned char __user *cmap);
 int con_get_cmap(unsigned char __user *cmap);
+<<<<<<< HEAD
 void scrollback(struct vc_data *vc, int lines);
+=======
+void scrollback(struct vc_data *vc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void scrollfront(struct vc_data *vc, int lines);
 void clear_buffer_attributes(struct vc_data *vc);
 void update_region(struct vc_data *vc, unsigned long start, int count);
@@ -53,29 +76,50 @@ void redraw_screen(struct vc_data *vc, int is_switch);
 #define update_screen(x) redraw_screen(x, 0)
 #define switch_screen(x) redraw_screen(x, 1)
 
+<<<<<<< HEAD
+=======
+static inline int vc_resize(struct vc_data *vc, unsigned int cols,
+			    unsigned int lines)
+{
+	return __vc_resize(vc, cols, lines, false);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct tty_struct;
 int tioclinux(struct tty_struct *tty, unsigned long arg);
 
 #ifdef CONFIG_CONSOLE_TRANSLATIONS
 /* consolemap.c */
 
+<<<<<<< HEAD
 struct unimapinit;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct unipair;
 
 int con_set_trans_old(unsigned char __user * table);
 int con_get_trans_old(unsigned char __user * table);
 int con_set_trans_new(unsigned short __user * table);
 int con_get_trans_new(unsigned short __user * table);
+<<<<<<< HEAD
 int con_clear_unimap(struct vc_data *vc, struct unimapinit *ui);
+=======
+int con_clear_unimap(struct vc_data *vc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int con_set_unimap(struct vc_data *vc, ushort ct, struct unipair __user *list);
 int con_get_unimap(struct vc_data *vc, ushort ct, ushort __user *uct, struct unipair __user *list);
 int con_set_default_unimap(struct vc_data *vc);
 void con_free_unimap(struct vc_data *vc);
+<<<<<<< HEAD
 void con_protect_unimap(struct vc_data *vc, int rdonly);
 int con_copy_unimap(struct vc_data *dst_vc, struct vc_data *src_vc);
 
 #define vc_translate(vc, c) ((vc)->vc_translate[(c) |			\
 					((vc)->vc_toggle_meta ? 0x80 : 0)])
+=======
+int con_copy_unimap(struct vc_data *dst_vc, struct vc_data *src_vc);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline int con_set_trans_old(unsigned char __user *table)
 {
@@ -93,7 +137,11 @@ static inline int con_get_trans_new(unsigned short __user *table)
 {
 	return -EINVAL;
 }
+<<<<<<< HEAD
 static inline int con_clear_unimap(struct vc_data *vc, struct unimapinit *ui)
+=======
+static inline int con_clear_unimap(struct vc_data *vc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
@@ -124,7 +172,10 @@ int con_copy_unimap(struct vc_data *dst_vc, struct vc_data *src_vc)
 	return 0;
 }
 
+<<<<<<< HEAD
 #define vc_translate(vc, c) (c)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* vt.c */
@@ -132,6 +183,7 @@ void vt_event_post(unsigned int event, unsigned int old, unsigned int new);
 int vt_waitactive(int n);
 void change_console(struct vc_data *new_vc);
 void reset_vc(struct vc_data *vc);
+<<<<<<< HEAD
 extern int do_unbind_con_driver(const struct consw *csw, int first, int last,
 			     int deflt);
 extern int unbind_con_driver(const struct consw *csw, int first, int last,
@@ -146,6 +198,13 @@ static inline bool vt_force_oops_output(struct vc_data *vc)
 }
 
 extern char vt_dont_switch;
+=======
+int do_unbind_con_driver(const struct consw *csw, int first, int last,
+			 int deflt);
+int vty_init(const struct file_operations *console_fops);
+
+extern bool vt_dont_switch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int default_utf8;
 extern int global_cursor_default;
 
@@ -156,7 +215,11 @@ struct vt_spawn_console {
 };
 extern struct vt_spawn_console vt_spawn_con;
 
+<<<<<<< HEAD
 extern int vt_move_to_console(unsigned int vt, int alloc);
+=======
+int vt_move_to_console(unsigned int vt, int alloc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Interfaces for VC notification of character events (for accessibility etc) */
 
@@ -165,6 +228,7 @@ struct vt_notifier_param {
 	unsigned int c;		/* Printed char */
 };
 
+<<<<<<< HEAD
 extern int register_vt_notifier(struct notifier_block *nb);
 extern int unregister_vt_notifier(struct notifier_block *nb);
 
@@ -195,5 +259,34 @@ extern void vt_set_led_state(int console, int leds);
 extern void vt_kbd_con_start(int console);
 extern void vt_kbd_con_stop(int console);
 
+=======
+int register_vt_notifier(struct notifier_block *nb);
+int unregister_vt_notifier(struct notifier_block *nb);
+
+void hide_boot_cursor(bool hide);
+
+/* keyboard  provided interfaces */
+int vt_do_diacrit(unsigned int cmd, void __user *up, int eperm);
+int vt_do_kdskbmode(unsigned int console, unsigned int arg);
+int vt_do_kdskbmeta(unsigned int console, unsigned int arg);
+int vt_do_kbkeycode_ioctl(int cmd, struct kbkeycode __user *user_kbkc,
+			  int perm);
+int vt_do_kdsk_ioctl(int cmd, struct kbentry __user *user_kbe, int perm,
+		     unsigned int console);
+int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm);
+int vt_do_kdskled(unsigned int console, int cmd, unsigned long arg, int perm);
+int vt_do_kdgkbmode(unsigned int console);
+int vt_do_kdgkbmeta(unsigned int console);
+void vt_reset_unicode(unsigned int console);
+int vt_get_shift_state(void);
+void vt_reset_keyboard(unsigned int console);
+int vt_get_leds(unsigned int console, int flag);
+int vt_get_kbd_mode_bit(unsigned int console, int bit);
+void vt_set_kbd_mode_bit(unsigned int console, int bit);
+void vt_clr_kbd_mode_bit(unsigned int console, int bit);
+void vt_set_led_state(unsigned int console, int leds);
+void vt_kbd_con_start(unsigned int console);
+void vt_kbd_con_stop(unsigned int console);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _VT_KERN_H */

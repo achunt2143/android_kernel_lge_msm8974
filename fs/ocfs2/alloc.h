@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * alloc.h
  *
  * Function prototypes
  *
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -21,6 +27,8 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef OCFS2_ALLOC_H
@@ -54,13 +62,21 @@
  */
 struct ocfs2_extent_tree_operations;
 struct ocfs2_extent_tree {
+<<<<<<< HEAD
 	struct ocfs2_extent_tree_operations	*et_ops;
+=======
+	const struct ocfs2_extent_tree_operations *et_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head			*et_root_bh;
 	struct ocfs2_extent_list		*et_root_el;
 	struct ocfs2_caching_info		*et_ci;
 	ocfs2_journal_access_func		et_root_journal_access;
 	void					*et_object;
 	unsigned int				et_max_leaf_clusters;
+<<<<<<< HEAD
+=======
+	struct ocfs2_cached_dealloc_ctxt	*et_dealloc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -142,10 +158,16 @@ int ocfs2_remove_btree_range(struct inode *inode,
 			     struct ocfs2_extent_tree *et,
 			     u32 cpos, u32 phys_cpos, u32 len, int flags,
 			     struct ocfs2_cached_dealloc_ctxt *dealloc,
+<<<<<<< HEAD
 			     u64 refcount_loc);
 
 int ocfs2_num_free_extents(struct ocfs2_super *osb,
 			   struct ocfs2_extent_tree *et);
+=======
+			     u64 refcount_loc, bool refcount_tree_locked);
+
+int ocfs2_num_free_extents(struct ocfs2_extent_tree *et);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * how many new metadata chunks would an allocation need at maximum?
@@ -188,6 +210,11 @@ int ocfs2_truncate_log_append(struct ocfs2_super *osb,
 			      u64 start_blk,
 			      unsigned int num_clusters);
 int __ocfs2_flush_truncate_log(struct ocfs2_super *osb);
+<<<<<<< HEAD
+=======
+int ocfs2_try_to_free_truncate_log(struct ocfs2_super *osb,
+				   unsigned int needed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Process local structure which describes the block unlinks done

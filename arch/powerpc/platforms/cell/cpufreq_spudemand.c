@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * spu aware cpufreq governor for the cell processor
  *
  * © Copyright IBM Corporation 2006-2008
  *
  * Author: Christian Krafft <krafft@de.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,10 +23,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/cpufreq.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/loadavg.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/timer.h>
 #include <linux/workqueue.h>
@@ -48,7 +59,11 @@ static int calc_freq(struct spu_gov_info_struct *info)
 	cpu = info->policy->cpu;
 	busy_spus = atomic_read(&cbe_spu_info[cpu_to_node(cpu)].busy_spus);
 
+<<<<<<< HEAD
 	CALC_LOAD(info->busy_spus, EXP, busy_spus * FIXED_1);
+=======
+	info->busy_spus = calc_load(info->busy_spus, EXP, busy_spus * FIXED_1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("cpu %d: busy_spus=%d, info->busy_spus=%ld\n",
 			cpu, busy_spus, info->busy_spus);
 
@@ -76,7 +91,11 @@ static void spu_gov_work(struct work_struct *work)
 static void spu_gov_init_work(struct spu_gov_info_struct *info)
 {
 	int delay = usecs_to_jiffies(info->poll_int);
+<<<<<<< HEAD
 	INIT_DELAYED_WORK_DEFERRABLE(&info->work, spu_gov_work);
+=======
+	INIT_DEFERRABLE_WORK(&info->work, spu_gov_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	schedule_delayed_work_on(info->policy->cpu, &info->work, delay);
 }
 
@@ -85,6 +104,7 @@ static void spu_gov_cancel_work(struct spu_gov_info_struct *info)
 	cancel_delayed_work_sync(&info->work);
 }
 
+<<<<<<< HEAD
 static int spu_gov_govern(struct cpufreq_policy *policy, unsigned int event)
 {
 	unsigned int cpu = policy->cpu;
@@ -135,10 +155,58 @@ static int spu_gov_govern(struct cpufreq_policy *policy, unsigned int event)
 	}
 
 	return ret;
+=======
+static int spu_gov_start(struct cpufreq_policy *policy)
+{
+	unsigned int cpu = policy->cpu;
+	struct spu_gov_info_struct *info = &per_cpu(spu_gov_info, cpu);
+	struct spu_gov_info_struct *affected_info;
+	int i;
+
+	if (!cpu_online(cpu)) {
+		printk(KERN_ERR "cpu %d is not online\n", cpu);
+		return -EINVAL;
+	}
+
+	if (!policy->cur) {
+		printk(KERN_ERR "no cpu specified in policy\n");
+		return -EINVAL;
+	}
+
+	/* initialize spu_gov_info for all affected cpus */
+	for_each_cpu(i, policy->cpus) {
+		affected_info = &per_cpu(spu_gov_info, i);
+		affected_info->policy = policy;
+	}
+
+	info->poll_int = POLL_TIME;
+
+	/* setup timer */
+	spu_gov_init_work(info);
+
+	return 0;
+}
+
+static void spu_gov_stop(struct cpufreq_policy *policy)
+{
+	unsigned int cpu = policy->cpu;
+	struct spu_gov_info_struct *info = &per_cpu(spu_gov_info, cpu);
+	int i;
+
+	/* cancel timer */
+	spu_gov_cancel_work(info);
+
+	/* clean spu_gov_info for all affected cpus */
+	for_each_cpu (i, policy->cpus) {
+		info = &per_cpu(spu_gov_info, i);
+		info->policy = NULL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct cpufreq_governor spu_governor = {
 	.name = "spudemand",
+<<<<<<< HEAD
 	.governor = spu_gov_govern,
 	.owner = THIS_MODULE,
 };
@@ -169,3 +237,14 @@ module_exit(spu_gov_exit);
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Christian Krafft <krafft@de.ibm.com>");
 
+=======
+	.start = spu_gov_start,
+	.stop = spu_gov_stop,
+	.owner = THIS_MODULE,
+};
+cpufreq_governor_init(spu_governor);
+cpufreq_governor_exit(spu_governor);
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Christian Krafft <krafft@de.ibm.com>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

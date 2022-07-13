@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sched.c - SPU scheduler.
  *
  * Copyright (C) IBM 2005
  * Author: Mark Nutter <mnutter@us.ibm.com>
  *
  * 2006-03-31	NUMA domains added.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,12 +23,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
 
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+#include <linux/sched/loadavg.h>
+#include <linux/sched/rt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
@@ -82,9 +95,14 @@ static struct timer_list spuloadavg_timer;
 #define MIN_SPU_TIMESLICE	max(5 * HZ / (1000 * SPUSCHED_TICK), 1)
 #define DEF_SPU_TIMESLICE	(100 * HZ / (1000 * SPUSCHED_TICK))
 
+<<<<<<< HEAD
 #define MAX_USER_PRIO		(MAX_PRIO - MAX_RT_PRIO)
 #define SCALE_PRIO(x, prio) \
 	max(x * (MAX_PRIO - prio) / (MAX_USER_PRIO / 2), MIN_SPU_TIMESLICE)
+=======
+#define SCALE_PRIO(x, prio) \
+	max(x * (MAX_PRIO - prio) / (NICE_WIDTH / 2), MIN_SPU_TIMESLICE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * scale user-nice values [ -20 ... 0 ... 19 ] to time slice values:
@@ -140,7 +158,11 @@ void __spu_update_sched_info(struct spu_context *ctx)
 	 * runqueue. The context will be rescheduled on the proper node
 	 * if it is timesliced or preempted.
 	 */
+<<<<<<< HEAD
 	cpumask_copy(&ctx->cpus_allowed, tsk_cpus_allowed(current));
+=======
+	cpumask_copy(&ctx->cpus_allowed, current->cpus_ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Save the current cpu id for spu interrupt routing. */
 	ctx->last_ran = raw_smp_processor_id();
@@ -193,9 +215,12 @@ void do_notify_spus_active(void)
 
 	/*
 	 * Wake up the active spu_contexts.
+<<<<<<< HEAD
 	 *
 	 * When the awakened processes see their "notify_active" flag is set,
 	 * they will call spu_switch_notify().
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	for_each_online_node(node) {
 		struct spu *spu;
@@ -251,7 +276,10 @@ static void spu_bind_context(struct spu *spu, struct spu_context *ctx)
 	spu_switch_log_notify(spu, ctx, SWITCH_LOG_START, 0);
 	spu_restore(&ctx->csa, spu);
 	spu->timestamp = jiffies;
+<<<<<<< HEAD
 	spu_switch_notify(spu, ctx);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctx->state = SPU_STATE_RUNNABLE;
 
 	spuctx_switch_state(ctx, SPU_UTIL_USER);
@@ -356,8 +384,12 @@ static struct spu *aff_ref_location(struct spu_context *ctx, int mem_aff,
 static void aff_set_ref_point_location(struct spu_gang *gang)
 {
 	int mem_aff, gs, lowest_offset;
+<<<<<<< HEAD
 	struct spu_context *ctx;
 	struct spu *tmp;
+=======
+	struct spu_context *tmp, *ctx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mem_aff = gang->aff_ref_ctx->flags & SPU_CREATE_AFFINITY_MEM;
 	lowest_offset = 0;
@@ -452,7 +484,10 @@ static void spu_unbind_context(struct spu *spu, struct spu_context *ctx)
 		 */
 		atomic_dec_if_positive(&ctx->gang->aff_sched_count);
 
+<<<<<<< HEAD
 	spu_switch_notify(spu, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spu_unmap_mappings(ctx);
 	spu_save(&ctx->csa, spu);
 	spu_switch_log_notify(spu, ctx, SWITCH_LOG_STOP, 0);
@@ -622,7 +657,11 @@ static struct spu *spu_get_idle(struct spu_context *ctx)
 
 /**
  * find_victim - find a lower priority context to preempt
+<<<<<<< HEAD
  * @ctx:	canidate context for running
+=======
+ * @ctx:	candidate context for running
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns the freed physical spu to run the new context on.
  */
@@ -986,18 +1025,31 @@ static void spu_calc_load(void)
 	unsigned long active_tasks; /* fixed-point */
 
 	active_tasks = count_active_contexts() * FIXED_1;
+<<<<<<< HEAD
 	CALC_LOAD(spu_avenrun[0], EXP_1, active_tasks);
 	CALC_LOAD(spu_avenrun[1], EXP_5, active_tasks);
 	CALC_LOAD(spu_avenrun[2], EXP_15, active_tasks);
 }
 
 static void spusched_wake(unsigned long data)
+=======
+	spu_avenrun[0] = calc_load(spu_avenrun[0], EXP_1, active_tasks);
+	spu_avenrun[1] = calc_load(spu_avenrun[1], EXP_5, active_tasks);
+	spu_avenrun[2] = calc_load(spu_avenrun[2], EXP_15, active_tasks);
+}
+
+static void spusched_wake(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mod_timer(&spusched_timer, jiffies + SPUSCHED_TICK);
 	wake_up_process(spusched_task);
 }
 
+<<<<<<< HEAD
 static void spuloadavg_wake(unsigned long data)
+=======
+static void spuloadavg_wake(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mod_timer(&spuloadavg_timer, jiffies + LOAD_FREQ);
 	spu_calc_load();
@@ -1039,13 +1091,20 @@ void spuctx_switch_state(struct spu_context *ctx,
 {
 	unsigned long long curtime;
 	signed long long delta;
+<<<<<<< HEAD
 	struct timespec ts;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct spu *spu;
 	enum spu_utilization_state old_state;
 	int node;
 
+<<<<<<< HEAD
 	ktime_get_ts(&ts);
 	curtime = timespec_to_ns(&ts);
+=======
+	curtime = ktime_get_ns();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	delta = curtime - ctx->stats.tstamp;
 
 	WARN_ON(!mutex_is_locked(&ctx->state_mutex));
@@ -1072,9 +1131,13 @@ void spuctx_switch_state(struct spu_context *ctx,
 	}
 }
 
+<<<<<<< HEAD
 #define LOAD_INT(x) ((x) >> FSHIFT)
 #define LOAD_FRAC(x) LOAD_INT(((x) & (FIXED_1-1)) * 100)
 
+=======
+#ifdef CONFIG_PROC_FS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int show_spu_loadavg(struct seq_file *s, void *private)
 {
 	int a, b, c;
@@ -1094,6 +1157,7 @@ static int show_spu_loadavg(struct seq_file *s, void *private)
 		LOAD_INT(c), LOAD_FRAC(c),
 		count_active_contexts(),
 		atomic_read(&nr_spu_contexts),
+<<<<<<< HEAD
 		current->nsproxy->pid_ns->last_pid);
 	return 0;
 }
@@ -1109,6 +1173,12 @@ static const struct file_operations spu_loadavg_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+=======
+		idr_get_cursor(&task_active_pid_ns(current)->idr) - 1);
+	return 0;
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int __init spu_sched_init(void)
 {
@@ -1125,8 +1195,13 @@ int __init spu_sched_init(void)
 	}
 	spin_lock_init(&spu_prio->runq_lock);
 
+<<<<<<< HEAD
 	setup_timer(&spusched_timer, spusched_wake, 0);
 	setup_timer(&spuloadavg_timer, spuloadavg_wake, 0);
+=======
+	timer_setup(&spusched_timer, spusched_wake, 0);
+	timer_setup(&spuloadavg_timer, spuloadavg_wake, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spusched_task = kthread_run(spusched_thread, NULL, "spusched");
 	if (IS_ERR(spusched_task)) {
@@ -1136,7 +1211,11 @@ int __init spu_sched_init(void)
 
 	mod_timer(&spuloadavg_timer, 0);
 
+<<<<<<< HEAD
 	entry = proc_create("spu_loadavg", 0, NULL, &spu_loadavg_fops);
+=======
+	entry = proc_create_single("spu_loadavg", 0, NULL, show_spu_loadavg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!entry)
 		goto out_stop_kthread;
 

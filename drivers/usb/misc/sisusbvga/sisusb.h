@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sisusb - usb kernel driver for Net2280/SiS315 based USB2VGA dongles
  *
@@ -37,6 +41,7 @@
 #ifndef _SISUSB_H_
 #define _SISUSB_H_
 
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
 #define SISUSB_NEW_CONFIG_COMPAT
 #endif
@@ -48,6 +53,10 @@
  */
 /* #define CONFIG_USB_SISUSBVGA_CON */
 
+=======
+#include <linux/mutex.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Version Information */
 
 #define SISUSB_VERSION		0
@@ -56,11 +65,14 @@
 
 /* Include console and mode switching code? */
 
+<<<<<<< HEAD
 #ifdef CONFIG_USB_SISUSBVGA_CON
 #define INCL_SISUSB_CON		1
 #endif
 
 #include <linux/console.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/vt_kern.h>
 #include "sisusb_struct.h"
 
@@ -138,6 +150,7 @@ struct sisusb_usb_data {
 	unsigned char gfxinit;	/* graphics core initialized? */
 	unsigned short chipid, chipvendor;
 	unsigned short chiprevision;
+<<<<<<< HEAD
 #ifdef INCL_SISUSB_CON
 	struct SiS_Private *SiS_Pr;
 	unsigned long scrbuf;
@@ -158,6 +171,8 @@ struct sisusb_usb_data {
 	int is_gfx;
 	int con_blanked;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define to_sisusb_dev(d) container_of(d, struct sisusb_usb_data, kref)

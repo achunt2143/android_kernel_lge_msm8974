@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/fs/ext2/xattr.c
  *
@@ -55,6 +59,10 @@
 
 #include <linux/buffer_head.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/printk.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/mbcache.h>
 #include <linux/quotaops.h>
@@ -77,27 +85,42 @@
 		printk("\n"); \
 	} while (0)
 # define ea_bdebug(bh, f...) do { \
+<<<<<<< HEAD
 		char b[BDEVNAME_SIZE]; \
 		printk(KERN_DEBUG "block %s:%lu: ", \
 			bdevname(bh->b_bdev, b), \
 			(unsigned long) bh->b_blocknr); \
+=======
+		printk(KERN_DEBUG "block %pg:%lu: ", \
+			bh->b_bdev, (unsigned long) bh->b_blocknr); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(f); \
 		printk("\n"); \
 	} while (0)
 #else
+<<<<<<< HEAD
 # define ea_idebug(f...)
 # define ea_bdebug(f...)
+=======
+# define ea_idebug(inode, f...)	no_printk(f)
+# define ea_bdebug(bh, f...)	no_printk(f)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static int ext2_xattr_set2(struct inode *, struct buffer_head *,
 			   struct ext2_xattr_header *);
 
+<<<<<<< HEAD
 static int ext2_xattr_cache_insert(struct buffer_head *);
+=======
+static int ext2_xattr_cache_insert(struct mb_cache *, struct buffer_head *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct buffer_head *ext2_xattr_cache_find(struct inode *,
 						 struct ext2_xattr_header *);
 static void ext2_xattr_rehash(struct ext2_xattr_header *,
 			      struct ext2_xattr_entry *);
 
+<<<<<<< HEAD
 static struct mb_cache *ext2_xattr_cache;
 
 static const struct xattr_handler *ext2_xattr_handler_map[] = {
@@ -105,6 +128,13 @@ static const struct xattr_handler *ext2_xattr_handler_map[] = {
 #ifdef CONFIG_EXT2_FS_POSIX_ACL
 	[EXT2_XATTR_INDEX_POSIX_ACL_ACCESS]  = &ext2_xattr_acl_access_handler,
 	[EXT2_XATTR_INDEX_POSIX_ACL_DEFAULT] = &ext2_xattr_acl_default_handler,
+=======
+static const struct xattr_handler * const ext2_xattr_handler_map[] = {
+	[EXT2_XATTR_INDEX_USER]		     = &ext2_xattr_user_handler,
+#ifdef CONFIG_EXT2_FS_POSIX_ACL
+	[EXT2_XATTR_INDEX_POSIX_ACL_ACCESS]  = &nop_posix_acl_access,
+	[EXT2_XATTR_INDEX_POSIX_ACL_DEFAULT] = &nop_posix_acl_default,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	[EXT2_XATTR_INDEX_TRUSTED]	     = &ext2_xattr_trusted_handler,
 #ifdef CONFIG_EXT2_FS_SECURITY
@@ -112,6 +142,7 @@ static const struct xattr_handler *ext2_xattr_handler_map[] = {
 #endif
 };
 
+<<<<<<< HEAD
 const struct xattr_handler *ext2_xattr_handlers[] = {
 	&ext2_xattr_user_handler,
 	&ext2_xattr_trusted_handler,
@@ -119,20 +150,87 @@ const struct xattr_handler *ext2_xattr_handlers[] = {
 	&ext2_xattr_acl_access_handler,
 	&ext2_xattr_acl_default_handler,
 #endif
+=======
+const struct xattr_handler * const ext2_xattr_handlers[] = {
+	&ext2_xattr_user_handler,
+	&ext2_xattr_trusted_handler,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_EXT2_FS_SECURITY
 	&ext2_xattr_security_handler,
 #endif
 	NULL
 };
 
+<<<<<<< HEAD
 static inline const struct xattr_handler *
 ext2_xattr_handler(int name_index)
+=======
+#define EA_BLOCK_CACHE(inode)	(EXT2_SB(inode->i_sb)->s_ea_block_cache)
+
+static inline const char *ext2_xattr_prefix(int name_index,
+					    struct dentry *dentry)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct xattr_handler *handler = NULL;
 
 	if (name_index > 0 && name_index < ARRAY_SIZE(ext2_xattr_handler_map))
 		handler = ext2_xattr_handler_map[name_index];
+<<<<<<< HEAD
 	return handler;
+=======
+
+	if (!xattr_handler_can_list(handler, dentry))
+		return NULL;
+
+	return xattr_prefix(handler);
+}
+
+static bool
+ext2_xattr_header_valid(struct ext2_xattr_header *header)
+{
+	if (header->h_magic != cpu_to_le32(EXT2_XATTR_MAGIC) ||
+	    header->h_blocks != cpu_to_le32(1))
+		return false;
+
+	return true;
+}
+
+static bool
+ext2_xattr_entry_valid(struct ext2_xattr_entry *entry,
+		       char *end, size_t end_offs)
+{
+	struct ext2_xattr_entry *next;
+	size_t size;
+
+	next = EXT2_XATTR_NEXT(entry);
+	if ((char *)next >= end)
+		return false;
+
+	if (entry->e_value_block != 0)
+		return false;
+
+	size = le32_to_cpu(entry->e_value_size);
+	if (size > end_offs ||
+	    le16_to_cpu(entry->e_value_offs) + size > end_offs)
+		return false;
+
+	return true;
+}
+
+static int
+ext2_xattr_cmp_entry(int name_index, size_t name_len, const char *name,
+		     struct ext2_xattr_entry *entry)
+{
+	int cmp;
+
+	cmp = name_index - entry->e_name_index;
+	if (!cmp)
+		cmp = name_len - entry->e_name_len;
+	if (!cmp)
+		cmp = memcmp(name, entry->e_name, name_len);
+
+	return cmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -153,7 +251,12 @@ ext2_xattr_get(struct inode *inode, int name_index, const char *name,
 	struct ext2_xattr_entry *entry;
 	size_t name_len, size;
 	char *end;
+<<<<<<< HEAD
 	int error;
+=======
+	int error, not_found;
+	struct mb_cache *ea_block_cache = EA_BLOCK_CACHE(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ea_idebug(inode, "name=%d.%s, buffer=%p, buffer_size=%ld",
 		  name_index, name, buffer, (long)buffer_size);
@@ -176,9 +279,15 @@ ext2_xattr_get(struct inode *inode, int name_index, const char *name,
 	ea_bdebug(bh, "b_count=%d, refcount=%d",
 		atomic_read(&(bh->b_count)), le32_to_cpu(HDR(bh)->h_refcount));
 	end = bh->b_data + bh->b_size;
+<<<<<<< HEAD
 	if (HDR(bh)->h_magic != cpu_to_le32(EXT2_XATTR_MAGIC) ||
 	    HDR(bh)->h_blocks != cpu_to_le32(1)) {
 bad_block:	ext2_error(inode->i_sb, "ext2_xattr_get",
+=======
+	if (!ext2_xattr_header_valid(HDR(bh))) {
+bad_block:
+		ext2_error(inode->i_sb, "ext2_xattr_get",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"inode %ld: bad block %d", inode->i_ino,
 			EXT2_I(inode)->i_file_acl);
 		error = -EIO;
@@ -188,6 +297,7 @@ bad_block:	ext2_error(inode->i_sb, "ext2_xattr_get",
 	/* find named attribute */
 	entry = FIRST_ENTRY(bh);
 	while (!IS_LAST_ENTRY(entry)) {
+<<<<<<< HEAD
 		struct ext2_xattr_entry *next =
 			EXT2_XATTR_NEXT(entry);
 		if ((char *)next >= end)
@@ -199,10 +309,27 @@ bad_block:	ext2_error(inode->i_sb, "ext2_xattr_get",
 		entry = next;
 	}
 	if (ext2_xattr_cache_insert(bh))
+=======
+		if (!ext2_xattr_entry_valid(entry, end,
+		    inode->i_sb->s_blocksize))
+			goto bad_block;
+
+		not_found = ext2_xattr_cmp_entry(name_index, name_len, name,
+						 entry);
+		if (!not_found)
+			goto found;
+		if (not_found < 0)
+			break;
+
+		entry = EXT2_XATTR_NEXT(entry);
+	}
+	if (ext2_xattr_cache_insert(ea_block_cache, bh))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ea_idebug(inode, "cache insert failed");
 	error = -ENODATA;
 	goto cleanup;
 found:
+<<<<<<< HEAD
 	/* check the buffer size */
 	if (entry->e_value_block != 0)
 		goto bad_block;
@@ -212,6 +339,10 @@ found:
 		goto bad_block;
 
 	if (ext2_xattr_cache_insert(bh))
+=======
+	size = le32_to_cpu(entry->e_value_size);
+	if (ext2_xattr_cache_insert(ea_block_cache, bh))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ea_idebug(inode, "cache insert failed");
 	if (buffer) {
 		error = -ERANGE;
@@ -243,12 +374,20 @@ cleanup:
 static int
 ext2_xattr_list(struct dentry *dentry, char *buffer, size_t buffer_size)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *bh = NULL;
 	struct ext2_xattr_entry *entry;
 	char *end;
 	size_t rest = buffer_size;
 	int error;
+<<<<<<< HEAD
+=======
+	struct mb_cache *ea_block_cache = EA_BLOCK_CACHE(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ea_idebug(inode, "buffer=%p, buffer_size=%ld",
 		  buffer, (long)buffer_size);
@@ -265,9 +404,15 @@ ext2_xattr_list(struct dentry *dentry, char *buffer, size_t buffer_size)
 	ea_bdebug(bh, "b_count=%d, refcount=%d",
 		atomic_read(&(bh->b_count)), le32_to_cpu(HDR(bh)->h_refcount));
 	end = bh->b_data + bh->b_size;
+<<<<<<< HEAD
 	if (HDR(bh)->h_magic != cpu_to_le32(EXT2_XATTR_MAGIC) ||
 	    HDR(bh)->h_blocks != cpu_to_le32(1)) {
 bad_block:	ext2_error(inode->i_sb, "ext2_xattr_list",
+=======
+	if (!ext2_xattr_header_valid(HDR(bh))) {
+bad_block:
+		ext2_error(inode->i_sb, "ext2_xattr_list",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"inode %ld: bad block %d", inode->i_ino,
 			EXT2_I(inode)->i_file_acl);
 		error = -EIO;
@@ -277,6 +422,7 @@ bad_block:	ext2_error(inode->i_sb, "ext2_xattr_list",
 	/* check the on-disk data structure */
 	entry = FIRST_ENTRY(bh);
 	while (!IS_LAST_ENTRY(entry)) {
+<<<<<<< HEAD
 		struct ext2_xattr_entry *next = EXT2_XATTR_NEXT(entry);
 
 		if ((char *)next >= end)
@@ -284,11 +430,20 @@ bad_block:	ext2_error(inode->i_sb, "ext2_xattr_list",
 		entry = next;
 	}
 	if (ext2_xattr_cache_insert(bh))
+=======
+		if (!ext2_xattr_entry_valid(entry, end,
+		    inode->i_sb->s_blocksize))
+			goto bad_block;
+		entry = EXT2_XATTR_NEXT(entry);
+	}
+	if (ext2_xattr_cache_insert(ea_block_cache, bh))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ea_idebug(inode, "cache insert failed");
 
 	/* list the attribute names */
 	for (entry = FIRST_ENTRY(bh); !IS_LAST_ENTRY(entry);
 	     entry = EXT2_XATTR_NEXT(entry)) {
+<<<<<<< HEAD
 		const struct xattr_handler *handler =
 			ext2_xattr_handler(entry->e_name_index);
 
@@ -297,12 +452,29 @@ bad_block:	ext2_error(inode->i_sb, "ext2_xattr_list",
 						    entry->e_name,
 						    entry->e_name_len,
 						    handler->flags);
+=======
+		const char *prefix;
+
+		prefix = ext2_xattr_prefix(entry->e_name_index, dentry);
+		if (prefix) {
+			size_t prefix_len = strlen(prefix);
+			size_t size = prefix_len + entry->e_name_len + 1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (buffer) {
 				if (size > rest) {
 					error = -ERANGE;
 					goto cleanup;
 				}
+<<<<<<< HEAD
 				buffer += size;
+=======
+				memcpy(buffer, prefix, prefix_len);
+				buffer += prefix_len;
+				memcpy(buffer, entry->e_name, entry->e_name_len);
+				buffer += entry->e_name_len;
+				*buffer++ = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			rest -= size;
 		}
@@ -319,7 +491,11 @@ cleanup:
 /*
  * Inode operation listxattr()
  *
+<<<<<<< HEAD
  * dentry->d_inode->i_mutex: don't care
+=======
+ * d_inode(dentry)->i_mutex: don't care
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 ssize_t
 ext2_listxattr(struct dentry *dentry, char *buffer, size_t size)
@@ -337,9 +513,15 @@ static void ext2_xattr_update_super_block(struct super_block *sb)
 		return;
 
 	spin_lock(&EXT2_SB(sb)->s_lock);
+<<<<<<< HEAD
 	EXT2_SET_COMPAT_FEATURE(sb, EXT2_FEATURE_COMPAT_EXT_ATTR);
 	spin_unlock(&EXT2_SB(sb)->s_lock);
 	sb->s_dirt = 1;
+=======
+	ext2_update_dynamic_rev(sb);
+	EXT2_SET_COMPAT_FEATURE(sb, EXT2_FEATURE_COMPAT_EXT_ATTR);
+	spin_unlock(&EXT2_SB(sb)->s_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_buffer_dirty(EXT2_SB(sb)->s_sbh);
 }
 
@@ -362,7 +544,11 @@ ext2_xattr_set(struct inode *inode, int name_index, const char *name,
 	struct super_block *sb = inode->i_sb;
 	struct buffer_head *bh = NULL;
 	struct ext2_xattr_header *header = NULL;
+<<<<<<< HEAD
 	struct ext2_xattr_entry *here, *last;
+=======
+	struct ext2_xattr_entry *here = NULL, *last = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t name_len, free, min_offs = sb->s_blocksize;
 	int not_found = 1, error;
 	char *end;
@@ -389,6 +575,12 @@ ext2_xattr_set(struct inode *inode, int name_index, const char *name,
 	name_len = strlen(name);
 	if (name_len > 255 || value_len > sb->s_blocksize)
 		return -ERANGE;
+<<<<<<< HEAD
+=======
+	error = dquot_initialize(inode);
+	if (error)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	down_write(&EXT2_I(inode)->xattr_sem);
 	if (EXT2_I(inode)->i_file_acl) {
 		/* The inode already has an extended attribute block. */
@@ -401,14 +593,21 @@ ext2_xattr_set(struct inode *inode, int name_index, const char *name,
 			le32_to_cpu(HDR(bh)->h_refcount));
 		header = HDR(bh);
 		end = bh->b_data + bh->b_size;
+<<<<<<< HEAD
 		if (header->h_magic != cpu_to_le32(EXT2_XATTR_MAGIC) ||
 		    header->h_blocks != cpu_to_le32(1)) {
 bad_block:		ext2_error(sb, "ext2_xattr_set",
+=======
+		if (!ext2_xattr_header_valid(header)) {
+bad_block:
+			ext2_error(sb, "ext2_xattr_set",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"inode %ld: bad block %d", inode->i_ino, 
 				   EXT2_I(inode)->i_file_acl);
 			error = -EIO;
 			goto cleanup;
 		}
+<<<<<<< HEAD
 		/* Find the named attribute. */
 		here = FIRST_ENTRY(bh);
 		while (!IS_LAST_ENTRY(here)) {
@@ -436,12 +635,38 @@ bad_block:		ext2_error(sb, "ext2_xattr_set",
 			if ((char *)next >= end)
 				goto bad_block;
 			if (!last->e_value_block && last->e_value_size) {
+=======
+		/*
+		 * Find the named attribute. If not found, 'here' will point
+		 * to entry where the new attribute should be inserted to
+		 * maintain sorting.
+		 */
+		last = FIRST_ENTRY(bh);
+		while (!IS_LAST_ENTRY(last)) {
+			if (!ext2_xattr_entry_valid(last, end, sb->s_blocksize))
+				goto bad_block;
+			if (last->e_value_size) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				size_t offs = le16_to_cpu(last->e_value_offs);
 				if (offs < min_offs)
 					min_offs = offs;
 			}
+<<<<<<< HEAD
 			last = next;
 		}
+=======
+			if (not_found > 0) {
+				not_found = ext2_xattr_cmp_entry(name_index,
+								 name_len,
+								 name, last);
+				if (not_found <= 0)
+					here = last;
+			}
+			last = EXT2_XATTR_NEXT(last);
+		}
+		if (not_found > 0)
+			here = last;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Check whether we have enough space left. */
 		free = min_offs - ((char*)last - (char*)header) - sizeof(__u32);
@@ -449,7 +674,10 @@ bad_block:		ext2_error(sb, "ext2_xattr_set",
 		/* We will use a new extended attribute block. */
 		free = sb->s_blocksize -
 			sizeof(struct ext2_xattr_header) - sizeof(__u32);
+<<<<<<< HEAD
 		here = last = NULL;  /* avoid gcc uninitialized warning. */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (not_found) {
@@ -465,6 +693,7 @@ bad_block:		ext2_error(sb, "ext2_xattr_set",
 		error = -EEXIST;
 		if (flags & XATTR_CREATE)
 			goto cleanup;
+<<<<<<< HEAD
 		if (!here->e_value_block && here->e_value_size) {
 			size_t size = le32_to_cpu(here->e_value_size);
 
@@ -473,6 +702,9 @@ bad_block:		ext2_error(sb, "ext2_xattr_set",
 				goto bad_block;
 			free += EXT2_XATTR_SIZE(size);
 		}
+=======
+		free += EXT2_XATTR_SIZE(le32_to_cpu(here->e_value_size));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free += EXT2_XATTR_LEN(name_len);
 	}
 	error = -ENOSPC;
@@ -482,6 +714,7 @@ bad_block:		ext2_error(sb, "ext2_xattr_set",
 	/* Here we know that we can set the new attribute. */
 
 	if (header) {
+<<<<<<< HEAD
 		struct mb_cache_entry *ce;
 
 		/* assert(header == HDR(bh)); */
@@ -512,18 +745,57 @@ bad_block:		ext2_error(sb, "ext2_xattr_set",
 			offset = (char *)last - bh->b_data;
 			last = ENTRY((char *)header + offset);
 		}
+=======
+		int offset;
+
+		lock_buffer(bh);
+		if (header->h_refcount == cpu_to_le32(1)) {
+			__u32 hash = le32_to_cpu(header->h_hash);
+			struct mb_cache_entry *oe;
+
+			oe = mb_cache_entry_delete_or_get(EA_BLOCK_CACHE(inode),
+					hash, bh->b_blocknr);
+			if (!oe) {
+				ea_bdebug(bh, "modifying in-place");
+				goto update_block;
+			}
+			/*
+			 * Someone is trying to reuse the block, leave it alone
+			 */
+			mb_cache_entry_put(EA_BLOCK_CACHE(inode), oe);
+		}
+		unlock_buffer(bh);
+		ea_bdebug(bh, "cloning");
+		header = kmemdup(HDR(bh), bh->b_size, GFP_KERNEL);
+		error = -ENOMEM;
+		if (header == NULL)
+			goto cleanup;
+		header->h_refcount = cpu_to_le32(1);
+
+		offset = (char *)here - bh->b_data;
+		here = ENTRY((char *)header + offset);
+		offset = (char *)last - bh->b_data;
+		last = ENTRY((char *)header + offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Allocate a buffer where we construct the new block. */
 		header = kzalloc(sb->s_blocksize, GFP_KERNEL);
 		error = -ENOMEM;
 		if (header == NULL)
 			goto cleanup;
+<<<<<<< HEAD
 		end = (char *)header + sb->s_blocksize;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		header->h_magic = cpu_to_le32(EXT2_XATTR_MAGIC);
 		header->h_blocks = header->h_refcount = cpu_to_le32(1);
 		last = here = ENTRY(header+1);
 	}
 
+<<<<<<< HEAD
+=======
+update_block:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Iff we are modifying the block in-place, bh is locked here. */
 
 	if (not_found) {
@@ -536,7 +808,11 @@ bad_block:		ext2_error(sb, "ext2_xattr_set",
 		here->e_name_len = name_len;
 		memcpy(here->e_name, name, name_len);
 	} else {
+<<<<<<< HEAD
 		if (!here->e_value_block && here->e_value_size) {
+=======
+		if (here->e_value_size) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			char *first_val = (char *)header + min_offs;
 			size_t offs = le16_to_cpu(here->e_value_offs);
 			char *val = (char *)header + offs;
@@ -556,18 +832,30 @@ bad_block:		ext2_error(sb, "ext2_xattr_set",
 			/* Remove the old value. */
 			memmove(first_val + size, first_val, val - first_val);
 			memset(first_val, 0, size);
+<<<<<<< HEAD
 			here->e_value_offs = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			min_offs += size;
 
 			/* Adjust all value offsets. */
 			last = ENTRY(header+1);
 			while (!IS_LAST_ENTRY(last)) {
 				size_t o = le16_to_cpu(last->e_value_offs);
+<<<<<<< HEAD
 				if (!last->e_value_block && o < offs)
+=======
+				if (o < offs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					last->e_value_offs =
 						cpu_to_le16(o + size);
 				last = EXT2_XATTR_NEXT(last);
 			}
+<<<<<<< HEAD
+=======
+
+			here->e_value_offs = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (value == NULL) {
 			/* Remove the old name. */
@@ -607,14 +895,72 @@ skip_replace:
 	}
 
 cleanup:
+<<<<<<< HEAD
 	brelse(bh);
 	if (!(bh && header == HDR(bh)))
 		kfree(header);
+=======
+	if (!(bh && header == HDR(bh)))
+		kfree(header);
+	brelse(bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_write(&EXT2_I(inode)->xattr_sem);
 
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+static void ext2_xattr_release_block(struct inode *inode,
+				     struct buffer_head *bh)
+{
+	struct mb_cache *ea_block_cache = EA_BLOCK_CACHE(inode);
+
+retry_ref:
+	lock_buffer(bh);
+	if (HDR(bh)->h_refcount == cpu_to_le32(1)) {
+		__u32 hash = le32_to_cpu(HDR(bh)->h_hash);
+		struct mb_cache_entry *oe;
+
+		/*
+		 * This must happen under buffer lock to properly
+		 * serialize with ext2_xattr_set() reusing the block.
+		 */
+		oe = mb_cache_entry_delete_or_get(ea_block_cache, hash,
+						  bh->b_blocknr);
+		if (oe) {
+			/*
+			 * Someone is trying to reuse the block. Wait
+			 * and retry.
+			 */
+			unlock_buffer(bh);
+			mb_cache_entry_wait_unused(oe);
+			mb_cache_entry_put(ea_block_cache, oe);
+			goto retry_ref;
+		}
+
+		/* Free the old block. */
+		ea_bdebug(bh, "freeing");
+		ext2_free_blocks(inode, bh->b_blocknr, 1);
+		/* We let our caller release bh, so we
+		 * need to duplicate the buffer before. */
+		get_bh(bh);
+		bforget(bh);
+		unlock_buffer(bh);
+	} else {
+		/* Decrement the refcount only. */
+		le32_add_cpu(&HDR(bh)->h_refcount, -1);
+		dquot_free_block(inode, 1);
+		mark_buffer_dirty(bh);
+		unlock_buffer(bh);
+		ea_bdebug(bh, "refcount now=%d",
+			le32_to_cpu(HDR(bh)->h_refcount));
+		if (IS_SYNC(inode))
+			sync_dirty_buffer(bh);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Second half of ext2_xattr_set(): Update the file system.
  */
@@ -625,6 +971,10 @@ ext2_xattr_set2(struct inode *inode, struct buffer_head *old_bh,
 	struct super_block *sb = inode->i_sb;
 	struct buffer_head *new_bh = NULL;
 	int error;
+<<<<<<< HEAD
+=======
+	struct mb_cache *ea_block_cache = EA_BLOCK_CACHE(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (header) {
 		new_bh = ext2_xattr_cache_find(inode, header);
@@ -652,11 +1002,16 @@ ext2_xattr_set2(struct inode *inode, struct buffer_head *old_bh,
 			   don't need to change the reference count. */
 			new_bh = old_bh;
 			get_bh(new_bh);
+<<<<<<< HEAD
 			ext2_xattr_cache_insert(new_bh);
+=======
+			ext2_xattr_cache_insert(ea_block_cache, new_bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/* We need to allocate a new block */
 			ext2_fsblk_t goal = ext2_group_first_block_no(sb,
 						EXT2_I(inode)->i_block_group);
+<<<<<<< HEAD
 			int block = ext2_new_block(inode, goal, &error);
 			if (error)
 				goto cleanup;
@@ -667,13 +1022,32 @@ ext2_xattr_set2(struct inode *inode, struct buffer_head *old_bh,
 				ext2_free_blocks(inode, block, 1);
 				mark_inode_dirty(inode);
 				error = -EIO;
+=======
+			unsigned long count = 1;
+			ext2_fsblk_t block = ext2_new_blocks(inode, goal,
+						&count, &error,
+						EXT2_ALLOC_NORESERVE);
+			if (error)
+				goto cleanup;
+			ea_idebug(inode, "creating block %lu", block);
+
+			new_bh = sb_getblk(sb, block);
+			if (unlikely(!new_bh)) {
+				ext2_free_blocks(inode, block, 1);
+				mark_inode_dirty(inode);
+				error = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto cleanup;
 			}
 			lock_buffer(new_bh);
 			memcpy(new_bh->b_data, header, new_bh->b_size);
 			set_buffer_uptodate(new_bh);
 			unlock_buffer(new_bh);
+<<<<<<< HEAD
 			ext2_xattr_cache_insert(new_bh);
+=======
+			ext2_xattr_cache_insert(ea_block_cache, new_bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			
 			ext2_xattr_update_super_block(sb);
 		}
@@ -688,7 +1062,11 @@ ext2_xattr_set2(struct inode *inode, struct buffer_head *old_bh,
 
 	/* Update the inode. */
 	EXT2_I(inode)->i_file_acl = new_bh ? new_bh->b_blocknr : 0;
+<<<<<<< HEAD
 	inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode_set_ctime_current(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_SYNC(inode)) {
 		error = sync_inode_metadata(inode, 1);
 		/* In case sync failed due to ENOSPC the inode was actually
@@ -706,12 +1084,16 @@ ext2_xattr_set2(struct inode *inode, struct buffer_head *old_bh,
 
 	error = 0;
 	if (old_bh && old_bh != new_bh) {
+<<<<<<< HEAD
 		struct mb_cache_entry *ce;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If there was an old block and we are no longer using it,
 		 * release the old block.
 		 */
+<<<<<<< HEAD
 		ce = mb_cache_entry_get(ext2_xattr_cache, old_bh->b_bdev,
 					old_bh->b_blocknr);
 		lock_buffer(old_bh);
@@ -738,6 +1120,9 @@ ext2_xattr_set2(struct inode *inode, struct buffer_head *old_bh,
 				le32_to_cpu(HDR(old_bh)->h_refcount));
 		}
 		unlock_buffer(old_bh);
+=======
+		ext2_xattr_release_block(inode, old_bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 cleanup:
@@ -756,11 +1141,35 @@ void
 ext2_xattr_delete_inode(struct inode *inode)
 {
 	struct buffer_head *bh = NULL;
+<<<<<<< HEAD
 	struct mb_cache_entry *ce;
 
 	down_write(&EXT2_I(inode)->xattr_sem);
 	if (!EXT2_I(inode)->i_file_acl)
 		goto cleanup;
+=======
+	struct ext2_sb_info *sbi = EXT2_SB(inode->i_sb);
+
+	/*
+	 * We are the only ones holding inode reference. The xattr_sem should
+	 * better be unlocked! We could as well just not acquire xattr_sem at
+	 * all but this makes the code more futureproof. OTOH we need trylock
+	 * here to avoid false-positive warning from lockdep about reclaim
+	 * circular dependency.
+	 */
+	if (WARN_ON_ONCE(!down_write_trylock(&EXT2_I(inode)->xattr_sem)))
+		return;
+	if (!EXT2_I(inode)->i_file_acl)
+		goto cleanup;
+
+	if (!ext2_data_block_valid(sbi, EXT2_I(inode)->i_file_acl, 1)) {
+		ext2_error(inode->i_sb, "ext2_xattr_delete_inode",
+			"inode %ld: xattr block %d is out of data blocks range",
+			inode->i_ino, EXT2_I(inode)->i_file_acl);
+		goto cleanup;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bh = sb_bread(inode->i_sb, EXT2_I(inode)->i_file_acl);
 	if (!bh) {
 		ext2_error(inode->i_sb, "ext2_xattr_delete_inode",
@@ -769,13 +1178,18 @@ ext2_xattr_delete_inode(struct inode *inode)
 		goto cleanup;
 	}
 	ea_bdebug(bh, "b_count=%d", atomic_read(&(bh->b_count)));
+<<<<<<< HEAD
 	if (HDR(bh)->h_magic != cpu_to_le32(EXT2_XATTR_MAGIC) ||
 	    HDR(bh)->h_blocks != cpu_to_le32(1)) {
+=======
+	if (!ext2_xattr_header_valid(HDR(bh))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ext2_error(inode->i_sb, "ext2_xattr_delete_inode",
 			"inode %ld: bad block %d", inode->i_ino,
 			EXT2_I(inode)->i_file_acl);
 		goto cleanup;
 	}
+<<<<<<< HEAD
 	ce = mb_cache_entry_get(ext2_xattr_cache, bh->b_bdev, bh->b_blocknr);
 	lock_buffer(bh);
 	if (HDR(bh)->h_refcount == cpu_to_le32(1)) {
@@ -797,6 +1211,9 @@ ext2_xattr_delete_inode(struct inode *inode)
 			sync_dirty_buffer(bh);
 		dquot_free_block_nodirty(inode, 1);
 	}
+=======
+	ext2_xattr_release_block(inode, bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	EXT2_I(inode)->i_file_acl = 0;
 
 cleanup:
@@ -805,6 +1222,7 @@ cleanup:
 }
 
 /*
+<<<<<<< HEAD
  * ext2_xattr_put_super()
  *
  * This is called when a file system is unmounted.
@@ -817,6 +1235,8 @@ ext2_xattr_put_super(struct super_block *sb)
 
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ext2_xattr_cache_insert()
  *
  * Create a new entry in the extended attribute cache, and insert
@@ -825,6 +1245,7 @@ ext2_xattr_put_super(struct super_block *sb)
  * Returns 0, or a negative error number on failure.
  */
 static int
+<<<<<<< HEAD
 ext2_xattr_cache_insert(struct buffer_head *bh)
 {
 	__u32 hash = le32_to_cpu(HDR(bh)->h_hash);
@@ -847,6 +1268,22 @@ ext2_xattr_cache_insert(struct buffer_head *bh)
 			  atomic_read(&ext2_xattr_cache->c_entry_count));
 		mb_cache_entry_release(ce);
 	}
+=======
+ext2_xattr_cache_insert(struct mb_cache *cache, struct buffer_head *bh)
+{
+	__u32 hash = le32_to_cpu(HDR(bh)->h_hash);
+	int error;
+
+	error = mb_cache_entry_create(cache, GFP_KERNEL, hash, bh->b_blocknr,
+				      true);
+	if (error) {
+		if (error == -EBUSY) {
+			ea_bdebug(bh, "already in cache");
+			error = 0;
+		}
+	} else
+		ea_bdebug(bh, "inserting [%x]", (int)hash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
@@ -903,10 +1340,15 @@ ext2_xattr_cache_find(struct inode *inode, struct ext2_xattr_header *header)
 {
 	__u32 hash = le32_to_cpu(header->h_hash);
 	struct mb_cache_entry *ce;
+<<<<<<< HEAD
+=======
+	struct mb_cache *ea_block_cache = EA_BLOCK_CACHE(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!header->h_hash)
 		return NULL;  /* never share */
 	ea_idebug(inode, "looking for cached blocks [%x]", (int)hash);
+<<<<<<< HEAD
 again:
 	ce = mb_cache_entry_find_first(ext2_xattr_cache, inode->i_sb->s_bdev,
 				       hash);
@@ -930,18 +1372,45 @@ again:
 				   EXT2_XATTR_REFCOUNT_MAX) {
 				ea_idebug(inode, "block %ld refcount %d>%d",
 					  (unsigned long) ce->e_block,
+=======
+
+	ce = mb_cache_entry_find_first(ea_block_cache, hash);
+	while (ce) {
+		struct buffer_head *bh;
+
+		bh = sb_bread(inode->i_sb, ce->e_value);
+		if (!bh) {
+			ext2_error(inode->i_sb, "ext2_xattr_cache_find",
+				"inode %ld: block %ld read error",
+				inode->i_ino, (unsigned long) ce->e_value);
+		} else {
+			lock_buffer(bh);
+			if (le32_to_cpu(HDR(bh)->h_refcount) >
+			    EXT2_XATTR_REFCOUNT_MAX) {
+				ea_idebug(inode, "block %ld refcount %d>%d",
+					  (unsigned long) ce->e_value,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  le32_to_cpu(HDR(bh)->h_refcount),
 					  EXT2_XATTR_REFCOUNT_MAX);
 			} else if (!ext2_xattr_cmp(header, HDR(bh))) {
 				ea_bdebug(bh, "b_count=%d",
 					  atomic_read(&(bh->b_count)));
+<<<<<<< HEAD
 				mb_cache_entry_release(ce);
+=======
+				mb_cache_entry_touch(ea_block_cache, ce);
+				mb_cache_entry_put(ea_block_cache, ce);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return bh;
 			}
 			unlock_buffer(bh);
 			brelse(bh);
 		}
+<<<<<<< HEAD
 		ce = mb_cache_entry_find_next(ce, inode->i_sb->s_bdev, hash);
+=======
+		ce = mb_cache_entry_find_next(ea_block_cache, ce);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NULL;
 }
@@ -1014,6 +1483,7 @@ static void ext2_xattr_rehash(struct ext2_xattr_header *header,
 
 #undef BLOCK_HASH_SHIFT
 
+<<<<<<< HEAD
 int __init
 init_ext2_xattr(void)
 {
@@ -1027,4 +1497,17 @@ void
 exit_ext2_xattr(void)
 {
 	mb_cache_destroy(ext2_xattr_cache);
+=======
+#define HASH_BUCKET_BITS 10
+
+struct mb_cache *ext2_xattr_create_cache(void)
+{
+	return mb_cache_create(HASH_BUCKET_BITS);
+}
+
+void ext2_xattr_destroy_cache(struct mb_cache *cache)
+{
+	if (cache)
+		mb_cache_destroy(cache);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

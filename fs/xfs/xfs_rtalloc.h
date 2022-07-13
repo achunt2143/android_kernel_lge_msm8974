@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2000-2003,2005 Silicon Graphics, Inc.
  * All Rights Reserved.
@@ -14,10 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write the Free Software Foundation,
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2000-2003,2005 Silicon Graphics, Inc.
+ * All Rights Reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __XFS_RTALLOC_H__
 #define	__XFS_RTALLOC_H__
 
+<<<<<<< HEAD
 struct xfs_mount;
 struct xfs_trans;
 
@@ -103,6 +111,15 @@ xfs_rtfree_extent(
 	xfs_extlen_t		len);	/* length of extent freed */
 
 /*
+=======
+/* kernel only definitions and functions */
+
+struct xfs_mount;
+struct xfs_trans;
+
+#ifdef CONFIG_XFS_RT
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Initialize realtime fields in the mount structure.
  */
 int					/* error */
@@ -121,6 +138,7 @@ xfs_rtmount_inodes(
 	struct xfs_mount	*mp);	/* file system mount structure */
 
 /*
+<<<<<<< HEAD
  * Pick an extent for allocation at the start of a new realtime file.
  * Use the sequence number stored in the atime field of the bitmap inode.
  * Translate this to a fraction of the rtextents, and return the product
@@ -135,6 +153,8 @@ xfs_rtpick_extent(
 	xfs_rtblock_t		*pick);	/* result rt extent */
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Grow the realtime area of the filesystem.
  */
 int
@@ -142,11 +162,18 @@ xfs_growfs_rt(
 	struct xfs_mount	*mp,	/* file system mount structure */
 	xfs_growfs_rt_t		*in);	/* user supplied growfs struct */
 
+<<<<<<< HEAD
 #else
 # define xfs_rtallocate_extent(t,b,min,max,l,a,f,p,rb)  (ENOSYS)
 # define xfs_rtfree_extent(t,b,l)                       (ENOSYS)
 # define xfs_rtpick_extent(m,t,l,rb)                    (ENOSYS)
 # define xfs_growfs_rt(mp,in)                           (ENOSYS)
+=======
+int xfs_rtalloc_reinit_frextents(struct xfs_mount *mp);
+#else
+# define xfs_growfs_rt(mp,in)				(-ENOSYS)
+# define xfs_rtalloc_reinit_frextents(m)		(0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int		/* error */
 xfs_rtmount_init(
 	xfs_mount_t	*mp)	/* file system mount structure */
@@ -155,6 +182,7 @@ xfs_rtmount_init(
 		return 0;
 
 	xfs_warn(mp, "Not built with CONFIG_XFS_RT");
+<<<<<<< HEAD
 	return ENOSYS;
 }
 # define xfs_rtmount_inodes(m)  (((mp)->m_sb.sb_rblocks == 0)? 0 : (ENOSYS))
@@ -163,4 +191,12 @@ xfs_rtmount_init(
 
 #endif	/* __KERNEL__ */
 
+=======
+	return -ENOSYS;
+}
+# define xfs_rtmount_inodes(m)  (((mp)->m_sb.sb_rblocks == 0)? 0 : (-ENOSYS))
+# define xfs_rtunmount_inodes(m)
+#endif	/* CONFIG_XFS_RT */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* __XFS_RTALLOC_H__ */

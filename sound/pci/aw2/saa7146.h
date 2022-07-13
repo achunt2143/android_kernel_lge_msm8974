@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************
  *
  * Copyright (C) 2008 Cedric Bregardis <cedric.bregardis@free.fr> and
@@ -5,6 +9,7 @@
  *
  * This file is part of the Audiowerk2 ALSA driver
  *
+<<<<<<< HEAD
  * The Audiowerk2 ALSA driver is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2.
@@ -19,6 +24,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301,
  * USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *****************************************************************************/
 
 /* SAA7146 registers */

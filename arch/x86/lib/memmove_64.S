@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Normally compiler builtins are used, but sometimes the compiler calls out
  * of line code. Based on asm-i386/string.h.
@@ -5,6 +9,7 @@
  * This assembly file is re-written from memmove_64.c file.
  *	- Copyright 2011 Fenghua Yu <fenghua.yu@intel.com>
  */
+<<<<<<< HEAD
 #define _STRING_C
 #include <linux/linkage.h>
 #include <asm/dwarf2.h>
@@ -13,6 +18,17 @@
 
 #undef memmove
 
+=======
+#include <linux/export.h>
+#include <linux/linkage.h>
+#include <asm/cpufeatures.h>
+#include <asm/alternative.h>
+
+#undef memmove
+
+.section .noinstr.text, "ax"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Implement memmove(). This can handle overlap between src and dst.
  *
@@ -24,6 +40,7 @@
  * Output:
  * rax: dest
  */
+<<<<<<< HEAD
 ENTRY(memmove)
 	CFI_STARTPROC
 
@@ -31,6 +48,11 @@ ENTRY(memmove)
 	mov %rdi, %rax
 	cmp $0x20, %rdx
 	jb	1f
+=======
+SYM_FUNC_START(__memmove)
+
+	mov %rdi, %rax
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Decide forward/backward copy mode */
 	cmp %rdi, %rsi
@@ -40,7 +62,17 @@ ENTRY(memmove)
 	cmp %rdi, %r8
 	jg 2f
 
+<<<<<<< HEAD
 .Lmemmove_begin_forward:
+=======
+#define CHECK_LEN	cmp $0x20, %rdx; jb 1f
+#define MEMMOVE_BYTES	movq %rdx, %rcx; rep movsb; RET
+.Lmemmove_begin_forward:
+	ALTERNATIVE_2 __stringify(CHECK_LEN), \
+		      __stringify(CHECK_LEN; MEMMOVE_BYTES), X86_FEATURE_ERMS, \
+		      __stringify(MEMMOVE_BYTES), X86_FEATURE_FSRM
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * movsq instruction have many startup latency
 	 * so we handle small size by general register.
@@ -56,7 +88,11 @@ ENTRY(memmove)
 3:
 	sub $0x20, %rdx
 	/*
+<<<<<<< HEAD
 	 * We gobble 32byts forward in each loop.
+=======
+	 * We gobble 32 bytes forward in each loop.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 5:
 	sub $0x20, %rdx
@@ -110,6 +146,11 @@ ENTRY(memmove)
 	 */
 	.p2align 4
 2:
+<<<<<<< HEAD
+=======
+	cmp $0x20, %rdx
+	jb 1f
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmp $680, %rdx
 	jb 6f
 	cmp %dil, %sil
@@ -122,7 +163,11 @@ ENTRY(memmove)
 	addq %rdx, %rdi
 	subq $0x20, %rdx
 	/*
+<<<<<<< HEAD
 	 * We gobble 32byts backward in each loop.
+=======
+	 * We gobble 32 bytes backward in each loop.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 8:
 	subq $0x20, %rdx
@@ -202,6 +247,7 @@ ENTRY(memmove)
 	movb (%rsi), %r11b
 	movb %r11b, (%rdi)
 13:
+<<<<<<< HEAD
 	retq
 	CFI_ENDPROC
 
@@ -221,3 +267,11 @@ ENTRY(memmove)
 		.Lmemmove_end_forward_efs-.Lmemmove_begin_forward_efs
 	.previous
 ENDPROC(memmove)
+=======
+	RET
+SYM_FUNC_END(__memmove)
+EXPORT_SYMBOL(__memmove)
+
+SYM_FUNC_ALIAS_MEMFUNC(memmove, __memmove)
+EXPORT_SYMBOL(memmove)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

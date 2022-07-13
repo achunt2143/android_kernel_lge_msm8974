@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/cio/cio.c
  *   S/390 common I/O routines -- low level i/o calls
  *
  *    Copyright IBM Corp. 1999,2008
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ *   S/390 common I/O routines -- low level i/o calls
+ *
+ *    Copyright IBM Corp. 1999, 2008
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Ingo Adlung (adlung@de.ibm.com)
  *		 Cornelia Huck (cornelia.huck@de.ibm.com)
  *		 Arnd Bergmann (arndb@de.ibm.com)
@@ -19,17 +27,28 @@
 #include <linux/device.h>
 #include <linux/kernel_stat.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cio.h>
 #include <asm/delay.h>
 #include <asm/irq.h>
 #include <asm/irq_regs.h>
 #include <asm/setup.h>
+<<<<<<< HEAD
 #include <asm/reset.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ipl.h>
 #include <asm/chpid.h>
 #include <asm/airq.h>
 #include <asm/isc.h>
+<<<<<<< HEAD
 #include <asm/cputime.h>
+=======
+#include <linux/sched/cputime.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/fcx.h>
 #include <asm/nmi.h>
 #include <asm/crw.h>
@@ -41,11 +60,21 @@
 #include "blacklist.h"
 #include "cio_debug.h"
 #include "chp.h"
+<<<<<<< HEAD
+=======
+#include "trace.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 debug_info_t *cio_debug_msg_id;
 debug_info_t *cio_debug_trace_id;
 debug_info_t *cio_debug_crw_id;
 
+<<<<<<< HEAD
+=======
+DEFINE_PER_CPU_ALIGNED(struct irb, cio_irb);
+EXPORT_PER_CPU_SYMBOL(cio_irb);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Function: cio_debug_init
  * Initializes three debug logs for common I/O:
@@ -55,7 +84,11 @@ debug_info_t *cio_debug_crw_id;
  */
 static int __init cio_debug_init(void)
 {
+<<<<<<< HEAD
 	cio_debug_msg_id = debug_register("cio_msg", 16, 1, 16 * sizeof(long));
+=======
+	cio_debug_msg_id = debug_register("cio_msg", 16, 1, 11 * sizeof(long));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cio_debug_msg_id)
 		goto out_unregister;
 	debug_register_view(cio_debug_msg_id, &debug_sprintf_view);
@@ -65,7 +98,11 @@ static int __init cio_debug_init(void)
 		goto out_unregister;
 	debug_register_view(cio_debug_trace_id, &debug_hex_ascii_view);
 	debug_set_level(cio_debug_trace_id, 2);
+<<<<<<< HEAD
 	cio_debug_crw_id = debug_register("cio_crw", 16, 1, 16 * sizeof(long));
+=======
+	cio_debug_crw_id = debug_register("cio_crw", 8, 1, 8 * sizeof(long));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cio_debug_crw_id)
 		goto out_unregister;
 	debug_register_view(cio_debug_crw_id, &debug_sprintf_view);
@@ -73,12 +110,18 @@ static int __init cio_debug_init(void)
 	return 0;
 
 out_unregister:
+<<<<<<< HEAD
 	if (cio_debug_msg_id)
 		debug_unregister(cio_debug_msg_id);
 	if (cio_debug_trace_id)
 		debug_unregister(cio_debug_trace_id);
 	if (cio_debug_crw_id)
 		debug_unregister(cio_debug_crw_id);
+=======
+	debug_unregister(cio_debug_msg_id);
+	debug_unregister(cio_debug_trace_id);
+	debug_unregister(cio_debug_crw_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 }
 
@@ -133,23 +176,36 @@ cio_start_key (struct subchannel *sch,	/* subchannel structure */
 
 	memset(orb, 0, sizeof(union orb));
 	/* sch is always under 2G. */
+<<<<<<< HEAD
 	orb->cmd.intparm = (u32)(addr_t)sch;
+=======
+	orb->cmd.intparm = (u32)virt_to_phys(sch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	orb->cmd.fmt = 1;
 
 	orb->cmd.pfch = priv->options.prefetch == 0;
 	orb->cmd.spnd = priv->options.suspend;
 	orb->cmd.ssic = priv->options.suspend && priv->options.inter;
 	orb->cmd.lpm = (lpm != 0) ? lpm : sch->lpm;
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * for 64 bit we always support 64 bit IDAWs with 4k page size only
 	 */
 	orb->cmd.c64 = 1;
 	orb->cmd.i2k = 0;
+<<<<<<< HEAD
 #endif
 	orb->cmd.key = key >> 4;
 	/* issue "Start Subchannel" */
 	orb->cmd.cpa = (__u32) __pa(cpa);
+=======
+	orb->cmd.key = key >> 4;
+	/* issue "Start Subchannel" */
+	orb->cmd.cpa = virt_to_dma32(cpa);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ccode = ssch(sch->schid, orb);
 
 	/* process condition code */
@@ -171,12 +227,20 @@ cio_start_key (struct subchannel *sch,	/* subchannel structure */
 		return ccode;
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cio_start_key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int
 cio_start (struct subchannel *sch, struct ccw1 *cpa, __u8 lpm)
 {
 	return cio_start_key(sch, cpa, lpm, PAGE_DEFAULT_KEY);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cio_start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * resume suspended I/O operation
@@ -209,6 +273,10 @@ cio_resume (struct subchannel *sch)
 		return -ENODEV;
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cio_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * halt I/O operation
@@ -242,6 +310,10 @@ cio_halt(struct subchannel *sch)
 		return -ENODEV;
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cio_halt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Clear I/O operation
@@ -272,6 +344,10 @@ cio_clear(struct subchannel *sch)
 		return -ENODEV;
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cio_clear);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Function: cio_cancel
@@ -309,7 +385,72 @@ cio_cancel (struct subchannel *sch)
 		return -ENODEV;
 	}
 }
+<<<<<<< HEAD
 
+=======
+EXPORT_SYMBOL_GPL(cio_cancel);
+
+/**
+ * cio_cancel_halt_clear - Cancel running I/O by performing cancel, halt
+ * and clear ordinally if subchannel is valid.
+ * @sch: subchannel on which to perform the cancel_halt_clear operation
+ * @iretry: the number of the times remained to retry the next operation
+ *
+ * This should be called repeatedly since halt/clear are asynchronous
+ * operations. We do one try with cio_cancel, three tries with cio_halt,
+ * 255 tries with cio_clear. The caller should initialize @iretry with
+ * the value 255 for its first call to this, and keep using the same
+ * @iretry in the subsequent calls until it gets a non -EBUSY return.
+ *
+ * Returns 0 if device now idle, -ENODEV for device not operational,
+ * -EBUSY if an interrupt is expected (either from halt/clear or from a
+ * status pending), and -EIO if out of retries.
+ */
+int cio_cancel_halt_clear(struct subchannel *sch, int *iretry)
+{
+	int ret;
+
+	if (cio_update_schib(sch))
+		return -ENODEV;
+	if (!sch->schib.pmcw.ena)
+		/* Not operational -> done. */
+		return 0;
+	/* Stage 1: cancel io. */
+	if (!(scsw_actl(&sch->schib.scsw) & SCSW_ACTL_HALT_PEND) &&
+	    !(scsw_actl(&sch->schib.scsw) & SCSW_ACTL_CLEAR_PEND)) {
+		if (!scsw_is_tm(&sch->schib.scsw)) {
+			ret = cio_cancel(sch);
+			if (ret != -EINVAL)
+				return ret;
+		}
+		/*
+		 * Cancel io unsuccessful or not applicable (transport mode).
+		 * Continue with asynchronous instructions.
+		 */
+		*iretry = 3;	/* 3 halt retries. */
+	}
+	/* Stage 2: halt io. */
+	if (!(scsw_actl(&sch->schib.scsw) & SCSW_ACTL_CLEAR_PEND)) {
+		if (*iretry) {
+			*iretry -= 1;
+			ret = cio_halt(sch);
+			if (ret != -EBUSY)
+				return (ret == 0) ? -EBUSY : ret;
+		}
+		/* Halt io unsuccessful. */
+		*iretry = 255;	/* 255 clear retries. */
+	}
+	/* Stage 3: clear io. */
+	if (*iretry) {
+		*iretry -= 1;
+		ret = cio_clear(sch);
+		return (ret == 0) ? -EBUSY : ret;
+	}
+	/* Function was unsuccessful */
+	return -EIO;
+}
+EXPORT_SYMBOL_GPL(cio_cancel_halt_clear);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void cio_apply_config(struct subchannel *sch, struct schib *schib)
 {
@@ -343,21 +484,37 @@ static int cio_check_config(struct subchannel *sch, struct schib *schib)
  */
 int cio_commit_config(struct subchannel *sch)
 {
+<<<<<<< HEAD
 	struct schib schib;
 	int ccode, retry, ret = 0;
 
 	if (stsch_err(sch->schid, &schib) || !css_sch_is_valid(&schib))
+=======
+	int ccode, retry, ret = 0;
+	struct schib schib;
+	struct irb irb;
+
+	if (stsch(sch->schid, &schib) || !css_sch_is_valid(&schib))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	for (retry = 0; retry < 5; retry++) {
 		/* copy desired changes to local schib */
 		cio_apply_config(sch, &schib);
+<<<<<<< HEAD
 		ccode = msch_err(sch->schid, &schib);
+=======
+		ccode = msch(sch->schid, &schib);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ccode < 0) /* -EIO if msch gets a program check. */
 			return ccode;
 		switch (ccode) {
 		case 0: /* successful */
+<<<<<<< HEAD
 			if (stsch_err(sch->schid, &schib) ||
+=======
+			if (stsch(sch->schid, &schib) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    !css_sch_is_valid(&schib))
 				return -ENODEV;
 			if (cio_check_config(sch, &schib)) {
@@ -368,7 +525,14 @@ int cio_commit_config(struct subchannel *sch)
 			ret = -EAGAIN;
 			break;
 		case 1: /* status pending */
+<<<<<<< HEAD
 			return -EBUSY;
+=======
+			ret = -EBUSY;
+			if (tsch(sch->schid, &irb))
+				return ret;
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 2: /* busy */
 			udelay(100); /* allow for recovery */
 			ret = -EBUSY;
@@ -379,6 +543,10 @@ int cio_commit_config(struct subchannel *sch)
 	}
 	return ret;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cio_commit_config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * cio_update_schib - Perform stsch and update schib if subchannel is valid.
@@ -389,7 +557,11 @@ int cio_update_schib(struct subchannel *sch)
 {
 	struct schib schib;
 
+<<<<<<< HEAD
 	if (stsch_err(sch->schid, &schib) || !css_sch_is_valid(&schib))
+=======
+	if (stsch(sch->schid, &schib) || !css_sch_is_valid(&schib))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	memcpy(&sch->schib, &schib, sizeof(schib));
@@ -404,7 +576,10 @@ EXPORT_SYMBOL_GPL(cio_update_schib);
  */
 int cio_enable_subchannel(struct subchannel *sch, u32 intparm)
 {
+<<<<<<< HEAD
 	int retry;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	CIO_TRACE_EVENT(2, "ensch");
@@ -419,6 +594,7 @@ int cio_enable_subchannel(struct subchannel *sch, u32 intparm)
 	sch->config.isc = sch->isc;
 	sch->config.intparm = intparm;
 
+<<<<<<< HEAD
 	for (retry = 0; retry < 3; retry++) {
 		ret = cio_commit_config(sch);
 		if (ret == -EIO) {
@@ -433,6 +609,16 @@ int cio_enable_subchannel(struct subchannel *sch, u32 intparm)
 				break;
 		} else
 			break;
+=======
+	ret = cio_commit_config(sch);
+	if (ret == -EIO) {
+		/*
+		 * Got a program check in msch. Try without
+		 * the concurrent sense bit the next time.
+		 */
+		sch->config.csense = 0;
+		ret = cio_commit_config(sch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	CIO_HEX_EVENT(2, &ret, sizeof(ret));
 	return ret;
@@ -445,7 +631,10 @@ EXPORT_SYMBOL_GPL(cio_enable_subchannel);
  */
 int cio_disable_subchannel(struct subchannel *sch)
 {
+<<<<<<< HEAD
 	int retry;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	CIO_TRACE_EVENT(2, "dissch");
@@ -457,6 +646,7 @@ int cio_disable_subchannel(struct subchannel *sch)
 		return -ENODEV;
 
 	sch->config.ena = 0;
+<<<<<<< HEAD
 
 	for (retry = 0; retry < 3; retry++) {
 		ret = cio_commit_config(sch);
@@ -467,11 +657,16 @@ int cio_disable_subchannel(struct subchannel *sch)
 		} else
 			break;
 	}
+=======
+	ret = cio_commit_config(sch);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CIO_HEX_EVENT(2, &ret, sizeof(ret));
 	return ret;
 }
 EXPORT_SYMBOL_GPL(cio_disable_subchannel);
 
+<<<<<<< HEAD
 int cio_create_sch_lock(struct subchannel *sch)
 {
 	sch->lock = kmalloc(sizeof(spinlock_t), GFP_KERNEL);
@@ -594,10 +789,17 @@ out:
  *
  */
 void __irq_entry do_IRQ(struct pt_regs *regs)
+=======
+/*
+ * do_cio_interrupt() handles all normal I/O device IRQ's
+ */
+static irqreturn_t do_cio_interrupt(int irq, void *dummy)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tpi_info *tpi_info;
 	struct subchannel *sch;
 	struct irb *irb;
+<<<<<<< HEAD
 	struct pt_regs *old_regs;
 
 	old_regs = set_irq_regs(regs);
@@ -750,22 +952,114 @@ cio_test_for_console(struct subchannel_id schid, void *data)
 	if ((console_subchannel.schib.pmcw.st == SUBCHANNEL_TYPE_IO) &&
 	    console_subchannel.schib.pmcw.dnv &&
 	    (console_subchannel.schib.pmcw.dev == console_devno)) {
+=======
+
+	set_cpu_flag(CIF_NOHZ_DELAY);
+	tpi_info = &get_irq_regs()->tpi_info;
+	trace_s390_cio_interrupt(tpi_info);
+	irb = this_cpu_ptr(&cio_irb);
+	if (!tpi_info->intparm) {
+		/* Clear pending interrupt condition. */
+		inc_irq_stat(IRQIO_CIO);
+		tsch(tpi_info->schid, irb);
+		return IRQ_HANDLED;
+	}
+	sch = phys_to_virt(tpi_info->intparm);
+	spin_lock(&sch->lock);
+	/* Store interrupt response block to lowcore. */
+	if (tsch(tpi_info->schid, irb) == 0) {
+		/* Keep subchannel information word up to date. */
+		memcpy (&sch->schib.scsw, &irb->scsw, sizeof (irb->scsw));
+		/* Call interrupt handler if there is one. */
+		if (sch->driver && sch->driver->irq)
+			sch->driver->irq(sch);
+		else
+			inc_irq_stat(IRQIO_CIO);
+	} else
+		inc_irq_stat(IRQIO_CIO);
+	spin_unlock(&sch->lock);
+
+	return IRQ_HANDLED;
+}
+
+void __init init_cio_interrupts(void)
+{
+	irq_set_chip_and_handler(IO_INTERRUPT,
+				 &dummy_irq_chip, handle_percpu_irq);
+	if (request_irq(IO_INTERRUPT, do_cio_interrupt, 0, "I/O", NULL))
+		panic("Failed to register I/O interrupt\n");
+}
+
+#ifdef CONFIG_CCW_CONSOLE
+static struct subchannel *console_sch;
+static struct lock_class_key console_sch_key;
+
+/*
+ * Use cio_tsch to update the subchannel status and call the interrupt handler
+ * if status had been pending. Called with the subchannel's lock held.
+ */
+void cio_tsch(struct subchannel *sch)
+{
+	struct irb *irb;
+	int irq_context;
+
+	irb = this_cpu_ptr(&cio_irb);
+	/* Store interrupt response block to lowcore. */
+	if (tsch(sch->schid, irb) != 0)
+		/* Not status pending or not operational. */
+		return;
+	memcpy(&sch->schib.scsw, &irb->scsw, sizeof(union scsw));
+	/* Call interrupt handler with updated status. */
+	irq_context = in_interrupt();
+	if (!irq_context) {
+		local_bh_disable();
+		irq_enter();
+	}
+	kstat_incr_irq_this_cpu(IO_INTERRUPT);
+	if (sch->driver && sch->driver->irq)
+		sch->driver->irq(sch);
+	else
+		inc_irq_stat(IRQIO_CIO);
+	if (!irq_context) {
+		irq_exit();
+		_local_bh_enable();
+	}
+}
+
+static int cio_test_for_console(struct subchannel_id schid, void *data)
+{
+	struct schib schib;
+
+	if (stsch(schid, &schib) != 0)
+		return -ENXIO;
+	if ((schib.pmcw.st == SUBCHANNEL_TYPE_IO) && schib.pmcw.dnv &&
+	    (schib.pmcw.dev == console_devno)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		console_irq = schid.sch_no;
 		return 1; /* found */
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 
 static int
 cio_get_console_sch_no(void)
 {
 	struct subchannel_id schid;
 	
+=======
+static int cio_get_console_sch_no(void)
+{
+	struct subchannel_id schid;
+	struct schib schib;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_subchannel_id(&schid);
 	if (console_irq != -1) {
 		/* VM provided us with the irq number of the console. */
 		schid.sch_no = console_irq;
+<<<<<<< HEAD
 		if (stsch_err(schid, &console_subchannel.schib) != 0 ||
 		    (console_subchannel.schib.pmcw.st != SUBCHANNEL_TYPE_IO) ||
 		    !console_subchannel.schib.pmcw.dnv)
@@ -781,10 +1075,20 @@ cio_get_console_sch_no(void)
 		 * the channel subsystem is not fully initialized.
 		 * With some luck, the HWC console can take over */
 		return -1;
+=======
+		if (stsch(schid, &schib) != 0 ||
+		    (schib.pmcw.st != SUBCHANNEL_TYPE_IO) || !schib.pmcw.dnv)
+			return -1;
+		console_devno = schib.pmcw.dev;
+	} else if (console_devno != -1) {
+		/* At least the console device number is known. */
+		for_each_subchannel(cio_test_for_console, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return console_irq;
 }
 
+<<<<<<< HEAD
 struct subchannel *
 cio_probe_console(void)
 {
@@ -1091,6 +1395,63 @@ int __init cio_get_iplinfo(struct cio_iplinfo *iplinfo)
 	iplinfo->is_qdio = schib.pmcw.qf;
 	return 0;
 }
+=======
+struct subchannel *cio_probe_console(void)
+{
+	struct subchannel_id schid;
+	struct subchannel *sch;
+	struct schib schib;
+	int sch_no, ret;
+
+	sch_no = cio_get_console_sch_no();
+	if (sch_no == -1) {
+		pr_warn("No CCW console was found\n");
+		return ERR_PTR(-ENODEV);
+	}
+	init_subchannel_id(&schid);
+	schid.sch_no = sch_no;
+	ret = stsch(schid, &schib);
+	if (ret)
+		return ERR_PTR(-ENODEV);
+
+	sch = css_alloc_subchannel(schid, &schib);
+	if (IS_ERR(sch))
+		return sch;
+
+	lockdep_set_class(&sch->lock, &console_sch_key);
+	isc_register(CONSOLE_ISC);
+	sch->config.isc = CONSOLE_ISC;
+	sch->config.intparm = (u32)virt_to_phys(sch);
+	ret = cio_commit_config(sch);
+	if (ret) {
+		isc_unregister(CONSOLE_ISC);
+		put_device(&sch->dev);
+		return ERR_PTR(ret);
+	}
+	console_sch = sch;
+	return sch;
+}
+
+int cio_is_console(struct subchannel_id schid)
+{
+	if (!console_sch)
+		return 0;
+	return schid_equal(&schid, &console_sch->schid);
+}
+
+void cio_register_early_subchannels(void)
+{
+	int ret;
+
+	if (!console_sch)
+		return;
+
+	ret = css_register_subchannel(console_sch);
+	if (ret)
+		put_device(&console_sch->dev);
+}
+#endif /* CONFIG_CCW_CONSOLE */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * cio_tm_start_key - perform start function
@@ -1108,11 +1469,19 @@ int cio_tm_start_key(struct subchannel *sch, struct tcw *tcw, u8 lpm, u8 key)
 	union orb *orb = &to_io_private(sch)->orb;
 
 	memset(orb, 0, sizeof(union orb));
+<<<<<<< HEAD
 	orb->tm.intparm = (u32) (addr_t) sch;
 	orb->tm.key = key >> 4;
 	orb->tm.b = 1;
 	orb->tm.lpm = lpm ? lpm : sch->lpm;
 	orb->tm.tcw = (u32) (addr_t) tcw;
+=======
+	orb->tm.intparm = (u32)virt_to_phys(sch);
+	orb->tm.key = key >> 4;
+	orb->tm.b = 1;
+	orb->tm.lpm = lpm ? lpm : sch->lpm;
+	orb->tm.tcw = virt_to_dma32(tcw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cc = ssch(sch->schid, orb);
 	switch (cc) {
 	case 0:
@@ -1124,10 +1493,18 @@ int cio_tm_start_key(struct subchannel *sch, struct tcw *tcw, u8 lpm, u8 key)
 		return cio_start_handle_notoper(sch, lpm);
 	}
 }
+<<<<<<< HEAD
 
 /**
  * cio_tm_intrg - perform interrogate function
  * @sch - subchannel on which to perform the interrogate function
+=======
+EXPORT_SYMBOL_GPL(cio_tm_start_key);
+
+/**
+ * cio_tm_intrg - perform interrogate function
+ * @sch: subchannel on which to perform the interrogate function
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If the specified subchannel is running in transport-mode, perform the
  * interrogate function. Return zero on success, non-zero otherwie.
@@ -1149,3 +1526,7 @@ int cio_tm_intrg(struct subchannel *sch)
 		return -ENODEV;
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cio_tm_intrg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

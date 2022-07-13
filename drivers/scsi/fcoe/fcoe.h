@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright(c) 2009 Intel Corporation. All rights reserved.
  *
@@ -14,6 +15,12 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright(c) 2009 Intel Corporation. All rights reserved.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Maintained at www.Open-FCoE.org
  */
 
@@ -55,12 +62,21 @@ do {                                                            	\
 
 #define FCOE_DBG(fmt, args...)						\
 	FCOE_CHECK_LOGGING(FCOE_LOGGING,				\
+<<<<<<< HEAD
 			   printk(KERN_INFO "fcoe: " fmt, ##args);)
 
 #define FCOE_NETDEV_DBG(netdev, fmt, args...)			\
 	FCOE_CHECK_LOGGING(FCOE_NETDEV_LOGGING,			\
 			   printk(KERN_INFO "fcoe: %s: " fmt,	\
 				  netdev->name, ##args);)
+=======
+			   pr_info("fcoe: " fmt, ##args);)
+
+#define FCOE_NETDEV_DBG(netdev, fmt, args...)			\
+	FCOE_CHECK_LOGGING(FCOE_NETDEV_LOGGING,			\
+			   pr_info("fcoe: %s: " fmt,		\
+				   netdev->name, ##args);)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct fcoe_interface - A FCoE interface
@@ -68,10 +84,18 @@ do {                                                            	\
  * @netdev:	      The associated net device
  * @fcoe_packet_type: FCoE packet type
  * @fip_packet_type:  FIP packet type
+<<<<<<< HEAD
  * @ctlr:	      The FCoE controller (for FIP)
  * @oem:	      The offload exchange manager for all local port
  *		      instances associated with this port
  * This structure is 1:1 with a net devive.
+=======
+ * @oem:	      The offload exchange manager for all local port
+ *		      instances associated with this port
+ * @removed:	      Indicates fcoe interface removed from net device
+ * @priority:	      Priority for the FCoE packet (DCB)
+ * This structure is 1:1 with a net device.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct fcoe_interface {
 	struct list_head   list;
@@ -79,11 +103,25 @@ struct fcoe_interface {
 	struct net_device  *realdev;
 	struct packet_type fcoe_packet_type;
 	struct packet_type fip_packet_type;
+<<<<<<< HEAD
 	struct fcoe_ctlr   ctlr;
 	struct fc_exch_mgr *oem;
 };
 
 #define fcoe_from_ctlr(fip) container_of(fip, struct fcoe_interface, ctlr)
+=======
+	struct packet_type fip_vlan_packet_type;
+	struct fc_exch_mgr *oem;
+	u8	removed;
+	u8	priority;
+};
+
+#define fcoe_to_ctlr(x)						\
+	(struct fcoe_ctlr *)(((struct fcoe_ctlr *)(x)) - 1)
+
+#define fcoe_from_ctlr(x)			\
+	((struct fcoe_interface *)((x) + 1))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fcoe_netdev() - Return the net device associated with a local port

@@ -1,11 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 1991, 1992  Linus Torvalds
  *  Copyright (C) 2000, 2001, 2002 Andi Kleen, SuSE Labs
  *  Copyright (C) 2009  Matt Fleming
+<<<<<<< HEAD
+=======
+ *  Copyright (C) 2002 - 2012  Paul Mundt
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kallsyms.h>
 #include <linux/ftrace.h>
 #include <linux/debug_locks.h>
+<<<<<<< HEAD
 #include <asm/unwinder.h>
 #include <asm/stacktrace.h>
 
@@ -13,6 +22,48 @@ void printk_address(unsigned long address, int reliable)
 {
 	printk(" [<%p>] %s%pS\n", (void *) address,
 			reliable ? "" : "? ", (void *) address);
+=======
+#include <linux/sched/debug.h>
+#include <linux/sched/task_stack.h>
+#include <linux/kdebug.h>
+#include <linux/export.h>
+#include <linux/uaccess.h>
+#include <asm/unwinder.h>
+#include <asm/stacktrace.h>
+
+void dump_mem(const char *str, const char *loglvl, unsigned long bottom,
+	      unsigned long top)
+{
+	unsigned long p;
+	int i;
+
+	printk("%s%s(0x%08lx to 0x%08lx)\n", loglvl, str, bottom, top);
+
+	for (p = bottom & ~31; p < top; ) {
+		printk("%s%04lx: ", loglvl,  p & 0xffff);
+
+		for (i = 0; i < 8; i++, p += 4) {
+			unsigned int val;
+
+			if (p < bottom || p >= top)
+				pr_cont("         ");
+			else {
+				if (__get_user(val, (unsigned int __user *)p)) {
+					pr_cont("\n");
+					return;
+				}
+				pr_cont("%08x ", val);
+			}
+		}
+		pr_cont("\n");
+	}
+}
+
+void printk_address(unsigned long address, int reliable)
+{
+	pr_cont(" [<%px>] %s%pS\n", (void *) address,
+		reliable ? "" : "? ", (void *) address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
@@ -22,17 +73,33 @@ print_ftrace_graph_addr(unsigned long addr, void *data,
 			struct thread_info *tinfo, int *graph)
 {
 	struct task_struct *task = tinfo->task;
+<<<<<<< HEAD
 	unsigned long ret_addr;
 	int index = task->curr_ret_stack;
+=======
+	struct ftrace_ret_stack *ret_stack;
+	unsigned long ret_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (addr != (unsigned long)return_to_handler)
 		return;
 
+<<<<<<< HEAD
 	if (!task->ret_stack || index < *graph)
 		return;
 
 	index -= *graph;
 	ret_addr = task->ret_stack[index].ret;
+=======
+	if (!task->ret_stack)
+		return;
+
+	ret_stack = ftrace_graph_get_ret_stack(task, *graph);
+	if (!ret_stack)
+		return;
+
+	ret_addr = ret_stack->ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ops->address(data, ret_addr, 1);
 
@@ -69,12 +136,15 @@ stack_reader_dump(struct task_struct *task, struct pt_regs *regs,
 	}
 }
 
+<<<<<<< HEAD
 static int print_trace_stack(void *data, char *name)
 {
 	printk("%s <%s> ", (char *)data, name);
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Print one address/symbol entries per line.
  */
@@ -85,24 +155,59 @@ static void print_trace_address(void *data, unsigned long addr, int reliable)
 }
 
 static const struct stacktrace_ops print_trace_ops = {
+<<<<<<< HEAD
 	.stack = print_trace_stack,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.address = print_trace_address,
 };
 
 void show_trace(struct task_struct *tsk, unsigned long *sp,
+<<<<<<< HEAD
 		struct pt_regs *regs)
+=======
+		struct pt_regs *regs, const char *loglvl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (regs && user_mode(regs))
 		return;
 
+<<<<<<< HEAD
 	printk("\nCall trace:\n");
 
 	unwind_stack(tsk, regs, sp, &print_trace_ops, "");
 
 	printk("\n");
+=======
+	printk("%s\nCall trace:\n", loglvl);
+
+	unwind_stack(tsk, regs, sp, &print_trace_ops, (void *)loglvl);
+
+	pr_cont("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!tsk)
 		tsk = current;
 
 	debug_show_held_locks(tsk);
 }
+<<<<<<< HEAD
+=======
+
+void show_stack(struct task_struct *tsk, unsigned long *sp, const char *loglvl)
+{
+	unsigned long stack;
+
+	if (!tsk)
+		tsk = current;
+	if (tsk == current)
+		sp = (unsigned long *)current_stack_pointer;
+	else
+		sp = (unsigned long *)tsk->thread.sp;
+
+	stack = (unsigned long)sp;
+	dump_mem("Stack: ", loglvl, stack, THREAD_SIZE +
+		 (unsigned long)task_stack_page(tsk));
+	show_trace(tsk, sp, NULL, loglvl);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

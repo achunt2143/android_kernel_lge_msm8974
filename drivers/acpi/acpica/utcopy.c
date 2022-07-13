@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: utcopy - Internal to external object translation utilities
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -53,7 +64,11 @@ ACPI_MODULE_NAME("utcopy")
 static acpi_status
 acpi_ut_copy_isimple_to_esimple(union acpi_operand_object *internal_object,
 				union acpi_object *external_object,
+<<<<<<< HEAD
 				u8 * data_space, acpi_size * buffer_space_used);
+=======
+				u8 *data_space, acpi_size *buffer_space_used);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static acpi_status
 acpi_ut_copy_ielement_to_ielement(u8 object_type,
@@ -63,7 +78,11 @@ acpi_ut_copy_ielement_to_ielement(u8 object_type,
 
 static acpi_status
 acpi_ut_copy_ipackage_to_epackage(union acpi_operand_object *internal_object,
+<<<<<<< HEAD
 				  u8 * buffer, acpi_size * space_used);
+=======
+				  u8 *buffer, acpi_size *space_used);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static acpi_status
 acpi_ut_copy_esimple_to_isimple(union acpi_object *user_obj,
@@ -111,7 +130,11 @@ acpi_ut_copy_ipackage_to_ipackage(union acpi_operand_object *source_obj,
 static acpi_status
 acpi_ut_copy_isimple_to_esimple(union acpi_operand_object *internal_object,
 				union acpi_object *external_object,
+<<<<<<< HEAD
 				u8 * data_space, acpi_size * buffer_space_used)
+=======
+				u8 *data_space, acpi_size *buffer_space_used)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status = AE_OK;
 
@@ -129,7 +152,11 @@ acpi_ut_copy_isimple_to_esimple(union acpi_operand_object *internal_object,
 
 	/* Always clear the external object */
 
+<<<<<<< HEAD
 	ACPI_MEMSET(external_object, 0, sizeof(union acpi_object));
+=======
+	memset(external_object, 0, sizeof(union acpi_object));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * In general, the external object will be the same type as
@@ -149,9 +176,15 @@ acpi_ut_copy_isimple_to_esimple(union acpi_operand_object *internal_object,
 								  string.
 								  length + 1);
 
+<<<<<<< HEAD
 		ACPI_MEMCPY((void *)data_space,
 			    (void *)internal_object->string.pointer,
 			    (acpi_size) internal_object->string.length + 1);
+=======
+		memcpy((void *)data_space,
+		       (void *)internal_object->string.pointer,
+		       (acpi_size)internal_object->string.length + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ACPI_TYPE_BUFFER:
@@ -162,9 +195,15 @@ acpi_ut_copy_isimple_to_esimple(union acpi_operand_object *internal_object,
 		    ACPI_ROUND_UP_TO_NATIVE_WORD(internal_object->string.
 						 length);
 
+<<<<<<< HEAD
 		ACPI_MEMCPY((void *)data_space,
 			    (void *)internal_object->buffer.pointer,
 			    internal_object->buffer.length);
+=======
+		memcpy((void *)data_space,
+		       (void *)internal_object->buffer.pointer,
+		       internal_object->buffer.length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ACPI_TYPE_INTEGER:
@@ -178,7 +217,10 @@ acpi_ut_copy_isimple_to_esimple(union acpi_operand_object *internal_object,
 
 		switch (internal_object->reference.class) {
 		case ACPI_REFCLASS_NAME:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * For namepath, return the object handle ("reference")
 			 * We are referring to the namespace node
@@ -258,6 +300,7 @@ acpi_ut_copy_ielement_to_eelement(u8 object_type,
 	ACPI_FUNCTION_ENTRY();
 
 	this_index = state->pkg.index;
+<<<<<<< HEAD
 	target_object = (union acpi_object *)
 	    &((union acpi_object *)(state->pkg.dest_object))->package.
 	    elements[this_index];
@@ -265,6 +308,14 @@ acpi_ut_copy_ielement_to_eelement(u8 object_type,
 	switch (object_type) {
 	case ACPI_COPY_TYPE_SIMPLE:
 
+=======
+	target_object = (union acpi_object *)&((union acpi_object *)
+					       (state->pkg.dest_object))->
+	    package.elements[this_index];
+
+	switch (object_type) {
+	case ACPI_COPY_TYPE_SIMPLE:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * This is a simple or null object
 		 */
@@ -278,7 +329,10 @@ acpi_ut_copy_ielement_to_eelement(u8 object_type,
 		break;
 
 	case ACPI_COPY_TYPE_PACKAGE:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Build the package object
 		 */
@@ -304,6 +358,10 @@ acpi_ut_copy_ielement_to_eelement(u8 object_type,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (AE_BAD_PARAMETER);
 	}
 
@@ -317,7 +375,11 @@ acpi_ut_copy_ielement_to_eelement(u8 object_type,
  * FUNCTION:    acpi_ut_copy_ipackage_to_epackage
  *
  * PARAMETERS:  internal_object     - Pointer to the object we are returning
+<<<<<<< HEAD
  *              Buffer              - Where the object is returned
+=======
+ *              buffer              - Where the object is returned
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              space_used          - Where the object length is returned
  *
  * RETURN:      Status
@@ -333,7 +395,11 @@ acpi_ut_copy_ielement_to_eelement(u8 object_type,
 
 static acpi_status
 acpi_ut_copy_ipackage_to_epackage(union acpi_operand_object *internal_object,
+<<<<<<< HEAD
 				  u8 * buffer, acpi_size * space_used)
+=======
+				  u8 *buffer, acpi_size *space_used)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union acpi_object *external_object;
 	acpi_status status;
@@ -350,21 +416,35 @@ acpi_ut_copy_ipackage_to_epackage(union acpi_operand_object *internal_object,
 	 * Free space begins right after the first package
 	 */
 	info.length = ACPI_ROUND_UP_TO_NATIVE_WORD(sizeof(union acpi_object));
+<<<<<<< HEAD
 	info.free_space =
 	    buffer + ACPI_ROUND_UP_TO_NATIVE_WORD(sizeof(union acpi_object));
+=======
+	info.free_space = buffer +
+	    ACPI_ROUND_UP_TO_NATIVE_WORD(sizeof(union acpi_object));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info.object_space = 0;
 	info.num_packages = 1;
 
 	external_object->type = internal_object->common.type;
 	external_object->package.count = internal_object->package.count;
+<<<<<<< HEAD
 	external_object->package.elements = ACPI_CAST_PTR(union acpi_object,
 							  info.free_space);
+=======
+	external_object->package.elements =
+	    ACPI_CAST_PTR(union acpi_object, info.free_space);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Leave room for an array of ACPI_OBJECTS in the buffer
 	 * and move the free space past it
 	 */
+<<<<<<< HEAD
 	info.length += (acpi_size) external_object->package.count *
+=======
+	info.length += (acpi_size)external_object->package.count *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    ACPI_ROUND_UP_TO_NATIVE_WORD(sizeof(union acpi_object));
 	info.free_space += external_object->package.count *
 	    ACPI_ROUND_UP_TO_NATIVE_WORD(sizeof(union acpi_object));
@@ -481,6 +561,10 @@ acpi_ut_copy_esimple_to_isimple(union acpi_object *external_object,
 		return_ACPI_STATUS(AE_OK);
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* All other types are not supported */
 
 		ACPI_ERROR((AE_INFO,
@@ -503,9 +587,15 @@ acpi_ut_copy_esimple_to_isimple(union acpi_object *external_object,
 			goto error_exit;
 		}
 
+<<<<<<< HEAD
 		ACPI_MEMCPY(internal_object->string.pointer,
 			    external_object->string.pointer,
 			    external_object->string.length);
+=======
+		memcpy(internal_object->string.pointer,
+		       external_object->string.pointer,
+		       external_object->string.length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		internal_object->string.length = external_object->string.length;
 		break;
@@ -518,9 +608,15 @@ acpi_ut_copy_esimple_to_isimple(union acpi_object *external_object,
 			goto error_exit;
 		}
 
+<<<<<<< HEAD
 		ACPI_MEMCPY(internal_object->buffer.pointer,
 			    external_object->buffer.pointer,
 			    external_object->buffer.length);
+=======
+		memcpy(internal_object->buffer.pointer,
+		       external_object->buffer.pointer,
+		       external_object->buffer.length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		internal_object->buffer.length = external_object->buffer.length;
 
@@ -536,22 +632,39 @@ acpi_ut_copy_esimple_to_isimple(union acpi_object *external_object,
 
 	case ACPI_TYPE_LOCAL_REFERENCE:
 
+<<<<<<< HEAD
 		/* TBD: should validate incoming handle */
 
 		internal_object->reference.class = ACPI_REFCLASS_NAME;
 		internal_object->reference.node =
+=======
+		/* An incoming reference is defined to be a namespace node */
+
+		internal_object->reference.class = ACPI_REFCLASS_REFOF;
+		internal_object->reference.object =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    external_object->reference.handle;
 		break;
 
 	default:
+<<<<<<< HEAD
 		/* Other types can't get here */
+=======
+
+		/* Other types can't get here */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	*ret_internal_object = internal_object;
 	return_ACPI_STATUS(AE_OK);
 
+<<<<<<< HEAD
       error_exit:
+=======
+error_exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_ut_remove_reference(internal_object);
 	return_ACPI_STATUS(AE_NO_MEMORY);
 }
@@ -592,8 +705,13 @@ acpi_ut_copy_epackage_to_ipackage(union acpi_object *external_object,
 	package_elements = package_object->package.elements;
 
 	/*
+<<<<<<< HEAD
 	 * Recursive implementation. Probably ok, since nested external packages
 	 * as parameters should be very rare.
+=======
+	 * Recursive implementation. Probably ok, since nested external
+	 * packages as parameters should be very rare.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	for (i = 0; i < external_object->package.count; i++) {
 		status =
@@ -648,9 +766,14 @@ acpi_ut_copy_eobject_to_iobject(union acpi_object *external_object,
 		/*
 		 * Build a simple object (no nested objects)
 		 */
+<<<<<<< HEAD
 		status =
 		    acpi_ut_copy_esimple_to_isimple(external_object,
 						    internal_object);
+=======
+		status = acpi_ut_copy_esimple_to_isimple(external_object,
+							 internal_object);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return_ACPI_STATUS(status);
@@ -693,8 +816,13 @@ acpi_ut_copy_simple_object(union acpi_operand_object *source_desc,
 		copy_size = sizeof(struct acpi_namespace_node);
 	}
 
+<<<<<<< HEAD
 	ACPI_MEMCPY(ACPI_CAST_PTR(char, dest_desc),
 		    ACPI_CAST_PTR(char, source_desc), copy_size);
+=======
+	memcpy(ACPI_CAST_PTR(char, dest_desc),
+	       ACPI_CAST_PTR(char, source_desc), copy_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Restore the saved fields */
 
@@ -724,9 +852,15 @@ acpi_ut_copy_simple_object(union acpi_operand_object *source_desc,
 
 			/* Copy the actual buffer data */
 
+<<<<<<< HEAD
 			ACPI_MEMCPY(dest_desc->buffer.pointer,
 				    source_desc->buffer.pointer,
 				    source_desc->buffer.length);
+=======
+			memcpy(dest_desc->buffer.pointer,
+			       source_desc->buffer.pointer,
+			       source_desc->buffer.length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -738,7 +872,11 @@ acpi_ut_copy_simple_object(union acpi_operand_object *source_desc,
 		 */
 		if (source_desc->string.pointer) {
 			dest_desc->string.pointer =
+<<<<<<< HEAD
 			    ACPI_ALLOCATE((acpi_size) source_desc->string.
+=======
+			    ACPI_ALLOCATE((acpi_size)source_desc->string.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  length + 1);
 			if (!dest_desc->string.pointer) {
 				return (AE_NO_MEMORY);
@@ -746,9 +884,15 @@ acpi_ut_copy_simple_object(union acpi_operand_object *source_desc,
 
 			/* Copy the actual string data */
 
+<<<<<<< HEAD
 			ACPI_MEMCPY(dest_desc->string.pointer,
 				    source_desc->string.pointer,
 				    (acpi_size) source_desc->string.length + 1);
+=======
+			memcpy(dest_desc->string.pointer,
+			       source_desc->string.pointer,
+			       (acpi_size)source_desc->string.length + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -785,7 +929,11 @@ acpi_ut_copy_simple_object(union acpi_operand_object *source_desc,
 
 		status = acpi_os_create_mutex(&dest_desc->mutex.os_mutex);
 		if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 			return status;
+=======
+			return (status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -795,12 +943,22 @@ acpi_ut_copy_simple_object(union acpi_operand_object *source_desc,
 						  &dest_desc->event.
 						  os_semaphore);
 		if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 			return status;
+=======
+			return (status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
 	default:
+<<<<<<< HEAD
 		/* Nothing to do for other simple objects */
+=======
+
+		/* Nothing to do for other simple objects */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -868,7 +1026,10 @@ acpi_ut_copy_ielement_to_ielement(u8 object_type,
 		break;
 
 	case ACPI_COPY_TYPE_PACKAGE:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * This object is a package - go down another nesting level
 		 * Create and build the package object
@@ -891,12 +1052,20 @@ acpi_ut_copy_ielement_to_ielement(u8 object_type,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (AE_BAD_PARAMETER);
 	}
 
 	return (status);
 
+<<<<<<< HEAD
       error_exit:
+=======
+error_exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_ut_remove_reference(target_object);
 	return (status);
 }
@@ -948,6 +1117,7 @@ acpi_ut_copy_ipackage_to_ipackage(union acpi_operand_object *source_obj,
 	status = acpi_ut_walk_package_tree(source_obj, dest_obj,
 					   acpi_ut_copy_ielement_to_ielement,
 					   walk_state);
+<<<<<<< HEAD
 	if (ACPI_FAILURE(status)) {
 
 		/* On failure, delete the destination package object */
@@ -955,6 +1125,8 @@ acpi_ut_copy_ipackage_to_ipackage(union acpi_operand_object *source_obj,
 		acpi_ut_remove_reference(dest_obj);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 
@@ -998,5 +1170,14 @@ acpi_ut_copy_iobject_to_iobject(union acpi_operand_object *source_desc,
 		status = acpi_ut_copy_simple_object(source_desc, *dest_desc);
 	}
 
+<<<<<<< HEAD
+=======
+	/* Delete the allocated object if copy failed */
+
+	if (ACPI_FAILURE(status)) {
+		acpi_ut_remove_reference(*dest_desc);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }

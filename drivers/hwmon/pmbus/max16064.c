@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Hardware monitoring driver for Maxim MAX16064
  *
  * Copyright (c) 2011 Ericsson AB.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -28,17 +35,30 @@
 #define MAX16064_MFR_VOUT_PEAK		0xd4
 #define MAX16064_MFR_TEMPERATURE_PEAK	0xd6
 
+<<<<<<< HEAD
 static int max16064_read_word_data(struct i2c_client *client, int page, int reg)
+=======
+static int max16064_read_word_data(struct i2c_client *client, int page,
+				   int phase, int reg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
 	switch (reg) {
 	case PMBUS_VIRT_READ_VOUT_MAX:
+<<<<<<< HEAD
 		ret = pmbus_read_word_data(client, page,
 					   MAX16064_MFR_VOUT_PEAK);
 		break;
 	case PMBUS_VIRT_READ_TEMP_MAX:
 		ret = pmbus_read_word_data(client, page,
+=======
+		ret = pmbus_read_word_data(client, page, phase,
+					   MAX16064_MFR_VOUT_PEAK);
+		break;
+	case PMBUS_VIRT_READ_TEMP_MAX:
+		ret = pmbus_read_word_data(client, page, phase,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   MAX16064_MFR_TEMPERATURE_PEAK);
 		break;
 	case PMBUS_VIRT_RESET_VOUT_HISTORY:
@@ -97,10 +117,16 @@ static struct pmbus_driver_info max16064_info = {
 	.write_word_data = max16064_write_word_data,
 };
 
+<<<<<<< HEAD
 static int max16064_probe(struct i2c_client *client,
 			  const struct i2c_device_id *id)
 {
 	return pmbus_do_probe(client, id, &max16064_info);
+=======
+static int max16064_probe(struct i2c_client *client)
+{
+	return pmbus_do_probe(client, &max16064_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id max16064_id[] = {
@@ -116,7 +142,10 @@ static struct i2c_driver max16064_driver = {
 		   .name = "max16064",
 		   },
 	.probe = max16064_probe,
+<<<<<<< HEAD
 	.remove = pmbus_do_remove,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = max16064_id,
 };
 
@@ -125,3 +154,7 @@ module_i2c_driver(max16064_driver);
 MODULE_AUTHOR("Guenter Roeck");
 MODULE_DESCRIPTION("PMBus driver for Maxim MAX16064");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_IMPORT_NS(PMBUS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

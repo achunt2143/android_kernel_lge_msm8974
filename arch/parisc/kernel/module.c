@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*    Kernel dynamically loadable module help for PARISC.
  *
  *    The best reference for this stuff is probably the Processor-
  *    Specific ELF Supplement for PA-RISC:
+<<<<<<< HEAD
  *        http://ftp.parisc-linux.org/docs/arch/elf-pa-hp.pdf
  *
  *    Linux/PA-RISC Project (http://www.parisc-linux.org/)
@@ -24,6 +29,14 @@
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
+=======
+ *        https://parisc.wiki.kernel.org/index.php/File:Elf-pa-hp.pdf
+ *
+ *    Linux/PA-RISC Project
+ *    Copyright (C) 2003 Randolph Chung <tausq at debian . org>
+ *    Copyright (C) 2008 Helge Deller <deller@gmx.de>
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Notes:
  *    - PLT stub handling
  *      On 32bit (and sometimes 64bit) and with big kernel modules like xfs or
@@ -42,6 +55,7 @@
  *      We are not doing SEGREL32 handling correctly. According to the ABI, we
  *      should do a value offset, like this:
  *			if (in_init(me, (void *)val))
+<<<<<<< HEAD
  *				val -= (uint32_t)me->module_init;
  *			else
  *				val -= (uint32_t)me->module_core;
@@ -51,6 +65,17 @@
  *	The unwind table mechanism has the ability to specify an offset for 
  *	the unwind table; however, because we split off the init functions into
  *	a different piece of memory, it is not possible to do this using a 
+=======
+ *				val -= (uint32_t)me->mem[MOD_INIT_TEXT].base;
+ *			else
+ *				val -= (uint32_t)me->mem[MOD_TEXT].base;
+ *	However, SEGREL32 is used only for PARISC unwind entries, and we want
+ *	those entries to have an absolute address, and not just an offset.
+ *
+ *	The unwind table mechanism has the ability to specify an offset for
+ *	the unwind table; however, because we split off the init functions into
+ *	a different piece of memory, it is not possible to do this using a
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	single offset. Instead, we use the above hack for now.
  */
 
@@ -58,12 +83,17 @@
 #include <linux/elf.h>
 #include <linux/vmalloc.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
+=======
+#include <linux/ftrace.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/kernel.h>
 #include <linux/bug.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/unwind.h>
 
@@ -72,6 +102,10 @@
 #else
 #define DEBUGP(fmt...)
 #endif
+=======
+#include <asm/unwind.h>
+#include <asm/sections.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RELOC_REACHABLE(val, bits) \
 	(( ( !((val) & (1<<((bits)-1))) && ((val)>>(bits)) != 0 )  ||	\
@@ -96,6 +130,7 @@
  * allows us to allocate up to 4095 GOT entries. */
 #define MAX_GOTS	4095
 
+<<<<<<< HEAD
 /* three functions to determine where in the module core
  * or init pieces the location is */
 static inline int in_init(struct module *me, void *loc)
@@ -115,6 +150,8 @@ static inline int in_local(struct module *me, void *loc)
 	return in_init(me, loc) || in_core(me, loc);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_64BIT
 struct got_entry {
 	Elf32_Addr addr;
@@ -214,14 +251,22 @@ static inline int reassemble_22(int as22)
 
 void *module_alloc(unsigned long size)
 {
+<<<<<<< HEAD
 	if (size == 0)
 		return NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* using RWX means less protection for modules, but it's
 	 * easier than trying to map the text, data, init_text and
 	 * init_data correctly */
 	return __vmalloc_node_range(size, 1, VMALLOC_START, VMALLOC_END,
+<<<<<<< HEAD
 				    GFP_KERNEL | __GFP_HIGHMEM,
 				    PAGE_KERNEL_RWX, -1,
+=======
+				    GFP_KERNEL,
+				    PAGE_KERNEL_RWX, 0, NUMA_NO_NODE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    __builtin_return_address(0));
 }
 
@@ -300,6 +345,7 @@ static inline unsigned long count_stubs(const Elf_Rela *rela, unsigned long n)
 }
 #endif
 
+<<<<<<< HEAD
 
 /* Free memory returned from module_alloc */
 void module_free(struct module *mod, void *module_region)
@@ -308,6 +354,12 @@ void module_free(struct module *mod, void *module_region)
 	mod->arch.section = NULL;
 
 	vfree(module_region);
+=======
+void module_arch_freeing_init(struct module *mod)
+{
+	kfree(mod->arch.section);
+	mod->arch.section = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Additional bytes needed in front of individual sections */
@@ -320,7 +372,11 @@ unsigned int arch_mod_section_prepend(struct module *mod,
 		* sizeof(struct stub_entry);
 }
 
+<<<<<<< HEAD
 #define CONST 
+=======
+#define CONST
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int module_frob_arch_sections(CONST Elf_Ehdr *hdr,
 			      CONST Elf_Shdr *sechdrs,
 			      CONST char *secstrings,
@@ -328,6 +384,10 @@ int module_frob_arch_sections(CONST Elf_Ehdr *hdr,
 {
 	unsigned long gots = 0, fdescs = 0, len;
 	unsigned int i;
+<<<<<<< HEAD
+=======
+	struct module_memory *mod_mem;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	len = hdr->e_shnum * sizeof(me->arch.section[0]);
 	me->arch.section = kzalloc(len, GFP_KERNEL);
@@ -372,6 +432,7 @@ int module_frob_arch_sections(CONST Elf_Ehdr *hdr,
 		me->arch.section[s].stub_entries += count;
 	}
 
+<<<<<<< HEAD
 	/* align things a bit */
 	me->core_size = ALIGN(me->core_size, 16);
 	me->arch.got_offset = me->core_size;
@@ -380,6 +441,17 @@ int module_frob_arch_sections(CONST Elf_Ehdr *hdr,
 	me->core_size = ALIGN(me->core_size, 16);
 	me->arch.fdesc_offset = me->core_size;
 	me->core_size += fdescs * sizeof(Elf_Fdesc);
+=======
+	mod_mem = &me->mem[MOD_TEXT];
+	/* align things a bit */
+	mod_mem->size = ALIGN(mod_mem->size, 16);
+	me->arch.got_offset = mod_mem->size;
+	mod_mem->size += gots * sizeof(struct got_entry);
+
+	mod_mem->size = ALIGN(mod_mem->size, 16);
+	me->arch.fdesc_offset = mod_mem->size;
+	mod_mem->size += fdescs * sizeof(Elf_Fdesc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	me->arch.got_max = gots;
 	me->arch.fdesc_max = fdescs;
@@ -397,7 +469,11 @@ static Elf64_Word get_got(struct module *me, unsigned long value, long addend)
 
 	BUG_ON(value == 0);
 
+<<<<<<< HEAD
 	got = me->module_core + me->arch.got_offset;
+=======
+	got = me->mem[MOD_TEXT].base + me->arch.got_offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; got[i].addr; i++)
 		if (got[i].addr == value)
 			goto out;
@@ -406,7 +482,11 @@ static Elf64_Word get_got(struct module *me, unsigned long value, long addend)
 
 	got[i].addr = value;
  out:
+<<<<<<< HEAD
 	DEBUGP("GOT ENTRY %d[%x] val %lx\n", i, i*sizeof(struct got_entry),
+=======
+	pr_debug("GOT ENTRY %d[%lx] val %lx\n", i, i*sizeof(struct got_entry),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       value);
 	return i * sizeof(struct got_entry);
 }
@@ -415,7 +495,11 @@ static Elf64_Word get_got(struct module *me, unsigned long value, long addend)
 #ifdef CONFIG_64BIT
 static Elf_Addr get_fdesc(struct module *me, unsigned long value)
 {
+<<<<<<< HEAD
 	Elf_Fdesc *fdesc = me->module_core + me->arch.fdesc_offset;
+=======
+	Elf_Fdesc *fdesc = me->mem[MOD_TEXT].base + me->arch.fdesc_offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!value) {
 		printk(KERN_ERR "%s: zero OPD requested!\n", me->name);
@@ -433,7 +517,11 @@ static Elf_Addr get_fdesc(struct module *me, unsigned long value)
 
 	/* Create new one */
 	fdesc->addr = value;
+<<<<<<< HEAD
 	fdesc->gp = (Elf_Addr)me->module_core + me->arch.got_offset;
+=======
+	fdesc->gp = (Elf_Addr)me->mem[MOD_TEXT].base + me->arch.got_offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (Elf_Addr)fdesc;
 }
 #endif /* CONFIG_64BIT */
@@ -559,7 +647,11 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 	//unsigned long dp = (unsigned long)$global$;
 	register unsigned long dp asm ("r27");
 
+<<<<<<< HEAD
 	DEBUGP("Applying relocate section %u to %u\n", relsec,
+=======
+	pr_debug("Applying relocate section %u to %u\n", relsec,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       targetsec);
 	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rel); i++) {
 		/* This is where to make the change */
@@ -583,7 +675,11 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 
 #if 0
 #define r(t) ELF32_R_TYPE(rel[i].r_info)==t ? #t :
+<<<<<<< HEAD
 		DEBUGP("Symbol %s loc 0x%x val 0x%x addend 0x%x: %s\n",
+=======
+		pr_debug("Symbol %s loc 0x%x val 0x%x addend 0x%x: %s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			strtab + sym->st_name,
 			(uint32_t)loc, val, addend,
 			r(R_PARISC_PLABEL32)
@@ -624,7 +720,15 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 			/* See note about special handling of SEGREL32 at
 			 * the beginning of this file.
 			 */
+<<<<<<< HEAD
 			*loc = fsel(val, addend); 
+=======
+			*loc = fsel(val, addend);
+			break;
+		case R_PARISC_SECREL32:
+			/* 32-bit section relative address. */
+			*loc = fsel(val, addend);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case R_PARISC_DPREL21L:
 			/* left 21 bit of relative address */
@@ -666,6 +770,13 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 			}
 			*loc = (*loc & ~0x3ff1ffd) | reassemble_22(val);
 			break;
+<<<<<<< HEAD
+=======
+		case R_PARISC_PCREL32:
+			/* 32-bit PC relative address */
+			*loc = val - dot - 8 + addend;
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		default:
 			printk(KERN_ERR "module %s: Unknown relocation: %u\n",
@@ -695,7 +806,11 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 	Elf_Addr loc0;
 	unsigned int targetsec = sechdrs[relsec].sh_info;
 
+<<<<<<< HEAD
 	DEBUGP("Applying relocate section %u to %u\n", relsec,
+=======
+	pr_debug("Applying relocate section %u to %u\n", relsec,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       targetsec);
 	for (i = 0; i < sechdrs[relsec].sh_size / sizeof(*rel); i++) {
 		/* This is where to make the change */
@@ -737,7 +852,11 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 		case R_PARISC_LTOFF21L:
 			/* LT-relative; left 21 bits */
 			val = get_got(me, val, addend);
+<<<<<<< HEAD
 			DEBUGP("LTOFF21L Symbol %s loc %p val %lx\n",
+=======
+			pr_debug("LTOFF21L Symbol %s loc %p val %llx\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       strtab + sym->st_name,
 			       loc, val);
 			val = lrsel(val, 0);
@@ -748,19 +867,31 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 			/* LT-relative; right 14 bits */
 			val = get_got(me, val, addend);
 			val = rrsel(val, 0);
+<<<<<<< HEAD
 			DEBUGP("LTOFF14R Symbol %s loc %p val %lx\n",
+=======
+			pr_debug("LTOFF14R Symbol %s loc %p val %llx\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       strtab + sym->st_name,
 			       loc, val);
 			*loc = mask(*loc, 14) | reassemble_14(val);
 			break;
 		case R_PARISC_PCREL22F:
 			/* PC-relative; 22 bits */
+<<<<<<< HEAD
 			DEBUGP("PCREL22F Symbol %s loc %p val %lx\n",
+=======
+			pr_debug("PCREL22F Symbol %s loc %p val %llx\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       strtab + sym->st_name,
 			       loc, val);
 			val += addend;
 			/* can we reach it locally? */
+<<<<<<< HEAD
 			if (in_local(me, (void *)val)) {
+=======
+			if (within_module(val, me)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* this is the case where the symbol is local
 				 * to the module, but in a different section,
 				 * so stub the jump in case it's more than 22
@@ -787,13 +918,28 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 					val = get_stub(me, val, addend, ELF_STUB_GOT,
 						       loc0, targetsec);
 			}
+<<<<<<< HEAD
 			DEBUGP("STUB FOR %s loc %lx, val %lx+%lx at %lx\n", 
+=======
+			pr_debug("STUB FOR %s loc %px, val %llx+%llx at %llx\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       strtab + sym->st_name, loc, sym->st_value,
 			       addend, val);
 			val = (val - dot - 8)/4;
 			CHECK_RELOC(val, 22);
 			*loc = (*loc & ~0x3ff1ffd) | reassemble_22(val);
 			break;
+<<<<<<< HEAD
+=======
+		case R_PARISC_PCREL32:
+			/* 32-bit PC relative address */
+			*loc = val - dot - 8 + addend;
+			break;
+		case R_PARISC_PCREL64:
+			/* 64-bit PC relative address */
+			*loc64 = val - dot - 8 + addend;
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case R_PARISC_DIR64:
 			/* 64-bit effective address */
 			*loc64 = val + addend;
@@ -803,6 +949,7 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 			/* See note about special handling of SEGREL32 at
 			 * the beginning of this file.
 			 */
+<<<<<<< HEAD
 			*loc = fsel(val, addend); 
 			break;
 		case R_PARISC_FPTR64:
@@ -810,13 +957,30 @@ int apply_relocate_add(Elf_Shdr *sechdrs,
 			if(in_local(me, (void *)(val + addend))) {
 				*loc64 = get_fdesc(me, val+addend);
 				DEBUGP("FDESC for %s at %p points to %lx\n",
+=======
+			*loc = fsel(val, addend);
+			break;
+		case R_PARISC_SECREL32:
+			/* 32-bit section relative address. */
+			*loc = fsel(val, addend);
+			break;
+		case R_PARISC_FPTR64:
+			/* 64-bit function address */
+			if (within_module(val + addend, me)) {
+				*loc64 = get_fdesc(me, val+addend);
+				pr_debug("FDESC for %s at %llx points to %llx\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       strtab + sym->st_name, *loc64,
 				       ((Elf_Fdesc *)*loc64)->addr);
 			} else {
 				/* if the symbol is not local to this
 				 * module then val+addend is a pointer
 				 * to the function descriptor */
+<<<<<<< HEAD
 				DEBUGP("Non local FPTR64 Symbol %s loc %p val %lx\n",
+=======
+				pr_debug("Non local FPTR64 Symbol %s loc %p val %llx\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       strtab + sym->st_name,
 				       loc, val);
 				*loc64 = val + addend;
@@ -845,9 +1009,15 @@ register_unwind_table(struct module *me,
 
 	table = (unsigned char *)sechdrs[me->arch.unwind_section].sh_addr;
 	end = table + sechdrs[me->arch.unwind_section].sh_size;
+<<<<<<< HEAD
 	gp = (Elf_Addr)me->module_core + me->arch.got_offset;
 
 	DEBUGP("register_unwind_table(), sect = %d at 0x%p - 0x%p (gp=0x%lx)\n",
+=======
+	gp = (Elf_Addr)me->mem[MOD_TEXT].base + me->arch.got_offset;
+
+	pr_debug("register_unwind_table(), sect = %d at 0x%p - 0x%p (gp=0x%lx)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       me->arch.unwind_section, table, end, gp);
 	me->arch.unwind = unwind_table_add(me->name, 0, gp, table, end);
 }
@@ -866,6 +1036,12 @@ int module_finalize(const Elf_Ehdr *hdr,
 	int i;
 	unsigned long nsyms;
 	const char *strtab = NULL;
+<<<<<<< HEAD
+=======
+	const Elf_Shdr *s;
+	char *secstrings;
+	int symindex __maybe_unused = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Elf_Sym *newptr, *oldptr;
 	Elf_Shdr *symhdr = NULL;
 #ifdef DEBUG
@@ -892,6 +1068,10 @@ int module_finalize(const Elf_Ehdr *hdr,
 		if(sechdrs[i].sh_type == SHT_SYMTAB
 		   && (sechdrs[i].sh_flags & SHF_ALLOC)) {
 			int strindex = sechdrs[i].sh_link;
+<<<<<<< HEAD
+=======
+			symindex = i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* FIXME: AWFUL HACK
 			 * The cast is to drop the const from
 			 * the sechdrs pointer */
@@ -901,7 +1081,11 @@ int module_finalize(const Elf_Ehdr *hdr,
 		}
 	}
 
+<<<<<<< HEAD
 	DEBUGP("module %s: strtab %p, symhdr %p\n",
+=======
+	pr_debug("module %s: strtab %p, symhdr %p\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       me->name, strtab, symhdr);
 
 	if(me->arch.got_count > MAX_GOTS) {
@@ -920,7 +1104,11 @@ int module_finalize(const Elf_Ehdr *hdr,
 	oldptr = (void *)symhdr->sh_addr;
 	newptr = oldptr + 1;	/* we start counting at 1 */
 	nsyms = symhdr->sh_size / sizeof(Elf_Sym);
+<<<<<<< HEAD
 	DEBUGP("OLD num_symtab %lu\n", nsyms);
+=======
+	pr_debug("OLD num_symtab %lu\n", nsyms);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 1; i < nsyms; i++) {
 		oldptr++;	/* note, count starts at 1 so preincrement */
@@ -935,8 +1123,44 @@ int module_finalize(const Elf_Ehdr *hdr,
 
 	}
 	nsyms = newptr - (Elf_Sym *)symhdr->sh_addr;
+<<<<<<< HEAD
 	DEBUGP("NEW num_symtab %lu\n", nsyms);
 	symhdr->sh_size = nsyms * sizeof(Elf_Sym);
+=======
+	pr_debug("NEW num_symtab %lu\n", nsyms);
+	symhdr->sh_size = nsyms * sizeof(Elf_Sym);
+
+	/* find .altinstructions section */
+	secstrings = (void *)hdr + sechdrs[hdr->e_shstrndx].sh_offset;
+	for (s = sechdrs; s < sechdrs + hdr->e_shnum; s++) {
+		void *aseg = (void *) s->sh_addr;
+		char *secname = secstrings + s->sh_name;
+
+		if (!strcmp(".altinstructions", secname))
+			/* patch .altinstructions */
+			apply_alternatives(aseg, aseg + s->sh_size, me->name);
+
+#ifdef CONFIG_DYNAMIC_FTRACE
+		/* For 32 bit kernels we're compiling modules with
+		 * -ffunction-sections so we must relocate the addresses in the
+		 *  ftrace callsite section.
+		 */
+		if (symindex != -1 && !strcmp(secname, FTRACE_CALLSITE_SECTION)) {
+			int err;
+			if (s->sh_type == SHT_REL)
+				err = apply_relocate((Elf_Shdr *)sechdrs,
+							strtab, symindex,
+							s - sechdrs, me);
+			else if (s->sh_type == SHT_RELA)
+				err = apply_relocate_add((Elf_Shdr *)sechdrs,
+							strtab, symindex,
+							s - sechdrs, me);
+			if (err)
+				return err;
+		}
+#endif
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -944,3 +1168,21 @@ void module_arch_cleanup(struct module *mod)
 {
 	deregister_unwind_table(mod);
 }
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_64BIT
+void *dereference_module_function_descriptor(struct module *mod, void *ptr)
+{
+	unsigned long start_opd = (Elf64_Addr)mod->mem[MOD_TEXT].base +
+				   mod->arch.fdesc_offset;
+	unsigned long end_opd = start_opd +
+				mod->arch.fdesc_count * sizeof(Elf64_Fdesc);
+
+	if (ptr < (void *)start_opd || ptr >= (void *)end_opd)
+		return ptr;
+
+	return dereference_function_descriptor(ptr);
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

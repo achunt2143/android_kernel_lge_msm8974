@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * btree.h - NILFS B-tree.
  *
@@ -18,6 +19,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Koji Sato <koji@osrg.net>.
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * NILFS B-tree.
+ *
+ * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
+ *
+ * Written by Koji Sato.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _NILFS_BTREE_H
@@ -26,7 +36,11 @@
 #include <linux/types.h>
 #include <linux/buffer_head.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/nilfs2_fs.h>
+=======
+#include <linux/nilfs2_ondisk.h>	/* nilfs_btree_node */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "btnode.h"
 #include "bmap.h"
 

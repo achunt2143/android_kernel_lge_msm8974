@@ -23,6 +23,7 @@
  * OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  */
+<<<<<<< HEAD
 
 #ifndef _AGP_H
 #define _AGP_H 1
@@ -113,6 +114,14 @@ typedef struct _agp_unbind {
 #include <linux/agp_backend.h>
 
 #define AGPGART_MINOR 175
+=======
+#ifndef _AGP_H
+#define _AGP_H 1
+
+#include <linux/mutex.h>
+#include <linux/agp_backend.h>
+#include <uapi/linux/agpgart.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct agp_info {
 	struct agp_version version;	/* version of the driver        */
@@ -209,6 +218,9 @@ struct agp_front_data {
 	bool backend_acquired;
 };
 
+<<<<<<< HEAD
 #endif				/* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* _AGP_H */

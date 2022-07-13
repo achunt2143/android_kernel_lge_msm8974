@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/affs/amigaffs.c
  *
@@ -8,12 +12,19 @@
  *  Please send bug reports to: hjw@zvw.de
  */
 
+<<<<<<< HEAD
 #include "affs.h"
 
 extern struct timezone sys_tz;
 
 static char ErrorBuffer[256];
 
+=======
+#include <linux/math64.h>
+#include <linux/iversion.h>
+#include "affs.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Functions for accessing Amiga-FFS structures.
  */
@@ -34,7 +45,11 @@ affs_insert_hash(struct inode *dir, struct buffer_head *bh)
 	ino = bh->b_blocknr;
 	offset = affs_hash_name(sb, AFFS_TAIL(sb, bh)->name + 1, AFFS_TAIL(sb, bh)->name[0]);
 
+<<<<<<< HEAD
 	pr_debug("AFFS: insert_hash(dir=%u, ino=%d)\n", (u32)dir->i_ino, ino);
+=======
+	pr_debug("%s(dir=%lu, ino=%d)\n", __func__, dir->i_ino, ino);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dir_bh = affs_bread(sb, dir->i_ino);
 	if (!dir_bh)
@@ -61,8 +76,13 @@ affs_insert_hash(struct inode *dir, struct buffer_head *bh)
 	mark_buffer_dirty_inode(dir_bh, dir);
 	affs_brelse(dir_bh);
 
+<<<<<<< HEAD
 	dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
 	dir->i_version++;
+=======
+	inode_set_mtime_to_ts(dir, inode_set_ctime_current(dir));
+	inode_inc_iversion(dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(dir);
 
 	return 0;
@@ -84,7 +104,12 @@ affs_remove_hash(struct inode *dir, struct buffer_head *rem_bh)
 	sb = dir->i_sb;
 	rem_ino = rem_bh->b_blocknr;
 	offset = affs_hash_name(sb, AFFS_TAIL(sb, rem_bh)->name+1, AFFS_TAIL(sb, rem_bh)->name[0]);
+<<<<<<< HEAD
 	pr_debug("AFFS: remove_hash(dir=%d, ino=%d, hashval=%d)\n", (u32)dir->i_ino, rem_ino, offset);
+=======
+	pr_debug("%s(dir=%lu, ino=%d, hashval=%d)\n", __func__, dir->i_ino,
+		 rem_ino, offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bh = affs_bread(sb, dir->i_ino);
 	if (!bh)
@@ -114,14 +139,20 @@ affs_remove_hash(struct inode *dir, struct buffer_head *rem_bh)
 
 	affs_brelse(bh);
 
+<<<<<<< HEAD
 	dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
 	dir->i_version++;
+=======
+	inode_set_mtime_to_ts(dir, inode_set_ctime_current(dir));
+	inode_inc_iversion(dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(dir);
 
 	return retval;
 }
 
 static void
+<<<<<<< HEAD
 affs_fix_dcache(struct dentry *dentry, u32 entry_ino)
 {
 	struct inode *inode = dentry->d_inode;
@@ -138,6 +169,17 @@ affs_fix_dcache(struct dentry *dentry, u32 entry_ino)
 			break;
 		}
 		next = next->next;
+=======
+affs_fix_dcache(struct inode *inode, u32 entry_ino)
+{
+	struct dentry *dentry;
+	spin_lock(&inode->i_lock);
+	hlist_for_each_entry(dentry, &inode->i_dentry, d_u.d_alias) {
+		if (entry_ino == (u32)(long)dentry->d_fsdata) {
+			dentry->d_fsdata = (void *)inode->i_ino;
+			break;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock(&inode->i_lock);
 }
@@ -148,6 +190,7 @@ affs_fix_dcache(struct dentry *dentry, u32 entry_ino)
 static int
 affs_remove_link(struct dentry *dentry)
 {
+<<<<<<< HEAD
 	struct inode *dir, *inode = dentry->d_inode;
 	struct super_block *sb = inode->i_sb;
 	struct buffer_head *bh = NULL, *link_bh = NULL;
@@ -155,6 +198,15 @@ affs_remove_link(struct dentry *dentry)
 	int retval;
 
 	pr_debug("AFFS: remove_link(key=%ld)\n", inode->i_ino);
+=======
+	struct inode *dir, *inode = d_inode(dentry);
+	struct super_block *sb = inode->i_sb;
+	struct buffer_head *bh, *link_bh = NULL;
+	u32 link_ino, ino;
+	int retval;
+
+	pr_debug("%s(key=%ld)\n", __func__, inode->i_ino);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = -EIO;
 	bh = affs_bread(sb, inode->i_ino);
 	if (!bh)
@@ -177,7 +229,15 @@ affs_remove_link(struct dentry *dentry)
 		}
 
 		affs_lock_dir(dir);
+<<<<<<< HEAD
 		affs_fix_dcache(dentry, link_ino);
+=======
+		/*
+		 * if there's a dentry for that block, make it
+		 * refer to inode itself.
+		 */
+		affs_fix_dcache(inode, link_ino);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = affs_remove_hash(dir, link_bh);
 		if (retval) {
 			affs_unlock_dir(dir);
@@ -274,6 +334,7 @@ affs_remove_header(struct dentry *dentry)
 	struct buffer_head *bh = NULL;
 	int retval;
 
+<<<<<<< HEAD
 	dir = dentry->d_parent->d_inode;
 	sb = dir->i_sb;
 
@@ -283,6 +344,17 @@ affs_remove_header(struct dentry *dentry)
 		goto done;
 
 	pr_debug("AFFS: remove_header(key=%ld)\n", inode->i_ino);
+=======
+	dir = d_inode(dentry->d_parent);
+	sb = dir->i_sb;
+
+	retval = -ENOENT;
+	inode = d_inode(dentry);
+	if (!inode)
+		goto done;
+
+	pr_debug("%s(key=%ld)\n", __func__, inode->i_ino);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = -EIO;
 	bh = affs_bread(sb, (u32)(long)dentry->d_fsdata);
 	if (!bh)
@@ -318,7 +390,11 @@ affs_remove_header(struct dentry *dentry)
 	else
 		clear_nlink(inode);
 	affs_unlock_link(inode);
+<<<<<<< HEAD
 	inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode_set_ctime_current(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 
 done:
@@ -372,6 +448,7 @@ affs_fix_checksum(struct super_block *sb, struct buffer_head *bh)
 }
 
 void
+<<<<<<< HEAD
 secs_to_datestamp(time_t secs, struct affs_date *ds)
 {
 	u32	 days;
@@ -392,10 +469,33 @@ secs_to_datestamp(time_t secs, struct affs_date *ds)
 
 umode_t
 prot_to_mode(u32 prot)
+=======
+affs_secs_to_datestamp(time64_t secs, struct affs_date *ds)
+{
+	u32	 days;
+	u32	 minute;
+	s32	 rem;
+
+	secs -= sys_tz.tz_minuteswest * 60 + AFFS_EPOCH_DELTA;
+	if (secs < 0)
+		secs = 0;
+	days    = div_s64_rem(secs, 86400, &rem);
+	minute  = rem / 60;
+	rem    -= minute * 60;
+
+	ds->days = cpu_to_be32(days);
+	ds->mins = cpu_to_be32(minute);
+	ds->ticks = cpu_to_be32(rem * 50);
+}
+
+umode_t
+affs_prot_to_mode(u32 prot)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	umode_t mode = 0;
 
 	if (!(prot & FIBF_NOWRITE))
+<<<<<<< HEAD
 		mode |= S_IWUSR;
 	if (!(prot & FIBF_NOREAD))
 		mode |= S_IRUSR;
@@ -413,16 +513,40 @@ prot_to_mode(u32 prot)
 		mode |= S_IROTH;
 	if (prot & FIBF_OTR_EXECUTE)
 		mode |= S_IXOTH;
+=======
+		mode |= 0200;
+	if (!(prot & FIBF_NOREAD))
+		mode |= 0400;
+	if (!(prot & FIBF_NOEXECUTE))
+		mode |= 0100;
+	if (prot & FIBF_GRP_WRITE)
+		mode |= 0020;
+	if (prot & FIBF_GRP_READ)
+		mode |= 0040;
+	if (prot & FIBF_GRP_EXECUTE)
+		mode |= 0010;
+	if (prot & FIBF_OTR_WRITE)
+		mode |= 0002;
+	if (prot & FIBF_OTR_READ)
+		mode |= 0004;
+	if (prot & FIBF_OTR_EXECUTE)
+		mode |= 0001;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mode;
 }
 
 void
+<<<<<<< HEAD
 mode_to_prot(struct inode *inode)
+=======
+affs_mode_to_prot(struct inode *inode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 prot = AFFS_I(inode)->i_protect;
 	umode_t mode = inode->i_mode;
 
+<<<<<<< HEAD
 	if (!(mode & S_IXUSR))
 		prot |= FIBF_NOEXECUTE;
 	if (!(mode & S_IRUSR))
@@ -441,6 +565,53 @@ mode_to_prot(struct inode *inode)
 		prot |= FIBF_OTR_READ;
 	if (mode & S_IWOTH)
 		prot |= FIBF_OTR_WRITE;
+=======
+	/*
+	 * First, clear all RWED bits for owner, group, other.
+	 * Then, recalculate them afresh.
+	 *
+	 * We'll always clear the delete-inhibit bit for the owner, as that is
+	 * the classic single-user mode AmigaOS protection bit and we need to
+	 * stay compatible with all scenarios.
+	 *
+	 * Since multi-user AmigaOS is an extension, we'll only set the
+	 * delete-allow bit if any of the other bits in the same user class
+	 * (group/other) are used.
+	 */
+	prot &= ~(FIBF_NOEXECUTE | FIBF_NOREAD
+		  | FIBF_NOWRITE | FIBF_NODELETE
+		  | FIBF_GRP_EXECUTE | FIBF_GRP_READ
+		  | FIBF_GRP_WRITE   | FIBF_GRP_DELETE
+		  | FIBF_OTR_EXECUTE | FIBF_OTR_READ
+		  | FIBF_OTR_WRITE   | FIBF_OTR_DELETE);
+
+	/* Classic single-user AmigaOS flags. These are inverted. */
+	if (!(mode & 0100))
+		prot |= FIBF_NOEXECUTE;
+	if (!(mode & 0400))
+		prot |= FIBF_NOREAD;
+	if (!(mode & 0200))
+		prot |= FIBF_NOWRITE;
+
+	/* Multi-user extended flags. Not inverted. */
+	if (mode & 0010)
+		prot |= FIBF_GRP_EXECUTE;
+	if (mode & 0040)
+		prot |= FIBF_GRP_READ;
+	if (mode & 0020)
+		prot |= FIBF_GRP_WRITE;
+	if (mode & 0070)
+		prot |= FIBF_GRP_DELETE;
+
+	if (mode & 0001)
+		prot |= FIBF_OTR_EXECUTE;
+	if (mode & 0004)
+		prot |= FIBF_OTR_READ;
+	if (mode & 0002)
+		prot |= FIBF_OTR_WRITE;
+	if (mode & 0007)
+		prot |= FIBF_OTR_DELETE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	AFFS_I(inode)->i_protect = prot;
 }
@@ -448,6 +619,7 @@ mode_to_prot(struct inode *inode)
 void
 affs_error(struct super_block *sb, const char *function, const char *fmt, ...)
 {
+<<<<<<< HEAD
 	va_list	 args;
 
 	va_start(args,fmt);
@@ -459,11 +631,25 @@ affs_error(struct super_block *sb, const char *function, const char *fmt, ...)
 	if (!(sb->s_flags & MS_RDONLY))
 		printk(KERN_WARNING "AFFS: Remounting filesystem read-only\n");
 	sb->s_flags |= MS_RDONLY;
+=======
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, fmt);
+	vaf.fmt = fmt;
+	vaf.va = &args;
+	pr_crit("error (device %s): %s(): %pV\n", sb->s_id, function, &vaf);
+	if (!sb_rdonly(sb))
+		pr_warn("Remounting filesystem read-only\n");
+	sb->s_flags |= SB_RDONLY;
+	va_end(args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
 affs_warning(struct super_block *sb, const char *function, const char *fmt, ...)
 {
+<<<<<<< HEAD
 	va_list	 args;
 
 	va_start(args,fmt);
@@ -472,11 +658,28 @@ affs_warning(struct super_block *sb, const char *function, const char *fmt, ...)
 
 	printk(KERN_WARNING "AFFS warning (device %s): %s(): %s\n", sb->s_id,
 		function,ErrorBuffer);
+=======
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, fmt);
+	vaf.fmt = fmt;
+	vaf.va = &args;
+	pr_warn("(device %s): %s(): %pV\n", sb->s_id, function, &vaf);
+	va_end(args);
+}
+
+bool
+affs_nofilenametruncate(const struct dentry *dentry)
+{
+	return affs_test_opt(AFFS_SB(dentry->d_sb)->s_flags, SF_NO_TRUNCATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Check if the name is valid for a affs object. */
 
 int
+<<<<<<< HEAD
 affs_check_name(const unsigned char *name, int len)
 {
 	int	 i;
@@ -488,6 +691,17 @@ affs_check_name(const unsigned char *name, int len)
 		len = 30;
 #endif
 
+=======
+affs_check_name(const unsigned char *name, int len, bool notruncate)
+{
+	int	 i;
+
+	if (len > AFFSNAMEMAX) {
+		if (notruncate)
+			return -ENAMETOOLONG;
+		len = AFFSNAMEMAX;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < len; i++) {
 		if (name[i] < ' ' || name[i] == ':'
 		    || (name[i] > 0x7e && name[i] < 0xa0))
@@ -507,7 +721,11 @@ affs_check_name(const unsigned char *name, int len)
 int
 affs_copy_name(unsigned char *bstr, struct dentry *dentry)
 {
+<<<<<<< HEAD
 	int len = min(dentry->d_name.len, 30u);
+=======
+	u32 len = min(dentry->d_name.len, AFFSNAMEMAX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*bstr++ = len;
 	memcpy(bstr, dentry->d_name.name, len);

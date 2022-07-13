@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: evxface - External interfaces for ACPI events
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -42,6 +47,14 @@
  */
 
 #include <linux/export.h>
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+#define EXPORT_ACPI_INTERFACES
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -50,6 +63,7 @@
 
 #define _COMPONENT          ACPI_EVENTS
 ACPI_MODULE_NAME("evxface")
+<<<<<<< HEAD
 
 
 /*******************************************************************************
@@ -117,12 +131,25 @@ acpi_add_handler_object(struct acpi_object_notify_handler *parent_obj,
 
 	return AE_OK;
 }
+=======
+#if (!ACPI_REDUCED_HARDWARE)
+/* Local prototypes */
+static acpi_status
+acpi_ev_install_gpe_handler(acpi_handle gpe_device,
+			    u32 gpe_number,
+			    u32 type,
+			    u8 is_raw_handler,
+			    acpi_gpe_handler address, void *context);
+
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_install_notify_handler
  *
+<<<<<<< HEAD
  * PARAMETERS:  Device          - The device for which notifies will be handled
  *              handler_type    - The type of handler:
  *                                  ACPI_SYSTEM_NOTIFY: system_handler (00-7f)
@@ -136,22 +163,58 @@ acpi_add_handler_object(struct acpi_object_notify_handler *parent_obj,
  * DESCRIPTION: Install a handler for notifies on an ACPI device
  *
  ******************************************************************************/
+=======
+ * PARAMETERS:  device          - The device for which notifies will be handled
+ *              handler_type    - The type of handler:
+ *                                  ACPI_SYSTEM_NOTIFY: System Handler (00-7F)
+ *                                  ACPI_DEVICE_NOTIFY: Device Handler (80-FF)
+ *                                  ACPI_ALL_NOTIFY:    Both System and Device
+ *              handler         - Address of the handler
+ *              context         - Value passed to the handler on each GPE
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install a handler for notifications on an ACPI Device,
+ *              thermal_zone, or Processor object.
+ *
+ * NOTES:       The Root namespace object may have only one handler for each
+ *              type of notify (System/Device). Device/Thermal/Processor objects
+ *              may have one device notify handler, and multiple system notify
+ *              handlers.
+ *
+ ******************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_status
 acpi_install_notify_handler(acpi_handle device,
 			    u32 handler_type,
 			    acpi_notify_handler handler, void *context)
 {
+<<<<<<< HEAD
 	union acpi_operand_object *obj_desc;
 	union acpi_operand_object *notify_obj;
 	struct acpi_namespace_node *node;
 	acpi_status status;
+=======
+	struct acpi_namespace_node *node =
+	    ACPI_CAST_PTR(struct acpi_namespace_node, device);
+	union acpi_operand_object *obj_desc;
+	union acpi_operand_object *handler_obj;
+	acpi_status status;
+	u32 i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE(acpi_install_notify_handler);
 
 	/* Parameter validation */
 
+<<<<<<< HEAD
 	if ((!device) ||
 	    (!handler) || (handler_type > ACPI_MAX_NOTIFY_HANDLER_TYPE)) {
+=======
+	if ((!device) || (!handler) || (!handler_type) ||
+	    (handler_type > ACPI_MAX_NOTIFY_HANDLER_TYPE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
 	}
 
@@ -160,6 +223,7 @@ acpi_install_notify_handler(acpi_handle device,
 		return_ACPI_STATUS(status);
 	}
 
+<<<<<<< HEAD
 	/* Convert and validate the device handle */
 
 	node = acpi_ns_validate_handle(device);
@@ -168,10 +232,13 @@ acpi_install_notify_handler(acpi_handle device,
 		goto unlock_and_exit;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Root Object:
 	 * Registering a notify handler on the root object indicates that the
 	 * caller wishes to receive notifications for all objects. Note that
+<<<<<<< HEAD
 	 * only one <external> global handler can be regsitered (per notify type).
 	 */
 	if (device == ACPI_ROOT_OBJECT) {
@@ -235,10 +302,20 @@ acpi_install_notify_handler(acpi_handle device,
 				struct acpi_object_notify_handler *parent_obj;
 
 				if (handler_type & ACPI_DEVICE_NOTIFY) {
+=======
+	 * only one global handler can be registered per notify type.
+	 * Ensure that a handler is not already installed.
+	 */
+	if (device == ACPI_ROOT_OBJECT) {
+		for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++) {
+			if (handler_type & (i + 1)) {
+				if (acpi_gbl_global_notify[i].handler) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					status = AE_ALREADY_EXISTS;
 					goto unlock_and_exit;
 				}
 
+<<<<<<< HEAD
 				parent_obj = &notify_obj->notify;
 				status = acpi_add_handler_object(parent_obj,
 								 handler,
@@ -272,10 +349,44 @@ acpi_install_notify_handler(acpi_handle device,
 		notify_obj =
 		    acpi_ut_create_internal_object(ACPI_TYPE_LOCAL_NOTIFY);
 		if (!notify_obj) {
+=======
+				acpi_gbl_global_notify[i].handler = handler;
+				acpi_gbl_global_notify[i].context = context;
+			}
+		}
+
+		goto unlock_and_exit;	/* Global notify handler installed, all done */
+	}
+
+	/*
+	 * All Other Objects:
+	 * Caller will only receive notifications specific to the target
+	 * object. Note that only certain object types are allowed to
+	 * receive notifications.
+	 */
+
+	/* Are Notifies allowed on this object? */
+
+	if (!acpi_ev_is_notify_object(node)) {
+		status = AE_TYPE;
+		goto unlock_and_exit;
+	}
+
+	/* Check for an existing internal object, might not exist */
+
+	obj_desc = acpi_ns_get_attached_object(node);
+	if (!obj_desc) {
+
+		/* Create a new object */
+
+		obj_desc = acpi_ut_create_internal_object(node->type);
+		if (!obj_desc) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = AE_NO_MEMORY;
 			goto unlock_and_exit;
 		}
 
+<<<<<<< HEAD
 		acpi_populate_handler_object(&notify_obj->notify,
 						handler_type,
 						handler, context,
@@ -298,6 +409,64 @@ acpi_install_notify_handler(acpi_handle device,
 	}
 
       unlock_and_exit:
+=======
+		/* Attach new object to the Node, remove local reference */
+
+		status = acpi_ns_attach_object(device, obj_desc, node->type);
+		acpi_ut_remove_reference(obj_desc);
+		if (ACPI_FAILURE(status)) {
+			goto unlock_and_exit;
+		}
+	}
+
+	/* Ensure that the handler is not already installed in the lists */
+
+	for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++) {
+		if (handler_type & (i + 1)) {
+			handler_obj = obj_desc->common_notify.notify_list[i];
+			while (handler_obj) {
+				if (handler_obj->notify.handler == handler) {
+					status = AE_ALREADY_EXISTS;
+					goto unlock_and_exit;
+				}
+
+				handler_obj = handler_obj->notify.next[i];
+			}
+		}
+	}
+
+	/* Create and populate a new notify handler object */
+
+	handler_obj = acpi_ut_create_internal_object(ACPI_TYPE_LOCAL_NOTIFY);
+	if (!handler_obj) {
+		status = AE_NO_MEMORY;
+		goto unlock_and_exit;
+	}
+
+	handler_obj->notify.node = node;
+	handler_obj->notify.handler_type = handler_type;
+	handler_obj->notify.handler = handler;
+	handler_obj->notify.context = context;
+
+	/* Install the handler at the list head(s) */
+
+	for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++) {
+		if (handler_type & (i + 1)) {
+			handler_obj->notify.next[i] =
+			    obj_desc->common_notify.notify_list[i];
+
+			obj_desc->common_notify.notify_list[i] = handler_obj;
+		}
+	}
+
+	/* Add an extra reference if handler was installed in both lists */
+
+	if (handler_type == ACPI_ALL_NOTIFY) {
+		acpi_ut_add_reference(handler_obj);
+	}
+
+unlock_and_exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	return_ACPI_STATUS(status);
 }
@@ -308,12 +477,21 @@ ACPI_EXPORT_SYMBOL(acpi_install_notify_handler)
  *
  * FUNCTION:    acpi_remove_notify_handler
  *
+<<<<<<< HEAD
  * PARAMETERS:  Device          - The device for which notifies will be handled
  *              handler_type    - The type of handler:
  *                                  ACPI_SYSTEM_NOTIFY: system_handler (00-7f)
  *                                  ACPI_DEVICE_NOTIFY: driver_handler (80-ff)
  *                                  ACPI_ALL_NOTIFY:  both system and device
  *              Handler         - Address of the handler
+=======
+ * PARAMETERS:  device          - The device for which the handler is installed
+ *              handler_type    - The type of handler:
+ *                                  ACPI_SYSTEM_NOTIFY: System Handler (00-7F)
+ *                                  ACPI_DEVICE_NOTIFY: Device Handler (80-FF)
+ *                                  ACPI_ALL_NOTIFY:    Both System and Device
+ *              handler         - Address of the handler
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -324,15 +502,26 @@ acpi_status
 acpi_remove_notify_handler(acpi_handle device,
 			   u32 handler_type, acpi_notify_handler handler)
 {
+<<<<<<< HEAD
 	union acpi_operand_object *notify_obj;
 	union acpi_operand_object *obj_desc;
 	struct acpi_namespace_node *node;
 	acpi_status status;
+=======
+	struct acpi_namespace_node *node =
+	    ACPI_CAST_PTR(struct acpi_namespace_node, device);
+	union acpi_operand_object *obj_desc;
+	union acpi_operand_object *handler_obj;
+	union acpi_operand_object *previous_handler_obj;
+	acpi_status status = AE_OK;
+	u32 i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE(acpi_remove_notify_handler);
 
 	/* Parameter validation */
 
+<<<<<<< HEAD
 	if ((!device) ||
 	    (!handler) || (handler_type > ACPI_MAX_NOTIFY_HANDLER_TYPE)) {
 		status = AE_BAD_PARAMETER;
@@ -463,10 +652,87 @@ acpi_remove_notify_handler(acpi_handle device,
 		if (handler_type & ACPI_DEVICE_NOTIFY) {
 			notify_obj = obj_desc->common_notify.device_notify;
 			if (!notify_obj) {
+=======
+	if ((!device) || (!handler) || (!handler_type) ||
+	    (handler_type > ACPI_MAX_NOTIFY_HANDLER_TYPE)) {
+		return_ACPI_STATUS(AE_BAD_PARAMETER);
+	}
+
+	/* Root Object. Global handlers are removed here */
+
+	if (device == ACPI_ROOT_OBJECT) {
+		for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++) {
+			if (handler_type & (i + 1)) {
+				status =
+				    acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
+				if (ACPI_FAILURE(status)) {
+					return_ACPI_STATUS(status);
+				}
+
+				if (!acpi_gbl_global_notify[i].handler ||
+				    (acpi_gbl_global_notify[i].handler !=
+				     handler)) {
+					status = AE_NOT_EXIST;
+					goto unlock_and_exit;
+				}
+
+				ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+						  "Removing global notify handler\n"));
+
+				acpi_gbl_global_notify[i].handler = NULL;
+				acpi_gbl_global_notify[i].context = NULL;
+
+				(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
+
+				/* Make sure all deferred notify tasks are completed */
+
+				acpi_os_wait_events_complete();
+			}
+		}
+
+		return_ACPI_STATUS(AE_OK);
+	}
+
+	/* All other objects: Are Notifies allowed on this object? */
+
+	if (!acpi_ev_is_notify_object(node)) {
+		return_ACPI_STATUS(AE_TYPE);
+	}
+
+	/* Must have an existing internal object */
+
+	obj_desc = acpi_ns_get_attached_object(node);
+	if (!obj_desc) {
+		return_ACPI_STATUS(AE_NOT_EXIST);
+	}
+
+	/* Internal object exists. Find the handler and remove it */
+
+	for (i = 0; i < ACPI_NUM_NOTIFY_TYPES; i++) {
+		if (handler_type & (i + 1)) {
+			status = acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
+			if (ACPI_FAILURE(status)) {
+				return_ACPI_STATUS(status);
+			}
+
+			handler_obj = obj_desc->common_notify.notify_list[i];
+			previous_handler_obj = NULL;
+
+			/* Attempt to find the handler in the handler list */
+
+			while (handler_obj &&
+			       (handler_obj->notify.handler != handler)) {
+				previous_handler_obj = handler_obj;
+				handler_obj = handler_obj->notify.next[i];
+			}
+
+			if (!handler_obj) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				status = AE_NOT_EXIST;
 				goto unlock_and_exit;
 			}
 
+<<<<<<< HEAD
 			if (notify_obj->notify.handler != handler) {
 				status = AE_BAD_PARAMETER;
 				goto unlock_and_exit;
@@ -483,6 +749,32 @@ acpi_remove_notify_handler(acpi_handle device,
       exit:
 	if (ACPI_FAILURE(status))
 		ACPI_EXCEPTION((AE_INFO, status, "Removing notify handler"));
+=======
+			/* Remove the handler object from the list */
+
+			if (previous_handler_obj) {	/* Handler is not at the list head */
+				previous_handler_obj->notify.next[i] =
+				    handler_obj->notify.next[i];
+			} else {	/* Handler is at the list head */
+
+				obj_desc->common_notify.notify_list[i] =
+				    handler_obj->notify.next[i];
+			}
+
+			(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
+
+			/* Make sure all deferred notify tasks are completed */
+
+			acpi_os_wait_events_complete();
+			acpi_ut_remove_reference(handler_obj);
+		}
+	}
+
+	return_ACPI_STATUS(status);
+
+unlock_and_exit:
+	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 
@@ -492,7 +784,11 @@ ACPI_EXPORT_SYMBOL(acpi_remove_notify_handler)
  *
  * FUNCTION:    acpi_install_exception_handler
  *
+<<<<<<< HEAD
  * PARAMETERS:  Handler         - Pointer to the handler function for the
+=======
+ * PARAMETERS:  handler         - Pointer to the handler function for the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                event
  *
  * RETURN:      Status
@@ -523,21 +819,177 @@ acpi_status acpi_install_exception_handler(acpi_exception_handler handler)
 
 	acpi_gbl_exception_handler = handler;
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)acpi_ut_release_mutex(ACPI_MTX_EVENTS);
 	return_ACPI_STATUS(status);
 }
 
 ACPI_EXPORT_SYMBOL(acpi_install_exception_handler)
+<<<<<<< HEAD
 #endif				/*  ACPI_FUTURE_USAGE  */
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if (!ACPI_REDUCED_HARDWARE)
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_install_global_event_handler
  *
  * PARAMETERS:  Handler         - Pointer to the global event handler function
  *              Context         - Value passed to the handler on each event
+=======
+ * FUNCTION:    acpi_install_sci_handler
+ *
+ * PARAMETERS:  address             - Address of the handler
+ *              context             - Value passed to the handler on each SCI
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install a handler for a System Control Interrupt.
+ *
+ ******************************************************************************/
+acpi_status acpi_install_sci_handler(acpi_sci_handler address, void *context)
+{
+	struct acpi_sci_handler_info *new_sci_handler;
+	struct acpi_sci_handler_info *sci_handler;
+	acpi_cpu_flags flags;
+	acpi_status status;
+
+	ACPI_FUNCTION_TRACE(acpi_install_sci_handler);
+
+	if (!address) {
+		return_ACPI_STATUS(AE_BAD_PARAMETER);
+	}
+
+	/* Allocate and init a handler object */
+
+	new_sci_handler = ACPI_ALLOCATE(sizeof(struct acpi_sci_handler_info));
+	if (!new_sci_handler) {
+		return_ACPI_STATUS(AE_NO_MEMORY);
+	}
+
+	new_sci_handler->address = address;
+	new_sci_handler->context = context;
+
+	status = acpi_ut_acquire_mutex(ACPI_MTX_EVENTS);
+	if (ACPI_FAILURE(status)) {
+		goto exit;
+	}
+
+	/* Lock list during installation */
+
+	flags = acpi_os_acquire_lock(acpi_gbl_gpe_lock);
+	sci_handler = acpi_gbl_sci_handler_list;
+
+	/* Ensure handler does not already exist */
+
+	while (sci_handler) {
+		if (address == sci_handler->address) {
+			status = AE_ALREADY_EXISTS;
+			goto unlock_and_exit;
+		}
+
+		sci_handler = sci_handler->next;
+	}
+
+	/* Install the new handler into the global list (at head) */
+
+	new_sci_handler->next = acpi_gbl_sci_handler_list;
+	acpi_gbl_sci_handler_list = new_sci_handler;
+
+unlock_and_exit:
+
+	acpi_os_release_lock(acpi_gbl_gpe_lock, flags);
+	(void)acpi_ut_release_mutex(ACPI_MTX_EVENTS);
+
+exit:
+	if (ACPI_FAILURE(status)) {
+		ACPI_FREE(new_sci_handler);
+	}
+	return_ACPI_STATUS(status);
+}
+
+ACPI_EXPORT_SYMBOL(acpi_install_sci_handler)
+
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_remove_sci_handler
+ *
+ * PARAMETERS:  address             - Address of the handler
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Remove a handler for a System Control Interrupt.
+ *
+ ******************************************************************************/
+acpi_status acpi_remove_sci_handler(acpi_sci_handler address)
+{
+	struct acpi_sci_handler_info *prev_sci_handler;
+	struct acpi_sci_handler_info *next_sci_handler;
+	acpi_cpu_flags flags;
+	acpi_status status;
+
+	ACPI_FUNCTION_TRACE(acpi_remove_sci_handler);
+
+	if (!address) {
+		return_ACPI_STATUS(AE_BAD_PARAMETER);
+	}
+
+	status = acpi_ut_acquire_mutex(ACPI_MTX_EVENTS);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+	/* Remove the SCI handler with lock */
+
+	flags = acpi_os_acquire_lock(acpi_gbl_gpe_lock);
+
+	prev_sci_handler = NULL;
+	next_sci_handler = acpi_gbl_sci_handler_list;
+	while (next_sci_handler) {
+		if (next_sci_handler->address == address) {
+
+			/* Unlink and free the SCI handler info block */
+
+			if (prev_sci_handler) {
+				prev_sci_handler->next = next_sci_handler->next;
+			} else {
+				acpi_gbl_sci_handler_list =
+				    next_sci_handler->next;
+			}
+
+			acpi_os_release_lock(acpi_gbl_gpe_lock, flags);
+			ACPI_FREE(next_sci_handler);
+			goto unlock_and_exit;
+		}
+
+		prev_sci_handler = next_sci_handler;
+		next_sci_handler = next_sci_handler->next;
+	}
+
+	acpi_os_release_lock(acpi_gbl_gpe_lock, flags);
+	status = AE_NOT_EXIST;
+
+unlock_and_exit:
+	(void)acpi_ut_release_mutex(ACPI_MTX_EVENTS);
+	return_ACPI_STATUS(status);
+}
+
+ACPI_EXPORT_SYMBOL(acpi_remove_sci_handler)
+
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_install_global_event_handler
+ *
+ * PARAMETERS:  handler         - Pointer to the global event handler function
+ *              context         - Value passed to the handler on each event
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -548,7 +1000,11 @@ ACPI_EXPORT_SYMBOL(acpi_install_exception_handler)
  *
  ******************************************************************************/
 acpi_status
+<<<<<<< HEAD
 acpi_install_global_event_handler(ACPI_GBL_EVENT_HANDLER handler, void *context)
+=======
+acpi_install_global_event_handler(acpi_gbl_event_handler handler, void *context)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 
@@ -575,7 +1031,11 @@ acpi_install_global_event_handler(ACPI_GBL_EVENT_HANDLER handler, void *context)
 	acpi_gbl_global_event_handler = handler;
 	acpi_gbl_global_event_handler_context = context;
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)acpi_ut_release_mutex(ACPI_MTX_EVENTS);
 	return_ACPI_STATUS(status);
 }
@@ -586,10 +1046,17 @@ ACPI_EXPORT_SYMBOL(acpi_install_global_event_handler)
  *
  * FUNCTION:    acpi_install_fixed_event_handler
  *
+<<<<<<< HEAD
  * PARAMETERS:  Event           - Event type to enable.
  *              Handler         - Pointer to the handler function for the
  *                                event
  *              Context         - Value passed to the handler on each GPE
+=======
+ * PARAMETERS:  event           - Event type to enable.
+ *              handler         - Pointer to the handler function for the
+ *                                event
+ *              context         - Value passed to the handler on each GPE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -616,9 +1083,15 @@ acpi_install_fixed_event_handler(u32 event,
 		return_ACPI_STATUS(status);
 	}
 
+<<<<<<< HEAD
 	/* Don't allow two handlers. */
 
 	if (NULL != acpi_gbl_fixed_event_handlers[event].handler) {
+=======
+	/* Do not allow multiple handlers */
+
+	if (acpi_gbl_fixed_event_handlers[event].handler) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = AE_ALREADY_EXISTS;
 		goto cleanup;
 	}
@@ -632,8 +1105,14 @@ acpi_install_fixed_event_handler(u32 event,
 	if (ACPI_SUCCESS(status))
 		status = acpi_enable_event(event, 0);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		ACPI_WARNING((AE_INFO, "Could not enable fixed event 0x%X",
 			      event));
+=======
+		ACPI_WARNING((AE_INFO,
+			      "Could not enable fixed event - %s (%u)",
+			      acpi_ut_get_event_name(event), event));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Remove the handler */
 
@@ -641,11 +1120,20 @@ acpi_install_fixed_event_handler(u32 event,
 		acpi_gbl_fixed_event_handlers[event].context = NULL;
 	} else {
 		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+<<<<<<< HEAD
 				  "Enabled fixed event %X, Handler=%p\n", event,
 				  handler));
 	}
 
       cleanup:
+=======
+				  "Enabled fixed event %s (%X), Handler=%p\n",
+				  acpi_ut_get_event_name(event), event,
+				  handler));
+	}
+
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)acpi_ut_release_mutex(ACPI_MTX_EVENTS);
 	return_ACPI_STATUS(status);
 }
@@ -656,8 +1144,13 @@ ACPI_EXPORT_SYMBOL(acpi_install_fixed_event_handler)
  *
  * FUNCTION:    acpi_remove_fixed_event_handler
  *
+<<<<<<< HEAD
  * PARAMETERS:  Event           - Event type to disable.
  *              Handler         - Address of the handler
+=======
+ * PARAMETERS:  event           - Event type to disable.
+ *              handler         - Address of the handler
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -693,11 +1186,20 @@ acpi_remove_fixed_event_handler(u32 event, acpi_event_handler handler)
 
 	if (ACPI_FAILURE(status)) {
 		ACPI_WARNING((AE_INFO,
+<<<<<<< HEAD
 			      "Could not write to fixed event enable register 0x%X",
 			      event));
 	} else {
 		ACPI_DEBUG_PRINT((ACPI_DB_INFO, "Disabled fixed event %X\n",
 				  event));
+=======
+			      "Could not disable fixed event - %s (%u)",
+			      acpi_ut_get_event_name(event), event));
+	} else {
+		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+				  "Disabled fixed event - %s (%X)\n",
+				  acpi_ut_get_event_name(event), event));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	(void)acpi_ut_release_mutex(ACPI_MTX_EVENTS);
@@ -708,11 +1210,16 @@ ACPI_EXPORT_SYMBOL(acpi_remove_fixed_event_handler)
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_install_gpe_handler
+=======
+ * FUNCTION:    acpi_ev_install_gpe_handler
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * PARAMETERS:  gpe_device      - Namespace node for the GPE (NULL for FADT
  *                                defined GPEs)
  *              gpe_number      - The GPE number within the GPE block
+<<<<<<< HEAD
  *              Type            - Whether this GPE should be treated as an
  *                                edge- or level-triggered interrupt.
  *              Address         - Address of the handler
@@ -727,13 +1234,38 @@ acpi_status
 acpi_install_gpe_handler(acpi_handle gpe_device,
 			 u32 gpe_number,
 			 u32 type, acpi_gpe_handler address, void *context)
+=======
+ *              type            - Whether this GPE should be treated as an
+ *                                edge- or level-triggered interrupt.
+ *              is_raw_handler  - Whether this GPE should be handled using
+ *                                the special GPE handler mode.
+ *              address         - Address of the handler
+ *              context         - Value passed to the handler on each GPE
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Internal function to install a handler for a General Purpose
+ *              Event.
+ *
+ ******************************************************************************/
+static acpi_status
+acpi_ev_install_gpe_handler(acpi_handle gpe_device,
+			    u32 gpe_number,
+			    u32 type,
+			    u8 is_raw_handler,
+			    acpi_gpe_handler address, void *context)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_gpe_event_info *gpe_event_info;
 	struct acpi_gpe_handler_info *handler;
 	acpi_status status;
 	acpi_cpu_flags flags;
 
+<<<<<<< HEAD
 	ACPI_FUNCTION_TRACE(acpi_install_gpe_handler);
+=======
+	ACPI_FUNCTION_TRACE(ev_install_gpe_handler);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Parameter validation */
 
@@ -746,7 +1278,11 @@ acpi_install_gpe_handler(acpi_handle gpe_device,
 		return_ACPI_STATUS(status);
 	}
 
+<<<<<<< HEAD
 	/* Allocate memory for the handler object */
+=======
+	/* Allocate and init handler object (before lock) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	handler = ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_gpe_handler_info));
 	if (!handler) {
@@ -766,12 +1302,20 @@ acpi_install_gpe_handler(acpi_handle gpe_device,
 
 	/* Make sure that there isn't a handler there already */
 
+<<<<<<< HEAD
 	if ((gpe_event_info->flags & ACPI_GPE_DISPATCH_MASK) ==
 	    ACPI_GPE_DISPATCH_HANDLER) {
+=======
+	if ((ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+	     ACPI_GPE_DISPATCH_HANDLER) ||
+	    (ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+	     ACPI_GPE_DISPATCH_RAW_HANDLER)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = AE_ALREADY_EXISTS;
 		goto free_and_exit;
 	}
 
+<<<<<<< HEAD
 	/* Allocate and init handler object */
 
 	handler->address = address;
@@ -790,17 +1334,56 @@ acpi_install_gpe_handler(acpi_handle gpe_device,
 	    && gpe_event_info->runtime_count) {
 		handler->originally_enabled = 1;
 		(void)acpi_ev_remove_gpe_reference(gpe_event_info);
+=======
+	handler->address = address;
+	handler->context = context;
+	handler->method_node = gpe_event_info->dispatch.method_node;
+	handler->original_flags = (u8)(gpe_event_info->flags &
+				       (ACPI_GPE_XRUPT_TYPE_MASK |
+					ACPI_GPE_DISPATCH_MASK));
+
+	/*
+	 * If the GPE is associated with a method, it may have been enabled
+	 * automatically during initialization, in which case it has to be
+	 * disabled now to avoid spurious execution of the handler.
+	 */
+	if (((ACPI_GPE_DISPATCH_TYPE(handler->original_flags) ==
+	      ACPI_GPE_DISPATCH_METHOD) ||
+	     (ACPI_GPE_DISPATCH_TYPE(handler->original_flags) ==
+	      ACPI_GPE_DISPATCH_NOTIFY)) && gpe_event_info->runtime_count) {
+		handler->originally_enabled = TRUE;
+		(void)acpi_ev_remove_gpe_reference(gpe_event_info);
+
+		/* Sanity check of original type against new type */
+
+		if (type !=
+		    (u32)(gpe_event_info->flags & ACPI_GPE_XRUPT_TYPE_MASK)) {
+			ACPI_WARNING((AE_INFO,
+				      "GPE type mismatch (level/edge)"));
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Install the handler */
 
 	gpe_event_info->dispatch.handler = handler;
 
+<<<<<<< HEAD
 	/* Setup up dispatch flags to indicate handler (vs. method) */
 
 	gpe_event_info->flags &=
 	    ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK);
 	gpe_event_info->flags |= (u8) (type | ACPI_GPE_DISPATCH_HANDLER);
+=======
+	/* Setup up dispatch flags to indicate handler (vs. method/notify) */
+
+	gpe_event_info->flags &=
+	    ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK);
+	gpe_event_info->flags |=
+	    (u8)(type |
+		 (is_raw_handler ? ACPI_GPE_DISPATCH_RAW_HANDLER :
+		  ACPI_GPE_DISPATCH_HANDLER));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	acpi_os_release_lock(acpi_gbl_gpe_lock, flags);
 
@@ -814,16 +1397,93 @@ free_and_exit:
 	goto unlock_and_exit;
 }
 
+<<<<<<< HEAD
+=======
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_install_gpe_handler
+ *
+ * PARAMETERS:  gpe_device      - Namespace node for the GPE (NULL for FADT
+ *                                defined GPEs)
+ *              gpe_number      - The GPE number within the GPE block
+ *              type            - Whether this GPE should be treated as an
+ *                                edge- or level-triggered interrupt.
+ *              address         - Address of the handler
+ *              context         - Value passed to the handler on each GPE
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install a handler for a General Purpose Event.
+ *
+ ******************************************************************************/
+
+acpi_status
+acpi_install_gpe_handler(acpi_handle gpe_device,
+			 u32 gpe_number,
+			 u32 type, acpi_gpe_handler address, void *context)
+{
+	acpi_status status;
+
+	ACPI_FUNCTION_TRACE(acpi_install_gpe_handler);
+
+	status = acpi_ev_install_gpe_handler(gpe_device, gpe_number, type,
+					     FALSE, address, context);
+
+	return_ACPI_STATUS(status);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ACPI_EXPORT_SYMBOL(acpi_install_gpe_handler)
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
+=======
+ * FUNCTION:    acpi_install_gpe_raw_handler
+ *
+ * PARAMETERS:  gpe_device      - Namespace node for the GPE (NULL for FADT
+ *                                defined GPEs)
+ *              gpe_number      - The GPE number within the GPE block
+ *              type            - Whether this GPE should be treated as an
+ *                                edge- or level-triggered interrupt.
+ *              address         - Address of the handler
+ *              context         - Value passed to the handler on each GPE
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Install a handler for a General Purpose Event.
+ *
+ ******************************************************************************/
+acpi_status
+acpi_install_gpe_raw_handler(acpi_handle gpe_device,
+			     u32 gpe_number,
+			     u32 type, acpi_gpe_handler address, void *context)
+{
+	acpi_status status;
+
+	ACPI_FUNCTION_TRACE(acpi_install_gpe_raw_handler);
+
+	status = acpi_ev_install_gpe_handler(gpe_device, gpe_number, type,
+					     TRUE, address, context);
+
+	return_ACPI_STATUS(status);
+}
+
+ACPI_EXPORT_SYMBOL(acpi_install_gpe_raw_handler)
+
+/*******************************************************************************
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FUNCTION:    acpi_remove_gpe_handler
  *
  * PARAMETERS:  gpe_device      - Namespace node for the GPE (NULL for FADT
  *                                defined GPEs)
  *              gpe_number      - The event to remove a handler
+<<<<<<< HEAD
  *              Address         - Address of the handler
+=======
+ *              address         - Address of the handler
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -847,10 +1507,13 @@ acpi_remove_gpe_handler(acpi_handle gpe_device,
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
 	}
 
+<<<<<<< HEAD
 	/* Make sure all deferred tasks are completed */
 
 	acpi_os_wait_events_complete(NULL);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = acpi_ut_acquire_mutex(ACPI_MTX_EVENTS);
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
@@ -868,8 +1531,15 @@ acpi_remove_gpe_handler(acpi_handle gpe_device,
 
 	/* Make sure that a handler is indeed installed */
 
+<<<<<<< HEAD
 	if ((gpe_event_info->flags & ACPI_GPE_DISPATCH_MASK) !=
 	    ACPI_GPE_DISPATCH_HANDLER) {
+=======
+	if ((ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) !=
+	     ACPI_GPE_DISPATCH_HANDLER) &&
+	    (ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) !=
+	     ACPI_GPE_DISPATCH_RAW_HANDLER)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = AE_NOT_EXIST;
 		goto unlock_and_exit;
 	}
@@ -884,12 +1554,20 @@ acpi_remove_gpe_handler(acpi_handle gpe_device,
 	/* Remove the handler */
 
 	handler = gpe_event_info->dispatch.handler;
+<<<<<<< HEAD
+=======
+	gpe_event_info->dispatch.handler = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Restore Method node (if any), set dispatch flags */
 
 	gpe_event_info->dispatch.method_node = handler->method_node;
 	gpe_event_info->flags &=
+<<<<<<< HEAD
 		~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK);
+=======
+	    ~(ACPI_GPE_XRUPT_TYPE_MASK | ACPI_GPE_DISPATCH_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gpe_event_info->flags |= handler->original_flags;
 
 	/*
@@ -897,14 +1575,43 @@ acpi_remove_gpe_handler(acpi_handle gpe_device,
 	 * enabled, it should be enabled at this point to restore the
 	 * post-initialization configuration.
 	 */
+<<<<<<< HEAD
 
 	if ((handler->original_flags & ACPI_GPE_DISPATCH_METHOD)
 	    && handler->originally_enabled)
 		(void)acpi_ev_add_gpe_reference(gpe_event_info);
+=======
+	if (((ACPI_GPE_DISPATCH_TYPE(handler->original_flags) ==
+	      ACPI_GPE_DISPATCH_METHOD) ||
+	     (ACPI_GPE_DISPATCH_TYPE(handler->original_flags) ==
+	      ACPI_GPE_DISPATCH_NOTIFY)) && handler->originally_enabled) {
+		(void)acpi_ev_add_gpe_reference(gpe_event_info, FALSE);
+		if (ACPI_GPE_IS_POLLING_NEEDED(gpe_event_info)) {
+
+			/* Poll edge triggered GPEs to handle existing events */
+
+			acpi_os_release_lock(acpi_gbl_gpe_lock, flags);
+			(void)acpi_ev_detect_gpe(gpe_device, gpe_event_info,
+						 gpe_number);
+			flags = acpi_os_acquire_lock(acpi_gbl_gpe_lock);
+		}
+	}
+
+	acpi_os_release_lock(acpi_gbl_gpe_lock, flags);
+	(void)acpi_ut_release_mutex(ACPI_MTX_EVENTS);
+
+	/* Make sure all deferred GPE tasks are completed */
+
+	acpi_os_wait_events_complete();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Now we can free the handler object */
 
 	ACPI_FREE(handler);
+<<<<<<< HEAD
+=======
+	return_ACPI_STATUS(status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unlock_and_exit:
 	acpi_os_release_lock(acpi_gbl_gpe_lock, flags);
@@ -919,8 +1626,13 @@ ACPI_EXPORT_SYMBOL(acpi_remove_gpe_handler)
  *
  * FUNCTION:    acpi_acquire_global_lock
  *
+<<<<<<< HEAD
  * PARAMETERS:  Timeout         - How long the caller is willing to wait
  *              Handle          - Where the handle to the lock is returned
+=======
+ * PARAMETERS:  timeout         - How long the caller is willing to wait
+ *              handle          - Where the handle to the lock is returned
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                (if acquired)
  *
  * RETURN:      Status
@@ -934,7 +1646,11 @@ ACPI_EXPORT_SYMBOL(acpi_remove_gpe_handler)
  * handle is returned.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 acpi_status acpi_acquire_global_lock(u16 timeout, u32 * handle)
+=======
+acpi_status acpi_acquire_global_lock(u16 timeout, u32 *handle)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_status status;
 
@@ -967,7 +1683,11 @@ ACPI_EXPORT_SYMBOL(acpi_acquire_global_lock)
  *
  * FUNCTION:    acpi_release_global_lock
  *
+<<<<<<< HEAD
  * PARAMETERS:  Handle      - Returned from acpi_acquire_global_lock
+=======
+ * PARAMETERS:  handle      - Returned from acpi_acquire_global_lock
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *

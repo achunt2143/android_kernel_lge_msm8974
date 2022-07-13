@@ -1,15 +1,30 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson AB 2010
  * Author:	Sjur Brendeland sjur.brandeland@stericsson.com
  * License terms: GNU General Public License (GPL) version 2
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) ST-Ericsson AB 2010
+ * Author:	Sjur Brendeland
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
 
+<<<<<<< HEAD
 #include <linux/fs.h>
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/sched.h>
+=======
+#include <linux/filter.h>
+#include <linux/fs.h>
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 #include <linux/mutex.h>
 #include <linux/list.h>
@@ -19,13 +34,21 @@
 #include <linux/uaccess.h>
 #include <linux/debugfs.h>
 #include <linux/caif/caif_socket.h>
+<<<<<<< HEAD
 #include <linux/atomic.h>
+=======
+#include <linux/pkt_sched.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/sock.h>
 #include <net/tcp_states.h>
 #include <net/caif/caif_layer.h>
 #include <net/caif/caif_dev.h>
 #include <net/caif/cfpkt.h>
 
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("ST-Ericsson CAIF modem protocol socket support (AF_CAIF)");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_NETPROTO(AF_CAIF);
 
@@ -46,7 +69,11 @@ enum caif_states {
 struct caifsock {
 	struct sock sk; /* must be first member */
 	struct cflayer layer;
+<<<<<<< HEAD
 	u32 flow_state;
+=======
+	unsigned long flow_state;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct caif_connect_request conn_req;
 	struct mutex readlock;
 	struct dentry *debugfs_socket_dir;
@@ -55,38 +82,62 @@ struct caifsock {
 
 static int rx_flow_is_on(struct caifsock *cf_sk)
 {
+<<<<<<< HEAD
 	return test_bit(RX_FLOW_ON_BIT,
 			(void *) &cf_sk->flow_state);
+=======
+	return test_bit(RX_FLOW_ON_BIT, &cf_sk->flow_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int tx_flow_is_on(struct caifsock *cf_sk)
 {
+<<<<<<< HEAD
 	return test_bit(TX_FLOW_ON_BIT,
 			(void *) &cf_sk->flow_state);
+=======
+	return test_bit(TX_FLOW_ON_BIT, &cf_sk->flow_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void set_rx_flow_off(struct caifsock *cf_sk)
 {
+<<<<<<< HEAD
 	 clear_bit(RX_FLOW_ON_BIT,
 		 (void *) &cf_sk->flow_state);
+=======
+	clear_bit(RX_FLOW_ON_BIT, &cf_sk->flow_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void set_rx_flow_on(struct caifsock *cf_sk)
 {
+<<<<<<< HEAD
 	 set_bit(RX_FLOW_ON_BIT,
 			(void *) &cf_sk->flow_state);
+=======
+	set_bit(RX_FLOW_ON_BIT, &cf_sk->flow_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void set_tx_flow_off(struct caifsock *cf_sk)
 {
+<<<<<<< HEAD
 	 clear_bit(TX_FLOW_ON_BIT,
 		(void *) &cf_sk->flow_state);
+=======
+	clear_bit(TX_FLOW_ON_BIT, &cf_sk->flow_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void set_tx_flow_on(struct caifsock *cf_sk)
 {
+<<<<<<< HEAD
 	 set_bit(TX_FLOW_ON_BIT,
 		(void *) &cf_sk->flow_state);
+=======
+	set_bit(TX_FLOW_ON_BIT, &cf_sk->flow_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void caif_read_lock(struct sock *sk)
@@ -121,6 +172,7 @@ static void caif_flow_ctrl(struct sock *sk, int mode)
  * Copied from sock.c:sock_queue_rcv_skb(), but changed so packets are
  * not dropped, but CAIF is sending flow off instead.
  */
+<<<<<<< HEAD
 static int caif_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 {
 	int err;
@@ -135,21 +187,45 @@ static int caif_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 			pr_debug("sending flow OFF (queue len = %d %d)\n",
 					atomic_read(&cf_sk->sk.sk_rmem_alloc),
 					sk_rcvbuf_lowwater(cf_sk));
+=======
+static void caif_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+{
+	int err;
+	unsigned long flags;
+	struct sk_buff_head *list = &sk->sk_receive_queue;
+	struct caifsock *cf_sk = container_of(sk, struct caifsock, sk);
+	bool queued = false;
+
+	if (atomic_read(&sk->sk_rmem_alloc) + skb->truesize >=
+		(unsigned int)sk->sk_rcvbuf && rx_flow_is_on(cf_sk)) {
+		net_dbg_ratelimited("sending flow OFF (queue len = %d %d)\n",
+				    atomic_read(&cf_sk->sk.sk_rmem_alloc),
+				    sk_rcvbuf_lowwater(cf_sk));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_rx_flow_off(cf_sk);
 		caif_flow_ctrl(sk, CAIF_MODEMCMD_FLOW_OFF_REQ);
 	}
 
 	err = sk_filter(sk, skb);
 	if (err)
+<<<<<<< HEAD
 		return err;
 	if (!sk_rmem_schedule(sk, skb->truesize) && rx_flow_is_on(cf_sk)) {
 		set_rx_flow_off(cf_sk);
 		if (net_ratelimit())
 			pr_debug("sending flow OFF due to rmem_schedule\n");
+=======
+		goto out;
+
+	if (!sk_rmem_schedule(sk, skb, skb->truesize) && rx_flow_is_on(cf_sk)) {
+		set_rx_flow_off(cf_sk);
+		net_dbg_ratelimited("sending flow OFF due to rmem_schedule\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		caif_flow_ctrl(sk, CAIF_MODEMCMD_FLOW_OFF_REQ);
 	}
 	skb->dev = NULL;
 	skb_set_owner_r(skb, sk);
+<<<<<<< HEAD
 	/* Cache the SKB length before we tack it onto the receive
 	 * queue. Once it is added it no longer belongs to us and
 	 * may be freed by other threads of control pulling packets
@@ -166,6 +242,18 @@ static int caif_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 	else
 		kfree_skb(skb);
 	return 0;
+=======
+	spin_lock_irqsave(&list->lock, flags);
+	queued = !sock_flag(sk, SOCK_DEAD);
+	if (queued)
+		__skb_queue_tail(list, skb);
+	spin_unlock_irqrestore(&list->lock, flags);
+out:
+	if (queued)
+		sk->sk_data_ready(sk);
+	else
+		kfree_skb(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Packet Receive Callback function called from CAIF Stack */
@@ -199,8 +287,13 @@ static void cfsk_put(struct cflayer *layr)
 
 /* Packet Control Callback function called from CAIF */
 static void caif_ctrl_cb(struct cflayer *layr,
+<<<<<<< HEAD
 				enum caif_ctrlcmd flow,
 				int phyid)
+=======
+			 enum caif_ctrlcmd flow,
+			 int phyid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct caifsock *cf_sk = container_of(layr, struct caifsock, layer);
 	switch (flow) {
@@ -222,6 +315,10 @@ static void caif_ctrl_cb(struct cflayer *layr,
 						cfsk_hold, cfsk_put);
 		cf_sk->sk.sk_state = CAIF_CONNECTED;
 		set_tx_flow_on(cf_sk);
+<<<<<<< HEAD
+=======
+		cf_sk->sk.sk_shutdown = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cf_sk->sk.sk_state_change(&cf_sk->sk);
 		break;
 
@@ -249,7 +346,11 @@ static void caif_ctrl_cb(struct cflayer *layr,
 		cf_sk->sk.sk_shutdown = SHUTDOWN_MASK;
 		cf_sk->sk.sk_err = ECONNRESET;
 		set_rx_flow_on(cf_sk);
+<<<<<<< HEAD
 		cf_sk->sk.sk_error_report(&cf_sk->sk);
+=======
+		sk_error_report(&cf_sk->sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -274,8 +375,13 @@ static void caif_check_flow_release(struct sock *sk)
  * Copied from unix_dgram_recvmsg, but removed credit checks,
  * changed locking, address handling and added MSG_TRUNC.
  */
+<<<<<<< HEAD
 static int caif_seqpkt_recvmsg(struct kiocb *iocb, struct socket *sock,
 				struct msghdr *m, size_t len, int flags)
+=======
+static int caif_seqpkt_recvmsg(struct socket *sock, struct msghdr *m,
+			       size_t len, int flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 {
 	struct sock *sk = sock->sk;
@@ -284,10 +390,17 @@ static int caif_seqpkt_recvmsg(struct kiocb *iocb, struct socket *sock,
 	int copylen;
 
 	ret = -EOPNOTSUPP;
+<<<<<<< HEAD
 	if (m->msg_flags&MSG_OOB)
 		goto read_error;
 
 	skb = skb_recv_datagram(sk, flags, 0 , &ret);
+=======
+	if (flags & MSG_OOB)
+		goto read_error;
+
+	skb = skb_recv_datagram(sk, flags, &ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb)
 		goto read_error;
 	copylen = skb->len;
@@ -296,7 +409,11 @@ static int caif_seqpkt_recvmsg(struct kiocb *iocb, struct socket *sock,
 		copylen = len;
 	}
 
+<<<<<<< HEAD
 	ret = skb_copy_datagram_iovec(skb, 0, m->msg_iov, copylen);
+=======
+	ret = skb_copy_datagram_msg(skb, 0, m, copylen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out_free;
 
@@ -329,11 +446,23 @@ static long caif_stream_data_wait(struct sock *sk, long timeo)
 			!timeo)
 			break;
 
+<<<<<<< HEAD
 		set_bit(SOCK_ASYNC_WAITDATA, &sk->sk_socket->flags);
 		release_sock(sk);
 		timeo = schedule_timeout(timeo);
 		lock_sock(sk);
 		clear_bit(SOCK_ASYNC_WAITDATA, &sk->sk_socket->flags);
+=======
+		sk_set_bit(SOCKWQ_ASYNC_WAITDATA, sk);
+		release_sock(sk);
+		timeo = schedule_timeout(timeo);
+		lock_sock(sk);
+
+		if (sock_flag(sk, SOCK_DEAD))
+			break;
+
+		sk_clear_bit(SOCKWQ_ASYNC_WAITDATA, sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	finish_wait(sk_sleep(sk), &wait);
@@ -346,9 +475,14 @@ static long caif_stream_data_wait(struct sock *sk, long timeo)
  * Copied from unix_stream_recvmsg, but removed credit checks,
  * changed locking calls, changed address handling.
  */
+<<<<<<< HEAD
 static int caif_stream_recvmsg(struct kiocb *iocb, struct socket *sock,
 				struct msghdr *msg, size_t size,
 				int flags)
+=======
+static int caif_stream_recvmsg(struct socket *sock, struct msghdr *msg,
+			       size_t size, int flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	int copied = 0;
@@ -377,6 +511,13 @@ static int caif_stream_recvmsg(struct kiocb *iocb, struct socket *sock,
 		struct sk_buff *skb;
 
 		lock_sock(sk);
+<<<<<<< HEAD
+=======
+		if (sock_flag(sk, SOCK_DEAD)) {
+			err = -ECONNRESET;
+			goto unlock;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb = skb_dequeue(&sk->sk_receive_queue);
 		caif_check_flow_release(sk);
 
@@ -421,7 +562,11 @@ unlock:
 		}
 		release_sock(sk);
 		chunk = min_t(unsigned int, skb->len, size);
+<<<<<<< HEAD
 		if (memcpy_toiovec(msg->msg_iov, skb->data, chunk)) {
+=======
+		if (memcpy_to_msg(msg, skb->data, chunk)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb_queue_head(&sk->sk_receive_queue, skb);
 			if (copied == 0)
 				copied = -EFAULT;
@@ -461,7 +606,11 @@ out:
  * CAIF flow-on and sock_writable.
  */
 static long caif_wait_for_flow_on(struct caifsock *cf_sk,
+<<<<<<< HEAD
 				int wait_writeable, long timeo, int *err)
+=======
+				  int wait_writeable, long timeo, int *err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = &cf_sk->sk;
 	DEFINE_WAIT(wait);
@@ -503,6 +652,10 @@ static int transmit_skb(struct sk_buff *skb, struct caifsock *cf_sk,
 
 	pkt = cfpkt_fromnative(CAIF_DIR_OUT, skb);
 	memset(skb->cb, 0, sizeof(struct caif_payload_info));
+<<<<<<< HEAD
+=======
+	cfpkt_set_prio(pkt, cf_sk->sk.sk_priority);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cf_sk->layer.dn == NULL) {
 		kfree_skb(skb);
@@ -513,8 +666,13 @@ static int transmit_skb(struct sk_buff *skb, struct caifsock *cf_sk,
 }
 
 /* Copied from af_unix:unix_dgram_sendmsg, and adapted to CAIF */
+<<<<<<< HEAD
 static int caif_seqpkt_sendmsg(struct kiocb *kiocb, struct socket *sock,
 			struct msghdr *msg, size_t len)
+=======
+static int caif_seqpkt_sendmsg(struct socket *sock, struct msghdr *msg,
+			       size_t len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct caifsock *cf_sk = container_of(sk, struct caifsock, sk);
@@ -536,9 +694,12 @@ static int caif_seqpkt_sendmsg(struct kiocb *kiocb, struct socket *sock,
 	if (msg->msg_namelen)
 		goto err;
 
+<<<<<<< HEAD
 	ret = -EINVAL;
 	if (unlikely(msg->msg_iov->iov_base == NULL))
 		goto err;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	noblock = msg->msg_flags & MSG_DONTWAIT;
 
 	timeo = sock_sndtimeo(sk, noblock);
@@ -568,7 +729,11 @@ static int caif_seqpkt_sendmsg(struct kiocb *kiocb, struct socket *sock,
 
 	skb_reserve(skb, cf_sk->headroom);
 
+<<<<<<< HEAD
 	ret = memcpy_fromiovec(skb_put(skb, len), msg->msg_iov, len);
+=======
+	ret = memcpy_from_msg(skb_put(skb, len), msg, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret)
 		goto err;
@@ -588,8 +753,13 @@ err:
  * Changed removed permission handling and added waiting for flow on
  * and other minor adaptations.
  */
+<<<<<<< HEAD
 static int caif_stream_sendmsg(struct kiocb *kiocb, struct socket *sock,
 				struct msghdr *msg, size_t len)
+=======
+static int caif_stream_sendmsg(struct socket *sock, struct msghdr *msg,
+			       size_t len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct caifsock *cf_sk = container_of(sk, struct caifsock, sk);
@@ -643,7 +813,11 @@ static int caif_stream_sendmsg(struct kiocb *kiocb, struct socket *sock,
 		 */
 		size = min_t(int, size, skb_tailroom(skb));
 
+<<<<<<< HEAD
 		err = memcpy_fromiovec(skb_put(skb, size), msg->msg_iov, size);
+=======
+		err = memcpy_from_msg(skb_put(skb, size), msg, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			kfree_skb(skb);
 			goto out_err;
@@ -667,8 +841,13 @@ out_err:
 	return sent ? : err;
 }
 
+<<<<<<< HEAD
 static int setsockopt(struct socket *sock,
 			int lvl, int opt, char __user *ov, unsigned int ol)
+=======
+static int setsockopt(struct socket *sock, int lvl, int opt, sockptr_t ov,
+		unsigned int ol)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct caifsock *cf_sk = container_of(sk, struct caifsock, sk);
@@ -683,7 +862,11 @@ static int setsockopt(struct socket *sock,
 			return -EINVAL;
 		if (lvl != SOL_CAIF)
 			goto bad_sol;
+<<<<<<< HEAD
 		if (copy_from_user(&linksel, ov, sizeof(int)))
+=======
+		if (copy_from_sockptr(&linksel, ov, sizeof(int)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		lock_sock(&(cf_sk->sk));
 		cf_sk->conn_req.link_selector = linksel;
@@ -697,7 +880,11 @@ static int setsockopt(struct socket *sock,
 			return -ENOPROTOOPT;
 		lock_sock(&(cf_sk->sk));
 		if (ol > sizeof(cf_sk->conn_req.param.data) ||
+<<<<<<< HEAD
 			copy_from_user(&cf_sk->conn_req.param.data, ov, ol)) {
+=======
+		    copy_from_sockptr(&cf_sk->conn_req.param.data, ov, ol)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			release_sock(&cf_sk->sk);
 			return -EINVAL;
 		}
@@ -752,6 +939,13 @@ static int caif_connect(struct socket *sock, struct sockaddr *uaddr,
 
 	lock_sock(sk);
 
+<<<<<<< HEAD
+=======
+	err = -EINVAL;
+	if (addr_len < offsetofend(struct sockaddr, sa_family))
+		goto out;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -EAFNOSUPPORT;
 	if (uaddr->sa_family != AF_CAIF)
 		goto out;
@@ -910,8 +1104,12 @@ static int caif_release(struct socket *sock)
 	sock->sk = NULL;
 
 	WARN_ON(IS_ERR(cf_sk->debugfs_socket_dir));
+<<<<<<< HEAD
 	if (cf_sk->debugfs_socket_dir != NULL)
 		debugfs_remove_recursive(cf_sk->debugfs_socket_dir);
+=======
+	debugfs_remove_recursive(cf_sk->debugfs_socket_dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lock_sock(&(cf_sk->sk));
 	sk->sk_state = CAIF_DISCONNECTED;
@@ -919,7 +1117,11 @@ static int caif_release(struct socket *sock)
 
 	caif_disconnect_client(sock_net(sk), &cf_sk->layer);
 	cf_sk->sk.sk_socket->state = SS_DISCONNECTING;
+<<<<<<< HEAD
 	wake_up_interruptible_poll(sk_sleep(sk), POLLERR|POLLHUP);
+=======
+	wake_up_interruptible_poll(sk_sleep(sk), EPOLLERR|EPOLLHUP);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sock_orphan(sk);
 	sk_stream_kill_queues(&cf_sk->sk);
@@ -929,6 +1131,7 @@ static int caif_release(struct socket *sock)
 }
 
 /* Copied from af_unix.c:unix_poll(), added CAIF tx_flow handling */
+<<<<<<< HEAD
 static unsigned int caif_poll(struct file *file,
 				struct socket *sock, poll_table *wait)
 {
@@ -937,10 +1140,21 @@ static unsigned int caif_poll(struct file *file,
 	struct caifsock *cf_sk = container_of(sk, struct caifsock, sk);
 
 	sock_poll_wait(file, sk_sleep(sk), wait);
+=======
+static __poll_t caif_poll(struct file *file,
+			      struct socket *sock, poll_table *wait)
+{
+	struct sock *sk = sock->sk;
+	__poll_t mask;
+	struct caifsock *cf_sk = container_of(sk, struct caifsock, sk);
+
+	sock_poll_wait(file, sock, wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mask = 0;
 
 	/* exceptional events? */
 	if (sk->sk_err)
+<<<<<<< HEAD
 		mask |= POLLERR;
 	if (sk->sk_shutdown == SHUTDOWN_MASK)
 		mask |= POLLHUP;
@@ -951,13 +1165,29 @@ static unsigned int caif_poll(struct file *file,
 	if (!skb_queue_empty(&sk->sk_receive_queue) ||
 		(sk->sk_shutdown & RCV_SHUTDOWN))
 		mask |= POLLIN | POLLRDNORM;
+=======
+		mask |= EPOLLERR;
+	if (sk->sk_shutdown == SHUTDOWN_MASK)
+		mask |= EPOLLHUP;
+	if (sk->sk_shutdown & RCV_SHUTDOWN)
+		mask |= EPOLLRDHUP;
+
+	/* readable? */
+	if (!skb_queue_empty_lockless(&sk->sk_receive_queue) ||
+		(sk->sk_shutdown & RCV_SHUTDOWN))
+		mask |= EPOLLIN | EPOLLRDNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * we set writable also when the other side has shut down the
 	 * connection. This prevents stuck sockets.
 	 */
 	if (sock_writeable(sk) && tx_flow_is_on(cf_sk))
+<<<<<<< HEAD
 		mask |= POLLOUT | POLLWRNORM | POLLWRBAND;
+=======
+		mask |= EPOLLOUT | EPOLLWRNORM | EPOLLWRBAND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mask;
 }
@@ -976,11 +1206,17 @@ static const struct proto_ops caif_seqpacket_ops = {
 	.listen = sock_no_listen,
 	.shutdown = sock_no_shutdown,
 	.setsockopt = setsockopt,
+<<<<<<< HEAD
 	.getsockopt = sock_no_getsockopt,
 	.sendmsg = caif_seqpkt_sendmsg,
 	.recvmsg = caif_seqpkt_recvmsg,
 	.mmap = sock_no_mmap,
 	.sendpage = sock_no_sendpage,
+=======
+	.sendmsg = caif_seqpkt_sendmsg,
+	.recvmsg = caif_seqpkt_recvmsg,
+	.mmap = sock_no_mmap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct proto_ops caif_stream_ops = {
@@ -997,17 +1233,24 @@ static const struct proto_ops caif_stream_ops = {
 	.listen = sock_no_listen,
 	.shutdown = sock_no_shutdown,
 	.setsockopt = setsockopt,
+<<<<<<< HEAD
 	.getsockopt = sock_no_getsockopt,
 	.sendmsg = caif_stream_sendmsg,
 	.recvmsg = caif_stream_recvmsg,
 	.mmap = sock_no_mmap,
 	.sendpage = sock_no_sendpage,
+=======
+	.sendmsg = caif_stream_sendmsg,
+	.recvmsg = caif_stream_recvmsg,
+	.mmap = sock_no_mmap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* This function is called when a socket is finally destroyed. */
 static void caif_sock_destructor(struct sock *sk)
 {
 	struct caifsock *cf_sk = container_of(sk, struct caifsock, sk);
+<<<<<<< HEAD
 	caif_assert(!atomic_read(&sk->sk_wmem_alloc));
 	caif_assert(sk_unhashed(sk));
 	caif_assert(!sk->sk_socket);
@@ -1016,17 +1259,37 @@ static void caif_sock_destructor(struct sock *sk)
 		return;
 	}
 	sk_stream_kill_queues(&cf_sk->sk);
+=======
+	caif_assert(!refcount_read(&sk->sk_wmem_alloc));
+	caif_assert(sk_unhashed(sk));
+	caif_assert(!sk->sk_socket);
+	if (!sock_flag(sk, SOCK_DEAD)) {
+		pr_debug("Attempt to release alive CAIF socket: %p\n", sk);
+		return;
+	}
+	sk_stream_kill_queues(&cf_sk->sk);
+	WARN_ON_ONCE(sk->sk_forward_alloc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	caif_free_client(&cf_sk->layer);
 }
 
 static int caif_create(struct net *net, struct socket *sock, int protocol,
+<<<<<<< HEAD
 			int kern)
+=======
+		       int kern)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = NULL;
 	struct caifsock *cf_sk = NULL;
 	static struct proto prot = {.name = "PF_CAIF",
 		.owner = THIS_MODULE,
 		.obj_size = sizeof(struct caifsock),
+<<<<<<< HEAD
+=======
+		.useroffset = offsetof(struct caifsock, conn_req.param),
+		.usersize = sizeof_field(struct caifsock, conn_req.param)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_NET_ADMIN))
@@ -1051,7 +1314,11 @@ static int caif_create(struct net *net, struct socket *sock, int protocol,
 	 * is really not used at all in the net/core or socket.c but the
 	 * initialization makes sure that sock->state is not uninitialized.
 	 */
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_CAIF, GFP_KERNEL, &prot);
+=======
+	sk = sk_alloc(net, PF_CAIF, GFP_KERNEL, &prot, kern);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sk)
 		return -ENOMEM;
 
@@ -1060,6 +1327,21 @@ static int caif_create(struct net *net, struct socket *sock, int protocol,
 	/* Store the protocol */
 	sk->sk_protocol = (unsigned char) protocol;
 
+<<<<<<< HEAD
+=======
+	/* Initialize default priority for well-known cases */
+	switch (protocol) {
+	case CAIFPROTO_AT:
+		sk->sk_priority = TC_PRIO_CONTROL;
+		break;
+	case CAIFPROTO_RFM:
+		sk->sk_priority = TC_PRIO_INTERACTIVE_BULK;
+		break;
+	default:
+		sk->sk_priority = TC_PRIO_BESTEFFORT;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Lock in order to try to stop someone from opening the socket
 	 * too early.
@@ -1079,7 +1361,10 @@ static int caif_create(struct net *net, struct socket *sock, int protocol,
 	set_rx_flow_on(cf_sk);
 
 	/* Set default options on configuration */
+<<<<<<< HEAD
 	cf_sk->sk.sk_priority = CAIF_PRIO_NORMAL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cf_sk->conn_req.link_selector = CAIF_LINK_LOW_LATENCY;
 	cf_sk->conn_req.protocol = protocol;
 	release_sock(&cf_sk->sk);
@@ -1087,7 +1372,11 @@ static int caif_create(struct net *net, struct socket *sock, int protocol,
 }
 
 
+<<<<<<< HEAD
 static struct net_proto_family caif_family_ops = {
+=======
+static const struct net_proto_family caif_family_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.family = PF_CAIF,
 	.create = caif_create,
 	.owner = THIS_MODULE,
@@ -1095,10 +1384,14 @@ static struct net_proto_family caif_family_ops = {
 
 static int __init caif_sktinit_module(void)
 {
+<<<<<<< HEAD
 	int err = sock_register(&caif_family_ops);
 	if (!err)
 		return err;
 	return 0;
+=======
+	return sock_register(&caif_family_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit caif_sktexit_module(void)

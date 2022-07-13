@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2008-2010
  *
  * - Kurt Van Dijck, EIA Electronics
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the version 2 of the GNU General Public License
@@ -15,6 +20,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -27,7 +34,11 @@
 #include "softing_platform.h"
 
 static int softingcs_index;
+<<<<<<< HEAD
 static spinlock_t softingcs_index_lock;
+=======
+static DEFINE_SPINLOCK(softingcs_index_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int softingcs_reset(struct platform_device *pdev, int v);
 static int softingcs_enable_irq(struct platform_device *pdev, int v);
@@ -159,7 +170,11 @@ MODULE_FIRMWARE(fw_dir "bcard2.bin");
 MODULE_FIRMWARE(fw_dir "ldcard2.bin");
 MODULE_FIRMWARE(fw_dir "cancrd2.bin");
 
+<<<<<<< HEAD
 static __devinit const struct softing_platform_data
+=======
+static const struct softing_platform_data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 *softingcs_find_platform_data(unsigned int manf, unsigned int prod)
 {
 	const struct softing_platform_data *lp;
@@ -193,8 +208,12 @@ static int softingcs_enable_irq(struct platform_device *pdev, int v)
 /*
  * pcmcia check
  */
+<<<<<<< HEAD
 static __devinit int softingcs_probe_config(struct pcmcia_device *pcmcia,
 		void *priv_data)
+=======
+static int softingcs_probe_config(struct pcmcia_device *pcmcia, void *priv_data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct softing_platform_data *pdat = priv_data;
 	struct resource *pres;
@@ -215,7 +234,11 @@ static __devinit int softingcs_probe_config(struct pcmcia_device *pcmcia,
 	return pcmcia_request_window(pcmcia, pres, memspeed);
 }
 
+<<<<<<< HEAD
 static __devexit void softingcs_remove(struct pcmcia_device *pcmcia)
+=======
+static void softingcs_remove(struct pcmcia_device *pcmcia)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platform_device *pdev = pcmcia->priv;
 
@@ -235,7 +258,11 @@ static void softingcs_pdev_release(struct device *dev)
 	kfree(pdev);
 }
 
+<<<<<<< HEAD
 static __devinit int softingcs_probe(struct pcmcia_device *pcmcia)
+=======
+static int softingcs_probe(struct pcmcia_device *pcmcia)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct platform_device *pdev;
@@ -306,13 +333,21 @@ static __devinit int softingcs_probe(struct pcmcia_device *pcmcia)
 	return 0;
 
 platform_failed:
+<<<<<<< HEAD
 	kfree(dev);
+=======
+	platform_device_put(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 mem_failed:
 pcmcia_bad:
 pcmcia_failed:
 	pcmcia_disable_device(pcmcia);
 	pcmcia->priv = NULL;
+<<<<<<< HEAD
 	return ret ?: -ENODEV;
+=======
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct pcmcia_device_id softingcs_ids[] = {
@@ -338,6 +373,7 @@ static struct pcmcia_driver softingcs_driver = {
 	.name		= "softingcs",
 	.id_table	= softingcs_ids,
 	.probe		= softingcs_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(softingcs_remove),
 };
 
@@ -354,6 +390,12 @@ static void __exit softingcs_stop(void)
 
 module_init(softingcs_start);
 module_exit(softingcs_stop);
+=======
+	.remove		= softingcs_remove,
+};
+
+module_pcmcia_driver(softingcs_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("softing CANcard driver"
 		", links PCMCIA card to softing driver");

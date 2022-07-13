@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Infrastructure for statistic tracing (histogram output).
  *
@@ -8,11 +12,19 @@
  *
  */
 
+<<<<<<< HEAD
 
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <linux/rbtree.h>
 #include <linux/debugfs.h>
+=======
+#include <linux/security.h>
+#include <linux/list.h>
+#include <linux/slab.h>
+#include <linux/rbtree.h>
+#include <linux/tracefs.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "trace_stat.h"
 #include "trace.h"
 
@@ -43,6 +55,7 @@ static DEFINE_MUTEX(all_stat_sessions_mutex);
 /* The root directory for all stat files */
 static struct dentry		*stat_dir;
 
+<<<<<<< HEAD
 /*
  * Iterate through the rbtree using a post order traversal path
  * to release the next node.
@@ -83,6 +96,17 @@ static void __reset_stat_session(struct stat_session *session)
 
 	while (node)
 		node = release_next(session->ts, node);
+=======
+static void __reset_stat_session(struct stat_session *session)
+{
+	struct stat_node *snode, *n;
+
+	rbtree_postorder_for_each_entry_safe(snode, n, &session->stat_root, node) {
+		if (session->ts->stat_release)
+			session->ts->stat_release(snode->stat);
+		kfree(snode);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	session->stat_root = RB_ROOT;
 }
@@ -96,15 +120,23 @@ static void reset_stat_session(struct stat_session *session)
 
 static void destroy_session(struct stat_session *session)
 {
+<<<<<<< HEAD
 	debugfs_remove(session->file);
+=======
+	tracefs_remove(session->file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__reset_stat_session(session);
 	mutex_destroy(&session->stat_mutex);
 	kfree(session);
 }
 
+<<<<<<< HEAD
 typedef int (*cmp_stat_t)(void *, void *);
 
 static int insert_stat(struct rb_root *root, void *stat, cmp_stat_t cmp)
+=======
+static int insert_stat(struct rb_root *root, void *stat, cmp_func_t cmp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rb_node **new = &(root->rb_node), *parent = NULL;
 	struct stat_node *data;
@@ -142,7 +174,11 @@ static int insert_stat(struct rb_root *root, void *stat, cmp_stat_t cmp)
  * This one will force an insertion as right-most node
  * in the rbtree.
  */
+<<<<<<< HEAD
 static int dummy_cmp(void *p1, void *p2)
+=======
+static int dummy_cmp(const void *p1, const void *p2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -1;
 }
@@ -268,6 +304,13 @@ static int tracing_stat_open(struct inode *inode, struct file *file)
 	struct seq_file *m;
 	struct stat_session *session = inode->i_private;
 
+<<<<<<< HEAD
+=======
+	ret = security_locked_down(LOCKDOWN_TRACEFS);
+	if (ret)
+		return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = stat_seq_init(session);
 	if (ret)
 		return ret;
@@ -304,6 +347,7 @@ static const struct file_operations tracing_stat_fops = {
 
 static int tracing_stat_init(void)
 {
+<<<<<<< HEAD
 	struct dentry *d_tracing;
 
 	d_tracing = tracing_init_dentry();
@@ -314,17 +358,41 @@ static int tracing_stat_init(void)
 	if (!stat_dir)
 		pr_warning("Could not create debugfs "
 			   "'trace_stat' entry\n");
+=======
+	int ret;
+
+	ret = tracing_init_dentry();
+	if (ret)
+		return -ENODEV;
+
+	stat_dir = tracefs_create_dir("trace_stat", NULL);
+	if (!stat_dir) {
+		pr_warn("Could not create tracefs 'trace_stat' entry\n");
+		return -ENOMEM;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int init_stat_file(struct stat_session *session)
 {
+<<<<<<< HEAD
 	if (!stat_dir && tracing_stat_init())
 		return -ENODEV;
 
 	session->file = debugfs_create_file(session->ts->name, 0644,
 					    stat_dir,
 					    session, &tracing_stat_fops);
+=======
+	int ret;
+
+	if (!stat_dir && (ret = tracing_stat_init()))
+		return ret;
+
+	session->file = tracefs_create_file(session->ts->name, TRACE_MODE_WRITE,
+					    stat_dir, session,
+					    &tracing_stat_fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!session->file)
 		return -ENOMEM;
 	return 0;
@@ -333,7 +401,11 @@ static int init_stat_file(struct stat_session *session)
 int register_stat_tracer(struct tracer_stat *trace)
 {
 	struct stat_session *session, *node;
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret = -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!trace)
 		return -EINVAL;
@@ -344,6 +416,7 @@ int register_stat_tracer(struct tracer_stat *trace)
 	/* Already registered? */
 	mutex_lock(&all_stat_sessions_mutex);
 	list_for_each_entry(node, &all_stat_sessions, session_list) {
+<<<<<<< HEAD
 		if (node->ts == trace) {
 			mutex_unlock(&all_stat_sessions_mutex);
 			return -EINVAL;
@@ -355,6 +428,17 @@ int register_stat_tracer(struct tracer_stat *trace)
 	session = kzalloc(sizeof(*session), GFP_KERNEL);
 	if (!session)
 		return -ENOMEM;
+=======
+		if (node->ts == trace)
+			goto out;
+	}
+
+	ret = -ENOMEM;
+	/* Init the session */
+	session = kzalloc(sizeof(*session), GFP_KERNEL);
+	if (!session)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	session->ts = trace;
 	INIT_LIST_HEAD(&session->session_list);
@@ -363,6 +447,7 @@ int register_stat_tracer(struct tracer_stat *trace)
 	ret = init_stat_file(session);
 	if (ret) {
 		destroy_session(session);
+<<<<<<< HEAD
 		return ret;
 	}
 
@@ -372,6 +457,18 @@ int register_stat_tracer(struct tracer_stat *trace)
 	mutex_unlock(&all_stat_sessions_mutex);
 
 	return 0;
+=======
+		goto out;
+	}
+
+	ret = 0;
+	/* Register */
+	list_add_tail(&session->session_list, &all_stat_sessions);
+ out:
+	mutex_unlock(&all_stat_sessions_mutex);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void unregister_stat_tracer(struct tracer_stat *trace)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_SPARC_DMA_H
 #define _ASM_SPARC_DMA_H
 
@@ -81,6 +85,7 @@
 #define DMA_BURST64      0x40
 #define DMA_BURSTBITS    0x7f
 
+<<<<<<< HEAD
 /* From PCI */
 
 #ifdef CONFIG_PCI
@@ -134,6 +139,13 @@ BTFIXUPDEF_CALL(void, mmu_unmap_dma_area, struct device *, unsigned long busa, i
 
 #define mmu_map_dma_area(dev,pba,va,a,len) BTFIXUP_CALL(mmu_map_dma_area)(dev,pba,va,a,len)
 #define mmu_unmap_dma_area(dev,ba,len) BTFIXUP_CALL(mmu_unmap_dma_area)(dev,ba,len)
+=======
+#ifdef CONFIG_SPARC32
+struct device;
+
+unsigned long sparc_dma_alloc_resource(struct device *dev, size_t len);
+bool sparc_dma_free_resource(void *cpu_addr, size_t size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* !(_ASM_SPARC_DMA_H) */

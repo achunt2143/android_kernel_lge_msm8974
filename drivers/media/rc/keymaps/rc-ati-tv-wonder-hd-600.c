@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* ati-tv-wonder-hd-600.h - Keytable for ati_tv_wonder_hd_600 Remote Controller
  *
  * keymap imported from ir-keymaps.c
@@ -9,6 +10,14 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+// ati-tv-wonder-hd-600.h - Keytable for ati_tv_wonder_hd_600 Remote Controller
+//
+// keymap imported from ir-keymaps.c
+//
+// Copyright (c) 2010 by Mauro Carvalho Chehab
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -46,10 +55,17 @@ static struct rc_map_table ati_tv_wonder_hd_600[] = {
 
 static struct rc_map_list ati_tv_wonder_hd_600_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = ati_tv_wonder_hd_600,
 		.size    = ARRAY_SIZE(ati_tv_wonder_hd_600),
 		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
 		.name    = RC_MAP_ATI_TV_WONDER_HD_600,
+=======
+		.scan     = ati_tv_wonder_hd_600,
+		.size     = ARRAY_SIZE(ati_tv_wonder_hd_600),
+		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.name     = RC_MAP_ATI_TV_WONDER_HD_600,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -67,4 +83,9 @@ module_init(init_rc_map_ati_tv_wonder_hd_600)
 module_exit(exit_rc_map_ati_tv_wonder_hd_600)
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+MODULE_DESCRIPTION("ati-tv-wonder-hd-600 remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

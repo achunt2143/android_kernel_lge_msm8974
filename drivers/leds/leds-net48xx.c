@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LEDs driver for Soekris net48xx
  *
  * Copyright (C) 2006 Chris Boot <bootc@bootc.net>
  *
  * Based on leds-ams-delta.c
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -15,7 +22,11 @@
 #include <linux/platform_device.h>
 #include <linux/leds.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/nsc_gpio.h>
 #include <linux/scx200_gpio.h>
 #include <linux/module.h>
@@ -39,6 +50,7 @@ static struct led_classdev net48xx_error_led = {
 
 static int net48xx_led_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return led_classdev_register(&pdev->dev, &net48xx_error_led);
 }
 
@@ -46,14 +58,22 @@ static int net48xx_led_remove(struct platform_device *pdev)
 {
 	led_classdev_unregister(&net48xx_error_led);
 	return 0;
+=======
+	return devm_led_classdev_register(&pdev->dev, &net48xx_error_led);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver net48xx_led_driver = {
 	.probe		= net48xx_led_probe,
+<<<<<<< HEAD
 	.remove		= net48xx_led_remove,
 	.driver		= {
 		.name		= DRVNAME,
 		.owner		= THIS_MODULE,
+=======
+	.driver		= {
+		.name		= DRVNAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

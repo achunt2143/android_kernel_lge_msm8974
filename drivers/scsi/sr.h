@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *      sr.h by David Giller
  *      CD-ROM disk driver header file
@@ -17,8 +21,12 @@
 #ifndef _SR_H
 #define _SR_H
 
+<<<<<<< HEAD
 #include <linux/genhd.h>
 #include <linux/kref.h>
+=======
+#include <linux/mutex.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_RETRIES	3
 #define SR_TIMEOUT	(30 * HZ)
@@ -31,11 +39,18 @@ struct scsi_device;
 
 
 typedef struct scsi_cd {
+<<<<<<< HEAD
 	struct scsi_driver *driver;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned capacity;	/* size in blocks                       */
 	struct scsi_device *device;
 	unsigned int vendor;	/* vendor code, see sr_vendor.c         */
 	unsigned long ms_offset;	/* for reading multisession-CD's        */
+<<<<<<< HEAD
+=======
+	unsigned writeable : 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned use:1;		/* is this device still supportable     */
 	unsigned xa_flag:1;	/* CD has XA sectors ? */
 	unsigned readcd_known:1;	/* drive supports READ_CD (0xbe) */
@@ -49,12 +64,22 @@ typedef struct scsi_cd {
 	bool ignore_get_event:1;	/* GET_EVENT is unreliable, use TUR */
 
 	struct cdrom_device_info cdi;
+<<<<<<< HEAD
 	/* We hold gendisk and scsi_device references on probe and use
 	 * the refs on this kref to decide when to release them */
 	struct kref kref;
 	struct gendisk *disk;
 } Scsi_CD;
 
+=======
+	struct mutex lock;
+	struct gendisk *disk;
+} Scsi_CD;
+
+#define sr_printk(prefix, cd, fmt, a...) \
+	sdev_prefix_printk(prefix, (cd)->device, (cd)->cdi.name, fmt, ##a)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sr_do_ioctl(Scsi_CD *, struct packet_command *);
 
 int sr_lock_door(struct cdrom_device_info *, int);

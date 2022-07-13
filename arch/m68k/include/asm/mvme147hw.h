@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _MVME147HW_H_
 #define _MVME147HW_H_
 
@@ -65,7 +69,14 @@ struct pcc_regs {
 #define PCC_INT_ENAB		0x08
 
 #define PCC_TIMER_INT_CLR	0x80
+<<<<<<< HEAD
 #define PCC_TIMER_PRELOAD	63936l
+=======
+
+#define PCC_TIMER_TIC_EN	0x01
+#define PCC_TIMER_COC_EN	0x02
+#define PCC_TIMER_CLR_OVF	0x04
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCC_LEVEL_ABORT		0x07
 #define PCC_LEVEL_SERIAL	0x04

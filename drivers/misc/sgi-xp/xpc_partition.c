@@ -3,6 +3,10 @@
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+<<<<<<< HEAD
+=======
+ * (C) Copyright 2020 Hewlett Packard Enterprise Development LP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2004-2008 Silicon Graphics, Inc.  All Rights Reserved.
  */
 
@@ -70,7 +74,11 @@ xpc_get_rsvd_page_pa(int nasid)
 	unsigned long rp_pa = nasid;	/* seed with nasid */
 	size_t len = 0;
 	size_t buf_len = 0;
+<<<<<<< HEAD
 	void *buf = buf;
+=======
+	void *buf = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *buf_base = NULL;
 	enum xp_retval (*get_partition_rsvd_page_pa)
 		(void *, u64 *, unsigned long *, size_t *) =
@@ -93,6 +101,7 @@ xpc_get_rsvd_page_pa(int nasid)
 		if (ret != xpNeedMoreInfo)
 			break;
 
+<<<<<<< HEAD
 		/* !!! L1_CACHE_ALIGN() is only a sn2-bte_copy requirement */
 		if (is_shub())
 			len = L1_CACHE_ALIGN(len);
@@ -100,6 +109,10 @@ xpc_get_rsvd_page_pa(int nasid)
 		if (len > buf_len) {
 			if (buf_base != NULL)
 				kfree(buf_base);
+=======
+		if (len > buf_len) {
+			kfree(buf_base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			buf_len = L1_CACHE_ALIGN(len);
 			buf = xpc_kmalloc_cacheline_aligned(buf_len, GFP_KERNEL,
 							    &buf_base);
@@ -266,8 +279,13 @@ xpc_get_remote_rp(int nasid, unsigned long *discovered_nasids,
  * from us. Though we requested the remote partition to deactivate with regard
  * to us, we really only need to wait for the other side to disengage from us.
  */
+<<<<<<< HEAD
 int
 xpc_partition_disengaged(struct xpc_partition *part)
+=======
+static int __xpc_partition_disengaged(struct xpc_partition *part,
+				      bool from_timer)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	short partid = XPC_PARTID(part);
 	int disengaged;
@@ -293,9 +311,15 @@ xpc_partition_disengaged(struct xpc_partition *part)
 		}
 		part->disengage_timeout = 0;
 
+<<<<<<< HEAD
 		/* cancel the timer function, provided it's not us */
 		if (!in_interrupt())
 			del_singleshot_timer_sync(&part->disengage_timer);
+=======
+		/* Cancel the timer function if not called from it */
+		if (!from_timer)
+			del_timer_sync(&part->disengage_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		DBUG_ON(part->act_state != XPC_P_AS_DEACTIVATING &&
 			part->act_state != XPC_P_AS_INACTIVE);
@@ -307,6 +331,19 @@ xpc_partition_disengaged(struct xpc_partition *part)
 	return disengaged;
 }
 
+<<<<<<< HEAD
+=======
+int xpc_partition_disengaged(struct xpc_partition *part)
+{
+	return __xpc_partition_disengaged(part, false);
+}
+
+int xpc_partition_disengaged_from_timer(struct xpc_partition *part)
+{
+	return __xpc_partition_disengaged(part, true);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Mark specified partition as active.
  */
@@ -415,7 +452,10 @@ xpc_discovery(void)
 	int region_size;
 	int max_regions;
 	int nasid;
+<<<<<<< HEAD
 	struct xpc_rsvd_page *rp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long *discovered_nasids;
 	enum xp_retval ret;
 
@@ -425,15 +465,22 @@ xpc_discovery(void)
 	if (remote_rp == NULL)
 		return;
 
+<<<<<<< HEAD
 	discovered_nasids = kzalloc(sizeof(long) * xpc_nasid_mask_nlongs,
+=======
+	discovered_nasids = kcalloc(xpc_nasid_mask_nlongs, sizeof(long),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    GFP_KERNEL);
 	if (discovered_nasids == NULL) {
 		kfree(remote_rp_base);
 		return;
 	}
 
+<<<<<<< HEAD
 	rp = (struct xpc_rsvd_page *)xpc_rsvd_page;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The term 'region' in this context refers to the minimum number of
 	 * nodes that can comprise an access protection grouping. The access
@@ -441,7 +488,11 @@ xpc_discovery(void)
 	 */
 	region_size = xp_region_size;
 
+<<<<<<< HEAD
 	if (is_uv())
+=======
+	if (is_uv_system())
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		max_regions = 256;
 	else {
 		max_regions = 64;
@@ -449,12 +500,22 @@ xpc_discovery(void)
 		switch (region_size) {
 		case 128:
 			max_regions *= 2;
+<<<<<<< HEAD
 		case 64:
 			max_regions *= 2;
 		case 32:
 			max_regions *= 2;
 			region_size = 16;
 			DBUG_ON(!is_shub2());
+=======
+			fallthrough;
+		case 64:
+			max_regions *= 2;
+			fallthrough;
+		case 32:
+			max_regions *= 2;
+			region_size = 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 

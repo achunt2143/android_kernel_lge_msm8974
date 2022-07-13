@@ -1,16 +1,24 @@
 /*
+<<<<<<< HEAD
  * include/asm-xtensa/timex.h
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+<<<<<<< HEAD
  * Copyright (C) 2001 - 2005 Tensilica Inc.
+=======
+ * Copyright (C) 2001 - 2013 Tensilica Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _XTENSA_TIMEX_H
 #define _XTENSA_TIMEX_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
 #include <asm/processor.h>
@@ -26,12 +34,27 @@
 # define LINUX_TIMER     1
 # define LINUX_TIMER_INT XCHAL_TIMER1_INTERRUPT
 #elif INTLEVEL(XCHAL_TIMER2_INTERRUPT) == 1
+=======
+#include <asm/processor.h>
+
+#if XCHAL_NUM_TIMERS > 0 && \
+	XTENSA_INT_LEVEL(XCHAL_TIMER0_INTERRUPT) <= XCHAL_EXCM_LEVEL
+# define LINUX_TIMER     0
+# define LINUX_TIMER_INT XCHAL_TIMER0_INTERRUPT
+#elif XCHAL_NUM_TIMERS > 1 && \
+	XTENSA_INT_LEVEL(XCHAL_TIMER1_INTERRUPT) <= XCHAL_EXCM_LEVEL
+# define LINUX_TIMER     1
+# define LINUX_TIMER_INT XCHAL_TIMER1_INTERRUPT
+#elif XCHAL_NUM_TIMERS > 2 && \
+	XTENSA_INT_LEVEL(XCHAL_TIMER2_INTERRUPT) <= XCHAL_EXCM_LEVEL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define LINUX_TIMER     2
 # define LINUX_TIMER_INT XCHAL_TIMER2_INTERRUPT
 #else
 # error "Bad timer number for Linux configurations!"
 #endif
 
+<<<<<<< HEAD
 #define LINUX_TIMER_MASK        (1L << LINUX_TIMER_INT)
 
 #define CLOCK_TICK_RATE 	1193180	/* (everyone is using this value) */
@@ -58,11 +81,17 @@ extern cycles_t cacheflush_time;
 
 #define get_cycles()	(0)
 
+=======
+extern unsigned long ccount_freq;
+
+void local_timer_setup(unsigned cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Register access.
  */
 
+<<<<<<< HEAD
 #define WSR_CCOUNT(r)	  asm volatile ("wsr %0,"__stringify(CCOUNT) :: "a" (r))
 #define RSR_CCOUNT(r)	  asm volatile ("rsr %0,"__stringify(CCOUNT) : "=a" (r))
 #define WSR_CCOMPARE(x,r) asm volatile ("wsr %0,"__stringify(CCOMPARE)"+"__stringify(x) :: "a"(r))
@@ -73,24 +102,45 @@ static inline unsigned long get_ccount (void)
 	unsigned long ccount;
 	RSR_CCOUNT(ccount);
 	return ccount;
+=======
+static inline unsigned long get_ccount (void)
+{
+	return xtensa_get_sr(ccount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void set_ccount (unsigned long ccount)
 {
+<<<<<<< HEAD
 	WSR_CCOUNT(ccount);
+=======
+	xtensa_set_sr(ccount, ccount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned long get_linux_timer (void)
 {
+<<<<<<< HEAD
 	unsigned ccompare;
 	RSR_CCOMPARE(LINUX_TIMER, ccompare);
 	return ccompare;
+=======
+	return xtensa_get_sr(SREG_CCOMPARE + LINUX_TIMER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void set_linux_timer (unsigned long ccompare)
 {
+<<<<<<< HEAD
 	WSR_CCOMPARE(LINUX_TIMER, ccompare);
 }
 
 #endif	/* __KERNEL__ */
+=======
+	xtensa_set_sr(ccompare, SREG_CCOMPARE + LINUX_TIMER);
+}
+
+#include <asm-generic/timex.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _XTENSA_TIMEX_H */

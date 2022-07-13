@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hardirq.h>
 
 #include <asm/x86_init.h>
@@ -5,6 +9,11 @@
 #include <xen/interface/xen.h>
 #include <xen/interface/sched.h>
 #include <xen/interface/vcpu.h>
+<<<<<<< HEAD
+=======
+#include <xen/features.h>
+#include <xen/events.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/xen/hypercall.h>
 #include <asm/xen/hypervisor.h>
@@ -16,11 +25,16 @@
  * callback mask. We do this in a very simple manner, by making a call
  * down into Xen. The pending flag will be checked by Xen on return.
  */
+<<<<<<< HEAD
 void xen_force_evtchn_callback(void)
+=======
+noinstr void xen_force_evtchn_callback(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	(void)HYPERVISOR_xen_version(0, NULL);
 }
 
+<<<<<<< HEAD
 static unsigned long xen_save_fl(void)
 {
 	struct vcpu_info *vcpu;
@@ -99,6 +113,9 @@ static void xen_irq_enable(void)
 PV_CALLEE_SAVE_REGS_THUNK(xen_irq_enable);
 
 static void xen_safe_halt(void)
+=======
+static noinstr void xen_safe_halt(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Blocking includes an implicit local_irq_enable(). */
 	if (HYPERVISOR_sched_op(SCHEDOP_block, NULL) != 0)
@@ -108,11 +125,17 @@ static void xen_safe_halt(void)
 static void xen_halt(void)
 {
 	if (irqs_disabled())
+<<<<<<< HEAD
 		HYPERVISOR_vcpu_op(VCPUOP_down, smp_processor_id(), NULL);
+=======
+		HYPERVISOR_vcpu_op(VCPUOP_down,
+				   xen_vcpu_nr(smp_processor_id()), NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		xen_safe_halt();
 }
 
+<<<<<<< HEAD
 static const struct pv_irq_ops xen_irq_ops __initconst = {
 	.save_fl = PV_CALLEE_SAVE(xen_save_fl),
 	.restore_fl = PV_CALLEE_SAVE(xen_restore_fl),
@@ -124,10 +147,26 @@ static const struct pv_irq_ops xen_irq_ops __initconst = {
 #ifdef CONFIG_X86_64
 	.adjust_exception_frame = xen_adjust_exception_frame,
 #endif
+=======
+static const typeof(pv_ops) xen_irq_ops __initconst = {
+	.irq = {
+		/* Initial interrupt flag handling only called while interrupts off. */
+		.save_fl = __PV_IS_CALLEE_SAVE(paravirt_ret0),
+		.irq_disable = __PV_IS_CALLEE_SAVE(paravirt_nop),
+		.irq_enable = __PV_IS_CALLEE_SAVE(BUG_func),
+
+		.safe_halt = xen_safe_halt,
+		.halt = xen_halt,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void __init xen_init_irq_ops(void)
 {
+<<<<<<< HEAD
 	pv_irq_ops = xen_irq_ops;
+=======
+	pv_ops.irq = xen_irq_ops.irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	x86_init.irqs.intr_init = xen_init_IRQ;
 }

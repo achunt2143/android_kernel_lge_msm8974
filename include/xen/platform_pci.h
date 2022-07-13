@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _XEN_PLATFORM_PCI_H
 #define _XEN_PLATFORM_PCI_H
 
@@ -46,6 +50,32 @@ static inline int xen_must_unplug_disks(void) {
 #endif
 }
 
+<<<<<<< HEAD
 extern int xen_platform_pci_unplug;
 
+=======
+#if defined(CONFIG_XEN_PVHVM)
+extern bool xen_has_pv_devices(void);
+extern bool xen_has_pv_disk_devices(void);
+extern bool xen_has_pv_nic_devices(void);
+extern bool xen_has_pv_and_legacy_disk_devices(void);
+#else
+static inline bool xen_has_pv_devices(void)
+{
+	return IS_ENABLED(CONFIG_XEN);
+}
+static inline bool xen_has_pv_disk_devices(void)
+{
+	return IS_ENABLED(CONFIG_XEN);
+}
+static inline bool xen_has_pv_nic_devices(void)
+{
+	return IS_ENABLED(CONFIG_XEN);
+}
+static inline bool xen_has_pv_and_legacy_disk_devices(void)
+{
+	return false;
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _XEN_PLATFORM_PCI_H */

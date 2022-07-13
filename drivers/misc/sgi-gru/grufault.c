@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SN Platform GRU Driver
  *
@@ -8,6 +12,7 @@
  * the user CB.
  *
  *  Copyright (c) 2008 Silicon Graphics, Inc.  All Rights Reserved.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +27,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -33,8 +40,13 @@
 #include <linux/io.h>
 #include <linux/uaccess.h>
 #include <linux/security.h>
+<<<<<<< HEAD
 #include <linux/prefetch.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/sync_core.h>
+#include <linux/prefetch.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "gru.h"
 #include "grutables.h"
 #include "grulib.h"
@@ -56,14 +68,23 @@ static inline int is_gru_paddr(unsigned long paddr)
 }
 
 /*
+<<<<<<< HEAD
  * Find the vma of a GRU segment. Caller must hold mmap_sem.
+=======
+ * Find the vma of a GRU segment. Caller must hold mmap_lock.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct vm_area_struct *gru_find_vma(unsigned long vaddr)
 {
 	struct vm_area_struct *vma;
 
+<<<<<<< HEAD
 	vma = find_vma(current->mm, vaddr);
 	if (vma && vma->vm_start <= vaddr && vma->vm_ops == &gru_vm_ops)
+=======
+	vma = vma_lookup(current->mm, vaddr);
+	if (vma && vma->vm_ops == &gru_vm_ops)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return vma;
 	return NULL;
 }
@@ -72,7 +93,11 @@ struct vm_area_struct *gru_find_vma(unsigned long vaddr)
  * Find and lock the gts that contains the specified user vaddr.
  *
  * Returns:
+<<<<<<< HEAD
  * 	- *gts with the mmap_sem locked for read and the GTS locked.
+=======
+ * 	- *gts with the mmap_lock locked for read and the GTS locked.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	- NULL if vaddr invalid OR is not a valid GSEG vaddr.
  */
 
@@ -82,14 +107,22 @@ static struct gru_thread_state *gru_find_lock_gts(unsigned long vaddr)
 	struct vm_area_struct *vma;
 	struct gru_thread_state *gts = NULL;
 
+<<<<<<< HEAD
 	down_read(&mm->mmap_sem);
+=======
+	mmap_read_lock(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma = gru_find_vma(vaddr);
 	if (vma)
 		gts = gru_find_thread_state(vma, TSID(vaddr, vma));
 	if (gts)
 		mutex_lock(&gts->ts_ctxlock);
 	else
+<<<<<<< HEAD
 		up_read(&mm->mmap_sem);
+=======
+		mmap_read_unlock(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return gts;
 }
 
@@ -99,7 +132,11 @@ static struct gru_thread_state *gru_alloc_locked_gts(unsigned long vaddr)
 	struct vm_area_struct *vma;
 	struct gru_thread_state *gts = ERR_PTR(-EINVAL);
 
+<<<<<<< HEAD
 	down_write(&mm->mmap_sem);
+=======
+	mmap_write_lock(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma = gru_find_vma(vaddr);
 	if (!vma)
 		goto err;
@@ -108,11 +145,19 @@ static struct gru_thread_state *gru_alloc_locked_gts(unsigned long vaddr)
 	if (IS_ERR(gts))
 		goto err;
 	mutex_lock(&gts->ts_ctxlock);
+<<<<<<< HEAD
 	downgrade_write(&mm->mmap_sem);
 	return gts;
 
 err:
 	up_write(&mm->mmap_sem);
+=======
+	mmap_write_downgrade(mm);
+	return gts;
+
+err:
+	mmap_write_unlock(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return gts;
 }
 
@@ -122,7 +167,11 @@ err:
 static void gru_unlock_gts(struct gru_thread_state *gts)
 {
 	mutex_unlock(&gts->ts_ctxlock);
+<<<<<<< HEAD
 	up_read(&current->mm->mmap_sem);
+=======
+	mmap_read_unlock(current->mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -198,8 +247,12 @@ static int non_atomic_pte_lookup(struct vm_area_struct *vma,
 #else
 	*pageshift = PAGE_SHIFT;
 #endif
+<<<<<<< HEAD
 	if (get_user_pages
 	    (current, current->mm, vaddr, 1, write, 0, &page, NULL) <= 0)
+=======
+	if (get_user_pages(vaddr, 1, write ? FOLL_WRITE : 0, &page) <= 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	*paddr = page_to_phys(page);
 	put_page(page);
@@ -213,22 +266,40 @@ static int non_atomic_pte_lookup(struct vm_area_struct *vma,
  * Only supports Intel large pages (2MB only) on x86_64.
  *	ZZZ - hugepage support is incomplete
  *
+<<<<<<< HEAD
  * NOTE: mmap_sem is already held on entry to this function. This
+=======
+ * NOTE: mmap_lock is already held on entry to this function. This
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * guarantees existence of the page tables.
  */
 static int atomic_pte_lookup(struct vm_area_struct *vma, unsigned long vaddr,
 	int write, unsigned long *paddr, int *pageshift)
 {
 	pgd_t *pgdp;
+<<<<<<< HEAD
 	pmd_t *pmdp;
 	pud_t *pudp;
+=======
+	p4d_t *p4dp;
+	pud_t *pudp;
+	pmd_t *pmdp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pte_t pte;
 
 	pgdp = pgd_offset(vma->vm_mm, vaddr);
 	if (unlikely(pgd_none(*pgdp)))
 		goto err;
 
+<<<<<<< HEAD
 	pudp = pud_offset(pgdp, vaddr);
+=======
+	p4dp = p4d_offset(pgdp, vaddr);
+	if (unlikely(p4d_none(*p4dp)))
+		goto err;
+
+	pudp = pud_offset(p4dp, vaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(pud_none(*pudp)))
 		goto err;
 
@@ -236,8 +307,13 @@ static int atomic_pte_lookup(struct vm_area_struct *vma, unsigned long vaddr,
 	if (unlikely(pmd_none(*pmdp)))
 		goto err;
 #ifdef CONFIG_X86_64
+<<<<<<< HEAD
 	if (unlikely(pmd_large(*pmdp)))
 		pte = *(pte_t *) pmdp;
+=======
+	if (unlikely(pmd_leaf(*pmdp)))
+		pte = ptep_get((pte_t *)pmdp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 #endif
 		pte = *pte_offset_kernel(pmdp, vaddr);
@@ -579,14 +655,24 @@ static irqreturn_t gru_intr(int chiplet, int blade)
 		}
 
 		/*
+<<<<<<< HEAD
 		 * This is running in interrupt context. Trylock the mmap_sem.
+=======
+		 * This is running in interrupt context. Trylock the mmap_lock.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * If it fails, retry the fault in user context.
 		 */
 		gts->ustats.fmm_tlbmiss++;
 		if (!gts->ts_force_cch_reload &&
+<<<<<<< HEAD
 					down_read_trylock(&gts->ts_mm->mmap_sem)) {
 			gru_try_dropin(gru, gts, tfh, NULL);
 			up_read(&gts->ts_mm->mmap_sem);
+=======
+					mmap_read_trylock(gts->ts_mm)) {
+			gru_try_dropin(gru, gts, tfh, NULL);
+			mmap_read_unlock(gts->ts_mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			tfh_user_polling_mode(tfh);
 			STAT(intr_mm_lock_failed);
@@ -612,8 +698,13 @@ irqreturn_t gru_intr_mblade(int irq, void *dev_id)
 	for_each_possible_blade(blade) {
 		if (uv_blade_nr_possible_cpus(blade))
 			continue;
+<<<<<<< HEAD
 		 gru_intr(0, blade);
 		 gru_intr(1, blade);
+=======
+		gru_intr(0, blade);
+		gru_intr(1, blade);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return IRQ_HANDLED;
 }
@@ -657,6 +748,10 @@ int gru_handle_user_call_os(unsigned long cb)
 	if ((cb & (GRU_HANDLE_STRIDE - 1)) || ucbnum >= GRU_NUM_CB)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+again:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gts = gru_find_lock_gts(cb);
 	if (!gts)
 		return -EINVAL;
@@ -665,7 +760,15 @@ int gru_handle_user_call_os(unsigned long cb)
 	if (ucbnum >= gts->ts_cbr_au_count * GRU_CBR_AU_SIZE)
 		goto exit;
 
+<<<<<<< HEAD
 	gru_check_context_placement(gts);
+=======
+	if (gru_check_context_placement(gts)) {
+		gru_unlock_gts(gts);
+		gru_unload_context(gts, 1);
+		goto again;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * CCH may contain stale data if ts_force_cch_reload is set.
@@ -876,13 +979,27 @@ int gru_set_context_option(unsigned long arg)
 	switch (req.op) {
 	case sco_blade_chiplet:
 		/* Select blade/chiplet for GRU context */
+<<<<<<< HEAD
 		if (req.val1 < -1 || req.val1 >= GRU_MAX_BLADES || !gru_base[req.val1] ||
 		    req.val0 < -1 || req.val0 >= GRU_CHIPLETS_PER_HUB) {
+=======
+		if (req.val0 < -1 || req.val0 >= GRU_CHIPLETS_PER_HUB ||
+		    req.val1 < -1 || req.val1 >= GRU_MAX_BLADES ||
+		    (req.val1 >= 0 && !gru_base[req.val1])) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EINVAL;
 		} else {
 			gts->ts_user_blade_id = req.val1;
 			gts->ts_user_chiplet_id = req.val0;
+<<<<<<< HEAD
 			gru_check_context_placement(gts);
+=======
+			if (gru_check_context_placement(gts)) {
+				gru_unlock_gts(gts);
+				gru_unload_context(gts, 1);
+				return ret;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case sco_gseg_owner:

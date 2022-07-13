@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 /* 
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* 
+ * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __UM_PROCESSOR_GENERIC_H
@@ -10,6 +16,7 @@ struct pt_regs;
 
 struct task_struct;
 
+<<<<<<< HEAD
 #include "asm/ptrace.h"
 #include "registers.h"
 #include "sysdep/archsetjmp.h"
@@ -38,6 +45,25 @@ struct thread_struct {
 	struct arch_thread arch;
 	jmp_buf switch_buf;
 	int mm_count;
+=======
+#include <asm/ptrace.h>
+#include <sysdep/archsetjmp.h>
+
+#include <linux/prefetch.h>
+
+#include <asm/cpufeatures.h>
+
+struct mm_struct;
+
+struct thread_struct {
+	struct pt_regs regs;
+	struct pt_regs *segv_regs;
+	void *fault_addr;
+	jmp_buf *fault_catcher;
+	struct task_struct *prev_sched;
+	struct arch_thread arch;
+	jmp_buf switch_buf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		int op;
 		union {
@@ -58,16 +84,23 @@ struct thread_struct {
 
 #define INIT_THREAD \
 { \
+<<<<<<< HEAD
 	.forking		= 0, \
 	.regs		   	= EMPTY_REGS,	\
 	.fault_addr		= NULL, \
 	.prev_sched		= NULL, \
 	.temp_stack		= 0, \
 	.exec_buf		= NULL, \
+=======
+	.regs		   	= EMPTY_REGS,	\
+	.fault_addr		= NULL, \
+	.prev_sched		= NULL, \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.arch			= INIT_ARCH_THREAD, \
 	.request		= { 0 } \
 }
 
+<<<<<<< HEAD
 extern struct task_struct *alloc_task_struct_node(int node);
 
 static inline void release_thread(struct task_struct *task)
@@ -90,6 +123,8 @@ static inline void mm_copy_segments(struct mm_struct *from_mm,
 
 #define init_stack	(init_thread_union.stack)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * User space process size: 3GB (default).
  */
@@ -117,10 +152,19 @@ extern void start_thread(struct pt_regs *regs, unsigned long entry,
 struct cpuinfo_um {
 	unsigned long loops_per_jiffy;
 	int ipi_pipe[2];
+<<<<<<< HEAD
+=======
+	int cache_alignment;
+	union {
+		__u32		x86_capability[NCAPINTS + NBUGINTS];
+		unsigned long	x86_capability_alignment;
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern struct cpuinfo_um boot_cpu_data;
 
+<<<<<<< HEAD
 #define my_cpu_data		cpu_data[smp_processor_id()]
 
 #ifdef CONFIG_SMP
@@ -134,5 +178,14 @@ extern struct cpuinfo_um cpu_data[];
 
 #define KSTK_REG(tsk, reg) get_thread_reg(reg, &tsk->thread.switch_buf)
 extern unsigned long get_wchan(struct task_struct *p);
+=======
+#define cpu_data(cpu)    boot_cpu_data
+#define current_cpu_data boot_cpu_data
+#define cache_line_size()	(boot_cpu_data.cache_alignment)
+
+extern unsigned long get_thread_reg(int reg, jmp_buf *buf);
+#define KSTK_REG(tsk, reg) get_thread_reg(reg, &tsk->thread.switch_buf)
+extern unsigned long __get_wchan(struct task_struct *p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

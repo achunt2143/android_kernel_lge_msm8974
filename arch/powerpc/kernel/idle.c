@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Idle daemon for PowerPC.  Idle daemon will handle any action
  * that needs to be taken when the system becomes idle.
@@ -12,11 +16,14 @@
  *    Copyright (c) 2003 Dave Engebretsen <engebret@us.ibm.com>
  *
  * 32-bit and 64-bit versions merged by Paul Mackerras <paulus@samba.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/sched.h>
@@ -33,11 +40,14 @@
 #include <asm/runlatch.h>
 #include <asm/smp.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_HOTPLUG_CPU
 #define cpu_should_die()	cpu_is_offline(smp_processor_id())
 #else
 #define cpu_should_die()	0
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned long cpuidle_disable = IDLE_NO_OVERRIDE;
 EXPORT_SYMBOL(cpuidle_disable);
@@ -46,6 +56,7 @@ static int __init powersave_off(char *arg)
 {
 	ppc_md.power_save = NULL;
 	cpuidle_disable = IDLE_POWERSAVE_OFF;
+<<<<<<< HEAD
 	return 0;
 }
 __setup("powersave=off", powersave_off);
@@ -134,11 +145,73 @@ EXPORT_SYMBOL_GPL(cpu_idle_wait);
 
 int powersave_nap;
 
+=======
+	return 1;
+}
+__setup("powersave=off", powersave_off);
+
+void arch_cpu_idle(void)
+{
+	ppc64_runlatch_off();
+
+	if (ppc_md.power_save) {
+		ppc_md.power_save();
+		/*
+		 * Some power_save functions return with
+		 * interrupts enabled, some don't.
+		 */
+		if (!irqs_disabled())
+			raw_local_irq_disable();
+	} else {
+		/*
+		 * Go into low thread priority and possibly
+		 * low power mode.
+		 */
+		HMT_low();
+		HMT_very_low();
+	}
+
+	HMT_medium();
+	ppc64_runlatch_on();
+}
+
+int powersave_nap;
+
+#ifdef CONFIG_PPC_970_NAP
+void power4_idle(void)
+{
+	if (!cpu_has_feature(CPU_FTR_CAN_NAP))
+		return;
+
+	if (!powersave_nap)
+		return;
+
+	if (!prep_irq_for_idle())
+		return;
+
+	if (cpu_has_feature(CPU_FTR_ALTIVEC))
+		asm volatile(PPC_DSSALL " ; sync" ::: "memory");
+
+	power4_idle_nap();
+
+	/*
+	 * power4_idle_nap returns with interrupts enabled (soft and hard).
+	 * to our caller with interrupts enabled (soft and hard). Our caller
+	 * can cope with either interrupts disabled or enabled upon return.
+	 */
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SYSCTL
 /*
  * Register the sysctl to set/clear powersave_nap.
  */
+<<<<<<< HEAD
 static ctl_table powersave_nap_ctl_table[]={
+=======
+static struct ctl_table powersave_nap_ctl_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "powersave-nap",
 		.data		= &powersave_nap,
@@ -146,6 +219,7 @@ static ctl_table powersave_nap_ctl_table[]={
 		.mode		= 0644,
 		.proc_handler	= proc_dointvec,
 	},
+<<<<<<< HEAD
 	{}
 };
 static ctl_table powersave_nap_sysctl_root[] = {
@@ -155,12 +229,18 @@ static ctl_table powersave_nap_sysctl_root[] = {
 		.child		= powersave_nap_ctl_table,
 	},
 	{}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init
 register_powersave_nap_sysctl(void)
 {
+<<<<<<< HEAD
 	register_sysctl_table(powersave_nap_sysctl_root);
+=======
+	register_sysctl("kernel", powersave_nap_ctl_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

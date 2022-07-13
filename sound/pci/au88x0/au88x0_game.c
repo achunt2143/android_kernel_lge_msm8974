@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Manuel Jander.
  *
@@ -5,6 +9,7 @@
  *  Vojtech Pavlik
  *  Raymond Ingles
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +24,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Should you need to contact me, the author, you can do so either by
  * e-mail - mail your message to <vojtech@suse.cz>, or by paper mail:
  * Vojtech Pavlik, Ucitelska 1576, Prague 8, 182 00 Czech Republic
@@ -36,7 +43,11 @@
 #include <linux/gameport.h>
 #include <linux/export.h>
 
+<<<<<<< HEAD
 #if defined(CONFIG_GAMEPORT) || (defined(MODULE) && defined(CONFIG_GAMEPORT_MODULE))
+=======
+#if IS_REACHABLE(CONFIG_GAMEPORT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VORTEX_GAME_DWAIT	20	/* 20 ms */
 
@@ -92,15 +103,26 @@ static int vortex_game_open(struct gameport *gameport, int mode)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit vortex_gameport_register(vortex_t * vortex)
+=======
+static int vortex_gameport_register(vortex_t *vortex)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gameport *gp;
 
 	vortex->gameport = gp = gameport_allocate_port();
 	if (!gp) {
+<<<<<<< HEAD
 		printk(KERN_ERR "vortex: cannot allocate memory for gameport\n");
 		return -ENOMEM;
 	};
+=======
+		dev_err(vortex->card->dev,
+			"cannot allocate memory for gameport\n");
+		return -ENOMEM;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gameport_set_name(gp, "AU88x0 Gameport");
 	gameport_set_phys(gp, "pci%s/gameport0", pci_name(vortex->pci_dev));

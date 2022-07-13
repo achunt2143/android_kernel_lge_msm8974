@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Synopsys DesignWare Multimedia Card PCI Interface driver
  *
  * Copyright (C) 2012 Vayavya Labs Pvt. Ltd.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/interrupt.h>
@@ -14,6 +21,7 @@
 #include <linux/io.h>
 #include <linux/irq.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
 #include <linux/mmc/host.h>
 #include <linux/mmc/mmc.h>
@@ -22,6 +30,15 @@
 
 #define PCI_BAR_NO 2
 #define COMPLETE_BAR 0
+=======
+#include <linux/pm_runtime.h>
+#include <linux/slab.h>
+#include <linux/mmc/host.h>
+#include <linux/mmc/mmc.h>
+#include "dw_mmc.h"
+
+#define PCI_BAR_NO 2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SYNOPSYS_DW_MCI_VENDOR_ID 0x700
 #define SYNOPSYS_DW_MCI_DEVICE_ID 0x1107
 /* Defining the Capabilities */
@@ -30,19 +47,28 @@
 				MMC_CAP_SDIO_IRQ)
 
 static struct dw_mci_board pci_board_data = {
+<<<<<<< HEAD
 	.num_slots			= 1,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.caps				= DW_MCI_CAPABILITIES,
 	.bus_hz				= 33 * 1000 * 1000,
 	.detect_delay_ms		= 200,
 	.fifo_depth			= 32,
 };
 
+<<<<<<< HEAD
 static int __devinit dw_mci_pci_probe(struct pci_dev *pdev,
 				  const struct pci_device_id *entries)
+=======
+static int dw_mci_pci_probe(struct pci_dev *pdev,
+			    const struct pci_device_id *entries)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dw_mci *host;
 	int ret;
 
+<<<<<<< HEAD
 	ret = pci_enable_device(pdev);
 	if (ret)
 		return ret;
@@ -86,10 +112,44 @@ err_disable_dev:
 }
 
 static void __devexit dw_mci_pci_remove(struct pci_dev *pdev)
+=======
+	ret = pcim_enable_device(pdev);
+	if (ret)
+		return ret;
+
+	host = devm_kzalloc(&pdev->dev, sizeof(struct dw_mci), GFP_KERNEL);
+	if (!host)
+		return -ENOMEM;
+
+	host->irq = pdev->irq;
+	host->irq_flags = IRQF_SHARED;
+	host->dev = &pdev->dev;
+	host->pdata = &pci_board_data;
+
+	ret = pcim_iomap_regions(pdev, 1 << PCI_BAR_NO, pci_name(pdev));
+	if (ret)
+		return ret;
+
+	host->regs = pcim_iomap_table(pdev)[PCI_BAR_NO];
+
+	pci_set_master(pdev);
+
+	ret = dw_mci_probe(host);
+	if (ret)
+		return ret;
+
+	pci_set_drvdata(pdev, host);
+
+	return 0;
+}
+
+static void dw_mci_pci_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dw_mci *host = pci_get_drvdata(pdev);
 
 	dw_mci_remove(host);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
 	pci_release_regions(pdev);
 	pci_iounmap(pdev, host->regs);
@@ -125,6 +185,19 @@ static int dw_mci_pci_resume(struct device *dev)
 static SIMPLE_DEV_PM_OPS(dw_mci_pci_pmops, dw_mci_pci_suspend, dw_mci_pci_resume);
 
 static DEFINE_PCI_DEVICE_TABLE(dw_mci_pci_id) = {
+=======
+}
+
+static const struct dev_pm_ops dw_mci_pci_dev_pm_ops = {
+	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+				pm_runtime_force_resume)
+	SET_RUNTIME_PM_OPS(dw_mci_runtime_suspend,
+			   dw_mci_runtime_resume,
+			   NULL)
+};
+
+static const struct pci_device_id dw_mci_pci_id[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(SYNOPSYS_DW_MCI_VENDOR_ID, SYNOPSYS_DW_MCI_DEVICE_ID) },
 	{}
 };
@@ -136,6 +209,7 @@ static struct pci_driver dw_mci_pci_driver = {
 	.probe		= dw_mci_pci_probe,
 	.remove		= dw_mci_pci_remove,
 	.driver		=	{
+<<<<<<< HEAD
 		.pm =   &dw_mci_pci_pmops
 	},
 };
@@ -152,6 +226,13 @@ static void __exit dw_mci_exit(void)
 
 module_init(dw_mci_init);
 module_exit(dw_mci_exit);
+=======
+		.pm =   &dw_mci_pci_dev_pm_ops,
+	},
+};
+
+module_pci_driver(dw_mci_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("DW Multimedia Card PCI Interface driver");
 MODULE_AUTHOR("Shashidhar Hiremath <shashidharh@vayavyalabs.com>");

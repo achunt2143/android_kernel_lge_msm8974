@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel(R) 82576 Virtual Function Linux driver
@@ -24,6 +25,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Copyright(c) 2009 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Linux PRO/1000 Ethernet Driver main header file */
 
@@ -43,10 +48,17 @@ struct igbvf_info;
 struct igbvf_adapter;
 
 /* Interrupt defines */
+<<<<<<< HEAD
 #define IGBVF_START_ITR                    488 /* ~8000 ints/sec */
 #define IGBVF_4K_ITR                       980
 #define IGBVF_20K_ITR                      196
 #define IGBVF_70K_ITR                       56
+=======
+#define IGBVF_START_ITR		488 /* ~8000 ints/sec */
+#define IGBVF_4K_ITR		980
+#define IGBVF_20K_ITR		196
+#define IGBVF_70K_ITR		56
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum latency_range {
 	lowest_latency = 0,
@@ -55,6 +67,7 @@ enum latency_range {
 	latency_invalid = 255
 };
 
+<<<<<<< HEAD
 
 /* Interrupt modes, as used by the IntMode parameter */
 #define IGBVF_INT_MODE_LEGACY           0
@@ -105,6 +118,59 @@ enum latency_range {
 
 /* Number of packet split data buffers (not including the header buffer) */
 #define PS_PAGE_BUFFERS                 (MAX_PS_BUFFERS - 1)
+=======
+/* Interrupt modes, as used by the IntMode parameter */
+#define IGBVF_INT_MODE_LEGACY	0
+#define IGBVF_INT_MODE_MSI	1
+#define IGBVF_INT_MODE_MSIX	2
+
+/* Tx/Rx descriptor defines */
+#define IGBVF_DEFAULT_TXD	256
+#define IGBVF_MAX_TXD		4096
+#define IGBVF_MIN_TXD		64
+
+#define IGBVF_DEFAULT_RXD	256
+#define IGBVF_MAX_RXD		4096
+#define IGBVF_MIN_RXD		64
+
+#define IGBVF_MIN_ITR_USECS	10 /* 100000 irq/sec */
+#define IGBVF_MAX_ITR_USECS	10000 /* 100    irq/sec */
+
+/* RX descriptor control thresholds.
+ * PTHRESH - MAC will consider prefetch if it has fewer than this number of
+ *	   descriptors available in its onboard memory.
+ *	   Setting this to 0 disables RX descriptor prefetch.
+ * HTHRESH - MAC will only prefetch if there are at least this many descriptors
+ *	   available in host memory.
+ *	   If PTHRESH is 0, this should also be 0.
+ * WTHRESH - RX descriptor writeback threshold - MAC will delay writing back
+ *	   descriptors until either it has this many to write back, or the
+ *	   ITR timer expires.
+ */
+#define IGBVF_RX_PTHRESH	16
+#define IGBVF_RX_HTHRESH	8
+#define IGBVF_RX_WTHRESH	1
+
+/* this is the size past which hardware will drop packets when setting LPE=0 */
+#define MAXIMUM_ETHERNET_VLAN_SIZE	1522
+
+#define IGBVF_FC_PAUSE_TIME	0x0680 /* 858 usec */
+
+/* How many Tx Descriptors do we need to call netif_wake_queue ? */
+#define IGBVF_TX_QUEUE_WAKE	32
+/* How many Rx Buffers do we bundle into one write to the hardware ? */
+#define IGBVF_RX_BUFFER_WRITE	16 /* Must be power of 2 */
+
+#define AUTO_ALL_MODES		0
+#define IGBVF_EEPROM_APME	0x0400
+
+#define IGBVF_MNG_VLAN_NONE	(-1)
+
+#define IGBVF_MAX_MAC_FILTERS	3
+
+/* Number of packet split data buffers (not including the header buffer) */
+#define PS_PAGE_BUFFERS		(MAX_PS_BUFFERS - 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum igbvf_boards {
 	board_vf,
@@ -116,8 +182,12 @@ struct igbvf_queue_stats {
 	u64 bytes;
 };
 
+<<<<<<< HEAD
 /*
  * wrappers around a pointer to a socket buffer,
+=======
+/* wrappers around a pointer to a socket buffer,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * so a DMA handle can be stored along with the buffer
  */
 struct igbvf_buffer {
@@ -127,8 +197,13 @@ struct igbvf_buffer {
 		/* Tx */
 		struct {
 			unsigned long time_stamp;
+<<<<<<< HEAD
 			u16 length;
 			u16 next_to_watch;
+=======
+			union e1000_adv_tx_desc *next_to_watch;
+			u16 length;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u16 mapped_as_page;
 		};
 		/* Rx */
@@ -148,10 +223,17 @@ union igbvf_desc {
 
 struct igbvf_ring {
 	struct igbvf_adapter *adapter;  /* backlink */
+<<<<<<< HEAD
 	union igbvf_desc *desc;         /* pointer to ring memory  */
 	dma_addr_t dma;                 /* phys address of ring    */
 	unsigned int size;              /* length of ring in bytes */
 	unsigned int count;             /* number of desc. in ring */
+=======
+	union igbvf_desc *desc;	/* pointer to ring memory  */
+	dma_addr_t dma;		/* phys address of ring    */
+	unsigned int size;	/* length of ring in bytes */
+	unsigned int count;	/* number of desc. in ring */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u16 next_to_use;
 	u16 next_to_clean;
@@ -202,9 +284,13 @@ struct igbvf_adapter {
 	u32 requested_itr; /* ints/sec or adaptive */
 	u32 current_itr; /* Actual ITR register value, not ints/sec */
 
+<<<<<<< HEAD
 	/*
 	 * Tx
 	 */
+=======
+	/* Tx */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct igbvf_ring *tx_ring /* One per active queue */
 	____cacheline_aligned_in_smp;
 
@@ -226,9 +312,13 @@ struct igbvf_adapter {
 	u32 tx_fifo_size;
 	u32 tx_dma_failed;
 
+<<<<<<< HEAD
 	/*
 	 * Rx
 	 */
+=======
+	/* Rx */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct igbvf_ring *rx_ring;
 
 	u32 rx_int_delay;
@@ -248,15 +338,23 @@ struct igbvf_adapter {
 	/* OS defined structs */
 	struct net_device *netdev;
 	struct pci_dev *pdev;
+<<<<<<< HEAD
 	struct net_device_stats net_stats;
 	spinlock_t stats_lock;      /* prevent concurrent stats updates */
+=======
+	spinlock_t stats_lock; /* prevent concurrent stats updates */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* structs defined in e1000_hw.h */
 	struct e1000_hw hw;
 
 	/* The VF counters don't clear on read so we have to get a base
 	 * count on driver start up and always subtract that base on
+<<<<<<< HEAD
 	 * on the first update, thus the flag..
+=======
+	 * the first update, thus the flag..
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	struct e1000_vf_stats stats;
 	u64 zero_base;
@@ -286,6 +384,7 @@ struct igbvf_adapter {
 };
 
 struct igbvf_info {
+<<<<<<< HEAD
 	enum e1000_mac_type     mac;
 	unsigned int            flags;
 	u32                     pba;
@@ -296,6 +395,18 @@ struct igbvf_info {
 /* hardware capability, feature, and workaround flags */
 #define IGBVF_FLAG_RX_CSUM_DISABLED             (1 << 0)
 
+=======
+	enum e1000_mac_type	mac;
+	unsigned int		flags;
+	u32			pba;
+	void			(*init_ops)(struct e1000_hw *);
+	s32			(*get_variants)(struct igbvf_adapter *);
+};
+
+/* hardware capability, feature, and workaround flags */
+#define IGBVF_FLAG_RX_CSUM_DISABLED	BIT(0)
+#define IGBVF_FLAG_RX_LB_VLAN_BSWAP	BIT(1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IGBVF_RX_DESC_ADV(R, i)     \
 	(&((((R).desc))[i].rx_desc))
 #define IGBVF_TX_DESC_ADV(R, i)     \
@@ -310,6 +421,7 @@ enum igbvf_state_t {
 };
 
 extern char igbvf_driver_name[];
+<<<<<<< HEAD
 extern const char igbvf_driver_version[];
 
 extern void igbvf_check_options(struct igbvf_adapter *);
@@ -323,6 +435,20 @@ extern int igbvf_setup_tx_resources(struct igbvf_adapter *, struct igbvf_ring *)
 extern void igbvf_free_rx_resources(struct igbvf_ring *);
 extern void igbvf_free_tx_resources(struct igbvf_ring *);
 extern void igbvf_update_stats(struct igbvf_adapter *);
+=======
+
+void igbvf_check_options(struct igbvf_adapter *);
+void igbvf_set_ethtool_ops(struct net_device *);
+
+int igbvf_up(struct igbvf_adapter *);
+void igbvf_down(struct igbvf_adapter *);
+void igbvf_reinit_locked(struct igbvf_adapter *);
+int igbvf_setup_rx_resources(struct igbvf_adapter *, struct igbvf_ring *);
+int igbvf_setup_tx_resources(struct igbvf_adapter *, struct igbvf_ring *);
+void igbvf_free_rx_resources(struct igbvf_ring *);
+void igbvf_free_tx_resources(struct igbvf_ring *);
+void igbvf_update_stats(struct igbvf_adapter *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern unsigned int copybreak;
 

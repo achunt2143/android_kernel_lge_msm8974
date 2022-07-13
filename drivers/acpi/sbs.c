@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  sbs.c - ACPI Smart Battery System Driver ($Revision: 2.0 $)
  *
  *  Copyright (c) 2007 Alexey Starikovskiy <astarikovskiy@suse.de>
  *  Copyright (c) 2005-2007 Vladimir Lebedev <vladimir.p.lebedev@intel.com>
  *  Copyright (c) 2005 Rich Townsend <rhdt@bartol.udel.edu>
+<<<<<<< HEAD
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -24,23 +29,33 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  */
 
+=======
+ */
+
+#define pr_fmt(fmt) "ACPI: " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/kernel.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_ACPI_PROCFS_POWER
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <asm/uaccess.h>
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/acpi.h>
 #include <linux/timer.h>
 #include <linux/jiffies.h>
 #include <linux/delay.h>
 #include <linux/power_supply.h>
+<<<<<<< HEAD
 
 #include "sbshc.h"
 
@@ -53,6 +68,16 @@
 #define ACPI_SBS_FILE_INFO		"info"
 #define ACPI_SBS_FILE_STATE		"state"
 #define ACPI_SBS_FILE_ALARM		"alarm"
+=======
+#include <linux/platform_data/x86/apple.h>
+#include <acpi/battery.h>
+
+#include "sbshc.h"
+
+#define ACPI_SBS_CLASS			"sbs"
+#define ACPI_AC_CLASS			"ac_adapter"
+#define ACPI_SBS_DEVICE_NAME		"Smart Battery System"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_BATTERY_DIR_NAME		"BAT%i"
 #define ACPI_AC_DIR_NAME		"AC0"
 
@@ -67,11 +92,14 @@ static unsigned int cache_time = 1000;
 module_param(cache_time, uint, 0644);
 MODULE_PARM_DESC(cache_time, "cache time in milliseconds");
 
+<<<<<<< HEAD
 extern struct proc_dir_entry *acpi_lock_ac_dir(void);
 extern struct proc_dir_entry *acpi_lock_battery_dir(void);
 extern void acpi_unlock_ac_dir(struct proc_dir_entry *acpi_ac_dir);
 extern void acpi_unlock_battery_dir(struct proc_dir_entry *acpi_battery_dir);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_SBS_BAT			4
 #define ACPI_SBS_BLOCK_MAX		32
 
@@ -82,11 +110,17 @@ static const struct acpi_device_id sbs_device_ids[] = {
 MODULE_DEVICE_TABLE(acpi, sbs_device_ids);
 
 struct acpi_battery {
+<<<<<<< HEAD
 	struct power_supply bat;
 	struct acpi_sbs *sbs;
 #ifdef CONFIG_ACPI_PROCFS_POWER
 	struct proc_dir_entry *proc_entry;
 #endif
+=======
+	struct power_supply *bat;
+	struct power_supply_desc bat_desc;
+	struct acpi_sbs *sbs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long update_time;
 	char name[8];
 	char manufacturer_name[ACPI_SBS_BLOCK_MAX];
@@ -112,6 +146,7 @@ struct acpi_battery {
 	u8 have_sysfs_alarm:1;
 };
 
+<<<<<<< HEAD
 #define to_acpi_battery(x) container_of(x, struct acpi_battery, bat)
 
 struct acpi_sbs {
@@ -122,15 +157,33 @@ struct acpi_sbs {
 #ifdef CONFIG_ACPI_PROCFS_POWER
 	struct proc_dir_entry *charger_entry;
 #endif
+=======
+#define to_acpi_battery(x) power_supply_get_drvdata(x)
+
+struct acpi_sbs {
+	struct power_supply *charger;
+	struct acpi_device *device;
+	struct acpi_smb_hc *hc;
+	struct mutex lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct acpi_battery battery[MAX_SBS_BAT];
 	u8 batteries_supported:4;
 	u8 manager_present:1;
 	u8 charger_present:1;
+<<<<<<< HEAD
 };
 
 #define to_acpi_sbs(x) container_of(x, struct acpi_sbs, charger)
 
 static int acpi_sbs_remove(struct acpi_device *device, int type);
+=======
+	u8 charger_exists:1;
+};
+
+#define to_acpi_sbs(x) power_supply_get_drvdata(x)
+
+static void acpi_sbs_remove(struct acpi_device *device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int acpi_battery_get_state(struct acpi_battery *battery);
 
 static inline int battery_scale(int log)
@@ -316,6 +369,16 @@ static enum power_supply_property sbs_energy_battery_props[] = {
 	POWER_SUPPLY_PROP_MANUFACTURER,
 };
 
+<<<<<<< HEAD
+=======
+static const struct power_supply_desc acpi_sbs_charger_desc = {
+	.name		= "sbs-charger",
+	.type		= POWER_SUPPLY_TYPE_MAINS,
+	.properties	= sbs_ac_props,
+	.num_properties	= ARRAY_SIZE(sbs_ac_props),
+	.get_property	= sbs_get_ac_property,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* --------------------------------------------------------------------------
                             Smart Battery System Management
@@ -393,7 +456,11 @@ static int acpi_battery_get_state(struct acpi_battery *battery)
 					 state_readers[i].mode,
 					 ACPI_SBS_BATTERY,
 					 state_readers[i].command,
+<<<<<<< HEAD
 				         (u8 *)battery +
+=======
+					 (u8 *)battery +
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						state_readers[i].offset);
 		if (result)
 			goto end;
@@ -426,11 +493,19 @@ static int acpi_battery_set_alarm(struct acpi_battery *battery)
 		if ((value & 0xf000) != sel) {
 			value &= 0x0fff;
 			value |= sel;
+<<<<<<< HEAD
 		ret = acpi_smbus_write(sbs->hc, SMBUS_WRITE_WORD,
 					 ACPI_SBS_MANAGER,
 					 0x01, (u8 *)&value, 2);
 		if (ret)
 			goto end;
+=======
+			ret = acpi_smbus_write(sbs->hc, SMBUS_WRITE_WORD,
+					 ACPI_SBS_MANAGER,
+					 0x01, (u8 *)&value, 2);
+			if (ret)
+				goto end;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	ret = acpi_smbus_write(sbs->hc, SMBUS_WRITE_WORD, ACPI_SBS_BATTERY,
@@ -446,9 +521,29 @@ static int acpi_ac_get_present(struct acpi_sbs *sbs)
 
 	result = acpi_smbus_read(sbs->hc, SMBUS_READ_WORD, ACPI_SBS_CHARGER,
 				 0x13, (u8 *) & status);
+<<<<<<< HEAD
 	if (!result)
 		sbs->charger_present = (status >> 15) & 0x1;
 	return result;
+=======
+
+	if (result)
+		return result;
+
+	/*
+	 * The spec requires that bit 4 always be 1. If it's not set, assume
+	 * that the implementation doesn't support an SBS charger.
+	 *
+	 * And on some MacBooks a status of 0xffff is always returned, no
+	 * matter whether the charger is plugged in or not, which is also
+	 * wrong, so ignore the SBS charger for those too.
+	 */
+	if (!((status >> 4) & 0x1) || status == 0xffff)
+		return -ENODEV;
+
+	sbs->charger_present = (status >> 15) & 0x1;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t acpi_battery_alarm_show(struct device *dev,
@@ -467,7 +562,11 @@ static ssize_t acpi_battery_alarm_store(struct device *dev,
 {
 	unsigned long x;
 	struct acpi_battery *battery = to_acpi_battery(dev_get_drvdata(dev));
+<<<<<<< HEAD
 	if (sscanf(buf, "%ld\n", &x) == 1)
+=======
+	if (sscanf(buf, "%lu\n", &x) == 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		battery->alarm_capacity = x /
 			(1000 * acpi_battery_scale(battery));
 	if (battery->present)
@@ -475,13 +574,18 @@ static ssize_t acpi_battery_alarm_store(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static struct device_attribute alarm_attr = {
+=======
+static const struct device_attribute alarm_attr = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attr = {.name = "alarm", .mode = 0644},
 	.show = acpi_battery_alarm_show,
 	.store = acpi_battery_alarm_store,
 };
 
 /* --------------------------------------------------------------------------
+<<<<<<< HEAD
                               FS Interface (/proc/acpi)
    -------------------------------------------------------------------------- */
 
@@ -750,16 +854,23 @@ static const struct file_operations acpi_ac_state_fops = {
 #endif
 
 /* --------------------------------------------------------------------------
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                                  Driver Interface
    -------------------------------------------------------------------------- */
 static int acpi_battery_read(struct acpi_battery *battery)
 {
+<<<<<<< HEAD
 	int result = 0, saved_present = battery->present;
+=======
+	int result, saved_present = battery->present;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 state;
 
 	if (battery->sbs->manager_present) {
 		result = acpi_smbus_read(battery->sbs->hc, SMBUS_READ_WORD,
 				ACPI_SBS_MANAGER, 0x01, (u8 *)&state);
+<<<<<<< HEAD
 		if (!result)
 			battery->present = state & (1 << battery->id);
 		state &= 0x0fff;
@@ -770,14 +881,47 @@ static int acpi_battery_read(struct acpi_battery *battery)
 		battery->present = 1;
 	if (result || !battery->present)
 		return result;
+=======
+		if (result)
+			return result;
+
+		battery->present = state & (1 << battery->id);
+		if (!battery->present)
+			return 0;
+
+		/* Masking necessary for Smart Battery Selectors */
+		state = 0x0fff;
+		state |= 1 << (battery->id + 12);
+		acpi_smbus_write(battery->sbs->hc, SMBUS_WRITE_WORD,
+				  ACPI_SBS_MANAGER, 0x01, (u8 *)&state, 2);
+	} else {
+		if (battery->id == 0) {
+			battery->present = 1;
+		} else {
+			if (!battery->present)
+				return 0;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (saved_present != battery->present) {
 		battery->update_time = 0;
 		result = acpi_battery_get_info(battery);
+<<<<<<< HEAD
 		if (result)
 			return result;
 	}
 	result = acpi_battery_get_state(battery);
+=======
+		if (result) {
+			battery->present = 0;
+			return result;
+		}
+	}
+	result = acpi_battery_get_state(battery);
+	if (result)
+		battery->present = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -785,6 +929,10 @@ static int acpi_battery_read(struct acpi_battery *battery)
 static int acpi_battery_add(struct acpi_sbs *sbs, int id)
 {
 	struct acpi_battery *battery = &sbs->battery[id];
+<<<<<<< HEAD
+=======
+	struct power_supply_config psy_cfg = { .drv_data = battery, };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result;
 
 	battery->id = id;
@@ -794,6 +942,7 @@ static int acpi_battery_add(struct acpi_sbs *sbs, int id)
 		return result;
 
 	sprintf(battery->name, ACPI_BATTERY_DIR_NAME, id);
+<<<<<<< HEAD
 #ifdef CONFIG_ACPI_PROCFS_POWER
 	acpi_sbs_add_fs(&battery->proc_entry, acpi_battery_dir,
 			battery->name, &acpi_battery_info_fops,
@@ -816,11 +965,38 @@ static int acpi_battery_add(struct acpi_sbs *sbs, int id)
 	if (result)
 		goto end;
 	result = device_create_file(battery->bat.dev, &alarm_attr);
+=======
+	battery->bat_desc.name = battery->name;
+	battery->bat_desc.type = POWER_SUPPLY_TYPE_BATTERY;
+	if (!acpi_battery_mode(battery)) {
+		battery->bat_desc.properties = sbs_charge_battery_props;
+		battery->bat_desc.num_properties =
+		    ARRAY_SIZE(sbs_charge_battery_props);
+	} else {
+		battery->bat_desc.properties = sbs_energy_battery_props;
+		battery->bat_desc.num_properties =
+		    ARRAY_SIZE(sbs_energy_battery_props);
+	}
+	battery->bat_desc.get_property = acpi_sbs_battery_get_property;
+	battery->bat = power_supply_register(&sbs->device->dev,
+					&battery->bat_desc, &psy_cfg);
+	if (IS_ERR(battery->bat)) {
+		result = PTR_ERR(battery->bat);
+		battery->bat = NULL;
+		goto end;
+	}
+
+	result = device_create_file(&battery->bat->dev, &alarm_attr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result)
 		goto end;
 	battery->have_sysfs_alarm = 1;
       end:
+<<<<<<< HEAD
 	printk(KERN_INFO PREFIX "%s [%s]: Battery Slot [%s] (battery %s)\n",
+=======
+	pr_info("%s [%s]: Battery Slot [%s] (battery %s)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       ACPI_SBS_DEVICE_NAME, acpi_device_bid(sbs->device),
 	       battery->name, battery->present ? "present" : "absent");
 	return result;
@@ -830,6 +1006,7 @@ static void acpi_battery_remove(struct acpi_sbs *sbs, int id)
 {
 	struct acpi_battery *battery = &sbs->battery[id];
 
+<<<<<<< HEAD
 	if (battery->bat.dev) {
 		if (battery->have_sysfs_alarm)
 			device_remove_file(battery->bat.dev, &alarm_attr);
@@ -839,15 +1016,27 @@ static void acpi_battery_remove(struct acpi_sbs *sbs, int id)
 	if (battery->proc_entry)
 		acpi_sbs_remove_fs(&battery->proc_entry, acpi_battery_dir);
 #endif
+=======
+	if (battery->bat) {
+		if (battery->have_sysfs_alarm)
+			device_remove_file(&battery->bat->dev, &alarm_attr);
+		power_supply_unregister(battery->bat);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int acpi_charger_add(struct acpi_sbs *sbs)
 {
 	int result;
+<<<<<<< HEAD
+=======
+	struct power_supply_config psy_cfg = { .drv_data = sbs, };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	result = acpi_ac_get_present(sbs);
 	if (result)
 		goto end;
+<<<<<<< HEAD
 #ifdef CONFIG_ACPI_PROCFS_POWER
 	result = acpi_sbs_add_fs(&sbs->charger_entry, acpi_ac_dir,
 				 ACPI_AC_DIR_NAME, NULL,
@@ -865,17 +1054,36 @@ static int acpi_charger_add(struct acpi_sbs *sbs)
 	       ACPI_SBS_DEVICE_NAME, acpi_device_bid(sbs->device),
 	       ACPI_AC_DIR_NAME, sbs->charger_present ? "on-line" : "off-line");
       end:
+=======
+
+	sbs->charger_exists = 1;
+	sbs->charger = power_supply_register(&sbs->device->dev,
+					&acpi_sbs_charger_desc, &psy_cfg);
+	if (IS_ERR(sbs->charger)) {
+		result = PTR_ERR(sbs->charger);
+		sbs->charger = NULL;
+	}
+	pr_info("%s [%s]: AC Adapter [%s] (%s)\n",
+	       ACPI_SBS_DEVICE_NAME, acpi_device_bid(sbs->device),
+	       ACPI_AC_DIR_NAME, sbs->charger_present ? "on-line" : "off-line");
+end:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
 static void acpi_charger_remove(struct acpi_sbs *sbs)
 {
+<<<<<<< HEAD
 	if (sbs->charger.dev)
 		power_supply_unregister(&sbs->charger);
 #ifdef CONFIG_ACPI_PROCFS_POWER
 	if (sbs->charger_entry)
 		acpi_sbs_remove_fs(&sbs->charger_entry, acpi_ac_dir);
 #endif
+=======
+	if (sbs->charger)
+		power_supply_unregister(sbs->charger);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void acpi_sbs_callback(void *context)
@@ -885,6 +1093,7 @@ static void acpi_sbs_callback(void *context)
 	struct acpi_battery *bat;
 	u8 saved_charger_state = sbs->charger_present;
 	u8 saved_battery_state;
+<<<<<<< HEAD
 	acpi_ac_get_present(sbs);
 	if (sbs->charger_present != saved_charger_state) {
 #ifdef CONFIG_ACPI_PROC_EVENT
@@ -894,6 +1103,15 @@ static void acpi_sbs_callback(void *context)
 #endif
 		kobject_uevent(&sbs->charger.dev->kobj, KOBJ_CHANGE);
 	}
+=======
+
+	if (sbs->charger_exists) {
+		acpi_ac_get_present(sbs);
+		if (sbs->charger_present != saved_charger_state)
+			kobject_uevent(&sbs->charger->dev.kobj, KOBJ_CHANGE);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sbs->manager_present) {
 		for (id = 0; id < MAX_SBS_BAT; ++id) {
 			if (!(sbs->batteries_supported & (1 << id)))
@@ -903,6 +1121,7 @@ static void acpi_sbs_callback(void *context)
 			acpi_battery_read(bat);
 			if (saved_battery_state == bat->present)
 				continue;
+<<<<<<< HEAD
 #ifdef CONFIG_ACPI_PROC_EVENT
 			acpi_bus_generate_proc_event4(ACPI_BATTERY_CLASS,
 						      bat->name,
@@ -910,6 +1129,9 @@ static void acpi_sbs_callback(void *context)
 						      bat->present);
 #endif
 			kobject_uevent(&bat->bat.dev->kobj, KOBJ_CHANGE);
+=======
+			kobject_uevent(&bat->bat->dev.kobj, KOBJ_CHANGE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -928,13 +1150,18 @@ static int acpi_sbs_add(struct acpi_device *device)
 
 	mutex_init(&sbs->lock);
 
+<<<<<<< HEAD
 	sbs->hc = acpi_driver_data(device->parent);
+=======
+	sbs->hc = acpi_driver_data(acpi_dev_parent(device));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbs->device = device;
 	strcpy(acpi_device_name(device), ACPI_SBS_DEVICE_NAME);
 	strcpy(acpi_device_class(device), ACPI_SBS_CLASS);
 	device->driver_data = sbs;
 
 	result = acpi_charger_add(sbs);
+<<<<<<< HEAD
 	if (result)
 		goto end;
 
@@ -954,15 +1181,50 @@ static int acpi_sbs_add(struct acpi_device *device)
 }
 
 static int acpi_sbs_remove(struct acpi_device *device, int type)
+=======
+	if (result && result != -ENODEV)
+		goto end;
+
+	result = 0;
+
+	if (!x86_apple_machine) {
+		result = acpi_manager_get_info(sbs);
+		if (!result) {
+			sbs->manager_present = 1;
+			for (id = 0; id < MAX_SBS_BAT; ++id)
+				if ((sbs->batteries_supported & (1 << id)))
+					acpi_battery_add(sbs, id);
+		}
+	}
+
+	if (!sbs->manager_present)
+		acpi_battery_add(sbs, 0);
+
+	acpi_smbus_register_callback(sbs->hc, acpi_sbs_callback, sbs);
+end:
+	if (result)
+		acpi_sbs_remove(device);
+	return result;
+}
+
+static void acpi_sbs_remove(struct acpi_device *device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_sbs *sbs;
 	int id;
 
 	if (!device)
+<<<<<<< HEAD
 		return -EINVAL;
 	sbs = acpi_driver_data(device);
 	if (!sbs)
 		return -EINVAL;
+=======
+		return;
+	sbs = acpi_driver_data(device);
+	if (!sbs)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&sbs->lock);
 	acpi_smbus_unregister_callback(sbs->hc);
 	for (id = 0; id < MAX_SBS_BAT; ++id)
@@ -971,6 +1233,7 @@ static int acpi_sbs_remove(struct acpi_device *device, int type)
 	mutex_unlock(&sbs->lock);
 	mutex_destroy(&sbs->lock);
 	kfree(sbs);
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -997,6 +1260,25 @@ static int acpi_sbs_resume(struct acpi_device *device)
 	acpi_sbs_callback(sbs);
 	return 0;
 }
+=======
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int acpi_sbs_resume(struct device *dev)
+{
+	struct acpi_sbs *sbs;
+	if (!dev)
+		return -EINVAL;
+	sbs = to_acpi_device(dev)->driver_data;
+	acpi_sbs_callback(sbs);
+	return 0;
+}
+#else
+#define acpi_sbs_resume NULL
+#endif
+
+static SIMPLE_DEV_PM_OPS(acpi_sbs_pm, NULL, acpi_sbs_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct acpi_driver acpi_sbs_driver = {
 	.name = "sbs",
@@ -1005,6 +1287,7 @@ static struct acpi_driver acpi_sbs_driver = {
 	.ops = {
 		.add = acpi_sbs_add,
 		.remove = acpi_sbs_remove,
+<<<<<<< HEAD
 		.resume = acpi_sbs_resume,
 		},
 };
@@ -1042,3 +1325,9 @@ static void __exit acpi_sbs_exit(void)
 
 module_init(acpi_sbs_init);
 module_exit(acpi_sbs_exit);
+=======
+		},
+	.drv.pm = &acpi_sbs_pm,
+};
+module_acpi_driver(acpi_sbs_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

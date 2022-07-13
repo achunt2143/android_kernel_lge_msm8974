@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * lib/btree.c	- Simple In-memory B+Tree
  *
@@ -7,6 +8,15 @@
  * Bits and pieces stolen from Peter Zijlstra's code, which is
  * Copyright 2007, Red Hat Inc. Peter Zijlstra <pzijlstr@redhat.com>
  * GPLv2
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * lib/btree.c	- Simple In-memory B+Tree
+ *
+ * Copyright (c) 2007-2008 Joern Engel <joern@purestorage.com>
+ * Bits and pieces stolen from Peter Zijlstra's code, which is
+ * Copyright 2007, Red Hat Inc. Peter Zijlstra
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * see http://programming.kicks-ass.net/kernel-patches/vma_lookup/btree.patch
  *
@@ -76,6 +86,11 @@ struct btree_geo btree_geo128 = {
 };
 EXPORT_SYMBOL_GPL(btree_geo128);
 
+<<<<<<< HEAD
+=======
+#define MAX_KEYLEN	(2 * LONG_PER_U64)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct kmem_cache *btree_cachep;
 
 void *btree_alloc(gfp_t gfp_mask, void *pool_data)
@@ -238,7 +253,11 @@ static int keyzero(struct btree_geo *geo, unsigned long *key)
 	return 1;
 }
 
+<<<<<<< HEAD
 void *btree_lookup(struct btree_head *head, struct btree_geo *geo,
+=======
+static void *btree_lookup_node(struct btree_head *head, struct btree_geo *geo,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long *key)
 {
 	int i, height = head->height;
@@ -257,7 +276,20 @@ void *btree_lookup(struct btree_head *head, struct btree_geo *geo,
 		if (!node)
 			return NULL;
 	}
+<<<<<<< HEAD
 
+=======
+	return node;
+}
+
+void *btree_lookup(struct btree_head *head, struct btree_geo *geo,
+		unsigned long *key)
+{
+	int i;
+	unsigned long *node;
+
+	node = btree_lookup_node(head, geo, key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!node)
 		return NULL;
 
@@ -271,6 +303,7 @@ EXPORT_SYMBOL_GPL(btree_lookup);
 int btree_update(struct btree_head *head, struct btree_geo *geo,
 		 unsigned long *key, void *val)
 {
+<<<<<<< HEAD
 	int i, height = head->height;
 	unsigned long *node = head->node;
 
@@ -288,6 +321,12 @@ int btree_update(struct btree_head *head, struct btree_geo *geo,
 			return -ENOENT;
 	}
 
+=======
+	int i;
+	unsigned long *node;
+
+	node = btree_lookup_node(head, geo, key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!node)
 		return -ENOENT;
 
@@ -313,7 +352,11 @@ void *btree_get_prev(struct btree_head *head, struct btree_geo *geo,
 {
 	int i, height;
 	unsigned long *node, *oldnode;
+<<<<<<< HEAD
 	unsigned long *retry_key = NULL, key[geo->keylen];
+=======
+	unsigned long *retry_key = NULL, key[MAX_KEYLEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (keyzero(geo, __key))
 		return NULL;
@@ -510,6 +553,10 @@ retry:
 int btree_insert(struct btree_head *head, struct btree_geo *geo,
 		unsigned long *key, void *val, gfp_t gfp)
 {
+<<<<<<< HEAD
+=======
+	BUG_ON(!val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return btree_insert_level(head, geo, key, val, 1, gfp);
 }
 EXPORT_SYMBOL_GPL(btree_insert);
@@ -638,8 +685,13 @@ EXPORT_SYMBOL_GPL(btree_remove);
 int btree_merge(struct btree_head *target, struct btree_head *victim,
 		struct btree_geo *geo, gfp_t gfp)
 {
+<<<<<<< HEAD
 	unsigned long key[geo->keylen];
 	unsigned long dup[geo->keylen];
+=======
+	unsigned long key[MAX_KEYLEN];
+	unsigned long dup[MAX_KEYLEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *val;
 	int err;
 
@@ -797,4 +849,7 @@ module_exit(btree_module_exit);
 
 MODULE_AUTHOR("Joern Engel <joern@logfs.org>");
 MODULE_AUTHOR("Johannes Berg <johannes@sipsolutions.net>");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

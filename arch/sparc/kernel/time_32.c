@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* linux/arch/sparc/kernel/time.c
  *
  * Copyright (C) 1995 David S. Miller (davem@davemloft.net)
@@ -23,23 +27,37 @@
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <linux/time.h>
+<<<<<<< HEAD
 #include <linux/rtc.h>
 #include <linux/rtc/m48t59.h>
 #include <linux/timex.h>
+=======
+#include <linux/rtc/m48t59.h>
+#include <linux/timex.h>
+#include <linux/clocksource.h>
+#include <linux/clockchips.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/ioport.h>
 #include <linux/profile.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 #include <linux/platform_device.h>
 
+=======
+#include <linux/platform_device.h>
+
+#include <asm/mc146818rtc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/oplib.h>
 #include <asm/timex.h>
 #include <asm/timer.h>
 #include <asm/irq.h>
 #include <asm/io.h>
 #include <asm/idprom.h>
+<<<<<<< HEAD
 #include <asm/machines.h>
 #include <asm/page.h>
 #include <asm/pcic.h>
@@ -56,6 +74,33 @@ unsigned long profile_pc(struct pt_regs *regs)
 {
 	extern char __copy_user_begin[], __copy_user_end[];
 	extern char __atomic_begin[], __atomic_end[];
+=======
+#include <asm/page.h>
+#include <asm/pcic.h>
+#include <asm/irq_regs.h>
+#include <asm/setup.h>
+
+#include "kernel.h"
+#include "irq.h"
+
+static __cacheline_aligned_in_smp DEFINE_SEQLOCK(timer_cs_lock);
+static __volatile__ u64 timer_cs_internal_counter = 0;
+static char timer_cs_enabled = 0;
+
+static struct clock_event_device timer_ce;
+static char timer_ce_enabled = 0;
+
+#ifdef CONFIG_SMP
+DEFINE_PER_CPU(struct clock_event_device, sparc32_clockevent);
+#endif
+
+DEFINE_SPINLOCK(rtc_lock);
+EXPORT_SYMBOL(rtc_lock);
+
+unsigned long profile_pc(struct pt_regs *regs)
+{
+	extern char __copy_user_begin[], __copy_user_end[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	extern char __bzero_begin[], __bzero_end[];
 
 	unsigned long pc = regs->pc;
@@ -63,8 +108,11 @@ unsigned long profile_pc(struct pt_regs *regs)
 	if (in_lock_functions(pc) ||
 	    (pc >= (unsigned long) __copy_user_begin &&
 	     pc < (unsigned long) __copy_user_end) ||
+<<<<<<< HEAD
 	    (pc >= (unsigned long) __atomic_begin &&
 	     pc < (unsigned long) __atomic_end) ||
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (pc >= (unsigned long) __bzero_begin &&
 	     pc < (unsigned long) __bzero_end))
 		pc = regs->u_regs[UREG_RETPC];
@@ -73,6 +121,7 @@ unsigned long profile_pc(struct pt_regs *regs)
 
 EXPORT_SYMBOL(profile_pc);
 
+<<<<<<< HEAD
 __volatile__ unsigned int *master_l10_counter;
 
 u32 (*do_arch_gettimeoffset)(void);
@@ -105,6 +154,162 @@ static irqreturn_t timer_interrupt(int dummy, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+=======
+volatile u32 __iomem *master_l10_counter;
+
+irqreturn_t notrace timer_interrupt(int dummy, void *dev_id)
+{
+	if (timer_cs_enabled) {
+		write_seqlock(&timer_cs_lock);
+		timer_cs_internal_counter++;
+		sparc_config.clear_clock_irq();
+		write_sequnlock(&timer_cs_lock);
+	} else {
+		sparc_config.clear_clock_irq();
+	}
+
+	if (timer_ce_enabled)
+		timer_ce.event_handler(&timer_ce);
+
+	return IRQ_HANDLED;
+}
+
+static int timer_ce_shutdown(struct clock_event_device *evt)
+{
+	timer_ce_enabled = 0;
+	smp_mb();
+	return 0;
+}
+
+static int timer_ce_set_periodic(struct clock_event_device *evt)
+{
+	timer_ce_enabled = 1;
+	smp_mb();
+	return 0;
+}
+
+static __init void setup_timer_ce(void)
+{
+	struct clock_event_device *ce = &timer_ce;
+
+	BUG_ON(smp_processor_id() != boot_cpu_id);
+
+	ce->name     = "timer_ce";
+	ce->rating   = 100;
+	ce->features = CLOCK_EVT_FEAT_PERIODIC;
+	ce->set_state_shutdown = timer_ce_shutdown;
+	ce->set_state_periodic = timer_ce_set_periodic;
+	ce->tick_resume = timer_ce_set_periodic;
+	ce->cpumask  = cpu_possible_mask;
+	ce->shift    = 32;
+	ce->mult     = div_sc(sparc_config.clock_rate, NSEC_PER_SEC,
+	                      ce->shift);
+	clockevents_register_device(ce);
+}
+
+static unsigned int sbus_cycles_offset(void)
+{
+	u32 val, offset;
+
+	val = sbus_readl(master_l10_counter);
+	offset = (val >> TIMER_VALUE_SHIFT) & TIMER_VALUE_MASK;
+
+	/* Limit hit? */
+	if (val & TIMER_LIMIT_BIT)
+		offset += sparc_config.cs_period;
+
+	return offset;
+}
+
+static u64 timer_cs_read(struct clocksource *cs)
+{
+	unsigned int seq, offset;
+	u64 cycles;
+
+	do {
+		seq = read_seqbegin(&timer_cs_lock);
+
+		cycles = timer_cs_internal_counter;
+		offset = sparc_config.get_cycles_offset();
+	} while (read_seqretry(&timer_cs_lock, seq));
+
+	/* Count absolute cycles */
+	cycles *= sparc_config.cs_period;
+	cycles += offset;
+
+	return cycles;
+}
+
+static struct clocksource timer_cs = {
+	.name	= "timer_cs",
+	.rating	= 100,
+	.read	= timer_cs_read,
+	.mask	= CLOCKSOURCE_MASK(64),
+	.flags	= CLOCK_SOURCE_IS_CONTINUOUS,
+};
+
+static __init int setup_timer_cs(void)
+{
+	timer_cs_enabled = 1;
+	return clocksource_register_hz(&timer_cs, sparc_config.clock_rate);
+}
+
+#ifdef CONFIG_SMP
+static int percpu_ce_shutdown(struct clock_event_device *evt)
+{
+	int cpu = cpumask_first(evt->cpumask);
+
+	sparc_config.load_profile_irq(cpu, 0);
+	return 0;
+}
+
+static int percpu_ce_set_periodic(struct clock_event_device *evt)
+{
+	int cpu = cpumask_first(evt->cpumask);
+
+	sparc_config.load_profile_irq(cpu, SBUS_CLOCK_RATE / HZ);
+	return 0;
+}
+
+static int percpu_ce_set_next_event(unsigned long delta,
+				    struct clock_event_device *evt)
+{
+	int cpu = cpumask_first(evt->cpumask);
+	unsigned int next = (unsigned int)delta;
+
+	sparc_config.load_profile_irq(cpu, next);
+	return 0;
+}
+
+void register_percpu_ce(int cpu)
+{
+	struct clock_event_device *ce = &per_cpu(sparc32_clockevent, cpu);
+	unsigned int features = CLOCK_EVT_FEAT_PERIODIC;
+
+	if (sparc_config.features & FEAT_L14_ONESHOT)
+		features |= CLOCK_EVT_FEAT_ONESHOT;
+
+	ce->name           = "percpu_ce";
+	ce->rating         = 200;
+	ce->features       = features;
+	ce->set_state_shutdown = percpu_ce_shutdown;
+	ce->set_state_periodic = percpu_ce_set_periodic;
+	ce->set_state_oneshot = percpu_ce_shutdown;
+	ce->set_next_event = percpu_ce_set_next_event;
+	ce->cpumask        = cpumask_of(cpu);
+	ce->shift          = 32;
+	ce->mult           = div_sc(sparc_config.clock_rate, NSEC_PER_SEC,
+	                            ce->shift);
+	ce->max_delta_ns   = clockevent_delta2ns(sparc_config.clock_rate, ce);
+	ce->max_delta_ticks = (unsigned long)sparc_config.clock_rate;
+	ce->min_delta_ns   = clockevent_delta2ns(100, ce);
+	ce->min_delta_ticks = 100;
+
+	clockevents_register_device(ce);
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned char mostek_read_byte(struct device *dev, u32 ofs)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -136,7 +341,11 @@ static struct platform_device m48t59_rtc = {
 	},
 };
 
+<<<<<<< HEAD
 static int __devinit clock_probe(struct platform_device *op)
+=======
+static int clock_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dp = op->dev.of_node;
 	const char *model = of_get_property(dp, "model", NULL);
@@ -145,7 +354,11 @@ static int __devinit clock_probe(struct platform_device *op)
 		return -ENODEV;
 
 	/* Only the primary RTC has an address property */
+<<<<<<< HEAD
 	if (!of_find_property(dp, "address", NULL))
+=======
+	if (!of_property_present(dp, "address"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	m48t59_rtc.resource = &op->resource[0];
@@ -167,7 +380,11 @@ static int __devinit clock_probe(struct platform_device *op)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id clock_match[] = {
+=======
+static const struct of_device_id clock_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "eeprom",
 	},
@@ -178,7 +395,10 @@ static struct platform_driver clock_driver = {
 	.probe		= clock_probe,
 	.driver = {
 		.name = "rtc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = clock_match,
 	},
 };
@@ -195,6 +415,7 @@ static int __init clock_init(void)
  */
 fs_initcall(clock_init);
 
+<<<<<<< HEAD
 
 u32 sbus_do_gettimeoffset(void)
 {
@@ -214,25 +435,48 @@ u32 arch_gettimeoffset(void)
 	if (unlikely(!do_arch_gettimeoffset))
 		return 0;
 	return do_arch_gettimeoffset();
+=======
+static void __init sparc32_late_time_init(void)
+{
+	if (sparc_config.features & FEAT_L10_CLOCKEVENT)
+		setup_timer_ce();
+	if (sparc_config.features & FEAT_L10_CLOCKSOURCE)
+		setup_timer_cs();
+#ifdef CONFIG_SMP
+	register_percpu_ce(smp_processor_id());
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init sbus_time_init(void)
 {
+<<<<<<< HEAD
 	do_arch_gettimeoffset = sbus_do_gettimeoffset;
 
 	btfixup();
 
 	sparc_irq_config.init_timers(timer_interrupt);
+=======
+	sparc_config.get_cycles_offset = sbus_cycles_offset;
+	sparc_config.init_timers();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init time_init(void)
 {
+<<<<<<< HEAD
+=======
+	sparc_config.features = 0;
+	late_time_init = sparc32_late_time_init;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pcic_present())
 		pci_time_init();
 	else
 		sbus_time_init();
 }
 
+<<<<<<< HEAD
 
 static int set_rtc_mmss(unsigned long secs)
 {
@@ -246,3 +490,5 @@ static int set_rtc_mmss(unsigned long secs)
 
 	return err;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

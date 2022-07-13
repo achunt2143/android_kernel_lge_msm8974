@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __USBHID_H
 #define __USBHID_H
 
@@ -8,6 +12,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -22,6 +27,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -34,6 +41,7 @@
 #include <linux/input.h>
 
 /*  API provided by hid-core.c for USB HID drivers */
+<<<<<<< HEAD
 int usbhid_wait_io(struct hid_device* hid);
 void usbhid_close(struct hid_device *hid);
 int usbhid_open(struct hid_device *hid);
@@ -42,6 +50,9 @@ void usbhid_submit_report
 (struct hid_device *hid, struct hid_report *report, unsigned char dir);
 int usbhid_get_power(struct hid_device *hid);
 void usbhid_put_power(struct hid_device *hid);
+=======
+void usbhid_init_reports(struct hid_device *hid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct usb_interface *usbhid_find_interface(int minor);
 
 /* iofl flags */
@@ -53,8 +64,25 @@ struct usb_interface *usbhid_find_interface(int minor);
 #define HID_CLEAR_HALT		6
 #define HID_DISCONNECTED	7
 #define HID_STARTED		8
+<<<<<<< HEAD
 #define HID_REPORTED_IDLE	9
 #define HID_KEYS_PRESSED	10
+=======
+#define HID_KEYS_PRESSED	10
+#define HID_NO_BANDWIDTH	11
+#define HID_RESUME_RUNNING	12
+/*
+ * The device is opened, meaning there is a client that is interested
+ * in data coming from the device.
+ */
+#define HID_OPENED		13
+/*
+ * We are polling input endpoint by [re]submitting IN URB, because
+ * either HID device is opened or ALWAYS POLL quirk is set for the
+ * device.
+ */
+#define HID_IN_POLLING		14
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * USB-specific HID struct, to be pointed to
@@ -88,6 +116,10 @@ struct usbhid_device {
 	dma_addr_t outbuf_dma;                                          /* Output buffer dma */
 	unsigned long last_out;							/* record of last output for timeouts */
 
+<<<<<<< HEAD
+=======
+	struct mutex mutex;						/* start/stop/open/close */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t lock;						/* fifo spinlock */
 	unsigned long iofl;                                             /* I/O flags (CTRL_RUNNING, OUT_RUNNING) */
 	struct timer_list io_retry;                                     /* Retry timer */
@@ -95,6 +127,7 @@ struct usbhid_device {
 	unsigned int retry_delay;                                       /* Delay length in ms */
 	struct work_struct reset_work;                                  /* Task context for resets */
 	wait_queue_head_t wait;						/* For sleeping */
+<<<<<<< HEAD
 	int ledcount;							/* counting the number of active leds */
 
 	struct work_struct led_work;					/* Task context for setting LEDs */
@@ -102,6 +135,12 @@ struct usbhid_device {
 
 #define	hid_to_usb_dev(hid_dev) \
 	container_of(hid_dev->dev.parent->parent, struct usb_device, dev)
+=======
+};
+
+#define	hid_to_usb_dev(hid_dev) \
+	to_usb_device(hid_dev->dev.parent->parent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif
 

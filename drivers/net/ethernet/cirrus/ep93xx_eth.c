@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * EP93xx ethernet network device driver
  * Copyright (C) 2006 Lennert Buytenhek <buytenh@wantstofly.org>
  * Dedicated to Marija Kulikova.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s: " fmt, __func__
@@ -18,7 +25,10 @@
 #include <linux/mii.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/moduleparam.h>
 #include <linux/platform_device.h>
@@ -26,10 +36,16 @@
 #include <linux/io.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #include <mach/hardware.h>
 
 #define DRV_MODULE_NAME		"ep93xx-eth"
 #define DRV_MODULE_VERSION	"0.1"
+=======
+#include <linux/platform_data/eth-ep93xx.h>
+
+#define DRV_MODULE_NAME		"ep93xx-eth"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RX_QUEUE_ENTRIES	64
 #define TX_QUEUE_ENTRIES	8
@@ -229,9 +245,16 @@ static void ep93xx_mdio_write(struct net_device *dev, int phy_id, int reg, int d
 		pr_info("mdio write timed out\n");
 }
 
+<<<<<<< HEAD
 static int ep93xx_rx(struct net_device *dev, int processed, int budget)
 {
 	struct ep93xx_priv *ep = netdev_priv(dev);
+=======
+static int ep93xx_rx(struct net_device *dev, int budget)
+{
+	struct ep93xx_priv *ep = netdev_priv(dev);
+	int processed = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (processed < budget) {
 		int entry;
@@ -295,7 +318,11 @@ static int ep93xx_rx(struct net_device *dev, int processed, int budget)
 			skb_put(skb, length);
 			skb->protocol = eth_type_trans(skb, dev);
 
+<<<<<<< HEAD
 			netif_receive_skb(skb);
+=======
+			napi_gro_receive(&ep->napi, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			dev->stats.rx_packets++;
 			dev->stats.rx_bytes += length;
@@ -311,16 +338,20 @@ err:
 	return processed;
 }
 
+<<<<<<< HEAD
 static int ep93xx_have_more_rx(struct ep93xx_priv *ep)
 {
 	struct ep93xx_rstat *rstat = ep->descs->rstat + ep->rx_pointer;
 	return !!((rstat->rstat0 & RSTAT0_RFP) && (rstat->rstat1 & RSTAT1_RFP));
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ep93xx_poll(struct napi_struct *napi, int budget)
 {
 	struct ep93xx_priv *ep = container_of(napi, struct ep93xx_priv, napi);
 	struct net_device *dev = ep->dev;
+<<<<<<< HEAD
 	int rx = 0;
 
 poll_some_more:
@@ -340,6 +371,15 @@ poll_some_more:
 
 		if (more && napi_reschedule(napi))
 			goto poll_some_more;
+=======
+	int rx;
+
+	rx = ep93xx_rx(dev, budget);
+	if (rx < budget && napi_complete_done(napi, rx)) {
+		spin_lock_irq(&ep->rx_lock);
+		wrl(ep, REG_INTEN, REG_INTEN_TX | REG_INTEN_RX);
+		spin_unlock_irq(&ep->rx_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (rx) {
@@ -350,7 +390,11 @@ poll_some_more:
 	return rx;
 }
 
+<<<<<<< HEAD
 static int ep93xx_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t ep93xx_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ep93xx_priv *ep = netdev_priv(dev);
 	struct ep93xx_tdesc *txd;
@@ -469,6 +513,12 @@ static void ep93xx_free_buffers(struct ep93xx_priv *ep)
 	struct device *dev = ep->dev->dev.parent;
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (!ep->descs)
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < RX_QUEUE_ENTRIES; i++) {
 		dma_addr_t d;
 
@@ -476,8 +526,12 @@ static void ep93xx_free_buffers(struct ep93xx_priv *ep)
 		if (d)
 			dma_unmap_single(dev, d, PKT_BUF_SIZE, DMA_FROM_DEVICE);
 
+<<<<<<< HEAD
 		if (ep->rx_buf[i] != NULL)
 			kfree(ep->rx_buf[i]);
+=======
+		kfree(ep->rx_buf[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < TX_QUEUE_ENTRIES; i++) {
@@ -487,12 +541,20 @@ static void ep93xx_free_buffers(struct ep93xx_priv *ep)
 		if (d)
 			dma_unmap_single(dev, d, PKT_BUF_SIZE, DMA_TO_DEVICE);
 
+<<<<<<< HEAD
 		if (ep->tx_buf[i] != NULL)
 			kfree(ep->tx_buf[i]);
+=======
+		kfree(ep->tx_buf[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dma_free_coherent(dev, sizeof(struct ep93xx_descs), ep->descs,
 							ep->descs_dma_addr);
+<<<<<<< HEAD
+=======
+	ep->descs = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ep93xx_alloc_buffers(struct ep93xx_priv *ep)
@@ -710,6 +772,7 @@ static int ep93xx_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 
 static void ep93xx_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
+<<<<<<< HEAD
 	strcpy(info->driver, DRV_MODULE_NAME);
 	strcpy(info->version, DRV_MODULE_VERSION);
 }
@@ -724,6 +787,26 @@ static int ep93xx_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct ep93xx_priv *ep = netdev_priv(dev);
 	return mii_ethtool_sset(&ep->mii, cmd);
+=======
+	strscpy(info->driver, DRV_MODULE_NAME, sizeof(info->driver));
+}
+
+static int ep93xx_get_link_ksettings(struct net_device *dev,
+				     struct ethtool_link_ksettings *cmd)
+{
+	struct ep93xx_priv *ep = netdev_priv(dev);
+
+	mii_ethtool_get_link_ksettings(&ep->mii, cmd);
+
+	return 0;
+}
+
+static int ep93xx_set_link_ksettings(struct net_device *dev,
+				     const struct ethtool_link_ksettings *cmd)
+{
+	struct ep93xx_priv *ep = netdev_priv(dev);
+	return mii_ethtool_set_link_ksettings(&ep->mii, cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ep93xx_nway_reset(struct net_device *dev)
@@ -740,19 +823,31 @@ static u32 ep93xx_get_link(struct net_device *dev)
 
 static const struct ethtool_ops ep93xx_ethtool_ops = {
 	.get_drvinfo		= ep93xx_get_drvinfo,
+<<<<<<< HEAD
 	.get_settings		= ep93xx_get_settings,
 	.set_settings		= ep93xx_set_settings,
 	.nway_reset		= ep93xx_nway_reset,
 	.get_link		= ep93xx_get_link,
+=======
+	.nway_reset		= ep93xx_nway_reset,
+	.get_link		= ep93xx_get_link,
+	.get_link_ksettings	= ep93xx_get_link_ksettings,
+	.set_link_ksettings	= ep93xx_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct net_device_ops ep93xx_netdev_ops = {
 	.ndo_open		= ep93xx_open,
 	.ndo_stop		= ep93xx_close,
 	.ndo_start_xmit		= ep93xx_xmit,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= ep93xx_ioctl,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+	.ndo_eth_ioctl		= ep93xx_ioctl,
+	.ndo_validate_addr	= eth_validate_addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address	= eth_mac_addr,
 };
 
@@ -764,7 +859,11 @@ static struct net_device *ep93xx_dev_alloc(struct ep93xx_eth_data *data)
 	if (dev == NULL)
 		return NULL;
 
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, data->dev_addr, ETH_ALEN);
+=======
+	eth_hw_addr_set(dev, data->dev_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->ethtool_ops = &ep93xx_ethtool_ops;
 	dev->netdev_ops = &ep93xx_netdev_ops;
@@ -775,6 +874,7 @@ static struct net_device *ep93xx_dev_alloc(struct ep93xx_eth_data *data)
 }
 
 
+<<<<<<< HEAD
 static int ep93xx_eth_remove(struct platform_device *pdev)
 {
 	struct net_device *dev;
@@ -784,6 +884,17 @@ static int ep93xx_eth_remove(struct platform_device *pdev)
 	if (dev == NULL)
 		return 0;
 	platform_set_drvdata(pdev, NULL);
+=======
+static void ep93xx_eth_remove(struct platform_device *pdev)
+{
+	struct net_device *dev;
+	struct ep93xx_priv *ep;
+	struct resource *mem;
+
+	dev = platform_get_drvdata(pdev);
+	if (dev == NULL)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ep = netdev_priv(dev);
 
@@ -795,6 +906,7 @@ static int ep93xx_eth_remove(struct platform_device *pdev)
 		iounmap(ep->base_addr);
 
 	if (ep->res != NULL) {
+<<<<<<< HEAD
 		release_resource(ep->res);
 		kfree(ep->res);
 	}
@@ -802,6 +914,13 @@ static int ep93xx_eth_remove(struct platform_device *pdev)
 	free_netdev(dev);
 
 	return 0;
+=======
+		mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+		release_mem_region(mem->start, resource_size(mem));
+	}
+
+	free_netdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ep93xx_eth_probe(struct platform_device *pdev)
@@ -815,7 +934,11 @@ static int ep93xx_eth_probe(struct platform_device *pdev)
 
 	if (pdev == NULL)
 		return -ENODEV;
+<<<<<<< HEAD
 	data = pdev->dev.platform_data;
+=======
+	data = dev_get_platdata(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	irq = platform_get_irq(pdev, 0);
@@ -830,7 +953,11 @@ static int ep93xx_eth_probe(struct platform_device *pdev)
 	ep = netdev_priv(dev);
 	ep->dev = dev;
 	SET_NETDEV_DEV(dev, &pdev->dev);
+<<<<<<< HEAD
 	netif_napi_add(dev, &ep->napi, ep93xx_poll, 64);
+=======
+	netif_napi_add(dev, &ep->napi, ep93xx_poll);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(pdev, dev);
 
@@ -880,6 +1007,7 @@ err_out:
 
 static struct platform_driver ep93xx_eth_driver = {
 	.probe		= ep93xx_eth_probe,
+<<<<<<< HEAD
 	.remove		= ep93xx_eth_remove,
 	.driver		= {
 		.name	= "ep93xx-eth",
@@ -900,5 +1028,16 @@ static void __exit ep93xx_eth_cleanup_module(void)
 
 module_init(ep93xx_eth_init_module);
 module_exit(ep93xx_eth_cleanup_module);
+=======
+	.remove_new	= ep93xx_eth_remove,
+	.driver		= {
+		.name	= "ep93xx-eth",
+	},
+};
+
+module_platform_driver(ep93xx_eth_driver);
+
+MODULE_DESCRIPTION("Cirrus EP93xx Ethernet driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:ep93xx-eth");

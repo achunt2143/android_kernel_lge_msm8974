@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _OMFS_H
 #define _OMFS_H
 
@@ -19,8 +23,13 @@ struct omfs_sb_info {
 	unsigned long **s_imap;
 	int s_imap_size;
 	struct mutex s_bitmap_lock;
+<<<<<<< HEAD
 	int s_uid;
 	int s_gid;
+=======
+	kuid_t s_uid;
+	kgid_t s_gid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int s_dmask;
 	int s_fmask;
 };

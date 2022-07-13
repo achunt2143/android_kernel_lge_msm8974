@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * c67x00-hcd.h: Cypress C67X00 USB HCD
  *
  * Copyright (C) 2006-2008 Barco N.V.
  *    Derived from the Cypress cy7c67200/300 ezusb linux driver and
  *    based on multiple host controller drivers inside the linux kernel.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
  * MA  02110-1301  USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _USB_C67X00_HCD_H
@@ -45,7 +52,11 @@
 /*
  * The current implementation switches between _STD (default) and _ISO (when
  * isochronous transfers are scheduled), in order to optimize the throughput
+<<<<<<< HEAD
  * in normal cicrumstances, but also provide good isochronous behaviour.
+=======
+ * in normal circumstances, but also provide good isochronous behaviour.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Bandwidth is described in bit time so with a 12MHz USB clock and 1ms
  * frames; there are 12000 bit times per frame.
@@ -90,7 +101,11 @@ struct c67x00_hcd {
 	u16 next_td_addr;
 	u16 next_buf_addr;
 
+<<<<<<< HEAD
 	struct tasklet_struct tasklet;
+=======
+	struct work_struct work;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct completion endpoint_disable;
 
@@ -123,7 +138,10 @@ int c67x00_urb_dequeue(struct usb_hcd *hcd, struct urb *urb, int status);
 void c67x00_endpoint_disable(struct usb_hcd *hcd,
 			     struct usb_host_endpoint *ep);
 
+<<<<<<< HEAD
 void c67x00_hcd_msg_received(struct c67x00_sie *sie, u16 msg);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void c67x00_sched_kick(struct c67x00_hcd *c67x00);
 int c67x00_sched_start_scheduler(struct c67x00_hcd *c67x00);
 void c67x00_sched_stop_scheduler(struct c67x00_hcd *c67x00);

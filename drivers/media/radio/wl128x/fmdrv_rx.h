@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  FM Driver for Connectivity chip of Texas Instruments.
  *  FM RX module header.
  *
  *  Copyright (C) 2011 Texas Instruments
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -17,6 +22,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _FMDRV_RX_H
@@ -40,7 +47,10 @@ void fm_rx_reset_station_info(struct fmdev *);
 int fm_rx_seek(struct fmdev *, u32, u32, u32);
 
 int fm_rx_get_rds_mode(struct fmdev *, u8 *);
+<<<<<<< HEAD
 int fm_rx_get_rds_system(struct fmdev *, u8 *);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int fm_rx_get_mute_mode(struct fmdev *, u8 *);
 int fm_rx_get_volume(struct fmdev *, u16 *);
 int fm_rx_get_band_freq_range(struct fmdev *,

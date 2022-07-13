@@ -14,6 +14,11 @@
 
 /dts-v1/;
 
+<<<<<<< HEAD
+=======
+/include/ "fsl/e500v1_power_isa.dtsi"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 / {
 	model = "KSI8560";
 	compatible = "emerson,KSI8560";
@@ -161,13 +166,19 @@
 				PHY1: ethernet-phy@1 {
 					interrupt-parent = <&mpic>;
 					reg = <0x1>;
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				};
 
 				PHY2: ethernet-phy@2 {
 					interrupt-parent = <&mpic>;
 					reg = <0x2>;
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				};
 
 				tbi0: tbi-phy@11 {
@@ -284,7 +295,10 @@
 				PHY0: ethernet-phy@0 {
 					interrupt-parent = <&mpic>;
 					reg = <0x0>;
+<<<<<<< HEAD
 					device_type = "ethernet-phy";
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				};
 			};
 
@@ -342,6 +356,10 @@
 
 
 	chosen {
+<<<<<<< HEAD
 		linux,stdout-path = "/soc/cpm/serial@91a00";
+=======
+		stdout-path = "/soc/cpm/serial@91a00";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };

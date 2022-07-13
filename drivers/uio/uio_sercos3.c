@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sercos3: UIO driver for the Automata Sercos III PCI card
 
    Copyright (C) 2008 Linutronix GmbH
@@ -116,13 +120,18 @@ static int sercos3_setup_iomem(struct pci_dev *dev, struct uio_info *info,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit sercos3_pci_probe(struct pci_dev *dev,
+=======
+static int sercos3_pci_probe(struct pci_dev *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       const struct pci_device_id *id)
 {
 	struct uio_info *info;
 	struct sercos3_priv *priv;
 	int i;
 
+<<<<<<< HEAD
 	info = kzalloc(sizeof(struct uio_info), GFP_KERNEL);
 	if (!info)
 		return -ENOMEM;
@@ -133,6 +142,18 @@ static int __devinit sercos3_pci_probe(struct pci_dev *dev,
 
 	if (pci_enable_device(dev))
 		goto out_free_priv;
+=======
+	info = devm_kzalloc(&dev->dev, sizeof(struct uio_info), GFP_KERNEL);
+	if (!info)
+		return -ENOMEM;
+
+	priv = devm_kzalloc(&dev->dev, sizeof(struct sercos3_priv), GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+	if (pci_enable_device(dev))
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci_request_regions(dev, "sercos3"))
 		goto out_disable;
@@ -173,10 +194,13 @@ out_unmap:
 	pci_release_regions(dev);
 out_disable:
 	pci_disable_device(dev);
+<<<<<<< HEAD
 out_free_priv:
 	kfree(priv);
 out_free:
 	kfree(info);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENODEV;
 }
 
@@ -188,16 +212,25 @@ static void sercos3_pci_remove(struct pci_dev *dev)
 	uio_unregister_device(info);
 	pci_release_regions(dev);
 	pci_disable_device(dev);
+<<<<<<< HEAD
 	pci_set_drvdata(dev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 5; i++) {
 		if (info->mem[i].internal_addr)
 			iounmap(info->mem[i].internal_addr);
 	}
+<<<<<<< HEAD
 	kfree(info->priv);
 	kfree(info);
 }
 
 static struct pci_device_id sercos3_pci_ids[] __devinitdata = {
+=======
+}
+
+static struct pci_device_id sercos3_pci_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.vendor =       PCI_VENDOR_ID_PLX,
 		.device =       PCI_DEVICE_ID_PLX_9030,
@@ -226,6 +259,7 @@ static struct pci_driver sercos3_pci_driver = {
 	.remove = sercos3_pci_remove,
 };
 
+<<<<<<< HEAD
 static int __init sercos3_init_module(void)
 {
 	return pci_register_driver(&sercos3_pci_driver);
@@ -239,6 +273,9 @@ static void __exit sercos3_exit_module(void)
 module_init(sercos3_init_module);
 module_exit(sercos3_exit_module);
 
+=======
+module_pci_driver(sercos3_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("UIO driver for the Automata Sercos III PCI card");
 MODULE_AUTHOR("John Ogness <john.ogness@linutronix.de>");
 MODULE_LICENSE("GPL v2");

@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /*
  *  arch/s390/hypfs/hypfs_diag.c
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Hypervisor filesystem for Linux on s390. Diag 204 and 224
  *    implementation.
  *
@@ -16,6 +21,7 @@
 #include <linux/string.h>
 #include <linux/vmalloc.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <asm/ebcdic.h>
 #include "hypfs.h"
 
@@ -43,15 +49,28 @@ enum diag204_format {
 #define LPAR_PHYS_FLG  0x80
 
 static char *diag224_cpu_names;			/* diag 224 name table */
+=======
+#include <asm/diag.h>
+#include <asm/ebcdic.h>
+#include "hypfs_diag.h"
+#include "hypfs.h"
+
+#define DBFS_D204_HDR_VERSION	0
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum diag204_sc diag204_store_sc;	/* used subcode for store */
 static enum diag204_format diag204_info_type;	/* used diag 204 data format */
 
 static void *diag204_buf;		/* 4K aligned buffer for diag204 data */
+<<<<<<< HEAD
 static void *diag204_buf_vmalloc;	/* vmalloc pointer for diag204 data */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int diag204_buf_pages;		/* number of pages for diag204 data */
 
 static struct dentry *dbfs_d204_file;
 
+<<<<<<< HEAD
 /*
  * DIAG 204 data structures and member access functions.
  *
@@ -352,6 +371,19 @@ static int diag204(unsigned long subcode, unsigned long size, void *addr)
 	return _size;
 }
 
+=======
+enum diag204_format diag204_get_info_type(void)
+{
+	return diag204_info_type;
+}
+
+static void diag204_set_info_type(enum diag204_format type)
+{
+	diag204_info_type = type;
+}
+
+/* Diagnose 204 functions */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * For the old diag subcode 4 with simple data format we have to use real
  * memory. If we use subcode 6 or 7 with extended data format, we can (and
@@ -361,6 +393,7 @@ static int diag204(unsigned long subcode, unsigned long size, void *addr)
 
 static void diag204_free_buffer(void)
 {
+<<<<<<< HEAD
 	if (!diag204_buf)
 		return;
 	if (diag204_buf_vmalloc) {
@@ -398,11 +431,19 @@ static void *diag204_alloc_rbuf(void)
 }
 
 static void *diag204_get_buffer(enum diag204_format fmt, int *pages)
+=======
+	vfree(diag204_buf);
+	diag204_buf = NULL;
+}
+
+void *diag204_get_buffer(enum diag204_format fmt, int *pages)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (diag204_buf) {
 		*pages = diag204_buf_pages;
 		return diag204_buf;
 	}
+<<<<<<< HEAD
 	if (fmt == INFO_SIMPLE) {
 		*pages = 1;
 		return diag204_alloc_rbuf();
@@ -414,6 +455,23 @@ static void *diag204_get_buffer(enum diag204_format fmt, int *pages)
 		else
 			return diag204_alloc_vbuf(*pages);
 	}
+=======
+	if (fmt == DIAG204_INFO_SIMPLE) {
+		*pages = 1;
+	} else {/* DIAG204_INFO_EXT */
+		*pages = diag204((unsigned long)DIAG204_SUBC_RSI |
+				 (unsigned long)DIAG204_INFO_EXT, 0, NULL);
+		if (*pages <= 0)
+			return ERR_PTR(-EOPNOTSUPP);
+	}
+	diag204_buf = __vmalloc_node(array_size(*pages, PAGE_SIZE),
+				     PAGE_SIZE, GFP_KERNEL, NUMA_NO_NODE,
+				     __builtin_return_address(0));
+	if (!diag204_buf)
+		return ERR_PTR(-ENOMEM);
+	diag204_buf_pages = *pages;
+	return diag204_buf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -435,6 +493,7 @@ static int diag204_probe(void)
 	void *buf;
 	int pages, rc;
 
+<<<<<<< HEAD
 	buf = diag204_get_buffer(INFO_EXT, &pages);
 	if (!IS_ERR(buf)) {
 		if (diag204((unsigned long)SUBC_STIB7 |
@@ -447,6 +506,20 @@ static int diag204_probe(void)
 			    (unsigned long)INFO_EXT, pages, buf) >= 0) {
 			diag204_store_sc = SUBC_STIB6;
 			diag204_info_type = INFO_EXT;
+=======
+	buf = diag204_get_buffer(DIAG204_INFO_EXT, &pages);
+	if (!IS_ERR(buf)) {
+		if (diag204((unsigned long)DIAG204_SUBC_STIB7 |
+			    (unsigned long)DIAG204_INFO_EXT, pages, buf) >= 0) {
+			diag204_store_sc = DIAG204_SUBC_STIB7;
+			diag204_set_info_type(DIAG204_INFO_EXT);
+			goto out;
+		}
+		if (diag204((unsigned long)DIAG204_SUBC_STIB6 |
+			    (unsigned long)DIAG204_INFO_EXT, pages, buf) >= 0) {
+			diag204_store_sc = DIAG204_SUBC_STIB6;
+			diag204_set_info_type(DIAG204_INFO_EXT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 		diag204_free_buffer();
@@ -454,11 +527,16 @@ static int diag204_probe(void)
 
 	/* subcodes 6 and 7 failed, now try subcode 4 */
 
+<<<<<<< HEAD
 	buf = diag204_get_buffer(INFO_SIMPLE, &pages);
+=======
+	buf = diag204_get_buffer(DIAG204_INFO_SIMPLE, &pages);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(buf)) {
 		rc = PTR_ERR(buf);
 		goto fail_alloc;
 	}
+<<<<<<< HEAD
 	if (diag204((unsigned long)SUBC_STIB4 |
 		    (unsigned long)INFO_SIMPLE, pages, buf) >= 0) {
 		diag204_store_sc = SUBC_STIB4;
@@ -466,6 +544,15 @@ static int diag204_probe(void)
 		goto out;
 	} else {
 		rc = -ENOSYS;
+=======
+	if (diag204((unsigned long)DIAG204_SUBC_STIB4 |
+		    (unsigned long)DIAG204_INFO_SIMPLE, pages, buf) >= 0) {
+		diag204_store_sc = DIAG204_SUBC_STIB4;
+		diag204_set_info_type(DIAG204_INFO_SIMPLE);
+		goto out;
+	} else {
+		rc = -EOPNOTSUPP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto fail_store;
 	}
 out:
@@ -476,6 +563,7 @@ fail_alloc:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int diag204_do_store(void *buf, int pages)
 {
 	int rc;
@@ -541,6 +629,15 @@ static int diag224_idx2name(int index, char *name)
 	name[CPU_NAME_LEN] = 0;
 	strim(name);
 	return 0;
+=======
+int diag204_store(void *buf, int pages)
+{
+	int rc;
+
+	rc = diag204((unsigned long)diag204_store_sc |
+		     (unsigned long)diag204_get_info_type(), pages, buf);
+	return rc < 0 ? -EOPNOTSUPP : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct dbfs_d204_hdr {
@@ -565,8 +662,13 @@ static int dbfs_d204_create(void **data, void **data_free_ptr, size_t *size)
 	base = vzalloc(buf_size);
 	if (!base)
 		return -ENOMEM;
+<<<<<<< HEAD
 	d204 = page_align_ptr(base + sizeof(d204->hdr)) - sizeof(d204->hdr);
 	rc = diag204_do_store(d204->buf, diag204_buf_pages);
+=======
+	d204 = PTR_ALIGN(base + sizeof(d204->hdr), PAGE_SIZE) - sizeof(d204->hdr);
+	rc = diag204_store(d204->buf, diag204_buf_pages);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		vfree(base);
 		return rc;
@@ -591,6 +693,7 @@ __init int hypfs_diag_init(void)
 	int rc;
 
 	if (diag204_probe()) {
+<<<<<<< HEAD
 		pr_err("The hardware system does not support hypfs\n");
 		return -ENODATA;
 	}
@@ -609,11 +712,27 @@ __init int hypfs_diag_init(void)
 		}
 	}
 	return 0;
+=======
+		pr_info("The hardware system does not support hypfs\n");
+		return -ENODATA;
+	}
+
+	if (diag204_get_info_type() == DIAG204_INFO_EXT)
+		hypfs_dbfs_create_file(&dbfs_file_d204);
+
+	rc = hypfs_diag_fs_init();
+	if (rc) {
+		pr_err("The hardware system does not provide all functions required by hypfs\n");
+		debugfs_remove(dbfs_d204_file);
+	}
+	return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void hypfs_diag_exit(void)
 {
 	debugfs_remove(dbfs_d204_file);
+<<<<<<< HEAD
 	diag224_delete_name_table();
 	diag204_free_buffer();
 	hypfs_dbfs_remove_file(&dbfs_file_d204);
@@ -776,3 +895,9 @@ int hypfs_diag_create_files(struct super_block *sb, struct dentry *root)
 err_out:
 	return rc;
 }
+=======
+	hypfs_diag_fs_exit();
+	diag204_free_buffer();
+	hypfs_dbfs_remove_file(&dbfs_file_d204);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

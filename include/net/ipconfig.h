@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 1997 Martin Mares
  *
@@ -6,6 +10,11 @@
 
 /* The following are initdata: */
 
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int ic_proto_enabled;	/* Protocols enabled (see IC_xxx) */
 extern int ic_set_manually;	/* IPconfig parameters set manually */
 

@@ -1,9 +1,18 @@
+<<<<<<< HEAD
 #ifndef _SH_SETUP_H
 #define _SH_SETUP_H
 
 #include <asm-generic/setup.h>
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _SH_SETUP_H
+#define _SH_SETUP_H
+
+#include <uapi/asm/setup.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is set up by the setup-routine at boot-time
  */
@@ -22,6 +31,9 @@ void sh_mv_setup(void);
 void check_for_initrd(void);
 void per_cpu_trap_init(void);
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _SH_SETUP_H */

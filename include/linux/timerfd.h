@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  include/linux/timerfd.h
  *
@@ -8,6 +12,7 @@
 #ifndef _LINUX_TIMERFD_H
 #define _LINUX_TIMERFD_H
 
+<<<<<<< HEAD
 /* For O_CLOEXEC and O_NONBLOCK */
 #include <linux/fcntl.h>
 
@@ -22,6 +27,9 @@
 #define TFD_TIMER_CANCEL_ON_SET (1 << 1)
 #define TFD_CLOEXEC O_CLOEXEC
 #define TFD_NONBLOCK O_NONBLOCK
+=======
+#include <uapi/linux/timerfd.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TFD_SHARED_FCNTL_FLAGS (TFD_CLOEXEC | TFD_NONBLOCK)
 /* Flags for timerfd_create.  */

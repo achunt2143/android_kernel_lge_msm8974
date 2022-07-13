@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  USB Hanwang tablet support
  *
  *  Copyright (c) 2010 Xing Wei <weixing@hanwang.com.cn>
+<<<<<<< HEAD
  *
  */
 
@@ -20,12 +25,15 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/usb/input.h>
 
@@ -36,6 +44,13 @@
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE(DRIVER_LICENSE);
+=======
+#include <linux/usb/input.h>
+
+MODULE_AUTHOR("Xing Wei <weixing@hanwang.com.cn>");
+MODULE_DESCRIPTION("USB Hanwang tablet driver");
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define USB_VENDOR_ID_HANWANG		0x0b57
 #define HANWANG_TABLET_INT_CLASS	0x0003
@@ -63,6 +78,10 @@ MODULE_LICENSE(DRIVER_LICENSE);
 enum hanwang_tablet_type {
 	HANWANG_ART_MASTER_III,
 	HANWANG_ART_MASTER_HD,
+<<<<<<< HEAD
+=======
+	HANWANG_ART_MASTER_II,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct hanwang {
@@ -99,6 +118,11 @@ static const struct hanwang_features features_array[] = {
 	  ART_MASTER_PKGLEN_MAX, 0x7f00, 0x4f60, 0x3f, 0x7f, 2048 },
 	{ 0x8401, "Hanwang Art Master HD 5012", HANWANG_ART_MASTER_HD,
 	  ART_MASTER_PKGLEN_MAX, 0x678e, 0x4150, 0x3f, 0x7f, 1024 },
+<<<<<<< HEAD
+=======
+	{ 0x8503, "Hanwang Art Master II", HANWANG_ART_MASTER_II,
+	  ART_MASTER_PKGLEN_MAX, 0x27de, 0x1cfe, 0x3f, 0x7f, 1024 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const int hw_eventtypes[] = {
@@ -127,14 +151,39 @@ static void hanwang_parse_packet(struct hanwang *hanwang)
 	struct usb_device *dev = hanwang->usbdev;
 	enum hanwang_tablet_type type = hanwang->features->type;
 	int i;
+<<<<<<< HEAD
 	u16 x, y, p;
+=======
+	u16 p;
+
+	if (type == HANWANG_ART_MASTER_II) {
+		hanwang->current_tool = BTN_TOOL_PEN;
+		hanwang->current_id = STYLUS_DEVICE_ID;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (data[0]) {
 	case 0x02:	/* data packet */
 		switch (data[1]) {
 		case 0x80:	/* tool prox out */
+<<<<<<< HEAD
 			hanwang->current_id = 0;
 			input_report_key(input_dev, hanwang->current_tool, 0);
+=======
+			if (type != HANWANG_ART_MASTER_II) {
+				hanwang->current_id = 0;
+				input_report_key(input_dev,
+						 hanwang->current_tool, 0);
+			}
+			break;
+
+		case 0x00:	/* artmaster ii pen leave */
+			if (type == HANWANG_ART_MASTER_II) {
+				hanwang->current_id = 0;
+				input_report_key(input_dev,
+						 hanwang->current_tool, 0);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case 0xc2:	/* first time tool prox in */
@@ -154,15 +203,22 @@ static void hanwang_parse_packet(struct hanwang *hanwang)
 			default:
 				hanwang->current_id = 0;
 				dev_dbg(&dev->dev,
+<<<<<<< HEAD
 					"unknown tablet tool %02x ", data[0]);
+=======
+					"unknown tablet tool %02x\n", data[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 			break;
 
 		default:	/* tool data packet */
+<<<<<<< HEAD
 			x = (data[2] << 8) | data[3];
 			y = (data[4] << 8) | data[5];
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (type) {
 			case HANWANG_ART_MASTER_III:
 				p = (data[6] << 3) |
@@ -171,6 +227,10 @@ static void hanwang_parse_packet(struct hanwang *hanwang)
 				break;
 
 			case HANWANG_ART_MASTER_HD:
+<<<<<<< HEAD
+=======
+			case HANWANG_ART_MASTER_II:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				p = (data[7] >> 6) | (data[6] << 2);
 				break;
 
@@ -180,6 +240,7 @@ static void hanwang_parse_packet(struct hanwang *hanwang)
 			}
 
 			input_report_abs(input_dev, ABS_X,
+<<<<<<< HEAD
 						le16_to_cpup((__le16 *)&x));
 			input_report_abs(input_dev, ABS_Y,
 						le16_to_cpup((__le16 *)&y));
@@ -191,6 +252,25 @@ static void hanwang_parse_packet(struct hanwang *hanwang)
 			input_report_key(input_dev, BTN_STYLUS2, data[1] & 0x04);
 			break;
 		}
+=======
+					 be16_to_cpup((__be16 *)&data[2]));
+			input_report_abs(input_dev, ABS_Y,
+					 be16_to_cpup((__be16 *)&data[4]));
+			input_report_abs(input_dev, ABS_PRESSURE, p);
+			input_report_abs(input_dev, ABS_TILT_X, data[7] & 0x3f);
+			input_report_abs(input_dev, ABS_TILT_Y, data[8] & 0x7f);
+			input_report_key(input_dev, BTN_STYLUS, data[1] & 0x02);
+
+			if (type != HANWANG_ART_MASTER_II)
+				input_report_key(input_dev, BTN_STYLUS2,
+						 data[1] & 0x04);
+			else
+				input_report_key(input_dev, BTN_TOOL_PEN, 1);
+
+			break;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_report_abs(input_dev, ABS_MISC, hanwang->current_id);
 		input_event(input_dev, EV_MSC, MSC_SERIAL,
 				hanwang->features->pid);
@@ -202,8 +282,13 @@ static void hanwang_parse_packet(struct hanwang *hanwang)
 
 		switch (type) {
 		case HANWANG_ART_MASTER_III:
+<<<<<<< HEAD
 			input_report_key(input_dev, BTN_TOOL_FINGER, data[1] ||
 							data[2] || data[3]);
+=======
+			input_report_key(input_dev, BTN_TOOL_FINGER,
+					 data[1] || data[2] || data[3]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			input_report_abs(input_dev, ABS_WHEEL, data[1]);
 			input_report_key(input_dev, BTN_0, data[2]);
 			for (i = 0; i < 8; i++)
@@ -227,6 +312,13 @@ static void hanwang_parse_packet(struct hanwang *hanwang)
 					 BTN_5 + i, data[6] & (1 << i));
 			}
 			break;
+<<<<<<< HEAD
+=======
+
+		case HANWANG_ART_MASTER_II:
+			dev_dbg(&dev->dev, "error packet  %02x\n", data[0]);
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		input_report_abs(input_dev, ABS_MISC, hanwang->current_id);
@@ -234,7 +326,11 @@ static void hanwang_parse_packet(struct hanwang *hanwang)
 		break;
 
 	default:
+<<<<<<< HEAD
 		dev_dbg(&dev->dev, "error packet  %02x ", data[0]);
+=======
+		dev_dbg(&dev->dev, "error packet  %02x\n", data[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -314,6 +410,12 @@ static int hanwang_probe(struct usb_interface *intf, const struct usb_device_id 
 	int error;
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (intf->cur_altsetting->desc.bNumEndpoints < 1)
+		return -ENODEV;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hanwang = kzalloc(sizeof(struct hanwang), GFP_KERNEL);
 	input_dev = input_allocate_device();
 	if (!hanwang || !input_dev) {
@@ -345,7 +447,11 @@ static int hanwang_probe(struct usb_interface *intf, const struct usb_device_id 
 	usb_make_path(dev, hanwang->phys, sizeof(hanwang->phys));
 	strlcat(hanwang->phys, "/input0", sizeof(hanwang->phys));
 
+<<<<<<< HEAD
 	strlcpy(hanwang->name, hanwang->features->name, sizeof(hanwang->name));
+=======
+	strscpy(hanwang->name, hanwang->features->name, sizeof(hanwang->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_dev->name = hanwang->name;
 	input_dev->phys = hanwang->phys;
 	usb_to_input_id(dev, &input_dev->id);

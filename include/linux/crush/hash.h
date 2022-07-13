@@ -1,6 +1,19 @@
+<<<<<<< HEAD
 #ifndef CEPH_CRUSH_HASH_H
 #define CEPH_CRUSH_HASH_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef CEPH_CRUSH_HASH_H
+#define CEPH_CRUSH_HASH_H
+
+#ifdef __KERNEL__
+# include <linux/types.h>
+#else
+# include "crush_compat.h"
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CRUSH_HASH_RJENKINS1   0
 
 #define CRUSH_HASH_DEFAULT CRUSH_HASH_RJENKINS1

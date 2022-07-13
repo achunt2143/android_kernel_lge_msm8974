@@ -43,6 +43,31 @@ struct mlx4_mod_stat_cfg {
 	u8 log_pg_sz_m;
 };
 
+<<<<<<< HEAD
+=======
+struct mlx4_port_cap {
+	u8  link_state;
+	u8  supported_port_types;
+	u8  suggested_type;
+	u8  default_sense;
+	u8  log_max_macs;
+	u8  log_max_vlans;
+	int ib_mtu;
+	int max_port_width;
+	int max_vl;
+	int max_tc_eth;
+	int max_gids;
+	int max_pkeys;
+	u64 def_mac;
+	u16 eth_mtu;
+	int trans_type;
+	int vendor_oui;
+	u16 wavelength;
+	u64 trans_code;
+	u8 dmfs_optimized_state;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mlx4_dev_cap {
 	int max_srq_sz;
 	int max_qp_sz;
@@ -56,16 +81,23 @@ struct mlx4_dev_cap {
 	int max_mpts;
 	int reserved_eqs;
 	int max_eqs;
+<<<<<<< HEAD
 	int reserved_mtts;
 	int max_mrw_sz;
 	int reserved_mrws;
 	int max_mtt_seg;
+=======
+	int num_sys_eqs;
+	int reserved_mtts;
+	int reserved_mrws;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int max_requester_per_qp;
 	int max_responder_per_qp;
 	int max_rdma_global;
 	int local_ca_ack_delay;
 	int num_ports;
 	u32 max_msg_sz;
+<<<<<<< HEAD
 	int ib_mtu[MLX4_MAX_PORTS + 1];
 	int max_port_width[MLX4_MAX_PORTS + 1];
 	int max_vl[MLX4_MAX_PORTS + 1];
@@ -79,6 +111,13 @@ struct mlx4_dev_cap {
 	u64 trans_code[MLX4_MAX_PORTS + 1];
 	u16 stat_rate_support;
 	u64 flags;
+=======
+	u16 stat_rate_support;
+	int fs_log_max_ucast_qp_range_size;
+	int fs_max_num_qp_per_entry;
+	u64 flags;
+	u64 flags2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int reserved_uars;
 	int uar_size;
 	int min_page_sz;
@@ -110,12 +149,24 @@ struct mlx4_dev_cap {
 	u32 reserved_lkey;
 	u64 max_icm_sz;
 	int max_gso_sz;
+<<<<<<< HEAD
 	u8  supported_port_types[MLX4_MAX_PORTS + 1];
 	u8  suggested_type[MLX4_MAX_PORTS + 1];
 	u8  default_sense[MLX4_MAX_PORTS + 1];
 	u8  log_max_macs[MLX4_MAX_PORTS + 1];
 	u8  log_max_vlans[MLX4_MAX_PORTS + 1];
 	u32 max_counters;
+=======
+	int max_rss_tbl_sz;
+	u32 max_counters;
+	u32 dmfs_high_rate_qpn_base;
+	u32 dmfs_high_rate_qpn_range;
+	struct mlx4_rate_limit_caps rl_caps;
+	u32 health_buffer_addrs;
+	struct mlx4_port_cap port_cap[MLX4_MAX_PORTS + 1];
+	bool wol_port[MLX4_MAX_PORTS + 1];
+	bool map_clock_to_user;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_func_cap {
@@ -130,8 +181,28 @@ struct mlx4_func_cap {
 	int	max_eq;
 	int	reserved_eq;
 	int	mcg_quota;
+<<<<<<< HEAD
 	u8	physical_port[MLX4_MAX_PORTS + 1];
 	u8	port_flags[MLX4_MAX_PORTS + 1];
+=======
+	struct mlx4_spec_qps spec_qps;
+	u32	reserved_lkey;
+	u8	physical_port;
+	u8	flags0;
+	u8	flags1;
+	u64	phys_port_id;
+	u32	extra_flags;
+};
+
+struct mlx4_func {
+	int	bus;
+	int	device;
+	int	function;
+	int	physical_function;
+	int	rsvd_eqs;
+	int	max_eq;
+	int	rsvd_uars;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_adapter {
@@ -152,17 +223,39 @@ struct mlx4_init_hca_param {
 	u64 cmpt_base;
 	u64 mtt_base;
 	u64 global_caps;
+<<<<<<< HEAD
 	u16 log_mc_entry_sz;
 	u16 log_mc_hash_sz;
+=======
+	u8 log_mc_entry_sz;
+	u8 log_mc_hash_sz;
+	u16 hca_core_clock; /* Internal Clock Frequency (in MHz) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8  log_num_qps;
 	u8  log_num_srqs;
 	u8  log_num_cqs;
 	u8  log_num_eqs;
+<<<<<<< HEAD
+=======
+	u16 num_sys_eqs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8  log_rd_per_qp;
 	u8  log_mc_table_sz;
 	u8  log_mpt_sz;
 	u8  log_uar_sz;
+<<<<<<< HEAD
 	u8  uar_page_sz; /* log pg sz in 4k chunks */
+=======
+	u8  mw_enabled;  /* Enable memory windows */
+	u8  uar_page_sz; /* log pg sz in 4k chunks */
+	u8  steering_mode; /* for QUERY_HCA */
+	u8  dmfs_high_steer_mode; /* for QUERY_HCA */
+	u64 dev_cap_enabled;
+	u16 cqe_size; /* For use only when CQE stride feature enabled */
+	u16 eqe_size; /* For use only when EQE stride feature enabled */
+	u8 rss_ip_frags;
+	u8 phv_check_en; /* for QUERY_HCA */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mlx4_init_ib_param {
@@ -186,13 +279,25 @@ struct mlx4_set_ib_param {
 	u32 cap_mask;
 };
 
+<<<<<<< HEAD
 int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap);
 int mlx4_QUERY_FUNC_CAP(struct mlx4_dev *dev, struct mlx4_func_cap *func_cap);
+=======
+void mlx4_dev_cap_dump(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap);
+int mlx4_QUERY_DEV_CAP(struct mlx4_dev *dev, struct mlx4_dev_cap *dev_cap);
+int mlx4_QUERY_PORT(struct mlx4_dev *dev, int port, struct mlx4_port_cap *port_cap);
+int mlx4_QUERY_FUNC_CAP(struct mlx4_dev *dev, u8 gen_or_port,
+			struct mlx4_func_cap *func_cap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_QUERY_FUNC_CAP_wrapper(struct mlx4_dev *dev, int slave,
 				struct mlx4_vhcr *vhcr,
 				struct mlx4_cmd_mailbox *inbox,
 				struct mlx4_cmd_mailbox *outbox,
 				struct mlx4_cmd_info *cmd);
+<<<<<<< HEAD
+=======
+int mlx4_QUERY_FUNC(struct mlx4_dev *dev, struct mlx4_func *func, int slave);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mlx4_MAP_FA(struct mlx4_dev *dev, struct mlx4_icm *icm);
 int mlx4_UNMAP_FA(struct mlx4_dev *dev);
 int mlx4_RUN_FW(struct mlx4_dev *dev);
@@ -207,5 +312,9 @@ int mlx4_MAP_ICM_AUX(struct mlx4_dev *dev, struct mlx4_icm *icm);
 int mlx4_UNMAP_ICM_AUX(struct mlx4_dev *dev);
 int mlx4_NOP(struct mlx4_dev *dev);
 int mlx4_MOD_STAT_CFG(struct mlx4_dev *dev, struct mlx4_mod_stat_cfg *cfg);
+<<<<<<< HEAD
+=======
+void mlx4_opreq_action(struct work_struct *work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* MLX4_FW_H */

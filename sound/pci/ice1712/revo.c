@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   ALSA driver for ICEnsemble ICE1712 (Envy24)
  *
  *   Lowlevel functions for M-Audio Audiophile 192, Revolution 7.1 and 5.1
  *
  *	Copyright (c) 2003 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,6 +27,10 @@
  */      
 
 #include <asm/io.h>
+=======
+ */      
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -36,6 +45,10 @@
 struct revo51_spec {
 	struct snd_i2c_device *dev;
 	struct snd_pt2258 *pt2258;
+<<<<<<< HEAD
+=======
+	struct ak4114 *ak4114;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void revo_i2s_mclk_changed(struct snd_ice1712 *ice)
@@ -235,7 +248,11 @@ static const struct snd_akm4xxx_adc_channel revo51_adc[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct snd_akm4xxx akm_revo_front __devinitdata = {
+=======
+static const struct snd_akm4xxx akm_revo_front = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type = SND_AK4381,
 	.num_dacs = 2,
 	.ops = {
@@ -244,7 +261,11 @@ static struct snd_akm4xxx akm_revo_front __devinitdata = {
 	.dac_info = revo71_front,
 };
 
+<<<<<<< HEAD
 static struct snd_ak4xxx_private akm_revo_front_priv __devinitdata = {
+=======
+static const struct snd_ak4xxx_private akm_revo_front_priv = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.caddr = 1,
 	.cif = 0,
 	.data_mask = VT1724_REVO_CDOUT,
@@ -256,7 +277,11 @@ static struct snd_ak4xxx_private akm_revo_front_priv __devinitdata = {
 	.mask_flags = 0,
 };
 
+<<<<<<< HEAD
 static struct snd_akm4xxx akm_revo_surround __devinitdata = {
+=======
+static const struct snd_akm4xxx akm_revo_surround = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type = SND_AK4355,
 	.idx_offset = 1,
 	.num_dacs = 6,
@@ -266,7 +291,11 @@ static struct snd_akm4xxx akm_revo_surround __devinitdata = {
 	.dac_info = revo71_surround,
 };
 
+<<<<<<< HEAD
 static struct snd_ak4xxx_private akm_revo_surround_priv __devinitdata = {
+=======
+static const struct snd_ak4xxx_private akm_revo_surround_priv = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.caddr = 3,
 	.cif = 0,
 	.data_mask = VT1724_REVO_CDOUT,
@@ -278,7 +307,11 @@ static struct snd_ak4xxx_private akm_revo_surround_priv __devinitdata = {
 	.mask_flags = 0,
 };
 
+<<<<<<< HEAD
 static struct snd_akm4xxx akm_revo51 __devinitdata = {
+=======
+static const struct snd_akm4xxx akm_revo51 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type = SND_AK4358,
 	.num_dacs = 8,
 	.ops = {
@@ -287,7 +320,11 @@ static struct snd_akm4xxx akm_revo51 __devinitdata = {
 	.dac_info = revo51_dac,
 };
 
+<<<<<<< HEAD
 static struct snd_ak4xxx_private akm_revo51_priv __devinitdata = {
+=======
+static const struct snd_ak4xxx_private akm_revo51_priv = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.caddr = 2,
 	.cif = 0,
 	.data_mask = VT1724_REVO_CDOUT,
@@ -299,13 +336,21 @@ static struct snd_ak4xxx_private akm_revo51_priv __devinitdata = {
 	.mask_flags = 0,
 };
 
+<<<<<<< HEAD
 static struct snd_akm4xxx akm_revo51_adc __devinitdata = {
+=======
+static const struct snd_akm4xxx akm_revo51_adc = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type = SND_AK5365,
 	.num_adcs = 2,
 	.adc_info = revo51_adc,
 };
 
+<<<<<<< HEAD
 static struct snd_ak4xxx_private akm_revo51_adc_priv __devinitdata = {
+=======
+static const struct snd_ak4xxx_private akm_revo51_adc_priv = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.caddr = 2,
 	.cif = 0,
 	.data_mask = VT1724_REVO_CDOUT,
@@ -346,7 +391,11 @@ static const struct snd_akm4xxx_dac_channel ap192_dac[] = {
 	AK_DAC("PCM Playback Volume", 2)
 };
 
+<<<<<<< HEAD
 static struct snd_akm4xxx akm_ap192 __devinitdata = {
+=======
+static const struct snd_akm4xxx akm_ap192 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type = SND_AK4358,
 	.num_dacs = 2,
 	.ops = {
@@ -355,14 +404,24 @@ static struct snd_akm4xxx akm_ap192 __devinitdata = {
 	.dac_info = ap192_dac,
 };
 
+<<<<<<< HEAD
 static struct snd_ak4xxx_private akm_ap192_priv __devinitdata = {
+=======
+static const struct snd_ak4xxx_private akm_ap192_priv = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.caddr = 2,
 	.cif = 0,
 	.data_mask = VT1724_REVO_CDOUT,
 	.clk_mask = VT1724_REVO_CCLK,
+<<<<<<< HEAD
 	.cs_mask = VT1724_REVO_CS0 | VT1724_REVO_CS1,
 	.cs_addr = VT1724_REVO_CS1,
 	.cs_none = VT1724_REVO_CS0 | VT1724_REVO_CS1,
+=======
+	.cs_mask = VT1724_REVO_CS0 | VT1724_REVO_CS3,
+	.cs_addr = VT1724_REVO_CS3,
+	.cs_none = VT1724_REVO_CS0 | VT1724_REVO_CS3,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.add_flags = VT1724_REVO_CCLK, /* high at init */
 	.mask_flags = 0,
 };
@@ -373,7 +432,11 @@ static struct snd_ak4xxx_private akm_ap192_priv __devinitdata = {
  * CCLK (pin 34) -- GPIO1 pin 51 (shared with AK4358)
  * CSN  (pin 35) -- GPIO7 pin 59
  */
+<<<<<<< HEAD
 #define AK4114_ADDR	0x02
+=======
+#define AK4114_ADDR	0x00
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void write_data(struct snd_ice1712 *ice, unsigned int gpio,
 		       unsigned int data, int idx)
@@ -427,7 +490,11 @@ static unsigned int ap192_4wire_start(struct snd_ice1712 *ice)
 	tmp = snd_ice1712_gpio_read(ice);
 	tmp |= VT1724_REVO_CCLK; /* high at init */
 	tmp |= VT1724_REVO_CS0;
+<<<<<<< HEAD
 	tmp &= ~VT1724_REVO_CS1;
+=======
+	tmp &= ~VT1724_REVO_CS3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_ice1712_gpio_write(ice, tmp);
 	udelay(1);
 	return tmp;
@@ -435,7 +502,11 @@ static unsigned int ap192_4wire_start(struct snd_ice1712 *ice)
 
 static void ap192_4wire_finish(struct snd_ice1712 *ice, unsigned int tmp)
 {
+<<<<<<< HEAD
 	tmp |= VT1724_REVO_CS1;
+=======
+	tmp |= VT1724_REVO_CS3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp |= VT1724_REVO_CS0;
 	snd_ice1712_gpio_write(ice, tmp);
 	udelay(1);
@@ -468,6 +539,7 @@ static unsigned char ap192_ak4114_read(void *private_data, unsigned char addr)
 	return data;
 }
 
+<<<<<<< HEAD
 static int __devinit ap192_ak4114_init(struct snd_ice1712 *ice)
 {
 	static const unsigned char ak4114_init_vals[] = {
@@ -475,19 +547,40 @@ static int __devinit ap192_ak4114_init(struct snd_ice1712 *ice)
 		AK4114_DIF_I24I2S,
 		AK4114_TX1E,
 		AK4114_EFH_1024 | AK4114_DIT | AK4114_IPS(1),
+=======
+static int ap192_ak4114_init(struct snd_ice1712 *ice)
+{
+	static const unsigned char ak4114_init_vals[] = {
+		AK4114_RST | AK4114_PWN | AK4114_OCKS0,
+		AK4114_DIF_I24I2S,
+		AK4114_TX1E,
+		AK4114_EFH_1024 | AK4114_DIT | AK4114_IPS(0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		0,
 		0
 	};
 	static const unsigned char ak4114_init_txcsb[] = {
 		0x41, 0x02, 0x2c, 0x00, 0x00
 	};
+<<<<<<< HEAD
 	struct ak4114 *ak;
 	int err;
 
+=======
+	int err;
+
+	struct revo51_spec *spec;
+	spec = kzalloc(sizeof(*spec), GFP_KERNEL);
+	if (!spec)
+		return -ENOMEM;
+	ice->spec = spec;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = snd_ak4114_create(ice->card,
 				 ap192_ak4114_read,
 				 ap192_ak4114_write,
 				 ak4114_init_vals, ak4114_init_txcsb,
+<<<<<<< HEAD
 				 ice, &ak);
 	/* AK4114 in Revo cannot detect external rate correctly.
 	 * No reason to stop capture stream due to incorrect checks */
@@ -497,6 +590,19 @@ static int __devinit ap192_ak4114_init(struct snd_ice1712 *ice)
 }
 
 static int __devinit revo_init(struct snd_ice1712 *ice)
+=======
+				 ice, &spec->ak4114);
+	if (err < 0)
+		return err;
+	/* AK4114 in Revo cannot detect external rate correctly.
+	 * No reason to stop capture stream due to incorrect checks */
+	spec->ak4114->check_flags = AK4114_CHECK_NO_RATE;
+
+	return 0;
+}
+
+static int revo_init(struct snd_ice1712 *ice)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_akm4xxx *ak;
 	int err;
@@ -563,6 +669,12 @@ static int __devinit revo_init(struct snd_ice1712 *ice)
 					       ice);
 		if (err < 0)
 			return err;
+<<<<<<< HEAD
+=======
+		err = ap192_ak4114_init(ice);
+		if (err < 0)
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		
 		/* unmute all codecs */
 		snd_ice1712_gpio_write_bits(ice, VT1724_REVO_MUTE,
@@ -574,9 +686,15 @@ static int __devinit revo_init(struct snd_ice1712 *ice)
 }
 
 
+<<<<<<< HEAD
 static int __devinit revo_add_controls(struct snd_ice1712 *ice)
 {
 	struct revo51_spec *spec;
+=======
+static int revo_add_controls(struct snd_ice1712 *ice)
+{
+	struct revo51_spec *spec = ice->spec;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	switch (ice->eeprom.subvendor) {
@@ -598,7 +716,13 @@ static int __devinit revo_add_controls(struct snd_ice1712 *ice)
 		err = snd_ice1712_akm4xxx_build_controls(ice);
 		if (err < 0)
 			return err;
+<<<<<<< HEAD
 		err = ap192_ak4114_init(ice);
+=======
+		/* only capture SPDIF over AK4114 */
+		err = snd_ak4114_build(spec->ak4114, NULL,
+		   ice->pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0)
 			return err;
 		break;
@@ -607,7 +731,11 @@ static int __devinit revo_add_controls(struct snd_ice1712 *ice)
 }
 
 /* entry point */
+<<<<<<< HEAD
 struct snd_ice1712_card_info snd_vt1724_revo_cards[] __devinitdata = {
+=======
+struct snd_ice1712_card_info snd_vt1724_revo_cards[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.subvendor = VT1724_SUBDEVICE_REVOLUTION71,
 		.name = "M Audio Revolution-7.1",

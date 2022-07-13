@@ -1,18 +1,29 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * lib80211 crypt: host-based TKIP encryption implementation for lib80211
  *
  * Copyright (c) 2003-2004, Jouni Malinen <j@w1.fi>
  * Copyright (c) 2008, John W. Linville <linville@tuxdriver.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation. See README and COPYING for
  * more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/err.h>
+<<<<<<< HEAD
+=======
+#include <linux/fips.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -29,6 +40,11 @@
 #include <linux/ieee80211.h>
 #include <net/iw_handler.h>
 
+<<<<<<< HEAD
+=======
+#include <crypto/arc4.h>
+#include <crypto/hash.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/crypto.h>
 #include <linux/crc32.h>
 
@@ -63,10 +79,17 @@ struct lib80211_tkip_data {
 
 	int key_idx;
 
+<<<<<<< HEAD
 	struct crypto_blkcipher *rx_tfm_arc4;
 	struct crypto_hash *rx_tfm_michael;
 	struct crypto_blkcipher *tx_tfm_arc4;
 	struct crypto_hash *tx_tfm_michael;
+=======
+	struct arc4_ctx rx_ctx_arc4;
+	struct arc4_ctx tx_ctx_arc4;
+	struct crypto_shash *rx_tfm_michael;
+	struct crypto_shash *tx_tfm_michael;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* scratch buffers for virt_to_page() (crypto API) */
 	u8 rx_hdr[16], tx_hdr[16];
@@ -92,12 +115,19 @@ static void *lib80211_tkip_init(int key_idx)
 {
 	struct lib80211_tkip_data *priv;
 
+<<<<<<< HEAD
+=======
+	if (fips_enabled)
+		return NULL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv = kzalloc(sizeof(*priv), GFP_ATOMIC);
 	if (priv == NULL)
 		goto fail;
 
 	priv->key_idx = key_idx;
 
+<<<<<<< HEAD
 	priv->tx_tfm_arc4 = crypto_alloc_blkcipher("ecb(arc4)", 0,
 						CRYPTO_ALG_ASYNC);
 	if (IS_ERR(priv->tx_tfm_arc4)) {
@@ -107,11 +137,15 @@ static void *lib80211_tkip_init(int key_idx)
 
 	priv->tx_tfm_michael = crypto_alloc_hash("michael_mic", 0,
 						 CRYPTO_ALG_ASYNC);
+=======
+	priv->tx_tfm_michael = crypto_alloc_shash("michael_mic", 0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(priv->tx_tfm_michael)) {
 		priv->tx_tfm_michael = NULL;
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	priv->rx_tfm_arc4 = crypto_alloc_blkcipher("ecb(arc4)", 0,
 						CRYPTO_ALG_ASYNC);
 	if (IS_ERR(priv->rx_tfm_arc4)) {
@@ -121,6 +155,9 @@ static void *lib80211_tkip_init(int key_idx)
 
 	priv->rx_tfm_michael = crypto_alloc_hash("michael_mic", 0,
 						 CRYPTO_ALG_ASYNC);
+=======
+	priv->rx_tfm_michael = crypto_alloc_shash("michael_mic", 0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(priv->rx_tfm_michael)) {
 		priv->rx_tfm_michael = NULL;
 		goto fail;
@@ -130,6 +167,7 @@ static void *lib80211_tkip_init(int key_idx)
 
       fail:
 	if (priv) {
+<<<<<<< HEAD
 		if (priv->tx_tfm_michael)
 			crypto_free_hash(priv->tx_tfm_michael);
 		if (priv->tx_tfm_arc4)
@@ -138,6 +176,10 @@ static void *lib80211_tkip_init(int key_idx)
 			crypto_free_hash(priv->rx_tfm_michael);
 		if (priv->rx_tfm_arc4)
 			crypto_free_blkcipher(priv->rx_tfm_arc4);
+=======
+		crypto_free_shash(priv->tx_tfm_michael);
+		crypto_free_shash(priv->rx_tfm_michael);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(priv);
 	}
 
@@ -148,6 +190,7 @@ static void lib80211_tkip_deinit(void *priv)
 {
 	struct lib80211_tkip_data *_priv = priv;
 	if (_priv) {
+<<<<<<< HEAD
 		if (_priv->tx_tfm_michael)
 			crypto_free_hash(_priv->tx_tfm_michael);
 		if (_priv->tx_tfm_arc4)
@@ -158,6 +201,12 @@ static void lib80211_tkip_deinit(void *priv)
 			crypto_free_blkcipher(_priv->rx_tfm_arc4);
 	}
 	kfree(priv);
+=======
+		crypto_free_shash(_priv->tx_tfm_michael);
+		crypto_free_shash(_priv->rx_tfm_michael);
+	}
+	kfree_sensitive(priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u16 RotR1(u16 val)
@@ -353,6 +402,7 @@ static int lib80211_tkip_hdr(struct sk_buff *skb, int hdr_len,
 static int lib80211_tkip_encrypt(struct sk_buff *skb, int hdr_len, void *priv)
 {
 	struct lib80211_tkip_data *tkey = priv;
+<<<<<<< HEAD
 	struct blkcipher_desc desc = { .tfm = tkey->tx_tfm_arc4 };
 	int len;
 	u8 rc4key[16], *pos, *icv;
@@ -366,6 +416,16 @@ static int lib80211_tkip_encrypt(struct sk_buff *skb, int hdr_len, void *priv)
 			printk(KERN_DEBUG ": TKIP countermeasures: dropped "
 			       "TX packet to %pM\n", hdr->addr1);
 		}
+=======
+	int len;
+	u8 rc4key[16], *pos, *icv;
+	u32 crc;
+
+	if (tkey->flags & IEEE80211_CRYPTO_TKIP_COUNTERMEASURES) {
+		struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)skb->data;
+		net_dbg_ratelimited("TKIP countermeasures: dropped TX packet to %pM\n",
+				    hdr->addr1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -385,9 +445,16 @@ static int lib80211_tkip_encrypt(struct sk_buff *skb, int hdr_len, void *priv)
 	icv[2] = crc >> 16;
 	icv[3] = crc >> 24;
 
+<<<<<<< HEAD
 	crypto_blkcipher_setkey(tkey->tx_tfm_arc4, rc4key, 16);
 	sg_init_one(&sg, pos, len + 4);
 	return crypto_blkcipher_encrypt(&desc, &sg, &sg, len + 4);
+=======
+	arc4_setkey(&tkey->tx_ctx_arc4, rc4key, 16);
+	arc4_crypt(&tkey->tx_ctx_arc4, pos, pos, len + 4);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -406,7 +473,10 @@ static inline int tkip_replay_check(u32 iv32_n, u16 iv16_n,
 static int lib80211_tkip_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 {
 	struct lib80211_tkip_data *tkey = priv;
+<<<<<<< HEAD
 	struct blkcipher_desc desc = { .tfm = tkey->rx_tfm_arc4 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 rc4key[16];
 	u8 keyidx, *pos;
 	u32 iv32;
@@ -414,16 +484,24 @@ static int lib80211_tkip_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 	struct ieee80211_hdr *hdr;
 	u8 icv[4];
 	u32 crc;
+<<<<<<< HEAD
 	struct scatterlist sg;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int plen;
 
 	hdr = (struct ieee80211_hdr *)skb->data;
 
 	if (tkey->flags & IEEE80211_CRYPTO_TKIP_COUNTERMEASURES) {
+<<<<<<< HEAD
 		if (net_ratelimit()) {
 			printk(KERN_DEBUG ": TKIP countermeasures: dropped "
 			       "received packet from %pM\n", hdr->addr2);
 		}
+=======
+		net_dbg_ratelimited("TKIP countermeasures: dropped received packet from %pM\n",
+				    hdr->addr2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -433,14 +511,20 @@ static int lib80211_tkip_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 	pos = skb->data + hdr_len;
 	keyidx = pos[3];
 	if (!(keyidx & (1 << 5))) {
+<<<<<<< HEAD
 		if (net_ratelimit()) {
 			printk(KERN_DEBUG "TKIP: received packet without ExtIV"
 			       " flag from %pM\n", hdr->addr2);
 		}
+=======
+		net_dbg_ratelimited("TKIP: received packet without ExtIV flag from %pM\n",
+				    hdr->addr2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -2;
 	}
 	keyidx >>= 6;
 	if (tkey->key_idx != keyidx) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG "TKIP: RX tkey->key_idx=%d frame "
 		       "keyidx=%d priv=%p\n", tkey->key_idx, keyidx, priv);
 		return -6;
@@ -451,6 +535,15 @@ static int lib80211_tkip_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 			       " with keyid=%d that does not have a configured"
 			       " key\n", hdr->addr2, keyidx);
 		}
+=======
+		net_dbg_ratelimited("TKIP: RX tkey->key_idx=%d frame keyidx=%d\n",
+				    tkey->key_idx, keyidx);
+		return -6;
+	}
+	if (!tkey->key_set) {
+		net_dbg_ratelimited("TKIP: received packet from %pM with keyid=%d that does not have a configured key\n",
+				    hdr->addr2, keyidx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -3;
 	}
 	iv16 = (pos[0] << 8) | pos[2];
@@ -459,12 +552,18 @@ static int lib80211_tkip_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 
 	if (tkip_replay_check(iv32, iv16, tkey->rx_iv32, tkey->rx_iv16)) {
 #ifdef CONFIG_LIB80211_DEBUG
+<<<<<<< HEAD
 		if (net_ratelimit()) {
 			printk(KERN_DEBUG "TKIP: replay detected: STA=%pM"
 			       " previous TSC %08x%04x received TSC "
 			       "%08x%04x\n", hdr->addr2,
 			       tkey->rx_iv32, tkey->rx_iv16, iv32, iv16);
 		}
+=======
+		net_dbg_ratelimited("TKIP: replay detected: STA=%pM previous TSC %08x%04x received TSC %08x%04x\n",
+				    hdr->addr2, tkey->rx_iv32, tkey->rx_iv16,
+				    iv32, iv16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		tkey->dot11RSNAStatsTKIPReplays++;
 		return -4;
@@ -478,6 +577,7 @@ static int lib80211_tkip_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 
 	plen = skb->len - hdr_len - 12;
 
+<<<<<<< HEAD
 	crypto_blkcipher_setkey(tkey->rx_tfm_arc4, rc4key, 16);
 	sg_init_one(&sg, pos, plen + 4);
 	if (crypto_blkcipher_decrypt(&desc, &sg, &sg, plen + 4)) {
@@ -488,6 +588,10 @@ static int lib80211_tkip_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 		}
 		return -7;
 	}
+=======
+	arc4_setkey(&tkey->rx_ctx_arc4, rc4key, 16);
+	arc4_crypt(&tkey->rx_ctx_arc4, pos, pos, plen + 4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	crc = ~crc32_le(~0, pos, plen);
 	icv[0] = crc;
@@ -501,10 +605,15 @@ static int lib80211_tkip_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 			tkey->rx_phase1_done = 0;
 		}
 #ifdef CONFIG_LIB80211_DEBUG
+<<<<<<< HEAD
 		if (net_ratelimit()) {
 			printk(KERN_DEBUG "TKIP: ICV error detected: STA="
 			       "%pM\n", hdr->addr2);
 		}
+=======
+		net_dbg_ratelimited("TKIP: ICV error detected: STA=%pM\n",
+				    hdr->addr2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		tkey->dot11RSNAStatsTKIPICVErrors++;
 		return -5;
@@ -523,16 +632,25 @@ static int lib80211_tkip_decrypt(struct sk_buff *skb, int hdr_len, void *priv)
 	return keyidx;
 }
 
+<<<<<<< HEAD
 static int michael_mic(struct crypto_hash *tfm_michael, u8 * key, u8 * hdr,
 		       u8 * data, size_t data_len, u8 * mic)
 {
 	struct hash_desc desc;
 	struct scatterlist sg[2];
+=======
+static int michael_mic(struct crypto_shash *tfm_michael, u8 *key, u8 *hdr,
+		       u8 *data, size_t data_len, u8 *mic)
+{
+	SHASH_DESC_ON_STACK(desc, tfm_michael);
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (tfm_michael == NULL) {
 		pr_warn("%s(): tfm_michael == NULL\n", __func__);
 		return -1;
 	}
+<<<<<<< HEAD
 	sg_init_table(sg, 2);
 	sg_set_buf(&sg[0], hdr, 16);
 	sg_set_buf(&sg[1], data, data_len);
@@ -543,6 +661,28 @@ static int michael_mic(struct crypto_hash *tfm_michael, u8 * key, u8 * hdr,
 	desc.tfm = tfm_michael;
 	desc.flags = 0;
 	return crypto_hash_digest(&desc, sg, data_len + 16, mic);
+=======
+
+	desc->tfm = tfm_michael;
+
+	if (crypto_shash_setkey(tfm_michael, key, 8))
+		return -1;
+
+	err = crypto_shash_init(desc);
+	if (err)
+		goto out;
+	err = crypto_shash_update(desc, hdr, 16);
+	if (err)
+		goto out;
+	err = crypto_shash_update(desc, data, data_len);
+	if (err)
+		goto out;
+	err = crypto_shash_final(desc, mic);
+
+out:
+	shash_desc_zero(desc);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void michael_mic_hdr(struct sk_buff *skb, u8 * hdr)
@@ -565,7 +705,11 @@ static void michael_mic_hdr(struct sk_buff *skb, u8 * hdr)
 		memcpy(hdr, hdr11->addr3, ETH_ALEN);	/* DA */
 		memcpy(hdr + ETH_ALEN, hdr11->addr4, ETH_ALEN);	/* SA */
 		break;
+<<<<<<< HEAD
 	case 0:
+=======
+	default:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(hdr, hdr11->addr1, ETH_ALEN);	/* DA */
 		memcpy(hdr + ETH_ALEN, hdr11->addr2, ETH_ALEN);	/* SA */
 		break;
@@ -663,18 +807,31 @@ static int lib80211_tkip_set_key(void *key, int len, u8 * seq, void *priv)
 {
 	struct lib80211_tkip_data *tkey = priv;
 	int keyidx;
+<<<<<<< HEAD
 	struct crypto_hash *tfm = tkey->tx_tfm_michael;
 	struct crypto_blkcipher *tfm2 = tkey->tx_tfm_arc4;
 	struct crypto_hash *tfm3 = tkey->rx_tfm_michael;
 	struct crypto_blkcipher *tfm4 = tkey->rx_tfm_arc4;
+=======
+	struct crypto_shash *tfm = tkey->tx_tfm_michael;
+	struct arc4_ctx *tfm2 = &tkey->tx_ctx_arc4;
+	struct crypto_shash *tfm3 = tkey->rx_tfm_michael;
+	struct arc4_ctx *tfm4 = &tkey->rx_ctx_arc4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	keyidx = tkey->key_idx;
 	memset(tkey, 0, sizeof(*tkey));
 	tkey->key_idx = keyidx;
 	tkey->tx_tfm_michael = tfm;
+<<<<<<< HEAD
 	tkey->tx_tfm_arc4 = tfm2;
 	tkey->rx_tfm_michael = tfm3;
 	tkey->rx_tfm_arc4 = tfm4;
+=======
+	tkey->tx_ctx_arc4 = *tfm2;
+	tkey->rx_tfm_michael = tfm3;
+	tkey->rx_ctx_arc4 = *tfm4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len == TKIP_KEY_LEN) {
 		memcpy(tkey->key, key, TKIP_KEY_LEN);
 		tkey->key_set = 1;
@@ -704,12 +861,21 @@ static int lib80211_tkip_get_key(void *key, int len, u8 * seq, void *priv)
 	memcpy(key, tkey->key, TKIP_KEY_LEN);
 
 	if (seq) {
+<<<<<<< HEAD
 		/* Return the sequence number of the last transmitted frame. */
 		u16 iv16 = tkey->tx_iv16;
 		u32 iv32 = tkey->tx_iv32;
 		if (iv16 == 0)
 			iv32--;
 		iv16--;
+=======
+		/*
+		 * Not clear if this should return the value as is
+		 * or - as the code previously seemed to partially
+		 * have been written as - subtract one from it. It
+		 * was working this way for a long time so leave it.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq[0] = tkey->tx_iv16;
 		seq[1] = tkey->tx_iv16 >> 8;
 		seq[2] = tkey->tx_iv32;
@@ -721,6 +887,7 @@ static int lib80211_tkip_get_key(void *key, int len, u8 * seq, void *priv)
 	return TKIP_KEY_LEN;
 }
 
+<<<<<<< HEAD
 static char *lib80211_tkip_print_stats(char *p, void *priv)
 {
 	struct lib80211_tkip_data *tkip = priv;
@@ -745,6 +912,32 @@ static char *lib80211_tkip_print_stats(char *p, void *priv)
 		     tkip->dot11RSNAStatsTKIPICVErrors,
 		     tkip->dot11RSNAStatsTKIPLocalMICFailures);
 	return p;
+=======
+static void lib80211_tkip_print_stats(struct seq_file *m, void *priv)
+{
+	struct lib80211_tkip_data *tkip = priv;
+	seq_printf(m,
+		   "key[%d] alg=TKIP key_set=%d "
+		   "tx_pn=%02x%02x%02x%02x%02x%02x "
+		   "rx_pn=%02x%02x%02x%02x%02x%02x "
+		   "replays=%d icv_errors=%d local_mic_failures=%d\n",
+		   tkip->key_idx, tkip->key_set,
+		   (tkip->tx_iv32 >> 24) & 0xff,
+		   (tkip->tx_iv32 >> 16) & 0xff,
+		   (tkip->tx_iv32 >> 8) & 0xff,
+		   tkip->tx_iv32 & 0xff,
+		   (tkip->tx_iv16 >> 8) & 0xff,
+		   tkip->tx_iv16 & 0xff,
+		   (tkip->rx_iv32 >> 24) & 0xff,
+		   (tkip->rx_iv32 >> 16) & 0xff,
+		   (tkip->rx_iv32 >> 8) & 0xff,
+		   tkip->rx_iv32 & 0xff,
+		   (tkip->rx_iv16 >> 8) & 0xff,
+		   tkip->rx_iv16 & 0xff,
+		   tkip->dot11RSNAStatsTKIPReplays,
+		   tkip->dot11RSNAStatsTKIPICVErrors,
+		   tkip->dot11RSNAStatsTKIPLocalMICFailures);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct lib80211_crypto_ops lib80211_crypt_tkip = {

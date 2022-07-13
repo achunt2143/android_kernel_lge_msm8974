@@ -15,6 +15,7 @@
 #   $2 - kernel image file
 #   $3 - kernel map file
 #   $4 - default install path (blank if root directory)
+<<<<<<< HEAD
 #   $5 and more - kernel boot files; zImage*, uImage, cuImage.*, etc.
 #
 
@@ -53,3 +54,25 @@ while [ $# -ne 0 ]; do
 	cat $1 > $path/$image_name
 	shift
 done;
+=======
+
+set -e
+
+# this should work for both the pSeries zImage and the iSeries vmlinux.sm
+image_name=`basename $2`
+
+
+echo "Warning: '${INSTALLKERNEL}' command not available... Copying" \
+     "directly to $4/$image_name-$1" >&2
+
+if [ -f $4/$image_name-$1 ]; then
+	mv $4/$image_name-$1 $4/$image_name-$1.old
+fi
+
+if [ -f $4/System.map-$1 ]; then
+	mv $4/System.map-$1 $4/System-$1.old
+fi
+
+cat $2 > $4/$image_name-$1
+cp $3 $4/System.map-$1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

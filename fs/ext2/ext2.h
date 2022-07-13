@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1992, 1993, 1994, 1995
  * Remy Card (card@masi.ibp.fr)
@@ -15,6 +19,11 @@
 #include <linux/blockgroup_lock.h>
 #include <linux/percpu_counter.h>
 #include <linux/rbtree.h>
+<<<<<<< HEAD
+=======
+#include <linux/mm.h>
+#include <linux/highmem.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* XXX Here for now... not interested in restructing headers JUST now */
 
@@ -51,8 +60,13 @@ struct ext2_block_alloc_info {
 	/*
 	 * Was i_next_alloc_goal in ext2_inode_info
 	 * is the *physical* companion to i_next_alloc_block.
+<<<<<<< HEAD
 	 * it the the physical block number of the block which was most-recentl
 	 * allocated to this file.  This give us the goal (target) for the next
+=======
+	 * it is the physical block number of the block which was most-recently
+	 * allocated to this file.  This gives us the goal (target) for the next
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * allocation when we detect linearly ascending requests.
 	 */
 	ext2_fsblk_t		last_alloc_physical_block;
@@ -61,14 +75,23 @@ struct ext2_block_alloc_info {
 #define rsv_start rsv_window._rsv_start
 #define rsv_end rsv_window._rsv_end
 
+<<<<<<< HEAD
+=======
+struct mb_cache;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * second extended-fs super-block data in memory
  */
 struct ext2_sb_info {
+<<<<<<< HEAD
 	unsigned long s_frag_size;	/* Size of a fragment in bytes */
 	unsigned long s_frags_per_block;/* Number of fragments per block */
 	unsigned long s_inodes_per_block;/* Number of inodes per block */
 	unsigned long s_frags_per_group;/* Number of fragments in a group */
+=======
+	unsigned long s_inodes_per_block;/* Number of inodes per block */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long s_blocks_per_group;/* Number of blocks in a group */
 	unsigned long s_inodes_per_group;/* Number of inodes in a group */
 	unsigned long s_itb_per_group;	/* Number of inode table blocks per group */
@@ -82,8 +105,13 @@ struct ext2_sb_info {
 	struct buffer_head ** s_group_desc;
 	unsigned long  s_mount_opt;
 	unsigned long s_sb_block;
+<<<<<<< HEAD
 	uid_t s_resuid;
 	gid_t s_resgid;
+=======
+	kuid_t s_resuid;
+	kgid_t s_resgid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short s_mount_state;
 	unsigned short s_pad;
 	int s_addr_per_block_bits;
@@ -111,6 +139,12 @@ struct ext2_sb_info {
 	 * of the mount options.
 	 */
 	spinlock_t s_lock;
+<<<<<<< HEAD
+=======
+	struct mb_cache *s_ea_block_cache;
+	struct dax_device *s_daxdev;
+	u64 s_dax_part_off;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline spinlock_t *
@@ -170,8 +204,14 @@ static inline struct ext2_sb_info *EXT2_SB(struct super_block *sb)
  * Macro-instructions used to manage several block sizes
  */
 #define EXT2_MIN_BLOCK_SIZE		1024
+<<<<<<< HEAD
 #define	EXT2_MAX_BLOCK_SIZE		4096
 #define EXT2_MIN_BLOCK_LOG_SIZE		  10
+=======
+#define	EXT2_MAX_BLOCK_SIZE		65536
+#define EXT2_MIN_BLOCK_LOG_SIZE		  10
+#define EXT2_MAX_BLOCK_LOG_SIZE		  16
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT2_BLOCK_SIZE(s)		((s)->s_blocksize)
 #define	EXT2_ADDR_PER_BLOCK(s)		(EXT2_BLOCK_SIZE(s) / sizeof (__u32))
 #define EXT2_BLOCK_SIZE_BITS(s)		((s)->s_blocksize_bits)
@@ -180,6 +220,7 @@ static inline struct ext2_sb_info *EXT2_SB(struct super_block *sb)
 #define EXT2_FIRST_INO(s)		(EXT2_SB(s)->s_first_ino)
 
 /*
+<<<<<<< HEAD
  * Macro-instructions used to manage fragments
  */
 #define EXT2_MIN_FRAG_SIZE		1024
@@ -189,6 +230,8 @@ static inline struct ext2_sb_info *EXT2_SB(struct super_block *sb)
 #define EXT2_FRAGS_PER_BLOCK(s)		(EXT2_SB(s)->s_frags_per_block)
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Structure of a blocks group descriptor
  */
 struct ext2_group_desc
@@ -276,8 +319,11 @@ static inline __u32 ext2_mask_flags(umode_t mode, __u32 flags)
 /*
  * ioctl commands
  */
+<<<<<<< HEAD
 #define	EXT2_IOC_GETFLAGS		FS_IOC_GETFLAGS
 #define	EXT2_IOC_SETFLAGS		FS_IOC_SETFLAGS
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	EXT2_IOC_GETVERSION		FS_IOC_GETVERSION
 #define	EXT2_IOC_SETVERSION		FS_IOC_SETVERSION
 #define	EXT2_IOC_GETRSVSZ		_IOR('f', 5, long)
@@ -286,8 +332,11 @@ static inline __u32 ext2_mask_flags(umode_t mode, __u32 flags)
 /*
  * ioctl commands in 32 bit emulation
  */
+<<<<<<< HEAD
 #define EXT2_IOC32_GETFLAGS		FS_IOC32_GETFLAGS
 #define EXT2_IOC32_SETFLAGS		FS_IOC32_SETFLAGS
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT2_IOC32_GETVERSION		FS_IOC32_GETVERSION
 #define EXT2_IOC32_SETVERSION		FS_IOC32_SETVERSION
 
@@ -364,11 +413,18 @@ struct ext2_inode {
  */
 #define	EXT2_VALID_FS			0x0001	/* Unmounted cleanly */
 #define	EXT2_ERROR_FS			0x0002	/* Errors detected */
+<<<<<<< HEAD
+=======
+#define	EFSCORRUPTED			EUCLEAN	/* Filesystem is corrupted */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Mount flags
  */
+<<<<<<< HEAD
 #define EXT2_MOUNT_CHECK		0x000001  /* Do mount-time checks */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EXT2_MOUNT_OLDALLOC		0x000002  /* Don't use the new Orlov allocator */
 #define EXT2_MOUNT_GRPID		0x000004  /* Create files with directory's group */
 #define EXT2_MOUNT_DEBUG		0x000008  /* Some debugging messages */
@@ -380,10 +436,18 @@ struct ext2_inode {
 #define EXT2_MOUNT_NO_UID32		0x000200  /* Disable 32-bit UIDs */
 #define EXT2_MOUNT_XATTR_USER		0x004000  /* Extended user attributes */
 #define EXT2_MOUNT_POSIX_ACL		0x008000  /* POSIX Access Control Lists */
+<<<<<<< HEAD
 #define EXT2_MOUNT_XIP			0x010000  /* Execute in place */
 #define EXT2_MOUNT_USRQUOTA		0x020000  /* user quota */
 #define EXT2_MOUNT_GRPQUOTA		0x040000  /* group quota */
 #define EXT2_MOUNT_RESERVATION		0x080000  /* Preallocation */
+=======
+#define EXT2_MOUNT_XIP			0x010000  /* Obsolete, use DAX */
+#define EXT2_MOUNT_USRQUOTA		0x020000  /* user quota */
+#define EXT2_MOUNT_GRPQUOTA		0x040000  /* group quota */
+#define EXT2_MOUNT_RESERVATION		0x080000  /* Preallocation */
+#define EXT2_MOUNT_DAX			0x100000  /* Direct Access */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define clear_opt(o, opt)		o &= ~EXT2_MOUNT_##opt
@@ -405,6 +469,15 @@ struct ext2_inode {
 #define EXT2_ERRORS_DEFAULT		EXT2_ERRORS_CONTINUE
 
 /*
+<<<<<<< HEAD
+=======
+ * Allocation flags
+ */
+#define EXT2_ALLOC_NORESERVE            0x1	/* Do not use reservation
+						 * window for allocation */
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Structure of the super block
  */
 struct ext2_super_block {
@@ -597,6 +670,7 @@ struct ext2_dir_entry_2 {
 };
 
 /*
+<<<<<<< HEAD
  * Ext2 directory file types.  Only the low 3 bits are used.  The
  * other bits are reserved for now.
  */
@@ -613,6 +687,8 @@ enum {
 };
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * EXT2_DIR_PAD defines the directory entries boundaries
  *
  * NOTE: It must be a multiple of 4
@@ -637,8 +713,13 @@ static inline void verify_offsets(void)
  */
 struct ext2_mount_options {
 	unsigned long s_mount_opt;
+<<<<<<< HEAD
 	uid_t s_resuid;
 	gid_t s_resgid;
+=======
+	kuid_t s_resuid;
+	kgid_t s_resgid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -689,6 +770,12 @@ struct ext2_inode_info {
 	struct mutex truncate_mutex;
 	struct inode	vfs_inode;
 	struct list_head i_orphan;	/* unlinked but open inodes */
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_QUOTA
+	struct dquot __rcu *i_dquot[MAXQUOTAS];
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -714,6 +801,7 @@ static inline struct ext2_inode_info *EXT2_I(struct inode *inode)
 /* balloc.c */
 extern int ext2_bg_has_super(struct super_block *sb, int group);
 extern unsigned long ext2_bg_num_gdb(struct super_block *sb, int group);
+<<<<<<< HEAD
 extern ext2_fsblk_t ext2_new_block(struct inode *, unsigned long, int *);
 extern ext2_fsblk_t ext2_new_blocks(struct inode *, unsigned long,
 				unsigned long *, int *);
@@ -722,6 +810,15 @@ extern void ext2_free_blocks (struct inode *, unsigned long,
 extern unsigned long ext2_count_free_blocks (struct super_block *);
 extern unsigned long ext2_count_dirs (struct super_block *);
 extern void ext2_check_blocks_bitmap (struct super_block *);
+=======
+extern ext2_fsblk_t ext2_new_blocks(struct inode *, ext2_fsblk_t,
+				unsigned long *, int *, unsigned int);
+extern int ext2_data_block_valid(struct ext2_sb_info *sbi, ext2_fsblk_t start_blk,
+				 unsigned int count);
+extern void ext2_free_blocks(struct inode *, ext2_fsblk_t, unsigned long);
+extern unsigned long ext2_count_free_blocks (struct super_block *);
+extern unsigned long ext2_count_dirs (struct super_block *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct ext2_group_desc * ext2_get_group_desc(struct super_block * sb,
 						    unsigned int block_group,
 						    struct buffer_head ** bh);
@@ -731,6 +828,7 @@ extern void ext2_init_block_alloc_info(struct inode *);
 extern void ext2_rsv_window_add(struct super_block *sb, struct ext2_reserve_window_node *rsv);
 
 /* dir.c */
+<<<<<<< HEAD
 extern int ext2_add_link (struct dentry *, struct inode *);
 extern ino_t ext2_inode_by_name(struct inode *, struct qstr *);
 extern int ext2_make_empty(struct inode *, struct inode *);
@@ -739,26 +837,57 @@ extern int ext2_delete_entry (struct ext2_dir_entry_2 *, struct page *);
 extern int ext2_empty_dir (struct inode *);
 extern struct ext2_dir_entry_2 * ext2_dotdot (struct inode *, struct page **);
 extern void ext2_set_link(struct inode *, struct ext2_dir_entry_2 *, struct page *, struct inode *, int);
+=======
+int ext2_add_link(struct dentry *, struct inode *);
+int ext2_inode_by_name(struct inode *dir,
+			      const struct qstr *child, ino_t *ino);
+int ext2_make_empty(struct inode *, struct inode *);
+struct ext2_dir_entry_2 *ext2_find_entry(struct inode *, const struct qstr *,
+		struct folio **foliop);
+int ext2_delete_entry(struct ext2_dir_entry_2 *dir, struct folio *folio);
+int ext2_empty_dir(struct inode *);
+struct ext2_dir_entry_2 *ext2_dotdot(struct inode *dir, struct folio **foliop);
+int ext2_set_link(struct inode *dir, struct ext2_dir_entry_2 *de,
+		struct folio *folio, struct inode *inode, bool update_times);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ialloc.c */
 extern struct inode * ext2_new_inode (struct inode *, umode_t, const struct qstr *);
 extern void ext2_free_inode (struct inode *);
 extern unsigned long ext2_count_free_inodes (struct super_block *);
+<<<<<<< HEAD
 extern void ext2_check_inodes_bitmap (struct super_block *);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned long ext2_count_free (struct buffer_head *, unsigned);
 
 /* inode.c */
 extern struct inode *ext2_iget (struct super_block *, unsigned long);
 extern int ext2_write_inode (struct inode *, struct writeback_control *);
 extern void ext2_evict_inode(struct inode *);
+<<<<<<< HEAD
 extern int ext2_get_block(struct inode *, sector_t, struct buffer_head *, int);
 extern int ext2_setattr (struct dentry *, struct iattr *);
 extern void ext2_set_inode_flags(struct inode *inode);
 extern void ext2_get_inode_flags(struct ext2_inode_info *);
+=======
+void ext2_write_failed(struct address_space *mapping, loff_t to);
+extern int ext2_get_block(struct inode *, sector_t, struct buffer_head *, int);
+extern int ext2_setattr (struct mnt_idmap *, struct dentry *, struct iattr *);
+extern int ext2_getattr (struct mnt_idmap *, const struct path *,
+			 struct kstat *, u32, unsigned int);
+extern void ext2_set_inode_flags(struct inode *inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int ext2_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo,
 		       u64 start, u64 len);
 
 /* ioctl.c */
+<<<<<<< HEAD
+=======
+extern int ext2_fileattr_get(struct dentry *dentry, struct fileattr *fa);
+extern int ext2_fileattr_set(struct mnt_idmap *idmap,
+			     struct dentry *dentry, struct fileattr *fa);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern long ext2_ioctl(struct file *, unsigned int, unsigned long);
 extern long ext2_compat_ioctl(struct file *, unsigned int, unsigned long);
 
@@ -771,7 +900,12 @@ void ext2_error(struct super_block *, const char *, const char *, ...);
 extern __printf(3, 4)
 void ext2_msg(struct super_block *, const char *, const char *, ...);
 extern void ext2_update_dynamic_rev (struct super_block *sb);
+<<<<<<< HEAD
 extern void ext2_write_super (struct super_block *);
+=======
+extern void ext2_sync_super(struct super_block *sb, struct ext2_super_block *es,
+			    int wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Inodes and files operations
@@ -785,12 +919,20 @@ extern int ext2_fsync(struct file *file, loff_t start, loff_t end,
 		      int datasync);
 extern const struct inode_operations ext2_file_inode_operations;
 extern const struct file_operations ext2_file_operations;
+<<<<<<< HEAD
 extern const struct file_operations ext2_xip_file_operations;
 
 /* inode.c */
 extern const struct address_space_operations ext2_aops;
 extern const struct address_space_operations ext2_aops_xip;
 extern const struct address_space_operations ext2_nobh_aops;
+=======
+
+/* inode.c */
+extern void ext2_set_file_ops(struct inode *inode);
+extern const struct address_space_operations ext2_aops;
+extern const struct iomap_ops ext2_iomap_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* namei.c */
 extern const struct inode_operations ext2_dir_inode_operations;
@@ -807,6 +949,21 @@ ext2_group_first_block_no(struct super_block *sb, unsigned long group_no)
 		le32_to_cpu(EXT2_SB(sb)->s_es->s_first_data_block);
 }
 
+<<<<<<< HEAD
+=======
+static inline ext2_fsblk_t
+ext2_group_last_block_no(struct super_block *sb, unsigned long group_no)
+{
+	struct ext2_sb_info *sbi = EXT2_SB(sb);
+
+	if (group_no == sbi->s_groups_count - 1)
+		return le32_to_cpu(sbi->s_es->s_blocks_count) - 1;
+	else
+		return ext2_group_first_block_no(sb, group_no) +
+			EXT2_BLOCKS_PER_GROUP(sb) - 1;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ext2_set_bit	__test_and_set_bit_le
 #define ext2_clear_bit	__test_and_clear_bit_le
 #define ext2_test_bit	test_bit_le

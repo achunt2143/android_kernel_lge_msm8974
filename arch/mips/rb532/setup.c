@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * setup.c - boot time setup code
  */
@@ -48,7 +52,11 @@ void __init plat_mem_setup(void)
 
 	set_io_port_base(KSEG1);
 
+<<<<<<< HEAD
 	pci_reg = ioremap_nocache(pci0_res[0].start,
+=======
+	pci_reg = ioremap(pci0_res[0].start,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pci0_res[0].end - pci0_res[0].start);
 	if (!pci_reg) {
 		printk(KERN_ERR "Could not remap PCI registers\n");

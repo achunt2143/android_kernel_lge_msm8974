@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sparc64/mm/fault.c: Page fault handlers for the 64-bit Sparc.
  *
@@ -10,27 +14,45 @@
 #include <linux/string.h>
 #include <linux/types.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/debug.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ptrace.h>
 #include <linux/mman.h>
 #include <linux/signal.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/extable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/perf_event.h>
 #include <linux/interrupt.h>
 #include <linux/kprobes.h>
 #include <linux/kdebug.h>
 #include <linux/percpu.h>
+<<<<<<< HEAD
 
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #include <asm/openprom.h>
 #include <asm/oplib.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/context_tracking.h>
+#include <linux/uaccess.h>
+
+#include <asm/page.h>
+#include <asm/openprom.h>
+#include <asm/oplib.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/asi.h>
 #include <asm/lsu.h>
 #include <asm/sections.h>
 #include <asm/mmu_context.h>
+<<<<<<< HEAD
 
 int show_unhandled_signals = 1;
 
@@ -48,6 +70,12 @@ static inline __kprobes int notify_page_fault(struct pt_regs *regs)
 	return ret;
 }
 
+=======
+#include <asm/setup.h>
+
+int show_unhandled_signals = 1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __kprobes unhandled_fault(unsigned long address,
 				      struct task_struct *tsk,
 				      struct pt_regs *regs)
@@ -81,7 +109,11 @@ static void __kprobes bad_kernel_pc(struct pt_regs *regs, unsigned long vaddr)
 }
 
 /*
+<<<<<<< HEAD
  * We now make sure that mmap_sem is held in all paths that call 
+=======
+ * We now make sure that mmap_lock is held in all paths that call
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * this. Additionally, to prevent kswapd from ripping ptes from
  * under us, raise interrupts around the time that we look at the
  * pte, kswapd will have to wait to get his smp ipi response from
@@ -90,6 +122,10 @@ static void __kprobes bad_kernel_pc(struct pt_regs *regs, unsigned long vaddr)
 static unsigned int get_user_insn(unsigned long tpc)
 {
 	pgd_t *pgdp = pgd_offset(current->mm, tpc);
+<<<<<<< HEAD
+=======
+	p4d_t *p4dp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pud_t *pudp;
 	pmd_t *pmdp;
 	pte_t *ptep, pte;
@@ -98,7 +134,14 @@ static unsigned int get_user_insn(unsigned long tpc)
 
 	if (pgd_none(*pgdp) || unlikely(pgd_bad(*pgdp)))
 		goto out;
+<<<<<<< HEAD
 	pudp = pud_offset(pgdp, tpc);
+=======
+	p4dp = p4d_offset(pgdp, tpc);
+	if (p4d_none(*p4dp) || unlikely(p4d_bad(*p4dp)))
+		goto out;
+	pudp = pud_offset(p4dp, tpc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pud_none(*pudp) || unlikely(pud_bad(*pudp)))
 		goto out;
 
@@ -106,6 +149,7 @@ static unsigned int get_user_insn(unsigned long tpc)
 	local_irq_disable();
 
 	pmdp = pmd_offset(pudp, tpc);
+<<<<<<< HEAD
 	if (pmd_none(*pmdp) || unlikely(pmd_bad(*pmdp)))
 		goto out_irq_enable;
 
@@ -114,6 +158,14 @@ static unsigned int get_user_insn(unsigned long tpc)
 		if (pmd_trans_splitting(*pmdp))
 			goto out_irq_enable;
 
+=======
+again:
+	if (pmd_none(*pmdp) || unlikely(pmd_bad(*pmdp)))
+		goto out_irq_enable;
+
+#if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+	if (is_hugetlb_pmd(*pmdp)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pa  = pmd_pfn(*pmdp) << PAGE_SHIFT;
 		pa += tpc & ~HPAGE_MASK;
 
@@ -125,6 +177,11 @@ static unsigned int get_user_insn(unsigned long tpc)
 #endif
 	{
 		ptep = pte_offset_map(pmdp, tpc);
+<<<<<<< HEAD
+=======
+		if (!ptep)
+			goto again;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pte = *ptep;
 		if (pte_present(pte)) {
 			pa  = (pte_pfn(pte) << PAGE_SHIFT);
@@ -153,7 +210,11 @@ show_signal_msg(struct pt_regs *regs, int sig, int code,
 	if (!printk_ratelimit())
 		return;
 
+<<<<<<< HEAD
 	printk("%s%s[%d]: segfault at %lx ip %p (rpc %p) sp %p error %x",
+=======
+	printk("%s%s[%d]: segfault at %lx ip %px (rpc %px) sp %px error %x",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       task_pid_nr(tsk) > 1 ? KERN_INFO : KERN_EMERG,
 	       tsk->comm, task_pid_nr(tsk), address,
 	       (void *)regs->tpc, (void *)regs->u_regs[UREG_I7],
@@ -164,18 +225,25 @@ show_signal_msg(struct pt_regs *regs, int sig, int code,
 	printk(KERN_CONT "\n");
 }
 
+<<<<<<< HEAD
 extern unsigned long compute_effective_address(struct pt_regs *, unsigned int, unsigned int);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void do_fault_siginfo(int code, int sig, struct pt_regs *regs,
 			     unsigned long fault_addr, unsigned int insn,
 			     int fault_code)
 {
 	unsigned long addr;
+<<<<<<< HEAD
 	siginfo_t info;
 
 	info.si_code = code;
 	info.si_signo = sig;
 	info.si_errno = 0;
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fault_code & FAULT_CODE_ITLB) {
 		addr = regs->tpc;
 	} else {
@@ -188,18 +256,27 @@ static void do_fault_siginfo(int code, int sig, struct pt_regs *regs,
 		else
 			addr = fault_addr;
 	}
+<<<<<<< HEAD
 	info.si_addr = (void __user *) addr;
 	info.si_trapno = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(show_unhandled_signals))
 		show_signal_msg(regs, sig, code, addr, current);
 
+<<<<<<< HEAD
 	force_sig_info(sig, &info, current);
 }
 
 extern int handle_ldf_stq(u32, struct pt_regs *);
 extern int handle_ld_nf(u32, struct pt_regs *);
 
+=======
+	force_sig_fault(sig, code, (void __user *) addr);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int get_fault_insn(struct pt_regs *regs, unsigned int insn)
 {
 	if (!insn) {
@@ -284,6 +361,7 @@ static void noinline __kprobes bogus_32bit_fault_tpc(struct pt_regs *regs)
 
 asmlinkage void __kprobes do_sparc64_fault(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	struct mm_struct *mm = current->mm;
 	struct vm_area_struct *vma;
 	unsigned int insn = 0;
@@ -295,6 +373,21 @@ asmlinkage void __kprobes do_sparc64_fault(struct pt_regs *regs)
 
 	if (notify_page_fault(regs))
 		return;
+=======
+	enum ctx_state prev_state = exception_enter();
+	struct mm_struct *mm = current->mm;
+	struct vm_area_struct *vma;
+	unsigned int insn = 0;
+	int si_code, fault_code;
+	vm_fault_t fault;
+	unsigned long address, mm_rss;
+	unsigned int flags = FAULT_FLAG_DEFAULT;
+
+	fault_code = get_thread_fault_code();
+
+	if (kprobe_page_fault(regs, 0))
+		goto exit_exception;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	si_code = SEGV_MAPERR;
 	address = current_thread_info()->fault_address;
@@ -323,20 +416,35 @@ asmlinkage void __kprobes do_sparc64_fault(struct pt_regs *regs)
 			/* Valid, no problems... */
 		} else {
 			bad_kernel_pc(regs, address);
+<<<<<<< HEAD
 			return;
 		}
 	}
+=======
+			goto exit_exception;
+		}
+	} else
+		flags |= FAULT_FLAG_USER;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we're in an interrupt or have no user
 	 * context, we must not take the fault..
 	 */
+<<<<<<< HEAD
 	if (in_atomic() || !mm)
+=======
+	if (faulthandler_disabled() || !mm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto intr_or_no_mm;
 
 	perf_sw_event(PERF_COUNT_SW_PAGE_FAULTS, 1, regs, address);
 
+<<<<<<< HEAD
 	if (!down_read_trylock(&mm->mmap_sem)) {
+=======
+	if (!mmap_read_trylock(mm)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((regs->tstate & TSTATE_PRIV) &&
 		    !search_exception_tables(regs->tpc)) {
 			insn = get_fault_insn(regs, insn);
@@ -344,9 +452,18 @@ asmlinkage void __kprobes do_sparc64_fault(struct pt_regs *regs)
 		}
 
 retry:
+<<<<<<< HEAD
 		down_read(&mm->mmap_sem);
 	}
 
+=======
+		mmap_read_lock(mm);
+	}
+
+	if (fault_code & FAULT_CODE_BAD_RA)
+		goto do_sigbus;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma = find_vma(mm, address);
 	if (!vma)
 		goto bad_area;
@@ -398,8 +515,14 @@ continue_fault:
 				goto bad_area;
 		}
 	}
+<<<<<<< HEAD
 	if (expand_stack(vma, address))
 		goto bad_area;
+=======
+	vma = expand_stack(mm, address);
+	if (!vma)
+		goto bad_area_nosemaphore;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Ok, we have a good vm_area for this memory access, so
 	 * we can handle it..
@@ -411,8 +534,14 @@ good_area:
 	 * that here.
 	 */
 	if ((fault_code & FAULT_CODE_ITLB) && !(vma->vm_flags & VM_EXEC)) {
+<<<<<<< HEAD
 		BUG_ON(address != regs->tpc);
 		BUG_ON(regs->tstate & TSTATE_PRIV);
+=======
+		WARN(address != regs->tpc,
+		     "address (%lx) != regs->tpc (%lx)\n", address, regs->tpc);
+		WARN_ON(regs->tstate & TSTATE_PRIV);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bad_area;
 	}
 
@@ -428,17 +557,38 @@ good_area:
 		    vma->vm_file != NULL)
 			set_thread_fault_code(fault_code |
 					      FAULT_CODE_BLKCOMMIT);
+<<<<<<< HEAD
+=======
+
+		flags |= FAULT_FLAG_WRITE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Allow reads even for write-only mappings */
 		if (!(vma->vm_flags & (VM_READ | VM_EXEC)))
 			goto bad_area;
 	}
 
+<<<<<<< HEAD
 	flags |= ((fault_code & FAULT_CODE_WRITE) ? FAULT_FLAG_WRITE : 0);
 	fault = handle_mm_fault(mm, vma, address, flags);
 
 	if ((fault & VM_FAULT_RETRY) && fatal_signal_pending(current))
 		return;
+=======
+	fault = handle_mm_fault(vma, address, flags, regs);
+
+	if (fault_signal_pending(fault, regs)) {
+		if (regs->tstate & TSTATE_PRIV) {
+			insn = get_fault_insn(regs, insn);
+			goto handle_kernel_fault;
+		}
+		goto exit_exception;
+	}
+
+	/* The fault is fully completed (including releasing mmap lock) */
+	if (fault & VM_FAULT_COMPLETED)
+		goto lock_released;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(fault & VM_FAULT_ERROR)) {
 		if (fault & VM_FAULT_OOM)
@@ -450,6 +600,7 @@ good_area:
 		BUG();
 	}
 
+<<<<<<< HEAD
 	if (flags & FAULT_FLAG_ALLOW_RETRY) {
 		if (fault & VM_FAULT_MAJOR) {
 			current->maj_flt++;
@@ -476,16 +627,51 @@ good_area:
 	mm_rss = get_mm_rss(mm);
 #ifdef CONFIG_HUGETLB_PAGE
 	mm_rss -= (mm->context.huge_pte_count * (HPAGE_SIZE / PAGE_SIZE));
+=======
+	if (fault & VM_FAULT_RETRY) {
+		flags |= FAULT_FLAG_TRIED;
+
+		/* No need to mmap_read_unlock(mm) as we would
+		 * have already released it in __lock_page_or_retry
+		 * in mm/filemap.c.
+		 */
+
+		goto retry;
+	}
+	mmap_read_unlock(mm);
+
+lock_released:
+	mm_rss = get_mm_rss(mm);
+#if defined(CONFIG_TRANSPARENT_HUGEPAGE)
+	mm_rss -= (mm->context.thp_pte_count * (HPAGE_SIZE / PAGE_SIZE));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	if (unlikely(mm_rss >
 		     mm->context.tsb_block[MM_TSB_BASE].tsb_rss_limit))
 		tsb_grow(mm, MM_TSB_BASE, mm_rss);
+<<<<<<< HEAD
 #ifdef CONFIG_HUGETLB_PAGE
 	mm_rss = mm->context.huge_pte_count;
 	if (unlikely(mm_rss >
 		     mm->context.tsb_block[MM_TSB_HUGE].tsb_rss_limit))
 		tsb_grow(mm, MM_TSB_HUGE, mm_rss);
 #endif
+=======
+#if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+	mm_rss = mm->context.hugetlb_pte_count + mm->context.thp_pte_count;
+	mm_rss *= REAL_HPAGE_PER_HPAGE;
+	if (unlikely(mm_rss >
+		     mm->context.tsb_block[MM_TSB_HUGE].tsb_rss_limit)) {
+		if (mm->context.tsb_block[MM_TSB_HUGE].tsb)
+			tsb_grow(mm, MM_TSB_HUGE, mm_rss);
+		else
+			hugetlb_setup(regs);
+
+	}
+#endif
+exit_exception:
+	exception_exit(prev_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 	/*
@@ -493,12 +679,22 @@ good_area:
 	 * Fix it, but check if it's kernel or user first..
 	 */
 bad_area:
+<<<<<<< HEAD
 	insn = get_fault_insn(regs, insn);
 	up_read(&mm->mmap_sem);
 
 handle_kernel_fault:
 	do_kernel_fault(regs, si_code, fault_code, insn, address);
 	return;
+=======
+	mmap_read_unlock(mm);
+bad_area_nosemaphore:
+	insn = get_fault_insn(regs, insn);
+
+handle_kernel_fault:
+	do_kernel_fault(regs, si_code, fault_code, insn, address);
+	goto exit_exception;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We ran out of memory, or some other thing happened to us that made
@@ -506,10 +702,17 @@ handle_kernel_fault:
  */
 out_of_memory:
 	insn = get_fault_insn(regs, insn);
+<<<<<<< HEAD
 	up_read(&mm->mmap_sem);
 	if (!(regs->tstate & TSTATE_PRIV)) {
 		pagefault_out_of_memory();
 		return;
+=======
+	mmap_read_unlock(mm);
+	if (!(regs->tstate & TSTATE_PRIV)) {
+		pagefault_out_of_memory();
+		goto exit_exception;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	goto handle_kernel_fault;
 
@@ -519,7 +722,11 @@ intr_or_no_mm:
 
 do_sigbus:
 	insn = get_fault_insn(regs, insn);
+<<<<<<< HEAD
 	up_read(&mm->mmap_sem);
+=======
+	mmap_read_unlock(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Send a sigbus, regardless of whether we were in kernel

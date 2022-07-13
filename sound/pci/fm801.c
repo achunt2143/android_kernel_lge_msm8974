@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  The driver for the ForteMedia FM801 based soundcards
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -18,11 +19,21 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  The driver for the ForteMedia FM801 based soundcards
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -34,17 +45,25 @@
 #include <sound/opl3.h>
 #include <sound/initval.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 
 #ifdef CONFIG_SND_FM801_TEA575X_BOOL
 #include <sound/tea575x-tuner.h>
+=======
+#ifdef CONFIG_SND_FM801_TEA575X_BOOL
+#include <media/drv-intf/tea575x.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("ForteMedia FM801");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{ForteMedia,FM801},"
 		"{Genius,SoundMaker Live 5.1}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -80,7 +99,14 @@ MODULE_PARM_DESC(radio_nr, "Radio device numbers");
  *  Direct registers
  */
 
+<<<<<<< HEAD
 #define FM801_REG(chip, reg)	(chip->port + FM801_##reg)
+=======
+#define fm801_writew(chip,reg,value)	outw((value), chip->port + FM801_##reg)
+#define fm801_readw(chip,reg)		inw(chip->port + FM801_##reg)
+
+#define fm801_writel(chip,reg,value)	outl((value), chip->port + FM801_##reg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FM801_PCM_VOL		0x00	/* PCM Output Volume */
 #define FM801_FM_VOL		0x02	/* FM Output Volume */
@@ -156,6 +182,7 @@ MODULE_PARM_DESC(radio_nr, "Radio device numbers");
 #define FM801_GPIO_GS3		(1<<15)
 #define FM801_GPIO_GS(x)	(1<<(12+(x)))
 	
+<<<<<<< HEAD
 /*
 
  */
@@ -171,6 +198,57 @@ struct fm801 {
 
 	unsigned short ply_ctrl; /* playback control */
 	unsigned short cap_ctrl; /* capture control */
+=======
+/**
+ * struct fm801 - describes FM801 chip
+ * @dev:		device for this chio
+ * @irq:		irq number
+ * @port:		I/O port number
+ * @multichannel:	multichannel support
+ * @secondary:		secondary codec
+ * @secondary_addr:	address of the secondary codec
+ * @tea575x_tuner:	tuner access method & flags
+ * @ply_ctrl:		playback control
+ * @cap_ctrl:		capture control
+ * @ply_buffer:		playback buffer
+ * @ply_buf:		playback buffer index
+ * @ply_count:		playback buffer count
+ * @ply_size:		playback buffer size
+ * @ply_pos:		playback position
+ * @cap_buffer:		capture buffer
+ * @cap_buf:		capture buffer index
+ * @cap_count:		capture buffer count
+ * @cap_size:		capture buffer size
+ * @cap_pos:		capture position
+ * @ac97_bus:		ac97 bus handle
+ * @ac97:		ac97 handle
+ * @ac97_sec:		ac97 secondary handle
+ * @card:		ALSA card
+ * @pcm:		PCM devices
+ * @rmidi:		rmidi device
+ * @playback_substream:	substream for playback
+ * @capture_substream:	substream for capture
+ * @p_dma_size:		playback DMA size
+ * @c_dma_size:		capture DMA size
+ * @reg_lock:		lock
+ * @proc_entry:		/proc entry
+ * @v4l2_dev:		v4l2 device
+ * @tea:		tea575a structure
+ * @saved_regs:		context saved during suspend
+ */
+struct fm801 {
+	struct device *dev;
+	int irq;
+
+	unsigned long port;
+	unsigned int multichannel: 1,
+		     secondary: 1;
+	unsigned char secondary_addr;
+	unsigned int tea575x_tuner;
+
+	unsigned short ply_ctrl;
+	unsigned short cap_ctrl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long ply_buffer;
 	unsigned int ply_buf;
@@ -188,7 +266,10 @@ struct fm801 {
 	struct snd_ac97 *ac97;
 	struct snd_ac97 *ac97_sec;
 
+<<<<<<< HEAD
 	struct pci_dev *pci;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_card *card;
 	struct snd_pcm *pcm;
 	struct snd_rawmidi *rmidi;
@@ -205,12 +286,33 @@ struct fm801 {
 	struct snd_tea575x tea;
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	u16 saved_regs[0x20];
 #endif
 };
 
 static DEFINE_PCI_DEVICE_TABLE(snd_fm801_ids) = {
+=======
+	u16 saved_regs[0x20];
+};
+
+/*
+ * IO accessors
+ */
+
+static inline void fm801_iowrite16(struct fm801 *chip, unsigned short offset, u16 value)
+{
+	outw(value, chip->port + offset);
+}
+
+static inline u16 fm801_ioread16(struct fm801 *chip, unsigned short offset)
+{
+	return inw(chip->port + offset);
+}
+
+static const struct pci_device_id snd_fm801_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x1319, 0x0801, PCI_ANY_ID, PCI_ANY_ID, PCI_CLASS_MULTIMEDIA_AUDIO << 8, 0xffff00, 0, },   /* FM801 */
 	{ 0x5213, 0x0510, PCI_ANY_ID, PCI_ANY_ID, PCI_CLASS_MULTIMEDIA_AUDIO << 8, 0xffff00, 0, },   /* Gallant Odyssey Sound 4 */
 	{ 0, }
@@ -222,6 +324,33 @@ MODULE_DEVICE_TABLE(pci, snd_fm801_ids);
  *  common I/O routines
  */
 
+<<<<<<< HEAD
+=======
+static bool fm801_ac97_is_ready(struct fm801 *chip, unsigned int iterations)
+{
+	unsigned int idx;
+
+	for (idx = 0; idx < iterations; idx++) {
+		if (!(fm801_readw(chip, AC97_CMD) & FM801_AC97_BUSY))
+			return true;
+		udelay(10);
+	}
+	return false;
+}
+
+static bool fm801_ac97_is_valid(struct fm801 *chip, unsigned int iterations)
+{
+	unsigned int idx;
+
+	for (idx = 0; idx < iterations; idx++) {
+		if (fm801_readw(chip, AC97_CMD) & FM801_AC97_VALID)
+			return true;
+		udelay(10);
+	}
+	return false;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_fm801_update_bits(struct fm801 *chip, unsigned short reg,
 				 unsigned short mask, unsigned short value)
 {
@@ -230,11 +359,19 @@ static int snd_fm801_update_bits(struct fm801 *chip, unsigned short reg,
 	unsigned short old, new;
 
 	spin_lock_irqsave(&chip->reg_lock, flags);
+<<<<<<< HEAD
 	old = inw(chip->port + reg);
 	new = (old & ~mask) | value;
 	change = old != new;
 	if (change)
 		outw(new, chip->port + reg);
+=======
+	old = fm801_ioread16(chip, reg);
+	new = (old & ~mask) | value;
+	change = old != new;
+	if (change)
+		fm801_iowrite16(chip, reg, new);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
 	return change;
 }
@@ -244,11 +381,15 @@ static void snd_fm801_codec_write(struct snd_ac97 *ac97,
 				  unsigned short val)
 {
 	struct fm801 *chip = ac97->private_data;
+<<<<<<< HEAD
 	int idx;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *  Wait until the codec interface is not ready..
 	 */
+<<<<<<< HEAD
 	for (idx = 0; idx < 100; idx++) {
 		if (!(inw(FM801_REG(chip, AC97_CMD)) & FM801_AC97_BUSY))
 			goto ok1;
@@ -270,16 +411,36 @@ static void snd_fm801_codec_write(struct snd_ac97 *ac97,
 		udelay(10);
 	}
 	snd_printk(KERN_ERR "AC'97 interface #%d is busy (2)\n", ac97->num);
+=======
+	if (!fm801_ac97_is_ready(chip, 100)) {
+		dev_err(chip->card->dev, "AC'97 interface is busy (1)\n");
+		return;
+	}
+
+	/* write data and address */
+	fm801_writew(chip, AC97_DATA, val);
+	fm801_writew(chip, AC97_CMD, reg | (ac97->addr << FM801_AC97_ADDR_SHIFT));
+	/*
+	 *  Wait until the write command is not completed..
+	 */
+	if (!fm801_ac97_is_ready(chip, 1000))
+		dev_err(chip->card->dev, "AC'97 interface #%d is busy (2)\n",
+		ac97->num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned short snd_fm801_codec_read(struct snd_ac97 *ac97, unsigned short reg)
 {
 	struct fm801 *chip = ac97->private_data;
+<<<<<<< HEAD
 	int idx;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *  Wait until the codec interface is not ready..
 	 */
+<<<<<<< HEAD
 	for (idx = 0; idx < 100; idx++) {
 		if (!(inw(FM801_REG(chip, AC97_CMD)) & FM801_AC97_BUSY))
 			goto ok1;
@@ -314,22 +475,60 @@ static unsigned short snd_fm801_codec_read(struct snd_ac97 *ac97, unsigned short
 }
 
 static unsigned int rates[] = {
+=======
+	if (!fm801_ac97_is_ready(chip, 100)) {
+		dev_err(chip->card->dev, "AC'97 interface is busy (1)\n");
+		return 0;
+	}
+
+	/* read command */
+	fm801_writew(chip, AC97_CMD,
+		     reg | (ac97->addr << FM801_AC97_ADDR_SHIFT) | FM801_AC97_READ);
+	if (!fm801_ac97_is_ready(chip, 100)) {
+		dev_err(chip->card->dev, "AC'97 interface #%d is busy (2)\n",
+			ac97->num);
+		return 0;
+	}
+
+	if (!fm801_ac97_is_valid(chip, 1000)) {
+		dev_err(chip->card->dev,
+			"AC'97 interface #%d is not valid (2)\n", ac97->num);
+		return 0;
+	}
+
+	return fm801_readw(chip, AC97_DATA);
+}
+
+static const unsigned int rates[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   5500,  8000,  9600, 11025,
   16000, 19200, 22050, 32000,
   38400, 44100, 48000
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hw_constraint_list hw_constraints_rates = {
+=======
+static const struct snd_pcm_hw_constraint_list hw_constraints_rates = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(rates),
 	.list = rates,
 	.mask = 0,
 };
 
+<<<<<<< HEAD
 static unsigned int channels[] = {
   2, 4, 6
 };
 
 static struct snd_pcm_hw_constraint_list hw_constraints_channels = {
+=======
+static const unsigned int channels[] = {
+  2, 4, 6
+};
+
+static const struct snd_pcm_hw_constraint_list hw_constraints_channels = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(channels),
 	.list = channels,
 	.mask = 0,
@@ -384,7 +583,11 @@ static int snd_fm801_playback_trigger(struct snd_pcm_substream *substream,
 		snd_BUG();
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	outw(chip->ply_ctrl, FM801_REG(chip, PLY_CTRL));
+=======
+	fm801_writew(chip, PLY_CTRL, chip->ply_ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&chip->reg_lock);
 	return 0;
 }
@@ -419,11 +622,16 @@ static int snd_fm801_capture_trigger(struct snd_pcm_substream *substream,
 		snd_BUG();
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	outw(chip->cap_ctrl, FM801_REG(chip, CAP_CTRL));
+=======
+	fm801_writew(chip, CAP_CTRL, chip->cap_ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&chip->reg_lock);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int snd_fm801_hw_params(struct snd_pcm_substream *substream,
 			       struct snd_pcm_hw_params *hw_params)
 {
@@ -435,6 +643,8 @@ static int snd_fm801_hw_free(struct snd_pcm_substream *substream)
 	return snd_pcm_lib_free_pages(substream);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_fm801_playback_prepare(struct snd_pcm_substream *substream)
 {
 	struct fm801 *chip = snd_pcm_substream_chip(substream);
@@ -457,12 +667,22 @@ static int snd_fm801_playback_prepare(struct snd_pcm_substream *substream)
 	}
 	chip->ply_ctrl |= snd_fm801_rate_bits(runtime->rate) << FM801_RATE_SHIFT;
 	chip->ply_buf = 0;
+<<<<<<< HEAD
 	outw(chip->ply_ctrl, FM801_REG(chip, PLY_CTRL));
 	outw(chip->ply_count - 1, FM801_REG(chip, PLY_COUNT));
 	chip->ply_buffer = runtime->dma_addr;
 	chip->ply_pos = 0;
 	outl(chip->ply_buffer, FM801_REG(chip, PLY_BUF1));
 	outl(chip->ply_buffer + (chip->ply_count % chip->ply_size), FM801_REG(chip, PLY_BUF2));
+=======
+	fm801_writew(chip, PLY_CTRL, chip->ply_ctrl);
+	fm801_writew(chip, PLY_COUNT, chip->ply_count - 1);
+	chip->ply_buffer = runtime->dma_addr;
+	chip->ply_pos = 0;
+	fm801_writel(chip, PLY_BUF1, chip->ply_buffer);
+	fm801_writel(chip, PLY_BUF2,
+		     chip->ply_buffer + (chip->ply_count % chip->ply_size));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&chip->reg_lock);
 	return 0;
 }
@@ -483,12 +703,22 @@ static int snd_fm801_capture_prepare(struct snd_pcm_substream *substream)
 		chip->cap_ctrl |= FM801_STEREO;
 	chip->cap_ctrl |= snd_fm801_rate_bits(runtime->rate) << FM801_RATE_SHIFT;
 	chip->cap_buf = 0;
+<<<<<<< HEAD
 	outw(chip->cap_ctrl, FM801_REG(chip, CAP_CTRL));
 	outw(chip->cap_count - 1, FM801_REG(chip, CAP_COUNT));
 	chip->cap_buffer = runtime->dma_addr;
 	chip->cap_pos = 0;
 	outl(chip->cap_buffer, FM801_REG(chip, CAP_BUF1));
 	outl(chip->cap_buffer + (chip->cap_count % chip->cap_size), FM801_REG(chip, CAP_BUF2));
+=======
+	fm801_writew(chip, CAP_CTRL, chip->cap_ctrl);
+	fm801_writew(chip, CAP_COUNT, chip->cap_count - 1);
+	chip->cap_buffer = runtime->dma_addr;
+	chip->cap_pos = 0;
+	fm801_writel(chip, CAP_BUF1, chip->cap_buffer);
+	fm801_writel(chip, CAP_BUF2,
+		     chip->cap_buffer + (chip->cap_count % chip->cap_size));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&chip->reg_lock);
 	return 0;
 }
@@ -501,8 +731,13 @@ static snd_pcm_uframes_t snd_fm801_playback_pointer(struct snd_pcm_substream *su
 	if (!(chip->ply_ctrl & FM801_START))
 		return 0;
 	spin_lock(&chip->reg_lock);
+<<<<<<< HEAD
 	ptr = chip->ply_pos + (chip->ply_count - 1) - inw(FM801_REG(chip, PLY_COUNT));
 	if (inw(FM801_REG(chip, IRQ_STATUS)) & FM801_IRQ_PLAYBACK) {
+=======
+	ptr = chip->ply_pos + (chip->ply_count - 1) - fm801_readw(chip, PLY_COUNT);
+	if (fm801_readw(chip, IRQ_STATUS) & FM801_IRQ_PLAYBACK) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ptr += chip->ply_count;
 		ptr %= chip->ply_size;
 	}
@@ -518,8 +753,13 @@ static snd_pcm_uframes_t snd_fm801_capture_pointer(struct snd_pcm_substream *sub
 	if (!(chip->cap_ctrl & FM801_START))
 		return 0;
 	spin_lock(&chip->reg_lock);
+<<<<<<< HEAD
 	ptr = chip->cap_pos + (chip->cap_count - 1) - inw(FM801_REG(chip, CAP_COUNT));
 	if (inw(FM801_REG(chip, IRQ_STATUS)) & FM801_IRQ_CAPTURE) {
+=======
+	ptr = chip->cap_pos + (chip->cap_count - 1) - fm801_readw(chip, CAP_COUNT);
+	if (fm801_readw(chip, IRQ_STATUS) & FM801_IRQ_CAPTURE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ptr += chip->cap_count;
 		ptr %= chip->cap_size;
 	}
@@ -533,12 +773,20 @@ static irqreturn_t snd_fm801_interrupt(int irq, void *dev_id)
 	unsigned short status;
 	unsigned int tmp;
 
+<<<<<<< HEAD
 	status = inw(FM801_REG(chip, IRQ_STATUS));
+=======
+	status = fm801_readw(chip, IRQ_STATUS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status &= FM801_IRQ_PLAYBACK|FM801_IRQ_CAPTURE|FM801_IRQ_MPU|FM801_IRQ_VOLUME;
 	if (! status)
 		return IRQ_NONE;
 	/* ack first */
+<<<<<<< HEAD
 	outw(status, FM801_REG(chip, IRQ_STATUS));
+=======
+	fm801_writew(chip, IRQ_STATUS, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip->pcm && (status & FM801_IRQ_PLAYBACK) && chip->playback_substream) {
 		spin_lock(&chip->reg_lock);
 		chip->ply_buf++;
@@ -546,10 +794,17 @@ static irqreturn_t snd_fm801_interrupt(int irq, void *dev_id)
 		chip->ply_pos %= chip->ply_size;
 		tmp = chip->ply_pos + chip->ply_count;
 		tmp %= chip->ply_size;
+<<<<<<< HEAD
 		outl(chip->ply_buffer + tmp,
 				(chip->ply_buf & 1) ?
 					FM801_REG(chip, PLY_BUF1) :
 					FM801_REG(chip, PLY_BUF2));
+=======
+		if (chip->ply_buf & 1)
+			fm801_writel(chip, PLY_BUF1, chip->ply_buffer + tmp);
+		else
+			fm801_writel(chip, PLY_BUF2, chip->ply_buffer + tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&chip->reg_lock);
 		snd_pcm_period_elapsed(chip->playback_substream);
 	}
@@ -560,22 +815,39 @@ static irqreturn_t snd_fm801_interrupt(int irq, void *dev_id)
 		chip->cap_pos %= chip->cap_size;
 		tmp = chip->cap_pos + chip->cap_count;
 		tmp %= chip->cap_size;
+<<<<<<< HEAD
 		outl(chip->cap_buffer + tmp,
 				(chip->cap_buf & 1) ?
 					FM801_REG(chip, CAP_BUF1) :
 					FM801_REG(chip, CAP_BUF2));
+=======
+		if (chip->cap_buf & 1)
+			fm801_writel(chip, CAP_BUF1, chip->cap_buffer + tmp);
+		else
+			fm801_writel(chip, CAP_BUF2, chip->cap_buffer + tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&chip->reg_lock);
 		snd_pcm_period_elapsed(chip->capture_substream);
 	}
 	if (chip->rmidi && (status & FM801_IRQ_MPU))
 		snd_mpu401_uart_interrupt(irq, chip->rmidi->private_data);
+<<<<<<< HEAD
 	if (status & FM801_IRQ_VOLUME)
 		;/* TODO */
+=======
+	if (status & FM801_IRQ_VOLUME) {
+		/* TODO */
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_fm801_playback =
+=======
+static const struct snd_pcm_hardware snd_fm801_playback =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -595,7 +867,11 @@ static struct snd_pcm_hardware snd_fm801_playback =
 	.fifo_size =		0,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_fm801_capture =
+=======
+static const struct snd_pcm_hardware snd_fm801_capture =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -631,7 +907,12 @@ static int snd_fm801_playback_open(struct snd_pcm_substream *substream)
 					   SNDRV_PCM_HW_PARAM_CHANNELS,
 					   &hw_constraints_channels);
 	}
+<<<<<<< HEAD
 	if ((err = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS)) < 0)
+=======
+	err = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return 0;
 }
@@ -646,7 +927,12 @@ static int snd_fm801_capture_open(struct snd_pcm_substream *substream)
 	runtime->hw = snd_fm801_capture;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_RATE,
 				   &hw_constraints_rates);
+<<<<<<< HEAD
 	if ((err = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS)) < 0)
+=======
+	err = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return 0;
 }
@@ -667,28 +953,41 @@ static int snd_fm801_capture_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_fm801_playback_ops = {
 	.open =		snd_fm801_playback_open,
 	.close =	snd_fm801_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_fm801_hw_params,
 	.hw_free =	snd_fm801_hw_free,
+=======
+static const struct snd_pcm_ops snd_fm801_playback_ops = {
+	.open =		snd_fm801_playback_open,
+	.close =	snd_fm801_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_fm801_playback_prepare,
 	.trigger =	snd_fm801_playback_trigger,
 	.pointer =	snd_fm801_playback_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_fm801_capture_ops = {
 	.open =		snd_fm801_capture_open,
 	.close =	snd_fm801_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_fm801_hw_params,
 	.hw_free =	snd_fm801_hw_free,
+=======
+static const struct snd_pcm_ops snd_fm801_capture_ops = {
+	.open =		snd_fm801_capture_open,
+	.close =	snd_fm801_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_fm801_capture_prepare,
 	.trigger =	snd_fm801_capture_trigger,
 	.pointer =	snd_fm801_capture_pointer,
 };
 
+<<<<<<< HEAD
 static int __devinit snd_fm801_pcm(struct fm801 *chip, int device, struct snd_pcm ** rpcm)
 {
 	struct snd_pcm *pcm;
@@ -697,6 +996,16 @@ static int __devinit snd_fm801_pcm(struct fm801 *chip, int device, struct snd_pc
 	if (rpcm)
 		*rpcm = NULL;
 	if ((err = snd_pcm_new(chip->card, "FM801", device, 1, 1, &pcm)) < 0)
+=======
+static int snd_fm801_pcm(struct fm801 *chip, int device)
+{
+	struct pci_dev *pdev = to_pci_dev(chip->dev);
+	struct snd_pcm *pcm;
+	int err;
+
+	err = snd_pcm_new(chip->card, "FM801", device, 1, 1, &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_fm801_playback_ops);
@@ -707,6 +1016,7 @@ static int __devinit snd_fm801_pcm(struct fm801 *chip, int device, struct snd_pc
 	strcpy(pcm->name, "FM801");
 	chip->pcm = pcm;
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(chip->pci),
 					      chip->multichannel ? 128*1024 : 64*1024, 128*1024);
@@ -714,6 +1024,15 @@ static int __devinit snd_fm801_pcm(struct fm801 *chip, int device, struct snd_pc
 	if (rpcm)
 		*rpcm = pcm;
 	return 0;
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV, &pdev->dev,
+				       chip->multichannel ? 128*1024 : 64*1024, 128*1024);
+
+	return snd_pcm_add_chmap_ctls(pcm, SNDRV_PCM_STREAM_PLAYBACK,
+				     snd_pcm_alt_chmaps,
+				     chip->multichannel ? 6 : 2, 0,
+				     NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -728,7 +1047,11 @@ struct snd_fm801_tea575x_gpio {
 	char *name;
 };
 
+<<<<<<< HEAD
 static struct snd_fm801_tea575x_gpio snd_fm801_tea575x_gpios[] = {
+=======
+static const struct snd_fm801_tea575x_gpio snd_fm801_tea575x_gpios[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .data = 1, .clk = 3, .wren = 2, .most = 0, .name = "SF256-PCS" },
 	{ .data = 1, .clk = 0, .wren = 2, .most = 3, .name = "SF256-PCP" },
 	{ .data = 2, .clk = 0, .wren = 1, .most = 3, .name = "SF64-PCR" },
@@ -740,7 +1063,11 @@ static struct snd_fm801_tea575x_gpio snd_fm801_tea575x_gpios[] = {
 static void snd_fm801_tea575x_set_pins(struct snd_tea575x *tea, u8 pins)
 {
 	struct fm801 *chip = tea->private_data;
+<<<<<<< HEAD
 	unsigned short reg = inw(FM801_REG(chip, GPIO_CTRL));
+=======
+	unsigned short reg = fm801_readw(chip, GPIO_CTRL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_fm801_tea575x_gpio gpio = *get_tea575x_gpio(chip);
 
 	reg &= ~(FM801_GPIO_GP(gpio.data) |
@@ -752,23 +1079,44 @@ static void snd_fm801_tea575x_set_pins(struct snd_tea575x *tea, u8 pins)
 	/* WRITE_ENABLE is inverted */
 	reg |= (pins & TEA575X_WREN) ? 0 : FM801_GPIO_GP(gpio.wren);
 
+<<<<<<< HEAD
 	outw(reg, FM801_REG(chip, GPIO_CTRL));
+=======
+	fm801_writew(chip, GPIO_CTRL, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u8 snd_fm801_tea575x_get_pins(struct snd_tea575x *tea)
 {
 	struct fm801 *chip = tea->private_data;
+<<<<<<< HEAD
 	unsigned short reg = inw(FM801_REG(chip, GPIO_CTRL));
 	struct snd_fm801_tea575x_gpio gpio = *get_tea575x_gpio(chip);
 
 	return  (reg & FM801_GPIO_GP(gpio.data)) ? TEA575X_DATA : 0 |
 		(reg & FM801_GPIO_GP(gpio.most)) ? TEA575X_MOST : 0;
+=======
+	unsigned short reg = fm801_readw(chip, GPIO_CTRL);
+	struct snd_fm801_tea575x_gpio gpio = *get_tea575x_gpio(chip);
+	u8 ret;
+
+	ret = 0;
+	if (reg & FM801_GPIO_GP(gpio.data))
+		ret |= TEA575X_DATA;
+	if (reg & FM801_GPIO_GP(gpio.most))
+		ret |= TEA575X_MOST;
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void snd_fm801_tea575x_set_direction(struct snd_tea575x *tea, bool output)
 {
 	struct fm801 *chip = tea->private_data;
+<<<<<<< HEAD
 	unsigned short reg = inw(FM801_REG(chip, GPIO_CTRL));
+=======
+	unsigned short reg = fm801_readw(chip, GPIO_CTRL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_fm801_tea575x_gpio gpio = *get_tea575x_gpio(chip);
 
 	/* use GPIO lines and set write enable bit */
@@ -799,10 +1147,17 @@ static void snd_fm801_tea575x_set_direction(struct snd_tea575x *tea, bool output
 			 FM801_GPIO_GP(gpio.clk));
 	}
 
+<<<<<<< HEAD
 	outw(reg, FM801_REG(chip, GPIO_CTRL));
 }
 
 static struct snd_tea575x_ops snd_fm801_tea_ops = {
+=======
+	fm801_writew(chip, GPIO_CTRL, reg);
+}
+
+static const struct snd_tea575x_ops snd_fm801_tea_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_pins = snd_fm801_tea575x_set_pins,
 	.get_pins = snd_fm801_tea575x_get_pins,
 	.set_direction = snd_fm801_tea575x_set_direction,
@@ -838,10 +1193,18 @@ static int snd_fm801_get_single(struct snd_kcontrol *kcontrol,
 	int shift = (kcontrol->private_value >> 8) & 0xff;
 	int mask = (kcontrol->private_value >> 16) & 0xff;
 	int invert = (kcontrol->private_value >> 24) & 0xff;
+<<<<<<< HEAD
 
 	ucontrol->value.integer.value[0] = (inw(chip->port + reg) >> shift) & mask;
 	if (invert)
 		ucontrol->value.integer.value[0] = mask - ucontrol->value.integer.value[0];
+=======
+	long *value = ucontrol->value.integer.value;
+
+	value[0] = (fm801_ioread16(chip, reg) >> shift) & mask;
+	if (invert)
+		value[0] = mask - value[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -894,6 +1257,7 @@ static int snd_fm801_get_double(struct snd_kcontrol *kcontrol,
 	int shift_right = (kcontrol->private_value >> 12) & 0x0f;
 	int mask = (kcontrol->private_value >> 16) & 0xff;
 	int invert = (kcontrol->private_value >> 24) & 0xff;
+<<<<<<< HEAD
 
 	spin_lock_irq(&chip->reg_lock);
 	ucontrol->value.integer.value[0] = (inw(chip->port + reg) >> shift_left) & mask;
@@ -902,6 +1266,17 @@ static int snd_fm801_get_double(struct snd_kcontrol *kcontrol,
 	if (invert) {
 		ucontrol->value.integer.value[0] = mask - ucontrol->value.integer.value[0];
 		ucontrol->value.integer.value[1] = mask - ucontrol->value.integer.value[1];
+=======
+	long *value = ucontrol->value.integer.value;
+
+	spin_lock_irq(&chip->reg_lock);
+	value[0] = (fm801_ioread16(chip, reg) >> shift_left) & mask;
+	value[1] = (fm801_ioread16(chip, reg) >> shift_right) & mask;
+	spin_unlock_irq(&chip->reg_lock);
+	if (invert) {
+		value[0] = mask - value[0];
+		value[1] = mask - value[1];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -931,6 +1306,7 @@ static int snd_fm801_put_double(struct snd_kcontrol *kcontrol,
 static int snd_fm801_info_mux(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[5] = {
 		"AC97 Primary", "FM", "I2S", "PCM", "AC97 Secondary"
 	};
@@ -942,6 +1318,13 @@ static int snd_fm801_info_mux(struct snd_kcontrol *kcontrol,
 		uinfo->value.enumerated.item = 4;
 	strcpy(uinfo->value.enumerated.name, texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[5] = {
+		"AC97 Primary", "FM", "I2S", "PCM", "AC97 Secondary"
+	};
+ 
+	return snd_ctl_enum_info(uinfo, 1, 5, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_fm801_get_mux(struct snd_kcontrol *kcontrol,
@@ -950,7 +1333,11 @@ static int snd_fm801_get_mux(struct snd_kcontrol *kcontrol,
 	struct fm801 *chip = snd_kcontrol_chip(kcontrol);
         unsigned short val;
  
+<<<<<<< HEAD
 	val = inw(FM801_REG(chip, REC_SRC)) & 7;
+=======
+	val = fm801_readw(chip, REC_SRC) & 7;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (val > 4)
 		val = 4;
         ucontrol->value.enumerated.item[0] = val;
@@ -963,7 +1350,12 @@ static int snd_fm801_put_mux(struct snd_kcontrol *kcontrol,
 	struct fm801 *chip = snd_kcontrol_chip(kcontrol);
         unsigned short val;
  
+<<<<<<< HEAD
         if ((val = ucontrol->value.enumerated.item[0]) > 4)
+=======
+	val = ucontrol->value.enumerated.item[0];
+	if (val > 4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 return -EINVAL;
 	return snd_fm801_update_bits(chip, FM801_REC_SRC, 7, val);
 }
@@ -972,7 +1364,11 @@ static const DECLARE_TLV_DB_SCALE(db_scale_dsp, -3450, 150, 0);
 
 #define FM801_CONTROLS ARRAY_SIZE(snd_fm801_controls)
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_fm801_controls[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_fm801_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 FM801_DOUBLE_TLV("Wave Playback Volume", FM801_PCM_VOL, 0, 8, 31, 1,
 		 db_scale_dsp),
 FM801_SINGLE("Wave Playback Switch", FM801_PCM_VOL, 15, 1, 1),
@@ -993,7 +1389,11 @@ FM801_SINGLE("FM Playback Switch", FM801_FM_VOL, 15, 1, 1),
 
 #define FM801_CONTROLS_MULTI ARRAY_SIZE(snd_fm801_controls_multi)
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_fm801_controls_multi[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_fm801_controls_multi[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 FM801_SINGLE("AC97 2ch->4ch Copy Switch", FM801_CODEC_CTRL, 7, 1, 0),
 FM801_SINGLE("AC97 18-bit Switch", FM801_CODEC_CTRL, 10, 1, 0),
 FM801_SINGLE(SNDRV_CTL_NAME_IEC958("",CAPTURE,SWITCH), FM801_I2S_MODE, 8, 1, 0),
@@ -1002,6 +1402,7 @@ FM801_SINGLE(SNDRV_CTL_NAME_IEC958("Raw Data ",CAPTURE,SWITCH), FM801_I2S_MODE, 
 FM801_SINGLE(SNDRV_CTL_NAME_IEC958("",PLAYBACK,SWITCH), FM801_GEN_CTRL, 2, 1, 0),
 };
 
+<<<<<<< HEAD
 static void snd_fm801_mixer_free_ac97_bus(struct snd_ac97_bus *bus)
 {
 	struct fm801 *chip = bus->private_data;
@@ -1019,15 +1420,23 @@ static void snd_fm801_mixer_free_ac97(struct snd_ac97 *ac97)
 }
 
 static int __devinit snd_fm801_mixer(struct fm801 *chip)
+=======
+static int snd_fm801_mixer(struct fm801 *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_ac97_template ac97;
 	unsigned int i;
 	int err;
+<<<<<<< HEAD
 	static struct snd_ac97_bus_ops ops = {
+=======
+	static const struct snd_ac97_bus_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write = snd_fm801_codec_write,
 		.read = snd_fm801_codec_read,
 	};
 
+<<<<<<< HEAD
 	if ((err = snd_ac97_bus(chip->card, 0, &ops, chip, &chip->ac97_bus)) < 0)
 		return err;
 	chip->ac97_bus->private_free = snd_fm801_mixer_free_ac97_bus;
@@ -1036,10 +1445,21 @@ static int __devinit snd_fm801_mixer(struct fm801 *chip)
 	ac97.private_data = chip;
 	ac97.private_free = snd_fm801_mixer_free_ac97;
 	if ((err = snd_ac97_mixer(chip->ac97_bus, &ac97, &chip->ac97)) < 0)
+=======
+	err = snd_ac97_bus(chip->card, 0, &ops, chip, &chip->ac97_bus);
+	if (err < 0)
+		return err;
+
+	memset(&ac97, 0, sizeof(ac97));
+	ac97.private_data = chip;
+	err = snd_ac97_mixer(chip->ac97_bus, &ac97, &chip->ac97);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	if (chip->secondary) {
 		ac97.num = 1;
 		ac97.addr = chip->secondary_addr;
+<<<<<<< HEAD
 		if ((err = snd_ac97_mixer(chip->ac97_bus, &ac97, &chip->ac97_sec)) < 0)
 			return err;
 	}
@@ -1048,6 +1468,25 @@ static int __devinit snd_fm801_mixer(struct fm801 *chip)
 	if (chip->multichannel) {
 		for (i = 0; i < FM801_CONTROLS_MULTI; i++)
 			snd_ctl_add(chip->card, snd_ctl_new1(&snd_fm801_controls_multi[i], chip));
+=======
+		err = snd_ac97_mixer(chip->ac97_bus, &ac97, &chip->ac97_sec);
+		if (err < 0)
+			return err;
+	}
+	for (i = 0; i < FM801_CONTROLS; i++) {
+		err = snd_ctl_add(chip->card,
+			snd_ctl_new1(&snd_fm801_controls[i], chip));
+		if (err < 0)
+			return err;
+	}
+	if (chip->multichannel) {
+		for (i = 0; i < FM801_CONTROLS_MULTI; i++) {
+			err = snd_ctl_add(chip->card,
+				snd_ctl_new1(&snd_fm801_controls_multi[i], chip));
+			if (err < 0)
+				return err;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1061,18 +1500,28 @@ static int wait_for_codec(struct fm801 *chip, unsigned int codec_id,
 {
 	unsigned long timeout = jiffies + waits;
 
+<<<<<<< HEAD
 	outw(FM801_AC97_READ | (codec_id << FM801_AC97_ADDR_SHIFT) | reg,
 	     FM801_REG(chip, AC97_CMD));
 	udelay(5);
 	do {
 		if ((inw(FM801_REG(chip, AC97_CMD)) & (FM801_AC97_VALID|FM801_AC97_BUSY))
 		    == FM801_AC97_VALID)
+=======
+	fm801_writew(chip, AC97_CMD,
+		     reg | (codec_id << FM801_AC97_ADDR_SHIFT) | FM801_AC97_READ);
+	udelay(5);
+	do {
+		if ((fm801_readw(chip, AC97_CMD) &
+		     (FM801_AC97_VALID | FM801_AC97_BUSY)) == FM801_AC97_VALID)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		schedule_timeout_uninterruptible(1);
 	} while (time_after(timeout, jiffies));
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int snd_fm801_chip_init(struct fm801 *chip, int resume)
 {
 	unsigned short cmdw;
@@ -1094,6 +1543,23 @@ static int snd_fm801_chip_init(struct fm801 *chip, int resume)
 			goto __ac97_ok;
 		}
 
+=======
+static int reset_codec(struct fm801 *chip)
+{
+	/* codec cold reset + AC'97 warm reset */
+	fm801_writew(chip, CODEC_CTRL, (1 << 5) | (1 << 6));
+	fm801_readw(chip, CODEC_CTRL); /* flush posting data */
+	udelay(100);
+	fm801_writew(chip, CODEC_CTRL, 0);
+
+	return wait_for_codec(chip, 0, AC97_RESET, msecs_to_jiffies(750));
+}
+
+static void snd_fm801_chip_multichannel_init(struct fm801 *chip)
+{
+	unsigned short cmdw;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip->multichannel) {
 		if (chip->secondary_addr) {
 			wait_for_codec(chip, chip->secondary_addr,
@@ -1105,7 +1571,11 @@ static int snd_fm801_chip_init(struct fm801 *chip, int resume)
 			for (i = 3; i > 0; i--) {
 				if (!wait_for_codec(chip, i, AC97_VENDOR_ID1,
 						     msecs_to_jiffies(50))) {
+<<<<<<< HEAD
 					cmdw = inw(FM801_REG(chip, AC97_DATA));
+=======
+					cmdw = fm801_readw(chip, AC97_DATA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (cmdw != 0xffff && cmdw != 0) {
 						chip->secondary = 1;
 						chip->secondary_addr = i;
@@ -1119,6 +1589,7 @@ static int snd_fm801_chip_init(struct fm801 *chip, int resume)
 		/* cause timeout problems */
 		wait_for_codec(chip, 0, AC97_VENDOR_ID1, msecs_to_jiffies(750));
 	}
+<<<<<<< HEAD
 
       __ac97_ok:
 
@@ -1132,10 +1603,29 @@ static int snd_fm801_chip_init(struct fm801 *chip, int resume)
 
 	/* interrupt setup */
 	cmdw = inw(FM801_REG(chip, IRQ_MASK));
+=======
+}
+
+static void snd_fm801_chip_init(struct fm801 *chip)
+{
+	unsigned short cmdw;
+
+	/* init volume */
+	fm801_writew(chip, PCM_VOL, 0x0808);
+	fm801_writew(chip, FM_VOL, 0x9f1f);
+	fm801_writew(chip, I2S_VOL, 0x8808);
+
+	/* I2S control - I2S mode */
+	fm801_writew(chip, I2S_MODE, 0x0003);
+
+	/* interrupt setup */
+	cmdw = fm801_readw(chip, IRQ_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip->irq < 0)
 		cmdw |= 0x00c3;		/* mask everything, no PCM nor MPU */
 	else
 		cmdw &= ~0x0083;	/* unmask MPU, PLAYBACK & CAPTURE */
+<<<<<<< HEAD
 	outw(cmdw, FM801_REG(chip, IRQ_MASK));
 
 	/* interrupt clear */
@@ -1158,12 +1648,32 @@ static int snd_fm801_free(struct fm801 *chip)
 	outw(cmdw, FM801_REG(chip, IRQ_MASK));
 
       __end_hw:
+=======
+	fm801_writew(chip, IRQ_MASK, cmdw);
+
+	/* interrupt clear */
+	fm801_writew(chip, IRQ_STATUS,
+		     FM801_IRQ_PLAYBACK | FM801_IRQ_CAPTURE | FM801_IRQ_MPU);
+}
+
+static void snd_fm801_free(struct snd_card *card)
+{
+	struct fm801 *chip = card->private_data;
+	unsigned short cmdw;
+
+	/* interrupt setup - mask everything */
+	cmdw = fm801_readw(chip, IRQ_MASK);
+	cmdw |= 0x00c3;
+	fm801_writew(chip, IRQ_MASK, cmdw);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SND_FM801_TEA575X_BOOL
 	if (!(chip->tea575x_tuner & TUNER_DISABLED)) {
 		snd_tea575x_exit(&chip->tea);
 		v4l2_device_unregister(&chip->v4l2_dev);
 	}
 #endif
+<<<<<<< HEAD
 	if (chip->irq >= 0)
 		free_irq(chip->irq, chip);
 	pci_release_regions(chip->pci);
@@ -1220,10 +1730,35 @@ static int __devinit snd_fm801_create(struct snd_card *card,
 		chip->irq = pci->irq;
 		pci_set_master(pci);
 	}
+=======
+}
+
+static int snd_fm801_create(struct snd_card *card,
+			    struct pci_dev *pci,
+			    int tea575x_tuner,
+			    int radio_nr)
+{
+	struct fm801 *chip = card->private_data;
+	int err;
+
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+	spin_lock_init(&chip->reg_lock);
+	chip->card = card;
+	chip->dev = &pci->dev;
+	chip->irq = -1;
+	chip->tea575x_tuner = tea575x_tuner;
+	err = pci_request_regions(pci, "FM801");
+	if (err < 0)
+		return err;
+	chip->port = pci_resource_start(pci, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci->revision >= 0xb1)	/* FM801-AU */
 		chip->multichannel = 1;
 
+<<<<<<< HEAD
 	snd_fm801_chip_init(chip, 0);
 	/* init might set tuner access method */
 	tea575x_tuner = chip->tea575x_tuner;
@@ -1247,11 +1782,42 @@ static int __devinit snd_fm801_create(struct snd_card *card,
 		snd_fm801_free(chip);
 		return err;
 	}
+=======
+	if (!(chip->tea575x_tuner & TUNER_ONLY)) {
+		if (reset_codec(chip) < 0) {
+			dev_info(chip->card->dev,
+				 "Primary AC'97 codec not found, assume SF64-PCR (tuner-only)\n");
+			chip->tea575x_tuner = 3 | TUNER_ONLY;
+		} else {
+			snd_fm801_chip_multichannel_init(chip);
+		}
+	}
+
+	if ((chip->tea575x_tuner & TUNER_ONLY) == 0) {
+		if (devm_request_irq(&pci->dev, pci->irq, snd_fm801_interrupt,
+				IRQF_SHARED, KBUILD_MODNAME, chip)) {
+			dev_err(card->dev, "unable to grab IRQ %d\n", pci->irq);
+			return -EBUSY;
+		}
+		chip->irq = pci->irq;
+		card->sync_irq = chip->irq;
+		pci_set_master(pci);
+	}
+
+	card->private_free = snd_fm801_free;
+	snd_fm801_chip_init(chip);
+
+#ifdef CONFIG_SND_FM801_TEA575X_BOOL
+	err = v4l2_device_register(&pci->dev, &chip->v4l2_dev);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->tea.v4l2_dev = &chip->v4l2_dev;
 	chip->tea.radio_nr = radio_nr;
 	chip->tea.private_data = chip;
 	chip->tea.ops = &snd_fm801_tea_ops;
 	sprintf(chip->tea.bus_info, "PCI:%s", pci_name(pci));
+<<<<<<< HEAD
 	if ((tea575x_tuner & TUNER_TYPE_MASK) > 0 &&
 	    (tea575x_tuner & TUNER_TYPE_MASK) < 4) {
 		if (snd_tea575x_init(&chip->tea)) {
@@ -1265,11 +1831,29 @@ static int __devinit snd_fm801_create(struct snd_card *card,
 			chip->tea575x_tuner = tea575x_tuner;
 			if (!snd_tea575x_init(&chip->tea)) {
 				snd_printk(KERN_INFO "detected TEA575x radio type %s\n",
+=======
+	if ((chip->tea575x_tuner & TUNER_TYPE_MASK) > 0 &&
+	    (chip->tea575x_tuner & TUNER_TYPE_MASK) < 4) {
+		if (snd_tea575x_init(&chip->tea, THIS_MODULE)) {
+			dev_err(card->dev, "TEA575x radio not found\n");
+			return -ENODEV;
+		}
+	} else if ((chip->tea575x_tuner & TUNER_TYPE_MASK) == 0) {
+		unsigned int tuner_only = chip->tea575x_tuner & TUNER_ONLY;
+
+		/* autodetect tuner connection */
+		for (tea575x_tuner = 1; tea575x_tuner <= 3; tea575x_tuner++) {
+			chip->tea575x_tuner = tea575x_tuner;
+			if (!snd_tea575x_init(&chip->tea, THIS_MODULE)) {
+				dev_info(card->dev,
+					 "detected TEA575x radio type %s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   get_tea575x_gpio(chip)->name);
 				break;
 			}
 		}
 		if (tea575x_tuner == 4) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "TEA575x radio not found\n");
 			chip->tea575x_tuner = TUNER_DISABLED;
 		}
@@ -1286,6 +1870,24 @@ static int __devinit snd_fm801_create(struct snd_card *card,
 
 static int __devinit snd_card_fm801_probe(struct pci_dev *pci,
 					  const struct pci_device_id *pci_id)
+=======
+			dev_err(card->dev, "TEA575x radio not found\n");
+			chip->tea575x_tuner = TUNER_DISABLED;
+		}
+
+		chip->tea575x_tuner |= tuner_only;
+	}
+	if (!(chip->tea575x_tuner & TUNER_DISABLED)) {
+		strscpy(chip->tea.card, get_tea575x_gpio(chip)->name,
+			sizeof(chip->tea.card));
+	}
+#endif
+	return 0;
+}
+
+static int __snd_card_fm801_probe(struct pci_dev *pci,
+				  const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -1300,6 +1902,7 @@ static int __devinit snd_card_fm801_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
 	if (err < 0)
 		return err;
@@ -1308,6 +1911,16 @@ static int __devinit snd_card_fm801_probe(struct pci_dev *pci,
 		return err;
 	}
 	card->private_data = chip;
+=======
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(*chip), &card);
+	if (err < 0)
+		return err;
+	chip = card->private_data;
+	err = snd_fm801_create(card, pci, tea575x_tuner[dev], radio_nr[dev]);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->driver, "FM801");
 	strcpy(card->shortname, "ForteMedia FM801-");
@@ -1318,6 +1931,7 @@ static int __devinit snd_card_fm801_probe(struct pci_dev *pci,
 	if (chip->tea575x_tuner & TUNER_ONLY)
 		goto __fm801_tuner_only;
 
+<<<<<<< HEAD
 	if ((err = snd_fm801_pcm(chip, 0, NULL)) < 0) {
 		snd_card_free(card);
 		return err;
@@ -1350,11 +1964,40 @@ static int __devinit snd_card_fm801_probe(struct pci_dev *pci,
 		snd_card_free(card);
 		return err;
 	}
+=======
+	err = snd_fm801_pcm(chip, 0);
+	if (err < 0)
+		return err;
+	err = snd_fm801_mixer(chip);
+	if (err < 0)
+		return err;
+	err = snd_mpu401_uart_new(card, 0, MPU401_HW_FM801,
+				  chip->port + FM801_MPU401_DATA,
+				  MPU401_INFO_INTEGRATED |
+				  MPU401_INFO_IRQ_HOOK,
+				  -1, &chip->rmidi);
+	if (err < 0)
+		return err;
+	err = snd_opl3_create(card, chip->port + FM801_OPL3_BANK0,
+			      chip->port + FM801_OPL3_BANK1,
+			      OPL3_HW_OPL3_FM801, 1, &opl3);
+	if (err < 0)
+		return err;
+	err = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
+	if (err < 0)
+		return err;
+
+      __fm801_tuner_only:
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_drvdata(pci, card);
 	dev++;
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_card_fm801_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
@@ -1363,19 +2006,35 @@ static void __devexit snd_card_fm801_remove(struct pci_dev *pci)
 
 #ifdef CONFIG_PM
 static unsigned char saved_regs[] = {
+=======
+static int snd_card_fm801_probe(struct pci_dev *pci,
+				const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_card_fm801_probe(pci, pci_id));
+}
+
+static const unsigned char saved_regs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FM801_PCM_VOL, FM801_I2S_VOL, FM801_FM_VOL, FM801_REC_SRC,
 	FM801_PLY_CTRL, FM801_PLY_COUNT, FM801_PLY_BUF1, FM801_PLY_BUF2,
 	FM801_CAP_CTRL, FM801_CAP_COUNT, FM801_CAP_BUF1, FM801_CAP_BUF2,
 	FM801_CODEC_CTRL, FM801_I2S_MODE, FM801_VOLUME, FM801_GEN_CTRL,
 };
 
+<<<<<<< HEAD
 static int snd_fm801_suspend(struct pci_dev *pci, pm_message_t state)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+static int snd_fm801_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fm801 *chip = card->private_data;
 	int i;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+<<<<<<< HEAD
 	snd_pcm_suspend_all(chip->pcm);
 	snd_ac97_suspend(chip->ac97);
 	snd_ac97_suspend(chip->ac97_sec);
@@ -1410,10 +2069,50 @@ static int snd_fm801_resume(struct pci_dev *pci)
 	snd_ac97_resume(chip->ac97_sec);
 	for (i = 0; i < ARRAY_SIZE(saved_regs); i++)
 		outw(chip->saved_regs[i], chip->port + saved_regs[i]);
+=======
+
+	for (i = 0; i < ARRAY_SIZE(saved_regs); i++)
+		chip->saved_regs[i] = fm801_ioread16(chip, saved_regs[i]);
+
+	if (chip->tea575x_tuner & TUNER_ONLY) {
+		/* FIXME: tea575x suspend */
+	} else {
+		snd_ac97_suspend(chip->ac97);
+		snd_ac97_suspend(chip->ac97_sec);
+	}
+
+	return 0;
+}
+
+static int snd_fm801_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct fm801 *chip = card->private_data;
+	int i;
+
+	if (chip->tea575x_tuner & TUNER_ONLY) {
+		snd_fm801_chip_init(chip);
+	} else {
+		reset_codec(chip);
+		snd_fm801_chip_multichannel_init(chip);
+		snd_fm801_chip_init(chip);
+		snd_ac97_resume(chip->ac97);
+		snd_ac97_resume(chip->ac97_sec);
+	}
+
+	for (i = 0; i < ARRAY_SIZE(saved_regs); i++)
+		fm801_iowrite16(chip, saved_regs[i], chip->saved_regs[i]);
+
+#ifdef CONFIG_SND_FM801_TEA575X_BOOL
+	if (!(chip->tea575x_tuner & TUNER_DISABLED))
+		snd_tea575x_set_freq(&chip->tea);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static struct pci_driver driver = {
@@ -1439,3 +2138,18 @@ static void __exit alsa_card_fm801_exit(void)
 
 module_init(alsa_card_fm801_init)
 module_exit(alsa_card_fm801_exit)
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(snd_fm801_pm, snd_fm801_suspend, snd_fm801_resume);
+
+static struct pci_driver fm801_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_fm801_ids,
+	.probe = snd_card_fm801_probe,
+	.driver = {
+		.pm = &snd_fm801_pm,
+	},
+};
+
+module_pci_driver(fm801_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Written by Pat Gaughen (gone@us.ibm.com) Mar 2002
  *
@@ -11,6 +15,7 @@
 #ifdef CONFIG_NUMA
 extern struct pglist_data *node_data[];
 #define NODE_DATA(nid)	(node_data[nid])
+<<<<<<< HEAD
 
 #include <asm/numaq.h>
 
@@ -61,4 +66,8 @@ static inline int pfn_valid(int pfn)
 	(NODE_DATA(0)->bdata)
 #endif /* CONFIG_NEED_MULTIPLE_NODES */
 
+=======
+#endif /* CONFIG_NUMA */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_MMZONE_32_H */

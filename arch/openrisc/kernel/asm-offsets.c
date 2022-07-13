@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC asm-offsets.c
  *
@@ -9,11 +13,14 @@
  * Copyright (C) 2003 Matjaz Breskvar <phoenix@bsemi.com>
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
  *
+<<<<<<< HEAD
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
  *      as published by the Free Software Foundation; either version
  *      2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This program is used to generate definitions needed by
  * assembly language modules.
  *
@@ -34,6 +41,7 @@
 #include <linux/mm.h>
 #include <linux/io.h>
 #include <linux/thread_info.h>
+<<<<<<< HEAD
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #include <asm/processor.h>
@@ -47,6 +55,15 @@ int main(void)
 {
 	/* offsets into the task_struct */
 	DEFINE(TASK_STATE, offsetof(struct task_struct, state));
+=======
+#include <linux/kbuild.h>
+#include <asm/page.h>
+#include <asm/processor.h>
+
+int main(void)
+{
+	/* offsets into the task_struct */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEFINE(TASK_FLAGS, offsetof(struct task_struct, flags));
 	DEFINE(TASK_PTRACE, offsetof(struct task_struct, ptrace));
 	DEFINE(TASK_THREAD, offsetof(struct task_struct, thread));

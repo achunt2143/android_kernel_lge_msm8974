@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_SMP_H
 #define __ASM_SH_SMP_H
 
@@ -7,7 +11,10 @@
 
 #ifdef CONFIG_SMP
 
+<<<<<<< HEAD
 #include <linux/spinlock.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/atomic.h>
 #include <asm/current.h>
 #include <asm/percpu.h>
@@ -34,11 +41,14 @@ enum {
 DECLARE_PER_CPU(int, cpu_state);
 
 void smp_message_recv(unsigned int msg);
+<<<<<<< HEAD
 void smp_timer_broadcast(const struct cpumask *mask);
 
 void local_timer_interrupt(void);
 void local_timer_setup(unsigned int cpu);
 void local_timer_stop(unsigned int cpu);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void arch_send_call_function_single_ipi(int cpu);
 void arch_send_call_function_ipi_mask(const struct cpumask *mask);
@@ -69,6 +79,19 @@ static inline int hard_smp_processor_id(void)
 	return mp_ops->smp_processor_id();
 }
 
+<<<<<<< HEAD
+=======
+struct of_cpu_method {
+	const char *method;
+	struct plat_smp_ops *ops;
+};
+
+#define CPU_METHOD_OF_DECLARE(name, _method, _ops)			\
+	static const struct of_cpu_method __cpu_method_of_table_##name	\
+		__used __section("__cpu_method_of_table")		\
+		= { .method = _method, .ops = _ops }
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 
 #define hard_smp_processor_id()	(0)

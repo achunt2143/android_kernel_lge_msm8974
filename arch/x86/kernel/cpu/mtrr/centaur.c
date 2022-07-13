@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/mm.h>
 
@@ -44,6 +48,7 @@ centaur_get_free_region(unsigned long base, unsigned long size, int replace_reg)
 	return -ENOSPC;
 }
 
+<<<<<<< HEAD
 /*
  * Report boot time MCR setups
  */
@@ -53,6 +58,8 @@ void mtrr_centaur_report_mcr(int mcr, u32 lo, u32 hi)
 	centaur_mcr[mcr].high = hi;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 centaur_get_mcr(unsigned int reg, unsigned long *base,
 		unsigned long *size, mtrr_type * type)
@@ -103,24 +110,36 @@ centaur_validate_add_page(unsigned long base, unsigned long size, unsigned int t
 	 */
 	if (type != MTRR_TYPE_WRCOMB &&
 	    (centaur_mcr_type == 0 || type != MTRR_TYPE_UNCACHABLE)) {
+<<<<<<< HEAD
 		pr_warning("mtrr: only write-combining%s supported\n",
+=======
+		pr_warn("mtrr: only write-combining%s supported\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   centaur_mcr_type ? " and uncacheable are" : " is");
 		return -EINVAL;
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct mtrr_ops centaur_mtrr_ops = {
 	.vendor            = X86_VENDOR_CENTAUR,
+=======
+const struct mtrr_ops centaur_mtrr_ops = {
+	.var_regs          = 8,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set               = centaur_set_mcr,
 	.get               = centaur_get_mcr,
 	.get_free_region   = centaur_get_free_region,
 	.validate_add_page = centaur_validate_add_page,
 	.have_wrcomb       = positive_have_wrcomb,
 };
+<<<<<<< HEAD
 
 int __init centaur_init_mtrr(void)
 {
 	set_mtrr_ops(&centaur_mtrr_ops);
 	return 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

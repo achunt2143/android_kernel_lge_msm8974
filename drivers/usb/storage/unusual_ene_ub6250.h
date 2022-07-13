@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -15,6 +16,9 @@
  * 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_USB_STORAGE_ENE_UB6250) || \
 		defined(CONFIG_USB_STORAGE_ENE_UB6250_MODULE)
 

@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RTC driver for Maxim MAX8925
  *
  * Copyright (C) 2009-2010 Marvell International Ltd.
  *	Haojian Zhuang <haojian.zhuang@marvell.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -69,6 +76,10 @@ struct max8925_rtc_info {
 	struct max8925_chip	*chip;
 	struct i2c_client	*rtc;
 	struct device		*dev;
+<<<<<<< HEAD
+=======
+	int			irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t rtc_update_handler(int irq, void *data)
@@ -233,8 +244,11 @@ static int max8925_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 		ret = max8925_reg_write(info->rtc, MAX8925_ALARM0_CNTL, 0x77);
 	else
 		ret = max8925_reg_write(info->rtc, MAX8925_ALARM0_CNTL, 0x0);
+<<<<<<< HEAD
 	if (ret < 0)
 		goto out;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return ret;
 }
@@ -246,6 +260,7 @@ static const struct rtc_class_ops max8925_rtc_ops = {
 	.set_alarm	= max8925_rtc_set_alarm,
 };
 
+<<<<<<< HEAD
 static int __devinit max8925_rtc_probe(struct platform_device *pdev)
 {
 	struct max8925_chip *chip = dev_get_drvdata(pdev->dev.parent);
@@ -253,11 +268,22 @@ static int __devinit max8925_rtc_probe(struct platform_device *pdev)
 	int irq, ret;
 
 	info = kzalloc(sizeof(struct max8925_rtc_info), GFP_KERNEL);
+=======
+static int max8925_rtc_probe(struct platform_device *pdev)
+{
+	struct max8925_chip *chip = dev_get_drvdata(pdev->dev.parent);
+	struct max8925_rtc_info *info;
+	int ret;
+
+	info = devm_kzalloc(&pdev->dev, sizeof(struct max8925_rtc_info),
+			    GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info)
 		return -ENOMEM;
 	info->chip = chip;
 	info->rtc = chip->rtc;
 	info->dev = &pdev->dev;
+<<<<<<< HEAD
 	irq = chip->irq_base + MAX8925_IRQ_RTC_ALARM0;
 
 	ret = request_threaded_irq(irq, NULL, rtc_update_handler,
@@ -266,6 +292,17 @@ static int __devinit max8925_rtc_probe(struct platform_device *pdev)
 		dev_err(chip->dev, "Failed to request IRQ: #%d: %d\n",
 			irq, ret);
 		goto out_irq;
+=======
+	info->irq = platform_get_irq(pdev, 0);
+
+	ret = devm_request_threaded_irq(&pdev->dev, info->irq, NULL,
+					rtc_update_handler, IRQF_ONESHOT,
+					"rtc-alarm0", info);
+	if (ret < 0) {
+		dev_err(chip->dev, "Failed to request IRQ: #%d: %d\n",
+			info->irq, ret);
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev_set_drvdata(&pdev->dev, info);
@@ -274,11 +311,16 @@ static int __devinit max8925_rtc_probe(struct platform_device *pdev)
 
 	device_init_wakeup(&pdev->dev, 1);
 
+<<<<<<< HEAD
 	info->rtc_dev = rtc_device_register("max8925-rtc", &pdev->dev,
+=======
+	info->rtc_dev = devm_rtc_device_register(&pdev->dev, "max8925-rtc",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					&max8925_rtc_ops, THIS_MODULE);
 	ret = PTR_ERR(info->rtc_dev);
 	if (IS_ERR(info->rtc_dev)) {
 		dev_err(&pdev->dev, "Failed to register RTC device: %d\n", ret);
+<<<<<<< HEAD
 		goto out_rtc;
 	}
 
@@ -301,6 +343,12 @@ static int __devexit max8925_rtc_remove(struct platform_device *pdev)
 		kfree(info);
 	}
 	return 0;
+=======
+		return ret;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -329,11 +377,17 @@ static SIMPLE_DEV_PM_OPS(max8925_rtc_pm_ops, max8925_rtc_suspend, max8925_rtc_re
 static struct platform_driver max8925_rtc_driver = {
 	.driver		= {
 		.name	= "max8925-rtc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm     = &max8925_rtc_pm_ops,
 	},
 	.probe		= max8925_rtc_probe,
 	.remove		= __devexit_p(max8925_rtc_remove),
+=======
+		.pm     = &max8925_rtc_pm_ops,
+	},
+	.probe		= max8925_rtc_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(max8925_rtc_driver);

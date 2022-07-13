@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/xtensa/platforms/xt2000/setup.c
  *
@@ -7,12 +11,15 @@
  *		Joe Taylor <joe@tensilica.com>
  *
  * Copyright 2001 - 2004 Tensilica Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/stddef.h>
 #include <linux/kernel.h>
@@ -28,6 +35,10 @@
 #include <linux/platform_device.h>
 #include <linux/serial.h>
 #include <linux/serial_8250.h>
+<<<<<<< HEAD
+=======
+#include <linux/timer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/processor.h>
 #include <asm/platform.h>
@@ -46,6 +57,7 @@ static void led_print (int f, char *s)
 		    break;
 }
 
+<<<<<<< HEAD
 void platform_halt(void)
 {
 	led_print (0, "  HALT  ");
@@ -54,10 +66,14 @@ void platform_halt(void)
 }
 
 void platform_power_off(void)
+=======
+static int xt2000_power_off(struct sys_off_data *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	led_print (0, "POWEROFF");
 	local_irq_disable();
 	while (1);
+<<<<<<< HEAD
 }
 
 void platform_restart(void)
@@ -83,11 +99,31 @@ void platform_restart(void)
 	/* control never gets here */
 }
 
+=======
+	return NOTIFY_DONE;
+}
+
+static int xt2000_restart(struct notifier_block *this,
+			  unsigned long event, void *ptr)
+{
+	/* Flush and reset the mmu, simulate a processor reset, and
+	 * jump to the reset vector. */
+	cpu_reset();
+
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block xt2000_restart_block = {
+	.notifier_call = xt2000_restart,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init platform_setup(char** cmdline)
 {
 	led_print (0, "LINUX   ");
 }
 
+<<<<<<< HEAD
 /* early initialization */
 
 extern sysmem_info_t __initdata sysmem;
@@ -120,6 +156,24 @@ void platform_heartbeat(void)
 
 //#define RS_TABLE_SIZE 2
 //#define STD_COM_FLAGS (ASYNC_BOOT_AUTOCONF|ASYNC_SKIP_TEST)
+=======
+/* Heartbeat. Let the LED blink. */
+
+static void xt2000_heartbeat(struct timer_list *unused);
+
+static DEFINE_TIMER(heartbeat_timer, xt2000_heartbeat);
+
+static void xt2000_heartbeat(struct timer_list *unused)
+{
+	static int i;
+
+	led_print(7, i ? "." : " ");
+	i ^= 1;
+	mod_timer(&heartbeat_timer, jiffies + HZ / 2);
+}
+
+//#define RS_TABLE_SIZE 2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _SERIAL_PORT(_base,_irq)					\
 {									\
@@ -174,7 +228,15 @@ static int __init xt2000_setup_devinit(void)
 {
 	platform_device_register(&xt2000_serial8250_device);
 	platform_device_register(&xt2000_sonic_device);
+<<<<<<< HEAD
 
+=======
+	mod_timer(&heartbeat_timer, jiffies + HZ / 2);
+	register_restart_handler(&xt2000_restart_block);
+	register_sys_off_handler(SYS_OFF_MODE_POWER_OFF,
+				 SYS_OFF_PRIO_DEFAULT,
+				 xt2000_power_off, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

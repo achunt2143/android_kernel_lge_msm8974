@@ -21,6 +21,7 @@
 #include <linux/kallsyms.h>
 #include <linux/kgdb.h>
 #include <linux/ftrace.h>
+<<<<<<< HEAD
 
 #include <linux/atomic.h>
 #include <asm/uaccess.h>
@@ -66,6 +67,14 @@ void free_irqno(unsigned int irq)
 	clear_bit(irq, irq_map);
 	smp_mb__after_clear_bit();
 }
+=======
+#include <linux/irqdomain.h>
+
+#include <linux/atomic.h>
+#include <linux/uaccess.h>
+
+void *irq_stack[NR_CPUS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 'what should we do if we get a hw irq event on an illegal vector'.
@@ -73,7 +82,10 @@ void free_irqno(unsigned int irq)
  */
 void ack_bad_irq(unsigned int irq)
 {
+<<<<<<< HEAD
 	smtc_im_ack_irq(irq);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("unexpected IRQ # %d\n", irq);
 }
 
@@ -93,21 +105,40 @@ asmlinkage void spurious_interrupt(void)
 void __init init_IRQ(void)
 {
 	int i;
+<<<<<<< HEAD
 
 #ifdef CONFIG_KGDB
 	if (kgdb_early_setup)
 		return;
 #endif
+=======
+	unsigned int order = get_order(IRQ_STACK_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < NR_IRQS; i++)
 		irq_set_noprobe(i);
 
+<<<<<<< HEAD
 	arch_init_irq();
 
 #ifdef CONFIG_KGDB
 	if (!kgdb_early_setup)
 		kgdb_early_setup = 1;
 #endif
+=======
+	if (cpu_has_veic)
+		clear_c0_status(ST0_IM);
+
+	arch_init_irq();
+
+	for_each_possible_cpu(i) {
+		void *s = (void *)__get_free_pages(GFP_KERNEL, order);
+
+		irq_stack[i] = s;
+		pr_debug("CPU%d IRQ stack at 0x%p - 0x%p\n", i,
+			irq_stack[i], irq_stack[i] + IRQ_STACK_SIZE);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_DEBUG_STACKOVERFLOW
@@ -142,6 +173,7 @@ void __irq_entry do_IRQ(unsigned int irq)
 {
 	irq_enter();
 	check_stack_overflow();
+<<<<<<< HEAD
 	if (!smtc_handle_on_other_cpu(irq))
 		generic_handle_irq(irq);
 	irq_exit();
@@ -157,8 +189,22 @@ void __irq_entry do_IRQ_no_affinity(unsigned int irq)
 {
 	irq_enter();
 	smtc_im_backstop(irq);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	generic_handle_irq(irq);
 	irq_exit();
 }
 
+<<<<<<< HEAD
 #endif /* CONFIG_MIPS_MT_SMTC_IRQAFF */
+=======
+#ifdef CONFIG_IRQ_DOMAIN
+void __irq_entry do_domain_IRQ(struct irq_domain *domain, unsigned int hwirq)
+{
+	irq_enter();
+	check_stack_overflow();
+	generic_handle_domain_irq(domain, hwirq);
+	irq_exit();
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

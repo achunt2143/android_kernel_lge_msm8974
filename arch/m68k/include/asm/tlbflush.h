@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _M68K_TLBFLUSH_H
 #define _M68K_TLBFLUSH_H
 
@@ -12,13 +16,21 @@ static inline void flush_tlb_kernel_page(void *addr)
 	if (CPU_IS_COLDFIRE) {
 		mmu_write(MMUOR, MMUOR_CNL);
 	} else if (CPU_IS_040_OR_060) {
+<<<<<<< HEAD
 		mm_segment_t old_fs = get_fs();
 		set_fs(KERNEL_DS);
+=======
+		set_fc(SUPER_DATA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__asm__ __volatile__(".chip 68040\n\t"
 				     "pflush (%0)\n\t"
 				     ".chip 68k"
 				     : : "a" (addr));
+<<<<<<< HEAD
 		set_fs(old_fs);
+=======
+		set_fc(USER_DATA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (CPU_IS_020_OR_030)
 		__asm__ __volatile__("pflush #4,#4,(%0)" : : "a" (addr));
 }
@@ -83,12 +95,17 @@ static inline void flush_tlb_mm(struct mm_struct *mm)
 
 static inline void flush_tlb_page(struct vm_area_struct *vma, unsigned long addr)
 {
+<<<<<<< HEAD
 	if (vma->vm_mm == current->active_mm) {
 		mm_segment_t old_fs = get_fs();
 		set_fs(USER_DS);
 		__flush_tlb_one(addr);
 		set_fs(old_fs);
 	}
+=======
+	if (vma->vm_mm == current->active_mm)
+		__flush_tlb_one(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void flush_tlb_range(struct vm_area_struct *vma,
@@ -116,6 +133,7 @@ extern unsigned char pmeg_ctx[SUN3_PMEGS_NUM];
    sun?) */
 static inline void flush_tlb_all(void)
 {
+<<<<<<< HEAD
        unsigned long addr;
        unsigned char ctx, oldctx;
 
@@ -138,11 +156,35 @@ static inline void flush_tlb_all(void)
 	       }
        }
 
+=======
+	unsigned long addr;
+	unsigned char ctx, oldctx;
+
+	oldctx = sun3_get_context();
+	for (addr = 0x00000000; addr < TASK_SIZE; addr += SUN3_PMEG_SIZE) {
+		for (ctx = 0; ctx < 8; ctx++) {
+			sun3_put_context(ctx);
+			sun3_put_segmap(addr, SUN3_INVALID_PMEG);
+		}
+	}
+
+	sun3_put_context(oldctx);
+	/* erase all of the userspace pmeg maps, we've clobbered them
+	   all anyway */
+	for (addr = 0; addr < SUN3_INVALID_PMEG; addr++) {
+		if (pmeg_alloc[addr] == 1) {
+			pmeg_alloc[addr] = 0;
+			pmeg_ctx[addr] = 0;
+			pmeg_vaddr[addr] = 0;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Clear user TLB entries within the context named in mm */
 static inline void flush_tlb_mm (struct mm_struct *mm)
 {
+<<<<<<< HEAD
      unsigned char oldctx;
      unsigned char seg;
      unsigned long i;
@@ -163,6 +205,27 @@ static inline void flush_tlb_mm (struct mm_struct *mm)
 
      sun3_put_context(oldctx);
 
+=======
+	unsigned char oldctx;
+	unsigned char seg;
+	unsigned long i;
+
+	oldctx = sun3_get_context();
+	sun3_put_context(mm->context);
+
+	for (i = 0; i < TASK_SIZE; i += SUN3_PMEG_SIZE) {
+		seg = sun3_get_segmap(i);
+		if (seg == SUN3_INVALID_PMEG)
+			continue;
+
+		sun3_put_segmap(i, SUN3_INVALID_PMEG);
+		pmeg_alloc[seg] = 0;
+		pmeg_ctx[seg] = 0;
+		pmeg_vaddr[seg] = 0;
+	}
+
+	sun3_put_context(oldctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Flush a single TLB page. In this case, we're limited to flushing a
@@ -212,6 +275,10 @@ static inline void flush_tlb_range (struct vm_area_struct *vma,
 	next:
 		start += SUN3_PMEG_SIZE;
 	}
+<<<<<<< HEAD
+=======
+	sun3_put_context(oldctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void flush_tlb_kernel_range(unsigned long start, unsigned long end)
@@ -262,7 +329,11 @@ static inline void flush_tlb_page(struct vm_area_struct *vma, unsigned long addr
 	BUG();
 }
 
+<<<<<<< HEAD
 static inline void flush_tlb_range(struct mm_struct *mm,
+=======
+static inline void flush_tlb_range(struct vm_area_struct *vma,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   unsigned long start, unsigned long end)
 {
 	BUG();

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * ds.h -- 16-bit PCMCIA core support
  *
@@ -5,6 +6,12 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * ds.h -- 16-bit PCMCIA core support
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The initial developer of the original code is David A. Hinds
  * <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
  * are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.
@@ -39,7 +46,11 @@ struct config_t;
 struct net_device;
 
 /* dynamic device IDs for PCMCIA device drivers. See
+<<<<<<< HEAD
  * Documentation/pcmcia/driver.txt for details.
+=======
+ * Documentation/pcmcia/driver.rst for details.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 struct pcmcia_dynids {
 	struct mutex		lock;
@@ -65,6 +76,21 @@ struct pcmcia_driver {
 int pcmcia_register_driver(struct pcmcia_driver *driver);
 void pcmcia_unregister_driver(struct pcmcia_driver *driver);
 
+<<<<<<< HEAD
+=======
+/**
+ * module_pcmcia_driver() - Helper macro for registering a pcmcia driver
+ * @__pcmcia_driver: pcmcia_driver struct
+ *
+ * Helper macro for pcmcia drivers which do not do anything special in module
+ * init/exit. This eliminates a lot of boilerplate. Each module may only use
+ * this macro once, and calling it replaces module_init() and module_exit().
+ */
+#define module_pcmcia_driver(__pcmcia_driver) \
+	module_driver(__pcmcia_driver, pcmcia_register_driver, \
+			pcmcia_unregister_driver)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* for struct resource * array embedded in struct pcmcia_device */
 enum {
 	PCMCIA_IOPORT_0,
@@ -194,6 +220,7 @@ int pcmcia_write_config_byte(struct pcmcia_device *p_dev, off_t where, u8 val);
 /* device configuration */
 int pcmcia_request_io(struct pcmcia_device *p_dev);
 
+<<<<<<< HEAD
 int __must_check
 __pcmcia_request_exclusive_irq(struct pcmcia_device *p_dev,
 				irq_handler_t handler);
@@ -204,6 +231,8 @@ pcmcia_request_exclusive_irq(struct pcmcia_device *p_dev,
 	return __pcmcia_request_exclusive_irq(p_dev, handler);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __must_check pcmcia_request_irq(struct pcmcia_device *p_dev,
 				irq_handler_t handler);
 

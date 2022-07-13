@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 3215 line mode terminal driver.
  *
@@ -9,7 +13,10 @@
  *	      Dan Morrison, IBM Corporation <dmorriso@cse.buffalo.edu>
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/kdev_t.h>
 #include <linux/tty.h>
@@ -19,6 +26,7 @@
 #include <linux/console.h>
 #include <linux/interrupt.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/reboot.h>
 #include <linux/slab.h>
 #include <asm/ccwdev.h>
@@ -26,6 +34,17 @@
 #include <asm/io.h>
 #include <asm/ebcdic.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/panic_notifier.h>
+#include <linux/reboot.h>
+#include <linux/serial.h> /* ASYNC_* flags */
+#include <linux/slab.h>
+#include <asm/ccwdev.h>
+#include <asm/cio.h>
+#include <linux/io.h>
+#include <asm/ebcdic.h>
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/delay.h>
 #include <asm/cpcmd.h>
 #include <asm/setup.h>
@@ -44,6 +63,7 @@
 #define RAW3215_TIMEOUT	    HZ/10     /* time for delayed output */
 
 #define RAW3215_FIXED	    1	      /* 3215 console device is not be freed */
+<<<<<<< HEAD
 #define RAW3215_ACTIVE	    2	      /* set if the device is in use */
 #define RAW3215_WORKING	    4	      /* set if a request is being worked on */
 #define RAW3215_THROTTLED   8	      /* set if reading is disabled */
@@ -52,6 +72,13 @@
 #define RAW3215_TIMER_RUNS  64	      /* set if the output delay timer is on */
 #define RAW3215_FLUSHING    128	      /* set to flush buffer (no delay) */
 #define RAW3215_FROZEN	    256	      /* set if 3215 is frozen for suspend */
+=======
+#define RAW3215_WORKING	    4	      /* set if a request is being worked on */
+#define RAW3215_THROTTLED   8	      /* set if reading is disabled */
+#define RAW3215_STOPPED	    16	      /* set if writing is disabled */
+#define RAW3215_TIMER_RUNS  64	      /* set if the output delay timer is on */
+#define RAW3215_FLUSHING    128	      /* set to flush buffer (no delay) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TAB_STOP_SIZE	    8	      /* tab stop size */
 
@@ -76,6 +103,7 @@ struct raw3215_req {
 } __attribute__ ((aligned(8)));
 
 struct raw3215_info {
+<<<<<<< HEAD
 	struct ccw_device *cdev;      /* device for tty driver */
 	spinlock_t *lock;	      /* pointer to irq lock */
 	int flags;		      /* state flags */
@@ -92,6 +120,22 @@ struct raw3215_info {
 	struct timer_list timer;      /* timer for delayed output */
 	int line_pos;		      /* position on the line (for tabs) */
 	char ubuffer[80];	      /* copy_from_user buffer */
+=======
+	struct tty_port port;
+	struct ccw_device *cdev;      /* device for tty driver */
+	spinlock_t *lock;	      /* pointer to irq lock */
+	int flags;		      /* state flags */
+	u8 *buffer;		      /* pointer to output buffer */
+	u8 *inbuf;		      /* pointer to input buffer */
+	int head;		      /* first free byte in output buffer */
+	int count;		      /* number of bytes in output buffer */
+	int written;		      /* number of bytes in write requests */
+	struct raw3215_req *queued_read; /* pointer to queued read requests */
+	struct raw3215_req *queued_write;/* pointer to queued write requests */
+	wait_queue_head_t empty_wait; /* wait queue for flushing */
+	struct timer_list timer;      /* timer for delayed output */
+	int line_pos;		      /* position on the line (for tabs) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* array of 3215 devices structures */
@@ -101,9 +145,16 @@ static DEFINE_SPINLOCK(raw3215_device_lock);
 /* list of free request structures */
 static struct raw3215_req *raw3215_freelist;
 /* spinlock to protect free list */
+<<<<<<< HEAD
 static spinlock_t raw3215_freelist_lock;
 
 static struct tty_driver *tty3215_driver;
+=======
+static DEFINE_SPINLOCK(raw3215_freelist_lock);
+
+static struct tty_driver *tty3215_driver;
+static bool con3215_drop = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Get a request structure from the free list
@@ -161,7 +212,11 @@ static void raw3215_mk_read_req(struct raw3215_info *raw)
 	ccw->cmd_code = 0x0A; /* read inquiry */
 	ccw->flags = 0x20;    /* ignore incorrect length */
 	ccw->count = 160;
+<<<<<<< HEAD
 	ccw->cda = (__u32) __pa(raw->inbuf);
+=======
+	ccw->cda = virt_to_dma32(raw->inbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -220,8 +275,12 @@ static void raw3215_mk_write_req(struct raw3215_info *raw)
 			ccw[-1].flags |= 0x40; /* use command chaining */
 		ccw->cmd_code = 0x01; /* write, auto carrier return */
 		ccw->flags = 0x20;    /* ignore incorrect length ind.  */
+<<<<<<< HEAD
 		ccw->cda =
 			(__u32) __pa(raw->buffer + ix);
+=======
+		ccw->cda = virt_to_dma32(raw->buffer + ix);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count = len;
 		if (ix + count > RAW3215_BUFFER_SIZE)
 			count = RAW3215_BUFFER_SIZE - ix;
@@ -284,6 +343,7 @@ static void raw3215_start_io(struct raw3215_info *raw)
 /*
  * Function to start a delayed output after RAW3215_TIMEOUT seconds
  */
+<<<<<<< HEAD
 static void raw3215_timeout(unsigned long __data)
 {
 	struct raw3215_info *raw = (struct raw3215_info *) __data;
@@ -297,6 +357,23 @@ static void raw3215_timeout(unsigned long __data)
 			raw3215_mk_write_req(raw);
 			raw3215_start_io(raw);
 		}
+=======
+static void raw3215_timeout(struct timer_list *t)
+{
+	struct raw3215_info *raw = from_timer(raw, t, timer);
+	unsigned long flags;
+
+	spin_lock_irqsave(get_ccwdev_lock(raw->cdev), flags);
+	raw->flags &= ~RAW3215_TIMER_RUNS;
+	raw3215_mk_write_req(raw);
+	raw3215_start_io(raw);
+	if ((raw->queued_read || raw->queued_write) &&
+	    !(raw->flags & RAW3215_WORKING) &&
+	    !(raw->flags & RAW3215_TIMER_RUNS)) {
+		raw->timer.expires = RAW3215_TIMEOUT + jiffies;
+		add_timer(&raw->timer);
+		raw->flags |= RAW3215_TIMER_RUNS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(get_ccwdev_lock(raw->cdev), flags);
 }
@@ -309,7 +386,11 @@ static void raw3215_timeout(unsigned long __data)
  */
 static inline void raw3215_try_io(struct raw3215_info *raw)
 {
+<<<<<<< HEAD
 	if (!(raw->flags & RAW3215_ACTIVE) || (raw->flags & RAW3215_FROZEN))
+=======
+	if (!tty_port_initialized(&raw->port))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	if (raw->queued_read != NULL)
 		raw3215_start_io(raw);
@@ -318,6 +399,7 @@ static inline void raw3215_try_io(struct raw3215_info *raw)
 		    (raw->flags & RAW3215_FLUSHING)) {
 			/* execute write requests bigger than minimum size */
 			raw3215_start_io(raw);
+<<<<<<< HEAD
 			if (raw->flags & RAW3215_TIMER_RUNS) {
 				del_timer(&raw->timer);
 				raw->flags &= ~RAW3215_TIMER_RUNS;
@@ -341,17 +423,37 @@ static void raw3215_wakeup(unsigned long data)
 {
 	struct raw3215_info *raw = (struct raw3215_info *) data;
 	tty_wakeup(raw->tty);
+=======
+		}
+	}
+	if ((raw->queued_read || raw->queued_write) &&
+	    !(raw->flags & RAW3215_WORKING) &&
+	    !(raw->flags & RAW3215_TIMER_RUNS)) {
+		raw->timer.expires = RAW3215_TIMEOUT + jiffies;
+		add_timer(&raw->timer);
+		raw->flags |= RAW3215_TIMER_RUNS;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Try to start the next IO and wake up processes waiting on the tty.
  */
+<<<<<<< HEAD
 static void raw3215_next_io(struct raw3215_info *raw)
 {
 	raw3215_mk_write_req(raw);
 	raw3215_try_io(raw);
 	if (raw->tty && RAW3215_BUFFER_SIZE - raw->count >= RAW3215_MIN_SPACE)
 		tasklet_schedule(&raw->tlet);
+=======
+static void raw3215_next_io(struct raw3215_info *raw, struct tty_struct *tty)
+{
+	raw3215_mk_write_req(raw);
+	raw3215_try_io(raw);
+	if (tty && RAW3215_BUFFER_SIZE - raw->count >= RAW3215_MIN_SPACE)
+		tty_wakeup(tty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -368,10 +470,18 @@ static void raw3215_irq(struct ccw_device *cdev, unsigned long intparm,
 
 	raw = dev_get_drvdata(&cdev->dev);
 	req = (struct raw3215_req *) intparm;
+<<<<<<< HEAD
 	cstat = irb->scsw.cmd.cstat;
 	dstat = irb->scsw.cmd.dstat;
 	if (cstat != 0)
 		raw3215_next_io(raw);
+=======
+	tty = tty_port_tty_get(&raw->port);
+	cstat = irb->scsw.cmd.cstat;
+	dstat = irb->scsw.cmd.dstat;
+	if (cstat != 0)
+		raw3215_next_io(raw, tty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dstat & 0x01) { /* we got a unit exception */
 		dstat &= ~0x01;	 /* we can ignore it */
 	}
@@ -381,19 +491,28 @@ static void raw3215_irq(struct ccw_device *cdev, unsigned long intparm,
 			break;
 		/* Attention interrupt, someone hit the enter key */
 		raw3215_mk_read_req(raw);
+<<<<<<< HEAD
 		raw3215_next_io(raw);
+=======
+		raw3215_next_io(raw, tty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 0x08:
 	case 0x0C:
 		/* Channel end interrupt. */
 		if ((raw = req->info) == NULL)
+<<<<<<< HEAD
 			return;		     /* That shouldn't happen ... */
+=======
+			goto put_tty;	     /* That shouldn't happen ... */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (req->type == RAW3215_READ) {
 			/* store residual count, then wait for device end */
 			req->residual = irb->scsw.cmd.count;
 		}
 		if (dstat == 0x08)
 			break;
+<<<<<<< HEAD
 	case 0x04:
 		/* Device end interrupt. */
 		if ((raw = req->info) == NULL)
@@ -402,6 +521,16 @@ static void raw3215_irq(struct ccw_device *cdev, unsigned long intparm,
 			unsigned int cchar;
 
 			tty = raw->tty;
+=======
+		fallthrough;
+	case 0x04:
+		/* Device end interrupt. */
+		if ((raw = req->info) == NULL)
+			goto put_tty;	     /* That shouldn't happen ... */
+		if (req->type == RAW3215_READ && tty != NULL) {
+			unsigned int cchar;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			count = 160 - req->residual;
 			EBCASC(raw->inbuf, count);
 			cchar = ctrlchar_handle(raw->inbuf, count, tty);
@@ -410,8 +539,14 @@ static void raw3215_irq(struct ccw_device *cdev, unsigned long intparm,
 				break;
 
 			case CTRLCHAR_CTRL:
+<<<<<<< HEAD
 				tty_insert_flip_char(tty, cchar, TTY_NORMAL);
 				tty_flip_buffer_push(raw->tty);
+=======
+				tty_insert_flip_char(&raw->port, cchar,
+						TTY_NORMAL);
+				tty_flip_buffer_push(&raw->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 
 			case CTRLCHAR_NONE:
@@ -423,8 +558,14 @@ static void raw3215_irq(struct ccw_device *cdev, unsigned long intparm,
 					count++;
 				} else
 					count -= 2;
+<<<<<<< HEAD
 				tty_insert_flip_string(tty, raw->inbuf, count);
 				tty_flip_buffer_push(raw->tty);
+=======
+				tty_insert_flip_string(&raw->port, raw->inbuf,
+						count);
+				tty_flip_buffer_push(&raw->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		} else if (req->type == RAW3215_WRITE) {
@@ -439,7 +580,11 @@ static void raw3215_irq(struct ccw_device *cdev, unsigned long intparm,
 		    raw->queued_read == NULL) {
 			wake_up_interruptible(&raw->empty_wait);
 		}
+<<<<<<< HEAD
 		raw3215_next_io(raw);
+=======
+		raw3215_next_io(raw, tty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		/* Strange interrupt, I'll do my best to clean up */
@@ -451,6 +596,7 @@ static void raw3215_irq(struct ccw_device *cdev, unsigned long intparm,
 			raw->flags &= ~RAW3215_WORKING;
 			raw3215_free_req(req);
 		}
+<<<<<<< HEAD
 		raw3215_next_io(raw);
 	}
 	return;
@@ -474,10 +620,43 @@ static void raw3215_drop_line(struct raw3215_info *raw)
 			break;
 	}
 	raw->head = ix;
+=======
+		raw3215_next_io(raw, tty);
+	}
+put_tty:
+	tty_kref_put(tty);
+}
+
+/*
+ * Need to drop data to avoid blocking. Drop as much data as possible.
+ * This is unqueued part in the buffer and the queued part in the request.
+ * Also adjust the head position to append new data and set count
+ * accordingly.
+ *
+ * Return number of bytes available in buffer.
+ */
+static unsigned int raw3215_drop(struct raw3215_info *raw)
+{
+	struct raw3215_req *req;
+
+	req = raw->queued_write;
+	if (req) {
+		/* Drop queued data and delete request */
+		raw->written -= req->len;
+		raw3215_free_req(req);
+		raw->queued_write = NULL;
+	}
+	raw->head = (raw->head - raw->count + raw->written) &
+		    (RAW3215_BUFFER_SIZE - 1);
+	raw->count = raw->written;
+
+	return RAW3215_BUFFER_SIZE - raw->count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Wait until length bytes are available int the output buffer.
+<<<<<<< HEAD
  * Has to be called with the s390irq lock held. Can be called
  * disabled.
  */
@@ -491,13 +670,31 @@ static void raw3215_make_room(struct raw3215_info *raw, unsigned int length)
 			raw3215_drop_line(raw);
 			continue;
 		}
+=======
+ * If drop mode is active and wait condition holds true, start dropping
+ * data.
+ * Has to be called with the s390irq lock held. Can be called
+ * disabled.
+ */
+static unsigned int raw3215_make_room(struct raw3215_info *raw,
+				      unsigned int length, bool drop)
+{
+	while (RAW3215_BUFFER_SIZE - raw->count < length) {
+		if (drop)
+			return raw3215_drop(raw);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* there might be a request pending */
 		raw->flags |= RAW3215_FLUSHING;
 		raw3215_mk_write_req(raw);
 		raw3215_try_io(raw);
 		raw->flags &= ~RAW3215_FLUSHING;
 #ifdef CONFIG_TN3215_CONSOLE
+<<<<<<< HEAD
 		wait_cons_dev();
+=======
+		ccw_device_wait_idle(raw->cdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		/* Enough room freed up ? */
 		if (RAW3215_BUFFER_SIZE - raw->count >= length)
@@ -507,11 +704,81 @@ static void raw3215_make_room(struct raw3215_info *raw, unsigned int length)
 		udelay(100);
 		spin_lock(get_ccwdev_lock(raw->cdev));
 	}
+<<<<<<< HEAD
+=======
+	return length;
+}
+
+#define	RAW3215_COUNT	1
+#define	RAW3215_STORE	2
+
+/*
+ * Add text to console buffer. Find tabs in input and calculate size
+ * including tab replacement.
+ * This function operates in 2 different modes, depending on parameter
+ * opmode:
+ * RAW3215_COUNT: Get the size needed for the input string with
+ *	proper tab replacement calculation.
+ *	Return value is the number of bytes required to store the
+ *	input. However no data is actually stored.
+ *	The parameter todrop is not used.
+ * RAW3215_STORE: Add data to the console buffer. The parameter todrop is
+ *	valid and contains the number of bytes to be dropped from head of
+ *	string	without blocking.
+ *	Return value is the number of bytes copied.
+ */
+static unsigned int raw3215_addtext(const u8 *str, size_t length,
+				    struct raw3215_info *raw, int opmode,
+				    unsigned int todrop)
+{
+	unsigned int i, blanks, expanded_size = 0;
+	unsigned int column = raw->line_pos;
+	size_t c;
+	u8 ch;
+
+	if (opmode == RAW3215_COUNT)
+		todrop = 0;
+
+	for (c = 0; c < length; ++c) {
+		blanks = 1;
+		ch = str[c];
+
+		switch (ch) {
+		case '\n':
+			expanded_size++;
+			column = 0;
+			break;
+		case '\t':
+			blanks = TAB_STOP_SIZE - (column % TAB_STOP_SIZE);
+			column += blanks;
+			expanded_size += blanks;
+			ch = ' ';
+			break;
+		default:
+			expanded_size++;
+			column++;
+			break;
+		}
+
+		if (opmode == RAW3215_COUNT)
+			continue;
+		if (todrop && expanded_size < todrop)	/* Drop head data */
+			continue;
+		for (i = 0; i < blanks; i++) {
+			raw->buffer[raw->head] = _ascebc[ch];
+			raw->head = (raw->head + 1) & (RAW3215_BUFFER_SIZE - 1);
+			raw->count++;
+		}
+		raw->line_pos = column;
+	}
+	return expanded_size - todrop;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * String write routine for 3215 devices
  */
+<<<<<<< HEAD
 static void raw3215_write(struct raw3215_info *raw, const char *str,
 			  unsigned int length)
 {
@@ -576,6 +843,22 @@ static void raw3215_putchar(struct raw3215_info *raw, unsigned char ch)
 		raw->buffer[raw->head] = (char) _ascebc[(int) ch];
 		raw->head = (raw->head + 1) & (RAW3215_BUFFER_SIZE - 1);
 		raw->count++;
+=======
+static void raw3215_write(struct raw3215_info *raw, const u8 *str,
+			  size_t length)
+{
+	unsigned int count, avail;
+	unsigned long flags;
+
+	spin_lock_irqsave(get_ccwdev_lock(raw->cdev), flags);
+
+	count = raw3215_addtext(str, length, raw, RAW3215_COUNT, 0);
+
+	avail = raw3215_make_room(raw, count, con3215_drop);
+	if (avail) {
+		raw3215_addtext(str, length, raw, RAW3215_STORE,
+				count - avail);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!(raw->flags & RAW3215_WORKING)) {
 		raw3215_mk_write_req(raw);
@@ -586,6 +869,17 @@ static void raw3215_putchar(struct raw3215_info *raw, unsigned char ch)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Put character routine for 3215 devices
+ */
+static void raw3215_putchar(struct raw3215_info *raw, u8 ch)
+{
+	raw3215_write(raw, &ch, 1);
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Flush routine, it simply sets the flush flag and tries to start
  * pending IO.
  */
@@ -609,10 +903,17 @@ static int raw3215_startup(struct raw3215_info *raw)
 {
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (raw->flags & RAW3215_ACTIVE)
 		return 0;
 	raw->line_pos = 0;
 	raw->flags |= RAW3215_ACTIVE;
+=======
+	if (tty_port_initialized(&raw->port))
+		return 0;
+	raw->line_pos = 0;
+	tty_port_set_initialized(&raw->port, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(get_ccwdev_lock(raw->cdev), flags);
 	raw3215_try_io(raw);
 	spin_unlock_irqrestore(get_ccwdev_lock(raw->cdev), flags);
@@ -628,14 +929,21 @@ static void raw3215_shutdown(struct raw3215_info *raw)
 	DECLARE_WAITQUEUE(wait, current);
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (!(raw->flags & RAW3215_ACTIVE) || (raw->flags & RAW3215_FIXED))
+=======
+	if (!tty_port_initialized(&raw->port) || (raw->flags & RAW3215_FIXED))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	/* Wait for outstanding requests, then free irq */
 	spin_lock_irqsave(get_ccwdev_lock(raw->cdev), flags);
 	if ((raw->flags & RAW3215_WORKING) ||
 	    raw->queued_write != NULL ||
 	    raw->queued_read != NULL) {
+<<<<<<< HEAD
 		raw->flags |= RAW3215_CLOSING;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add_wait_queue(&raw->empty_wait, &wait);
 		set_current_state(TASK_INTERRUPTIBLE);
 		spin_unlock_irqrestore(get_ccwdev_lock(raw->cdev), flags);
@@ -643,12 +951,52 @@ static void raw3215_shutdown(struct raw3215_info *raw)
 		spin_lock_irqsave(get_ccwdev_lock(raw->cdev), flags);
 		remove_wait_queue(&raw->empty_wait, &wait);
 		set_current_state(TASK_RUNNING);
+<<<<<<< HEAD
 		raw->flags &= ~(RAW3215_ACTIVE | RAW3215_CLOSING);
+=======
+		tty_port_set_initialized(&raw->port, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(get_ccwdev_lock(raw->cdev), flags);
 }
 
+<<<<<<< HEAD
 static int raw3215_probe (struct ccw_device *cdev)
+=======
+static struct raw3215_info *raw3215_alloc_info(void)
+{
+	struct raw3215_info *info;
+
+	info = kzalloc(sizeof(struct raw3215_info), GFP_KERNEL | GFP_DMA);
+	if (!info)
+		return NULL;
+
+	info->buffer = kzalloc(RAW3215_BUFFER_SIZE, GFP_KERNEL | GFP_DMA);
+	info->inbuf = kzalloc(RAW3215_INBUF_SIZE, GFP_KERNEL | GFP_DMA);
+	if (!info->buffer || !info->inbuf) {
+		kfree(info->inbuf);
+		kfree(info->buffer);
+		kfree(info);
+		return NULL;
+	}
+
+	timer_setup(&info->timer, raw3215_timeout, 0);
+	init_waitqueue_head(&info->empty_wait);
+	tty_port_init(&info->port);
+
+	return info;
+}
+
+static void raw3215_free_info(struct raw3215_info *raw)
+{
+	kfree(raw->inbuf);
+	kfree(raw->buffer);
+	tty_port_destroy(&raw->port);
+	kfree(raw);
+}
+
+static int raw3215_probe(struct ccw_device *cdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw3215_info *raw;
 	int line;
@@ -656,11 +1004,23 @@ static int raw3215_probe (struct ccw_device *cdev)
 	/* Console is special. */
 	if (raw3215[0] && (raw3215[0] == dev_get_drvdata(&cdev->dev)))
 		return 0;
+<<<<<<< HEAD
 	raw = kmalloc(sizeof(struct raw3215_info) +
 		      RAW3215_INBUF_SIZE, GFP_KERNEL|GFP_DMA);
 	if (raw == NULL)
 		return -ENOMEM;
 
+=======
+
+	raw = raw3215_alloc_info();
+	if (raw == NULL)
+		return -ENOMEM;
+
+	raw->cdev = cdev;
+	dev_set_drvdata(&cdev->dev, raw);
+	cdev->handler = raw3215_irq;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&raw3215_device_lock);
 	for (line = 0; line < NR_3215; line++) {
 		if (!raw3215[line]) {
@@ -670,6 +1030,7 @@ static int raw3215_probe (struct ccw_device *cdev)
 	}
 	spin_unlock(&raw3215_device_lock);
 	if (line == NR_3215) {
+<<<<<<< HEAD
 		kfree(raw);
 		return -ENODEV;
 	}
@@ -698,10 +1059,24 @@ static int raw3215_probe (struct ccw_device *cdev)
 static void raw3215_remove (struct ccw_device *cdev)
 {
 	struct raw3215_info *raw;
+=======
+		raw3215_free_info(raw);
+		return -ENODEV;
+	}
+
+	return 0;
+}
+
+static void raw3215_remove(struct ccw_device *cdev)
+{
+	struct raw3215_info *raw;
+	unsigned int line;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ccw_device_set_offline(cdev);
 	raw = dev_get_drvdata(&cdev->dev);
 	if (raw) {
+<<<<<<< HEAD
 		dev_set_drvdata(&cdev->dev, NULL);
 		kfree(raw->buffer);
 		kfree(raw);
@@ -709,6 +1084,20 @@ static void raw3215_remove (struct ccw_device *cdev)
 }
 
 static int raw3215_set_online (struct ccw_device *cdev)
+=======
+		spin_lock(&raw3215_device_lock);
+		for (line = 0; line < NR_3215; line++)
+			if (raw3215[line] == raw)
+				break;
+		raw3215[line] = NULL;
+		spin_unlock(&raw3215_device_lock);
+		dev_set_drvdata(&cdev->dev, NULL);
+		raw3215_free_info(raw);
+	}
+}
+
+static int raw3215_set_online(struct ccw_device *cdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw3215_info *raw;
 
@@ -719,7 +1108,11 @@ static int raw3215_set_online (struct ccw_device *cdev)
 	return raw3215_startup(raw);
 }
 
+<<<<<<< HEAD
 static int raw3215_set_offline (struct ccw_device *cdev)
+=======
+static int raw3215_set_offline(struct ccw_device *cdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw3215_info *raw;
 
@@ -732,6 +1125,7 @@ static int raw3215_set_offline (struct ccw_device *cdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int raw3215_pm_stop(struct ccw_device *cdev)
 {
 	struct raw3215_info *raw;
@@ -762,14 +1156,56 @@ static int raw3215_pm_start(struct ccw_device *cdev)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ccw_device_id raw3215_id[] = {
 	{ CCW_DEVICE(0x3215, 0) },
 	{ /* end of list */ },
 };
 
+<<<<<<< HEAD
 static struct ccw_driver raw3215_ccw_driver = {
 	.driver = {
 		.name	= "3215",
+=======
+static ssize_t con_drop_store(struct device_driver *dev, const char *buf, size_t count)
+{
+	bool drop;
+	int rc;
+
+	rc = kstrtobool(buf, &drop);
+	if (!rc)
+		con3215_drop = drop;
+	return rc ?: count;
+}
+
+static ssize_t con_drop_show(struct device_driver *dev, char *buf)
+{
+	return sysfs_emit(buf, "%d\n", con3215_drop ? 1 : 0);
+}
+
+static DRIVER_ATTR_RW(con_drop);
+
+static struct attribute *con3215_drv_attrs[] = {
+	&driver_attr_con_drop.attr,
+	NULL,
+};
+
+static struct attribute_group con3215_drv_attr_group = {
+	.attrs = con3215_drv_attrs,
+	NULL,
+};
+
+static const struct attribute_group *con3215_drv_attr_groups[] = {
+	&con3215_drv_attr_group,
+	NULL,
+};
+
+static struct ccw_driver raw3215_ccw_driver = {
+	.driver = {
+		.name	= "3215",
+		.groups = con3215_drv_attr_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.owner	= THIS_MODULE,
 	},
 	.ids		= raw3215_id,
@@ -777,16 +1213,33 @@ static struct ccw_driver raw3215_ccw_driver = {
 	.remove		= &raw3215_remove,
 	.set_online	= &raw3215_set_online,
 	.set_offline	= &raw3215_set_offline,
+<<<<<<< HEAD
 	.freeze		= &raw3215_pm_stop,
 	.thaw		= &raw3215_pm_start,
 	.restore	= &raw3215_pm_start,
 	.int_class	= IOINT_C15,
 };
 
+=======
+	.int_class	= IRQIO_C15,
+};
+
+static void handle_write(struct raw3215_info *raw, const u8 *str, size_t count)
+{
+	while (count > 0) {
+		size_t i = min_t(size_t, count, RAW3215_BUFFER_SIZE - 1);
+		raw3215_write(raw, str, i);
+		count -= i;
+		str += i;
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_TN3215_CONSOLE
 /*
  * Write a string to the 3215 console
  */
+<<<<<<< HEAD
 static void con3215_write(struct console *co, const char *str,
 			  unsigned int count)
 {
@@ -809,6 +1262,11 @@ static void con3215_write(struct console *co, const char *str,
 			str++;
 		}
 	}
+=======
+static void con3215_write(struct console *co, const char *str, unsigned int count)
+{
+	handle_write(raw3215[0], str, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct tty_driver *con3215_device(struct console *c, int *index)
@@ -818,15 +1276,28 @@ static struct tty_driver *con3215_device(struct console *c, int *index)
 }
 
 /*
+<<<<<<< HEAD
  * panic() calls con3215_flush through a panic_notifier
  * before the system enters a disabled, endless loop.
  */
 static void con3215_flush(void)
+=======
+ * The below function is called as a panic/reboot notifier before the
+ * system enters a disabled, endless loop.
+ *
+ * Notice we must use the spin_trylock() alternative, to prevent lockups
+ * in atomic context (panic routine runs with secondary CPUs, local IRQs
+ * and preemption disabled).
+ */
+static int con3215_notify(struct notifier_block *self,
+			  unsigned long event, void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw3215_info *raw;
 	unsigned long flags;
 
 	raw = raw3215[0];  /* console 3215 is the first one */
+<<<<<<< HEAD
 	if (raw->flags & RAW3215_FROZEN)
 		/* The console is still frozen for suspend. */
 		if (ccw_device_force_console())
@@ -842,16 +1313,32 @@ static int con3215_notify(struct notifier_block *self,
 {
 	con3215_flush();
 	return NOTIFY_OK;
+=======
+	if (!spin_trylock_irqsave(get_ccwdev_lock(raw->cdev), flags))
+		return NOTIFY_DONE;
+	raw3215_make_room(raw, RAW3215_BUFFER_SIZE, false);
+	spin_unlock_irqrestore(get_ccwdev_lock(raw->cdev), flags);
+
+	return NOTIFY_DONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct notifier_block on_panic_nb = {
 	.notifier_call = con3215_notify,
+<<<<<<< HEAD
 	.priority = 0,
+=======
+	.priority = INT_MIN + 1, /* run the callback late */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct notifier_block on_reboot_nb = {
 	.notifier_call = con3215_notify,
+<<<<<<< HEAD
 	.priority = 0,
+=======
+	.priority = INT_MIN + 1, /* run the callback late */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -886,13 +1373,21 @@ static int __init con3215_init(void)
 
 	/* allocate 3215 request structures */
 	raw3215_freelist = NULL;
+<<<<<<< HEAD
 	spin_lock_init(&raw3215_freelist_lock);
 	for (i = 0; i < NR_3215_REQ; i++) {
 		req = kzalloc(sizeof(struct raw3215_req), GFP_KERNEL | GFP_DMA);
+=======
+	for (i = 0; i < NR_3215_REQ; i++) {
+		req = kzalloc(sizeof(struct raw3215_req), GFP_KERNEL | GFP_DMA);
+		if (!req)
+			return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		req->next = raw3215_freelist;
 		raw3215_freelist = req;
 	}
 
+<<<<<<< HEAD
 	cdev = ccw_device_probe_console();
 	if (IS_ERR(cdev))
 		return -ENODEV;
@@ -901,11 +1396,19 @@ static int __init con3215_init(void)
 		kzalloc(sizeof(struct raw3215_info), GFP_KERNEL | GFP_DMA);
 	raw->buffer = kzalloc(RAW3215_BUFFER_SIZE, GFP_KERNEL | GFP_DMA);
 	raw->inbuf = kzalloc(RAW3215_INBUF_SIZE, GFP_KERNEL | GFP_DMA);
+=======
+	cdev = ccw_device_create_console(&raw3215_ccw_driver);
+	if (IS_ERR(cdev))
+		return -ENODEV;
+
+	raw3215[0] = raw = raw3215_alloc_info();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raw->cdev = cdev;
 	dev_set_drvdata(&cdev->dev, raw);
 	cdev->handler = raw3215_irq;
 
 	raw->flags |= RAW3215_FIXED;
+<<<<<<< HEAD
 	init_waitqueue_head(&raw->empty_wait);
 	tasklet_init(&raw->tlet, raw3215_wakeup, (unsigned long) raw);
 
@@ -914,6 +1417,18 @@ static int __init con3215_init(void)
 		kfree(raw->inbuf);
 		kfree(raw->buffer);
 		kfree(raw);
+=======
+	if (ccw_device_enable_console(cdev)) {
+		ccw_device_destroy_console(cdev);
+		raw3215_free_info(raw);
+		raw3215[0] = NULL;
+		return -ENODEV;
+	}
+
+	/* Request the console irq */
+	if (raw3215_startup(raw) != 0) {
+		raw3215_free_info(raw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		raw3215[0] = NULL;
 		return -ENODEV;
 	}
@@ -925,6 +1440,22 @@ static int __init con3215_init(void)
 console_initcall(con3215_init);
 #endif
 
+<<<<<<< HEAD
+=======
+static int tty3215_install(struct tty_driver *driver, struct tty_struct *tty)
+{
+	struct raw3215_info *raw;
+
+	raw = raw3215[tty->index];
+	if (raw == NULL)
+		return -ENODEV;
+
+	tty->driver_data = raw;
+
+	return tty_port_install(&raw->port, driver, tty);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * tty3215_open
  *
@@ -932,6 +1463,7 @@ console_initcall(con3215_init);
  */
 static int tty3215_open(struct tty_struct *tty, struct file * filp)
 {
+<<<<<<< HEAD
 	struct raw3215_info *raw;
 	int retval;
 
@@ -951,6 +1483,16 @@ static int tty3215_open(struct tty_struct *tty, struct file * filp)
 		return retval;
 
 	return 0;
+=======
+	struct raw3215_info *raw = tty->driver_data;
+
+	tty_port_tty_set(&raw->port, tty);
+
+	/*
+	 * Start up 3215 device
+	 */
+	return raw3215_startup(raw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -961,27 +1503,43 @@ static int tty3215_open(struct tty_struct *tty, struct file * filp)
  */
 static void tty3215_close(struct tty_struct *tty, struct file * filp)
 {
+<<<<<<< HEAD
 	struct raw3215_info *raw;
 
 	raw = (struct raw3215_info *) tty->driver_data;
+=======
+	struct raw3215_info *raw = tty->driver_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (raw == NULL || tty->count > 1)
 		return;
 	tty->closing = 1;
 	/* Shutdown the terminal */
 	raw3215_shutdown(raw);
+<<<<<<< HEAD
 	tasklet_kill(&raw->tlet);
 	tty->closing = 0;
 	raw->tty = NULL;
+=======
+	tty->closing = 0;
+	tty_port_tty_set(&raw->port, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Returns the amount of free space in the output buffer.
  */
+<<<<<<< HEAD
 static int tty3215_write_room(struct tty_struct *tty)
 {
 	struct raw3215_info *raw;
 
 	raw = (struct raw3215_info *) tty->driver_data;
+=======
+static unsigned int tty3215_write_room(struct tty_struct *tty)
+{
+	struct raw3215_info *raw = tty->driver_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Subtract TAB_STOP_SIZE to allow for a tab, 8 <<< 64K */
 	if ((RAW3215_BUFFER_SIZE - raw->count - TAB_STOP_SIZE) >= 0)
@@ -993,6 +1551,7 @@ static int tty3215_write_room(struct tty_struct *tty)
 /*
  * String write routine for 3215 ttys
  */
+<<<<<<< HEAD
 static int tty3215_write(struct tty_struct * tty,
 			 const unsigned char *buf, int count)
 {
@@ -1017,11 +1576,19 @@ static int tty3215_write(struct tty_struct * tty,
 		}
 	}
 	return written;
+=======
+static ssize_t tty3215_write(struct tty_struct *tty, const u8 *buf,
+			     size_t count)
+{
+	handle_write(tty->driver_data, buf, count);
+	return count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Put character routine for 3215 ttys
  */
+<<<<<<< HEAD
 static int tty3215_put_char(struct tty_struct *tty, unsigned char ch)
 {
 	struct raw3215_info *raw;
@@ -1030,6 +1597,14 @@ static int tty3215_put_char(struct tty_struct *tty, unsigned char ch)
 		return 0;
 	raw = (struct raw3215_info *) tty->driver_data;
 	raw3215_putchar(raw, ch);
+=======
+static int tty3215_put_char(struct tty_struct *tty, u8 ch)
+{
+	struct raw3215_info *raw = tty->driver_data;
+
+	raw3215_putchar(raw, ch);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -1040,19 +1615,31 @@ static void tty3215_flush_chars(struct tty_struct *tty)
 /*
  * Returns the number of characters in the output buffer
  */
+<<<<<<< HEAD
 static int tty3215_chars_in_buffer(struct tty_struct *tty)
 {
 	struct raw3215_info *raw;
 
 	raw = (struct raw3215_info *) tty->driver_data;
+=======
+static unsigned int tty3215_chars_in_buffer(struct tty_struct *tty)
+{
+	struct raw3215_info *raw = tty->driver_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return raw->count;
 }
 
 static void tty3215_flush_buffer(struct tty_struct *tty)
 {
+<<<<<<< HEAD
 	struct raw3215_info *raw;
 
 	raw = (struct raw3215_info *) tty->driver_data;
+=======
+	struct raw3215_info *raw = tty->driver_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raw3215_flush_buffer(raw);
 	tty_wakeup(tty);
 }
@@ -1060,23 +1647,38 @@ static void tty3215_flush_buffer(struct tty_struct *tty)
 /*
  * Disable reading from a 3215 tty
  */
+<<<<<<< HEAD
 static void tty3215_throttle(struct tty_struct * tty)
 {
 	struct raw3215_info *raw;
 
 	raw = (struct raw3215_info *) tty->driver_data;
+=======
+static void tty3215_throttle(struct tty_struct *tty)
+{
+	struct raw3215_info *raw = tty->driver_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raw->flags |= RAW3215_THROTTLED;
 }
 
 /*
  * Enable reading from a 3215 tty
  */
+<<<<<<< HEAD
 static void tty3215_unthrottle(struct tty_struct * tty)
 {
 	struct raw3215_info *raw;
 	unsigned long flags;
 
 	raw = (struct raw3215_info *) tty->driver_data;
+=======
+static void tty3215_unthrottle(struct tty_struct *tty)
+{
+	struct raw3215_info *raw = tty->driver_data;
+	unsigned long flags;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (raw->flags & RAW3215_THROTTLED) {
 		spin_lock_irqsave(get_ccwdev_lock(raw->cdev), flags);
 		raw->flags &= ~RAW3215_THROTTLED;
@@ -1090,9 +1692,14 @@ static void tty3215_unthrottle(struct tty_struct * tty)
  */
 static void tty3215_stop(struct tty_struct *tty)
 {
+<<<<<<< HEAD
 	struct raw3215_info *raw;
 
 	raw = (struct raw3215_info *) tty->driver_data;
+=======
+	struct raw3215_info *raw = tty->driver_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raw->flags |= RAW3215_STOPPED;
 }
 
@@ -1101,10 +1708,16 @@ static void tty3215_stop(struct tty_struct *tty)
  */
 static void tty3215_start(struct tty_struct *tty)
 {
+<<<<<<< HEAD
 	struct raw3215_info *raw;
 	unsigned long flags;
 
 	raw = (struct raw3215_info *) tty->driver_data;
+=======
+	struct raw3215_info *raw = tty->driver_data;
+	unsigned long flags;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (raw->flags & RAW3215_STOPPED) {
 		spin_lock_irqsave(get_ccwdev_lock(raw->cdev), flags);
 		raw->flags &= ~RAW3215_STOPPED;
@@ -1114,6 +1727,10 @@ static void tty3215_start(struct tty_struct *tty)
 }
 
 static const struct tty_operations tty3215_ops = {
+<<<<<<< HEAD
+=======
+	.install = tty3215_install,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open = tty3215_open,
 	.close = tty3215_close,
 	.write = tty3215_write,
@@ -1128,6 +1745,21 @@ static const struct tty_operations tty3215_ops = {
 	.start = tty3215_start,
 };
 
+<<<<<<< HEAD
+=======
+static int __init con3215_setup_drop(char *str)
+{
+	bool drop;
+	int rc;
+
+	rc = kstrtobool(str, &drop);
+	if (!rc)
+		con3215_drop = drop;
+	return rc;
+}
+early_param("con3215_drop", con3215_setup_drop);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 3215 tty registration code called from tty_init().
  * Most kernel services (incl. kmalloc) are available at this poimt.
@@ -1140,6 +1772,7 @@ static int __init tty3215_init(void)
 	if (!CONSOLE_IS_3215)
 		return 0;
 
+<<<<<<< HEAD
 	driver = alloc_tty_driver(NR_3215);
 	if (!driver)
 		return -ENOMEM;
@@ -1147,6 +1780,15 @@ static int __init tty3215_init(void)
 	ret = ccw_driver_register(&raw3215_ccw_driver);
 	if (ret) {
 		put_tty_driver(driver);
+=======
+	driver = tty_alloc_driver(NR_3215, TTY_DRIVER_REAL_RAW);
+	if (IS_ERR(driver))
+		return PTR_ERR(driver);
+
+	ret = ccw_driver_register(&raw3215_ccw_driver);
+	if (ret) {
+		tty_driver_kref_put(driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	/*
@@ -1165,16 +1807,24 @@ static int __init tty3215_init(void)
 	driver->init_termios.c_iflag = IGNBRK | IGNPAR;
 	driver->init_termios.c_oflag = ONLCR;
 	driver->init_termios.c_lflag = ISIG;
+<<<<<<< HEAD
 	driver->flags = TTY_DRIVER_REAL_RAW;
 	tty_set_operations(driver, &tty3215_ops);
 	ret = tty_register_driver(driver);
 	if (ret) {
 		put_tty_driver(driver);
+=======
+	tty_set_operations(driver, &tty3215_ops);
+	ret = tty_register_driver(driver);
+	if (ret) {
+		tty_driver_kref_put(driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	tty3215_driver = driver;
 	return 0;
 }
+<<<<<<< HEAD
 
 static void __exit tty3215_exit(void)
 {
@@ -1185,3 +1835,6 @@ static void __exit tty3215_exit(void)
 
 module_init(tty3215_init);
 module_exit(tty3215_exit);
+=======
+device_initcall(tty3215_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

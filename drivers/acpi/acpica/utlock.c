@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: utlock - Reader/Writer lock interfaces
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 
@@ -52,7 +63,11 @@ ACPI_MODULE_NAME("utlock")
  * FUNCTION:    acpi_ut_create_rw_lock
  *              acpi_ut_delete_rw_lock
  *
+<<<<<<< HEAD
  * PARAMETERS:  Lock                - Pointer to a valid RW lock
+=======
+ * PARAMETERS:  lock                - Pointer to a valid RW lock
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -66,11 +81,19 @@ acpi_status acpi_ut_create_rw_lock(struct acpi_rw_lock *lock)
 	lock->num_readers = 0;
 	status = acpi_os_create_mutex(&lock->reader_mutex);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		return status;
 	}
 
 	status = acpi_os_create_mutex(&lock->writer_mutex);
 	return status;
+=======
+		return (status);
+	}
+
+	status = acpi_os_create_mutex(&lock->writer_mutex);
+	return (status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void acpi_ut_delete_rw_lock(struct acpi_rw_lock *lock)
@@ -89,7 +112,11 @@ void acpi_ut_delete_rw_lock(struct acpi_rw_lock *lock)
  * FUNCTION:    acpi_ut_acquire_read_lock
  *              acpi_ut_release_read_lock
  *
+<<<<<<< HEAD
  * PARAMETERS:  Lock                - Pointer to a valid RW lock
+=======
+ * PARAMETERS:  lock                - Pointer to a valid RW lock
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -108,7 +135,11 @@ acpi_status acpi_ut_acquire_read_lock(struct acpi_rw_lock *lock)
 
 	status = acpi_os_acquire_mutex(lock->reader_mutex, ACPI_WAIT_FOREVER);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		return status;
+=======
+		return (status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Acquire the write lock only for the first reader */
@@ -121,7 +152,11 @@ acpi_status acpi_ut_acquire_read_lock(struct acpi_rw_lock *lock)
 	}
 
 	acpi_os_release_mutex(lock->reader_mutex);
+<<<<<<< HEAD
 	return status;
+=======
+	return (status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 acpi_status acpi_ut_release_read_lock(struct acpi_rw_lock *lock)
@@ -130,7 +165,11 @@ acpi_status acpi_ut_release_read_lock(struct acpi_rw_lock *lock)
 
 	status = acpi_os_acquire_mutex(lock->reader_mutex, ACPI_WAIT_FOREVER);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		return status;
+=======
+		return (status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Release the write lock only for the very last reader */
@@ -141,7 +180,11 @@ acpi_status acpi_ut_release_read_lock(struct acpi_rw_lock *lock)
 	}
 
 	acpi_os_release_mutex(lock->reader_mutex);
+<<<<<<< HEAD
 	return status;
+=======
+	return (status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
@@ -149,7 +192,11 @@ acpi_status acpi_ut_release_read_lock(struct acpi_rw_lock *lock)
  * FUNCTION:    acpi_ut_acquire_write_lock
  *              acpi_ut_release_write_lock
  *
+<<<<<<< HEAD
  * PARAMETERS:  Lock                - Pointer to a valid RW lock
+=======
+ * PARAMETERS:  lock                - Pointer to a valid RW lock
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -165,7 +212,11 @@ acpi_status acpi_ut_acquire_write_lock(struct acpi_rw_lock *lock)
 	acpi_status status;
 
 	status = acpi_os_acquire_mutex(lock->writer_mutex, ACPI_WAIT_FOREVER);
+<<<<<<< HEAD
 	return status;
+=======
+	return (status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void acpi_ut_release_write_lock(struct acpi_rw_lock *lock)

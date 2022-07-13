@@ -1,8 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/parisc/mm/ioremap.c
  *
  * (C) Copyright 1995 1996 Linus Torvalds
+<<<<<<< HEAD
  * (C) Copyright 2001-2006 Helge Deller <deller@gmx.de>
+=======
+ * (C) Copyright 2001-2019 Helge Deller <deller@gmx.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * (C) Copyright 2005 Kyle McMartin <kyle@parisc-linux.org>
  */
 
@@ -10,6 +18,7 @@
 #include <linux/errno.h>
 #include <linux/module.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <asm/pgalloc.h>
 
 /*
@@ -31,10 +40,18 @@ void __iomem * __ioremap(unsigned long phys_addr, unsigned long size, unsigned l
 	unsigned long offset, last_addr;
 	pgprot_t pgprot;
 
+=======
+#include <linux/mm.h>
+
+void __iomem *ioremap_prot(phys_addr_t phys_addr, size_t size,
+			   unsigned long prot)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_EISA
 	unsigned long end = phys_addr + size - 1;
 	/* Support EISA addresses */
 	if ((phys_addr >= 0x00080000 && end < 0x000fffff) ||
+<<<<<<< HEAD
 	    (phys_addr >= 0x00500000 && end < 0x03bfffff)) {
 		phys_addr |= F_EXTEND(0xfc000000);
 		flags |= _PAGE_NO_CACHE;
@@ -46,6 +63,12 @@ void __iomem * __ioremap(unsigned long phys_addr, unsigned long size, unsigned l
 	if (!size || last_addr < phys_addr)
 		return NULL;
 
+=======
+	    (phys_addr >= 0x00500000 && end < 0x03bfffff))
+		phys_addr |= F_EXTEND(0xfc000000);
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Don't allow anybody to remap normal RAM that we're using..
 	 */
@@ -63,6 +86,7 @@ void __iomem * __ioremap(unsigned long phys_addr, unsigned long size, unsigned l
 		}
 	}
 
+<<<<<<< HEAD
 	pgprot = __pgprot(_PAGE_PRESENT | _PAGE_RW | _PAGE_DIRTY |
 			  _PAGE_ACCESSED | flags);
 
@@ -97,3 +121,8 @@ void iounmap(const volatile void __iomem *addr)
 		return vfree((void *) (PAGE_MASK & (unsigned long __force) addr));
 }
 EXPORT_SYMBOL(iounmap);
+=======
+	return generic_ioremap_prot(phys_addr, size, __pgprot(prot));
+}
+EXPORT_SYMBOL(ioremap_prot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

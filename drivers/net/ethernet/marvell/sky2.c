@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * New driver for Marvell Yukon 2 chipset.
  * Based on earlier sk98lin, and skge driver.
@@ -7,6 +11,7 @@
  * those should be done at higher levels.
  *
  * Copyright (C) 2005 Stephen Hemminger <shemminger@osdl.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -44,6 +51,11 @@
 #include <linux/prefetch.h>
 #include <linux/debugfs.h>
 #include <linux/mii.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_net.h>
+#include <linux/dmi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/irq.h>
 
@@ -64,14 +76,22 @@
 #define RX_DEF_PENDING		RX_MAX_PENDING
 
 /* This is the worst case number of transmit list elements for a single skb:
+<<<<<<< HEAD
    VLAN:GSO + CKSUM + Data + skb_frags * DMA */
+=======
+ * VLAN:GSO + CKSUM + Data + skb_frags * DMA
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_SKB_TX_LE	(2 + (sizeof(dma_addr_t)/sizeof(u32))*(MAX_SKB_FRAGS+1))
 #define TX_MIN_PENDING		(MAX_SKB_TX_LE+1)
 #define TX_MAX_PENDING		1024
 #define TX_DEF_PENDING		63
 
 #define TX_WATCHDOG		(5 * HZ)
+<<<<<<< HEAD
 #define NAPI_WEIGHT		64
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PHY_RETRIES		1000
 
 #define SKY2_EEPROM_MAGIC	0x9955aabb
@@ -91,7 +111,11 @@ static int copybreak __read_mostly = 128;
 module_param(copybreak, int, 0);
 MODULE_PARM_DESC(copybreak, "Receive copy threshold");
 
+<<<<<<< HEAD
 static int disable_msi = 0;
+=======
+static int disable_msi = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(disable_msi, int, 0);
 MODULE_PARM_DESC(disable_msi, "Disable Message Signaled Interrupt (MSI)");
 
@@ -99,7 +123,11 @@ static int legacy_pme = 0;
 module_param(legacy_pme, int, 0);
 MODULE_PARM_DESC(legacy_pme, "Legacy power management");
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(sky2_id_table) = {
+=======
+static const struct pci_device_id sky2_id_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_SYSKONNECT, 0x9000) }, /* SK-9Sxx */
 	{ PCI_DEVICE(PCI_VENDOR_ID_SYSKONNECT, 0x9E00) }, /* SK-9Exx */
 	{ PCI_DEVICE(PCI_VENDOR_ID_SYSKONNECT, 0x9E01) }, /* SK-9E21M */
@@ -141,6 +169,10 @@ static DEFINE_PCI_DEVICE_TABLE(sky2_id_table) = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_MARVELL, 0x4370) }, /* 88E8075 */
 	{ PCI_DEVICE(PCI_VENDOR_ID_MARVELL, 0x4380) }, /* 88E8057 */
 	{ PCI_DEVICE(PCI_VENDOR_ID_MARVELL, 0x4381) }, /* 88E8059 */
+<<<<<<< HEAD
+=======
+	{ PCI_DEVICE(PCI_VENDOR_ID_MARVELL, 0x4382) }, /* 88E8079 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0 }
 };
 
@@ -211,7 +243,11 @@ io_error:
 
 static inline u16 gm_phy_read(struct sky2_hw *hw, unsigned port, u16 reg)
 {
+<<<<<<< HEAD
 	u16 v;
+=======
+	u16 v = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__gm_phy_read(hw, port, reg, &v);
 	return v;
 }
@@ -478,7 +514,11 @@ static void sky2_phy_init(struct sky2_hw *hw, unsigned port)
 			adv |= fiber_fc_adv[sky2->flow_mode];
 	} else {
 		reg |= GM_GPCR_AU_FCT_DIS;
+<<<<<<< HEAD
  		reg |= gm_fc_disable[sky2->flow_mode];
+=======
+		reg |= gm_fc_disable[sky2->flow_mode];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Forward pause packets to GMAC? */
 		if (sky2->flow_mode & FC_RX)
@@ -1135,9 +1175,12 @@ static inline void sky2_put_idx(struct sky2_hw *hw, unsigned q, u16 idx)
 	/* Make sure write' to descriptors are complete before we tell hardware */
 	wmb();
 	sky2_write16(hw, Y2_QADDR(q, PREF_UNIT_PUT_IDX), idx);
+<<<<<<< HEAD
 
 	/* Synchronize I/O on since next processor may write to tail */
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1220,8 +1263,14 @@ static int sky2_rx_map_skb(struct pci_dev *pdev, struct rx_ring_info *re,
 	struct sk_buff *skb = re->skb;
 	int i;
 
+<<<<<<< HEAD
 	re->data_addr = pci_map_single(pdev, skb->data, size, PCI_DMA_FROMDEVICE);
 	if (pci_dma_mapping_error(pdev, re->data_addr))
+=======
+	re->data_addr = dma_map_single(&pdev->dev, skb->data, size,
+				       DMA_FROM_DEVICE);
+	if (dma_mapping_error(&pdev->dev, re->data_addr))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto mapping_error;
 
 	dma_unmap_len_set(re, data_size, size);
@@ -1240,6 +1289,7 @@ static int sky2_rx_map_skb(struct pci_dev *pdev, struct rx_ring_info *re,
 
 map_page_error:
 	while (--i >= 0) {
+<<<<<<< HEAD
 		pci_unmap_page(pdev, re->frag_addr[i],
 			       skb_frag_size(&skb_shinfo(skb)->frags[i]),
 			       PCI_DMA_FROMDEVICE);
@@ -1247,6 +1297,15 @@ map_page_error:
 
 	pci_unmap_single(pdev, re->data_addr, dma_unmap_len(re, data_size),
 			 PCI_DMA_FROMDEVICE);
+=======
+		dma_unmap_page(&pdev->dev, re->frag_addr[i],
+			       skb_frag_size(&skb_shinfo(skb)->frags[i]),
+			       DMA_FROM_DEVICE);
+	}
+
+	dma_unmap_single(&pdev->dev, re->data_addr,
+			 dma_unmap_len(re, data_size), DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 mapping_error:
 	if (net_ratelimit())
@@ -1260,6 +1319,7 @@ static void sky2_rx_unmap_skb(struct pci_dev *pdev, struct rx_ring_info *re)
 	struct sk_buff *skb = re->skb;
 	int i;
 
+<<<<<<< HEAD
 	pci_unmap_single(pdev, re->data_addr, dma_unmap_len(re, data_size),
 			 PCI_DMA_FROMDEVICE);
 
@@ -1267,6 +1327,15 @@ static void sky2_rx_unmap_skb(struct pci_dev *pdev, struct rx_ring_info *re)
 		pci_unmap_page(pdev, re->frag_addr[i],
 			       skb_frag_size(&skb_shinfo(skb)->frags[i]),
 			       PCI_DMA_FROMDEVICE);
+=======
+	dma_unmap_single(&pdev->dev, re->data_addr,
+			 dma_unmap_len(re, data_size), DMA_FROM_DEVICE);
+
+	for (i = 0; i < skb_shinfo(skb)->nr_frags; i++)
+		dma_unmap_page(&pdev->dev, re->frag_addr[i],
+			       skb_frag_size(&skb_shinfo(skb)->frags[i]),
+			       DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Tell chip where to start receive checksum.
@@ -1287,6 +1356,7 @@ static void rx_set_checksum(struct sky2_port *sky2)
 		     ? BMU_ENA_RX_CHKSUM : BMU_DIS_RX_CHKSUM);
 }
 
+<<<<<<< HEAD
 /*
  * Fixed initial key as seed to RSS.
  */
@@ -1295,6 +1365,8 @@ static const uint32_t rss_init_key[10] = {
 	0xb1d60e7e, 0x6a3dd760, 0x01a2e453, 0x16f46f13, 0x1a0e7b30
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Enable/disable receive hash calculation (RSS) */
 static void rx_set_rss(struct net_device *dev, netdev_features_t features)
 {
@@ -1310,9 +1382,18 @@ static void rx_set_rss(struct net_device *dev, netdev_features_t features)
 
 	/* Program RSS initial values */
 	if (features & NETIF_F_RXHASH) {
+<<<<<<< HEAD
 		for (i = 0; i < nkeys; i++)
 			sky2_write32(hw, SK_REG(sky2->port, RSS_KEY + i * 4),
 				     rss_init_key[i]);
+=======
+		u32 rss_key[10];
+
+		netdev_rss_key_fill(rss_key, sizeof(rss_key));
+		for (i = 0; i < nkeys; i++)
+			sky2_write32(hw, SK_REG(sky2->port, RSS_KEY + i * 4),
+				     rss_key[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Need to turn on (undocumented) flag to make hashing work  */
 		sky2_write32(hw, SK_REG(sky2->port, RX_GMF_CTRL_T),
@@ -1355,7 +1436,10 @@ stopped:
 
 	/* reset the Rx prefetch unit */
 	sky2_write32(hw, Y2_QADDR(rxq, PREF_UNIT_CTRL), PREF_UNIT_RST_SET);
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Clean out receive buffer area, assumes receiver hardware stopped */
@@ -1363,7 +1447,13 @@ static void sky2_rx_clean(struct sky2_port *sky2)
 {
 	unsigned i;
 
+<<<<<<< HEAD
 	memset(sky2->rx_le, 0, RX_LE_BYTES);
+=======
+	if (sky2->rx_le)
+		memset(sky2->rx_le, 0, RX_LE_BYTES);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < sky2->rx_pending; i++) {
 		struct rx_ring_info *re = sky2->rx_ring + i;
 
@@ -1390,7 +1480,11 @@ static int sky2_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 	case SIOCGMIIPHY:
 		data->phy_id = PHY_ADDR_MARV;
 
+<<<<<<< HEAD
 		/* fallthru */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SIOCGMIIREG: {
 		u16 val = 0;
 
@@ -1420,14 +1514,22 @@ static void sky2_vlan_mode(struct net_device *dev, netdev_features_t features)
 	struct sky2_hw *hw = sky2->hw;
 	u16 port = sky2->port;
 
+<<<<<<< HEAD
 	if (features & NETIF_F_HW_VLAN_RX)
+=======
+	if (features & NETIF_F_HW_VLAN_CTAG_RX)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sky2_write32(hw, SK_REG(port, RX_GMF_CTRL_T),
 			     RX_VLAN_STRIP_ON);
 	else
 		sky2_write32(hw, SK_REG(port, RX_GMF_CTRL_T),
 			     RX_VLAN_STRIP_OFF);
 
+<<<<<<< HEAD
 	if (features & NETIF_F_HW_VLAN_TX) {
+=======
+	if (features & NETIF_F_HW_VLAN_CTAG_TX) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sky2_write32(hw, SK_REG(port, TX_GMF_CTRL_T),
 			     TX_VLAN_TAG_ON);
 
@@ -1543,7 +1645,12 @@ static void sky2_rx_start(struct sky2_port *sky2)
 		sky2_write32(hw, Q_ADDR(rxq, Q_WM), BMU_WM_PEX);
 
 	/* These chips have no ram buffer?
+<<<<<<< HEAD
 	 * MAC Rx RAM Read is controlled by hardware */
+=======
+	 * MAC Rx RAM Read is controlled by hardware
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->chip_id == CHIP_ID_YUKON_EC_U &&
 	    hw->chip_rev > CHIP_REV_YU_EC_U_A0)
 		sky2_write32(hw, Q_ADDR(rxq, Q_TEST), F_M_RX_RAM_DIS);
@@ -1607,10 +1714,16 @@ static int sky2_alloc_buffers(struct sky2_port *sky2)
 	struct sky2_hw *hw = sky2->hw;
 
 	/* must be power of 2 */
+<<<<<<< HEAD
 	sky2->tx_le = pci_alloc_consistent(hw->pdev,
 					   sky2->tx_ring_size *
 					   sizeof(struct sky2_tx_le),
 					   &sky2->tx_le_map);
+=======
+	sky2->tx_le = dma_alloc_coherent(&hw->pdev->dev,
+					 sky2->tx_ring_size * sizeof(struct sky2_tx_le),
+					 &sky2->tx_le_map, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sky2->tx_le)
 		goto nomem;
 
@@ -1619,11 +1732,18 @@ static int sky2_alloc_buffers(struct sky2_port *sky2)
 	if (!sky2->tx_ring)
 		goto nomem;
 
+<<<<<<< HEAD
 	sky2->rx_le = pci_alloc_consistent(hw->pdev, RX_LE_BYTES,
 					   &sky2->rx_le_map);
 	if (!sky2->rx_le)
 		goto nomem;
 	memset(sky2->rx_le, 0, RX_LE_BYTES);
+=======
+	sky2->rx_le = dma_alloc_coherent(&hw->pdev->dev, RX_LE_BYTES,
+					 &sky2->rx_le_map, GFP_KERNEL);
+	if (!sky2->rx_le)
+		goto nomem;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sky2->rx_ring = kcalloc(sky2->rx_pending, sizeof(struct rx_ring_info),
 				GFP_KERNEL);
@@ -1642,6 +1762,7 @@ static void sky2_free_buffers(struct sky2_port *sky2)
 	sky2_rx_clean(sky2);
 
 	if (sky2->rx_le) {
+<<<<<<< HEAD
 		pci_free_consistent(hw->pdev, RX_LE_BYTES,
 				    sky2->rx_le, sky2->rx_le_map);
 		sky2->rx_le = NULL;
@@ -1650,6 +1771,16 @@ static void sky2_free_buffers(struct sky2_port *sky2)
 		pci_free_consistent(hw->pdev,
 				    sky2->tx_ring_size * sizeof(struct sky2_tx_le),
 				    sky2->tx_le, sky2->tx_le_map);
+=======
+		dma_free_coherent(&hw->pdev->dev, RX_LE_BYTES, sky2->rx_le,
+				  sky2->rx_le_map);
+		sky2->rx_le = NULL;
+	}
+	if (sky2->tx_le) {
+		dma_free_coherent(&hw->pdev->dev,
+				  sky2->tx_ring_size * sizeof(struct sky2_tx_le),
+				  sky2->tx_le, sky2->tx_le_map);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sky2->tx_le = NULL;
 	}
 	kfree(sky2->tx_ring);
@@ -1670,6 +1801,7 @@ static void sky2_hw_up(struct sky2_port *sky2)
 	tx_init(sky2);
 
 	/*
+<<<<<<< HEAD
  	 * On dual port PCI-X card, there is an problem where status
 	 * can be received out of order due to split transactions
 	 */
@@ -1680,6 +1812,18 @@ static void sky2_hw_up(struct sky2_port *sky2)
 		cmd = sky2_pci_read16(hw, cap + PCI_X_CMD);
  		cmd &= ~PCI_X_CMD_MAX_SPLIT;
  		sky2_pci_write16(hw, cap + PCI_X_CMD, cmd);
+=======
+	 * On dual port PCI-X card, there is an problem where status
+	 * can be received out of order due to split transactions
+	 */
+	if (otherdev && netif_running(otherdev) &&
+	    (cap = pci_find_capability(hw->pdev, PCI_CAP_ID_PCIX))) {
+		u16 cmd;
+
+		cmd = sky2_pci_read16(hw, cap + PCI_X_CMD);
+		cmd &= ~PCI_X_CMD_MAX_SPLIT;
+		sky2_pci_write16(hw, cap + PCI_X_CMD, cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sky2_mac_init(hw, port);
@@ -1822,6 +1966,7 @@ static unsigned tx_le_req(const struct sk_buff *skb)
 static void sky2_tx_unmap(struct pci_dev *pdev, struct tx_ring_info *re)
 {
 	if (re->flags & TX_MAP_SINGLE)
+<<<<<<< HEAD
 		pci_unmap_single(pdev, dma_unmap_addr(re, mapaddr),
 				 dma_unmap_len(re, maplen),
 				 PCI_DMA_TODEVICE);
@@ -1829,6 +1974,13 @@ static void sky2_tx_unmap(struct pci_dev *pdev, struct tx_ring_info *re)
 		pci_unmap_page(pdev, dma_unmap_addr(re, mapaddr),
 			       dma_unmap_len(re, maplen),
 			       PCI_DMA_TODEVICE);
+=======
+		dma_unmap_single(&pdev->dev, dma_unmap_addr(re, mapaddr),
+				 dma_unmap_len(re, maplen), DMA_TO_DEVICE);
+	else if (re->flags & TX_MAP_PAGE)
+		dma_unmap_page(&pdev->dev, dma_unmap_addr(re, mapaddr),
+			       dma_unmap_len(re, maplen), DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	re->flags = 0;
 }
 
@@ -1852,6 +2004,7 @@ static netdev_tx_t sky2_xmit_frame(struct sk_buff *skb,
 	u16 mss;
 	u8 ctrl;
 
+<<<<<<< HEAD
  	if (unlikely(tx_avail(sky2) < tx_le_req(skb)))
   		return NETDEV_TX_BUSY;
 
@@ -1859,6 +2012,16 @@ static netdev_tx_t sky2_xmit_frame(struct sk_buff *skb,
 	mapping = pci_map_single(hw->pdev, skb->data, len, PCI_DMA_TODEVICE);
 
 	if (pci_dma_mapping_error(hw->pdev, mapping))
+=======
+	if (unlikely(tx_avail(sky2) < tx_le_req(skb)))
+		return NETDEV_TX_BUSY;
+
+	len = skb_headlen(skb);
+	mapping = dma_map_single(&hw->pdev->dev, skb->data, len,
+				 DMA_TO_DEVICE);
+
+	if (dma_mapping_error(&hw->pdev->dev, mapping))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto mapping_error;
 
 	slot = sky2->tx_prod;
@@ -1879,11 +2042,19 @@ static netdev_tx_t sky2_xmit_frame(struct sk_buff *skb,
 	if (mss != 0) {
 
 		if (!(hw->flags & SKY2_HW_NEW_LE))
+<<<<<<< HEAD
 			mss += ETH_HLEN + ip_hdrlen(skb) + tcp_hdrlen(skb);
 
   		if (mss != sky2->tx_last_mss) {
 			le = get_tx_le(sky2, &slot);
   			le->addr = cpu_to_le32(mss);
+=======
+			mss += skb_tcp_all_headers(skb);
+
+		if (mss != sky2->tx_last_mss) {
+			le = get_tx_le(sky2, &slot);
+			le->addr = cpu_to_le32(mss);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (hw->flags & SKY2_HW_NEW_LE)
 				le->opcode = OP_MSS | HW_OWNER;
@@ -1896,22 +2067,35 @@ static netdev_tx_t sky2_xmit_frame(struct sk_buff *skb,
 	ctrl = 0;
 
 	/* Add VLAN tag, can piggyback on LRGLEN or ADDR64 */
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb)) {
+=======
+	if (skb_vlan_tag_present(skb)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!le) {
 			le = get_tx_le(sky2, &slot);
 			le->addr = 0;
 			le->opcode = OP_VLAN|HW_OWNER;
 		} else
 			le->opcode |= OP_VLAN;
+<<<<<<< HEAD
 		le->length = cpu_to_be16(vlan_tx_tag_get(skb));
+=======
+		le->length = cpu_to_be16(skb_vlan_tag_get(skb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ctrl |= INS_VLAN;
 	}
 
 	/* Handle TCP checksum offload */
 	if (skb->ip_summed == CHECKSUM_PARTIAL) {
 		/* On Yukon EX (some versions) encoding change. */
+<<<<<<< HEAD
  		if (hw->flags & SKY2_HW_AUTO_TX_SUM)
  			ctrl |= CALSUM;	/* auto checksum */
+=======
+		if (hw->flags & SKY2_HW_AUTO_TX_SUM)
+			ctrl |= CALSUM;	/* auto checksum */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {
 			const unsigned offset = skb_transport_offset(skb);
 			u32 tcpsum;
@@ -1999,7 +2183,11 @@ mapping_unwind:
 mapping_error:
 	if (net_ratelimit())
 		dev_warn(&hw->pdev->dev, "%s: tx mapping error\n", dev->name);
+<<<<<<< HEAD
 	dev_kfree_skb(skb);
+=======
+	dev_kfree_skb_any(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NETDEV_TX_OK;
 }
 
@@ -2374,7 +2562,11 @@ static void sky2_qlink_intr(struct sky2_hw *hw)
 /* Transmit timeout is only called if we are running, carrier is up
  * and tx queue is full (stopped).
  */
+<<<<<<< HEAD
 static void sky2_tx_timeout(struct net_device *dev)
+=======
+static void sky2_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sky2_port *sky2 = netdev_priv(dev);
 	struct sky2_hw *hw = sky2->hw;
@@ -2399,6 +2591,7 @@ static int sky2_change_mtu(struct net_device *dev, int new_mtu)
 	u16 ctl, mode;
 	u32 imask;
 
+<<<<<<< HEAD
 	/* MTU size outside the spec */
 	if (new_mtu < ETH_ZLEN || new_mtu > ETH_JUMBO_MTU)
 		return -EINVAL;
@@ -2409,6 +2602,8 @@ static int sky2_change_mtu(struct net_device *dev, int new_mtu)
 	     hw->chip_id == CHIP_ID_YUKON_FE_P))
 		return -EINVAL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!netif_running(dev)) {
 		dev->mtu = new_mtu;
 		netdev_update_features(dev);
@@ -2417,8 +2612,14 @@ static int sky2_change_mtu(struct net_device *dev, int new_mtu)
 
 	imask = sky2_read32(hw, B0_IMSK);
 	sky2_write32(hw, B0_IMSK, 0);
+<<<<<<< HEAD
 
 	dev->trans_start = jiffies;	/* prevent tx timeout */
+=======
+	sky2_read32(hw, B0_IMSK);
+
+	netif_trans_update(dev);	/* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	napi_disable(&hw->napi);
 	netif_tx_disable(dev);
 
@@ -2489,6 +2690,7 @@ static struct sk_buff *receive_copy(struct sky2_port *sky2,
 
 	skb = netdev_alloc_skb_ip_align(sky2->netdev, length);
 	if (likely(skb)) {
+<<<<<<< HEAD
 		pci_dma_sync_single_for_cpu(sky2->hw->pdev, re->data_addr,
 					    length, PCI_DMA_FROMDEVICE);
 		skb_copy_from_linear_data(re->skb, skb->data, length);
@@ -2501,6 +2703,21 @@ static struct sk_buff *receive_copy(struct sky2_port *sky2,
 					       length, PCI_DMA_FROMDEVICE);
 		re->skb->vlan_tci = 0;
 		re->skb->rxhash = 0;
+=======
+		dma_sync_single_for_cpu(&sky2->hw->pdev->dev, re->data_addr,
+					length, DMA_FROM_DEVICE);
+		skb_copy_from_linear_data(re->skb, skb->data, length);
+		skb->ip_summed = re->skb->ip_summed;
+		skb->csum = re->skb->csum;
+		skb_copy_hash(skb, re->skb);
+		__vlan_hwaccel_copy_tag(skb, re->skb);
+
+		dma_sync_single_for_device(&sky2->hw->pdev->dev,
+					   re->data_addr, length,
+					   DMA_FROM_DEVICE);
+		__vlan_hwaccel_clear_tag(re->skb);
+		skb_clear_hash(re->skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		re->skb->ip_summed = CHECKSUM_NONE;
 		skb_put(skb, length);
 	}
@@ -2526,7 +2743,11 @@ static void skb_put_frags(struct sk_buff *skb, unsigned int hdr_space,
 
 		if (length == 0) {
 			/* don't need this page */
+<<<<<<< HEAD
 			__skb_frag_unref(frag);
+=======
+			__skb_frag_unref(frag, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			--skb_shinfo(skb)->nr_frags;
 		} else {
 			size = min(length, (unsigned) PAGE_SIZE);
@@ -2580,7 +2801,11 @@ nobuf:
 static struct sk_buff *sky2_receive(struct net_device *dev,
 				    u16 length, u32 status)
 {
+<<<<<<< HEAD
  	struct sky2_port *sky2 = netdev_priv(dev);
+=======
+	struct sky2_port *sky2 = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rx_ring_info *re = sky2->rx_ring + sky2->rx_next;
 	struct sk_buff *skb = NULL;
 	u16 count = (status & GMR_FS_LEN) >> 16;
@@ -2592,7 +2817,11 @@ static struct sk_buff *sky2_receive(struct net_device *dev,
 	sky2->rx_next = (sky2->rx_next + 1) % sky2->rx_pending;
 	prefetch(sky2->rx_ring + sky2->rx_next);
 
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(re->skb))
+=======
+	if (skb_vlan_tag_present(re->skb))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count -= VLAN_HLEN;	/* Account for vlan tag */
 
 	/* This chip has hardware problems that generates bogus status.
@@ -2674,7 +2903,11 @@ static inline void sky2_rx_done(struct sky2_hw *hw, unsigned port,
 	sky2->rx_stats.bytes += bytes;
 	u64_stats_update_end(&sky2->rx_stats.syncp);
 
+<<<<<<< HEAD
 	dev->last_rx = jiffies;
+=======
+	sky2->last_rx = jiffies;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sky2_rx_update(netdev_priv(dev), rxqaddr[port]);
 }
 
@@ -2712,7 +2945,11 @@ static void sky2_rx_tag(struct sky2_port *sky2, u16 length)
 	struct sk_buff *skb;
 
 	skb = sky2->rx_ring[sky2->rx_next].skb;
+<<<<<<< HEAD
 	__vlan_hwaccel_put_tag(skb, be16_to_cpu(length));
+=======
+	__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), be16_to_cpu(length));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sky2_rx_hash(struct sky2_port *sky2, u32 status)
@@ -2720,7 +2957,11 @@ static void sky2_rx_hash(struct sky2_port *sky2, u32 status)
 	struct sk_buff *skb;
 
 	skb = sky2->rx_ring[sky2->rx_next].skb;
+<<<<<<< HEAD
 	skb->rxhash = le32_to_cpu(status);
+=======
+	skb_set_hash(skb, le32_to_cpu(status), PKT_HASH_TYPE_L3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Process status response ring */
@@ -2730,6 +2971,12 @@ static int sky2_status_intr(struct sky2_hw *hw, int to_do, u16 idx)
 	unsigned int total_bytes[2] = { 0 };
 	unsigned int total_packets[2] = { 0 };
 
+<<<<<<< HEAD
+=======
+	if (to_do <= 0)
+		return work_done;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rmb();
 	do {
 		struct sky2_port *sky2;
@@ -2786,7 +3033,11 @@ static int sky2_status_intr(struct sky2_hw *hw, int to_do, u16 idx)
 
 		case OP_RXCHKSVLAN:
 			sky2_rx_tag(sky2, length);
+<<<<<<< HEAD
 			/* fall through */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case OP_RXCHKS:
 			if (likely(dev->features & NETIF_F_RXCSUM))
 				sky2_rx_checksum(sky2, status);
@@ -2807,7 +3058,11 @@ static int sky2_status_intr(struct sky2_hw *hw, int to_do, u16 idx)
 
 		default:
 			if (net_ratelimit())
+<<<<<<< HEAD
 				pr_warning("unknown status opcode 0x%x\n", opcode);
+=======
+				pr_warn("unknown status opcode 0x%x\n", opcode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} while (hw->st_idx != idx);
 
@@ -2958,7 +3213,11 @@ static int sky2_rx_hung(struct net_device *dev)
 	u8 fifo_lev = sky2_read8(hw, Q_ADDR(rxq, Q_RL));
 
 	/* If idle and MAC or PCI is stuck */
+<<<<<<< HEAD
 	if (sky2->check.last == dev->last_rx &&
+=======
+	if (sky2->check.last == sky2->last_rx &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    ((mac_rp == sky2->check.mac_rp &&
 	      mac_lev != 0 && mac_lev >= sky2->check.mac_lev) ||
 	     /* Check if the PCI RX hang */
@@ -2970,7 +3229,11 @@ static int sky2_rx_hung(struct net_device *dev)
 			      fifo_rp, sky2_read8(hw, Q_ADDR(rxq, Q_WP)));
 		return 1;
 	} else {
+<<<<<<< HEAD
 		sky2->check.last = dev->last_rx;
+=======
+		sky2->check.last = sky2->last_rx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sky2->check.mac_rp = mac_rp;
 		sky2->check.mac_lev = mac_lev;
 		sky2->check.fifo_rp = fifo_rp;
@@ -2979,9 +3242,15 @@ static int sky2_rx_hung(struct net_device *dev)
 	}
 }
 
+<<<<<<< HEAD
 static void sky2_watchdog(unsigned long arg)
 {
 	struct sky2_hw *hw = (struct sky2_hw *) arg;
+=======
+static void sky2_watchdog(struct timer_list *t)
+{
+	struct sky2_hw *hw = from_timer(hw, t, watchdog_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check for lost IRQ once a second */
 	if (sky2_read32(hw, B0_ISRC)) {
@@ -3065,7 +3334,11 @@ static int sky2_poll(struct napi_struct *napi, int work_limit)
 			goto done;
 	}
 
+<<<<<<< HEAD
 	napi_complete(napi);
+=======
+	napi_complete_done(napi, work_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sky2_read32(hw, B0_Y2_SP_LISR);
 done:
 
@@ -3139,7 +3412,11 @@ static inline u32 sky2_clk2us(const struct sky2_hw *hw, u32 clk)
 }
 
 
+<<<<<<< HEAD
 static int __devinit sky2_init(struct sky2_hw *hw)
+=======
+static int sky2_init(struct sky2_hw *hw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 t8;
 
@@ -3351,6 +3628,20 @@ static void sky2_reset(struct sky2_hw *hw)
 			sky2_pci_write16(hw, pdev->pcie_cap + PCI_EXP_LNKCTL,
 					 reg);
 
+<<<<<<< HEAD
+=======
+		if (hw->chip_id == CHIP_ID_YUKON_PRM &&
+			hw->chip_rev == CHIP_REV_YU_PRM_A0) {
+			/* change PHY Interrupt polarity to low active */
+			reg = sky2_read16(hw, GPHY_CTRL);
+			sky2_write16(hw, GPHY_CTRL, reg | GPC_INTPOL);
+
+			/* adapt HW for low active PHY Interrupt */
+			reg = sky2_read16(hw, Y2_CFG_SPC + PCI_LDO_CTRL);
+			sky2_write16(hw, Y2_CFG_SPC + PCI_LDO_CTRL, reg | PHY_M_UNDOC1);
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sky2_write8(hw, B2_TST_CTRL1, TST_CFG_WRITE_OFF);
 
 		/* re-enable PEX PM in PEX PHY debug reg. 8 (clear bit 12) */
@@ -3469,8 +3760,13 @@ static void sky2_all_down(struct sky2_hw *hw)
 	int i;
 
 	if (hw->flags & SKY2_HW_IRQ_SETUP) {
+<<<<<<< HEAD
 		sky2_read32(hw, B0_IMSK);
 		sky2_write32(hw, B0_IMSK, 0);
+=======
+		sky2_write32(hw, B0_IMSK, 0);
+		sky2_read32(hw, B0_IMSK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		synchronize_irq(hw->pdev->irq);
 		napi_disable(&hw->napi);
@@ -3583,6 +3879,7 @@ static u32 sky2_supported_modes(const struct sky2_hw *hw)
 			| SUPPORTED_1000baseT_Full;
 }
 
+<<<<<<< HEAD
 static int sky2_get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 {
 	struct sky2_port *sky2 = netdev_priv(dev);
@@ -3609,10 +3906,47 @@ static int sky2_get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 }
 
 static int sky2_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
+=======
+static int sky2_get_link_ksettings(struct net_device *dev,
+				   struct ethtool_link_ksettings *cmd)
+{
+	struct sky2_port *sky2 = netdev_priv(dev);
+	struct sky2_hw *hw = sky2->hw;
+	u32 supported, advertising;
+
+	supported = sky2_supported_modes(hw);
+	cmd->base.phy_address = PHY_ADDR_MARV;
+	if (sky2_is_copper(hw)) {
+		cmd->base.port = PORT_TP;
+		cmd->base.speed = sky2->speed;
+		supported |=  SUPPORTED_Autoneg | SUPPORTED_TP;
+	} else {
+		cmd->base.speed = SPEED_1000;
+		cmd->base.port = PORT_FIBRE;
+		supported |=  SUPPORTED_Autoneg | SUPPORTED_FIBRE;
+	}
+
+	advertising = sky2->advertising;
+	cmd->base.autoneg = (sky2->flags & SKY2_FLAG_AUTO_SPEED)
+		? AUTONEG_ENABLE : AUTONEG_DISABLE;
+	cmd->base.duplex = sky2->duplex;
+
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
+						supported);
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
+						advertising);
+
+	return 0;
+}
+
+static int sky2_set_link_ksettings(struct net_device *dev,
+				   const struct ethtool_link_ksettings *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sky2_port *sky2 = netdev_priv(dev);
 	const struct sky2_hw *hw = sky2->hw;
 	u32 supported = sky2_supported_modes(hw);
+<<<<<<< HEAD
 
 	if (ecmd->autoneg == AUTONEG_ENABLE) {
 		if (ecmd->advertising & ~supported)
@@ -3624,6 +3958,23 @@ static int sky2_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 					    ADVERTISED_Autoneg;
 		else
 			sky2->advertising = ecmd->advertising |
+=======
+	u32 new_advertising;
+
+	ethtool_convert_link_mode_to_legacy_u32(&new_advertising,
+						cmd->link_modes.advertising);
+
+	if (cmd->base.autoneg == AUTONEG_ENABLE) {
+		if (new_advertising & ~supported)
+			return -EINVAL;
+
+		if (sky2_is_copper(hw))
+			sky2->advertising = new_advertising |
+					    ADVERTISED_TP |
+					    ADVERTISED_Autoneg;
+		else
+			sky2->advertising = new_advertising |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    ADVERTISED_FIBRE |
 					    ADVERTISED_Autoneg;
 
@@ -3632,6 +3983,7 @@ static int sky2_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 		sky2->speed = -1;
 	} else {
 		u32 setting;
+<<<<<<< HEAD
 		u32 speed = ethtool_cmd_speed(ecmd);
 
 		switch (speed) {
@@ -3639,23 +3991,44 @@ static int sky2_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 			if (ecmd->duplex == DUPLEX_FULL)
 				setting = SUPPORTED_1000baseT_Full;
 			else if (ecmd->duplex == DUPLEX_HALF)
+=======
+		u32 speed = cmd->base.speed;
+
+		switch (speed) {
+		case SPEED_1000:
+			if (cmd->base.duplex == DUPLEX_FULL)
+				setting = SUPPORTED_1000baseT_Full;
+			else if (cmd->base.duplex == DUPLEX_HALF)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				setting = SUPPORTED_1000baseT_Half;
 			else
 				return -EINVAL;
 			break;
 		case SPEED_100:
+<<<<<<< HEAD
 			if (ecmd->duplex == DUPLEX_FULL)
 				setting = SUPPORTED_100baseT_Full;
 			else if (ecmd->duplex == DUPLEX_HALF)
+=======
+			if (cmd->base.duplex == DUPLEX_FULL)
+				setting = SUPPORTED_100baseT_Full;
+			else if (cmd->base.duplex == DUPLEX_HALF)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				setting = SUPPORTED_100baseT_Half;
 			else
 				return -EINVAL;
 			break;
 
 		case SPEED_10:
+<<<<<<< HEAD
 			if (ecmd->duplex == DUPLEX_FULL)
 				setting = SUPPORTED_10baseT_Full;
 			else if (ecmd->duplex == DUPLEX_HALF)
+=======
+			if (cmd->base.duplex == DUPLEX_FULL)
+				setting = SUPPORTED_10baseT_Full;
+			else if (cmd->base.duplex == DUPLEX_HALF)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				setting = SUPPORTED_10baseT_Half;
 			else
 				return -EINVAL;
@@ -3668,7 +4041,11 @@ static int sky2_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 			return -EINVAL;
 
 		sky2->speed = speed;
+<<<<<<< HEAD
 		sky2->duplex = ecmd->duplex;
+=======
+		sky2->duplex = cmd->base.duplex;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sky2->flags &= ~SKY2_FLAG_AUTO_SPEED;
 	}
 
@@ -3685,9 +4062,15 @@ static void sky2_get_drvinfo(struct net_device *dev,
 {
 	struct sky2_port *sky2 = netdev_priv(dev);
 
+<<<<<<< HEAD
 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
 	strlcpy(info->bus_info, pci_name(sky2->hw->pdev),
+=======
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	strscpy(info->version, DRV_VERSION, sizeof(info->version));
+	strscpy(info->bus_info, pci_name(sky2->hw->pdev),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(info->bus_info));
 }
 
@@ -3814,7 +4197,11 @@ static int sky2_set_mac_address(struct net_device *dev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, addr->sa_data, ETH_ALEN);
+=======
+	eth_hw_addr_set(dev, addr->sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy_toio(hw->regs + B2_MAC_1 + port * 8,
 		    dev->dev_addr, ETH_ALEN);
 	memcpy_toio(hw->regs + B2_MAC_2 + port * 8,
@@ -3882,8 +4269,13 @@ static void sky2_set_multicast(struct net_device *dev)
 	gma_write16(hw, port, GM_RX_CTRL, reg);
 }
 
+<<<<<<< HEAD
 static struct rtnl_link_stats64 *sky2_get_stats(struct net_device *dev,
 						struct rtnl_link_stats64 *stats)
+=======
+static void sky2_get_stats(struct net_device *dev,
+			   struct rtnl_link_stats64 *stats)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sky2_port *sky2 = netdev_priv(dev);
 	struct sky2_hw *hw = sky2->hw;
@@ -3892,19 +4284,33 @@ static struct rtnl_link_stats64 *sky2_get_stats(struct net_device *dev,
 	u64 _bytes, _packets;
 
 	do {
+<<<<<<< HEAD
 		start = u64_stats_fetch_begin_irq(&sky2->rx_stats.syncp);
 		_bytes = sky2->rx_stats.bytes;
 		_packets = sky2->rx_stats.packets;
 	} while (u64_stats_fetch_retry_irq(&sky2->rx_stats.syncp, start));
+=======
+		start = u64_stats_fetch_begin(&sky2->rx_stats.syncp);
+		_bytes = sky2->rx_stats.bytes;
+		_packets = sky2->rx_stats.packets;
+	} while (u64_stats_fetch_retry(&sky2->rx_stats.syncp, start));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	stats->rx_packets = _packets;
 	stats->rx_bytes = _bytes;
 
 	do {
+<<<<<<< HEAD
 		start = u64_stats_fetch_begin_irq(&sky2->tx_stats.syncp);
 		_bytes = sky2->tx_stats.bytes;
 		_packets = sky2->tx_stats.packets;
 	} while (u64_stats_fetch_retry_irq(&sky2->tx_stats.syncp, start));
+=======
+		start = u64_stats_fetch_begin(&sky2->tx_stats.syncp);
+		_bytes = sky2->tx_stats.bytes;
+		_packets = sky2->tx_stats.packets;
+	} while (u64_stats_fetch_retry(&sky2->tx_stats.syncp, start));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	stats->tx_packets = _packets;
 	stats->tx_bytes = _bytes;
@@ -3923,8 +4329,11 @@ static struct rtnl_link_stats64 *sky2_get_stats(struct net_device *dev,
 	stats->rx_dropped = dev->stats.rx_dropped;
 	stats->rx_fifo_errors = dev->stats.rx_fifo_errors;
 	stats->tx_fifo_errors = dev->stats.tx_fifo_errors;
+<<<<<<< HEAD
 
 	return stats;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Can have one global because blinking is controlled by
@@ -4051,7 +4460,13 @@ static int sky2_set_pauseparam(struct net_device *dev,
 }
 
 static int sky2_get_coalesce(struct net_device *dev,
+<<<<<<< HEAD
 			     struct ethtool_coalesce *ecmd)
+=======
+			     struct ethtool_coalesce *ecmd,
+			     struct kernel_ethtool_coalesce *kernel_coal,
+			     struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sky2_port *sky2 = netdev_priv(dev);
 	struct sky2_hw *hw = sky2->hw;
@@ -4086,7 +4501,13 @@ static int sky2_get_coalesce(struct net_device *dev,
 
 /* Note: this affect both ports */
 static int sky2_set_coalesce(struct net_device *dev,
+<<<<<<< HEAD
 			     struct ethtool_coalesce *ecmd)
+=======
+			     struct ethtool_coalesce *ecmd,
+			     struct kernel_ethtool_coalesce *kernel_coal,
+			     struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sky2_port *sky2 = netdev_priv(dev);
 	struct sky2_hw *hw = sky2->hw;
@@ -4136,7 +4557,11 @@ static int sky2_set_coalesce(struct net_device *dev,
 /*
  * Hardware is limited to min of 128 and max of 2048 for ring size
  * and  rounded up to next power of two
+<<<<<<< HEAD
  * to avoid division in modulus calclation
+=======
+ * to avoid division in modulus calculation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static unsigned long roundup_ring_size(unsigned long pending)
 {
@@ -4144,7 +4569,13 @@ static unsigned long roundup_ring_size(unsigned long pending)
 }
 
 static void sky2_get_ringparam(struct net_device *dev,
+<<<<<<< HEAD
 			       struct ethtool_ringparam *ering)
+=======
+			       struct ethtool_ringparam *ering,
+			       struct kernel_ethtool_ringparam *kernel_ering,
+			       struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sky2_port *sky2 = netdev_priv(dev);
 
@@ -4156,7 +4587,13 @@ static void sky2_get_ringparam(struct net_device *dev,
 }
 
 static int sky2_set_ringparam(struct net_device *dev,
+<<<<<<< HEAD
 			      struct ethtool_ringparam *ering)
+=======
+			      struct ethtool_ringparam *ering,
+			      struct kernel_ethtool_ringparam *kernel_ering,
+			      struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sky2_port *sky2 = netdev_priv(dev);
 
@@ -4261,6 +4698,7 @@ static int sky2_get_eeprom_len(struct net_device *dev)
 	return 1 << ( ((reg2 & PCI_VPD_ROM_SZ) >> 14) + 8);
 }
 
+<<<<<<< HEAD
 static int sky2_vpd_wait(const struct sky2_hw *hw, int cap, u16 busy)
 {
 	unsigned long start = jiffies;
@@ -4320,10 +4758,13 @@ static int sky2_vpd_write(struct sky2_hw *hw, int cap, const void *data,
 	return rc;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sky2_get_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 			   u8 *data)
 {
 	struct sky2_port *sky2 = netdev_priv(dev);
+<<<<<<< HEAD
 	int cap = pci_find_capability(sky2->hw->pdev, PCI_CAP_ID_VPD);
 
 	if (!cap)
@@ -4332,25 +4773,49 @@ static int sky2_get_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom
 	eeprom->magic = SKY2_EEPROM_MAGIC;
 
 	return sky2_vpd_read(sky2->hw, cap, data, eeprom->offset, eeprom->len);
+=======
+	int rc;
+
+	eeprom->magic = SKY2_EEPROM_MAGIC;
+	rc = pci_read_vpd_any(sky2->hw->pdev, eeprom->offset, eeprom->len,
+			      data);
+	if (rc < 0)
+		return rc;
+
+	eeprom->len = rc;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sky2_set_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 			   u8 *data)
 {
 	struct sky2_port *sky2 = netdev_priv(dev);
+<<<<<<< HEAD
 	int cap = pci_find_capability(sky2->hw->pdev, PCI_CAP_ID_VPD);
 
 	if (!cap)
 		return -EINVAL;
+=======
+	int rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (eeprom->magic != SKY2_EEPROM_MAGIC)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	/* Partial writes not supported */
 	if ((eeprom->offset & 3) || (eeprom->len & 3))
 		return -EINVAL;
 
 	return sky2_vpd_write(sky2->hw, cap, data, eeprom->offset, eeprom->len);
+=======
+	rc = pci_write_vpd_any(sky2->hw->pdev, eeprom->offset, eeprom->len,
+			       data);
+
+	return rc < 0 ? rc : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static netdev_features_t sky2_fix_features(struct net_device *dev,
@@ -4364,7 +4829,11 @@ static netdev_features_t sky2_fix_features(struct net_device *dev,
 	 */
 	if (dev->mtu > ETH_DATA_LEN && hw->chip_id == CHIP_ID_YUKON_EC_U) {
 		netdev_info(dev, "checksum offload not possible with jumbo frames\n");
+<<<<<<< HEAD
 		features &= ~(NETIF_F_TSO|NETIF_F_SG|NETIF_F_ALL_CSUM);
+=======
+		features &= ~(NETIF_F_TSO | NETIF_F_SG | NETIF_F_CSUM_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Some hardware requires receive checksum for RSS to work. */
@@ -4394,15 +4863,26 @@ static int sky2_set_features(struct net_device *dev, netdev_features_t features)
 	if (changed & NETIF_F_RXHASH)
 		rx_set_rss(dev, features);
 
+<<<<<<< HEAD
 	if (changed & (NETIF_F_HW_VLAN_TX|NETIF_F_HW_VLAN_RX))
+=======
+	if (changed & (NETIF_F_HW_VLAN_CTAG_TX|NETIF_F_HW_VLAN_CTAG_RX))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sky2_vlan_mode(dev, features);
 
 	return 0;
 }
 
 static const struct ethtool_ops sky2_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings	= sky2_get_settings,
 	.set_settings	= sky2_set_settings,
+=======
+	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+				     ETHTOOL_COALESCE_MAX_FRAMES |
+				     ETHTOOL_COALESCE_RX_USECS_IRQ |
+				     ETHTOOL_COALESCE_RX_MAX_FRAMES_IRQ,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo	= sky2_get_drvinfo,
 	.get_wol	= sky2_get_wol,
 	.set_wol	= sky2_set_wol,
@@ -4425,12 +4905,18 @@ static const struct ethtool_ops sky2_ethtool_ops = {
 	.set_phys_id	= sky2_set_phys_id,
 	.get_sset_count = sky2_get_sset_count,
 	.get_ethtool_stats = sky2_get_ethtool_stats,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings = sky2_get_link_ksettings,
+	.set_link_ksettings = sky2_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_SKY2_DEBUG
 
 static struct dentry *sky2_debug;
 
+<<<<<<< HEAD
 
 /*
  * Read and parse the first part of Vital Product Data
@@ -4511,6 +4997,8 @@ out:
 	kfree(buf);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sky2_debug_show(struct seq_file *seq, void *v)
 {
 	struct net_device *dev = seq->private;
@@ -4520,15 +5008,23 @@ static int sky2_debug_show(struct seq_file *seq, void *v)
 	unsigned idx, last;
 	int sop;
 
+<<<<<<< HEAD
 	sky2_show_vpd(seq, hw);
 
 	seq_printf(seq, "\nIRQ src=%x mask=%x control=%x\n",
+=======
+	seq_printf(seq, "IRQ src=%x mask=%x control=%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   sky2_read32(hw, B0_ISRC),
 		   sky2_read32(hw, B0_IMSK),
 		   sky2_read32(hw, B0_Y2_SP_ICR));
 
 	if (!netif_running(dev)) {
+<<<<<<< HEAD
 		seq_printf(seq, "network not running\n");
+=======
+		seq_puts(seq, "network not running\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -4607,6 +5103,7 @@ static int sky2_debug_show(struct seq_file *seq, void *v)
 	napi_enable(&hw->napi);
 	return 0;
 }
+<<<<<<< HEAD
 
 static int sky2_debug_open(struct inode *inode, struct file *file)
 {
@@ -4620,6 +5117,9 @@ static const struct file_operations sky2_debug_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+=======
+DEFINE_SHOW_ATTRIBUTE(sky2_debug);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Use network device events to create/remove/rename
@@ -4628,7 +5128,11 @@ static const struct file_operations sky2_debug_fops = {
 static int sky2_device_event(struct notifier_block *unused,
 			     unsigned long event, void *ptr)
 {
+<<<<<<< HEAD
 	struct net_device *dev = ptr;
+=======
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sky2_port *sky2 = netdev_priv(dev);
 
 	if (dev->netdev_ops->ndo_open != sky2_open || !sky2_debug)
@@ -4651,7 +5155,11 @@ static int sky2_device_event(struct notifier_block *unused,
 		break;
 
 	case NETDEV_UP:
+<<<<<<< HEAD
 		sky2->debugfs = debugfs_create_file(dev->name, S_IRUGO,
+=======
+		sky2->debugfs = debugfs_create_file(dev->name, 0444,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						    sky2_debug, dev,
 						    &sky2_debug_fops);
 		if (IS_ERR(sky2->debugfs))
@@ -4671,7 +5179,11 @@ static __init void sky2_debug_init(void)
 	struct dentry *ent;
 
 	ent = debugfs_create_dir("sky2", NULL);
+<<<<<<< HEAD
 	if (!ent || IS_ERR(ent))
+=======
+	if (IS_ERR(ent))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	sky2_debug = ent;
@@ -4693,13 +5205,22 @@ static __exit void sky2_debug_cleanup(void)
 #endif
 
 /* Two copies of network device operations to handle special case of
+<<<<<<< HEAD
    not allowing netpoll on second port */
+=======
+ * not allowing netpoll on second port
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops sky2_netdev_ops[2] = {
   {
 	.ndo_open		= sky2_open,
 	.ndo_stop		= sky2_close,
 	.ndo_start_xmit		= sky2_xmit_frame,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= sky2_ioctl,
+=======
+	.ndo_eth_ioctl		= sky2_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= sky2_set_mac_address,
 	.ndo_set_rx_mode	= sky2_set_multicast,
@@ -4716,7 +5237,11 @@ static const struct net_device_ops sky2_netdev_ops[2] = {
 	.ndo_open		= sky2_open,
 	.ndo_stop		= sky2_close,
 	.ndo_start_xmit		= sky2_xmit_frame,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= sky2_ioctl,
+=======
+	.ndo_eth_ioctl		= sky2_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= sky2_set_mac_address,
 	.ndo_set_rx_mode	= sky2_set_multicast,
@@ -4729,19 +5254,32 @@ static const struct net_device_ops sky2_netdev_ops[2] = {
 };
 
 /* Initialize network device */
+<<<<<<< HEAD
 static __devinit struct net_device *sky2_init_netdev(struct sky2_hw *hw,
 						     unsigned port,
 						     int highmem, int wol)
 {
 	struct sky2_port *sky2;
 	struct net_device *dev = alloc_etherdev(sizeof(*sky2));
+=======
+static struct net_device *sky2_init_netdev(struct sky2_hw *hw, unsigned port,
+					   int highmem, int wol)
+{
+	struct sky2_port *sky2;
+	struct net_device *dev = alloc_etherdev(sizeof(*sky2));
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev)
 		return NULL;
 
 	SET_NETDEV_DEV(dev, &hw->pdev->dev);
 	dev->irq = hw->pdev->irq;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(dev, &sky2_ethtool_ops);
+=======
+	dev->ethtool_ops = &sky2_ethtool_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->watchdog_timeo = TX_WATCHDOG;
 	dev->netdev_ops = &sky2_netdev_ops[port];
 
@@ -4785,20 +5323,62 @@ static __devinit struct net_device *sky2_init_netdev(struct sky2_hw *hw,
 		dev->hw_features |= NETIF_F_RXHASH;
 
 	if (!(hw->flags & SKY2_HW_VLAN_BROKEN)) {
+<<<<<<< HEAD
 		dev->hw_features |= NETIF_F_HW_VLAN_TX | NETIF_F_HW_VLAN_RX;
+=======
+		dev->hw_features |= NETIF_F_HW_VLAN_CTAG_TX |
+				    NETIF_F_HW_VLAN_CTAG_RX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->vlan_features |= SKY2_VLAN_OFFLOADS;
 	}
 
 	dev->features |= dev->hw_features;
 
+<<<<<<< HEAD
 	/* read the mac address */
 	memcpy_fromio(dev->dev_addr, hw->regs + B2_MAC_1 + port * 8, ETH_ALEN);
 	memcpy(dev->perm_addr, dev->dev_addr, dev->addr_len);
+=======
+	/* MTU range: 60 - 1500 or 9000 */
+	dev->min_mtu = ETH_ZLEN;
+	if (hw->chip_id == CHIP_ID_YUKON_FE ||
+	    hw->chip_id == CHIP_ID_YUKON_FE_P)
+		dev->max_mtu = ETH_DATA_LEN;
+	else
+		dev->max_mtu = ETH_JUMBO_MTU;
+
+	/* try to get mac address in the following order:
+	 * 1) from device tree data
+	 * 2) from internal registers set by bootloader
+	 */
+	ret = of_get_ethdev_address(hw->pdev->dev.of_node, dev);
+	if (ret) {
+		u8 addr[ETH_ALEN];
+
+		memcpy_fromio(addr, hw->regs + B2_MAC_1 + port * 8, ETH_ALEN);
+		eth_hw_addr_set(dev, addr);
+	}
+
+	/* if the address is invalid, use a random value */
+	if (!is_valid_ether_addr(dev->dev_addr)) {
+		struct sockaddr sa = { AF_UNSPEC };
+
+		dev_warn(&hw->pdev->dev, "Invalid MAC address, defaulting to random\n");
+		eth_hw_addr_random(dev);
+		memcpy(sa.sa_data, dev->dev_addr, ETH_ALEN);
+		if (sky2_set_mac_address(dev, &sa))
+			dev_warn(&hw->pdev->dev, "Failed to set MAC address.\n");
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return dev;
 }
 
+<<<<<<< HEAD
 static void __devinit sky2_show_addr(struct net_device *dev)
+=======
+static void sky2_show_addr(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct sky2_port *sky2 = netdev_priv(dev);
 
@@ -4806,7 +5386,11 @@ static void __devinit sky2_show_addr(struct net_device *dev)
 }
 
 /* Handle software interrupt used during MSI test */
+<<<<<<< HEAD
 static irqreturn_t __devinit sky2_test_intr(int irq, void *dev_id)
+=======
+static irqreturn_t sky2_test_intr(int irq, void *dev_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sky2_hw *hw = dev_id;
 	u32 status = sky2_read32(hw, B0_Y2_SP_ISRC2);
@@ -4824,22 +5408,35 @@ static irqreturn_t __devinit sky2_test_intr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 /* Test interrupt path by forcing a a software IRQ */
 static int __devinit sky2_test_msi(struct sky2_hw *hw)
+=======
+/* Test interrupt path by forcing a software IRQ */
+static int sky2_test_msi(struct sky2_hw *hw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = hw->pdev;
 	int err;
 
 	init_waitqueue_head(&hw->msi_wait);
 
+<<<<<<< HEAD
 	sky2_write32(hw, B0_IMSK, Y2_IS_IRQ_SW);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = request_irq(pdev->irq, sky2_test_intr, 0, DRV_NAME, hw);
 	if (err) {
 		dev_err(&pdev->dev, "cannot assign irq %d\n", pdev->irq);
 		return err;
 	}
 
+<<<<<<< HEAD
+=======
+	sky2_write32(hw, B0_IMSK, Y2_IS_IRQ_SW);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sky2_write8(hw, B0_CTST, CS_ST_SW_IRQ);
 	sky2_read8(hw, B0_CTST);
 
@@ -4865,7 +5462,11 @@ static int __devinit sky2_test_msi(struct sky2_hw *hw)
 /* This driver supports yukon2 chipset only */
 static const char *sky2_name(u8 chipid, char *buf, int sz)
 {
+<<<<<<< HEAD
 	const char *name[] = {
+=======
+	static const char *const name[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"XL",		/* 0xb3 */
 		"EC Ultra", 	/* 0xb4 */
 		"Extreme",	/* 0xb5 */
@@ -4876,19 +5477,70 @@ static const char *sky2_name(u8 chipid, char *buf, int sz)
 		"UL 2",		/* 0xba */
 		"Unknown",	/* 0xbb */
 		"Optima",	/* 0xbc */
+<<<<<<< HEAD
 		"Optima Prime", /* 0xbd */
+=======
+		"OptimaEEE",    /* 0xbd */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Optima 2",	/* 0xbe */
 	};
 
 	if (chipid >= CHIP_ID_YUKON_XL && chipid <= CHIP_ID_YUKON_OP_2)
+<<<<<<< HEAD
 		strncpy(buf, name[chipid - CHIP_ID_YUKON_XL], sz);
+=======
+		snprintf(buf, sz, "%s", name[chipid - CHIP_ID_YUKON_XL]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		snprintf(buf, sz, "(chip %#x)", chipid);
 	return buf;
 }
 
+<<<<<<< HEAD
 static int __devinit sky2_probe(struct pci_dev *pdev,
 				const struct pci_device_id *ent)
+=======
+static const struct dmi_system_id msi_blacklist[] = {
+	{
+		.ident = "Dell Inspiron 1545",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc."),
+			DMI_MATCH(DMI_PRODUCT_NAME, "Inspiron 1545"),
+		},
+	},
+	{
+		.ident = "Gateway P-79",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "Gateway"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "P-79"),
+		},
+	},
+	{
+		.ident = "ASUS P5W DH Deluxe",
+		.matches = {
+			DMI_MATCH(DMI_SYS_VENDOR, "ASUSTEK COMPUTER INC"),
+			DMI_MATCH(DMI_PRODUCT_NAME, "P5W DH Deluxe"),
+		},
+	},
+	{
+		.ident = "ASUS P6T",
+		.matches = {
+			DMI_MATCH(DMI_BOARD_VENDOR, "ASUSTeK Computer INC."),
+			DMI_MATCH(DMI_BOARD_NAME, "P6T"),
+		},
+	},
+	{
+		.ident = "ASUS P6X",
+		.matches = {
+			DMI_MATCH(DMI_BOARD_VENDOR, "ASUSTeK Computer INC."),
+			DMI_MATCH(DMI_BOARD_NAME, "P6X"),
+		},
+	},
+	{}
+};
+
+static int sky2_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev, *dev1;
 	struct sky2_hw *hw;
@@ -4910,12 +5562,21 @@ static int __devinit sky2_probe(struct pci_dev *pdev,
 	err = pci_read_config_dword(pdev, PCI_DEV_REG2, &reg);
 	if (err) {
 		dev_err(&pdev->dev, "PCI read config failed\n");
+<<<<<<< HEAD
 		goto err_out;
+=======
+		goto err_out_disable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (~reg == 0) {
 		dev_err(&pdev->dev, "PCI configuration read error\n");
+<<<<<<< HEAD
 		goto err_out;
+=======
+		err = -EIO;
+		goto err_out_disable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = pci_request_regions(pdev, DRV_NAME);
@@ -4927,16 +5588,26 @@ static int __devinit sky2_probe(struct pci_dev *pdev,
 	pci_set_master(pdev);
 
 	if (sizeof(dma_addr_t) > sizeof(u32) &&
+<<<<<<< HEAD
 	    !(err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64)))) {
 		using_dac = 1;
 		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
+=======
+	    !dma_set_mask(&pdev->dev, DMA_BIT_MASK(64))) {
+		using_dac = 1;
+		err = dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(64));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err < 0) {
 			dev_err(&pdev->dev, "unable to obtain 64 bit DMA "
 				"for consistent allocations\n");
 			goto err_out_free_regions;
 		}
 	} else {
+<<<<<<< HEAD
 		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			dev_err(&pdev->dev, "no usable DMA configuration\n");
 			goto err_out_free_regions;
@@ -4962,15 +5633,24 @@ static int __devinit sky2_probe(struct pci_dev *pdev,
 
 	hw = kzalloc(sizeof(*hw) + strlen(DRV_NAME "@pci:")
 		     + strlen(pci_name(pdev)) + 1, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!hw) {
 		dev_err(&pdev->dev, "cannot allocate hardware struct\n");
 		goto err_out_free_regions;
 	}
+=======
+	if (!hw)
+		goto err_out_free_regions;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hw->pdev = pdev;
 	sprintf(hw->irq_name, DRV_NAME "@pci:%s", pci_name(pdev));
 
+<<<<<<< HEAD
 	hw->regs = ioremap_nocache(pci_resource_start(pdev, 0), 0x4000);
+=======
+	hw->regs = ioremap(pci_resource_start(pdev, 0), 0x4000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hw->regs) {
 		dev_err(&pdev->dev, "cannot map device registers\n");
 		goto err_out_free_hw;
@@ -4982,10 +5662,20 @@ static int __devinit sky2_probe(struct pci_dev *pdev,
 
 	/* ring for status responses */
 	hw->st_size = hw->ports * roundup_pow_of_two(3*RX_MAX_PENDING + TX_MAX_PENDING);
+<<<<<<< HEAD
 	hw->st_le = pci_alloc_consistent(pdev, hw->st_size * sizeof(struct sky2_status_le),
 					 &hw->st_dma);
 	if (!hw->st_le)
 		goto err_out_reset;
+=======
+	hw->st_le = dma_alloc_coherent(&pdev->dev,
+				       hw->st_size * sizeof(struct sky2_status_le),
+				       &hw->st_dma, GFP_KERNEL);
+	if (!hw->st_le) {
+		err = -ENOMEM;
+		goto err_out_reset;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(&pdev->dev, "Yukon-2 %s chip revision %d\n",
 		 sky2_name(hw->chip_id, buf1, sizeof(buf1)), hw->chip_rev);
@@ -4998,6 +5688,7 @@ static int __devinit sky2_probe(struct pci_dev *pdev,
 		goto err_out_free_pci;
 	}
 
+<<<<<<< HEAD
 	if (!disable_msi && pci_enable_msi(pdev) == 0) {
 		err = sky2_test_msi(hw);
 		if (err == -EOPNOTSUPP)
@@ -5005,6 +5696,21 @@ static int __devinit sky2_probe(struct pci_dev *pdev,
 		else if (err)
 			goto err_out_free_netdev;
  	}
+=======
+	if (disable_msi == -1)
+		disable_msi = !!dmi_check_system(msi_blacklist);
+
+	if (!disable_msi && pci_enable_msi(pdev) == 0) {
+		err = sky2_test_msi(hw);
+		if (err) {
+			pci_disable_msi(pdev);
+			if (err != -EOPNOTSUPP)
+				goto err_out_free_netdev;
+		}
+	}
+
+	netif_napi_add(dev, &hw->napi, sky2_poll);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = register_netdev(dev);
 	if (err) {
@@ -5014,8 +5720,11 @@ static int __devinit sky2_probe(struct pci_dev *pdev,
 
 	netif_carrier_off(dev);
 
+<<<<<<< HEAD
 	netif_napi_add(dev, &hw->napi, sky2_poll, NAPI_WEIGHT);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sky2_show_addr(dev);
 
 	if (hw->ports > 1) {
@@ -5038,11 +5747,19 @@ static int __devinit sky2_probe(struct pci_dev *pdev,
 		sky2_show_addr(dev1);
 	}
 
+<<<<<<< HEAD
 	setup_timer(&hw->watchdog_timer, sky2_watchdog, (unsigned long) hw);
 	INIT_WORK(&hw->restart_work, sky2_restart);
 
 	pci_set_drvdata(pdev, hw);
 	pdev->d3_delay = 150;
+=======
+	timer_setup(&hw->watchdog_timer, sky2_watchdog, 0);
+	INIT_WORK(&hw->restart_work, sky2_restart);
+
+	pci_set_drvdata(pdev, hw);
+	pdev->d3hot_delay = 300;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -5051,6 +5768,7 @@ err_out_unregister_dev1:
 err_out_free_dev1:
 	free_netdev(dev1);
 err_out_unregister:
+<<<<<<< HEAD
 	if (hw->flags & SKY2_HW_USE_MSI)
 		pci_disable_msi(pdev);
 	unregister_netdev(dev);
@@ -5059,6 +5777,17 @@ err_out_free_netdev:
 err_out_free_pci:
 	pci_free_consistent(pdev, hw->st_size * sizeof(struct sky2_status_le),
 			    hw->st_le, hw->st_dma);
+=======
+	unregister_netdev(dev);
+err_out_free_netdev:
+	if (hw->flags & SKY2_HW_USE_MSI)
+		pci_disable_msi(pdev);
+	free_netdev(dev);
+err_out_free_pci:
+	dma_free_coherent(&pdev->dev,
+			  hw->st_size * sizeof(struct sky2_status_le),
+			  hw->st_le, hw->st_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_reset:
 	sky2_write8(hw, B0_CTST, CS_RST_SET);
 err_out_iounmap:
@@ -5070,11 +5799,18 @@ err_out_free_regions:
 err_out_disable:
 	pci_disable_device(pdev);
 err_out:
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
 	return err;
 }
 
 static void __devexit sky2_remove(struct pci_dev *pdev)
+=======
+	return err;
+}
+
+static void sky2_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sky2_hw *hw = pci_get_drvdata(pdev);
 	int i;
@@ -5082,7 +5818,11 @@ static void __devexit sky2_remove(struct pci_dev *pdev)
 	if (!hw)
 		return;
 
+<<<<<<< HEAD
 	del_timer_sync(&hw->watchdog_timer);
+=======
+	timer_shutdown_sync(&hw->watchdog_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cancel_work_sync(&hw->restart_work);
 
 	for (i = hw->ports-1; i >= 0; --i)
@@ -5103,8 +5843,14 @@ static void __devexit sky2_remove(struct pci_dev *pdev)
 
 	if (hw->flags & SKY2_HW_USE_MSI)
 		pci_disable_msi(pdev);
+<<<<<<< HEAD
 	pci_free_consistent(pdev, hw->st_size * sizeof(struct sky2_status_le),
 			    hw->st_le, hw->st_dma);
+=======
+	dma_free_coherent(&pdev->dev,
+			  hw->st_size * sizeof(struct sky2_status_le),
+			  hw->st_le, hw->st_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_release_regions(pdev);
 	pci_disable_device(pdev);
 
@@ -5113,14 +5859,21 @@ static void __devexit sky2_remove(struct pci_dev *pdev)
 
 	iounmap(hw->regs);
 	kfree(hw);
+<<<<<<< HEAD
 
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sky2_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pdev = to_pci_dev(dev);
 	struct sky2_hw *hw = pci_get_drvdata(pdev);
+=======
+	struct sky2_hw *hw = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (!hw)
@@ -5186,6 +5939,22 @@ static SIMPLE_DEV_PM_OPS(sky2_pm_ops, sky2_suspend, sky2_resume);
 
 static void sky2_shutdown(struct pci_dev *pdev)
 {
+<<<<<<< HEAD
+=======
+	struct sky2_hw *hw = pci_get_drvdata(pdev);
+	int port;
+
+	for (port = 0; port < hw->ports; port++) {
+		struct net_device *ndev = hw->dev[port];
+
+		rtnl_lock();
+		if (netif_running(ndev)) {
+			dev_close(ndev);
+			netif_device_detach(ndev);
+		}
+		rtnl_unlock();
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sky2_suspend(&pdev->dev);
 	pci_wake_from_d3(pdev, device_may_wakeup(&pdev->dev));
 	pci_set_power_state(pdev, PCI_D3hot);
@@ -5195,7 +5964,11 @@ static struct pci_driver sky2_driver = {
 	.name = DRV_NAME,
 	.id_table = sky2_id_table,
 	.probe = sky2_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(sky2_remove),
+=======
+	.remove = sky2_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown = sky2_shutdown,
 	.driver.pm = SKY2_PM_OPS,
 };

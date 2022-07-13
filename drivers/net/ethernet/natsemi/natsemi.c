@@ -51,7 +51,11 @@
 #include <asm/processor.h>	/* Processor type for cache alignment. */
 #include <asm/io.h>
 #include <asm/irq.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRV_NAME	"natsemi"
 #define DRV_VERSION	"2.1"
@@ -127,7 +131,11 @@ static int full_duplex[MAX_UNITS];
 #define NATSEMI_RX_LIMIT	2046	/* maximum supported by hardware */
 
 /* These identify the driver base version and may not be removed. */
+<<<<<<< HEAD
 static const char version[] __devinitconst =
+=======
+static const char version[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   KERN_INFO DRV_NAME " dp8381x driver, version "
       DRV_VERSION ", " DRV_RELDATE "\n"
   "  originally by Donald Becker <becker@scyld.com>\n"
@@ -158,7 +166,11 @@ MODULE_PARM_DESC(full_duplex, "DP8381x full duplex setting(s) (1)");
 I. Board Compatibility
 
 This driver is designed for National Semiconductor DP83815 PCI Ethernet NIC.
+<<<<<<< HEAD
 It also works with other chips in in the DP83810 series.
+=======
+It also works with other chips in the DP83810 series.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 II. Board-specific settings
 
@@ -242,12 +254,20 @@ static struct {
 	const char *name;
 	unsigned long flags;
 	unsigned int eeprom_size;
+<<<<<<< HEAD
 } natsemi_pci_info[] __devinitdata = {
+=======
+} natsemi_pci_info[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "Aculab E1/T1 PMXc cPCI carrier card", NATSEMI_FLAG_IGNORE_PHY, 128 },
 	{ "NatSemi DP8381[56]", 0, 24 },
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(natsemi_pci_tbl) = {
+=======
+static const struct pci_device_id natsemi_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_NS, 0x0020, 0x12d9,     0x000c,     0, 0, 0 },
 	{ PCI_VENDOR_ID_NS, 0x0020, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 1 },
 	{ }	/* terminate list */
@@ -547,6 +567,10 @@ struct netdev_private {
 	struct sk_buff *tx_skbuff[TX_RING_SIZE];
 	dma_addr_t tx_dma[TX_RING_SIZE];
 	struct net_device *dev;
+<<<<<<< HEAD
+=======
+	void __iomem *ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct napi_struct napi;
 	/* Media monitoring timer */
 	struct timer_list timer;
@@ -609,9 +633,15 @@ static int netdev_open(struct net_device *dev);
 static void do_cable_magic(struct net_device *dev);
 static void undo_cable_magic(struct net_device *dev);
 static void check_link(struct net_device *dev);
+<<<<<<< HEAD
 static void netdev_timer(unsigned long data);
 static void dump_ring(struct net_device *dev);
 static void ns_tx_timeout(struct net_device *dev);
+=======
+static void netdev_timer(struct timer_list *t);
+static void dump_ring(struct net_device *dev);
+static void ns_tx_timeout(struct net_device *dev, unsigned int txqueue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int alloc_ring(struct net_device *dev);
 static void refill_rx(struct net_device *dev);
 static void init_ring(struct net_device *dev);
@@ -639,8 +669,15 @@ static int netdev_set_wol(struct net_device *dev, u32 newval);
 static int netdev_get_wol(struct net_device *dev, u32 *supported, u32 *cur);
 static int netdev_set_sopass(struct net_device *dev, u8 *newval);
 static int netdev_get_sopass(struct net_device *dev, u8 *data);
+<<<<<<< HEAD
 static int netdev_get_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd);
 static int netdev_set_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd);
+=======
+static int netdev_get_ecmd(struct net_device *dev,
+			   struct ethtool_link_ksettings *ecmd);
+static int netdev_set_ecmd(struct net_device *dev,
+			   const struct ethtool_link_ksettings *ecmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void enable_wol_mode(struct net_device *dev, int enable_intr);
 static int netdev_close(struct net_device *dev);
 static int netdev_get_regs(struct net_device *dev, u8 *buf);
@@ -699,7 +736,13 @@ static ssize_t natsemi_set_dspcfg_workaround(struct device *dev,
 
 static inline void __iomem *ns_ioaddr(struct net_device *dev)
 {
+<<<<<<< HEAD
 	return (void __iomem *) dev->base_addr;
+=======
+	struct netdev_private *np = netdev_priv(dev);
+
+	return np->ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void natsemi_irq_enable(struct net_device *dev)
@@ -739,7 +782,11 @@ static void move_int_phy(struct net_device *dev, int addr)
 	udelay(1);
 }
 
+<<<<<<< HEAD
 static void __devinit natsemi_init_media (struct net_device *dev)
+=======
+static void natsemi_init_media(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netdev_private *np = netdev_priv(dev);
 	u32 tmp;
@@ -785,7 +832,11 @@ static const struct net_device_ops natsemi_netdev_ops = {
 	.ndo_get_stats		= get_stats,
 	.ndo_set_rx_mode	= set_rx_mode,
 	.ndo_change_mtu		= natsemi_change_mtu,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= netdev_ioctl,
+=======
+	.ndo_eth_ioctl		= netdev_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout 	= ns_tx_timeout,
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
@@ -794,8 +845,12 @@ static const struct net_device_ops natsemi_netdev_ops = {
 #endif
 };
 
+<<<<<<< HEAD
 static int __devinit natsemi_probe1 (struct pci_dev *pdev,
 	const struct pci_device_id *ent)
+=======
+static int natsemi_probe1(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct netdev_private *np;
@@ -805,6 +860,10 @@ static int __devinit natsemi_probe1 (struct pci_dev *pdev,
 	unsigned long iosize;
 	void __iomem *ioaddr;
 	const int pcibar = 1; /* PCI base address register */
+<<<<<<< HEAD
+=======
+	u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int prev_eedata;
 	u32 tmp;
 
@@ -815,7 +874,11 @@ static int __devinit natsemi_probe1 (struct pci_dev *pdev,
 		printk(version);
 #endif
 
+<<<<<<< HEAD
 	i = pci_enable_device(pdev);
+=======
+	i = pcim_enable_device(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (i) return i;
 
 	/* natsemi has a non-standard PM control register
@@ -848,13 +911,18 @@ static int __devinit natsemi_probe1 (struct pci_dev *pdev,
 	ioaddr = ioremap(iostart, iosize);
 	if (!ioaddr) {
 		i = -ENOMEM;
+<<<<<<< HEAD
 		goto err_ioremap;
+=======
+		goto err_pci_request_regions;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Work around the dropped serial bit. */
 	prev_eedata = eeprom_read(ioaddr, 6);
 	for (i = 0; i < 3; i++) {
 		int eedata = eeprom_read(ioaddr, i + 7);
+<<<<<<< HEAD
 		dev->dev_addr[i*2] = (eedata << 1) + (prev_eedata >> 15);
 		dev->dev_addr[i*2+1] = eedata >> 7;
 		prev_eedata = eedata;
@@ -868,6 +936,18 @@ static int __devinit natsemi_probe1 (struct pci_dev *pdev,
 
 	np = netdev_priv(dev);
 	netif_napi_add(dev, &np->napi, natsemi_poll, 64);
+=======
+		addr[i*2] = (eedata << 1) + (prev_eedata >> 15);
+		addr[i*2+1] = eedata >> 7;
+		prev_eedata = eedata;
+	}
+	eth_hw_addr_set(dev, addr);
+
+	np = netdev_priv(dev);
+	np->ioaddr = ioaddr;
+
+	netif_napi_add(dev, &np->napi, natsemi_poll);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np->dev = dev;
 
 	np->pci_dev = pdev;
@@ -914,9 +994,12 @@ static int __devinit natsemi_probe1 (struct pci_dev *pdev,
 	}
 
 	option = find_cnt < MAX_UNITS ? options[find_cnt] : 0;
+<<<<<<< HEAD
 	if (dev->mem_start)
 		option = dev->mem_start;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The lower four bits are the media type. */
 	if (option) {
 		if (option & 0x200)
@@ -932,7 +1015,15 @@ static int __devinit natsemi_probe1 (struct pci_dev *pdev,
 	dev->netdev_ops = &natsemi_netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
 
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(dev, &ethtool_ops);
+=======
+	dev->ethtool_ops = &ethtool_ops;
+
+	/* MTU range: 64 - 2024 */
+	dev->min_mtu = ETH_ZLEN + ETH_FCS_LEN;
+	dev->max_mtu = NATSEMI_RX_LIMIT - NATSEMI_HEADERS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mtu)
 		dev->mtu = mtu;
@@ -948,8 +1039,13 @@ static int __devinit natsemi_probe1 (struct pci_dev *pdev,
 	i = register_netdev(dev);
 	if (i)
 		goto err_register_netdev;
+<<<<<<< HEAD
 
 	if (NATSEMI_CREATE_FILE(pdev, dspcfg_workaround))
+=======
+	i = NATSEMI_CREATE_FILE(pdev, dspcfg_workaround);
+	if (i)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_create_file;
 
 	if (netif_msg_drv(np)) {
@@ -968,15 +1064,22 @@ static int __devinit natsemi_probe1 (struct pci_dev *pdev,
 	return 0;
 
  err_create_file:
+<<<<<<< HEAD
  	unregister_netdev(dev);
+=======
+	unregister_netdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  err_register_netdev:
 	iounmap(ioaddr);
 
+<<<<<<< HEAD
  err_ioremap:
 	pci_release_regions(pdev);
 	pci_set_drvdata(pdev, NULL);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_pci_request_regions:
 	free_netdev(dev);
 	return i;
@@ -990,8 +1093,11 @@ static int __devinit natsemi_probe1 (struct pci_dev *pdev,
    No extra delay is needed with 33Mhz PCI, but future 66Mhz access may need
    a delay.  Note that pre-2.0.34 kernels had a cache-alignment bug that
    made udelay() unreliable.
+<<<<<<< HEAD
    The old method of using an ISA access as a delay, __SLOW_DOWN_IO__, is
    deprecated.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 #define eeprom_delay(ee_addr)	readl(ee_addr)
 
@@ -1532,20 +1638,35 @@ static int netdev_open(struct net_device *dev)
 {
 	struct netdev_private *np = netdev_priv(dev);
 	void __iomem * ioaddr = ns_ioaddr(dev);
+<<<<<<< HEAD
+=======
+	const int irq = np->pci_dev->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/* Reset the chip, just in case. */
 	natsemi_reset(dev);
 
+<<<<<<< HEAD
 	i = request_irq(dev->irq, intr_handler, IRQF_SHARED, dev->name, dev);
+=======
+	i = request_irq(irq, intr_handler, IRQF_SHARED, dev->name, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (i) return i;
 
 	if (netif_msg_ifup(np))
 		printk(KERN_DEBUG "%s: netdev_open() irq %d.\n",
+<<<<<<< HEAD
 			dev->name, dev->irq);
 	i = alloc_ring(dev);
 	if (i < 0) {
 		free_irq(dev->irq, dev);
+=======
+			dev->name, irq);
+	i = alloc_ring(dev);
+	if (i < 0) {
+		free_irq(irq, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return i;
 	}
 	napi_enable(&np->napi);
@@ -1570,10 +1691,15 @@ static int netdev_open(struct net_device *dev)
 			dev->name, (int)readl(ioaddr + ChipCmd));
 
 	/* Set the timer to check for link beat. */
+<<<<<<< HEAD
 	init_timer(&np->timer);
 	np->timer.expires = round_jiffies(jiffies + NATSEMI_TIMER_FREQ);
 	np->timer.data = (unsigned long)dev;
 	np->timer.function = netdev_timer; /* timer handler */
+=======
+	timer_setup(&np->timer, netdev_timer, 0);
+	np->timer.expires = round_jiffies(jiffies + NATSEMI_TIMER_FREQ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_timer(&np->timer);
 
 	return 0;
@@ -1788,12 +1914,22 @@ static void init_registers(struct net_device *dev)
  *    this check via dspcfg_workaround sysfs option.
  * 3) check of death of the RX path due to OOM
  */
+<<<<<<< HEAD
 static void netdev_timer(unsigned long data)
 {
 	struct net_device *dev = (struct net_device *)data;
 	struct netdev_private *np = netdev_priv(dev);
 	void __iomem * ioaddr = ns_ioaddr(dev);
 	int next_tick = NATSEMI_TIMER_FREQ;
+=======
+static void netdev_timer(struct timer_list *t)
+{
+	struct netdev_private *np = from_timer(np, t, timer);
+	struct net_device *dev = np->dev;
+	void __iomem * ioaddr = ns_ioaddr(dev);
+	int next_tick = NATSEMI_TIMER_FREQ;
+	const int irq = np->pci_dev->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_msg_timer(np)) {
 		/* DO NOT read the IntrStatus register,
@@ -1817,14 +1953,22 @@ static void netdev_timer(unsigned long data)
 				if (netif_msg_drv(np))
 					printk(KERN_NOTICE "%s: possible phy reset: "
 						"re-initializing\n", dev->name);
+<<<<<<< HEAD
 				disable_irq(dev->irq);
+=======
+				disable_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				spin_lock_irq(&np->lock);
 				natsemi_stop_rxtx(dev);
 				dump_ring(dev);
 				reinit_ring(dev);
 				init_registers(dev);
 				spin_unlock_irq(&np->lock);
+<<<<<<< HEAD
 				enable_irq(dev->irq);
+=======
+				enable_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else {
 				/* hurry back */
 				next_tick = HZ;
@@ -1841,10 +1985,17 @@ static void netdev_timer(unsigned long data)
 		spin_unlock_irq(&np->lock);
 	}
 	if (np->oom) {
+<<<<<<< HEAD
 		disable_irq(dev->irq);
 		np->oom = 0;
 		refill_rx(dev);
 		enable_irq(dev->irq);
+=======
+		disable_irq(irq);
+		np->oom = 0;
+		refill_rx(dev);
+		enable_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!np->oom) {
 			writel(RxOn, ioaddr + ChipCmd);
 		} else {
@@ -1881,12 +2032,22 @@ static void dump_ring(struct net_device *dev)
 	}
 }
 
+<<<<<<< HEAD
 static void ns_tx_timeout(struct net_device *dev)
 {
 	struct netdev_private *np = netdev_priv(dev);
 	void __iomem * ioaddr = ns_ioaddr(dev);
 
 	disable_irq(dev->irq);
+=======
+static void ns_tx_timeout(struct net_device *dev, unsigned int txqueue)
+{
+	struct netdev_private *np = netdev_priv(dev);
+	void __iomem * ioaddr = ns_ioaddr(dev);
+	const int irq = np->pci_dev->irq;
+
+	disable_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&np->lock);
 	if (!np->hands_off) {
 		if (netif_msg_tx_err(np))
@@ -1905,9 +2066,15 @@ static void ns_tx_timeout(struct net_device *dev)
 			dev->name);
 	}
 	spin_unlock_irq(&np->lock);
+<<<<<<< HEAD
 	enable_irq(dev->irq);
 
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	enable_irq(irq);
+
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->stats.tx_errors++;
 	netif_wake_queue(dev);
 }
@@ -1915,9 +2082,15 @@ static void ns_tx_timeout(struct net_device *dev)
 static int alloc_ring(struct net_device *dev)
 {
 	struct netdev_private *np = netdev_priv(dev);
+<<<<<<< HEAD
 	np->rx_ring = pci_alloc_consistent(np->pci_dev,
 		sizeof(struct netdev_desc) * (RX_RING_SIZE+TX_RING_SIZE),
 		&np->ring_dma);
+=======
+	np->rx_ring = dma_alloc_coherent(&np->pci_dev->dev,
+					 sizeof(struct netdev_desc) * (RX_RING_SIZE + TX_RING_SIZE),
+					 &np->ring_dma, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!np->rx_ring)
 		return -ENOMEM;
 	np->tx_ring = &np->rx_ring[RX_RING_SIZE];
@@ -1938,8 +2111,19 @@ static void refill_rx(struct net_device *dev)
 			np->rx_skbuff[entry] = skb;
 			if (skb == NULL)
 				break; /* Better luck next round. */
+<<<<<<< HEAD
 			np->rx_dma[entry] = pci_map_single(np->pci_dev,
 				skb->data, buflen, PCI_DMA_FROMDEVICE);
+=======
+			np->rx_dma[entry] = dma_map_single(&np->pci_dev->dev,
+							   skb->data, buflen,
+							   DMA_FROM_DEVICE);
+			if (dma_mapping_error(&np->pci_dev->dev, np->rx_dma[entry])) {
+				dev_kfree_skb_any(skb);
+				np->rx_skbuff[entry] = NULL;
+				break; /* Better luck next round. */
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			np->rx_ring[entry].addr = cpu_to_le32(np->rx_dma[entry]);
 		}
 		np->rx_ring[entry].cmd_status = cpu_to_le32(np->rx_buf_sz);
@@ -2006,9 +2190,14 @@ static void drain_tx(struct net_device *dev)
 
 	for (i = 0; i < TX_RING_SIZE; i++) {
 		if (np->tx_skbuff[i]) {
+<<<<<<< HEAD
 			pci_unmap_single(np->pci_dev,
 				np->tx_dma[i], np->tx_skbuff[i]->len,
 				PCI_DMA_TODEVICE);
+=======
+			dma_unmap_single(&np->pci_dev->dev, np->tx_dma[i],
+					 np->tx_skbuff[i]->len, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(np->tx_skbuff[i]);
 			dev->stats.tx_dropped++;
 		}
@@ -2027,9 +2216,15 @@ static void drain_rx(struct net_device *dev)
 		np->rx_ring[i].cmd_status = 0;
 		np->rx_ring[i].addr = cpu_to_le32(0xBADF00D0); /* An invalid address. */
 		if (np->rx_skbuff[i]) {
+<<<<<<< HEAD
 			pci_unmap_single(np->pci_dev, np->rx_dma[i],
 				buflen + NATSEMI_PADDING,
 				PCI_DMA_FROMDEVICE);
+=======
+			dma_unmap_single(&np->pci_dev->dev, np->rx_dma[i],
+					 buflen + NATSEMI_PADDING,
+					 DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(np->rx_skbuff[i]);
 		}
 		np->rx_skbuff[i] = NULL;
@@ -2045,9 +2240,15 @@ static void drain_ring(struct net_device *dev)
 static void free_ring(struct net_device *dev)
 {
 	struct netdev_private *np = netdev_priv(dev);
+<<<<<<< HEAD
 	pci_free_consistent(np->pci_dev,
 		sizeof(struct netdev_desc) * (RX_RING_SIZE+TX_RING_SIZE),
 		np->rx_ring, np->ring_dma);
+=======
+	dma_free_coherent(&np->pci_dev->dev,
+			  sizeof(struct netdev_desc) * (RX_RING_SIZE + TX_RING_SIZE),
+			  np->rx_ring, np->ring_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void reinit_rx(struct net_device *dev)
@@ -2094,8 +2295,19 @@ static netdev_tx_t start_tx(struct sk_buff *skb, struct net_device *dev)
 	entry = np->cur_tx % TX_RING_SIZE;
 
 	np->tx_skbuff[entry] = skb;
+<<<<<<< HEAD
 	np->tx_dma[entry] = pci_map_single(np->pci_dev,
 				skb->data,skb->len, PCI_DMA_TODEVICE);
+=======
+	np->tx_dma[entry] = dma_map_single(&np->pci_dev->dev, skb->data,
+					   skb->len, DMA_TO_DEVICE);
+	if (dma_mapping_error(&np->pci_dev->dev, np->tx_dma[entry])) {
+		np->tx_skbuff[entry] = NULL;
+		dev_kfree_skb_irq(skb);
+		dev->stats.tx_dropped++;
+		return NETDEV_TX_OK;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	np->tx_ring[entry].addr = cpu_to_le32(np->tx_dma[entry]);
 
@@ -2156,11 +2368,18 @@ static void netdev_tx_done(struct net_device *dev)
 				dev->stats.tx_window_errors++;
 			dev->stats.tx_errors++;
 		}
+<<<<<<< HEAD
 		pci_unmap_single(np->pci_dev,np->tx_dma[entry],
 					np->tx_skbuff[entry]->len,
 					PCI_DMA_TODEVICE);
 		/* Free the original skb. */
 		dev_kfree_skb_irq(np->tx_skbuff[entry]);
+=======
+		dma_unmap_single(&np->pci_dev->dev, np->tx_dma[entry],
+				 np->tx_skbuff[entry]->len, DMA_TO_DEVICE);
+		/* Free the original skb. */
+		dev_consume_skb_irq(np->tx_skbuff[entry]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np->tx_skbuff[entry] = NULL;
 	}
 	if (netif_queue_stopped(dev) &&
@@ -2252,7 +2471,11 @@ static int natsemi_poll(struct napi_struct *napi, int budget)
 		np->intr_status = readl(ioaddr + IntrStatus);
 	} while (np->intr_status);
 
+<<<<<<< HEAD
 	napi_complete(napi);
+=======
+	napi_complete_done(napi, work_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reenable interrupts providing nothing is trying to shut
 	 * the chip down. */
@@ -2346,6 +2569,7 @@ static void netdev_rx(struct net_device *dev, int *work_done, int work_to_do)
 			    (skb = netdev_alloc_skb(dev, pkt_len + RX_OFFSET)) != NULL) {
 				/* 16 byte align the IP header */
 				skb_reserve(skb, RX_OFFSET);
+<<<<<<< HEAD
 				pci_dma_sync_single_for_cpu(np->pci_dev,
 					np->rx_dma[entry],
 					buflen,
@@ -2361,6 +2585,24 @@ static void netdev_rx(struct net_device *dev, int *work_done, int work_to_do)
 				pci_unmap_single(np->pci_dev, np->rx_dma[entry],
 						 buflen + NATSEMI_PADDING,
 						 PCI_DMA_FROMDEVICE);
+=======
+				dma_sync_single_for_cpu(&np->pci_dev->dev,
+							np->rx_dma[entry],
+							buflen,
+							DMA_FROM_DEVICE);
+				skb_copy_to_linear_data(skb,
+					np->rx_skbuff[entry]->data, pkt_len);
+				skb_put(skb, pkt_len);
+				dma_sync_single_for_device(&np->pci_dev->dev,
+							   np->rx_dma[entry],
+							   buflen,
+							   DMA_FROM_DEVICE);
+			} else {
+				dma_unmap_single(&np->pci_dev->dev,
+						 np->rx_dma[entry],
+						 buflen + NATSEMI_PADDING,
+						 DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				skb_put(skb = np->rx_skbuff[entry], pkt_len);
 				np->rx_skbuff[entry] = NULL;
 			}
@@ -2470,9 +2712,18 @@ static struct net_device_stats *get_stats(struct net_device *dev)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 static void natsemi_poll_controller(struct net_device *dev)
 {
+<<<<<<< HEAD
 	disable_irq(dev->irq);
 	intr_handler(dev->irq, dev);
 	enable_irq(dev->irq);
+=======
+	struct netdev_private *np = netdev_priv(dev);
+	const int irq = np->pci_dev->irq;
+
+	disable_irq(irq);
+	intr_handler(irq, dev);
+	enable_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -2514,17 +2765,26 @@ static void __set_rx_mode(struct net_device *dev)
 
 static int natsemi_change_mtu(struct net_device *dev, int new_mtu)
 {
+<<<<<<< HEAD
 	if (new_mtu < 64 || new_mtu > NATSEMI_RX_LIMIT-NATSEMI_HEADERS)
 		return -EINVAL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->mtu = new_mtu;
 
 	/* synchronized against open : rtnl_lock() held by caller */
 	if (netif_running(dev)) {
 		struct netdev_private *np = netdev_priv(dev);
 		void __iomem * ioaddr = ns_ioaddr(dev);
+<<<<<<< HEAD
 
 		disable_irq(dev->irq);
+=======
+		const int irq = np->pci_dev->irq;
+
+		disable_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock(&np->lock);
 		/* stop engines */
 		natsemi_stop_rxtx(dev);
@@ -2537,7 +2797,11 @@ static int natsemi_change_mtu(struct net_device *dev, int new_mtu)
 		/* restart engines */
 		writel(RxOn | TxOn, ioaddr + ChipCmd);
 		spin_unlock(&np->lock);
+<<<<<<< HEAD
 		enable_irq(dev->irq);
+=======
+		enable_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -2554,9 +2818,15 @@ static void set_rx_mode(struct net_device *dev)
 static void get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
 	struct netdev_private *np = netdev_priv(dev);
+<<<<<<< HEAD
 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
 	strlcpy(info->bus_info, pci_name(np->pci_dev), sizeof(info->bus_info));
+=======
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	strscpy(info->version, DRV_VERSION, sizeof(info->version));
+	strscpy(info->bus_info, pci_name(np->pci_dev), sizeof(info->bus_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int get_regs_len(struct net_device *dev)
@@ -2570,7 +2840,12 @@ static int get_eeprom_len(struct net_device *dev)
 	return np->eeprom_size;
 }
 
+<<<<<<< HEAD
 static int get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
+=======
+static int get_link_ksettings(struct net_device *dev,
+			      struct ethtool_link_ksettings *ecmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netdev_private *np = netdev_priv(dev);
 	spin_lock_irq(&np->lock);
@@ -2579,7 +2854,12 @@ static int get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
+=======
+static int set_link_ksettings(struct net_device *dev,
+			      const struct ethtool_link_ksettings *ecmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct netdev_private *np = netdev_priv(dev);
 	int res;
@@ -2675,8 +2955,11 @@ static const struct ethtool_ops ethtool_ops = {
 	.get_drvinfo = get_drvinfo,
 	.get_regs_len = get_regs_len,
 	.get_eeprom_len = get_eeprom_len,
+<<<<<<< HEAD
 	.get_settings = get_settings,
 	.set_settings = set_settings,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_wol = get_wol,
 	.set_wol = set_wol,
 	.get_regs = get_regs,
@@ -2685,6 +2968,11 @@ static const struct ethtool_ops ethtool_ops = {
 	.nway_reset = nway_reset,
 	.get_link = get_link,
 	.get_eeprom = get_eeprom,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings = get_link_ksettings,
+	.set_link_ksettings = set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int netdev_set_wol(struct net_device *dev, u32 newval)
@@ -2814,6 +3102,7 @@ static int netdev_get_sopass(struct net_device *dev, u8 *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int netdev_get_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 {
 	struct netdev_private *np = netdev_priv(dev);
@@ -2837,6 +3126,34 @@ static int netdev_get_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 		SUPPORTED_100baseT_Half | SUPPORTED_100baseT_Full |
 		SUPPORTED_TP | SUPPORTED_MII | SUPPORTED_FIBRE);
 	ecmd->phy_address = np->phy_addr_external;
+=======
+static int netdev_get_ecmd(struct net_device *dev,
+			   struct ethtool_link_ksettings *ecmd)
+{
+	struct netdev_private *np = netdev_priv(dev);
+	u32 supported, advertising;
+	u32 tmp;
+
+	ecmd->base.port   = dev->if_port;
+	ecmd->base.speed  = np->speed;
+	ecmd->base.duplex = np->duplex;
+	ecmd->base.autoneg = np->autoneg;
+	advertising = 0;
+
+	if (np->advertising & ADVERTISE_10HALF)
+		advertising |= ADVERTISED_10baseT_Half;
+	if (np->advertising & ADVERTISE_10FULL)
+		advertising |= ADVERTISED_10baseT_Full;
+	if (np->advertising & ADVERTISE_100HALF)
+		advertising |= ADVERTISED_100baseT_Half;
+	if (np->advertising & ADVERTISE_100FULL)
+		advertising |= ADVERTISED_100baseT_Full;
+	supported   = (SUPPORTED_Autoneg |
+		SUPPORTED_10baseT_Half  | SUPPORTED_10baseT_Full  |
+		SUPPORTED_100baseT_Half | SUPPORTED_100baseT_Full |
+		SUPPORTED_TP | SUPPORTED_MII | SUPPORTED_FIBRE);
+	ecmd->base.phy_address = np->phy_addr_external;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We intentionally report the phy address of the external
 	 * phy, even if the internal phy is used. This is necessary
@@ -2856,6 +3173,7 @@ static int netdev_get_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 	 */
 
 	/* set information based on active port type */
+<<<<<<< HEAD
 	switch (ecmd->port) {
 	default:
 	case PORT_TP:
@@ -2869,10 +3187,23 @@ static int netdev_get_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 	case PORT_FIBRE:
 		ecmd->advertising |= ADVERTISED_FIBRE;
 		ecmd->transceiver = XCVR_EXTERNAL;
+=======
+	switch (ecmd->base.port) {
+	default:
+	case PORT_TP:
+		advertising |= ADVERTISED_TP;
+		break;
+	case PORT_MII:
+		advertising |= ADVERTISED_MII;
+		break;
+	case PORT_FIBRE:
+		advertising |= ADVERTISED_FIBRE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	/* if autonegotiation is on, try to return the active speed/duplex */
+<<<<<<< HEAD
 	if (ecmd->autoneg == AUTONEG_ENABLE) {
 		ecmd->advertising |= ADVERTISED_Autoneg;
 		tmp = mii_nway_result(
@@ -2885,10 +3216,25 @@ static int netdev_get_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 			ecmd->duplex = DUPLEX_FULL;
 		else
 			ecmd->duplex = DUPLEX_HALF;
+=======
+	if (ecmd->base.autoneg == AUTONEG_ENABLE) {
+		advertising |= ADVERTISED_Autoneg;
+		tmp = mii_nway_result(
+			np->advertising & mdio_read(dev, MII_LPA));
+		if (tmp == LPA_100FULL || tmp == LPA_100HALF)
+			ecmd->base.speed = SPEED_100;
+		else
+			ecmd->base.speed = SPEED_10;
+		if (tmp == LPA_100FULL || tmp == LPA_10FULL)
+			ecmd->base.duplex = DUPLEX_FULL;
+		else
+			ecmd->base.duplex = DUPLEX_HALF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* ignore maxtxpkt, maxrxpkt for now */
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -2902,16 +3248,50 @@ static int netdev_set_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 		return -EINVAL;
 	if (ecmd->autoneg == AUTONEG_ENABLE) {
 		if ((ecmd->advertising & (ADVERTISED_10baseT_Half |
+=======
+	ethtool_convert_legacy_u32_to_link_mode(ecmd->link_modes.supported,
+						supported);
+	ethtool_convert_legacy_u32_to_link_mode(ecmd->link_modes.advertising,
+						advertising);
+
+	return 0;
+}
+
+static int netdev_set_ecmd(struct net_device *dev,
+			   const struct ethtool_link_ksettings *ecmd)
+{
+	struct netdev_private *np = netdev_priv(dev);
+	u32 advertising;
+
+	ethtool_convert_link_mode_to_legacy_u32(&advertising,
+						ecmd->link_modes.advertising);
+
+	if (ecmd->base.port != PORT_TP &&
+	    ecmd->base.port != PORT_MII &&
+	    ecmd->base.port != PORT_FIBRE)
+		return -EINVAL;
+	if (ecmd->base.autoneg == AUTONEG_ENABLE) {
+		if ((advertising & (ADVERTISED_10baseT_Half |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  ADVERTISED_10baseT_Full |
 					  ADVERTISED_100baseT_Half |
 					  ADVERTISED_100baseT_Full)) == 0) {
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 	} else if (ecmd->autoneg == AUTONEG_DISABLE) {
 		u32 speed = ethtool_cmd_speed(ecmd);
 		if (speed != SPEED_10 && speed != SPEED_100)
 			return -EINVAL;
 		if (ecmd->duplex != DUPLEX_HALF && ecmd->duplex != DUPLEX_FULL)
+=======
+	} else if (ecmd->base.autoneg == AUTONEG_DISABLE) {
+		u32 speed = ecmd->base.speed;
+		if (speed != SPEED_10 && speed != SPEED_100)
+			return -EINVAL;
+		if (ecmd->base.duplex != DUPLEX_HALF &&
+		    ecmd->base.duplex != DUPLEX_FULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 	} else {
 		return -EINVAL;
@@ -2922,8 +3302,13 @@ static int netdev_set_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 	 * transceiver are really not going to work so don't let the
 	 * user select them.
 	 */
+<<<<<<< HEAD
 	if (np->ignore_phy && (ecmd->autoneg == AUTONEG_ENABLE ||
 			       ecmd->port == PORT_TP))
+=======
+	if (np->ignore_phy && (ecmd->base.autoneg == AUTONEG_ENABLE ||
+			       ecmd->base.port == PORT_TP))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/*
@@ -2942,6 +3327,7 @@ static int netdev_set_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 	/* WHEW! now lets bang some bits */
 
 	/* save the parms */
+<<<<<<< HEAD
 	dev->if_port          = ecmd->port;
 	np->autoneg           = ecmd->autoneg;
 	np->phy_addr_external = ecmd->phy_address & PhyAddrMask;
@@ -2959,13 +3345,36 @@ static int netdev_set_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 	} else {
 		np->speed  = ethtool_cmd_speed(ecmd);
 		np->duplex = ecmd->duplex;
+=======
+	dev->if_port          = ecmd->base.port;
+	np->autoneg           = ecmd->base.autoneg;
+	np->phy_addr_external = ecmd->base.phy_address & PhyAddrMask;
+	if (np->autoneg == AUTONEG_ENABLE) {
+		/* advertise only what has been requested */
+		np->advertising &= ~(ADVERTISE_ALL | ADVERTISE_100BASE4);
+		if (advertising & ADVERTISED_10baseT_Half)
+			np->advertising |= ADVERTISE_10HALF;
+		if (advertising & ADVERTISED_10baseT_Full)
+			np->advertising |= ADVERTISE_10FULL;
+		if (advertising & ADVERTISED_100baseT_Half)
+			np->advertising |= ADVERTISE_100HALF;
+		if (advertising & ADVERTISED_100baseT_Full)
+			np->advertising |= ADVERTISE_100FULL;
+	} else {
+		np->speed  = ecmd->base.speed;
+		np->duplex = ecmd->base.duplex;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* user overriding the initial full duplex parm? */
 		if (np->duplex == DUPLEX_HALF)
 			np->full_duplex = 0;
 	}
 
 	/* get the right phy enabled */
+<<<<<<< HEAD
 	if (ecmd->port == PORT_TP)
+=======
+	if (ecmd->base.port == PORT_TP)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch_port_internal(dev);
 	else
 		switch_port_external(dev);
@@ -3054,7 +3463,11 @@ static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 	switch(cmd) {
 	case SIOCGMIIPHY:		/* Get address of MII PHY in use. */
 		data->phy_id = np->phy_addr_external;
+<<<<<<< HEAD
 		/* Fall Through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case SIOCGMIIREG:		/* Read MII PHY register. */
 		/* The phy_id is not enough to uniquely identify
@@ -3077,14 +3490,22 @@ static int netdev_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 	case SIOCSMIIREG:		/* Write MII PHY register. */
 		if (dev->if_port == PORT_TP) {
 			if ((data->phy_id & 0x1f) == np->phy_addr_external) {
+<<<<<<< HEAD
  				if ((data->reg_num & 0x1f) == MII_ADVERTISE)
+=======
+				if ((data->reg_num & 0x1f) == MII_ADVERTISE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					np->advertising = data->val_in;
 				mdio_write(dev, data->reg_num & 0x1f,
 							data->val_in);
 			}
 		} else {
 			if ((data->phy_id & 0x1f) == np->phy_addr_external) {
+<<<<<<< HEAD
  				if ((data->reg_num & 0x1f) == MII_ADVERTISE)
+=======
+				if ((data->reg_num & 0x1f) == MII_ADVERTISE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					np->advertising = data->val_in;
 			}
 			move_int_phy(dev, data->phy_id & 0x1f);
@@ -3135,6 +3556,10 @@ static int netdev_close(struct net_device *dev)
 {
 	void __iomem * ioaddr = ns_ioaddr(dev);
 	struct netdev_private *np = netdev_priv(dev);
+<<<<<<< HEAD
+=======
+	const int irq = np->pci_dev->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_msg_ifdown(np))
 		printk(KERN_DEBUG
@@ -3156,14 +3581,24 @@ static int netdev_close(struct net_device *dev)
 	 */
 
 	del_timer_sync(&np->timer);
+<<<<<<< HEAD
 	disable_irq(dev->irq);
+=======
+	disable_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&np->lock);
 	natsemi_irq_disable(dev);
 	np->hands_off = 1;
 	spin_unlock_irq(&np->lock);
+<<<<<<< HEAD
 	enable_irq(dev->irq);
 
 	free_irq(dev->irq, dev);
+=======
+	enable_irq(irq);
+
+	free_irq(irq, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Interrupt disabled, interrupt handler released,
 	 * queue stopped, timer deleted, rtnl_lock held
@@ -3207,13 +3642,18 @@ static int netdev_close(struct net_device *dev)
 }
 
 
+<<<<<<< HEAD
 static void __devexit natsemi_remove1 (struct pci_dev *pdev)
+=======
+static void natsemi_remove1(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 	void __iomem * ioaddr = ns_ioaddr(dev);
 
 	NATSEMI_REMOVE_FILE(pdev, dspcfg_workaround);
 	unregister_netdev (dev);
+<<<<<<< HEAD
 	pci_release_regions (pdev);
 	iounmap(ioaddr);
 	free_netdev (dev);
@@ -3222,6 +3662,12 @@ static void __devexit natsemi_remove1 (struct pci_dev *pdev)
 
 #ifdef CONFIG_PM
 
+=======
+	iounmap(ioaddr);
+	free_netdev (dev);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The ns83815 chip doesn't have explicit RxStop bits.
  * Kicking the Rx or Tx process for a new packet reenables the Rx process
@@ -3248,17 +3694,31 @@ static void __devexit natsemi_remove1 (struct pci_dev *pdev)
  * Interrupts must be disabled, otherwise hands_off can cause irq storms.
  */
 
+<<<<<<< HEAD
 static int natsemi_suspend (struct pci_dev *pdev, pm_message_t state)
 {
 	struct net_device *dev = pci_get_drvdata (pdev);
+=======
+static int __maybe_unused natsemi_suspend(struct device *dev_d)
+{
+	struct net_device *dev = dev_get_drvdata(dev_d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct netdev_private *np = netdev_priv(dev);
 	void __iomem * ioaddr = ns_ioaddr(dev);
 
 	rtnl_lock();
 	if (netif_running (dev)) {
+<<<<<<< HEAD
 		del_timer_sync(&np->timer);
 
 		disable_irq(dev->irq);
+=======
+		const int irq = np->pci_dev->irq;
+
+		del_timer_sync(&np->timer);
+
+		disable_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irq(&np->lock);
 
 		natsemi_irq_disable(dev);
@@ -3267,7 +3727,11 @@ static int natsemi_suspend (struct pci_dev *pdev, pm_message_t state)
 		netif_stop_queue(dev);
 
 		spin_unlock_irq(&np->lock);
+<<<<<<< HEAD
 		enable_irq(dev->irq);
+=======
+		enable_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		napi_disable(&np->napi);
 
@@ -3297,16 +3761,24 @@ static int natsemi_suspend (struct pci_dev *pdev, pm_message_t state)
 }
 
 
+<<<<<<< HEAD
 static int natsemi_resume (struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata (pdev);
 	struct netdev_private *np = netdev_priv(dev);
 	int ret = 0;
+=======
+static int __maybe_unused natsemi_resume(struct device *dev_d)
+{
+	struct net_device *dev = dev_get_drvdata(dev_d);
+	struct netdev_private *np = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rtnl_lock();
 	if (netif_device_present(dev))
 		goto out;
 	if (netif_running(dev)) {
+<<<<<<< HEAD
 		BUG_ON(!np->hands_off);
 		ret = pci_enable_device(pdev);
 		if (ret < 0) {
@@ -3314,39 +3786,64 @@ static int natsemi_resume (struct pci_dev *pdev)
 				"pci_enable_device() failed: %d\n", ret);
 			goto out;
 		}
+=======
+		const int irq = np->pci_dev->irq;
+
+		BUG_ON(!np->hands_off);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*	pci_power_on(pdev); */
 
 		napi_enable(&np->napi);
 
 		natsemi_reset(dev);
 		init_ring(dev);
+<<<<<<< HEAD
 		disable_irq(dev->irq);
+=======
+		disable_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irq(&np->lock);
 		np->hands_off = 0;
 		init_registers(dev);
 		netif_device_attach(dev);
 		spin_unlock_irq(&np->lock);
+<<<<<<< HEAD
 		enable_irq(dev->irq);
+=======
+		enable_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		mod_timer(&np->timer, round_jiffies(jiffies + 1*HZ));
 	}
 	netif_device_attach(dev);
 out:
 	rtnl_unlock();
+<<<<<<< HEAD
 	return ret;
 }
 
 #endif /* CONFIG_PM */
+=======
+	return 0;
+}
+
+static SIMPLE_DEV_PM_OPS(natsemi_pm_ops, natsemi_suspend, natsemi_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver natsemi_driver = {
 	.name		= DRV_NAME,
 	.id_table	= natsemi_pci_tbl,
 	.probe		= natsemi_probe1,
+<<<<<<< HEAD
 	.remove		= __devexit_p(natsemi_remove1),
 #ifdef CONFIG_PM
 	.suspend	= natsemi_suspend,
 	.resume		= natsemi_resume,
 #endif
+=======
+	.remove		= natsemi_remove1,
+	.driver.pm	= &natsemi_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init natsemi_init_mod (void)

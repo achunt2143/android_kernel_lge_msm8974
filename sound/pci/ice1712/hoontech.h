@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_HOONTECH_H
 #define __SOUND_HOONTECH_H
 
@@ -7,6 +11,7 @@
  *   Lowlevel functions for Hoontech STDSP24
  *
  *	Copyright (c) 2000 Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,6 +27,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */      
 
 #define  HOONTECH_DEVICE_DESC \
@@ -34,6 +41,10 @@
 #define ICE1712_SUBDEVICE_STDSP24_VALUE		0x00010010	/* A dummy id for Hoontech SoundTrack Audio DSP 24 Value */
 #define ICE1712_SUBDEVICE_STDSP24_MEDIA7_1	0x16141217	/* Hoontech ST Audio DSP24 Media 7.1 */
 #define ICE1712_SUBDEVICE_EVENT_EZ8		0x00010001	/* A dummy id for EZ8 */
+<<<<<<< HEAD
+=======
+#define ICE1712_SUBDEVICE_STAUDIO_ADCIII	0x00010002	/* A dummy id for STAudio ADCIII */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct snd_ice1712_card_info snd_ice1712_hoontech_cards[];
 

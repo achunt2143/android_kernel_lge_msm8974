@@ -1,5 +1,13 @@
+<<<<<<< HEAD
 #include <linux/ioport.h>
 #include <asm/e820.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/ioport.h>
+#include <linux/printk.h>
+#include <asm/e820/api.h>
+#include <asm/pci_x86.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void resource_clip(struct resource *res, resource_size_t start,
 			  resource_size_t end)
@@ -25,6 +33,7 @@ static void resource_clip(struct resource *res, resource_size_t start,
 static void remove_e820_regions(struct resource *avail)
 {
 	int i;
+<<<<<<< HEAD
 	struct e820entry *entry;
 
 	for (i = 0; i < e820.nr_map; i++) {
@@ -32,15 +41,52 @@ static void remove_e820_regions(struct resource *avail)
 
 		resource_clip(avail, entry->addr,
 			      entry->addr + entry->size - 1);
+=======
+	struct e820_entry *entry;
+	u64 e820_start, e820_end;
+	struct resource orig = *avail;
+
+	if (!pci_use_e820)
+		return;
+
+	for (i = 0; i < e820_table->nr_entries; i++) {
+		entry = &e820_table->entries[i];
+		e820_start = entry->addr;
+		e820_end = entry->addr + entry->size - 1;
+
+		resource_clip(avail, e820_start, e820_end);
+		if (orig.start != avail->start || orig.end != avail->end) {
+			pr_info("resource: avoiding allocation from e820 entry [mem %#010Lx-%#010Lx]\n",
+				e820_start, e820_end);
+			if (avail->end > avail->start)
+				/*
+				 * Use %pa instead of %pR because "avail"
+				 * is typically IORESOURCE_UNSET, so %pR
+				 * shows the size instead of addresses.
+				 */
+				pr_info("resource: remaining [mem %pa-%pa] available\n",
+					&avail->start, &avail->end);
+			orig = *avail;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 void arch_remove_reservations(struct resource *avail)
 {
+<<<<<<< HEAD
 	/* Trim out BIOS areas (low 1MB and high 2MB) and E820 regions */
 	if (avail->flags & IORESOURCE_MEM) {
 		if (avail->start < BIOS_END)
 			avail->start = BIOS_END;
+=======
+	/*
+	 * Trim out BIOS area (high 2MB) and E820 regions. We do not remove
+	 * the low 1MB unconditionally, as this area is needed for some ISA
+	 * cards requiring a memory range, e.g. the i82365 PCMCIA controller.
+	 */
+	if (avail->flags & IORESOURCE_MEM) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		resource_clip(avail, BIOS_ROM_BASE, BIOS_ROM_END);
 
 		remove_e820_regions(avail);

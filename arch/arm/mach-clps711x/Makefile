@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #
 # Makefile for the linux kernel.
 #
@@ -18,3 +19,7 @@ obj-$(CONFIG_ARCH_FORTUNET) += fortunet.o
 obj-$(CONFIG_ARCH_P720T)    += p720t.o
 leds-$(CONFIG_ARCH_P720T)   += p720t-leds.o
 obj-$(CONFIG_LEDS)          += $(leds-y)
+=======
+# SPDX-License-Identifier: GPL-2.0
+obj-y += board-dt.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Copyright (c) by James Courtier-Dutton <James@superbug.demon.co.uk>
  *  Driver p17v chips
@@ -22,6 +23,17 @@
 /******************************************************************************/
 /* Audigy2Value Tina (P17V) pointer-offset register set,
  * accessed through the PTR20 and DATA24 registers  */
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *  Copyright (c) by James Courtier-Dutton <James@superbug.demon.co.uk>
+ *  Driver p17v chips
+ */
+
+/******************************************************************************/
+/* Audigy2Value Tina (P17V) pointer-offset register set,                      */
+/* accessed through the PTR2 and DATA2 registers                              */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************/
 
 /* 00 - 07: Not used */

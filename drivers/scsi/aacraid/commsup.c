@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Adaptec AAC series RAID controller driver
  *	(c) Copyright 2001 Red Hat Inc.
@@ -6,6 +10,7 @@
  * Adaptec aacraid device driver for Linux.
  *
  * Copyright (c) 2000-2010 Adaptec, Inc.
+<<<<<<< HEAD
  *               2010 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,17 +26,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; see the file COPYING.  If not, write to
  * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+ *               2010-2015 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
+ *		 2016-2017 Microsemi Corp. (aacraid@microsemi.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Module Name:
  *  commsup.c
  *
  * Abstract: Contain all routines that are required for FSA host/adapter
  *    communication.
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/crash_dump.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/sched.h>
 #include <linux/pci.h>
@@ -42,7 +58,11 @@
 #include <linux/delay.h>
 #include <linux/kthread.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/semaphore.h>
+=======
+#include <linux/bcd.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi.h>
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_device.h>
@@ -60,6 +80,7 @@
 
 static int fib_map_alloc(struct aac_dev *dev)
 {
+<<<<<<< HEAD
 	dprintk((KERN_INFO
 	  "allocate hardware fibs pci_alloc_consistent(%p, %d * (%d + %d), %p)\n",
 	  dev->pdev, dev->max_fib_size, dev->scsi_host_ptr->can_queue,
@@ -68,6 +89,26 @@ static int fib_map_alloc(struct aac_dev *dev)
 		(dev->max_fib_size + sizeof(struct aac_fib_xporthdr))
 		* (dev->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB) + (ALIGN32 - 1),
 		&dev->hw_fib_pa);
+=======
+	if (dev->max_fib_size > AAC_MAX_NATIVE_SIZE)
+		dev->max_cmd_size = AAC_MAX_NATIVE_SIZE;
+	else
+		dev->max_cmd_size = dev->max_fib_size;
+	if (dev->max_fib_size < AAC_MAX_NATIVE_SIZE) {
+		dev->max_cmd_size = AAC_MAX_NATIVE_SIZE;
+	} else {
+		dev->max_cmd_size = dev->max_fib_size;
+	}
+
+	dprintk((KERN_INFO
+	  "allocate hardware fibs dma_alloc_coherent(%p, %d * (%d + %d), %p)\n",
+	  &dev->pdev->dev, dev->max_cmd_size, dev->scsi_host_ptr->can_queue,
+	  AAC_NUM_MGT_FIB, &dev->hw_fib_pa));
+	dev->hw_fib_va = dma_alloc_coherent(&dev->pdev->dev,
+		(dev->max_cmd_size + sizeof(struct aac_fib_xporthdr))
+		* (dev->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB) + (ALIGN32 - 1),
+		&dev->hw_fib_pa, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->hw_fib_va == NULL)
 		return -ENOMEM;
 	return 0;
@@ -83,13 +124,55 @@ static int fib_map_alloc(struct aac_dev *dev)
 
 void aac_fib_map_free(struct aac_dev *dev)
 {
+<<<<<<< HEAD
 	pci_free_consistent(dev->pdev,
 	  dev->max_fib_size * (dev->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB),
 	  dev->hw_fib_va, dev->hw_fib_pa);
+=======
+	size_t alloc_size;
+	size_t fib_size;
+	int num_fibs;
+
+	if(!dev->hw_fib_va || !dev->max_cmd_size)
+		return;
+
+	num_fibs = dev->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB;
+	fib_size = dev->max_fib_size + sizeof(struct aac_fib_xporthdr);
+	alloc_size = fib_size * num_fibs + ALIGN32 - 1;
+
+	dma_free_coherent(&dev->pdev->dev, alloc_size, dev->hw_fib_va,
+			  dev->hw_fib_pa);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->hw_fib_va = NULL;
 	dev->hw_fib_pa = 0;
 }
 
+<<<<<<< HEAD
+=======
+void aac_fib_vector_assign(struct aac_dev *dev)
+{
+	u32 i = 0;
+	u32 vector = 1;
+	struct fib *fibptr = NULL;
+
+	for (i = 0, fibptr = &dev->fibs[i];
+		i < (dev->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB);
+		i++, fibptr++) {
+		if ((dev->max_msix == 1) ||
+		  (i > ((dev->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB - 1)
+			- dev->vector_cap))) {
+			fibptr->vector_no = 0;
+		} else {
+			fibptr->vector_no = vector;
+			vector++;
+			if (vector == dev->max_msix)
+				vector = 1;
+		}
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	aac_fib_setup	-	setup the fibs
  *	@dev: Adapter to set up
@@ -104,15 +187,27 @@ int aac_fib_setup(struct aac_dev * dev)
 	struct hw_fib *hw_fib;
 	dma_addr_t hw_fib_pa;
 	int i;
+<<<<<<< HEAD
 
 	while (((i = fib_map_alloc(dev)) == -ENOMEM)
 	 && (dev->scsi_host_ptr->can_queue > (64 - AAC_NUM_MGT_FIB))) {
 		dev->init->MaxIoCommands = cpu_to_le32((dev->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB) >> 1);
 		dev->scsi_host_ptr->can_queue = le32_to_cpu(dev->init->MaxIoCommands) - AAC_NUM_MGT_FIB;
+=======
+	u32 max_cmds;
+
+	while (((i = fib_map_alloc(dev)) == -ENOMEM)
+	 && (dev->scsi_host_ptr->can_queue > (64 - AAC_NUM_MGT_FIB))) {
+		max_cmds = (dev->scsi_host_ptr->can_queue+AAC_NUM_MGT_FIB) >> 1;
+		dev->scsi_host_ptr->can_queue = max_cmds - AAC_NUM_MGT_FIB;
+		if (dev->comm_interface != AAC_COMM_MESSAGE_TYPE3)
+			dev->init->r7.max_io_commands = cpu_to_le32(max_cmds);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (i<0)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	/* 32 byte alignment for PMC */
 	hw_fib_pa = (dev->hw_fib_pa + (ALIGN32 - 1)) & ~(ALIGN32 - 1);
 	dev->hw_fib_va = (struct hw_fib *)((unsigned char *)dev->hw_fib_va +
@@ -129,6 +224,22 @@ int aac_fib_setup(struct aac_dev * dev)
 
 	hw_fib = dev->hw_fib_va;
 	hw_fib_pa = dev->hw_fib_pa;
+=======
+	memset(dev->hw_fib_va, 0,
+		(dev->max_cmd_size + sizeof(struct aac_fib_xporthdr)) *
+		(dev->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB));
+
+	/* 32 byte alignment for PMC */
+	hw_fib_pa = (dev->hw_fib_pa + (ALIGN32 - 1)) & ~(ALIGN32 - 1);
+	hw_fib    = (struct hw_fib *)((unsigned char *)dev->hw_fib_va +
+					(hw_fib_pa - dev->hw_fib_pa));
+
+	/* add Xport header */
+	hw_fib = (struct hw_fib *)((unsigned char *)hw_fib +
+		sizeof(struct aac_fib_xporthdr));
+	hw_fib_pa += sizeof(struct aac_fib_xporthdr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	Initialise the fibs
 	 */
@@ -136,10 +247,16 @@ int aac_fib_setup(struct aac_dev * dev)
 		i < (dev->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB);
 		i++, fibptr++)
 	{
+<<<<<<< HEAD
+=======
+		fibptr->flags = 0;
+		fibptr->size = sizeof(struct fib);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fibptr->dev = dev;
 		fibptr->hw_fib_va = hw_fib;
 		fibptr->data = (void *) fibptr->hw_fib_va->data;
 		fibptr->next = fibptr+1;	/* Forward chain the fibs */
+<<<<<<< HEAD
 		sema_init(&fibptr->event_wait, 0);
 		spin_lock_init(&fibptr->event_lock);
 		hw_fib->header.XferState = cpu_to_le32(0xffffffff);
@@ -150,18 +267,82 @@ int aac_fib_setup(struct aac_dev * dev)
 		hw_fib_pa = hw_fib_pa +
 			dev->max_fib_size + sizeof(struct aac_fib_xporthdr);
 	}
+=======
+		init_completion(&fibptr->event_wait);
+		spin_lock_init(&fibptr->event_lock);
+		hw_fib->header.XferState = cpu_to_le32(0xffffffff);
+		hw_fib->header.SenderSize =
+			cpu_to_le16(dev->max_fib_size);	/* ?? max_cmd_size */
+		fibptr->hw_fib_pa = hw_fib_pa;
+		fibptr->hw_sgl_pa = hw_fib_pa +
+			offsetof(struct aac_hba_cmd_req, sge[2]);
+		/*
+		 * one element is for the ptr to the separate sg list,
+		 * second element for 32 byte alignment
+		 */
+		fibptr->hw_error_pa = hw_fib_pa +
+			offsetof(struct aac_native_hba, resp.resp_bytes[0]);
+
+		hw_fib = (struct hw_fib *)((unsigned char *)hw_fib +
+			dev->max_cmd_size + sizeof(struct aac_fib_xporthdr));
+		hw_fib_pa = hw_fib_pa +
+			dev->max_cmd_size + sizeof(struct aac_fib_xporthdr);
+	}
+
+	/*
+	 *Assign vector numbers to fibs
+	 */
+	aac_fib_vector_assign(dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	Add the fib chain to the free list
 	 */
 	dev->fibs[dev->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB - 1].next = NULL;
 	/*
+<<<<<<< HEAD
 	 *	Enable this to debug out of queue space
 	 */
 	dev->free_fib = &dev->fibs[0];
+=======
+	*	Set 8 fibs aside for management tools
+	*/
+	dev->free_fib = &dev->fibs[dev->scsi_host_ptr->can_queue];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
+<<<<<<< HEAD
+=======
+ *	aac_fib_alloc_tag-allocate a fib using tags
+ *	@dev: Adapter to allocate the fib for
+ *	@scmd: SCSI command
+ *
+ *	Allocate a fib from the adapter fib pool using tags
+ *	from the blk layer.
+ */
+
+struct fib *aac_fib_alloc_tag(struct aac_dev *dev, struct scsi_cmnd *scmd)
+{
+	struct fib *fibptr;
+
+	fibptr = &dev->fibs[scsi_cmd_to_rq(scmd)->tag];
+	/*
+	 *	Null out fields that depend on being zero at the start of
+	 *	each I/O
+	 */
+	fibptr->hw_fib_va->header.XferState = 0;
+	fibptr->type = FSAFS_NTC_FIB_CONTEXT;
+	fibptr->callback_data = NULL;
+	fibptr->callback = NULL;
+	fibptr->flags = 0;
+
+	return fibptr;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	aac_fib_alloc	-	allocate a fib
  *	@dev: Adapter to allocate the fib for
  *
@@ -207,6 +388,7 @@ struct fib *aac_fib_alloc(struct aac_dev *dev)
 
 void aac_fib_free(struct fib *fibptr)
 {
+<<<<<<< HEAD
 	unsigned long flags, flagsv;
 
 	spin_lock_irqsave(&fibptr->event_lock, flagsv);
@@ -215,11 +397,22 @@ void aac_fib_free(struct fib *fibptr)
 		return;
 	}
 	spin_unlock_irqrestore(&fibptr->event_lock, flagsv);
+=======
+	unsigned long flags;
+
+	if (fibptr->done == 2)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&fibptr->dev->fib_lock, flags);
 	if (unlikely(fibptr->flags & FIB_CONTEXT_FLAG_TIMED_OUT))
 		aac_config.fib_timeouts++;
+<<<<<<< HEAD
 	if (fibptr->hw_fib_va->header.XferState != 0) {
+=======
+	if (!(fibptr->flags & FIB_CONTEXT_FLAG_NATIVE_HBA) &&
+		fibptr->hw_fib_va->header.XferState != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING "aac_fib_free, XferState != 0, fibptr = 0x%p, XferState = 0x%x\n",
 			 (void*)fibptr,
 			 le32_to_cpu(fibptr->hw_fib_va->header.XferState));
@@ -240,16 +433,28 @@ void aac_fib_init(struct fib *fibptr)
 {
 	struct hw_fib *hw_fib = fibptr->hw_fib_va;
 
+<<<<<<< HEAD
 	hw_fib->header.StructType = FIB_MAGIC;
 	hw_fib->header.Size = cpu_to_le16(fibptr->dev->max_fib_size);
 	hw_fib->header.XferState = cpu_to_le32(HostOwned | FibInitialized | FibEmpty | FastResponseCapable);
 	hw_fib->header.SenderFibAddress = 0; /* Filled in later if needed */
 	hw_fib->header.ReceiverFibAddress = cpu_to_le32(fibptr->hw_fib_pa);
+=======
+	memset(&hw_fib->header, 0, sizeof(struct aac_fibhdr));
+	hw_fib->header.StructType = FIB_MAGIC;
+	hw_fib->header.Size = cpu_to_le16(fibptr->dev->max_fib_size);
+	hw_fib->header.XferState = cpu_to_le32(HostOwned | FibInitialized | FibEmpty | FastResponseCapable);
+	hw_fib->header.u.ReceiverFibAddress = cpu_to_le32(fibptr->hw_fib_pa);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw_fib->header.SenderSize = cpu_to_le16(fibptr->dev->max_fib_size);
 }
 
 /**
+<<<<<<< HEAD
  *	fib_deallocate		-	deallocate a fib
+=======
+ *	fib_dealloc		-	deallocate a fib
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@fibptr: fib to deallocate
  *
  *	Will deallocate and return to the free pool the FIB pointed to by the
@@ -259,7 +464,10 @@ void aac_fib_init(struct fib *fibptr)
 static void fib_dealloc(struct fib * fibptr)
 {
 	struct hw_fib *hw_fib = fibptr->hw_fib_va;
+<<<<<<< HEAD
 	BUG_ON(hw_fib->header.StructType != FIB_MAGIC);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw_fib->header.XferState = 0;
 }
 
@@ -321,7 +529,11 @@ static int aac_get_entry (struct aac_dev * dev, u32 qid, struct aac_entry **entr
 	/* Queue is full */
 	if ((*index + 1) == le32_to_cpu(*(q->headers.consumer))) {
 		printk(KERN_WARNING "Queue %d full, %u outstanding.\n",
+<<<<<<< HEAD
 				qid, q->numpending);
+=======
+				qid, atomic_read(&q->numpending));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	} else {
 		*entry = q->base + *index;
@@ -333,8 +545,13 @@ static int aac_get_entry (struct aac_dev * dev, u32 qid, struct aac_entry **entr
  *	aac_queue_get		-	get the next free QE
  *	@dev: Adapter
  *	@index: Returned index
+<<<<<<< HEAD
  *	@priority: Priority of fib
  *	@fib: Fib to associate with the queue entry
+=======
+ *	@qid: Queue number
+ *	@hw_fib: Fib to associate with the queue entry
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@wait: Wait if queue full
  *	@fibptr: Driver fib object to go with fib
  *	@nonotify: Don't notify the adapter
@@ -370,7 +587,11 @@ int aac_queue_get(struct aac_dev * dev, u32 * index, u32 qid, struct hw_fib * hw
 		entry->size = cpu_to_le32(le16_to_cpu(hw_fib->header.Size));
 		entry->addr = hw_fib->header.SenderFibAddress;
 			/* Restore adapters pointer to the FIB */
+<<<<<<< HEAD
 		hw_fib->header.ReceiverFibAddress = hw_fib->header.SenderFibAddress;	/* Let the adapter now where to find its data */
+=======
+		hw_fib->header.u.ReceiverFibAddress = hw_fib->header.SenderFibAddress;  /* Let the adapter now where to find its data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		map = 0;
 	}
 	/*
@@ -414,6 +635,7 @@ int aac_fib_send(u16 command, struct fib *fibptr, unsigned long size,
 	struct aac_dev * dev = fibptr->dev;
 	struct hw_fib * hw_fib = fibptr->hw_fib_va;
 	unsigned long flags = 0;
+<<<<<<< HEAD
 	unsigned long qflags;
 	unsigned long mflags = 0;
 	unsigned long sflags = 0;
@@ -421,12 +643,27 @@ int aac_fib_send(u16 command, struct fib *fibptr, unsigned long size,
 
 	if (!(hw_fib->header.XferState & cpu_to_le32(HostOwned)))
 		return -EBUSY;
+=======
+	unsigned long mflags = 0;
+	unsigned long sflags = 0;
+
+	if (!(hw_fib->header.XferState & cpu_to_le32(HostOwned)))
+		return -EBUSY;
+
+	if (hw_fib->header.XferState & cpu_to_le32(AdapterProcessed))
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	There are 5 cases with the wait and response requested flags.
 	 *	The only invalid cases are if the caller requests to wait and
 	 *	does not request a response and if the caller does not want a
 	 *	response and the Fib is not allocated from pool. If a response
+<<<<<<< HEAD
 	 *	is not requesed the Fib will just be deallocaed by the DPC
+=======
+	 *	is not requested the Fib will just be deallocaed by the DPC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *	routine when the response comes back from the adapter. No
 	 *	further processing will be done besides deleting the Fib. We
 	 *	will have a debug mode where the adapter can notify the host
@@ -449,8 +686,20 @@ int aac_fib_send(u16 command, struct fib *fibptr, unsigned long size,
 	 *	Map the fib into 32bits by using the fib number
 	 */
 
+<<<<<<< HEAD
 	hw_fib->header.SenderFibAddress = cpu_to_le32(((u32)(fibptr - dev->fibs)) << 2);
 	hw_fib->header.SenderData = (u32)(fibptr - dev->fibs);
+=======
+	hw_fib->header.SenderFibAddress =
+		cpu_to_le32(((u32)(fibptr - dev->fibs)) << 2);
+
+	/* use the same shifted value for handle to be compatible
+	 * with the new native hba command handle
+	 */
+	hw_fib->header.Handle =
+		cpu_to_le32((((u32)(fibptr - dev->fibs)) << 2) + 1);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	Set FIB state to indicate where it came from and if we want a
 	 *	response from the adapter. Also load the command from the
@@ -460,7 +709,10 @@ int aac_fib_send(u16 command, struct fib *fibptr, unsigned long size,
 	 */
 	hw_fib->header.Command = cpu_to_le16(command);
 	hw_fib->header.XferState |= cpu_to_le32(SentFromHost);
+<<<<<<< HEAD
 	fibptr->hw_fib_va->header.Flags = 0;	/* 0 the flags field - internal only*/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	Set the size of the Fib we want to send to the adapter
 	 */
@@ -529,7 +781,11 @@ int aac_fib_send(u16 command, struct fib *fibptr, unsigned long size,
 		}
 		if (wait) {
 			fibptr->flags |= FIB_CONTEXT_FLAG_WAIT;
+<<<<<<< HEAD
 			if (down_interruptible(&fibptr->event_wait)) {
+=======
+			if (wait_for_completion_interruptible(&fibptr->event_wait)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				fibptr->flags &= ~FIB_CONTEXT_FLAG_WAIT;
 				return -EFAULT;
 			}
@@ -564,6 +820,7 @@ int aac_fib_send(u16 command, struct fib *fibptr, unsigned long size,
 			 * functioning because an interrupt routing or other
 			 * hardware failure has occurred.
 			 */
+<<<<<<< HEAD
 			unsigned long count = 36000000L; /* 3 minutes */
 			while (down_trylock(&fibptr->event_wait)) {
 				int blink;
@@ -572,6 +829,14 @@ int aac_fib_send(u16 command, struct fib *fibptr, unsigned long size,
 					spin_lock_irqsave(q->lock, qflags);
 					q->numpending--;
 					spin_unlock_irqrestore(q->lock, qflags);
+=======
+			unsigned long timeout = jiffies + (180 * HZ); /* 3 minutes */
+			while (!try_wait_for_completion(&fibptr->event_wait)) {
+				int blink;
+				if (time_is_before_eq_jiffies(timeout)) {
+					struct aac_queue * q = &dev->queues->queue[AdapNormCmdQueue];
+					atomic_dec(&q->numpending);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (wait == -1) {
 	        				printk(KERN_ERR "aacraid: aac_fib_send: first asynchronous command timed out.\n"
 						  "Usually a result of a PCI interrupt routing problem;\n"
@@ -580,6 +845,13 @@ int aac_fib_send(u16 command, struct fib *fibptr, unsigned long size,
 					}
 					return -ETIMEDOUT;
 				}
+<<<<<<< HEAD
+=======
+
+				if (unlikely(aac_pci_offline(dev)))
+					return -EFAULT;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if ((blink = aac_adapter_check_health(dev)) > 0) {
 					if (wait == -1) {
 	        				printk(KERN_ERR "aacraid: aac_fib_send: adapter blinkLED 0x%x.\n"
@@ -588,11 +860,22 @@ int aac_fib_send(u16 command, struct fib *fibptr, unsigned long size,
 					}
 					return -EFAULT;
 				}
+<<<<<<< HEAD
 				udelay(5);
 			}
 		} else if (down_interruptible(&fibptr->event_wait)) {
 			/* Do nothing ... satisfy
 			 * down_interruptible must_check */
+=======
+				/*
+				 * Allow other processes / CPUS to use core
+				 */
+				schedule();
+			}
+		} else if (wait_for_completion_interruptible(&fibptr->event_wait)) {
+			/* Do nothing ... satisfy
+			 * wait_for_completion_interruptible must_check */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		spin_lock_irqsave(&fibptr->event_lock, flags);
@@ -618,6 +901,91 @@ int aac_fib_send(u16 command, struct fib *fibptr, unsigned long size,
 		return 0;
 }
 
+<<<<<<< HEAD
+=======
+int aac_hba_send(u8 command, struct fib *fibptr, fib_callback callback,
+		void *callback_data)
+{
+	struct aac_dev *dev = fibptr->dev;
+	int wait;
+	unsigned long flags = 0;
+	unsigned long mflags = 0;
+	struct aac_hba_cmd_req *hbacmd = (struct aac_hba_cmd_req *)
+			fibptr->hw_fib_va;
+
+	fibptr->flags = (FIB_CONTEXT_FLAG | FIB_CONTEXT_FLAG_NATIVE_HBA);
+	if (callback) {
+		wait = 0;
+		fibptr->callback = callback;
+		fibptr->callback_data = callback_data;
+	} else
+		wait = 1;
+
+
+	hbacmd->iu_type = command;
+
+	if (command == HBA_IU_TYPE_SCSI_CMD_REQ) {
+		/* bit1 of request_id must be 0 */
+		hbacmd->request_id =
+			cpu_to_le32((((u32)(fibptr - dev->fibs)) << 2) + 1);
+		fibptr->flags |= FIB_CONTEXT_FLAG_SCSI_CMD;
+	} else
+		return -EINVAL;
+
+
+	if (wait) {
+		spin_lock_irqsave(&dev->manage_lock, mflags);
+		if (dev->management_fib_count >= AAC_NUM_MGT_FIB) {
+			spin_unlock_irqrestore(&dev->manage_lock, mflags);
+			return -EBUSY;
+		}
+		dev->management_fib_count++;
+		spin_unlock_irqrestore(&dev->manage_lock, mflags);
+		spin_lock_irqsave(&fibptr->event_lock, flags);
+	}
+
+	if (aac_adapter_deliver(fibptr) != 0) {
+		if (wait) {
+			spin_unlock_irqrestore(&fibptr->event_lock, flags);
+			spin_lock_irqsave(&dev->manage_lock, mflags);
+			dev->management_fib_count--;
+			spin_unlock_irqrestore(&dev->manage_lock, mflags);
+		}
+		return -EBUSY;
+	}
+	FIB_COUNTER_INCREMENT(aac_config.NativeSent);
+
+	if (wait) {
+
+		spin_unlock_irqrestore(&fibptr->event_lock, flags);
+
+		if (unlikely(aac_pci_offline(dev)))
+			return -EFAULT;
+
+		fibptr->flags |= FIB_CONTEXT_FLAG_WAIT;
+		if (wait_for_completion_interruptible(&fibptr->event_wait))
+			fibptr->done = 2;
+		fibptr->flags &= ~(FIB_CONTEXT_FLAG_WAIT);
+
+		spin_lock_irqsave(&fibptr->event_lock, flags);
+		if ((fibptr->done == 0) || (fibptr->done == 2)) {
+			fibptr->done = 2; /* Tell interrupt we aborted */
+			spin_unlock_irqrestore(&fibptr->event_lock, flags);
+			return -ERESTARTSYS;
+		}
+		spin_unlock_irqrestore(&fibptr->event_lock, flags);
+		WARN_ON(fibptr->done == 0);
+
+		if (unlikely(fibptr->flags & FIB_CONTEXT_FLAG_TIMED_OUT))
+			return -ETIMEDOUT;
+
+		return 0;
+	}
+
+	return -EINPROGRESS;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	aac_consumer_get	-	get the top of the queue
  *	@dev: Adapter
@@ -708,7 +1076,13 @@ int aac_fib_adapter_complete(struct fib *fibptr, unsigned short size)
 	unsigned long nointr = 0;
 	unsigned long qflags;
 
+<<<<<<< HEAD
 	if (dev->comm_interface == AAC_COMM_MESSAGE_TYPE1) {
+=======
+	if (dev->comm_interface == AAC_COMM_MESSAGE_TYPE1 ||
+		dev->comm_interface == AAC_COMM_MESSAGE_TYPE2 ||
+		dev->comm_interface == AAC_COMM_MESSAGE_TYPE3) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(hw_fib);
 		return 0;
 	}
@@ -721,7 +1095,13 @@ int aac_fib_adapter_complete(struct fib *fibptr, unsigned short size)
 	/*
 	 *	If we plan to do anything check the structure type first.
 	 */
+<<<<<<< HEAD
 	if (hw_fib->header.StructType != FIB_MAGIC) {
+=======
+	if (hw_fib->header.StructType != FIB_MAGIC &&
+	    hw_fib->header.StructType != FIB_MAGIC2 &&
+	    hw_fib->header.StructType != FIB_MAGIC2_64) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dev->comm_interface == AAC_COMM_MESSAGE)
 			kfree(hw_fib);
 		return -EINVAL;
@@ -763,13 +1143,18 @@ int aac_fib_adapter_complete(struct fib *fibptr, unsigned short size)
 
 /**
  *	aac_fib_complete	-	fib completion handler
+<<<<<<< HEAD
  *	@fib: FIB to complete
+=======
+ *	@fibptr: FIB to complete
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Will do all necessary work to complete a FIB.
  */
 
 int aac_fib_complete(struct fib *fibptr)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	struct hw_fib * hw_fib = fibptr->hw_fib_va;
 
@@ -778,12 +1163,33 @@ int aac_fib_complete(struct fib *fibptr)
 	 */
 
 	if (hw_fib->header.XferState == 0)
+=======
+	struct hw_fib * hw_fib = fibptr->hw_fib_va;
+
+	if (fibptr->flags & FIB_CONTEXT_FLAG_NATIVE_HBA) {
+		fib_dealloc(fibptr);
+		return 0;
+	}
+
+	/*
+	 *	Check for a fib which has already been completed or with a
+	 *	status wait timeout
+	 */
+
+	if (hw_fib->header.XferState == 0 || fibptr->done == 2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	/*
 	 *	If we plan to do anything check the structure type first.
 	 */
 
+<<<<<<< HEAD
 	if (hw_fib->header.StructType != FIB_MAGIC)
+=======
+	if (hw_fib->header.StructType != FIB_MAGIC &&
+	    hw_fib->header.StructType != FIB_MAGIC2 &&
+	    hw_fib->header.StructType != FIB_MAGIC2_64)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	/*
 	 *	This block completes a cdb which orginated on the host and we
@@ -791,12 +1197,15 @@ int aac_fib_complete(struct fib *fibptr)
 	 *	command is complete that we had sent to the adapter and this
 	 *	cdb could be reused.
 	 */
+<<<<<<< HEAD
 	spin_lock_irqsave(&fibptr->event_lock, flags);
 	if (fibptr->done == 2) {
 		spin_unlock_irqrestore(&fibptr->event_lock, flags);
 		return 0;
 	}
 	spin_unlock_irqrestore(&fibptr->event_lock, flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if((hw_fib->header.XferState & cpu_to_le32(SentFromHost)) &&
 		(hw_fib->header.XferState & cpu_to_le32(AdapterProcessed)))
@@ -851,7 +1260,37 @@ void aac_printf(struct aac_dev *dev, u32 val)
 	memset(cp, 0, 256);
 }
 
+<<<<<<< HEAD
 
+=======
+static inline int aac_aif_data(struct aac_aifcmd *aifcmd, uint32_t index)
+{
+	return le32_to_cpu(((__le32 *)aifcmd->data)[index]);
+}
+
+
+static void aac_handle_aif_bu(struct aac_dev *dev, struct aac_aifcmd *aifcmd)
+{
+	switch (aac_aif_data(aifcmd, 1)) {
+	case AifBuCacheDataLoss:
+		if (aac_aif_data(aifcmd, 2))
+			dev_info(&dev->pdev->dev, "Backup unit had cache data loss - [%d]\n",
+			aac_aif_data(aifcmd, 2));
+		else
+			dev_info(&dev->pdev->dev, "Backup Unit had cache data loss\n");
+		break;
+	case AifBuCacheDataRecover:
+		if (aac_aif_data(aifcmd, 2))
+			dev_info(&dev->pdev->dev, "DDR cache data recovered successfully - [%d]\n",
+			aac_aif_data(aifcmd, 2));
+		else
+			dev_info(&dev->pdev->dev, "DDR cache data recovered successfully\n");
+		break;
+	}
+}
+
+#define AIF_SNIFF_TIMEOUT	(500*HZ)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	aac_handle_aif		-	Handle a message from the firmware
  *	@dev: Which adapter this fib is from
@@ -860,8 +1299,11 @@ void aac_printf(struct aac_dev *dev, u32 val)
  *	This routine handles a driver notify fib from the adapter and
  *	dispatches it to the appropriate routine for handling.
  */
+<<<<<<< HEAD
 
 #define AIF_SNIFF_TIMEOUT	(30*HZ)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void aac_handle_aif(struct aac_dev * dev, struct fib * fibptr)
 {
 	struct hw_fib * hw_fib = fibptr->hw_fib_va;
@@ -890,6 +1332,31 @@ static void aac_handle_aif(struct aac_dev * dev, struct fib * fibptr)
 	switch (le32_to_cpu(aifcmd->command)) {
 	case AifCmdDriverNotify:
 		switch (le32_to_cpu(((__le32 *)aifcmd->data)[0])) {
+<<<<<<< HEAD
+=======
+		case AifRawDeviceRemove:
+			container = le32_to_cpu(((__le32 *)aifcmd->data)[1]);
+			if ((container >> 28)) {
+				container = (u32)-1;
+				break;
+			}
+			channel = (container >> 24) & 0xF;
+			if (channel >= dev->maximum_num_channels) {
+				container = (u32)-1;
+				break;
+			}
+			id = container & 0xFFFF;
+			if (id >= dev->maximum_num_physicals) {
+				container = (u32)-1;
+				break;
+			}
+			lun = (container >> 16) & 0xFF;
+			container = (u32)-1;
+			channel = aac_phys_to_logical(channel);
+			device_config_needed = DELETE;
+			break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 *	Morph or Expand complete
 		 */
@@ -1037,6 +1504,11 @@ static void aac_handle_aif(struct aac_dev * dev, struct fib * fibptr)
 			switch (le32_to_cpu(((__le32 *)aifcmd->data)[3])) {
 			case EM_DRIVE_INSERTION:
 			case EM_DRIVE_REMOVAL:
+<<<<<<< HEAD
+=======
+			case EM_SES_DRIVE_INSERTION:
+			case EM_SES_DRIVE_REMOVAL:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				container = le32_to_cpu(
 					((__le32 *)aifcmd->data)[2]);
 				if ((container >> 28)) {
@@ -1062,12 +1534,25 @@ static void aac_handle_aif(struct aac_dev * dev, struct fib * fibptr)
 				}
 				channel = aac_phys_to_logical(channel);
 				device_config_needed =
+<<<<<<< HEAD
 				  (((__le32 *)aifcmd->data)[3]
 				    == cpu_to_le32(EM_DRIVE_INSERTION)) ?
+=======
+				  ((((__le32 *)aifcmd->data)[3]
+				    == cpu_to_le32(EM_DRIVE_INSERTION)) ||
+				    (((__le32 *)aifcmd->data)[3]
+				    == cpu_to_le32(EM_SES_DRIVE_INSERTION))) ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  ADD : DELETE;
 				break;
 			}
 			break;
+<<<<<<< HEAD
+=======
+		case AifBuManagerEvent:
+			aac_handle_aif_bu(dev, aifcmd);
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/*
@@ -1138,6 +1623,7 @@ static void aac_handle_aif(struct aac_dev * dev, struct fib * fibptr)
 
 	container = 0;
 retry_next:
+<<<<<<< HEAD
 	if (device_config_needed == NOTHING)
 	for (; container < dev->maximum_num_containers; ++container) {
 		if ((dev->fsa_dev[container].config_waiting_on == 0) &&
@@ -1150,6 +1636,21 @@ retry_next:
 			id = CONTAINER_TO_ID(container);
 			lun = CONTAINER_TO_LUN(container);
 			break;
+=======
+	if (device_config_needed == NOTHING) {
+		for (; container < dev->maximum_num_containers; ++container) {
+			if ((dev->fsa_dev[container].config_waiting_on == 0) &&
+			    (dev->fsa_dev[container].config_needed != NOTHING) &&
+			    time_before(jiffies, dev->fsa_dev[container].config_waiting_stamp + AIF_SNIFF_TIMEOUT)) {
+				device_config_needed =
+					dev->fsa_dev[container].config_needed;
+				dev->fsa_dev[container].config_needed = NOTHING;
+				channel = CONTAINER_TO_CHANNEL(container);
+				id = CONTAINER_TO_ID(container);
+				lun = CONTAINER_TO_LUN(container);
+				break;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	if (device_config_needed == NOTHING)
@@ -1204,7 +1705,11 @@ retry_next:
 						"enclosure services event");
 				scsi_device_set_state(device, SDEV_RUNNING);
 			}
+<<<<<<< HEAD
 			/* FALLTHRU */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case CHANGE:
 			if ((channel == CONTAINER_CHANNEL)
 			 && (!dev->fsa_dev[container].valid)) {
@@ -1220,7 +1725,12 @@ retry_next:
 #endif
 				break;
 			}
+<<<<<<< HEAD
 			scsi_rescan_device(&device->sdev_gendev);
+=======
+			scsi_rescan_device(device);
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		default:
 			break;
@@ -1237,6 +1747,7 @@ retry_next:
 	}
 }
 
+<<<<<<< HEAD
 static int _aac_reset_adapter(struct aac_dev *aac, int forced)
 {
 	int index, quirks;
@@ -1246,6 +1757,25 @@ static int _aac_reset_adapter(struct aac_dev *aac, int forced)
 	struct scsi_cmnd *command;
 	struct scsi_cmnd *command_list;
 	int jafo = 0;
+=======
+static void aac_schedule_bus_scan(struct aac_dev *aac)
+{
+	if (aac->sa_firmware)
+		aac_schedule_safw_scan_worker(aac);
+	else
+		aac_schedule_src_reinit_aif_worker(aac);
+}
+
+static int _aac_reset_adapter(struct aac_dev *aac, int forced, u8 reset_type)
+{
+	int index, quirks;
+	int retval;
+	struct Scsi_Host *host = aac->scsi_host_ptr;
+	int jafo = 0;
+	int bled;
+	u64 dmamask;
+	int num_of_fibs = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Assumptions:
@@ -1257,12 +1787,20 @@ static int _aac_reset_adapter(struct aac_dev *aac, int forced)
 	 *	- The card is dead, or will be very shortly ;-/ so no new
 	 *	  commands are completing in the interrupt service.
 	 */
+<<<<<<< HEAD
 	host = aac->scsi_host_ptr;
 	scsi_block_requests(host);
 	aac_adapter_disable_int(aac);
 	if (aac->thread->pid != current->pid) {
 		spin_unlock_irq(host->host_lock);
 		kthread_stop(aac->thread);
+=======
+	aac_adapter_disable_int(aac);
+	if (aac->thread && aac->thread->pid != current->pid) {
+		spin_unlock_irq(host->host_lock);
+		kthread_stop(aac->thread);
+		aac->thread = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		jafo = 1;
 	}
 
@@ -1270,7 +1808,12 @@ static int _aac_reset_adapter(struct aac_dev *aac, int forced)
 	 *	If a positive health, means in a known DEAD PANIC
 	 * state and the adapter could be reset to `try again'.
 	 */
+<<<<<<< HEAD
 	retval = aac_adapter_restart(aac, forced ? 0 : aac_adapter_check_health(aac));
+=======
+	bled = forced ? 0 : aac_adapter_check_health(aac);
+	retval = aac_adapter_restart(aac, bled, reset_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (retval)
 		goto out;
@@ -1278,6 +1821,7 @@ static int _aac_reset_adapter(struct aac_dev *aac, int forced)
 	/*
 	 *	Loop through the fibs, close the synchronous FIBS
 	 */
+<<<<<<< HEAD
 	for (retval = 1, index = 0; index < (aac->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB); index++) {
 		struct fib *fib = &aac->fibs[index];
 		if (!(fib->hw_fib_va->header.XferState & cpu_to_le32(NoResponseExpected | Async)) &&
@@ -1285,6 +1829,25 @@ static int _aac_reset_adapter(struct aac_dev *aac, int forced)
 			unsigned long flagv;
 			spin_lock_irqsave(&fib->event_lock, flagv);
 			up(&fib->event_wait);
+=======
+	retval = 1;
+	num_of_fibs = aac->scsi_host_ptr->can_queue + AAC_NUM_MGT_FIB;
+	for (index = 0; index <  num_of_fibs; index++) {
+
+		struct fib *fib = &aac->fibs[index];
+		__le32 XferState = fib->hw_fib_va->header.XferState;
+		bool is_response_expected = false;
+
+		if (!(XferState & cpu_to_le32(NoResponseExpected | Async)) &&
+		   (XferState & cpu_to_le32(ResponseExpected)))
+			is_response_expected = true;
+
+		if (is_response_expected
+		  || fib->flags & FIB_CONTEXT_FLAG_WAIT) {
+			unsigned long flagv;
+			spin_lock_irqsave(&fib->event_lock, flagv);
+			complete(&fib->event_wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock_irqrestore(&fib->event_lock, flagv);
 			schedule();
 			retval = 0;
@@ -1302,12 +1865,21 @@ static int _aac_reset_adapter(struct aac_dev *aac, int forced)
 	 * will ensure that i/o is queisced and the card is flushed in that
 	 * case.
 	 */
+<<<<<<< HEAD
 	aac_fib_map_free(aac);
 	pci_free_consistent(aac->pdev, aac->comm_size, aac->comm_addr, aac->comm_phys);
+=======
+	aac_free_irq(aac);
+	aac_fib_map_free(aac);
+	dma_free_coherent(&aac->pdev->dev, aac->comm_size, aac->comm_addr,
+			  aac->comm_phys);
+	aac_adapter_ioremap(aac, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	aac->comm_addr = NULL;
 	aac->comm_phys = 0;
 	kfree(aac->queues);
 	aac->queues = NULL;
+<<<<<<< HEAD
 	free_irq(aac->pdev->irq, aac);
 	if (aac->msi)
 		pci_disable_msi(aac->pdev);
@@ -1332,6 +1904,37 @@ static int _aac_reset_adapter(struct aac_dev *aac, int forced)
 		aac->thread = kthread_run(aac_command_thread, aac, aac->name);
 		if (IS_ERR(aac->thread)) {
 			retval = PTR_ERR(aac->thread);
+=======
+	kfree(aac->fsa_dev);
+	aac->fsa_dev = NULL;
+
+	dmamask = DMA_BIT_MASK(32);
+	quirks = aac_get_driver_ident(index)->quirks;
+	if (quirks & AAC_QUIRK_31BIT)
+		retval = dma_set_mask(&aac->pdev->dev, dmamask);
+	else if (!(quirks & AAC_QUIRK_SRC))
+		retval = dma_set_mask(&aac->pdev->dev, dmamask);
+	else
+		retval = dma_set_coherent_mask(&aac->pdev->dev, dmamask);
+
+	if (quirks & AAC_QUIRK_31BIT && !retval) {
+		dmamask = DMA_BIT_MASK(31);
+		retval = dma_set_coherent_mask(&aac->pdev->dev, dmamask);
+	}
+
+	if (retval)
+		goto out;
+
+	if ((retval = (*(aac_get_driver_ident(index)->init))(aac)))
+		goto out;
+
+	if (jafo) {
+		aac->thread = kthread_run(aac_command_thread, aac, "%s",
+					  aac->name);
+		if (IS_ERR(aac->thread)) {
+			retval = PTR_ERR(aac->thread);
+			aac->thread = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 	}
@@ -1350,6 +1953,7 @@ static int _aac_reset_adapter(struct aac_dev *aac, int forced)
 	 * This is where the assumption that the Adapter is quiesced
 	 * is important.
 	 */
+<<<<<<< HEAD
 	command_list = NULL;
 	__shost_for_each_device(dev, host) {
 		unsigned long flags;
@@ -1375,17 +1979,43 @@ static int _aac_reset_adapter(struct aac_dev *aac, int forced)
 out:
 	aac->in_reset = 0;
 	scsi_unblock_requests(host);
+=======
+	scsi_host_complete_all_commands(host, DID_RESET);
+
+	retval = 0;
+out:
+	aac->in_reset = 0;
+
+	/*
+	 * Issue bus rescan to catch any configuration that might have
+	 * occurred
+	 */
+	if (!retval && !is_kdump_kernel()) {
+		dev_info(&aac->pdev->dev, "Scheduling bus rescan\n");
+		aac_schedule_bus_scan(aac);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (jafo) {
 		spin_lock_irq(host->host_lock);
 	}
 	return retval;
 }
 
+<<<<<<< HEAD
 int aac_reset_adapter(struct aac_dev * aac, int forced)
 {
 	unsigned long flagv = 0;
 	int retval;
 	struct Scsi_Host * host;
+=======
+int aac_reset_adapter(struct aac_dev *aac, int forced, u8 reset_type)
+{
+	unsigned long flagv = 0;
+	int retval, unblock_retval;
+	struct Scsi_Host *host = aac->scsi_host_ptr;
+	int bled;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (spin_trylock_irqsave(&aac->fib_lock, flagv) == 0)
 		return -EBUSY;
@@ -1402,6 +2032,7 @@ int aac_reset_adapter(struct aac_dev * aac, int forced)
 	 * target (block maximum 60 seconds). Although not necessary,
 	 * it does make us a good storage citizen.
 	 */
+<<<<<<< HEAD
 	host = aac->scsi_host_ptr;
 	scsi_block_requests(host);
 	if (forced < 2) for (retval = 60; retval; --retval) {
@@ -1429,14 +2060,28 @@ int aac_reset_adapter(struct aac_dev * aac, int forced)
 			break;
 		ssleep(1);
 	}
+=======
+	scsi_host_block(host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Quiesce build, flush cache, write through mode */
 	if (forced < 2)
 		aac_send_shutdown(aac);
 	spin_lock_irqsave(host->host_lock, flagv);
+<<<<<<< HEAD
 	retval = _aac_reset_adapter(aac, forced ? forced : ((aac_check_reset != 0) && (aac_check_reset != 1)));
 	spin_unlock_irqrestore(host->host_lock, flagv);
 
+=======
+	bled = forced ? forced :
+			(aac_check_reset != 0 && aac_check_reset != 1);
+	retval = _aac_reset_adapter(aac, bled, reset_type);
+	spin_unlock_irqrestore(host->host_lock, flagv);
+
+	unblock_retval = scsi_host_unblock(host, SDEV_RUNNING);
+	if (!retval)
+		retval = unblock_retval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((forced < 2) && (retval == -ENODEV)) {
 		/* Unwind aac_send_shutdown() IOP_RESET unsupported/disabled */
 		struct fib * fibctx = aac_fib_alloc(aac);
@@ -1479,7 +2124,10 @@ int aac_check_health(struct aac_dev * aac)
 	int BlinkLED;
 	unsigned long time_now, flagv = 0;
 	struct list_head * entry;
+<<<<<<< HEAD
 	struct Scsi_Host * host;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Extending the scope of fib_lock slightly to protect aac->in_reset */
 	if (spin_trylock_irqsave(&aac->fib_lock, flagv) == 0)
@@ -1572,7 +2220,11 @@ int aac_check_health(struct aac_dev * aac)
 			 * Set the event to wake up the
 			 * thread that will waiting.
 			 */
+<<<<<<< HEAD
 			up(&fibctx->wait_sem);
+=======
+			complete(&fibctx->completion);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			printk(KERN_WARNING "aifd: didn't allocate NewFib.\n");
 			kfree(fib);
@@ -1584,12 +2236,18 @@ int aac_check_health(struct aac_dev * aac)
 	spin_unlock_irqrestore(&aac->fib_lock, flagv);
 
 	if (BlinkLED < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Host adapter dead %d\n", aac->name, BlinkLED);
+=======
+		printk(KERN_ERR "%s: Host adapter is dead (or got a PCI error) %d\n",
+				aac->name, BlinkLED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	printk(KERN_ERR "%s: Host adapter BLINK LED 0x%x\n", aac->name, BlinkLED);
 
+<<<<<<< HEAD
 	if (!aac_check_reset || ((aac_check_reset == 1) &&
 		(aac->supplement_adapter_info.SupportedOptions2 &
 			AAC_OPTION_IGNORE_RESET)))
@@ -1602,15 +2260,620 @@ int aac_check_health(struct aac_dev * aac)
 		spin_unlock_irqrestore(host->host_lock, flagv);
 	return BlinkLED;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	aac->in_reset = 0;
 	return BlinkLED;
 }
 
+<<<<<<< HEAD
 
 /**
  *	aac_command_thread	-	command processing thread
  *	@dev: Adapter to monitor
+=======
+static inline int is_safw_raid_volume(struct aac_dev *aac, int bus, int target)
+{
+	return bus == CONTAINER_CHANNEL && target < aac->maximum_num_containers;
+}
+
+static struct scsi_device *aac_lookup_safw_scsi_device(struct aac_dev *dev,
+								int bus,
+								int target)
+{
+	if (bus != CONTAINER_CHANNEL)
+		bus = aac_phys_to_logical(bus);
+
+	return scsi_device_lookup(dev->scsi_host_ptr, bus, target, 0);
+}
+
+static int aac_add_safw_device(struct aac_dev *dev, int bus, int target)
+{
+	if (bus != CONTAINER_CHANNEL)
+		bus = aac_phys_to_logical(bus);
+
+	return scsi_add_device(dev->scsi_host_ptr, bus, target, 0);
+}
+
+static void aac_put_safw_scsi_device(struct scsi_device *sdev)
+{
+	if (sdev)
+		scsi_device_put(sdev);
+}
+
+static void aac_remove_safw_device(struct aac_dev *dev, int bus, int target)
+{
+	struct scsi_device *sdev;
+
+	sdev = aac_lookup_safw_scsi_device(dev, bus, target);
+	scsi_remove_device(sdev);
+	aac_put_safw_scsi_device(sdev);
+}
+
+static inline int aac_is_safw_scan_count_equal(struct aac_dev *dev,
+	int bus, int target)
+{
+	return dev->hba_map[bus][target].scan_counter == dev->scan_counter;
+}
+
+static int aac_is_safw_target_valid(struct aac_dev *dev, int bus, int target)
+{
+	if (is_safw_raid_volume(dev, bus, target))
+		return dev->fsa_dev[target].valid;
+	else
+		return aac_is_safw_scan_count_equal(dev, bus, target);
+}
+
+static int aac_is_safw_device_exposed(struct aac_dev *dev, int bus, int target)
+{
+	int is_exposed = 0;
+	struct scsi_device *sdev;
+
+	sdev = aac_lookup_safw_scsi_device(dev, bus, target);
+	if (sdev)
+		is_exposed = 1;
+	aac_put_safw_scsi_device(sdev);
+
+	return is_exposed;
+}
+
+static int aac_update_safw_host_devices(struct aac_dev *dev)
+{
+	int i;
+	int bus;
+	int target;
+	int is_exposed = 0;
+	int rcode = 0;
+
+	rcode = aac_setup_safw_adapter(dev);
+	if (unlikely(rcode < 0)) {
+		goto out;
+	}
+
+	for (i = 0; i < AAC_BUS_TARGET_LOOP; i++) {
+
+		bus = get_bus_number(i);
+		target = get_target_number(i);
+
+		is_exposed = aac_is_safw_device_exposed(dev, bus, target);
+
+		if (aac_is_safw_target_valid(dev, bus, target) && !is_exposed)
+			aac_add_safw_device(dev, bus, target);
+		else if (!aac_is_safw_target_valid(dev, bus, target) &&
+								is_exposed)
+			aac_remove_safw_device(dev, bus, target);
+	}
+out:
+	return rcode;
+}
+
+static int aac_scan_safw_host(struct aac_dev *dev)
+{
+	int rcode = 0;
+
+	rcode = aac_update_safw_host_devices(dev);
+	if (rcode)
+		aac_schedule_safw_scan_worker(dev);
+
+	return rcode;
+}
+
+int aac_scan_host(struct aac_dev *dev)
+{
+	int rcode = 0;
+
+	mutex_lock(&dev->scan_mutex);
+	if (dev->sa_firmware)
+		rcode = aac_scan_safw_host(dev);
+	else
+		scsi_scan_host(dev->scsi_host_ptr);
+	mutex_unlock(&dev->scan_mutex);
+
+	return rcode;
+}
+
+void aac_src_reinit_aif_worker(struct work_struct *work)
+{
+	struct aac_dev *dev = container_of(to_delayed_work(work),
+				struct aac_dev, src_reinit_aif_worker);
+
+	wait_event(dev->scsi_host_ptr->host_wait,
+			!scsi_host_in_recovery(dev->scsi_host_ptr));
+	aac_reinit_aif(dev, dev->cardtype);
+}
+
+/**
+ *	aac_handle_sa_aif -	Handle a message from the firmware
+ *	@dev: Which adapter this fib is from
+ *	@fibptr: Pointer to fibptr from adapter
+ *
+ *	This routine handles a driver notify fib from the adapter and
+ *	dispatches it to the appropriate routine for handling.
+ */
+static void aac_handle_sa_aif(struct aac_dev *dev, struct fib *fibptr)
+{
+	int i;
+	u32 events = 0;
+
+	if (fibptr->hbacmd_size & SA_AIF_HOTPLUG)
+		events = SA_AIF_HOTPLUG;
+	else if (fibptr->hbacmd_size & SA_AIF_HARDWARE)
+		events = SA_AIF_HARDWARE;
+	else if (fibptr->hbacmd_size & SA_AIF_PDEV_CHANGE)
+		events = SA_AIF_PDEV_CHANGE;
+	else if (fibptr->hbacmd_size & SA_AIF_LDEV_CHANGE)
+		events = SA_AIF_LDEV_CHANGE;
+	else if (fibptr->hbacmd_size & SA_AIF_BPSTAT_CHANGE)
+		events = SA_AIF_BPSTAT_CHANGE;
+	else if (fibptr->hbacmd_size & SA_AIF_BPCFG_CHANGE)
+		events = SA_AIF_BPCFG_CHANGE;
+
+	switch (events) {
+	case SA_AIF_HOTPLUG:
+	case SA_AIF_HARDWARE:
+	case SA_AIF_PDEV_CHANGE:
+	case SA_AIF_LDEV_CHANGE:
+	case SA_AIF_BPCFG_CHANGE:
+
+		aac_scan_host(dev);
+
+		break;
+
+	case SA_AIF_BPSTAT_CHANGE:
+		/* currently do nothing */
+		break;
+	}
+
+	for (i = 1; i <= 10; ++i) {
+		events = src_readl(dev, MUnit.IDR);
+		if (events & (1<<23)) {
+			pr_warn(" AIF not cleared by firmware - %d/%d)\n",
+				i, 10);
+			ssleep(1);
+		}
+	}
+}
+
+static int get_fib_count(struct aac_dev *dev)
+{
+	unsigned int num = 0;
+	struct list_head *entry;
+	unsigned long flagv;
+
+	/*
+	 * Warning: no sleep allowed while
+	 * holding spinlock. We take the estimate
+	 * and pre-allocate a set of fibs outside the
+	 * lock.
+	 */
+	num = le32_to_cpu(dev->init->r7.adapter_fibs_size)
+			/ sizeof(struct hw_fib); /* some extra */
+	spin_lock_irqsave(&dev->fib_lock, flagv);
+	entry = dev->fib_list.next;
+	while (entry != &dev->fib_list) {
+		entry = entry->next;
+		++num;
+	}
+	spin_unlock_irqrestore(&dev->fib_lock, flagv);
+
+	return num;
+}
+
+static int fillup_pools(struct aac_dev *dev, struct hw_fib **hw_fib_pool,
+						struct fib **fib_pool,
+						unsigned int num)
+{
+	struct hw_fib **hw_fib_p;
+	struct fib **fib_p;
+
+	hw_fib_p = hw_fib_pool;
+	fib_p = fib_pool;
+	while (hw_fib_p < &hw_fib_pool[num]) {
+		*(hw_fib_p) = kmalloc(sizeof(struct hw_fib), GFP_KERNEL);
+		if (!(*(hw_fib_p++))) {
+			--hw_fib_p;
+			break;
+		}
+
+		*(fib_p) = kmalloc(sizeof(struct fib), GFP_KERNEL);
+		if (!(*(fib_p++))) {
+			kfree(*(--hw_fib_p));
+			break;
+		}
+	}
+
+	/*
+	 * Get the actual number of allocated fibs
+	 */
+	num = hw_fib_p - hw_fib_pool;
+	return num;
+}
+
+static void wakeup_fibctx_threads(struct aac_dev *dev,
+						struct hw_fib **hw_fib_pool,
+						struct fib **fib_pool,
+						struct fib *fib,
+						struct hw_fib *hw_fib,
+						unsigned int num)
+{
+	unsigned long flagv;
+	struct list_head *entry;
+	struct hw_fib **hw_fib_p;
+	struct fib **fib_p;
+	u32 time_now, time_last;
+	struct hw_fib *hw_newfib;
+	struct fib *newfib;
+	struct aac_fib_context *fibctx;
+
+	time_now = jiffies/HZ;
+	spin_lock_irqsave(&dev->fib_lock, flagv);
+	entry = dev->fib_list.next;
+	/*
+	 * For each Context that is on the
+	 * fibctxList, make a copy of the
+	 * fib, and then set the event to wake up the
+	 * thread that is waiting for it.
+	 */
+
+	hw_fib_p = hw_fib_pool;
+	fib_p = fib_pool;
+	while (entry != &dev->fib_list) {
+		/*
+		 * Extract the fibctx
+		 */
+		fibctx = list_entry(entry, struct aac_fib_context,
+				next);
+		/*
+		 * Check if the queue is getting
+		 * backlogged
+		 */
+		if (fibctx->count > 20) {
+			/*
+			 * It's *not* jiffies folks,
+			 * but jiffies / HZ so do not
+			 * panic ...
+			 */
+			time_last = fibctx->jiffies;
+			/*
+			 * Has it been > 2 minutes
+			 * since the last read off
+			 * the queue?
+			 */
+			if ((time_now - time_last) > aif_timeout) {
+				entry = entry->next;
+				aac_close_fib_context(dev, fibctx);
+				continue;
+			}
+		}
+		/*
+		 * Warning: no sleep allowed while
+		 * holding spinlock
+		 */
+		if (hw_fib_p >= &hw_fib_pool[num]) {
+			pr_warn("aifd: didn't allocate NewFib\n");
+			entry = entry->next;
+			continue;
+		}
+
+		hw_newfib = *hw_fib_p;
+		*(hw_fib_p++) = NULL;
+		newfib = *fib_p;
+		*(fib_p++) = NULL;
+		/*
+		 * Make the copy of the FIB
+		 */
+		memcpy(hw_newfib, hw_fib, sizeof(struct hw_fib));
+		memcpy(newfib, fib, sizeof(struct fib));
+		newfib->hw_fib_va = hw_newfib;
+		/*
+		 * Put the FIB onto the
+		 * fibctx's fibs
+		 */
+		list_add_tail(&newfib->fiblink, &fibctx->fib_list);
+		fibctx->count++;
+		/*
+		 * Set the event to wake up the
+		 * thread that is waiting.
+		 */
+		complete(&fibctx->completion);
+
+		entry = entry->next;
+	}
+	/*
+	 *	Set the status of this FIB
+	 */
+	*(__le32 *)hw_fib->data = cpu_to_le32(ST_OK);
+	aac_fib_adapter_complete(fib, sizeof(u32));
+	spin_unlock_irqrestore(&dev->fib_lock, flagv);
+
+}
+
+static void aac_process_events(struct aac_dev *dev)
+{
+	struct hw_fib *hw_fib;
+	struct fib *fib;
+	unsigned long flags;
+	spinlock_t *t_lock;
+
+	t_lock = dev->queues->queue[HostNormCmdQueue].lock;
+	spin_lock_irqsave(t_lock, flags);
+
+	while (!list_empty(&(dev->queues->queue[HostNormCmdQueue].cmdq))) {
+		struct list_head *entry;
+		struct aac_aifcmd *aifcmd;
+		unsigned int  num;
+		struct hw_fib **hw_fib_pool, **hw_fib_p;
+		struct fib **fib_pool, **fib_p;
+
+		set_current_state(TASK_RUNNING);
+
+		entry = dev->queues->queue[HostNormCmdQueue].cmdq.next;
+		list_del(entry);
+
+		t_lock = dev->queues->queue[HostNormCmdQueue].lock;
+		spin_unlock_irqrestore(t_lock, flags);
+
+		fib = list_entry(entry, struct fib, fiblink);
+		hw_fib = fib->hw_fib_va;
+		if (dev->sa_firmware) {
+			/* Thor AIF */
+			aac_handle_sa_aif(dev, fib);
+			aac_fib_adapter_complete(fib, (u16)sizeof(u32));
+			goto free_fib;
+		}
+		/*
+		 *	We will process the FIB here or pass it to a
+		 *	worker thread that is TBD. We Really can't
+		 *	do anything at this point since we don't have
+		 *	anything defined for this thread to do.
+		 */
+		memset(fib, 0, sizeof(struct fib));
+		fib->type = FSAFS_NTC_FIB_CONTEXT;
+		fib->size = sizeof(struct fib);
+		fib->hw_fib_va = hw_fib;
+		fib->data = hw_fib->data;
+		fib->dev = dev;
+		/*
+		 *	We only handle AifRequest fibs from the adapter.
+		 */
+
+		aifcmd = (struct aac_aifcmd *) hw_fib->data;
+		if (aifcmd->command == cpu_to_le32(AifCmdDriverNotify)) {
+			/* Handle Driver Notify Events */
+			aac_handle_aif(dev, fib);
+			*(__le32 *)hw_fib->data = cpu_to_le32(ST_OK);
+			aac_fib_adapter_complete(fib, (u16)sizeof(u32));
+			goto free_fib;
+		}
+		/*
+		 * The u32 here is important and intended. We are using
+		 * 32bit wrapping time to fit the adapter field
+		 */
+
+		/* Sniff events */
+		if (aifcmd->command == cpu_to_le32(AifCmdEventNotify)
+		 || aifcmd->command == cpu_to_le32(AifCmdJobProgress)) {
+			aac_handle_aif(dev, fib);
+		}
+
+		/*
+		 * get number of fibs to process
+		 */
+		num = get_fib_count(dev);
+		if (!num)
+			goto free_fib;
+
+		hw_fib_pool = kmalloc_array(num, sizeof(struct hw_fib *),
+						GFP_KERNEL);
+		if (!hw_fib_pool)
+			goto free_fib;
+
+		fib_pool = kmalloc_array(num, sizeof(struct fib *), GFP_KERNEL);
+		if (!fib_pool)
+			goto free_hw_fib_pool;
+
+		/*
+		 * Fill up fib pointer pools with actual fibs
+		 * and hw_fibs
+		 */
+		num = fillup_pools(dev, hw_fib_pool, fib_pool, num);
+		if (!num)
+			goto free_mem;
+
+		/*
+		 * wakeup the thread that is waiting for
+		 * the response from fw (ioctl)
+		 */
+		wakeup_fibctx_threads(dev, hw_fib_pool, fib_pool,
+							    fib, hw_fib, num);
+
+free_mem:
+		/* Free up the remaining resources */
+		hw_fib_p = hw_fib_pool;
+		fib_p = fib_pool;
+		while (hw_fib_p < &hw_fib_pool[num]) {
+			kfree(*hw_fib_p);
+			kfree(*fib_p);
+			++fib_p;
+			++hw_fib_p;
+		}
+		kfree(fib_pool);
+free_hw_fib_pool:
+		kfree(hw_fib_pool);
+free_fib:
+		kfree(fib);
+		t_lock = dev->queues->queue[HostNormCmdQueue].lock;
+		spin_lock_irqsave(t_lock, flags);
+	}
+	/*
+	 *	There are no more AIF's
+	 */
+	t_lock = dev->queues->queue[HostNormCmdQueue].lock;
+	spin_unlock_irqrestore(t_lock, flags);
+}
+
+static int aac_send_wellness_command(struct aac_dev *dev, char *wellness_str,
+							u32 datasize)
+{
+	struct aac_srb *srbcmd;
+	struct sgmap64 *sg64;
+	dma_addr_t addr;
+	char *dma_buf;
+	struct fib *fibptr;
+	int ret = -ENOMEM;
+	u32 vbus, vid;
+
+	fibptr = aac_fib_alloc(dev);
+	if (!fibptr)
+		goto out;
+
+	dma_buf = dma_alloc_coherent(&dev->pdev->dev, datasize, &addr,
+				     GFP_KERNEL);
+	if (!dma_buf)
+		goto fib_free_out;
+
+	aac_fib_init(fibptr);
+
+	vbus = (u32)le16_to_cpu(dev->supplement_adapter_info.virt_device_bus);
+	vid = (u32)le16_to_cpu(dev->supplement_adapter_info.virt_device_target);
+
+	srbcmd = (struct aac_srb *)fib_data(fibptr);
+
+	srbcmd->function = cpu_to_le32(SRBF_ExecuteScsi);
+	srbcmd->channel = cpu_to_le32(vbus);
+	srbcmd->id = cpu_to_le32(vid);
+	srbcmd->lun = 0;
+	srbcmd->flags = cpu_to_le32(SRB_DataOut);
+	srbcmd->timeout = cpu_to_le32(10);
+	srbcmd->retry_limit = 0;
+	srbcmd->cdb_size = cpu_to_le32(12);
+	srbcmd->count = cpu_to_le32(datasize);
+
+	memset(srbcmd->cdb, 0, sizeof(srbcmd->cdb));
+	srbcmd->cdb[0] = BMIC_OUT;
+	srbcmd->cdb[6] = WRITE_HOST_WELLNESS;
+	memcpy(dma_buf, (char *)wellness_str, datasize);
+
+	sg64 = (struct sgmap64 *)&srbcmd->sg;
+	sg64->count = cpu_to_le32(1);
+	sg64->sg[0].addr[1] = cpu_to_le32((u32)(((addr) >> 16) >> 16));
+	sg64->sg[0].addr[0] = cpu_to_le32((u32)(addr & 0xffffffff));
+	sg64->sg[0].count = cpu_to_le32(datasize);
+
+	ret = aac_fib_send(ScsiPortCommand64, fibptr, sizeof(struct aac_srb),
+				FsaNormal, 1, 1, NULL, NULL);
+
+	dma_free_coherent(&dev->pdev->dev, datasize, dma_buf, addr);
+
+	/*
+	 * Do not set XferState to zero unless
+	 * receives a response from F/W
+	 */
+	if (ret >= 0)
+		aac_fib_complete(fibptr);
+
+	/*
+	 * FIB should be freed only after
+	 * getting the response from the F/W
+	 */
+	if (ret != -ERESTARTSYS)
+		goto fib_free_out;
+
+out:
+	return ret;
+fib_free_out:
+	aac_fib_free(fibptr);
+	goto out;
+}
+
+static int aac_send_safw_hostttime(struct aac_dev *dev, struct timespec64 *now)
+{
+	struct tm cur_tm;
+	char wellness_str[] = "<HW>TD\010\0\0\0\0\0\0\0\0\0DW\0\0ZZ";
+	u32 datasize = sizeof(wellness_str);
+	time64_t local_time;
+	int ret = -ENODEV;
+
+	if (!dev->sa_firmware)
+		goto out;
+
+	local_time = (now->tv_sec - (sys_tz.tz_minuteswest * 60));
+	time64_to_tm(local_time, 0, &cur_tm);
+	cur_tm.tm_mon += 1;
+	cur_tm.tm_year += 1900;
+	wellness_str[8] = bin2bcd(cur_tm.tm_hour);
+	wellness_str[9] = bin2bcd(cur_tm.tm_min);
+	wellness_str[10] = bin2bcd(cur_tm.tm_sec);
+	wellness_str[12] = bin2bcd(cur_tm.tm_mon);
+	wellness_str[13] = bin2bcd(cur_tm.tm_mday);
+	wellness_str[14] = bin2bcd(cur_tm.tm_year / 100);
+	wellness_str[15] = bin2bcd(cur_tm.tm_year % 100);
+
+	ret = aac_send_wellness_command(dev, wellness_str, datasize);
+
+out:
+	return ret;
+}
+
+static int aac_send_hosttime(struct aac_dev *dev, struct timespec64 *now)
+{
+	int ret = -ENOMEM;
+	struct fib *fibptr;
+	__le32 *info;
+
+	fibptr = aac_fib_alloc(dev);
+	if (!fibptr)
+		goto out;
+
+	aac_fib_init(fibptr);
+	info = (__le32 *)fib_data(fibptr);
+	*info = cpu_to_le32(now->tv_sec); /* overflow in y2106 */
+	ret = aac_fib_send(SendHostTime, fibptr, sizeof(*info), FsaNormal,
+					1, 1, NULL, NULL);
+
+	/*
+	 * Do not set XferState to zero unless
+	 * receives a response from F/W
+	 */
+	if (ret >= 0)
+		aac_fib_complete(fibptr);
+
+	/*
+	 * FIB should be freed only after
+	 * getting the response from the F/W
+	 */
+	if (ret != -ERESTARTSYS)
+		aac_fib_free(fibptr);
+
+out:
+	return ret;
+}
+
+/**
+ *	aac_command_thread	-	command processing thread
+ *	@data: Adapter to monitor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Waits on the commandready event in it's queue. When the event gets set
  *	it will pull FIBs off it's queue. It will continue to pull FIBs off
@@ -1621,10 +2884,13 @@ out:
 int aac_command_thread(void *data)
 {
 	struct aac_dev *dev = data;
+<<<<<<< HEAD
 	struct hw_fib *hw_fib, *hw_newfib;
 	struct fib *fib, *newfib;
 	struct aac_fib_context *fibctx;
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DECLARE_WAITQUEUE(wait, current);
 	unsigned long next_jiffies = jiffies + HZ;
 	unsigned long next_check_jiffies = next_jiffies;
@@ -1644,6 +2910,7 @@ int aac_command_thread(void *data)
 	set_current_state(TASK_INTERRUPTIBLE);
 	dprintk ((KERN_INFO "aac_command_thread start\n"));
 	while (1) {
+<<<<<<< HEAD
 		spin_lock_irqsave(dev->queues->queue[HostNormCmdQueue].lock, flags);
 		while(!list_empty(&(dev->queues->queue[HostNormCmdQueue].cmdq))) {
 			struct list_head *entry;
@@ -1834,6 +3101,10 @@ int aac_command_thread(void *data)
 		 *	There are no more AIF's
 		 */
 		spin_unlock_irqrestore(dev->queues->queue[HostNormCmdQueue].lock, flags);
+=======
+
+		aac_process_events(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 *	Background activity
@@ -1841,7 +3112,11 @@ int aac_command_thread(void *data)
 		if ((time_before(next_check_jiffies,next_jiffies))
 		 && ((difference = next_check_jiffies - jiffies) <= 0)) {
 			next_check_jiffies = next_jiffies;
+<<<<<<< HEAD
 			if (aac_check_health(dev) == 0) {
+=======
+			if (aac_adapter_check_health(dev) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				difference = ((long)(unsigned)check_interval)
 					   * HZ;
 				next_check_jiffies = jiffies + difference;
@@ -1850,16 +3125,26 @@ int aac_command_thread(void *data)
 		}
 		if (!time_before(next_check_jiffies,next_jiffies)
 		 && ((difference = next_jiffies - jiffies) <= 0)) {
+<<<<<<< HEAD
 			struct timeval now;
 			int ret;
 
 			/* Don't even try to talk to adapter if its sick */
 			ret = aac_check_health(dev);
 			if (!ret && !dev->queues)
+=======
+			struct timespec64 now;
+			int ret;
+
+			/* Don't even try to talk to adapter if its sick */
+			ret = aac_adapter_check_health(dev);
+			if (ret || !dev->queues)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			next_check_jiffies = jiffies
 					   + ((long)(unsigned)check_interval)
 					   * HZ;
+<<<<<<< HEAD
 			do_gettimeofday(&now);
 
 			/* Synchronize our watches */
@@ -1902,6 +3187,26 @@ int aac_command_thread(void *data)
 			} else {
 				/* retry shortly */
 				difference = 10 * HZ;
+=======
+			ktime_get_real_ts64(&now);
+
+			/* Synchronize our watches */
+			if (((NSEC_PER_SEC - (NSEC_PER_SEC / HZ)) > now.tv_nsec)
+			 && (now.tv_nsec > (NSEC_PER_SEC / HZ)))
+				difference = HZ + HZ / 2 -
+					     now.tv_nsec / (NSEC_PER_SEC / HZ);
+			else {
+				if (now.tv_nsec > NSEC_PER_SEC / 2)
+					++now.tv_sec;
+
+				if (dev->sa_firmware)
+					ret =
+					aac_send_safw_hostttime(dev, &now);
+				else
+					ret = aac_send_hosttime(dev, &now);
+
+				difference = (long)(unsigned)update_interval*HZ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			next_jiffies = jiffies + difference;
 			if (time_before(next_check_jiffies,next_jiffies))
@@ -1910,6 +3215,17 @@ int aac_command_thread(void *data)
 		if (difference <= 0)
 			difference = 1;
 		set_current_state(TASK_INTERRUPTIBLE);
+<<<<<<< HEAD
+=======
+
+		if (kthread_should_stop())
+			break;
+
+		/*
+		 * we probably want usleep_range() here instead of the
+		 * jiffies computation
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		schedule_timeout(difference);
 
 		if (kthread_should_stop())
@@ -1920,3 +3236,66 @@ int aac_command_thread(void *data)
 	dev->aif_thread = 0;
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+int aac_acquire_irq(struct aac_dev *dev)
+{
+	int i;
+	int j;
+	int ret = 0;
+
+	if (!dev->sync_mode && dev->msi_enabled && dev->max_msix > 1) {
+		for (i = 0; i < dev->max_msix; i++) {
+			dev->aac_msix[i].vector_no = i;
+			dev->aac_msix[i].dev = dev;
+			if (request_irq(pci_irq_vector(dev->pdev, i),
+					dev->a_ops.adapter_intr,
+					0, "aacraid", &(dev->aac_msix[i]))) {
+				printk(KERN_ERR "%s%d: Failed to register IRQ for vector %d.\n",
+						dev->name, dev->id, i);
+				for (j = 0 ; j < i ; j++)
+					free_irq(pci_irq_vector(dev->pdev, j),
+						 &(dev->aac_msix[j]));
+				pci_disable_msix(dev->pdev);
+				ret = -1;
+			}
+		}
+	} else {
+		dev->aac_msix[0].vector_no = 0;
+		dev->aac_msix[0].dev = dev;
+
+		if (request_irq(dev->pdev->irq, dev->a_ops.adapter_intr,
+			IRQF_SHARED, "aacraid",
+			&(dev->aac_msix[0])) < 0) {
+			if (dev->msi)
+				pci_disable_msi(dev->pdev);
+			printk(KERN_ERR "%s%d: Interrupt unavailable.\n",
+					dev->name, dev->id);
+			ret = -1;
+		}
+	}
+	return ret;
+}
+
+void aac_free_irq(struct aac_dev *dev)
+{
+	int i;
+
+	if (aac_is_src(dev)) {
+		if (dev->max_msix > 1) {
+			for (i = 0; i < dev->max_msix; i++)
+				free_irq(pci_irq_vector(dev->pdev, i),
+					 &(dev->aac_msix[i]));
+		} else {
+			free_irq(dev->pdev->irq, &(dev->aac_msix[0]));
+		}
+	} else {
+		free_irq(dev->pdev->irq, dev);
+	}
+	if (dev->msi)
+		pci_disable_msi(dev->pdev);
+	else if (dev->max_msix > 1)
+		pci_disable_msix(dev->pdev);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

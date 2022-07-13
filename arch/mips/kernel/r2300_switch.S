@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * r2300_switch.S: R2300 specific task switching code.
  *
@@ -15,7 +19,10 @@
 #include <asm/fpregdef.h>
 #include <asm/mipsregs.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
 #include <asm/page.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/regdef.h>
 #include <asm/stackframe.h>
 #include <asm/thread_info.h>
@@ -26,6 +33,7 @@
 	.align	5
 
 /*
+<<<<<<< HEAD
  * Offset to the current process status flags, the first 32 bytes of the
  * stack are not used.
  */
@@ -44,6 +52,10 @@
 /*
  * task_struct *resume(task_struct *prev, task_struct *next,
  *                     struct thread_info *next_ti) )
+=======
+ * task_struct *resume(task_struct *prev, task_struct *next,
+ *		       struct thread_info *next_ti)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 LEAF(resume)
 	mfc0	t1, CP0_STATUS
@@ -51,6 +63,7 @@ LEAF(resume)
 	cpu_save_nonscratch a0
 	sw	ra, THREAD_REG31(a0)
 
+<<<<<<< HEAD
 	/*
 	 * check if we need to save FPU registers
 	 */
@@ -75,6 +88,14 @@ LEAF(resume)
 	fpu_save_single a0, t0			# clobbers t0
 
 1:
+=======
+#if defined(CONFIG_STACKPROTECTOR) && !defined(CONFIG_SMP)
+	PTR_LA	t8, __stack_chk_guard
+	LONG_L	t9, TASK_STACK_CANARY(a1)
+	LONG_S	t9, 0(t8)
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The order of restoring the registers takes care of the race
 	 * updating $28, $29 and kernelsp without disabling ints.
@@ -96,6 +117,7 @@ LEAF(resume)
 	move	v0, a0
 	jr	ra
 	END(resume)
+<<<<<<< HEAD
 
 /*
  * Save a thread's fp context.
@@ -168,3 +190,5 @@ LEAF(_init_fpu)
 	mtc1	t0, $f31
 	jr	ra
 	END(_init_fpu)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

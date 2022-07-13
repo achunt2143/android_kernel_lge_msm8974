@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ipmi_smic_sm.c
  *
@@ -18,6 +22,7 @@
  * copyright notice:
  * (c) Copyright 2001 Grant Grundler (c) Copyright
  * 2001 Hewlett-Packard Company
+<<<<<<< HEAD
  *
  *
  *  This program is free software; you can redistribute it and/or modify it
@@ -40,6 +45,11 @@
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  675 Mass Ave, Cambridge, MA 02139, USA.  */
+=======
+ */
+
+#define DEBUG /* So dev_dbg() is always available. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kernel.h> /* For printk. */
 #include <linux/string.h>
@@ -80,7 +90,11 @@ enum smic_states {
 #define SMIC_MAX_ERROR_RETRIES 3
 
 /* Timeouts in microseconds. */
+<<<<<<< HEAD
 #define SMIC_RETRY_TIMEOUT 2000000
+=======
+#define SMIC_RETRY_TIMEOUT (2*USEC_PER_SEC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SMIC Flags Register Bits */
 #define SMIC_RX_DATA_READY	0x80
@@ -146,6 +160,7 @@ static int start_smic_transaction(struct si_sm_data *smic,
 	if (size > MAX_SMIC_WRITE_SIZE)
 		return IPMI_REQ_LEN_EXCEEDED_ERR;
 
+<<<<<<< HEAD
 	if ((smic->state != SMIC_IDLE) && (smic->state != SMIC_HOSED))
 		return IPMI_NOT_IN_MY_STATE_ERR;
 
@@ -154,6 +169,19 @@ static int start_smic_transaction(struct si_sm_data *smic,
 		for (i = 0; i < size; i++)
 			printk(" %02x", (unsigned char) data[i]);
 		printk("\n");
+=======
+	if ((smic->state != SMIC_IDLE) && (smic->state != SMIC_HOSED)) {
+		dev_warn(smic->io->dev,
+			 "SMIC in invalid state %d\n", smic->state);
+		return IPMI_NOT_IN_MY_STATE_ERR;
+	}
+
+	if (smic_debug & SMIC_DEBUG_MSG) {
+		dev_dbg(smic->io->dev, "%s -", __func__);
+		for (i = 0; i < size; i++)
+			pr_cont(" %02x", data[i]);
+		pr_cont("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	smic->error_retries = 0;
 	memcpy(smic->write_data, data, size);
@@ -172,10 +200,17 @@ static int smic_get_result(struct si_sm_data *smic,
 	int i;
 
 	if (smic_debug & SMIC_DEBUG_MSG) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG "smic_get result -");
 		for (i = 0; i < smic->read_pos; i++)
 			printk(" %02x", smic->read_data[i]);
 		printk("\n");
+=======
+		dev_dbg(smic->io->dev, "smic_get result -");
+		for (i = 0; i < smic->read_pos; i++)
+			pr_cont(" %02x", smic->read_data[i]);
+		pr_cont("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (length < smic->read_pos) {
 		smic->read_pos = length;
@@ -232,8 +267,12 @@ static inline void start_error_recovery(struct si_sm_data *smic, char *reason)
 	(smic->error_retries)++;
 	if (smic->error_retries > SMIC_MAX_ERROR_RETRIES) {
 		if (smic_debug & SMIC_DEBUG_ENABLE)
+<<<<<<< HEAD
 			printk(KERN_WARNING
 			       "ipmi_smic_drv: smic hosed: %s\n", reason);
+=======
+			pr_warn("ipmi_smic_drv: smic hosed: %s\n", reason);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smic->state = SMIC_HOSED;
 	} else {
 		smic->write_count = smic->orig_write_count;
@@ -345,10 +384,16 @@ static enum si_sm_result smic_event(struct si_sm_data *smic, long time)
 	}
 	if (smic->state != SMIC_IDLE) {
 		if (smic_debug & SMIC_DEBUG_STATES)
+<<<<<<< HEAD
 			printk(KERN_DEBUG
 			       "smic_event - smic->smic_timeout = %ld,"
 			       " time = %ld\n",
 			       smic->smic_timeout, time);
+=======
+			dev_dbg(smic->io->dev,
+				"%s - smic->smic_timeout = %ld, time = %ld\n",
+				__func__, smic->smic_timeout, time);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * FIXME: smic_event is sometimes called with time >
 		 * SMIC_RETRY_TIMEOUT
@@ -367,10 +412,16 @@ static enum si_sm_result smic_event(struct si_sm_data *smic, long time)
 
 	status = read_smic_status(smic);
 	if (smic_debug & SMIC_DEBUG_STATES)
+<<<<<<< HEAD
 		printk(KERN_DEBUG
 		       "smic_event - state = %d, flags = 0x%02x,"
 		       " status = 0x%02x\n",
 		       smic->state, flags, status);
+=======
+		dev_dbg(smic->io->dev,
+			"%s - state = %d, flags = 0x%02x, status = 0x%02x\n",
+			__func__, smic->state, flags, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (smic->state) {
 	case SMIC_IDLE:
@@ -460,8 +511,14 @@ static enum si_sm_result smic_event(struct si_sm_data *smic, long time)
 		data = read_smic_data(smic);
 		if (data != 0) {
 			if (smic_debug & SMIC_DEBUG_ENABLE)
+<<<<<<< HEAD
 				printk(KERN_DEBUG
 				       "SMIC_WRITE_END: data = %02x\n", data);
+=======
+				dev_dbg(smic->io->dev,
+					"SMIC_WRITE_END: data = %02x\n",
+					data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start_error_recovery(smic,
 					     "state = SMIC_WRITE_END, "
 					     "data != SUCCESS");
@@ -540,8 +597,14 @@ static enum si_sm_result smic_event(struct si_sm_data *smic, long time)
 		/* data register holds an error code */
 		if (data != 0) {
 			if (smic_debug & SMIC_DEBUG_ENABLE)
+<<<<<<< HEAD
 				printk(KERN_DEBUG
 				       "SMIC_READ_END: data = %02x\n", data);
+=======
+				dev_dbg(smic->io->dev,
+					"SMIC_READ_END: data = %02x\n",
+					data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start_error_recovery(smic,
 					     "state = SMIC_READ_END, "
 					     "data != SUCCESS");
@@ -557,7 +620,12 @@ static enum si_sm_result smic_event(struct si_sm_data *smic, long time)
 
 	default:
 		if (smic_debug & SMIC_DEBUG_ENABLE) {
+<<<<<<< HEAD
 			printk(KERN_DEBUG "smic->state = %d\n", smic->state);
+=======
+			dev_dbg(smic->io->dev,
+				"smic->state = %d\n", smic->state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start_error_recovery(smic, "state = UNKNOWN");
 			return SI_SM_CALL_WITH_DELAY;
 		}
@@ -589,7 +657,11 @@ static int smic_size(void)
 	return sizeof(struct si_sm_data);
 }
 
+<<<<<<< HEAD
 struct si_sm_handlers smic_smi_handlers = {
+=======
+const struct si_sm_handlers smic_smi_handlers = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_data         = init_smic_data,
 	.start_transaction = start_smic_transaction,
 	.get_result        = smic_get_result,

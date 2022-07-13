@@ -5,7 +5,11 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unsigned long __generic_copy_from_user(void *to, const void __user *from,
 				       unsigned long n)
@@ -30,6 +34,7 @@ unsigned long __generic_copy_from_user(void *to, const void __user *from,
 		"6:\n"
 		"	.section .fixup,\"ax\"\n"
 		"	.even\n"
+<<<<<<< HEAD
 		"10:	move.l	%0,%3\n"
 		"7:	clr.l	(%2)+\n"
 		"	subq.l	#1,%3\n"
@@ -43,6 +48,15 @@ unsigned long __generic_copy_from_user(void *to, const void __user *from,
 		"	jeq	6b\n"
 		"50:	clr.b	(%2)+\n"
 		"	addq.l	#1,%0\n"
+=======
+		"10:	lsl.l	#2,%0\n"
+		"	btst	#1,%5\n"
+		"	jeq	8f\n"
+		"30:	addq.l	#2,%0\n"
+		"8:	btst	#0,%5\n"
+		"	jeq	6b\n"
+		"50:	addq.l	#1,%0\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"	jra	6b\n"
 		"	.previous\n"
 		"\n"
@@ -52,7 +66,11 @@ unsigned long __generic_copy_from_user(void *to, const void __user *from,
 		"	.long	3b,30b\n"
 		"	.long	5b,50b\n"
 		"	.previous"
+<<<<<<< HEAD
 		: "=d" (res), "+a" (from), "+a" (to), "=&r" (tmp)
+=======
+		: "=d" (res), "+a" (from), "+a" (to), "=&d" (tmp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "0" (n / 4), "d" (n & 3));
 
 	return res;
@@ -96,7 +114,11 @@ unsigned long __generic_copy_to_user(void __user *to, const void *from,
 		"	.long	7b,50b\n"
 		"	.long	8b,50b\n"
 		"	.previous"
+<<<<<<< HEAD
 		: "=d" (res), "+a" (from), "+a" (to), "=&r" (tmp)
+=======
+		: "=d" (res), "+a" (from), "+a" (to), "=&d" (tmp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "0" (n / 4), "d" (n & 3));
 
 	return res;
@@ -104,6 +126,7 @@ unsigned long __generic_copy_to_user(void __user *to, const void *from,
 EXPORT_SYMBOL(__generic_copy_to_user);
 
 /*
+<<<<<<< HEAD
  * Copy a null terminated string from userspace.
  */
 long strncpy_from_user(char *dst, const char __user *src, long count)
@@ -178,6 +201,8 @@ long strnlen_user(const char __user *src, long n)
 EXPORT_SYMBOL(strnlen_user);
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Zero Userspace
  */
 
@@ -215,7 +240,11 @@ unsigned long __clear_user(void __user *to, unsigned long n)
 		"	.long	7b,40b\n"
 		"	.previous"
 		: "=d" (res), "+a" (to)
+<<<<<<< HEAD
 		: "r" (0), "0" (n / 4), "d" (n & 3));
+=======
+		: "d" (0), "0" (n / 4), "d" (n & 3));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     return res;
 }

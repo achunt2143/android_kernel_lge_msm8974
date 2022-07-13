@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 #               Makefile for wm-FPU-emu
 #
@@ -5,8 +9,13 @@
 #DEBUG	= -DDEBUGGING
 DEBUG	=
 PARANOID = -DPARANOID
+<<<<<<< HEAD
 EXTRA_CFLAGS	:= $(PARANOID) $(DEBUG) -fno-builtin $(MATH_EMULATION)
 EXTRA_AFLAGS	:= $(PARANOID)
+=======
+ccflags-y += $(PARANOID) $(DEBUG) -fno-builtin $(MATH_EMULATION)
+asflags-y += $(PARANOID)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # From 'C' language sources:
 C_OBJS =fpu_entry.o errors.o \

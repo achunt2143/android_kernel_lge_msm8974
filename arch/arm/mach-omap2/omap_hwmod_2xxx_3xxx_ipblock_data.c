@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * omap_hwmod_2xxx_3xxx_ipblock_data.c - common IP block data for OMAP2/3
  *
  * Copyright (C) 2011 Nokia Corporation
+<<<<<<< HEAD
  * Paul Walmsley
  *
  * This program is free software; you can redistribute it and/or modify
@@ -14,6 +19,17 @@
 #include <plat/common.h>
 
 #include <mach/irqs.h>
+=======
+ * Copyright (C) 2012 Texas Instruments, Inc.
+ * Paul Walmsley
+ */
+
+#include <linux/dmaengine.h>
+#include <linux/omap-dma.h>
+
+#include "omap_hwmod.h"
+#include "hdq1w.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "omap_hwmod_common_data.h"
 
@@ -36,6 +52,7 @@ struct omap_hwmod_class omap2_uart_class = {
 };
 
 /*
+<<<<<<< HEAD
  * 'dss' class
  * display sub-system
  */
@@ -76,6 +93,8 @@ struct omap_hwmod_class omap2_rfbi_hwmod_class = {
 };
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 'venc' class
  * video encoder
  */
@@ -84,6 +103,7 @@ struct omap_hwmod_class omap2_venc_hwmod_class = {
 	.name = "venc",
 };
 
+<<<<<<< HEAD
 
 /* Common DMA request line data */
 struct omap_hwmod_dma_info omap2_uart1_sdma_reqs[] = {
@@ -157,11 +177,14 @@ struct omap_hwmod_dma_info omap2_mcbsp3_sdma_reqs[] = {
 /* Other IP block data */
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * omap_hwmod class data
  */
 
 struct omap_hwmod_class l3_hwmod_class = {
+<<<<<<< HEAD
 	.name = "l3"
 };
 
@@ -302,3 +325,34 @@ struct omap_hwmod_irq_info omap2_mcspi2_mpu_irqs[] = {
 	{ .irq = -1 }
 };
 
+=======
+	.name = "l3",
+};
+
+struct omap_hwmod_class l4_hwmod_class = {
+	.name = "l4",
+};
+
+struct omap_hwmod_class mpu_hwmod_class = {
+	.name = "mpu",
+};
+
+struct omap_hwmod_class iva_hwmod_class = {
+	.name = "iva",
+};
+
+static struct omap_hwmod_class_sysconfig omap2_hdq1w_sysc = {
+	.rev_offs	= 0x0,
+	.sysc_offs	= 0x14,
+	.syss_offs	= 0x18,
+	.sysc_flags	= (SYSC_HAS_SOFTRESET | SYSC_HAS_AUTOIDLE |
+			   SYSS_HAS_RESET_STATUS),
+	.sysc_fields    = &omap_hwmod_sysc_type1,
+};
+
+struct omap_hwmod_class omap2_hdq1w_class = {
+	.name	= "hdq1w",
+	.sysc	= &omap2_hdq1w_sysc,
+	.reset	= &omap_hdq1w_reset,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

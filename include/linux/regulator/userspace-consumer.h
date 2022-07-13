@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __REGULATOR_PLATFORM_CONSUMER_H_
 #define __REGULATOR_PLATFORM_CONSUMER_H_
 
@@ -20,6 +24,10 @@ struct regulator_userspace_consumer_data {
 	struct regulator_bulk_data *supplies;
 
 	bool init_on;
+<<<<<<< HEAD
+=======
+	bool no_autoswitch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif /* __REGULATOR_PLATFORM_CONSUMER_H_ */

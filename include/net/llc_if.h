@@ -62,6 +62,7 @@
 #define LLC_STATUS_CONFLICT	7 /* disconnect conn */
 #define LLC_STATUS_RESET_DONE	8 /*  */
 
+<<<<<<< HEAD
 /**
  *      llc_mac_null - determines if a address is a null mac address
  *      @mac: Mac address to test if null.
@@ -96,4 +97,10 @@ extern int llc_establish_connection(struct sock *sk, u8 *lmac,
 				    u8 *dmac, u8 dsap);
 extern int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb);
 extern int llc_send_disc(struct sock *sk);
+=======
+int llc_establish_connection(struct sock *sk, const u8 *lmac, u8 *dmac,
+			     u8 dsap);
+int llc_build_and_send_pkt(struct sock *sk, struct sk_buff *skb);
+int llc_send_disc(struct sock *sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* LLC_IF_H */

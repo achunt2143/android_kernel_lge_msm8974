@@ -1,12 +1,20 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Global definition of all the bootwrapper operations.
  *
  * Author: Mark A. Greer <mgreer@mvista.com>
  *
+<<<<<<< HEAD
  * 2006 (c) MontaVista Software, Inc.  This file is licensed under
  * the terms of the GNU General Public License version 2.  This program
  * is licensed "as is" without any warranty of any kind, whether express
  * or implied.
+=======
+ * 2006 (c) MontaVista Software, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _PPC_BOOT_OPS_H_
 #define _PPC_BOOT_OPS_H_
@@ -15,7 +23,11 @@
 #include "types.h"
 #include "string.h"
 
+<<<<<<< HEAD
 #define	COMMAND_LINE_SIZE	512
+=======
+#define	BOOT_COMMAND_LINE_SIZE	2048
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	MAX_PATH_LEN		256
 #define	MAX_PROP_LEN		256 /* What should this be? */
 
@@ -30,6 +42,10 @@ struct platform_ops {
 	void *	(*realloc)(void *ptr, unsigned long size);
 	void	(*exit)(void);
 	void *	(*vmlinux_alloc)(unsigned long size);
+<<<<<<< HEAD
+=======
+	void  	(*kentry)(unsigned long fdt_addr, void *vmlinux_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 extern struct platform_ops platform_ops;
 
@@ -58,7 +74,11 @@ extern struct dt_ops dt_ops;
 struct console_ops {
 	int	(*open)(void);
 	void	(*write)(const char *buf, int len);
+<<<<<<< HEAD
 	void	(*edit_cmdline)(char *buf, int len);
+=======
+	void	(*edit_cmdline)(char *buf, int len, unsigned int getline_timeout);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void	(*close)(void);
 	void	*data;
 };
@@ -85,10 +105,16 @@ void start(void);
 void fdt_init(void *blob);
 int serial_console_init(void);
 int ns16550_console_init(void *devp, struct serial_console_data *scdp);
+<<<<<<< HEAD
 int mpsc_console_init(void *devp, struct serial_console_data *scdp);
 int cpm_console_init(void *devp, struct serial_console_data *scdp);
 int mpc5200_psc_console_init(void *devp, struct serial_console_data *scdp);
 int uartlite_console_init(void *devp, struct serial_console_data *scdp);
+=======
+int cpm_console_init(void *devp, struct serial_console_data *scdp);
+int mpc5200_psc_console_init(void *devp, struct serial_console_data *scdp);
+int opal_console_init(void *devp, struct serial_console_data *scdp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void *simple_alloc_init(char *base, unsigned long heap_size,
 			unsigned long granularity, unsigned long max_allocs);
 extern void flush_cache(void *, unsigned long);
@@ -200,12 +226,15 @@ void __dt_fixup_mac_addresses(u32 startindex, ...);
 	__dt_fixup_mac_addresses(0, __VA_ARGS__, NULL)
 
 
+<<<<<<< HEAD
 static inline void *find_node_by_linuxphandle(const u32 linuxphandle)
 {
 	return find_node_by_prop_value(NULL, "linux,phandle",
 			(char *)&linuxphandle, sizeof(u32));
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline char *get_path(const void *phandle, char *buf, int len)
 {
 	if (dt_ops.get_path)
@@ -250,6 +279,11 @@ extern char _initrd_start[];
 extern char _initrd_end[];
 extern char _dtb_start[];
 extern char _dtb_end[];
+<<<<<<< HEAD
+=======
+extern char _esm_blob_start[];
+extern char _esm_blob_end[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline __attribute__((const))
 int __ilog2_u32(u32 n)
@@ -259,4 +293,10 @@ int __ilog2_u32(u32 n)
 	return 31 - bit;
 }
 
+<<<<<<< HEAD
+=======
+long partial_decompress(void *inbuf, unsigned long input_size, void *outbuf,
+	unsigned long output_size, unsigned long skip);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _PPC_BOOT_OPS_H_ */

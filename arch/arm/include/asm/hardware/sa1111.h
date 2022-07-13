@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/include/asm/hardware/sa1111.h
  *
@@ -12,6 +16,7 @@
 #ifndef _ASM_ARCH_SA1111
 #define _ASM_ARCH_SA1111
 
+<<<<<<< HEAD
 #include <mach/bitfield.h>
 
 /*
@@ -41,6 +46,8 @@
 #define SA1111_ADDR_MASK	((1<<SA1111_ADDR_WIDTH)-1)
 #define SA1111_DMA_ADDR(x)	((x)&SA1111_ADDR_MASK)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Don't ask the (SAC) DMA engines to move less than this amount.
  */
@@ -416,11 +423,19 @@ struct sa1111_dev {
 	struct resource	res;
 	void __iomem	*mapbase;
 	unsigned int	skpcr_mask;
+<<<<<<< HEAD
 	unsigned int	irq[6];
 	u64		dma_mask;
 };
 
 #define SA1111_DEV(_d)	container_of((_d), struct sa1111_dev, dev)
+=======
+	unsigned int	hwirq[6];
+	u64		dma_mask;
+};
+
+#define to_sa1111_device(x)	container_of(x, struct sa1111_dev, dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define sa1111_get_drvdata(d)	dev_get_drvdata(&(d)->dev)
 #define sa1111_set_drvdata(d,p)	dev_set_drvdata(&(d)->dev, p)
@@ -429,10 +444,14 @@ struct sa1111_driver {
 	struct device_driver	drv;
 	unsigned int		devid;
 	int (*probe)(struct sa1111_dev *);
+<<<<<<< HEAD
 	int (*remove)(struct sa1111_dev *);
 	int (*suspend)(struct sa1111_dev *, pm_message_t);
 	int (*resume)(struct sa1111_dev *);
 	void (*shutdown)(struct sa1111_dev *);
+=======
+	void (*remove)(struct sa1111_dev *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define SA1111_DRV(_d)	container_of((_d), struct sa1111_driver, drv)
@@ -446,6 +465,11 @@ struct sa1111_driver {
 int sa1111_enable_device(struct sa1111_dev *);
 void sa1111_disable_device(struct sa1111_dev *);
 
+<<<<<<< HEAD
+=======
+int sa1111_get_irq(struct sa1111_dev *, unsigned num);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned int sa1111_pll_clock(struct sa1111_dev *);
 
 #define SA1111_AUDIO_ACLINK	0
@@ -460,10 +484,13 @@ int sa1111_check_dma_bug(dma_addr_t addr);
 int sa1111_driver_register(struct sa1111_driver *);
 void sa1111_driver_unregister(struct sa1111_driver *);
 
+<<<<<<< HEAD
 void sa1111_set_io_dir(struct sa1111_dev *sadev, unsigned int bits, unsigned int dir, unsigned int sleep_dir);
 void sa1111_set_io(struct sa1111_dev *sadev, unsigned int bits, unsigned int v);
 void sa1111_set_sleep_io(struct sa1111_dev *sadev, unsigned int bits, unsigned int v);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sa1111_platform_data {
 	int	irq_base;	/* base for cascaded on-chip IRQs */
 	unsigned disable_devs;

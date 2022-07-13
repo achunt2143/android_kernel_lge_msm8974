@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2004 James Courtier-Dutton <James@superbug.demon.co.uk>
  *  Driver CA0106 chips. e.g. Sound Blaster Audigy LS and Live 24bit
@@ -50,6 +54,7 @@
  *  0.0.22
  *    Add support for mute control on SB Live 24bit (cards w/ SPI DAC)
  *
+<<<<<<< HEAD
  *
  *  This code was initially based on code from ALSA's emu10k1x.c which is:
  *  Copyright (c) by Francisco Moraes <fmoraes@nc.rr.com>
@@ -68,21 +73,36 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+ *  This code was initially based on code from ALSA's emu10k1x.c which is:
+ *  Copyright (c) by Francisco Moraes <fmoraes@nc.rr.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /************************************************************************************************/
 /* PCI function 0 registers, address = <val> + PCIBASE0						*/
 /************************************************************************************************/
 
+<<<<<<< HEAD
 #define PTR			0x00		/* Indexed register set pointer register	*/
+=======
+#define CA0106_PTR		0x00		/* Indexed register set pointer register	*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						/* NOTE: The CHANNELNUM and ADDRESS words can	*/
 						/* be modified independently of each other.	*/
 						/* CNL[1:0], ADDR[27:16]                        */
 
+<<<<<<< HEAD
 #define DATA			0x04		/* Indexed register set data register		*/
 						/* DATA[31:0]					*/
 
 #define IPR			0x08		/* Global interrupt pending register		*/
+=======
+#define CA0106_DATA		0x04		/* Indexed register set data register		*/
+						/* DATA[31:0]					*/
+
+#define CA0106_IPR		0x08		/* Global interrupt pending register		*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						/* Clear pending interrupts by writing a 1 to	*/
 						/* the relevant bits and zero to the other bits	*/
 #define IPR_MIDI_RX_B		0x00020000	/* MIDI UART-B Receive buffer non-empty		*/
@@ -103,7 +123,11 @@
 #define IPR_MIDI_TX_A		0x00000002	/* MIDI UART-A Transmit buffer empty		*/
 #define IPR_PCI			0x00000001	/* PCI Bus error				*/
 
+<<<<<<< HEAD
 #define INTE			0x0c		/* Interrupt enable register			*/
+=======
+#define CA0106_INTE		0x0c		/* Interrupt enable register			*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define INTE_MIDI_RX_B		0x00020000	/* MIDI UART-B Receive buffer non-empty		*/
 #define INTE_MIDI_TX_B		0x00010000	/* MIDI UART-B Transmit buffer empty		*/
@@ -123,8 +147,13 @@
 #define INTE_MIDI_TX_A		0x00000002	/* MIDI UART-A Transmit buffer empty		*/
 #define INTE_PCI		0x00000001	/* PCI Bus error				*/
 
+<<<<<<< HEAD
 #define UNKNOWN10		0x10		/* Unknown ??. Defaults to 0 */
 #define HCFG			0x14		/* Hardware config register			*/
+=======
+#define CA0106_UNKNOWN10	0x10		/* Unknown ??. Defaults to 0 */
+#define CA0106_HCFG		0x14		/* Hardware config register			*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						/* 0x1000 causes AC3 to fails. It adds a dither bit. */
 
 #define HCFG_STAC		0x10000000	/* Special mode for STAC9460 Codec. */
@@ -148,7 +177,11 @@
 #define HCFG_AUDIOENABLE	0x00000001	/* 0 = CODECs transmit zero-valued samples	*/
 						/* Should be set to 1 when the EMU10K1 is	*/
 						/* completely initialized.			*/
+<<<<<<< HEAD
 #define GPIO			0x18		/* Defaults: 005f03a3-Analog, 005f02a2-SPDIF.   */
+=======
+#define CA0106_GPIO		0x18		/* Defaults: 005f03a3-Analog, 005f02a2-SPDIF.   */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						/* Here pins 0,1,2,3,4,,6 are output. 5,7 are input */
 						/* For the Audigy LS, pin 0 (or bit 8) controls the SPDIF/Analog jack. */
 						/* SB Live 24bit:
@@ -167,9 +200,15 @@
 						 * GPO [15:8] Default 0x9. (Default to SPDIF jack enabled for SPDIF)
 						 * GPO Enable [23:16] Default 0x0f. Setting a bit to 1, causes the pin to be an output pin.
 						 */
+<<<<<<< HEAD
 #define AC97DATA		0x1c		/* AC97 register set data register (16 bit)	*/
 
 #define AC97ADDRESS		0x1e		/* AC97 register set address register (8 bit)	*/
+=======
+#define CA0106_AC97DATA		0x1c		/* AC97 register set data register (16 bit)	*/
+
+#define CA0106_AC97ADDRESS	0x1e		/* AC97 register set address register (8 bit)	*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /********************************************************************************************************/
 /* CA0106 pointer-offset register set, accessed through the PTR and DATA registers                     */
@@ -582,7 +621,11 @@
 #define SPI_PL_BIT_R_R		(2<<7)	/* right channel = right */
 #define SPI_PL_BIT_R_C		(3<<7)	/* right channel = (L+R)/2 */
 #define SPI_IZD_REG		2
+<<<<<<< HEAD
 #define SPI_IZD_BIT		(1<<4)	/* infinite zero detect */
+=======
+#define SPI_IZD_BIT		(0<<4)	/* infinite zero detect */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SPI_FMT_REG		3
 #define SPI_FMT_BIT_RJ		(0<<0)	/* right justified mode */
@@ -678,11 +721,18 @@ struct snd_ca0106_details {
 // definition of the chip-specific record
 struct snd_ca0106 {
 	struct snd_card *card;
+<<<<<<< HEAD
 	struct snd_ca0106_details *details;
 	struct pci_dev *pci;
 
 	unsigned long port;
 	struct resource *res_port;
+=======
+	const struct snd_ca0106_details *details;
+	struct pci_dev *pci;
+
+	unsigned long port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int irq;
 
 	unsigned int serial;            /* serial number */
@@ -703,14 +753,22 @@ struct snd_ca0106 {
 	u8 i2c_capture_volume[4][2];
 	int capture_mic_line_in;
 
+<<<<<<< HEAD
 	struct snd_dma_buffer buffer;
+=======
+	struct snd_dma_buffer *buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct snd_ca_midi midi;
 	struct snd_ca_midi midi2;
 
 	u16 spi_dac_reg[16];
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NUM_SAVED_VOLUMES	9
 	unsigned int saved_vol[NUM_SAVED_VOLUMES];
 #endif
@@ -733,7 +791,11 @@ int snd_ca0106_i2c_write(struct snd_ca0106 *emu, u32 reg, u32 value);
 int snd_ca0106_spi_write(struct snd_ca0106 * emu,
 				   unsigned int data);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void snd_ca0106_mixer_suspend(struct snd_ca0106 *chip);
 void snd_ca0106_mixer_resume(struct snd_ca0106 *chip);
 #else

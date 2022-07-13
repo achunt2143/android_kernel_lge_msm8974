@@ -1,16 +1,27 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Backlight driver for Marvell Semiconductor 88PM8606
  *
  * Copyright (C) 2009 Marvell International Ltd.
  *	Haojian Zhuang <haojian.zhuang@marvell.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/fb.h>
@@ -31,6 +42,7 @@ struct pm860x_backlight_data {
 	int	port;
 	int	pwm;
 	int	iset;
+<<<<<<< HEAD
 };
 
 static inline int wled_a(int port)
@@ -67,12 +79,20 @@ static inline int wled_idc(int port)
 	return ret;
 }
 
+=======
+	int	reg_duty_cycle;
+	int	reg_always_on;
+	int	reg_current;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int backlight_power_set(struct pm860x_chip *chip, int port,
 		int on)
 {
 	int ret = -EINVAL;
 
 	switch (port) {
+<<<<<<< HEAD
 	case PM8606_BACKLIGHT1:
 		ret = on ? pm8606_osc_enable(chip, WLED1_DUTY) :
 			pm8606_osc_disable(chip, WLED1_DUTY);
@@ -82,6 +102,17 @@ static int backlight_power_set(struct pm860x_chip *chip, int port,
 			pm8606_osc_disable(chip, WLED2_DUTY);
 		break;
 	case PM8606_BACKLIGHT3:
+=======
+	case 0:
+		ret = on ? pm8606_osc_enable(chip, WLED1_DUTY) :
+			pm8606_osc_disable(chip, WLED1_DUTY);
+		break;
+	case 1:
+		ret = on ? pm8606_osc_enable(chip, WLED2_DUTY) :
+			pm8606_osc_disable(chip, WLED2_DUTY);
+		break;
+	case 2:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = on ? pm8606_osc_enable(chip, WLED3_DUTY) :
 			pm8606_osc_disable(chip, WLED3_DUTY);
 		break;
@@ -104,13 +135,21 @@ static int pm860x_backlight_set(struct backlight_device *bl, int brightness)
 	if (brightness)
 		backlight_power_set(chip, data->port, 1);
 
+<<<<<<< HEAD
 	ret = pm860x_reg_write(data->i2c, wled_a(data->port), value);
+=======
+	ret = pm860x_reg_write(data->i2c, data->reg_duty_cycle, value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto out;
 
 	if ((data->current_brightness == 0) && brightness) {
 		if (data->iset) {
+<<<<<<< HEAD
 			ret = pm860x_set_bits(data->i2c, wled_idc(data->port),
+=======
+			ret = pm860x_set_bits(data->i2c, data->reg_current,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      CURRENT_BITMASK, data->iset);
 			if (ret < 0)
 				goto out;
@@ -123,17 +162,29 @@ static int pm860x_backlight_set(struct backlight_device *bl, int brightness)
 		}
 		if (brightness == MAX_BRIGHTNESS) {
 			/* set WLED_ON bit as 100% */
+<<<<<<< HEAD
 			ret = pm860x_set_bits(data->i2c, wled_b(data->port),
+=======
+			ret = pm860x_set_bits(data->i2c, data->reg_always_on,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      PM8606_WLED_ON, PM8606_WLED_ON);
 		}
 	} else {
 		if (brightness == MAX_BRIGHTNESS) {
 			/* set WLED_ON bit as 100% */
+<<<<<<< HEAD
 			ret = pm860x_set_bits(data->i2c, wled_b(data->port),
 					      PM8606_WLED_ON, PM8606_WLED_ON);
 		} else {
 			/* clear WLED_ON bit since it's not 100% */
 			ret = pm860x_set_bits(data->i2c, wled_b(data->port),
+=======
+			ret = pm860x_set_bits(data->i2c, data->reg_always_on,
+					      PM8606_WLED_ON, PM8606_WLED_ON);
+		} else {
+			/* clear WLED_ON bit since it's not 100% */
+			ret = pm860x_set_bits(data->i2c, data->reg_always_on,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      PM8606_WLED_ON, 0);
 		}
 	}
@@ -147,13 +198,19 @@ static int pm860x_backlight_set(struct backlight_device *bl, int brightness)
 	data->current_brightness = value;
 	return 0;
 out:
+<<<<<<< HEAD
 	dev_dbg(chip->dev, "set brightness %d failure with return "
 		"value:%d\n", value, ret);
+=======
+	dev_dbg(chip->dev, "set brightness %d failure with return value: %d\n",
+		value, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int pm860x_backlight_update_status(struct backlight_device *bl)
 {
+<<<<<<< HEAD
 	int brightness = bl->props.brightness;
 
 	if (bl->props.power != FB_BLANK_UNBLANK)
@@ -166,6 +223,9 @@ static int pm860x_backlight_update_status(struct backlight_device *bl)
 		brightness = 0;
 
 	return pm860x_backlight_set(bl, brightness);
+=======
+	return pm860x_backlight_set(bl, backlight_get_brightness(bl));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pm860x_backlight_get_brightness(struct backlight_device *bl)
@@ -174,7 +234,11 @@ static int pm860x_backlight_get_brightness(struct backlight_device *bl)
 	struct pm860x_chip *chip = data->chip;
 	int ret;
 
+<<<<<<< HEAD
 	ret = pm860x_reg_read(data->i2c, wled_a(data->port));
+=======
+	ret = pm860x_reg_read(data->i2c, data->reg_duty_cycle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		goto out;
 	data->current_brightness = ret;
@@ -190,15 +254,54 @@ static const struct backlight_ops pm860x_backlight_ops = {
 	.get_brightness	= pm860x_backlight_get_brightness,
 };
 
+<<<<<<< HEAD
 static int pm860x_backlight_probe(struct platform_device *pdev)
 {
 	struct pm860x_chip *chip = dev_get_drvdata(pdev->dev.parent);
 	struct pm860x_backlight_pdata *pdata = NULL;
+=======
+#ifdef CONFIG_OF
+static int pm860x_backlight_dt_init(struct platform_device *pdev,
+				    struct pm860x_backlight_data *data,
+				    char *name)
+{
+	struct device_node *nproot, *np;
+	int iset = 0;
+
+	nproot = of_get_child_by_name(pdev->dev.parent->of_node, "backlights");
+	if (!nproot) {
+		dev_err(&pdev->dev, "failed to find backlights node\n");
+		return -ENODEV;
+	}
+	for_each_child_of_node(nproot, np) {
+		if (of_node_name_eq(np, name)) {
+			of_property_read_u32(np, "marvell,88pm860x-iset",
+					     &iset);
+			data->iset = PM8606_WLED_CURRENT(iset);
+			of_property_read_u32(np, "marvell,88pm860x-pwm",
+					     &data->pwm);
+			of_node_put(np);
+			break;
+		}
+	}
+	of_node_put(nproot);
+	return 0;
+}
+#else
+#define pm860x_backlight_dt_init(x, y, z)	(-1)
+#endif
+
+static int pm860x_backlight_probe(struct platform_device *pdev)
+{
+	struct pm860x_chip *chip = dev_get_drvdata(pdev->dev.parent);
+	struct pm860x_backlight_pdata *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pm860x_backlight_data *data;
 	struct backlight_device *bl;
 	struct resource *res;
 	struct backlight_properties props;
 	char name[MFD_NAME_SIZE];
+<<<<<<< HEAD
 	int ret;
 
 	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
@@ -213,11 +316,15 @@ static int pm860x_backlight_probe(struct platform_device *pdev)
 			"backlight\n");
 		return -EINVAL;
 	}
+=======
+	int ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data = devm_kzalloc(&pdev->dev, sizeof(struct pm860x_backlight_data),
 			    GFP_KERNEL);
 	if (data == NULL)
 		return -ENOMEM;
+<<<<<<< HEAD
 	strncpy(name, res->name, MFD_NAME_SIZE);
 	data->chip = chip;
 	data->i2c = (chip->id == CHIP_PM8606) ? chip->client	\
@@ -229,12 +336,48 @@ static int pm860x_backlight_probe(struct platform_device *pdev)
 	if (data->port < 0) {
 		dev_err(&pdev->dev, "wrong platform data is assigned");
 		return -EINVAL;
+=======
+	res = platform_get_resource_byname(pdev, IORESOURCE_REG, "duty cycle");
+	if (!res) {
+		dev_err(&pdev->dev, "No REG resource for duty cycle\n");
+		return -ENXIO;
+	}
+	data->reg_duty_cycle = res->start;
+	res = platform_get_resource_byname(pdev, IORESOURCE_REG, "always on");
+	if (!res) {
+		dev_err(&pdev->dev, "No REG resource for always on\n");
+		return -ENXIO;
+	}
+	data->reg_always_on = res->start;
+	res = platform_get_resource_byname(pdev, IORESOURCE_REG, "current");
+	if (!res) {
+		dev_err(&pdev->dev, "No REG resource for current\n");
+		return -ENXIO;
+	}
+	data->reg_current = res->start;
+
+	memset(name, 0, MFD_NAME_SIZE);
+	sprintf(name, "backlight-%d", pdev->id);
+	data->port = pdev->id;
+	data->chip = chip;
+	data->i2c = (chip->id == CHIP_PM8606) ? chip->client : chip->companion;
+	data->current_brightness = MAX_BRIGHTNESS;
+	if (pm860x_backlight_dt_init(pdev, data, name)) {
+		if (pdata) {
+			data->pwm = pdata->pwm;
+			data->iset = pdata->iset;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = MAX_BRIGHTNESS;
+<<<<<<< HEAD
 	bl = backlight_device_register(name, &pdev->dev, data,
+=======
+	bl = devm_backlight_device_register(&pdev->dev, name, &pdev->dev, data,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					&pm860x_backlight_ops, &props);
 	if (IS_ERR(bl)) {
 		dev_err(&pdev->dev, "failed to register backlight\n");
@@ -247,6 +390,7 @@ static int pm860x_backlight_probe(struct platform_device *pdev)
 	/* read current backlight */
 	ret = pm860x_backlight_get_brightness(bl);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto out;
 
 	backlight_update_status(bl);
@@ -262,15 +406,26 @@ static int pm860x_backlight_remove(struct platform_device *pdev)
 
 	backlight_device_unregister(bl);
 	return 0;
+=======
+		return ret;
+
+	backlight_update_status(bl);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver pm860x_backlight_driver = {
 	.driver		= {
 		.name	= "88pm860x-backlight",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= pm860x_backlight_probe,
 	.remove		= pm860x_backlight_remove,
+=======
+	},
+	.probe		= pm860x_backlight_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(pm860x_backlight_driver);

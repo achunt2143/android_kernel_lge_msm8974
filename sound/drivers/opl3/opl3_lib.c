@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>,
  *                   Hannu Savolainen 1993-1996,
@@ -6,6 +10,7 @@
  *  Routines for control of AdLib FM cards (OPL2/OPL3/OPL4 chips)
  *
  *  Most if code is ported from OSS/Lite.
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -25,19 +30,32 @@
 
 #include <sound/opl3.h>
 #include <asm/io.h>
+=======
+ */
+
+#include <sound/opl3.h>
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/ioport.h>
 #include <sound/minors.h>
+<<<<<<< HEAD
+=======
+#include "opl3_voice.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>, Hannu Savolainen 1993-1996, Rob Hooft");
 MODULE_DESCRIPTION("Routines for control of AdLib FM cards (OPL2/OPL3/OPL4 chips)");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 extern char snd_opl3_regmap[MAX_OPL2_VOICES][4];
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void snd_opl2_command(struct snd_opl3 * opl3, unsigned short cmd, unsigned char val)
 {
 	unsigned long flags;
@@ -229,7 +247,11 @@ static int snd_opl3_timer2_stop(struct snd_timer * timer)
 
  */
 
+<<<<<<< HEAD
 static struct snd_timer_hardware snd_opl3_timer1 =
+=======
+static const struct snd_timer_hardware snd_opl3_timer1 =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.flags =	SNDRV_TIMER_HW_STOP,
 	.resolution =	80000,
@@ -238,7 +260,11 @@ static struct snd_timer_hardware snd_opl3_timer1 =
 	.stop =		snd_opl3_timer1_stop,
 };
 
+<<<<<<< HEAD
 static struct snd_timer_hardware snd_opl3_timer2 =
+=======
+static const struct snd_timer_hardware snd_opl3_timer2 =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.flags =	SNDRV_TIMER_HW_STOP,
 	.resolution =	320000,
@@ -258,7 +284,12 @@ static int snd_opl3_timer1_init(struct snd_opl3 * opl3, int timer_no)
 	tid.card = opl3->card->number;
 	tid.device = timer_no;
 	tid.subdevice = 0;
+<<<<<<< HEAD
 	if ((err = snd_timer_new(opl3->card, "AdLib timer #1", &tid, &timer)) >= 0) {
+=======
+	err = snd_timer_new(opl3->card, "AdLib timer #1", &tid, &timer);
+	if (err >= 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		strcpy(timer->name, "AdLib timer #1");
 		timer->private_data = opl3;
 		timer->hw = snd_opl3_timer1;
@@ -278,7 +309,12 @@ static int snd_opl3_timer2_init(struct snd_opl3 * opl3, int timer_no)
 	tid.card = opl3->card->number;
 	tid.device = timer_no;
 	tid.subdevice = 0;
+<<<<<<< HEAD
 	if ((err = snd_timer_new(opl3->card, "AdLib timer #2", &tid, &timer)) >= 0) {
+=======
+	err = snd_timer_new(opl3->card, "AdLib timer #2", &tid, &timer);
+	if (err >= 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		strcpy(timer->name, "AdLib timer #2");
 		timer->private_data = opl3;
 		timer->hw = snd_opl3_timer2;
@@ -347,7 +383,11 @@ int snd_opl3_new(struct snd_card *card,
 		 unsigned short hardware,
 		 struct snd_opl3 **ropl3)
 {
+<<<<<<< HEAD
 	static struct snd_device_ops ops = {
+=======
+	static const struct snd_device_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.dev_free = snd_opl3_dev_free,
 	};
 	struct snd_opl3 *opl3;
@@ -355,17 +395,27 @@ int snd_opl3_new(struct snd_card *card,
 
 	*ropl3 = NULL;
 	opl3 = kzalloc(sizeof(*opl3), GFP_KERNEL);
+<<<<<<< HEAD
 	if (opl3 == NULL) {
 		snd_printk(KERN_ERR "opl3: cannot allocate\n");
 		return -ENOMEM;
 	}
+=======
+	if (!opl3)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	opl3->card = card;
 	opl3->hardware = hardware;
 	spin_lock_init(&opl3->reg_lock);
 	spin_lock_init(&opl3->timer_lock);
 
+<<<<<<< HEAD
 	if ((err = snd_device_new(card, SNDRV_DEV_CODEC, opl3, &ops)) < 0) {
+=======
+	err = snd_device_new(card, SNDRV_DEV_CODEC, opl3, &ops);
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_opl3_free(opl3);
 		return err;
 	}
@@ -413,19 +463,38 @@ int snd_opl3_create(struct snd_card *card,
 	int err;
 
 	*ropl3 = NULL;
+<<<<<<< HEAD
 	if ((err = snd_opl3_new(card, hardware, &opl3)) < 0)
 		return err;
 	if (! integrated) {
 		if ((opl3->res_l_port = request_region(l_port, 2, "OPL2/3 (left)")) == NULL) {
+=======
+	err = snd_opl3_new(card, hardware, &opl3);
+	if (err < 0)
+		return err;
+	if (! integrated) {
+		opl3->res_l_port = request_region(l_port, 2, "OPL2/3 (left)");
+		if (!opl3->res_l_port) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk(KERN_ERR "opl3: can't grab left port 0x%lx\n", l_port);
 			snd_device_free(card, opl3);
 			return -EBUSY;
 		}
+<<<<<<< HEAD
 		if (r_port != 0 &&
 		    (opl3->res_r_port = request_region(r_port, 2, "OPL2/3 (right)")) == NULL) {
 			snd_printk(KERN_ERR "opl3: can't grab right port 0x%lx\n", r_port);
 			snd_device_free(card, opl3);
 			return -EBUSY;
+=======
+		if (r_port != 0) {
+			opl3->res_r_port = request_region(r_port, 2, "OPL2/3 (right)");
+			if (!opl3->res_r_port) {
+				snd_printk(KERN_ERR "opl3: can't grab right port 0x%lx\n", r_port);
+				snd_device_free(card, opl3);
+				return -EBUSY;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	opl3->l_port = l_port;
@@ -440,7 +509,12 @@ int snd_opl3_create(struct snd_card *card,
 		break;
 	default:
 		opl3->command = &snd_opl2_command;
+<<<<<<< HEAD
 		if ((err = snd_opl3_detect(opl3)) < 0) {
+=======
+		err = snd_opl3_detect(opl3);
+		if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printd("OPL2/3 chip not detected at 0x%lx/0x%lx\n",
 				   opl3->l_port, opl3->r_port);
 			snd_device_free(card, opl3);
@@ -466,11 +540,22 @@ int snd_opl3_timer_new(struct snd_opl3 * opl3, int timer1_dev, int timer2_dev)
 {
 	int err;
 
+<<<<<<< HEAD
 	if (timer1_dev >= 0)
 		if ((err = snd_opl3_timer1_init(opl3, timer1_dev)) < 0)
 			return err;
 	if (timer2_dev >= 0) {
 		if ((err = snd_opl3_timer2_init(opl3, timer2_dev)) < 0) {
+=======
+	if (timer1_dev >= 0) {
+		err = snd_opl3_timer1_init(opl3, timer1_dev);
+		if (err < 0)
+			return err;
+	}
+	if (timer2_dev >= 0) {
+		err = snd_opl3_timer2_init(opl3, timer2_dev);
+		if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_device_free(opl3->card, opl3->timer1);
 			opl3->timer1 = NULL;
 			return err;
@@ -494,17 +579,27 @@ int snd_opl3_hwdep_new(struct snd_opl3 * opl3,
 
 	/* create hardware dependent device (direct FM) */
 
+<<<<<<< HEAD
 	if ((err = snd_hwdep_new(card, "OPL2/OPL3", device, &hw)) < 0) {
+=======
+	err = snd_hwdep_new(card, "OPL2/OPL3", device, &hw);
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_device_free(card, opl3);
 		return err;
 	}
 	hw->private_data = opl3;
 	hw->exclusive = 1;
 #ifdef CONFIG_SND_OSSEMUL
+<<<<<<< HEAD
 	if (device == 0) {
 		hw->oss_type = SNDRV_OSS_DEVICE_TYPE_DMFM;
 		sprintf(hw->oss_dev, "dmfm%i", card->number);
 	}
+=======
+	if (device == 0)
+		hw->oss_type = SNDRV_OSS_DEVICE_TYPE_DMFM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	strcpy(hw->name, hw->id);
 	switch (opl3->hardware & OPL3_HW_MASK) {
@@ -530,7 +625,11 @@ int snd_opl3_hwdep_new(struct snd_opl3 * opl3,
 
 	opl3->hwdep = hw;
 	opl3->seq_dev_num = seq_device;
+<<<<<<< HEAD
 #if defined(CONFIG_SND_SEQUENCER) || (defined(MODULE) && defined(CONFIG_SND_SEQUENCER_MODULE))
+=======
+#if IS_ENABLED(CONFIG_SND_SEQUENCER)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (snd_seq_device_new(card, seq_device, SNDRV_SEQ_DEV_ID_OPL3,
 			       sizeof(struct snd_opl3 *), &opl3->seq_dev) >= 0) {
 		strcpy(opl3->seq_dev->name, hw->name);
@@ -543,6 +642,7 @@ int snd_opl3_hwdep_new(struct snd_opl3 * opl3,
 }
 
 EXPORT_SYMBOL(snd_opl3_hwdep_new);
+<<<<<<< HEAD
 
 /*
  *  INIT part
@@ -559,3 +659,5 @@ static void __exit alsa_opl3_exit(void)
 
 module_init(alsa_opl3_init)
 module_exit(alsa_opl3_exit)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

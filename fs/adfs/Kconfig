@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 config ADFS_FS
 	tristate "ADFS file system support (EXPERIMENTAL)"
 	depends on BLOCK && EXPERIMENTAL
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config ADFS_FS
+	tristate "ADFS file system support"
+	depends on BLOCK
+	select BUFFER_HEAD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The Acorn Disc Filing System is the standard file system of the
 	  RiscOS operating system which runs on Acorn's ARM-based Risc PC
@@ -11,7 +19,11 @@ config ADFS_FS
 
 	  The ADFS partition should be the first partition (i.e.,
 	  /dev/[hs]d?1) on each of your drives. Please read the file
+<<<<<<< HEAD
 	  <file:Documentation/filesystems/adfs.txt> for further details.
+=======
+	  <file:Documentation/filesystems/adfs.rst> for further details.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this code as a module, choose M here: the module will be
 	  called adfs.

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * inventory.c
  *
@@ -6,6 +7,12 @@
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * inventory.c
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 1999 The Puffin Group (David Kennedy and Alex deVries)
  * Copyright (c) 2001 Matthew Wilcox for Hewlett-Packard
  *
@@ -23,6 +30,10 @@
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/hardware.h>
 #include <asm/io.h>
 #include <asm/mmzone.h>
@@ -31,6 +42,10 @@
 #include <asm/processor.h>
 #include <asm/page.h>
 #include <asm/parisc-device.h>
+<<<<<<< HEAD
+=======
+#include <asm/tlbflush.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 ** Debug options
@@ -38,7 +53,17 @@
 */
 #undef DEBUG_PAT
 
+<<<<<<< HEAD
 int pdc_type __read_mostly = PDC_TYPE_ILLEGAL;
+=======
+int pdc_type __ro_after_init = PDC_TYPE_ILLEGAL;
+
+/* cell number and location (PAT firmware only) */
+unsigned long parisc_cell_num __ro_after_init;
+unsigned long parisc_cell_loc __ro_after_init;
+unsigned long parisc_pat_pdc_cap __ro_after_init;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init setup_pdc(void)
 {
@@ -58,7 +83,11 @@ void __init setup_pdc(void)
 	status = pdc_system_map_find_mods(&module_result, &module_path, 0);
 	if (status == PDC_OK) {
 		pdc_type = PDC_TYPE_SYSTEM_MAP;
+<<<<<<< HEAD
 		printk("System Map.\n");
+=======
+		pr_cont("System Map.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -76,8 +105,26 @@ void __init setup_pdc(void)
 #ifdef CONFIG_64BIT
 	status = pdc_pat_cell_get_number(&cell_info);
 	if (status == PDC_OK) {
+<<<<<<< HEAD
 		pdc_type = PDC_TYPE_PAT;
 		printk("64 bit PAT.\n");
+=======
+		unsigned long legacy_rev, pat_rev;
+		pdc_type = PDC_TYPE_PAT;
+		pr_cont("64 bit PAT.\n");
+		parisc_cell_num = cell_info.cell_num;
+		parisc_cell_loc = cell_info.cell_loc;
+		pr_info("PAT: Running on cell %lu and location %lu.\n",
+			parisc_cell_num, parisc_cell_loc);
+		status = pdc_pat_pd_get_pdc_revisions(&legacy_rev,
+			&pat_rev, &parisc_pat_pdc_cap);
+		pr_info("PAT: legacy revision 0x%lx, pat_rev 0x%lx, pdc_cap 0x%lx, S-PTLB %d, HPMC_RENDEZ %d.\n",
+			legacy_rev, pat_rev, parisc_pat_pdc_cap,
+			parisc_pat_pdc_cap
+			 & PDC_PAT_CAPABILITY_BIT_SIMULTANEOUS_PTLB ? 1:0,
+			parisc_pat_pdc_cap
+			 & PDC_PAT_CAPABILITY_BIT_PDC_HPMC_RENDEZ   ? 1:0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 #endif
@@ -97,12 +144,20 @@ void __init setup_pdc(void)
 	case 0xC:		/* 715/64, at least */
 
 		pdc_type = PDC_TYPE_SNAKE;
+<<<<<<< HEAD
 		printk("Snake.\n");
+=======
+		pr_cont("Snake.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	default:		/* Everything else */
 
+<<<<<<< HEAD
 		printk("Unsupported.\n");
+=======
+		pr_cont("Unsupported.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		panic("If this is a 64-bit machine, please try a 64-bit kernel.\n");
 	}
 }
@@ -186,12 +241,20 @@ pat_query_module(ulong pcell_loc, ulong mod_index)
 
 	if (status != PDC_OK) {
 		/* no more cell modules or error */
+<<<<<<< HEAD
+=======
+		kfree(pa_pdc_cell);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return status;
 	}
 
 	temp = pa_pdc_cell->cba;
 	dev = alloc_pa_dev(PAT_GET_CBA(temp), &(pa_pdc_cell->mod_path));
 	if (!dev) {
+<<<<<<< HEAD
+=======
+		kfree(pa_pdc_cell);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return PDC_OK;
 	}
 
@@ -209,13 +272,23 @@ pat_query_module(ulong pcell_loc, ulong mod_index)
 	/* REVISIT: who is the consumer of this? not sure yet... */
 	dev->mod_info = pa_pdc_cell->mod_info;	/* pass to PAT_GET_ENTITY() */
 	dev->pmod_loc = pa_pdc_cell->mod_location;
+<<<<<<< HEAD
+=======
+	dev->mod0 = pa_pdc_cell->mod[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	register_parisc_device(dev);	/* advertise device */
 
 #ifdef DEBUG_PAT
+<<<<<<< HEAD
 	pdc_pat_cell_mod_maddr_block_t io_pdc_cell;
 	/* dump what we see so far... */
 	switch (PAT_GET_ENTITY(dev->mod_info)) {
+=======
+	/* dump what we see so far... */
+	switch (PAT_GET_ENTITY(dev->mod_info)) {
+		pdc_pat_cell_mod_maddr_block_t io_pdc_cell;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long i;
 
 	case PAT_ENTITY_PROC:
@@ -256,9 +329,15 @@ pat_query_module(ulong pcell_loc, ulong mod_index)
 				pa_pdc_cell->mod[4 + i * 3]);	/* finish (ie end) */
 			printk(KERN_DEBUG 
 				"  IO_VIEW %ld: 0x%016lx 0x%016lx 0x%016lx\n", 
+<<<<<<< HEAD
 				i, io_pdc_cell->mod[2 + i * 3],	/* type */
 				io_pdc_cell->mod[3 + i * 3],	/* start */
 				io_pdc_cell->mod[4 + i * 3]);	/* finish (ie end) */
+=======
+				i, io_pdc_cell.mod[2 + i * 3],	/* type */
+				io_pdc_cell.mod[3 + i * 3],	/* start */
+				io_pdc_cell.mod[4 + i * 3]);	/* finish (ie end) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		printk(KERN_DEBUG "\n");
 		break;
@@ -503,7 +582,11 @@ add_system_map_addresses(struct parisc_device *dev, int num_addrs,
 	long status;
 	struct pdc_system_map_addr_info addr_result;
 
+<<<<<<< HEAD
 	dev->addr = kmalloc(num_addrs * sizeof(unsigned long), GFP_KERNEL);
+=======
+	dev->addr = kmalloc_array(num_addrs, sizeof(*dev->addr), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if(!dev->addr) {
 		printk(KERN_ERR "%s %s(): memory allocation failure\n",
 		       __FILE__, __func__);
@@ -616,4 +699,42 @@ void __init do_device_inventory(void)
 	}
 	printk(KERN_INFO "Found devices:\n");
 	print_parisc_devices();
+<<<<<<< HEAD
+=======
+
+#if defined(CONFIG_64BIT) && defined(CONFIG_SMP)
+	pa_serialize_tlb_flushes = machine_has_merced_bus();
+	if (pa_serialize_tlb_flushes)
+		pr_info("Merced bus found: Enable PxTLB serialization.\n");
+#endif
+
+#if defined(CONFIG_FW_CFG_SYSFS)
+	if (running_on_qemu) {
+		struct resource res[3] = {0,};
+		unsigned int base;
+
+		base = ((unsigned long long) PAGE0->pad0[2] << 32)
+			| PAGE0->pad0[3]; /* SeaBIOS stored it here */
+
+		res[0].name = "fw_cfg";
+		res[0].start = base;
+		res[0].end = base + 8 - 1;
+		res[0].flags = IORESOURCE_MEM;
+
+		res[1].name = "ctrl";
+		res[1].start = 0;
+		res[1].flags = IORESOURCE_REG;
+
+		res[2].name = "data";
+		res[2].start = 4;
+		res[2].flags = IORESOURCE_REG;
+
+		if (base) {
+			pr_info("Found qemu fw_cfg interface at %#08x\n", base);
+			platform_device_register_simple("fw_cfg",
+				PLATFORM_DEVID_NONE, res, 3);
+		}
+	}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

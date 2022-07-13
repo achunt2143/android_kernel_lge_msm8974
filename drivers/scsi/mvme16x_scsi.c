@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Detection routine for the NCR53c710 based MVME16x SCSI Controllers for Linux.
  *
@@ -34,8 +38,12 @@ static struct scsi_host_template mvme16x_scsi_driver_template = {
 
 static struct platform_device *mvme16x_scsi_device;
 
+<<<<<<< HEAD
 static __devinit int
 mvme16x_probe(struct platform_device *dev)
+=======
+static int mvme16x_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host * host = NULL;
 	struct NCR_700_Host_Parameters *hostdata;
@@ -103,8 +111,12 @@ mvme16x_probe(struct platform_device *dev)
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static __devexit int
 mvme16x_device_remove(struct platform_device *dev)
+=======
+static void mvme16x_device_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host = platform_get_drvdata(dev);
 	struct NCR_700_Host_Parameters *hostdata = shost_priv(host);
@@ -121,17 +133,26 @@ mvme16x_device_remove(struct platform_device *dev)
 	NCR_700_release(host);
 	kfree(hostdata);
 	free_irq(host->irq, host);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver mvme16x_scsi_driver = {
 	.driver = {
 		.name           = "mvme16x-scsi",
+<<<<<<< HEAD
 		.owner          = THIS_MODULE,
 	},
 	.probe          = mvme16x_probe,
 	.remove         = __devexit_p(mvme16x_device_remove),
+=======
+	},
+	.probe          = mvme16x_probe,
+	.remove_new     = mvme16x_device_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init mvme16x_scsi_init(void)

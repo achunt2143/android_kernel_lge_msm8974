@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Sony MemoryStick support
  *
  *  Copyright (C) 2007 Alex Dubov <oakad@yahoo.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _MEMSTICK_H
@@ -285,6 +292,10 @@ struct memstick_host {
 
 	struct memstick_dev *card;
 	unsigned int        retries;
+<<<<<<< HEAD
+=======
+	bool removing;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Notify the host that some requests are pending. */
 	void                (*request)(struct memstick_host *host);
@@ -292,7 +303,11 @@ struct memstick_host {
 	int                 (*set_param)(struct memstick_host *host,
 					 enum memstick_param param,
 					 int value);
+<<<<<<< HEAD
 	unsigned long       private[0] ____cacheline_aligned;
+=======
+	unsigned long       private[] ____cacheline_aligned;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct memstick_driver {

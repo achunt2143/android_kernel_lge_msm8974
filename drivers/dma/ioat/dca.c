@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Intel I/OAT DMA Linux driver
  * Copyright(c) 2007 - 2009 Intel Corporation.
@@ -18,6 +19,12 @@
  * The full GNU General Public License is included in this distribution in
  * the file called "COPYING".
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Intel I/OAT DMA Linux driver
+ * Copyright(c) 2007 - 2009 Intel Corporation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -56,6 +63,7 @@
 #define DCA2_TAG_MAP_BYTE3 0x82
 #define DCA2_TAG_MAP_BYTE4 0x82
 
+<<<<<<< HEAD
 /* verify if tag map matches expected values */
 static inline int dca2_tag_map_valid(u8 *tag_map)
 {
@@ -66,6 +74,8 @@ static inline int dca2_tag_map_valid(u8 *tag_map)
 		(tag_map[4] == DCA2_TAG_MAP_BYTE4));
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * "Legacy" DCA systems do not implement the DCA register set in the
  * I/OAT device.  Software needs direct support for their tag mappings.
@@ -74,6 +84,7 @@ static inline int dca2_tag_map_valid(u8 *tag_map)
 #define APICID_BIT(x)		(DCA_TAG_MAP_VALID | (x))
 #define IOAT_TAG_MAP_LEN	8
 
+<<<<<<< HEAD
 static u8 ioat_tag_map_BNB[IOAT_TAG_MAP_LEN] = {
 	1, APICID_BIT(1), APICID_BIT(2), APICID_BIT(2), };
 static u8 ioat_tag_map_SCNB[IOAT_TAG_MAP_LEN] = {
@@ -86,6 +97,12 @@ static u8 ioat_tag_map_UNISYS[IOAT_TAG_MAP_LEN] = { 0 };
 static inline u16 dcaid_from_pcidev(struct pci_dev *pci)
 {
 	return (pci->bus->number << 8) | pci->devfn;
+=======
+/* pack PCI B/D/F into a u16 */
+static inline u16 dcaid_from_pcidev(struct pci_dev *pci)
+{
+	return pci_dev_id(pci);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dca_enabled_in_bios(struct pci_dev *pdev)
@@ -126,6 +143,7 @@ struct ioat_dca_priv {
 	int			 max_requesters;
 	int			 requester_count;
 	u8			 tag_map[IOAT_TAG_MAP_LEN];
+<<<<<<< HEAD
 	struct ioat_dca_slot 	 req_slots[0];
 };
 
@@ -219,6 +237,11 @@ static u8 ioat_dca_get_tag(struct dca_provider *dca,
 	return tag;
 }
 
+=======
+	struct ioat_dca_slot	 req_slots[];
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ioat_dca_dev_managed(struct dca_provider *dca,
 				struct device *dev)
 {
@@ -234,6 +257,7 @@ static int ioat_dca_dev_managed(struct dca_provider *dca,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dca_ops ioat_dca_ops = {
 	.add_requester		= ioat_dca_add_requester,
 	.remove_requester	= ioat_dca_remove_requester,
@@ -313,6 +337,9 @@ ioat_dca_init(struct pci_dev *pdev, void __iomem *iobase)
 
 
 static int ioat2_dca_add_requester(struct dca_provider *dca, struct device *dev)
+=======
+static int ioat_dca_add_requester(struct dca_provider *dca, struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ioat_dca_priv *ioatdca = dca_priv(dca);
 	struct pci_dev *pdev;
@@ -321,6 +348,7 @@ static int ioat2_dca_add_requester(struct dca_provider *dca, struct device *dev)
 	u16 global_req_table;
 
 	/* This implementation only supports PCI-Express */
+<<<<<<< HEAD
 	if (dev->bus != &pci_bus_type)
 		return -ENODEV;
 	pdev = to_pci_dev(dev);
@@ -497,6 +525,9 @@ static int ioat3_dca_add_requester(struct dca_provider *dca, struct device *dev)
 
 	/* This implementation only supports PCI-Express */
 	if (dev->bus != &pci_bus_type)
+=======
+	if (!dev_is_pci(dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	pdev = to_pci_dev(dev);
 	id = dcaid_from_pcidev(pdev);
@@ -521,7 +552,11 @@ static int ioat3_dca_add_requester(struct dca_provider *dca, struct device *dev)
 	return -EFAULT;
 }
 
+<<<<<<< HEAD
 static int ioat3_dca_remove_requester(struct dca_provider *dca,
+=======
+static int ioat_dca_remove_requester(struct dca_provider *dca,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      struct device *dev)
 {
 	struct ioat_dca_priv *ioatdca = dca_priv(dca);
@@ -530,7 +565,11 @@ static int ioat3_dca_remove_requester(struct dca_provider *dca,
 	u16 global_req_table;
 
 	/* This implementation only supports PCI-Express */
+<<<<<<< HEAD
 	if (dev->bus != &pci_bus_type)
+=======
+	if (!dev_is_pci(dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	pdev = to_pci_dev(dev);
 
@@ -548,7 +587,11 @@ static int ioat3_dca_remove_requester(struct dca_provider *dca,
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static u8 ioat3_dca_get_tag(struct dca_provider *dca,
+=======
+static u8 ioat_dca_get_tag(struct dca_provider *dca,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    struct device *dev,
 			    int cpu)
 {
@@ -579,6 +622,7 @@ static u8 ioat3_dca_get_tag(struct dca_provider *dca,
 	return tag;
 }
 
+<<<<<<< HEAD
 static struct dca_ops ioat3_dca_ops = {
 	.add_requester		= ioat3_dca_add_requester,
 	.remove_requester	= ioat3_dca_remove_requester,
@@ -587,6 +631,16 @@ static struct dca_ops ioat3_dca_ops = {
 };
 
 static int ioat3_dca_count_dca_slots(void *iobase, u16 dca_offset)
+=======
+static const struct dca_ops ioat_dca_ops = {
+	.add_requester		= ioat_dca_add_requester,
+	.remove_requester	= ioat_dca_remove_requester,
+	.get_tag		= ioat_dca_get_tag,
+	.dev_managed		= ioat_dca_dev_managed,
+};
+
+static int ioat_dca_count_dca_slots(void *iobase, u16 dca_offset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int slots = 0;
 	u32 req;
@@ -604,8 +658,29 @@ static int ioat3_dca_count_dca_slots(void *iobase, u16 dca_offset)
 	return slots;
 }
 
+<<<<<<< HEAD
 struct dca_provider * __devinit
 ioat3_dca_init(struct pci_dev *pdev, void __iomem *iobase)
+=======
+static inline int dca3_tag_map_invalid(u8 *tag_map)
+{
+	/*
+	 * If the tag map is not programmed by the BIOS the default is:
+	 * 0x80 0x80 0x80 0x80 0x80 0x00 0x00 0x00
+	 *
+	 * This an invalid map and will result in only 2 possible tags
+	 * 0x1F and 0x00.  0x00 is an invalid DCA tag so we know that
+	 * this entire definition is invalid.
+	 */
+	return ((tag_map[0] == DCA_TAG_MAP_VALID) &&
+		(tag_map[1] == DCA_TAG_MAP_VALID) &&
+		(tag_map[2] == DCA_TAG_MAP_VALID) &&
+		(tag_map[3] == DCA_TAG_MAP_VALID) &&
+		(tag_map[4] == DCA_TAG_MAP_VALID));
+}
+
+struct dca_provider *ioat_dca_init(struct pci_dev *pdev, void __iomem *iobase)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dca_provider *dca;
 	struct ioat_dca_priv *ioatdca;
@@ -632,6 +707,7 @@ ioat3_dca_init(struct pci_dev *pdev, void __iomem *iobase)
 	if (dca_offset == 0)
 		return NULL;
 
+<<<<<<< HEAD
 	slots = ioat3_dca_count_dca_slots(iobase, dca_offset);
 	if (slots == 0)
 		return NULL;
@@ -639,6 +715,14 @@ ioat3_dca_init(struct pci_dev *pdev, void __iomem *iobase)
 	dca = alloc_dca_provider(&ioat3_dca_ops,
 				 sizeof(*ioatdca)
 				      + (sizeof(struct ioat_dca_slot) * slots));
+=======
+	slots = ioat_dca_count_dca_slots(iobase, dca_offset);
+	if (slots == 0)
+		return NULL;
+
+	dca = alloc_dca_provider(&ioat_dca_ops,
+				 struct_size(ioatdca, req_slots, slots));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dca)
 		return NULL;
 
@@ -674,6 +758,18 @@ ioat3_dca_init(struct pci_dev *pdev, void __iomem *iobase)
 		ioatdca->tag_map[i] = bit & DCA_TAG_MAP_MASK;
 	}
 
+<<<<<<< HEAD
+=======
+	if (dca3_tag_map_invalid(ioatdca->tag_map)) {
+		add_taint(TAINT_FIRMWARE_WORKAROUND, LOCKDEP_STILL_OK);
+		pr_warn_once("%s %s: APICID_TAG_MAP set incorrectly by BIOS, disabling DCA\n",
+			     dev_driver_string(&pdev->dev),
+			     dev_name(&pdev->dev));
+		free_dca_provider(dca);
+		return NULL;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = register_dca_provider(dca, &pdev->dev);
 	if (err) {
 		free_dca_provider(dca);

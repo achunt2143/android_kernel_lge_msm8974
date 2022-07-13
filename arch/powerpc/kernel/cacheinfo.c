@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Processor cache information made available to userspace via sysfs;
  * intended to be compatible with x86 intel_cacheinfo implementation.
  *
  * Copyright 2008 IBM Corporation
  * Author: Nathan Lynch
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License version
@@ -13,6 +18,14 @@
 #include <linux/cpu.h>
 #include <linux/cpumask.h>
 #include <linux/init.h>
+=======
+ */
+
+#define pr_fmt(fmt) "cacheinfo: " fmt
+
+#include <linux/cpu.h>
+#include <linux/cpumask.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/kobject.h>
 #include <linux/list.h>
@@ -20,7 +33,12 @@
 #include <linux/of.h>
 #include <linux/percpu.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+#include <asm/cputhreads.h>
+#include <asm/smp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "cacheinfo.h"
 
@@ -120,6 +138,10 @@ struct cache {
 	struct cpumask shared_cpu_map; /* online CPUs using this cache */
 	int type;                      /* split cache disambiguation */
 	int level;                     /* level not explicit in device tree */
+<<<<<<< HEAD
+=======
+	int group_id;                  /* id of the group of threads that share this cache */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head list;         /* global list of cache objects */
 	struct cache *next_local;      /* next cache of >= level */
 };
@@ -141,22 +163,40 @@ static const char *cache_type_string(const struct cache *cache)
 	return cache_type_info[cache->type].name;
 }
 
+<<<<<<< HEAD
 static void __cpuinit cache_init(struct cache *cache, int type, int level, struct device_node *ofnode)
+=======
+static void cache_init(struct cache *cache, int type, int level,
+		       struct device_node *ofnode, int group_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	cache->type = type;
 	cache->level = level;
 	cache->ofnode = of_node_get(ofnode);
+<<<<<<< HEAD
+=======
+	cache->group_id = group_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&cache->list);
 	list_add(&cache->list, &cache_list);
 }
 
+<<<<<<< HEAD
 static struct cache *__cpuinit new_cache(int type, int level, struct device_node *ofnode)
+=======
+static struct cache *new_cache(int type, int level,
+			       struct device_node *ofnode, int group_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cache *cache;
 
 	cache = kzalloc(sizeof(*cache), GFP_KERNEL);
 	if (cache)
+<<<<<<< HEAD
 		cache_init(cache, type, level, ofnode);
+=======
+		cache_init(cache, type, level, ofnode, group_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return cache;
 }
@@ -167,10 +207,17 @@ static void release_cache_debugcheck(struct cache *cache)
 
 	list_for_each_entry(iter, &cache_list, list)
 		WARN_ONCE(iter->next_local == cache,
+<<<<<<< HEAD
 			  "cache for %s(%s) refers to cache for %s(%s)\n",
 			  iter->ofnode->full_name,
 			  cache_type_string(iter),
 			  cache->ofnode->full_name,
+=======
+			  "cache for %pOFP(%s) refers to cache for %pOFP(%s)\n",
+			  iter->ofnode,
+			  cache_type_string(iter),
+			  cache->ofnode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  cache_type_string(cache));
 }
 
@@ -179,8 +226,13 @@ static void release_cache(struct cache *cache)
 	if (!cache)
 		return;
 
+<<<<<<< HEAD
 	pr_debug("freeing L%d %s cache for %s\n", cache->level,
 		 cache_type_string(cache), cache->ofnode->full_name);
+=======
+	pr_debug("freeing L%d %s cache for %pOFP\n", cache->level,
+		 cache_type_string(cache), cache->ofnode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	release_cache_debugcheck(cache);
 	list_del(&cache->list);
@@ -194,8 +246,13 @@ static void cache_cpu_set(struct cache *cache, int cpu)
 
 	while (next) {
 		WARN_ONCE(cpumask_test_cpu(cpu, &next->shared_cpu_map),
+<<<<<<< HEAD
 			  "CPU %i already accounted in %s(%s)\n",
 			  cpu, next->ofnode->full_name,
+=======
+			  "CPU %i already accounted in %pOFP(%s)\n",
+			  cpu, next->ofnode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  cache_type_string(next));
 		cpumask_set_cpu(cpu, &next->shared_cpu_map);
 		next = next->next_local;
@@ -205,7 +262,11 @@ static void cache_cpu_set(struct cache *cache, int cpu)
 static int cache_size(const struct cache *cache, unsigned int *ret)
 {
 	const char *propname;
+<<<<<<< HEAD
 	const u32 *cache_size;
+=======
+	const __be32 *cache_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	propname = cache_type_info[cache->type].size_prop;
 
@@ -213,7 +274,11 @@ static int cache_size(const struct cache *cache, unsigned int *ret)
 	if (!cache_size)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	*ret = *cache_size;
+=======
+	*ret = of_read_number(cache_size, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -231,7 +296,11 @@ static int cache_size_kb(const struct cache *cache, unsigned int *ret)
 /* not cache_line_size() because that's a macro in include/linux/cache.h */
 static int cache_get_line_size(const struct cache *cache, unsigned int *ret)
 {
+<<<<<<< HEAD
 	const u32 *line_size;
+=======
+	const __be32 *line_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, lim;
 
 	lim = ARRAY_SIZE(cache_type_info[cache->type].line_size_props);
@@ -248,14 +317,22 @@ static int cache_get_line_size(const struct cache *cache, unsigned int *ret)
 	if (!line_size)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	*ret = *line_size;
+=======
+	*ret = of_read_number(line_size, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int cache_nr_sets(const struct cache *cache, unsigned int *ret)
 {
 	const char *propname;
+<<<<<<< HEAD
 	const u32 *nr_sets;
+=======
+	const __be32 *nr_sets;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	propname = cache_type_info[cache->type].nr_sets_prop;
 
@@ -263,7 +340,11 @@ static int cache_nr_sets(const struct cache *cache, unsigned int *ret)
 	if (!nr_sets)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	*ret = *nr_sets;
+=======
+	*ret = of_read_number(nr_sets, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -308,20 +389,37 @@ static struct cache *cache_find_first_sibling(struct cache *cache)
 		return cache;
 
 	list_for_each_entry(iter, &cache_list, list)
+<<<<<<< HEAD
 		if (iter->ofnode == cache->ofnode && iter->next_local == cache)
+=======
+		if (iter->ofnode == cache->ofnode &&
+		    iter->group_id == cache->group_id &&
+		    iter->next_local == cache)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return iter;
 
 	return cache;
 }
 
+<<<<<<< HEAD
 /* return the first cache on a local list matching node */
 static struct cache *cache_lookup_by_node(const struct device_node *node)
+=======
+/* return the first cache on a local list matching node and thread-group id */
+static struct cache *cache_lookup_by_node_group(const struct device_node *node,
+						int group_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cache *cache = NULL;
 	struct cache *iter;
 
 	list_for_each_entry(iter, &cache_list, list) {
+<<<<<<< HEAD
 		if (iter->ofnode != node)
+=======
+		if (iter->ofnode != node ||
+		    iter->group_id != group_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		cache = cache_find_first_sibling(iter);
 		break;
@@ -351,6 +449,7 @@ static int cache_is_unified_d(const struct device_node *np)
 		CACHE_TYPE_UNIFIED_D : CACHE_TYPE_UNIFIED;
 }
 
+<<<<<<< HEAD
 static struct cache *__cpuinit cache_do_one_devnode_unified(struct device_node *node, int level)
 {
 	pr_debug("creating L%d ucache for %s\n", level, node->full_name);
@@ -367,6 +466,26 @@ static struct cache *__cpuinit cache_do_one_devnode_split(struct device_node *no
 
 	dcache = new_cache(CACHE_TYPE_DATA, level, node);
 	icache = new_cache(CACHE_TYPE_INSTRUCTION, level, node);
+=======
+static struct cache *cache_do_one_devnode_unified(struct device_node *node, int group_id,
+						  int level)
+{
+	pr_debug("creating L%d ucache for %pOFP\n", level, node);
+
+	return new_cache(cache_is_unified_d(node), level, node, group_id);
+}
+
+static struct cache *cache_do_one_devnode_split(struct device_node *node, int group_id,
+						int level)
+{
+	struct cache *dcache, *icache;
+
+	pr_debug("creating L%d dcache and icache for %pOFP\n", level,
+		 node);
+
+	dcache = new_cache(CACHE_TYPE_DATA, level, node, group_id);
+	icache = new_cache(CACHE_TYPE_INSTRUCTION, level, node, group_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dcache || !icache)
 		goto err;
@@ -380,35 +499,63 @@ err:
 	return NULL;
 }
 
+<<<<<<< HEAD
 static struct cache *__cpuinit cache_do_one_devnode(struct device_node *node, int level)
+=======
+static struct cache *cache_do_one_devnode(struct device_node *node, int group_id, int level)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cache *cache;
 
 	if (cache_node_is_unified(node))
+<<<<<<< HEAD
 		cache = cache_do_one_devnode_unified(node, level);
 	else
 		cache = cache_do_one_devnode_split(node, level);
+=======
+		cache = cache_do_one_devnode_unified(node, group_id, level);
+	else
+		cache = cache_do_one_devnode_split(node, group_id, level);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return cache;
 }
 
+<<<<<<< HEAD
 static struct cache *__cpuinit cache_lookup_or_instantiate(struct device_node *node, int level)
 {
 	struct cache *cache;
 
 	cache = cache_lookup_by_node(node);
+=======
+static struct cache *cache_lookup_or_instantiate(struct device_node *node,
+						 int group_id,
+						 int level)
+{
+	struct cache *cache;
+
+	cache = cache_lookup_by_node_group(node, group_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WARN_ONCE(cache && cache->level != level,
 		  "cache level mismatch on lookup (got %d, expected %d)\n",
 		  cache->level, level);
 
 	if (!cache)
+<<<<<<< HEAD
 		cache = cache_do_one_devnode(node, level);
+=======
+		cache = cache_do_one_devnode(node, group_id, level);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return cache;
 }
 
+<<<<<<< HEAD
 static void __cpuinit link_cache_lists(struct cache *smaller, struct cache *bigger)
+=======
+static void link_cache_lists(struct cache *smaller, struct cache *bigger)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (smaller->next_local) {
 		if (smaller->next_local == bigger)
@@ -417,6 +564,7 @@ static void __cpuinit link_cache_lists(struct cache *smaller, struct cache *bigg
 	}
 
 	smaller->next_local = bigger;
+<<<<<<< HEAD
 }
 
 static void __cpuinit do_subsidiary_caches_debugcheck(struct cache *cache)
@@ -426,6 +574,55 @@ static void __cpuinit do_subsidiary_caches_debugcheck(struct cache *cache)
 }
 
 static void __cpuinit do_subsidiary_caches(struct cache *cache)
+=======
+
+	/*
+	 * The cache->next_local list sorts by level ascending:
+	 * L1d -> L1i -> L2 -> L3 ...
+	 */
+	WARN_ONCE((smaller->level == 1 && bigger->level > 2) ||
+		  (smaller->level > 1 && bigger->level != smaller->level + 1),
+		  "linking L%i cache %pOFP to L%i cache %pOFP; skipped a level?\n",
+		  smaller->level, smaller->ofnode, bigger->level, bigger->ofnode);
+}
+
+static void do_subsidiary_caches_debugcheck(struct cache *cache)
+{
+	WARN_ONCE(cache->level != 1,
+		  "instantiating cache chain from L%d %s cache for "
+		  "%pOFP instead of an L1\n", cache->level,
+		  cache_type_string(cache), cache->ofnode);
+	WARN_ONCE(!of_node_is_type(cache->ofnode, "cpu"),
+		  "instantiating cache chain from node %pOFP of type '%s' "
+		  "instead of a cpu node\n", cache->ofnode,
+		  of_node_get_device_type(cache->ofnode));
+}
+
+/*
+ * If sub-groups of threads in a core containing @cpu_id share the
+ * L@level-cache (information obtained via "ibm,thread-groups"
+ * device-tree property), then we identify the group by the first
+ * thread-sibling in the group. We define this to be the group-id.
+ *
+ * In the absence of any thread-group information for L@level-cache,
+ * this function returns -1.
+ */
+static int get_group_id(unsigned int cpu_id, int level)
+{
+	if (has_big_cores && level == 1)
+		return cpumask_first(per_cpu(thread_group_l1_cache_map,
+					     cpu_id));
+	else if (thread_group_shares_l2 && level == 2)
+		return cpumask_first(per_cpu(thread_group_l2_cache_map,
+					     cpu_id));
+	else if (thread_group_shares_l3 && level == 3)
+		return cpumask_first(per_cpu(thread_group_l3_cache_map,
+					     cpu_id));
+	return -1;
+}
+
+static void do_subsidiary_caches(struct cache *cache, unsigned int cpu_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *subcache_node;
 	int level = cache->level;
@@ -434,9 +631,17 @@ static void __cpuinit do_subsidiary_caches(struct cache *cache)
 
 	while ((subcache_node = of_find_next_cache_node(cache->ofnode))) {
 		struct cache *subcache;
+<<<<<<< HEAD
 
 		level++;
 		subcache = cache_lookup_or_instantiate(subcache_node, level);
+=======
+		int group_id;
+
+		level++;
+		group_id = get_group_id(cpu_id, level);
+		subcache = cache_lookup_or_instantiate(subcache_node, group_id, level);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_node_put(subcache_node);
 		if (!subcache)
 			break;
@@ -446,10 +651,18 @@ static void __cpuinit do_subsidiary_caches(struct cache *cache)
 	}
 }
 
+<<<<<<< HEAD
 static struct cache *__cpuinit cache_chain_instantiate(unsigned int cpu_id)
 {
 	struct device_node *cpu_node;
 	struct cache *cpu_cache = NULL;
+=======
+static struct cache *cache_chain_instantiate(unsigned int cpu_id)
+{
+	struct device_node *cpu_node;
+	struct cache *cpu_cache = NULL;
+	int group_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("creating cache object(s) for CPU %i\n", cpu_id);
 
@@ -458,11 +671,21 @@ static struct cache *__cpuinit cache_chain_instantiate(unsigned int cpu_id)
 	if (!cpu_node)
 		goto out;
 
+<<<<<<< HEAD
 	cpu_cache = cache_lookup_or_instantiate(cpu_node, 1);
 	if (!cpu_cache)
 		goto out;
 
 	do_subsidiary_caches(cpu_cache);
+=======
+	group_id = get_group_id(cpu_id, 1);
+
+	cpu_cache = cache_lookup_or_instantiate(cpu_node, group_id, 1);
+	if (!cpu_cache)
+		goto out;
+
+	do_subsidiary_caches(cpu_cache, cpu_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cache_cpu_set(cpu_cache, cpu_id);
 out:
@@ -471,7 +694,11 @@ out:
 	return cpu_cache;
 }
 
+<<<<<<< HEAD
 static struct cache_dir *__cpuinit cacheinfo_create_cache_dir(unsigned int cpu_id)
+=======
+static struct cache_dir *cacheinfo_create_cache_dir(unsigned int cpu_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cache_dir *cache_dir;
 	struct device *dev;
@@ -623,6 +850,7 @@ static ssize_t level_show(struct kobject *k, struct kobj_attribute *attr, char *
 static struct kobj_attribute cache_level_attr =
 	__ATTR(level, 0444, level_show, NULL);
 
+<<<<<<< HEAD
 static ssize_t shared_cpu_map_show(struct kobject *k, struct kobj_attribute *attr, char *buf)
 {
 	struct cache_index_dir *index;
@@ -640,21 +868,61 @@ static ssize_t shared_cpu_map_show(struct kobject *k, struct kobj_attribute *att
 		buf[n] = '\0';
 	}
 	return n;
+=======
+static ssize_t
+show_shared_cpumap(struct kobject *k, struct kobj_attribute *attr, char *buf, bool list)
+{
+	struct cache_index_dir *index;
+	struct cache *cache;
+	const struct cpumask *mask;
+
+	index = kobj_to_cache_index_dir(k);
+	cache = index->cache;
+
+	mask = &cache->shared_cpu_map;
+
+	return cpumap_print_to_pagebuf(list, buf, mask);
+}
+
+static ssize_t shared_cpu_map_show(struct kobject *k, struct kobj_attribute *attr, char *buf)
+{
+	return show_shared_cpumap(k, attr, buf, false);
+}
+
+static ssize_t shared_cpu_list_show(struct kobject *k, struct kobj_attribute *attr, char *buf)
+{
+	return show_shared_cpumap(k, attr, buf, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct kobj_attribute cache_shared_cpu_map_attr =
 	__ATTR(shared_cpu_map, 0444, shared_cpu_map_show, NULL);
 
+<<<<<<< HEAD
 /* Attributes which should always be created -- the kobject/sysfs core
  * does this automatically via kobj_type->default_attrs.  This is the
+=======
+static struct kobj_attribute cache_shared_cpu_list_attr =
+	__ATTR(shared_cpu_list, 0444, shared_cpu_list_show, NULL);
+
+/* Attributes which should always be created -- the kobject/sysfs core
+ * does this automatically via kobj_type->default_groups.  This is the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * minimum data required to uniquely identify a cache.
  */
 static struct attribute *cache_index_default_attrs[] = {
 	&cache_type_attr.attr,
 	&cache_level_attr.attr,
 	&cache_shared_cpu_map_attr.attr,
+<<<<<<< HEAD
 	NULL,
 };
+=======
+	&cache_shared_cpu_list_attr.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(cache_index_default);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Attributes which should be created if the cache device node has the
  * right properties -- see cacheinfo_create_index_opt_attrs
@@ -673,12 +941,20 @@ static const struct sysfs_ops cache_index_ops = {
 static struct kobj_type cache_index_type = {
 	.release = cache_index_release,
 	.sysfs_ops = &cache_index_ops,
+<<<<<<< HEAD
 	.default_attrs = cache_index_default_attrs,
 };
 
 static void __cpuinit cacheinfo_create_index_opt_attrs(struct cache_index_dir *dir)
 {
 	const char *cache_name;
+=======
+	.default_groups = cache_index_default_groups,
+};
+
+static void cacheinfo_create_index_opt_attrs(struct cache_index_dir *dir)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *cache_type;
 	struct cache *cache;
 	char *buf;
@@ -689,7 +965,10 @@ static void __cpuinit cacheinfo_create_index_opt_attrs(struct cache_index_dir *d
 		return;
 
 	cache = dir->cache;
+<<<<<<< HEAD
 	cache_name = cache->ofnode->full_name;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cache_type = cache_type_string(cache);
 
 	/* We don't want to create an attribute that can't provide a
@@ -706,39 +985,66 @@ static void __cpuinit cacheinfo_create_index_opt_attrs(struct cache_index_dir *d
 		rc = attr->show(&dir->kobj, attr, buf);
 		if (rc <= 0) {
 			pr_debug("not creating %s attribute for "
+<<<<<<< HEAD
 				 "%s(%s) (rc = %zd)\n",
 				 attr->attr.name, cache_name,
+=======
+				 "%pOFP(%s) (rc = %zd)\n",
+				 attr->attr.name, cache->ofnode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 cache_type, rc);
 			continue;
 		}
 		if (sysfs_create_file(&dir->kobj, &attr->attr))
+<<<<<<< HEAD
 			pr_debug("could not create %s attribute for %s(%s)\n",
 				 attr->attr.name, cache_name, cache_type);
+=======
+			pr_debug("could not create %s attribute for %pOFP(%s)\n",
+				 attr->attr.name, cache->ofnode, cache_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kfree(buf);
 }
 
+<<<<<<< HEAD
 static void __cpuinit cacheinfo_create_index_dir(struct cache *cache, int index, struct cache_dir *cache_dir)
+=======
+static void cacheinfo_create_index_dir(struct cache *cache, int index,
+				       struct cache_dir *cache_dir)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cache_index_dir *index_dir;
 	int rc;
 
 	index_dir = kzalloc(sizeof(*index_dir), GFP_KERNEL);
 	if (!index_dir)
+<<<<<<< HEAD
 		goto err;
+=======
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	index_dir->cache = cache;
 
 	rc = kobject_init_and_add(&index_dir->kobj, &cache_index_type,
 				  cache_dir->kobj, "index%d", index);
+<<<<<<< HEAD
 	if (rc)
 		goto err;
+=======
+	if (rc) {
+		kobject_put(&index_dir->kobj);
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	index_dir->next = cache_dir->index;
 	cache_dir->index = index_dir;
 
 	cacheinfo_create_index_opt_attrs(index_dir);
+<<<<<<< HEAD
 
 	return;
 err:
@@ -746,6 +1052,12 @@ err:
 }
 
 static void __cpuinit cacheinfo_sysfs_populate(unsigned int cpu_id, struct cache *cache_list)
+=======
+}
+
+static void cacheinfo_sysfs_populate(unsigned int cpu_id,
+				     struct cache *cache_list)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cache_dir *cache_dir;
 	struct cache *cache;
@@ -763,7 +1075,11 @@ static void __cpuinit cacheinfo_sysfs_populate(unsigned int cpu_id, struct cache
 	}
 }
 
+<<<<<<< HEAD
 void __cpuinit cacheinfo_cpu_online(unsigned int cpu_id)
+=======
+void cacheinfo_cpu_online(unsigned int cpu_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cache *cache;
 
@@ -774,19 +1090,35 @@ void __cpuinit cacheinfo_cpu_online(unsigned int cpu_id)
 	cacheinfo_sysfs_populate(cpu_id, cache);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_HOTPLUG_CPU /* functions needed for cpu offline */
+=======
+/* functions needed to remove cache entry for cpu offline or suspend/resume */
+
+#if (defined(CONFIG_PPC_PSERIES) && defined(CONFIG_SUSPEND)) || \
+    defined(CONFIG_HOTPLUG_CPU)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct cache *cache_lookup_by_cpu(unsigned int cpu_id)
 {
 	struct device_node *cpu_node;
 	struct cache *cache;
+<<<<<<< HEAD
+=======
+	int group_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cpu_node = of_get_cpu_node(cpu_id, NULL);
 	WARN_ONCE(!cpu_node, "no OF node found for CPU %i\n", cpu_id);
 	if (!cpu_node)
 		return NULL;
 
+<<<<<<< HEAD
 	cache = cache_lookup_by_node(cpu_node);
+=======
+	group_id = get_group_id(cpu_id, 1);
+	cache = cache_lookup_by_node_group(cpu_node, group_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	of_node_put(cpu_node);
 
 	return cache;
@@ -825,8 +1157,13 @@ static void cache_cpu_clear(struct cache *cache, int cpu)
 		struct cache *next = cache->next_local;
 
 		WARN_ONCE(!cpumask_test_cpu(cpu, &cache->shared_cpu_map),
+<<<<<<< HEAD
 			  "CPU %i not accounted in %s(%s)\n",
 			  cpu, cache->ofnode->full_name,
+=======
+			  "CPU %i not accounted in %pOFP(%s)\n",
+			  cpu, cache->ofnode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  cache_type_string(cache));
 
 		cpumask_clear_cpu(cpu, &cache->shared_cpu_map);
@@ -861,4 +1198,29 @@ void cacheinfo_cpu_offline(unsigned int cpu_id)
 	if (cache)
 		cache_cpu_clear(cache, cpu_id);
 }
+<<<<<<< HEAD
 #endif /* CONFIG_HOTPLUG_CPU */
+=======
+
+void cacheinfo_teardown(void)
+{
+	unsigned int cpu;
+
+	lockdep_assert_cpus_held();
+
+	for_each_online_cpu(cpu)
+		cacheinfo_cpu_offline(cpu);
+}
+
+void cacheinfo_rebuild(void)
+{
+	unsigned int cpu;
+
+	lockdep_assert_cpus_held();
+
+	for_each_online_cpu(cpu)
+		cacheinfo_cpu_online(cpu);
+}
+
+#endif /* (CONFIG_PPC_PSERIES && CONFIG_SUSPEND) || CONFIG_HOTPLUG_CPU */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

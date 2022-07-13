@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/mmc/host/sdhci-of-hlwd.c
  *
@@ -12,11 +16,14 @@
  *
  * Authors: Xiaobo Xie <X.Xie@freescale.com>
  *	    Anton Vorontsov <avorontsov@ru.mvista.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -51,21 +58,36 @@ static void sdhci_hlwd_writeb(struct sdhci_host *host, u8 val, int reg)
 	udelay(SDHCI_HLWD_WRITE_DELAY);
 }
 
+<<<<<<< HEAD
 static struct sdhci_ops sdhci_hlwd_ops = {
+=======
+static const struct sdhci_ops sdhci_hlwd_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read_l = sdhci_be32bs_readl,
 	.read_w = sdhci_be32bs_readw,
 	.read_b = sdhci_be32bs_readb,
 	.write_l = sdhci_hlwd_writel,
 	.write_w = sdhci_hlwd_writew,
 	.write_b = sdhci_hlwd_writeb,
+<<<<<<< HEAD
 };
 
 static struct sdhci_pltfm_data sdhci_hlwd_pdata = {
+=======
+	.set_clock = sdhci_set_clock,
+	.set_bus_width = sdhci_set_bus_width,
+	.reset = sdhci_reset,
+	.set_uhs_signaling = sdhci_set_uhs_signaling,
+};
+
+static const struct sdhci_pltfm_data sdhci_hlwd_pdata = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.quirks = SDHCI_QUIRK_32BIT_DMA_ADDR |
 		  SDHCI_QUIRK_32BIT_DMA_SIZE,
 	.ops = &sdhci_hlwd_ops,
 };
 
+<<<<<<< HEAD
 static int __devinit sdhci_hlwd_probe(struct platform_device *pdev)
 {
 	return sdhci_pltfm_register(pdev, &sdhci_hlwd_pdata);
@@ -74,6 +96,11 @@ static int __devinit sdhci_hlwd_probe(struct platform_device *pdev)
 static int __devexit sdhci_hlwd_remove(struct platform_device *pdev)
 {
 	return sdhci_pltfm_unregister(pdev);
+=======
+static int sdhci_hlwd_probe(struct platform_device *pdev)
+{
+	return sdhci_pltfm_init_and_add_host(pdev, &sdhci_hlwd_pdata, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id sdhci_hlwd_of_match[] = {
@@ -85,12 +112,21 @@ MODULE_DEVICE_TABLE(of, sdhci_hlwd_of_match);
 static struct platform_driver sdhci_hlwd_driver = {
 	.driver = {
 		.name = "sdhci-hlwd",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = sdhci_hlwd_of_match,
 		.pm = SDHCI_PLTFM_PMOPS,
 	},
 	.probe = sdhci_hlwd_probe,
 	.remove = __devexit_p(sdhci_hlwd_remove),
+=======
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+		.of_match_table = sdhci_hlwd_of_match,
+		.pm = &sdhci_pltfm_pmops,
+	},
+	.probe = sdhci_hlwd_probe,
+	.remove_new = sdhci_pltfm_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(sdhci_hlwd_driver);

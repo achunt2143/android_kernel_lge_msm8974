@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2009-2010 PetaLogix
  * Copyright (C) 2006 Benjamin Herrenschmidt, IBM Corporation
@@ -7,6 +11,7 @@
  */
 
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/dma-mapping.h>
 #include <linux/gfp.h>
 #include <linux/dma-debug.h>
@@ -202,3 +207,38 @@ static int __init dma_init(void)
        return 0;
 }
 fs_initcall(dma_init);
+=======
+#include <linux/dma-map-ops.h>
+#include <linux/gfp.h>
+#include <linux/export.h>
+#include <linux/bug.h>
+#include <asm/cacheflush.h>
+
+static void __dma_sync(phys_addr_t paddr, size_t size,
+		enum dma_data_direction direction)
+{
+	switch (direction) {
+	case DMA_TO_DEVICE:
+	case DMA_BIDIRECTIONAL:
+		flush_dcache_range(paddr, paddr + size);
+		break;
+	case DMA_FROM_DEVICE:
+		invalidate_dcache_range(paddr, paddr + size);
+		break;
+	default:
+		BUG();
+	}
+}
+
+void arch_sync_dma_for_device(phys_addr_t paddr, size_t size,
+		enum dma_data_direction dir)
+{
+	__dma_sync(paddr, size, dir);
+}
+
+void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+		enum dma_data_direction dir)
+{
+	__dma_sync(paddr, size, dir);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

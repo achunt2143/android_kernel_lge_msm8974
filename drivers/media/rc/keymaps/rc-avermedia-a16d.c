@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* avermedia-a16d.h - Keytable for avermedia_a16d Remote Controller
  *
  * keymap imported from ir-keymaps.c
@@ -9,6 +10,14 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+// avermedia-a16d.h - Keytable for avermedia_a16d Remote Controller
+//
+// keymap imported from ir-keymaps.c
+//
+// Copyright (c) 2010 by Mauro Carvalho Chehab
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -16,6 +25,7 @@
 static struct rc_map_table avermedia_a16d[] = {
 	{ 0x20, KEY_LIST},
 	{ 0x00, KEY_POWER},
+<<<<<<< HEAD
 	{ 0x28, KEY_1},
 	{ 0x18, KEY_2},
 	{ 0x38, KEY_3},
@@ -27,6 +37,19 @@ static struct rc_map_table avermedia_a16d[] = {
 	{ 0x3c, KEY_9},
 	{ 0x12, KEY_SUBTITLE},
 	{ 0x22, KEY_0},
+=======
+	{ 0x28, KEY_NUMERIC_1},
+	{ 0x18, KEY_NUMERIC_2},
+	{ 0x38, KEY_NUMERIC_3},
+	{ 0x24, KEY_NUMERIC_4},
+	{ 0x14, KEY_NUMERIC_5},
+	{ 0x34, KEY_NUMERIC_6},
+	{ 0x2c, KEY_NUMERIC_7},
+	{ 0x1c, KEY_NUMERIC_8},
+	{ 0x3c, KEY_NUMERIC_9},
+	{ 0x12, KEY_SUBTITLE},
+	{ 0x22, KEY_NUMERIC_0},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x32, KEY_REWIND},
 	{ 0x3a, KEY_SHUFFLE},
 	{ 0x02, KEY_PRINT},
@@ -52,10 +75,17 @@ static struct rc_map_table avermedia_a16d[] = {
 
 static struct rc_map_list avermedia_a16d_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = avermedia_a16d,
 		.size    = ARRAY_SIZE(avermedia_a16d),
 		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
 		.name    = RC_MAP_AVERMEDIA_A16D,
+=======
+		.scan     = avermedia_a16d,
+		.size     = ARRAY_SIZE(avermedia_a16d),
+		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.name     = RC_MAP_AVERMEDIA_A16D,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -73,4 +103,9 @@ module_init(init_rc_map_avermedia_a16d)
 module_exit(exit_rc_map_avermedia_a16d)
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+MODULE_DESCRIPTION("avermedia-a16d remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * vt1211.c - driver for the VIA VT1211 Super-I/O chip integrated hardware
  *            monitoring features
@@ -5,6 +9,7 @@
  *
  * This driver is based on the driver for kernel 2.4 by Mark D. Studebaker
  * and its port to kernel 2.6 by Lars Ekman.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -118,7 +125,11 @@ struct vt1211_data {
 	struct device *hwmon_dev;
 
 	struct mutex update_lock;
+<<<<<<< HEAD
 	char valid;			/* !=0 if following fields are valid */
+=======
+	bool valid;			/* true if following fields are valid */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated;	/* In jiffies */
 
 	/* Register values */
@@ -158,7 +169,11 @@ struct vt1211_data {
 #define IN_FROM_REG(ix, reg)	((reg) < 3 ? 0 : (ix) == 5 ? \
 				 (((reg) - 3) * 15882 + 479) / 958 : \
 				 (((reg) - 3) * 10000 + 479) / 958)
+<<<<<<< HEAD
 #define IN_TO_REG(ix, val)	(SENSORS_LIMIT((ix) == 5 ? \
+=======
+#define IN_TO_REG(ix, val)	(clamp_val((ix) == 5 ? \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 ((val) * 958 + 7941) / 15882 + 3 : \
 				 ((val) * 958 + 5000) / 10000 + 3, 0, 255))
 
@@ -173,7 +188,11 @@ struct vt1211_data {
 				 (ix) == 1 ? (reg) < 51 ? 0 : \
 				 ((reg) - 51) * 1000 : \
 				 ((253 - (reg)) * 2200 + 105) / 210)
+<<<<<<< HEAD
 #define TEMP_TO_REG(ix, val)	SENSORS_LIMIT( \
+=======
+#define TEMP_TO_REG(ix, val)	clamp_val( \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 ((ix) == 0 ? ((val) + 500) / 1000 : \
 				  (ix) == 1 ? ((val) + 500) / 1000 + 51 : \
 				  253 - ((val) * 210 + 1100) / 2200), 0, 255)
@@ -183,7 +202,11 @@ struct vt1211_data {
 #define RPM_FROM_REG(reg, div)	(((reg) == 0) || ((reg) == 255) ? 0 : \
 				 1310720 / (reg) / DIV_FROM_REG(div))
 #define RPM_TO_REG(val, div)	((val) == 0 ? 255 : \
+<<<<<<< HEAD
 				 SENSORS_LIMIT((1310720 / (val) / \
+=======
+				 clamp_val((1310720 / (val) / \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 DIV_FROM_REG(div)), 1, 254))
 
 /* ---------------------------------------------------------------------
@@ -208,12 +231,15 @@ struct vt1211_data {
 /* VT1211 logical device numbers */
 #define SIO_VT1211_LDN_HWMON	0x0b	/* HW monitor */
 
+<<<<<<< HEAD
 static inline void superio_outb(int sio_cip, int reg, int val)
 {
 	outb(reg, sio_cip);
 	outb(val, sio_cip + 1);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int superio_inb(int sio_cip, int reg)
 {
 	outb(reg, sio_cip);
@@ -226,15 +252,31 @@ static inline void superio_select(int sio_cip, int ldn)
 	outb(ldn, sio_cip + 1);
 }
 
+<<<<<<< HEAD
 static inline void superio_enter(int sio_cip)
 {
 	outb(0x87, sio_cip);
 	outb(0x87, sio_cip);
+=======
+static inline int superio_enter(int sio_cip)
+{
+	if (!request_muxed_region(sio_cip, 2, DRVNAME))
+		return -EBUSY;
+
+	outb(0x87, sio_cip);
+	outb(0x87, sio_cip);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void superio_exit(int sio_cip)
 {
 	outb(0xaa, sio_cip);
+<<<<<<< HEAD
+=======
+	release_region(sio_cip, 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ---------------------------------------------------------------------
@@ -326,7 +368,11 @@ static struct vt1211_data *vt1211_update_device(struct device *dev)
 				vt1211_read8(data, VT1211_REG_ALARM1);
 
 		data->last_updated = jiffies;
+<<<<<<< HEAD
 		data->valid = 1;
+=======
+		data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&data->update_lock);
@@ -571,8 +617,14 @@ static ssize_t set_fan(struct device *dev, struct device_attribute *attr,
 			break;
 		default:
 			count = -EINVAL;
+<<<<<<< HEAD
 			dev_warn(dev, "fan div value %ld not supported. "
 				 "Choose one of 1, 2, 4, or 8.\n", val);
+=======
+			dev_warn(dev,
+				 "fan div value %ld not supported. Choose one of 1, 2, 4, or 8.\n",
+				 val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto EXIT;
 		}
 		vt1211_write8(data, VT1211_REG_FAN_DIV,
@@ -674,8 +726,14 @@ static ssize_t set_pwm(struct device *dev, struct device_attribute *attr,
 			break;
 		default:
 			count = -EINVAL;
+<<<<<<< HEAD
 			dev_warn(dev, "pwm mode %ld not supported. "
 				 "Choose one of 0 or 2.\n", val);
+=======
+			dev_warn(dev,
+				 "pwm mode %ld not supported. Choose one of 0 or 2.\n",
+				 val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto EXIT;
 		}
 		vt1211_write8(data, VT1211_REG_PWM_CTL,
@@ -687,7 +745,11 @@ static ssize_t set_pwm(struct device *dev, struct device_attribute *attr,
 				data->fan_ctl));
 		break;
 	case SHOW_SET_PWM_FREQ:
+<<<<<<< HEAD
 		val = 135000 / SENSORS_LIMIT(val, 135000 >> 7, 135000);
+=======
+		val = 135000 / clamp_val(val, 135000 >> 7, 135000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* calculate tmp = log2(val) */
 		tmp = 0;
 		for (val >>= 1; val > 0; val >>= 1)
@@ -700,8 +762,14 @@ static ssize_t set_pwm(struct device *dev, struct device_attribute *attr,
 	case SHOW_SET_PWM_AUTO_CHANNELS_TEMP:
 		if (val < 1 || val > 7) {
 			count = -EINVAL;
+<<<<<<< HEAD
 			dev_warn(dev, "temp channel %ld not supported. "
 				 "Choose a value between 1 and 7.\n", val);
+=======
+			dev_warn(dev,
+				 "temp channel %ld not supported. Choose a value between 1 and 7.\n",
+				 val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto EXIT;
 		}
 		if (!ISTEMP(val - 1, data->uch_config)) {
@@ -845,7 +913,11 @@ static ssize_t set_pwm_auto_point_pwm(struct device *dev,
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->pwm_auto_pwm[ix][ap] = SENSORS_LIMIT(val, 0, 255);
+=======
+	data->pwm_auto_pwm[ix][ap] = clamp_val(val, 0, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vt1211_write8(data, VT1211_REG_PWM_AUTO_PWM(ix, ap),
 		      data->pwm_auto_pwm[ix][ap]);
 	mutex_unlock(&data->update_lock);
@@ -876,6 +948,12 @@ static ssize_t set_vrm(struct device *dev, struct device_attribute *attr,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
+=======
+	if (val > 255)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->vrm = val;
 
 	return count;
@@ -1086,7 +1164,11 @@ static struct device_attribute vt1211_sysfs_misc[] = {
  * Device registration and initialization
  * --------------------------------------------------------------------- */
 
+<<<<<<< HEAD
 static void __devinit vt1211_init_device(struct vt1211_data *data)
+=======
+static void vt1211_init_device(struct vt1211_data *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* set VRM */
 	data->vrm = vid_which_vrm();
@@ -1141,13 +1223,18 @@ static void vt1211_remove_sysfs(struct platform_device *pdev)
 		device_remove_file(dev, &vt1211_sysfs_misc[i]);
 }
 
+<<<<<<< HEAD
 static int __devinit vt1211_probe(struct platform_device *pdev)
+=======
+static int vt1211_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev = &pdev->dev;
 	struct vt1211_data *data;
 	struct resource *res;
 	int i, err;
 
+<<<<<<< HEAD
 	data = kzalloc(sizeof(struct vt1211_data), GFP_KERNEL);
 	if (!data) {
 		err = -ENOMEM;
@@ -1161,6 +1248,18 @@ static int __devinit vt1211_probe(struct platform_device *pdev)
 		dev_err(dev, "Failed to request region 0x%lx-0x%lx\n",
 			(unsigned long)res->start, (unsigned long)res->end);
 		goto EXIT_KFREE;
+=======
+	data = devm_kzalloc(dev, sizeof(struct vt1211_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	res = platform_get_resource(pdev, IORESOURCE_IO, 0);
+	if (!devm_request_region(dev, res->start, resource_size(res),
+				 DRVNAME)) {
+		dev_err(dev, "Failed to request region 0x%lx-0x%lx\n",
+			(unsigned long)res->start, (unsigned long)res->end);
+		return -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	data->addr = res->start;
 	data->name = DRVNAME;
@@ -1215,6 +1314,7 @@ EXIT_DEV_REMOVE:
 	dev_err(dev, "Sysfs interface creation failed (%d)\n", err);
 EXIT_DEV_REMOVE_SILENT:
 	vt1211_remove_sysfs(pdev);
+<<<<<<< HEAD
 	release_region(res->start, resource_size(res));
 EXIT_KFREE:
 	platform_set_drvdata(pdev, NULL);
@@ -1237,15 +1337,33 @@ static int __devexit vt1211_remove(struct platform_device *pdev)
 	release_region(res->start, resource_size(res));
 
 	return 0;
+=======
+	return err;
+}
+
+static void vt1211_remove(struct platform_device *pdev)
+{
+	struct vt1211_data *data = platform_get_drvdata(pdev);
+
+	hwmon_device_unregister(data->hwmon_dev);
+	vt1211_remove_sysfs(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver vt1211_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.name  = DRVNAME,
 	},
 	.probe  = vt1211_probe,
 	.remove = __devexit_p(vt1211_remove),
+=======
+		.name  = DRVNAME,
+	},
+	.probe  = vt1211_probe,
+	.remove_new = vt1211_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init vt1211_device_add(unsigned short address)
@@ -1291,11 +1409,22 @@ EXIT:
 
 static int __init vt1211_find(int sio_cip, unsigned short *address)
 {
+<<<<<<< HEAD
 	int err = -ENODEV;
 	int devid;
 
 	superio_enter(sio_cip);
 
+=======
+	int err;
+	int devid;
+
+	err = superio_enter(sio_cip);
+	if (err)
+		return err;
+
+	err = -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	devid = force_id ? force_id : superio_inb(sio_cip, SIO_VT1211_DEVID);
 	if (devid != SIO_VT1211_ID)
 		goto EXIT;
@@ -1337,15 +1466,25 @@ static int __init vt1211_init(void)
 
 	if ((uch_config < -1) || (uch_config > 31)) {
 		err = -EINVAL;
+<<<<<<< HEAD
 		pr_warn("Invalid UCH configuration %d. "
 			"Choose a value between 0 and 31.\n", uch_config);
+=======
+		pr_warn("Invalid UCH configuration %d. Choose a value between 0 and 31.\n",
+			uch_config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto EXIT;
 	}
 
 	if ((int_mode < -1) || (int_mode > 0)) {
 		err = -EINVAL;
+<<<<<<< HEAD
 		pr_warn("Invalid interrupt mode %d. "
 			"Only mode 0 is supported.\n", int_mode);
+=======
+		pr_warn("Invalid interrupt mode %d. Only mode 0 is supported.\n",
+			int_mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto EXIT;
 	}
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2006, Segher Boessenkool, IBM Corporation.
  * Copyright 2006-2007, Michael Ellerman, IBM Corporation.
@@ -14,6 +15,18 @@
 #include <linux/msi.h>
 #include <asm/mpic.h>
 #include <asm/prom.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright 2006, Segher Boessenkool, IBM Corporation.
+ * Copyright 2006-2007, Michael Ellerman, IBM Corporation.
+ */
+
+#include <linux/irq.h>
+#include <linux/irqdomain.h>
+#include <linux/msi.h>
+#include <asm/mpic.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/hw_irq.h>
 #include <asm/ppc-pci.h>
 #include <asm/msi_bitmap.h>
@@ -25,14 +38,22 @@ static struct mpic *msi_mpic;
 
 static void mpic_u3msi_mask_irq(struct irq_data *data)
 {
+<<<<<<< HEAD
 	mask_msi_irq(data);
+=======
+	pci_msi_mask_irq(data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mpic_mask_irq(data);
 }
 
 static void mpic_u3msi_unmask_irq(struct irq_data *data)
 {
 	mpic_unmask_irq(data);
+<<<<<<< HEAD
 	unmask_msi_irq(data);
+=======
+	pci_msi_unmask_irq(data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct irq_chip mpic_u3msi_chip = {
@@ -84,7 +105,11 @@ static u64 find_u4_magic_addr(struct pci_dev *pdev, unsigned int hwirq)
 
 	/* U4 PCIe MSIs need to write to the special register in
 	 * the bridge that generates interrupts. There should be
+<<<<<<< HEAD
 	 * theorically a register at 0xf8005000 where you just write
+=======
+	 * theoretically a register at 0xf8005000 where you just write
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the MSI number and that triggers the right interrupt, but
 	 * unfortunately, this is busted in HW, the bridge endian swaps
 	 * the value and hits the wrong nibble in the register.
@@ -105,8 +130,33 @@ static u64 find_u4_magic_addr(struct pci_dev *pdev, unsigned int hwirq)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int u3msi_msi_check_device(struct pci_dev *pdev, int nvec, int type)
 {
+=======
+static void u3msi_teardown_msi_irqs(struct pci_dev *pdev)
+{
+	struct msi_desc *entry;
+	irq_hw_number_t hwirq;
+
+	msi_for_each_desc(entry, &pdev->dev, MSI_DESC_ASSOCIATED) {
+		hwirq = virq_to_hw(entry->irq);
+		irq_set_msi_desc(entry->irq, NULL);
+		irq_dispose_mapping(entry->irq);
+		entry->irq = 0;
+		msi_bitmap_free_hwirqs(&msi_mpic->msi_bitmap, hwirq, 1);
+	}
+}
+
+static int u3msi_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
+{
+	unsigned int virq;
+	struct msi_desc *entry;
+	struct msi_msg msg;
+	u64 addr;
+	int hwirq;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (type == PCI_CAP_ID_MSIX)
 		pr_debug("u3msi: MSI-X untested, trying anyway.\n");
 
@@ -118,6 +168,7 @@ static int u3msi_msi_check_device(struct pci_dev *pdev, int nvec, int type)
 		return -ENXIO;
 	}
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -148,6 +199,9 @@ static int u3msi_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
 	int hwirq;
 
 	list_for_each_entry(entry, &pdev->msi_list, list) {
+=======
+	msi_for_each_desc(entry, &pdev->dev, MSI_DESC_NOTASSOCIATED) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hwirq = msi_bitmap_alloc_hwirqs(&msi_mpic->msi_bitmap, 1);
 		if (hwirq < 0) {
 			pr_debug("u3msi: failed allocating hwirq\n");
@@ -161,7 +215,11 @@ static int u3msi_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
 		msg.address_hi = addr >> 32;
 
 		virq = irq_create_mapping(msi_mpic->irqhost, hwirq);
+<<<<<<< HEAD
 		if (virq == NO_IRQ) {
+=======
+		if (!virq) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_debug("u3msi: failed mapping hwirq 0x%x\n", hwirq);
 			msi_bitmap_free_hwirqs(&msi_mpic->msi_bitmap, hwirq, 1);
 			return -ENOSPC;
@@ -177,7 +235,11 @@ static int u3msi_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
 		printk("u3msi: allocated virq 0x%x (hw 0x%x) addr 0x%lx\n",
 			  virq, hwirq, (unsigned long)addr);
 		msg.data = hwirq;
+<<<<<<< HEAD
 		write_msi_msg(virq, &msg);
+=======
+		pci_write_msi_msg(virq, &msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hwirq++;
 	}
@@ -185,9 +247,16 @@ static int u3msi_setup_msi_irqs(struct pci_dev *pdev, int nvec, int type)
 	return 0;
 }
 
+<<<<<<< HEAD
 int mpic_u3msi_init(struct mpic *mpic)
 {
 	int rc;
+=======
+int __init mpic_u3msi_init(struct mpic *mpic)
+{
+	int rc;
+	struct pci_controller *phb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = mpic_msi_init_allocator(mpic);
 	if (rc) {
@@ -200,10 +269,18 @@ int mpic_u3msi_init(struct mpic *mpic)
 	BUG_ON(msi_mpic);
 	msi_mpic = mpic;
 
+<<<<<<< HEAD
 	WARN_ON(ppc_md.setup_msi_irqs);
 	ppc_md.setup_msi_irqs = u3msi_setup_msi_irqs;
 	ppc_md.teardown_msi_irqs = u3msi_teardown_msi_irqs;
 	ppc_md.msi_check_device = u3msi_msi_check_device;
+=======
+	list_for_each_entry(phb, &hose_list, list_node) {
+		WARN_ON(phb->controller_ops.setup_msi_irqs);
+		phb->controller_ops.setup_msi_irqs = u3msi_setup_msi_irqs;
+		phb->controller_ops.teardown_msi_irqs = u3msi_teardown_msi_irqs;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

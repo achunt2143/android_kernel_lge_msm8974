@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * latencytop.c: Latency display infrastructure
  *
  * (C) Copyright 2008 Intel Corporation
  * Author: Arjan van de Ven <arjan@linux.intel.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2
  * of the License.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -47,16 +54,30 @@
  * of times)
  */
 
+<<<<<<< HEAD
 #include <linux/latencytop.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kallsyms.h>
 #include <linux/seq_file.h>
 #include <linux/notifier.h>
 #include <linux/spinlock.h>
 #include <linux/proc_fs.h>
+<<<<<<< HEAD
 #include <linux/export.h>
 #include <linux/sched.h>
 #include <linux/list.h>
 #include <linux/stacktrace.h>
+=======
+#include <linux/latencytop.h>
+#include <linux/export.h>
+#include <linux/sched.h>
+#include <linux/sched/debug.h>
+#include <linux/sched/stat.h>
+#include <linux/list.h>
+#include <linux/stacktrace.h>
+#include <linux/sysctl.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_RAW_SPINLOCK(latency_lock);
 
@@ -65,6 +86,7 @@ static struct latency_record latency_record[MAXLR];
 
 int latencytop_enabled;
 
+<<<<<<< HEAD
 void clear_all_latency_tracing(struct task_struct *p)
 {
 	unsigned long flags;
@@ -72,6 +94,37 @@ void clear_all_latency_tracing(struct task_struct *p)
 	if (!latencytop_enabled)
 		return;
 
+=======
+#ifdef CONFIG_SYSCTL
+static int sysctl_latencytop(struct ctl_table *table, int write, void *buffer,
+		size_t *lenp, loff_t *ppos)
+{
+	int err;
+
+	err = proc_dointvec(table, write, buffer, lenp, ppos);
+	if (latencytop_enabled)
+		force_schedstat_enabled();
+
+	return err;
+}
+
+static struct ctl_table latencytop_sysctl[] = {
+	{
+		.procname   = "latencytop",
+		.data       = &latencytop_enabled,
+		.maxlen     = sizeof(int),
+		.mode       = 0644,
+		.proc_handler   = sysctl_latencytop,
+	},
+	{}
+};
+#endif
+
+void clear_tsk_latency_tracing(struct task_struct *p)
+{
+	unsigned long flags;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	raw_spin_lock_irqsave(&latency_lock, flags);
 	memset(&p->latency_record, 0, sizeof(p->latency_record));
 	p->latency_record_count = 0;
@@ -88,6 +141,7 @@ static void clear_global_latency_tracing(void)
 }
 
 static void __sched
+<<<<<<< HEAD
 account_global_scheduler_latency(struct task_struct *tsk, struct latency_record *lat)
 {
 	int firstnonnull = MAXLR + 1;
@@ -96,6 +150,14 @@ account_global_scheduler_latency(struct task_struct *tsk, struct latency_record 
 	if (!latencytop_enabled)
 		return;
 
+=======
+account_global_scheduler_latency(struct task_struct *tsk,
+				 struct latency_record *lat)
+{
+	int firstnonnull = MAXLR;
+	int i;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* skip kernel threads for now */
 	if (!tsk->mm)
 		return;
@@ -117,8 +179,13 @@ account_global_scheduler_latency(struct task_struct *tsk, struct latency_record 
 				break;
 			}
 
+<<<<<<< HEAD
 			/* 0 and ULONG_MAX entries mean end of backtrace: */
 			if (record == 0 || record == ULONG_MAX)
+=======
+			/* 0 entry marks end of backtrace: */
+			if (!record)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 		}
 		if (same) {
@@ -131,13 +198,18 @@ account_global_scheduler_latency(struct task_struct *tsk, struct latency_record 
 	}
 
 	i = firstnonnull;
+<<<<<<< HEAD
 	if (i >= MAXLR - 1)
+=======
+	if (i >= MAXLR)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/* Allocted a new one: */
 	memcpy(&latency_record[i], lat, sizeof(struct latency_record));
 }
 
+<<<<<<< HEAD
 /*
  * Iterator to store a backtrace into a latency record entry
  */
@@ -152,6 +224,8 @@ static inline void store_stacktrace(struct task_struct *tsk,
 	save_stack_trace_tsk(tsk, &trace);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * __account_scheduler_latency - record an occurred latency
  * @tsk - the task struct of the task hitting the latency
@@ -188,7 +262,12 @@ __account_scheduler_latency(struct task_struct *tsk, int usecs, int inter)
 	lat.count = 1;
 	lat.time = usecs;
 	lat.max = usecs;
+<<<<<<< HEAD
 	store_stacktrace(tsk, &lat);
+=======
+
+	stack_trace_save_tsk(tsk, lat.backtrace, LT_BACKTRACEDEPTH, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	raw_spin_lock_irqsave(&latency_lock, flags);
 
@@ -207,8 +286,13 @@ __account_scheduler_latency(struct task_struct *tsk, int usecs, int inter)
 				break;
 			}
 
+<<<<<<< HEAD
 			/* 0 and ULONG_MAX entries mean end of backtrace: */
 			if (record == 0 || record == ULONG_MAX)
+=======
+			/* 0 entry is end of backtrace */
+			if (!record)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 		}
 		if (same) {
@@ -249,6 +333,7 @@ static int lstats_show(struct seq_file *m, void *v)
 				   lr->count, lr->time, lr->max);
 			for (q = 0; q < LT_BACKTRACEDEPTH; q++) {
 				unsigned long bt = lr->backtrace[q];
+<<<<<<< HEAD
 				if (!bt)
 					break;
 				if (bt == ULONG_MAX)
@@ -256,6 +341,15 @@ static int lstats_show(struct seq_file *m, void *v)
 				seq_printf(m, " %ps", (void *)bt);
 			}
 			seq_printf(m, "\n");
+=======
+
+				if (!bt)
+					break;
+
+				seq_printf(m, " %ps", (void *)bt);
+			}
+			seq_puts(m, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return 0;
@@ -275,17 +369,33 @@ static int lstats_open(struct inode *inode, struct file *filp)
 	return single_open(filp, lstats_show, NULL);
 }
 
+<<<<<<< HEAD
 static const struct file_operations lstats_fops = {
 	.open		= lstats_open,
 	.read		= seq_read,
 	.write		= lstats_write,
 	.llseek		= seq_lseek,
 	.release	= single_release,
+=======
+static const struct proc_ops lstats_proc_ops = {
+	.proc_open	= lstats_open,
+	.proc_read	= seq_read,
+	.proc_write	= lstats_write,
+	.proc_lseek	= seq_lseek,
+	.proc_release	= single_release,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init init_lstats_procfs(void)
 {
+<<<<<<< HEAD
 	proc_create("latency_stats", 0644, NULL, &lstats_fops);
+=======
+	proc_create("latency_stats", 0644, NULL, &lstats_proc_ops);
+#ifdef CONFIG_SYSCTL
+	register_sysctl_init("kernel", latencytop_sysctl);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 device_initcall(init_lstats_procfs);

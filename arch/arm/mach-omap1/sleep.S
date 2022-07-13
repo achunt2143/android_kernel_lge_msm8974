@@ -36,6 +36,11 @@
 
 #include <asm/assembler.h>
 
+<<<<<<< HEAD
+=======
+#include "hardware.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iomap.h"
 #include "pm.h"
 
@@ -59,6 +64,7 @@
  *
  */
 
+<<<<<<< HEAD
 #if defined(CONFIG_ARCH_OMAP730) || defined(CONFIG_ARCH_OMAP850)
 	.align	3
 ENTRY(omap7xx_cpu_suspend)
@@ -139,6 +145,8 @@ ENTRY(omap7xx_cpu_suspend_sz)
 	.word	. - omap7xx_cpu_suspend
 #endif /* CONFIG_ARCH_OMAP730 || CONFIG_ARCH_OMAP850 */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ARCH_OMAP15XX
 	.align	3
 ENTRY(omap1510_cpu_suspend)

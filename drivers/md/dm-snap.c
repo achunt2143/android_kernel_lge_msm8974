@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 /*
  * dm-snapshot.c
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2001-2002 Sistina Software (UK) Limited.
  *
  * This file is released under the GPL.
@@ -13,6 +18,10 @@
 #include <linux/init.h>
 #include <linux/kdev_t.h>
 #include <linux/list.h>
+<<<<<<< HEAD
+=======
+#include <linux/list_bl.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mempool.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -20,6 +29,11 @@
 #include <linux/log2.h>
 #include <linux/dm-kcopyd.h>
 
+<<<<<<< HEAD
+=======
+#include "dm.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "dm-exception-store.h"
 
 #define DM_MSG_PREFIX "snapshots"
@@ -40,8 +54,13 @@ static const char dm_snapshot_merge_target_name[] = "snapshot-merge";
 
 struct dm_exception_table {
 	uint32_t hash_mask;
+<<<<<<< HEAD
 	unsigned hash_shift;
 	struct list_head *table;
+=======
+	unsigned int hash_shift;
+	struct hlist_bl_head *table;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dm_snapshot {
@@ -61,12 +80,28 @@ struct dm_snapshot {
 	 */
 	int valid;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * The snapshot overflowed because of a write to the snapshot device.
+	 * We don't have to invalidate the snapshot in this case, but we need
+	 * to prevent further writes.
+	 */
+	int snapshot_overflowed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Origin writes don't trigger exceptions until this is set */
 	int active;
 
 	atomic_t pending_exceptions_count;
 
+<<<<<<< HEAD
 	/* Protected by "lock" */
+=======
+	spinlock_t pe_allocation_lock;
+
+	/* Protected by "pe_allocation_lock" */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sector_t exception_start_sequence;
 
 	/* Protected by kcopyd single-threaded callback */
@@ -76,9 +111,15 @@ struct dm_snapshot {
 	 * A list of pending exceptions that completed out of order.
 	 * Protected by kcopyd single-threaded callback.
 	 */
+<<<<<<< HEAD
 	struct list_head out_of_order_list;
 
 	mempool_t *pending_pool;
+=======
+	struct rb_root out_of_order_tree;
+
+	mempool_t pending_pool;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct dm_exception_table pending;
 	struct dm_exception_table complete;
@@ -91,12 +132,21 @@ struct dm_snapshot {
 
 	/* Chunks with outstanding reads */
 	spinlock_t tracked_chunk_lock;
+<<<<<<< HEAD
 	mempool_t *tracked_chunk_pool;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hlist_head tracked_chunk_hash[DM_TRACKED_CHUNK_HASH_SIZE];
 
 	/* The on disk metadata handler */
 	struct dm_exception_store *store;
 
+<<<<<<< HEAD
+=======
+	unsigned int in_progress;
+	struct wait_queue_head in_progress_wait;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_kcopyd_client *kcopyd_client;
 
 	/* Wait for events based on state_bits */
@@ -110,16 +160,31 @@ struct dm_snapshot {
 	 * The merge operation failed if this flag is set.
 	 * Failure modes are handled as follows:
 	 * - I/O error reading the header
+<<<<<<< HEAD
 	 *   	=> don't load the target; abort.
 	 * - Header does not have "valid" flag set
 	 *   	=> use the origin; forget about the snapshot.
 	 * - I/O error when reading exceptions
 	 *   	=> don't load the target; abort.
+=======
+	 *	=> don't load the target; abort.
+	 * - Header does not have "valid" flag set
+	 *	=> use the origin; forget about the snapshot.
+	 * - I/O error when reading exceptions
+	 *	=> don't load the target; abort.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *         (We can't use the intermediate origin state.)
 	 * - I/O error while merging
 	 *	=> stop merging; set merge_failed; process I/O normally.
 	 */
+<<<<<<< HEAD
 	int merge_failed;
+=======
+	bool merge_failed:1;
+
+	bool discard_zeroes_cow:1;
+	bool discard_passdown_origin:1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Incoming bios that overlap with chunks being merged must wait
@@ -137,6 +202,25 @@ struct dm_snapshot {
 #define RUNNING_MERGE          0
 #define SHUTDOWN_MERGE         1
 
+<<<<<<< HEAD
+=======
+/*
+ * Maximum number of chunks being copied on write.
+ *
+ * The value was decided experimentally as a trade-off between memory
+ * consumption, stalling the kernel's workqueues and maintaining a high enough
+ * throughput.
+ */
+#define DEFAULT_COW_THRESHOLD 2048
+
+static unsigned int cow_threshold = DEFAULT_COW_THRESHOLD;
+module_param_named(snapshot_cow_threshold, cow_threshold, uint, 0644);
+MODULE_PARM_DESC(snapshot_cow_threshold, "Maximum number of chunks being copied on write");
+
+DECLARE_DM_KCOPYD_THROTTLE_WITH_MODULE_PARM(snapshot_copy_throttle,
+		"A percentage of time allocated for copy on write");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dm_dev *dm_snap_origin(struct dm_snapshot *s)
 {
 	return s->origin;
@@ -189,14 +273,21 @@ struct dm_snap_pending_exception {
 	/* A sequence number, it is used for in-order completion. */
 	sector_t exception_sequence;
 
+<<<<<<< HEAD
 	struct list_head out_of_order_entry;
+=======
+	struct rb_node out_of_order_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * For writing a complete chunk, bypassing the copy.
 	 */
 	struct bio *full_bio;
 	bio_end_io_t *full_bio_end_io;
+<<<<<<< HEAD
 	void *full_bio_private;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -211,6 +302,7 @@ struct dm_snap_tracked_chunk {
 	chunk_t chunk;
 };
 
+<<<<<<< HEAD
 static struct kmem_cache *tracked_chunk_cache;
 
 static struct dm_snap_tracked_chunk *track_chunk(struct dm_snapshot *s,
@@ -233,24 +325,65 @@ static struct dm_snap_tracked_chunk *track_chunk(struct dm_snapshot *s,
 static void stop_tracking_chunk(struct dm_snapshot *s,
 				struct dm_snap_tracked_chunk *c)
 {
+=======
+static void init_tracked_chunk(struct bio *bio)
+{
+	struct dm_snap_tracked_chunk *c = dm_per_bio_data(bio, sizeof(struct dm_snap_tracked_chunk));
+
+	INIT_HLIST_NODE(&c->node);
+}
+
+static bool is_bio_tracked(struct bio *bio)
+{
+	struct dm_snap_tracked_chunk *c = dm_per_bio_data(bio, sizeof(struct dm_snap_tracked_chunk));
+
+	return !hlist_unhashed(&c->node);
+}
+
+static void track_chunk(struct dm_snapshot *s, struct bio *bio, chunk_t chunk)
+{
+	struct dm_snap_tracked_chunk *c = dm_per_bio_data(bio, sizeof(struct dm_snap_tracked_chunk));
+
+	c->chunk = chunk;
+
+	spin_lock_irq(&s->tracked_chunk_lock);
+	hlist_add_head(&c->node,
+		       &s->tracked_chunk_hash[DM_TRACKED_CHUNK_HASH(chunk)]);
+	spin_unlock_irq(&s->tracked_chunk_lock);
+}
+
+static void stop_tracking_chunk(struct dm_snapshot *s, struct bio *bio)
+{
+	struct dm_snap_tracked_chunk *c = dm_per_bio_data(bio, sizeof(struct dm_snap_tracked_chunk));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	spin_lock_irqsave(&s->tracked_chunk_lock, flags);
 	hlist_del(&c->node);
 	spin_unlock_irqrestore(&s->tracked_chunk_lock, flags);
+<<<<<<< HEAD
 
 	mempool_free(c, s->tracked_chunk_pool);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __chunk_is_tracked(struct dm_snapshot *s, chunk_t chunk)
 {
 	struct dm_snap_tracked_chunk *c;
+<<<<<<< HEAD
 	struct hlist_node *hn;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int found = 0;
 
 	spin_lock_irq(&s->tracked_chunk_lock);
 
+<<<<<<< HEAD
 	hlist_for_each_entry(c, hn,
+=======
+	hlist_for_each_entry(c,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    &s->tracked_chunk_hash[DM_TRACKED_CHUNK_HASH(chunk)], node) {
 		if (c->chunk == chunk) {
 			found = 1;
@@ -265,12 +398,20 @@ static int __chunk_is_tracked(struct dm_snapshot *s, chunk_t chunk)
 
 /*
  * This conflicting I/O is extremely improbable in the caller,
+<<<<<<< HEAD
  * so msleep(1) is sufficient and there is no need for a wait queue.
+=======
+ * so fsleep(1000) is sufficient and there is no need for a wait queue.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void __check_for_conflicting_io(struct dm_snapshot *s, chunk_t chunk)
 {
 	while (__chunk_is_tracked(s, chunk))
+<<<<<<< HEAD
 		msleep(1);
+=======
+		fsleep(1000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -287,12 +428,29 @@ struct origin {
 };
 
 /*
+<<<<<<< HEAD
+=======
+ * This structure is allocated for each origin target
+ */
+struct dm_origin {
+	struct dm_dev *dev;
+	struct dm_target *ti;
+	unsigned int split_boundary;
+	struct list_head hash_list;
+};
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Size of the hash table for origin volumes. If we make this
  * the size of the minors list then it should be nearly perfect
  */
 #define ORIGIN_HASH_SIZE 256
 #define ORIGIN_MASK      0xFF
 static struct list_head *_origins;
+<<<<<<< HEAD
+=======
+static struct list_head *_dm_origins;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct rw_semaphore _origins_lock;
 
 static DECLARE_WAIT_QUEUE_HEAD(_pending_exceptions_done);
@@ -303,6 +461,7 @@ static int init_origin_hash(void)
 {
 	int i;
 
+<<<<<<< HEAD
 	_origins = kmalloc(ORIGIN_HASH_SIZE * sizeof(struct list_head),
 			   GFP_KERNEL);
 	if (!_origins) {
@@ -312,6 +471,28 @@ static int init_origin_hash(void)
 
 	for (i = 0; i < ORIGIN_HASH_SIZE; i++)
 		INIT_LIST_HEAD(_origins + i);
+=======
+	_origins = kmalloc_array(ORIGIN_HASH_SIZE, sizeof(struct list_head),
+				 GFP_KERNEL);
+	if (!_origins) {
+		DMERR("unable to allocate memory for _origins");
+		return -ENOMEM;
+	}
+	for (i = 0; i < ORIGIN_HASH_SIZE; i++)
+		INIT_LIST_HEAD(_origins + i);
+
+	_dm_origins = kmalloc_array(ORIGIN_HASH_SIZE,
+				    sizeof(struct list_head),
+				    GFP_KERNEL);
+	if (!_dm_origins) {
+		DMERR("unable to allocate memory for _dm_origins");
+		kfree(_origins);
+		return -ENOMEM;
+	}
+	for (i = 0; i < ORIGIN_HASH_SIZE; i++)
+		INIT_LIST_HEAD(_dm_origins + i);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_rwsem(&_origins_lock);
 
 	return 0;
@@ -320,9 +501,16 @@ static int init_origin_hash(void)
 static void exit_origin_hash(void)
 {
 	kfree(_origins);
+<<<<<<< HEAD
 }
 
 static unsigned origin_hash(struct block_device *bdev)
+=======
+	kfree(_dm_origins);
+}
+
+static unsigned int origin_hash(struct block_device *bdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return bdev->bd_dev & ORIGIN_MASK;
 }
@@ -333,7 +521,11 @@ static struct origin *__lookup_origin(struct block_device *origin)
 	struct origin *o;
 
 	ol = &_origins[origin_hash(origin)];
+<<<<<<< HEAD
 	list_for_each_entry (o, ol, hash_list)
+=======
+	list_for_each_entry(o, ol, hash_list)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bdev_equal(o->bdev, origin))
 			return o;
 
@@ -343,9 +535,41 @@ static struct origin *__lookup_origin(struct block_device *origin)
 static void __insert_origin(struct origin *o)
 {
 	struct list_head *sl = &_origins[origin_hash(o->bdev)];
+<<<<<<< HEAD
 	list_add_tail(&o->hash_list, sl);
 }
 
+=======
+
+	list_add_tail(&o->hash_list, sl);
+}
+
+static struct dm_origin *__lookup_dm_origin(struct block_device *origin)
+{
+	struct list_head *ol;
+	struct dm_origin *o;
+
+	ol = &_dm_origins[origin_hash(origin)];
+	list_for_each_entry(o, ol, hash_list)
+		if (bdev_equal(o->dev->bdev, origin))
+			return o;
+
+	return NULL;
+}
+
+static void __insert_dm_origin(struct dm_origin *o)
+{
+	struct list_head *sl = &_dm_origins[origin_hash(o->dev->bdev)];
+
+	list_add_tail(&o->hash_list, sl);
+}
+
+static void __remove_dm_origin(struct dm_origin *o)
+{
+	list_del(&o->hash_list);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * _origins_lock must be held when calling this function.
  * Returns number of snapshots registered using the supplied cow device, plus:
@@ -411,8 +635,12 @@ static int __validate_exception_handover(struct dm_snapshot *snap)
 	if ((__find_snapshots_sharing_cow(snap, &snap_src, &snap_dest,
 					  &snap_merge) == 2) ||
 	    snap_dest) {
+<<<<<<< HEAD
 		snap->ti->error = "Snapshot cow pairing for exception "
 				  "table handover failed";
+=======
+		snap->ti->error = "Snapshot cow pairing for exception table handover failed";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -439,8 +667,12 @@ static int __validate_exception_handover(struct dm_snapshot *snap)
 
 	if (!snap_src->store->type->prepare_merge ||
 	    !snap_src->store->type->commit_merge) {
+<<<<<<< HEAD
 		snap->ti->error = "Snapshot exception store does not "
 				  "support snapshot-merge.";
+=======
+		snap->ti->error = "Snapshot exception store does not support snapshot-merge.";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -542,19 +774,63 @@ static void unregister_snapshot(struct dm_snapshot *s)
  * The lowest hash_shift bits of the chunk number are ignored, allowing
  * some consecutive chunks to be grouped together.
  */
+<<<<<<< HEAD
 static int dm_exception_table_init(struct dm_exception_table *et,
 				   uint32_t size, unsigned hash_shift)
+=======
+static uint32_t exception_hash(struct dm_exception_table *et, chunk_t chunk);
+
+/* Lock to protect access to the completed and pending exception hash tables. */
+struct dm_exception_table_lock {
+	struct hlist_bl_head *complete_slot;
+	struct hlist_bl_head *pending_slot;
+};
+
+static void dm_exception_table_lock_init(struct dm_snapshot *s, chunk_t chunk,
+					 struct dm_exception_table_lock *lock)
+{
+	struct dm_exception_table *complete = &s->complete;
+	struct dm_exception_table *pending = &s->pending;
+
+	lock->complete_slot = &complete->table[exception_hash(complete, chunk)];
+	lock->pending_slot = &pending->table[exception_hash(pending, chunk)];
+}
+
+static void dm_exception_table_lock(struct dm_exception_table_lock *lock)
+{
+	hlist_bl_lock(lock->complete_slot);
+	hlist_bl_lock(lock->pending_slot);
+}
+
+static void dm_exception_table_unlock(struct dm_exception_table_lock *lock)
+{
+	hlist_bl_unlock(lock->pending_slot);
+	hlist_bl_unlock(lock->complete_slot);
+}
+
+static int dm_exception_table_init(struct dm_exception_table *et,
+				   uint32_t size, unsigned int hash_shift)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 
 	et->hash_shift = hash_shift;
 	et->hash_mask = size - 1;
+<<<<<<< HEAD
 	et->table = dm_vcalloc(size, sizeof(struct list_head));
+=======
+	et->table = kvmalloc_array(size, sizeof(struct hlist_bl_head),
+				   GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!et->table)
 		return -ENOMEM;
 
 	for (i = 0; i < size; i++)
+<<<<<<< HEAD
 		INIT_LIST_HEAD(et->table + i);
+=======
+		INIT_HLIST_BL_HEAD(et->table + i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -562,19 +838,35 @@ static int dm_exception_table_init(struct dm_exception_table *et,
 static void dm_exception_table_exit(struct dm_exception_table *et,
 				    struct kmem_cache *mem)
 {
+<<<<<<< HEAD
 	struct list_head *slot;
 	struct dm_exception *ex, *next;
+=======
+	struct hlist_bl_head *slot;
+	struct dm_exception *ex;
+	struct hlist_bl_node *pos, *n;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, size;
 
 	size = et->hash_mask + 1;
 	for (i = 0; i < size; i++) {
 		slot = et->table + i;
 
+<<<<<<< HEAD
 		list_for_each_entry_safe (ex, next, slot, hash_list)
 			kmem_cache_free(mem, ex);
 	}
 
 	vfree(et->table);
+=======
+		hlist_bl_for_each_entry_safe(ex, pos, n, slot, hash_list) {
+			kmem_cache_free(mem, ex);
+			cond_resched();
+		}
+	}
+
+	kvfree(et->table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static uint32_t exception_hash(struct dm_exception_table *et, chunk_t chunk)
@@ -584,7 +876,11 @@ static uint32_t exception_hash(struct dm_exception_table *et, chunk_t chunk)
 
 static void dm_remove_exception(struct dm_exception *e)
 {
+<<<<<<< HEAD
 	list_del(&e->hash_list);
+=======
+	hlist_bl_del(&e->hash_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -594,11 +890,20 @@ static void dm_remove_exception(struct dm_exception *e)
 static struct dm_exception *dm_lookup_exception(struct dm_exception_table *et,
 						chunk_t chunk)
 {
+<<<<<<< HEAD
 	struct list_head *slot;
 	struct dm_exception *e;
 
 	slot = &et->table[exception_hash(et, chunk)];
 	list_for_each_entry (e, slot, hash_list)
+=======
+	struct hlist_bl_head *slot;
+	struct hlist_bl_node *pos;
+	struct dm_exception *e;
+
+	slot = &et->table[exception_hash(et, chunk)];
+	hlist_bl_for_each_entry(e, pos, slot, hash_list)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (chunk >= e->old_chunk &&
 		    chunk <= e->old_chunk + dm_consecutive_chunk_count(e))
 			return e;
@@ -606,12 +911,21 @@ static struct dm_exception *dm_lookup_exception(struct dm_exception_table *et,
 	return NULL;
 }
 
+<<<<<<< HEAD
 static struct dm_exception *alloc_completed_exception(void)
 {
 	struct dm_exception *e;
 
 	e = kmem_cache_alloc(exception_cache, GFP_NOIO);
 	if (!e)
+=======
+static struct dm_exception *alloc_completed_exception(gfp_t gfp)
+{
+	struct dm_exception *e;
+
+	e = kmem_cache_alloc(exception_cache, gfp);
+	if (!e && gfp == GFP_NOIO)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		e = kmem_cache_alloc(exception_cache, GFP_ATOMIC);
 
 	return e;
@@ -624,7 +938,11 @@ static void free_completed_exception(struct dm_exception *e)
 
 static struct dm_snap_pending_exception *alloc_pending_exception(struct dm_snapshot *s)
 {
+<<<<<<< HEAD
 	struct dm_snap_pending_exception *pe = mempool_alloc(s->pending_pool,
+=======
+	struct dm_snap_pending_exception *pe = mempool_alloc(&s->pending_pool,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							     GFP_NOIO);
 
 	atomic_inc(&s->pending_exceptions_count);
@@ -637,15 +955,25 @@ static void free_pending_exception(struct dm_snap_pending_exception *pe)
 {
 	struct dm_snapshot *s = pe->snap;
 
+<<<<<<< HEAD
 	mempool_free(pe, s->pending_pool);
 	smp_mb__before_atomic_dec();
+=======
+	mempool_free(pe, &s->pending_pool);
+	smp_mb__before_atomic();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_dec(&s->pending_exceptions_count);
 }
 
 static void dm_insert_exception(struct dm_exception_table *eh,
 				struct dm_exception *new_e)
 {
+<<<<<<< HEAD
 	struct list_head *l;
+=======
+	struct hlist_bl_head *l;
+	struct hlist_bl_node *pos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_exception *e = NULL;
 
 	l = &eh->table[exception_hash(eh, new_e->old_chunk)];
@@ -655,7 +983,11 @@ static void dm_insert_exception(struct dm_exception_table *eh,
 		goto out;
 
 	/* List is ordered by old_chunk */
+<<<<<<< HEAD
 	list_for_each_entry_reverse(e, l, hash_list) {
+=======
+	hlist_bl_for_each_entry(e, pos, l, hash_list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Insert after an existing chunk? */
 		if (new_e->old_chunk == (e->old_chunk +
 					 dm_consecutive_chunk_count(e) + 1) &&
@@ -676,12 +1008,32 @@ static void dm_insert_exception(struct dm_exception_table *eh,
 			return;
 		}
 
+<<<<<<< HEAD
 		if (new_e->old_chunk > e->old_chunk)
+=======
+		if (new_e->old_chunk < e->old_chunk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 
 out:
+<<<<<<< HEAD
 	list_add(&new_e->hash_list, e ? &e->hash_list : l);
+=======
+	if (!e) {
+		/*
+		 * Either the table doesn't support consecutive chunks or slot
+		 * l is empty.
+		 */
+		hlist_bl_add_head(&new_e->hash_list, l);
+	} else if (new_e->old_chunk < e->old_chunk) {
+		/* Add before an existing exception */
+		hlist_bl_add_before(&new_e->hash_list, &e->hash_list);
+	} else {
+		/* Add to l's tail: e is the last exception in this slot */
+		hlist_bl_add_behind(&new_e->hash_list, &e->hash_list);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -690,10 +1042,18 @@ out:
  */
 static int dm_add_exception(void *context, chunk_t old, chunk_t new)
 {
+<<<<<<< HEAD
 	struct dm_snapshot *s = context;
 	struct dm_exception *e;
 
 	e = alloc_completed_exception();
+=======
+	struct dm_exception_table_lock lock;
+	struct dm_snapshot *s = context;
+	struct dm_exception *e;
+
+	e = alloc_completed_exception(GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!e)
 		return -ENOMEM;
 
@@ -702,7 +1062,21 @@ static int dm_add_exception(void *context, chunk_t old, chunk_t new)
 	/* Consecutive_count is implicitly initialised to zero */
 	e->new_chunk = new;
 
+<<<<<<< HEAD
 	dm_insert_exception(&s->complete, e);
+=======
+	/*
+	 * Although there is no need to lock access to the exception tables
+	 * here, if we don't then hlist_bl_add_head(), called by
+	 * dm_insert_exception(), will complain about accessing the
+	 * corresponding list without locking it first.
+	 */
+	dm_exception_table_lock_init(s, old, &lock);
+
+	dm_exception_table_lock(&lock);
+	dm_insert_exception(&s->complete, e);
+	dm_exception_table_unlock(&lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -711,17 +1085,28 @@ static int dm_add_exception(void *context, chunk_t old, chunk_t new)
  * Return a minimum chunk size of all snapshots that have the specified origin.
  * Return zero if the origin has no snapshots.
  */
+<<<<<<< HEAD
 static sector_t __minimum_chunk_size(struct origin *o)
 {
 	struct dm_snapshot *snap;
 	unsigned chunk_size = 0;
+=======
+static uint32_t __minimum_chunk_size(struct origin *o)
+{
+	struct dm_snapshot *snap;
+	unsigned int chunk_size = rounddown_pow_of_two(UINT_MAX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (o)
 		list_for_each_entry(snap, &o->snapshots, list)
 			chunk_size = min_not_zero(chunk_size,
 						  snap->store->chunk_size);
 
+<<<<<<< HEAD
 	return chunk_size;
+=======
+	return (uint32_t) chunk_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -731,7 +1116,12 @@ static int calc_max_buckets(void)
 {
 	/* use a fixed size of 2MB */
 	unsigned long mem = 2 * 1024 * 1024;
+<<<<<<< HEAD
 	mem /= sizeof(struct list_head);
+=======
+
+	mem /= sizeof(struct hlist_bl_head);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mem;
 }
@@ -779,7 +1169,11 @@ static int init_hash_tables(struct dm_snapshot *s)
 static void merge_shutdown(struct dm_snapshot *s)
 {
 	clear_bit_unlock(RUNNING_MERGE, &s->state_bits);
+<<<<<<< HEAD
 	smp_mb__after_clear_bit();
+=======
+	smp_mb__after_atomic();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up_bit(&s->state_bits, RUNNING_MERGE);
 }
 
@@ -801,8 +1195,12 @@ static int __remove_single_exception_chunk(struct dm_snapshot *s,
 
 	e = dm_lookup_exception(&s->complete, old_chunk);
 	if (!e) {
+<<<<<<< HEAD
 		DMERR("Corruption detected: exception for block %llu is "
 		      "on disk but not in memory",
+=======
+		DMERR("Corruption detected: exception for block %llu is on disk but not in memory",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      (unsigned long long)old_chunk);
 		return -EINVAL;
 	}
@@ -829,8 +1227,12 @@ static int __remove_single_exception_chunk(struct dm_snapshot *s,
 		e->new_chunk++;
 	} else if (old_chunk != e->old_chunk +
 		   dm_consecutive_chunk_count(e)) {
+<<<<<<< HEAD
 		DMERR("Attempt to merge block %llu from the "
 		      "middle of a chunk range [%llu - %llu]",
+=======
+		DMERR("Attempt to merge block %llu from the middle of a chunk range [%llu - %llu]",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      (unsigned long long)old_chunk,
 		      (unsigned long long)e->old_chunk,
 		      (unsigned long long)
@@ -874,7 +1276,11 @@ out:
 }
 
 static int origin_write_extent(struct dm_snapshot *merging_snap,
+<<<<<<< HEAD
 			       sector_t sector, unsigned chunk_size);
+=======
+			       sector_t sector, unsigned int chunk_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void merge_callback(int read_err, unsigned long write_err,
 			   void *context);
@@ -923,10 +1329,16 @@ static void snapshot_merge_next_chunks(struct dm_snapshot *s)
 						      &new_chunk);
 	if (linear_chunks <= 0) {
 		if (linear_chunks < 0) {
+<<<<<<< HEAD
 			DMERR("Read error in exception store: "
 			      "shutting down merge");
 			down_write(&s->lock);
 			s->merge_failed = 1;
+=======
+			DMERR("Read error in exception store: shutting down merge");
+			down_write(&s->lock);
+			s->merge_failed = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			up_write(&s->lock);
 		}
 		goto shut;
@@ -999,6 +1411,14 @@ static void merge_callback(int read_err, unsigned long write_err, void *context)
 		goto shut;
 	}
 
+<<<<<<< HEAD
+=======
+	if (blkdev_issue_flush(s->origin->bdev) < 0) {
+		DMERR("Flush after merge failed: shutting down merge");
+		goto shut;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (s->store->type->commit_merge(s->store,
 					 s->num_merging_chunks) < 0) {
 		DMERR("Write error in exception store: shutting down merge");
@@ -1014,7 +1434,11 @@ static void merge_callback(int read_err, unsigned long write_err, void *context)
 
 shut:
 	down_write(&s->lock);
+<<<<<<< HEAD
 	s->merge_failed = 1;
+=======
+	s->merge_failed = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b = __release_queued_bios_after_merge(s);
 	up_write(&s->lock);
 	error_bios(b);
@@ -1028,6 +1452,7 @@ static void start_merge(struct dm_snapshot *s)
 		snapshot_merge_next_chunks(s);
 }
 
+<<<<<<< HEAD
 static int wait_schedule(void *ptr)
 {
 	schedule();
@@ -1035,12 +1460,15 @@ static int wait_schedule(void *ptr)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Stop the merging process and wait until it finishes.
  */
 static void stop_merge(struct dm_snapshot *s)
 {
 	set_bit(SHUTDOWN_MERGE, &s->state_bits);
+<<<<<<< HEAD
 	wait_on_bit(&s->state_bits, RUNNING_MERGE, wait_schedule,
 		    TASK_UNINTERRUPTIBLE);
 	clear_bit(SHUTDOWN_MERGE, &s->state_bits);
@@ -1048,10 +1476,70 @@ static void stop_merge(struct dm_snapshot *s)
 
 /*
  * Construct a snapshot mapping: <origin_dev> <COW-dev> <p/n> <chunk-size>
+=======
+	wait_on_bit(&s->state_bits, RUNNING_MERGE, TASK_UNINTERRUPTIBLE);
+	clear_bit(SHUTDOWN_MERGE, &s->state_bits);
+}
+
+static int parse_snapshot_features(struct dm_arg_set *as, struct dm_snapshot *s,
+				   struct dm_target *ti)
+{
+	int r;
+	unsigned int argc;
+	const char *arg_name;
+
+	static const struct dm_arg _args[] = {
+		{0, 2, "Invalid number of feature arguments"},
+	};
+
+	/*
+	 * No feature arguments supplied.
+	 */
+	if (!as->argc)
+		return 0;
+
+	r = dm_read_arg_group(_args, as, &argc, &ti->error);
+	if (r)
+		return -EINVAL;
+
+	while (argc && !r) {
+		arg_name = dm_shift_arg(as);
+		argc--;
+
+		if (!strcasecmp(arg_name, "discard_zeroes_cow"))
+			s->discard_zeroes_cow = true;
+
+		else if (!strcasecmp(arg_name, "discard_passdown_origin"))
+			s->discard_passdown_origin = true;
+
+		else {
+			ti->error = "Unrecognised feature requested";
+			r = -EINVAL;
+			break;
+		}
+	}
+
+	if (!s->discard_zeroes_cow && s->discard_passdown_origin) {
+		/*
+		 * TODO: really these are disjoint.. but ti->num_discard_bios
+		 * and dm_bio_get_target_bio_nr() require rigid constraints.
+		 */
+		ti->error = "discard_passdown_origin feature depends on discard_zeroes_cow";
+		r = -EINVAL;
+	}
+
+	return r;
+}
+
+/*
+ * Construct a snapshot mapping:
+ * <origin_dev> <COW-dev> <p|po|n> <chunk-size> [<# feature args> [<arg>]*]
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int snapshot_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	struct dm_snapshot *s;
+<<<<<<< HEAD
 	int i;
 	int r = -EINVAL;
 	char *origin_path, *cow_path;
@@ -1060,22 +1548,51 @@ static int snapshot_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	if (argc != 4) {
 		ti->error = "requires exactly 4 arguments";
+=======
+	struct dm_arg_set as;
+	int i;
+	int r = -EINVAL;
+	char *origin_path, *cow_path;
+	unsigned int args_used, num_flush_bios = 1;
+	blk_mode_t origin_mode = BLK_OPEN_READ;
+
+	if (argc < 4) {
+		ti->error = "requires 4 or more arguments";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = -EINVAL;
 		goto bad;
 	}
 
 	if (dm_target_is_snapshot_merge(ti)) {
+<<<<<<< HEAD
 		num_flush_requests = 2;
 		origin_mode = FMODE_WRITE;
 	}
 
 	s = kmalloc(sizeof(*s), GFP_KERNEL);
+=======
+		num_flush_bios = 2;
+		origin_mode = BLK_OPEN_WRITE;
+	}
+
+	s = kzalloc(sizeof(*s), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!s) {
 		ti->error = "Cannot allocate private snapshot structure";
 		r = -ENOMEM;
 		goto bad;
 	}
 
+<<<<<<< HEAD
+=======
+	as.argc = argc;
+	as.argv = argv;
+	dm_consume_args(&as, 4);
+	r = parse_snapshot_features(&as, s, ti);
+	if (r)
+		goto bad_features;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	origin_path = argv[0];
 	argv++;
 	argc--;
@@ -1095,6 +1612,14 @@ static int snapshot_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		ti->error = "Cannot get COW device";
 		goto bad_cow;
 	}
+<<<<<<< HEAD
+=======
+	if (s->cow->bdev && s->cow->bdev == s->origin->bdev) {
+		ti->error = "COW device cannot be the same as origin device";
+		r = -EINVAL;
+		goto bad_store;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r = dm_exception_store_create(ti, argc, argv, s, &args_used, &s->store);
 	if (r) {
@@ -1108,16 +1633,30 @@ static int snapshot_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	s->ti = ti;
 	s->valid = 1;
+<<<<<<< HEAD
 	s->active = 0;
 	atomic_set(&s->pending_exceptions_count, 0);
 	s->exception_start_sequence = 0;
 	s->exception_complete_sequence = 0;
 	INIT_LIST_HEAD(&s->out_of_order_list);
+=======
+	s->snapshot_overflowed = 0;
+	s->active = 0;
+	atomic_set(&s->pending_exceptions_count, 0);
+	spin_lock_init(&s->pe_allocation_lock);
+	s->exception_start_sequence = 0;
+	s->exception_complete_sequence = 0;
+	s->out_of_order_tree = RB_ROOT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_rwsem(&s->lock);
 	INIT_LIST_HEAD(&s->list);
 	spin_lock_init(&s->pe_lock);
 	s->state_bits = 0;
+<<<<<<< HEAD
 	s->merge_failed = 0;
+=======
+	s->merge_failed = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s->first_merging_chunk = 0;
 	s->num_merging_chunks = 0;
 	bio_list_init(&s->bios_queued_during_merge);
@@ -1129,13 +1668,20 @@ static int snapshot_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		goto bad_hash_tables;
 	}
 
+<<<<<<< HEAD
 	s->kcopyd_client = dm_kcopyd_client_create();
+=======
+	init_waitqueue_head(&s->in_progress_wait);
+
+	s->kcopyd_client = dm_kcopyd_client_create(&dm_kcopyd_throttle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(s->kcopyd_client)) {
 		r = PTR_ERR(s->kcopyd_client);
 		ti->error = "Could not create kcopyd client";
 		goto bad_kcopyd;
 	}
 
+<<<<<<< HEAD
 	s->pending_pool = mempool_create_slab_pool(MIN_IOS, pending_cache);
 	if (!s->pending_pool) {
 		ti->error = "Could not allocate mempool for pending exceptions";
@@ -1151,13 +1697,28 @@ static int snapshot_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		goto bad_tracked_chunk_pool;
 	}
 
+=======
+	r = mempool_init_slab_pool(&s->pending_pool, MIN_IOS, pending_cache);
+	if (r) {
+		ti->error = "Could not allocate mempool for pending exceptions";
+		goto bad_pending_pool;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < DM_TRACKED_CHUNK_HASH_SIZE; i++)
 		INIT_HLIST_HEAD(&s->tracked_chunk_hash[i]);
 
 	spin_lock_init(&s->tracked_chunk_lock);
 
 	ti->private = s;
+<<<<<<< HEAD
 	ti->num_flush_requests = num_flush_requests;
+=======
+	ti->num_flush_bios = num_flush_bios;
+	if (s->discard_zeroes_cow)
+		ti->num_discard_bios = (s->discard_passdown_origin ? 2 : 1);
+	ti->per_io_data_size = sizeof(struct dm_snap_tracked_chunk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Add snapshot to the list of snapshots for this origin */
 	/* Exceptions aren't triggered till snapshot_resume() is called */
@@ -1193,14 +1754,25 @@ static int snapshot_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	if (!s->store->chunk_size) {
 		ti->error = "Chunk size not set";
+<<<<<<< HEAD
 		goto bad_read_metadata;
 	}
 	ti->split_io = s->store->chunk_size;
+=======
+		r = -EINVAL;
+		goto bad_read_metadata;
+	}
+
+	r = dm_set_target_max_io_len(ti, s->store->chunk_size);
+	if (r)
+		goto bad_read_metadata;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 bad_read_metadata:
 	unregister_snapshot(s);
+<<<<<<< HEAD
 
 bad_load_and_register:
 	mempool_destroy(s->tracked_chunk_pool);
@@ -1227,6 +1799,24 @@ bad_cow:
 bad_origin:
 	kfree(s);
 
+=======
+bad_load_and_register:
+	mempool_exit(&s->pending_pool);
+bad_pending_pool:
+	dm_kcopyd_client_destroy(s->kcopyd_client);
+bad_kcopyd:
+	dm_exception_table_exit(&s->pending, pending_cache);
+	dm_exception_table_exit(&s->complete, exception_cache);
+bad_hash_tables:
+	dm_exception_store_destroy(s->store);
+bad_store:
+	dm_put_device(ti, s->cow);
+bad_cow:
+	dm_put_device(ti, s->origin);
+bad_origin:
+bad_features:
+	kfree(s);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bad:
 	return r;
 }
@@ -1257,13 +1847,23 @@ static void __handover_exceptions(struct dm_snapshot *snap_src,
 
 	u.store_swap = snap_dest->store;
 	snap_dest->store = snap_src->store;
+<<<<<<< HEAD
+=======
+	snap_dest->store->userspace_supports_overflow = u.store_swap->userspace_supports_overflow;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snap_src->store = u.store_swap;
 
 	snap_dest->store->snap = snap_dest;
 	snap_src->store->snap = snap_src;
 
+<<<<<<< HEAD
 	snap_dest->ti->split_io = snap_dest->store->chunk_size;
 	snap_dest->valid = snap_src->valid;
+=======
+	snap_dest->ti->max_io_len = snap_dest->store->chunk_size;
+	snap_dest->valid = snap_src->valid;
+	snap_dest->snapshot_overflowed = snap_src->snapshot_overflowed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Set source invalid to ensure it receives no further I/O.
@@ -1298,9 +1898,15 @@ static void snapshot_dtr(struct dm_target *ti)
 	unregister_snapshot(s);
 
 	while (atomic_read(&s->pending_exceptions_count))
+<<<<<<< HEAD
 		msleep(1);
 	/*
 	 * Ensure instructions in mempool_destroy aren't reordered
+=======
+		fsleep(1000);
+	/*
+	 * Ensure instructions in mempool_exit aren't reordered
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * before atomic_read.
 	 */
 	smp_mb();
@@ -1310,11 +1916,17 @@ static void snapshot_dtr(struct dm_target *ti)
 		BUG_ON(!hlist_empty(&s->tracked_chunk_hash[i]));
 #endif
 
+<<<<<<< HEAD
 	mempool_destroy(s->tracked_chunk_pool);
 
 	__free_exceptions(s);
 
 	mempool_destroy(s->pending_pool);
+=======
+	__free_exceptions(s);
+
+	mempool_exit(&s->pending_pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dm_exception_store_destroy(s->store);
 
@@ -1322,9 +1934,63 @@ static void snapshot_dtr(struct dm_target *ti)
 
 	dm_put_device(ti, s->origin);
 
+<<<<<<< HEAD
 	kfree(s);
 }
 
+=======
+	WARN_ON(s->in_progress);
+
+	kfree(s);
+}
+
+static void account_start_copy(struct dm_snapshot *s)
+{
+	spin_lock(&s->in_progress_wait.lock);
+	s->in_progress++;
+	spin_unlock(&s->in_progress_wait.lock);
+}
+
+static void account_end_copy(struct dm_snapshot *s)
+{
+	spin_lock(&s->in_progress_wait.lock);
+	BUG_ON(!s->in_progress);
+	s->in_progress--;
+	if (likely(s->in_progress <= cow_threshold) &&
+	    unlikely(waitqueue_active(&s->in_progress_wait)))
+		wake_up_locked(&s->in_progress_wait);
+	spin_unlock(&s->in_progress_wait.lock);
+}
+
+static bool wait_for_in_progress(struct dm_snapshot *s, bool unlock_origins)
+{
+	if (unlikely(s->in_progress > cow_threshold)) {
+		spin_lock(&s->in_progress_wait.lock);
+		if (likely(s->in_progress > cow_threshold)) {
+			/*
+			 * NOTE: this throttle doesn't account for whether
+			 * the caller is servicing an IO that will trigger a COW
+			 * so excess throttling may result for chunks not required
+			 * to be COW'd.  But if cow_threshold was reached, extra
+			 * throttling is unlikely to negatively impact performance.
+			 */
+			DECLARE_WAITQUEUE(wait, current);
+
+			__add_wait_queue(&s->in_progress_wait, &wait);
+			__set_current_state(TASK_UNINTERRUPTIBLE);
+			spin_unlock(&s->in_progress_wait.lock);
+			if (unlock_origins)
+				up_read(&_origins_lock);
+			io_schedule();
+			remove_wait_queue(&s->in_progress_wait, &wait);
+			return false;
+		}
+		spin_unlock(&s->in_progress_wait.lock);
+	}
+	return true;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Flush a list of buffers.
  */
@@ -1335,12 +2001,20 @@ static void flush_bios(struct bio *bio)
 	while (bio) {
 		n = bio->bi_next;
 		bio->bi_next = NULL;
+<<<<<<< HEAD
 		generic_make_request(bio);
+=======
+		submit_bio_noacct(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bio = n;
 	}
 }
 
+<<<<<<< HEAD
 static int do_origin(struct dm_dev *origin, struct bio *bio);
+=======
+static int do_origin(struct dm_dev *origin, struct bio *bio, bool limit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Flush a list of buffers.
@@ -1353,9 +2027,15 @@ static void retry_origin_bios(struct dm_snapshot *s, struct bio *bio)
 	while (bio) {
 		n = bio->bi_next;
 		bio->bi_next = NULL;
+<<<<<<< HEAD
 		r = do_origin(s->origin, bio);
 		if (r == DM_MAPIO_REMAPPED)
 			generic_make_request(bio);
+=======
+		r = do_origin(s->origin, bio, false);
+		if (r == DM_MAPIO_REMAPPED)
+			submit_bio_noacct(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bio = n;
 	}
 }
@@ -1393,13 +2073,27 @@ static void __invalidate_snapshot(struct dm_snapshot *s, int err)
 	dm_table_event(s->ti->table);
 }
 
+<<<<<<< HEAD
 static void pending_complete(struct dm_snap_pending_exception *pe, int success)
 {
+=======
+static void invalidate_snapshot(struct dm_snapshot *s, int err)
+{
+	down_write(&s->lock);
+	__invalidate_snapshot(s, err);
+	up_write(&s->lock);
+}
+
+static void pending_complete(void *context, int success)
+{
+	struct dm_snap_pending_exception *pe = context;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_exception *e;
 	struct dm_snapshot *s = pe->snap;
 	struct bio *origin_bios = NULL;
 	struct bio *snapshot_bios = NULL;
 	struct bio *full_bio = NULL;
+<<<<<<< HEAD
 	int error = 0;
 
 	if (!success) {
@@ -1415,10 +2109,33 @@ static void pending_complete(struct dm_snap_pending_exception *pe, int success)
 		down_write(&s->lock);
 		__invalidate_snapshot(s, -ENOMEM);
 		error = 1;
+=======
+	struct dm_exception_table_lock lock;
+	int error = 0;
+
+	dm_exception_table_lock_init(s, pe->e.old_chunk, &lock);
+
+	if (!success) {
+		/* Read/write error - snapshot is unusable */
+		invalidate_snapshot(s, -EIO);
+		error = 1;
+
+		dm_exception_table_lock(&lock);
+		goto out;
+	}
+
+	e = alloc_completed_exception(GFP_NOIO);
+	if (!e) {
+		invalidate_snapshot(s, -ENOMEM);
+		error = 1;
+
+		dm_exception_table_lock(&lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	*e = pe->e;
 
+<<<<<<< HEAD
 	down_write(&s->lock);
 	if (!s->valid) {
 		free_completed_exception(e);
@@ -1448,6 +2165,48 @@ out:
 
 	up_write(&s->lock);
 
+=======
+	down_read(&s->lock);
+	dm_exception_table_lock(&lock);
+	if (!s->valid) {
+		up_read(&s->lock);
+		free_completed_exception(e);
+		error = 1;
+
+		goto out;
+	}
+
+	/*
+	 * Add a proper exception. After inserting the completed exception all
+	 * subsequent snapshot reads to this chunk will be redirected to the
+	 * COW device.  This ensures that we do not starve. Moreover, as long
+	 * as the pending exception exists, neither origin writes nor snapshot
+	 * merging can overwrite the chunk in origin.
+	 */
+	dm_insert_exception(&s->complete, e);
+	up_read(&s->lock);
+
+	/* Wait for conflicting reads to drain */
+	if (__chunk_is_tracked(s, pe->e.old_chunk)) {
+		dm_exception_table_unlock(&lock);
+		__check_for_conflicting_io(s, pe->e.old_chunk);
+		dm_exception_table_lock(&lock);
+	}
+
+out:
+	/* Remove the in-flight exception from the list */
+	dm_remove_exception(&pe->e);
+
+	dm_exception_table_unlock(&lock);
+
+	snapshot_bios = bio_list_get(&pe->snapshot_bios);
+	origin_bios = bio_list_get(&pe->origin_bios);
+	full_bio = pe->full_bio;
+	if (full_bio)
+		full_bio->bi_end_io = pe->full_bio_end_io;
+	increment_pending_exceptions_done_count();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Submit any pending write bios */
 	if (error) {
 		if (full_bio)
@@ -1455,7 +2214,11 @@ out:
 		error_bios(snapshot_bios);
 	} else {
 		if (full_bio)
+<<<<<<< HEAD
 			bio_endio(full_bio, 0);
+=======
+			bio_endio(full_bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flush_bios(snapshot_bios);
 	}
 
@@ -1464,6 +2227,7 @@ out:
 	free_pending_exception(pe);
 }
 
+<<<<<<< HEAD
 static void commit_callback(void *context, int success)
 {
 	struct dm_snap_pending_exception *pe = context;
@@ -1471,10 +2235,13 @@ static void commit_callback(void *context, int success)
 	pending_complete(pe, success);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void complete_exception(struct dm_snap_pending_exception *pe)
 {
 	struct dm_snapshot *s = pe->snap;
 
+<<<<<<< HEAD
 	if (unlikely(pe->copy_error))
 		pending_complete(pe, 0);
 
@@ -1482,6 +2249,11 @@ static void complete_exception(struct dm_snap_pending_exception *pe)
 		/* Update the metadata if we are persistent */
 		s->store->type->commit_exception(s->store, &pe->e,
 						 commit_callback, pe);
+=======
+	/* Update the metadata if we are persistent */
+	s->store->type->commit_exception(s->store, &pe->e, !pe->copy_error,
+					 pending_complete, pe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1496,6 +2268,7 @@ static void copy_callback(int read_err, unsigned long write_err, void *context)
 	pe->copy_error = read_err || write_err;
 
 	if (pe->exception_sequence == s->exception_complete_sequence) {
+<<<<<<< HEAD
 		s->exception_complete_sequence++;
 		complete_exception(pe);
 
@@ -1519,6 +2292,45 @@ static void copy_callback(int read_err, unsigned long write_err, void *context)
 		}
 		list_add(&pe->out_of_order_entry, lh);
 	}
+=======
+		struct rb_node *next;
+
+		s->exception_complete_sequence++;
+		complete_exception(pe);
+
+		next = rb_first(&s->out_of_order_tree);
+		while (next) {
+			pe = rb_entry(next, struct dm_snap_pending_exception,
+					out_of_order_node);
+			if (pe->exception_sequence != s->exception_complete_sequence)
+				break;
+			next = rb_next(next);
+			s->exception_complete_sequence++;
+			rb_erase(&pe->out_of_order_node, &s->out_of_order_tree);
+			complete_exception(pe);
+			cond_resched();
+		}
+	} else {
+		struct rb_node *parent = NULL;
+		struct rb_node **p = &s->out_of_order_tree.rb_node;
+		struct dm_snap_pending_exception *pe2;
+
+		while (*p) {
+			pe2 = rb_entry(*p, struct dm_snap_pending_exception, out_of_order_node);
+			parent = *p;
+
+			BUG_ON(pe->exception_sequence == pe2->exception_sequence);
+			if (pe->exception_sequence < pe2->exception_sequence)
+				p = &((*p)->rb_left);
+			else
+				p = &((*p)->rb_right);
+		}
+
+		rb_link_node(&pe->out_of_order_node, parent, p);
+		rb_insert_color(&pe->out_of_order_node, &s->out_of_order_tree);
+	}
+	account_end_copy(s);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1542,6 +2354,7 @@ static void start_copy(struct dm_snap_pending_exception *pe)
 	dest.count = src.count;
 
 	/* Hand over to kcopyd */
+<<<<<<< HEAD
 	dm_kcopyd_copy(s->kcopyd_client, &src, 1, &dest, 0, copy_callback, pe);
 }
 
@@ -1550,6 +2363,17 @@ static void full_bio_end_io(struct bio *bio, int error)
 	void *callback_data = bio->bi_private;
 
 	dm_kcopyd_do_callback(callback_data, 0, error ? 1 : 0);
+=======
+	account_start_copy(s);
+	dm_kcopyd_copy(s->kcopyd_client, &src, 1, &dest, 0, copy_callback, pe);
+}
+
+static void full_bio_end_io(struct bio *bio)
+{
+	void *callback_data = bio->bi_private;
+
+	dm_kcopyd_do_callback(callback_data, 0, bio->bi_status ? 1 : 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void start_full_bio(struct dm_snap_pending_exception *pe,
@@ -1560,15 +2384,24 @@ static void start_full_bio(struct dm_snap_pending_exception *pe,
 
 	pe->full_bio = bio;
 	pe->full_bio_end_io = bio->bi_end_io;
+<<<<<<< HEAD
 	pe->full_bio_private = bio->bi_private;
 
+=======
+
+	account_start_copy(s);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	callback_data = dm_kcopyd_prepare_callback(s->kcopyd_client,
 						   copy_callback, pe);
 
 	bio->bi_end_io = full_bio_end_io;
 	bio->bi_private = callback_data;
 
+<<<<<<< HEAD
 	generic_make_request(bio);
+=======
+	submit_bio_noacct(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dm_snap_pending_exception *
@@ -1583,12 +2416,51 @@ __lookup_pending_exception(struct dm_snapshot *s, chunk_t chunk)
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Inserts a pending exception into the pending table.
+ *
+ * NOTE: a write lock must be held on the chunk's pending exception table slot
+ * before calling this.
+ */
+static struct dm_snap_pending_exception *
+__insert_pending_exception(struct dm_snapshot *s,
+			   struct dm_snap_pending_exception *pe, chunk_t chunk)
+{
+	pe->e.old_chunk = chunk;
+	bio_list_init(&pe->origin_bios);
+	bio_list_init(&pe->snapshot_bios);
+	pe->started = 0;
+	pe->full_bio = NULL;
+
+	spin_lock(&s->pe_allocation_lock);
+	if (s->store->type->prepare_exception(s->store, &pe->e)) {
+		spin_unlock(&s->pe_allocation_lock);
+		free_pending_exception(pe);
+		return NULL;
+	}
+
+	pe->exception_sequence = s->exception_start_sequence++;
+	spin_unlock(&s->pe_allocation_lock);
+
+	dm_insert_exception(&s->pending, &pe->e);
+
+	return pe;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Looks to see if this snapshot already has a pending exception
  * for this chunk, otherwise it allocates a new one and inserts
  * it into the pending table.
  *
+<<<<<<< HEAD
  * NOTE: a write lock must be held on snap->lock before calling
  * this.
+=======
+ * NOTE: a write lock must be held on the chunk's pending exception table slot
+ * before calling this.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct dm_snap_pending_exception *
 __find_pending_exception(struct dm_snapshot *s,
@@ -1602,6 +2474,7 @@ __find_pending_exception(struct dm_snapshot *s,
 		return pe2;
 	}
 
+<<<<<<< HEAD
 	pe->e.old_chunk = chunk;
 	bio_list_init(&pe->origin_bios);
 	bio_list_init(&pe->snapshot_bios);
@@ -1618,11 +2491,15 @@ __find_pending_exception(struct dm_snapshot *s,
 	dm_insert_exception(&s->pending, &pe->e);
 
 	return pe;
+=======
+	return __insert_pending_exception(s, pe, chunk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void remap_exception(struct dm_snapshot *s, struct dm_exception *e,
 			    struct bio *bio, chunk_t chunk)
 {
+<<<<<<< HEAD
 	bio->bi_bdev = s->cow->bdev;
 	bio->bi_sector = chunk_to_sector(s->store,
 					 dm_chunk_number(e->new_chunk) +
@@ -1633,12 +2510,54 @@ static void remap_exception(struct dm_snapshot *s, struct dm_exception *e,
 
 static int snapshot_map(struct dm_target *ti, struct bio *bio,
 			union map_info *map_context)
+=======
+	bio_set_dev(bio, s->cow->bdev);
+	bio->bi_iter.bi_sector =
+		chunk_to_sector(s->store, dm_chunk_number(e->new_chunk) +
+				(chunk - e->old_chunk)) +
+		(bio->bi_iter.bi_sector & s->store->chunk_mask);
+}
+
+static void zero_callback(int read_err, unsigned long write_err, void *context)
+{
+	struct bio *bio = context;
+	struct dm_snapshot *s = bio->bi_private;
+
+	account_end_copy(s);
+	bio->bi_status = write_err ? BLK_STS_IOERR : 0;
+	bio_endio(bio);
+}
+
+static void zero_exception(struct dm_snapshot *s, struct dm_exception *e,
+			   struct bio *bio, chunk_t chunk)
+{
+	struct dm_io_region dest;
+
+	dest.bdev = s->cow->bdev;
+	dest.sector = bio->bi_iter.bi_sector;
+	dest.count = s->store->chunk_size;
+
+	account_start_copy(s);
+	WARN_ON_ONCE(bio->bi_private);
+	bio->bi_private = s;
+	dm_kcopyd_zero(s->kcopyd_client, 1, &dest, 0, zero_callback, bio);
+}
+
+static bool io_overlaps_chunk(struct dm_snapshot *s, struct bio *bio)
+{
+	return bio->bi_iter.bi_size ==
+		(s->store->chunk_size << SECTOR_SHIFT);
+}
+
+static int snapshot_map(struct dm_target *ti, struct bio *bio)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dm_exception *e;
 	struct dm_snapshot *s = ti->private;
 	int r = DM_MAPIO_REMAPPED;
 	chunk_t chunk;
 	struct dm_snap_pending_exception *pe = NULL;
+<<<<<<< HEAD
 
 	if (bio->bi_rw & REQ_FLUSH) {
 		bio->bi_bdev = s->cow->bdev;
@@ -1646,10 +2565,24 @@ static int snapshot_map(struct dm_target *ti, struct bio *bio,
 	}
 
 	chunk = sector_to_chunk(s->store, bio->bi_sector);
+=======
+	struct dm_exception_table_lock lock;
+
+	init_tracked_chunk(bio);
+
+	if (bio->bi_opf & REQ_PREFLUSH) {
+		bio_set_dev(bio, s->cow->bdev);
+		return DM_MAPIO_REMAPPED;
+	}
+
+	chunk = sector_to_chunk(s->store, bio->bi_iter.bi_sector);
+	dm_exception_table_lock_init(s, chunk, &lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Full snapshots are not usable */
 	/* To get here the table must be live so s->active is always set. */
 	if (!s->valid)
+<<<<<<< HEAD
 		return -EIO;
 
 	/* FIXME: should only take write lock if we need
@@ -1661,16 +2594,71 @@ static int snapshot_map(struct dm_target *ti, struct bio *bio,
 		goto out_unlock;
 	}
 
+=======
+		return DM_MAPIO_KILL;
+
+	if (bio_data_dir(bio) == WRITE) {
+		while (unlikely(!wait_for_in_progress(s, false)))
+			; /* wait_for_in_progress() has slept */
+	}
+
+	down_read(&s->lock);
+	dm_exception_table_lock(&lock);
+
+	if (!s->valid || (unlikely(s->snapshot_overflowed) &&
+	    bio_data_dir(bio) == WRITE)) {
+		r = DM_MAPIO_KILL;
+		goto out_unlock;
+	}
+
+	if (unlikely(bio_op(bio) == REQ_OP_DISCARD)) {
+		if (s->discard_passdown_origin && dm_bio_get_target_bio_nr(bio)) {
+			/*
+			 * passdown discard to origin (without triggering
+			 * snapshot exceptions via do_origin; doing so would
+			 * defeat the goal of freeing space in origin that is
+			 * implied by the "discard_passdown_origin" feature)
+			 */
+			bio_set_dev(bio, s->origin->bdev);
+			track_chunk(s, bio, chunk);
+			goto out_unlock;
+		}
+		/* discard to snapshot (target_bio_nr == 0) zeroes exceptions */
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If the block is already remapped - use that, else remap it */
 	e = dm_lookup_exception(&s->complete, chunk);
 	if (e) {
 		remap_exception(s, e, bio, chunk);
+<<<<<<< HEAD
+=======
+		if (unlikely(bio_op(bio) == REQ_OP_DISCARD) &&
+		    io_overlaps_chunk(s, bio)) {
+			dm_exception_table_unlock(&lock);
+			up_read(&s->lock);
+			zero_exception(s, e, bio, chunk);
+			r = DM_MAPIO_SUBMITTED; /* discard is not issued */
+			goto out;
+		}
+		goto out_unlock;
+	}
+
+	if (unlikely(bio_op(bio) == REQ_OP_DISCARD)) {
+		/*
+		 * If no exception exists, complete discard immediately
+		 * otherwise it'll trigger copy-out.
+		 */
+		bio_endio(bio);
+		r = DM_MAPIO_SUBMITTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unlock;
 	}
 
 	/*
 	 * Write to snapshot - higher level takes care of RW/RO
 	 * flags so we should only get this if we are
+<<<<<<< HEAD
 	 * writeable.
 	 */
 	if (bio_rw(bio) == WRITE) {
@@ -1685,6 +2673,16 @@ static int snapshot_map(struct dm_target *ti, struct bio *bio,
 				r = -EIO;
 				goto out_unlock;
 			}
+=======
+	 * writable.
+	 */
+	if (bio_data_dir(bio) == WRITE) {
+		pe = __lookup_pending_exception(s, chunk);
+		if (!pe) {
+			dm_exception_table_unlock(&lock);
+			pe = alloc_pending_exception(s);
+			dm_exception_table_lock(&lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			e = dm_lookup_exception(&s->complete, chunk);
 			if (e) {
@@ -1695,9 +2693,28 @@ static int snapshot_map(struct dm_target *ti, struct bio *bio,
 
 			pe = __find_pending_exception(s, pe, chunk);
 			if (!pe) {
+<<<<<<< HEAD
 				__invalidate_snapshot(s, -ENOMEM);
 				r = -EIO;
 				goto out_unlock;
+=======
+				dm_exception_table_unlock(&lock);
+				up_read(&s->lock);
+
+				down_write(&s->lock);
+
+				if (s->store->userspace_supports_overflow) {
+					if (s->valid && !s->snapshot_overflowed) {
+						s->snapshot_overflowed = 1;
+						DMERR("Snapshot overflowed: Unable to allocate exception.");
+					}
+				} else
+					__invalidate_snapshot(s, -ENOMEM);
+				up_write(&s->lock);
+
+				r = DM_MAPIO_KILL;
+				goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -1705,10 +2722,19 @@ static int snapshot_map(struct dm_target *ti, struct bio *bio,
 
 		r = DM_MAPIO_SUBMITTED;
 
+<<<<<<< HEAD
 		if (!pe->started &&
 		    bio->bi_size == (s->store->chunk_size << SECTOR_SHIFT)) {
 			pe->started = 1;
 			up_write(&s->lock);
+=======
+		if (!pe->started && io_overlaps_chunk(s, bio)) {
+			pe->started = 1;
+
+			dm_exception_table_unlock(&lock);
+			up_read(&s->lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start_full_bio(pe, bio);
 			goto out;
 		}
@@ -1716,19 +2742,38 @@ static int snapshot_map(struct dm_target *ti, struct bio *bio,
 		bio_list_add(&pe->snapshot_bios, bio);
 
 		if (!pe->started) {
+<<<<<<< HEAD
 			/* this is protected by snap->lock */
 			pe->started = 1;
 			up_write(&s->lock);
+=======
+			/* this is protected by the exception table lock */
+			pe->started = 1;
+
+			dm_exception_table_unlock(&lock);
+			up_read(&s->lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start_copy(pe);
 			goto out;
 		}
 	} else {
+<<<<<<< HEAD
 		bio->bi_bdev = s->origin->bdev;
 		map_context->ptr = track_chunk(s, chunk);
 	}
 
 out_unlock:
 	up_write(&s->lock);
+=======
+		bio_set_dev(bio, s->origin->bdev);
+		track_chunk(s, bio, chunk);
+	}
+
+out_unlock:
+	dm_exception_table_unlock(&lock);
+	up_read(&s->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return r;
 }
@@ -1745,14 +2790,19 @@ out:
  * If merging is currently taking place on the chunk in question, the
  * I/O is deferred by adding it to s->bios_queued_during_merge.
  */
+<<<<<<< HEAD
 static int snapshot_merge_map(struct dm_target *ti, struct bio *bio,
 			      union map_info *map_context)
+=======
+static int snapshot_merge_map(struct dm_target *ti, struct bio *bio)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dm_exception *e;
 	struct dm_snapshot *s = ti->private;
 	int r = DM_MAPIO_REMAPPED;
 	chunk_t chunk;
 
+<<<<<<< HEAD
 	if (bio->bi_rw & REQ_FLUSH) {
 		if (!map_context->target_request_nr)
 			bio->bi_bdev = s->origin->bdev;
@@ -1763,6 +2813,25 @@ static int snapshot_merge_map(struct dm_target *ti, struct bio *bio,
 	}
 
 	chunk = sector_to_chunk(s->store, bio->bi_sector);
+=======
+	init_tracked_chunk(bio);
+
+	if (bio->bi_opf & REQ_PREFLUSH) {
+		if (!dm_bio_get_target_bio_nr(bio))
+			bio_set_dev(bio, s->origin->bdev);
+		else
+			bio_set_dev(bio, s->cow->bdev);
+		return DM_MAPIO_REMAPPED;
+	}
+
+	if (unlikely(bio_op(bio) == REQ_OP_DISCARD)) {
+		/* Once merging, discards no longer effect change */
+		bio_endio(bio);
+		return DM_MAPIO_SUBMITTED;
+	}
+
+	chunk = sector_to_chunk(s->store, bio->bi_iter.bi_sector);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_write(&s->lock);
 
@@ -1774,11 +2843,19 @@ static int snapshot_merge_map(struct dm_target *ti, struct bio *bio,
 	e = dm_lookup_exception(&s->complete, chunk);
 	if (e) {
 		/* Queue writes overlapping with chunks being merged */
+<<<<<<< HEAD
 		if (bio_rw(bio) == WRITE &&
 		    chunk >= s->first_merging_chunk &&
 		    chunk < (s->first_merging_chunk +
 			     s->num_merging_chunks)) {
 			bio->bi_bdev = s->origin->bdev;
+=======
+		if (bio_data_dir(bio) == WRITE &&
+		    chunk >= s->first_merging_chunk &&
+		    chunk < (s->first_merging_chunk +
+			     s->num_merging_chunks)) {
+			bio_set_dev(bio, s->origin->bdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bio_list_add(&s->bios_queued_during_merge, bio);
 			r = DM_MAPIO_SUBMITTED;
 			goto out_unlock;
@@ -1786,17 +2863,30 @@ static int snapshot_merge_map(struct dm_target *ti, struct bio *bio,
 
 		remap_exception(s, e, bio, chunk);
 
+<<<<<<< HEAD
 		if (bio_rw(bio) == WRITE)
 			map_context->ptr = track_chunk(s, chunk);
+=======
+		if (bio_data_dir(bio) == WRITE)
+			track_chunk(s, bio, chunk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unlock;
 	}
 
 redirect_to_origin:
+<<<<<<< HEAD
 	bio->bi_bdev = s->origin->bdev;
 
 	if (bio_rw(bio) == WRITE) {
 		up_write(&s->lock);
 		return do_origin(s->origin, bio);
+=======
+	bio_set_dev(bio, s->origin->bdev);
+
+	if (bio_data_dir(bio) == WRITE) {
+		up_write(&s->lock);
+		return do_origin(s->origin, bio, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out_unlock:
@@ -1806,6 +2896,7 @@ out_unlock:
 }
 
 static int snapshot_end_io(struct dm_target *ti, struct bio *bio,
+<<<<<<< HEAD
 			   int error, union map_info *map_context)
 {
 	struct dm_snapshot *s = ti->private;
@@ -1815,6 +2906,16 @@ static int snapshot_end_io(struct dm_target *ti, struct bio *bio,
 		stop_tracking_chunk(s, c);
 
 	return 0;
+=======
+		blk_status_t *error)
+{
+	struct dm_snapshot *s = ti->private;
+
+	if (is_bio_tracked(bio))
+		stop_tracking_chunk(s, bio);
+
+	return DM_ENDIO_DONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void snapshot_merge_presuspend(struct dm_target *ti)
@@ -1835,12 +2936,19 @@ static int snapshot_preresume(struct dm_target *ti)
 	if (snap_src && snap_dest) {
 		down_read(&snap_src->lock);
 		if (s == snap_src) {
+<<<<<<< HEAD
 			DMERR("Unable to resume snapshot source until "
 			      "handover completes.");
 			r = -EINVAL;
 		} else if (!dm_suspended(snap_src->ti)) {
 			DMERR("Unable to perform snapshot handover until "
 			      "source is suspended.");
+=======
+			DMERR("Unable to resume snapshot source until handover completes.");
+			r = -EINVAL;
+		} else if (!dm_suspended(snap_src->ti)) {
+			DMERR("Unable to perform snapshot handover until source is suspended.");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r = -EINVAL;
 		}
 		up_read(&snap_src->lock);
@@ -1853,9 +2961,46 @@ static int snapshot_preresume(struct dm_target *ti)
 static void snapshot_resume(struct dm_target *ti)
 {
 	struct dm_snapshot *s = ti->private;
+<<<<<<< HEAD
 	struct dm_snapshot *snap_src = NULL, *snap_dest = NULL;
 
 	down_read(&_origins_lock);
+=======
+	struct dm_snapshot *snap_src = NULL, *snap_dest = NULL, *snap_merging = NULL;
+	struct dm_origin *o;
+	struct mapped_device *origin_md = NULL;
+	bool must_restart_merging = false;
+
+	down_read(&_origins_lock);
+
+	o = __lookup_dm_origin(s->origin->bdev);
+	if (o)
+		origin_md = dm_table_get_md(o->ti->table);
+	if (!origin_md) {
+		(void) __find_snapshots_sharing_cow(s, NULL, NULL, &snap_merging);
+		if (snap_merging)
+			origin_md = dm_table_get_md(snap_merging->ti->table);
+	}
+	if (origin_md == dm_table_get_md(ti->table))
+		origin_md = NULL;
+	if (origin_md) {
+		if (dm_hold(origin_md))
+			origin_md = NULL;
+	}
+
+	up_read(&_origins_lock);
+
+	if (origin_md) {
+		dm_internal_suspend_fast(origin_md);
+		if (snap_merging && test_bit(RUNNING_MERGE, &snap_merging->state_bits)) {
+			must_restart_merging = true;
+			stop_merge(snap_merging);
+		}
+	}
+
+	down_read(&_origins_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void) __find_snapshots_sharing_cow(s, &snap_src, &snap_dest, NULL);
 	if (snap_src && snap_dest) {
 		down_write(&snap_src->lock);
@@ -1864,8 +3009,21 @@ static void snapshot_resume(struct dm_target *ti)
 		up_write(&snap_dest->lock);
 		up_write(&snap_src->lock);
 	}
+<<<<<<< HEAD
 	up_read(&_origins_lock);
 
+=======
+
+	up_read(&_origins_lock);
+
+	if (origin_md) {
+		if (must_restart_merging)
+			start_merge(snap_merging);
+		dm_internal_resume_fast(origin_md);
+		dm_put(origin_md);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Now we have correct chunk size, reregister */
 	reregister_snapshot(s);
 
@@ -1874,9 +3032,15 @@ static void snapshot_resume(struct dm_target *ti)
 	up_write(&s->lock);
 }
 
+<<<<<<< HEAD
 static sector_t get_origin_minimum_chunksize(struct block_device *bdev)
 {
 	sector_t min_chunksize;
+=======
+static uint32_t get_origin_minimum_chunksize(struct block_device *bdev)
+{
+	uint32_t min_chunksize;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_read(&_origins_lock);
 	min_chunksize = __minimum_chunk_size(__lookup_origin(bdev));
@@ -1895,18 +3059,32 @@ static void snapshot_merge_resume(struct dm_target *ti)
 	snapshot_resume(ti);
 
 	/*
+<<<<<<< HEAD
 	 * snapshot-merge acts as an origin, so set ti->split_io
 	 */
 	ti->split_io = get_origin_minimum_chunksize(s->origin->bdev);
+=======
+	 * snapshot-merge acts as an origin, so set ti->max_io_len
+	 */
+	ti->max_io_len = get_origin_minimum_chunksize(s->origin->bdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	start_merge(s);
 }
 
 static void snapshot_status(struct dm_target *ti, status_type_t type,
+<<<<<<< HEAD
 			    char *result, unsigned int maxlen)
 {
 	unsigned sz = 0;
 	struct dm_snapshot *snap = ti->private;
+=======
+			    unsigned int status_flags, char *result, unsigned int maxlen)
+{
+	unsigned int sz = 0;
+	struct dm_snapshot *snap = ti->private;
+	unsigned int num_features;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (type) {
 	case STATUSTYPE_INFO:
@@ -1917,6 +3095,11 @@ static void snapshot_status(struct dm_target *ti, status_type_t type,
 			DMEMIT("Invalid");
 		else if (snap->merge_failed)
 			DMEMIT("Merge failed");
+<<<<<<< HEAD
+=======
+		else if (snap->snapshot_overflowed)
+			DMEMIT("Overflow");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {
 			if (snap->store->type->usage) {
 				sector_t total_sectors, sectors_allocated,
@@ -1929,8 +3112,12 @@ static void snapshot_status(struct dm_target *ti, status_type_t type,
 				       (unsigned long long)sectors_allocated,
 				       (unsigned long long)total_sectors,
 				       (unsigned long long)metadata_sectors);
+<<<<<<< HEAD
 			}
 			else
+=======
+			} else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DMEMIT("Unknown");
 		}
 
@@ -1945,8 +3132,31 @@ static void snapshot_status(struct dm_target *ti, status_type_t type,
 		 * make sense.
 		 */
 		DMEMIT("%s %s", snap->origin->name, snap->cow->name);
+<<<<<<< HEAD
 		snap->store->type->status(snap->store, type, result + sz,
 					  maxlen - sz);
+=======
+		sz += snap->store->type->status(snap->store, type, result + sz,
+						maxlen - sz);
+		num_features = snap->discard_zeroes_cow + snap->discard_passdown_origin;
+		if (num_features) {
+			DMEMIT(" %u", num_features);
+			if (snap->discard_zeroes_cow)
+				DMEMIT(" discard_zeroes_cow");
+			if (snap->discard_passdown_origin)
+				DMEMIT(" discard_passdown_origin");
+		}
+		break;
+
+	case STATUSTYPE_IMA:
+		DMEMIT_TARGET_NAME_VERSION(ti->type);
+		DMEMIT(",snap_origin_name=%s", snap->origin->name);
+		DMEMIT(",snap_cow_name=%s", snap->cow->name);
+		DMEMIT(",snap_valid=%c", snap->valid ? 'y' : 'n');
+		DMEMIT(",snap_merge_failed=%c", snap->merge_failed ? 'y' : 'n');
+		DMEMIT(",snapshot_overflowed=%c", snap->snapshot_overflowed ? 'y' : 'n');
+		DMEMIT(";");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -1965,11 +3175,40 @@ static int snapshot_iterate_devices(struct dm_target *ti,
 	return r;
 }
 
+<<<<<<< HEAD
 
 /*-----------------------------------------------------------------
  * Origin methods
  *---------------------------------------------------------------*/
 
+=======
+static void snapshot_io_hints(struct dm_target *ti, struct queue_limits *limits)
+{
+	struct dm_snapshot *snap = ti->private;
+
+	if (snap->discard_zeroes_cow) {
+		struct dm_snapshot *snap_src = NULL, *snap_dest = NULL;
+
+		down_read(&_origins_lock);
+
+		(void) __find_snapshots_sharing_cow(snap, &snap_src, &snap_dest, NULL);
+		if (snap_src && snap_dest)
+			snap = snap_src;
+
+		/* All discards are split on chunk_size boundary */
+		limits->discard_granularity = snap->store->chunk_size;
+		limits->max_discard_sectors = snap->store->chunk_size;
+
+		up_read(&_origins_lock);
+	}
+}
+
+/*
+ *---------------------------------------------------------------
+ * Origin methods
+ *---------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * If no exceptions need creating, DM_MAPIO_REMAPPED is returned and any
  * supplied bio was ignored.  The caller may submit it immediately.
@@ -1986,6 +3225,7 @@ static int __origin_write(struct list_head *snapshots, sector_t sector,
 	int r = DM_MAPIO_REMAPPED;
 	struct dm_snapshot *snap;
 	struct dm_exception *e;
+<<<<<<< HEAD
 	struct dm_snap_pending_exception *pe;
 	struct dm_snap_pending_exception *pe_to_start_now = NULL;
 	struct dm_snap_pending_exception *pe_to_start_last = NULL;
@@ -1993,6 +3233,16 @@ static int __origin_write(struct list_head *snapshots, sector_t sector,
 
 	/* Do all the snapshots on this origin */
 	list_for_each_entry (snap, snapshots, list) {
+=======
+	struct dm_snap_pending_exception *pe, *pe2;
+	struct dm_snap_pending_exception *pe_to_start_now = NULL;
+	struct dm_snap_pending_exception *pe_to_start_last = NULL;
+	struct dm_exception_table_lock lock;
+	chunk_t chunk;
+
+	/* Do all the snapshots on this origin */
+	list_for_each_entry(snap, snapshots, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Don't make new exceptions in a merging snapshot
 		 * because it has effectively been deleted
@@ -2000,6 +3250,7 @@ static int __origin_write(struct list_head *snapshots, sector_t sector,
 		if (dm_target_is_snapshot_merge(snap->ti))
 			continue;
 
+<<<<<<< HEAD
 		down_write(&snap->lock);
 
 		/* Only deal with valid and active snapshots */
@@ -2009,12 +3260,18 @@ static int __origin_write(struct list_head *snapshots, sector_t sector,
 		/* Nothing to do if writing beyond end of snapshot */
 		if (sector >= dm_table_get_size(snap->ti->table))
 			goto next_snapshot;
+=======
+		/* Nothing to do if writing beyond end of snapshot */
+		if (sector >= dm_table_get_size(snap->ti->table))
+			continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Remember, different snapshots can have
 		 * different chunk sizes.
 		 */
 		chunk = sector_to_chunk(snap->store, sector);
+<<<<<<< HEAD
 
 		/*
 		 * Check exception table to see if block
@@ -2023,10 +3280,20 @@ static int __origin_write(struct list_head *snapshots, sector_t sector,
 		 */
 		e = dm_lookup_exception(&snap->complete, chunk);
 		if (e)
+=======
+		dm_exception_table_lock_init(snap, chunk, &lock);
+
+		down_read(&snap->lock);
+		dm_exception_table_lock(&lock);
+
+		/* Only deal with valid and active snapshots */
+		if (!snap->valid || !snap->active)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto next_snapshot;
 
 		pe = __lookup_pending_exception(snap, chunk);
 		if (!pe) {
+<<<<<<< HEAD
 			up_write(&snap->lock);
 			pe = alloc_pending_exception(snap);
 			down_write(&snap->lock);
@@ -2046,6 +3313,41 @@ static int __origin_write(struct list_head *snapshots, sector_t sector,
 			if (!pe) {
 				__invalidate_snapshot(snap, -ENOMEM);
 				goto next_snapshot;
+=======
+			/*
+			 * Check exception table to see if block is already
+			 * remapped in this snapshot and trigger an exception
+			 * if not.
+			 */
+			e = dm_lookup_exception(&snap->complete, chunk);
+			if (e)
+				goto next_snapshot;
+
+			dm_exception_table_unlock(&lock);
+			pe = alloc_pending_exception(snap);
+			dm_exception_table_lock(&lock);
+
+			pe2 = __lookup_pending_exception(snap, chunk);
+
+			if (!pe2) {
+				e = dm_lookup_exception(&snap->complete, chunk);
+				if (e) {
+					free_pending_exception(pe);
+					goto next_snapshot;
+				}
+
+				pe = __insert_pending_exception(snap, pe, chunk);
+				if (!pe) {
+					dm_exception_table_unlock(&lock);
+					up_read(&snap->lock);
+
+					invalidate_snapshot(snap, -ENOMEM);
+					continue;
+				}
+			} else {
+				free_pending_exception(pe);
+				pe = pe2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -2072,7 +3374,12 @@ static int __origin_write(struct list_head *snapshots, sector_t sector,
 		}
 
 next_snapshot:
+<<<<<<< HEAD
 		up_write(&snap->lock);
+=======
+		dm_exception_table_unlock(&lock);
+		up_read(&snap->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (pe_to_start_now) {
 			start_copy(pe_to_start_now);
@@ -2093,15 +3400,36 @@ next_snapshot:
 /*
  * Called on a write from the origin driver.
  */
+<<<<<<< HEAD
 static int do_origin(struct dm_dev *origin, struct bio *bio)
+=======
+static int do_origin(struct dm_dev *origin, struct bio *bio, bool limit)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct origin *o;
 	int r = DM_MAPIO_REMAPPED;
 
+<<<<<<< HEAD
 	down_read(&_origins_lock);
 	o = __lookup_origin(origin->bdev);
 	if (o)
 		r = __origin_write(&o->snapshots, bio->bi_sector, bio);
+=======
+again:
+	down_read(&_origins_lock);
+	o = __lookup_origin(origin->bdev);
+	if (o) {
+		if (limit) {
+			struct dm_snapshot *s;
+
+			list_for_each_entry(s, &o->snapshots, list)
+				if (unlikely(!wait_for_in_progress(s, true)))
+					goto again;
+		}
+
+		r = __origin_write(&o->snapshots, bio->bi_iter.bi_sector, bio);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_read(&_origins_lock);
 
 	return r;
@@ -2121,19 +3449,31 @@ static int do_origin(struct dm_dev *origin, struct bio *bio)
  * size must be a multiple of merging_snap's chunk_size.
  */
 static int origin_write_extent(struct dm_snapshot *merging_snap,
+<<<<<<< HEAD
 			       sector_t sector, unsigned size)
+=======
+			       sector_t sector, unsigned int size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int must_wait = 0;
 	sector_t n;
 	struct origin *o;
 
 	/*
+<<<<<<< HEAD
 	 * The origin's __minimum_chunk_size() got stored in split_io
+=======
+	 * The origin's __minimum_chunk_size() got stored in max_io_len
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * by snapshot_merge_resume().
 	 */
 	down_read(&_origins_lock);
 	o = __lookup_origin(merging_snap->origin->bdev);
+<<<<<<< HEAD
 	for (n = 0; n < size; n += merging_snap->ti->split_io)
+=======
+	for (n = 0; n < size; n += merging_snap->ti->max_io_len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (__origin_write(&o->snapshots, sector + n, NULL) ==
 		    DM_MAPIO_SUBMITTED)
 			must_wait = 1;
@@ -2154,13 +3494,18 @@ static int origin_write_extent(struct dm_snapshot *merging_snap,
 static int origin_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	int r;
+<<<<<<< HEAD
 	struct dm_dev *dev;
+=======
+	struct dm_origin *o;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (argc != 1) {
 		ti->error = "origin: incorrect number of arguments";
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	r = dm_get_device(ti, argv[0], dm_table_get_mode(ti->table), &dev);
 	if (r) {
 		ti->error = "Cannot get target device";
@@ -2171,10 +3516,36 @@ static int origin_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	ti->num_flush_requests = 1;
 
 	return 0;
+=======
+	o = kmalloc(sizeof(struct dm_origin), GFP_KERNEL);
+	if (!o) {
+		ti->error = "Cannot allocate private origin structure";
+		r = -ENOMEM;
+		goto bad_alloc;
+	}
+
+	r = dm_get_device(ti, argv[0], dm_table_get_mode(ti->table), &o->dev);
+	if (r) {
+		ti->error = "Cannot get target device";
+		goto bad_open;
+	}
+
+	o->ti = ti;
+	ti->private = o;
+	ti->num_flush_bios = 1;
+
+	return 0;
+
+bad_open:
+	kfree(o);
+bad_alloc:
+	return r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void origin_dtr(struct dm_target *ti)
 {
+<<<<<<< HEAD
 	struct dm_dev *dev = ti->private;
 	dm_put_device(ti, dev);
 }
@@ -2194,10 +3565,44 @@ static int origin_map(struct dm_target *ti, struct bio *bio,
 
 /*
  * Set the target "split_io" field to the minimum of all the snapshots'
+=======
+	struct dm_origin *o = ti->private;
+
+	dm_put_device(ti, o->dev);
+	kfree(o);
+}
+
+static int origin_map(struct dm_target *ti, struct bio *bio)
+{
+	struct dm_origin *o = ti->private;
+	unsigned int available_sectors;
+
+	bio_set_dev(bio, o->dev->bdev);
+
+	if (unlikely(bio->bi_opf & REQ_PREFLUSH))
+		return DM_MAPIO_REMAPPED;
+
+	if (bio_data_dir(bio) != WRITE)
+		return DM_MAPIO_REMAPPED;
+
+	available_sectors = o->split_boundary -
+		((unsigned int)bio->bi_iter.bi_sector & (o->split_boundary - 1));
+
+	if (bio_sectors(bio) > available_sectors)
+		dm_accept_partial_bio(bio, available_sectors);
+
+	/* Only tell snapshots if this is a write */
+	return do_origin(o->dev, bio, true);
+}
+
+/*
+ * Set the target "max_io_len" field to the minimum of all the snapshots'
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * chunk sizes.
  */
 static void origin_resume(struct dm_target *ti)
 {
+<<<<<<< HEAD
 	struct dm_dev *dev = ti->private;
 
 	ti->split_io = get_origin_minimum_chunksize(dev->bdev);
@@ -2207,6 +3612,30 @@ static void origin_status(struct dm_target *ti, status_type_t type, char *result
 			  unsigned int maxlen)
 {
 	struct dm_dev *dev = ti->private;
+=======
+	struct dm_origin *o = ti->private;
+
+	o->split_boundary = get_origin_minimum_chunksize(o->dev->bdev);
+
+	down_write(&_origins_lock);
+	__insert_dm_origin(o);
+	up_write(&_origins_lock);
+}
+
+static void origin_postsuspend(struct dm_target *ti)
+{
+	struct dm_origin *o = ti->private;
+
+	down_write(&_origins_lock);
+	__remove_dm_origin(o);
+	up_write(&_origins_lock);
+}
+
+static void origin_status(struct dm_target *ti, status_type_t type,
+			  unsigned int status_flags, char *result, unsigned int maxlen)
+{
+	struct dm_origin *o = ti->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (type) {
 	case STATUSTYPE_INFO:
@@ -2214,11 +3643,19 @@ static void origin_status(struct dm_target *ti, status_type_t type, char *result
 		break;
 
 	case STATUSTYPE_TABLE:
+<<<<<<< HEAD
 		snprintf(result, maxlen, "%s", dev->name);
+=======
+		snprintf(result, maxlen, "%s", o->dev->name);
+		break;
+	case STATUSTYPE_IMA:
+		result[0] = '\0';
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
+<<<<<<< HEAD
 static int origin_merge(struct dm_target *ti, struct bvec_merge_data *bvm,
 			struct bio_vec *biovec, int max_size)
 {
@@ -2240,24 +3677,45 @@ static int origin_iterate_devices(struct dm_target *ti,
 	struct dm_dev *dev = ti->private;
 
 	return fn(ti, dev, 0, ti->len, data);
+=======
+static int origin_iterate_devices(struct dm_target *ti,
+				  iterate_devices_callout_fn fn, void *data)
+{
+	struct dm_origin *o = ti->private;
+
+	return fn(ti, o->dev, 0, ti->len, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct target_type origin_target = {
 	.name    = "snapshot-origin",
+<<<<<<< HEAD
 	.version = {1, 7, 1},
+=======
+	.version = {1, 9, 0},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module  = THIS_MODULE,
 	.ctr     = origin_ctr,
 	.dtr     = origin_dtr,
 	.map     = origin_map,
 	.resume  = origin_resume,
+<<<<<<< HEAD
 	.status  = origin_status,
 	.merge	 = origin_merge,
+=======
+	.postsuspend = origin_postsuspend,
+	.status  = origin_status,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iterate_devices = origin_iterate_devices,
 };
 
 static struct target_type snapshot_target = {
 	.name    = "snapshot",
+<<<<<<< HEAD
 	.version = {1, 10, 2},
+=======
+	.version = {1, 16, 0},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module  = THIS_MODULE,
 	.ctr     = snapshot_ctr,
 	.dtr     = snapshot_dtr,
@@ -2267,11 +3725,19 @@ static struct target_type snapshot_target = {
 	.resume  = snapshot_resume,
 	.status  = snapshot_status,
 	.iterate_devices = snapshot_iterate_devices,
+<<<<<<< HEAD
+=======
+	.io_hints = snapshot_io_hints,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct target_type merge_target = {
 	.name    = dm_snapshot_merge_target_name,
+<<<<<<< HEAD
 	.version = {1, 1, 0},
+=======
+	.version = {1, 5, 0},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module  = THIS_MODULE,
 	.ctr     = snapshot_ctr,
 	.dtr     = snapshot_dtr,
@@ -2282,6 +3748,10 @@ static struct target_type merge_target = {
 	.resume  = snapshot_merge_resume,
 	.status  = snapshot_status,
 	.iterate_devices = snapshot_iterate_devices,
+<<<<<<< HEAD
+=======
+	.io_hints = snapshot_io_hints,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init dm_snapshot_init(void)
@@ -2294,6 +3764,7 @@ static int __init dm_snapshot_init(void)
 		return r;
 	}
 
+<<<<<<< HEAD
 	r = dm_register_target(&snapshot_target);
 	if (r < 0) {
 		DMERR("snapshot target register failed %d", r);
@@ -2312,6 +3783,8 @@ static int __init dm_snapshot_init(void)
 		goto bad_register_merge_target;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = init_origin_hash();
 	if (r) {
 		DMERR("init_origin_hash failed.");
@@ -2332,6 +3805,7 @@ static int __init dm_snapshot_init(void)
 		goto bad_pending_cache;
 	}
 
+<<<<<<< HEAD
 	tracked_chunk_cache = KMEM_CACHE(dm_snap_tracked_chunk, 0);
 	if (!tracked_chunk_cache) {
 		DMERR("Couldn't create cache to track chunks in use.");
@@ -2342,18 +3816,42 @@ static int __init dm_snapshot_init(void)
 	return 0;
 
 bad_tracked_chunk_cache:
+=======
+	r = dm_register_target(&snapshot_target);
+	if (r < 0)
+		goto bad_register_snapshot_target;
+
+	r = dm_register_target(&origin_target);
+	if (r < 0)
+		goto bad_register_origin_target;
+
+	r = dm_register_target(&merge_target);
+	if (r < 0)
+		goto bad_register_merge_target;
+
+	return 0;
+
+bad_register_merge_target:
+	dm_unregister_target(&origin_target);
+bad_register_origin_target:
+	dm_unregister_target(&snapshot_target);
+bad_register_snapshot_target:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_destroy(pending_cache);
 bad_pending_cache:
 	kmem_cache_destroy(exception_cache);
 bad_exception_cache:
 	exit_origin_hash();
 bad_origin_hash:
+<<<<<<< HEAD
 	dm_unregister_target(&merge_target);
 bad_register_merge_target:
 	dm_unregister_target(&origin_target);
 bad_register_origin_target:
 	dm_unregister_target(&snapshot_target);
 bad_register_snapshot_target:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dm_exception_store_exit();
 
 	return r;
@@ -2368,7 +3866,10 @@ static void __exit dm_snapshot_exit(void)
 	exit_origin_hash();
 	kmem_cache_destroy(pending_cache);
 	kmem_cache_destroy(exception_cache);
+<<<<<<< HEAD
 	kmem_cache_destroy(tracked_chunk_cache);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dm_exception_store_exit();
 }

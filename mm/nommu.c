@@ -1,10 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/mm/nommu.c
  *
  *  Replacement code for mm functions to support CPU's that don't
  *  have any form of memory management unit (thus no virtual memory).
  *
+<<<<<<< HEAD
  *  See Documentation/nommu-mmap.txt
+=======
+ *  See Documentation/admin-guide/mm/nommu-mmap.rst
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Copyright (c) 2004-2008 David Howells <dhowells@redhat.com>
  *  Copyright (c) 2000-2003 David McCullough <davidm@snapgear.com>
@@ -13,8 +21,16 @@
  *  Copyright (c) 2007-2010 Paul Mundt <lethal@linux-sh.org>
  */
 
+<<<<<<< HEAD
 #include <linux/export.h>
 #include <linux/mm.h>
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/export.h>
+#include <linux/mm.h>
+#include <linux/sched/mm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mman.h>
 #include <linux/swap.h>
 #include <linux/file.h>
@@ -22,20 +38,33 @@
 #include <linux/pagemap.h>
 #include <linux/slab.h>
 #include <linux/vmalloc.h>
+<<<<<<< HEAD
 #include <linux/blkdev.h>
 #include <linux/backing-dev.h>
+=======
+#include <linux/backing-dev.h>
+#include <linux/compiler.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mount.h>
 #include <linux/personality.h>
 #include <linux/security.h>
 #include <linux/syscalls.h>
 #include <linux/audit.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
+=======
+#include <linux/printk.h>
+
+#include <linux/uaccess.h>
+#include <linux/uio.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/tlb.h>
 #include <asm/tlbflush.h>
 #include <asm/mmu_context.h>
 #include "internal.h"
 
+<<<<<<< HEAD
 #if 0
 #define kenter(FMT, ...) \
 	printk(KERN_DEBUG "==> %s("FMT")\n", __func__, ##__VA_ARGS__)
@@ -61,13 +90,24 @@ struct percpu_counter vm_committed_as;
 int sysctl_overcommit_memory = OVERCOMMIT_GUESS; /* heuristic overcommit */
 int sysctl_overcommit_ratio = 50; /* default is 50% */
 int sysctl_max_map_count = DEFAULT_MAX_MAP_COUNT;
+=======
+void *high_memory;
+EXPORT_SYMBOL(high_memory);
+struct page *mem_map;
+unsigned long max_mapnr;
+EXPORT_SYMBOL(max_mapnr);
+unsigned long highest_memmap_pfn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sysctl_nr_trim_pages = CONFIG_NOMMU_INITIAL_TRIM_EXCESS;
 int heap_stack_gap = 0;
 
 atomic_long_t mmap_pages_allocated;
 
 EXPORT_SYMBOL(mem_map);
+<<<<<<< HEAD
 EXPORT_SYMBOL(num_physpages);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* list of mapped, potentially shareable regions */
 static struct kmem_cache *vm_region_jar;
@@ -121,6 +161,7 @@ unsigned int kobjsize(const void *objp)
 	 * The ksize() function is only guaranteed to work for pointers
 	 * returned by kmalloc(). So handle arbitrary pointers here.
 	 */
+<<<<<<< HEAD
 	return PAGE_SIZE << compound_order(page);
 }
 
@@ -190,6 +231,11 @@ int get_user_pages(struct task_struct *tsk, struct mm_struct *mm,
 }
 EXPORT_SYMBOL(get_user_pages);
 
+=======
+	return page_size(page);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * follow_pfn - look up PFN at a user virtual address
  * @vma: memory mapping
@@ -211,16 +257,23 @@ int follow_pfn(struct vm_area_struct *vma, unsigned long address,
 }
 EXPORT_SYMBOL(follow_pfn);
 
+<<<<<<< HEAD
 DEFINE_RWLOCK(vmlist_lock);
 struct vm_struct *vmlist;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void vfree(const void *addr)
 {
 	kfree(addr);
 }
 EXPORT_SYMBOL(vfree);
 
+<<<<<<< HEAD
 void *__vmalloc(unsigned long size, gfp_t gfp_mask, pgprot_t prot)
+=======
+void *__vmalloc(unsigned long size, gfp_t gfp_mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 *  You can't specify __GFP_HIGHMEM with kmalloc() since kmalloc()
@@ -230,6 +283,7 @@ void *__vmalloc(unsigned long size, gfp_t gfp_mask, pgprot_t prot)
 }
 EXPORT_SYMBOL(__vmalloc);
 
+<<<<<<< HEAD
 void *vmalloc_user(unsigned long size)
 {
 	void *ret;
@@ -244,10 +298,47 @@ void *vmalloc_user(unsigned long size)
 		if (vma)
 			vma->vm_flags |= VM_USERMAP;
 		up_write(&current->mm->mmap_sem);
+=======
+void *__vmalloc_node_range(unsigned long size, unsigned long align,
+		unsigned long start, unsigned long end, gfp_t gfp_mask,
+		pgprot_t prot, unsigned long vm_flags, int node,
+		const void *caller)
+{
+	return __vmalloc(size, gfp_mask);
+}
+
+void *__vmalloc_node(unsigned long size, unsigned long align, gfp_t gfp_mask,
+		int node, const void *caller)
+{
+	return __vmalloc(size, gfp_mask);
+}
+
+static void *__vmalloc_user_flags(unsigned long size, gfp_t flags)
+{
+	void *ret;
+
+	ret = __vmalloc(size, flags);
+	if (ret) {
+		struct vm_area_struct *vma;
+
+		mmap_write_lock(current->mm);
+		vma = find_vma(current->mm, (unsigned long)ret);
+		if (vma)
+			vm_flags_set(vma, VM_USERMAP);
+		mmap_write_unlock(current->mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 }
+<<<<<<< HEAD
+=======
+
+void *vmalloc_user(unsigned long size)
+{
+	return __vmalloc_user_flags(size, GFP_KERNEL | __GFP_ZERO);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(vmalloc_user);
 
 struct page *vmalloc_to_page(const void *addr)
@@ -262,6 +353,7 @@ unsigned long vmalloc_to_pfn(const void *addr)
 }
 EXPORT_SYMBOL(vmalloc_to_pfn);
 
+<<<<<<< HEAD
 long vread(char *buf, char *addr, unsigned long count)
 {
 	memcpy(buf, addr, count);
@@ -269,39 +361,69 @@ long vread(char *buf, char *addr, unsigned long count)
 }
 
 long vwrite(char *buf, char *addr, unsigned long count)
+=======
+long vread_iter(struct iov_iter *iter, const char *addr, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Don't allow overflow */
 	if ((unsigned long) addr + count < count)
 		count = -(unsigned long) addr;
 
+<<<<<<< HEAD
 	memcpy(addr, buf, count);
 	return(count);
 }
 
 /*
  *	vmalloc  -  allocate virtually continguos memory
+=======
+	return copy_to_iter(addr, count, iter);
+}
+
+/*
+ *	vmalloc  -  allocate virtually contiguous memory
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	@size:		allocation size
  *
  *	Allocate enough pages to cover @size from the page level
+<<<<<<< HEAD
  *	allocator and map them into continguos kernel virtual space.
+=======
+ *	allocator and map them into contiguous kernel virtual space.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	For tight control over page level allocator and protection flags
  *	use __vmalloc() instead.
  */
 void *vmalloc(unsigned long size)
 {
+<<<<<<< HEAD
        return __vmalloc(size, GFP_KERNEL | __GFP_HIGHMEM, PAGE_KERNEL);
 }
 EXPORT_SYMBOL(vmalloc);
 
 /*
  *	vzalloc - allocate virtually continguos memory with zero fill
+=======
+	return __vmalloc(size, GFP_KERNEL);
+}
+EXPORT_SYMBOL(vmalloc);
+
+void *vmalloc_huge(unsigned long size, gfp_t gfp_mask) __weak __alias(__vmalloc);
+
+/*
+ *	vzalloc - allocate virtually contiguous memory with zero fill
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	@size:		allocation size
  *
  *	Allocate enough pages to cover @size from the page level
+<<<<<<< HEAD
  *	allocator and map them into continguos kernel virtual space.
+=======
+ *	allocator and map them into contiguous kernel virtual space.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The memory allocated is set to zero.
  *
  *	For tight control over page level allocator and protection flags
@@ -309,8 +431,12 @@ EXPORT_SYMBOL(vmalloc);
  */
 void *vzalloc(unsigned long size)
 {
+<<<<<<< HEAD
 	return __vmalloc(size, GFP_KERNEL | __GFP_HIGHMEM | __GFP_ZERO,
 			PAGE_KERNEL);
+=======
+	return __vmalloc(size, GFP_KERNEL | __GFP_ZERO);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(vzalloc);
 
@@ -349,6 +475,7 @@ void *vzalloc_node(unsigned long size, int node)
 }
 EXPORT_SYMBOL(vzalloc_node);
 
+<<<<<<< HEAD
 #ifndef PAGE_KERNEL_EXEC
 # define PAGE_KERNEL_EXEC PAGE_KERNEL
 #endif
@@ -370,16 +497,26 @@ void *vmalloc_exec(unsigned long size)
 	return __vmalloc(size, GFP_KERNEL | __GFP_HIGHMEM, PAGE_KERNEL_EXEC);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * vmalloc_32  -  allocate virtually contiguous memory (32bit addressable)
  *	@size:		allocation size
  *
  *	Allocate enough 32bit PA addressable pages to cover @size from the
+<<<<<<< HEAD
  *	page level allocator and map them into continguos kernel virtual space.
  */
 void *vmalloc_32(unsigned long size)
 {
 	return __vmalloc(size, GFP_KERNEL, PAGE_KERNEL);
+=======
+ *	page level allocator and map them into contiguous kernel virtual space.
+ */
+void *vmalloc_32(unsigned long size)
+{
+	return __vmalloc(size, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(vmalloc_32);
 
@@ -416,7 +553,11 @@ void vunmap(const void *addr)
 }
 EXPORT_SYMBOL(vunmap);
 
+<<<<<<< HEAD
 void *vm_map_ram(struct page **pages, unsigned int count, int node, pgprot_t prot)
+=======
+void *vm_map_ram(struct page **pages, unsigned int count, int node)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	BUG();
 	return NULL;
@@ -434,6 +575,7 @@ void vm_unmap_aliases(void)
 }
 EXPORT_SYMBOL_GPL(vm_unmap_aliases);
 
+<<<<<<< HEAD
 /*
  * Implement a stub for vmalloc_sync_all() if the architecture chose not to
  * have one.
@@ -461,6 +603,8 @@ struct vm_struct *alloc_vm_area(size_t size, pte_t **ptes)
 }
 EXPORT_SYMBOL_GPL(alloc_vm_area);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void free_vm_area(struct vm_struct *area)
 {
 	BUG();
@@ -474,6 +618,23 @@ int vm_insert_page(struct vm_area_struct *vma, unsigned long addr,
 }
 EXPORT_SYMBOL(vm_insert_page);
 
+<<<<<<< HEAD
+=======
+int vm_map_pages(struct vm_area_struct *vma, struct page **pages,
+			unsigned long num)
+{
+	return -EINVAL;
+}
+EXPORT_SYMBOL(vm_map_pages);
+
+int vm_map_pages_zero(struct vm_area_struct *vma, struct page **pages,
+				unsigned long num)
+{
+	return -EINVAL;
+}
+EXPORT_SYMBOL(vm_map_pages_zero);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  sys_brk() for the most part doesn't need the global kernel
  *  lock, except when an application is doing something nasty
@@ -502,20 +663,34 @@ SYSCALL_DEFINE1(brk, unsigned long, brk)
 	/*
 	 * Ok, looks good - let it rip.
 	 */
+<<<<<<< HEAD
 	flush_icache_range(mm->brk, brk);
+=======
+	flush_icache_user_range(mm->brk, brk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mm->brk = brk;
 }
 
 /*
+<<<<<<< HEAD
  * initialise the VMA and region record slabs
+=======
+ * initialise the percpu counter for VM and region record slabs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void __init mmap_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = percpu_counter_init(&vm_committed_as, 0);
 	VM_BUG_ON(ret);
 	vm_region_jar = KMEM_CACHE(vm_region, SLAB_PANIC);
+=======
+	ret = percpu_counter_init(&vm_committed_as, 0, GFP_KERNEL);
+	VM_BUG_ON(ret);
+	vm_region_jar = KMEM_CACHE(vm_region, SLAB_PANIC|SLAB_ACCOUNT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -533,16 +708,27 @@ static noinline void validate_nommu_regions(void)
 		return;
 
 	last = rb_entry(lastp, struct vm_region, vm_rb);
+<<<<<<< HEAD
 	BUG_ON(unlikely(last->vm_end <= last->vm_start));
 	BUG_ON(unlikely(last->vm_top < last->vm_end));
+=======
+	BUG_ON(last->vm_end <= last->vm_start);
+	BUG_ON(last->vm_top < last->vm_end);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while ((p = rb_next(lastp))) {
 		region = rb_entry(p, struct vm_region, vm_rb);
 		last = rb_entry(lastp, struct vm_region, vm_rb);
 
+<<<<<<< HEAD
 		BUG_ON(unlikely(region->vm_end <= region->vm_start));
 		BUG_ON(unlikely(region->vm_top < region->vm_end));
 		BUG_ON(unlikely(region->vm_start < last->vm_top));
+=======
+		BUG_ON(region->vm_end <= region->vm_start);
+		BUG_ON(region->vm_top < region->vm_end);
+		BUG_ON(region->vm_start < last->vm_top);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		lastp = p;
 	}
@@ -602,6 +788,7 @@ static void delete_nommu_region(struct vm_region *region)
 static void free_page_series(unsigned long from, unsigned long to)
 {
 	for (; from < to; from += PAGE_SIZE) {
+<<<<<<< HEAD
 		struct page *page = virt_to_page(from);
 
 		kdebug("- free %lx", from);
@@ -609,6 +796,11 @@ static void free_page_series(unsigned long from, unsigned long to)
 		if (page_count(page) != 1)
 			kdebug("free page %p: refcount not one: %d",
 			       page, page_count(page));
+=======
+		struct page *page = virt_to_page((void *)from);
+
+		atomic_long_dec(&mmap_pages_allocated);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_page(page);
 	}
 }
@@ -622,8 +814,11 @@ static void free_page_series(unsigned long from, unsigned long to)
 static void __put_nommu_region(struct vm_region *region)
 	__releases(nommu_region_sem)
 {
+<<<<<<< HEAD
 	kenter("%p{%d}", region, region->vm_usage);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(!nommu_region_tree.rb_node);
 
 	if (--region->vm_usage == 0) {
@@ -636,10 +831,15 @@ static void __put_nommu_region(struct vm_region *region)
 
 		/* IO memory and memory shared directly out of the pagecache
 		 * from ramfs/tmpfs mustn't be released here */
+<<<<<<< HEAD
 		if (region->vm_flags & VM_MAPPED_COPY) {
 			kdebug("free series");
 			free_page_series(region->vm_start, region->vm_top);
 		}
+=======
+		if (region->vm_flags & VM_MAPPED_COPY)
+			free_page_series(region->vm_start, region->vm_top);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kmem_cache_free(vm_region_jar, region);
 	} else {
 		up_write(&nommu_region_sem);
@@ -655,6 +855,7 @@ static void put_nommu_region(struct vm_region *region)
 	__put_nommu_region(region);
 }
 
+<<<<<<< HEAD
 /*
  * update protection on a vma
  */
@@ -740,11 +941,44 @@ static void add_vma_to_mm(struct mm_struct *mm, struct vm_area_struct *vma)
 		prev = rb_entry(rb_prev, struct vm_area_struct, vm_rb);
 
 	__vma_link_list(mm, vma, prev, parent);
+=======
+static void setup_vma_to_mm(struct vm_area_struct *vma, struct mm_struct *mm)
+{
+	vma->vm_mm = mm;
+
+	/* add the VMA to the mapping */
+	if (vma->vm_file) {
+		struct address_space *mapping = vma->vm_file->f_mapping;
+
+		i_mmap_lock_write(mapping);
+		flush_dcache_mmap_lock(mapping);
+		vma_interval_tree_insert(vma, &mapping->i_mmap);
+		flush_dcache_mmap_unlock(mapping);
+		i_mmap_unlock_write(mapping);
+	}
+}
+
+static void cleanup_vma_from_mm(struct vm_area_struct *vma)
+{
+	vma->vm_mm->map_count--;
+	/* remove the VMA from the mapping */
+	if (vma->vm_file) {
+		struct address_space *mapping;
+		mapping = vma->vm_file->f_mapping;
+
+		i_mmap_lock_write(mapping);
+		flush_dcache_mmap_lock(mapping);
+		vma_interval_tree_remove(vma, &mapping->i_mmap);
+		flush_dcache_mmap_unlock(mapping);
+		i_mmap_unlock_write(mapping);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * delete a VMA from its owning mm_struct and address space
  */
+<<<<<<< HEAD
 static void delete_vma_from_mm(struct vm_area_struct *vma)
 {
 	struct address_space *mapping;
@@ -781,11 +1015,30 @@ static void delete_vma_from_mm(struct vm_area_struct *vma)
 		vma->vm_next->vm_prev = vma->vm_prev;
 }
 
+=======
+static int delete_vma_from_mm(struct vm_area_struct *vma)
+{
+	VMA_ITERATOR(vmi, vma->vm_mm, vma->vm_start);
+
+	vma_iter_config(&vmi, vma->vm_start, vma->vm_end);
+	if (vma_iter_prealloc(&vmi, vma)) {
+		pr_warn("Allocation of vma tree for process %d failed\n",
+		       current->pid);
+		return -ENOMEM;
+	}
+	cleanup_vma_from_mm(vma);
+
+	/* remove from the MM's tree and list */
+	vma_iter_clear(&vmi);
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * destroy a VMA record
  */
 static void delete_vma(struct mm_struct *mm, struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 	kenter("%p", vma);
 	if (vma->vm_ops && vma->vm_ops->close)
 		vma->vm_ops->close(vma);
@@ -823,30 +1076,92 @@ struct vm_area_struct *find_vma(struct mm_struct *mm, unsigned long addr)
 	}
 
 	return NULL;
+=======
+	if (vma->vm_ops && vma->vm_ops->close)
+		vma->vm_ops->close(vma);
+	if (vma->vm_file)
+		fput(vma->vm_file);
+	put_nommu_region(vma->vm_region);
+	vm_area_free(vma);
+}
+
+struct vm_area_struct *find_vma_intersection(struct mm_struct *mm,
+					     unsigned long start_addr,
+					     unsigned long end_addr)
+{
+	unsigned long index = start_addr;
+
+	mmap_assert_locked(mm);
+	return mt_find(&mm->mm_mt, &index, end_addr - 1);
+}
+EXPORT_SYMBOL(find_vma_intersection);
+
+/*
+ * look up the first VMA in which addr resides, NULL if none
+ * - should be called with mm->mmap_lock at least held readlocked
+ */
+struct vm_area_struct *find_vma(struct mm_struct *mm, unsigned long addr)
+{
+	VMA_ITERATOR(vmi, mm, addr);
+
+	return vma_iter_load(&vmi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(find_vma);
 
 /*
+<<<<<<< HEAD
  * find a VMA
  * - we don't extend stack VMAs under NOMMU conditions
  */
 struct vm_area_struct *find_extend_vma(struct mm_struct *mm, unsigned long addr)
 {
 	return find_vma(mm, addr);
+=======
+ * At least xtensa ends up having protection faults even with no
+ * MMU.. No stack expansion, at least.
+ */
+struct vm_area_struct *lock_mm_and_find_vma(struct mm_struct *mm,
+			unsigned long addr, struct pt_regs *regs)
+{
+	struct vm_area_struct *vma;
+
+	mmap_read_lock(mm);
+	vma = vma_lookup(mm, addr);
+	if (!vma)
+		mmap_read_unlock(mm);
+	return vma;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * expand a stack to a given address
  * - not supported under NOMMU conditions
  */
+<<<<<<< HEAD
 int expand_stack(struct vm_area_struct *vma, unsigned long address)
+=======
+int expand_stack_locked(struct vm_area_struct *vma, unsigned long addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOMEM;
 }
 
+<<<<<<< HEAD
 /*
  * look up the first VMA exactly that exactly matches addr
  * - should be called with mm->mmap_sem at least held readlocked
+=======
+struct vm_area_struct *expand_stack(struct mm_struct *mm, unsigned long addr)
+{
+	mmap_read_unlock(mm);
+	return NULL;
+}
+
+/*
+ * look up the first VMA exactly that exactly matches addr
+ * - should be called with mm->mmap_lock at least held readlocked
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct vm_area_struct *find_vma_exact(struct mm_struct *mm,
 					     unsigned long addr,
@@ -854,6 +1169,7 @@ static struct vm_area_struct *find_vma_exact(struct mm_struct *mm,
 {
 	struct vm_area_struct *vma;
 	unsigned long end = addr + len;
+<<<<<<< HEAD
 
 	/* check the cache first */
 	vma = mm->mmap_cache;
@@ -874,6 +1190,19 @@ static struct vm_area_struct *find_vma_exact(struct mm_struct *mm,
 	}
 
 	return NULL;
+=======
+	VMA_ITERATOR(vmi, mm, addr);
+
+	vma = vma_iter_load(&vmi);
+	if (!vma)
+		return NULL;
+	if (vma->vm_start != addr)
+		return NULL;
+	if (vma->vm_end != end)
+		return NULL;
+
+	return vma;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -889,6 +1218,7 @@ static int validate_mmap_request(struct file *file,
 				 unsigned long *_capabilities)
 {
 	unsigned long capabilities, rlen;
+<<<<<<< HEAD
 	unsigned long reqprot = prot;
 	int ret;
 
@@ -899,6 +1229,13 @@ static int validate_mmap_request(struct file *file,
 		       current->pid);
 		return -EINVAL;
 	}
+=======
+	int ret;
+
+	/* do the simple checks first */
+	if (flags & MAP_FIXED)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((flags & MAP_TYPE) != MAP_PRIVATE &&
 	    (flags & MAP_TYPE) != MAP_SHARED)
@@ -917,17 +1254,23 @@ static int validate_mmap_request(struct file *file,
 		return -EOVERFLOW;
 
 	if (file) {
+<<<<<<< HEAD
 		/* validate file mapping requests */
 		struct address_space *mapping;
 
 		/* files must support mmap */
 		if (!file->f_op || !file->f_op->mmap)
+=======
+		/* files must support mmap */
+		if (!file->f_op->mmap)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 
 		/* work out if what we've got could possibly be shared
 		 * - we support chardevs that provide their own "memory"
 		 * - we support files/blockdevs that are memory backed
 		 */
+<<<<<<< HEAD
 		mapping = file->f_mapping;
 		if (!mapping)
 			mapping = file->f_path.dentry->d_inode->i_mapping;
@@ -943,13 +1286,30 @@ static int validate_mmap_request(struct file *file,
 			case S_IFREG:
 			case S_IFBLK:
 				capabilities = BDI_CAP_MAP_COPY;
+=======
+		if (file->f_op->mmap_capabilities) {
+			capabilities = file->f_op->mmap_capabilities(file);
+		} else {
+			/* no explicit capabilities set, so assume some
+			 * defaults */
+			switch (file_inode(file)->i_mode & S_IFMT) {
+			case S_IFREG:
+			case S_IFBLK:
+				capabilities = NOMMU_MAP_COPY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 
 			case S_IFCHR:
 				capabilities =
+<<<<<<< HEAD
 					BDI_CAP_MAP_DIRECT |
 					BDI_CAP_READ_MAP |
 					BDI_CAP_WRITE_MAP;
+=======
+					NOMMU_MAP_DIRECT |
+					NOMMU_MAP_READ |
+					NOMMU_MAP_WRITE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 
 			default:
@@ -960,9 +1320,15 @@ static int validate_mmap_request(struct file *file,
 		/* eliminate any capabilities that we can't support on this
 		 * device */
 		if (!file->f_op->get_unmapped_area)
+<<<<<<< HEAD
 			capabilities &= ~BDI_CAP_MAP_DIRECT;
 		if (!file->f_op->read)
 			capabilities &= ~BDI_CAP_MAP_COPY;
+=======
+			capabilities &= ~NOMMU_MAP_DIRECT;
+		if (!(file->f_mode & FMODE_CAN_READ))
+			capabilities &= ~NOMMU_MAP_COPY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* The file shall have been opened with read permission. */
 		if (!(file->f_mode & FMODE_READ))
@@ -974,6 +1340,7 @@ static int validate_mmap_request(struct file *file,
 			    !(file->f_mode & FMODE_WRITE))
 				return -EACCES;
 
+<<<<<<< HEAD
 			if (IS_APPEND(file->f_path.dentry->d_inode) &&
 			    (file->f_mode & FMODE_WRITE))
 				return -EACCES;
@@ -991,11 +1358,27 @@ static int validate_mmap_request(struct file *file,
 			/* we're going to read the file into private memory we
 			 * allocate */
 			if (!(capabilities & BDI_CAP_MAP_COPY))
+=======
+			if (IS_APPEND(file_inode(file)) &&
+			    (file->f_mode & FMODE_WRITE))
+				return -EACCES;
+
+			if (!(capabilities & NOMMU_MAP_DIRECT))
+				return -ENODEV;
+
+			/* we mustn't privatise shared mappings */
+			capabilities &= ~NOMMU_MAP_COPY;
+		} else {
+			/* we're going to read the file into private memory we
+			 * allocate */
+			if (!(capabilities & NOMMU_MAP_COPY))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENODEV;
 
 			/* we don't permit a private writable mapping to be
 			 * shared with the backing device */
 			if (prot & PROT_WRITE)
+<<<<<<< HEAD
 				capabilities &= ~BDI_CAP_MAP_DIRECT;
 		}
 
@@ -1008,6 +1391,19 @@ static int validate_mmap_request(struct file *file,
 				if (flags & MAP_SHARED) {
 					printk(KERN_WARNING
 					       "MAP_SHARED not completely supported on !MMU\n");
+=======
+				capabilities &= ~NOMMU_MAP_DIRECT;
+		}
+
+		if (capabilities & NOMMU_MAP_DIRECT) {
+			if (((prot & PROT_READ)  && !(capabilities & NOMMU_MAP_READ))  ||
+			    ((prot & PROT_WRITE) && !(capabilities & NOMMU_MAP_WRITE)) ||
+			    ((prot & PROT_EXEC)  && !(capabilities & NOMMU_MAP_EXEC))
+			    ) {
+				capabilities &= ~NOMMU_MAP_DIRECT;
+				if (flags & MAP_SHARED) {
+					pr_warn("MAP_SHARED not completely supported on !MMU\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return -EINVAL;
 				}
 			}
@@ -1015,6 +1411,7 @@ static int validate_mmap_request(struct file *file,
 
 		/* handle executable mappings and implied executable
 		 * mappings */
+<<<<<<< HEAD
 		if (file->f_path.mnt->mnt_flags & MNT_NOEXEC) {
 			if (prot & PROT_EXEC)
 				return -EPERM;
@@ -1039,6 +1436,29 @@ static int validate_mmap_request(struct file *file,
 		 * privately mapped
 		 */
 		capabilities = BDI_CAP_MAP_COPY;
+=======
+		if (path_noexec(&file->f_path)) {
+			if (prot & PROT_EXEC)
+				return -EPERM;
+		} else if ((prot & PROT_READ) && !(prot & PROT_EXEC)) {
+			/* handle implication of PROT_EXEC by PROT_READ */
+			if (current->personality & READ_IMPLIES_EXEC) {
+				if (capabilities & NOMMU_MAP_EXEC)
+					prot |= PROT_EXEC;
+			}
+		} else if ((prot & PROT_READ) &&
+			 (prot & PROT_EXEC) &&
+			 !(capabilities & NOMMU_MAP_EXEC)
+			 ) {
+			/* backing file is not executable, try to copy */
+			capabilities &= ~NOMMU_MAP_DIRECT;
+		}
+	} else {
+		/* anonymous mappings are always memory backed and can be
+		 * privately mapped
+		 */
+		capabilities = NOMMU_MAP_COPY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* handle PROT_EXEC implication by PROT_READ */
 		if ((prot & PROT_READ) &&
@@ -1047,7 +1467,11 @@ static int validate_mmap_request(struct file *file,
 	}
 
 	/* allow the security API to have its say */
+<<<<<<< HEAD
 	ret = security_file_mmap(file, reqprot, prot, flags, addr, 0);
+=======
+	ret = security_mmap_addr(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -1067,6 +1491,7 @@ static unsigned long determine_vm_flags(struct file *file,
 {
 	unsigned long vm_flags;
 
+<<<<<<< HEAD
 	vm_flags = calc_vm_prot_bits(prot) | calc_vm_flag_bits(flags);
 	/* vm_flags |= mm->def_flags; */
 
@@ -1090,6 +1515,38 @@ static unsigned long determine_vm_flags(struct file *file,
 	 */
 	if ((flags & MAP_PRIVATE) && current->ptrace)
 		vm_flags &= ~VM_MAYSHARE;
+=======
+	vm_flags = calc_vm_prot_bits(prot, 0) | calc_vm_flag_bits(flags);
+
+	if (!file) {
+		/*
+		 * MAP_ANONYMOUS. MAP_SHARED is mapped to MAP_PRIVATE, because
+		 * there is no fork().
+		 */
+		vm_flags |= VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC;
+	} else if (flags & MAP_PRIVATE) {
+		/* MAP_PRIVATE file mapping */
+		if (capabilities & NOMMU_MAP_DIRECT)
+			vm_flags |= (capabilities & NOMMU_VMFLAGS);
+		else
+			vm_flags |= VM_MAYREAD | VM_MAYWRITE | VM_MAYEXEC;
+
+		if (!(prot & PROT_WRITE) && !current->ptrace)
+			/*
+			 * R/O private file mapping which cannot be used to
+			 * modify memory, especially also not via active ptrace
+			 * (e.g., set breakpoints) or later by upgrading
+			 * permissions (no mprotect()). We can try overlaying
+			 * the file mapping, which will work e.g., on chardevs,
+			 * ramfs/tmpfs/shmfs and romfs/cramf.
+			 */
+			vm_flags |= VM_MAYOVERLAY;
+	} else {
+		/* MAP_SHARED file mapping: NOMMU_MAP_DIRECT is set. */
+		vm_flags |= VM_SHARED | VM_MAYSHARE |
+			    (capabilities & NOMMU_VMFLAGS);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return vm_flags;
 }
@@ -1102,7 +1559,11 @@ static int do_mmap_shared_file(struct vm_area_struct *vma)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = vma->vm_file->f_op->mmap(vma->vm_file, vma);
+=======
+	ret = call_mmap(vma->vm_file, vma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret == 0) {
 		vma->vm_region->vm_top = vma->vm_region->vm_end;
 		return 0;
@@ -1124,6 +1585,7 @@ static int do_mmap_private(struct vm_area_struct *vma,
 			   unsigned long len,
 			   unsigned long capabilities)
 {
+<<<<<<< HEAD
 	struct page *pages;
 	unsigned long total, point, n;
 	void *base;
@@ -1138,6 +1600,24 @@ static int do_mmap_private(struct vm_area_struct *vma,
 		if (ret == 0) {
 			/* shouldn't return success if we're not sharing */
 			BUG_ON(!(vma->vm_flags & VM_MAYSHARE));
+=======
+	unsigned long total, point;
+	void *base;
+	int ret, order;
+
+	/*
+	 * Invoke the file's mapping function so that it can keep track of
+	 * shared mappings on devices or memory. VM_MAYOVERLAY will be set if
+	 * it may attempt to share, which will make is_nommu_shared_mapping()
+	 * happy.
+	 */
+	if (capabilities & NOMMU_MAP_DIRECT) {
+		ret = call_mmap(vma->vm_file, vma);
+		/* shouldn't return success if we're not sharing */
+		if (WARN_ON_ONCE(!is_nommu_shared_mapping(vma->vm_flags)))
+			ret = -ENOSYS;
+		if (ret == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vma->vm_region->vm_top = vma->vm_region->vm_end;
 			return 0;
 		}
@@ -1155,6 +1635,7 @@ static int do_mmap_private(struct vm_area_struct *vma,
 	 *   we're allocating is smaller than a page
 	 */
 	order = get_order(len);
+<<<<<<< HEAD
 	kdebug("alloc order %d for %lx", order, len);
 
 	pages = alloc_pages(GFP_KERNEL, order);
@@ -1185,6 +1666,23 @@ static int do_mmap_private(struct vm_area_struct *vma,
 
 	base = page_address(pages);
 	region->vm_flags = vma->vm_flags |= VM_MAPPED_COPY;
+=======
+	total = 1 << order;
+	point = len >> PAGE_SHIFT;
+
+	/* we don't want to allocate a power-of-2 sized page set */
+	if (sysctl_nr_trim_pages && total - point >= sysctl_nr_trim_pages)
+		total = point;
+
+	base = alloc_pages_exact(total << PAGE_SHIFT, GFP_KERNEL);
+	if (!base)
+		goto enomem;
+
+	atomic_long_add(total, &mmap_pages_allocated);
+
+	vm_flags_set(vma, VM_MAPPED_COPY);
+	region->vm_flags = vma->vm_flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	region->vm_start = (unsigned long) base;
 	region->vm_end   = region->vm_start + len;
 	region->vm_top   = region->vm_start + (total << PAGE_SHIFT);
@@ -1194,17 +1692,24 @@ static int do_mmap_private(struct vm_area_struct *vma,
 
 	if (vma->vm_file) {
 		/* read the contents of a file into the copy */
+<<<<<<< HEAD
 		mm_segment_t old_fs;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		loff_t fpos;
 
 		fpos = vma->vm_pgoff;
 		fpos <<= PAGE_SHIFT;
 
+<<<<<<< HEAD
 		old_fs = get_fs();
 		set_fs(KERNEL_DS);
 		ret = vma->vm_file->f_op->read(vma->vm_file, base, len, &fpos);
 		set_fs(old_fs);
 
+=======
+		ret = kernel_read(vma->vm_file, base, len, &fpos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			goto error_free;
 
@@ -1212,6 +1717,11 @@ static int do_mmap_private(struct vm_area_struct *vma,
 		if (ret < len)
 			memset(base + ret, 0, len - ret);
 
+<<<<<<< HEAD
+=======
+	} else {
+		vma_set_anonymous(vma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1224,38 +1734,69 @@ error_free:
 	return ret;
 
 enomem:
+<<<<<<< HEAD
 	printk("Allocation of length %lu from process %d (%s) failed\n",
 	       len, current->pid, current->comm);
 	show_free_areas(0);
+=======
+	pr_err("Allocation of length %lu from process %d (%s) failed\n",
+	       len, current->pid, current->comm);
+	show_mem();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
 /*
  * handle mapping creation for uClinux
  */
+<<<<<<< HEAD
 static unsigned long do_mmap_pgoff(struct file *file,
 			    unsigned long addr,
 			    unsigned long len,
 			    unsigned long prot,
 			    unsigned long flags,
 			    unsigned long pgoff)
+=======
+unsigned long do_mmap(struct file *file,
+			unsigned long addr,
+			unsigned long len,
+			unsigned long prot,
+			unsigned long flags,
+			vm_flags_t vm_flags,
+			unsigned long pgoff,
+			unsigned long *populate,
+			struct list_head *uf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vm_area_struct *vma;
 	struct vm_region *region;
 	struct rb_node *rb;
+<<<<<<< HEAD
 	unsigned long capabilities, vm_flags, result;
 	int ret;
 
 	kenter(",%lx,%lx,%lx,%lx,%lx", addr, len, prot, flags, pgoff);
+=======
+	unsigned long capabilities, result;
+	int ret;
+	VMA_ITERATOR(vmi, current->mm, 0);
+
+	*populate = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* decide whether we should attempt the mapping, and if so what sort of
 	 * mapping */
 	ret = validate_mmap_request(file, addr, len, prot, flags, pgoff,
 				    &capabilities);
+<<<<<<< HEAD
 	if (ret < 0) {
 		kleave(" = %d [val]", ret);
 		return ret;
 	}
+=======
+	if (ret < 0)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we ignore the address hint */
 	addr = 0;
@@ -1263,14 +1804,23 @@ static unsigned long do_mmap_pgoff(struct file *file,
 
 	/* we've determined that we can make the mapping, now translate what we
 	 * now know into VMA flags */
+<<<<<<< HEAD
 	vm_flags = determine_vm_flags(file, prot, flags, capabilities);
+=======
+	vm_flags |= determine_vm_flags(file, prot, flags, capabilities);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we're going to need to record the mapping */
 	region = kmem_cache_zalloc(vm_region_jar, GFP_KERNEL);
 	if (!region)
 		goto error_getting_region;
 
+<<<<<<< HEAD
 	vma = kmem_cache_zalloc(vm_area_cachep, GFP_KERNEL);
+=======
+	vma = vm_area_alloc(current->mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!vma)
 		goto error_getting_vma;
 
@@ -1278,6 +1828,7 @@ static unsigned long do_mmap_pgoff(struct file *file,
 	region->vm_flags = vm_flags;
 	region->vm_pgoff = pgoff;
 
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&vma->anon_vma_chain);
 	vma->vm_flags = vm_flags;
 	vma->vm_pgoff = pgoff;
@@ -1291,6 +1842,14 @@ static unsigned long do_mmap_pgoff(struct file *file,
 			added_exe_file_vma(current->mm);
 			vma->vm_mm = current->mm;
 		}
+=======
+	vm_flags_init(vma, vm_flags);
+	vma->vm_pgoff = pgoff;
+
+	if (file) {
+		region->vm_file = get_file(file);
+		vma->vm_file = get_file(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	down_write(&nommu_region_sem);
@@ -1303,7 +1862,11 @@ static unsigned long do_mmap_pgoff(struct file *file,
 	 *   these cases, sharing is handled in the driver or filesystem rather
 	 *   than here
 	 */
+<<<<<<< HEAD
 	if (vm_flags & VM_MAYSHARE) {
+=======
+	if (is_nommu_shared_mapping(vm_flags)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct vm_region *pregion;
 		unsigned long pglen, rpglen, pgend, rpgend, start;
 
@@ -1313,12 +1876,21 @@ static unsigned long do_mmap_pgoff(struct file *file,
 		for (rb = rb_first(&nommu_region_tree); rb; rb = rb_next(rb)) {
 			pregion = rb_entry(rb, struct vm_region, vm_rb);
 
+<<<<<<< HEAD
 			if (!(pregion->vm_flags & VM_MAYSHARE))
 				continue;
 
 			/* search for overlapping mappings on the same file */
 			if (pregion->vm_file->f_path.dentry->d_inode !=
 			    file->f_path.dentry->d_inode)
+=======
+			if (!is_nommu_shared_mapping(pregion->vm_flags))
+				continue;
+
+			/* search for overlapping mappings on the same file */
+			if (file_inode(pregion->vm_file) !=
+			    file_inode(file))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 
 			if (pregion->vm_pgoff >= pgend)
@@ -1335,7 +1907,11 @@ static unsigned long do_mmap_pgoff(struct file *file,
 			if ((pregion->vm_pgoff != pgoff || rpglen != pglen) &&
 			    !(pgoff >= pregion->vm_pgoff && pgend <= rpgend)) {
 				/* new mapping is not a subset of the region */
+<<<<<<< HEAD
 				if (!(capabilities & BDI_CAP_MAP_DIRECT))
+=======
+				if (!(capabilities & NOMMU_MAP_DIRECT))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto sharing_violation;
 				continue;
 			}
@@ -1348,11 +1924,17 @@ static unsigned long do_mmap_pgoff(struct file *file,
 			vma->vm_start = start;
 			vma->vm_end = start + len;
 
+<<<<<<< HEAD
 			if (pregion->vm_flags & VM_MAPPED_COPY) {
 				kdebug("share copy");
 				vma->vm_flags |= VM_MAPPED_COPY;
 			} else {
 				kdebug("share mmap");
+=======
+			if (pregion->vm_flags & VM_MAPPED_COPY)
+				vm_flags_set(vma, VM_MAPPED_COPY);
+			else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = do_mmap_shared_file(vma);
 				if (ret < 0) {
 					vma->vm_region = NULL;
@@ -1374,7 +1956,11 @@ static unsigned long do_mmap_pgoff(struct file *file,
 		 * - this is the hook for quasi-memory character devices to
 		 *   tell us the location of a shared mapping
 		 */
+<<<<<<< HEAD
 		if (capabilities & BDI_CAP_MAP_DIRECT) {
+=======
+		if (capabilities & NOMMU_MAP_DIRECT) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			addr = file->f_op->get_unmapped_area(file, addr, len,
 							     pgoff, flags);
 			if (IS_ERR_VALUE(addr)) {
@@ -1386,10 +1972,17 @@ static unsigned long do_mmap_pgoff(struct file *file,
 				 * the mapping so we'll have to attempt to copy
 				 * it */
 				ret = -ENODEV;
+<<<<<<< HEAD
 				if (!(capabilities & BDI_CAP_MAP_COPY))
 					goto error_just_free;
 
 				capabilities &= ~BDI_CAP_MAP_DIRECT;
+=======
+				if (!(capabilities & NOMMU_MAP_COPY))
+					goto error_just_free;
+
+				capabilities &= ~NOMMU_MAP_DIRECT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else {
 				vma->vm_start = region->vm_start = addr;
 				vma->vm_end = region->vm_end = addr + len;
@@ -1400,7 +1993,11 @@ static unsigned long do_mmap_pgoff(struct file *file,
 	vma->vm_region = region;
 
 	/* set up the mapping
+<<<<<<< HEAD
 	 * - the region is filled in if BDI_CAP_MAP_DIRECT is still set
+=======
+	 * - the region is filled in if NOMMU_MAP_DIRECT is still set
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (file && vma->vm_flags & VM_SHARED)
 		ret = do_mmap_shared_file(vma);
@@ -1411,7 +2008,13 @@ static unsigned long do_mmap_pgoff(struct file *file,
 	add_nommu_region(region);
 
 	/* clear anonymous mappings that don't ask for uninitialized data */
+<<<<<<< HEAD
 	if (!vma->vm_file && !(flags & MAP_UNINITIALIZED))
+=======
+	if (!vma->vm_file &&
+	    (!IS_ENABLED(CONFIG_MMAP_ALLOW_UNINITIALIZED) ||
+	     !(flags & MAP_UNINITIALIZED)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset((void *)region->vm_start, 0,
 		       region->vm_end - region->vm_start);
 
@@ -1421,42 +2024,74 @@ static unsigned long do_mmap_pgoff(struct file *file,
 	current->mm->total_vm += len >> PAGE_SHIFT;
 
 share:
+<<<<<<< HEAD
 	add_vma_to_mm(current->mm, vma);
+=======
+	BUG_ON(!vma->vm_region);
+	vma_iter_config(&vmi, vma->vm_start, vma->vm_end);
+	if (vma_iter_prealloc(&vmi, vma))
+		goto error_just_free;
+
+	setup_vma_to_mm(vma, current->mm);
+	current->mm->map_count++;
+	/* add the VMA to the tree */
+	vma_iter_store(&vmi, vma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we flush the region from the icache only when the first executable
 	 * mapping of it is made  */
 	if (vma->vm_flags & VM_EXEC && !region->vm_icache_flushed) {
+<<<<<<< HEAD
 		flush_icache_range(region->vm_start, region->vm_end);
+=======
+		flush_icache_user_range(region->vm_start, region->vm_end);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		region->vm_icache_flushed = true;
 	}
 
 	up_write(&nommu_region_sem);
 
+<<<<<<< HEAD
 	kleave(" = %lx", result);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 
 error_just_free:
 	up_write(&nommu_region_sem);
 error:
+<<<<<<< HEAD
+=======
+	vma_iter_free(&vmi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (region->vm_file)
 		fput(region->vm_file);
 	kmem_cache_free(vm_region_jar, region);
 	if (vma->vm_file)
 		fput(vma->vm_file);
+<<<<<<< HEAD
 	if (vma->vm_flags & VM_EXECUTABLE)
 		removed_exe_file_vma(vma->vm_mm);
 	kmem_cache_free(vm_area_cachep, vma);
 	kleave(" = %d", ret);
+=======
+	vm_area_free(vma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 
 sharing_violation:
 	up_write(&nommu_region_sem);
+<<<<<<< HEAD
 	printk(KERN_WARNING "Attempt to share mismatched mappings\n");
+=======
+	pr_warn("Attempt to share mismatched mappings\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = -EINVAL;
 	goto error;
 
 error_getting_vma:
 	kmem_cache_free(vm_region_jar, region);
+<<<<<<< HEAD
 	printk(KERN_WARNING "Allocation of vma for %lu byte allocation"
 	       " from process %d failed\n",
 	       len, current->pid);
@@ -1500,6 +2135,23 @@ EXPORT_SYMBOL(vm_mmap);
 SYSCALL_DEFINE6(mmap_pgoff, unsigned long, addr, unsigned long, len,
 		unsigned long, prot, unsigned long, flags,
 		unsigned long, fd, unsigned long, pgoff)
+=======
+	pr_warn("Allocation of vma for %lu byte allocation from process %d failed\n",
+			len, current->pid);
+	show_mem();
+	return -ENOMEM;
+
+error_getting_region:
+	pr_warn("Allocation of vm region for %lu byte allocation from process %d failed\n",
+			len, current->pid);
+	show_mem();
+	return -ENOMEM;
+}
+
+unsigned long ksys_mmap_pgoff(unsigned long addr, unsigned long len,
+			      unsigned long prot, unsigned long flags,
+			      unsigned long fd, unsigned long pgoff)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct file *file = NULL;
 	unsigned long retval = -EBADF;
@@ -1511,11 +2163,15 @@ SYSCALL_DEFINE6(mmap_pgoff, unsigned long, addr, unsigned long, len,
 			goto out;
 	}
 
+<<<<<<< HEAD
 	flags &= ~(MAP_EXECUTABLE | MAP_DENYWRITE);
 
 	down_write(&current->mm->mmap_sem);
 	retval = do_mmap_pgoff(file, addr, len, prot, flags, pgoff);
 	up_write(&current->mm->mmap_sem);
+=======
+	retval = vm_mmap_pgoff(file, addr, len, prot, flags, pgoff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (file)
 		fput(file);
@@ -1523,6 +2179,16 @@ out:
 	return retval;
 }
 
+<<<<<<< HEAD
+=======
+SYSCALL_DEFINE6(mmap_pgoff, unsigned long, addr, unsigned long, len,
+		unsigned long, prot, unsigned long, flags,
+		unsigned long, fd, unsigned long, pgoff)
+{
+	return ksys_mmap_pgoff(addr, len, prot, flags, fd, pgoff);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __ARCH_WANT_SYS_OLD_MMAP
 struct mmap_arg_struct {
 	unsigned long addr;
@@ -1539,11 +2205,19 @@ SYSCALL_DEFINE1(old_mmap, struct mmap_arg_struct __user *, arg)
 
 	if (copy_from_user(&a, arg, sizeof(a)))
 		return -EFAULT;
+<<<<<<< HEAD
 	if (a.offset & ~PAGE_MASK)
 		return -EINVAL;
 
 	return sys_mmap_pgoff(a.addr, a.len, a.prot, a.flags, a.fd,
 			      a.offset >> PAGE_SHIFT);
+=======
+	if (offset_in_page(a.offset))
+		return -EINVAL;
+
+	return ksys_mmap_pgoff(a.addr, a.len, a.prot, a.flags, a.fd,
+			       a.offset >> PAGE_SHIFT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* __ARCH_WANT_SYS_OLD_MMAP */
 
@@ -1551,20 +2225,33 @@ SYSCALL_DEFINE1(old_mmap, struct mmap_arg_struct __user *, arg)
  * split a vma into two pieces at address 'addr', a new vma is allocated either
  * for the first part or the tail.
  */
+<<<<<<< HEAD
 int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
 	      unsigned long addr, int new_below)
+=======
+static int split_vma(struct vma_iterator *vmi, struct vm_area_struct *vma,
+		     unsigned long addr, int new_below)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vm_area_struct *new;
 	struct vm_region *region;
 	unsigned long npages;
+<<<<<<< HEAD
 
 	kenter("");
+=======
+	struct mm_struct *mm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we're only permitted to split anonymous regions (these should have
 	 * only a single usage on the region) */
 	if (vma->vm_file)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	mm = vma->vm_mm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mm->map_count >= sysctl_max_map_count)
 		return -ENOMEM;
 
@@ -1572,6 +2259,7 @@ int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
 	if (!region)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	new = kmem_cache_alloc(vm_area_cachep, GFP_KERNEL);
 	if (!new) {
 		kmem_cache_free(vm_region_jar, region);
@@ -1580,6 +2268,13 @@ int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
 
 	/* most fields are the same, copy all, and then fixup */
 	*new = *vma;
+=======
+	new = vm_area_dup(vma);
+	if (!new)
+		goto err_vma_dup;
+
+	/* most fields are the same, copy all, and then fixup */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*region = *vma->vm_region;
 	new->vm_region = region;
 
@@ -1592,10 +2287,23 @@ int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
 		region->vm_pgoff = new->vm_pgoff += npages;
 	}
 
+<<<<<<< HEAD
 	if (new->vm_ops && new->vm_ops->open)
 		new->vm_ops->open(new);
 
 	delete_vma_from_mm(vma);
+=======
+	vma_iter_config(vmi, new->vm_start, new->vm_end);
+	if (vma_iter_prealloc(vmi, vma)) {
+		pr_warn("Allocation of vma tree for process %d failed\n",
+			current->pid);
+		goto err_vmi_preallocate;
+	}
+
+	if (new->vm_ops && new->vm_ops->open)
+		new->vm_ops->open(new);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	down_write(&nommu_region_sem);
 	delete_nommu_region(vma->vm_region);
 	if (new_below) {
@@ -1608,21 +2316,41 @@ int split_vma(struct mm_struct *mm, struct vm_area_struct *vma,
 	add_nommu_region(vma->vm_region);
 	add_nommu_region(new->vm_region);
 	up_write(&nommu_region_sem);
+<<<<<<< HEAD
 	add_vma_to_mm(mm, vma);
 	add_vma_to_mm(mm, new);
 	return 0;
+=======
+
+	setup_vma_to_mm(vma, mm);
+	setup_vma_to_mm(new, mm);
+	vma_iter_store(vmi, new);
+	mm->map_count++;
+	return 0;
+
+err_vmi_preallocate:
+	vm_area_free(new);
+err_vma_dup:
+	kmem_cache_free(vm_region_jar, region);
+	return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * shrink a VMA by removing the specified chunk from either the beginning or
  * the end
  */
+<<<<<<< HEAD
 static int shrink_vma(struct mm_struct *mm,
+=======
+static int vmi_shrink_vma(struct vma_iterator *vmi,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      struct vm_area_struct *vma,
 		      unsigned long from, unsigned long to)
 {
 	struct vm_region *region;
 
+<<<<<<< HEAD
 	kenter("");
 
 	/* adjust the VMA's pointers, which may reposition it in the MM's tree
@@ -1633,6 +2361,19 @@ static int shrink_vma(struct mm_struct *mm,
 	else
 		vma->vm_start = to;
 	add_vma_to_mm(mm, vma);
+=======
+	/* adjust the VMA's pointers, which may reposition it in the MM's tree
+	 * and list */
+	if (from > vma->vm_start) {
+		if (vma_iter_clear_gfp(vmi, from, vma->vm_end, GFP_KERNEL))
+			return -ENOMEM;
+		vma->vm_end = from;
+	} else {
+		if (vma_iter_clear_gfp(vmi, vma->vm_start, to, GFP_KERNEL))
+			return -ENOMEM;
+		vma->vm_start = to;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* cut the backing region down to size */
 	region = vma->vm_region;
@@ -1658,6 +2399,7 @@ static int shrink_vma(struct mm_struct *mm,
  * - under NOMMU conditions the chunk to be unmapped must be backed by a single
  *   VMA, though it need not cover the whole VMA
  */
+<<<<<<< HEAD
 int do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
 {
 	struct vm_area_struct *vma;
@@ -1665,6 +2407,14 @@ int do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
 	int ret;
 
 	kenter(",%lx,%zx", start, len);
+=======
+int do_munmap(struct mm_struct *mm, unsigned long start, size_t len, struct list_head *uf)
+{
+	VMA_ITERATOR(vmi, mm, start);
+	struct vm_area_struct *vma;
+	unsigned long end;
+	int ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	len = PAGE_ALIGN(len);
 	if (len == 0)
@@ -1673,6 +2423,7 @@ int do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
 	end = start + len;
 
 	/* find the first potentially overlapping VMA */
+<<<<<<< HEAD
 	vma = find_vma(mm, start);
 	if (!vma) {
 		static int limit = 0;
@@ -1682,6 +2433,15 @@ int do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
 			       " (%s): 0x%lx-0x%lx\n",
 			       current->pid, current->comm,
 			       start, start + len - 1);
+=======
+	vma = vma_find(&vmi, end);
+	if (!vma) {
+		static int limit;
+		if (limit < 5) {
+			pr_warn("munmap of memory not mmapped by process %d (%s): 0x%lx-0x%lx\n",
+					current->pid, current->comm,
+					start, start + len - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			limit++;
 		}
 		return -EINVAL;
@@ -1690,6 +2450,7 @@ int do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
 	/* we're allowed to split an anonymous VMA but not a file-backed one */
 	if (vma->vm_file) {
 		do {
+<<<<<<< HEAD
 			if (start > vma->vm_start) {
 				kleave(" = -EINVAL [miss]");
 				return -EINVAL;
@@ -1699,11 +2460,20 @@ int do_munmap(struct mm_struct *mm, unsigned long start, size_t len)
 			vma = vma->vm_next;
 		} while (vma);
 		kleave(" = -EINVAL [split file]");
+=======
+			if (start > vma->vm_start)
+				return -EINVAL;
+			if (end == vma->vm_end)
+				goto erase_whole_vma;
+			vma = vma_find(&vmi, end);
+		} while (vma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	} else {
 		/* the chunk must be a subset of the VMA found */
 		if (start == vma->vm_start && end == vma->vm_end)
 			goto erase_whole_vma;
+<<<<<<< HEAD
 		if (start < vma->vm_start || end > vma->vm_end) {
 			kleave(" = -EINVAL [superset]");
 			return -EINVAL;
@@ -1733,15 +2503,44 @@ erase_whole_vma:
 	return 0;
 }
 EXPORT_SYMBOL(do_munmap);
+=======
+		if (start < vma->vm_start || end > vma->vm_end)
+			return -EINVAL;
+		if (offset_in_page(start))
+			return -EINVAL;
+		if (end != vma->vm_end && offset_in_page(end))
+			return -EINVAL;
+		if (start != vma->vm_start && end != vma->vm_end) {
+			ret = split_vma(&vmi, vma, start, 1);
+			if (ret < 0)
+				return ret;
+		}
+		return vmi_shrink_vma(&vmi, vma, start, end);
+	}
+
+erase_whole_vma:
+	if (delete_vma_from_mm(vma))
+		ret = -ENOMEM;
+	else
+		delete_vma(mm, vma);
+	return ret;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int vm_munmap(unsigned long addr, size_t len)
 {
 	struct mm_struct *mm = current->mm;
 	int ret;
 
+<<<<<<< HEAD
 	down_write(&mm->mmap_sem);
 	ret = do_munmap(mm, addr, len);
 	up_write(&mm->mmap_sem);
+=======
+	mmap_write_lock(mm);
+	ret = do_munmap(mm, addr, len, NULL);
+	mmap_write_unlock(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(vm_munmap);
@@ -1756,11 +2555,16 @@ SYSCALL_DEFINE2(munmap, unsigned long, addr, size_t, len)
  */
 void exit_mmap(struct mm_struct *mm)
 {
+<<<<<<< HEAD
+=======
+	VMA_ITERATOR(vmi, mm, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vm_area_struct *vma;
 
 	if (!mm)
 		return;
 
+<<<<<<< HEAD
 	kenter("");
 
 	mm->total_vm = 0;
@@ -1778,6 +2582,22 @@ void exit_mmap(struct mm_struct *mm)
 unsigned long vm_brk(unsigned long addr, unsigned long len)
 {
 	return -ENOMEM;
+=======
+	mm->total_vm = 0;
+
+	/*
+	 * Lock the mm to avoid assert complaining even though this is the only
+	 * user of the mm
+	 */
+	mmap_write_lock(mm);
+	for_each_vma(vmi, vma) {
+		cleanup_vma_from_mm(vma);
+		delete_vma(mm, vma);
+		cond_resched();
+	}
+	__mt_destroy(&mm->mm_mt);
+	mmap_write_unlock(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1790,7 +2610,11 @@ unsigned long vm_brk(unsigned long addr, unsigned long len)
  *
  * MREMAP_FIXED is not supported under NOMMU conditions
  */
+<<<<<<< HEAD
 unsigned long do_mremap(unsigned long addr,
+=======
+static unsigned long do_mremap(unsigned long addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned long old_len, unsigned long new_len,
 			unsigned long flags, unsigned long new_addr)
 {
@@ -1802,7 +2626,11 @@ unsigned long do_mremap(unsigned long addr,
 	if (old_len == 0 || new_len == 0)
 		return (unsigned long) -EINVAL;
 
+<<<<<<< HEAD
 	if (addr & ~PAGE_MASK)
+=======
+	if (offset_in_page(addr))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (flags & MREMAP_FIXED && new_addr != addr)
@@ -1815,7 +2643,11 @@ unsigned long do_mremap(unsigned long addr,
 	if (vma->vm_end != vma->vm_start + old_len)
 		return (unsigned long) -EFAULT;
 
+<<<<<<< HEAD
 	if (vma->vm_flags & VM_MAYSHARE)
+=======
+	if (is_nommu_shared_mapping(vma->vm_flags))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (unsigned long) -EPERM;
 
 	if (new_len > vma->vm_region->vm_end - vma->vm_region->vm_start)
@@ -1825,7 +2657,10 @@ unsigned long do_mremap(unsigned long addr,
 	vma->vm_end = vma->vm_start + new_len;
 	return vma->vm_start;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(do_mremap);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
 		unsigned long, new_len, unsigned long, flags,
@@ -1833,14 +2668,24 @@ SYSCALL_DEFINE5(mremap, unsigned long, addr, unsigned long, old_len,
 {
 	unsigned long ret;
 
+<<<<<<< HEAD
 	down_write(&current->mm->mmap_sem);
 	ret = do_mremap(addr, old_len, new_len, flags, new_addr);
 	up_write(&current->mm->mmap_sem);
+=======
+	mmap_write_lock(current->mm);
+	ret = do_mremap(addr, old_len, new_len, flags, new_addr);
+	mmap_write_unlock(current->mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 struct page *follow_page(struct vm_area_struct *vma, unsigned long address,
+<<<<<<< HEAD
 			unsigned int foll_flags)
+=======
+			 unsigned int foll_flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return NULL;
 }
@@ -1851,7 +2696,11 @@ int remap_pfn_range(struct vm_area_struct *vma, unsigned long addr,
 	if (addr != (pfn << PAGE_SHIFT))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	vma->vm_flags |= VM_IO | VM_RESERVED | VM_PFNMAP;
+=======
+	vm_flags_set(vma, VM_IO | VM_PFNMAP | VM_DONTEXPAND | VM_DONTDUMP);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(remap_pfn_range);
@@ -1881,6 +2730,7 @@ int remap_vmalloc_range(struct vm_area_struct *vma, void *addr,
 }
 EXPORT_SYMBOL(remap_vmalloc_range);
 
+<<<<<<< HEAD
 unsigned long arch_get_unmapped_area(struct file *file, unsigned long addr,
 	unsigned long len, unsigned long pgoff, unsigned long flags)
 {
@@ -1996,18 +2846,40 @@ int in_gate_area_no_mm(unsigned long addr)
 }
 
 int filemap_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
+=======
+vm_fault_t filemap_fault(struct vm_fault *vmf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	BUG();
 	return 0;
 }
 EXPORT_SYMBOL(filemap_fault);
 
+<<<<<<< HEAD
 static int __access_remote_vm(struct task_struct *tsk, struct mm_struct *mm,
 		unsigned long addr, void *buf, int len, int write)
 {
 	struct vm_area_struct *vma;
 
 	down_read(&mm->mmap_sem);
+=======
+vm_fault_t filemap_map_pages(struct vm_fault *vmf,
+		pgoff_t start_pgoff, pgoff_t end_pgoff)
+{
+	BUG();
+	return 0;
+}
+EXPORT_SYMBOL(filemap_map_pages);
+
+static int __access_remote_vm(struct mm_struct *mm, unsigned long addr,
+			      void *buf, int len, unsigned int gup_flags)
+{
+	struct vm_area_struct *vma;
+	int write = gup_flags & FOLL_WRITE;
+
+	if (mmap_read_lock_killable(mm))
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* the access must start within one of the target process's mappings */
 	vma = find_vma(mm, addr);
@@ -2029,32 +2901,55 @@ static int __access_remote_vm(struct task_struct *tsk, struct mm_struct *mm,
 		len = 0;
 	}
 
+<<<<<<< HEAD
 	up_read(&mm->mmap_sem);
+=======
+	mmap_read_unlock(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return len;
 }
 
 /**
+<<<<<<< HEAD
  * @access_remote_vm - access another process' address space
+=======
+ * access_remote_vm - access another process' address space
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @mm:		the mm_struct of the target address space
  * @addr:	start address to access
  * @buf:	source or destination buffer
  * @len:	number of bytes to transfer
+<<<<<<< HEAD
  * @write:	whether the access is a write
+=======
+ * @gup_flags:	flags modifying lookup behaviour
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The caller must hold a reference on @mm.
  */
 int access_remote_vm(struct mm_struct *mm, unsigned long addr,
+<<<<<<< HEAD
 		void *buf, int len, int write)
 {
 	return __access_remote_vm(NULL, mm, addr, buf, len, write);
+=======
+		void *buf, int len, unsigned int gup_flags)
+{
+	return __access_remote_vm(mm, addr, buf, len, gup_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Access another process' address space.
  * - source/target buffer must be kernel space
  */
+<<<<<<< HEAD
 int access_process_vm(struct task_struct *tsk, unsigned long addr, void *buf, int len, int write)
+=======
+int access_process_vm(struct task_struct *tsk, unsigned long addr, void *buf, int len,
+		unsigned int gup_flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mm_struct *mm;
 
@@ -2065,11 +2960,19 @@ int access_process_vm(struct task_struct *tsk, unsigned long addr, void *buf, in
 	if (!mm)
 		return 0;
 
+<<<<<<< HEAD
 	len = __access_remote_vm(tsk, mm, addr, buf, len, write);
+=======
+	len = __access_remote_vm(mm, addr, buf, len, gup_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmput(mm);
 	return len;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(access_process_vm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * nommu_shrink_inode_mappings - Shrink the shared mappings on an inode
@@ -2078,15 +2981,23 @@ int access_process_vm(struct task_struct *tsk, unsigned long addr, void *buf, in
  * @newsize: The proposed filesize of the inode
  *
  * Check the shared mappings on an inode on behalf of a shrinking truncate to
+<<<<<<< HEAD
  * make sure that that any outstanding VMAs aren't broken and then shrink the
  * vm_regions that extend that beyond so that do_mmap_pgoff() doesn't
+=======
+ * make sure that any outstanding VMAs aren't broken and then shrink the
+ * vm_regions that extend beyond so that do_mmap() doesn't
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * automatically grant mappings that are too large.
  */
 int nommu_shrink_inode_mappings(struct inode *inode, size_t size,
 				size_t newsize)
 {
 	struct vm_area_struct *vma;
+<<<<<<< HEAD
 	struct prio_tree_iter iter;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct vm_region *region;
 	pgoff_t low, high;
 	size_t r_size, r_top;
@@ -2095,6 +3006,7 @@ int nommu_shrink_inode_mappings(struct inode *inode, size_t size,
 	high = (size + PAGE_SIZE - 1) >> PAGE_SHIFT;
 
 	down_write(&nommu_region_sem);
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mapping->i_mmap_mutex);
 
 	/* search for VMAs that fall within the dead zone */
@@ -2104,6 +3016,16 @@ int nommu_shrink_inode_mappings(struct inode *inode, size_t size,
 		 * cache */
 		if (vma->vm_flags & VM_SHARED) {
 			mutex_unlock(&inode->i_mapping->i_mmap_mutex);
+=======
+	i_mmap_lock_read(inode->i_mapping);
+
+	/* search for VMAs that fall within the dead zone */
+	vma_interval_tree_foreach(vma, &inode->i_mapping->i_mmap, low, high) {
+		/* found one - only interested if it's shared out of the page
+		 * cache */
+		if (vma->vm_flags & VM_SHARED) {
+			i_mmap_unlock_read(inode->i_mapping);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			up_write(&nommu_region_sem);
 			return -ETXTBSY; /* not quite true, but near enough */
 		}
@@ -2115,8 +3037,12 @@ int nommu_shrink_inode_mappings(struct inode *inode, size_t size,
 	 * we don't check for any regions that start beyond the EOF as there
 	 * shouldn't be any
 	 */
+<<<<<<< HEAD
 	vma_prio_tree_foreach(vma, &iter, &inode->i_mapping->i_mmap,
 			      0, ULONG_MAX) {
+=======
+	vma_interval_tree_foreach(vma, &inode->i_mapping->i_mmap, 0, ULONG_MAX) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(vma->vm_flags & VM_SHARED))
 			continue;
 
@@ -2131,7 +3057,56 @@ int nommu_shrink_inode_mappings(struct inode *inode, size_t size,
 		}
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&inode->i_mapping->i_mmap_mutex);
 	up_write(&nommu_region_sem);
 	return 0;
 }
+=======
+	i_mmap_unlock_read(inode->i_mapping);
+	up_write(&nommu_region_sem);
+	return 0;
+}
+
+/*
+ * Initialise sysctl_user_reserve_kbytes.
+ *
+ * This is intended to prevent a user from starting a single memory hogging
+ * process, such that they cannot recover (kill the hog) in OVERCOMMIT_NEVER
+ * mode.
+ *
+ * The default value is min(3% of free memory, 128MB)
+ * 128MB is enough to recover with sshd/login, bash, and top/kill.
+ */
+static int __meminit init_user_reserve(void)
+{
+	unsigned long free_kbytes;
+
+	free_kbytes = K(global_zone_page_state(NR_FREE_PAGES));
+
+	sysctl_user_reserve_kbytes = min(free_kbytes / 32, 1UL << 17);
+	return 0;
+}
+subsys_initcall(init_user_reserve);
+
+/*
+ * Initialise sysctl_admin_reserve_kbytes.
+ *
+ * The purpose of sysctl_admin_reserve_kbytes is to allow the sys admin
+ * to log in and kill a memory hogging process.
+ *
+ * Systems with more than 256MB will reserve 8MB, enough to recover
+ * with sshd, bash, and top in OVERCOMMIT_GUESS. Smaller systems will
+ * only reserve 3% of free pages by default.
+ */
+static int __meminit init_admin_reserve(void)
+{
+	unsigned long free_kbytes;
+
+	free_kbytes = K(global_zone_page_state(NR_FREE_PAGES));
+
+	sysctl_admin_reserve_kbytes = min(free_kbytes / 32, 1UL << 13);
+	return 0;
+}
+subsys_initcall(init_admin_reserve);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

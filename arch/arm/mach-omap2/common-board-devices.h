@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __OMAP_COMMON_BOARD_DEVICES__
 #define __OMAP_COMMON_BOARD_DEVICES__
 
@@ -11,5 +12,16 @@ struct ads7846_platform_data;
 void omap_ads7846_init(int bus_num, int gpio_pendown, int gpio_debounce,
 		       struct ads7846_platform_data *board_pdata);
 void omap_nand_flash_init(int opts, struct mtd_partition *parts, int n_parts);
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __OMAP_COMMON_BOARD_DEVICES__
+#define __OMAP_COMMON_BOARD_DEVICES__
+
+#include <linux/mfd/menelaus.h>
+
+void *n8x0_legacy_init(void);
+
+extern struct menelaus_platform_data n8x0_menelaus_platform_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __OMAP_COMMON_BOARD_DEVICES__ */

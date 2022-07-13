@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**************************************************************************
  * Copyright (c) 2007, Intel Corporation.
  *
@@ -16,6 +17,17 @@
  *
  **************************************************************************/
 #include <drm/drmP.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/**************************************************************************
+ * Copyright (c) 2007, Intel Corporation.
+ *
+ **************************************************************************/
+
+#include <linux/highmem.h>
+
+#include "mmu.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "psb_drv.h"
 #include "psb_reg.h"
 
@@ -47,6 +59,7 @@
  * but on average it should be fast.
  */
 
+<<<<<<< HEAD
 struct psb_mmu_driver {
 	/* protects driver- and pd structures. Always take in read mode
 	 * before taking the page table spinlock.
@@ -92,6 +105,8 @@ struct psb_mmu_pd {
 	uint32_t invalid_pte;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline uint32_t psb_mmu_pt_index(uint32_t offset)
 {
 	return (offset >> PSB_PTE_SHIFT) & 0x3FF;
@@ -107,8 +122,12 @@ static inline void psb_clflush(void *addr)
 	__asm__ __volatile__("clflush (%0)\n" : : "r"(addr) : "memory");
 }
 
+<<<<<<< HEAD
 static inline void psb_mmu_clflush(struct psb_mmu_driver *driver,
 				   void *addr)
+=======
+static inline void psb_mmu_clflush(struct psb_mmu_driver *driver, void *addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!driver->has_clflush)
 		return;
@@ -118,6 +137,7 @@ static inline void psb_mmu_clflush(struct psb_mmu_driver *driver,
 	mb();
 }
 
+<<<<<<< HEAD
 static void psb_page_clflush(struct psb_mmu_driver *driver, struct page* page)
 {
 	uint32_t clflush_add = driver->clflush_add >> PAGE_SHIFT;
@@ -153,12 +173,35 @@ static void psb_mmu_flush_pd_locked(struct psb_mmu_driver *driver,
 	atomic_set(&driver->needs_tlbflush, 0);
 }
 
+=======
+static void psb_mmu_flush_pd_locked(struct psb_mmu_driver *driver, int force)
+{
+	struct drm_device *dev = driver->dev;
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+
+	if (atomic_read(&driver->needs_tlbflush) || force) {
+		uint32_t val = PSB_RSGX32(PSB_CR_BIF_CTRL);
+		PSB_WSGX32(val | _PSB_CB_CTRL_INVALDC, PSB_CR_BIF_CTRL);
+
+		/* Make sure data cache is turned off before enabling it */
+		wmb();
+		PSB_WSGX32(val & ~_PSB_CB_CTRL_INVALDC, PSB_CR_BIF_CTRL);
+		(void)PSB_RSGX32(PSB_CR_BIF_CTRL);
+		if (driver->msvdx_mmu_invaldc)
+			atomic_set(driver->msvdx_mmu_invaldc, 1);
+	}
+	atomic_set(&driver->needs_tlbflush, 0);
+}
+
+#if 0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void psb_mmu_flush_pd(struct psb_mmu_driver *driver, int force)
 {
 	down_write(&driver->sem);
 	psb_mmu_flush_pd_locked(driver, force);
 	up_write(&driver->sem);
 }
+<<<<<<< HEAD
 
 void psb_mmu_flush(struct psb_mmu_driver *driver, int rc_prot)
 {
@@ -166,13 +209,51 @@ void psb_mmu_flush(struct psb_mmu_driver *driver, int rc_prot)
 		down_write(&driver->sem);
 	if (rc_prot)
 		up_write(&driver->sem);
+=======
+#endif
+
+void psb_mmu_flush(struct psb_mmu_driver *driver)
+{
+	struct drm_device *dev = driver->dev;
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	uint32_t val;
+
+	down_write(&driver->sem);
+	val = PSB_RSGX32(PSB_CR_BIF_CTRL);
+	if (atomic_read(&driver->needs_tlbflush))
+		PSB_WSGX32(val | _PSB_CB_CTRL_INVALDC, PSB_CR_BIF_CTRL);
+	else
+		PSB_WSGX32(val | _PSB_CB_CTRL_FLUSH, PSB_CR_BIF_CTRL);
+
+	/* Make sure data cache is turned off and MMU is flushed before
+	   restoring bank interface control register */
+	wmb();
+	PSB_WSGX32(val & ~(_PSB_CB_CTRL_FLUSH | _PSB_CB_CTRL_INVALDC),
+		   PSB_CR_BIF_CTRL);
+	(void)PSB_RSGX32(PSB_CR_BIF_CTRL);
+
+	atomic_set(&driver->needs_tlbflush, 0);
+	if (driver->msvdx_mmu_invaldc)
+		atomic_set(driver->msvdx_mmu_invaldc, 1);
+	up_write(&driver->sem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void psb_mmu_set_pd_context(struct psb_mmu_pd *pd, int hw_context)
 {
+<<<<<<< HEAD
 	/*ttm_tt_cache_flush(&pd->p, 1);*/
 	psb_pages_clflush(pd->driver, &pd->p, 1);
 	down_write(&pd->driver->sem);
+=======
+	struct drm_device *dev = pd->driver->dev;
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	uint32_t offset = (hw_context == 0) ? PSB_CR_BIF_DIR_LIST_BASE0 :
+			  PSB_CR_BIF_DIR_LIST_BASE1 + hw_context * 4;
+
+	down_write(&pd->driver->sem);
+	PSB_WSGX32(page_to_pfn(pd->p) << PAGE_SHIFT, offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wmb();
 	psb_mmu_flush_pd_locked(pd->driver, 1);
 	pd->hw_context = hw_context;
@@ -183,7 +264,10 @@ void psb_mmu_set_pd_context(struct psb_mmu_pd *pd, int hw_context)
 static inline unsigned long psb_pd_addr_end(unsigned long addr,
 					    unsigned long end)
 {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addr = (addr + PSB_PDE_MASK + 1) & ~PSB_PDE_MASK;
 	return (addr < end) ? addr : end;
 }
@@ -223,17 +307,25 @@ struct psb_mmu_pd *psb_mmu_alloc_pd(struct psb_mmu_driver *driver,
 		goto out_err3;
 
 	if (!trap_pagefaults) {
+<<<<<<< HEAD
 		pd->invalid_pde =
 		    psb_mmu_mask_pte(page_to_pfn(pd->dummy_pt),
 				     invalid_type);
 		pd->invalid_pte =
 		    psb_mmu_mask_pte(page_to_pfn(pd->dummy_page),
 				     invalid_type);
+=======
+		pd->invalid_pde = psb_mmu_mask_pte(page_to_pfn(pd->dummy_pt),
+						   invalid_type);
+		pd->invalid_pte = psb_mmu_mask_pte(page_to_pfn(pd->dummy_page),
+						   invalid_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		pd->invalid_pde = 0;
 		pd->invalid_pte = 0;
 	}
 
+<<<<<<< HEAD
 	v = kmap(pd->dummy_pt);
 	for (i = 0; i < (PAGE_SIZE / sizeof(uint32_t)); ++i)
 		v[i] = pd->invalid_pte;
@@ -245,6 +337,19 @@ struct psb_mmu_pd *psb_mmu_alloc_pd(struct psb_mmu_driver *driver,
 		v[i] = pd->invalid_pde;
 
 	kunmap(pd->p);
+=======
+	v = kmap_local_page(pd->dummy_pt);
+	for (i = 0; i < (PAGE_SIZE / sizeof(uint32_t)); ++i)
+		v[i] = pd->invalid_pte;
+
+	kunmap_local(v);
+
+	v = kmap_local_page(pd->p);
+	for (i = 0; i < (PAGE_SIZE / sizeof(uint32_t)); ++i)
+		v[i] = pd->invalid_pde;
+
+	kunmap_local(v);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clear_page(kmap(pd->dummy_page));
 	kunmap(pd->dummy_page);
@@ -279,12 +384,24 @@ static void psb_mmu_free_pt(struct psb_mmu_pt *pt)
 void psb_mmu_free_pagedir(struct psb_mmu_pd *pd)
 {
 	struct psb_mmu_driver *driver = pd->driver;
+<<<<<<< HEAD
+=======
+	struct drm_device *dev = driver->dev;
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psb_mmu_pt *pt;
 	int i;
 
 	down_write(&driver->sem);
+<<<<<<< HEAD
 	if (pd->hw_context != -1)
 		psb_mmu_flush_pd_locked(driver, 1);
+=======
+	if (pd->hw_context != -1) {
+		PSB_WSGX32(0, PSB_CR_BIF_DIR_LIST_BASE0 + pd->hw_context * 4);
+		psb_mmu_flush_pd_locked(driver, 1);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Should take the spinlock here, but we don't need to do that
 	   since we have the semaphore in write mode. */
@@ -331,7 +448,10 @@ static struct psb_mmu_pt *psb_mmu_alloc_pt(struct psb_mmu_pd *pd)
 	for (i = 0; i < (PAGE_SIZE / sizeof(uint32_t)); ++i)
 		*ptes++ = pd->invalid_pte;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pd->driver->has_clflush && pd->hw_context != -1) {
 		mb();
 		for (i = 0; i < clflush_count; ++i) {
@@ -340,7 +460,10 @@ static struct psb_mmu_pt *psb_mmu_alloc_pt(struct psb_mmu_pd *pd)
 		}
 		mb();
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kunmap_atomic(v);
 	spin_unlock(lock);
 
@@ -352,7 +475,11 @@ static struct psb_mmu_pt *psb_mmu_alloc_pt(struct psb_mmu_pd *pd)
 }
 
 static struct psb_mmu_pt *psb_mmu_pt_alloc_map_lock(struct psb_mmu_pd *pd,
+<<<<<<< HEAD
 					     unsigned long addr)
+=======
+						    unsigned long addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint32_t index = psb_mmu_pd_index(addr);
 	struct psb_mmu_pt *pt;
@@ -383,7 +510,11 @@ static struct psb_mmu_pt *psb_mmu_pt_alloc_map_lock(struct psb_mmu_pd *pd,
 		kunmap_atomic((void *) v);
 
 		if (pd->hw_context != -1) {
+<<<<<<< HEAD
 			psb_mmu_clflush(pd->driver, (void *) &v[index]);
+=======
+			psb_mmu_clflush(pd->driver, (void *)&v[index]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atomic_set(&pd->driver->needs_tlbflush, 1);
 		}
 	}
@@ -420,11 +551,18 @@ static void psb_mmu_pt_unmap_unlock(struct psb_mmu_pt *pt)
 		pd->tables[pt->index] = NULL;
 
 		if (pd->hw_context != -1) {
+<<<<<<< HEAD
 			psb_mmu_clflush(pd->driver,
 					(void *) &v[pt->index]);
 			atomic_set(&pd->driver->needs_tlbflush, 1);
 		}
 		kunmap_atomic(pt->v);
+=======
+			psb_mmu_clflush(pd->driver, (void *)&v[pt->index]);
+			atomic_set(&pd->driver->needs_tlbflush, 1);
+		}
+		kunmap_atomic(v);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&pd->driver->lock);
 		psb_mmu_free_pt(pt);
 		return;
@@ -432,8 +570,13 @@ static void psb_mmu_pt_unmap_unlock(struct psb_mmu_pt *pt)
 	spin_unlock(&pd->driver->lock);
 }
 
+<<<<<<< HEAD
 static inline void psb_mmu_set_pte(struct psb_mmu_pt *pt,
 				   unsigned long addr, uint32_t pte)
+=======
+static inline void psb_mmu_set_pte(struct psb_mmu_pt *pt, unsigned long addr,
+				   uint32_t pte)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pt->v[psb_mmu_pt_index(addr)] = pte;
 }
@@ -444,6 +587,7 @@ static inline void psb_mmu_invalidate_pte(struct psb_mmu_pt *pt,
 	pt->v[psb_mmu_pt_index(addr)] = pt->pd->invalid_pte;
 }
 
+<<<<<<< HEAD
 
 void psb_mmu_mirror_gtt(struct psb_mmu_pd *pd,
 			uint32_t mmu_offset, uint32_t gtt_start,
@@ -477,36 +621,66 @@ void psb_mmu_mirror_gtt(struct psb_mmu_pd *pd,
 	psb_mmu_flush_pd(pd->driver, 0);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct psb_mmu_pd *psb_mmu_get_default_pd(struct psb_mmu_driver *driver)
 {
 	struct psb_mmu_pd *pd;
 
+<<<<<<< HEAD
 	/* down_read(&driver->sem); */
 	pd = driver->default_pd;
 	/* up_read(&driver->sem); */
+=======
+	down_read(&driver->sem);
+	pd = driver->default_pd;
+	up_read(&driver->sem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return pd;
 }
 
 void psb_mmu_driver_takedown(struct psb_mmu_driver *driver)
 {
+<<<<<<< HEAD
+=======
+	struct drm_device *dev = driver->dev;
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+
+	PSB_WSGX32(driver->bif_ctrl, PSB_CR_BIF_CTRL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	psb_mmu_free_pagedir(driver->default_pd);
 	kfree(driver);
 }
 
+<<<<<<< HEAD
 struct psb_mmu_driver *psb_mmu_driver_init(uint8_t __iomem * registers,
 					int trap_pagefaults,
 					int invalid_type,
 					struct drm_psb_private *dev_priv)
 {
 	struct psb_mmu_driver *driver;
+=======
+struct psb_mmu_driver *psb_mmu_driver_init(struct drm_device *dev,
+					   int trap_pagefaults,
+					   int invalid_type,
+					   atomic_t *msvdx_mmu_invaldc)
+{
+	struct psb_mmu_driver *driver;
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	driver = kmalloc(sizeof(*driver), GFP_KERNEL);
 
 	if (!driver)
 		return NULL;
+<<<<<<< HEAD
 	driver->dev_priv = dev_priv;
 
+=======
+
+	driver->dev = dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	driver->default_pd = psb_mmu_alloc_pd(driver, trap_pagefaults,
 					      invalid_type);
 	if (!driver->default_pd)
@@ -515,6 +689,7 @@ struct psb_mmu_driver *psb_mmu_driver_init(uint8_t __iomem * registers,
 	spin_lock_init(&driver->lock);
 	init_rwsem(&driver->sem);
 	down_write(&driver->sem);
+<<<<<<< HEAD
 	driver->register_map = registers;
 	atomic_set(&driver->needs_tlbflush, 1);
 
@@ -526,6 +701,25 @@ struct psb_mmu_driver *psb_mmu_driver_init(uint8_t __iomem * registers,
 		/*
 		 * clflush size is determined at kernel setup for x86_64
 		 *  but not for i386. We have to do it here.
+=======
+	atomic_set(&driver->needs_tlbflush, 1);
+	driver->msvdx_mmu_invaldc = msvdx_mmu_invaldc;
+
+	driver->bif_ctrl = PSB_RSGX32(PSB_CR_BIF_CTRL);
+	PSB_WSGX32(driver->bif_ctrl | _PSB_CB_CTRL_CLEAR_FAULT,
+		   PSB_CR_BIF_CTRL);
+	PSB_WSGX32(driver->bif_ctrl & ~_PSB_CB_CTRL_CLEAR_FAULT,
+		   PSB_CR_BIF_CTRL);
+
+	driver->has_clflush = 0;
+
+	if (boot_cpu_has(X86_FEATURE_CLFLUSH)) {
+		uint32_t tfms, misc, cap0, cap4, clflush_size;
+
+		/*
+		 * clflush size is determined at kernel setup for x86_64 but not
+		 * for i386. We have to do it here.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 
 		cpuid(0x00000001, &tfms, &misc, &cap0, &cap4);
@@ -545,9 +739,14 @@ out_err1:
 	return NULL;
 }
 
+<<<<<<< HEAD
 static void psb_mmu_flush_ptes(struct psb_mmu_pd *pd,
 			       unsigned long address, uint32_t num_pages,
 			       uint32_t desired_tile_stride,
+=======
+static void psb_mmu_flush_ptes(struct psb_mmu_pd *pd, unsigned long address,
+			       uint32_t num_pages, uint32_t desired_tile_stride,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       uint32_t hw_tile_stride)
 {
 	struct psb_mmu_pt *pt;
@@ -561,11 +760,16 @@ static void psb_mmu_flush_ptes(struct psb_mmu_pd *pd,
 	unsigned long clflush_add = pd->driver->clflush_add;
 	unsigned long clflush_mask = pd->driver->clflush_mask;
 
+<<<<<<< HEAD
 	if (!pd->driver->has_clflush) {
 		/*ttm_tt_cache_flush(&pd->p, num_pages);*/
 		psb_pages_clflush(pd->driver, &pd->p, num_pages);
 		return;
 	}
+=======
+	if (!pd->driver->has_clflush)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hw_tile_stride)
 		rows = num_pages / desired_tile_stride;
@@ -586,10 +790,15 @@ static void psb_mmu_flush_ptes(struct psb_mmu_pd *pd,
 			if (!pt)
 				continue;
 			do {
+<<<<<<< HEAD
 				psb_clflush(&pt->v
 					    [psb_mmu_pt_index(addr)]);
 			} while (addr +=
 				 clflush_add,
+=======
+				psb_clflush(&pt->v[psb_mmu_pt_index(addr)]);
+			} while (addr += clflush_add,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 (addr & clflush_mask) < next);
 
 			psb_mmu_pt_unmap_unlock(pt);
@@ -633,7 +842,11 @@ out:
 	up_read(&pd->driver->sem);
 
 	if (pd->hw_context != -1)
+<<<<<<< HEAD
 		psb_mmu_flush(pd->driver, 0);
+=======
+		psb_mmu_flush(pd->driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return;
 }
@@ -660,7 +873,11 @@ void psb_mmu_remove_pages(struct psb_mmu_pd *pd, unsigned long address,
 	add = desired_tile_stride << PAGE_SHIFT;
 	row_add = hw_tile_stride << PAGE_SHIFT;
 
+<<<<<<< HEAD
 	/* down_read(&pd->driver->sem); */
+=======
+	down_read(&pd->driver->sem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Make sure we only need to flush this processor's cache */
 
@@ -688,10 +905,17 @@ void psb_mmu_remove_pages(struct psb_mmu_pd *pd, unsigned long address,
 		psb_mmu_flush_ptes(pd, f_address, num_pages,
 				   desired_tile_stride, hw_tile_stride);
 
+<<<<<<< HEAD
 	/* up_read(&pd->driver->sem); */
 
 	if (pd->hw_context != -1)
 		psb_mmu_flush(pd->driver, 0);
+=======
+	up_read(&pd->driver->sem);
+
+	if (pd->hw_context != -1)
+		psb_mmu_flush(pd->driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int psb_mmu_insert_pfn_sequence(struct psb_mmu_pd *pd, uint32_t start_pfn,
@@ -704,7 +928,11 @@ int psb_mmu_insert_pfn_sequence(struct psb_mmu_pd *pd, uint32_t start_pfn,
 	unsigned long end;
 	unsigned long next;
 	unsigned long f_address = address;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+	int ret = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_read(&pd->driver->sem);
 
@@ -726,6 +954,10 @@ int psb_mmu_insert_pfn_sequence(struct psb_mmu_pd *pd, uint32_t start_pfn,
 		psb_mmu_pt_unmap_unlock(pt);
 
 	} while (addr = next, next != end);
+<<<<<<< HEAD
+=======
+	ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	if (pd->hw_context != -1)
@@ -734,15 +966,24 @@ out:
 	up_read(&pd->driver->sem);
 
 	if (pd->hw_context != -1)
+<<<<<<< HEAD
 		psb_mmu_flush(pd->driver, 1);
+=======
+		psb_mmu_flush(pd->driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 int psb_mmu_insert_pages(struct psb_mmu_pd *pd, struct page **pages,
 			 unsigned long address, uint32_t num_pages,
+<<<<<<< HEAD
 			 uint32_t desired_tile_stride,
 			 uint32_t hw_tile_stride, int type)
+=======
+			 uint32_t desired_tile_stride, uint32_t hw_tile_stride,
+			 int type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct psb_mmu_pt *pt;
 	uint32_t rows = 1;
@@ -754,7 +995,11 @@ int psb_mmu_insert_pages(struct psb_mmu_pd *pd, struct page **pages,
 	unsigned long add;
 	unsigned long row_add;
 	unsigned long f_address = address;
+<<<<<<< HEAD
 	int ret = 0;
+=======
+	int ret = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hw_tile_stride) {
 		if (num_pages % desired_tile_stride != 0)
@@ -777,6 +1022,7 @@ int psb_mmu_insert_pages(struct psb_mmu_pd *pd, struct page **pages,
 		do {
 			next = psb_pd_addr_end(addr, end);
 			pt = psb_mmu_pt_alloc_map_lock(pd, addr);
+<<<<<<< HEAD
 			if (!pt) {
 				ret = -ENOMEM;
 				goto out;
@@ -785,6 +1031,13 @@ int psb_mmu_insert_pages(struct psb_mmu_pd *pd, struct page **pages,
 				pte =
 				    psb_mmu_mask_pte(page_to_pfn(*pages++),
 						     type);
+=======
+			if (!pt)
+				goto out;
+			do {
+				pte = psb_mmu_mask_pte(page_to_pfn(*pages++),
+						       type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				psb_mmu_set_pte(pt, addr, pte);
 				pt->count++;
 			} while (addr += PAGE_SIZE, addr < next);
@@ -794,6 +1047,11 @@ int psb_mmu_insert_pages(struct psb_mmu_pd *pd, struct page **pages,
 
 		address += row_add;
 	}
+<<<<<<< HEAD
+=======
+
+	ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (pd->hw_context != -1)
 		psb_mmu_flush_ptes(pd, f_address, num_pages,
@@ -802,7 +1060,11 @@ out:
 	up_read(&pd->driver->sem);
 
 	if (pd->hw_context != -1)
+<<<<<<< HEAD
 		psb_mmu_flush(pd->driver, 1);
+=======
+		psb_mmu_flush(pd->driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2004-2005 Silicon Graphics, Inc.
  * All Rights Reserved.
@@ -30,6 +31,26 @@
 #include "xfs_inode.h"
 #include "xfs_inode_item.h"
 #include "xfs_trace.h"
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2004-2005 Silicon Graphics, Inc.
+ * All Rights Reserved.
+ */
+#include "xfs.h"
+#include "xfs_shared.h"
+#include "xfs_format.h"
+#include "xfs_log_format.h"
+#include "xfs_trans_resv.h"
+#include "xfs_mount.h"
+#include "xfs_dir2.h"
+#include "xfs_export.h"
+#include "xfs_inode.h"
+#include "xfs_trans.h"
+#include "xfs_inode_item.h"
+#include "xfs_icache.h"
+#include "xfs_pnfs.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Note that we only accept fileids which are long enough rather than allow
@@ -48,11 +69,16 @@ static int xfs_fileid_length(int fileid_type)
 	case FILEID_INO32_GEN_PARENT | XFS_FILEID_TYPE_64FLAG:
 		return 6;
 	}
+<<<<<<< HEAD
 	return 255; /* invalid */
+=======
+	return FILEID_INVALID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 STATIC int
 xfs_fs_encode_fh(
+<<<<<<< HEAD
 	struct dentry		*dentry,
 	__u32			*fh,
 	int			*max_len,
@@ -61,25 +87,47 @@ xfs_fs_encode_fh(
 	struct fid		*fid = (struct fid *)fh;
 	struct xfs_fid64	*fid64 = (struct xfs_fid64 *)fh;
 	struct inode		*inode = dentry->d_inode;
+=======
+	struct inode	*inode,
+	__u32		*fh,
+	int		*max_len,
+	struct inode	*parent)
+{
+	struct xfs_mount	*mp = XFS_M(inode->i_sb);
+	struct fid		*fid = (struct fid *)fh;
+	struct xfs_fid64	*fid64 = (struct xfs_fid64 *)fh;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			fileid_type;
 	int			len;
 
 	/* Directories don't need their parent encoded, they have ".." */
+<<<<<<< HEAD
 	if (S_ISDIR(inode->i_mode) || !connectable)
+=======
+	if (!parent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fileid_type = FILEID_INO32_GEN;
 	else
 		fileid_type = FILEID_INO32_GEN_PARENT;
 
 	/*
+<<<<<<< HEAD
 	 * If the the filesystem may contain 64bit inode numbers, we need
+=======
+	 * If the filesystem may contain 64bit inode numbers, we need
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * to use larger file handles that can represent them.
 	 *
 	 * While we only allocate inodes that do not fit into 32 bits any
 	 * large enough filesystem may contain them, thus the slightly
 	 * confusing looking conditional below.
 	 */
+<<<<<<< HEAD
 	if (!(XFS_M(inode->i_sb)->m_flags & XFS_MOUNT_SMALL_INUMS) ||
 	    (XFS_M(inode->i_sb)->m_flags & XFS_MOUNT_32BITINODES))
+=======
+	if (!xfs_has_small_inums(mp) || xfs_is_inode32(mp))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fileid_type |= XFS_FILEID_TYPE_64FLAG;
 
 	/*
@@ -91,27 +139,43 @@ xfs_fs_encode_fh(
 	len = xfs_fileid_length(fileid_type);
 	if (*max_len < len) {
 		*max_len = len;
+<<<<<<< HEAD
 		return 255;
+=======
+		return FILEID_INVALID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	*max_len = len;
 
 	switch (fileid_type) {
 	case FILEID_INO32_GEN_PARENT:
+<<<<<<< HEAD
 		spin_lock(&dentry->d_lock);
 		fid->i32.parent_ino = XFS_I(dentry->d_parent->d_inode)->i_ino;
 		fid->i32.parent_gen = dentry->d_parent->d_inode->i_generation;
 		spin_unlock(&dentry->d_lock);
 		/*FALLTHRU*/
+=======
+		fid->i32.parent_ino = XFS_I(parent)->i_ino;
+		fid->i32.parent_gen = parent->i_generation;
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FILEID_INO32_GEN:
 		fid->i32.ino = XFS_I(inode)->i_ino;
 		fid->i32.gen = inode->i_generation;
 		break;
 	case FILEID_INO32_GEN_PARENT | XFS_FILEID_TYPE_64FLAG:
+<<<<<<< HEAD
 		spin_lock(&dentry->d_lock);
 		fid64->parent_ino = XFS_I(dentry->d_parent->d_inode)->i_ino;
 		fid64->parent_gen = dentry->d_parent->d_inode->i_generation;
 		spin_unlock(&dentry->d_lock);
 		/*FALLTHRU*/
+=======
+		fid64->parent_ino = XFS_I(parent)->i_ino;
+		fid64->parent_gen = parent->i_generation;
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FILEID_INO32_GEN | XFS_FILEID_TYPE_64FLAG:
 		fid64->ino = XFS_I(inode)->i_ino;
 		fid64->gen = inode->i_generation;
@@ -126,7 +190,11 @@ xfs_nfs_get_inode(
 	struct super_block	*sb,
 	u64			ino,
 	u32			generation)
+<<<<<<< HEAD
  {
+=======
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  	xfs_mount_t		*mp = XFS_M(sb);
 	xfs_inode_t		*ip;
 	int			error;
@@ -144,6 +212,7 @@ xfs_nfs_get_inode(
 	 */
 	error = xfs_iget(mp, NULL, ino, XFS_IGET_UNTRUSTED, 0, &ip);
 	if (error) {
+<<<<<<< HEAD
 		/*
 		 * EINVAL means the inode cluster doesn't exist anymore.
 		 * This implies the filehandle is stale, so we should
@@ -158,6 +227,45 @@ xfs_nfs_get_inode(
 
 	if (ip->i_d.di_gen != generation) {
 		IRELE(ip);
+=======
+
+		/*
+		 * EINVAL means the inode cluster doesn't exist anymore.
+		 * EFSCORRUPTED means the metadata pointing to the inode cluster
+		 * or the inode cluster itself is corrupt.  This implies the
+		 * filehandle is stale, so we should translate it here.
+		 * We don't use ESTALE directly down the chain to not
+		 * confuse applications using bulkstat that expect EINVAL.
+		 */
+		switch (error) {
+		case -EINVAL:
+		case -ENOENT:
+		case -EFSCORRUPTED:
+			error = -ESTALE;
+			break;
+		default:
+			break;
+		}
+		return ERR_PTR(error);
+	}
+
+	/*
+	 * Reload the incore unlinked list to avoid failure in inodegc.
+	 * Use an unlocked check here because unrecovered unlinked inodes
+	 * should be somewhat rare.
+	 */
+	if (xfs_inode_unlinked_incomplete(ip)) {
+		error = xfs_inode_reload_unlinked(ip);
+		if (error) {
+			xfs_force_shutdown(mp, SHUTDOWN_CORRUPT_INCORE);
+			xfs_irele(ip);
+			return ERR_PTR(error);
+		}
+	}
+
+	if (VFS_I(ip)->i_generation != generation) {
+		xfs_irele(ip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(-ESTALE);
 	}
 
@@ -219,9 +327,15 @@ xfs_fs_get_parent(
 	int			error;
 	struct xfs_inode	*cip;
 
+<<<<<<< HEAD
 	error = xfs_lookup(XFS_I(child->d_inode), &xfs_name_dotdot, &cip, NULL);
 	if (unlikely(error))
 		return ERR_PTR(-error);
+=======
+	error = xfs_lookup(XFS_I(d_inode(child)), &xfs_name_dotdot, &cip, NULL);
+	if (unlikely(error))
+		return ERR_PTR(error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return d_obtain_alias(VFS_I(cip));
 }
@@ -230,6 +344,7 @@ STATIC int
 xfs_fs_nfs_commit_metadata(
 	struct inode		*inode)
 {
+<<<<<<< HEAD
 	struct xfs_inode	*ip = XFS_I(inode);
 	struct xfs_mount	*mp = ip->i_mount;
 	xfs_lsn_t		lsn = 0;
@@ -242,6 +357,9 @@ xfs_fs_nfs_commit_metadata(
 	if (!lsn)
 		return 0;
 	return _xfs_log_force_lsn(mp, lsn, XFS_LOG_SYNC, NULL);
+=======
+	return xfs_log_force_inode(XFS_I(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct export_operations xfs_export_operations = {
@@ -250,4 +368,12 @@ const struct export_operations xfs_export_operations = {
 	.fh_to_parent		= xfs_fs_fh_to_parent,
 	.get_parent		= xfs_fs_get_parent,
 	.commit_metadata	= xfs_fs_nfs_commit_metadata,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_EXPORTFS_BLOCK_OPS
+	.get_uuid		= xfs_fs_get_uuid,
+	.map_blocks		= xfs_fs_map_blocks,
+	.commit_blocks		= xfs_fs_commit_blocks,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

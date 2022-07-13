@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * security/tomoyo/realpath.c
  *
@@ -6,6 +10,10 @@
 
 #include "common.h"
 #include <linux/magic.h>
+<<<<<<< HEAD
+=======
+#include <linux/proc_fs.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * tomoyo_encode2 - Encode binary string to ascii string.
@@ -89,15 +97,28 @@ char *tomoyo_encode(const char *str)
  *
  * If dentry is a directory, trailing '/' is appended.
  */
+<<<<<<< HEAD
 static char *tomoyo_get_absolute_path(struct path *path, char * const buffer,
 				      const int buflen)
 {
 	char *pos = ERR_PTR(-ENOMEM);
+=======
+static char *tomoyo_get_absolute_path(const struct path *path, char * const buffer,
+				      const int buflen)
+{
+	char *pos = ERR_PTR(-ENOMEM);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (buflen >= 256) {
 		/* go to whatever namespace root we are under */
 		pos = d_absolute_path(path, buffer, buflen - 1);
 		if (!IS_ERR(pos) && *pos == '/' && pos[1]) {
+<<<<<<< HEAD
 			struct inode *inode = path->dentry->d_inode;
+=======
+			struct inode *inode = d_backing_inode(path->dentry);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (inode && S_ISDIR(inode->i_mode)) {
 				buffer[buflen - 2] = '/';
 				buffer[buflen - 1] = '\0';
@@ -122,10 +143,19 @@ static char *tomoyo_get_dentry_path(struct dentry *dentry, char * const buffer,
 				    const int buflen)
 {
 	char *pos = ERR_PTR(-ENOMEM);
+<<<<<<< HEAD
 	if (buflen >= 256) {
 		pos = dentry_path_raw(dentry, buffer, buflen - 1);
 		if (!IS_ERR(pos) && *pos == '/' && pos[1]) {
 			struct inode *inode = dentry->d_inode;
+=======
+
+	if (buflen >= 256) {
+		pos = dentry_path_raw(dentry, buffer, buflen - 1);
+		if (!IS_ERR(pos) && *pos == '/' && pos[1]) {
+			struct inode *inode = d_backing_inode(dentry);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (inode && S_ISDIR(inode->i_mode)) {
 				buffer[buflen - 2] = '/';
 				buffer[buflen - 1] = '\0';
@@ -149,14 +179,25 @@ static char *tomoyo_get_local_path(struct dentry *dentry, char * const buffer,
 {
 	struct super_block *sb = dentry->d_sb;
 	char *pos = tomoyo_get_dentry_path(dentry, buffer, buflen);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(pos))
 		return pos;
 	/* Convert from $PID to self if $PID is current thread. */
 	if (sb->s_magic == PROC_SUPER_MAGIC && *pos == '/') {
 		char *ep;
 		const pid_t pid = (pid_t) simple_strtoul(pos + 1, &ep, 10);
+<<<<<<< HEAD
 		if (*ep == '/' && pid && pid ==
 		    task_tgid_nr_ns(current, sb->s_fs_info)) {
+=======
+		struct pid_namespace *proc_pidns = proc_pid_ns(sb);
+
+		if (*ep == '/' && pid && pid ==
+		    task_tgid_nr_ns(current, proc_pidns)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pos = ep - 5;
 			if (pos < buffer)
 				goto out;
@@ -168,12 +209,21 @@ static char *tomoyo_get_local_path(struct dentry *dentry, char * const buffer,
 	if (!MAJOR(sb->s_dev))
 		goto prepend_filesystem_name;
 	{
+<<<<<<< HEAD
 		struct inode *inode = sb->s_root->d_inode;
+=======
+		struct inode *inode = d_backing_inode(sb->s_root);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Use filesystem name if filesystem does not support rename()
 		 * operation.
 		 */
+<<<<<<< HEAD
 		if (inode->i_op && !inode->i_op->rename)
+=======
+		if (!inode->i_op->rename)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto prepend_filesystem_name;
 	}
 	/* Prepend device name. */
@@ -181,6 +231,10 @@ static char *tomoyo_get_local_path(struct dentry *dentry, char * const buffer,
 		char name[64];
 		int name_len;
 		const dev_t dev = sb->s_dev;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		name[sizeof(name) - 1] = '\0';
 		snprintf(name, sizeof(name) - 1, "dev(%u,%u):", MAJOR(dev),
 			 MINOR(dev));
@@ -196,6 +250,10 @@ prepend_filesystem_name:
 	{
 		const char *name = sb->s_type->name;
 		const int name_len = strlen(name);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pos -= name_len + 1;
 		if (pos < buffer)
 			goto out;
@@ -208,6 +266,7 @@ out:
 }
 
 /**
+<<<<<<< HEAD
  * tomoyo_get_socket_name - Get the name of a socket.
  *
  * @path:   Pointer to "struct path".
@@ -233,6 +292,8 @@ static char *tomoyo_get_socket_name(struct path *path, char * const buffer,
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * tomoyo_realpath_from_path - Returns realpath(3) of the given pathname but ignores chroot'ed root.
  *
  * @path: Pointer to "struct path".
@@ -247,12 +308,17 @@ static char *tomoyo_get_socket_name(struct path *path, char * const buffer,
  * These functions use kzalloc(), so the caller must call kfree()
  * if these functions didn't return NULL.
  */
+<<<<<<< HEAD
 char *tomoyo_realpath_from_path(struct path *path)
+=======
+char *tomoyo_realpath_from_path(const struct path *path)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *buf = NULL;
 	char *name = NULL;
 	unsigned int buf_len = PAGE_SIZE / 2;
 	struct dentry *dentry = path->dentry;
+<<<<<<< HEAD
 	struct super_block *sb;
 	if (!dentry)
 		return NULL;
@@ -260,6 +326,14 @@ char *tomoyo_realpath_from_path(struct path *path)
 	while (1) {
 		char *pos;
 		struct inode *inode;
+=======
+	struct super_block *sb = dentry->d_sb;
+
+	while (1) {
+		char *pos;
+		struct inode *inode;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		buf_len <<= 1;
 		kfree(buf);
 		buf = kmalloc(buf_len, GFP_NOFS);
@@ -267,22 +341,35 @@ char *tomoyo_realpath_from_path(struct path *path)
 			break;
 		/* To make sure that pos is '\0' terminated. */
 		buf[buf_len - 1] = '\0';
+<<<<<<< HEAD
 		/* Get better name for socket. */
 		if (sb->s_magic == SOCKFS_MAGIC) {
 			pos = tomoyo_get_socket_name(path, buf, buf_len - 1);
 			goto encode;
 		}
 		/* For "pipe:[\$]". */
+=======
+		/* For "pipe:[\$]" and "socket:[\$]". */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dentry->d_op && dentry->d_op->d_dname) {
 			pos = dentry->d_op->d_dname(dentry, buf, buf_len - 1);
 			goto encode;
 		}
+<<<<<<< HEAD
 		inode = sb->s_root->d_inode;
 		/*
 		 * Get local name for filesystems without rename() operation
 		 * or dentry without vfsmount.
 		 */
 		if (!path->mnt || (inode->i_op && !inode->i_op->rename))
+=======
+		inode = d_backing_inode(sb->s_root);
+		/*
+		 * Get local name for filesystems without rename() operation
+		 */
+		if ((!inode->i_op->rename &&
+		     !(sb->s_type->fs_flags & FS_REQUIRES_DEV)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pos = tomoyo_get_local_path(path->dentry, buf,
 						    buf_len - 1);
 		/* Get absolute name for the rest. */
@@ -321,6 +408,10 @@ char *tomoyo_realpath_nofollow(const char *pathname)
 
 	if (pathname && kern_path(pathname, 0, &path) == 0) {
 		char *buf = tomoyo_realpath_from_path(&path);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		path_put(&path);
 		return buf;
 	}

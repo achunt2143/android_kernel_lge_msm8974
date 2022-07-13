@@ -36,6 +36,7 @@
  * also be included by applications that need to communicate with the driver
  * via the ioctl interface.
  */
+<<<<<<< HEAD
 
 #ifndef FSL_HYPERVISOR_H
 #define FSL_HYPERVISOR_H
@@ -217,6 +218,13 @@ struct fsl_hv_ioctl_prop {
 	_IOWR(FSL_HV_IOCTL_TYPE, 8, struct fsl_hv_ioctl_prop)
 
 #ifdef __KERNEL__
+=======
+#ifndef FSL_HYPERVISOR_H
+#define FSL_HYPERVISOR_H
+
+#include <uapi/linux/fsl_hypervisor.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fsl_hv_event_register() - register a callback for failover events
@@ -237,5 +245,8 @@ int fsl_hv_failover_register(struct notifier_block *nb);
 int fsl_hv_failover_unregister(struct notifier_block *nb);
 
 #endif
+<<<<<<< HEAD
 
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Device driver for the SYMBIOS/LSILOGIC 53C8XX and 53C1010 family 
  * of PCI-SCSI IO processors.
@@ -21,6 +25,7 @@
  * Copyright (C) 1997 Richard Waltham <dormouse@farsrobt.demon.co.uk>
  *
  *-----------------------------------------------------------------------------
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +40,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "sym_glue.h"
@@ -240,7 +247,11 @@ static void sym_display_Tekram_nvram(struct sym_device *np, Tekram_nvram *nvram)
 /*
  *  24C16 EEPROM reading.
  *
+<<<<<<< HEAD
  *  GPOI0 - data in/data out
+=======
+ *  GPIO0 - data in/data out
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  GPIO1 - clock
  *  Symbios NVRAM wiring now also used by Tekram.
  */
@@ -537,7 +548,11 @@ static int sym_read_Symbios_nvram(struct sym_device *np, Symbios_nvram *nvram)
 /*
  *  93C46 EEPROM reading.
  *
+<<<<<<< HEAD
  *  GPOI0 - data in
+=======
+ *  GPIO0 - data in
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  GPIO1 - data out
  *  GPIO2 - clock
  *  GPIO4 - chip select
@@ -661,7 +676,11 @@ static int sym_read_T93C46_nvram(struct sym_device *np, Tekram_nvram *nvram)
 {
 	u_char gpcntl, gpreg;
 	u_char old_gpcntl, old_gpreg;
+<<<<<<< HEAD
 	int retv = 1;
+=======
+	int retv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* save current state of GPCNTL and GPREG */
 	old_gpreg	= INB(np, nc_gpreg);
@@ -708,6 +727,10 @@ static int sym_read_Tekram_nvram (struct sym_device *np, Tekram_nvram *nvram)
 					  data, len);
 		if (!x)
 			break;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		x = sym_read_T93C46_nvram(np, nvram);
 		break;

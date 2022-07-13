@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u32 scx200_gpio_configure(unsigned index, u32 set, u32 clear);
 
 extern unsigned scx200_gpio_base;

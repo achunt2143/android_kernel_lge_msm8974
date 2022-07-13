@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_X86_VM86_H
 #define _ASM_X86_VM86_H
 
@@ -128,6 +129,14 @@ struct vm86plus_struct {
 #ifdef __KERNEL__
 
 #include <asm/ptrace.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_X86_VM86_H
+#define _ASM_X86_VM86_H
+
+#include <asm/ptrace.h>
+#include <uapi/asm/vm86.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is the (kernel) stack-layout when we have done a "SAVE_ALL" from vm86
@@ -152,6 +161,7 @@ struct kernel_vm86_regs {
 	unsigned short gs, __gsh;
 };
 
+<<<<<<< HEAD
 struct kernel_vm86_struct {
 	struct kernel_vm86_regs regs;
 /*
@@ -165,10 +175,21 @@ struct kernel_vm86_struct {
 #define VM86_TSS_ESP0 flags
 	unsigned long flags;
 	unsigned long screen_bitmap;
+=======
+struct vm86 {
+	struct vm86plus_struct __user *user_vm86;
+	struct pt_regs regs32;
+	unsigned long veflags;
+	unsigned long veflags_mask;
+	unsigned long saved_sp0;
+
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long cpu_type;
 	struct revectored_struct int_revectored;
 	struct revectored_struct int21_revectored;
 	struct vm86plus_info_struct vm86plus;
+<<<<<<< HEAD
 	struct pt_regs *regs32;   /* here we save the pointer to the old regs */
 /*
  * The below is not part of the structure, but the stack layout continues
@@ -180,15 +201,44 @@ struct kernel_vm86_struct {
 	long return-eip;        from call to vm86()
 	struct pt_regs oldregs;  user space registers as saved by syscall
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_VM86
 
 void handle_vm86_fault(struct kernel_vm86_regs *, long);
 int handle_vm86_trap(struct kernel_vm86_regs *, long, int);
+<<<<<<< HEAD
 struct pt_regs *save_v86_state(struct kernel_vm86_regs *);
 
 struct task_struct;
+=======
+void save_v86_state(struct kernel_vm86_regs *, int);
+
+struct task_struct;
+
+#define free_vm86(t) do {				\
+	struct thread_struct *__t = (t);		\
+	if (__t->vm86 != NULL) {			\
+		kfree(__t->vm86);			\
+		__t->vm86 = NULL;			\
+	}						\
+} while (0)
+
+/*
+ * Support for VM86 programs to request interrupts for
+ * real mode hardware drivers:
+ */
+#define FIRST_VM86_IRQ		 3
+#define LAST_VM86_IRQ		15
+
+static inline int invalid_vm86_irq(int irq)
+{
+	return irq < FIRST_VM86_IRQ || irq > LAST_VM86_IRQ;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void release_vm86_irqs(struct task_struct *);
 
 #else
@@ -201,8 +251,17 @@ static inline int handle_vm86_trap(struct kernel_vm86_regs *a, long b, int c)
 	return 0;
 }
 
+<<<<<<< HEAD
 #endif /* CONFIG_VM86 */
 
 #endif /* __KERNEL__ */
 
+=======
+static inline void save_v86_state(struct kernel_vm86_regs *a, int b) { }
+
+#define free_vm86(t) do { } while(0)
+
+#endif /* CONFIG_VM86 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_VM86_H */

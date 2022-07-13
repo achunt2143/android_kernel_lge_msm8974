@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A hwmon driver for the Intel 5000 series chipset FB-DIMM AMB
  * temperature sensors
  * Copyright (C) 2007 IBM
  *
+<<<<<<< HEAD
  * Author: Darrick J. Wong <djwong@us.ibm.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -22,11 +27,20 @@
 
 #include <linux/module.h>
 #include <linux/jiffies.h>
+=======
+ * Author: Darrick J. Wong <darrick.wong@oracle.com>
+ */
+
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
 #include <linux/err.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/log2.h>
 #include <linux/pci.h>
 #include <linux/platform_device.h>
@@ -116,14 +130,22 @@ struct i5k_amb_data {
 	unsigned int num_attrs;
 };
 
+<<<<<<< HEAD
 static ssize_t show_name(struct device *dev, struct device_attribute *devattr,
+=======
+static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 char *buf)
 {
 	return sprintf(buf, "%s\n", DRVNAME);
 }
 
 
+<<<<<<< HEAD
 static DEVICE_ATTR(name, S_IRUGO, show_name, NULL);
+=======
+static DEVICE_ATTR_RO(name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_device *amb_pdev;
 
@@ -262,7 +284,11 @@ static ssize_t show_label(struct device *dev,
 		       attr->index & DIMM_MASK);
 }
 
+<<<<<<< HEAD
 static int __devinit i5k_amb_hwmon_init(struct platform_device *pdev)
+=======
+static int i5k_amb_hwmon_init(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, j, k, d = 0;
 	u16 c;
@@ -276,8 +302,14 @@ static int __devinit i5k_amb_hwmon_init(struct platform_device *pdev)
 		num_ambs += hweight16(data->amb_present[i] & 0x7fff);
 
 	/* Set up sysfs stuff */
+<<<<<<< HEAD
 	data->attrs = kzalloc(sizeof(*data->attrs) * num_ambs * KNOBS_PER_AMB,
 				GFP_KERNEL);
+=======
+	data->attrs = kzalloc(array3_size(num_ambs, KNOBS_PER_AMB,
+					  sizeof(*data->attrs)),
+			      GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data->attrs)
 		return -ENOMEM;
 	data->num_attrs = 0;
@@ -297,7 +329,11 @@ static int __devinit i5k_amb_hwmon_init(struct platform_device *pdev)
 			snprintf(iattr->name, AMB_SYSFS_NAME_LEN,
 				 "temp%d_label", d);
 			iattr->s_attr.dev_attr.attr.name = iattr->name;
+<<<<<<< HEAD
 			iattr->s_attr.dev_attr.attr.mode = S_IRUGO;
+=======
+			iattr->s_attr.dev_attr.attr.mode = 0444;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iattr->s_attr.dev_attr.show = show_label;
 			iattr->s_attr.index = k;
 			sysfs_attr_init(&iattr->s_attr.dev_attr.attr);
@@ -312,7 +348,11 @@ static int __devinit i5k_amb_hwmon_init(struct platform_device *pdev)
 			snprintf(iattr->name, AMB_SYSFS_NAME_LEN,
 				 "temp%d_input", d);
 			iattr->s_attr.dev_attr.attr.name = iattr->name;
+<<<<<<< HEAD
 			iattr->s_attr.dev_attr.attr.mode = S_IRUGO;
+=======
+			iattr->s_attr.dev_attr.attr.mode = 0444;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iattr->s_attr.dev_attr.show = show_amb_temp;
 			iattr->s_attr.index = k;
 			sysfs_attr_init(&iattr->s_attr.dev_attr.attr);
@@ -327,7 +367,11 @@ static int __devinit i5k_amb_hwmon_init(struct platform_device *pdev)
 			snprintf(iattr->name, AMB_SYSFS_NAME_LEN,
 				 "temp%d_min", d);
 			iattr->s_attr.dev_attr.attr.name = iattr->name;
+<<<<<<< HEAD
 			iattr->s_attr.dev_attr.attr.mode = S_IWUSR | S_IRUGO;
+=======
+			iattr->s_attr.dev_attr.attr.mode = 0644;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iattr->s_attr.dev_attr.show = show_amb_min;
 			iattr->s_attr.dev_attr.store = store_amb_min;
 			iattr->s_attr.index = k;
@@ -343,7 +387,11 @@ static int __devinit i5k_amb_hwmon_init(struct platform_device *pdev)
 			snprintf(iattr->name, AMB_SYSFS_NAME_LEN,
 				 "temp%d_mid", d);
 			iattr->s_attr.dev_attr.attr.name = iattr->name;
+<<<<<<< HEAD
 			iattr->s_attr.dev_attr.attr.mode = S_IWUSR | S_IRUGO;
+=======
+			iattr->s_attr.dev_attr.attr.mode = 0644;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iattr->s_attr.dev_attr.show = show_amb_mid;
 			iattr->s_attr.dev_attr.store = store_amb_mid;
 			iattr->s_attr.index = k;
@@ -359,7 +407,11 @@ static int __devinit i5k_amb_hwmon_init(struct platform_device *pdev)
 			snprintf(iattr->name, AMB_SYSFS_NAME_LEN,
 				 "temp%d_max", d);
 			iattr->s_attr.dev_attr.attr.name = iattr->name;
+<<<<<<< HEAD
 			iattr->s_attr.dev_attr.attr.mode = S_IWUSR | S_IRUGO;
+=======
+			iattr->s_attr.dev_attr.attr.mode = 0644;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iattr->s_attr.dev_attr.show = show_amb_max;
 			iattr->s_attr.dev_attr.store = store_amb_max;
 			iattr->s_attr.index = k;
@@ -375,7 +427,11 @@ static int __devinit i5k_amb_hwmon_init(struct platform_device *pdev)
 			snprintf(iattr->name, AMB_SYSFS_NAME_LEN,
 				 "temp%d_alarm", d);
 			iattr->s_attr.dev_attr.attr.name = iattr->name;
+<<<<<<< HEAD
 			iattr->s_attr.dev_attr.attr.mode = S_IRUGO;
+=======
+			iattr->s_attr.dev_attr.attr.mode = 0444;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iattr->s_attr.dev_attr.show = show_amb_alarm;
 			iattr->s_attr.index = k;
 			sysfs_attr_init(&iattr->s_attr.dev_attr.attr);
@@ -408,9 +464,15 @@ exit_remove:
 	return res;
 }
 
+<<<<<<< HEAD
 static int __devinit i5k_amb_add(void)
 {
 	int res = -ENODEV;
+=======
+static int i5k_amb_add(void)
+{
+	int res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* only ever going to be one of these */
 	amb_pdev = platform_device_alloc(DRVNAME, 0);
@@ -427,7 +489,11 @@ err:
 	return res;
 }
 
+<<<<<<< HEAD
 static int __devinit i5k_find_amb_registers(struct i5k_amb_data *data,
+=======
+static int i5k_find_amb_registers(struct i5k_amb_data *data,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    unsigned long devid)
 {
 	struct pci_dev *pcidev;
@@ -441,11 +507,21 @@ static int __devinit i5k_find_amb_registers(struct i5k_amb_data *data,
 	if (!pcidev)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (pci_read_config_dword(pcidev, I5K_REG_AMB_BASE_ADDR, &val32))
 		goto out;
 	data->amb_base = val32;
 
 	if (pci_read_config_dword(pcidev, I5K_REG_AMB_LEN_ADDR, &val32))
+=======
+	pci_read_config_dword(pcidev, I5K_REG_AMB_BASE_ADDR, &val32);
+	if (val32 == (u32)~0)
+		goto out;
+	data->amb_base = val32;
+
+	pci_read_config_dword(pcidev, I5K_REG_AMB_LEN_ADDR, &val32);
+	if (val32 == (u32)~0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	data->amb_len = val32;
 
@@ -461,7 +537,11 @@ out:
 	return res;
 }
 
+<<<<<<< HEAD
 static int __devinit i5k_channel_probe(u16 *amb_present, unsigned long dev_id)
+=======
+static int i5k_channel_probe(u16 *amb_present, unsigned long dev_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pcidev;
 	u16 val16;
@@ -472,11 +552,21 @@ static int __devinit i5k_channel_probe(u16 *amb_present, unsigned long dev_id)
 	if (!pcidev)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (pci_read_config_word(pcidev, I5K_REG_CHAN0_PRESENCE_ADDR, &val16))
 		goto out;
 	amb_present[0] = val16;
 
 	if (pci_read_config_word(pcidev, I5K_REG_CHAN1_PRESENCE_ADDR, &val16))
+=======
+	pci_read_config_word(pcidev, I5K_REG_CHAN0_PRESENCE_ADDR, &val16);
+	if (val16 == (u16)~0)
+		goto out;
+	amb_present[0] = val16;
+
+	pci_read_config_word(pcidev, I5K_REG_CHAN1_PRESENCE_ADDR, &val16);
+	if (val16 == (u16)~0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	amb_present[1] = val16;
 
@@ -490,14 +580,22 @@ out:
 static struct {
 	unsigned long err;
 	unsigned long fbd0;
+<<<<<<< HEAD
 } chipset_ids[] __devinitdata  = {
+=======
+} chipset_ids[]  = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE_ID_INTEL_5000_ERR, PCI_DEVICE_ID_INTEL_5000_FBD0 },
 	{ PCI_DEVICE_ID_INTEL_5400_ERR, PCI_DEVICE_ID_INTEL_5400_FBD0 },
 	{ 0, 0 }
 };
 
 #ifdef MODULE
+<<<<<<< HEAD
 static struct pci_device_id i5k_amb_ids[] __devinitdata = {
+=======
+static const struct pci_device_id i5k_amb_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_5000_ERR) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_5400_ERR) },
 	{ 0, }
@@ -505,7 +603,11 @@ static struct pci_device_id i5k_amb_ids[] __devinitdata = {
 MODULE_DEVICE_TABLE(pci, i5k_amb_ids);
 #endif
 
+<<<<<<< HEAD
 static int __devinit i5k_amb_probe(struct platform_device *pdev)
+=======
+static int i5k_amb_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i5k_amb_data *data;
 	struct resource *reso;
@@ -542,7 +644,11 @@ static int __devinit i5k_amb_probe(struct platform_device *pdev)
 		goto err;
 	}
 
+<<<<<<< HEAD
 	data->amb_mmio = ioremap_nocache(data->amb_base, data->amb_len);
+=======
+	data->amb_mmio = ioremap(data->amb_base, data->amb_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data->amb_mmio) {
 		res = -EBUSY;
 		goto err_map_failed;
@@ -558,7 +664,10 @@ static int __devinit i5k_amb_probe(struct platform_device *pdev)
 
 err_init_failed:
 	iounmap(data->amb_mmio);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_map_failed:
 	release_mem_region(data->amb_base, data->amb_len);
 err:
@@ -566,7 +675,11 @@ err:
 	return res;
 }
 
+<<<<<<< HEAD
 static int __devexit i5k_amb_remove(struct platform_device *pdev)
+=======
+static void i5k_amb_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct i5k_amb_data *data = platform_get_drvdata(pdev);
@@ -578,18 +691,29 @@ static int __devexit i5k_amb_remove(struct platform_device *pdev)
 	kfree(data->attrs);
 	iounmap(data->amb_mmio);
 	release_mem_region(data->amb_base, data->amb_len);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 	kfree(data);
 	return 0;
+=======
+	kfree(data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver i5k_amb_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.name = DRVNAME,
 	},
 	.probe = i5k_amb_probe,
 	.remove = __devexit_p(i5k_amb_remove),
+=======
+		.name = DRVNAME,
+	},
+	.probe = i5k_amb_probe,
+	.remove_new = i5k_amb_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init i5k_amb_init(void)
@@ -613,7 +737,11 @@ static void __exit i5k_amb_exit(void)
 	platform_driver_unregister(&i5k_amb_driver);
 }
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Darrick J. Wong <djwong@us.ibm.com>");
+=======
+MODULE_AUTHOR("Darrick J. Wong <darrick.wong@oracle.com>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Intel 5000 chipset FB-DIMM AMB temperature sensor");
 MODULE_LICENSE("GPL");
 

@@ -10,7 +10,10 @@
 
 #include <asm/hwrpb.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/segment.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if 0
 # define DBG_DEVS(args)         printk args
@@ -933,6 +936,7 @@ void SMC37c669_display_device_info(
  *
  *--
  */
+<<<<<<< HEAD
 #if 0
 /* $INCLUDE_OPTIONS$ */
 #include    "cp$inc:platform_io.h"
@@ -945,6 +949,8 @@ void SMC37c669_display_device_info(
 /* Platform-specific includes */
 #include    "cp$src:platform.h"
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef TRUE
 #define TRUE 1
@@ -2019,11 +2025,16 @@ static void __init SMC37c669_config_mode(
 static unsigned char __init SMC37c669_read_config( 
     unsigned char index )
 {
+<<<<<<< HEAD
     unsigned char data;
 
     wb( &SMC37c669->index_port, index );
     data = rb( &SMC37c669->data_port );
     return data;
+=======
+	wb(&SMC37c669->index_port, index);
+	return rb(&SMC37c669->data_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*

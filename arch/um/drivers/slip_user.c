@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL.
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdio.h>
@@ -9,12 +15,21 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
+<<<<<<< HEAD
 #include <sys/termios.h>
 #include <sys/wait.h>
 #include "net_user.h"
 #include "os.h"
 #include "slip.h"
 #include "um_malloc.h"
+=======
+#include <termios.h>
+#include <sys/wait.h>
+#include <net_user.h>
+#include <os.h>
+#include "slip.h"
+#include <um_malloc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int slip_user_init(void *data, void *dev)
 {
@@ -55,8 +70,13 @@ static int set_up_tty(int fd)
 }
 
 struct slip_pre_exec_data {
+<<<<<<< HEAD
 	int stdin;
 	int stdout;
+=======
+	int stdin_fd;
+	int stdout_fd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int close_me;
 };
 
@@ -64,9 +84,15 @@ static void slip_pre_exec(void *arg)
 {
 	struct slip_pre_exec_data *data = arg;
 
+<<<<<<< HEAD
 	if (data->stdin >= 0)
 		dup2(data->stdin, 0);
 	dup2(data->stdout, 1);
+=======
+	if (data->stdin_fd >= 0)
+		dup2(data->stdin_fd, 0);
+	dup2(data->stdout_fd, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data->close_me >= 0)
 		close(data->close_me);
 }
@@ -85,8 +111,13 @@ static int slip_tramp(char **argv, int fd)
 	}
 
 	err = 0;
+<<<<<<< HEAD
 	pe_data.stdin = fd;
 	pe_data.stdout = fds[1];
+=======
+	pe_data.stdin_fd = fd;
+	pe_data.stdout_fd = fds[1];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pe_data.close_me = fds[0];
 	err = run_helper(slip_pre_exec, &pe_data, argv);
 	if (err < 0)
@@ -145,7 +176,12 @@ static int slip_open(void *data)
 	}
 	sfd = err;
 
+<<<<<<< HEAD
 	if (set_up_tty(sfd))
+=======
+	err = set_up_tty(sfd);
+	if (err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_close2;
 
 	pri->slave = sfd;

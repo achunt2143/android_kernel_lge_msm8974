@@ -9,9 +9,19 @@
 #define __ASM_TOPOLOGY_H
 
 #include <topology.h>
+<<<<<<< HEAD
 
 #ifdef CONFIG_SMP
 #define smt_capable()   (smp_num_siblings > 1)
+=======
+#include <linux/smp.h>
+
+#ifdef CONFIG_SMP
+#define topology_physical_package_id(cpu)	(cpu_data[cpu].package)
+#define topology_core_id(cpu)			(cpu_core(&cpu_data[cpu]))
+#define topology_core_cpumask(cpu)		(&cpu_core_map[cpu])
+#define topology_sibling_cpumask(cpu)		(&cpu_sibling_map[cpu])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* __ASM_TOPOLOGY_H */

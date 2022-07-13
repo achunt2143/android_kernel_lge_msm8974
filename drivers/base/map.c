@@ -1,8 +1,15 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/base/map.c
  *
  * (C) Copyright Al Viro 2002,2003
+<<<<<<< HEAD
  *	Released under GPL v2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * NOTE: data structure needs to be changed.  It works, but for large dev_t
  * it will be too slow.  It is isolated, though, so these changes will be
@@ -33,16 +40,26 @@ int kobj_map(struct kobj_map *domain, dev_t dev, unsigned long range,
 	     struct module *module, kobj_probe_t *probe,
 	     int (*lock)(dev_t, void *), void *data)
 {
+<<<<<<< HEAD
 	unsigned n = MAJOR(dev + range - 1) - MAJOR(dev) + 1;
 	unsigned index = MAJOR(dev);
 	unsigned i;
+=======
+	unsigned int n = MAJOR(dev + range - 1) - MAJOR(dev) + 1;
+	unsigned int index = MAJOR(dev);
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct probe *p;
 
 	if (n > 255)
 		n = 255;
 
+<<<<<<< HEAD
 	p = kmalloc(sizeof(struct probe) * n, GFP_KERNEL);
 
+=======
+	p = kmalloc_array(n, sizeof(struct probe), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p == NULL)
 		return -ENOMEM;
 
@@ -68,9 +85,15 @@ int kobj_map(struct kobj_map *domain, dev_t dev, unsigned long range,
 
 void kobj_unmap(struct kobj_map *domain, dev_t dev, unsigned long range)
 {
+<<<<<<< HEAD
 	unsigned n = MAJOR(dev + range - 1) - MAJOR(dev) + 1;
 	unsigned index = MAJOR(dev);
 	unsigned i;
+=======
+	unsigned int n = MAJOR(dev + range - 1) - MAJOR(dev) + 1;
+	unsigned int index = MAJOR(dev);
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct probe *found = NULL;
 
 	if (n > 255)

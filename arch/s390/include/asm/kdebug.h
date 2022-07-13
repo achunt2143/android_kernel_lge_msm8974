@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _S390_KDEBUG_H
 #define _S390_KDEBUG_H
 
@@ -22,6 +26,10 @@ enum die_val {
 	DIE_NMI_IPI,
 };
 
+<<<<<<< HEAD
 extern void die(struct pt_regs *, const char *);
+=======
+extern void __noreturn die(struct pt_regs *, const char *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

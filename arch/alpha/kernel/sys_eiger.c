@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/sys_eiger.c
  *
@@ -22,8 +26,11 @@
 #include <asm/irq.h>
 #include <asm/mmu_context.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/pci.h>
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/core_tsunami.h>
 #include <asm/hwrpb.h>
 #include <asm/tlbflush.h>
@@ -142,7 +149,11 @@ eiger_init_irq(void)
 	}
 }
 
+<<<<<<< HEAD
 static int __init
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 eiger_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	u8 irq_orig;
@@ -159,7 +170,11 @@ eiger_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return irq_orig - 0x80;
 }
 
+<<<<<<< HEAD
 static u8 __init
+=======
+static u8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 eiger_swizzle(struct pci_dev *dev, u8 *pinp)
 {
 	struct pci_controller *hose = dev->sysdata;
@@ -176,7 +191,11 @@ eiger_swizzle(struct pci_dev *dev, u8 *pinp)
 	   case 0x03: bridge_count = 2; break; /* 2 */
 	   case 0x07: bridge_count = 3; break; /* 3 */
 	   case 0x0f: bridge_count = 4; break; /* 4 */
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	slot = PCI_SLOT(dev->devfn);
 	while (dev->bus->self) {

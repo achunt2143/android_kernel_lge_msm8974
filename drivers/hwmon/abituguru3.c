@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * abituguru3.c
  *
  * Copyright (c) 2006-2008 Hans de Goede <hdegoede@redhat.com>
  * Copyright (c) 2008 Alistair John Strachan <alistair@devzero.co.uk>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * This driver supports the sensor part of revision 3 of the custom Abit uGuru
@@ -76,9 +83,17 @@
 #define ABIT_UGURU3_SYNCHRONIZE_TIMEOUT		5
 /* utility macros */
 #define ABIT_UGURU3_NAME			"abituguru3"
+<<<<<<< HEAD
 #define ABIT_UGURU3_DEBUG(format, arg...)	\
 	if (verbose)				\
 		printk(KERN_DEBUG ABIT_UGURU3_NAME ": "	format , ## arg)
+=======
+#define ABIT_UGURU3_DEBUG(format, arg...)		\
+	do {						\
+		if (verbose)				\
+			pr_debug(format , ## arg);	\
+	} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Macros to help calculate the sysfs_names array length */
 #define ABIT_UGURU3_MAX_NO_SENSORS 26
@@ -156,7 +171,11 @@ struct abituguru3_data {
 	struct device *hwmon_dev;	/* hwmon registered device */
 	struct mutex update_lock;	/* protect access to data and uGuru */
 	unsigned short addr;		/* uguru base address */
+<<<<<<< HEAD
 	char valid;			/* !=0 if following fields are valid */
+=======
+	bool valid;			/* true if following fields are valid */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated;	/* In jiffies */
 
 	/*
@@ -174,7 +193,11 @@ struct abituguru3_data {
 
 	/*
 	 * The abituguru3 supports up to 48 sensors, and thus has registers
+<<<<<<< HEAD
 	 * sets for 48 sensors, for convienence reasons / simplicity of the
+=======
+	 * sets for 48 sensors, for convenience reasons / simplicity of the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * code we always read and store all registers for all 48 sensors
 	 */
 
@@ -966,7 +989,11 @@ static struct sensor_device_attribute_2 abituguru3_sysfs_attr[] = {
 	SENSOR_ATTR_2(name, 0444, show_name, NULL, 0, 0),
 };
 
+<<<<<<< HEAD
 static int __devinit abituguru3_probe(struct platform_device *pdev)
+=======
+static int abituguru3_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const int no_sysfs_attr[3] = { 10, 8, 7 };
 	int sensor_index[3] = { 0, 1, 1 };
@@ -976,7 +1003,12 @@ static int __devinit abituguru3_probe(struct platform_device *pdev)
 	u8 buf[2];
 	u16 id;
 
+<<<<<<< HEAD
 	data = kzalloc(sizeof(struct abituguru3_data), GFP_KERNEL);
+=======
+	data = devm_kzalloc(&pdev->dev, sizeof(struct abituguru3_data),
+			    GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data)
 		return -ENOMEM;
 
@@ -1068,25 +1100,38 @@ abituguru3_probe_error:
 	for (i = 0; i < ARRAY_SIZE(abituguru3_sysfs_attr); i++)
 		device_remove_file(&pdev->dev,
 			&abituguru3_sysfs_attr[i].dev_attr);
+<<<<<<< HEAD
 	kfree(data);
 	return res;
 }
 
 static int __devexit abituguru3_remove(struct platform_device *pdev)
+=======
+	return res;
+}
+
+static void abituguru3_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct abituguru3_data *data = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hwmon_device_unregister(data->hwmon_dev);
 	for (i = 0; data->sysfs_attr[i].dev_attr.attr.name; i++)
 		device_remove_file(&pdev->dev, &data->sysfs_attr[i].dev_attr);
 	for (i = 0; i < ARRAY_SIZE(abituguru3_sysfs_attr); i++)
 		device_remove_file(&pdev->dev,
 			&abituguru3_sysfs_attr[i].dev_attr);
+<<<<<<< HEAD
 	kfree(data);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct abituguru3_data *abituguru3_update_device(struct device *dev)
@@ -1097,7 +1142,11 @@ static struct abituguru3_data *abituguru3_update_device(struct device *dev)
 	mutex_lock(&data->update_lock);
 	if (!data->valid || time_after(jiffies, data->last_updated + HZ)) {
 		/* Clear data->valid while updating */
+<<<<<<< HEAD
 		data->valid = 0;
+=======
+		data->valid = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Read alarms */
 		if (abituguru3_read_increment_offset(data,
 				ABIT_UGURU3_SETTINGS_BANK,
@@ -1131,7 +1180,11 @@ static struct abituguru3_data *abituguru3_update_device(struct device *dev)
 				goto LEAVE_UPDATE;
 		}
 		data->last_updated = jiffies;
+<<<<<<< HEAD
 		data->valid = 1;
+=======
+		data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 LEAVE_UPDATE:
 	mutex_unlock(&data->update_lock);
@@ -1141,10 +1194,16 @@ LEAVE_UPDATE:
 		return NULL;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int abituguru3_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	struct abituguru3_data *data = platform_get_drvdata(pdev);
+=======
+static int abituguru3_suspend(struct device *dev)
+{
+	struct abituguru3_data *data = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * make sure all communications with the uguru3 are done and no new
 	 * ones are started
@@ -1153,6 +1212,7 @@ static int abituguru3_suspend(struct platform_device *pdev, pm_message_t state)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int abituguru3_resume(struct platform_device *pdev)
 {
 	struct abituguru3_data *data = platform_get_drvdata(pdev);
@@ -1173,6 +1233,24 @@ static struct platform_driver abituguru3_driver = {
 	.remove	= __devexit_p(abituguru3_remove),
 	.suspend = abituguru3_suspend,
 	.resume = abituguru3_resume
+=======
+static int abituguru3_resume(struct device *dev)
+{
+	struct abituguru3_data *data = dev_get_drvdata(dev);
+	mutex_unlock(&data->update_lock);
+	return 0;
+}
+
+static DEFINE_SIMPLE_DEV_PM_OPS(abituguru3_pm, abituguru3_suspend, abituguru3_resume);
+
+static struct platform_driver abituguru3_driver = {
+	.driver = {
+		.name	= ABIT_UGURU3_NAME,
+		.pm	= pm_sleep_ptr(&abituguru3_pm),
+	},
+	.probe	= abituguru3_probe,
+	.remove_new = abituguru3_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init abituguru3_dmi_detect(void)

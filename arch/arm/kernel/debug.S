@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/debug.S
  *
  *  Copyright (C) 1994-1999 Russell King
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  32-bit debugging code
  */
 #include <linux/linkage.h>
@@ -20,6 +27,7 @@
  * references to these in a production kernel!
  */
 
+<<<<<<< HEAD
 #if defined(CONFIG_DEBUG_ICEDCC)
 		@@ debug using ARM EmbeddedICE DCC channel
 
@@ -104,6 +112,11 @@
 #elif !defined(CONFIG_DEBUG_SEMIHOSTING)
 #include <mach/debug-macro.S>
 #endif	/* CONFIG_DEBUG_ICEDCC */
+=======
+#if !defined(CONFIG_DEBUG_SEMIHOSTING)
+#include CONFIG_DEBUG_LL_INCLUDE
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_MMU
 		.macro	addruart_current, rx, tmp1, tmp2
@@ -116,7 +129,11 @@
 
 #else /* !CONFIG_MMU */
 		.macro	addruart_current, rx, tmp1, tmp2
+<<<<<<< HEAD
 		addruart	\rx, \tmp1
+=======
+		addruart	\rx, \tmp1, \tmp2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.endm
 
 #endif /* CONFIG_MMU */
@@ -136,7 +153,13 @@ ENDPROC(printhex4)
 
 ENTRY(printhex2)
 		mov	r1, #2
+<<<<<<< HEAD
 printhex:	adr	r2, hexbuf
+=======
+printhex:	adr	r2, hexbuf_rel
+		ldr	r3, [r2]
+		add	r2, r2, r3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add	r3, r2, r1
 		mov	r1, #0
 		strb	r1, [r3]
@@ -152,7 +175,15 @@ printhex:	adr	r2, hexbuf
 		b	printascii
 ENDPROC(printhex2)
 
+<<<<<<< HEAD
 hexbuf:		.space 16
+=======
+		.pushsection .bss
+hexbuf_addr:	.space 16
+		.popsection
+		.align
+hexbuf_rel:	.long	hexbuf_addr - .
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		.ltorg
 
@@ -160,6 +191,7 @@ hexbuf:		.space 16
 
 ENTRY(printascii)
 		addruart_current r3, r1, r2
+<<<<<<< HEAD
 		b	2f
 1:		waituart r2, r3
 		senduart r1, r3
@@ -172,21 +204,61 @@ ENTRY(printascii)
 		teqne	r1, #0
 		bne	1b
 		mov	pc, lr
+=======
+1:		teq	r0, #0
+		ldrbne	r1, [r0], #1
+		teqne	r1, #0
+		reteq	lr
+2:		teq     r1, #'\n'
+		bne	3f
+		mov	r1, #'\r'
+#ifdef CONFIG_DEBUG_UART_FLOW_CONTROL
+		waituartcts r2, r3
+#endif
+		waituarttxrdy r2, r3
+		senduart r1, r3
+		busyuart r2, r3
+		mov	r1, #'\n'
+3:
+#ifdef CONFIG_DEBUG_UART_FLOW_CONTROL
+		waituartcts r2, r3
+#endif
+		waituarttxrdy r2, r3
+		senduart r1, r3
+		busyuart r2, r3
+		b	1b
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(printascii)
 
 ENTRY(printch)
 		addruart_current r3, r1, r2
 		mov	r1, r0
 		mov	r0, #0
+<<<<<<< HEAD
 		b	1b
 ENDPROC(printch)
 
+=======
+		b	2b
+ENDPROC(printch)
+
+#ifdef CONFIG_MMU
+ENTRY(debug_ll_addr)
+		addruart r2, r3, ip
+		str	r2, [r0]
+		str	r3, [r1]
+		ret	lr
+ENDPROC(debug_ll_addr)
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 
 ENTRY(printascii)
 		mov	r1, r0
 		mov	r0, #0x04		@ SYS_WRITE0
 	ARM(	svc	#0x123456	)
+<<<<<<< HEAD
 	THUMB(	svc	#0xab		)
 		mov	pc, lr
 ENDPROC(printascii)
@@ -200,4 +272,36 @@ ENTRY(printch)
 		mov	pc, lr
 ENDPROC(printch)
 
+=======
+#ifdef CONFIG_CPU_V7M
+	THUMB(	bkpt	#0xab		)
+#else
+	THUMB(	svc	#0xab		)
+#endif
+		ret	lr
+ENDPROC(printascii)
+
+ENTRY(printch)
+		adr	r1, hexbuf_rel
+		ldr	r2, [r1]
+		add	r1, r1, r2
+		strb	r0, [r1]
+		mov	r0, #0x03		@ SYS_WRITEC
+	ARM(	svc	#0x123456	)
+#ifdef CONFIG_CPU_V7M
+	THUMB(	bkpt	#0xab		)
+#else
+	THUMB(	svc	#0xab		)
+#endif
+		ret	lr
+ENDPROC(printch)
+
+ENTRY(debug_ll_addr)
+		mov	r2, #0
+		str	r2, [r0]
+		str	r2, [r1]
+		ret	lr
+ENDPROC(debug_ll_addr)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef CCISS_IOCTLH
 #define CCISS_IOCTLH
 
@@ -86,6 +87,14 @@ typedef struct _LogvolInfo_struct{
 #define CCISS_BIG_PASSTHRU _IOWR(CCISS_IOC_MAGIC, 18, BIG_IOCTL_Command_struct)
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef CCISS_IOCTLH
+#define CCISS_IOCTLH
+
+#include <uapi/linux/cciss_ioctl.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_COMPAT
 
 /* 32 bit compatible ioctl structs */
@@ -111,5 +120,8 @@ typedef struct _BIG_IOCTL32_Command_struct {
 #define CCISS_BIG_PASSTHRU32 _IOWR(CCISS_IOC_MAGIC, 18, BIG_IOCTL32_Command_struct)
 
 #endif /* CONFIG_COMPAT */
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif  

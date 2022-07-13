@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PS3 RTC Driver
  *
  * Copyright 2009 Sony Corporation
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +20,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.
  * If not, see <http://www.gnu.org/licenses/>.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -40,16 +47,25 @@ static u64 read_rtc(void)
 
 static int ps3_get_time(struct device *dev, struct rtc_time *tm)
 {
+<<<<<<< HEAD
 	rtc_time_to_tm(read_rtc() + ps3_os_area_get_rtc_diff(), tm);
 	return rtc_valid_tm(tm);
+=======
+	rtc_time64_to_tm(read_rtc() + ps3_os_area_get_rtc_diff(), tm);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ps3_set_time(struct device *dev, struct rtc_time *tm)
 {
+<<<<<<< HEAD
 	unsigned long now;
 
 	rtc_tm_to_time(tm, &now);
 	ps3_os_area_set_rtc_diff(now - read_rtc());
+=======
+	ps3_os_area_set_rtc_diff(rtc_tm_to_time64(tm) - read_rtc());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -62,6 +78,7 @@ static int __init ps3_rtc_probe(struct platform_device *dev)
 {
 	struct rtc_device *rtc;
 
+<<<<<<< HEAD
 	rtc = rtc_device_register("rtc-ps3", &dev->dev, &ps3_rtc_ops,
 				  THIS_MODULE);
 	if (IS_ERR(rtc))
@@ -75,11 +92,24 @@ static int __exit ps3_rtc_remove(struct platform_device *dev)
 {
 	rtc_device_unregister(platform_get_drvdata(dev));
 	return 0;
+=======
+	rtc = devm_rtc_allocate_device(&dev->dev);
+	if (IS_ERR(rtc))
+		return PTR_ERR(rtc);
+
+	rtc->ops = &ps3_rtc_ops;
+	rtc->range_max = U64_MAX;
+
+	platform_set_drvdata(dev, rtc);
+
+	return devm_rtc_register_device(rtc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver ps3_rtc_driver = {
 	.driver = {
 		.name = "rtc-ps3",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.remove = __exit_p(ps3_rtc_remove),
@@ -97,6 +127,12 @@ static void __exit ps3_rtc_fini(void)
 
 module_init(ps3_rtc_init);
 module_exit(ps3_rtc_fini);
+=======
+	},
+};
+
+module_platform_driver_probe(ps3_rtc_driver, ps3_rtc_probe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Sony Corporation");
 MODULE_LICENSE("GPL");

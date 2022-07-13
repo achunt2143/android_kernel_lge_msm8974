@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  scsi_netlink.c  - SCSI Transport Netlink Interface
  *
  *  Copyright (C) 2006   James Smart, Emulex Corporation
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/time.h>
 #include <linux/jiffies.h>
@@ -33,6 +40,7 @@
 struct sock *scsi_nl_sock = NULL;
 EXPORT_SYMBOL_GPL(scsi_nl_sock);
 
+<<<<<<< HEAD
 static DEFINE_SPINLOCK(scsi_nl_lock);
 static struct list_head scsi_nl_drivers;
 
@@ -67,6 +75,8 @@ struct scsi_nl_drvr {
 
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * scsi_nl_rcv_msg - Receive message handler.
  * @skb:		socket receive buffer
@@ -81,11 +91,18 @@ scsi_nl_rcv_msg(struct sk_buff *skb)
 {
 	struct nlmsghdr *nlh;
 	struct scsi_nl_hdr *hdr;
+<<<<<<< HEAD
 	unsigned long flags;
 	u32 rlen;
 	int err, tport;
 
 	while (skb->len >= NLMSG_SPACE(0)) {
+=======
+	u32 rlen;
+	int err, tport;
+
+	while (skb->len >= NLMSG_HDRLEN) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = 0;
 
 		nlh = nlmsg_hdr(skb);
@@ -105,14 +122,22 @@ scsi_nl_rcv_msg(struct sk_buff *skb)
 			goto next_msg;
 		}
 
+<<<<<<< HEAD
 		hdr = NLMSG_DATA(nlh);
+=======
+		hdr = nlmsg_data(nlh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((hdr->version != SCSI_NL_VERSION) ||
 		    (hdr->magic != SCSI_NL_MAGIC)) {
 			err = -EPROTOTYPE;
 			goto next_msg;
 		}
 
+<<<<<<< HEAD
 		if (!capable(CAP_SYS_ADMIN)) {
+=======
+		if (!netlink_capable(skb, CAP_SYS_ADMIN)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EPERM;
 			goto next_msg;
 		}
@@ -126,6 +151,7 @@ scsi_nl_rcv_msg(struct sk_buff *skb)
 		/*
 		 * Deliver message to the appropriate transport
 		 */
+<<<<<<< HEAD
 		spin_lock_irqsave(&scsi_nl_lock, flags);
 
 		tport = hdr->transport;
@@ -145,11 +171,35 @@ scsi_nl_rcv_msg(struct sk_buff *skb)
 next_msg:
 		if ((err) || (nlh->nlmsg_flags & NLM_F_ACK))
 			netlink_ack(skb, nlh, err);
+=======
+		tport = hdr->transport;
+		if (tport == SCSI_NL_TRANSPORT) {
+			switch (hdr->msgtype) {
+			case SCSI_NL_SHOST_VENDOR:
+				/* Locate the driver that corresponds to the message */
+				err = -ESRCH;
+				break;
+			default:
+				err = -EBADR;
+				break;
+			}
+			if (err)
+				printk(KERN_WARNING "%s: Msgtype %d failed - err %d\n",
+				       __func__, hdr->msgtype, err);
+		}
+		else
+			err = -ENOENT;
+
+next_msg:
+		if ((err) || (nlh->nlmsg_flags & NLM_F_ACK))
+			netlink_ack(skb, nlh, err, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		skb_pull(skb, rlen);
 	}
 }
 
+<<<<<<< HEAD
 
 /**
  * scsi_nl_rcv_event - Event handler for a netlink socket.
@@ -477,6 +527,8 @@ scsi_nl_remove_driver(u64 vendor_id)
 EXPORT_SYMBOL_GPL(scsi_nl_remove_driver);
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * scsi_netlink_init - Called by SCSI subsystem to initialize
  * 	the SCSI transport netlink interface
@@ -485,6 +537,7 @@ EXPORT_SYMBOL_GPL(scsi_nl_remove_driver);
 void
 scsi_netlink_init(void)
 {
+<<<<<<< HEAD
 	int error;
 
 	INIT_LIST_HEAD(&scsi_nl_drivers);
@@ -512,6 +565,21 @@ scsi_netlink_init(void)
 	if (error)
 		printk(KERN_ERR "%s: register of GENERIC transport handler"
 				"  failed - %d\n", __func__, error);
+=======
+	struct netlink_kernel_cfg cfg = {
+		.input	= scsi_nl_rcv_msg,
+		.groups	= SCSI_NL_GRP_CNT,
+	};
+
+	scsi_nl_sock = netlink_kernel_create(&init_net, NETLINK_SCSITRANSPORT,
+					     &cfg);
+	if (!scsi_nl_sock) {
+		printk(KERN_ERR "%s: register of receive handler failed\n",
+				__func__);
+		return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -523,16 +591,22 @@ scsi_netlink_init(void)
 void
 scsi_netlink_exit(void)
 {
+<<<<<<< HEAD
 	scsi_nl_remove_transport(SCSI_NL_TRANSPORT);
 
 	if (scsi_nl_sock) {
 		netlink_kernel_release(scsi_nl_sock);
 		netlink_unregister_notifier(&scsi_netlink_notifier);
+=======
+	if (scsi_nl_sock) {
+		netlink_kernel_release(scsi_nl_sock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return;
 }
 
+<<<<<<< HEAD
 
 /*
  * Exported Interfaces
@@ -678,3 +752,5 @@ send_vendor_fail:
 EXPORT_SYMBOL(scsi_nl_send_vendor_msg);
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

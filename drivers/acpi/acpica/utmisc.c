@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: utmisc - common utility procedures
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -43,6 +48,8 @@
 
 #include <linux/module.h>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -52,6 +59,7 @@ ACPI_MODULE_NAME("utmisc")
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ut_validate_exception
  *
  * PARAMETERS:  Status       - The acpi_status code to be formatted
@@ -123,13 +131,21 @@ const char *acpi_ut_validate_exception(acpi_status status)
  * FUNCTION:    acpi_ut_is_pci_root_bridge
  *
  * PARAMETERS:  Id              - The HID/CID in string format
+=======
+ * FUNCTION:    acpi_ut_is_pci_root_bridge
+ *
+ * PARAMETERS:  id              - The HID/CID in string format
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      TRUE if the Id is a match for a PCI/PCI-Express Root Bridge
  *
  * DESCRIPTION: Determine if the input ID is a PCI Root Bridge ID.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u8 acpi_ut_is_pci_root_bridge(char *id)
 {
 
@@ -137,20 +153,34 @@ u8 acpi_ut_is_pci_root_bridge(char *id)
 	 * Check if this is a PCI root bridge.
 	 * ACPI 3.0+: check for a PCI Express root also.
 	 */
+<<<<<<< HEAD
 	if (!(ACPI_STRCMP(id,
 			  PCI_ROOT_HID_STRING)) ||
 	    !(ACPI_STRCMP(id, PCI_EXPRESS_ROOT_HID_STRING))) {
+=======
+	if (!(strcmp(id,
+		     PCI_ROOT_HID_STRING)) ||
+	    !(strcmp(id, PCI_EXPRESS_ROOT_HID_STRING))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (TRUE);
 	}
 
 	return (FALSE);
 }
 
+<<<<<<< HEAD
+=======
+#if (defined ACPI_ASL_COMPILER || defined ACPI_EXEC_APP || defined ACPI_NAMES_APP)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_is_aml_table
  *
+<<<<<<< HEAD
  * PARAMETERS:  Table               - An ACPI table
+=======
+ * PARAMETERS:  table               - An ACPI table
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      TRUE if table contains executable AML; FALSE otherwise
  *
@@ -165,14 +195,23 @@ u8 acpi_ut_is_aml_table(struct acpi_table_header *table)
 
 	/* These are the only tables that contain executable AML */
 
+<<<<<<< HEAD
 	if (ACPI_COMPARE_NAME(table->signature, ACPI_SIG_DSDT) ||
 	    ACPI_COMPARE_NAME(table->signature, ACPI_SIG_PSDT) ||
 	    ACPI_COMPARE_NAME(table->signature, ACPI_SIG_SSDT)) {
+=======
+	if (ACPI_COMPARE_NAMESEG(table->signature, ACPI_SIG_DSDT) ||
+	    ACPI_COMPARE_NAMESEG(table->signature, ACPI_SIG_PSDT) ||
+	    ACPI_COMPARE_NAMESEG(table->signature, ACPI_SIG_SSDT) ||
+	    ACPI_COMPARE_NAMESEG(table->signature, ACPI_SIG_OSDT) ||
+	    ACPI_IS_OEM_SIG(table->signature)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (TRUE);
 	}
 
 	return (FALSE);
 }
+<<<<<<< HEAD
 
 /*******************************************************************************
  *
@@ -462,12 +501,19 @@ void acpi_ut_print_string(char *string, u8 max_length)
 		acpi_os_printf("...");
 	}
 }
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_dword_byte_swap
  *
+<<<<<<< HEAD
  * PARAMETERS:  Value           - Value to be converted
+=======
+ * PARAMETERS:  value           - Value to be converted
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      u32 integer with bytes swapped
  *
@@ -507,8 +553,13 @@ u32 acpi_ut_dword_byte_swap(u32 value)
  * RETURN:      None
  *
  * DESCRIPTION: Set the global integer bit width based upon the revision
+<<<<<<< HEAD
  *              of the DSDT.  For Revision 1 and 0, Integers are 32 bits.
  *              For Revision 2 and above, Integers are 64 bits.  Yes, this
+=======
+ *              of the DSDT. For Revision 1 and 0, Integers are 32 bits.
+ *              For Revision 2 and above, Integers are 64 bits. Yes, this
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              makes a difference.
  *
  ******************************************************************************/
@@ -532,6 +583,7 @@ void acpi_ut_set_integer_width(u8 revision)
 	}
 }
 
+<<<<<<< HEAD
 #ifdef ACPI_DEBUG_OUTPUT
 /*******************************************************************************
  *
@@ -874,12 +926,19 @@ acpi_status acpi_ut_strtoul64(char *string, u32 base, u64 * ret_integer)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_create_update_state_and_push
  *
+<<<<<<< HEAD
  * PARAMETERS:  Object          - Object to be added to the new state
  *              Action          - Increment/Decrement
+=======
+ * PARAMETERS:  object          - Object to be added to the new state
+ *              action          - Increment/Decrement
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              state_list      - List the state will be added to
  *
  * RETURN:      Status
@@ -919,24 +978,41 @@ acpi_ut_create_update_state_and_push(union acpi_operand_object *object,
  * PARAMETERS:  source_object       - The package to walk
  *              target_object       - Target object (if package is being copied)
  *              walk_callback       - Called once for each package element
+<<<<<<< HEAD
  *              Context             - Passed to the callback function
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Walk through a package
+=======
+ *              context             - Passed to the callback function
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Walk through a package, including subpackages
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ut_walk_package_tree(union acpi_operand_object * source_object,
+=======
+acpi_ut_walk_package_tree(union acpi_operand_object *source_object,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  void *target_object,
 			  acpi_pkg_callback walk_callback, void *context)
 {
 	acpi_status status = AE_OK;
 	union acpi_generic_state *state_list = NULL;
 	union acpi_generic_state *state;
+<<<<<<< HEAD
 	u32 this_index;
 	union acpi_operand_object *this_source_obj;
+=======
+	union acpi_operand_object *this_source_obj;
+	u32 this_index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE(ut_walk_package_tree);
 
@@ -950,6 +1026,7 @@ acpi_ut_walk_package_tree(union acpi_operand_object * source_object,
 		/* Get one element of the package */
 
 		this_index = state->pkg.index;
+<<<<<<< HEAD
 		this_source_obj = (union acpi_operand_object *)
 		    state->pkg.source_object->package.elements[this_index];
 
@@ -959,12 +1036,30 @@ acpi_ut_walk_package_tree(union acpi_operand_object * source_object,
 		 *    legal to declare a package and leave it uninitialized
 		 * 2) Not an internal object - can be a namespace node instead
 		 * 3) Any type other than a package.  Packages are handled in else
+=======
+		this_source_obj =
+		    state->pkg.source_object->package.elements[this_index];
+		state->pkg.this_target_obj =
+		    &state->pkg.source_object->package.elements[this_index];
+
+		/*
+		 * Check for:
+		 * 1) An uninitialized package element. It is completely
+		 *    legal to declare a package and leave it uninitialized
+		 * 2) Not an internal object - can be a namespace node instead
+		 * 3) Any type other than a package. Packages are handled in else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 *    case below.
 		 */
 		if ((!this_source_obj) ||
 		    (ACPI_GET_DESCRIPTOR_TYPE(this_source_obj) !=
+<<<<<<< HEAD
 		     ACPI_DESC_TYPE_OPERAND)
 		    || (this_source_obj->common.type != ACPI_TYPE_PACKAGE)) {
+=======
+		     ACPI_DESC_TYPE_OPERAND) ||
+		    (this_source_obj->common.type != ACPI_TYPE_PACKAGE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status =
 			    walk_callback(ACPI_COPY_TYPE_SIMPLE,
 					  this_source_obj, state, context);
@@ -977,7 +1072,11 @@ acpi_ut_walk_package_tree(union acpi_operand_object * source_object,
 			       state->pkg.source_object->package.count) {
 				/*
 				 * We've handled all of the objects at this level,  This means
+<<<<<<< HEAD
 				 * that we have just completed a package.  That package may
+=======
+				 * that we have just completed a package. That package may
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 * have contained one or more packages itself.
 				 *
 				 * Delete this state and pop the previous state (package).
@@ -1017,9 +1116,16 @@ acpi_ut_walk_package_tree(union acpi_operand_object * source_object,
 			 * The callback above returned a new target package object.
 			 */
 			acpi_ut_push_generic_state(&state_list, state);
+<<<<<<< HEAD
 			state = acpi_ut_create_pkg_state(this_source_obj,
 							 state->pkg.
 							 this_target_obj, 0);
+=======
+			state =
+			    acpi_ut_create_pkg_state(this_source_obj,
+						     state->pkg.this_target_obj,
+						     0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!state) {
 
 				/* Free any stacked Update State objects */
@@ -1037,5 +1143,82 @@ acpi_ut_walk_package_tree(union acpi_operand_object * source_object,
 
 	/* We should never get here */
 
+<<<<<<< HEAD
 	return_ACPI_STATUS(AE_AML_INTERNAL);
 }
+=======
+	ACPI_ERROR((AE_INFO, "State list did not terminate correctly"));
+
+	return_ACPI_STATUS(AE_AML_INTERNAL);
+}
+
+#ifdef ACPI_DEBUG_OUTPUT
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_ut_display_init_pathname
+ *
+ * PARAMETERS:  type                - Object type of the node
+ *              obj_handle          - Handle whose pathname will be displayed
+ *              path                - Additional path string to be appended.
+ *                                      (NULL if no extra path)
+ *
+ * RETURN:      acpi_status
+ *
+ * DESCRIPTION: Display full pathname of an object, DEBUG ONLY
+ *
+ ******************************************************************************/
+
+void
+acpi_ut_display_init_pathname(u8 type,
+			      struct acpi_namespace_node *obj_handle,
+			      const char *path)
+{
+	acpi_status status;
+	struct acpi_buffer buffer;
+
+	ACPI_FUNCTION_ENTRY();
+
+	/* Only print the path if the appropriate debug level is enabled */
+
+	if (!(acpi_dbg_level & ACPI_LV_INIT_NAMES)) {
+		return;
+	}
+
+	/* Get the full pathname to the node */
+
+	buffer.length = ACPI_ALLOCATE_LOCAL_BUFFER;
+	status = acpi_ns_handle_to_pathname(obj_handle, &buffer, TRUE);
+	if (ACPI_FAILURE(status)) {
+		return;
+	}
+
+	/* Print what we're doing */
+
+	switch (type) {
+	case ACPI_TYPE_METHOD:
+
+		acpi_os_printf("Executing  ");
+		break;
+
+	default:
+
+		acpi_os_printf("Initializing ");
+		break;
+	}
+
+	/* Print the object type and pathname */
+
+	acpi_os_printf("%-12s %s",
+		       acpi_ut_get_type_name(type), (char *)buffer.pointer);
+
+	/* Extra path is used to append names like _STA, _INI, etc. */
+
+	if (path) {
+		acpi_os_printf(".%s", path);
+	}
+	acpi_os_printf("\n");
+
+	ACPI_FREE(buffer.pointer);
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

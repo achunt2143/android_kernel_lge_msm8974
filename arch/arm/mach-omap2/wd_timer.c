@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * OMAP2+ MPU WD_TIMER-specific code
  *
@@ -5,15 +6,33 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * OMAP2+ MPU WD_TIMER-specific code
+ *
+ * Copyright (C) 2012 Texas Instruments, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/io.h>
 #include <linux/err.h>
 
+<<<<<<< HEAD
 #include <plat/omap_hwmod.h>
 
 #include "wd_timer.h"
+=======
+#include <linux/platform_data/omap-wd-timer.h>
+
+#include "omap_hwmod.h"
+#include "omap_device.h"
+#include "wd_timer.h"
+#include "common.h"
+#include "prm.h"
+#include "soc.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * In order to avoid any assumptions from bootloader regarding WDT
@@ -25,7 +44,10 @@
 #define OMAP_WDT_WPS		0x34
 #define OMAP_WDT_SPR		0x48
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int omap2_wd_timer_disable(struct omap_hwmod *oh)
 {
 	void __iomem *base;
@@ -43,14 +65,70 @@ int omap2_wd_timer_disable(struct omap_hwmod *oh)
 	}
 
 	/* sequence required to disable watchdog */
+<<<<<<< HEAD
 	__raw_writel(0xAAAA, base + OMAP_WDT_SPR);
 	while (__raw_readl(base + OMAP_WDT_WPS) & 0x10)
 		cpu_relax();
 
 	__raw_writel(0x5555, base + OMAP_WDT_SPR);
 	while (__raw_readl(base + OMAP_WDT_WPS) & 0x10)
+=======
+	writel_relaxed(0xAAAA, base + OMAP_WDT_SPR);
+	while (readl_relaxed(base + OMAP_WDT_WPS) & 0x10)
+		cpu_relax();
+
+	writel_relaxed(0x5555, base + OMAP_WDT_SPR);
+	while (readl_relaxed(base + OMAP_WDT_WPS) & 0x10)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cpu_relax();
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * omap2_wd_timer_reset - reset and disable the WDTIMER IP block
+ * @oh: struct omap_hwmod *
+ *
+ * After the WDTIMER IP blocks are reset on OMAP2/3, we must also take
+ * care to execute the special watchdog disable sequence.  This is
+ * because the watchdog is re-armed upon OCP softreset.  (On OMAP4,
+ * this behavior was apparently changed and the watchdog is no longer
+ * re-armed after an OCP soft-reset.)  Returns -ETIMEDOUT if the reset
+ * did not complete, or 0 upon success.
+ *
+ * XXX Most of this code should be moved to the omap_hwmod.c layer
+ * during a normal merge window.  omap_hwmod_softreset() should be
+ * renamed to omap_hwmod_set_ocp_softreset(), and omap_hwmod_softreset()
+ * should call the hwmod _ocp_softreset() code.
+ *
+ * Returns: %0 on success or -errno value on error.
+ */
+int omap2_wd_timer_reset(struct omap_hwmod *oh)
+{
+	int c = 0;
+
+	/* Write to the SOFTRESET bit */
+	omap_hwmod_softreset(oh);
+
+	/* Poll on RESETDONE bit */
+	omap_test_timeout((omap_hwmod_read(oh,
+					   oh->class->sysc->syss_offs)
+			   & SYSS_RESETDONE_MASK),
+			  MAX_MODULE_SOFTRESET_WAIT, c);
+
+	if (oh->class->sysc->srst_udelay)
+		udelay(oh->class->sysc->srst_udelay);
+
+	if (c == MAX_MODULE_SOFTRESET_WAIT)
+		pr_warn("%s: %s: softreset failed (waited %d usec)\n",
+			__func__, oh->name, MAX_MODULE_SOFTRESET_WAIT);
+	else
+		pr_debug("%s: %s: softreset in %d usec\n", __func__,
+			 oh->name, c);
+
+	return (c == MAX_MODULE_SOFTRESET_WAIT) ? -ETIMEDOUT :
+		omap2_wd_timer_disable(oh);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

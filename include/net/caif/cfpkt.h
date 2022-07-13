@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson AB 2010
  * Author:	Sjur Brendeland/sjur.brandeland@stericsson.com
  * License terms: GNU General Public License (GPL) version 2
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) ST-Ericsson AB 2010
+ * Author:	Sjur Brendeland
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef CFPKT_H_
@@ -32,6 +39,36 @@ void cfpkt_destroy(struct cfpkt *pkt);
  */
 int cfpkt_extr_head(struct cfpkt *pkt, void *data, u16 len);
 
+<<<<<<< HEAD
+=======
+static inline u8 cfpkt_extr_head_u8(struct cfpkt *pkt)
+{
+	u8 tmp;
+
+	cfpkt_extr_head(pkt, &tmp, 1);
+
+	return tmp;
+}
+
+static inline u16 cfpkt_extr_head_u16(struct cfpkt *pkt)
+{
+	__le16 tmp;
+
+	cfpkt_extr_head(pkt, &tmp, 2);
+
+	return le16_to_cpu(tmp);
+}
+
+static inline u32 cfpkt_extr_head_u32(struct cfpkt *pkt)
+{
+	__le32 tmp;
+
+	cfpkt_extr_head(pkt, &tmp, 4);
+
+	return le32_to_cpu(tmp);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Peek header from packet.
  * Reads data from packet without changing packet.
@@ -171,7 +208,11 @@ struct cfpkt *cfpkt_split(struct cfpkt *pkt, u16 pos);
  * @return    Checksum of buffer.
  */
 
+<<<<<<< HEAD
 u16 cfpkt_iterate(struct cfpkt *pkt,
+=======
+int cfpkt_iterate(struct cfpkt *pkt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u16 (*iter_func)(u16 chks, void *buf, u16 len),
 		u16 data);
 
@@ -188,11 +229,25 @@ struct cfpkt *cfpkt_fromnative(enum caif_direction dir, void *nativepkt);
  */
 void *cfpkt_tonative(struct cfpkt *pkt);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Returns packet information for a packet.
  * pkt Packet to get info from;
  * @return Packet information
  */
 struct caif_payload_info *cfpkt_info(struct cfpkt *pkt);
+<<<<<<< HEAD
+=======
+
+/** cfpkt_set_prio - set priority for a CAIF packet.
+ *
+ * @pkt: The CAIF packet to be adjusted.
+ * @prio: one of TC_PRIO_ constants.
+ */
+void cfpkt_set_prio(struct cfpkt *pkt, int prio);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* CFPKT_H_ */

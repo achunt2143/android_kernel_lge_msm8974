@@ -1,26 +1,40 @@
+<<<<<<< HEAD
 /*
  * handle transition of Linux booting another kernel
  * Copyright (C) 2002-2005 Eric Biederman  <ebiederm@xmission.com>
  *
  * This source code is licensed under the GNU General Public License,
  * Version 2.  See the file COPYING for more details.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * handle transition of Linux booting another kernel
+ * Copyright (C) 2002-2005 Eric Biederman  <ebiederm@xmission.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mm.h>
 #include <linux/kexec.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/numa.h>
 #include <linux/ftrace.h>
 #include <linux/suspend.h>
 #include <linux/gfp.h>
 #include <linux/io.h>
 
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pgalloc.h>
 #include <asm/tlbflush.h>
 #include <asm/mmu_context.h>
 #include <asm/apic.h>
+<<<<<<< HEAD
 #include <asm/cpufeature.h>
 #include <asm/desc.h>
 #include <asm/cacheflush.h>
@@ -49,6 +63,14 @@ static void set_gdt(void *newgdt, __u16 limit)
 	load_gdt(&curgdt);
 }
 
+=======
+#include <asm/io_apic.h>
+#include <asm/cpufeature.h>
+#include <asm/desc.h>
+#include <asm/set_memory.h>
+#include <asm/debugreg.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void load_segments(void)
 {
 #define __STR(X) #X
@@ -60,8 +82,11 @@ static void load_segments(void)
 		"\tmovl $"STR(__KERNEL_DS)",%%eax\n"
 		"\tmovl %%eax,%%ds\n"
 		"\tmovl %%eax,%%es\n"
+<<<<<<< HEAD
 		"\tmovl %%eax,%%fs\n"
 		"\tmovl %%eax,%%gs\n"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"\tmovl %%eax,%%ss\n"
 		: : : "eax", "memory");
 #undef STR
@@ -70,6 +95,7 @@ static void load_segments(void)
 
 static void machine_kexec_free_page_tables(struct kimage *image)
 {
+<<<<<<< HEAD
 	free_page((unsigned long)image->arch.pgd);
 #ifdef CONFIG_X86_PAE
 	free_page((unsigned long)image->arch.pmd0);
@@ -77,11 +103,30 @@ static void machine_kexec_free_page_tables(struct kimage *image)
 #endif
 	free_page((unsigned long)image->arch.pte0);
 	free_page((unsigned long)image->arch.pte1);
+=======
+	free_pages((unsigned long)image->arch.pgd, PGD_ALLOCATION_ORDER);
+	image->arch.pgd = NULL;
+#ifdef CONFIG_X86_PAE
+	free_page((unsigned long)image->arch.pmd0);
+	image->arch.pmd0 = NULL;
+	free_page((unsigned long)image->arch.pmd1);
+	image->arch.pmd1 = NULL;
+#endif
+	free_page((unsigned long)image->arch.pte0);
+	image->arch.pte0 = NULL;
+	free_page((unsigned long)image->arch.pte1);
+	image->arch.pte1 = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int machine_kexec_alloc_page_tables(struct kimage *image)
 {
+<<<<<<< HEAD
 	image->arch.pgd = (pgd_t *)get_zeroed_page(GFP_KERNEL);
+=======
+	image->arch.pgd = (pgd_t *)__get_free_pages(GFP_KERNEL | __GFP_ZERO,
+						    PGD_ALLOCATION_ORDER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_X86_PAE
 	image->arch.pmd0 = (pmd_t *)get_zeroed_page(GFP_KERNEL);
 	image->arch.pmd1 = (pmd_t *)get_zeroed_page(GFP_KERNEL);
@@ -93,7 +138,10 @@ static int machine_kexec_alloc_page_tables(struct kimage *image)
 	    !image->arch.pmd0 || !image->arch.pmd1 ||
 #endif
 	    !image->arch.pte0 || !image->arch.pte1) {
+<<<<<<< HEAD
 		machine_kexec_free_page_tables(image);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	return 0;
@@ -103,6 +151,10 @@ static void machine_kexec_page_table_set_one(
 	pgd_t *pgd, pmd_t *pmd, pte_t *pte,
 	unsigned long vaddr, unsigned long paddr)
 {
+<<<<<<< HEAD
+=======
+	p4d_t *p4d;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pud_t *pud;
 
 	pgd += pgd_index(vaddr);
@@ -110,7 +162,12 @@ static void machine_kexec_page_table_set_one(
 	if (!(pgd_val(*pgd) & _PAGE_PRESENT))
 		set_pgd(pgd, __pgd(__pa(pmd) | _PAGE_PRESENT));
 #endif
+<<<<<<< HEAD
 	pud = pud_offset(pgd, vaddr);
+=======
+	p4d = p4d_offset(pgd, vaddr);
+	pud = pud_offset(p4d, vaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmd = pmd_offset(pud, vaddr);
 	if (!(pmd_val(*pmd) & _PAGE_PRESENT))
 		set_pmd(pmd, __pmd(__pa(pte) | _PAGE_TABLE));
@@ -157,7 +214,11 @@ int machine_kexec_prepare(struct kimage *image)
 {
 	int error;
 
+<<<<<<< HEAD
 	set_pages_x(image->control_code_page, 1);
+=======
+	set_memory_x((unsigned long)page_address(image->control_code_page), 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = machine_kexec_alloc_page_tables(image);
 	if (error)
 		return error;
@@ -171,7 +232,11 @@ int machine_kexec_prepare(struct kimage *image)
  */
 void machine_kexec_cleanup(struct kimage *image)
 {
+<<<<<<< HEAD
 	set_pages_nx(image->control_code_page, 1);
+=======
+	set_memory_nx((unsigned long)page_address(image->control_code_page), 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	machine_kexec_free_page_tables(image);
 }
 
@@ -207,11 +272,19 @@ void machine_kexec(struct kimage *image)
 		/*
 		 * We need to put APICs in legacy mode so that we can
 		 * get timer interrupts in second kernel. kexec/kdump
+<<<<<<< HEAD
 		 * paths already have calls to disable_IO_APIC() in
 		 * one form or other. kexec jump path also need
 		 * one.
 		 */
 		disable_IO_APIC();
+=======
+		 * paths already have calls to restore_boot_irq_mode()
+		 * in one form or other. kexec jump path also need one.
+		 */
+		clear_IO_APIC();
+		restore_boot_irq_mode();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	}
 
@@ -242,13 +315,23 @@ void machine_kexec(struct kimage *image)
 	 * The gdt & idt are now invalid.
 	 * If you want to load them you must set up your own idt & gdt.
 	 */
+<<<<<<< HEAD
 	set_gdt(phys_to_virt(0), 0);
 	set_idt(phys_to_virt(0), 0);
+=======
+	native_idt_invalidate();
+	native_gdt_invalidate();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* now call it */
 	image->start = relocate_kernel_ptr((unsigned long)image->head,
 					   (unsigned long)page_list,
+<<<<<<< HEAD
 					   image->start, cpu_has_pae,
+=======
+					   image->start,
+					   boot_cpu_has(X86_FEATURE_PAE),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   image->preserve_context);
 
 #ifdef CONFIG_KEXEC_JUMP
@@ -258,6 +341,7 @@ void machine_kexec(struct kimage *image)
 
 	__ftrace_enabled_restore(save_ftrace_enabled);
 }
+<<<<<<< HEAD
 
 void arch_crash_save_vmcoreinfo(void)
 {
@@ -270,3 +354,5 @@ void arch_crash_save_vmcoreinfo(void)
 #endif
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

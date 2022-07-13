@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX__INIT_TASK_H
 #define _LINUX__INIT_TASK_H
 
@@ -10,6 +14,7 @@
 #include <linux/pid_namespace.h>
 #include <linux/user_namespace.h>
 #include <linux/securebits.h>
+<<<<<<< HEAD
 #include <net/net_namespace.h>
 
 #ifdef CONFIG_SMP
@@ -140,10 +145,35 @@ extern struct task_group root_task_group;
 	.perf_event_list = LIST_HEAD_INIT(tsk.perf_event_list),
 #else
 # define INIT_PERF_EVENTS(tsk)
+=======
+#include <linux/seqlock.h>
+#include <linux/rbtree.h>
+#include <linux/refcount.h>
+#include <linux/sched/autogroup.h>
+#include <net/net_namespace.h>
+#include <linux/sched/rt.h>
+#include <linux/livepatch.h>
+#include <linux/mm_types.h>
+
+#include <asm/thread_info.h>
+
+extern struct files_struct init_files;
+extern struct fs_struct init_fs;
+extern struct nsproxy init_nsproxy;
+extern struct cred init_cred;
+
+#ifndef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
+#define INIT_PREV_CPUTIME(x)	.prev_cputime = {			\
+	.lock = __RAW_SPIN_LOCK_UNLOCKED(x.prev_cputime.lock),		\
+},
+#else
+#define INIT_PREV_CPUTIME(x)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define INIT_TASK_COMM "swapper"
 
+<<<<<<< HEAD
 /*
  *  INIT_TASK is used to set up the first task table, touch at
  * your own risk!. Base=0, limit=0x1fffff (=2MB)
@@ -225,5 +255,9 @@ extern struct task_group root_task_group;
 /* Attach to the init_task data structure for proper alignment */
 #define __init_task_data __attribute__((__section__(".data..init_task")))
 
+=======
+/* Attach to the thread_info data structure for proper alignment */
+#define __init_thread_info __section(".data..init_thread_info")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

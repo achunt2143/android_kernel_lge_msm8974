@@ -1,8 +1,12 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -11,12 +15,19 @@
 #include <asm/proc-fns.h>
 #include <asm/system_misc.h>
 
+<<<<<<< HEAD
 #include <mach/regs-ost.h>
 #include <mach/reset.h>
 #include <mach/smemc.h>
 
 unsigned int reset_status;
 EXPORT_SYMBOL(reset_status);
+=======
+#include "regs-ost.h"
+#include "reset.h"
+#include "smemc.h"
+#include "generic.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void do_hw_reset(void);
 
@@ -78,9 +89,16 @@ static void do_gpio_reset(void)
 static void do_hw_reset(void)
 {
 	/* Initialize the watchdog and let it fire */
+<<<<<<< HEAD
 	OWER = OWER_WME;
 	OSSR = OSSR_M3;
 	OSMR3 = OSCR + 368640;	/* ... in 100 ms */
+=======
+	writel_relaxed(OWER_WME, OWER);
+	writel_relaxed(OSSR_M3, OSSR);
+	/* ... in 100 ms */
+	writel_relaxed(readl_relaxed(OSCR) + 368640, OSMR3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * SDRAM hangs on watchdog reset on Marvell PXA270 (erratum 71)
 	 * we put SDRAM into self-refresh to prevent that
@@ -89,7 +107,11 @@ static void do_hw_reset(void)
 		writel_relaxed(MDREFR_SLFRSH, MDREFR);
 }
 
+<<<<<<< HEAD
 void pxa_restart(char mode, const char *cmd)
+=======
+void pxa_restart(enum reboot_mode mode, const char *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	local_irq_disable();
 	local_fiq_disable();
@@ -97,6 +119,7 @@ void pxa_restart(char mode, const char *cmd)
 	clear_reset_status(RESET_STATUS_ALL);
 
 	switch (mode) {
+<<<<<<< HEAD
 	case 's':
 		/* Jump into ROM at address 0 */
 		soft_restart(0);
@@ -105,6 +128,16 @@ void pxa_restart(char mode, const char *cmd)
 		do_gpio_reset();
 		break;
 	case 'h':
+=======
+	case REBOOT_SOFT:
+		/* Jump into ROM at address 0 */
+		soft_restart(0);
+		break;
+	case REBOOT_GPIO:
+		do_gpio_reset();
+		break;
+	case REBOOT_HARD:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		do_hw_reset();
 		break;

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* linux/net/ipv4/arp.c
  *
  * Copyright (C) 1994 by Florian  La Roche
@@ -7,11 +11,14 @@
  * high-level addresses) into a low-level hardware address (like an Ethernet
  * address).
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Fixes:
  *		Alan Cox	:	Removed the Ethernet assumptions in
  *					Florian's code
@@ -73,6 +80,11 @@
  *		Jesper D. Brouer:       Proxy ARP PVLAN RFC 3069 support.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/string.h>
@@ -89,7 +101,10 @@
 #include <linux/etherdevice.h>
 #include <linux/fddidevice.h>
 #include <linux/if_arp.h>
+<<<<<<< HEAD
 #include <linux/trdevice.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/skbuff.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -112,6 +127,11 @@
 #include <net/arp.h>
 #include <net/ax25.h>
 #include <net/netrom.h>
+<<<<<<< HEAD
+=======
+#include <net/dst_metadata.h>
+#include <net/ip_tunnels.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/uaccess.h>
 
@@ -121,10 +141,18 @@
  *	Interface to generic neighbour cache.
  */
 static u32 arp_hash(const void *pkey, const struct net_device *dev, __u32 *hash_rnd);
+<<<<<<< HEAD
+=======
+static bool arp_key_eq(const struct neighbour *n, const void *pkey);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int arp_constructor(struct neighbour *neigh);
 static void arp_solicit(struct neighbour *neigh, struct sk_buff *skb);
 static void arp_error_report(struct neighbour *neigh, struct sk_buff *skb);
 static void parp_redo(struct sk_buff *skb);
+<<<<<<< HEAD
+=======
+static int arp_is_multicast(const void *pkey);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct neigh_ops arp_generic_ops = {
 	.family =		AF_INET,
@@ -148,6 +176,7 @@ static const struct neigh_ops arp_direct_ops = {
 	.connected_output =	neigh_direct_output,
 };
 
+<<<<<<< HEAD
 static const struct neigh_ops arp_broken_ops = {
 	.family =		AF_INET,
 	.solicit =		arp_solicit,
@@ -177,6 +206,35 @@ struct neigh_table arp_tbl = {
 		.proxy_delay		= (8 * HZ) / 10,
 		.proxy_qlen		= 64,
 		.locktime		= 1 * HZ,
+=======
+struct neigh_table arp_tbl = {
+	.family		= AF_INET,
+	.key_len	= 4,
+	.protocol	= cpu_to_be16(ETH_P_IP),
+	.hash		= arp_hash,
+	.key_eq		= arp_key_eq,
+	.constructor	= arp_constructor,
+	.proxy_redo	= parp_redo,
+	.is_multicast	= arp_is_multicast,
+	.id		= "arp_cache",
+	.parms		= {
+		.tbl			= &arp_tbl,
+		.reachable_time		= 30 * HZ,
+		.data	= {
+			[NEIGH_VAR_MCAST_PROBES] = 3,
+			[NEIGH_VAR_UCAST_PROBES] = 3,
+			[NEIGH_VAR_RETRANS_TIME] = 1 * HZ,
+			[NEIGH_VAR_BASE_REACHABLE_TIME] = 30 * HZ,
+			[NEIGH_VAR_DELAY_PROBE_TIME] = 5 * HZ,
+			[NEIGH_VAR_INTERVAL_PROBE_TIME_MS] = 5 * HZ,
+			[NEIGH_VAR_GC_STALETIME] = 60 * HZ,
+			[NEIGH_VAR_QUEUE_LEN_BYTES] = SK_WMEM_MAX,
+			[NEIGH_VAR_PROXY_QLEN] = 64,
+			[NEIGH_VAR_ANYCAST_DELAY] = 1 * HZ,
+			[NEIGH_VAR_PROXY_DELAY]	= (8 * HZ) / 10,
+			[NEIGH_VAR_LOCKTIME] = 1 * HZ,
+		},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.gc_interval	= 30 * HZ,
 	.gc_thresh1	= 128,
@@ -193,9 +251,12 @@ int arp_mc_map(__be32 addr, u8 *haddr, struct net_device *dev, int dir)
 	case ARPHRD_IEEE802:
 		ip_eth_mc_map(addr, haddr);
 		return 0;
+<<<<<<< HEAD
 	case ARPHRD_IEEE802_TR:
 		ip_tr_mc_map(addr, haddr);
 		return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ARPHRD_INFINIBAND:
 		ip_ib_mc_map(addr, dev->broadcast, haddr);
 		return 0;
@@ -216,11 +277,21 @@ static u32 arp_hash(const void *pkey,
 		    const struct net_device *dev,
 		    __u32 *hash_rnd)
 {
+<<<<<<< HEAD
 	return arp_hashfn(*(u32 *)pkey, dev, *hash_rnd);
+=======
+	return arp_hashfn(pkey, dev, hash_rnd);
+}
+
+static bool arp_key_eq(const struct neighbour *neigh, const void *pkey)
+{
+	return neigh_key_eq32(neigh, pkey);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int arp_constructor(struct neighbour *neigh)
 {
+<<<<<<< HEAD
 	__be32 addr = *(__be32 *)neigh->primary_key;
 	struct net_device *dev = neigh->dev;
 	struct in_device *in_dev;
@@ -229,11 +300,30 @@ static int arp_constructor(struct neighbour *neigh)
 	rcu_read_lock();
 	in_dev = __in_dev_get_rcu(dev);
 	if (in_dev == NULL) {
+=======
+	__be32 addr;
+	struct net_device *dev = neigh->dev;
+	struct in_device *in_dev;
+	struct neigh_parms *parms;
+	u32 inaddr_any = INADDR_ANY;
+
+	if (dev->flags & (IFF_LOOPBACK | IFF_POINTOPOINT))
+		memcpy(neigh->primary_key, &inaddr_any, arp_tbl.key_len);
+
+	addr = *(__be32 *)neigh->primary_key;
+	rcu_read_lock();
+	in_dev = __in_dev_get_rcu(dev);
+	if (!in_dev) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rcu_read_unlock();
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	neigh->type = inet_addr_type(dev_net(dev), addr);
+=======
+	neigh->type = inet_addr_type_dev_table(dev_net(dev), dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	parms = in_dev->arp_parms;
 	__neigh_parms_put(neigh->parms);
@@ -260,6 +350,7 @@ static int arp_constructor(struct neighbour *neigh)
 		   in old paradigm.
 		 */
 
+<<<<<<< HEAD
 #if 1
 		/* So... these "amateur" devices are hopeless.
 		   The only thing, that I can say now:
@@ -289,6 +380,8 @@ static int arp_constructor(struct neighbour *neigh)
 #endif
 		}
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (neigh->type == RTN_MULTICAST) {
 			neigh->nud_state = NUD_NOARP;
 			arp_mc_map(addr, neigh->ha, dev, 1);
@@ -317,6 +410,7 @@ static int arp_constructor(struct neighbour *neigh)
 static void arp_error_report(struct neighbour *neigh, struct sk_buff *skb)
 {
 	dst_link_failure(skb);
+<<<<<<< HEAD
 	kfree_skb(skb);
 }
 
@@ -324,10 +418,56 @@ static void arp_solicit(struct neighbour *neigh, struct sk_buff *skb)
 {
 	__be32 saddr = 0;
 	u8  *dst_ha = NULL;
+=======
+	kfree_skb_reason(skb, SKB_DROP_REASON_NEIGH_FAILED);
+}
+
+/* Create and send an arp packet. */
+static void arp_send_dst(int type, int ptype, __be32 dest_ip,
+			 struct net_device *dev, __be32 src_ip,
+			 const unsigned char *dest_hw,
+			 const unsigned char *src_hw,
+			 const unsigned char *target_hw,
+			 struct dst_entry *dst)
+{
+	struct sk_buff *skb;
+
+	/* arp on this interface. */
+	if (dev->flags & IFF_NOARP)
+		return;
+
+	skb = arp_create(type, ptype, dest_ip, dev, src_ip,
+			 dest_hw, src_hw, target_hw);
+	if (!skb)
+		return;
+
+	skb_dst_set(skb, dst_clone(dst));
+	arp_xmit(skb);
+}
+
+void arp_send(int type, int ptype, __be32 dest_ip,
+	      struct net_device *dev, __be32 src_ip,
+	      const unsigned char *dest_hw, const unsigned char *src_hw,
+	      const unsigned char *target_hw)
+{
+	arp_send_dst(type, ptype, dest_ip, dev, src_ip, dest_hw, src_hw,
+		     target_hw, NULL);
+}
+EXPORT_SYMBOL(arp_send);
+
+static void arp_solicit(struct neighbour *neigh, struct sk_buff *skb)
+{
+	__be32 saddr = 0;
+	u8 dst_ha[MAX_ADDR_LEN], *dst_hw = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *dev = neigh->dev;
 	__be32 target = *(__be32 *)neigh->primary_key;
 	int probes = atomic_read(&neigh->probes);
 	struct in_device *in_dev;
+<<<<<<< HEAD
+=======
+	struct dst_entry *dst = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rcu_read_lock();
 	in_dev = __in_dev_get_rcu(dev);
@@ -338,7 +478,11 @@ static void arp_solicit(struct neighbour *neigh, struct sk_buff *skb)
 	switch (IN_DEV_ARP_ANNOUNCE(in_dev)) {
 	default:
 	case 0:		/* By default announce any local IP */
+<<<<<<< HEAD
 		if (skb && inet_addr_type(dev_net(dev),
+=======
+		if (skb && inet_addr_type_dev_table(dev_net(dev), dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  ip_hdr(skb)->saddr) == RTN_LOCAL)
 			saddr = ip_hdr(skb)->saddr;
 		break;
@@ -346,7 +490,12 @@ static void arp_solicit(struct neighbour *neigh, struct sk_buff *skb)
 		if (!skb)
 			break;
 		saddr = ip_hdr(skb)->saddr;
+<<<<<<< HEAD
 		if (inet_addr_type(dev_net(dev), saddr) == RTN_LOCAL) {
+=======
+		if (inet_addr_type_dev_table(dev_net(dev), dev,
+					     saddr) == RTN_LOCAL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* saddr should be known to target */
 			if (inet_addr_onlink(in_dev, target, saddr))
 				break;
@@ -361,6 +510,7 @@ static void arp_solicit(struct neighbour *neigh, struct sk_buff *skb)
 	if (!saddr)
 		saddr = inet_select_addr(dev, target, RT_SCOPE_LINK);
 
+<<<<<<< HEAD
 	probes -= neigh->parms->ucast_probes;
 	if (probes < 0) {
 		if (!(neigh->nud_state & NUD_VALID))
@@ -374,18 +524,41 @@ static void arp_solicit(struct neighbour *neigh, struct sk_buff *skb)
 #ifdef CONFIG_ARPD
 			neigh_app_ns(neigh);
 #endif
+=======
+	probes -= NEIGH_VAR(neigh->parms, UCAST_PROBES);
+	if (probes < 0) {
+		if (!(READ_ONCE(neigh->nud_state) & NUD_VALID))
+			pr_debug("trying to ucast probe in NUD_INVALID\n");
+		neigh_ha_snapshot(dst_ha, neigh, dev);
+		dst_hw = dst_ha;
+	} else {
+		probes -= NEIGH_VAR(neigh->parms, APP_PROBES);
+		if (probes < 0) {
+			neigh_app_ns(neigh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
 
+<<<<<<< HEAD
 	arp_send(ARPOP_REQUEST, ETH_P_ARP, target, dev, saddr,
 		 dst_ha, dev->dev_addr, NULL);
 	if (dst_ha)
 		read_unlock_bh(&neigh->lock);
+=======
+	if (skb && !(dev->priv_flags & IFF_XMIT_DST_RELEASE))
+		dst = skb_dst(skb);
+	arp_send_dst(ARPOP_REQUEST, ETH_P_ARP, target, dev, saddr,
+		     dst_hw, dev->dev_addr, NULL, dst);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int arp_ignore(struct in_device *in_dev, __be32 sip, __be32 tip)
 {
+<<<<<<< HEAD
+=======
+	struct net *net = dev_net(in_dev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int scope;
 
 	switch (IN_DEV_ARP_IGNORE(in_dev)) {
@@ -404,6 +577,10 @@ static int arp_ignore(struct in_device *in_dev, __be32 sip, __be32 tip)
 	case 3:	/* Do not reply for scope host addresses */
 		sip = 0;
 		scope = RT_SCOPE_LINK;
+<<<<<<< HEAD
+=======
+		in_dev = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 4:	/* Reserved */
 	case 5:
@@ -415,7 +592,31 @@ static int arp_ignore(struct in_device *in_dev, __be32 sip, __be32 tip)
 	default:
 		return 0;
 	}
+<<<<<<< HEAD
 	return !inet_confirm_addr(in_dev, sip, tip, scope);
+=======
+	return !inet_confirm_addr(net, in_dev, sip, tip, scope);
+}
+
+static int arp_accept(struct in_device *in_dev, __be32 sip)
+{
+	struct net *net = dev_net(in_dev->dev);
+	int scope = RT_SCOPE_LINK;
+
+	switch (IN_DEV_ARP_ACCEPT(in_dev)) {
+	case 0: /* Don't create new entries from garp */
+		return 0;
+	case 1: /* Create new entries from garp */
+		return 1;
+	case 2: /* Create a neighbor in the arp table only if sip
+		 * is in the same subnet as an address configured
+		 * on the interface that received the garp message
+		 */
+		return !!inet_confirm_addr(net, in_dev, sip, 0, scope);
+	default:
+		return 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int arp_filter(__be32 sip, __be32 tip, struct net_device *dev)
@@ -425,17 +626,26 @@ static int arp_filter(__be32 sip, __be32 tip, struct net_device *dev)
 	/*unsigned long now; */
 	struct net *net = dev_net(dev);
 
+<<<<<<< HEAD
 	rt = ip_route_output(net, sip, tip, 0, 0);
 	if (IS_ERR(rt))
 		return 1;
 	if (rt->dst.dev != dev) {
 		NET_INC_STATS_BH(net, LINUX_MIB_ARPFILTER);
+=======
+	rt = ip_route_output(net, sip, tip, 0, l3mdev_master_ifindex_rcu(dev));
+	if (IS_ERR(rt))
+		return 1;
+	if (rt->dst.dev != dev) {
+		__NET_INC_STATS(net, LINUX_MIB_ARPFILTER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flag = 1;
 	}
 	ip_rt_put(rt);
 	return flag;
 }
 
+<<<<<<< HEAD
 /* OBSOLETE FUNCTIONS */
 
 /*
@@ -502,6 +712,8 @@ EXPORT_SYMBOL(arp_find);
 
 /* END OF OBSOLETE FUNCTIONS */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Check if we can use proxy ARP for this path
  */
@@ -573,7 +785,11 @@ static inline int arp_fwd_pvlan(struct in_device *in_dev,
  */
 
 /*
+<<<<<<< HEAD
  *	Create an arp packet. If (dest_hw == NULL), we create a broadcast
+=======
+ *	Create an arp packet. If dest_hw is not set, we create a broadcast
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	message.
  */
 struct sk_buff *arp_create(int type, int ptype, __be32 dest_ip,
@@ -593,17 +809,30 @@ struct sk_buff *arp_create(int type, int ptype, __be32 dest_ip,
 	 */
 
 	skb = alloc_skb(arp_hdr_len(dev) + hlen + tlen, GFP_ATOMIC);
+<<<<<<< HEAD
 	if (skb == NULL)
+=======
+	if (!skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 
 	skb_reserve(skb, hlen);
 	skb_reset_network_header(skb);
+<<<<<<< HEAD
 	arp = (struct arphdr *) skb_put(skb, arp_hdr_len(dev));
 	skb->dev = dev;
 	skb->protocol = htons(ETH_P_ARP);
 	if (src_hw == NULL)
 		src_hw = dev->dev_addr;
 	if (dest_hw == NULL)
+=======
+	arp = skb_put(skb, arp_hdr_len(dev));
+	skb->dev = dev;
+	skb->protocol = htons(ETH_P_ARP);
+	if (!src_hw)
+		src_hw = dev->dev_addr;
+	if (!dest_hw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dest_hw = dev->broadcast;
 
 	/*
@@ -648,12 +877,15 @@ struct sk_buff *arp_create(int type, int ptype, __be32 dest_ip,
 		arp->ar_pro = htons(ETH_P_IP);
 		break;
 #endif
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_TR)
 	case ARPHRD_IEEE802_TR:
 		arp->ar_hrd = htons(ARPHRD_IEEE802);
 		arp->ar_pro = htons(ETH_P_IP);
 		break;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	arp->ar_hln = dev->addr_len;
@@ -666,11 +898,27 @@ struct sk_buff *arp_create(int type, int ptype, __be32 dest_ip,
 	arp_ptr += dev->addr_len;
 	memcpy(arp_ptr, &src_ip, 4);
 	arp_ptr += 4;
+<<<<<<< HEAD
 	if (target_hw != NULL)
 		memcpy(arp_ptr, target_hw, dev->addr_len);
 	else
 		memset(arp_ptr, 0, dev->addr_len);
 	arp_ptr += dev->addr_len;
+=======
+
+	switch (dev->type) {
+#if IS_ENABLED(CONFIG_FIREWIRE_NET)
+	case ARPHRD_IEEE1394:
+		break;
+#endif
+	default:
+		if (target_hw)
+			memcpy(arp_ptr, target_hw, dev->addr_len);
+		else
+			memset(arp_ptr, 0, dev->addr_len);
+		arp_ptr += dev->addr_len;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(arp_ptr, &dest_ip, 4);
 
 	return skb;
@@ -681,12 +929,21 @@ out:
 }
 EXPORT_SYMBOL(arp_create);
 
+<<<<<<< HEAD
+=======
+static int arp_xmit_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
+{
+	return dev_queue_xmit(skb);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Send an arp packet.
  */
 void arp_xmit(struct sk_buff *skb)
 {
 	/* Send it off, maybe filter it using firewalling first.  */
+<<<<<<< HEAD
 	NF_HOOK(NFPROTO_ARP, NF_ARP_OUT, skb, NULL, skb->dev, dev_queue_xmit);
 }
 EXPORT_SYMBOL(arp_xmit);
@@ -716,12 +973,49 @@ void arp_send(int type, int ptype, __be32 dest_ip,
 	arp_xmit(skb);
 }
 EXPORT_SYMBOL(arp_send);
+=======
+	NF_HOOK(NFPROTO_ARP, NF_ARP_OUT,
+		dev_net(skb->dev), NULL, skb, NULL, skb->dev,
+		arp_xmit_finish);
+}
+EXPORT_SYMBOL(arp_xmit);
+
+static bool arp_is_garp(struct net *net, struct net_device *dev,
+			int *addr_type, __be16 ar_op,
+			__be32 sip, __be32 tip,
+			unsigned char *sha, unsigned char *tha)
+{
+	bool is_garp = tip == sip;
+
+	/* Gratuitous ARP _replies_ also require target hwaddr to be
+	 * the same as source.
+	 */
+	if (is_garp && ar_op == htons(ARPOP_REPLY))
+		is_garp =
+			/* IPv4 over IEEE 1394 doesn't provide target
+			 * hardware address field in its ARP payload.
+			 */
+			tha &&
+			!memcmp(tha, sha, dev->addr_len);
+
+	if (is_garp) {
+		*addr_type = inet_addr_type_dev_table(net, dev, sip);
+		if (*addr_type != RTN_UNICAST)
+			is_garp = false;
+	}
+	return is_garp;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Process an arp request.
  */
 
+<<<<<<< HEAD
 static int arp_process(struct sk_buff *skb)
+=======
+static int arp_process(struct net *net, struct sock *sk, struct sk_buff *skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = skb->dev;
 	struct in_device *in_dev = __in_dev_get_rcu(dev);
@@ -729,18 +1023,32 @@ static int arp_process(struct sk_buff *skb)
 	unsigned char *arp_ptr;
 	struct rtable *rt;
 	unsigned char *sha;
+<<<<<<< HEAD
+=======
+	unsigned char *tha = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 sip, tip;
 	u16 dev_type = dev->type;
 	int addr_type;
 	struct neighbour *n;
+<<<<<<< HEAD
 	struct net *net = dev_net(dev);
+=======
+	struct dst_entry *reply_dst = NULL;
+	bool is_garp = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* arp_rcv below verifies the ARP header and verifies the device
 	 * is ARP'able.
 	 */
 
+<<<<<<< HEAD
 	if (in_dev == NULL)
 		goto out;
+=======
+	if (!in_dev)
+		goto out_free_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	arp = arp_hdr(skb);
 
@@ -748,6 +1056,7 @@ static int arp_process(struct sk_buff *skb)
 	default:
 		if (arp->ar_pro != htons(ETH_P_IP) ||
 		    htons(dev_type) != arp->ar_hrd)
+<<<<<<< HEAD
 			goto out;
 		break;
 	case ARPHRD_ETHER:
@@ -756,6 +1065,15 @@ static int arp_process(struct sk_buff *skb)
 	case ARPHRD_IEEE802:
 		/*
 		 * ETHERNET, Token Ring and Fibre Channel (which are IEEE 802
+=======
+			goto out_free_skb;
+		break;
+	case ARPHRD_ETHER:
+	case ARPHRD_FDDI:
+	case ARPHRD_IEEE802:
+		/*
+		 * ETHERNET, and Fibre Channel (which are IEEE 802
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * devices, according to RFC 2625) devices will accept ARP
 		 * hardware types of either 1 (Ethernet) or 6 (IEEE 802.2).
 		 * This is the case also of FDDI, where the RFC 1390 says that
@@ -766,17 +1084,29 @@ static int arp_process(struct sk_buff *skb)
 		if ((arp->ar_hrd != htons(ARPHRD_ETHER) &&
 		     arp->ar_hrd != htons(ARPHRD_IEEE802)) ||
 		    arp->ar_pro != htons(ETH_P_IP))
+<<<<<<< HEAD
 			goto out;
+=======
+			goto out_free_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ARPHRD_AX25:
 		if (arp->ar_pro != htons(AX25_P_IP) ||
 		    arp->ar_hrd != htons(ARPHRD_AX25))
+<<<<<<< HEAD
 			goto out;
+=======
+			goto out_free_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case ARPHRD_NETROM:
 		if (arp->ar_pro != htons(AX25_P_IP) ||
 		    arp->ar_hrd != htons(ARPHRD_NETROM))
+<<<<<<< HEAD
 			goto out;
+=======
+			goto out_free_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -784,7 +1114,11 @@ static int arp_process(struct sk_buff *skb)
 
 	if (arp->ar_op != htons(ARPOP_REPLY) &&
 	    arp->ar_op != htons(ARPOP_REQUEST))
+<<<<<<< HEAD
 		goto out;
+=======
+		goto out_free_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Extract fields
@@ -794,14 +1128,40 @@ static int arp_process(struct sk_buff *skb)
 	arp_ptr += dev->addr_len;
 	memcpy(&sip, arp_ptr, 4);
 	arp_ptr += 4;
+<<<<<<< HEAD
 	arp_ptr += dev->addr_len;
+=======
+	switch (dev_type) {
+#if IS_ENABLED(CONFIG_FIREWIRE_NET)
+	case ARPHRD_IEEE1394:
+		break;
+#endif
+	default:
+		tha = arp_ptr;
+		arp_ptr += dev->addr_len;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(&tip, arp_ptr, 4);
 /*
  *	Check for bad requests for 127.x.x.x and requests for multicast
  *	addresses.  If this is one such, delete it.
  */
+<<<<<<< HEAD
 	if (ipv4_is_loopback(tip) || ipv4_is_multicast(tip))
 		goto out;
+=======
+	if (ipv4_is_multicast(tip) ||
+	    (!IN_DEV_ROUTE_LOCALNET(in_dev) && ipv4_is_loopback(tip)))
+		goto out_free_skb;
+
+ /*
+  *	For some 802.11 wireless deployments (and possibly other networks),
+  *	there will be an ARP proxy and gratuitous ARP frames are attacks
+  *	and thus should not be accepted.
+  */
+	if (sip == tip && IN_DEV_ORCONF(in_dev, DROP_GRATUITOUS_ARP))
+		goto out_free_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *     Special case: We must set Frame Relay source Q.922 address
@@ -826,6 +1186,7 @@ static int arp_process(struct sk_buff *skb)
  *  cache.
  */
 
+<<<<<<< HEAD
 	/* Special case: IPv4 duplicate address detection packet (RFC2131) */
 	if (sip == 0) {
 		if (arp->ar_op == htons(ARPOP_REQUEST) &&
@@ -834,6 +1195,21 @@ static int arp_process(struct sk_buff *skb)
 			arp_send(ARPOP_REPLY, ETH_P_ARP, sip, dev, tip, sha,
 				 dev->dev_addr, sha);
 		goto out;
+=======
+	if (arp->ar_op == htons(ARPOP_REQUEST) && skb_metadata_dst(skb))
+		reply_dst = (struct dst_entry *)
+			    iptunnel_metadata_reply(skb_metadata_dst(skb),
+						    GFP_ATOMIC);
+
+	/* Special case: IPv4 duplicate address detection packet (RFC2131) */
+	if (sip == 0) {
+		if (arp->ar_op == htons(ARPOP_REQUEST) &&
+		    inet_addr_type_dev_table(net, dev, tip) == RTN_LOCAL &&
+		    !arp_ignore(in_dev, sip, tip))
+			arp_send_dst(ARPOP_REPLY, ETH_P_ARP, sip, dev, tip,
+				     sha, dev->dev_addr, sha, reply_dst);
+		goto out_consume_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (arp->ar_op == htons(ARPOP_REQUEST) &&
@@ -851,6 +1227,7 @@ static int arp_process(struct sk_buff *skb)
 			if (!dont_send) {
 				n = neigh_event_ns(&arp_tbl, sha, &sip, dev);
 				if (n) {
+<<<<<<< HEAD
 					arp_send(ARPOP_REPLY, ETH_P_ARP, sip,
 						 dev, tip, sha, dev->dev_addr,
 						 sha);
@@ -858,6 +1235,16 @@ static int arp_process(struct sk_buff *skb)
 				}
 			}
 			goto out;
+=======
+					arp_send_dst(ARPOP_REPLY, ETH_P_ARP,
+						     sip, dev, tip, sha,
+						     dev->dev_addr, sha,
+						     reply_dst);
+					neigh_release(n);
+				}
+			}
+			goto out_consume_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (IN_DEV_FORWARD(in_dev)) {
 			if (addr_type == RTN_UNICAST  &&
 			    (arp_fwd_proxy(in_dev, dev, rt) ||
@@ -870,6 +1257,7 @@ static int arp_process(struct sk_buff *skb)
 
 				if (NEIGH_CB(skb)->flags & LOCALLY_ENQUEUED ||
 				    skb->pkt_type == PACKET_HOST ||
+<<<<<<< HEAD
 				    in_dev->arp_parms->proxy_delay == 0) {
 					arp_send(ARPOP_REPLY, ETH_P_ARP, sip,
 						 dev, tip, sha, dev->dev_addr,
@@ -880,6 +1268,19 @@ static int arp_process(struct sk_buff *skb)
 					return 0;
 				}
 				goto out;
+=======
+				    NEIGH_VAR(in_dev->arp_parms, PROXY_DELAY) == 0) {
+					arp_send_dst(ARPOP_REPLY, ETH_P_ARP,
+						     sip, dev, tip, sha,
+						     dev->dev_addr, sha,
+						     reply_dst);
+				} else {
+					pneigh_enqueue(&arp_tbl,
+						       in_dev->arp_parms, skb);
+					goto out_free_dst;
+				}
+				goto out_consume_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -888,15 +1289,36 @@ static int arp_process(struct sk_buff *skb)
 
 	n = __neigh_lookup(&arp_tbl, &sip, dev, 0);
 
+<<<<<<< HEAD
 	if (IN_DEV_ARP_ACCEPT(in_dev)) {
+=======
+	addr_type = -1;
+	if (n || arp_accept(in_dev, sip)) {
+		is_garp = arp_is_garp(net, dev, &addr_type, arp->ar_op,
+				      sip, tip, sha, tha);
+	}
+
+	if (arp_accept(in_dev, sip)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Unsolicited ARP is not accepted by default.
 		   It is possible, that this option should be enabled for some
 		   devices (strip is candidate)
 		 */
+<<<<<<< HEAD
 		if (n == NULL &&
 		    (arp->ar_op == htons(ARPOP_REPLY) ||
 		     (arp->ar_op == htons(ARPOP_REQUEST) && tip == sip)) &&
 		    inet_addr_type(net, sip) == RTN_UNICAST)
+=======
+		if (!n &&
+		    (is_garp ||
+		     (arp->ar_op == htons(ARPOP_REPLY) &&
+		      (addr_type == RTN_UNICAST ||
+		       (addr_type < 0 &&
+			/* postpone calculation to as late as possible */
+			inet_addr_type_dev_table(net, dev, sip) ==
+				RTN_UNICAST)))))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			n = __neigh_lookup(&arp_tbl, &sip, dev, 1);
 	}
 
@@ -909,7 +1331,14 @@ static int arp_process(struct sk_buff *skb)
 		   agents are active. Taking the first reply prevents
 		   arp trashing and chooses the fastest router.
 		 */
+<<<<<<< HEAD
 		override = time_after(jiffies, n->updated + n->parms->locktime);
+=======
+		override = time_after(jiffies,
+				      n->updated +
+				      NEIGH_VAR(n->parms, LOCKTIME)) ||
+			   is_garp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Broadcast replies and request packets
 		   do not assert neighbour reachability.
@@ -918,6 +1347,7 @@ static int arp_process(struct sk_buff *skb)
 		    skb->pkt_type != PACKET_HOST)
 			state = NUD_STALE;
 		neigh_update(n, sha, state,
+<<<<<<< HEAD
 			     override ? NEIGH_UPDATE_F_OVERRIDE : 0);
 		neigh_release(n);
 	}
@@ -925,13 +1355,39 @@ static int arp_process(struct sk_buff *skb)
 out:
 	consume_skb(skb);
 	return 0;
+=======
+			     override ? NEIGH_UPDATE_F_OVERRIDE : 0, 0);
+		neigh_release(n);
+	}
+
+out_consume_skb:
+	consume_skb(skb);
+
+out_free_dst:
+	dst_release(reply_dst);
+	return NET_RX_SUCCESS;
+
+out_free_skb:
+	kfree_skb(skb);
+	return NET_RX_DROP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void parp_redo(struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	arp_process(skb);
 }
 
+=======
+	arp_process(dev_net(skb->dev), NULL, skb);
+}
+
+static int arp_is_multicast(const void *pkey)
+{
+	return ipv4_is_multicast(*((__be32 *)pkey));
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Receive an arp request from the device layer.
@@ -940,13 +1396,28 @@ static void parp_redo(struct sk_buff *skb)
 static int arp_rcv(struct sk_buff *skb, struct net_device *dev,
 		   struct packet_type *pt, struct net_device *orig_dev)
 {
+<<<<<<< HEAD
 	struct arphdr *arp;
+=======
+	const struct arphdr *arp;
+
+	/* do not tweak dropwatch on an ARP we will ignore */
+	if (dev->flags & IFF_NOARP ||
+	    skb->pkt_type == PACKET_OTHERHOST ||
+	    skb->pkt_type == PACKET_LOOPBACK)
+		goto consumeskb;
+
+	skb = skb_share_check(skb, GFP_ATOMIC);
+	if (!skb)
+		goto out_of_mem;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ARP header, plus 2 device addresses, plus 2 IP addresses.  */
 	if (!pskb_may_pull(skb, arp_hdr_len(dev)))
 		goto freeskb;
 
 	arp = arp_hdr(skb);
+<<<<<<< HEAD
 	if (arp->ar_hln != dev->addr_len ||
 	    dev->flags & IFF_NOARP ||
 	    skb->pkt_type == PACKET_OTHERHOST ||
@@ -966,6 +1437,24 @@ freeskb:
 	kfree_skb(skb);
 out_of_mem:
 	return 0;
+=======
+	if (arp->ar_hln != dev->addr_len || arp->ar_pln != 4)
+		goto freeskb;
+
+	memset(NEIGH_CB(skb), 0, sizeof(struct neighbour_cb));
+
+	return NF_HOOK(NFPROTO_ARP, NF_ARP_IN,
+		       dev_net(dev), NULL, skb, dev, NULL,
+		       arp_process);
+
+consumeskb:
+	consume_skb(skb);
+	return NET_RX_SUCCESS;
+freeskb:
+	kfree_skb(skb);
+out_of_mem:
+	return NET_RX_DROP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -978,7 +1467,11 @@ out_of_mem:
 
 static int arp_req_set_proxy(struct net *net, struct net_device *dev, int on)
 {
+<<<<<<< HEAD
 	if (dev == NULL) {
+=======
+	if (!dev) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		IPV4_DEVCONF_ALL(net, PROXY_ARP) = on;
 		return 0;
 	}
@@ -1004,7 +1497,11 @@ static int arp_req_set_public(struct net *net, struct arpreq *r,
 			return -ENODEV;
 	}
 	if (mask) {
+<<<<<<< HEAD
 		if (pneigh_lookup(&arp_tbl, net, &ip, dev, 1) == NULL)
+=======
+		if (!pneigh_lookup(&arp_tbl, net, &ip, dev, 1))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOBUFS;
 		return 0;
 	}
@@ -1025,7 +1522,11 @@ static int arp_req_set(struct net *net, struct arpreq *r,
 	ip = ((struct sockaddr_in *)&r->arp_pa)->sin_addr.s_addr;
 	if (r->arp_flags & ATF_PERM)
 		r->arp_flags |= ATF_COM;
+<<<<<<< HEAD
 	if (dev == NULL) {
+=======
+	if (!dev) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct rtable *rt = ip_route_output(net, ip, 0, RTO_ONLINK, 0);
 
 		if (IS_ERR(rt))
@@ -1059,19 +1560,31 @@ static int arp_req_set(struct net *net, struct arpreq *r,
 	neigh = __neigh_lookup_errno(&arp_tbl, &ip, dev);
 	err = PTR_ERR(neigh);
 	if (!IS_ERR(neigh)) {
+<<<<<<< HEAD
 		unsigned state = NUD_STALE;
+=======
+		unsigned int state = NUD_STALE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r->arp_flags & ATF_PERM)
 			state = NUD_PERMANENT;
 		err = neigh_update(neigh, (r->arp_flags & ATF_COM) ?
 				   r->arp_ha.sa_data : NULL, state,
 				   NEIGH_UPDATE_F_OVERRIDE |
+<<<<<<< HEAD
 				   NEIGH_UPDATE_F_ADMIN);
+=======
+				   NEIGH_UPDATE_F_ADMIN, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		neigh_release(neigh);
 	}
 	return err;
 }
 
+<<<<<<< HEAD
 static unsigned arp_state_to_flags(struct neighbour *neigh)
+=======
+static unsigned int arp_state_to_flags(struct neighbour *neigh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (neigh->nud_state&NUD_PERMANENT)
 		return ATF_PERM | ATF_COM;
@@ -1093,6 +1606,7 @@ static int arp_req_get(struct arpreq *r, struct net_device *dev)
 
 	neigh = neigh_lookup(&arp_tbl, &ip, dev);
 	if (neigh) {
+<<<<<<< HEAD
 		read_lock_bh(&neigh->lock);
 		memcpy(r->arp_ha.sa_data, neigh->ha, dev->addr_len);
 		r->arp_flags = arp_state_to_flags(neigh);
@@ -1101,10 +1615,24 @@ static int arp_req_get(struct arpreq *r, struct net_device *dev)
 		strlcpy(r->arp_dev, dev->name, sizeof(r->arp_dev));
 		neigh_release(neigh);
 		err = 0;
+=======
+		if (!(READ_ONCE(neigh->nud_state) & NUD_NOARP)) {
+			read_lock_bh(&neigh->lock);
+			memcpy(r->arp_ha.sa_data, neigh->ha,
+			       min(dev->addr_len, sizeof(r->arp_ha.sa_data_min)));
+			r->arp_flags = arp_state_to_flags(neigh);
+			read_unlock_bh(&neigh->lock);
+			r->arp_ha.sa_family = dev->type;
+			strscpy(r->arp_dev, dev->name, sizeof(r->arp_dev));
+			err = 0;
+		}
+		neigh_release(neigh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
 
+<<<<<<< HEAD
 int arp_invalidate(struct net_device *dev, __be32 ip)
 {
 	struct neighbour *neigh = neigh_lookup(&arp_tbl, &ip, dev);
@@ -1116,11 +1644,36 @@ int arp_invalidate(struct net_device *dev, __be32 ip)
 					   NEIGH_UPDATE_F_OVERRIDE|
 					   NEIGH_UPDATE_F_ADMIN);
 		neigh_release(neigh);
+=======
+int arp_invalidate(struct net_device *dev, __be32 ip, bool force)
+{
+	struct neighbour *neigh = neigh_lookup(&arp_tbl, &ip, dev);
+	int err = -ENXIO;
+	struct neigh_table *tbl = &arp_tbl;
+
+	if (neigh) {
+		if ((READ_ONCE(neigh->nud_state) & NUD_VALID) && !force) {
+			neigh_release(neigh);
+			return 0;
+		}
+
+		if (READ_ONCE(neigh->nud_state) & ~NUD_NOARP)
+			err = neigh_update(neigh, NULL, NUD_FAILED,
+					   NEIGH_UPDATE_F_OVERRIDE|
+					   NEIGH_UPDATE_F_ADMIN, 0);
+		write_lock_bh(&tbl->lock);
+		neigh_release(neigh);
+		neigh_remove_one(neigh, tbl);
+		write_unlock_bh(&tbl->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(arp_invalidate);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int arp_req_delete_public(struct net *net, struct arpreq *r,
 		struct net_device *dev)
@@ -1146,7 +1699,11 @@ static int arp_req_delete(struct net *net, struct arpreq *r,
 		return arp_req_delete_public(net, r, dev);
 
 	ip = ((struct sockaddr_in *)&r->arp_pa)->sin_addr.s_addr;
+<<<<<<< HEAD
 	if (dev == NULL) {
+=======
+	if (!dev) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct rtable *rt = ip_route_output(net, ip, 0, RTO_ONLINK, 0);
 		if (IS_ERR(rt))
 			return PTR_ERR(rt);
@@ -1155,7 +1712,11 @@ static int arp_req_delete(struct net *net, struct arpreq *r,
 		if (!dev)
 			return -EINVAL;
 	}
+<<<<<<< HEAD
 	return arp_invalidate(dev, ip);
+=======
+	return arp_invalidate(dev, ip, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1173,6 +1734,10 @@ int arp_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 	case SIOCSARP:
 		if (!ns_capable(net->user_ns, CAP_NET_ADMIN))
 			return -EPERM;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SIOCGARP:
 		err = copy_from_user(&r, arg, sizeof(struct arpreq));
 		if (err)
@@ -1195,7 +1760,11 @@ int arp_ioctl(struct net *net, unsigned int cmd, void __user *arg)
 	if (r.arp_dev[0]) {
 		err = -ENODEV;
 		dev = __dev_get_by_name(net, r.arp_dev);
+<<<<<<< HEAD
 		if (dev == NULL)
+=======
+		if (!dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 
 		/* Mmmm... It is wrong... ARPHRD_NETROM==0 */
@@ -1230,12 +1799,37 @@ out:
 static int arp_netdev_event(struct notifier_block *this, unsigned long event,
 			    void *ptr)
 {
+<<<<<<< HEAD
 	struct net_device *dev = ptr;
+=======
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+	struct netdev_notifier_change_info *change_info;
+	struct in_device *in_dev;
+	bool evict_nocarrier;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case NETDEV_CHANGEADDR:
 		neigh_changeaddr(&arp_tbl, dev);
+<<<<<<< HEAD
 		rt_cache_flush(dev_net(dev), 0);
+=======
+		rt_cache_flush(dev_net(dev));
+		break;
+	case NETDEV_CHANGE:
+		change_info = ptr;
+		if (change_info->flags_changed & IFF_NOARP)
+			neigh_changeaddr(&arp_tbl, dev);
+
+		in_dev = __in_dev_get_rtnl(dev);
+		if (!in_dev)
+			evict_nocarrier = true;
+		else
+			evict_nocarrier = IN_DEV_ARP_EVICT_NOCARRIER(in_dev);
+
+		if (evict_nocarrier && !netif_carrier_ok(dev))
+			neigh_carrier_down(&arp_tbl, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
@@ -1267,6 +1861,7 @@ static struct packet_type arp_packet_type __read_mostly = {
 	.func =	arp_rcv,
 };
 
+<<<<<<< HEAD
 static int arp_proc_init(void);
 
 void __init arp_init(void)
@@ -1289,6 +1884,15 @@ void __init arp_init(void)
  *	ax25 -> ASCII conversion
  */
 static char *ax2asc2(ax25_address *a, char *buf)
+=======
+#ifdef CONFIG_PROC_FS
+#if IS_ENABLED(CONFIG_AX25)
+
+/*
+ *	ax25 -> ASCII conversion
+ */
+static void ax2asc2(ax25_address *a, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char c, *s;
 	int n;
@@ -1310,10 +1914,17 @@ static char *ax2asc2(ax25_address *a, char *buf)
 	*s++ = n + '0';
 	*s++ = '\0';
 
+<<<<<<< HEAD
 	if (*buf == '\0' || *buf == '-')
 		return "*";
 
 	return buf;
+=======
+	if (*buf == '\0' || *buf == '-') {
+		buf[0] = '*';
+		buf[1] = '\0';
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_AX25 */
 
@@ -1347,7 +1958,11 @@ static void arp_format_neigh_entry(struct seq_file *seq,
 	}
 #endif
 	sprintf(tbuf, "%pI4", n->primary_key);
+<<<<<<< HEAD
 	seq_printf(seq, "%-16s 0x%-10x0x%-10x%s     *        %s\n",
+=======
+	seq_printf(seq, "%-16s 0x%-10x0x%-10x%-17s     *        %s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   tbuf, hatype, arp_state_to_flags(n), hbuffer, dev->name);
 	read_unlock(&n->lock);
 }
@@ -1390,14 +2005,18 @@ static void *arp_seq_start(struct seq_file *seq, loff_t *pos)
 	return neigh_seq_start(seq, pos, &arp_tbl, NEIGH_SEQ_SKIP_NOARP);
 }
 
+<<<<<<< HEAD
 /* ------------------------------------------------------------------------ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct seq_operations arp_seq_ops = {
 	.start	= arp_seq_start,
 	.next	= neigh_seq_next,
 	.stop	= neigh_seq_stop,
 	.show	= arp_seq_show,
 };
+<<<<<<< HEAD
 
 static int arp_seq_open(struct inode *inode, struct file *file)
 {
@@ -1417,13 +2036,25 @@ static const struct file_operations arp_seq_fops = {
 static int __net_init arp_net_init(struct net *net)
 {
 	if (!proc_net_fops_create(net, "arp", S_IRUGO, &arp_seq_fops))
+=======
+#endif /* CONFIG_PROC_FS */
+
+static int __net_init arp_net_init(struct net *net)
+{
+	if (!proc_create_net("arp", 0444, net->proc_net, &arp_seq_ops,
+			sizeof(struct neigh_seq_state)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	return 0;
 }
 
 static void __net_exit arp_net_exit(struct net *net)
 {
+<<<<<<< HEAD
 	proc_net_remove(net, "arp");
+=======
+	remove_proc_entry("arp", net->proc_net);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pernet_operations arp_net_ops = {
@@ -1431,6 +2062,7 @@ static struct pernet_operations arp_net_ops = {
 	.exit = arp_net_exit,
 };
 
+<<<<<<< HEAD
 static int __init arp_proc_init(void)
 {
 	return register_pernet_subsys(&arp_net_ops);
@@ -1444,3 +2076,16 @@ static int __init arp_proc_init(void)
 }
 
 #endif /* CONFIG_PROC_FS */
+=======
+void __init arp_init(void)
+{
+	neigh_table_init(NEIGH_ARP_TABLE, &arp_tbl);
+
+	dev_add_pack(&arp_packet_type);
+	register_pernet_subsys(&arp_net_ops);
+#ifdef CONFIG_SYSCTL
+	neigh_sysctl_register(NULL, &arp_tbl.parms, NULL);
+#endif
+	register_netdevice_notifier(&arp_netdev_notifier);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/arm940.S: utility functions for ARM940T
  *
  *  Copyright (C) 2004-2006 Hyok S. Choi (hyok.choi@samsung.com)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -14,6 +19,15 @@
 #include <asm/hwcap.h>
 #include <asm/pgtable-hwdef.h>
 #include <asm/pgtable.h>
+=======
+ */
+#include <linux/linkage.h>
+#include <linux/init.h>
+#include <linux/pgtable.h>
+#include <asm/assembler.h>
+#include <asm/hwcap.h>
+#include <asm/pgtable-hwdef.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ptrace.h>
 #include "proc-macros.S"
 
@@ -31,7 +45,11 @@
  */
 ENTRY(cpu_arm940_proc_init)
 ENTRY(cpu_arm940_switch_mm)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_arm940_proc_fin()
@@ -41,7 +59,11 @@ ENTRY(cpu_arm940_proc_fin)
 	bic	r0, r0, #0x00001000		@ i-cache
 	bic	r0, r0, #0x00000004		@ d-cache
 	mcr	p15, 0, r0, c1, c0, 0		@ disable caches
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_arm940_reset(loc)
@@ -58,7 +80,11 @@ ENTRY(cpu_arm940_reset)
 	bic	ip, ip, #0x00000005		@ .............c.p
 	bic	ip, ip, #0x00001000		@ i-cache
 	mcr	p15, 0, ip, c1, c0, 0		@ ctrl register
+<<<<<<< HEAD
 	mov	pc, r0
+=======
+	ret	r0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(cpu_arm940_reset)
 	.popsection
 
@@ -68,7 +94,11 @@ ENDPROC(cpu_arm940_reset)
 	.align	5
 ENTRY(cpu_arm940_do_idle)
 	mcr	p15, 0, r0, c7, c0, 4		@ Wait for interrupt
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	flush_icache_all()
@@ -78,7 +108,11 @@ ENTRY(cpu_arm940_do_idle)
 ENTRY(arm940_flush_icache_all)
 	mov	r0, #0
 	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(arm940_flush_icache_all)
 
 /*
@@ -122,7 +156,11 @@ ENTRY(arm940_flush_user_cache_range)
 	tst	r2, #VM_EXEC
 	mcrne	p15, 0, ip, c7, c5, 0		@ invalidate I cache
 	mcrne	p15, 0, ip, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	coherent_kern_range(start, end)
@@ -160,7 +198,11 @@ ENTRY(arm940_coherent_user_range)
  *	- size	- region size
  */
 ENTRY(arm940_flush_kern_dcache_area)
+<<<<<<< HEAD
 	mov	ip, #0
+=======
+	mov	r0, #0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov	r1, #(CACHE_DSEGMENTS - 1) << 4	@ 4 segments
 1:	orr	r3, r1, #(CACHE_DENTRIES - 1) << 26 @ 64 entries
 2:	mcr	p15, 0, r3, c7, c14, 2		@ clean/flush D index
@@ -168,9 +210,15 @@ ENTRY(arm940_flush_kern_dcache_area)
 	bcs	2b				@ entries 63 to 0
 	subs	r1, r1, #1 << 4
 	bcs	1b				@ segments 7 to 0
+<<<<<<< HEAD
 	mcr	p15, 0, ip, c7, c5, 0		@ invalidate I cache
 	mcr	p15, 0, ip, c7, c10, 4		@ drain WB
 	mov	pc, lr
+=======
+	mcr	p15, 0, r0, c7, c5, 0		@ invalidate I cache
+	mcr	p15, 0, r0, c7, c10, 4		@ drain WB
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_inv_range(start, end)
@@ -191,7 +239,11 @@ arm940_dma_inv_range:
 	subs	r1, r1, #1 << 4
 	bcs	1b				@ segments 7 to 0
 	mcr	p15, 0, ip, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_clean_range(start, end)
@@ -215,7 +267,11 @@ ENTRY(cpu_arm940_dcache_clean_area)
 	bcs	1b				@ segments 7 to 0
 #endif
 	mcr	p15, 0, ip, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_flush_range(start, end)
@@ -241,7 +297,11 @@ ENTRY(arm940_dma_flush_range)
 	subs	r1, r1, #1 << 4
 	bcs	1b				@ segments 7 to 0
 	mcr	p15, 0, ip, c7, c10, 4		@ drain WB
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	dma_map_area(start, size, dir)
@@ -264,7 +324,11 @@ ENDPROC(arm940_dma_map_area)
  *	- dir	- DMA direction
  */
 ENTRY(arm940_dma_unmap_area)
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(arm940_dma_unmap_area)
 
 	.globl	arm940_flush_kern_cache_louis
@@ -273,8 +337,11 @@ ENDPROC(arm940_dma_unmap_area)
 	@ define struct cpu_cache_fns (see <asm/cacheflush.h> and proc-macros.S)
 	define_cache_functions arm940
 
+<<<<<<< HEAD
 	__CPUINIT
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type	__arm940_setup, #function
 __arm940_setup:
 	mov	r0, #0
@@ -299,6 +366,7 @@ __arm940_setup:
 	mcr	p15, 0, r0, c6,	c0, 1
 
 	ldr	r0, =(CONFIG_DRAM_BASE & 0xFFFFF000) @ base[31:12] of RAM
+<<<<<<< HEAD
 	ldr	r1, =(CONFIG_DRAM_SIZE >> 12)	@ size of RAM (must be >= 4KB)
 	mov	r2, #10				@ 11 is the minimum (4KB)
 1:	add	r2, r2, #1			@ area size *= 2
@@ -319,6 +387,18 @@ __arm940_setup:
 	orr	r0, r0, #1			@ set enable bit
 	mcr	p15, 0, r0, c6,	c2, 0		@ set area 2, ROM/FLASH
 	mcr	p15, 0, r0, c6,	c2, 1
+=======
+	ldr	r7, =CONFIG_DRAM_SIZE >> 12	@ size of RAM (must be >= 4KB)
+	pr_val	r3, r0, r7, #1
+	mcr	p15, 0, r3, c6,	c1, 0		@ set area 1, RAM
+	mcr	p15, 0, r3, c6,	c1, 1
+
+	ldr	r0, =(CONFIG_FLASH_MEM_BASE & 0xFFFFF000) @ base[31:12] of FLASH
+	ldr	r7, =CONFIG_FLASH_SIZE		@ size of FLASH (must be >= 4KB)
+	pr_val	r3, r0, r6, #1
+	mcr	p15, 0, r3, c6,	c2, 0		@ set area 2, ROM/FLASH
+	mcr	p15, 0, r3, c6,	c2, 1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mov	r0, #0x06
 	mcr	p15, 0, r0, c2, c0, 0		@ Region 1&2 cacheable
@@ -339,7 +419,11 @@ __arm940_setup:
 	orr	r0, r0, #0x00001000		@ I-cache
 	orr	r0, r0, #0x00000005		@ MPU/D-cache
 
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.size	__arm940_setup, . - __arm940_setup
 
@@ -356,14 +440,22 @@ __arm940_setup:
 
 	.align
 
+<<<<<<< HEAD
 	.section ".proc.info.init", #alloc, #execinstr
+=======
+	.section ".proc.info.init", "a"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.type	__arm940_proc_info,#object
 __arm940_proc_info:
 	.long	0x41009400
 	.long	0xff00fff0
 	.long	0
+<<<<<<< HEAD
 	b	__arm940_setup
+=======
+	initfn	__arm940_setup, __arm940_proc_info
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	cpu_arch_name
 	.long	cpu_elf_name
 	.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB

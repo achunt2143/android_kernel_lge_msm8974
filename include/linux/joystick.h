@@ -1,11 +1,16 @@
+<<<<<<< HEAD
 #ifndef _LINUX_JOYSTICK_H
 #define _LINUX_JOYSTICK_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 1996-2000 Vojtech Pavlik
  *
  *  Sponsored by SuSE
  */
+<<<<<<< HEAD
 
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -133,6 +138,15 @@ struct JS_DATA_SAVE_TYPE_64 {
 };
 
 #ifdef __KERNEL__
+=======
+/*
+ */
+#ifndef _LINUX_JOYSTICK_H
+#define _LINUX_JOYSTICK_H
+
+#include <uapi/linux/joystick.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if BITS_PER_LONG == 64
 #define JS_DATA_SAVE_TYPE JS_DATA_SAVE_TYPE_64
 #elif BITS_PER_LONG == 32
@@ -140,6 +154,9 @@ struct JS_DATA_SAVE_TYPE_64 {
 #else
 #error Unexpected BITS_PER_LONG
 #endif
+<<<<<<< HEAD
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_JOYSTICK_H */

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ISA Plug & Play support
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Changelog:
  *  2000-01-01	Added quirks handling for buggy hardware
  *		Peter Denison <peterd@pnd-pc.demon.co.uk>
@@ -34,7 +41,11 @@
  *  2003-08-11	Resource Management Updates - Adam Belay <ambx1@neo.rr.com>
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/moduleparam.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/delay.h>
@@ -54,8 +65,11 @@ static int isapnp_rdp;		/* Read Data Port */
 static int isapnp_reset = 1;	/* reset all PnP cards (deactivate) */
 static int isapnp_verbose = 1;	/* verbose mode */
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Generic ISA Plug & Play support");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(isapnp_disable, int, 0);
 MODULE_PARM_DESC(isapnp_disable, "ISA Plug & Play disable");
 module_param(isapnp_rdp, int, 0);
@@ -64,7 +78,10 @@ module_param(isapnp_reset, int, 0);
 MODULE_PARM_DESC(isapnp_reset, "ISA Plug & Play reset all cards");
 module_param(isapnp_verbose, int, 0);
 MODULE_PARM_DESC(isapnp_verbose, "ISA Plug & Play verbose mode");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _PIDXR		0x279
 #define _PNPWRP		0xa79
@@ -379,10 +396,13 @@ static int __init isapnp_read_tag(unsigned char *type, unsigned short *size)
 		*type = (tag >> 3) & 0x0f;
 		*size = tag & 0x07;
 	}
+<<<<<<< HEAD
 #if 0
 	printk(KERN_DEBUG "tag = 0x%x, type = 0x%x, size = %i\n", tag, *type,
 	       *size);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*type == 0xff && *size == 0xffff)	/* probably invalid data */
 		return -1;
 	return 0;
@@ -768,6 +788,7 @@ __skip:
 }
 
 /*
+<<<<<<< HEAD
  *  Compute ISA PnP checksum for first eight bytes.
  */
 static unsigned char __init isapnp_checksum(unsigned char *data)
@@ -790,12 +811,18 @@ static unsigned char __init isapnp_checksum(unsigned char *data)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Build device list for all present ISA PnP devices.
  */
 static int __init isapnp_build_device_list(void)
 {
 	int csn;
+<<<<<<< HEAD
 	unsigned char header[9], checksum;
+=======
+	unsigned char header[9];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pnp_card *card;
 	u32 eisa_id;
 	char id[8];
@@ -805,7 +832,10 @@ static int __init isapnp_build_device_list(void)
 	for (csn = 1; csn <= isapnp_csn_count; csn++) {
 		isapnp_wake(csn);
 		isapnp_peek(header, 9);
+<<<<<<< HEAD
 		checksum = isapnp_checksum(header);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eisa_id = header[0] | header[1] << 8 |
 			  header[2] << 16 | header[3] << 24;
 		pnp_eisa_id_to_string(eisa_id, id);
@@ -813,6 +843,7 @@ static int __init isapnp_build_device_list(void)
 		if (!card)
 			continue;
 
+<<<<<<< HEAD
 #if 0
 		dev_info(&card->dev,
 		       "vendor: %02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x:%02x\n",
@@ -820,6 +851,8 @@ static int __init isapnp_build_device_list(void)
 		       header[5], header[6], header[7], header[8]);
 		dev_info(&card->dev, "checksum = %#x\n", checksum);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		INIT_LIST_HEAD(&card->devices);
 		card->serial =
 		    (header[7] << 24) | (header[6] << 16) | (header[5] << 8) |

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/cio/chpid.h
  *
@@ -23,6 +24,30 @@ struct chp_id {
 #ifdef __KERNEL__
 #include <asm/cio.h>
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ *    Copyright IBM Corp. 2007, 2012
+ *    Author(s): Peter Oberparleiter <peter.oberparleiter@de.ibm.com>
+ */
+#ifndef _ASM_S390_CHPID_H
+#define _ASM_S390_CHPID_H
+
+#include <uapi/asm/chpid.h>
+#include <asm/cio.h>
+
+struct channel_path_desc_fmt0 {
+	u8 flags;
+	u8 lsn;
+	u8 desc;
+	u8 chpid;
+	u8 swla;
+	u8 zeroes;
+	u8 chla;
+	u8 chpp;
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void chp_id_init(struct chp_id *chpid)
 {
 	memset(chpid, 0, sizeof(struct chp_id));
@@ -51,6 +76,9 @@ static inline int chp_id_is_valid(struct chp_id *chpid)
 
 #define chp_id_for_each(c) \
 	for (chp_id_init(c); chp_id_is_valid(c); chp_id_next(c))
+<<<<<<< HEAD
 #endif /* __KERNEL */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_S390_CHPID_H */

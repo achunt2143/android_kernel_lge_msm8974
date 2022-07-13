@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ip_vs_app.c: Application module support for IPVS
  *
  * Authors:     Wensong Zhang <wensong@linuxvirtualserver.org>
  *
+<<<<<<< HEAD
  *              This program is free software; you can redistribute it and/or
  *              modify it under the terms of the GNU General Public License
  *              as published by the Free Software Foundation; either version
  *              2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Most code here is taken from ip_masq_app.c in kernel 2.2. The difference
  * is that ip_vs_app module handles the reverse direction (incoming requests
  * and outgoing responses).
@@ -15,7 +22,10 @@
  *		IP_MASQ_APP application masquerading module
  *
  * Author:	Juan Jose Ciarlante, <jjciarla@raiz.uncu.edu.ar>
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define KMSG_COMPONENT "IPVS"
@@ -58,12 +68,31 @@ static inline void ip_vs_app_put(struct ip_vs_app *app)
 	module_put(app->module);
 }
 
+<<<<<<< HEAD
+=======
+static void ip_vs_app_inc_destroy(struct ip_vs_app *inc)
+{
+	kfree(inc->timeout_table);
+	kfree(inc);
+}
+
+static void ip_vs_app_inc_rcu_free(struct rcu_head *head)
+{
+	struct ip_vs_app *inc = container_of(head, struct ip_vs_app, rcu_head);
+
+	ip_vs_app_inc_destroy(inc);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Allocate/initialize app incarnation and register it in proto apps.
  */
 static int
+<<<<<<< HEAD
 ip_vs_app_inc_new(struct net *net, struct ip_vs_app *app, __u16 proto,
+=======
+ip_vs_app_inc_new(struct netns_ipvs *ipvs, struct ip_vs_app *app, __u16 proto,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __u16 port)
 {
 	struct ip_vs_protocol *pp;
@@ -95,7 +124,11 @@ ip_vs_app_inc_new(struct net *net, struct ip_vs_app *app, __u16 proto,
 		}
 	}
 
+<<<<<<< HEAD
 	ret = pp->register_app(net, inc);
+=======
+	ret = pp->register_app(ipvs, inc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out;
 
@@ -106,8 +139,12 @@ ip_vs_app_inc_new(struct net *net, struct ip_vs_app *app, __u16 proto,
 	return 0;
 
   out:
+<<<<<<< HEAD
 	kfree(inc->timeout_table);
 	kfree(inc);
+=======
+	ip_vs_app_inc_destroy(inc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -116,7 +153,11 @@ ip_vs_app_inc_new(struct net *net, struct ip_vs_app *app, __u16 proto,
  *	Release app incarnation
  */
 static void
+<<<<<<< HEAD
 ip_vs_app_inc_release(struct net *net, struct ip_vs_app *inc)
+=======
+ip_vs_app_inc_release(struct netns_ipvs *ipvs, struct ip_vs_app *inc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ip_vs_protocol *pp;
 
@@ -124,15 +165,23 @@ ip_vs_app_inc_release(struct net *net, struct ip_vs_app *inc)
 		return;
 
 	if (pp->unregister_app)
+<<<<<<< HEAD
 		pp->unregister_app(net, inc);
+=======
+		pp->unregister_app(ipvs, inc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	IP_VS_DBG(9, "%s App %s:%u unregistered\n",
 		  pp->name, inc->name, ntohs(inc->port));
 
 	list_del(&inc->a_list);
 
+<<<<<<< HEAD
 	kfree(inc->timeout_table);
 	kfree(inc);
+=======
+	call_rcu(&inc->rcu_head, ip_vs_app_inc_rcu_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -144,9 +193,15 @@ int ip_vs_app_inc_get(struct ip_vs_app *inc)
 {
 	int result;
 
+<<<<<<< HEAD
 	atomic_inc(&inc->usecnt);
 	if (unlikely((result = ip_vs_app_get(inc->app)) != 1))
 		atomic_dec(&inc->usecnt);
+=======
+	result = ip_vs_app_get(inc->app);
+	if (result)
+		atomic_inc(&inc->usecnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -156,8 +211,13 @@ int ip_vs_app_inc_get(struct ip_vs_app *inc)
  */
 void ip_vs_app_inc_put(struct ip_vs_app *inc)
 {
+<<<<<<< HEAD
 	ip_vs_app_put(inc->app);
 	atomic_dec(&inc->usecnt);
+=======
+	atomic_dec(&inc->usecnt);
+	ip_vs_app_put(inc->app);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -165,14 +225,22 @@ void ip_vs_app_inc_put(struct ip_vs_app *inc)
  *	Register an application incarnation in protocol applications
  */
 int
+<<<<<<< HEAD
 register_ip_vs_app_inc(struct net *net, struct ip_vs_app *app, __u16 proto,
+=======
+register_ip_vs_app_inc(struct netns_ipvs *ipvs, struct ip_vs_app *app, __u16 proto,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       __u16 port)
 {
 	int result;
 
 	mutex_lock(&__ip_vs_app_mutex);
 
+<<<<<<< HEAD
 	result = ip_vs_app_inc_new(net, app, proto, port);
+=======
+	result = ip_vs_app_inc_new(ipvs, app, proto, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&__ip_vs_app_mutex);
 
@@ -180,6 +248,7 @@ register_ip_vs_app_inc(struct net *net, struct ip_vs_app *app, __u16 proto,
 }
 
 
+<<<<<<< HEAD
 /*
  *	ip_vs_app registration routine
  */
@@ -196,12 +265,51 @@ int register_ip_vs_app(struct net *net, struct ip_vs_app *app)
 	mutex_unlock(&__ip_vs_app_mutex);
 
 	return 0;
+=======
+/* Register application for netns */
+struct ip_vs_app *register_ip_vs_app(struct netns_ipvs *ipvs, struct ip_vs_app *app)
+{
+	struct ip_vs_app *a;
+	int err = 0;
+
+	mutex_lock(&__ip_vs_app_mutex);
+
+	/* increase the module use count */
+	if (!ip_vs_use_count_inc()) {
+		err = -ENOENT;
+		goto out_unlock;
+	}
+
+	list_for_each_entry(a, &ipvs->app_list, a_list) {
+		if (!strcmp(app->name, a->name)) {
+			err = -EEXIST;
+			/* decrease the module use count */
+			ip_vs_use_count_dec();
+			goto out_unlock;
+		}
+	}
+	a = kmemdup(app, sizeof(*app), GFP_KERNEL);
+	if (!a) {
+		err = -ENOMEM;
+		/* decrease the module use count */
+		ip_vs_use_count_dec();
+		goto out_unlock;
+	}
+	INIT_LIST_HEAD(&a->incs_list);
+	list_add(&a->a_list, &ipvs->app_list);
+
+out_unlock:
+	mutex_unlock(&__ip_vs_app_mutex);
+
+	return err ? ERR_PTR(err) : a;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /*
  *	ip_vs_app unregistration routine
  *	We are sure there are no app incarnations attached to services
+<<<<<<< HEAD
  */
 void unregister_ip_vs_app(struct net *net, struct ip_vs_app *app)
 {
@@ -219,6 +327,31 @@ void unregister_ip_vs_app(struct net *net, struct ip_vs_app *app)
 
 	/* decrease the module use count */
 	ip_vs_use_count_dec();
+=======
+ *	Caller should use synchronize_rcu() or rcu_barrier()
+ */
+void unregister_ip_vs_app(struct netns_ipvs *ipvs, struct ip_vs_app *app)
+{
+	struct ip_vs_app *a, *anxt, *inc, *nxt;
+
+	mutex_lock(&__ip_vs_app_mutex);
+
+	list_for_each_entry_safe(a, anxt, &ipvs->app_list, a_list) {
+		if (app && strcmp(app->name, a->name))
+			continue;
+		list_for_each_entry_safe(inc, nxt, &a->incs_list, a_list) {
+			ip_vs_app_inc_release(ipvs, inc);
+		}
+
+		list_del(&a->a_list);
+		kfree(a);
+
+		/* decrease the module use count */
+		ip_vs_use_count_dec();
+	}
+
+	mutex_unlock(&__ip_vs_app_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -313,28 +446,48 @@ vs_fix_ack_seq(const struct ip_vs_seq *vseq, struct tcphdr *th)
  *	Assumes already checked proto==IPPROTO_TCP and diff!=0.
  */
 static inline void vs_seq_update(struct ip_vs_conn *cp, struct ip_vs_seq *vseq,
+<<<<<<< HEAD
 				 unsigned flag, __u32 seq, int diff)
 {
 	/* spinlock is to keep updating cp->flags atomic */
 	spin_lock(&cp->lock);
+=======
+				 unsigned int flag, __u32 seq, int diff)
+{
+	/* spinlock is to keep updating cp->flags atomic */
+	spin_lock_bh(&cp->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(cp->flags & flag) || after(seq, vseq->init_seq)) {
 		vseq->previous_delta = vseq->delta;
 		vseq->delta += diff;
 		vseq->init_seq = seq;
 		cp->flags |= flag;
 	}
+<<<<<<< HEAD
 	spin_unlock(&cp->lock);
 }
 
 static inline int app_tcp_pkt_out(struct ip_vs_conn *cp, struct sk_buff *skb,
 				  struct ip_vs_app *app)
+=======
+	spin_unlock_bh(&cp->lock);
+}
+
+static inline int app_tcp_pkt_out(struct ip_vs_conn *cp, struct sk_buff *skb,
+				  struct ip_vs_app *app,
+				  struct ip_vs_iphdr *ipvsh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int diff;
 	const unsigned int tcp_offset = ip_hdrlen(skb);
 	struct tcphdr *th;
 	__u32 seq;
 
+<<<<<<< HEAD
 	if (!skb_make_writable(skb, tcp_offset + sizeof(*th)))
+=======
+	if (skb_ensure_writable(skb, tcp_offset + sizeof(*th)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	th = (struct tcphdr *)(skb_network_header(skb) + tcp_offset);
@@ -358,7 +511,11 @@ static inline int app_tcp_pkt_out(struct ip_vs_conn *cp, struct sk_buff *skb,
 	if (app->pkt_out == NULL)
 		return 1;
 
+<<<<<<< HEAD
 	if (!app->pkt_out(app, cp, skb, &diff))
+=======
+	if (!app->pkt_out(app, cp, skb, &diff, ipvsh))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/*
@@ -376,7 +533,12 @@ static inline int app_tcp_pkt_out(struct ip_vs_conn *cp, struct sk_buff *skb,
  *	called by ipvs packet handler, assumes previously checked cp!=NULL
  *	returns false if it can't handle packet (oom)
  */
+<<<<<<< HEAD
 int ip_vs_app_pkt_out(struct ip_vs_conn *cp, struct sk_buff *skb)
+=======
+int ip_vs_app_pkt_out(struct ip_vs_conn *cp, struct sk_buff *skb,
+		      struct ip_vs_iphdr *ipvsh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ip_vs_app *app;
 
@@ -389,7 +551,11 @@ int ip_vs_app_pkt_out(struct ip_vs_conn *cp, struct sk_buff *skb)
 
 	/* TCP is complicated */
 	if (cp->protocol == IPPROTO_TCP)
+<<<<<<< HEAD
 		return app_tcp_pkt_out(cp, skb, app);
+=======
+		return app_tcp_pkt_out(cp, skb, app, ipvsh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Call private output hook function
@@ -397,19 +563,32 @@ int ip_vs_app_pkt_out(struct ip_vs_conn *cp, struct sk_buff *skb)
 	if (app->pkt_out == NULL)
 		return 1;
 
+<<<<<<< HEAD
 	return app->pkt_out(app, cp, skb, NULL);
+=======
+	return app->pkt_out(app, cp, skb, NULL, ipvsh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static inline int app_tcp_pkt_in(struct ip_vs_conn *cp, struct sk_buff *skb,
+<<<<<<< HEAD
 				 struct ip_vs_app *app)
+=======
+				 struct ip_vs_app *app,
+				 struct ip_vs_iphdr *ipvsh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int diff;
 	const unsigned int tcp_offset = ip_hdrlen(skb);
 	struct tcphdr *th;
 	__u32 seq;
 
+<<<<<<< HEAD
 	if (!skb_make_writable(skb, tcp_offset + sizeof(*th)))
+=======
+	if (skb_ensure_writable(skb, tcp_offset + sizeof(*th)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	th = (struct tcphdr *)(skb_network_header(skb) + tcp_offset);
@@ -433,7 +612,11 @@ static inline int app_tcp_pkt_in(struct ip_vs_conn *cp, struct sk_buff *skb,
 	if (app->pkt_in == NULL)
 		return 1;
 
+<<<<<<< HEAD
 	if (!app->pkt_in(app, cp, skb, &diff))
+=======
+	if (!app->pkt_in(app, cp, skb, &diff, ipvsh))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/*
@@ -451,7 +634,12 @@ static inline int app_tcp_pkt_in(struct ip_vs_conn *cp, struct sk_buff *skb,
  *	called by ipvs packet handler, assumes previously checked cp!=NULL.
  *	returns false if can't handle packet (oom).
  */
+<<<<<<< HEAD
 int ip_vs_app_pkt_in(struct ip_vs_conn *cp, struct sk_buff *skb)
+=======
+int ip_vs_app_pkt_in(struct ip_vs_conn *cp, struct sk_buff *skb,
+		     struct ip_vs_iphdr *ipvsh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ip_vs_app *app;
 
@@ -464,7 +652,11 @@ int ip_vs_app_pkt_in(struct ip_vs_conn *cp, struct sk_buff *skb)
 
 	/* TCP is complicated */
 	if (cp->protocol == IPPROTO_TCP)
+<<<<<<< HEAD
 		return app_tcp_pkt_in(cp, skb, app);
+=======
+		return app_tcp_pkt_in(cp, skb, app, ipvsh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Call private input hook function
@@ -472,7 +664,11 @@ int ip_vs_app_pkt_in(struct ip_vs_conn *cp, struct sk_buff *skb)
 	if (app->pkt_in == NULL)
 		return 1;
 
+<<<<<<< HEAD
 	return app->pkt_in(app, cp, skb, NULL);
+=======
+	return app->pkt_in(app, cp, skb, NULL, ipvsh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -559,6 +755,7 @@ static const struct seq_operations ip_vs_app_seq_ops = {
 	.stop  = ip_vs_app_seq_stop,
 	.show  = ip_vs_app_seq_show,
 };
+<<<<<<< HEAD
 
 static int ip_vs_app_open(struct inode *inode, struct file *file)
 {
@@ -587,4 +784,26 @@ int __net_init ip_vs_app_net_init(struct net *net)
 void __net_exit ip_vs_app_net_cleanup(struct net *net)
 {
 	proc_net_remove(net, "ip_vs_app");
+=======
+#endif
+
+int __net_init ip_vs_app_net_init(struct netns_ipvs *ipvs)
+{
+	INIT_LIST_HEAD(&ipvs->app_list);
+#ifdef CONFIG_PROC_FS
+	if (!proc_create_net("ip_vs_app", 0, ipvs->net->proc_net,
+			     &ip_vs_app_seq_ops,
+			     sizeof(struct seq_net_private)))
+		return -ENOMEM;
+#endif
+	return 0;
+}
+
+void __net_exit ip_vs_app_net_cleanup(struct netns_ipvs *ipvs)
+{
+	unregister_ip_vs_app(ipvs, NULL /* all */);
+#ifdef CONFIG_PROC_FS
+	remove_proc_entry("ip_vs_app", ipvs->net->proc_net);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

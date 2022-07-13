@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CAN driver for PEAK System PCAN-USB adapter
  * Derived from the PCAN project file driver/src/pcan_usb.c
@@ -6,6 +10,7 @@
  * Copyright (C) 2011-2012 Stephane Grosjean <s.grosjean@peak-system.com>
  *
  * Many thanks to Klaus Hitschler <klaus.hitschler@gmx.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published
@@ -19,6 +24,15 @@
 #include <linux/netdevice.h>
 #include <linux/usb.h>
 #include <linux/module.h>
+=======
+ */
+#include <asm/unaligned.h>
+
+#include <linux/ethtool.h>
+#include <linux/module.h>
+#include <linux/netdevice.h>
+#include <linux/usb.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/can.h>
 #include <linux/can/dev.h>
@@ -26,8 +40,11 @@
 
 #include "pcan_usb_core.h"
 
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB adapter");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PCAN-USB Endpoints */
 #define PCAN_USB_EP_CMDOUT		1
 #define PCAN_USB_EP_CMDIN		(PCAN_USB_EP_CMDOUT | USB_DIR_IN)
@@ -42,6 +59,27 @@ MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB adapter");
 #define PCAN_USB_CMD_LEN		(PCAN_USB_CMD_ARGS + \
 					 PCAN_USB_CMD_ARGS_LEN)
 
+<<<<<<< HEAD
+=======
+/* PCAN-USB commands */
+#define PCAN_USB_CMD_BITRATE	1
+#define PCAN_USB_CMD_SET_BUS	3
+#define PCAN_USB_CMD_DEVID	4
+#define PCAN_USB_CMD_SN		6
+#define PCAN_USB_CMD_REGISTER	9
+#define PCAN_USB_CMD_EXT_VCC	10
+#define PCAN_USB_CMD_ERR_FR	11
+#define PCAN_USB_CMD_LED	12
+
+/* PCAN_USB_CMD_SET_BUS number arg */
+#define PCAN_USB_BUS_XCVER		2
+#define PCAN_USB_BUS_SILENT_MODE	3
+
+/* PCAN_USB_CMD_xxx functions */
+#define PCAN_USB_GET		1
+#define PCAN_USB_SET		2
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PCAN-USB command timeout (ms.) */
 #define PCAN_USB_COMMAND_TIMEOUT	1000
 
@@ -54,6 +92,11 @@ MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB adapter");
 
 #define PCAN_USB_MSG_HEADER_LEN		2
 
+<<<<<<< HEAD
+=======
+#define PCAN_USB_MSG_TX_CAN		2	/* Tx msg is a CAN frame */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PCAN-USB adapter internal clock (MHz) */
 #define PCAN_USB_CRYSTAL_HZ		16000000
 
@@ -64,6 +107,13 @@ MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB adapter");
 #define PCAN_USB_STATUSLEN_RTR		(1 << 4)
 #define PCAN_USB_STATUSLEN_DLC		(0xf)
 
+<<<<<<< HEAD
+=======
+/* PCAN-USB 4.1 CAN Id tx extended flags */
+#define PCAN_USB_TX_SRR			0x01	/* SJA1000 SRR command */
+#define PCAN_USB_TX_AT			0x02	/* SJA1000 AT command */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PCAN-USB error flags */
 #define PCAN_USB_ERROR_TXFULL		0x01
 #define PCAN_USB_ERROR_RXQOVR		0x02
@@ -74,6 +124,13 @@ MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB adapter");
 #define PCAN_USB_ERROR_QOVR		0x40
 #define PCAN_USB_ERROR_TXQFULL		0x80
 
+<<<<<<< HEAD
+=======
+#define PCAN_USB_ERROR_BUS		(PCAN_USB_ERROR_BUS_LIGHT | \
+					 PCAN_USB_ERROR_BUS_HEAVY | \
+					 PCAN_USB_ERROR_BUS_OFF)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SJA1000 modes */
 #define SJA1000_MODE_NORMAL		0x00
 #define SJA1000_MODE_INIT		0x01
@@ -93,11 +150,32 @@ MODULE_SUPPORTED_DEVICE("PEAK-System PCAN-USB adapter");
 #define PCAN_USB_REC_TS			4
 #define PCAN_USB_REC_BUSEVT		5
 
+<<<<<<< HEAD
+=======
+/* CAN bus events notifications selection mask */
+#define PCAN_USB_ERR_RXERR		0x02	/* ask for rxerr counter */
+#define PCAN_USB_ERR_TXERR		0x04	/* ask for txerr counter */
+
+/* This mask generates an usb packet each time the state of the bus changes.
+ * In other words, its interest is to know which side among rx and tx is
+ * responsible of the change of the bus state.
+ */
+#define PCAN_USB_BERR_MASK	(PCAN_USB_ERR_RXERR | PCAN_USB_ERR_TXERR)
+
+/* identify bus event packets with rx/tx error counters */
+#define PCAN_USB_ERR_CNT_DEC		0x00	/* counters are decreasing */
+#define PCAN_USB_ERR_CNT_INC		0x80	/* counters are increasing */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* private to PCAN-USB adapter */
 struct pcan_usb {
 	struct peak_usb_device dev;
 	struct peak_time_ref time_ref;
 	struct timer_list restart_timer;
+<<<<<<< HEAD
+=======
+	struct can_berr_counter bec;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* incoming message context for decoding */
@@ -108,7 +186,11 @@ struct pcan_usb_msg_context {
 	u8 *end;
 	u8 rec_cnt;
 	u8 rec_idx;
+<<<<<<< HEAD
 	u8 rec_data_idx;
+=======
+	u8 rec_ts_idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct net_device *netdev;
 	struct pcan_usb *pdev;
 };
@@ -180,7 +262,12 @@ static int pcan_usb_set_sja1000(struct peak_usb_device *dev, u8 mode)
 		[1] = mode,
 	};
 
+<<<<<<< HEAD
 	return pcan_usb_send_cmd(dev, 9, 2, args);
+=======
+	return pcan_usb_send_cmd(dev, PCAN_USB_CMD_REGISTER, PCAN_USB_SET,
+				 args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcan_usb_set_bus(struct peak_usb_device *dev, u8 onoff)
@@ -189,7 +276,12 @@ static int pcan_usb_set_bus(struct peak_usb_device *dev, u8 onoff)
 		[0] = !!onoff,
 	};
 
+<<<<<<< HEAD
 	return pcan_usb_send_cmd(dev, 3, 2, args);
+=======
+	return pcan_usb_send_cmd(dev, PCAN_USB_CMD_SET_BUS, PCAN_USB_BUS_XCVER,
+				 args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcan_usb_set_silent(struct peak_usb_device *dev, u8 onoff)
@@ -198,7 +290,22 @@ static int pcan_usb_set_silent(struct peak_usb_device *dev, u8 onoff)
 		[0] = !!onoff,
 	};
 
+<<<<<<< HEAD
 	return pcan_usb_send_cmd(dev, 3, 3, args);
+=======
+	return pcan_usb_send_cmd(dev, PCAN_USB_CMD_SET_BUS,
+				 PCAN_USB_BUS_SILENT_MODE, args);
+}
+
+/* send the cmd to be notified from bus errors */
+static int pcan_usb_set_err_frame(struct peak_usb_device *dev, u8 err_mask)
+{
+	u8 args[PCAN_USB_CMD_ARGS_LEN] = {
+		[0] = err_mask,
+	};
+
+	return pcan_usb_send_cmd(dev, PCAN_USB_CMD_ERR_FR, PCAN_USB_SET, args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcan_usb_set_ext_vcc(struct peak_usb_device *dev, u8 onoff)
@@ -207,7 +314,20 @@ static int pcan_usb_set_ext_vcc(struct peak_usb_device *dev, u8 onoff)
 		[0] = !!onoff,
 	};
 
+<<<<<<< HEAD
 	return pcan_usb_send_cmd(dev, 10, 2, args);
+=======
+	return pcan_usb_send_cmd(dev, PCAN_USB_CMD_EXT_VCC, PCAN_USB_SET, args);
+}
+
+static int pcan_usb_set_led(struct peak_usb_device *dev, u8 onoff)
+{
+	u8 args[PCAN_USB_CMD_ARGS_LEN] = {
+		[0] = !!onoff,
+	};
+
+	return pcan_usb_send_cmd(dev, PCAN_USB_CMD_LED, PCAN_USB_SET, args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -231,7 +351,11 @@ static int pcan_usb_set_bittiming(struct peak_usb_device *dev,
 	args[0] = btr1;
 	args[1] = btr0;
 
+<<<<<<< HEAD
 	return pcan_usb_send_cmd(dev, 1, 2, args);
+=======
+	return pcan_usb_send_cmd(dev, PCAN_USB_CMD_BITRATE, PCAN_USB_SET, args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -259,10 +383,20 @@ static int pcan_usb_write_mode(struct peak_usb_device *dev, u8 onoff)
 /*
  * handle end of waiting for the device to reset
  */
+<<<<<<< HEAD
 static void pcan_usb_restart(unsigned long arg)
 {
 	/* notify candev and netdev */
 	peak_usb_restart_complete((struct peak_usb_device *)arg);
+=======
+static void pcan_usb_restart(struct timer_list *t)
+{
+	struct pcan_usb *pdev = from_timer(pdev, t, restart_timer);
+	struct peak_usb_device *dev = &pdev->dev;
+
+	/* notify candev and netdev */
+	peak_usb_restart_complete(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -312,6 +446,7 @@ static int pcan_usb_get_serial(struct peak_usb_device *dev, u32 *serial_number)
 	u8 args[PCAN_USB_CMD_ARGS_LEN];
 	int err;
 
+<<<<<<< HEAD
 	err = pcan_usb_wait_rsp(dev, 6, 1, args);
 	if (err) {
 		netdev_err(dev->netdev, "getting serial failure: %d\n", err);
@@ -329,24 +464,70 @@ static int pcan_usb_get_serial(struct peak_usb_device *dev, u32 *serial_number)
  * read device id from device
  */
 static int pcan_usb_get_device_id(struct peak_usb_device *dev, u32 *device_id)
+=======
+	err = pcan_usb_wait_rsp(dev, PCAN_USB_CMD_SN, PCAN_USB_GET, args);
+	if (err)
+		return err;
+	*serial_number = le32_to_cpup((__le32 *)args);
+
+	return 0;
+}
+
+/*
+ * read can channel id from device
+ */
+static int pcan_usb_get_can_channel_id(struct peak_usb_device *dev, u32 *can_ch_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 args[PCAN_USB_CMD_ARGS_LEN];
 	int err;
 
+<<<<<<< HEAD
 	err = pcan_usb_wait_rsp(dev, 4, 1, args);
 	if (err)
 		netdev_err(dev->netdev, "getting device id failure: %d\n", err);
 	else if (device_id)
 		*device_id = args[0];
+=======
+	err = pcan_usb_wait_rsp(dev, PCAN_USB_CMD_DEVID, PCAN_USB_GET, args);
+	if (err)
+		netdev_err(dev->netdev, "getting can channel id failure: %d\n", err);
+
+	else
+		*can_ch_id = args[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+/* set a new CAN channel id in the flash memory of the device */
+static int pcan_usb_set_can_channel_id(struct peak_usb_device *dev, u32 can_ch_id)
+{
+	u8 args[PCAN_USB_CMD_ARGS_LEN];
+
+	/* this kind of device supports 8-bit values only */
+	if (can_ch_id > U8_MAX)
+		return -EINVAL;
+
+	/* during the flash process the device disconnects during ~1.25 s.:
+	 * prohibit access when interface is UP
+	 */
+	if (dev->netdev->flags & IFF_UP)
+		return -EBUSY;
+
+	args[0] = can_ch_id;
+	return pcan_usb_send_cmd(dev, PCAN_USB_CMD_DEVID, PCAN_USB_SET, args);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * update current time ref with received timestamp
  */
 static int pcan_usb_update_ts(struct pcan_usb_msg_context *mc)
 {
+<<<<<<< HEAD
 	u16 tmp16;
 
 	if ((mc->ptr+2) > mc->end)
@@ -355,6 +536,12 @@ static int pcan_usb_update_ts(struct pcan_usb_msg_context *mc)
 	memcpy(&tmp16, mc->ptr, 2);
 
 	mc->ts16 = le16_to_cpu(tmp16);
+=======
+	if ((mc->ptr + 2) > mc->end)
+		return -EINVAL;
+
+	mc->ts16 = get_unaligned_le16(mc->ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mc->rec_idx > 0)
 		peak_usb_update_ts_now(&mc->pdev->time_ref, mc->ts16);
@@ -371,6 +558,7 @@ static int pcan_usb_decode_ts(struct pcan_usb_msg_context *mc, u8 first_packet)
 {
 	/* only 1st packet supplies a word timestamp */
 	if (first_packet) {
+<<<<<<< HEAD
 		u16 tmp16;
 
 		if ((mc->ptr + 2) > mc->end)
@@ -381,6 +569,15 @@ static int pcan_usb_decode_ts(struct pcan_usb_msg_context *mc, u8 first_packet)
 
 		mc->ts16 = le16_to_cpu(tmp16);
 		mc->prev_ts8 = mc->ts16 & 0x00ff;
+=======
+		if ((mc->ptr + 2) > mc->end)
+			return -EINVAL;
+
+		mc->ts16 = get_unaligned_le16(mc->ptr);
+		mc->prev_ts8 = mc->ts16 & 0x00ff;
+
+		mc->ptr += 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		u8 ts8;
 
@@ -405,14 +602,19 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_context *mc, u8 n,
 {
 	struct sk_buff *skb;
 	struct can_frame *cf;
+<<<<<<< HEAD
 	struct timeval tv;
 	enum can_state new_state;
+=======
+	enum can_state new_state = CAN_STATE_ERROR_ACTIVE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ignore this error until 1st ts received */
 	if (n == PCAN_USB_ERROR_QOVR)
 		if (!mc->pdev->time_ref.tick_count)
 			return 0;
 
+<<<<<<< HEAD
 	new_state = mc->pdev->dev.can.state;
 
 	switch (mc->pdev->dev.can.state) {
@@ -517,10 +719,66 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_context *mc, u8 n,
 	}
 
 	mc->pdev->dev.can.state = new_state;
+=======
+	/* allocate an skb to store the error frame */
+	skb = alloc_can_err_skb(mc->netdev, &cf);
+
+	if (n & PCAN_USB_ERROR_RXQOVR) {
+		/* data overrun interrupt */
+		netdev_dbg(mc->netdev, "data overrun interrupt\n");
+		mc->netdev->stats.rx_over_errors++;
+		mc->netdev->stats.rx_errors++;
+		if (cf) {
+			cf->can_id |= CAN_ERR_CRTL;
+			cf->data[1] |= CAN_ERR_CRTL_RX_OVERFLOW;
+		}
+	}
+
+	if (n & PCAN_USB_ERROR_TXQFULL)
+		netdev_dbg(mc->netdev, "device Tx queue full)\n");
+
+	if (n & PCAN_USB_ERROR_BUS_OFF) {
+		new_state = CAN_STATE_BUS_OFF;
+	} else if (n & PCAN_USB_ERROR_BUS_HEAVY) {
+		new_state = ((mc->pdev->bec.txerr >= 128) ||
+			     (mc->pdev->bec.rxerr >= 128)) ?
+				CAN_STATE_ERROR_PASSIVE :
+				CAN_STATE_ERROR_WARNING;
+	} else {
+		new_state = CAN_STATE_ERROR_ACTIVE;
+	}
+
+	/* handle change of state */
+	if (new_state != mc->pdev->dev.can.state) {
+		enum can_state tx_state =
+			(mc->pdev->bec.txerr >= mc->pdev->bec.rxerr) ?
+				new_state : 0;
+		enum can_state rx_state =
+			(mc->pdev->bec.txerr <= mc->pdev->bec.rxerr) ?
+				new_state : 0;
+
+		can_change_state(mc->netdev, cf, tx_state, rx_state);
+
+		if (new_state == CAN_STATE_BUS_OFF) {
+			can_bus_off(mc->netdev);
+		} else if (cf && (cf->can_id & CAN_ERR_CRTL)) {
+			/* Supply TX/RX error counters in case of
+			 * controller error.
+			 */
+			cf->can_id = CAN_ERR_CNT;
+			cf->data[6] = mc->pdev->bec.txerr;
+			cf->data[7] = mc->pdev->bec.rxerr;
+		}
+	}
+
+	if (!skb)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (status_len & PCAN_USB_STATUSLEN_TIMESTAMP) {
 		struct skb_shared_hwtstamps *hwts = skb_hwtstamps(skb);
 
+<<<<<<< HEAD
 		peak_usb_get_ts_tv(&mc->pdev->time_ref, mc->ts16, &tv);
 		hwts->hwtstamp = timeval_to_ktime(tv);
 	}
@@ -528,6 +786,38 @@ static int pcan_usb_decode_error(struct pcan_usb_msg_context *mc, u8 n,
 	netif_rx(skb);
 	mc->netdev->stats.rx_packets++;
 	mc->netdev->stats.rx_bytes += cf->can_dlc;
+=======
+		peak_usb_get_ts_time(&mc->pdev->time_ref, mc->ts16,
+				     &hwts->hwtstamp);
+	}
+
+	netif_rx(skb);
+
+	return 0;
+}
+
+/* decode bus event usb packet: first byte contains rxerr while 2nd one contains
+ * txerr.
+ */
+static int pcan_usb_handle_bus_evt(struct pcan_usb_msg_context *mc, u8 ir)
+{
+	struct pcan_usb *pdev = mc->pdev;
+
+	/* according to the content of the packet */
+	switch (ir) {
+	case PCAN_USB_ERR_CNT_DEC:
+	case PCAN_USB_ERR_CNT_INC:
+
+		/* save rx/tx error counters from in the device context */
+		pdev->bec.rxerr = mc->ptr[1];
+		pdev->bec.txerr = mc->ptr[2];
+		break;
+
+	default:
+		/* reserved */
+		break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -551,10 +841,22 @@ static int pcan_usb_decode_status(struct pcan_usb_msg_context *mc,
 	mc->ptr += PCAN_USB_CMD_ARGS;
 
 	if (status_len & PCAN_USB_STATUSLEN_TIMESTAMP) {
+<<<<<<< HEAD
 		int err = pcan_usb_decode_ts(mc, !mc->rec_idx);
 
 		if (err)
 			return err;
+=======
+		int err = pcan_usb_decode_ts(mc, !mc->rec_ts_idx);
+
+		if (err)
+			return err;
+
+		/* Next packet in the buffer will have a timestamp on a single
+		 * byte
+		 */
+		mc->rec_ts_idx++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (f) {
@@ -581,9 +883,16 @@ static int pcan_usb_decode_status(struct pcan_usb_msg_context *mc,
 		break;
 
 	case PCAN_USB_REC_BUSEVT:
+<<<<<<< HEAD
 		/* error frame/bus event */
 		if (n & PCAN_USB_ERROR_TXQFULL)
 			netdev_dbg(mc->netdev, "device Tx queue full)\n");
+=======
+		/* bus event notifications (get rxerr/txerr) */
+		err = pcan_usb_handle_bus_evt(mc, n);
+		if (err)
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		netdev_err(mc->netdev, "unexpected function %u\n", f);
@@ -606,14 +915,20 @@ static int pcan_usb_decode_data(struct pcan_usb_msg_context *mc, u8 status_len)
 	u8 rec_len = status_len & PCAN_USB_STATUSLEN_DLC;
 	struct sk_buff *skb;
 	struct can_frame *cf;
+<<<<<<< HEAD
 	struct timeval tv;
 	struct skb_shared_hwtstamps *hwts;
+=======
+	struct skb_shared_hwtstamps *hwts;
+	u32 can_id_flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = alloc_can_skb(mc->netdev, &cf);
 	if (!skb)
 		return -ENOMEM;
 
 	if (status_len & PCAN_USB_STATUSLEN_EXT_ID) {
+<<<<<<< HEAD
 		u32 tmp32;
 
 		if ((mc->ptr + 4) > mc->end)
@@ -641,6 +956,32 @@ static int pcan_usb_decode_data(struct pcan_usb_msg_context *mc, u8 status_len)
 	if (pcan_usb_decode_ts(mc, !mc->rec_data_idx))
 		goto decode_failed;
 
+=======
+		if ((mc->ptr + 4) > mc->end)
+			goto decode_failed;
+
+		can_id_flags = get_unaligned_le32(mc->ptr);
+		cf->can_id = can_id_flags >> 3 | CAN_EFF_FLAG;
+		mc->ptr += 4;
+	} else {
+		if ((mc->ptr + 2) > mc->end)
+			goto decode_failed;
+
+		can_id_flags = get_unaligned_le16(mc->ptr);
+		cf->can_id = can_id_flags >> 5;
+		mc->ptr += 2;
+	}
+
+	can_frame_set_cc_len(cf, rec_len, mc->pdev->dev.can.ctrlmode);
+
+	/* Only first packet timestamp is a word */
+	if (pcan_usb_decode_ts(mc, !mc->rec_ts_idx))
+		goto decode_failed;
+
+	/* Next packet in the buffer will have a timestamp on a single byte */
+	mc->rec_ts_idx++;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* read data */
 	memset(cf->data, 0x0, sizeof(cf->data));
 	if (status_len & PCAN_USB_STATUSLEN_RTR) {
@@ -649,6 +990,7 @@ static int pcan_usb_decode_data(struct pcan_usb_msg_context *mc, u8 status_len)
 		if ((mc->ptr + rec_len) > mc->end)
 			goto decode_failed;
 
+<<<<<<< HEAD
 		memcpy(cf->data, mc->ptr, cf->can_dlc);
 		mc->ptr += rec_len;
 	}
@@ -657,14 +999,34 @@ static int pcan_usb_decode_data(struct pcan_usb_msg_context *mc, u8 status_len)
 	peak_usb_get_ts_tv(&mc->pdev->time_ref, mc->ts16, &tv);
 	hwts = skb_hwtstamps(skb);
 	hwts->hwtstamp = timeval_to_ktime(tv);
+=======
+		memcpy(cf->data, mc->ptr, cf->len);
+		mc->ptr += rec_len;
+
+		/* Ignore next byte (client private id) if SRR bit is set */
+		if (can_id_flags & PCAN_USB_TX_SRR)
+			mc->ptr++;
+
+		/* update statistics */
+		mc->netdev->stats.rx_bytes += cf->len;
+	}
+	mc->netdev->stats.rx_packets++;
+
+	/* convert timestamp into kernel time */
+	hwts = skb_hwtstamps(skb);
+	peak_usb_get_ts_time(&mc->pdev->time_ref, mc->ts16, &hwts->hwtstamp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* push the skb */
 	netif_rx(skb);
 
+<<<<<<< HEAD
 	/* update statistics */
 	mc->netdev->stats.rx_packets++;
 	mc->netdev->stats.rx_bytes += cf->can_dlc;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 decode_failed:
@@ -695,7 +1057,10 @@ static int pcan_usb_decode_msg(struct peak_usb_device *dev, u8 *ibuf, u32 lbuf)
 		/* handle normal can frames here */
 		} else {
 			err = pcan_usb_decode_data(&mc, sl);
+<<<<<<< HEAD
 			mc.rec_data_idx++;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -731,20 +1096,34 @@ static int pcan_usb_encode_msg(struct peak_usb_device *dev, struct sk_buff *skb,
 	struct net_device *netdev = dev->netdev;
 	struct net_device_stats *stats = &netdev->stats;
 	struct can_frame *cf = (struct can_frame *)skb->data;
+<<<<<<< HEAD
 	u8 *pc;
 
 	obuf[0] = 2;
 	obuf[1] = 1;
+=======
+	u32 can_id_flags = cf->can_id & CAN_ERR_MASK;
+	u8 *pc;
+
+	obuf[0] = PCAN_USB_MSG_TX_CAN;
+	obuf[1] = 1;	/* only one CAN frame is stored in the packet */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pc = obuf + PCAN_USB_MSG_HEADER_LEN;
 
 	/* status/len byte */
+<<<<<<< HEAD
 	*pc = cf->can_dlc;
+=======
+	*pc = can_get_cc_dlc(cf, dev->can.ctrlmode);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cf->can_id & CAN_RTR_FLAG)
 		*pc |= PCAN_USB_STATUSLEN_RTR;
 
 	/* can id */
 	if (cf->can_id & CAN_EFF_FLAG) {
+<<<<<<< HEAD
 		__le32 tmp32 = cpu_to_le32((cf->can_id & CAN_ERR_MASK) << 3);
 
 		*pc |= PCAN_USB_STATUSLEN_EXT_ID;
@@ -754,34 +1133,109 @@ static int pcan_usb_encode_msg(struct peak_usb_device *dev, struct sk_buff *skb,
 		__le16 tmp16 = cpu_to_le16((cf->can_id & CAN_ERR_MASK) << 5);
 
 		memcpy(++pc, &tmp16, 2);
+=======
+		*pc |= PCAN_USB_STATUSLEN_EXT_ID;
+		pc++;
+
+		can_id_flags <<= 3;
+
+		if (dev->can.ctrlmode & CAN_CTRLMODE_LOOPBACK)
+			can_id_flags |= PCAN_USB_TX_SRR;
+
+		if (dev->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT)
+			can_id_flags |= PCAN_USB_TX_AT;
+
+		put_unaligned_le32(can_id_flags, pc);
+		pc += 4;
+	} else {
+		pc++;
+
+		can_id_flags <<= 5;
+
+		if (dev->can.ctrlmode & CAN_CTRLMODE_LOOPBACK)
+			can_id_flags |= PCAN_USB_TX_SRR;
+
+		if (dev->can.ctrlmode & CAN_CTRLMODE_ONE_SHOT)
+			can_id_flags |= PCAN_USB_TX_AT;
+
+		put_unaligned_le16(can_id_flags, pc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pc += 2;
 	}
 
 	/* can data */
 	if (!(cf->can_id & CAN_RTR_FLAG)) {
+<<<<<<< HEAD
 		memcpy(pc, cf->data, cf->can_dlc);
 		pc += cf->can_dlc;
 	}
 
+=======
+		memcpy(pc, cf->data, cf->len);
+		pc += cf->len;
+	}
+
+	/* SRR bit needs a writer id (useless here) */
+	if (can_id_flags & PCAN_USB_TX_SRR)
+		*pc++ = 0x80;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	obuf[(*size)-1] = (u8)(stats->tx_packets & 0xff);
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/* socket callback used to copy berr counters values received through USB */
+static int pcan_usb_get_berr_counter(const struct net_device *netdev,
+				     struct can_berr_counter *bec)
+{
+	struct peak_usb_device *dev = netdev_priv(netdev);
+	struct pcan_usb *pdev = container_of(dev, struct pcan_usb, dev);
+
+	*bec = pdev->bec;
+
+	/* must return 0 */
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * start interface
  */
 static int pcan_usb_start(struct peak_usb_device *dev)
 {
 	struct pcan_usb *pdev = container_of(dev, struct pcan_usb, dev);
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* number of bits used in timestamps read from adapter struct */
 	peak_usb_init_time_ref(&pdev->time_ref, &pcan_usb);
 
+<<<<<<< HEAD
 	/* if revision greater than 3, can put silent mode on/off */
 	if (dev->device_rev > 3) {
 		int err;
 
+=======
+	pdev->bec.rxerr = 0;
+	pdev->bec.txerr = 0;
+
+	/* always ask the device for BERR reporting, to be able to switch from
+	 * WARNING to PASSIVE state
+	 */
+	err = pcan_usb_set_err_frame(dev, PCAN_USB_BERR_MASK);
+	if (err)
+		netdev_warn(dev->netdev,
+			    "Asking for BERR reporting error %u\n",
+			    err);
+
+	/* if revision greater than 3, can put silent mode on/off */
+	if (dev->device_rev > 3) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = pcan_usb_set_silent(dev,
 				dev->can.ctrlmode & CAN_CTRLMODE_LISTENONLY);
 		if (err)
@@ -798,9 +1252,13 @@ static int pcan_usb_init(struct peak_usb_device *dev)
 	int err;
 
 	/* initialize a timer needed to wait for hardware restart */
+<<<<<<< HEAD
 	init_timer(&pdev->restart_timer);
 	pdev->restart_timer.function = pcan_usb_restart;
 	pdev->restart_timer.data = (unsigned long)dev;
+=======
+	timer_setup(&pdev->restart_timer, pcan_usb_restart, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * explicit use of dev_xxx() instead of netdev_xxx() here:
@@ -820,6 +1278,22 @@ static int pcan_usb_init(struct peak_usb_device *dev)
 		 pcan_usb.name, dev->device_rev, serial_number,
 		 pcan_usb.ctrl_count);
 
+<<<<<<< HEAD
+=======
+	/* Since rev 4.1, PCAN-USB is able to make single-shot as well as
+	 * looped back frames.
+	 */
+	if (dev->device_rev >= 41) {
+		struct can_priv *priv = netdev_priv(dev->netdev);
+
+		priv->ctrlmode_supported |= CAN_CTRLMODE_ONE_SHOT |
+					    CAN_CTRLMODE_LOOPBACK;
+	} else {
+		dev_info(dev->netdev->dev.parent,
+			 "Firmware update available. Please contact support@peak-system.com\n");
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -851,6 +1325,7 @@ static int pcan_usb_probe(struct usb_interface *intf)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * describe the PCAN-USB adapter
  */
@@ -872,13 +1347,91 @@ struct peak_usb_adapter pcan_usb = {
 		.brp_max = 64,
 		.brp_inc = 1,
 	},
+=======
+static int pcan_usb_set_phys_id(struct net_device *netdev,
+				enum ethtool_phys_id_state state)
+{
+	struct peak_usb_device *dev = netdev_priv(netdev);
+	int err = 0;
+
+	switch (state) {
+	case ETHTOOL_ID_ACTIVE:
+		/* call ON/OFF twice a second */
+		return 2;
+
+	case ETHTOOL_ID_OFF:
+		err = pcan_usb_set_led(dev, 0);
+		break;
+
+	case ETHTOOL_ID_ON:
+		fallthrough;
+
+	case ETHTOOL_ID_INACTIVE:
+		/* restore LED default */
+		err = pcan_usb_set_led(dev, 1);
+		break;
+
+	default:
+		break;
+	}
+
+	return err;
+}
+
+/* This device only handles 8-bit CAN channel id. */
+static int pcan_usb_get_eeprom_len(struct net_device *netdev)
+{
+	return sizeof(u8);
+}
+
+static const struct ethtool_ops pcan_usb_ethtool_ops = {
+	.set_phys_id = pcan_usb_set_phys_id,
+	.get_ts_info = pcan_get_ts_info,
+	.get_eeprom_len	= pcan_usb_get_eeprom_len,
+	.get_eeprom = peak_usb_get_eeprom,
+	.set_eeprom = peak_usb_set_eeprom,
+};
+
+/*
+ * describe the PCAN-USB adapter
+ */
+static const struct can_bittiming_const pcan_usb_const = {
+	.name = "pcan_usb",
+	.tseg1_min = 1,
+	.tseg1_max = 16,
+	.tseg2_min = 1,
+	.tseg2_max = 8,
+	.sjw_max = 4,
+	.brp_min = 1,
+	.brp_max = 64,
+	.brp_inc = 1,
+};
+
+const struct peak_usb_adapter pcan_usb = {
+	.name = "PCAN-USB",
+	.device_id = PCAN_USB_PRODUCT_ID,
+	.ctrl_count = 1,
+	.ctrlmode_supported = CAN_CTRLMODE_3_SAMPLES | CAN_CTRLMODE_LISTENONLY |
+			      CAN_CTRLMODE_CC_LEN8_DLC,
+	.clock = {
+		.freq = PCAN_USB_CRYSTAL_HZ / 2,
+	},
+	.bittiming_const = &pcan_usb_const,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* size of device private data */
 	.sizeof_dev_private = sizeof(struct pcan_usb),
 
+<<<<<<< HEAD
 	/* timestamps usage */
 	.ts_used_bits = 16,
 	.ts_period = 24575, /* calibration period in ts. */
+=======
+	.ethtool_ops = &pcan_usb_ethtool_ops,
+
+	/* timestamps usage */
+	.ts_used_bits = 16,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.us_per_ts_scale = PCAN_USB_TS_US_PER_TICK, /* us=(ts*scale) */
 	.us_per_ts_shift = PCAN_USB_TS_DIV_SHIFTER, /*  >> shift     */
 
@@ -895,9 +1448,18 @@ struct peak_usb_adapter pcan_usb = {
 	.dev_init = pcan_usb_init,
 	.dev_set_bus = pcan_usb_write_mode,
 	.dev_set_bittiming = pcan_usb_set_bittiming,
+<<<<<<< HEAD
 	.dev_get_device_id = pcan_usb_get_device_id,
+=======
+	.dev_get_can_channel_id = pcan_usb_get_can_channel_id,
+	.dev_set_can_channel_id = pcan_usb_set_can_channel_id,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dev_decode_buf = pcan_usb_decode_buf,
 	.dev_encode_msg = pcan_usb_encode_msg,
 	.dev_start = pcan_usb_start,
 	.dev_restart_async = pcan_usb_restart_async,
+<<<<<<< HEAD
+=======
+	.do_get_berr_counter = pcan_usb_get_berr_counter,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

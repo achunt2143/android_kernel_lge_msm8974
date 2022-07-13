@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999-2001 Vojtech Pavlik
  */
@@ -6,6 +10,7 @@
  *  Serial mouse driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,13 +31,18 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/interrupt.h>
 #include <linux/input.h>
 #include <linux/serio.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"Serial mouse driver"
 
@@ -144,7 +154,12 @@ static void sermouse_process_ms(struct sermouse *sermouse, signed char data)
 			switch (sermouse->type) {
 
 				case SERIO_MS:
+<<<<<<< HEAD
 					 sermouse->type = SERIO_MP;
+=======
+					sermouse->type = SERIO_MP;
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				case SERIO_MP:
 					if ((data >> 2) & 3) break;	/* M++ Wireless Extension packet. */
@@ -155,6 +170,10 @@ static void sermouse_process_ms(struct sermouse *sermouse, signed char data)
 				case SERIO_MZP:
 				case SERIO_MZPP:
 					input_report_key(dev, BTN_SIDE,   (data >> 5) & 1);
+<<<<<<< HEAD
+=======
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				case SERIO_MZ:
 					input_report_key(dev, BTN_MIDDLE, (data >> 4) & 1);
@@ -355,6 +374,7 @@ static struct serio_driver sermouse_drv = {
 	.disconnect	= sermouse_disconnect,
 };
 
+<<<<<<< HEAD
 static int __init sermouse_init(void)
 {
 	return serio_register_driver(&sermouse_drv);
@@ -367,3 +387,6 @@ static void __exit sermouse_exit(void)
 
 module_init(sermouse_init);
 module_exit(sermouse_exit);
+=======
+module_serio_driver(sermouse_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

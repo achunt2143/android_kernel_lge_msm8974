@@ -60,8 +60,11 @@
 */
 
 #define DRV_NAME	"3c509"
+<<<<<<< HEAD
 #define DRV_VERSION	"1.20"
 #define DRV_RELDATE	"04Feb2008"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* A few values that may be tweaked. */
 
@@ -69,7 +72,10 @@
 #define TX_TIMEOUT  (400*HZ/1000)
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/mca.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/isa.h>
 #include <linux/pnp.h>
 #include <linux/string.h>
@@ -89,12 +95,19 @@
 #include <linux/eisa.h>
 #include <linux/bitops.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include <asm/io.h>
 #include <asm/irq.h>
 
 static char version[] __devinitdata = DRV_NAME ".c:" DRV_VERSION " " DRV_RELDATE " becker@scyld.com\n";
 
+=======
+#include <linux/uaccess.h>
+#include <asm/io.h>
+#include <asm/irq.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef EL3_DEBUG
 static int el3_debug = EL3_DEBUG;
 #else
@@ -102,7 +115,11 @@ static int el3_debug = 2;
 #endif
 
 /* Used to do a global count of all the cards in the system.  Must be
+<<<<<<< HEAD
  * a global variable so that the mca/eisa probe routines can increment
+=======
+ * a global variable so that the eisa probe routines can increment
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * it */
 static int el3_cards = 0;
 #define EL3_MAX_CARDS 8
@@ -163,7 +180,11 @@ enum RxFilter {
  */
 #define SKB_QUEUE_SIZE	64
 
+<<<<<<< HEAD
 enum el3_cardtype { EL3_ISA, EL3_PNP, EL3_MCA, EL3_EISA };
+=======
+enum el3_cardtype { EL3_ISA, EL3_PNP, EL3_EISA };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct el3_private {
 	spinlock_t lock;
@@ -185,7 +206,11 @@ static int max_interrupt_work = 10;
 static int nopnp;
 #endif
 
+<<<<<<< HEAD
 static int __devinit el3_common_init(struct net_device *dev);
+=======
+static int el3_common_init(struct net_device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void el3_common_remove(struct net_device *dev);
 static ushort id_read_eeprom(int index);
 static ushort read_eeprom(int ioaddr, int index);
@@ -197,7 +222,11 @@ static struct net_device_stats *el3_get_stats(struct net_device *dev);
 static int el3_rx(struct net_device *dev);
 static int el3_close(struct net_device *dev);
 static void set_multicast_list(struct net_device *dev);
+<<<<<<< HEAD
 static void el3_tx_timeout (struct net_device *dev);
+=======
+static void el3_tx_timeout (struct net_device *dev, unsigned int txqueue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void el3_down(struct net_device *dev);
 static void el3_up(struct net_device *dev);
 static const struct ethtool_ops ethtool_ops;
@@ -253,8 +282,12 @@ static int el3_isa_id_sequence(__be16 *phys_addr)
 		for (i = 0; i < el3_cards; i++) {
 			struct el3_private *lp = netdev_priv(el3_devs[i]);
 			if (lp->type == EL3_PNP &&
+<<<<<<< HEAD
 			    !memcmp(phys_addr, el3_devs[i]->dev_addr,
 				    ETH_ALEN)) {
+=======
+			    ether_addr_equal((u8 *)phys_addr, el3_devs[i]->dev_addr)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (el3_debug > 3)
 					pr_debug("3c509 with address %02x %02x %02x %02x %02x %02x was found by ISAPnP\n",
 						phys_addr[0] & 0xff, phys_addr[0] >> 8,
@@ -271,6 +304,7 @@ static int el3_isa_id_sequence(__be16 *phys_addr)
 
 }
 
+<<<<<<< HEAD
 static void __devinit el3_dev_fill(struct net_device *dev, __be16 *phys_addr,
 				   int ioaddr, int irq, int if_port,
 				   enum el3_cardtype type)
@@ -278,14 +312,26 @@ static void __devinit el3_dev_fill(struct net_device *dev, __be16 *phys_addr,
 	struct el3_private *lp = netdev_priv(dev);
 
 	memcpy(dev->dev_addr, phys_addr, ETH_ALEN);
+=======
+static void el3_dev_fill(struct net_device *dev, __be16 *phys_addr, int ioaddr,
+			 int irq, int if_port, enum el3_cardtype type)
+{
+	struct el3_private *lp = netdev_priv(dev);
+
+	eth_hw_addr_set(dev, (u8 *)phys_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->base_addr = ioaddr;
 	dev->irq = irq;
 	dev->if_port = if_port;
 	lp->type = type;
 }
 
+<<<<<<< HEAD
 static int __devinit el3_isa_match(struct device *pdev,
 				   unsigned int ndev)
+=======
+static int el3_isa_match(struct device *pdev, unsigned int ndev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	int ioaddr, isa_irq, if_port, err;
@@ -310,7 +356,10 @@ static int __devinit el3_isa_match(struct device *pdev,
 		return -ENOMEM;
 
 	SET_NETDEV_DEV(dev, pdev);
+<<<<<<< HEAD
 	netdev_boot_setup_check(dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!request_region(ioaddr, EL3_IO_EXTENT, "3c509-isa")) {
 		free_netdev(dev);
@@ -343,12 +392,19 @@ static int __devinit el3_isa_match(struct device *pdev,
 	return 1;
 }
 
+<<<<<<< HEAD
 static int __devexit el3_isa_remove(struct device *pdev,
+=======
+static void el3_isa_remove(struct device *pdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    unsigned int ndev)
 {
 	el3_device_remove(pdev);
 	dev_set_drvdata(pdev, NULL);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -384,7 +440,11 @@ static int el3_isa_resume(struct device *dev, unsigned int n)
 
 static struct isa_driver el3_isa_driver = {
 	.match		= el3_isa_match,
+<<<<<<< HEAD
 	.remove		= __devexit_p(el3_isa_remove),
+=======
+	.remove		= el3_isa_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= el3_isa_suspend,
 	.resume		= el3_isa_resume,
@@ -396,7 +456,11 @@ static struct isa_driver el3_isa_driver = {
 static int isa_registered;
 
 #ifdef CONFIG_PNP
+<<<<<<< HEAD
 static struct pnp_device_id el3_pnp_ids[] = {
+=======
+static const struct pnp_device_id el3_pnp_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .id = "TCM5090" }, /* 3Com Etherlink III (TP) */
 	{ .id = "TCM5091" }, /* 3Com Etherlink III */
 	{ .id = "TCM5094" }, /* 3Com Etherlink III (combo) */
@@ -408,8 +472,12 @@ static struct pnp_device_id el3_pnp_ids[] = {
 };
 MODULE_DEVICE_TABLE(pnp, el3_pnp_ids);
 
+<<<<<<< HEAD
 static int __devinit el3_pnp_probe(struct pnp_dev *pdev,
 				    const struct pnp_device_id *id)
+=======
+static int el3_pnp_probe(struct pnp_dev *pdev, const struct pnp_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	short i;
 	int ioaddr, irq, if_port;
@@ -431,7 +499,10 @@ static int __devinit el3_pnp_probe(struct pnp_dev *pdev,
 		return -ENOMEM;
 	}
 	SET_NETDEV_DEV(dev, &pdev->dev);
+<<<<<<< HEAD
 	netdev_boot_setup_check(dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	el3_dev_fill(dev, phys_addr, ioaddr, irq, if_port, EL3_PNP);
 	pnp_set_drvdata(pdev, dev);
@@ -447,7 +518,11 @@ static int __devinit el3_pnp_probe(struct pnp_dev *pdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit el3_pnp_remove(struct pnp_dev *pdev)
+=======
+static void el3_pnp_remove(struct pnp_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	el3_common_remove(pnp_get_drvdata(pdev));
 	pnp_set_drvdata(pdev, NULL);
@@ -469,7 +544,11 @@ static struct pnp_driver el3_pnp_driver = {
 	.name		= "3c509",
 	.id_table	= el3_pnp_ids,
 	.probe		= el3_pnp_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(el3_pnp_remove),
+=======
+	.remove		= el3_pnp_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= el3_pnp_suspend,
 	.resume		= el3_pnp_resume,
@@ -479,7 +558,11 @@ static int pnp_registered;
 #endif /* CONFIG_PNP */
 
 #ifdef CONFIG_EISA
+<<<<<<< HEAD
 static struct eisa_device_id el3_eisa_ids[] = {
+=======
+static const struct eisa_device_id el3_eisa_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ "TCM5090" },
 		{ "TCM5091" },
 		{ "TCM5092" },
@@ -498,7 +581,11 @@ static struct eisa_driver el3_eisa_driver = {
 		.driver   = {
 				.name    = "3c579",
 				.probe   = el3_eisa_probe,
+<<<<<<< HEAD
 				.remove  = __devexit_p (el3_device_remove),
+=======
+				.remove  = el3_device_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				.suspend = el3_suspend,
 				.resume  = el3_resume,
 		}
@@ -506,6 +593,7 @@ static struct eisa_driver el3_eisa_driver = {
 static int eisa_registered;
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_MCA
 static int el3_mca_probe(struct device *dev);
 
@@ -541,6 +629,8 @@ static struct mca_driver el3_mca_driver = {
 static int mca_registered;
 #endif /* CONFIG_MCA */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops netdev_ops = {
 	.ndo_open 		= el3_open,
 	.ndo_stop	 	= el3_close,
@@ -548,7 +638,10 @@ static const struct net_device_ops netdev_ops = {
 	.ndo_get_stats 		= el3_get_stats,
 	.ndo_set_rx_mode	= set_multicast_list,
 	.ndo_tx_timeout 	= el3_tx_timeout,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -556,11 +649,21 @@ static const struct net_device_ops netdev_ops = {
 #endif
 };
 
+<<<<<<< HEAD
 static int __devinit el3_common_init(struct net_device *dev)
 {
 	struct el3_private *lp = netdev_priv(dev);
 	int err;
 	const char *if_names[] = {"10baseT", "AUI", "undefined", "BNC"};
+=======
+static int el3_common_init(struct net_device *dev)
+{
+	struct el3_private *lp = netdev_priv(dev);
+	int err;
+	static const char * const if_names[] = {
+		"10baseT", "AUI", "undefined", "BNC"
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&lp->lock);
 
@@ -574,7 +677,11 @@ static int __devinit el3_common_init(struct net_device *dev)
 	/* The EL3-specific entries in the device structure. */
 	dev->netdev_ops = &netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(dev, &ethtool_ops);
+=======
+	dev->ethtool_ops = &ethtool_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = register_netdev(dev);
 	if (err) {
@@ -588,8 +695,11 @@ static int __devinit el3_common_init(struct net_device *dev)
 	       dev->name, dev->base_addr, if_names[(dev->if_port & 0x03)],
 	       dev->dev_addr, dev->irq);
 
+<<<<<<< HEAD
 	if (el3_debug > 0)
 		pr_info("%s", version);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 }
@@ -601,6 +711,7 @@ static void el3_common_remove (struct net_device *dev)
 	free_netdev (dev);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_MCA
 static int __init el3_mca_probe(struct device *device)
 {
@@ -673,6 +784,10 @@ static int __init el3_mca_probe(struct device *device)
 
 #ifdef CONFIG_EISA
 static int __init el3_eisa_probe (struct device *device)
+=======
+#ifdef CONFIG_EISA
+static int el3_eisa_probe(struct device *device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	short i;
 	int ioaddr, irq, if_port;
@@ -706,7 +821,10 @@ static int __init el3_eisa_probe (struct device *device)
 	}
 
 	SET_NETDEV_DEV(dev, device);
+<<<<<<< HEAD
 	netdev_boot_setup_check(dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	el3_dev_fill(dev, phys_addr, ioaddr, irq, if_port, EL3_EISA);
 	eisa_set_drvdata (edev, dev);
@@ -726,7 +844,11 @@ static int __init el3_eisa_probe (struct device *device)
 /* This remove works for all device types.
  *
  * The net dev must be stored in the driver data field */
+<<<<<<< HEAD
 static int __devexit el3_device_remove (struct device *device)
+=======
+static int el3_device_remove(struct device *device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 
@@ -800,16 +922,28 @@ el3_open(struct net_device *dev)
 }
 
 static void
+<<<<<<< HEAD
 el3_tx_timeout (struct net_device *dev)
+=======
+el3_tx_timeout (struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ioaddr = dev->base_addr;
 
 	/* Transmitter timeout, serious problems. */
+<<<<<<< HEAD
 	pr_warning("%s: transmit timed out, Tx_status %2.2x status %4.4x Tx FIFO room %d.\n",
 		   dev->name, inb(ioaddr + TX_STATUS), inw(ioaddr + EL3_STATUS),
 		   inw(ioaddr + TX_FREE));
 	dev->stats.tx_errors++;
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	pr_warn("%s: transmit timed out, Tx_status %2.2x status %4.4x Tx FIFO room %d\n",
+		dev->name, inb(ioaddr + TX_STATUS), inw(ioaddr + EL3_STATUS),
+		inw(ioaddr + TX_FREE));
+	dev->stats.tx_errors++;
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Issue TX_RESET and TX_START commands. */
 	outw(TxReset, ioaddr + EL3_CMD);
 	outw(TxEnable, ioaddr + EL3_CMD);
@@ -832,6 +966,7 @@ el3_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		pr_debug("%s: el3_start_xmit(length = %u) called, status %4.4x.\n",
 			   dev->name, skb->len, inw(ioaddr + EL3_STATUS));
 	}
+<<<<<<< HEAD
 #if 0
 #ifndef final_version
 	{	/* Error-checking code, delete someday. */
@@ -851,6 +986,8 @@ el3_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 #endif
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *	We lock the driver against other processors. Note
 	 *	we don't need to lock versus the IRQ as we suspended
@@ -878,7 +1015,11 @@ el3_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	spin_unlock_irqrestore(&lp->lock, flags);
 
+<<<<<<< HEAD
 	dev_kfree_skb (skb);
+=======
+	dev_consume_skb_any (skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the Tx status stack. */
 	{
@@ -1169,15 +1310,25 @@ el3_link_ok(struct net_device *dev)
 	return tmp & (1<<11);
 }
 
+<<<<<<< HEAD
 static int
 el3_netdev_get_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 {
 	u16 tmp;
 	int ioaddr = dev->base_addr;
+=======
+static void
+el3_netdev_get_ecmd(struct net_device *dev, struct ethtool_link_ksettings *cmd)
+{
+	u16 tmp;
+	int ioaddr = dev->base_addr;
+	u32 supported;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	EL3WINDOW(0);
 	/* obtain current transceiver via WN4_MEDIA? */
 	tmp = inw(ioaddr + WN0_ADDR_CONF);
+<<<<<<< HEAD
 	ecmd->transceiver = XCVR_INTERNAL;
 	switch (tmp >> 14) {
 	case 0:
@@ -1189,10 +1340,23 @@ el3_netdev_get_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 		break;
 	case 3:
 		ecmd->port = PORT_BNC;
+=======
+	switch (tmp >> 14) {
+	case 0:
+		cmd->base.port = PORT_TP;
+		break;
+	case 1:
+		cmd->base.port = PORT_AUI;
+		break;
+	case 3:
+		cmd->base.port = PORT_BNC;
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
 
+<<<<<<< HEAD
 	ecmd->duplex = DUPLEX_HALF;
 	ecmd->supported = 0;
 	tmp = inw(ioaddr + WN0_CONF_CTRL);
@@ -1202,10 +1366,22 @@ el3_netdev_get_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 		ecmd->supported |= SUPPORTED_BNC;
 	if (tmp & (1<<9)) {
 		ecmd->supported |= SUPPORTED_TP | SUPPORTED_10baseT_Half |
+=======
+	cmd->base.duplex = DUPLEX_HALF;
+	supported = 0;
+	tmp = inw(ioaddr + WN0_CONF_CTRL);
+	if (tmp & (1<<13))
+		supported |= SUPPORTED_AUI;
+	if (tmp & (1<<12))
+		supported |= SUPPORTED_BNC;
+	if (tmp & (1<<9)) {
+		supported |= SUPPORTED_TP | SUPPORTED_10baseT_Half |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				SUPPORTED_10baseT_Full;	/* hmm... */
 		EL3WINDOW(4);
 		tmp = inw(ioaddr + WN4_NETDIAG);
 		if (tmp & FD_ENABLE)
+<<<<<<< HEAD
 			ecmd->duplex = DUPLEX_FULL;
 	}
 
@@ -1216,21 +1392,46 @@ el3_netdev_get_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 
 static int
 el3_netdev_set_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
+=======
+			cmd->base.duplex = DUPLEX_FULL;
+	}
+
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
+						supported);
+	cmd->base.speed = SPEED_10;
+	EL3WINDOW(1);
+}
+
+static int
+el3_netdev_set_ecmd(struct net_device *dev,
+		    const struct ethtool_link_ksettings *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 tmp;
 	int ioaddr = dev->base_addr;
 
+<<<<<<< HEAD
 	if (ecmd->speed != SPEED_10)
 		return -EINVAL;
 	if ((ecmd->duplex != DUPLEX_HALF) && (ecmd->duplex != DUPLEX_FULL))
 		return -EINVAL;
 	if ((ecmd->transceiver != XCVR_INTERNAL) && (ecmd->transceiver != XCVR_EXTERNAL))
+=======
+	if (cmd->base.speed != SPEED_10)
+		return -EINVAL;
+	if ((cmd->base.duplex != DUPLEX_HALF) &&
+	    (cmd->base.duplex != DUPLEX_FULL))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	/* change XCVR type */
 	EL3WINDOW(0);
 	tmp = inw(ioaddr + WN0_ADDR_CONF);
+<<<<<<< HEAD
 	switch (ecmd->port) {
+=======
+	switch (cmd->base.port) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PORT_TP:
 		tmp &= ~(3<<14);
 		dev->if_port = 0;
@@ -1260,7 +1461,11 @@ el3_netdev_set_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 
 	EL3WINDOW(4);
 	tmp = inw(ioaddr + WN4_NETDIAG);
+<<<<<<< HEAD
 	if (ecmd->duplex == DUPLEX_FULL)
+=======
+	if (cmd->base.duplex == DUPLEX_FULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp |= FD_ENABLE;
 	else
 		tmp &= ~FD_ENABLE;
@@ -1272,6 +1477,7 @@ el3_netdev_set_ecmd(struct net_device *dev, struct ethtool_cmd *ecmd)
 
 static void el3_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
+<<<<<<< HEAD
 	strcpy(info->driver, DRV_NAME);
 	strcpy(info->version, DRV_VERSION);
 }
@@ -1288,12 +1494,34 @@ static int el3_get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 }
 
 static int el3_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
+=======
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+}
+
+static int el3_get_link_ksettings(struct net_device *dev,
+				  struct ethtool_link_ksettings *cmd)
+{
+	struct el3_private *lp = netdev_priv(dev);
+
+	spin_lock_irq(&lp->lock);
+	el3_netdev_get_ecmd(dev, cmd);
+	spin_unlock_irq(&lp->lock);
+	return 0;
+}
+
+static int el3_set_link_ksettings(struct net_device *dev,
+				  const struct ethtool_link_ksettings *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct el3_private *lp = netdev_priv(dev);
 	int ret;
 
 	spin_lock_irq(&lp->lock);
+<<<<<<< HEAD
 	ret = el3_netdev_set_ecmd(dev, ecmd);
+=======
+	ret = el3_netdev_set_ecmd(dev, cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&lp->lock);
 	return ret;
 }
@@ -1321,11 +1549,19 @@ static void el3_set_msglevel(struct net_device *dev, u32 v)
 
 static const struct ethtool_ops ethtool_ops = {
 	.get_drvinfo = el3_get_drvinfo,
+<<<<<<< HEAD
 	.get_settings = el3_get_settings,
 	.set_settings = el3_set_settings,
 	.get_link = el3_get_link,
 	.get_msglevel = el3_get_msglevel,
 	.set_msglevel = el3_set_msglevel,
+=======
+	.get_link = el3_get_link,
+	.get_msglevel = el3_get_msglevel,
+	.set_msglevel = el3_set_msglevel,
+	.get_link_ksettings = el3_get_link_ksettings,
+	.set_link_ksettings = el3_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void
@@ -1395,12 +1631,20 @@ el3_up(struct net_device *dev)
 					pr_cont("Forcing 3c5x9b full-duplex mode");
 					break;
 				}
+<<<<<<< HEAD
+=======
+				fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case 8:
 				/* set full-duplex mode based on eeprom config setting */
 				if ((sw_info & 0x000f) && (sw_info & 0x8000)) {
 					pr_cont("Setting 3c5x9b full-duplex mode (from EEPROM configuration bit)");
 					break;
 				}
+<<<<<<< HEAD
+=======
+				fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			default:
 				/* xcvr=(0 || 4) OR user has an old 3c5x9 non "B" model */
 				pr_cont("Setting 3c5x9/3c5x9B half-duplex mode");
@@ -1498,7 +1742,11 @@ el3_resume(struct device *pdev)
 #endif /* CONFIG_PM */
 
 module_param(debug,int, 0);
+<<<<<<< HEAD
 module_param_array(irq, int, NULL, 0);
+=======
+module_param_hw_array(irq, int, irq, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(max_interrupt_work, int, 0);
 MODULE_PARM_DESC(debug, "debug level (0-6)");
 MODULE_PARM_DESC(irq, "IRQ number(s) (assigned)");
@@ -1549,11 +1797,14 @@ static int __init el3_init_module(void)
 	if (!ret)
 		eisa_registered = 1;
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_MCA
 	ret = mca_register_driver(&el3_mca_driver);
 	if (!ret)
 		mca_registered = 1;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PNP
 	if (pnp_registered)
@@ -1565,10 +1816,13 @@ static int __init el3_init_module(void)
 	if (eisa_registered)
 		ret = 0;
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_MCA
 	if (mca_registered)
 		ret = 0;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1586,10 +1840,13 @@ static void __exit el3_cleanup_module(void)
 	if (eisa_registered)
 		eisa_driver_unregister(&el3_eisa_driver);
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_MCA
 	if (mca_registered)
 		mca_unregister_driver(&el3_mca_driver);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init (el3_init_module);

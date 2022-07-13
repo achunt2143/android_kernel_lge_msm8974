@@ -1,19 +1,30 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2011, 2012 Patrick McHardy <kaber@trash.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2011, 2012 Patrick McHardy <kaber@trash.net>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/skbuff.h>
 #include <linux/ipv6.h>
+<<<<<<< HEAD
+=======
+#include <net/ipv6.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv6.h>
 #include <linux/netfilter_ipv6/ip6t_NPT.h>
 #include <linux/netfilter/x_tables.h>
 
+<<<<<<< HEAD
 static __sum16 csum16_complement(__sum16 a)
 {
 	return (__force __sum16)(0xffff - (__force u16)a);
@@ -38,10 +49,18 @@ static int ip6t_npt_checkentry(const struct xt_tgchk_param *par)
 	struct ip6t_npt_tginfo *npt = par->targinfo;
 	__sum16 src_sum = 0, dst_sum = 0;
 	unsigned int i;
+=======
+static int ip6t_npt_checkentry(const struct xt_tgchk_param *par)
+{
+	struct ip6t_npt_tginfo *npt = par->targinfo;
+	struct in6_addr pfx;
+	__wsum src_sum, dst_sum;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (npt->src_pfx_len > 64 || npt->dst_pfx_len > 64)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(npt->src_pfx.in6.s6_addr16); i++) {
 		src_sum = csum16_add(src_sum,
 				(__force __sum16)npt->src_pfx.in6.s6_addr16[i]);
@@ -50,6 +69,20 @@ static int ip6t_npt_checkentry(const struct xt_tgchk_param *par)
 	}
 
 	npt->adjustment = csum16_sub(src_sum, dst_sum);
+=======
+	/* Ensure that LSB of prefix is zero */
+	ipv6_addr_prefix(&pfx, &npt->src_pfx.in6, npt->src_pfx_len);
+	if (!ipv6_addr_equal(&pfx, &npt->src_pfx.in6))
+		return -EINVAL;
+	ipv6_addr_prefix(&pfx, &npt->dst_pfx.in6, npt->dst_pfx_len);
+	if (!ipv6_addr_equal(&pfx, &npt->dst_pfx.in6))
+		return -EINVAL;
+
+	src_sum = csum_partial(&npt->src_pfx.in6, sizeof(npt->src_pfx.in6), 0);
+	dst_sum = csum_partial(&npt->dst_pfx.in6, sizeof(npt->dst_pfx.in6), 0);
+
+	npt->adjustment = ~csum_fold(csum_sub(src_sum, dst_sum));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -66,11 +99,19 @@ static bool ip6t_npt_map_pfx(const struct ip6t_npt_tginfo *npt,
 		if (pfx_len - i >= 32)
 			mask = 0;
 		else
+<<<<<<< HEAD
 			mask = htonl(~((1 << (pfx_len - i)) - 1));
 
 		idx = i / 32;
 		addr->s6_addr32[idx] &= mask;
 		addr->s6_addr32[idx] |= npt->dst_pfx.in6.s6_addr32[idx];
+=======
+			mask = htonl((1 << (i - pfx_len + 32)) - 1);
+
+		idx = i / 32;
+		addr->s6_addr32[idx] &= mask;
+		addr->s6_addr32[idx] |= ~mask & npt->dst_pfx.in6.s6_addr32[idx];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (pfx_len <= 48)
@@ -85,8 +126,13 @@ static bool ip6t_npt_map_pfx(const struct ip6t_npt_tginfo *npt,
 			return false;
 	}
 
+<<<<<<< HEAD
 	sum = csum16_add((__force __sum16)addr->s6_addr16[idx],
 			 npt->adjustment);
+=======
+	sum = ~csum_fold(csum_add(csum_unfold((__force __sum16)addr->s6_addr16[idx]),
+				  csum_unfold(npt->adjustment)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sum == CSUM_MANGLED_0)
 		sum = 0;
 	*(__force __sum16 *)&addr->s6_addr16[idx] = sum;
@@ -94,16 +140,52 @@ static bool ip6t_npt_map_pfx(const struct ip6t_npt_tginfo *npt,
 	return true;
 }
 
+<<<<<<< HEAD
+=======
+static struct ipv6hdr *icmpv6_bounced_ipv6hdr(struct sk_buff *skb,
+					      struct ipv6hdr *_bounced_hdr)
+{
+	if (ipv6_hdr(skb)->nexthdr != IPPROTO_ICMPV6)
+		return NULL;
+
+	if (!icmpv6_is_err(icmp6_hdr(skb)->icmp6_type))
+		return NULL;
+
+	return skb_header_pointer(skb,
+				  skb_transport_offset(skb) + sizeof(struct icmp6hdr),
+				  sizeof(struct ipv6hdr),
+				  _bounced_hdr);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int
 ip6t_snpt_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct ip6t_npt_tginfo *npt = par->targinfo;
+<<<<<<< HEAD
+=======
+	struct ipv6hdr _bounced_hdr;
+	struct ipv6hdr *bounced_hdr;
+	struct in6_addr bounced_pfx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ip6t_npt_map_pfx(npt, &ipv6_hdr(skb)->saddr)) {
 		icmpv6_send(skb, ICMPV6_PARAMPROB, ICMPV6_HDR_FIELD,
 			    offsetof(struct ipv6hdr, saddr));
 		return NF_DROP;
 	}
+<<<<<<< HEAD
+=======
+
+	/* rewrite dst addr of bounced packet which was sent to dst range */
+	bounced_hdr = icmpv6_bounced_ipv6hdr(skb, &_bounced_hdr);
+	if (bounced_hdr) {
+		ipv6_addr_prefix(&bounced_pfx, &bounced_hdr->daddr, npt->src_pfx_len);
+		if (ipv6_addr_cmp(&bounced_pfx, &npt->src_pfx.in6) == 0)
+			ip6t_npt_map_pfx(npt, &bounced_hdr->daddr);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return XT_CONTINUE;
 }
 
@@ -111,20 +193,45 @@ static unsigned int
 ip6t_dnpt_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct ip6t_npt_tginfo *npt = par->targinfo;
+<<<<<<< HEAD
+=======
+	struct ipv6hdr _bounced_hdr;
+	struct ipv6hdr *bounced_hdr;
+	struct in6_addr bounced_pfx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ip6t_npt_map_pfx(npt, &ipv6_hdr(skb)->daddr)) {
 		icmpv6_send(skb, ICMPV6_PARAMPROB, ICMPV6_HDR_FIELD,
 			    offsetof(struct ipv6hdr, daddr));
 		return NF_DROP;
 	}
+<<<<<<< HEAD
+=======
+
+	/* rewrite src addr of bounced packet which was sent from dst range */
+	bounced_hdr = icmpv6_bounced_ipv6hdr(skb, &_bounced_hdr);
+	if (bounced_hdr) {
+		ipv6_addr_prefix(&bounced_pfx, &bounced_hdr->saddr, npt->src_pfx_len);
+		if (ipv6_addr_cmp(&bounced_pfx, &npt->src_pfx.in6) == 0)
+			ip6t_npt_map_pfx(npt, &bounced_hdr->saddr);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return XT_CONTINUE;
 }
 
 static struct xt_target ip6t_npt_target_reg[] __read_mostly = {
 	{
 		.name		= "SNPT",
+<<<<<<< HEAD
 		.target		= ip6t_snpt_tg,
 		.targetsize	= sizeof(struct ip6t_npt_tginfo),
+=======
+		.table		= "mangle",
+		.target		= ip6t_snpt_tg,
+		.targetsize	= sizeof(struct ip6t_npt_tginfo),
+		.usersize	= offsetof(struct ip6t_npt_tginfo, adjustment),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.checkentry	= ip6t_npt_checkentry,
 		.family		= NFPROTO_IPV6,
 		.hooks		= (1 << NF_INET_LOCAL_IN) |
@@ -133,8 +240,15 @@ static struct xt_target ip6t_npt_target_reg[] __read_mostly = {
 	},
 	{
 		.name		= "DNPT",
+<<<<<<< HEAD
 		.target		= ip6t_dnpt_tg,
 		.targetsize	= sizeof(struct ip6t_npt_tginfo),
+=======
+		.table		= "mangle",
+		.target		= ip6t_dnpt_tg,
+		.targetsize	= sizeof(struct ip6t_npt_tginfo),
+		.usersize	= offsetof(struct ip6t_npt_tginfo, adjustment),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.checkentry	= ip6t_npt_checkentry,
 		.family		= NFPROTO_IPV6,
 		.hooks		= (1 << NF_INET_PRE_ROUTING) |

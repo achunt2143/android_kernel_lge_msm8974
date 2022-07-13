@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Makefile for cpupower
 #
 # Copyright (C) 2005,2006 Dominik Brodowski <linux@dominikbrodowski.net>
@@ -6,6 +10,7 @@
 #
 # Copyright (C) 2003,2004 Greg Kroah-Hartman <greg@kroah.com>
 #
+<<<<<<< HEAD
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; version 2 of the License.
@@ -19,6 +24,8 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
 #
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 OUTPUT=./
 ifeq ("$(origin O)", "command line")
 	OUTPUT := $(O)/
@@ -26,10 +33,18 @@ endif
 
 ifneq ($(OUTPUT),)
 # check that the output directory actually exists
+<<<<<<< HEAD
 OUTDIR := $(shell cd $(OUTPUT) && /bin/pwd)
 $(if $(OUTDIR),, $(error output directory "$(OUTPUT)" does not exist))
 endif
 
+=======
+OUTDIR := $(shell cd $(OUTPUT) && pwd)
+$(if $(OUTDIR),, $(error output directory "$(OUTPUT)" does not exist))
+endif
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # --- CONFIGURATION BEGIN ---
 
 # Set the following to `true' to make a unstripped, unoptimized
@@ -47,6 +62,14 @@ NLS ?=		true
 # cpufreq-bench benchmarking tool
 CPUFREQ_BENCH ?= true
 
+<<<<<<< HEAD
+=======
+# Do not build libraries, but build the code in statically
+# Libraries are still built, otherwise the Makefile code would
+# be rather ugly.
+export STATIC ?= false
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Prefix to the directories we're installing to
 DESTDIR ?=
 
@@ -57,6 +80,7 @@ DESTDIR ?=
 # Package-related definitions. Distributions can modify the version
 # and _should_ modify the PACKAGE_BUGREPORT definition
 
+<<<<<<< HEAD
 VERSION=			$(shell ./utils/version-gen.sh)
 LIB_MAJ=			0.0.0
 LIB_MIN=			0
@@ -64,6 +88,15 @@ LIB_MIN=			0
 PACKAGE =			cpupower
 PACKAGE_BUGREPORT =		cpufreq@vger.kernel.org
 LANGUAGES = 			de fr it cs pt
+=======
+VERSION:=			$(shell ./utils/version-gen.sh)
+LIB_MAJ=			0.0.1
+LIB_MIN=			1
+
+PACKAGE =			cpupower
+PACKAGE_BUGREPORT =		linux-pm@vger.kernel.org
+LANGUAGES = 			de fr it cs pt ka
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 # Directory definitions. These are default and most probably
@@ -74,10 +107,17 @@ bindir ?=	/usr/bin
 sbindir ?=	/usr/sbin
 mandir ?=	/usr/man
 includedir ?=	/usr/include
+<<<<<<< HEAD
 libdir ?=	/usr/lib
 localedir ?=	/usr/share/locale
 docdir ?=       /usr/share/doc/packages/cpupower
 confdir ?=      /etc/
+=======
+localedir ?=	/usr/share/locale
+docdir ?=       /usr/share/doc/packages/cpupower
+confdir ?=      /etc/
+bash_completion_dir ?= /usr/share/bash-completion/completions
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Toolchain: what tools do we use, and what options do they need:
 
@@ -85,7 +125,12 @@ CP = cp -fpR
 INSTALL = /usr/bin/install -c
 INSTALL_PROGRAM = ${INSTALL}
 INSTALL_DATA  = ${INSTALL} -m 644
+<<<<<<< HEAD
 INSTALL_SCRIPT = ${INSTALL_PROGRAM}
+=======
+#bash completion scripts get sourced and so they should be rw only.
+INSTALL_SCRIPT = ${INSTALL} -m 644
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # If you are running a cross compiler, you may want to set this
 # to something more interesting, like "arm-linux-".  If you want
@@ -99,13 +144,27 @@ RANLIB = $(CROSS)ranlib
 HOSTCC = gcc
 MKDIR = mkdir
 
+<<<<<<< HEAD
+=======
+# 64bit library detection
+include ../../scripts/Makefile.arch
+
+ifeq ($(IS_64_BIT), 1)
+libdir ?=	/usr/lib64
+else
+libdir ?=	/usr/lib
+endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Now we set up the build system
 #
 
+<<<<<<< HEAD
 # set up PWD so that older versions of make will work with our build.
 PWD = $(shell pwd)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 GMO_FILES = ${shell for HLANG in ${LANGUAGES}; do echo $(OUTPUT)po/$$HLANG.gmo; done;}
 
 export CROSS CC AR STRIP RANLIB CFLAGS LDFLAGS LIB_OBJS
@@ -121,6 +180,7 @@ WARNINGS += $(call cc-supports,-Wno-pointer-sign)
 WARNINGS += $(call cc-supports,-Wdeclaration-after-statement)
 WARNINGS += -Wshadow
 
+<<<<<<< HEAD
 CFLAGS += -DVERSION=\"$(VERSION)\" -DPACKAGE=\"$(PACKAGE)\" \
 		-DPACKAGE_BUGREPORT=\"$(PACKAGE_BUGREPORT)\" -D_GNU_SOURCE
 
@@ -132,6 +192,22 @@ UTIL_OBJS =  utils/helpers/amd.o utils/helpers/topology.o utils/helpers/msr.o \
 	utils/idle_monitor/mperf_monitor.o utils/idle_monitor/cpupower-monitor.o \
 	utils/cpupower.o utils/cpufreq-info.o utils/cpufreq-set.o \
 	utils/cpupower-set.o utils/cpupower-info.o utils/cpuidle-info.o
+=======
+override CFLAGS += -DVERSION=\"$(VERSION)\" -DPACKAGE=\"$(PACKAGE)\" \
+		-DPACKAGE_BUGREPORT=\"$(PACKAGE_BUGREPORT)\" -D_GNU_SOURCE
+
+UTIL_OBJS =  utils/helpers/amd.o utils/helpers/msr.o \
+	utils/helpers/sysfs.o utils/helpers/misc.o utils/helpers/cpuid.o \
+	utils/helpers/pci.o utils/helpers/bitmask.o \
+	utils/idle_monitor/nhm_idle.o utils/idle_monitor/snb_idle.o \
+	utils/idle_monitor/hsw_ext_idle.o \
+	utils/idle_monitor/amd_fam14h_idle.o utils/idle_monitor/cpuidle_sysfs.o \
+	utils/idle_monitor/mperf_monitor.o utils/idle_monitor/cpupower-monitor.o \
+	utils/idle_monitor/rapl_monitor.o \
+	utils/cpupower.o utils/cpufreq-info.o utils/cpufreq-set.o \
+	utils/cpupower-set.o utils/cpupower-info.o utils/cpuidle-info.o \
+	utils/cpuidle-set.o utils/powercap-info.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 UTIL_SRC := $(UTIL_OBJS:.o=.c)
 
@@ -141,17 +217,33 @@ UTIL_HEADERS = utils/helpers/helpers.h utils/idle_monitor/cpupower-monitor.h \
 	utils/helpers/bitmask.h \
 	utils/idle_monitor/idle_monitors.h utils/idle_monitor/idle_monitors.def
 
+<<<<<<< HEAD
 LIB_HEADERS = 	lib/cpufreq.h lib/sysfs.h
 LIB_SRC = 	lib/cpufreq.c lib/sysfs.c
 LIB_OBJS = 	lib/cpufreq.o lib/sysfs.o
 LIB_OBJS :=	$(addprefix $(OUTPUT),$(LIB_OBJS))
 
 CFLAGS +=	-pipe
+=======
+LIB_HEADERS = 	lib/cpufreq.h lib/cpupower.h lib/cpuidle.h lib/acpi_cppc.h \
+	lib/powercap.h
+LIB_SRC = 	lib/cpufreq.c lib/cpupower.c lib/cpuidle.c lib/acpi_cppc.c \
+	lib/powercap.c
+LIB_OBJS = 	lib/cpufreq.o lib/cpupower.o lib/cpuidle.o lib/acpi_cppc.o \
+	lib/powercap.o
+LIB_OBJS :=	$(addprefix $(OUTPUT),$(LIB_OBJS))
+
+override CFLAGS +=	-pipe
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ifeq ($(strip $(NLS)),true)
 	INSTALL_NLS += install-gmo
 	COMPILE_NLS += create-gmo
+<<<<<<< HEAD
 	CFLAGS += -DNLS
+=======
+	override CFLAGS += -DNLS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif
 
 ifeq ($(strip $(CPUFREQ_BENCH)),true)
@@ -159,7 +251,17 @@ ifeq ($(strip $(CPUFREQ_BENCH)),true)
 	COMPILE_BENCH += compile-bench
 endif
 
+<<<<<<< HEAD
 CFLAGS += $(WARNINGS)
+=======
+ifeq ($(strip $(STATIC)),true)
+        UTIL_OBJS += $(LIB_OBJS)
+        UTIL_HEADERS += $(LIB_HEADERS)
+        UTIL_SRC += $(LIB_SRC)
+endif
+
+override CFLAGS += $(WARNINGS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ifeq ($(strip $(V)),false)
 	QUIET=@
@@ -172,10 +274,17 @@ export QUIET ECHO
 
 # if DEBUG is enabled, then we do not strip or optimize
 ifeq ($(strip $(DEBUG)),true)
+<<<<<<< HEAD
 	CFLAGS += -O1 -g -DDEBUG
 	STRIPCMD = /bin/true -Since_we_are_debugging
 else
 	CFLAGS += $(OPTIMIZATION) -fomit-frame-pointer
+=======
+	override CFLAGS += -O1 -g -DDEBUG
+	STRIPCMD = /bin/true -Since_we_are_debugging
+else
+	override CFLAGS += $(OPTIMIZATION) -fomit-frame-pointer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	STRIPCMD = $(STRIP) -s --remove-section=.note --remove-section=.comment
 endif
 
@@ -207,7 +316,15 @@ $(OUTPUT)%.o: %.c
 
 $(OUTPUT)cpupower: $(UTIL_OBJS) $(OUTPUT)libcpupower.so.$(LIB_MAJ)
 	$(ECHO) "  CC      " $@
+<<<<<<< HEAD
 	$(QUIET) $(CC) $(CFLAGS) $(LDFLAGS) $(UTIL_OBJS) -lcpupower -lrt -lpci -L$(OUTPUT) -o $@
+=======
+ifeq ($(strip $(STATIC)),true)
+	$(QUIET) $(CC) $(CFLAGS) $(LDFLAGS) $(UTIL_OBJS) -lrt -lpci -L$(OUTPUT) -o $@
+else
+	$(QUIET) $(CC) $(CFLAGS) $(LDFLAGS) $(UTIL_OBJS) -lcpupower -lrt -lpci -L$(OUTPUT) -o $@
+endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$(QUIET) $(STRIPCMD) $@
 
 $(OUTPUT)po/$(PACKAGE).pot: $(UTIL_SRC)
@@ -253,47 +370,102 @@ clean:
 	 | xargs rm -f
 	-rm -f $(OUTPUT)cpupower
 	-rm -f $(OUTPUT)libcpupower.so*
+<<<<<<< HEAD
 	-rm -rf $(OUTPUT)po/*.{gmo,pot}
 	$(MAKE) -C bench O=$(OUTPUT) clean
 
 
 install-lib:
+=======
+	-rm -rf $(OUTPUT)po/*.gmo
+	-rm -rf $(OUTPUT)po/*.pot
+	$(MAKE) -C bench O=$(OUTPUT) clean
+
+
+install-lib: libcpupower
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$(INSTALL) -d $(DESTDIR)${libdir}
 	$(CP) $(OUTPUT)libcpupower.so* $(DESTDIR)${libdir}/
 	$(INSTALL) -d $(DESTDIR)${includedir}
 	$(INSTALL_DATA) lib/cpufreq.h $(DESTDIR)${includedir}/cpufreq.h
+<<<<<<< HEAD
 
 install-tools:
 	$(INSTALL) -d $(DESTDIR)${bindir}
 	$(INSTALL_PROGRAM) $(OUTPUT)cpupower $(DESTDIR)${bindir}
+=======
+	$(INSTALL_DATA) lib/cpuidle.h $(DESTDIR)${includedir}/cpuidle.h
+	$(INSTALL_DATA) lib/powercap.h $(DESTDIR)${includedir}/powercap.h
+
+install-tools: $(OUTPUT)cpupower
+	$(INSTALL) -d $(DESTDIR)${bindir}
+	$(INSTALL_PROGRAM) $(OUTPUT)cpupower $(DESTDIR)${bindir}
+	$(INSTALL) -d $(DESTDIR)${bash_completion_dir}
+	$(INSTALL_SCRIPT) cpupower-completion.sh '$(DESTDIR)${bash_completion_dir}/cpupower'
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 install-man:
 	$(INSTALL_DATA) -D man/cpupower.1 $(DESTDIR)${mandir}/man1/cpupower.1
 	$(INSTALL_DATA) -D man/cpupower-frequency-set.1 $(DESTDIR)${mandir}/man1/cpupower-frequency-set.1
 	$(INSTALL_DATA) -D man/cpupower-frequency-info.1 $(DESTDIR)${mandir}/man1/cpupower-frequency-info.1
+<<<<<<< HEAD
 	$(INSTALL_DATA) -D man/cpupower-set.1 $(DESTDIR)${mandir}/man1/cpupower-set.1
 	$(INSTALL_DATA) -D man/cpupower-info.1 $(DESTDIR)${mandir}/man1/cpupower-info.1
 	$(INSTALL_DATA) -D man/cpupower-monitor.1 $(DESTDIR)${mandir}/man1/cpupower-monitor.1
 
 install-gmo:
+=======
+	$(INSTALL_DATA) -D man/cpupower-idle-set.1 $(DESTDIR)${mandir}/man1/cpupower-idle-set.1
+	$(INSTALL_DATA) -D man/cpupower-idle-info.1 $(DESTDIR)${mandir}/man1/cpupower-idle-info.1
+	$(INSTALL_DATA) -D man/cpupower-set.1 $(DESTDIR)${mandir}/man1/cpupower-set.1
+	$(INSTALL_DATA) -D man/cpupower-info.1 $(DESTDIR)${mandir}/man1/cpupower-info.1
+	$(INSTALL_DATA) -D man/cpupower-monitor.1 $(DESTDIR)${mandir}/man1/cpupower-monitor.1
+	$(INSTALL_DATA) -D man/cpupower-powercap-info.1 $(DESTDIR)${mandir}/man1/cpupower-powercap-info.1
+
+install-gmo: create-gmo
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$(INSTALL) -d $(DESTDIR)${localedir}
 	for HLANG in $(LANGUAGES); do \
 		echo '$(INSTALL_DATA) -D $(OUTPUT)po/$$HLANG.gmo $(DESTDIR)${localedir}/$$HLANG/LC_MESSAGES/cpupower.mo'; \
 		$(INSTALL_DATA) -D $(OUTPUT)po/$$HLANG.gmo $(DESTDIR)${localedir}/$$HLANG/LC_MESSAGES/cpupower.mo; \
 	done;
 
+<<<<<<< HEAD
 install-bench:
 	@#DESTDIR must be set from outside to survive
 	@sbindir=$(sbindir) bindir=$(bindir) docdir=$(docdir) confdir=$(confdir) $(MAKE) -C bench O=$(OUTPUT) install
 
 install: all install-lib install-tools install-man $(INSTALL_NLS) $(INSTALL_BENCH)
+=======
+install-bench: compile-bench
+	@#DESTDIR must be set from outside to survive
+	@sbindir=$(sbindir) bindir=$(bindir) docdir=$(docdir) confdir=$(confdir) $(MAKE) -C bench O=$(OUTPUT) install
+
+ifeq ($(strip $(STATIC)),true)
+install: all install-tools install-man $(INSTALL_NLS) $(INSTALL_BENCH)
+else
+install: all install-lib install-tools install-man $(INSTALL_NLS) $(INSTALL_BENCH)
+endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 uninstall:
 	- rm -f $(DESTDIR)${libdir}/libcpupower.*
 	- rm -f $(DESTDIR)${includedir}/cpufreq.h
+<<<<<<< HEAD
 	- rm -f $(DESTDIR)${bindir}/utils/cpupower
 	- rm -f $(DESTDIR)${mandir}/man1/cpufreq-set.1
 	- rm -f $(DESTDIR)${mandir}/man1/cpufreq-info.1
+=======
+	- rm -f $(DESTDIR)${includedir}/cpuidle.h
+	- rm -f $(DESTDIR)${bindir}/utils/cpupower
+	- rm -f $(DESTDIR)${mandir}/man1/cpupower.1
+	- rm -f $(DESTDIR)${mandir}/man1/cpupower-frequency-set.1
+	- rm -f $(DESTDIR)${mandir}/man1/cpupower-frequency-info.1
+	- rm -f $(DESTDIR)${mandir}/man1/cpupower-set.1
+	- rm -f $(DESTDIR)${mandir}/man1/cpupower-info.1
+	- rm -f $(DESTDIR)${mandir}/man1/cpupower-monitor.1
+	- rm -f $(DESTDIR)${mandir}/man1/cpupower-powercap-info.1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	- for HLANG in $(LANGUAGES); do \
 		rm -f $(DESTDIR)${localedir}/$$HLANG/LC_MESSAGES/cpupower.mo; \
 	  done;

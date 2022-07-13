@@ -1,10 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/char/watchdog/sp805-wdt.c
  *
  * Watchdog driver for ARM SP805 watchdog module
  *
  * Copyright (C) 2010 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar<viresh.kumar@st.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2 or later. This program is licensed "as is" without any
@@ -16,12 +24,16 @@
 #include <linux/amba/bus.h>
 #include <linux/bitops.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <linux/fs.h>
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include <linux/ioport.h>
 #include <linux/kernel.h>
 #include <linux/math64.h>
+<<<<<<< HEAD
 #include <linux/miscdevice.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -30,6 +42,16 @@
 #include <linux/spinlock.h>
 #include <linux/types.h>
 #include <linux/uaccess.h>
+=======
+#include <linux/module.h>
+#include <linux/moduleparam.h>
+#include <linux/pm.h>
+#include <linux/property.h>
+#include <linux/reset.h>
+#include <linux/slab.h>
+#include <linux/spinlock.h>
+#include <linux/types.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/watchdog.h>
 
 /* default timeout in seconds */
@@ -46,6 +68,10 @@
 	/* control register masks */
 	#define	INT_ENABLE	(1 << 0)
 	#define	RESET_ENABLE	(1 << 1)
+<<<<<<< HEAD
+=======
+	#define	ENABLE_MASK	(INT_ENABLE | RESET_ENABLE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WDTINTCLR		0x00C
 #define WDTRIS			0x010
 #define WDTMIS			0x014
@@ -56,14 +82,23 @@
 
 /**
  * struct sp805_wdt: sp805 wdt device structure
+<<<<<<< HEAD
  * @lock: spin lock protecting dev structure and io access
  * @base: base address of wdt
  * @clk: clock structure of wdt
+=======
+ * @wdd: instance of struct watchdog_device
+ * @lock: spin lock protecting dev structure and io access
+ * @base: base address of wdt
+ * @clk: (optional) clock structure of wdt
+ * @rate: (optional) clock rate when provided via properties
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @adev: amba device structure of wdt
  * @status: current status of wdt
  * @load_val: load value to be set for current timeout
  */
 struct sp805_wdt {
+<<<<<<< HEAD
 	spinlock_t			lock;
 	void __iomem			*base;
 	struct clk			*clk;
@@ -84,6 +119,38 @@ static void wdt_setload(unsigned int timeout)
 	u64 load, rate;
 
 	rate = clk_get_rate(wdt->clk);
+=======
+	struct watchdog_device		wdd;
+	spinlock_t			lock;
+	void __iomem			*base;
+	struct clk			*clk;
+	u64				rate;
+	struct amba_device		*adev;
+	unsigned int			load_val;
+};
+
+static bool nowayout = WATCHDOG_NOWAYOUT;
+module_param(nowayout, bool, 0);
+MODULE_PARM_DESC(nowayout,
+		"Set to 1 to keep watchdog running after device release");
+
+/* returns true if wdt is running; otherwise returns false */
+static bool wdt_is_running(struct watchdog_device *wdd)
+{
+	struct sp805_wdt *wdt = watchdog_get_drvdata(wdd);
+	u32 wdtcontrol = readl_relaxed(wdt->base + WDTCONTROL);
+
+	return (wdtcontrol & ENABLE_MASK) == ENABLE_MASK;
+}
+
+/* This routine finds load value that will reset system in required timeout */
+static int wdt_setload(struct watchdog_device *wdd, unsigned int timeout)
+{
+	struct sp805_wdt *wdt = watchdog_get_drvdata(wdd);
+	u64 load, rate;
+
+	rate = wdt->rate;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * sp805 runs counter with given value twice, after the end of first
@@ -101,6 +168,7 @@ static void wdt_setload(unsigned int timeout)
 	/* roundup timeout to closest positive integer value */
 	wdd->timeout = div_u64((load + 1) * 2 + (rate / 2), rate);
 	spin_unlock(&wdt->lock);
+<<<<<<< HEAD
 }
 
 /* returns number of seconds left for reset to occur */
@@ -109,6 +177,17 @@ static u32 wdt_timeleft(void)
 	u64 load, rate;
 
 	rate = clk_get_rate(wdt->clk);
+=======
+
+	return 0;
+}
+
+/* returns number of seconds left for reset to occur */
+static unsigned int wdt_timeleft(struct watchdog_device *wdd)
+{
+	struct sp805_wdt *wdt = watchdog_get_drvdata(wdd);
+	u64 load;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&wdt->lock);
 	load = readl_relaxed(wdt->base + WDTVALUE);
@@ -118,28 +197,95 @@ static u32 wdt_timeleft(void)
 		load += wdt->load_val + 1;
 	spin_unlock(&wdt->lock);
 
+<<<<<<< HEAD
 	return div_u64(load, rate);
 }
 
 /* enables watchdog timers reset */
 static void wdt_enable(void)
 {
+=======
+	return div_u64(load, wdt->rate);
+}
+
+static int
+wdt_restart(struct watchdog_device *wdd, unsigned long mode, void *cmd)
+{
+	struct sp805_wdt *wdt = watchdog_get_drvdata(wdd);
+
+	writel_relaxed(UNLOCK, wdt->base + WDTLOCK);
+	writel_relaxed(0, wdt->base + WDTCONTROL);
+	writel_relaxed(0, wdt->base + WDTLOAD);
+	writel_relaxed(INT_ENABLE | RESET_ENABLE, wdt->base + WDTCONTROL);
+
+	/* Flush posted writes. */
+	readl_relaxed(wdt->base + WDTLOCK);
+
+	return 0;
+}
+
+static int wdt_config(struct watchdog_device *wdd, bool ping)
+{
+	struct sp805_wdt *wdt = watchdog_get_drvdata(wdd);
+	int ret;
+
+	if (!ping) {
+
+		ret = clk_prepare_enable(wdt->clk);
+		if (ret) {
+			dev_err(&wdt->adev->dev, "clock enable fail");
+			return ret;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&wdt->lock);
 
 	writel_relaxed(UNLOCK, wdt->base + WDTLOCK);
 	writel_relaxed(wdt->load_val, wdt->base + WDTLOAD);
 	writel_relaxed(INT_MASK, wdt->base + WDTINTCLR);
+<<<<<<< HEAD
 	writel_relaxed(INT_ENABLE | RESET_ENABLE, wdt->base + WDTCONTROL);
+=======
+
+	if (!ping)
+		writel_relaxed(INT_ENABLE | RESET_ENABLE, wdt->base +
+				WDTCONTROL);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel_relaxed(LOCK, wdt->base + WDTLOCK);
 
 	/* Flush posted writes. */
 	readl_relaxed(wdt->base + WDTLOCK);
 	spin_unlock(&wdt->lock);
+<<<<<<< HEAD
 }
 
 /* disables watchdog timers reset */
 static void wdt_disable(void)
 {
+=======
+
+	return 0;
+}
+
+static int wdt_ping(struct watchdog_device *wdd)
+{
+	return wdt_config(wdd, true);
+}
+
+/* enables watchdog timers reset */
+static int wdt_enable(struct watchdog_device *wdd)
+{
+	return wdt_config(wdd, false);
+}
+
+/* disables watchdog timers reset */
+static int wdt_disable(struct watchdog_device *wdd)
+{
+	struct sp805_wdt *wdt = watchdog_get_drvdata(wdd);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&wdt->lock);
 
 	writel_relaxed(UNLOCK, wdt->base + WDTLOCK);
@@ -149,6 +295,7 @@ static void wdt_disable(void)
 	/* Flush posted writes. */
 	readl_relaxed(wdt->base + WDTLOCK);
 	spin_unlock(&wdt->lock);
+<<<<<<< HEAD
 }
 
 static ssize_t sp805_wdt_write(struct file *file, const char *data,
@@ -179,10 +326,20 @@ static ssize_t sp805_wdt_write(struct file *file, const char *data,
 }
 
 static const struct watchdog_info ident = {
+=======
+
+	clk_disable_unprepare(wdt->clk);
+
+	return 0;
+}
+
+static const struct watchdog_info wdt_info = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.options = WDIOF_MAGICCLOSE | WDIOF_SETTIMEOUT | WDIOF_KEEPALIVEPING,
 	.identity = MODULE_NAME,
 };
 
+<<<<<<< HEAD
 static long sp805_wdt_ioctl(struct file *file, unsigned int cmd,
 		unsigned long arg)
 {
@@ -293,10 +450,33 @@ sp805_wdt_probe(struct amba_device *adev, const struct amba_id *id)
 	wdt = devm_kzalloc(&adev->dev, sizeof(*wdt), GFP_KERNEL);
 	if (!wdt) {
 		dev_warn(&adev->dev, "Kzalloc failed\n");
+=======
+static const struct watchdog_ops wdt_ops = {
+	.owner		= THIS_MODULE,
+	.start		= wdt_enable,
+	.stop		= wdt_disable,
+	.ping		= wdt_ping,
+	.set_timeout	= wdt_setload,
+	.get_timeleft	= wdt_timeleft,
+	.restart	= wdt_restart,
+};
+
+static int
+sp805_wdt_probe(struct amba_device *adev, const struct amba_id *id)
+{
+	struct sp805_wdt *wdt;
+	struct reset_control *rst;
+	u64 rate = 0;
+	int ret = 0;
+
+	wdt = devm_kzalloc(&adev->dev, sizeof(*wdt), GFP_KERNEL);
+	if (!wdt) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto err;
 	}
 
+<<<<<<< HEAD
 	wdt->base = devm_ioremap(&adev->dev, adev->res.start,
 			resource_size(&adev->res));
 	if (!wdt->base) {
@@ -327,19 +507,105 @@ sp805_wdt_probe(struct amba_device *adev, const struct amba_id *id)
 
 err_misc_register:
 	clk_put(wdt->clk);
+=======
+	wdt->base = devm_ioremap_resource(&adev->dev, &adev->res);
+	if (IS_ERR(wdt->base))
+		return PTR_ERR(wdt->base);
+
+	/*
+	 * When driver probe with ACPI device, clock devices
+	 * are not available, so watchdog rate get from
+	 * clock-frequency property given in _DSD object.
+	 */
+	device_property_read_u64(&adev->dev, "clock-frequency", &rate);
+
+	wdt->clk = devm_clk_get_optional(&adev->dev, NULL);
+	if (IS_ERR(wdt->clk))
+		return dev_err_probe(&adev->dev, PTR_ERR(wdt->clk), "Clock not found\n");
+
+	wdt->rate = clk_get_rate(wdt->clk);
+	if (!wdt->rate)
+		wdt->rate = rate;
+	if (!wdt->rate) {
+		dev_err(&adev->dev, "no clock-frequency property\n");
+		return -ENODEV;
+	}
+
+	rst = devm_reset_control_get_optional_exclusive(&adev->dev, NULL);
+	if (IS_ERR(rst))
+		return dev_err_probe(&adev->dev, PTR_ERR(rst), "Can not get reset\n");
+
+	reset_control_deassert(rst);
+
+	wdt->adev = adev;
+	wdt->wdd.info = &wdt_info;
+	wdt->wdd.ops = &wdt_ops;
+	wdt->wdd.parent = &adev->dev;
+
+	spin_lock_init(&wdt->lock);
+	watchdog_set_nowayout(&wdt->wdd, nowayout);
+	watchdog_set_drvdata(&wdt->wdd, wdt);
+	watchdog_set_restart_priority(&wdt->wdd, 128);
+	watchdog_stop_on_unregister(&wdt->wdd);
+
+	/*
+	 * If 'timeout-sec' devicetree property is specified, use that.
+	 * Otherwise, use DEFAULT_TIMEOUT
+	 */
+	wdt->wdd.timeout = DEFAULT_TIMEOUT;
+	watchdog_init_timeout(&wdt->wdd, 0, &adev->dev);
+	wdt_setload(&wdt->wdd, wdt->wdd.timeout);
+
+	/*
+	 * If HW is already running, enable/reset the wdt and set the running
+	 * bit to tell the wdt subsystem
+	 */
+	if (wdt_is_running(&wdt->wdd)) {
+		wdt_enable(&wdt->wdd);
+		set_bit(WDOG_HW_RUNNING, &wdt->wdd.status);
+	}
+
+	watchdog_stop_on_reboot(&wdt->wdd);
+	ret = watchdog_register_device(&wdt->wdd);
+	if (ret)
+		goto err;
+	amba_set_drvdata(adev, wdt);
+
+	dev_info(&adev->dev, "registration successful\n");
+	return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	dev_err(&adev->dev, "Probe Failed!!!\n");
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit sp805_wdt_remove(struct amba_device *adev)
 {
 	misc_deregister(&sp805_wdt_miscdev);
 	clk_put(wdt->clk);
+=======
+static void sp805_wdt_remove(struct amba_device *adev)
+{
+	struct sp805_wdt *wdt = amba_get_drvdata(adev);
+
+	watchdog_unregister_device(&wdt->wdd);
+	watchdog_set_drvdata(&wdt->wdd, NULL);
+}
+
+static int __maybe_unused sp805_wdt_suspend(struct device *dev)
+{
+	struct sp805_wdt *wdt = dev_get_drvdata(dev);
+
+	if (watchdog_active(&wdt->wdd))
+		return wdt_disable(&wdt->wdd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int sp805_wdt_suspend(struct device *dev)
 {
@@ -347,10 +613,19 @@ static int sp805_wdt_suspend(struct device *dev)
 		wdt_disable();
 		clk_disable(wdt->clk);
 	}
+=======
+static int __maybe_unused sp805_wdt_resume(struct device *dev)
+{
+	struct sp805_wdt *wdt = dev_get_drvdata(dev);
+
+	if (watchdog_active(&wdt->wdd))
+		return wdt_enable(&wdt->wdd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int sp805_wdt_resume(struct device *dev)
 {
 	int ret = 0;
@@ -372,10 +647,23 @@ static SIMPLE_DEV_PM_OPS(sp805_wdt_dev_pm_ops, sp805_wdt_suspend,
 		sp805_wdt_resume);
 
 static struct amba_id sp805_wdt_ids[] = {
+=======
+static SIMPLE_DEV_PM_OPS(sp805_wdt_dev_pm_ops, sp805_wdt_suspend,
+		sp805_wdt_resume);
+
+static const struct amba_id sp805_wdt_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.id	= 0x00141805,
 		.mask	= 0x00ffffff,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.id     = 0x001bb824,
+		.mask   = 0x00ffffff,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, 0 },
 };
 
@@ -388,11 +676,16 @@ static struct amba_driver sp805_wdt_driver = {
 	},
 	.id_table	= sp805_wdt_ids,
 	.probe		= sp805_wdt_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(sp805_wdt_remove),
+=======
+	.remove = sp805_wdt_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_amba_driver(sp805_wdt_driver);
 
+<<<<<<< HEAD
 module_param(nowayout, bool, 0);
 MODULE_PARM_DESC(nowayout,
 		"Set to 1 to keep watchdog running after device release");
@@ -401,3 +694,8 @@ MODULE_AUTHOR("Viresh Kumar <viresh.kumar@st.com>");
 MODULE_DESCRIPTION("ARM SP805 Watchdog Driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+MODULE_AUTHOR("Viresh Kumar <vireshk@kernel.org>");
+MODULE_DESCRIPTION("ARM SP805 Watchdog Driver");
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

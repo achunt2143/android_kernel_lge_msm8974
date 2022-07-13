@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * asm-generic/int-ll64.h
  *
  * Integer declarations for architectures which use "long long"
  * for 64-bit types.
  */
+<<<<<<< HEAD
 
 #ifndef _ASM_GENERIC_INT_LL64_H
 #define _ASM_GENERIC_INT_LL64_H
@@ -50,6 +55,24 @@ typedef unsigned int u32;
 
 typedef signed long long s64;
 typedef unsigned long long u64;
+=======
+#ifndef _ASM_GENERIC_INT_LL64_H
+#define _ASM_GENERIC_INT_LL64_H
+
+#include <uapi/asm-generic/int-ll64.h>
+
+
+#ifndef __ASSEMBLY__
+
+typedef __s8  s8;
+typedef __u8  u8;
+typedef __s16 s16;
+typedef __u16 u16;
+typedef __s32 s32;
+typedef __u32 u32;
+typedef __s64 s64;
+typedef __u64 u64;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define S8_C(x)  x
 #define U8_C(x)  x ## U
@@ -73,6 +96,9 @@ typedef unsigned long long u64;
 
 #endif /* __ASSEMBLY__ */
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_GENERIC_INT_LL64_H */

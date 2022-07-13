@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* 
  * Copyright (C) 2000 - 2003 Jeff Dike (jdike@addtoit.com)
  * Licensed under the GPL
@@ -63,4 +64,13 @@ long sys_sigaction(int sig, const struct old_sigaction __user *act,
 	}
 
 	return ret;
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/syscalls.h>
+#include <os.h>
+
+SYSCALL_DEFINE2(arch_prctl, int, option, unsigned long, arg2)
+{
+	return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

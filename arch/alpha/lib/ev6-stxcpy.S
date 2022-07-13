@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/ev6-stxcpy.S
  * 21264 version contributed by Rick Gorton <rick.gorton@alpha-processor.com>

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: rsirq - IRQ resource descriptors
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -41,6 +46,8 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acresrc.h"
@@ -53,7 +60,11 @@ ACPI_MODULE_NAME("rsirq")
  * acpi_rs_get_irq
  *
  ******************************************************************************/
+<<<<<<< HEAD
 struct acpi_rsconvert_info acpi_rs_get_irq[8] = {
+=======
+struct acpi_rsconvert_info acpi_rs_get_irq[9] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_IRQ,
 	 ACPI_RS_SIZE(struct acpi_resource_irq),
 	 ACPI_RSC_TABLE_SIZE(acpi_rs_get_irq)},
@@ -80,7 +91,11 @@ struct acpi_rsconvert_info acpi_rs_get_irq[8] = {
 
 	{ACPI_RSC_EXIT_NE, ACPI_RSC_COMPARE_AML_LENGTH, 0, 3},
 
+<<<<<<< HEAD
 	/* Get flags: Triggering[0], Polarity[3], Sharing[4] */
+=======
+	/* Get flags: Triggering[0], Polarity[3], Sharing[4], Wake[5] */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.irq.triggering),
 	 AML_OFFSET(irq.flags),
@@ -90,9 +105,19 @@ struct acpi_rsconvert_info acpi_rs_get_irq[8] = {
 	 AML_OFFSET(irq.flags),
 	 3},
 
+<<<<<<< HEAD
 	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.irq.sharable),
 	 AML_OFFSET(irq.flags),
 	 4}
+=======
+	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.irq.shareable),
+	 AML_OFFSET(irq.flags),
+	 4},
+
+	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.irq.wake_capable),
+	 AML_OFFSET(irq.flags),
+	 5}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*******************************************************************************
@@ -101,7 +126,11 @@ struct acpi_rsconvert_info acpi_rs_get_irq[8] = {
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 struct acpi_rsconvert_info acpi_rs_set_irq[13] = {
+=======
+struct acpi_rsconvert_info acpi_rs_set_irq[14] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Start with a default descriptor of length 3 */
 
 	{ACPI_RSC_INITSET, ACPI_RESOURCE_NAME_IRQ,
@@ -114,7 +143,11 @@ struct acpi_rsconvert_info acpi_rs_set_irq[13] = {
 	 AML_OFFSET(irq.irq_mask),
 	 ACPI_RS_OFFSET(data.irq.interrupt_count)},
 
+<<<<<<< HEAD
 	/* Set the flags byte */
+=======
+	/* Set flags: Triggering[0], Polarity[3], Sharing[4], Wake[5] */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.irq.triggering),
 	 AML_OFFSET(irq.flags),
@@ -124,10 +157,21 @@ struct acpi_rsconvert_info acpi_rs_set_irq[13] = {
 	 AML_OFFSET(irq.flags),
 	 3},
 
+<<<<<<< HEAD
 	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.irq.sharable),
 	 AML_OFFSET(irq.flags),
 	 4},
 
+=======
+	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.irq.shareable),
+	 AML_OFFSET(irq.flags),
+	 4},
+
+	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.irq.wake_capable),
+	 AML_OFFSET(irq.flags),
+	 5},
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * All done if the output descriptor length is required to be 3
 	 * (i.e., optimization to 2 bytes cannot be attempted)
@@ -167,7 +211,11 @@ struct acpi_rsconvert_info acpi_rs_set_irq[13] = {
 	 ACPI_ACTIVE_HIGH},
 
 	{ACPI_RSC_EXIT_NE, ACPI_RSC_COMPARE_VALUE,
+<<<<<<< HEAD
 	 ACPI_RS_OFFSET(data.irq.sharable),
+=======
+	 ACPI_RS_OFFSET(data.irq.shareable),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 ACPI_EXCLUSIVE},
 
 	/* We can optimize to a 2-byte irq_no_flags() descriptor */
@@ -181,7 +229,11 @@ struct acpi_rsconvert_info acpi_rs_set_irq[13] = {
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 struct acpi_rsconvert_info acpi_rs_convert_ext_irq[9] = {
+=======
+struct acpi_rsconvert_info acpi_rs_convert_ext_irq[10] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_RSC_INITGET, ACPI_RESOURCE_TYPE_EXTENDED_IRQ,
 	 ACPI_RS_SIZE(struct acpi_resource_extended_irq),
 	 ACPI_RSC_TABLE_SIZE(acpi_rs_convert_ext_irq)},
@@ -190,8 +242,15 @@ struct acpi_rsconvert_info acpi_rs_convert_ext_irq[9] = {
 	 sizeof(struct aml_resource_extended_irq),
 	 0},
 
+<<<<<<< HEAD
 	/* Flag bits */
 
+=======
+	/*
+	 * Flags: Producer/Consumer[0], Triggering[1], Polarity[2],
+	 *        Sharing[3], Wake[4]
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.extended_irq.producer_consumer),
 	 AML_OFFSET(extended_irq.flags),
 	 0},
@@ -204,23 +263,42 @@ struct acpi_rsconvert_info acpi_rs_convert_ext_irq[9] = {
 	 AML_OFFSET(extended_irq.flags),
 	 2},
 
+<<<<<<< HEAD
 	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.extended_irq.sharable),
 	 AML_OFFSET(extended_irq.flags),
 	 3},
 
+=======
+	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.extended_irq.shareable),
+	 AML_OFFSET(extended_irq.flags),
+	 3},
+
+	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.extended_irq.wake_capable),
+	 AML_OFFSET(extended_irq.flags),
+	 4},
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* IRQ Table length (Byte4) */
 
 	{ACPI_RSC_COUNT, ACPI_RS_OFFSET(data.extended_irq.interrupt_count),
 	 AML_OFFSET(extended_irq.interrupt_count),
+<<<<<<< HEAD
 	 sizeof(u32)}
 	,
+=======
+	 sizeof(u32)},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Copy every IRQ in the table, each is 32 bits */
 
 	{ACPI_RSC_MOVE32, ACPI_RS_OFFSET(data.extended_irq.interrupts[0]),
 	 AML_OFFSET(extended_irq.interrupts[0]),
+<<<<<<< HEAD
 	 0}
 	,
+=======
+	 0},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Optional resource_source (Index and String) */
 
@@ -285,7 +363,10 @@ struct acpi_rsconvert_info acpi_rs_convert_fixed_dma[4] = {
 	 * request_lines
 	 * Channels
 	 */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ACPI_RSC_MOVE16, ACPI_RS_OFFSET(data.fixed_dma.request_lines),
 	 AML_OFFSET(fixed_dma.request_lines),
 	 2},
@@ -293,5 +374,8 @@ struct acpi_rsconvert_info acpi_rs_convert_fixed_dma[4] = {
 	{ACPI_RSC_MOVE8, ACPI_RS_OFFSET(data.fixed_dma.width),
 	 AML_OFFSET(fixed_dma.width),
 	 1},
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

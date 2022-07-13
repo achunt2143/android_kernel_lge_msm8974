@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2001-2005 Silicon Graphics, Inc.
  * All Rights Reserved.
@@ -14,12 +15,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write the Free Software Foundation,
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2001-2005 Silicon Graphics, Inc.
+ * All Rights Reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __XFS_ACL_H__
 #define __XFS_ACL_H__
 
 struct inode;
 struct posix_acl;
+<<<<<<< HEAD
 struct xfs_inode;
 
 #define XFS_ACL_MAX_ENTRIES 25
@@ -60,4 +68,26 @@ static inline struct posix_acl *xfs_get_acl(struct inode *inode, int type)
 # define posix_acl_access_exists(inode)			0
 # define posix_acl_default_exists(inode)		0
 #endif /* CONFIG_XFS_POSIX_ACL */
+=======
+
+#ifdef CONFIG_XFS_POSIX_ACL
+extern struct posix_acl *xfs_get_acl(struct inode *inode, int type, bool rcu);
+extern int xfs_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
+		       struct posix_acl *acl, int type);
+extern int __xfs_set_acl(struct inode *inode, struct posix_acl *acl, int type);
+void xfs_forget_acl(struct inode *inode, const char *name);
+#else
+#define xfs_get_acl NULL
+#define xfs_set_acl NULL
+static inline int __xfs_set_acl(struct inode *inode, struct posix_acl *acl,
+				int type)
+{
+	return 0;
+}
+static inline void xfs_forget_acl(struct inode *inode, const char *name)
+{
+}
+#endif /* CONFIG_XFS_POSIX_ACL */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* __XFS_ACL_H__ */

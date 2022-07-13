@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Red Hat, Inc.
  *
  * This file is released under the GPL.
  */
 
+<<<<<<< HEAD
 #include "dm-space-map-checker.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "dm-space-map-common.h"
 #include "dm-space-map-disk.h"
 #include "dm-space-map.h"
@@ -49,6 +56,10 @@ static int sm_disk_extend(struct dm_space_map *sm, dm_block_t extra_blocks)
 static int sm_disk_get_nr_blocks(struct dm_space_map *sm, dm_block_t *count)
 {
 	struct sm_disk *smd = container_of(sm, struct sm_disk, sm);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*count = smd->old_ll.nr_blocks;
 
 	return 0;
@@ -57,6 +68,10 @@ static int sm_disk_get_nr_blocks(struct dm_space_map *sm, dm_block_t *count)
 static int sm_disk_get_nr_free(struct dm_space_map *sm, dm_block_t *count)
 {
 	struct sm_disk *smd = container_of(sm, struct sm_disk, sm);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*count = (smd->old_ll.nr_blocks - smd->old_ll.nr_allocated) - smd->nr_allocated_this_transaction;
 
 	return 0;
@@ -66,6 +81,10 @@ static int sm_disk_get_count(struct dm_space_map *sm, dm_block_t b,
 			     uint32_t *result)
 {
 	struct sm_disk *smd = container_of(sm, struct sm_disk, sm);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sm_ll_lookup(&smd->ll, b, result);
 }
 
@@ -79,13 +98,20 @@ static int sm_disk_count_is_more_than_one(struct dm_space_map *sm, dm_block_t b,
 	if (r)
 		return r;
 
+<<<<<<< HEAD
 	return count > 1;
+=======
+	*result = count > 1;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sm_disk_set_count(struct dm_space_map *sm, dm_block_t b,
 			     uint32_t count)
 {
 	int r;
+<<<<<<< HEAD
 	uint32_t old_count;
 	enum allocation_event ev;
 	struct sm_disk *smd = container_of(sm, struct sm_disk, sm);
@@ -118,10 +144,19 @@ static int sm_disk_set_count(struct dm_space_map *sm, dm_block_t b,
 			break;
 		}
 	}
+=======
+	int32_t nr_allocations;
+	struct sm_disk *smd = container_of(sm, struct sm_disk, sm);
+
+	r = sm_ll_insert(&smd->ll, b, count, &nr_allocations);
+	if (!r)
+		smd->nr_allocated_this_transaction += nr_allocations;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
 
+<<<<<<< HEAD
 static int sm_disk_inc_block(struct dm_space_map *sm, dm_block_t b)
 {
 	int r;
@@ -135,10 +170,22 @@ static int sm_disk_inc_block(struct dm_space_map *sm, dm_block_t b)
 		 * otherwise we've lost atomicity.
 		 */
 		smd->nr_allocated_this_transaction++;
+=======
+static int sm_disk_inc_blocks(struct dm_space_map *sm, dm_block_t b, dm_block_t e)
+{
+	int r;
+	int32_t nr_allocations;
+	struct sm_disk *smd = container_of(sm, struct sm_disk, sm);
+
+	r = sm_ll_inc(&smd->ll, b, e, &nr_allocations);
+	if (!r)
+		smd->nr_allocated_this_transaction += nr_allocations;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
 
+<<<<<<< HEAD
 static int sm_disk_dec_block(struct dm_space_map *sm, dm_block_t b)
 {
 	int r;
@@ -159,6 +206,17 @@ static int sm_disk_dec_block(struct dm_space_map *sm, dm_block_t b)
 		if (!old_count)
 			smd->nr_allocated_this_transaction--;
 	}
+=======
+static int sm_disk_dec_blocks(struct dm_space_map *sm, dm_block_t b, dm_block_t e)
+{
+	int r;
+	int32_t nr_allocations;
+	struct sm_disk *smd = container_of(sm, struct sm_disk, sm);
+
+	r = sm_ll_dec(&smd->ll, b, e, &nr_allocations);
+	if (!r)
+		smd->nr_allocated_this_transaction += nr_allocations;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
@@ -166,20 +224,43 @@ static int sm_disk_dec_block(struct dm_space_map *sm, dm_block_t b)
 static int sm_disk_new_block(struct dm_space_map *sm, dm_block_t *b)
 {
 	int r;
+<<<<<<< HEAD
 	enum allocation_event ev;
 	struct sm_disk *smd = container_of(sm, struct sm_disk, sm);
 
 	/* FIXME: we should loop round a couple of times */
 	r = sm_ll_find_free_block(&smd->old_ll, smd->begin, smd->old_ll.nr_blocks, b);
+=======
+	int32_t nr_allocations;
+	struct sm_disk *smd = container_of(sm, struct sm_disk, sm);
+
+	/*
+	 * Any block we allocate has to be free in both the old and current ll.
+	 */
+	r = sm_ll_find_common_free_block(&smd->old_ll, &smd->ll, smd->begin, smd->ll.nr_blocks, b);
+	if (r == -ENOSPC)
+		/*
+		 * There's no free block between smd->begin and the end of the metadata device.
+		 * We search before smd->begin in case something has been freed.
+		 */
+		r = sm_ll_find_common_free_block(&smd->old_ll, &smd->ll, 0, smd->begin, b);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r)
 		return r;
 
 	smd->begin = *b + 1;
+<<<<<<< HEAD
 	r = sm_ll_inc(&smd->ll, *b, &ev);
 	if (!r) {
 		BUG_ON(ev != SM_ALLOC);
 		smd->nr_allocated_this_transaction++;
 	}
+=======
+	r = sm_ll_inc(&smd->ll, *b, *b + 1, &nr_allocations);
+	if (!r)
+		smd->nr_allocated_this_transaction += nr_allocations;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
@@ -187,6 +268,7 @@ static int sm_disk_new_block(struct dm_space_map *sm, dm_block_t *b)
 static int sm_disk_commit(struct dm_space_map *sm)
 {
 	int r;
+<<<<<<< HEAD
 	dm_block_t nr_free;
 	struct sm_disk *smd = container_of(sm, struct sm_disk, sm);
 
@@ -194,11 +276,16 @@ static int sm_disk_commit(struct dm_space_map *sm)
 	if (r)
 		return r;
 
+=======
+	struct sm_disk *smd = container_of(sm, struct sm_disk, sm);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = sm_ll_commit(&smd->ll);
 	if (r)
 		return r;
 
 	memcpy(&smd->old_ll, &smd->ll, sizeof(smd->old_ll));
+<<<<<<< HEAD
 	smd->begin = 0;
 	smd->nr_allocated_this_transaction = 0;
 
@@ -206,6 +293,10 @@ static int sm_disk_commit(struct dm_space_map *sm)
 	if (r)
 		return r;
 
+=======
+	smd->nr_allocated_this_transaction = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -244,6 +335,7 @@ static struct dm_space_map ops = {
 	.get_count = sm_disk_get_count,
 	.count_is_more_than_one = sm_disk_count_is_more_than_one,
 	.set_count = sm_disk_set_count,
+<<<<<<< HEAD
 	.inc_block = sm_disk_inc_block,
 	.dec_block = sm_disk_dec_block,
 	.new_block = sm_disk_new_block,
@@ -255,6 +347,19 @@ static struct dm_space_map ops = {
 static struct dm_space_map *dm_sm_disk_create_real(
 	struct dm_transaction_manager *tm,
 	dm_block_t nr_blocks)
+=======
+	.inc_blocks = sm_disk_inc_blocks,
+	.dec_blocks = sm_disk_dec_blocks,
+	.new_block = sm_disk_new_block,
+	.commit = sm_disk_commit,
+	.root_size = sm_disk_root_size,
+	.copy_root = sm_disk_copy_root,
+	.register_threshold_callback = NULL
+};
+
+struct dm_space_map *dm_sm_disk_create(struct dm_transaction_manager *tm,
+				       dm_block_t nr_blocks)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	struct sm_disk *smd;
@@ -285,6 +390,7 @@ bad:
 	kfree(smd);
 	return ERR_PTR(r);
 }
+<<<<<<< HEAD
 
 struct dm_space_map *dm_sm_disk_create(struct dm_transaction_manager *tm,
 				       dm_block_t nr_blocks)
@@ -306,6 +412,12 @@ EXPORT_SYMBOL_GPL(dm_sm_disk_create);
 static struct dm_space_map *dm_sm_disk_open_real(
 	struct dm_transaction_manager *tm,
 	void *root_le, size_t len)
+=======
+EXPORT_SYMBOL_GPL(dm_sm_disk_create);
+
+struct dm_space_map *dm_sm_disk_open(struct dm_transaction_manager *tm,
+				     void *root_le, size_t len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	struct sm_disk *smd;
@@ -332,6 +444,7 @@ bad:
 	kfree(smd);
 	return ERR_PTR(r);
 }
+<<<<<<< HEAD
 
 struct dm_space_map *dm_sm_disk_open(struct dm_transaction_manager *tm,
 				     void *root_le, size_t len)
@@ -339,6 +452,8 @@ struct dm_space_map *dm_sm_disk_open(struct dm_transaction_manager *tm,
 	return dm_sm_checker_create(
 		dm_sm_disk_open_real(tm, root_le, len));
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(dm_sm_disk_open);
 
 /*----------------------------------------------------------------*/

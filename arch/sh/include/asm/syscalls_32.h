@@ -1,14 +1,22 @@
+<<<<<<< HEAD
 #ifndef __ASM_SH_SYSCALLS_32_H
 #define __ASM_SH_SYSCALLS_32_H
 
 #ifdef __KERNEL__
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ASM_SH_SYSCALLS_32_H
+#define __ASM_SH_SYSCALLS_32_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/compiler.h>
 #include <linux/linkage.h>
 #include <linux/types.h>
 
 struct pt_regs;
 
+<<<<<<< HEAD
 asmlinkage int sys_fork(unsigned long r4, unsigned long r5,
 			unsigned long r6, unsigned long r7,
 			struct pt_regs __regs);
@@ -40,6 +48,11 @@ asmlinkage int sys_rt_sigreturn(unsigned long r4, unsigned long r5,
 asmlinkage int sys_sh_pipe(unsigned long r4, unsigned long r5,
 			   unsigned long r6, unsigned long r7,
 			   struct pt_regs __regs);
+=======
+asmlinkage int sys_sigreturn(void);
+asmlinkage int sys_rt_sigreturn(void);
+asmlinkage int sys_sh_pipe(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 asmlinkage ssize_t sys_pread_wrapper(unsigned int fd, char __user *buf,
 				     size_t count, long dummy, loff_t pos);
 asmlinkage ssize_t sys_pwrite_wrapper(unsigned int fd, const char __user *buf,
@@ -53,5 +66,8 @@ asmlinkage void do_syscall_trace_leave(struct pt_regs *regs);
 asmlinkage void do_notify_resume(struct pt_regs *regs, unsigned int save_r0,
 				 unsigned long thread_info_flags);
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_SYSCALLS_32_H */

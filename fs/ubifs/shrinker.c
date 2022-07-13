@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -16,6 +21,8 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Artem Bityutskiy (Битюцкий Артём)
  *          Adrian Hunter
  */
@@ -71,10 +78,17 @@ static int shrink_tnc(struct ubifs_info *c, int nr, int age, int *contention)
 {
 	int total_freed = 0;
 	struct ubifs_znode *znode, *zprev;
+<<<<<<< HEAD
 	int time = get_seconds();
 
 	ubifs_assert(mutex_is_locked(&c->umount_mutex));
 	ubifs_assert(mutex_is_locked(&c->tnc_mutex));
+=======
+	time64_t time = ktime_get_seconds();
+
+	ubifs_assert(c, mutex_is_locked(&c->umount_mutex));
+	ubifs_assert(c, mutex_is_locked(&c->tnc_mutex));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!c->zroot.znode || atomic_long_read(&c->clean_zn_cnt) == 0)
 		return 0;
@@ -89,7 +103,11 @@ static int shrink_tnc(struct ubifs_info *c, int nr, int age, int *contention)
 	 * changed only when the 'c->tnc_mutex' is held.
 	 */
 	zprev = NULL;
+<<<<<<< HEAD
 	znode = ubifs_tnc_levelorder_next(c->zroot.znode, NULL);
+=======
+	znode = ubifs_tnc_levelorder_next(c, c->zroot.znode, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (znode && total_freed < nr &&
 	       atomic_long_read(&c->clean_zn_cnt) > 0) {
 		int freed;
@@ -125,7 +143,11 @@ static int shrink_tnc(struct ubifs_info *c, int nr, int age, int *contention)
 			else
 				c->zroot.znode = NULL;
 
+<<<<<<< HEAD
 			freed = ubifs_destroy_tnc_subtree(znode);
+=======
+			freed = ubifs_destroy_tnc_subtree(c, znode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atomic_long_sub(freed, &ubifs_clean_zn_cnt);
 			atomic_long_sub(freed, &c->clean_zn_cnt);
 			total_freed += freed;
@@ -136,7 +158,11 @@ static int shrink_tnc(struct ubifs_info *c, int nr, int age, int *contention)
 			break;
 
 		zprev = znode;
+<<<<<<< HEAD
 		znode = ubifs_tnc_levelorder_next(c->zroot.znode, znode);
+=======
+		znode = ubifs_tnc_levelorder_next(c, c->zroot.znode, znode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cond_resched();
 	}
 
@@ -276,6 +302,7 @@ static int kick_a_thread(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 int ubifs_shrinker(struct shrinker *shrink, struct shrink_control *sc)
 {
 	int nr = sc->nr_to_scan;
@@ -288,6 +315,27 @@ int ubifs_shrinker(struct shrinker *shrink, struct shrink_control *sc)
 		 * temporarily be negative.
 		 */
 		return clean_zn_cnt >= 0 ? clean_zn_cnt : 1;
+=======
+unsigned long ubifs_shrink_count(struct shrinker *shrink,
+				 struct shrink_control *sc)
+{
+	long clean_zn_cnt = atomic_long_read(&ubifs_clean_zn_cnt);
+
+	/*
+	 * Due to the way UBIFS updates the clean znode counter it may
+	 * temporarily be negative.
+	 */
+	return clean_zn_cnt >= 0 ? clean_zn_cnt : 1;
+}
+
+unsigned long ubifs_shrink_scan(struct shrinker *shrink,
+				struct shrink_control *sc)
+{
+	unsigned long nr = sc->nr_to_scan;
+	int contention = 0;
+	unsigned long freed;
+	long clean_zn_cnt = atomic_long_read(&ubifs_clean_zn_cnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!clean_zn_cnt) {
 		/*
@@ -315,10 +363,18 @@ int ubifs_shrinker(struct shrinker *shrink, struct shrink_control *sc)
 
 	if (!freed && contention) {
 		dbg_tnc("freed nothing, but contention");
+<<<<<<< HEAD
 		return -1;
 	}
 
 out:
 	dbg_tnc("%d znodes were freed, requested %d", freed, nr);
+=======
+		return SHRINK_STOP;
+	}
+
+out:
+	dbg_tnc("%lu znodes were freed, requested %lu", freed, nr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return freed;
 }

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: dswload2 - Dispatcher second pass namespace load callbacks
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acparser.h"
@@ -49,6 +60,12 @@
 #include "acinterp.h"
 #include "acnamesp.h"
 #include "acevents.h"
+<<<<<<< HEAD
+=======
+#ifdef ACPI_EXEC_APP
+#include "aecommon.h"
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_DISPATCHER
 ACPI_MODULE_NAME("dswload2")
@@ -58,7 +75,11 @@ ACPI_MODULE_NAME("dswload2")
  * FUNCTION:    acpi_ds_load2_begin_op
  *
  * PARAMETERS:  walk_state      - Current state of the parse tree walk
+<<<<<<< HEAD
  *              out_op          - Wher to return op if a new one is created
+=======
+ *              out_op          - Where to return op if a new one is created
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -184,11 +205,22 @@ acpi_ds_load2_begin_op(struct acpi_walk_state *walk_state,
 				if (status == AE_NOT_FOUND) {
 					status = AE_OK;
 				} else {
+<<<<<<< HEAD
 					ACPI_ERROR_NAMESPACE(buffer_ptr,
 							     status);
 				}
 #else
 				ACPI_ERROR_NAMESPACE(buffer_ptr, status);
+=======
+					ACPI_ERROR_NAMESPACE(walk_state->
+							     scope_info,
+							     buffer_ptr,
+							     status);
+				}
+#else
+				ACPI_ERROR_NAMESPACE(walk_state->scope_info,
+						     buffer_ptr, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 				return_ACPI_STATUS(status);
 			}
@@ -222,7 +254,11 @@ acpi_ds_load2_begin_op(struct acpi_walk_state *walk_state,
 			 */
 			ACPI_WARNING((AE_INFO,
 				      "Type override - [%4.4s] had invalid type (%s) "
+<<<<<<< HEAD
 				      "for Scope operator, changed to type ANY\n",
+=======
+				      "for Scope operator, changed to type ANY",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      acpi_ut_get_node_name(node),
 				      acpi_ut_get_type_name(node->type)));
 
@@ -230,6 +266,23 @@ acpi_ds_load2_begin_op(struct acpi_walk_state *walk_state,
 			walk_state->scope_info->common.value = ACPI_TYPE_ANY;
 			break;
 
+<<<<<<< HEAD
+=======
+		case ACPI_TYPE_METHOD:
+
+			/*
+			 * Allow scope change to root during execution of module-level
+			 * code. Root is typed METHOD during this time.
+			 */
+			if ((node == acpi_gbl_root_node) &&
+			    (walk_state->
+			     parse_flags & ACPI_PARSE_MODULE_LEVEL)) {
+				break;
+			}
+
+			ACPI_FALLTHROUGH;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 
 			/* All other types are an error */
@@ -240,7 +293,11 @@ acpi_ds_load2_begin_op(struct acpi_walk_state *walk_state,
 				    acpi_ut_get_type_name(node->type),
 				    acpi_ut_get_node_name(node)));
 
+<<<<<<< HEAD
 			return (AE_AML_OPERAND_TYPE);
+=======
+			return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -296,6 +353,33 @@ acpi_ds_load2_begin_op(struct acpi_walk_state *walk_state,
 				flags |= ACPI_NS_TEMPORARY;
 			}
 		}
+<<<<<<< HEAD
+=======
+#ifdef ACPI_ASL_COMPILER
+
+		/*
+		 * Do not open a scope for AML_EXTERNAL_OP
+		 * acpi_ns_lookup can open a new scope based on the object type
+		 * of this op. AML_EXTERNAL_OP is a declaration rather than a
+		 * definition. In the case that this external is a method object,
+		 * acpi_ns_lookup will open a new scope. However, an AML_EXTERNAL_OP
+		 * associated with the ACPI_TYPE_METHOD is a declaration, rather than
+		 * a definition. Flags is set to avoid opening a scope for any
+		 * AML_EXTERNAL_OP.
+		 */
+		if (walk_state->opcode == AML_EXTERNAL_OP) {
+			flags |= ACPI_NS_DONT_OPEN_SCOPE;
+		}
+#endif
+
+		/*
+		 * For name creation opcodes, the full namepath prefix must
+		 * exist, except for the final (new) nameseg.
+		 */
+		if (walk_state->op_info->flags & AML_NAMED) {
+			flags |= ACPI_NS_PREFIX_MUST_EXIST;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Add new entry or lookup existing entry */
 
@@ -313,7 +397,12 @@ acpi_ds_load2_begin_op(struct acpi_walk_state *walk_state,
 	}
 
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		ACPI_ERROR_NAMESPACE(buffer_ptr, status);
+=======
+		ACPI_ERROR_NAMESPACE(walk_state->scope_info,
+				     buffer_ptr, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_ACPI_STATUS(status);
 	}
 
@@ -321,7 +410,11 @@ acpi_ds_load2_begin_op(struct acpi_walk_state *walk_state,
 
 		/* Create a new op */
 
+<<<<<<< HEAD
 		op = acpi_ps_alloc_op(walk_state->opcode);
+=======
+		op = acpi_ps_alloc_op(walk_state->opcode, walk_state->aml);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!op) {
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
@@ -363,9 +456,17 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 	struct acpi_namespace_node *node;
 	union acpi_parse_object *arg;
 	struct acpi_namespace_node *new_node;
+<<<<<<< HEAD
 #ifndef ACPI_NO_METHOD_EXECUTION
 	u32 i;
 	u8 region_space;
+=======
+	u32 i;
+	u8 region_space;
+#ifdef ACPI_EXEC_APP
+	union acpi_operand_object *obj_desc;
+	char *namepath;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	ACPI_FUNCTION_TRACE(ds_load2_end_op);
@@ -453,7 +554,10 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 	arg = op->common.value.arg;
 
 	switch (walk_state->op_info->type) {
+<<<<<<< HEAD
 #ifndef ACPI_NO_METHOD_EXECUTION
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case AML_TYPE_CREATE_FIELD:
 		/*
@@ -461,6 +565,14 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 		 * be evaluated later during the execution phase
 		 */
 		status = acpi_ds_create_buffer_field(op, walk_state);
+<<<<<<< HEAD
+=======
+		if (ACPI_FAILURE(status)) {
+			ACPI_EXCEPTION((AE_INFO, status,
+					"CreateBufferField failure"));
+			goto cleanup;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case AML_TYPE_NAMED_FIELD:
@@ -476,8 +588,13 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 
 			status =
 			    acpi_ds_create_index_field(op,
+<<<<<<< HEAD
 						       (acpi_handle) arg->
 						       common.node, walk_state);
+=======
+						       (acpi_handle)arg->common.
+						       node, walk_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case AML_BANK_FIELD_OP:
@@ -495,6 +612,10 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 			break;
 
 		default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* All NAMED_FIELD opcodes must be handled above */
 			break;
 		}
@@ -513,7 +634,11 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 			status = acpi_ex_create_processor(walk_state);
 			break;
 
+<<<<<<< HEAD
 		case AML_POWER_RES_OP:
+=======
+		case AML_POWER_RESOURCE_OP:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			status = acpi_ex_create_power_resource(walk_state);
 			break;
@@ -534,6 +659,10 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 			break;
 
 		default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Unknown opcode */
 
 			status = AE_OK;
@@ -548,12 +677,18 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 		}
 
 		break;
+<<<<<<< HEAD
 #endif				/* ACPI_NO_METHOD_EXECUTION */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case AML_TYPE_NAMED_COMPLEX:
 
 		switch (op->common.aml_opcode) {
+<<<<<<< HEAD
 #ifndef ACPI_NO_METHOD_EXECUTION
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case AML_REGION_OP:
 		case AML_DATA_REGION_OP:
 
@@ -582,6 +717,7 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 				 * Executing a method: initialize the region and unlock
 				 * the interpreter
 				 */
+<<<<<<< HEAD
 				status =
 				    acpi_ex_create_region(op->named.data,
 							  op->named.length,
@@ -592,10 +728,20 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 				}
 
 				acpi_ex_exit_interpreter();
+=======
+				status = acpi_ex_create_region(op->named.data,
+							       op->named.length,
+							       region_space,
+							       walk_state);
+				if (ACPI_FAILURE(status)) {
+					return_ACPI_STATUS(status);
+				}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			status =
 			    acpi_ev_initialize_region
+<<<<<<< HEAD
 			    (acpi_ns_get_attached_object(node), FALSE);
 			if (walk_state->method_node) {
 				acpi_ex_enter_interpreter();
@@ -611,11 +757,40 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 					status = AE_OK;
 				}
 			}
+=======
+			    (acpi_ns_get_attached_object(node));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case AML_NAME_OP:
 
 			status = acpi_ds_create_node(walk_state, node, op);
+<<<<<<< HEAD
+=======
+			if (ACPI_FAILURE(status)) {
+				goto cleanup;
+			}
+#ifdef ACPI_EXEC_APP
+			/*
+			 * acpi_exec support for namespace initialization file (initialize
+			 * Name opcodes in this code.)
+			 */
+			namepath = acpi_ns_get_external_pathname(node);
+			status = ae_lookup_init_file_entry(namepath, &obj_desc);
+			if (ACPI_SUCCESS(status)) {
+
+				/* Detach any existing object, attach new object */
+
+				if (node->object) {
+					acpi_ns_detach_object(node);
+				}
+				acpi_ns_attach_object(node, obj_desc,
+						      obj_desc->common.type);
+			}
+			ACPI_FREE(namepath);
+			status = AE_OK;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case AML_METHOD_OP:
@@ -648,6 +823,10 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 								  length,
 								  walk_state);
 				}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				walk_state->operands[0] = NULL;
 				walk_state->num_operands = 0;
 
@@ -657,9 +836,14 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 			}
 			break;
 
+<<<<<<< HEAD
 #endif				/* ACPI_NO_METHOD_EXECUTION */
 
 		default:
+=======
+		default:
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* All NAMED_COMPLEX opcodes must be handled above */
 			break;
 		}
@@ -702,15 +886,28 @@ acpi_status acpi_ds_load2_end_op(struct acpi_walk_state *walk_state)
 			 */
 			op->common.node = new_node;
 		} else {
+<<<<<<< HEAD
 			ACPI_ERROR_NAMESPACE(arg->common.value.string, status);
+=======
+			ACPI_ERROR_NAMESPACE(walk_state->scope_info,
+					     arg->common.value.string, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
 	default:
+<<<<<<< HEAD
 		break;
 	}
 
       cleanup:
+=======
+
+		break;
+	}
+
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Remove the Node pushed at the very beginning */
 

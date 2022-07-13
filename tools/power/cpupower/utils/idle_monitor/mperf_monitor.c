@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 /*
  *  (C) 2010,2011       Thomas Renninger <trenn@suse.de>, Novell Inc.
  *
  *  Licensed under the terms of the GNU GPL License version 2.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  (C) 2010,2011       Thomas Renninger <trenn@suse.de>, Novell Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #if defined(__i386__) || defined(__x86_64__)
@@ -20,6 +26,13 @@
 #define MSR_APERF	0xE8
 #define MSR_MPERF	0xE7
 
+<<<<<<< HEAD
+=======
+#define RDPRU ".byte 0x0f, 0x01, 0xfd"
+#define RDPRU_ECX_MPERF	0
+#define RDPRU_ECX_APERF	1
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSR_TSC	0x10
 
 #define MSR_AMD_HWCR 0xc0010015
@@ -67,8 +80,13 @@ static int max_freq_mode;
  */
 static unsigned long max_frequency;
 
+<<<<<<< HEAD
 static unsigned long long tsc_at_measure_start;
 static unsigned long long tsc_at_measure_end;
+=======
+static unsigned long long *tsc_at_measure_start;
+static unsigned long long *tsc_at_measure_end;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long long *mperf_previous_count;
 static unsigned long long *aperf_previous_count;
 static unsigned long long *mperf_current_count;
@@ -80,12 +98,18 @@ static int *is_valid;
 static int mperf_get_tsc(unsigned long long *tsc)
 {
 	int ret;
+<<<<<<< HEAD
 	ret = read_msr(0, MSR_TSC, tsc);
+=======
+
+	ret = read_msr(base_cpu, MSR_TSC, tsc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		dprint("Reading TSC MSR failed, returning %llu\n", *tsc);
 	return ret;
 }
 
+<<<<<<< HEAD
 static int mperf_init_stats(unsigned int cpu)
 {
 	unsigned long long val;
@@ -95,6 +119,53 @@ static int mperf_init_stats(unsigned int cpu)
 	aperf_previous_count[cpu] = val;
 	ret |= read_msr(cpu, MSR_MPERF, &val);
 	mperf_previous_count[cpu] = val;
+=======
+static int get_aperf_mperf(int cpu, unsigned long long *aval,
+				    unsigned long long *mval)
+{
+	unsigned long low_a, high_a;
+	unsigned long low_m, high_m;
+	int ret;
+
+	/*
+	 * Running on the cpu from which we read the registers will
+	 * prevent APERF/MPERF from going out of sync because of IPI
+	 * latency introduced by read_msr()s.
+	 */
+	if (mperf_monitor.flags.per_cpu_schedule) {
+		if (bind_cpu(cpu))
+			return 1;
+	}
+
+	if (cpupower_cpu_info.caps & CPUPOWER_CAP_AMD_RDPRU) {
+		asm volatile(RDPRU
+			     : "=a" (low_a), "=d" (high_a)
+			     : "c" (RDPRU_ECX_APERF));
+		asm volatile(RDPRU
+			     : "=a" (low_m), "=d" (high_m)
+			     : "c" (RDPRU_ECX_MPERF));
+
+		*aval = ((low_a) | (high_a) << 32);
+		*mval = ((low_m) | (high_m) << 32);
+
+		return 0;
+	}
+
+	ret  = read_msr(cpu, MSR_APERF, aval);
+	ret |= read_msr(cpu, MSR_MPERF, mval);
+
+	return ret;
+}
+
+static int mperf_init_stats(unsigned int cpu)
+{
+	unsigned long long aval, mval;
+	int ret;
+
+	ret = get_aperf_mperf(cpu, &aval, &mval);
+	aperf_previous_count[cpu] = aval;
+	mperf_previous_count[cpu] = mval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	is_valid[cpu] = !ret;
 
 	return 0;
@@ -102,6 +173,7 @@ static int mperf_init_stats(unsigned int cpu)
 
 static int mperf_measure_stats(unsigned int cpu)
 {
+<<<<<<< HEAD
 	unsigned long long val;
 	int ret;
 
@@ -109,6 +181,14 @@ static int mperf_measure_stats(unsigned int cpu)
 	aperf_current_count[cpu] = val;
 	ret |= read_msr(cpu, MSR_MPERF, &val);
 	mperf_current_count[cpu] = val;
+=======
+	unsigned long long aval, mval;
+	int ret;
+
+	ret = get_aperf_mperf(cpu, &aval, &mval);
+	aperf_current_count[cpu] = aval;
+	mperf_current_count[cpu] = mval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	is_valid[cpu] = !ret;
 
 	return 0;
@@ -130,12 +210,20 @@ static int mperf_get_count_percent(unsigned int id, double *percent,
 	aperf_diff = aperf_current_count[cpu] - aperf_previous_count[cpu];
 
 	if (max_freq_mode == MAX_FREQ_TSC_REF) {
+<<<<<<< HEAD
 		tsc_diff = tsc_at_measure_end - tsc_at_measure_start;
+=======
+		tsc_diff = tsc_at_measure_end[cpu] - tsc_at_measure_start[cpu];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*percent = 100.0 * mperf_diff / tsc_diff;
 		dprint("%s: TSC Ref - mperf_diff: %llu, tsc_diff: %llu\n",
 		       mperf_cstates[id].name, mperf_diff, tsc_diff);
 	} else if (max_freq_mode == MAX_FREQ_SYSFS) {
+<<<<<<< HEAD
 		timediff = timespec_diff_us(time_start, time_end);
+=======
+		timediff = max_frequency * timespec_diff_us(time_start, time_end);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*percent = 100.0 * mperf_diff / timediff;
 		dprint("%s: MAXFREQ - mperf_diff: %llu, time_diff: %llu\n",
 		       mperf_cstates[id].name, mperf_diff, timediff);
@@ -167,7 +255,11 @@ static int mperf_get_count_freq(unsigned int id, unsigned long long *count,
 
 	if (max_freq_mode == MAX_FREQ_TSC_REF) {
 		/* Calculate max_freq from TSC count */
+<<<<<<< HEAD
 		tsc_diff = tsc_at_measure_end - tsc_at_measure_start;
+=======
+		tsc_diff = tsc_at_measure_end[cpu] - tsc_at_measure_start[cpu];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		time_diff = timespec_diff_us(time_start, time_end);
 		max_frequency = tsc_diff / time_diff;
 	}
@@ -176,7 +268,11 @@ static int mperf_get_count_freq(unsigned int id, unsigned long long *count,
 	dprint("%s: Average freq based on %s maximum frequency:\n",
 	       mperf_cstates[id].name,
 	       (max_freq_mode == MAX_FREQ_TSC_REF) ? "TSC calculated" : "sysfs read");
+<<<<<<< HEAD
 	dprint("%max_frequency: %lu", max_frequency);
+=======
+	dprint("max_frequency: %lu\n", max_frequency);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dprint("aperf_diff: %llu\n", aperf_diff);
 	dprint("mperf_diff: %llu\n", mperf_diff);
 	dprint("avg freq:   %llu\n", *count);
@@ -186,6 +282,7 @@ static int mperf_get_count_freq(unsigned int id, unsigned long long *count,
 static int mperf_start(void)
 {
 	int cpu;
+<<<<<<< HEAD
 	unsigned long long dbg;
 
 	clock_gettime(CLOCK_REALTIME, &time_start);
@@ -196,11 +293,22 @@ static int mperf_start(void)
 
 	mperf_get_tsc(&dbg);
 	dprint("TSC diff: %llu\n", dbg - tsc_at_measure_start);
+=======
+
+	clock_gettime(CLOCK_REALTIME, &time_start);
+
+	for (cpu = 0; cpu < cpu_count; cpu++) {
+		mperf_get_tsc(&tsc_at_measure_start[cpu]);
+		mperf_init_stats(cpu);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int mperf_stop(void)
 {
+<<<<<<< HEAD
 	unsigned long long dbg;
 	int cpu;
 
@@ -213,6 +321,16 @@ static int mperf_stop(void)
 	mperf_get_tsc(&dbg);
 	dprint("TSC diff: %llu\n", dbg - tsc_at_measure_end);
 
+=======
+	int cpu;
+
+	for (cpu = 0; cpu < cpu_count; cpu++) {
+		mperf_measure_stats(cpu);
+		mperf_get_tsc(&tsc_at_measure_end[cpu]);
+	}
+
+	clock_gettime(CLOCK_REALTIME, &time_end);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -237,10 +355,18 @@ static int init_maxfreq_mode(void)
 	unsigned long long hwcr;
 	unsigned long min;
 
+<<<<<<< HEAD
 	if (!cpupower_cpu_info.caps & CPUPOWER_CAP_INV_TSC)
 		goto use_sysfs;
 
 	if (cpupower_cpu_info.vendor == X86_VENDOR_AMD) {
+=======
+	if (!(cpupower_cpu_info.caps & CPUPOWER_CAP_INV_TSC))
+		goto use_sysfs;
+
+	if (cpupower_cpu_info.vendor == X86_VENDOR_AMD ||
+	    cpupower_cpu_info.vendor == X86_VENDOR_HYGON) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* MSR_AMD_HWCR tells us whether TSC runs at P0/mperf
 		 * freq.
 		 * A test whether hwcr is accessable/available would be:
@@ -279,6 +405,10 @@ use_sysfs:
 		return -1;
 	}
 	max_freq_mode = MAX_FREQ_SYSFS;
+<<<<<<< HEAD
+=======
+	max_frequency /= 1000; /* Default automatically to MHz value */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -303,13 +433,24 @@ struct cpuidle_monitor *mperf_register(void)
 	if (init_maxfreq_mode())
 		return NULL;
 
+<<<<<<< HEAD
+=======
+	if (cpupower_cpu_info.vendor == X86_VENDOR_AMD)
+		mperf_monitor.flags.per_cpu_schedule = 1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Free this at program termination */
 	is_valid = calloc(cpu_count, sizeof(int));
 	mperf_previous_count = calloc(cpu_count, sizeof(unsigned long long));
 	aperf_previous_count = calloc(cpu_count, sizeof(unsigned long long));
 	mperf_current_count = calloc(cpu_count, sizeof(unsigned long long));
 	aperf_current_count = calloc(cpu_count, sizeof(unsigned long long));
+<<<<<<< HEAD
 
+=======
+	tsc_at_measure_start = calloc(cpu_count, sizeof(unsigned long long));
+	tsc_at_measure_end = calloc(cpu_count, sizeof(unsigned long long));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mperf_monitor.name_len = strlen(mperf_monitor.name);
 	return &mperf_monitor;
 }
@@ -320,6 +461,11 @@ void mperf_unregister(void)
 	free(aperf_previous_count);
 	free(mperf_current_count);
 	free(aperf_current_count);
+<<<<<<< HEAD
+=======
+	free(tsc_at_measure_start);
+	free(tsc_at_measure_end);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free(is_valid);
 }
 
@@ -331,7 +477,11 @@ struct cpuidle_monitor mperf_monitor = {
 	.stop			= mperf_stop,
 	.do_register		= mperf_register,
 	.unregister		= mperf_unregister,
+<<<<<<< HEAD
 	.needs_root		= 1,
+=======
+	.flags.needs_root	= 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.overflow_s		= 922000000 /* 922337203 seconds TSC overflow
 					       at 20GHz */
 };

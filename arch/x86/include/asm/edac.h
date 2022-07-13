@@ -1,9 +1,17 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_EDAC_H
 #define _ASM_X86_EDAC_H
 
 /* ECC atomic, DMA, SMP and interrupt safe scrub function */
 
+<<<<<<< HEAD
 static inline void atomic_scrub(void *va, u32 size)
+=======
+static inline void edac_atomic_scrub(void *va, u32 size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 i, *virt_addr = va;
 

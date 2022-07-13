@@ -21,6 +21,10 @@
 #define PIT_LATCH	((PIT_TICK_RATE + HZ/2) / HZ)
 
 extern raw_spinlock_t i8253_lock;
+<<<<<<< HEAD
+=======
+extern bool i8253_clear_counter_on_shutdown;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct clock_event_device i8253_clockevent;
 extern void clockevent_i8253_init(bool oneshot);
 

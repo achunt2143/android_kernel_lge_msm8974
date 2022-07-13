@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ashldi3.S
 font.c
 lib1funcs.S
@@ -16,3 +17,9 @@ fdt_rw.c
 fdt_wip.c
 libfdt.h
 libfdt_internal.h
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+piggy_data
+vmlinux
+vmlinux.lds
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

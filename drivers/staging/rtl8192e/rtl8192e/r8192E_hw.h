@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /******************************************************************************
  * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
  *
@@ -18,10 +19,19 @@
 ******************************************************************************/
 
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
+ *
+ * Contact Information: wlanfae <wlanfae@realtek.com>
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef R8180_HW
 #define R8180_HW
 
 enum baseband_config {
+<<<<<<< HEAD
 	BaseBand_Config_PHY_REG = 0,
 	BaseBand_Config_AGC_TAB = 1,
 };
@@ -44,11 +54,18 @@ enum baseband_config {
 #define BB_HOST_BANG_RW (1<<3)
 #define BB_HOST_BANG_DATA	 1
 
+=======
+	BB_CONFIG_PHY_REG = 0,
+	BB_CONFIG_AGC_TAB = 1,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RTL8190_EEPROM_ID	0x8129
 #define EEPROM_VID		0x02
 #define EEPROM_DID		0x04
 #define EEPROM_NODE_ADDRESS_BYTE_0	0x0C
 
+<<<<<<< HEAD
 #define EEPROM_TxPowerDiff	0x1F
 
 
@@ -67,14 +84,24 @@ enum baseband_config {
 #define EEPROM_Default_TxPwDiff_CrystalCap	0x5
 #define EEPROM_Default_PwDiff			0x4
 #define EEPROM_Default_CrystalCap		0x5
+=======
+#define EEPROM_Default_ThermalMeter		0x77
+#define EEPROM_Default_AntTxPowerDiff		0x0
+#define EEPROM_Default_TxPwDiff_CrystalCap	0x5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EEPROM_Default_TxPower			0x1010
 #define EEPROM_ICVersion_ChannelPlan	0x7C
 #define EEPROM_Customer_ID			0x7B
 #define EEPROM_RFInd_PowerDiff			0x28
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EEPROM_ThermalMeter			0x29
 #define EEPROM_TxPwDiff_CrystalCap		0x2A
 #define EEPROM_TxPwIndex_CCK			0x2C
 #define EEPROM_TxPwIndex_OFDM_24G	0x3A
+<<<<<<< HEAD
 #define EEPROM_Default_TxPowerLevel		0x10
 #define EEPROM_IC_VER				0x7d
 #define EEPROM_CRC				0x7e
@@ -107,10 +134,22 @@ enum _RTL8192Pci_HW {
 #define MXDMA2_NoLimit		0x7
 
 #define	MULRW_SHIFT		3
+=======
+
+#define EEPROM_CID_TOSHIBA				0x4
+#define EEPROM_CID_NetCore				0x5
+enum _RTL8192PCI_HW {
+	MAC0			= 0x000,
+	MAC4			= 0x004,
+	PCIF			= 0x009,
+#define MXDMA2_NO_LIMIT		0x7
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	MXDMA2_RX_SHIFT		4
 #define	MXDMA2_TX_SHIFT		0
 	PMR			= 0x00c,
 	EPROM_CMD		= 0x00e,
+<<<<<<< HEAD
 #define EPROM_CMD_RESERVED_MASK BIT5
 #define EPROM_CMD_9356SEL	BIT4
 #define EPROM_CMD_OPERATING_MODE_SHIFT 6
@@ -128,12 +167,24 @@ enum _RTL8192Pci_HW {
 #define AFR_CardBEn		(1<<0)
 #define AFR_CLKRUN_SEL		(1<<1)
 #define AFR_FuncRegEn		(1<<2)
+=======
+
+#define EPROM_CMD_9356SEL	BIT(4)
+#define EPROM_CMD_OPERATING_MODE_SHIFT 6
+#define EPROM_CMD_NORMAL 0
+#define EPROM_CMD_PROGRAM 2
+#define EPROM_CS_BIT 3
+#define EPROM_CK_BIT 2
+#define EPROM_W_BIT 1
+#define EPROM_R_BIT 0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ANAPAR			= 0x17,
 #define	BB_GLOBAL_RESET_BIT	0x1
 	BB_GLOBAL_RESET		= 0x020,
 	BSSIDR			= 0x02E,
 	CMDR			= 0x037,
+<<<<<<< HEAD
 #define		CR_RST					0x10
 #define		CR_RE					0x08
 #define		CR_TE					0x04
@@ -161,12 +212,31 @@ enum _RTL8192Pci_HW {
 #define	RCR_AM			BIT2
 #define	RCR_APM			BIT1
 #define	RCR_AAP			BIT0
+=======
+#define		CR_RE					0x08
+#define		CR_TE					0x04
+	SIFS		= 0x03E,
+	RCR			= 0x044,
+#define RCR_ONLYERLPKT		BIT(31)
+#define RCR_CBSSID		BIT(23)
+#define	RCR_ADD3		BIT(21)
+#define RCR_AMF			BIT(20)
+#define RCR_ADF			BIT(18)
+#define RCR_AICV		BIT(12)
+#define	RCR_AB			BIT(3)
+#define	RCR_AM			BIT(2)
+#define	RCR_APM			BIT(1)
+#define	RCR_AAP			BIT(0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RCR_MXDMA_OFFSET	8
 #define RCR_FIFO_OFFSET		13
 	SLOT_TIME		= 0x049,
 	ACK_TIMEOUT		= 0x04c,
+<<<<<<< HEAD
 	PIFS_TIME		= 0x04d,
 	USTIME			= 0x04e,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	EDCAPARA_BE		= 0x050,
 	EDCAPARA_BK		= 0x054,
 	EDCAPARA_VO		= 0x058,
@@ -175,14 +245,18 @@ enum _RTL8192Pci_HW {
 #define	AC_PARAM_ECW_MAX_OFFSET		12
 #define	AC_PARAM_ECW_MIN_OFFSET			8
 #define	AC_PARAM_AIFS_OFFSET				0
+<<<<<<< HEAD
 	RFPC			= 0x05F,
 	CWRR			= 0x060,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BCN_TCFG		= 0x062,
 #define BCN_TCFG_CW_SHIFT		8
 #define BCN_TCFG_IFS			0
 	BCN_INTERVAL		= 0x070,
 	ATIMWND			= 0x072,
 	BCN_DRV_EARLY_INT	= 0x074,
+<<<<<<< HEAD
 #define	BCN_DRV_EARLY_INT_SWBCN_SHIFT	8
 #define	BCN_DRV_EARLY_INT_TIME_SHIFT	0
 	BCN_DMATIME		= 0x076,
@@ -265,6 +339,44 @@ enum _RTL8192Pci_HW {
 #define PSR_CPU			0x1
 	CPU_GEN			= 0x100,
 	BB_RESET			= 0x101,
+=======
+	BCN_DMATIME		= 0x076,
+	BCN_ERR_THRESH		= 0x078,
+	RWCAM			= 0x0A0,
+#define   TOTAL_CAM_ENTRY				32
+	WCAMI			= 0x0A4,
+	SECR			= 0x0B0,
+#define	SCR_TxUseDK			BIT(0)
+#define   SCR_RxUseDK			BIT(1)
+#define   SCR_TxEncEnable		BIT(2)
+#define   SCR_RxDecEnable		BIT(3)
+#define   SCR_NoSKMC				BIT(5)
+	SWREGULATOR	= 0x0BD,
+	INTA_MASK		= 0x0f4,
+#define IMR_TBDOK			BIT(27)
+#define IMR_TBDER			BIT(26)
+#define IMR_TXFOVW			BIT(15)
+#define IMR_TIMEOUT0			BIT(14)
+#define IMR_BcnInt			BIT(13)
+#define	IMR_RXFOVW			BIT(12)
+#define IMR_RDU				BIT(11)
+#define IMR_RXCMDOK			BIT(10)
+#define IMR_BDOK			BIT(9)
+#define IMR_HIGHDOK			BIT(8)
+#define	IMR_COMDOK			BIT(7)
+#define IMR_MGNTDOK			BIT(6)
+#define IMR_HCCADOK			BIT(5)
+#define	IMR_BKDOK			BIT(4)
+#define	IMR_BEDOK			BIT(3)
+#define	IMR_VIDOK			BIT(2)
+#define	IMR_VODOK			BIT(1)
+#define	IMR_ROK				BIT(0)
+	ISR			= 0x0f8,
+	TP_POLL			= 0x0fd,
+#define TP_POLL_CQ		BIT(5)
+	PSR			= 0x0ff,
+	CPU_GEN			= 0x100,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	CPU_CCK_LOOPBACK	0x00030000
 #define	CPU_GEN_SYSTEM_RESET	0x00000001
 #define	CPU_GEN_FIRMWARE_RESET	0x00000008
@@ -275,6 +387,7 @@ enum _RTL8192Pci_HW {
 #define	CPU_GEN_PWR_STB_CPU	0x00000004
 #define CPU_GEN_NO_LOOPBACK_MSK	0xFFF8FFFF
 #define CPU_GEN_NO_LOOPBACK_SET	0x00080000
+<<<<<<< HEAD
 #define	CPU_GEN_GPIO_UART		0x00007000
 
 	LED1Cfg			= 0x154,
@@ -300,6 +413,15 @@ enum _RTL8192Pci_HW {
 	RQPN2			= 0x184,
 	RQPN3			= 0x188,
 	QPRR			= 0x1E0,
+=======
+	ACM_HW_CTRL		= 0x171,
+#define	ACM_HW_BEQ_EN		BIT(1)
+#define	ACM_HW_VIQ_EN		BIT(2)
+#define	ACM_HW_VOQ_EN		BIT(3)
+	RQPN1			= 0x180,
+	RQPN2			= 0x184,
+	RQPN3			= 0x188,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	QPNR			= 0x1F0,
 	BQDA			= 0x200,
 	HQDA			= 0x204,
@@ -310,6 +432,7 @@ enum _RTL8192Pci_HW {
 	VIQDA			= 0x218,
 	BEQDA			= 0x21C,
 	BKQDA			= 0x220,
+<<<<<<< HEAD
 	RCQDA			= 0x224,
 	RDQDA			= 0x228,
 
@@ -338,11 +461,16 @@ enum _RTL8192Pci_HW {
 	NHM_RPI_COUNTER5	= 0x269,
 	NHM_RPI_COUNTER6	= 0x26A,
 	NHM_RPI_COUNTER7	= 0x26B,
+=======
+	RDQDA			= 0x228,
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WFCRC0		  = 0x2f0,
 	WFCRC1		  = 0x2f4,
 	WFCRC2		  = 0x2f8,
 
 	BW_OPMODE		= 0x300,
+<<<<<<< HEAD
 #define	BW_OPMODE_11J			BIT0
 #define	BW_OPMODE_5G			BIT1
 #define	BW_OPMODE_20MHZ			BIT2
@@ -355,6 +483,15 @@ enum _RTL8192Pci_HW {
 #define MSR_LINK_ADHOC     1
 #define MSR_LINK_MASTER    3
 #define MSR_LINK_ENEDCA	   (1<<4)
+=======
+#define	BW_OPMODE_20MHZ			BIT(2)
+	IC_VERRSION		= 0x301,
+	MSR			= 0x303,
+#define MSR_LINK_MASK		(BIT(1) | BIT(0))
+#define MSR_LINK_MANAGED   2
+#define MSR_LINK_ADHOC     1
+#define MSR_LINK_MASTER    3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	MSR_NOLINK					0x00
 #define	MSR_ADHOC					0x01
@@ -366,6 +503,7 @@ enum _RTL8192Pci_HW {
 #define RETRY_LIMIT_LONG_SHIFT 0
 	TSFR			= 0x308,
 	RRSR			= 0x310,
+<<<<<<< HEAD
 #define RRSR_RSC_OFFSET				21
 #define RRSR_SHORT_OFFSET			23
 #define RRSR_RSC_DUPLICATE			0x600000
@@ -393,6 +531,22 @@ enum _RTL8192Pci_HW {
 #define RRSR_MCS6				BIT18
 #define RRSR_MCS7				BIT19
 #define BRSR_AckShortPmb			BIT23
+=======
+#define RRSR_SHORT_OFFSET			23
+#define RRSR_1M					BIT(0)
+#define RRSR_2M					BIT(1)
+#define RRSR_5_5M				BIT(2)
+#define RRSR_11M				BIT(3)
+#define RRSR_6M					BIT(4)
+#define RRSR_9M					BIT(5)
+#define RRSR_12M				BIT(6)
+#define RRSR_18M				BIT(7)
+#define RRSR_24M				BIT(8)
+#define RRSR_36M				BIT(9)
+#define RRSR_48M				BIT(10)
+#define RRSR_54M				BIT(11)
+#define BRSR_AckShortPmb			BIT(23)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	UFWP			= 0x318,
 	RATR0			= 0x320,
 #define	RATR_1M			0x00000001
@@ -433,6 +587,7 @@ enum _RTL8192Pci_HW {
 				RATR_MCS11 | RATR_MCS12 | RATR_MCS13 |	\
 				RATR_MCS14|RATR_MCS15)
 
+<<<<<<< HEAD
 
 	DRIVER_RSSI		= 0x32c,
 	MCS_TXAGC		= 0x340,
@@ -449,5 +604,16 @@ enum _RTL8192Pci_HW {
 #define	 HWSET_MAX_SIZE_92S				128
 
 #define	ANAPAR_FOR_8192PciE				0x17
+=======
+	DRIVER_RSSI		= 0x32c,
+	MCS_TXAGC		= 0x340,
+	CCK_TXAGC		= 0x348,
+	MAC_BLK_CTRL		= 0x403,
+};
+
+#define GPI 0x108
+
+#define	ANAPAR_FOR_8192PCIE	0x17
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

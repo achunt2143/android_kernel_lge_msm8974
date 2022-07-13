@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IRQ flags handling
  */
@@ -10,6 +14,7 @@
  */
 #include <asm/hw_irq.h>
 
+<<<<<<< HEAD
 #else
 #ifdef CONFIG_TRACE_IRQFLAGS
 #ifdef CONFIG_IRQSOFF_TRACER
@@ -65,6 +70,8 @@
 	stb	__rB,PACASOFTIRQEN(r13);	\
 	stb	__rA,PACAIRQHAPPENED(r13)
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif

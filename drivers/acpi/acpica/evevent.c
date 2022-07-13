@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: evevent - Fixed Event handling and dispatch
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acevents.h"
@@ -164,7 +175,11 @@ static acpi_status acpi_ev_fixed_event_initialize(void)
 
 	/*
 	 * Initialize the structure that keeps track of fixed event handlers and
+<<<<<<< HEAD
 	 * enable the fixed events.
+=======
+	 * disable all of the fixed events.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++) {
 		acpi_gbl_fixed_event_handlers[i].handler = NULL;
@@ -204,6 +219,10 @@ u32 acpi_ev_fixed_event_detect(void)
 	u32 fixed_status;
 	u32 fixed_enable;
 	u32 i;
+<<<<<<< HEAD
+=======
+	acpi_status status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_NAME(ev_fixed_event_detect);
 
@@ -211,8 +230,17 @@ u32 acpi_ev_fixed_event_detect(void)
 	 * Read the fixed feature status and enable registers, as all the cases
 	 * depend on their values. Ignore errors here.
 	 */
+<<<<<<< HEAD
 	(void)acpi_hw_register_read(ACPI_REGISTER_PM1_STATUS, &fixed_status);
 	(void)acpi_hw_register_read(ACPI_REGISTER_PM1_ENABLE, &fixed_enable);
+=======
+	status = acpi_hw_register_read(ACPI_REGISTER_PM1_STATUS, &fixed_status);
+	status |=
+	    acpi_hw_register_read(ACPI_REGISTER_PM1_ENABLE, &fixed_enable);
+	if (ACPI_FAILURE(status)) {
+		return (int_status);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INTERRUPTS,
 			  "Fixed Event Block: Enable %08X Status %08X\n",
@@ -251,12 +279,21 @@ u32 acpi_ev_fixed_event_detect(void)
  *
  * FUNCTION:    acpi_ev_fixed_event_dispatch
  *
+<<<<<<< HEAD
  * PARAMETERS:  Event               - Event type
+=======
+ * PARAMETERS:  event               - Event type
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      INTERRUPT_HANDLED or INTERRUPT_NOT_HANDLED
  *
  * DESCRIPTION: Clears the status bit for the requested event, calls the
  *              handler that previously registered for the event.
+<<<<<<< HEAD
+=======
+ *              NOTE: If there is no handler for the event, the event is
+ *              disabled to prevent further interrupts.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 
@@ -271,17 +308,29 @@ static u32 acpi_ev_fixed_event_dispatch(u32 event)
 				      status_register_id, ACPI_CLEAR_STATUS);
 
 	/*
+<<<<<<< HEAD
 	 * Make sure we've got a handler. If not, report an error. The event is
 	 * disabled to prevent further interrupts.
 	 */
 	if (NULL == acpi_gbl_fixed_event_handlers[event].handler) {
+=======
+	 * Make sure that a handler exists. If not, report an error
+	 * and disable the event to prevent further interrupts.
+	 */
+	if (!acpi_gbl_fixed_event_handlers[event].handler) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(void)acpi_write_bit_register(acpi_gbl_fixed_event_info[event].
 					      enable_register_id,
 					      ACPI_DISABLE_EVENT);
 
 		ACPI_ERROR((AE_INFO,
+<<<<<<< HEAD
 			    "No installed handler for fixed event [0x%08X]",
 			    event));
+=======
+			    "No installed handler for fixed event - %s (%u), disabling",
+			    acpi_ut_get_event_name(event), event));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return (ACPI_INTERRUPT_NOT_HANDLED);
 	}
@@ -292,4 +341,52 @@ static u32 acpi_ev_fixed_event_dispatch(u32 event)
 		 handler) (acpi_gbl_fixed_event_handlers[event].context));
 }
 
+<<<<<<< HEAD
+=======
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_any_fixed_event_status_set
+ *
+ * PARAMETERS:  None
+ *
+ * RETURN:      TRUE or FALSE
+ *
+ * DESCRIPTION: Checks the PM status register for active fixed events
+ *
+ ******************************************************************************/
+
+u32 acpi_any_fixed_event_status_set(void)
+{
+	acpi_status status;
+	u32 in_status;
+	u32 in_enable;
+	u32 i;
+
+	status = acpi_hw_register_read(ACPI_REGISTER_PM1_ENABLE, &in_enable);
+	if (ACPI_FAILURE(status)) {
+		return (FALSE);
+	}
+
+	status = acpi_hw_register_read(ACPI_REGISTER_PM1_STATUS, &in_status);
+	if (ACPI_FAILURE(status)) {
+		return (FALSE);
+	}
+
+	/*
+	 * Check for all possible Fixed Events and dispatch those that are active
+	 */
+	for (i = 0; i < ACPI_NUM_FIXED_EVENTS; i++) {
+
+		/* Both the status and enable bits must be on for this event */
+
+		if ((in_status & acpi_gbl_fixed_event_info[i].status_bit_mask) &&
+		    (in_enable & acpi_gbl_fixed_event_info[i].enable_bit_mask)) {
+			return (TRUE);
+		}
+	}
+
+	return (FALSE);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* !ACPI_REDUCED_HARDWARE */

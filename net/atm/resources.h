@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* net/atm/resources.h - ATM-related resources */
 
 /* Written 1995-1998 by Werner Almesberger, EPFL LRC/ICA */
@@ -13,8 +17,14 @@
 extern struct list_head atm_devs;
 extern struct mutex atm_dev_mutex;
 
+<<<<<<< HEAD
 int atm_dev_ioctl(unsigned int cmd, void __user *arg, int compat);
 
+=======
+int atm_getnames(void __user *buf, int __user *iobuf_len);
+int atm_dev_ioctl(unsigned int cmd, void __user *buf, int __user *sioc_len,
+		  int number, int compat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PROC_FS
 

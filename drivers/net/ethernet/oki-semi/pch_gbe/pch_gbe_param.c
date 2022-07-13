@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 1999 - 2010 Intel Corporation.
  * Copyright (C) 2010 OKI SEMICONDUCTOR Co., LTD.
  *
  * This code was derived from the Intel e1000e Linux driver.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "pch_gbe.h"
@@ -25,7 +32,11 @@
 #define OPTION_DISABLED 0
 #define OPTION_ENABLED  1
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TxDescriptors - Transmit Descriptor Count
  * @Valid Range:   PCH_GBE_MIN_TXD - PCH_GBE_MAX_TXD
  * @Default Value: PCH_GBE_DEFAULT_TXD
@@ -34,7 +45,11 @@ static int TxDescriptors = OPTION_UNSET;
 module_param(TxDescriptors, int, 0);
 MODULE_PARM_DESC(TxDescriptors, "Number of transmit descriptors");
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * RxDescriptors -Receive Descriptor Count
  * @Valid Range:   PCH_GBE_MIN_RXD - PCH_GBE_MAX_RXD
  * @Default Value: PCH_GBE_DEFAULT_RXD
@@ -43,7 +58,11 @@ static int RxDescriptors = OPTION_UNSET;
 module_param(RxDescriptors, int, 0);
 MODULE_PARM_DESC(RxDescriptors, "Number of receive descriptors");
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Speed - User Specified Speed Override
  * @Valid Range: 0, 10, 100, 1000
  *   - 0:    auto-negotiate at all supported speeds
@@ -56,7 +75,11 @@ static int Speed = OPTION_UNSET;
 module_param(Speed, int, 0);
 MODULE_PARM_DESC(Speed, "Speed setting");
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Duplex - User Specified Duplex Override
  * @Valid Range: 0-2
  *   - 0:  auto-negotiate for duplex
@@ -71,7 +94,11 @@ MODULE_PARM_DESC(Duplex, "Duplex setting");
 #define HALF_DUPLEX 1
 #define FULL_DUPLEX 2
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * AutoNeg - Auto-negotiation Advertisement Override
  * @Valid Range: 0x01-0x0F, 0x20-0x2F
  *
@@ -97,7 +124,11 @@ MODULE_PARM_DESC(AutoNeg, "Advertised auto-negotiation setting");
 #define PHY_ADVERTISE_1000_FULL    0x0020
 #define PCH_AUTONEG_ADVERTISE_DEFAULT   0x2F
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FlowControl - User Specified Flow Control Override
  * @Valid Range: 0-3
  *    - 0:  No Flow Control
@@ -136,10 +167,17 @@ MODULE_PARM_DESC(XsumTX, "Disable or enable Transmit Checksum offload");
 
 #define PCH_GBE_DEFAULT_TX_CSUM             true	/* trueorfalse */
 
+<<<<<<< HEAD
 /**
  * pch_gbe_option - Force the MAC's flow control settings
  * @hw:	            Pointer to the HW structure
  * Returns
+=======
+/*
+ * pch_gbe_option - Force the MAC's flow control settings
+ * @hw:	            Pointer to the HW structure
+ * Returns:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	0:			Successful.
  *	Negative value:		Failed.
  */
@@ -220,7 +258,11 @@ static const struct pch_gbe_opt_list fc_list[] = {
  * @value:    value
  * @opt:      option
  * @adapter:  Board private structure
+<<<<<<< HEAD
  * Returns
+=======
+ * Returns:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	0:			Successful.
  *	Negative value:		Failed.
  */
@@ -237,16 +279,28 @@ static int pch_gbe_validate_option(int *value,
 	case enable_option:
 		switch (*value) {
 		case OPTION_ENABLED:
+<<<<<<< HEAD
 			pr_debug("%s Enabled\n", opt->name);
 			return 0;
 		case OPTION_DISABLED:
 			pr_debug("%s Disabled\n", opt->name);
+=======
+			netdev_dbg(adapter->netdev, "%s Enabled\n", opt->name);
+			return 0;
+		case OPTION_DISABLED:
+			netdev_dbg(adapter->netdev, "%s Disabled\n", opt->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 		break;
 	case range_option:
 		if (*value >= opt->arg.r.min && *value <= opt->arg.r.max) {
+<<<<<<< HEAD
 			pr_debug("%s set to %i\n", opt->name, *value);
+=======
+			netdev_dbg(adapter->netdev, "%s set to %i\n",
+				   opt->name, *value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 		break;
@@ -258,7 +312,12 @@ static int pch_gbe_validate_option(int *value,
 			ent = &opt->arg.l.p[i];
 			if (*value == ent->i) {
 				if (ent->str[0] != '\0')
+<<<<<<< HEAD
 					pr_debug("%s\n", ent->str);
+=======
+					netdev_dbg(adapter->netdev, "%s\n",
+						   ent->str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 		}
@@ -268,8 +327,13 @@ static int pch_gbe_validate_option(int *value,
 		BUG();
 	}
 
+<<<<<<< HEAD
 	pr_debug("Invalid %s value specified (%i) %s\n",
 		 opt->name, *value, opt->err);
+=======
+	netdev_dbg(adapter->netdev, "Invalid %s value specified (%i) %s\n",
+		   opt->name, *value, opt->err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*value = opt->def;
 	return -1;
 }
@@ -318,7 +382,12 @@ static void pch_gbe_check_copper_options(struct pch_gbe_adapter *adapter)
 					 .p = an_list} }
 		};
 		if (speed || dplx) {
+<<<<<<< HEAD
 			pr_debug("AutoNeg specified along with Speed or Duplex, AutoNeg parameter ignored\n");
+=======
+			netdev_dbg(adapter->netdev,
+				   "AutoNeg specified along with Speed or Duplex, AutoNeg parameter ignored\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hw->phy.autoneg_advertised = opt.def;
 		} else {
 			int tmp = AutoNeg;
@@ -332,13 +401,25 @@ static void pch_gbe_check_copper_options(struct pch_gbe_adapter *adapter)
 	case 0:
 		hw->mac.autoneg = hw->mac.fc_autoneg = 1;
 		if ((speed || dplx))
+<<<<<<< HEAD
 			pr_debug("Speed and duplex autonegotiation enabled\n");
+=======
+			netdev_dbg(adapter->netdev,
+				   "Speed and duplex autonegotiation enabled\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->mac.link_speed = SPEED_10;
 		hw->mac.link_duplex = DUPLEX_HALF;
 		break;
 	case HALF_DUPLEX:
+<<<<<<< HEAD
 		pr_debug("Half Duplex specified without Speed\n");
 		pr_debug("Using Autonegotiation at Half Duplex only\n");
+=======
+		netdev_dbg(adapter->netdev,
+			   "Half Duplex specified without Speed\n");
+		netdev_dbg(adapter->netdev,
+			   "Using Autonegotiation at Half Duplex only\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->mac.autoneg = hw->mac.fc_autoneg = 1;
 		hw->phy.autoneg_advertised = PHY_ADVERTISE_10_HALF |
 						PHY_ADVERTISE_100_HALF;
@@ -346,8 +427,15 @@ static void pch_gbe_check_copper_options(struct pch_gbe_adapter *adapter)
 		hw->mac.link_duplex = DUPLEX_HALF;
 		break;
 	case FULL_DUPLEX:
+<<<<<<< HEAD
 		pr_debug("Full Duplex specified without Speed\n");
 		pr_debug("Using Autonegotiation at Full Duplex only\n");
+=======
+		netdev_dbg(adapter->netdev,
+			   "Full Duplex specified without Speed\n");
+		netdev_dbg(adapter->netdev,
+			   "Using Autonegotiation at Full Duplex only\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->mac.autoneg = hw->mac.fc_autoneg = 1;
 		hw->phy.autoneg_advertised = PHY_ADVERTISE_10_FULL |
 						PHY_ADVERTISE_100_FULL |
@@ -356,8 +444,15 @@ static void pch_gbe_check_copper_options(struct pch_gbe_adapter *adapter)
 		hw->mac.link_duplex = DUPLEX_FULL;
 		break;
 	case SPEED_10:
+<<<<<<< HEAD
 		pr_debug("10 Mbps Speed specified without Duplex\n");
 		pr_debug("Using Autonegotiation at 10 Mbps only\n");
+=======
+		netdev_dbg(adapter->netdev,
+			   "10 Mbps Speed specified without Duplex\n");
+		netdev_dbg(adapter->netdev,
+			   "Using Autonegotiation at 10 Mbps only\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->mac.autoneg = hw->mac.fc_autoneg = 1;
 		hw->phy.autoneg_advertised = PHY_ADVERTISE_10_HALF |
 						PHY_ADVERTISE_10_FULL;
@@ -365,22 +460,37 @@ static void pch_gbe_check_copper_options(struct pch_gbe_adapter *adapter)
 		hw->mac.link_duplex = DUPLEX_HALF;
 		break;
 	case SPEED_10 + HALF_DUPLEX:
+<<<<<<< HEAD
 		pr_debug("Forcing to 10 Mbps Half Duplex\n");
+=======
+		netdev_dbg(adapter->netdev, "Forcing to 10 Mbps Half Duplex\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->mac.autoneg = hw->mac.fc_autoneg = 0;
 		hw->phy.autoneg_advertised = 0;
 		hw->mac.link_speed = SPEED_10;
 		hw->mac.link_duplex = DUPLEX_HALF;
 		break;
 	case SPEED_10 + FULL_DUPLEX:
+<<<<<<< HEAD
 		pr_debug("Forcing to 10 Mbps Full Duplex\n");
+=======
+		netdev_dbg(adapter->netdev, "Forcing to 10 Mbps Full Duplex\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->mac.autoneg = hw->mac.fc_autoneg = 0;
 		hw->phy.autoneg_advertised = 0;
 		hw->mac.link_speed = SPEED_10;
 		hw->mac.link_duplex = DUPLEX_FULL;
 		break;
 	case SPEED_100:
+<<<<<<< HEAD
 		pr_debug("100 Mbps Speed specified without Duplex\n");
 		pr_debug("Using Autonegotiation at 100 Mbps only\n");
+=======
+		netdev_dbg(adapter->netdev,
+			   "100 Mbps Speed specified without Duplex\n");
+		netdev_dbg(adapter->netdev,
+			   "Using Autonegotiation at 100 Mbps only\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->mac.autoneg = hw->mac.fc_autoneg = 1;
 		hw->phy.autoneg_advertised = PHY_ADVERTISE_100_HALF |
 						PHY_ADVERTISE_100_FULL;
@@ -388,20 +498,31 @@ static void pch_gbe_check_copper_options(struct pch_gbe_adapter *adapter)
 		hw->mac.link_duplex = DUPLEX_HALF;
 		break;
 	case SPEED_100 + HALF_DUPLEX:
+<<<<<<< HEAD
 		pr_debug("Forcing to 100 Mbps Half Duplex\n");
+=======
+		netdev_dbg(adapter->netdev,
+			   "Forcing to 100 Mbps Half Duplex\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->mac.autoneg = hw->mac.fc_autoneg = 0;
 		hw->phy.autoneg_advertised = 0;
 		hw->mac.link_speed = SPEED_100;
 		hw->mac.link_duplex = DUPLEX_HALF;
 		break;
 	case SPEED_100 + FULL_DUPLEX:
+<<<<<<< HEAD
 		pr_debug("Forcing to 100 Mbps Full Duplex\n");
+=======
+		netdev_dbg(adapter->netdev,
+			   "Forcing to 100 Mbps Full Duplex\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->mac.autoneg = hw->mac.fc_autoneg = 0;
 		hw->phy.autoneg_advertised = 0;
 		hw->mac.link_speed = SPEED_100;
 		hw->mac.link_duplex = DUPLEX_FULL;
 		break;
 	case SPEED_1000:
+<<<<<<< HEAD
 		pr_debug("1000 Mbps Speed specified without Duplex\n");
 		goto full_duplex_only;
 	case SPEED_1000 + HALF_DUPLEX:
@@ -410,6 +531,19 @@ static void pch_gbe_check_copper_options(struct pch_gbe_adapter *adapter)
 	case SPEED_1000 + FULL_DUPLEX:
 full_duplex_only:
 		pr_debug("Using Autonegotiation at 1000 Mbps Full Duplex only\n");
+=======
+		netdev_dbg(adapter->netdev,
+			   "1000 Mbps Speed specified without Duplex\n");
+		goto full_duplex_only;
+	case SPEED_1000 + HALF_DUPLEX:
+		netdev_dbg(adapter->netdev,
+			   "Half Duplex is not supported at 1000 Mbps\n");
+		fallthrough;
+	case SPEED_1000 + FULL_DUPLEX:
+full_duplex_only:
+		netdev_dbg(adapter->netdev,
+			   "Using Autonegotiation at 1000 Mbps Full Duplex only\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->mac.autoneg = hw->mac.fc_autoneg = 1;
 		hw->phy.autoneg_advertised = PHY_ADVERTISE_1000_FULL;
 		hw->mac.link_speed = SPEED_1000;
@@ -484,7 +618,11 @@ void pch_gbe_check_options(struct pch_gbe_adapter *adapter)
 		val = XsumTX;
 		pch_gbe_validate_option(&val, &opt, adapter);
 		if (!val)
+<<<<<<< HEAD
 			dev->features &= ~NETIF_F_ALL_CSUM;
+=======
+			dev->features &= ~NETIF_F_CSUM_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	{ /* Flow Control */
 		static const struct pch_gbe_option opt = {

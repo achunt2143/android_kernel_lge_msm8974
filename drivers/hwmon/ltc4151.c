@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Linear Technology LTC4151 High Voltage I2C Current
  * and Voltage Monitor
@@ -11,6 +15,7 @@
  *  Copyright (C) 2010 Ericsson AB.
  *
  * Datasheet: http://www.linear.com/docs/Datasheet/4151fc.pdf
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,16 +31,26 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
+<<<<<<< HEAD
+=======
+#include <linux/jiffies.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* chip registers */
 #define LTC4151_SENSE_H	0x00
@@ -46,11 +61,19 @@
 #define LTC4151_ADIN_L	0x05
 
 struct ltc4151_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex update_lock;
 	bool valid;
 	unsigned long last_updated; /* in jiffies */
+<<<<<<< HEAD
+=======
+	unsigned int shunt; /* in micro ohms */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Registers */
 	u8 regs[6];
@@ -58,8 +81,13 @@ struct ltc4151_data {
 
 static struct ltc4151_data *ltc4151_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ltc4151_data *data = i2c_get_clientdata(client);
+=======
+	struct ltc4151_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ltc4151_data *ret = data;
 
 	mutex_lock(&data->update_lock);
@@ -88,7 +116,11 @@ static struct ltc4151_data *ltc4151_update_device(struct device *dev)
 			data->regs[i] = val;
 		}
 		data->last_updated = jiffies;
+<<<<<<< HEAD
 		data->valid = 1;
+=======
+		data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 abort:
 	mutex_unlock(&data->update_lock);
@@ -110,9 +142,15 @@ static int ltc4151_get_value(struct ltc4151_data *data, u8 reg)
 	case LTC4151_SENSE_H:
 		/*
 		 * 20uV resolution. Convert to current as measured with
+<<<<<<< HEAD
 		 * an 1 mOhm sense resistor, in mA.
 		 */
 		val = val * 20;
+=======
+		 * a given sense resistor, in mA.
+		 */
+		val = val * 20 * 1000 / data->shunt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case LTC4151_VIN_H:
 		/* 25 mV per increment */
@@ -128,7 +166,11 @@ static int ltc4151_get_value(struct ltc4151_data *data, u8 reg)
 	return val;
 }
 
+<<<<<<< HEAD
 static ssize_t ltc4151_show_value(struct device *dev,
+=======
+static ssize_t ltc4151_value_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct device_attribute *da, char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
@@ -139,12 +181,17 @@ static ssize_t ltc4151_show_value(struct device *dev,
 		return PTR_ERR(data);
 
 	value = ltc4151_get_value(data, attr->index);
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%d\n", value);
+=======
+	return sysfs_emit(buf, "%d\n", value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Input voltages.
  */
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(in1_input, S_IRUGO, \
 	ltc4151_show_value, NULL, LTC4151_VIN_H);
 static SENSOR_DEVICE_ATTR(in2_input, S_IRUGO, \
@@ -153,12 +200,23 @@ static SENSOR_DEVICE_ATTR(in2_input, S_IRUGO, \
 /* Currents (via sense resistor) */
 static SENSOR_DEVICE_ATTR(curr1_input, S_IRUGO, \
 	ltc4151_show_value, NULL, LTC4151_SENSE_H);
+=======
+static SENSOR_DEVICE_ATTR_RO(in1_input, ltc4151_value, LTC4151_VIN_H);
+static SENSOR_DEVICE_ATTR_RO(in2_input, ltc4151_value, LTC4151_ADIN_H);
+
+/* Currents (via sense resistor) */
+static SENSOR_DEVICE_ATTR_RO(curr1_input, ltc4151_value, LTC4151_SENSE_H);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Finally, construct an array of pointers to members of the above objects,
  * as required for sysfs_create_group()
  */
+<<<<<<< HEAD
 static struct attribute *ltc4151_attributes[] = {
+=======
+static struct attribute *ltc4151_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sensor_dev_attr_in1_input.dev_attr.attr,
 	&sensor_dev_attr_in2_input.dev_attr.attr,
 
@@ -166,6 +224,7 @@ static struct attribute *ltc4151_attributes[] = {
 
 	NULL,
 };
+<<<<<<< HEAD
 
 static const struct attribute_group ltc4151_group = {
 	.attrs = ltc4151_attributes,
@@ -177,10 +236,22 @@ static int ltc4151_probe(struct i2c_client *client,
 	struct i2c_adapter *adapter = client->adapter;
 	struct ltc4151_data *data;
 	int ret;
+=======
+ATTRIBUTE_GROUPS(ltc4151);
+
+static int ltc4151_probe(struct i2c_client *client)
+{
+	struct i2c_adapter *adapter = client->adapter;
+	struct device *dev = &client->dev;
+	struct ltc4151_data *data;
+	struct device *hwmon_dev;
+	u32 shunt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	data = kzalloc(sizeof(*data), GFP_KERNEL);
 	if (!data) {
 		ret = -ENOMEM;
@@ -221,6 +292,28 @@ static int ltc4151_remove(struct i2c_client *client)
 	kfree(data);
 
 	return 0;
+=======
+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	if (of_property_read_u32(client->dev.of_node,
+				 "shunt-resistor-micro-ohms", &shunt))
+		shunt = 1000; /* 1 mOhm if not set via DT */
+
+	if (shunt == 0)
+		return -EINVAL;
+
+	data->shunt = shunt;
+
+	data->client = client;
+	mutex_init(&data->update_lock);
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data,
+							   ltc4151_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id ltc4151_id[] = {
@@ -229,13 +322,28 @@ static const struct i2c_device_id ltc4151_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, ltc4151_id);
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id __maybe_unused ltc4151_match[] = {
+	{ .compatible = "lltc,ltc4151" },
+	{},
+};
+MODULE_DEVICE_TABLE(of, ltc4151_match);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This is the driver that will be inserted */
 static struct i2c_driver ltc4151_driver = {
 	.driver = {
 		.name	= "ltc4151",
+<<<<<<< HEAD
 	},
 	.probe		= ltc4151_probe,
 	.remove		= ltc4151_remove,
+=======
+		.of_match_table = of_match_ptr(ltc4151_match),
+	},
+	.probe		= ltc4151_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= ltc4151_id,
 };
 

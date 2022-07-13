@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: exnames - interpreter/scanner name load/execute
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -42,6 +47,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
@@ -53,8 +64,12 @@ ACPI_MODULE_NAME("exnames")
 /* Local prototypes */
 static char *acpi_ex_allocate_name_string(u32 prefix_count, u32 num_name_segs);
 
+<<<<<<< HEAD
 static acpi_status
 acpi_ex_name_segment(u8 ** in_aml_address, char *name_string);
+=======
+static acpi_status acpi_ex_name_segment(u8 **in_aml_address, char *name_string);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*******************************************************************************
  *
@@ -64,7 +79,11 @@ acpi_ex_name_segment(u8 ** in_aml_address, char *name_string);
  *                                    (-1)==root,  0==none
  *              num_name_segs       - count of 4-character name segments
  *
+<<<<<<< HEAD
  * RETURN:      A pointer to the allocated string segment.  This segment must
+=======
+ * RETURN:      A pointer to the allocated string segment. This segment must
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              be deleted by the caller.
  *
  * DESCRIPTION: Allocate a buffer for a name string. Ensure allocated name
@@ -89,10 +108,17 @@ static char *acpi_ex_allocate_name_string(u32 prefix_count, u32 num_name_segs)
 
 		/* Special case for root */
 
+<<<<<<< HEAD
 		size_needed = 1 + (ACPI_NAME_SIZE * num_name_segs) + 2 + 1;
 	} else {
 		size_needed =
 		    prefix_count + (ACPI_NAME_SIZE * num_name_segs) + 2 + 1;
+=======
+		size_needed = 1 + (ACPI_NAMESEG_SIZE * num_name_segs) + 2 + 1;
+	} else {
+		size_needed =
+		    prefix_count + (ACPI_NAMESEG_SIZE * num_name_segs) + 2 + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -124,7 +150,11 @@ static char *acpi_ex_allocate_name_string(u32 prefix_count, u32 num_name_segs)
 
 		/* Set up multi prefixes   */
 
+<<<<<<< HEAD
 		*temp_ptr++ = AML_MULTI_NAME_PREFIX_OP;
+=======
+		*temp_ptr++ = AML_MULTI_NAME_PREFIX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*temp_ptr++ = (char)num_name_segs;
 	} else if (2 == num_name_segs) {
 
@@ -166,8 +196,13 @@ static acpi_status acpi_ex_name_segment(u8 ** in_aml_address, char *name_string)
 	ACPI_FUNCTION_TRACE(ex_name_segment);
 
 	/*
+<<<<<<< HEAD
 	 * If first character is a digit, then we know that we aren't looking at a
 	 * valid name segment
+=======
+	 * If first character is a digit, then we know that we aren't looking
+	 * at a valid name segment
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	char_buf[0] = *aml_address;
 
@@ -176,12 +211,19 @@ static acpi_status acpi_ex_name_segment(u8 ** in_aml_address, char *name_string)
 		return_ACPI_STATUS(AE_CTRL_PENDING);
 	}
 
+<<<<<<< HEAD
 	ACPI_DEBUG_PRINT((ACPI_DB_LOAD, "Bytes from stream:\n"));
 
 	for (index = 0; (index < ACPI_NAME_SIZE)
 	     && (acpi_ut_valid_acpi_char(*aml_address, 0)); index++) {
 		char_buf[index] = *aml_address++;
 		ACPI_DEBUG_PRINT((ACPI_DB_LOAD, "%c\n", char_buf[index]));
+=======
+	for (index = 0;
+	     (index < ACPI_NAMESEG_SIZE)
+	     && (acpi_ut_valid_name_char(*aml_address, 0)); index++) {
+		char_buf[index] = *aml_address++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Valid name segment  */
@@ -193,9 +235,15 @@ static acpi_status acpi_ex_name_segment(u8 ** in_aml_address, char *name_string)
 		char_buf[4] = '\0';
 
 		if (name_string) {
+<<<<<<< HEAD
 			ACPI_STRCAT(name_string, char_buf);
 			ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
 					  "Appended to - %s\n", name_string));
+=======
+			ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
+					  "Appending NameSeg %s\n", char_buf));
+			strcat(name_string, char_buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
 					  "No Name string - %s\n", char_buf));
@@ -343,7 +391,11 @@ acpi_ex_get_name_string(acpi_object_type data_type,
 			}
 			break;
 
+<<<<<<< HEAD
 		case AML_MULTI_NAME_PREFIX_OP:
+=======
+		case AML_MULTI_NAME_PREFIX:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			ACPI_DEBUG_PRINT((ACPI_DB_LOAD,
 					  "MultiNamePrefix at %p\n",

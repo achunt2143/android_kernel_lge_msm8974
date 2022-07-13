@@ -1,13 +1,46 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Video configuration
 #
 
 menu "Graphics support"
+<<<<<<< HEAD
 	depends on HAS_IOMEM
+=======
+
+config APERTURE_HELPERS
+	bool
+	help
+	  Support tracking and hand-over of aperture ownership. Required
+	  by graphics drivers for firmware-provided framebuffers.
+
+config SCREEN_INFO
+	bool
+	default n
+
+config STI_CORE
+	bool
+	depends on PARISC
+	help
+	  STI refers to the HP "Standard Text Interface" which is a set of
+	  BIOS routines contained in a ROM chip in HP PA-RISC based machines.
+
+config VIDEO
+	bool
+	default n
+
+source "drivers/auxdisplay/Kconfig"
+
+if HAS_IOMEM
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config HAVE_FB_ATMEL
 	bool
 
+<<<<<<< HEAD
 config SH_MIPI_DSI
 	tristate
 	depends on (SUPERH || ARCH_SHMOBILE) && HAVE_CLK
@@ -15,10 +48,13 @@ config SH_MIPI_DSI
 config SH_LCD_MIPI_DSI
 	bool
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "drivers/char/agp/Kconfig"
 
 source "drivers/gpu/vga/Kconfig"
 
+<<<<<<< HEAD
 source "drivers/gpu/drm/Kconfig"
 
 source "drivers/gpu/stub/Kconfig"
@@ -26,11 +62,24 @@ source "drivers/gpu/stub/Kconfig"
 source "drivers/gpu/ion/Kconfig"
 
 source "drivers/gpu/msm/Kconfig"
+=======
+source "drivers/gpu/host1x/Kconfig"
+source "drivers/gpu/ipu-v3/Kconfig"
+
+source "drivers/gpu/drm/Kconfig"
+
+menu "Frame buffer Devices"
+source "drivers/video/fbdev/Kconfig"
+endmenu
+
+source "drivers/video/backlight/Kconfig"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config VGASTATE
        tristate
        default n
 
+<<<<<<< HEAD
 config VIDEO_OUTPUT_CONTROL
 	tristate "Lowlevel video output switch controls"
 	help
@@ -2414,11 +2463,21 @@ source "drivers/video/omap/Kconfig"
 source "drivers/video/omap2/Kconfig"
 source "drivers/video/exynos/Kconfig"
 source "drivers/video/backlight/Kconfig"
+=======
+config VIDEOMODE_HELPERS
+	bool
+
+config HDMI
+	bool
+
+endif # HAS_IOMEM
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 if VT
 	source "drivers/video/console/Kconfig"
 endif
 
+<<<<<<< HEAD
 if FB || SGI_NEWPORT_CONSOLE
 	source "drivers/video/logo/Kconfig"
 endif
@@ -2436,5 +2495,12 @@ config FB_SH_MOBILE_MERAM
 	  2 YCbCr framebuffers to be configured.
 
 source "drivers/video/slimport/Kconfig"
+=======
+if FB_CORE || SGI_NEWPORT_CONSOLE
+	source "drivers/video/logo/Kconfig"
+
+endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endmenu

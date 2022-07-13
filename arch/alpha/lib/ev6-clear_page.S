@@ -1,9 +1,17 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/ev6-clear_page.S
  *
  * Zero an entire page.
  */
+<<<<<<< HEAD
 
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         .text
         .align 4
         .global clear_page
@@ -52,3 +60,7 @@ clear_page:
 	nop
 
 	.end clear_page
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(clear_page)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

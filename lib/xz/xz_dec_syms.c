@@ -15,8 +15,20 @@ EXPORT_SYMBOL(xz_dec_reset);
 EXPORT_SYMBOL(xz_dec_run);
 EXPORT_SYMBOL(xz_dec_end);
 
+<<<<<<< HEAD
 MODULE_DESCRIPTION("XZ decompressor");
 MODULE_VERSION("1.0");
+=======
+#ifdef CONFIG_XZ_DEC_MICROLZMA
+EXPORT_SYMBOL(xz_dec_microlzma_alloc);
+EXPORT_SYMBOL(xz_dec_microlzma_reset);
+EXPORT_SYMBOL(xz_dec_microlzma_run);
+EXPORT_SYMBOL(xz_dec_microlzma_end);
+#endif
+
+MODULE_DESCRIPTION("XZ decompressor");
+MODULE_VERSION("1.1");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Lasse Collin <lasse.collin@tukaani.org> and Igor Pavlov");
 
 /*

@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PlanetCore configuration data support functions
  *
  * Author: Scott Wood <scottwood@freescale.com>
  *
  * Copyright (c) 2007 Freescale Semiconductor, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "stdio.h"
@@ -131,6 +138,7 @@ void planetcore_set_stdout_path(const char *table)
 
 	setprop_str(chosen, "linux,stdout-path", path);
 }
+<<<<<<< HEAD
 
 void planetcore_set_serial_speed(const char *table)
 {
@@ -164,3 +172,5 @@ void planetcore_set_serial_speed(const char *table)
 	baud32 = baud;
 	setprop(stdout, "current-speed", &baud32, 4);
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

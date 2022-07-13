@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 /*
  * (C) 2007 Patrick McHardy <kaber@trash.net>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * (C) 2007 Patrick McHardy <kaber@trash.net>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -18,6 +24,7 @@ static bool
 xt_rateest_mt(const struct sk_buff *skb, struct xt_action_param *par)
 {
 	const struct xt_rateest_match_info *info = par->matchinfo;
+<<<<<<< HEAD
 	struct gnet_stats_rate_est *r;
 	u_int32_t bps1, bps2, pps1, pps2;
 	bool ret = true;
@@ -32,11 +39,27 @@ xt_rateest_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		pps1 = r->pps;
 	}
 	spin_unlock_bh(&info->est1->lock);
+=======
+	struct gnet_stats_rate_est64 sample = {0};
+	u_int32_t bps1, bps2, pps1, pps2;
+	bool ret = true;
+
+	gen_estimator_read(&info->est1->rate_est, &sample);
+
+	if (info->flags & XT_RATEEST_MATCH_DELTA) {
+		bps1 = info->bps1 >= sample.bps ? info->bps1 - sample.bps : 0;
+		pps1 = info->pps1 >= sample.pps ? info->pps1 - sample.pps : 0;
+	} else {
+		bps1 = sample.bps;
+		pps1 = sample.pps;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->flags & XT_RATEEST_MATCH_ABS) {
 		bps2 = info->bps2;
 		pps2 = info->pps2;
 	} else {
+<<<<<<< HEAD
 		spin_lock_bh(&info->est2->lock);
 		r = &info->est2->rstats;
 		if (info->flags & XT_RATEEST_MATCH_DELTA) {
@@ -47,6 +70,17 @@ xt_rateest_mt(const struct sk_buff *skb, struct xt_action_param *par)
 			pps2 = r->pps;
 		}
 		spin_unlock_bh(&info->est2->lock);
+=======
+		gen_estimator_read(&info->est2->rate_est, &sample);
+
+		if (info->flags & XT_RATEEST_MATCH_DELTA) {
+			bps2 = info->bps2 >= sample.bps ? info->bps2 - sample.bps : 0;
+			pps2 = info->pps2 >= sample.pps ? info->pps2 - sample.pps : 0;
+		} else {
+			bps2 = sample.bps;
+			pps2 = sample.pps;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (info->mode) {
@@ -97,13 +131,21 @@ static int xt_rateest_mt_checkentry(const struct xt_mtchk_param *par)
 	}
 
 	ret  = -ENOENT;
+<<<<<<< HEAD
 	est1 = xt_rateest_lookup(info->name1);
+=======
+	est1 = xt_rateest_lookup(par->net, info->name1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!est1)
 		goto err1;
 
 	est2 = NULL;
 	if (info->flags & XT_RATEEST_MATCH_REL) {
+<<<<<<< HEAD
 		est2 = xt_rateest_lookup(info->name2);
+=======
+		est2 = xt_rateest_lookup(par->net, info->name2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!est2)
 			goto err2;
 	}
@@ -113,7 +155,11 @@ static int xt_rateest_mt_checkentry(const struct xt_mtchk_param *par)
 	return 0;
 
 err2:
+<<<<<<< HEAD
 	xt_rateest_put(est1);
+=======
+	xt_rateest_put(par->net, est1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err1:
 	return ret;
 }
@@ -122,9 +168,15 @@ static void xt_rateest_mt_destroy(const struct xt_mtdtor_param *par)
 {
 	struct xt_rateest_match_info *info = par->matchinfo;
 
+<<<<<<< HEAD
 	xt_rateest_put(info->est1);
 	if (info->est2)
 		xt_rateest_put(info->est2);
+=======
+	xt_rateest_put(par->net, info->est1);
+	if (info->est2)
+		xt_rateest_put(par->net, info->est2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xt_match xt_rateest_mt_reg __read_mostly = {
@@ -135,6 +187,10 @@ static struct xt_match xt_rateest_mt_reg __read_mostly = {
 	.checkentry = xt_rateest_mt_checkentry,
 	.destroy    = xt_rateest_mt_destroy,
 	.matchsize  = sizeof(struct xt_rateest_match_info),
+<<<<<<< HEAD
+=======
+	.usersize   = offsetof(struct xt_rateest_match_info, est1),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.me         = THIS_MODULE,
 };
 

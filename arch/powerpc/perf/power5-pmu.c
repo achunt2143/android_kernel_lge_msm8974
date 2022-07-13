@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Performance counter support for POWER5 (not POWER5++) processors.
  *
  * Copyright 2009 Paul Mackerras, IBM Corporation.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/perf_event.h>
@@ -14,6 +21,11 @@
 #include <asm/reg.h>
 #include <asm/cputable.h>
 
+<<<<<<< HEAD
+=======
+#include "internal.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Bits in event code for POWER5 (not POWER5++)
  */
@@ -138,7 +150,11 @@ static unsigned long unit_cons[PM_LASTUNIT+1][2] = {
 };
 
 static int power5_get_constraint(u64 event, unsigned long *maskp,
+<<<<<<< HEAD
 				 unsigned long *valp)
+=======
+				 unsigned long *valp, u64 event_config1 __maybe_unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int pmc, byte, unit, sh;
 	int bit, fmask;
@@ -383,7 +399,13 @@ static int power5_marked_instr_event(u64 event)
 }
 
 static int power5_compute_mmcr(u64 event[], int n_ev,
+<<<<<<< HEAD
 			       unsigned int hwc[], unsigned long mmcr[])
+=======
+			       unsigned int hwc[], struct mmcr_regs *mmcr,
+			       struct perf_event *pevents[],
+			       u32 flags __maybe_unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long mmcr1 = 0;
 	unsigned long mmcra = MMCRA_SDAR_DCACHE_MISS | MMCRA_SDAR_ERAT_MISS;
@@ -532,6 +554,7 @@ static int power5_compute_mmcr(u64 event[], int n_ev,
 	}
 
 	/* Return MMCRx values */
+<<<<<<< HEAD
 	mmcr[0] = 0;
 	if (pmc_inuse & 1)
 		mmcr[0] = MMCR0_PMC1CE;
@@ -546,6 +569,22 @@ static void power5_disable_pmc(unsigned int pmc, unsigned long mmcr[])
 {
 	if (pmc <= 3)
 		mmcr[1] &= ~(0x7fUL << MMCR1_PMCSEL_SH(pmc));
+=======
+	mmcr->mmcr0 = 0;
+	if (pmc_inuse & 1)
+		mmcr->mmcr0 = MMCR0_PMC1CE;
+	if (pmc_inuse & 0x3e)
+		mmcr->mmcr0 |= MMCR0_PMCjCE;
+	mmcr->mmcr1 = mmcr1;
+	mmcr->mmcra = mmcra;
+	return 0;
+}
+
+static void power5_disable_pmc(unsigned int pmc, struct mmcr_regs *mmcr)
+{
+	if (pmc <= 3)
+		mmcr->mmcr1 &= ~(0x7fUL << MMCR1_PMCSEL_SH(pmc));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int power5_generic_events[] = {
@@ -564,7 +603,11 @@ static int power5_generic_events[] = {
  * 0 means not supported, -1 means nonsensical, other values
  * are event codes.
  */
+<<<<<<< HEAD
 static int power5_cache_events[C(MAX)][C(OP_MAX)][C(RESULT_MAX)] = {
+=======
+static u64 power5_cache_events[C(MAX)][C(OP_MAX)][C(RESULT_MAX)] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[C(L1D)] = {		/* 	RESULT_ACCESS	RESULT_MISS */
 		[C(OP_READ)] = {	0x4c1090,	0x3c1088	},
 		[C(OP_WRITE)] = {	0x3c1090,	0xc10c3		},
@@ -615,15 +658,29 @@ static struct power_pmu power5_pmu = {
 	.n_generic		= ARRAY_SIZE(power5_generic_events),
 	.generic_events		= power5_generic_events,
 	.cache_events		= &power5_cache_events,
+<<<<<<< HEAD
 };
 
 static int __init init_power5_pmu(void)
 {
 	if (!cur_cpu_spec->oprofile_cpu_type ||
 	    strcmp(cur_cpu_spec->oprofile_cpu_type, "ppc64/power5"))
+=======
+	.flags			= PPMU_HAS_SSLOT,
+};
+
+int __init init_power5_pmu(void)
+{
+	unsigned int pvr = mfspr(SPRN_PVR);
+
+	if (PVR_VER(pvr) != PVR_POWER5)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	return register_power_pmu(&power5_pmu);
 }
+<<<<<<< HEAD
 
 early_initcall(init_power5_pmu);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

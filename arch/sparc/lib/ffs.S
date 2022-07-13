@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/linkage.h>
 
 	.register	%g2,#scratch
@@ -65,6 +70,11 @@ ENTRY(__ffs)
 	 add	%o2, %g1, %o0
 ENDPROC(ffs)
 ENDPROC(__ffs)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__ffs)
+EXPORT_SYMBOL(ffs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.section	.popc_6insn_patch, "ax"
 	.word		ffs

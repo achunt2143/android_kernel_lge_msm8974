@@ -1,16 +1,27 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A gpio chip driver for TXx9 SoCs
  *
  * Copyright (C) 2008 Atsushi Nemoto <anemo@mba.ocn.ne.jp>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/io.h>
 #include <asm/txx9pio.h>
@@ -21,7 +32,11 @@ static struct txx9_pio_reg __iomem *txx9_pioptr;
 
 static int txx9_gpio_get(struct gpio_chip *chip, unsigned int offset)
 {
+<<<<<<< HEAD
 	return __raw_readl(&txx9_pioptr->din) & (1 << offset);
+=======
+	return !!(__raw_readl(&txx9_pioptr->din) & (1 << offset));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void txx9_gpio_set_raw(unsigned int offset, int value)
@@ -85,5 +100,9 @@ int __init txx9_gpio_init(unsigned long baseaddr,
 		return -ENODEV;
 	txx9_gpio_chip.base = base;
 	txx9_gpio_chip.ngpio = num;
+<<<<<<< HEAD
 	return gpiochip_add(&txx9_gpio_chip);
+=======
+	return gpiochip_add_data(&txx9_gpio_chip, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

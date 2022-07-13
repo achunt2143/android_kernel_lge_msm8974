@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -16,6 +21,8 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Artem Bityutskiy (Битюцкий Артём)
  *          Adrian Hunter
  */
@@ -37,6 +44,7 @@
  *
  * A thing to keep in mind: inode @i_mutex is locked in most VFS operations we
  * implement. However, this is not true for 'ubifs_writepage()', which may be
+<<<<<<< HEAD
  * called with @i_mutex unlocked. For example, when pdflush is doing background
  * write-back, it calls 'ubifs_writepage()' with unlocked @i_mutex. At "normal"
  * work-paths the @i_mutex is locked in 'ubifs_writepage()', e.g. in the
@@ -46,13 +54,29 @@
  * Similarly, @i_mutex is not always locked in 'ubifs_readpage()', e.g., the
  * read-ahead path does not lock it ("sys_read -> generic_file_aio_read ->
  * ondemand_readahead -> readpage"). In case of readahead, @I_SYNC flag is not
+=======
+ * called with @i_mutex unlocked. For example, when flusher thread is doing
+ * background write-back, it calls 'ubifs_writepage()' with unlocked @i_mutex.
+ * At "normal" work-paths the @i_mutex is locked in 'ubifs_writepage()', e.g.
+ * in the "sys_write -> alloc_pages -> direct reclaim path". So, in
+ * 'ubifs_writepage()' we are only guaranteed that the page is locked.
+ *
+ * Similarly, @i_mutex is not always locked in 'ubifs_read_folio()', e.g., the
+ * read-ahead path does not lock it ("sys_read -> generic_file_aio_read ->
+ * ondemand_readahead -> read_folio"). In case of readahead, @I_SYNC flag is not
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * set as well. However, UBIFS disables readahead.
  */
 
 #include "ubifs.h"
 #include <linux/mount.h>
+<<<<<<< HEAD
 #include <linux/namei.h>
 #include <linux/slab.h>
+=======
+#include <linux/slab.h>
+#include <linux/migrate.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int read_block(struct inode *inode, void *addr, unsigned int block,
 		      struct ubifs_data_node *dn)
@@ -71,15 +95,31 @@ static int read_block(struct inode *inode, void *addr, unsigned int block,
 		return err;
 	}
 
+<<<<<<< HEAD
 	ubifs_assert(le64_to_cpu(dn->ch.sqnum) >
+=======
+	ubifs_assert(c, le64_to_cpu(dn->ch.sqnum) >
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     ubifs_inode(inode)->creat_sqnum);
 	len = le32_to_cpu(dn->size);
 	if (len <= 0 || len > UBIFS_BLOCK_SIZE)
 		goto dump;
 
 	dlen = le32_to_cpu(dn->ch.len) - UBIFS_DATA_NODE_SZ;
+<<<<<<< HEAD
 	out_len = UBIFS_BLOCK_SIZE;
 	err = ubifs_decompress(&dn->data, dlen, addr, &out_len,
+=======
+
+	if (IS_ENCRYPTED(inode)) {
+		err = ubifs_decrypt(inode, dn, &dlen, block);
+		if (err)
+			goto dump;
+	}
+
+	out_len = UBIFS_BLOCK_SIZE;
+	err = ubifs_decompress(c, &dn->data, dlen, addr, &out_len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       le16_to_cpu(dn->compr_type));
 	if (err || len != out_len)
 		goto dump;
@@ -95,6 +135,7 @@ static int read_block(struct inode *inode, void *addr, unsigned int block,
 	return 0;
 
 dump:
+<<<<<<< HEAD
 	ubifs_err("bad data node (block %u, inode %lu)",
 		  block, inode->i_ino);
 	dbg_dump_node(c, dn);
@@ -102,10 +143,20 @@ dump:
 }
 
 static int do_readpage(struct page *page)
+=======
+	ubifs_err(c, "bad data node (block %u, inode %lu)",
+		  block, inode->i_ino);
+	ubifs_dump_node(c, dn, UBIFS_MAX_DATA_NODE_SZ);
+	return -EINVAL;
+}
+
+static int do_readpage(struct folio *folio)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *addr;
 	int err = 0, i;
 	unsigned int block, beyond;
+<<<<<<< HEAD
 	struct ubifs_data_node *dn;
 	struct inode *inode = page->mapping->host;
 	loff_t i_size = i_size_read(inode);
@@ -123,13 +174,37 @@ static int do_readpage(struct page *page)
 		/* Reading beyond inode */
 		SetPageChecked(page);
 		memset(addr, 0, PAGE_CACHE_SIZE);
+=======
+	struct ubifs_data_node *dn = NULL;
+	struct inode *inode = folio->mapping->host;
+	struct ubifs_info *c = inode->i_sb->s_fs_info;
+	loff_t i_size = i_size_read(inode);
+
+	dbg_gen("ino %lu, pg %lu, i_size %lld, flags %#lx",
+		inode->i_ino, folio->index, i_size, folio->flags);
+	ubifs_assert(c, !folio_test_checked(folio));
+	ubifs_assert(c, !folio->private);
+
+	addr = kmap_local_folio(folio, 0);
+
+	block = folio->index << UBIFS_BLOCKS_PER_PAGE_SHIFT;
+	beyond = (i_size + UBIFS_BLOCK_SIZE - 1) >> UBIFS_BLOCK_SHIFT;
+	if (block >= beyond) {
+		/* Reading beyond inode */
+		folio_set_checked(folio);
+		addr = folio_zero_tail(folio, 0, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	dn = kmalloc(UBIFS_MAX_DATA_NODE_SZ, GFP_NOFS);
 	if (!dn) {
 		err = -ENOMEM;
+<<<<<<< HEAD
 		goto error;
+=======
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	i = 0;
@@ -154,6 +229,7 @@ static int do_readpage(struct page *page)
 					memset(addr + ilen, 0, dlen - ilen);
 			}
 		}
+<<<<<<< HEAD
 		if (++i >= UBIFS_BLOCKS_PER_PAGE)
 			break;
 		block += 1;
@@ -186,6 +262,37 @@ error:
 	SetPageError(page);
 	flush_dcache_page(page);
 	kunmap(page);
+=======
+		if (++i >= (UBIFS_BLOCKS_PER_PAGE << folio_order(folio)))
+			break;
+		block += 1;
+		addr += UBIFS_BLOCK_SIZE;
+		if (folio_test_highmem(folio) && (offset_in_page(addr) == 0)) {
+			kunmap_local(addr - UBIFS_BLOCK_SIZE);
+			addr = kmap_local_folio(folio, i * UBIFS_BLOCK_SIZE);
+		}
+	}
+
+	if (err) {
+		struct ubifs_info *c = inode->i_sb->s_fs_info;
+		if (err == -ENOENT) {
+			/* Not found, so it must be a hole */
+			folio_set_checked(folio);
+			dbg_gen("hole");
+			err = 0;
+		} else {
+			ubifs_err(c, "cannot read page %lu of inode %lu, error %d",
+				  folio->index, inode->i_ino, err);
+		}
+	}
+
+out:
+	kfree(dn);
+	if (!err)
+		folio_mark_uptodate(folio);
+	flush_dcache_folio(folio);
+	kunmap_local(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -208,7 +315,11 @@ static void release_new_page_budget(struct ubifs_info *c)
  * @c: UBIFS file-system description object
  *
  * This is a helper function which releases budget corresponding to the budget
+<<<<<<< HEAD
  * of changing one one page of data which already exists on the flash media.
+=======
+ * of changing one page of data which already exists on the flash media.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void release_existing_page_budget(struct ubifs_info *c)
 {
@@ -218,6 +329,7 @@ static void release_existing_page_budget(struct ubifs_info *c)
 }
 
 static int write_begin_slow(struct address_space *mapping,
+<<<<<<< HEAD
 			    loff_t pos, unsigned len, struct page **pagep,
 			    unsigned flags)
 {
@@ -227,15 +339,32 @@ static int write_begin_slow(struct address_space *mapping,
 	struct ubifs_budget_req req = { .new_page = 1 };
 	int uninitialized_var(err), appending = !!(pos + len > inode->i_size);
 	struct page *page;
+=======
+			    loff_t pos, unsigned len, struct page **pagep)
+{
+	struct inode *inode = mapping->host;
+	struct ubifs_info *c = inode->i_sb->s_fs_info;
+	pgoff_t index = pos >> PAGE_SHIFT;
+	struct ubifs_budget_req req = { .new_page = 1 };
+	int err, appending = !!(pos + len > inode->i_size);
+	struct folio *folio;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg_gen("ino %lu, pos %llu, len %u, i_size %lld",
 		inode->i_ino, pos, len, inode->i_size);
 
 	/*
+<<<<<<< HEAD
 	 * At the slow path we have to budget before locking the page, because
 	 * budgeting may force write-back, which would wait on locked pages and
 	 * deadlock if we had the page locked. At this point we do not know
 	 * anything about the page, so assume that this is a new page which is
+=======
+	 * At the slow path we have to budget before locking the folio, because
+	 * budgeting may force write-back, which would wait on locked folios and
+	 * deadlock if we had the folio locked. At this point we do not know
+	 * anything about the folio, so assume that this is a new folio which is
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * written to a hole. This corresponds to largest budget. Later the
 	 * budget will be amended if this is not true.
 	 */
@@ -247,6 +376,7 @@ static int write_begin_slow(struct address_space *mapping,
 	if (unlikely(err))
 		return err;
 
+<<<<<<< HEAD
 	page = grab_cache_page_write_begin(mapping, index, flags);
 	if (unlikely(!page)) {
 		ubifs_release_budget(c, &req);
@@ -285,6 +415,45 @@ static int write_begin_slow(struct address_space *mapping,
 		/*
 		 * We are changing a page which already exists on the media.
 		 * This means that changing the page does not make the amount
+=======
+	folio = __filemap_get_folio(mapping, index, FGP_WRITEBEGIN,
+			mapping_gfp_mask(mapping));
+	if (IS_ERR(folio)) {
+		ubifs_release_budget(c, &req);
+		return PTR_ERR(folio);
+	}
+
+	if (!folio_test_uptodate(folio)) {
+		if (pos == folio_pos(folio) && len >= folio_size(folio))
+			folio_set_checked(folio);
+		else {
+			err = do_readpage(folio);
+			if (err) {
+				folio_unlock(folio);
+				folio_put(folio);
+				ubifs_release_budget(c, &req);
+				return err;
+			}
+		}
+	}
+
+	if (folio->private)
+		/*
+		 * The folio is dirty, which means it was budgeted twice:
+		 *   o first time the budget was allocated by the task which
+		 *     made the folio dirty and set the private field;
+		 *   o and then we budgeted for it for the second time at the
+		 *     very beginning of this function.
+		 *
+		 * So what we have to do is to release the folio budget we
+		 * allocated.
+		 */
+		release_new_page_budget(c);
+	else if (!folio_test_checked(folio))
+		/*
+		 * We are changing a folio which already exists on the media.
+		 * This means that changing the folio does not make the amount
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * of indexing information larger, and this part of the budget
 		 * which we have already acquired may be released.
 		 */
@@ -307,32 +476,55 @@ static int write_begin_slow(struct address_space *mapping,
 			ubifs_release_dirty_inode_budget(c, ui);
 	}
 
+<<<<<<< HEAD
 	*pagep = page;
+=======
+	*pagep = &folio->page;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /**
  * allocate_budget - allocate budget for 'ubifs_write_begin()'.
  * @c: UBIFS file-system description object
+<<<<<<< HEAD
  * @page: page to allocate budget for
+=======
+ * @folio: folio to allocate budget for
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ui: UBIFS inode object the page belongs to
  * @appending: non-zero if the page is appended
  *
  * This is a helper function for 'ubifs_write_begin()' which allocates budget
  * for the operation. The budget is allocated differently depending on whether
  * this is appending, whether the page is dirty or not, and so on. This
+<<<<<<< HEAD
  * function leaves the @ui->ui_mutex locked in case of appending. Returns zero
  * in case of success and %-ENOSPC in case of failure.
  */
 static int allocate_budget(struct ubifs_info *c, struct page *page,
+=======
+ * function leaves the @ui->ui_mutex locked in case of appending.
+ *
+ * Returns: %0 in case of success and %-ENOSPC in case of failure.
+ */
+static int allocate_budget(struct ubifs_info *c, struct folio *folio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   struct ubifs_inode *ui, int appending)
 {
 	struct ubifs_budget_req req = { .fast = 1 };
 
+<<<<<<< HEAD
 	if (PagePrivate(page)) {
 		if (!appending)
 			/*
 			 * The page is dirty and we are not appending, which
+=======
+	if (folio->private) {
+		if (!appending)
+			/*
+			 * The folio is dirty and we are not appending, which
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * means no budget is needed at all.
 			 */
 			return 0;
@@ -356,11 +548,19 @@ static int allocate_budget(struct ubifs_info *c, struct page *page,
 		 */
 		req.dirtied_ino = 1;
 	} else {
+<<<<<<< HEAD
 		if (PageChecked(page))
 			/*
 			 * The page corresponds to a hole and does not
 			 * exist on the media. So changing it makes
 			 * make the amount of indexing information
+=======
+		if (folio_test_checked(folio))
+			/*
+			 * The page corresponds to a hole and does not
+			 * exist on the media. So changing it makes
+			 * the amount of indexing information
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * larger, and we have to budget for a new
 			 * page.
 			 */
@@ -421,12 +621,17 @@ static int allocate_budget(struct ubifs_info *c, struct page *page,
  * without forcing write-back. The slow path does not make this assumption.
  */
 static int ubifs_write_begin(struct file *file, struct address_space *mapping,
+<<<<<<< HEAD
 			     loff_t pos, unsigned len, unsigned flags,
+=======
+			     loff_t pos, unsigned len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct page **pagep, void **fsdata)
 {
 	struct inode *inode = mapping->host;
 	struct ubifs_info *c = inode->i_sb->s_fs_info;
 	struct ubifs_inode *ui = ubifs_inode(inode);
+<<<<<<< HEAD
 	pgoff_t index = pos >> PAGE_CACHE_SHIFT;
 	int uninitialized_var(err), appending = !!(pos + len > inode->i_size);
 	int skipped_read = 0;
@@ -434,11 +639,21 @@ static int ubifs_write_begin(struct file *file, struct address_space *mapping,
 
 	ubifs_assert(ubifs_inode(inode)->ui_size == inode->i_size);
 	ubifs_assert(!c->ro_media && !c->ro_mount);
+=======
+	pgoff_t index = pos >> PAGE_SHIFT;
+	int err, appending = !!(pos + len > inode->i_size);
+	int skipped_read = 0;
+	struct folio *folio;
+
+	ubifs_assert(c, ubifs_inode(inode)->ui_size == inode->i_size);
+	ubifs_assert(c, !c->ro_media && !c->ro_mount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(c->ro_error))
 		return -EROFS;
 
 	/* Try out the fast-path part first */
+<<<<<<< HEAD
 	page = grab_cache_page_write_begin(mapping, index, flags);
 	if (unlikely(!page))
 		return -ENOMEM;
@@ -446,6 +661,16 @@ static int ubifs_write_begin(struct file *file, struct address_space *mapping,
 	if (!PageUptodate(page)) {
 		/* The page is not loaded from the flash */
 		if (!(pos & ~PAGE_CACHE_MASK) && len == PAGE_CACHE_SIZE) {
+=======
+	folio = __filemap_get_folio(mapping, index, FGP_WRITEBEGIN,
+			mapping_gfp_mask(mapping));
+	if (IS_ERR(folio))
+		return PTR_ERR(folio);
+
+	if (!folio_test_uptodate(folio)) {
+		/* The page is not loaded from the flash */
+		if (pos == folio_pos(folio) && len >= folio_size(folio)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * We change whole page so no need to load it. But we
 			 * do not know whether this page exists on the media or
@@ -455,6 +680,7 @@ static int ubifs_write_begin(struct file *file, struct address_space *mapping,
 			 * media. Thus, we are setting the @PG_checked flag
 			 * here.
 			 */
+<<<<<<< HEAD
 			SetPageChecked(page);
 			skipped_read = 1;
 		} else {
@@ -473,14 +699,36 @@ static int ubifs_write_begin(struct file *file, struct address_space *mapping,
 	err = allocate_budget(c, page, ui, appending);
 	if (unlikely(err)) {
 		ubifs_assert(err == -ENOSPC);
+=======
+			folio_set_checked(folio);
+			skipped_read = 1;
+		} else {
+			err = do_readpage(folio);
+			if (err) {
+				folio_unlock(folio);
+				folio_put(folio);
+				return err;
+			}
+		}
+	}
+
+	err = allocate_budget(c, folio, ui, appending);
+	if (unlikely(err)) {
+		ubifs_assert(c, err == -ENOSPC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * If we skipped reading the page because we were going to
 		 * write all of it, then it is not up to date.
 		 */
+<<<<<<< HEAD
 		if (skipped_read) {
 			ClearPageChecked(page);
 			ClearPageUptodate(page);
 		}
+=======
+		if (skipped_read)
+			folio_clear_checked(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Budgeting failed which means it would have to force
 		 * write-back but didn't, because we set the @fast flag in the
@@ -489,6 +737,7 @@ static int ubifs_write_begin(struct file *file, struct address_space *mapping,
 		 * everything and fall-back to slow-path.
 		 */
 		if (appending) {
+<<<<<<< HEAD
 			ubifs_assert(mutex_is_locked(&ui->ui_mutex));
 			mutex_unlock(&ui->ui_mutex);
 		}
@@ -496,6 +745,15 @@ static int ubifs_write_begin(struct file *file, struct address_space *mapping,
 		page_cache_release(page);
 
 		return write_begin_slow(mapping, pos, len, pagep, flags);
+=======
+			ubifs_assert(c, mutex_is_locked(&ui->ui_mutex));
+			mutex_unlock(&ui->ui_mutex);
+		}
+		folio_unlock(folio);
+		folio_put(folio);
+
+		return write_begin_slow(mapping, pos, len, pagep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -504,22 +762,35 @@ static int ubifs_write_begin(struct file *file, struct address_space *mapping,
 	 * with @ui->ui_mutex locked if we are appending pages, and unlocked
 	 * otherwise. This is an optimization (slightly hacky though).
 	 */
+<<<<<<< HEAD
 	*pagep = page;
 	return 0;
 
+=======
+	*pagep = &folio->page;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * cancel_budget - cancel budget.
  * @c: UBIFS file-system description object
+<<<<<<< HEAD
  * @page: page to cancel budget for
+=======
+ * @folio: folio to cancel budget for
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ui: UBIFS inode object the page belongs to
  * @appending: non-zero if the page is appended
  *
  * This is a helper function for a page write operation. It unlocks the
  * @ui->ui_mutex in case of appending.
  */
+<<<<<<< HEAD
 static void cancel_budget(struct ubifs_info *c, struct page *page,
+=======
+static void cancel_budget(struct ubifs_info *c, struct folio *folio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct ubifs_inode *ui, int appending)
 {
 	if (appending) {
@@ -527,8 +798,13 @@ static void cancel_budget(struct ubifs_info *c, struct page *page,
 			ubifs_release_dirty_inode_budget(c, ui);
 		mutex_unlock(&ui->ui_mutex);
 	}
+<<<<<<< HEAD
 	if (!PagePrivate(page)) {
 		if (PageChecked(page))
+=======
+	if (!folio->private) {
+		if (folio_test_checked(folio))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			release_new_page_budget(c);
 		else
 			release_existing_page_budget(c);
@@ -539,6 +815,10 @@ static int ubifs_write_end(struct file *file, struct address_space *mapping,
 			   loff_t pos, unsigned len, unsigned copied,
 			   struct page *page, void *fsdata)
 {
+<<<<<<< HEAD
+=======
+	struct folio *folio = page_folio(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *inode = mapping->host;
 	struct ubifs_inode *ui = ubifs_inode(inode);
 	struct ubifs_info *c = inode->i_sb->s_fs_info;
@@ -546,6 +826,7 @@ static int ubifs_write_end(struct file *file, struct address_space *mapping,
 	int appending = !!(end_pos > inode->i_size);
 
 	dbg_gen("ino %lu, pos %llu, pg %lu, len %u, copied %d, i_size %lld",
+<<<<<<< HEAD
 		inode->i_ino, pos, page->index, len, copied, inode->i_size);
 
 	if (unlikely(copied < len && len == PAGE_CACHE_SIZE)) {
@@ -562,11 +843,30 @@ static int ubifs_write_end(struct file *file, struct address_space *mapping,
 			copied, len);
 		cancel_budget(c, page, ui, appending);
 		ClearPageChecked(page);
+=======
+		inode->i_ino, pos, folio->index, len, copied, inode->i_size);
+
+	if (unlikely(copied < len && !folio_test_uptodate(folio))) {
+		/*
+		 * VFS copied less data to the folio than it intended and
+		 * declared in its '->write_begin()' call via the @len
+		 * argument. If the folio was not up-to-date,
+		 * the 'ubifs_write_begin()' function did
+		 * not load it from the media (for optimization reasons). This
+		 * means that part of the folio contains garbage. So read the
+		 * folio now.
+		 */
+		dbg_gen("copied %d instead of %d, read page and repeat",
+			copied, len);
+		cancel_budget(c, folio, ui, appending);
+		folio_clear_checked(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Return 0 to force VFS to repeat the whole operation, or the
 		 * error code if 'do_readpage()' fails.
 		 */
+<<<<<<< HEAD
 		copied = do_readpage(page);
 		goto out;
 	}
@@ -575,30 +875,58 @@ static int ubifs_write_end(struct file *file, struct address_space *mapping,
 		SetPagePrivate(page);
 		atomic_long_inc(&c->dirty_pg_cnt);
 		__set_page_dirty_nobuffers(page);
+=======
+		copied = do_readpage(folio);
+		goto out;
+	}
+
+	if (len == folio_size(folio))
+		folio_mark_uptodate(folio);
+
+	if (!folio->private) {
+		folio_attach_private(folio, (void *)1);
+		atomic_long_inc(&c->dirty_pg_cnt);
+		filemap_dirty_folio(mapping, folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (appending) {
 		i_size_write(inode, end_pos);
 		ui->ui_size = end_pos;
 		/*
+<<<<<<< HEAD
 		 * Note, we do not set @I_DIRTY_PAGES (which means that the
 		 * inode has dirty pages), this has been done in
 		 * '__set_page_dirty_nobuffers()'.
 		 */
 		__mark_inode_dirty(inode, I_DIRTY_DATASYNC);
 		ubifs_assert(mutex_is_locked(&ui->ui_mutex));
+=======
+		 * We do not set @I_DIRTY_PAGES (which means that
+		 * the inode has dirty pages), this was done in
+		 * filemap_dirty_folio().
+		 */
+		__mark_inode_dirty(inode, I_DIRTY_DATASYNC);
+		ubifs_assert(c, mutex_is_locked(&ui->ui_mutex));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&ui->ui_mutex);
 	}
 
 out:
+<<<<<<< HEAD
 	unlock_page(page);
 	page_cache_release(page);
+=======
+	folio_unlock(folio);
+	folio_put(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return copied;
 }
 
 /**
  * populate_page - copy data nodes into a page for bulk-read.
  * @c: UBIFS file-system description object
+<<<<<<< HEAD
  * @page: page
  * @bu: bulk-read information
  * @n: next zbranch slot
@@ -610,12 +938,26 @@ static int populate_page(struct ubifs_info *c, struct page *page,
 {
 	int i = 0, nn = *n, offs = bu->zbranch[0].offs, hole = 0, read = 0;
 	struct inode *inode = page->mapping->host;
+=======
+ * @folio: folio
+ * @bu: bulk-read information
+ * @n: next zbranch slot
+ *
+ * Returns: %0 on success and a negative error code on failure.
+ */
+static int populate_page(struct ubifs_info *c, struct folio *folio,
+			 struct bu_info *bu, int *n)
+{
+	int i = 0, nn = *n, offs = bu->zbranch[0].offs, hole = 0, read = 0;
+	struct inode *inode = folio->mapping->host;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	loff_t i_size = i_size_read(inode);
 	unsigned int page_block;
 	void *addr, *zaddr;
 	pgoff_t end_index;
 
 	dbg_gen("ino %lu, pg %lu, i_size %lld, flags %#lx",
+<<<<<<< HEAD
 		inode->i_ino, page->index, i_size, page->flags);
 
 	addr = zaddr = kmap(page);
@@ -628,6 +970,20 @@ static int populate_page(struct ubifs_info *c, struct page *page,
 	}
 
 	page_block = page->index << UBIFS_BLOCKS_PER_PAGE_SHIFT;
+=======
+		inode->i_ino, folio->index, i_size, folio->flags);
+
+	addr = zaddr = kmap_local_folio(folio, 0);
+
+	end_index = (i_size - 1) >> PAGE_SHIFT;
+	if (!i_size || folio->index > end_index) {
+		hole = 1;
+		addr = folio_zero_tail(folio, 0, addr);
+		goto out_hole;
+	}
+
+	page_block = folio->index << UBIFS_BLOCKS_PER_PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (1) {
 		int err, len, out_len, dlen;
 
@@ -639,7 +995,11 @@ static int populate_page(struct ubifs_info *c, struct page *page,
 
 			dn = bu->buf + (bu->zbranch[nn].offs - offs);
 
+<<<<<<< HEAD
 			ubifs_assert(le64_to_cpu(dn->ch.sqnum) >
+=======
+			ubifs_assert(c, le64_to_cpu(dn->ch.sqnum) >
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     ubifs_inode(inode)->creat_sqnum);
 
 			len = le32_to_cpu(dn->size);
@@ -648,7 +1008,18 @@ static int populate_page(struct ubifs_info *c, struct page *page,
 
 			dlen = le32_to_cpu(dn->ch.len) - UBIFS_DATA_NODE_SZ;
 			out_len = UBIFS_BLOCK_SIZE;
+<<<<<<< HEAD
 			err = ubifs_decompress(&dn->data, dlen, addr, &out_len,
+=======
+
+			if (IS_ENCRYPTED(inode)) {
+				err = ubifs_decrypt(inode, dn, &dlen, page_block);
+				if (err)
+					goto out_err;
+			}
+
+			err = ubifs_decompress(c, &dn->data, dlen, addr, &out_len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       le16_to_cpu(dn->compr_type));
 			if (err || len != out_len)
 				goto out_err;
@@ -669,10 +1040,21 @@ static int populate_page(struct ubifs_info *c, struct page *page,
 			break;
 		addr += UBIFS_BLOCK_SIZE;
 		page_block += 1;
+<<<<<<< HEAD
 	}
 
 	if (end_index == page->index) {
 		int len = i_size & (PAGE_CACHE_SIZE - 1);
+=======
+		if (folio_test_highmem(folio) && (offset_in_page(addr) == 0)) {
+			kunmap_local(addr - UBIFS_BLOCK_SIZE);
+			addr = kmap_local_folio(folio, i * UBIFS_BLOCK_SIZE);
+		}
+	}
+
+	if (end_index == folio->index) {
+		int len = i_size & (PAGE_SIZE - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (len && len < read)
 			memset(zaddr + len, 0, read - len);
@@ -680,6 +1062,7 @@ static int populate_page(struct ubifs_info *c, struct page *page,
 
 out_hole:
 	if (hole) {
+<<<<<<< HEAD
 		SetPageChecked(page);
 		dbg_gen("hole");
 	}
@@ -688,15 +1071,30 @@ out_hole:
 	ClearPageError(page);
 	flush_dcache_page(page);
 	kunmap(page);
+=======
+		folio_set_checked(folio);
+		dbg_gen("hole");
+	}
+
+	folio_mark_uptodate(folio);
+	flush_dcache_folio(folio);
+	kunmap_local(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*n = nn;
 	return 0;
 
 out_err:
+<<<<<<< HEAD
 	ClearPageUptodate(page);
 	SetPageError(page);
 	flush_dcache_page(page);
 	kunmap(page);
 	ubifs_err("bad data node (block %u, inode %lu)",
+=======
+	flush_dcache_folio(folio);
+	kunmap_local(addr);
+	ubifs_err(c, "bad data node (block %u, inode %lu)",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  page_block, inode->i_ino);
 	return -EINVAL;
 }
@@ -705,6 +1103,7 @@ out_err:
  * ubifs_do_bulk_read - do bulk-read.
  * @c: UBIFS file-system description object
  * @bu: bulk-read information
+<<<<<<< HEAD
  * @page1: first page to read
  *
  * This function returns %1 if the bulk-read is done, otherwise %0 is returned.
@@ -714,11 +1113,26 @@ static int ubifs_do_bulk_read(struct ubifs_info *c, struct bu_info *bu,
 {
 	pgoff_t offset = page1->index, end_index;
 	struct address_space *mapping = page1->mapping;
+=======
+ * @folio1: first folio to read
+ *
+ * Returns: %1 if the bulk-read is done, otherwise %0 is returned.
+ */
+static int ubifs_do_bulk_read(struct ubifs_info *c, struct bu_info *bu,
+			      struct folio *folio1)
+{
+	pgoff_t offset = folio1->index, end_index;
+	struct address_space *mapping = folio1->mapping;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *inode = mapping->host;
 	struct ubifs_inode *ui = ubifs_inode(inode);
 	int err, page_idx, page_cnt, ret = 0, n = 0;
 	int allocate = bu->buf ? 0 : 1;
 	loff_t isize;
+<<<<<<< HEAD
+=======
+	gfp_t ra_gfp_mask = readahead_gfp_mask(mapping) & ~__GFP_FS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = ubifs_tnc_get_bu_keys(c, bu);
 	if (err)
@@ -750,8 +1164,13 @@ static int ubifs_do_bulk_read(struct ubifs_info *c, struct bu_info *bu,
 			bu->buf_len = bu->zbranch[bu->cnt - 1].offs +
 				      bu->zbranch[bu->cnt - 1].len -
 				      bu->zbranch[0].offs;
+<<<<<<< HEAD
 			ubifs_assert(bu->buf_len > 0);
 			ubifs_assert(bu->buf_len <= c->leb_size);
+=======
+			ubifs_assert(c, bu->buf_len > 0);
+			ubifs_assert(c, bu->buf_len <= c->leb_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bu->buf = kmalloc(bu->buf_len, GFP_NOFS | __GFP_NOWARN);
 			if (!bu->buf)
 				goto out_bu_off;
@@ -762,16 +1181,25 @@ static int ubifs_do_bulk_read(struct ubifs_info *c, struct bu_info *bu,
 			goto out_warn;
 	}
 
+<<<<<<< HEAD
 	err = populate_page(c, page1, bu, &n);
 	if (err)
 		goto out_warn;
 
 	unlock_page(page1);
+=======
+	err = populate_page(c, folio1, bu, &n);
+	if (err)
+		goto out_warn;
+
+	folio_unlock(folio1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = 1;
 
 	isize = i_size_read(inode);
 	if (isize == 0)
 		goto out_free;
+<<<<<<< HEAD
 	end_index = ((isize - 1) >> PAGE_CACHE_SHIFT);
 
 	for (page_idx = 1; page_idx < page_cnt; page_idx++) {
@@ -788,6 +1216,25 @@ static int ubifs_do_bulk_read(struct ubifs_info *c, struct bu_info *bu,
 			err = populate_page(c, page, bu, &n);
 		unlock_page(page);
 		page_cache_release(page);
+=======
+	end_index = ((isize - 1) >> PAGE_SHIFT);
+
+	for (page_idx = 1; page_idx < page_cnt; page_idx++) {
+		pgoff_t page_offset = offset + page_idx;
+		struct folio *folio;
+
+		if (page_offset > end_index)
+			break;
+		folio = __filemap_get_folio(mapping, page_offset,
+				 FGP_LOCK|FGP_ACCESSED|FGP_CREAT|FGP_NOWAIT,
+				 ra_gfp_mask);
+		if (IS_ERR(folio))
+			break;
+		if (!folio_test_uptodate(folio))
+			err = populate_page(c, folio, bu, &n);
+		folio_unlock(folio);
+		folio_put(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			break;
 	}
@@ -800,7 +1247,11 @@ out_free:
 	return ret;
 
 out_warn:
+<<<<<<< HEAD
 	ubifs_warn("ignoring error %d and skipping bulk-read", err);
+=======
+	ubifs_warn(c, "ignoring error %d and skipping bulk-read", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out_free;
 
 out_bu_off:
@@ -810,11 +1261,16 @@ out_bu_off:
 
 /**
  * ubifs_bulk_read - determine whether to bulk-read and, if so, do it.
+<<<<<<< HEAD
  * @page: page from which to start bulk-read.
+=======
+ * @folio: folio from which to start bulk-read.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Some flash media are capable of reading sequentially at faster rates. UBIFS
  * bulk-read facility is designed to take advantage of that, by reading in one
  * go consecutive data nodes that are also located consecutively in the same
+<<<<<<< HEAD
  * LEB. This function returns %1 if a bulk-read is done and %0 otherwise.
  */
 static int ubifs_bulk_read(struct page *page)
@@ -823,6 +1279,18 @@ static int ubifs_bulk_read(struct page *page)
 	struct ubifs_info *c = inode->i_sb->s_fs_info;
 	struct ubifs_inode *ui = ubifs_inode(inode);
 	pgoff_t index = page->index, last_page_read = ui->last_page_read;
+=======
+ * LEB.
+ *
+ * Returns: %1 if a bulk-read is done and %0 otherwise.
+ */
+static int ubifs_bulk_read(struct folio *folio)
+{
+	struct inode *inode = folio->mapping->host;
+	struct ubifs_info *c = inode->i_sb->s_fs_info;
+	struct ubifs_inode *ui = ubifs_inode(inode);
+	pgoff_t index = folio->index, last_page_read = ui->last_page_read;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bu_info *bu;
 	int err = 0, allocated = 0;
 
@@ -870,8 +1338,13 @@ static int ubifs_bulk_read(struct page *page)
 
 	bu->buf_len = c->max_bu_buf_len;
 	data_key_init(c, &bu->key, inode->i_ino,
+<<<<<<< HEAD
 		      page->index << UBIFS_BLOCKS_PER_PAGE_SHIFT);
 	err = ubifs_do_bulk_read(c, bu, page);
+=======
+		      folio->index << UBIFS_BLOCKS_PER_PAGE_SHIFT);
+	err = ubifs_do_bulk_read(c, bu, folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!allocated)
 		mutex_unlock(&c->bu_mutex);
@@ -883,6 +1356,7 @@ out_unlock:
 	return err;
 }
 
+<<<<<<< HEAD
 static int ubifs_readpage(struct file *file, struct page *page)
 {
 	if (ubifs_bulk_read(page))
@@ -915,10 +1389,45 @@ static int do_writepage(struct page *page, int len)
 	i = 0;
 	while (len) {
 		blen = min_t(int, len, UBIFS_BLOCK_SIZE);
+=======
+static int ubifs_read_folio(struct file *file, struct folio *folio)
+{
+	if (ubifs_bulk_read(folio))
+		return 0;
+	do_readpage(folio);
+	folio_unlock(folio);
+	return 0;
+}
+
+static int do_writepage(struct folio *folio, size_t len)
+{
+	int err = 0, blen;
+	unsigned int block;
+	void *addr;
+	size_t offset = 0;
+	union ubifs_key key;
+	struct inode *inode = folio->mapping->host;
+	struct ubifs_info *c = inode->i_sb->s_fs_info;
+
+#ifdef UBIFS_DEBUG
+	struct ubifs_inode *ui = ubifs_inode(inode);
+	spin_lock(&ui->ui_lock);
+	ubifs_assert(c, folio->index <= ui->synced_i_size >> PAGE_SHIFT);
+	spin_unlock(&ui->ui_lock);
+#endif
+
+	folio_start_writeback(folio);
+
+	addr = kmap_local_folio(folio, offset);
+	block = folio->index << UBIFS_BLOCKS_PER_PAGE_SHIFT;
+	for (;;) {
+		blen = min_t(size_t, len, UBIFS_BLOCK_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data_key_init(c, &key, inode->i_ino, block);
 		err = ubifs_jnl_write_data(c, inode, &key, addr, blen);
 		if (err)
 			break;
+<<<<<<< HEAD
 		if (++i >= UBIFS_BLOCKS_PER_PAGE)
 			break;
 		block += 1;
@@ -934,17 +1443,48 @@ static int do_writepage(struct page *page, int len)
 
 	ubifs_assert(PagePrivate(page));
 	if (PageChecked(page))
+=======
+		len -= blen;
+		if (!len)
+			break;
+		block += 1;
+		addr += blen;
+		if (folio_test_highmem(folio) && !offset_in_page(addr)) {
+			kunmap_local(addr - blen);
+			offset += PAGE_SIZE;
+			addr = kmap_local_folio(folio, offset);
+		}
+	}
+	kunmap_local(addr);
+	if (err) {
+		mapping_set_error(folio->mapping, err);
+		ubifs_err(c, "cannot write folio %lu of inode %lu, error %d",
+			  folio->index, inode->i_ino, err);
+		ubifs_ro_mode(c, err);
+	}
+
+	ubifs_assert(c, folio->private != NULL);
+	if (folio_test_checked(folio))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_new_page_budget(c);
 	else
 		release_existing_page_budget(c);
 
 	atomic_long_dec(&c->dirty_pg_cnt);
+<<<<<<< HEAD
 	ClearPagePrivate(page);
 	ClearPageChecked(page);
 
 	kunmap(page);
 	unlock_page(page);
 	end_page_writeback(page);
+=======
+	folio_detach_private(folio);
+	folio_clear_checked(folio);
+
+	folio_unlock(folio);
+	folio_end_writeback(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -994,6 +1534,7 @@ static int do_writepage(struct page *page, int len)
  * on the page lock and it would not write the truncated inode node to the
  * journal before we have finished.
  */
+<<<<<<< HEAD
 static int ubifs_writepage(struct page *page, struct writeback_control *wbc)
 {
 	struct inode *inode = page->mapping->host;
@@ -1009,6 +1550,23 @@ static int ubifs_writepage(struct page *page, struct writeback_control *wbc)
 
 	/* Is the page fully outside @i_size? (truncate in progress) */
 	if (page->index > end_index || (page->index == end_index && !len)) {
+=======
+static int ubifs_writepage(struct folio *folio, struct writeback_control *wbc,
+		void *data)
+{
+	struct inode *inode = folio->mapping->host;
+	struct ubifs_info *c = inode->i_sb->s_fs_info;
+	struct ubifs_inode *ui = ubifs_inode(inode);
+	loff_t i_size =  i_size_read(inode), synced_i_size;
+	int err, len = folio_size(folio);
+
+	dbg_gen("ino %lu, pg %lu, pg flags %#lx",
+		inode->i_ino, folio->index, folio->flags);
+	ubifs_assert(c, folio->private != NULL);
+
+	/* Is the folio fully outside @i_size? (truncate in progress) */
+	if (folio_pos(folio) >= i_size) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = 0;
 		goto out_unlock;
 	}
@@ -1017,12 +1575,21 @@ static int ubifs_writepage(struct page *page, struct writeback_control *wbc)
 	synced_i_size = ui->synced_i_size;
 	spin_unlock(&ui->ui_lock);
 
+<<<<<<< HEAD
 	/* Is the page fully inside @i_size? */
 	if (page->index < end_index) {
 		if (page->index >= synced_i_size >> PAGE_CACHE_SHIFT) {
 			err = inode->i_sb->s_op->write_inode(inode, NULL);
 			if (err)
 				goto out_unlock;
+=======
+	/* Is the folio fully inside i_size? */
+	if (folio_pos(folio) + len <= i_size) {
+		if (folio_pos(folio) >= synced_i_size) {
+			err = inode->i_sb->s_op->write_inode(inode, NULL);
+			if (err)
+				goto out_redirty;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * The inode has been written, but the write-buffer has
 			 * not been synchronized, so in case of an unclean
@@ -1032,24 +1599,38 @@ static int ubifs_writepage(struct page *page, struct writeback_control *wbc)
 			 * with this.
 			 */
 		}
+<<<<<<< HEAD
 		return do_writepage(page, PAGE_CACHE_SIZE);
 	}
 
 	/*
 	 * The page straddles @i_size. It must be zeroed out on each and every
+=======
+		return do_writepage(folio, len);
+	}
+
+	/*
+	 * The folio straddles @i_size. It must be zeroed out on each and every
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * writepage invocation because it may be mmapped. "A file is mapped
 	 * in multiples of the page size. For a file that is not a multiple of
 	 * the page size, the remaining memory is zeroed when mapped, and
 	 * writes to that region are not written out to the file."
 	 */
+<<<<<<< HEAD
 	kaddr = kmap_atomic(page);
 	memset(kaddr + len, 0, PAGE_CACHE_SIZE - len);
 	flush_dcache_page(page);
 	kunmap_atomic(kaddr);
+=======
+	len = i_size - folio_pos(folio);
+	folio_zero_segment(folio, len, folio_size(folio));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (i_size > synced_i_size) {
 		err = inode->i_sb->s_op->write_inode(inode, NULL);
 		if (err)
+<<<<<<< HEAD
 			goto out_unlock;
 	}
 
@@ -1060,6 +1641,30 @@ out_unlock:
 	return err;
 }
 
+=======
+			goto out_redirty;
+	}
+
+	return do_writepage(folio, len);
+out_redirty:
+	/*
+	 * folio_redirty_for_writepage() won't call ubifs_dirty_inode() because
+	 * it passes I_DIRTY_PAGES flag while calling __mark_inode_dirty(), so
+	 * there is no need to do space budget for dirty inode.
+	 */
+	folio_redirty_for_writepage(wbc, folio);
+out_unlock:
+	folio_unlock(folio);
+	return err;
+}
+
+static int ubifs_writepages(struct address_space *mapping,
+		struct writeback_control *wbc)
+{
+	return write_cache_pages(mapping, wbc, ubifs_writepage, NULL);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * do_attr_changes - change inode attributes.
  * @inode: inode to change attributes for
@@ -1072,6 +1677,7 @@ static void do_attr_changes(struct inode *inode, const struct iattr *attr)
 	if (attr->ia_valid & ATTR_GID)
 		inode->i_gid = attr->ia_gid;
 	if (attr->ia_valid & ATTR_ATIME)
+<<<<<<< HEAD
 		inode->i_atime = timespec_trunc(attr->ia_atime,
 						inode->i_sb->s_time_gran);
 	if (attr->ia_valid & ATTR_MTIME)
@@ -1080,6 +1686,13 @@ static void do_attr_changes(struct inode *inode, const struct iattr *attr)
 	if (attr->ia_valid & ATTR_CTIME)
 		inode->i_ctime = timespec_trunc(attr->ia_ctime,
 						inode->i_sb->s_time_gran);
+=======
+		inode_set_atime_to_ts(inode, attr->ia_atime);
+	if (attr->ia_valid & ATTR_MTIME)
+		inode_set_mtime_to_ts(inode, attr->ia_mtime);
+	if (attr->ia_valid & ATTR_CTIME)
+		inode_set_ctime_to_ts(inode, attr->ia_ctime);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (attr->ia_valid & ATTR_MODE) {
 		umode_t mode = attr->ia_mode;
 
@@ -1096,7 +1709,13 @@ static void do_attr_changes(struct inode *inode, const struct iattr *attr)
  * @attr: inode attribute changes description
  *
  * This function implements VFS '->setattr()' call when the inode is truncated
+<<<<<<< HEAD
  * to a smaller size. Returns zero in case of success and a negative error code
+=======
+ * to a smaller size.
+ *
+ * Returns: %0 in case of success and a negative error code
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * in case of failure.
  */
 static int do_truncation(struct ubifs_info *c, struct inode *inode,
@@ -1136,12 +1755,21 @@ static int do_truncation(struct ubifs_info *c, struct inode *inode,
 	truncate_setsize(inode, new_size);
 
 	if (offset) {
+<<<<<<< HEAD
 		pgoff_t index = new_size >> PAGE_CACHE_SHIFT;
 		struct page *page;
 
 		page = find_lock_page(inode->i_mapping, index);
 		if (page) {
 			if (PageDirty(page)) {
+=======
+		pgoff_t index = new_size >> PAGE_SHIFT;
+		struct folio *folio;
+
+		folio = filemap_lock_folio(inode->i_mapping, index);
+		if (!IS_ERR(folio)) {
+			if (folio_test_dirty(folio)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * 'ubifs_jnl_truncate()' will try to truncate
 				 * the last data node, but it contains
@@ -1150,6 +1778,7 @@ static int do_truncation(struct ubifs_info *c, struct inode *inode,
 				 * 'ubifs_jnl_truncate()' will see an already
 				 * truncated (and up to date) data node.
 				 */
+<<<<<<< HEAD
 				ubifs_assert(PagePrivate(page));
 
 				clear_page_dirty_for_io(page);
@@ -1158,6 +1787,16 @@ static int do_truncation(struct ubifs_info *c, struct inode *inode,
 						 (PAGE_CACHE_SIZE - 1);
 				err = do_writepage(page, offset);
 				page_cache_release(page);
+=======
+				ubifs_assert(c, folio->private != NULL);
+
+				folio_clear_dirty_for_io(folio);
+				if (UBIFS_BLOCKS_PER_PAGE_SHIFT)
+					offset = offset_in_folio(folio,
+							new_size);
+				err = do_writepage(folio, offset);
+				folio_put(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (err)
 					goto out_budg;
 				/*
@@ -1170,8 +1809,13 @@ static int do_truncation(struct ubifs_info *c, struct inode *inode,
 				 * to 'ubifs_jnl_truncate()' to save it from
 				 * having to read it.
 				 */
+<<<<<<< HEAD
 				unlock_page(page);
 				page_cache_release(page);
+=======
+				folio_unlock(folio);
+				folio_put(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -1179,7 +1823,11 @@ static int do_truncation(struct ubifs_info *c, struct inode *inode,
 	mutex_lock(&ui->ui_mutex);
 	ui->ui_size = inode->i_size;
 	/* Truncation changes inode [mc]time */
+<<<<<<< HEAD
 	inode->i_mtime = inode->i_ctime = ubifs_current_time(inode);
+=======
+	inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Other attributes may be changed at the same time as well */
 	do_attr_changes(inode, attr);
 	err = ubifs_jnl_truncate(c, inode, old_size, new_size);
@@ -1202,7 +1850,13 @@ out_budg:
  * @attr: inode attribute changes description
  *
  * This function implements VFS '->setattr()' call for all cases except
+<<<<<<< HEAD
  * truncations to smaller size. Returns zero in case of success and a negative
+=======
+ * truncations to smaller size.
+ *
+ * Returns: %0 in case of success and a negative
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * error code in case of failure.
  */
 static int do_setattr(struct ubifs_info *c, struct inode *inode,
@@ -1226,7 +1880,11 @@ static int do_setattr(struct ubifs_info *c, struct inode *inode,
 	mutex_lock(&ui->ui_mutex);
 	if (attr->ia_valid & ATTR_SIZE) {
 		/* Truncation changes inode [mc]time */
+<<<<<<< HEAD
 		inode->i_mtime = inode->i_ctime = ubifs_current_time(inode);
+=======
+		inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* 'truncate_setsize()' changed @i_size, update @ui_size */
 		ui->ui_size = inode->i_size;
 	}
@@ -1239,7 +1897,11 @@ static int do_setattr(struct ubifs_info *c, struct inode *inode,
 		 * Inode length changed, so we have to make sure
 		 * @I_DIRTY_DATASYNC is set.
 		 */
+<<<<<<< HEAD
 		 __mark_inode_dirty(inode, I_DIRTY_SYNC | I_DIRTY_DATASYNC);
+=======
+		 __mark_inode_dirty(inode, I_DIRTY_DATASYNC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		mark_inode_dirty_sync(inode);
 	mutex_unlock(&ui->ui_mutex);
@@ -1251,15 +1913,27 @@ static int do_setattr(struct ubifs_info *c, struct inode *inode,
 	return err;
 }
 
+<<<<<<< HEAD
 int ubifs_setattr(struct dentry *dentry, struct iattr *attr)
 {
 	int err;
 	struct inode *inode = dentry->d_inode;
+=======
+int ubifs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
+		  struct iattr *attr)
+{
+	int err;
+	struct inode *inode = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ubifs_info *c = inode->i_sb->s_fs_info;
 
 	dbg_gen("ino %lu, mode %#x, ia_valid %#x",
 		inode->i_ino, inode->i_mode, attr->ia_valid);
+<<<<<<< HEAD
 	err = inode_change_ok(inode, attr);
+=======
+	err = setattr_prepare(&nop_mnt_idmap, dentry, attr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -1267,6 +1941,13 @@ int ubifs_setattr(struct dentry *dentry, struct iattr *attr)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
+=======
+	err = fscrypt_prepare_setattr(dentry, attr);
+	if (err)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((attr->ia_valid & ATTR_SIZE) && attr->ia_size < inode->i_size)
 		/* Truncation to a smaller size */
 		err = do_truncation(c, inode, attr);
@@ -1276,6 +1957,7 @@ int ubifs_setattr(struct dentry *dentry, struct iattr *attr)
 	return err;
 }
 
+<<<<<<< HEAD
 static void ubifs_invalidatepage(struct page *page, unsigned long offset)
 {
 	struct inode *inode = page->mapping->host;
@@ -1287,11 +1969,26 @@ static void ubifs_invalidatepage(struct page *page, unsigned long offset)
 		return;
 
 	if (PageChecked(page))
+=======
+static void ubifs_invalidate_folio(struct folio *folio, size_t offset,
+				 size_t length)
+{
+	struct inode *inode = folio->mapping->host;
+	struct ubifs_info *c = inode->i_sb->s_fs_info;
+
+	ubifs_assert(c, folio_test_private(folio));
+	if (offset || length < folio_size(folio))
+		/* Partial folio remains dirty */
+		return;
+
+	if (folio_test_checked(folio))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_new_page_budget(c);
 	else
 		release_existing_page_budget(c);
 
 	atomic_long_dec(&c->dirty_pg_cnt);
+<<<<<<< HEAD
 	ClearPagePrivate(page);
 	ClearPageChecked(page);
 }
@@ -1302,6 +1999,10 @@ static void *ubifs_follow_link(struct dentry *dentry, struct nameidata *nd)
 
 	nd_set_link(nd, ui->data);
 	return NULL;
+=======
+	folio_detach_private(folio);
+	folio_clear_checked(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ubifs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
@@ -1319,10 +2020,17 @@ int ubifs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 		 */
 		return 0;
 
+<<<<<<< HEAD
 	err = filemap_write_and_wait_range(inode->i_mapping, start, end);
 	if (err)
 		return err;
 	mutex_lock(&inode->i_mutex);
+=======
+	err = file_write_and_wait_range(file, start, end);
+	if (err)
+		return err;
+	inode_lock(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Synchronize the inode unless this is a 'datasync()' call. */
 	if (!datasync || (inode->i_state & I_DIRTY_DATASYNC)) {
@@ -1337,7 +2045,11 @@ int ubifs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 	 */
 	err = ubifs_sync_wbufs_by_inode(c, inode);
 out:
+<<<<<<< HEAD
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_unlock(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -1349,17 +2061,31 @@ out:
  * This helper function checks if the inode mtime/ctime should be updated or
  * not. If current values of the time-stamps are within the UBIFS inode time
  * granularity, they are not updated. This is an optimization.
+<<<<<<< HEAD
  */
 static inline int mctime_update_needed(const struct inode *inode,
 				       const struct timespec *now)
 {
 	if (!timespec_equal(&inode->i_mtime, now) ||
 	    !timespec_equal(&inode->i_ctime, now))
+=======
+ *
+ * Returns: %1 if time update is needed, %0 if not
+ */
+static inline int mctime_update_needed(const struct inode *inode,
+				       const struct timespec64 *now)
+{
+	struct timespec64 ctime = inode_get_ctime(inode);
+	struct timespec64 mtime = inode_get_mtime(inode);
+
+	if (!timespec64_equal(&mtime, now) || !timespec64_equal(&ctime, now))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	return 0;
 }
 
 /**
+<<<<<<< HEAD
  * update_ctime - update mtime and ctime of an inode.
  * @c: UBIFS file-system description object
  * @inode: inode to update
@@ -1372,6 +2098,59 @@ static int update_mctime(struct ubifs_info *c, struct inode *inode)
 {
 	struct timespec now = ubifs_current_time(inode);
 	struct ubifs_inode *ui = ubifs_inode(inode);
+=======
+ * ubifs_update_time - update time of inode.
+ * @inode: inode to update
+ * @flags: time updating control flag determines updating
+ *	    which time fields of @inode
+ *
+ * This function updates time of the inode.
+ *
+ * Returns: %0 for success or a negative error code otherwise.
+ */
+int ubifs_update_time(struct inode *inode, int flags)
+{
+	struct ubifs_inode *ui = ubifs_inode(inode);
+	struct ubifs_info *c = inode->i_sb->s_fs_info;
+	struct ubifs_budget_req req = { .dirtied_ino = 1,
+			.dirtied_ino_d = ALIGN(ui->data_len, 8) };
+	int err, release;
+
+	if (!IS_ENABLED(CONFIG_UBIFS_ATIME_SUPPORT)) {
+		generic_update_time(inode, flags);
+		return 0;
+	}
+
+	err = ubifs_budget_space(c, &req);
+	if (err)
+		return err;
+
+	mutex_lock(&ui->ui_mutex);
+	inode_update_timestamps(inode, flags);
+	release = ui->dirty;
+	__mark_inode_dirty(inode, I_DIRTY_SYNC);
+	mutex_unlock(&ui->ui_mutex);
+	if (release)
+		ubifs_release_budget(c, &req);
+	return 0;
+}
+
+/**
+ * update_mctime - update mtime and ctime of an inode.
+ * @inode: inode to update
+ *
+ * This function updates mtime and ctime of the inode if it is not equivalent to
+ * current time.
+ *
+ * Returns: %0 in case of success and a negative error code in
+ * case of failure.
+ */
+static int update_mctime(struct inode *inode)
+{
+	struct timespec64 now = current_time(inode);
+	struct ubifs_inode *ui = ubifs_inode(inode);
+	struct ubifs_info *c = inode->i_sb->s_fs_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mctime_update_needed(inode, &now)) {
 		int err, release;
@@ -1383,7 +2162,11 @@ static int update_mctime(struct ubifs_info *c, struct inode *inode)
 			return err;
 
 		mutex_lock(&ui->ui_mutex);
+<<<<<<< HEAD
 		inode->i_mtime = inode->i_ctime = ubifs_current_time(inode);
+=======
+		inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release = ui->dirty;
 		mark_inode_dirty_sync(inode);
 		mutex_unlock(&ui->ui_mutex);
@@ -1394,6 +2177,7 @@ static int update_mctime(struct ubifs_info *c, struct inode *inode)
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t ubifs_aio_write(struct kiocb *iocb, const struct iovec *iov,
 			       unsigned long nr_segs, loff_t pos)
 {
@@ -1413,10 +2197,29 @@ static int ubifs_set_page_dirty(struct page *page)
 	int ret;
 
 	ret = __set_page_dirty_nobuffers(page);
+=======
+static ssize_t ubifs_write_iter(struct kiocb *iocb, struct iov_iter *from)
+{
+	int err = update_mctime(file_inode(iocb->ki_filp));
+	if (err)
+		return err;
+
+	return generic_file_write_iter(iocb, from);
+}
+
+static bool ubifs_dirty_folio(struct address_space *mapping,
+		struct folio *folio)
+{
+	bool ret;
+	struct ubifs_info *c = mapping->host->i_sb->s_fs_info;
+
+	ret = filemap_dirty_folio(mapping, folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * An attempt to dirty a page without budgeting for it - should not
 	 * happen.
 	 */
+<<<<<<< HEAD
 	ubifs_assert(ret == 0);
 	return ret;
 }
@@ -1434,12 +2237,44 @@ static int ubifs_releasepage(struct page *page, gfp_t unused_gfp_flags)
 	ClearPagePrivate(page);
 	ClearPageChecked(page);
 	return 1;
+=======
+	ubifs_assert(c, ret == false);
+	return ret;
+}
+
+static bool ubifs_release_folio(struct folio *folio, gfp_t unused_gfp_flags)
+{
+	struct inode *inode = folio->mapping->host;
+	struct ubifs_info *c = inode->i_sb->s_fs_info;
+
+	if (folio_test_writeback(folio))
+		return false;
+
+	/*
+	 * Page is private but not dirty, weird? There is one condition
+	 * making it happened. ubifs_writepage skipped the page because
+	 * page index beyonds isize (for example. truncated by other
+	 * process named A), then the page is invalidated by fadvise64
+	 * syscall before being truncated by process A.
+	 */
+	ubifs_assert(c, folio_test_private(folio));
+	if (folio_test_checked(folio))
+		release_new_page_budget(c);
+	else
+		release_existing_page_budget(c);
+
+	atomic_long_dec(&c->dirty_pg_cnt);
+	folio_detach_private(folio);
+	folio_clear_checked(folio);
+	return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * mmap()d file has taken write protection fault and is being made writable.
  * UBIFS must ensure page is budgeted for.
  */
+<<<<<<< HEAD
 static int ubifs_vm_page_mkwrite(struct vm_area_struct *vma,
 				 struct vm_fault *vmf)
 {
@@ -1453,11 +2288,26 @@ static int ubifs_vm_page_mkwrite(struct vm_area_struct *vma,
 	dbg_gen("ino %lu, pg %lu, i_size %lld",	inode->i_ino, page->index,
 		i_size_read(inode));
 	ubifs_assert(!c->ro_media && !c->ro_mount);
+=======
+static vm_fault_t ubifs_vm_page_mkwrite(struct vm_fault *vmf)
+{
+	struct folio *folio = page_folio(vmf->page);
+	struct inode *inode = file_inode(vmf->vma->vm_file);
+	struct ubifs_info *c = inode->i_sb->s_fs_info;
+	struct timespec64 now = current_time(inode);
+	struct ubifs_budget_req req = { .new_page = 1 };
+	int err, update_time;
+
+	dbg_gen("ino %lu, pg %lu, i_size %lld",	inode->i_ino, folio->index,
+		i_size_read(inode));
+	ubifs_assert(c, !c->ro_media && !c->ro_mount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(c->ro_error))
 		return VM_FAULT_SIGBUS; /* -EROFS */
 
 	/*
+<<<<<<< HEAD
 	 * We have not locked @page so far so we may budget for changing the
 	 * page. Note, we cannot do this after we locked the page, because
 	 * budgeting may cause write-back which would cause deadlock.
@@ -1469,6 +2319,19 @@ static int ubifs_vm_page_mkwrite(struct vm_area_struct *vma,
 	 * would need additional care. We do not bother with this at the
 	 * moment, although it might be good idea to do. Instead, we allocate
 	 * budget for a new page and amend it later on if the page was in fact
+=======
+	 * We have not locked @folio so far so we may budget for changing the
+	 * folio. Note, we cannot do this after we locked the folio, because
+	 * budgeting may cause write-back which would cause deadlock.
+	 *
+	 * At the moment we do not know whether the folio is dirty or not, so we
+	 * assume that it is not and budget for a new folio. We could look at
+	 * the @PG_private flag and figure this out, but we may race with write
+	 * back and the folio state may change by the time we lock it, so this
+	 * would need additional care. We do not bother with this at the
+	 * moment, although it might be good idea to do. Instead, we allocate
+	 * budget for a new folio and amend it later on if the folio was in fact
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * dirty.
 	 *
 	 * The budgeting-related logic of this function is similar to what we
@@ -1486,6 +2349,7 @@ static int ubifs_vm_page_mkwrite(struct vm_area_struct *vma,
 	err = ubifs_budget_space(c, &req);
 	if (unlikely(err)) {
 		if (err == -ENOSPC)
+<<<<<<< HEAD
 			ubifs_warn("out of space for mmapped file "
 				   "(inode number %lu)", inode->i_ino);
 		return VM_FAULT_SIGBUS;
@@ -1507,6 +2371,28 @@ static int ubifs_vm_page_mkwrite(struct vm_area_struct *vma,
 		SetPagePrivate(page);
 		atomic_long_inc(&c->dirty_pg_cnt);
 		__set_page_dirty_nobuffers(page);
+=======
+			ubifs_warn(c, "out of space for mmapped file (inode number %lu)",
+				   inode->i_ino);
+		return VM_FAULT_SIGBUS;
+	}
+
+	folio_lock(folio);
+	if (unlikely(folio->mapping != inode->i_mapping ||
+		     folio_pos(folio) >= i_size_read(inode))) {
+		/* Folio got truncated out from underneath us */
+		goto sigbus;
+	}
+
+	if (folio->private)
+		release_new_page_budget(c);
+	else {
+		if (!folio_test_checked(folio))
+			ubifs_convert_page_budget(c);
+		folio_attach_private(folio, (void *)1);
+		atomic_long_inc(&c->dirty_pg_cnt);
+		filemap_dirty_folio(folio->mapping, folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (update_time) {
@@ -1514,7 +2400,11 @@ static int ubifs_vm_page_mkwrite(struct vm_area_struct *vma,
 		struct ubifs_inode *ui = ubifs_inode(inode);
 
 		mutex_lock(&ui->ui_mutex);
+<<<<<<< HEAD
 		inode->i_mtime = inode->i_ctime = ubifs_current_time(inode);
+=======
+		inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release = ui->dirty;
 		mark_inode_dirty_sync(inode);
 		mutex_unlock(&ui->ui_mutex);
@@ -1522,6 +2412,7 @@ static int ubifs_vm_page_mkwrite(struct vm_area_struct *vma,
 			ubifs_release_dirty_inode_budget(c, ui);
 	}
 
+<<<<<<< HEAD
 	unlock_page(page);
 	return 0;
 
@@ -1531,10 +2422,23 @@ out_unlock:
 	if (err)
 		err = VM_FAULT_SIGBUS;
 	return err;
+=======
+	folio_wait_stable(folio);
+	return VM_FAULT_LOCKED;
+
+sigbus:
+	folio_unlock(folio);
+	ubifs_release_budget(c, &req);
+	return VM_FAULT_SIGBUS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct vm_operations_struct ubifs_file_vm_ops = {
 	.fault        = filemap_fault,
+<<<<<<< HEAD
+=======
+	.map_pages = filemap_map_pages,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.page_mkwrite = ubifs_vm_page_mkwrite,
 };
 
@@ -1546,10 +2450,44 @@ static int ubifs_file_mmap(struct file *file, struct vm_area_struct *vma)
 	if (err)
 		return err;
 	vma->vm_ops = &ubifs_file_vm_ops;
+<<<<<<< HEAD
+=======
+
+	if (IS_ENABLED(CONFIG_UBIFS_ATIME_SUPPORT))
+		file_accessed(file);
+
+	return 0;
+}
+
+static const char *ubifs_get_link(struct dentry *dentry,
+					    struct inode *inode,
+					    struct delayed_call *done)
+{
+	struct ubifs_inode *ui = ubifs_inode(inode);
+
+	if (!IS_ENCRYPTED(inode))
+		return ui->data;
+
+	if (!dentry)
+		return ERR_PTR(-ECHILD);
+
+	return fscrypt_get_symlink(inode, ui->data, ui->data_len, done);
+}
+
+static int ubifs_symlink_getattr(struct mnt_idmap *idmap,
+				 const struct path *path, struct kstat *stat,
+				 u32 request_mask, unsigned int query_flags)
+{
+	ubifs_getattr(idmap, path, stat, request_mask, query_flags);
+
+	if (IS_ENCRYPTED(d_inode(path->dentry)))
+		return fscrypt_symlink_getattr(path, stat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 const struct address_space_operations ubifs_file_address_operations = {
+<<<<<<< HEAD
 	.readpage       = ubifs_readpage,
 	.writepage      = ubifs_writepage,
 	.write_begin    = ubifs_write_begin,
@@ -1557,11 +2495,22 @@ const struct address_space_operations ubifs_file_address_operations = {
 	.invalidatepage = ubifs_invalidatepage,
 	.set_page_dirty = ubifs_set_page_dirty,
 	.releasepage    = ubifs_releasepage,
+=======
+	.read_folio     = ubifs_read_folio,
+	.writepages     = ubifs_writepages,
+	.write_begin    = ubifs_write_begin,
+	.write_end      = ubifs_write_end,
+	.invalidate_folio = ubifs_invalidate_folio,
+	.dirty_folio	= ubifs_dirty_folio,
+	.migrate_folio	= filemap_migrate_folio,
+	.release_folio	= ubifs_release_folio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const struct inode_operations ubifs_file_inode_operations = {
 	.setattr     = ubifs_setattr,
 	.getattr     = ubifs_getattr,
+<<<<<<< HEAD
 #ifdef CONFIG_UBIFS_FS_XATTR
 	.setxattr    = ubifs_setxattr,
 	.getxattr    = ubifs_getxattr,
@@ -1575,10 +2524,25 @@ const struct inode_operations ubifs_symlink_inode_operations = {
 	.follow_link = ubifs_follow_link,
 	.setattr     = ubifs_setattr,
 	.getattr     = ubifs_getattr,
+=======
+	.listxattr   = ubifs_listxattr,
+	.update_time = ubifs_update_time,
+	.fileattr_get = ubifs_fileattr_get,
+	.fileattr_set = ubifs_fileattr_set,
+};
+
+const struct inode_operations ubifs_symlink_inode_operations = {
+	.get_link    = ubifs_get_link,
+	.setattr     = ubifs_setattr,
+	.getattr     = ubifs_symlink_getattr,
+	.listxattr   = ubifs_listxattr,
+	.update_time = ubifs_update_time,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const struct file_operations ubifs_file_operations = {
 	.llseek         = generic_file_llseek,
+<<<<<<< HEAD
 	.read           = do_sync_read,
 	.write          = do_sync_write,
 	.aio_read       = generic_file_aio_read,
@@ -1588,6 +2552,16 @@ const struct file_operations ubifs_file_operations = {
 	.unlocked_ioctl = ubifs_ioctl,
 	.splice_read	= generic_file_splice_read,
 	.splice_write	= generic_file_splice_write,
+=======
+	.read_iter      = generic_file_read_iter,
+	.write_iter     = ubifs_write_iter,
+	.mmap           = ubifs_file_mmap,
+	.fsync          = ubifs_fsync,
+	.unlocked_ioctl = ubifs_ioctl,
+	.splice_read	= filemap_splice_read,
+	.splice_write	= iter_file_splice_write,
+	.open		= fscrypt_file_open,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_COMPAT
 	.compat_ioctl   = ubifs_compat_ioctl,
 #endif

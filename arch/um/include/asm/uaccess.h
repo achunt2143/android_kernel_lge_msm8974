@@ -1,11 +1,19 @@
+<<<<<<< HEAD
 /* 
  * Copyright (C) 2002 Jeff Dike (jdike@karaya.com)
  * Licensed under the GPL
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* 
+ * Copyright (C) 2002 Jeff Dike (jdike@karaya.com)
+ * Copyright (C) 2015 Richard Weinberger (richard@nod.at)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __UM_UACCESS_H
 #define __UM_UACCESS_H
 
+<<<<<<< HEAD
 /* thread_info has a mm_segment_t in it, so put the definition up here */
 typedef struct {
 	unsigned long seg;
@@ -37,20 +45,30 @@ typedef struct {
 #define set_fs(x)	(current_thread_info()->addr_limit = (x))
 
 #define segment_eq(a, b) ((a).seg == (b).seg)
+=======
+#include <asm/elf.h>
+#include <asm/unaligned.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __under_task_size(addr, size) \
 	(((unsigned long) (addr) < TASK_SIZE) && \
 	 (((unsigned long) (addr) + (size)) < TASK_SIZE))
 
+<<<<<<< HEAD
 #define __access_ok_vsyscall(type, addr, size) \
 	 ((type == VERIFY_READ) && \
 	  ((unsigned long) (addr) >= FIXADDR_USER_START) && \
+=======
+#define __access_ok_vsyscall(addr, size) \
+	  (((unsigned long) (addr) >= FIXADDR_USER_START) && \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  ((unsigned long) (addr) + (size) <= FIXADDR_USER_END) && \
 	  ((unsigned long) (addr) + (size) >= (unsigned long)(addr)))
 
 #define __addr_range_nowrap(addr, size) \
 	((unsigned long) (addr) <= ((unsigned long) (addr) + (size)))
 
+<<<<<<< HEAD
 #define access_ok(type, addr, size) \
 	(__addr_range_nowrap(addr, size) && \
 	 (__under_task_size(addr, size) || \
@@ -174,5 +192,43 @@ struct exception_table_entry
         unsigned long insn;
 	unsigned long fixup;
 };
+=======
+extern unsigned long raw_copy_from_user(void *to, const void __user *from, unsigned long n);
+extern unsigned long raw_copy_to_user(void __user *to, const void *from, unsigned long n);
+extern unsigned long __clear_user(void __user *mem, unsigned long len);
+static inline int __access_ok(const void __user *ptr, unsigned long size);
+
+/* Teach asm-generic/uaccess.h that we have C functions for these. */
+#define __access_ok __access_ok
+#define __clear_user __clear_user
+
+#define INLINE_COPY_FROM_USER
+#define INLINE_COPY_TO_USER
+
+#include <asm-generic/uaccess.h>
+
+static inline int __access_ok(const void __user *ptr, unsigned long size)
+{
+	unsigned long addr = (unsigned long)ptr;
+	return __addr_range_nowrap(addr, size) &&
+		(__under_task_size(addr, size) ||
+		 __access_ok_vsyscall(addr, size));
+}
+
+/* no pagefaults for kernel addresses in um */
+#define __get_kernel_nofault(dst, src, type, err_label)			\
+do {									\
+	*((type *)dst) = get_unaligned((type *)(src));			\
+	if (0) /* make sure the label looks used to the compiler */	\
+		goto err_label;						\
+} while (0)
+
+#define __put_kernel_nofault(dst, src, type, err_label)			\
+do {									\
+	put_unaligned(*((type *)src), (type *)(dst));			\
+	if (0) /* make sure the label looks used to the compiler */	\
+		goto err_label;						\
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

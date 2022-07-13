@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	elanfreq:	cpufreq driver for the AMD ELAN family
  *
@@ -7,6 +11,7 @@
  *
  *      All Rights Reserved.
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
@@ -16,6 +21,13 @@
  *
  */
 
+=======
+ *	2002-02-13: - initial revision for 2.4.18-pre9 by Robert Schwebel
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -56,6 +68,7 @@ static struct s_elan_multiplier elan_multiplier[] = {
 };
 
 static struct cpufreq_frequency_table elanfreq_table[] = {
+<<<<<<< HEAD
 	{0,	1000},
 	{1,	2000},
 	{2,	4000},
@@ -65,6 +78,17 @@ static struct cpufreq_frequency_table elanfreq_table[] = {
 	{6,	66000},
 	{7,	99000},
 	{0,	CPUFREQ_TABLE_END},
+=======
+	{0, 0,	1000},
+	{0, 1,	2000},
+	{0, 2,	4000},
+	{0, 3,	8000},
+	{0, 4,	16000},
+	{0, 5,	33000},
+	{0, 6,	66000},
+	{0, 7,	99000},
+	{0, 0,	CPUFREQ_TABLE_END},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -105,6 +129,7 @@ static unsigned int elanfreq_get_cpu_frequency(unsigned int cpu)
 }
 
 
+<<<<<<< HEAD
 /**
  *	elanfreq_set_cpu_frequency: Change the CPU core frequency
  *	@cpu: cpu number
@@ -131,6 +156,11 @@ static void elanfreq_set_cpu_state(unsigned int state)
 			elan_multiplier[state].clock);
 
 
+=======
+static int elanfreq_target(struct cpufreq_policy *policy,
+			    unsigned int state)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Access to the Elan's internal registers is indexed via
 	 * 0x22: Chip Setup & Control Register Index Register (CSCI)
@@ -161,6 +191,7 @@ static void elanfreq_set_cpu_state(unsigned int state)
 	udelay(10000);
 	local_irq_enable();
 
+<<<<<<< HEAD
 	cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
 };
 
@@ -194,6 +225,10 @@ static int elanfreq_target(struct cpufreq_policy *policy,
 }
 
 
+=======
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Module init and exit code
  */
@@ -201,8 +236,12 @@ static int elanfreq_target(struct cpufreq_policy *policy,
 static int elanfreq_cpu_init(struct cpufreq_policy *policy)
 {
 	struct cpuinfo_x86 *c = &cpu_data(0);
+<<<<<<< HEAD
 	unsigned int i;
 	int result;
+=======
+	struct cpufreq_frequency_table *pos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* capability check */
 	if ((c->x86_vendor != X86_VENDOR_AMD) ||
@@ -214,6 +253,7 @@ static int elanfreq_cpu_init(struct cpufreq_policy *policy)
 		max_freq = elanfreq_get_cpu_frequency(0);
 
 	/* table init */
+<<<<<<< HEAD
 	for (i = 0; (elanfreq_table[i].frequency != CPUFREQ_TABLE_END); i++) {
 		if (elanfreq_table[i].frequency > max_freq)
 			elanfreq_table[i].frequency = CPUFREQ_ENTRY_INVALID;
@@ -235,6 +275,13 @@ static int elanfreq_cpu_init(struct cpufreq_policy *policy)
 static int elanfreq_cpu_exit(struct cpufreq_policy *policy)
 {
 	cpufreq_frequency_table_put_attr(policy->cpu);
+=======
+	cpufreq_for_each_entry(pos, elanfreq_table)
+		if (pos->frequency > max_freq)
+			pos->frequency = CPUFREQ_ENTRY_INVALID;
+
+	policy->freq_table = elanfreq_table;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -254,13 +301,18 @@ static int elanfreq_cpu_exit(struct cpufreq_policy *policy)
 static int __init elanfreq_setup(char *str)
 {
 	max_freq = simple_strtoul(str, &str, 0);
+<<<<<<< HEAD
 	printk(KERN_WARNING "You're using the deprecated elanfreq command line option. Use elanfreq.max_freq instead, please!\n");
+=======
+	pr_warn("You're using the deprecated elanfreq command line option. Use elanfreq.max_freq instead, please!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 __setup("elanfreq=", elanfreq_setup);
 #endif
 
 
+<<<<<<< HEAD
 static struct freq_attr *elanfreq_attr[] = {
 	&cpufreq_freq_attr_scaling_available_freqs,
 	NULL,
@@ -280,6 +332,20 @@ static struct cpufreq_driver elanfreq_driver = {
 
 static const struct x86_cpu_id elan_id[] = {
 	{ X86_VENDOR_AMD, 4, 10, },
+=======
+static struct cpufreq_driver elanfreq_driver = {
+	.get		= elanfreq_get_cpu_frequency,
+	.flags		= CPUFREQ_NO_AUTO_DYNAMIC_SWITCHING,
+	.verify		= cpufreq_generic_frequency_table_verify,
+	.target_index	= elanfreq_target,
+	.init		= elanfreq_cpu_init,
+	.name		= "elanfreq",
+	.attr		= cpufreq_generic_attr,
+};
+
+static const struct x86_cpu_id elan_id[] = {
+	X86_MATCH_VENDOR_FAM_MODEL(AMD, 4, 10, NULL),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 MODULE_DEVICE_TABLE(x86cpu, elan_id);

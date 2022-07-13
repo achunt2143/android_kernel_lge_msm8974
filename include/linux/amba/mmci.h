@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  include/linux/amba/mmci.h
  */
@@ -5,6 +9,7 @@
 #define AMBA_MMCI_H
 
 #include <linux/mmc/host.h>
+<<<<<<< HEAD
 #include <linux/mmc/card.h>
 #include <linux/mmc/sdio_func.h>
 
@@ -30,10 +35,13 @@ struct embedded_sdio_data {
 
 /* Just some dummy forwarding */
 struct dma_chan;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct mmci_platform_data - platform configuration for the MMCI
  * (also known as PL180) block.
+<<<<<<< HEAD
  * @f_max: the maximum operational frequency for this host in this
  * platform configuration. When this is specified it takes precedence
  * over the module parameter for the same frequency.
@@ -85,6 +93,17 @@ struct mmci_platform_data {
 	unsigned int status_irq;
 	struct embedded_sdio_data *embedded_sdio;
 	int (*register_status_notify)(void (*callback)(int card_present, void *dev_id), void *dev_id);
+=======
+ * @ocr_mask: available voltages on the 4 pins from the block, this
+ * is ignored if a regulator is used, see the MMC_VDD_* masks in
+ * mmc/host.h
+ * @status: if no GPIO line was given to the block in this function will
+ * be called to determine whether a card is present in the MMC slot or not
+ */
+struct mmci_platform_data {
+	unsigned int ocr_mask;
+	unsigned int (*status)(struct device *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

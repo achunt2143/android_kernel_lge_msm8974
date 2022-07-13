@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/init.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
 #include <asm/setup.h>
 #ifdef CONFIG_MACH_LGE
 #include <mach/board_lge.h>
@@ -64,3 +69,24 @@ static int __init proc_cmdline_init(void)
 	return 0;
 }
 module_init(proc_cmdline_init);
+=======
+#include "internal.h"
+
+static int cmdline_proc_show(struct seq_file *m, void *v)
+{
+	seq_puts(m, saved_command_line);
+	seq_putc(m, '\n');
+	return 0;
+}
+
+static int __init proc_cmdline_init(void)
+{
+	struct proc_dir_entry *pde;
+
+	pde = proc_create_single("cmdline", 0, NULL, cmdline_proc_show);
+	pde_make_permanent(pde);
+	pde->size = saved_command_line_len + 1;
+	return 0;
+}
+fs_initcall(proc_cmdline_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

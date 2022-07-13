@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * acpi_pad.c ACPI Processor Aggregator Driver
  *
  * Copyright (c) 2009, Intel Corporation.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -16,6 +21,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -24,6 +31,7 @@
 #include <linux/init.h>
 #include <linux/types.h>
 #include <linux/kthread.h>
+<<<<<<< HEAD
 #include <linux/freezer.h>
 #include <linux/cpu.h>
 #include <linux/clockchips.h>
@@ -31,6 +39,18 @@
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
 #include <asm/mwait.h>
+=======
+#include <uapi/linux/sched/types.h>
+#include <linux/freezer.h>
+#include <linux/cpu.h>
+#include <linux/tick.h>
+#include <linux/slab.h>
+#include <linux/acpi.h>
+#include <linux/perf_event.h>
+#include <linux/platform_device.h>
+#include <asm/mwait.h>
+#include <xen/xen.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ACPI_PROCESSOR_AGGREGATOR_CLASS	"acpi_pad"
 #define ACPI_PROCESSOR_AGGREGATOR_DEVICE_NAME "Processor Aggregator"
@@ -42,8 +62,11 @@ static unsigned long power_saving_mwait_eax;
 
 static unsigned char tsc_detected_unstable;
 static unsigned char tsc_marked_unstable;
+<<<<<<< HEAD
 static unsigned char lapic_detected_unstable;
 static unsigned char lapic_marked_unstable;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void power_saving_mwait_init(void)
 {
@@ -75,14 +98,23 @@ static void power_saving_mwait_init(void)
 
 #if defined(CONFIG_X86)
 	switch (boot_cpu_data.x86_vendor) {
+<<<<<<< HEAD
 	case X86_VENDOR_AMD:
 	case X86_VENDOR_INTEL:
+=======
+	case X86_VENDOR_HYGON:
+	case X86_VENDOR_AMD:
+	case X86_VENDOR_INTEL:
+	case X86_VENDOR_ZHAOXIN:
+	case X86_VENDOR_CENTAUR:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * AMD Fam10h TSC will tick in all
 		 * C/P/S0/S1 states when this bit is set.
 		 */
 		if (!boot_cpu_has(X86_FEATURE_NONSTOP_TSC))
 			tsc_detected_unstable = 1;
+<<<<<<< HEAD
 		if (!boot_cpu_has(X86_FEATURE_ARAT))
 			lapic_detected_unstable = 1;
 		break;
@@ -90,6 +122,12 @@ static void power_saving_mwait_init(void)
 		/* TSC & LAPIC could halt in idle */
 		tsc_detected_unstable = 1;
 		lapic_detected_unstable = 1;
+=======
+		break;
+	default:
+		/* TSC could halt in idle */
+		tsc_detected_unstable = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 }
@@ -103,7 +141,11 @@ static void round_robin_cpu(unsigned int tsk_index)
 	cpumask_var_t tmp;
 	int cpu;
 	unsigned long min_weight = -1;
+<<<<<<< HEAD
 	unsigned long uninitialized_var(preferred_cpu);
+=======
+	unsigned long preferred_cpu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!alloc_cpumask_var(&tmp, GFP_KERNEL))
 		return;
@@ -111,13 +153,23 @@ static void round_robin_cpu(unsigned int tsk_index)
 	mutex_lock(&round_robin_lock);
 	cpumask_clear(tmp);
 	for_each_cpu(cpu, pad_busy_cpus)
+<<<<<<< HEAD
 		cpumask_or(tmp, tmp, topology_thread_cpumask(cpu));
 	cpumask_andnot(tmp, cpu_online_mask, tmp);
 	/* avoid HT sibilings if possible */
+=======
+		cpumask_or(tmp, tmp, topology_sibling_cpumask(cpu));
+	cpumask_andnot(tmp, cpu_online_mask, tmp);
+	/* avoid HT siblings if possible */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cpumask_empty(tmp))
 		cpumask_andnot(tmp, cpu_online_mask, pad_busy_cpus);
 	if (cpumask_empty(tmp)) {
 		mutex_unlock(&round_robin_lock);
+<<<<<<< HEAD
+=======
+		free_cpumask_var(tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	for_each_cpu(cpu, tmp) {
@@ -135,24 +187,40 @@ static void round_robin_cpu(unsigned int tsk_index)
 	mutex_unlock(&round_robin_lock);
 
 	set_cpus_allowed_ptr(current, cpumask_of(preferred_cpu));
+<<<<<<< HEAD
+=======
+
+	free_cpumask_var(tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void exit_round_robin(unsigned int tsk_index)
 {
 	struct cpumask *pad_busy_cpus = to_cpumask(pad_busy_cpus_bits);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpumask_clear_cpu(tsk_in_cpu[tsk_index], pad_busy_cpus);
 	tsk_in_cpu[tsk_index] = -1;
 }
 
 static unsigned int idle_pct = 5; /* percentage */
+<<<<<<< HEAD
 static unsigned int round_robin_time = 10; /* second */
 static int power_saving_thread(void *data)
 {
 	struct sched_param param = {.sched_priority = 1};
+=======
+static unsigned int round_robin_time = 1; /* second */
+static int power_saving_thread(void *data)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int do_sleep;
 	unsigned int tsk_index = (unsigned long)data;
 	u64 last_jiffies = 0;
 
+<<<<<<< HEAD
 	sched_setscheduler(current, SCHED_RR, &param);
 
 	while (!kthread_should_stop()) {
@@ -163,6 +231,16 @@ static int power_saving_thread(void *data)
 
 		/* round robin to cpus */
 		if (last_jiffies + round_robin_time * HZ < jiffies) {
+=======
+	sched_set_fifo_low(current);
+
+	while (!kthread_should_stop()) {
+		unsigned long expire_time;
+
+		/* round robin to cpus */
+		expire_time = last_jiffies + round_robin_time * HZ;
+		if (time_before(expire_time, jiffies)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			last_jiffies = jiffies;
 			round_robin_cpu(tsk_index);
 		}
@@ -177,6 +255,7 @@ static int power_saving_thread(void *data)
 				mark_tsc_unstable("TSC halts in idle");
 				tsc_marked_unstable = 1;
 			}
+<<<<<<< HEAD
 			if (lapic_detected_unstable && !lapic_marked_unstable) {
 				int i;
 				/* LAPIC could halt in idle, so notify users */
@@ -205,6 +284,26 @@ static int power_saving_thread(void *data)
 			local_irq_enable();
 
 			if (jiffies > expire_time) {
+=======
+			local_irq_disable();
+
+			perf_lopwr_cb(true);
+
+			tick_broadcast_enable();
+			tick_broadcast_enter();
+			stop_critical_timings();
+
+			mwait_idle_with_hints(power_saving_mwait_eax, 1);
+
+			start_critical_timings();
+			tick_broadcast_exit();
+
+			perf_lopwr_cb(false);
+
+			local_irq_enable();
+
+			if (time_before(expire_time, jiffies)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				do_sleep = 1;
 				break;
 			}
@@ -219,8 +318,20 @@ static int power_saving_thread(void *data)
 		 * borrow CPU time from this CPU and cause RT task use > 95%
 		 * CPU time. To make 'avoid starvation' work, takes a nap here.
 		 */
+<<<<<<< HEAD
 		if (do_sleep)
 			schedule_timeout_killable(HZ * idle_pct / 100);
+=======
+		if (unlikely(do_sleep))
+			schedule_timeout_killable(HZ * idle_pct / 100);
+
+		/* If an external event has set the need_resched flag, then
+		 * we need to deal with it, or this loop will continue to
+		 * spin without calling __mwait().
+		 */
+		if (unlikely(need_resched()))
+			schedule();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	exit_round_robin(tsk_index);
@@ -231,6 +342,7 @@ static struct task_struct *ps_tsks[NR_CPUS];
 static unsigned int ps_tsk_num;
 static int create_power_saving_task(void)
 {
+<<<<<<< HEAD
 	int rc = -ENOMEM;
 
 	ps_tsks[ps_tsk_num] = kthread_run(power_saving_thread,
@@ -241,6 +353,21 @@ static int create_power_saving_task(void)
 		ps_tsk_num++;
 	else
 		ps_tsks[ps_tsk_num] = NULL;
+=======
+	int rc;
+
+	ps_tsks[ps_tsk_num] = kthread_run(power_saving_thread,
+		(void *)(unsigned long)ps_tsk_num,
+		"acpi_pad/%d", ps_tsk_num);
+
+	if (IS_ERR(ps_tsks[ps_tsk_num])) {
+		rc = PTR_ERR(ps_tsks[ps_tsk_num]);
+		ps_tsks[ps_tsk_num] = NULL;
+	} else {
+		rc = 0;
+		ps_tsk_num++;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -269,12 +396,20 @@ static void set_power_saving_task_num(unsigned int num)
 
 static void acpi_pad_idle_cpus(unsigned int num_cpus)
 {
+<<<<<<< HEAD
 	get_online_cpus();
+=======
+	cpus_read_lock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	num_cpus = min_t(unsigned int, num_cpus, num_online_cpus());
 	set_power_saving_task_num(num_cpus);
 
+<<<<<<< HEAD
 	put_online_cpus();
+=======
+	cpus_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static uint32_t acpi_pad_idle_cpus_num(void)
@@ -282,11 +417,20 @@ static uint32_t acpi_pad_idle_cpus_num(void)
 	return ps_tsk_num;
 }
 
+<<<<<<< HEAD
 static ssize_t acpi_pad_rrtime_store(struct device *dev,
 	struct device_attribute *attr, const char *buf, size_t count)
 {
 	unsigned long num;
 	if (strict_strtoul(buf, 0, &num))
+=======
+static ssize_t rrtime_store(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t count)
+{
+	unsigned long num;
+
+	if (kstrtoul(buf, 0, &num))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	if (num < 1 || num >= 100)
 		return -EINVAL;
@@ -296,6 +440,7 @@ static ssize_t acpi_pad_rrtime_store(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t acpi_pad_rrtime_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
@@ -310,6 +455,21 @@ static ssize_t acpi_pad_idlepct_store(struct device *dev,
 {
 	unsigned long num;
 	if (strict_strtoul(buf, 0, &num))
+=======
+static ssize_t rrtime_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	return sysfs_emit(buf, "%d\n", round_robin_time);
+}
+static DEVICE_ATTR_RW(rrtime);
+
+static ssize_t idlepct_store(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t count)
+{
+	unsigned long num;
+
+	if (kstrtoul(buf, 0, &num))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	if (num < 1 || num >= 100)
 		return -EINVAL;
@@ -319,6 +479,7 @@ static ssize_t acpi_pad_idlepct_store(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t acpi_pad_idlepct_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
@@ -333,6 +494,21 @@ static ssize_t acpi_pad_idlecpus_store(struct device *dev,
 {
 	unsigned long num;
 	if (strict_strtoul(buf, 0, &num))
+=======
+static ssize_t idlepct_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	return sysfs_emit(buf, "%d\n", idle_pct);
+}
+static DEVICE_ATTR_RW(idlepct);
+
+static ssize_t idlecpus_store(struct device *dev,
+	struct device_attribute *attr, const char *buf, size_t count)
+{
+	unsigned long num;
+
+	if (kstrtoul(buf, 0, &num))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	mutex_lock(&isolated_cpus_lock);
 	acpi_pad_idle_cpus(num);
@@ -340,6 +516,7 @@ static ssize_t acpi_pad_idlecpus_store(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t acpi_pad_idlecpus_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
@@ -380,6 +557,25 @@ static void acpi_pad_remove_sysfs(struct acpi_device *device)
 	device_remove_file(&device->dev, &dev_attr_idlepct);
 	device_remove_file(&device->dev, &dev_attr_rrtime);
 }
+=======
+static ssize_t idlecpus_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	return cpumap_print_to_pagebuf(false, buf,
+				       to_cpumask(pad_busy_cpus_bits));
+}
+
+static DEVICE_ATTR_RW(idlecpus);
+
+static struct attribute *acpi_pad_attrs[] = {
+	&dev_attr_idlecpus.attr,
+	&dev_attr_idlepct.attr,
+	&dev_attr_rrtime.attr,
+	NULL
+};
+
+ATTRIBUTE_GROUPS(acpi_pad);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Query firmware how many CPUs should be idle
@@ -409,6 +605,7 @@ static int acpi_pad_pur(acpi_handle handle)
 	return num;
 }
 
+<<<<<<< HEAD
 /* Notify firmware how many CPUs are idle */
 static void acpi_pad_ost(acpi_handle handle, int stat,
 	uint32_t idle_cpus)
@@ -427,10 +624,19 @@ static void acpi_pad_ost(acpi_handle handle, int stat,
 	acpi_evaluate_object(handle, "_OST", &arg_list, NULL);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void acpi_pad_handle_notify(acpi_handle handle)
 {
 	int num_cpus;
 	uint32_t idle_cpus;
+<<<<<<< HEAD
+=======
+	struct acpi_buffer param = {
+		.length = 4,
+		.pointer = (void *)&idle_cpus,
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&isolated_cpus_lock);
 	num_cpus = acpi_pad_pur(handle);
@@ -440,28 +646,45 @@ static void acpi_pad_handle_notify(acpi_handle handle)
 	}
 	acpi_pad_idle_cpus(num_cpus);
 	idle_cpus = acpi_pad_idle_cpus_num();
+<<<<<<< HEAD
 	acpi_pad_ost(handle, 0, idle_cpus);
+=======
+	acpi_evaluate_ost(handle, ACPI_PROCESSOR_AGGREGATOR_NOTIFY, 0, &param);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&isolated_cpus_lock);
 }
 
 static void acpi_pad_notify(acpi_handle handle, u32 event,
 	void *data)
 {
+<<<<<<< HEAD
 	struct acpi_device *device = data;
+=======
+	struct acpi_device *adev = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case ACPI_PROCESSOR_AGGREGATOR_NOTIFY:
 		acpi_pad_handle_notify(handle);
+<<<<<<< HEAD
 		acpi_bus_generate_proc_event(device, event, 0);
 		acpi_bus_generate_netlink_event(device->pnp.device_class,
 			dev_name(&device->dev), event, 0);
 		break;
 	default:
 		printk(KERN_WARNING "Unsupported event [0x%x]\n", event);
+=======
+		acpi_bus_generate_netlink_event(adev->pnp.device_class,
+			dev_name(&adev->dev), event, 0);
+		break;
+	default:
+		pr_warn("Unsupported event [0x%x]\n", event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
+<<<<<<< HEAD
 static int acpi_pad_add(struct acpi_device *device)
 {
 	acpi_status status;
@@ -478,21 +701,48 @@ static int acpi_pad_add(struct acpi_device *device)
 		acpi_pad_remove_sysfs(device);
 		return -ENODEV;
 	}
+=======
+static int acpi_pad_probe(struct platform_device *pdev)
+{
+	struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
+	acpi_status status;
+
+	strcpy(acpi_device_name(adev), ACPI_PROCESSOR_AGGREGATOR_DEVICE_NAME);
+	strcpy(acpi_device_class(adev), ACPI_PROCESSOR_AGGREGATOR_CLASS);
+
+	status = acpi_install_notify_handler(adev->handle,
+		ACPI_DEVICE_NOTIFY, acpi_pad_notify, adev);
+
+	if (ACPI_FAILURE(status))
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int acpi_pad_remove(struct acpi_device *device,
 	int type)
 {
+=======
+static void acpi_pad_remove(struct platform_device *pdev)
+{
+	struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&isolated_cpus_lock);
 	acpi_pad_idle_cpus(0);
 	mutex_unlock(&isolated_cpus_lock);
 
+<<<<<<< HEAD
 	acpi_remove_notify_handler(device->handle,
 		ACPI_DEVICE_NOTIFY, acpi_pad_notify);
 	acpi_pad_remove_sysfs(device);
 	return 0;
+=======
+	acpi_remove_notify_handler(adev->handle,
+		ACPI_DEVICE_NOTIFY, acpi_pad_notify);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct acpi_device_id pad_device_ids[] = {
@@ -501,6 +751,7 @@ static const struct acpi_device_id pad_device_ids[] = {
 };
 MODULE_DEVICE_TABLE(acpi, pad_device_ids);
 
+<<<<<<< HEAD
 static struct acpi_driver acpi_pad_driver = {
 	.name = "processor_aggregator",
 	.class = ACPI_PROCESSOR_AGGREGATOR_CLASS,
@@ -508,21 +759,45 @@ static struct acpi_driver acpi_pad_driver = {
 	.ops = {
 		.add = acpi_pad_add,
 		.remove = acpi_pad_remove,
+=======
+static struct platform_driver acpi_pad_driver = {
+	.probe = acpi_pad_probe,
+	.remove_new = acpi_pad_remove,
+	.driver = {
+		.dev_groups = acpi_pad_groups,
+		.name = "processor_aggregator",
+		.acpi_match_table = pad_device_ids,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
 static int __init acpi_pad_init(void)
 {
+<<<<<<< HEAD
+=======
+	/* Xen ACPI PAD is used when running as Xen Dom0. */
+	if (xen_initial_domain())
+		return -ENODEV;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	power_saving_mwait_init();
 	if (power_saving_mwait_eax == 0)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	return acpi_bus_register_driver(&acpi_pad_driver);
+=======
+	return platform_driver_register(&acpi_pad_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit acpi_pad_exit(void)
 {
+<<<<<<< HEAD
 	acpi_bus_unregister_driver(&acpi_pad_driver);
+=======
+	platform_driver_unregister(&acpi_pad_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(acpi_pad_init);

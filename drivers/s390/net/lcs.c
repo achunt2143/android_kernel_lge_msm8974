@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Linux for S/390 Lan Channel Station Network Driver
  *
@@ -7,6 +11,7 @@
  *	       Rewritten by
  *			Frank Pavlic <fpavlic@de.ibm.com> and
  *			Martin Schwidefsky <schwidefsky@de.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +26,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define KMSG_COMPONENT		"lcs"
@@ -30,8 +37,11 @@
 #include <linux/if.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
+<<<<<<< HEAD
 #include <linux/trdevice.h>
 #include <linux/fddidevice.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/inetdevice.h>
 #include <linux/in.h>
 #include <linux/igmp.h>
@@ -50,23 +60,35 @@
 #include "lcs.h"
 
 
+<<<<<<< HEAD
 #if !defined(CONFIG_ETHERNET) && \
     !defined(CONFIG_TR) && !defined(CONFIG_FDDI)
 #error Cannot compile lcs.c without some net devices switched on.
 #endif
 
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * initialization string for output
  */
 
 static char version[] __initdata = "LCS driver";
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   * the root device for lcs group devices
   */
 static struct device *lcs_root_dev;
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Some prototypes.
  */
 static void lcs_tasklet(unsigned long);
@@ -77,23 +99,36 @@ static int lcs_send_delipm(struct lcs_card *, struct lcs_ipm_list *);
 #endif /* CONFIG_IP_MULTICAST */
 static int lcs_recovery(void *ptr);
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Debug Facility Stuff
  */
 static char debug_buffer[255];
 static debug_info_t *lcs_dbf_setup;
 static debug_info_t *lcs_dbf_trace;
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  LCS Debug Facility functions
  */
 static void
 lcs_unregister_debug_facility(void)
 {
+<<<<<<< HEAD
 	if (lcs_dbf_setup)
 		debug_unregister(lcs_dbf_setup);
 	if (lcs_dbf_trace)
 		debug_unregister(lcs_dbf_trace);
+=======
+	debug_unregister(lcs_dbf_setup);
+	debug_unregister(lcs_dbf_trace);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -113,7 +148,11 @@ lcs_register_debug_facility(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Allocate io buffers.
  */
 static int
@@ -140,7 +179,11 @@ lcs_alloc_channel(struct lcs_channel *channel)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Free io buffers.
  */
 static void
@@ -168,7 +211,11 @@ lcs_cleanup_channel(struct lcs_channel *channel)
 	lcs_free_channel(channel);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LCS free memory for card and channels.
  */
 static void
@@ -179,7 +226,11 @@ lcs_free_card(struct lcs_card *card)
 	kfree(card);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LCS alloc memory for card and channels
  */
 static struct lcs_card *
@@ -240,7 +291,11 @@ lcs_setup_read_ccws(struct lcs_card *card)
 		 * we do not need to do set_normalized_cda.
 		 */
 		card->read.ccws[cnt].cda =
+<<<<<<< HEAD
 			(__u32) __pa(card->read.iob[cnt].data);
+=======
+			virt_to_dma32(card->read.iob[cnt].data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		((struct lcs_header *)
 		 card->read.iob[cnt].data)->offset = LCS_ILLEGAL_OFFSET;
 		card->read.iob[cnt].callback = lcs_get_frames_cb;
@@ -252,8 +307,12 @@ lcs_setup_read_ccws(struct lcs_card *card)
 	card->read.ccws[LCS_NUM_BUFFS - 1].flags |= CCW_FLAG_SUSPEND;
 	/* Last ccw is a tic (transfer in channel). */
 	card->read.ccws[LCS_NUM_BUFFS].cmd_code = LCS_CCW_TRANSFER;
+<<<<<<< HEAD
 	card->read.ccws[LCS_NUM_BUFFS].cda =
 		(__u32) __pa(card->read.ccws);
+=======
+	card->read.ccws[LCS_NUM_BUFFS].cda = virt_to_dma32(card->read.ccws);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Setg initial state of the read channel. */
 	card->read.state = LCS_CH_STATE_INIT;
 
@@ -284,7 +343,11 @@ lcs_setup_write_ccws(struct lcs_card *card)
 
 	LCS_DBF_TEXT(3, setup, "iwritccw");
 	/* Setup write ccws. */
+<<<<<<< HEAD
 	memset(card->write.ccws, 0, sizeof(struct ccw1) * LCS_NUM_BUFFS + 1);
+=======
+	memset(card->write.ccws, 0, sizeof(struct ccw1) * (LCS_NUM_BUFFS + 1));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (cnt = 0; cnt < LCS_NUM_BUFFS; cnt++) {
 		card->write.ccws[cnt].cmd_code = LCS_CCW_WRITE;
 		card->write.ccws[cnt].count = 0;
@@ -295,12 +358,20 @@ lcs_setup_write_ccws(struct lcs_card *card)
 		 * we do not need to do set_normalized_cda.
 		 */
 		card->write.ccws[cnt].cda =
+<<<<<<< HEAD
 			(__u32) __pa(card->write.iob[cnt].data);
 	}
 	/* Last ccw is a tic (transfer in channel). */
 	card->write.ccws[LCS_NUM_BUFFS].cmd_code = LCS_CCW_TRANSFER;
 	card->write.ccws[LCS_NUM_BUFFS].cda =
 		(__u32) __pa(card->write.ccws);
+=======
+			virt_to_dma32(card->write.iob[cnt].data);
+	}
+	/* Last ccw is a tic (transfer in channel). */
+	card->write.ccws[LCS_NUM_BUFFS].cmd_code = LCS_CCW_TRANSFER;
+	card->write.ccws[LCS_NUM_BUFFS].cda = virt_to_dma32(card->write.ccws);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set initial state of the write channel. */
 	card->read.state = LCS_CH_STATE_INIT;
 
@@ -331,8 +402,12 @@ lcs_set_allowed_threads(struct lcs_card *card, unsigned long threads)
 	spin_unlock_irqrestore(&card->mask_lock, flags);
 	wake_up(&card->wait_q);
 }
+<<<<<<< HEAD
 static inline int
 lcs_threads_running(struct lcs_card *card, unsigned long threads)
+=======
+static int lcs_threads_running(struct lcs_card *card, unsigned long threads)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
         unsigned long flags;
         int rc = 0;
@@ -350,8 +425,12 @@ lcs_wait_for_threads(struct lcs_card *card, unsigned long threads)
                         lcs_threads_running(card, threads) == 0);
 }
 
+<<<<<<< HEAD
 static inline int
 lcs_set_thread_start_bit(struct lcs_card *card, unsigned long thread)
+=======
+static int lcs_set_thread_start_bit(struct lcs_card *card, unsigned long thread)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
         unsigned long flags;
 
@@ -377,8 +456,12 @@ lcs_clear_thread_running_bit(struct lcs_card *card, unsigned long thread)
         wake_up(&card->wait_q);
 }
 
+<<<<<<< HEAD
 static inline int
 __lcs_do_run_thread(struct lcs_card *card, unsigned long thread)
+=======
+static int __lcs_do_run_thread(struct lcs_card *card, unsigned long thread)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
         unsigned long flags;
         int rc = 0;
@@ -422,7 +505,11 @@ lcs_do_start_thread(struct lcs_card *card, unsigned long thread)
         return rc;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Initialize channels,card and state machines.
  */
 static void
@@ -448,8 +535,12 @@ lcs_setup_card(struct lcs_card *card)
 	INIT_LIST_HEAD(&card->lancmd_waiters);
 }
 
+<<<<<<< HEAD
 static inline void
 lcs_clear_multicast_list(struct lcs_card *card)
+=======
+static void lcs_clear_multicast_list(struct lcs_card *card)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef	CONFIG_IP_MULTICAST
 	struct lcs_ipm_list *ipm;
@@ -472,7 +563,12 @@ lcs_clear_multicast_list(struct lcs_card *card)
 	spin_unlock_irqrestore(&card->ipm_lock, flags);
 #endif
 }
+<<<<<<< HEAD
 /**
+=======
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Cleanup channels,card and state machines.
  */
 static void
@@ -489,7 +585,11 @@ lcs_cleanup_card(struct lcs_card *card)
 	lcs_cleanup_channel(&card->read);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Start channel.
  */
 static int
@@ -525,7 +625,11 @@ lcs_clear_channel(struct lcs_channel *channel)
 	LCS_DBF_TEXT(4,trace,"clearch");
 	LCS_DBF_TEXT_(4, trace, "%s", dev_name(&channel->ccwdev->dev));
 	spin_lock_irqsave(get_ccwdev_lock(channel->ccwdev), flags);
+<<<<<<< HEAD
 	rc = ccw_device_clear(channel->ccwdev, (addr_t) channel);
+=======
+	rc = ccw_device_clear(channel->ccwdev, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(get_ccwdev_lock(channel->ccwdev), flags);
 	if (rc) {
 		LCS_DBF_TEXT_(4, trace, "ecsc%s",
@@ -538,7 +642,11 @@ lcs_clear_channel(struct lcs_channel *channel)
 }
 
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Stop channel.
  */
 static int
@@ -553,7 +661,11 @@ lcs_stop_channel(struct lcs_channel *channel)
 	LCS_DBF_TEXT_(4, trace, "%s", dev_name(&channel->ccwdev->dev));
 	channel->state = LCS_CH_STATE_INIT;
 	spin_lock_irqsave(get_ccwdev_lock(channel->ccwdev), flags);
+<<<<<<< HEAD
 	rc = ccw_device_halt(channel->ccwdev, (addr_t) channel);
+=======
+	rc = ccw_device_halt(channel->ccwdev, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(get_ccwdev_lock(channel->ccwdev), flags);
 	if (rc) {
 		LCS_DBF_TEXT_(4, trace, "ehsc%s",
@@ -566,7 +678,11 @@ lcs_stop_channel(struct lcs_channel *channel)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * start read and write channel
  */
 static int
@@ -586,7 +702,11 @@ lcs_start_channels(struct lcs_card *card)
 	return rc;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * stop read and write channel
  */
 static int
@@ -598,7 +718,11 @@ lcs_stop_channels(struct lcs_card *card)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Get empty buffer.
  */
 static struct lcs_buffer *
@@ -631,7 +755,11 @@ lcs_get_buffer(struct lcs_channel *channel)
 	return buffer;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Resume channel program if the channel is suspended.
  */
 static int
@@ -657,11 +785,18 @@ __lcs_resume_channel(struct lcs_channel *channel)
 
 }
 
+<<<<<<< HEAD
 /**
  * Make a buffer ready for processing.
  */
 static inline void
 __lcs_ready_buffer_bits(struct lcs_channel *channel, int index)
+=======
+/*
+ * Make a buffer ready for processing.
+ */
+static void __lcs_ready_buffer_bits(struct lcs_channel *channel, int index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int prev, next;
 
@@ -700,7 +835,11 @@ lcs_ready_buffer(struct lcs_channel *channel, struct lcs_buffer *buffer)
 	return rc;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Mark the buffer as processed. Take care of the suspend bit
  * of the previous buffer. This function is called from
  * interrupt context, so the lock must not be taken.
@@ -734,7 +873,11 @@ __lcs_processed_buffer(struct lcs_channel *channel, struct lcs_buffer *buffer)
 	return __lcs_resume_channel(channel);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Put a processed buffer back to state empty.
  */
 static void
@@ -750,7 +893,11 @@ lcs_release_buffer(struct lcs_channel *channel, struct lcs_buffer *buffer)
 	spin_unlock_irqrestore(get_ccwdev_lock(channel->ccwdev), flags);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Get buffer for a lan command.
  */
 static struct lcs_buffer *
@@ -778,18 +925,27 @@ lcs_get_lancmd(struct lcs_card *card, int count)
 static void
 lcs_get_reply(struct lcs_reply *reply)
 {
+<<<<<<< HEAD
 	WARN_ON(atomic_read(&reply->refcnt) <= 0);
 	atomic_inc(&reply->refcnt);
+=======
+	refcount_inc(&reply->refcnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
 lcs_put_reply(struct lcs_reply *reply)
 {
+<<<<<<< HEAD
         WARN_ON(atomic_read(&reply->refcnt) <= 0);
         if (atomic_dec_and_test(&reply->refcnt)) {
 		kfree(reply);
 	}
 
+=======
+	if (refcount_dec_and_test(&reply->refcnt))
+		kfree(reply);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct lcs_reply *
@@ -802,7 +958,11 @@ lcs_alloc_reply(struct lcs_cmd *cmd)
 	reply = kzalloc(sizeof(struct lcs_reply), GFP_ATOMIC);
 	if (!reply)
 		return NULL;
+<<<<<<< HEAD
 	atomic_set(&reply->refcnt,1);
+=======
+	refcount_set(&reply->refcnt, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reply->sequence_no = cmd->sequence_no;
 	reply->received = 0;
 	reply->rc = 0;
@@ -811,7 +971,11 @@ lcs_alloc_reply(struct lcs_cmd *cmd)
 	return reply;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Notifier function for lancmd replies. Called from read irq.
  */
 static void
@@ -839,6 +1003,7 @@ lcs_notify_lancmd_waiters(struct lcs_card *card, struct lcs_cmd *cmd)
 	spin_unlock(&card->lock);
 }
 
+<<<<<<< HEAD
 /**
  * Emit buffer of a lan command.
  */
@@ -850,6 +1015,19 @@ lcs_lancmd_timeout(unsigned long data)
 
 	LCS_DBF_TEXT(4, trace, "timeout");
 	reply = (struct lcs_reply *) data;
+=======
+/*
+ * Emit buffer of a lan command.
+ */
+static void
+lcs_lancmd_timeout(struct timer_list *t)
+{
+	struct lcs_reply *reply = from_timer(reply, t, timer);
+	struct lcs_reply *list_reply, *r;
+	unsigned long flags;
+
+	LCS_DBF_TEXT(4, trace, "timeout");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&reply->card->lock, flags);
 	list_for_each_entry_safe(list_reply, r,
 				 &reply->card->lancmd_waiters,list) {
@@ -873,7 +1051,10 @@ lcs_send_lancmd(struct lcs_card *card, struct lcs_buffer *buffer,
 {
 	struct lcs_reply *reply;
 	struct lcs_cmd *cmd;
+<<<<<<< HEAD
 	struct timer_list timer;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int rc;
 
@@ -894,6 +1075,7 @@ lcs_send_lancmd(struct lcs_card *card, struct lcs_buffer *buffer,
 	rc = lcs_ready_buffer(&card->write, buffer);
 	if (rc)
 		return rc;
+<<<<<<< HEAD
 	init_timer_on_stack(&timer);
 	timer.function = lcs_lancmd_timeout;
 	timer.data = (unsigned long) reply;
@@ -901,13 +1083,23 @@ lcs_send_lancmd(struct lcs_card *card, struct lcs_buffer *buffer,
 	add_timer(&timer);
 	wait_event(reply->wait_q, reply->received);
 	del_timer_sync(&timer);
+=======
+	timer_setup(&reply->timer, lcs_lancmd_timeout, 0);
+	mod_timer(&reply->timer, jiffies + HZ * card->lancmd_timeout);
+	wait_event(reply->wait_q, reply->received);
+	del_timer_sync(&reply->timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LCS_DBF_TEXT_(4, trace, "rc:%d",reply->rc);
 	rc = reply->rc;
 	lcs_put_reply(reply);
 	return rc ? -EIO : 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LCS startup command
  */
 static int
@@ -925,7 +1117,11 @@ lcs_send_startup(struct lcs_card *card, __u8 initiator)
 	return lcs_send_lancmd(card, buffer, NULL);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LCS shutdown command
  */
 static int
@@ -942,7 +1138,11 @@ lcs_send_shutdown(struct lcs_card *card)
 	return lcs_send_lancmd(card, buffer, NULL);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LCS lanstat command
  */
 static void
@@ -969,7 +1169,11 @@ lcs_send_lanstat(struct lcs_card *card)
 	return lcs_send_lancmd(card, buffer, __lcs_lanstat_cb);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * send stoplan command
  */
 static int
@@ -988,7 +1192,11 @@ lcs_send_stoplan(struct lcs_card *card, __u8 initiator)
 	return lcs_send_lancmd(card, buffer, NULL);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * send startlan command
  */
 static void
@@ -1016,7 +1224,11 @@ lcs_send_startlan(struct lcs_card *card, __u8 initiator)
 }
 
 #ifdef CONFIG_IP_MULTICAST
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * send setipm command (Multicast)
  */
 static int
@@ -1040,7 +1252,11 @@ lcs_send_setipm(struct lcs_card *card,struct lcs_ipm_list *ipm_list)
 	return lcs_send_lancmd(card, buffer, NULL);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * send delipm command (Multicast)
  */
 static int
@@ -1064,7 +1280,11 @@ lcs_send_delipm(struct lcs_card *card,struct lcs_ipm_list *ipm_list)
 	return lcs_send_lancmd(card, buffer, NULL);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * check if multicast is supported by LCS
  */
 static void
@@ -1104,7 +1324,11 @@ lcs_check_multicast_support(struct lcs_card *card)
 	return -EOPNOTSUPP;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * set or del multicast address on LCS card
  */
 static void
@@ -1159,13 +1383,18 @@ list_modified:
 	spin_unlock_irqrestore(&card->ipm_lock, flags);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * get mac address for the relevant Multicast address
  */
 static void
 lcs_get_mac_for_ipm(__be32 ipm, char *mac, struct net_device *dev)
 {
 	LCS_DBF_TEXT(4,trace, "getmac");
+<<<<<<< HEAD
 	if (dev->type == ARPHRD_IEEE802_TR)
 		ip_tr_mc_map(ipm, mac);
 	else
@@ -1177,6 +1406,16 @@ lcs_get_mac_for_ipm(__be32 ipm, char *mac, struct net_device *dev)
  */
 static inline void
 lcs_remove_mc_addresses(struct lcs_card *card, struct in_device *in4_dev)
+=======
+	ip_eth_mc_map(ipm, mac);
+}
+
+/*
+ * function called by net device to handle multicast address relevant things
+ */
+static void lcs_remove_mc_addresses(struct lcs_card *card,
+				    struct in_device *in4_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ip_mc_list *im4;
 	struct list_head *l;
@@ -1202,8 +1441,14 @@ lcs_remove_mc_addresses(struct lcs_card *card, struct in_device *in4_dev)
 	spin_unlock_irqrestore(&card->ipm_lock, flags);
 }
 
+<<<<<<< HEAD
 static inline struct lcs_ipm_list *
 lcs_check_addr_entry(struct lcs_card *card, struct ip_mc_list *im4, char *buf)
+=======
+static struct lcs_ipm_list *lcs_check_addr_entry(struct lcs_card *card,
+						 struct ip_mc_list *im4,
+						 char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lcs_ipm_list *tmp, *ipm = NULL;
 	struct list_head *l;
@@ -1224,8 +1469,13 @@ lcs_check_addr_entry(struct lcs_card *card, struct ip_mc_list *im4, char *buf)
 	return ipm;
 }
 
+<<<<<<< HEAD
 static inline void
 lcs_set_mc_addresses(struct lcs_card *card, struct in_device *in4_dev)
+=======
+static void lcs_set_mc_addresses(struct lcs_card *card,
+				 struct in_device *in4_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	struct ip_mc_list *im4;
@@ -1292,7 +1542,11 @@ out:
 }
 #endif /* CONFIG_IP_MULTICAST */
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * function called by net device to
  * handle multicast address relevant things
  */
@@ -1387,7 +1641,11 @@ lcs_schedule_recovery(struct lcs_card *card)
 		schedule_work(&card->kernel_thread_starter);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * IRQ Handler for LCS channels
  */
 static void
@@ -1435,7 +1693,11 @@ lcs_irq(struct ccw_device *cdev, unsigned long intparm, struct irb *irb)
 	if ((channel->state != LCS_CH_STATE_INIT) &&
 	    (irb->scsw.cmd.fctl & SCSW_FCTL_START_FUNC) &&
 	    (irb->scsw.cmd.cpa != 0)) {
+<<<<<<< HEAD
 		index = (struct ccw1 *) __va((addr_t) irb->scsw.cmd.cpa)
+=======
+		index = (struct ccw1 *)dma32_to_virt(irb->scsw.cmd.cpa)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			- channel->ccws;
 		if ((irb->scsw.cmd.actl & SCSW_ACTL_SUSPENDED) ||
 		    (irb->scsw.cmd.cstat & SCHN_STAT_PCI))
@@ -1459,7 +1721,11 @@ lcs_irq(struct ccw_device *cdev, unsigned long intparm, struct irb *irb)
 		channel->state = LCS_CH_STATE_SUSPENDED;
 	if (irb->scsw.cmd.fctl & SCSW_FCTL_HALT_FUNC) {
 		if (irb->scsw.cmd.cc != 0) {
+<<<<<<< HEAD
 			ccw_device_halt(channel->ccwdev, (addr_t) channel);
+=======
+			ccw_device_halt(channel->ccwdev, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		/* The channel has been stopped by halt_IO. */
@@ -1471,7 +1737,11 @@ lcs_irq(struct ccw_device *cdev, unsigned long intparm, struct irb *irb)
 	tasklet_schedule(&channel->irq_tasklet);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Tasklet for IRQ handler
  */
 static void
@@ -1508,7 +1778,11 @@ lcs_tasklet(unsigned long data)
 	wake_up(&channel->wait_q);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Finish current tx buffer and make it ready for transmit.
  */
 static void
@@ -1522,7 +1796,11 @@ __lcs_emit_txbuffer(struct lcs_card *card)
 	card->tx_emitted++;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Callback for finished tx buffers.
  */
 static void
@@ -1547,12 +1825,20 @@ lcs_txbuffer_cb(struct lcs_channel *channel, struct lcs_buffer *buffer)
 	spin_unlock(&card->lock);
 }
 
+<<<<<<< HEAD
 /**
  * Packet transmit function called by network stack
  */
 static int
 __lcs_start_xmit(struct lcs_card *card, struct sk_buff *skb,
 		 struct net_device *dev)
+=======
+/*
+ * Packet transmit function called by network stack
+ */
+static netdev_tx_t __lcs_start_xmit(struct lcs_card *card, struct sk_buff *skb,
+				    struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lcs_header *header;
 	int rc = NETDEV_TX_OK;
@@ -1613,8 +1899,12 @@ out:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int
 lcs_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t lcs_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lcs_card *card;
 	int rc;
@@ -1625,7 +1915,11 @@ lcs_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	return rc;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * send startlan and lanstat command to make LCS device ready
  */
 static int
@@ -1634,12 +1928,16 @@ lcs_startlan_auto(struct lcs_card *card)
 	int rc;
 
 	LCS_DBF_TEXT(2, trace, "strtauto");
+<<<<<<< HEAD
 #ifdef CONFIG_ETHERNET
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	card->lan_type = LCS_FRAME_TYPE_ENET;
 	rc = lcs_send_startlan(card, LCS_INITIATOR_TCPIP);
 	if (rc == 0)
 		return 0;
 
+<<<<<<< HEAD
 #endif
 #ifdef CONFIG_TR
 	card->lan_type = LCS_FRAME_TYPE_TR;
@@ -1653,6 +1951,8 @@ lcs_startlan_auto(struct lcs_card *card)
 	if (rc == 0)
 		return 0;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
@@ -1686,7 +1986,11 @@ lcs_startlan(struct lcs_card *card)
 	return rc;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LCS detect function
  * setup channels and make them I/O ready
  */
@@ -1718,7 +2022,11 @@ lcs_detect(struct lcs_card *card)
 	return rc;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LCS Stop card
  */
 static int
@@ -1743,7 +2051,11 @@ lcs_stopcard(struct lcs_card *card)
 	return rc;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Kernel Thread helper functions for LGW initiated commands
  */
 static void
@@ -1759,7 +2071,11 @@ lcs_start_kernel_thread(struct work_struct *work)
 #endif
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Process control frames.
  */
 static void
@@ -1773,10 +2089,18 @@ lcs_get_control(struct lcs_card *card, struct lcs_cmd *cmd)
 			lcs_schedule_recovery(card);
 			break;
 		case LCS_CMD_STOPLAN:
+<<<<<<< HEAD
 			pr_warning("Stoplan for %s initiated by LGW.\n",
 				   card->dev->name);
 			if (card->dev)
 				netif_carrier_off(card->dev);
+=======
+			if (card->dev) {
+				pr_warn("Stoplan for %s initiated by LGW\n",
+					card->dev->name);
+				netif_carrier_off(card->dev);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			LCS_DBF_TEXT(5, trace, "noLGWcmd");
@@ -1786,7 +2110,11 @@ lcs_get_control(struct lcs_card *card, struct lcs_cmd *cmd)
 		lcs_notify_lancmd_waiters(card, cmd);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Unpack network packet.
  */
 static void
@@ -1808,7 +2136,11 @@ lcs_get_skb(struct lcs_card *card, char *skb_data, unsigned int skb_len)
 		card->stats.rx_dropped++;
 		return;
 	}
+<<<<<<< HEAD
 	memcpy(skb_put(skb, skb_len), skb_data, skb_len);
+=======
+	skb_put_data(skb, skb_data, skb_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb->protocol =	card->lan_type_trans(skb, card->dev);
 	card->stats.rx_bytes += skb_len;
 	card->stats.rx_packets++;
@@ -1817,7 +2149,11 @@ lcs_get_skb(struct lcs_card *card, char *skb_data, unsigned int skb_len)
 	netif_rx(skb);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LCS main routine to get packets and lancmd replies from the buffers
  */
 static void
@@ -1844,6 +2180,7 @@ lcs_get_frames_cb(struct lcs_channel *channel, struct lcs_buffer *buffer)
 			card->stats.rx_errors++;
 			return;
 		}
+<<<<<<< HEAD
 		/* What kind of frame is it? */
 		if (lcs_hdr->type == LCS_FRAME_TYPE_CONTROL)
 			/* Control frame. */
@@ -1852,13 +2189,24 @@ lcs_get_frames_cb(struct lcs_channel *channel, struct lcs_buffer *buffer)
 			 lcs_hdr->type == LCS_FRAME_TYPE_TR ||
 			 lcs_hdr->type == LCS_FRAME_TYPE_FDDI)
 			/* Normal network packet. */
+=======
+		if (lcs_hdr->type == LCS_FRAME_TYPE_CONTROL)
+			lcs_get_control(card, (struct lcs_cmd *) lcs_hdr);
+		else if (lcs_hdr->type == LCS_FRAME_TYPE_ENET)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lcs_get_skb(card, (char *)(lcs_hdr + 1),
 				    lcs_hdr->offset - offset -
 				    sizeof(struct lcs_header));
 		else
+<<<<<<< HEAD
 			/* Unknown frame type. */
 			; // FIXME: error message ?
 		/* Proceed to next frame. */
+=======
+			dev_info_once(&card->dev->dev,
+				      "Unknown frame type %d\n",
+				      lcs_hdr->type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		offset = lcs_hdr->offset;
 		lcs_hdr->offset = LCS_ILLEGAL_OFFSET;
 		lcs_hdr = (struct lcs_header *) (buffer->data + offset);
@@ -1867,7 +2215,11 @@ lcs_get_frames_cb(struct lcs_channel *channel, struct lcs_buffer *buffer)
 	lcs_ready_buffer(&card->read, buffer);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * get network statistics for ifconfig and other user programs
  */
 static struct net_device_stats *
@@ -1880,7 +2232,11 @@ lcs_getstats(struct net_device *dev)
 	return &card->stats;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * stop lcs device
  * This function will be called by user doing ifconfig xxx down
  */
@@ -1900,11 +2256,19 @@ lcs_stop_device(struct net_device *dev)
 	rc = lcs_stopcard(card);
 	if (rc)
 		dev_err(&card->dev->dev,
+<<<<<<< HEAD
 			" Shutting down the LCS device failed\n ");
 	return rc;
 }
 
 /**
+=======
+			" Shutting down the LCS device failed\n");
+	return rc;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * start lcs device and make it runnable
  * This function will be called by user doing ifconfig xxx up
  */
@@ -1930,12 +2294,17 @@ lcs_open_device(struct net_device *dev)
 	return rc;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * show function for portno called by cat or similar things
  */
 static ssize_t
 lcs_portno_show (struct device *dev, struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
         struct lcs_card *card;
 
 	card = dev_get_drvdata(dev);
@@ -1947,22 +2316,50 @@ lcs_portno_show (struct device *dev, struct device_attribute *attr, char *buf)
 }
 
 /**
+=======
+	struct lcs_card *card;
+
+	card = dev_get_drvdata(dev);
+
+	if (!card)
+		return 0;
+
+	return sysfs_emit(buf, "%d\n", card->portno);
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * store the value which is piped to file portno
  */
 static ssize_t
 lcs_portno_store (struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
 {
         struct lcs_card *card;
+<<<<<<< HEAD
         int value;
+=======
+	int rc;
+	s16 value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	card = dev_get_drvdata(dev);
 
         if (!card)
                 return 0;
 
+<<<<<<< HEAD
         sscanf(buf, "%u", &value);
         /* TODO: sanity checks */
         card->portno = value;
+=======
+	rc = kstrtos16(buf, 0, &value);
+	if (rc)
+		return -EINVAL;
+        /* TODO: sanity checks */
+        card->portno = value;
+	if (card->dev)
+		card->dev->dev_port = card->portno;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         return count;
 
@@ -1988,7 +2385,12 @@ lcs_type_show(struct device *dev, struct device_attribute *attr, char *buf)
 	if (!cgdev)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	return sprintf(buf, "%s\n", lcs_type[cgdev->cdev[0]->id.driver_info]);
+=======
+	return sysfs_emit(buf, "%s\n",
+			  lcs_type[cgdev->cdev[0]->id.driver_info]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(type, 0444, lcs_type_show, NULL);
@@ -2000,21 +2402,36 @@ lcs_timeout_show(struct device *dev, struct device_attribute *attr, char *buf)
 
 	card = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	return card ? sprintf(buf, "%u\n", card->lancmd_timeout) : 0;
+=======
+	return card ? sysfs_emit(buf, "%u\n", card->lancmd_timeout) : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
 lcs_timeout_store (struct device *dev, struct device_attribute *attr, const char *buf, size_t count)
 {
         struct lcs_card *card;
+<<<<<<< HEAD
         int value;
+=======
+	unsigned int value;
+	int rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	card = dev_get_drvdata(dev);
 
         if (!card)
                 return 0;
 
+<<<<<<< HEAD
         sscanf(buf, "%u", &value);
+=======
+	rc = kstrtouint(buf, 0, &value);
+	if (rc)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         /* TODO: sanity checks */
         card->lancmd_timeout = value;
 
@@ -2051,19 +2468,38 @@ static struct attribute * lcs_attrs[] = {
 	&dev_attr_recover.attr,
 	NULL,
 };
+<<<<<<< HEAD
 
 static struct attribute_group lcs_attr_group = {
 	.attrs = lcs_attrs,
 };
 
 /**
+=======
+static struct attribute_group lcs_attr_group = {
+	.attrs = lcs_attrs,
+};
+static const struct attribute_group *lcs_attr_groups[] = {
+	&lcs_attr_group,
+	NULL,
+};
+static const struct device_type lcs_devtype = {
+	.name = "lcs",
+	.groups = lcs_attr_groups,
+};
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lcs_probe_device is called on establishing a new ccwgroup_device.
  */
 static int
 lcs_probe_device(struct ccwgroup_device *ccwgdev)
 {
 	struct lcs_card *card;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!get_device(&ccwgdev->dev))
 		return -ENODEV;
@@ -2075,12 +2511,15 @@ lcs_probe_device(struct ccwgroup_device *ccwgdev)
 		put_device(&ccwgdev->dev);
                 return -ENOMEM;
         }
+<<<<<<< HEAD
 	ret = sysfs_create_group(&ccwgdev->dev.kobj, &lcs_attr_group);
 	if (ret) {
 		lcs_free_card(card);
 		put_device(&ccwgdev->dev);
 		return ret;
         }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_drvdata(&ccwgdev->dev, card);
 	ccwgdev->cdev[0]->handler = lcs_irq;
 	ccwgdev->cdev[1]->handler = lcs_irq;
@@ -2089,7 +2528,13 @@ lcs_probe_device(struct ccwgroup_device *ccwgdev)
 	card->thread_start_mask = 0;
 	card->thread_allowed_mask = 0;
 	card->thread_running_mask = 0;
+<<<<<<< HEAD
         return 0;
+=======
+	ccwgdev->dev.type = &lcs_devtype;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -2105,7 +2550,11 @@ lcs_register_netdev(struct ccwgroup_device *ccwgdev)
 	return register_netdev(card->dev);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lcs_new_device will be called by setting the group device online.
  */
 static const struct net_device_ops lcs_netdev_ops = {
@@ -2154,7 +2603,11 @@ lcs_new_device(struct ccwgroup_device *ccwgdev)
 	rc = lcs_detect(card);
 	if (rc) {
 		LCS_DBF_TEXT(2, setup, "dtctfail");
+<<<<<<< HEAD
 		dev_err(&card->dev->dev,
+=======
+		dev_err(&ccwgdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Detecting a network adapter for LCS devices"
 			" failed with rc=%d (0x%x)\n", rc, rc);
 		lcs_stopcard(card);
@@ -2166,11 +2619,15 @@ lcs_new_device(struct ccwgroup_device *ccwgdev)
 		goto netdev_out;
 	}
 	switch (card->lan_type) {
+<<<<<<< HEAD
 #ifdef CONFIG_ETHERNET
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case LCS_FRAME_TYPE_ENET:
 		card->lan_type_trans = eth_type_trans;
 		dev = alloc_etherdev(0);
 		break;
+<<<<<<< HEAD
 #endif
 #ifdef CONFIG_TR
 	case LCS_FRAME_TYPE_TR:
@@ -2184,6 +2641,8 @@ lcs_new_device(struct ccwgroup_device *ccwgdev)
 		dev = alloc_fddidev(0);
 		break;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		LCS_DBF_TEXT(3, setup, "errinit");
 		pr_err(" Initialization failed\n");
@@ -2194,7 +2653,12 @@ lcs_new_device(struct ccwgroup_device *ccwgdev)
 	card->dev = dev;
 	card->dev->ml_priv = card;
 	card->dev->netdev_ops = &lcs_netdev_ops;
+<<<<<<< HEAD
 	memcpy(card->dev->dev_addr, card->mac, LCS_MAC_LENGTH);
+=======
+	card->dev->dev_port = card->portno;
+	eth_hw_addr_set(card->dev, card->mac);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_IP_MULTICAST
 	if (!lcs_check_multicast_support(card))
 		card->dev->netdev_ops = &lcs_mc_netdev_ops;
@@ -2232,7 +2696,11 @@ out_err:
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lcs_shutdown_device, called when setting the group device offline.
  */
 static int
@@ -2273,7 +2741,11 @@ lcs_shutdown_device(struct ccwgroup_device *ccwgdev)
 	return __lcs_shutdown_device(ccwgdev, 0);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * drive lcs recovery after startup and startlan initiated by Lan Gateway
  */
 static int
@@ -2304,7 +2776,11 @@ lcs_recovery(void *ptr)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * lcs_remove_device, free buffers and card
  */
 static void
@@ -2323,6 +2799,7 @@ lcs_remove_device(struct ccwgroup_device *ccwgdev)
 	}
 	if (card->dev)
 		unregister_netdev(card->dev);
+<<<<<<< HEAD
 	sysfs_remove_group(&ccwgdev->dev.kobj, &lcs_attr_group);
 	lcs_cleanup_card(card);
 	lcs_free_card(card);
@@ -2383,6 +2860,14 @@ static int lcs_restore(struct ccwgroup_device *gdev)
 	return lcs_pm_resume(card);
 }
 
+=======
+	lcs_cleanup_card(card);
+	lcs_free_card(card);
+	dev_set_drvdata(&ccwgdev->dev, NULL);
+	put_device(&ccwgdev->dev);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ccw_device_id lcs_ids[] = {
 	{CCW_DEVICE(0x3088, 0x08), .driver_info = lcs_channel_type_parallel},
 	{CCW_DEVICE(0x3088, 0x1f), .driver_info = lcs_channel_type_2216},
@@ -2399,10 +2884,17 @@ static struct ccw_driver lcs_ccw_driver = {
 	.ids	= lcs_ids,
 	.probe	= ccwgroup_probe_ccwdev,
 	.remove	= ccwgroup_remove_ccwdev,
+<<<<<<< HEAD
 	.int_class = IOINT_LCS,
 };
 
 /**
+=======
+	.int_class = IRQIO_LCS,
+};
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * LCS ccwgroup driver registration
  */
 static struct ccwgroup_driver lcs_group_driver = {
@@ -2410,6 +2902,7 @@ static struct ccwgroup_driver lcs_group_driver = {
 		.owner	= THIS_MODULE,
 		.name	= "lcs",
 	},
+<<<<<<< HEAD
 	.max_slaves  = 2,
 	.driver_id   = 0xD3C3E2,
 	.probe       = lcs_probe_device,
@@ -2451,6 +2944,37 @@ static const struct attribute_group *lcs_group_attr_groups[] = {
 };
 
 /**
+=======
+	.ccw_driver  = &lcs_ccw_driver,
+	.setup	     = lcs_probe_device,
+	.remove      = lcs_remove_device,
+	.set_online  = lcs_new_device,
+	.set_offline = lcs_shutdown_device,
+};
+
+static ssize_t group_store(struct device_driver *ddrv, const char *buf,
+			   size_t count)
+{
+	int err;
+	err = ccwgroup_create_dev(lcs_root_dev, &lcs_group_driver, 2, buf);
+	return err ? err : count;
+}
+static DRIVER_ATTR_WO(group);
+
+static struct attribute *lcs_drv_attrs[] = {
+	&driver_attr_group.attr,
+	NULL,
+};
+static struct attribute_group lcs_drv_attr_group = {
+	.attrs = lcs_drv_attrs,
+};
+static const struct attribute_group *lcs_drv_attr_groups[] = {
+	&lcs_drv_attr_group,
+	NULL,
+};
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  LCS Module/Kernel initialization function
  */
 static int
@@ -2464,13 +2988,21 @@ __init lcs_init_module(void)
 	if (rc)
 		goto out_err;
 	lcs_root_dev = root_device_register("lcs");
+<<<<<<< HEAD
 	rc = IS_ERR(lcs_root_dev) ? PTR_ERR(lcs_root_dev) : 0;
+=======
+	rc = PTR_ERR_OR_ZERO(lcs_root_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto register_err;
 	rc = ccw_driver_register(&lcs_ccw_driver);
 	if (rc)
 		goto ccw_err;
+<<<<<<< HEAD
 	lcs_group_driver.driver.groups = lcs_group_attr_groups;
+=======
+	lcs_group_driver.driver.groups = lcs_drv_attr_groups;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = ccwgroup_driver_register(&lcs_group_driver);
 	if (rc)
 		goto ccwgroup_err;
@@ -2488,7 +3020,11 @@ out_err:
 }
 
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  LCS module cleanup function
  */
 static void
@@ -2496,8 +3032,11 @@ __exit lcs_cleanup_module(void)
 {
 	pr_info("Terminating lcs module.\n");
 	LCS_DBF_TEXT(0, trace, "cleanup");
+<<<<<<< HEAD
 	driver_remove_file(&lcs_group_driver.driver,
 			   &driver_attr_group);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ccwgroup_driver_unregister(&lcs_group_driver);
 	ccw_driver_unregister(&lcs_ccw_driver);
 	root_device_unregister(lcs_root_dev);

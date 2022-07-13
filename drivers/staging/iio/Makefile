@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the industrial I/O core.
 #
 
+<<<<<<< HEAD
 obj-$(CONFIG_IIO) += industrialio.o
 industrialio-y := industrialio-core.o industrialio-event.o inkern.o
 industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
@@ -33,3 +38,10 @@ obj-y += magnetometer/
 obj-y += meter/
 obj-y += resolver/
 obj-y += trigger/
+=======
+obj-y += accel/
+obj-y += adc/
+obj-y += addac/
+obj-y += frequency/
+obj-y += impedance-analyzer/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

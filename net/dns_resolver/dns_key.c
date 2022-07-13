@@ -1,6 +1,10 @@
 /* Key type used to cache DNS lookups made by the kernel
  *
+<<<<<<< HEAD
  * See Documentation/networking/dns_resolver.txt
+=======
+ * See Documentation/networking/dns_resolver.rst
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   Copyright (c) 2007 Igor Mammedov
  *   Author(s): Igor Mammedov (niallain@gmail.com)
@@ -19,8 +23,12 @@
  *   the GNU Lesser General Public License for more details.
  *
  *   You should have received a copy of the GNU Lesser General Public License
+<<<<<<< HEAD
  *   along with this library; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+ *   along with this library; if not, see <http://www.gnu.org/licenses/>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -30,6 +38,10 @@
 #include <linux/keyctl.h>
 #include <linux/err.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
+=======
+#include <linux/dns_resolver.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <keys/dns_resolver-type.h>
 #include <keys/user-type.h>
 #include "internal.h"
@@ -38,8 +50,13 @@ MODULE_DESCRIPTION("DNS Resolver");
 MODULE_AUTHOR("Wang Lei");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 unsigned dns_resolver_debug;
 module_param_named(debug, dns_resolver_debug, uint, S_IWUSR | S_IRUGO);
+=======
+unsigned int dns_resolver_debug;
+module_param_named(debug, dns_resolver_debug, uint, 0644);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(debug, "DNS Resolver debugging mask");
 
 const struct cred *dns_resolver_cache;
@@ -47,23 +64,67 @@ const struct cred *dns_resolver_cache;
 #define	DNS_ERRORNO_OPTION	"dnserror"
 
 /*
+<<<<<<< HEAD
  * Instantiate a user defined key for dns_resolver.
  *
  * The data must be a NUL-terminated string, with the NUL char accounted in
  * datalen.
+=======
+ * Preparse instantiation data for a dns_resolver key.
+ *
+ * For normal hostname lookups, the data must be a NUL-terminated string, with
+ * the NUL char accounted in datalen.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If the data contains a '#' characters, then we take the clause after each
  * one to be an option of the form 'key=value'.  The actual data of interest is
  * the string leading up to the first '#'.  For instance:
  *
  *        "ip1,ip2,...#foo=bar"
+<<<<<<< HEAD
  */
 static int
 dns_resolver_instantiate(struct key *key, const void *_data, size_t datalen)
+=======
+ *
+ * For server list requests, the data must begin with a NUL char and be
+ * followed by a byte indicating the version of the data format.  Version 1
+ * looks something like (note this is packed):
+ *
+ *	u8      Non-string marker (ie. 0)
+ *	u8	Content (DNS_PAYLOAD_IS_*)
+ *	u8	Version (e.g. 1)
+ *	u8	Source of server list
+ *	u8	Lookup status of server list
+ *	u8	Number of servers
+ *	foreach-server {
+ *		__le16	Name length
+ *		__le16	Priority (as per SRV record, low first)
+ *		__le16	Weight (as per SRV record, higher first)
+ *		__le16	Port
+ *		u8	Source of address list
+ *		u8	Lookup status of address list
+ *		u8	Protocol (DNS_SERVER_PROTOCOL_*)
+ *		u8	Number of addresses
+ *		char[]	Name (not NUL-terminated)
+ *		foreach-address {
+ *			u8		Family (DNS_ADDRESS_IS_*)
+ *			union {
+ *				u8[4]	ipv4_addr
+ *				u8[16]	ipv6_addr
+ *			}
+ *		}
+ *	}
+ *
+ */
+static int
+dns_resolver_preparse(struct key_preparsed_payload *prep)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct user_key_payload *upayload;
 	unsigned long derrno;
 	int ret;
+<<<<<<< HEAD
 	size_t result_len = 0;
 	const char *data = _data, *end, *opt;
 
@@ -72,6 +133,50 @@ dns_resolver_instantiate(struct key *key, const void *_data, size_t datalen)
 	       (int)datalen, (int)datalen, data, datalen);
 
 	if (datalen <= 1 || !data || data[datalen - 1] != '\0')
+=======
+	int datalen = prep->datalen, result_len = 0;
+	const char *data = prep->data, *end, *opt;
+
+	if (datalen <= 1 || !data)
+		return -EINVAL;
+
+	if (data[0] == 0) {
+		const struct dns_server_list_v1_header *v1;
+
+		/* It may be a server list. */
+		if (datalen < sizeof(*v1))
+			return -EINVAL;
+
+		v1 = (const struct dns_server_list_v1_header *)data;
+		kenter("[%u,%u],%u", v1->hdr.content, v1->hdr.version, datalen);
+		if (v1->hdr.content != DNS_PAYLOAD_IS_SERVER_LIST) {
+			pr_warn_ratelimited(
+				"dns_resolver: Unsupported content type (%u)\n",
+				v1->hdr.content);
+			return -EINVAL;
+		}
+
+		if (v1->hdr.version != 1) {
+			pr_warn_ratelimited(
+				"dns_resolver: Unsupported server list version (%u)\n",
+				v1->hdr.version);
+			return -EINVAL;
+		}
+
+		if ((v1->status != DNS_LOOKUP_GOOD &&
+		     v1->status != DNS_LOOKUP_GOOD_WITH_BAD)) {
+			if (prep->expiry == TIME64_MAX)
+				prep->expiry = ktime_get_real_seconds() + 1;
+		}
+
+		result_len = datalen;
+		goto store_result;
+	}
+
+	kenter("'%*.*s',%u", datalen, datalen, data, datalen);
+
+	if (!data || data[datalen - 1] != '\0')
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	datalen--;
 
@@ -89,6 +194,7 @@ dns_resolver_instantiate(struct key *key, const void *_data, size_t datalen)
 		opt++;
 		kdebug("options: '%s'", opt);
 		do {
+<<<<<<< HEAD
 			const char *eq;
 			int opt_len, opt_nlen, opt_vlen, tmp;
 
@@ -109,16 +215,48 @@ dns_resolver_instantiate(struct key *key, const void *_data, size_t datalen)
 			tmp = opt_vlen >= 0 ? opt_vlen : 0;
 			kdebug("option '%*.*s' val '%*.*s'",
 			       opt_nlen, opt_nlen, opt, tmp, tmp, eq);
+=======
+			int opt_len, opt_nlen;
+			const char *eq;
+			char optval[128];
+
+			next_opt = memchr(opt, '#', end - opt) ?: end;
+			opt_len = next_opt - opt;
+			if (opt_len <= 0 || opt_len > sizeof(optval)) {
+				pr_warn_ratelimited("Invalid option length (%d) for dns_resolver key\n",
+						    opt_len);
+				return -EINVAL;
+			}
+
+			eq = memchr(opt, '=', opt_len);
+			if (eq) {
+				opt_nlen = eq - opt;
+				eq++;
+				memcpy(optval, eq, next_opt - eq);
+				optval[next_opt - eq] = '\0';
+			} else {
+				opt_nlen = opt_len;
+				optval[0] = '\0';
+			}
+
+			kdebug("option '%*.*s' val '%s'",
+			       opt_nlen, opt_nlen, opt, optval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* see if it's an error number representing a DNS error
 			 * that's to be recorded as the result in this key */
 			if (opt_nlen == sizeof(DNS_ERRORNO_OPTION) - 1 &&
 			    memcmp(opt, DNS_ERRORNO_OPTION, opt_nlen) == 0) {
 				kdebug("dns error number option");
+<<<<<<< HEAD
 				if (opt_vlen <= 0)
 					goto bad_option_value;
 
 				ret = strict_strtoul(eq, 10, &derrno);
+=======
+
+				ret = kstrtoul(optval, 10, &derrno);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (ret < 0)
 					goto bad_option_value;
 
@@ -126,21 +264,31 @@ dns_resolver_instantiate(struct key *key, const void *_data, size_t datalen)
 					goto bad_option_value;
 
 				kdebug("dns error no. = %lu", derrno);
+<<<<<<< HEAD
 				key->type_data.x[0] = -derrno;
+=======
+				prep->payload.data[dns_key_error] = ERR_PTR(-derrno);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 
 		bad_option_value:
+<<<<<<< HEAD
 			printk(KERN_WARNING
 			       "Option '%*.*s' to dns_resolver key %d:"
 			       " bad/missing value\n",
 			       opt_nlen, opt_nlen, opt, key->serial);
+=======
+			pr_warn_ratelimited("Option '%*.*s' to dns_resolver key: bad/missing value\n",
+					    opt_nlen, opt_nlen, opt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		} while (opt = next_opt + 1, opt < end);
 	}
 
 	/* don't cache the result if we're caching an error saying there's no
 	 * result */
+<<<<<<< HEAD
 	if (key->type_data.x[0]) {
 		kleave(" = 0 [h_error %ld]", key->type_data.x[0]);
 		return 0;
@@ -150,6 +298,16 @@ dns_resolver_instantiate(struct key *key, const void *_data, size_t datalen)
 	ret = key_payload_reserve(key, result_len);
 	if (ret < 0)
 		return -EINVAL;
+=======
+	if (prep->payload.data[dns_key_error]) {
+		kleave(" = 0 [h_error %ld]", PTR_ERR(prep->payload.data[dns_key_error]));
+		return 0;
+	}
+
+store_result:
+	kdebug("store result");
+	prep->quotalen = result_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	upayload = kmalloc(sizeof(*upayload) + result_len + 1, GFP_KERNEL);
 	if (!upayload) {
@@ -160,23 +318,49 @@ dns_resolver_instantiate(struct key *key, const void *_data, size_t datalen)
 	upayload->datalen = result_len;
 	memcpy(upayload->data, data, result_len);
 	upayload->data[result_len] = '\0';
+<<<<<<< HEAD
 	rcu_assign_pointer(key->payload.data, upayload);
 
+=======
+
+	prep->payload.data[dns_key_data] = upayload;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kleave(" = 0");
 	return 0;
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Clean up the preparse data
+ */
+static void dns_resolver_free_preparse(struct key_preparsed_payload *prep)
+{
+	pr_devel("==>%s()\n", __func__);
+
+	kfree(prep->payload.data[dns_key_data]);
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The description is of the form "[<type>:]<domain_name>"
  *
  * The domain name may be a simple name or an absolute domain name (which
  * should end with a period).  The domain name is case-independent.
  */
+<<<<<<< HEAD
 static int
 dns_resolver_match(const struct key *key, const void *description)
 {
 	int slen, dlen, ret = 0;
 	const char *src = key->description, *dsp = description;
+=======
+static bool dns_resolver_cmp(const struct key *key,
+			     const struct key_match_data *match_data)
+{
+	int slen, dlen, ret = 0;
+	const char *src = key->description, *dsp = match_data->raw_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kenter("%s,%s", src, dsp);
 
@@ -205,14 +389,34 @@ no_match:
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Preparse the match criterion.
+ */
+static int dns_resolver_match_preparse(struct key_match_data *match_data)
+{
+	match_data->lookup_type = KEYRING_SEARCH_LOOKUP_ITERATE;
+	match_data->cmp = dns_resolver_cmp;
+	return 0;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Describe a DNS key
  */
 static void dns_resolver_describe(const struct key *key, struct seq_file *m)
 {
+<<<<<<< HEAD
 	int err = key->type_data.x[0];
 
 	seq_puts(m, key->description);
 	if (key_is_instantiated(key)) {
+=======
+	seq_puts(m, key->description);
+	if (key_is_positive(key)) {
+		int err = PTR_ERR(key->payload.data[dns_key_error]);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			seq_printf(m, ": %d", err);
 		else
@@ -225,18 +429,35 @@ static void dns_resolver_describe(const struct key *key, struct seq_file *m)
  * - the key's semaphore is read-locked
  */
 static long dns_resolver_read(const struct key *key,
+<<<<<<< HEAD
 			      char __user *buffer, size_t buflen)
 {
 	if (key->type_data.x[0])
 		return key->type_data.x[0];
+=======
+			      char *buffer, size_t buflen)
+{
+	int err = PTR_ERR(key->payload.data[dns_key_error]);
+
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return user_read(key, buffer, buflen);
 }
 
 struct key_type key_type_dns_resolver = {
 	.name		= "dns_resolver",
+<<<<<<< HEAD
 	.instantiate	= dns_resolver_instantiate,
 	.match		= dns_resolver_match,
+=======
+	.flags		= KEY_TYPE_NET_DOMAIN | KEY_TYPE_INSTANT_REAP,
+	.preparse	= dns_resolver_preparse,
+	.free_preparse	= dns_resolver_free_preparse,
+	.instantiate	= generic_key_instantiate,
+	.match_preparse	= dns_resolver_match_preparse,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.revoke		= user_revoke,
 	.destroy	= user_destroy,
 	.describe	= dns_resolver_describe,
@@ -249,15 +470,19 @@ static int __init init_dns_resolver(void)
 	struct key *keyring;
 	int ret;
 
+<<<<<<< HEAD
 	printk(KERN_NOTICE "Registering the %s key type\n",
 	       key_type_dns_resolver.name);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* create an override credential set with a special thread keyring in
 	 * which DNS requests are cached
 	 *
 	 * this is used to prevent malicious redirections from being installed
 	 * with add_key().
 	 */
+<<<<<<< HEAD
 	cred = prepare_kernel_cred(NULL);
 	if (!cred)
 		return -ENOMEM;
@@ -266,15 +491,29 @@ static int __init init_dns_resolver(void)
 			    (KEY_POS_ALL & ~KEY_POS_SETATTR) |
 			    KEY_USR_VIEW | KEY_USR_READ,
 			    KEY_ALLOC_NOT_IN_QUOTA);
+=======
+	cred = prepare_kernel_cred(&init_task);
+	if (!cred)
+		return -ENOMEM;
+
+	keyring = keyring_alloc(".dns_resolver",
+				GLOBAL_ROOT_UID, GLOBAL_ROOT_GID, cred,
+				(KEY_POS_ALL & ~KEY_POS_SETATTR) |
+				KEY_USR_VIEW | KEY_USR_READ,
+				KEY_ALLOC_NOT_IN_QUOTA, NULL, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(keyring)) {
 		ret = PTR_ERR(keyring);
 		goto failed_put_cred;
 	}
 
+<<<<<<< HEAD
 	ret = key_instantiate_and_link(keyring, NULL, 0, NULL, NULL);
 	if (ret < 0)
 		goto failed_put_key;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = register_key_type(&key_type_dns_resolver);
 	if (ret < 0)
 		goto failed_put_key;
@@ -301,8 +540,11 @@ static void __exit exit_dns_resolver(void)
 	key_revoke(dns_resolver_cache->thread_keyring);
 	unregister_key_type(&key_type_dns_resolver);
 	put_cred(dns_resolver_cache);
+<<<<<<< HEAD
 	printk(KERN_NOTICE "Unregistered %s key type\n",
 	       key_type_dns_resolver.name);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(init_dns_resolver)

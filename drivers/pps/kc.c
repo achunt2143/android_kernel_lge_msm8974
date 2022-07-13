@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PPS kernel consumer API
  *
  * Copyright (C) 2009-2010   Alexander Gordeev <lasaine@lvk.cs.msu.su>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -34,10 +41,17 @@
  */
 
 /* state variables to bind kernel consumer */
+<<<<<<< HEAD
 DEFINE_SPINLOCK(pps_kc_hardpps_lock);
 /* PPS API (RFC 2783): current source and mode for kernel consumer */
 struct pps_device *pps_kc_hardpps_dev;	/* unique pointer to device */
 int pps_kc_hardpps_mode;		/* mode bits for kernel consumer */
+=======
+static DEFINE_SPINLOCK(pps_kc_hardpps_lock);
+/* PPS API (RFC 2783): current source and mode for kernel consumer */
+static struct pps_device *pps_kc_hardpps_dev;	/* unique pointer to device */
+static int pps_kc_hardpps_mode;		/* mode bits for kernel consumer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* pps_kc_bind - control PPS kernel consumer binding
  * @pps: the PPS source

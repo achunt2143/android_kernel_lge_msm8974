@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cpumask.h>
 #include <linux/fs.h>
 #include <linux/init.h>
@@ -5,11 +9,21 @@
 #include <linux/kernel_stat.h>
 #include <linux/proc_fs.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <linux/time.h>
 #include <linux/irqnr.h>
 #include <asm/cputime.h>
+=======
+#include <linux/sched/stat.h>
+#include <linux/seq_file.h>
+#include <linux/slab.h>
+#include <linux/time.h>
+#include <linux/time_namespace.h>
+#include <linux/irqnr.h>
+#include <linux/sched/cputime.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/tick.h>
 
 #ifndef arch_irq_stat_cpu
@@ -19,6 +33,7 @@
 #define arch_irq_stat() 0
 #endif
 
+<<<<<<< HEAD
 #ifdef arch_idle_time
 
 static cputime64_t get_idle_time(int cpu)
@@ -55,10 +70,25 @@ static u64 get_idle_time(int cpu)
 		idle = kcpustat_cpu(cpu).cpustat[CPUTIME_IDLE];
 	else
 		idle = usecs_to_cputime64(idle_time);
+=======
+u64 get_idle_time(struct kernel_cpustat *kcs, int cpu)
+{
+	u64 idle, idle_usecs = -1ULL;
+
+	if (cpu_online(cpu))
+		idle_usecs = get_cpu_idle_time_us(cpu, NULL);
+
+	if (idle_usecs == -1ULL)
+		/* !NO_HZ or cpu offline so we can rely on cpustat.idle */
+		idle = kcs->cpustat[CPUTIME_IDLE];
+	else
+		idle = idle_usecs * NSEC_PER_USEC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return idle;
 }
 
+<<<<<<< HEAD
 static u64 get_iowait_time(int cpu)
 {
 	u64 iowait, iowait_time = -1ULL;
@@ -71,26 +101,75 @@ static u64 get_iowait_time(int cpu)
 		iowait = kcpustat_cpu(cpu).cpustat[CPUTIME_IOWAIT];
 	else
 		iowait = usecs_to_cputime64(iowait_time);
+=======
+static u64 get_iowait_time(struct kernel_cpustat *kcs, int cpu)
+{
+	u64 iowait, iowait_usecs = -1ULL;
+
+	if (cpu_online(cpu))
+		iowait_usecs = get_cpu_iowait_time_us(cpu, NULL);
+
+	if (iowait_usecs == -1ULL)
+		/* !NO_HZ or cpu offline so we can rely on cpustat.iowait */
+		iowait = kcs->cpustat[CPUTIME_IOWAIT];
+	else
+		iowait = iowait_usecs * NSEC_PER_USEC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return iowait;
 }
 
+<<<<<<< HEAD
 #endif
+=======
+static void show_irq_gap(struct seq_file *p, unsigned int gap)
+{
+	static const char zeros[] = " 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0";
+
+	while (gap > 0) {
+		unsigned int inc;
+
+		inc = min_t(unsigned int, gap, ARRAY_SIZE(zeros) / 2);
+		seq_write(p, zeros, 2 * inc);
+		gap -= inc;
+	}
+}
+
+static void show_all_irqs(struct seq_file *p)
+{
+	unsigned int i, next = 0;
+
+	for_each_active_irq(i) {
+		show_irq_gap(p, i - next);
+		seq_put_decimal_ull(p, " ", kstat_irqs_usr(i));
+		next = i + 1;
+	}
+	show_irq_gap(p, nr_irqs - next);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int show_stat(struct seq_file *p, void *v)
 {
 	int i, j;
+<<<<<<< HEAD
 	unsigned long jif;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 user, nice, system, idle, iowait, irq, softirq, steal;
 	u64 guest, guest_nice;
 	u64 sum = 0;
 	u64 sum_softirq = 0;
 	unsigned int per_softirq_sums[NR_SOFTIRQS] = {0};
+<<<<<<< HEAD
 	struct timespec boottime;
+=======
+	struct timespec64 boottime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	user = nice = system = idle = iowait =
 		irq = softirq = steal = 0;
 	guest = guest_nice = 0;
+<<<<<<< HEAD
 	getboottime(&boottime);
 	jif = boottime.tv_sec;
 
@@ -107,6 +186,30 @@ static int show_stat(struct seq_file *p, void *v)
 		guest_nice += kcpustat_cpu(i).cpustat[CPUTIME_GUEST_NICE];
 		sum += kstat_cpu_irqs_sum(i);
 		sum += arch_irq_stat_cpu(i);
+=======
+	getboottime64(&boottime);
+	/* shift boot timestamp according to the timens offset */
+	timens_sub_boottime(&boottime);
+
+	for_each_possible_cpu(i) {
+		struct kernel_cpustat kcpustat;
+		u64 *cpustat = kcpustat.cpustat;
+
+		kcpustat_cpu_fetch(&kcpustat, i);
+
+		user		+= cpustat[CPUTIME_USER];
+		nice		+= cpustat[CPUTIME_NICE];
+		system		+= cpustat[CPUTIME_SYSTEM];
+		idle		+= get_idle_time(&kcpustat, i);
+		iowait		+= get_iowait_time(&kcpustat, i);
+		irq		+= cpustat[CPUTIME_IRQ];
+		softirq		+= cpustat[CPUTIME_SOFTIRQ];
+		steal		+= cpustat[CPUTIME_STEAL];
+		guest		+= cpustat[CPUTIME_GUEST];
+		guest_nice	+= cpustat[CPUTIME_GUEST_NICE];
+		sum		+= kstat_cpu_irqs_sum(i);
+		sum		+= arch_irq_stat_cpu(i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (j = 0; j < NR_SOFTIRQS; j++) {
 			unsigned int softirq_stat = kstat_softirqs_cpu(j, i);
@@ -117,6 +220,7 @@ static int show_stat(struct seq_file *p, void *v)
 	}
 	sum += arch_irq_stat();
 
+<<<<<<< HEAD
 	seq_puts(p, "cpu ");
 	seq_put_decimal_ull(p, ' ', cputime64_to_clock_t(user));
 	seq_put_decimal_ull(p, ' ', cputime64_to_clock_t(nice));
@@ -169,14 +273,77 @@ static int show_stat(struct seq_file *p, void *v)
 		"procs_blocked %lu\n",
 		nr_context_switches(),
 		(unsigned long)jif,
+=======
+	seq_put_decimal_ull(p, "cpu  ", nsec_to_clock_t(user));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(nice));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(system));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(idle));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(iowait));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(irq));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(softirq));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(steal));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(guest));
+	seq_put_decimal_ull(p, " ", nsec_to_clock_t(guest_nice));
+	seq_putc(p, '\n');
+
+	for_each_online_cpu(i) {
+		struct kernel_cpustat kcpustat;
+		u64 *cpustat = kcpustat.cpustat;
+
+		kcpustat_cpu_fetch(&kcpustat, i);
+
+		/* Copy values here to work around gcc-2.95.3, gcc-2.96 */
+		user		= cpustat[CPUTIME_USER];
+		nice		= cpustat[CPUTIME_NICE];
+		system		= cpustat[CPUTIME_SYSTEM];
+		idle		= get_idle_time(&kcpustat, i);
+		iowait		= get_iowait_time(&kcpustat, i);
+		irq		= cpustat[CPUTIME_IRQ];
+		softirq		= cpustat[CPUTIME_SOFTIRQ];
+		steal		= cpustat[CPUTIME_STEAL];
+		guest		= cpustat[CPUTIME_GUEST];
+		guest_nice	= cpustat[CPUTIME_GUEST_NICE];
+		seq_printf(p, "cpu%d", i);
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(user));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(nice));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(system));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(idle));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(iowait));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(irq));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(softirq));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(steal));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(guest));
+		seq_put_decimal_ull(p, " ", nsec_to_clock_t(guest_nice));
+		seq_putc(p, '\n');
+	}
+	seq_put_decimal_ull(p, "intr ", (unsigned long long)sum);
+
+	show_all_irqs(p);
+
+	seq_printf(p,
+		"\nctxt %llu\n"
+		"btime %llu\n"
+		"processes %lu\n"
+		"procs_running %u\n"
+		"procs_blocked %u\n",
+		nr_context_switches(),
+		(unsigned long long)boottime.tv_sec,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		total_forks,
 		nr_running(),
 		nr_iowait());
 
+<<<<<<< HEAD
 	seq_printf(p, "softirq %llu", (unsigned long long)sum_softirq);
 
 	for (i = 0; i < NR_SOFTIRQS; i++)
 		seq_put_decimal_ull(p, ' ', per_softirq_sums[i]);
+=======
+	seq_put_decimal_ull(p, "softirq ", (unsigned long long)sum_softirq);
+
+	for (i = 0; i < NR_SOFTIRQS; i++)
+		seq_put_decimal_ull(p, " ", per_softirq_sums[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	seq_putc(p, '\n');
 
 	return 0;
@@ -184,6 +351,7 @@ static int show_stat(struct seq_file *p, void *v)
 
 static int stat_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	unsigned size = 1024 + 128 * num_possible_cpus();
 	char *buf;
 	struct seq_file *m;
@@ -214,11 +382,33 @@ static const struct file_operations proc_stat_operations = {
 	.read		= seq_read,
 	.llseek		= seq_lseek,
 	.release	= single_release,
+=======
+	unsigned int size = 1024 + 128 * num_online_cpus();
+
+	/* minimum size to display an interrupt count : 2 bytes */
+	size += 2 * nr_irqs;
+	return single_open_size(file, show_stat, NULL, size);
+}
+
+static const struct proc_ops stat_proc_ops = {
+	.proc_flags	= PROC_ENTRY_PERMANENT,
+	.proc_open	= stat_open,
+	.proc_read_iter	= seq_read_iter,
+	.proc_lseek	= seq_lseek,
+	.proc_release	= single_release,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init proc_stat_init(void)
 {
+<<<<<<< HEAD
 	proc_create("stat", 0, NULL, &proc_stat_operations);
 	return 0;
 }
 module_init(proc_stat_init);
+=======
+	proc_create("stat", 0, NULL, &stat_proc_ops);
+	return 0;
+}
+fs_initcall(proc_stat_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

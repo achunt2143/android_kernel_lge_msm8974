@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright(c) 2007 Intel Corporation. All rights reserved.
  * Copyright(c) 2008 Red Hat, Inc.  All rights reserved.
  * Copyright(c) 2008 Mike Christie
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
  * version 2, as published by the Free Software Foundation.
@@ -16,6 +21,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Maintained at www.Open-FCoE.org
  */
 
@@ -38,8 +45,13 @@
 #include <scsi/fc/fc_fc2.h>
 
 #include <scsi/libfc.h>
+<<<<<<< HEAD
 #include <scsi/fc_encode.h>
 
+=======
+
+#include "fc_encode.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "fc_libfc.h"
 
 static struct kmem_cache *scsi_pkt_cachep;
@@ -57,6 +69,7 @@ static struct kmem_cache *scsi_pkt_cachep;
 #define FC_SRB_READ		(1 << 1)
 #define FC_SRB_WRITE		(1 << 0)
 
+<<<<<<< HEAD
 /*
  * The SCp.ptr should be tested and set under the scsi_pkt_queue lock
  */
@@ -65,6 +78,12 @@ static struct kmem_cache *scsi_pkt_cachep;
 #define CMD_COMPL_STATUS(Cmnd)	    ((Cmnd)->SCp.this_residual)
 #define CMD_SCSI_STATUS(Cmnd)	    ((Cmnd)->SCp.Status)
 #define CMD_RESID_LEN(Cmnd)	    ((Cmnd)->SCp.buffers_residual)
+=======
+static struct libfc_cmd_priv *libfc_priv(struct scsi_cmnd *cmd)
+{
+	return scsi_cmd_priv(cmd);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct fc_fcp_internal - FCP layer internal data
@@ -97,7 +116,11 @@ static void fc_fcp_complete_locked(struct fc_fcp_pkt *);
 static void fc_tm_done(struct fc_seq *, struct fc_frame *, void *);
 static void fc_fcp_error(struct fc_fcp_pkt *, struct fc_frame *);
 static void fc_fcp_recovery(struct fc_fcp_pkt *, u8 code);
+<<<<<<< HEAD
 static void fc_fcp_timeout(unsigned long);
+=======
+static void fc_fcp_timeout(struct timer_list *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void fc_fcp_rec(struct fc_fcp_pkt *);
 static void fc_fcp_rec_error(struct fc_fcp_pkt *, struct fc_frame *);
 static void fc_fcp_rec_resp(struct fc_seq *, struct fc_frame *, void *);
@@ -122,6 +145,10 @@ static void fc_fcp_srr_error(struct fc_fcp_pkt *, struct fc_frame *);
 #define FC_HRD_ERROR		9
 #define FC_CRC_ERROR		10
 #define FC_TIMED_OUT		11
+<<<<<<< HEAD
+=======
+#define FC_TRANS_RESET		12
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Error recovery timeout values.
@@ -153,11 +180,20 @@ static struct fc_fcp_pkt *fc_fcp_pkt_alloc(struct fc_lport *lport, gfp_t gfp)
 		memset(fsp, 0, sizeof(*fsp));
 		fsp->lp = lport;
 		fsp->xfer_ddp = FC_XID_UNKNOWN;
+<<<<<<< HEAD
 		atomic_set(&fsp->ref_cnt, 1);
 		init_timer(&fsp->timer);
 		fsp->timer.data = (unsigned long)fsp;
 		INIT_LIST_HEAD(&fsp->list);
 		spin_lock_init(&fsp->scsi_pkt_lock);
+=======
+		refcount_set(&fsp->ref_cnt, 1);
+		timer_setup(&fsp->timer, NULL, 0);
+		INIT_LIST_HEAD(&fsp->list);
+		spin_lock_init(&fsp->scsi_pkt_lock);
+	} else {
+		this_cpu_inc(lport->stats->FcpPktAllocFails);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return fsp;
 }
@@ -171,7 +207,11 @@ static struct fc_fcp_pkt *fc_fcp_pkt_alloc(struct fc_lport *lport, gfp_t gfp)
  */
 static void fc_fcp_pkt_release(struct fc_fcp_pkt *fsp)
 {
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&fsp->ref_cnt)) {
+=======
+	if (refcount_dec_and_test(&fsp->ref_cnt)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct fc_fcp_internal *si = fc_get_scsi_internal(fsp->lp);
 
 		mempool_free(fsp, si->scsi_pkt_pool);
@@ -184,6 +224,7 @@ static void fc_fcp_pkt_release(struct fc_fcp_pkt *fsp)
  */
 static void fc_fcp_pkt_hold(struct fc_fcp_pkt *fsp)
 {
+<<<<<<< HEAD
 	atomic_inc(&fsp->ref_cnt);
 }
 
@@ -193,6 +234,17 @@ static void fc_fcp_pkt_hold(struct fc_fcp_pkt *fsp)
  * @fsp: The FCP packet to be released
  *
  * This routine is called by a destructor callback in the exch_seq_send()
+=======
+	refcount_inc(&fsp->ref_cnt);
+}
+
+/**
+ * fc_fcp_pkt_destroy() - Release hold on a fcp_pkt
+ * @seq: The sequence that the FCP packet is on (required by destructor API)
+ * @fsp: The FCP packet to be released
+ *
+ * This routine is called by a destructor callback in the fc_exch_seq_send()
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * routine of the libfc Transport Template. The 'struct fc_seq' is a required
  * argument even though it is not used by this routine.
  *
@@ -250,8 +302,26 @@ static inline void fc_fcp_unlock_pkt(struct fc_fcp_pkt *fsp)
  */
 static void fc_fcp_timer_set(struct fc_fcp_pkt *fsp, unsigned long delay)
 {
+<<<<<<< HEAD
 	if (!(fsp->state & FC_SRB_COMPL))
 		mod_timer(&fsp->timer, jiffies + delay);
+=======
+	if (!(fsp->state & FC_SRB_COMPL)) {
+		mod_timer(&fsp->timer, jiffies + delay);
+		fsp->timer_delay = delay;
+	}
+}
+
+static void fc_fcp_abort_done(struct fc_fcp_pkt *fsp)
+{
+	fsp->state |= FC_SRB_ABORTED;
+	fsp->state &= ~FC_SRB_ABORT_PENDING;
+
+	if (fsp->wait_for_comp)
+		complete(&fsp->tm_done);
+	else
+		fc_fcp_complete_locked(fsp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -261,32 +331,73 @@ static void fc_fcp_timer_set(struct fc_fcp_pkt *fsp, unsigned long delay)
  */
 static int fc_fcp_send_abort(struct fc_fcp_pkt *fsp)
 {
+<<<<<<< HEAD
 	if (!fsp->seq_ptr)
 		return -EINVAL;
 
 	fsp->state |= FC_SRB_ABORT_PENDING;
 	return fsp->lp->tt.seq_exch_abort(fsp->seq_ptr, 0);
+=======
+	int rc;
+
+	if (!fsp->seq_ptr)
+		return -EINVAL;
+
+	if (fsp->state & FC_SRB_ABORT_PENDING) {
+		FC_FCP_DBG(fsp, "abort already pending\n");
+		return -EBUSY;
+	}
+
+	this_cpu_inc(fsp->lp->stats->FcpPktAborts);
+
+	fsp->state |= FC_SRB_ABORT_PENDING;
+	rc = fc_seq_exch_abort(fsp->seq_ptr, 0);
+	/*
+	 * fc_seq_exch_abort() might return -ENXIO if
+	 * the sequence is already completed
+	 */
+	if (rc == -ENXIO) {
+		fc_fcp_abort_done(fsp);
+		rc = 0;
+	}
+	return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fc_fcp_retry_cmd() - Retry a fcp_pkt
  * @fsp: The FCP packet to be retried
+<<<<<<< HEAD
+=======
+ * @status_code: The FCP status code to set
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Sets the status code to be FC_ERROR and then calls
  * fc_fcp_complete_locked() which in turn calls fc_io_compl().
  * fc_io_compl() will notify the SCSI-ml that the I/O is done.
  * The SCSI-ml will retry the command.
  */
+<<<<<<< HEAD
 static void fc_fcp_retry_cmd(struct fc_fcp_pkt *fsp)
 {
 	if (fsp->seq_ptr) {
 		fsp->lp->tt.exch_done(fsp->seq_ptr);
+=======
+static void fc_fcp_retry_cmd(struct fc_fcp_pkt *fsp, int status_code)
+{
+	if (fsp->seq_ptr) {
+		fc_exch_done(fsp->seq_ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fsp->seq_ptr = NULL;
 	}
 
 	fsp->state &= ~FC_SRB_ABORT_PENDING;
 	fsp->io_status = 0;
+<<<<<<< HEAD
 	fsp->status_code = FC_ERROR;
+=======
+	fsp->status_code = status_code;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_fcp_complete_locked(fsp);
 }
 
@@ -376,11 +487,19 @@ unlock:
  * can_queue. Eventually we will hit the point where we run
  * on all reserved structs.
  */
+<<<<<<< HEAD
 static void fc_fcp_can_queue_ramp_down(struct fc_lport *lport)
+=======
+static bool fc_fcp_can_queue_ramp_down(struct fc_lport *lport)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fc_fcp_internal *si = fc_get_scsi_internal(lport);
 	unsigned long flags;
 	int can_queue;
+<<<<<<< HEAD
+=======
+	bool changed = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(lport->host->host_lock, flags);
 
@@ -396,11 +515,19 @@ static void fc_fcp_can_queue_ramp_down(struct fc_lport *lport)
 	if (!can_queue)
 		can_queue = 1;
 	lport->host->can_queue = can_queue;
+<<<<<<< HEAD
 	shost_printk(KERN_ERR, lport->host, "libfc: Could not allocate frame.\n"
 		     "Reducing can_queue to %d.\n", can_queue);
 
 unlock:
 	spin_unlock_irqrestore(lport->host->host_lock, flags);
+=======
+	changed = true;
+
+unlock:
+	spin_unlock_irqrestore(lport->host->host_lock, flags);
+	return changed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -420,12 +547,40 @@ static inline struct fc_frame *fc_fcp_frame_alloc(struct fc_lport *lport,
 	if (likely(fp))
 		return fp;
 
+<<<<<<< HEAD
 	/* error case */
 	fc_fcp_can_queue_ramp_down(lport);
+=======
+	this_cpu_inc(lport->stats->FcpFrameAllocFails);
+	/* error case */
+	fc_fcp_can_queue_ramp_down(lport);
+	shost_printk(KERN_ERR, lport->host,
+		     "libfc: Could not allocate frame, "
+		     "reducing can_queue to %d.\n", lport->host->can_queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * get_fsp_rec_tov() - Helper function to get REC_TOV
+ * @fsp: the FCP packet
+ *
+ * Returns rec tov in jiffies as rpriv->e_d_tov + 1 second
+ */
+static inline unsigned int get_fsp_rec_tov(struct fc_fcp_pkt *fsp)
+{
+	struct fc_rport_libfc_priv *rpriv = fsp->rport->dd_data;
+	unsigned int e_d_tov = FC_DEF_E_D_TOV;
+
+	if (rpriv && rpriv->e_d_tov > e_d_tov)
+		e_d_tov = rpriv->e_d_tov;
+	return msecs_to_jiffies(e_d_tov) + HZ;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fc_fcp_recv_data() - Handler for receiving SCSI-FCP data from a target
  * @fsp: The FCP packet the data is on
  * @fp:	 The data frame
@@ -434,7 +589,10 @@ static void fc_fcp_recv_data(struct fc_fcp_pkt *fsp, struct fc_frame *fp)
 {
 	struct scsi_cmnd *sc = fsp->cmd;
 	struct fc_lport *lport = fsp->lp;
+<<<<<<< HEAD
 	struct fcoe_dev_stats *stats;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_frame_header *fh;
 	size_t start_offset;
 	size_t offset;
@@ -496,6 +654,7 @@ static void fc_fcp_recv_data(struct fc_fcp_pkt *fsp, struct fc_frame *fp)
 
 		if (~crc != le32_to_cpu(fr_crc(fp))) {
 crc_err:
+<<<<<<< HEAD
 			stats = per_cpu_ptr(lport->dev_stats, get_cpu());
 			stats->ErrorFrames++;
 			/* per cpu count, not total count, but OK for limit */
@@ -504,6 +663,14 @@ crc_err:
 				       "frame for port (%6.6x)\n",
 				       lport->port_id);
 			put_cpu();
+=======
+			this_cpu_inc(lport->stats->ErrorFrames);
+			/* per cpu count, not total count, but OK for limit */
+			if (this_cpu_inc_return(lport->stats->InvalidCRCCount) < FC_MAX_ERROR_CNT)
+				printk(KERN_WARNING "libfc: CRC error on data "
+				       "frame for port (%6.6x)\n",
+				       lport->port_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Assume the frame is total garbage.
 			 * We may have copied it over the good part
@@ -528,8 +695,15 @@ crc_err:
 	 * and completes the transfer, call the completion handler.
 	 */
 	if (unlikely(fsp->state & FC_SRB_RCV_STATUS) &&
+<<<<<<< HEAD
 	    fsp->xfer_len == fsp->data_len - fsp->scsi_resid)
 		fc_fcp_complete_locked(fsp);
+=======
+	    fsp->xfer_len == fsp->data_len - fsp->scsi_resid) {
+		FC_FCP_DBG( fsp, "complete out-of-order sequence\n" );
+		fc_fcp_complete_locked(fsp);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 err:
 	fc_fcp_recovery(fsp, host_bcode);
@@ -538,7 +712,11 @@ err:
 /**
  * fc_fcp_send_data() - Send SCSI data to a target
  * @fsp:      The FCP packet the data is on
+<<<<<<< HEAD
  * @sp:	      The sequence the data is to be sent on
+=======
+ * @seq:      The sequence the data is to be sent on
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @offset:   The starting offset for this data request
  * @seq_blen: The burst length for this data request
  *
@@ -601,7 +779,11 @@ static int fc_fcp_send_data(struct fc_fcp_pkt *fsp, struct fc_seq *seq,
 	remaining = seq_blen;
 	fh_parm_offset = frame_offset = offset;
 	tlen = 0;
+<<<<<<< HEAD
 	seq = lport->tt.seq_start_next(seq);
+=======
+	seq = fc_seq_start_next(seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	f_ctl = FC_FC_REL_OFF;
 	WARN_ON(!seq);
 
@@ -679,7 +861,11 @@ static int fc_fcp_send_data(struct fc_fcp_pkt *fsp, struct fc_seq *seq,
 		/*
 		 * send fragment using for a sequence.
 		 */
+<<<<<<< HEAD
 		error = lport->tt.seq_send(lport, seq, fp);
+=======
+		error = fc_seq_send(lport, seq, fp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error) {
 			WARN_ON(1);		/* send error should be rare */
 			return error;
@@ -709,7 +895,11 @@ static void fc_fcp_abts_resp(struct fc_fcp_pkt *fsp, struct fc_frame *fp)
 		brp = fc_frame_payload_get(fp, sizeof(*brp));
 		if (brp && brp->br_reason == FC_BA_RJT_LOG_ERR)
 			break;
+<<<<<<< HEAD
 		/* fall thru */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		/*
 		 * we will let the command timeout
@@ -719,6 +909,7 @@ static void fc_fcp_abts_resp(struct fc_fcp_pkt *fsp, struct fc_frame *fp)
 		ba_done = 0;
 	}
 
+<<<<<<< HEAD
 	if (ba_done) {
 		fsp->state |= FC_SRB_ABORTED;
 		fsp->state &= ~FC_SRB_ABORT_PENDING;
@@ -728,6 +919,10 @@ static void fc_fcp_abts_resp(struct fc_fcp_pkt *fsp, struct fc_frame *fp)
 		else
 			fc_fcp_complete_locked(fsp);
 	}
+=======
+	if (ba_done)
+		fc_fcp_abort_done(fsp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -756,8 +951,16 @@ static void fc_fcp_recv(struct fc_seq *seq, struct fc_frame *fp, void *arg)
 	fh = fc_frame_header_get(fp);
 	r_ctl = fh->fh_r_ctl;
 
+<<<<<<< HEAD
 	if (lport->state != LPORT_ST_READY)
 		goto out;
+=======
+	if (lport->state != LPORT_ST_READY) {
+		FC_FCP_DBG(fsp, "lport state %d, ignoring r_ctl %x\n",
+			   lport->state, r_ctl);
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fc_fcp_lock_pkt(fsp))
 		goto out;
 
@@ -766,8 +969,15 @@ static void fc_fcp_recv(struct fc_seq *seq, struct fc_frame *fp, void *arg)
 		goto unlock;
 	}
 
+<<<<<<< HEAD
 	if (fsp->state & (FC_SRB_ABORTED | FC_SRB_ABORT_PENDING))
 		goto unlock;
+=======
+	if (fsp->state & (FC_SRB_ABORTED | FC_SRB_ABORT_PENDING)) {
+		FC_FCP_DBG(fsp, "command aborted, ignoring r_ctl %x\n", r_ctl);
+		goto unlock;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (r_ctl == FC_RCTL_DD_DATA_DESC) {
 		/*
@@ -843,7 +1053,12 @@ static void fc_fcp_resp(struct fc_fcp_pkt *fsp, struct fc_frame *fp)
 			fc_rp_info = (struct fcp_resp_rsp_info *)(rp_ex + 1);
 			if (flags & FCP_RSP_LEN_VAL) {
 				respl = ntohl(rp_ex->fr_rsp_len);
+<<<<<<< HEAD
 				if (respl != sizeof(*fc_rp_info))
+=======
+				if ((respl != FCP_RESP_RSP_INFO_LEN4) &&
+				    (respl != FCP_RESP_RSP_INFO_LEN8))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto len_err;
 				if (fsp->wait_for_comp) {
 					/* Abuse cdb_status for rsp code */
@@ -893,14 +1108,32 @@ static void fc_fcp_resp(struct fc_fcp_pkt *fsp, struct fc_frame *fp)
 	/*
 	 * Check for missing or extra data frames.
 	 */
+<<<<<<< HEAD
 	if (unlikely(fsp->xfer_len != expected_len)) {
+=======
+	if (unlikely(fsp->cdb_status == SAM_STAT_GOOD &&
+		     fsp->xfer_len != expected_len)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fsp->xfer_len < expected_len) {
 			/*
 			 * Some data may be queued locally,
 			 * Wait a at least one jiffy to see if it is delivered.
 			 * If this expires without data, we may do SRR.
 			 */
+<<<<<<< HEAD
 			fc_fcp_timer_set(fsp, 2);
+=======
+			if (fsp->lp->qfull) {
+				FC_FCP_DBG(fsp, "tgt %6.6x queue busy retry\n",
+					   fsp->rport->port_id);
+				return;
+			}
+			FC_FCP_DBG(fsp, "tgt %6.6x xfer len %zx data underrun "
+				   "len %x, data len %x\n",
+				   fsp->rport->port_id,
+				   fsp->xfer_len, expected_len, fsp->data_len);
+			fc_fcp_timer_set(fsp, get_fsp_rec_tov(fsp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		fsp->status_code = FC_DATA_OVRRUN;
@@ -946,11 +1179,21 @@ static void fc_fcp_complete_locked(struct fc_fcp_pkt *fsp)
 		 * Test for transport underrun, independent of response
 		 * underrun status.
 		 */
+<<<<<<< HEAD
 		if (fsp->xfer_len < fsp->data_len && !fsp->io_status &&
 		    (!(fsp->scsi_comp_flags & FCP_RESID_UNDER) ||
 		     fsp->xfer_len < fsp->data_len - fsp->scsi_resid)) {
 			fsp->status_code = FC_DATA_UNDRUN;
 			fsp->io_status = 0;
+=======
+		if (fsp->cdb_status == SAM_STAT_GOOD &&
+		    fsp->xfer_len < fsp->data_len && !fsp->io_status &&
+		    (!(fsp->scsi_comp_flags & FCP_RESID_UNDER) ||
+		     fsp->xfer_len < fsp->data_len - fsp->scsi_resid)) {
+			FC_FCP_DBG(fsp, "data underrun, xfer %zx data %x\n",
+				    fsp->xfer_len, fsp->data_len);
+			fsp->status_code = FC_DATA_UNDRUN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -961,7 +1204,11 @@ static void fc_fcp_complete_locked(struct fc_fcp_pkt *fsp)
 			struct fc_frame *conf_frame;
 			struct fc_seq *csp;
 
+<<<<<<< HEAD
 			csp = lport->tt.seq_start_next(seq);
+=======
+			csp = fc_seq_start_next(seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			conf_frame = fc_fcp_frame_alloc(fsp->lp, 0);
 			if (conf_frame) {
 				f_ctl = FC_FC_SEQ_INIT;
@@ -970,10 +1217,17 @@ static void fc_fcp_complete_locked(struct fc_fcp_pkt *fsp)
 				fc_fill_fc_hdr(conf_frame, FC_RCTL_DD_SOL_CTL,
 					       ep->did, ep->sid,
 					       FC_TYPE_FCP, f_ctl, 0);
+<<<<<<< HEAD
 				lport->tt.seq_send(lport, csp, conf_frame);
 			}
 		}
 		lport->tt.exch_done(seq);
+=======
+				fc_seq_send(lport, csp, conf_frame);
+			}
+		}
+		fc_exch_done(seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/*
 	 * Some resets driven by SCSI are not I/Os and do not have
@@ -991,10 +1245,15 @@ static void fc_fcp_complete_locked(struct fc_fcp_pkt *fsp)
  */
 static void fc_fcp_cleanup_cmd(struct fc_fcp_pkt *fsp, int error)
 {
+<<<<<<< HEAD
 	struct fc_lport *lport = fsp->lp;
 
 	if (fsp->seq_ptr) {
 		lport->tt.exch_done(fsp->seq_ptr);
+=======
+	if (fsp->seq_ptr) {
+		fc_exch_done(fsp->seq_ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fsp->seq_ptr = NULL;
 	}
 	fsp->status_code = error;
@@ -1085,7 +1344,11 @@ static int fc_fcp_pkt_send(struct fc_lport *lport, struct fc_fcp_pkt *fsp)
 	unsigned long flags;
 	int rc;
 
+<<<<<<< HEAD
 	fsp->cmd->SCp.ptr = (char *)fsp;
+=======
+	libfc_priv(fsp->cmd)->fsp = fsp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fsp->cdb_cmd.fc_dl = htonl(fsp->data_len);
 	fsp->cdb_cmd.fc_flags = fsp->req_flags & ~FCP_CFL_LEN_MASK;
 
@@ -1098,7 +1361,11 @@ static int fc_fcp_pkt_send(struct fc_lport *lport, struct fc_fcp_pkt *fsp)
 	rc = lport->tt.fcp_cmd_send(lport, fsp, fc_fcp_recv);
 	if (unlikely(rc)) {
 		spin_lock_irqsave(&si->scsi_queue_lock, flags);
+<<<<<<< HEAD
 		fsp->cmd->SCp.ptr = NULL;
+=======
+		libfc_priv(fsp->cmd)->fsp = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del(&fsp->list);
 		spin_unlock_irqrestore(&si->scsi_queue_lock, flags);
 	}
@@ -1107,6 +1374,7 @@ static int fc_fcp_pkt_send(struct fc_lport *lport, struct fc_fcp_pkt *fsp)
 }
 
 /**
+<<<<<<< HEAD
  * get_fsp_rec_tov() - Helper function to get REC_TOV
  * @fsp: the FCP packet
  *
@@ -1120,6 +1388,8 @@ static inline unsigned int get_fsp_rec_tov(struct fc_fcp_pkt *fsp)
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fc_fcp_cmd_send() - Send a FCP command
  * @lport: The local port to send the command on
  * @fsp:   The FCP packet the command is on
@@ -1156,8 +1426,12 @@ static int fc_fcp_cmd_send(struct fc_lport *lport, struct fc_fcp_pkt *fsp,
 		       rpriv->local_port->port_id, FC_TYPE_FCP,
 		       FC_FCTL_REQ, 0);
 
+<<<<<<< HEAD
 	seq = lport->tt.exch_seq_send(lport, fp, resp, fc_fcp_pkt_destroy,
 				      fsp, 0);
+=======
+	seq = fc_exch_seq_send(lport, fp, resp, fc_fcp_pkt_destroy, fsp, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!seq) {
 		rc = -1;
 		goto unlock;
@@ -1165,7 +1439,11 @@ static int fc_fcp_cmd_send(struct fc_lport *lport, struct fc_fcp_pkt *fsp,
 	fsp->seq_ptr = seq;
 	fc_fcp_pkt_hold(fsp);	/* hold for fc_fcp_pkt_destroy */
 
+<<<<<<< HEAD
 	setup_timer(&fsp->timer, fc_fcp_timeout, (unsigned long)fsp);
+=======
+	fsp->timer.function = fc_fcp_timeout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rpriv->flags & FC_RP_FLAGS_REC_SUPPORTED)
 		fc_fcp_timer_set(fsp, get_fsp_rec_tov(fsp));
 
@@ -1187,7 +1465,11 @@ static void fc_fcp_error(struct fc_fcp_pkt *fsp, struct fc_frame *fp)
 		return;
 
 	if (error == -FC_EX_CLOSED) {
+<<<<<<< HEAD
 		fc_fcp_retry_cmd(fsp);
+=======
+		fc_fcp_retry_cmd(fsp, FC_ERROR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unlock;
 	}
 
@@ -1213,8 +1495,21 @@ static int fc_fcp_pkt_abort(struct fc_fcp_pkt *fsp)
 	int rc = FAILED;
 	unsigned long ticks_left;
 
+<<<<<<< HEAD
 	if (fc_fcp_send_abort(fsp))
 		return FAILED;
+=======
+	FC_FCP_DBG(fsp, "pkt abort state %x\n", fsp->state);
+	if (fc_fcp_send_abort(fsp)) {
+		FC_FCP_DBG(fsp, "failed to send abort\n");
+		return FAILED;
+	}
+
+	if (fsp->state & FC_SRB_ABORTED) {
+		FC_FCP_DBG(fsp, "target abort cmd  completed\n");
+		return SUCCESS;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_completion(&fsp->tm_done);
 	fsp->wait_for_comp = 1;
@@ -1238,11 +1533,19 @@ static int fc_fcp_pkt_abort(struct fc_fcp_pkt *fsp)
 
 /**
  * fc_lun_reset_send() - Send LUN reset command
+<<<<<<< HEAD
  * @data: The FCP packet that identifies the LUN to be reset
  */
 static void fc_lun_reset_send(unsigned long data)
 {
 	struct fc_fcp_pkt *fsp = (struct fc_fcp_pkt *)data;
+=======
+ * @t: Timer context used to fetch the FSP packet
+ */
+static void fc_lun_reset_send(struct timer_list *t)
+{
+	struct fc_fcp_pkt *fsp = from_timer(fsp, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_lport *lport = fsp->lp;
 
 	if (lport->tt.fcp_cmd_send(lport, fsp, fc_tm_done)) {
@@ -1250,7 +1553,11 @@ static void fc_lun_reset_send(unsigned long data)
 			return;
 		if (fc_fcp_lock_pkt(fsp))
 			return;
+<<<<<<< HEAD
 		setup_timer(&fsp->timer, fc_lun_reset_send, (unsigned long)fsp);
+=======
+		fsp->timer.function = fc_lun_reset_send;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_fcp_timer_set(fsp, get_fsp_rec_tov(fsp));
 		fc_fcp_unlock_pkt(fsp);
 	}
@@ -1276,7 +1583,11 @@ static int fc_lun_reset(struct fc_lport *lport, struct fc_fcp_pkt *fsp,
 	fsp->wait_for_comp = 1;
 	init_completion(&fsp->tm_done);
 
+<<<<<<< HEAD
 	fc_lun_reset_send((unsigned long)fsp);
+=======
+	fc_lun_reset_send(&fsp->timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * wait for completion of reset
@@ -1292,7 +1603,11 @@ static int fc_lun_reset(struct fc_lport *lport, struct fc_fcp_pkt *fsp,
 
 	spin_lock_bh(&fsp->scsi_pkt_lock);
 	if (fsp->seq_ptr) {
+<<<<<<< HEAD
 		lport->tt.exch_done(fsp->seq_ptr);
+=======
+		fc_exch_done(fsp->seq_ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fsp->seq_ptr = NULL;
 	}
 	fsp->wait_for_comp = 0;
@@ -1346,7 +1661,11 @@ static void fc_tm_done(struct fc_seq *seq, struct fc_frame *fp, void *arg)
 	if (fh->fh_type != FC_TYPE_BLS)
 		fc_fcp_resp(fsp, fp);
 	fsp->seq_ptr = NULL;
+<<<<<<< HEAD
 	fsp->lp->tt.exch_done(seq);
+=======
+	fc_exch_done(seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_unlock:
 	fc_fcp_unlock_pkt(fsp);
 out:
@@ -1364,7 +1683,11 @@ static void fc_fcp_cleanup(struct fc_lport *lport)
 
 /**
  * fc_fcp_timeout() - Handler for fcp_pkt timeouts
+<<<<<<< HEAD
  * @data: The FCP packet that has timed out
+=======
+ * @t: Timer context used to fetch the FSP packet
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If REC is supported then just issue it and return. The REC exchange will
  * complete or time out and recovery can continue at that point. Otherwise,
@@ -1373,9 +1696,15 @@ static void fc_fcp_cleanup(struct fc_lport *lport)
  * received we see if data was received recently. If it has been then we
  * continue waiting, otherwise, we abort the command.
  */
+<<<<<<< HEAD
 static void fc_fcp_timeout(unsigned long data)
 {
 	struct fc_fcp_pkt *fsp = (struct fc_fcp_pkt *)data;
+=======
+static void fc_fcp_timeout(struct timer_list *t)
+{
+	struct fc_fcp_pkt *fsp = from_timer(fsp, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_rport *rport = fsp->rport;
 	struct fc_rport_libfc_priv *rpriv = rport->dd_data;
 
@@ -1385,6 +1714,18 @@ static void fc_fcp_timeout(unsigned long data)
 	if (fsp->cdb_cmd.fc_tm_flags)
 		goto unlock;
 
+<<<<<<< HEAD
+=======
+	if (fsp->lp->qfull) {
+		FC_FCP_DBG(fsp, "fcp timeout, resetting timer delay %d\n",
+			   fsp->timer_delay);
+		fsp->timer.function = fc_fcp_timeout;
+		fc_fcp_timer_set(fsp, fsp->timer_delay);
+		goto unlock;
+	}
+	FC_FCP_DBG(fsp, "fcp timeout, delay %d flags %x state %x\n",
+		   fsp->timer_delay, rpriv->flags, fsp->state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fsp->state |= FC_SRB_FCP_PROCESSING_TMO;
 
 	if (rpriv->flags & FC_RP_FLAGS_REC_SUPPORTED)
@@ -1477,11 +1818,19 @@ static void fc_fcp_rec_resp(struct fc_seq *seq, struct fc_frame *fp, void *arg)
 		rjt = fc_frame_payload_get(fp, sizeof(*rjt));
 		switch (rjt->er_reason) {
 		default:
+<<<<<<< HEAD
 			FC_FCP_DBG(fsp, "device %x unexpected REC reject "
 				   "reason %d expl %d\n",
 				   fsp->rport->port_id, rjt->er_reason,
 				   rjt->er_explan);
 			/* fall through */
+=======
+			FC_FCP_DBG(fsp,
+				   "device %x invalid REC reject %d/%d\n",
+				   fsp->rport->port_id, rjt->er_reason,
+				   rjt->er_explan);
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ELS_RJT_UNSUP:
 			FC_FCP_DBG(fsp, "device does not support REC\n");
 			rpriv = fsp->rport->dd_data;
@@ -1494,6 +1843,7 @@ static void fc_fcp_rec_resp(struct fc_seq *seq, struct fc_frame *fp, void *arg)
 			break;
 		case ELS_RJT_LOGIC:
 		case ELS_RJT_UNAB:
+<<<<<<< HEAD
 			/*
 			 * If no data transfer, the command frame got dropped
 			 * so we just retry.  If data was transferred, we
@@ -1506,6 +1856,25 @@ static void fc_fcp_rec_resp(struct fc_seq *seq, struct fc_frame *fp, void *arg)
 				break;
 			}
 			fc_fcp_recovery(fsp, FC_ERROR);
+=======
+			FC_FCP_DBG(fsp, "device %x REC reject %d/%d\n",
+				   fsp->rport->port_id, rjt->er_reason,
+				   rjt->er_explan);
+			/*
+			 * If response got lost or is stuck in the
+			 * queue somewhere we have no idea if and when
+			 * the response will be received. So quarantine
+			 * the xid and retry the command.
+			 */
+			if (rjt->er_explan == ELS_EXPL_OXID_RXID) {
+				struct fc_exch *ep = fc_seq_exch(fsp->seq_ptr);
+				ep->state |= FC_EX_QUARANTINE;
+				fsp->state |= FC_SRB_ABORTED;
+				fc_fcp_retry_cmd(fsp, FC_TRANS_RESET);
+				break;
+			}
+			fc_fcp_recovery(fsp, FC_TRANS_RESET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	} else if (opcode == ELS_LS_ACC) {
@@ -1599,27 +1968,46 @@ static void fc_fcp_rec_error(struct fc_fcp_pkt *fsp, struct fc_frame *fp)
 
 	switch (error) {
 	case -FC_EX_CLOSED:
+<<<<<<< HEAD
 		fc_fcp_retry_cmd(fsp);
+=======
+		FC_FCP_DBG(fsp, "REC %p fid %6.6x exchange closed\n",
+			   fsp, fsp->rport->port_id);
+		fc_fcp_retry_cmd(fsp, FC_ERROR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
 		FC_FCP_DBG(fsp, "REC %p fid %6.6x error unexpected error %d\n",
 			   fsp, fsp->rport->port_id, error);
 		fsp->status_code = FC_CMD_PLOGO;
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case -FC_EX_TIMEOUT:
 		/*
 		 * Assume REC or LS_ACC was lost.
 		 * The exchange manager will have aborted REC, so retry.
 		 */
+<<<<<<< HEAD
 		FC_FCP_DBG(fsp, "REC fid %6.6x error error %d retry %d/%d\n",
 			   fsp->rport->port_id, error, fsp->recov_retry,
+=======
+		FC_FCP_DBG(fsp, "REC %p fid %6.6x exchange timeout retry %d/%d\n",
+			   fsp, fsp->rport->port_id, fsp->recov_retry,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   FC_MAX_RECOV_RETRY);
 		if (fsp->recov_retry++ < FC_MAX_RECOV_RETRY)
 			fc_fcp_rec(fsp);
 		else
+<<<<<<< HEAD
 			fc_fcp_recovery(fsp, FC_ERROR);
+=======
+			fc_fcp_recovery(fsp, FC_TIMED_OUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	fc_fcp_unlock_pkt(fsp);
@@ -1630,6 +2018,7 @@ out:
 /**
  * fc_fcp_recovery() - Handler for fcp_pkt recovery
  * @fsp: The FCP pkt that needs to be aborted
+<<<<<<< HEAD
  */
 static void fc_fcp_recovery(struct fc_fcp_pkt *fsp, u8 code)
 {
@@ -1641,12 +2030,32 @@ static void fc_fcp_recovery(struct fc_fcp_pkt *fsp, u8 code)
 	 * scsi-ml escalate.
 	 */
 	fc_fcp_send_abort(fsp);
+=======
+ * @code: The FCP status code to set
+ */
+static void fc_fcp_recovery(struct fc_fcp_pkt *fsp, u8 code)
+{
+	FC_FCP_DBG(fsp, "start recovery code %x\n", code);
+	fsp->status_code = code;
+	fsp->cdb_status = 0;
+	fsp->io_status = 0;
+	if (!fsp->cmd)
+		/*
+		 * Only abort non-scsi commands; otherwise let the
+		 * scsi command timer fire and scsi-ml escalate.
+		 */
+		fc_fcp_send_abort(fsp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fc_fcp_srr() - Send a SRR request (Sequence Retransmission Request)
  * @fsp:   The FCP packet the SRR is to be sent on
  * @r_ctl: The R_CTL field for the SRR request
+<<<<<<< HEAD
+=======
+ * @offset: The SRR relative offset
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This is called after receiving status but insufficient data, or
  * when expecting status but the request has timed out.
  */
@@ -1659,7 +2068,10 @@ static void fc_fcp_srr(struct fc_fcp_pkt *fsp, enum fc_rctl r_ctl, u32 offset)
 	struct fc_seq *seq;
 	struct fcp_srr *srr;
 	struct fc_frame *fp;
+<<<<<<< HEAD
 	unsigned int rec_tov;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rport = fsp->rport;
 	rpriv = rport->dd_data;
@@ -1683,10 +2095,16 @@ static void fc_fcp_srr(struct fc_fcp_pkt *fsp, enum fc_rctl r_ctl, u32 offset)
 		       rpriv->local_port->port_id, FC_TYPE_FCP,
 		       FC_FCTL_REQ, 0);
 
+<<<<<<< HEAD
 	rec_tov = get_fsp_rec_tov(fsp);
 	seq = lport->tt.exch_seq_send(lport, fp, fc_fcp_srr_resp,
 				      fc_fcp_pkt_destroy,
 				      fsp, jiffies_to_msecs(rec_tov));
+=======
+	seq = fc_exch_seq_send(lport, fp, fc_fcp_srr_resp,
+			       fc_fcp_pkt_destroy,
+			       fsp, get_fsp_rec_tov(fsp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!seq)
 		goto retry;
 
@@ -1697,7 +2115,11 @@ static void fc_fcp_srr(struct fc_fcp_pkt *fsp, enum fc_rctl r_ctl, u32 offset)
 	fc_fcp_pkt_hold(fsp);		/* hold for outstanding SRR */
 	return;
 retry:
+<<<<<<< HEAD
 	fc_fcp_retry_cmd(fsp);
+=======
+	fc_fcp_retry_cmd(fsp, FC_TRANS_RESET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1721,9 +2143,15 @@ static void fc_fcp_srr_resp(struct fc_seq *seq, struct fc_frame *fp, void *arg)
 
 	fh = fc_frame_header_get(fp);
 	/*
+<<<<<<< HEAD
 	 * BUG? fc_fcp_srr_error calls exch_done which would release
 	 * the ep. But if fc_fcp_srr_error had got -FC_EX_TIMEOUT,
 	 * then fc_exch_timeout would be sending an abort. The exch_done
+=======
+	 * BUG? fc_fcp_srr_error calls fc_exch_done which would release
+	 * the ep. But if fc_fcp_srr_error had got -FC_EX_TIMEOUT,
+	 * then fc_exch_timeout would be sending an abort. The fc_exch_done
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * call by fc_fcp_srr_error would prevent fc_exch.c from seeing
 	 * an abort response though.
 	 */
@@ -1744,7 +2172,11 @@ static void fc_fcp_srr_resp(struct fc_seq *seq, struct fc_frame *fp, void *arg)
 	}
 	fc_fcp_unlock_pkt(fsp);
 out:
+<<<<<<< HEAD
 	fsp->lp->tt.exch_done(seq);
+=======
+	fc_exch_done(seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_frame_free(fp);
 }
 
@@ -1759,20 +2191,35 @@ static void fc_fcp_srr_error(struct fc_fcp_pkt *fsp, struct fc_frame *fp)
 		goto out;
 	switch (PTR_ERR(fp)) {
 	case -FC_EX_TIMEOUT:
+<<<<<<< HEAD
+=======
+		FC_FCP_DBG(fsp, "SRR timeout, retries %d\n", fsp->recov_retry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fsp->recov_retry++ < FC_MAX_RECOV_RETRY)
 			fc_fcp_rec(fsp);
 		else
 			fc_fcp_recovery(fsp, FC_TIMED_OUT);
 		break;
 	case -FC_EX_CLOSED:			/* e.g., link failure */
+<<<<<<< HEAD
 		/* fall through */
 	default:
 		fc_fcp_retry_cmd(fsp);
+=======
+		FC_FCP_DBG(fsp, "SRR error, exchange closed\n");
+		fallthrough;
+	default:
+		fc_fcp_retry_cmd(fsp, FC_ERROR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	fc_fcp_unlock_pkt(fsp);
 out:
+<<<<<<< HEAD
 	fsp->lp->tt.exch_done(fsp->recov_seq);
+=======
+	fc_exch_done(fsp->recov_seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1789,7 +2236,11 @@ static inline int fc_fcp_lport_queue_ready(struct fc_lport *lport)
 /**
  * fc_queuecommand() - The queuecommand function of the SCSI template
  * @shost: The Scsi_Host that the command was issued to
+<<<<<<< HEAD
  * @cmd:   The scsi_cmnd to be executed
+=======
+ * @sc_cmd:   The scsi_cmnd to be executed
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is the i/o strategy routine, called by the SCSI layer.
  */
@@ -1798,15 +2249,24 @@ int fc_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *sc_cmd)
 	struct fc_lport *lport = shost_priv(shost);
 	struct fc_rport *rport = starget_to_rport(scsi_target(sc_cmd->device));
 	struct fc_fcp_pkt *fsp;
+<<<<<<< HEAD
 	struct fc_rport_libfc_priv *rpriv;
 	int rval;
 	int rc = 0;
 	struct fcoe_dev_stats *stats;
+=======
+	int rval;
+	int rc = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rval = fc_remote_port_chkready(rport);
 	if (rval) {
 		sc_cmd->result = rval;
+<<<<<<< HEAD
 		sc_cmd->scsi_done(sc_cmd);
+=======
+		scsi_done(sc_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -1816,6 +2276,7 @@ int fc_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *sc_cmd)
 		 * online
 		 */
 		sc_cmd->result = DID_IMM_RETRY << 16;
+<<<<<<< HEAD
 		sc_cmd->scsi_done(sc_cmd);
 		goto out;
 	}
@@ -1825,6 +2286,20 @@ int fc_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *sc_cmd)
 	if (!fc_fcp_lport_queue_ready(lport)) {
 		if (lport->qfull)
 			fc_fcp_can_queue_ramp_down(lport);
+=======
+		scsi_done(sc_cmd);
+		goto out;
+	}
+
+	if (!fc_fcp_lport_queue_ready(lport)) {
+		if (lport->qfull) {
+			if (fc_fcp_can_queue_ramp_down(lport))
+				shost_printk(KERN_ERR, lport->host,
+					     "libfc: queue full, "
+					     "reducing can_queue to %d.\n",
+					     lport->host->can_queue);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = SCSI_MLQUEUE_HOST_BUSY;
 		goto out;
 	}
@@ -1850,6 +2325,7 @@ int fc_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *sc_cmd)
 	/*
 	 * setup the data direction
 	 */
+<<<<<<< HEAD
 	stats = per_cpu_ptr(lport->dev_stats, get_cpu());
 	if (sc_cmd->sc_data_direction == DMA_FROM_DEVICE) {
 		fsp->req_flags = FC_SRB_READ;
@@ -1864,6 +2340,20 @@ int fc_queuecommand(struct Scsi_Host *shost, struct scsi_cmnd *sc_cmd)
 		stats->ControlRequests++;
 	}
 	put_cpu();
+=======
+	if (sc_cmd->sc_data_direction == DMA_FROM_DEVICE) {
+		fsp->req_flags = FC_SRB_READ;
+		this_cpu_inc(lport->stats->InputRequests);
+		this_cpu_add(lport->stats->InputBytes, fsp->data_len);
+	} else if (sc_cmd->sc_data_direction == DMA_TO_DEVICE) {
+		fsp->req_flags = FC_SRB_WRITE;
+		this_cpu_inc(lport->stats->OutputRequests);
+		this_cpu_add(lport->stats->OutputBytes, fsp->data_len);
+	} else {
+		fsp->req_flags = 0;
+		this_cpu_inc(lport->stats->ControlRequests);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * send it to the lower layer
@@ -1916,7 +2406,11 @@ static void fc_io_compl(struct fc_fcp_pkt *fsp)
 		fc_fcp_can_queue_ramp_up(lport);
 
 	sc_cmd = fsp->cmd;
+<<<<<<< HEAD
 	CMD_SCSI_STATUS(sc_cmd) = fsp->cdb_status;
+=======
+	libfc_priv(sc_cmd)->status = fsp->cdb_status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (fsp->status_code) {
 	case FC_COMPLETE:
 		if (fsp->cdb_status == 0) {
@@ -1925,7 +2419,11 @@ static void fc_io_compl(struct fc_fcp_pkt *fsp)
 			 */
 			sc_cmd->result = DID_OK << 16;
 			if (fsp->scsi_resid)
+<<<<<<< HEAD
 				CMD_RESID_LEN(sc_cmd) = fsp->scsi_resid;
+=======
+				libfc_priv(sc_cmd)->resid_len = fsp->scsi_resid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/*
 			 * transport level I/O was ok but scsi
@@ -1958,7 +2456,11 @@ static void fc_io_compl(struct fc_fcp_pkt *fsp)
 			 */
 			FC_FCP_DBG(fsp, "Returning DID_ERROR to scsi-ml "
 				   "due to FC_DATA_UNDRUN (scsi)\n");
+<<<<<<< HEAD
 			CMD_RESID_LEN(sc_cmd) = fsp->scsi_resid;
+=======
+			libfc_priv(sc_cmd)->resid_len = fsp->scsi_resid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sc_cmd->result = (DID_ERROR << 16) | fsp->cdb_status;
 		}
 		break;
@@ -1971,15 +2473,35 @@ static void fc_io_compl(struct fc_fcp_pkt *fsp)
 		sc_cmd->result = (DID_ERROR << 16) | fsp->cdb_status;
 		break;
 	case FC_CMD_ABORTED:
+<<<<<<< HEAD
 		FC_FCP_DBG(fsp, "Returning DID_ERROR to scsi-ml "
 			  "due to FC_CMD_ABORTED\n");
 		sc_cmd->result = (DID_ERROR << 16) | fsp->io_status;
+=======
+		if (host_byte(sc_cmd->result) == DID_TIME_OUT)
+			FC_FCP_DBG(fsp, "Returning DID_TIME_OUT to scsi-ml "
+				   "due to FC_CMD_ABORTED\n");
+		else {
+			FC_FCP_DBG(fsp, "Returning DID_ERROR to scsi-ml "
+				   "due to FC_CMD_ABORTED\n");
+			set_host_byte(sc_cmd, DID_ERROR);
+		}
+		sc_cmd->result |= fsp->io_status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case FC_CMD_RESET:
 		FC_FCP_DBG(fsp, "Returning DID_RESET to scsi-ml "
 			   "due to FC_CMD_RESET\n");
 		sc_cmd->result = (DID_RESET << 16);
 		break;
+<<<<<<< HEAD
+=======
+	case FC_TRANS_RESET:
+		FC_FCP_DBG(fsp, "Returning DID_SOFT_ERROR to scsi-ml "
+			   "due to FC_TRANS_RESET\n");
+		sc_cmd->result = (DID_SOFT_ERROR << 16);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FC_HRD_ERROR:
 		FC_FCP_DBG(fsp, "Returning DID_NO_CONNECT to scsi-ml "
 			   "due to FC_HRD_ERROR\n");
@@ -1991,9 +2513,15 @@ static void fc_io_compl(struct fc_fcp_pkt *fsp)
 		sc_cmd->result = (DID_PARITY << 16);
 		break;
 	case FC_TIMED_OUT:
+<<<<<<< HEAD
 		FC_FCP_DBG(fsp, "Returning DID_BUS_BUSY to scsi-ml "
 			   "due to FC_TIMED_OUT\n");
 		sc_cmd->result = (DID_BUS_BUSY << 16) | fsp->io_status;
+=======
+		FC_FCP_DBG(fsp, "Returning DID_TIME_OUT to scsi-ml "
+			   "due to FC_TIMED_OUT\n");
+		sc_cmd->result = (DID_TIME_OUT << 16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		FC_FCP_DBG(fsp, "Returning DID_ERROR to scsi-ml "
@@ -2007,9 +2535,15 @@ static void fc_io_compl(struct fc_fcp_pkt *fsp)
 
 	spin_lock_irqsave(&si->scsi_queue_lock, flags);
 	list_del(&fsp->list);
+<<<<<<< HEAD
 	sc_cmd->SCp.ptr = NULL;
 	spin_unlock_irqrestore(&si->scsi_queue_lock, flags);
 	sc_cmd->scsi_done(sc_cmd);
+=======
+	libfc_priv(sc_cmd)->fsp = NULL;
+	spin_unlock_irqrestore(&si->scsi_queue_lock, flags);
+	scsi_done(sc_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* release ref from initial allocation in queue command */
 	fc_fcp_pkt_release(fsp);
@@ -2043,13 +2577,21 @@ int fc_eh_abort(struct scsi_cmnd *sc_cmd)
 
 	si = fc_get_scsi_internal(lport);
 	spin_lock_irqsave(&si->scsi_queue_lock, flags);
+<<<<<<< HEAD
 	fsp = CMD_SP(sc_cmd);
+=======
+	fsp = libfc_priv(sc_cmd)->fsp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fsp) {
 		/* command completed while scsi eh was setting up */
 		spin_unlock_irqrestore(&si->scsi_queue_lock, flags);
 		return SUCCESS;
 	}
+<<<<<<< HEAD
 	/* grab a ref so the fsp and sc_cmd cannot be relased from under us */
+=======
+	/* grab a ref so the fsp and sc_cmd cannot be released from under us */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_fcp_pkt_hold(fsp);
 	spin_unlock_irqrestore(&si->scsi_queue_lock, flags);
 
@@ -2131,9 +2673,13 @@ int fc_eh_host_reset(struct scsi_cmnd *sc_cmd)
 
 	FC_SCSI_DBG(lport, "Resetting host\n");
 
+<<<<<<< HEAD
 	fc_block_scsi_eh(sc_cmd);
 
 	lport->tt.lport_reset(lport);
+=======
+	fc_lport_reset(lport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_tmo = jiffies + FC_HOST_RESET_TIMEOUT;
 	while (!fc_fcp_lport_queue_ready(lport) && time_before(jiffies,
 							       wait_tmo))
@@ -2166,17 +2712,22 @@ int fc_slave_alloc(struct scsi_device *sdev)
 	if (!rport || fc_remote_port_chkready(rport))
 		return -ENXIO;
 
+<<<<<<< HEAD
 	if (sdev->tagged_supported)
 		scsi_activate_tcq(sdev, FC_FCP_DFLT_QUEUE_DEPTH);
 	else
 		scsi_adjust_queue_depth(sdev, scsi_get_tag_type(sdev),
 					FC_FCP_DFLT_QUEUE_DEPTH);
 
+=======
+	scsi_change_queue_depth(sdev, FC_FCP_DFLT_QUEUE_DEPTH);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(fc_slave_alloc);
 
 /**
+<<<<<<< HEAD
  * fc_change_queue_depth() - Change a device's queue depth
  * @sdev:   The SCSI device whose queue depth is to change
  * @qdepth: The new queue depth
@@ -2223,6 +2774,9 @@ EXPORT_SYMBOL(fc_change_queue_type);
 
 /**
  * fc_fcp_destory() - Tear down the FCP layer for a given local port
+=======
+ * fc_fcp_destroy() - Tear down the FCP layer for a given local port
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @lport: The local port that no longer needs the FCP layer
  */
 void fc_fcp_destroy(struct fc_lport *lport)
@@ -2257,8 +2811,12 @@ int fc_setup_fcp(void)
 
 void fc_destroy_fcp(void)
 {
+<<<<<<< HEAD
 	if (scsi_pkt_cachep)
 		kmem_cache_destroy(scsi_pkt_cachep);
+=======
+	kmem_cache_destroy(scsi_pkt_cachep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**

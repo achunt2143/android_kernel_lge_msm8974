@@ -20,6 +20,11 @@
 Queue Control Unit, DCF Control Unit Functions
 \********************************************/
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ath5k.h"
 #include "reg.h"
 #include "debug.h"
@@ -325,8 +330,11 @@ ath5k_hw_reset_tx_queue(struct ath5k_hw *ah, unsigned int queue)
 
 	AR5K_ASSERT_ENTRY(queue, ah->ah_capabilities.cap_queues.q_tx_num);
 
+<<<<<<< HEAD
 	tq = &ah->ah_txq[queue];
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Skip if queue inactive or if we are on AR5210
 	 * that doesn't have QCU/DCU */
 	if ((ah->ah_version == AR5K_AR5210) ||
@@ -557,9 +565,18 @@ ath5k_hw_reset_tx_queue(struct ath5k_hw *ah, unsigned int queue)
 int ath5k_hw_set_ifs_intervals(struct ath5k_hw *ah, unsigned int slot_time)
 {
 	struct ieee80211_channel *channel = ah->ah_current_channel;
+<<<<<<< HEAD
 	struct ieee80211_rate *rate;
 	u32 ack_tx_time, eifs, eifs_clock, sifs, sifs_clock;
 	u32 slot_time_clock = ath5k_hw_htoclock(ah, slot_time);
+=======
+	enum nl80211_band band;
+	struct ieee80211_supported_band *sband;
+	struct ieee80211_rate *rate;
+	u32 ack_tx_time, eifs, eifs_clock, sifs, sifs_clock;
+	u32 slot_time_clock = ath5k_hw_htoclock(ah, slot_time);
+	u32 rate_flags, i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (slot_time < 6 || slot_time_clock > AR5K_SLOT_TIME_MAX)
 		return -EINVAL;
@@ -591,12 +608,43 @@ int ath5k_hw_set_ifs_intervals(struct ath5k_hw *ah, unsigned int slot_time)
 	 *
 	 * Also we have different lowest rate for 802.11a
 	 */
+<<<<<<< HEAD
 	if (channel->band == IEEE80211_BAND_5GHZ)
 		rate = &ah->sbands[IEEE80211_BAND_5GHZ].bitrates[0];
 	else
 		rate = &ah->sbands[IEEE80211_BAND_2GHZ].bitrates[0];
 
 	ack_tx_time = ath5k_hw_get_frame_duration(ah, 10, rate, false);
+=======
+	if (channel->band == NL80211_BAND_5GHZ)
+		band = NL80211_BAND_5GHZ;
+	else
+		band = NL80211_BAND_2GHZ;
+
+	switch (ah->ah_bwmode) {
+	case AR5K_BWMODE_5MHZ:
+		rate_flags = IEEE80211_RATE_SUPPORTS_5MHZ;
+		break;
+	case AR5K_BWMODE_10MHZ:
+		rate_flags = IEEE80211_RATE_SUPPORTS_10MHZ;
+		break;
+	default:
+		rate_flags = 0;
+		break;
+	}
+	sband = &ah->sbands[band];
+	rate = NULL;
+	for (i = 0; i < sband->n_bitrates; i++) {
+		if ((rate_flags & sband->bitrates[i].flags) != rate_flags)
+			continue;
+		rate = &sband->bitrates[i];
+		break;
+	}
+	if (WARN_ON(!rate))
+		return -EINVAL;
+
+	ack_tx_time = ath5k_hw_get_frame_duration(ah, band, 10, rate, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ack_tx_time includes an SIFS already */
 	eifs = ack_tx_time + sifs + 2 * slot_time;

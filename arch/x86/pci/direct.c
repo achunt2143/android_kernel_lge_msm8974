@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * direct.c - Low-level direct PCI config space access
  */
@@ -194,14 +198,22 @@ static const struct pci_raw_ops pci_direct_conf2 = {
 static int __init pci_sanity_check(const struct pci_raw_ops *o)
 {
 	u32 x = 0;
+<<<<<<< HEAD
 	int year, devfn;
+=======
+	int devfn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci_probe & PCI_NO_CHECKS)
 		return 1;
 	/* Assume Type 1 works for newer systems.
 	   This handles machines that don't have anything on PCI Bus 0. */
+<<<<<<< HEAD
 	dmi_get_date(DMI_BIOS_DATE, &year, NULL, NULL);
 	if (year >= 2001)
+=======
+	if (dmi_get_bios_year() >= 2001)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	for (devfn = 0; devfn < 0x100; devfn++) {

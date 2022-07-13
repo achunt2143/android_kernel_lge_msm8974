@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
@@ -28,6 +29,22 @@ int new_mm(unsigned long stack)
 
 	return fd;
 }
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+ */
+
+#include <linux/init.h>
+#include <linux/sched/mm.h>
+#include <linux/sched/task_stack.h>
+#include <linux/sched/task.h>
+
+#include <as-layout.h>
+#include <kern.h>
+#include <os.h>
+#include <skas.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void start_kernel(void);
 
@@ -35,14 +52,22 @@ static int __init start_kernel_proc(void *unused)
 {
 	int pid;
 
+<<<<<<< HEAD
 	block_signals();
+=======
+	block_signals_trace();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pid = os_getpid();
 
 	cpu_tasks[0].pid = pid;
 	cpu_tasks[0].task = current;
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 	init_cpu_online(get_cpu_mask(0));
 #endif
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	start_kernel();
 	return 0;
 }
@@ -55,6 +80,7 @@ int __init start_uml(void)
 {
 	stack_protections((unsigned long) &cpu0_irqstack);
 	set_sigstack(cpu0_irqstack, THREAD_SIZE);
+<<<<<<< HEAD
 	if (proc_mm) {
 		userspace_pid[0] = start_userspace(0);
 		if (userspace_pid[0] < 0) {
@@ -63,6 +89,8 @@ int __init start_uml(void)
 			exit(1);
 		}
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_new_thread_signals();
 

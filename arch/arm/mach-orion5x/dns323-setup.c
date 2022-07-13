@@ -33,7 +33,12 @@
 #include <asm/mach/arch.h>
 #include <asm/mach/pci.h>
 #include <asm/system_info.h>
+<<<<<<< HEAD
 #include <mach/orion5x.h>
+=======
+#include <plat/orion-gpio.h>
+#include "orion5x.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "common.h"
 #include "mpp.h"
 
@@ -86,7 +91,10 @@ static int __init dns323_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 
 static struct hw_pci dns323_pci __initdata = {
 	.nr_controllers = 2,
+<<<<<<< HEAD
 	.swizzle	= pci_std_swizzle,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup		= orion5x_pci_sys_setup,
 	.scan		= orion5x_pci_sys_scan_bus,
 	.map_irq	= dns323_pci_map_irq,
@@ -236,9 +244,13 @@ static int __init dns323_read_mac_addr(void)
 	}
 
 	iounmap(mac_page);
+<<<<<<< HEAD
 	printk("DNS-323: Found ethernet MAC address: ");
 	for (i = 0; i < 6; i++)
 		printk("%.2x%s", addr[i], (i < 5) ? ":" : ".\n");
+=======
+	printk("DNS-323: Found ethernet MAC address: %pM\n", addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(dns323_eth_data.mac_addr, addr, 6);
 
@@ -253,6 +265,7 @@ error_fail:
  * GPIO LEDs (simple - doesn't use hardware blinking support)
  */
 
+<<<<<<< HEAD
 #define ORION_BLINK_HALF_PERIOD 100 /* ms */
 
 static int dns323_gpio_blink_set(unsigned gpio, int state,
@@ -274,6 +287,8 @@ static int dns323_gpio_blink_set(unsigned gpio, int state,
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct gpio_led dns323ab_leds[] = {
 	{
 		.name = "power:blue",
@@ -312,13 +327,21 @@ static struct gpio_led dns323c_leds[] = {
 static struct gpio_led_platform_data dns323ab_led_data = {
 	.num_leds	= ARRAY_SIZE(dns323ab_leds),
 	.leds		= dns323ab_leds,
+<<<<<<< HEAD
 	.gpio_blink_set = dns323_gpio_blink_set,
+=======
+	.gpio_blink_set = orion_gpio_led_blink_set,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct gpio_led_platform_data dns323c_led_data = {
 	.num_leds	= ARRAY_SIZE(dns323c_leds),
 	.leds		= dns323c_leds,
+<<<<<<< HEAD
 	.gpio_blink_set = dns323_gpio_blink_set,
+=======
+	.gpio_blink_set = orion_gpio_led_blink_set,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device dns323_gpio_leds = {
@@ -571,7 +594,11 @@ static int __init dns323_identify_rev(void)
 			break;
 	}
 	if (i >= 1000) {
+<<<<<<< HEAD
 		pr_warning("DNS-323: Timeout accessing PHY, assuming rev B1\n");
+=======
+		pr_warn("DNS-323: Timeout accessing PHY, assuming rev B1\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return DNS323_REV_B1;
 	}
 	writel((3 << 21)	/* phy ID reg */ |
@@ -583,7 +610,11 @@ static int __init dns323_identify_rev(void)
 			break;
 	}
 	if (i >= 1000) {
+<<<<<<< HEAD
 		pr_warning("DNS-323: Timeout reading PHY, assuming rev B1\n");
+=======
+		pr_warn("DNS-323: Timeout reading PHY, assuming rev B1\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return DNS323_REV_B1;
 	}
 	pr_debug("DNS-323: Ethernet PHY ID 0x%x\n", reg & 0xffff);
@@ -598,8 +629,13 @@ static int __init dns323_identify_rev(void)
 	case 0x0e10: /* MV88E1118 */
 		return DNS323_REV_C1;
 	default:
+<<<<<<< HEAD
 		pr_warning("DNS-323: Unknown PHY ID 0x%04x, assuming rev B1\n",
 			   reg & 0xffff);
+=======
+		pr_warn("DNS-323: Unknown PHY ID 0x%04x, assuming rev B1\n",
+			reg & 0xffff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return DNS323_REV_B1;
 }
@@ -632,7 +668,14 @@ static void __init dns323_init(void)
 	/* setup flash mapping
 	 * CS3 holds a 8 MB Spansion S29GL064M90TFIR4
 	 */
+<<<<<<< HEAD
 	orion5x_setup_dev_boot_win(DNS323_NOR_BOOT_BASE, DNS323_NOR_BOOT_SIZE);
+=======
+	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_BOOT_TARGET,
+				    ORION_MBUS_DEVBUS_BOOT_ATTR,
+				    DNS323_NOR_BOOT_BASE,
+				    DNS323_NOR_BOOT_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_device_register(&dns323_nor_flash);
 
 	/* Sort out LEDs, Buttons and i2c devices */
@@ -644,7 +687,11 @@ static void __init dns323_init(void)
 		 dns323ab_leds[0].active_low = 1;
 		 gpio_request(DNS323_GPIO_LED_POWER1, "Power Led Enable");
 		 gpio_direction_output(DNS323_GPIO_LED_POWER1, 0);
+<<<<<<< HEAD
 		/* Fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DNS323_REV_B1:
 		i2c_register_board_info(0, dns323ab_i2c_devices,
 				ARRAY_SIZE(dns323ab_i2c_devices));
@@ -660,6 +707,11 @@ static void __init dns323_init(void)
 		platform_device_register_simple("dns323c-fan", 0, NULL, 0);
 
 		/* Register fixup for the PHY LEDs */
+<<<<<<< HEAD
+=======
+		if (!IS_BUILTIN(CONFIG_PHYLIB))
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		phy_register_fixup_for_uid(MARVELL_PHY_ID_88E1118,
 					   MARVELL_PHY_ID_MASK,
 					   dns323c_phy_fixup);
@@ -714,15 +766,26 @@ static void __init dns323_init(void)
 			pr_err("DNS-323: failed to setup power-off GPIO\n");
 		pm_power_off = dns323c_power_off;
 
+<<<<<<< HEAD
 		/* Now, -this- should theorically be done by the sata_mv driver
+=======
+		/* Now, -this- should theoretically be done by the sata_mv driver
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * once I figure out what's going on there. Maybe the behaviour
 		 * of the LEDs should be somewhat passed via the platform_data.
 		 * for now, just whack the register and make the LEDs happy
 		 *
+<<<<<<< HEAD
 		 * Note: AFAIK, rev B1 needs the same treatement but I'll let
 		 * somebody else test it.
 		 */
 		writel(0x5, ORION5X_SATA_VIRT_BASE | 0x2c);
+=======
+		 * Note: AFAIK, rev B1 needs the same treatment but I'll let
+		 * somebody else test it.
+		 */
+		writel(0x5, ORION5X_SATA_VIRT_BASE + 0x2c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -731,11 +794,19 @@ static void __init dns323_init(void)
 MACHINE_START(DNS323, "D-Link DNS-323")
 	/* Maintainer: Herbert Valerio Riedel <hvr@gnu.org> */
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= ORION5X_NR_IRQS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_machine	= dns323_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,
 	.init_irq	= orion5x_init_irq,
+<<<<<<< HEAD
 	.timer		= &orion5x_timer,
+=======
+	.init_time	= orion5x_timer_init,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fixup		= tag_fixup_mem32,
 	.restart	= orion5x_restart,
 MACHINE_END

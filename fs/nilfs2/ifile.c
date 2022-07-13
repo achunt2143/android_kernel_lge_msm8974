@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * ifile.c - NILFS inode file
  *
@@ -19,6 +20,16 @@
  *
  * Written by Amagai Yoshiji <amagai@osrg.net>.
  * Revised by Ryusuke Konishi <ryusuke@osrg.net>.
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * NILFS inode file
+ *
+ * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
+ *
+ * Written by Amagai Yoshiji.
+ * Revised by Ryusuke Konishi.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -28,8 +39,18 @@
 #include "mdt.h"
 #include "alloc.h"
 #include "ifile.h"
+<<<<<<< HEAD
 
 
+=======
+#include "cpfile.h"
+
+/**
+ * struct nilfs_ifile_info - on-memory private data of ifile
+ * @mi: on-memory private data of metadata file
+ * @palloc_cache: persistent object allocator cache of ifile
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nilfs_ifile_info {
 	struct nilfs_mdt_info mi;
 	struct nilfs_palloc_cache palloc_cache;
@@ -64,8 +85,15 @@ int nilfs_ifile_create_inode(struct inode *ifile, ino_t *out_ino,
 	struct nilfs_palloc_req req;
 	int ret;
 
+<<<<<<< HEAD
 	req.pr_entry_nr = 0;  /* 0 says find free inode from beginning of
 				 a group. dull code!! */
+=======
+	req.pr_entry_nr = 0;  /*
+			       * 0 says find free inode from beginning
+			       * of a group. dull code!!
+			       */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req.pr_entry_bh = NULL;
 
 	ret = nilfs_palloc_prepare_alloc_entry(ifile, &req);
@@ -122,11 +150,19 @@ int nilfs_ifile_delete_inode(struct inode *ifile, ino_t ino)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	kaddr = kmap_atomic(req.pr_entry_bh->b_page);
 	raw_inode = nilfs_palloc_block_get_entry(ifile, req.pr_entry_nr,
 						 req.pr_entry_bh, kaddr);
 	raw_inode->i_flags = 0;
 	kunmap_atomic(kaddr);
+=======
+	kaddr = kmap_local_page(req.pr_entry_bh->b_page);
+	raw_inode = nilfs_palloc_block_get_entry(ifile, req.pr_entry_nr,
+						 req.pr_entry_bh, kaddr);
+	raw_inode->i_flags = 0;
+	kunmap_local(kaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mark_buffer_dirty(req.pr_entry_bh);
 	brelse(req.pr_entry_bh);
@@ -143,15 +179,46 @@ int nilfs_ifile_get_inode_block(struct inode *ifile, ino_t ino,
 	int err;
 
 	if (unlikely(!NILFS_VALID_INODE(sb, ino))) {
+<<<<<<< HEAD
 		nilfs_error(sb, __func__, "bad inode number: %lu",
 			    (unsigned long) ino);
+=======
+		nilfs_error(sb, "bad inode number: %lu", (unsigned long)ino);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	err = nilfs_palloc_get_entry_block(ifile, ino, 0, out_bh);
 	if (unlikely(err))
+<<<<<<< HEAD
 		nilfs_warning(sb, __func__, "unable to read inode: %lu",
 			      (unsigned long) ino);
+=======
+		nilfs_warn(sb, "error %d reading inode: ino=%lu",
+			   err, (unsigned long)ino);
+	return err;
+}
+
+/**
+ * nilfs_ifile_count_free_inodes - calculate free inodes count
+ * @ifile: ifile inode
+ * @nmaxinodes: current maximum of available inodes count [out]
+ * @nfreeinodes: free inodes count [out]
+ */
+int nilfs_ifile_count_free_inodes(struct inode *ifile,
+				    u64 *nmaxinodes, u64 *nfreeinodes)
+{
+	u64 nused;
+	int err;
+
+	*nmaxinodes = 0;
+	*nfreeinodes = 0;
+
+	nused = atomic64_read(&NILFS_I(ifile)->i_root->inodes_count);
+	err = nilfs_palloc_count_max_entries(ifile, nused, nmaxinodes);
+	if (likely(!err))
+		*nfreeinodes = *nmaxinodes - nused;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -159,6 +226,7 @@ int nilfs_ifile_get_inode_block(struct inode *ifile, ino_t ino,
  * nilfs_ifile_read - read or get ifile inode
  * @sb: super block instance
  * @root: root object
+<<<<<<< HEAD
  * @inode_size: size of an inode
  * @raw_inode: on-disk ifile inode
  * @inodep: buffer to store the inode
@@ -167,6 +235,20 @@ int nilfs_ifile_read(struct super_block *sb, struct nilfs_root *root,
 		     size_t inode_size, struct nilfs_inode *raw_inode,
 		     struct inode **inodep)
 {
+=======
+ * @cno: number of checkpoint entry to read
+ * @inode_size: size of an inode
+ *
+ * Return: 0 on success, or the following negative error code on failure.
+ * * %-EINVAL	- Invalid checkpoint.
+ * * %-ENOMEM	- Insufficient memory available.
+ * * %-EIO	- I/O error (including metadata corruption).
+ */
+int nilfs_ifile_read(struct super_block *sb, struct nilfs_root *root,
+		     __u64 cno, size_t inode_size)
+{
+	struct the_nilfs *nilfs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *ifile;
 	int err;
 
@@ -187,13 +269,21 @@ int nilfs_ifile_read(struct super_block *sb, struct nilfs_root *root,
 
 	nilfs_palloc_setup_cache(ifile, &NILFS_IFILE_I(ifile)->palloc_cache);
 
+<<<<<<< HEAD
 	err = nilfs_read_inode_common(ifile, raw_inode);
+=======
+	nilfs = sb->s_fs_info;
+	err = nilfs_cpfile_read_checkpoint(nilfs->ns_cpfile, cno, root, ifile);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto failed;
 
 	unlock_new_inode(ifile);
  out:
+<<<<<<< HEAD
 	*inodep = ifile;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
  failed:
 	iget_failed(ifile);

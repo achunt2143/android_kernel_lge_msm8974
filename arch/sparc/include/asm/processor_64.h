@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/asm/processor.h
  *
@@ -7,17 +11,21 @@
 #ifndef __ASM_SPARC64_PROCESSOR_H
 #define __ASM_SPARC64_PROCESSOR_H
 
+<<<<<<< HEAD
 /*
  * Sparc64 implementation of macro that returns current
  * instruction pointer ("program counter").
  */
 #define current_text_addr() ({ void *pc; __asm__("rd %%pc, %0" : "=r" (pc)); pc; })
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/asi.h>
 #include <asm/pstate.h>
 #include <asm/ptrace.h>
 #include <asm/page.h>
 
+<<<<<<< HEAD
 /* Don't hold the runqueue lock over context switch */
 #define __ARCH_WANT_UNLOCKED_CTXSW
 
@@ -25,6 +33,8 @@
 #define wp_works_ok 1
 #define wp_works_ok__is_a_macro /* for versions in ksyms.c */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * User lives in his very own context, and cannot reference us. Note
  * that TASK_SIZE is a misnomer, it really gives maximum user virtual
@@ -42,7 +52,13 @@
 #define TASK_SIZE_OF(tsk) \
 	(test_tsk_thread_flag(tsk,TIF_32BIT) ? \
 	 (1UL << 32UL) : ((unsigned long)-VPTE_SIZE))
+<<<<<<< HEAD
 #define TASK_SIZE	TASK_SIZE_OF(current)
+=======
+#define TASK_SIZE \
+	(test_thread_flag(TIF_32BIT) ? \
+	 (1UL << 32UL) : ((unsigned long)-VPTE_SIZE))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __KERNEL__
 
 #define STACK_TOP32	((1UL << 32UL) - PAGE_SIZE)
@@ -57,10 +73,13 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 typedef struct {
 	unsigned char seg;
 } mm_segment_t;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The Sparc processor specific thread struct. */
 /* XXX This should die, everything can go into thread_info now. */
 struct thread_struct {
@@ -92,10 +111,16 @@ struct thread_struct {
 #ifndef __ASSEMBLY__
 
 #include <linux/types.h>
+<<<<<<< HEAD
 
 /* Return saved PC of a blocked thread. */
 struct task_struct;
 extern unsigned long thread_saved_pc(struct task_struct *);
+=======
+#include <asm/fpumacro.h>
+
+struct task_struct;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* On Uniprocessor, even in RMO processes see TSO semantics */
 #ifdef CONFIG_SMP
@@ -141,6 +166,13 @@ do { \
 	: \
 	: "r" (regs), "r" (sp - sizeof(struct reg_window) - STACK_BIAS), \
 	  "i" ((const unsigned long)(&((struct pt_regs *)0)->u_regs[0]))); \
+<<<<<<< HEAD
+=======
+	fprs_write(0);	\
+	current_thread_info()->xfsr[0] = 0;	\
+	current_thread_info()->fpsaved[0] = 0;	\
+	regs->tstate &= ~TSTATE_PEF;	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } while (0)
 
 #define start_thread32(regs, pc, sp) \
@@ -181,6 +213,7 @@ do { \
 	: \
 	: "r" (regs), "r" (sp - sizeof(struct reg_window32)), \
 	  "i" ((const unsigned long)(&((struct pt_regs *)0)->u_regs[0]))); \
+<<<<<<< HEAD
 } while (0)
 
 /* Free all resources held by a thread. */
@@ -192,12 +225,48 @@ do { \
 extern pid_t kernel_thread(int (*fn)(void *), void * arg, unsigned long flags);
 
 extern unsigned long get_wchan(struct task_struct *task);
+=======
+	fprs_write(0);	\
+	current_thread_info()->xfsr[0] = 0;	\
+	current_thread_info()->fpsaved[0] = 0;	\
+	regs->tstate &= ~TSTATE_PEF;	\
+} while (0)
+
+unsigned long __get_wchan(struct task_struct *task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define task_pt_regs(tsk) (task_thread_info(tsk)->kregs)
 #define KSTK_EIP(tsk)  (task_pt_regs(tsk)->tpc)
 #define KSTK_ESP(tsk)  (task_pt_regs(tsk)->u_regs[UREG_FP])
 
+<<<<<<< HEAD
 #define cpu_relax()	barrier()
+=======
+/* Please see the commentary in asm/backoff.h for a description of
+ * what these instructions are doing and how they have been chosen.
+ * To make a long story short, we are trying to yield the current cpu
+ * strand during busy loops.
+ */
+#ifdef	BUILD_VDSO
+#define	cpu_relax()	asm volatile("\n99:\n\t"			\
+				     "rd	%%ccr, %%g0\n\t"	\
+				     "rd	%%ccr, %%g0\n\t"	\
+				     "rd	%%ccr, %%g0\n\t"	\
+				     ::: "memory")
+#else /* ! BUILD_VDSO */
+#define cpu_relax()	asm volatile("\n99:\n\t"			\
+				     "rd	%%ccr, %%g0\n\t"	\
+				     "rd	%%ccr, %%g0\n\t"	\
+				     "rd	%%ccr, %%g0\n\t"	\
+				     ".section	.pause_3insn_patch,\"ax\"\n\t"\
+				     ".word	99b\n\t"		\
+				     "wr	%%g0, 128, %%asr27\n\t"	\
+				     "nop\n\t"				\
+				     "nop\n\t"				\
+				     ".previous"			\
+				     ::: "memory")
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Prefetch support.  This is tuned for UltraSPARC-III and later.
  * UltraSPARC-I will treat these as nops, and UltraSPARC-II has
@@ -205,7 +274,10 @@ extern unsigned long get_wchan(struct task_struct *task);
  */
 #define ARCH_HAS_PREFETCH
 #define ARCH_HAS_PREFETCHW
+<<<<<<< HEAD
 #define ARCH_HAS_SPINLOCK_PREFETCH
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void prefetch(const void *x)
 {
@@ -231,10 +303,17 @@ static inline void prefetchw(const void *x)
 			     : "r" (x));
 }
 
+<<<<<<< HEAD
 #define spin_lock_prefetch(x)	prefetchw(x)
 
 #define HAVE_ARCH_PICK_MMAP_LAYOUT
 
+=======
+#define HAVE_ARCH_PICK_MMAP_LAYOUT
+
+int do_mathemu(struct pt_regs *regs, struct fpustate *f, bool illegal_insn_trap);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(__ASSEMBLY__) */
 
 #endif /* !(__ASM_SPARC64_PROCESSOR_H) */

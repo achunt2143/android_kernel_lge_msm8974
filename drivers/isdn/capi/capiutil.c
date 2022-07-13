@@ -20,6 +20,7 @@
 #include <linux/isdn/capiutil.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 /* from CAPI2.0 DDK AVM Berlin GmbH */
 
 #ifndef CONFIG_ISDN_DRV_AVMB1_VERBOSE_REASON
@@ -221,6 +222,12 @@ char *capi_info2str(u16 reason)
 }
 #endif
 
+=======
+#include "kcapi.h"
+
+/* from CAPI2.0 DDK AVM Berlin GmbH */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef struct {
 	int typ;
 	size_t off;
@@ -400,6 +407,7 @@ static unsigned char *cpars[] =
 #define structTRcpyovl(x, y, l) memmove(y, x, l)
 
 /*-------------------------------------------------------*/
+<<<<<<< HEAD
 static unsigned command_2_index(unsigned c, unsigned sc)
 {
 	if (c & 0x80)
@@ -408,10 +416,35 @@ static unsigned command_2_index(unsigned c, unsigned sc)
 	else if (c == 0x41)
 		c = 0x9 + 0x1;
 	else if (c == 0xff)
+=======
+static unsigned command_2_index(u8 c, u8 sc)
+{
+	if (c & 0x80)
+		c = 0x9 + (c & 0x0f);
+	else if (c == 0x41)
+		c = 0x9 + 0x1;
+	if (c > 0x18)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c = 0x00;
 	return (sc & 3) * (0x9 + 0x9) + c;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * capi_cmd2par() - find parameter string for CAPI 2.0 command/subcommand
+ * @cmd:	command number
+ * @subcmd:	subcommand number
+ *
+ * Return value: static string, NULL if command/subcommand unknown
+ */
+
+static unsigned char *capi_cmd2par(u8 cmd, u8 subcmd)
+{
+	return cpars[command_2_index(cmd, subcmd)];
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-------------------------------------------------------*/
 #define TYP (cdef[cmsg->par[cmsg->p]].typ)
 #define OFF (((u8 *)cmsg) + cdef[cmsg->par[cmsg->p]].off)
@@ -432,6 +465,7 @@ static void jumpcstruct(_cmsg *cmsg)
 		}
 	}
 }
+<<<<<<< HEAD
 /*-------------------------------------------------------*/
 static void pars_2_message(_cmsg *cmsg)
 {
@@ -612,6 +646,8 @@ unsigned capi_cmsg_header(_cmsg *cmsg, u16 _ApplId,
 	cmsg->adr.adrController = _Controller;
 	return 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*-------------------------------------------------------*/
 
@@ -672,12 +708,25 @@ static char *mnames[] =
  * @cmd:	command number
  * @subcmd:	subcommand number
  *
+<<<<<<< HEAD
  * Return value: static string, NULL if command/subcommand unknown
+=======
+ * Return value: static string
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 char *capi_cmd2str(u8 cmd, u8 subcmd)
 {
+<<<<<<< HEAD
 	return mnames[command_2_index(cmd, subcmd)];
+=======
+	char *result;
+
+	result = mnames[command_2_index(cmd, subcmd)];
+	if (result == NULL)
+		result = "INVALID_COMMAND";
+	return result;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -739,9 +788,13 @@ static char *pnames[] =
 	/*2f */ "Useruserdata"
 };
 
+<<<<<<< HEAD
 
 
 #include <stdarg.h>
+=======
+#include <linux/stdarg.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*-------------------------------------------------------*/
 static _cdebbuf *bufprint(_cdebbuf *cdb, char *fmt, ...)
@@ -827,6 +880,12 @@ static _cdebbuf *printstruct(_cdebbuf *cdb, u8 *m)
 
 static _cdebbuf *protocol_message_2_pars(_cdebbuf *cdb, _cmsg *cmsg, int level)
 {
+<<<<<<< HEAD
+=======
+	if (!cmsg->par)
+		return NULL;	/* invalid command/subcommand */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (; TYP != _CEND; cmsg->p++) {
 		int slen = 29 + 3 - level;
 		int i;
@@ -961,10 +1020,17 @@ _cdebbuf *capi_message2str(u8 *msg)
 	cmsg->p = 0;
 	byteTRcpy(cmsg->m + 4, &cmsg->Command);
 	byteTRcpy(cmsg->m + 5, &cmsg->Subcommand);
+<<<<<<< HEAD
 	cmsg->par = cpars[command_2_index(cmsg->Command, cmsg->Subcommand)];
 
 	cdb = bufprint(cdb, "%-26s ID=%03d #0x%04x LEN=%04d\n",
 		       mnames[command_2_index(cmsg->Command, cmsg->Subcommand)],
+=======
+	cmsg->par = capi_cmd2par(cmsg->Command, cmsg->Subcommand);
+
+	cdb = bufprint(cdb, "%-26s ID=%03d #0x%04x LEN=%04d\n",
+		       capi_cmd2str(cmsg->Command, cmsg->Subcommand),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       ((unsigned short *) msg)[1],
 		       ((unsigned short *) msg)[3],
 		       ((unsigned short *) msg)[0]);
@@ -975,6 +1041,7 @@ _cdebbuf *capi_message2str(u8 *msg)
 	return cdb;
 }
 
+<<<<<<< HEAD
 /**
  * capi_cmsg2str() - format _cmsg structure for printing
  * @cmsg:	_cmsg structure
@@ -1006,6 +1073,8 @@ _cdebbuf *capi_cmsg2str(_cmsg *cmsg)
 	return cdb;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __init cdebug_init(void)
 {
 	g_cmsg = kmalloc(sizeof(_cmsg), GFP_KERNEL);
@@ -1029,7 +1098,11 @@ int __init cdebug_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 void __exit cdebug_exit(void)
+=======
+void cdebug_exit(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (g_debbuf)
 		kfree(g_debbuf->buf);
@@ -1060,11 +1133,16 @@ int __init cdebug_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 void __exit cdebug_exit(void)
+=======
+void cdebug_exit(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
 #endif
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(cdebbuf_free);
 EXPORT_SYMBOL(capi_cmsg2message);
@@ -1074,3 +1152,5 @@ EXPORT_SYMBOL(capi_cmd2str);
 EXPORT_SYMBOL(capi_cmsg2str);
 EXPORT_SYMBOL(capi_message2str);
 EXPORT_SYMBOL(capi_info2str);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

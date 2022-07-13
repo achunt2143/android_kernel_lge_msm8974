@@ -25,9 +25,24 @@ enum kmsg_dump_reason {
 	KMSG_DUMP_PANIC,
 	KMSG_DUMP_OOPS,
 	KMSG_DUMP_EMERG,
+<<<<<<< HEAD
 	KMSG_DUMP_RESTART,
 	KMSG_DUMP_HALT,
 	KMSG_DUMP_POWEROFF,
+=======
+	KMSG_DUMP_SHUTDOWN,
+	KMSG_DUMP_MAX
+};
+
+/**
+ * struct kmsg_dump_iter - iterator for retrieving kernel messages
+ * @cur_seq:	Points to the oldest message to dump
+ * @next_seq:	Points after the newest message to dump
+ */
+struct kmsg_dump_iter {
+	u64	cur_seq;
+	u64	next_seq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -42,6 +57,7 @@ struct kmsg_dumper {
 	struct list_head list;
 	void (*dump)(struct kmsg_dumper *dumper, enum kmsg_dump_reason reason);
 	enum kmsg_dump_reason max_reason;
+<<<<<<< HEAD
 	bool active;
 	bool registered;
 
@@ -50,11 +66,15 @@ struct kmsg_dumper {
 	u32 next_idx;
 	u64 cur_seq;
 	u64 next_seq;
+=======
+	bool registered;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_PRINTK
 void kmsg_dump(enum kmsg_dump_reason reason);
 
+<<<<<<< HEAD
 bool kmsg_dump_get_line(struct kmsg_dumper *dumper, bool syslog,
 			char *line, size_t size, size_t *len);
 
@@ -62,28 +82,56 @@ bool kmsg_dump_get_buffer(struct kmsg_dumper *dumper, bool syslog,
 			  char *buf, size_t size, size_t *len);
 
 void kmsg_dump_rewind(struct kmsg_dumper *dumper);
+=======
+bool kmsg_dump_get_line(struct kmsg_dump_iter *iter, bool syslog,
+			char *line, size_t size, size_t *len);
+
+bool kmsg_dump_get_buffer(struct kmsg_dump_iter *iter, bool syslog,
+			  char *buf, size_t size, size_t *len_out);
+
+void kmsg_dump_rewind(struct kmsg_dump_iter *iter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int kmsg_dump_register(struct kmsg_dumper *dumper);
 
 int kmsg_dump_unregister(struct kmsg_dumper *dumper);
+<<<<<<< HEAD
+=======
+
+const char *kmsg_dump_reason_str(enum kmsg_dump_reason reason);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline void kmsg_dump(enum kmsg_dump_reason reason)
 {
 }
 
+<<<<<<< HEAD
 bool kmsg_dump_get_line(struct kmsg_dumper *dumper, bool syslog,
 			  const char *line, size_t size, size_t *len)
+=======
+static inline bool kmsg_dump_get_line(struct kmsg_dump_iter *iter, bool syslog,
+				const char *line, size_t size, size_t *len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return false;
 }
 
+<<<<<<< HEAD
 bool kmsg_dump_get_buffer(struct kmsg_dumper *dumper, bool syslog,
 			    char *buf, size_t size, size_t *len)
+=======
+static inline bool kmsg_dump_get_buffer(struct kmsg_dump_iter *iter, bool syslog,
+					char *buf, size_t size, size_t *len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return false;
 }
 
+<<<<<<< HEAD
 void kmsg_dump_rewind(struct kmsg_dumper *dumper)
+=======
+static inline void kmsg_dump_rewind(struct kmsg_dump_iter *iter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
@@ -96,6 +144,14 @@ static inline int kmsg_dump_unregister(struct kmsg_dumper *dumper)
 {
 	return -EINVAL;
 }
+<<<<<<< HEAD
+=======
+
+static inline const char *kmsg_dump_reason_str(enum kmsg_dump_reason reason)
+{
+	return "Disabled";
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* _LINUX_KMSG_DUMP_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/cpu/sh3/probe.c
  *
@@ -5,10 +9,13 @@
  *
  * Copyright (C) 1999, 2000  Niibe Yutaka
  * Copyright (C) 2002  Paul Mundt
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -16,7 +23,11 @@
 #include <asm/cache.h>
 #include <asm/io.h>
 
+<<<<<<< HEAD
 void __cpuinit cpu_probe(void)
+=======
+void cpu_probe(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long addr0, addr1, data0, data1, data2, data3;
 

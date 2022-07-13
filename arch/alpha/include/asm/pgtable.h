@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 #ifndef _ALPHA_PGTABLE_H
 #define _ALPHA_PGTABLE_H
 
 #include <asm-generic/4level-fixup.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ALPHA_PGTABLE_H
+#define _ALPHA_PGTABLE_H
+
+#include <asm-generic/pgtable-nopud.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This file contains the functions and defines necessary to modify and use
@@ -25,7 +33,10 @@ struct vm_area_struct;
  * hook is made available.
  */
 #define set_pte(pteptr, pteval) ((*(pteptr)) = (pteval))
+<<<<<<< HEAD
 #define set_pte_at(mm,addr,ptep,pteval) set_pte(ptep,pteval)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PMD_SHIFT determines the size of the area a second-level page table can map */
 #define PMD_SHIFT	(PAGE_SHIFT + (PAGE_SHIFT-3))
@@ -45,7 +56,10 @@ struct vm_area_struct;
 #define PTRS_PER_PMD	(1UL << (PAGE_SHIFT-3))
 #define PTRS_PER_PGD	(1UL << (PAGE_SHIFT-3))
 #define USER_PTRS_PER_PGD	(TASK_SIZE / PGDIR_SIZE)
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Number of pointers that fit on a page:  this will go away. */
 #define PTRS_PER_PAGE	(1UL << (PAGE_SHIFT-3))
@@ -73,7 +87,13 @@ struct vm_area_struct;
 /* .. and these are ours ... */
 #define _PAGE_DIRTY	0x20000
 #define _PAGE_ACCESSED	0x40000
+<<<<<<< HEAD
 #define _PAGE_FILE	0x80000	/* set:pagecache, unset:swap */
+=======
+
+/* We borrow bit 39 to store the exclusive marker in swap PTEs. */
+#define _PAGE_SWP_EXCLUSIVE	0x8000000000UL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * NOTE! The "accessed" bit isn't necessarily exact:  it can be kept exactly
@@ -117,6 +137,7 @@ struct vm_area_struct;
  * arch/alpha/mm/fault.c)
  */
 	/* xwr */
+<<<<<<< HEAD
 #define __P000	_PAGE_P(_PAGE_FOE | _PAGE_FOW | _PAGE_FOR)
 #define __P001	_PAGE_P(_PAGE_FOE | _PAGE_FOW)
 #define __P010	_PAGE_P(_PAGE_FOE)
@@ -134,6 +155,8 @@ struct vm_area_struct;
 #define __S101	_PAGE_S(_PAGE_FOW)
 #define __S110	_PAGE_S(0)
 #define __S111	_PAGE_S(0)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * pgprot_noncached() is only for infiniband pci support, and a real
@@ -203,10 +226,17 @@ extern unsigned long __zero_page(void);
  * Conversion functions:  convert a page and protection to a page entry,
  * and a page entry and page directory to the page they refer to.
  */
+<<<<<<< HEAD
 #ifndef CONFIG_DISCONTIGMEM
 #define page_to_pa(page)	(((page) - mem_map) << PAGE_SHIFT)
 
 #define pte_pfn(pte)	(pte_val(pte) >> 32)
+=======
+#define page_to_pa(page)	(page_to_pfn(page) << PAGE_SHIFT)
+#define PFN_PTE_SHIFT		32
+#define pte_pfn(pte)		(pte_val(pte) >> PFN_PTE_SHIFT)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pte_page(pte)	pfn_to_page(pte_pfn(pte))
 #define mk_pte(page, pgprot)						\
 ({									\
@@ -215,7 +245,10 @@ extern unsigned long __zero_page(void);
 	pte_val(pte) = (page_to_pfn(page) << 32) | pgprot_val(pgprot);	\
 	pte;								\
 })
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern inline pte_t pfn_pte(unsigned long physpfn, pgprot_t pgprot)
 { pte_t pte; pte_val(pte) = (PHYS_TWIDDLE(physpfn) << 32) | pgprot_val(pgprot); return pte; }
@@ -226,8 +259,13 @@ extern inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
 extern inline void pmd_set(pmd_t * pmdp, pte_t * ptep)
 { pmd_val(*pmdp) = _PAGE_TABLE | ((((unsigned long) ptep) - PAGE_OFFSET) << (32-PAGE_SHIFT)); }
 
+<<<<<<< HEAD
 extern inline void pgd_set(pgd_t * pgdp, pmd_t * pmdp)
 { pgd_val(*pgdp) = _PAGE_TABLE | ((((unsigned long) pmdp) - PAGE_OFFSET) << (32-PAGE_SHIFT)); }
+=======
+extern inline void pud_set(pud_t * pudp, pmd_t * pmdp)
+{ pud_val(*pudp) = _PAGE_TABLE | ((((unsigned long) pmdp) - PAGE_OFFSET) << (32-PAGE_SHIFT)); }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 extern inline unsigned long
@@ -236,6 +274,7 @@ pmd_page_vaddr(pmd_t pmd)
 	return ((pmd_val(pmd) & _PFN_MASK) >> (32-PAGE_SHIFT)) + PAGE_OFFSET;
 }
 
+<<<<<<< HEAD
 #ifndef CONFIG_DISCONTIGMEM
 #define pmd_page(pmd)	(mem_map + ((pmd_val(pmd) & _PFN_MASK) >> 32))
 #define pgd_page(pgd)	(mem_map + ((pgd_val(pgd) & _PFN_MASK) >> 32))
@@ -243,6 +282,16 @@ pmd_page_vaddr(pmd_t pmd)
 
 extern inline unsigned long pgd_page_vaddr(pgd_t pgd)
 { return PAGE_OFFSET + ((pgd_val(pgd) & _PFN_MASK) >> (32-PAGE_SHIFT)); }
+=======
+#define pmd_pfn(pmd)	(pmd_val(pmd) >> 32)
+#define pmd_page(pmd)	(pfn_to_page(pmd_val(pmd) >> 32))
+#define pud_page(pud)	(pfn_to_page(pud_val(pud) >> 32))
+
+extern inline pmd_t *pud_pgtable(pud_t pgd)
+{
+	return (pmd_t *)(PAGE_OFFSET + ((pud_val(pgd) & _PFN_MASK) >> (32-PAGE_SHIFT)));
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern inline int pte_none(pte_t pte)		{ return !pte_val(pte); }
 extern inline int pte_present(pte_t pte)	{ return pte_val(pte) & _PAGE_VALID; }
@@ -256,10 +305,17 @@ extern inline int pmd_bad(pmd_t pmd)		{ return (pmd_val(pmd) & ~_PFN_MASK) != _P
 extern inline int pmd_present(pmd_t pmd)	{ return pmd_val(pmd) & _PAGE_VALID; }
 extern inline void pmd_clear(pmd_t * pmdp)	{ pmd_val(*pmdp) = 0; }
 
+<<<<<<< HEAD
 extern inline int pgd_none(pgd_t pgd)		{ return !pgd_val(pgd); }
 extern inline int pgd_bad(pgd_t pgd)		{ return (pgd_val(pgd) & ~_PFN_MASK) != _PAGE_TABLE; }
 extern inline int pgd_present(pgd_t pgd)	{ return pgd_val(pgd) & _PAGE_VALID; }
 extern inline void pgd_clear(pgd_t * pgdp)	{ pgd_val(*pgdp) = 0; }
+=======
+extern inline int pud_none(pud_t pud)		{ return !pud_val(pud); }
+extern inline int pud_bad(pud_t pud)		{ return (pud_val(pud) & ~_PFN_MASK) != _PAGE_TABLE; }
+extern inline int pud_present(pud_t pud)	{ return pud_val(pud) & _PAGE_VALID; }
+extern inline void pud_clear(pud_t * pudp)	{ pud_val(*pudp) = 0; }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The following only work if pte_present() is true.
@@ -268,12 +324,16 @@ extern inline void pgd_clear(pgd_t * pgdp)	{ pgd_val(*pgdp) = 0; }
 extern inline int pte_write(pte_t pte)		{ return !(pte_val(pte) & _PAGE_FOW); }
 extern inline int pte_dirty(pte_t pte)		{ return pte_val(pte) & _PAGE_DIRTY; }
 extern inline int pte_young(pte_t pte)		{ return pte_val(pte) & _PAGE_ACCESSED; }
+<<<<<<< HEAD
 extern inline int pte_file(pte_t pte)		{ return pte_val(pte) & _PAGE_FILE; }
 extern inline int pte_special(pte_t pte)	{ return 0; }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern inline pte_t pte_wrprotect(pte_t pte)	{ pte_val(pte) |= _PAGE_FOW; return pte; }
 extern inline pte_t pte_mkclean(pte_t pte)	{ pte_val(pte) &= ~(__DIRTY_BITS); return pte; }
 extern inline pte_t pte_mkold(pte_t pte)	{ pte_val(pte) &= ~(__ACCESS_BITS); return pte; }
+<<<<<<< HEAD
 extern inline pte_t pte_mkwrite(pte_t pte)	{ pte_val(pte) &= ~_PAGE_FOW; return pte; }
 extern inline pte_t pte_mkdirty(pte_t pte)	{ pte_val(pte) |= __DIRTY_BITS; return pte; }
 extern inline pte_t pte_mkyoung(pte_t pte)	{ pte_val(pte) |= __ACCESS_BITS; return pte; }
@@ -292,6 +352,16 @@ extern inline pte_t pte_mkspecial(pte_t pte)	{ return pte; }
  * The smp_read_barrier_depends() in the following functions are required to
  * order the load of *dir (the pointer in the top level page table) with any
  * subsequent load of the returned pmd_t *ret (ret is data dependent on *dir).
+=======
+extern inline pte_t pte_mkwrite_novma(pte_t pte){ pte_val(pte) &= ~_PAGE_FOW; return pte; }
+extern inline pte_t pte_mkdirty(pte_t pte)	{ pte_val(pte) |= __DIRTY_BITS; return pte; }
+extern inline pte_t pte_mkyoung(pte_t pte)	{ pte_val(pte) |= __ACCESS_BITS; return pte; }
+
+/*
+ * The smp_rmb() in the following functions are required to order the load of
+ * *dir (the pointer in the top level page table) with any subsequent load of
+ * the returned pmd_t *ret (ret is data dependent on *dir).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If this ordering is not enforced, the CPU might load an older value of
  * *ret, which may be uninitialized data. See mm/memory.c:__pte_alloc for
@@ -302,24 +372,41 @@ extern inline pte_t pte_mkspecial(pte_t pte)	{ return pte; }
  */
 
 /* Find an entry in the second-level page table.. */
+<<<<<<< HEAD
 extern inline pmd_t * pmd_offset(pgd_t * dir, unsigned long address)
 {
 	pmd_t *ret = (pmd_t *) pgd_page_vaddr(*dir) + ((address >> PMD_SHIFT) & (PTRS_PER_PAGE - 1));
 	smp_read_barrier_depends(); /* see above */
 	return ret;
 }
+=======
+extern inline pmd_t * pmd_offset(pud_t * dir, unsigned long address)
+{
+	pmd_t *ret = pud_pgtable(*dir) + ((address >> PMD_SHIFT) & (PTRS_PER_PAGE - 1));
+	smp_rmb(); /* see above */
+	return ret;
+}
+#define pmd_offset pmd_offset
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Find an entry in the third-level page table.. */
 extern inline pte_t * pte_offset_kernel(pmd_t * dir, unsigned long address)
 {
 	pte_t *ret = (pte_t *) pmd_page_vaddr(*dir)
 		+ ((address >> PAGE_SHIFT) & (PTRS_PER_PAGE - 1));
+<<<<<<< HEAD
 	smp_read_barrier_depends(); /* see above */
 	return ret;
 }
 
 #define pte_offset_map(dir,addr)	pte_offset_kernel((dir),(addr))
 #define pte_unmap(pte)			do { } while (0)
+=======
+	smp_rmb(); /* see above */
+	return ret;
+}
+#define pte_offset_kernel pte_offset_kernel
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern pgd_t swapper_pg_dir[1024];
 
@@ -332,6 +419,7 @@ extern inline void update_mmu_cache(struct vm_area_struct * vma,
 {
 }
 
+<<<<<<< HEAD
 /*
  * Non-present pages:  high 24 bits are offset, next 8 bits type,
  * low 32 bits zero.
@@ -340,11 +428,40 @@ extern inline pte_t mk_swap_pte(unsigned long type, unsigned long offset)
 { pte_t pte; pte_val(pte) = (type << 32) | (offset << 40); return pte; }
 
 #define __swp_type(x)		(((x).val >> 32) & 0xff)
+=======
+static inline void update_mmu_cache_range(struct vm_fault *vmf,
+		struct vm_area_struct *vma, unsigned long address,
+		pte_t *ptep, unsigned int nr)
+{
+}
+
+/*
+ * Encode/decode swap entries and swap PTEs. Swap PTEs are all PTEs that
+ * are !pte_none() && !pte_present().
+ *
+ * Format of swap PTEs:
+ *
+ *   6 6 6 6 5 5 5 5 5 5 5 5 5 5 4 4 4 4 4 4 4 4 4 4 3 3 3 3 3 3 3 3
+ *   3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2
+ *   <------------------- offset ------------------> E <--- type -->
+ *
+ *   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
+ *   1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
+ *   <--------------------------- zeroes -------------------------->
+ *
+ *   E is the exclusive marker that is not stored in swap entries.
+ */
+extern inline pte_t mk_swap_pte(unsigned long type, unsigned long offset)
+{ pte_t pte; pte_val(pte) = ((type & 0x7f) << 32) | (offset << 40); return pte; }
+
+#define __swp_type(x)		(((x).val >> 32) & 0x7f)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __swp_offset(x)		((x).val >> 40)
 #define __swp_entry(type, off)	((swp_entry_t) { pte_val(mk_swap_pte((type), (off))) })
 #define __pte_to_swp_entry(pte)	((swp_entry_t) { pte_val(pte) })
 #define __swp_entry_to_pte(x)	((pte_t) { (x).val })
 
+<<<<<<< HEAD
 #define pte_to_pgoff(pte)	(pte_val(pte) >> 32)
 #define pgoff_to_pte(off)	((pte_t) { ((off) << 32) | _PAGE_FILE })
 
@@ -356,6 +473,24 @@ extern inline pte_t mk_swap_pte(unsigned long type, unsigned long offset)
 
 #define io_remap_pfn_range(vma, start, pfn, size, prot)	\
 		remap_pfn_range(vma, start, pfn, size, prot)
+=======
+static inline int pte_swp_exclusive(pte_t pte)
+{
+	return pte_val(pte) & _PAGE_SWP_EXCLUSIVE;
+}
+
+static inline pte_t pte_swp_mkexclusive(pte_t pte)
+{
+	pte_val(pte) |= _PAGE_SWP_EXCLUSIVE;
+	return pte;
+}
+
+static inline pte_t pte_swp_clear_exclusive(pte_t pte)
+{
+	pte_val(pte) &= ~_PAGE_SWP_EXCLUSIVE;
+	return pte;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pte_ERROR(e) \
 	printk("%s:%d: bad pte %016lx.\n", __FILE__, __LINE__, pte_val(e))
@@ -366,6 +501,7 @@ extern inline pte_t mk_swap_pte(unsigned long type, unsigned long offset)
 
 extern void paging_init(void);
 
+<<<<<<< HEAD
 #include <asm-generic/pgtable.h>
 
 /*
@@ -373,6 +509,8 @@ extern void paging_init(void);
  */
 #define pgtable_cache_init()	do { } while (0)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* We have our own get_unmapped_area to cope with ADDR_LIMIT_32BIT.  */
 #define HAVE_ARCH_UNMAPPED_AREA
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/
 /*
  *  linux/fs/binfmt_flat.c
@@ -15,9 +19,17 @@
  *	JAN/99 -- coded full program relocation (gerg@snapgear.com)
  */
 
+<<<<<<< HEAD
 #include <linux/export.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
+=======
+#define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
+
+#include <linux/kernel.h>
+#include <linux/sched.h>
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/mman.h>
 #include <linux/errno.h>
@@ -25,8 +37,11 @@
 #include <linux/string.h>
 #include <linux/fs.h>
 #include <linux/file.h>
+<<<<<<< HEAD
 #include <linux/stat.h>
 #include <linux/fcntl.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ptrace.h>
 #include <linux/user.h>
 #include <linux/slab.h>
@@ -34,6 +49,7 @@
 #include <linux/personality.h>
 #include <linux/init.h>
 #include <linux/flat.h>
+<<<<<<< HEAD
 #include <linux/syscalls.h>
 
 #include <asm/byteorder.h>
@@ -54,6 +70,23 @@
 #define	DBG_FLT(a...)
 #endif
 
+=======
+#include <linux/uaccess.h>
+#include <linux/vmalloc.h>
+
+#include <asm/byteorder.h>
+#include <asm/unaligned.h>
+#include <asm/cacheflush.h>
+#include <asm/page.h>
+#include <asm/flat.h>
+
+#ifndef flat_get_relocate_addr
+#define flat_get_relocate_addr(rel)	(rel)
+#endif
+
+/****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * User data (data section and bss) needs to be aligned.
  * We pick 0x20 here because it is the max value elf2flt has always
@@ -72,6 +105,17 @@
 #define RELOC_FAILED 0xff00ff01		/* Relocation incorrect somewhere */
 #define UNLOADED_LIB 0x7ff000ff		/* Placeholder for unused library */
 
+<<<<<<< HEAD
+=======
+#define MAX_SHARED_LIBS			(1)
+
+#ifdef CONFIG_BINFMT_FLAT_NO_DATA_START_OFFSET
+#define DATA_START_OFFSET_WORDS		(0)
+#else
+#define DATA_START_OFFSET_WORDS		(MAX_SHARED_LIBS)
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct lib_info {
 	struct {
 		unsigned long start_code;		/* Start of text segment */
@@ -80,6 +124,7 @@ struct lib_info {
 		unsigned long text_len;			/* Length of text segment */
 		unsigned long entry;			/* Start address for this module */
 		unsigned long build_date;		/* When this one was compiled */
+<<<<<<< HEAD
 		short loaded;				/* Has this library been loaded? */
 	} lib_list[MAX_SHARED_LIBS];
 };
@@ -90,10 +135,18 @@ static int load_flat_shared_library(int id, struct lib_info *p);
 
 static int load_flat_binary(struct linux_binprm *, struct pt_regs * regs);
 static int flat_core_dump(struct coredump_params *cprm);
+=======
+		bool loaded;				/* Has this library been loaded? */
+	} lib_list[MAX_SHARED_LIBS];
+};
+
+static int load_flat_binary(struct linux_binprm *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct linux_binfmt flat_format = {
 	.module		= THIS_MODULE,
 	.load_binary	= load_flat_binary,
+<<<<<<< HEAD
 	.core_dump	= flat_core_dump,
 	.min_coredump	= PAGE_SIZE
 };
@@ -110,11 +163,16 @@ static int flat_core_dump(struct coredump_params *cprm)
 			current->comm, current->pid, (int) cprm->signr);
 	return(1);
 }
+=======
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /****************************************************************************/
 /*
  * create_flat_tables() parses the env- and arg-strings in new user
  * memory and creates the pointer tables from them, and puts their
+<<<<<<< HEAD
  * addresses on the "stack", returning the new stack pointer value.
  */
 
@@ -159,6 +217,66 @@ static unsigned long create_flat_tables(
 	put_user((unsigned long) NULL, envp);
 	current->mm->env_end = (unsigned long) p;
 	return (unsigned long)sp;
+=======
+ * addresses on the "stack", recording the new stack pointer value.
+ */
+
+static int create_flat_tables(struct linux_binprm *bprm, unsigned long arg_start)
+{
+	char __user *p;
+	unsigned long __user *sp;
+	long i, len;
+
+	p = (char __user *)arg_start;
+	sp = (unsigned long __user *)current->mm->start_stack;
+
+	sp -= bprm->envc + 1;
+	sp -= bprm->argc + 1;
+	if (IS_ENABLED(CONFIG_BINFMT_FLAT_ARGVP_ENVP_ON_STACK))
+		sp -= 2; /* argvp + envp */
+	sp -= 1;  /* &argc */
+
+	current->mm->start_stack = (unsigned long)sp & -FLAT_STACK_ALIGN;
+	sp = (unsigned long __user *)current->mm->start_stack;
+
+	if (put_user(bprm->argc, sp++))
+		return -EFAULT;
+	if (IS_ENABLED(CONFIG_BINFMT_FLAT_ARGVP_ENVP_ON_STACK)) {
+		unsigned long argv, envp;
+		argv = (unsigned long)(sp + 2);
+		envp = (unsigned long)(sp + 2 + bprm->argc + 1);
+		if (put_user(argv, sp++) || put_user(envp, sp++))
+			return -EFAULT;
+	}
+
+	current->mm->arg_start = (unsigned long)p;
+	for (i = bprm->argc; i > 0; i--) {
+		if (put_user((unsigned long)p, sp++))
+			return -EFAULT;
+		len = strnlen_user(p, MAX_ARG_STRLEN);
+		if (!len || len > MAX_ARG_STRLEN)
+			return -EINVAL;
+		p += len;
+	}
+	if (put_user(0, sp++))
+		return -EFAULT;
+	current->mm->arg_end = (unsigned long)p;
+
+	current->mm->env_start = (unsigned long) p;
+	for (i = bprm->envc; i > 0; i--) {
+		if (put_user((unsigned long)p, sp++))
+			return -EFAULT;
+		len = strnlen_user(p, MAX_ARG_STRLEN);
+		if (!len || len > MAX_ARG_STRLEN)
+			return -EINVAL;
+		p += len;
+	}
+	if (put_user(0, sp++))
+		return -EFAULT;
+	current->mm->env_end = (unsigned long)p;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /****************************************************************************/
@@ -178,6 +296,7 @@ static unsigned long create_flat_tables(
 #define ENCRYPTED    0x20 /* bit 5 set: file is encrypted */
 #define RESERVED     0xC0 /* bit 6,7:   reserved */
 
+<<<<<<< HEAD
 static int decompress_exec(
 	struct linux_binprm *bprm,
 	unsigned long offset,
@@ -201,13 +320,35 @@ static int decompress_exec(
 	buf = kmalloc(LBUFSIZE, GFP_KERNEL);
 	if (buf == NULL) {
 		DBG_FLT("binfmt_flat: no memory for read buffer\n");
+=======
+static int decompress_exec(struct linux_binprm *bprm, loff_t fpos, char *dst,
+		long len, int fd)
+{
+	unsigned char *buf;
+	z_stream strm;
+	int ret, retval;
+
+	pr_debug("decompress_exec(offset=%llx,buf=%p,len=%lx)\n", fpos, dst, len);
+
+	memset(&strm, 0, sizeof(strm));
+	strm.workspace = kmalloc(zlib_inflate_workspacesize(), GFP_KERNEL);
+	if (!strm.workspace)
+		return -ENOMEM;
+
+	buf = kmalloc(LBUFSIZE, GFP_KERNEL);
+	if (!buf) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENOMEM;
 		goto out_free;
 	}
 
 	/* Read in first chunk of data and parse gzip header. */
+<<<<<<< HEAD
 	fpos = offset;
 	ret = bprm->file->f_op->read(bprm->file, buf, LBUFSIZE, &fpos);
+=======
+	ret = kernel_read(bprm->file, buf, LBUFSIZE, &fpos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strm.next_in = buf;
 	strm.avail_in = ret;
@@ -217,49 +358,80 @@ static int decompress_exec(
 
 	/* Check minimum size -- gzip header */
 	if (ret < 10) {
+<<<<<<< HEAD
 		DBG_FLT("binfmt_flat: file too small?\n");
+=======
+		pr_debug("file too small?\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_buf;
 	}
 
 	/* Check gzip magic number */
 	if ((buf[0] != 037) || ((buf[1] != 0213) && (buf[1] != 0236))) {
+<<<<<<< HEAD
 		DBG_FLT("binfmt_flat: unknown compression magic?\n");
+=======
+		pr_debug("unknown compression magic?\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_buf;
 	}
 
 	/* Check gzip method */
 	if (buf[2] != 8) {
+<<<<<<< HEAD
 		DBG_FLT("binfmt_flat: unknown compression method?\n");
+=======
+		pr_debug("unknown compression method?\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_buf;
 	}
 	/* Check gzip flags */
 	if ((buf[3] & ENCRYPTED) || (buf[3] & CONTINUATION) ||
 	    (buf[3] & RESERVED)) {
+<<<<<<< HEAD
 		DBG_FLT("binfmt_flat: unknown flags?\n");
+=======
+		pr_debug("unknown flags?\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_buf;
 	}
 
 	ret = 10;
 	if (buf[3] & EXTRA_FIELD) {
 		ret += 2 + buf[10] + (buf[11] << 8);
+<<<<<<< HEAD
 		if (unlikely(LBUFSIZE <= ret)) {
 			DBG_FLT("binfmt_flat: buffer overflow (EXTRA)?\n");
+=======
+		if (unlikely(ret >= LBUFSIZE)) {
+			pr_debug("buffer overflow (EXTRA)?\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_free_buf;
 		}
 	}
 	if (buf[3] & ORIG_NAME) {
 		while (ret < LBUFSIZE && buf[ret++] != 0)
 			;
+<<<<<<< HEAD
 		if (unlikely(LBUFSIZE == ret)) {
 			DBG_FLT("binfmt_flat: buffer overflow (ORIG_NAME)?\n");
+=======
+		if (unlikely(ret == LBUFSIZE)) {
+			pr_debug("buffer overflow (ORIG_NAME)?\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_free_buf;
 		}
 	}
 	if (buf[3] & COMMENT) {
 		while (ret < LBUFSIZE && buf[ret++] != 0)
 			;
+<<<<<<< HEAD
 		if (unlikely(LBUFSIZE == ret)) {
 			DBG_FLT("binfmt_flat: buffer overflow (COMMENT)?\n");
+=======
+		if (unlikely(ret == LBUFSIZE)) {
+			pr_debug("buffer overflow (COMMENT)?\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_free_buf;
 		}
 	}
@@ -272,12 +444,20 @@ static int decompress_exec(
 	strm.total_out = 0;
 
 	if (zlib_inflateInit2(&strm, -MAX_WBITS) != Z_OK) {
+<<<<<<< HEAD
 		DBG_FLT("binfmt_flat: zlib init failed?\n");
+=======
+		pr_debug("zlib init failed?\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_buf;
 	}
 
 	while ((ret = zlib_inflate(&strm, Z_NO_FLUSH)) == Z_OK) {
+<<<<<<< HEAD
 		ret = bprm->file->f_op->read(bprm->file, buf, LBUFSIZE, &fpos);
+=======
+		ret = kernel_read(bprm->file, buf, LBUFSIZE, &fpos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret <= 0)
 			break;
 		len -= ret;
@@ -288,7 +468,11 @@ static int decompress_exec(
 	}
 
 	if (ret < 0) {
+<<<<<<< HEAD
 		DBG_FLT("binfmt_flat: decompression failed (%d), %s\n",
+=======
+		pr_debug("decompression failed (%d), %s\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret, strm.msg);
 		goto out_zlib;
 	}
@@ -308,15 +492,22 @@ out_free:
 /****************************************************************************/
 
 static unsigned long
+<<<<<<< HEAD
 calc_reloc(unsigned long r, struct lib_info *p, int curid, int internalp)
 {
 	unsigned long addr;
 	int id;
+=======
+calc_reloc(unsigned long r, struct lib_info *p)
+{
+	unsigned long addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long start_brk;
 	unsigned long start_data;
 	unsigned long text_len;
 	unsigned long start_code;
 
+<<<<<<< HEAD
 #ifdef CONFIG_BINFMT_SHARED_FLAT
 	if (r == 0)
 		id = curid;	/* Relocs of 0 are always self referring */
@@ -358,6 +549,16 @@ calc_reloc(unsigned long r, struct lib_info *p, int curid, int internalp)
 	if (!flat_reloc_valid(r, start_brk - start_data + text_len)) {
 		printk("BINFMT_FLAT: reloc outside program 0x%x (0 - 0x%x/0x%x)",
 		       (int) r,(int)(start_brk-start_data+text_len),(int)text_len);
+=======
+	start_brk = p->lib_list[0].start_brk;
+	start_data = p->lib_list[0].start_data;
+	start_code = p->lib_list[0].start_code;
+	text_len = p->lib_list[0].text_len;
+
+	if (r > start_brk - start_data + text_len) {
+		pr_err("reloc outside program 0x%lx (0 - 0x%lx/0x%lx)",
+		       r, start_brk-start_data+text_len, text_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto failed;
 	}
 
@@ -367,10 +568,17 @@ calc_reloc(unsigned long r, struct lib_info *p, int curid, int internalp)
 		addr = r - text_len + start_data;
 
 	/* Range checked already above so doing the range tests is redundant...*/
+<<<<<<< HEAD
 	return(addr);
 
 failed:
 	printk(", killing %s!\n", current->comm);
+=======
+	return addr;
+
+failed:
+	pr_cont(", killing %s!\n", current->comm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	send_sig(SIGSEGV, current, 0);
 
 	return RELOC_FAILED;
@@ -378,6 +586,7 @@ failed:
 
 /****************************************************************************/
 
+<<<<<<< HEAD
 void old_reloc(unsigned long rl)
 {
 #ifdef DEBUG
@@ -439,6 +648,90 @@ static int load_flat_file(struct linux_binprm * bprm,
 
 	hdr = ((struct flat_hdr *) bprm->buf);		/* exec-header */
 	inode = bprm->file->f_path.dentry->d_inode;
+=======
+#ifdef CONFIG_BINFMT_FLAT_OLD
+static void old_reloc(unsigned long rl)
+{
+	static const char *segment[] = { "TEXT", "DATA", "BSS", "*UNKNOWN*" };
+	flat_v2_reloc_t	r;
+	unsigned long __user *ptr;
+	unsigned long val;
+
+	r.value = rl;
+#if defined(CONFIG_COLDFIRE)
+	ptr = (unsigned long __user *)(current->mm->start_code + r.reloc.offset);
+#else
+	ptr = (unsigned long __user *)(current->mm->start_data + r.reloc.offset);
+#endif
+	get_user(val, ptr);
+
+	pr_debug("Relocation of variable at DATASEG+%x "
+		 "(address %p, currently %lx) into segment %s\n",
+		 r.reloc.offset, ptr, val, segment[r.reloc.type]);
+
+	switch (r.reloc.type) {
+	case OLD_FLAT_RELOC_TYPE_TEXT:
+		val += current->mm->start_code;
+		break;
+	case OLD_FLAT_RELOC_TYPE_DATA:
+		val += current->mm->start_data;
+		break;
+	case OLD_FLAT_RELOC_TYPE_BSS:
+		val += current->mm->end_data;
+		break;
+	default:
+		pr_err("Unknown relocation type=%x\n", r.reloc.type);
+		break;
+	}
+	put_user(val, ptr);
+
+	pr_debug("Relocation became %lx\n", val);
+}
+#endif /* CONFIG_BINFMT_FLAT_OLD */
+
+/****************************************************************************/
+
+static inline u32 __user *skip_got_header(u32 __user *rp)
+{
+	if (IS_ENABLED(CONFIG_RISCV)) {
+		/*
+		 * RISC-V has a 16 byte GOT PLT header for elf64-riscv
+		 * and 8 byte GOT PLT header for elf32-riscv.
+		 * Skip the whole GOT PLT header, since it is reserved
+		 * for the dynamic linker (ld.so).
+		 */
+		u32 rp_val0, rp_val1;
+
+		if (get_user(rp_val0, rp))
+			return rp;
+		if (get_user(rp_val1, rp + 1))
+			return rp;
+
+		if (rp_val0 == 0xffffffff && rp_val1 == 0xffffffff)
+			rp += 4;
+		else if (rp_val0 == 0xffffffff)
+			rp += 2;
+	}
+	return rp;
+}
+
+static int load_flat_file(struct linux_binprm *bprm,
+		struct lib_info *libinfo, unsigned long *extra_stack)
+{
+	struct flat_hdr *hdr;
+	unsigned long textpos, datapos, realdatastart;
+	u32 text_len, data_len, bss_len, stack_len, full_data, flags;
+	unsigned long len, memp, memp_size, extra, rlim;
+	__be32 __user *reloc;
+	u32 __user *rp;
+	int i, rev, relocs;
+	loff_t fpos;
+	unsigned long start_code, end_code;
+	ssize_t result;
+	int ret;
+
+	hdr = ((struct flat_hdr *) bprm->buf);		/* exec-header */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	text_len  = ntohl(hdr->data_start);
 	data_len  = ntohl(hdr->data_end) - ntohl(hdr->data_start);
@@ -451,6 +744,10 @@ static int load_flat_file(struct linux_binprm * bprm,
 	relocs    = ntohl(hdr->reloc_count);
 	flags     = ntohl(hdr->flags);
 	rev       = ntohl(hdr->rev);
+<<<<<<< HEAD
+=======
+	full_data = data_len + relocs * sizeof(unsigned long);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (strncmp(hdr->magic, "bFLT", 4)) {
 		/*
@@ -465,6 +762,7 @@ static int load_flat_file(struct linux_binprm * bprm,
 	}
 
 	if (flags & FLAT_FLAG_KTRACE)
+<<<<<<< HEAD
 		printk("BINFMT_FLAT: Loading file: %s\n", bprm->filename);
 
 	if (rev != FLAT_VERSION && rev != OLD_FLAT_VERSION) {
@@ -479,6 +777,14 @@ static int load_flat_file(struct linux_binprm * bprm,
 	if (rev == OLD_FLAT_VERSION && id != 0) {
 		printk("BINFMT_FLAT: shared libraries are not available before rev 0x%x\n",
 				(int) FLAT_VERSION);
+=======
+		pr_info("Loading file: %s\n", bprm->filename);
+
+#ifdef CONFIG_BINFMT_FLAT_OLD
+	if (rev != FLAT_VERSION && rev != OLD_FLAT_VERSION) {
+		pr_err("bad flat file version 0x%x (supported 0x%lx and 0x%lx)\n",
+		       rev, FLAT_VERSION, OLD_FLAT_VERSION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOEXEC;
 		goto err;
 	}
@@ -487,12 +793,42 @@ static int load_flat_file(struct linux_binprm * bprm,
 	 * fix up the flags for the older format,  there were all kinds
 	 * of endian hacks,  this only works for the simple cases
 	 */
+<<<<<<< HEAD
 	if (rev == OLD_FLAT_VERSION && flat_old_ram_flag(flags))
 		flags = FLAT_FLAG_RAM;
 
 #ifndef CONFIG_BINFMT_ZFLAT
 	if (flags & (FLAT_FLAG_GZIP|FLAT_FLAG_GZDATA)) {
 		printk("Support for ZFLAT executables is not enabled.\n");
+=======
+	if (rev == OLD_FLAT_VERSION &&
+	   (flags || IS_ENABLED(CONFIG_BINFMT_FLAT_OLD_ALWAYS_RAM)))
+		flags = FLAT_FLAG_RAM;
+
+#else /* CONFIG_BINFMT_FLAT_OLD */
+	if (rev != FLAT_VERSION) {
+		pr_err("bad flat file version 0x%x (supported 0x%lx)\n",
+		       rev, FLAT_VERSION);
+		ret = -ENOEXEC;
+		goto err;
+	}
+#endif /* !CONFIG_BINFMT_FLAT_OLD */
+
+	/*
+	 * Make sure the header params are sane.
+	 * 28 bits (256 MB) is way more than reasonable in this case.
+	 * If some top bits are set we have probable binary corruption.
+	*/
+	if ((text_len | data_len | bss_len | stack_len | full_data) >> 28) {
+		pr_err("bad header\n");
+		ret = -ENOEXEC;
+		goto err;
+	}
+
+#ifndef CONFIG_BINFMT_ZFLAT
+	if (flags & (FLAT_FLAG_GZIP|FLAT_FLAG_GZDATA)) {
+		pr_err("Support for ZFLAT executables is not enabled.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOEXEC;
 		goto err;
 	}
@@ -512,6 +848,7 @@ static int load_flat_file(struct linux_binprm * bprm,
 	}
 
 	/* Flush all traces of the currently running executable */
+<<<<<<< HEAD
 	if (id == 0) {
 		result = flush_old_exec(bprm);
 		if (result) {
@@ -523,6 +860,15 @@ static int load_flat_file(struct linux_binprm * bprm,
 		set_personality(PER_LINUX_32BIT);
 		setup_new_exec(bprm);
 	}
+=======
+	ret = begin_new_exec(bprm);
+	if (ret)
+		goto err;
+
+	/* OK, This is the point of no return */
+	set_personality(PER_LINUX_32BIT);
+	setup_new_exec(bprm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * calculate the extra space we need to map in
@@ -535,11 +881,16 @@ static int load_flat_file(struct linux_binprm * bprm,
 	 * case,  and then the fully copied to RAM case which lumps
 	 * it all together.
 	 */
+<<<<<<< HEAD
 	if ((flags & (FLAT_FLAG_RAM|FLAT_FLAG_GZIP)) == 0) {
+=======
+	if (!IS_ENABLED(CONFIG_MMU) && !(flags & (FLAT_FLAG_RAM|FLAT_FLAG_GZIP))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * this should give us a ROM ptr,  but if it doesn't we don't
 		 * really care
 		 */
+<<<<<<< HEAD
 		DBG_FLT("BINFMT_FLAT: ROM mapping of file (we hope)\n");
 
 		textpos = vm_mmap(bprm->file, 0, text_len, PROT_READ|PROT_EXEC,
@@ -572,10 +923,46 @@ static int load_flat_file(struct linux_binprm * bprm,
 
 		DBG_FLT("BINFMT_FLAT: Allocated data+bss+stack (%d bytes): %x\n",
 				(int)(data_len + bss_len + stack_len), (int)datapos);
+=======
+		pr_debug("ROM mapping of file (we hope)\n");
+
+		textpos = vm_mmap(bprm->file, 0, text_len, PROT_READ|PROT_EXEC,
+				  MAP_PRIVATE, 0);
+		if (!textpos || IS_ERR_VALUE(textpos)) {
+			ret = textpos;
+			if (!textpos)
+				ret = -ENOMEM;
+			pr_err("Unable to mmap process text, errno %d\n", ret);
+			goto err;
+		}
+
+		len = data_len + extra +
+			DATA_START_OFFSET_WORDS * sizeof(unsigned long);
+		len = PAGE_ALIGN(len);
+		realdatastart = vm_mmap(NULL, 0, len,
+			PROT_READ|PROT_WRITE|PROT_EXEC, MAP_PRIVATE, 0);
+
+		if (realdatastart == 0 || IS_ERR_VALUE(realdatastart)) {
+			ret = realdatastart;
+			if (!realdatastart)
+				ret = -ENOMEM;
+			pr_err("Unable to allocate RAM for process data, "
+			       "errno %d\n", ret);
+			vm_munmap(textpos, text_len);
+			goto err;
+		}
+		datapos = ALIGN(realdatastart +
+				DATA_START_OFFSET_WORDS * sizeof(unsigned long),
+				FLAT_DATA_ALIGN);
+
+		pr_debug("Allocated data+bss+stack (%u bytes): %lx\n",
+			 data_len + bss_len + stack_len, datapos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		fpos = ntohl(hdr->data_start);
 #ifdef CONFIG_BINFMT_ZFLAT
 		if (flags & FLAT_FLAG_GZDATA) {
+<<<<<<< HEAD
 			result = decompress_exec(bprm, fpos, (char *) datapos, 
 						 data_len + (relocs * sizeof(unsigned long)), 0);
 		} else
@@ -593,10 +980,31 @@ static int load_flat_file(struct linux_binprm * bprm,
 		}
 
 		reloc = (unsigned long *) (datapos+(ntohl(hdr->reloc_start)-text_len));
+=======
+			result = decompress_exec(bprm, fpos, (char *)datapos,
+						 full_data, 0);
+		} else
+#endif
+		{
+			result = read_code(bprm->file, datapos, fpos,
+					full_data);
+		}
+		if (IS_ERR_VALUE(result)) {
+			ret = result;
+			pr_err("Unable to read data+bss, errno %d\n", ret);
+			vm_munmap(textpos, text_len);
+			vm_munmap(realdatastart, len);
+			goto err;
+		}
+
+		reloc = (__be32 __user *)
+			(datapos + (ntohl(hdr->reloc_start) - text_len));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memp = realdatastart;
 		memp_size = len;
 	} else {
 
+<<<<<<< HEAD
 		len = text_len + data_len + extra + MAX_SHARED_LIBS * sizeof(unsigned long);
 		len = PAGE_ALIGN(len);
 		textpos = vm_mmap(0, 0, len,
@@ -608,15 +1016,36 @@ static int load_flat_file(struct linux_binprm * bprm,
 			printk("Unable to allocate RAM for process text/data, errno %d\n",
 					(int)-textpos);
 			ret = textpos;
+=======
+		len = text_len + data_len + extra +
+			DATA_START_OFFSET_WORDS * sizeof(u32);
+		len = PAGE_ALIGN(len);
+		textpos = vm_mmap(NULL, 0, len,
+			PROT_READ | PROT_EXEC | PROT_WRITE, MAP_PRIVATE, 0);
+
+		if (!textpos || IS_ERR_VALUE(textpos)) {
+			ret = textpos;
+			if (!textpos)
+				ret = -ENOMEM;
+			pr_err("Unable to allocate RAM for process text/data, "
+			       "errno %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err;
 		}
 
 		realdatastart = textpos + ntohl(hdr->data_start);
 		datapos = ALIGN(realdatastart +
+<<<<<<< HEAD
 				MAX_SHARED_LIBS * sizeof(unsigned long),
 				FLAT_DATA_ALIGN);
 
 		reloc = (unsigned long *)
+=======
+				DATA_START_OFFSET_WORDS * sizeof(u32),
+				FLAT_DATA_ALIGN);
+
+		reloc = (__be32 __user *)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(datapos + (ntohl(hdr->reloc_start) - text_len));
 		memp = textpos;
 		memp_size = len;
@@ -625,6 +1054,7 @@ static int load_flat_file(struct linux_binprm * bprm,
 		 * load it all in and treat it like a RAM load from now on
 		 */
 		if (flags & FLAT_FLAG_GZIP) {
+<<<<<<< HEAD
 			result = decompress_exec(bprm, sizeof (struct flat_hdr),
 					 (((char *) textpos) + sizeof (struct flat_hdr)),
 					 (text_len + data_len + (relocs * sizeof(unsigned long))
@@ -657,10 +1087,78 @@ static int load_flat_file(struct linux_binprm * bprm,
 			do_munmap(current->mm, textpos, text_len + data_len + extra +
 				MAX_SHARED_LIBS * sizeof(unsigned long));
 			ret = result;
+=======
+#ifndef CONFIG_MMU
+			result = decompress_exec(bprm, sizeof(struct flat_hdr),
+					 (((char *)textpos) + sizeof(struct flat_hdr)),
+					 (text_len + full_data
+						  - sizeof(struct flat_hdr)),
+					 0);
+			memmove((void *) datapos, (void *) realdatastart,
+					full_data);
+#else
+			/*
+			 * This is used on MMU systems mainly for testing.
+			 * Let's use a kernel buffer to simplify things.
+			 */
+			long unz_text_len = text_len - sizeof(struct flat_hdr);
+			long unz_len = unz_text_len + full_data;
+			char *unz_data = vmalloc(unz_len);
+			if (!unz_data) {
+				result = -ENOMEM;
+			} else {
+				result = decompress_exec(bprm, sizeof(struct flat_hdr),
+							 unz_data, unz_len, 0);
+				if (result == 0 &&
+				    (copy_to_user((void __user *)textpos + sizeof(struct flat_hdr),
+						  unz_data, unz_text_len) ||
+				     copy_to_user((void __user *)datapos,
+						  unz_data + unz_text_len, full_data)))
+					result = -EFAULT;
+				vfree(unz_data);
+			}
+#endif
+		} else if (flags & FLAT_FLAG_GZDATA) {
+			result = read_code(bprm->file, textpos, 0, text_len);
+			if (!IS_ERR_VALUE(result)) {
+#ifndef CONFIG_MMU
+				result = decompress_exec(bprm, text_len, (char *) datapos,
+						 full_data, 0);
+#else
+				char *unz_data = vmalloc(full_data);
+				if (!unz_data) {
+					result = -ENOMEM;
+				} else {
+					result = decompress_exec(bprm, text_len,
+						       unz_data, full_data, 0);
+					if (result == 0 &&
+					    copy_to_user((void __user *)datapos,
+							 unz_data, full_data))
+						result = -EFAULT;
+					vfree(unz_data);
+				}
+#endif
+			}
+		} else
+#endif /* CONFIG_BINFMT_ZFLAT */
+		{
+			result = read_code(bprm->file, textpos, 0, text_len);
+			if (!IS_ERR_VALUE(result))
+				result = read_code(bprm->file, datapos,
+						   ntohl(hdr->data_start),
+						   full_data);
+		}
+		if (IS_ERR_VALUE(result)) {
+			ret = result;
+			pr_err("Unable to read code+data+bss, errno %d\n", ret);
+			vm_munmap(textpos, text_len + data_len + extra +
+				  DATA_START_OFFSET_WORDS * sizeof(u32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err;
 		}
 	}
 
+<<<<<<< HEAD
 	if (flags & FLAT_FLAG_KTRACE)
 		printk("Mapping is %x, Entry point is %x, data_start is %x\n",
 			(int)textpos, 0x00ffffff&ntohl(hdr->entry), ntohl(hdr->data_start));
@@ -705,6 +1203,48 @@ static int load_flat_file(struct linux_binprm * bprm,
 	libinfo->lib_list[id].entry = (0x00ffffff & ntohl(hdr->entry)) + textpos;
 	libinfo->lib_list[id].build_date = ntohl(hdr->build_date);
 	
+=======
+	start_code = textpos + sizeof(struct flat_hdr);
+	end_code = textpos + text_len;
+	text_len -= sizeof(struct flat_hdr); /* the real code len */
+
+	/* The main program needs a little extra setup in the task structure */
+	current->mm->start_code = start_code;
+	current->mm->end_code = end_code;
+	current->mm->start_data = datapos;
+	current->mm->end_data = datapos + data_len;
+	/*
+	 * set up the brk stuff, uses any slack left in data/bss/stack
+	 * allocation.  We put the brk after the bss (between the bss
+	 * and stack) like other platforms.
+	 * Userspace code relies on the stack pointer starting out at
+	 * an address right at the end of a page.
+	 */
+	current->mm->start_brk = datapos + data_len + bss_len;
+	current->mm->brk = (current->mm->start_brk + 3) & ~3;
+#ifndef CONFIG_MMU
+	current->mm->context.end_brk = memp + memp_size - stack_len;
+#endif
+
+	if (flags & FLAT_FLAG_KTRACE) {
+		pr_info("Mapping is %lx, Entry point is %x, data_start is %x\n",
+			textpos, 0x00ffffff&ntohl(hdr->entry), ntohl(hdr->data_start));
+		pr_info("%s %s: TEXT=%lx-%lx DATA=%lx-%lx BSS=%lx-%lx\n",
+			"Load", bprm->filename,
+			start_code, end_code, datapos, datapos + data_len,
+			datapos + data_len, (datapos + data_len + bss_len + 3) & ~3);
+	}
+
+	/* Store the current module values into the global library structure */
+	libinfo->lib_list[0].start_code = start_code;
+	libinfo->lib_list[0].start_data = datapos;
+	libinfo->lib_list[0].start_brk = datapos + data_len + bss_len;
+	libinfo->lib_list[0].text_len = text_len;
+	libinfo->lib_list[0].loaded = 1;
+	libinfo->lib_list[0].entry = (0x00ffffff & ntohl(hdr->entry)) + textpos;
+	libinfo->lib_list[0].build_date = ntohl(hdr->build_date);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We just load the allocations into some temporary memory to
 	 * help simplify all this mumbo jumbo
@@ -718,15 +1258,32 @@ static int load_flat_file(struct linux_binprm * bprm,
 	 * image.
 	 */
 	if (flags & FLAT_FLAG_GOTPIC) {
+<<<<<<< HEAD
 		for (rp = (unsigned long *)datapos; *rp != 0xffffffff; rp++) {
 			unsigned long addr;
 			if (*rp) {
 				addr = calc_reloc(*rp, libinfo, id, 0);
+=======
+		rp = skip_got_header((u32 __user *) datapos);
+		for (; ; rp++) {
+			u32 addr, rp_val;
+			if (get_user(rp_val, rp))
+				return -EFAULT;
+			if (rp_val == 0xffffffff)
+				break;
+			if (rp_val) {
+				addr = calc_reloc(rp_val, libinfo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (addr == RELOC_FAILED) {
 					ret = -ENOEXEC;
 					goto err;
 				}
+<<<<<<< HEAD
 				*rp = addr;
+=======
+				if (put_user(addr, rp))
+					return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -743,6 +1300,7 @@ static int load_flat_file(struct linux_binprm * bprm,
 	 * __start to address 4 so that is okay).
 	 */
 	if (rev > OLD_FLAT_VERSION) {
+<<<<<<< HEAD
 		unsigned long persistent = 0;
 		for (i=0; i < relocs; i++) {
 			unsigned long addr, relval;
@@ -756,27 +1314,63 @@ static int load_flat_file(struct linux_binprm * bprm,
 			addr = flat_get_relocate_addr(relval);
 			rp = (unsigned long *) calc_reloc(addr, libinfo, id, 1);
 			if (rp == (unsigned long *)RELOC_FAILED) {
+=======
+		for (i = 0; i < relocs; i++) {
+			u32 addr, relval;
+			__be32 tmp;
+
+			/*
+			 * Get the address of the pointer to be
+			 * relocated (of course, the address has to be
+			 * relocated first).
+			 */
+			if (get_user(tmp, reloc + i))
+				return -EFAULT;
+			relval = ntohl(tmp);
+			addr = flat_get_relocate_addr(relval);
+			rp = (u32 __user *)calc_reloc(addr, libinfo);
+			if (rp == (u32 __user *)RELOC_FAILED) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -ENOEXEC;
 				goto err;
 			}
 
 			/* Get the pointer's value.  */
+<<<<<<< HEAD
 			addr = flat_get_addr_from_rp(rp, relval, flags,
 							&persistent);
+=======
+			ret = flat_get_addr_from_rp(rp, relval, flags, &addr);
+			if (unlikely(ret))
+				goto err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (addr != 0) {
 				/*
 				 * Do the relocation.  PIC relocs in the data section are
 				 * already in target order
 				 */
+<<<<<<< HEAD
 				if ((flags & FLAT_FLAG_GOTPIC) == 0)
 					addr = ntohl(addr);
 				addr = calc_reloc(addr, libinfo, id, 0);
+=======
+				if ((flags & FLAT_FLAG_GOTPIC) == 0) {
+					/*
+					 * Meh, the same value can have a different
+					 * byte order based on a flag..
+					 */
+					addr = ntohl((__force __be32)addr);
+				}
+				addr = calc_reloc(addr, libinfo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (addr == RELOC_FAILED) {
 					ret = -ENOEXEC;
 					goto err;
 				}
 
 				/* Write back the relocated pointer.  */
+<<<<<<< HEAD
 				flat_put_addr_at_rp(rp, addr, relval);
 			}
 		}
@@ -792,6 +1386,32 @@ static int load_flat_file(struct linux_binprm * bprm,
 			(memp + memp_size - stack_len -		/* end brk */
 			libinfo->lib_list[id].start_brk) +	/* start brk */
 			stack_len);
+=======
+				ret = flat_put_addr_at_rp(rp, addr, relval);
+				if (unlikely(ret))
+					goto err;
+			}
+		}
+#ifdef CONFIG_BINFMT_FLAT_OLD
+	} else {
+		for (i = 0; i < relocs; i++) {
+			__be32 relval;
+			if (get_user(relval, reloc + i))
+				return -EFAULT;
+			old_reloc(ntohl(relval));
+		}
+#endif /* CONFIG_BINFMT_FLAT_OLD */
+	}
+
+	flush_icache_user_range(start_code, end_code);
+
+	/* zero the BSS,  BRK and stack areas */
+	if (clear_user((void __user *)(datapos + data_len), bss_len +
+		       (memp + memp_size - stack_len -		/* end brk */
+		       libinfo->lib_list[0].start_brk) +	/* start brk */
+		       stack_len))
+		return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 err:
@@ -800,6 +1420,7 @@ err:
 
 
 /****************************************************************************/
+<<<<<<< HEAD
 #ifdef CONFIG_BINFMT_SHARED_FLAT
 
 /*
@@ -852,12 +1473,15 @@ out:
 
 #endif /* CONFIG_BINFMT_SHARED_FLAT */
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These are the functions used to load flat style executables and shared
  * libraries.  There is no binary dependent code anywhere else.
  */
 
+<<<<<<< HEAD
 static int load_flat_binary(struct linux_binprm * bprm, struct pt_regs * regs)
 {
 	struct lib_info libinfo;
@@ -865,10 +1489,22 @@ static int load_flat_binary(struct linux_binprm * bprm, struct pt_regs * regs)
 	unsigned long stack_len;
 	unsigned long start_addr;
 	unsigned long *sp;
+=======
+static int load_flat_binary(struct linux_binprm *bprm)
+{
+	struct lib_info libinfo;
+	struct pt_regs *regs = current_pt_regs();
+	unsigned long stack_len = 0;
+	unsigned long start_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 	int i, j;
 
 	memset(&libinfo, 0, sizeof(libinfo));
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We have to add the size of our arguments to our stack size
 	 * otherwise it's too easy for users to create stack overflows
@@ -876,6 +1512,7 @@ static int load_flat_binary(struct linux_binprm * bprm, struct pt_regs * regs)
 	 * pedantic and include space for the argv/envp array as it may have
 	 * a lot of entries.
 	 */
+<<<<<<< HEAD
 #define TOP_OF_ARGS (PAGE_SIZE * MAX_ARG_PAGES - sizeof(void *))
 	stack_len = TOP_OF_ARGS - bprm->p;             /* the strings */
 	stack_len += (bprm->argc + 1) * sizeof(char *); /* the argv array */
@@ -908,12 +1545,61 @@ static int load_flat_binary(struct linux_binprm * bprm, struct pt_regs * regs)
 
 	sp = (unsigned long *) create_flat_tables(p, bprm);
 	
+=======
+#ifndef CONFIG_MMU
+	stack_len += PAGE_SIZE * MAX_ARG_PAGES - bprm->p; /* the strings */
+#endif
+	stack_len += (bprm->argc + 1) * sizeof(char *);   /* the argv array */
+	stack_len += (bprm->envc + 1) * sizeof(char *);   /* the envp array */
+	stack_len = ALIGN(stack_len, FLAT_STACK_ALIGN);
+
+	res = load_flat_file(bprm, &libinfo, &stack_len);
+	if (res < 0)
+		return res;
+
+	/* Update data segment pointers for all libraries */
+	for (i = 0; i < MAX_SHARED_LIBS; i++) {
+		if (!libinfo.lib_list[i].loaded)
+			continue;
+		for (j = 0; j < MAX_SHARED_LIBS; j++) {
+			unsigned long val = libinfo.lib_list[j].loaded ?
+				libinfo.lib_list[j].start_data : UNLOADED_LIB;
+			unsigned long __user *p = (unsigned long __user *)
+				libinfo.lib_list[i].start_data;
+			p -= j + 1;
+			if (put_user(val, p))
+				return -EFAULT;
+		}
+	}
+
+	set_binfmt(&flat_format);
+
+#ifdef CONFIG_MMU
+	res = setup_arg_pages(bprm, STACK_TOP, EXSTACK_DEFAULT);
+	if (!res)
+		res = create_flat_tables(bprm, bprm->p);
+#else
+	/* Stash our initial stack pointer into the mm structure */
+	current->mm->start_stack =
+		((current->mm->context.end_brk + stack_len + 3) & ~3) - 4;
+	pr_debug("sp=%lx\n", current->mm->start_stack);
+
+	/* copy the arg pages onto the stack */
+	res = transfer_args_to_stack(bprm, &current->mm->start_stack);
+	if (!res)
+		res = create_flat_tables(bprm, current->mm->start_stack);
+#endif
+	if (res)
+		return res;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Fake some return addresses to ensure the call chain will
 	 * initialise library in order for us.  We are required to call
 	 * lib 1 first, then 2, ... and finally the main program (id 0).
 	 */
 	start_addr = libinfo.lib_list[0].entry;
 
+<<<<<<< HEAD
 #ifdef CONFIG_BINFMT_SHARED_FLAT
 	for (i = MAX_SHARED_LIBS-1; i>0; i--) {
 		if (libinfo.lib_list[i].loaded) {
@@ -933,6 +1619,15 @@ static int load_flat_binary(struct linux_binprm * bprm, struct pt_regs * regs)
 	DBG_FLT("start_thread(regs=0x%x, entry=0x%x, start_stack=0x%x)\n",
 		(int)regs, (int)start_addr, (int)current->mm->start_stack);
 	
+=======
+#ifdef FLAT_PLAT_INIT
+	FLAT_PLAT_INIT(regs);
+#endif
+
+	finalize_exec(bprm);
+	pr_debug("start_thread(regs=0x%p, entry=0x%lx, start_stack=0x%lx)\n",
+		 regs, start_addr, current->mm->start_stack);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	start_thread(regs, start_addr, current->mm->start_stack);
 
 	return 0;
@@ -945,9 +1640,12 @@ static int __init init_flat_binfmt(void)
 	register_binfmt(&flat_format);
 	return 0;
 }
+<<<<<<< HEAD
 
 /****************************************************************************/
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 core_initcall(init_flat_binfmt);
 
 /****************************************************************************/

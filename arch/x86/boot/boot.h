@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- ------------------------------------------------------- *
  *
  *   Copyright (C) 1991, 1992 Linus Torvalds
  *   Copyright 2007 rPath, Inc. - All Rights Reserved
  *   Copyright 2009 Intel Corporation; author H. Peter Anvin
  *
+<<<<<<< HEAD
  *   This file is part of the Linux kernel, and is made available under
  *   the terms of the GNU General Public License version 2.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -16,6 +23,7 @@
 #ifndef BOOT_BOOT_H
 #define BOOT_BOOT_H
 
+<<<<<<< HEAD
 #define STACK_SIZE	512	/* Minimum number of bytes for stack */
 
 #ifndef __ASSEMBLY__
@@ -33,6 +41,23 @@
 /* Useful macros */
 #define BUILD_BUG_ON(condition) ((void)sizeof(char[1 - 2*!!(condition)]))
 
+=======
+#define STACK_SIZE	1024	/* Minimum number of bytes for stack */
+
+#ifndef __ASSEMBLY__
+
+#include <linux/stdarg.h>
+#include <linux/types.h>
+#include <linux/edd.h>
+#include <asm/setup.h>
+#include <asm/asm.h>
+#include "bitops.h"
+#include "ctype.h"
+#include "cpuflags.h"
+#include "io.h"
+
+/* Useful macros */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof(*(x)))
 
 extern struct setup_header hdr;
@@ -40,6 +65,7 @@ extern struct boot_params boot_params;
 
 #define cpu_relax()	asm volatile("rep; nop")
 
+<<<<<<< HEAD
 /* Basic port I/O */
 static inline void outb(u8 v, u16 port)
 {
@@ -78,6 +104,12 @@ static inline void io_delay(void)
 {
 	const u16 DELAY_PORT = 0x80;
 	asm volatile("outb %%al,%0" : : "dN" (DELAY_PORT));
+=======
+static inline void io_delay(void)
+{
+	const u16 DELAY_PORT = 0x80;
+	outb(0, DELAY_PORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* These functions are used to reference data in other segments. */
@@ -115,25 +147,44 @@ typedef unsigned int addr_t;
 
 static inline u8 rdfs8(addr_t addr)
 {
+<<<<<<< HEAD
 	u8 v;
 	asm volatile("movb %%fs:%1,%0" : "=q" (v) : "m" (*(u8 *)addr));
+=======
+	u8 *ptr = (u8 *)absolute_pointer(addr);
+	u8 v;
+	asm volatile("movb %%fs:%1,%0" : "=q" (v) : "m" (*ptr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return v;
 }
 static inline u16 rdfs16(addr_t addr)
 {
+<<<<<<< HEAD
 	u16 v;
 	asm volatile("movw %%fs:%1,%0" : "=r" (v) : "m" (*(u16 *)addr));
+=======
+	u16 *ptr = (u16 *)absolute_pointer(addr);
+	u16 v;
+	asm volatile("movw %%fs:%1,%0" : "=r" (v) : "m" (*ptr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return v;
 }
 static inline u32 rdfs32(addr_t addr)
 {
+<<<<<<< HEAD
 	u32 v;
 	asm volatile("movl %%fs:%1,%0" : "=r" (v) : "m" (*(u32 *)addr));
+=======
+	u32 *ptr = (u32 *)absolute_pointer(addr);
+	u32 v;
+	asm volatile("movl %%fs:%1,%0" : "=r" (v) : "m" (*ptr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return v;
 }
 
 static inline void wrfs8(u8 v, addr_t addr)
 {
+<<<<<<< HEAD
 	asm volatile("movb %1,%%fs:%0" : "+m" (*(u8 *)addr) : "qi" (v));
 }
 static inline void wrfs16(u16 v, addr_t addr)
@@ -143,29 +194,62 @@ static inline void wrfs16(u16 v, addr_t addr)
 static inline void wrfs32(u32 v, addr_t addr)
 {
 	asm volatile("movl %1,%%fs:%0" : "+m" (*(u32 *)addr) : "ri" (v));
+=======
+	u8 *ptr = (u8 *)absolute_pointer(addr);
+	asm volatile("movb %1,%%fs:%0" : "+m" (*ptr) : "qi" (v));
+}
+static inline void wrfs16(u16 v, addr_t addr)
+{
+	u16 *ptr = (u16 *)absolute_pointer(addr);
+	asm volatile("movw %1,%%fs:%0" : "+m" (*ptr) : "ri" (v));
+}
+static inline void wrfs32(u32 v, addr_t addr)
+{
+	u32 *ptr = (u32 *)absolute_pointer(addr);
+	asm volatile("movl %1,%%fs:%0" : "+m" (*ptr) : "ri" (v));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u8 rdgs8(addr_t addr)
 {
+<<<<<<< HEAD
 	u8 v;
 	asm volatile("movb %%gs:%1,%0" : "=q" (v) : "m" (*(u8 *)addr));
+=======
+	u8 *ptr = (u8 *)absolute_pointer(addr);
+	u8 v;
+	asm volatile("movb %%gs:%1,%0" : "=q" (v) : "m" (*ptr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return v;
 }
 static inline u16 rdgs16(addr_t addr)
 {
+<<<<<<< HEAD
 	u16 v;
 	asm volatile("movw %%gs:%1,%0" : "=r" (v) : "m" (*(u16 *)addr));
+=======
+	u16 *ptr = (u16 *)absolute_pointer(addr);
+	u16 v;
+	asm volatile("movw %%gs:%1,%0" : "=r" (v) : "m" (*ptr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return v;
 }
 static inline u32 rdgs32(addr_t addr)
 {
+<<<<<<< HEAD
 	u32 v;
 	asm volatile("movl %%gs:%1,%0" : "=r" (v) : "m" (*(u32 *)addr));
+=======
+	u32 *ptr = (u32 *)absolute_pointer(addr);
+	u32 v;
+	asm volatile("movl %%gs:%1,%0" : "=r" (v) : "m" (*ptr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return v;
 }
 
 static inline void wrgs8(u8 v, addr_t addr)
 {
+<<<<<<< HEAD
 	asm volatile("movb %1,%%gs:%0" : "+m" (*(u8 *)addr) : "qi" (v));
 }
 static inline void wrgs16(u16 v, addr_t addr)
@@ -198,6 +282,35 @@ static inline int memcmp_gs(const void *s1, addr_t s2, size_t len)
 	u8 diff;
 	asm volatile("gs; repe; cmpsb; setnz %0"
 		     : "=qm" (diff), "+D" (s1), "+S" (s2), "+c" (len));
+=======
+	u8 *ptr = (u8 *)absolute_pointer(addr);
+	asm volatile("movb %1,%%gs:%0" : "+m" (*ptr) : "qi" (v));
+}
+static inline void wrgs16(u16 v, addr_t addr)
+{
+	u16 *ptr = (u16 *)absolute_pointer(addr);
+	asm volatile("movw %1,%%gs:%0" : "+m" (*ptr) : "ri" (v));
+}
+static inline void wrgs32(u32 v, addr_t addr)
+{
+	u32 *ptr = (u32 *)absolute_pointer(addr);
+	asm volatile("movl %1,%%gs:%0" : "+m" (*ptr) : "ri" (v));
+}
+
+/* Note: these only return true/false, not a signed return value! */
+static inline bool memcmp_fs(const void *s1, addr_t s2, size_t len)
+{
+	bool diff;
+	asm volatile("fs; repe; cmpsb" CC_SET(nz)
+		     : CC_OUT(nz) (diff), "+D" (s1), "+S" (s2), "+c" (len));
+	return diff;
+}
+static inline bool memcmp_gs(const void *s1, addr_t s2, size_t len)
+{
+	bool diff;
+	asm volatile("gs; repe; cmpsb" CC_SET(nz)
+		     : CC_OUT(nz) (diff), "+D" (s1), "+S" (s2), "+c" (len));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return diff;
 }
 
@@ -229,11 +342,14 @@ void copy_to_fs(addr_t dst, void *src, size_t len);
 void *copy_from_fs(void *dst, addr_t src, size_t len);
 void copy_to_gs(addr_t dst, void *src, size_t len);
 void *copy_from_gs(void *dst, addr_t src, size_t len);
+<<<<<<< HEAD
 void *memcpy(void *dst, void *src, size_t len);
 void *memset(void *dst, int c, size_t len);
 
 #define memcpy(d,s,l) __builtin_memcpy(d,s,l)
 #define memset(d,c,l) __builtin_memset(d,c,l)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* a20.c */
 int enable_a20(void);
@@ -285,15 +401,29 @@ struct biosregs {
 void intcall(u8 int_no, const struct biosregs *ireg, struct biosregs *oreg);
 
 /* cmdline.c */
+<<<<<<< HEAD
 int __cmdline_find_option(u32 cmdline_ptr, const char *option, char *buffer, int bufsize);
 int __cmdline_find_option_bool(u32 cmdline_ptr, const char *option);
 static inline int cmdline_find_option(const char *option, char *buffer, int bufsize)
 {
 	return __cmdline_find_option(boot_params.hdr.cmd_line_ptr, option, buffer, bufsize);
+=======
+int __cmdline_find_option(unsigned long cmdline_ptr, const char *option, char *buffer, int bufsize);
+int __cmdline_find_option_bool(unsigned long cmdline_ptr, const char *option);
+static inline int cmdline_find_option(const char *option, char *buffer, int bufsize)
+{
+	unsigned long cmd_line_ptr = boot_params.hdr.cmd_line_ptr;
+
+	if (cmd_line_ptr >= 0x100000)
+		return -1;      /* inaccessible */
+
+	return __cmdline_find_option(cmd_line_ptr, option, buffer, bufsize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int cmdline_find_option_bool(const char *option)
 {
+<<<<<<< HEAD
 	return __cmdline_find_option_bool(boot_params.hdr.cmd_line_ptr, option);
 }
 
@@ -306,6 +436,19 @@ struct cpu_features {
 };
 extern struct cpu_features cpu;
 int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr);
+=======
+	unsigned long cmd_line_ptr = boot_params.hdr.cmd_line_ptr;
+
+	if (cmd_line_ptr >= 0x100000)
+		return -1;      /* inaccessible */
+
+	return __cmdline_find_option_bool(cmd_line_ptr, option);
+}
+
+/* cpu.c, cpucheck.c */
+int check_cpu(int *cpu_level_ptr, int *req_level_ptr, u32 **err_flags_ptr);
+int check_knl_erratum(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int validate_cpu(void);
 
 /* early_serial_console.c */
@@ -318,11 +461,16 @@ void query_edd(void);
 /* header.S */
 void __attribute__((noreturn)) die(void);
 
+<<<<<<< HEAD
 /* mca.c */
 int query_mca(void);
 
 /* memory.c */
 int detect_memory(void);
+=======
+/* memory.c */
+void detect_memory(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* pm.c */
 void __attribute__((noreturn)) go_to_protected_mode(void);
@@ -345,6 +493,11 @@ int strncmp(const char *cs, const char *ct, size_t count);
 size_t strnlen(const char *s, size_t maxlen);
 unsigned int atou(const char *s);
 unsigned long long simple_strtoull(const char *cp, char **endp, unsigned int base);
+<<<<<<< HEAD
+=======
+size_t strlen(const char *s);
+char *strchr(const char *s, int c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* tty.c */
 void puts(const char *);

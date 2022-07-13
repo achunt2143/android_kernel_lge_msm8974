@@ -1,12 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The idle loop for all SuperH platforms.
  *
  *  Copyright (C) 2002 - 2009  Paul Mundt
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  */
+=======
+ */
+#include <linux/cpu.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/mm.h>
@@ -16,6 +25,7 @@
 #include <linux/thread_info.h>
 #include <linux/irqflags.h>
 #include <linux/smp.h>
+<<<<<<< HEAD
 #include <linux/cpuidle.h>
 #include <linux/atomic.h>
 #include <asm/pgalloc.h>
@@ -116,6 +126,33 @@ void cpu_idle(void)
 		tick_nohz_idle_exit();
 		schedule_preempt_disabled();
 	}
+=======
+#include <linux/atomic.h>
+#include <asm/processor.h>
+#include <asm/smp.h>
+#include <asm/bl_bit.h>
+
+static void (*sh_idle)(void);
+
+void default_idle(void)
+{
+	set_bl_bit();
+	raw_local_irq_enable();
+	/* Isn't this racy ? */
+	cpu_sleep();
+	raw_local_irq_disable();
+	clear_bl_bit();
+}
+
+void __noreturn arch_cpu_idle_dead(void)
+{
+	play_dead();
+}
+
+void arch_cpu_idle(void)
+{
+	sh_idle();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init select_idle_routine(void)
@@ -123,6 +160,7 @@ void __init select_idle_routine(void)
 	/*
 	 * If a platform has set its own idle routine, leave it alone.
 	 */
+<<<<<<< HEAD
 	if (pm_idle)
 		return;
 
@@ -134,6 +172,10 @@ void __init select_idle_routine(void)
 
 static void do_nothing(void *unused)
 {
+=======
+	if (!sh_idle)
+		sh_idle = default_idle;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void stop_this_cpu(void *unused)
@@ -144,6 +186,7 @@ void stop_this_cpu(void *unused)
 	for (;;)
 		cpu_sleep();
 }
+<<<<<<< HEAD
 
 /*
  * cpu_idle_wait - Used to ensure that all the CPUs discard old value of
@@ -160,3 +203,5 @@ void cpu_idle_wait(void)
 	smp_call_function(do_nothing, NULL, 1);
 }
 EXPORT_SYMBOL_GPL(cpu_idle_wait);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

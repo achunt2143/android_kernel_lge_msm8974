@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /**
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	i2c-ali1563.c - i2c driver for the ALi 1563 Southbridge
  *
  *	Copyright (C) 2004 Patrick Mochel
@@ -12,15 +17,21 @@
  *
  *	This driver is based on a mix of the 15x3, 1535, and i801 drivers,
  *	with a little help from the ALi 1563 spec.
+<<<<<<< HEAD
  *
  *	This file is released under the GPLv2
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/acpi.h>
 
 #define ALI1563_MAX_TIMEOUT	500
@@ -64,7 +75,11 @@
 static struct pci_driver ali1563_pci_driver;
 static unsigned short ali1563_smba;
 
+<<<<<<< HEAD
 static int ali1563_transaction(struct i2c_adapter * a, int size)
+=======
+static int ali1563_transaction(struct i2c_adapter *a, int size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 data;
 	int timeout;
@@ -79,7 +94,11 @@ static int ali1563_transaction(struct i2c_adapter * a, int size)
 	data = inb_p(SMB_HST_STS);
 	if (data & HST_STS_BAD) {
 		dev_err(&a->dev, "ali1563: Trying to reset busy device\n");
+<<<<<<< HEAD
 		outb_p(data | HST_STS_BAD,SMB_HST_STS);
+=======
+		outb_p(data | HST_STS_BAD, SMB_HST_STS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data = inb_p(SMB_HST_STS);
 		if (data & HST_STS_BAD)
 			return -EBUSY;
@@ -103,10 +122,17 @@ static int ali1563_transaction(struct i2c_adapter * a, int size)
 	if (!timeout) {
 		dev_err(&a->dev, "Timeout - Trying to KILL transaction!\n");
 		/* Issue 'kill' to host controller */
+<<<<<<< HEAD
 		outb_p(HST_CNTL2_KILL,SMB_HST_CNTL2);
 		data = inb_p(SMB_HST_STS);
 		status = -ETIMEDOUT;
  	}
+=======
+		outb_p(HST_CNTL2_KILL, SMB_HST_CNTL2);
+		data = inb_p(SMB_HST_STS);
+		status = -ETIMEDOUT;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* device error - no response, ignore the autodetection case */
 	if (data & HST_STS_DEVERR) {
@@ -118,18 +144,30 @@ static int ali1563_transaction(struct i2c_adapter * a, int size)
 	if (data & HST_STS_BUSERR) {
 		dev_err(&a->dev, "Bus collision!\n");
 		/* Issue timeout, hoping it helps */
+<<<<<<< HEAD
 		outb_p(HST_CNTL1_TIMEOUT,SMB_HST_CNTL1);
+=======
+		outb_p(HST_CNTL1_TIMEOUT, SMB_HST_CNTL1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (data & HST_STS_FAIL) {
 		dev_err(&a->dev, "Cleaning fail after KILL!\n");
+<<<<<<< HEAD
 		outb_p(0x0,SMB_HST_CNTL2);
+=======
+		outb_p(0x0, SMB_HST_CNTL2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return status;
 }
 
+<<<<<<< HEAD
 static int ali1563_block_start(struct i2c_adapter * a)
+=======
+static int ali1563_block_start(struct i2c_adapter *a)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 data;
 	int timeout;
@@ -143,8 +181,13 @@ static int ali1563_block_start(struct i2c_adapter * a)
 
 	data = inb_p(SMB_HST_STS);
 	if (data & HST_STS_BAD) {
+<<<<<<< HEAD
 		dev_warn(&a->dev,"ali1563: Trying to reset busy device\n");
 		outb_p(data | HST_STS_BAD,SMB_HST_STS);
+=======
+		dev_warn(&a->dev, "ali1563: Trying to reset busy device\n");
+		outb_p(data | HST_STS_BAD, SMB_HST_STS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data = inb_p(SMB_HST_STS);
 		if (data & HST_STS_BAD)
 			return -EBUSY;
@@ -185,13 +228,22 @@ static int ali1563_block_start(struct i2c_adapter * a)
 	return status;
 }
 
+<<<<<<< HEAD
 static int ali1563_block(struct i2c_adapter * a, union i2c_smbus_data * data, u8 rw)
+=======
+static int ali1563_block(struct i2c_adapter *a,
+			 union i2c_smbus_data *data, u8 rw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, len;
 	int error = 0;
 
 	/* Do we need this? */
+<<<<<<< HEAD
 	outb_p(HST_CNTL1_LAST,SMB_HST_CNTL1);
+=======
+	outb_p(HST_CNTL1_LAST, SMB_HST_CNTL1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rw == I2C_SMBUS_WRITE) {
 		len = data->block[0];
@@ -199,8 +251,13 @@ static int ali1563_block(struct i2c_adapter * a, union i2c_smbus_data * data, u8
 			len = 1;
 		else if (len > 32)
 			len = 32;
+<<<<<<< HEAD
 		outb_p(len,SMB_HST_DAT0);
 		outb_p(data->block[1],SMB_BLK_DAT);
+=======
+		outb_p(len, SMB_HST_DAT0);
+		outb_p(data->block[1], SMB_BLK_DAT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		len = 32;
 
@@ -209,10 +266,19 @@ static int ali1563_block(struct i2c_adapter * a, union i2c_smbus_data * data, u8
 	for (i = 0; i < len; i++) {
 		if (rw == I2C_SMBUS_WRITE) {
 			outb_p(data->block[i + 1], SMB_BLK_DAT);
+<<<<<<< HEAD
 			if ((error = ali1563_block_start(a)))
 				break;
 		} else {
 			if ((error = ali1563_block_start(a)))
+=======
+			error = ali1563_block_start(a);
+			if (error)
+				break;
+		} else {
+			error = ali1563_block_start(a);
+			if (error)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			if (i == 0) {
 				len = inb_p(SMB_HST_DAT0);
@@ -225,6 +291,7 @@ static int ali1563_block(struct i2c_adapter * a, union i2c_smbus_data * data, u8
 		}
 	}
 	/* Do we need this? */
+<<<<<<< HEAD
 	outb_p(HST_CNTL1_LAST,SMB_HST_CNTL1);
 	return error;
 }
@@ -232,18 +299,37 @@ static int ali1563_block(struct i2c_adapter * a, union i2c_smbus_data * data, u8
 static s32 ali1563_access(struct i2c_adapter * a, u16 addr,
 			  unsigned short flags, char rw, u8 cmd,
 			  int size, union i2c_smbus_data * data)
+=======
+	outb_p(HST_CNTL1_LAST, SMB_HST_CNTL1);
+	return error;
+}
+
+static s32 ali1563_access(struct i2c_adapter *a, u16 addr,
+			  unsigned short flags, char rw, u8 cmd,
+			  int size, union i2c_smbus_data *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error = 0;
 	int timeout;
 	u32 reg;
 
 	for (timeout = ALI1563_MAX_TIMEOUT; timeout; timeout--) {
+<<<<<<< HEAD
 		if (!(reg = inb_p(SMB_HST_STS) & HST_STS_BUSY))
 			break;
 	}
 	if (!timeout)
 		dev_warn(&a->dev,"SMBus not idle. HST_STS = %02x\n",reg);
 	outb_p(0xff,SMB_HST_STS);
+=======
+		reg = inb_p(SMB_HST_STS);
+		if (!(reg & HST_STS_BUSY))
+			break;
+	}
+	if (!timeout)
+		dev_warn(&a->dev, "SMBus not idle. HST_STS = %02x\n", reg);
+	outb_p(0xff, SMB_HST_STS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Map the size to what the chip understands */
 	switch (size) {
@@ -269,6 +355,7 @@ static s32 ali1563_access(struct i2c_adapter * a, u16 addr,
 	}
 
 	outb_p(((addr & 0x7f) << 1) | (rw & 0x01), SMB_HST_ADD);
+<<<<<<< HEAD
 	outb_p((inb_p(SMB_HST_CNTL2) & ~HST_CNTL2_SIZEMASK) | (size << 3), SMB_HST_CNTL2);
 
 	/* Write the command register */
@@ -276,6 +363,16 @@ static s32 ali1563_access(struct i2c_adapter * a, u16 addr,
 	switch(size) {
 	case HST_CNTL2_BYTE:
 		if (rw== I2C_SMBUS_WRITE)
+=======
+	outb_p((inb_p(SMB_HST_CNTL2) & ~HST_CNTL2_SIZEMASK) |
+	       (size << 3), SMB_HST_CNTL2);
+
+	/* Write the command register */
+
+	switch (size) {
+	case HST_CNTL2_BYTE:
+		if (rw == I2C_SMBUS_WRITE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Beware it uses DAT0 register and not CMD! */
 			outb_p(cmd, SMB_HST_DAT0);
 		break;
@@ -293,11 +390,20 @@ static s32 ali1563_access(struct i2c_adapter * a, u16 addr,
 		break;
 	case HST_CNTL2_BLOCK:
 		outb_p(cmd, SMB_HST_CMD);
+<<<<<<< HEAD
 		error = ali1563_block(a,data,rw);
 		goto Done;
 	}
 
 	if ((error = ali1563_transaction(a, size)))
+=======
+		error = ali1563_block(a, data, rw);
+		goto Done;
+	}
+
+	error = ali1563_transaction(a, size);
+	if (error)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto Done;
 
 	if ((rw == I2C_SMBUS_WRITE) || (size == HST_CNTL2_QUICK))
@@ -318,7 +424,11 @@ Done:
 	return error;
 }
 
+<<<<<<< HEAD
 static u32 ali1563_func(struct i2c_adapter * a)
+=======
+static u32 ali1563_func(struct i2c_adapter *a)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return I2C_FUNC_SMBUS_QUICK | I2C_FUNC_SMBUS_BYTE |
 	    I2C_FUNC_SMBUS_BYTE_DATA | I2C_FUNC_SMBUS_WORD_DATA |
@@ -326,17 +436,29 @@ static u32 ali1563_func(struct i2c_adapter * a)
 }
 
 
+<<<<<<< HEAD
 static int __devinit ali1563_setup(struct pci_dev * dev)
 {
 	u16 ctrl;
 
 	pci_read_config_word(dev,ALI1563_SMBBA,&ctrl);
+=======
+static int ali1563_setup(struct pci_dev *dev)
+{
+	u16 ctrl;
+
+	pci_read_config_word(dev, ALI1563_SMBBA, &ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SMB I/O Base in high 12 bits and must be aligned with the
 	 * size of the I/O space. */
 	ali1563_smba = ctrl & ~(ALI1563_SMB_IOSIZE - 1);
 	if (!ali1563_smba) {
+<<<<<<< HEAD
 		dev_warn(&dev->dev,"ali1563_smba Uninitialized\n");
+=======
+		dev_warn(&dev->dev, "ali1563_smba Uninitialized\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto Err;
 	}
 
@@ -351,8 +473,13 @@ static int __devinit ali1563_setup(struct pci_dev * dev)
 				      ctrl | ALI1563_SMB_IOEN);
 		pci_read_config_word(dev, ALI1563_SMBBA, &ctrl);
 		if (!(ctrl & ALI1563_SMB_IOEN)) {
+<<<<<<< HEAD
 			dev_err(&dev->dev, "I/O space still not enabled, "
 				"giving up\n");
+=======
+			dev_err(&dev->dev,
+				"I/O space still not enabled, giving up\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto Err;
 		}
 	}
@@ -376,7 +503,11 @@ Err:
 
 static void ali1563_shutdown(struct pci_dev *dev)
 {
+<<<<<<< HEAD
 	release_region(ali1563_smba,ALI1563_SMB_IOSIZE);
+=======
+	release_region(ali1563_smba, ALI1563_SMB_IOSIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_algorithm ali1563_algorithm = {
@@ -386,6 +517,7 @@ static const struct i2c_algorithm ali1563_algorithm = {
 
 static struct i2c_adapter ali1563_adapter = {
 	.owner	= THIS_MODULE,
+<<<<<<< HEAD
 	.class	= I2C_CLASS_HWMON | I2C_CLASS_SPD,
 	.algo	= &ali1563_algorithm,
 };
@@ -396,11 +528,29 @@ static int __devinit ali1563_probe(struct pci_dev * dev,
 	int error;
 
 	if ((error = ali1563_setup(dev)))
+=======
+	.class	= I2C_CLASS_HWMON,
+	.algo	= &ali1563_algorithm,
+};
+
+static int ali1563_probe(struct pci_dev *dev,
+			 const struct pci_device_id *id_table)
+{
+	int error;
+
+	error = ali1563_setup(dev);
+	if (error)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit;
 	ali1563_adapter.dev.parent = &dev->dev;
 	snprintf(ali1563_adapter.name, sizeof(ali1563_adapter.name),
 		 "SMBus ALi 1563 Adapter @ %04x", ali1563_smba);
+<<<<<<< HEAD
 	if ((error = i2c_add_adapter(&ali1563_adapter)))
+=======
+	error = i2c_add_adapter(&ali1563_adapter);
+	if (error)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto exit_shutdown;
 	return 0;
 
@@ -411,17 +561,26 @@ exit:
 	return error;
 }
 
+<<<<<<< HEAD
 static void __devexit ali1563_remove(struct pci_dev * dev)
+=======
+static void ali1563_remove(struct pci_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	i2c_del_adapter(&ali1563_adapter);
 	ali1563_shutdown(dev);
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(ali1563_id_table) = {
+=======
+static const struct pci_device_id ali1563_id_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_AL, PCI_DEVICE_ID_AL_M1563) },
 	{},
 };
 
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE (pci, ali1563_id_table);
 
 static struct pci_driver ali1563_pci_driver = {
@@ -444,5 +603,17 @@ static void __exit ali1563_exit(void)
 }
 
 module_exit(ali1563_exit);
+=======
+MODULE_DEVICE_TABLE(pci, ali1563_id_table);
+
+static struct pci_driver ali1563_pci_driver = {
+	.name		= "ali1563_smbus",
+	.id_table	= ali1563_id_table,
+	.probe		= ali1563_probe,
+	.remove		= ali1563_remove,
+};
+
+module_pci_driver(ali1563_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ALSA SoC TLV320AIC23 codec driver
  *
@@ -6,10 +10,13 @@
  *
  * Based on sound/soc/codecs/wm8731.c by Richard Purdie
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Notes:
  *  The AIC23 is a driver for a low power stereo audio
  *  codec tlv320aic23
@@ -23,7 +30,11 @@
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/pm.h>
+<<<<<<< HEAD
 #include <linux/i2c.h>
+=======
+#include <linux/regmap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -34,6 +45,7 @@
 
 #include "tlv320aic23.h"
 
+<<<<<<< HEAD
 #define AIC23_VERSION "0.1"
 
 /*
@@ -51,14 +63,53 @@ static const char *deemph_text[] = {"None", "32Khz", "44.1Khz", "48Khz"};
 
 static const struct soc_enum rec_src_enum =
 	SOC_ENUM_SINGLE(TLV320AIC23_ANLG, 2, 2, rec_src_text);
+=======
+/*
+ * AIC23 register cache
+ */
+static const struct reg_default tlv320aic23_reg[] = {
+	{  0, 0x0097 },
+	{  1, 0x0097 },
+	{  2, 0x00F9 },
+	{  3, 0x00F9 },
+	{  4, 0x001A },
+	{  5, 0x0004 },
+	{  6, 0x0007 },
+	{  7, 0x0001 },
+	{  8, 0x0020 },
+	{  9, 0x0000 },
+};
+
+const struct regmap_config tlv320aic23_regmap = {
+	.reg_bits = 7,
+	.val_bits = 9,
+
+	.max_register = TLV320AIC23_RESET,
+	.reg_defaults = tlv320aic23_reg,
+	.num_reg_defaults = ARRAY_SIZE(tlv320aic23_reg),
+	.cache_type = REGCACHE_RBTREE,
+};
+EXPORT_SYMBOL(tlv320aic23_regmap);
+
+static const char *rec_src_text[] = { "Line", "Mic" };
+static const char *deemph_text[] = {"None", "32Khz", "44.1Khz", "48Khz"};
+
+static SOC_ENUM_SINGLE_DECL(rec_src_enum,
+			    TLV320AIC23_ANLG, 2, rec_src_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_kcontrol_new tlv320aic23_rec_src_mux_controls =
 SOC_DAPM_ENUM("Input Select", rec_src_enum);
 
+<<<<<<< HEAD
 static const struct soc_enum tlv320aic23_rec_src =
 	SOC_ENUM_SINGLE(TLV320AIC23_ANLG, 2, 2, rec_src_text);
 static const struct soc_enum tlv320aic23_deemph =
 	SOC_ENUM_SINGLE(TLV320AIC23_DIGT, 1, 4, deemph_text);
+=======
+static SOC_ENUM_SINGLE_DECL(tlv320aic23_deemph,
+			    TLV320AIC23_DIGT, 1, deemph_text);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const DECLARE_TLV_DB_SCALE(out_gain_tlv, -12100, 100, 0);
 static const DECLARE_TLV_DB_SCALE(input_gain_tlv, -1725, 75, 0);
@@ -67,7 +118,11 @@ static const DECLARE_TLV_DB_SCALE(sidetone_vol_tlv, -1800, 300, 0);
 static int snd_soc_tlv320aic23_put_volsw(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 val, reg;
 
 	val = (ucontrol->value.integer.value[0] & 0x07);
@@ -81,8 +136,13 @@ static int snd_soc_tlv320aic23_put_volsw(struct snd_kcontrol *kcontrol,
 	*/
 	val = (val >= 4) ? 4  : (3 - val);
 
+<<<<<<< HEAD
 	reg = snd_soc_read(codec, TLV320AIC23_ANLG) & (~0x1C0);
 	snd_soc_write(codec, TLV320AIC23_ANLG, reg | (val << 6));
+=======
+	reg = snd_soc_component_read(component, TLV320AIC23_ANLG) & (~0x1C0);
+	snd_soc_component_write(component, TLV320AIC23_ANLG, reg | (val << 6));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -90,10 +150,17 @@ static int snd_soc_tlv320aic23_put_volsw(struct snd_kcontrol *kcontrol,
 static int snd_soc_tlv320aic23_get_volsw(struct snd_kcontrol *kcontrol,
 	struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	u16 val;
 
 	val = snd_soc_read(codec, TLV320AIC23_ANLG) & (0x1C0);
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	u16 val;
+
+	val = snd_soc_component_read(component, TLV320AIC23_ANLG) & (0x1C0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = val >> 6;
 	val = (val >= 4) ? 4  : (3 -  val);
 	ucontrol->value.integer.value[0] = val;
@@ -159,10 +226,16 @@ static const struct snd_soc_dapm_route tlv320aic23_intercon[] = {
 	{"ROUT", NULL, "Output Mixer"},
 
 	/* Inputs */
+<<<<<<< HEAD
 	{"Line Input", "NULL", "LLINEIN"},
 	{"Line Input", "NULL", "RLINEIN"},
 
 	{"Mic Input", "NULL", "MICIN"},
+=======
+	{"Line Input", NULL, "LLINEIN"},
+	{"Line Input", NULL, "RLINEIN"},
+	{"Mic Input", NULL, "MICIN"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* input mux */
 	{"Capture Source", "Line", "Line Input"},
@@ -173,7 +246,11 @@ static const struct snd_soc_dapm_route tlv320aic23_intercon[] = {
 
 /* AIC23 driver data */
 struct aic23 {
+<<<<<<< HEAD
 	enum snd_soc_control_type control_type;
+=======
+	struct regmap *regmap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int mclk;
 	int requested_adc;
 	int requested_dac;
@@ -282,10 +359,17 @@ static int find_rate(int mclk, u32 need_adc, u32 need_dac)
 }
 
 #ifdef DEBUG
+<<<<<<< HEAD
 static void get_current_sample_rates(struct snd_soc_codec *codec, int mclk,
 		u32 *sample_rate_adc, u32 *sample_rate_dac)
 {
 	int src = snd_soc_read(codec, TLV320AIC23_SRATE);
+=======
+static void get_current_sample_rates(struct snd_soc_component *component, int mclk,
+		u32 *sample_rate_adc, u32 *sample_rate_dac)
+{
+	int src = snd_soc_component_read(component, TLV320AIC23_SRATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int sr = (src >> 2) & 0x0f;
 	int val = (mclk / bosr_usb_divisor_table[src & 3]);
 	int adc = (val * sr_adc_mult_table[sr]) / SR_MULT;
@@ -299,7 +383,11 @@ static void get_current_sample_rates(struct snd_soc_codec *codec, int mclk,
 }
 #endif
 
+<<<<<<< HEAD
 static int set_sample_rate_control(struct snd_soc_codec *codec, int mclk,
+=======
+static int set_sample_rate_control(struct snd_soc_component *component, int mclk,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 sample_rate_adc, u32 sample_rate_dac)
 {
 	/* Search for the right sample rate */
@@ -309,11 +397,19 @@ static int set_sample_rate_control(struct snd_soc_codec *codec, int mclk,
 				__func__, sample_rate_adc, sample_rate_dac);
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	snd_soc_write(codec, TLV320AIC23_SRATE, data);
 #ifdef DEBUG
 	{
 		u32 adc, dac;
 		get_current_sample_rates(codec, mclk, &adc, &dac);
+=======
+	snd_soc_component_write(component, TLV320AIC23_SRATE, data);
+#ifdef DEBUG
+	{
+		u32 adc, dac;
+		get_current_sample_rates(component, mclk, &adc, &dac);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_DEBUG "actual samplerate = %u,%u reg=%x\n",
 			adc, dac, data);
 	}
@@ -325,11 +421,18 @@ static int tlv320aic23_hw_params(struct snd_pcm_substream *substream,
 				 struct snd_pcm_hw_params *params,
 				 struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
 	u16 iface_reg;
 	int ret;
 	struct aic23 *aic23 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = dai->component;
+	u16 iface_reg;
+	int ret;
+	struct aic23 *aic23 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 sample_rate_adc = aic23->requested_adc;
 	u32 sample_rate_dac = aic23->requested_dac;
 	u32 sample_rate = params_rate(params);
@@ -343,11 +446,16 @@ static int tlv320aic23_hw_params(struct snd_pcm_substream *substream,
 		if (!sample_rate_dac)
 			sample_rate_dac = sample_rate;
 	}
+<<<<<<< HEAD
 	ret = set_sample_rate_control(codec, aic23->mclk, sample_rate_adc,
+=======
+	ret = set_sample_rate_control(component, aic23->mclk, sample_rate_adc,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sample_rate_dac);
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	iface_reg = snd_soc_read(codec, TLV320AIC23_DIGT_FMT) & ~(0x03 << 2);
 
 	switch (params_format(params)) {
@@ -364,6 +472,24 @@ static int tlv320aic23_hw_params(struct snd_pcm_substream *substream,
 		break;
 	}
 	snd_soc_write(codec, TLV320AIC23_DIGT_FMT, iface_reg);
+=======
+	iface_reg = snd_soc_component_read(component, TLV320AIC23_DIGT_FMT) & ~(0x03 << 2);
+
+	switch (params_width(params)) {
+	case 16:
+		break;
+	case 20:
+		iface_reg |= (0x01 << 2);
+		break;
+	case 24:
+		iface_reg |= (0x02 << 2);
+		break;
+	case 32:
+		iface_reg |= (0x03 << 2);
+		break;
+	}
+	snd_soc_component_write(component, TLV320AIC23_DIGT_FMT, iface_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -371,11 +497,18 @@ static int tlv320aic23_hw_params(struct snd_pcm_substream *substream,
 static int tlv320aic23_pcm_prepare(struct snd_pcm_substream *substream,
 				   struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
 
 	/* set active */
 	snd_soc_write(codec, TLV320AIC23_ACTIVE, 0x0001);
+=======
+	struct snd_soc_component *component = dai->component;
+
+	/* set active */
+	snd_soc_component_write(component, TLV320AIC23_ACTIVE, 0x0001);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -383,6 +516,7 @@ static int tlv320aic23_pcm_prepare(struct snd_pcm_substream *substream,
 static void tlv320aic23_shutdown(struct snd_pcm_substream *substream,
 				 struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
 	struct aic23 *aic23 = snd_soc_codec_get_drvdata(codec);
@@ -391,6 +525,15 @@ static void tlv320aic23_shutdown(struct snd_pcm_substream *substream,
 	if (!codec->active) {
 		udelay(50);
 		snd_soc_write(codec, TLV320AIC23_ACTIVE, 0x0);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct aic23 *aic23 = snd_soc_component_get_drvdata(component);
+
+	/* deactivate */
+	if (!snd_soc_component_active(component)) {
+		udelay(50);
+		snd_soc_component_write(component, TLV320AIC23_ACTIVE, 0x0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		aic23->requested_dac = 0;
@@ -398,19 +541,32 @@ static void tlv320aic23_shutdown(struct snd_pcm_substream *substream,
 		aic23->requested_adc = 0;
 }
 
+<<<<<<< HEAD
 static int tlv320aic23_mute(struct snd_soc_dai *dai, int mute)
 {
 	struct snd_soc_codec *codec = dai->codec;
 	u16 reg;
 
 	reg = snd_soc_read(codec, TLV320AIC23_DIGT);
+=======
+static int tlv320aic23_mute(struct snd_soc_dai *dai, int mute, int direction)
+{
+	struct snd_soc_component *component = dai->component;
+	u16 reg;
+
+	reg = snd_soc_component_read(component, TLV320AIC23_DIGT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mute)
 		reg |= TLV320AIC23_DACM_MUTE;
 
 	else
 		reg &= ~TLV320AIC23_DACM_MUTE;
 
+<<<<<<< HEAD
 	snd_soc_write(codec, TLV320AIC23_DIGT, reg);
+=======
+	snd_soc_component_write(component, TLV320AIC23_DIGT, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -418,6 +574,7 @@ static int tlv320aic23_mute(struct snd_soc_dai *dai, int mute)
 static int tlv320aic23_set_dai_fmt(struct snd_soc_dai *codec_dai,
 				   unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	u16 iface_reg;
 
@@ -429,6 +586,18 @@ static int tlv320aic23_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		iface_reg |= TLV320AIC23_MS_MASTER;
 		break;
 	case SND_SOC_DAIFMT_CBS_CFS:
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	u16 iface_reg;
+
+	iface_reg = snd_soc_component_read(component, TLV320AIC23_DIGT_FMT) & (~0x03);
+
+	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
+	case SND_SOC_DAIFMT_CBP_CFP:
+		iface_reg |= TLV320AIC23_MS_MASTER;
+		break;
+	case SND_SOC_DAIFMT_CBC_CFC:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iface_reg &= ~TLV320AIC23_MS_MASTER;
 		break;
 	default:
@@ -443,6 +612,10 @@ static int tlv320aic23_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		break;
 	case SND_SOC_DAIFMT_DSP_A:
 		iface_reg |= TLV320AIC23_LRP_ON;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SND_SOC_DAIFMT_DSP_B:
 		iface_reg |= TLV320AIC23_FOR_DSP;
 		break;
@@ -456,7 +629,11 @@ static int tlv320aic23_set_dai_fmt(struct snd_soc_dai *codec_dai,
 
 	}
 
+<<<<<<< HEAD
 	snd_soc_write(codec, TLV320AIC23_DIGT_FMT, iface_reg);
+=======
+	snd_soc_component_write(component, TLV320AIC23_DIGT_FMT, iface_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -469,32 +646,54 @@ static int tlv320aic23_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tlv320aic23_set_bias_level(struct snd_soc_codec *codec,
 				      enum snd_soc_bias_level level)
 {
 	u16 reg = snd_soc_read(codec, TLV320AIC23_PWR) & 0x17f;
+=======
+static int tlv320aic23_set_bias_level(struct snd_soc_component *component,
+				      enum snd_soc_bias_level level)
+{
+	u16 reg = snd_soc_component_read(component, TLV320AIC23_PWR) & 0x17f;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 		/* vref/mid, osc on, dac unmute */
 		reg &= ~(TLV320AIC23_DEVICE_PWR_OFF | TLV320AIC23_OSC_OFF | \
 			TLV320AIC23_DAC_OFF);
+<<<<<<< HEAD
 		snd_soc_write(codec, TLV320AIC23_PWR, reg);
+=======
+		snd_soc_component_write(component, TLV320AIC23_PWR, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
 		/* everything off except vref/vmid, */
+<<<<<<< HEAD
 		snd_soc_write(codec, TLV320AIC23_PWR,
+=======
+		snd_soc_component_write(component, TLV320AIC23_PWR,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      reg | TLV320AIC23_CLK_OFF);
 		break;
 	case SND_SOC_BIAS_OFF:
 		/* everything off, dac mute, inactive */
+<<<<<<< HEAD
 		snd_soc_write(codec, TLV320AIC23_ACTIVE, 0x0);
 		snd_soc_write(codec, TLV320AIC23_PWR, 0x1ff);
 		break;
 	}
 	codec->dapm.bias_level = level;
+=======
+		snd_soc_component_write(component, TLV320AIC23_ACTIVE, 0x0);
+		snd_soc_component_write(component, TLV320AIC23_PWR, 0x1ff);
+		break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -506,9 +705,16 @@ static const struct snd_soc_dai_ops tlv320aic23_dai_ops = {
 	.prepare	= tlv320aic23_pcm_prepare,
 	.hw_params	= tlv320aic23_hw_params,
 	.shutdown	= tlv320aic23_shutdown,
+<<<<<<< HEAD
 	.digital_mute	= tlv320aic23_mute,
 	.set_fmt	= tlv320aic23_set_dai_fmt,
 	.set_sysclk	= tlv320aic23_set_dai_sysclk,
+=======
+	.mute_stream	= tlv320aic23_mute,
+	.set_fmt	= tlv320aic23_set_dai_fmt,
+	.set_sysclk	= tlv320aic23_set_dai_sysclk,
+	.no_capture_mute = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver tlv320aic23_dai = {
@@ -528,13 +734,22 @@ static struct snd_soc_dai_driver tlv320aic23_dai = {
 	.ops = &tlv320aic23_dai_ops,
 };
 
+<<<<<<< HEAD
 static int tlv320aic23_suspend(struct snd_soc_codec *codec)
 {
 	tlv320aic23_set_bias_level(codec, SND_SOC_BIAS_OFF);
+=======
+static int tlv320aic23_resume(struct snd_soc_component *component)
+{
+	struct aic23 *aic23 = snd_soc_component_get_drvdata(component);
+	regcache_mark_dirty(aic23->regmap);
+	regcache_sync(aic23->regmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tlv320aic23_resume(struct snd_soc_codec *codec)
 {
 	snd_soc_cache_sync(codec);
@@ -582,10 +797,28 @@ static int tlv320aic23_probe(struct snd_soc_codec *codec)
 			    TLV320AIC23_LIM_MUTED, TLV320AIC23_LRS_ENABLED);
 
 	snd_soc_update_bits(codec, TLV320AIC23_ANLG,
+=======
+static int tlv320aic23_component_probe(struct snd_soc_component *component)
+{
+	/* Reset codec */
+	snd_soc_component_write(component, TLV320AIC23_RESET, 0);
+
+	snd_soc_component_write(component, TLV320AIC23_DIGT, TLV320AIC23_DEEMP_44K);
+
+	/* Unmute input */
+	snd_soc_component_update_bits(component, TLV320AIC23_LINVOL,
+			    TLV320AIC23_LIM_MUTED, TLV320AIC23_LRS_ENABLED);
+
+	snd_soc_component_update_bits(component, TLV320AIC23_RINVOL,
+			    TLV320AIC23_LIM_MUTED, TLV320AIC23_LRS_ENABLED);
+
+	snd_soc_component_update_bits(component, TLV320AIC23_ANLG,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    TLV320AIC23_BYPASS_ON | TLV320AIC23_MICM_MUTED,
 			    0);
 
 	/* Default output volume */
+<<<<<<< HEAD
 	snd_soc_write(codec, TLV320AIC23_LCHNVOL,
 		      TLV320AIC23_DEFAULT_OUT_VOL & TLV320AIC23_OUT_VOL_MASK);
 	snd_soc_write(codec, TLV320AIC23_RCHNVOL,
@@ -595,10 +828,19 @@ static int tlv320aic23_probe(struct snd_soc_codec *codec)
 
 	snd_soc_add_codec_controls(codec, tlv320aic23_snd_controls,
 				ARRAY_SIZE(tlv320aic23_snd_controls));
+=======
+	snd_soc_component_write(component, TLV320AIC23_LCHNVOL,
+		      TLV320AIC23_DEFAULT_OUT_VOL & TLV320AIC23_OUT_VOL_MASK);
+	snd_soc_component_write(component, TLV320AIC23_RCHNVOL,
+		      TLV320AIC23_DEFAULT_OUT_VOL & TLV320AIC23_OUT_VOL_MASK);
+
+	snd_soc_component_write(component, TLV320AIC23_ACTIVE, 0x1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int tlv320aic23_remove(struct snd_soc_codec *codec)
 {
 	tlv320aic23_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -690,6 +932,44 @@ static void __exit tlv320aic23_exit(void)
 #endif
 }
 module_exit(tlv320aic23_exit);
+=======
+static const struct snd_soc_component_driver soc_component_dev_tlv320aic23 = {
+	.probe			= tlv320aic23_component_probe,
+	.resume			= tlv320aic23_resume,
+	.set_bias_level		= tlv320aic23_set_bias_level,
+	.controls		= tlv320aic23_snd_controls,
+	.num_controls		= ARRAY_SIZE(tlv320aic23_snd_controls),
+	.dapm_widgets		= tlv320aic23_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(tlv320aic23_dapm_widgets),
+	.dapm_routes		= tlv320aic23_intercon,
+	.num_dapm_routes	= ARRAY_SIZE(tlv320aic23_intercon),
+	.suspend_bias_off	= 1,
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+};
+
+int tlv320aic23_probe(struct device *dev, struct regmap *regmap)
+{
+	struct aic23 *aic23;
+
+	if (IS_ERR(regmap))
+		return PTR_ERR(regmap);
+
+	aic23 = devm_kzalloc(dev, sizeof(struct aic23), GFP_KERNEL);
+	if (aic23 == NULL)
+		return -ENOMEM;
+
+	aic23->regmap = regmap;
+
+	dev_set_drvdata(dev, aic23);
+
+	return devm_snd_soc_register_component(dev,
+				      &soc_component_dev_tlv320aic23,
+				      &tlv320aic23_dai, 1);
+}
+EXPORT_SYMBOL(tlv320aic23_probe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("ASoC TLV320AIC23 codec driver");
 MODULE_AUTHOR("Arun KS <arunks@mistralsolutions.com>");

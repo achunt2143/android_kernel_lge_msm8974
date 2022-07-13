@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson SA 2010
  *
  * License Terms: GNU General Public License, version 2
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) ST-Ericsson SA 2010
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Rabin Vincent <rabin.vincent@stericsson.com> for ST-Ericsson
  */
 
@@ -10,7 +17,26 @@
 
 #include <linux/mutex.h>
 
+<<<<<<< HEAD
 struct device;
+=======
+#define STMPE_SAMPLE_TIME(x)	((x & 0xf) << 4)
+#define STMPE_MOD_12B(x)	((x & 0x1) << 3)
+#define STMPE_REF_SEL(x)	((x & 0x1) << 1)
+#define STMPE_ADC_FREQ(x)	(x & 0x3)
+#define STMPE_AVE_CTRL(x)	((x & 0x3) << 6)
+#define STMPE_DET_DELAY(x)	((x & 0x7) << 3)
+#define STMPE_SETTLING(x)	(x & 0x7)
+#define STMPE_FRACTION_Z(x)	(x & 0x7)
+#define STMPE_I_DRIVE(x)	(x & 0x1)
+#define STMPE_OP_MODE(x)	((x & 0x7) << 1)
+
+#define STMPE811_REG_ADC_CTRL1	0x20
+#define STMPE811_REG_ADC_CTRL2	0x21
+
+struct device;
+struct regulator;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum stmpe_block {
 	STMPE_BLOCK_GPIO	= 1 << 0,
@@ -25,7 +51,13 @@ enum stmpe_partnum {
 	STMPE610,
 	STMPE801,
 	STMPE811,
+<<<<<<< HEAD
 	STMPE1601,
+=======
+	STMPE1600,
+	STMPE1601,
+	STMPE1801,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	STMPE2401,
 	STMPE2403,
 	STMPE_NBR_PARTS
@@ -37,6 +69,7 @@ enum stmpe_partnum {
  */
 enum {
 	STMPE_IDX_CHIP_ID,
+<<<<<<< HEAD
 	STMPE_IDX_ICR_LSB,
 	STMPE_IDX_IER_LSB,
 	STMPE_IDX_ISR_MSB,
@@ -49,6 +82,44 @@ enum {
 	STMPE_IDX_GPFER_LSB,
 	STMPE_IDX_GPAFR_U_MSB,
 	STMPE_IDX_IEGPIOR_LSB,
+=======
+	STMPE_IDX_SYS_CTRL,
+	STMPE_IDX_SYS_CTRL2,
+	STMPE_IDX_ICR_LSB,
+	STMPE_IDX_IER_LSB,
+	STMPE_IDX_IER_MSB,
+	STMPE_IDX_ISR_LSB,
+	STMPE_IDX_ISR_MSB,
+	STMPE_IDX_GPMR_LSB,
+	STMPE_IDX_GPMR_CSB,
+	STMPE_IDX_GPMR_MSB,
+	STMPE_IDX_GPSR_LSB,
+	STMPE_IDX_GPSR_CSB,
+	STMPE_IDX_GPSR_MSB,
+	STMPE_IDX_GPCR_LSB,
+	STMPE_IDX_GPCR_CSB,
+	STMPE_IDX_GPCR_MSB,
+	STMPE_IDX_GPDR_LSB,
+	STMPE_IDX_GPDR_CSB,
+	STMPE_IDX_GPDR_MSB,
+	STMPE_IDX_GPEDR_LSB,
+	STMPE_IDX_GPEDR_CSB,
+	STMPE_IDX_GPEDR_MSB,
+	STMPE_IDX_GPRER_LSB,
+	STMPE_IDX_GPRER_CSB,
+	STMPE_IDX_GPRER_MSB,
+	STMPE_IDX_GPFER_LSB,
+	STMPE_IDX_GPFER_CSB,
+	STMPE_IDX_GPFER_MSB,
+	STMPE_IDX_GPPUR_LSB,
+	STMPE_IDX_GPPDR_LSB,
+	STMPE_IDX_GPAFR_U_MSB,
+	STMPE_IDX_IEGPIOR_LSB,
+	STMPE_IDX_IEGPIOR_CSB,
+	STMPE_IDX_IEGPIOR_MSB,
+	STMPE_IDX_ISGPIOR_LSB,
+	STMPE_IDX_ISGPIOR_CSB,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	STMPE_IDX_ISGPIOR_MSB,
 	STMPE_IDX_MAX,
 };
@@ -56,12 +127,25 @@ enum {
 
 struct stmpe_variant_info;
 struct stmpe_client_info;
+<<<<<<< HEAD
 
 /**
  * struct stmpe - STMPE MFD structure
  * @lock: lock protecting I/O operations
  * @irq_lock: IRQ bus lock
  * @dev: device, mostly for dev_dbg()
+=======
+struct stmpe_platform_data;
+
+/**
+ * struct stmpe - STMPE MFD structure
+ * @vcc: optional VCC regulator
+ * @vio: optional VIO regulator
+ * @lock: lock protecting I/O operations
+ * @irq_lock: IRQ bus lock
+ * @dev: device, mostly for dev_dbg()
+ * @irq_domain: IRQ domain
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @client: client - i2c or spi
  * @ci: client specific information
  * @partnum: part number
@@ -69,16 +153,28 @@ struct stmpe_client_info;
  * @regs: list of addresses of registers which are at different addresses on
  *	  different variants.  Indexed by one of STMPE_IDX_*.
  * @irq: irq number for stmpe
+<<<<<<< HEAD
  * @irq_base: starting IRQ number for internal IRQs
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @num_gpios: number of gpios, differs for variants
  * @ier: cache of IER registers for bus_lock
  * @oldier: cache of IER registers for bus_lock
  * @pdata: platform data
  */
 struct stmpe {
+<<<<<<< HEAD
 	struct mutex lock;
 	struct mutex irq_lock;
 	struct device *dev;
+=======
+	struct regulator *vcc;
+	struct regulator *vio;
+	struct mutex lock;
+	struct mutex irq_lock;
+	struct device *dev;
+	struct irq_domain *domain;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *client;
 	struct stmpe_client_info *ci;
 	enum stmpe_partnum partnum;
@@ -86,11 +182,23 @@ struct stmpe {
 	const u8 *regs;
 
 	int irq;
+<<<<<<< HEAD
 	int irq_base;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int num_gpios;
 	u8 ier[2];
 	u8 oldier[2];
 	struct stmpe_platform_data *pdata;
+<<<<<<< HEAD
+=======
+
+	/* For devices that use an ADC */
+	u8 sample_time;
+	u8 mod_12b;
+	u8 ref_sel;
+	u8 adc_freq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern int stmpe_reg_write(struct stmpe *stmpe, u8 reg, u8 data);
@@ -104,6 +212,7 @@ extern int stmpe_set_altfunc(struct stmpe *stmpe, u32 pins,
 			     enum stmpe_block block);
 extern int stmpe_enable(struct stmpe *stmpe, unsigned int blocks);
 extern int stmpe_disable(struct stmpe *stmpe, unsigned int blocks);
+<<<<<<< HEAD
 
 struct matrix_keymap_data;
 
@@ -222,4 +331,10 @@ struct stmpe_platform_data {
 #define STMPE_NR_GPIOS		24
 #define STMPE_NR_IRQS		STMPE_INT_GPIO(STMPE_NR_GPIOS)
 
+=======
+extern int stmpe811_adc_common_init(struct stmpe *stmpe);
+
+#define STMPE_GPIO_NOREQ_811_TOUCH	(0xf0)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

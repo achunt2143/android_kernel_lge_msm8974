@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _NF_CONNTRACK_DCCP_H
 #define _NF_CONNTRACK_DCCP_H
 
@@ -24,8 +28,12 @@ enum ct_dccp_roles {
 };
 #define CT_DCCP_ROLE_MAX	(__CT_DCCP_ROLE_MAX - 1)
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 #include <net/netfilter/nf_conntrack_tuple.h>
+=======
+#include <linux/netfilter/nf_conntrack_tuple_common.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nf_ct_dccp {
 	u_int8_t	role[IP_CT_DIR_MAX];
@@ -35,6 +43,9 @@ struct nf_ct_dccp {
 	u_int64_t	handshake_seq;
 };
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _NF_CONNTRACK_DCCP_H */

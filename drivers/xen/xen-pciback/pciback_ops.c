@@ -1,19 +1,34 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCI Backend Operations - respond to PCI requests from Frontend
  *
  *   Author: Ryan Wilson <hap9@epoch.ncsc.mil>
  */
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+#define dev_fmt pr_fmt
+
+#include <linux/moduleparam.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/wait.h>
 #include <linux/bitops.h>
 #include <xen/events.h>
 #include <linux/sched.h>
 #include "pciback.h"
+<<<<<<< HEAD
 #include <linux/ratelimit.h>
 #include <linux/printk.h>
 
 int verbose_request;
 module_param(verbose_request, int, 0644);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static irqreturn_t xen_pcibk_guest_interrupt(int irq, void *dev_id);
 
@@ -125,8 +140,11 @@ void xen_pcibk_reset_device(struct pci_dev *dev)
 		if (pci_is_enabled(dev))
 			pci_disable_device(dev);
 
+<<<<<<< HEAD
 		pci_write_config_word(dev, PCI_COMMAND, 0);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->is_busmaster = 0;
 	} else {
 		pci_read_config_word(dev, PCI_COMMAND, &cmd);
@@ -147,9 +165,12 @@ int xen_pcibk_enable_msi(struct xen_pcibk_device *pdev,
 	struct xen_pcibk_dev_data *dev_data;
 	int status;
 
+<<<<<<< HEAD
 	if (unlikely(verbose_request))
 		printk(KERN_DEBUG DRV_NAME ": %s: enable MSI\n", pci_name(dev));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->msi_enabled)
 		status = -EALREADY;
 	else if (dev->msix_enabled)
@@ -158,13 +179,19 @@ int xen_pcibk_enable_msi(struct xen_pcibk_device *pdev,
 		status = pci_enable_msi(dev);
 
 	if (status) {
+<<<<<<< HEAD
 		pr_warn_ratelimited(DRV_NAME ": %s: error enabling MSI for guest %u: err %d\n",
 				    pci_name(dev), pdev->xdev->otherend_id,
 				    status);
+=======
+		dev_warn_ratelimited(&dev->dev, "error enabling MSI for guest %u: err %d\n",
+				     pdev->xdev->otherend_id, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		op->value = 0;
 		return XEN_PCI_ERR_op_failed;
 	}
 
+<<<<<<< HEAD
 	/* The value the guest needs is actually the IDT vector, not the
 	 * the local domain's IRQ number. */
 
@@ -172,6 +199,14 @@ int xen_pcibk_enable_msi(struct xen_pcibk_device *pdev,
 	if (unlikely(verbose_request))
 		printk(KERN_DEBUG DRV_NAME ": %s: MSI: %d\n", pci_name(dev),
 			op->value);
+=======
+	/* The value the guest needs is actually the IDT vector, not
+	 * the local domain's IRQ number. */
+
+	op->value = dev->irq ? xen_pirq_from_irq(dev->irq) : 0;
+
+	dev_dbg(&dev->dev, "MSI: %d\n", op->value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_data = pci_get_drvdata(dev);
 	if (dev_data)
@@ -184,10 +219,13 @@ static
 int xen_pcibk_disable_msi(struct xen_pcibk_device *pdev,
 			  struct pci_dev *dev, struct xen_pci_op *op)
 {
+<<<<<<< HEAD
 	if (unlikely(verbose_request))
 		printk(KERN_DEBUG DRV_NAME ": %s: disable MSI\n",
 		       pci_name(dev));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->msi_enabled) {
 		struct xen_pcibk_dev_data *dev_data;
 
@@ -198,9 +236,15 @@ int xen_pcibk_disable_msi(struct xen_pcibk_device *pdev,
 			dev_data->ack_intr = 1;
 	}
 	op->value = dev->irq ? xen_pirq_from_irq(dev->irq) : 0;
+<<<<<<< HEAD
 	if (unlikely(verbose_request))
 		printk(KERN_DEBUG DRV_NAME ": %s: MSI: %d\n", pci_name(dev),
 			op->value);
+=======
+
+	dev_dbg(&dev->dev, "MSI: %d\n", op->value);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -213,9 +257,13 @@ int xen_pcibk_enable_msix(struct xen_pcibk_device *pdev,
 	struct msix_entry *entries;
 	u16 cmd;
 
+<<<<<<< HEAD
 	if (unlikely(verbose_request))
 		printk(KERN_DEBUG DRV_NAME ": %s: enable MSI-X\n",
 		       pci_name(dev));
+=======
+	dev_dbg(&dev->dev, "enable MSI-X\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (op->value > SH_INFO_MAX_VEC)
 		return -EINVAL;
@@ -226,12 +274,22 @@ int xen_pcibk_enable_msix(struct xen_pcibk_device *pdev,
 	/*
 	 * PCI_COMMAND_MEMORY must be enabled, otherwise we may not be able
 	 * to access the BARs where the MSI-X entries reside.
+<<<<<<< HEAD
 	 */
 	pci_read_config_word(dev, PCI_COMMAND, &cmd);
 	if (dev->msi_enabled || !(cmd & PCI_COMMAND_MEMORY))
 		return -ENXIO;
 
 	entries = kmalloc(op->value * sizeof(*entries), GFP_KERNEL);
+=======
+	 * But VF devices are unique in which the PF needs to be checked.
+	 */
+	pci_read_config_word(pci_physfn(dev), PCI_COMMAND, &cmd);
+	if (dev->msi_enabled || !(cmd & PCI_COMMAND_MEMORY))
+		return -ENXIO;
+
+	entries = kmalloc_array(op->value, sizeof(*entries), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (entries == NULL)
 		return -ENOMEM;
 
@@ -240,6 +298,7 @@ int xen_pcibk_enable_msix(struct xen_pcibk_device *pdev,
 		entries[i].vector = op->msix_entries[i].vector;
 	}
 
+<<<<<<< HEAD
 	result = pci_enable_msix(dev, entries, op->value);
 
 	if (result == 0) {
@@ -258,6 +317,22 @@ int xen_pcibk_enable_msix(struct xen_pcibk_device *pdev,
 		pr_warn_ratelimited(DRV_NAME ": %s: error enabling MSI-X for guest %u: err %d!\n",
 				    pci_name(dev), pdev->xdev->otherend_id,
 				    result);
+=======
+	result = pci_enable_msix_exact(dev, entries, op->value);
+	if (result == 0) {
+		for (i = 0; i < op->value; i++) {
+			op->msix_entries[i].entry = entries[i].entry;
+			if (entries[i].vector) {
+				op->msix_entries[i].vector =
+					xen_pirq_from_irq(entries[i].vector);
+				dev_dbg(&dev->dev, "MSI-X[%d]: %d\n", i,
+					op->msix_entries[i].vector);
+			}
+		}
+	} else
+		dev_warn_ratelimited(&dev->dev, "error enabling MSI-X for guest %u: err %d!\n",
+				     pdev->xdev->otherend_id, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(entries);
 
 	op->value = result;
@@ -272,10 +347,13 @@ static
 int xen_pcibk_disable_msix(struct xen_pcibk_device *pdev,
 			   struct pci_dev *dev, struct xen_pci_op *op)
 {
+<<<<<<< HEAD
 	if (unlikely(verbose_request))
 		printk(KERN_DEBUG DRV_NAME ": %s: disable MSI-X\n",
 			pci_name(dev));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->msix_enabled) {
 		struct xen_pcibk_dev_data *dev_data;
 
@@ -290,18 +368,36 @@ int xen_pcibk_disable_msix(struct xen_pcibk_device *pdev,
 	 * an undefined IRQ value of zero.
 	 */
 	op->value = dev->irq ? xen_pirq_from_irq(dev->irq) : 0;
+<<<<<<< HEAD
 	if (unlikely(verbose_request))
 		printk(KERN_DEBUG DRV_NAME ": %s: MSI-X: %d\n",
 		       pci_name(dev), op->value);
 	return 0;
 }
 #endif
+=======
+
+	dev_dbg(&dev->dev, "MSI-X: %d\n", op->value);
+
+	return 0;
+}
+#endif
+
+static inline bool xen_pcibk_test_op_pending(struct xen_pcibk_device *pdev)
+{
+	return test_bit(_XEN_PCIF_active,
+			(unsigned long *)&pdev->sh_info->flags) &&
+	       !test_and_set_bit(_PDEVF_op_active, &pdev->flags);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 * Now the same evtchn is used for both pcifront conf_read_write request
 * as well as pcie aer front end ack. We use a new work_queue to schedule
 * xen_pcibk conf_read_write service for avoiding confict with aer_core
 * do_recovery job which also use the system default work_queue
 */
+<<<<<<< HEAD
 void xen_pcibk_test_and_schedule_op(struct xen_pcibk_device *pdev)
 {
 	/* Check that frontend is requesting an operation and that we are not
@@ -309,13 +405,33 @@ void xen_pcibk_test_and_schedule_op(struct xen_pcibk_device *pdev)
 	if (test_bit(_XEN_PCIF_active, (unsigned long *)&pdev->sh_info->flags)
 	    && !test_and_set_bit(_PDEVF_op_active, &pdev->flags)) {
 		queue_work(xen_pcibk_wq, &pdev->op_work);
+=======
+static void xen_pcibk_test_and_schedule_op(struct xen_pcibk_device *pdev)
+{
+	bool eoi = true;
+
+	/* Check that frontend is requesting an operation and that we are not
+	 * already processing a request */
+	if (xen_pcibk_test_op_pending(pdev)) {
+		schedule_work(&pdev->op_work);
+		eoi = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/*_XEN_PCIB_active should have been cleared by pcifront. And also make
 	sure xen_pcibk is waiting for ack by checking _PCIB_op_pending*/
 	if (!test_bit(_XEN_PCIB_active, (unsigned long *)&pdev->sh_info->flags)
 	    && test_bit(_PCIB_op_pending, &pdev->flags)) {
 		wake_up(&xen_pcibk_aer_wait_queue);
+<<<<<<< HEAD
 	}
+=======
+		eoi = false;
+	}
+
+	/* EOI if there was nothing to do. */
+	if (eoi)
+		xen_pcibk_lateeoi(pdev, XEN_EOI_FLAG_SPURIOUS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Performing the configuration space reads/writes must not be done in atomic
@@ -323,10 +439,15 @@ void xen_pcibk_test_and_schedule_op(struct xen_pcibk_device *pdev)
  * use of semaphores). This function is intended to be called from a work
  * queue in process context taking a struct xen_pcibk_device as a parameter */
 
+<<<<<<< HEAD
 void xen_pcibk_do_op(struct work_struct *data)
 {
 	struct xen_pcibk_device *pdev =
 		container_of(data, struct xen_pcibk_device, op_work);
+=======
+static void xen_pcibk_do_one_op(struct xen_pcibk_device *pdev)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *dev;
 	struct xen_pcibk_dev_data *dev_data = NULL;
 	struct xen_pci_op *op = &pdev->op;
@@ -396,6 +517,7 @@ void xen_pcibk_do_op(struct work_struct *data)
 	notify_remote_via_irq(pdev->evtchn_irq);
 
 	/* Mark that we're done. */
+<<<<<<< HEAD
 	smp_mb__before_clear_bit(); /* /after/ clearing PCIF_active */
 	clear_bit(_PDEVF_op_active, &pdev->flags);
 	smp_mb__after_clear_bit(); /* /before/ final check for work */
@@ -404,11 +526,39 @@ void xen_pcibk_do_op(struct work_struct *data)
 	 * between clearing _XEN_PCIF_active and clearing _PDEVF_op_active.
 	*/
 	xen_pcibk_test_and_schedule_op(pdev);
+=======
+	smp_mb__before_atomic(); /* /after/ clearing PCIF_active */
+	clear_bit(_PDEVF_op_active, &pdev->flags);
+	smp_mb__after_atomic(); /* /before/ final check for work */
+}
+
+void xen_pcibk_do_op(struct work_struct *data)
+{
+	struct xen_pcibk_device *pdev =
+		container_of(data, struct xen_pcibk_device, op_work);
+
+	do {
+		xen_pcibk_do_one_op(pdev);
+	} while (xen_pcibk_test_op_pending(pdev));
+
+	xen_pcibk_lateeoi(pdev, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 irqreturn_t xen_pcibk_handle_event(int irq, void *dev_id)
 {
 	struct xen_pcibk_device *pdev = dev_id;
+<<<<<<< HEAD
+=======
+	bool eoi;
+
+	/* IRQs might come in before pdev->evtchn_irq is written. */
+	if (unlikely(pdev->evtchn_irq != irq))
+		pdev->evtchn_irq = irq;
+
+	eoi = test_and_set_bit(_EOI_pending, &pdev->flags);
+	WARN(eoi, "IRQ while EOI pending\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	xen_pcibk_test_and_schedule_op(pdev);
 
@@ -423,7 +573,11 @@ static irqreturn_t xen_pcibk_guest_interrupt(int irq, void *dev_id)
 		dev_data->handled++;
 		if ((dev_data->handled % 1000) == 0) {
 			if (xen_test_irq_shared(irq)) {
+<<<<<<< HEAD
 				printk(KERN_INFO "%s IRQ line is not shared "
+=======
+				dev_info(&dev->dev, "%s IRQ line is not shared "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"with other domains. Turning ISR off\n",
 					 dev_data->irq_name);
 				dev_data->ack_intr = 0;

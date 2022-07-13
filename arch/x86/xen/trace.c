@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <linux/ftrace.h>
 #include <xen/interface/xen.h>
 
@@ -49,6 +50,18 @@ static const char *xen_hypercall_names[] = {
 	N(arch_7),
 };
 #undef N
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/ftrace.h>
+#include <xen/interface/xen.h>
+#include <xen/interface/xen-mca.h>
+
+#define HYPERCALL(x)	[__HYPERVISOR_##x] = "("#x")",
+static const char *xen_hypercall_names[] = {
+#include <asm/xen-hypercalls.h>
+};
+#undef HYPERCALL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const char *xen_hypercall_name(unsigned op)
 {

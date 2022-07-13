@@ -26,14 +26,25 @@ void ath9k_htc_beaconq_config(struct ath9k_htc_priv *priv)
 	memset(&qi, 0, sizeof(struct ath9k_tx_queue_info));
 	memset(&qi_be, 0, sizeof(struct ath9k_tx_queue_info));
 
+<<<<<<< HEAD
 	ath9k_hw_get_txq_props(ah, priv->beaconq, &qi);
 
 	if (priv->ah->opmode == NL80211_IFTYPE_AP) {
+=======
+	ath9k_hw_get_txq_props(ah, priv->beacon.beaconq, &qi);
+
+	if (priv->ah->opmode == NL80211_IFTYPE_AP ||
+	    priv->ah->opmode == NL80211_IFTYPE_MESH_POINT) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qi.tqi_aifs = 1;
 		qi.tqi_cwmin = 0;
 		qi.tqi_cwmax = 0;
 	} else if (priv->ah->opmode == NL80211_IFTYPE_ADHOC) {
+<<<<<<< HEAD
 		int qnum = priv->hwq_map[WME_AC_BE];
+=======
+		int qnum = priv->hwq_map[IEEE80211_AC_BE];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ath9k_hw_get_txq_props(ah, qnum, &qi_be);
 
@@ -44,7 +55,11 @@ void ath9k_htc_beaconq_config(struct ath9k_htc_priv *priv)
 		 * Long slot time  : 2x cwmin
 		 * Short slot time : 4x cwmin
 		 */
+<<<<<<< HEAD
 		if (ah->slottime == ATH9K_SLOT_TIME_20)
+=======
+		if (ah->slottime == 20)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			qi.tqi_cwmin = 2*qi_be.tqi_cwmin;
 		else
 			qi.tqi_cwmin = 4*qi_be.tqi_cwmin;
@@ -53,6 +68,7 @@ void ath9k_htc_beaconq_config(struct ath9k_htc_priv *priv)
 
 	}
 
+<<<<<<< HEAD
 	if (!ath9k_hw_set_txq_props(ah, priv->beaconq, &qi)) {
 		ath_err(ath9k_hw_common(ah),
 			"Unable to update beacon queue %u!\n", priv->beaconq);
@@ -175,6 +191,54 @@ static void ath9k_htc_beacon_config_sta(struct ath9k_htc_priv *priv,
 		bs.bs_cfpperiod, bs.bs_cfpmaxduration, bs.bs_cfpnext);
 
 	/* Set the computed STA beacon timers */
+=======
+	if (!ath9k_hw_set_txq_props(ah, priv->beacon.beaconq, &qi)) {
+		ath_err(ath9k_hw_common(ah),
+			"Unable to update beacon queue %u!\n", priv->beacon.beaconq);
+	} else {
+		ath9k_hw_resettxqueue(ah, priv->beacon.beaconq);
+	}
+}
+
+/*
+ * Both nexttbtt and intval have to be in usecs.
+ */
+static void ath9k_htc_beacon_init(struct ath9k_htc_priv *priv,
+				  struct ath_beacon_config *conf,
+				  bool reset_tsf)
+{
+	struct ath_hw *ah = priv->ah;
+	int ret __attribute__ ((unused));
+	__be32 htc_imask = 0;
+	u8 cmd_rsp;
+
+	if (conf->intval >= TU_TO_USEC(DEFAULT_SWBA_RESPONSE))
+		ah->config.sw_beacon_response_time = DEFAULT_SWBA_RESPONSE;
+	else
+		ah->config.sw_beacon_response_time = MIN_SWBA_RESPONSE;
+
+	WMI_CMD(WMI_DISABLE_INTR_CMDID);
+	if (reset_tsf)
+		ath9k_hw_reset_tsf(ah);
+	ath9k_htc_beaconq_config(priv);
+	ath9k_hw_beaconinit(ah, conf->nexttbtt, conf->intval);
+	priv->beacon.bmisscnt = 0;
+	htc_imask = cpu_to_be32(ah->imask);
+	WMI_CMD_BUF(WMI_ENABLE_INTR_CMDID, &htc_imask);
+}
+
+static void ath9k_htc_beacon_config_sta(struct ath9k_htc_priv *priv,
+					struct ath_beacon_config *bss_conf)
+{
+	struct ath9k_beacon_state bs;
+	enum ath9k_int imask = 0;
+	__be32 htc_imask = 0;
+	int ret __attribute__ ((unused));
+	u8 cmd_rsp;
+
+	if (ath9k_cmn_beacon_config_sta(priv->ah, bss_conf, &bs) == -EPERM)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WMI_CMD(WMI_DISABLE_INTR_CMDID);
 	ath9k_hw_set_sta_beacon_timers(priv->ah, &bs);
@@ -184,6 +248,7 @@ static void ath9k_htc_beacon_config_sta(struct ath9k_htc_priv *priv,
 }
 
 static void ath9k_htc_beacon_config_ap(struct ath9k_htc_priv *priv,
+<<<<<<< HEAD
 				       struct htc_beacon_config *bss_conf)
 {
 	struct ath_common *common = ath9k_hw_common(priv->ah);
@@ -282,6 +347,25 @@ static void ath9k_htc_beacon_config_adhoc(struct ath9k_htc_priv *priv,
 	priv->cur_beacon_conf.bmiss_cnt = 0;
 	htc_imask = cpu_to_be32(imask);
 	WMI_CMD_BUF(WMI_ENABLE_INTR_CMDID, &htc_imask);
+=======
+				       struct ath_beacon_config *conf)
+{
+	struct ath_hw *ah = priv->ah;
+	ah->imask = 0;
+
+	ath9k_cmn_beacon_config_ap(ah, conf, ATH9K_HTC_MAX_BCN_VIF);
+	ath9k_htc_beacon_init(priv, conf, false);
+}
+
+static void ath9k_htc_beacon_config_adhoc(struct ath9k_htc_priv *priv,
+					  struct ath_beacon_config *conf)
+{
+	struct ath_hw *ah = priv->ah;
+	ah->imask = 0;
+
+	ath9k_cmn_beacon_config_adhoc(ah, conf);
+	ath9k_htc_beacon_init(priv, conf, conf->ibss_creator);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ath9k_htc_beaconep(void *drv_priv, struct sk_buff *skb,
@@ -301,14 +385,22 @@ static void ath9k_htc_send_buffered(struct ath9k_htc_priv *priv,
 
 	spin_lock_bh(&priv->beacon_lock);
 
+<<<<<<< HEAD
 	vif = priv->cur_beacon_conf.bslot[slot];
+=======
+	vif = priv->beacon.bslot[slot];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb = ieee80211_get_buffered_bc(priv->hw, vif);
 
 	while(skb) {
 		hdr = (struct ieee80211_hdr *) skb->data;
 
+<<<<<<< HEAD
 		padpos = ath9k_cmn_padpos(hdr->frame_control);
+=======
+		padpos = ieee80211_hdrlen(hdr->frame_control);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		padsize = padpos & 3;
 		if (padsize && skb->len > padpos) {
 			if (skb_headroom(skb) < padsize) {
@@ -326,7 +418,11 @@ static void ath9k_htc_send_buffered(struct ath9k_htc_priv *priv,
 			goto next;
 		}
 
+<<<<<<< HEAD
 		ret = ath9k_htc_tx_start(priv, skb, tx_slot, true);
+=======
+		ret = ath9k_htc_tx_start(priv, NULL, skb, tx_slot, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret != 0) {
 			ath9k_htc_tx_clear_slot(priv, tx_slot);
 			dev_kfree_skb_any(skb);
@@ -362,16 +458,27 @@ static void ath9k_htc_send_beacon(struct ath9k_htc_priv *priv,
 
 	spin_lock_bh(&priv->beacon_lock);
 
+<<<<<<< HEAD
 	vif = priv->cur_beacon_conf.bslot[slot];
 	avp = (struct ath9k_htc_vif *)vif->drv_priv;
 
 	if (unlikely(priv->op_flags & OP_SCANNING)) {
+=======
+	vif = priv->beacon.bslot[slot];
+	avp = (struct ath9k_htc_vif *)vif->drv_priv;
+
+	if (unlikely(test_bit(ATH_OP_SCANNING, &common->op_flags))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_bh(&priv->beacon_lock);
 		return;
 	}
 
 	/* Get a new beacon */
+<<<<<<< HEAD
 	beacon = ieee80211_beacon_get(priv->hw, vif);
+=======
+	beacon = ieee80211_beacon_get(priv->hw, vif, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!beacon) {
 		spin_unlock_bh(&priv->beacon_lock);
 		return;
@@ -413,6 +520,11 @@ static void ath9k_htc_send_beacon(struct ath9k_htc_priv *priv,
 	}
 
 	spin_unlock_bh(&priv->beacon_lock);
+<<<<<<< HEAD
+=======
+
+	ath9k_htc_csa_is_finished(priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath9k_htc_choose_bslot(struct ath9k_htc_priv *priv,
@@ -445,8 +557,13 @@ void ath9k_htc_swba(struct ath9k_htc_priv *priv,
 	int slot;
 
 	if (swba->beacon_pending != 0) {
+<<<<<<< HEAD
 		priv->cur_beacon_conf.bmiss_cnt++;
 		if (priv->cur_beacon_conf.bmiss_cnt > BSTUCK_THRESHOLD) {
+=======
+		priv->beacon.bmisscnt++;
+		if (priv->beacon.bmisscnt > BSTUCK_THRESHOLD) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ath_dbg(common, BSTUCK, "Beacon stuck, HW reset\n");
 			ieee80211_queue_work(priv->hw,
 					     &priv->fatal_work);
@@ -454,16 +571,28 @@ void ath9k_htc_swba(struct ath9k_htc_priv *priv,
 		return;
 	}
 
+<<<<<<< HEAD
 	if (priv->cur_beacon_conf.bmiss_cnt) {
 		ath_dbg(common, BSTUCK,
 			"Resuming beacon xmit after %u misses\n",
 			priv->cur_beacon_conf.bmiss_cnt);
 		priv->cur_beacon_conf.bmiss_cnt = 0;
+=======
+	if (priv->beacon.bmisscnt) {
+		ath_dbg(common, BSTUCK,
+			"Resuming beacon xmit after %u misses\n",
+			priv->beacon.bmisscnt);
+		priv->beacon.bmisscnt = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	slot = ath9k_htc_choose_bslot(priv, swba);
 	spin_lock_bh(&priv->beacon_lock);
+<<<<<<< HEAD
 	if (priv->cur_beacon_conf.bslot[slot] == NULL) {
+=======
+	if (priv->beacon.bslot[slot] == NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_bh(&priv->beacon_lock);
 		return;
 	}
@@ -482,13 +611,21 @@ void ath9k_htc_assign_bslot(struct ath9k_htc_priv *priv,
 
 	spin_lock_bh(&priv->beacon_lock);
 	for (i = 0; i < ATH9K_HTC_MAX_BCN_VIF; i++) {
+<<<<<<< HEAD
 		if (priv->cur_beacon_conf.bslot[i] == NULL) {
+=======
+		if (priv->beacon.bslot[i] == NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			avp->bslot = i;
 			break;
 		}
 	}
 
+<<<<<<< HEAD
 	priv->cur_beacon_conf.bslot[avp->bslot] = vif;
+=======
+	priv->beacon.bslot[avp->bslot] = vif;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_bh(&priv->beacon_lock);
 
 	ath_dbg(common, CONFIG, "Added interface at beacon slot: %d\n",
@@ -502,7 +639,11 @@ void ath9k_htc_remove_bslot(struct ath9k_htc_priv *priv,
 	struct ath9k_htc_vif *avp = (struct ath9k_htc_vif *)vif->drv_priv;
 
 	spin_lock_bh(&priv->beacon_lock);
+<<<<<<< HEAD
 	priv->cur_beacon_conf.bslot[avp->bslot] = NULL;
+=======
+	priv->beacon.bslot[avp->bslot] = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_bh(&priv->beacon_lock);
 
 	ath_dbg(common, CONFIG, "Removed interface at beacon slot: %d\n",
@@ -518,7 +659,11 @@ void ath9k_htc_set_tsfadjust(struct ath9k_htc_priv *priv,
 {
 	struct ath_common *common = ath9k_hw_common(priv->ah);
 	struct ath9k_htc_vif *avp = (struct ath9k_htc_vif *)vif->drv_priv;
+<<<<<<< HEAD
 	struct htc_beacon_config *cur_conf = &priv->cur_beacon_conf;
+=======
+	struct ath_beacon_config *cur_conf = &priv->cur_beacon_conf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 tsfadjust;
 
 	if (avp->bslot == 0)
@@ -538,7 +683,11 @@ void ath9k_htc_set_tsfadjust(struct ath9k_htc_priv *priv,
 
 static void ath9k_htc_beacon_iter(void *data, u8 *mac, struct ieee80211_vif *vif)
 {
+<<<<<<< HEAD
 	bool *beacon_configured = (bool *)data;
+=======
+	bool *beacon_configured = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath9k_htc_vif *avp = (struct ath9k_htc_vif *) vif->drv_priv;
 
 	if (vif->type == NL80211_IFTYPE_STATION &&
@@ -550,7 +699,11 @@ static bool ath9k_htc_check_beacon_config(struct ath9k_htc_priv *priv,
 					  struct ieee80211_vif *vif)
 {
 	struct ath_common *common = ath9k_hw_common(priv->ah);
+<<<<<<< HEAD
 	struct htc_beacon_config *cur_conf = &priv->cur_beacon_conf;
+=======
+	struct ath_beacon_config *cur_conf = &priv->cur_beacon_conf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ieee80211_bss_conf *bss_conf = &vif->bss_conf;
 	bool beacon_configured;
 
@@ -587,9 +740,15 @@ static bool ath9k_htc_check_beacon_config(struct ath9k_htc_priv *priv,
 	    (priv->num_sta_vif > 1) &&
 	    (vif->type == NL80211_IFTYPE_STATION)) {
 		beacon_configured = false;
+<<<<<<< HEAD
 		ieee80211_iterate_active_interfaces_atomic(priv->hw,
 							   ath9k_htc_beacon_iter,
 							   &beacon_configured);
+=======
+		ieee80211_iterate_active_interfaces_atomic(
+			priv->hw, IEEE80211_IFACE_ITER_RESUME_ALL,
+			ath9k_htc_beacon_iter, &beacon_configured);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (beacon_configured) {
 			ath_dbg(common, CONFIG,
@@ -605,7 +764,11 @@ void ath9k_htc_beacon_config(struct ath9k_htc_priv *priv,
 			     struct ieee80211_vif *vif)
 {
 	struct ath_common *common = ath9k_hw_common(priv->ah);
+<<<<<<< HEAD
 	struct htc_beacon_config *cur_conf = &priv->cur_beacon_conf;
+=======
+	struct ath_beacon_config *cur_conf = &priv->cur_beacon_conf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ieee80211_bss_conf *bss_conf = &vif->bss_conf;
 	struct ath9k_htc_vif *avp = (struct ath9k_htc_vif *) vif->drv_priv;
 
@@ -628,6 +791,10 @@ void ath9k_htc_beacon_config(struct ath9k_htc_priv *priv,
 	case NL80211_IFTYPE_ADHOC:
 		ath9k_htc_beacon_config_adhoc(priv, cur_conf);
 		break;
+<<<<<<< HEAD
+=======
+	case NL80211_IFTYPE_MESH_POINT:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NL80211_IFTYPE_AP:
 		ath9k_htc_beacon_config_ap(priv, cur_conf);
 		break;
@@ -640,7 +807,11 @@ void ath9k_htc_beacon_config(struct ath9k_htc_priv *priv,
 void ath9k_htc_beacon_reconfig(struct ath9k_htc_priv *priv)
 {
 	struct ath_common *common = ath9k_hw_common(priv->ah);
+<<<<<<< HEAD
 	struct htc_beacon_config *cur_conf = &priv->cur_beacon_conf;
+=======
+	struct ath_beacon_config *cur_conf = &priv->cur_beacon_conf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (priv->ah->opmode) {
 	case NL80211_IFTYPE_STATION:
@@ -649,6 +820,10 @@ void ath9k_htc_beacon_reconfig(struct ath9k_htc_priv *priv)
 	case NL80211_IFTYPE_ADHOC:
 		ath9k_htc_beacon_config_adhoc(priv, cur_conf);
 		break;
+<<<<<<< HEAD
+=======
+	case NL80211_IFTYPE_MESH_POINT:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NL80211_IFTYPE_AP:
 		ath9k_htc_beacon_config_ap(priv, cur_conf);
 		break;
@@ -657,3 +832,23 @@ void ath9k_htc_beacon_reconfig(struct ath9k_htc_priv *priv)
 		return;
 	}
 }
+<<<<<<< HEAD
+=======
+
+bool ath9k_htc_csa_is_finished(struct ath9k_htc_priv *priv)
+{
+	struct ieee80211_vif *vif;
+
+	vif = priv->csa_vif;
+	if (!vif || !vif->bss_conf.csa_active)
+		return false;
+
+	if (!ieee80211_beacon_cntdwn_is_complete(vif, 0))
+		return false;
+
+	ieee80211_csa_finish(vif, 0);
+
+	priv->csa_vif = NULL;
+	return true;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 /*
  *  USB ATI Remote support
  *
  *                Copyright (c) 2011 Anssi Hannula <anssi.hannula@iki.fi>
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  USB ATI Remote support
+ *
+ *                Copyright (c) 2011, 2012 Anssi Hannula <anssi.hannula@iki.fi>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Version 2.2.0 Copyright (c) 2004 Torrey Hoffman <thoffman@arnor.net>
  *  Version 2.1.1 Copyright (c) 2002 Vladimir Dergachev
  *
@@ -26,6 +34,7 @@
  *
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -40,6 +49,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
  *
  * Hardware & software notes
@@ -83,7 +94,10 @@
  *
  * The default is 0 (respond to all channels). Bit 0 and bits 17-32 of this
  * parameter are unused.
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -147,6 +161,7 @@ static bool mouse = true;
 module_param(mouse, bool, 0444);
 MODULE_PARM_DESC(mouse, "Enable mouse device, default = yes");
 
+<<<<<<< HEAD
 #define dbginfo(dev, format, arg...) do { if (debug) dev_info(dev , format , ## arg); } while (0)
 #undef err
 #define err(format, arg...) printk(KERN_ERR format , ## arg)
@@ -158,6 +173,86 @@ static struct usb_device_id ati_remote_table[] = {
 	{ USB_DEVICE(ATI_REMOTE_VENDOR_ID, NVIDIA_REMOTE_PRODUCT_ID),	.driver_info = (unsigned long)RC_MAP_ATI_X10 },
 	{ USB_DEVICE(ATI_REMOTE_VENDOR_ID, MEDION_REMOTE_PRODUCT_ID),	.driver_info = (unsigned long)RC_MAP_MEDION_X10 },
 	{ USB_DEVICE(ATI_REMOTE_VENDOR_ID, FIREFLY_REMOTE_PRODUCT_ID),	.driver_info = (unsigned long)RC_MAP_SNAPSTREAM_FIREFLY },
+=======
+#define dbginfo(dev, format, arg...) \
+	do { if (debug) dev_info(dev , format , ## arg); } while (0)
+
+struct ati_receiver_type {
+	/* either default_keymap or get_default_keymap should be set */
+	const char *default_keymap;
+	const char *(*get_default_keymap)(struct usb_interface *interface);
+};
+
+static const char *get_medion_keymap(struct usb_interface *interface)
+{
+	struct usb_device *udev = interface_to_usbdev(interface);
+
+	/*
+	 * There are many different Medion remotes shipped with a receiver
+	 * with the same usb id, but the receivers have subtle differences
+	 * in the USB descriptors allowing us to detect them.
+	 */
+
+	if (udev->manufacturer && udev->product) {
+		if (udev->actconfig->desc.bmAttributes & USB_CONFIG_ATT_WAKEUP) {
+
+			if (!strcmp(udev->manufacturer, "X10 Wireless Technology Inc")
+			    && !strcmp(udev->product, "USB Receiver"))
+				return RC_MAP_MEDION_X10_DIGITAINER;
+
+			if (!strcmp(udev->manufacturer, "X10 WTI")
+			    && !strcmp(udev->product, "RF receiver"))
+				return RC_MAP_MEDION_X10_OR2X;
+		} else {
+
+			 if (!strcmp(udev->manufacturer, "X10 Wireless Technology Inc")
+			    && !strcmp(udev->product, "USB Receiver"))
+				return RC_MAP_MEDION_X10;
+		}
+	}
+
+	dev_info(&interface->dev,
+		 "Unknown Medion X10 receiver, using default ati_remote Medion keymap\n");
+
+	return RC_MAP_MEDION_X10;
+}
+
+static const struct ati_receiver_type type_ati		= {
+	.default_keymap = RC_MAP_ATI_X10
+};
+static const struct ati_receiver_type type_medion	= {
+	.get_default_keymap = get_medion_keymap
+};
+static const struct ati_receiver_type type_firefly	= {
+	.default_keymap = RC_MAP_SNAPSTREAM_FIREFLY
+};
+
+static const struct usb_device_id ati_remote_table[] = {
+	{
+		USB_DEVICE(ATI_REMOTE_VENDOR_ID, LOLA_REMOTE_PRODUCT_ID),
+		.driver_info = (unsigned long)&type_ati
+	},
+	{
+		USB_DEVICE(ATI_REMOTE_VENDOR_ID, LOLA2_REMOTE_PRODUCT_ID),
+		.driver_info = (unsigned long)&type_ati
+	},
+	{
+		USB_DEVICE(ATI_REMOTE_VENDOR_ID, ATI_REMOTE_PRODUCT_ID),
+		.driver_info = (unsigned long)&type_ati
+	},
+	{
+		USB_DEVICE(ATI_REMOTE_VENDOR_ID, NVIDIA_REMOTE_PRODUCT_ID),
+		.driver_info = (unsigned long)&type_ati
+	},
+	{
+		USB_DEVICE(ATI_REMOTE_VENDOR_ID, MEDION_REMOTE_PRODUCT_ID),
+		.driver_info = (unsigned long)&type_medion
+	},
+	{
+		USB_DEVICE(ATI_REMOTE_VENDOR_ID, FIREFLY_REMOTE_PRODUCT_ID),
+		.driver_info = (unsigned long)&type_firefly
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}	/* Terminating entry */
 };
 
@@ -198,7 +293,11 @@ struct ati_remote {
 
 	char rc_name[NAME_BUFSIZE];
 	char rc_phys[NAME_BUFSIZE];
+<<<<<<< HEAD
 	char mouse_name[NAME_BUFSIZE];
+=======
+	char mouse_name[NAME_BUFSIZE + 6];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char mouse_phys[NAME_BUFSIZE];
 
 	wait_queue_head_t wait;
@@ -210,6 +309,7 @@ struct ati_remote {
 
 /* "Kinds" of messages sent from the hardware to the driver. */
 #define KIND_END        0
+<<<<<<< HEAD
 #define KIND_LITERAL    1   /* Simply pass to input system */
 #define KIND_FILTERED   2   /* Add artificial key-up events, drop keyrepeats */
 #define KIND_LU         3   /* Directional keypad diagonals - left up, */
@@ -271,6 +371,48 @@ static struct usb_driver ati_remote_driver = {
 
 /*
  *	ati_remote_dump_input
+=======
+#define KIND_LITERAL    1   /* Simply pass to input system as EV_KEY */
+#define KIND_FILTERED   2   /* Add artificial key-up events, drop keyrepeats */
+#define KIND_ACCEL      3   /* Translate to EV_REL mouse-move events */
+
+/* Translation table from hardware messages to input events. */
+static const struct {
+	unsigned char kind;
+	unsigned char data;	/* Raw key code from remote */
+	unsigned short code;	/* Input layer translation */
+}  ati_remote_tbl[] = {
+	/* Directional control pad axes.  Code is xxyy */
+	{KIND_ACCEL,    0x70, 0xff00},	/* left */
+	{KIND_ACCEL,    0x71, 0x0100},	/* right */
+	{KIND_ACCEL,    0x72, 0x00ff},	/* up */
+	{KIND_ACCEL,    0x73, 0x0001},	/* down */
+
+	/* Directional control pad diagonals */
+	{KIND_ACCEL,    0x74, 0xffff},	/* left up */
+	{KIND_ACCEL,    0x75, 0x01ff},	/* right up */
+	{KIND_ACCEL,    0x77, 0xff01},	/* left down */
+	{KIND_ACCEL,    0x76, 0x0101},	/* right down */
+
+	/* "Mouse button" buttons.  The code below uses the fact that the
+	 * lsbit of the raw code is a down/up indicator. */
+	{KIND_LITERAL,  0x78, BTN_LEFT}, /* left btn down */
+	{KIND_LITERAL,  0x79, BTN_LEFT}, /* left btn up */
+	{KIND_LITERAL,  0x7c, BTN_RIGHT},/* right btn down */
+	{KIND_LITERAL,  0x7d, BTN_RIGHT},/* right btn up */
+
+	/* Artificial "double-click" events are generated by the hardware.
+	 * They are mapped to the "side" and "extra" mouse buttons here. */
+	{KIND_FILTERED, 0x7a, BTN_SIDE}, /* left dblclick */
+	{KIND_FILTERED, 0x7e, BTN_EXTRA},/* right dblclick */
+
+	/* Non-mouse events are handled by rc-core */
+	{KIND_END, 0x00, 0}
+};
+
+/*
+ * ati_remote_dump_input
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void ati_remote_dump(struct device *dev, unsigned char *data,
 			    unsigned int len)
@@ -279,6 +421,7 @@ static void ati_remote_dump(struct device *dev, unsigned char *data,
 		if (data[0] != (unsigned char)0xff && data[0] != 0x00)
 			dev_warn(dev, "Weird byte 0x%02x\n", data[0]);
 	} else if (len == 4)
+<<<<<<< HEAD
 		dev_warn(dev, "Weird key %02x %02x %02x %02x\n",
 		     data[0], data[1], data[2], data[3]);
 	else
@@ -288,6 +431,15 @@ static void ati_remote_dump(struct device *dev, unsigned char *data,
 
 /*
  *	ati_remote_open
+=======
+		dev_warn(dev, "Weird key %*ph\n", 4, data);
+	else
+		dev_warn(dev, "Weird data, len=%d %*ph ...\n", len, 6, data);
+}
+
+/*
+ * ati_remote_open
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int ati_remote_open(struct ati_remote *ati_remote)
 {
@@ -311,7 +463,11 @@ out:	mutex_unlock(&ati_remote->open_mutex);
 }
 
 /*
+<<<<<<< HEAD
  *	ati_remote_close
+=======
+ * ati_remote_close
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void ati_remote_close(struct ati_remote *ati_remote)
 {
@@ -346,7 +502,11 @@ static void ati_remote_rc_close(struct rc_dev *rdev)
 }
 
 /*
+<<<<<<< HEAD
  *		ati_remote_irq_out
+=======
+ * ati_remote_irq_out
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void ati_remote_irq_out(struct urb *urb)
 {
@@ -364,11 +524,20 @@ static void ati_remote_irq_out(struct urb *urb)
 }
 
 /*
+<<<<<<< HEAD
  *	ati_remote_sendpacket
  *
  *	Used to send device initialization strings
  */
 static int ati_remote_sendpacket(struct ati_remote *ati_remote, u16 cmd, unsigned char *data)
+=======
+ * ati_remote_sendpacket
+ *
+ * Used to send device initialization strings
+ */
+static int ati_remote_sendpacket(struct ati_remote *ati_remote, u16 cmd,
+	unsigned char *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int retval = 0;
 
@@ -396,8 +565,28 @@ static int ati_remote_sendpacket(struct ati_remote *ati_remote, u16 cmd, unsigne
 	return retval;
 }
 
+<<<<<<< HEAD
 /*
  *	ati_remote_compute_accel
+=======
+struct accel_times {
+	const char	value;
+	unsigned int	msecs;
+};
+
+static const struct accel_times accel[] = {
+	{  1,  125 },
+	{  2,  250 },
+	{  4,  500 },
+	{  6, 1000 },
+	{  9, 1500 },
+	{ 13, 2000 },
+	{ 20,    0 },
+};
+
+/*
+ * ati_remote_compute_accel
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Implements acceleration curve for directional control pad
  * If elapsed time since last event is > 1/4 second, user "stopped",
@@ -407,6 +596,7 @@ static int ati_remote_sendpacket(struct ati_remote *ati_remote, u16 cmd, unsigne
  */
 static int ati_remote_compute_accel(struct ati_remote *ati_remote)
 {
+<<<<<<< HEAD
 	static const char accel[] = { 1, 2, 4, 6, 9, 13, 20 };
 	unsigned long now = jiffies;
 	int acc;
@@ -435,6 +625,28 @@ static int ati_remote_compute_accel(struct ati_remote *ati_remote)
 
 /*
  *	ati_remote_report_input
+=======
+	unsigned long now = jiffies, reset_time;
+	int i;
+
+	reset_time = msecs_to_jiffies(250);
+
+	if (time_after(now, ati_remote->old_jiffies + reset_time)) {
+		ati_remote->acc_jiffies = now;
+		return 1;
+	}
+	for (i = 0; i < ARRAY_SIZE(accel) - 1; i++) {
+		unsigned long timeout = msecs_to_jiffies(accel[i].msecs);
+
+		if (time_before(now, ati_remote->acc_jiffies + timeout))
+			return accel[i].value;
+	}
+	return accel[i].value;
+}
+
+/*
+ * ati_remote_report_input
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void ati_remote_input_report(struct urb *urb)
 {
@@ -442,9 +654,15 @@ static void ati_remote_input_report(struct urb *urb)
 	unsigned char *data= ati_remote->inbuf;
 	struct input_dev *dev = ati_remote->idev;
 	int index = -1;
+<<<<<<< HEAD
 	int acc;
 	int remote_num;
 	unsigned char scancode;
+=======
+	int remote_num;
+	unsigned char scancode;
+	u32 wheel_keycode = KEY_RESERVED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/*
@@ -455,16 +673,26 @@ static void ati_remote_input_report(struct urb *urb)
 	 */
 
 	/* Deal with strange looking inputs */
+<<<<<<< HEAD
 	if ( (urb->actual_length != 4) || (data[0] != 0x14) ||
 		((data[3] & 0x0f) != 0x00) ) {
+=======
+	if ( urb->actual_length != 4 || data[0] != 0x14 ||
+	     data[1] != (unsigned char)(data[2] + data[3] + 0xD5) ||
+	     (data[3] & 0x0f) != 0x00) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ati_remote_dump(&urb->dev->dev, data, urb->actual_length);
 		return;
 	}
 
 	if (data[1] != ((data[2] + data[3] + 0xd5) & 0xff)) {
 		dbginfo(&ati_remote->interface->dev,
+<<<<<<< HEAD
 			"wrong checksum in input: %02x %02x %02x %02x\n",
 			data[0], data[1], data[2], data[3]);
+=======
+			"wrong checksum in input: %*ph\n", 4, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -473,8 +701,13 @@ static void ati_remote_input_report(struct urb *urb)
 	remote_num = (data[3] >> 4) & 0x0f;
 	if (channel_mask & (1 << (remote_num + 1))) {
 		dbginfo(&ati_remote->interface->dev,
+<<<<<<< HEAD
 			"Masked input from channel 0x%02x: data %02x,%02x, mask= 0x%02lx\n",
 			remote_num, data[1], data[2], channel_mask);
+=======
+			"Masked input from channel 0x%02x: data %02x, mask= 0x%02lx\n",
+			remote_num, data[2], channel_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -484,6 +717,7 @@ static void ati_remote_input_report(struct urb *urb)
 	 */
 	scancode = data[2] & 0x7f;
 
+<<<<<<< HEAD
 	/* Look up event code index in the mouse translation table. */
 	for (i = 0; ati_remote_tbl[i].kind != KIND_END; i++) {
 		if (scancode == ati_remote_tbl[i].data) {
@@ -515,6 +749,48 @@ static void ati_remote_input_report(struct urb *urb)
 	}
 
 	if (index < 0 || ati_remote_tbl[index].kind == KIND_FILTERED) {
+=======
+	dbginfo(&ati_remote->interface->dev,
+		"channel 0x%02x; key data %02x, scancode %02x\n",
+		remote_num, data[2], scancode);
+
+	if (scancode >= 0x70) {
+		/*
+		 * This is either a mouse or scrollwheel event, depending on
+		 * the remote/keymap.
+		 * Get the keycode assigned to scancode 0x78/0x70. If it is
+		 * set, assume this is a scrollwheel up/down event.
+		 */
+		wheel_keycode = rc_g_keycode_from_table(ati_remote->rdev,
+							scancode & 0x78);
+
+		if (wheel_keycode == KEY_RESERVED) {
+			/* scrollwheel was not mapped, assume mouse */
+
+			/* Look up event code index in the mouse translation
+			 * table.
+			 */
+			for (i = 0; ati_remote_tbl[i].kind != KIND_END; i++) {
+				if (scancode == ati_remote_tbl[i].data) {
+					index = i;
+					break;
+				}
+			}
+		}
+	}
+
+	if (index >= 0 && ati_remote_tbl[index].kind == KIND_LITERAL) {
+		/*
+		 * The lsbit of the raw key code is a down/up flag.
+		 * Invert it to match the input layer's conventions.
+		 */
+		input_event(dev, EV_KEY, ati_remote_tbl[index].code,
+			!(data[2] & 1));
+
+		ati_remote->old_jiffies = jiffies;
+
+	} else if (index < 0 || ati_remote_tbl[index].kind == KIND_FILTERED) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long now = jiffies;
 
 		/* Filter duplicate events which happen "too close" together. */
@@ -527,12 +803,20 @@ static void ati_remote_input_report(struct urb *urb)
 			ati_remote->first_jiffies = now;
 		}
 
+<<<<<<< HEAD
 		ati_remote->old_data = data[2];
 		ati_remote->old_jiffies = now;
 
 		/* Ensure we skip at least the 4 first duplicate events (generated
 		 * by a single keypress), and continue skipping until repeat_delay
 		 * msecs have passed
+=======
+		ati_remote->old_jiffies = now;
+
+		/* Ensure we skip at least the 4 first duplicate events
+		 * (generated by a single keypress), and continue skipping
+		 * until repeat_delay msecs have passed.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (ati_remote->repeat_count > 0 &&
 		    (ati_remote->repeat_count < 5 ||
@@ -540,6 +824,7 @@ static void ati_remote_input_report(struct urb *urb)
 				      msecs_to_jiffies(repeat_delay))))
 			return;
 
+<<<<<<< HEAD
 		if (index < 0) {
 			/* Not a mouse event, hand it to rc-core. */
 
@@ -605,6 +890,68 @@ static void ati_remote_input_report(struct urb *urb)
 
 /*
  *	ati_remote_irq_in
+=======
+		if (index >= 0) {
+			input_event(dev, EV_KEY, ati_remote_tbl[index].code, 1);
+			input_event(dev, EV_KEY, ati_remote_tbl[index].code, 0);
+		} else {
+			/* Not a mouse event, hand it to rc-core. */
+			int count = 1;
+
+			if (wheel_keycode != KEY_RESERVED) {
+				/*
+				 * This is a scrollwheel event, send the
+				 * scroll up (0x78) / down (0x70) scancode
+				 * repeatedly as many times as indicated by
+				 * rest of the scancode.
+				 */
+				count = (scancode & 0x07) + 1;
+				scancode &= 0x78;
+			}
+
+			while (count--) {
+				/*
+				* We don't use the rc-core repeat handling yet as
+				* it would cause ghost repeats which would be a
+				* regression for this driver.
+				*/
+				rc_keydown_notimeout(ati_remote->rdev,
+						     RC_PROTO_OTHER,
+						     scancode, data[2]);
+				rc_keyup(ati_remote->rdev);
+			}
+			goto nosync;
+		}
+
+	} else if (ati_remote_tbl[index].kind == KIND_ACCEL) {
+		signed char dx = ati_remote_tbl[index].code >> 8;
+		signed char dy = ati_remote_tbl[index].code & 255;
+
+		/*
+		 * Other event kinds are from the directional control pad, and
+		 * have an acceleration factor applied to them.  Without this
+		 * acceleration, the control pad is mostly unusable.
+		 */
+		int acc = ati_remote_compute_accel(ati_remote);
+		if (dx)
+			input_report_rel(dev, REL_X, dx * acc);
+		if (dy)
+			input_report_rel(dev, REL_Y, dy * acc);
+		ati_remote->old_jiffies = jiffies;
+
+	} else {
+		dev_dbg(&ati_remote->interface->dev, "ati_remote kind=%d\n",
+			ati_remote_tbl[index].kind);
+		return;
+	}
+	input_sync(dev);
+nosync:
+	ati_remote->old_data = data[2];
+}
+
+/*
+ * ati_remote_irq_in
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void ati_remote_irq_in(struct urb *urb)
 {
@@ -618,22 +965,41 @@ static void ati_remote_irq_in(struct urb *urb)
 	case -ECONNRESET:	/* unlink */
 	case -ENOENT:
 	case -ESHUTDOWN:
+<<<<<<< HEAD
 		dev_dbg(&ati_remote->interface->dev, "%s: urb error status, unlink? \n",
 			__func__);
 		return;
 	default:		/* error */
 		dev_dbg(&ati_remote->interface->dev, "%s: Nonzero urb status %d\n",
+=======
+		dev_dbg(&ati_remote->interface->dev,
+			"%s: urb error status, unlink?\n",
+			__func__);
+		return;
+	default:		/* error */
+		dev_dbg(&ati_remote->interface->dev,
+			"%s: Nonzero urb status %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, urb->status);
 	}
 
 	retval = usb_submit_urb(urb, GFP_ATOMIC);
 	if (retval)
+<<<<<<< HEAD
 		dev_err(&ati_remote->interface->dev, "%s: usb_submit_urb()=%d\n",
+=======
+		dev_err(&ati_remote->interface->dev,
+			"%s: usb_submit_urb()=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, retval);
 }
 
 /*
+<<<<<<< HEAD
  *	ati_remote_alloc_buffers
+=======
+ * ati_remote_alloc_buffers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int ati_remote_alloc_buffers(struct usb_device *udev,
 				    struct ati_remote *ati_remote)
@@ -660,7 +1026,11 @@ static int ati_remote_alloc_buffers(struct usb_device *udev,
 }
 
 /*
+<<<<<<< HEAD
  *	ati_remote_free_buffers
+=======
+ * ati_remote_free_buffers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void ati_remote_free_buffers(struct ati_remote *ati_remote)
 {
@@ -684,8 +1054,14 @@ static void ati_remote_input_init(struct ati_remote *ati_remote)
 		BIT_MASK(BTN_RIGHT) | BIT_MASK(BTN_SIDE) | BIT_MASK(BTN_EXTRA);
 	idev->relbit[0] = BIT_MASK(REL_X) | BIT_MASK(REL_Y);
 	for (i = 0; ati_remote_tbl[i].kind != KIND_END; i++)
+<<<<<<< HEAD
 		if (ati_remote_tbl[i].type == EV_KEY)
 			set_bit(ati_remote_tbl[i].code, idev->keybit);
+=======
+		if (ati_remote_tbl[i].kind == KIND_LITERAL ||
+		    ati_remote_tbl[i].kind == KIND_FILTERED)
+			__set_bit(ati_remote_tbl[i].code, idev->keybit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_set_drvdata(idev, ati_remote);
 
@@ -704,14 +1080,22 @@ static void ati_remote_rc_init(struct ati_remote *ati_remote)
 	struct rc_dev *rdev = ati_remote->rdev;
 
 	rdev->priv = ati_remote;
+<<<<<<< HEAD
 	rdev->driver_type = RC_DRIVER_SCANCODE;
 	rdev->allowed_protos = RC_TYPE_OTHER;
+=======
+	rdev->allowed_protocols = RC_PROTO_BIT_OTHER;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->driver_name = "ati_remote";
 
 	rdev->open = ati_remote_rc_open;
 	rdev->close = ati_remote_rc_close;
 
+<<<<<<< HEAD
 	rdev->input_name = ati_remote->rc_name;
+=======
+	rdev->device_name = ati_remote->rc_name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->input_phys = ati_remote->rc_phys;
 
 	usb_to_input_id(ati_remote->udev, &rdev->input_id);
@@ -727,7 +1111,11 @@ static int ati_remote_initialize(struct ati_remote *ati_remote)
 
 	/* Set up irq_urb */
 	pipe = usb_rcvintpipe(udev, ati_remote->endpoint_in->bEndpointAddress);
+<<<<<<< HEAD
 	maxp = usb_maxpacket(udev, pipe, usb_pipeout(pipe));
+=======
+	maxp = usb_maxpacket(udev, pipe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	maxp = (maxp > DATA_BUFSIZE) ? DATA_BUFSIZE : maxp;
 
 	usb_fill_int_urb(ati_remote->irq_urb, udev, pipe, ati_remote->inbuf,
@@ -738,7 +1126,11 @@ static int ati_remote_initialize(struct ati_remote *ati_remote)
 
 	/* Set up out_urb */
 	pipe = usb_sndintpipe(udev, ati_remote->endpoint_out->bEndpointAddress);
+<<<<<<< HEAD
 	maxp = usb_maxpacket(udev, pipe, usb_pipeout(pipe));
+=======
+	maxp = usb_maxpacket(udev, pipe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	maxp = (maxp > DATA_BUFSIZE) ? DATA_BUFSIZE : maxp;
 
 	usb_fill_int_urb(ati_remote->out_urb, udev, pipe, ati_remote->outbuf,
@@ -759,20 +1151,38 @@ static int ati_remote_initialize(struct ati_remote *ati_remote)
 }
 
 /*
+<<<<<<< HEAD
  *	ati_remote_probe
  */
 static int ati_remote_probe(struct usb_interface *interface, const struct usb_device_id *id)
+=======
+ * ati_remote_probe
+ */
+static int ati_remote_probe(struct usb_interface *interface,
+	const struct usb_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_device *udev = interface_to_usbdev(interface);
 	struct usb_host_interface *iface_host = interface->cur_altsetting;
 	struct usb_endpoint_descriptor *endpoint_in, *endpoint_out;
+<<<<<<< HEAD
 	struct ati_remote *ati_remote;
 	struct input_dev *input_dev;
+=======
+	struct ati_receiver_type *type = (struct ati_receiver_type *)id->driver_info;
+	struct ati_remote *ati_remote;
+	struct input_dev *input_dev;
+	struct device *device = &interface->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rc_dev *rc_dev;
 	int err = -ENOMEM;
 
 	if (iface_host->desc.bNumEndpoints != 2) {
+<<<<<<< HEAD
 		err("%s: Unexpected desc.bNumEndpoints\n", __func__);
+=======
+		dev_err(device, "%s: Unexpected desc.bNumEndpoints\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -780,15 +1190,28 @@ static int ati_remote_probe(struct usb_interface *interface, const struct usb_de
 	endpoint_out = &iface_host->endpoint[1].desc;
 
 	if (!usb_endpoint_is_int_in(endpoint_in)) {
+<<<<<<< HEAD
 		err("%s: Unexpected endpoint_in\n", __func__);
 		return -ENODEV;
 	}
 	if (le16_to_cpu(endpoint_in->wMaxPacketSize) == 0) {
 		err("%s: endpoint_in message size==0? \n", __func__);
+=======
+		dev_err(device, "%s: Unexpected endpoint_in\n", __func__);
+		return -ENODEV;
+	}
+	if (le16_to_cpu(endpoint_in->wMaxPacketSize) == 0) {
+		dev_err(device, "%s: endpoint_in message size==0?\n", __func__);
+		return -ENODEV;
+	}
+	if (!usb_endpoint_is_int_out(endpoint_out)) {
+		dev_err(device, "%s: Unexpected endpoint_out\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
 	ati_remote = kzalloc(sizeof (struct ati_remote), GFP_KERNEL);
+<<<<<<< HEAD
 	rc_dev = rc_allocate_device();
 	if (!ati_remote || !rc_dev)
 		goto fail1;
@@ -796,6 +1219,15 @@ static int ati_remote_probe(struct usb_interface *interface, const struct usb_de
 	/* Allocate URB buffers, URBs */
 	if (ati_remote_alloc_buffers(udev, ati_remote))
 		goto fail2;
+=======
+	rc_dev = rc_allocate_device(RC_DRIVER_SCANCODE);
+	if (!ati_remote || !rc_dev)
+		goto exit_free_dev_rdev;
+
+	/* Allocate URB buffers, URBs */
+	if (ati_remote_alloc_buffers(udev, ati_remote))
+		goto exit_free_buffers;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ati_remote->endpoint_in = endpoint_in;
 	ati_remote->endpoint_out = endpoint_out;
@@ -804,12 +1236,17 @@ static int ati_remote_probe(struct usb_interface *interface, const struct usb_de
 	ati_remote->interface = interface;
 
 	usb_make_path(udev, ati_remote->rc_phys, sizeof(ati_remote->rc_phys));
+<<<<<<< HEAD
 	strlcpy(ati_remote->mouse_phys, ati_remote->rc_phys,
+=======
+	strscpy(ati_remote->mouse_phys, ati_remote->rc_phys,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(ati_remote->mouse_phys));
 
 	strlcat(ati_remote->rc_phys, "/input0", sizeof(ati_remote->rc_phys));
 	strlcat(ati_remote->mouse_phys, "/input1", sizeof(ati_remote->mouse_phys));
 
+<<<<<<< HEAD
 	if (udev->manufacturer)
 		strlcpy(ati_remote->rc_name, udev->manufacturer,
 			sizeof(ati_remote->rc_name));
@@ -817,6 +1254,12 @@ static int ati_remote_probe(struct usb_interface *interface, const struct usb_de
 	if (udev->product)
 		snprintf(ati_remote->rc_name, sizeof(ati_remote->rc_name),
 			 "%s %s", ati_remote->rc_name, udev->product);
+=======
+	snprintf(ati_remote->rc_name, sizeof(ati_remote->rc_name), "%s%s%s",
+		udev->manufacturer ?: "",
+		udev->manufacturer && udev->product ? " " : "",
+		udev->product ?: "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!strlen(ati_remote->rc_name))
 		snprintf(ati_remote->rc_name, sizeof(ati_remote->rc_name),
@@ -827,10 +1270,22 @@ static int ati_remote_probe(struct usb_interface *interface, const struct usb_de
 	snprintf(ati_remote->mouse_name, sizeof(ati_remote->mouse_name),
 		 "%s mouse", ati_remote->rc_name);
 
+<<<<<<< HEAD
 	if (id->driver_info)
 		rc_dev->map_name = (const char *)id->driver_info;
 	else
 		rc_dev->map_name = RC_MAP_ATI_X10;
+=======
+	rc_dev->map_name = RC_MAP_ATI_X10; /* default map */
+
+	/* set default keymap according to receiver model */
+	if (type) {
+		if (type->default_keymap)
+			rc_dev->map_name = type->default_keymap;
+		else if (type->get_default_keymap)
+			rc_dev->map_name = type->get_default_keymap(interface);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ati_remote_rc_init(ati_remote);
 	mutex_init(&ati_remote->open_mutex);
@@ -838,33 +1293,53 @@ static int ati_remote_probe(struct usb_interface *interface, const struct usb_de
 	/* Device Hardware Initialization - fills in ati_remote->idev from udev. */
 	err = ati_remote_initialize(ati_remote);
 	if (err)
+<<<<<<< HEAD
 		goto fail3;
+=======
+		goto exit_kill_urbs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set up and register rc device */
 	err = rc_register_device(ati_remote->rdev);
 	if (err)
+<<<<<<< HEAD
 		goto fail3;
 
 	/* use our delay for rc_dev */
 	ati_remote->rdev->input_dev->rep[REP_DELAY] = repeat_delay;
+=======
+		goto exit_kill_urbs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set up and register mouse input device */
 	if (mouse) {
 		input_dev = input_allocate_device();
+<<<<<<< HEAD
 		if (!input_dev)
 			goto fail4;
+=======
+		if (!input_dev) {
+			err = -ENOMEM;
+			goto exit_unregister_device;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ati_remote->idev = input_dev;
 		ati_remote_input_init(ati_remote);
 		err = input_register_device(input_dev);
 
 		if (err)
+<<<<<<< HEAD
 			goto fail5;
+=======
+			goto exit_free_input_device;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	usb_set_intfdata(interface, ati_remote);
 	return 0;
 
+<<<<<<< HEAD
  fail5:	input_free_device(input_dev);
  fail4:	rc_unregister_device(rc_dev);
 	rc_dev = NULL;
@@ -872,12 +1347,30 @@ static int ati_remote_probe(struct usb_interface *interface, const struct usb_de
 	usb_kill_urb(ati_remote->out_urb);
  fail2:	ati_remote_free_buffers(ati_remote);
  fail1:	rc_free_device(rc_dev);
+=======
+ exit_free_input_device:
+	input_free_device(input_dev);
+ exit_unregister_device:
+	rc_unregister_device(rc_dev);
+	rc_dev = NULL;
+ exit_kill_urbs:
+	usb_kill_urb(ati_remote->irq_urb);
+	usb_kill_urb(ati_remote->out_urb);
+ exit_free_buffers:
+	ati_remote_free_buffers(ati_remote);
+ exit_free_dev_rdev:
+	 rc_free_device(rc_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ati_remote);
 	return err;
 }
 
 /*
+<<<<<<< HEAD
  *	ati_remote_disconnect
+=======
+ * ati_remote_disconnect
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void ati_remote_disconnect(struct usb_interface *interface)
 {
@@ -899,6 +1392,17 @@ static void ati_remote_disconnect(struct usb_interface *interface)
 	kfree(ati_remote);
 }
 
+<<<<<<< HEAD
+=======
+/* usb specific object to register with the usb subsystem */
+static struct usb_driver ati_remote_driver = {
+	.name         = "ati_remote",
+	.probe        = ati_remote_probe,
+	.disconnect   = ati_remote_disconnect,
+	.id_table     = ati_remote_table,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_usb_driver(ati_remote_driver);
 
 MODULE_AUTHOR(DRIVER_AUTHOR);

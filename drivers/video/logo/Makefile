@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Makefile for the Linux logos
 
 obj-$(CONFIG_LOGO)			+= logo.o
 obj-$(CONFIG_LOGO_LINUX_MONO)		+= logo_linux_mono.o
 obj-$(CONFIG_LOGO_LINUX_VGA16)		+= logo_linux_vga16.o
 obj-$(CONFIG_LOGO_LINUX_CLUT224)	+= logo_linux_clut224.o
+<<<<<<< HEAD
 obj-$(CONFIG_LOGO_BLACKFIN_CLUT224)	+= logo_blackfin_clut224.o
 obj-$(CONFIG_LOGO_BLACKFIN_VGA16)	+= logo_blackfin_vga16.o
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_LOGO_DEC_CLUT224)		+= logo_dec_clut224.o
 obj-$(CONFIG_LOGO_MAC_CLUT224)		+= logo_mac_clut224.o
 obj-$(CONFIG_LOGO_PARISC_CLUT224)	+= logo_parisc_clut224.o
@@ -14,12 +21,16 @@ obj-$(CONFIG_LOGO_SUN_CLUT224)		+= logo_sun_clut224.o
 obj-$(CONFIG_LOGO_SUPERH_MONO)		+= logo_superh_mono.o
 obj-$(CONFIG_LOGO_SUPERH_VGA16)		+= logo_superh_vga16.o
 obj-$(CONFIG_LOGO_SUPERH_CLUT224)	+= logo_superh_clut224.o
+<<<<<<< HEAD
 obj-$(CONFIG_LOGO_M32R_CLUT224)		+= logo_m32r_clut224.o
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_SPU_BASE)			+= logo_spe_clut224.o
 
 # How to generate logo's
 
+<<<<<<< HEAD
 # Use logo-cfiles to retrieve list of .c files to be built
 logo-cfiles = $(notdir $(patsubst %.$(2), %.c, \
               $(wildcard $(srctree)/$(src)/*$(1).$(2))))
@@ -59,3 +70,22 @@ $(obj)/%_gray256.c: $(src)/%_gray256.pgm $(pnmtologo) FORCE
 
 # Files generated that shall be removed upon make clean
 clean-files := *.o *_mono.c *_vga16.c *_clut224.c *_gray256.c
+=======
+hostprogs := pnmtologo
+
+# Create commands like "pnmtologo -t mono -n logo_mac_mono -o ..."
+quiet_cmd_logo = LOGO    $@
+      cmd_logo = $(obj)/pnmtologo -t $(lastword $(subst _, ,$*)) -n $* -o $@ $<
+
+$(obj)/%.c: $(src)/%.pbm $(obj)/pnmtologo FORCE
+	$(call if_changed,logo)
+
+$(obj)/%.c: $(src)/%.ppm $(obj)/pnmtologo FORCE
+	$(call if_changed,logo)
+
+$(obj)/%.c: $(src)/%.pgm $(obj)/pnmtologo FORCE
+	$(call if_changed,logo)
+
+# generated C files
+targets += *_mono.c *_vga16.c *_clut224.c *_gray256.c
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_RCULIST_BL_H
 #define _LINUX_RCULIST_BL_H
 
@@ -20,6 +24,7 @@ static inline void hlist_bl_set_first_rcu(struct hlist_bl_head *h,
 static inline struct hlist_bl_node *hlist_bl_first_rcu(struct hlist_bl_head *h)
 {
 	return (struct hlist_bl_node *)
+<<<<<<< HEAD
 		((unsigned long)rcu_dereference(h->first) & ~LIST_BL_LOCKMASK);
 }
 
@@ -49,6 +54,9 @@ static inline void hlist_bl_del_init_rcu(struct hlist_bl_node *n)
 		__hlist_bl_del(n);
 		n->pprev = NULL;
 	}
+=======
+		((unsigned long)rcu_dereference_check(h->first, hlist_bl_is_locked(h)) & ~LIST_BL_LOCKMASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**

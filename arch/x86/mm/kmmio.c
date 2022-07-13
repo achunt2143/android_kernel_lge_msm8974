@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 /* Support for MMIO probes.
  * Benfit many code from kprobes
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* Support for MMIO probes.
+ * Benefit many code from kprobes
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * (C) 2002 Louis Zhuang <louis.zhuang@intel.com>.
  *     2007 Alexander Eichner
  *     2008 Pekka Paalanen <pq@iki.fi>
@@ -11,8 +17,12 @@
 #include <linux/rculist.h>
 #include <linux/spinlock.h>
 #include <linux/hash.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/uaccess.h>
 #include <linux/ptrace.h>
@@ -34,7 +44,11 @@
 struct kmmio_fault_page {
 	struct list_head list;
 	struct kmmio_fault_page *release_next;
+<<<<<<< HEAD
 	unsigned long page; /* location of the fault page */
+=======
+	unsigned long addr; /* the requested address */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pteval_t old_presence; /* page presence prior to arming */
 	bool armed;
 
@@ -62,7 +76,17 @@ struct kmmio_context {
 	int active;
 };
 
+<<<<<<< HEAD
 static DEFINE_SPINLOCK(kmmio_lock);
+=======
+/*
+ * The kmmio_lock is taken in int3 context, which is treated as NMI context.
+ * This causes lockdep to complain about it bein in both NMI and normal
+ * context. Hide it from lockdep, as it should not have any other locks
+ * taken under it, and this is only enabled for debugging mmio anyway.
+ */
+static arch_spinlock_t kmmio_lock = __ARCH_SPIN_LOCK_UNLOCKED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Protected by kmmio_lock */
 unsigned int kmmio_count;
@@ -71,9 +95,22 @@ unsigned int kmmio_count;
 static struct list_head kmmio_page_table[KMMIO_PAGE_TABLE_SIZE];
 static LIST_HEAD(kmmio_probes);
 
+<<<<<<< HEAD
 static struct list_head *kmmio_page_list(unsigned long page)
 {
 	return &kmmio_page_table[hash_long(page, KMMIO_PAGE_HASH_BITS)];
+=======
+static struct list_head *kmmio_page_list(unsigned long addr)
+{
+	unsigned int l;
+	pte_t *pte = lookup_address(addr, &l);
+
+	if (!pte)
+		return NULL;
+	addr &= page_level_mask(l);
+
+	return &kmmio_page_table[hash_long(addr, KMMIO_PAGE_HASH_BITS)];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Accessed per-cpu */
@@ -99,6 +136,7 @@ static struct kmmio_probe *get_kmmio_probe(unsigned long addr)
 }
 
 /* You must be holding RCU read lock. */
+<<<<<<< HEAD
 static struct kmmio_fault_page *get_kmmio_fault_page(unsigned long page)
 {
 	struct list_head *head;
@@ -108,6 +146,21 @@ static struct kmmio_fault_page *get_kmmio_fault_page(unsigned long page)
 	head = kmmio_page_list(page);
 	list_for_each_entry_rcu(f, head, list) {
 		if (f->page == page)
+=======
+static struct kmmio_fault_page *get_kmmio_fault_page(unsigned long addr)
+{
+	struct list_head *head;
+	struct kmmio_fault_page *f;
+	unsigned int l;
+	pte_t *pte = lookup_address(addr, &l);
+
+	if (!pte)
+		return NULL;
+	addr &= page_level_mask(l);
+	head = kmmio_page_list(addr);
+	list_for_each_entry_rcu(f, head, list) {
+		if (f->addr == addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return f;
 	}
 	return NULL;
@@ -115,6 +168,7 @@ static struct kmmio_fault_page *get_kmmio_fault_page(unsigned long page)
 
 static void clear_pmd_presence(pmd_t *pmd, bool clear, pmdval_t *old)
 {
+<<<<<<< HEAD
 	pmdval_t v = pmd_val(*pmd);
 	if (clear) {
 		*old = v & _PAGE_PRESENT;
@@ -122,26 +176,55 @@ static void clear_pmd_presence(pmd_t *pmd, bool clear, pmdval_t *old)
 	} else	/* presume this has been called with clear==true previously */
 		v |= *old;
 	set_pmd(pmd, __pmd(v));
+=======
+	pmd_t new_pmd;
+	pmdval_t v = pmd_val(*pmd);
+	if (clear) {
+		*old = v;
+		new_pmd = pmd_mkinvalid(*pmd);
+	} else {
+		/* Presume this has been called with clear==true previously */
+		new_pmd = __pmd(*old);
+	}
+	set_pmd(pmd, new_pmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void clear_pte_presence(pte_t *pte, bool clear, pteval_t *old)
 {
 	pteval_t v = pte_val(*pte);
 	if (clear) {
+<<<<<<< HEAD
 		*old = v & _PAGE_PRESENT;
 		v &= ~_PAGE_PRESENT;
 	} else	/* presume this has been called with clear==true previously */
 		v |= *old;
 	set_pte_atomic(pte, __pte(v));
+=======
+		*old = v;
+		/* Nothing should care about address */
+		pte_clear(&init_mm, 0, pte);
+	} else {
+		/* Presume this has been called with clear==true previously */
+		set_pte_atomic(pte, __pte(*old));
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int clear_page_presence(struct kmmio_fault_page *f, bool clear)
 {
 	unsigned int level;
+<<<<<<< HEAD
 	pte_t *pte = lookup_address(f->page, &level);
 
 	if (!pte) {
 		pr_err("no pte for page 0x%08lx\n", f->page);
+=======
+	pte_t *pte = lookup_address(f->addr, &level);
+
+	if (!pte) {
+		pr_err("no pte for addr 0x%08lx\n", f->addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -157,7 +240,11 @@ static int clear_page_presence(struct kmmio_fault_page *f, bool clear)
 		return -1;
 	}
 
+<<<<<<< HEAD
 	__flush_tlb_one(f->page);
+=======
+	flush_tlb_one_kernel(f->addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -177,12 +264,21 @@ static int arm_kmmio_fault_page(struct kmmio_fault_page *f)
 	int ret;
 	WARN_ONCE(f->armed, KERN_ERR pr_fmt("kmmio page already armed.\n"));
 	if (f->armed) {
+<<<<<<< HEAD
 		pr_warning("double-arm: page 0x%08lx, ref %d, old %d\n",
 			   f->page, f->count, !!f->old_presence);
 	}
 	ret = clear_page_presence(f, true);
 	WARN_ONCE(ret < 0, KERN_ERR pr_fmt("arming 0x%08lx failed.\n"),
 		  f->page);
+=======
+		pr_warn("double-arm: addr 0x%08lx, ref %d, old %d\n",
+			f->addr, f->count, !!f->old_presence);
+	}
+	ret = clear_page_presence(f, true);
+	WARN_ONCE(ret < 0, KERN_ERR pr_fmt("arming at 0x%08lx failed.\n"),
+		  f->addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	f->armed = true;
 	return ret;
 }
@@ -192,7 +288,11 @@ static void disarm_kmmio_fault_page(struct kmmio_fault_page *f)
 {
 	int ret = clear_page_presence(f, false);
 	WARN_ONCE(ret < 0,
+<<<<<<< HEAD
 			KERN_ERR "kmmio disarming 0x%08lx failed.\n", f->page);
+=======
+			KERN_ERR "kmmio disarming at 0x%08lx failed.\n", f->addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	f->armed = false;
 }
 
@@ -216,6 +316,7 @@ int kmmio_handler(struct pt_regs *regs, unsigned long addr)
 	struct kmmio_context *ctx;
 	struct kmmio_fault_page *faultpage;
 	int ret = 0; /* default to fault not handled */
+<<<<<<< HEAD
 
 	/*
 	 * Preemption is now disabled to prevent process switch during
@@ -229,6 +330,26 @@ int kmmio_handler(struct pt_regs *regs, unsigned long addr)
 	rcu_read_lock();
 
 	faultpage = get_kmmio_fault_page(addr);
+=======
+	unsigned long page_base = addr;
+	unsigned int l;
+	pte_t *pte = lookup_address(addr, &l);
+	if (!pte)
+		return -EINVAL;
+	page_base &= page_level_mask(l);
+
+	/*
+	 * Hold the RCU read lock over single stepping to avoid looking
+	 * up the probe and kmmio_fault_page again. The rcu_read_lock_sched()
+	 * also disables preemption and prevents process switch during
+	 * the single stepping. We can only handle one active kmmio trace
+	 * per cpu, so ensure that we finish it before something else
+	 * gets to run.
+	 */
+	rcu_read_lock_sched_notrace();
+
+	faultpage = get_kmmio_fault_page(page_base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!faultpage) {
 		/*
 		 * Either this page fault is not caused by kmmio, or
@@ -238,9 +359,15 @@ int kmmio_handler(struct pt_regs *regs, unsigned long addr)
 		goto no_kmmio;
 	}
 
+<<<<<<< HEAD
 	ctx = &get_cpu_var(kmmio_ctx);
 	if (ctx->active) {
 		if (addr == ctx->addr) {
+=======
+	ctx = this_cpu_ptr(&kmmio_ctx);
+	if (ctx->active) {
+		if (page_base == ctx->addr) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * A second fault on the same page means some other
 			 * condition needs handling by do_page_fault(), the
@@ -263,14 +390,24 @@ int kmmio_handler(struct pt_regs *regs, unsigned long addr)
 			pr_emerg("previous hit was at 0x%08lx.\n", ctx->addr);
 			disarm_kmmio_fault_page(faultpage);
 		}
+<<<<<<< HEAD
 		goto no_kmmio_ctx;
+=======
+		goto no_kmmio;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ctx->active++;
 
 	ctx->fpage = faultpage;
+<<<<<<< HEAD
 	ctx->probe = get_kmmio_probe(addr);
 	ctx->saved_flags = (regs->flags & (X86_EFLAGS_TF | X86_EFLAGS_IF));
 	ctx->addr = addr;
+=======
+	ctx->probe = get_kmmio_probe(page_base);
+	ctx->saved_flags = (regs->flags & (X86_EFLAGS_TF | X86_EFLAGS_IF));
+	ctx->addr = page_base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ctx->probe && ctx->probe->pre_handler)
 		ctx->probe->pre_handler(ctx->probe, regs, addr);
@@ -292,6 +429,7 @@ int kmmio_handler(struct pt_regs *regs, unsigned long addr)
 	 * the user should drop to single cpu before tracing.
 	 */
 
+<<<<<<< HEAD
 	put_cpu_var(kmmio_ctx);
 	return 1; /* fault handled */
 
@@ -300,6 +438,12 @@ no_kmmio_ctx:
 no_kmmio:
 	rcu_read_unlock();
 	preempt_enable_no_resched();
+=======
+	return 1; /* fault handled */
+
+no_kmmio:
+	rcu_read_unlock_sched_notrace();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -311,7 +455,11 @@ no_kmmio:
 static int post_kmmio_handler(unsigned long condition, struct pt_regs *regs)
 {
 	int ret = 0;
+<<<<<<< HEAD
 	struct kmmio_context *ctx = &get_cpu_var(kmmio_ctx);
+=======
+	struct kmmio_context *ctx = this_cpu_ptr(&kmmio_ctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ctx->active) {
 		/*
@@ -319,8 +467,12 @@ static int post_kmmio_handler(unsigned long condition, struct pt_regs *regs)
 		 * something external causing them (f.e. using a debugger while
 		 * mmio tracing enabled), or erroneous behaviour
 		 */
+<<<<<<< HEAD
 		pr_warning("unexpected debug trap on CPU %d.\n",
 			   smp_processor_id());
+=======
+		pr_warn("unexpected debug trap on CPU %d.\n", smp_processor_id());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -328,10 +480,17 @@ static int post_kmmio_handler(unsigned long condition, struct pt_regs *regs)
 		ctx->probe->post_handler(ctx->probe, condition, regs);
 
 	/* Prevent racing against release_kmmio_fault_page(). */
+<<<<<<< HEAD
 	spin_lock(&kmmio_lock);
 	if (ctx->fpage->count)
 		arm_kmmio_fault_page(ctx->fpage);
 	spin_unlock(&kmmio_lock);
+=======
+	arch_spin_lock(&kmmio_lock);
+	if (ctx->fpage->count)
+		arm_kmmio_fault_page(ctx->fpage);
+	arch_spin_unlock(&kmmio_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	regs->flags &= ~X86_EFLAGS_TF;
 	regs->flags |= ctx->saved_flags;
@@ -339,8 +498,12 @@ static int post_kmmio_handler(unsigned long condition, struct pt_regs *regs)
 	/* These were acquired in kmmio_handler(). */
 	ctx->active--;
 	BUG_ON(ctx->active);
+<<<<<<< HEAD
 	rcu_read_unlock();
 	preempt_enable_no_resched();
+=======
+	rcu_read_unlock_sched_notrace();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * if somebody else is singlestepping across a probe point, flags
@@ -350,17 +513,28 @@ static int post_kmmio_handler(unsigned long condition, struct pt_regs *regs)
 	if (!(regs->flags & X86_EFLAGS_TF))
 		ret = 1;
 out:
+<<<<<<< HEAD
 	put_cpu_var(kmmio_ctx);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /* You must be holding kmmio_lock. */
+<<<<<<< HEAD
 static int add_kmmio_fault_page(unsigned long page)
 {
 	struct kmmio_fault_page *f;
 
 	page &= PAGE_MASK;
 	f = get_kmmio_fault_page(page);
+=======
+static int add_kmmio_fault_page(unsigned long addr)
+{
+	struct kmmio_fault_page *f;
+
+	f = get_kmmio_fault_page(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (f) {
 		if (!f->count)
 			arm_kmmio_fault_page(f);
@@ -373,26 +547,42 @@ static int add_kmmio_fault_page(unsigned long page)
 		return -1;
 
 	f->count = 1;
+<<<<<<< HEAD
 	f->page = page;
+=======
+	f->addr = addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (arm_kmmio_fault_page(f)) {
 		kfree(f);
 		return -1;
 	}
 
+<<<<<<< HEAD
 	list_add_rcu(&f->list, kmmio_page_list(f->page));
+=======
+	list_add_rcu(&f->list, kmmio_page_list(f->addr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /* You must be holding kmmio_lock. */
+<<<<<<< HEAD
 static void release_kmmio_fault_page(unsigned long page,
+=======
+static void release_kmmio_fault_page(unsigned long addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct kmmio_fault_page **release_list)
 {
 	struct kmmio_fault_page *f;
 
+<<<<<<< HEAD
 	page &= PAGE_MASK;
 	f = get_kmmio_fault_page(page);
+=======
+	f = get_kmmio_fault_page(addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!f)
 		return;
 
@@ -420,6 +610,7 @@ int register_kmmio_probe(struct kmmio_probe *p)
 	unsigned long flags;
 	int ret = 0;
 	unsigned long size = 0;
+<<<<<<< HEAD
 	const unsigned long size_lim = p->len + (p->addr & ~PAGE_MASK);
 
 	spin_lock_irqsave(&kmmio_lock, flags);
@@ -436,6 +627,37 @@ int register_kmmio_probe(struct kmmio_probe *p)
 	}
 out:
 	spin_unlock_irqrestore(&kmmio_lock, flags);
+=======
+	unsigned long addr = p->addr & PAGE_MASK;
+	const unsigned long size_lim = p->len + (p->addr & ~PAGE_MASK);
+	unsigned int l;
+	pte_t *pte;
+
+	local_irq_save(flags);
+	arch_spin_lock(&kmmio_lock);
+	if (get_kmmio_probe(addr)) {
+		ret = -EEXIST;
+		goto out;
+	}
+
+	pte = lookup_address(addr, &l);
+	if (!pte) {
+		ret = -EINVAL;
+		goto out;
+	}
+
+	kmmio_count++;
+	list_add_rcu(&p->list, &kmmio_probes);
+	while (size < size_lim) {
+		if (add_kmmio_fault_page(addr + size))
+			pr_err("Unable to set page fault.\n");
+		size += page_level_size(l);
+	}
+out:
+	arch_spin_unlock(&kmmio_lock);
+	local_irq_restore(flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * XXX: What should I do here?
 	 * Here was a call to global_flush_tlb(), but it does not exist
@@ -469,7 +691,12 @@ static void remove_kmmio_fault_pages(struct rcu_head *head)
 	struct kmmio_fault_page **prevp = &dr->release_list;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&kmmio_lock, flags);
+=======
+	local_irq_save(flags);
+	arch_spin_lock(&kmmio_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (f) {
 		if (!f->count) {
 			list_del_rcu(&f->list);
@@ -481,7 +708,12 @@ static void remove_kmmio_fault_pages(struct rcu_head *head)
 		}
 		f = *prevp;
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&kmmio_lock, flags);
+=======
+	arch_spin_unlock(&kmmio_lock);
+	local_irq_restore(flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This is the real RCU destroy call. */
 	call_rcu(&dr->rcu, rcu_free_kmmio_fault_pages);
@@ -504,6 +736,7 @@ void unregister_kmmio_probe(struct kmmio_probe *p)
 {
 	unsigned long flags;
 	unsigned long size = 0;
+<<<<<<< HEAD
 	const unsigned long size_lim = p->len + (p->addr & ~PAGE_MASK);
 	struct kmmio_fault_page *release_list = NULL;
 	struct kmmio_delayed_release *drelease;
@@ -516,6 +749,29 @@ void unregister_kmmio_probe(struct kmmio_probe *p)
 	list_del_rcu(&p->list);
 	kmmio_count--;
 	spin_unlock_irqrestore(&kmmio_lock, flags);
+=======
+	unsigned long addr = p->addr & PAGE_MASK;
+	const unsigned long size_lim = p->len + (p->addr & ~PAGE_MASK);
+	struct kmmio_fault_page *release_list = NULL;
+	struct kmmio_delayed_release *drelease;
+	unsigned int l;
+	pte_t *pte;
+
+	pte = lookup_address(addr, &l);
+	if (!pte)
+		return;
+
+	local_irq_save(flags);
+	arch_spin_lock(&kmmio_lock);
+	while (size < size_lim) {
+		release_kmmio_fault_page(addr + size, &release_list);
+		size += page_level_size(l);
+	}
+	list_del_rcu(&p->list);
+	kmmio_count--;
+	arch_spin_unlock(&kmmio_lock);
+	local_irq_restore(flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!release_list)
 		return;

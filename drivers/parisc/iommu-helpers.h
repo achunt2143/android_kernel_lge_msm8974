@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/prefetch.h>
 
 /**
@@ -13,13 +17,21 @@
 static inline unsigned int
 iommu_fill_pdir(struct ioc *ioc, struct scatterlist *startsg, int nents, 
 		unsigned long hint,
+<<<<<<< HEAD
 		void (*iommu_io_pdir_entry)(u64 *, space_t, unsigned long,
+=======
+		void (*iommu_io_pdir_entry)(__le64 *, space_t, unsigned long,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    unsigned long))
 {
 	struct scatterlist *dma_sg = startsg;	/* pointer to current DMA */
 	unsigned int n_mappings = 0;
 	unsigned long dma_offset = 0, dma_len = 0;
+<<<<<<< HEAD
 	u64 *pdirp = NULL;
+=======
+	__le64 *pdirp = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Horrible hack.  For efficiency's sake, dma_sg starts one 
 	 * entry below the true start (it is immediately incremented
@@ -30,9 +42,15 @@ iommu_fill_pdir(struct ioc *ioc, struct scatterlist *startsg, int nents,
 		unsigned long vaddr;
 		long size;
 
+<<<<<<< HEAD
 		DBG_RUN_SG(" %d : %08lx/%05x %08lx/%05x\n", nents,
 			   (unsigned long)sg_dma_address(startsg), cnt,
 			   sg_virt_addr(startsg), startsg->length
+=======
+		DBG_RUN_SG(" %d : %08lx %p/%05x\n", nents,
+			   (unsigned long)sg_dma_address(startsg),
+			   sg_virt(startsg), startsg->length
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		);
 
 
@@ -66,7 +84,11 @@ iommu_fill_pdir(struct ioc *ioc, struct scatterlist *startsg, int nents,
 		
 		BUG_ON(pdirp == NULL);
 		
+<<<<<<< HEAD
 		vaddr = sg_virt_addr(startsg);
+=======
+		vaddr = (unsigned long)sg_virt(startsg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sg_dma_len(dma_sg) += startsg->length;
 		size = startsg->length + dma_offset;
 		dma_offset = 0;
@@ -117,7 +139,11 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 		*/
 		contig_sg = startsg;
 		dma_len = startsg->length;
+<<<<<<< HEAD
 		dma_offset = sg_virt_addr(startsg) & ~IOVP_MASK;
+=======
+		dma_offset = startsg->offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* PARANOID: clear entries */
 		sg_dma_address(startsg) = 0;
@@ -128,6 +154,7 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 		** it's always looking one "ahead".
 		*/
 		while(--nents > 0) {
+<<<<<<< HEAD
 			unsigned long prevstartsg_end, startsg_end;
 
 			prevstartsg_end = sg_virt_addr(startsg) +
@@ -136,6 +163,15 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 			startsg++;
 			startsg_end = sg_virt_addr(startsg) + 
 				startsg->length;
+=======
+			unsigned long prev_end, sg_start;
+
+			prev_end = (unsigned long)sg_virt(startsg) +
+							startsg->length;
+
+			startsg++;
+			sg_start = (unsigned long)sg_virt(startsg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* PARANOID: clear entries */
 			sg_dma_address(startsg) = 0;
@@ -151,10 +187,20 @@ iommu_coalesce_chunks(struct ioc *ioc, struct device *dev,
 				break;
 
 			/*
+<<<<<<< HEAD
 			** Next see if we can append the next chunk (i.e.
 			** it must end on one page and begin on another
 			*/
 			if (unlikely(((prevstartsg_end | sg_virt_addr(startsg)) & ~PAGE_MASK) != 0))
+=======
+			* Next see if we can append the next chunk (i.e.
+			* it must end on one page and begin on another, or
+			* it must start on the same address as the previous
+			* entry ended.
+			*/
+			if (unlikely((prev_end != sg_start) ||
+				((prev_end | sg_start) & ~PAGE_MASK)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			
 			dma_len += startsg->length;

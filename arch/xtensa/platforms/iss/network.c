@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * arch/xtensa/platforms/iss/network.c
@@ -8,6 +12,7 @@
  * Based on work form the UML team.
  *
  * Copyright 2005 Tensilica Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
@@ -16,6 +21,12 @@
  *
  */
 
+=======
+ */
+
+#define pr_fmt(fmt) "%s: " fmt, __func__
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/irq.h>
 #include <linux/spinlock.h>
@@ -28,7 +39,11 @@
 #include <linux/etherdevice.h>
 #include <linux/interrupt.h>
 #include <linux/ioctl.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ethtool.h>
 #include <linux/rtnetlink.h>
 #include <linux/platform_device.h>
@@ -38,6 +53,7 @@
 #define DRIVER_NAME "iss-netdev"
 #define ETH_MAX_PACKET 1500
 #define ETH_HEADER_OTHER 14
+<<<<<<< HEAD
 #define ISS_NET_TIMER_VALUE (2 * HZ)
 
 
@@ -46,6 +62,9 @@ static LIST_HEAD(opened);
 
 static DEFINE_SPINLOCK(devices_lock);
 static LIST_HEAD(devices);
+=======
+#define ISS_NET_TIMER_VALUE (HZ / 10)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ------------------------------------------------------------------------- */
 
@@ -56,14 +75,18 @@ static LIST_HEAD(devices);
 
 struct tuntap_info {
 	char dev_name[IFNAMSIZ];
+<<<<<<< HEAD
 	int fixed_config;
 	unsigned char gw[ETH_ALEN];
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int fd;
 };
 
 /* ------------------------------------------------------------------------- */
 
 
+<<<<<<< HEAD
 /* This structure contains out private information for the driver. */
 
 struct iss_net_private {
@@ -71,11 +94,31 @@ struct iss_net_private {
 	struct list_head device_list;
 	struct list_head opened_list;
 
+=======
+struct iss_net_private;
+
+struct iss_net_ops {
+	int (*open)(struct iss_net_private *lp);
+	void (*close)(struct iss_net_private *lp);
+	int (*read)(struct iss_net_private *lp, struct sk_buff **skb);
+	int (*write)(struct iss_net_private *lp, struct sk_buff **skb);
+	unsigned short (*protocol)(struct sk_buff *skb);
+	int (*poll)(struct iss_net_private *lp);
+};
+
+/* This structure contains out private information for the driver. */
+
+struct iss_net_private {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t lock;
 	struct net_device *dev;
 	struct platform_device pdev;
 	struct timer_list tl;
+<<<<<<< HEAD
 	struct net_device_stats stats;
+=======
+	struct rtnl_link_stats64 stats;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct timer_list timer;
 	unsigned int timer_val;
@@ -83,24 +126,32 @@ struct iss_net_private {
 	int index;
 	int mtu;
 
+<<<<<<< HEAD
 	unsigned char mac[ETH_ALEN];
 	int have_mac;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		union {
 			struct tuntap_info tuntap;
 		} info;
 
+<<<<<<< HEAD
 		int (*open)(struct iss_net_private *lp);
 		void (*close)(struct iss_net_private *lp);
 		int (*read)(struct iss_net_private *lp, struct sk_buff **skb);
 		int (*write)(struct iss_net_private *lp, struct sk_buff **skb);
 		unsigned short (*protocol)(struct sk_buff *skb);
 		int (*poll)(struct iss_net_private *lp);
+=======
+		const struct iss_net_ops *net_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} tp;
 
 };
 
+<<<<<<< HEAD
 /* ======================= ISS SIMCALL INTERFACE =========================== */
 
 /* Note: __simc must _not_ be declared inline! */
@@ -150,6 +201,8 @@ static int inline simc_poll(int fd)
 	return __simc(SYS_select_one, fd, XTISS_SELECT_ONE_READ, (int)&tv,0,0);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ================================ HELPERS ================================ */
 
 
@@ -160,6 +213,7 @@ static char *split_if_spec(char *str, ...)
 
 	va_start(ap, str);
 	while ((arg = va_arg(ap, char**)) != NULL) {
+<<<<<<< HEAD
 		if (*str == '\0')
 			return NULL;
 		end = strchr(str, ',');
@@ -168,12 +222,27 @@ static char *split_if_spec(char *str, ...)
 		if (end == NULL)
 			return NULL;
 		*end ++ = '\0';
+=======
+		if (*str == '\0') {
+			va_end(ap);
+			return NULL;
+		}
+		end = strchr(str, ',');
+		if (end != str)
+			*arg = str;
+		if (end == NULL) {
+			va_end(ap);
+			return NULL;
+		}
+		*end++ = '\0';
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		str = end;
 	}
 	va_end(ap);
 	return str;
 }
 
+<<<<<<< HEAD
 
 #if 0
 /* Adjust SKB. */
@@ -228,6 +297,43 @@ static void inline set_ether_mac(void *d, unsigned char *addr)
 	memcpy(dev->dev_addr, addr, ETH_ALEN);
 }
 
+=======
+/* Set Ethernet address of the specified device. */
+
+static void setup_etheraddr(struct net_device *dev, char *str)
+{
+	u8 addr[ETH_ALEN];
+
+	if (str == NULL)
+		goto random;
+
+	if (!mac_pton(str, addr)) {
+		pr_err("%s: failed to parse '%s' as an ethernet address\n",
+		       dev->name, str);
+		goto random;
+	}
+	if (is_multicast_ether_addr(addr)) {
+		pr_err("%s: attempt to assign a multicast ethernet address\n",
+		       dev->name);
+		goto random;
+	}
+	if (!is_valid_ether_addr(addr)) {
+		pr_err("%s: attempt to assign an invalid ethernet address\n",
+		       dev->name);
+		goto random;
+	}
+	if (!is_local_ether_addr(addr))
+		pr_warn("%s: assigning a globally valid ethernet address\n",
+			dev->name);
+	eth_hw_addr_set(dev, addr);
+	return;
+
+random:
+	pr_info("%s: choosing a random ethernet address\n",
+		dev->name);
+	eth_hw_addr_random(dev);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ======================= TUNTAP TRANSPORT INTERFACE ====================== */
 
@@ -238,6 +344,7 @@ static int tuntap_open(struct iss_net_private *lp)
 	int err = -EINVAL;
 	int fd;
 
+<<<<<<< HEAD
 	/* We currently only support a fixed configuration. */
 
 	if (!lp->tp.info.tuntap.fixed_config)
@@ -256,6 +363,23 @@ static int tuntap_open(struct iss_net_private *lp)
 	if ((err = simc_ioctl(fd, TUNSETIFF, (void*) &ifr)) < 0) {
 		printk("Failed to set interface, returned %d "
 		       "(errno = %d)\n", err, errno);
+=======
+	fd = simc_open("/dev/net/tun", 02, 0); /* O_RDWR */
+	if (fd < 0) {
+		pr_err("%s: failed to open /dev/net/tun, returned %d (errno = %d)\n",
+		       lp->dev->name, fd, errno);
+		return fd;
+	}
+
+	memset(&ifr, 0, sizeof(ifr));
+	ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
+	strscpy(ifr.ifr_name, dev_name, sizeof(ifr.ifr_name));
+
+	err = simc_ioctl(fd, TUNSETIFF, &ifr);
+	if (err < 0) {
+		pr_err("%s: failed to set interface %s, returned %d (errno = %d)\n",
+		       lp->dev->name, dev_name, err, errno);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		simc_close(fd);
 		return err;
 	}
@@ -266,14 +390,18 @@ static int tuntap_open(struct iss_net_private *lp)
 
 static void tuntap_close(struct iss_net_private *lp)
 {
+<<<<<<< HEAD
 #if 0
 	if (lp->tp.info.tuntap.fixed_config)
 		iter_addresses(lp->tp.info.tuntap.dev, close_addr, lp->host.dev_name);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	simc_close(lp->tp.info.tuntap.fd);
 	lp->tp.info.tuntap.fd = -1;
 }
 
+<<<<<<< HEAD
 static int tuntap_read (struct iss_net_private *lp, struct sk_buff **skb)
 {
 #if 0
@@ -282,16 +410,28 @@ static int tuntap_read (struct iss_net_private *lp, struct sk_buff **skb)
 		return -ENOMEM;
 #endif
 
+=======
+static int tuntap_read(struct iss_net_private *lp, struct sk_buff **skb)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return simc_read(lp->tp.info.tuntap.fd,
 			(*skb)->data, (*skb)->dev->mtu + ETH_HEADER_OTHER);
 }
 
+<<<<<<< HEAD
 static int tuntap_write (struct iss_net_private *lp, struct sk_buff **skb)
+=======
+static int tuntap_write(struct iss_net_private *lp, struct sk_buff **skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return simc_write(lp->tp.info.tuntap.fd, (*skb)->data, (*skb)->len);
 }
 
+<<<<<<< HEAD
 unsigned short tuntap_protocol(struct sk_buff *skb)
+=======
+static unsigned short tuntap_protocol(struct sk_buff *skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return eth_type_trans(skb, skb->dev);
 }
@@ -301,18 +441,37 @@ static int tuntap_poll(struct iss_net_private *lp)
 	return simc_poll(lp->tp.info.tuntap.fd);
 }
 
+<<<<<<< HEAD
 /*
  * Currently only a device name is supported.
  * ethX=tuntap[,[mac address][,[device name]]]
+=======
+static const struct iss_net_ops tuntap_ops = {
+	.open		= tuntap_open,
+	.close		= tuntap_close,
+	.read		= tuntap_read,
+	.write		= tuntap_write,
+	.protocol	= tuntap_protocol,
+	.poll		= tuntap_poll,
+};
+
+/*
+ * ethX=tuntap,[mac address],device name
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static int tuntap_probe(struct iss_net_private *lp, int index, char *init)
 {
+<<<<<<< HEAD
 	const int len = strlen(TRANSPORT_TUNTAP_NAME);
+=======
+	struct net_device *dev = lp->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *dev_name = NULL, *mac_str = NULL, *rem = NULL;
 
 	/* Transport should be 'tuntap': ethX=tuntap,mac,dev_name */
 
+<<<<<<< HEAD
 	if (strncmp(init, TRANSPORT_TUNTAP_NAME, len))
 		return 0;
 
@@ -357,6 +516,40 @@ static int tuntap_probe(struct iss_net_private *lp, int index, char *init)
 		printk("IP = %s", lp->host.gate_addr);
 #endif
 	printk("\n");
+=======
+	if (strncmp(init, TRANSPORT_TUNTAP_NAME,
+		    sizeof(TRANSPORT_TUNTAP_NAME) - 1))
+		return 0;
+
+	init += sizeof(TRANSPORT_TUNTAP_NAME) - 1;
+	if (*init == ',') {
+		rem = split_if_spec(init + 1, &mac_str, &dev_name, NULL);
+		if (rem != NULL) {
+			pr_err("%s: extra garbage on specification : '%s'\n",
+			       dev->name, rem);
+			return 0;
+		}
+	} else if (*init != '\0') {
+		pr_err("%s: invalid argument: %s. Skipping device!\n",
+		       dev->name, init);
+		return 0;
+	}
+
+	if (!dev_name) {
+		pr_err("%s: missing tuntap device name\n", dev->name);
+		return 0;
+	}
+
+	strscpy(lp->tp.info.tuntap.dev_name, dev_name,
+		sizeof(lp->tp.info.tuntap.dev_name));
+
+	setup_etheraddr(dev, mac_str);
+
+	lp->mtu = TRANSPORT_TUNTAP_MTU;
+
+	lp->tp.info.tuntap.fd = -1;
+	lp->tp.net_ops = &tuntap_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
@@ -371,13 +564,25 @@ static int iss_net_rx(struct net_device *dev)
 
 	/* Check if there is any new data. */
 
+<<<<<<< HEAD
 	if (lp->tp.poll(lp) == 0)
+=======
+	if (lp->tp.net_ops->poll(lp) == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* Try to allocate memory, if it fails, try again next round. */
 
+<<<<<<< HEAD
 	if ((skb = dev_alloc_skb(dev->mtu + 2 + ETH_HEADER_OTHER)) == NULL) {
 		lp->stats.rx_dropped++;
+=======
+	skb = dev_alloc_skb(dev->mtu + 2 + ETH_HEADER_OTHER);
+	if (skb == NULL) {
+		spin_lock_bh(&lp->lock);
+		lp->stats.rx_dropped++;
+		spin_unlock_bh(&lp->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -387,23 +592,38 @@ static int iss_net_rx(struct net_device *dev)
 
 	skb->dev = dev;
 	skb_reset_mac_header(skb);
+<<<<<<< HEAD
 	pkt_len = lp->tp.read(lp, &skb);
+=======
+	pkt_len = lp->tp.net_ops->read(lp, &skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_put(skb, pkt_len);
 
 	if (pkt_len > 0) {
 		skb_trim(skb, pkt_len);
+<<<<<<< HEAD
 		skb->protocol = lp->tp.protocol(skb);
 
 		lp->stats.rx_bytes += skb->len;
 		lp->stats.rx_packets++;
 	//	netif_rx(skb);
 		netif_rx_ni(skb);
+=======
+		skb->protocol = lp->tp.net_ops->protocol(skb);
+
+		spin_lock_bh(&lp->lock);
+		lp->stats.rx_bytes += skb->len;
+		lp->stats.rx_packets++;
+		spin_unlock_bh(&lp->lock);
+		netif_rx(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return pkt_len;
 	}
 	kfree_skb(skb);
 	return pkt_len;
 }
 
+<<<<<<< HEAD
 static int iss_net_poll(void)
 {
 	struct list_head *ele;
@@ -436,10 +656,31 @@ static int iss_net_poll(void)
 	}
 
 	spin_unlock(&opened_lock);
+=======
+static int iss_net_poll(struct iss_net_private *lp)
+{
+	int err, ret = 0;
+
+	if (!netif_running(lp->dev))
+		return 0;
+
+	while ((err = iss_net_rx(lp->dev)) > 0)
+		ret++;
+
+	if (err < 0) {
+		pr_err("Device '%s' read returned %d, shutting it down\n",
+		       lp->dev->name, err);
+		dev_close(lp->dev);
+	} else {
+		/* FIXME reactivate_fd(lp->fd, ISS_ETH_IRQ); */
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 
+<<<<<<< HEAD
 static void iss_net_timer(unsigned long priv)
 {
 	struct iss_net_private* lp = (struct iss_net_private*) priv;
@@ -451,12 +692,21 @@ static void iss_net_timer(unsigned long priv)
 	mod_timer(&lp->timer, jiffies + lp->timer_val);
 
 	spin_unlock(&lp->lock);
+=======
+static void iss_net_timer(struct timer_list *t)
+{
+	struct iss_net_private *lp = from_timer(lp, t, timer);
+
+	iss_net_poll(lp);
+	mod_timer(&lp->timer, jiffies + lp->timer_val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static int iss_net_open(struct net_device *dev)
 {
 	struct iss_net_private *lp = netdev_priv(dev);
+<<<<<<< HEAD
 	char addr[sizeof "255.255.255.255\0"];
 	int err;
 
@@ -469,6 +719,13 @@ static int iss_net_open(struct net_device *dev)
 		dev_ip_addr(dev, addr, &lp->mac[2]);
 		set_ether_mac(dev, lp->mac);
 	}
+=======
+	int err;
+
+	err = lp->tp.net_ops->open(lp);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_start_queue(dev);
 
@@ -479,6 +736,7 @@ static int iss_net_open(struct net_device *dev)
 	while ((err = iss_net_rx(dev)) > 0)
 		;
 
+<<<<<<< HEAD
 	spin_lock(&opened_lock);
 	list_add(&lp->opened_list, &opened);
 	spin_unlock(&opened_lock);
@@ -491,12 +749,19 @@ static int iss_net_open(struct net_device *dev)
 
 out:
 	spin_unlock(&lp->lock);
+=======
+	timer_setup(&lp->timer, iss_net_timer, 0);
+	lp->timer_val = ISS_NET_TIMER_VALUE;
+	mod_timer(&lp->timer, jiffies + lp->timer_val);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static int iss_net_close(struct net_device *dev)
 {
 	struct iss_net_private *lp = netdev_priv(dev);
+<<<<<<< HEAD
 printk("iss_net_close!\n");
 	netif_stop_queue(dev);
 	spin_lock(&lp->lock);
@@ -510,12 +775,20 @@ printk("iss_net_close!\n");
 	lp->tp.close(lp);
 
 	spin_unlock(&lp->lock);
+=======
+
+	netif_stop_queue(dev);
+	del_timer_sync(&lp->timer);
+	lp->tp.net_ops->close(lp);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int iss_net_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct iss_net_private *lp = netdev_priv(dev);
+<<<<<<< HEAD
 	unsigned long flags;
 	int len;
 
@@ -528,6 +801,20 @@ static int iss_net_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		lp->stats.tx_packets++;
 		lp->stats.tx_bytes += skb->len;
 		dev->trans_start = jiffies;
+=======
+	int len;
+
+	netif_stop_queue(dev);
+
+	len = lp->tp.net_ops->write(lp, &skb);
+
+	if (len == skb->len) {
+		spin_lock_bh(&lp->lock);
+		lp->stats.tx_packets++;
+		lp->stats.tx_bytes += skb->len;
+		spin_unlock_bh(&lp->lock);
+		netif_trans_update(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_start_queue(dev);
 
 		/* this is normally done in the interrupt when tx finishes */
@@ -535,6 +822,7 @@ static int iss_net_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	} else if (len == 0) {
 		netif_start_queue(dev);
+<<<<<<< HEAD
 		lp->stats.tx_dropped++;
 
 	} else {
@@ -543,20 +831,43 @@ static int iss_net_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	spin_unlock_irqrestore(&lp->lock, flags);
+=======
+		spin_lock_bh(&lp->lock);
+		lp->stats.tx_dropped++;
+		spin_unlock_bh(&lp->lock);
+
+	} else {
+		netif_start_queue(dev);
+		pr_err("%s: %s failed(%d)\n", dev->name, __func__, len);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_kfree_skb(skb);
 	return NETDEV_TX_OK;
 }
 
 
+<<<<<<< HEAD
 static struct net_device_stats *iss_net_get_stats(struct net_device *dev)
 {
 	struct iss_net_private *lp = netdev_priv(dev);
 	return &lp->stats;
+=======
+static void iss_net_get_stats64(struct net_device *dev,
+				struct rtnl_link_stats64 *stats)
+{
+	struct iss_net_private *lp = netdev_priv(dev);
+
+	spin_lock_bh(&lp->lock);
+	*stats = lp->stats;
+	spin_unlock_bh(&lp->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void iss_net_set_multicast_list(struct net_device *dev)
 {
+<<<<<<< HEAD
 #if 0
 	if (dev->flags & IFF_PROMISC)
 		return;
@@ -587,10 +898,17 @@ static int iss_net_set_mac(struct net_device *dev, void *addr)
 #endif
 
 	return 0;
+=======
+}
+
+static void iss_net_tx_timeout(struct net_device *dev, unsigned int txqueue)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int iss_net_change_mtu(struct net_device *dev, int new_mtu)
 {
+<<<<<<< HEAD
 #if 0
 	struct iss_net_private *lp = netdev_priv(dev);
 	int err = 0;
@@ -611,6 +929,12 @@ static int iss_net_change_mtu(struct net_device *dev, int new_mtu)
 }
 
 void iss_net_user_timer_expire(unsigned long _conn)
+=======
+	return -EINVAL;
+}
+
+static void iss_net_user_timer_expire(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
@@ -626,16 +950,25 @@ static int driver_registered;
 static const struct net_device_ops iss_netdev_ops = {
 	.ndo_open		= iss_net_open,
 	.ndo_stop		= iss_net_close,
+<<<<<<< HEAD
 	.ndo_get_stats		= iss_net_get_stats,
 	.ndo_start_xmit		= iss_net_start_xmit,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_change_mtu		= iss_net_change_mtu,
 	.ndo_set_mac_address	= iss_net_set_mac,
 	//.ndo_do_ioctl		= iss_net_ioctl,
+=======
+	.ndo_get_stats64	= iss_net_get_stats64,
+	.ndo_start_xmit		= iss_net_start_xmit,
+	.ndo_validate_addr	= eth_validate_addr,
+	.ndo_change_mtu		= iss_net_change_mtu,
+	.ndo_set_mac_address	= eth_mac_addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout		= iss_net_tx_timeout,
 	.ndo_set_rx_mode	= iss_net_set_multicast_list,
 };
 
+<<<<<<< HEAD
 static int iss_net_configure(int index, char *init)
 {
 	struct net_device *dev;
@@ -645,11 +978,32 @@ static int iss_net_configure(int index, char *init)
 	if ((dev = alloc_etherdev(sizeof *lp)) == NULL) {
 		printk(KERN_ERR "eth_configure: failed to allocate device\n");
 		return 1;
+=======
+static void iss_net_pdev_release(struct device *dev)
+{
+	struct platform_device *pdev = to_platform_device(dev);
+	struct iss_net_private *lp =
+		container_of(pdev, struct iss_net_private, pdev);
+
+	free_netdev(lp->dev);
+}
+
+static void iss_net_configure(int index, char *init)
+{
+	struct net_device *dev;
+	struct iss_net_private *lp;
+
+	dev = alloc_etherdev(sizeof(*lp));
+	if (dev == NULL) {
+		pr_err("eth_configure: failed to allocate device\n");
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Initialize private element. */
 
 	lp = netdev_priv(dev);
+<<<<<<< HEAD
 	*lp = ((struct iss_net_private) {
 		.device_list		= LIST_HEAD_INIT(lp->device_list),
 		.opened_list		= LIST_HEAD_INIT(lp->opened_list),
@@ -660,6 +1014,20 @@ static int iss_net_configure(int index, char *init)
 		.mac			= { 0xfe, 0xfd, 0x0, 0x0, 0x0, 0x0 },
 		.have_mac		= 0,
 		});
+=======
+	*lp = (struct iss_net_private) {
+		.dev			= dev,
+		.index			= index,
+	};
+
+	spin_lock_init(&lp->lock);
+	/*
+	 * If this name ends up conflicting with an existing registered
+	 * netdevice, that is OK, register_netdev{,ice}() will notice this
+	 * and fail.
+	 */
+	snprintf(dev->name, sizeof(dev->name), "eth%d", index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Try all transport protocols.
@@ -667,6 +1035,7 @@ static int iss_net_configure(int index, char *init)
 	 */
 
 	if (!tuntap_probe(lp, index, init)) {
+<<<<<<< HEAD
 		printk("Invalid arguments. Skipping device!\n");
 		goto errout;
 	}
@@ -675,10 +1044,19 @@ static int iss_net_configure(int index, char *init)
 	if (lp->have_mac)
 		printk("(%pM) ", lp->mac);
 	printk(": ");
+=======
+		pr_err("%s: invalid arguments. Skipping device!\n",
+		       dev->name);
+		goto err_free_netdev;
+	}
+
+	pr_info("Netdevice %d (%pM)\n", index, dev->dev_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* sysfs register */
 
 	if (!driver_registered) {
+<<<<<<< HEAD
 		platform_driver_register(&iss_net_driver);
 		driver_registered = 1;
 	}
@@ -698,6 +1076,19 @@ static int iss_net_configure(int index, char *init)
 	 * and fail.
 	 */
 	snprintf(dev->name, sizeof dev->name, "eth%d", index);
+=======
+		if (platform_driver_register(&iss_net_driver))
+			goto err_free_netdev;
+		driver_registered = 1;
+	}
+
+	lp->pdev.id = index;
+	lp->pdev.name = DRIVER_NAME;
+	lp->pdev.dev.release = iss_net_pdev_release;
+	if (platform_device_register(&lp->pdev))
+		goto err_free_netdev;
+	SET_NETDEV_DEV(dev, &lp->pdev.dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->netdev_ops = &iss_netdev_ops;
 	dev->mtu = lp->mtu;
@@ -705,6 +1096,7 @@ static int iss_net_configure(int index, char *init)
 	dev->irq = -1;
 
 	rtnl_lock();
+<<<<<<< HEAD
 	err = register_netdevice(dev);
 	rtnl_unlock();
 
@@ -728,6 +1120,23 @@ errout:
 	// FIXME: unregister; free, etc..
 	return -EIO;
 
+=======
+	if (register_netdevice(dev)) {
+		rtnl_unlock();
+		pr_err("%s: error registering net device!\n", dev->name);
+		platform_device_unregister(&lp->pdev);
+		/* dev is freed by the iss_net_pdev_release callback */
+		return;
+	}
+	rtnl_unlock();
+
+	timer_setup(&lp->tl, iss_net_user_timer_expire, 0);
+
+	return;
+
+err_free_netdev:
+	free_netdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ------------------------------------------------------------------------- */
@@ -747,6 +1156,7 @@ struct iss_net_init {
  * those fields. They will be later initialized in iss_net_init.
  */
 
+<<<<<<< HEAD
 #define ERR KERN_ERR "iss_net_setup: "
 
 static int iss_net_setup(char *str)
@@ -775,10 +1185,38 @@ static int iss_net_setup(char *str)
 
 	list_for_each(ele, &devices) {
 		device = list_entry(ele, struct iss_net_private, device_list);
+=======
+static int __init iss_net_setup(char *str)
+{
+	struct iss_net_init *device = NULL;
+	struct iss_net_init *new;
+	struct list_head *ele;
+	char *end;
+	int rc;
+	unsigned n;
+
+	end = strchr(str, '=');
+	if (!end) {
+		pr_err("Expected '=' after device number\n");
+		return 1;
+	}
+	*end = 0;
+	rc = kstrtouint(str, 0, &n);
+	*end = '=';
+	if (rc < 0) {
+		pr_err("Failed to parse '%s'\n", str);
+		return 1;
+	}
+	str = end;
+
+	list_for_each(ele, &eth_cmd_line) {
+		device = list_entry(ele, struct iss_net_init, list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (device->index == n)
 			break;
 	}
 
+<<<<<<< HEAD
 	spin_unlock(&devices_lock);
 
 	if (device && device->index == n) {
@@ -788,6 +1226,16 @@ static int iss_net_setup(char *str)
 
 	if ((new = alloc_bootmem(sizeof new)) == NULL) {
 		printk("Alloc_bootmem failed\n");
+=======
+	if (device && device->index == n) {
+		pr_err("Device %u already configured\n", n);
+		return 1;
+	}
+
+	new = memblock_alloc(sizeof(*new), SMP_CACHE_BYTES);
+	if (new == NULL) {
+		pr_err("Alloc_bootmem failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
@@ -799,9 +1247,13 @@ static int iss_net_setup(char *str)
 	return 1;
 }
 
+<<<<<<< HEAD
 #undef ERR
 
 __setup("eth=", iss_net_setup);
+=======
+__setup("eth", iss_net_setup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Initialize all ISS Ethernet devices previously registered in iss_net_setup.
@@ -821,6 +1273,10 @@ static int iss_net_init(void)
 
 	return 1;
 }
+<<<<<<< HEAD
 
 module_init(iss_net_init);
 
+=======
+device_initcall(iss_net_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

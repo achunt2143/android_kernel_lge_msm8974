@@ -14,9 +14,16 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include <linux/nl80211.h>
 #include <linux/pci.h>
 #include <linux/pci-aspm.h>
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/nl80211.h>
+#include <linux/pci.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/etherdevice.h>
 #include <linux/module.h>
 #include "../ath.h"
@@ -26,7 +33,11 @@
 #include "reg.h"
 
 /* Known PCI ids */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(ath5k_pci_id_table) = {
+=======
+static const struct pci_device_id ath5k_pci_id_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(ATHEROS, 0x0207) }, /* 5210 early */
 	{ PCI_VDEVICE(ATHEROS, 0x0007) }, /* 5210 */
 	{ PCI_VDEVICE(ATHEROS, 0x0011) }, /* 5311 - this is on AHB bus !*/
@@ -45,6 +56,10 @@ static DEFINE_PCI_DEVICE_TABLE(ath5k_pci_id_table) = {
 	{ PCI_VDEVICE(ATHEROS, 0x001b) }, /* 5413 Eagle */
 	{ PCI_VDEVICE(ATHEROS, 0x001c) }, /* PCI-E cards */
 	{ PCI_VDEVICE(ATHEROS, 0x001d) }, /* 2417 Nala */
+<<<<<<< HEAD
+=======
+	{ PCI_VDEVICE(ATHEROS, 0xff1b) }, /* AR5BXB63 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0 }
 };
 MODULE_DEVICE_TABLE(pci, ath5k_pci_id_table);
@@ -52,7 +67,11 @@ MODULE_DEVICE_TABLE(pci, ath5k_pci_id_table);
 /* return bus cachesize in 4B word units */
 static void ath5k_pci_read_cachesize(struct ath_common *common, int *csz)
 {
+<<<<<<< HEAD
 	struct ath5k_hw *ah = (struct ath5k_hw *) common->priv;
+=======
+	struct ath5k_hw *ah = common->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 u8tmp;
 
 	pci_read_config_byte(ah->pdev, PCI_CACHE_LINE_SIZE, &u8tmp);
@@ -74,7 +93,11 @@ static void ath5k_pci_read_cachesize(struct ath_common *common, int *csz)
 static bool
 ath5k_pci_eeprom_read(struct ath_common *common, u32 offset, u16 *data)
 {
+<<<<<<< HEAD
 	struct ath5k_hw *ah = (struct ath5k_hw *) common->ah;
+=======
+	struct ath5k_hw *ah = common->ah;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 status, timeout;
 
 	/*
@@ -152,7 +175,11 @@ static const struct ath_bus_ops ath_pci_bus_ops = {
 * PCI Initialization *
 \********************/
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ath5k_pci_probe(struct pci_dev *pdev,
 		const struct pci_device_id *id)
 {
@@ -189,7 +216,11 @@ ath5k_pci_probe(struct pci_dev *pdev,
 	}
 
 	/* XXX 32-bit addressing only */
+<<<<<<< HEAD
 	ret = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	ret = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(&pdev->dev, "32-bit DMA not available\n");
 		goto err_dis;
@@ -282,7 +313,11 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __devexit
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ath5k_pci_remove(struct pci_dev *pdev)
 {
 	struct ieee80211_hw *hw = pci_get_drvdata(pdev);
@@ -298,8 +333,12 @@ ath5k_pci_remove(struct pci_dev *pdev)
 #ifdef CONFIG_PM_SLEEP
 static int ath5k_pci_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pdev = to_pci_dev(dev);
 	struct ieee80211_hw *hw = pci_get_drvdata(pdev);
+=======
+	struct ieee80211_hw *hw = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath5k_hw *ah = hw->priv;
 
 	ath5k_led_off(ah);
@@ -333,6 +372,7 @@ static struct pci_driver ath5k_pci_driver = {
 	.name		= KBUILD_MODNAME,
 	.id_table	= ath5k_pci_id_table,
 	.probe		= ath5k_pci_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(ath5k_pci_remove),
 	.driver.pm	= ATH5K_PM_OPS,
 };
@@ -362,3 +402,10 @@ exit_ath5k_pci(void)
 
 module_init(init_ath5k_pci);
 module_exit(exit_ath5k_pci);
+=======
+	.remove		= ath5k_pci_remove,
+	.driver.pm	= ATH5K_PM_OPS,
+};
+
+module_pci_driver(ath5k_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

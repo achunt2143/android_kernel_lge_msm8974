@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel 82599 Virtual Function driver
@@ -24,6 +25,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Copyright(c) 1999 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __IXGBE_VF_H__
 #define __IXGBE_VF_H__
@@ -40,19 +45,29 @@
 
 struct ixgbe_hw;
 
+<<<<<<< HEAD
 /* iterator type for walking multicast address lists */
 typedef u8* (*ixgbe_mc_addr_itr) (struct ixgbe_hw *hw, u8 **mc_addr_ptr,
 				  u32 *vmdq);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ixgbe_mac_operations {
 	s32 (*init_hw)(struct ixgbe_hw *);
 	s32 (*reset_hw)(struct ixgbe_hw *);
 	s32 (*start_hw)(struct ixgbe_hw *);
 	s32 (*clear_hw_cntrs)(struct ixgbe_hw *);
 	enum ixgbe_media_type (*get_media_type)(struct ixgbe_hw *);
+<<<<<<< HEAD
 	u32 (*get_supported_physical_layer)(struct ixgbe_hw *);
 	s32 (*get_mac_addr)(struct ixgbe_hw *, u8 *);
 	s32 (*stop_adapter)(struct ixgbe_hw *);
 	s32 (*get_bus_info)(struct ixgbe_hw *);
+=======
+	s32 (*get_mac_addr)(struct ixgbe_hw *, u8 *);
+	s32 (*stop_adapter)(struct ixgbe_hw *);
+	s32 (*get_bus_info)(struct ixgbe_hw *);
+	s32 (*negotiate_api_version)(struct ixgbe_hw *hw, int api);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Link */
 	s32 (*setup_link)(struct ixgbe_hw *, ixgbe_link_speed, bool, bool);
@@ -65,16 +80,31 @@ struct ixgbe_mac_operations {
 	s32 (*set_uc_addr)(struct ixgbe_hw *, u32, u8 *);
 	s32 (*init_rx_addrs)(struct ixgbe_hw *);
 	s32 (*update_mc_addr_list)(struct ixgbe_hw *, struct net_device *);
+<<<<<<< HEAD
+=======
+	s32 (*update_xcast_mode)(struct ixgbe_hw *, int);
+	s32 (*get_link_state)(struct ixgbe_hw *hw, bool *link_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32 (*enable_mc)(struct ixgbe_hw *);
 	s32 (*disable_mc)(struct ixgbe_hw *);
 	s32 (*clear_vfta)(struct ixgbe_hw *);
 	s32 (*set_vfta)(struct ixgbe_hw *, u32, u32, bool);
+<<<<<<< HEAD
+=======
+	s32 (*set_rlpml)(struct ixgbe_hw *, u16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum ixgbe_mac_type {
 	ixgbe_mac_unknown = 0,
 	ixgbe_mac_82599_vf,
 	ixgbe_mac_X540_vf,
+<<<<<<< HEAD
+=======
+	ixgbe_mac_X550_vf,
+	ixgbe_mac_X550EM_x_vf,
+	ixgbe_mac_x550em_a_vf,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ixgbe_num_macs
 };
 
@@ -95,10 +125,16 @@ struct ixgbe_mac_info {
 
 struct ixgbe_mbx_operations {
 	s32 (*init_params)(struct ixgbe_hw *hw);
+<<<<<<< HEAD
 	s32 (*read)(struct ixgbe_hw *, u32 *, u16);
 	s32 (*write)(struct ixgbe_hw *, u32 *, u16);
 	s32 (*read_posted)(struct ixgbe_hw *, u32 *, u16);
 	s32 (*write_posted)(struct ixgbe_hw *, u32 *, u16);
+=======
+	void (*release)(struct ixgbe_hw *hw);
+	s32 (*read)(struct ixgbe_hw *, u32 *, u16);
+	s32 (*write)(struct ixgbe_hw *, u32 *, u16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32 (*check_for_msg)(struct ixgbe_hw *);
 	s32 (*check_for_ack)(struct ixgbe_hw *);
 	s32 (*check_for_rst)(struct ixgbe_hw *);
@@ -118,7 +154,11 @@ struct ixgbe_mbx_info {
 	struct ixgbe_mbx_stats stats;
 	u32 timeout;
 	u32 udelay;
+<<<<<<< HEAD
 	u32 v2p_mailbox;
+=======
+	u32 vf_mailbox;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 size;
 };
 
@@ -137,6 +177,11 @@ struct ixgbe_hw {
 
 	u8  revision_id;
 	bool adapter_stopped;
+<<<<<<< HEAD
+=======
+
+	int api_version;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ixgbevf_hw_stats {
@@ -166,9 +211,55 @@ struct ixgbevf_hw_stats {
 };
 
 struct ixgbevf_info {
+<<<<<<< HEAD
 	enum ixgbe_mac_type		mac;
 	const struct ixgbe_mac_operations *mac_ops;
 };
 
 #endif /* __IXGBE_VF_H__ */
 
+=======
+	enum ixgbe_mac_type mac;
+	const struct ixgbe_mac_operations *mac_ops;
+};
+
+#define IXGBE_FAILED_READ_REG 0xffffffffU
+
+#define IXGBE_REMOVED(a) unlikely(!(a))
+
+static inline void ixgbe_write_reg(struct ixgbe_hw *hw, u32 reg, u32 value)
+{
+	u8 __iomem *reg_addr = READ_ONCE(hw->hw_addr);
+
+	if (IXGBE_REMOVED(reg_addr))
+		return;
+	writel(value, reg_addr + reg);
+}
+
+#define IXGBE_WRITE_REG(h, r, v) ixgbe_write_reg(h, r, v)
+
+u32 ixgbevf_read_reg(struct ixgbe_hw *hw, u32 reg);
+#define IXGBE_READ_REG(h, r) ixgbevf_read_reg(h, r)
+
+static inline void ixgbe_write_reg_array(struct ixgbe_hw *hw, u32 reg,
+					 u32 offset, u32 value)
+{
+	ixgbe_write_reg(hw, reg + (offset << 2), value);
+}
+
+#define IXGBE_WRITE_REG_ARRAY(h, r, o, v) ixgbe_write_reg_array(h, r, o, v)
+
+static inline u32 ixgbe_read_reg_array(struct ixgbe_hw *hw, u32 reg,
+				       u32 offset)
+{
+	return ixgbevf_read_reg(hw, reg + (offset << 2));
+}
+
+#define IXGBE_READ_REG_ARRAY(h, r, o) ixgbe_read_reg_array(h, r, o)
+
+int ixgbevf_get_queues(struct ixgbe_hw *hw, unsigned int *num_tcs,
+		       unsigned int *default_tc);
+int ixgbevf_get_reta_locked(struct ixgbe_hw *hw, u32 *reta, int num_rx_queues);
+int ixgbevf_get_rss_key_locked(struct ixgbe_hw *hw, u8 *rss_key);
+#endif /* __IXGBE_VF_H__ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

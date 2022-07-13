@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/minix/dir.c
  *
@@ -16,11 +20,16 @@
 typedef struct minix_dir_entry minix_dirent;
 typedef struct minix3_dir_entry minix3_dirent;
 
+<<<<<<< HEAD
 static int minix_readdir(struct file *, void *, filldir_t);
+=======
+static int minix_readdir(struct file *, struct dir_context *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const struct file_operations minix_dir_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.readdir	= minix_readdir,
 	.fsync		= generic_file_fsync,
 };
@@ -31,6 +40,12 @@ static inline void dir_put_page(struct page *page)
 	page_cache_release(page);
 }
 
+=======
+	.iterate_shared	= minix_readdir,
+	.fsync		= generic_file_fsync,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Return the offset into page `page_nr' of the last valid
  * byte in that page, plus one.
@@ -38,6 +53,7 @@ static inline void dir_put_page(struct page *page)
 static unsigned
 minix_last_byte(struct inode *inode, unsigned long page_nr)
 {
+<<<<<<< HEAD
 	unsigned last_byte = PAGE_CACHE_SIZE;
 
 	if (page_nr == (inode->i_size >> PAGE_CACHE_SHIFT))
@@ -55,12 +71,27 @@ static int dir_commit_chunk(struct page *page, loff_t pos, unsigned len)
 	struct address_space *mapping = page->mapping;
 	struct inode *dir = mapping->host;
 	int err = 0;
+=======
+	unsigned last_byte = PAGE_SIZE;
+
+	if (page_nr == (inode->i_size >> PAGE_SHIFT))
+		last_byte = inode->i_size & (PAGE_SIZE - 1);
+	return last_byte;
+}
+
+static void dir_commit_chunk(struct page *page, loff_t pos, unsigned len)
+{
+	struct address_space *mapping = page->mapping;
+	struct inode *dir = mapping->host;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	block_write_end(NULL, mapping, pos, len, len, page, NULL);
 
 	if (pos+len > dir->i_size) {
 		i_size_write(dir, pos+len);
 		mark_inode_dirty(dir);
 	}
+<<<<<<< HEAD
 	if (IS_DIRSYNC(dir))
 		err = write_one_page(page, 1);
 	else
@@ -75,6 +106,29 @@ static struct page * dir_get_page(struct inode *dir, unsigned long n)
 	if (!IS_ERR(page))
 		kmap(page);
 	return page;
+=======
+	unlock_page(page);
+}
+
+static int minix_handle_dirsync(struct inode *dir)
+{
+	int err;
+
+	err = filemap_write_and_wait(dir->i_mapping);
+	if (!err)
+		err = sync_inode_metadata(dir, 1);
+	return err;
+}
+
+static void *dir_get_page(struct inode *dir, unsigned long n, struct page **p)
+{
+	struct address_space *mapping = dir->i_mapping;
+	struct page *page = read_mapping_page(mapping, n, NULL);
+	if (IS_ERR(page))
+		return ERR_CAST(page);
+	*p = page;
+	return kmap_local_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void *minix_next_entry(void *de, struct minix_sb_info *sbi)
@@ -82,6 +136,7 @@ static inline void *minix_next_entry(void *de, struct minix_sb_info *sbi)
 	return (void*)((char*)de + sbi->s_dirsize);
 }
 
+<<<<<<< HEAD
 static int minix_readdir(struct file * filp, void * dirent, filldir_t filldir)
 {
 	unsigned long pos = filp->f_pos;
@@ -109,6 +164,38 @@ static int minix_readdir(struct file * filp, void * dirent, filldir_t filldir)
 		p = kaddr+offset;
 		limit = kaddr + minix_last_byte(inode, n) - chunk_size;
 		for ( ; p <= limit; p = minix_next_entry(p, sbi)) {
+=======
+static int minix_readdir(struct file *file, struct dir_context *ctx)
+{
+	struct inode *inode = file_inode(file);
+	struct super_block *sb = inode->i_sb;
+	struct minix_sb_info *sbi = minix_sb(sb);
+	unsigned chunk_size = sbi->s_dirsize;
+	unsigned long npages = dir_pages(inode);
+	unsigned long pos = ctx->pos;
+	unsigned offset;
+	unsigned long n;
+
+	ctx->pos = pos = ALIGN(pos, chunk_size);
+	if (pos >= inode->i_size)
+		return 0;
+
+	offset = pos & ~PAGE_MASK;
+	n = pos >> PAGE_SHIFT;
+
+	for ( ; n < npages; n++, offset = 0) {
+		char *p, *kaddr, *limit;
+		struct page *page;
+
+		kaddr = dir_get_page(inode, n, &page);
+		if (IS_ERR(kaddr))
+			continue;
+		p = kaddr+offset;
+		limit = kaddr + minix_last_byte(inode, n) - chunk_size;
+		for ( ; p <= limit; p = minix_next_entry(p, sbi)) {
+			const char *name;
+			__u32 inumber;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (sbi->s_version == MINIX_V3) {
 				minix3_dirent *de3 = (minix3_dirent *)p;
 				name = de3->name;
@@ -119,6 +206,7 @@ static int minix_readdir(struct file * filp, void * dirent, filldir_t filldir)
 				inumber = de->inode;
 			}
 			if (inumber) {
+<<<<<<< HEAD
 				int over;
 
 				unsigned l = strnlen(name, sbi->s_namelen);
@@ -137,6 +225,19 @@ static int minix_readdir(struct file * filp, void * dirent, filldir_t filldir)
 
 done:
 	filp->f_pos = (n << PAGE_CACHE_SHIFT) | offset;
+=======
+				unsigned l = strnlen(name, sbi->s_namelen);
+				if (!dir_emit(ctx, name, l,
+					      inumber, DT_UNKNOWN)) {
+					unmap_and_put_page(page, p);
+					return 0;
+				}
+			}
+			ctx->pos += chunk_size;
+		}
+		unmap_and_put_page(page, kaddr);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -160,7 +261,11 @@ minix_dirent *minix_find_entry(struct dentry *dentry, struct page **res_page)
 {
 	const char * name = dentry->d_name.name;
 	int namelen = dentry->d_name.len;
+<<<<<<< HEAD
 	struct inode * dir = dentry->d_parent->d_inode;
+=======
+	struct inode * dir = d_inode(dentry->d_parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct super_block * sb = dir->i_sb;
 	struct minix_sb_info * sbi = minix_sb(sb);
 	unsigned long n;
@@ -175,11 +280,18 @@ minix_dirent *minix_find_entry(struct dentry *dentry, struct page **res_page)
 	for (n = 0; n < npages; n++) {
 		char *kaddr, *limit;
 
+<<<<<<< HEAD
 		page = dir_get_page(dir, n);
 		if (IS_ERR(page))
 			continue;
 
 		kaddr = (char*)page_address(page);
+=======
+		kaddr = dir_get_page(dir, n, &page);
+		if (IS_ERR(kaddr))
+			continue;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		limit = kaddr + minix_last_byte(dir, n) - sbi->s_dirsize;
 		for (p = kaddr; p <= limit; p = minix_next_entry(p, sbi)) {
 			if (sbi->s_version == MINIX_V3) {
@@ -196,7 +308,11 @@ minix_dirent *minix_find_entry(struct dentry *dentry, struct page **res_page)
 			if (namecompare(namelen, sbi->s_namelen, name, namx))
 				goto found;
 		}
+<<<<<<< HEAD
 		dir_put_page(page);
+=======
+		unmap_and_put_page(page, kaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NULL;
 
@@ -207,7 +323,11 @@ found:
 
 int minix_add_link(struct dentry *dentry, struct inode *inode)
 {
+<<<<<<< HEAD
 	struct inode *dir = dentry->d_parent->d_inode;
+=======
+	struct inode *dir = d_inode(dentry->d_parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char * name = dentry->d_name.name;
 	int namelen = dentry->d_name.len;
 	struct super_block * sb = dir->i_sb;
@@ -231,6 +351,7 @@ int minix_add_link(struct dentry *dentry, struct inode *inode)
 	for (n = 0; n <= npages; n++) {
 		char *limit, *dir_end;
 
+<<<<<<< HEAD
 		page = dir_get_page(dir, n);
 		err = PTR_ERR(page);
 		if (IS_ERR(page))
@@ -239,6 +360,14 @@ int minix_add_link(struct dentry *dentry, struct inode *inode)
 		kaddr = (char*)page_address(page);
 		dir_end = kaddr + minix_last_byte(dir, n);
 		limit = kaddr + PAGE_CACHE_SIZE - sbi->s_dirsize;
+=======
+		kaddr = dir_get_page(dir, n, &page);
+		if (IS_ERR(kaddr))
+			return PTR_ERR(kaddr);
+		lock_page(page);
+		dir_end = kaddr + minix_last_byte(dir, n);
+		limit = kaddr + PAGE_SIZE - sbi->s_dirsize;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (p = kaddr; p <= limit; p = minix_next_entry(p, sbi)) {
 			de = (minix_dirent *)p;
 			de3 = (minix3_dirent *)p;
@@ -264,13 +393,21 @@ int minix_add_link(struct dentry *dentry, struct inode *inode)
 				goto out_unlock;
 		}
 		unlock_page(page);
+<<<<<<< HEAD
 		dir_put_page(page);
+=======
+		unmap_and_put_page(page, kaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	BUG();
 	return -EINVAL;
 
 got_it:
+<<<<<<< HEAD
 	pos = page_offset(page) + p - (char *)page_address(page);
+=======
+	pos = page_offset(page) + offset_in_page(p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = minix_prepare_chunk(page, pos, sbi->s_dirsize);
 	if (err)
 		goto out_unlock;
@@ -282,12 +419,21 @@ got_it:
 		memset (namx + namelen, 0, sbi->s_dirsize - namelen - 2);
 		de->inode = inode->i_ino;
 	}
+<<<<<<< HEAD
 	err = dir_commit_chunk(page, pos, sbi->s_dirsize);
 	dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
 	mark_inode_dirty(dir);
 out_put:
 	dir_put_page(page);
 out:
+=======
+	dir_commit_chunk(page, pos, sbi->s_dirsize);
+	inode_set_mtime_to_ts(dir, inode_set_ctime_current(dir));
+	mark_inode_dirty(dir);
+	err = minix_handle_dirsync(dir);
+out_put:
+	unmap_and_put_page(page, kaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 out_unlock:
 	unlock_page(page);
@@ -297,14 +443,19 @@ out_unlock:
 int minix_delete_entry(struct minix_dir_entry *de, struct page *page)
 {
 	struct inode *inode = page->mapping->host;
+<<<<<<< HEAD
 	char *kaddr = page_address(page);
 	loff_t pos = page_offset(page) + (char*)de - kaddr;
+=======
+	loff_t pos = page_offset(page) + offset_in_page(de);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct minix_sb_info *sbi = minix_sb(inode->i_sb);
 	unsigned len = sbi->s_dirsize;
 	int err;
 
 	lock_page(page);
 	err = minix_prepare_chunk(page, pos, len);
+<<<<<<< HEAD
 	if (err == 0) {
 		if (sbi->s_version == MINIX_V3)
 			((minix3_dirent *) de)->inode = 0;
@@ -318,6 +469,20 @@ int minix_delete_entry(struct minix_dir_entry *de, struct page *page)
 	inode->i_ctime = inode->i_mtime = CURRENT_TIME_SEC;
 	mark_inode_dirty(inode);
 	return err;
+=======
+	if (err) {
+		unlock_page(page);
+		return err;
+	}
+	if (sbi->s_version == MINIX_V3)
+		((minix3_dirent *)de)->inode = 0;
+	else
+		de->inode = 0;
+	dir_commit_chunk(page, pos, len);
+	inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
+	mark_inode_dirty(inode);
+	return minix_handle_dirsync(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int minix_make_empty(struct inode *inode, struct inode *dir)
@@ -335,8 +500,13 @@ int minix_make_empty(struct inode *inode, struct inode *dir)
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	kaddr = kmap_atomic(page);
 	memset(kaddr, 0, PAGE_CACHE_SIZE);
+=======
+	kaddr = kmap_local_page(page);
+	memset(kaddr, 0, PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sbi->s_version == MINIX_V3) {
 		minix3_dirent *de3 = (minix3_dirent *)kaddr;
@@ -355,11 +525,20 @@ int minix_make_empty(struct inode *inode, struct inode *dir)
 		de->inode = dir->i_ino;
 		strcpy(de->name, "..");
 	}
+<<<<<<< HEAD
 	kunmap_atomic(kaddr);
 
 	err = dir_commit_chunk(page, 0, 2 * sbi->s_dirsize);
 fail:
 	page_cache_release(page);
+=======
+	kunmap_local(kaddr);
+
+	dir_commit_chunk(page, 0, 2 * sbi->s_dirsize);
+	err = minix_handle_dirsync(inode);
+fail:
+	put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -371,6 +550,7 @@ int minix_empty_dir(struct inode * inode)
 	struct page *page = NULL;
 	unsigned long i, npages = dir_pages(inode);
 	struct minix_sb_info *sbi = minix_sb(inode->i_sb);
+<<<<<<< HEAD
 	char *name;
 	__u32 inumber;
 
@@ -382,6 +562,18 @@ int minix_empty_dir(struct inode * inode)
 			continue;
 
 		kaddr = (char *)page_address(page);
+=======
+	char *name, *kaddr;
+	__u32 inumber;
+
+	for (i = 0; i < npages; i++) {
+		char *p, *limit;
+
+		kaddr = dir_get_page(inode, i, &page);
+		if (IS_ERR(kaddr))
+			continue;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		limit = kaddr + minix_last_byte(inode, i) - sbi->s_dirsize;
 		for (p = kaddr; p <= limit; p = minix_next_entry(p, sbi)) {
 			if (sbi->s_version == MINIX_V3) {
@@ -407,16 +599,25 @@ int minix_empty_dir(struct inode * inode)
 					goto not_empty;
 			}
 		}
+<<<<<<< HEAD
 		dir_put_page(page);
+=======
+		unmap_and_put_page(page, kaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 1;
 
 not_empty:
+<<<<<<< HEAD
 	dir_put_page(page);
+=======
+	unmap_and_put_page(page, kaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /* Releases the page */
+<<<<<<< HEAD
 void minix_set_link(struct minix_dir_entry *de, struct page *page,
 	struct inode *inode)
 {
@@ -441,10 +642,35 @@ void minix_set_link(struct minix_dir_entry *de, struct page *page,
 	dir_put_page(page);
 	dir->i_mtime = dir->i_ctime = CURRENT_TIME_SEC;
 	mark_inode_dirty(dir);
+=======
+int minix_set_link(struct minix_dir_entry *de, struct page *page,
+		struct inode *inode)
+{
+	struct inode *dir = page->mapping->host;
+	struct minix_sb_info *sbi = minix_sb(dir->i_sb);
+	loff_t pos = page_offset(page) + offset_in_page(de);
+	int err;
+
+	lock_page(page);
+	err = minix_prepare_chunk(page, pos, sbi->s_dirsize);
+	if (err) {
+		unlock_page(page);
+		return err;
+	}
+	if (sbi->s_version == MINIX_V3)
+		((minix3_dirent *)de)->inode = inode->i_ino;
+	else
+		de->inode = inode->i_ino;
+	dir_commit_chunk(page, pos, sbi->s_dirsize);
+	inode_set_mtime_to_ts(dir, inode_set_ctime_current(dir));
+	mark_inode_dirty(dir);
+	return minix_handle_dirsync(dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct minix_dir_entry * minix_dotdot (struct inode *dir, struct page **p)
 {
+<<<<<<< HEAD
 	struct page *page = dir_get_page(dir, 0);
 	struct minix_sb_info *sbi = minix_sb(dir->i_sb);
 	struct minix_dir_entry *de = NULL;
@@ -454,6 +680,14 @@ struct minix_dir_entry * minix_dotdot (struct inode *dir, struct page **p)
 		*p = page;
 	}
 	return de;
+=======
+	struct minix_sb_info *sbi = minix_sb(dir->i_sb);
+	struct minix_dir_entry *de = dir_get_page(dir, 0, p);
+
+	if (!IS_ERR(de))
+		return minix_next_entry(de, sbi);
+	return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 ino_t minix_inode_by_name(struct dentry *dentry)
@@ -471,7 +705,11 @@ ino_t minix_inode_by_name(struct dentry *dentry)
 			res = ((minix3_dirent *) de)->inode;
 		else
 			res = de->inode;
+<<<<<<< HEAD
 		dir_put_page(page);
+=======
+		unmap_and_put_page(page, de);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return res;
 }

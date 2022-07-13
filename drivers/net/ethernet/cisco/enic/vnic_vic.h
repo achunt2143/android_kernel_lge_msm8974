@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2010 Cisco Systems, Inc.  All rights reserved.
  *
@@ -15,6 +16,10 @@
  * SOFTWARE.
  *
  */
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* Copyright 2010 Cisco Systems, Inc.  All rights reserved. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _VNIC_VIC_H_
 #define _VNIC_VIC_H_
@@ -59,7 +64,11 @@ struct vic_provinfo {
 		u16 type;
 		u16 length;
 		u8 value[0];
+<<<<<<< HEAD
 	} tlv[0];
+=======
+	} tlv[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define VIC_PROVINFO_ADD_TLV(vp, tlvtype, tlvlen, data) \

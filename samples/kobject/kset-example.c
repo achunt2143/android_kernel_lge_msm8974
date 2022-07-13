@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sample kset and ktype implementation
  *
  * Copyright (C) 2004-2007 Greg Kroah-Hartman <greg@kroah.com>
  * Copyright (C) 2007 Novell Inc.
+<<<<<<< HEAD
  *
  * Released under the GPL version 2 only.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kobject.h>
 #include <linux/string.h>
@@ -114,18 +121,37 @@ static void foo_release(struct kobject *kobj)
 static ssize_t foo_show(struct foo_obj *foo_obj, struct foo_attribute *attr,
 			char *buf)
 {
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", foo_obj->foo);
+=======
+	return sysfs_emit(buf, "%d\n", foo_obj->foo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t foo_store(struct foo_obj *foo_obj, struct foo_attribute *attr,
 			 const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	sscanf(buf, "%du", &foo_obj->foo);
 	return count;
 }
 
 static struct foo_attribute foo_attribute =
 	__ATTR(foo, 0666, foo_show, foo_store);
+=======
+	int ret;
+
+	ret = kstrtoint(buf, 10, &foo_obj->foo);
+	if (ret < 0)
+		return ret;
+
+	return count;
+}
+
+/* Sysfs attributes cannot be world-writable. */
+static struct foo_attribute foo_attribute =
+	__ATTR(foo, 0664, foo_show, foo_store);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * More complex function where we determine which variable is being accessed by
@@ -140,15 +166,28 @@ static ssize_t b_show(struct foo_obj *foo_obj, struct foo_attribute *attr,
 		var = foo_obj->baz;
 	else
 		var = foo_obj->bar;
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", var);
+=======
+	return sysfs_emit(buf, "%d\n", var);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t b_store(struct foo_obj *foo_obj, struct foo_attribute *attr,
 		       const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	int var;
 
 	sscanf(buf, "%du", &var);
+=======
+	int var, ret;
+
+	ret = kstrtoint(buf, 10, &var);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (strcmp(attr->attr.name, "baz") == 0)
 		foo_obj->baz = var;
 	else
@@ -157,9 +196,15 @@ static ssize_t b_store(struct foo_obj *foo_obj, struct foo_attribute *attr,
 }
 
 static struct foo_attribute baz_attribute =
+<<<<<<< HEAD
 	__ATTR(baz, 0666, b_show, b_store);
 static struct foo_attribute bar_attribute =
 	__ATTR(bar, 0666, b_show, b_store);
+=======
+	__ATTR(baz, 0664, b_show, b_store);
+static struct foo_attribute bar_attribute =
+	__ATTR(bar, 0664, b_show, b_store);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Create a group of attributes so that we can create and destroy them all
@@ -171,16 +216,27 @@ static struct attribute *foo_default_attrs[] = {
 	&bar_attribute.attr,
 	NULL,	/* need to NULL terminate the list of attributes */
 };
+<<<<<<< HEAD
+=======
+ATTRIBUTE_GROUPS(foo_default);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Our own ktype for our kobjects.  Here we specify our sysfs ops, the
  * release function, and the set of default attributes we want created
  * whenever a kobject of this type is registered with the kernel.
  */
+<<<<<<< HEAD
 static struct kobj_type foo_ktype = {
 	.sysfs_ops = &foo_sysfs_ops,
 	.release = foo_release,
 	.default_attrs = foo_default_attrs,
+=======
+static const struct kobj_type foo_ktype = {
+	.sysfs_ops = &foo_sysfs_ops,
+	.release = foo_release,
+	.default_groups = foo_default_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct kset *example_kset;
@@ -262,6 +318,10 @@ baz_error:
 bar_error:
 	destroy_foo_obj(foo_obj);
 foo_error:
+<<<<<<< HEAD
+=======
+	kset_unregister(example_kset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
@@ -275,5 +335,9 @@ static void __exit example_exit(void)
 
 module_init(example_init);
 module_exit(example_exit);
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Greg Kroah-Hartman <greg@kroah.com>");

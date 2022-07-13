@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /******************************************************************************
  * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
  *
@@ -22,12 +23,24 @@
  * Contact Information:
  * wlanfae <wlanfae@realtek.com>
  ******************************************************************************/
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
+ *
+ * Based on the r8180 driver, which is:
+ * Copyright 2004-2005 Andrea Merello <andrea.merello@gmail.com>, et al.
+ *
+ * Contact Information: wlanfae <wlanfae@realtek.com>
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _RTL_PCI_H
 #define _RTL_PCI_H
 
 #include <linux/types.h>
 #include <linux/pci.h>
 
+<<<<<<< HEAD
 static inline void NdisRawWritePortUlong(u32 port,  u32 val)
 {
 	outl(val, port);
@@ -99,5 +112,9 @@ struct rt_pci_capab_header {
 
 struct net_device;
 bool rtl8192_pci_findadapter(struct pci_dev *pdev, struct net_device *dev);
+=======
+struct net_device;
+bool rtl92e_check_adapter(struct pci_dev *pdev, struct net_device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

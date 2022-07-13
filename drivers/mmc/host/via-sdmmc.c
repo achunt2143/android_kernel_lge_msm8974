@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  drivers/mmc/host/via-sdmmc.c - VIA SD/MMC Card Reader driver
  *  Copyright (c) 2008, VIA Technologies Inc. All Rights Reserved.
@@ -6,6 +7,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  drivers/mmc/host/via-sdmmc.c - VIA SD/MMC Card Reader driver
+ *  Copyright (c) 2008, VIA Technologies Inc. All Rights Reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/pci.h>
@@ -13,6 +20,10 @@
 #include <linux/dma-mapping.h>
 #include <linux/highmem.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/interrupt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mmc/host.h>
 
@@ -322,7 +333,13 @@ struct via_crdr_mmc_host {
 /* some devices need a very long delay for power to stabilize */
 #define VIA_CRDR_QUIRK_300MS_PWRDELAY	0x0001
 
+<<<<<<< HEAD
 static struct pci_device_id via_ids[] = {
+=======
+#define VIA_CMD_TIMEOUT_MS		1000
+
+static const struct pci_device_id via_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_9530,
 	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0,},
 	{0,}
@@ -492,7 +509,11 @@ static void via_sdc_preparedata(struct via_crdr_mmc_host *host,
 
 	count = dma_map_sg(mmc_dev(host->mmc), data->sg, data->sg_len,
 		((data->flags & MMC_DATA_READ) ?
+<<<<<<< HEAD
 		PCI_DMA_FROMDEVICE : PCI_DMA_TODEVICE));
+=======
+		DMA_FROM_DEVICE : DMA_TO_DEVICE));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(count != 1);
 
 	via_set_ddma(host, sg_dma_address(data->sg), sg_dma_len(data->sg),
@@ -554,14 +575,26 @@ static void via_sdc_send_command(struct via_crdr_mmc_host *host,
 {
 	void __iomem *addrbase;
 	struct mmc_data *data;
+<<<<<<< HEAD
+=======
+	unsigned int timeout_ms;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 cmdctrl = 0;
 
 	WARN_ON(host->cmd);
 
 	data = cmd->data;
+<<<<<<< HEAD
 	mod_timer(&host->timer, jiffies + HZ);
 	host->cmd = cmd;
 
+=======
+	host->cmd = cmd;
+
+	timeout_ms = cmd->busy_timeout ? cmd->busy_timeout : VIA_CMD_TIMEOUT_MS;
+	mod_timer(&host->timer, jiffies + msecs_to_jiffies(timeout_ms));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*Command index*/
 	cmdctrl = cmd->opcode << 8;
 
@@ -636,7 +669,11 @@ static void via_sdc_finish_data(struct via_crdr_mmc_host *host)
 
 	dma_unmap_sg(mmc_dev(host->mmc), data->sg, data->sg_len,
 		((data->flags & MMC_DATA_READ) ?
+<<<<<<< HEAD
 		PCI_DMA_FROMDEVICE : PCI_DMA_TODEVICE));
+=======
+		DMA_FROM_DEVICE : DMA_TO_DEVICE));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (data->stop)
 		via_sdc_send_command(host, data->stop);
@@ -685,7 +722,10 @@ static void via_sdc_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		via_sdc_send_command(host, mrq->cmd);
 	}
 
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&host->lock, flags);
 }
 
@@ -710,7 +750,10 @@ static void via_sdc_set_power(struct via_crdr_mmc_host *host,
 		gatt &= ~VIA_CRDR_PCICLKGATT_PAD_PWRON;
 	writeb(gatt, host->pcictrl_mmiobase + VIA_CRDR_PCICLKGATT);
 
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&host->lock, flags);
 
 	via_pwron_sleep(host);
@@ -769,7 +812,10 @@ static void via_sdc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	if (readb(addrbase + VIA_CRDR_PCISDCCLK) != clock)
 		writeb(clock, addrbase + VIA_CRDR_PCISDCCLK);
 
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&host->lock, flags);
 
 	if (ios->power_mode != MMC_POWER_OFF)
@@ -829,7 +875,10 @@ static void via_reset_pcictrl(struct via_crdr_mmc_host *host)
 	via_restore_pcictrlreg(host);
 	via_restore_sdcreg(host);
 
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&host->lock, flags);
 }
 
@@ -859,6 +908,12 @@ static void via_sdc_data_isr(struct via_crdr_mmc_host *host, u16 intmask)
 {
 	BUG_ON(intmask == 0);
 
+<<<<<<< HEAD
+=======
+	if (!host->data)
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (intmask & VIA_CRDR_SDSTS_DT)
 		host->data->error = -ETIMEDOUT;
 	else if (intmask & (VIA_CRDR_SDSTS_RC | VIA_CRDR_SDSTS_WC))
@@ -924,19 +979,30 @@ static irqreturn_t via_sdc_isr(int irq, void *dev_id)
 
 	result = IRQ_HANDLED;
 
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	spin_unlock(&sdhost->lock);
 
 	return result;
 }
 
+<<<<<<< HEAD
 static void via_sdc_timeout(unsigned long ulongdata)
+=======
+static void via_sdc_timeout(struct timer_list *t)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct via_crdr_mmc_host *sdhost;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	sdhost = (struct via_crdr_mmc_host *)ulongdata;
+=======
+	sdhost = from_timer(sdhost, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&sdhost->lock, flags);
 
@@ -959,6 +1025,7 @@ static void via_sdc_timeout(unsigned long ulongdata)
 		}
 	}
 
+<<<<<<< HEAD
 	mmiowb();
 	spin_unlock_irqrestore(&sdhost->lock, flags);
 }
@@ -971,6 +1038,17 @@ static void via_sdc_tasklet_finish(unsigned long param)
 
 	host = (struct via_crdr_mmc_host *)param;
 
+=======
+	spin_unlock_irqrestore(&sdhost->lock, flags);
+}
+
+static void via_sdc_tasklet_finish(struct tasklet_struct *t)
+{
+	struct via_crdr_mmc_host *host = from_tasklet(host, t, finish_tasklet);
+	unsigned long flags;
+	struct mmc_request *mrq;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&host->lock, flags);
 
 	del_timer(&host->timer);
@@ -1011,7 +1089,10 @@ static void via_sdc_card_detect(struct work_struct *work)
 			tasklet_schedule(&host->finish_tasklet);
 		}
 
+<<<<<<< HEAD
 		mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&host->lock, flags);
 
 		via_reset_pcictrl(host);
@@ -1019,7 +1100,10 @@ static void via_sdc_card_detect(struct work_struct *work)
 		spin_lock_irqsave(&host->lock, flags);
 	}
 
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&host->lock, flags);
 
 	via_print_pcictrl(host);
@@ -1035,9 +1119,13 @@ static void via_init_mmc_host(struct via_crdr_mmc_host *host)
 	u32 lenreg;
 	u32 status;
 
+<<<<<<< HEAD
 	init_timer(&host->timer);
 	host->timer.data = (unsigned long)host;
 	host->timer.function = via_sdc_timeout;
+=======
+	timer_setup(&host->timer, via_sdc_timeout, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&host->lock);
 
@@ -1058,8 +1146,12 @@ static void via_init_mmc_host(struct via_crdr_mmc_host *host)
 
 	INIT_WORK(&host->carddet_work, via_sdc_card_detect);
 
+<<<<<<< HEAD
 	tasklet_init(&host->finish_tasklet, via_sdc_tasklet_finish,
 		     (unsigned long)host);
+=======
+	tasklet_setup(&host->finish_tasklet, via_sdc_tasklet_finish);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	addrbase = host->sdhc_mmiobase;
 	writel(0x0, addrbase + VIA_CRDR_SDINTMASK);
@@ -1082,7 +1174,11 @@ static void via_init_mmc_host(struct via_crdr_mmc_host *host)
 	msleep(1);
 }
 
+<<<<<<< HEAD
 static int __devinit via_sd_probe(struct pci_dev *pcidev,
+=======
+static int via_sd_probe(struct pci_dev *pcidev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    const struct pci_device_id *id)
 {
 	struct mmc_host *mmc;
@@ -1119,7 +1215,11 @@ static int __devinit via_sd_probe(struct pci_dev *pcidev,
 
 	len = pci_resource_len(pcidev, 0);
 	base = pci_resource_start(pcidev, 0);
+<<<<<<< HEAD
 	sdhost->mmiobase = ioremap_nocache(base, len);
+=======
+	sdhost->mmiobase = ioremap(base, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sdhost->mmiobase) {
 		ret = -ENOMEM;
 		goto free_mmc_host;
@@ -1159,14 +1259,23 @@ static int __devinit via_sd_probe(struct pci_dev *pcidev,
 	    pcidev->subsystem_device == 0x3891)
 		sdhost->quirks = VIA_CRDR_QUIRK_300MS_PWRDELAY;
 
+<<<<<<< HEAD
 	mmc_add_host(mmc);
+=======
+	ret = mmc_add_host(mmc);
+	if (ret)
+		goto unmap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 unmap:
 	iounmap(sdhost->mmiobase);
 free_mmc_host:
+<<<<<<< HEAD
 	dev_set_drvdata(&pcidev->dev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mmc_free_host(mmc);
 release:
 	pci_release_regions(pcidev);
@@ -1176,7 +1285,11 @@ disable:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __devexit via_sd_remove(struct pci_dev *pcidev)
+=======
+static void via_sd_remove(struct pci_dev *pcidev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct via_crdr_mmc_host *sdhost = pci_get_drvdata(pcidev);
 	unsigned long flags;
@@ -1189,7 +1302,10 @@ static void __devexit via_sd_remove(struct pci_dev *pcidev)
 
 	/* Disable generating further interrupts */
 	writeb(0x0, sdhost->pcictrl_mmiobase + VIA_CRDR_PCIINTCTRL);
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sdhost->mrq) {
 		pr_err("%s: Controller removed during "
@@ -1198,7 +1314,10 @@ static void __devexit via_sd_remove(struct pci_dev *pcidev)
 		/* make sure all DMA is stopped */
 		writel(VIA_CRDR_DMACTRL_SFTRST,
 			sdhost->ddma_mmiobase + VIA_CRDR_DMACTRL);
+<<<<<<< HEAD
 		mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sdhost->mrq->cmd->error = -ENOMEDIUM;
 		if (sdhost->mrq->stop)
 			sdhost->mrq->stop->error = -ENOMEDIUM;
@@ -1220,7 +1339,10 @@ static void __devexit via_sd_remove(struct pci_dev *pcidev)
 	writeb(gatt, sdhost->pcictrl_mmiobase + VIA_CRDR_PCICLKGATT);
 
 	iounmap(sdhost->mmiobase);
+<<<<<<< HEAD
 	dev_set_drvdata(&pcidev->dev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mmc_free_host(sdhost->mmc);
 	pci_release_regions(pcidev);
 	pci_disable_device(pcidev);
@@ -1230,9 +1352,13 @@ static void __devexit via_sd_remove(struct pci_dev *pcidev)
 		pci_name(pcidev), (int)pcidev->vendor, (int)pcidev->device);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
 static void via_init_sdc_pm(struct via_crdr_mmc_host *host)
+=======
+static void __maybe_unused via_init_sdc_pm(struct via_crdr_mmc_host *host)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sdhcreg *pm_sdhcreg;
 	void __iomem *addrbase;
@@ -1266,6 +1392,7 @@ static void via_init_sdc_pm(struct via_crdr_mmc_host *host)
 	via_print_sdchc(host);
 }
 
+<<<<<<< HEAD
 static int via_sd_suspend(struct pci_dev *pcidev, pm_message_t state)
 {
 	struct via_crdr_mmc_host *host;
@@ -1293,6 +1420,31 @@ static int via_sd_resume(struct pci_dev *pcidev)
 	u8 gatt;
 
 	sdhost = pci_get_drvdata(pcidev);
+=======
+static int __maybe_unused via_sd_suspend(struct device *dev)
+{
+	struct via_crdr_mmc_host *host;
+	unsigned long flags;
+
+	host = dev_get_drvdata(dev);
+
+	spin_lock_irqsave(&host->lock, flags);
+	via_save_pcictrlreg(host);
+	via_save_sdcreg(host);
+	spin_unlock_irqrestore(&host->lock, flags);
+
+	device_wakeup_enable(dev);
+
+	return 0;
+}
+
+static int __maybe_unused via_sd_resume(struct device *dev)
+{
+	struct via_crdr_mmc_host *sdhost;
+	u8 gatt;
+
+	sdhost = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gatt = VIA_CRDR_PCICLKGATT_PAD_PWRON;
 	if (sdhost->power == MMC_VDD_165_195)
@@ -1307,6 +1459,7 @@ static int via_sd_resume(struct pci_dev *pcidev)
 
 	msleep(100);
 
+<<<<<<< HEAD
 	pci_set_power_state(pcidev, PCI_D0);
 	pci_restore_state(pcidev);
 	ret = pci_enable_device(pcidev);
@@ -1327,11 +1480,21 @@ static int via_sd_resume(struct pci_dev *pcidev)
 #define via_sd_resume NULL
 
 #endif /* CONFIG_PM */
+=======
+	via_restore_pcictrlreg(sdhost);
+	via_init_sdc_pm(sdhost);
+
+	return 0;
+}
+
+static SIMPLE_DEV_PM_OPS(via_sd_pm_ops, via_sd_suspend, via_sd_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver via_sd_driver = {
 	.name = DRV_NAME,
 	.id_table = via_ids,
 	.probe = via_sd_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(via_sd_remove),
 	.suspend = via_sd_suspend,
 	.resume = via_sd_resume,
@@ -1352,6 +1515,13 @@ static void __exit via_sd_drv_exit(void)
 
 module_init(via_sd_drv_init);
 module_exit(via_sd_drv_exit);
+=======
+	.remove = via_sd_remove,
+	.driver.pm = &via_sd_pm_ops,
+};
+
+module_pci_driver(via_sd_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("VIA Technologies Inc.");

@@ -1,13 +1,22 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	xt_conntrack - Netfilter module to match connection tracking
  *	information. (Superset of Rusty's minimalistic state match.)
  *
  *	(C) 2001  Marc Boucher (marc@mbsi.ca).
+<<<<<<< HEAD
  *	Copyright © CC Computer Consultants GmbH, 2007 - 2008
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License version 2 as
  *	published by the Free Software Foundation.
+=======
+ *	(C) 2006-2012 Patrick McHardy <kaber@trash.net>
+ *	Copyright © CC Computer Consultants GmbH, 2007 - 2008
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
@@ -171,12 +180,20 @@ conntrack_mt(const struct sk_buff *skb, struct xt_action_param *par,
 
 	ct = nf_ct_get(skb, &ctinfo);
 
+<<<<<<< HEAD
 	if (ct) {
 		if (nf_ct_is_untracked(ct))
 			statebit = XT_CONNTRACK_STATE_UNTRACKED;
 		else
 			statebit = XT_CONNTRACK_STATE_BIT(ctinfo);
 	} else
+=======
+	if (ct)
+		statebit = XT_CONNTRACK_STATE_BIT(ctinfo);
+	else if (ctinfo == IP_CT_UNTRACKED)
+		statebit = XT_CONNTRACK_STATE_UNTRACKED;
+	else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		statebit = XT_CONNTRACK_STATE_INVALID;
 
 	if (info->match_flags & XT_CONNTRACK_STATE) {
@@ -199,22 +216,38 @@ conntrack_mt(const struct sk_buff *skb, struct xt_action_param *par,
 		return false;
 
 	if (info->match_flags & XT_CONNTRACK_ORIGSRC)
+<<<<<<< HEAD
 		if (conntrack_mt_origsrc(ct, info, par->family) ^
+=======
+		if (conntrack_mt_origsrc(ct, info, xt_family(par)) ^
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    !(info->invert_flags & XT_CONNTRACK_ORIGSRC))
 			return false;
 
 	if (info->match_flags & XT_CONNTRACK_ORIGDST)
+<<<<<<< HEAD
 		if (conntrack_mt_origdst(ct, info, par->family) ^
+=======
+		if (conntrack_mt_origdst(ct, info, xt_family(par)) ^
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    !(info->invert_flags & XT_CONNTRACK_ORIGDST))
 			return false;
 
 	if (info->match_flags & XT_CONNTRACK_REPLSRC)
+<<<<<<< HEAD
 		if (conntrack_mt_replsrc(ct, info, par->family) ^
+=======
+		if (conntrack_mt_replsrc(ct, info, xt_family(par)) ^
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    !(info->invert_flags & XT_CONNTRACK_REPLSRC))
 			return false;
 
 	if (info->match_flags & XT_CONNTRACK_REPLDST)
+<<<<<<< HEAD
 		if (conntrack_mt_repldst(ct, info, par->family) ^
+=======
+		if (conntrack_mt_repldst(ct, info, xt_family(par)) ^
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    !(info->invert_flags & XT_CONNTRACK_REPLDST))
 			return false;
 
@@ -232,10 +265,15 @@ conntrack_mt(const struct sk_buff *skb, struct xt_action_param *par,
 		return false;
 
 	if (info->match_flags & XT_CONNTRACK_EXPIRES) {
+<<<<<<< HEAD
 		unsigned long expires = 0;
 
 		if (timer_pending(&ct->timeout))
 			expires = (ct->timeout.expires - jiffies) / HZ;
+=======
+		unsigned long expires = nf_ct_expires(ct) / HZ;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((expires >= info->expires_min &&
 		    expires <= info->expires_max) ^
 		    !(info->invert_flags & XT_CONNTRACK_EXPIRES))
@@ -272,16 +310,27 @@ static int conntrack_mt_check(const struct xt_mtchk_param *par)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = nf_ct_l3proto_try_module_get(par->family);
 	if (ret < 0)
 		pr_info("cannot load conntrack support for proto=%u\n",
 			par->family);
+=======
+	ret = nf_ct_netns_get(par->net, par->family);
+	if (ret < 0)
+		pr_info_ratelimited("cannot load conntrack support for proto=%u\n",
+				    par->family);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static void conntrack_mt_destroy(const struct xt_mtdtor_param *par)
 {
+<<<<<<< HEAD
 	nf_ct_l3proto_module_put(par->family);
+=======
+	nf_ct_netns_put(par->net, par->family);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xt_match conntrack_mt_reg[] __read_mostly = {

@@ -6,6 +6,7 @@
  * (C) Copyright 1995 1996 Linus Torvalds
  * (C) Copyright 2001, 2002 Ralf Baechle
  */
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <asm/addrspace.h>
 #include <asm/byteorder.h>
@@ -119,6 +120,58 @@ void __iomem * __ioremap(phys_t phys_addr, phys_t size, unsigned long flags)
 	unsigned long offset;
 	phys_t last_addr;
 	void * addr;
+=======
+#include <linux/export.h>
+#include <asm/addrspace.h>
+#include <asm/byteorder.h>
+#include <linux/ioport.h>
+#include <linux/sched.h>
+#include <linux/slab.h>
+#include <linux/vmalloc.h>
+#include <linux/mm_types.h>
+#include <linux/io.h>
+#include <asm/cacheflush.h>
+#include <asm/tlbflush.h>
+#include <ioremap.h>
+
+#define IS_LOW512(addr) (!((phys_addr_t)(addr) & (phys_addr_t) ~0x1fffffffULL))
+#define IS_KSEG1(addr) (((unsigned long)(addr) & ~0x1fffffffUL) == CKSEG1)
+
+static int __ioremap_check_ram(unsigned long start_pfn, unsigned long nr_pages,
+			       void *arg)
+{
+	unsigned long i;
+
+	for (i = 0; i < nr_pages; i++) {
+		if (pfn_valid(start_pfn + i) &&
+		    !PageReserved(pfn_to_page(start_pfn + i)))
+			return 1;
+	}
+
+	return 0;
+}
+
+/*
+ * ioremap_prot     -   map bus memory into CPU space
+ * @phys_addr:    bus address of the memory
+ * @size:      size of the resource to map
+ *
+ * ioremap_prot gives the caller control over cache coherency attributes (CCA)
+ */
+void __iomem *ioremap_prot(phys_addr_t phys_addr, unsigned long size,
+		unsigned long prot_val)
+{
+	unsigned long flags = prot_val & _CACHE_MASK;
+	unsigned long offset, pfn, last_pfn;
+	struct vm_struct *area;
+	phys_addr_t last_addr;
+	unsigned long vaddr;
+	void __iomem *cpu_addr;
+
+	cpu_addr = plat_ioremap(phys_addr, size, flags);
+	if (cpu_addr)
+		return cpu_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	phys_addr = fixup_bigphys_addr(phys_addr, size);
 
@@ -135,6 +188,7 @@ void __iomem * __ioremap(phys_t phys_addr, phys_t size, unsigned long flags)
 	    flags == _CACHE_UNCACHED)
 		return (void __iomem *) CKSEG1ADDR(phys_addr);
 
+<<<<<<< HEAD
 	/*
 	 * Don't allow anybody to remap normal RAM that we're using..
 	 */
@@ -148,6 +202,23 @@ void __iomem * __ioremap(phys_t phys_addr, phys_t size, unsigned long flags)
 		for(page = virt_to_page(t_addr); page <= virt_to_page(t_end); page++)
 			if(!PageReserved(page))
 				return NULL;
+=======
+	/* Early remaps should use the unmapped regions til' VM is available */
+	if (WARN_ON_ONCE(!slab_is_available()))
+		return NULL;
+
+	/*
+	 * Don't allow anybody to remap RAM that may be allocated by the page
+	 * allocator, since that could lead to races & data clobbering.
+	 */
+	pfn = PFN_DOWN(phys_addr);
+	last_pfn = PFN_DOWN(last_addr);
+	if (walk_system_ram_range(pfn, last_pfn - pfn + 1, NULL,
+				  __ioremap_check_ram) == 1) {
+		WARN_ONCE(1, "ioremap on RAM at %pa - %pa\n",
+			  &phys_addr, &last_addr);
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -163,6 +234,7 @@ void __iomem * __ioremap(phys_t phys_addr, phys_t size, unsigned long flags)
 	area = get_vm_area(size, VM_IOREMAP);
 	if (!area)
 		return NULL;
+<<<<<<< HEAD
 	addr = area->addr;
 	if (remap_area_pages((unsigned long) addr, phys_addr, size, flags)) {
 		vunmap(addr);
@@ -190,3 +262,24 @@ void __iounmap(const volatile void __iomem *addr)
 
 EXPORT_SYMBOL(__ioremap);
 EXPORT_SYMBOL(__iounmap);
+=======
+	vaddr = (unsigned long)area->addr;
+
+	flags |= _PAGE_GLOBAL | _PAGE_PRESENT | __READABLE | __WRITEABLE;
+	if (ioremap_page_range(vaddr, vaddr + size, phys_addr,
+			__pgprot(flags))) {
+		free_vm_area(area);
+		return NULL;
+	}
+
+	return (void __iomem *)(vaddr + offset);
+}
+EXPORT_SYMBOL(ioremap_prot);
+
+void iounmap(const volatile void __iomem *addr)
+{
+	if (!plat_iounmap(addr) && !IS_KSEG1(addr))
+		vunmap((void *)((unsigned long)addr & PAGE_MASK));
+}
+EXPORT_SYMBOL(iounmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,17 +1,27 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Meywa-Denki & KAYAC YUREX
  *
  * Copyright (C) 2010 Tomoki Sekiyama (tomoki.sekiyama@gmail.com)
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License as
  *	published by the Free Software Foundation, version 2.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/kref.h>
@@ -39,6 +49,11 @@
 #define YUREX_BUF_SIZE		8
 #define YUREX_WRITE_TIMEOUT	(HZ*2)
 
+<<<<<<< HEAD
+=======
+#define MAX_S64_STRLEN 20 /* {-}922337203685477580{7,8} */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* table of devices that work with this driver */
 static struct usb_device_id yurex_table[] = {
 	{ USB_DEVICE(YUREX_VENDOR_ID, YUREX_PRODUCT_ID) },
@@ -65,6 +80,10 @@ struct usb_yurex {
 
 	struct kref		kref;
 	struct mutex		io_mutex;
+<<<<<<< HEAD
+=======
+	unsigned long		disconnected:1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fasync_struct	*async_queue;
 	wait_queue_head_t	waitq;
 
@@ -83,7 +102,12 @@ static void yurex_control_callback(struct urb *urb)
 	int status = urb->status;
 
 	if (status) {
+<<<<<<< HEAD
 		err("%s - control failed: %d\n", __func__, status);
+=======
+		dev_err(&urb->dev->dev, "%s - control failed: %d\n",
+			__func__, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up_interruptible(&dev->waitq);
 		return;
 	}
@@ -94,6 +118,7 @@ static void yurex_delete(struct kref *kref)
 {
 	struct usb_yurex *dev = to_yurex_dev(kref);
 
+<<<<<<< HEAD
 	dbg("yurex_delete");
 
 	usb_put_dev(dev->udev);
@@ -102,16 +127,33 @@ static void yurex_delete(struct kref *kref)
 		kfree(dev->cntl_req);
 		if (dev->cntl_buffer)
 			usb_free_coherent(dev->udev, YUREX_BUF_SIZE,
+=======
+	dev_dbg(&dev->interface->dev, "%s\n", __func__);
+
+	if (dev->cntl_urb) {
+		usb_kill_urb(dev->cntl_urb);
+		kfree(dev->cntl_req);
+		usb_free_coherent(dev->udev, YUREX_BUF_SIZE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->cntl_buffer, dev->cntl_urb->transfer_dma);
 		usb_free_urb(dev->cntl_urb);
 	}
 	if (dev->urb) {
 		usb_kill_urb(dev->urb);
+<<<<<<< HEAD
 		if (dev->int_buffer)
 			usb_free_coherent(dev->udev, YUREX_BUF_SIZE,
 				dev->int_buffer, dev->urb->transfer_dma);
 		usb_free_urb(dev->urb);
 	}
+=======
+		usb_free_coherent(dev->udev, YUREX_BUF_SIZE,
+				dev->int_buffer, dev->urb->transfer_dma);
+		usb_free_urb(dev->urb);
+	}
+	usb_put_intf(dev->interface);
+	usb_put_dev(dev->udev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(dev);
 }
 
@@ -136,18 +178,37 @@ static void yurex_interrupt(struct urb *urb)
 	switch (status) {
 	case 0: /*success*/
 		break;
+<<<<<<< HEAD
 	case -EOVERFLOW:
 		err("%s - overflow with length %d, actual length is %d",
 		    __func__, YUREX_BUF_SIZE, dev->urb->actual_length);
+=======
+	/* The device is terminated or messed up, give up */
+	case -EOVERFLOW:
+		dev_err(&dev->interface->dev,
+			"%s - overflow with length %d, actual length is %d\n",
+			__func__, YUREX_BUF_SIZE, dev->urb->actual_length);
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case -ECONNRESET:
 	case -ENOENT:
 	case -ESHUTDOWN:
 	case -EILSEQ:
+<<<<<<< HEAD
 		/* The device is terminated, clean up */
 		return;
 	default:
 		err("%s - unknown status received: %d", __func__, status);
 		goto exit;
+=======
+	case -EPROTO:
+	case -ETIME:
+		return;
+	default:
+		dev_err(&dev->interface->dev,
+			"%s - unknown status received: %d\n", __func__, status);
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* handle received message */
@@ -162,24 +223,44 @@ static void yurex_interrupt(struct urb *urb)
 				if (i != 5)
 					dev->bbu <<= 8;
 			}
+<<<<<<< HEAD
 			dbg("%s count: %lld", __func__, dev->bbu);
+=======
+			dev_dbg(&dev->interface->dev, "%s count: %lld\n",
+				__func__, dev->bbu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock_irqrestore(&dev->lock, flags);
 
 			kill_fasync(&dev->async_queue, SIGIO, POLL_IN);
 		}
 		else
+<<<<<<< HEAD
 			dbg("data format error - no EOF");
 		break;
 	case CMD_ACK:
 		dbg("%s ack: %c", __func__, buf[1]);
+=======
+			dev_dbg(&dev->interface->dev,
+				"data format error - no EOF\n");
+		break;
+	case CMD_ACK:
+		dev_dbg(&dev->interface->dev, "%s ack: %c\n",
+			__func__, buf[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up_interruptible(&dev->waitq);
 		break;
 	}
 
+<<<<<<< HEAD
 exit:
 	retval = usb_submit_urb(dev->urb, GFP_ATOMIC);
 	if (retval) {
 		err("%s - usb_submit_urb failed: %d",
+=======
+	retval = usb_submit_urb(dev->urb, GFP_ATOMIC);
+	if (retval) {
+		dev_err(&dev->interface->dev, "%s - usb_submit_urb failed: %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, retval);
 	}
 }
@@ -190,6 +271,7 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 	struct usb_host_interface *iface_desc;
 	struct usb_endpoint_descriptor *endpoint;
 	int retval = -ENOMEM;
+<<<<<<< HEAD
 	int i;
 	DEFINE_WAIT(wait);
 
@@ -199,12 +281,22 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 		err("Out of memory");
 		goto error;
 	}
+=======
+	DEFINE_WAIT(wait);
+	int res;
+
+	/* allocate memory for our device state and initialize it */
+	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+	if (!dev)
+		goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kref_init(&dev->kref);
 	mutex_init(&dev->io_mutex);
 	spin_lock_init(&dev->lock);
 	init_waitqueue_head(&dev->waitq);
 
 	dev->udev = usb_get_dev(interface_to_usbdev(interface));
+<<<<<<< HEAD
 	dev->interface = interface;
 
 	/* set up the endpoint information */
@@ -237,13 +329,41 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 		err("Could not allocate cntl_req");
 		goto error;
 	}
+=======
+	dev->interface = usb_get_intf(interface);
+
+	/* set up the endpoint information */
+	iface_desc = interface->cur_altsetting;
+	res = usb_find_int_in_endpoint(iface_desc, &endpoint);
+	if (res) {
+		dev_err(&interface->dev, "Could not find endpoints\n");
+		retval = res;
+		goto error;
+	}
+
+	dev->int_in_endpointAddr = endpoint->bEndpointAddress;
+
+	/* allocate control URB */
+	dev->cntl_urb = usb_alloc_urb(0, GFP_KERNEL);
+	if (!dev->cntl_urb)
+		goto error;
+
+	/* allocate buffer for control req */
+	dev->cntl_req = kmalloc(YUREX_BUF_SIZE, GFP_KERNEL);
+	if (!dev->cntl_req)
+		goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allocate buffer for control msg */
 	dev->cntl_buffer = usb_alloc_coherent(dev->udev, YUREX_BUF_SIZE,
 					      GFP_KERNEL,
 					      &dev->cntl_urb->transfer_dma);
 	if (!dev->cntl_buffer) {
+<<<<<<< HEAD
 		err("Could not allocate cntl_buffer");
+=======
+		dev_err(&interface->dev, "Could not allocate cntl_buffer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
@@ -264,16 +384,25 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 
 	/* allocate interrupt URB */
 	dev->urb = usb_alloc_urb(0, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!dev->urb) {
 		err("Could not allocate URB");
 		goto error;
 	}
+=======
+	if (!dev->urb)
+		goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allocate buffer for interrupt in */
 	dev->int_buffer = usb_alloc_coherent(dev->udev, YUREX_BUF_SIZE,
 					GFP_KERNEL, &dev->urb->transfer_dma);
 	if (!dev->int_buffer) {
+<<<<<<< HEAD
 		err("Could not allocate int_buffer");
+=======
+		dev_err(&interface->dev, "Could not allocate int_buffer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
@@ -285,23 +414,39 @@ static int yurex_probe(struct usb_interface *interface, const struct usb_device_
 	dev->urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 	if (usb_submit_urb(dev->urb, GFP_KERNEL)) {
 		retval = -EIO;
+<<<<<<< HEAD
 		err("Could not submitting URB");
+=======
+		dev_err(&interface->dev, "Could not submitting URB\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
 	/* save our data pointer in this interface device */
 	usb_set_intfdata(interface, dev);
+<<<<<<< HEAD
+=======
+	dev->bbu = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we can register the device now, as it is ready */
 	retval = usb_register_dev(interface, &yurex_class);
 	if (retval) {
+<<<<<<< HEAD
 		err("Not able to get a minor for this device.");
+=======
+		dev_err(&interface->dev,
+			"Not able to get a minor for this device.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_set_intfdata(interface, NULL);
 		goto error;
 	}
 
+<<<<<<< HEAD
 	dev->bbu = -1;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(&interface->dev,
 		 "USB YUREX device now attached to Yurex #%d\n",
 		 interface->minor);
@@ -327,8 +472,15 @@ static void yurex_disconnect(struct usb_interface *interface)
 	usb_deregister_dev(interface, &yurex_class);
 
 	/* prevent more I/O from starting */
+<<<<<<< HEAD
 	mutex_lock(&dev->io_mutex);
 	dev->interface = NULL;
+=======
+	usb_poison_urb(dev->urb);
+	usb_poison_urb(dev->cntl_urb);
+	mutex_lock(&dev->io_mutex);
+	dev->disconnected = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&dev->io_mutex);
 
 	/* wakeup waiters */
@@ -353,7 +505,11 @@ static int yurex_fasync(int fd, struct file *file, int on)
 {
 	struct usb_yurex *dev;
 
+<<<<<<< HEAD
 	dev = (struct usb_yurex *)file->private_data;
+=======
+	dev = file->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return fasync_helper(fd, file, on, &dev->async_queue);
 }
 
@@ -368,8 +524,13 @@ static int yurex_open(struct inode *inode, struct file *file)
 
 	interface = usb_find_interface(&yurex_driver, subminor);
 	if (!interface) {
+<<<<<<< HEAD
 		err("%s - error, can't find device for minor %d",
 		    __func__, subminor);
+=======
+		printk(KERN_ERR "%s - error, can't find device for minor %d",
+		       __func__, subminor);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENODEV;
 		goto exit;
 	}
@@ -396,17 +557,25 @@ static int yurex_release(struct inode *inode, struct file *file)
 {
 	struct usb_yurex *dev;
 
+<<<<<<< HEAD
 	dev = (struct usb_yurex *)file->private_data;
 	if (dev == NULL)
 		return -ENODEV;
 
 	yurex_fasync(-1, file, 0);
 
+=======
+	dev = file->private_data;
+	if (dev == NULL)
+		return -ENODEV;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* decrement the count on our device */
 	kref_put(&dev->kref, yurex_delete);
 	return 0;
 }
 
+<<<<<<< HEAD
 static ssize_t yurex_read(struct file *file, char *buffer, size_t count, loff_t *ppos)
 {
 	struct usb_yurex *dev;
@@ -446,20 +615,66 @@ static ssize_t yurex_write(struct file *file, const char *user_buffer, size_t co
 	struct usb_yurex *dev;
 	int i, set = 0, retval = 0;
 	char buffer[16];
+=======
+static ssize_t yurex_read(struct file *file, char __user *buffer, size_t count,
+			  loff_t *ppos)
+{
+	struct usb_yurex *dev;
+	int len = 0;
+	char in_buffer[MAX_S64_STRLEN];
+	unsigned long flags;
+
+	dev = file->private_data;
+
+	mutex_lock(&dev->io_mutex);
+	if (dev->disconnected) {		/* already disconnected */
+		mutex_unlock(&dev->io_mutex);
+		return -ENODEV;
+	}
+
+	if (WARN_ON_ONCE(dev->bbu > S64_MAX || dev->bbu < S64_MIN)) {
+		mutex_unlock(&dev->io_mutex);
+		return -EIO;
+	}
+
+	spin_lock_irqsave(&dev->lock, flags);
+	scnprintf(in_buffer, MAX_S64_STRLEN, "%lld\n", dev->bbu);
+	spin_unlock_irqrestore(&dev->lock, flags);
+	mutex_unlock(&dev->io_mutex);
+
+	return simple_read_from_buffer(buffer, count, ppos, in_buffer, len);
+}
+
+static ssize_t yurex_write(struct file *file, const char __user *user_buffer,
+			   size_t count, loff_t *ppos)
+{
+	struct usb_yurex *dev;
+	int i, set = 0, retval = 0;
+	char buffer[16 + 1];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *data = buffer;
 	unsigned long long c, c2 = 0;
 	signed long timeout = 0;
 	DEFINE_WAIT(wait);
 
+<<<<<<< HEAD
 	count = min(sizeof(buffer), count);
 	dev = (struct usb_yurex *)file->private_data;
+=======
+	count = min(sizeof(buffer) - 1, count);
+	dev = file->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* verify that we actually have some data to write */
 	if (count == 0)
 		goto error;
 
 	mutex_lock(&dev->io_mutex);
+<<<<<<< HEAD
 	if (!dev->interface) {		/* alreaday disconnected */
+=======
+	if (dev->disconnected) {		/* already disconnected */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&dev->io_mutex);
 		retval = -ENODEV;
 		goto error;
@@ -470,6 +685,10 @@ static ssize_t yurex_write(struct file *file, const char *user_buffer, size_t co
 		retval = -EFAULT;
 		goto error;
 	}
+<<<<<<< HEAD
+=======
+	buffer[count] = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(dev->cntl_buffer, CMD_PADDING, YUREX_BUF_SIZE);
 
 	switch (buffer[0]) {
@@ -487,7 +706,11 @@ static ssize_t yurex_write(struct file *file, const char *user_buffer, size_t co
 		break;
 	case CMD_SET:
 		data++;
+<<<<<<< HEAD
 		/* FALL THROUGH */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case '0' ... '9':
 		set = 1;
 		c = c2 = simple_strtoull(data, NULL, 0);
@@ -505,16 +728,34 @@ static ssize_t yurex_write(struct file *file, const char *user_buffer, size_t co
 
 	/* send the data as the control msg */
 	prepare_to_wait(&dev->waitq, &wait, TASK_INTERRUPTIBLE);
+<<<<<<< HEAD
 	dbg("%s - submit %c", __func__, dev->cntl_buffer[0]);
 	retval = usb_submit_urb(dev->cntl_urb, GFP_KERNEL);
+=======
+	dev_dbg(&dev->interface->dev, "%s - submit %c\n", __func__,
+		dev->cntl_buffer[0]);
+	retval = usb_submit_urb(dev->cntl_urb, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval >= 0)
 		timeout = schedule_timeout(YUREX_WRITE_TIMEOUT);
 	finish_wait(&dev->waitq, &wait);
 
+<<<<<<< HEAD
 	mutex_unlock(&dev->io_mutex);
 
 	if (retval < 0) {
 		err("%s - failed to send bulk msg, error %d", __func__, retval);
+=======
+	/* make sure URB is idle after timeout or (spurious) CMD_ACK */
+	usb_kill_urb(dev->cntl_urb);
+
+	mutex_unlock(&dev->io_mutex);
+
+	if (retval < 0) {
+		dev_err(&dev->interface->dev,
+			"%s - failed to send bulk msg, error %d\n",
+			__func__, retval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 	if (set && timeout)

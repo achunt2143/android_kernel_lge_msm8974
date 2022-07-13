@@ -1,18 +1,29 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8904.h  --  WM8904 ASoC driver
  *
  * Copyright 2009 Wolfson Microelectronics, plc
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _WM8904_H
 #define _WM8904_H
 
+<<<<<<< HEAD
+=======
+#define WM8904_CLK_AUTO 0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WM8904_CLK_MCLK 1
 #define WM8904_CLK_FLL  2
 

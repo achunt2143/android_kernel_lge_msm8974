@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * direct.c - NILFS direct block pointer.
  *
@@ -18,6 +19,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Koji Sato <koji@osrg.net>.
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * NILFS direct block pointer.
+ *
+ * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
+ *
+ * Written by Koji Sato.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -62,7 +72,11 @@ static int nilfs_direct_lookup(const struct nilfs_bmap *direct,
 
 static int nilfs_direct_lookup_contig(const struct nilfs_bmap *direct,
 				      __u64 key, __u64 *ptrp,
+<<<<<<< HEAD
 				      unsigned maxblocks)
+=======
+				      unsigned int maxblocks)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *dat = NULL;
 	__u64 ptr, ptr2;
@@ -79,11 +93,20 @@ static int nilfs_direct_lookup_contig(const struct nilfs_bmap *direct,
 		dat = nilfs_bmap_get_dat(direct);
 		ret = nilfs_dat_translate(dat, ptr, &blocknr);
 		if (ret < 0)
+<<<<<<< HEAD
 			return ret;
 		ptr = blocknr;
 	}
 
 	maxblocks = min_t(unsigned, maxblocks, NILFS_DIRECT_KEY_MAX - key + 1);
+=======
+			goto dat_error;
+		ptr = blocknr;
+	}
+
+	maxblocks = min_t(unsigned int, maxblocks,
+			  NILFS_DIRECT_KEY_MAX - key + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (cnt = 1; cnt < maxblocks &&
 		     (ptr2 = nilfs_direct_get_ptr(direct, key + cnt)) !=
 		     NILFS_BMAP_INVALID_PTR;
@@ -91,7 +114,11 @@ static int nilfs_direct_lookup_contig(const struct nilfs_bmap *direct,
 		if (dat) {
 			ret = nilfs_dat_translate(dat, ptr2, &blocknr);
 			if (ret < 0)
+<<<<<<< HEAD
 				return ret;
+=======
+				goto dat_error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ptr2 = blocknr;
 		}
 		if (ptr2 != ptr + cnt)
@@ -99,6 +126,14 @@ static int nilfs_direct_lookup_contig(const struct nilfs_bmap *direct,
 	}
 	*ptrp = ptr;
 	return cnt;
+<<<<<<< HEAD
+=======
+
+ dat_error:
+	if (ret == -ENOENT)
+		ret = -EINVAL;  /* Notify bmap layer of metadata corruption */
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __u64
@@ -110,9 +145,15 @@ nilfs_direct_find_target_v(const struct nilfs_bmap *direct, __u64 key)
 	if (ptr != NILFS_BMAP_INVALID_PTR)
 		/* sequential access */
 		return ptr;
+<<<<<<< HEAD
 	else
 		/* block group */
 		return nilfs_bmap_find_target_in_group(direct);
+=======
+
+	/* block group */
+	return nilfs_bmap_find_target_in_group(direct);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int nilfs_direct_insert(struct nilfs_bmap *bmap, __u64 key, __u64 ptr)
@@ -173,6 +214,24 @@ static int nilfs_direct_delete(struct nilfs_bmap *bmap, __u64 key)
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static int nilfs_direct_seek_key(const struct nilfs_bmap *direct, __u64 start,
+				 __u64 *keyp)
+{
+	__u64 key;
+
+	for (key = start; key <= NILFS_DIRECT_KEY_MAX; key++) {
+		if (nilfs_direct_get_ptr(direct, key) !=
+		    NILFS_BMAP_INVALID_PTR) {
+			*keyp = key;
+			return 0;
+		}
+	}
+	return -ENOENT;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_direct_last_key(const struct nilfs_bmap *direct, __u64 *keyp)
 {
 	__u64 key, lastkey;
@@ -311,6 +370,10 @@ static int nilfs_direct_assign_p(struct nilfs_bmap *direct,
 
 	binfo->bi_dat.bi_blkoff = cpu_to_le64(key);
 	binfo->bi_dat.bi_level = 0;
+<<<<<<< HEAD
+=======
+	memset(binfo->bi_dat.bi_pad, 0, sizeof(binfo->bi_dat.bi_pad));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -325,14 +388,28 @@ static int nilfs_direct_assign(struct nilfs_bmap *bmap,
 
 	key = nilfs_bmap_data_get_key(bmap, *bh);
 	if (unlikely(key > NILFS_DIRECT_KEY_MAX)) {
+<<<<<<< HEAD
 		printk(KERN_CRIT "%s: invalid key: %llu\n", __func__,
 		       (unsigned long long)key);
+=======
+		nilfs_crit(bmap->b_inode->i_sb,
+			   "%s (ino=%lu): invalid key: %llu",
+			   __func__,
+			   bmap->b_inode->i_ino, (unsigned long long)key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	ptr = nilfs_direct_get_ptr(bmap, key);
 	if (unlikely(ptr == NILFS_BMAP_INVALID_PTR)) {
+<<<<<<< HEAD
 		printk(KERN_CRIT "%s: invalid pointer: %llu\n", __func__,
 		       (unsigned long long)ptr);
+=======
+		nilfs_crit(bmap->b_inode->i_sb,
+			   "%s (ino=%lu): invalid pointer: %llu",
+			   __func__,
+			   bmap->b_inode->i_ino, (unsigned long long)ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -355,7 +432,13 @@ static const struct nilfs_bmap_operations nilfs_direct_ops = {
 	.bop_assign		=	nilfs_direct_assign,
 	.bop_mark		=	NULL,
 
+<<<<<<< HEAD
 	.bop_last_key		=	nilfs_direct_last_key,
+=======
+	.bop_seek_key		=	nilfs_direct_seek_key,
+	.bop_last_key		=	nilfs_direct_last_key,
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bop_check_insert	=	nilfs_direct_check_insert,
 	.bop_check_delete	=	NULL,
 	.bop_gather_data	=	nilfs_direct_gather_data,

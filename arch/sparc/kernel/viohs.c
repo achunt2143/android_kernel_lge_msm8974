@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* viohs.c: LDOM Virtual I/O handshake helper layer.
  *
  * Copyright (C) 2007 David S. Miller <davem@davemloft.net>
@@ -8,6 +12,10 @@
 #include <linux/string.h>
 #include <linux/delay.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/clock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 #include <asm/ldc.h>
@@ -178,11 +186,25 @@ static int send_dreg(struct vio_driver_state *vio)
 		struct vio_dring_register pkt;
 		char all[sizeof(struct vio_dring_register) +
 			 (sizeof(struct ldc_trans_cookie) *
+<<<<<<< HEAD
 			  dr->ncookies)];
 	} u;
 	int i;
 
 	memset(&u, 0, sizeof(u));
+=======
+			  VIO_MAX_RING_COOKIES)];
+	} u;
+	size_t bytes = sizeof(struct vio_dring_register) +
+		       (sizeof(struct ldc_trans_cookie) *
+			dr->ncookies);
+	int i;
+
+	if (WARN_ON(bytes > sizeof(u)))
+		return -EINVAL;
+
+	memset(&u, 0, bytes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_tag(&u.pkt.tag, VIO_TYPE_CTRL, VIO_SUBTYPE_INFO, VIO_DRING_REG);
 	u.pkt.dring_ident = 0;
 	u.pkt.num_descr = dr->num_entries;
@@ -204,7 +226,11 @@ static int send_dreg(struct vio_driver_state *vio)
 		       (unsigned long long) u.pkt.cookies[i].cookie_size);
 	}
 
+<<<<<<< HEAD
 	return send_ctrl(vio, &u.pkt.tag, sizeof(u));
+=======
+	return send_ctrl(vio, &u.pkt.tag, bytes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int send_rdx(struct vio_driver_state *vio)
@@ -222,6 +248,12 @@ static int send_rdx(struct vio_driver_state *vio)
 
 static int send_attr(struct vio_driver_state *vio)
 {
+<<<<<<< HEAD
+=======
+	if (!vio->ops)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return vio->ops->send_attr(vio);
 }
 
@@ -282,6 +314,10 @@ static int process_ver_info(struct vio_driver_state *vio,
 			ver.minor = vap->minor;
 		pkt->minor = ver.minor;
 		pkt->tag.stype = VIO_SUBTYPE_ACK;
+<<<<<<< HEAD
+=======
+		pkt->dev_class = vio->dev_class;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		viodbg(HS, "SEND VERSION ACK maj[%u] min[%u]\n",
 		       pkt->major, pkt->minor);
 		err = send_ctrl(vio, &pkt->tag, sizeof(*pkt));
@@ -373,6 +409,12 @@ static int process_attr(struct vio_driver_state *vio, void *pkt)
 	if (!(vio->hs_state & VIO_HS_GOTVERS))
 		return handshake_failure(vio);
 
+<<<<<<< HEAD
+=======
+	if (!vio->ops)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = vio->ops->handle_attr(vio, pkt);
 	if (err < 0) {
 		return handshake_failure(vio);
@@ -387,6 +429,10 @@ static int process_attr(struct vio_driver_state *vio, void *pkt)
 			vio->hs_state |= VIO_HS_SENT_DREG;
 		}
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -412,7 +458,11 @@ static int process_dreg_info(struct vio_driver_state *vio,
 			     struct vio_dring_register *pkt)
 {
 	struct vio_dring_state *dr;
+<<<<<<< HEAD
 	int i, len;
+=======
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	viodbg(HS, "GOT DRING_REG INFO ident[%llx] "
 	       "ndesc[%u] dsz[%u] opt[0x%x] ncookies[%u]\n",
@@ -426,6 +476,16 @@ static int process_dreg_info(struct vio_driver_state *vio,
 	if (vio->dr_state & VIO_DR_STATE_RXREG)
 		goto send_nack;
 
+<<<<<<< HEAD
+=======
+	/* v1.6 and higher, ACK with desired, supported mode, or NACK */
+	if (vio_version_after_eq(vio, 1, 6)) {
+		if (!(pkt->options & VIO_TX_DRING))
+			goto send_nack;
+		pkt->options = VIO_TX_DRING;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(vio->desc_buf);
 
 	vio->desc_buf = kzalloc(pkt->descr_size, GFP_ATOMIC);
@@ -453,12 +513,22 @@ static int process_dreg_info(struct vio_driver_state *vio,
 	pkt->tag.stype = VIO_SUBTYPE_ACK;
 	pkt->dring_ident = ++dr->ident;
 
+<<<<<<< HEAD
 	viodbg(HS, "SEND DRING_REG ACK ident[%llx]\n",
 	       (unsigned long long) pkt->dring_ident);
 
 	len = (sizeof(*pkt) +
 	       (dr->ncookies * sizeof(struct ldc_trans_cookie)));
 	if (send_ctrl(vio, &pkt->tag, len) < 0)
+=======
+	viodbg(HS, "SEND DRING_REG ACK ident[%llx] "
+	       "ndesc[%u] dsz[%u] opt[0x%x] ncookies[%u]\n",
+	       (unsigned long long) pkt->dring_ident,
+	       pkt->num_descr, pkt->descr_size, pkt->options,
+	       pkt->num_cookies);
+
+	if (send_ctrl(vio, &pkt->tag, struct_size(pkt, cookies, dr->ncookies)) < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto send_nack;
 
 	vio->dr_state |= VIO_DR_STATE_RXREG;
@@ -636,10 +706,20 @@ int vio_control_pkt_engine(struct vio_driver_state *vio, void *pkt)
 		err = process_unknown(vio, pkt);
 		break;
 	}
+<<<<<<< HEAD
 	if (!err &&
 	    vio->hs_state != prev_state &&
 	    (vio->hs_state & VIO_HS_COMPLETE))
 		vio->ops->handshake_complete(vio);
+=======
+
+	if (!err &&
+	    vio->hs_state != prev_state &&
+	    (vio->hs_state & VIO_HS_COMPLETE)) {
+		if (vio->ops)
+			vio->ops->handshake_complete(vio);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -714,7 +794,11 @@ int vio_ldc_alloc(struct vio_driver_state *vio,
 	cfg.tx_irq = vio->vdev->tx_irq;
 	cfg.rx_irq = vio->vdev->rx_irq;
 
+<<<<<<< HEAD
 	lp = ldc_alloc(vio->vdev->channel_id, &cfg, event_arg);
+=======
+	lp = ldc_alloc(vio->vdev->channel_id, &cfg, event_arg, vio->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(lp))
 		return PTR_ERR(lp);
 
@@ -746,7 +830,11 @@ void vio_port_up(struct vio_driver_state *vio)
 
 	err = 0;
 	if (state == LDC_STATE_INIT) {
+<<<<<<< HEAD
 		err = ldc_bind(vio->lp, vio->name);
+=======
+		err = ldc_bind(vio->lp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			printk(KERN_WARNING "%s: Port %lu bind failed, "
 			       "err=%d\n",
@@ -754,7 +842,15 @@ void vio_port_up(struct vio_driver_state *vio)
 	}
 
 	if (!err) {
+<<<<<<< HEAD
 		err = ldc_connect(vio->lp);
+=======
+		if (ldc_mode(vio->lp) == LDC_MODE_RAW)
+			ldc_set_state(vio->lp, LDC_STATE_CONNECTED);
+		else
+			err = ldc_connect(vio->lp);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			printk(KERN_WARNING "%s: Port %lu connect failed, "
 			       "err=%d\n",
@@ -771,9 +867,15 @@ void vio_port_up(struct vio_driver_state *vio)
 }
 EXPORT_SYMBOL(vio_port_up);
 
+<<<<<<< HEAD
 static void vio_port_timer(unsigned long _arg)
 {
 	struct vio_driver_state *vio = (struct vio_driver_state *) _arg;
+=======
+static void vio_port_timer(struct timer_list *t)
+{
+	struct vio_driver_state *vio = from_timer(vio, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vio_port_up(vio);
 }
@@ -788,16 +890,31 @@ int vio_driver_init(struct vio_driver_state *vio, struct vio_dev *vdev,
 	case VDEV_NETWORK_SWITCH:
 	case VDEV_DISK:
 	case VDEV_DISK_SERVER:
+<<<<<<< HEAD
+=======
+	case VDEV_CONSOLE_CON:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (!ops->send_attr ||
 	    !ops->handle_attr ||
 	    !ops->handshake_complete)
 		return -EINVAL;
+=======
+	if (dev_class == VDEV_NETWORK ||
+	    dev_class == VDEV_NETWORK_SWITCH ||
+	    dev_class == VDEV_DISK ||
+	    dev_class == VDEV_DISK_SERVER) {
+		if (!ops || !ops->send_attr || !ops->handle_attr ||
+		    !ops->handshake_complete)
+			return -EINVAL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ver_table || ver_table_size < 0)
 		return -EINVAL;
@@ -817,7 +934,11 @@ int vio_driver_init(struct vio_driver_state *vio, struct vio_dev *vdev,
 
 	vio->ops = ops;
 
+<<<<<<< HEAD
 	setup_timer(&vio->timer, vio_port_timer, (unsigned long) vio);
+=======
+	timer_setup(&vio->timer, vio_port_timer, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

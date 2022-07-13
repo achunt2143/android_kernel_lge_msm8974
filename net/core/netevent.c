@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Network event notifiers
  *
@@ -5,11 +9,14 @@
  *      Tom Tucker             <tom@opengridcomputing.com>
  *      Steve Wise             <swise@opengridcomputing.com>
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
  *      as published by the Free Software Foundation; either version
  *      2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Fixes:
  */
 
@@ -31,15 +38,23 @@ static ATOMIC_NOTIFIER_HEAD(netevent_notif_chain);
  */
 int register_netevent_notifier(struct notifier_block *nb)
 {
+<<<<<<< HEAD
 	int err;
 
 	err = atomic_notifier_chain_register(&netevent_notif_chain, nb);
 	return err;
+=======
+	return atomic_notifier_chain_register(&netevent_notif_chain, nb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(register_netevent_notifier);
 
 /**
+<<<<<<< HEAD
  *	netevent_unregister_notifier - unregister a netevent notifier block
+=======
+ *	unregister_netevent_notifier - unregister a netevent notifier block
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@nb: notifier
  *
  *	Unregister a notifier previously registered by

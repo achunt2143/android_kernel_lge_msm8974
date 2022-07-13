@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Hidraw Userspace Example
  *
@@ -17,10 +21,16 @@
 /*
  * Ugly hack to work around failing compilation on systems that don't
  * yet populate new version of hidraw.h to userspace.
+<<<<<<< HEAD
  *
  * If you need this, please have your distro update the kernel headers.
  */
 #ifndef HIDIOCSFEATURE
+=======
+ */
+#ifndef HIDIOCSFEATURE
+#warning Please have your distro update the userspace kernel headers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HIDIOCSFEATURE(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x06, len)
 #define HIDIOCGFEATURE(len)    _IOC(_IOC_WRITE|_IOC_READ, 'H', 0x07, len)
 #endif
@@ -47,10 +57,21 @@ int main(int argc, char **argv)
 	char buf[256];
 	struct hidraw_report_descriptor rpt_desc;
 	struct hidraw_devinfo info;
+<<<<<<< HEAD
 
 	/* Open the Device with non-blocking reads. In real life,
 	   don't use a hard coded path; use libudev instead. */
 	fd = open("/dev/hidraw0", O_RDWR|O_NONBLOCK);
+=======
+	char *device = "/dev/hidraw0";
+
+	if (argc > 1)
+		device = argv[1];
+
+	/* Open the Device with non-blocking reads. In real life,
+	   don't use a hard coded path; use libudev instead. */
+	fd = open(device, O_RDWR|O_NONBLOCK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fd < 0) {
 		perror("Unable to open device");
@@ -115,7 +136,11 @@ int main(int argc, char **argv)
 	if (res < 0)
 		perror("HIDIOCSFEATURE");
 	else
+<<<<<<< HEAD
 		printf("ioctl HIDIOCGFEATURE returned: %d\n", res);
+=======
+		printf("ioctl HIDIOCSFEATURE returned: %d\n", res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get Feature */
 	buf[0] = 0x9; /* Report Number */
@@ -124,7 +149,11 @@ int main(int argc, char **argv)
 		perror("HIDIOCGFEATURE");
 	} else {
 		printf("ioctl HIDIOCGFEATURE returned: %d\n", res);
+<<<<<<< HEAD
 		printf("Report data (not containing the report number):\n\t");
+=======
+		printf("Report data:\n\t");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < res; i++)
 			printf("%hhx ", buf[i]);
 		puts("\n");

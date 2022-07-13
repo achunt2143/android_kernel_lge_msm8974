@@ -1,11 +1,16 @@
+<<<<<<< HEAD
 #ifndef _HIDDEV_H
 #define _HIDDEV_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999-2000 Vojtech Pavlik
  *
  *  Sponsored by SuSE
  */
+<<<<<<< HEAD
 
 /*
  * This program is free software; you can redistribute it and/or modify
@@ -21,11 +26,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 
  * Should you need to contact me, the author, you can do so either by
  * e-mail - mail your message to <vojtech@suse.cz>, or by paper mail:
  * Vojtech Pavlik, Ucitelska 1576, Prague 8, 182 00 Czech Republic
  */
+<<<<<<< HEAD
 
 #include <linux/types.h>
 
@@ -210,11 +219,33 @@ struct hiddev_usage_ref_multi {
 
 
 #ifdef __KERNEL__
+=======
+#ifndef _HIDDEV_H
+#define _HIDDEV_H
+
+#include <uapi/linux/hiddev.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * In-kernel definitions.
  */
 
+<<<<<<< HEAD
+=======
+struct hiddev {
+	int minor;
+	int exist;
+	int open;
+	struct mutex existancelock;
+	wait_queue_head_t wait;
+	struct hid_device *hid;
+	struct list_head list;
+	spinlock_t list_lock;
+	bool initialized;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hid_device;
 struct hid_usage;
 struct hid_field;
@@ -237,4 +268,7 @@ static inline void hiddev_report_event(struct hid_device *hid, struct hid_report
 #endif
 
 #endif
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

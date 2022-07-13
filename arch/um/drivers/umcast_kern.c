@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * user-mode-linux networking multicast transport
  * Copyright (C) 2001 by Harald Welte <laforge@gnumonks.org>
@@ -8,6 +12,7 @@
  * James Leu (jleu@mindspring.net).
  * Copyright (C) 2001 by various other people who didn't put their name here.
  *
+<<<<<<< HEAD
  * Licensed under the GPL.
  */
 
@@ -15,6 +20,14 @@
 #include <linux/netdevice.h>
 #include "umcast.h"
 #include "net_kern.h"
+=======
+ */
+
+#include <linux/init.h>
+#include <linux/netdevice.h>
+#include "umcast.h"
+#include <net_kern.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct umcast_init {
 	char *addr;

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel 10 Gigabit PCI Express Linux driver
@@ -24,27 +25,48 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Copyright(c) 1999 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _DCB_82599_CONFIG_H_
 #define _DCB_82599_CONFIG_H_
 
 /* DCB register definitions */
 #define IXGBE_RTTDCS_TDPAC      0x00000001 /* 0 Round Robin,
+<<<<<<< HEAD
                                             * 1 WSP - Weighted Strict Priority
                                             */
 #define IXGBE_RTTDCS_VMPAC      0x00000002 /* 0 Round Robin,
                                             * 1 WRR - Weighted Round Robin
                                             */
+=======
+					    * 1 WSP - Weighted Strict Priority
+					    */
+#define IXGBE_RTTDCS_VMPAC      0x00000002 /* 0 Round Robin,
+					    * 1 WRR - Weighted Round Robin
+					    */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IXGBE_RTTDCS_TDRM       0x00000010 /* Transmit Recycle Mode */
 #define IXGBE_RTTDCS_ARBDIS     0x00000040 /* DCB arbiter disable */
 #define IXGBE_RTTDCS_BDPM       0x00400000 /* Bypass Data Pipe - must clear! */
 #define IXGBE_RTTDCS_BPBFSM     0x00800000 /* Bypass PB Free Space - must
+<<<<<<< HEAD
                                              * clear!
                                              */
+=======
+					     * clear!
+					     */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IXGBE_RTTDCS_SPEED_CHG  0x80000000 /* Link speed change */
 
 /* Receive UP2TC mapping */
 #define IXGBE_RTRUP2TC_UP_SHIFT 3
+<<<<<<< HEAD
+=======
+#define IXGBE_RTRUP2TC_UP_MASK	7
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Transmit UP2TC mapping */
 #define IXGBE_RTTUP2TC_UP_SHIFT 3
 
@@ -54,11 +76,19 @@
 #define IXGBE_RTRPT4C_LSP       0x80000000 /* LSP enable bit */
 
 #define IXGBE_RDRXCTL_MPBEN     0x00000010 /* DMA config for multiple packet
+<<<<<<< HEAD
                                             * buffers enable
                                             */
 #define IXGBE_RDRXCTL_MCEN      0x00000040 /* DMA config for multiple cores
                                             * (RSS) enable
                                             */
+=======
+					    * buffers enable
+					    */
+#define IXGBE_RDRXCTL_MCEN      0x00000040 /* DMA config for multiple cores
+					    * (RSS) enable
+					    */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* RTRPCS Bit Masks */
 #define IXGBE_RTRPCS_RRM        0x00000002 /* Receive Recycle Mode enable */
@@ -79,8 +109,13 @@
 
 /* RTTPCS Bit Masks */
 #define IXGBE_RTTPCS_TPPAC      0x00000020 /* 0 Round Robin,
+<<<<<<< HEAD
                                             * 1 SP - Strict Priority
                                             */
+=======
+					    * 1 SP - Strict Priority
+					    */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IXGBE_RTTPCS_ARBDIS     0x00000040 /* Arbiter disable */
 #define IXGBE_RTTPCS_TPRM       0x00000100 /* Transmit Recycle Mode enable */
 #define IXGBE_RTTPCS_ARBD_SHIFT 22
@@ -93,6 +128,7 @@
 /* DCB hardware-specific driver APIs */
 
 /* DCB PFC functions */
+<<<<<<< HEAD
 s32 ixgbe_dcb_config_pfc_82599(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc);
 
 /* DCB hw initialization */
@@ -117,6 +153,23 @@ s32 ixgbe_dcb_config_tx_data_arbiter_82599(struct ixgbe_hw *hw,
 						u8 *prio_tc);
 
 s32 ixgbe_dcb_hw_config_82599(struct ixgbe_hw *hw, u8 pfc_en, u16 *refill,
+=======
+int ixgbe_dcb_config_pfc_82599(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc);
+
+/* DCB hw initialization */
+int ixgbe_dcb_config_rx_arbiter_82599(struct ixgbe_hw *hw, u16 *refill,
+				      u16 *max, u8 *bwg_id, u8 *prio_type,
+				      u8 *prio_tc);
+
+int ixgbe_dcb_config_tx_desc_arbiter_82599(struct ixgbe_hw *hw, u16 *refill,
+					   u16 *max, u8 *bwg_id, u8 *prio_type);
+
+int ixgbe_dcb_config_tx_data_arbiter_82599(struct ixgbe_hw *hw, u16 *refill,
+					   u16 *max, u8 *bwg_id, u8 *prio_type,
+					   u8 *prio_tc);
+
+int ixgbe_dcb_hw_config_82599(struct ixgbe_hw *hw, u8 pfc_en, u16 *refill,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      u16 *max, u8 *bwg_id, u8 *prio_type,
 			      u8 *prio_tc);
 

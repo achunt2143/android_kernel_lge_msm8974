@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Penmount serial touchscreen driver
  *
@@ -8,11 +12,14 @@
  * Copyright (c) 2004 Vojtech Pavlik
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation.
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -21,7 +28,10 @@
 #include <linux/input.h>
 #include <linux/input/mt.h>
 #include <linux/serio.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"PenMount serial touchscreen driver"
 
@@ -264,7 +274,11 @@ static int pm_connect(struct serio *serio, struct serio_driver *drv)
 	input_set_abs_params(pm->dev, ABS_Y, 0, max_y, 0, 0);
 
 	if (pm->maxcontacts > 1) {
+<<<<<<< HEAD
 		input_mt_init_slots(pm->dev, pm->maxcontacts);
+=======
+		input_mt_init_slots(pm->dev, pm->maxcontacts, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_set_abs_params(pm->dev,
 				     ABS_MT_POSITION_X, 0, max_x, 0, 0);
 		input_set_abs_params(pm->dev,
@@ -294,7 +308,11 @@ static int pm_connect(struct serio *serio, struct serio_driver *drv)
  * The serio driver structure.
  */
 
+<<<<<<< HEAD
 static struct serio_device_id pm_serio_ids[] = {
+=======
+static const struct serio_device_id pm_serio_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_PENMOUNT,
@@ -317,6 +335,7 @@ static struct serio_driver pm_drv = {
 	.disconnect	= pm_disconnect,
 };
 
+<<<<<<< HEAD
 /*
  * The functions for inserting/removing us as a module.
  */
@@ -333,3 +352,6 @@ static void __exit pm_exit(void)
 
 module_init(pm_init);
 module_exit(pm_exit);
+=======
+module_serio_driver(pm_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

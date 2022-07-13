@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * dsp_pipeline.c: pipelined audio processing
  *
  * Copyright (C) 2007, Nadi Sarrar
  *
  * Nadi Sarrar <nadi@beronet.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -22,6 +27,8 @@
  * The full GNU General Public License is included in this distribution in the
  * file called LICENSE.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -34,9 +41,12 @@
 #include "dsp.h"
 #include "dsp_hwec.h"
 
+<<<<<<< HEAD
 /* uncomment for debugging */
 /*#define PIPELINE_DEBUG*/
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dsp_pipeline_entry {
 	struct mISDN_dsp_element *elem;
 	void                *p;
@@ -51,7 +61,13 @@ struct dsp_element_entry {
 static LIST_HEAD(dsp_elements);
 
 /* sysfs */
+<<<<<<< HEAD
 static struct class *elements_class;
+=======
+static const struct class elements_class = {
+	.name = "dsp_pipeline",
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t
 attr_show_args(struct device *dev, struct device_attribute *attr, char *buf)
@@ -97,12 +113,22 @@ int mISDN_dsp_element_register(struct mISDN_dsp_element *elem)
 	if (!entry)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	entry->elem = elem;
 
 	entry->dev.class = elements_class;
 	entry->dev.release = mISDN_dsp_dev_release;
 	dev_set_drvdata(&entry->dev, elem);
 	dev_set_name(&entry->dev, elem->name);
+=======
+	INIT_LIST_HEAD(&entry->list);
+	entry->elem = elem;
+
+	entry->dev.class = &elements_class;
+	entry->dev.release = mISDN_dsp_dev_release;
+	dev_set_drvdata(&entry->dev, elem);
+	dev_set_name(&entry->dev, "%s", elem->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = device_register(&entry->dev);
 	if (ret) {
 		printk(KERN_ERR "%s: failed to register %s\n",
@@ -121,17 +147,24 @@ int mISDN_dsp_element_register(struct mISDN_dsp_element *elem)
 		}
 	}
 
+<<<<<<< HEAD
 #ifdef PIPELINE_DEBUG
 	printk(KERN_DEBUG "%s: %s registered\n", __func__, elem->name);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err2:
 	device_unregister(&entry->dev);
 	return ret;
 err1:
+<<<<<<< HEAD
 	kfree(entry);
+=======
+	put_device(&entry->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 EXPORT_SYMBOL(mISDN_dsp_element_register);
@@ -146,10 +179,13 @@ void mISDN_dsp_element_unregister(struct mISDN_dsp_element *elem)
 	list_for_each_entry_safe(entry, n, &dsp_elements, list)
 		if (entry->elem == elem) {
 			device_unregister(&entry->dev);
+<<<<<<< HEAD
 #ifdef PIPELINE_DEBUG
 			printk(KERN_DEBUG "%s: %s unregistered\n",
 			       __func__, elem->name);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	printk(KERN_ERR "%s: element %s not in list.\n", __func__, elem->name);
@@ -158,6 +194,7 @@ EXPORT_SYMBOL(mISDN_dsp_element_unregister);
 
 int dsp_pipeline_module_init(void)
 {
+<<<<<<< HEAD
 	elements_class = class_create(THIS_MODULE, "dsp_pipeline");
 	if (IS_ERR(elements_class))
 		return PTR_ERR(elements_class);
@@ -165,6 +202,13 @@ int dsp_pipeline_module_init(void)
 #ifdef PIPELINE_DEBUG
 	printk(KERN_DEBUG "%s: dsp pipeline module initialized\n", __func__);
 #endif
+=======
+	int err;
+
+	err = class_register(&elements_class);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dsp_hwec_init();
 
@@ -177,7 +221,11 @@ void dsp_pipeline_module_exit(void)
 
 	dsp_hwec_exit();
 
+<<<<<<< HEAD
 	class_destroy(elements_class);
+=======
+	class_unregister(&elements_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry_safe(entry, n, &dsp_elements, list) {
 		list_del(&entry->list);
@@ -185,10 +233,13 @@ void dsp_pipeline_module_exit(void)
 		       __func__, entry->elem->name);
 		kfree(entry);
 	}
+<<<<<<< HEAD
 
 #ifdef PIPELINE_DEBUG
 	printk(KERN_DEBUG "%s: dsp pipeline module exited\n", __func__);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int dsp_pipeline_init(struct dsp_pipeline *pipeline)
@@ -198,10 +249,13 @@ int dsp_pipeline_init(struct dsp_pipeline *pipeline)
 
 	INIT_LIST_HEAD(&pipeline->list);
 
+<<<<<<< HEAD
 #ifdef PIPELINE_DEBUG
 	printk(KERN_DEBUG "%s: dsp pipeline ready\n", __func__);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -227,16 +281,24 @@ void dsp_pipeline_destroy(struct dsp_pipeline *pipeline)
 		return;
 
 	_dsp_pipeline_destroy(pipeline);
+<<<<<<< HEAD
 
 #ifdef PIPELINE_DEBUG
 	printk(KERN_DEBUG "%s: dsp pipeline destroyed\n", __func__);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
 {
+<<<<<<< HEAD
 	int len, incomplete = 0, found = 0;
 	char *dup, *tok, *name, *args;
+=======
+	int found = 0;
+	char *dup, *next, *tok, *name, *args;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dsp_element_entry *entry, *n;
 	struct dsp_pipeline_entry *pipeline_entry;
 	struct mISDN_dsp_element *elem;
@@ -247,6 +309,7 @@ int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
 	if (!list_empty(&pipeline->list))
 		_dsp_pipeline_destroy(pipeline);
 
+<<<<<<< HEAD
 	if (!cfg)
 		return 0;
 
@@ -259,6 +322,12 @@ int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
 		return 0;
 	strcpy(dup, cfg);
 	while ((tok = strsep(&dup, "|"))) {
+=======
+	dup = next = kstrdup(cfg, GFP_ATOMIC);
+	if (!dup)
+		return 0;
+	while ((tok = strsep(&next, "|"))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!strlen(tok))
 			continue;
 		name = strsep(&tok, "(");
@@ -276,7 +345,10 @@ int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
 					printk(KERN_ERR "%s: failed to add "
 					       "entry to pipeline: %s (out of "
 					       "memory)\n", __func__, elem->name);
+<<<<<<< HEAD
 					incomplete = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto _out;
 				}
 				pipeline_entry->elem = elem;
@@ -293,6 +365,7 @@ int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
 					if (pipeline_entry->p) {
 						list_add_tail(&pipeline_entry->
 							      list, &pipeline->list);
+<<<<<<< HEAD
 #ifdef PIPELINE_DEBUG
 						printk(KERN_DEBUG "%s: created "
 						       "instance of %s%s%s\n",
@@ -300,13 +373,18 @@ int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
 						       " with args " : "", args ?
 						       args : "");
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					} else {
 						printk(KERN_ERR "%s: failed "
 						       "to add entry to pipeline: "
 						       "%s (new() returned NULL)\n",
 						       __func__, elem->name);
 						kfree(pipeline_entry);
+<<<<<<< HEAD
 						incomplete = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 				}
 				found = 1;
@@ -315,11 +393,17 @@ int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
 
 		if (found)
 			found = 0;
+<<<<<<< HEAD
 		else {
 			printk(KERN_ERR "%s: element not found, skipping: "
 			       "%s\n", __func__, name);
 			incomplete = 1;
 		}
+=======
+		else
+			printk(KERN_ERR "%s: element not found, skipping: "
+			       "%s\n", __func__, name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 _out:
@@ -328,10 +412,13 @@ _out:
 	else
 		pipeline->inuse = 0;
 
+<<<<<<< HEAD
 #ifdef PIPELINE_DEBUG
 	printk(KERN_DEBUG "%s: dsp pipeline built%s: %s\n",
 	       __func__, incomplete ? " incomplete" : "", cfg);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(dup);
 	return 0;
 }

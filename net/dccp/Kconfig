@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 menuconfig IP_DCCP
 	tristate "The DCCP Protocol (EXPERIMENTAL)"
 	depends on INET && EXPERIMENTAL
@@ -5,6 +6,16 @@ menuconfig IP_DCCP
 	  Datagram Congestion Control Protocol (RFC 4340)
 
 	  From http://www.ietf.org/rfc/rfc4340.txt:
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+menuconfig IP_DCCP
+	tristate "The DCCP Protocol"
+	depends on INET
+	help
+	  Datagram Congestion Control Protocol (RFC 4340)
+
+	  From https://www.ietf.org/rfc/rfc4340.txt:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  The Datagram Congestion Control Protocol (DCCP) is a transport
 	  protocol that implements bidirectional, unicast connections of
@@ -31,7 +42,11 @@ menu "DCCP Kernel Hacking"
 
 config IP_DCCP_DEBUG
 	bool "DCCP debug messages"
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Only use this if you're hacking DCCP.
 
 	  When compiling DCCP as a module, this debugging output can be toggled
@@ -39,6 +54,7 @@ config IP_DCCP_DEBUG
 
 	  Just say N.
 
+<<<<<<< HEAD
 config NET_DCCPPROBE
 	tristate "DCCP connection probing"
 	depends on PROC_FS && KPROBES
@@ -56,6 +72,8 @@ config NET_DCCPPROBE
 	To compile this code as a module, choose M here: the
 	module will be called dccp_probe.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endmenu
 

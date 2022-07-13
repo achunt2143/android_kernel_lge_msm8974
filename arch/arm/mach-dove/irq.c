@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-dove/irq.c
  *
  * Dove IRQ handling.
+<<<<<<< HEAD
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2.  This program is licensed "as is" without any
@@ -99,20 +104,84 @@ static void pmu_irq_handler(unsigned int irq, struct irq_desc *desc)
 			continue;
 		irq = pmu_to_irq(irq);
 		generic_handle_irq(irq);
+=======
+ */
+#include <linux/init.h>
+#include <linux/irq.h>
+#include <linux/io.h>
+#include <asm/exception.h>
+
+#include <plat/irq.h>
+#include <plat/orion-gpio.h>
+
+#include "pm.h"
+#include "bridge-regs.h"
+#include "common.h"
+
+static int __initdata gpio0_irqs[4] = {
+	IRQ_DOVE_GPIO_0_7,
+	IRQ_DOVE_GPIO_8_15,
+	IRQ_DOVE_GPIO_16_23,
+	IRQ_DOVE_GPIO_24_31,
+};
+
+static int __initdata gpio1_irqs[4] = {
+	IRQ_DOVE_HIGH_GPIO,
+	0,
+	0,
+	0,
+};
+
+static int __initdata gpio2_irqs[4] = {
+	0,
+	0,
+	0,
+	0,
+};
+
+static void __iomem *dove_irq_base = IRQ_VIRT_BASE;
+
+static asmlinkage void
+__exception_irq_entry dove_legacy_handle_irq(struct pt_regs *regs)
+{
+	u32 stat;
+
+	stat = readl_relaxed(dove_irq_base + IRQ_CAUSE_LOW_OFF);
+	stat &= readl_relaxed(dove_irq_base + IRQ_MASK_LOW_OFF);
+	if (stat) {
+		unsigned int hwirq = 1 + __fls(stat);
+		handle_IRQ(hwirq, regs);
+		return;
+	}
+	stat = readl_relaxed(dove_irq_base + IRQ_CAUSE_HIGH_OFF);
+	stat &= readl_relaxed(dove_irq_base + IRQ_MASK_HIGH_OFF);
+	if (stat) {
+		unsigned int hwirq = 33 + __fls(stat);
+		handle_IRQ(hwirq, regs);
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 void __init dove_init_irq(void)
 {
+<<<<<<< HEAD
 	int i;
 
 	orion_irq_init(0, (void __iomem *)(IRQ_VIRT_BASE + IRQ_MASK_LOW_OFF));
 	orion_irq_init(32, (void __iomem *)(IRQ_VIRT_BASE + IRQ_MASK_HIGH_OFF));
+=======
+	orion_irq_init(1, IRQ_VIRT_BASE + IRQ_MASK_LOW_OFF);
+	orion_irq_init(33, IRQ_VIRT_BASE + IRQ_MASK_HIGH_OFF);
+
+	set_handle_irq(dove_legacy_handle_irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Initialize gpiolib for GPIOs 0-71.
 	 */
 	orion_gpio_init(0, 32, DOVE_GPIO_LO_VIRT_BASE, 0,
+<<<<<<< HEAD
 			IRQ_DOVE_GPIO_START);
 	irq_set_chained_handler(IRQ_DOVE_GPIO_0_7, gpio_irq_handler);
 	irq_set_chained_handler(IRQ_DOVE_GPIO_8_15, gpio_irq_handler);
@@ -138,4 +207,13 @@ void __init dove_init_irq(void)
 		set_irq_flags(i, IRQF_VALID);
 	}
 	irq_set_chained_handler(IRQ_DOVE_PMU, pmu_irq_handler);
+=======
+			IRQ_DOVE_GPIO_START, gpio0_irqs);
+
+	orion_gpio_init(32, 32, DOVE_GPIO_HI_VIRT_BASE, 0,
+			IRQ_DOVE_GPIO_START + 32, gpio1_irqs);
+
+	orion_gpio_init(64, 8, DOVE_GPIO2_VIRT_BASE, 0,
+			IRQ_DOVE_GPIO_START + 64, gpio2_irqs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

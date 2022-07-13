@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 SPI (Serial Peripheral Interface) busses
 
 SPI busses can be described with a node for the SPI master device
@@ -55,3 +56,6 @@ SPI example for an MPC5200 SPI bus:
 			reg = <1>;
 		};
 	};
+=======
+This file has moved to spi-controller.yaml.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

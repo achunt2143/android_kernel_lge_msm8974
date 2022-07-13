@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for Freescale's 3-Axis Accelerometer MMA8450
  *
  *  Copyright (C) 2011 Freescale Semiconductor, Inc. All Rights Reserved.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -23,8 +30,13 @@
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/input-polldev.h>
 #include <linux/of_device.h>
+=======
+#include <linux/input.h>
+#include <linux/mod_devicetable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MMA8450_DRV_NAME	"mma8450"
 
@@ -52,6 +64,7 @@
 #define MMA8450_CTRL_REG1	0x38
 #define MMA8450_CTRL_REG2	0x39
 
+<<<<<<< HEAD
 /* mma8450 status */
 struct mma8450 {
 	struct i2c_client	*client;
@@ -61,6 +74,10 @@ struct mma8450 {
 static int mma8450_read(struct mma8450 *m, unsigned off)
 {
 	struct i2c_client *c = m->client;
+=======
+static int mma8450_read(struct i2c_client *c, unsigned int off)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = i2c_smbus_read_byte_data(c, off);
@@ -72,9 +89,14 @@ static int mma8450_read(struct mma8450 *m, unsigned off)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int mma8450_write(struct mma8450 *m, unsigned off, u8 v)
 {
 	struct i2c_client *c = m->client;
+=======
+static int mma8450_write(struct i2c_client *c, unsigned int off, u8 v)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	error = i2c_smbus_write_byte_data(c, off, v);
@@ -88,10 +110,16 @@ static int mma8450_write(struct mma8450 *m, unsigned off, u8 v)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mma8450_read_block(struct mma8450 *m, unsigned off,
 			      u8 *buf, size_t size)
 {
 	struct i2c_client *c = m->client;
+=======
+static int mma8450_read_block(struct i2c_client *c, unsigned int off,
+			      u8 *buf, size_t size)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = i2c_smbus_read_i2c_block_data(c, off, size, buf);
@@ -105,20 +133,31 @@ static int mma8450_read_block(struct mma8450 *m, unsigned off,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void mma8450_poll(struct input_polled_dev *dev)
 {
 	struct mma8450 *m = dev->private;
+=======
+static void mma8450_poll(struct input_dev *input)
+{
+	struct i2c_client *c = input_get_drvdata(input);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int x, y, z;
 	int ret;
 	u8 buf[6];
 
+<<<<<<< HEAD
 	ret = mma8450_read(m, MMA8450_STATUS);
+=======
+	ret = mma8450_read(c, MMA8450_STATUS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return;
 
 	if (!(ret & MMA8450_STATUS_ZXYDR))
 		return;
 
+<<<<<<< HEAD
 	ret = mma8450_read_block(m, MMA8450_OUT_X_LSB, buf, sizeof(buf));
 	if (ret < 0)
 		return;
@@ -143,12 +182,39 @@ static void mma8450_open(struct input_polled_dev *dev)
 	err = mma8450_write(m, MMA8450_XYZ_DATA_CFG, 0x07);
 	if (err)
 		return;
+=======
+	ret = mma8450_read_block(c, MMA8450_OUT_X_LSB, buf, sizeof(buf));
+	if (ret < 0)
+		return;
+
+	x = ((int)(s8)buf[1] << 4) | (buf[0] & 0xf);
+	y = ((int)(s8)buf[3] << 4) | (buf[2] & 0xf);
+	z = ((int)(s8)buf[5] << 4) | (buf[4] & 0xf);
+
+	input_report_abs(input, ABS_X, x);
+	input_report_abs(input, ABS_Y, y);
+	input_report_abs(input, ABS_Z, z);
+	input_sync(input);
+}
+
+/* Initialize the MMA8450 chip */
+static int mma8450_open(struct input_dev *input)
+{
+	struct i2c_client *c = input_get_drvdata(input);
+	int err;
+
+	/* enable all events from X/Y/Z, no FIFO */
+	err = mma8450_write(c, MMA8450_XYZ_DATA_CFG, 0x07);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Sleep mode poll rate - 50Hz
 	 * System output data rate - 400Hz
 	 * Full scale selection - Active, +/- 2G
 	 */
+<<<<<<< HEAD
 	err = mma8450_write(m, MMA8450_CTRL_REG1, 0x01);
 	if (err < 0)
 		return;
@@ -162,11 +228,28 @@ static void mma8450_close(struct input_polled_dev *dev)
 
 	mma8450_write(m, MMA8450_CTRL_REG1, 0x00);
 	mma8450_write(m, MMA8450_CTRL_REG2, 0x01);
+=======
+	err = mma8450_write(c, MMA8450_CTRL_REG1, 0x01);
+	if (err)
+		return err;
+
+	msleep(MODE_CHANGE_DELAY_MS);
+	return 0;
+}
+
+static void mma8450_close(struct input_dev *input)
+{
+	struct i2c_client *c = input_get_drvdata(input);
+
+	mma8450_write(c, MMA8450_CTRL_REG1, 0x00);
+	mma8450_write(c, MMA8450_CTRL_REG2, 0x01);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * I2C init/probing/exit functions
  */
+<<<<<<< HEAD
 static int __devinit mma8450_probe(struct i2c_client *c,
 				   const struct i2c_device_id *id)
 {
@@ -220,6 +303,43 @@ static int __devexit mma8450_remove(struct i2c_client *c)
 	input_unregister_polled_device(idev);
 	input_free_polled_device(idev);
 	kfree(m);
+=======
+static int mma8450_probe(struct i2c_client *c)
+{
+	struct input_dev *input;
+	int err;
+
+	input = devm_input_allocate_device(&c->dev);
+	if (!input)
+		return -ENOMEM;
+
+	input_set_drvdata(input, c);
+
+	input->name = MMA8450_DRV_NAME;
+	input->id.bustype = BUS_I2C;
+
+	input->open = mma8450_open;
+	input->close = mma8450_close;
+
+	input_set_abs_params(input, ABS_X, -2048, 2047, 32, 32);
+	input_set_abs_params(input, ABS_Y, -2048, 2047, 32, 32);
+	input_set_abs_params(input, ABS_Z, -2048, 2047, 32, 32);
+
+	err = input_setup_polling(input, mma8450_poll);
+	if (err) {
+		dev_err(&c->dev, "failed to set up polling\n");
+		return err;
+	}
+
+	input_set_poll_interval(input, POLL_INTERVAL);
+	input_set_max_poll_interval(input, POLL_INTERVAL_MAX);
+
+	err = input_register_device(input);
+	if (err) {
+		dev_err(&c->dev, "failed to register input device\n");
+		return err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -239,11 +359,17 @@ MODULE_DEVICE_TABLE(of, mma8450_dt_ids);
 static struct i2c_driver mma8450_driver = {
 	.driver = {
 		.name	= MMA8450_DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.of_match_table = mma8450_dt_ids,
 	},
 	.probe		= mma8450_probe,
 	.remove		= __devexit_p(mma8450_remove),
+=======
+		.of_match_table = mma8450_dt_ids,
+	},
+	.probe		= mma8450_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= mma8450_id,
 };
 

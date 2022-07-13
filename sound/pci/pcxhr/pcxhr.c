@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram pcxhr compatible soundcards
  *
  * main file with alsa callbacks
  *
  * Copyright (c) 2004 by Digigram <alsa@digigram.com>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -48,7 +55,10 @@ MODULE_AUTHOR("Markus Bollinger <bollinger@digigram.com>, "
 	      "Marc Titinger <titinger@digigram.com>");
 MODULE_DESCRIPTION("Digigram " DRIVER_NAME " " PCXHR_DRIVER_VERSION_STRING);
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Digigram," DRIVER_NAME "}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -91,10 +101,25 @@ enum {
 	PCI_ID_PCX924E,
 	PCI_ID_PCX924HRMIC,
 	PCI_ID_PCX924E_MIC,
+<<<<<<< HEAD
 	PCI_ID_LAST
 };
 
 static DEFINE_PCI_DEVICE_TABLE(pcxhr_ids) = {
+=======
+	PCI_ID_VX442HR,
+	PCI_ID_PCX442HR,
+	PCI_ID_VX442E,
+	PCI_ID_PCX442E,
+	PCI_ID_VX822HR,
+	PCI_ID_PCX822HR,
+	PCI_ID_VX822E,
+	PCI_ID_PCX822E,
+	PCI_ID_LAST
+};
+
+static const struct pci_device_id pcxhr_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x10b5, 0x9656, 0x1369, 0xb001, 0, 0, PCI_ID_VX882HR, },
 	{ 0x10b5, 0x9656, 0x1369, 0xb101, 0, 0, PCI_ID_PCX882HR, },
 	{ 0x10b5, 0x9656, 0x1369, 0xb201, 0, 0, PCI_ID_VX881HR, },
@@ -121,6 +146,17 @@ static DEFINE_PCI_DEVICE_TABLE(pcxhr_ids) = {
 	{ 0x10b5, 0x9056, 0x1369, 0xbb21, 0, 0, PCI_ID_PCX924E, },
 	{ 0x10b5, 0x9056, 0x1369, 0xbf01, 0, 0, PCI_ID_PCX924HRMIC, },
 	{ 0x10b5, 0x9056, 0x1369, 0xbf21, 0, 0, PCI_ID_PCX924E_MIC, },
+<<<<<<< HEAD
+=======
+	{ 0x10b5, 0x9656, 0x1369, 0xd001, 0, 0, PCI_ID_VX442HR, },
+	{ 0x10b5, 0x9656, 0x1369, 0xd101, 0, 0, PCI_ID_PCX442HR, },
+	{ 0x10b5, 0x9056, 0x1369, 0xd021, 0, 0, PCI_ID_VX442E, },
+	{ 0x10b5, 0x9056, 0x1369, 0xd121, 0, 0, PCI_ID_PCX442E, },
+	{ 0x10b5, 0x9656, 0x1369, 0xd201, 0, 0, PCI_ID_VX822HR, },
+	{ 0x10b5, 0x9656, 0x1369, 0xd301, 0, 0, PCI_ID_PCX822HR, },
+	{ 0x10b5, 0x9056, 0x1369, 0xd221, 0, 0, PCI_ID_VX822E, },
+	{ 0x10b5, 0x9056, 0x1369, 0xd321, 0, 0, PCI_ID_PCX822E, },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, }
 };
 
@@ -133,7 +169,11 @@ struct board_parameters {
 	short fw_file_set;
 	short firmware_num;
 };
+<<<<<<< HEAD
 static struct board_parameters pcxhr_board_params[] = {
+=======
+static const struct board_parameters pcxhr_board_params[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 [PCI_ID_VX882HR] =      { "VX882HR",      4, 4, 0, 41 },
 [PCI_ID_PCX882HR] =     { "PCX882HR",     4, 4, 0, 41 },
 [PCI_ID_VX881HR] =      { "VX881HR",      4, 4, 0, 41 },
@@ -160,6 +200,17 @@ static struct board_parameters pcxhr_board_params[] = {
 [PCI_ID_PCX924E] =      { "PCX924e",      1, 1, 5, 44 },
 [PCI_ID_PCX924HRMIC] =  { "PCX924HR-Mic", 1, 1, 5, 44 },
 [PCI_ID_PCX924E_MIC] =  { "PCX924e-Mic",  1, 1, 5, 44 },
+<<<<<<< HEAD
+=======
+[PCI_ID_VX442HR] =      { "VX442HR",      2, 2, 0, 41 },
+[PCI_ID_PCX442HR] =     { "PCX442HR",     2, 2, 0, 41 },
+[PCI_ID_VX442E] =       { "VX442e",       2, 2, 1, 41 },
+[PCI_ID_PCX442E] =      { "PCX442e",      2, 2, 1, 41 },
+[PCI_ID_VX822HR] =      { "VX822HR",      4, 1, 2, 42 },
+[PCI_ID_PCX822HR] =     { "PCX822HR",     4, 1, 2, 42 },
+[PCI_ID_VX822E] =       { "VX822e",       4, 1, 3, 42 },
+[PCI_ID_PCX822E] =      { "PCX822e",      4, 1, 3, 42 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* boards without hw AES1 and SRC onboard are all using fw_file_set==4 */
@@ -260,7 +311,11 @@ static int pcxhr_get_clock_reg(struct pcxhr_mgr *mgr, unsigned int rate,
 			rmh.cmd_len = 3;
 			err = pcxhr_send_msg(mgr, &rmh);
 			if (err < 0) {
+<<<<<<< HEAD
 				snd_printk(KERN_ERR
+=======
+				dev_err(&mgr->pci->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   "error CMD_ACCESS_IO_WRITE "
 					   "for PLL register : %x!\n", err);
 				return err;
@@ -333,7 +388,11 @@ static int pcxhr_sub_set_clock(struct pcxhr_mgr *mgr,
 			return err;
 	}
 	/* set the new frequency */
+<<<<<<< HEAD
 	snd_printdd("clock register : set %x\n", val);
+=======
+	dev_dbg(&mgr->pci->dev, "clock register : set %x\n", val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = pcxhr_write_io_num_reg_cont(mgr, PCXHR_FREQ_REG_MASK,
 					  val, changed);
 	if (err)
@@ -356,7 +415,11 @@ static int pcxhr_sub_set_clock(struct pcxhr_mgr *mgr,
 		mgr->codec_speed = speed;	/* save new codec speed */
 	}
 
+<<<<<<< HEAD
 	snd_printdd("pcxhr_sub_set_clock to %dHz (realfreq=%d)\n",
+=======
+	dev_dbg(&mgr->pci->dev, "%s to %dHz (realfreq=%d)\n", __func__,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    rate, realfreq);
 	return 0;
 }
@@ -456,7 +519,11 @@ static int pcxhr_sub_get_external_clock(struct pcxhr_mgr *mgr,
 	case REG_STATUS_SYNC_192000 :	rate = 192000; break;
 	default: rate = 0;
 	}
+<<<<<<< HEAD
 	snd_printdd("External clock is at %d Hz\n", rate);
+=======
+	dev_dbg(&mgr->pci->dev, "External clock is at %d Hz\n", rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*sample_rate = rate;
 	return 0;
 }
@@ -477,10 +544,17 @@ int pcxhr_get_external_clock(struct pcxhr_mgr *mgr,
 /*
  *  start or stop playback/capture substream
  */
+<<<<<<< HEAD
 static int pcxhr_set_stream_state(struct pcxhr_stream *stream)
 {
 	int err;
 	struct snd_pcxhr *chip;
+=======
+static int pcxhr_set_stream_state(struct snd_pcxhr *chip,
+				  struct pcxhr_stream *stream)
+{
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pcxhr_rmh rmh;
 	int stream_mask, start;
 
@@ -488,8 +562,13 @@ static int pcxhr_set_stream_state(struct pcxhr_stream *stream)
 		start = 1;
 	else {
 		if (stream->status != PCXHR_STREAM_STATUS_SCHEDULE_STOP) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "ERROR pcxhr_set_stream_state "
 				   "CANNOT be stopped\n");
+=======
+			dev_err(chip->card->dev,
+				"%s CANNOT be stopped\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		start = 0;
@@ -513,8 +592,13 @@ static int pcxhr_set_stream_state(struct pcxhr_stream *stream)
 
 	err = pcxhr_send_msg(chip->mgr, &rmh);
 	if (err)
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "ERROR pcxhr_set_stream_state err=%x;\n",
 			   err);
+=======
+		dev_err(chip->card->dev,
+			"ERROR %s err=%x;\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stream->status =
 	  start ? PCXHR_STREAM_STATUS_STARTED : PCXHR_STREAM_STATUS_STOPPED;
 	return err;
@@ -536,6 +620,10 @@ static int pcxhr_set_format(struct pcxhr_stream *stream)
 	struct pcxhr_rmh rmh;
 	unsigned int header;
 
+<<<<<<< HEAD
+=======
+	chip = snd_pcm_substream_chip(stream->substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (stream->format) {
 	case SNDRV_PCM_FORMAT_U8:
 		header = HEADER_FMT_BASE_LIN;
@@ -558,11 +646,18 @@ static int pcxhr_set_format(struct pcxhr_stream *stream)
 		header = HEADER_FMT_BASE_FLOAT | HEADER_FMT_INTEL;
 		break;
 	default:
+<<<<<<< HEAD
 		snd_printk(KERN_ERR
 			   "error pcxhr_set_format() : unknown format\n");
 		return -EINVAL;
 	}
 	chip = snd_pcm_substream_chip(stream->substream);
+=======
+		dev_err(chip->card->dev,
+			"error %s() : unknown format\n", __func__);
+		return -EINVAL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sample_rate = chip->mgr->sample_rate;
 	if (sample_rate <= 32000 && sample_rate !=0) {
@@ -604,7 +699,12 @@ static int pcxhr_set_format(struct pcxhr_stream *stream)
 	rmh.cmd[rmh.cmd_len++] = (header & 0xff) << 16;
 	err = pcxhr_send_msg(chip->mgr, &rmh);
 	if (err)
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "ERROR pcxhr_set_format err=%x;\n", err);
+=======
+		dev_err(chip->card->dev,
+			"ERROR %s err=%x;\n", __func__, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -618,11 +718,19 @@ static int pcxhr_update_r_buffer(struct pcxhr_stream *stream)
 	is_capture = (subs->stream == SNDRV_PCM_STREAM_CAPTURE);
 	stream_num = is_capture ? 0 : subs->number;
 
+<<<<<<< HEAD
 	snd_printdd("pcxhr_update_r_buffer(pcm%c%d) : "
 		    "addr(%p) bytes(%zx) subs(%d)\n",
 		    is_capture ? 'c' : 'p',
 		    chip->chip_idx, (void *)(long)subs->runtime->dma_addr,
 		    subs->runtime->dma_bytes, subs->number);
+=======
+	dev_dbg(chip->card->dev,
+		"%s(pcm%c%d) : addr(%p) bytes(%zx) subs(%d)\n", __func__,
+		is_capture ? 'c' : 'p',
+		chip->chip_idx, (void *)(long)subs->runtime->dma_addr,
+		subs->runtime->dma_bytes, subs->number);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcxhr_init_rmh(&rmh, CMD_UPDATE_R_BUFFERS);
 	pcxhr_set_pipe_cmd_params(&rmh, is_capture, stream->pipe->first_audio,
@@ -641,7 +749,11 @@ static int pcxhr_update_r_buffer(struct pcxhr_stream *stream)
 	rmh.cmd_len = 4;
 	err = pcxhr_send_msg(chip->mgr, &rmh);
 	if (err)
+<<<<<<< HEAD
 		snd_printk(KERN_ERR
+=======
+		dev_err(chip->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   "ERROR CMD_UPDATE_R_BUFFERS err=%x;\n", err);
 	return err;
 }
@@ -662,7 +774,11 @@ static int pcxhr_pipe_sample_count(struct pcxhr_stream *stream,
 		*sample_count = ((snd_pcm_uframes_t)rmh.stat[0]) << 24;
 		*sample_count += (snd_pcm_uframes_t)rmh.stat[1];
 	}
+<<<<<<< HEAD
 	snd_printdd("PIPE_SAMPLE_COUNT = %lx\n", *sample_count);
+=======
+	dev_dbg(chip->card->dev, "PIPE_SAMPLE_COUNT = %lx\n", *sample_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 #endif
@@ -677,6 +793,7 @@ static inline int pcxhr_stream_scheduled_get_pipe(struct pcxhr_stream *stream,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void pcxhr_trigger_tasklet(unsigned long arg)
 {
 	unsigned long flags;
@@ -684,12 +801,25 @@ static void pcxhr_trigger_tasklet(unsigned long arg)
 	struct pcxhr_pipe *pipe;
 	struct snd_pcxhr *chip;
 	struct pcxhr_mgr *mgr = (struct pcxhr_mgr*)(arg);
+=======
+static void pcxhr_start_linked_stream(struct pcxhr_mgr *mgr)
+{
+	int i, j, err;
+	struct pcxhr_pipe *pipe;
+	struct snd_pcxhr *chip;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int capture_mask = 0;
 	int playback_mask = 0;
 
 #ifdef CONFIG_SND_DEBUG_VERBOSE
+<<<<<<< HEAD
 	struct timeval my_tv1, my_tv2;
 	do_gettimeofday(&my_tv1);
+=======
+	ktime_t start_time, stop_time, diff_time;
+
+	start_time = ktime_get();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	mutex_lock(&mgr->setup_mutex);
 
@@ -711,6 +841,7 @@ static void pcxhr_trigger_tasklet(unsigned long arg)
 	}
 	if (capture_mask == 0 && playback_mask == 0) {
 		mutex_unlock(&mgr->setup_mutex);
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "pcxhr_trigger_tasklet : no pipes\n");
 		return;
 	}
@@ -718,14 +849,28 @@ static void pcxhr_trigger_tasklet(unsigned long arg)
 	snd_printdd("pcxhr_trigger_tasklet : "
 		    "playback_mask=%x capture_mask=%x\n",
 		    playback_mask, capture_mask);
+=======
+		dev_err(&mgr->pci->dev, "%s : no pipes\n", __func__);
+		return;
+	}
+
+	dev_dbg(&mgr->pci->dev, "%s : playback_mask=%x capture_mask=%x\n",
+		    __func__, playback_mask, capture_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* synchronous stop of all the pipes concerned */
 	err = pcxhr_set_pipe_state(mgr,  playback_mask, capture_mask, 0);
 	if (err) {
 		mutex_unlock(&mgr->setup_mutex);
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "pcxhr_trigger_tasklet : "
 			   "error stop pipes (P%x C%x)\n",
 			   playback_mask, capture_mask);
+=======
+		dev_err(&mgr->pci->dev, "%s : "
+			   "error stop pipes (P%x C%x)\n",
+			   __func__, playback_mask, capture_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -755,12 +900,20 @@ static void pcxhr_trigger_tasklet(unsigned long arg)
 		for (j = 0; j < chip->nb_streams_capt; j++) {
 			stream = &chip->capture_stream[j];
 			if (pcxhr_stream_scheduled_get_pipe(stream, &pipe))
+<<<<<<< HEAD
 				err = pcxhr_set_stream_state(stream);
+=======
+				err = pcxhr_set_stream_state(chip, stream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		for (j = 0; j < chip->nb_streams_play; j++) {
 			stream = &chip->playback_stream[j];
 			if (pcxhr_stream_scheduled_get_pipe(stream, &pipe))
+<<<<<<< HEAD
 				err = pcxhr_set_stream_state(stream);
+=======
+				err = pcxhr_set_stream_state(chip, stream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -768,16 +921,26 @@ static void pcxhr_trigger_tasklet(unsigned long arg)
 	err = pcxhr_set_pipe_state(mgr, playback_mask, capture_mask, 1);
 	if (err) {
 		mutex_unlock(&mgr->setup_mutex);
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "pcxhr_trigger_tasklet : "
 			   "error start pipes (P%x C%x)\n",
 			   playback_mask, capture_mask);
+=======
+		dev_err(&mgr->pci->dev, "%s : "
+			   "error start pipes (P%x C%x)\n",
+			   __func__, playback_mask, capture_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	/* put the streams into the running state now
 	 * (increment pointer by interrupt)
 	 */
+<<<<<<< HEAD
 	spin_lock_irqsave(&mgr->lock, flags);
+=======
+	mutex_lock(&mgr->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for ( i =0; i < mgr->num_cards; i++) {
 		struct pcxhr_stream *stream;
 		chip = mgr->chip[i];
@@ -795,14 +958,25 @@ static void pcxhr_trigger_tasklet(unsigned long arg)
 			}
 		}
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&mgr->lock, flags);
+=======
+	mutex_unlock(&mgr->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&mgr->setup_mutex);
 
 #ifdef CONFIG_SND_DEBUG_VERBOSE
+<<<<<<< HEAD
 	do_gettimeofday(&my_tv2);
 	snd_printdd("***TRIGGER TASKLET*** TIME = %ld (err = %x)\n",
 		    (long)(my_tv2.tv_usec - my_tv1.tv_usec), err);
+=======
+	stop_time = ktime_get();
+	diff_time = ktime_sub(stop_time, start_time);
+	dev_dbg(&mgr->pci->dev, "***TRIGGER START*** TIME = %ld (err = %x)\n",
+		    (long)(ktime_to_ns(diff_time)), err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -814,12 +988,21 @@ static int pcxhr_trigger(struct snd_pcm_substream *subs, int cmd)
 {
 	struct pcxhr_stream *stream;
 	struct snd_pcm_substream *s;
+<<<<<<< HEAD
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 		snd_printdd("SNDRV_PCM_TRIGGER_START\n");
 		if (snd_pcm_stream_linked(subs)) {
 			struct snd_pcxhr *chip = snd_pcm_substream_chip(subs);
+=======
+	struct snd_pcxhr *chip = snd_pcm_substream_chip(subs);
+
+	switch (cmd) {
+	case SNDRV_PCM_TRIGGER_START:
+		dev_dbg(chip->card->dev, "SNDRV_PCM_TRIGGER_START\n");
+		if (snd_pcm_stream_linked(subs)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_pcm_group_for_each_entry(s, subs) {
 				if (snd_pcm_substream_chip(s) != chip)
 					continue;
@@ -828,10 +1011,17 @@ static int pcxhr_trigger(struct snd_pcm_substream *subs, int cmd)
 					PCXHR_STREAM_STATUS_SCHEDULE_RUN;
 				snd_pcm_trigger_done(s, subs);
 			}
+<<<<<<< HEAD
 			tasklet_schedule(&chip->mgr->trigger_taskq);
 		} else {
 			stream = subs->runtime->private_data;
 			snd_printdd("Only one Substream %c %d\n",
+=======
+			pcxhr_start_linked_stream(chip->mgr);
+		} else {
+			stream = subs->runtime->private_data;
+			dev_dbg(chip->card->dev, "Only one Substream %c %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    stream->pipe->is_capture ? 'C' : 'P',
 				    stream->pipe->first_audio);
 			if (pcxhr_set_format(stream))
@@ -840,17 +1030,29 @@ static int pcxhr_trigger(struct snd_pcm_substream *subs, int cmd)
 				return -EINVAL;
 
 			stream->status = PCXHR_STREAM_STATUS_SCHEDULE_RUN;
+<<<<<<< HEAD
 			if (pcxhr_set_stream_state(stream))
+=======
+			if (pcxhr_set_stream_state(chip, stream))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 			stream->status = PCXHR_STREAM_STATUS_RUNNING;
 		}
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
+<<<<<<< HEAD
 		snd_printdd("SNDRV_PCM_TRIGGER_STOP\n");
 		snd_pcm_group_for_each_entry(s, subs) {
 			stream = s->runtime->private_data;
 			stream->status = PCXHR_STREAM_STATUS_SCHEDULE_STOP;
 			if (pcxhr_set_stream_state(stream))
+=======
+		dev_dbg(chip->card->dev, "SNDRV_PCM_TRIGGER_STOP\n");
+		snd_pcm_group_for_each_entry(s, subs) {
+			stream = s->runtime->private_data;
+			stream->status = PCXHR_STREAM_STATUS_SCHEDULE_STOP;
+			if (pcxhr_set_stream_state(chip, stream))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 			snd_pcm_trigger_done(s, subs);
 		}
@@ -878,7 +1080,11 @@ static int pcxhr_hardware_timer(struct pcxhr_mgr *mgr, int start)
 	}
 	err = pcxhr_send_msg(mgr, &rmh);
 	if (err < 0)
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "error pcxhr_hardware_timer err(%x)\n",
+=======
+		dev_err(&mgr->pci->dev, "error %s err(%x)\n", __func__,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   err);
 	return err;
 }
@@ -892,7 +1098,12 @@ static int pcxhr_prepare(struct snd_pcm_substream *subs)
 	struct pcxhr_mgr *mgr = chip->mgr;
 	int err = 0;
 
+<<<<<<< HEAD
 	snd_printdd("pcxhr_prepare : period_size(%lx) periods(%x) buffer_size(%lx)\n",
+=======
+	dev_dbg(chip->card->dev,
+		"%s : period_size(%lx) periods(%x) buffer_size(%lx)\n", __func__,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    subs->runtime->period_size, subs->runtime->periods,
 		    subs->runtime->buffer_size);
 
@@ -927,6 +1138,7 @@ static int pcxhr_hw_params(struct snd_pcm_substream *subs,
 	struct snd_pcxhr *chip = snd_pcm_substream_chip(subs);
 	struct pcxhr_mgr *mgr = chip->mgr;
 	struct pcxhr_stream *stream = subs->runtime->private_data;
+<<<<<<< HEAD
 	snd_pcm_format_t format;
 	int err;
 	int channels;
@@ -953,6 +1165,18 @@ static int pcxhr_hw_params(struct snd_pcm_substream *subs,
 static int pcxhr_hw_free(struct snd_pcm_substream *subs)
 {
 	snd_pcm_lib_free_pages(subs);
+=======
+
+	mutex_lock(&mgr->setup_mutex);
+
+	/* set up channels */
+	stream->channels = params_channels(hw);
+	/* set up format for the stream */
+	stream->format = params_format(hw);
+
+	mutex_unlock(&mgr->setup_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -960,7 +1184,11 @@ static int pcxhr_hw_free(struct snd_pcm_substream *subs)
 /*
  *  CONFIGURATION SPACE for all pcms, mono pcm must update channels_max
  */
+<<<<<<< HEAD
 static struct snd_pcm_hardware pcxhr_caps =
+=======
+static const struct snd_pcm_hardware pcxhr_caps =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info             = (SNDRV_PCM_INFO_MMAP |
 			     SNDRV_PCM_INFO_INTERLEAVED |
@@ -1001,12 +1229,21 @@ static int pcxhr_open(struct snd_pcm_substream *subs)
 	runtime->hw = pcxhr_caps;
 
 	if( subs->stream == SNDRV_PCM_STREAM_PLAYBACK ) {
+<<<<<<< HEAD
 		snd_printdd("pcxhr_open playback chip%d subs%d\n",
 			    chip->chip_idx, subs->number);
 		stream = &chip->playback_stream[subs->number];
 	} else {
 		snd_printdd("pcxhr_open capture chip%d subs%d\n",
 			    chip->chip_idx, subs->number);
+=======
+		dev_dbg(chip->card->dev, "%s playback chip%d subs%d\n",
+			    __func__, chip->chip_idx, subs->number);
+		stream = &chip->playback_stream[subs->number];
+	} else {
+		dev_dbg(chip->card->dev, "%s capture chip%d subs%d\n",
+			    __func__, chip->chip_idx, subs->number);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mgr->mono_capture)
 			runtime->hw.channels_max = 1;
 		else
@@ -1015,8 +1252,13 @@ static int pcxhr_open(struct snd_pcm_substream *subs)
 	}
 	if (stream->status != PCXHR_STREAM_STATUS_FREE){
 		/* streams in use */
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "pcxhr_open chip%d subs%d in use\n",
 			   chip->chip_idx, subs->number);
+=======
+		dev_err(chip->card->dev, "%s chip%d subs%d in use\n",
+			   __func__, chip->chip_idx, subs->number);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&mgr->setup_mutex);
 		return -EBUSY;
 	}
@@ -1081,7 +1323,11 @@ static int pcxhr_close(struct snd_pcm_substream *subs)
 
 	mutex_lock(&mgr->setup_mutex);
 
+<<<<<<< HEAD
 	snd_printdd("pcxhr_close chip%d subs%d\n",
+=======
+	dev_dbg(chip->card->dev, "%s chip%d subs%d\n", __func__,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    chip->chip_idx, subs->number);
 
 	/* sample rate released */
@@ -1101,26 +1347,38 @@ static int pcxhr_close(struct snd_pcm_substream *subs)
 
 static snd_pcm_uframes_t pcxhr_stream_pointer(struct snd_pcm_substream *subs)
 {
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u_int32_t timer_period_frag;
 	int timer_buf_periods;
 	struct snd_pcxhr *chip = snd_pcm_substream_chip(subs);
 	struct snd_pcm_runtime *runtime = subs->runtime;
 	struct pcxhr_stream *stream  = runtime->private_data;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&chip->mgr->lock, flags);
+=======
+	mutex_lock(&chip->mgr->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get the period fragment and the nb of periods in the buffer */
 	timer_period_frag = stream->timer_period_frag;
 	timer_buf_periods = stream->timer_buf_periods;
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->mgr->lock, flags);
+=======
+	mutex_unlock(&chip->mgr->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (snd_pcm_uframes_t)((timer_buf_periods * runtime->period_size) +
 				   timer_period_frag);
 }
 
 
+<<<<<<< HEAD
 static struct snd_pcm_ops pcxhr_ops = {
 	.open      = pcxhr_open,
 	.close     = pcxhr_close,
@@ -1128,6 +1386,13 @@ static struct snd_pcm_ops pcxhr_ops = {
 	.prepare   = pcxhr_prepare,
 	.hw_params = pcxhr_hw_params,
 	.hw_free   = pcxhr_hw_free,
+=======
+static const struct snd_pcm_ops pcxhr_ops = {
+	.open      = pcxhr_open,
+	.close     = pcxhr_close,
+	.prepare   = pcxhr_prepare,
+	.hw_params = pcxhr_hw_params,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.trigger   = pcxhr_trigger,
 	.pointer   = pcxhr_stream_pointer,
 };
@@ -1140,11 +1405,20 @@ int pcxhr_create_pcm(struct snd_pcxhr *chip)
 	struct snd_pcm *pcm;
 	char name[32];
 
+<<<<<<< HEAD
 	sprintf(name, "pcxhr %d", chip->chip_idx);
 	if ((err = snd_pcm_new(chip->card, name, 0,
 			       chip->nb_streams_play,
 			       chip->nb_streams_capt, &pcm)) < 0) {
 		snd_printk(KERN_ERR "cannot create pcm %s\n", name);
+=======
+	snprintf(name, sizeof(name), "pcxhr %d", chip->chip_idx);
+	err = snd_pcm_new(chip->card, name, 0,
+			  chip->nb_streams_play,
+			  chip->nb_streams_capt, &pcm);
+	if (err < 0) {
+		dev_err(chip->card->dev, "cannot create pcm %s\n", name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	pcm->private_data = chip;
@@ -1155,11 +1429,20 @@ int pcxhr_create_pcm(struct snd_pcxhr *chip)
 		snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &pcxhr_ops);
 
 	pcm->info_flags = 0;
+<<<<<<< HEAD
 	strcpy(pcm->name, name);
 
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(chip->mgr->pci),
 					      32*1024, 32*1024);
+=======
+	pcm->nonatomic = true;
+	strcpy(pcm->name, name);
+
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+				       &chip->mgr->pci->dev,
+				       32*1024, 32*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->pcm = pcm;
 	return 0;
 }
@@ -1179,24 +1462,42 @@ static int pcxhr_chip_dev_free(struct snd_device *device)
 
 /*
  */
+<<<<<<< HEAD
 static int __devinit pcxhr_create(struct pcxhr_mgr *mgr,
 				  struct snd_card *card, int idx)
 {
 	int err;
 	struct snd_pcxhr *chip;
 	static struct snd_device_ops ops = {
+=======
+static int pcxhr_create(struct pcxhr_mgr *mgr,
+			struct snd_card *card, int idx)
+{
+	int err;
+	struct snd_pcxhr *chip;
+	static const struct snd_device_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.dev_free = pcxhr_chip_dev_free,
 	};
 
 	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
+<<<<<<< HEAD
 	if (! chip) {
 		snd_printk(KERN_ERR "cannot allocate chip\n");
 		return -ENOMEM;
 	}
+=======
+	if (!chip)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->card = card;
 	chip->chip_idx = idx;
 	chip->mgr = mgr;
+<<<<<<< HEAD
+=======
+	card->sync_irq = mgr->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (idx < mgr->playback_chips)
 		/* stereo or mono streams */
@@ -1209,13 +1510,21 @@ static int __devinit pcxhr_create(struct pcxhr_mgr *mgr,
 			chip->nb_streams_capt = 1;	/* or 1 stereo stream */
 	}
 
+<<<<<<< HEAD
 	if ((err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops)) < 0) {
+=======
+	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops);
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pcxhr_chip_free(chip);
 		return err;
 	}
 
 	mgr->chip[idx] = chip;
+<<<<<<< HEAD
 	snd_card_set_dev(card, &mgr->pci->dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1227,7 +1536,11 @@ static void pcxhr_proc_info(struct snd_info_entry *entry,
 	struct snd_pcxhr *chip = entry->private_data;
 	struct pcxhr_mgr *mgr = chip->mgr;
 
+<<<<<<< HEAD
 	snd_iprintf(buffer, "\n%s\n", mgr->longname);
+=======
+	snd_iprintf(buffer, "\n%s\n", mgr->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* stats available when embedded DSP is running */
 	if (mgr->dsp_loaded & (1 << PCXHR_FIRMWARE_DSP_MAIN_INDEX)) {
@@ -1314,7 +1627,11 @@ static void pcxhr_proc_sync(struct snd_info_entry *entry,
 		max_clock = PCXHR_CLOCK_TYPE_MAX;
 	}
 
+<<<<<<< HEAD
 	snd_iprintf(buffer, "\n%s\n", mgr->longname);
+=======
+	snd_iprintf(buffer, "\n%s\n", mgr->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_iprintf(buffer, "Current Sample Clock\t: %s\n",
 		    texts[mgr->cur_clock_type]);
 	snd_iprintf(buffer, "Current Sample Rate\t= %d\n",
@@ -1368,6 +1685,7 @@ static void pcxhr_proc_gpo_write(struct snd_info_entry *entry,
 	}
 }
 
+<<<<<<< HEAD
 static void __devinit pcxhr_proc_init(struct snd_pcxhr *chip)
 {
 	struct snd_info_entry *entry;
@@ -1383,6 +1701,79 @@ static void __devinit pcxhr_proc_init(struct snd_pcxhr *chip)
 		entry->c.text.write = pcxhr_proc_gpo_write;
 		entry->mode |= S_IWUSR;
 	}
+=======
+/* Access to the results of the CMD_GET_TIME_CODE RMH */
+#define TIME_CODE_VALID_MASK	0x00800000
+#define TIME_CODE_NEW_MASK	0x00400000
+#define TIME_CODE_BACK_MASK	0x00200000
+#define TIME_CODE_WAIT_MASK	0x00100000
+
+/* Values for the CMD_MANAGE_SIGNAL RMH */
+#define MANAGE_SIGNAL_TIME_CODE	0x01
+#define MANAGE_SIGNAL_MIDI	0x02
+
+/* linear time code read proc*/
+static void pcxhr_proc_ltc(struct snd_info_entry *entry,
+			   struct snd_info_buffer *buffer)
+{
+	struct snd_pcxhr *chip = entry->private_data;
+	struct pcxhr_mgr *mgr = chip->mgr;
+	struct pcxhr_rmh rmh;
+	unsigned int ltcHrs, ltcMin, ltcSec, ltcFrm;
+	int err;
+	/* commands available when embedded DSP is running */
+	if (!(mgr->dsp_loaded & (1 << PCXHR_FIRMWARE_DSP_MAIN_INDEX))) {
+		snd_iprintf(buffer, "no firmware loaded\n");
+		return;
+	}
+	if (!mgr->capture_ltc) {
+		pcxhr_init_rmh(&rmh, CMD_MANAGE_SIGNAL);
+		rmh.cmd[0] |= MANAGE_SIGNAL_TIME_CODE;
+		err = pcxhr_send_msg(mgr, &rmh);
+		if (err) {
+			snd_iprintf(buffer, "ltc not activated (%d)\n", err);
+			return;
+		}
+		if (mgr->is_hr_stereo)
+			hr222_manage_timecode(mgr, 1);
+		else
+			pcxhr_write_io_num_reg_cont(mgr, REG_CONT_VALSMPTE,
+						    REG_CONT_VALSMPTE, NULL);
+		mgr->capture_ltc = 1;
+	}
+	pcxhr_init_rmh(&rmh, CMD_GET_TIME_CODE);
+	err = pcxhr_send_msg(mgr, &rmh);
+	if (err) {
+		snd_iprintf(buffer, "ltc read error (err=%d)\n", err);
+		return ;
+	}
+	ltcHrs = 10*((rmh.stat[0] >> 8) & 0x3) + (rmh.stat[0] & 0xf);
+	ltcMin = 10*((rmh.stat[1] >> 16) & 0x7) + ((rmh.stat[1] >> 8) & 0xf);
+	ltcSec = 10*(rmh.stat[1] & 0x7) + ((rmh.stat[2] >> 16) & 0xf);
+	ltcFrm = 10*((rmh.stat[2] >> 8) & 0x3) + (rmh.stat[2] & 0xf);
+
+	snd_iprintf(buffer, "timecode: %02u:%02u:%02u-%02u\n",
+			    ltcHrs, ltcMin, ltcSec, ltcFrm);
+	snd_iprintf(buffer, "raw: 0x%04x%06x%06x\n", rmh.stat[0] & 0x00ffff,
+			    rmh.stat[1] & 0xffffff, rmh.stat[2] & 0xffffff);
+	/*snd_iprintf(buffer, "dsp ref time: 0x%06x%06x\n",
+			    rmh.stat[3] & 0xffffff, rmh.stat[4] & 0xffffff);*/
+	if (!(rmh.stat[0] & TIME_CODE_VALID_MASK)) {
+		snd_iprintf(buffer, "warning: linear timecode not valid\n");
+	}
+}
+
+static void pcxhr_proc_init(struct snd_pcxhr *chip)
+{
+	snd_card_ro_proc_new(chip->card, "info", chip, pcxhr_proc_info);
+	snd_card_ro_proc_new(chip->card, "sync", chip, pcxhr_proc_sync);
+	/* gpio available on stereo sound cards only */
+	if (chip->mgr->is_hr_stereo)
+		snd_card_rw_proc_new(chip->card, "gpio", chip,
+				     pcxhr_proc_gpio_read,
+				     pcxhr_proc_gpo_write);
+	snd_card_ro_proc_new(chip->card, "ltc", chip, pcxhr_proc_ltc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 /* end of proc interface */
 
@@ -1401,7 +1792,11 @@ static int pcxhr_free(struct pcxhr_mgr *mgr)
 	/* reset board if some firmware was loaded */
 	if(mgr->dsp_loaded) {
 		pcxhr_reset_board(mgr);
+<<<<<<< HEAD
 		snd_printdd("reset pcxhr !\n");
+=======
+		dev_dbg(&mgr->pci->dev, "reset pcxhr !\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* release irq  */
@@ -1426,8 +1821,13 @@ static int pcxhr_free(struct pcxhr_mgr *mgr)
 /*
  *    probe function - creates the card manager
  */
+<<<<<<< HEAD
 static int __devinit pcxhr_probe(struct pci_dev *pci,
 				 const struct pci_device_id *pci_id)
+=======
+static int pcxhr_probe(struct pci_dev *pci,
+		       const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct pcxhr_mgr *mgr;
@@ -1444,14 +1844,25 @@ static int __devinit pcxhr_probe(struct pci_dev *pci,
 	}
 
 	/* enable PCI device */
+<<<<<<< HEAD
 	if ((err = pci_enable_device(pci)) < 0)
+=======
+	err = pci_enable_device(pci);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	pci_set_master(pci);
 
 	/* check if we can restrict PCI DMA transfers to 32 bits */
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(32)) < 0) {
 		snd_printk(KERN_ERR "architecture does not support "
 			   "32bit PCI busmaster DMA\n");
+=======
+	if (dma_set_mask(&pci->dev, DMA_BIT_MASK(32)) < 0) {
+		dev_err(&pci->dev,
+			"architecture does not support 32bit PCI busmaster DMA\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_disable_device(pci);
 		return -ENXIO;
 	}
@@ -1489,7 +1900,12 @@ static int __devinit pcxhr_probe(struct pci_dev *pci,
 		mgr->granularity = PCXHR_GRANULARITY;
 
 	/* resource assignment */
+<<<<<<< HEAD
 	if ((err = pci_request_regions(pci, card_name)) < 0) {
+=======
+	err = pci_request_regions(pci, card_name);
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(mgr);
 		pci_disable_device(pci);
 		return err;
@@ -1500,14 +1916,22 @@ static int __devinit pcxhr_probe(struct pci_dev *pci,
 	mgr->pci = pci;
 	mgr->irq = -1;
 
+<<<<<<< HEAD
 	if (request_irq(pci->irq, pcxhr_interrupt, IRQF_SHARED,
 			KBUILD_MODNAME, mgr)) {
 		snd_printk(KERN_ERR "unable to grab IRQ %d\n", pci->irq);
+=======
+	if (request_threaded_irq(pci->irq, pcxhr_interrupt,
+				 pcxhr_threaded_irq, IRQF_SHARED,
+				 KBUILD_MODNAME, mgr)) {
+		dev_err(&pci->dev, "unable to grab IRQ %d\n", pci->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pcxhr_free(mgr);
 		return -EBUSY;
 	}
 	mgr->irq = pci->irq;
 
+<<<<<<< HEAD
 	sprintf(mgr->shortname, "Digigram %s", card_name);
 	sprintf(mgr->longname, "%s at 0x%lx & 0x%lx, 0x%lx irq %i",
 		mgr->shortname,
@@ -1516,10 +1940,20 @@ static int __devinit pcxhr_probe(struct pci_dev *pci,
 	/* ISR spinlock  */
 	spin_lock_init(&mgr->lock);
 	spin_lock_init(&mgr->msg_lock);
+=======
+	snprintf(mgr->name, sizeof(mgr->name),
+		 "Digigram at 0x%lx & 0x%lx, 0x%lx irq %i",
+		 mgr->port[0], mgr->port[1], mgr->port[2], mgr->irq);
+
+	/* ISR lock  */
+	mutex_init(&mgr->lock);
+	mutex_init(&mgr->msg_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* init setup mutex*/
 	mutex_init(&mgr->setup_mutex);
 
+<<<<<<< HEAD
 	/* init taslket */
 	tasklet_init(&mgr->msg_taskq, pcxhr_msg_tasklet,
 		     (unsigned long) mgr);
@@ -1527,6 +1961,9 @@ static int __devinit pcxhr_probe(struct pci_dev *pci,
 		     (unsigned long) mgr);
 
 	mgr->prmh = kmalloc(sizeof(*mgr->prmh) + 
+=======
+	mgr->prmh = kmalloc(sizeof(*mgr->prmh) +
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    sizeof(u32) * (PCXHR_SIZE_MAX_LONG_STATUS -
 					   PCXHR_SIZE_MAX_STATUS),
 			    GFP_KERNEL);
@@ -1551,19 +1988,37 @@ static int __devinit pcxhr_probe(struct pci_dev *pci,
 
 		snprintf(tmpid, sizeof(tmpid), "%s-%d",
 			 id[dev] ? id[dev] : card_name, i);
+<<<<<<< HEAD
 		err = snd_card_create(idx, tmpid, THIS_MODULE, 0, &card);
 
 		if (err < 0) {
 			snd_printk(KERN_ERR "cannot allocate the card %d\n", i);
+=======
+		err = snd_card_new(&pci->dev, idx, tmpid, THIS_MODULE,
+				   0, &card);
+
+		if (err < 0) {
+			dev_err(&pci->dev, "cannot allocate the card %d\n", i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pcxhr_free(mgr);
 			return err;
 		}
 
 		strcpy(card->driver, DRIVER_NAME);
+<<<<<<< HEAD
 		sprintf(card->shortname, "%s [PCM #%d]", mgr->shortname, i);
 		sprintf(card->longname, "%s [PCM #%d]", mgr->longname, i);
 
 		if ((err = pcxhr_create(mgr, card, i)) < 0) {
+=======
+		snprintf(card->shortname, sizeof(card->shortname),
+			 "Digigram [PCM #%d]", i);
+		snprintf(card->longname, sizeof(card->longname),
+			 "%s [PCM #%d]", mgr->name, i);
+
+		err = pcxhr_create(mgr, card, i);
+		if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_card_free(card);
 			pcxhr_free(mgr);
 			return err;
@@ -1573,7 +2028,12 @@ static int __devinit pcxhr_probe(struct pci_dev *pci,
 			/* init proc interface only for chip0 */
 			pcxhr_proc_init(mgr->chip[i]);
 
+<<<<<<< HEAD
 		if ((err = snd_card_register(card)) < 0) {
+=======
+		err = snd_card_register(card);
+		if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pcxhr_free(mgr);
 			return err;
 		}
@@ -1581,7 +2041,11 @@ static int __devinit pcxhr_probe(struct pci_dev *pci,
 
 	/* create hostport purgebuffer */
 	size = PAGE_ALIGN(sizeof(struct pcxhr_hostport));
+<<<<<<< HEAD
 	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(pci),
+=======
+	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, &pci->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				size, &mgr->hostport) < 0) {
 		pcxhr_free(mgr);
 		return -ENOMEM;
@@ -1601,6 +2065,7 @@ static int __devinit pcxhr_probe(struct pci_dev *pci,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit pcxhr_remove(struct pci_dev *pci)
 {
 	pcxhr_free(pci_get_drvdata(pci));
@@ -1626,3 +2091,18 @@ static void __exit pcxhr_module_exit(void)
 
 module_init(pcxhr_module_init)
 module_exit(pcxhr_module_exit)
+=======
+static void pcxhr_remove(struct pci_dev *pci)
+{
+	pcxhr_free(pci_get_drvdata(pci));
+}
+
+static struct pci_driver pcxhr_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = pcxhr_ids,
+	.probe = pcxhr_probe,
+	.remove = pcxhr_remove,
+};
+
+module_pci_driver(pcxhr_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

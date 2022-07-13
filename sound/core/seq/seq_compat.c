@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   32bit -> 64bit ioctl wrapper for sequencer API
  *   Copyright (c) by Takashi Iwai <tiwai@suse.de>
@@ -16,6 +17,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *   32bit -> 64bit ioctl wrapper for sequencer API
+ *   Copyright (c) by Takashi Iwai <tiwai@suse.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* This file included from seq.c */
@@ -45,6 +52,7 @@ struct snd_seq_port_info32 {
 static int snd_seq_call_port_info_ioctl(struct snd_seq_client *client, unsigned int cmd,
 					struct snd_seq_port_info32 __user *data32)
 {
+<<<<<<< HEAD
 	int err = -EFAULT;
 	struct snd_seq_port_info *data;
 	mm_segment_t fs;
@@ -63,14 +71,37 @@ static int snd_seq_call_port_info_ioctl(struct snd_seq_client *client, unsigned 
 	snd_leave_user(fs);
 	if (err < 0)
 		goto error;
+=======
+	struct snd_seq_port_info *data __free(kfree) = NULL;
+	int err;
+
+	data = kmalloc(sizeof(*data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	if (copy_from_user(data, data32, sizeof(*data32)) ||
+	    get_user(data->flags, &data32->flags) ||
+	    get_user(data->time_queue, &data32->time_queue))
+		return -EFAULT;
+	data->kernel = NULL;
+
+	err = snd_seq_kernel_client_ctl(client->number, cmd, data);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_to_user(data32, data, sizeof(*data32)) ||
 	    put_user(data->flags, &data32->flags) ||
 	    put_user(data->time_queue, &data32->time_queue))
+<<<<<<< HEAD
 		err = -EFAULT;
 
  error:
 	kfree(data);
+=======
+		return -EFAULT;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -97,10 +128,19 @@ static long snd_seq_ioctl_compat(struct file *file, unsigned int cmd, unsigned l
 
 	switch (cmd) {
 	case SNDRV_SEQ_IOCTL_PVERSION:
+<<<<<<< HEAD
+=======
+	case SNDRV_SEQ_IOCTL_USER_PVERSION:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_SEQ_IOCTL_CLIENT_ID:
 	case SNDRV_SEQ_IOCTL_SYSTEM_INFO:
 	case SNDRV_SEQ_IOCTL_GET_CLIENT_INFO:
 	case SNDRV_SEQ_IOCTL_SET_CLIENT_INFO:
+<<<<<<< HEAD
+=======
+	case SNDRV_SEQ_IOCTL_GET_CLIENT_UMP_INFO:
+	case SNDRV_SEQ_IOCTL_SET_CLIENT_UMP_INFO:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_SEQ_IOCTL_SUBSCRIBE_PORT:
 	case SNDRV_SEQ_IOCTL_UNSUBSCRIBE_PORT:
 	case SNDRV_SEQ_IOCTL_CREATE_QUEUE:
@@ -122,7 +162,11 @@ static long snd_seq_ioctl_compat(struct file *file, unsigned int cmd, unsigned l
 	case SNDRV_SEQ_IOCTL_GET_SUBSCRIPTION:
 	case SNDRV_SEQ_IOCTL_QUERY_NEXT_CLIENT:
 	case SNDRV_SEQ_IOCTL_RUNNING_MODE:
+<<<<<<< HEAD
 		return snd_seq_do_ioctl(client, cmd, argp);
+=======
+		return snd_seq_ioctl(file, cmd, arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_SEQ_IOCTL_CREATE_PORT32:
 		return snd_seq_call_port_info_ioctl(client, SNDRV_SEQ_IOCTL_CREATE_PORT, argp);
 	case SNDRV_SEQ_IOCTL_DELETE_PORT32:

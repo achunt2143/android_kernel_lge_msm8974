@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _SPARC_TERMBITS_H
 #define _SPARC_TERMBITS_H
 
@@ -263,4 +264,14 @@ struct ktermios {
 #define	TCSADRAIN	1
 #define	TCSAFLUSH	2
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _SPARC_TERMBITS_H
+#define _SPARC_TERMBITS_H
+
+#include <uapi/asm/termbits.h>
+
+#define VMIN     16
+#define VTIME    17
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(_SPARC_TERMBITS_H) */

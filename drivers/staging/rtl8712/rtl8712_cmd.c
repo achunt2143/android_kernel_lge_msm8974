@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * rtl8712_cmd.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,6 +22,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -31,8 +38,13 @@
 #include <linux/compiler.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/slab.h>
+=======
+#include <linux/slab.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kref.h>
 #include <linux/netdevice.h>
@@ -50,7 +62,10 @@
 #include "drv_types.h"
 #include "recv_osdep.h"
 #include "mlme_osdep.h"
+<<<<<<< HEAD
 #include "rtl871x_byteorder.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "rtl871x_ioctl_set.h"
 
 static void check_hw_pbc(struct _adapter *padapter)
@@ -63,6 +78,7 @@ static void check_hw_pbc(struct _adapter *padapter)
 	r8712_write8(padapter, GPIO_IO_SEL, tmp1byte);
 	tmp1byte = r8712_read8(padapter, GPIO_CTRL);
 	if (tmp1byte == 0xff)
+<<<<<<< HEAD
 		return ;
 	if (tmp1byte&HAL_8192S_HW_GPIO_WPS_BIT) {
 		/* Here we only set bPbcPressed to true
@@ -70,6 +86,17 @@ static void check_hw_pbc(struct _adapter *padapter)
 		DBG_8712("CheckPbcGPIO - PBC is pressed !!!!\n");
 		/* 0 is the default value and it means the application monitors
 		 * the HW PBC doesn't privde its pid to driver. */
+=======
+		return;
+	if (tmp1byte & HAL_8192S_HW_GPIO_WPS_BIT) {
+		/* Here we only set bPbcPressed to true
+		 * After trigger PBC, the variable will be set to false
+		 */
+		netdev_dbg(padapter->pnetdev, "CheckPbcGPIO - PBC is pressed !!!!\n");
+		/* 0 is the default value and it means the application monitors
+		 * the HW PBC doesn't provide its pid to driver.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (padapter->pid == 0)
 			return;
 		kill_pid(find_vpid(padapter->pid), SIGUSR1, 1);
@@ -78,13 +105,22 @@ static void check_hw_pbc(struct _adapter *padapter)
 
 /* query rx phy status from fw.
  * Adhoc mode: beacon.
+<<<<<<< HEAD
  * Infrastructure mode: beacon , data. */
+=======
+ * Infrastructure mode: beacon , data.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void query_fw_rx_phy_status(struct _adapter *padapter)
 {
 	u32 val32 = 0;
 	int pollingcnts = 50;
 
+<<<<<<< HEAD
 	if (check_fwstate(&padapter->mlmepriv, _FW_LINKED) == true) {
+=======
+	if (check_fwstate(&padapter->mlmepriv, _FW_LINKED)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r8712_write32(padapter, IOCMD_CTRL_REG, 0xf4000001);
 		msleep(100);
 		/* Wait FW complete IO Cmd */
@@ -97,7 +133,11 @@ static void query_fw_rx_phy_status(struct _adapter *padapter)
 			val32 = r8712_read32(padapter, IOCMD_DATA_REG);
 		else /* time out */
 			val32 = 0;
+<<<<<<< HEAD
 		val32 = val32 >> 4;
+=======
+		val32 >>= 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		padapter->recvpriv.fw_rssi =
 			 (u8)r8712_signal_scale_mapping(val32);
 	}
@@ -127,6 +167,7 @@ static void r871x_internal_cmd_hdl(struct _adapter *padapter, u8 *pbuf)
 	kfree(pdrvcmd->pbuf);
 }
 
+<<<<<<< HEAD
 static u8 read_macreg_hdl(struct _adapter *padapter, u8 *pbuf)
 {
 	void (*pcmd_callback)(struct _adapter *dev, struct cmd_obj	*pcmd);
@@ -170,18 +211,32 @@ static u8 read_bbreg_hdl(struct _adapter *padapter, u8 *pbuf)
 		r8712_free_cmd_obj(pcmd);
 	else
 		pcmd_callback(padapter, pcmd);
+=======
+static u8 read_bbreg_hdl(struct _adapter *padapter, u8 *pbuf)
+{
+	struct cmd_obj *pcmd  = (struct cmd_obj *)pbuf;
+
+	r8712_free_cmd_obj(pcmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return H2C_SUCCESS;
 }
 
 static u8 write_bbreg_hdl(struct _adapter *padapter, u8 *pbuf)
 {
 	void (*pcmd_callback)(struct _adapter *dev, struct cmd_obj *pcmd);
+<<<<<<< HEAD
 	struct writeBB_parm *pwritebbparm;
 	struct cmd_obj *pcmd  = (struct cmd_obj *)pbuf;
 
 	pwritebbparm = (struct writeBB_parm *)pcmd->parmbuf;
 	pcmd_callback = cmd_callback[pcmd->cmdcode].callback;
 	if (pcmd_callback == NULL)
+=======
+	struct cmd_obj *pcmd  = (struct cmd_obj *)pbuf;
+
+	pcmd_callback = cmd_callback[pcmd->cmdcode].callback;
+	if (!pcmd_callback)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r8712_free_cmd_obj(pcmd);
 	else
 		pcmd_callback(padapter, pcmd);
@@ -192,6 +247,7 @@ static u8 read_rfreg_hdl(struct _adapter *padapter, u8 *pbuf)
 {
 	u32 val;
 	void (*pcmd_callback)(struct _adapter *dev, struct cmd_obj *pcmd);
+<<<<<<< HEAD
 	struct readRF_parm *prdrfparm;
 	struct cmd_obj *pcmd  = (struct cmd_obj *)pbuf;
 
@@ -200,6 +256,14 @@ static u8 read_rfreg_hdl(struct _adapter *padapter, u8 *pbuf)
 		memcpy(pcmd->rsp, (u8 *)&val, pcmd->rspsz);
 	pcmd_callback = cmd_callback[pcmd->cmdcode].callback;
 	if (pcmd_callback == NULL)
+=======
+	struct cmd_obj *pcmd  = (struct cmd_obj *)pbuf;
+
+	if (pcmd->rsp && pcmd->rspsz > 0)
+		memcpy(pcmd->rsp, (u8 *)&val, pcmd->rspsz);
+	pcmd_callback = cmd_callback[pcmd->cmdcode].callback;
+	if (!pcmd_callback)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r8712_free_cmd_obj(pcmd);
 	else
 		pcmd_callback(padapter, pcmd);
@@ -209,12 +273,19 @@ static u8 read_rfreg_hdl(struct _adapter *padapter, u8 *pbuf)
 static u8 write_rfreg_hdl(struct _adapter *padapter, u8 *pbuf)
 {
 	void (*pcmd_callback)(struct _adapter *dev, struct cmd_obj *pcmd);
+<<<<<<< HEAD
 	struct writeRF_parm *pwriterfparm;
 	struct cmd_obj *pcmd  = (struct cmd_obj *)pbuf;
 
 	pwriterfparm = (struct writeRF_parm *)pcmd->parmbuf;
 	pcmd_callback = cmd_callback[pcmd->cmdcode].callback;
 	if (pcmd_callback == NULL)
+=======
+	struct cmd_obj *pcmd  = (struct cmd_obj *)pbuf;
+
+	pcmd_callback = cmd_callback[pcmd->cmdcode].callback;
+	if (!pcmd_callback)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r8712_free_cmd_obj(pcmd);
 	else
 		pcmd_callback(padapter, pcmd);
@@ -224,9 +295,13 @@ static u8 write_rfreg_hdl(struct _adapter *padapter, u8 *pbuf)
 static u8 sys_suspend_hdl(struct _adapter *padapter, u8 *pbuf)
 {
 	struct cmd_obj *pcmd  = (struct cmd_obj *)pbuf;
+<<<<<<< HEAD
 	struct usb_suspend_parm *psetusbsuspend;
 
 	psetusbsuspend = (struct usb_suspend_parm *)pcmd->parmbuf;
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r8712_free_cmd_obj(pcmd);
 	return H2C_SUCCESS;
 }
@@ -236,11 +311,16 @@ static struct cmd_obj *cmd_hdl_filter(struct _adapter *padapter,
 {
 	struct cmd_obj *pcmd_r;
 
+<<<<<<< HEAD
 	if (pcmd == NULL)
+=======
+	if (!pcmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return pcmd;
 	pcmd_r = NULL;
 
 	switch (pcmd->cmdcode) {
+<<<<<<< HEAD
 	case GEN_CMD_CODE(_Read_MACREG):
 		read_macreg_hdl(padapter, (u8 *)pcmd);
 		pcmd_r = pcmd;
@@ -249,6 +329,8 @@ static struct cmd_obj *cmd_hdl_filter(struct _adapter *padapter,
 		write_macreg_hdl(padapter, (u8 *)pcmd);
 		pcmd_r = pcmd;
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case GEN_CMD_CODE(_Read_BBREG):
 		read_bbreg_hdl(padapter, (u8 *)pcmd);
 		break;
@@ -269,12 +351,22 @@ static struct cmd_obj *cmd_hdl_filter(struct _adapter *padapter,
 		/* Before set JoinBss_CMD to FW, driver must ensure FW is in
 		 * PS_MODE_ACTIVE. Directly write rpwm to radio on and assign
 		 * new pwr_mode to Driver, instead of use workitem to change
+<<<<<<< HEAD
 		 * state. */
 		if (padapter->pwrctrlpriv.pwr_mode > PS_MODE_ACTIVE) {
 			padapter->pwrctrlpriv.pwr_mode = PS_MODE_ACTIVE;
 			_enter_pwrlock(&(padapter->pwrctrlpriv.lock));
 			r8712_set_rpwm(padapter, PS_STATE_S4);
 			up(&(padapter->pwrctrlpriv.lock));
+=======
+		 * state.
+		 */
+		if (padapter->pwrctrlpriv.pwr_mode > PS_MODE_ACTIVE) {
+			padapter->pwrctrlpriv.pwr_mode = PS_MODE_ACTIVE;
+			mutex_lock(&padapter->pwrctrlpriv.mutex_lock);
+			r8712_set_rpwm(padapter, PS_STATE_S4);
+			mutex_unlock(&padapter->pwrctrlpriv.mutex_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		pcmd_r = pcmd;
 		break;
@@ -290,19 +382,26 @@ static struct cmd_obj *cmd_hdl_filter(struct _adapter *padapter,
 	return pcmd_r; /* if returning pcmd_r == NULL, pcmd must be free. */
 }
 
+<<<<<<< HEAD
 static u8 check_cmd_fifo(struct _adapter *padapter, uint sz)
 {
 	u8 res = _SUCCESS;
 	return res;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u8 r8712_fw_cmd(struct _adapter *pAdapter, u32 cmd)
 {
 	int pollingcnts = 50;
 
 	r8712_write32(pAdapter, IOCMD_CTRL_REG, cmd);
 	msleep(100);
+<<<<<<< HEAD
 	while ((0 != r8712_read32(pAdapter, IOCMD_CTRL_REG)) &&
+=======
+	while ((r8712_read32(pAdapter, IOCMD_CTRL_REG != 0)) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       (pollingcnts > 0)) {
 		pollingcnts--;
 		msleep(20);
@@ -323,6 +422,7 @@ void r8712_fw_cmd_data(struct _adapter *pAdapter, u32 *value, u8 flag)
 int r8712_cmd_thread(void *context)
 {
 	struct cmd_obj *pcmd;
+<<<<<<< HEAD
 	unsigned int cmdsz, wr_sz, *pcmdbuf, *prspbuf;
 	struct tx_desc *pdesc;
 	void (*pcmd_callback)(struct _adapter *dev, struct cmd_obj *pcmd);
@@ -340,16 +440,43 @@ int r8712_cmd_thread(void *context)
 			continue;
 _next:
 		pcmd = r8712_dequeue_cmd(&(pcmdpriv->cmd_queue));
+=======
+	unsigned int cmdsz, wr_sz;
+	__le32 *pcmdbuf;
+	struct tx_desc *pdesc;
+	void (*pcmd_callback)(struct _adapter *dev, struct cmd_obj *pcmd);
+	struct _adapter *padapter = context;
+	struct	cmd_priv *pcmdpriv = &padapter->cmdpriv;
+	struct completion *cmd_queue_comp =
+		&pcmdpriv->cmd_queue_comp;
+	struct mutex *pwctrl_lock = &padapter->pwrctrlpriv.mutex_lock;
+
+	allow_signal(SIGTERM);
+	while (1) {
+		if (wait_for_completion_interruptible(cmd_queue_comp))
+			break;
+		if (padapter->driver_stopped || padapter->surprise_removed)
+			break;
+		if (r8712_register_cmd_alive(padapter))
+			continue;
+_next:
+		pcmd = r8712_dequeue_cmd(&pcmdpriv->cmd_queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(pcmd)) {
 			r8712_unregister_cmd_alive(padapter);
 			continue;
 		}
+<<<<<<< HEAD
 		pcmdbuf = (unsigned int *)pcmdpriv->cmd_buf;
 		prspbuf = (unsigned int *)pcmdpriv->rsp_buf;
+=======
+		pcmdbuf = (__le32 *)pcmdpriv->cmd_buf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdesc = (struct tx_desc *)pcmdbuf;
 		memset(pdesc, 0, TXDESC_SIZE);
 		pcmd = cmd_hdl_filter(padapter, pcmd);
 		if (pcmd) { /* if pcmd != NULL, cmd will be handled by f/w */
+<<<<<<< HEAD
 			struct dvobj_priv *pdvobj = (struct dvobj_priv *)
 						    &padapter->dvobjpriv;
 			u8 blnPending = 0;
@@ -357,6 +484,16 @@ _next:
 			cmdsz = _RND8((pcmd->cmdsz)); /* _RND8	*/
 			wr_sz = TXDESC_SIZE + 8 + cmdsz;
 			pdesc->txdw0 |= cpu_to_le32((wr_sz-TXDESC_SIZE) &
+=======
+			struct dvobj_priv *pdvobj = &padapter->dvobjpriv;
+			u8 blnPending = 0;
+			u16 cmdcode = pcmd->cmdcode;
+
+			pcmdpriv->cmd_issued_cnt++;
+			cmdsz = round_up(pcmd->cmdsz, 8);
+			wr_sz = TXDESC_SIZE + 8 + cmdsz;
+			pdesc->txdw0 |= cpu_to_le32((wr_sz - TXDESC_SIZE) &
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						     0x0000ffff);
 			if (pdvobj->ishighspeed) {
 				if ((wr_sz % 512) == 0)
@@ -365,11 +502,19 @@ _next:
 				if ((wr_sz % 64) == 0)
 					blnPending = 1;
 			}
+<<<<<<< HEAD
 			if (blnPending) /* 32 bytes for TX Desc - 8 offset */
 				pdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE +
 						OFFSET_SZ + 8) << OFFSET_SHT) &
 						0x00ff0000);
 			else {
+=======
+			if (blnPending) { /* 32 bytes for TX Desc - 8 offset */
+				pdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE +
+						OFFSET_SZ + 8) << OFFSET_SHT) &
+						0x00ff0000);
+			} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pdesc->txdw0 |= cpu_to_le32(((TXDESC_SIZE +
 							      OFFSET_SZ) <<
 							      OFFSET_SHT) &
@@ -382,6 +527,7 @@ _next:
 			*pcmdbuf = cpu_to_le32((cmdsz & 0x0000ffff) |
 					       (pcmd->cmdcode << 16) |
 					       (pcmdpriv->cmd_seq << 24));
+<<<<<<< HEAD
 			pcmdbuf += 2 ; /* 8 bytes aligment */
 			memcpy((u8 *)pcmdbuf, pcmd->parmbuf, pcmd->cmdsz);
 			while (check_cmd_fifo(padapter, wr_sz) == _FAIL) {
@@ -400,10 +546,23 @@ _next:
 				pcmd->res = H2C_SUCCESS;
 				pcmd_callback = cmd_callback[pcmd->
 						cmdcode].callback;
+=======
+			pcmdbuf += 2; /* 8 bytes alignment */
+			memcpy((u8 *)pcmdbuf, pcmd->parmbuf, pcmd->cmdsz);
+			if (blnPending)
+				wr_sz += 8;   /* Append 8 bytes */
+			r8712_write_mem(padapter, RTL8712_DMA_H2CCMD, wr_sz,
+					(u8 *)pdesc);
+			pcmdpriv->cmd_seq++;
+			if (cmdcode == GEN_CMD_CODE(_CreateBss)) {
+				pcmd->res = H2C_SUCCESS;
+				pcmd_callback = cmd_callback[cmdcode].callback;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (pcmd_callback)
 					pcmd_callback(padapter, pcmd);
 				continue;
 			}
+<<<<<<< HEAD
 			if (pcmd->cmdcode == GEN_CMD_CODE(_SetPwrMode)) {
 				if (padapter->pwrctrlpriv.bSleep) {
 					_enter_pwrlock(&(padapter->
@@ -420,10 +579,30 @@ _next:
 				goto _next;
 		} else
 			goto _next;
+=======
+			if (cmdcode == GEN_CMD_CODE(_SetPwrMode)) {
+				if (padapter->pwrctrlpriv.bSleep) {
+					mutex_lock(pwctrl_lock);
+					r8712_set_rpwm(padapter, PS_STATE_S2);
+					mutex_unlock(pwctrl_lock);
+				}
+			}
+			r8712_free_cmd_obj(pcmd);
+			if (list_empty(&pcmdpriv->cmd_queue.queue)) {
+				r8712_unregister_cmd_alive(padapter);
+				continue;
+			} else {
+				goto _next;
+			}
+		} else {
+			goto _next;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flush_signals_thread();
 	}
 	/* free all cmd_obj resources */
 	do {
+<<<<<<< HEAD
 		pcmd = r8712_dequeue_cmd(&(pcmdpriv->cmd_queue));
 		if (pcmd == NULL)
 			break;
@@ -434,13 +613,31 @@ _next:
 }
 
 void r8712_event_handle(struct _adapter *padapter, uint *peventbuf)
+=======
+		pcmd = r8712_dequeue_cmd(&pcmdpriv->cmd_queue);
+		if (!pcmd)
+			break;
+		r8712_free_cmd_obj(pcmd);
+	} while (1);
+	complete(&pcmdpriv->terminate_cmdthread_comp);
+	return 0;
+}
+
+void r8712_event_handle(struct _adapter *padapter, __le32 *peventbuf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 evt_code, evt_seq;
 	u16 evt_sz;
 	void (*event_callback)(struct _adapter *dev, u8 *pbuf);
+<<<<<<< HEAD
 	struct	evt_priv *pevt_priv = &(padapter->evtpriv);
 
 	if (peventbuf == NULL)
+=======
+	struct	evt_priv *pevt_priv = &padapter->evtpriv;
+
+	if (!peventbuf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto _abort_event_;
 	evt_sz = (u16)(le32_to_cpu(*peventbuf) & 0xffff);
 	evt_seq = (u8)((le32_to_cpu(*peventbuf) >> 24) & 0x7f);
@@ -452,31 +649,54 @@ void r8712_event_handle(struct _adapter *padapter, uint *peventbuf)
 	}
 	/* checking if event code is valid */
 	if (evt_code >= MAX_C2HEVT) {
+<<<<<<< HEAD
 		pevt_priv->event_seq = ((evt_seq+1) & 0x7f);
 		goto _abort_event_;
 	} else if ((evt_code == GEN_EVT_CODE(_Survey)) &&
 		   (evt_sz > sizeof(struct wlan_bssid_ex))) {
 		pevt_priv->event_seq = ((evt_seq+1)&0x7f);
+=======
+		pevt_priv->event_seq = ((evt_seq + 1) & 0x7f);
+		goto _abort_event_;
+	} else if ((evt_code == GEN_EVT_CODE(_Survey)) &&
+		   (evt_sz > sizeof(struct wlan_bssid_ex))) {
+		pevt_priv->event_seq = ((evt_seq + 1) & 0x7f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto _abort_event_;
 	}
 	/* checking if event size match the event parm size */
 	if ((wlanevents[evt_code].parmsize) &&
 	    (wlanevents[evt_code].parmsize != evt_sz)) {
+<<<<<<< HEAD
 		pevt_priv->event_seq = ((evt_seq+1)&0x7f);
 		goto _abort_event_;
 	} else if ((evt_sz == 0) && (evt_code != GEN_EVT_CODE(_WPS_PBC))) {
 		pevt_priv->event_seq = ((evt_seq+1)&0x7f);
+=======
+		pevt_priv->event_seq = ((evt_seq + 1) & 0x7f);
+		goto _abort_event_;
+	} else if ((evt_sz == 0) && (evt_code != GEN_EVT_CODE(_WPS_PBC))) {
+		pevt_priv->event_seq = ((evt_seq + 1) & 0x7f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto _abort_event_;
 	}
 	pevt_priv->event_seq++;	/* update evt_seq */
 	if (pevt_priv->event_seq > 127)
 		pevt_priv->event_seq = 0;
+<<<<<<< HEAD
 	peventbuf = peventbuf + 2; /* move to event content, 8 bytes aligment */
 	if (peventbuf) {
 		event_callback = wlanevents[evt_code].event_callback;
 		if (event_callback)
 			event_callback(padapter, (u8 *)peventbuf);
 	}
+=======
+	/* move to event content, 8 bytes alignment */
+	peventbuf = peventbuf + 2;
+	event_callback = wlanevents[evt_code].event_callback;
+	if (event_callback)
+		event_callback(padapter, (u8 *)peventbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pevt_priv->evt_done_cnt++;
 _abort_event_:
 	return;

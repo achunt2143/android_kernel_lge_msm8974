@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2007 IBM Corp
  *
@@ -16,6 +17,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright 2007 IBM Corp
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_POWERPC_TSI108_PCI_H
@@ -39,7 +45,11 @@
 
 extern int tsi108_setup_pci(struct device_node *dev, u32 cfg_phys, int primary);
 extern void tsi108_pci_int_init(struct device_node *node);
+<<<<<<< HEAD
 extern void tsi108_irq_cascade(unsigned int irq, struct irq_desc *desc);
+=======
+extern void tsi108_irq_cascade(struct irq_desc *desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void tsi108_clear_pci_cfg_error(void);
 
 #endif				/*  _ASM_POWERPC_TSI108_PCI_H */

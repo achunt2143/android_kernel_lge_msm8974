@@ -1,17 +1,33 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ALSA SoC TLV320AIC23 codec driver
  *
  * Author:      Arun KS, <arunks@mistralsolutions.com>
  * Copyright:   (C) 2008 Mistral Solutions Pvt Ltd
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _TLV320AIC23_H
 #define _TLV320AIC23_H
 
+<<<<<<< HEAD
+=======
+struct device;
+struct regmap_config;
+
+extern const struct regmap_config tlv320aic23_regmap;
+int tlv320aic23_probe(struct device *dev, struct regmap *regmap);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Codec TLV320AIC23 */
 #define TLV320AIC23_LINVOL		0x00
 #define TLV320AIC23_RINVOL		0x01

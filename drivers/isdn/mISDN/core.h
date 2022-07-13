@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008  by Karsten Keil <kkeil@novell.com>
  *
@@ -10,6 +11,11 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright 2008  by Karsten Keil <kkeil@novell.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef mISDN_CORE_H
@@ -69,8 +75,13 @@ struct Bprotocol	*get_Bprotocol4id(u_int);
 extern int	mISDN_inittimer(u_int *);
 extern void	mISDN_timer_cleanup(void);
 
+<<<<<<< HEAD
 extern int	l1_init(u_int *);
 extern void	l1_cleanup(void);
+=======
+extern int	Isdnl1_Init(u_int *);
+extern void	Isdnl1_cleanup(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int	Isdnl2_Init(u_int *);
 extern void	Isdnl2_cleanup(void);
 

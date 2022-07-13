@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for AMD7930 sound chips found on Sparcs.
  * Copyright (C) 2002, 2008 David S. Miller <davem@davemloft.net>
@@ -36,7 +40,12 @@
 #include <linux/interrupt.h>
 #include <linux/moduleparam.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/platform_device.h>
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/pcm.h>
@@ -44,9 +53,13 @@
 #include <sound/control.h>
 #include <sound/initval.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <asm/prom.h>
+=======
+#include <asm/irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -61,7 +74,10 @@ MODULE_PARM_DESC(enable, "Enable Sun AMD7930 soundcard.");
 MODULE_AUTHOR("Thomas K. Dyas and David S. Miller");
 MODULE_DESCRIPTION("Sun AMD7930");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Sun,AMD7930}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Device register layout.  */
 
@@ -666,7 +682,11 @@ static snd_pcm_uframes_t snd_amd7930_capture_pointer(struct snd_pcm_substream *s
 }
 
 /* Playback and capture have identical properties.  */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_amd7930_pcm_hw =
+=======
+static const struct snd_pcm_hardware snd_amd7930_pcm_hw =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info			= (SNDRV_PCM_INFO_MMAP |
 				   SNDRV_PCM_INFO_MMAP_VALID |
@@ -722,6 +742,7 @@ static int snd_amd7930_capture_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int snd_amd7930_hw_params(struct snd_pcm_substream *substream,
 				    struct snd_pcm_hw_params *hw_params)
 {
@@ -739,23 +760,38 @@ static struct snd_pcm_ops snd_amd7930_playback_ops = {
 	.ioctl		=	snd_pcm_lib_ioctl,
 	.hw_params	=	snd_amd7930_hw_params,
 	.hw_free	=	snd_amd7930_hw_free,
+=======
+static const struct snd_pcm_ops snd_amd7930_playback_ops = {
+	.open		=	snd_amd7930_playback_open,
+	.close		=	snd_amd7930_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare	=	snd_amd7930_playback_prepare,
 	.trigger	=	snd_amd7930_playback_trigger,
 	.pointer	=	snd_amd7930_playback_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_amd7930_capture_ops = {
 	.open		=	snd_amd7930_capture_open,
 	.close		=	snd_amd7930_capture_close,
 	.ioctl		=	snd_pcm_lib_ioctl,
 	.hw_params	=	snd_amd7930_hw_params,
 	.hw_free	=	snd_amd7930_hw_free,
+=======
+static const struct snd_pcm_ops snd_amd7930_capture_ops = {
+	.open		=	snd_amd7930_capture_open,
+	.close		=	snd_amd7930_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare	=	snd_amd7930_capture_prepare,
 	.trigger	=	snd_amd7930_capture_trigger,
 	.pointer	=	snd_amd7930_capture_pointer,
 };
 
+<<<<<<< HEAD
 static int __devinit snd_amd7930_pcm(struct snd_amd7930 *amd)
+=======
+static int snd_amd7930_pcm(struct snd_amd7930 *amd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -775,9 +811,14 @@ static int __devinit snd_amd7930_pcm(struct snd_amd7930 *amd)
 	strcpy(pcm->name, amd->card->shortname);
 	amd->pcm = pcm;
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_CONTINUOUS,
 					      snd_dma_continuous_data(GFP_KERNEL),
 					      64*1024, 64*1024);
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_CONTINUOUS,
+				       NULL, 64*1024, 64*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -813,7 +854,11 @@ static int snd_amd7930_get_volume(struct snd_kcontrol *kctl, struct snd_ctl_elem
 	default:
 		swval = &amd->pgain;
 		break;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ucontrol->value.integer.value[0] = *swval;
 
@@ -838,7 +883,11 @@ static int snd_amd7930_put_volume(struct snd_kcontrol *kctl, struct snd_ctl_elem
 	default:
 		swval = &amd->pgain;
 		break;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&amd->lock, flags);
 
@@ -854,7 +903,11 @@ static int snd_amd7930_put_volume(struct snd_kcontrol *kctl, struct snd_ctl_elem
 	return change;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new amd7930_controls[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new amd7930_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.iface		=	SNDRV_CTL_ELEM_IFACE_MIXER,
 		.name		=	"Monitor Volume",
@@ -884,7 +937,11 @@ static struct snd_kcontrol_new amd7930_controls[] __devinitdata = {
 	},
 };
 
+<<<<<<< HEAD
 static int __devinit snd_amd7930_mixer(struct snd_amd7930 *amd)
+=======
+static int snd_amd7930_mixer(struct snd_amd7930 *amd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	int idx, err;
@@ -929,6 +986,7 @@ static int snd_amd7930_dev_free(struct snd_device *device)
 	return snd_amd7930_free(amd);
 }
 
+<<<<<<< HEAD
 static struct snd_device_ops snd_amd7930_dev_ops = {
 	.dev_free	=	snd_amd7930_dev_free,
 };
@@ -937,6 +995,16 @@ static int __devinit snd_amd7930_create(struct snd_card *card,
 					struct platform_device *op,
 					int irq, int dev,
 					struct snd_amd7930 **ramd)
+=======
+static const struct snd_device_ops snd_amd7930_dev_ops = {
+	.dev_free	=	snd_amd7930_dev_free,
+};
+
+static int snd_amd7930_create(struct snd_card *card,
+			      struct platform_device *op,
+			      int irq, int dev,
+			      struct snd_amd7930 **ramd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_amd7930 *amd;
 	unsigned long flags;
@@ -956,6 +1024,10 @@ static int __devinit snd_amd7930_create(struct snd_card *card,
 	if (!amd->regs) {
 		snd_printk(KERN_ERR
 			   "amd7930-%d: Unable to map chip registers.\n", dev);
+<<<<<<< HEAD
+=======
+		kfree(amd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -992,8 +1064,14 @@ static int __devinit snd_amd7930_create(struct snd_card *card,
 
 	spin_unlock_irqrestore(&amd->lock, flags);
 
+<<<<<<< HEAD
 	if ((err = snd_device_new(card, SNDRV_DEV_LOWLEVEL,
 				  amd, &snd_amd7930_dev_ops)) < 0) {
+=======
+	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL,
+			     amd, &snd_amd7930_dev_ops);
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_amd7930_free(amd);
 		return err;
 	}
@@ -1002,7 +1080,11 @@ static int __devinit snd_amd7930_create(struct snd_card *card,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit amd7930_sbus_probe(struct platform_device *op)
+=======
+static int amd7930_sbus_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *rp = &op->resource[0];
 	static int dev_num;
@@ -1019,8 +1101,13 @@ static int __devinit amd7930_sbus_probe(struct platform_device *op)
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev_num], id[dev_num], THIS_MODULE, 0,
 			      &card);
+=======
+	err = snd_card_new(&op->dev, index[dev_num], id[dev_num],
+			   THIS_MODULE, 0, &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -1036,6 +1123,7 @@ static int __devinit amd7930_sbus_probe(struct platform_device *op)
 				      irq, dev_num, &amd)) < 0)
 		goto out_err;
 
+<<<<<<< HEAD
 	if ((err = snd_amd7930_pcm(amd)) < 0)
 		goto out_err;
 
@@ -1043,6 +1131,18 @@ static int __devinit amd7930_sbus_probe(struct platform_device *op)
 		goto out_err;
 
 	if ((err = snd_card_register(card)) < 0)
+=======
+	err = snd_amd7930_pcm(amd);
+	if (err < 0)
+		goto out_err;
+
+	err = snd_amd7930_mixer(amd);
+	if (err < 0)
+		goto out_err;
+
+	err = snd_card_register(card);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_err;
 
 	amd->next = amd7930_list;
@@ -1063,11 +1163,18 @@ static const struct of_device_id amd7930_match[] = {
 	},
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, amd7930_match);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver amd7930_sbus_driver = {
 	.driver = {
 		.name = "audio",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = amd7930_match,
 	},
 	.probe		= amd7930_sbus_probe,

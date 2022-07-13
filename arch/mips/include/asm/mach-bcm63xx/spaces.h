@@ -10,7 +10,11 @@
 #ifndef _ASM_BCM63XX_SPACES_H
 #define _ASM_BCM63XX_SPACES_H
 
+<<<<<<< HEAD
 #define FIXADDR_TOP		((unsigned long)(long)(int)0xff000000)
+=======
+#include <asm/bmips-spaces.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mach-generic/spaces.h>
 

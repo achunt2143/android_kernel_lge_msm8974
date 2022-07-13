@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Watchdog Timer Driver
  *	   for ITE IT87xx Environment Control - Low Pin Count Input / Output
@@ -12,6 +16,7 @@
  *		    http://www.ite.com.tw/
  *
  *	Support of the watchdog timers, which are available on
+<<<<<<< HEAD
  *	IT8702, IT8712, IT8716, IT8718, IT8720, IT8721 and IT8726.
  *
  *	This program is free software; you can redistribute it and/or
@@ -27,10 +32,16 @@
  *	You should have received a copy of the GNU General Public License
  *	along with this program; if not, write to the Free Software
  *	Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+ *	IT8607, IT8613, IT8620, IT8622, IT8625, IT8628, IT8655, IT8659,
+ *	IT8665, IT8686, IT8702, IT8712, IT8716, IT8718, IT8720, IT8721,
+ *	IT8726,	IT8728, IT8772, IT8783, IT8784 and IT8786.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/types.h>
@@ -54,6 +65,19 @@
 /* Defaults for Module Parameter */
 #define DEFAULT_NOGAMEPORT	0
 #define DEFAULT_EXCLUSIVE	1
+=======
+#include <linux/init.h>
+#include <linux/io.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/moduleparam.h>
+#include <linux/types.h>
+#include <linux/watchdog.h>
+
+#define WATCHDOG_NAME		"IT87 WDT"
+
+/* Defaults for Module Parameter */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEFAULT_TIMEOUT		60
 #define DEFAULT_TESTMODE	0
 #define DEFAULT_NOWAYOUT	WATCHDOG_NOWAYOUT
@@ -64,18 +88,37 @@
 
 /* Logical device Numbers LDN */
 #define GPIO		0x07
+<<<<<<< HEAD
 #define GAMEPORT	0x09
 #define CIR		0x0a
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Configuration Registers and Functions */
 #define LDNREG		0x07
 #define CHIPID		0x20
 #define CHIPREV		0x22
+<<<<<<< HEAD
 #define ACTREG		0x30
 #define BASEREG		0x60
 
 /* Chip Id numbers */
 #define NO_DEV_ID	0xffff
+=======
+
+/* Chip Id numbers */
+#define NO_DEV_ID	0xffff
+#define IT8607_ID	0x8607
+#define IT8613_ID	0x8613
+#define IT8620_ID	0x8620
+#define IT8622_ID	0x8622
+#define IT8625_ID	0x8625
+#define IT8628_ID	0x8628
+#define IT8655_ID	0x8655
+#define IT8659_ID	0x8659
+#define IT8665_ID	0x8665
+#define IT8686_ID	0x8686
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IT8702_ID	0x8702
 #define IT8705_ID	0x8705
 #define IT8712_ID	0x8712
@@ -84,6 +127,14 @@
 #define IT8720_ID	0x8720
 #define IT8721_ID	0x8721
 #define IT8726_ID	0x8726	/* the data sheet suggest wrongly 0x8716 */
+<<<<<<< HEAD
+=======
+#define IT8728_ID	0x8728
+#define IT8772_ID	0x8772
+#define IT8783_ID	0x8783
+#define IT8784_ID	0x8784
+#define IT8786_ID	0x8786
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* GPIO Configuration Registers LDN=0x07 */
 #define WDTCTRL		0x71
@@ -91,6 +142,7 @@
 #define WDTVALLSB	0x73
 #define WDTVALMSB	0x74
 
+<<<<<<< HEAD
 /* GPIO Bits WDTCTRL */
 #define WDT_CIRINT	0x80
 #define WDT_MOUSEINT	0x40
@@ -99,6 +151,8 @@
 #define WDT_FORCE	0x02
 #define WDT_ZERO	0x01
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* GPIO Bits WDTCFG */
 #define WDT_TOV1	0x80
 #define WDT_KRST	0x40
@@ -106,6 +160,7 @@
 #define WDT_PWROK	0x10 /* not in it8721 */
 #define WDT_INT_MASK	0x0f
 
+<<<<<<< HEAD
 /* CIR Configuration Register LDN=0x0a */
 #define CIR_ILS		0x70
 
@@ -150,6 +205,14 @@ MODULE_PARM_DESC(nogameport, "Forbid the activation of game port, default="
 module_param(exclusive, int, 0);
 MODULE_PARM_DESC(exclusive, "Watchdog exclusive device open, default="
 		__MODULE_STRING(DEFAULT_EXCLUSIVE));
+=======
+static unsigned int max_units, chip_type;
+
+static unsigned int timeout = DEFAULT_TIMEOUT;
+static int testmode = DEFAULT_TESTMODE;
+static bool nowayout = DEFAULT_NOWAYOUT;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(timeout, int, 0);
 MODULE_PARM_DESC(timeout, "Watchdog timeout in seconds, default="
 		__MODULE_STRING(DEFAULT_TIMEOUT));
@@ -205,6 +268,10 @@ static inline void superio_outb(int val, int reg)
 static inline int superio_inw(int reg)
 {
 	int val;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outb(reg++, REG);
 	val = inb(VAL) << 8;
 	outb(reg, REG);
@@ -212,6 +279,7 @@ static inline int superio_inw(int reg)
 	return val;
 }
 
+<<<<<<< HEAD
 static inline void superio_outw(int val, int reg)
 {
 	outb(reg++, REG);
@@ -225,22 +293,56 @@ static void wdt_update_timeout(void)
 {
 	unsigned char cfg = WDT_KRST;
 	int tm = timeout;
+=======
+/* Internal function, should be called after superio_select(GPIO) */
+static void _wdt_update_timeout(unsigned int t)
+{
+	unsigned char cfg = WDT_KRST;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (testmode)
 		cfg = 0;
 
+<<<<<<< HEAD
 	if (tm <= max_units)
 		cfg |= WDT_TOV1;
 	else
 		tm /= 60;
+=======
+	if (t <= max_units)
+		cfg |= WDT_TOV1;
+	else
+		t /= 60;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (chip_type != IT8721_ID)
 		cfg |= WDT_PWROK;
 
 	superio_outb(cfg, WDTCFG);
+<<<<<<< HEAD
 	superio_outb(tm, WDTVALLSB);
 	if (max_units > 255)
 		superio_outb(tm>>8, WDTVALMSB);
+=======
+	superio_outb(t, WDTVALLSB);
+	if (max_units > 255)
+		superio_outb(t >> 8, WDTVALMSB);
+}
+
+static int wdt_update_timeout(unsigned int t)
+{
+	int ret;
+
+	ret = superio_enter();
+	if (ret)
+		return ret;
+
+	superio_select(GPIO);
+	_wdt_update_timeout(t);
+	superio_exit();
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int wdt_round_time(int t)
@@ -252,6 +354,7 @@ static int wdt_round_time(int t)
 
 /* watchdog timer handling */
 
+<<<<<<< HEAD
 static void wdt_keepalive(void)
 {
 	if (test_bit(WDTS_USE_GP, &wdt_status))
@@ -295,16 +398,31 @@ static int wdt_stop(void)
 
 	superio_exit();
 	return 0;
+=======
+static int wdt_start(struct watchdog_device *wdd)
+{
+	return wdt_update_timeout(wdd->timeout);
+}
+
+static int wdt_stop(struct watchdog_device *wdd)
+{
+	return wdt_update_timeout(0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  *	wdt_set_timeout - set a new timeout value with watchdog ioctl
+<<<<<<< HEAD
+=======
+ *	@wdd: pointer to the watchdog_device structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@t: timeout value in seconds
  *
  *	The hardware device has a 8 or 16 bit watchdog timer (depends on
  *	chip version) that can be configured to count seconds or minutes.
  *
  *	Used within WDIOC_SETTIMEOUT watchdog device ioctl.
+<<<<<<< HEAD
  */
 
 static int wdt_set_timeout(int t)
@@ -468,10 +586,31 @@ static ssize_t wdt_write(struct file *file, const char __user *buf,
 		}
 	}
 	return count;
+=======
+ *
+ *	Return: 0 if the timeout was set successfully, or a negative error code on
+ *	failure.
+ */
+
+static int wdt_set_timeout(struct watchdog_device *wdd, unsigned int t)
+{
+	int ret = 0;
+
+	if (t > max_units)
+		t = wdt_round_time(t);
+
+	wdd->timeout = t;
+
+	if (watchdog_hw_running(wdd))
+		ret = wdt_update_timeout(t);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct watchdog_info ident = {
 	.options = WDIOF_SETTIMEOUT | WDIOF_MAGICCLOSE | WDIOF_KEEPALIVEPING,
+<<<<<<< HEAD
 	.firmware_version =	1,
 	.identity = WATCHDOG_NAME,
 };
@@ -583,16 +722,39 @@ static struct miscdevice wdt_miscdev = {
 
 static struct notifier_block wdt_notifier = {
 	.notifier_call = wdt_notify_sys,
+=======
+	.firmware_version = 1,
+	.identity = WATCHDOG_NAME,
+};
+
+static const struct watchdog_ops wdt_ops = {
+	.owner = THIS_MODULE,
+	.start = wdt_start,
+	.stop = wdt_stop,
+	.set_timeout = wdt_set_timeout,
+};
+
+static struct watchdog_device wdt_dev = {
+	.info = &ident,
+	.ops = &wdt_ops,
+	.min_timeout = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init it87_wdt_init(void)
 {
+<<<<<<< HEAD
 	int rc = 0;
 	int try_gameport = !nogameport;
 	u8  chip_rev;
 	int gp_rreq_fail = 0;
 
 	wdt_status = 0;
+=======
+	u8  chip_rev;
+	u8 ctrl;
+	int rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = superio_enter();
 	if (rc)
@@ -609,6 +771,7 @@ static int __init it87_wdt_init(void)
 	case IT8712_ID:
 		max_units = (chip_rev < 8) ? 255 : 65535;
 		break;
+<<<<<<< HEAD
 	case IT8716_ID:
 	case IT8726_ID:
 		max_units = 65535;
@@ -618,6 +781,29 @@ static int __init it87_wdt_init(void)
 	case IT8721_ID:
 		max_units = 65535;
 		try_gameport = 0;
+=======
+	case IT8607_ID:
+	case IT8613_ID:
+	case IT8620_ID:
+	case IT8622_ID:
+	case IT8625_ID:
+	case IT8628_ID:
+	case IT8655_ID:
+	case IT8659_ID:
+	case IT8665_ID:
+	case IT8686_ID:
+	case IT8716_ID:
+	case IT8718_ID:
+	case IT8720_ID:
+	case IT8721_ID:
+	case IT8726_ID:
+	case IT8728_ID:
+	case IT8772_ID:
+	case IT8783_ID:
+	case IT8784_ID:
+	case IT8786_ID:
+		max_units = 65535;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case IT8705_ID:
 		pr_err("Unsupported Chip found, Chip %04x Revision %02x\n",
@@ -638,6 +824,7 @@ static int __init it87_wdt_init(void)
 
 	superio_select(GPIO);
 	superio_outb(WDT_TOV1, WDTCFG);
+<<<<<<< HEAD
 	superio_outb(0x00, WDTCTRL);
 
 	/* First try to get Gameport support */
@@ -680,6 +867,21 @@ static int __init it87_wdt_init(void)
 			superio_outb(gpact, ACTREG);
 		}
 	}
+=======
+
+	switch (chip_type) {
+	case IT8784_ID:
+	case IT8786_ID:
+		ctrl = superio_inb(WDTCTRL);
+		ctrl &= 0x08;
+		superio_outb(ctrl, WDTCTRL);
+		break;
+	default:
+		superio_outb(0x00, WDTCTRL);
+	}
+
+	superio_exit();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (timeout < 1 || timeout > max_units * 60) {
 		timeout = DEFAULT_TIMEOUT;
@@ -690,6 +892,7 @@ static int __init it87_wdt_init(void)
 	if (timeout > max_units)
 		timeout = wdt_round_time(timeout);
 
+<<<<<<< HEAD
 	rc = register_reboot_notifier(&wdt_notifier);
 	if (rc) {
 		pr_err("Cannot register reboot notifier (err=%d)\n", rc);
@@ -737,10 +940,27 @@ err_out:
 
 	superio_exit();
 	return rc;
+=======
+	wdt_dev.timeout = timeout;
+	wdt_dev.max_timeout = max_units * 60;
+
+	watchdog_stop_on_reboot(&wdt_dev);
+	rc = watchdog_register_device(&wdt_dev);
+	if (rc) {
+		pr_err("Cannot register watchdog device (err=%d)\n", rc);
+		return rc;
+	}
+
+	pr_info("Chip IT%04x revision %d initialized. timeout=%d sec (nowayout=%d testmode=%d)\n",
+		chip_type, chip_rev, timeout, nowayout, testmode);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit it87_wdt_exit(void)
 {
+<<<<<<< HEAD
 	if (superio_enter() == 0) {
 		superio_select(GPIO);
 		superio_outb(0x00, WDTCTRL);
@@ -761,6 +981,9 @@ static void __exit it87_wdt_exit(void)
 	misc_deregister(&wdt_miscdev);
 	unregister_reboot_notifier(&wdt_notifier);
 	release_region(base, test_bit(WDTS_USE_GP, &wdt_status) ? 1 : 8);
+=======
+	watchdog_unregister_device(&wdt_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(it87_wdt_init);
@@ -769,4 +992,7 @@ module_exit(it87_wdt_exit);
 MODULE_AUTHOR("Oliver Schuster");
 MODULE_DESCRIPTION("Hardware Watchdog Device Driver for IT87xx EC-LPC I/O");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Sound core.  This file is composed of two parts.  sound_class
  *	which is common to both OSS and ALSA and OSS sound core which
@@ -22,20 +26,36 @@ static inline int init_oss_soundcore(void)	{ return 0; }
 static inline void cleanup_oss_soundcore(void)	{ }
 #endif
 
+<<<<<<< HEAD
 struct class *sound_class;
 EXPORT_SYMBOL(sound_class);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Core sound module");
 MODULE_AUTHOR("Alan Cox");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 static char *sound_devnode(struct device *dev, umode_t *mode)
+=======
+static char *sound_devnode(const struct device *dev, umode_t *mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (MAJOR(dev->devt) == SOUND_MAJOR)
 		return NULL;
 	return kasprintf(GFP_KERNEL, "snd/%s", dev_name(dev));
 }
 
+<<<<<<< HEAD
+=======
+const struct class sound_class = {
+	.name = "sound",
+	.devnode = sound_devnode,
+};
+EXPORT_SYMBOL(sound_class);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init init_soundcore(void)
 {
 	int rc;
@@ -44,6 +64,7 @@ static int __init init_soundcore(void)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	sound_class = class_create(THIS_MODULE, "sound");
 	if (IS_ERR(sound_class)) {
 		cleanup_oss_soundcore();
@@ -52,13 +73,25 @@ static int __init init_soundcore(void)
 
 	sound_class->devnode = sound_devnode;
 
+=======
+	rc = class_register(&sound_class);
+	if (rc) {
+		cleanup_oss_soundcore();
+		return rc;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void __exit cleanup_soundcore(void)
 {
 	cleanup_oss_soundcore();
+<<<<<<< HEAD
 	class_destroy(sound_class);
+=======
+	class_unregister(&sound_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 subsys_initcall(init_soundcore);
@@ -73,12 +106,15 @@ module_exit(cleanup_soundcore);
  *
  *	Fixes:
  *
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                         --------------------
  * 
  *	Top level handler for the sound subsystem. Various devices can
@@ -119,6 +155,7 @@ struct sound_unit
 	char name[32];
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_SOUND_MSNDCLAS
 extern int msnd_classic_init(void);
 #endif
@@ -126,6 +163,8 @@ extern int msnd_classic_init(void);
 extern int msnd_pinnacle_init(void);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * By default, OSS sound_core claims full legacy minor range (0-255)
  * of SOUND_MAJOR to trap open attempts to any sound minor and
@@ -146,6 +185,7 @@ extern int msnd_pinnacle_init(void);
  * devices only the standard chrdev aliases are requested.
  *
  * All these clutters are scheduled to be removed along with
+<<<<<<< HEAD
  * sound-slot/service-* module aliases.  Please take a look at
  * feature-removal-schedule.txt for details.
  */
@@ -154,6 +194,11 @@ static int preclaim_oss = 1;
 #else
 static int preclaim_oss = 0;
 #endif
+=======
+ * sound-slot/service-* module aliases.
+ */
+static int preclaim_oss = IS_ENABLED(CONFIG_SOUND_OSS_CORE_PRECLAIM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(preclaim_oss, int, 0444);
 
@@ -288,12 +333,22 @@ retry:
 				goto retry;
 			}
 			spin_unlock(&sound_loader_lock);
+<<<<<<< HEAD
 			return -EBUSY;
 		}
 	}
 
 	device_create(sound_class, dev, MKDEV(SOUND_MAJOR, s->unit_minor),
 		      NULL, s->name+6);
+=======
+			r = -EBUSY;
+			goto fail;
+		}
+	}
+
+	device_create(&sound_class, dev, MKDEV(SOUND_MAJOR, s->unit_minor),
+		      NULL, "%s", s->name+6);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return s->unit_minor;
 
 fail:
@@ -318,7 +373,11 @@ static void sound_remove_unit(struct sound_unit **list, int unit)
 		if (!preclaim_oss)
 			__unregister_chrdev(SOUND_MAJOR, p->unit_minor, 1,
 					    p->name);
+<<<<<<< HEAD
 		device_destroy(sound_class, MKDEV(SOUND_MAJOR, p->unit_minor));
+=======
+		device_destroy(&sound_class, MKDEV(SOUND_MAJOR, p->unit_minor));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(p);
 	}
 }
@@ -353,7 +412,13 @@ static struct sound_unit *chains[SOUND_STEP];
  *      @dev: device pointer
  *
  *	Allocate a special sound device by minor number from the sound
+<<<<<<< HEAD
  *	subsystem. The allocated number is returned on success. On failure
+=======
+ *	subsystem.
+ *
+ *	Return: The allocated number is returned on success. On failure,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	a negative error code is returned.
  */
  
@@ -361,7 +426,11 @@ int register_sound_special_device(const struct file_operations *fops, int unit,
 				  struct device *dev)
 {
 	const int chain = unit % SOUND_STEP;
+<<<<<<< HEAD
 	int max_unit = 128 + chain;
+=======
+	int max_unit = 256;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *name;
 	char _name[16];
 
@@ -419,7 +488,11 @@ int register_sound_special_device(const struct file_operations *fops, int unit,
 		break;
 	}
 	return sound_insert_unit(&chains[chain], fops, -1, unit, max_unit,
+<<<<<<< HEAD
 				 name, S_IRUSR | S_IWUSR, dev);
+=======
+				 name, 0600, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
  
 EXPORT_SYMBOL(register_sound_special_device);
@@ -437,18 +510,30 @@ EXPORT_SYMBOL(register_sound_special);
  *	@dev: Unit number to allocate
  *
  *	Allocate a mixer device. Unit is the number of the mixer requested.
+<<<<<<< HEAD
  *	Pass -1 to request the next free mixer unit. On success the allocated
  *	number is returned, on failure a negative error code is returned.
+=======
+ *	Pass -1 to request the next free mixer unit.
+ *
+ *	Return: On success, the allocated number is returned. On failure,
+ *	a negative error code is returned.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 int register_sound_mixer(const struct file_operations *fops, int dev)
 {
 	return sound_insert_unit(&chains[0], fops, dev, 0, 128,
+<<<<<<< HEAD
 				 "mixer", S_IRUSR | S_IWUSR, NULL);
+=======
+				 "mixer", 0600, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL(register_sound_mixer);
 
+<<<<<<< HEAD
 /**
  *	register_sound_midi - register a midi device
  *	@fops: File operations for the driver
@@ -467,6 +552,8 @@ int register_sound_midi(const struct file_operations *fops, int dev)
 
 EXPORT_SYMBOL(register_sound_midi);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	DSP's are registered as a triple. Register only one and cheat
  *	in open - see below.
@@ -478,17 +565,31 @@ EXPORT_SYMBOL(register_sound_midi);
  *	@dev: Unit number to allocate
  *
  *	Allocate a DSP device. Unit is the number of the DSP requested.
+<<<<<<< HEAD
  *	Pass -1 to request the next free DSP unit. On success the allocated
  *	number is returned, on failure a negative error code is returned.
  *
  *	This function allocates both the audio and dsp device entries together
  *	and will always allocate them as a matching pair - eg dsp3/audio3
+=======
+ *	Pass -1 to request the next free DSP unit.
+ *
+ *	This function allocates both the audio and dsp device entries together
+ *	and will always allocate them as a matching pair - eg dsp3/audio3
+ *
+ *	Return: On success, the allocated number is returned. On failure,
+ *	a negative error code is returned.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 int register_sound_dsp(const struct file_operations *fops, int dev)
 {
 	return sound_insert_unit(&chains[3], fops, dev, 3, 131,
+<<<<<<< HEAD
 				 "dsp", S_IWUSR | S_IRUSR, NULL);
+=======
+				 "dsp", 0600, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL(register_sound_dsp);
@@ -526,6 +627,7 @@ void unregister_sound_mixer(int unit)
 EXPORT_SYMBOL(unregister_sound_mixer);
 
 /**
+<<<<<<< HEAD
  *	unregister_sound_midi - unregister a midi device
  *	@unit: unit number to allocate
  *
@@ -541,6 +643,8 @@ void unregister_sound_midi(int unit)
 EXPORT_SYMBOL(unregister_sound_midi);
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	unregister_sound_dsp - unregister a DSP device
  *	@unit: unit number to allocate
  *
@@ -619,6 +723,7 @@ static int soundcore_open(struct inode *inode, struct file *file)
 		if (s)
 			new_fops = fops_get(s->unit_fops);
 	}
+<<<<<<< HEAD
 	if (new_fops) {
 		/*
 		 * We rely upon the fact that we can't be unloaded while the
@@ -645,6 +750,23 @@ static int soundcore_open(struct inode *inode, struct file *file)
 	}
 	spin_unlock(&sound_loader_lock);
 	return -ENODEV;
+=======
+	spin_unlock(&sound_loader_lock);
+
+	if (!new_fops)
+		return -ENODEV;
+
+	/*
+	 * We rely upon the fact that we can't be unloaded while the
+	 * subdriver is there.
+	 */
+	replace_fops(file, new_fops);
+
+	if (!file->f_op->open)
+		return -ENODEV;
+
+	return file->f_op->open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MODULE_ALIAS_CHARDEV_MAJOR(SOUND_MAJOR);
@@ -659,7 +781,11 @@ static void cleanup_oss_soundcore(void)
 static int __init init_oss_soundcore(void)
 {
 	if (preclaim_oss &&
+<<<<<<< HEAD
 	    register_chrdev(SOUND_MAJOR, "sound", &soundcore_fops) == -1) {
+=======
+	    register_chrdev(SOUND_MAJOR, "sound", &soundcore_fops) < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "soundcore: sound device already in use.\n");
 		return -EBUSY;
 	}

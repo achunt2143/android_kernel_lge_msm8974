@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: excreate - Named object creation
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
@@ -49,7 +60,10 @@
 
 #define _COMPONENT          ACPI_EXECUTER
 ACPI_MODULE_NAME("excreate")
+<<<<<<< HEAD
 #ifndef ACPI_NO_METHOD_EXECUTION
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ex_create_alias
@@ -78,7 +92,11 @@ acpi_status acpi_ex_create_alias(struct acpi_walk_state *walk_state)
 	    (target_node->type == ACPI_TYPE_LOCAL_METHOD_ALIAS)) {
 		/*
 		 * Dereference an existing alias so that we don't create a chain
+<<<<<<< HEAD
 		 * of aliases.  With this code, we guarantee that an alias is
+=======
+		 * of aliases. With this code, we guarantee that an alias is
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * always exactly one level of indirection away from the
 		 * actual aliased name.
 		 */
@@ -87,6 +105,7 @@ acpi_status acpi_ex_create_alias(struct acpi_walk_state *walk_state)
 				  target_node->object);
 	}
 
+<<<<<<< HEAD
 	/*
 	 * For objects that can never change (i.e., the NS node will
 	 * permanently point to the same object), we can simply attach
@@ -115,6 +134,29 @@ acpi_status acpi_ex_create_alias(struct acpi_walk_state *walk_state)
 	case ACPI_TYPE_LOCAL_SCOPE:
 
 		/*
+=======
+	/* Ensure that the target node is valid */
+
+	if (!target_node) {
+		return_ACPI_STATUS(AE_NULL_OBJECT);
+	}
+
+	/* Construct the alias object (a namespace node) */
+
+	switch (target_node->type) {
+	case ACPI_TYPE_METHOD:
+		/*
+		 * Control method aliases need to be differentiated with
+		 * a special type
+		 */
+		alias_node->type = ACPI_TYPE_LOCAL_METHOD_ALIAS;
+		break;
+
+	default:
+		/*
+		 * All other object types.
+		 *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * The new alias has the type ALIAS and points to the original
 		 * NS node, not the object itself.
 		 */
@@ -122,6 +164,7 @@ acpi_status acpi_ex_create_alias(struct acpi_walk_state *walk_state)
 		alias_node->object =
 		    ACPI_CAST_PTR(union acpi_operand_object, target_node);
 		break;
+<<<<<<< HEAD
 
 	case ACPI_TYPE_METHOD:
 
@@ -148,10 +191,17 @@ acpi_status acpi_ex_create_alias(struct acpi_walk_state *walk_state)
 					       (target_node),
 					       target_node->type);
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Since both operands are Nodes, we don't need to delete them */
 
+<<<<<<< HEAD
+=======
+	alias_node->object =
+	    ACPI_CAST_PTR(union acpi_operand_object, target_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 
@@ -192,11 +242,19 @@ acpi_status acpi_ex_create_event(struct acpi_walk_state *walk_state)
 
 	/* Attach object to the Node */
 
+<<<<<<< HEAD
 	status =
 	    acpi_ns_attach_object((struct acpi_namespace_node *)walk_state->
 				  operands[0], obj_desc, ACPI_TYPE_EVENT);
 
       cleanup:
+=======
+	status = acpi_ns_attach_object((struct acpi_namespace_node *)
+				       walk_state->operands[0], obj_desc,
+				       ACPI_TYPE_EVENT);
+
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Remove local reference to the object (on error, will cause deletion
 	 * of both object and semaphore if present.)
@@ -243,8 +301,12 @@ acpi_status acpi_ex_create_mutex(struct acpi_walk_state *walk_state)
 
 	/* Init object and attach to NS node */
 
+<<<<<<< HEAD
 	obj_desc->mutex.sync_level =
 	    (u8) walk_state->operands[1]->integer.value;
+=======
+	obj_desc->mutex.sync_level = (u8)walk_state->operands[1]->integer.value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	obj_desc->mutex.node =
 	    (struct acpi_namespace_node *)walk_state->operands[0];
 
@@ -252,7 +314,11 @@ acpi_status acpi_ex_create_mutex(struct acpi_walk_state *walk_state)
 	    acpi_ns_attach_object(obj_desc->mutex.node, obj_desc,
 				  ACPI_TYPE_MUTEX);
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Remove local reference to the object (on error, will cause deletion
 	 * of both object and semaphore if present.)
@@ -330,9 +396,16 @@ acpi_ex_create_region(u8 * aml_start,
 	 * Remember location in AML stream of address & length
 	 * operands since they need to be evaluated at run time.
 	 */
+<<<<<<< HEAD
 	region_obj2 = obj_desc->common.next_object;
 	region_obj2->extra.aml_start = aml_start;
 	region_obj2->extra.aml_length = aml_length;
+=======
+	region_obj2 = acpi_ns_get_secondary_object(obj_desc);
+	region_obj2->extra.aml_start = aml_start;
+	region_obj2->extra.aml_length = aml_length;
+	region_obj2->extra.method_REG = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (walk_state->scope_info) {
 		region_obj2->extra.scope_node =
 		    walk_state->scope_info->scope.node;
@@ -345,13 +418,26 @@ acpi_ex_create_region(u8 * aml_start,
 	obj_desc->region.space_id = space_id;
 	obj_desc->region.address = 0;
 	obj_desc->region.length = 0;
+<<<<<<< HEAD
 	obj_desc->region.node = node;
+=======
+	obj_desc->region.pointer = NULL;
+	obj_desc->region.node = node;
+	obj_desc->region.handler = NULL;
+	obj_desc->common.flags &=
+	    ~(AOPOBJ_SETUP_COMPLETE | AOPOBJ_REG_CONNECTED |
+	      AOPOBJ_OBJECT_INITIALIZED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Install the new region object in the parent Node */
 
 	status = acpi_ns_attach_object(node, obj_desc, ACPI_TYPE_REGION);
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Remove local reference to the object */
 
@@ -369,7 +455,11 @@ acpi_ex_create_region(u8 * aml_start,
  *
  * DESCRIPTION: Create a new processor object and populate the fields
  *
+<<<<<<< HEAD
  *              Processor (Name[0], cpu_iD[1], pblock_addr[2], pblock_length[3])
+=======
+ *              Processor (Name[0], cpu_ID[1], pblock_addr[2], pblock_length[3])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  ******************************************************************************/
 
@@ -393,7 +483,11 @@ acpi_status acpi_ex_create_processor(struct acpi_walk_state *walk_state)
 	obj_desc->processor.proc_id = (u8) operand[1]->integer.value;
 	obj_desc->processor.length = (u8) operand[3]->integer.value;
 	obj_desc->processor.address =
+<<<<<<< HEAD
 	    (acpi_io_address) operand[2]->integer.value;
+=======
+	    (acpi_io_address)operand[2]->integer.value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Install the processor object in the parent Node */
 
@@ -451,7 +545,10 @@ acpi_status acpi_ex_create_power_resource(struct acpi_walk_state *walk_state)
 	acpi_ut_remove_reference(obj_desc);
 	return_ACPI_STATUS(status);
 }
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*******************************************************************************
  *
@@ -490,15 +587,25 @@ acpi_ex_create_method(u8 * aml_start,
 
 	obj_desc->method.aml_start = aml_start;
 	obj_desc->method.aml_length = aml_length;
+<<<<<<< HEAD
+=======
+	obj_desc->method.node = operand[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Disassemble the method flags. Split off the arg_count, Serialized
 	 * flag, and sync_level for efficiency.
 	 */
+<<<<<<< HEAD
 	method_flags = (u8) operand[1]->integer.value;
 
 	obj_desc->method.param_count =
 	    (u8) (method_flags & AML_METHOD_ARG_COUNT);
+=======
+	method_flags = (u8)operand[1]->integer.value;
+	obj_desc->method.param_count = (u8)
+	    (method_flags & AML_METHOD_ARG_COUNT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Get the sync_level. If method is serialized, a mutex will be
@@ -524,7 +631,11 @@ acpi_ex_create_method(u8 * aml_start,
 
 	acpi_ut_remove_reference(obj_desc);
 
+<<<<<<< HEAD
       exit:
+=======
+exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Remove a reference to the operand */
 
 	acpi_ut_remove_reference(operand[1]);

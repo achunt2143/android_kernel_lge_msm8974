@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************************************
  * Copyright (c) 2007-2008, Intel Corporation.
  * All Rights Reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
  * version 2, as published by the Free Software Foundation.
@@ -15,12 +20,20 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **************************************************************************/
 
 #ifndef _PSB_GTT_H_
 #define _PSB_GTT_H_
 
+<<<<<<< HEAD
 #include <drm/drmP.h>
+=======
+#include <drm/drm_gem.h>
+
+struct drm_psb_private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This wants cleaning up with respect to the psb_dev and un-needed stuff */
 struct psb_gtt {
@@ -32,6 +45,7 @@ struct psb_gtt {
 	unsigned gatt_pages;
 	unsigned long stolen_size;
 	unsigned long vram_stolen_size;
+<<<<<<< HEAD
 	struct rw_semaphore sem;
 };
 
@@ -60,5 +74,22 @@ extern int psb_gtt_pin(struct gtt_range *gt);
 extern void psb_gtt_unpin(struct gtt_range *gt);
 extern void psb_gtt_roll(struct drm_device *dev,
 					struct gtt_range *gt, int roll);
+=======
+};
+
+/* Exported functions */
+int psb_gtt_init(struct drm_device *dev);
+void psb_gtt_fini(struct drm_device *dev);
+int psb_gtt_resume(struct drm_device *dev);
+
+int psb_gtt_allocate_resource(struct drm_psb_private *pdev, struct resource *res,
+			      const char *name, resource_size_t size, resource_size_t align,
+			      bool stolen, u32 *offset);
+
+uint32_t psb_gtt_mask_pte(uint32_t pfn, int type);
+void psb_gtt_insert_pages(struct drm_psb_private *pdev, const struct resource *res,
+			  struct page **pages);
+void psb_gtt_remove_pages(struct drm_psb_private *pdev, const struct resource *res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

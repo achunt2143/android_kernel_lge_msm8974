@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 #ifndef _PQ2_H
 #define _PQ2_H
 
 void pq2_restart(char *cmd);
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _PQ2_H
+#define _PQ2_H
+
+void __noreturn pq2_restart(char *cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PCI
 int pq2ads_pci_init_irq(void);

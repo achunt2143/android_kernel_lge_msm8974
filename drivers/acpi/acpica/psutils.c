@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: psutils - Parser miscellaneous utilities (Parser only)
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,10 +46,20 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acparser.h"
 #include "amlcode.h"
+<<<<<<< HEAD
+=======
+#include "acconvert.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_PARSER
 ACPI_MODULE_NAME("psutils")
@@ -60,11 +75,19 @@ ACPI_MODULE_NAME("psutils")
  * DESCRIPTION: Create a Scope and associated namepath op with the root name
  *
  ******************************************************************************/
+<<<<<<< HEAD
 union acpi_parse_object *acpi_ps_create_scope_op(void)
 {
 	union acpi_parse_object *scope_op;
 
 	scope_op = acpi_ps_alloc_op(AML_SCOPE_OP);
+=======
+union acpi_parse_object *acpi_ps_create_scope_op(u8 *aml)
+{
+	union acpi_parse_object *scope_op;
+
+	scope_op = acpi_ps_alloc_op(AML_SCOPE_OP, aml);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!scope_op) {
 		return (NULL);
 	}
@@ -77,8 +100,13 @@ union acpi_parse_object *acpi_ps_create_scope_op(void)
  *
  * FUNCTION:    acpi_ps_init_op
  *
+<<<<<<< HEAD
  * PARAMETERS:  Op              - A newly allocated Op object
  *              Opcode          - Opcode to store in the Op
+=======
+ * PARAMETERS:  op              - A newly allocated Op object
+ *              opcode          - Opcode to store in the Op
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -93,27 +121,48 @@ void acpi_ps_init_op(union acpi_parse_object *op, u16 opcode)
 	op->common.descriptor_type = ACPI_DESC_TYPE_PARSER;
 	op->common.aml_opcode = opcode;
 
+<<<<<<< HEAD
 	ACPI_DISASM_ONLY_MEMBERS(ACPI_STRNCPY(op->common.aml_op_name,
 					      (acpi_ps_get_opcode_info
 					       (opcode))->name,
 					      sizeof(op->common.aml_op_name)));
+=======
+	ACPI_DISASM_ONLY_MEMBERS(acpi_ut_safe_strncpy(op->common.aml_op_name,
+						      (acpi_ps_get_opcode_info
+						       (opcode))->name,
+						      sizeof(op->common.
+							     aml_op_name)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ps_alloc_op
  *
+<<<<<<< HEAD
  * PARAMETERS:  Opcode          - Opcode that will be stored in the new Op
+=======
+ * PARAMETERS:  opcode          - Opcode that will be stored in the new Op
+ *              aml             - Address of the opcode
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Pointer to the new Op, null on failure
  *
  * DESCRIPTION: Allocate an acpi_op, choose op type (and thus size) based on
+<<<<<<< HEAD
  *              opcode.  A cache of opcodes is available for the pure
+=======
+ *              opcode. A cache of opcodes is available for the pure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              GENERIC_OP, since this is by far the most commonly used.
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 union acpi_parse_object *acpi_ps_alloc_op(u16 opcode)
+=======
+union acpi_parse_object *acpi_ps_alloc_op(u16 opcode, u8 *aml)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union acpi_parse_object *op;
 	const struct acpi_opcode_info *op_info;
@@ -128,7 +177,11 @@ union acpi_parse_object *acpi_ps_alloc_op(u16 opcode)
 	if (op_info->flags & AML_DEFER) {
 		flags = ACPI_PARSEOP_DEFERRED;
 	} else if (op_info->flags & AML_NAMED) {
+<<<<<<< HEAD
 		flags = ACPI_PARSEOP_NAMED;
+=======
+		flags = ACPI_PARSEOP_NAMED_OBJECT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (opcode == AML_INT_BYTELIST_OP) {
 		flags = ACPI_PARSEOP_BYTELIST;
 	}
@@ -150,7 +203,21 @@ union acpi_parse_object *acpi_ps_alloc_op(u16 opcode)
 
 	if (op) {
 		acpi_ps_init_op(op, opcode);
+<<<<<<< HEAD
 		op->common.flags = flags;
+=======
+		op->common.aml = aml;
+		op->common.flags = flags;
+		ASL_CV_CLEAR_OP_COMMENTS(op);
+
+		if (opcode == AML_SCOPE_OP) {
+			acpi_gbl_current_scope = op;
+		}
+
+		if (acpi_gbl_capture_comments) {
+			ASL_CV_TRANSFER_COMMENTS(op);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return (op);
@@ -160,11 +227,19 @@ union acpi_parse_object *acpi_ps_alloc_op(u16 opcode)
  *
  * FUNCTION:    acpi_ps_free_op
  *
+<<<<<<< HEAD
  * PARAMETERS:  Op              - Op to be freed
  *
  * RETURN:      None.
  *
  * DESCRIPTION: Free an Op object.  Either put it on the GENERIC_OP cache list
+=======
+ * PARAMETERS:  op              - Op to be freed
+ *
+ * RETURN:      None.
+ *
+ * DESCRIPTION: Free an Op object. Either put it on the GENERIC_OP cache list
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              or actually free it.
  *
  ******************************************************************************/
@@ -173,9 +248,16 @@ void acpi_ps_free_op(union acpi_parse_object *op)
 {
 	ACPI_FUNCTION_NAME(ps_free_op);
 
+<<<<<<< HEAD
 	if (op->common.aml_opcode == AML_INT_RETURN_VALUE_OP) {
 		ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS, "Free retval op: %p\n",
 				  op));
+=======
+	ASL_CV_CLEAR_OP_COMMENTS(op);
+	if (op->common.aml_opcode == AML_INT_RETURN_VALUE_OP) {
+		ACPI_DEBUG_PRINT((ACPI_DB_ALLOCATIONS,
+				  "Free retval op: %p\n", op));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (op->common.flags & ACPI_PARSEOP_GENERIC) {
@@ -202,6 +284,7 @@ u8 acpi_ps_is_leading_char(u32 c)
 }
 
 /*
+<<<<<<< HEAD
  * Is "c" a namestring prefix character?
  */
 u8 acpi_ps_is_prefix_char(u32 c)
@@ -213,6 +296,10 @@ u8 acpi_ps_is_prefix_char(u32 c)
  * Get op's name (4-byte name segment) or 0 if unnamed
  */
 #ifdef ACPI_FUTURE_USAGE
+=======
+ * Get op's name (4-byte name segment) or 0 if unnamed
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u32 acpi_ps_get_name(union acpi_parse_object * op)
 {
 
@@ -226,7 +313,10 @@ u32 acpi_ps_get_name(union acpi_parse_object * op)
 
 	return (op->named.name);
 }
+<<<<<<< HEAD
 #endif				/*  ACPI_FUTURE_USAGE  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set op's name

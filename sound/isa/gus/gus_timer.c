@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Routines for Gravis UltraSound soundcards - Timers
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *
  *  GUS have similar timers as AdLib (OPL2/OPL3 chips).
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -19,6 +24,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/time.h>
@@ -123,7 +130,11 @@ static void snd_gf1_interrupt_timer2(struct snd_gus_card * gus)
 
  */
 
+<<<<<<< HEAD
 static struct snd_timer_hardware snd_gf1_timer1 =
+=======
+static const struct snd_timer_hardware snd_gf1_timer1 =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.flags =	SNDRV_TIMER_HW_STOP,
 	.resolution =	80000,
@@ -132,7 +143,11 @@ static struct snd_timer_hardware snd_gf1_timer1 =
 	.stop =		snd_gf1_timer1_stop,
 };
 
+<<<<<<< HEAD
 static struct snd_timer_hardware snd_gf1_timer2 =
+=======
+static const struct snd_timer_hardware snd_gf1_timer2 =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.flags =	SNDRV_TIMER_HW_STOP,
 	.resolution =	320000,

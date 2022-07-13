@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  arch/sparc64/kernel/signal32.c
  *
  *  Copyright (C) 1991, 1992  Linus Torvalds
@@ -19,11 +23,17 @@
 #include <linux/binfmts.h>
 #include <linux/compat.h>
 #include <linux/bitops.h>
+<<<<<<< HEAD
 #include <linux/tracehook.h>
 
 #include <asm/uaccess.h>
 #include <asm/ptrace.h>
 #include <asm/pgtable.h>
+=======
+
+#include <linux/uaccess.h>
+#include <asm/ptrace.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/psrcompat.h>
 #include <asm/fpumacro.h>
 #include <asm/visasm.h>
@@ -31,8 +41,12 @@
 #include <asm/switch_to.h>
 
 #include "sigutil.h"
+<<<<<<< HEAD
 
 #define _BLOCKABLE (~(sigmask(SIGKILL) | sigmask(SIGSTOP)))
+=======
+#include "kernel.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This magic should be in g_upper[0] for all upper parts
  * to be valid.
@@ -56,6 +70,7 @@ struct signal_frame32 {
 	/* __siginfo_rwin_t * */u32 rwin_save;
 } __attribute__((aligned(8)));
 
+<<<<<<< HEAD
 typedef struct compat_siginfo{
 	int si_signo;
 	int si_errno;
@@ -108,6 +123,8 @@ typedef struct compat_siginfo{
 	} _sifields;
 }compat_siginfo_t;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rt_signal_frame32 {
 	struct sparc_stackf32	ss;
 	compat_siginfo_t	info;
@@ -115,13 +132,18 @@ struct rt_signal_frame32 {
 	compat_sigset_t		mask;
 	/* __siginfo_fpu_t * */ u32 fpu_save;
 	unsigned int		insns[2];
+<<<<<<< HEAD
 	stack_t32		stack;
+=======
+	compat_stack_t		stack;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		extra_size; /* Should be sizeof(siginfo_extra_v8plus_t) */
 	/* Only valid if (regs.psr & (PSR_VERS|PSR_IMPL)) == PSR_V8PLUS */
 	siginfo_extra_v8plus_t	v8plus;
 	/* __siginfo_rwin_t * */u32 rwin_save;
 } __attribute__((aligned(8)));
 
+<<<<<<< HEAD
 int copy_siginfo_to_user32(compat_siginfo_t __user *to, siginfo_t *from)
 {
 	int err;
@@ -189,6 +211,18 @@ int copy_siginfo_from_user32(siginfo_t *to, compat_siginfo_t __user *from)
 		return -EFAULT;
 
 	return 0;
+=======
+/* Checks if the fp is valid.  We always build signal frames which are
+ * 16-byte aligned, therefore we can always enforce that the restore
+ * frame has that property as well.
+ */
+static bool invalid_frame_pointer(void __user *fp, int fplen)
+{
+	if ((((unsigned long) fp) & 15) ||
+	    ((unsigned long)fp) > 0x100000000ULL - fplen)
+		return true;
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void do_sigreturn32(struct pt_regs *regs)
@@ -196,6 +230,7 @@ void do_sigreturn32(struct pt_regs *regs)
 	struct signal_frame32 __user *sf;
 	compat_uptr_t fpu_save;
 	compat_uptr_t rwin_save;
+<<<<<<< HEAD
 	unsigned int psr;
 	unsigned pc, npc;
 	sigset_t set;
@@ -204,6 +239,16 @@ void do_sigreturn32(struct pt_regs *regs)
 	
 	/* Always make any pending restarted system calls return -EINTR */
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	unsigned int psr, ufp;
+	unsigned int pc, npc;
+	sigset_t set;
+	compat_sigset_t seta;
+	int err, i;
+	
+	/* Always make any pending restarted system calls return -EINTR */
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	synchronize_user_stack();
 
@@ -211,12 +256,27 @@ void do_sigreturn32(struct pt_regs *regs)
 	sf = (struct signal_frame32 __user *) regs->u_regs[UREG_FP];
 
 	/* 1. Make sure we are not getting garbage from the user */
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_READ, sf, sizeof(*sf)) ||
 	    (((unsigned long) sf) & 3))
 		goto segv;
 
 	get_user(pc, &sf->info.si_regs.pc);
 	__get_user(npc, &sf->info.si_regs.npc);
+=======
+	if (invalid_frame_pointer(sf, sizeof(*sf)))
+		goto segv;
+
+	if (get_user(ufp, &sf->info.si_regs.u_regs[UREG_FP]))
+		goto segv;
+
+	if (ufp & 0x7)
+		goto segv;
+
+	if (__get_user(pc, &sf->info.si_regs.pc) ||
+	    __get_user(npc, &sf->info.si_regs.npc))
+		goto segv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((pc | npc) & 3)
 		goto segv;
@@ -262,6 +322,7 @@ void do_sigreturn32(struct pt_regs *regs)
 		if (restore_rwin_state(compat_ptr(rwin_save)))
 			goto segv;
 	}
+<<<<<<< HEAD
 	err |= __get_user(seta[0], &sf->info.si_mask);
 	err |= copy_from_user(seta+1, &sf->extramask,
 			      (_COMPAT_NSIG_WORDS - 1) * sizeof(unsigned int));
@@ -274,16 +335,30 @@ void do_sigreturn32(struct pt_regs *regs)
 		case 1: set.sig[0] = seta[0] + (((long)seta[1]) << 32);
 	}
 	sigdelsetmask(&set, ~_BLOCKABLE);
+=======
+	err |= __get_user(seta.sig[0], &sf->info.si_mask);
+	err |= copy_from_user(&seta.sig[1], &sf->extramask,
+			      (_COMPAT_NSIG_WORDS - 1) * sizeof(unsigned int));
+	if (err)
+	    	goto segv;
+
+	set.sig[0] = seta.sig[0] + (((long)seta.sig[1]) << 32);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_current_blocked(&set);
 	return;
 
 segv:
+<<<<<<< HEAD
 	force_sig(SIGSEGV, current);
+=======
+	force_sig(SIGSEGV);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 asmlinkage void do_rt_sigreturn32(struct pt_regs *regs)
 {
 	struct rt_signal_frame32 __user *sf;
+<<<<<<< HEAD
 	unsigned int psr, pc, npc, u_ss_sp;
 	compat_uptr_t fpu_save;
 	compat_uptr_t rwin_save;
@@ -295,18 +370,43 @@ asmlinkage void do_rt_sigreturn32(struct pt_regs *regs)
 	
 	/* Always make any pending restarted system calls return -EINTR */
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+	unsigned int psr, pc, npc, ufp;
+	compat_uptr_t fpu_save;
+	compat_uptr_t rwin_save;
+	sigset_t set;
+	int err, i;
+	
+	/* Always make any pending restarted system calls return -EINTR */
+	current->restart_block.fn = do_no_restart_syscall;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	synchronize_user_stack();
 	regs->u_regs[UREG_FP] &= 0x00000000ffffffffUL;
 	sf = (struct rt_signal_frame32 __user *) regs->u_regs[UREG_FP];
 
 	/* 1. Make sure we are not getting garbage from the user */
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_READ, sf, sizeof(*sf)) ||
 	    (((unsigned long) sf) & 3))
 		goto segv;
 
 	get_user(pc, &sf->regs.pc);
 	__get_user(npc, &sf->regs.npc);
+=======
+	if (invalid_frame_pointer(sf, sizeof(*sf)))
+		goto segv;
+
+	if (get_user(ufp, &sf->regs.u_regs[UREG_FP]))
+		goto segv;
+
+	if (ufp & 0x7)
+		goto segv;
+
+	if (__get_user(pc, &sf->regs.pc) || 
+	    __get_user(npc, &sf->regs.npc))
+		goto segv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((pc | npc) & 3)
 		goto segv;
@@ -347,6 +447,7 @@ asmlinkage void do_rt_sigreturn32(struct pt_regs *regs)
 	err |= __get_user(fpu_save, &sf->fpu_save);
 	if (!err && fpu_save)
 		err |= restore_fpu_state(regs, compat_ptr(fpu_save));
+<<<<<<< HEAD
 	err |= copy_from_user(&seta, &sf->mask, sizeof(compat_sigset_t));
 	err |= __get_user(u_ss_sp, &sf->stack.ss_sp);
 	st.ss_sp = compat_ptr(u_ss_sp);
@@ -362,12 +463,20 @@ asmlinkage void do_rt_sigreturn32(struct pt_regs *regs)
 	do_sigaltstack((stack_t __user *) &st, NULL, (unsigned long)sf);
 	set_fs(old_fs);
 	
+=======
+	err |= get_compat_sigset(&set, &sf->mask);
+	err |= compat_restore_altstack(&sf->stack);
+	if (err)
+		goto segv;
+		
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err |= __get_user(rwin_save, &sf->rwin_save);
 	if (!err && rwin_save) {
 		if (restore_rwin_state(compat_ptr(rwin_save)))
 			goto segv;
 	}
 
+<<<<<<< HEAD
 	switch (_NSIG_WORDS) {
 		case 4: set.sig[3] = seta.sig[6] + (((long)seta.sig[7]) << 32);
 		case 3: set.sig[2] = seta.sig[4] + (((long)seta.sig[5]) << 32);
@@ -390,6 +499,15 @@ static int invalid_frame_pointer(void __user *fp, int fplen)
 }
 
 static void __user *get_sigframe(struct sigaction *sa, struct pt_regs *regs, unsigned long framesize)
+=======
+	set_current_blocked(&set);
+	return;
+segv:
+	force_sig(SIGSEGV);
+}
+
+static void __user *get_sigframe(struct ksignal *ksig, struct pt_regs *regs, unsigned long framesize)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long sp;
 	
@@ -404,12 +522,16 @@ static void __user *get_sigframe(struct sigaction *sa, struct pt_regs *regs, uns
 		return (void __user *) -1L;
 
 	/* This is the X/Open sanctioned signal stack switching.  */
+<<<<<<< HEAD
 	if (sa->sa_flags & SA_ONSTACK) {
 		if (sas_ss_flags(sp) == 0)
 			sp = current->sas_ss_sp + current->sas_ss_size;
 	}
 
 	sp -= framesize;
+=======
+	sp = sigsp(sp, ksig) - framesize;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Always align the stack frame.  This handles two cases.  First,
 	 * sigaltstack need not be mindful of platform specific stack
@@ -434,6 +556,10 @@ static void flush_signal_insns(unsigned long address)
 	unsigned long pstate, paddr;
 	pte_t *ptep, pte;
 	pgd_t *pgdp;
+<<<<<<< HEAD
+=======
+	p4d_t *p4dp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pud_t *pudp;
 	pmd_t *pmdp;
 
@@ -453,7 +579,14 @@ static void flush_signal_insns(unsigned long address)
 	pgdp = pgd_offset(current->mm, address);
 	if (pgd_none(*pgdp))
 		goto out_irqs_on;
+<<<<<<< HEAD
 	pudp = pud_offset(pgdp, address);
+=======
+	p4dp = p4d_offset(pgdp, address);
+	if (p4d_none(*p4dp))
+		goto out_irqs_on;
+	pudp = pud_offset(p4dp, address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pud_none(*pudp))
 		goto out_irqs_on;
 	pmdp = pmd_offset(pudp, address);
@@ -461,6 +594,11 @@ static void flush_signal_insns(unsigned long address)
 		goto out_irqs_on;
 
 	ptep = pte_offset_map(pmdp, address);
+<<<<<<< HEAD
+=======
+	if (!ptep)
+		goto out_irqs_on;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pte = *ptep;
 	if (!pte_present(pte))
 		goto out_unmap;
@@ -480,15 +618,24 @@ out_irqs_on:
 
 }
 
+<<<<<<< HEAD
 static int setup_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 			 int signo, sigset_t *oldset)
+=======
+static int setup_frame32(struct ksignal *ksig, struct pt_regs *regs,
+			 sigset_t *oldset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct signal_frame32 __user *sf;
 	int i, err, wsaved;
 	void __user *tail;
 	int sigframe_size;
 	u32 psr;
+<<<<<<< HEAD
 	unsigned int seta[_COMPAT_NSIG_WORDS];
+=======
+	compat_sigset_t seta;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 1. Make sure everything is clean */
 	synchronize_user_stack();
@@ -503,10 +650,23 @@ static int setup_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 		sigframe_size += sizeof(__siginfo_rwin_t);
 
 	sf = (struct signal_frame32 __user *)
+<<<<<<< HEAD
 		get_sigframe(&ka->sa, regs, sigframe_size);
 	
 	if (invalid_frame_pointer(sf, sigframe_size))
 		goto sigill;
+=======
+		get_sigframe(ksig, regs, sigframe_size);
+	
+	if (invalid_frame_pointer(sf, sigframe_size)) {
+		if (show_unhandled_signals)
+			pr_info("%s[%d] bad frame in setup_frame32: %08lx TPC %08lx O7 %08lx\n",
+				current->comm, current->pid, (unsigned long)sf,
+				regs->tpc, regs->u_regs[UREG_I7]);
+		force_sigsegv(ksig->sig);
+		return -EINVAL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tail = (sf + 1);
 
@@ -550,6 +710,7 @@ static int setup_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 		err |= __put_user(0, &sf->rwin_save);
 	}
 
+<<<<<<< HEAD
 	switch (_NSIG_WORDS) {
 	case 4: seta[7] = (oldset->sig[3] >> 32);
 	        seta[6] = oldset->sig[3];
@@ -568,6 +729,22 @@ static int setup_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 		err |= copy_in_user((u32 __user *)sf,
 				    (u32 __user *)(regs->u_regs[UREG_FP]),
 				    sizeof(struct reg_window32));
+=======
+	/* If these change we need to know - assignments to seta relies on these sizes */
+	BUILD_BUG_ON(_NSIG_WORDS != 1);
+	BUILD_BUG_ON(_COMPAT_NSIG_WORDS != 2);
+	seta.sig[1] = (oldset->sig[0] >> 32);
+	seta.sig[0] = oldset->sig[0];
+
+	err |= __put_user(seta.sig[0], &sf->info.si_mask);
+	err |= __copy_to_user(sf->extramask, &seta.sig[1],
+			      (_COMPAT_NSIG_WORDS - 1) * sizeof(unsigned int));
+
+	if (!wsaved) {
+		err |= raw_copy_in_user((u32 __user *)sf,
+					(u32 __user *)(regs->u_regs[UREG_FP]),
+					sizeof(struct reg_window32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		struct reg_window *rp;
 
@@ -580,16 +757,28 @@ static int setup_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 		err |= __put_user(rp->ins[7], &sf->ss.callers_pc);
 	}	
 	if (err)
+<<<<<<< HEAD
 		goto sigsegv;
 
 	/* 3. signal handler back-trampoline and parameters */
 	regs->u_regs[UREG_FP] = (unsigned long) sf;
 	regs->u_regs[UREG_I0] = signo;
+=======
+		return err;
+
+	/* 3. signal handler back-trampoline and parameters */
+	regs->u_regs[UREG_FP] = (unsigned long) sf;
+	regs->u_regs[UREG_I0] = ksig->sig;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regs->u_regs[UREG_I1] = (unsigned long) &sf->info;
 	regs->u_regs[UREG_I2] = (unsigned long) &sf->info;
 
 	/* 4. signal handler */
+<<<<<<< HEAD
 	regs->tpc = (unsigned long) ka->sa.sa_handler;
+=======
+	regs->tpc = (unsigned long) ksig->ka.sa.sa_handler;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regs->tnpc = (regs->tpc + 4);
 	if (test_thread_flag(TIF_32BIT)) {
 		regs->tpc &= 0xffffffff;
@@ -597,8 +786,13 @@ static int setup_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 	}
 
 	/* 5. return to kernel instructions */
+<<<<<<< HEAD
 	if (ka->ka_restorer) {
 		regs->u_regs[UREG_I7] = (unsigned long)ka->ka_restorer;
+=======
+	if (ksig->ka.ka_restorer) {
+		regs->u_regs[UREG_I7] = (unsigned long)ksig->ka.ka_restorer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		unsigned long address = ((unsigned long)&(sf->insns[0]));
 
@@ -607,6 +801,7 @@ static int setup_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 		err  = __put_user(0x821020d8, &sf->insns[0]); /*mov __NR_sigreturn, %g1*/
 		err |= __put_user(0x91d02010, &sf->insns[1]); /*t 0x10*/
 		if (err)
+<<<<<<< HEAD
 			goto sigsegv;
 		flush_signal_insns(address);
 	}
@@ -624,13 +819,26 @@ sigsegv:
 static int setup_rt_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 			    unsigned long signr, sigset_t *oldset,
 			    siginfo_t *info)
+=======
+			return err;
+		flush_signal_insns(address);
+	}
+	return 0;
+}
+
+static int setup_rt_frame32(struct ksignal *ksig, struct pt_regs *regs,
+			    sigset_t *oldset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rt_signal_frame32 __user *sf;
 	int i, err, wsaved;
 	void __user *tail;
 	int sigframe_size;
 	u32 psr;
+<<<<<<< HEAD
 	compat_sigset_t seta;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 1. Make sure everything is clean */
 	synchronize_user_stack();
@@ -645,10 +853,23 @@ static int setup_rt_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 		sigframe_size += sizeof(__siginfo_rwin_t);
 
 	sf = (struct rt_signal_frame32 __user *)
+<<<<<<< HEAD
 		get_sigframe(&ka->sa, regs, sigframe_size);
 	
 	if (invalid_frame_pointer(sf, sigframe_size))
 		goto sigill;
+=======
+		get_sigframe(ksig, regs, sigframe_size);
+	
+	if (invalid_frame_pointer(sf, sigframe_size)) {
+		if (show_unhandled_signals)
+			pr_info("%s[%d] bad frame in setup_rt_frame32: %08lx TPC %08lx O7 %08lx\n",
+				current->comm, current->pid, (unsigned long)sf,
+				regs->tpc, regs->u_regs[UREG_I7]);
+		force_sigsegv(ksig->sig);
+		return -EINVAL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tail = (sf + 1);
 
@@ -693,6 +914,7 @@ static int setup_rt_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 	}
 
 	/* Update the siginfo structure.  */
+<<<<<<< HEAD
 	err |= copy_siginfo_to_user32(&sf->info, info);
 	
 	/* Setup sigaltstack */
@@ -716,6 +938,19 @@ static int setup_rt_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 		err |= copy_in_user((u32 __user *)sf,
 				    (u32 __user *)(regs->u_regs[UREG_FP]),
 				    sizeof(struct reg_window32));
+=======
+	err |= copy_siginfo_to_user32(&sf->info, &ksig->info);
+	
+	/* Setup sigaltstack */
+	err |= __compat_save_altstack(&sf->stack, regs->u_regs[UREG_FP]);
+
+	err |= put_compat_sigset(&sf->mask, oldset, sizeof(compat_sigset_t));
+
+	if (!wsaved) {
+		err |= raw_copy_in_user((u32 __user *)sf,
+					(u32 __user *)(regs->u_regs[UREG_FP]),
+					sizeof(struct reg_window32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		struct reg_window *rp;
 
@@ -728,16 +963,28 @@ static int setup_rt_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 		err |= __put_user(rp->ins[7], &sf->ss.callers_pc);
 	}
 	if (err)
+<<<<<<< HEAD
 		goto sigsegv;
 	
 	/* 3. signal handler back-trampoline and parameters */
 	regs->u_regs[UREG_FP] = (unsigned long) sf;
 	regs->u_regs[UREG_I0] = signr;
+=======
+		return err;
+	
+	/* 3. signal handler back-trampoline and parameters */
+	regs->u_regs[UREG_FP] = (unsigned long) sf;
+	regs->u_regs[UREG_I0] = ksig->sig;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regs->u_regs[UREG_I1] = (unsigned long) &sf->info;
 	regs->u_regs[UREG_I2] = (unsigned long) &sf->regs;
 
 	/* 4. signal handler */
+<<<<<<< HEAD
 	regs->tpc = (unsigned long) ka->sa.sa_handler;
+=======
+	regs->tpc = (unsigned long) ksig->ka.sa.sa_handler;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regs->tnpc = (regs->tpc + 4);
 	if (test_thread_flag(TIF_32BIT)) {
 		regs->tpc &= 0xffffffff;
@@ -745,8 +992,13 @@ static int setup_rt_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 	}
 
 	/* 5. return to kernel instructions */
+<<<<<<< HEAD
 	if (ka->ka_restorer)
 		regs->u_regs[UREG_I7] = (unsigned long)ka->ka_restorer;
+=======
+	if (ksig->ka.ka_restorer)
+		regs->u_regs[UREG_I7] = (unsigned long)ksig->ka.ka_restorer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		unsigned long address = ((unsigned long)&(sf->insns[0]));
 
@@ -758,11 +1010,16 @@ static int setup_rt_frame32(struct k_sigaction *ka, struct pt_regs *regs,
 		/* t 0x10 */
 		err |= __put_user(0x91d02010, &sf->insns[1]);
 		if (err)
+<<<<<<< HEAD
 			goto sigsegv;
+=======
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		flush_signal_insns(address);
 	}
 	return 0;
+<<<<<<< HEAD
 
 sigill:
 	do_exit(SIGILL);
@@ -791,6 +1048,22 @@ static inline int handle_signal32(unsigned long signr, struct k_sigaction *ka,
 	tracehook_signal_handler(signr, info, ka, regs, 0);
 
 	return 0;
+=======
+}
+
+static inline void handle_signal32(struct ksignal *ksig, 
+				  struct pt_regs *regs)
+{
+	sigset_t *oldset = sigmask_to_save();
+	int err;
+
+	if (ksig->ka.sa.sa_flags & SA_SIGINFO)
+		err = setup_rt_frame32(ksig, regs, oldset);
+	else
+		err = setup_frame32(ksig, regs, oldset);
+
+	signal_setup_done(err, ksig, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void syscall_restart32(unsigned long orig_i0, struct pt_regs *regs,
@@ -806,7 +1079,11 @@ static inline void syscall_restart32(unsigned long orig_i0, struct pt_regs *regs
 	case ERESTARTSYS:
 		if (!(sa->sa_flags & SA_RESTART))
 			goto no_system_call_restart;
+<<<<<<< HEAD
 		/* fallthrough */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ERESTARTNOINTR:
 		regs->u_regs[UREG_I0] = orig_i0;
 		regs->tpc -= 4;
@@ -818,6 +1095,7 @@ static inline void syscall_restart32(unsigned long orig_i0, struct pt_regs *regs
  * want to handle. Thus you cannot kill init even with a SIGKILL even by
  * mistake.
  */
+<<<<<<< HEAD
 void do_signal32(sigset_t *oldset, struct pt_regs * regs)
 {
 	struct k_sigaction ka;
@@ -830,12 +1108,22 @@ void do_signal32(sigset_t *oldset, struct pt_regs * regs)
 
 	restart_syscall = 0;
 	orig_i0 = 0;
+=======
+void do_signal32(struct pt_regs * regs)
+{
+	struct ksignal ksig;
+	unsigned long orig_i0 = 0;
+	int restart_syscall = 0;
+	bool has_handler = get_signal(&ksig);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pt_regs_is_syscall(regs) &&
 	    (regs->tstate & (TSTATE_XCARRY | TSTATE_ICARRY))) {
 		restart_syscall = 1;
 		orig_i0 = regs->u_regs[UREG_G6];
 	}
 
+<<<<<<< HEAD
 	if (signr > 0) {
 		if (restart_syscall)
 			syscall_restart32(orig_i0, regs, &ka.sa);
@@ -873,6 +1161,32 @@ void do_signal32(sigset_t *oldset, struct pt_regs * regs)
 	if (current_thread_info()->status & TS_RESTORE_SIGMASK) {
 		current_thread_info()->status &= ~TS_RESTORE_SIGMASK;
 		set_current_blocked(&current->saved_sigmask);
+=======
+	if (has_handler) {
+		if (restart_syscall)
+			syscall_restart32(orig_i0, regs, &ksig.ka.sa);
+		handle_signal32(&ksig, regs);
+	} else {
+		if (restart_syscall) {
+			switch (regs->u_regs[UREG_I0]) {
+			case ERESTARTNOHAND:
+	     		case ERESTARTSYS:
+			case ERESTARTNOINTR:
+				/* replay the system call when we are done */
+				regs->u_regs[UREG_I0] = orig_i0;
+				regs->tpc -= 4;
+				regs->tnpc -= 4;
+				pt_regs_clear_syscall(regs);
+				fallthrough;
+			case ERESTART_RESTARTBLOCK:
+				regs->u_regs[UREG_G1] = __NR_restart_syscall;
+				regs->tpc -= 4;
+				regs->tnpc -= 4;
+				pt_regs_clear_syscall(regs);
+			}
+		}
+		restore_saved_sigmask();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -924,6 +1238,7 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 asmlinkage long do_sys32_sigaltstack(u32 ussa, u32 uossa, unsigned long sp)
 {
 	stack_t uss, uoss;
@@ -949,3 +1264,42 @@ asmlinkage long do_sys32_sigaltstack(u32 ussa, u32 uossa, unsigned long sp)
 		return -EFAULT;
 	return ret;
 }
+=======
+/*
+ * Compile-time assertions for siginfo_t offsets. Check NSIG* as well, as
+ * changes likely come with new fields that should be added below.
+ */
+static_assert(NSIGILL	== 11);
+static_assert(NSIGFPE	== 15);
+static_assert(NSIGSEGV	== 10);
+static_assert(NSIGBUS	== 5);
+static_assert(NSIGTRAP	== 6);
+static_assert(NSIGCHLD	== 6);
+static_assert(NSIGSYS	== 2);
+static_assert(sizeof(compat_siginfo_t) == 128);
+static_assert(__alignof__(compat_siginfo_t) == 4);
+static_assert(offsetof(compat_siginfo_t, si_signo)	== 0x00);
+static_assert(offsetof(compat_siginfo_t, si_errno)	== 0x04);
+static_assert(offsetof(compat_siginfo_t, si_code)	== 0x08);
+static_assert(offsetof(compat_siginfo_t, si_pid)	== 0x0c);
+static_assert(offsetof(compat_siginfo_t, si_uid)	== 0x10);
+static_assert(offsetof(compat_siginfo_t, si_tid)	== 0x0c);
+static_assert(offsetof(compat_siginfo_t, si_overrun)	== 0x10);
+static_assert(offsetof(compat_siginfo_t, si_status)	== 0x14);
+static_assert(offsetof(compat_siginfo_t, si_utime)	== 0x18);
+static_assert(offsetof(compat_siginfo_t, si_stime)	== 0x1c);
+static_assert(offsetof(compat_siginfo_t, si_value)	== 0x14);
+static_assert(offsetof(compat_siginfo_t, si_int)	== 0x14);
+static_assert(offsetof(compat_siginfo_t, si_ptr)	== 0x14);
+static_assert(offsetof(compat_siginfo_t, si_addr)	== 0x0c);
+static_assert(offsetof(compat_siginfo_t, si_trapno)	== 0x10);
+static_assert(offsetof(compat_siginfo_t, si_addr_lsb)	== 0x10);
+static_assert(offsetof(compat_siginfo_t, si_lower)	== 0x14);
+static_assert(offsetof(compat_siginfo_t, si_upper)	== 0x18);
+static_assert(offsetof(compat_siginfo_t, si_pkey)	== 0x14);
+static_assert(offsetof(compat_siginfo_t, si_perf_data)	== 0x10);
+static_assert(offsetof(compat_siginfo_t, si_perf_type)	== 0x14);
+static_assert(offsetof(compat_siginfo_t, si_perf_flags)	== 0x18);
+static_assert(offsetof(compat_siginfo_t, si_band)	== 0x0c);
+static_assert(offsetof(compat_siginfo_t, si_fd)		== 0x10);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IEEE754 floating point arithmetic
  * double precision: common utilities
  */
 /*
  * MIPS floating point support
  * Copyright (C) 1994-2000 Algorithmics Ltd.
+<<<<<<< HEAD
  *
  * ########################################################################
  *
@@ -27,12 +32,23 @@
 #include "ieee754dp.h"
 
 ieee754dp ieee754dp_fint(int x)
+=======
+ */
+
+#include "ieee754dp.h"
+
+union ieee754dp ieee754dp_fint(int x)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 xm;
 	int xe;
 	int xs;
 
+<<<<<<< HEAD
 	CLEARCX;
+=======
+	ieee754_clearcx();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (x == 0)
 		return ieee754dp_zero(0);
@@ -51,14 +67,21 @@ ieee754dp ieee754dp_fint(int x)
 		xm = x;
 	}
 
+<<<<<<< HEAD
 #if 1
 	/* normalize - result can never be inexact or overflow */
 	xe = DP_MBITS;
 	while ((xm >> DP_MBITS) == 0) {
+=======
+	/* normalize - result can never be inexact or overflow */
+	xe = DP_FBITS;
+	while ((xm >> DP_FBITS) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		xm <<= 1;
 		xe--;
 	}
 	return builddp(xs, xe + DP_EBIAS, xm & ~DP_HIDDEN_BIT);
+<<<<<<< HEAD
 #else
 	/* normalize */
 	xe = DP_MBITS + 3;
@@ -76,4 +99,6 @@ ieee754dp ieee754dp_funs(unsigned int u)
 		return ieee754dp_add(ieee754dp_1e31(),
 				     ieee754dp_fint(u & ~(1 << 31)));
 	return ieee754dp_fint(u);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

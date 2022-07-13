@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __RTL8712_EFUSE_H__
 #define __RTL8712_EFUSE_H__
 
 #include "osdep_service.h"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _REPEAT_THRESHOLD_	3
 
 #define EFUSE_MAX_SIZE		512
@@ -15,14 +22,23 @@
 
 #define GET_EFUSE_OFFSET(header)	((header & 0xF0) >> 4)
 #define GET_EFUSE_WORD_EN(header)	(header & 0x0F)
+<<<<<<< HEAD
 #define MAKE_EFUSE_HEADER(offset, word_en)	(((offset & 0x0F) << 4) | \
 						(word_en & 0x0F))
+=======
+#define MAKE_EFUSE_HEADER(offset, word_en)	((((offset) & 0x0F) << 4) | \
+						((word_en) & 0x0F))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*--------------------------------------------------------------------------*/
 struct PGPKT_STRUCT {
 	u8 offset;
 	u8 word_en;
 	u8 data[PGPKT_DATA_SIZE];
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*--------------------------------------------------------------------------*/
 u8 r8712_efuse_reg_init(struct _adapter *padapter);
 void r8712_efuse_reg_uninit(struct _adapter *padapter);
@@ -39,5 +55,9 @@ u8 r8712_efuse_access(struct _adapter *padapter, u8 bRead,
 u8 r8712_efuse_map_read(struct _adapter *padapter, u16 addr,
 			u16 cnts, u8 *data);
 u8 r8712_efuse_map_write(struct _adapter *padapter, u16 addr,
+<<<<<<< HEAD
 				u16 cnts, u8 *data);
+=======
+			 u16 cnts, u8 *data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

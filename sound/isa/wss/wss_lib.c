@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  Routines for control of CS4231(A)/CS4232/InterWave & compatible chips
@@ -7,6 +11,7 @@
  *       Yamaha OPL3-SA3 chip
  *     - CS4231 (GUS MAX) - still trouble with occasional noises
  *			  - broken initialization?
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -22,6 +27,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -31,12 +38,19 @@
 #include <linux/slab.h>
 #include <linux/ioport.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/wss.h>
 #include <sound/pcm_params.h>
 #include <sound/tlv.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dma.h>
 #include <asm/irq.h>
 
@@ -52,7 +66,11 @@ MODULE_LICENSE("GPL");
  *  Some variables
  */
 
+<<<<<<< HEAD
 static unsigned char freq_bits[14] = {
+=======
+static const unsigned char freq_bits[14] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* 5510 */	0x00 | CS4231_XTAL2,
 	/* 6620 */	0x0E | CS4231_XTAL2,
 	/* 8000 */	0x00 | CS4231_XTAL1,
@@ -69,12 +87,20 @@ static unsigned char freq_bits[14] = {
 	/* 48000 */	0x0C | CS4231_XTAL1
 };
 
+<<<<<<< HEAD
 static unsigned int rates[14] = {
+=======
+static const unsigned int rates[14] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	5510, 6620, 8000, 9600, 11025, 16000, 18900, 22050,
 	27042, 32000, 33075, 37800, 44100, 48000
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hw_constraint_list hw_constraints_rates = {
+=======
+static const struct snd_pcm_hw_constraint_list hw_constraints_rates = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(rates),
 	.list = rates,
 	.mask = 0,
@@ -86,7 +112,11 @@ static int snd_wss_xrate(struct snd_pcm_runtime *runtime)
 					  &hw_constraints_rates);
 }
 
+<<<<<<< HEAD
 static unsigned char snd_wss_original_image[32] =
+=======
+static const unsigned char snd_wss_original_image[32] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	0x00,			/* 00/00 - lic */
 	0x00,			/* 01/01 - ric */
@@ -122,7 +152,11 @@ static unsigned char snd_wss_original_image[32] =
 	0x00,			/* 1f/31 - cbrl */
 };
 
+<<<<<<< HEAD
 static unsigned char snd_opti93x_original_image[32] =
+=======
+static const unsigned char snd_opti93x_original_image[32] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	0x00,		/* 00/00 - l_mixout_outctrl */
 	0x00,		/* 01/01 - r_mixout_outctrl */
@@ -541,7 +575,11 @@ static unsigned char snd_wss_get_rate(unsigned int rate)
 }
 
 static unsigned char snd_wss_get_format(struct snd_wss *chip,
+<<<<<<< HEAD
 					int format,
+=======
+					snd_pcm_format_t format,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					int channels)
 {
 	unsigned char rformat;
@@ -975,7 +1013,11 @@ static int snd_wss_timer_close(struct snd_timer *timer)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_timer_hardware snd_wss_timer_table =
+=======
+static const struct snd_timer_hardware snd_wss_timer_table =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.flags =	SNDRV_TIMER_HW_AUTO,
 	.resolution =	9945,
@@ -996,10 +1038,14 @@ static int snd_wss_playback_hw_params(struct snd_pcm_substream *substream,
 {
 	struct snd_wss *chip = snd_pcm_substream_chip(substream);
 	unsigned char new_pdfr;
+<<<<<<< HEAD
 	int err;
 
 	if ((err = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params))) < 0)
 		return err;
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new_pdfr = snd_wss_get_format(chip, params_format(hw_params),
 				params_channels(hw_params)) |
 				snd_wss_get_rate(params_rate(hw_params));
@@ -1007,11 +1053,14 @@ static int snd_wss_playback_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int snd_wss_playback_hw_free(struct snd_pcm_substream *substream)
 {
 	return snd_pcm_lib_free_pages(substream);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_wss_playback_prepare(struct snd_pcm_substream *substream)
 {
 	struct snd_wss *chip = snd_pcm_substream_chip(substream);
@@ -1039,10 +1088,14 @@ static int snd_wss_capture_hw_params(struct snd_pcm_substream *substream,
 {
 	struct snd_wss *chip = snd_pcm_substream_chip(substream);
 	unsigned char new_cdfr;
+<<<<<<< HEAD
 	int err;
 
 	if ((err = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params))) < 0)
 		return err;
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new_cdfr = snd_wss_get_format(chip, params_format(hw_params),
 			   params_channels(hw_params)) |
 			   snd_wss_get_rate(params_rate(hw_params));
@@ -1050,11 +1103,14 @@ static int snd_wss_capture_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int snd_wss_capture_hw_free(struct snd_pcm_substream *substream)
 {
 	return snd_pcm_lib_free_pages(substream);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_wss_capture_prepare(struct snd_pcm_substream *substream)
 {
 	struct snd_wss *chip = snd_pcm_substream_chip(substream);
@@ -1452,11 +1508,18 @@ static int snd_wss_probe(struct snd_wss *chip)
 
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_wss_playback =
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_MMAP_VALID |
 				 SNDRV_PCM_INFO_RESUME |
+=======
+static const struct snd_pcm_hardware snd_wss_playback =
+{
+	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
+				 SNDRV_PCM_INFO_MMAP_VALID |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 SNDRV_PCM_INFO_SYNC_START),
 	.formats =		(SNDRV_PCM_FMTBIT_MU_LAW | SNDRV_PCM_FMTBIT_A_LAW | SNDRV_PCM_FMTBIT_IMA_ADPCM |
 				 SNDRV_PCM_FMTBIT_U8 | SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S16_BE),
@@ -1473,7 +1536,11 @@ static struct snd_pcm_hardware snd_wss_playback =
 	.fifo_size =		0,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_wss_capture =
+=======
+static const struct snd_pcm_hardware snd_wss_capture =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_MMAP_VALID |
@@ -1524,7 +1591,12 @@ static int snd_wss_playback_open(struct snd_pcm_substream *substream)
 	snd_pcm_limit_isa_dma_size(chip->dma1, &runtime->hw.period_bytes_max);
 
 	if (chip->claim_dma) {
+<<<<<<< HEAD
 		if ((err = chip->claim_dma(chip, chip->dma_private_data, chip->dma1)) < 0)
+=======
+		err = chip->claim_dma(chip, chip->dma_private_data, chip->dma1);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 
@@ -1532,7 +1604,10 @@ static int snd_wss_playback_open(struct snd_pcm_substream *substream)
 	if (err < 0) {
 		if (chip->release_dma)
 			chip->release_dma(chip, chip->dma_private_data, chip->dma1);
+<<<<<<< HEAD
 		snd_free_pages(runtime->dma_area, runtime->dma_bytes);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	chip->playback_substream = substream;
@@ -1565,7 +1640,12 @@ static int snd_wss_capture_open(struct snd_pcm_substream *substream)
 	snd_pcm_limit_isa_dma_size(chip->dma2, &runtime->hw.period_bytes_max);
 
 	if (chip->claim_dma) {
+<<<<<<< HEAD
 		if ((err = chip->claim_dma(chip, chip->dma_private_data, chip->dma2)) < 0)
+=======
+		err = chip->claim_dma(chip, chip->dma_private_data, chip->dma2);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 
@@ -1573,7 +1653,10 @@ static int snd_wss_capture_open(struct snd_pcm_substream *substream)
 	if (err < 0) {
 		if (chip->release_dma)
 			chip->release_dma(chip, chip->dma_private_data, chip->dma2);
+<<<<<<< HEAD
 		snd_free_pages(runtime->dma_area, runtime->dma_bytes);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	chip->capture_substream = substream;
@@ -1628,7 +1711,10 @@ static void snd_wss_suspend(struct snd_wss *chip)
 	int reg;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	snd_pcm_suspend_all(chip->pcm);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&chip->reg_lock, flags);
 	for (reg = 0; reg < 32; reg++)
 		chip->image[reg] = snd_wss_in(chip, reg);
@@ -1657,6 +1743,13 @@ static void snd_wss_resume(struct snd_wss *chip)
 			break;
 		}
 	}
+<<<<<<< HEAD
+=======
+	/* Yamaha needs this to resume properly */
+	if (chip->hardware == WSS_HW_OPL3SA2)
+		snd_wss_out(chip, CS4231_PLAYBK_FORMAT,
+			    chip->image[CS4231_PLAYBK_FORMAT]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
 #if 1
 	snd_wss_mce_down(chip);
@@ -1683,6 +1776,7 @@ static void snd_wss_resume(struct snd_wss *chip)
 }
 #endif /* CONFIG_PM */
 
+<<<<<<< HEAD
 static int snd_wss_free(struct snd_wss *chip)
 {
 	release_and_free_resource(chip->res_port);
@@ -1713,6 +1807,8 @@ static int snd_wss_dev_free(struct snd_device *device)
 	return snd_wss_free(chip);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const char *snd_wss_chip_id(struct snd_wss *chip)
 {
 	switch (chip->hardware) {
@@ -1766,7 +1862,11 @@ static int snd_wss_new(struct snd_card *card,
 	struct snd_wss *chip;
 
 	*rchip = NULL;
+<<<<<<< HEAD
 	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
+=======
+	chip = devm_kzalloc(card->dev, sizeof(*chip), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip == NULL)
 		return -ENOMEM;
 	chip->hardware = hardware;
@@ -1802,9 +1902,12 @@ int snd_wss_create(struct snd_card *card,
 		      unsigned short hwshare,
 		      struct snd_wss **rchip)
 {
+<<<<<<< HEAD
 	static struct snd_device_ops ops = {
 		.dev_free =	snd_wss_dev_free,
 	};
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_wss *chip;
 	int err;
 
@@ -1816,24 +1919,39 @@ int snd_wss_create(struct snd_card *card,
 	chip->dma1 = -1;
 	chip->dma2 = -1;
 
+<<<<<<< HEAD
 	chip->res_port = request_region(port, 4, "WSS");
 	if (!chip->res_port) {
 		snd_printk(KERN_ERR "wss: can't grab port 0x%lx\n", port);
 		snd_wss_free(chip);
+=======
+	chip->res_port = devm_request_region(card->dev, port, 4, "WSS");
+	if (!chip->res_port) {
+		snd_printk(KERN_ERR "wss: can't grab port 0x%lx\n", port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 	chip->port = port;
 	if ((long)cport >= 0) {
+<<<<<<< HEAD
 		chip->res_cport = request_region(cport, 8, "CS4232 Control");
 		if (!chip->res_cport) {
 			snd_printk(KERN_ERR
 				"wss: can't grab control port 0x%lx\n", cport);
 			snd_wss_free(chip);
+=======
+		chip->res_cport = devm_request_region(card->dev, cport, 8,
+						      "CS4232 Control");
+		if (!chip->res_cport) {
+			snd_printk(KERN_ERR
+				"wss: can't grab control port 0x%lx\n", cport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENODEV;
 		}
 	}
 	chip->cport = cport;
 	if (!(hwshare & WSS_HWSHARE_IRQ))
+<<<<<<< HEAD
 		if (request_irq(irq, snd_wss_interrupt, 0,
 				"WSS", (void *) chip)) {
 			snd_printk(KERN_ERR "wss: can't grab IRQ %d\n", irq);
@@ -1851,6 +1969,24 @@ int snd_wss_create(struct snd_card *card,
 	      dma2 >= 0 && request_dma(dma2, "WSS - 2")) {
 		snd_printk(KERN_ERR "wss: can't grab DMA2 %d\n", dma2);
 		snd_wss_free(chip);
+=======
+		if (devm_request_irq(card->dev, irq, snd_wss_interrupt, 0,
+				     "WSS", (void *) chip)) {
+			snd_printk(KERN_ERR "wss: can't grab IRQ %d\n", irq);
+			return -EBUSY;
+		}
+	chip->irq = irq;
+	card->sync_irq = chip->irq;
+	if (!(hwshare & WSS_HWSHARE_DMA1) &&
+	    snd_devm_request_dma(card->dev, dma1, "WSS - 1")) {
+		snd_printk(KERN_ERR "wss: can't grab DMA1 %d\n", dma1);
+		return -EBUSY;
+	}
+	chip->dma1 = dma1;
+	if (!(hwshare & WSS_HWSHARE_DMA2) && dma1 != dma2 && dma2 >= 0 &&
+	    snd_devm_request_dma(card->dev, dma2, "WSS - 2")) {
+		snd_printk(KERN_ERR "wss: can't grab DMA2 %d\n", dma2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 	if (dma1 == dma2 || dma2 < 0) {
@@ -1866,10 +2002,15 @@ int snd_wss_create(struct snd_card *card,
 	}
 
 	/* global setup */
+<<<<<<< HEAD
 	if (snd_wss_probe(chip) < 0) {
 		snd_wss_free(chip);
 		return -ENODEV;
 	}
+=======
+	if (snd_wss_probe(chip) < 0)
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_wss_init(chip);
 
 #if 0
@@ -1880,6 +2021,7 @@ int snd_wss_create(struct snd_card *card,
 	}
 #endif
 
+<<<<<<< HEAD
 	/* Register device */
 	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops);
 	if (err < 0) {
@@ -1887,6 +2029,8 @@ int snd_wss_create(struct snd_card *card,
 		return err;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	/* Power Management */
 	chip->suspend = snd_wss_suspend;
@@ -1898,29 +2042,47 @@ int snd_wss_create(struct snd_card *card,
 }
 EXPORT_SYMBOL(snd_wss_create);
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_wss_playback_ops = {
 	.open =		snd_wss_playback_open,
 	.close =	snd_wss_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_wss_playback_hw_params,
 	.hw_free =	snd_wss_playback_hw_free,
+=======
+static const struct snd_pcm_ops snd_wss_playback_ops = {
+	.open =		snd_wss_playback_open,
+	.close =	snd_wss_playback_close,
+	.hw_params =	snd_wss_playback_hw_params,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_wss_playback_prepare,
 	.trigger =	snd_wss_trigger,
 	.pointer =	snd_wss_playback_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_wss_capture_ops = {
 	.open =		snd_wss_capture_open,
 	.close =	snd_wss_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_wss_capture_hw_params,
 	.hw_free =	snd_wss_capture_hw_free,
+=======
+static const struct snd_pcm_ops snd_wss_capture_ops = {
+	.open =		snd_wss_capture_open,
+	.close =	snd_wss_capture_close,
+	.hw_params =	snd_wss_capture_hw_params,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_wss_capture_prepare,
 	.trigger =	snd_wss_trigger,
 	.pointer =	snd_wss_capture_pointer,
 };
 
+<<<<<<< HEAD
 int snd_wss_pcm(struct snd_wss *chip, int device, struct snd_pcm **rpcm)
+=======
+int snd_wss_pcm(struct snd_wss *chip, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -1941,6 +2103,7 @@ int snd_wss_pcm(struct snd_wss *chip, int device, struct snd_pcm **rpcm)
 		pcm->info_flags |= SNDRV_PCM_INFO_JOINT_DUPLEX;
 	strcpy(pcm->name, snd_wss_chip_id(chip));
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_isa_data(),
 					      64*1024, chip->dma1 > 3 || chip->dma2 > 3 ? 128*1024 : 64*1024);
@@ -1948,6 +2111,12 @@ int snd_wss_pcm(struct snd_wss *chip, int device, struct snd_pcm **rpcm)
 	chip->pcm = pcm;
 	if (rpcm)
 		*rpcm = pcm;
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV, chip->card->dev,
+				       64*1024, chip->dma1 > 3 || chip->dma2 > 3 ? 128*1024 : 64*1024);
+
+	chip->pcm = pcm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(snd_wss_pcm);
@@ -1958,7 +2127,11 @@ static void snd_wss_timer_free(struct snd_timer *timer)
 	chip->timer = NULL;
 }
 
+<<<<<<< HEAD
 int snd_wss_timer(struct snd_wss *chip, int device, struct snd_timer **rtimer)
+=======
+int snd_wss_timer(struct snd_wss *chip, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_timer *timer;
 	struct snd_timer_id tid;
@@ -1970,15 +2143,23 @@ int snd_wss_timer(struct snd_wss *chip, int device, struct snd_timer **rtimer)
 	tid.card = chip->card->number;
 	tid.device = device;
 	tid.subdevice = 0;
+<<<<<<< HEAD
 	if ((err = snd_timer_new(chip->card, "CS4231", &tid, &timer)) < 0)
+=======
+	err = snd_timer_new(chip->card, "CS4231", &tid, &timer);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	strcpy(timer->name, snd_wss_chip_id(chip));
 	timer->private_data = chip;
 	timer->private_free = snd_wss_timer_free;
 	timer->hw = snd_wss_timer_table;
 	chip->timer = timer;
+<<<<<<< HEAD
 	if (rtimer)
 		*rtimer = timer;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL(snd_wss_timer);
@@ -1990,6 +2171,7 @@ EXPORT_SYMBOL(snd_wss_timer);
 static int snd_wss_info_mux(struct snd_kcontrol *kcontrol,
 			    struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[4] = {
 		"Line", "Aux", "Mic", "Mix"
 	};
@@ -2000,15 +2182,30 @@ static int snd_wss_info_mux(struct snd_kcontrol *kcontrol,
 		"Line", "Synth", "Mic", "Mix"
 	};
 	char **ptexts = texts;
+=======
+	static const char * const texts[4] = {
+		"Line", "Aux", "Mic", "Mix"
+	};
+	static const char * const opl3sa_texts[4] = {
+		"Line", "CD", "Mic", "Mix"
+	};
+	static const char * const gusmax_texts[4] = {
+		"Line", "Synth", "Mic", "Mix"
+	};
+	const char * const *ptexts = texts;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_wss *chip = snd_kcontrol_chip(kcontrol);
 
 	if (snd_BUG_ON(!chip->card))
 		return -EINVAL;
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->count = 2;
 	uinfo->value.enumerated.items = 4;
 	if (uinfo->value.enumerated.item > 3)
 		uinfo->value.enumerated.item = 3;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!strcmp(chip->card->driver, "GUS MAX"))
 		ptexts = gusmax_texts;
 	switch (chip->hardware) {
@@ -2020,8 +2217,12 @@ static int snd_wss_info_mux(struct snd_kcontrol *kcontrol,
 		ptexts = opl3sa_texts;
 		break;
 	}
+<<<<<<< HEAD
 	strcpy(uinfo->value.enumerated.name, ptexts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 2, 4, ptexts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_wss_get_mux(struct snd_kcontrol *kcontrol,
@@ -2201,7 +2402,11 @@ static const DECLARE_TLV_DB_SCALE(db_scale_5bit_12db_max, -3450, 150, 0);
 static const DECLARE_TLV_DB_SCALE(db_scale_rec_gain, 0, 150, 0);
 static const DECLARE_TLV_DB_SCALE(db_scale_4bit, -4500, 300, 0);
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_wss_controls[] = {
+=======
+static const struct snd_kcontrol_new snd_wss_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 WSS_DOUBLE("PCM Playback Switch", 0,
 		CS4231_LEFT_OUTPUT, CS4231_RIGHT_OUTPUT, 7, 7, 1, 1),
 WSS_DOUBLE_TLV("PCM Playback Volume", 0,
@@ -2286,6 +2491,7 @@ const struct snd_pcm_ops *snd_wss_get_pcm_ops(int direction)
 		&snd_wss_playback_ops : &snd_wss_capture_ops;
 }
 EXPORT_SYMBOL(snd_wss_get_pcm_ops);
+<<<<<<< HEAD
 
 /*
  *  INIT part
@@ -2302,3 +2508,5 @@ static void __exit alsa_wss_exit(void)
 
 module_init(alsa_wss_init);
 module_exit(alsa_wss_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

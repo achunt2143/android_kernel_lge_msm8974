@@ -1,8 +1,17 @@
+<<<<<<< HEAD
 config MKISS
 	tristate "Serial port KISS driver"
 	depends on AX25
 	select CRC16
 	---help---
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config MKISS
+	tristate "Serial port KISS driver"
+	depends on AX25 && TTY
+	select CRC16
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  KISS is a protocol used for the exchange of data between a computer
 	  and a Terminal Node Controller (a small embedded system commonly
 	  used for networking over AX.25 amateur radio connections; it
@@ -18,8 +27,13 @@ config MKISS
 
 config 6PACK
 	tristate "Serial port 6PACK driver"
+<<<<<<< HEAD
 	depends on AX25
 	---help---
+=======
+	depends on AX25 && TTY
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  6pack is a transmission protocol for the data exchange between your
 	  PC and your TNC (the Terminal Node Controller acts as a kind of
 	  modem connecting your computer's serial port to your radio's
@@ -29,7 +43,11 @@ config 6PACK
 
 	  Note that this driver is still experimental and might cause
 	  problems. For details about the features and the usage of the
+<<<<<<< HEAD
 	  driver, read <file:Documentation/networking/6pack.txt>.
+=======
+	  driver, read <file:Documentation/networking/6pack.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called 6pack.
@@ -44,6 +62,7 @@ config BPQETHER
 	  useful if some other computer on your local network has a direct
 	  amateur radio connection.
 
+<<<<<<< HEAD
 config DMASCC
 	tristate "High-speed (DMA) SCC driver for AX.25"
 	depends on ISA && AX25 && BROKEN_ON_SMP && ISA_DMA_API
@@ -85,6 +104,17 @@ config SCC
 	  in order to communicate with other computers. If you want to use
 	  this, read <file:Documentation/networking/z8530drv.txt> and the
 	  AX25-HOWTO, available from
+=======
+config SCC
+	tristate "Z8530 SCC driver"
+	depends on ISA && AX25
+	help
+	  These cards are used to connect your Linux box to an amateur radio
+	  in order to communicate with other computers. If you want to use
+	  this, read
+	  <file:Documentation/networking/device_drivers/hamradio/z8530drv.rst>
+	  and the AX25-HOWTO, available from
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  <http://www.tldp.org/docs.html#howto>. Also make sure to say Y
 	  to "Amateur Radio AX.25 Level 2" support.
 
@@ -97,7 +127,12 @@ config SCC_DELAY
 	help
 	  Say Y here if you experience problems with the SCC driver not
 	  working properly; please read
+<<<<<<< HEAD
 	  <file:Documentation/networking/z8530drv.txt> for details.
+=======
+	  <file:Documentation/networking/device_drivers/hamradio/z8530drv.rst>
+	  for details.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  If unsure, say N.
 
@@ -115,7 +150,11 @@ config BAYCOM_SER_FDX
 	tristate "BAYCOM ser12 fullduplex driver for AX.25"
 	depends on AX25 && !S390
 	select CRC_CCITT
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is one of two drivers for Baycom style simple amateur radio
 	  modems that connect to a serial interface. The driver supports the
 	  ser12 design in full-duplex mode. In addition, it allows the
@@ -124,9 +163,15 @@ config BAYCOM_SER_FDX
 	  driver, "BAYCOM ser12 half-duplex driver for AX.25" is the old
 	  driver and still provided in case this driver does not work with
 	  your serial interface chip. To configure the driver, use the sethdlc
+<<<<<<< HEAD
 	  utility available in the standard ax25 utilities package. For
 	  information on the modems, see <http://www.baycom.de/> and
 	  <file:Documentation/networking/baycom.txt>.
+=======
+	  utility available in the standard ax25 utilities package.
+	  For more information on the modems, see
+	  <file:Documentation/networking/device_drivers/hamradio/baycom.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called baycom_ser_fdx.  This is recommended.
@@ -135,16 +180,25 @@ config BAYCOM_SER_HDX
 	tristate "BAYCOM ser12 halfduplex driver for AX.25"
 	depends on AX25 && !S390
 	select CRC_CCITT
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  This is one of two drivers for Baycom style simple amateur radio
 	  modems that connect to a serial interface. The driver supports the
 	  ser12 design in half-duplex mode. This is the old driver.  It is
 	  still provided in case your serial interface chip does not work with
 	  the full-duplex driver. This driver is deprecated.  To configure
 	  the driver, use the sethdlc utility available in the standard ax25
+<<<<<<< HEAD
 	  utilities package. For information on the modems, see
 	  <http://www.baycom.de/> and
 	  <file:Documentation/networking/baycom.txt>.
+=======
+	  utilities package. For more information on the modems, see
+	  <file:Documentation/networking/device_drivers/hamradio/baycom.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called baycom_ser_hdx.  This is recommended.
@@ -153,6 +207,7 @@ config BAYCOM_PAR
 	tristate "BAYCOM picpar and par96 driver for AX.25"
 	depends on PARPORT && AX25
 	select CRC_CCITT
+<<<<<<< HEAD
 	---help---
 	  This is a driver for Baycom style simple amateur radio modems that
 	  connect to a parallel interface. The driver supports the picpar and
@@ -160,6 +215,15 @@ config BAYCOM_PAR
 	  available in the standard ax25 utilities package. For information on
 	  the modems, see <http://www.baycom.de/> and the file
 	  <file:Documentation/networking/baycom.txt>.
+=======
+	help
+	  This is a driver for Baycom style simple amateur radio modems that
+	  connect to a parallel interface. The driver supports the picpar and
+	  par96 designs. To configure the driver, use the sethdlc utility
+	  available in the standard ax25 utilities package.
+	  For more information on the modems, see
+	  <file:Documentation/networking/device_drivers/hamradio/baycom.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called baycom_par.  This is recommended.
@@ -168,6 +232,7 @@ config BAYCOM_EPP
 	tristate "BAYCOM epp driver for AX.25"
 	depends on PARPORT && AX25 && !64BIT
 	select CRC_CCITT
+<<<<<<< HEAD
 	---help---
 	  This is a driver for Baycom style simple amateur radio modems that
 	  connect to a parallel interface. The driver supports the EPP
@@ -175,6 +240,15 @@ config BAYCOM_EPP
 	  in the standard ax25 utilities package. For information on the
 	  modems, see <http://www.baycom.de/> and the file
 	  <file:Documentation/networking/baycom.txt>.
+=======
+	help
+	  This is a driver for Baycom style simple amateur radio modems that
+	  connect to a parallel interface. The driver supports the EPP
+	  designs. To configure the driver, use the sethdlc utility available
+	  in the standard ax25 utilities package.
+	  For more information on the modems, see
+	  <file:Documentation/networking/device_drivers/hamradio/baycom.rst>.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module
 	  will be called baycom_epp.  This is recommended.

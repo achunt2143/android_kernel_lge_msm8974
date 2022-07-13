@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright(c) 2007 Atheros Corporation. All rights reserved.
  *
  * Derived from Intel e1000 driver
  * Copyright(c) 1999 - 2005 Intel Corporation. All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -17,6 +22,8 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ATHL1E_HW_H_
@@ -129,7 +136,11 @@ s32 atl1e_restart_autoneg(struct atl1e_hw *hw);
 #define     TWSI_CTRL_LD_SLV_ADDR_SHIFT     8
 #define     TWSI_CTRL_SW_LDSTART            0x800
 #define     TWSI_CTRL_HW_LDSTART            0x1000
+<<<<<<< HEAD
 #define     TWSI_CTRL_SMB_SLV_ADDR_MASK     0x0x7F
+=======
+#define     TWSI_CTRL_SMB_SLV_ADDR_MASK     0x7F
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define     TWSI_CTRL_SMB_SLV_ADDR_SHIFT    15
 #define     TWSI_CTRL_LD_EXIST              0x400000
 #define     TWSI_CTRL_READ_FREQ_SEL_MASK    0x3

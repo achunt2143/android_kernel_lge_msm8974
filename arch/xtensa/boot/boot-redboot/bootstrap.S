@@ -1,7 +1,16 @@
+<<<<<<< HEAD
 #include <variant/core.h>
 #include <asm/regs.h>
 #include <asm/asmmacro.h>
 #include <asm/cacheasm.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#include <asm/core.h>
+#include <asm/regs.h>
+#include <asm/asmmacro.h>
+#include <asm/cacheasm.h>
+#include <asm/processor.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * RB-Data: RedBoot data/bss
 	 * P:	    Boot-Parameters
@@ -35,12 +44,20 @@
 	.globl __start
 	/* this must be the first byte of the loader! */
 __start:
+<<<<<<< HEAD
 	entry	sp, 32		# we do not intend to return
+=======
+	abi_entry(32)		# we do not intend to return
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_call0	_start
 __start_a0:
 	.align 4
 
 	.section .text, "ax"
+<<<<<<< HEAD
+=======
+	.literal_position
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.begin literal_prefix .text
 
 	/* put literals in here! */
@@ -51,6 +68,7 @@ _start:
 	/* 'reset' window registers */
 
 	movi	a4, 1
+<<<<<<< HEAD
 	wsr	a4, PS
 	rsync
 
@@ -63,6 +81,22 @@ _start:
 	movi	a4, 0x00040000
 	wsr	a4, PS
 	rsync
+=======
+	wsr	a4, ps
+	rsync
+#if XCHAL_HAVE_WINDOWED
+	rsr	a5, windowbase
+	ssl	a5
+	sll	a4, a4
+	wsr	a4, windowstart
+	rsync
+#endif
+	movi	a4, KERNEL_PS_WOE_MASK
+	wsr	a4, ps
+	rsync
+
+KABI_C0	mov	abi_saved0, abi_arg0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* copy the loader to its address
 	 * Note: The loader itself is a very small piece, so we assume we
@@ -166,11 +200,16 @@ _reloc:
 
 	movi	a3, __image_load
 	sub	a4, a3, a4
+<<<<<<< HEAD
 	add	a8, a0, a4
+=======
+	add	abi_arg2, a0, a4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	# a1  Stack
 	# a8(a4)  Load address of the image
 
+<<<<<<< HEAD
 	movi	a6, _image_start
 	movi	a10, _image_end
 	movi	a7, 0x1000000
@@ -190,10 +229,32 @@ _reloc:
 	beqz	a4, 1f
 
 	callx4	a4
+=======
+	movi	abi_arg0, _image_start
+	movi	abi_arg4, _image_end
+	movi	abi_arg1, 0x1000000
+	sub	abi_tmp0, abi_arg4, abi_arg0
+	movi	abi_arg3, complen
+	s32i	abi_tmp0, abi_arg3, 0
+
+	movi	a0, 0
+
+	# abi_arg0 destination
+	# abi_arg1 maximum size of destination
+	# abi_arg2 source
+	# abi_arg3 ptr to length
+
+	.extern gunzip
+	movi	abi_tmp0, gunzip
+	beqz	abi_tmp0, 1f
+
+	abi_callx	abi_tmp0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	j	2f
 
 
+<<<<<<< HEAD
 	# a6 destination start
 	# a7 maximum size of destination
 	# a8 source start
@@ -212,6 +273,26 @@ _reloc:
         addi    a6, a6, 16
         addi    a8, a8, 16
         blt     a6, a10, 1b
+=======
+	# abi_arg0 destination start
+	# abi_arg1 maximum size of destination
+	# abi_arg2 source start
+	# abi_arg3 ptr to length
+	# abi_arg4 destination end
+
+1:
+        l32i    abi_tmp0, abi_arg2, 0
+        l32i    abi_tmp1, abi_arg2, 4
+        s32i    abi_tmp0, abi_arg0, 0
+        s32i    abi_tmp1, abi_arg0, 4
+        l32i    abi_tmp0, abi_arg2, 8
+        l32i    abi_tmp1, abi_arg2, 12
+        s32i    abi_tmp0, abi_arg0, 8
+        s32i    abi_tmp1, abi_arg0, 12
+        addi    abi_arg0, abi_arg0, 16
+        addi    abi_arg2, abi_arg2, 16
+        blt     abi_arg0, abi_arg4, 1b
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	/* jump to the kernel */
@@ -226,6 +307,7 @@ _reloc:
 
 	isync
 
+<<<<<<< HEAD
 	movi	a5, __start
 	movi	a3, boot_initrd_start
 	movi	a4, boot_initrd_end
@@ -238,6 +320,11 @@ _reloc:
 	# a3  initrd_start (virtual load address)
 	# a4  initrd_end   (virtual load address)
 
+=======
+	# a2  Boot parameter list
+
+KABI_C0	mov	abi_arg0, abi_saved0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movi	a0, _image_start
 	jx	a0
 

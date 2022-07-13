@@ -18,6 +18,7 @@
 #include "ath9k.h"
 #include "ar9003_mac.h"
 
+<<<<<<< HEAD
 #define SKB_CB_ATHBUF(__skb)	(*((struct ath_buf **)__skb->cb))
 
 static inline bool ath_is_alt_ant_ratio_better(int alt_ratio, int maxdelta,
@@ -56,6 +57,9 @@ static inline bool ath_ant_div_comb_alt_check(u8 div_group, int alt_ratio,
 
 	return result;
 }
+=======
+#define SKB_CB_ATHBUF(__skb)	(*((struct ath_rxbuf **)__skb->cb))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline bool ath9k_check_auto_sleep(struct ath_softc *sc)
 {
@@ -71,7 +75,12 @@ static inline bool ath9k_check_auto_sleep(struct ath_softc *sc)
  * buffer (or rx fifo). This can incorrectly acknowledge packets
  * to a sender if last desc is self-linked.
  */
+<<<<<<< HEAD
 static void ath_rx_buf_link(struct ath_softc *sc, struct ath_buf *bf)
+=======
+static void ath_rx_buf_link(struct ath_softc *sc, struct ath_rxbuf *bf,
+			    bool flush)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
@@ -96,18 +105,33 @@ static void ath_rx_buf_link(struct ath_softc *sc, struct ath_buf *bf)
 			     common->rx_bufsize,
 			     0);
 
+<<<<<<< HEAD
 	if (sc->rx.rxlink == NULL)
 		ath9k_hw_putrxbuf(ah, bf->bf_daddr);
 	else
 		*sc->rx.rxlink = bf->bf_daddr;
+=======
+	if (sc->rx.rxlink)
+		*sc->rx.rxlink = bf->bf_daddr;
+	else if (!flush)
+		ath9k_hw_putrxbuf(ah, bf->bf_daddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sc->rx.rxlink = &ds->ds_link;
 }
 
+<<<<<<< HEAD
 static void ath_rx_buf_relink(struct ath_softc *sc, struct ath_buf *bf)
 {
 	if (sc->rx.buf_hold)
 		ath_rx_buf_link(sc, sc->rx.buf_hold);
+=======
+static void ath_rx_buf_relink(struct ath_softc *sc, struct ath_rxbuf *bf,
+			      bool flush)
+{
+	if (sc->rx.buf_hold)
+		ath_rx_buf_link(sc, sc->rx.buf_hold, flush);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sc->rx.buf_hold = bf;
 }
@@ -148,13 +172,21 @@ static bool ath_rx_edma_buf_link(struct ath_softc *sc,
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_rx_edma *rx_edma;
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rx_edma = &sc->rx.rx_edma[qtype];
 	if (skb_queue_len(&rx_edma->rx_fifo) >= rx_edma->rx_fifo_hwsize)
 		return false;
 
+<<<<<<< HEAD
 	bf = list_first_entry(&sc->rx.rxbuf, struct ath_buf, list);
+=======
+	bf = list_first_entry(&sc->rx.rxbuf, struct ath_rxbuf, list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del_init(&bf->list);
 
 	skb = bf->bf_mpdu;
@@ -165,16 +197,27 @@ static bool ath_rx_edma_buf_link(struct ath_softc *sc,
 
 	SKB_CB_ATHBUF(skb) = bf;
 	ath9k_hw_addrxbuf_edma(ah, bf->bf_buf_addr, qtype);
+<<<<<<< HEAD
 	skb_queue_tail(&rx_edma->rx_fifo, skb);
+=======
+	__skb_queue_tail(&rx_edma->rx_fifo, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return true;
 }
 
 static void ath_rx_addbuffer_edma(struct ath_softc *sc,
+<<<<<<< HEAD
 				  enum ath9k_rx_qtype qtype, int size)
 {
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
 	struct ath_buf *bf, *tbf;
+=======
+				  enum ath9k_rx_qtype qtype)
+{
+	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
+	struct ath_rxbuf *bf, *tbf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (list_empty(&sc->rx.rxbuf)) {
 		ath_dbg(common, QUEUE, "No free rx buf available\n");
@@ -190,13 +233,21 @@ static void ath_rx_addbuffer_edma(struct ath_softc *sc,
 static void ath_rx_remove_buffer(struct ath_softc *sc,
 				 enum ath9k_rx_qtype qtype)
 {
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ath_rx_edma *rx_edma;
 	struct sk_buff *skb;
 
 	rx_edma = &sc->rx.rx_edma[qtype];
 
+<<<<<<< HEAD
 	while ((skb = skb_dequeue(&rx_edma->rx_fifo)) != NULL) {
+=======
+	while ((skb = __skb_dequeue(&rx_edma->rx_fifo)) != NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bf = SKB_CB_ATHBUF(skb);
 		BUG_ON(!bf);
 		list_add_tail(&bf->list, &sc->rx.rxbuf);
@@ -207,7 +258,11 @@ static void ath_rx_edma_cleanup(struct ath_softc *sc)
 {
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath_rx_remove_buffer(sc, ATH9K_RX_QUEUE_LP);
 	ath_rx_remove_buffer(sc, ATH9K_RX_QUEUE_HP);
@@ -222,16 +277,23 @@ static void ath_rx_edma_cleanup(struct ath_softc *sc)
 			bf->bf_mpdu = NULL;
 		}
 	}
+<<<<<<< HEAD
 
 	INIT_LIST_HEAD(&sc->rx.rxbuf);
 
 	kfree(sc->rx.rx_bufptr);
 	sc->rx.rx_bufptr = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ath_rx_edma_init_queue(struct ath_rx_edma *rx_edma, int size)
 {
+<<<<<<< HEAD
 	skb_queue_head_init(&rx_edma->rx_fifo);
+=======
+	__skb_queue_head_init(&rx_edma->rx_fifo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rx_edma->rx_fifo_hwsize = size;
 }
 
@@ -240,7 +302,11 @@ static int ath_rx_edma_init(struct ath_softc *sc, int nbufs)
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
 	struct ath_hw *ah = sc->sc_ah;
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = 0, i;
 	u32 size;
 
@@ -252,13 +318,21 @@ static int ath_rx_edma_init(struct ath_softc *sc, int nbufs)
 	ath_rx_edma_init_queue(&sc->rx.rx_edma[ATH9K_RX_QUEUE_HP],
 			       ah->caps.rx_hp_qdepth);
 
+<<<<<<< HEAD
 	size = sizeof(struct ath_buf) * nbufs;
 	bf = kzalloc(size, GFP_KERNEL);
+=======
+	size = sizeof(struct ath_rxbuf) * nbufs;
+	bf = devm_kzalloc(sc->dev, size, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!bf)
 		return -ENOMEM;
 
 	INIT_LIST_HEAD(&sc->rx.rxbuf);
+<<<<<<< HEAD
 	sc->rx.rx_bufptr = bf;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < nbufs; i++, bf++) {
 		skb = ath_rxbuf_alloc(common, common->rx_bufsize, GFP_KERNEL);
@@ -296,6 +370,7 @@ rx_init_fail:
 
 static void ath_edma_start_recv(struct ath_softc *sc)
 {
+<<<<<<< HEAD
 	spin_lock_bh(&sc->rx.rxbuflock);
 
 	ath9k_hw_rxena(sc->sc_ah);
@@ -311,6 +386,13 @@ static void ath_edma_start_recv(struct ath_softc *sc)
 	ath9k_hw_startpcureceive(sc->sc_ah, (sc->sc_flags & SC_OP_OFFCHANNEL));
 
 	spin_unlock_bh(&sc->rx.rxbuflock);
+=======
+	ath9k_hw_rxena(sc->sc_ah);
+	ath_rx_addbuffer_edma(sc, ATH9K_RX_QUEUE_HP);
+	ath_rx_addbuffer_edma(sc, ATH9K_RX_QUEUE_LP);
+	ath_opmode_init(sc);
+	ath9k_hw_startpcureceive(sc->sc_ah, sc->cur_chan->offchannel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ath_edma_stop_recv(struct ath_softc *sc)
@@ -323,16 +405,24 @@ int ath_rx_init(struct ath_softc *sc, int nbufs)
 {
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	struct ath_buf *bf;
 	int error = 0;
 
 	spin_lock_init(&sc->sc_pcu_lock);
 	sc->sc_flags &= ~SC_OP_RXFLUSH;
 	spin_lock_init(&sc->rx.rxbuflock);
+=======
+	struct ath_rxbuf *bf;
+	int error = 0;
+
+	spin_lock_init(&sc->sc_pcu_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	common->rx_bufsize = IEEE80211_MAX_MPDU_LEN / 2 +
 			     sc->sc_ah->caps.rx_status_len;
 
+<<<<<<< HEAD
 	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_EDMA) {
 		return ath_rx_edma_init(sc, nbufs);
 	} else {
@@ -376,6 +466,49 @@ int ath_rx_init(struct ath_softc *sc, int nbufs)
 		sc->rx.rxlink = NULL;
 	}
 
+=======
+	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_EDMA)
+		return ath_rx_edma_init(sc, nbufs);
+
+	ath_dbg(common, CONFIG, "cachelsz %u rxbufsize %u\n",
+		common->cachelsz, common->rx_bufsize);
+
+	/* Initialize rx descriptors */
+
+	error = ath_descdma_setup(sc, &sc->rx.rxdma, &sc->rx.rxbuf,
+				  "rx", nbufs, 1, 0);
+	if (error != 0) {
+		ath_err(common,
+			"failed to allocate rx descriptors: %d\n",
+			error);
+		goto err;
+	}
+
+	list_for_each_entry(bf, &sc->rx.rxbuf, list) {
+		skb = ath_rxbuf_alloc(common, common->rx_bufsize,
+				      GFP_KERNEL);
+		if (skb == NULL) {
+			error = -ENOMEM;
+			goto err;
+		}
+
+		bf->bf_mpdu = skb;
+		bf->bf_buf_addr = dma_map_single(sc->dev, skb->data,
+						 common->rx_bufsize,
+						 DMA_FROM_DEVICE);
+		if (unlikely(dma_mapping_error(sc->dev,
+					       bf->bf_buf_addr))) {
+			dev_kfree_skb_any(skb);
+			bf->bf_mpdu = NULL;
+			bf->bf_buf_addr = 0;
+			ath_err(common,
+				"dma_mapping_error() on RX init\n");
+			error = -ENOMEM;
+			goto err;
+		}
+	}
+	sc->rx.rxlink = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	if (error)
 		ath_rx_cleanup(sc);
@@ -388,11 +521,16 @@ void ath_rx_cleanup(struct ath_softc *sc)
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_EDMA) {
 		ath_rx_edma_cleanup(sc);
 		return;
+<<<<<<< HEAD
 	} else {
 		list_for_each_entry(bf, &sc->rx.rxbuf, list) {
 			skb = bf->bf_mpdu;
@@ -408,6 +546,20 @@ void ath_rx_cleanup(struct ath_softc *sc)
 
 		if (sc->rx.rxdma.dd_desc_len != 0)
 			ath_descdma_cleanup(sc, &sc->rx.rxdma, &sc->rx.rxbuf);
+=======
+	}
+
+	list_for_each_entry(bf, &sc->rx.rxbuf, list) {
+		skb = bf->bf_mpdu;
+		if (skb) {
+			dma_unmap_single(sc->dev, bf->bf_buf_addr,
+					 common->rx_bufsize,
+					 DMA_FROM_DEVICE);
+			dev_kfree_skb(skb);
+			bf->bf_buf_addr = 0;
+			bf->bf_mpdu = NULL;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -432,6 +584,7 @@ void ath_rx_cleanup(struct ath_softc *sc)
 
 u32 ath_calcrxfilter(struct ath_softc *sc)
 {
+<<<<<<< HEAD
 	u32 rfilt;
 
 	rfilt = ATH9K_RX_FILTER_UCAST | ATH9K_RX_FILTER_BCAST
@@ -468,14 +621,76 @@ u32 ath_calcrxfilter(struct ath_softc *sc)
 	if (sc->nvifs > 1 || (sc->rx.rxfilter & FIF_OTHER_BSS)) {
 		/* The following may also be needed for other older chips */
 		if (sc->sc_ah->hw_version.macVersion == AR_SREV_VERSION_9160)
+=======
+	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
+	u32 rfilt;
+
+	if (IS_ENABLED(CONFIG_ATH9K_TX99))
+		return 0;
+
+	rfilt = ATH9K_RX_FILTER_UCAST | ATH9K_RX_FILTER_BCAST
+		| ATH9K_RX_FILTER_MCAST;
+
+	/* if operating on a DFS channel, enable radar pulse detection */
+	if (sc->hw->conf.radar_enabled)
+		rfilt |= ATH9K_RX_FILTER_PHYRADAR | ATH9K_RX_FILTER_PHYERR;
+
+	spin_lock_bh(&sc->chan_lock);
+
+	if (sc->cur_chan->rxfilter & FIF_PROBE_REQ)
+		rfilt |= ATH9K_RX_FILTER_PROBEREQ;
+
+	if (sc->sc_ah->is_monitoring)
+		rfilt |= ATH9K_RX_FILTER_PROM;
+
+	if ((sc->cur_chan->rxfilter & FIF_CONTROL) ||
+	    sc->sc_ah->dynack.enabled)
+		rfilt |= ATH9K_RX_FILTER_CONTROL;
+
+	if ((sc->sc_ah->opmode == NL80211_IFTYPE_STATION) &&
+	    (sc->cur_chan->nvifs <= 1) &&
+	    !(sc->cur_chan->rxfilter & FIF_BCN_PRBRESP_PROMISC))
+		rfilt |= ATH9K_RX_FILTER_MYBEACON;
+	else if (sc->sc_ah->opmode != NL80211_IFTYPE_OCB)
+		rfilt |= ATH9K_RX_FILTER_BEACON;
+
+	if ((sc->sc_ah->opmode == NL80211_IFTYPE_AP) ||
+	    (sc->cur_chan->rxfilter & FIF_PSPOLL))
+		rfilt |= ATH9K_RX_FILTER_PSPOLL;
+
+	if (sc->cur_chandef.width != NL80211_CHAN_WIDTH_20_NOHT)
+		rfilt |= ATH9K_RX_FILTER_COMP_BAR;
+
+	if (sc->cur_chan->nvifs > 1 ||
+	    (sc->cur_chan->rxfilter & (FIF_OTHER_BSS | FIF_MCAST_ACTION))) {
+		/* This is needed for older chips */
+		if (sc->sc_ah->hw_version.macVersion <= AR_SREV_VERSION_9160)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rfilt |= ATH9K_RX_FILTER_PROM;
 		rfilt |= ATH9K_RX_FILTER_MCAST_BCAST_ALL;
 	}
 
+<<<<<<< HEAD
+=======
+	if (AR_SREV_9550(sc->sc_ah) || AR_SREV_9531(sc->sc_ah) ||
+	    AR_SREV_9561(sc->sc_ah))
+		rfilt |= ATH9K_RX_FILTER_4ADDRESS;
+
+	if (AR_SREV_9462(sc->sc_ah) || AR_SREV_9565(sc->sc_ah))
+		rfilt |= ATH9K_RX_FILTER_CONTROL_WRAPPER;
+
+	if (ath9k_is_chanctx_enabled() &&
+	    test_bit(ATH_OP_SCANNING, &common->op_flags))
+		rfilt |= ATH9K_RX_FILTER_BEACON;
+
+	spin_unlock_bh(&sc->chan_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rfilt;
 
 }
 
+<<<<<<< HEAD
 int ath_startrecv(struct ath_softc *sc)
 {
 	struct ath_hw *ah = sc->sc_ah;
@@ -487,30 +702,61 @@ int ath_startrecv(struct ath_softc *sc)
 	}
 
 	spin_lock_bh(&sc->rx.rxbuflock);
+=======
+void ath_startrecv(struct ath_softc *sc)
+{
+	struct ath_hw *ah = sc->sc_ah;
+	struct ath_rxbuf *bf, *tbf;
+
+	if (ah->caps.hw_caps & ATH9K_HW_CAP_EDMA) {
+		ath_edma_start_recv(sc);
+		return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (list_empty(&sc->rx.rxbuf))
 		goto start_recv;
 
 	sc->rx.buf_hold = NULL;
 	sc->rx.rxlink = NULL;
 	list_for_each_entry_safe(bf, tbf, &sc->rx.rxbuf, list) {
+<<<<<<< HEAD
 		ath_rx_buf_link(sc, bf);
+=======
+		ath_rx_buf_link(sc, bf, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* We could have deleted elements so the list may be empty now */
 	if (list_empty(&sc->rx.rxbuf))
 		goto start_recv;
 
+<<<<<<< HEAD
 	bf = list_first_entry(&sc->rx.rxbuf, struct ath_buf, list);
+=======
+	bf = list_first_entry(&sc->rx.rxbuf, struct ath_rxbuf, list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath9k_hw_putrxbuf(ah, bf->bf_daddr);
 	ath9k_hw_rxena(ah);
 
 start_recv:
 	ath_opmode_init(sc);
+<<<<<<< HEAD
 	ath9k_hw_startpcureceive(ah, (sc->sc_flags & SC_OP_OFFCHANNEL));
 
 	spin_unlock_bh(&sc->rx.rxbuflock);
 
 	return 0;
+=======
+	ath9k_hw_startpcureceive(ah, sc->cur_chan->offchannel);
+}
+
+static void ath_flushrecv(struct ath_softc *sc)
+{
+	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_EDMA)
+		ath_rx_tasklet(sc, 1, true);
+	ath_rx_tasklet(sc, 1, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 bool ath_stoprecv(struct ath_softc *sc)
@@ -518,15 +764,24 @@ bool ath_stoprecv(struct ath_softc *sc)
 	struct ath_hw *ah = sc->sc_ah;
 	bool stopped, reset = false;
 
+<<<<<<< HEAD
 	spin_lock_bh(&sc->rx.rxbuflock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath9k_hw_abortpcurecv(ah);
 	ath9k_hw_setrxfilter(ah, 0);
 	stopped = ath9k_hw_stopdmarecv(ah, &reset);
 
+<<<<<<< HEAD
+=======
+	ath_flushrecv(sc);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sc->sc_ah->caps.hw_caps & ATH9K_HW_CAP_EDMA)
 		ath_edma_stop_recv(sc);
 	else
 		sc->rx.rxlink = NULL;
+<<<<<<< HEAD
 	spin_unlock_bh(&sc->rx.rxbuflock);
 
 	if (!(ah->ah_flags & AH_UNPLUGGED) &&
@@ -535,10 +790,19 @@ bool ath_stoprecv(struct ath_softc *sc)
 			"Could not stop RX, we could be "
 			"confusing the DMA engine when we start RX up\n");
 		ATH_DBG_WARN_ON_ONCE(!stopped);
+=======
+
+	if (!(ah->ah_flags & AH_UNPLUGGED) &&
+	    unlikely(!stopped)) {
+		ath_dbg(ath9k_hw_common(sc->sc_ah), RESET,
+			"Failed to stop Rx DMA\n");
+		RESET_STAT_INC(sc, RESET_RX_DMA_ERROR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return stopped && !reset;
 }
 
+<<<<<<< HEAD
 void ath_flushrecv(struct ath_softc *sc)
 {
 	sc->sc_flags |= SC_OP_RXFLUSH;
@@ -548,6 +812,8 @@ void ath_flushrecv(struct ath_softc *sc)
 	sc->sc_flags &= ~SC_OP_RXFLUSH;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool ath_beacon_dtim_pending_cab(struct sk_buff *skb)
 {
 	/* Check whether the Beacon frame has DTIM indicating buffered bc/mc */
@@ -583,6 +849,10 @@ static bool ath_beacon_dtim_pending_cab(struct sk_buff *skb)
 static void ath_rx_ps_beacon(struct ath_softc *sc, struct sk_buff *skb)
 {
 	struct ath_common *common = ath9k_hw_common(sc->sc_ah);
+<<<<<<< HEAD
+=======
+	bool skip_beacon = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (skb->len < 24 + 8 + 2 + 2)
 		return;
@@ -592,8 +862,25 @@ static void ath_rx_ps_beacon(struct ath_softc *sc, struct sk_buff *skb)
 	if (sc->ps_flags & PS_BEACON_SYNC) {
 		sc->ps_flags &= ~PS_BEACON_SYNC;
 		ath_dbg(common, PS,
+<<<<<<< HEAD
 			"Reconfigure Beacon timers based on timestamp from the AP\n");
 		ath_set_beacon(sc);
+=======
+			"Reconfigure beacon timers based on synchronized timestamp\n");
+
+#ifdef CONFIG_ATH9K_CHANNEL_CONTEXT
+		if (ath9k_is_chanctx_enabled()) {
+			if (sc->cur_chan == &sc->offchannel.chan)
+				skip_beacon = true;
+		}
+#endif
+
+		if (!skip_beacon &&
+		    !(WARN_ON_ONCE(sc->cur_chan->beacon.beacon_interval == 0)))
+			ath9k_set_beacon(sc);
+
+		ath9k_p2p_beacon_sync(sc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (ath_beacon_dtim_pending_cab(skb)) {
@@ -630,6 +917,7 @@ static void ath_rx_ps(struct ath_softc *sc, struct sk_buff *skb, bool mybeacon)
 
 	/* Process Beacon and CAB receive in PS state */
 	if (((sc->ps_flags & PS_WAIT_FOR_BEACON) || ath9k_check_auto_sleep(sc))
+<<<<<<< HEAD
 	    && mybeacon)
 		ath_rx_ps_beacon(sc, skb);
 	else if ((sc->ps_flags & PS_WAIT_FOR_CAB) &&
@@ -637,6 +925,15 @@ static void ath_rx_ps(struct ath_softc *sc, struct sk_buff *skb, bool mybeacon)
 		  ieee80211_is_action(hdr->frame_control)) &&
 		 is_multicast_ether_addr(hdr->addr1) &&
 		 !ieee80211_has_moredata(hdr->frame_control)) {
+=======
+	    && mybeacon) {
+		ath_rx_ps_beacon(sc, skb);
+	} else if ((sc->ps_flags & PS_WAIT_FOR_CAB) &&
+		   (ieee80211_is_data(hdr->frame_control) ||
+		    ieee80211_is_action(hdr->frame_control)) &&
+		   is_multicast_ether_addr(hdr->addr1) &&
+		   !ieee80211_has_moredata(hdr->frame_control)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * No more broadcast/multicast frames to be received at this
 		 * point.
@@ -660,13 +957,21 @@ static void ath_rx_ps(struct ath_softc *sc, struct sk_buff *skb, bool mybeacon)
 static bool ath_edma_get_buffers(struct ath_softc *sc,
 				 enum ath9k_rx_qtype qtype,
 				 struct ath_rx_status *rs,
+<<<<<<< HEAD
 				 struct ath_buf **dest)
+=======
+				 struct ath_rxbuf **dest)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath_rx_edma *rx_edma = &sc->rx.rx_edma[qtype];
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	skb = skb_peek(&rx_edma->rx_fifo);
@@ -710,11 +1015,19 @@ static bool ath_edma_get_buffers(struct ath_softc *sc,
 	return true;
 }
 
+<<<<<<< HEAD
 static struct ath_buf *ath_edma_get_next_rx_buf(struct ath_softc *sc,
 						struct ath_rx_status *rs,
 						enum ath9k_rx_qtype qtype)
 {
 	struct ath_buf *bf = NULL;
+=======
+static struct ath_rxbuf *ath_edma_get_next_rx_buf(struct ath_softc *sc,
+						struct ath_rx_status *rs,
+						enum ath9k_rx_qtype qtype)
+{
+	struct ath_rxbuf *bf = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (ath_edma_get_buffers(sc, qtype, rs, &bf)) {
 		if (!bf)
@@ -725,13 +1038,21 @@ static struct ath_buf *ath_edma_get_next_rx_buf(struct ath_softc *sc,
 	return NULL;
 }
 
+<<<<<<< HEAD
 static struct ath_buf *ath_get_next_rx_buf(struct ath_softc *sc,
+=======
+static struct ath_rxbuf *ath_get_next_rx_buf(struct ath_softc *sc,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   struct ath_rx_status *rs)
 {
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath_desc *ds;
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (list_empty(&sc->rx.rxbuf)) {
@@ -739,7 +1060,11 @@ static struct ath_buf *ath_get_next_rx_buf(struct ath_softc *sc,
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	bf = list_first_entry(&sc->rx.rxbuf, struct ath_buf, list);
+=======
+	bf = list_first_entry(&sc->rx.rxbuf, struct ath_rxbuf, list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bf == sc->rx.buf_hold)
 		return NULL;
 
@@ -759,7 +1084,11 @@ static struct ath_buf *ath_get_next_rx_buf(struct ath_softc *sc,
 	ret = ath9k_hw_rxprocdesc(ah, ds, rs);
 	if (ret == -EINPROGRESS) {
 		struct ath_rx_status trs;
+<<<<<<< HEAD
 		struct ath_buf *tbf;
+=======
+		struct ath_rxbuf *tbf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct ath_desc *tds;
 
 		memset(&trs, 0, sizeof(trs));
@@ -768,7 +1097,11 @@ static struct ath_buf *ath_get_next_rx_buf(struct ath_softc *sc,
 			return NULL;
 		}
 
+<<<<<<< HEAD
 		tbf = list_entry(bf->list.next, struct ath_buf, list);
+=======
+		tbf = list_entry(bf->list.next, struct ath_rxbuf, list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * On some hardware the descriptor status words could
@@ -785,6 +1118,23 @@ static struct ath_buf *ath_get_next_rx_buf(struct ath_softc *sc,
 		ret = ath9k_hw_rxprocdesc(ah, tds, &trs);
 		if (ret == -EINPROGRESS)
 			return NULL;
+<<<<<<< HEAD
+=======
+
+		/*
+		 * Re-check previous descriptor, in case it has been filled
+		 * in the mean time.
+		 */
+		ret = ath9k_hw_rxprocdesc(ah, ds, rs);
+		if (ret == -EINPROGRESS) {
+			/*
+			 * mark descriptor as zero-length and set the 'more'
+			 * flag to ensure that both buffers get discarded
+			 */
+			rs->rs_datalen = 0;
+			rs->rs_more = true;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	list_del(&bf->list);
@@ -803,6 +1153,7 @@ static struct ath_buf *ath_get_next_rx_buf(struct ath_softc *sc,
 	return bf;
 }
 
+<<<<<<< HEAD
 /* Assumes you've already done the endian to CPU conversion */
 static bool ath9k_rx_accept(struct ath_common *common,
 			    struct ieee80211_hdr *hdr,
@@ -977,6 +1328,22 @@ static void ath9k_process_rssi(struct ath_common *common,
 
 	/* Update Beacon RSSI, this is used by ANI. */
 	ah->stats.avgbrssi = rssi;
+=======
+static void ath9k_process_tsf(struct ath_rx_status *rs,
+			      struct ieee80211_rx_status *rxs,
+			      u64 tsf)
+{
+	u32 tsf_lower = tsf & 0xffffffff;
+
+	rxs->mactime = (tsf & ~0xffffffffULL) | rs->rs_tstamp;
+	if (rs->rs_tstamp > tsf_lower &&
+	    unlikely(rs->rs_tstamp - tsf_lower > 0x10000000))
+		rxs->mactime -= 0x100000000ULL;
+
+	if (rs->rs_tstamp < tsf_lower &&
+	    unlikely(tsf_lower - rs->rs_tstamp > 0x10000000))
+		rxs->mactime += 0x100000000ULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -984,6 +1351,7 @@ static void ath9k_process_rssi(struct ath_common *common,
  * up the frame up to let mac80211 handle the actual error case, be it no
  * decryption key or real decryption error. This let us keep statistics there.
  */
+<<<<<<< HEAD
 static int ath9k_rx_skb_preprocess(struct ath_common *common,
 				   struct ieee80211_hw *hw,
 				   struct ieee80211_hdr *hdr,
@@ -999,11 +1367,56 @@ static int ath9k_rx_skb_preprocess(struct ath_common *common,
 	 */
 	if (!ath9k_rx_accept(common, hdr, rx_status, rx_stats, decrypt_error))
 		return -EINVAL;
+=======
+static int ath9k_rx_skb_preprocess(struct ath_softc *sc,
+				   struct sk_buff *skb,
+				   struct ath_rx_status *rx_stats,
+				   struct ieee80211_rx_status *rx_status,
+				   bool *decrypt_error, u64 tsf)
+{
+	struct ieee80211_hw *hw = sc->hw;
+	struct ath_hw *ah = sc->sc_ah;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ieee80211_hdr *hdr;
+	bool discard_current = sc->rx.discard_next;
+	bool is_phyerr;
+
+	/*
+	 * Discard corrupt descriptors which are marked in
+	 * ath_get_next_rx_buf().
+	 */
+	if (discard_current)
+		goto corrupt;
+
+	sc->rx.discard_next = false;
+
+	/*
+	 * Discard zero-length packets and packets smaller than an ACK
+	 * which are not PHY_ERROR (short radar pulses have a length of 3)
+	 */
+	is_phyerr = rx_stats->rs_status & ATH9K_RXERR_PHY;
+	if (!rx_stats->rs_datalen ||
+	    (rx_stats->rs_datalen < 10 && !is_phyerr)) {
+		RX_STAT_INC(sc, rx_len_err);
+		goto corrupt;
+	}
+
+	/*
+	 * rs_status follows rs_datalen so if rs_datalen is too large
+	 * we can take a hint that hardware corrupted it, so ignore
+	 * those frames.
+	 */
+	if (rx_stats->rs_datalen > (common->rx_bufsize - ah->caps.rx_status_len)) {
+		RX_STAT_INC(sc, rx_len_err);
+		goto corrupt;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Only use status info from the last fragment */
 	if (rx_stats->rs_more)
 		return 0;
 
+<<<<<<< HEAD
 	ath9k_process_rssi(common, hw, hdr, rx_stats);
 
 	if (ath9k_process_rate(common, hw, rx_stats, rx_status))
@@ -1772,26 +2185,246 @@ div_comb_done:
 	antcomb->alt_total_rssi = 0;
 	antcomb->main_recv_cnt = 0;
 	antcomb->alt_recv_cnt = 0;
+=======
+	/*
+	 * Return immediately if the RX descriptor has been marked
+	 * as corrupt based on the various error bits.
+	 *
+	 * This is different from the other corrupt descriptor
+	 * condition handled above.
+	 */
+	if (rx_stats->rs_status & ATH9K_RXERR_CORRUPT_DESC)
+		goto corrupt;
+
+	hdr = (struct ieee80211_hdr *) (skb->data + ah->caps.rx_status_len);
+
+	ath9k_process_tsf(rx_stats, rx_status, tsf);
+	ath_debug_stat_rx(sc, rx_stats);
+
+	/*
+	 * Process PHY errors and return so that the packet
+	 * can be dropped.
+	 */
+	if (rx_stats->rs_status & ATH9K_RXERR_PHY) {
+		/*
+		 * DFS and spectral are mutually exclusive
+		 *
+		 * Since some chips use PHYERR_RADAR as indication for both, we
+		 * need to double check which feature is enabled to prevent
+		 * feeding spectral or dfs-detector with wrong frames.
+		 */
+		if (hw->conf.radar_enabled) {
+			ath9k_dfs_process_phyerr(sc, hdr, rx_stats,
+						 rx_status->mactime);
+		} else if (sc->spec_priv.spectral_mode != SPECTRAL_DISABLED &&
+			   ath_cmn_process_fft(&sc->spec_priv, hdr, rx_stats,
+					       rx_status->mactime)) {
+			RX_STAT_INC(sc, rx_spectral);
+		}
+		return -EINVAL;
+	}
+
+	/*
+	 * everything but the rate is checked here, the rate check is done
+	 * separately to avoid doing two lookups for a rate for each frame.
+	 */
+	spin_lock_bh(&sc->chan_lock);
+	if (!ath9k_cmn_rx_accept(common, hdr, rx_status, rx_stats, decrypt_error,
+				 sc->cur_chan->rxfilter)) {
+		spin_unlock_bh(&sc->chan_lock);
+		return -EINVAL;
+	}
+	spin_unlock_bh(&sc->chan_lock);
+
+	if (ath_is_mybeacon(common, hdr)) {
+		RX_STAT_INC(sc, rx_beacons);
+		rx_stats->is_mybeacon = true;
+	}
+
+	/*
+	 * This shouldn't happen, but have a safety check anyway.
+	 */
+	if (WARN_ON(!ah->curchan))
+		return -EINVAL;
+
+	if (ath9k_cmn_process_rate(common, hw, rx_stats, rx_status)) {
+		/*
+		 * No valid hardware bitrate found -- we should not get here
+		 * because hardware has already validated this frame as OK.
+		 */
+		ath_dbg(common, ANY, "unsupported hw bitrate detected 0x%02x using 1 Mbit\n",
+			rx_stats->rs_rate);
+		RX_STAT_INC(sc, rx_rate_err);
+		return -EINVAL;
+	}
+
+	if (ath9k_is_chanctx_enabled()) {
+		if (rx_stats->is_mybeacon)
+			ath_chanctx_beacon_recv_ev(sc,
+					   ATH_CHANCTX_EVENT_BEACON_RECEIVED);
+	}
+
+	ath9k_cmn_process_rssi(common, hw, rx_stats, rx_status);
+
+	rx_status->band = ah->curchan->chan->band;
+	rx_status->freq = ah->curchan->chan->center_freq;
+	rx_status->antenna = rx_stats->rs_antenna;
+	rx_status->flag |= RX_FLAG_MACTIME_END;
+
+#ifdef CONFIG_ATH9K_BTCOEX_SUPPORT
+	if (ieee80211_is_data_present(hdr->frame_control) &&
+	    !ieee80211_is_qos_nullfunc(hdr->frame_control))
+		sc->rx.num_pkts++;
+#endif
+
+	return 0;
+
+corrupt:
+	sc->rx.discard_next = rx_stats->rs_more;
+	return -EINVAL;
+}
+
+/*
+ * Run the LNA combining algorithm only in these cases:
+ *
+ * Standalone WLAN cards with both LNA/Antenna diversity
+ * enabled in the EEPROM.
+ *
+ * WLAN+BT cards which are in the supported card list
+ * in ath_pci_id_table and the user has loaded the
+ * driver with "bt_ant_diversity" set to true.
+ */
+static void ath9k_antenna_check(struct ath_softc *sc,
+				struct ath_rx_status *rs)
+{
+	struct ath_hw *ah = sc->sc_ah;
+	struct ath9k_hw_capabilities *pCap = &ah->caps;
+	struct ath_common *common = ath9k_hw_common(ah);
+
+	if (!(ah->caps.hw_caps & ATH9K_HW_CAP_ANT_DIV_COMB))
+		return;
+
+	/*
+	 * Change the default rx antenna if rx diversity
+	 * chooses the other antenna 3 times in a row.
+	 */
+	if (sc->rx.defant != rs->rs_antenna) {
+		if (++sc->rx.rxotherant >= 3)
+			ath_setdefantenna(sc, rs->rs_antenna);
+	} else {
+		sc->rx.rxotherant = 0;
+	}
+
+	if (pCap->hw_caps & ATH9K_HW_CAP_BT_ANT_DIV) {
+		if (common->bt_ant_diversity)
+			ath_ant_comb_scan(sc, rs);
+	} else {
+		ath_ant_comb_scan(sc, rs);
+	}
+}
+
+static void ath9k_apply_ampdu_details(struct ath_softc *sc,
+	struct ath_rx_status *rs, struct ieee80211_rx_status *rxs)
+{
+	if (rs->rs_isaggr) {
+		rxs->flag |= RX_FLAG_AMPDU_DETAILS | RX_FLAG_AMPDU_LAST_KNOWN;
+
+		rxs->ampdu_reference = sc->rx.ampdu_ref;
+
+		if (!rs->rs_moreaggr) {
+			rxs->flag |= RX_FLAG_AMPDU_IS_LAST;
+			sc->rx.ampdu_ref++;
+		}
+
+		if (rs->rs_flags & ATH9K_RX_DELIM_CRC_PRE)
+			rxs->flag |= RX_FLAG_AMPDU_DELIM_CRC_ERROR;
+	}
+}
+
+static void ath_rx_count_airtime(struct ath_softc *sc,
+				 struct ath_rx_status *rs,
+				 struct sk_buff *skb)
+{
+	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *) skb->data;
+	struct ath_hw *ah = sc->sc_ah;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ieee80211_sta *sta;
+	struct ieee80211_rx_status *rxs;
+	const struct ieee80211_rate *rate;
+	bool is_sgi, is_40, is_sp;
+	int phy;
+	u16 len = rs->rs_datalen;
+	u32 airtime = 0;
+	u8 tidno;
+
+	if (!ieee80211_is_data(hdr->frame_control))
+		return;
+
+	rcu_read_lock();
+
+	sta = ieee80211_find_sta_by_ifaddr(sc->hw, hdr->addr2, NULL);
+	if (!sta)
+		goto exit;
+	tidno = skb->priority & IEEE80211_QOS_CTL_TID_MASK;
+
+	rxs = IEEE80211_SKB_RXCB(skb);
+
+	is_sgi = !!(rxs->enc_flags & RX_ENC_FLAG_SHORT_GI);
+	is_40 = !!(rxs->bw == RATE_INFO_BW_40);
+	is_sp = !!(rxs->enc_flags & RX_ENC_FLAG_SHORTPRE);
+
+	if (!!(rxs->encoding == RX_ENC_HT)) {
+		/* MCS rates */
+
+		airtime += ath_pkt_duration(sc, rxs->rate_idx, len,
+					is_40, is_sgi, is_sp);
+	} else {
+
+		phy = IS_CCK_RATE(rs->rs_rate) ? WLAN_RC_PHY_CCK : WLAN_RC_PHY_OFDM;
+		rate = &common->sbands[rxs->band].bitrates[rxs->rate_idx];
+		airtime += ath9k_hw_computetxtime(ah, phy, rate->bitrate * 100,
+						len, rxs->rate_idx, is_sp);
+	}
+
+	ieee80211_sta_register_airtime(sta, tidno, 0, airtime);
+exit:
+	rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 {
+<<<<<<< HEAD
 	struct ath_buf *bf;
+=======
+	struct ath_rxbuf *bf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb = NULL, *requeue_skb, *hdr_skb;
 	struct ieee80211_rx_status *rxs;
 	struct ath_hw *ah = sc->sc_ah;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ieee80211_hw *hw = sc->hw;
+<<<<<<< HEAD
 	struct ieee80211_hdr *hdr;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval;
 	struct ath_rx_status rs;
 	enum ath9k_rx_qtype qtype;
 	bool edma = !!(ah->caps.hw_caps & ATH9K_HW_CAP_EDMA);
 	int dma_type;
+<<<<<<< HEAD
 	u8 rx_status_len = ah->caps.rx_status_len;
 	u64 tsf = 0;
 	u32 tsf_lower = 0;
 	unsigned long flags;
+=======
+	u64 tsf = 0;
+	unsigned long flags;
+	dma_addr_t new_buf_addr;
+	unsigned int budget = 512;
+	struct ieee80211_hdr *hdr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (edma)
 		dma_type = DMA_BIDIRECTIONAL;
@@ -1799,6 +2432,7 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 		dma_type = DMA_FROM_DEVICE;
 
 	qtype = hp ? ATH9K_RX_QUEUE_HP : ATH9K_RX_QUEUE_LP;
+<<<<<<< HEAD
 	spin_lock_bh(&sc->rx.rxbuflock);
 
 	tsf = ath9k_hw_gettsf64(ah);
@@ -1809,6 +2443,13 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 		/* If handling rx interrupt and flush is in progress => exit */
 		if ((sc->sc_flags & SC_OP_RXFLUSH) && (flush == 0))
 			break;
+=======
+
+	tsf = ath9k_hw_gettsf64(ah);
+
+	do {
+		bool decrypt_error = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		memset(&rs, 0, sizeof(rs));
 		if (edma)
@@ -1832,6 +2473,7 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 		else
 			hdr_skb = skb;
 
+<<<<<<< HEAD
 		hdr = (struct ieee80211_hdr *) (hdr_skb->data + rx_status_len);
 		rxs = IEEE80211_SKB_RXCB(hdr_skb);
 		if (ieee80211_is_beacon(hdr->frame_control) &&
@@ -1863,6 +2505,13 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 
 		retval = ath9k_rx_skb_preprocess(common, hw, hdr, &rs,
 						 rxs, &decrypt_error);
+=======
+		rxs = IEEE80211_SKB_RXCB(hdr_skb);
+		memset(rxs, 0, sizeof(struct ieee80211_rx_status));
+
+		retval = ath9k_rx_skb_preprocess(sc, hdr_skb, &rs, rxs,
+						 &decrypt_error, tsf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (retval)
 			goto requeue_drop_frag;
 
@@ -1874,6 +2523,7 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 		 * tell hardware it can give us a new frame using the old
 		 * skb and put it at the tail of the sc->rx.rxbuf list for
 		 * processing. */
+<<<<<<< HEAD
 		if (!requeue_skb)
 			goto requeue_drop_frag;
 
@@ -1881,12 +2531,34 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 		dma_unmap_single(sc->dev, bf->bf_buf_addr,
 				 common->rx_bufsize,
 				 dma_type);
+=======
+		if (!requeue_skb) {
+			RX_STAT_INC(sc, rx_oom_err);
+			goto requeue_drop_frag;
+		}
+
+		/* We will now give hardware our shiny new allocated skb */
+		new_buf_addr = dma_map_single(sc->dev, requeue_skb->data,
+					      common->rx_bufsize, dma_type);
+		if (unlikely(dma_mapping_error(sc->dev, new_buf_addr))) {
+			dev_kfree_skb_any(requeue_skb);
+			goto requeue_drop_frag;
+		}
+
+		/* Unmap the frame */
+		dma_unmap_single(sc->dev, bf->bf_buf_addr,
+				 common->rx_bufsize, dma_type);
+
+		bf->bf_mpdu = requeue_skb;
+		bf->bf_buf_addr = new_buf_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		skb_put(skb, rs.rs_datalen + ah->caps.rx_status_len);
 		if (ah->caps.rx_status_len)
 			skb_pull(skb, ah->caps.rx_status_len);
 
 		if (!rs.rs_more)
+<<<<<<< HEAD
 			ath9k_rx_skb_postprocess(common, hdr_skb, &rs,
 						 rxs, decrypt_error);
 
@@ -1906,6 +2578,13 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 		}
 
 		if (rs.rs_more) {
+=======
+			ath9k_cmn_rx_skb_postprocess(common, hdr_skb, &rs,
+						     rxs, decrypt_error);
+
+		if (rs.rs_more) {
+			RX_STAT_INC(sc, rx_frags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * rs_more indicates chained descriptors which can be
 			 * used to link buffers together for a sort of
@@ -1915,6 +2594,10 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 				/* too many fragments - cannot handle frame */
 				dev_kfree_skb_any(sc->rx.frag);
 				dev_kfree_skb_any(skb);
+<<<<<<< HEAD
+=======
+				RX_STAT_INC(sc, rx_too_many_frags_err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				skb = NULL;
 			}
 			sc->rx.frag = skb;
@@ -1926,6 +2609,10 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 
 			if (pskb_expand_head(hdr_skb, 0, space, GFP_ATOMIC) < 0) {
 				dev_kfree_skb(skb);
+<<<<<<< HEAD
+=======
+				RX_STAT_INC(sc, rx_oom_err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto requeue_drop_frag;
 			}
 
@@ -1937,6 +2624,7 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 			skb = hdr_skb;
 		}
 
+<<<<<<< HEAD
 
 		if (ah->caps.hw_caps & ATH9K_HW_CAP_ANT_DIV_COMB) {
 
@@ -1953,11 +2641,16 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 
 		}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rxs->flag & RX_FLAG_MMIC_STRIPPED)
 			skb_trim(skb, skb->len - 8);
 
 		spin_lock_irqsave(&sc->sc_pm_lock, flags);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((sc->ps_flags & (PS_WAIT_FOR_BEACON |
 				     PS_WAIT_FOR_CAB |
 				     PS_WAIT_FOR_PSPOLL_DATA)) ||
@@ -1965,8 +2658,19 @@ int ath_rx_tasklet(struct ath_softc *sc, int flush, bool hp)
 			ath_rx_ps(sc, skb, rs.is_mybeacon);
 		spin_unlock_irqrestore(&sc->sc_pm_lock, flags);
 
+<<<<<<< HEAD
 		if ((ah->caps.hw_caps & ATH9K_HW_CAP_ANT_DIV_COMB) && sc->ant_rx == 3)
 			ath_ant_comb_scan(sc, &rs);
+=======
+		ath9k_antenna_check(sc, &rs);
+		ath9k_apply_ampdu_details(sc, &rs, rxs);
+		ath_debug_rate_stats(sc, &rs, skb);
+		ath_rx_count_airtime(sc, &rs, skb);
+
+		hdr = (struct ieee80211_hdr *)skb->data;
+		if (ieee80211_is_ack(hdr->frame_control))
+			ath_dynack_sample_ack_ts(sc->sc_ah, skb, rs.rs_tstamp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ieee80211_rx(hw, skb);
 
@@ -1977,6 +2681,7 @@ requeue_drop_frag:
 		}
 requeue:
 		list_add_tail(&bf->list, &sc->rx.rxbuf);
+<<<<<<< HEAD
 		if (flush)
 			continue;
 
@@ -1989,6 +2694,20 @@ requeue:
 	} while (1);
 
 	spin_unlock_bh(&sc->rx.rxbuflock);
+=======
+
+		if (!edma) {
+			ath_rx_buf_relink(sc, bf, flush);
+			if (!flush)
+				ath9k_hw_rxena(ah);
+		} else if (!flush) {
+			ath_rx_edma_buf_link(sc, qtype);
+		}
+
+		if (!budget--)
+			break;
+	} while (1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(ah->imask & ATH9K_INT_RXEOL)) {
 		ah->imask |= (ATH9K_INT_RXEOL | ATH9K_INT_RXORN);

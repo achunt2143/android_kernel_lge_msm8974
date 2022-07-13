@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Dallas Semiconductor DS1682 Elapsed Time Recorder device driver
  *
  * Written by: Grant Likely <grant.likely@secretlab.ca>
  *
  * Copyright (C) 2007 Secret Lab Technologies Ltd.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -32,7 +39,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/i2c.h>
 #include <linux/string.h>
 #include <linux/list.h>
@@ -60,13 +70,19 @@ static ssize_t ds1682_show(struct device *dev, struct device_attribute *attr,
 {
 	struct sensor_device_attribute_2 *sattr = to_sensor_dev_attr_2(attr);
 	struct i2c_client *client = to_i2c_client(dev);
+<<<<<<< HEAD
 	__le32 val = 0;
+=======
+	unsigned long long val, check;
+	__le32 val_le = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	dev_dbg(dev, "ds1682_show() called on %s\n", attr->attr.name);
 
 	/* Read the register */
 	rc = i2c_smbus_read_i2c_block_data(client, sattr->index, sattr->nr,
+<<<<<<< HEAD
 					   (u8 *) & val);
 	if (rc < 0)
 		return -EIO;
@@ -79,6 +95,36 @@ static ssize_t ds1682_show(struct device *dev, struct device_attribute *attr,
 
 	/* Format the output string and return # of bytes */
 	return sprintf(buf, "%li\n", (long)le32_to_cpu(val));
+=======
+					   (u8 *)&val_le);
+	if (rc < 0)
+		return -EIO;
+
+	val = le32_to_cpu(val_le);
+
+	if (sattr->index == DS1682_REG_ELAPSED) {
+		int retries = 5;
+
+		/* Detect and retry when a tick occurs mid-read */
+		do {
+			rc = i2c_smbus_read_i2c_block_data(client, sattr->index,
+							   sattr->nr,
+							   (u8 *)&val_le);
+			if (rc < 0 || retries <= 0)
+				return -EIO;
+
+			check = val;
+			val = le32_to_cpu(val_le);
+			retries--;
+		} while (val != check && val != (check + 1));
+	}
+
+	/* Format the output string and return # of bytes
+	 * Special case: the 32 bit regs are time values with 1/4s
+	 * resolution, scale them up to milliseconds
+	 */
+	return sprintf(buf, "%llu\n", (sattr->nr == 4) ? (val * 250) : val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t ds1682_store(struct device *dev, struct device_attribute *attr,
@@ -86,7 +132,10 @@ static ssize_t ds1682_store(struct device *dev, struct device_attribute *attr,
 {
 	struct sensor_device_attribute_2 *sattr = to_sensor_dev_attr_2(attr);
 	struct i2c_client *client = to_i2c_client(dev);
+<<<<<<< HEAD
 	char *endp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 val;
 	__le32 val_le;
 	int rc;
@@ -94,8 +143,13 @@ static ssize_t ds1682_store(struct device *dev, struct device_attribute *attr,
 	dev_dbg(dev, "ds1682_store() called on %s\n", attr->attr.name);
 
 	/* Decode input */
+<<<<<<< HEAD
 	val = simple_strtoull(buf, &endp, 0);
 	if (buf == endp) {
+=======
+	rc = kstrtoull(buf, 0, &val);
+	if (rc < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(dev, "input string not a number\n");
 		return -EINVAL;
 	}
@@ -150,12 +204,15 @@ static ssize_t ds1682_eeprom_read(struct file *filp, struct kobject *kobj,
 	dev_dbg(&client->dev, "ds1682_eeprom_read(p=%p, off=%lli, c=%zi)\n",
 		buf, off, count);
 
+<<<<<<< HEAD
 	if (off >= DS1682_EEPROM_SIZE)
 		return 0;
 
 	if (off + count > DS1682_EEPROM_SIZE)
 		count = DS1682_EEPROM_SIZE - off;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = i2c_smbus_read_i2c_block_data(client, DS1682_REG_EEPROM + off,
 					   count, buf);
 	if (rc < 0)
@@ -173,12 +230,15 @@ static ssize_t ds1682_eeprom_write(struct file *filp, struct kobject *kobj,
 	dev_dbg(&client->dev, "ds1682_eeprom_write(p=%p, off=%lli, c=%zi)\n",
 		buf, off, count);
 
+<<<<<<< HEAD
 	if (off >= DS1682_EEPROM_SIZE)
 		return -ENOSPC;
 
 	if (off + count > DS1682_EEPROM_SIZE)
 		count = DS1682_EEPROM_SIZE - off;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Write out to the device */
 	if (i2c_smbus_write_i2c_block_data(client, DS1682_REG_EEPROM + off,
 					   count, buf) < 0)
@@ -187,7 +247,11 @@ static ssize_t ds1682_eeprom_write(struct file *filp, struct kobject *kobj,
 	return count;
 }
 
+<<<<<<< HEAD
 static struct bin_attribute ds1682_eeprom_attr = {
+=======
+static const struct bin_attribute ds1682_eeprom_attr = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attr = {
 		.name = "eeprom",
 		.mode = S_IRUGO | S_IWUSR,
@@ -200,8 +264,12 @@ static struct bin_attribute ds1682_eeprom_attr = {
 /*
  * Called when a ds1682 device is matched with this driver
  */
+<<<<<<< HEAD
 static int ds1682_probe(struct i2c_client *client,
 			const struct i2c_device_id *id)
+=======
+static int ds1682_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 
@@ -228,11 +296,18 @@ static int ds1682_probe(struct i2c_client *client,
 	return rc;
 }
 
+<<<<<<< HEAD
 static int ds1682_remove(struct i2c_client *client)
 {
 	sysfs_remove_bin_file(&client->dev.kobj, &ds1682_eeprom_attr);
 	sysfs_remove_group(&client->dev.kobj, &ds1682_group);
 	return 0;
+=======
+static void ds1682_remove(struct i2c_client *client)
+{
+	sysfs_remove_bin_file(&client->dev.kobj, &ds1682_eeprom_attr);
+	sysfs_remove_group(&client->dev.kobj, &ds1682_group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id ds1682_id[] = {
@@ -241,9 +316,22 @@ static const struct i2c_device_id ds1682_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, ds1682_id);
 
+<<<<<<< HEAD
 static struct i2c_driver ds1682_driver = {
 	.driver = {
 		.name = "ds1682",
+=======
+static const struct of_device_id ds1682_of_match[] = {
+	{ .compatible = "dallas,ds1682", },
+	{}
+};
+MODULE_DEVICE_TABLE(of, ds1682_of_match);
+
+static struct i2c_driver ds1682_driver = {
+	.driver = {
+		.name = "ds1682",
+		.of_match_table = ds1682_of_match,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.probe = ds1682_probe,
 	.remove = ds1682_remove,

@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Integer base 2 logarithm calculation
  *
  * Copyright (C) 2006 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _LINUX_LOG2_H
@@ -16,19 +23,26 @@
 #include <linux/bitops.h>
 
 /*
+<<<<<<< HEAD
  * deal with unrepresentable constant logarithms
  */
 extern __attribute__((const, noreturn))
 int ____ilog2_NaN(void);
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * non-constant log of base 2 calculators
  * - the arch may override these in asm/bitops.h if they can be implemented
  *   more efficiently than using fls() and fls64()
  * - the arch is not required to handle n==0 if implementing the fallback
  */
 #ifndef CONFIG_ARCH_HAS_ILOG2_U32
+<<<<<<< HEAD
 static inline __attribute__((const))
+=======
+static __always_inline __attribute__((const))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __ilog2_u32(u32 n)
 {
 	return fls(n) - 1;
@@ -36,26 +50,47 @@ int __ilog2_u32(u32 n)
 #endif
 
 #ifndef CONFIG_ARCH_HAS_ILOG2_U64
+<<<<<<< HEAD
 static inline __attribute__((const))
+=======
+static __always_inline __attribute__((const))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int __ilog2_u64(u64 n)
 {
 	return fls64(n) - 1;
 }
 #endif
 
+<<<<<<< HEAD
 /*
  *  Determine whether some value is a power of two, where zero is
  * *not* considered a power of two.
  */
 
+=======
+/**
+ * is_power_of_2() - check if a value is a power of two
+ * @n: the value to check
+ *
+ * Determine whether some value is a power of two, where zero is
+ * *not* considered a power of two.
+ * Return: true if @n is a power of 2, otherwise false.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline __attribute__((const))
 bool is_power_of_2(unsigned long n)
 {
 	return (n != 0 && ((n & (n - 1)) == 0));
 }
 
+<<<<<<< HEAD
 /*
  * round up to nearest power of two
+=======
+/**
+ * __roundup_pow_of_two() - round up to nearest power of two
+ * @n: value to round up
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline __attribute__((const))
 unsigned long __roundup_pow_of_two(unsigned long n)
@@ -63,8 +98,14 @@ unsigned long __roundup_pow_of_two(unsigned long n)
 	return 1UL << fls_long(n - 1);
 }
 
+<<<<<<< HEAD
 /*
  * round down to nearest power of two
+=======
+/**
+ * __rounddown_pow_of_two() - round down to nearest power of two
+ * @n: value to round down
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline __attribute__((const))
 unsigned long __rounddown_pow_of_two(unsigned long n)
@@ -73,6 +114,7 @@ unsigned long __rounddown_pow_of_two(unsigned long n)
 }
 
 /**
+<<<<<<< HEAD
  * ilog2 - log of base 2 of 32-bit or a 64-bit unsigned value
  * @n - parameter
  *
@@ -86,6 +128,18 @@ unsigned long __rounddown_pow_of_two(unsigned long n)
 (						\
 	__builtin_constant_p(n) ? (		\
 		(n) < 1 ? ____ilog2_NaN() :	\
+=======
+ * const_ilog2 - log base 2 of 32-bit or a 64-bit constant unsigned value
+ * @n: parameter
+ *
+ * Use this where sparse expects a true constant expression, e.g. for array
+ * indices.
+ */
+#define const_ilog2(n)				\
+(						\
+	__builtin_constant_p(n) ? (		\
+		(n) < 2 ? 0 :			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(n) & (1ULL << 63) ? 63 :	\
 		(n) & (1ULL << 62) ? 62 :	\
 		(n) & (1ULL << 61) ? 61 :	\
@@ -148,6 +202,7 @@ unsigned long __rounddown_pow_of_two(unsigned long n)
 		(n) & (1ULL <<  4) ?  4 :	\
 		(n) & (1ULL <<  3) ?  3 :	\
 		(n) & (1ULL <<  2) ?  2 :	\
+<<<<<<< HEAD
 		(n) & (1ULL <<  1) ?  1 :	\
 		(n) & (1ULL <<  0) ?  0 :	\
 		____ilog2_NaN()			\
@@ -155,11 +210,38 @@ unsigned long __rounddown_pow_of_two(unsigned long n)
 	(sizeof(n) <= 4) ?			\
 	__ilog2_u32(n) :			\
 	__ilog2_u64(n)				\
+=======
+		1) :				\
+	-1)
+
+/**
+ * ilog2 - log base 2 of 32-bit or a 64-bit unsigned value
+ * @n: parameter
+ *
+ * constant-capable log of base 2 calculation
+ * - this can be used to initialise global variables from constant data, hence
+ * the massive ternary operator construction
+ *
+ * selects the appropriately-sized optimised version depending on sizeof(n)
+ */
+#define ilog2(n) \
+( \
+	__builtin_constant_p(n) ?	\
+	((n) < 2 ? 0 :			\
+	 63 - __builtin_clzll(n)) :	\
+	(sizeof(n) <= 4) ?		\
+	__ilog2_u32(n) :		\
+	__ilog2_u64(n)			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  )
 
 /**
  * roundup_pow_of_two - round the given value up to nearest power of two
+<<<<<<< HEAD
  * @n - parameter
+=======
+ * @n: parameter
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * round the given value up to the nearest power of two
  * - the result is undefined when n == 0
@@ -168,7 +250,11 @@ unsigned long __rounddown_pow_of_two(unsigned long n)
 #define roundup_pow_of_two(n)			\
 (						\
 	__builtin_constant_p(n) ? (		\
+<<<<<<< HEAD
 		(n == 1) ? 1 :			\
+=======
+		((n) == 1) ? 1 :		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(1UL << (ilog2((n) - 1) + 1))	\
 				   ) :		\
 	__roundup_pow_of_two(n)			\
@@ -176,7 +262,11 @@ unsigned long __rounddown_pow_of_two(unsigned long n)
 
 /**
  * rounddown_pow_of_two - round the given value down to nearest power of two
+<<<<<<< HEAD
  * @n - parameter
+=======
+ * @n: parameter
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * round the given value down to the nearest power of two
  * - the result is undefined when n == 0
@@ -189,6 +279,15 @@ unsigned long __rounddown_pow_of_two(unsigned long n)
 	__rounddown_pow_of_two(n)		\
  )
 
+<<<<<<< HEAD
+=======
+static inline __attribute_const__
+int __order_base_2(unsigned long n)
+{
+	return n > 1 ? ilog2(n - 1) + 1 : 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * order_base_2 - calculate the (rounded up) base 2 order of the argument
  * @n: parameter
@@ -202,7 +301,51 @@ unsigned long __rounddown_pow_of_two(unsigned long n)
  *  ob2(5) = 3
  *  ... and so on.
  */
+<<<<<<< HEAD
 
 #define order_base_2(n) ilog2(roundup_pow_of_two(n))
 
+=======
+#define order_base_2(n)				\
+(						\
+	__builtin_constant_p(n) ? (		\
+		((n) == 0 || (n) == 1) ? 0 :	\
+		ilog2((n) - 1) + 1) :		\
+	__order_base_2(n)			\
+)
+
+static inline __attribute__((const))
+int __bits_per(unsigned long n)
+{
+	if (n < 2)
+		return 1;
+	if (is_power_of_2(n))
+		return order_base_2(n) + 1;
+	return order_base_2(n);
+}
+
+/**
+ * bits_per - calculate the number of bits required for the argument
+ * @n: parameter
+ *
+ * This is constant-capable and can be used for compile time
+ * initializations, e.g bitfields.
+ *
+ * The first few values calculated by this routine:
+ * bf(0) = 1
+ * bf(1) = 1
+ * bf(2) = 2
+ * bf(3) = 2
+ * bf(4) = 3
+ * ... and so on.
+ */
+#define bits_per(n)				\
+(						\
+	__builtin_constant_p(n) ? (		\
+		((n) == 0 || (n) == 1)		\
+			? 1 : ilog2(n) + 1	\
+	) :					\
+	__bits_per(n)				\
+)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_LOG2_H */

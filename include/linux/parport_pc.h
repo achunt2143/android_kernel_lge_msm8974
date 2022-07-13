@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_PARPORT_PC_H
 #define __LINUX_PARPORT_PC_H
 
@@ -25,6 +29,12 @@ struct parport_pc_private {
 	/* Whether or not there's an ECR. */
 	int ecr;
 
+<<<<<<< HEAD
+=======
+	/* Bitmask of writable ECR bits. */
+	unsigned char ecr_writable;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Number of PWords that FIFO will hold. */
 	int fifo_depth;
 

@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/char/tape_3590.c
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    tape device discipline for 3590 tapes.
  *
  *    Copyright IBM Corp. 2001, 2009
@@ -113,16 +118,26 @@ static int crypt_enabled(struct tape_device *device)
 static void ext_to_int_kekl(struct tape390_kekl *in,
 			    struct tape3592_kekl *out)
 {
+<<<<<<< HEAD
 	int i;
+=======
+	int len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(out, 0, sizeof(*out));
 	if (in->type == TAPE390_KEKL_TYPE_HASH)
 		out->flags |= 0x40;
 	if (in->type_on_tape == TAPE390_KEKL_TYPE_HASH)
 		out->flags |= 0x80;
+<<<<<<< HEAD
 	strncpy(out->label, in->label, 64);
 	for (i = strlen(in->label); i < sizeof(out->label); i++)
 		out->label[i] = ' ';
+=======
+	len = min(sizeof(out->label), strlen(in->label));
+	memcpy(out->label, in->label, len);
+	memset(out->label + len, ' ', sizeof(out->label) - len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ASCEBC(out->label, sizeof(out->label));
 }
 
@@ -313,6 +328,7 @@ static int tape_3592_ioctl_kekl_set(struct tape_device *device,
 		return -ENOSYS;
 	if (!crypt_enabled(device))
 		return -EUNATCH;
+<<<<<<< HEAD
 	ext_kekls = kmalloc(sizeof(*ext_kekls), GFP_KERNEL);
 	if (!ext_kekls)
 		return -ENOMEM;
@@ -322,6 +338,12 @@ static int tape_3592_ioctl_kekl_set(struct tape_device *device,
 	}
 	rc = tape_3592_kekl_set(device, ext_kekls);
 out:
+=======
+	ext_kekls = memdup_user((char __user *)arg, sizeof(*ext_kekls));
+	if (IS_ERR(ext_kekls))
+		return PTR_ERR(ext_kekls);
+	rc = tape_3592_kekl_set(device, ext_kekls);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ext_kekls);
 	return rc;
 }
@@ -670,6 +692,7 @@ tape_3590_schedule_work(struct tape_device *device, enum tape_op op)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_S390_TAPE_BLOCK
 /*
  * Tape Block READ
@@ -756,6 +779,8 @@ tape_3590_check_locate(struct tape_device *device, struct tape_request *request)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void tape_3590_med_state_set(struct tape_device *device,
 				    struct tape_3590_med_sense *sense)
 {
@@ -852,7 +877,11 @@ tape_3590_done(struct tape_device *device, struct tape_request *request)
  * This function is called, when error recovery was successful
  */
 static inline int
+<<<<<<< HEAD
 tape_3590_erp_succeded(struct tape_device *device, struct tape_request *request)
+=======
+tape_3590_erp_succeeded(struct tape_device *device, struct tape_request *request)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	DBF_EVENT(3, "Error Recovery successful for %s\n",
 		  tape_op_verbose[request->op]);
@@ -922,7 +951,11 @@ tape_3590_erp_basic(struct tape_device *device, struct tape_request *request,
 	case SENSE_BRA_PER:
 		return tape_3590_erp_failed(device, request, irb, rc);
 	case SENSE_BRA_CONT:
+<<<<<<< HEAD
 		return tape_3590_erp_succeded(device, request);
+=======
+		return tape_3590_erp_succeeded(device, request);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SENSE_BRA_RE:
 		return tape_3590_erp_retry(device, request, irb);
 	case SENSE_BRA_DRE:
@@ -1062,7 +1095,11 @@ tape_3590_print_mim_msg_f0(struct tape_device *device, struct irb *irb)
 		snprintf(exception, BUFSIZE, "Data degraded");
 		break;
 	case 0x03:
+<<<<<<< HEAD
 		snprintf(exception, BUFSIZE, "Data degraded in partion %i",
+=======
+		snprintf(exception, BUFSIZE, "Data degraded in partition %i",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sense->fmt.f70.mp);
 		break;
 	case 0x04:
@@ -1177,7 +1214,11 @@ tape_3590_print_io_sim_msg_f1(struct tape_device *device, struct irb *irb)
 				"channel path 0x%x on CU",
 				sense->fmt.f71.md[1]);
 		else
+<<<<<<< HEAD
 			snprintf(service, BUFSIZE, "Repair will disable cannel"
+=======
+			snprintf(service, BUFSIZE, "Repair will disable channel"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				" paths (0x%x-0x%x) on CU",
 				sense->fmt.f71.md[1], sense->fmt.f71.md[2]);
 		break;
@@ -1423,6 +1464,7 @@ tape_3590_unit_check(struct tape_device *device, struct tape_request *request,
 {
 	struct tape_3590_sense *sense;
 
+<<<<<<< HEAD
 #ifdef CONFIG_S390_TAPE_BLOCK
 	if (request->op == TO_BLOCK) {
 		/*
@@ -1437,6 +1479,8 @@ tape_3590_unit_check(struct tape_device *device, struct tape_request *request,
 	}
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sense = (struct tape_3590_sense *) irb->ecw;
 
 	DBF_EVENT(6, "Unit Check: RQC = %x\n", sense->rc_rqc);
@@ -1582,7 +1626,11 @@ tape_3590_irq(struct tape_device *device, struct tape_request *request,
 	}
 
 	if (irb->scsw.cmd.dstat & DEV_STAT_CHN_END) {
+<<<<<<< HEAD
 		DBF_EVENT(2, "cannel end\n");
+=======
+		DBF_EVENT(2, "channel end\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return TAPE_IO_PENDING;
 	}
 
@@ -1729,11 +1777,14 @@ static struct tape_discipline tape_discipline_3590 = {
 	.irq = tape_3590_irq,
 	.read_block = tape_std_read_block,
 	.write_block = tape_std_write_block,
+<<<<<<< HEAD
 #ifdef CONFIG_S390_TAPE_BLOCK
 	.bread = tape_3590_bread,
 	.free_bread = tape_3590_free_bread,
 	.check_locate = tape_3590_check_locate,
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ioctl_fn = tape_3590_ioctl,
 	.mtop_array = tape_3590_mtop
 };
@@ -1761,8 +1812,12 @@ static struct ccw_driver tape_3590_driver = {
 	.remove = tape_generic_remove,
 	.set_offline = tape_generic_offline,
 	.set_online = tape_3590_online,
+<<<<<<< HEAD
 	.freeze = tape_generic_pm_suspend,
 	.int_class = IOINT_TAP,
+=======
+	.int_class = IRQIO_TAP,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*

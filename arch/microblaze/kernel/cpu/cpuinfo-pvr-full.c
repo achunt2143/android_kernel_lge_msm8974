@@ -22,6 +22,7 @@
 
 #define CI(c, p) { ci->c = PVR_##p(pvr); }
 
+<<<<<<< HEAD
 #if defined(CONFIG_EARLY_PRINTK) && defined(CONFIG_SERIAL_UARTLITE_CONSOLE)
 #define err_printk(x) \
 	early_printk("ERROR: Microblaze " x "-different for PVR and DTS\n");
@@ -29,21 +30,37 @@
 #define err_printk(x) \
 	printk(KERN_INFO "ERROR: Microblaze " x "-different for PVR and DTS\n");
 #endif
+=======
+#define err_printk(x) \
+	pr_err("ERROR: Microblaze " x "-different for PVR and DTS\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void set_cpuinfo_pvr_full(struct cpuinfo *ci, struct device_node *cpu)
 {
 	struct pvr_s pvr;
+<<<<<<< HEAD
 	int temp; /* for saving temp value */
+=======
+	u32 temp; /* for saving temp value */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	get_pvr(&pvr);
 
 	CI(ver_code, VERSION);
 	if (!ci->ver_code) {
+<<<<<<< HEAD
 		printk(KERN_ERR "ERROR: MB has broken PVR regs "
 						"-> use DTS setting\n");
 		return;
 	}
 
 	temp = PVR_USE_BARREL(pvr) | PVR_USE_MSR_INSTR(pvr) |\
+=======
+		pr_err("ERROR: MB has broken PVR regs -> use DTS setting\n");
+		return;
+	}
+
+	temp = PVR_USE_BARREL(pvr) | PVR_USE_MSR_INSTR(pvr) |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		PVR_USE_PCMP_INSTR(pvr) | PVR_USE_DIV(pvr);
 	if (ci->use_instr != temp)
 		err_printk("BARREL, MSR, PCMP or DIV");
@@ -59,6 +76,7 @@ void set_cpuinfo_pvr_full(struct cpuinfo *ci, struct device_node *cpu)
 		err_printk("HW_FPU");
 	ci->use_fpu = temp;
 
+<<<<<<< HEAD
 	ci->use_exc = PVR_OPCODE_0x0_ILLEGAL(pvr) |\
 			PVR_UNALIGNED_EXCEPTION(pvr) |\
 			PVR_ILL_OPCODE_EXCEPTION(pvr) |\
@@ -66,6 +84,15 @@ void set_cpuinfo_pvr_full(struct cpuinfo *ci, struct device_node *cpu)
 			PVR_DOPB_BUS_EXCEPTION(pvr) |\
 			PVR_DIV_ZERO_EXCEPTION(pvr) |\
 			PVR_FPU_EXCEPTION(pvr) |\
+=======
+	ci->use_exc = PVR_OPCODE_0x0_ILLEGAL(pvr) |
+			PVR_UNALIGNED_EXCEPTION(pvr) |
+			PVR_ILL_OPCODE_EXCEPTION(pvr) |
+			PVR_IOPB_BUS_EXCEPTION(pvr) |
+			PVR_DOPB_BUS_EXCEPTION(pvr) |
+			PVR_DIV_ZERO_EXCEPTION(pvr) |
+			PVR_FPU_EXCEPTION(pvr) |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			PVR_FSL_EXCEPTION(pvr);
 
 	CI(pvr_user1, USER1);
@@ -113,7 +140,10 @@ void set_cpuinfo_pvr_full(struct cpuinfo *ci, struct device_node *cpu)
 	CI(num_wr_brk, NUMBER_OF_WR_ADDR_BRK);
 
 	CI(fpga_family_code, TARGET_FAMILY);
+<<<<<<< HEAD
 
 	/* take timebase-frequency from DTS */
 	ci->cpu_clock_freq = fcpu(cpu, "timebase-frequency");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

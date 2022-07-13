@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  (C) 2003  Bruno Ducrot
  *  (C) 2004  Dominik Brodowski <linux@dominikbrodowski.de>
  *
+<<<<<<< HEAD
  *  Licensed under the terms of the GNU GPL License version 2.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based on code found in
  * linux/include/asm-i386/ist.h and linux/arch/i386/kernel/setup.c
  * and originally developed by Andy Grover <andrew.grover@intel.com>
@@ -66,13 +73,21 @@ int main (void)
 		printf("ecx = 0x%.8x\n", r.ecx);
 		printf("edx = 0x%.8x\n", r.edx);
 		printf("Note also that some BIOS do not support the initial "
+<<<<<<< HEAD
 		       "GSIC call, but the newer\nspeeedstep-smi driver may "
+=======
+		       "GSIC call, but the newer\nspeedstep-smi driver may "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       "work.\nFor this, you need to pass some arguments to "
 		       "the speedstep-smi driver:\n");
 		printf("\tsmi_cmd=0x?? smi_port=0x?? smi_sig=1\n");
 		printf("\nUnfortunately, you have to know what exactly are "
 		       "smi_cmd and smi_port, and this\nis system "
+<<<<<<< HEAD
 		       "dependant.\n");
+=======
+		       "dependent.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 1;
 }

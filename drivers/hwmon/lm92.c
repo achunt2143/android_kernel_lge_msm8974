@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 /*
  * lm92 - Hardware monitoring driver
  * Copyright (C) 2005-2008  Jean Delvare <khali@linux-fr.org>
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * lm92 - Hardware monitoring driver
+ * Copyright (C) 2005-2008  Jean Delvare <jdelvare@suse.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Based on the lm90 driver, with some ideas taken from the lm_sensors
  * lm92 driver as well.
@@ -24,6 +31,7 @@
  * Support could easily be added for the National Semiconductor LM76
  * and Maxim MAX6633 and MAX6634 chips, which are mostly compatible
  * with the LM92.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -38,6 +46,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -48,6 +58,10 @@
 #include <linux/hwmon-sysfs.h>
 #include <linux/err.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/jiffies.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The LM92 and MAX6635 have 2 two-state pins for address selection,
@@ -55,6 +69,10 @@
  */
 static const unsigned short normal_i2c[] = { 0x48, 0x49, 0x4a, 0x4b,
 						I2C_CLIENT_END };
+<<<<<<< HEAD
+=======
+enum chips { lm92, max6635 };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The LM92 registers */
 #define LM92_REG_CONFIG			0x01 /* 8-bit, RW */
@@ -77,12 +95,18 @@ static inline int TEMP_FROM_REG(s16 reg)
 	return reg / 8 * 625 / 10;
 }
 
+<<<<<<< HEAD
 static inline s16 TEMP_TO_REG(int val)
 {
 	if (val <= -60000)
 		return -60000 * 10 / 625 * 8;
 	if (val >= 160000)
 		return 160000 * 10 / 625 * 8;
+=======
+static inline s16 TEMP_TO_REG(long val)
+{
+	val = clamp_val(val, -60000, 160000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return val * 10 / 625 * 8;
 }
 
@@ -92,6 +116,7 @@ static inline u8 ALARMS_FROM_REG(s16 reg)
 	return reg & 0x0007;
 }
 
+<<<<<<< HEAD
 /* Driver data (common to all clients) */
 static struct i2c_driver lm92_driver;
 
@@ -107,12 +132,43 @@ struct lm92_data {
 };
 
 
+=======
+enum temp_index {
+	t_input,
+	t_crit,
+	t_min,
+	t_max,
+	t_hyst,
+	t_num_regs
+};
+
+static const u8 regs[t_num_regs] = {
+	[t_input] = LM92_REG_TEMP,
+	[t_crit] = LM92_REG_TEMP_CRIT,
+	[t_min] = LM92_REG_TEMP_LOW,
+	[t_max] = LM92_REG_TEMP_HIGH,
+	[t_hyst] = LM92_REG_TEMP_HYST,
+};
+
+/* Client data (each client gets its own) */
+struct lm92_data {
+	struct i2c_client *client;
+	struct mutex update_lock;
+	bool valid; /* false until following fields are valid */
+	unsigned long last_updated; /* in jiffies */
+
+	/* registers values */
+	s16 temp[t_num_regs];	/* index with enum temp_index */
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sysfs attributes and callback functions
  */
 
 static struct lm92_data *lm92_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm92_data *data = i2c_get_clientdata(client);
 
@@ -134,6 +190,23 @@ static struct lm92_data *lm92_update_device(struct device *dev)
 
 		data->last_updated = jiffies;
 		data->valid = 1;
+=======
+	struct lm92_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	int i;
+
+	mutex_lock(&data->update_lock);
+
+	if (time_after(jiffies, data->last_updated + HZ) ||
+	    !data->valid) {
+		dev_dbg(&client->dev, "Updating lm92 data\n");
+		for (i = 0; i < t_num_regs; i++) {
+			data->temp[i] =
+				i2c_smbus_read_word_swapped(client, regs[i]);
+		}
+		data->last_updated = jiffies;
+		data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&data->update_lock);
@@ -141,6 +214,7 @@ static struct lm92_data *lm92_update_device(struct device *dev)
 	return data;
 }
 
+<<<<<<< HEAD
 #define show_temp(value) \
 static ssize_t show_##value(struct device *dev, struct device_attribute *attr, \
 			    char *buf) \
@@ -203,6 +277,25 @@ static ssize_t set_temp1_crit_hyst(struct device *dev,
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm92_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t temp_show(struct device *dev, struct device_attribute *devattr,
+			 char *buf)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	struct lm92_data *data = lm92_update_device(dev);
+
+	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp[attr->index]));
+}
+
+static ssize_t temp_store(struct device *dev,
+			  struct device_attribute *devattr, const char *buf,
+			  size_t count)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	struct lm92_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	int nr = attr->index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long val;
 	int err;
 
@@ -211,13 +304,19 @@ static ssize_t set_temp1_crit_hyst(struct device *dev,
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->temp1_hyst = TEMP_FROM_REG(data->temp1_crit) - val;
 	i2c_smbus_write_word_swapped(client, LM92_REG_TEMP_HYST,
 				     TEMP_TO_REG(data->temp1_hyst));
+=======
+	data->temp[nr] = TEMP_TO_REG(val);
+	i2c_smbus_write_word_swapped(client, regs[nr], data->temp[nr]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&data->update_lock);
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t show_alarms(struct device *dev, struct device_attribute *attr,
 			   char *buf)
 {
@@ -226,10 +325,65 @@ static ssize_t show_alarms(struct device *dev, struct device_attribute *attr,
 }
 
 static ssize_t show_alarm(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t temp_hyst_show(struct device *dev,
+			      struct device_attribute *devattr, char *buf)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	struct lm92_data *data = lm92_update_device(dev);
+
+	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp[attr->index])
+		       - TEMP_FROM_REG(data->temp[t_hyst]));
+}
+
+static ssize_t temp1_min_hyst_show(struct device *dev,
+				   struct device_attribute *attr, char *buf)
+{
+	struct lm92_data *data = lm92_update_device(dev);
+
+	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp[t_min])
+		       + TEMP_FROM_REG(data->temp[t_hyst]));
+}
+
+static ssize_t temp_hyst_store(struct device *dev,
+			       struct device_attribute *devattr,
+			       const char *buf, size_t count)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	struct lm92_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	long val;
+	int err;
+
+	err = kstrtol(buf, 10, &val);
+	if (err)
+		return err;
+
+	val = clamp_val(val, -120000, 220000);
+	mutex_lock(&data->update_lock);
+	data->temp[t_hyst] =
+		TEMP_TO_REG(TEMP_FROM_REG(data->temp[attr->index]) - val);
+	i2c_smbus_write_word_swapped(client, LM92_REG_TEMP_HYST,
+				     data->temp[t_hyst]);
+	mutex_unlock(&data->update_lock);
+	return count;
+}
+
+static ssize_t alarms_show(struct device *dev, struct device_attribute *attr,
+			   char *buf)
+{
+	struct lm92_data *data = lm92_update_device(dev);
+
+	return sprintf(buf, "%d\n", ALARMS_FROM_REG(data->temp[t_input]));
+}
+
+static ssize_t alarm_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  char *buf)
 {
 	int bitnr = to_sensor_dev_attr(attr)->index;
 	struct lm92_data *data = lm92_update_device(dev);
+<<<<<<< HEAD
 	return sprintf(buf, "%d\n", (data->temp1_input >> bitnr) & 1);
 }
 
@@ -249,6 +403,22 @@ static SENSOR_DEVICE_ATTR(temp1_crit_alarm, S_IRUGO, show_alarm, NULL, 2);
 static SENSOR_DEVICE_ATTR(temp1_min_alarm, S_IRUGO, show_alarm, NULL, 0);
 static SENSOR_DEVICE_ATTR(temp1_max_alarm, S_IRUGO, show_alarm, NULL, 1);
 
+=======
+	return sprintf(buf, "%d\n", (data->temp[t_input] >> bitnr) & 1);
+}
+
+static SENSOR_DEVICE_ATTR_RO(temp1_input, temp, t_input);
+static SENSOR_DEVICE_ATTR_RW(temp1_crit, temp, t_crit);
+static SENSOR_DEVICE_ATTR_RW(temp1_crit_hyst, temp_hyst, t_crit);
+static SENSOR_DEVICE_ATTR_RW(temp1_min, temp, t_min);
+static DEVICE_ATTR_RO(temp1_min_hyst);
+static SENSOR_DEVICE_ATTR_RW(temp1_max, temp, t_max);
+static SENSOR_DEVICE_ATTR_RO(temp1_max_hyst, temp_hyst, t_max);
+static DEVICE_ATTR_RO(alarms);
+static SENSOR_DEVICE_ATTR_RO(temp1_crit_alarm, alarm, 2);
+static SENSOR_DEVICE_ATTR_RO(temp1_min_alarm, alarm, 0);
+static SENSOR_DEVICE_ATTR_RO(temp1_max_alarm, alarm, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Detection and registration
@@ -265,6 +435,7 @@ static void lm92_init_client(struct i2c_client *client)
 					  config & 0xFE);
 }
 
+<<<<<<< HEAD
 /*
  * The MAX6635 has no identification register, so we have to use tricks
  * to identify it reliably. This is somewhat slow.
@@ -329,16 +500,30 @@ static struct attribute *lm92_attributes[] = {
 	&dev_attr_temp1_min_hyst.attr,
 	&dev_attr_temp1_max.attr,
 	&dev_attr_temp1_max_hyst.attr,
+=======
+static struct attribute *lm92_attrs[] = {
+	&sensor_dev_attr_temp1_input.dev_attr.attr,
+	&sensor_dev_attr_temp1_crit.dev_attr.attr,
+	&sensor_dev_attr_temp1_crit_hyst.dev_attr.attr,
+	&sensor_dev_attr_temp1_min.dev_attr.attr,
+	&dev_attr_temp1_min_hyst.attr,
+	&sensor_dev_attr_temp1_max.dev_attr.attr,
+	&sensor_dev_attr_temp1_max_hyst.dev_attr.attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_alarms.attr,
 	&sensor_dev_attr_temp1_crit_alarm.dev_attr.attr,
 	&sensor_dev_attr_temp1_min_alarm.dev_attr.attr,
 	&sensor_dev_attr_temp1_max_alarm.dev_attr.attr,
 	NULL
 };
+<<<<<<< HEAD
 
 static const struct attribute_group lm92_group = {
 	.attrs = lm92_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(lm92);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Return 0 if detection is successful, -ENODEV otherwise */
 static int lm92_detect(struct i2c_client *new_client,
@@ -357,16 +542,24 @@ static int lm92_detect(struct i2c_client *new_client,
 
 	if ((config & 0xe0) == 0x00 && man_id == 0x0180)
 		pr_info("lm92: Found National Semiconductor LM92 chip\n");
+<<<<<<< HEAD
 	else if (max6635_check(new_client))
 		pr_info("lm92: Found Maxim MAX6635 chip\n");
 	else
 		return -ENODEV;
 
 	strlcpy(info->type, "lm92", I2C_NAME_SIZE);
+=======
+	else
+		return -ENODEV;
+
+	strscpy(info->type, "lm92", I2C_NAME_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int lm92_probe(struct i2c_client *new_client,
 		      const struct i2c_device_id *id)
 {
@@ -381,11 +574,25 @@ static int lm92_probe(struct i2c_client *new_client,
 
 	i2c_set_clientdata(new_client, data);
 	data->valid = 0;
+=======
+static int lm92_probe(struct i2c_client *new_client)
+{
+	struct device *hwmon_dev;
+	struct lm92_data *data;
+
+	data = devm_kzalloc(&new_client->dev, sizeof(struct lm92_data),
+			    GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = new_client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&data->update_lock);
 
 	/* Initialize the chipset */
 	lm92_init_client(new_client);
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	err = sysfs_create_group(&new_client->dev.kobj, &lm92_group);
 	if (err)
@@ -419,13 +626,26 @@ static int lm92_remove(struct i2c_client *client)
 }
 
 
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(&new_client->dev,
+							   new_client->name,
+							   data, lm92_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Module and driver stuff
  */
 
 static const struct i2c_device_id lm92_id[] = {
+<<<<<<< HEAD
 	{ "lm92", 0 },
 	/* max6635 could be added here */
+=======
+	{ "lm92", lm92 },
+	{ "max6635", max6635 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, lm92_id);
@@ -436,7 +656,10 @@ static struct i2c_driver lm92_driver = {
 		.name	= "lm92",
 	},
 	.probe		= lm92_probe,
+<<<<<<< HEAD
 	.remove		= lm92_remove,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= lm92_id,
 	.detect		= lm92_detect,
 	.address_list	= normal_i2c,
@@ -444,6 +667,10 @@ static struct i2c_driver lm92_driver = {
 
 module_i2c_driver(lm92_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Jean Delvare <khali@linux-fr.org>");
+=======
+MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("LM92/MAX6635 driver");
 MODULE_LICENSE("GPL");

@@ -1,19 +1,28 @@
+<<<<<<< HEAD
 /*
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * arch/sh/kernel/syscalls.S
  *
  * System call table for SuperH
  *
  *  Copyright (C) 1999, 2000, 2002  Niibe Yutaka
  *  Copyright (C) 2003  Paul Mundt
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/sys.h>
 #include <linux/linkage.h>
 
+<<<<<<< HEAD
 	.data
 ENTRY(sys_call_table)
 	.long sys_restart_syscall	/* 0  -  old "setup()" system call*/
@@ -384,3 +393,10 @@ ENTRY(sys_call_table)
 	.long sys_setns
 	.long sys_process_vm_readv	/* 365 */
 	.long sys_process_vm_writev
+=======
+#define __SYSCALL(nr, entry)	.long entry
+	.data
+ENTRY(sys_call_table)
+#include <asm/syscall_table.h>
+#undef __SYSCALL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

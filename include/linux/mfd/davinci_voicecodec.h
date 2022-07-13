@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DaVinci Voice Codec Core Interface for TI platforms
  *
  * Copyright (C) 2010 Texas Instruments, Inc
  *
  * Author: Miguel Aguilar <miguel.aguilar@ridgerun.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,12 +27,24 @@
 
 #ifndef __LINUX_MFD_DAVINCI_VOICECODEC_H_
 #define __LINUX_MFD_DAVINIC_VOICECODEC_H_
+=======
+ */
+
+#ifndef __LINUX_MFD_DAVINCI_VOICECODEC_H_
+#define __LINUX_MFD_DAVINCI_VOICECODEC_H_
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 #include <linux/mfd/core.h>
+<<<<<<< HEAD
 
 #include <mach/edma.h>
+=======
+#include <linux/platform_data/edma.h>
+
+struct regmap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Register values.
@@ -96,6 +113,7 @@ struct davinci_vcif {
 	dma_addr_t dma_rx_addr;
 };
 
+<<<<<<< HEAD
 struct cq93vc {
 	struct platform_device *pdev;
 	struct snd_soc_codec *codec;
@@ -104,6 +122,8 @@ struct cq93vc {
 
 struct davinci_vc;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct davinci_vc {
 	/* Device data */
 	struct device *dev;
@@ -112,15 +132,22 @@ struct davinci_vc {
 
 	/* Memory resources */
 	void __iomem *base;
+<<<<<<< HEAD
 	resource_size_t pbase;
 	size_t base_size;
+=======
+	struct regmap *regmap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* MFD cells */
 	struct mfd_cell cells[DAVINCI_VC_CELLS];
 
 	/* Client devices */
 	struct davinci_vcif davinci_vcif;
+<<<<<<< HEAD
 	struct cq93vc cq93vc;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

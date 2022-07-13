@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  include/linux/nfs4.h
  *
@@ -9,6 +13,7 @@
  *  Kendrick Smith <kmsmith@umich.edu>
  *  Andy Adamson   <andros@umich.edu>
  */
+<<<<<<< HEAD
 
 #ifndef _LINUX_NFS4_H
 #define _LINUX_NFS4_H
@@ -157,6 +162,15 @@
  * actual operation per compound
  */
 #define NFS4_MAX_BACK_CHANNEL_OPS 2
+=======
+#ifndef _LINUX_NFS4_H
+#define _LINUX_NFS4_H
+
+#include <linux/list.h>
+#include <linux/uidgid.h>
+#include <uapi/linux/nfs4.h>
+#include <linux/sunrpc/msg_prot.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum nfs4_acl_whotype {
 	NFS4_ACL_WHO_NAMED = 0,
@@ -165,30 +179,78 @@ enum nfs4_acl_whotype {
 	NFS4_ACL_WHO_EVERYONE,
 };
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 #include <linux/list.h>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nfs4_ace {
 	uint32_t	type;
 	uint32_t	flag;
 	uint32_t	access_mask;
 	int		whotype;
+<<<<<<< HEAD
 	uid_t		who;
+=======
+	union {
+		kuid_t	who_uid;
+		kgid_t	who_gid;
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nfs4_acl {
 	uint32_t	naces;
+<<<<<<< HEAD
 	struct nfs4_ace	aces[0];
+=======
+	struct nfs4_ace	aces[];
+};
+
+#define NFS4_MAXLABELLEN	2048
+
+struct nfs4_label {
+	uint32_t	lfs;
+	uint32_t	pi;
+	u32		len;
+	char	*label;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 typedef struct { char data[NFS4_VERIFIER_SIZE]; } nfs4_verifier;
 
+<<<<<<< HEAD
 struct nfs_stateid4 {
 	__be32 seqid;
 	char other[NFS4_STATEID_OTHER_SIZE];
 } __attribute__ ((packed));
 
 typedef struct nfs_stateid4 nfs4_stateid;
+=======
+struct nfs4_stateid_struct {
+	union {
+		char data[NFS4_STATEID_SIZE];
+		struct {
+			__be32 seqid;
+			char other[NFS4_STATEID_OTHER_SIZE];
+		} __attribute__ ((packed));
+	};
+
+	enum {
+		NFS4_INVALID_STATEID_TYPE = 0,
+		NFS4_SPECIAL_STATEID_TYPE,
+		NFS4_OPEN_STATEID_TYPE,
+		NFS4_LOCK_STATEID_TYPE,
+		NFS4_DELEGATION_STATEID_TYPE,
+		NFS4_LAYOUT_STATEID_TYPE,
+		NFS4_PNFS_DS_STATEID_TYPE,
+		NFS4_REVOKED_STATEID_TYPE,
+	} type;
+};
+
+typedef struct nfs4_stateid_struct nfs4_stateid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum nfs_opnum4 {
 	OP_ACCESS = 3,
@@ -250,6 +312,30 @@ enum nfs_opnum4 {
 	OP_DESTROY_CLIENTID = 57,
 	OP_RECLAIM_COMPLETE = 58,
 
+<<<<<<< HEAD
+=======
+	/* nfs42 */
+	OP_ALLOCATE = 59,
+	OP_COPY = 60,
+	OP_COPY_NOTIFY = 61,
+	OP_DEALLOCATE = 62,
+	OP_IO_ADVISE = 63,
+	OP_LAYOUTERROR = 64,
+	OP_LAYOUTSTATS = 65,
+	OP_OFFLOAD_CANCEL = 66,
+	OP_OFFLOAD_STATUS = 67,
+	OP_READ_PLUS = 68,
+	OP_SEEK = 69,
+	OP_WRITE_SAME = 70,
+	OP_CLONE = 71,
+
+	/* xattr support (RFC8276) */
+	OP_GETXATTR                = 72,
+	OP_SETXATTR                = 73,
+	OP_LISTXATTRS              = 74,
+	OP_REMOVEXATTR             = 75,
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OP_ILLEGAL = 10044,
 };
 
@@ -257,7 +343,14 @@ enum nfs_opnum4 {
 Needs to be updated if more operations are defined in future.*/
 
 #define FIRST_NFS4_OP	OP_ACCESS
+<<<<<<< HEAD
 #define LAST_NFS4_OP 	OP_RECLAIM_COMPLETE
+=======
+#define LAST_NFS40_OP	OP_RELEASE_LOCKOWNER
+#define LAST_NFS41_OP	OP_RECLAIM_COMPLETE
+#define LAST_NFS42_OP	OP_REMOVEXATTR
+#define LAST_NFS4_OP	LAST_NFS42_OP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum nfsstat4 {
 	NFS4_OK = 0,
@@ -368,11 +461,36 @@ enum nfsstat4 {
 	NFS4ERR_REJECT_DELEG	= 10085,	/* on callback */
 	NFS4ERR_RETURNCONFLICT	= 10086,	/* outstanding layoutreturn */
 	NFS4ERR_DELEG_REVOKED	= 10087,	/* deleg./layout revoked */
+<<<<<<< HEAD
 };
 
 static inline bool seqid_mutating_err(u32 err)
 {
 	/* rfc 3530 section 8.1.5: */
+=======
+
+	/* nfs42 */
+	NFS4ERR_PARTNER_NOTSUPP	= 10088,
+	NFS4ERR_PARTNER_NO_AUTH	= 10089,
+	NFS4ERR_UNION_NOTSUPP = 10090,
+	NFS4ERR_OFFLOAD_DENIED = 10091,
+	NFS4ERR_WRONG_LFS = 10092,
+	NFS4ERR_BADLABEL = 10093,
+	NFS4ERR_OFFLOAD_NO_REQS = 10094,
+
+	/* xattr (RFC8276) */
+	NFS4ERR_NOXATTR        = 10095,
+	NFS4ERR_XATTR2BIG      = 10096,
+};
+
+/* error codes for internal client use */
+#define NFS4ERR_RESET_TO_MDS   12001
+#define NFS4ERR_RESET_TO_PNFS  12002
+
+static inline bool seqid_mutating_err(u32 err)
+{
+	/* See RFC 7530, section 9.1.7 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (err) {
 	case NFS4ERR_STALE_CLIENTID:
 	case NFS4ERR_STALE_STATEID:
@@ -381,8 +499,14 @@ static inline bool seqid_mutating_err(u32 err)
 	case NFS4ERR_BADXDR:
 	case NFS4ERR_RESOURCE:
 	case NFS4ERR_NOFILEHANDLE:
+<<<<<<< HEAD
 		return false;
 	};
+=======
+	case NFS4ERR_MOVED:
+		return false;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
@@ -462,6 +586,7 @@ enum lock_type4 {
 	NFS4_WRITEW_LT = 4
 };
 
+<<<<<<< HEAD
 
 /* Mandatory Attributes */
 #define FATTR4_WORD0_SUPPORTED_ATTRS    (1UL << 0)
@@ -526,12 +651,218 @@ enum lock_type4 {
 #define FATTR4_WORD1_MOUNTED_ON_FILEID  (1UL << 23)
 #define FATTR4_WORD1_FS_LAYOUT_TYPES    (1UL << 30)
 #define FATTR4_WORD2_LAYOUT_BLKSIZE     (1UL << 1)
+=======
+/*
+ * Symbol names and values are from RFC 7531 Section 2.
+ * "XDR Description of NFSv4.0"
+ */
+enum {
+	FATTR4_SUPPORTED_ATTRS		= 0,
+	FATTR4_TYPE			= 1,
+	FATTR4_FH_EXPIRE_TYPE		= 2,
+	FATTR4_CHANGE			= 3,
+	FATTR4_SIZE			= 4,
+	FATTR4_LINK_SUPPORT		= 5,
+	FATTR4_SYMLINK_SUPPORT		= 6,
+	FATTR4_NAMED_ATTR		= 7,
+	FATTR4_FSID			= 8,
+	FATTR4_UNIQUE_HANDLES		= 9,
+	FATTR4_LEASE_TIME		= 10,
+	FATTR4_RDATTR_ERROR		= 11,
+	FATTR4_ACL			= 12,
+	FATTR4_ACLSUPPORT		= 13,
+	FATTR4_ARCHIVE			= 14,
+	FATTR4_CANSETTIME		= 15,
+	FATTR4_CASE_INSENSITIVE		= 16,
+	FATTR4_CASE_PRESERVING		= 17,
+	FATTR4_CHOWN_RESTRICTED		= 18,
+	FATTR4_FILEHANDLE		= 19,
+	FATTR4_FILEID			= 20,
+	FATTR4_FILES_AVAIL		= 21,
+	FATTR4_FILES_FREE		= 22,
+	FATTR4_FILES_TOTAL		= 23,
+	FATTR4_FS_LOCATIONS		= 24,
+	FATTR4_HIDDEN			= 25,
+	FATTR4_HOMOGENEOUS		= 26,
+	FATTR4_MAXFILESIZE		= 27,
+	FATTR4_MAXLINK			= 28,
+	FATTR4_MAXNAME			= 29,
+	FATTR4_MAXREAD			= 30,
+	FATTR4_MAXWRITE			= 31,
+	FATTR4_MIMETYPE			= 32,
+	FATTR4_MODE			= 33,
+	FATTR4_NO_TRUNC			= 34,
+	FATTR4_NUMLINKS			= 35,
+	FATTR4_OWNER			= 36,
+	FATTR4_OWNER_GROUP		= 37,
+	FATTR4_QUOTA_AVAIL_HARD		= 38,
+	FATTR4_QUOTA_AVAIL_SOFT		= 39,
+	FATTR4_QUOTA_USED		= 40,
+	FATTR4_RAWDEV			= 41,
+	FATTR4_SPACE_AVAIL		= 42,
+	FATTR4_SPACE_FREE		= 43,
+	FATTR4_SPACE_TOTAL		= 44,
+	FATTR4_SPACE_USED		= 45,
+	FATTR4_SYSTEM			= 46,
+	FATTR4_TIME_ACCESS		= 47,
+	FATTR4_TIME_ACCESS_SET		= 48,
+	FATTR4_TIME_BACKUP		= 49,
+	FATTR4_TIME_CREATE		= 50,
+	FATTR4_TIME_DELTA		= 51,
+	FATTR4_TIME_METADATA		= 52,
+	FATTR4_TIME_MODIFY		= 53,
+	FATTR4_TIME_MODIFY_SET		= 54,
+	FATTR4_MOUNTED_ON_FILEID	= 55,
+};
+
+/*
+ * Symbol names and values are from RFC 5662 Section 2.
+ * "XDR Description of NFSv4.1"
+ */
+enum {
+	FATTR4_DIR_NOTIF_DELAY		= 56,
+	FATTR4_DIRENT_NOTIF_DELAY	= 57,
+	FATTR4_DACL			= 58,
+	FATTR4_SACL			= 59,
+	FATTR4_CHANGE_POLICY		= 60,
+	FATTR4_FS_STATUS		= 61,
+	FATTR4_FS_LAYOUT_TYPES		= 62,
+	FATTR4_LAYOUT_HINT		= 63,
+	FATTR4_LAYOUT_TYPES		= 64,
+	FATTR4_LAYOUT_BLKSIZE		= 65,
+	FATTR4_LAYOUT_ALIGNMENT		= 66,
+	FATTR4_FS_LOCATIONS_INFO	= 67,
+	FATTR4_MDSTHRESHOLD		= 68,
+	FATTR4_RETENTION_GET		= 69,
+	FATTR4_RETENTION_SET		= 70,
+	FATTR4_RETENTEVT_GET		= 71,
+	FATTR4_RETENTEVT_SET		= 72,
+	FATTR4_RETENTION_HOLD		= 73,
+	FATTR4_MODE_SET_MASKED		= 74,
+	FATTR4_SUPPATTR_EXCLCREAT	= 75,
+	FATTR4_FS_CHARSET_CAP		= 76,
+};
+
+/*
+ * Symbol names and values are from RFC 7863 Section 2.
+ * "XDR Description of NFSv4.2"
+ */
+enum {
+	FATTR4_CLONE_BLKSIZE		= 77,
+	FATTR4_SPACE_FREED		= 78,
+	FATTR4_CHANGE_ATTR_TYPE		= 79,
+	FATTR4_SEC_LABEL		= 80,
+};
+
+/*
+ * Symbol names and values are from RFC 8275 Section 5.
+ * "The mode_umask Attribute"
+ */
+enum {
+	FATTR4_MODE_UMASK		= 81,
+};
+
+/*
+ * Symbol names and values are from RFC 8276 Section 8.6.
+ * "Numeric Values Assigned to Protocol Extensions"
+ */
+enum {
+	FATTR4_XATTR_SUPPORT		= 82,
+};
+
+/*
+ * The following internal definitions enable processing the above
+ * attribute bits within 32-bit word boundaries.
+ */
+
+/* Mandatory Attributes */
+#define FATTR4_WORD0_SUPPORTED_ATTRS    BIT(FATTR4_SUPPORTED_ATTRS)
+#define FATTR4_WORD0_TYPE               BIT(FATTR4_TYPE)
+#define FATTR4_WORD0_FH_EXPIRE_TYPE     BIT(FATTR4_FH_EXPIRE_TYPE)
+#define FATTR4_WORD0_CHANGE             BIT(FATTR4_CHANGE)
+#define FATTR4_WORD0_SIZE               BIT(FATTR4_SIZE)
+#define FATTR4_WORD0_LINK_SUPPORT       BIT(FATTR4_LINK_SUPPORT)
+#define FATTR4_WORD0_SYMLINK_SUPPORT    BIT(FATTR4_SYMLINK_SUPPORT)
+#define FATTR4_WORD0_NAMED_ATTR         BIT(FATTR4_NAMED_ATTR)
+#define FATTR4_WORD0_FSID               BIT(FATTR4_FSID)
+#define FATTR4_WORD0_UNIQUE_HANDLES     BIT(FATTR4_UNIQUE_HANDLES)
+#define FATTR4_WORD0_LEASE_TIME         BIT(FATTR4_LEASE_TIME)
+#define FATTR4_WORD0_RDATTR_ERROR       BIT(FATTR4_RDATTR_ERROR)
+/* Mandatory in NFSv4.1 */
+#define FATTR4_WORD2_SUPPATTR_EXCLCREAT BIT(FATTR4_SUPPATTR_EXCLCREAT - 64)
+
+/* Recommended Attributes */
+#define FATTR4_WORD0_ACL                BIT(FATTR4_ACL)
+#define FATTR4_WORD0_ACLSUPPORT         BIT(FATTR4_ACLSUPPORT)
+#define FATTR4_WORD0_ARCHIVE            BIT(FATTR4_ARCHIVE)
+#define FATTR4_WORD0_CANSETTIME         BIT(FATTR4_CANSETTIME)
+#define FATTR4_WORD0_CASE_INSENSITIVE   BIT(FATTR4_CASE_INSENSITIVE)
+#define FATTR4_WORD0_CASE_PRESERVING    BIT(FATTR4_CASE_PRESERVING)
+#define FATTR4_WORD0_CHOWN_RESTRICTED   BIT(FATTR4_CHOWN_RESTRICTED)
+#define FATTR4_WORD0_FILEHANDLE         BIT(FATTR4_FILEHANDLE)
+#define FATTR4_WORD0_FILEID             BIT(FATTR4_FILEID)
+#define FATTR4_WORD0_FILES_AVAIL        BIT(FATTR4_FILES_AVAIL)
+#define FATTR4_WORD0_FILES_FREE         BIT(FATTR4_FILES_FREE)
+#define FATTR4_WORD0_FILES_TOTAL        BIT(FATTR4_FILES_TOTAL)
+#define FATTR4_WORD0_FS_LOCATIONS       BIT(FATTR4_FS_LOCATIONS)
+#define FATTR4_WORD0_HIDDEN             BIT(FATTR4_HIDDEN)
+#define FATTR4_WORD0_HOMOGENEOUS        BIT(FATTR4_HOMOGENEOUS)
+#define FATTR4_WORD0_MAXFILESIZE        BIT(FATTR4_MAXFILESIZE)
+#define FATTR4_WORD0_MAXLINK            BIT(FATTR4_MAXLINK)
+#define FATTR4_WORD0_MAXNAME            BIT(FATTR4_MAXNAME)
+#define FATTR4_WORD0_MAXREAD            BIT(FATTR4_MAXREAD)
+#define FATTR4_WORD0_MAXWRITE           BIT(FATTR4_MAXWRITE)
+
+#define FATTR4_WORD1_MIMETYPE           BIT(FATTR4_MIMETYPE - 32)
+#define FATTR4_WORD1_MODE               BIT(FATTR4_MODE	- 32)
+#define FATTR4_WORD1_NO_TRUNC           BIT(FATTR4_NO_TRUNC - 32)
+#define FATTR4_WORD1_NUMLINKS           BIT(FATTR4_NUMLINKS - 32)
+#define FATTR4_WORD1_OWNER              BIT(FATTR4_OWNER - 32)
+#define FATTR4_WORD1_OWNER_GROUP        BIT(FATTR4_OWNER_GROUP - 32)
+#define FATTR4_WORD1_QUOTA_HARD         BIT(FATTR4_QUOTA_AVAIL_HARD - 32)
+#define FATTR4_WORD1_QUOTA_SOFT         BIT(FATTR4_QUOTA_AVAIL_SOFT - 32)
+#define FATTR4_WORD1_QUOTA_USED         BIT(FATTR4_QUOTA_USED - 32)
+#define FATTR4_WORD1_RAWDEV             BIT(FATTR4_RAWDEV - 32)
+#define FATTR4_WORD1_SPACE_AVAIL        BIT(FATTR4_SPACE_AVAIL - 32)
+#define FATTR4_WORD1_SPACE_FREE         BIT(FATTR4_SPACE_FREE - 32)
+#define FATTR4_WORD1_SPACE_TOTAL        BIT(FATTR4_SPACE_TOTAL - 32)
+#define FATTR4_WORD1_SPACE_USED         BIT(FATTR4_SPACE_USED - 32)
+#define FATTR4_WORD1_SYSTEM             BIT(FATTR4_SYSTEM - 32)
+#define FATTR4_WORD1_TIME_ACCESS        BIT(FATTR4_TIME_ACCESS - 32)
+#define FATTR4_WORD1_TIME_ACCESS_SET    BIT(FATTR4_TIME_ACCESS_SET - 32)
+#define FATTR4_WORD1_TIME_BACKUP        BIT(FATTR4_TIME_BACKUP - 32)
+#define FATTR4_WORD1_TIME_CREATE        BIT(FATTR4_TIME_CREATE - 32)
+#define FATTR4_WORD1_TIME_DELTA         BIT(FATTR4_TIME_DELTA - 32)
+#define FATTR4_WORD1_TIME_METADATA      BIT(FATTR4_TIME_METADATA - 32)
+#define FATTR4_WORD1_TIME_MODIFY        BIT(FATTR4_TIME_MODIFY - 32)
+#define FATTR4_WORD1_TIME_MODIFY_SET    BIT(FATTR4_TIME_MODIFY_SET - 32)
+#define FATTR4_WORD1_MOUNTED_ON_FILEID  BIT(FATTR4_MOUNTED_ON_FILEID - 32)
+#define FATTR4_WORD1_DACL               BIT(FATTR4_DACL	- 32)
+#define FATTR4_WORD1_SACL               BIT(FATTR4_SACL	- 32)
+#define FATTR4_WORD1_FS_LAYOUT_TYPES    BIT(FATTR4_FS_LAYOUT_TYPES - 32)
+
+#define FATTR4_WORD2_LAYOUT_TYPES       BIT(FATTR4_LAYOUT_TYPES - 64)
+#define FATTR4_WORD2_LAYOUT_BLKSIZE     BIT(FATTR4_LAYOUT_BLKSIZE - 64)
+#define FATTR4_WORD2_MDSTHRESHOLD       BIT(FATTR4_MDSTHRESHOLD	- 64)
+#define FATTR4_WORD2_CLONE_BLKSIZE	BIT(FATTR4_CLONE_BLKSIZE - 64)
+#define FATTR4_WORD2_CHANGE_ATTR_TYPE	BIT(FATTR4_CHANGE_ATTR_TYPE - 64)
+#define FATTR4_WORD2_SECURITY_LABEL     BIT(FATTR4_SEC_LABEL - 64)
+#define FATTR4_WORD2_MODE_UMASK		BIT(FATTR4_MODE_UMASK - 64)
+#define FATTR4_WORD2_XATTR_SUPPORT	BIT(FATTR4_XATTR_SUPPORT - 64)
+
+/* MDS threshold bitmap bits */
+#define THRESHOLD_RD                    (1UL << 0)
+#define THRESHOLD_WR                    (1UL << 1)
+#define THRESHOLD_RD_IO                 (1UL << 2)
+#define THRESHOLD_WR_IO                 (1UL << 3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NFSPROC4_NULL 0
 #define NFSPROC4_COMPOUND 1
 #define NFS4_VERSION 4
 #define NFS4_MINOR_VERSION 0
 
+<<<<<<< HEAD
 #if defined(CONFIG_NFS_V4_1)
 #define NFS4_MAX_MINOR_VERSION 1
 #else
@@ -541,6 +872,16 @@ enum lock_type4 {
 #define NFS4_DEBUG 1
 
 /* Index of predefined Linux client operations */
+=======
+#define NFS4_DEBUG 1
+
+/*
+ * Index of predefined Linux client operations
+ *
+ * To ensure that /proc/net/rpc/nfs remains correctly ordered, please
+ * append only to this enum when adding new client operations.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	NFSPROC4_CLNT_NULL = 0,		/* Unused */
@@ -580,8 +921,13 @@ enum {
 	NFSPROC4_CLNT_FS_LOCATIONS,
 	NFSPROC4_CLNT_RELEASE_LOCKOWNER,
 	NFSPROC4_CLNT_SECINFO,
+<<<<<<< HEAD
 
 	/* nfs41 */
+=======
+	NFSPROC4_CLNT_FSID_PRESENT,
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NFSPROC4_CLNT_EXCHANGE_ID,
 	NFSPROC4_CLNT_CREATE_SESSION,
 	NFSPROC4_CLNT_DESTROY_SESSION,
@@ -596,6 +942,29 @@ enum {
 	NFSPROC4_CLNT_TEST_STATEID,
 	NFSPROC4_CLNT_FREE_STATEID,
 	NFSPROC4_CLNT_GETDEVICELIST,
+<<<<<<< HEAD
+=======
+	NFSPROC4_CLNT_BIND_CONN_TO_SESSION,
+	NFSPROC4_CLNT_DESTROY_CLIENTID,
+
+	NFSPROC4_CLNT_SEEK,
+	NFSPROC4_CLNT_ALLOCATE,
+	NFSPROC4_CLNT_DEALLOCATE,
+	NFSPROC4_CLNT_LAYOUTSTATS,
+	NFSPROC4_CLNT_CLONE,
+	NFSPROC4_CLNT_COPY,
+	NFSPROC4_CLNT_OFFLOAD_CANCEL,
+
+	NFSPROC4_CLNT_LOOKUPP,
+	NFSPROC4_CLNT_LAYOUTERROR,
+	NFSPROC4_CLNT_COPY_NOTIFY,
+
+	NFSPROC4_CLNT_GETXATTR,
+	NFSPROC4_CLNT_SETXATTR,
+	NFSPROC4_CLNT_LISTXATTRS,
+	NFSPROC4_CLNT_REMOVEXATTR,
+	NFSPROC4_CLNT_READ_PLUS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* nfs41 types */
@@ -620,6 +989,12 @@ enum pnfs_layouttype {
 	LAYOUT_NFSV4_1_FILES  = 1,
 	LAYOUT_OSD2_OBJECTS = 2,
 	LAYOUT_BLOCK_VOLUME = 3,
+<<<<<<< HEAD
+=======
+	LAYOUT_FLEX_FILES = 4,
+	LAYOUT_SCSI = 5,
+	LAYOUT_TYPE_MAX
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* used for both layout return and recall */
@@ -640,6 +1015,45 @@ enum pnfs_notify_deviceid_type4 {
 	NOTIFY_DEVICEID4_DELETE = 1 << 2,
 };
 
+<<<<<<< HEAD
+=======
+enum pnfs_block_volume_type {
+	PNFS_BLOCK_VOLUME_SIMPLE	= 0,
+	PNFS_BLOCK_VOLUME_SLICE		= 1,
+	PNFS_BLOCK_VOLUME_CONCAT	= 2,
+	PNFS_BLOCK_VOLUME_STRIPE	= 3,
+	PNFS_BLOCK_VOLUME_SCSI		= 4,
+};
+
+enum pnfs_block_extent_state {
+	PNFS_BLOCK_READWRITE_DATA	= 0,
+	PNFS_BLOCK_READ_DATA		= 1,
+	PNFS_BLOCK_INVALID_DATA		= 2,
+	PNFS_BLOCK_NONE_DATA		= 3,
+};
+
+/* on the wire size of a block layout extent */
+#define PNFS_BLOCK_EXTENT_SIZE \
+	(7 * sizeof(__be32) + NFS4_DEVICEID4_SIZE)
+
+/* on the wire size of a scsi commit range */
+#define PNFS_SCSI_RANGE_SIZE \
+	(4 * sizeof(__be32))
+
+enum scsi_code_set {
+	PS_CODE_SET_BINARY	= 1,
+	PS_CODE_SET_ASCII	= 2,
+	PS_CODE_SET_UTF8	= 3
+};
+
+enum scsi_designator_type {
+	PS_DESIGNATOR_T10	= 1,
+	PS_DESIGNATOR_EUI64	= 2,
+	PS_DESIGNATOR_NAA	= 3,
+	PS_DESIGNATOR_NAME	= 8
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NFL4_UFLG_MASK			0x0000003F
 #define NFL4_UFLG_DENSE			0x00000001
 #define NFL4_UFLG_COMMIT_THRU_MDS	0x00000002
@@ -659,6 +1073,7 @@ struct nfs4_deviceid {
 	char data[NFS4_DEVICEID4_SIZE];
 };
 
+<<<<<<< HEAD
 #endif
 #endif
 
@@ -667,3 +1082,114 @@ struct nfs4_deviceid {
  *  c-basic-offset: 8
  * End:
  */
+=======
+enum data_content4 {
+	NFS4_CONTENT_DATA		= 0,
+	NFS4_CONTENT_HOLE		= 1,
+};
+
+enum pnfs_update_layout_reason {
+	PNFS_UPDATE_LAYOUT_UNKNOWN = 0,
+	PNFS_UPDATE_LAYOUT_NO_PNFS,
+	PNFS_UPDATE_LAYOUT_RD_ZEROLEN,
+	PNFS_UPDATE_LAYOUT_MDSTHRESH,
+	PNFS_UPDATE_LAYOUT_NOMEM,
+	PNFS_UPDATE_LAYOUT_BULK_RECALL,
+	PNFS_UPDATE_LAYOUT_IO_TEST_FAIL,
+	PNFS_UPDATE_LAYOUT_FOUND_CACHED,
+	PNFS_UPDATE_LAYOUT_RETURN,
+	PNFS_UPDATE_LAYOUT_RETRY,
+	PNFS_UPDATE_LAYOUT_BLOCKED,
+	PNFS_UPDATE_LAYOUT_INVALID_OPEN,
+	PNFS_UPDATE_LAYOUT_SEND_LAYOUTGET,
+	PNFS_UPDATE_LAYOUT_EXIT,
+};
+
+#define NFS4_OP_MAP_NUM_LONGS					\
+	DIV_ROUND_UP(LAST_NFS4_OP, 8 * sizeof(unsigned long))
+#define NFS4_OP_MAP_NUM_WORDS \
+	(NFS4_OP_MAP_NUM_LONGS * sizeof(unsigned long) / sizeof(u32))
+struct nfs4_op_map {
+	union {
+		unsigned long longs[NFS4_OP_MAP_NUM_LONGS];
+		u32 words[NFS4_OP_MAP_NUM_WORDS];
+	} u;
+};
+
+struct nfs42_netaddr {
+	char		netid[RPCBIND_MAXNETIDLEN];
+	char		addr[RPCBIND_MAXUADDRLEN + 1];
+	u32		netid_len;
+	u32		addr_len;
+};
+
+enum netloc_type4 {
+	NL4_NAME		= 1,
+	NL4_URL			= 2,
+	NL4_NETADDR		= 3,
+};
+
+struct nl4_server {
+	enum netloc_type4	nl4_type;
+	union {
+		struct { /* NL4_NAME, NL4_URL */
+			int	nl4_str_sz;
+			char	nl4_str[NFS4_OPAQUE_LIMIT + 1];
+		};
+		struct nfs42_netaddr	nl4_addr; /* NL4_NETADDR */
+	} u;
+};
+
+enum nfs4_change_attr_type {
+	NFS4_CHANGE_TYPE_IS_MONOTONIC_INCR = 0,
+	NFS4_CHANGE_TYPE_IS_VERSION_COUNTER = 1,
+	NFS4_CHANGE_TYPE_IS_VERSION_COUNTER_NOPNFS = 2,
+	NFS4_CHANGE_TYPE_IS_TIME_METADATA = 3,
+	NFS4_CHANGE_TYPE_IS_UNDEFINED = 4,
+};
+
+/*
+ * Options for setxattr. These match the flags for setxattr(2).
+ */
+enum nfs4_setxattr_options {
+	SETXATTR4_EITHER	= 0,
+	SETXATTR4_CREATE	= 1,
+	SETXATTR4_REPLACE	= 2,
+};
+
+enum {
+	RCA4_TYPE_MASK_RDATA_DLG	= 0,
+	RCA4_TYPE_MASK_WDATA_DLG	= 1,
+	RCA4_TYPE_MASK_DIR_DLG		= 2,
+	RCA4_TYPE_MASK_FILE_LAYOUT	= 3,
+	RCA4_TYPE_MASK_BLK_LAYOUT	= 4,
+	RCA4_TYPE_MASK_OBJ_LAYOUT_MIN	= 8,
+	RCA4_TYPE_MASK_OBJ_LAYOUT_MAX	= 9,
+	RCA4_TYPE_MASK_OTHER_LAYOUT_MIN	= 12,
+	RCA4_TYPE_MASK_OTHER_LAYOUT_MAX	= 15,
+};
+
+enum nfs_cb_opnum4 {
+	OP_CB_GETATTR = 3,
+	OP_CB_RECALL  = 4,
+
+	/* Callback operations new to NFSv4.1 */
+	OP_CB_LAYOUTRECALL  = 5,
+	OP_CB_NOTIFY        = 6,
+	OP_CB_PUSH_DELEG    = 7,
+	OP_CB_RECALL_ANY    = 8,
+	OP_CB_RECALLABLE_OBJ_AVAIL = 9,
+	OP_CB_RECALL_SLOT   = 10,
+	OP_CB_SEQUENCE      = 11,
+	OP_CB_WANTS_CANCELLED = 12,
+	OP_CB_NOTIFY_LOCK   = 13,
+	OP_CB_NOTIFY_DEVICEID = 14,
+
+	/* Callback operations new to NFSv4.2 */
+	OP_CB_OFFLOAD = 15,
+
+	OP_CB_ILLEGAL = 10044,
+};
+
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

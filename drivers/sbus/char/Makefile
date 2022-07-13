@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the kernel miscellaneous SPARC device drivers.
 #
@@ -14,5 +18,10 @@ obj-$(CONFIG_DISPLAY7SEG)		+= display7seg.o
 obj-$(CONFIG_OBP_FLASH)			+= flash.o
 obj-$(CONFIG_SUN_OPENPROMIO)		+= openprom.o
 obj-$(CONFIG_TADPOLE_TS102_UCTRL)	+= uctrl.o
+<<<<<<< HEAD
 obj-$(CONFIG_SUN_JSFLASH)		+= jsflash.o
 obj-$(CONFIG_BBC_I2C)			+= bbc.o
+=======
+obj-$(CONFIG_BBC_I2C)			+= bbc.o
+obj-$(CONFIG_ORACLE_DAX) 		+= oradax.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

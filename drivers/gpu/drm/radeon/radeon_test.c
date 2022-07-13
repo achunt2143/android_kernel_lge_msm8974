@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0 OR MIT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2009 VMware, Inc.
  *
@@ -21,11 +25,16 @@
  *
  * Authors: Michel Dänzer
  */
+<<<<<<< HEAD
 #include <drm/drmP.h>
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <drm/radeon_drm.h>
 #include "radeon_reg.h"
 #include "radeon.h"
 
+<<<<<<< HEAD
 
 /* Test BO GTT->VRAM and VRAM->GTT GPU copies across the whole GTT aperture */
 void radeon_test_moves(struct radeon_device *rdev)
@@ -36,12 +45,39 @@ void radeon_test_moves(struct radeon_device *rdev)
 	uint64_t gtt_addr, vram_addr;
 	unsigned i, n, size;
 	int r;
+=======
+#define RADEON_TEST_COPY_BLIT 1
+#define RADEON_TEST_COPY_DMA  0
+
+
+/* Test BO GTT->VRAM and VRAM->GTT GPU copies across the whole GTT aperture */
+static void radeon_do_test_moves(struct radeon_device *rdev, int flag)
+{
+	struct radeon_bo *vram_obj = NULL;
+	struct radeon_bo **gtt_obj = NULL;
+	uint64_t gtt_addr, vram_addr;
+	unsigned n, size;
+	int i, r, ring;
+
+	switch (flag) {
+	case RADEON_TEST_COPY_DMA:
+		ring = radeon_copy_dma_ring_index(rdev);
+		break;
+	case RADEON_TEST_COPY_BLIT:
+		ring = radeon_copy_blit_ring_index(rdev);
+		break;
+	default:
+		DRM_ERROR("Unknown copy method\n");
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	size = 1024 * 1024;
 
 	/* Number of tests =
 	 * (Total GTT - IB pool - writeback page - ring buffers) / test size
 	 */
+<<<<<<< HEAD
 	n = rdev->mc.gtt_size - RADEON_IB_POOL_SIZE*64*1024;
 	for (i = 0; i < RADEON_NUM_RINGS; ++i)
 		n -= rdev->ring[i].ring_size;
@@ -52,6 +88,12 @@ void radeon_test_moves(struct radeon_device *rdev)
 	n /= size;
 
 	gtt_obj = kzalloc(n * sizeof(*gtt_obj), GFP_KERNEL);
+=======
+	n = rdev->mc.gtt_size - rdev->gart_pin_size;
+	n /= size;
+
+	gtt_obj = kcalloc(n, sizeof(*gtt_obj), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!gtt_obj) {
 		DRM_ERROR("Failed to allocate %d pointers\n", n);
 		r = 1;
@@ -59,44 +101,79 @@ void radeon_test_moves(struct radeon_device *rdev)
 	}
 
 	r = radeon_bo_create(rdev, size, PAGE_SIZE, true, RADEON_GEM_DOMAIN_VRAM,
+<<<<<<< HEAD
 				&vram_obj);
+=======
+			     0, NULL, NULL, &vram_obj);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r) {
 		DRM_ERROR("Failed to create VRAM object\n");
 		goto out_cleanup;
 	}
 	r = radeon_bo_reserve(vram_obj, false);
 	if (unlikely(r != 0))
+<<<<<<< HEAD
 		goto out_cleanup;
 	r = radeon_bo_pin(vram_obj, RADEON_GEM_DOMAIN_VRAM, &vram_addr);
 	if (r) {
 		DRM_ERROR("Failed to pin VRAM object\n");
 		goto out_cleanup;
+=======
+		goto out_unref;
+	r = radeon_bo_pin(vram_obj, RADEON_GEM_DOMAIN_VRAM, &vram_addr);
+	if (r) {
+		DRM_ERROR("Failed to pin VRAM object\n");
+		goto out_unres;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	for (i = 0; i < n; i++) {
 		void *gtt_map, *vram_map;
 		void **gtt_start, **gtt_end;
 		void **vram_start, **vram_end;
+<<<<<<< HEAD
 
 		r = radeon_bo_create(rdev, size, PAGE_SIZE, true,
 					 RADEON_GEM_DOMAIN_GTT, gtt_obj + i);
 		if (r) {
 			DRM_ERROR("Failed to create GTT object %d\n", i);
 			goto out_cleanup;
+=======
+		struct radeon_fence *fence = NULL;
+
+		r = radeon_bo_create(rdev, size, PAGE_SIZE, true,
+				     RADEON_GEM_DOMAIN_GTT, 0, NULL, NULL,
+				     gtt_obj + i);
+		if (r) {
+			DRM_ERROR("Failed to create GTT object %d\n", i);
+			goto out_lclean;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		r = radeon_bo_reserve(gtt_obj[i], false);
 		if (unlikely(r != 0))
+<<<<<<< HEAD
 			goto out_cleanup;
 		r = radeon_bo_pin(gtt_obj[i], RADEON_GEM_DOMAIN_GTT, &gtt_addr);
 		if (r) {
 			DRM_ERROR("Failed to pin GTT object %d\n", i);
 			goto out_cleanup;
+=======
+			goto out_lclean_unref;
+		r = radeon_bo_pin(gtt_obj[i], RADEON_GEM_DOMAIN_GTT, &gtt_addr);
+		if (r) {
+			DRM_ERROR("Failed to pin GTT object %d\n", i);
+			goto out_lclean_unres;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		r = radeon_bo_kmap(gtt_obj[i], &gtt_map);
 		if (r) {
 			DRM_ERROR("Failed to map GTT object %d\n", i);
+<<<<<<< HEAD
 			goto out_cleanup;
+=======
+			goto out_lclean_unpin;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		for (gtt_start = gtt_map, gtt_end = gtt_map + size;
@@ -106,6 +183,7 @@ void radeon_test_moves(struct radeon_device *rdev)
 
 		radeon_bo_kunmap(gtt_obj[i]);
 
+<<<<<<< HEAD
 		r = radeon_fence_create(rdev, &fence, RADEON_RING_TYPE_GFX_INDEX);
 		if (r) {
 			DRM_ERROR("Failed to create GTT->VRAM fence %d\n", i);
@@ -116,12 +194,30 @@ void radeon_test_moves(struct radeon_device *rdev)
 		if (r) {
 			DRM_ERROR("Failed GTT->VRAM copy %d\n", i);
 			goto out_cleanup;
+=======
+		if (ring == R600_RING_TYPE_DMA_INDEX)
+			fence = radeon_copy_dma(rdev, gtt_addr, vram_addr,
+						size / RADEON_GPU_PAGE_SIZE,
+						vram_obj->tbo.base.resv);
+		else
+			fence = radeon_copy_blit(rdev, gtt_addr, vram_addr,
+						 size / RADEON_GPU_PAGE_SIZE,
+						 vram_obj->tbo.base.resv);
+		if (IS_ERR(fence)) {
+			DRM_ERROR("Failed GTT->VRAM copy %d\n", i);
+			r = PTR_ERR(fence);
+			goto out_lclean_unpin;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		r = radeon_fence_wait(fence, false);
 		if (r) {
 			DRM_ERROR("Failed to wait for GTT->VRAM fence %d\n", i);
+<<<<<<< HEAD
 			goto out_cleanup;
+=======
+			goto out_lclean_unpin;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		radeon_fence_unref(&fence);
@@ -129,7 +225,11 @@ void radeon_test_moves(struct radeon_device *rdev)
 		r = radeon_bo_kmap(vram_obj, &vram_map);
 		if (r) {
 			DRM_ERROR("Failed to map VRAM object after copy %d\n", i);
+<<<<<<< HEAD
 			goto out_cleanup;
+=======
+			goto out_lclean_unpin;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		for (gtt_start = gtt_map, gtt_end = gtt_map + size,
@@ -143,18 +243,28 @@ void radeon_test_moves(struct radeon_device *rdev)
 					  i, *vram_start, gtt_start,
 					  (unsigned long long)
 					  (gtt_addr - rdev->mc.gtt_start +
+<<<<<<< HEAD
 					   (void*)gtt_start - gtt_map),
 					  (unsigned long long)
 					  (vram_addr - rdev->mc.vram_start +
 					   (void*)gtt_start - gtt_map));
 				radeon_bo_kunmap(vram_obj);
 				goto out_cleanup;
+=======
+					   (void *)gtt_start - gtt_map),
+					  (unsigned long long)
+					  (vram_addr - rdev->mc.vram_start +
+					   (void *)gtt_start - gtt_map));
+				radeon_bo_kunmap(vram_obj);
+				goto out_lclean_unpin;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			*vram_start = vram_start;
 		}
 
 		radeon_bo_kunmap(vram_obj);
 
+<<<<<<< HEAD
 		r = radeon_fence_create(rdev, &fence, RADEON_RING_TYPE_GFX_INDEX);
 		if (r) {
 			DRM_ERROR("Failed to create VRAM->GTT fence %d\n", i);
@@ -165,12 +275,30 @@ void radeon_test_moves(struct radeon_device *rdev)
 		if (r) {
 			DRM_ERROR("Failed VRAM->GTT copy %d\n", i);
 			goto out_cleanup;
+=======
+		if (ring == R600_RING_TYPE_DMA_INDEX)
+			fence = radeon_copy_dma(rdev, vram_addr, gtt_addr,
+						size / RADEON_GPU_PAGE_SIZE,
+						vram_obj->tbo.base.resv);
+		else
+			fence = radeon_copy_blit(rdev, vram_addr, gtt_addr,
+						 size / RADEON_GPU_PAGE_SIZE,
+						 vram_obj->tbo.base.resv);
+		if (IS_ERR(fence)) {
+			DRM_ERROR("Failed VRAM->GTT copy %d\n", i);
+			r = PTR_ERR(fence);
+			goto out_lclean_unpin;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		r = radeon_fence_wait(fence, false);
 		if (r) {
 			DRM_ERROR("Failed to wait for VRAM->GTT fence %d\n", i);
+<<<<<<< HEAD
 			goto out_cleanup;
+=======
+			goto out_lclean_unpin;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		radeon_fence_unref(&fence);
@@ -178,7 +306,11 @@ void radeon_test_moves(struct radeon_device *rdev)
 		r = radeon_bo_kmap(gtt_obj[i], &gtt_map);
 		if (r) {
 			DRM_ERROR("Failed to map GTT object after copy %d\n", i);
+<<<<<<< HEAD
 			goto out_cleanup;
+=======
+			goto out_lclean_unpin;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		for (gtt_start = gtt_map, gtt_end = gtt_map + size,
@@ -192,12 +324,21 @@ void radeon_test_moves(struct radeon_device *rdev)
 					  i, *gtt_start, vram_start,
 					  (unsigned long long)
 					  (vram_addr - rdev->mc.vram_start +
+<<<<<<< HEAD
 					   (void*)vram_start - vram_map),
 					  (unsigned long long)
 					  (gtt_addr - rdev->mc.gtt_start +
 					   (void*)vram_start - vram_map));
 				radeon_bo_kunmap(gtt_obj[i]);
 				goto out_cleanup;
+=======
+					   (void *)vram_start - vram_map),
+					  (unsigned long long)
+					  (gtt_addr - rdev->mc.gtt_start +
+					   (void *)vram_start - vram_map));
+				radeon_bo_kunmap(gtt_obj[i]);
+				goto out_lclean_unpin;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -205,6 +346,7 @@ void radeon_test_moves(struct radeon_device *rdev)
 
 		DRM_INFO("Tested GTT->VRAM and VRAM->GTT copy for GTT offset 0x%llx\n",
 			 gtt_addr - rdev->mc.gtt_start);
+<<<<<<< HEAD
 	}
 
 out_cleanup:
@@ -235,12 +377,105 @@ out_cleanup:
 	}
 }
 
+=======
+		continue;
+
+out_lclean_unpin:
+		radeon_bo_unpin(gtt_obj[i]);
+out_lclean_unres:
+		radeon_bo_unreserve(gtt_obj[i]);
+out_lclean_unref:
+		radeon_bo_unref(&gtt_obj[i]);
+out_lclean:
+		for (--i; i >= 0; --i) {
+			radeon_bo_unpin(gtt_obj[i]);
+			radeon_bo_unreserve(gtt_obj[i]);
+			radeon_bo_unref(&gtt_obj[i]);
+		}
+		if (fence && !IS_ERR(fence))
+			radeon_fence_unref(&fence);
+		break;
+	}
+
+	radeon_bo_unpin(vram_obj);
+out_unres:
+	radeon_bo_unreserve(vram_obj);
+out_unref:
+	radeon_bo_unref(&vram_obj);
+out_cleanup:
+	kfree(gtt_obj);
+	if (r) {
+		pr_warn("Error while testing BO move\n");
+	}
+}
+
+void radeon_test_moves(struct radeon_device *rdev)
+{
+	if (rdev->asic->copy.dma)
+		radeon_do_test_moves(rdev, RADEON_TEST_COPY_DMA);
+	if (rdev->asic->copy.blit)
+		radeon_do_test_moves(rdev, RADEON_TEST_COPY_BLIT);
+}
+
+static int radeon_test_create_and_emit_fence(struct radeon_device *rdev,
+					     struct radeon_ring *ring,
+					     struct radeon_fence **fence)
+{
+	uint32_t handle = ring->idx ^ 0xdeafbeef;
+	int r;
+
+	if (ring->idx == R600_RING_TYPE_UVD_INDEX) {
+		r = radeon_uvd_get_create_msg(rdev, ring->idx, handle, NULL);
+		if (r) {
+			DRM_ERROR("Failed to get dummy create msg\n");
+			return r;
+		}
+
+		r = radeon_uvd_get_destroy_msg(rdev, ring->idx, handle, fence);
+		if (r) {
+			DRM_ERROR("Failed to get dummy destroy msg\n");
+			return r;
+		}
+
+	} else if (ring->idx == TN_RING_TYPE_VCE1_INDEX ||
+		   ring->idx == TN_RING_TYPE_VCE2_INDEX) {
+		r = radeon_vce_get_create_msg(rdev, ring->idx, handle, NULL);
+		if (r) {
+			DRM_ERROR("Failed to get dummy create msg\n");
+			return r;
+		}
+
+		r = radeon_vce_get_destroy_msg(rdev, ring->idx, handle, fence);
+		if (r) {
+			DRM_ERROR("Failed to get dummy destroy msg\n");
+			return r;
+		}
+
+	} else {
+		r = radeon_ring_lock(rdev, ring, 64);
+		if (r) {
+			DRM_ERROR("Failed to lock ring A %d\n", ring->idx);
+			return r;
+		}
+		r = radeon_fence_emit(rdev, fence, ring->idx);
+		if (r) {
+			DRM_ERROR("Failed to emit fence\n");
+			radeon_ring_unlock_undo(rdev, ring);
+			return r;
+		}
+		radeon_ring_unlock_commit(rdev, ring, false);
+	}
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void radeon_test_ring_sync(struct radeon_device *rdev,
 			   struct radeon_ring *ringA,
 			   struct radeon_ring *ringB)
 {
 	struct radeon_fence *fence1 = NULL, *fence2 = NULL;
 	struct radeon_semaphore *semaphore = NULL;
+<<<<<<< HEAD
 	int ridxA = radeon_ring_index(rdev, ringA);
 	int ridxB = radeon_ring_index(rdev, ringB);
 	int r;
@@ -256,6 +491,10 @@ void radeon_test_ring_sync(struct radeon_device *rdev,
 		goto out_cleanup;
 	}
 
+=======
+	int r;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = radeon_semaphore_create(rdev, &semaphore);
 	if (r) {
 		DRM_ERROR("Failed to create semaphore\n");
@@ -264,6 +503,7 @@ void radeon_test_ring_sync(struct radeon_device *rdev,
 
 	r = radeon_ring_lock(rdev, ringA, 64);
 	if (r) {
+<<<<<<< HEAD
 		DRM_ERROR("Failed to lock ring A %d\n", ridxA);
 		goto out_cleanup;
 	}
@@ -274,6 +514,31 @@ void radeon_test_ring_sync(struct radeon_device *rdev,
 	radeon_ring_unlock_commit(rdev, ringA);
 
 	mdelay(1000);
+=======
+		DRM_ERROR("Failed to lock ring A %d\n", ringA->idx);
+		goto out_cleanup;
+	}
+	radeon_semaphore_emit_wait(rdev, ringA->idx, semaphore);
+	radeon_ring_unlock_commit(rdev, ringA, false);
+
+	r = radeon_test_create_and_emit_fence(rdev, ringA, &fence1);
+	if (r)
+		goto out_cleanup;
+
+	r = radeon_ring_lock(rdev, ringA, 64);
+	if (r) {
+		DRM_ERROR("Failed to lock ring A %d\n", ringA->idx);
+		goto out_cleanup;
+	}
+	radeon_semaphore_emit_wait(rdev, ringA->idx, semaphore);
+	radeon_ring_unlock_commit(rdev, ringA, false);
+
+	r = radeon_test_create_and_emit_fence(rdev, ringA, &fence2);
+	if (r)
+		goto out_cleanup;
+
+	msleep(1000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (radeon_fence_signaled(fence1)) {
 		DRM_ERROR("Fence 1 signaled without waiting for semaphore.\n");
@@ -285,8 +550,13 @@ void radeon_test_ring_sync(struct radeon_device *rdev,
 		DRM_ERROR("Failed to lock ring B %p\n", ringB);
 		goto out_cleanup;
 	}
+<<<<<<< HEAD
 	radeon_semaphore_emit_signal(rdev, ridxB, semaphore);
 	radeon_ring_unlock_commit(rdev, ringB);
+=======
+	radeon_semaphore_emit_signal(rdev, ringB->idx, semaphore);
+	radeon_ring_unlock_commit(rdev, ringB, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r = radeon_fence_wait(fence1, false);
 	if (r) {
@@ -294,7 +564,11 @@ void radeon_test_ring_sync(struct radeon_device *rdev,
 		goto out_cleanup;
 	}
 
+<<<<<<< HEAD
 	mdelay(1000);
+=======
+	msleep(1000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (radeon_fence_signaled(fence2)) {
 		DRM_ERROR("Fence 2 signaled without waiting for semaphore.\n");
@@ -306,8 +580,13 @@ void radeon_test_ring_sync(struct radeon_device *rdev,
 		DRM_ERROR("Failed to lock ring B %p\n", ringB);
 		goto out_cleanup;
 	}
+<<<<<<< HEAD
 	radeon_semaphore_emit_signal(rdev, ridxB, semaphore);
 	radeon_ring_unlock_commit(rdev, ringB);
+=======
+	radeon_semaphore_emit_signal(rdev, ringB->idx, semaphore);
+	radeon_ring_unlock_commit(rdev, ringB, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r = radeon_fence_wait(fence2, false);
 	if (r) {
@@ -316,8 +595,12 @@ void radeon_test_ring_sync(struct radeon_device *rdev,
 	}
 
 out_cleanup:
+<<<<<<< HEAD
 	if (semaphore)
 		radeon_semaphore_free(rdev, semaphore);
+=======
+	radeon_semaphore_free(rdev, &semaphore, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fence1)
 		radeon_fence_unref(&fence1);
@@ -326,16 +609,24 @@ out_cleanup:
 		radeon_fence_unref(&fence2);
 
 	if (r)
+<<<<<<< HEAD
 		printk(KERN_WARNING "Error while testing ring sync (%d).\n", r);
 }
 
 void radeon_test_ring_sync2(struct radeon_device *rdev,
+=======
+		pr_warn("Error while testing ring sync (%d)\n", r);
+}
+
+static void radeon_test_ring_sync2(struct radeon_device *rdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    struct radeon_ring *ringA,
 			    struct radeon_ring *ringB,
 			    struct radeon_ring *ringC)
 {
 	struct radeon_fence *fenceA = NULL, *fenceB = NULL;
 	struct radeon_semaphore *semaphore = NULL;
+<<<<<<< HEAD
 	int ridxA = radeon_ring_index(rdev, ringA);
 	int ridxB = radeon_ring_index(rdev, ringB);
 	int ridxC = radeon_ring_index(rdev, ringC);
@@ -353,6 +644,11 @@ void radeon_test_ring_sync2(struct radeon_device *rdev,
 		goto out_cleanup;
 	}
 
+=======
+	bool sigA, sigB;
+	int i, r;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = radeon_semaphore_create(rdev, &semaphore);
 	if (r) {
 		DRM_ERROR("Failed to create semaphore\n");
@@ -361,6 +657,7 @@ void radeon_test_ring_sync2(struct radeon_device *rdev,
 
 	r = radeon_ring_lock(rdev, ringA, 64);
 	if (r) {
+<<<<<<< HEAD
 		DRM_ERROR("Failed to lock ring A %d\n", ridxA);
 		goto out_cleanup;
 	}
@@ -378,13 +675,41 @@ void radeon_test_ring_sync2(struct radeon_device *rdev,
 	radeon_ring_unlock_commit(rdev, ringB);
 
 	mdelay(1000);
+=======
+		DRM_ERROR("Failed to lock ring A %d\n", ringA->idx);
+		goto out_cleanup;
+	}
+	radeon_semaphore_emit_wait(rdev, ringA->idx, semaphore);
+	radeon_ring_unlock_commit(rdev, ringA, false);
+
+	r = radeon_test_create_and_emit_fence(rdev, ringA, &fenceA);
+	if (r)
+		goto out_cleanup;
+
+	r = radeon_ring_lock(rdev, ringB, 64);
+	if (r) {
+		DRM_ERROR("Failed to lock ring B %d\n", ringB->idx);
+		goto out_cleanup;
+	}
+	radeon_semaphore_emit_wait(rdev, ringB->idx, semaphore);
+	radeon_ring_unlock_commit(rdev, ringB, false);
+	r = radeon_test_create_and_emit_fence(rdev, ringB, &fenceB);
+	if (r)
+		goto out_cleanup;
+
+	msleep(1000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (radeon_fence_signaled(fenceA)) {
 		DRM_ERROR("Fence A signaled without waiting for semaphore.\n");
 		goto out_cleanup;
 	}
 	if (radeon_fence_signaled(fenceB)) {
+<<<<<<< HEAD
 		DRM_ERROR("Fence A signaled without waiting for semaphore.\n");
+=======
+		DRM_ERROR("Fence B signaled without waiting for semaphore.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_cleanup;
 	}
 
@@ -393,11 +718,19 @@ void radeon_test_ring_sync2(struct radeon_device *rdev,
 		DRM_ERROR("Failed to lock ring B %p\n", ringC);
 		goto out_cleanup;
 	}
+<<<<<<< HEAD
 	radeon_semaphore_emit_signal(rdev, ridxC, semaphore);
 	radeon_ring_unlock_commit(rdev, ringC);
 
 	for (i = 0; i < 30; ++i) {
 		mdelay(100);
+=======
+	radeon_semaphore_emit_signal(rdev, ringC->idx, semaphore);
+	radeon_ring_unlock_commit(rdev, ringC, false);
+
+	for (i = 0; i < 30; ++i) {
+		msleep(100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sigA = radeon_fence_signaled(fenceA);
 		sigB = radeon_fence_signaled(fenceB);
 		if (sigA || sigB)
@@ -419,10 +752,17 @@ void radeon_test_ring_sync2(struct radeon_device *rdev,
 		DRM_ERROR("Failed to lock ring B %p\n", ringC);
 		goto out_cleanup;
 	}
+<<<<<<< HEAD
 	radeon_semaphore_emit_signal(rdev, ridxC, semaphore);
 	radeon_ring_unlock_commit(rdev, ringC);
 
 	mdelay(1000);
+=======
+	radeon_semaphore_emit_signal(rdev, ringC->idx, semaphore);
+	radeon_ring_unlock_commit(rdev, ringC, false);
+
+	msleep(1000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	r = radeon_fence_wait(fenceA, false);
 	if (r) {
@@ -436,8 +776,12 @@ void radeon_test_ring_sync2(struct radeon_device *rdev,
 	}
 
 out_cleanup:
+<<<<<<< HEAD
 	if (semaphore)
 		radeon_semaphore_free(rdev, semaphore);
+=======
+	radeon_semaphore_free(rdev, &semaphore, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fenceA)
 		radeon_fence_unref(&fenceA);
@@ -446,7 +790,21 @@ out_cleanup:
 		radeon_fence_unref(&fenceB);
 
 	if (r)
+<<<<<<< HEAD
 		printk(KERN_WARNING "Error while testing ring sync (%d).\n", r);
+=======
+		pr_warn("Error while testing ring sync (%d)\n", r);
+}
+
+static bool radeon_test_sync_possible(struct radeon_ring *ringA,
+				      struct radeon_ring *ringB)
+{
+	if (ringA->idx == TN_RING_TYPE_VCE2_INDEX &&
+	    ringB->idx == TN_RING_TYPE_VCE1_INDEX)
+		return false;
+
+	return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void radeon_test_syncing(struct radeon_device *rdev)
@@ -463,6 +821,12 @@ void radeon_test_syncing(struct radeon_device *rdev)
 			if (!ringB->ready)
 				continue;
 
+<<<<<<< HEAD
+=======
+			if (!radeon_test_sync_possible(ringA, ringB))
+				continue;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			DRM_INFO("Testing syncing between rings %d and %d...\n", i, j);
 			radeon_test_ring_sync(rdev, ringA, ringB);
 
@@ -474,6 +838,15 @@ void radeon_test_syncing(struct radeon_device *rdev)
 				if (!ringC->ready)
 					continue;
 
+<<<<<<< HEAD
+=======
+				if (!radeon_test_sync_possible(ringA, ringC))
+					continue;
+
+				if (!radeon_test_sync_possible(ringB, ringC))
+					continue;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DRM_INFO("Testing syncing between rings %d, %d and %d...\n", i, j, k);
 				radeon_test_ring_sync2(rdev, ringA, ringB, ringC);
 

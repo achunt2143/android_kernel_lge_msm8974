@@ -22,21 +22,38 @@ extern void _mcount(void);
 #define safe_load(load, src, dst, error)		\
 do {							\
 	asm volatile (					\
+<<<<<<< HEAD
 		"1: " load " %[" STR(dst) "], 0(%[" STR(src) "])\n"\
 		"   li %[" STR(error) "], 0\n"		\
 		"2:\n"					\
 							\
 		".section .fixup, \"ax\"\n"		\
 		"3: li %[" STR(error) "], 1\n"		\
+=======
+		"1: " load " %[tmp_dst], 0(%[tmp_src])\n"	\
+		"   li %[tmp_err], 0\n"			\
+		"2: .insn\n"				\
+							\
+		".section .fixup, \"ax\"\n"		\
+		"3: li %[tmp_err], 1\n"			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"   j 2b\n"				\
 		".previous\n"				\
 							\
 		".section\t__ex_table,\"a\"\n\t"	\
+<<<<<<< HEAD
 		STR(PTR) "\t1b, 3b\n\t"			\
 		".previous\n"				\
 							\
 		: [dst] "=&r" (dst), [error] "=r" (error)\
 		: [src] "r" (src)			\
+=======
+		STR(PTR_WD) "\t1b, 3b\n\t"		\
+		".previous\n"				\
+							\
+		: [tmp_dst] "=&r" (dst), [tmp_err] "=r" (error)\
+		: [tmp_src] "r" (src)			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "memory"				\
 	);						\
 } while (0)
@@ -44,21 +61,38 @@ do {							\
 #define safe_store(store, src, dst, error)	\
 do {						\
 	asm volatile (				\
+<<<<<<< HEAD
 		"1: " store " %[" STR(src) "], 0(%[" STR(dst) "])\n"\
 		"   li %[" STR(error) "], 0\n"	\
 		"2:\n"				\
 						\
 		".section .fixup, \"ax\"\n"	\
 		"3: li %[" STR(error) "], 1\n"	\
+=======
+		"1: " store " %[tmp_src], 0(%[tmp_dst])\n"\
+		"   li %[tmp_err], 0\n"		\
+		"2: .insn\n"			\
+						\
+		".section .fixup, \"ax\"\n"	\
+		"3: li %[tmp_err], 1\n"		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"   j 2b\n"			\
 		".previous\n"			\
 						\
 		".section\t__ex_table,\"a\"\n\t"\
+<<<<<<< HEAD
 		STR(PTR) "\t1b, 3b\n\t"		\
 		".previous\n"			\
 						\
 		: [error] "=r" (error)		\
 		: [dst] "r" (dst), [src] "r" (src)\
+=======
+		STR(PTR_WD) "\t1b, 3b\n\t"	\
+		".previous\n"			\
+						\
+		: [tmp_err] "=r" (error)	\
+		: [tmp_dst] "r" (dst), [tmp_src] "r" (src)\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "memory"			\
 	);					\
 } while (0)
@@ -85,6 +119,13 @@ struct dyn_arch_ftrace {
 };
 
 #endif /*  CONFIG_DYNAMIC_FTRACE */
+<<<<<<< HEAD
+=======
+
+void prepare_ftrace_return(unsigned long *parent_ra_addr, unsigned long self_ra,
+			   unsigned long fp);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASSEMBLY__ */
 #endif /* CONFIG_FUNCTION_TRACER */
 #endif /* _ASM_MIPS_FTRACE_H */

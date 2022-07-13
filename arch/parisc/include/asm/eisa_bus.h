@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * eisa_bus.h interface between the eisa BA driver and the bus enumerator
  *
@@ -8,6 +9,13 @@
  *
  * Copyright (c) 2002 Daniel Engstrom <5116@telia.com>
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * eisa_bus.h interface between the eisa BA driver and the bus enumerator
+ *
+ * Copyright (c) 2002 Daniel Engstrom <5116@telia.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef ASM_EISA_H

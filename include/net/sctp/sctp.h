@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (c) 1999-2000 Cisco, Inc.
@@ -8,6 +12,7 @@
  *
  * The base lksctp header.
  *
+<<<<<<< HEAD
  * This SCTP implementation is free software;
  * you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by
@@ -31,6 +36,11 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
@@ -41,9 +51,12 @@
  *    Ardelle Fan           <ardelle.fan@intel.com>
  *    Ryan Layer            <rmlayer@us.ibm.com>
  *    Kevin Gao             <kevin.gao@intel.com> 
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __net_sctp_h__
@@ -76,13 +89,18 @@
 #include <net/ip6_route.h>
 #endif
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <net/sock.h>
 #include <net/snmp.h>
 #include <net/sctp/structs.h>
 #include <net/sctp/constants.h>
 
+<<<<<<< HEAD
 
 /* Set SCTP_DEBUG flag via config if not already set. */
 #ifndef SCTP_DEBUG
@@ -93,12 +111,15 @@
 #endif /* CONFIG_SCTP_DBG */
 #endif /* SCTP_DEBUG */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_IP_SCTP_MODULE
 #define SCTP_PROTOSW_FLAG 0
 #else /* static! */
 #define SCTP_PROTOSW_FLAG INET_PROTOSW_PERMANENT
 #endif
 
+<<<<<<< HEAD
 
 /* Certain internal static functions need to be exported when
  * compiled into the test frame.
@@ -107,6 +128,8 @@
 #define SCTP_STATIC static
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Function declarations.
  */
@@ -114,6 +137,7 @@
 /*
  * sctp/protocol.c
  */
+<<<<<<< HEAD
 extern struct sock *sctp_get_ctl_sock(void);
 extern int sctp_copy_local_addr_list(struct sctp_bind_addr *,
 				     sctp_scope_t, gfp_t gfp,
@@ -121,36 +145,88 @@ extern int sctp_copy_local_addr_list(struct sctp_bind_addr *,
 extern struct sctp_pf *sctp_get_pf_specific(sa_family_t family);
 extern int sctp_register_pf(struct sctp_pf *, sa_family_t);
 extern void sctp_addr_wq_mgmt(struct sctp_sockaddr_entry *, int);
+=======
+int sctp_copy_local_addr_list(struct net *net, struct sctp_bind_addr *addr,
+			      enum sctp_scope, gfp_t gfp, int flags);
+struct sctp_pf *sctp_get_pf_specific(sa_family_t family);
+int sctp_register_pf(struct sctp_pf *, sa_family_t);
+void sctp_addr_wq_mgmt(struct net *, struct sctp_sockaddr_entry *, int);
+int sctp_udp_sock_start(struct net *net);
+void sctp_udp_sock_stop(struct net *net);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * sctp/socket.c
  */
+<<<<<<< HEAD
 int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb);
 int sctp_inet_listen(struct socket *sock, int backlog);
 void sctp_write_space(struct sock *sk);
 void sctp_data_ready(struct sock *sk, int len);
 unsigned int sctp_poll(struct file *file, struct socket *sock,
+=======
+int sctp_inet_connect(struct socket *sock, struct sockaddr *uaddr,
+		      int addr_len, int flags);
+int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb);
+int sctp_inet_listen(struct socket *sock, int backlog);
+void sctp_write_space(struct sock *sk);
+void sctp_data_ready(struct sock *sk);
+__poll_t sctp_poll(struct file *file, struct socket *sock,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		poll_table *wait);
 void sctp_sock_rfree(struct sk_buff *skb);
 void sctp_copy_sock(struct sock *newsk, struct sock *sk,
 		    struct sctp_association *asoc);
 extern struct percpu_counter sctp_sockets_allocated;
+<<<<<<< HEAD
 extern int sctp_asconf_mgmt(struct sctp_sock *, struct sctp_sockaddr_entry *);
+=======
+int sctp_asconf_mgmt(struct sctp_sock *, struct sctp_sockaddr_entry *);
+struct sk_buff *sctp_skb_recv_datagram(struct sock *, int, int *);
+
+typedef int (*sctp_callback_t)(struct sctp_endpoint *, struct sctp_transport *, void *);
+void sctp_transport_walk_start(struct rhashtable_iter *iter);
+void sctp_transport_walk_stop(struct rhashtable_iter *iter);
+struct sctp_transport *sctp_transport_get_next(struct net *net,
+			struct rhashtable_iter *iter);
+struct sctp_transport *sctp_transport_get_idx(struct net *net,
+			struct rhashtable_iter *iter, int pos);
+int sctp_transport_lookup_process(sctp_callback_t cb, struct net *net,
+				  const union sctp_addr *laddr,
+				  const union sctp_addr *paddr, void *p, int dif);
+int sctp_transport_traverse_process(sctp_callback_t cb, sctp_callback_t cb_done,
+				    struct net *net, int *pos, void *p);
+int sctp_for_each_endpoint(int (*cb)(struct sctp_endpoint *, void *), void *p);
+int sctp_get_sctp_info(struct sock *sk, struct sctp_association *asoc,
+		       struct sctp_info *info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * sctp/primitive.c
  */
+<<<<<<< HEAD
 int sctp_primitive_ASSOCIATE(struct sctp_association *, void *arg);
 int sctp_primitive_SHUTDOWN(struct sctp_association *, void *arg);
 int sctp_primitive_ABORT(struct sctp_association *, void *arg);
 int sctp_primitive_SEND(struct sctp_association *, void *arg);
 int sctp_primitive_REQUESTHEARTBEAT(struct sctp_association *, void *arg);
 int sctp_primitive_ASCONF(struct sctp_association *, void *arg);
+=======
+int sctp_primitive_ASSOCIATE(struct net *, struct sctp_association *, void *arg);
+int sctp_primitive_SHUTDOWN(struct net *, struct sctp_association *, void *arg);
+int sctp_primitive_ABORT(struct net *, struct sctp_association *, void *arg);
+int sctp_primitive_SEND(struct net *, struct sctp_association *, void *arg);
+int sctp_primitive_REQUESTHEARTBEAT(struct net *, struct sctp_association *, void *arg);
+int sctp_primitive_ASCONF(struct net *, struct sctp_association *, void *arg);
+int sctp_primitive_RECONF(struct net *net, struct sctp_association *asoc,
+			  void *arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * sctp/input.c
  */
 int sctp_rcv(struct sk_buff *skb);
+<<<<<<< HEAD
 void sctp_v4_err(struct sk_buff *skb, u32 info);
 void sctp_hash_established(struct sctp_association *);
 void sctp_unhash_established(struct sctp_association *);
@@ -167,10 +243,42 @@ void sctp_icmp_proto_unreachable(struct sock *sk,
 				 struct sctp_transport *t);
 void sctp_backlog_migrate(struct sctp_association *assoc,
 			  struct sock *oldsk, struct sock *newsk);
+=======
+int sctp_v4_err(struct sk_buff *skb, u32 info);
+int sctp_hash_endpoint(struct sctp_endpoint *ep);
+void sctp_unhash_endpoint(struct sctp_endpoint *);
+struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *,
+			     struct sctphdr *, struct sctp_association **,
+			     struct sctp_transport **);
+void sctp_err_finish(struct sock *, struct sctp_transport *);
+int sctp_udp_v4_err(struct sock *sk, struct sk_buff *skb);
+int sctp_udp_v6_err(struct sock *sk, struct sk_buff *skb);
+void sctp_icmp_frag_needed(struct sock *, struct sctp_association *,
+			   struct sctp_transport *t, __u32 pmtu);
+void sctp_icmp_redirect(struct sock *, struct sctp_transport *,
+			struct sk_buff *);
+void sctp_icmp_proto_unreachable(struct sock *sk,
+				 struct sctp_association *asoc,
+				 struct sctp_transport *t);
+int sctp_transport_hashtable_init(void);
+void sctp_transport_hashtable_destroy(void);
+int sctp_hash_transport(struct sctp_transport *t);
+void sctp_unhash_transport(struct sctp_transport *t);
+struct sctp_transport *sctp_addrs_lookup_transport(
+				struct net *net,
+				const union sctp_addr *laddr,
+				const union sctp_addr *paddr,
+				int dif, int sdif);
+struct sctp_transport *sctp_epaddr_lookup_transport(
+				const struct sctp_endpoint *ep,
+				const union sctp_addr *paddr);
+bool sctp_sk_bound_dev_eq(struct net *net, int bound_dev_if, int dif, int sdif);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * sctp/proc.c
  */
+<<<<<<< HEAD
 int sctp_snmp_proc_init(void);
 void sctp_snmp_proc_exit(void);
 int sctp_eps_proc_init(void);
@@ -180,6 +288,28 @@ void sctp_assocs_proc_exit(void);
 int sctp_remaddr_proc_init(void);
 void sctp_remaddr_proc_exit(void);
 
+=======
+int __net_init sctp_proc_init(struct net *net);
+
+/*
+ * sctp/offload.c
+ */
+int sctp_offload_init(void);
+
+/*
+ * sctp/stream_sched.c
+ */
+void sctp_sched_ops_init(void);
+
+/*
+ * sctp/stream.c
+ */
+int sctp_send_reset_streams(struct sctp_association *asoc,
+			    struct sctp_reset_streams *params);
+int sctp_send_reset_assoc(struct sctp_association *asoc);
+int sctp_send_add_streams(struct sctp_association *asoc,
+			  struct sctp_add_streams *params);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Module global variables
@@ -190,11 +320,18 @@ void sctp_remaddr_proc_exit(void);
   */
 extern struct kmem_cache *sctp_chunk_cachep __read_mostly;
 extern struct kmem_cache *sctp_bucket_cachep __read_mostly;
+<<<<<<< HEAD
+=======
+extern long sysctl_sctp_mem[3];
+extern int sysctl_sctp_rmem[3];
+extern int sysctl_sctp_wmem[3];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Section:  Macros, externs, and inlines
  */
 
+<<<<<<< HEAD
 
 #ifdef TEST_FRAME
 #include <test_frame.h>
@@ -227,6 +364,12 @@ DECLARE_SNMP_STAT(struct sctp_mib, sctp_statistics);
 #define SCTP_DEC_STATS(field)      SNMP_DEC_STATS(sctp_statistics, field)
 
 #endif /* !TEST_FRAME */
+=======
+/* SCTP SNMP MIB stats handlers */
+#define SCTP_INC_STATS(net, field)	SNMP_INC_STATS((net)->sctp.sctp_statistics, field)
+#define __SCTP_INC_STATS(net, field)	__SNMP_INC_STATS((net)->sctp.sctp_statistics, field)
+#define SCTP_DEC_STATS(net, field)	SNMP_DEC_STATS((net)->sctp.sctp_statistics, field)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sctp mib definitions */
 enum {
@@ -272,6 +415,7 @@ struct sctp_mib {
         unsigned long   mibs[SCTP_MIB_MAX];
 };
 
+<<<<<<< HEAD
 
 /* Print debugging messages.  */
 #if SCTP_DEBUG
@@ -327,6 +471,20 @@ do {									\
 
 #endif /* SCTP_DEBUG */
 
+=======
+/* helper function to track stats about max rto and related transport */
+static inline void sctp_max_rto(struct sctp_association *asoc,
+				struct sctp_transport *trans)
+{
+	if (asoc->stats.max_obs_rto < (__u64)trans->rto) {
+		asoc->stats.max_obs_rto = trans->rto;
+		memset(&asoc->stats.obs_rto_ipaddr, 0,
+			sizeof(struct sockaddr_storage));
+		memcpy(&asoc->stats.obs_rto_ipaddr, &trans->ipaddr,
+			trans->af_specific->sockaddr_len);
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Macros for keeping a global reference of object allocations.
@@ -341,7 +499,10 @@ extern atomic_t sctp_dbg_objcnt_chunk;
 extern atomic_t sctp_dbg_objcnt_bind_addr;
 extern atomic_t sctp_dbg_objcnt_bind_bucket;
 extern atomic_t sctp_dbg_objcnt_addr;
+<<<<<<< HEAD
 extern atomic_t sctp_dbg_objcnt_ssnmap;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern atomic_t sctp_dbg_objcnt_datamsg;
 extern atomic_t sctp_dbg_objcnt_keys;
 
@@ -353,31 +514,53 @@ atomic_dec(&sctp_dbg_objcnt_## name)
 #define SCTP_DBG_OBJCNT(name) \
 atomic_t sctp_dbg_objcnt_## name = ATOMIC_INIT(0)
 
+<<<<<<< HEAD
 /* Macro to help create new entries in in the global array of
+=======
+/* Macro to help create new entries in the global array of
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * objcnt counters.
  */
 #define SCTP_DBG_OBJCNT_ENTRY(name) \
 {.label= #name, .counter= &sctp_dbg_objcnt_## name}
 
+<<<<<<< HEAD
 void sctp_dbg_objcnt_init(void);
 void sctp_dbg_objcnt_exit(void);
+=======
+void sctp_dbg_objcnt_init(struct net *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 
 #define SCTP_DBG_OBJCNT_INC(name)
 #define SCTP_DBG_OBJCNT_DEC(name)
 
+<<<<<<< HEAD
 static inline void sctp_dbg_objcnt_init(void) { return; }
 static inline void sctp_dbg_objcnt_exit(void) { return; }
+=======
+static inline void sctp_dbg_objcnt_init(struct net *net) { return; }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_SCTP_DBG_OBJCOUNT */
 
 #if defined CONFIG_SYSCTL
 void sctp_sysctl_register(void);
 void sctp_sysctl_unregister(void);
+<<<<<<< HEAD
 #else
 static inline void sctp_sysctl_register(void) { return; }
 static inline void sctp_sysctl_unregister(void) { return; }
+=======
+int sctp_sysctl_net_register(struct net *net);
+void sctp_sysctl_net_unregister(struct net *net);
+#else
+static inline void sctp_sysctl_register(void) { return; }
+static inline void sctp_sysctl_unregister(void) { return; }
+static inline int sctp_sysctl_net_register(struct net *net) { return 0; }
+static inline void sctp_sysctl_net_unregister(struct net *net) { return; }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Size of Supported Address Parameter for 'x' address types. */
@@ -410,6 +593,22 @@ static inline sctp_assoc_t sctp_assoc2id(const struct sctp_association *asoc)
 	return asoc ? asoc->assoc_id : 0;
 }
 
+<<<<<<< HEAD
+=======
+static inline enum sctp_sstat_state
+sctp_assoc_to_state(const struct sctp_association *asoc)
+{
+	/* SCTP's uapi always had SCTP_EMPTY(=0) as a dummy state, but we
+	 * got rid of it in kernel space. Therefore SCTP_CLOSED et al
+	 * start at =1 in user space, but actually as =0 in kernel space.
+	 * Now that we can not break user space and SCTP_EMPTY is exposed
+	 * there, we need to fix it up with an ugly offset not to break
+	 * applications. :(
+	 */
+	return asoc->state + 1;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Look up the association by its id.  */
 struct sctp_association *sctp_id2assoc(struct sock *sk, sctp_assoc_t id);
 
@@ -419,6 +618,7 @@ int sctp_do_peeloff(struct sock *sk, sctp_assoc_t id, struct socket **sockp);
 #define sctp_skb_for_each(pos, head, tmp) \
 	skb_queue_walk_safe(head, pos, tmp)
 
+<<<<<<< HEAD
 /* A helper to append an entire skb list (list) to another (head). */
 static inline void sctp_skb_list_tail(struct sk_buff_head *list,
 				      struct sk_buff_head *head)
@@ -434,6 +634,8 @@ static inline void sctp_skb_list_tail(struct sk_buff_head *list,
 	sctp_spin_unlock_irqrestore(&head->lock, flags);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	sctp_list_dequeue - remove from the head of the queue
  *	@list: list to dequeue from
@@ -446,11 +648,17 @@ static inline struct list_head *sctp_list_dequeue(struct list_head *list)
 {
 	struct list_head *result = NULL;
 
+<<<<<<< HEAD
 	if (list->next != list) {
 		result = list->next;
 		list->next = result->next;
 		list->next->prev = list;
 		INIT_LIST_HEAD(result);
+=======
+	if (!list_empty(list)) {
+		result = list->next;
+		list_del_init(result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return result;
 }
@@ -470,12 +678,17 @@ static inline void sctp_skb_set_owner_r(struct sk_buff *skb, struct sock *sk)
 	/*
 	 * This mimics the behavior of skb_set_owner_r
 	 */
+<<<<<<< HEAD
 	sk->sk_forward_alloc -= event->rmem_len;
+=======
+	sk_mem_charge(sk, event->rmem_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Tests if the list has one and only one entry. */
 static inline int sctp_list_single_entry(struct list_head *head)
 {
+<<<<<<< HEAD
 	return (head->next != head) && (head->next == head->prev);
 }
 
@@ -522,6 +735,9 @@ static inline void sctp_assoc_pending_pmtu(struct sctp_association *asoc)
 
 	sctp_assoc_sync_pmtu(asoc);
 	asoc->pmtu_pending = 0;
+=======
+	return list_is_singular(head);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool sctp_chunk_pending(const struct sctp_chunk *chunk)
@@ -534,6 +750,7 @@ static inline bool sctp_chunk_pending(const struct sctp_chunk *chunk)
  * the chunk length to indicate when to stop.  Make sure
  * there is room for a param header too.
  */
+<<<<<<< HEAD
 #define sctp_walk_params(pos, chunk, member)\
 _sctp_walk_params((pos), (chunk), ntohs((chunk)->chunk_hdr.length), member)
 
@@ -542,21 +759,44 @@ for (pos.v = chunk->member;\
      pos.v <= (void *)chunk + end - ntohs(pos.p->length) &&\
      ntohs(pos.p->length) >= sizeof(sctp_paramhdr_t);\
      pos.v += WORD_ROUND(ntohs(pos.p->length)))
+=======
+#define sctp_walk_params(pos, chunk)\
+_sctp_walk_params((pos), (chunk), ntohs((chunk)->chunk_hdr.length))
+
+#define _sctp_walk_params(pos, chunk, end)\
+for (pos.v = (u8 *)(chunk + 1);\
+     (pos.v + offsetof(struct sctp_paramhdr, length) + sizeof(pos.p->length) <=\
+      (void *)chunk + end) &&\
+     pos.v <= (void *)chunk + end - ntohs(pos.p->length) &&\
+     ntohs(pos.p->length) >= sizeof(struct sctp_paramhdr);\
+     pos.v += SCTP_PAD4(ntohs(pos.p->length)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define sctp_walk_errors(err, chunk_hdr)\
 _sctp_walk_errors((err), (chunk_hdr), ntohs((chunk_hdr)->length))
 
 #define _sctp_walk_errors(err, chunk_hdr, end)\
+<<<<<<< HEAD
 for (err = (sctp_errhdr_t *)((void *)chunk_hdr + \
 	    sizeof(sctp_chunkhdr_t));\
      (void *)err <= (void *)chunk_hdr + end - ntohs(err->length) &&\
      ntohs(err->length) >= sizeof(sctp_errhdr_t); \
      err = (sctp_errhdr_t *)((void *)err + WORD_ROUND(ntohs(err->length))))
+=======
+for (err = (struct sctp_errhdr *)((void *)chunk_hdr + \
+	    sizeof(struct sctp_chunkhdr));\
+     ((void *)err + offsetof(struct sctp_errhdr, length) + sizeof(err->length) <=\
+      (void *)chunk_hdr + end) &&\
+     (void *)err <= (void *)chunk_hdr + end - ntohs(err->length) &&\
+     ntohs(err->length) >= sizeof(struct sctp_errhdr); \
+     err = (struct sctp_errhdr *)((void *)err + SCTP_PAD4(ntohs(err->length))))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define sctp_walk_fwdtsn(pos, chunk)\
 _sctp_walk_fwdtsn((pos), (chunk), ntohs((chunk)->chunk_hdr->length) - sizeof(struct sctp_fwdtsn_chunk))
 
 #define _sctp_walk_fwdtsn(pos, chunk, end)\
+<<<<<<< HEAD
 for (pos = chunk->subh.fwdtsn_hdr->skip;\
      (void *)pos <= (void *)chunk->subh.fwdtsn_hdr->skip + end - sizeof(struct sctp_fwdtsn_skip);\
      pos++)
@@ -585,11 +825,20 @@ for (pos = chunk->subh.fwdtsn_hdr->skip;\
         (tv2).tv_usec = usecs; \
 })
 
+=======
+for (pos = (void *)(chunk->subh.fwdtsn_hdr + 1);\
+     (void *)pos <= (void *)(chunk->subh.fwdtsn_hdr + 1) + end - sizeof(struct sctp_fwdtsn_skip);\
+     pos++)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* External references. */
 
 extern struct proto sctp_prot;
 extern struct proto sctpv6_prot;
+<<<<<<< HEAD
 extern struct proc_dir_entry *proc_net_sctp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void sctp_put_port(struct sock *sk);
 
 extern struct idr sctp_assocs_id;
@@ -623,6 +872,7 @@ static inline int param_type2af(__be16 type)
 	}
 }
 
+<<<<<<< HEAD
 /* Perform some sanity checks. */
 static inline int sctp_sanity_check(void)
 {
@@ -671,6 +921,28 @@ static inline int sctp_vtag_hashfn(__u16 lport, __u16 rport, __u32 vtag)
 /* Is a socket of this style? */
 #define sctp_style(sk, style) __sctp_style((sk), (SCTP_SOCKET_##style))
 static inline int __sctp_style(const struct sock *sk, sctp_socket_type_t style)
+=======
+/* Warning: The following hash functions assume a power of two 'size'. */
+/* This is the hash function for the SCTP port hash table. */
+static inline int sctp_phashfn(struct net *net, __u16 lport)
+{
+	return (net_hash_mix(net) + lport) & (sctp_port_hashsize - 1);
+}
+
+/* This is the hash function for the endpoint hash table. */
+static inline int sctp_ep_hashfn(struct net *net, __u16 lport)
+{
+	return (net_hash_mix(net) + lport) & (sctp_ep_hashsize - 1);
+}
+
+#define sctp_for_each_hentry(ep, head) \
+	hlist_for_each_entry(ep, head, node)
+
+/* Is a socket of this style? */
+#define sctp_style(sk, style) __sctp_style((sk), (SCTP_SOCKET_##style))
+static inline int __sctp_style(const struct sock *sk,
+			       enum sctp_socket_type style)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sctp_sk(sk)->type == style;
 }
@@ -678,14 +950,23 @@ static inline int __sctp_style(const struct sock *sk, sctp_socket_type_t style)
 /* Is the association in this state? */
 #define sctp_state(asoc, state) __sctp_state((asoc), (SCTP_STATE_##state))
 static inline int __sctp_state(const struct sctp_association *asoc,
+<<<<<<< HEAD
 			       sctp_state_t state)
+=======
+			       enum sctp_state state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return asoc->state == state;
 }
 
 /* Is the socket in this state? */
 #define sctp_sstate(sk, state) __sctp_sstate((sk), (SCTP_SS_##state))
+<<<<<<< HEAD
 static inline int __sctp_sstate(const struct sock *sk, sctp_sock_state_t state)
+=======
+static inline int __sctp_sstate(const struct sock *sk,
+				enum sctp_sock_state state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sk->sk_state == state;
 }
@@ -701,9 +982,20 @@ static inline void sctp_v6_map_v4(union sctp_addr *addr)
 /* Map v4 address to v4-mapped v6 address */
 static inline void sctp_v4_map_v6(union sctp_addr *addr)
 {
+<<<<<<< HEAD
 	addr->v6.sin6_family = AF_INET6;
 	addr->v6.sin6_port = addr->v4.sin_port;
 	addr->v6.sin6_addr.s6_addr32[3] = addr->v4.sin_addr.s_addr;
+=======
+	__be16 port;
+
+	port = addr->v4.sin_port;
+	addr->v6.sin6_addr.s6_addr32[3] = addr->v4.sin_addr.s_addr;
+	addr->v6.sin6_port = port;
+	addr->v6.sin6_family = AF_INET6;
+	addr->v6.sin6_flowinfo = 0;
+	addr->v6.sin6_scope_id = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addr->v6.sin6_addr.s6_addr32[0] = 0;
 	addr->v6.sin6_addr.s6_addr32[1] = 0;
 	addr->v6.sin6_addr.s6_addr32[2] = htonl(0x0000ffff);
@@ -714,12 +1006,125 @@ static inline void sctp_v4_map_v6(union sctp_addr *addr)
  */
 static inline struct dst_entry *sctp_transport_dst_check(struct sctp_transport *t)
 {
+<<<<<<< HEAD
 	if (t->dst && !dst_check(t->dst, 0)) {
 		dst_release(t->dst);
 		t->dst = NULL;
 	}
+=======
+	if (t->dst && !dst_check(t->dst, t->dst_cookie))
+		sctp_transport_dst_release(t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return t->dst;
 }
 
+<<<<<<< HEAD
+=======
+/* Calculate max payload size given a MTU, or the total overhead if
+ * given MTU is zero
+ */
+static inline __u32 __sctp_mtu_payload(const struct sctp_sock *sp,
+				       const struct sctp_transport *t,
+				       __u32 mtu, __u32 extra)
+{
+	__u32 overhead = sizeof(struct sctphdr) + extra;
+
+	if (sp) {
+		overhead += sp->pf->af->net_header_len;
+		if (sp->udp_port && (!t || t->encap_port))
+			overhead += sizeof(struct udphdr);
+	} else {
+		overhead += sizeof(struct ipv6hdr);
+	}
+
+	if (WARN_ON_ONCE(mtu && mtu <= overhead))
+		mtu = overhead;
+
+	return mtu ? mtu - overhead : overhead;
+}
+
+static inline __u32 sctp_mtu_payload(const struct sctp_sock *sp,
+				     __u32 mtu, __u32 extra)
+{
+	return __sctp_mtu_payload(sp, NULL, mtu, extra);
+}
+
+static inline __u32 sctp_dst_mtu(const struct dst_entry *dst)
+{
+	return SCTP_TRUNC4(max_t(__u32, dst_mtu(dst),
+				 SCTP_DEFAULT_MINSEGMENT));
+}
+
+static inline bool sctp_transport_pmtu_check(struct sctp_transport *t)
+{
+	__u32 pmtu = sctp_dst_mtu(t->dst);
+
+	if (t->pathmtu == pmtu)
+		return true;
+
+	t->pathmtu = pmtu;
+
+	return false;
+}
+
+static inline __u32 sctp_min_frag_point(struct sctp_sock *sp, __u16 datasize)
+{
+	return sctp_mtu_payload(sp, SCTP_DEFAULT_MINSEGMENT, datasize);
+}
+
+static inline int sctp_transport_pl_hlen(struct sctp_transport *t)
+{
+	return __sctp_mtu_payload(sctp_sk(t->asoc->base.sk), t, 0, 0) -
+	       sizeof(struct sctphdr);
+}
+
+static inline void sctp_transport_pl_reset(struct sctp_transport *t)
+{
+	if (t->probe_interval && (t->param_flags & SPP_PMTUD_ENABLE) &&
+	    (t->state == SCTP_ACTIVE || t->state == SCTP_UNKNOWN)) {
+		if (t->pl.state == SCTP_PL_DISABLED) {
+			t->pl.state = SCTP_PL_BASE;
+			t->pl.pmtu = SCTP_BASE_PLPMTU;
+			t->pl.probe_size = SCTP_BASE_PLPMTU;
+			sctp_transport_reset_probe_timer(t);
+		}
+	} else {
+		if (t->pl.state != SCTP_PL_DISABLED) {
+			if (del_timer(&t->probe_timer))
+				sctp_transport_put(t);
+			t->pl.state = SCTP_PL_DISABLED;
+		}
+	}
+}
+
+static inline void sctp_transport_pl_update(struct sctp_transport *t)
+{
+	if (t->pl.state == SCTP_PL_DISABLED)
+		return;
+
+	t->pl.state = SCTP_PL_BASE;
+	t->pl.pmtu = SCTP_BASE_PLPMTU;
+	t->pl.probe_size = SCTP_BASE_PLPMTU;
+	sctp_transport_reset_probe_timer(t);
+}
+
+static inline bool sctp_transport_pl_enabled(struct sctp_transport *t)
+{
+	return t->pl.state != SCTP_PL_DISABLED;
+}
+
+static inline bool sctp_newsk_ready(const struct sock *sk)
+{
+	return sock_flag(sk, SOCK_DEAD) || sk->sk_socket;
+}
+
+static inline void sctp_sock_set_nodelay(struct sock *sk)
+{
+	lock_sock(sk);
+	sctp_sk(sk)->nodelay = true;
+	release_sock(sk);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __net_sctp_h__ */

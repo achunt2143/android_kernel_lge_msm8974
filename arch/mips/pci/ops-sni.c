@@ -14,8 +14,13 @@
 
 /*
  * It seems that on the RM200 only lower 3 bits of the 5 bit PCI device
+<<<<<<< HEAD
  * address are decoded.  We therefore manually have to reject attempts at
  * reading outside this range.  Being on the paranoid side we only do this
+=======
+ * address are decoded.	 We therefore manually have to reject attempts at
+ * reading outside this range.	Being on the paranoid side we only do this
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * test for bus 0 and hope forwarding and decoding work properly for any
  * subordinated busses.
  *
@@ -31,8 +36,13 @@ static int set_config_address(unsigned int busno, unsigned int devfn, int reg)
 
 	*(volatile u32 *)PCIMT_CONFIG_ADDRESS =
 		 ((busno    & 0xff) << 16) |
+<<<<<<< HEAD
 	         ((devfn    & 0xff) <<  8) |
 	          (reg      & 0xfc);
+=======
+		 ((devfn    & 0xff) <<	8) |
+		  (reg	    & 0xfc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return PCIBIOS_SUCCESSFUL;
 }

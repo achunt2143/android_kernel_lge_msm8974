@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Procedures for drawing on the screen early on in the boot process.
  *
@@ -7,6 +11,7 @@
 #include <linux/string.h>
 #include <linux/init.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <linux/memblock.h>
 
 #include <asm/sections.h>
@@ -15,6 +20,17 @@
 #include <asm/page.h>
 #include <asm/mmu.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/font.h>
+#include <linux/memblock.h>
+#include <linux/pgtable.h>
+#include <linux/of.h>
+
+#include <asm/sections.h>
+#include <asm/btext.h>
+#include <asm/page.h>
+#include <asm/mmu.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/processor.h>
 #include <asm/udbg.h>
@@ -25,12 +41,16 @@
 static void scrollscreen(void);
 #endif
 
+<<<<<<< HEAD
 static void draw_byte(unsigned char c, long locX, long locY);
 static void draw_byte_32(unsigned char *bits, unsigned int *base, int rb);
 static void draw_byte_16(unsigned char *bits, unsigned int *base, int rb);
 static void draw_byte_8(unsigned char *bits, unsigned int *base, int rb);
 
 #define __force_data __attribute__((__section__(".data")))
+=======
+#define __force_data __section(".data")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int g_loc_X __force_data;
 static int g_loc_Y __force_data;
@@ -45,12 +65,36 @@ static unsigned char *logicalDisplayBase __force_data;
 
 unsigned long disp_BAT[2] __initdata = {0, 0};
 
+<<<<<<< HEAD
 #define cmapsz	(16*256)
 
 static unsigned char vga_font[cmapsz];
 
 int boot_text_mapped __force_data = 0;
 int force_printk_to_btext = 0;
+=======
+static int boot_text_mapped __force_data;
+
+extern void rmci_on(void);
+extern void rmci_off(void);
+
+static inline void rmci_maybe_on(void)
+{
+#if defined(CONFIG_PPC_EARLY_DEBUG_BOOTX) && defined(CONFIG_PPC64)
+	if (!(mfmsr() & MSR_DR))
+		rmci_on();
+#endif
+}
+
+static inline void rmci_maybe_off(void)
+{
+#if defined(CONFIG_PPC_EARLY_DEBUG_BOOTX) && defined(CONFIG_PPC64)
+	if (!(mfmsr() & MSR_DR))
+		rmci_off();
+#endif
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PPC32
 /* Calc BAT values for mapping the display and store them
@@ -58,7 +102,11 @@ int force_printk_to_btext = 0;
  * the display during identify_machine() and MMU_Init()
  *
  * The display is mapped to virtual address 0xD0000000, rather
+<<<<<<< HEAD
  * than 1:1, because some some CHRP machines put the frame buffer
+=======
+ * than 1:1, because some CHRP machines put the frame buffer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * in the region starting at 0xC0000000 (PAGE_OFFSET).
  * This mapping is temporary and will disappear as soon as the
  * setup done by MMU_Init() is applied.
@@ -79,6 +127,7 @@ void __init btext_prepare_BAT(void)
 		boot_text_mapped = 0;
 		return;
 	}
+<<<<<<< HEAD
 	if (PVR_VER(mfspr(SPRN_PVR)) != 1) {
 		/* 603, 604, G3, G4, ... */
 		lowbits = addr & ~0xFF000000UL;
@@ -92,6 +141,12 @@ void __init btext_prepare_BAT(void)
 		disp_BAT[0] = vaddr | (_PAGE_NO_CACHE | PP_RWXX) | 4;
 		disp_BAT[1] = addr | BL_8M | 0x40;
 	}
+=======
+	lowbits = addr & ~0xFF000000UL;
+	addr &= 0xFF000000UL;
+	disp_BAT[0] = vaddr | (BL_16M<<2) | 2;
+	disp_BAT[1] = addr | (_PAGE_NO_CACHE | _PAGE_GUARDED | BPP_RW);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	logicalDisplayBase = (void *) (vaddr + lowbits);
 }
 #endif
@@ -134,27 +189,44 @@ void __init btext_unmap(void)
  *    changes.
  */
 
+<<<<<<< HEAD
 static void map_boot_text(void)
+=======
+void btext_map(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long base, offset, size;
 	unsigned char *vbase;
 
 	/* By default, we are no longer mapped */
 	boot_text_mapped = 0;
+<<<<<<< HEAD
 	if (dispDeviceBase == 0)
+=======
+	if (!dispDeviceBase)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	base = ((unsigned long) dispDeviceBase) & 0xFFFFF000UL;
 	offset = ((unsigned long) dispDeviceBase) - base;
 	size = dispDeviceRowBytes * dispDeviceRect[3] + offset
 		+ dispDeviceRect[0];
+<<<<<<< HEAD
 	vbase = __ioremap(base, size, _PAGE_NO_CACHE);
 	if (vbase == 0)
+=======
+	vbase = ioremap_wc(base, size);
+	if (!vbase)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	logicalDisplayBase = vbase + offset;
 	boot_text_mapped = 1;
 }
 
+<<<<<<< HEAD
 int btext_initialize(struct device_node *np)
+=======
+static int __init btext_initialize(struct device_node *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int width, height, depth, pitch;
 	unsigned long address = 0;
@@ -209,13 +281,18 @@ int btext_initialize(struct device_node *np)
 	dispDeviceRect[2] = width;
 	dispDeviceRect[3] = height;
 
+<<<<<<< HEAD
 	map_boot_text();
+=======
+	btext_map();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 int __init btext_find_display(int allow_nonstdout)
 {
+<<<<<<< HEAD
 	const char *name;
 	struct device_node *np = NULL; 
 	int rc = -ENODEV;
@@ -230,6 +307,14 @@ int __init btext_find_display(int allow_nonstdout)
 				np = NULL;
 			}
 		}
+=======
+	struct device_node *np = of_stdout;
+	int rc = -ENODEV;
+
+	if (!of_node_is_type(np, "display")) {
+		printk("boot stdout isn't a display !\n");
+		np = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (np)
 		rc = btext_initialize(np);
@@ -237,6 +322,7 @@ int __init btext_find_display(int allow_nonstdout)
 		return rc;
 
 	for_each_node_by_type(np, "display") {
+<<<<<<< HEAD
 		if (of_get_property(np, "linux,opened", NULL)) {
 			printk("trying %s ...\n", np->full_name);
 			rc = btext_initialize(np);
@@ -244,6 +330,17 @@ int __init btext_find_display(int allow_nonstdout)
 		}
 		if (rc == 0)
 			break;
+=======
+		if (of_property_read_bool(np, "linux,opened")) {
+			printk("trying %pOF ...\n", np);
+			rc = btext_initialize(np);
+			printk("result: %d\n", rc);
+		}
+		if (rc == 0) {
+			of_node_put(np);
+			break;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return rc;
 }
@@ -254,7 +351,11 @@ static unsigned char * calc_base(int x, int y)
 	unsigned char *base;
 
 	base = logicalDisplayBase;
+<<<<<<< HEAD
 	if (base == 0)
+=======
+	if (!base)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		base = dispDeviceBase;
 	base += (x + dispDeviceRect[0]) * (dispDeviceDepth >> 3);
 	base += (y + dispDeviceRect[1]) * dispDeviceRowBytes;
@@ -265,7 +366,11 @@ static unsigned char * calc_base(int x, int y)
 void btext_update_display(unsigned long phys, int width, int height,
 			  int depth, int pitch)
 {
+<<<<<<< HEAD
 	if (dispDeviceBase == 0)
+=======
+	if (!dispDeviceBase)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/* check it's the same frame buffer (within 256MB) */
@@ -283,7 +388,11 @@ void btext_update_display(unsigned long phys, int width, int height,
 		iounmap(logicalDisplayBase);
 		boot_text_mapped = 0;
 	}
+<<<<<<< HEAD
 	map_boot_text();
+=======
+	btext_map();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	g_loc_X = 0;
 	g_loc_Y = 0;
 	g_max_loc_X = width / 8;
@@ -291,13 +400,21 @@ void btext_update_display(unsigned long phys, int width, int height,
 }
 EXPORT_SYMBOL(btext_update_display);
 
+<<<<<<< HEAD
 void btext_clearscreen(void)
+=======
+void __init btext_clearscreen(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int *base	= (unsigned int *)calc_base(0, 0);
 	unsigned long width 	= ((dispDeviceRect[2] - dispDeviceRect[0]) *
 					(dispDeviceDepth >> 3)) >> 2;
 	int i,j;
 
+<<<<<<< HEAD
+=======
+	rmci_maybe_on();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i=0; i<(dispDeviceRect[3] - dispDeviceRect[1]); i++)
 	{
 		unsigned int *ptr = base;
@@ -305,9 +422,16 @@ void btext_clearscreen(void)
 			*(ptr++) = 0;
 		base += (dispDeviceRowBytes >> 2);
 	}
+<<<<<<< HEAD
 }
 
 void btext_flushscreen(void)
+=======
+	rmci_maybe_off();
+}
+
+void __init btext_flushscreen(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int *base	= (unsigned int *)calc_base(0, 0);
 	unsigned long width 	= ((dispDeviceRect[2] - dispDeviceRect[0]) *
@@ -326,7 +450,11 @@ void btext_flushscreen(void)
 	__asm__ __volatile__ ("sync" ::: "memory");
 }
 
+<<<<<<< HEAD
 void btext_flushline(void)
+=======
+void __init btext_flushline(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int *base	= (unsigned int *)calc_base(0, g_loc_Y << 4);
 	unsigned long width 	= ((dispDeviceRect[2] - dispDeviceRect[0]) *
@@ -355,6 +483,11 @@ static void scrollscreen(void)
 				   (dispDeviceDepth >> 3)) >> 2;
 	int i,j;
 
+<<<<<<< HEAD
+=======
+	rmci_maybe_on();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i=0; i<(dispDeviceRect[3] - dispDeviceRect[1] - 16); i++)
 	{
 		unsigned int *src_ptr = src;
@@ -371,9 +504,123 @@ static void scrollscreen(void)
 			*(dst_ptr++) = 0;
 		dst += (dispDeviceRowBytes >> 2);
 	}
+<<<<<<< HEAD
 }
 #endif /* ndef NO_SCROLL */
 
+=======
+
+	rmci_maybe_off();
+}
+#endif /* ndef NO_SCROLL */
+
+static unsigned int expand_bits_8[16] = {
+	0x00000000,
+	0x000000ff,
+	0x0000ff00,
+	0x0000ffff,
+	0x00ff0000,
+	0x00ff00ff,
+	0x00ffff00,
+	0x00ffffff,
+	0xff000000,
+	0xff0000ff,
+	0xff00ff00,
+	0xff00ffff,
+	0xffff0000,
+	0xffff00ff,
+	0xffffff00,
+	0xffffffff
+};
+
+static unsigned int expand_bits_16[4] = {
+	0x00000000,
+	0x0000ffff,
+	0xffff0000,
+	0xffffffff
+};
+
+
+static void draw_byte_32(const unsigned char *font, unsigned int *base, int rb)
+{
+	int l, bits;
+	int fg = 0xFFFFFFFFUL;
+	int bg = 0x00000000UL;
+
+	for (l = 0; l < 16; ++l)
+	{
+		bits = *font++;
+		base[0] = (-(bits >> 7) & fg) ^ bg;
+		base[1] = (-((bits >> 6) & 1) & fg) ^ bg;
+		base[2] = (-((bits >> 5) & 1) & fg) ^ bg;
+		base[3] = (-((bits >> 4) & 1) & fg) ^ bg;
+		base[4] = (-((bits >> 3) & 1) & fg) ^ bg;
+		base[5] = (-((bits >> 2) & 1) & fg) ^ bg;
+		base[6] = (-((bits >> 1) & 1) & fg) ^ bg;
+		base[7] = (-(bits & 1) & fg) ^ bg;
+		base = (unsigned int *) ((char *)base + rb);
+	}
+}
+
+static inline void draw_byte_16(const unsigned char *font, unsigned int *base, int rb)
+{
+	int l, bits;
+	int fg = 0xFFFFFFFFUL;
+	int bg = 0x00000000UL;
+	unsigned int *eb = (int *)expand_bits_16;
+
+	for (l = 0; l < 16; ++l)
+	{
+		bits = *font++;
+		base[0] = (eb[bits >> 6] & fg) ^ bg;
+		base[1] = (eb[(bits >> 4) & 3] & fg) ^ bg;
+		base[2] = (eb[(bits >> 2) & 3] & fg) ^ bg;
+		base[3] = (eb[bits & 3] & fg) ^ bg;
+		base = (unsigned int *) ((char *)base + rb);
+	}
+}
+
+static inline void draw_byte_8(const unsigned char *font, unsigned int *base, int rb)
+{
+	int l, bits;
+	int fg = 0x0F0F0F0FUL;
+	int bg = 0x00000000UL;
+	unsigned int *eb = (int *)expand_bits_8;
+
+	for (l = 0; l < 16; ++l)
+	{
+		bits = *font++;
+		base[0] = (eb[bits >> 4] & fg) ^ bg;
+		base[1] = (eb[bits & 0xf] & fg) ^ bg;
+		base = (unsigned int *) ((char *)base + rb);
+	}
+}
+
+static noinline void draw_byte(unsigned char c, long locX, long locY)
+{
+	unsigned char *base	= calc_base(locX << 3, locY << 4);
+	unsigned int font_index = c * 16;
+	const unsigned char *font	= font_sun_8x16.data + font_index;
+	int rb			= dispDeviceRowBytes;
+
+	rmci_maybe_on();
+	switch(dispDeviceDepth) {
+	case 24:
+	case 32:
+		draw_byte_32(font, (unsigned int *)base, rb);
+		break;
+	case 15:
+	case 16:
+		draw_byte_16(font, (unsigned int *)base, rb);
+		break;
+	case 8:
+		draw_byte_8(font, (unsigned int *)base, rb);
+		break;
+	}
+	rmci_maybe_off();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void btext_drawchar(char c)
 {
 	int cline = 0;
@@ -432,7 +679,11 @@ void btext_drawstring(const char *c)
 		btext_drawchar(*c++);
 }
 
+<<<<<<< HEAD
 void btext_drawtext(const char *c, unsigned int len)
+=======
+void __init btext_drawtext(const char *c, unsigned int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!boot_text_mapped)
 		return;
@@ -440,7 +691,11 @@ void btext_drawtext(const char *c, unsigned int len)
 		btext_drawchar(*c++);
 }
 
+<<<<<<< HEAD
 void btext_drawhex(unsigned long v)
+=======
+void __init btext_drawhex(unsigned long v)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!boot_text_mapped)
 		return;
@@ -465,6 +720,7 @@ void btext_drawhex(unsigned long v)
 	btext_drawchar(' ');
 }
 
+<<<<<<< HEAD
 static void draw_byte(unsigned char c, long locX, long locY)
 {
 	unsigned char *base	= calc_base(locX << 3, locY << 4);
@@ -913,6 +1169,8 @@ static unsigned char vga_font[cmapsz] = {
 0x00, 0x00, 0x00, 0x00,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init udbg_init_btext(void)
 {
 	/* If btext is enabled, we might have a BAT setup for early display,

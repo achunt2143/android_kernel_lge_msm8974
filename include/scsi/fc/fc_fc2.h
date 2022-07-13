@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright(c) 2007 Intel Corporation. All rights reserved.
  *
@@ -14,6 +15,12 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright(c) 2007 Intel Corporation. All rights reserved.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Maintained at www.Open-FCoE.org
  */
 
@@ -104,7 +111,11 @@ struct fc_esb {
  * esb_e_stat - flags from FC-FS-2 T11/1619-D Rev 0.90.
  */
 #define ESB_ST_RESP         (1 << 31)   /* responder to exchange */
+<<<<<<< HEAD
 #define ESB_ST_SEQ_INIT     (1 << 30)   /* port holds sequence initiaive */
+=======
+#define ESB_ST_SEQ_INIT     (1 << 30)   /* port holds sequence initiative */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ESB_ST_COMPLETE     (1 << 29)   /* exchange is complete */
 #define ESB_ST_ABNORMAL     (1 << 28)   /* abnormal ending condition */
 #define ESB_ST_REC_QUAL     (1 << 26)   /* recovery qualifier active */

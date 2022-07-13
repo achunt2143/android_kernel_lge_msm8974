@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * File: pep.c
  *
@@ -5,6 +9,7 @@
  *
  * Copyright (C) 2008 Nokia Corporation.
  *
+<<<<<<< HEAD
  * Author: Rémi Denis-Courmont <remi.denis-courmont@nokia.com>
  *
  * This program is free software; you can redistribute it and/or
@@ -23,6 +28,13 @@
  */
 
 #include <linux/kernel.h>
+=======
+ * Author: Rémi Denis-Courmont
+ */
+
+#include <linux/kernel.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/socket.h>
 #include <net/sock.h>
@@ -131,7 +143,11 @@ static int pep_indicate(struct sock *sk, u8 id, u8 code,
 	ph->utid = 0;
 	ph->message_id = id;
 	ph->pipe_handle = pn->pipe_handle;
+<<<<<<< HEAD
 	ph->data[0] = code;
+=======
+	ph->error_code = code;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pn_skb_send(sk, skb, NULL);
 }
 
@@ -152,7 +168,11 @@ static int pipe_handler_request(struct sock *sk, u8 id, u8 code,
 	ph->utid = id; /* whatever */
 	ph->message_id = id;
 	ph->pipe_handle = pn->pipe_handle;
+<<<<<<< HEAD
 	ph->data[0] = code;
+=======
+	ph->error_code = code;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pn_skb_send(sk, skb, NULL);
 }
 
@@ -207,7 +227,11 @@ static int pep_ctrlreq_error(struct sock *sk, struct sk_buff *oskb, u8 code,
 	struct pnpipehdr *ph;
 	struct sockaddr_pn dst;
 	u8 data[4] = {
+<<<<<<< HEAD
 		oph->data[0], /* PEP type */
+=======
+		oph->pep_type, /* PEP type */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		code, /* error code, at an unusual offset */
 		PAD, PAD,
 	};
@@ -220,7 +244,11 @@ static int pep_ctrlreq_error(struct sock *sk, struct sk_buff *oskb, u8 code,
 	ph->utid = oph->utid;
 	ph->message_id = PNS_PEP_CTRL_RESP;
 	ph->pipe_handle = oph->pipe_handle;
+<<<<<<< HEAD
 	ph->data[0] = oph->data[1]; /* CTRL id */
+=======
+	ph->data0 = oph->data[0]; /* CTRL id */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pn_skb_get_src_sockaddr(oskb, &dst);
 	return pn_skb_send(sk, skb, &dst);
@@ -271,6 +299,7 @@ static int pipe_rcv_status(struct sock *sk, struct sk_buff *skb)
 		return -EINVAL;
 
 	hdr = pnp_hdr(skb);
+<<<<<<< HEAD
 	if (hdr->data[0] != PN_PEP_TYPE_COMMON) {
 		LIMIT_NETDEBUG(KERN_DEBUG"Phonet unknown PEP type: %u\n",
 				(unsigned)hdr->data[0]);
@@ -282,6 +311,19 @@ static int pipe_rcv_status(struct sock *sk, struct sk_buff *skb)
 		switch (pn->tx_fc) {
 		case PN_LEGACY_FLOW_CONTROL:
 			switch (hdr->data[4]) {
+=======
+	if (hdr->pep_type != PN_PEP_TYPE_COMMON) {
+		net_dbg_ratelimited("Phonet unknown PEP type: %u\n",
+				    (unsigned int)hdr->pep_type);
+		return -EOPNOTSUPP;
+	}
+
+	switch (hdr->data[0]) {
+	case PN_PEP_IND_FLOW_CONTROL:
+		switch (pn->tx_fc) {
+		case PN_LEGACY_FLOW_CONTROL:
+			switch (hdr->data[3]) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case PEP_IND_BUSY:
 				atomic_set(&pn->tx_credits, 0);
 				break;
@@ -291,7 +333,11 @@ static int pipe_rcv_status(struct sock *sk, struct sk_buff *skb)
 			}
 			break;
 		case PN_ONE_CREDIT_FLOW_CONTROL:
+<<<<<<< HEAD
 			if (hdr->data[4] == PEP_IND_READY)
+=======
+			if (hdr->data[3] == PEP_IND_READY)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				atomic_set(&pn->tx_credits, wake = 1);
 			break;
 		}
@@ -300,12 +346,21 @@ static int pipe_rcv_status(struct sock *sk, struct sk_buff *skb)
 	case PN_PEP_IND_ID_MCFC_GRANT_CREDITS:
 		if (pn->tx_fc != PN_MULTI_CREDIT_FLOW_CONTROL)
 			break;
+<<<<<<< HEAD
 		atomic_add(wake = hdr->data[4], &pn->tx_credits);
 		break;
 
 	default:
 		LIMIT_NETDEBUG(KERN_DEBUG"Phonet unknown PEP indication: %u\n",
 				(unsigned)hdr->data[1]);
+=======
+		atomic_add(wake = hdr->data[3], &pn->tx_credits);
+		break;
+
+	default:
+		net_dbg_ratelimited("Phonet unknown PEP indication: %u\n",
+				    (unsigned int)hdr->data[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EOPNOTSUPP;
 	}
 	if (wake)
@@ -317,7 +372,11 @@ static int pipe_rcv_created(struct sock *sk, struct sk_buff *skb)
 {
 	struct pep_sock *pn = pep_sk(sk);
 	struct pnpipehdr *hdr = pnp_hdr(skb);
+<<<<<<< HEAD
 	u8 n_sb = hdr->data[0];
+=======
+	u8 n_sb = hdr->data0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pn->rx_fc = pn->tx_fc = PN_LEGACY_FLOW_CONTROL;
 	__skb_pull(skb, sizeof(*hdr));
@@ -380,7 +439,11 @@ static int pipe_do_rcv(struct sock *sk, struct sk_buff *skb)
 			err = -EINVAL;
 			goto out;
 		}
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PNS_PEP_DISABLE_REQ:
 		atomic_set(&pn->tx_credits, 0);
 		pep_reply(sk, skb, PN_PIPE_NO_ERROR, NULL, 0, GFP_ATOMIC);
@@ -397,7 +460,11 @@ static int pipe_do_rcv(struct sock *sk, struct sk_buff *skb)
 
 	case PNS_PIPE_ALIGNED_DATA:
 		__skb_pull(skb, 1);
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PNS_PIPE_DATA:
 		__skb_pull(skb, 3); /* Pipe data header */
 		if (!pn_flow_safe(pn->rx_fc)) {
@@ -429,11 +496,19 @@ static int pipe_do_rcv(struct sock *sk, struct sk_buff *skb)
 		err = pipe_rcv_created(sk, skb);
 		if (err)
 			break;
+<<<<<<< HEAD
 		/* fall through */
 	case PNS_PIPE_RESET_IND:
 		if (!pn->init_enable)
 			break;
 		/* fall through */
+=======
+		fallthrough;
+	case PNS_PIPE_RESET_IND:
+		if (!pn->init_enable)
+			break;
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PNS_PIPE_ENABLED_IND:
 		if (!pn_flow_safe(pn->tx_fc)) {
 			atomic_set(&pn->tx_credits, 1);
@@ -451,8 +526,13 @@ static int pipe_do_rcv(struct sock *sk, struct sk_buff *skb)
 		break;
 
 	default:
+<<<<<<< HEAD
 		LIMIT_NETDEBUG(KERN_DEBUG"Phonet unknown PEP message: %u\n",
 				hdr->message_id);
+=======
+		net_dbg_ratelimited("Phonet unknown PEP message: %u\n",
+				    hdr->message_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 	}
 out:
@@ -462,10 +542,16 @@ out:
 queue:
 	skb->dev = NULL;
 	skb_set_owner_r(skb, sk);
+<<<<<<< HEAD
 	err = skb->len;
 	skb_queue_tail(queue, skb);
 	if (!sock_flag(sk, SOCK_DEAD))
 		sk->sk_data_ready(sk, err);
+=======
+	skb_queue_tail(queue, skb);
+	if (!sock_flag(sk, SOCK_DEAD))
+		sk->sk_data_ready(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NET_RX_SUCCESS;
 }
 
@@ -478,9 +564,15 @@ static void pipe_destruct(struct sock *sk)
 	skb_queue_purge(&pn->ctrlreq_queue);
 }
 
+<<<<<<< HEAD
 static u8 pipe_negotiate_fc(const u8 *fcs, unsigned n)
 {
 	unsigned i;
+=======
+static u8 pipe_negotiate_fc(const u8 *fcs, unsigned int n)
+{
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 final_fc = PN_NO_FLOW_CONTROL;
 
 	for (i = 0; i < n; i++) {
@@ -506,7 +598,11 @@ static int pep_connresp_rcv(struct sock *sk, struct sk_buff *skb)
 		return -ECONNREFUSED;
 
 	/* Parse sub-blocks */
+<<<<<<< HEAD
 	n_sb = hdr->data[4];
+=======
+	n_sb = hdr->data[3];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (n_sb > 0) {
 		u8 type, buf[6], len = sizeof(buf);
 		const u8 *data = pep_get_sb(skb, &type, &len, buf);
@@ -568,7 +664,11 @@ static int pipe_handler_do_rcv(struct sock *sk, struct sk_buff *skb)
 	switch (hdr->message_id) {
 	case PNS_PIPE_ALIGNED_DATA:
 		__skb_pull(skb, 1);
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PNS_PIPE_DATA:
 		__skb_pull(skb, 3); /* Pipe data header */
 		if (!pn_flow_safe(pn->rx_fc)) {
@@ -587,10 +687,16 @@ static int pipe_handler_do_rcv(struct sock *sk, struct sk_buff *skb)
 		pn->rx_credits--;
 		skb->dev = NULL;
 		skb_set_owner_r(skb, sk);
+<<<<<<< HEAD
 		err = skb->len;
 		skb_queue_tail(&sk->sk_receive_queue, skb);
 		if (!sock_flag(sk, SOCK_DEAD))
 			sk->sk_data_ready(sk, err);
+=======
+		skb_queue_tail(&sk->sk_receive_queue, skb);
+		if (!sock_flag(sk, SOCK_DEAD))
+			sk->sk_data_ready(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NET_RX_SUCCESS;
 
 	case PNS_PEP_CONNECT_RESP:
@@ -640,11 +746,18 @@ static struct sock *pep_find_pipe(const struct hlist_head *hlist,
 					const struct sockaddr_pn *dst,
 					u8 pipe_handle)
 {
+<<<<<<< HEAD
 	struct hlist_node *node;
 	struct sock *sknode;
 	u16 dobj = pn_sockaddr_get_object(dst);
 
 	sk_for_each(sknode, node, hlist) {
+=======
+	struct sock *sknode;
+	u16 dobj = pn_sockaddr_get_object(dst);
+
+	sk_for_each(sknode, hlist) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct pep_sock *pnnode = pep_sk(sknode);
 
 		/* Ports match, but addresses might not: */
@@ -699,7 +812,11 @@ static int pep_do_rcv(struct sock *sk, struct sk_buff *skb)
 		skb_queue_head(&sk->sk_receive_queue, skb);
 		sk_acceptq_added(sk);
 		if (!sock_flag(sk, SOCK_DEAD))
+<<<<<<< HEAD
 			sk->sk_data_ready(sk, 0);
+=======
+			sk->sk_data_ready(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NET_RX_SUCCESS;
 
 	case PNS_PEP_DISCONNECT_REQ:
@@ -741,7 +858,11 @@ static int pipe_do_remove(struct sock *sk)
 	ph->utid = 0;
 	ph->message_id = PNS_PIPE_REMOVE_REQ;
 	ph->pipe_handle = pn->pipe_handle;
+<<<<<<< HEAD
 	ph->data[0] = PAD;
+=======
+	ph->data0 = PAD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pn_skb_send(sk, skb, NULL);
 }
 
@@ -774,7 +895,12 @@ static void pep_sock_close(struct sock *sk, long timeout)
 	sock_put(sk);
 }
 
+<<<<<<< HEAD
 static struct sock *pep_sock_accept(struct sock *sk, int flags, int *errp)
+=======
+static struct sock *pep_sock_accept(struct sock *sk, int flags, int *errp,
+				    bool kern)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pep_sock *pn = pep_sk(sk), *newpn;
 	struct sock *newsk = NULL;
@@ -786,7 +912,12 @@ static struct sock *pep_sock_accept(struct sock *sk, int flags, int *errp)
 	u8 pipe_handle, enabled, n_sb;
 	u8 aligned = 0;
 
+<<<<<<< HEAD
 	skb = skb_recv_datagram(sk, 0, flags & O_NONBLOCK, errp);
+=======
+	skb = skb_recv_datagram(sk, (flags & O_NONBLOCK) ? MSG_DONTWAIT : 0,
+				errp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!skb)
 		return NULL;
 
@@ -818,7 +949,11 @@ static struct sock *pep_sock_accept(struct sock *sk, int flags, int *errp)
 	peer_type = hdr->other_pep_type << 8;
 
 	/* Parse sub-blocks (options) */
+<<<<<<< HEAD
 	n_sb = hdr->data[4];
+=======
+	n_sb = hdr->data[3];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (n_sb > 0) {
 		u8 type, buf[1], len = sizeof(buf);
 		const u8 *data = pep_get_sb(skb, &type, &len, buf);
@@ -848,7 +983,12 @@ static struct sock *pep_sock_accept(struct sock *sk, int flags, int *errp)
 	}
 
 	/* Create a new to-be-accepted sock */
+<<<<<<< HEAD
 	newsk = sk_alloc(sock_net(sk), PF_PHONET, GFP_KERNEL, sk->sk_prot);
+=======
+	newsk = sk_alloc(sock_net(sk), PF_PHONET, GFP_KERNEL, sk->sk_prot,
+			 kern);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!newsk) {
 		pep_reject_conn(sk, skb, PN_PIPE_ERR_OVERLOAD, GFP_KERNEL);
 		err = -ENOBUFS;
@@ -881,6 +1021,10 @@ static struct sock *pep_sock_accept(struct sock *sk, int flags, int *errp)
 
 	err = pep_accept_conn(newsk, skb);
 	if (err) {
+<<<<<<< HEAD
+=======
+		__sock_put(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sock_put(newsk);
 		newsk = NULL;
 		goto drop;
@@ -928,10 +1072,47 @@ static int pep_sock_enable(struct sock *sk, struct sockaddr *addr, int len)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pep_ioctl(struct sock *sk, int cmd, unsigned long arg)
 {
 	struct pep_sock *pn = pep_sk(sk);
 	int answ;
+=======
+static unsigned int pep_first_packet_length(struct sock *sk)
+{
+	struct pep_sock *pn = pep_sk(sk);
+	struct sk_buff_head *q;
+	struct sk_buff *skb;
+	unsigned int len = 0;
+	bool found = false;
+
+	if (sock_flag(sk, SOCK_URGINLINE)) {
+		q = &pn->ctrlreq_queue;
+		spin_lock_bh(&q->lock);
+		skb = skb_peek(q);
+		if (skb) {
+			len = skb->len;
+			found = true;
+		}
+		spin_unlock_bh(&q->lock);
+	}
+
+	if (likely(!found)) {
+		q = &sk->sk_receive_queue;
+		spin_lock_bh(&q->lock);
+		skb = skb_peek(q);
+		if (skb)
+			len = skb->len;
+		spin_unlock_bh(&q->lock);
+	}
+
+	return len;
+}
+
+static int pep_ioctl(struct sock *sk, int cmd, int *karg)
+{
+	struct pep_sock *pn = pep_sk(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = -ENOIOCTLCMD;
 
 	switch (cmd) {
@@ -941,6 +1122,7 @@ static int pep_ioctl(struct sock *sk, int cmd, unsigned long arg)
 			break;
 		}
 
+<<<<<<< HEAD
 		lock_sock(sk);
 		if (sock_flag(sk, SOCK_URGINLINE) &&
 		    !skb_queue_empty(&pn->ctrlreq_queue))
@@ -951,6 +1133,10 @@ static int pep_ioctl(struct sock *sk, int cmd, unsigned long arg)
 			answ = 0;
 		release_sock(sk);
 		ret = put_user(answ, (int __user *)arg);
+=======
+		*karg = pep_first_packet_length(sk);
+		ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SIOCPNENABLEPIPE:
@@ -959,6 +1145,11 @@ static int pep_ioctl(struct sock *sk, int cmd, unsigned long arg)
 			ret =  -EBUSY;
 		else if (sk->sk_state == TCP_ESTABLISHED)
 			ret = -EISCONN;
+<<<<<<< HEAD
+=======
+		else if (!pn->pn_sk.sobject)
+			ret = -EADDRNOTAVAIL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			ret = pep_sock_enable(sk, NULL, 0);
 		release_sock(sk);
@@ -988,7 +1179,11 @@ static int pep_init(struct sock *sk)
 }
 
 static int pep_setsockopt(struct sock *sk, int level, int optname,
+<<<<<<< HEAD
 				char __user *optval, unsigned int optlen)
+=======
+			  sockptr_t optval, unsigned int optlen)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pep_sock *pn = pep_sk(sk);
 	int val = 0, err = 0;
@@ -996,7 +1191,11 @@ static int pep_setsockopt(struct sock *sk, int level, int optname,
 	if (level != SOL_PNPIPE)
 		return -ENOPROTOOPT;
 	if (optlen >= sizeof(int)) {
+<<<<<<< HEAD
 		if (get_user(val, (int __user *) optval))
+=======
+		if (copy_from_sockptr(&val, optval, sizeof(int)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EFAULT;
 	}
 
@@ -1109,7 +1308,11 @@ static int pipe_skb_send(struct sock *sk, struct sk_buff *skb)
 	ph->utid = 0;
 	if (pn->aligned) {
 		ph->message_id = PNS_PIPE_ALIGNED_DATA;
+<<<<<<< HEAD
 		ph->data[0] = 0; /* padding */
+=======
+		ph->data0 = 0; /* padding */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		ph->message_id = PNS_PIPE_DATA;
 	ph->pipe_handle = pn->pipe_handle;
@@ -1121,8 +1324,12 @@ static int pipe_skb_send(struct sock *sk, struct sk_buff *skb)
 
 }
 
+<<<<<<< HEAD
 static int pep_sendmsg(struct kiocb *iocb, struct sock *sk,
 			struct msghdr *msg, size_t len)
+=======
+static int pep_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pep_sock *pn = pep_sk(sk);
 	struct sk_buff *skb;
@@ -1144,7 +1351,11 @@ static int pep_sendmsg(struct kiocb *iocb, struct sock *sk,
 		return err;
 
 	skb_reserve(skb, MAX_PHONET_HEADER + 3 + pn->aligned);
+<<<<<<< HEAD
 	err = memcpy_fromiovec(skb_put(skb, len), msg->msg_iov, len);
+=======
+	err = memcpy_from_msg(skb_put(skb, len), msg, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		goto outfree;
 
@@ -1171,7 +1382,11 @@ disabled:
 	/* Wait until flow control allows TX */
 	done = atomic_read(&pn->tx_credits);
 	while (!done) {
+<<<<<<< HEAD
 		DEFINE_WAIT(wait);
+=======
+		DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!timeo) {
 			err = -EAGAIN;
@@ -1182,10 +1397,16 @@ disabled:
 			goto out;
 		}
 
+<<<<<<< HEAD
 		prepare_to_wait(sk_sleep(sk), &wait,
 				TASK_INTERRUPTIBLE);
 		done = sk_wait_event(sk, &timeo, atomic_read(&pn->tx_credits));
 		finish_wait(sk_sleep(sk), &wait);
+=======
+		add_wait_queue(sk_sleep(sk), &wait);
+		done = sk_wait_event(sk, &timeo, atomic_read(&pn->tx_credits), &wait);
+		remove_wait_queue(sk_sleep(sk), &wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (sk->sk_state != TCP_ESTABLISHED)
 			goto disabled;
@@ -1249,9 +1470,14 @@ struct sk_buff *pep_read(struct sock *sk)
 	return skb;
 }
 
+<<<<<<< HEAD
 static int pep_recvmsg(struct kiocb *iocb, struct sock *sk,
 			struct msghdr *msg, size_t len, int noblock,
 			int flags, int *addr_len)
+=======
+static int pep_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
+		       int flags, int *addr_len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *skb;
 	int err;
@@ -1280,7 +1506,11 @@ static int pep_recvmsg(struct kiocb *iocb, struct sock *sk,
 			return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	skb = skb_recv_datagram(sk, flags, noblock, &err);
+=======
+	skb = skb_recv_datagram(sk, flags, &err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lock_sock(sk);
 	if (skb == NULL) {
 		if (err == -ENOTCONN && sk->sk_state == TCP_CLOSE_WAIT)
@@ -1299,7 +1529,11 @@ copy:
 	else
 		len = skb->len;
 
+<<<<<<< HEAD
 	err = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, len);
+=======
+	err = skb_copy_datagram_msg(skb, 0, msg, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!err)
 		err = (flags & MSG_TRUNC) ? skb->len : len;
 
@@ -1354,7 +1588,11 @@ static struct proto pep_proto = {
 	.name		= "PNPIPE",
 };
 
+<<<<<<< HEAD
 static struct phonet_protocol pep_pn_proto = {
+=======
+static const struct phonet_protocol pep_pn_proto = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ops		= &phonet_stream_ops,
 	.prot		= &pep_proto,
 	.sock_type	= SOCK_SEQPACKET,

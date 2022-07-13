@@ -31,6 +31,7 @@ SECTIONS
 
 	__reloc_end = . ;
 
+<<<<<<< HEAD
 	.initrd ALIGN(0x10) :
 	{
 		boot_initrd_start = . ;
@@ -41,6 +42,11 @@ SECTIONS
 	. = ALIGN(0x10);
 	__image_load = . ;
 	.image 0xd0001000: AT(__image_load)
+=======
+	. = ALIGN(0x10);
+	__image_load = . ;
+	.image 0xd0003000: AT(__image_load)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		_image_start = .;
 		*(image)

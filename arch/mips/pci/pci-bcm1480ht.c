@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2001,2002,2005 Broadcom Corporation
  * Copyright (C) 2004 by Ralf Baechle (ralf@linux-mips.org)
@@ -15,6 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (C) 2001,2002,2005 Broadcom Corporation
+ * Copyright (C) 2004 by Ralf Baechle (ralf@linux-mips.org)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -53,8 +60,13 @@
 
 static void *ht_cfg_space;
 
+<<<<<<< HEAD
 #define PCI_BUS_ENABLED	1
 #define PCI_DEVICE_MODE	2
+=======
+#define PCI_BUS_ENABLED 1
+#define PCI_DEVICE_MODE 2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int bcm1480ht_bus_status;
 
@@ -191,7 +203,11 @@ struct pci_controller bcm1480ht_controller = {
 	.io_resource	= &bcm1480ht_io_resource,
 	.index		= 1,
 	.get_busno	= bcm1480ht_pcibios_get_busno,
+<<<<<<< HEAD
 	.io_offset      = A_BCM1480_PHYS_HT_IO_MATCH_BYTES,
+=======
+	.io_offset	= A_BCM1480_PHYS_HT_IO_MATCH_BYTES,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init bcm1480ht_pcibios_init(void)

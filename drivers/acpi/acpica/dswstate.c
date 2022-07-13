@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: dswstate - Dispatcher parse tree walk management routines
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acparser.h"
@@ -51,14 +62,24 @@
 ACPI_MODULE_NAME("dswstate")
 
   /* Local prototypes */
+<<<<<<< HEAD
 static acpi_status acpi_ds_result_stack_push(struct acpi_walk_state *ws);
 static acpi_status acpi_ds_result_stack_pop(struct acpi_walk_state *ws);
+=======
+static acpi_status
+acpi_ds_result_stack_push(struct acpi_walk_state *walk_state);
+static acpi_status acpi_ds_result_stack_pop(struct acpi_walk_state *walk_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ds_result_pop
  *
+<<<<<<< HEAD
  * PARAMETERS:  Object              - Where to return the popped object
+=======
+ * PARAMETERS:  object              - Where to return the popped object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              walk_state          - Current Walk state
  *
  * RETURN:      Status
@@ -132,7 +153,11 @@ acpi_ds_result_pop(union acpi_operand_object **object,
  *
  * FUNCTION:    acpi_ds_result_push
  *
+<<<<<<< HEAD
  * PARAMETERS:  Object              - Where to return the popped object
+=======
+ * PARAMETERS:  object              - Where to return the popped object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              walk_state          - Current Walk state
  *
  * RETURN:      Status
@@ -142,8 +167,13 @@ acpi_ds_result_pop(union acpi_operand_object **object,
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ds_result_push(union acpi_operand_object * object,
 		    struct acpi_walk_state * walk_state)
+=======
+acpi_ds_result_push(union acpi_operand_object *object,
+		    struct acpi_walk_state *walk_state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union acpi_generic_state *state;
 	acpi_status status;
@@ -179,8 +209,13 @@ acpi_ds_result_push(union acpi_operand_object * object,
 
 	if (!object) {
 		ACPI_ERROR((AE_INFO,
+<<<<<<< HEAD
 			    "Null Object! Obj=%p State=%p Num=%u",
 			    object, walk_state, walk_state->result_count));
+=======
+			    "Null Object! State=%p Num=%u",
+			    walk_state, walk_state->result_count));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (AE_BAD_PARAMETER);
 	}
 
@@ -296,7 +331,11 @@ static acpi_status acpi_ds_result_stack_pop(struct acpi_walk_state *walk_state)
  *
  * FUNCTION:    acpi_ds_obj_stack_push
  *
+<<<<<<< HEAD
  * PARAMETERS:  Object              - Object to push
+=======
+ * PARAMETERS:  object              - Object to push
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              walk_state          - Current Walk state
  *
  * RETURN:      Status
@@ -306,7 +345,11 @@ static acpi_status acpi_ds_result_stack_pop(struct acpi_walk_state *walk_state)
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ds_obj_stack_push(void *object, struct acpi_walk_state * walk_state)
+=======
+acpi_ds_obj_stack_push(void *object, struct acpi_walk_state *walk_state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ACPI_FUNCTION_NAME(ds_obj_stack_push);
 
@@ -347,13 +390,21 @@ acpi_ds_obj_stack_push(void *object, struct acpi_walk_state * walk_state)
  *
  * RETURN:      Status
  *
+<<<<<<< HEAD
  * DESCRIPTION: Pop this walk's object stack.  Objects on the stack are NOT
+=======
+ * DESCRIPTION: Pop this walk's object stack. Objects on the stack are NOT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              deleted by this routine.
  *
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ds_obj_stack_pop(u32 pop_count, struct acpi_walk_state * walk_state)
+=======
+acpi_ds_obj_stack_pop(u32 pop_count, struct acpi_walk_state *walk_state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 i;
 
@@ -410,7 +461,11 @@ acpi_ds_obj_stack_pop_and_delete(u32 pop_count,
 		return;
 	}
 
+<<<<<<< HEAD
 	for (i = (s32) pop_count - 1; i >= 0; i--) {
+=======
+	for (i = (s32)pop_count - 1; i >= 0; i--) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (walk_state->num_operands == 0) {
 			return;
 		}
@@ -433,7 +488,11 @@ acpi_ds_obj_stack_pop_and_delete(u32 pop_count,
  *
  * FUNCTION:    acpi_ds_get_current_walk_state
  *
+<<<<<<< HEAD
  * PARAMETERS:  Thread          - Get current active state for this Thread
+=======
+ * PARAMETERS:  thread          - Get current active state for this Thread
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Pointer to the current walk state
  *
@@ -462,7 +521,11 @@ struct acpi_walk_state *acpi_ds_get_current_walk_state(struct acpi_thread_state
  * FUNCTION:    acpi_ds_push_walk_state
  *
  * PARAMETERS:  walk_state      - State to push
+<<<<<<< HEAD
  *              Thread          - Thread state object
+=======
+ *              thread          - Thread state object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -486,12 +549,20 @@ acpi_ds_push_walk_state(struct acpi_walk_state *walk_state,
  *
  * FUNCTION:    acpi_ds_pop_walk_state
  *
+<<<<<<< HEAD
  * PARAMETERS:  Thread      - Current thread state
+=======
+ * PARAMETERS:  thread      - Current thread state
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      A walk_state object popped from the thread's stack
  *
  * DESCRIPTION: Remove and return the walkstate object that is at the head of
+<<<<<<< HEAD
  *              the walk stack for the given walk list.  NULL indicates that
+=======
+ *              the walk stack for the given walk list. NULL indicates that
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              the list is empty.
  *
  ******************************************************************************/
@@ -525,6 +596,7 @@ struct acpi_walk_state *acpi_ds_pop_walk_state(struct acpi_thread_state *thread)
  * FUNCTION:    acpi_ds_create_walk_state
  *
  * PARAMETERS:  owner_id        - ID for object creation
+<<<<<<< HEAD
  *              Origin          - Starting point for this walk
  *              method_desc     - Method object
  *              Thread          - Current thread state
@@ -532,13 +604,31 @@ struct acpi_walk_state *acpi_ds_pop_walk_state(struct acpi_thread_state *thread)
  * RETURN:      Pointer to the new walk state.
  *
  * DESCRIPTION: Allocate and initialize a new walk state.  The current walk
+=======
+ *              origin          - Starting point for this walk
+ *              method_desc     - Method object
+ *              thread          - Current thread state
+ *
+ * RETURN:      Pointer to the new walk state.
+ *
+ * DESCRIPTION: Allocate and initialize a new walk state. The current walk
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              state is set to this new state.
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 struct acpi_walk_state *acpi_ds_create_walk_state(acpi_owner_id owner_id, union acpi_parse_object
 						  *origin, union acpi_operand_object
 						  *method_desc, struct acpi_thread_state
+=======
+struct acpi_walk_state *acpi_ds_create_walk_state(acpi_owner_id owner_id,
+						  union acpi_parse_object
+						  *origin,
+						  union acpi_operand_object
+						  *method_desc,
+						  struct acpi_thread_state
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  *thread)
 {
 	struct acpi_walk_state *walk_state;
@@ -560,7 +650,11 @@ struct acpi_walk_state *acpi_ds_create_walk_state(acpi_owner_id owner_id, union 
 
 	/* Init the method args/local */
 
+<<<<<<< HEAD
 #if (!defined (ACPI_NO_METHOD_EXECUTION) && !defined (ACPI_CONSTANT_EVAL_ONLY))
+=======
+#ifndef ACPI_CONSTANT_EVAL_ONLY
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_ds_method_data_init(walk_state);
 #endif
 
@@ -578,11 +672,19 @@ struct acpi_walk_state *acpi_ds_create_walk_state(acpi_owner_id owner_id, union 
  * FUNCTION:    acpi_ds_init_aml_walk
  *
  * PARAMETERS:  walk_state      - New state to be initialized
+<<<<<<< HEAD
  *              Op              - Current parse op
  *              method_node     - Control method NS node, if any
  *              aml_start       - Start of AML
  *              aml_length      - Length of AML
  *              Info            - Method info block (params, etc.)
+=======
+ *              op              - Current parse op
+ *              method_node     - Control method NS node, if any
+ *              aml_start       - Start of AML
+ *              aml_length      - Length of AML
+ *              info            - Method info block (params, etc.)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              pass_number     - 1, 2, or 3
  *
  * RETURN:      Status
@@ -606,9 +708,20 @@ acpi_ds_init_aml_walk(struct acpi_walk_state *walk_state,
 	ACPI_FUNCTION_TRACE(ds_init_aml_walk);
 
 	walk_state->parser_state.aml =
+<<<<<<< HEAD
 	    walk_state->parser_state.aml_start = aml_start;
 	walk_state->parser_state.aml_end =
 	    walk_state->parser_state.pkg_end = aml_start + aml_length;
+=======
+	    walk_state->parser_state.aml_start =
+	    walk_state->parser_state.aml_end =
+	    walk_state->parser_state.pkg_end = aml_start;
+	/* Avoid undefined behavior: applying zero offset to null pointer */
+	if (aml_length != 0) {
+		walk_state->parser_state.aml_end += aml_length;
+		walk_state->parser_state.pkg_end += aml_length;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The next_op of the next_walk will be the beginning of the method */
 
@@ -653,7 +766,11 @@ acpi_ds_init_aml_walk(struct acpi_walk_state *walk_state,
 		/*
 		 * Setup the current scope.
 		 * Find a Named Op that has a namespace node associated with it.
+<<<<<<< HEAD
 		 * search upwards from this Op.  Current scope is the first
+=======
+		 * search upwards from this Op. Current scope is the first
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * Op with a namespace node.
 		 */
 		extra_op = parser_state->start_op;
@@ -704,13 +821,21 @@ void acpi_ds_delete_walk_state(struct acpi_walk_state *walk_state)
 	ACPI_FUNCTION_TRACE_PTR(ds_delete_walk_state, walk_state);
 
 	if (!walk_state) {
+<<<<<<< HEAD
 		return;
+=======
+		return_VOID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (walk_state->descriptor_type != ACPI_DESC_TYPE_WALK) {
 		ACPI_ERROR((AE_INFO, "%p is not a valid walk state",
 			    walk_state));
+<<<<<<< HEAD
 		return;
+=======
+		return_VOID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* There should not be any open scopes */

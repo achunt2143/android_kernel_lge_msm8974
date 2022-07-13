@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 2003, 04, 11 Ralf Baechle (ralf@linux-mips.org)
  * Copyright (C) 2011 Wind River Systems,
@@ -11,11 +16,16 @@
 #include <linux/bug.h>
 #include <linux/kernel.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/init.h>
 #include <linux/types.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 
 #include <asm/cpu-info.h>
 
@@ -159,21 +169,42 @@ out:
 static void __init pcibios_set_cache_line_size(void)
 {
 	struct cpuinfo_mips *c = &current_cpu_data;
+=======
+#include <linux/of_address.h>
+
+#include <asm/cpu-info.h>
+
+unsigned long PCIBIOS_MIN_IO;
+EXPORT_SYMBOL(PCIBIOS_MIN_IO);
+
+unsigned long PCIBIOS_MIN_MEM;
+EXPORT_SYMBOL(PCIBIOS_MIN_MEM);
+
+static int __init pcibios_set_cache_line_size(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int lsize;
 
 	/*
 	 * Set PCI cacheline size to that of the highest level in the
 	 * cache hierarchy.
 	 */
+<<<<<<< HEAD
 	lsize = c->dcache.linesz;
 	lsize = c->scache.linesz ? : lsize;
 	lsize = c->tcache.linesz ? : lsize;
+=======
+	lsize = cpu_dcache_line_size();
+	lsize = cpu_scache_line_size() ? : lsize;
+	lsize = cpu_tcache_line_size() ? : lsize;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!lsize);
 
 	pci_dfl_cache_line_size = lsize >> 2;
 
 	pr_debug("PCI: pci_cache_line_size set to %d bytes\n", lsize);
+<<<<<<< HEAD
 }
 
 static int __init pcibios_init(void)
@@ -300,4 +331,18 @@ char *__devinit pcibios_setup(char *str)
 	if (pcibios_plat_setup)
 		return pcibios_plat_setup(str);
 	return str;
+=======
+	return 0;
+}
+arch_initcall(pcibios_set_cache_line_size);
+
+void pci_resource_to_user(const struct pci_dev *dev, int bar,
+			  const struct resource *rsrc, resource_size_t *start,
+			  resource_size_t *end)
+{
+	phys_addr_t size = resource_size(rsrc);
+
+	*start = fixup_bigphys_addr(rsrc->start, size);
+	*end = rsrc->start + size - 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,6 +1,10 @@
 /*
  * Linux ARCnet driver - "RIM I" (entirely mem-mapped) cards
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Written 1994-1999 by Avery Pennarun.
  * Written 1999-2000 by Martin Mares <mj@ucw.cz>.
  * Derived from skeleton.c by Donald Becker.
@@ -24,12 +28,19 @@
  *
  * **********************
  */
+<<<<<<< HEAD
+=======
+
+#define pr_fmt(fmt) "arcnet:" KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/ioport.h>
 #include <linux/delay.h>
 #include <linux/netdevice.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -39,6 +50,15 @@
 
 #define VERSION "arcnet: RIM I (entirely mem-mapped) support\n"
 
+=======
+#include <linux/memblock.h>
+#include <linux/init.h>
+#include <linux/interrupt.h>
+#include <linux/io.h>
+
+#include "arcdevice.h"
+#include "com9026.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Internal function declarations */
 
@@ -50,12 +70,18 @@ static void arcrimi_setmask(struct net_device *dev, int mask);
 static int arcrimi_reset(struct net_device *dev, int really_reset);
 static void arcrimi_copy_to_card(struct net_device *dev, int bufnum, int offset,
 				 void *buf, int count);
+<<<<<<< HEAD
 static void arcrimi_copy_from_card(struct net_device *dev, int bufnum, int offset,
 				   void *buf, int count);
+=======
+static void arcrimi_copy_from_card(struct net_device *dev, int bufnum,
+				   int offset, void *buf, int count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Handy defines for ARCnet specific stuff */
 
 /* Amount of I/O memory used by the card */
+<<<<<<< HEAD
 #define BUFFER_SIZE (512)
 #define MIRROR_SIZE (BUFFER_SIZE*4)
 
@@ -81,11 +107,18 @@ static void arcrimi_copy_from_card(struct net_device *dev, int bufnum, int offse
 
 /*
  * We cannot probe for a RIM I card; one reason is I don't know how to reset
+=======
+#define BUFFER_SIZE	(512)
+#define MIRROR_SIZE	(BUFFER_SIZE * 4)
+
+/* We cannot probe for a RIM I card; one reason is I don't know how to reset
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * them.  In fact, we can't even get their node ID automatically.  So, we
  * need to be passed a specific shmem address, IRQ, and node ID.
  */
 static int __init arcrimi_probe(struct net_device *dev)
 {
+<<<<<<< HEAD
 	BUGLVL(D_NORMAL) printk(VERSION);
 	BUGLVL(D_NORMAL) printk("E-mail me if you actually test the RIM I driver, please!\n");
 
@@ -104,12 +137,37 @@ static int __init arcrimi_probe(struct net_device *dev)
 	}
 	/*
 	 * Grab the memory region at mem_start for MIRROR_SIZE bytes.
+=======
+	if (BUGLVL(D_NORMAL)) {
+		pr_info("%s\n", "RIM I (entirely mem-mapped) support");
+		pr_info("E-mail me if you actually test the RIM I driver, please!\n");
+		pr_info("Given: node %02Xh, shmem %lXh, irq %d\n",
+			dev->dev_addr[0], dev->mem_start, dev->irq);
+	}
+
+	if (dev->mem_start <= 0 || dev->irq <= 0) {
+		if (BUGLVL(D_NORMAL))
+			pr_err("No autoprobe for RIM I; you must specify the shmem and irq!\n");
+		return -ENODEV;
+	}
+	if (dev->dev_addr[0] == 0) {
+		if (BUGLVL(D_NORMAL))
+			pr_err("You need to specify your card's station ID!\n");
+		return -ENODEV;
+	}
+	/* Grab the memory region at mem_start for MIRROR_SIZE bytes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Later in arcrimi_found() the real size will be determined
 	 * and this reserve will be released and the correct size
 	 * will be taken.
 	 */
 	if (!request_mem_region(dev->mem_start, MIRROR_SIZE, "arcnet (90xx)")) {
+<<<<<<< HEAD
 		BUGLVL(D_NORMAL) printk("Card memory already allocated\n");
+=======
+		if (BUGLVL(D_NORMAL))
+			pr_notice("Card memory already allocated\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	return arcrimi_found(dev);
@@ -125,7 +183,11 @@ static int check_mirror(unsigned long addr, size_t size)
 
 	p = ioremap(addr, size);
 	if (p) {
+<<<<<<< HEAD
 		if (readb(p) == TESTvalue)
+=======
+		if (arcnet_readb(p, COM9026_REG_R_STATUS) == TESTvalue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res = 1;
 		else
 			res = 0;
@@ -136,9 +198,14 @@ static int check_mirror(unsigned long addr, size_t size)
 	return res;
 }
 
+<<<<<<< HEAD
 /*
  * Set up the struct net_device associated with this card.  Called after
  * probing succeeds.
+=======
+/* Set up the struct net_device associated with this card.
+ * Called after probing succeeds.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int __init arcrimi_found(struct net_device *dev)
 {
@@ -151,7 +218,11 @@ static int __init arcrimi_found(struct net_device *dev)
 	p = ioremap(dev->mem_start, MIRROR_SIZE);
 	if (!p) {
 		release_mem_region(dev->mem_start, MIRROR_SIZE);
+<<<<<<< HEAD
 		BUGMSG(D_NORMAL, "Can't ioremap\n");
+=======
+		arc_printk(D_NORMAL, dev, "Can't ioremap\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -159,13 +230,23 @@ static int __init arcrimi_found(struct net_device *dev)
 	if (request_irq(dev->irq, arcnet_interrupt, 0, "arcnet (RIM I)", dev)) {
 		iounmap(p);
 		release_mem_region(dev->mem_start, MIRROR_SIZE);
+<<<<<<< HEAD
 		BUGMSG(D_NORMAL, "Can't get IRQ %d!\n", dev->irq);
+=======
+		arc_printk(D_NORMAL, dev, "Can't get IRQ %d!\n", dev->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
 	shmem = dev->mem_start;
+<<<<<<< HEAD
 	writeb(TESTvalue, p);
 	writeb(dev->dev_addr[0], p + 1);	/* actually the node ID */
+=======
+	arcnet_writeb(TESTvalue, p, COM9026_REG_W_INTMASK);
+	arcnet_writeb(TESTvalue, p, COM9026_REG_W_COMMAND);
+					/* actually the station/node ID */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* find the real shared memory start/end points, including mirrors */
 
@@ -174,7 +255,11 @@ static int __init arcrimi_found(struct net_device *dev)
 	 * 2k (or there are no mirrors at all) but on some, it's 4k.
 	 */
 	mirror_size = MIRROR_SIZE;
+<<<<<<< HEAD
 	if (readb(p) == TESTvalue &&
+=======
+	if (arcnet_readb(p, COM9026_REG_R_STATUS) == TESTvalue &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    check_mirror(shmem - MIRROR_SIZE, MIRROR_SIZE) == 0 &&
 	    check_mirror(shmem - 2 * MIRROR_SIZE, MIRROR_SIZE) == 1)
 		mirror_size = 2 * MIRROR_SIZE;
@@ -204,8 +289,12 @@ static int __init arcrimi_found(struct net_device *dev)
 	lp->hw.copy_to_card = arcrimi_copy_to_card;
 	lp->hw.copy_from_card = arcrimi_copy_from_card;
 
+<<<<<<< HEAD
 	/*
 	 * re-reserve the memory region - arcrimi_probe() alloced this reqion
+=======
+	/* re-reserve the memory region - arcrimi_probe() alloced this reqion
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * but didn't know the real size.  Free that region and then re-get
 	 * with the correct size.  There is a VERY slim chance this could
 	 * fail.
@@ -215,6 +304,7 @@ static int __init arcrimi_found(struct net_device *dev)
 	if (!request_mem_region(dev->mem_start,
 				dev->mem_end - dev->mem_start + 1,
 				"arcnet (90xx)")) {
+<<<<<<< HEAD
 		BUGMSG(D_NORMAL, "Card memory already allocated\n");
 		goto err_free_irq;
 	}
@@ -222,10 +312,21 @@ static int __init arcrimi_found(struct net_device *dev)
 	lp->mem_start = ioremap(dev->mem_start, dev->mem_end - dev->mem_start + 1);
 	if (!lp->mem_start) {
 		BUGMSG(D_NORMAL, "Can't remap device memory!\n");
+=======
+		arc_printk(D_NORMAL, dev, "Card memory already allocated\n");
+		goto err_free_irq;
+	}
+
+	lp->mem_start = ioremap(dev->mem_start,
+				dev->mem_end - dev->mem_start + 1);
+	if (!lp->mem_start) {
+		arc_printk(D_NORMAL, dev, "Can't remap device memory!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_release_mem;
 	}
 
 	/* get and check the station ID from offset 1 in shmem */
+<<<<<<< HEAD
 	dev->dev_addr[0] = readb(lp->mem_start + 1);
 
 	BUGMSG(D_NORMAL, "ARCnet RIM I: station %02Xh found at IRQ %d, "
@@ -233,6 +334,16 @@ static int __init arcrimi_found(struct net_device *dev)
 	       dev->dev_addr[0],
 	       dev->irq, dev->mem_start,
 	 (dev->mem_end - dev->mem_start + 1) / mirror_size, mirror_size);
+=======
+	arcnet_set_addr(dev, arcnet_readb(lp->mem_start,
+					  COM9026_REG_R_STATION));
+
+	arc_printk(D_NORMAL, dev, "ARCnet RIM I: station %02Xh found at IRQ %d, ShMem %lXh (%ld*%d bytes)\n",
+		   dev->dev_addr[0],
+		   dev->irq, dev->mem_start,
+		   (dev->mem_end - dev->mem_start + 1) / mirror_size,
+		   mirror_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = register_netdev(dev);
 	if (err)
@@ -249,9 +360,13 @@ err_free_irq:
 	return -EIO;
 }
 
+<<<<<<< HEAD
 
 /*
  * Do a hardware reset on the card, and set up necessary registers.
+=======
+/* Do a hardware reset on the card, and set up necessary registers.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This should be called as little as possible, because it disrupts the
  * token on the network (causes a RECON) and requires a significant delay.
@@ -263,6 +378,7 @@ static int arcrimi_reset(struct net_device *dev, int really_reset)
 	struct arcnet_local *lp = netdev_priv(dev);
 	void __iomem *ioaddr = lp->mem_start + 0x800;
 
+<<<<<<< HEAD
 	BUGMSG(D_INIT, "Resetting %s (status=%02Xh)\n", dev->name, ASTATUS());
 
 	if (really_reset) {
@@ -274,6 +390,21 @@ static int arcrimi_reset(struct net_device *dev, int really_reset)
 
 	/* enable extended (512-byte) packets */
 	ACOMMAND(CONFIGcmd | EXTconf);
+=======
+	arc_printk(D_INIT, dev, "Resetting %s (status=%02Xh)\n",
+		   dev->name, arcnet_readb(ioaddr, COM9026_REG_R_STATUS));
+
+	if (really_reset) {
+		arcnet_writeb(TESTvalue, ioaddr, -0x800);	/* fake reset */
+		return 0;
+	}
+	/* clear flags & end reset */
+	arcnet_writeb(CFLAGScmd | RESETclear, ioaddr, COM9026_REG_W_COMMAND);
+	arcnet_writeb(CFLAGScmd | CONFIGclear, ioaddr, COM9026_REG_W_COMMAND);
+
+	/* enable extended (512-byte) packets */
+	arcnet_writeb(CONFIGcmd | EXTconf, ioaddr, COM9026_REG_W_COMMAND);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* done!  return success. */
 	return 0;
@@ -284,7 +415,11 @@ static void arcrimi_setmask(struct net_device *dev, int mask)
 	struct arcnet_local *lp = netdev_priv(dev);
 	void __iomem *ioaddr = lp->mem_start + 0x800;
 
+<<<<<<< HEAD
 	AINTMASK(mask);
+=======
+	arcnet_writeb(mask, ioaddr, COM9026_REG_W_INTMASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int arcrimi_status(struct net_device *dev)
@@ -292,7 +427,11 @@ static int arcrimi_status(struct net_device *dev)
 	struct arcnet_local *lp = netdev_priv(dev);
 	void __iomem *ioaddr = lp->mem_start + 0x800;
 
+<<<<<<< HEAD
 	return ASTATUS();
+=======
+	return arcnet_readb(ioaddr, COM9026_REG_R_STATUS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void arcrimi_command(struct net_device *dev, int cmd)
@@ -300,7 +439,11 @@ static void arcrimi_command(struct net_device *dev, int cmd)
 	struct arcnet_local *lp = netdev_priv(dev);
 	void __iomem *ioaddr = lp->mem_start + 0x800;
 
+<<<<<<< HEAD
 	ACOMMAND(cmd);
+=======
+	arcnet_writeb(cmd, ioaddr, COM9026_REG_W_COMMAND);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void arcrimi_copy_to_card(struct net_device *dev, int bufnum, int offset,
@@ -308,6 +451,7 @@ static void arcrimi_copy_to_card(struct net_device *dev, int bufnum, int offset,
 {
 	struct arcnet_local *lp = netdev_priv(dev);
 	void __iomem *memaddr = lp->mem_start + 0x800 + bufnum * 512 + offset;
+<<<<<<< HEAD
 	TIME("memcpy_toio", count, memcpy_toio(memaddr, buf, count));
 }
 
@@ -318,6 +462,19 @@ static void arcrimi_copy_from_card(struct net_device *dev, int bufnum, int offse
 	struct arcnet_local *lp = netdev_priv(dev);
 	void __iomem *memaddr = lp->mem_start + 0x800 + bufnum * 512 + offset;
 	TIME("memcpy_fromio", count, memcpy_fromio(buf, memaddr, count));
+=======
+
+	TIME(dev, "memcpy_toio", count, memcpy_toio(memaddr, buf, count));
+}
+
+static void arcrimi_copy_from_card(struct net_device *dev, int bufnum,
+				   int offset, void *buf, int count)
+{
+	struct arcnet_local *lp = netdev_priv(dev);
+	void __iomem *memaddr = lp->mem_start + 0x800 + bufnum * 512 + offset;
+
+	TIME(dev, "memcpy_fromio", count, memcpy_fromio(buf, memaddr, count));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int node;
@@ -329,6 +486,10 @@ module_param(node, int, 0);
 module_param(io, int, 0);
 module_param(irq, int, 0);
 module_param_string(device, device, sizeof(device), 0);
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("ARCnet COM90xx RIM I chipset driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 static struct net_device *my_dev;
@@ -342,7 +503,11 @@ static int __init arc_rimi_init(void)
 		return -ENOMEM;
 
 	if (node && node != 0xff)
+<<<<<<< HEAD
 		dev->dev_addr[0] = node;
+=======
+		arcnet_set_addr(dev, node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->mem_start = io;
 	dev->irq = irq;
@@ -350,7 +515,11 @@ static int __init arc_rimi_init(void)
 		dev->irq = 9;
 
 	if (arcrimi_probe(dev)) {
+<<<<<<< HEAD
 		free_netdev(dev);
+=======
+		free_arcdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -367,23 +536,42 @@ static void __exit arc_rimi_exit(void)
 	iounmap(lp->mem_start);
 	release_mem_region(dev->mem_start, dev->mem_end - dev->mem_start + 1);
 	free_irq(dev->irq, dev);
+<<<<<<< HEAD
 	free_netdev(dev);
+=======
+	free_arcdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifndef MODULE
 static int __init arcrimi_setup(char *s)
 {
 	int ints[8];
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s = get_options(s, 8, ints);
 	if (!ints[0])
 		return 1;
 	switch (ints[0]) {
 	default:		/* ERROR */
+<<<<<<< HEAD
 		printk("arcrimi: Too many arguments.\n");
 	case 3:		/* Node ID */
 		node = ints[3];
 	case 2:		/* IRQ */
 		irq = ints[2];
+=======
+		pr_err("Too many arguments\n");
+		fallthrough;
+	case 3:		/* Node ID */
+		node = ints[3];
+		fallthrough;
+	case 2:		/* IRQ */
+		irq = ints[2];
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:		/* IO address */
 		io = ints[1];
 	}

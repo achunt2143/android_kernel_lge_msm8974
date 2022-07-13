@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 * RS485 serial communications
 
 The RTS signal is capable of automatically controlling line direction for
@@ -29,3 +30,6 @@ RS485 example for Atmel USART:
 		rs485-rts-delay = <0 200>;		// in milliseconds
 	};
 
+=======
+See rs485.yaml
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

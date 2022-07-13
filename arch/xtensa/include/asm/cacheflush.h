@@ -1,18 +1,28 @@
 /*
+<<<<<<< HEAD
  * include/asm-xtensa/cacheflush.h
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+<<<<<<< HEAD
  * (C) 2001 - 2007 Tensilica Inc.
+=======
+ * (C) 2001 - 2013 Tensilica Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _XTENSA_CACHEFLUSH_H
 #define _XTENSA_CACHEFLUSH_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <asm/processor.h>
 #include <asm/page.h>
@@ -41,6 +51,10 @@
  * specials for cache aliasing:
  *
  * __flush_invalidate_dcache_page_alias(vaddr,paddr)
+<<<<<<< HEAD
+=======
+ * __invalidate_dcache_page_alias(vaddr,paddr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * __invalidate_icache_page_alias(vaddr,paddr)
  */
 
@@ -51,7 +65,10 @@ extern void __invalidate_icache_page(unsigned long);
 extern void __invalidate_icache_range(unsigned long, unsigned long);
 extern void __invalidate_dcache_range(unsigned long, unsigned long);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if XCHAL_DCACHE_IS_WRITEBACK
 extern void __flush_invalidate_dcache_all(void);
 extern void __flush_dcache_page(unsigned long);
@@ -59,17 +76,37 @@ extern void __flush_dcache_range(unsigned long, unsigned long);
 extern void __flush_invalidate_dcache_page(unsigned long);
 extern void __flush_invalidate_dcache_range(unsigned long, unsigned long);
 #else
+<<<<<<< HEAD
 # define __flush_dcache_range(p,s)		do { } while(0)
 # define __flush_dcache_page(p)			do { } while(0)
 # define __flush_invalidate_dcache_page(p) 	__invalidate_dcache_page(p)
+=======
+static inline void __flush_dcache_page(unsigned long va)
+{
+}
+static inline void __flush_dcache_range(unsigned long va, unsigned long sz)
+{
+}
+# define __flush_invalidate_dcache_all()	__invalidate_dcache_all()
+# define __flush_invalidate_dcache_page(p)	__invalidate_dcache_page(p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define __flush_invalidate_dcache_range(p,s)	__invalidate_dcache_range(p,s)
 #endif
 
 #if defined(CONFIG_MMU) && (DCACHE_WAY_SIZE > PAGE_SIZE)
 extern void __flush_invalidate_dcache_page_alias(unsigned long, unsigned long);
+<<<<<<< HEAD
 #else
 static inline void __flush_invalidate_dcache_page_alias(unsigned long virt,
 							unsigned long phys) { }
+=======
+extern void __invalidate_dcache_page_alias(unsigned long, unsigned long);
+#else
+static inline void __flush_invalidate_dcache_page_alias(unsigned long virt,
+							unsigned long phys) { }
+static inline void __invalidate_dcache_page_alias(unsigned long virt,
+						  unsigned long phys) { }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #if defined(CONFIG_MMU) && (ICACHE_WAY_SIZE > PAGE_SIZE)
 extern void __invalidate_icache_page_alias(unsigned long, unsigned long);
@@ -84,12 +121,39 @@ static inline void __invalidate_icache_page_alias(unsigned long virt,
  *
  * Pages can get remapped. Because this might change the 'color' of that page,
  * we have to flush the cache before the PTE is changed.
+<<<<<<< HEAD
  * (see also Documentation/cachetlb.txt)
  */
 
 #if (DCACHE_WAY_SIZE > PAGE_SIZE)
 
 #define flush_cache_all()						\
+=======
+ * (see also Documentation/core-api/cachetlb.rst)
+ */
+
+#if defined(CONFIG_MMU) && \
+	((DCACHE_WAY_SIZE > PAGE_SIZE) || defined(CONFIG_SMP))
+
+#ifdef CONFIG_SMP
+void flush_cache_all(void);
+void flush_cache_range(struct vm_area_struct*, ulong, ulong);
+void flush_icache_range(unsigned long start, unsigned long end);
+void flush_cache_page(struct vm_area_struct*,
+			     unsigned long, unsigned long);
+#define flush_cache_all flush_cache_all
+#define flush_cache_range flush_cache_range
+#define flush_icache_range flush_icache_range
+#define flush_cache_page flush_cache_page
+#else
+#define flush_cache_all local_flush_cache_all
+#define flush_cache_range local_flush_cache_range
+#define flush_icache_range local_flush_icache_range
+#define flush_cache_page  local_flush_cache_page
+#endif
+
+#define local_flush_cache_all()						\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {								\
 		__flush_invalidate_dcache_all();			\
 		__invalidate_icache_all();				\
@@ -98,6 +162,7 @@ static inline void __invalidate_icache_page_alias(unsigned long virt,
 #define flush_cache_mm(mm)		flush_cache_all()
 #define flush_cache_dup_mm(mm)		flush_cache_mm(mm)
 
+<<<<<<< HEAD
 #define flush_cache_vmap(start,end)	flush_cache_all()
 #define flush_cache_vunmap(start,end)	flush_cache_all()
 
@@ -125,11 +190,42 @@ extern void flush_cache_page(struct vm_area_struct*, unsigned long, unsigned lon
 
 /* Ensure consistency between data and instruction cache. */
 #define flush_icache_range(start,end) 					\
+=======
+#define flush_cache_vmap(start,end)		flush_cache_all()
+#define flush_cache_vmap_early(start,end)	do { } while (0)
+#define flush_cache_vunmap(start,end)		flush_cache_all()
+
+void flush_dcache_folio(struct folio *folio);
+#define flush_dcache_folio flush_dcache_folio
+
+#define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 1
+static inline void flush_dcache_page(struct page *page)
+{
+	flush_dcache_folio(page_folio(page));
+}
+
+void local_flush_cache_range(struct vm_area_struct *vma,
+		unsigned long start, unsigned long end);
+void local_flush_cache_page(struct vm_area_struct *vma,
+		unsigned long address, unsigned long pfn);
+
+#else
+
+#define flush_icache_range local_flush_icache_range
+
+#endif
+
+#define flush_icache_user_range flush_icache_range
+
+/* Ensure consistency between data and instruction cache. */
+#define local_flush_icache_range(start, end)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {								\
 		__flush_dcache_range(start, (end) - (start));		\
 		__invalidate_icache_range(start,(end) - (start));	\
 	} while (0)
 
+<<<<<<< HEAD
 /* This is not required, see Documentation/cachetlb.txt */
 #define	flush_icache_page(vma,page)			do { } while (0)
 
@@ -137,11 +233,19 @@ extern void flush_cache_page(struct vm_area_struct*, unsigned long, unsigned lon
 #define flush_dcache_mmap_unlock(mapping)		do { } while (0)
 
 #if (DCACHE_WAY_SIZE > PAGE_SIZE)
+=======
+#if defined(CONFIG_MMU) && (DCACHE_WAY_SIZE > PAGE_SIZE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void copy_to_user_page(struct vm_area_struct*, struct page*,
 		unsigned long, void*, const void*, unsigned long);
 extern void copy_from_user_page(struct vm_area_struct*, struct page*,
 		unsigned long, void*, const void*, unsigned long);
+<<<<<<< HEAD
+=======
+#define copy_to_user_page copy_to_user_page
+#define copy_from_user_page copy_from_user_page
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 
@@ -157,6 +261,7 @@ extern void copy_from_user_page(struct vm_area_struct*, struct page*,
 
 #endif
 
+<<<<<<< HEAD
 #define XTENSA_CACHEBLK_LOG2	29
 #define XTENSA_CACHEBLK_SIZE	(1 << XTENSA_CACHEBLK_LOG2)
 #define XTENSA_CACHEBLK_MASK	(7 << XTENSA_CACHEBLK_LOG2)
@@ -253,4 +358,8 @@ static inline void flush_invalidate_dcache_unaligned(u32 addr, u32 size)
 }
 
 #endif /* __KERNEL__ */
+=======
+#include <asm-generic/cacheflush.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _XTENSA_CACHEFLUSH_H */

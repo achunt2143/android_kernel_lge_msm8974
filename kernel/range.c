@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Range add and subtract
  */
@@ -5,6 +6,17 @@
 #include <linux/init.h>
 #include <linux/sort.h>
 
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Range add and subtract
+ */
+#include <linux/init.h>
+#include <linux/minmax.h>
+#include <linux/printk.h>
+#include <linux/sort.h>
+#include <linux/string.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/range.h>
 
 int add_range(struct range *range, int az, int nr_range, u64 start, u64 end)
@@ -32,9 +44,14 @@ int add_range_with_merge(struct range *range, int az, int nr_range,
 	if (start >= end)
 		return nr_range;
 
+<<<<<<< HEAD
 	/* Try to merge it with old one: */
 	for (i = 0; i < nr_range; i++) {
 		u64 final_start, final_end;
+=======
+	/* get new start/end: */
+	for (i = 0; i < nr_range; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64 common_start, common_end;
 
 		if (!range[i].end)
@@ -45,12 +62,25 @@ int add_range_with_merge(struct range *range, int az, int nr_range,
 		if (common_start > common_end)
 			continue;
 
+<<<<<<< HEAD
 		final_start = min(range[i].start, start);
 		final_end = max(range[i].end, end);
 
 		range[i].start = final_start;
 		range[i].end =  final_end;
 		return nr_range;
+=======
+		/* new start/end, will add it back at last */
+		start = min(range[i].start, start);
+		end = max(range[i].end, end);
+
+		memmove(&range[i], &range[i + 1],
+			(nr_range - (i + 1)) * sizeof(range[i]));
+		range[nr_range - 1].start = 0;
+		range[nr_range - 1].end   = 0;
+		nr_range--;
+		i--;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Need to add it: */
@@ -97,7 +127,12 @@ void subtract_range(struct range *range, int az, u64 start, u64 end)
 				range[i].end = range[j].end;
 				range[i].start = end;
 			} else {
+<<<<<<< HEAD
 				printk(KERN_ERR "run of slot in ranges\n");
+=======
+				pr_err("%s: run out of slot in ranges\n",
+					__func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			range[j].end = start;
 			continue;
@@ -109,12 +144,21 @@ static int cmp_range(const void *x1, const void *x2)
 {
 	const struct range *r1 = x1;
 	const struct range *r2 = x2;
+<<<<<<< HEAD
 	s64 start1, start2;
 
 	start1 = r1->start;
 	start2 = r2->start;
 
 	return start1 - start2;
+=======
+
+	if (r1->start < r2->start)
+		return -1;
+	if (r1->start > r2->start)
+		return 1;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int clean_sort_range(struct range *range, int az)

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    Filename: cfag12864b.h
  *     Version: 0.1.0
  * Description: cfag12864b LCD driver header
+<<<<<<< HEAD
  *     License: GPLv2
  *
  *      Author: Copyright (C) Miguel Ojeda Sandonis
@@ -20,6 +25,11 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+ *
+ *      Author: Copyright (C) Miguel Ojeda <ojeda@kernel.org>
+ *        Date: 2006-10-12
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _CFAG12864B_H_

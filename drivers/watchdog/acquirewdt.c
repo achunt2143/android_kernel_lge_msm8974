@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Acquire Single Board Computer Watchdog Timer driver
  *
@@ -6,11 +10,14 @@
  *	(c) Copyright 1996 Alan Cox <alan@lxorguk.ukuu.org.uk>,
  *						All Rights Reserved.
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Neither Alan Cox nor CymruNet Ltd. admit liability nor provide
  *	warranty for any of this software. This material is provided
  *	"AS-IS" and at no charge.
@@ -60,8 +67,12 @@
 #include <linux/types.h>		/* For standard types (like size_t) */
 #include <linux/errno.h>		/* For the -ENODEV/... values */
 #include <linux/kernel.h>		/* For printk/panic/... */
+<<<<<<< HEAD
 #include <linux/miscdevice.h>		/* For MODULE_ALIAS_MISCDEV
 							(WATCHDOG_MINOR) */
+=======
+#include <linux/miscdevice.h>		/* For struct miscdevice */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/watchdog.h>		/* For the watchdog specific items */
 #include <linux/fs.h>			/* For file operations */
 #include <linux/ioport.h>		/* For io-port access */
@@ -201,7 +212,11 @@ static int acq_open(struct inode *inode, struct file *file)
 
 	/* Activate */
 	acq_keepalive();
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int acq_close(struct inode *inode, struct file *file)
@@ -226,6 +241,10 @@ static const struct file_operations acq_fops = {
 	.llseek		= no_llseek,
 	.write		= acq_write,
 	.unlocked_ioctl	= acq_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= acq_open,
 	.release	= acq_close,
 };
@@ -240,7 +259,11 @@ static struct miscdevice acq_miscdev = {
  *	Init & exit routines
  */
 
+<<<<<<< HEAD
 static int __devinit acq_probe(struct platform_device *dev)
+=======
+static int __init acq_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -275,14 +298,21 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit acq_remove(struct platform_device *dev)
+=======
+static void acq_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	misc_deregister(&acq_miscdev);
 	release_region(wdt_start, 1);
 	if (wdt_stop != wdt_start)
 		release_region(wdt_stop, 1);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void acq_shutdown(struct platform_device *dev)
@@ -292,11 +322,17 @@ static void acq_shutdown(struct platform_device *dev)
 }
 
 static struct platform_driver acquirewdt_driver = {
+<<<<<<< HEAD
 	.probe		= acq_probe,
 	.remove		= __devexit_p(acq_remove),
 	.shutdown	= acq_shutdown,
 	.driver		= {
 		.owner	= THIS_MODULE,
+=======
+	.remove_new	= acq_remove,
+	.shutdown	= acq_shutdown,
+	.driver		= {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name	= DRV_NAME,
 	},
 };
@@ -307,6 +343,7 @@ static int __init acq_init(void)
 
 	pr_info("WDT driver for Acquire single board computer initialising\n");
 
+<<<<<<< HEAD
 	err = platform_driver_register(&acquirewdt_driver);
 	if (err)
 		return err;
@@ -321,6 +358,20 @@ static int __init acq_init(void)
 
 unreg_platform_driver:
 	platform_driver_unregister(&acquirewdt_driver);
+=======
+	acq_platform_device = platform_device_register_simple(DRV_NAME,
+								-1, NULL, 0);
+	if (IS_ERR(acq_platform_device))
+		return PTR_ERR(acq_platform_device);
+
+	err = platform_driver_probe(&acquirewdt_driver, acq_probe);
+	if (err)
+		goto unreg_platform_device;
+	return 0;
+
+unreg_platform_device:
+	platform_device_unregister(acq_platform_device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -337,4 +388,7 @@ module_exit(acq_exit);
 MODULE_AUTHOR("David Woodhouse");
 MODULE_DESCRIPTION("Acquire Inc. Single Board Computer Watchdog Timer driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_SOUND_H
 #define _LINUX_SOUND_H
 
@@ -28,6 +29,14 @@
 #define SND_DEV_ADMMIDI		14	/* Like /dev/dmmidi (onsolete) */
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_SOUND_H
+#define _LINUX_SOUND_H
+
+#include <uapi/linux/sound.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Sound core interface functions
  */
@@ -36,13 +45,20 @@ struct device;
 extern int register_sound_special(const struct file_operations *fops, int unit);
 extern int register_sound_special_device(const struct file_operations *fops, int unit, struct device *dev);
 extern int register_sound_mixer(const struct file_operations *fops, int dev);
+<<<<<<< HEAD
 extern int register_sound_midi(const struct file_operations *fops, int dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int register_sound_dsp(const struct file_operations *fops, int dev);
 
 extern void unregister_sound_special(int unit);
 extern void unregister_sound_mixer(int unit);
+<<<<<<< HEAD
 extern void unregister_sound_midi(int unit);
 extern void unregister_sound_dsp(int unit);
 #endif /* __KERNEL__ */
 
+=======
+extern void unregister_sound_dsp(int unit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_SOUND_H */

@@ -433,6 +433,7 @@ struct scsi_ctrl_blk {
 #define TARGET_BUSY     0x08
 #define INI_QUEUE_FULL	0x28
 
+<<<<<<< HEAD
 /* SCSI MESSAGE */
 #define MSG_COMP        0x00
 #define MSG_EXTEND      0x01
@@ -458,6 +459,8 @@ struct scsi_ctrl_blk {
 
 #define MSG_IDENT   0x80
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /***********************************************************************
 		Target Device Control Structure
 **********************************************************************/
@@ -665,3 +668,15 @@ typedef struct _NVRAM {
 #define SCSI_RESET_HOST_RESET 0x200
 #define SCSI_RESET_ACTION   0xff
 
+<<<<<<< HEAD
+=======
+struct initio_cmd_priv {
+	dma_addr_t sense_dma_addr;
+	dma_addr_t sglist_dma_addr;
+};
+
+static inline struct initio_cmd_priv *initio_priv(struct scsi_cmnd *cmd)
+{
+	return scsi_cmd_priv(cmd);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* exynos_drm_fb.c
  *
  * Copyright (c) 2011 Samsung Electronics Co., Ltd.
@@ -5,6 +9,7 @@
  *	Inki Dae <inki.dae@samsung.com>
  *	Joonyoung Shim <jy0922.shim@samsung.com>
  *	Seung-Woo Kim <sw0312.kim@samsung.com>
+<<<<<<< HEAD
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -80,18 +85,66 @@ static int exynos_drm_fb_dirty(struct drm_framebuffer *fb,
 	DRM_DEBUG_KMS("%s\n", __FILE__);
 
 	/* TODO */
+=======
+ */
+
+#include <drm/drm_atomic.h>
+#include <drm/drm_atomic_helper.h>
+#include <drm/drm_crtc.h>
+#include <drm/drm_framebuffer.h>
+#include <drm/drm_fourcc.h>
+#include <drm/drm_gem_framebuffer_helper.h>
+#include <drm/drm_probe_helper.h>
+#include <drm/exynos_drm.h>
+
+#include "exynos_drm_crtc.h"
+#include "exynos_drm_drv.h"
+#include "exynos_drm_fb.h"
+#include "exynos_drm_fbdev.h"
+
+static int check_fb_gem_memory_type(struct drm_device *drm_dev,
+				    struct exynos_drm_gem *exynos_gem)
+{
+	unsigned int flags;
+
+	/*
+	 * if exynos drm driver supports iommu then framebuffer can use
+	 * all the buffer types.
+	 */
+	if (is_drm_iommu_supported(drm_dev))
+		return 0;
+
+	flags = exynos_gem->flags;
+
+	/*
+	 * Physically non-contiguous memory type for framebuffer is not
+	 * supported without IOMMU.
+	 */
+	if (IS_NONCONTIG_BUFFER(flags)) {
+		DRM_DEV_ERROR(drm_dev->dev,
+			      "Non-contiguous GEM memory is not supported.\n");
+		return -EINVAL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct drm_framebuffer_funcs exynos_drm_fb_funcs = {
 	.destroy	= exynos_drm_fb_destroy,
 	.create_handle	= exynos_drm_fb_create_handle,
 	.dirty		= exynos_drm_fb_dirty,
+=======
+static const struct drm_framebuffer_funcs exynos_drm_fb_funcs = {
+	.destroy	= drm_gem_fb_destroy,
+	.create_handle	= drm_gem_fb_create_handle,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct drm_framebuffer *
 exynos_drm_framebuffer_init(struct drm_device *dev,
+<<<<<<< HEAD
 			    struct drm_mode_fb_cmd2 *mode_cmd,
 			    struct drm_gem_object *obj)
 {
@@ -114,10 +167,47 @@ exynos_drm_framebuffer_init(struct drm_device *dev,
 	exynos_fb->exynos_gem_obj[0] = to_exynos_gem_obj(obj);
 
 	return &exynos_fb->fb;
+=======
+			    const struct drm_mode_fb_cmd2 *mode_cmd,
+			    struct exynos_drm_gem **exynos_gem,
+			    int count)
+{
+	struct drm_framebuffer *fb;
+	int i;
+	int ret;
+
+	fb = kzalloc(sizeof(*fb), GFP_KERNEL);
+	if (!fb)
+		return ERR_PTR(-ENOMEM);
+
+	for (i = 0; i < count; i++) {
+		ret = check_fb_gem_memory_type(dev, exynos_gem[i]);
+		if (ret < 0)
+			goto err;
+
+		fb->obj[i] = &exynos_gem[i]->base;
+	}
+
+	drm_helper_mode_fill_fb_struct(dev, fb, mode_cmd);
+
+	ret = drm_framebuffer_init(dev, fb, &exynos_drm_fb_funcs);
+	if (ret < 0) {
+		DRM_DEV_ERROR(dev->dev,
+			      "failed to initialize framebuffer\n");
+		goto err;
+	}
+
+	return fb;
+
+err:
+	kfree(fb);
+	return ERR_PTR(ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct drm_framebuffer *
 exynos_user_fb_create(struct drm_device *dev, struct drm_file *file_priv,
+<<<<<<< HEAD
 		      struct drm_mode_fb_cmd2 *mode_cmd)
 {
 	struct drm_gem_object *obj;
@@ -194,6 +284,72 @@ static void exynos_drm_output_poll_changed(struct drm_device *dev)
 static struct drm_mode_config_funcs exynos_drm_mode_config_funcs = {
 	.fb_create = exynos_user_fb_create,
 	.output_poll_changed = exynos_drm_output_poll_changed,
+=======
+		      const struct drm_mode_fb_cmd2 *mode_cmd)
+{
+	const struct drm_format_info *info = drm_get_format_info(dev, mode_cmd);
+	struct exynos_drm_gem *exynos_gem[MAX_FB_BUFFER];
+	struct drm_framebuffer *fb;
+	int i;
+	int ret;
+
+	for (i = 0; i < info->num_planes; i++) {
+		unsigned int height = (i == 0) ? mode_cmd->height :
+				     DIV_ROUND_UP(mode_cmd->height, info->vsub);
+		unsigned long size = height * mode_cmd->pitches[i] +
+				     mode_cmd->offsets[i];
+
+		exynos_gem[i] = exynos_drm_gem_get(file_priv,
+						   mode_cmd->handles[i]);
+		if (!exynos_gem[i]) {
+			DRM_DEV_ERROR(dev->dev,
+				      "failed to lookup gem object\n");
+			ret = -ENOENT;
+			goto err;
+		}
+
+		if (size > exynos_gem[i]->size) {
+			i++;
+			ret = -EINVAL;
+			goto err;
+		}
+	}
+
+	fb = exynos_drm_framebuffer_init(dev, mode_cmd, exynos_gem, i);
+	if (IS_ERR(fb)) {
+		ret = PTR_ERR(fb);
+		goto err;
+	}
+
+	return fb;
+
+err:
+	while (i--)
+		exynos_drm_gem_put(exynos_gem[i]);
+
+	return ERR_PTR(ret);
+}
+
+dma_addr_t exynos_drm_fb_dma_addr(struct drm_framebuffer *fb, int index)
+{
+	struct exynos_drm_gem *exynos_gem;
+
+	if (WARN_ON_ONCE(index >= MAX_FB_BUFFER))
+		return 0;
+
+	exynos_gem = to_exynos_gem(fb->obj[index]);
+	return exynos_gem->dma_addr + fb->offsets[index];
+}
+
+static struct drm_mode_config_helper_funcs exynos_drm_mode_config_helpers = {
+	.atomic_commit_tail = drm_atomic_helper_commit_tail_rpm,
+};
+
+static const struct drm_mode_config_funcs exynos_drm_mode_config_funcs = {
+	.fb_create = exynos_user_fb_create,
+	.atomic_check = drm_atomic_helper_check,
+	.atomic_commit = drm_atomic_helper_commit,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void exynos_drm_mode_config_init(struct drm_device *dev)
@@ -210,4 +366,10 @@ void exynos_drm_mode_config_init(struct drm_device *dev)
 	dev->mode_config.max_height = 4096;
 
 	dev->mode_config.funcs = &exynos_drm_mode_config_funcs;
+<<<<<<< HEAD
+=======
+	dev->mode_config.helper_private = &exynos_drm_mode_config_helpers;
+
+	dev->mode_config.normalize_zpos = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

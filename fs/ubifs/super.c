@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -16,6 +21,8 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Artem Bityutskiy (Битюцкий Артём)
  *          Adrian Hunter
  */
@@ -38,6 +45,27 @@
 #include <linux/writeback.h>
 #include "ubifs.h"
 
+<<<<<<< HEAD
+=======
+static int ubifs_default_version_set(const char *val, const struct kernel_param *kp)
+{
+	int n = 0, ret;
+
+	ret = kstrtoint(val, 10, &n);
+	if (ret != 0 || n < 4 || n > UBIFS_FORMAT_VERSION)
+		return -EINVAL;
+	return param_set_int(val, kp);
+}
+
+static const struct kernel_param_ops ubifs_default_version_ops = {
+	.set = ubifs_default_version_set,
+	.get = param_get_int,
+};
+
+int ubifs_default_version = UBIFS_FORMAT_VERSION;
+module_param_cb(default_version, &ubifs_default_version_ops, &ubifs_default_version, 0600);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Maximum amount of memory we may 'kmalloc()' without worrying that we are
  * allocating too much.
@@ -45,6 +73,7 @@
 #define UBIFS_KMALLOC_OK (128*1024)
 
 /* Slab cache for UBIFS inodes */
+<<<<<<< HEAD
 struct kmem_cache *ubifs_inode_slab;
 
 /* UBIFS TNC shrinker description */
@@ -52,6 +81,12 @@ static struct shrinker ubifs_shrinker_info = {
 	.shrink = ubifs_shrinker,
 	.seeks = DEFAULT_SEEKS,
 };
+=======
+static struct kmem_cache *ubifs_inode_slab;
+
+/* UBIFS TNC shrinker description */
+static struct shrinker *ubifs_shrinker_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * validate_inode - validate inode.
@@ -69,13 +104,22 @@ static int validate_inode(struct ubifs_info *c, const struct inode *inode)
 	const struct ubifs_inode *ui = ubifs_inode(inode);
 
 	if (inode->i_size > c->max_inode_sz) {
+<<<<<<< HEAD
 		ubifs_err("inode is too large (%lld)",
+=======
+		ubifs_err(c, "inode is too large (%lld)",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  (long long)inode->i_size);
 		return 1;
 	}
 
+<<<<<<< HEAD
 	if (ui->compr_type < 0 || ui->compr_type >= UBIFS_COMPR_TYPES_CNT) {
 		ubifs_err("unknown compression type %d", ui->compr_type);
+=======
+	if (ui->compr_type >= UBIFS_COMPR_TYPES_CNT) {
+		ubifs_err(c, "unknown compression type %d", ui->compr_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 2;
 	}
 
@@ -88,10 +132,16 @@ static int validate_inode(struct ubifs_info *c, const struct inode *inode)
 	if (ui->xattr && !S_ISREG(inode->i_mode))
 		return 5;
 
+<<<<<<< HEAD
 	if (!ubifs_compr_present(ui->compr_type)) {
 		ubifs_warn("inode %lu uses '%s' compression, but it was not "
 			   "compiled in", inode->i_ino,
 			   ubifs_compr_name(ui->compr_type));
+=======
+	if (!ubifs_compr_present(c, ui->compr_type)) {
+		ubifs_warn(c, "inode %lu uses '%s' compression, but it was not compiled in",
+			   inode->i_ino, ubifs_compr_name(c, ui->compr_type));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = dbg_check_dir(c, inode);
@@ -128,6 +178,7 @@ struct inode *ubifs_iget(struct super_block *sb, unsigned long inum)
 	if (err)
 		goto out_ino;
 
+<<<<<<< HEAD
 	inode->i_flags |= (S_NOCMTIME | S_NOATIME);
 	set_nlink(inode, le32_to_cpu(ino->nlink));
 	inode->i_uid   = le32_to_cpu(ino->uid);
@@ -138,6 +189,22 @@ struct inode *ubifs_iget(struct super_block *sb, unsigned long inum)
 	inode->i_mtime.tv_nsec = le32_to_cpu(ino->mtime_nsec);
 	inode->i_ctime.tv_sec  = (int64_t)le64_to_cpu(ino->ctime_sec);
 	inode->i_ctime.tv_nsec = le32_to_cpu(ino->ctime_nsec);
+=======
+	inode->i_flags |= S_NOCMTIME;
+
+	if (!IS_ENABLED(CONFIG_UBIFS_ATIME_SUPPORT))
+		inode->i_flags |= S_NOATIME;
+
+	set_nlink(inode, le32_to_cpu(ino->nlink));
+	i_uid_write(inode, le32_to_cpu(ino->uid));
+	i_gid_write(inode, le32_to_cpu(ino->gid));
+	inode_set_atime(inode, (int64_t)le64_to_cpu(ino->atime_sec),
+			le32_to_cpu(ino->atime_nsec));
+	inode_set_mtime(inode, (int64_t)le64_to_cpu(ino->mtime_sec),
+			le32_to_cpu(ino->mtime_nsec));
+	inode_set_ctime(inode, (int64_t)le64_to_cpu(ino->ctime_sec),
+			le32_to_cpu(ino->ctime_nsec));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_mode = le32_to_cpu(ino->mode);
 	inode->i_size = le64_to_cpu(ino->size);
 
@@ -156,9 +223,12 @@ struct inode *ubifs_iget(struct super_block *sb, unsigned long inum)
 	if (err)
 		goto out_invalid;
 
+<<<<<<< HEAD
 	/* Disable read-ahead */
 	inode->i_mapping->backing_dev_info = &c->bdi;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (inode->i_mode & S_IFMT) {
 	case S_IFREG:
 		inode->i_mapping->a_ops = &ubifs_file_address_operations;
@@ -245,14 +315,24 @@ struct inode *ubifs_iget(struct super_block *sb, unsigned long inum)
 	return inode;
 
 out_invalid:
+<<<<<<< HEAD
 	ubifs_err("inode %lu validation failed, error %d", inode->i_ino, err);
 	dbg_dump_node(c, ino);
 	dbg_dump_inode(c, inode);
+=======
+	ubifs_err(c, "inode %lu validation failed, error %d", inode->i_ino, err);
+	ubifs_dump_node(c, ino, UBIFS_MAX_INO_NODE_SZ);
+	ubifs_dump_inode(c, inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -EINVAL;
 out_ino:
 	kfree(ino);
 out:
+<<<<<<< HEAD
 	ubifs_err("failed to read inode %lu, error %d", inode->i_ino, err);
+=======
+	ubifs_err(c, "failed to read inode %lu, error %d", inode->i_ino, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iget_failed(inode);
 	return ERR_PTR(err);
 }
@@ -261,17 +341,26 @@ static struct inode *ubifs_alloc_inode(struct super_block *sb)
 {
 	struct ubifs_inode *ui;
 
+<<<<<<< HEAD
 	ui = kmem_cache_alloc(ubifs_inode_slab, GFP_NOFS);
+=======
+	ui = alloc_inode_sb(sb, ubifs_inode_slab, GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ui)
 		return NULL;
 
 	memset((void *)ui + sizeof(struct inode), 0,
 	       sizeof(struct ubifs_inode) - sizeof(struct inode));
 	mutex_init(&ui->ui_mutex);
+<<<<<<< HEAD
+=======
+	init_rwsem(&ui->xattr_sem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&ui->ui_lock);
 	return &ui->vfs_inode;
 };
 
+<<<<<<< HEAD
 static void ubifs_i_callback(struct rcu_head *head)
 {
 	struct inode *inode = container_of(head, struct inode, i_rcu);
@@ -280,11 +369,20 @@ static void ubifs_i_callback(struct rcu_head *head)
 }
 
 static void ubifs_destroy_inode(struct inode *inode)
+=======
+static void ubifs_free_inode(struct inode *inode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ubifs_inode *ui = ubifs_inode(inode);
 
 	kfree(ui->data);
+<<<<<<< HEAD
 	call_rcu(&inode->i_rcu, ubifs_i_callback);
+=======
+	fscrypt_free_inode(inode);
+
+	kmem_cache_free(ubifs_inode_slab, ui);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -296,14 +394,22 @@ static int ubifs_write_inode(struct inode *inode, struct writeback_control *wbc)
 	struct ubifs_info *c = inode->i_sb->s_fs_info;
 	struct ubifs_inode *ui = ubifs_inode(inode);
 
+<<<<<<< HEAD
 	ubifs_assert(!ui->xattr);
+=======
+	ubifs_assert(c, !ui->xattr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (is_bad_inode(inode))
 		return 0;
 
 	mutex_lock(&ui->ui_mutex);
 	/*
 	 * Due to races between write-back forced by budgeting
+<<<<<<< HEAD
 	 * (see 'sync_some_inodes()') and pdflush write-back, the inode may
+=======
+	 * (see 'sync_some_inodes()') and background write-back, the inode may
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * have already been synchronized, do not do this again. This might
 	 * also happen if it was synchronized in an VFS operation, e.g.
 	 * 'ubifs_link()'.
@@ -322,7 +428,11 @@ static int ubifs_write_inode(struct inode *inode, struct writeback_control *wbc)
 	if (inode->i_nlink) {
 		err = ubifs_jnl_write_inode(c, inode);
 		if (err)
+<<<<<<< HEAD
 			ubifs_err("can't write inode %lu, error %d",
+=======
+			ubifs_err(c, "can't write inode %lu, error %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  inode->i_ino, err);
 		else
 			err = dbg_check_inode_size(c, inode, ui->ui_size);
@@ -334,6 +444,19 @@ static int ubifs_write_inode(struct inode *inode, struct writeback_control *wbc)
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static int ubifs_drop_inode(struct inode *inode)
+{
+	int drop = generic_drop_inode(inode);
+
+	if (!drop)
+		drop = fscrypt_drop_inode(inode);
+
+	return drop;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ubifs_evict_inode(struct inode *inode)
 {
 	int err;
@@ -349,9 +472,15 @@ static void ubifs_evict_inode(struct inode *inode)
 		goto out;
 
 	dbg_gen("inode %lu, mode %#x", inode->i_ino, (int)inode->i_mode);
+<<<<<<< HEAD
 	ubifs_assert(!atomic_read(&inode->i_count));
 
 	truncate_inode_pages(&inode->i_data, 0);
+=======
+	ubifs_assert(c, !atomic_read(&inode->i_count));
+
+	truncate_inode_pages_final(&inode->i_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (inode->i_nlink)
 		goto done;
@@ -366,7 +495,11 @@ static void ubifs_evict_inode(struct inode *inode)
 		 * Worst case we have a lost orphan inode wasting space, so a
 		 * simple error message is OK here.
 		 */
+<<<<<<< HEAD
 		ubifs_err("can't delete inode %lu, error %d",
+=======
+		ubifs_err(c, "can't delete inode %lu, error %d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  inode->i_ino, err);
 
 out:
@@ -378,14 +511,26 @@ out:
 		smp_wmb();
 	}
 done:
+<<<<<<< HEAD
 	end_writeback(inode);
+=======
+	clear_inode(inode);
+	fscrypt_put_encryption_info(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ubifs_dirty_inode(struct inode *inode, int flags)
 {
+<<<<<<< HEAD
 	struct ubifs_inode *ui = ubifs_inode(inode);
 
 	ubifs_assert(mutex_is_locked(&ui->ui_mutex));
+=======
+	struct ubifs_info *c = inode->i_sb->s_fs_info;
+	struct ubifs_inode *ui = ubifs_inode(inode);
+
+	ubifs_assert(c, mutex_is_locked(&ui->ui_mutex));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ui->dirty) {
 		ui->dirty = 1;
 		dbg_gen("inode %lu",  inode->i_ino);
@@ -415,7 +560,11 @@ static int ubifs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_namelen = UBIFS_MAX_NLEN;
 	buf->f_fsid.val[0] = le32_to_cpu(uuid[0]) ^ le32_to_cpu(uuid[2]);
 	buf->f_fsid.val[1] = le32_to_cpu(uuid[1]) ^ le32_to_cpu(uuid[3]);
+<<<<<<< HEAD
 	ubifs_assert(buf->f_bfree <= c->block_cnt);
+=======
+	ubifs_assert(c, buf->f_bfree <= c->block_cnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -424,6 +573,7 @@ static int ubifs_show_options(struct seq_file *s, struct dentry *root)
 	struct ubifs_info *c = root->d_sb->s_fs_info;
 
 	if (c->mount_opts.unmount_mode == 2)
+<<<<<<< HEAD
 		seq_printf(s, ",fast_unmount");
 	else if (c->mount_opts.unmount_mode == 1)
 		seq_printf(s, ",norm_unmount");
@@ -443,6 +593,30 @@ static int ubifs_show_options(struct seq_file *s, struct dentry *root)
 			   ubifs_compr_name(c->mount_opts.compr_type));
 	}
 
+=======
+		seq_puts(s, ",fast_unmount");
+	else if (c->mount_opts.unmount_mode == 1)
+		seq_puts(s, ",norm_unmount");
+
+	if (c->mount_opts.bulk_read == 2)
+		seq_puts(s, ",bulk_read");
+	else if (c->mount_opts.bulk_read == 1)
+		seq_puts(s, ",no_bulk_read");
+
+	if (c->mount_opts.chk_data_crc == 2)
+		seq_puts(s, ",chk_data_crc");
+	else if (c->mount_opts.chk_data_crc == 1)
+		seq_puts(s, ",no_chk_data_crc");
+
+	if (c->mount_opts.override_compr) {
+		seq_printf(s, ",compr=%s",
+			   ubifs_compr_name(c, c->mount_opts.compr_type));
+	}
+
+	seq_printf(s, ",assert=%s", ubifs_assert_action_name(c));
+	seq_printf(s, ",ubi=%d,vol=%d", c->vi.ubi_num, c->vi.vol_id);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -495,17 +669,29 @@ static int ubifs_sync_fs(struct super_block *sb, int wait)
 static int init_constants_early(struct ubifs_info *c)
 {
 	if (c->vi.corrupted) {
+<<<<<<< HEAD
 		ubifs_warn("UBI volume is corrupted - read-only mode");
+=======
+		ubifs_warn(c, "UBI volume is corrupted - read-only mode");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->ro_media = 1;
 	}
 
 	if (c->di.ro_mode) {
+<<<<<<< HEAD
 		ubifs_msg("read-only UBI device");
+=======
+		ubifs_msg(c, "read-only UBI device");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->ro_media = 1;
 	}
 
 	if (c->vi.vol_type == UBI_STATIC_VOLUME) {
+<<<<<<< HEAD
 		ubifs_msg("static UBI volume - read-only mode");
+=======
+		ubifs_msg(c, "static UBI volume - read-only mode");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->ro_media = 1;
 	}
 
@@ -519,19 +705,33 @@ static int init_constants_early(struct ubifs_info *c)
 	c->max_write_shift = fls(c->max_write_size) - 1;
 
 	if (c->leb_size < UBIFS_MIN_LEB_SZ) {
+<<<<<<< HEAD
 		ubifs_err("too small LEBs (%d bytes), min. is %d bytes",
 			  c->leb_size, UBIFS_MIN_LEB_SZ);
+=======
+		ubifs_errc(c, "too small LEBs (%d bytes), min. is %d bytes",
+			   c->leb_size, UBIFS_MIN_LEB_SZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (c->leb_cnt < UBIFS_MIN_LEB_CNT) {
+<<<<<<< HEAD
 		ubifs_err("too few LEBs (%d), min. is %d",
 			  c->leb_cnt, UBIFS_MIN_LEB_CNT);
+=======
+		ubifs_errc(c, "too few LEBs (%d), min. is %d",
+			   c->leb_cnt, UBIFS_MIN_LEB_CNT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (!is_power_of_2(c->min_io_size)) {
+<<<<<<< HEAD
 		ubifs_err("bad min. I/O size %d", c->min_io_size);
+=======
+		ubifs_errc(c, "bad min. I/O size %d", c->min_io_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -542,8 +742,13 @@ static int init_constants_early(struct ubifs_info *c)
 	if (c->max_write_size < c->min_io_size ||
 	    c->max_write_size % c->min_io_size ||
 	    !is_power_of_2(c->max_write_size)) {
+<<<<<<< HEAD
 		ubifs_err("bad write buffer size %d for %d min. I/O unit",
 			  c->max_write_size, c->min_io_size);
+=======
+		ubifs_errc(c, "bad write buffer size %d for %d min. I/O unit",
+			   c->max_write_size, c->min_io_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -574,6 +779,14 @@ static int init_constants_early(struct ubifs_info *c)
 	c->ranges[UBIFS_REF_NODE].len  = UBIFS_REF_NODE_SZ;
 	c->ranges[UBIFS_TRUN_NODE].len = UBIFS_TRUN_NODE_SZ;
 	c->ranges[UBIFS_CS_NODE].len   = UBIFS_CS_NODE_SZ;
+<<<<<<< HEAD
+=======
+	c->ranges[UBIFS_AUTH_NODE].min_len = UBIFS_AUTH_NODE_SZ;
+	c->ranges[UBIFS_AUTH_NODE].max_len = UBIFS_AUTH_NODE_SZ +
+				UBIFS_MAX_HMAC_LEN;
+	c->ranges[UBIFS_SIG_NODE].min_len = UBIFS_SIG_NODE_SZ;
+	c->ranges[UBIFS_SIG_NODE].max_len = c->leb_size - UBIFS_SB_NODE_SZ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	c->ranges[UBIFS_INO_NODE].min_len  = UBIFS_INO_NODE_SZ;
 	c->ranges[UBIFS_INO_NODE].max_len  = UBIFS_MAX_INO_NODE_SZ;
@@ -615,6 +828,13 @@ static int init_constants_early(struct ubifs_info *c)
 	c->max_bu_buf_len = UBIFS_MAX_BULK_READ * UBIFS_MAX_DATA_NODE_SZ;
 	if (c->max_bu_buf_len > c->leb_size)
 		c->max_bu_buf_len = c->leb_size;
+<<<<<<< HEAD
+=======
+
+	/* Log is ready, preserve one LEB for commits. */
+	c->min_log_bytes = c->leb_size;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -668,8 +888,13 @@ static int init_constants_sb(struct ubifs_info *c)
 	tmp = UBIFS_CS_NODE_SZ + UBIFS_REF_NODE_SZ * c->jhead_cnt;
 	tmp = ALIGN(tmp, c->min_io_size);
 	if (tmp > c->leb_size) {
+<<<<<<< HEAD
 		dbg_err("too small LEB size %d, at least %d needed",
 			c->leb_size, tmp);
+=======
+		ubifs_err(c, "too small LEB size %d, at least %d needed",
+			  c->leb_size, tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -683,8 +908,13 @@ static int init_constants_sb(struct ubifs_info *c)
 	tmp /= c->leb_size;
 	tmp += 1;
 	if (c->log_lebs < tmp) {
+<<<<<<< HEAD
 		dbg_err("too small log %d LEBs, required min. %d LEBs",
 			c->log_lebs, tmp);
+=======
+		ubifs_err(c, "too small log %d LEBs, required min. %d LEBs",
+			  c->log_lebs, tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -775,7 +1005,11 @@ static int take_gc_lnum(struct ubifs_info *c)
 	int err;
 
 	if (c->gc_lnum == -1) {
+<<<<<<< HEAD
 		ubifs_err("no LEB for GC");
+=======
+		ubifs_err(c, "no LEB for GC");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -796,8 +1030,13 @@ static int alloc_wbufs(struct ubifs_info *c)
 {
 	int i, err;
 
+<<<<<<< HEAD
 	c->jheads = kzalloc(c->jhead_cnt * sizeof(struct ubifs_jhead),
 			   GFP_KERNEL);
+=======
+	c->jheads = kcalloc(c->jhead_cnt, sizeof(struct ubifs_jhead),
+			    GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!c->jheads)
 		return -ENOMEM;
 
@@ -806,11 +1045,16 @@ static int alloc_wbufs(struct ubifs_info *c)
 		INIT_LIST_HEAD(&c->jheads[i].buds_list);
 		err = ubifs_wbuf_init(c, &c->jheads[i].wbuf);
 		if (err)
+<<<<<<< HEAD
 			return err;
+=======
+			goto out_wbuf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		c->jheads[i].wbuf.sync_callback = &bud_wbuf_callback;
 		c->jheads[i].wbuf.jhead = i;
 		c->jheads[i].grouped = 1;
+<<<<<<< HEAD
 	}
 
 	c->jheads[BASEHD].wbuf.dtype = UBI_SHORTTERM;
@@ -820,10 +1064,41 @@ static int alloc_wbufs(struct ubifs_info *c)
 	 * not grouped.
 	 */
 	c->jheads[GCHD].wbuf.dtype = UBI_LONGTERM;
+=======
+		c->jheads[i].log_hash = ubifs_hash_get_desc(c);
+		if (IS_ERR(c->jheads[i].log_hash)) {
+			err = PTR_ERR(c->jheads[i].log_hash);
+			goto out_log_hash;
+		}
+	}
+
+	/*
+	 * Garbage Collector head does not need to be synchronized by timer.
+	 * Also GC head nodes are not grouped.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->jheads[GCHD].wbuf.no_timer = 1;
 	c->jheads[GCHD].grouped = 0;
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+out_log_hash:
+	kfree(c->jheads[i].wbuf.buf);
+	kfree(c->jheads[i].wbuf.inodes);
+
+out_wbuf:
+	while (i--) {
+		kfree(c->jheads[i].wbuf.buf);
+		kfree(c->jheads[i].wbuf.inodes);
+		kfree(c->jheads[i].log_hash);
+	}
+	kfree(c->jheads);
+	c->jheads = NULL;
+
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -838,6 +1113,10 @@ static void free_wbufs(struct ubifs_info *c)
 		for (i = 0; i < c->jhead_cnt; i++) {
 			kfree(c->jheads[i].wbuf.buf);
 			kfree(c->jheads[i].wbuf.inodes);
+<<<<<<< HEAD
+=======
+			kfree(c->jheads[i].log_hash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		kfree(c->jheads);
 		c->jheads = NULL;
@@ -863,7 +1142,11 @@ static void free_orphans(struct ubifs_info *c)
 		orph = list_entry(c->orph_list.next, struct ubifs_orphan, list);
 		list_del(&orph->list);
 		kfree(orph);
+<<<<<<< HEAD
 		dbg_err("orphan list not empty at unmount");
+=======
+		ubifs_err(c, "orphan list not empty at unmount");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	vfree(c->orph_buf);
@@ -876,6 +1159,7 @@ static void free_orphans(struct ubifs_info *c)
  */
 static void free_buds(struct ubifs_info *c)
 {
+<<<<<<< HEAD
 	struct rb_node *this = c->buds.rb_node;
 	struct ubifs_bud *bud;
 
@@ -895,6 +1179,13 @@ static void free_buds(struct ubifs_info *c)
 			}
 			kfree(bud);
 		}
+=======
+	struct ubifs_bud *bud, *n;
+
+	rbtree_postorder_for_each_entry_safe(bud, n, &c->buds, rb) {
+		kfree(bud->log_hash);
+		kfree(bud);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -937,6 +1228,12 @@ static int check_volume_empty(struct ubifs_info *c)
  * Opt_chk_data_crc: check CRCs when reading data nodes
  * Opt_no_chk_data_crc: do not check CRCs when reading data nodes
  * Opt_override_compr: override default compressor
+<<<<<<< HEAD
+=======
+ * Opt_assert: set ubifs_assert() action
+ * Opt_auth_key: The key name used for authentication
+ * Opt_auth_hash_name: The hash type used for authentication
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Opt_err: just end of array marker
  */
 enum {
@@ -947,6 +1244,13 @@ enum {
 	Opt_chk_data_crc,
 	Opt_no_chk_data_crc,
 	Opt_override_compr,
+<<<<<<< HEAD
+=======
+	Opt_assert,
+	Opt_auth_key,
+	Opt_auth_hash_name,
+	Opt_ignore,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Opt_err,
 };
 
@@ -958,6 +1262,14 @@ static const match_table_t tokens = {
 	{Opt_chk_data_crc, "chk_data_crc"},
 	{Opt_no_chk_data_crc, "no_chk_data_crc"},
 	{Opt_override_compr, "compr=%s"},
+<<<<<<< HEAD
+=======
+	{Opt_auth_key, "auth_key=%s"},
+	{Opt_auth_hash_name, "auth_hash_name=%s"},
+	{Opt_ignore, "ubi=%s"},
+	{Opt_ignore, "vol=%s"},
+	{Opt_assert, "assert=%s"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{Opt_err, NULL},
 };
 
@@ -976,9 +1288,16 @@ static const match_table_t tokens = {
  */
 static int parse_standard_option(const char *option)
 {
+<<<<<<< HEAD
 	ubifs_msg("parse %s", option);
 	if (!strcmp(option, "sync"))
 		return MS_SYNCHRONOUS;
+=======
+
+	pr_notice("UBIFS: parse %s\n", option);
+	if (!strcmp(option, "sync"))
+		return SB_SYNCHRONOUS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1047,8 +1366,15 @@ static int ubifs_parse_options(struct ubifs_info *c, char *options,
 				c->mount_opts.compr_type = UBIFS_COMPR_LZO;
 			else if (!strcmp(name, "zlib"))
 				c->mount_opts.compr_type = UBIFS_COMPR_ZLIB;
+<<<<<<< HEAD
 			else {
 				ubifs_err("unknown compressor \"%s\"", name);
+=======
+			else if (!strcmp(name, "zstd"))
+				c->mount_opts.compr_type = UBIFS_COMPR_ZSTD;
+			else {
+				ubifs_err(c, "unknown compressor \"%s\"", name); //FIXME: is c ready?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				kfree(name);
 				return -EINVAL;
 			}
@@ -1057,6 +1383,47 @@ static int ubifs_parse_options(struct ubifs_info *c, char *options,
 			c->default_compr = c->mount_opts.compr_type;
 			break;
 		}
+<<<<<<< HEAD
+=======
+		case Opt_assert:
+		{
+			char *act = match_strdup(&args[0]);
+
+			if (!act)
+				return -ENOMEM;
+			if (!strcmp(act, "report"))
+				c->assert_action = ASSACT_REPORT;
+			else if (!strcmp(act, "read-only"))
+				c->assert_action = ASSACT_RO;
+			else if (!strcmp(act, "panic"))
+				c->assert_action = ASSACT_PANIC;
+			else {
+				ubifs_err(c, "unknown assert action \"%s\"", act);
+				kfree(act);
+				return -EINVAL;
+			}
+			kfree(act);
+			break;
+		}
+		case Opt_auth_key:
+			if (!is_remount) {
+				c->auth_key_name = kstrdup(args[0].from,
+								GFP_KERNEL);
+				if (!c->auth_key_name)
+					return -ENOMEM;
+			}
+			break;
+		case Opt_auth_hash_name:
+			if (!is_remount) {
+				c->auth_hash_name = kstrdup(args[0].from,
+								GFP_KERNEL);
+				if (!c->auth_hash_name)
+					return -ENOMEM;
+			}
+			break;
+		case Opt_ignore:
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 		{
 			unsigned long flag;
@@ -1064,8 +1431,13 @@ static int ubifs_parse_options(struct ubifs_info *c, char *options,
 
 			flag = parse_standard_option(p);
 			if (!flag) {
+<<<<<<< HEAD
 				ubifs_err("unrecognized mount option \"%s\" "
 					  "or missing value", p);
+=======
+				ubifs_err(c, "unrecognized mount option \"%s\" or missing value",
+					  p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -EINVAL;
 			}
 			sb->s_flags |= flag;
@@ -1077,6 +1449,21 @@ static int ubifs_parse_options(struct ubifs_info *c, char *options,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * ubifs_release_options - release mount parameters which have been dumped.
+ * @c: UBIFS file-system description object
+ */
+static void ubifs_release_options(struct ubifs_info *c)
+{
+	kfree(c->auth_key_name);
+	c->auth_key_name = NULL;
+	kfree(c->auth_hash_name);
+	c->auth_hash_name = NULL;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * destroy_journal - destroy journal data structures.
  * @c: UBIFS file-system description object
@@ -1099,6 +1486,10 @@ static void destroy_journal(struct ubifs_info *c)
 
 		bud = list_entry(c->old_buds.next, struct ubifs_bud, list);
 		list_del(&bud->list);
+<<<<<<< HEAD
+=======
+		kfree(bud->log_hash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(bud);
 	}
 	ubifs_destroy_idx_gc(c);
@@ -1113,7 +1504,11 @@ static void destroy_journal(struct ubifs_info *c)
  */
 static void bu_init(struct ubifs_info *c)
 {
+<<<<<<< HEAD
 	ubifs_assert(c->bulk_read == 1);
+=======
+	ubifs_assert(c, c->bulk_read == 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (c->bu.buf)
 		return; /* Already initialized */
@@ -1127,8 +1522,13 @@ again:
 		}
 
 		/* Just disable bulk-read */
+<<<<<<< HEAD
 		ubifs_warn("Cannot allocate %d bytes of memory for bulk-read, "
 			   "disabling it", c->max_bu_buf_len);
+=======
+		ubifs_warn(c, "cannot allocate %d bytes of memory for bulk-read, disabling it",
+			   c->max_bu_buf_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->mount_opts.bulk_read = 1;
 		c->bulk_read = 0;
 		return;
@@ -1144,11 +1544,19 @@ again:
  */
 static int check_free_space(struct ubifs_info *c)
 {
+<<<<<<< HEAD
 	ubifs_assert(c->dark_wm > 0);
 	if (c->lst.total_free + c->lst.total_dirty < c->dark_wm) {
 		ubifs_err("insufficient free space to mount in R/W mode");
 		dbg_dump_budg(c, &c->bi);
 		dbg_dump_lprops(c);
+=======
+	ubifs_assert(c, c->dark_wm > 0);
+	if (c->lst.total_free + c->lst.total_dirty < c->dark_wm) {
+		ubifs_err(c, "insufficient free space to mount in R/W mode");
+		ubifs_dump_budg(c, &c->bi);
+		ubifs_dump_lprops(c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSPC;
 	}
 	return 0;
@@ -1160,17 +1568,30 @@ static int check_free_space(struct ubifs_info *c)
  *
  * This function mounts UBIFS file system. Returns zero in case of success and
  * a negative error code in case of failure.
+<<<<<<< HEAD
  *
  * Note, the function does not de-allocate resources it it fails half way
  * through, and the caller has to do this instead.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int mount_ubifs(struct ubifs_info *c)
 {
 	int err;
+<<<<<<< HEAD
 	long long x;
 	size_t sz;
 
 	c->ro_mount = !!(c->vfs_sb->s_flags & MS_RDONLY);
+=======
+	long long x, y;
+	size_t sz;
+
+	c->ro_mount = !!sb_rdonly(c->vfs_sb);
+	/* Suppress error messages while probing if SB_SILENT is set */
+	c->probing = !!(c->vfs_sb->s_flags & SB_SILENT);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = init_constants_early(c);
 	if (err)
 		return err;
@@ -1179,6 +1600,13 @@ static int mount_ubifs(struct ubifs_info *c)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
+=======
+	err = ubifs_sysfs_register(c);
+	if (err)
+		goto out_debugging;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = check_volume_empty(c);
 	if (err)
 		goto out_free;
@@ -1188,14 +1616,22 @@ static int mount_ubifs(struct ubifs_info *c)
 		 * This UBI volume is empty, and read-only, or the file system
 		 * is mounted read-only - we cannot format it.
 		 */
+<<<<<<< HEAD
 		ubifs_err("can't format empty UBI volume: read-only %s",
+=======
+		ubifs_err(c, "can't format empty UBI volume: read-only %s",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  c->ro_media ? "UBI volume" : "mount");
 		err = -EROFS;
 		goto out_free;
 	}
 
 	if (c->ro_media && !c->ro_mount) {
+<<<<<<< HEAD
 		ubifs_err("cannot mount read-write - read-only media");
+=======
+		ubifs_err(c, "cannot mount read-write - read-only media");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EROFS;
 		goto out_free;
 	}
@@ -1206,7 +1642,12 @@ static int mount_ubifs(struct ubifs_info *c)
 	 * never exceed 64.
 	 */
 	err = -ENOMEM;
+<<<<<<< HEAD
 	c->bottom_up_buf = kmalloc(BOTTOM_UP_HEIGHT * sizeof(int), GFP_KERNEL);
+=======
+	c->bottom_up_buf = kmalloc_array(BOTTOM_UP_HEIGHT, sizeof(int),
+					 GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!c->bottom_up_buf)
 		goto out_free;
 
@@ -1224,7 +1665,12 @@ static int mount_ubifs(struct ubifs_info *c)
 		bu_init(c);
 
 	if (!c->ro_mount) {
+<<<<<<< HEAD
 		c->write_reserve_buf = kmalloc(COMPRESSED_DATA_NODE_BUF_SZ,
+=======
+		c->write_reserve_buf = kmalloc(COMPRESSED_DATA_NODE_BUF_SZ + \
+					       UBIFS_CIPHER_BLOCK_SIZE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       GFP_KERNEL);
 		if (!c->write_reserve_buf)
 			goto out_free;
@@ -1232,23 +1678,53 @@ static int mount_ubifs(struct ubifs_info *c)
 
 	c->mounting = 1;
 
+<<<<<<< HEAD
 	err = ubifs_read_superblock(c);
 	if (err)
 		goto out_free;
+=======
+	if (c->auth_key_name) {
+		if (IS_ENABLED(CONFIG_UBIFS_FS_AUTHENTICATION)) {
+			err = ubifs_init_authentication(c);
+			if (err)
+				goto out_free;
+		} else {
+			ubifs_err(c, "auth_key_name, but UBIFS is built without"
+				  " authentication support");
+			err = -EINVAL;
+			goto out_free;
+		}
+	}
+
+	err = ubifs_read_superblock(c);
+	if (err)
+		goto out_auth;
+
+	c->probing = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Make sure the compressor which is set as default in the superblock
 	 * or overridden by mount options is actually compiled in.
 	 */
+<<<<<<< HEAD
 	if (!ubifs_compr_present(c->default_compr)) {
 		ubifs_err("'compressor \"%s\" is not compiled in",
 			  ubifs_compr_name(c->default_compr));
 		err = -ENOTSUPP;
 		goto out_free;
+=======
+	if (!ubifs_compr_present(c, c->default_compr)) {
+		ubifs_err(c, "'compressor \"%s\" is not compiled in",
+			  ubifs_compr_name(c, c->default_compr));
+		err = -ENOTSUPP;
+		goto out_auth;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = init_constants_sb(c);
 	if (err)
+<<<<<<< HEAD
 		goto out_free;
 
 	sz = ALIGN(c->max_idx_node_sz, c->min_io_size);
@@ -1257,6 +1733,15 @@ static int mount_ubifs(struct ubifs_info *c)
 	if (!c->cbuf) {
 		err = -ENOMEM;
 		goto out_free;
+=======
+		goto out_auth;
+
+	sz = ALIGN(c->max_idx_node_sz, c->min_io_size) * 2;
+	c->cbuf = kmalloc(sz, GFP_NOFS);
+	if (!c->cbuf) {
+		err = -ENOMEM;
+		goto out_auth;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = alloc_wbufs(c);
@@ -1266,6 +1751,7 @@ static int mount_ubifs(struct ubifs_info *c)
 	sprintf(c->bgt_name, BGT_NAME_PATTERN, c->vi.ubi_num, c->vi.vol_id);
 	if (!c->ro_mount) {
 		/* Create background thread */
+<<<<<<< HEAD
 		c->bgt = kthread_create(ubifs_bg_thread, c, "%s", c->bgt_name);
 		if (IS_ERR(c->bgt)) {
 			err = PTR_ERR(c->bgt);
@@ -1275,6 +1761,16 @@ static int mount_ubifs(struct ubifs_info *c)
 			goto out_wbufs;
 		}
 		wake_up_process(c->bgt);
+=======
+		c->bgt = kthread_run(ubifs_bg_thread, c, "%s", c->bgt_name);
+		if (IS_ERR(c->bgt)) {
+			err = PTR_ERR(c->bgt);
+			c->bgt = NULL;
+			ubifs_err(c, "cannot spawn \"%s\", error %d",
+				  c->bgt_name, err);
+			goto out_wbufs;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = ubifs_read_master(c);
@@ -1284,7 +1780,11 @@ static int mount_ubifs(struct ubifs_info *c)
 	init_constants_master(c);
 
 	if ((c->mst_node->flags & cpu_to_le32(UBIFS_MST_DIRTY)) != 0) {
+<<<<<<< HEAD
 		ubifs_msg("recovery needed");
+=======
+		ubifs_msg(c, "recovery needed");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->need_recovery = 1;
 	}
 
@@ -1301,10 +1801,17 @@ static int mount_ubifs(struct ubifs_info *c)
 	if (!c->ro_mount && c->space_fixup) {
 		err = ubifs_fixup_free_space(c);
 		if (err)
+<<<<<<< HEAD
 			goto out_master;
 	}
 
 	if (!c->ro_mount) {
+=======
+			goto out_lpt;
+	}
+
+	if (!c->ro_mount && !c->need_recovery) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Set the "dirty" flag so that if we reboot uncleanly we
 		 * will notice this immediately on the next mount.
@@ -1315,6 +1822,29 @@ static int mount_ubifs(struct ubifs_info *c)
 			goto out_lpt;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Handle offline signed images: Now that the master node is
+	 * written and its validation no longer depends on the hash
+	 * in the superblock, we can update the offline signed
+	 * superblock with a HMAC version,
+	 */
+	if (ubifs_authenticated(c) && ubifs_hmac_zero(c, c->sup_node->hmac)) {
+		err = ubifs_hmac_wkm(c, c->sup_node->hmac_wkm);
+		if (err)
+			goto out_lpt;
+		c->superblock_need_write = 1;
+	}
+
+	if (!c->ro_mount && c->superblock_need_write) {
+		err = ubifs_write_sb_node(c, c->sup_node);
+		if (err)
+			goto out_lpt;
+		c->superblock_need_write = 0;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = dbg_check_idx_size(c, c->bi.old_idx_sz);
 	if (err)
 		goto out_lpt;
@@ -1348,12 +1878,30 @@ static int mount_ubifs(struct ubifs_info *c)
 		}
 
 		if (c->need_recovery) {
+<<<<<<< HEAD
 			err = ubifs_recover_size(c);
 			if (err)
 				goto out_orphans;
 			err = ubifs_rcvry_gc_commit(c);
 			if (err)
 				goto out_orphans;
+=======
+			if (!ubifs_authenticated(c)) {
+				err = ubifs_recover_size(c, true);
+				if (err)
+					goto out_orphans;
+			}
+
+			err = ubifs_rcvry_gc_commit(c);
+			if (err)
+				goto out_orphans;
+
+			if (ubifs_authenticated(c)) {
+				err = ubifs_recover_size(c, false);
+				if (err)
+					goto out_orphans;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			err = take_gc_lnum(c);
 			if (err)
@@ -1372,7 +1920,11 @@ static int mount_ubifs(struct ubifs_info *c)
 		if (err)
 			goto out_orphans;
 	} else if (c->need_recovery) {
+<<<<<<< HEAD
 		err = ubifs_recover_size(c);
+=======
+		err = ubifs_recover_size(c, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto out_orphans;
 	} else {
@@ -1393,24 +1945,39 @@ static int mount_ubifs(struct ubifs_info *c)
 
 	if (c->need_recovery) {
 		if (c->ro_mount)
+<<<<<<< HEAD
 			ubifs_msg("recovery deferred");
 		else {
 			c->need_recovery = 0;
 			ubifs_msg("recovery completed");
+=======
+			ubifs_msg(c, "recovery deferred");
+		else {
+			c->need_recovery = 0;
+			ubifs_msg(c, "recovery completed");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * GC LEB has to be empty and taken at this point. But
 			 * the journal head LEBs may also be accounted as
 			 * "empty taken" if they are empty.
 			 */
+<<<<<<< HEAD
 			ubifs_assert(c->lst.taken_empty_lebs > 0);
 		}
 	} else
 		ubifs_assert(c->lst.taken_empty_lebs > 0);
+=======
+			ubifs_assert(c, c->lst.taken_empty_lebs > 0);
+		}
+	} else
+		ubifs_assert(c, c->lst.taken_empty_lebs > 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = dbg_check_filesystem(c);
 	if (err)
 		goto out_infos;
 
+<<<<<<< HEAD
 	err = dbg_debugfs_init_fs(c);
 	if (err)
 		goto out_infos;
@@ -1486,6 +2053,77 @@ static int mount_ubifs(struct ubifs_info *c)
 		c->bud_bytes, c->bud_bytes >> 10, c->bud_bytes >> 20);
 	dbg_msg("max. seq. number:    %llu", c->max_sqnum);
 	dbg_msg("commit number:       %llu", c->cmt_no);
+=======
+	dbg_debugfs_init_fs(c);
+
+	c->mounting = 0;
+
+	ubifs_msg(c, "UBIFS: mounted UBI device %d, volume %d, name \"%s\"%s",
+		  c->vi.ubi_num, c->vi.vol_id, c->vi.name,
+		  c->ro_mount ? ", R/O mode" : "");
+	x = (long long)c->main_lebs * c->leb_size;
+	y = (long long)c->log_lebs * c->leb_size + c->max_bud_bytes;
+	ubifs_msg(c, "LEB size: %d bytes (%d KiB), min./max. I/O unit sizes: %d bytes/%d bytes",
+		  c->leb_size, c->leb_size >> 10, c->min_io_size,
+		  c->max_write_size);
+	ubifs_msg(c, "FS size: %lld bytes (%lld MiB, %d LEBs), max %d LEBs, journal size %lld bytes (%lld MiB, %d LEBs)",
+		  x, x >> 20, c->main_lebs, c->max_leb_cnt,
+		  y, y >> 20, c->log_lebs + c->max_bud_cnt);
+	ubifs_msg(c, "reserved for root: %llu bytes (%llu KiB)",
+		  c->report_rp_size, c->report_rp_size >> 10);
+	ubifs_msg(c, "media format: w%d/r%d (latest is w%d/r%d), UUID %pUB%s",
+		  c->fmt_version, c->ro_compat_version,
+		  UBIFS_FORMAT_VERSION, UBIFS_RO_COMPAT_VERSION, c->uuid,
+		  c->big_lpt ? ", big LPT model" : ", small LPT model");
+
+	dbg_gen("default compressor:  %s", ubifs_compr_name(c, c->default_compr));
+	dbg_gen("data journal heads:  %d",
+		c->jhead_cnt - NONDATA_JHEADS_CNT);
+	dbg_gen("log LEBs:            %d (%d - %d)",
+		c->log_lebs, UBIFS_LOG_LNUM, c->log_last);
+	dbg_gen("LPT area LEBs:       %d (%d - %d)",
+		c->lpt_lebs, c->lpt_first, c->lpt_last);
+	dbg_gen("orphan area LEBs:    %d (%d - %d)",
+		c->orph_lebs, c->orph_first, c->orph_last);
+	dbg_gen("main area LEBs:      %d (%d - %d)",
+		c->main_lebs, c->main_first, c->leb_cnt - 1);
+	dbg_gen("index LEBs:          %d", c->lst.idx_lebs);
+	dbg_gen("total index bytes:   %llu (%llu KiB, %llu MiB)",
+		c->bi.old_idx_sz, c->bi.old_idx_sz >> 10,
+		c->bi.old_idx_sz >> 20);
+	dbg_gen("key hash type:       %d", c->key_hash_type);
+	dbg_gen("tree fanout:         %d", c->fanout);
+	dbg_gen("reserved GC LEB:     %d", c->gc_lnum);
+	dbg_gen("max. znode size      %d", c->max_znode_sz);
+	dbg_gen("max. index node size %d", c->max_idx_node_sz);
+	dbg_gen("node sizes:          data %zu, inode %zu, dentry %zu",
+		UBIFS_DATA_NODE_SZ, UBIFS_INO_NODE_SZ, UBIFS_DENT_NODE_SZ);
+	dbg_gen("node sizes:          trun %zu, sb %zu, master %zu",
+		UBIFS_TRUN_NODE_SZ, UBIFS_SB_NODE_SZ, UBIFS_MST_NODE_SZ);
+	dbg_gen("node sizes:          ref %zu, cmt. start %zu, orph %zu",
+		UBIFS_REF_NODE_SZ, UBIFS_CS_NODE_SZ, UBIFS_ORPH_NODE_SZ);
+	dbg_gen("max. node sizes:     data %zu, inode %zu dentry %zu, idx %d",
+		UBIFS_MAX_DATA_NODE_SZ, UBIFS_MAX_INO_NODE_SZ,
+		UBIFS_MAX_DENT_NODE_SZ, ubifs_idx_node_sz(c, c->fanout));
+	dbg_gen("dead watermark:      %d", c->dead_wm);
+	dbg_gen("dark watermark:      %d", c->dark_wm);
+	dbg_gen("LEB overhead:        %d", c->leb_overhead);
+	x = (long long)c->main_lebs * c->dark_wm;
+	dbg_gen("max. dark space:     %lld (%lld KiB, %lld MiB)",
+		x, x >> 10, x >> 20);
+	dbg_gen("maximum bud bytes:   %lld (%lld KiB, %lld MiB)",
+		c->max_bud_bytes, c->max_bud_bytes >> 10,
+		c->max_bud_bytes >> 20);
+	dbg_gen("BG commit bud bytes: %lld (%lld KiB, %lld MiB)",
+		c->bg_bud_bytes, c->bg_bud_bytes >> 10,
+		c->bg_bud_bytes >> 20);
+	dbg_gen("current bud bytes    %lld (%lld KiB, %lld MiB)",
+		c->bud_bytes, c->bud_bytes >> 10, c->bud_bytes >> 20);
+	dbg_gen("max. seq. number:    %llu", c->max_sqnum);
+	dbg_gen("commit number:       %llu", c->cmt_no);
+	dbg_gen("max. xattrs per inode: %d", ubifs_xattr_max_cnt(c));
+	dbg_gen("max orphans:           %d", c->max_orphans);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -1508,12 +2146,23 @@ out_wbufs:
 	free_wbufs(c);
 out_cbuf:
 	kfree(c->cbuf);
+<<<<<<< HEAD
+=======
+out_auth:
+	ubifs_exit_authentication(c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_free:
 	kfree(c->write_reserve_buf);
 	kfree(c->bu.buf);
 	vfree(c->ileb_buf);
 	vfree(c->sbuf);
 	kfree(c->bottom_up_buf);
+<<<<<<< HEAD
+=======
+	kfree(c->sup_node);
+	ubifs_sysfs_unregister(c);
+out_debugging:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ubifs_debugging_exit(c);
 	return err;
 }
@@ -1544,7 +2193,13 @@ static void ubifs_umount(struct ubifs_info *c)
 	free_wbufs(c);
 	free_orphans(c);
 	ubifs_lpt_free(c, 0);
+<<<<<<< HEAD
 
+=======
+	ubifs_exit_authentication(c);
+
+	ubifs_release_options(c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(c->cbuf);
 	kfree(c->rcvrd_mst_node);
 	kfree(c->mst_node);
@@ -1553,7 +2208,13 @@ static void ubifs_umount(struct ubifs_info *c)
 	vfree(c->ileb_buf);
 	vfree(c->sbuf);
 	kfree(c->bottom_up_buf);
+<<<<<<< HEAD
 	ubifs_debugging_exit(c);
+=======
+	kfree(c->sup_node);
+	ubifs_debugging_exit(c);
+	ubifs_sysfs_unregister(c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1569,11 +2230,18 @@ static int ubifs_remount_rw(struct ubifs_info *c)
 	int err, lnum;
 
 	if (c->rw_incompat) {
+<<<<<<< HEAD
 		ubifs_err("the file-system is not R/W-compatible");
 		ubifs_msg("on-flash format version is w%d/r%d, but software "
 			  "only supports up to version w%d/r%d", c->fmt_version,
 			  c->ro_compat_version, UBIFS_FORMAT_VERSION,
 			  UBIFS_RO_COMPAT_VERSION);
+=======
+		ubifs_err(c, "the file-system is not R/W-compatible");
+		ubifs_msg(c, "on-flash format version is w%d/r%d, but software only supports up to version w%d/r%d",
+			  c->fmt_version, c->ro_compat_version,
+			  UBIFS_FORMAT_VERSION, UBIFS_RO_COMPAT_VERSION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EROFS;
 	}
 
@@ -1585,13 +2253,18 @@ static int ubifs_remount_rw(struct ubifs_info *c)
 	if (c->space_fixup) {
 		err = ubifs_fixup_free_space(c);
 		if (err)
+<<<<<<< HEAD
 			return err;
+=======
+			goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = check_free_space(c);
 	if (err)
 		goto out;
 
+<<<<<<< HEAD
 	if (c->old_leb_cnt != c->leb_cnt) {
 		struct ubifs_sb_node *sup;
 
@@ -1615,6 +2288,18 @@ static int ubifs_remount_rw(struct ubifs_info *c)
 		err = ubifs_recover_size(c);
 		if (err)
 			goto out;
+=======
+	if (c->need_recovery) {
+		ubifs_msg(c, "completing deferred recovery");
+		err = ubifs_write_rcvrd_mst_node(c);
+		if (err)
+			goto out;
+		if (!ubifs_authenticated(c)) {
+			err = ubifs_recover_size(c, true);
+			if (err)
+				goto out;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = ubifs_clean_lebs(c, c->sbuf);
 		if (err)
 			goto out;
@@ -1623,7 +2308,11 @@ static int ubifs_remount_rw(struct ubifs_info *c)
 			goto out;
 	} else {
 		/* A readonly mount is not allowed to have orphans */
+<<<<<<< HEAD
 		ubifs_assert(c->tot_orphans == 0);
+=======
+		ubifs_assert(c, c->tot_orphans == 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = ubifs_clear_orphans(c);
 		if (err)
 			goto out;
@@ -1636,21 +2325,44 @@ static int ubifs_remount_rw(struct ubifs_info *c)
 			goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	if (c->superblock_need_write) {
+		struct ubifs_sb_node *sup = c->sup_node;
+
+		err = ubifs_write_sb_node(c, sup);
+		if (err)
+			goto out;
+
+		c->superblock_need_write = 0;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c->ileb_buf = vmalloc(c->leb_size);
 	if (!c->ileb_buf) {
 		err = -ENOMEM;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	c->write_reserve_buf = kmalloc(COMPRESSED_DATA_NODE_BUF_SZ, GFP_KERNEL);
 	if (!c->write_reserve_buf)
 		goto out;
+=======
+	c->write_reserve_buf = kmalloc(COMPRESSED_DATA_NODE_BUF_SZ + \
+				       UBIFS_CIPHER_BLOCK_SIZE, GFP_KERNEL);
+	if (!c->write_reserve_buf) {
+		err = -ENOMEM;
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = ubifs_lpt_init(c, 0, 1);
 	if (err)
 		goto out;
 
 	/* Create background thread */
+<<<<<<< HEAD
 	c->bgt = kthread_create(ubifs_bg_thread, c, "%s", c->bgt_name);
 	if (IS_ERR(c->bgt)) {
 		err = PTR_ERR(c->bgt);
@@ -1660,6 +2372,16 @@ static int ubifs_remount_rw(struct ubifs_info *c)
 		goto out;
 	}
 	wake_up_process(c->bgt);
+=======
+	c->bgt = kthread_run(ubifs_bg_thread, c, "%s", c->bgt_name);
+	if (IS_ERR(c->bgt)) {
+		err = PTR_ERR(c->bgt);
+		c->bgt = NULL;
+		ubifs_err(c, "cannot spawn \"%s\", error %d",
+			  c->bgt_name, err);
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	c->orph_buf = vmalloc(c->leb_size);
 	if (!c->orph_buf) {
@@ -1677,10 +2399,26 @@ static int ubifs_remount_rw(struct ubifs_info *c)
 			goto out;
 	}
 
+<<<<<<< HEAD
 	if (c->need_recovery)
 		err = ubifs_rcvry_gc_commit(c);
 	else
 		err = ubifs_leb_unmap(c, c->gc_lnum);
+=======
+	if (c->need_recovery) {
+		err = ubifs_rcvry_gc_commit(c);
+		if (err)
+			goto out;
+
+		if (ubifs_authenticated(c)) {
+			err = ubifs_recover_size(c, false);
+			if (err)
+				goto out;
+		}
+	} else {
+		err = ubifs_leb_unmap(c, c->gc_lnum);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 
@@ -1689,7 +2427,11 @@ static int ubifs_remount_rw(struct ubifs_info *c)
 
 	if (c->need_recovery) {
 		c->need_recovery = 0;
+<<<<<<< HEAD
 		ubifs_msg("deferred recovery completed");
+=======
+		ubifs_msg(c, "deferred recovery completed");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/*
 		 * Do not run the debugging space check if the were doing
@@ -1715,7 +2457,10 @@ out:
 		kthread_stop(c->bgt);
 		c->bgt = NULL;
 	}
+<<<<<<< HEAD
 	free_wbufs(c);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(c->write_reserve_buf);
 	c->write_reserve_buf = NULL;
 	vfree(c->ileb_buf);
@@ -1737,8 +2482,13 @@ static void ubifs_remount_ro(struct ubifs_info *c)
 {
 	int i, err;
 
+<<<<<<< HEAD
 	ubifs_assert(!c->need_recovery);
 	ubifs_assert(!c->ro_mount);
+=======
+	ubifs_assert(c, !c->need_recovery);
+	ubifs_assert(c, !c->ro_mount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&c->umount_mutex);
 	if (c->bgt) {
@@ -1748,8 +2498,16 @@ static void ubifs_remount_ro(struct ubifs_info *c)
 
 	dbg_save_space_info(c);
 
+<<<<<<< HEAD
 	for (i = 0; i < c->jhead_cnt; i++)
 		ubifs_wbuf_sync(&c->jheads[i].wbuf);
+=======
+	for (i = 0; i < c->jhead_cnt; i++) {
+		err = ubifs_wbuf_sync(&c->jheads[i].wbuf);
+		if (err)
+			ubifs_ro_mode(c, err);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	c->mst_node->flags &= ~cpu_to_le32(UBIFS_MST_DIRTY);
 	c->mst_node->flags |= cpu_to_le32(UBIFS_MST_NO_ORPHS);
@@ -1777,8 +2535,12 @@ static void ubifs_put_super(struct super_block *sb)
 	int i;
 	struct ubifs_info *c = sb->s_fs_info;
 
+<<<<<<< HEAD
 	ubifs_msg("un-mount UBI device %d, volume %d", c->vi.ubi_num,
 		  c->vi.vol_id);
+=======
+	ubifs_msg(c, "un-mount UBI device %d", c->vi.ubi_num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The following asserts are only valid if there has not been a failure
@@ -1786,9 +2548,15 @@ static void ubifs_put_super(struct super_block *sb)
 	 * to write them back because of I/O errors.
 	 */
 	if (!c->ro_error) {
+<<<<<<< HEAD
 		ubifs_assert(c->bi.idx_growth == 0);
 		ubifs_assert(c->bi.dd_growth == 0);
 		ubifs_assert(c->bi.data_growth == 0);
+=======
+		ubifs_assert(c, c->bi.idx_growth == 0);
+		ubifs_assert(c, c->bi.dd_growth == 0);
+		ubifs_assert(c, c->bi.data_growth == 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1816,8 +2584,16 @@ static void ubifs_put_super(struct super_block *sb)
 			int err;
 
 			/* Synchronize write-buffers */
+<<<<<<< HEAD
 			for (i = 0; i < c->jhead_cnt; i++)
 				ubifs_wbuf_sync(&c->jheads[i].wbuf);
+=======
+			for (i = 0; i < c->jhead_cnt; i++) {
+				err = ubifs_wbuf_sync(&c->jheads[i].wbuf);
+				if (err)
+					ubifs_ro_mode(c, err);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * We are being cleanly unmounted which means the
@@ -1834,8 +2610,13 @@ static void ubifs_put_super(struct super_block *sb)
 				 * next mount, so we just print a message and
 				 * continue to unmount normally.
 				 */
+<<<<<<< HEAD
 				ubifs_err("failed to write master node, "
 					  "error %d", err);
+=======
+				ubifs_err(c, "failed to write master node, error %d",
+					  err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			for (i = 0; i < c->jhead_cnt; i++)
 				/* Make sure write-buffer timers are canceled */
@@ -1844,7 +2625,10 @@ static void ubifs_put_super(struct super_block *sb)
 	}
 
 	ubifs_umount(c);
+<<<<<<< HEAD
 	bdi_destroy(&c->bdi);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ubi_close_volume(c->ubi);
 	mutex_unlock(&c->umount_mutex);
 }
@@ -1854,10 +2638,15 @@ static int ubifs_remount_fs(struct super_block *sb, int *flags, char *data)
 	int err;
 	struct ubifs_info *c = sb->s_fs_info;
 
+<<<<<<< HEAD
+=======
+	sync_filesystem(sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dbg_gen("old flags %#lx, new flags %#x", sb->s_flags, *flags);
 
 	err = ubifs_parse_options(c, data, 1);
 	if (err) {
+<<<<<<< HEAD
 		ubifs_err("invalid or unknown remount parameter");
 		return err;
 	}
@@ -1869,14 +2658,33 @@ static int ubifs_remount_fs(struct super_block *sb, int *flags, char *data)
 		}
 		if (c->ro_media) {
 			ubifs_msg("cannot re-mount R/W - UBI volume is R/O");
+=======
+		ubifs_err(c, "invalid or unknown remount parameter");
+		return err;
+	}
+
+	if (c->ro_mount && !(*flags & SB_RDONLY)) {
+		if (c->ro_error) {
+			ubifs_msg(c, "cannot re-mount R/W due to prior errors");
+			return -EROFS;
+		}
+		if (c->ro_media) {
+			ubifs_msg(c, "cannot re-mount R/W - UBI volume is R/O");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EROFS;
 		}
 		err = ubifs_remount_rw(c);
 		if (err)
 			return err;
+<<<<<<< HEAD
 	} else if (!c->ro_mount && (*flags & MS_RDONLY)) {
 		if (c->ro_error) {
 			ubifs_msg("cannot re-mount R/O due to prior errors");
+=======
+	} else if (!c->ro_mount && (*flags & SB_RDONLY)) {
+		if (c->ro_error) {
+			ubifs_msg(c, "cannot re-mount R/O due to prior errors");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EROFS;
 		}
 		ubifs_remount_ro(c);
@@ -1886,19 +2694,38 @@ static int ubifs_remount_fs(struct super_block *sb, int *flags, char *data)
 		bu_init(c);
 	else {
 		dbg_gen("disable bulk-read");
+<<<<<<< HEAD
 		kfree(c->bu.buf);
 		c->bu.buf = NULL;
 	}
 
 	ubifs_assert(c->lst.taken_empty_lebs > 0);
+=======
+		mutex_lock(&c->bu_mutex);
+		kfree(c->bu.buf);
+		c->bu.buf = NULL;
+		mutex_unlock(&c->bu_mutex);
+	}
+
+	if (!c->need_recovery)
+		ubifs_assert(c, c->lst.taken_empty_lebs > 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 const struct super_operations ubifs_super_operations = {
 	.alloc_inode   = ubifs_alloc_inode,
+<<<<<<< HEAD
 	.destroy_inode = ubifs_destroy_inode,
 	.put_super     = ubifs_put_super,
 	.write_inode   = ubifs_write_inode,
+=======
+	.free_inode    = ubifs_free_inode,
+	.put_super     = ubifs_put_super,
+	.write_inode   = ubifs_write_inode,
+	.drop_inode    = ubifs_drop_inode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.evict_inode   = ubifs_evict_inode,
 	.statfs        = ubifs_statfs,
 	.dirty_inode   = ubifs_dirty_inode,
@@ -1913,7 +2740,11 @@ const struct super_operations ubifs_super_operations = {
  * @mode: UBI volume open mode
  *
  * The primary method of mounting UBIFS is by specifying the UBI volume
+<<<<<<< HEAD
  * character device node path. However, UBIFS may also be mounted withoug any
+=======
+ * character device node path. However, UBIFS may also be mounted without any
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * character device node using one of the following methods:
  *
  * o ubiX_Y    - mount UBI device number X, volume Y;
@@ -1932,6 +2763,12 @@ static struct ubi_volume_desc *open_ubi(const char *name, int mode)
 	int dev, vol;
 	char *endptr;
 
+<<<<<<< HEAD
+=======
+	if (!name || !*name)
+		return ERR_PTR(-EINVAL);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* First, try to open using the device node path method */
 	ubi = ubi_open_volume_path(name, mode);
 	if (!IS_ERR(ubi))
@@ -1988,6 +2825,11 @@ static struct ubifs_info *alloc_ubifs_info(struct ubi_volume_desc *ubi)
 		mutex_init(&c->bu_mutex);
 		mutex_init(&c->write_reserve_mutex);
 		init_waitqueue_head(&c->cmt_wq);
+<<<<<<< HEAD
+=======
+		init_waitqueue_head(&c->reserve_space_wq);
+		atomic_set(&c->need_wait_space, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->buds = RB_ROOT;
 		c->old_idx = RB_ROOT;
 		c->size_tree = RB_ROOT;
@@ -2005,6 +2847,10 @@ static struct ubifs_info *alloc_ubifs_info(struct ubi_volume_desc *ubi)
 		INIT_LIST_HEAD(&c->orph_list);
 		INIT_LIST_HEAD(&c->orph_new);
 		c->no_chk_data_crc = 1;
+<<<<<<< HEAD
+=======
+		c->assert_action = ASSACT_RO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		c->highest_inum = UBIFS_FIRST_INO;
 		c->lhead_lnum = c->ltail_lnum = UBIFS_LOG_LNUM;
@@ -2029,6 +2875,7 @@ static int ubifs_fill_super(struct super_block *sb, void *data, int silent)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * UBIFS provides 'backing_dev_info' in order to disable read-ahead. For
 	 * UBIFS, I/O is not deferred, it is done immediately in readpage,
@@ -2052,6 +2899,29 @@ static int ubifs_fill_super(struct super_block *sb, void *data, int silent)
 		goto out_bdi;
 
 	sb->s_bdi = &c->bdi;
+=======
+	err = ubifs_parse_options(c, data, 0);
+	if (err)
+		goto out_close;
+
+	/*
+	 * UBIFS provides 'backing_dev_info' in order to disable read-ahead. For
+	 * UBIFS, I/O is not deferred, it is done immediately in read_folio,
+	 * which means the user would have to wait not just for their own I/O
+	 * but the read-ahead I/O as well i.e. completely pointless.
+	 *
+	 * Read-ahead will be disabled because @sb->s_bdi->ra_pages is 0. Also
+	 * @sb->s_bdi->capabilities are initialized to 0 so there won't be any
+	 * writeback happening.
+	 */
+	err = super_setup_bdi_name(sb, "ubifs_%d_%d", c->vi.ubi_num,
+				   c->vi.vol_id);
+	if (err)
+		goto out_close;
+	sb->s_bdi->ra_pages = 0;
+	sb->s_bdi->io_pages = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb->s_fs_info = c;
 	sb->s_magic = UBIFS_SUPER_MAGIC;
 	sb->s_blocksize = UBIFS_BLOCK_SIZE;
@@ -2060,11 +2930,20 @@ static int ubifs_fill_super(struct super_block *sb, void *data, int silent)
 	if (c->max_inode_sz > MAX_LFS_FILESIZE)
 		sb->s_maxbytes = c->max_inode_sz = MAX_LFS_FILESIZE;
 	sb->s_op = &ubifs_super_operations;
+<<<<<<< HEAD
+=======
+	sb->s_xattr = ubifs_xattr_handlers;
+	fscrypt_set_ops(sb, &ubifs_crypt_operations);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&c->umount_mutex);
 	err = mount_ubifs(c);
 	if (err) {
+<<<<<<< HEAD
 		ubifs_assert(err < 0);
+=======
+		ubifs_assert(c, err < 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unlock;
 	}
 
@@ -2075,9 +2954,20 @@ static int ubifs_fill_super(struct super_block *sb, void *data, int silent)
 		goto out_umount;
 	}
 
+<<<<<<< HEAD
 	sb->s_root = d_make_root(root);
 	if (!sb->s_root)
 		goto out_umount;
+=======
+	generic_set_sb_d_ops(sb);
+	sb->s_root = d_make_root(root);
+	if (!sb->s_root) {
+		err = -ENOMEM;
+		goto out_umount;
+	}
+
+	super_set_uuid(sb, c->uuid, sizeof(c->uuid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&c->umount_mutex);
 	return 0;
@@ -2086,9 +2976,14 @@ out_umount:
 	ubifs_umount(c);
 out_unlock:
 	mutex_unlock(&c->umount_mutex);
+<<<<<<< HEAD
 out_bdi:
 	bdi_destroy(&c->bdi);
 out_close:
+=======
+out_close:
+	ubifs_release_options(c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ubi_close_volume(c->ubi);
 out:
 	return err;
@@ -2125,8 +3020,14 @@ static struct dentry *ubifs_mount(struct file_system_type *fs_type, int flags,
 	 */
 	ubi = open_ubi(name, UBI_READONLY);
 	if (IS_ERR(ubi)) {
+<<<<<<< HEAD
 		dbg_err("cannot open \"%s\", error %d",
 			name, (int)PTR_ERR(ubi));
+=======
+		if (!(flags & SB_SILENT))
+			pr_err("UBIFS error (pid: %d): cannot open \"%s\", error %d",
+			       current->pid, name, (int)PTR_ERR(ubi));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_CAST(ubi);
 	}
 
@@ -2138,7 +3039,11 @@ static struct dentry *ubifs_mount(struct file_system_type *fs_type, int flags,
 
 	dbg_gen("opened ubi%d_%d", c->vi.ubi_num, c->vi.vol_id);
 
+<<<<<<< HEAD
 	sb = sget(fs_type, sb_test, sb_set, c);
+=======
+	sb = sget(fs_type, sb_test, sb_set, flags, c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(sb)) {
 		err = PTR_ERR(sb);
 		kfree(c);
@@ -2150,17 +3055,33 @@ static struct dentry *ubifs_mount(struct file_system_type *fs_type, int flags,
 		kfree(c);
 		/* A new mount point for already mounted UBIFS */
 		dbg_gen("this ubi volume is already mounted");
+<<<<<<< HEAD
 		if (!!(flags & MS_RDONLY) != c1->ro_mount) {
+=======
+		if (!!(flags & SB_RDONLY) != c1->ro_mount) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EBUSY;
 			goto out_deact;
 		}
 	} else {
+<<<<<<< HEAD
 		sb->s_flags = flags;
 		err = ubifs_fill_super(sb, data, flags & MS_SILENT ? 1 : 0);
 		if (err)
 			goto out_deact;
 		/* We do not support atime */
 		sb->s_flags |= MS_ACTIVE | MS_NOATIME;
+=======
+		err = ubifs_fill_super(sb, data, flags & SB_SILENT ? 1 : 0);
+		if (err)
+			goto out_deact;
+		/* We do not support atime */
+		sb->s_flags |= SB_ACTIVE;
+		if (IS_ENABLED(CONFIG_UBIFS_ATIME_SUPPORT))
+			ubifs_msg(c, "full atime support is enabled.");
+		else
+			sb->s_flags |= SB_NOATIME;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* 'fill_super()' opens ubi again so we must close it here */
@@ -2201,7 +3122,11 @@ static void inode_slab_ctor(void *obj)
 
 static int __init ubifs_init(void)
 {
+<<<<<<< HEAD
 	int err;
+=======
+	int err = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUILD_BUG_ON(sizeof(struct ubifs_ch) != 24);
 
@@ -2251,6 +3176,7 @@ static int __init ubifs_init(void)
 	BUILD_BUG_ON(UBIFS_COMPR_TYPES_CNT > 4);
 
 	/*
+<<<<<<< HEAD
 	 * We require that PAGE_CACHE_SIZE is greater-than-or-equal-to
 	 * UBIFS_BLOCK_SIZE. It is assumed that both are powers of 2.
 	 */
@@ -2258,22 +3184,46 @@ static int __init ubifs_init(void)
 		ubifs_err("VFS page cache size is %u bytes, but UBIFS requires"
 			  " at least 4096 bytes",
 			  (unsigned int)PAGE_CACHE_SIZE);
+=======
+	 * We require that PAGE_SIZE is greater-than-or-equal-to
+	 * UBIFS_BLOCK_SIZE. It is assumed that both are powers of 2.
+	 */
+	if (PAGE_SIZE < UBIFS_BLOCK_SIZE) {
+		pr_err("UBIFS error (pid %d): VFS page cache size is %u bytes, but UBIFS requires at least 4096 bytes",
+		       current->pid, (unsigned int)PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	ubifs_inode_slab = kmem_cache_create("ubifs_inode_slab",
 				sizeof(struct ubifs_inode), 0,
+<<<<<<< HEAD
 				SLAB_MEM_SPREAD | SLAB_RECLAIM_ACCOUNT,
+=======
+				SLAB_RECLAIM_ACCOUNT | SLAB_ACCOUNT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				&inode_slab_ctor);
 	if (!ubifs_inode_slab)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	register_shrinker(&ubifs_shrinker_info);
+=======
+	ubifs_shrinker_info = shrinker_alloc(0, "ubifs-slab");
+	if (!ubifs_shrinker_info)
+		goto out_slab;
+
+	ubifs_shrinker_info->count_objects = ubifs_shrink_count;
+	ubifs_shrinker_info->scan_objects = ubifs_shrink_scan;
+
+	shrinker_register(ubifs_shrinker_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = ubifs_compressors_init();
 	if (err)
 		goto out_shrinker;
 
+<<<<<<< HEAD
 	err = dbg_debugfs_init();
 	if (err)
 		goto out_compr;
@@ -2291,6 +3241,30 @@ out_compr:
 	ubifs_compressors_exit();
 out_shrinker:
 	unregister_shrinker(&ubifs_shrinker_info);
+=======
+	dbg_debugfs_init();
+
+	err = ubifs_sysfs_init();
+	if (err)
+		goto out_dbg;
+
+	err = register_filesystem(&ubifs_fs_type);
+	if (err) {
+		pr_err("UBIFS error (pid %d): cannot register file system, error %d",
+		       current->pid, err);
+		goto out_sysfs;
+	}
+	return 0;
+
+out_sysfs:
+	ubifs_sysfs_exit();
+out_dbg:
+	dbg_debugfs_exit();
+	ubifs_compressors_exit();
+out_shrinker:
+	shrinker_free(ubifs_shrinker_info);
+out_slab:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_destroy(ubifs_inode_slab);
 	return err;
 }
@@ -2299,12 +3273,22 @@ late_initcall(ubifs_init);
 
 static void __exit ubifs_exit(void)
 {
+<<<<<<< HEAD
 	ubifs_assert(list_empty(&ubifs_infos));
 	ubifs_assert(atomic_long_read(&ubifs_clean_zn_cnt) == 0);
 
 	dbg_debugfs_exit();
 	ubifs_compressors_exit();
 	unregister_shrinker(&ubifs_shrinker_info);
+=======
+	WARN_ON(!list_empty(&ubifs_infos));
+	WARN_ON(atomic_long_read(&ubifs_clean_zn_cnt) != 0);
+
+	dbg_debugfs_exit();
+	ubifs_sysfs_exit();
+	ubifs_compressors_exit();
+	shrinker_free(ubifs_shrinker_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Make sure all delayed rcu free inodes are flushed before we

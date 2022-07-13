@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/proc-arm720.S: MMU functions for ARM720
  *
@@ -6,6 +10,7 @@
  *  Copyright (C) 2000 ARM Limited, Deep Blue Solutions Ltd.
  *  hacked for non-paged-MM by Hyok S. Choi, 2004.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -21,6 +26,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * These are the low level assembler for performing cache and TLB
  * functions on the ARM720T.  The ARM720T has a writethrough IDC
  * cache, so we don't need to clean it.
@@ -34,11 +41,18 @@
  */
 #include <linux/linkage.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/pgtable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/assembler.h>
 #include <asm/asm-offsets.h>
 #include <asm/hwcap.h>
 #include <asm/pgtable-hwdef.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ptrace.h>
 
 #include "proc-macros.S"
@@ -51,14 +65,22 @@
  */
 ENTRY(cpu_arm720_dcache_clean_area)
 ENTRY(cpu_arm720_proc_init)
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(cpu_arm720_proc_fin)
 		mrc	p15, 0, r0, c1, c0, 0
 		bic	r0, r0, #0x1000			@ ...i............
 		bic	r0, r0, #0x000e			@ ............wca.
 		mcr	p15, 0, r0, c1, c0, 0		@ disable caches
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Function: arm720_proc_do_idle(void)
@@ -66,7 +88,11 @@ ENTRY(cpu_arm720_proc_fin)
  * Purpose : put the processor in proper idle mode
  */
 ENTRY(cpu_arm720_do_idle)
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Function: arm720_switch_mm(unsigned long pgd_phys)
@@ -81,7 +107,11 @@ ENTRY(cpu_arm720_switch_mm)
 		mcr	p15, 0, r0, c2, c0, 0		@ update page table ptr
 		mcr	p15, 0, r1, c8, c7, 0		@ flush TLB (v4)
 #endif
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Function: arm720_set_pte_ext(pte_t *ptep, pte_t pte, unsigned int ext)
@@ -94,7 +124,11 @@ ENTRY(cpu_arm720_set_pte_ext)
 #ifdef CONFIG_MMU
 	armv3_set_pte_ext wc_disable=0
 #endif
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Function: arm720_reset
@@ -112,12 +146,19 @@ ENTRY(cpu_arm720_reset)
 		bic	ip, ip, #0x000f			@ ............wcam
 		bic	ip, ip, #0x2100			@ ..v....s........
 		mcr	p15, 0, ip, c1, c0, 0		@ ctrl register
+<<<<<<< HEAD
 		mov	pc, r0
 ENDPROC(cpu_arm720_reset)
 		.popsection
 
 	__CPUINIT
 
+=======
+		ret	r0
+ENDPROC(cpu_arm720_reset)
+		.popsection
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.type	__arm710_setup, #function
 __arm710_setup:
 	mov	r0, #0
@@ -130,7 +171,11 @@ __arm710_setup:
 	bic	r0, r0, r5
 	ldr	r5, arm710_cr1_set
 	orr	r0, r0, r5
+<<<<<<< HEAD
 	mov	pc, lr				@ __ret (head.S)
+=======
+	ret	lr				@ __ret (head.S)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size	__arm710_setup, . - __arm710_setup
 
 	/*
@@ -158,7 +203,11 @@ __arm720_setup:
 	mrc	p15, 0, r0, c1, c0		@ get control register
 	bic	r0, r0, r5
 	orr	r0, r0, r6
+<<<<<<< HEAD
 	mov	pc, lr				@ __ret (head.S)
+=======
+	ret	lr				@ __ret (head.S)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size	__arm720_setup, . - __arm720_setup
 
 	/*
@@ -188,7 +237,11 @@ arm720_crval:
  * See <asm/procinfo.h> for a definition of this structure.
  */
 	
+<<<<<<< HEAD
 		.section ".proc.info.init", #alloc, #execinstr
+=======
+		.section ".proc.info.init", "a"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .macro arm720_proc_info name:req, cpu_val:req, cpu_mask:req, cpu_name:req, cpu_flush:req
 		.type	__\name\()_proc_info,#object
@@ -205,7 +258,11 @@ __\name\()_proc_info:
 			PMD_BIT4 | \
 			PMD_SECT_AP_WRITE | \
 			PMD_SECT_AP_READ
+<<<<<<< HEAD
 		b	\cpu_flush				@ cpu_flush
+=======
+		initfn	\cpu_flush, __\name\()_proc_info	@ cpu_flush
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.long	cpu_arch_name				@ arch_name
 		.long	cpu_elf_name				@ elf_name
 		.long	HWCAP_SWP | HWCAP_HALF | HWCAP_THUMB	@ elf_hwcap

@@ -1,14 +1,26 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * zfcp device driver
  *
  * Header file for zfcp qdio interface
  *
+<<<<<<< HEAD
  * Copyright IBM Corporation 2010
+=======
+ * Copyright IBM Corp. 2010
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef ZFCP_QDIO_H
 #define ZFCP_QDIO_H
 
+<<<<<<< HEAD
+=======
+#include <linux/interrupt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/qdio.h>
 
 #define ZFCP_QDIO_SBALE_LEN	PAGE_SIZE
@@ -28,7 +40,16 @@
  * @req_q_util: used for accounting
  * @req_q_full: queue full incidents
  * @req_q_wq: used to wait for SBAL availability
+<<<<<<< HEAD
  * @adapter: adapter used in conjunction with this qdio structure
+=======
+ * @irq_tasklet: used for QDIO interrupt processing
+ * @request_tasklet: used for Request Queue completion processing
+ * @request_timer: used to trigger the Request Queue completion processing
+ * @adapter: adapter used in conjunction with this qdio structure
+ * @max_sbale_per_sbal: qdio limit per sbal
+ * @max_sbale_per_req: qdio limit per request
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct zfcp_qdio {
 	struct qdio_buffer	*res_q[QDIO_MAX_BUFFERS_PER_Q];
@@ -41,6 +62,12 @@ struct zfcp_qdio {
 	u64			req_q_util;
 	atomic_t		req_q_full;
 	wait_queue_head_t	req_q_wq;
+<<<<<<< HEAD
+=======
+	struct tasklet_struct	irq_tasklet;
+	struct tasklet_struct	request_tasklet;
+	struct timer_list	request_timer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zfcp_adapter	*adapter;
 	u16			max_sbale_per_sbal;
 	u16			max_sbale_per_req;
@@ -54,7 +81,10 @@ struct zfcp_qdio {
  * @sbal_last: last sbal for this request
  * @sbal_limit: last possible sbal for this request
  * @sbale_curr: current sbale at creation of this request
+<<<<<<< HEAD
  * @sbal_response: sbal used in interrupt
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @qdio_outb_usage: usage of outbound queue
  */
 struct zfcp_qdio_req {
@@ -64,14 +94,21 @@ struct zfcp_qdio_req {
 	u8	sbal_last;
 	u8	sbal_limit;
 	u8	sbale_curr;
+<<<<<<< HEAD
 	u8	sbal_response;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16	qdio_outb_usage;
 };
 
 /**
  * zfcp_qdio_sbale_req - return pointer to sbale on req_q for a request
  * @qdio: pointer to struct zfcp_qdio
+<<<<<<< HEAD
  * @q_rec: pointer to struct zfcp_qdio_req
+=======
+ * @q_req: pointer to struct zfcp_qdio_req
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns: pointer to qdio_buffer_element (sbale) structure
  */
 static inline struct qdio_buffer_element *
@@ -83,7 +120,11 @@ zfcp_qdio_sbale_req(struct zfcp_qdio *qdio, struct zfcp_qdio_req *q_req)
 /**
  * zfcp_qdio_sbale_curr - return current sbale on req_q for a request
  * @qdio: pointer to struct zfcp_qdio
+<<<<<<< HEAD
  * @fsf_req: pointer to struct zfcp_fsf_req
+=======
+ * @q_req: pointer to struct zfcp_qdio_req
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns: pointer to qdio_buffer_element (sbale) structure
  */
 static inline struct qdio_buffer_element *
@@ -107,7 +148,11 @@ zfcp_qdio_sbale_curr(struct zfcp_qdio *qdio, struct zfcp_qdio_req *q_req)
  */
 static inline
 void zfcp_qdio_req_init(struct zfcp_qdio *qdio, struct zfcp_qdio_req *q_req,
+<<<<<<< HEAD
 			unsigned long req_id, u8 sbtype, void *data, u32 len)
+=======
+			u64 req_id, u8 sbtype, void *data, u32 len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qdio_buffer_element *sbale;
 	int count = min(atomic_read(&qdio->req_q_free),
@@ -121,14 +166,22 @@ void zfcp_qdio_req_init(struct zfcp_qdio *qdio, struct zfcp_qdio_req *q_req,
 					% QDIO_MAX_BUFFERS_PER_Q;
 
 	sbale = zfcp_qdio_sbale_req(qdio, q_req);
+<<<<<<< HEAD
 	sbale->addr = (void *) req_id;
+=======
+	sbale->addr = u64_to_dma64(req_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbale->eflags = 0;
 	sbale->sflags = SBAL_SFLAGS0_COMMAND | sbtype;
 
 	if (unlikely(!data))
 		return;
 	sbale++;
+<<<<<<< HEAD
 	sbale->addr = data;
+=======
+	sbale->addr = virt_to_dma64(data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbale->length = len;
 }
 
@@ -136,6 +189,11 @@ void zfcp_qdio_req_init(struct zfcp_qdio *qdio, struct zfcp_qdio_req *q_req,
  * zfcp_qdio_fill_next - Fill next sbale, only for single sbal requests
  * @qdio: pointer to struct zfcp_qdio
  * @q_req: pointer to struct zfcp_queue_req
+<<<<<<< HEAD
+=======
+ * @data: pointer to data
+ * @len: length of data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This is only required for single sbal requests, calling it when
  * wrapping around to the next sbal is a bug.
@@ -149,7 +207,11 @@ void zfcp_qdio_fill_next(struct zfcp_qdio *qdio, struct zfcp_qdio_req *q_req,
 	BUG_ON(q_req->sbale_curr == qdio->max_sbale_per_sbal - 1);
 	q_req->sbale_curr++;
 	sbale = zfcp_qdio_sbale_curr(qdio, q_req);
+<<<<<<< HEAD
 	sbale->addr = data;
+=======
+	sbale->addr = virt_to_dma64(data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbale->length = len;
 }
 
@@ -183,6 +245,10 @@ int zfcp_qdio_sg_one_sbale(struct scatterlist *sg)
 
 /**
  * zfcp_qdio_skip_to_last_sbale - skip to last sbale in sbal
+<<<<<<< HEAD
+=======
+ * @qdio: pointer to struct zfcp_qdio
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @q_req: The current zfcp_qdio_req
  */
 static inline
@@ -225,6 +291,7 @@ void zfcp_qdio_set_data_div(struct zfcp_qdio *qdio,
 }
 
 /**
+<<<<<<< HEAD
  * zfcp_qdio_sbale_count - count sbale used
  * @sg: pointer to struct scatterlist
  */
@@ -240,6 +307,8 @@ unsigned int zfcp_qdio_sbale_count(struct scatterlist *sg)
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * zfcp_qdio_real_bytes - count bytes used
  * @sg: pointer to struct scatterlist
  */

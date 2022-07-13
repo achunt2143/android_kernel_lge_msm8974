@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  sata_nv.c - NVIDIA nForce SATA
  *
  *  Copyright 2004 NVIDIA Corp.  All rights reserved.
  *  Copyright 2004 Andrew Chew
  *
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -22,6 +27,10 @@
  *
  *  libata documentation is available via 'make {ps|pdf}docs',
  *  as Documentation/DocBook/libata.*
+=======
+ *  libata documentation is available via 'make {ps|pdf}docs',
+ *  as Documentation/driver-api/libata.rst
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  No hardware documentation available outside of NVIDIA.
  *  This driver programs the NVIDIA SATA controller in a similar
@@ -33,14 +42,20 @@
  *  similar to the ADMA specification (with some modifications).
  *  This allows the use of NCQ. Non-DMA-mapped ATA commands are still
  *  sent through the legacy interface.
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/gfp.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -48,6 +63,10 @@
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_device.h>
 #include <linux/libata.h>
+<<<<<<< HEAD
+=======
+#include <trace/events/libata.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRV_NAME			"sata_nv"
 #define DRV_VERSION			"3.5"
@@ -296,7 +315,11 @@ struct nv_swncq_port_priv {
 #define NV_ADMA_CHECK_INTR(GCTL, PORT) ((GCTL) & (1 << (19 + (12 * (PORT)))))
 
 static int nv_init_one(struct pci_dev *pdev, const struct pci_device_id *ent);
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nv_pci_device_resume(struct pci_dev *pdev);
 #endif
 static void nv_ck804_host_stop(struct ata_host *host);
@@ -314,7 +337,11 @@ static void nv_ck804_freeze(struct ata_port *ap);
 static void nv_ck804_thaw(struct ata_port *ap);
 static int nv_adma_slave_config(struct scsi_device *sdev);
 static int nv_adma_check_atapi_dma(struct ata_queued_cmd *qc);
+<<<<<<< HEAD
 static void nv_adma_qc_prep(struct ata_queued_cmd *qc);
+=======
+static enum ata_completion_errors nv_adma_qc_prep(struct ata_queued_cmd *qc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int nv_adma_qc_issue(struct ata_queued_cmd *qc);
 static irqreturn_t nv_adma_interrupt(int irq, void *dev_instance);
 static void nv_adma_irq_clear(struct ata_port *ap);
@@ -336,7 +363,11 @@ static void nv_mcp55_freeze(struct ata_port *ap);
 static void nv_swncq_error_handler(struct ata_port *ap);
 static int nv_swncq_slave_config(struct scsi_device *sdev);
 static int nv_swncq_port_start(struct ata_port *ap);
+<<<<<<< HEAD
 static void nv_swncq_qc_prep(struct ata_queued_cmd *qc);
+=======
+static enum ata_completion_errors nv_swncq_qc_prep(struct ata_queued_cmd *qc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void nv_swncq_fill_sg(struct ata_queued_cmd *qc);
 static unsigned int nv_swncq_qc_issue(struct ata_queued_cmd *qc);
 static void nv_swncq_irq_clear(struct ata_port *ap, u16 fis);
@@ -380,23 +411,37 @@ static struct pci_driver nv_pci_driver = {
 	.name			= DRV_NAME,
 	.id_table		= nv_pci_tbl,
 	.probe			= nv_init_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= nv_pci_device_resume,
 #endif
 	.remove			= ata_pci_remove_one,
 };
 
+<<<<<<< HEAD
 static struct scsi_host_template nv_sht = {
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
 static struct scsi_host_template nv_adma_sht = {
 	ATA_NCQ_SHT(DRV_NAME),
+=======
+static const struct scsi_host_template nv_sht = {
+	ATA_BMDMA_SHT(DRV_NAME),
+};
+
+static const struct scsi_host_template nv_adma_sht = {
+	__ATA_BASE_SHT(DRV_NAME),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.can_queue		= NV_ADMA_MAX_CPBS,
 	.sg_tablesize		= NV_ADMA_SGTBL_TOTAL_LEN,
 	.dma_boundary		= NV_ADMA_DMA_BOUNDARY,
 	.slave_configure	= nv_adma_slave_config,
+<<<<<<< HEAD
 };
 
 static struct scsi_host_template nv_swncq_sht = {
@@ -405,6 +450,22 @@ static struct scsi_host_template nv_swncq_sht = {
 	.sg_tablesize		= LIBATA_MAX_PRD,
 	.dma_boundary		= ATA_DMA_BOUNDARY,
 	.slave_configure	= nv_swncq_slave_config,
+=======
+	.sdev_groups		= ata_ncq_sdev_groups,
+	.change_queue_depth     = ata_scsi_change_queue_depth,
+	.tag_alloc_policy	= BLK_TAG_ALLOC_RR,
+};
+
+static const struct scsi_host_template nv_swncq_sht = {
+	__ATA_BASE_SHT(DRV_NAME),
+	.can_queue		= ATA_MAX_QUEUE - 1,
+	.sg_tablesize		= LIBATA_MAX_PRD,
+	.dma_boundary		= ATA_DMA_BOUNDARY,
+	.slave_configure	= nv_swncq_slave_config,
+	.sdev_groups		= ata_ncq_sdev_groups,
+	.change_queue_depth     = ata_scsi_change_queue_depth,
+	.tag_alloc_policy	= BLK_TAG_ALLOC_RR,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -530,7 +591,11 @@ static struct ata_port_operations nv_swncq_ops = {
 
 struct nv_pi_priv {
 	irq_handler_t			irq_handler;
+<<<<<<< HEAD
 	struct scsi_host_template	*sht;
+=======
+	const struct scsi_host_template	*sht;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define NV_PI_PRIV(_irq_handler, _sht) \
@@ -600,7 +665,11 @@ MODULE_DEVICE_TABLE(pci, nv_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
 
 static bool adma_enabled;
+<<<<<<< HEAD
 static bool swncq_enabled = 1;
+=======
+static bool swncq_enabled = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool msi_enabled;
 
 static void nv_adma_register_mode(struct ata_port *ap)
@@ -676,7 +745,10 @@ static int nv_adma_slave_config(struct scsi_device *sdev)
 	struct ata_port *ap = ata_shost_to_port(sdev->host);
 	struct nv_adma_port_priv *pp = ap->private_data;
 	struct nv_adma_port_priv *port0, *port1;
+<<<<<<< HEAD
 	struct scsi_device *sdev0, *sdev1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *pdev = to_pci_dev(ap->host->dev);
 	unsigned long segment_boundary, flags;
 	unsigned short sg_tablesize;
@@ -737,6 +809,7 @@ static int nv_adma_slave_config(struct scsi_device *sdev)
 
 	port0 = ap->host->ports[0]->private_data;
 	port1 = ap->host->ports[1]->private_data;
+<<<<<<< HEAD
 	sdev0 = ap->host->ports[0]->link.device[0].sdev;
 	sdev1 = ap->host->ports[1]->link.device[0].sdev;
 	if ((port0->flags & NV_ADMA_ATAPI_SETUP_COMPLETE) ||
@@ -767,6 +840,20 @@ static int nv_adma_slave_config(struct scsi_device *sdev)
 		if (sdev1)
 			blk_queue_bounce_limit(sdev1->request_queue,
 					       pp->adma_dma_mask);
+=======
+	if ((port0->flags & NV_ADMA_ATAPI_SETUP_COMPLETE) ||
+	    (port1->flags & NV_ADMA_ATAPI_SETUP_COMPLETE)) {
+		/*
+		 * We have to set the DMA mask to 32-bit if either port is in
+		 * ATAPI mode, since they are on the same PCI device which is
+		 * used for DMA mapping.  If either SCSI device is not allocated
+		 * yet, it's OK since that port will discover its correct
+		 * setting when it does get allocated.
+		 */
+		rc = dma_set_mask(&pdev->dev, ATA_DMA_MASK);
+	} else {
+		rc = dma_set_mask(&pdev->dev, pp->adma_dma_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	blk_queue_segment_boundary(sdev->request_queue, segment_boundary);
@@ -838,7 +925,11 @@ static int nv_adma_check_cpb(struct ata_port *ap, int cpb_num, int force_err)
 	struct nv_adma_port_priv *pp = ap->private_data;
 	u8 flags = pp->cpb[cpb_num].resp_flags;
 
+<<<<<<< HEAD
 	VPRINTK("CPB %d, flags=0x%x\n", cpb_num, flags);
+=======
+	ata_port_dbg(ap, "CPB %d, flags=0x%x\n", cpb_num, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely((force_err ||
 		     flags & (NV_CPB_RESP_ATA_ERR |
@@ -1020,7 +1111,11 @@ static irqreturn_t nv_adma_interrupt(int irq, void *dev_instance)
 					check_commands = 0;
 				check_commands &= ~(1 << pos);
 			}
+<<<<<<< HEAD
 			ata_qc_complete_multiple(ap, ap->qc_active ^ done_mask);
+=======
+			ata_qc_complete_multiple(ap, ata_qc_get_active(ap) ^ done_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1130,6 +1225,7 @@ static int nv_adma_port_start(struct ata_port *ap)
 	struct pci_dev *pdev = to_pci_dev(dev);
 	u16 tmp;
 
+<<<<<<< HEAD
 	VPRINTK("ENTER\n");
 
 	/* Ensure DMA mask is set to 32-bit before allocating legacy PRD and
@@ -1138,6 +1234,13 @@ static int nv_adma_port_start(struct ata_port *ap)
 	if (rc)
 		return rc;
 	rc = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	/*
+	 * Ensure DMA mask is set to 32-bit before allocating legacy PRD and
+	 * pad buffers.
+	 */
+	rc = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
@@ -1157,6 +1260,7 @@ static int nv_adma_port_start(struct ata_port *ap)
 	pp->notifier_clear_block = pp->gen_block +
 	       NV_ADMA_NOTIFIER_CLEAR + (4 * ap->port_no);
 
+<<<<<<< HEAD
 	/* Now that the legacy PRD and padding buffer are allocated we can
 	   safely raise the DMA mask to allocate the CPB/APRD table.
 	   These are allowed to fail since we store the value that ends up
@@ -1164,13 +1268,24 @@ static int nv_adma_port_start(struct ata_port *ap)
 	   needed. */
 	pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
 	pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
+=======
+	/*
+	 * Now that the legacy PRD and padding buffer are allocated we can
+	 * raise the DMA mask to allocate the CPB/APRD table.
+	 */
+	dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pp->adma_dma_mask = *dev->dma_mask;
 
 	mem = dmam_alloc_coherent(dev, NV_ADMA_PORT_PRIV_DMA_SZ,
 				  &mem_dma, GFP_KERNEL);
 	if (!mem)
 		return -ENOMEM;
+<<<<<<< HEAD
 	memset(mem, 0, NV_ADMA_PORT_PRIV_DMA_SZ);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * First item in chunk of DMA memory:
@@ -1223,7 +1338,10 @@ static void nv_adma_port_stop(struct ata_port *ap)
 	struct nv_adma_port_priv *pp = ap->private_data;
 	void __iomem *mmio = pp->ctl_block;
 
+<<<<<<< HEAD
 	VPRINTK("ENTER\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writew(0, mmio + NV_ADMA_CTL);
 }
 
@@ -1285,8 +1403,11 @@ static void nv_adma_setup_port(struct ata_port *ap)
 	void __iomem *mmio = ap->host->iomap[NV_MMIO_BAR];
 	struct ata_ioports *ioport = &ap->ioaddr;
 
+<<<<<<< HEAD
 	VPRINTK("ENTER\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mmio += NV_ADMA_PORT + ap->port_no * NV_ADMA_PORT_SIZE;
 
 	ioport->cmd_addr	= mmio;
@@ -1310,8 +1431,11 @@ static int nv_adma_host_init(struct ata_host *host)
 	unsigned int i;
 	u32 tmp32;
 
+<<<<<<< HEAD
 	VPRINTK("ENTER\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable ADMA on the ports */
 	pci_read_config_dword(pdev, NV_MCP_SATA_CFG_20, &tmp32);
 	tmp32 |= NV_MCP_SATA_CFG_20_PORT0_EN |
@@ -1353,6 +1477,7 @@ static void nv_adma_fill_sg(struct ata_queued_cmd *qc, struct nv_adma_cpb *cpb)
 	struct scatterlist *sg;
 	unsigned int si;
 
+<<<<<<< HEAD
 	VPRINTK("ENTER\n");
 
 	for_each_sg(qc->sg, sg, qc->n_elem, si) {
@@ -1362,6 +1487,15 @@ static void nv_adma_fill_sg(struct ata_queued_cmd *qc, struct nv_adma_cpb *cpb)
 	}
 	if (si > 5)
 		cpb->next_aprd = cpu_to_le64(((u64)(pp->aprd_dma + NV_ADMA_SGTBL_SZ * qc->tag)));
+=======
+	for_each_sg(qc->sg, sg, qc->n_elem, si) {
+		aprd = (si < 5) ? &cpb->aprd[si] :
+			&pp->aprd[NV_ADMA_SGTBL_LEN * qc->hw_tag + (si-5)];
+		nv_adma_fill_aprd(qc, sg, si, aprd);
+	}
+	if (si > 5)
+		cpb->next_aprd = cpu_to_le64(((u64)(pp->aprd_dma + NV_ADMA_SGTBL_SZ * qc->hw_tag)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		cpb->next_aprd = cpu_to_le64(0);
 }
@@ -1383,10 +1517,17 @@ static int nv_adma_use_reg_mode(struct ata_queued_cmd *qc)
 	return 1;
 }
 
+<<<<<<< HEAD
 static void nv_adma_qc_prep(struct ata_queued_cmd *qc)
 {
 	struct nv_adma_port_priv *pp = qc->ap->private_data;
 	struct nv_adma_cpb *cpb = &pp->cpb[qc->tag];
+=======
+static enum ata_completion_errors nv_adma_qc_prep(struct ata_queued_cmd *qc)
+{
+	struct nv_adma_port_priv *pp = qc->ap->private_data;
+	struct nv_adma_cpb *cpb = &pp->cpb[qc->hw_tag];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 ctl_flags = NV_CPB_CTL_CPB_VALID |
 		       NV_CPB_CTL_IEN;
 
@@ -1395,7 +1536,11 @@ static void nv_adma_qc_prep(struct ata_queued_cmd *qc)
 			(qc->flags & ATA_QCFLAG_DMAMAP));
 		nv_adma_register_mode(qc->ap);
 		ata_bmdma_qc_prep(qc);
+<<<<<<< HEAD
 		return;
+=======
+		return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	cpb->resp_flags = NV_CPB_RESP_DONE;
@@ -1404,15 +1549,22 @@ static void nv_adma_qc_prep(struct ata_queued_cmd *qc)
 	wmb();
 
 	cpb->len		= 3;
+<<<<<<< HEAD
 	cpb->tag		= qc->tag;
+=======
+	cpb->tag		= qc->hw_tag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpb->next_cpb_idx	= 0;
 
 	/* turn on NCQ flags for NCQ commands */
 	if (qc->tf.protocol == ATA_PROT_NCQ)
 		ctl_flags |= NV_CPB_CTL_QUEUE | NV_CPB_CTL_FPDMA;
 
+<<<<<<< HEAD
 	VPRINTK("qc->flags = 0x%lx\n", qc->flags);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nv_adma_tf_to_cpb(&qc->tf, cpb->tf);
 
 	if (qc->flags & ATA_QCFLAG_DMAMAP) {
@@ -1427,6 +1579,11 @@ static void nv_adma_qc_prep(struct ata_queued_cmd *qc)
 	cpb->ctl_flags = ctl_flags;
 	wmb();
 	cpb->resp_flags = 0;
+<<<<<<< HEAD
+=======
+
+	return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int nv_adma_qc_issue(struct ata_queued_cmd *qc)
@@ -1435,8 +1592,11 @@ static unsigned int nv_adma_qc_issue(struct ata_queued_cmd *qc)
 	void __iomem *mmio = pp->ctl_block;
 	int curr_ncq = (qc->tf.protocol == ATA_PROT_NCQ);
 
+<<<<<<< HEAD
 	VPRINTK("ENTER\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We can't handle result taskfile with NCQ commands, since
 	   retrieving the taskfile switches us out of ADMA mode and would abort
 	   existing commands. */
@@ -1448,7 +1608,10 @@ static unsigned int nv_adma_qc_issue(struct ata_queued_cmd *qc)
 
 	if (nv_adma_use_reg_mode(qc)) {
 		/* use ATA register mode */
+<<<<<<< HEAD
 		VPRINTK("using ATA register mode: 0x%lx\n", qc->flags);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG_ON(!(pp->flags & NV_ADMA_ATAPI_SETUP_COMPLETE) &&
 			(qc->flags & ATA_QCFLAG_DMAMAP));
 		nv_adma_register_mode(qc->ap);
@@ -1467,9 +1630,13 @@ static unsigned int nv_adma_qc_issue(struct ata_queued_cmd *qc)
 		pp->last_issue_ncq = curr_ncq;
 	}
 
+<<<<<<< HEAD
 	writew(qc->tag, mmio + NV_ADMA_APPEND);
 
 	DPRINTK("Issued tag %u\n", qc->tag);
+=======
+	writew(qc->hw_tag, mmio + NV_ADMA_APPEND);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1575,7 +1742,11 @@ static int nv_hardreset(struct ata_link *link, unsigned int *class,
 		sata_link_hardreset(link, sata_deb_timing_hotplug, deadline,
 				    NULL, NULL);
 	else {
+<<<<<<< HEAD
 		const unsigned long *timing = sata_ehc_deb_timing(ehc);
+=======
+		const unsigned int *timing = sata_ehc_deb_timing(ehc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int rc;
 
 		if (!(ehc->i.flags & ATA_EHI_QUIET))
@@ -1731,8 +1902,13 @@ static void nv_swncq_qc_to_dq(struct ata_port *ap, struct ata_queued_cmd *qc)
 
 	/* queue is full */
 	WARN_ON(dq->tail - dq->head == ATA_MAX_QUEUE);
+<<<<<<< HEAD
 	dq->defer_bits |= (1 << qc->tag);
 	dq->tag[dq->tail++ & (ATA_MAX_QUEUE - 1)] = qc->tag;
+=======
+	dq->defer_bits |= (1 << qc->hw_tag);
+	dq->tag[dq->tail++ & (ATA_MAX_QUEUE - 1)] = qc->hw_tag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct ata_queued_cmd *nv_swncq_qc_from_dq(struct ata_port *ap)
@@ -1797,7 +1973,11 @@ static void nv_swncq_ncq_stop(struct ata_port *ap)
 	u32 sactive;
 	u32 done_mask;
 
+<<<<<<< HEAD
 	ata_port_err(ap, "EH in SWNCQ mode,QC:qc_active 0x%X sactive 0x%X\n",
+=======
+	ata_port_err(ap, "EH in SWNCQ mode,QC:qc_active 0x%llX sactive 0x%X\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     ap->qc_active, ap->link.sactive);
 	ata_port_err(ap,
 		"SWNCQ:qc_active 0x%X defer_bits 0x%X last_issue_tag 0x%x\n  "
@@ -1902,12 +2082,20 @@ static void nv_swncq_host_init(struct ata_host *host)
 
 	/* enable swncq */
 	tmp = readl(mmio + NV_CTL_MCP55);
+<<<<<<< HEAD
 	VPRINTK("HOST_CTL:0x%X\n", tmp);
+=======
+	dev_dbg(&pdev->dev, "HOST_CTL:0x%X\n", tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(tmp | NV_CTL_PRI_SWNCQ | NV_CTL_SEC_SWNCQ, mmio + NV_CTL_MCP55);
 
 	/* enable irq intr */
 	tmp = readl(mmio + NV_INT_ENABLE_MCP55);
+<<<<<<< HEAD
 	VPRINTK("HOST_ENABLE:0x%X\n", tmp);
+=======
+	dev_dbg(&pdev->dev, "HOST_ENABLE:0x%X\n", tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(tmp | 0x00fd00fd, mmio + NV_INT_ENABLE_MCP55);
 
 	/*  clear port irq */
@@ -1952,7 +2140,11 @@ static int nv_swncq_slave_config(struct scsi_device *sdev)
 	ata_id_c_string(dev->id, model_num, ATA_ID_PROD, sizeof(model_num));
 
 	if (strncmp(model_num, "Maxtor", 6) == 0) {
+<<<<<<< HEAD
 		ata_scsi_change_queue_depth(sdev, 1, SCSI_QDEPTH_DEFAULT);
+=======
+		ata_scsi_change_queue_depth(sdev, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ata_dev_notice(dev, "Disabling SWNCQ mode (depth %x)\n",
 			       sdev->queue_depth);
 	}
@@ -1980,7 +2172,10 @@ static int nv_swncq_port_start(struct ata_port *ap)
 				      &pp->prd_dma, GFP_KERNEL);
 	if (!pp->prd)
 		return -ENOMEM;
+<<<<<<< HEAD
 	memset(pp->prd, 0, ATA_PRD_TBL_SZ * ATA_MAX_QUEUE);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ap->private_data = pp;
 	pp->sactive_block = ap->ioaddr.scr_addr + 4 * SCR_ACTIVE;
@@ -1990,6 +2185,7 @@ static int nv_swncq_port_start(struct ata_port *ap)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void nv_swncq_qc_prep(struct ata_queued_cmd *qc)
 {
 	if (qc->tf.protocol != ATA_PROT_NCQ) {
@@ -2001,6 +2197,21 @@ static void nv_swncq_qc_prep(struct ata_queued_cmd *qc)
 		return;
 
 	nv_swncq_fill_sg(qc);
+=======
+static enum ata_completion_errors nv_swncq_qc_prep(struct ata_queued_cmd *qc)
+{
+	if (qc->tf.protocol != ATA_PROT_NCQ) {
+		ata_bmdma_qc_prep(qc);
+		return AC_ERR_OK;
+	}
+
+	if (!(qc->flags & ATA_QCFLAG_DMAMAP))
+		return AC_ERR_OK;
+
+	nv_swncq_fill_sg(qc);
+
+	return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nv_swncq_fill_sg(struct ata_queued_cmd *qc)
@@ -2011,7 +2222,11 @@ static void nv_swncq_fill_sg(struct ata_queued_cmd *qc)
 	struct ata_bmdma_prd *prd;
 	unsigned int si, idx;
 
+<<<<<<< HEAD
 	prd = pp->prd + ATA_MAX_PRD * qc->tag;
+=======
+	prd = pp->prd + ATA_MAX_PRD * qc->hw_tag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	idx = 0;
 	for_each_sg(qc->sg, sg, qc->n_elem, si) {
@@ -2047,6 +2262,7 @@ static unsigned int nv_swncq_issue_atacmd(struct ata_port *ap,
 	if (qc == NULL)
 		return 0;
 
+<<<<<<< HEAD
 	DPRINTK("Enter\n");
 
 	writel((1 << qc->tag), pp->sactive_block);
@@ -2060,6 +2276,19 @@ static unsigned int nv_swncq_issue_atacmd(struct ata_port *ap,
 
 	DPRINTK("Issued tag %u\n", qc->tag);
 
+=======
+	writel((1 << qc->hw_tag), pp->sactive_block);
+	pp->last_issue_tag = qc->hw_tag;
+	pp->dhfis_bits &= ~(1 << qc->hw_tag);
+	pp->dmafis_bits &= ~(1 << qc->hw_tag);
+	pp->qc_active |= (0x1 << qc->hw_tag);
+
+	trace_ata_tf_load(ap, &qc->tf);
+	ap->ops->sff_tf_load(ap, &qc->tf);	 /* load tf registers */
+	trace_ata_exec_command(ap, &qc->tf, qc->hw_tag);
+	ap->ops->sff_exec_command(ap, &qc->tf);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2071,8 +2300,11 @@ static unsigned int nv_swncq_qc_issue(struct ata_queued_cmd *qc)
 	if (qc->tf.protocol != ATA_PROT_NCQ)
 		return ata_bmdma_qc_issue(qc);
 
+<<<<<<< HEAD
 	DPRINTK("Enter\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pp->qc_active)
 		nv_swncq_issue_atacmd(ap, qc);
 	else
@@ -2117,6 +2349,10 @@ static int nv_swncq_sdbfis(struct ata_port *ap)
 	u8 lack_dhfis = 0;
 
 	host_stat = ap->ops->bmdma_status(ap);
+<<<<<<< HEAD
+=======
+	trace_ata_bmdma_status(ap, host_stat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(host_stat & ATA_DMA_ERR)) {
 		/* error when transferring data to/from memory */
 		ata_ehi_clear_desc(ehi);
@@ -2136,10 +2372,17 @@ static int nv_swncq_sdbfis(struct ata_port *ap)
 	pp->dhfis_bits &= ~done_mask;
 	pp->dmafis_bits &= ~done_mask;
 	pp->sdbfis_bits |= done_mask;
+<<<<<<< HEAD
 	ata_qc_complete_multiple(ap, ap->qc_active ^ done_mask);
 
 	if (!ap->qc_active) {
 		DPRINTK("over\n");
+=======
+	ata_qc_complete_multiple(ap, ata_qc_get_active(ap) ^ done_mask);
+
+	if (!ap->qc_active) {
+		ata_port_dbg(ap, "over\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nv_swncq_pp_reinit(ap);
 		return 0;
 	}
@@ -2154,12 +2397,21 @@ static int nv_swncq_sdbfis(struct ata_port *ap)
 		 */
 		lack_dhfis = 1;
 
+<<<<<<< HEAD
 	DPRINTK("id 0x%x QC: qc_active 0x%x,"
 		"SWNCQ:qc_active 0x%X defer_bits %X "
 		"dhfis 0x%X dmafis 0x%X last_issue_tag %x\n",
 		ap->print_id, ap->qc_active, pp->qc_active,
 		pp->defer_queue.defer_bits, pp->dhfis_bits,
 		pp->dmafis_bits, pp->last_issue_tag);
+=======
+	ata_port_dbg(ap, "QC: qc_active 0x%llx,"
+		     "SWNCQ:qc_active 0x%X defer_bits %X "
+		     "dhfis 0x%X dmafis 0x%X last_issue_tag %x\n",
+		     ap->qc_active, pp->qc_active,
+		     pp->defer_queue.defer_bits, pp->dhfis_bits,
+		     pp->dmafis_bits, pp->last_issue_tag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nv_swncq_fis_reinit(ap);
 
@@ -2199,7 +2451,11 @@ static void nv_swncq_dmafis(struct ata_port *ap)
 	__ata_bmdma_stop(ap);
 	tag = nv_swncq_tag(ap);
 
+<<<<<<< HEAD
 	DPRINTK("dma setup tag 0x%x\n", tag);
+=======
+	ata_port_dbg(ap, "dma setup tag 0x%x\n", tag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qc = ata_qc_from_tag(ap, tag);
 
 	if (unlikely(!qc))
@@ -2208,7 +2464,11 @@ static void nv_swncq_dmafis(struct ata_port *ap)
 	rw = qc->tf.flags & ATA_TFLAG_WRITE;
 
 	/* load PRD table addr. */
+<<<<<<< HEAD
 	iowrite32(pp->prd_dma + ATA_PRD_TBL_SZ * qc->tag,
+=======
+	iowrite32(pp->prd_dma + ATA_PRD_TBL_SZ * qc->hw_tag,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  ap->ioaddr.bmdma_addr + ATA_DMA_TABLE_OFS);
 
 	/* specify data direction, triple-check start bit is clear */
@@ -2233,7 +2493,11 @@ static void nv_swncq_host_interrupt(struct ata_port *ap, u16 fis)
 	if (!fis)
 		return;
 
+<<<<<<< HEAD
 	if (ap->pflags & ATA_PFLAG_FROZEN)
+=======
+	if (ata_port_is_frozen(ap))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (fis & NV_SWNCQ_IRQ_HOTPLUG) {
@@ -2267,9 +2531,15 @@ static void nv_swncq_host_interrupt(struct ata_port *ap, u16 fis)
 
 	if (fis & NV_SWNCQ_IRQ_SDBFIS) {
 		pp->ncq_flags |= ncq_saw_sdb;
+<<<<<<< HEAD
 		DPRINTK("id 0x%x SWNCQ: qc_active 0x%X "
 			"dhfis 0x%X dmafis 0x%X sactive 0x%X\n",
 			ap->print_id, pp->qc_active, pp->dhfis_bits,
+=======
+		ata_port_dbg(ap, "SWNCQ: qc_active 0x%X "
+			"dhfis 0x%X dmafis 0x%X sactive 0x%X\n",
+			pp->qc_active, pp->dhfis_bits,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pp->dmafis_bits, readl(pp->sactive_block));
 		if (nv_swncq_sdbfis(ap) < 0)
 			goto irq_error;
@@ -2295,7 +2565,11 @@ static void nv_swncq_host_interrupt(struct ata_port *ap, u16 fis)
 				goto irq_exit;
 
 			if (pp->defer_queue.defer_bits) {
+<<<<<<< HEAD
 				DPRINTK("send next command\n");
+=======
+				ata_port_dbg(ap, "send next command\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				qc = nv_swncq_qc_from_dq(ap);
 				nv_swncq_issue_atacmd(ap, qc);
 			}
@@ -2365,7 +2639,11 @@ static int nv_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
         // Make sure this is a SATA controller by counting the number of bars
         // (NVIDIA SATA controllers will always have six bars).  Otherwise,
         // it's an IDE controller and we ignore it.
+<<<<<<< HEAD
 	for (bar = 0; bar < 6; bar++)
+=======
+	for (bar = 0; bar < PCI_STD_NUM_BARS; bar++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pci_resource_start(pdev, bar) == 0)
 			return -ENODEV;
 
@@ -2432,10 +2710,17 @@ static int nv_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
 	return ata_pci_sff_activate_host(host, ipriv->irq_handler, ipriv->sht);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int nv_pci_device_resume(struct pci_dev *pdev)
 {
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int nv_pci_device_resume(struct pci_dev *pdev)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nv_host_priv *hpriv = host->private_data;
 	int rc;
 
@@ -2510,6 +2795,7 @@ static void nv_adma_host_stop(struct ata_host *host)
 	nv_ck804_host_stop(host);
 }
 
+<<<<<<< HEAD
 static int __init nv_init(void)
 {
 	return pci_register_driver(&nv_pci_driver);
@@ -2522,10 +2808,17 @@ static void __exit nv_exit(void)
 
 module_init(nv_init);
 module_exit(nv_exit);
+=======
+module_pci_driver(nv_pci_driver);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_named(adma, adma_enabled, bool, 0444);
 MODULE_PARM_DESC(adma, "Enable use of ADMA (Default: false)");
 module_param_named(swncq, swncq_enabled, bool, 0444);
 MODULE_PARM_DESC(swncq, "Enable use of SWNCQ (Default: true)");
 module_param_named(msi, msi_enabled, bool, 0444);
 MODULE_PARM_DESC(msi, "Enable use of MSI (Default: false)");
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

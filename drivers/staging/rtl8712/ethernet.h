@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -26,6 +33,7 @@
 #ifndef __INC_ETHERNET_H
 #define __INC_ETHERNET_H
 
+<<<<<<< HEAD
 #define ETHERNET_ADDRESS_LENGTH		6	/*!< Ethernet Address Length*/
 #define ETHERNET_HEADER_SIZE		14	/*!< Ethernet Header Length*/
 #define LLC_HEADER_SIZE			6	/*!< LLC Header Length*/
@@ -43,6 +51,10 @@
 			((u8 *)(_pAddr))[3] == 0xff	&&		\
 			((u8 *)(_pAddr))[4] == 0xff	&&		\
 			((u8 *)(_pAddr))[5] == 0xff)
+=======
+#define ETHERNET_HEADER_SIZE		14	/*!< Ethernet Header Length*/
+#define LLC_HEADER_SIZE			6	/*!< LLC Header Length*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* #ifndef __INC_ETHERNET_H */
 

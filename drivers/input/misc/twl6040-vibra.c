@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * twl6040-vibra.c - TWL6040 Vibrator driver
  *
@@ -9,6 +13,7 @@
  * Based on twl4030-vibra.c by Henrik Saari <henrik.saari@nokia.com>
  *				Felipe Balbi <felipe.balbi@nokia.com>
  *				Jari Vanhala <ext-javi.vanhala@nokia.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -27,6 +32,12 @@
  */
 #include <linux/module.h>
 #include <linux/platform_device.h>
+=======
+ */
+#include <linux/module.h>
+#include <linux/platform_device.h>
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/workqueue.h>
 #include <linux/input.h>
 #include <linux/mfd/twl6040.h>
@@ -44,9 +55,14 @@
 struct vibra_info {
 	struct device *dev;
 	struct input_dev *input_dev;
+<<<<<<< HEAD
 	struct workqueue_struct *workqueue;
 	struct work_struct play_work;
 	struct mutex mutex;
+=======
+	struct work_struct play_work;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int irq;
 
 	bool enabled;
@@ -181,8 +197,19 @@ static void vibra_play_work(struct work_struct *work)
 {
 	struct vibra_info *info = container_of(work,
 				struct vibra_info, play_work);
+<<<<<<< HEAD
 
 	mutex_lock(&info->mutex);
+=======
+	int ret;
+
+	/* Do not allow effect, while the routing is set to use audio */
+	ret = twl6040_get_vibralr_status(info->twl6040);
+	if (ret & TWL6040_VIBSEL) {
+		dev_info(info->dev, "Vibra is configured for audio\n");
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->weak_speed || info->strong_speed) {
 		if (!info->enabled)
@@ -192,13 +219,17 @@ static void vibra_play_work(struct work_struct *work)
 	} else if (info->enabled)
 		twl6040_vibra_disable(info);
 
+<<<<<<< HEAD
 	mutex_unlock(&info->mutex);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vibra_play(struct input_dev *input, void *data,
 		      struct ff_effect *effect)
 {
 	struct vibra_info *info = input_get_drvdata(input);
+<<<<<<< HEAD
 	int ret;
 
 	/* Do not allow effect, while the routing is set to use audio */
@@ -207,16 +238,22 @@ static int vibra_play(struct input_dev *input, void *data,
 		dev_info(&input->dev, "Vibra is configured for audio\n");
 		return -EBUSY;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info->weak_speed = effect->u.rumble.weak_magnitude;
 	info->strong_speed = effect->u.rumble.strong_magnitude;
 	info->direction = effect->direction < EFFECT_DIR_180_DEG ? 1 : -1;
 
+<<<<<<< HEAD
 	ret = queue_work(info->workqueue, &info->play_work);
 	if (!ret) {
 		dev_info(&input->dev, "work is already on queue\n");
 		return ret;
 	}
+=======
+	schedule_work(&info->play_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -227,6 +264,7 @@ static void twl6040_vibra_close(struct input_dev *input)
 
 	cancel_work_sync(&info->play_work);
 
+<<<<<<< HEAD
 	mutex_lock(&info->mutex);
 
 	if (info->enabled)
@@ -236,16 +274,27 @@ static void twl6040_vibra_close(struct input_dev *input)
 }
 
 #ifdef CONFIG_PM_SLEEP
+=======
+	if (info->enabled)
+		twl6040_vibra_disable(info);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int twl6040_vibra_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
 	struct vibra_info *info = platform_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	mutex_lock(&info->mutex);
+=======
+	cancel_work_sync(&info->play_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->enabled)
 		twl6040_vibra_disable(info);
 
+<<<<<<< HEAD
 	mutex_unlock(&info->mutex);
 
 	return 0;
@@ -268,11 +317,39 @@ static int __devinit twl6040_vibra_probe(struct platform_device *pdev)
 
 	info = kzalloc(sizeof(*info), GFP_KERNEL);
 	if (!info) {
+=======
+	return 0;
+}
+
+static DEFINE_SIMPLE_DEV_PM_OPS(twl6040_vibra_pm_ops,
+				twl6040_vibra_suspend, NULL);
+
+static int twl6040_vibra_probe(struct platform_device *pdev)
+{
+	struct device *twl6040_core_dev = pdev->dev.parent;
+	struct device_node *twl6040_core_node;
+	struct vibra_info *info;
+	int vddvibl_uV = 0;
+	int vddvibr_uV = 0;
+	int error;
+
+	twl6040_core_node = of_get_child_by_name(twl6040_core_dev->of_node,
+						 "vibra");
+	if (!twl6040_core_node) {
+		dev_err(&pdev->dev, "parent of node is missing?\n");
+		return -EINVAL;
+	}
+
+	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
+	if (!info) {
+		of_node_put(twl6040_core_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "couldn't allocate memory\n");
 		return -ENOMEM;
 	}
 
 	info->dev = &pdev->dev;
+<<<<<<< HEAD
 	info->twl6040 = dev_get_drvdata(pdev->dev.parent);
 	info->vibldrv_res = pdata->vibldrv_res;
 	info->vibrdrv_res = pdata->vibrdrv_res;
@@ -299,12 +376,90 @@ static int __devinit twl6040_vibra_probe(struct platform_device *pdev)
 		dev_err(info->dev, "couldn't allocate input device\n");
 		ret = -ENOMEM;
 		goto err_kzalloc;
+=======
+
+	info->twl6040 = dev_get_drvdata(pdev->dev.parent);
+
+	of_property_read_u32(twl6040_core_node, "ti,vibldrv-res",
+			     &info->vibldrv_res);
+	of_property_read_u32(twl6040_core_node, "ti,vibrdrv-res",
+			     &info->vibrdrv_res);
+	of_property_read_u32(twl6040_core_node, "ti,viblmotor-res",
+			     &info->viblmotor_res);
+	of_property_read_u32(twl6040_core_node, "ti,vibrmotor-res",
+			     &info->vibrmotor_res);
+	of_property_read_u32(twl6040_core_node, "ti,vddvibl-uV", &vddvibl_uV);
+	of_property_read_u32(twl6040_core_node, "ti,vddvibr-uV", &vddvibr_uV);
+
+	of_node_put(twl6040_core_node);
+
+	if ((!info->vibldrv_res && !info->viblmotor_res) ||
+	    (!info->vibrdrv_res && !info->vibrmotor_res)) {
+		dev_err(info->dev, "invalid vibra driver/motor resistance\n");
+		return -EINVAL;
+	}
+
+	info->irq = platform_get_irq(pdev, 0);
+	if (info->irq < 0)
+		return -EINVAL;
+
+	error = devm_request_threaded_irq(&pdev->dev, info->irq, NULL,
+					  twl6040_vib_irq_handler,
+					  IRQF_ONESHOT,
+					  "twl6040_irq_vib", info);
+	if (error) {
+		dev_err(info->dev, "VIB IRQ request failed: %d\n", error);
+		return error;
+	}
+
+	info->supplies[0].supply = "vddvibl";
+	info->supplies[1].supply = "vddvibr";
+	/*
+	 * When booted with Device tree the regulators are attached to the
+	 * parent device (twl6040 MFD core)
+	 */
+	error = devm_regulator_bulk_get(twl6040_core_dev,
+					ARRAY_SIZE(info->supplies),
+					info->supplies);
+	if (error) {
+		dev_err(info->dev, "couldn't get regulators %d\n", error);
+		return error;
+	}
+
+	if (vddvibl_uV) {
+		error = regulator_set_voltage(info->supplies[0].consumer,
+					      vddvibl_uV, vddvibl_uV);
+		if (error) {
+			dev_err(info->dev, "failed to set VDDVIBL volt %d\n",
+				error);
+			return error;
+		}
+	}
+
+	if (vddvibr_uV) {
+		error = regulator_set_voltage(info->supplies[1].consumer,
+					      vddvibr_uV, vddvibr_uV);
+		if (error) {
+			dev_err(info->dev, "failed to set VDDVIBR volt %d\n",
+				error);
+			return error;
+		}
+	}
+
+	INIT_WORK(&info->play_work, vibra_play_work);
+
+	info->input_dev = devm_input_allocate_device(&pdev->dev);
+	if (!info->input_dev) {
+		dev_err(info->dev, "couldn't allocate input device\n");
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	input_set_drvdata(info->input_dev, info);
 
 	info->input_dev->name = "twl6040:vibrator";
 	info->input_dev->id.version = 1;
+<<<<<<< HEAD
 	info->input_dev->dev.parent = pdev->dev.parent;
 	info->input_dev->close = twl6040_vibra_close;
 	__set_bit(FF_RUMBLE, info->input_dev->ffbit);
@@ -319,10 +474,26 @@ static int __devinit twl6040_vibra_probe(struct platform_device *pdev)
 	if (ret < 0) {
 		dev_err(info->dev, "couldn't register input device\n");
 		goto err_iff;
+=======
+	info->input_dev->close = twl6040_vibra_close;
+	__set_bit(FF_RUMBLE, info->input_dev->ffbit);
+
+	error = input_ff_create_memless(info->input_dev, NULL, vibra_play);
+	if (error) {
+		dev_err(info->dev, "couldn't register vibrator to FF\n");
+		return error;
+	}
+
+	error = input_register_device(info->input_dev);
+	if (error) {
+		dev_err(info->dev, "couldn't register input device\n");
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_set_drvdata(pdev, info);
 
+<<<<<<< HEAD
 	ret = request_threaded_irq(info->irq, NULL, twl6040_vib_irq_handler, 0,
 				   "twl6040_irq_vib", info);
 	if (ret) {
@@ -398,16 +569,24 @@ static int __devexit twl6040_vibra_remove(struct platform_device *pdev)
 	destroy_workqueue(info->workqueue);
 	kfree(info);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static struct platform_driver twl6040_vibra_driver = {
 	.probe		= twl6040_vibra_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(twl6040_vibra_remove),
 	.driver		= {
 		.name	= "twl6040-vibra",
 		.owner	= THIS_MODULE,
 		.pm	= &twl6040_vibra_pm_ops,
+=======
+	.driver		= {
+		.name	= "twl6040-vibra",
+		.pm	= pm_sleep_ptr(&twl6040_vibra_pm_ops),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(twl6040_vibra_driver);

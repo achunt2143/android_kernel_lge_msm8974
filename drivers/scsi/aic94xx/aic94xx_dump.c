@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Aic94xx SAS/SATA driver dump interface.
  *
@@ -5,6 +9,7 @@
  * Copyright (C) 2004 David Chaw <david_chaw@adaptec.com>
  * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
  *
+<<<<<<< HEAD
  * This file is licensed under GPLv2.
  *
  * This file is part of the aic94xx driver.
@@ -27,6 +32,11 @@
  * locations, names, etc.  Make use of macros.  Print more information.
  * Print all cseq and lseq mip and mdp.
  *
+=======
+ * 2005/07/14/LT  Complete overhaul of this file.  Update pages, register
+ * locations, names, etc.  Make use of macros.  Print more information.
+ * Print all cseq and lseq mip and mdp.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/pci.h>
@@ -738,6 +748,7 @@ static void asd_dump_lseq_state(struct asd_ha_struct *asd_ha, int lseq)
 	PRINT_LMIP_dword(asd_ha, lseq, DEV_PRES_TIMER_TERM_TS);
 }
 
+<<<<<<< HEAD
 #if 0
 
 /**
@@ -886,6 +897,10 @@ void asd_dump_scb_sites(struct asd_ha_struct *asd_ha)
 
 /**
  * ads_dump_seq_state -- dump CSEQ and LSEQ states
+=======
+/**
+ * asd_dump_seq_state -- dump CSEQ and LSEQ states
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @asd_ha: pointer to host adapter structure
  * @lseq_mask: mask of LSEQs of interest
  */
@@ -926,6 +941,7 @@ void asd_dump_frame_rcvd(struct asd_phy *phy,
 	spin_unlock_irqrestore(&phy->sas_phy.frame_rcvd_lock, flags);
 }
 
+<<<<<<< HEAD
 #if 0
 
 static void asd_dump_scb(struct asd_ascb *ascb, int ind)
@@ -964,4 +980,6 @@ void asd_dump_scb_list(struct asd_ascb *ascb, int num)
 
 #endif  /*  0  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* ASD_DEBUG */

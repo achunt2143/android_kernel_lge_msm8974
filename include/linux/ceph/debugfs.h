@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _FS_CEPH_DEBUGFS_H
 #define _FS_CEPH_DEBUGFS_H
 
@@ -27,6 +28,18 @@ static const struct file_operations name##_fops = {			\
 extern int ceph_debugfs_init(void);
 extern void ceph_debugfs_cleanup(void);
 extern int ceph_debugfs_client_init(struct ceph_client *client);
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _FS_CEPH_DEBUGFS_H
+#define _FS_CEPH_DEBUGFS_H
+
+#include <linux/ceph/types.h>
+
+/* debugfs.c */
+extern void ceph_debugfs_init(void);
+extern void ceph_debugfs_cleanup(void);
+extern void ceph_debugfs_client_init(struct ceph_client *client);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void ceph_debugfs_client_cleanup(struct ceph_client *client);
 
 #endif

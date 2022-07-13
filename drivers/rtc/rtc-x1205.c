@@ -1,20 +1,31 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * An i2c driver for the Xicor/Intersil X1205 RTC
  * Copyright 2004 Karen Spearel
  * Copyright 2005 Alessandro Zummo
  *
  * please send all reports to:
+<<<<<<< HEAD
  * 	Karen Spearel <kas111 at gmail dot com>
+=======
+ *	Karen Spearel <kas111 at gmail dot com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Alessandro Zummo <a.zummo@towertech.it>
  *
  * based on a lot of other RTC drivers.
  *
  * Information and datasheet:
  * http://www.intersil.com/cda/deviceinfo/0,1477,X1205,00.html
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/i2c.h>
@@ -22,8 +33,12 @@
 #include <linux/rtc.h>
 #include <linux/delay.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
 #define DRV_VERSION "1.0.8"
+=======
+#include <linux/bitops.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* offsets into CCR area */
 
@@ -97,8 +112,22 @@ static int x1205_get_datetime(struct i2c_client *client, struct rtc_time *tm,
 	int i;
 
 	struct i2c_msg msgs[] = {
+<<<<<<< HEAD
 		{ client->addr, 0, 2, dt_addr },	/* setup read ptr */
 		{ client->addr, I2C_M_RD, 8, buf },	/* read date */
+=======
+		{/* setup read ptr */
+			.addr = client->addr,
+			.len = 2,
+			.buf = dt_addr
+		},
+		{/* read date */
+			.addr = client->addr,
+			.flags = I2C_M_RD,
+			.len = 8,
+			.buf = buf
+		},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	/* read date registers */
@@ -142,8 +171,22 @@ static int x1205_get_status(struct i2c_client *client, unsigned char *sr)
 	static unsigned char sr_addr[2] = { 0, X1205_REG_SR };
 
 	struct i2c_msg msgs[] = {
+<<<<<<< HEAD
 		{ client->addr, 0, 2, sr_addr },	/* setup read ptr */
 		{ client->addr, I2C_M_RD, 1, sr },	/* read status */
+=======
+		{     /* setup read ptr */
+			.addr = client->addr,
+			.len = 2,
+			.buf = sr_addr
+		},
+		{    /* read status */
+			.addr = client->addr,
+			.flags = I2C_M_RD,
+			.len = 1,
+			.buf = sr
+		},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	/* read status register */
@@ -197,12 +240,22 @@ static int x1205_set_datetime(struct i2c_client *client, struct rtc_time *tm,
 			buf[i] |= 0x80;
 
 	/* this sequence is required to unlock the chip */
+<<<<<<< HEAD
 	if ((xfer = i2c_master_send(client, wel, 3)) != 3) {
+=======
+	xfer = i2c_master_send(client, wel, 3);
+	if (xfer != 3) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&client->dev, "%s: wel - %d\n", __func__, xfer);
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	if ((xfer = i2c_master_send(client, rwel, 3)) != 3) {
+=======
+	xfer = i2c_master_send(client, rwel, 3);
+	if (xfer != 3) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&client->dev, "%s: rwel - %d\n", __func__, xfer);
 		return -EIO;
 	}
@@ -251,7 +304,12 @@ static int x1205_set_datetime(struct i2c_client *client, struct rtc_time *tm,
 	}
 
 	/* disable further writes */
+<<<<<<< HEAD
 	if ((xfer = i2c_master_send(client, diswe, 3)) != 3) {
+=======
+	xfer = i2c_master_send(client, diswe, 3);
+	if (xfer != 3) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&client->dev, "%s: diswe - %d\n", __func__, xfer);
 		return -EIO;
 	}
@@ -279,8 +337,22 @@ static int x1205_get_dtrim(struct i2c_client *client, int *trim)
 	static unsigned char dtr_addr[2] = { 0, X1205_REG_DTR };
 
 	struct i2c_msg msgs[] = {
+<<<<<<< HEAD
 		{ client->addr, 0, 2, dtr_addr },	/* setup read ptr */
 		{ client->addr, I2C_M_RD, 1, &dtr }, 	/* read dtr */
+=======
+		{	/* setup read ptr */
+			.addr = client->addr,
+			.len = 2,
+			.buf = dtr_addr
+		},
+		{      /* read dtr */
+			.addr = client->addr,
+			.flags = I2C_M_RD,
+			.len = 1,
+			.buf = &dtr
+		},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	/* read dtr register */
@@ -311,8 +383,22 @@ static int x1205_get_atrim(struct i2c_client *client, int *trim)
 	static unsigned char atr_addr[2] = { 0, X1205_REG_ATR };
 
 	struct i2c_msg msgs[] = {
+<<<<<<< HEAD
 		{ client->addr, 0, 2, atr_addr },	/* setup read ptr */
 		{ client->addr, I2C_M_RD, 1, &atr }, 	/* read atr */
+=======
+		{/* setup read ptr */
+			.addr = client->addr,
+			.len = 2,
+			.buf = atr_addr
+		},
+		{/* read atr */
+			.addr = client->addr,
+			.flags = I2C_M_RD,
+			.len = 1,
+			.buf = &atr
+		},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	/* read atr register */
@@ -327,8 +413,12 @@ static int x1205_get_atrim(struct i2c_client *client, int *trim)
 	 * perform sign extension. The formula is
 	 * Catr = (atr * 0.25pF) + 11.00pF.
 	 */
+<<<<<<< HEAD
 	if (atr & 0x20)
 		atr |= 0xC0;
+=======
+	atr = sign_extend32(atr, 5);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&client->dev, "%s: raw atr=%x (%d)\n", __func__, atr, atr);
 
@@ -339,8 +429,12 @@ static int x1205_get_atrim(struct i2c_client *client, int *trim)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct x1205_limit
 {
+=======
+struct x1205_limit {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char reg, mask, min, max;
 };
 
@@ -381,11 +475,29 @@ static int x1205_validate_client(struct i2c_client *client)
 		unsigned char addr[2] = { 0, probe_zero_pattern[i] };
 
 		struct i2c_msg msgs[2] = {
+<<<<<<< HEAD
 			{ client->addr, 0, 2, addr },
 			{ client->addr, I2C_M_RD, 1, &buf },
 		};
 
 		if ((xfer = i2c_transfer(client->adapter, msgs, 2)) != 2) {
+=======
+			{
+				.addr = client->addr,
+				.len = 2,
+				.buf = addr
+			},
+			{
+				.addr = client->addr,
+				.flags = I2C_M_RD,
+				.len = 1,
+				.buf = &buf
+			},
+		};
+
+		xfer = i2c_transfer(client->adapter, msgs, 2);
+		if (xfer != 2) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_err(&client->dev,
 				"%s: could not read register %x\n",
 				__func__, probe_zero_pattern[i]);
@@ -409,11 +521,29 @@ static int x1205_validate_client(struct i2c_client *client)
 		unsigned char addr[2] = { 0, probe_limits_pattern[i].reg };
 
 		struct i2c_msg msgs[2] = {
+<<<<<<< HEAD
 			{ client->addr, 0, 2, addr },
 			{ client->addr, I2C_M_RD, 1, &reg },
 		};
 
 		if ((xfer = i2c_transfer(client->adapter, msgs, 2)) != 2) {
+=======
+			{
+				.addr = client->addr,
+				.len = 2,
+				.buf = addr
+			},
+			{
+				.addr = client->addr,
+				.flags = I2C_M_RD,
+				.len = 1,
+				.buf = &reg
+			},
+		};
+
+		xfer = i2c_transfer(client->adapter, msgs, 2);
+		if (xfer != 2) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_err(&client->dev,
 				"%s: could not read register %x\n",
 				__func__, probe_limits_pattern[i].reg);
@@ -444,8 +574,23 @@ static int x1205_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	static unsigned char int_addr[2] = { 0, X1205_REG_INT };
 	struct i2c_client *client = to_i2c_client(dev);
 	struct i2c_msg msgs[] = {
+<<<<<<< HEAD
 		{ client->addr, 0, 2, int_addr },        /* setup read ptr */
 		{ client->addr, I2C_M_RD, 1, &intreg },  /* read INT register */
+=======
+		{ /* setup read ptr */
+			.addr = client->addr,
+			.len = 2,
+			.buf = int_addr
+		},
+		{/* read INT register */
+
+			.addr = client->addr,
+			.flags = I2C_M_RD,
+			.len = 1,
+			.buf = &intreg
+		},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	/* read interrupt register and status register */
@@ -484,10 +629,19 @@ static int x1205_rtc_proc(struct device *dev, struct seq_file *seq)
 {
 	int err, dtrim, atrim;
 
+<<<<<<< HEAD
 	if ((err = x1205_get_dtrim(to_i2c_client(dev), &dtrim)) == 0)
 		seq_printf(seq, "digital_trim\t: %d ppm\n", dtrim);
 
 	if ((err = x1205_get_atrim(to_i2c_client(dev), &atrim)) == 0)
+=======
+	err = x1205_get_dtrim(to_i2c_client(dev), &dtrim);
+	if (!err)
+		seq_printf(seq, "digital_trim\t: %d ppm\n", dtrim);
+
+	err = x1205_get_atrim(to_i2c_client(dev), &atrim);
+	if (!err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_printf(seq, "analog_trim\t: %d.%02d pF\n",
 			atrim / 1000, atrim % 1000);
 	return 0;
@@ -549,8 +703,12 @@ static void x1205_sysfs_unregister(struct device *dev)
 }
 
 
+<<<<<<< HEAD
 static int x1205_probe(struct i2c_client *client,
 			const struct i2c_device_id *id)
+=======
+static int x1205_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 	unsigned char sr;
@@ -564,10 +722,15 @@ static int x1205_probe(struct i2c_client *client,
 	if (x1205_validate_client(client) < 0)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	dev_info(&client->dev, "chip found, driver version " DRV_VERSION "\n");
 
 	rtc = rtc_device_register(x1205_driver.driver.name, &client->dev,
 				&x1205_rtc_ops, THIS_MODULE);
+=======
+	rtc = devm_rtc_device_register(&client->dev, x1205_driver.driver.name,
+					&x1205_rtc_ops, THIS_MODULE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_ERR(rtc))
 		return PTR_ERR(rtc);
@@ -575,7 +738,12 @@ static int x1205_probe(struct i2c_client *client,
 	i2c_set_clientdata(client, rtc);
 
 	/* Check for power failures and eventually enable the osc */
+<<<<<<< HEAD
 	if ((err = x1205_get_status(client, &sr)) == 0) {
+=======
+	err = x1205_get_status(client, &sr);
+	if (!err) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (sr & X1205_SR_RTCF) {
 			dev_err(&client->dev,
 				"power failure detected, "
@@ -583,6 +751,7 @@ static int x1205_probe(struct i2c_client *client,
 			udelay(50);
 			x1205_fix_osc(client);
 		}
+<<<<<<< HEAD
 	}
 	else
 		dev_err(&client->dev, "couldn't read status\n");
@@ -606,6 +775,22 @@ static int x1205_remove(struct i2c_client *client)
 	rtc_device_unregister(rtc);
 	x1205_sysfs_unregister(&client->dev);
 	return 0;
+=======
+	} else {
+		dev_err(&client->dev, "couldn't read status\n");
+	}
+
+	err = x1205_sysfs_register(&client->dev);
+	if (err)
+		dev_err(&client->dev, "Unable to create sysfs entries\n");
+
+	return 0;
+}
+
+static void x1205_remove(struct i2c_client *client)
+{
+	x1205_sysfs_unregister(&client->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id x1205_id[] = {
@@ -614,9 +799,22 @@ static const struct i2c_device_id x1205_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, x1205_id);
 
+<<<<<<< HEAD
 static struct i2c_driver x1205_driver = {
 	.driver		= {
 		.name	= "rtc-x1205",
+=======
+static const struct of_device_id x1205_dt_ids[] = {
+	{ .compatible = "xircom,x1205", },
+	{},
+};
+MODULE_DEVICE_TABLE(of, x1205_dt_ids);
+
+static struct i2c_driver x1205_driver = {
+	.driver		= {
+		.name	= "rtc-x1205",
+		.of_match_table = x1205_dt_ids,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.probe		= x1205_probe,
 	.remove		= x1205_remove,
@@ -630,4 +828,7 @@ MODULE_AUTHOR(
 	"Alessandro Zummo <a.zummo@towertech.it>");
 MODULE_DESCRIPTION("Xicor/Intersil X1205 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

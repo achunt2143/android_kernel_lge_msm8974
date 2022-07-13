@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * opal driver interface to hvc_console.c
  *
  * Copyright 2011 Benjamin Herrenschmidt <benh@kernel.crashing.org>, IBM Corp.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
@@ -27,11 +34,20 @@
 #include <linux/slab.h>
 #include <linux/console.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 #include <linux/export.h>
 
 #include <asm/hvconsole.h>
 #include <asm/prom.h>
+=======
+#include <linux/of_irq.h>
+#include <linux/platform_device.h>
+#include <linux/export.h>
+#include <linux/interrupt.h>
+
+#include <asm/hvconsole.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/firmware.h>
 #include <asm/hvsi.h>
 #include <asm/udbg.h>
@@ -41,7 +57,11 @@
 
 static const char hvc_opal_name[] = "hvc_opal";
 
+<<<<<<< HEAD
 static struct of_device_id hvc_opal_match[] __devinitdata = {
+=======
+static const struct of_device_id hvc_opal_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .name = "serial", .compatible = "ibm,opal-console-raw" },
 	{ .name = "serial", .compatible = "ibm,opal-console-hvsi" },
 	{ },
@@ -65,12 +85,20 @@ static u32 hvc_opal_boot_termno;
 static const struct hv_ops hvc_opal_raw_ops = {
 	.get_chars = opal_get_chars,
 	.put_chars = opal_put_chars,
+<<<<<<< HEAD
+=======
+	.flush = opal_flush_chars,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.notifier_add = notifier_add_irq,
 	.notifier_del = notifier_del_irq,
 	.notifier_hangup = notifier_hangup_irq,
 };
 
+<<<<<<< HEAD
 static int hvc_opal_hvsi_get_chars(uint32_t vtermno, char *buf, int count)
+=======
+static ssize_t hvc_opal_hvsi_get_chars(uint32_t vtermno, u8 *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hvc_opal_priv *pv = hvc_opal_privs[vtermno];
 
@@ -80,7 +108,12 @@ static int hvc_opal_hvsi_get_chars(uint32_t vtermno, char *buf, int count)
 	return hvsilib_get_chars(&pv->hvsi, buf, count);
 }
 
+<<<<<<< HEAD
 static int hvc_opal_hvsi_put_chars(uint32_t vtermno, const char *buf, int count)
+=======
+static ssize_t hvc_opal_hvsi_put_chars(uint32_t vtermno, const u8 *buf,
+				       size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hvc_opal_priv *pv = hvc_opal_privs[vtermno];
 
@@ -115,7 +148,11 @@ static void hvc_opal_hvsi_close(struct hvc_struct *hp, int data)
 	notifier_del_irq(hp, data);
 }
 
+<<<<<<< HEAD
 void hvc_opal_hvsi_hangup(struct hvc_struct *hp, int data)
+=======
+static void hvc_opal_hvsi_hangup(struct hvc_struct *hp, int data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hvc_opal_priv *pv = hvc_opal_privs[hp->vtermno];
 
@@ -154,6 +191,10 @@ static int hvc_opal_hvsi_tiocmset(struct hvc_struct *hp, unsigned int set,
 static const struct hv_ops hvc_opal_hvsi_ops = {
 	.get_chars = hvc_opal_hvsi_get_chars,
 	.put_chars = hvc_opal_hvsi_put_chars,
+<<<<<<< HEAD
+=======
+	.flush = opal_flush_chars,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.notifier_add = hvc_opal_hvsi_open,
 	.notifier_del = hvc_opal_hvsi_close,
 	.notifier_hangup = hvc_opal_hvsi_hangup,
@@ -161,13 +202,21 @@ static const struct hv_ops hvc_opal_hvsi_ops = {
 	.tiocmset = hvc_opal_hvsi_tiocmset,
 };
 
+<<<<<<< HEAD
 static int __devinit hvc_opal_probe(struct platform_device *dev)
+=======
+static int hvc_opal_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct hv_ops *ops;
 	struct hvc_struct *hp;
 	struct hvc_opal_priv *pv;
 	hv_protocol_t proto;
+<<<<<<< HEAD
 	unsigned int termno, boot = 0;
+=======
+	unsigned int termno, irq, boot = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const __be32 *reg;
 
 	if (of_device_is_compatible(dev->dev.of_node, "ibm,opal-console-raw")) {
@@ -178,8 +227,13 @@ static int __devinit hvc_opal_probe(struct platform_device *dev)
 		proto = HV_PROTOCOL_HVSI;
 		ops = &hvc_opal_hvsi_ops;
 	} else {
+<<<<<<< HEAD
 		pr_err("hvc_opal: Unkown protocol for %s\n",
 		       dev->dev.of_node->full_name);
+=======
+		pr_err("hvc_opal: Unknown protocol for %pOF\n",
+		       dev->dev.of_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	}
 
@@ -196,13 +250,26 @@ static int __devinit hvc_opal_probe(struct platform_device *dev)
 			return -ENOMEM;
 		pv->proto = proto;
 		hvc_opal_privs[termno] = pv;
+<<<<<<< HEAD
 		if (proto == HV_PROTOCOL_HVSI)
 			hvsilib_init(&pv->hvsi, opal_get_chars, opal_put_chars,
 				     termno, 0);
+=======
+		if (proto == HV_PROTOCOL_HVSI) {
+			/*
+			 * We want put_chars to be atomic to avoid mangling of
+			 * hvsi packets.
+			 */
+			hvsilib_init(&pv->hvsi,
+				     opal_get_chars, opal_put_chars_atomic,
+				     termno, 0);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Instanciate now to establish a mapping index==vtermno */
 		hvc_instantiate(termno, termno, ops);
 	} else {
+<<<<<<< HEAD
 		pr_err("hvc_opal: Device %s has duplicate terminal number #%d\n",
 		       dev->dev.of_node->full_name, termno);
 		return -ENXIO;
@@ -217,11 +284,43 @@ static int __devinit hvc_opal_probe(struct platform_device *dev)
 	hp = hvc_alloc(termno, 0, ops, MAX_VIO_PUT_CHARS);
 	if (IS_ERR(hp))
 		return PTR_ERR(hp);
+=======
+		pr_err("hvc_opal: Device %pOF has duplicate terminal number #%d\n",
+		       dev->dev.of_node, termno);
+		return -ENXIO;
+	}
+
+	pr_info("hvc%d: %s protocol on %pOF%s\n", termno,
+		proto == HV_PROTOCOL_RAW ? "raw" : "hvsi",
+		dev->dev.of_node,
+		boot ? " (boot console)" : "");
+
+	irq = irq_of_parse_and_map(dev->dev.of_node, 0);
+	if (!irq) {
+		pr_info("hvc%d: No interrupts property, using OPAL event\n",
+				termno);
+		irq = opal_event_request(ilog2(OPAL_EVENT_CONSOLE_INPUT));
+	}
+
+	if (!irq) {
+		pr_err("hvc_opal: Unable to map interrupt for device %pOF\n",
+			dev->dev.of_node);
+		return irq;
+	}
+
+	hp = hvc_alloc(termno, irq, ops, MAX_VIO_PUT_CHARS);
+	if (IS_ERR(hp))
+		return PTR_ERR(hp);
+
+	/* hvc consoles on powernv may need to share a single irq */
+	hp->flags = IRQF_SHARED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_drvdata(&dev->dev, hp);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit hvc_opal_remove(struct platform_device *dev)
 {
 	struct hvc_struct *hp = dev_get_drvdata(&dev->dev);
@@ -235,14 +334,32 @@ static int __devexit hvc_opal_remove(struct platform_device *dev)
 		hvc_opal_privs[termno] = NULL;
 	}
 	return rc;
+=======
+static void hvc_opal_remove(struct platform_device *dev)
+{
+	struct hvc_struct *hp = dev_get_drvdata(&dev->dev);
+	int termno;
+
+	termno = hp->vtermno;
+	hvc_remove(hp);
+	if (hvc_opal_privs[termno] != &hvc_opal_boot_priv)
+		kfree(hvc_opal_privs[termno]);
+	hvc_opal_privs[termno] = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver hvc_opal_driver = {
 	.probe		= hvc_opal_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(hvc_opal_remove),
 	.driver		= {
 		.name	= hvc_opal_name,
 		.owner	= THIS_MODULE,
+=======
+	.remove_new	= hvc_opal_remove,
+	.driver		= {
+		.name	= hvc_opal_name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table	= hvc_opal_match,
 	}
 };
@@ -255,6 +372,7 @@ static int __init hvc_opal_init(void)
 	/* Register as a vio device to receive callbacks */
 	return platform_driver_register(&hvc_opal_driver);
 }
+<<<<<<< HEAD
 module_init(hvc_opal_init);
 
 static void __exit hvc_opal_exit(void)
@@ -262,6 +380,9 @@ static void __exit hvc_opal_exit(void)
 	platform_driver_unregister(&hvc_opal_driver);
 }
 module_exit(hvc_opal_exit);
+=======
+device_initcall(hvc_opal_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void udbg_opal_putc(char c)
 {
@@ -280,6 +401,14 @@ static void udbg_opal_putc(char c)
 			count = hvc_opal_hvsi_put_chars(termno, &c, 1);
 			break;
 		}
+<<<<<<< HEAD
+=======
+
+		/* This is needed for the cosole to flush
+		 * when there aren't any interrupts.
+		 */
+		opal_flush_console(termno);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while(count == 0 || count == -EAGAIN);
 }
 
@@ -307,6 +436,7 @@ static int udbg_opal_getc(void)
 	int ch;
 	for (;;) {
 		ch = udbg_opal_getc_poll();
+<<<<<<< HEAD
 		if (ch == -1) {
 			/* This shouldn't be needed...but... */
 			volatile unsigned long delay;
@@ -315,6 +445,10 @@ static int udbg_opal_getc(void)
 		} else {
 			return ch;
 		}
+=======
+		if (ch != -1)
+			return ch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -323,11 +457,15 @@ static void udbg_init_opal_common(void)
 	udbg_putc = udbg_opal_putc;
 	udbg_getc = udbg_opal_getc;
 	udbg_getc_poll = udbg_opal_getc_poll;
+<<<<<<< HEAD
 	tb_ticks_per_usec = 0x200; /* Make udelay not suck */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init hvc_opal_init_early(void)
 {
+<<<<<<< HEAD
 	struct device_node *stdout_node = NULL;
 	const u32 *termno;
 	const char *name = NULL;
@@ -344,15 +482,30 @@ void __init hvc_opal_init_early(void)
 			return;
 		}
 	} else {
+=======
+	struct device_node *stdout_node = of_node_get(of_stdout);
+	const __be32 *termno;
+	const struct hv_ops *ops;
+	u32 index;
+
+	/* If the console wasn't in /chosen, try /ibm,opal */
+	if (!stdout_node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct device_node *opal, *np;
 
 		/* Current OPAL takeover doesn't provide the stdout
 		 * path, so we hard wire it
 		 */
 		opal = of_find_node_by_path("/ibm,opal/consoles");
+<<<<<<< HEAD
 		if (opal)
 			pr_devel("hvc_opal: Found consoles in new location\n");
 		if (!opal) {
+=======
+		if (opal) {
+			pr_devel("hvc_opal: Found consoles in new location\n");
+		} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			opal = of_find_node_by_path("/ibm,opal");
 			if (opal)
 				pr_devel("hvc_opal: "
@@ -361,7 +514,11 @@ void __init hvc_opal_init_early(void)
 		if (!opal)
 			return;
 		for_each_child_of_node(opal, np) {
+<<<<<<< HEAD
 			if (!strcmp(np->name, "serial")) {
+=======
+			if (of_node_name_eq(np, "serial")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				stdout_node = np;
 				break;
 			}
@@ -371,7 +528,11 @@ void __init hvc_opal_init_early(void)
 	if (!stdout_node)
 		return;
 	termno = of_get_property(stdout_node, "reg", NULL);
+<<<<<<< HEAD
 	index = termno ? *termno : 0;
+=======
+	index = termno ? be32_to_cpup(termno) : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (index >= MAX_NR_HVC_CONSOLES)
 		return;
 	hvc_opal_privs[index] = &hvc_opal_boot_priv;
@@ -385,8 +546,14 @@ void __init hvc_opal_init_early(void)
 	else if (of_device_is_compatible(stdout_node,"ibm,opal-console-hvsi")) {
 		hvc_opal_boot_priv.proto = HV_PROTOCOL_HVSI;
 		ops = &hvc_opal_hvsi_ops;
+<<<<<<< HEAD
 		hvsilib_init(&hvc_opal_boot_priv.hvsi, opal_get_chars,
 			     opal_put_chars, index, 1);
+=======
+		hvsilib_init(&hvc_opal_boot_priv.hvsi,
+			     opal_get_chars, opal_put_chars_atomic,
+			     index, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* HVSI, perform the handshake now */
 		hvsilib_establish(&hvc_opal_boot_priv.hvsi);
 		pr_devel("hvc_opal: Found HVSI console\n");
@@ -401,7 +568,11 @@ out:
 }
 
 #ifdef CONFIG_PPC_EARLY_DEBUG_OPAL_RAW
+<<<<<<< HEAD
 void __init udbg_init_debug_opal(void)
+=======
+void __init udbg_init_debug_opal_raw(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 index = CONFIG_PPC_EARLY_DEBUG_OPAL_VTERMNO;
 	hvc_opal_privs[index] = &hvc_opal_boot_priv;
@@ -418,7 +589,12 @@ void __init udbg_init_debug_opal_hvsi(void)
 	hvc_opal_privs[index] = &hvc_opal_boot_priv;
 	hvc_opal_boot_termno = index;
 	udbg_init_opal_common();
+<<<<<<< HEAD
 	hvsilib_init(&hvc_opal_boot_priv.hvsi, opal_get_chars, opal_put_chars,
+=======
+	hvsilib_init(&hvc_opal_boot_priv.hvsi,
+		     opal_get_chars, opal_put_chars_atomic,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     index, 1);
 	hvsilib_establish(&hvc_opal_boot_priv.hvsi);
 }

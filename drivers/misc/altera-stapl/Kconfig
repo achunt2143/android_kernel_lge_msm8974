@@ -1,8 +1,17 @@
+<<<<<<< HEAD
 comment "Altera FPGA firmware download module"
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+comment "Altera FPGA firmware download module (requires I2C)"
+	depends on !I2C
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ALTERA_STAPL
 	tristate "Altera FPGA firmware download module"
 	depends on I2C
+<<<<<<< HEAD
 	default n
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  An Altera FPGA module. Say Y when you want to support this tool.

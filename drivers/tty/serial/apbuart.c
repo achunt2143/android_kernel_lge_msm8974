@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for GRLIB serial ports (APBUART)
  *
@@ -10,10 +14,13 @@
  *  Copyright (C) 2009 Kristoffer Glembo <kristoffer@gaisler.com>, Aeroflex Gaisler AB
  */
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_GRLIB_GAISLER_APBUART_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
 #define SUPPORT_SYSRQ
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
@@ -25,9 +32,12 @@
 #include <linux/kthread.h>
 #include <linux/device.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
 #include <linux/of_irq.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/io.h>
 #include <linux/serial_core.h>
@@ -71,6 +81,7 @@ static void apbuart_stop_rx(struct uart_port *port)
 	UART_PUT_CTRL(port, cr);
 }
 
+<<<<<<< HEAD
 static void apbuart_enable_ms(struct uart_port *port)
 {
 	/* No modem status change interrupts for APBUART */
@@ -81,6 +92,13 @@ static void apbuart_rx_chars(struct uart_port *port)
 	struct tty_struct *tty = port->state->port.tty;
 	unsigned int status, ch, rsr, flag;
 	unsigned int max_chars = port->fifosize;
+=======
+static void apbuart_rx_chars(struct uart_port *port)
+{
+	unsigned int status, rsr;
+	unsigned int max_chars = port->fifosize;
+	u8 ch, flag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = UART_GET_STATUS(port);
 
@@ -126,11 +144,16 @@ static void apbuart_rx_chars(struct uart_port *port)
 		status = UART_GET_STATUS(port);
 	}
 
+<<<<<<< HEAD
 	tty_flip_buffer_push(tty);
+=======
+	tty_flip_buffer_push(&port->state->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void apbuart_tx_chars(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct circ_buf *xmit = &port->state->xmit;
 	int count;
 
@@ -161,6 +184,14 @@ static void apbuart_tx_chars(struct uart_port *port)
 
 	if (uart_circ_empty(xmit))
 		apbuart_stop_tx(port);
+=======
+	u8 ch;
+
+	uart_port_tx_limited(port, ch, port->fifosize,
+		true,
+		UART_PUT_CHAR(port, ch),
+		({}));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static irqreturn_t apbuart_int(int irq, void *dev_id)
@@ -168,7 +199,11 @@ static irqreturn_t apbuart_int(int irq, void *dev_id)
 	struct uart_port *port = dev_id;
 	unsigned int status;
 
+<<<<<<< HEAD
 	spin_lock(&port->lock);
+=======
+	uart_port_lock(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = UART_GET_STATUS(port);
 	if (status & UART_STATUS_DR)
@@ -176,7 +211,11 @@ static irqreturn_t apbuart_int(int irq, void *dev_id)
 	if (status & UART_STATUS_THE)
 		apbuart_tx_chars(port);
 
+<<<<<<< HEAD
 	spin_unlock(&port->lock);
+=======
+	uart_port_unlock(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -237,7 +276,11 @@ static void apbuart_shutdown(struct uart_port *port)
 }
 
 static void apbuart_set_termios(struct uart_port *port,
+<<<<<<< HEAD
 				struct ktermios *termios, struct ktermios *old)
+=======
+				struct ktermios *termios, const struct ktermios *old)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int cr;
 	unsigned long flags;
@@ -263,7 +306,11 @@ static void apbuart_set_termios(struct uart_port *port,
 	if (termios->c_cflag & CRTSCTS)
 		cr |= UART_CTRL_FL;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
+=======
+	uart_port_lock_irqsave(port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Update the per-port timeout. */
 	uart_update_timeout(port, termios->c_cflag, baud);
@@ -286,7 +333,11 @@ static void apbuart_set_termios(struct uart_port *port,
 	UART_PUT_SCAL(port, quot);
 	UART_PUT_CTRL(port, cr);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *apbuart_type(struct uart_port *port)
@@ -329,14 +380,21 @@ static int apbuart_verify_port(struct uart_port *port,
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct uart_ops grlib_apbuart_ops = {
+=======
+static const struct uart_ops grlib_apbuart_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty = apbuart_tx_empty,
 	.set_mctrl = apbuart_set_mctrl,
 	.get_mctrl = apbuart_get_mctrl,
 	.stop_tx = apbuart_stop_tx,
 	.start_tx = apbuart_start_tx,
 	.stop_rx = apbuart_stop_rx,
+<<<<<<< HEAD
 	.enable_ms = apbuart_enable_ms,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.break_ctl = apbuart_break_ctl,
 	.startup = apbuart_startup,
 	.shutdown = apbuart_shutdown,
@@ -423,7 +481,11 @@ static void apbuart_flush_fifo(struct uart_port *port)
 
 #ifdef CONFIG_SERIAL_GRLIB_GAISLER_APBUART_CONSOLE
 
+<<<<<<< HEAD
 static void apbuart_console_putchar(struct uart_port *port, int ch)
+=======
+static void apbuart_console_putchar(struct uart_port *port, unsigned char ch)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int status;
 	do {
@@ -554,7 +616,11 @@ static struct uart_driver grlib_apbuart_driver = {
 /* OF Platform Driver                                                       */
 /* ======================================================================== */
 
+<<<<<<< HEAD
 static int __devinit apbuart_probe(struct platform_device *op)
+=======
+static int apbuart_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct uart_port *port = NULL;
@@ -577,7 +643,11 @@ static int __devinit apbuart_probe(struct platform_device *op)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct of_device_id apbuart_match[] = {
+=======
+static const struct of_device_id apbuart_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	 .name = "GAISLER_APBUART",
 	 },
@@ -586,11 +656,18 @@ static struct of_device_id apbuart_match[] = {
 	 },
 	{},
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(of, apbuart_match);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver grlib_apbuart_of_driver = {
 	.probe = apbuart_probe,
 	.driver = {
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name = "grlib-apbuart",
 		.of_match_table = apbuart_match,
 	},
@@ -630,6 +707,10 @@ static int __init grlib_apbuart_configure(void)
 		port->irq = 0;
 		port->iotype = UPIO_MEM;
 		port->ops = &grlib_apbuart_ops;
+<<<<<<< HEAD
+=======
+		port->has_sysrq = IS_ENABLED(CONFIG_SERIAL_GRLIB_GAISLER_APBUART_CONSOLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		port->flags = UPF_BOOT_AUTOCONF;
 		port->line = line;
 		port->uartclk = *freq_hz;

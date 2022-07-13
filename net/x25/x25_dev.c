@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	X.25 Packet Layer release 002
  *
@@ -6,17 +10,25 @@
  *
  *	This code REQUIRES 2.1.15 or higher
  *
+<<<<<<< HEAD
  *	This module:
  *		This module is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	History
  *	X.25 001	Jonathan Naylor	Started coding.
  *      2000-09-04	Henner Eisen	Prevent freeing a dangling skb.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "X25: " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
 #include <linux/skbuff.h>
@@ -58,7 +70,11 @@ static int x25_receive_data(struct sk_buff *skb, struct x25_neigh *nb)
 		if (!sock_owned_by_user(sk)) {
 			queued = x25_process_rx_frame(sk, skb);
 		} else {
+<<<<<<< HEAD
 			queued = !sk_add_backlog(sk, skb);
+=======
+			queued = !sk_add_backlog(sk, skb, READ_ONCE(sk->sk_rcvbuf));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		bh_unlock_sock(sk);
 		sock_put(sk);
@@ -89,7 +105,11 @@ static int x25_receive_data(struct sk_buff *skb, struct x25_neigh *nb)
 */
 
 	if (frametype != X25_CLEAR_CONFIRMATION)
+<<<<<<< HEAD
 		printk(KERN_DEBUG "x25_receive_data(): unknown frame type %2x\n",frametype);
+=======
+		pr_debug("x25_receive_data(): unknown frame type %2x\n",frametype);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -114,12 +134,23 @@ int x25_lapb_receive_frame(struct sk_buff *skb, struct net_device *dev,
 	 */
 	nb = x25_get_neigh(dev);
 	if (!nb) {
+<<<<<<< HEAD
 		printk(KERN_DEBUG "X.25: unknown neighbour - %s\n", dev->name);
 		goto drop;
 	}
 
 	if (!pskb_may_pull(skb, 1))
 		return 0;
+=======
+		pr_debug("unknown neighbour - %s\n", dev->name);
+		goto drop;
+	}
+
+	if (!pskb_may_pull(skb, 1)) {
+		x25_neigh_put(nb);
+		goto drop;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (skb->data[0]) {
 
@@ -154,17 +185,24 @@ void x25_establish_link(struct x25_neigh *nb)
 	switch (nb->dev->type) {
 	case ARPHRD_X25:
 		if ((skb = alloc_skb(1, GFP_ATOMIC)) == NULL) {
+<<<<<<< HEAD
 			printk(KERN_ERR "x25_dev: out of memory\n");
+=======
+			pr_err("x25_dev: out of memory\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		ptr  = skb_put(skb, 1);
 		*ptr = X25_IFACE_CONNECT;
 		break;
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_LLC)
 	case ARPHRD_ETHER:
 		return;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return;
 	}
@@ -180,16 +218,23 @@ void x25_terminate_link(struct x25_neigh *nb)
 	struct sk_buff *skb;
 	unsigned char *ptr;
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_LLC)
 	if (nb->dev->type == ARPHRD_ETHER)
 		return;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nb->dev->type != ARPHRD_X25)
 		return;
 
 	skb = alloc_skb(1, GFP_ATOMIC);
 	if (!skb) {
+<<<<<<< HEAD
 		printk(KERN_ERR "x25_dev: out of memory\n");
+=======
+		pr_err("x25_dev: out of memory\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -213,11 +258,14 @@ void x25_send_frame(struct sk_buff *skb, struct x25_neigh *nb)
 		*dptr = X25_IFACE_DATA;
 		break;
 
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_LLC)
 	case ARPHRD_ETHER:
 		kfree_skb(skb);
 		return;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		kfree_skb(skb);
 		return;

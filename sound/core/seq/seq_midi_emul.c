@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  GM/GS/XG midi module.
  *
  *  Copyright (C) 1999 Steve Ratcliffe
  *
  *  Based on awe_wave.c by Takashi Iwai
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * This module is used to keep track of the current midi state.
@@ -44,6 +51,7 @@ MODULE_DESCRIPTION("Advanced Linux Sound Architecture sequencer MIDI emulation."
 MODULE_LICENSE("GPL");
 
 /* Prototypes for static functions */
+<<<<<<< HEAD
 static void note_off(struct snd_midi_op *ops, void *drv,
 		     struct snd_midi_channel *chan,
 		     int note, int vel);
@@ -60,6 +68,27 @@ static void sysex(struct snd_midi_op *ops, void *private, unsigned char *sysex,
 static void all_sounds_off(struct snd_midi_op *ops, void *private,
 			   struct snd_midi_channel *chan);
 static void all_notes_off(struct snd_midi_op *ops, void *private,
+=======
+static void note_off(const struct snd_midi_op *ops, void *drv,
+		     struct snd_midi_channel *chan,
+		     int note, int vel);
+static void do_control(const struct snd_midi_op *ops, void *private,
+		       struct snd_midi_channel_set *chset,
+		       struct snd_midi_channel *chan,
+		       int control, int value);
+static void rpn(const struct snd_midi_op *ops, void *drv,
+		struct snd_midi_channel *chan,
+		struct snd_midi_channel_set *chset);
+static void nrpn(const struct snd_midi_op *ops, void *drv,
+		 struct snd_midi_channel *chan,
+		 struct snd_midi_channel_set *chset);
+static void sysex(const struct snd_midi_op *ops, void *private,
+		  unsigned char *sysex,
+		  int len, struct snd_midi_channel_set *chset);
+static void all_sounds_off(const struct snd_midi_op *ops, void *private,
+			   struct snd_midi_channel *chan);
+static void all_notes_off(const struct snd_midi_op *ops, void *private,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct snd_midi_channel *chan);
 static void snd_midi_reset_controllers(struct snd_midi_channel *chan);
 static void reset_all_channels(struct snd_midi_channel_set *chset);
@@ -80,7 +109,11 @@ static void reset_all_channels(struct snd_midi_channel_set *chset);
  *        be interpreted.
  */
 void
+<<<<<<< HEAD
 snd_midi_process_event(struct snd_midi_op *ops,
+=======
+snd_midi_process_event(const struct snd_midi_op *ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       struct snd_seq_event *ev,
 		       struct snd_midi_channel_set *chanset)
 {
@@ -89,7 +122,11 @@ snd_midi_process_event(struct snd_midi_op *ops,
 	int dest_channel = 0;
 
 	if (ev == NULL || chanset == NULL) {
+<<<<<<< HEAD
 		snd_printd("ev or chanbase NULL (snd_midi_process_event)\n");
+=======
+		pr_debug("ALSA: seq_midi_emul: ev or chanbase NULL (snd_midi_process_event)\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	if (chanset->channels == NULL)
@@ -98,7 +135,11 @@ snd_midi_process_event(struct snd_midi_op *ops,
 	if (snd_seq_ev_is_channel_type(ev)) {
 		dest_channel = ev->data.note.channel;
 		if (dest_channel >= chanset->max_channels) {
+<<<<<<< HEAD
 			snd_printd("dest channel is %d, max is %d\n",
+=======
+			pr_debug("ALSA: seq_midi_emul: dest channel is %d, max is %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   dest_channel, chanset->max_channels);
 			return;
 		}
@@ -232,17 +273,30 @@ snd_midi_process_event(struct snd_midi_op *ops,
 	case SNDRV_SEQ_EVENT_ECHO:
 	not_yet:
 	default:
+<<<<<<< HEAD
 		/*snd_printd("Unimplemented event %d\n", ev->type);*/
 		break;
 	}
 }
+=======
+		/*pr_debug("ALSA: seq_midi_emul: Unimplemented event %d\n", ev->type);*/
+		break;
+	}
+}
+EXPORT_SYMBOL(snd_midi_process_event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
  * release note
  */
 static void
+<<<<<<< HEAD
 note_off(struct snd_midi_op *ops, void *drv, struct snd_midi_channel *chan,
+=======
+note_off(const struct snd_midi_op *ops, void *drv,
+	 struct snd_midi_channel *chan,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 int note, int vel)
 {
 	if (chan->gm_hold) {
@@ -264,11 +318,22 @@ note_off(struct snd_midi_op *ops, void *drv, struct snd_midi_channel *chan,
  * events that need to take place immediately to the driver.
  */
 static void
+<<<<<<< HEAD
 do_control(struct snd_midi_op *ops, void *drv, struct snd_midi_channel_set *chset,
+=======
+do_control(const struct snd_midi_op *ops, void *drv,
+	   struct snd_midi_channel_set *chset,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   struct snd_midi_channel *chan, int control, int value)
 {
 	int  i;
 
+<<<<<<< HEAD
+=======
+	if (control >= ARRAY_SIZE(chan->control))
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Switches */
 	if ((control >=64 && control <=69) || (control >= 80 && control <= 83)) {
 		/* These are all switches; either off or on so set to 0 or 127 */
@@ -314,7 +379,11 @@ do_control(struct snd_midi_op *ops, void *drv, struct snd_midi_channel_set *chse
 		break;
 	case MIDI_CTL_MSB_DATA_ENTRY:
 		chan->control[MIDI_CTL_LSB_DATA_ENTRY] = 0;
+<<<<<<< HEAD
 		/* go through here */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MIDI_CTL_LSB_DATA_ENTRY:
 		if (chan->param_type == SNDRV_MIDI_PARAM_TYPE_REGISTERED)
 			rpn(ops, drv, chan, chset);
@@ -406,12 +475,20 @@ snd_midi_channel_set_clear(struct snd_midi_channel_set *chset)
 			chan->drum_channel = 0;
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_midi_channel_set_clear);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Process a rpn message.
  */
 static void
+<<<<<<< HEAD
 rpn(struct snd_midi_op *ops, void *drv, struct snd_midi_channel *chan,
+=======
+rpn(const struct snd_midi_op *ops, void *drv, struct snd_midi_channel *chan,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     struct snd_midi_channel_set *chset)
 {
 	int type;
@@ -451,7 +528,11 @@ rpn(struct snd_midi_op *ops, void *drv, struct snd_midi_channel *chan,
  * Process an nrpn message.
  */
 static void
+<<<<<<< HEAD
 nrpn(struct snd_midi_op *ops, void *drv, struct snd_midi_channel *chan,
+=======
+nrpn(const struct snd_midi_op *ops, void *drv, struct snd_midi_channel *chan,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
      struct snd_midi_channel_set *chset)
 {
 	/* parse XG NRPNs here if possible */
@@ -479,6 +560,7 @@ get_channel(unsigned char cmd)
  * Process a sysex message.
  */
 static void
+<<<<<<< HEAD
 sysex(struct snd_midi_op *ops, void *private, unsigned char *buf, int len,
       struct snd_midi_channel_set *chset)
 {
@@ -488,6 +570,17 @@ sysex(struct snd_midi_op *ops, void *private, unsigned char *buf, int len,
 	};
 	/* XG on */
 	static unsigned char xg_on_macro[] = {
+=======
+sysex(const struct snd_midi_op *ops, void *private, unsigned char *buf, int len,
+      struct snd_midi_channel_set *chset)
+{
+	/* GM on */
+	static const unsigned char gm_on_macro[] = {
+		0x7e,0x7f,0x09,0x01,
+	};
+	/* XG on */
+	static const unsigned char xg_on_macro[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		0x43,0x10,0x4c,0x00,0x00,0x7e,0x00,
 	};
 	/* GS prefix
@@ -496,7 +589,11 @@ sysex(struct snd_midi_op *ops, void *private, unsigned char *buf, int len,
 	 * chorus mode: XX=0x01, YY=0x38, ZZ=0-7
 	 * master vol:  XX=0x00, YY=0x04, ZZ=0-127
 	 */
+<<<<<<< HEAD
 	static unsigned char gs_pfx_macro[] = {
+=======
+	static const unsigned char gs_pfx_macro[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		0x41,0x10,0x42,0x12,0x40,/*XX,YY,ZZ*/
 	};
 
@@ -593,7 +690,12 @@ sysex(struct snd_midi_op *ops, void *private, unsigned char *buf, int len,
  * all sound off
  */
 static void
+<<<<<<< HEAD
 all_sounds_off(struct snd_midi_op *ops, void *drv, struct snd_midi_channel *chan)
+=======
+all_sounds_off(const struct snd_midi_op *ops, void *drv,
+	       struct snd_midi_channel *chan)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int n;
 
@@ -611,7 +713,12 @@ all_sounds_off(struct snd_midi_op *ops, void *drv, struct snd_midi_channel *chan
  * all notes off
  */
 static void
+<<<<<<< HEAD
 all_notes_off(struct snd_midi_op *ops, void *drv, struct snd_midi_channel *chan)
+=======
+all_notes_off(const struct snd_midi_op *ops, void *drv,
+	      struct snd_midi_channel *chan)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int n;
 
@@ -652,7 +759,11 @@ static struct snd_midi_channel *snd_midi_channel_init_set(int n)
 	struct snd_midi_channel *chan;
 	int  i;
 
+<<<<<<< HEAD
 	chan = kmalloc(n * sizeof(struct snd_midi_channel), GFP_KERNEL);
+=======
+	chan = kmalloc_array(n, sizeof(struct snd_midi_channel), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chan) {
 		for (i = 0; i < n; i++)
 			snd_midi_channel_init(chan+i, i);
@@ -698,6 +809,10 @@ struct snd_midi_channel_set *snd_midi_channel_alloc_set(int n)
 	}
 	return chset;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_midi_channel_alloc_set);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Reset the midi controllers on a particular channel to default values.
@@ -721,6 +836,7 @@ void snd_midi_channel_free_set(struct snd_midi_channel_set *chset)
 	kfree(chset->channels);
 	kfree(chset);
 }
+<<<<<<< HEAD
 
 static int __init alsa_seq_midi_emul_init(void)
 {
@@ -737,4 +853,6 @@ module_exit(alsa_seq_midi_emul_exit)
 EXPORT_SYMBOL(snd_midi_process_event);
 EXPORT_SYMBOL(snd_midi_channel_set_clear);
 EXPORT_SYMBOL(snd_midi_channel_alloc_set);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(snd_midi_channel_free_set);

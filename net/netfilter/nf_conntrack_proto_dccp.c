@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DCCP connection tracking protocol helper
  *
  * Copyright (c) 2005, 2006, 2008 Patrick McHardy <kaber@trash.net>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -10,6 +15,10 @@
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
+=======
+ */
+#include <linux/kernel.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/sysctl.h>
 #include <linux/spinlock.h>
@@ -24,6 +33,10 @@
 #include <net/netfilter/nf_conntrack.h>
 #include <net/netfilter/nf_conntrack_l4proto.h>
 #include <net/netfilter/nf_conntrack_ecache.h>
+<<<<<<< HEAD
+=======
+#include <net/netfilter/nf_conntrack_timeout.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netfilter/nf_log.h>
 
 /* Timeouts are based on values from RFC4340:
@@ -73,6 +86,10 @@
 
 #define DCCP_MSL (2 * 60 * HZ)
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NF_CONNTRACK_PROCFS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char * const dccp_state_names[] = {
 	[CT_DCCP_NONE]		= "NONE",
 	[CT_DCCP_REQUEST]	= "REQUEST",
@@ -85,6 +102,10 @@ static const char * const dccp_state_names[] = {
 	[CT_DCCP_IGNORE]	= "IGNORE",
 	[CT_DCCP_INVALID]	= "INVALID",
 };
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define sNO	CT_DCCP_NONE
 #define sRQ	CT_DCCP_REQUEST
@@ -244,14 +265,22 @@ dccp_state_table[CT_DCCP_ROLE_MAX + 1][DCCP_PKT_SYNCACK + 1][CT_DCCP_MAX + 1] = 
 		 * We currently ignore Sync packets
 		 *
 		 *	sNO, sRQ, sRS, sPO, sOP, sCR, sCG, sTW */
+<<<<<<< HEAD
 			sIG, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+=======
+			sIV, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 		[DCCP_PKT_SYNCACK] = {
 		/*
 		 * We currently ignore SyncAck packets
 		 *
 		 *	sNO, sRQ, sRS, sPO, sOP, sCR, sCG, sTW */
+<<<<<<< HEAD
 			sIG, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+=======
+			sIV, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 	},
 	[CT_DCCP_ROLE_SERVER] = {
@@ -372,18 +401,27 @@ dccp_state_table[CT_DCCP_ROLE_MAX + 1][DCCP_PKT_SYNCACK + 1][CT_DCCP_MAX + 1] = 
 		 * We currently ignore Sync packets
 		 *
 		 *	sNO, sRQ, sRS, sPO, sOP, sCR, sCG, sTW */
+<<<<<<< HEAD
 			sIG, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+=======
+			sIV, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 		[DCCP_PKT_SYNCACK] = {
 		/*
 		 * We currently ignore SyncAck packets
 		 *
 		 *	sNO, sRQ, sRS, sPO, sOP, sCR, sCG, sTW */
+<<<<<<< HEAD
 			sIG, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+=======
+			sIV, sIG, sIG, sIG, sIG, sIG, sIG, sIG,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		},
 	},
 };
 
+<<<<<<< HEAD
 /* this module per-net specifics */
 static int dccp_net_id __read_mostly;
 struct dccp_net {
@@ -446,6 +484,31 @@ static bool dccp_new(struct nf_conn *ct, const struct sk_buff *skb,
 		break;
 	case CT_DCCP_INVALID:
 		msg = "nf_ct_dccp: invalid state transition ";
+=======
+static noinline bool
+dccp_new(struct nf_conn *ct, const struct sk_buff *skb,
+	 const struct dccp_hdr *dh,
+	 const struct nf_hook_state *hook_state)
+{
+	struct net *net = nf_ct_net(ct);
+	struct nf_dccp_net *dn;
+	const char *msg;
+	u_int8_t state;
+
+	state = dccp_state_table[CT_DCCP_ROLE_CLIENT][dh->dccph_type][CT_DCCP_NONE];
+	switch (state) {
+	default:
+		dn = nf_dccp_pernet(net);
+		if (dn->dccp_loose == 0) {
+			msg = "not picking up existing connection ";
+			goto out_invalid;
+		}
+		break;
+	case CT_DCCP_REQUEST:
+		break;
+	case CT_DCCP_INVALID:
+		msg = "invalid state transition ";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_invalid;
 	}
 
@@ -458,8 +521,12 @@ static bool dccp_new(struct nf_conn *ct, const struct sk_buff *skb,
 	return true;
 
 out_invalid:
+<<<<<<< HEAD
 	if (LOG_INVALID(net, IPPROTO_DCCP))
 		nf_log_packet(nf_ct_l3num(ct), 0, skb, NULL, NULL, NULL, msg);
+=======
+	nf_ct_l4proto_log_invalid(skb, ct, hook_state, "%s", msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return false;
 }
 
@@ -472,6 +539,7 @@ static u64 dccp_ack_seq(const struct dccp_hdr *dh)
 		     ntohl(dhack->dccph_ack_nr_low);
 }
 
+<<<<<<< HEAD
 static unsigned int *dccp_get_timeouts(struct net *net)
 {
 	return dccp_pernet(net)->dccp_timeout;
@@ -491,6 +559,116 @@ static int dccp_packet(struct nf_conn *ct, const struct sk_buff *skb,
 	dh = skb_header_pointer(skb, dataoff, sizeof(_dh), &_dh);
 	BUG_ON(dh == NULL);
 	type = dh->dccph_type;
+=======
+static bool dccp_error(const struct dccp_hdr *dh,
+		       struct sk_buff *skb, unsigned int dataoff,
+		       const struct nf_hook_state *state)
+{
+	static const unsigned long require_seq48 = 1 << DCCP_PKT_REQUEST |
+						   1 << DCCP_PKT_RESPONSE |
+						   1 << DCCP_PKT_CLOSEREQ |
+						   1 << DCCP_PKT_CLOSE |
+						   1 << DCCP_PKT_RESET |
+						   1 << DCCP_PKT_SYNC |
+						   1 << DCCP_PKT_SYNCACK;
+	unsigned int dccp_len = skb->len - dataoff;
+	unsigned int cscov;
+	const char *msg;
+	u8 type;
+
+	BUILD_BUG_ON(DCCP_PKT_INVALID >= BITS_PER_LONG);
+
+	if (dh->dccph_doff * 4 < sizeof(struct dccp_hdr) ||
+	    dh->dccph_doff * 4 > dccp_len) {
+		msg = "nf_ct_dccp: truncated/malformed packet ";
+		goto out_invalid;
+	}
+
+	cscov = dccp_len;
+	if (dh->dccph_cscov) {
+		cscov = (dh->dccph_cscov - 1) * 4;
+		if (cscov > dccp_len) {
+			msg = "nf_ct_dccp: bad checksum coverage ";
+			goto out_invalid;
+		}
+	}
+
+	if (state->hook == NF_INET_PRE_ROUTING &&
+	    state->net->ct.sysctl_checksum &&
+	    nf_checksum_partial(skb, state->hook, dataoff, cscov,
+				IPPROTO_DCCP, state->pf)) {
+		msg = "nf_ct_dccp: bad checksum ";
+		goto out_invalid;
+	}
+
+	type = dh->dccph_type;
+	if (type >= DCCP_PKT_INVALID) {
+		msg = "nf_ct_dccp: reserved packet type ";
+		goto out_invalid;
+	}
+
+	if (test_bit(type, &require_seq48) && !dh->dccph_x) {
+		msg = "nf_ct_dccp: type lacks 48bit sequence numbers";
+		goto out_invalid;
+	}
+
+	return false;
+out_invalid:
+	nf_l4proto_log_invalid(skb, state, IPPROTO_DCCP, "%s", msg);
+	return true;
+}
+
+struct nf_conntrack_dccp_buf {
+	struct dccp_hdr dh;	 /* generic header part */
+	struct dccp_hdr_ext ext; /* optional depending dh->dccph_x */
+	union {			 /* depends on header type */
+		struct dccp_hdr_ack_bits ack;
+		struct dccp_hdr_request req;
+		struct dccp_hdr_response response;
+		struct dccp_hdr_reset rst;
+	} u;
+};
+
+static struct dccp_hdr *
+dccp_header_pointer(const struct sk_buff *skb, int offset, const struct dccp_hdr *dh,
+		    struct nf_conntrack_dccp_buf *buf)
+{
+	unsigned int hdrlen = __dccp_hdr_len(dh);
+
+	if (hdrlen > sizeof(*buf))
+		return NULL;
+
+	return skb_header_pointer(skb, offset, hdrlen, buf);
+}
+
+int nf_conntrack_dccp_packet(struct nf_conn *ct, struct sk_buff *skb,
+			     unsigned int dataoff,
+			     enum ip_conntrack_info ctinfo,
+			     const struct nf_hook_state *state)
+{
+	enum ip_conntrack_dir dir = CTINFO2DIR(ctinfo);
+	struct nf_conntrack_dccp_buf _dh;
+	u_int8_t type, old_state, new_state;
+	enum ct_dccp_roles role;
+	unsigned int *timeouts;
+	struct dccp_hdr *dh;
+
+	dh = skb_header_pointer(skb, dataoff, sizeof(*dh), &_dh.dh);
+	if (!dh)
+		return NF_DROP;
+
+	if (dccp_error(dh, skb, dataoff, state))
+		return -NF_ACCEPT;
+
+	/* pull again, including possible 48 bit sequences and subtype header */
+	dh = dccp_header_pointer(skb, dataoff, dh, &_dh);
+	if (!dh)
+		return NF_DROP;
+
+	type = dh->dccph_type;
+	if (!nf_ct_is_confirmed(ct) && !dccp_new(ct, skb, dh, state))
+		return -NF_ACCEPT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (type == DCCP_PKT_RESET &&
 	    !test_bit(IPS_SEEN_REPLY_BIT, &ct->status)) {
@@ -544,6 +722,7 @@ static int dccp_packet(struct nf_conn *ct, const struct sk_buff *skb,
 		ct->proto.dccp.last_pkt = type;
 
 		spin_unlock_bh(&ct->lock);
+<<<<<<< HEAD
 		if (LOG_INVALID(net, IPPROTO_DCCP))
 			nf_log_packet(pf, 0, skb, NULL, NULL, NULL,
 				      "nf_ct_dccp: invalid packet ignored ");
@@ -553,6 +732,13 @@ static int dccp_packet(struct nf_conn *ct, const struct sk_buff *skb,
 		if (LOG_INVALID(net, IPPROTO_DCCP))
 			nf_log_packet(pf, 0, skb, NULL, NULL, NULL,
 				      "nf_ct_dccp: invalid state transition ");
+=======
+		nf_ct_l4proto_log_invalid(skb, ct, state, "%s", "invalid packet");
+		return NF_ACCEPT;
+	case CT_DCCP_INVALID:
+		spin_unlock_bh(&ct->lock);
+		nf_ct_l4proto_log_invalid(skb, ct, state, "%s", "invalid state transition");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -NF_ACCEPT;
 	}
 
@@ -564,11 +750,18 @@ static int dccp_packet(struct nf_conn *ct, const struct sk_buff *skb,
 	if (new_state != old_state)
 		nf_conntrack_event_cache(IPCT_PROTOINFO, ct);
 
+<<<<<<< HEAD
+=======
+	timeouts = nf_ct_timeout_lookup(ct);
+	if (!timeouts)
+		timeouts = nf_dccp_pernet(nf_ct_net(ct))->dccp_timeout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nf_ct_refresh_acct(ct, ctinfo, skb, timeouts[new_state]);
 
 	return NF_ACCEPT;
 }
 
+<<<<<<< HEAD
 static int dccp_error(struct net *net, struct nf_conn *tmpl,
 		      struct sk_buff *skb, unsigned int dataoff,
 		      enum ip_conntrack_info *ctinfo,
@@ -636,10 +829,37 @@ static int dccp_print_conntrack(struct seq_file *s, struct nf_conn *ct)
 #if IS_ENABLED(CONFIG_NF_CT_NETLINK)
 static int dccp_to_nlattr(struct sk_buff *skb, struct nlattr *nla,
 			  struct nf_conn *ct)
+=======
+static bool dccp_can_early_drop(const struct nf_conn *ct)
+{
+	switch (ct->proto.dccp.state) {
+	case CT_DCCP_CLOSEREQ:
+	case CT_DCCP_CLOSING:
+	case CT_DCCP_TIMEWAIT:
+		return true;
+	default:
+		break;
+	}
+
+	return false;
+}
+
+#ifdef CONFIG_NF_CONNTRACK_PROCFS
+static void dccp_print_conntrack(struct seq_file *s, struct nf_conn *ct)
+{
+	seq_printf(s, "%s ", dccp_state_names[ct->proto.dccp.state]);
+}
+#endif
+
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK)
+static int dccp_to_nlattr(struct sk_buff *skb, struct nlattr *nla,
+			  struct nf_conn *ct, bool destroy)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nlattr *nest_parms;
 
 	spin_lock_bh(&ct->lock);
+<<<<<<< HEAD
 	nest_parms = nla_nest_start(skb, CTA_PROTOINFO_DCCP | NLA_F_NESTED);
 	if (!nest_parms)
 		goto nla_put_failure;
@@ -650,6 +870,27 @@ static int dccp_to_nlattr(struct sk_buff *skb, struct nlattr *nla,
 		     cpu_to_be64(ct->proto.dccp.handshake_seq));
 	nla_nest_end(skb, nest_parms);
 	spin_unlock_bh(&ct->lock);
+=======
+	nest_parms = nla_nest_start(skb, CTA_PROTOINFO_DCCP);
+	if (!nest_parms)
+		goto nla_put_failure;
+	if (nla_put_u8(skb, CTA_PROTOINFO_DCCP_STATE, ct->proto.dccp.state))
+		goto nla_put_failure;
+
+	if (destroy)
+		goto skip_state;
+
+	if (nla_put_u8(skb, CTA_PROTOINFO_DCCP_ROLE,
+		       ct->proto.dccp.role[IP_CT_DIR_ORIGINAL]) ||
+	    nla_put_be64(skb, CTA_PROTOINFO_DCCP_HANDSHAKE_SEQ,
+			 cpu_to_be64(ct->proto.dccp.handshake_seq),
+			 CTA_PROTOINFO_DCCP_PAD))
+		goto nla_put_failure;
+skip_state:
+	nla_nest_end(skb, nest_parms);
+	spin_unlock_bh(&ct->lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 nla_put_failure:
@@ -661,8 +902,20 @@ static const struct nla_policy dccp_nla_policy[CTA_PROTOINFO_DCCP_MAX + 1] = {
 	[CTA_PROTOINFO_DCCP_STATE]	= { .type = NLA_U8 },
 	[CTA_PROTOINFO_DCCP_ROLE]	= { .type = NLA_U8 },
 	[CTA_PROTOINFO_DCCP_HANDSHAKE_SEQ] = { .type = NLA_U64 },
+<<<<<<< HEAD
 };
 
+=======
+	[CTA_PROTOINFO_DCCP_PAD]	= { .type = NLA_UNSPEC },
+};
+
+#define DCCP_NLATTR_SIZE ( \
+	NLA_ALIGN(NLA_HDRLEN + 1) + \
+	NLA_ALIGN(NLA_HDRLEN + 1) + \
+	NLA_ALIGN(NLA_HDRLEN + sizeof(u64)) + \
+	NLA_ALIGN(NLA_HDRLEN + 0))
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nlattr_to_dccp(struct nlattr *cda[], struct nf_conn *ct)
 {
 	struct nlattr *attr = cda[CTA_PROTOINFO_DCCP];
@@ -672,8 +925,13 @@ static int nlattr_to_dccp(struct nlattr *cda[], struct nf_conn *ct)
 	if (!attr)
 		return 0;
 
+<<<<<<< HEAD
 	err = nla_parse_nested(tb, CTA_PROTOINFO_DCCP_MAX, attr,
 			       dccp_nla_policy);
+=======
+	err = nla_parse_nested_deprecated(tb, CTA_PROTOINFO_DCCP_MAX, attr,
+					  dccp_nla_policy, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -700,6 +958,7 @@ static int nlattr_to_dccp(struct nlattr *cda[], struct nf_conn *ct)
 	spin_unlock_bh(&ct->lock);
 	return 0;
 }
+<<<<<<< HEAD
 
 static int dccp_nlattr_size(void)
 {
@@ -710,16 +969,34 @@ static int dccp_nlattr_size(void)
 #endif
 
 #if IS_ENABLED(CONFIG_NF_CT_NETLINK_TIMEOUT)
+=======
+#endif
+
+#ifdef CONFIG_NF_CONNTRACK_TIMEOUT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/netfilter/nfnetlink.h>
 #include <linux/netfilter/nfnetlink_cttimeout.h>
 
+<<<<<<< HEAD
 static int dccp_timeout_nlattr_to_obj(struct nlattr *tb[], void *data)
 {
 	struct dccp_net *dn = dccp_pernet(&init_net);
 	unsigned int *timeouts = data;
 	int i;
 
+=======
+static int dccp_timeout_nlattr_to_obj(struct nlattr *tb[],
+				      struct net *net, void *data)
+{
+	struct nf_dccp_net *dn = nf_dccp_pernet(net);
+	unsigned int *timeouts = data;
+	int i;
+
+	if (!timeouts)
+		 timeouts = dn->dccp_timeout;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set default DCCP timeouts. */
 	for (i=0; i<CT_DCCP_MAX; i++)
 		timeouts[i] = dn->dccp_timeout[i];
@@ -730,6 +1007,11 @@ static int dccp_timeout_nlattr_to_obj(struct nlattr *tb[], void *data)
 			timeouts[i] = ntohl(nla_get_be32(tb[i])) * HZ;
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	timeouts[CTA_TIMEOUT_DCCP_UNSPEC] = timeouts[CTA_TIMEOUT_DCCP_REQUEST];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -739,9 +1021,16 @@ dccp_timeout_obj_to_nlattr(struct sk_buff *skb, const void *data)
         const unsigned int *timeouts = data;
 	int i;
 
+<<<<<<< HEAD
 	for (i=CTA_TIMEOUT_DCCP_UNSPEC+1; i<CTA_TIMEOUT_DCCP_MAX+1; i++)
 		NLA_PUT_BE32(skb, i, htonl(timeouts[i] / HZ));
 
+=======
+	for (i=CTA_TIMEOUT_DCCP_UNSPEC+1; i<CTA_TIMEOUT_DCCP_MAX+1; i++) {
+		if (nla_put_be32(skb, i, htonl(timeouts[i] / HZ)))
+			goto nla_put_failure;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 nla_put_failure:
@@ -758,6 +1047,7 @@ dccp_timeout_nla_policy[CTA_TIMEOUT_DCCP_MAX+1] = {
 	[CTA_TIMEOUT_DCCP_CLOSING]	= { .type = NLA_U32 },
 	[CTA_TIMEOUT_DCCP_TIMEWAIT]	= { .type = NLA_U32 },
 };
+<<<<<<< HEAD
 #endif /* CONFIG_NF_CT_NETLINK_TIMEOUT */
 
 #ifdef CONFIG_SYSCTL
@@ -882,6 +1172,13 @@ static struct nf_conntrack_l4proto dccp_proto6 __read_mostly = {
 static __net_init int dccp_net_init(struct net *net)
 {
 	struct dccp_net *dn = dccp_pernet(net);
+=======
+#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+
+void nf_conntrack_dccp_init_net(struct net *net)
+{
+	struct nf_dccp_net *dn = nf_dccp_pernet(net);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* default values */
 	dn->dccp_loose = 1;
@@ -893,6 +1190,7 @@ static __net_init int dccp_net_init(struct net *net)
 	dn->dccp_timeout[CT_DCCP_CLOSING]	= 64 * HZ;
 	dn->dccp_timeout[CT_DCCP_TIMEWAIT]	= 2 * DCCP_MSL;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SYSCTL
 	dn->sysctl_table = kmemdup(dccp_sysctl_table,
 			sizeof(dccp_sysctl_table), GFP_KERNEL);
@@ -973,3 +1271,36 @@ module_exit(nf_conntrack_proto_dccp_fini);
 MODULE_AUTHOR("Patrick McHardy <kaber@trash.net>");
 MODULE_DESCRIPTION("DCCP connection tracking protocol helper");
 MODULE_LICENSE("GPL");
+=======
+	/* timeouts[0] is unused, make it same as SYN_SENT so
+	 * ->timeouts[0] contains 'new' timeout, like udp or icmp.
+	 */
+	dn->dccp_timeout[CT_DCCP_NONE] = dn->dccp_timeout[CT_DCCP_REQUEST];
+}
+
+const struct nf_conntrack_l4proto nf_conntrack_l4proto_dccp = {
+	.l4proto		= IPPROTO_DCCP,
+	.can_early_drop		= dccp_can_early_drop,
+#ifdef CONFIG_NF_CONNTRACK_PROCFS
+	.print_conntrack	= dccp_print_conntrack,
+#endif
+#if IS_ENABLED(CONFIG_NF_CT_NETLINK)
+	.nlattr_size		= DCCP_NLATTR_SIZE,
+	.to_nlattr		= dccp_to_nlattr,
+	.from_nlattr		= nlattr_to_dccp,
+	.tuple_to_nlattr	= nf_ct_port_tuple_to_nlattr,
+	.nlattr_tuple_size	= nf_ct_port_nlattr_tuple_size,
+	.nlattr_to_tuple	= nf_ct_port_nlattr_to_tuple,
+	.nla_policy		= nf_ct_port_nla_policy,
+#endif
+#ifdef CONFIG_NF_CONNTRACK_TIMEOUT
+	.ctnl_timeout		= {
+		.nlattr_to_obj	= dccp_timeout_nlattr_to_obj,
+		.obj_to_nlattr	= dccp_timeout_obj_to_nlattr,
+		.nlattr_max	= CTA_TIMEOUT_DCCP_MAX,
+		.obj_size	= sizeof(unsigned int) * CT_DCCP_MAX,
+		.nla_policy	= dccp_timeout_nla_policy,
+	},
+#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

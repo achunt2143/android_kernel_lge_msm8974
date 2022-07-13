@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ext4/hash.c
  *
  * Copyright (C) 2002 by Theodore Ts'o
+<<<<<<< HEAD
  *
  * This file is released under the GPL v2.
  *
@@ -12,6 +17,14 @@
 #include <linux/fs.h>
 #include <linux/jbd2.h>
 #include <linux/cryptohash.h>
+=======
+ */
+
+#include <linux/fs.h>
+#include <linux/unicode.h>
+#include <linux/compiler.h>
+#include <linux/bitops.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ext4.h"
 
 #define DELTA 0x9E3779B9
@@ -33,6 +46,77 @@ static void TEA_transform(__u32 buf[4], __u32 const in[])
 	buf[1] += b1;
 }
 
+<<<<<<< HEAD
+=======
+/* F, G and H are basic MD4 functions: selection, majority, parity */
+#define F(x, y, z) ((z) ^ ((x) & ((y) ^ (z))))
+#define G(x, y, z) (((x) & (y)) + (((x) ^ (y)) & (z)))
+#define H(x, y, z) ((x) ^ (y) ^ (z))
+
+/*
+ * The generic round function.  The application is so specific that
+ * we don't bother protecting all the arguments with parens, as is generally
+ * good macro practice, in favor of extra legibility.
+ * Rotation is separate from addition to prevent recomputation
+ */
+#define ROUND(f, a, b, c, d, x, s)	\
+	(a += f(b, c, d) + x, a = rol32(a, s))
+#define K1 0
+#define K2 013240474631UL
+#define K3 015666365641UL
+
+/*
+ * Basic cut-down MD4 transform.  Returns only 32 bits of result.
+ */
+static __u32 half_md4_transform(__u32 buf[4], __u32 const in[8])
+{
+	__u32 a = buf[0], b = buf[1], c = buf[2], d = buf[3];
+
+	/* Round 1 */
+	ROUND(F, a, b, c, d, in[0] + K1,  3);
+	ROUND(F, d, a, b, c, in[1] + K1,  7);
+	ROUND(F, c, d, a, b, in[2] + K1, 11);
+	ROUND(F, b, c, d, a, in[3] + K1, 19);
+	ROUND(F, a, b, c, d, in[4] + K1,  3);
+	ROUND(F, d, a, b, c, in[5] + K1,  7);
+	ROUND(F, c, d, a, b, in[6] + K1, 11);
+	ROUND(F, b, c, d, a, in[7] + K1, 19);
+
+	/* Round 2 */
+	ROUND(G, a, b, c, d, in[1] + K2,  3);
+	ROUND(G, d, a, b, c, in[3] + K2,  5);
+	ROUND(G, c, d, a, b, in[5] + K2,  9);
+	ROUND(G, b, c, d, a, in[7] + K2, 13);
+	ROUND(G, a, b, c, d, in[0] + K2,  3);
+	ROUND(G, d, a, b, c, in[2] + K2,  5);
+	ROUND(G, c, d, a, b, in[4] + K2,  9);
+	ROUND(G, b, c, d, a, in[6] + K2, 13);
+
+	/* Round 3 */
+	ROUND(H, a, b, c, d, in[3] + K3,  3);
+	ROUND(H, d, a, b, c, in[7] + K3,  9);
+	ROUND(H, c, d, a, b, in[2] + K3, 11);
+	ROUND(H, b, c, d, a, in[6] + K3, 15);
+	ROUND(H, a, b, c, d, in[1] + K3,  3);
+	ROUND(H, d, a, b, c, in[5] + K3,  9);
+	ROUND(H, c, d, a, b, in[0] + K3, 11);
+	ROUND(H, b, c, d, a, in[4] + K3, 15);
+
+	buf[0] += a;
+	buf[1] += b;
+	buf[2] += c;
+	buf[3] += d;
+
+	return buf[1]; /* "most hashed" word */
+}
+#undef ROUND
+#undef K1
+#undef K2
+#undef K3
+#undef F
+#undef G
+#undef H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The old legacy hash */
 static __u32 dx_hack_hash_unsigned(const char *name, int len)
@@ -80,8 +164,11 @@ static void str2hashbuf_signed(const char *msg, int len, __u32 *buf, int num)
 	if (len > num*4)
 		len = num * 4;
 	for (i = 0; i < len; i++) {
+<<<<<<< HEAD
 		if ((i % 4) == 0)
 			val = pad;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = ((int) scp[i]) + (val << 8);
 		if ((i % 4) == 3) {
 			*buf++ = val;
@@ -108,8 +195,11 @@ static void str2hashbuf_unsigned(const char *msg, int len, __u32 *buf, int num)
 	if (len > num*4)
 		len = num * 4;
 	for (i = 0; i < len; i++) {
+<<<<<<< HEAD
 		if ((i % 4) == 0)
 			val = pad;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = ((int) ucp[i]) + (val << 8);
 		if ((i % 4) == 3) {
 			*buf++ = val;
@@ -136,7 +226,12 @@ static void str2hashbuf_unsigned(const char *msg, int len, __u32 *buf, int num)
  * represented, and whether or not the returned hash is 32 bits or 64
  * bits.  32 bit hashes will return 0 for the minor hash.
  */
+<<<<<<< HEAD
 int ext4fs_dirhash(const char *name, int len, struct dx_hash_info *hinfo)
+=======
+static int __ext4fs_dirhash(const struct inode *dir, const char *name, int len,
+			    struct dx_hash_info *hinfo)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u32	hash;
 	__u32	minor_hash = 0;
@@ -155,11 +250,19 @@ int ext4fs_dirhash(const char *name, int len, struct dx_hash_info *hinfo)
 	/* Check to see if the seed is all zero's */
 	if (hinfo->seed) {
 		for (i = 0; i < 4; i++) {
+<<<<<<< HEAD
 			if (hinfo->seed[i])
 				break;
 		}
 		if (i < 4)
 			memcpy(buf, hinfo->seed, sizeof(buf));
+=======
+			if (hinfo->seed[i]) {
+				memcpy(buf, hinfo->seed, sizeof(buf));
+				break;
+			}
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (hinfo->hash_version) {
@@ -171,6 +274,10 @@ int ext4fs_dirhash(const char *name, int len, struct dx_hash_info *hinfo)
 		break;
 	case DX_HASH_HALF_MD4_UNSIGNED:
 		str2hashbuf = str2hashbuf_unsigned;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DX_HASH_HALF_MD4:
 		p = name;
 		while (len > 0) {
@@ -184,6 +291,10 @@ int ext4fs_dirhash(const char *name, int len, struct dx_hash_info *hinfo)
 		break;
 	case DX_HASH_TEA_UNSIGNED:
 		str2hashbuf = str2hashbuf_unsigned;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DX_HASH_TEA:
 		p = name;
 		while (len > 0) {
@@ -195,9 +306,35 @@ int ext4fs_dirhash(const char *name, int len, struct dx_hash_info *hinfo)
 		hash = buf[0];
 		minor_hash = buf[1];
 		break;
+<<<<<<< HEAD
 	default:
 		hinfo->hash = 0;
 		return -1;
+=======
+	case DX_HASH_SIPHASH:
+	{
+		struct qstr qname = QSTR_INIT(name, len);
+		__u64	combined_hash;
+
+		if (fscrypt_has_encryption_key(dir)) {
+			combined_hash = fscrypt_fname_siphash(dir, &qname);
+		} else {
+			ext4_warning_inode(dir, "Siphash requires key");
+			return -1;
+		}
+
+		hash = (__u32)(combined_hash >> 32);
+		minor_hash = (__u32)combined_hash;
+		break;
+	}
+	default:
+		hinfo->hash = 0;
+		hinfo->minor_hash = 0;
+		ext4_warning(dir->i_sb,
+			     "invalid/unsupported hash tree version %u",
+			     hinfo->hash_version);
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	hash = hash & ~1;
 	if (hash == (EXT4_HTREE_EOF_32BIT << 1))
@@ -206,3 +343,37 @@ int ext4fs_dirhash(const char *name, int len, struct dx_hash_info *hinfo)
 	hinfo->minor_hash = minor_hash;
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+int ext4fs_dirhash(const struct inode *dir, const char *name, int len,
+		   struct dx_hash_info *hinfo)
+{
+#if IS_ENABLED(CONFIG_UNICODE)
+	const struct unicode_map *um = dir->i_sb->s_encoding;
+	int r, dlen;
+	unsigned char *buff;
+	struct qstr qstr = {.name = name, .len = len };
+
+	if (len && IS_CASEFOLDED(dir) &&
+	   (!IS_ENCRYPTED(dir) || fscrypt_has_encryption_key(dir))) {
+		buff = kzalloc(sizeof(char) * PATH_MAX, GFP_KERNEL);
+		if (!buff)
+			return -ENOMEM;
+
+		dlen = utf8_casefold(um, &qstr, buff, PATH_MAX);
+		if (dlen < 0) {
+			kfree(buff);
+			goto opaque_seq;
+		}
+
+		r = __ext4fs_dirhash(dir, buff, dlen, hinfo);
+
+		kfree(buff);
+		return r;
+	}
+opaque_seq:
+#endif
+	return __ext4fs_dirhash(dir, name, len, hinfo);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

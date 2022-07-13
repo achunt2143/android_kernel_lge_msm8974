@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 2002, Greg Ungerer (gerg@snapgear.com)
  *
@@ -14,6 +18,7 @@
 #include <linux/linkage.h>
 
 #ifndef CONFIG_MMU
+<<<<<<< HEAD
 #define sys_mmap2		sys_mmap_pgoff
 #endif
 
@@ -368,3 +373,13 @@ ENTRY(sys_call_table)
 	.long sys_process_vm_readv	/* 345 */
 	.long sys_process_vm_writev
 
+=======
+#define sys_mmap2	sys_mmap_pgoff
+#endif
+
+#define __SYSCALL(nr, entry) .long entry
+	.section .rodata
+ALIGN
+ENTRY(sys_call_table)
+#include <asm/syscall_table.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

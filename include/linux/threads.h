@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_THREADS_H
 #define _LINUX_THREADS_H
 
@@ -28,7 +32,11 @@
 
 /*
  * A maximum of 4 million PIDs should be enough for a while.
+<<<<<<< HEAD
  * [NOTE: PID/TIDs are limited to 2^29 ~= 500+ million, see futex.h.]
+=======
+ * [NOTE: PID/TIDs are limited to 2^30 ~= 1 billion, see FUTEX_TID_MASK.]
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define PID_MAX_LIMIT (CONFIG_BASE_SMALL ? PAGE_SIZE * 8 : \
 	(sizeof(long) > 4 ? 4 * 1024 * 1024 : PID_MAX_DEFAULT))
@@ -37,7 +45,11 @@
  * Define a minimum number of pids per cpu.  Heuristically based
  * on original pid max of 32k for 32 cpus.  Also, increase the
  * minimum settable value for pid_max on the running system based
+<<<<<<< HEAD
  * on similar defaults.  See kernel/pid.c:pidmap_init() for details.
+=======
+ * on similar defaults.  See kernel/pid.c:pid_idr_init() for details.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define PIDS_PER_CPU_DEFAULT	1024
 #define PIDS_PER_CPU_MIN	8

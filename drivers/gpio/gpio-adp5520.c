@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * GPIO driver for Analog Devices ADP5520 MFD PMICs
  *
  * Copyright 2009 Analog Devices Inc.
+<<<<<<< HEAD
  *
  * Licensed under the GPL-2 or later.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -12,8 +19,12 @@
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/mfd/adp5520.h>
+<<<<<<< HEAD
 
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct adp5520_gpio {
 	struct device *master;
@@ -27,7 +38,11 @@ static int adp5520_gpio_get_value(struct gpio_chip *chip, unsigned off)
 	struct adp5520_gpio *dev;
 	uint8_t reg_val;
 
+<<<<<<< HEAD
 	dev = container_of(chip, struct adp5520_gpio, gpio_chip);
+=======
+	dev = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * There are dedicated registers for GPIO IN/OUT.
@@ -46,7 +61,11 @@ static void adp5520_gpio_set_value(struct gpio_chip *chip,
 		unsigned off, int val)
 {
 	struct adp5520_gpio *dev;
+<<<<<<< HEAD
 	dev = container_of(chip, struct adp5520_gpio, gpio_chip);
+=======
+	dev = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (val)
 		adp5520_set_bits(dev->master, ADP5520_GPIO_OUT, dev->lut[off]);
@@ -57,7 +76,11 @@ static void adp5520_gpio_set_value(struct gpio_chip *chip,
 static int adp5520_gpio_direction_input(struct gpio_chip *chip, unsigned off)
 {
 	struct adp5520_gpio *dev;
+<<<<<<< HEAD
 	dev = container_of(chip, struct adp5520_gpio, gpio_chip);
+=======
+	dev = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clear_bit(off, &dev->output);
 
@@ -70,7 +93,11 @@ static int adp5520_gpio_direction_output(struct gpio_chip *chip,
 {
 	struct adp5520_gpio *dev;
 	int ret = 0;
+<<<<<<< HEAD
 	dev = container_of(chip, struct adp5520_gpio, gpio_chip);
+=======
+	dev = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_bit(off, &dev->output);
 
@@ -87,9 +114,15 @@ static int adp5520_gpio_direction_output(struct gpio_chip *chip,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devinit adp5520_gpio_probe(struct platform_device *pdev)
 {
 	struct adp5520_gpio_platform_data *pdata = pdev->dev.platform_data;
+=======
+static int adp5520_gpio_probe(struct platform_device *pdev)
+{
+	struct adp5520_gpio_platform_data *pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct adp5520_gpio *dev;
 	struct gpio_chip *gc;
 	int ret, i, gpios;
@@ -105,11 +138,17 @@ static int __devinit adp5520_gpio_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
 	if (dev == NULL) {
 		dev_err(&pdev->dev, "failed to alloc memory\n");
 		return -ENOMEM;
 	}
+=======
+	dev = devm_kzalloc(&pdev->dev, sizeof(*dev), GFP_KERNEL);
+	if (dev == NULL)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->master = pdev->dev.parent;
 
@@ -117,17 +156,26 @@ static int __devinit adp5520_gpio_probe(struct platform_device *pdev)
 		if (pdata->gpio_en_mask & (1 << i))
 			dev->lut[gpios++] = 1 << i;
 
+<<<<<<< HEAD
 	if (gpios < 1) {
 		ret = -EINVAL;
 		goto err;
 	}
+=======
+	if (gpios < 1)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gc = &dev->gpio_chip;
 	gc->direction_input  = adp5520_gpio_direction_input;
 	gc->direction_output = adp5520_gpio_direction_output;
 	gc->get = adp5520_gpio_get_value;
 	gc->set = adp5520_gpio_set_value;
+<<<<<<< HEAD
 	gc->can_sleep = 1;
+=======
+	gc->can_sleep = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gc->base = pdata->gpio_start;
 	gc->ngpio = gpios;
@@ -152,6 +200,7 @@ static int __devinit adp5520_gpio_probe(struct platform_device *pdev)
 
 	if (ret) {
 		dev_err(&pdev->dev, "failed to write\n");
+<<<<<<< HEAD
 		goto err;
 	}
 
@@ -182,20 +231,35 @@ static int __devexit adp5520_gpio_remove(struct platform_device *pdev)
 
 	kfree(dev);
 	return 0;
+=======
+		return ret;
+	}
+
+	return devm_gpiochip_add_data(&pdev->dev, &dev->gpio_chip, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver adp5520_gpio_driver = {
 	.driver	= {
 		.name	= "adp5520-gpio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= adp5520_gpio_probe,
 	.remove		= __devexit_p(adp5520_gpio_remove),
+=======
+	},
+	.probe		= adp5520_gpio_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(adp5520_gpio_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Michael Hennerich <hennerich@blackfin.uclinux.org>");
+=======
+MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("GPIO ADP5520 Driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:adp5520-gpio");

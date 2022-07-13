@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * posix-clock.c - support for dynamic clock devices
  *
@@ -16,6 +17,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Support for dynamic clock devices
+ *
+ * Copyright (C) 2010 OMICRON electronics GmbH
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/device.h>
 #include <linux/export.h>
@@ -25,14 +33,23 @@
 #include <linux/syscalls.h>
 #include <linux/uaccess.h>
 
+<<<<<<< HEAD
 static void delete_clock(struct kref *kref);
+=======
+#include "posix-timers.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Returns NULL if the posix_clock instance attached to 'fp' is old and stale.
  */
 static struct posix_clock *get_posix_clock(struct file *fp)
 {
+<<<<<<< HEAD
 	struct posix_clock *clk = fp->private_data;
+=======
+	struct posix_clock_context *pccontext = fp->private_data;
+	struct posix_clock *clk = pccontext->clk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_read(&clk->rwsem);
 
@@ -52,6 +69,10 @@ static void put_posix_clock(struct posix_clock *clk)
 static ssize_t posix_clock_read(struct file *fp, char __user *buf,
 				size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
+=======
+	struct posix_clock_context *pccontext = fp->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct posix_clock *clk = get_posix_clock(fp);
 	int err = -EINVAL;
 
@@ -59,13 +80,18 @@ static ssize_t posix_clock_read(struct file *fp, char __user *buf,
 		return -ENODEV;
 
 	if (clk->ops.read)
+<<<<<<< HEAD
 		err = clk->ops.read(clk, fp->f_flags, buf, count);
+=======
+		err = clk->ops.read(pccontext, fp->f_flags, buf, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	put_posix_clock(clk);
 
 	return err;
 }
 
+<<<<<<< HEAD
 static unsigned int posix_clock_poll(struct file *fp, poll_table *wait)
 {
 	struct posix_clock *clk = get_posix_clock(fp);
@@ -76,12 +102,26 @@ static unsigned int posix_clock_poll(struct file *fp, poll_table *wait)
 
 	if (clk->ops.poll)
 		result = clk->ops.poll(clk, fp, wait);
+=======
+static __poll_t posix_clock_poll(struct file *fp, poll_table *wait)
+{
+	struct posix_clock_context *pccontext = fp->private_data;
+	struct posix_clock *clk = get_posix_clock(fp);
+	__poll_t result = 0;
+
+	if (!clk)
+		return EPOLLERR;
+
+	if (clk->ops.poll)
+		result = clk->ops.poll(pccontext, fp, wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	put_posix_clock(clk);
 
 	return result;
 }
 
+<<<<<<< HEAD
 static int posix_clock_fasync(int fd, struct file *fp, int on)
 {
 	struct posix_clock *clk = get_posix_clock(fp);
@@ -117,6 +157,12 @@ static int posix_clock_mmap(struct file *fp, struct vm_area_struct *vma)
 static long posix_clock_ioctl(struct file *fp,
 			      unsigned int cmd, unsigned long arg)
 {
+=======
+static long posix_clock_ioctl(struct file *fp,
+			      unsigned int cmd, unsigned long arg)
+{
+	struct posix_clock_context *pccontext = fp->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct posix_clock *clk = get_posix_clock(fp);
 	int err = -ENOTTY;
 
@@ -124,7 +170,11 @@ static long posix_clock_ioctl(struct file *fp,
 		return -ENODEV;
 
 	if (clk->ops.ioctl)
+<<<<<<< HEAD
 		err = clk->ops.ioctl(clk, cmd, arg);
+=======
+		err = clk->ops.ioctl(pccontext, cmd, arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	put_posix_clock(clk);
 
@@ -135,6 +185,10 @@ static long posix_clock_ioctl(struct file *fp,
 static long posix_clock_compat_ioctl(struct file *fp,
 				     unsigned int cmd, unsigned long arg)
 {
+<<<<<<< HEAD
+=======
+	struct posix_clock_context *pccontext = fp->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct posix_clock *clk = get_posix_clock(fp);
 	int err = -ENOTTY;
 
@@ -142,7 +196,11 @@ static long posix_clock_compat_ioctl(struct file *fp,
 		return -ENODEV;
 
 	if (clk->ops.ioctl)
+<<<<<<< HEAD
 		err = clk->ops.ioctl(clk, cmd, arg);
+=======
+		err = clk->ops.ioctl(pccontext, cmd, arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	put_posix_clock(clk);
 
@@ -155,6 +213,10 @@ static int posix_clock_open(struct inode *inode, struct file *fp)
 	int err;
 	struct posix_clock *clk =
 		container_of(inode->i_cdev, struct posix_clock, cdev);
+<<<<<<< HEAD
+=======
+	struct posix_clock_context *pccontext;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_read(&clk->rwsem);
 
@@ -162,6 +224,7 @@ static int posix_clock_open(struct inode *inode, struct file *fp)
 		err = -ENODEV;
 		goto out;
 	}
+<<<<<<< HEAD
 	if (clk->ops.open)
 		err = clk->ops.open(clk, fp->f_mode);
 	else
@@ -171,6 +234,25 @@ static int posix_clock_open(struct inode *inode, struct file *fp)
 		kref_get(&clk->kref);
 		fp->private_data = clk;
 	}
+=======
+	pccontext = kzalloc(sizeof(*pccontext), GFP_KERNEL);
+	if (!pccontext) {
+		err = -ENOMEM;
+		goto out;
+	}
+	pccontext->clk = clk;
+	if (clk->ops.open) {
+		err = clk->ops.open(pccontext, fp->f_mode);
+		if (err) {
+			kfree(pccontext);
+			goto out;
+		}
+	}
+
+	fp->private_data = pccontext;
+	get_device(clk->dev);
+	err = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	up_read(&clk->rwsem);
 	return err;
@@ -178,6 +260,7 @@ out:
 
 static int posix_clock_release(struct inode *inode, struct file *fp)
 {
+<<<<<<< HEAD
 	struct posix_clock *clk = fp->private_data;
 	int err = 0;
 
@@ -186,6 +269,22 @@ static int posix_clock_release(struct inode *inode, struct file *fp)
 
 	kref_put(&clk->kref, delete_clock);
 
+=======
+	struct posix_clock_context *pccontext = fp->private_data;
+	struct posix_clock *clk;
+	int err = 0;
+
+	if (!pccontext)
+		return -ENODEV;
+	clk = pccontext->clk;
+
+	if (clk->ops.release)
+		err = clk->ops.release(pccontext);
+
+	put_device(clk->dev);
+
+	kfree(pccontext);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fp->private_data = NULL;
 
 	return err;
@@ -199,13 +298,17 @@ static const struct file_operations posix_clock_file_operations = {
 	.unlocked_ioctl	= posix_clock_ioctl,
 	.open		= posix_clock_open,
 	.release	= posix_clock_release,
+<<<<<<< HEAD
 	.fasync		= posix_clock_fasync,
 	.mmap		= posix_clock_mmap,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= posix_clock_compat_ioctl,
 #endif
 };
 
+<<<<<<< HEAD
 int posix_clock_register(struct posix_clock *clk, dev_t devid)
 {
 	int err;
@@ -232,12 +335,41 @@ static void delete_clock(struct kref *kref)
 void posix_clock_unregister(struct posix_clock *clk)
 {
 	cdev_del(&clk->cdev);
+=======
+int posix_clock_register(struct posix_clock *clk, struct device *dev)
+{
+	int err;
+
+	init_rwsem(&clk->rwsem);
+
+	cdev_init(&clk->cdev, &posix_clock_file_operations);
+	err = cdev_device_add(&clk->cdev, dev);
+	if (err) {
+		pr_err("%s unable to add device %d:%d\n",
+			dev_name(dev), MAJOR(dev->devt), MINOR(dev->devt));
+		return err;
+	}
+	clk->cdev.owner = clk->ops.owner;
+	clk->dev = dev;
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(posix_clock_register);
+
+void posix_clock_unregister(struct posix_clock *clk)
+{
+	cdev_device_del(&clk->cdev, clk->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_write(&clk->rwsem);
 	clk->zombie = true;
 	up_write(&clk->rwsem);
 
+<<<<<<< HEAD
 	kref_put(&clk->kref, delete_clock);
+=======
+	put_device(clk->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(posix_clock_unregister);
 
@@ -248,7 +380,11 @@ struct posix_clock_desc {
 
 static int get_clock_desc(const clockid_t id, struct posix_clock_desc *cd)
 {
+<<<<<<< HEAD
 	struct file *fp = fget(CLOCKID_TO_FD(id));
+=======
+	struct file *fp = fget(clockid_to_fd(id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = -EINVAL;
 
 	if (!fp)
@@ -273,7 +409,11 @@ static void put_clock_desc(struct posix_clock_desc *cd)
 	fput(cd->fp);
 }
 
+<<<<<<< HEAD
 static int pc_clock_adjtime(clockid_t id, struct timex *tx)
+=======
+static int pc_clock_adjtime(clockid_t id, struct __kernel_timex *tx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct posix_clock_desc cd;
 	int err;
@@ -297,7 +437,11 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int pc_clock_gettime(clockid_t id, struct timespec *ts)
+=======
+static int pc_clock_gettime(clockid_t id, struct timespec64 *ts)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct posix_clock_desc cd;
 	int err;
@@ -316,7 +460,11 @@ static int pc_clock_gettime(clockid_t id, struct timespec *ts)
 	return err;
 }
 
+<<<<<<< HEAD
 static int pc_clock_getres(clockid_t id, struct timespec *ts)
+=======
+static int pc_clock_getres(clockid_t id, struct timespec64 *ts)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct posix_clock_desc cd;
 	int err;
@@ -335,7 +483,11 @@ static int pc_clock_getres(clockid_t id, struct timespec *ts)
 	return err;
 }
 
+<<<<<<< HEAD
 static int pc_clock_settime(clockid_t id, const struct timespec *ts)
+=======
+static int pc_clock_settime(clockid_t id, const struct timespec64 *ts)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct posix_clock_desc cd;
 	int err;
@@ -359,6 +511,7 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int pc_timer_create(struct k_itimer *kit)
 {
 	clockid_t id = kit->it_clock;
@@ -443,4 +596,11 @@ struct k_clock clock_posix_dynamic = {
 	.timer_set	= pc_timer_settime,
 	.timer_del	= pc_timer_delete,
 	.timer_get	= pc_timer_gettime,
+=======
+const struct k_clock clock_posix_dynamic = {
+	.clock_getres		= pc_clock_getres,
+	.clock_set		= pc_clock_settime,
+	.clock_get_timespec	= pc_clock_gettime,
+	.clock_adj		= pc_clock_adjtime,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

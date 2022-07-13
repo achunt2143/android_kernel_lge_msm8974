@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sunsab.c: ASYNC Driver for the SIEMENS SAB82532 DUSCC.
  *
  * Copyright (C) 1997  Eddie C. Dost  (ecd@skynet.be)
@@ -32,17 +36,27 @@
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 
 #include <asm/io.h>
+=======
+#include <linux/of.h>
+#include <linux/platform_device.h>
+
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 #include <asm/prom.h>
 #include <asm/setup.h>
 
+<<<<<<< HEAD
 #if defined(CONFIG_SERIAL_SUNSAB_CONSOLE) && defined(CONFIG_MAGIC_SYSRQ)
 #define SUPPORT_SYSRQ
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial_core.h>
 #include <linux/sunserialcore.h>
 
@@ -107,11 +121,19 @@ static __inline__ void sunsab_cec_wait(struct uart_sunsab_port *up)
 		udelay(1);
 }
 
+<<<<<<< HEAD
 static struct tty_struct *
 receive_chars(struct uart_sunsab_port *up,
 	      union sab82532_irq_status *stat)
 {
 	struct tty_struct *tty = NULL;
+=======
+static struct tty_port *
+receive_chars(struct uart_sunsab_port *up,
+	      union sab82532_irq_status *stat)
+{
+	struct tty_port *port = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char buf[32];
 	int saw_console_brk = 0;
 	int free_fifo = 0;
@@ -119,7 +141,11 @@ receive_chars(struct uart_sunsab_port *up,
 	int i;
 
 	if (up->port.state != NULL)		/* Unopened serial console */
+<<<<<<< HEAD
 		tty = up->port.state->port.tty;
+=======
+		port = &up->port.state->port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read number of BYTES (Character + Status) available. */
 	if (stat->sreg.isr0 & SAB82532_ISR0_RPF) {
@@ -136,7 +162,11 @@ receive_chars(struct uart_sunsab_port *up,
 	if (stat->sreg.isr0 & SAB82532_ISR0_TIME) {
 		sunsab_cec_wait(up);
 		writeb(SAB82532_CMDR_RFRD, &up->regs->w.cmdr);
+<<<<<<< HEAD
 		return tty;
+=======
+		return port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (stat->sreg.isr0 & SAB82532_ISR0_RFO)
@@ -169,11 +199,14 @@ receive_chars(struct uart_sunsab_port *up,
 	for (i = 0; i < count; i++) {
 		unsigned char ch = buf[i], flag;
 
+<<<<<<< HEAD
 		if (tty == NULL) {
 			uart_handle_sysrq_char(&up->port, ch);
 			continue;
 		}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flag = TTY_NORMAL;
 		up->port.icount.rx++;
 
@@ -217,20 +250,34 @@ receive_chars(struct uart_sunsab_port *up,
 				flag = TTY_FRAME;
 		}
 
+<<<<<<< HEAD
 		if (uart_handle_sysrq_char(&up->port, ch))
+=======
+		if (uart_handle_sysrq_char(&up->port, ch) || !port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		if ((stat->sreg.isr0 & (up->port.ignore_status_mask & 0xff)) == 0 &&
 		    (stat->sreg.isr1 & ((up->port.ignore_status_mask >> 8) & 0xff)) == 0)
+<<<<<<< HEAD
 			tty_insert_flip_char(tty, ch, flag);
 		if (stat->sreg.isr0 & SAB82532_ISR0_RFO)
 			tty_insert_flip_char(tty, 0, TTY_OVERRUN);
+=======
+			tty_insert_flip_char(port, ch, flag);
+		if (stat->sreg.isr0 & SAB82532_ISR0_RFO)
+			tty_insert_flip_char(port, 0, TTY_OVERRUN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (saw_console_brk)
 		sun_do_break();
 
+<<<<<<< HEAD
 	return tty;
+=======
+	return port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sunsab_stop_tx(struct uart_port *);
@@ -274,8 +321,12 @@ static void transmit_chars(struct uart_sunsab_port *up,
 	for (i = 0; i < up->port.fifosize; i++) {
 		writeb(xmit->buf[xmit->tail],
 		       &up->regs->w.xfifo[i]);
+<<<<<<< HEAD
 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
 		up->port.icount.tx++;
+=======
+		uart_xmit_advance(&up->port, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (uart_circ_empty(xmit))
 			break;
 	}
@@ -313,12 +364,20 @@ static void check_status(struct uart_sunsab_port *up,
 static irqreturn_t sunsab_interrupt(int irq, void *dev_id)
 {
 	struct uart_sunsab_port *up = dev_id;
+<<<<<<< HEAD
 	struct tty_struct *tty;
+=======
+	struct tty_port *port = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union sab82532_irq_status status;
 	unsigned long flags;
 	unsigned char gis;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&up->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&up->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status.stat = 0;
 	gis = readb(&up->regs->r.gis) >> up->gis_shift;
@@ -327,12 +386,19 @@ static irqreturn_t sunsab_interrupt(int irq, void *dev_id)
 	if (gis & 2)
 		status.sreg.isr1 = readb(&up->regs->r.isr1);
 
+<<<<<<< HEAD
 	tty = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status.stat) {
 		if ((status.sreg.isr0 & (SAB82532_ISR0_TCD | SAB82532_ISR0_TIME |
 					 SAB82532_ISR0_RFO | SAB82532_ISR0_RPF)) ||
 		    (status.sreg.isr1 & SAB82532_ISR1_BRK))
+<<<<<<< HEAD
 			tty = receive_chars(up, &status);
+=======
+			port = receive_chars(up, &status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((status.sreg.isr0 & SAB82532_ISR0_CDSC) ||
 		    (status.sreg.isr1 & SAB82532_ISR1_CSC))
 			check_status(up, &status);
@@ -340,10 +406,17 @@ static irqreturn_t sunsab_interrupt(int irq, void *dev_id)
 			transmit_chars(up, &status);
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&up->port.lock, flags);
 
 	if (tty)
 		tty_flip_buffer_push(tty);
+=======
+	uart_port_unlock_irqrestore(&up->port, flags);
+
+	if (port)
+		tty_flip_buffer_push(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -351,7 +424,12 @@ static irqreturn_t sunsab_interrupt(int irq, void *dev_id)
 /* port->lock is not held.  */
 static unsigned int sunsab_tx_empty(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsab_port *up = (struct uart_sunsab_port *) port;
+=======
+	struct uart_sunsab_port *up =
+		container_of(port, struct uart_sunsab_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/* Do not need a lock for a state test like this.  */
@@ -366,7 +444,12 @@ static unsigned int sunsab_tx_empty(struct uart_port *port)
 /* port->lock held by caller.  */
 static void sunsab_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
+<<<<<<< HEAD
 	struct uart_sunsab_port *up = (struct uart_sunsab_port *) port;
+=======
+	struct uart_sunsab_port *up =
+		container_of(port, struct uart_sunsab_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mctrl & TIOCM_RTS) {
 		up->cached_mode &= ~SAB82532_MODE_FRTS;
@@ -389,7 +472,12 @@ static void sunsab_set_mctrl(struct uart_port *port, unsigned int mctrl)
 /* port->lock is held by caller and interrupts are disabled.  */
 static unsigned int sunsab_get_mctrl(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsab_port *up = (struct uart_sunsab_port *) port;
+=======
+	struct uart_sunsab_port *up =
+		container_of(port, struct uart_sunsab_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char val;
 	unsigned int result;
 
@@ -410,7 +498,12 @@ static unsigned int sunsab_get_mctrl(struct uart_port *port)
 /* port->lock held by caller.  */
 static void sunsab_stop_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsab_port *up = (struct uart_sunsab_port *) port;
+=======
+	struct uart_sunsab_port *up =
+		container_of(port, struct uart_sunsab_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	up->interrupt_mask1 |= SAB82532_IMR1_XPR;
 	writeb(up->interrupt_mask1, &up->regs->w.imr1);
@@ -438,6 +531,7 @@ static void sunsab_tx_idle(struct uart_sunsab_port *up)
 /* port->lock held by caller.  */
 static void sunsab_start_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsab_port *up = (struct uart_sunsab_port *) port;
 	struct circ_buf *xmit = &up->port.state->xmit;
 	int i;
@@ -445,6 +539,19 @@ static void sunsab_start_tx(struct uart_port *port)
 	up->interrupt_mask1 &= ~(SAB82532_IMR1_ALLS|SAB82532_IMR1_XPR);
 	writeb(up->interrupt_mask1, &up->regs->w.imr1);
 	
+=======
+	struct uart_sunsab_port *up =
+		container_of(port, struct uart_sunsab_port, port);
+	struct circ_buf *xmit = &up->port.state->xmit;
+	int i;
+
+	if (uart_circ_empty(xmit) || uart_tx_stopped(port))
+		return;
+
+	up->interrupt_mask1 &= ~(SAB82532_IMR1_ALLS|SAB82532_IMR1_XPR);
+	writeb(up->interrupt_mask1, &up->regs->w.imr1);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!test_bit(SAB82532_XPR, &up->irqflags))
 		return;
 
@@ -454,8 +561,12 @@ static void sunsab_start_tx(struct uart_port *port)
 	for (i = 0; i < up->port.fifosize; i++) {
 		writeb(xmit->buf[xmit->tail],
 		       &up->regs->w.xfifo[i]);
+<<<<<<< HEAD
 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
 		up->port.icount.tx++;
+=======
+		uart_xmit_advance(&up->port, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (uart_circ_empty(xmit))
 			break;
 	}
@@ -468,26 +579,47 @@ static void sunsab_start_tx(struct uart_port *port)
 /* port->lock is not held.  */
 static void sunsab_send_xchar(struct uart_port *port, char ch)
 {
+<<<<<<< HEAD
 	struct uart_sunsab_port *up = (struct uart_sunsab_port *) port;
 	unsigned long flags;
 
 	spin_lock_irqsave(&up->port.lock, flags);
+=======
+	struct uart_sunsab_port *up =
+		container_of(port, struct uart_sunsab_port, port);
+	unsigned long flags;
+
+	if (ch == __DISABLED_CHAR)
+		return;
+
+	uart_port_lock_irqsave(&up->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sunsab_tec_wait(up);
 	writeb(ch, &up->regs->w.tic);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&up->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&up->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* port->lock held by caller.  */
 static void sunsab_stop_rx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsab_port *up = (struct uart_sunsab_port *) port;
+=======
+	struct uart_sunsab_port *up =
+		container_of(port, struct uart_sunsab_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	up->interrupt_mask0 |= SAB82532_IMR0_TCD;
 	writeb(up->interrupt_mask1, &up->regs->w.imr0);
 }
 
+<<<<<<< HEAD
 /* port->lock held by caller.  */
 static void sunsab_enable_ms(struct uart_port *port)
 {
@@ -502,6 +634,17 @@ static void sunsab_break_ctl(struct uart_port *port, int break_state)
 	unsigned char val;
 
 	spin_lock_irqsave(&up->port.lock, flags);
+=======
+/* port->lock is not held.  */
+static void sunsab_break_ctl(struct uart_port *port, int break_state)
+{
+	struct uart_sunsab_port *up =
+		container_of(port, struct uart_sunsab_port, port);
+	unsigned long flags;
+	unsigned char val;
+
+	uart_port_lock_irqsave(&up->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = up->cached_dafo;
 	if (break_state)
@@ -514,13 +657,22 @@ static void sunsab_break_ctl(struct uart_port *port, int break_state)
 	if (test_bit(SAB82532_XPR, &up->irqflags))
 		sunsab_tx_idle(up);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&up->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&up->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* port->lock is not held.  */
 static int sunsab_startup(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsab_port *up = (struct uart_sunsab_port *) port;
+=======
+	struct uart_sunsab_port *up =
+		container_of(port, struct uart_sunsab_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	unsigned char tmp;
 	int err = request_irq(up->port.irq, sunsab_interrupt,
@@ -528,7 +680,11 @@ static int sunsab_startup(struct uart_port *port)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&up->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&up->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Wait for any commands or immediate characters
@@ -550,7 +706,11 @@ static int sunsab_startup(struct uart_port *port)
 	(void) readb(&up->regs->r.isr1);
 
 	/*
+<<<<<<< HEAD
 	 * Now, initialize the UART 
+=======
+	 * Now, initialize the UART
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	writeb(0, &up->regs->w.ccr0);				/* power-down */
 	writeb(SAB82532_CCR0_MCE | SAB82532_CCR0_SC_NRZ |
@@ -564,7 +724,11 @@ static int sunsab_startup(struct uart_port *port)
 			   SAB82532_MODE_RAC);
 	writeb(up->cached_mode, &up->regs->w.mode);
 	writeb(SAB82532_RFC_DPS|SAB82532_RFC_RFTH_32, &up->regs->w.rfc);
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp = readb(&up->regs->rw.ccr0);
 	tmp |= SAB82532_CCR0_PU;	/* power-up */
 	writeb(tmp, &up->regs->rw.ccr0);
@@ -583,7 +747,11 @@ static int sunsab_startup(struct uart_port *port)
 	set_bit(SAB82532_ALLS, &up->irqflags);
 	set_bit(SAB82532_XPR, &up->irqflags);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&up->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&up->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -591,10 +759,18 @@ static int sunsab_startup(struct uart_port *port)
 /* port->lock is not held.  */
 static void sunsab_shutdown(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunsab_port *up = (struct uart_sunsab_port *) port;
 	unsigned long flags;
 
 	spin_lock_irqsave(&up->port.lock, flags);
+=======
+	struct uart_sunsab_port *up =
+		container_of(port, struct uart_sunsab_port, port);
+	unsigned long flags;
+
+	uart_port_lock_irqsave(&up->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable Interrupts */
 	up->interrupt_mask0 = 0xff;
@@ -607,7 +783,11 @@ static void sunsab_shutdown(struct uart_port *port)
 	up->cached_dafo &= ~SAB82532_DAFO_XBRK;
 	writeb(up->cached_dafo, &up->regs->rw.dafo);
 
+<<<<<<< HEAD
 	/* Disable Receiver */	
+=======
+	/* Disable Receiver */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up->cached_mode &= ~SAB82532_MODE_RAC;
 	writeb(up->cached_mode, &up->regs->rw.mode);
 
@@ -622,13 +802,21 @@ static void sunsab_shutdown(struct uart_port *port)
 	 * speed the chip was configured for when the port was open).
 	 */
 #if 0
+<<<<<<< HEAD
 	/* Power Down */	
+=======
+	/* Power Down */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp = readb(&up->regs->rw.ccr0);
 	tmp &= ~SAB82532_CCR0_PU;
 	writeb(tmp, &up->regs->rw.ccr0);
 #endif
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&up->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&up->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_irq(up->port.irq, up);
 }
 
@@ -649,7 +837,11 @@ static void calc_ebrg(int baud, int *n_ret, int *m_ret)
 		*m_ret = 0;
 		return;
 	}
+<<<<<<< HEAD
      
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We scale numbers by 10 so that we get better accuracy
 	 * without having to use floating point.  Here we increment m
@@ -680,6 +872,7 @@ static void sunsab_convert_to_sab(struct uart_sunsab_port *up, unsigned int cfla
 				  unsigned int quot)
 {
 	unsigned char dafo;
+<<<<<<< HEAD
 	int bits, n, m;
 
 	/* Byte size and parity */
@@ -701,6 +894,25 @@ static void sunsab_convert_to_sab(struct uart_sunsab_port *up, unsigned int cfla
 		dafo |= SAB82532_DAFO_PARE;
 		bits++;
 	}
+=======
+	int n, m;
+
+	/* Byte size and parity */
+	switch (cflag & CSIZE) {
+	      case CS5: dafo = SAB82532_DAFO_CHL5; break;
+	      case CS6: dafo = SAB82532_DAFO_CHL6; break;
+	      case CS7: dafo = SAB82532_DAFO_CHL7; break;
+	      case CS8: dafo = SAB82532_DAFO_CHL8; break;
+	      /* Never happens, but GCC is too dumb to figure it out */
+	      default:  dafo = SAB82532_DAFO_CHL5; break;
+	}
+
+	if (cflag & CSTOPB)
+		dafo |= SAB82532_DAFO_STOP;
+
+	if (cflag & PARENB)
+		dafo |= SAB82532_DAFO_PARE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cflag & PARODD) {
 		dafo |= SAB82532_DAFO_PAR_ODD;
@@ -734,7 +946,11 @@ static void sunsab_convert_to_sab(struct uart_sunsab_port *up, unsigned int cfla
 	if (iflag & INPCK)
 		up->port.read_status_mask |= (SAB82532_ISR0_PERR |
 					      SAB82532_ISR0_FERR);
+<<<<<<< HEAD
 	if (iflag & (BRKINT | PARMRK))
+=======
+	if (iflag & (IGNBRK | BRKINT | PARMRK))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		up->port.read_status_mask |= (SAB82532_ISR1_BRK << 8);
 
 	/*
@@ -775,23 +991,40 @@ static void sunsab_convert_to_sab(struct uart_sunsab_port *up, unsigned int cfla
 
 /* port->lock is not held.  */
 static void sunsab_set_termios(struct uart_port *port, struct ktermios *termios,
+<<<<<<< HEAD
 			       struct ktermios *old)
 {
 	struct uart_sunsab_port *up = (struct uart_sunsab_port *) port;
+=======
+			       const struct ktermios *old)
+{
+	struct uart_sunsab_port *up =
+		container_of(port, struct uart_sunsab_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	unsigned int baud = uart_get_baud_rate(port, termios, old, 0, 4000000);
 	unsigned int quot = uart_get_divisor(port, baud);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&up->port.lock, flags);
 	sunsab_convert_to_sab(up, termios->c_cflag, termios->c_iflag, baud, quot);
 	spin_unlock_irqrestore(&up->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&up->port, &flags);
+	sunsab_convert_to_sab(up, termios->c_cflag, termios->c_iflag, baud, quot);
+	uart_port_unlock_irqrestore(&up->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *sunsab_type(struct uart_port *port)
 {
 	struct uart_sunsab_port *up = (void *)port;
 	static char buf[36];
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sprintf(buf, "SAB82532 %s", sab82532_version[up->type]);
 	return buf;
 }
@@ -814,7 +1047,11 @@ static int sunsab_verify_port(struct uart_port *port, struct serial_struct *ser)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static struct uart_ops sunsab_pops = {
+=======
+static const struct uart_ops sunsab_pops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	= sunsab_tx_empty,
 	.set_mctrl	= sunsab_set_mctrl,
 	.get_mctrl	= sunsab_get_mctrl,
@@ -822,7 +1059,10 @@ static struct uart_ops sunsab_pops = {
 	.start_tx	= sunsab_start_tx,
 	.send_xchar	= sunsab_send_xchar,
 	.stop_rx	= sunsab_stop_rx,
+<<<<<<< HEAD
 	.enable_ms	= sunsab_enable_ms,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.break_ctl	= sunsab_break_ctl,
 	.startup	= sunsab_startup,
 	.shutdown	= sunsab_shutdown,
@@ -845,9 +1085,16 @@ static struct uart_sunsab_port *sunsab_ports;
 
 #ifdef CONFIG_SERIAL_SUNSAB_CONSOLE
 
+<<<<<<< HEAD
 static void sunsab_console_putchar(struct uart_port *port, int c)
 {
 	struct uart_sunsab_port *up = (struct uart_sunsab_port *)port;
+=======
+static void sunsab_console_putchar(struct uart_port *port, unsigned char c)
+{
+	struct uart_sunsab_port *up =
+		container_of(port, struct uart_sunsab_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sunsab_tec_wait(up);
 	writeb(c, &up->regs->w.tic);
@@ -859,6 +1106,7 @@ static void sunsab_console_write(struct console *con, const char *s, unsigned n)
 	unsigned long flags;
 	int locked = 1;
 
+<<<<<<< HEAD
 	local_irq_save(flags);
 	if (up->port.sysrq) {
 		locked = 0;
@@ -866,13 +1114,23 @@ static void sunsab_console_write(struct console *con, const char *s, unsigned n)
 		locked = spin_trylock(&up->port.lock);
 	} else
 		spin_lock(&up->port.lock);
+=======
+	if (up->port.sysrq || oops_in_progress)
+		locked = uart_port_trylock_irqsave(&up->port, &flags);
+	else
+		uart_port_lock_irqsave(&up->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uart_console_write(&up->port, s, n, sunsab_console_putchar);
 	sunsab_tec_wait(up);
 
 	if (locked)
+<<<<<<< HEAD
 		spin_unlock(&up->port.lock);
 	local_irq_restore(flags);
+=======
+		uart_port_unlock_irqrestore(&up->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sunsab_console_setup(struct console *con, char *options)
@@ -888,7 +1146,11 @@ static int sunsab_console_setup(struct console *con, char *options)
 	 * though...
 	 */
 	if (up->port.type != PORT_SUNSAB)
+<<<<<<< HEAD
 		return -1;
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk("Console: ttyS%d (SAB82532)\n",
 	       (sunsab_reg.minor - 64) + con->index);
@@ -909,7 +1171,11 @@ static int sunsab_console_setup(struct console *con, char *options)
 	case B115200: baud = 115200; break;
 	case B230400: baud = 230400; break;
 	case B460800: baud = 460800; break;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Temporary fix.
@@ -921,7 +1187,11 @@ static int sunsab_console_setup(struct console *con, char *options)
 	 */
 	sunsab_startup(&up->port);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&up->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&up->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Finally, enable interrupts
@@ -939,8 +1209,13 @@ static int sunsab_console_setup(struct console *con, char *options)
 	sunsab_convert_to_sab(up, con->cflag, 0, baud, quot);
 	sunsab_set_mctrl(&up->port, TIOCM_DTR | TIOCM_RTS);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&up->port.lock, flags);
 	
+=======
+	uart_port_unlock_irqrestore(&up->port, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -963,7 +1238,11 @@ static inline struct console *SUNSAB_CONSOLE(void)
 #define sunsab_console_init()	do { } while (0)
 #endif
 
+<<<<<<< HEAD
 static int __devinit sunsab_init_one(struct uart_sunsab_port *up,
+=======
+static int sunsab_init_one(struct uart_sunsab_port *up,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     struct platform_device *op,
 				     unsigned long offset,
 				     int line)
@@ -983,6 +1262,10 @@ static int __devinit sunsab_init_one(struct uart_sunsab_port *up,
 
 	up->port.fifosize = SAB82532_XMIT_FIFO_SIZE;
 	up->port.iotype = UPIO_MEM;
+<<<<<<< HEAD
+=======
+	up->port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_SUNSAB_CONSOLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writeb(SAB82532_IPC_IC_ACT_LOW, &up->regs->w.ipc);
 
@@ -1016,7 +1299,11 @@ static int __devinit sunsab_init_one(struct uart_sunsab_port *up,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit sab_probe(struct platform_device *op)
+=======
+static int sab_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int inst;
 	struct uart_sunsab_port *up;
@@ -1052,7 +1339,11 @@ static int __devinit sab_probe(struct platform_device *op)
 	if (err)
 		goto out3;
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, &up[0]);
+=======
+	platform_set_drvdata(op, &up[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inst++;
 
@@ -1072,9 +1363,15 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit sab_remove(struct platform_device *op)
 {
 	struct uart_sunsab_port *up = dev_get_drvdata(&op->dev);
+=======
+static void sab_remove(struct platform_device *op)
+{
+	struct uart_sunsab_port *up = platform_get_drvdata(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uart_remove_one_port(&sunsab_reg, &up[1].port);
 	uart_remove_one_port(&sunsab_reg, &up[0].port);
@@ -1084,10 +1381,13 @@ static int __devexit sab_remove(struct platform_device *op)
 	of_iounmap(&op->resource[0],
 		   up[0].port.membase,
 		   sizeof(union sab82532_async_regs));
+<<<<<<< HEAD
 
 	dev_set_drvdata(&op->dev, NULL);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id sab_match[] = {
@@ -1105,11 +1405,18 @@ MODULE_DEVICE_TABLE(of, sab_match);
 static struct platform_driver sab_driver = {
 	.driver = {
 		.name = "sab",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = sab_match,
 	},
 	.probe		= sab_probe,
 	.remove		= __devexit_p(sab_remove),
+=======
+		.of_match_table = sab_match,
+	},
+	.probe		= sab_probe,
+	.remove_new	= sab_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init sunsab_init(void)
@@ -1126,8 +1433,14 @@ static int __init sunsab_init(void)
 	}
 
 	if (num_channels) {
+<<<<<<< HEAD
 		sunsab_ports = kzalloc(sizeof(struct uart_sunsab_port) *
 				       num_channels, GFP_KERNEL);
+=======
+		sunsab_ports = kcalloc(num_channels,
+				       sizeof(struct uart_sunsab_port),
+				       GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!sunsab_ports)
 			return -ENOMEM;
 
@@ -1140,7 +1453,17 @@ static int __init sunsab_init(void)
 		}
 	}
 
+<<<<<<< HEAD
 	return platform_driver_register(&sab_driver);
+=======
+	err = platform_driver_register(&sab_driver);
+	if (err) {
+		kfree(sunsab_ports);
+		sunsab_ports = NULL;
+	}
+
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit sunsab_exit(void)

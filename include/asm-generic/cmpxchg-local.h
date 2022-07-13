@@ -1,16 +1,29 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_GENERIC_CMPXCHG_LOCAL_H
 #define __ASM_GENERIC_CMPXCHG_LOCAL_H
 
 #include <linux/types.h>
 #include <linux/irqflags.h>
 
+<<<<<<< HEAD
 extern unsigned long wrong_size_cmpxchg(volatile void *ptr);
+=======
+extern unsigned long wrong_size_cmpxchg(volatile void *ptr)
+	__noreturn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Generic version of __cmpxchg_local (disables interrupts). Takes an unsigned
  * long parameter, supporting various types of architectures.
  */
+<<<<<<< HEAD
 static inline unsigned long __cmpxchg_local_generic(volatile void *ptr,
+=======
+static inline unsigned long __generic_cmpxchg_local(volatile void *ptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long old, unsigned long new, int size)
 {
 	unsigned long flags, prev;
@@ -21,6 +34,7 @@ static inline unsigned long __cmpxchg_local_generic(volatile void *ptr,
 	if (size == 8 && sizeof(unsigned long) != 8)
 		wrong_size_cmpxchg(ptr);
 
+<<<<<<< HEAD
 	local_irq_save(flags);
 	switch (size) {
 	case 1: prev = *(u8 *)ptr;
@@ -34,6 +48,21 @@ static inline unsigned long __cmpxchg_local_generic(volatile void *ptr,
 	case 4: prev = *(u32 *)ptr;
 		if (prev == old)
 			*(u32 *)ptr = (u32)new;
+=======
+	raw_local_irq_save(flags);
+	switch (size) {
+	case 1: prev = *(u8 *)ptr;
+		if (prev == (old & 0xffu))
+			*(u8 *)ptr = (new & 0xffu);
+		break;
+	case 2: prev = *(u16 *)ptr;
+		if (prev == (old & 0xffffu))
+			*(u16 *)ptr = (new & 0xffffu);
+		break;
+	case 4: prev = *(u32 *)ptr;
+		if (prev == (old & 0xffffffffu))
+			*(u32 *)ptr = (new & 0xffffffffu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 8: prev = *(u64 *)ptr;
 		if (prev == old)
@@ -42,24 +71,40 @@ static inline unsigned long __cmpxchg_local_generic(volatile void *ptr,
 	default:
 		wrong_size_cmpxchg(ptr);
 	}
+<<<<<<< HEAD
 	local_irq_restore(flags);
+=======
+	raw_local_irq_restore(flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return prev;
 }
 
 /*
  * Generic version of __cmpxchg64_local. Takes an u64 parameter.
  */
+<<<<<<< HEAD
 static inline u64 __cmpxchg64_local_generic(volatile void *ptr,
+=======
+static inline u64 __generic_cmpxchg64_local(volatile void *ptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u64 old, u64 new)
 {
 	u64 prev;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	local_irq_save(flags);
 	prev = *(u64 *)ptr;
 	if (prev == old)
 		*(u64 *)ptr = new;
 	local_irq_restore(flags);
+=======
+	raw_local_irq_save(flags);
+	prev = *(u64 *)ptr;
+	if (prev == old)
+		*(u64 *)ptr = new;
+	raw_local_irq_restore(flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return prev;
 }
 

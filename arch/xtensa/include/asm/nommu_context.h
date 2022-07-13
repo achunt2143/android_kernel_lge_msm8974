@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 static inline void enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
 {
 }
@@ -23,3 +24,15 @@ static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
 static inline void deactivate_mm(struct task_struct *tsk, struct mm_struct *mm)
 {
 }
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+static inline void init_mmu(void)
+{
+}
+
+static inline void init_kio(void)
+{
+}
+
+#include <asm-generic/nommu_context.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

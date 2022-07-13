@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* $Id: scc.h,v 1.29 1997/04/02 14:56:45 jreuter Exp jreuter $ */
 
 #ifndef	_SCC_H
@@ -170,6 +171,15 @@ struct scc_calibrate {
 };
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* $Id: scc.h,v 1.29 1997/04/02 14:56:45 jreuter Exp jreuter $ */
+#ifndef	_SCC_H
+#define	_SCC_H
+
+#include <uapi/linux/scc.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {TX_OFF, TX_ON};	/* command for scc_key_trx() */
 
@@ -248,5 +258,8 @@ struct scc_channel {
 	spinlock_t	lock;		/* Channel guard lock */
 };
 
+<<<<<<< HEAD
 #endif /* defined(__KERNEL__) */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* defined(_SCC_H) */

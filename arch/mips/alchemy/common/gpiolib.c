@@ -23,8 +23,11 @@
  *  675 Mass Ave, Cambridge, MA 02139, USA.
  *
  *  Notes :
+<<<<<<< HEAD
  *	This file must ONLY be built when CONFIG_GPIOLIB=y and
  *	 CONFIG_ALCHEMY_GPIO_INDIRECT=n, otherwise compilation will fail!
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	au1000 SoC have only one GPIO block : GPIO1
  *	Au1100, Au15x0, Au12x0 have a second one : GPIO2
  *	Au1300 is totally different: 1 block with up to 128 GPIOs
@@ -32,15 +35,24 @@
 
 #include <linux/init.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/gpio.h>
+=======
+#include <linux/types.h>
+#include <linux/gpio/driver.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mach-au1x00/gpio-au1000.h>
 #include <asm/mach-au1x00/gpio-au1300.h>
 
 static int gpio2_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	return alchemy_gpio2_get_value(offset + ALCHEMY_GPIO2_BASE);
+=======
+	return !!alchemy_gpio2_get_value(offset + ALCHEMY_GPIO2_BASE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gpio2_set(struct gpio_chip *chip, unsigned offset, int value)
@@ -68,7 +80,11 @@ static int gpio2_to_irq(struct gpio_chip *chip, unsigned offset)
 
 static int gpio1_get(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	return alchemy_gpio1_get_value(offset + ALCHEMY_GPIO1_BASE);
+=======
+	return !!alchemy_gpio1_get_value(offset + ALCHEMY_GPIO1_BASE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gpio1_set(struct gpio_chip *chip,
@@ -106,6 +122,7 @@ struct gpio_chip alchemy_gpio_chip[] = {
 		.ngpio			= ALCHEMY_GPIO1_NUM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.label                  = "alchemy-gpio2",
 		.direction_input        = gpio2_direction_input,
 		.direction_output       = gpio2_direction_output,
@@ -114,12 +131,26 @@ struct gpio_chip alchemy_gpio_chip[] = {
 		.to_irq			= gpio2_to_irq,
 		.base                   = ALCHEMY_GPIO2_BASE,
 		.ngpio                  = ALCHEMY_GPIO2_NUM,
+=======
+		.label			= "alchemy-gpio2",
+		.direction_input	= gpio2_direction_input,
+		.direction_output	= gpio2_direction_output,
+		.get			= gpio2_get,
+		.set			= gpio2_set,
+		.to_irq			= gpio2_to_irq,
+		.base			= ALCHEMY_GPIO2_BASE,
+		.ngpio			= ALCHEMY_GPIO2_NUM,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
 static int alchemy_gpic_get(struct gpio_chip *chip, unsigned int off)
 {
+<<<<<<< HEAD
 	return au1300_gpio_get_value(off + AU1300_GPIO_BASE);
+=======
+	return !!au1300_gpio_get_value(off + AU1300_GPIO_BASE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void alchemy_gpic_set(struct gpio_chip *chip, unsigned int off, int v)
@@ -160,6 +191,7 @@ static int __init alchemy_gpiochip_init(void)
 
 	switch (alchemy_get_cputype()) {
 	case ALCHEMY_CPU_AU1000:
+<<<<<<< HEAD
 		ret = gpiochip_add(&alchemy_gpio_chip[0]);
 		break;
 	case ALCHEMY_CPU_AU1500...ALCHEMY_CPU_AU1200:
@@ -168,6 +200,16 @@ static int __init alchemy_gpiochip_init(void)
 		break;
 	case ALCHEMY_CPU_AU1300:
 		ret = gpiochip_add(&au1300_gpiochip);
+=======
+		ret = gpiochip_add_data(&alchemy_gpio_chip[0], NULL);
+		break;
+	case ALCHEMY_CPU_AU1500...ALCHEMY_CPU_AU1200:
+		ret = gpiochip_add_data(&alchemy_gpio_chip[0], NULL);
+		ret |= gpiochip_add_data(&alchemy_gpio_chip[1], NULL);
+		break;
+	case ALCHEMY_CPU_AU1300:
+		ret = gpiochip_add_data(&au1300_gpiochip, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	return ret;

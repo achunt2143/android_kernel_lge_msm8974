@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
  *
@@ -5,6 +6,12 @@
  * See the COPYING file included in the main directory of this source
  * distribution for the license terms and conditions.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @File	cthardware.c
  *
  * @Brief
@@ -12,7 +19,10 @@
  *
  * @Author	Liu Chun
  * @Date 	Jun 26 2008
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "cthardware.h"
@@ -20,8 +30,13 @@
 #include "cthw20k2.h"
 #include <linux/bug.h>
 
+<<<<<<< HEAD
 int __devinit create_hw_obj(struct pci_dev *pci, enum CHIPTYP chip_type,
 			    enum CTCARDS model, struct hw **rhw)
+=======
+int create_hw_obj(struct pci_dev *pci, enum CHIPTYP chip_type,
+		  enum CTCARDS model, struct hw **rhw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -69,7 +84,12 @@ unsigned int get_field(unsigned int data, unsigned int field)
 {
 	int i;
 
+<<<<<<< HEAD
 	BUG_ON(!field);
+=======
+	if (WARN_ON(!field))
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* @field should always be greater than 0 */
 	for (i = 0; !(field & (1 << i)); )
 		i++;
@@ -81,7 +101,12 @@ void set_field(unsigned int *data, unsigned int field, unsigned int value)
 {
 	int i;
 
+<<<<<<< HEAD
 	BUG_ON(!field);
+=======
+	if (WARN_ON(!field))
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* @field should always be greater than 0 */
 	for (i = 0; !(field & (1 << i)); )
 		i++;

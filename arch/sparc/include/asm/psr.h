@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * psr.h: This file holds the macros for masking off various parts of
  *        the processor status register on the Sparc. This is valid
@@ -7,6 +11,7 @@
  *
  * Copyright (C) 1994 David S. Miller (davem@caip.rutgers.edu)
  */
+<<<<<<< HEAD
 
 #ifndef __LINUX_SPARC_PSR_H
 #define __LINUX_SPARC_PSR_H
@@ -36,6 +41,13 @@
 #define PSR_IMPL    0xf0000000         /* cpu-implementation field   */
 
 #ifdef __KERNEL__
+=======
+#ifndef __LINUX_SPARC_PSR_H
+#define __LINUX_SPARC_PSR_H
+
+#include <uapi/asm/psr.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 /* Get the %psr register. */
@@ -88,6 +100,9 @@ static inline unsigned int get_fsr(void)
 
 #endif /* !(__ASSEMBLY__) */
 
+<<<<<<< HEAD
 #endif /* (__KERNEL__) */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(__LINUX_SPARC_PSR_H) */

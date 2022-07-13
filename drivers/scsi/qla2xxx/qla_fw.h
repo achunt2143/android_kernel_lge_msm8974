@@ -1,12 +1,27 @@
+<<<<<<< HEAD
 /*
  * QLogic Fibre Channel HBA Driver
  * Copyright (c)  2003-2011 QLogic Corporation
  *
  * See LICENSE.qla2xxx for copyright and licensing details.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * QLogic Fibre Channel HBA Driver
+ * Copyright (c)  2003-2014 QLogic Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __QLA_FW_H
 #define __QLA_FW_H
 
+<<<<<<< HEAD
+=======
+#include <linux/nvme.h>
+#include <linux/nvme-fc.h>
+
+#include "qla_dsd.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MBS_CHECKSUM_ERROR	0x4010
 #define MBS_INVALID_PRODUCT_KEY	0x4020
 
@@ -26,6 +41,12 @@
 #define PDO_FORCE_ADISC		BIT_1
 #define PDO_FORCE_PLOGI		BIT_0
 
+<<<<<<< HEAD
+=======
+struct buffer_credit_24xx {
+	u32 parameter[28];
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	PORT_DATABASE_24XX_SIZE		64
 struct port_database_24xx {
@@ -37,6 +58,15 @@ struct port_database_24xx {
 #define PDF_CLASS_2		BIT_4
 #define PDF_HARD_ADDR		BIT_1
 
+<<<<<<< HEAD
+=======
+	/*
+	 * for NVMe, the login_state field has been
+	 * split into nibbles.
+	 * The lower nibble is for FCP.
+	 * The upper nibble is for NVMe.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t current_login_state;
 	uint8_t last_login_state;
 #define PDS_PLOGI_PENDING	0x03
@@ -69,7 +99,47 @@ struct port_database_24xx {
 	uint8_t port_name[WWN_SIZE];
 	uint8_t node_name[WWN_SIZE];
 
+<<<<<<< HEAD
 	uint8_t reserved_3[24];
+=======
+	uint8_t reserved_3[2];
+	uint16_t nvme_first_burst_size;
+	uint16_t prli_nvme_svc_param_word_0;	/* Bits 15-0 of word 0 */
+	uint16_t prli_nvme_svc_param_word_3;	/* Bits 15-0 of word 3 */
+	uint8_t secure_login;
+	uint8_t reserved_4[14];
+};
+
+/*
+ * MB 75h returns a list of DB entries similar to port_database_24xx(64B).
+ * However, in this case it returns 1st 40 bytes.
+ */
+struct get_name_list_extended {
+	__le16 flags;
+	u8 current_login_state;
+	u8 last_login_state;
+	u8 hard_address[3];
+	u8 reserved_1;
+	u8 port_id[3];
+	u8 sequence_id;
+	__le16 port_timer;
+	__le16 nport_handle;			/* N_PORT handle. */
+	__le16 receive_data_size;
+	__le16 reserved_2;
+
+	/* PRLI SVC Param are Big endian */
+	u8 prli_svc_param_word_0[2]; /* Bits 15-0 of word 0 */
+	u8 prli_svc_param_word_3[2]; /* Bits 15-0 of word 3 */
+	u8 port_name[WWN_SIZE];
+	u8 node_name[WWN_SIZE];
+};
+
+/* MB 75h: This is the short version of the database */
+struct get_name_list {
+	u8 port_node_name[WWN_SIZE]; /* B7 most sig, B0 least sig */
+	__le16 nport_handle;
+	u8 reserved;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct vp_database_24xx {
@@ -85,6 +155,7 @@ struct vp_database_24xx {
 struct nvram_24xx {
 	/* NVRAM header. */
 	uint8_t id[4];
+<<<<<<< HEAD
 	uint16_t nvram_version;
 	uint16_t reserved_0;
 
@@ -95,10 +166,23 @@ struct nvram_24xx {
 	uint16_t execution_throttle;
 	uint16_t exchange_count;
 	uint16_t hard_address;
+=======
+	__le16	nvram_version;
+	uint16_t reserved_0;
+
+	/* Firmware Initialization Control Block. */
+	__le16	version;
+	uint16_t reserved_1;
+	__le16	frame_payload_size;
+	__le16	execution_throttle;
+	__le16	exchange_count;
+	__le16	hard_address;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t port_name[WWN_SIZE];
 	uint8_t node_name[WWN_SIZE];
 
+<<<<<<< HEAD
 	uint16_t login_retry_count;
 	uint16_t link_down_on_nos;
 	uint16_t interrupt_delay_timer;
@@ -107,6 +191,16 @@ struct nvram_24xx {
 	uint32_t firmware_options_1;
 	uint32_t firmware_options_2;
 	uint32_t firmware_options_3;
+=======
+	__le16	login_retry_count;
+	__le16	link_down_on_nos;
+	__le16	interrupt_delay_timer;
+	__le16	login_timeout;
+
+	__le32	firmware_options_1;
+	__le32	firmware_options_2;
+	__le32	firmware_options_3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Offset 56. */
 
@@ -129,7 +223,11 @@ struct nvram_24xx {
 	 * BIT 11-13 = Output Emphasis 4G
 	 * BIT 14-15 = Reserved
 	 */
+<<<<<<< HEAD
 	uint16_t seriallink_options[4];
+=======
+	__le16	seriallink_options[4];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint16_t reserved_2[16];
 
@@ -169,12 +267,17 @@ struct nvram_24xx {
 	 *
 	 * BIT 16-31 =
 	 */
+<<<<<<< HEAD
 	uint32_t host_p;
+=======
+	__le32	host_p;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t alternate_port_name[WWN_SIZE];
 	uint8_t alternate_node_name[WWN_SIZE];
 
 	uint8_t boot_port_name[WWN_SIZE];
+<<<<<<< HEAD
 	uint16_t boot_lun_number;
 	uint16_t reserved_8;
 
@@ -188,6 +291,21 @@ struct nvram_24xx {
 
 	uint8_t alt3_boot_port_name[WWN_SIZE];
 	uint16_t alt3_boot_lun_number;
+=======
+	__le16	boot_lun_number;
+	uint16_t reserved_8;
+
+	uint8_t alt1_boot_port_name[WWN_SIZE];
+	__le16	alt1_boot_lun_number;
+	uint16_t reserved_9;
+
+	uint8_t alt2_boot_port_name[WWN_SIZE];
+	__le16	alt2_boot_lun_number;
+	uint16_t reserved_10;
+
+	uint8_t alt3_boot_port_name[WWN_SIZE];
+	__le16	alt3_boot_lun_number;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t reserved_11;
 
 	/*
@@ -200,12 +318,17 @@ struct nvram_24xx {
 	 * BIT 6 = Reserved
 	 * BIT 7-31 =
 	 */
+<<<<<<< HEAD
 	uint32_t efi_parameters;
+=======
+	__le32	efi_parameters;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t reset_delay;
 	uint8_t reserved_12;
 	uint16_t reserved_13;
 
+<<<<<<< HEAD
 	uint16_t boot_id_number;
 	uint16_t reserved_14;
 
@@ -217,6 +340,19 @@ struct nvram_24xx {
 
 	/* FCode parameters. */
 	uint16_t fcode_parameter;
+=======
+	__le16	boot_id_number;
+	uint16_t reserved_14;
+
+	__le16	max_luns_per_target;
+	uint16_t reserved_15;
+
+	__le16	port_down_retry_count;
+	__le16	link_down_timeout;
+
+	/* FCode parameters. */
+	__le16	fcode_parameter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint16_t reserved_16[3];
 
@@ -226,6 +362,7 @@ struct nvram_24xx {
 	uint8_t prev_drv_ver_minor;
 	uint8_t prev_drv_ver_subminor;
 
+<<<<<<< HEAD
 	uint16_t prev_bios_ver_major;
 	uint16_t prev_bios_ver_minor;
 
@@ -233,6 +370,15 @@ struct nvram_24xx {
 	uint16_t prev_efi_ver_minor;
 
 	uint16_t prev_fw_ver_major;
+=======
+	__le16	prev_bios_ver_major;
+	__le16	prev_bios_ver_minor;
+
+	__le16	prev_efi_ver_major;
+	__le16	prev_efi_ver_minor;
+
+	__le16	prev_fw_ver_major;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t prev_fw_ver_minor;
 	uint8_t prev_fw_ver_subminor;
 
@@ -260,7 +406,11 @@ struct nvram_24xx {
 	uint16_t subsystem_vendor_id;
 	uint16_t subsystem_device_id;
 
+<<<<<<< HEAD
 	uint32_t checksum;
+=======
+	__le32	checksum;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -269,6 +419,7 @@ struct nvram_24xx {
  */
 #define	ICB_VERSION 1
 struct init_cb_24xx {
+<<<<<<< HEAD
 	uint16_t version;
 	uint16_t reserved_1;
 
@@ -277,10 +428,21 @@ struct init_cb_24xx {
 	uint16_t exchange_count;
 
 	uint16_t hard_address;
+=======
+	__le16	version;
+	uint16_t reserved_1;
+
+	__le16	frame_payload_size;
+	__le16	execution_throttle;
+	__le16	exchange_count;
+
+	__le16	hard_address;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t port_name[WWN_SIZE];		/* Big endian. */
 	uint8_t node_name[WWN_SIZE];		/* Big endian. */
 
+<<<<<<< HEAD
 	uint16_t response_q_inpointer;
 	uint16_t request_q_outpointer;
 
@@ -308,6 +470,36 @@ struct init_cb_24xx {
 
 	uint16_t interrupt_delay_timer;		/* 100us increments. */
 	uint16_t login_timeout;
+=======
+	__le16	response_q_inpointer;
+	__le16	request_q_outpointer;
+
+	__le16	login_retry_count;
+
+	__le16	prio_request_q_outpointer;
+
+	__le16	response_q_length;
+	__le16	request_q_length;
+
+	__le16	link_down_on_nos;		/* Milliseconds. */
+
+	__le16	prio_request_q_length;
+
+	__le64	 request_q_address __packed;
+	__le64	 response_q_address __packed;
+	__le64	 prio_request_q_address __packed;
+
+	__le16	msix;
+	__le16	msix_atio;
+	uint8_t reserved_2[4];
+
+	__le16	atio_q_inpointer;
+	__le16	atio_q_length;
+	__le64	atio_q_address __packed;
+
+	__le16	interrupt_delay_timer;		/* 100us increments. */
+	__le16	login_timeout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * BIT 0  = Enable Hard Loop Id
@@ -316,8 +508,13 @@ struct init_cb_24xx {
 	 * BIT 3  = Reserved
 	 * BIT 4  = Enable Target Mode
 	 * BIT 5  = Disable Initiator Mode
+<<<<<<< HEAD
 	 * BIT 6  = Reserved
 	 * BIT 7  = Reserved
+=======
+	 * BIT 6  = Acquire FA-WWN
+	 * BIT 7  = Enable D-port Diagnostics
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *
 	 * BIT 8  = Reserved
 	 * BIT 9  = Non Participating LIP
@@ -328,7 +525,11 @@ struct init_cb_24xx {
 	 * BIT 14 = Node Name Option
 	 * BIT 15-31 = Reserved
 	 */
+<<<<<<< HEAD
 	uint32_t firmware_options_1;
+=======
+	__le32	firmware_options_1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * BIT 0  = Operation Mode bit 0
@@ -349,7 +550,11 @@ struct init_cb_24xx {
 	 * BIT 14 = Enable Target PRLI Control
 	 * BIT 15-31 = Reserved
 	 */
+<<<<<<< HEAD
 	uint32_t firmware_options_2;
+=======
+	__le32	firmware_options_2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * BIT 0  = Reserved
@@ -370,17 +575,68 @@ struct init_cb_24xx {
 	 * BIT 14 = Data Rate bit 1
 	 * BIT 15 = Data Rate bit 2
 	 * BIT 16 = Enable 75 ohm Termination Select
+<<<<<<< HEAD
 	 * BIT 17-31 = Reserved
 	 */
 	uint32_t firmware_options_3;
 	uint16_t qos;
 	uint16_t rid;
+=======
+	 * BIT 17-28 = Reserved
+	 * BIT 29 = Enable response queue 0 in index shadowing
+	 * BIT 30 = Enable request queue 0 out index shadowing
+	 * BIT 31 = Reserved
+	 */
+	__le32	firmware_options_3;
+	__le16	 qos;
+	__le16	 rid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t  reserved_3[20];
 };
 
 /*
  * ISP queue - command entry structure definition.
  */
+<<<<<<< HEAD
+=======
+#define COMMAND_BIDIRECTIONAL 0x75
+struct cmd_bidir {
+	uint8_t entry_type;		/* Entry type. */
+	uint8_t entry_count;		/* Entry count. */
+	uint8_t sys_define;		/* System defined */
+	uint8_t entry_status;		/* Entry status. */
+
+	uint32_t handle;		/* System handle. */
+
+	__le16	nport_handle;		/* N_PORT handle. */
+
+	__le16	timeout;		/* Command timeout. */
+
+	__le16	wr_dseg_count;		/* Write Data segment count. */
+	__le16	rd_dseg_count;		/* Read Data segment count. */
+
+	struct scsi_lun lun;		/* FCP LUN (BE). */
+
+	__le16	control_flags;		/* Control flags. */
+#define BD_WRAP_BACK			BIT_3
+#define BD_READ_DATA			BIT_1
+#define BD_WRITE_DATA			BIT_0
+
+	__le16	fcp_cmnd_dseg_len;		/* Data segment length. */
+	__le64	 fcp_cmnd_dseg_address __packed;/* Data segment address. */
+
+	uint16_t reserved[2];			/* Reserved */
+
+	__le32	rd_byte_count;			/* Total Byte count Read. */
+	__le32	wr_byte_count;			/* Total Byte count write. */
+
+	uint8_t port_id[3];			/* PortID of destination port.*/
+	uint8_t vp_index;
+
+	struct dsd64 fcp_dsd;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define COMMAND_TYPE_6	0x48		/* Command Type 6 entry */
 struct cmd_type_6 {
 	uint8_t entry_type;		/* Entry type. */
@@ -390,6 +646,7 @@ struct cmd_type_6 {
 
 	uint32_t handle;		/* System handle. */
 
+<<<<<<< HEAD
 	uint16_t nport_handle;		/* N_PORT handle. */
 	uint16_t timeout;		/* Command timeout. */
 
@@ -400,23 +657,52 @@ struct cmd_type_6 {
 	struct scsi_lun lun;		/* FCP LUN (BE). */
 
 	uint16_t control_flags;		/* Control flags. */
+=======
+	__le16	nport_handle;		/* N_PORT handle. */
+	__le16	timeout;		/* Command timeout. */
+
+	__le16	dseg_count;		/* Data segment count. */
+
+	__le16	fcp_rsp_dsd_len;	/* FCP_RSP DSD length. */
+
+	struct scsi_lun lun;		/* FCP LUN (BE). */
+
+	__le16	control_flags;		/* Control flags. */
+#define CF_NEW_SA			BIT_12
+#define CF_EN_EDIF			BIT_9
+#define CF_ADDITIONAL_PARAM_BLK		BIT_8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CF_DIF_SEG_DESCR_ENABLE		BIT_3
 #define CF_DATA_SEG_DESCR_ENABLE	BIT_2
 #define CF_READ_DATA			BIT_1
 #define CF_WRITE_DATA			BIT_0
 
+<<<<<<< HEAD
 	uint16_t fcp_cmnd_dseg_len;		/* Data segment length. */
 	uint32_t fcp_cmnd_dseg_address[2];	/* Data segment address. */
 
 	uint32_t fcp_rsp_dseg_address[2];	/* Data segment address. */
 
 	uint32_t byte_count;		/* Total byte count. */
+=======
+	__le16	fcp_cmnd_dseg_len;	/* Data segment length. */
+					/* Data segment address. */
+	__le64	 fcp_cmnd_dseg_address __packed;
+					/* Data segment address. */
+	__le64	 fcp_rsp_dseg_address __packed;
+
+	__le32	byte_count;		/* Total byte count. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t port_id[3];		/* PortID of destination port. */
 	uint8_t vp_index;
 
+<<<<<<< HEAD
 	uint32_t fcp_data_dseg_address[2];	/* Data segment address. */
 	uint32_t fcp_data_dseg_len;		/* Data segment length. */
+=======
+	struct dsd64 fcp_dsd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define COMMAND_TYPE_7	0x18		/* Command Type 7 entry */
@@ -428,16 +714,28 @@ struct cmd_type_7 {
 
 	uint32_t handle;		/* System handle. */
 
+<<<<<<< HEAD
 	uint16_t nport_handle;		/* N_PORT handle. */
 	uint16_t timeout;		/* Command timeout. */
 #define FW_MAX_TIMEOUT		0x1999
 
 	uint16_t dseg_count;		/* Data segment count. */
+=======
+	__le16	nport_handle;		/* N_PORT handle. */
+	__le16	timeout;		/* Command timeout. */
+#define FW_MAX_TIMEOUT		0x1999
+
+	__le16	dseg_count;		/* Data segment count. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t reserved_1;
 
 	struct scsi_lun lun;		/* FCP LUN (BE). */
 
+<<<<<<< HEAD
 	uint16_t task_mgmt_flags;	/* Task management flags. */
+=======
+	__le16	task_mgmt_flags;	/* Task management flags. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TMF_CLEAR_ACA		BIT_14
 #define TMF_TARGET_RESET	BIT_13
 #define TMF_LUN_RESET		BIT_12
@@ -457,13 +755,21 @@ struct cmd_type_7 {
 	uint8_t crn;
 
 	uint8_t fcp_cdb[MAX_CMDSZ]; 	/* SCSI command words. */
+<<<<<<< HEAD
 	uint32_t byte_count;		/* Total byte count. */
+=======
+	__le32	byte_count;		/* Total byte count. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t port_id[3];		/* PortID of destination port. */
 	uint8_t vp_index;
 
+<<<<<<< HEAD
 	uint32_t dseg_0_address[2];	/* Data segment 0 address. */
 	uint32_t dseg_0_len;		/* Data segment 0 length. */
+=======
+	struct dsd64 dsd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define COMMAND_TYPE_CRC_2	0x6A	/* Command Type CRC_2 (Type 6)
@@ -476,6 +782,7 @@ struct cmd_type_crc_2 {
 
 	uint32_t handle;		/* System handle. */
 
+<<<<<<< HEAD
 	uint16_t nport_handle;		/* N_PORT handle. */
 	uint16_t timeout;		/* Command timeout. */
 
@@ -493,12 +800,36 @@ struct cmd_type_crc_2 {
 	uint32_t fcp_rsp_dseg_address[2];	/* Data segment address. */
 
 	uint32_t byte_count;		/* Total byte count. */
+=======
+	__le16	nport_handle;		/* N_PORT handle. */
+	__le16	timeout;		/* Command timeout. */
+
+	__le16	dseg_count;		/* Data segment count. */
+
+	__le16	fcp_rsp_dseg_len;	/* FCP_RSP DSD length. */
+
+	struct scsi_lun lun;		/* FCP LUN (BE). */
+
+	__le16	control_flags;		/* Control flags. */
+
+	__le16	fcp_cmnd_dseg_len;	/* Data segment length. */
+	__le64	 fcp_cmnd_dseg_address __packed;
+					/* Data segment address. */
+	__le64	 fcp_rsp_dseg_address __packed;
+
+	__le32	byte_count;		/* Total byte count. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t port_id[3];		/* PortID of destination port. */
 	uint8_t vp_index;
 
+<<<<<<< HEAD
 	uint32_t crc_context_address[2];	/* Data segment address. */
 	uint16_t crc_context_len;		/* Data segment length. */
+=======
+	__le64	 crc_context_address __packed;	/* Data segment address. */
+	__le16	crc_context_len;		/* Data segment length. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t reserved_1;			/* MUST be set to 0. */
 };
 
@@ -515,6 +846,7 @@ struct sts_entry_24xx {
 
 	uint32_t handle;		/* System handle. */
 
+<<<<<<< HEAD
 	uint16_t comp_status;		/* Completion status. */
 	uint16_t ox_id;			/* OX_ID used by the firmware. */
 
@@ -534,6 +866,41 @@ struct sts_entry_24xx {
 	uint32_t sense_len;		/* FCP SENSE length. */
 	uint32_t rsp_data_len;		/* FCP response data length. */
 	uint8_t data[28];		/* FCP response/sense information. */
+=======
+	__le16	comp_status;		/* Completion status. */
+	__le16	ox_id;			/* OX_ID used by the firmware. */
+
+	__le32	residual_len;		/* FW calc residual transfer length. */
+
+	union {
+		__le16 reserved_1;
+		__le16	nvme_rsp_pyld_len;
+		__le16 edif_sa_index;	 /* edif sa_index used for initiator read data */
+	};
+
+	__le16	state_flags;		/* State flags. */
+#define SF_TRANSFERRED_DATA	BIT_11
+#define SF_NVME_ERSP            BIT_6
+#define SF_FCP_RSP_DMA		BIT_0
+
+	__le16	status_qualifier;
+	__le16	scsi_status;		/* SCSI status. */
+#define SS_CONFIRMATION_REQ		BIT_12
+
+	__le32	rsp_residual_count;	/* FCP RSP residual count. */
+
+	__le32	sense_len;		/* FCP SENSE length. */
+
+	union {
+		struct {
+			__le32	rsp_data_len;	/* FCP response data length  */
+			uint8_t data[28];	/* FCP rsp/sense information */
+		};
+		struct nvme_fc_ersp_iu nvme_ersp;
+		uint8_t nvme_ersp_data[32];
+	};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If DIF Error is set in comp_status, these additional fields are
 	 * defined:
@@ -570,7 +937,11 @@ struct mrk_entry_24xx {
 
 	uint32_t handle;		/* System handle. */
 
+<<<<<<< HEAD
 	uint16_t nport_handle;		/* N_PORT handle. */
+=======
+	__le16	nport_handle;		/* N_PORT handle. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t modifier;		/* Modifier (7-0). */
 #define MK_SYNC_ID_LUN	0		/* Synchronize ID/LUN */
@@ -599,15 +970,24 @@ struct ct_entry_24xx {
 
 	uint32_t handle;		/* System handle. */
 
+<<<<<<< HEAD
 	uint16_t comp_status;		/* Completion status. */
 
 	uint16_t nport_handle;		/* N_PORT handle. */
 
 	uint16_t cmd_dsd_count;
+=======
+	__le16	comp_status;		/* Completion status. */
+
+	__le16	nport_handle;		/* N_PORT handle. */
+
+	__le16	cmd_dsd_count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t vp_index;
 	uint8_t reserved_1;
 
+<<<<<<< HEAD
 	uint16_t timeout;		/* Command timeout. */
 	uint16_t reserved_2;
 
@@ -622,6 +1002,63 @@ struct ct_entry_24xx {
 	uint32_t dseg_0_len;		/* Data segment 0 length. */
 	uint32_t dseg_1_address[2];	/* Data segment 1 address. */
 	uint32_t dseg_1_len;		/* Data segment 1 length. */
+=======
+	__le16	timeout;		/* Command timeout. */
+	uint16_t reserved_2;
+
+	__le16	rsp_dsd_count;
+
+	uint8_t reserved_3[10];
+
+	__le32	rsp_byte_count;
+	__le32	cmd_byte_count;
+
+	struct dsd64 dsd[2];
+};
+
+#define PURX_ELS_HEADER_SIZE	0x18
+
+/*
+ * ISP queue - PUREX IOCB entry structure definition
+ */
+#define PUREX_IOCB_TYPE		0x51	/* CT Pass Through IOCB entry */
+struct purex_entry_24xx {
+	uint8_t entry_type;		/* Entry type. */
+	uint8_t entry_count;		/* Entry count. */
+	uint8_t sys_define;		/* System defined. */
+	uint8_t entry_status;		/* Entry Status. */
+
+	__le16	reserved1;
+	uint8_t vp_idx;
+	uint8_t reserved2;
+
+	__le16	status_flags;
+	__le16	nport_handle;
+
+	__le16	frame_size;
+	__le16	trunc_frame_size;
+
+	__le32	rx_xchg_addr;
+
+	uint8_t d_id[3];
+	uint8_t r_ctl;
+
+	uint8_t s_id[3];
+	uint8_t cs_ctl;
+
+	uint8_t f_ctl[3];
+	uint8_t type;
+
+	__le16	seq_cnt;
+	uint8_t df_ctl;
+	uint8_t seq_id;
+
+	__le16	rx_id;
+	__le16	ox_id;
+	__le32	param;
+
+	uint8_t els_frame_payload[20];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -636,33 +1073,53 @@ struct els_entry_24xx {
 
 	uint32_t handle;		/* System handle. */
 
+<<<<<<< HEAD
 	uint16_t reserved_1;
 
 	uint16_t nport_handle;		/* N_PORT handle. */
 
 	uint16_t tx_dsd_count;
+=======
+	__le16	comp_status;		/* response only */
+	__le16	nport_handle;
+
+	__le16	tx_dsd_count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t vp_index;
 	uint8_t sof_type;
 #define EST_SOFI3		(1 << 4)
 #define EST_SOFI2		(3 << 4)
 
+<<<<<<< HEAD
 	uint32_t rx_xchg_address;	/* Receive exchange address. */
 	uint16_t rx_dsd_count;
+=======
+	__le32	rx_xchg_address;	/* Receive exchange address. */
+	__le16	rx_dsd_count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t opcode;
 	uint8_t reserved_2;
 
+<<<<<<< HEAD
 	uint8_t port_id[3];
 	uint8_t reserved_3;
 
 	uint16_t reserved_4;
 
 	uint16_t control_flags;		/* Control flags. */
+=======
+	uint8_t d_id[3];
+	uint8_t s_id[3];
+
+	__le16	control_flags;		/* Control flags. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ECF_PAYLOAD_DESCR_MASK	(BIT_15|BIT_14|BIT_13)
 #define EPD_ELS_COMMAND		(0 << 13)
 #define EPD_ELS_ACC		(1 << 13)
 #define EPD_ELS_RJT		(2 << 13)
+<<<<<<< HEAD
 #define EPD_RX_XCHG		(3 << 13)
 #define ECF_CLR_PASSTHRU_PEND	BIT_12
 #define ECF_INCL_FRAME_HDR	BIT_11
@@ -674,6 +1131,31 @@ struct els_entry_24xx {
 	uint32_t tx_len;		/* Data segment 0 length. */
 	uint32_t rx_address[2];		/* Data segment 1 address. */
 	uint32_t rx_len;		/* Data segment 1 length. */
+=======
+#define EPD_RX_XCHG		(3 << 13)  /* terminate exchange */
+#define ECF_CLR_PASSTHRU_PEND	BIT_12
+#define ECF_INCL_FRAME_HDR	BIT_11
+#define ECF_SEC_LOGIN		BIT_3
+
+	union {
+		struct {
+			__le32	 rx_byte_count;
+			__le32	 tx_byte_count;
+
+			__le64	 tx_address __packed;	/* DSD 0 address. */
+			__le32	 tx_len;		/* DSD 0 length. */
+
+			__le64	 rx_address __packed;	/* DSD 1 address. */
+			__le32	 rx_len;		/* DSD 1 length. */
+		};
+		struct {
+			__le32	total_byte_count;
+			__le32	error_subcode_1;
+			__le32	error_subcode_2;
+			__le32	error_subcode_3;
+		};
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct els_sts_entry_24xx {
@@ -682,6 +1164,7 @@ struct els_sts_entry_24xx {
 	uint8_t sys_define;		/* System Defined. */
 	uint8_t entry_status;		/* Entry Status. */
 
+<<<<<<< HEAD
 	uint32_t handle;		/* System handle. */
 
 	uint16_t comp_status;
@@ -689,16 +1172,31 @@ struct els_sts_entry_24xx {
 	uint16_t nport_handle;		/* N_PORT handle. */
 
 	uint16_t reserved_1;
+=======
+	__le32	handle;		/* System handle. */
+
+	__le16	comp_status;
+
+	__le16	nport_handle;		/* N_PORT handle. */
+
+	__le16	reserved_1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t vp_index;
 	uint8_t sof_type;
 
+<<<<<<< HEAD
 	uint32_t rx_xchg_address;	/* Receive exchange address. */
 	uint16_t reserved_2;
+=======
+	__le32	rx_xchg_address;	/* Receive exchange address. */
+	__le16	reserved_2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t opcode;
 	uint8_t reserved_3;
 
+<<<<<<< HEAD
 	uint8_t port_id[3];
 	uint8_t reserved_4;
 
@@ -708,6 +1206,18 @@ struct els_sts_entry_24xx {
 	uint32_t total_byte_count;
 	uint32_t error_subcode_1;
 	uint32_t error_subcode_2;
+=======
+	uint8_t d_id[3];
+	uint8_t s_id[3];
+
+	__le16	control_flags;		/* Control flags. */
+	__le32	total_byte_count;
+	__le32	error_subcode_1;
+	__le32	error_subcode_2;
+	__le32	error_subcode_3;
+
+	__le32	reserved_4[4];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 /*
  * ISP queue - Mailbox Command entry structure definition.
@@ -734,18 +1244,33 @@ struct logio_entry_24xx {
 
 	uint32_t handle;		/* System handle. */
 
+<<<<<<< HEAD
 	uint16_t comp_status;		/* Completion status. */
 #define CS_LOGIO_ERROR		0x31	/* Login/Logout IOCB error. */
 
 	uint16_t nport_handle;		/* N_PORT handle. */
 
 	uint16_t control_flags;		/* Control flags. */
+=======
+	__le16	comp_status;		/* Completion status. */
+#define CS_LOGIO_ERROR		0x31	/* Login/Logout IOCB error. */
+
+	__le16	nport_handle;		/* N_PORT handle. */
+
+	__le16	control_flags;		/* Control flags. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					/* Modifiers. */
 #define LCF_INCLUDE_SNS		BIT_10	/* Include SNS (FFFFFC) during LOGO. */
 #define LCF_FCP2_OVERRIDE	BIT_9	/* Set/Reset word 3 of PRLI. */
 #define LCF_CLASS_2		BIT_8	/* Enable class 2 during PLOGI. */
 #define LCF_FREE_NPORT		BIT_7	/* Release NPORT handle after LOGO. */
+<<<<<<< HEAD
 #define LCF_EXPL_LOGO		BIT_6	/* Perform an explicit LOGO. */
+=======
+#define LCF_COMMON_FEAT		BIT_7	/* PLOGI - Set Common Features Field */
+#define LCF_EXPL_LOGO		BIT_6	/* Perform an explicit LOGO. */
+#define LCF_NVME_PRLI		BIT_6   /* Perform NVME FC4 PRLI */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LCF_SKIP_PRLI		BIT_5	/* Skip PRLI after PLOGI. */
 #define LCF_IMPL_LOGO_ALL	BIT_5	/* Implicit LOGO to all ports. */
 #define LCF_COND_PLOGI		BIT_4	/* PLOGI only if not logged-in. */
@@ -767,7 +1292,13 @@ struct logio_entry_24xx {
 
 	uint8_t rsp_size;		/* Response size in 32bit words. */
 
+<<<<<<< HEAD
 	uint32_t io_parameter[11];	/* General I/O parameters. */
+=======
+	__le32	io_parameter[11];	/* General I/O parameters. */
+#define LIO_COMM_FEAT_FCSP	BIT_21
+#define LIO_COMM_FEAT_CIO	BIT_31
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LSC_SCODE_NOLINK	0x01
 #define LSC_SCODE_NOIOCB	0x02
 #define LSC_SCODE_NOXCB		0x03
@@ -795,6 +1326,7 @@ struct tsk_mgmt_entry {
 
 	uint32_t handle;		/* System handle. */
 
+<<<<<<< HEAD
 	uint16_t nport_handle;		/* N_PORT handle. */
 
 	uint16_t reserved_1;
@@ -806,6 +1338,19 @@ struct tsk_mgmt_entry {
 	struct scsi_lun lun;		/* FCP LUN (BE). */
 
 	uint32_t control_flags;		/* Control Flags. */
+=======
+	__le16	nport_handle;		/* N_PORT handle. */
+
+	uint16_t reserved_1;
+
+	__le16	delay;			/* Activity delay in seconds. */
+
+	__le16	timeout;		/* Command timeout. */
+
+	struct scsi_lun lun;		/* FCP LUN (BE). */
+
+	__le32	control_flags;		/* Control Flags. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TCF_NOTMCMD_TO_TARGET	BIT_31
 #define TCF_LUN_RESET		BIT_4
 #define TCF_ABORT_TASK_SET	BIT_3
@@ -830,6 +1375,7 @@ struct abort_entry_24xx {
 
 	uint32_t handle;		/* System handle. */
 
+<<<<<<< HEAD
 	uint16_t nport_handle;		/* N_PORT handle. */
 					/* or Completion status. */
 
@@ -839,19 +1385,145 @@ struct abort_entry_24xx {
 	uint32_t handle_to_abort;	/* System handle to abort. */
 
 	uint16_t req_que_no;
+=======
+	union {
+		__le16 nport_handle;            /* N_PORT handle. */
+		__le16 comp_status;             /* Completion status. */
+	};
+
+	__le16	options;		/* Options. */
+#define AOF_NO_ABTS		BIT_0	/* Do not send any ABTS. */
+#define AOF_NO_RRQ		BIT_1   /* Do not send RRQ. */
+#define AOF_ABTS_TIMEOUT	BIT_2   /* Disable logout on ABTS timeout. */
+#define AOF_ABTS_RTY_CNT	BIT_3   /* Use driver specified retry count. */
+#define AOF_RSP_TIMEOUT		BIT_4   /* Use specified response timeout. */
+
+
+	uint32_t handle_to_abort;	/* System handle to abort. */
+
+	__le16	req_que_no;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t reserved_1[30];
 
 	uint8_t port_id[3];		/* PortID of destination port. */
 	uint8_t vp_index;
+<<<<<<< HEAD
 
 	uint8_t reserved_2[12];
 };
 
+=======
+	u8	reserved_2[4];
+	union {
+		struct {
+			__le16 abts_rty_cnt;
+			__le16 rsp_timeout;
+		} drv;
+		struct {
+			u8	ba_rjt_vendorUnique;
+			u8	ba_rjt_reasonCodeExpl;
+			u8	ba_rjt_reasonCode;
+			u8	reserved_3;
+		} fw;
+	};
+	u8	reserved_4[4];
+};
+
+#define ABTS_RCV_TYPE		0x54
+#define ABTS_RSP_TYPE		0x55
+struct abts_entry_24xx {
+	uint8_t entry_type;
+	uint8_t entry_count;
+	uint8_t handle_count;
+	uint8_t entry_status;
+
+	__le32	handle;		/* type 0x55 only */
+
+	__le16	comp_status;		/* type 0x55 only */
+	__le16	nport_handle;		/* type 0x54 only */
+
+	__le16	control_flags;		/* type 0x55 only */
+	uint8_t vp_idx;
+	uint8_t sof_type;		/* sof_type is upper nibble */
+
+	__le32	rx_xch_addr;
+
+	uint8_t d_id[3];
+	uint8_t r_ctl;
+
+	uint8_t s_id[3];
+	uint8_t cs_ctl;
+
+	uint8_t f_ctl[3];
+	uint8_t type;
+
+	__le16	seq_cnt;
+	uint8_t df_ctl;
+	uint8_t seq_id;
+
+	__le16	rx_id;
+	__le16	ox_id;
+
+	__le32	param;
+
+	union {
+		struct {
+			__le32	subcode3;
+			__le32	rsvd;
+			__le32	subcode1;
+			__le32	subcode2;
+		} error;
+		struct {
+			__le16	rsrvd1;
+			uint8_t last_seq_id;
+			uint8_t seq_id_valid;
+			__le16	aborted_rx_id;
+			__le16	aborted_ox_id;
+			__le16	high_seq_cnt;
+			__le16	low_seq_cnt;
+		} ba_acc;
+		struct {
+			uint8_t vendor_unique;
+			uint8_t explanation;
+			uint8_t reason;
+		} ba_rjt;
+	} payload;
+
+	__le32	rx_xch_addr_to_abort;
+} __packed;
+
+/* ABTS payload explanation values */
+#define BA_RJT_EXP_NO_ADDITIONAL	0
+#define BA_RJT_EXP_INV_OX_RX_ID		3
+#define BA_RJT_EXP_SEQ_ABORTED		5
+
+/* ABTS payload reason values */
+#define BA_RJT_RSN_INV_CMD_CODE		1
+#define BA_RJT_RSN_LOGICAL_ERROR	3
+#define BA_RJT_RSN_LOGICAL_BUSY		5
+#define BA_RJT_RSN_PROTOCOL_ERROR	7
+#define BA_RJT_RSN_UNABLE_TO_PERFORM	9
+#define BA_RJT_RSN_VENDOR_SPECIFIC	0xff
+
+/* FC_F values */
+#define FC_TYPE_BLD		0x000		/* Basic link data */
+#define FC_F_CTL_RSP_CNTXT	0x800000	/* Responder of exchange */
+#define FC_F_CTL_LAST_SEQ	0x100000	/* Last sequence */
+#define FC_F_CTL_END_SEQ	0x80000		/* Last sequence */
+#define FC_F_CTL_SEQ_INIT	0x010000	/* Sequence initiative */
+#define FC_ROUTING_BLD		0x80		/* Basic link data frame */
+#define FC_R_CTL_BLD_BA_ACC	0x04		/* BA_ACC (basic accept) */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ISP I/O Register Set structure definitions.
  */
 struct device_reg_24xx {
+<<<<<<< HEAD
 	uint32_t flash_addr;		/* Flash/NVRAM BIOS address. */
+=======
+	__le32	flash_addr;		/* Flash/NVRAM BIOS address. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FARX_DATA_FLAG	BIT_31
 #define FARX_ACCESS_FLASH_CONF	0x7FFD0000
 #define FARX_ACCESS_FLASH_DATA	0x7FF00000
@@ -902,9 +1574,15 @@ struct device_reg_24xx {
 #define HW_EVENT_NVRAM_CHKSUM_ERR	0xF023
 #define HW_EVENT_FLASH_FW_ERR	0xF024
 
+<<<<<<< HEAD
 	uint32_t flash_data;		/* Flash/NVRAM BIOS data. */
 
 	uint32_t ctrl_status;		/* Control/Status. */
+=======
+	__le32	flash_data;		/* Flash/NVRAM BIOS data. */
+
+	__le32	ctrl_status;		/* Control/Status. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CSRX_FLASH_ACCESS_ERROR	BIT_18	/* Flash/NVRAM Access Error. */
 #define CSRX_DMA_ACTIVE		BIT_17	/* DMA Active status. */
 #define CSRX_DMA_SHUTDOWN	BIT_16	/* DMA Shutdown control status. */
@@ -930,6 +1608,7 @@ struct device_reg_24xx {
 #define CSRX_FLASH_ENABLE	BIT_1	/* Flash BIOS Read/Write enable. */
 #define CSRX_ISP_SOFT_RESET	BIT_0	/* ISP soft reset. */
 
+<<<<<<< HEAD
 	uint32_t ictrl;			/* Interrupt control. */
 #define ICRX_EN_RISC_INT	BIT_3	/* Enable RISC interrupts on PCI. */
 
@@ -959,6 +1638,37 @@ struct device_reg_24xx {
 #define HSRX_RISC_PAUSED	BIT_8	/* RISC Paused. */
 
 	uint32_t hccr;			/* Host command & control register. */
+=======
+	__le32	ictrl;			/* Interrupt control. */
+#define ICRX_EN_RISC_INT	BIT_3	/* Enable RISC interrupts on PCI. */
+
+	__le32	istatus;		/* Interrupt status. */
+#define ISRX_RISC_INT		BIT_3	/* RISC interrupt. */
+
+	__le32	unused_1[2];		/* Gap. */
+
+					/* Request Queue. */
+	__le32	req_q_in;		/*  In-Pointer. */
+	__le32	req_q_out;		/*  Out-Pointer. */
+					/* Response Queue. */
+	__le32	rsp_q_in;		/*  In-Pointer. */
+	__le32	rsp_q_out;		/*  Out-Pointer. */
+					/* Priority Request Queue. */
+	__le32	preq_q_in;		/*  In-Pointer. */
+	__le32	preq_q_out;		/*  Out-Pointer. */
+
+	__le32	unused_2[2];		/* Gap. */
+
+					/* ATIO Queue. */
+	__le32	atio_q_in;		/*  In-Pointer. */
+	__le32	atio_q_out;		/*  Out-Pointer. */
+
+	__le32	host_status;
+#define HSRX_RISC_INT		BIT_15	/* RISC to Host interrupt. */
+#define HSRX_RISC_PAUSED	BIT_8	/* RISC Paused. */
+
+	__le32	hccr;			/* Host command & control register. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					/* HCCR statuses. */
 #define HCCRX_HOST_INT		BIT_6	/* Host to RISC interrupt bit. */
 #define HCCRX_RISC_RESET	BIT_5	/* RISC Reset mode bit. */
@@ -980,7 +1690,11 @@ struct device_reg_24xx {
 					/* Clear RISC to PCI interrupt. */
 #define HCCRX_CLR_RISC_INT	0xA0000000
 
+<<<<<<< HEAD
 	uint32_t gpiod;			/* GPIO Data register. */
+=======
+	__le32	gpiod;			/* GPIO Data register. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 					/* LED update mask. */
 #define GPDX_LED_UPDATE_MASK	(BIT_20|BIT_19|BIT_18)
@@ -999,7 +1713,11 @@ struct device_reg_24xx {
 					/* Data in/out. */
 #define GPDX_DATA_INOUT		(BIT_1|BIT_0)
 
+<<<<<<< HEAD
 	uint32_t gpioe;			/* GPIO Enable register. */
+=======
+	__le32	gpioe;			/* GPIO Enable register. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					/* Enable update mask. */
 #define GPEX_ENABLE_UPDATE_MASK	(BIT_17|BIT_16)
 					/* Enable update mask. */
@@ -1007,6 +1725,7 @@ struct device_reg_24xx {
 					/* Enable. */
 #define GPEX_ENABLE		(BIT_1|BIT_0)
 
+<<<<<<< HEAD
 	uint32_t iobase_addr;		/* I/O Bus Base Address register. */
 
 	uint32_t unused_3[10];		/* Gap. */
@@ -1054,6 +1773,76 @@ struct device_reg_24xx {
 	uint32_t unused_6[2];		/* Gap. */
 	uint32_t iobase_sdata;
 };
+=======
+	__le32	iobase_addr;		/* I/O Bus Base Address register. */
+
+	__le32	unused_3[10];		/* Gap. */
+
+	__le16	mailbox0;
+	__le16	mailbox1;
+	__le16	mailbox2;
+	__le16	mailbox3;
+	__le16	mailbox4;
+	__le16	mailbox5;
+	__le16	mailbox6;
+	__le16	mailbox7;
+	__le16	mailbox8;
+	__le16	mailbox9;
+	__le16	mailbox10;
+	__le16	mailbox11;
+	__le16	mailbox12;
+	__le16	mailbox13;
+	__le16	mailbox14;
+	__le16	mailbox15;
+	__le16	mailbox16;
+	__le16	mailbox17;
+	__le16	mailbox18;
+	__le16	mailbox19;
+	__le16	mailbox20;
+	__le16	mailbox21;
+	__le16	mailbox22;
+	__le16	mailbox23;
+	__le16	mailbox24;
+	__le16	mailbox25;
+	__le16	mailbox26;
+	__le16	mailbox27;
+	__le16	mailbox28;
+	__le16	mailbox29;
+	__le16	mailbox30;
+	__le16	mailbox31;
+
+	__le32	iobase_window;
+	__le32	iobase_c4;
+	__le32	iobase_c8;
+	__le32	unused_4_1[6];		/* Gap. */
+	__le32	iobase_q;
+	__le32	unused_5[2];		/* Gap. */
+	__le32	iobase_select;
+	__le32	unused_6[2];		/* Gap. */
+	__le32	iobase_sdata;
+};
+/* RISC-RISC semaphore register PCI offet */
+#define RISC_REGISTER_BASE_OFFSET	0x7010
+#define RISC_REGISTER_WINDOW_OFFSET	0x6
+
+/* RISC-RISC semaphore/flag register (risc address 0x7016) */
+
+#define RISC_SEMAPHORE		0x1UL
+#define RISC_SEMAPHORE_WE	(RISC_SEMAPHORE << 16)
+#define RISC_SEMAPHORE_CLR	(RISC_SEMAPHORE_WE | 0x0UL)
+#define RISC_SEMAPHORE_SET	(RISC_SEMAPHORE_WE | RISC_SEMAPHORE)
+
+#define RISC_SEMAPHORE_FORCE		0x8000UL
+#define RISC_SEMAPHORE_FORCE_WE		(RISC_SEMAPHORE_FORCE << 16)
+#define RISC_SEMAPHORE_FORCE_CLR	(RISC_SEMAPHORE_FORCE_WE | 0x0UL)
+#define RISC_SEMAPHORE_FORCE_SET	\
+		(RISC_SEMAPHORE_FORCE_WE | RISC_SEMAPHORE_FORCE)
+
+/* RISC semaphore timeouts (ms) */
+#define TIMEOUT_SEMAPHORE		2500
+#define TIMEOUT_SEMAPHORE_FORCE		2000
+#define TIMEOUT_TOTAL_ELAPSED		4500
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Trace Control *************************************************************/
 
@@ -1074,6 +1863,7 @@ struct device_reg_24xx {
 #define MIN_MULTI_ID_FABRIC	64	/* Must be power-of-2. */
 #define MAX_MULTI_ID_FABRIC	256	/* ... */
 
+<<<<<<< HEAD
 #define for_each_mapped_vp_idx(_ha, _idx)		\
 	for (_idx = find_next_bit((_ha)->vp_idx_map,	\
 		(_ha)->max_npiv_vports + 1, 1);		\
@@ -1081,6 +1871,8 @@ struct device_reg_24xx {
 	    _idx = find_next_bit((_ha)->vp_idx_map,	\
 		(_ha)->max_npiv_vports + 1, _idx + 1))	\
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mid_conf_entry_24xx {
 	uint16_t reserved_1;
 
@@ -1104,8 +1896,13 @@ struct mid_conf_entry_24xx {
 struct mid_init_cb_24xx {
 	struct init_cb_24xx init_cb;
 
+<<<<<<< HEAD
 	uint16_t count;
 	uint16_t options;
+=======
+	__le16	count;
+	__le16	options;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mid_conf_entry_24xx entries[MAX_MULTI_ID_FABRIC];
 };
@@ -1130,7 +1927,11 @@ struct mid_db_entry_24xx {
 /*
  * Virtual Port Control IOCB
  */
+<<<<<<< HEAD
 #define VP_CTRL_IOCB_TYPE	0x30	/* Vitual Port Control entry. */
+=======
+#define VP_CTRL_IOCB_TYPE	0x30	/* Virtual Port Control entry. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vp_ctrl_entry_24xx {
 	uint8_t entry_type;		/* Entry type. */
 	uint8_t entry_count;		/* Entry count. */
@@ -1139,20 +1940,31 @@ struct vp_ctrl_entry_24xx {
 
 	uint32_t handle;		/* System handle. */
 
+<<<<<<< HEAD
 	uint16_t vp_idx_failed;
 
 	uint16_t comp_status;		/* Completion status. */
+=======
+	__le16	vp_idx_failed;
+
+	__le16	comp_status;		/* Completion status. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CS_VCE_IOCB_ERROR       0x01    /* Error processing IOCB */
 #define CS_VCE_ACQ_ID_ERROR	0x02	/* Error while acquireing ID. */
 #define CS_VCE_BUSY		0x05	/* Firmware not ready to accept cmd. */
 
+<<<<<<< HEAD
 	uint16_t command;
+=======
+	__le16	command;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VCE_COMMAND_ENABLE_VPS	0x00	/* Enable VPs. */
 #define VCE_COMMAND_DISABLE_VPS	0x08	/* Disable VPs. */
 #define VCE_COMMAND_DISABLE_VPS_REINIT	0x09 /* Disable VPs and reinit link. */
 #define VCE_COMMAND_DISABLE_VPS_LOGO	0x0a /* Disable VPs and LOGO ports. */
 #define VCE_COMMAND_DISABLE_VPS_LOGO_ALL        0x0b /* Disable VPs and LOGO ports. */
 
+<<<<<<< HEAD
 	uint16_t vp_count;
 
 	uint8_t vp_idx_map[16];
@@ -1160,13 +1972,26 @@ struct vp_ctrl_entry_24xx {
 	uint16_t id;
 	uint16_t reserved_4;
 	uint16_t hopct;
+=======
+	__le16	vp_count;
+
+	uint8_t vp_idx_map[16];
+	__le16	flags;
+	__le16	id;
+	uint16_t reserved_4;
+	__le16	hopct;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t reserved_5[24];
 };
 
 /*
  * Modify Virtual Port Configuration IOCB
  */
+<<<<<<< HEAD
 #define VP_CONFIG_IOCB_TYPE	0x31	/* Vitual Port Config entry. */
+=======
+#define VP_CONFIG_IOCB_TYPE	0x31	/* Virtual Port Config entry. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vp_config_entry_24xx {
 	uint8_t entry_type;		/* Entry type. */
 	uint8_t entry_count;		/* Entry count. */
@@ -1175,12 +2000,20 @@ struct vp_config_entry_24xx {
 
 	uint32_t handle;		/* System handle. */
 
+<<<<<<< HEAD
 	uint16_t flags;
+=======
+	__le16	flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CS_VF_BIND_VPORTS_TO_VF         BIT_0
 #define CS_VF_SET_QOS_OF_VPORTS         BIT_1
 #define CS_VF_SET_HOPS_OF_VPORTS        BIT_2
 
+<<<<<<< HEAD
 	uint16_t comp_status;		/* Completion status. */
+=======
+	__le16	comp_status;		/* Completion status. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CS_VCT_STS_ERROR	0x01	/* Specified VPs were not disabled. */
 #define CS_VCT_CNT_ERROR	0x02	/* Invalid VP count. */
 #define CS_VCT_ERROR		0x03	/* Unknown error. */
@@ -1207,18 +2040,45 @@ struct vp_config_entry_24xx {
 	uint16_t reserved_vp2;
 	uint8_t port_name_idx2[WWN_SIZE];
 	uint8_t node_name_idx2[WWN_SIZE];
+<<<<<<< HEAD
 	uint16_t id;
 	uint16_t reserved_4;
 	uint16_t hopct;
+=======
+	__le16	id;
+	uint16_t reserved_4;
+	__le16	hopct;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t reserved_5[2];
 };
 
 #define VP_RPT_ID_IOCB_TYPE	0x32	/* Report ID Acquisition entry. */
+<<<<<<< HEAD
+=======
+enum VP_STATUS {
+	VP_STAT_COMPL,
+	VP_STAT_FAIL,
+	VP_STAT_ID_CHG,
+	VP_STAT_SNS_TO,				/* timeout */
+	VP_STAT_SNS_RJT,
+	VP_STAT_SCR_TO,				/* timeout */
+	VP_STAT_SCR_RJT,
+};
+
+enum VP_FLAGS {
+	VP_FLAGS_CON_FLOOP = 1,
+	VP_FLAGS_CON_P2P = 2,
+	VP_FLAGS_CON_FABRIC = 3,
+	VP_FLAGS_NAME_VALID = BIT_5,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vp_rpt_id_entry_24xx {
 	uint8_t entry_type;		/* Entry type. */
 	uint8_t entry_count;		/* Entry count. */
 	uint8_t sys_define;		/* System defined. */
 	uint8_t entry_status;		/* Entry Status. */
+<<<<<<< HEAD
 
 	uint32_t handle;		/* System handle. */
 
@@ -1233,6 +2093,62 @@ struct vp_rpt_id_entry_24xx {
 	uint8_t vp_idx_map[16];
 
 	uint8_t reserved_4[32];
+=======
+	__le32 resv1;
+	uint8_t vp_acquired;
+	uint8_t vp_setup;
+	uint8_t vp_idx;		/* Format 0=reserved */
+	uint8_t vp_status;	/* Format 0=reserved */
+
+	uint8_t port_id[3];
+	uint8_t format;
+	union {
+		struct _f0 {
+			/* format 0 loop */
+			uint8_t vp_idx_map[16];
+			uint8_t reserved_4[32];
+		} f0;
+		struct _f1 {
+			/* format 1 fabric */
+			uint8_t vpstat1_subcode; /* vp_status=1 subcode */
+			uint8_t flags;
+#define TOPO_MASK  0xE
+#define TOPO_FL    0x2
+#define TOPO_N2N   0x4
+#define TOPO_F     0x6
+
+			uint16_t fip_flags;
+			uint8_t rsv2[12];
+
+			uint8_t ls_rjt_vendor;
+			uint8_t ls_rjt_explanation;
+			uint8_t ls_rjt_reason;
+			uint8_t rsv3[5];
+
+			uint8_t port_name[8];
+			uint8_t node_name[8];
+			uint16_t bbcr;
+			uint8_t reserved_5[6];
+		} f1;
+		struct _f2 { /* format 2: N2N direct connect */
+			uint8_t vpstat1_subcode;
+			uint8_t flags;
+			uint16_t fip_flags;
+			uint8_t rsv2[12];
+
+			uint8_t ls_rjt_vendor;
+			uint8_t ls_rjt_explanation;
+			uint8_t ls_rjt_reason;
+			uint8_t rsv3[5];
+
+			uint8_t port_name[8];
+			uint8_t node_name[8];
+			uint16_t bbcr;
+			uint8_t reserved_5[2];
+			uint8_t remote_nport_id[4];
+		} f2;
+	} u;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define VF_EVFP_IOCB_TYPE       0x26    /* Exchange Virtual Fabric Parameters entry. */
@@ -1243,6 +2159,7 @@ struct vf_evfp_entry_24xx {
         uint8_t entry_status;           /* Entry Status. */
 
         uint32_t handle;                /* System handle. */
+<<<<<<< HEAD
         uint16_t comp_status;           /* Completion status. */
         uint16_t timeout;               /* timeout */
         uint16_t adim_tagging_mode;
@@ -1257,6 +2174,22 @@ struct vf_evfp_entry_24xx {
         uint32_t tx_address[2];         /* Data segment 0 address. */
         uint32_t tx_len;                /* Data segment 0 length. */
         uint32_t rx_address[2];         /* Data segment 1 address. */
+=======
+        __le16	comp_status;           /* Completion status. */
+        __le16	timeout;               /* timeout */
+        __le16	adim_tagging_mode;
+
+        __le16	vfport_id;
+        uint32_t exch_addr;
+
+        __le16	nport_handle;          /* N_PORT handle. */
+        __le16	control_flags;
+        uint32_t io_parameter_0;
+        uint32_t io_parameter_1;
+	__le64	 tx_address __packed;	/* Data segment 0 address. */
+        uint32_t tx_len;                /* Data segment 0 length. */
+	__le64	 rx_address __packed;	/* Data segment 1 address. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         uint32_t rx_len;                /* Data segment 1 length. */
 };
 
@@ -1266,6 +2199,7 @@ struct vf_evfp_entry_24xx {
 
 struct qla_fdt_layout {
 	uint8_t sig[4];
+<<<<<<< HEAD
 	uint16_t version;
 	uint16_t len;
 	uint16_t checksum;
@@ -1273,6 +2207,15 @@ struct qla_fdt_layout {
 	uint8_t model[16];
 	uint16_t man_id;
 	uint16_t id;
+=======
+	__le16	version;
+	__le16	len;
+	__le16	checksum;
+	uint8_t unused1[2];
+	uint8_t model[16];
+	__le16	man_id;
+	__le16	id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t flags;
 	uint8_t erase_cmd;
 	uint8_t alt_erase_cmd;
@@ -1281,15 +2224,26 @@ struct qla_fdt_layout {
 	uint8_t wrt_sts_reg_cmd;
 	uint8_t unprotect_sec_cmd;
 	uint8_t read_man_id_cmd;
+<<<<<<< HEAD
 	uint32_t block_size;
 	uint32_t alt_block_size;
 	uint32_t flash_size;
 	uint32_t wrt_enable_data;
+=======
+	__le32 block_size;
+	__le32 alt_block_size;
+	__le32 flash_size;
+	__le32 wrt_enable_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t read_id_addr_len;
 	uint8_t wrt_disable_bits;
 	uint8_t read_dev_id_len;
 	uint8_t chip_erase_cmd;
+<<<<<<< HEAD
 	uint16_t read_timeout;
+=======
+	__le16	read_timeout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t protect_sec_cmd;
 	uint8_t unused2[65];
 };
@@ -1298,6 +2252,7 @@ struct qla_fdt_layout {
 
 struct qla_flt_location {
 	uint8_t sig[4];
+<<<<<<< HEAD
 	uint16_t start_lo;
 	uint16_t start_hi;
 	uint8_t version;
@@ -1310,6 +2265,13 @@ struct qla_flt_header {
 	uint16_t length;
 	uint16_t checksum;
 	uint16_t unused;
+=======
+	__le16	start_lo;
+	__le16	start_hi;
+	uint8_t version;
+	uint8_t unused[5];
+	__le16	checksum;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define FLT_REG_FW		0x01
@@ -1318,6 +2280,13 @@ struct qla_flt_header {
 #define FLT_REG_NVRAM_0		0x15
 #define FLT_REG_VPD_1		0x16
 #define FLT_REG_NVRAM_1		0x17
+<<<<<<< HEAD
+=======
+#define FLT_REG_VPD_2		0xD4
+#define FLT_REG_NVRAM_2		0xD5
+#define FLT_REG_VPD_3		0xD6
+#define FLT_REG_NVRAM_3		0xD7
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FLT_REG_FDT		0x1a
 #define FLT_REG_FLT		0x1c
 #define FLT_REG_HW_EVENT_0	0x1d
@@ -1327,6 +2296,7 @@ struct qla_flt_header {
 #define FLT_REG_GOLD_FW		0x2f
 #define FLT_REG_FCP_PRIO_0	0x87
 #define FLT_REG_FCP_PRIO_1	0x88
+<<<<<<< HEAD
 #define FLT_REG_FCOE_FW		0xA4
 #define FLT_REG_FCOE_VPD_0	0xA9
 #define FLT_REG_FCOE_NVRAM_0	0xAA
@@ -1340,10 +2310,69 @@ struct qla_flt_region {
 	uint32_t end;
 };
 
+=======
+#define FLT_REG_CNA_FW		0x97
+#define FLT_REG_BOOT_CODE_8044	0xA2
+#define FLT_REG_FCOE_FW		0xA4
+#define FLT_REG_FCOE_NVRAM_0	0xAA
+#define FLT_REG_FCOE_NVRAM_1	0xAC
+
+/* 27xx */
+#define FLT_REG_IMG_PRI_27XX	0x95
+#define FLT_REG_IMG_SEC_27XX	0x96
+#define FLT_REG_FW_SEC_27XX	0x02
+#define FLT_REG_BOOTLOAD_SEC_27XX	0x9
+#define FLT_REG_VPD_SEC_27XX_0	0x50
+#define FLT_REG_VPD_SEC_27XX_1	0x52
+#define FLT_REG_VPD_SEC_27XX_2	0xD8
+#define FLT_REG_VPD_SEC_27XX_3	0xDA
+#define FLT_REG_NVME_PARAMS_27XX	0x21
+
+/* 28xx */
+#define FLT_REG_AUX_IMG_PRI_28XX	0x125
+#define FLT_REG_AUX_IMG_SEC_28XX	0x126
+#define FLT_REG_VPD_SEC_28XX_0		0x10C
+#define FLT_REG_VPD_SEC_28XX_1		0x10E
+#define FLT_REG_VPD_SEC_28XX_2		0x110
+#define FLT_REG_VPD_SEC_28XX_3		0x112
+#define FLT_REG_NVRAM_SEC_28XX_0	0x10D
+#define FLT_REG_NVRAM_SEC_28XX_1	0x10F
+#define FLT_REG_NVRAM_SEC_28XX_2	0x111
+#define FLT_REG_NVRAM_SEC_28XX_3	0x113
+#define FLT_REG_MPI_PRI_28XX		0xD3
+#define FLT_REG_MPI_SEC_28XX		0xF0
+#define FLT_REG_PEP_PRI_28XX		0xD1
+#define FLT_REG_PEP_SEC_28XX		0xF1
+#define FLT_REG_NVME_PARAMS_PRI_28XX	0x14E
+#define FLT_REG_NVME_PARAMS_SEC_28XX	0x179
+
+struct qla_flt_region {
+	__le16	code;
+	uint8_t attribute;
+	uint8_t reserved;
+	__le32 size;
+	__le32 start;
+	__le32 end;
+};
+
+struct qla_flt_header {
+	__le16	version;
+	__le16	length;
+	__le16	checksum;
+	__le16	unused;
+	struct qla_flt_region region[];
+};
+
+#define FLT_REGION_SIZE		16
+#define FLT_MAX_REGIONS		0xFF
+#define FLT_REGIONS_SIZE	(FLT_REGION_SIZE * FLT_MAX_REGIONS)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Flash NPIV Configuration Table ********************************************/
 
 struct qla_npiv_header {
 	uint8_t sig[2];
+<<<<<<< HEAD
 	uint16_t version;
 	uint16_t entries;
 	uint16_t unused[4];
@@ -1356,6 +2385,20 @@ struct qla_npiv_entry {
 	uint8_t q_qos;
 	uint8_t f_qos;
 	uint16_t unused1;
+=======
+	__le16	version;
+	__le16	entries;
+	__le16	unused[4];
+	__le16	checksum;
+};
+
+struct qla_npiv_entry {
+	__le16	flags;
+	__le16	vf_id;
+	uint8_t q_qos;
+	uint8_t f_qos;
+	__le16	unused1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t port_name[WWN_SIZE];
 	uint8_t node_name[WWN_SIZE];
 };
@@ -1385,7 +2428,11 @@ struct verify_chip_entry_84xx {
 
 	uint32_t handle;
 
+<<<<<<< HEAD
 	uint16_t options;
+=======
+	__le16	options;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VCO_DONT_UPDATE_FW	BIT_0
 #define VCO_FORCE_UPDATE	BIT_1
 #define VCO_DONT_RESET_UPDATE	BIT_2
@@ -1393,6 +2440,7 @@ struct verify_chip_entry_84xx {
 #define VCO_END_OF_DATA		BIT_14
 #define VCO_ENABLE_DSD		BIT_15
 
+<<<<<<< HEAD
 	uint16_t reserved_1;
 
 	uint16_t data_seg_cnt;
@@ -1408,6 +2456,22 @@ struct verify_chip_entry_84xx {
 
 	uint32_t dseg_address[2];
 	uint32_t dseg_length;
+=======
+	__le16	reserved_1;
+
+	__le16	data_seg_cnt;
+	__le16	reserved_2[3];
+
+	__le32	fw_ver;
+	__le32	exchange_address;
+
+	__le32 reserved_3[3];
+	__le32	fw_size;
+	__le32	fw_seq_size;
+	__le32	relative_offset;
+
+	struct dsd64 dsd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct verify_chip_rsp_84xx {
@@ -1418,22 +2482,39 @@ struct verify_chip_rsp_84xx {
 
 	uint32_t handle;
 
+<<<<<<< HEAD
 	uint16_t comp_status;
+=======
+	__le16	comp_status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CS_VCS_CHIP_FAILURE	0x3
 #define CS_VCS_BAD_EXCHANGE	0x8
 #define CS_VCS_SEQ_COMPLETEi	0x40
 
+<<<<<<< HEAD
 	uint16_t failure_code;
+=======
+	__le16	failure_code;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VFC_CHECKSUM_ERROR	0x1
 #define VFC_INVALID_LEN		0x2
 #define VFC_ALREADY_IN_PROGRESS	0x8
 
+<<<<<<< HEAD
 	uint16_t reserved_1[4];
 
 	uint32_t fw_ver;
 	uint32_t exchange_address;
 
 	uint32_t reserved_2[6];
+=======
+	__le16	reserved_1[4];
+
+	__le32	fw_ver;
+	__le32	exchange_address;
+
+	__le32 reserved_2[6];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define ACCESS_CHIP_IOCB_TYPE	0x2B
@@ -1445,12 +2526,17 @@ struct access_chip_84xx {
 
 	uint32_t handle;
 
+<<<<<<< HEAD
 	uint16_t options;
+=======
+	__le16	options;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACO_DUMP_MEMORY		0x0
 #define ACO_LOAD_MEMORY		0x1
 #define ACO_CHANGE_CONFIG_PARAM	0x2
 #define ACO_REQUEST_INFO	0x3
 
+<<<<<<< HEAD
 	uint16_t reserved1;
 
 	uint16_t dseg_count;
@@ -1466,6 +2552,22 @@ struct access_chip_84xx {
 
 	uint32_t dseg_address[2];
 	uint32_t dseg_length;
+=======
+	__le16	reserved1;
+
+	__le16	dseg_count;
+	__le16	reserved2[3];
+
+	__le32	parameter1;
+	__le32	parameter2;
+	__le32	parameter3;
+
+	__le32	reserved3[3];
+	__le32	total_byte_cnt;
+	__le32	reserved4;
+
+	struct dsd64 dsd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct access_chip_rsp_84xx {
@@ -1476,11 +2578,19 @@ struct access_chip_rsp_84xx {
 
 	uint32_t handle;
 
+<<<<<<< HEAD
 	uint16_t comp_status;
 	uint16_t failure_code;
 	uint32_t residual_count;
 
 	uint32_t reserved[12];
+=======
+	__le16	comp_status;
+	__le16	failure_code;
+	__le32	residual_count;
+
+	__le32	reserved[12];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* 81XX Support **************************************************************/
@@ -1502,7 +2612,14 @@ struct access_chip_rsp_84xx {
 /*
  * ISP83xx mailbox commands
  */
+<<<<<<< HEAD
 #define MBC_WRITE_REMOTE_REG 0x0001 /* Write remote register */
+=======
+#define MBC_WRITE_REMOTE_REG		0x0001 /* Write remote register */
+#define MBC_READ_REMOTE_REG		0x0009 /* Read remote register */
+#define MBC_RESTART_NIC_FIRMWARE	0x003d /* Restart NIC firmware */
+#define MBC_SET_ACCESS_CONTROL		0x003e /* Access control command */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flash access control option field bit definitions */
 #define FAC_OPT_FORCE_SEMAPHORE		BIT_15
@@ -1517,6 +2634,7 @@ struct access_chip_rsp_84xx {
 #define FAC_OPT_CMD_UNLOCK_SEMAPHORE	0x04
 #define FAC_OPT_CMD_GET_SECTOR_SIZE	0x05
 
+<<<<<<< HEAD
 struct nvram_81xx {
 	/* NVRAM header. */
 	uint8_t id[4];
@@ -1530,10 +2648,38 @@ struct nvram_81xx {
 	uint16_t execution_throttle;
 	uint16_t exchange_count;
 	uint16_t reserved_2;
+=======
+/* enhanced features bit definitions */
+#define NEF_LR_DIST_ENABLE	BIT_0
+
+/* LR Distance bit positions */
+#define LR_DIST_NV_POS		2
+#define LR_DIST_NV_MASK		0xf
+#define LR_DIST_FW_POS		12
+
+/* FAC semaphore defines */
+#define FAC_SEMAPHORE_UNLOCK    0
+#define FAC_SEMAPHORE_LOCK      1
+
+struct nvram_81xx {
+	/* NVRAM header. */
+	uint8_t id[4];
+	__le16	nvram_version;
+	__le16	reserved_0;
+
+	/* Firmware Initialization Control Block. */
+	__le16	version;
+	__le16	reserved_1;
+	__le16	frame_payload_size;
+	__le16	execution_throttle;
+	__le16	exchange_count;
+	__le16	reserved_2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t port_name[WWN_SIZE];
 	uint8_t node_name[WWN_SIZE];
 
+<<<<<<< HEAD
 	uint16_t login_retry_count;
 	uint16_t reserved_3;
 	uint16_t interrupt_delay_timer;
@@ -1564,6 +2710,40 @@ struct nvram_81xx {
 
 	/* Offset 192. */
 	uint16_t reserved_7[32];
+=======
+	__le16	login_retry_count;
+	__le16	reserved_3;
+	__le16	interrupt_delay_timer;
+	__le16	login_timeout;
+
+	__le32	firmware_options_1;
+	__le32	firmware_options_2;
+	__le32	firmware_options_3;
+
+	__le16	reserved_4[4];
+
+	/* Offset 64. */
+	uint8_t enode_mac[6];
+	__le16	reserved_5[5];
+
+	/* Offset 80. */
+	__le16	reserved_6[24];
+
+	/* Offset 128. */
+	__le16	ex_version;
+	uint8_t prio_fcf_matching_flags;
+	uint8_t reserved_6_1[3];
+	__le16	pri_fcf_vlan_id;
+	uint8_t pri_fcf_fabric_name[8];
+	__le16	reserved_6_2[7];
+	uint8_t spma_mac_addr[6];
+	__le16	reserved_6_3[14];
+
+	/* Offset 192. */
+	uint8_t min_supported_speed;
+	uint8_t reserved_7_0;
+	__le16	reserved_7[31];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * BIT 0  = Enable spinup delay
@@ -1596,12 +2776,17 @@ struct nvram_81xx {
 	 * BIT 25 = Temp WWPN
 	 * BIT 26-31 =
 	 */
+<<<<<<< HEAD
 	uint32_t host_p;
+=======
+	__le32	host_p;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t alternate_port_name[WWN_SIZE];
 	uint8_t alternate_node_name[WWN_SIZE];
 
 	uint8_t boot_port_name[WWN_SIZE];
+<<<<<<< HEAD
 	uint16_t boot_lun_number;
 	uint16_t reserved_8;
 
@@ -1616,6 +2801,22 @@ struct nvram_81xx {
 	uint8_t alt3_boot_port_name[WWN_SIZE];
 	uint16_t alt3_boot_lun_number;
 	uint16_t reserved_11;
+=======
+	__le16	boot_lun_number;
+	__le16	reserved_8;
+
+	uint8_t alt1_boot_port_name[WWN_SIZE];
+	__le16	alt1_boot_lun_number;
+	__le16	reserved_9;
+
+	uint8_t alt2_boot_port_name[WWN_SIZE];
+	__le16	alt2_boot_lun_number;
+	__le16	reserved_10;
+
+	uint8_t alt3_boot_port_name[WWN_SIZE];
+	__le16	alt3_boot_lun_number;
+	__le16	reserved_11;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * BIT 0 = Selective Login
@@ -1627,6 +2828,7 @@ struct nvram_81xx {
 	 * BIT 6 = Reserved
 	 * BIT 7-31 =
 	 */
+<<<<<<< HEAD
 	uint32_t efi_parameters;
 
 	uint8_t reset_delay;
@@ -1671,11 +2873,58 @@ struct nvram_81xx {
 
 	/* Offset 416. */
 	uint16_t reserved_25[32];
+=======
+	__le32	efi_parameters;
+
+	uint8_t reset_delay;
+	uint8_t reserved_12;
+	__le16	reserved_13;
+
+	__le16	boot_id_number;
+	__le16	reserved_14;
+
+	__le16	max_luns_per_target;
+	__le16	reserved_15;
+
+	__le16	port_down_retry_count;
+	__le16	link_down_timeout;
+
+	/* FCode parameters. */
+	__le16	fcode_parameter;
+
+	__le16	reserved_16[3];
+
+	/* Offset 352. */
+	uint8_t reserved_17[4];
+	__le16	reserved_18[5];
+	uint8_t reserved_19[2];
+	__le16	reserved_20[8];
+
+	/* Offset 384. */
+	uint8_t reserved_21[16];
+	__le16	reserved_22[3];
+
+	/* Offset 406 (0x196) Enhanced Features
+	 * BIT 0    = Extended BB credits for LR
+	 * BIT 1    = Virtual Fabric Enable
+	 * BIT 2-5  = Distance Support if BIT 0 is on
+	 * BIT 6    = Prefer FCP
+	 * BIT 7    = SCM Disabled if BIT is set (1)
+	 * BIT 8-15 = Unused
+	 */
+	uint16_t enhanced_features;
+
+	uint16_t reserved_24[4];
+
+	/* Offset 416. */
+	__le16	reserved_25[32];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Offset 480. */
 	uint8_t model_name[16];
 
 	/* Offset 496. */
+<<<<<<< HEAD
 	uint16_t feature_mask_l;
 	uint16_t feature_mask_h;
 	uint16_t reserved_26[2];
@@ -1684,6 +2933,16 @@ struct nvram_81xx {
 	uint16_t subsystem_device_id;
 
 	uint32_t checksum;
+=======
+	__le16	feature_mask_l;
+	__le16	feature_mask_h;
+	__le16	reserved_26[2];
+
+	__le16	subsystem_vendor_id;
+	__le16	subsystem_device_id;
+
+	__le32	checksum;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1692,6 +2951,7 @@ struct nvram_81xx {
  */
 #define	ICB_VERSION 1
 struct init_cb_81xx {
+<<<<<<< HEAD
 	uint16_t version;
 	uint16_t reserved_1;
 
@@ -1700,10 +2960,21 @@ struct init_cb_81xx {
 	uint16_t exchange_count;
 
 	uint16_t reserved_2;
+=======
+	__le16	version;
+	__le16	reserved_1;
+
+	__le16	frame_payload_size;
+	__le16	execution_throttle;
+	__le16	exchange_count;
+
+	__le16	reserved_2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t port_name[WWN_SIZE];		/* Big endian. */
 	uint8_t node_name[WWN_SIZE];		/* Big endian. */
 
+<<<<<<< HEAD
 	uint16_t response_q_inpointer;
 	uint16_t request_q_outpointer;
 
@@ -1730,6 +3001,34 @@ struct init_cb_81xx {
 
 	uint16_t interrupt_delay_timer;		/* 100us increments. */
 	uint16_t login_timeout;
+=======
+	__le16	response_q_inpointer;
+	__le16	request_q_outpointer;
+
+	__le16	login_retry_count;
+
+	__le16	prio_request_q_outpointer;
+
+	__le16	response_q_length;
+	__le16	request_q_length;
+
+	__le16	reserved_3;
+
+	__le16	prio_request_q_length;
+
+	__le64	 request_q_address __packed;
+	__le64	 response_q_address __packed;
+	__le64	 prio_request_q_address __packed;
+
+	uint8_t reserved_4[8];
+
+	__le16	atio_q_inpointer;
+	__le16	atio_q_length;
+	__le64	 atio_q_address __packed;
+
+	__le16	interrupt_delay_timer;		/* 100us increments. */
+	__le16	login_timeout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * BIT 0-3 = Reserved
@@ -1742,7 +3041,11 @@ struct init_cb_81xx {
 	 * BIT 14 = Node Name Option
 	 * BIT 15-31 = Reserved
 	 */
+<<<<<<< HEAD
 	uint32_t firmware_options_1;
+=======
+	__le32	firmware_options_1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * BIT 0  = Operation Mode bit 0
@@ -1760,7 +3063,11 @@ struct init_cb_81xx {
 	 * BIT 14 = Enable Target PRLI Control
 	 * BIT 15-31 = Reserved
 	 */
+<<<<<<< HEAD
 	uint32_t firmware_options_2;
+=======
+	__le32	firmware_options_2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * BIT 0-3 = Reserved
@@ -1781,7 +3088,11 @@ struct init_cb_81xx {
 	 * BIT 28 = SPMA selection bit 1
 	 * BIT 30-31 = Reserved
 	 */
+<<<<<<< HEAD
 	uint32_t firmware_options_3;
+=======
+	__le32	firmware_options_3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint8_t  reserved_5[8];
 
@@ -1812,6 +3123,11 @@ struct ex_init_cb_81xx {
 
 #define FARX_ACCESS_FLASH_CONF_81XX	0x7FFD0000
 #define FARX_ACCESS_FLASH_DATA_81XX	0x7F800000
+<<<<<<< HEAD
+=======
+#define FARX_ACCESS_FLASH_CONF_28XX	0x7FFD0000
+#define FARX_ACCESS_FLASH_DATA_28XX	0x7F7D0000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* FCP priority config defines *************************************/
 /* operations */
@@ -1857,9 +3173,15 @@ struct qla_fcp_prio_cfg {
 #define FCP_PRIO_ATTR_ENABLE    0x1
 #define FCP_PRIO_ATTR_PERSIST   0x2
 	uint8_t  reserved;      /* Reserved for future use          */
+<<<<<<< HEAD
 #define FCP_PRIO_CFG_HDR_SIZE   0x10
 	struct qla_fcp_prio_entry entry[1];     /* fcp priority entries  */
 #define FCP_PRIO_CFG_ENTRY_SIZE 0x20
+=======
+#define FCP_PRIO_CFG_HDR_SIZE   offsetof(struct qla_fcp_prio_cfg, entry)
+	struct qla_fcp_prio_entry entry[1023]; /* fcp priority entries  */
+	uint8_t  reserved2[16];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define FCP_PRIO_CFG_SIZE       (32*1024) /* fcp prio data per port*/
@@ -1886,6 +3208,13 @@ struct qla_fcp_prio_cfg {
 #define FA_NPIV_CONF1_ADDR_81	0xD2000
 
 /* 83XX Flash locations -- occupies second 8MB region. */
+<<<<<<< HEAD
 #define FA_FLASH_LAYOUT_ADDR_83	0xFC400
+=======
+#define FA_FLASH_LAYOUT_ADDR_83	(0x3F1000/4)
+#define FA_FLASH_LAYOUT_ADDR_28	(0x11000/4)
+
+#define NVRAM_DUAL_FCP_NVME_FLAG_OFFSET	0x196
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

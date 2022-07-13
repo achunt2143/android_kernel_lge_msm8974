@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 /*
  * dump_psb. (c) 2004, Dave Jones, Red Hat Inc.
  * Licensed under the GPL v2.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+// dump_psb. (c) 2004, Dave Jones, Red Hat Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <fcntl.h>
 #include <stdio.h>
@@ -134,7 +139,11 @@ next_one:
 }
 
 static struct option info_opts[] = {
+<<<<<<< HEAD
 	{.name = "numpst",	.has_arg=no_argument,	.flag=NULL, .val='n'},
+=======
+     {"numpst", no_argument, NULL, 'n'},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void print_help(void)

@@ -1,16 +1,43 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # SPMI driver configuration
 #
 menuconfig SPMI
+<<<<<<< HEAD
 	bool "SPMI support"
+=======
+	tristate "SPMI support"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  SPMI (System Power Management Interface) is a two-wire
 	  serial interface between baseband and application processors
 	  and Power Management Integrated Circuits (PMIC).
 
 if SPMI
+<<<<<<< HEAD
 config SPMI_MSM_PMIC_ARB
 	tristate "Qualcomm MSM SPMI Controller (PMIC Arbiter)"
+=======
+
+config SPMI_HISI3670
+	tristate "Hisilicon 3670 SPMI Controller"
+	select IRQ_DOMAIN_HIERARCHY
+	depends on HAS_IOMEM
+	help
+	  If you say yes to this option, support will be included for the
+	  built-in SPMI PMIC Arbiter interface on Hisilicon 3670
+	  processors.
+
+config SPMI_MSM_PMIC_ARB
+	tristate "Qualcomm MSM SPMI Controller (PMIC Arbiter)"
+	select IRQ_DOMAIN_HIERARCHY
+	depends on ARCH_QCOM || COMPILE_TEST
+	depends on HAS_IOMEM
+	default ARCH_QCOM
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If you say yes to this option, support will be included for the
 	  built-in SPMI PMIC Arbiter interface on Qualcomm MSM family
@@ -19,6 +46,7 @@ config SPMI_MSM_PMIC_ARB
 	  This is required for communicating with Qualcomm PMICs and
 	  other devices that have the SPMI interface.
 
+<<<<<<< HEAD
 config MSM_QPNP_INT
 	depends on SPARSE_IRQ
 	depends on SPMI
@@ -27,4 +55,17 @@ config MSM_QPNP_INT
 	help
 	  Say 'y' here to include support for the Qualcomm QPNP interrupt
 	  support. QPNP is a SPMI based PMIC implementation.
+=======
+config SPMI_MTK_PMIF
+	tristate "Mediatek SPMI Controller (PMIC Arbiter)"
+	depends on ARCH_MEDIATEK || COMPILE_TEST
+	help
+	  If you say yes to this option, support will be included for the
+	  built-in SPMI PMIC Arbiter interface on Mediatek family
+	  processors.
+
+	  This is required for communicating with Mediatek PMICs and
+	  other devices that have the SPMI interface.
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* strlen.S: Sparc optimized strlen code
  * Hand optimized from GNU libc's strlen
  * Copyright (C) 1991,1996 Free Software Foundation
@@ -5,6 +9,10 @@
  * Copyright (C) 1996, 1997 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/linkage.h>
 #include <asm/asm.h>
 
@@ -78,3 +86,7 @@ ENTRY(strlen)
 	retl
 	 mov	2, %o0
 ENDPROC(strlen)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(strlen)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

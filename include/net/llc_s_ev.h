@@ -13,6 +13,10 @@
  */
 
 #include <linux/skbuff.h>
+<<<<<<< HEAD
+=======
+#include <net/llc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Defines SAP component events */
 /* Types of events (possible values in 'ev->type') */
@@ -53,6 +57,7 @@ struct llc_sap;
 
 typedef int (*llc_sap_ev_t)(struct llc_sap *sap, struct sk_buff *skb);
 
+<<<<<<< HEAD
 extern int llc_sap_ev_activation_req(struct llc_sap *sap, struct sk_buff *skb);
 extern int llc_sap_ev_rx_ui(struct llc_sap *sap, struct sk_buff *skb);
 extern int llc_sap_ev_unitdata_req(struct llc_sap *sap, struct sk_buff *skb);
@@ -64,4 +69,16 @@ extern int llc_sap_ev_rx_test_c(struct llc_sap *sap, struct sk_buff *skb);
 extern int llc_sap_ev_rx_test_r(struct llc_sap *sap, struct sk_buff *skb);
 extern int llc_sap_ev_deactivation_req(struct llc_sap *sap,
 				       struct sk_buff *skb);
+=======
+int llc_sap_ev_activation_req(struct llc_sap *sap, struct sk_buff *skb);
+int llc_sap_ev_rx_ui(struct llc_sap *sap, struct sk_buff *skb);
+int llc_sap_ev_unitdata_req(struct llc_sap *sap, struct sk_buff *skb);
+int llc_sap_ev_xid_req(struct llc_sap *sap, struct sk_buff *skb);
+int llc_sap_ev_rx_xid_c(struct llc_sap *sap, struct sk_buff *skb);
+int llc_sap_ev_rx_xid_r(struct llc_sap *sap, struct sk_buff *skb);
+int llc_sap_ev_test_req(struct llc_sap *sap, struct sk_buff *skb);
+int llc_sap_ev_rx_test_c(struct llc_sap *sap, struct sk_buff *skb);
+int llc_sap_ev_rx_test_r(struct llc_sap *sap, struct sk_buff *skb);
+int llc_sap_ev_deactivation_req(struct llc_sap *sap, struct sk_buff *skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* LLC_S_EV_H */

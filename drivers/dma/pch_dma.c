@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Topcliff PCH DMA controller driver
  * Copyright (c) 2010 Intel Corporation
  * Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,12 +20,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
 #include <linux/init.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/module.h>
 #include <linux/pch_dma.h>
@@ -126,7 +137,11 @@ struct pch_dma_chan {
 struct pch_dma {
 	struct dma_device	dma;
 	void __iomem *membase;
+<<<<<<< HEAD
 	struct pci_pool		*pool;
+=======
+	struct dma_pool		*pool;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pch_dma_regs	regs;
 	struct pch_dma_desc_regs ch_regs[MAX_CHAN_NR];
 	struct pch_dma_chan	channels[MAX_CHAN_NR];
@@ -360,6 +375,7 @@ static void pdc_chain_complete(struct pch_dma_chan *pd_chan,
 			       struct pch_dma_desc *desc)
 {
 	struct dma_async_tx_descriptor *txd = &desc->txd;
+<<<<<<< HEAD
 	dma_async_tx_callback callback = txd->callback;
 	void *param = txd->callback_param;
 
@@ -368,6 +384,15 @@ static void pdc_chain_complete(struct pch_dma_chan *pd_chan,
 
 	if (callback)
 		callback(param);
+=======
+	struct dmaengine_desc_callback cb;
+
+	dmaengine_desc_get_callback(txd, &cb);
+	list_splice_init(&desc->tx_list, &pd_chan->free_list);
+	list_move(&desc->desc_node, &pd_chan->free_list);
+
+	dmaengine_desc_callback_invoke(&cb, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pdc_complete_all(struct pch_dma_chan *pd_chan)
@@ -421,10 +446,15 @@ static dma_cookie_t pd_tx_submit(struct dma_async_tx_descriptor *txd)
 {
 	struct pch_dma_desc *desc = to_pd_desc(txd);
 	struct pch_dma_chan *pd_chan = to_pd_chan(txd->chan);
+<<<<<<< HEAD
 	dma_cookie_t cookie;
 
 	spin_lock(&pd_chan->lock);
 	cookie = dma_cookie_assign(txd);
+=======
+
+	spin_lock(&pd_chan->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (list_empty(&pd_chan->active_list)) {
 		list_add_tail(&desc->desc_node, &pd_chan->active_list);
@@ -443,9 +473,14 @@ static struct pch_dma_desc *pdc_alloc_desc(struct dma_chan *chan, gfp_t flags)
 	struct pch_dma *pd = to_pd(chan->device);
 	dma_addr_t addr;
 
+<<<<<<< HEAD
 	desc = pci_pool_alloc(pd->pool, flags, &addr);
 	if (desc) {
 		memset(desc, 0, sizeof(struct pch_dma_desc));
+=======
+	desc = dma_pool_zalloc(pd->pool, flags, &addr);
+	if (desc) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		INIT_LIST_HEAD(&desc->tx_list);
 		dma_async_tx_descriptor_init(&desc->txd, chan);
 		desc->txd.tx_submit = pd_tx_submit;
@@ -556,7 +591,11 @@ static void pd_free_chan_resources(struct dma_chan *chan)
 	spin_unlock_irq(&pd_chan->lock);
 
 	list_for_each_entry_safe(desc, _d, &tmp_list, desc_node)
+<<<<<<< HEAD
 		pci_pool_free(pd->pool, desc, desc->txd.phys);
+=======
+		dma_pool_free(pd->pool, desc, desc->txd.phys);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdc_enable_irq(chan, 0);
 }
@@ -564,6 +603,7 @@ static void pd_free_chan_resources(struct dma_chan *chan)
 static enum dma_status pd_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
 				    struct dma_tx_state *txstate)
 {
+<<<<<<< HEAD
 	struct pch_dma_chan *pd_chan = to_pd_chan(chan);
 	enum dma_status ret;
 
@@ -572,6 +612,9 @@ static enum dma_status pd_tx_status(struct dma_chan *chan, dma_cookie_t cookie,
 	spin_unlock_irq(&pd_chan->lock);
 
 	return ret;
+=======
+	return dma_cookie_status(chan, cookie, txstate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pd_issue_pending(struct dma_chan *chan)
@@ -621,7 +664,11 @@ static struct dma_async_tx_descriptor *pd_prep_slave_sg(struct dma_chan *chan,
 			goto err_desc_get;
 
 		desc->regs.dev_addr = reg;
+<<<<<<< HEAD
 		desc->regs.mem_addr = sg_phys(sg);
+=======
+		desc->regs.mem_addr = sg_dma_address(sg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		desc->regs.size = sg_dma_len(sg);
 		desc->regs.next = DMA_DESC_FOLLOW_WITHOUT_IRQ;
 
@@ -671,16 +718,23 @@ err_desc_get:
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int pd_device_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 			     unsigned long arg)
+=======
+static int pd_device_terminate_all(struct dma_chan *chan)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pch_dma_chan *pd_chan = to_pd_chan(chan);
 	struct pch_dma_desc *desc, *_d;
 	LIST_HEAD(list);
 
+<<<<<<< HEAD
 	if (cmd != DMA_TERMINATE_ALL)
 		return -ENXIO;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&pd_chan->lock);
 
 	pdc_set_mode(&pd_chan->chan, DMA_CTL0_DISABLE);
@@ -696,9 +750,15 @@ static int pd_device_control(struct dma_chan *chan, enum dma_ctrl_cmd cmd,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void pdc_tasklet(unsigned long data)
 {
 	struct pch_dma_chan *pd_chan = (struct pch_dma_chan *)data;
+=======
+static void pdc_tasklet(struct tasklet_struct *t)
+{
+	struct pch_dma_chan *pd_chan = from_tasklet(pd_chan, t, tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	if (!pdc_is_idle(pd_chan)) {
@@ -761,8 +821,12 @@ static irqreturn_t pd_irq(int irq, void *devid)
 	return ret0 | ret2;
 }
 
+<<<<<<< HEAD
 #ifdef	CONFIG_PM
 static void pch_dma_save_regs(struct pch_dma *pd)
+=======
+static void __maybe_unused pch_dma_save_regs(struct pch_dma *pd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pch_dma_chan *pd_chan;
 	struct dma_chan *chan, *_c;
@@ -785,7 +849,11 @@ static void pch_dma_save_regs(struct pch_dma *pd)
 	}
 }
 
+<<<<<<< HEAD
 static void pch_dma_restore_regs(struct pch_dma *pd)
+=======
+static void __maybe_unused pch_dma_restore_regs(struct pch_dma *pd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pch_dma_chan *pd_chan;
 	struct dma_chan *chan, *_c;
@@ -808,13 +876,20 @@ static void pch_dma_restore_regs(struct pch_dma *pd)
 	}
 }
 
+<<<<<<< HEAD
 static int pch_dma_suspend(struct pci_dev *pdev, pm_message_t state)
 {
 	struct pch_dma *pd = pci_get_drvdata(pdev);
+=======
+static int __maybe_unused pch_dma_suspend(struct device *dev)
+{
+	struct pch_dma *pd = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pd)
 		pch_dma_save_regs(pd);
 
+<<<<<<< HEAD
 	pci_save_state(pdev);
 	pci_disable_device(pdev);
 	pci_set_power_state(pdev, pci_choose_state(pdev, state));
@@ -835,15 +910,28 @@ static int pch_dma_resume(struct pci_dev *pdev)
 		dev_dbg(&pdev->dev, "failed to enable device\n");
 		return err;
 	}
+=======
+	return 0;
+}
+
+static int __maybe_unused pch_dma_resume(struct device *dev)
+{
+	struct pch_dma *pd = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pd)
 		pch_dma_restore_regs(pd);
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static int __devinit pch_dma_probe(struct pci_dev *pdev,
+=======
+
+static int pch_dma_probe(struct pci_dev *pdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   const struct pci_device_id *id)
 {
 	struct pch_dma *pd;
@@ -867,6 +955,10 @@ static int __devinit pch_dma_probe(struct pci_dev *pdev,
 
 	if (!(pci_resource_flags(pdev, 1) & IORESOURCE_MEM)) {
 		dev_err(&pdev->dev, "Cannot find proper base address\n");
+<<<<<<< HEAD
+=======
+		err = -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_disable_pdev;
 	}
 
@@ -876,7 +968,11 @@ static int __devinit pch_dma_probe(struct pci_dev *pdev,
 		goto err_disable_pdev;
 	}
 
+<<<<<<< HEAD
 	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		dev_err(&pdev->dev, "Cannot set proper DMA config\n");
 		goto err_free_res;
@@ -890,6 +986,10 @@ static int __devinit pch_dma_probe(struct pci_dev *pdev,
 	}
 
 	pci_set_master(pdev);
+<<<<<<< HEAD
+=======
+	pd->dma.dev = &pdev->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = request_irq(pdev->irq, pd_irq, IRQF_SHARED, DRV_NAME, pd);
 	if (err) {
@@ -897,7 +997,11 @@ static int __devinit pch_dma_probe(struct pci_dev *pdev,
 		goto err_iounmap;
 	}
 
+<<<<<<< HEAD
 	pd->pool = pci_pool_create("pch_dma_desc_pool", pdev,
+=======
+	pd->pool = dma_pool_create("pch_dma_desc_pool", &pdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   sizeof(struct pch_dma_desc), 4, 0);
 	if (!pd->pool) {
 		dev_err(&pdev->dev, "Failed to alloc DMA descriptors\n");
@@ -905,7 +1009,10 @@ static int __devinit pch_dma_probe(struct pci_dev *pdev,
 		goto err_free_irq;
 	}
 
+<<<<<<< HEAD
 	pd->dma.dev = &pdev->dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&pd->dma.channels);
 
@@ -923,8 +1030,12 @@ static int __devinit pch_dma_probe(struct pci_dev *pdev,
 		INIT_LIST_HEAD(&pd_chan->queue);
 		INIT_LIST_HEAD(&pd_chan->free_list);
 
+<<<<<<< HEAD
 		tasklet_init(&pd_chan->tasklet, pdc_tasklet,
 			     (unsigned long)pd_chan);
+=======
+		tasklet_setup(&pd_chan->tasklet, pdc_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_add_tail(&pd_chan->chan.device_node, &pd->dma.channels);
 	}
 
@@ -937,7 +1048,11 @@ static int __devinit pch_dma_probe(struct pci_dev *pdev,
 	pd->dma.device_tx_status = pd_tx_status;
 	pd->dma.device_issue_pending = pd_issue_pending;
 	pd->dma.device_prep_slave_sg = pd_prep_slave_sg;
+<<<<<<< HEAD
 	pd->dma.device_control = pd_device_control;
+=======
+	pd->dma.device_terminate_all = pd_device_terminate_all;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = dma_async_device_register(&pd->dma);
 	if (err) {
@@ -948,7 +1063,11 @@ static int __devinit pch_dma_probe(struct pci_dev *pdev,
 	return 0;
 
 err_free_pool:
+<<<<<<< HEAD
 	pci_pool_destroy(pd->pool);
+=======
+	dma_pool_destroy(pd->pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free_irq:
 	free_irq(pdev->irq, pd);
 err_iounmap:
@@ -958,10 +1077,18 @@ err_free_res:
 err_disable_pdev:
 	pci_disable_device(pdev);
 err_free_mem:
+<<<<<<< HEAD
 	return err;
 }
 
 static void __devexit pch_dma_remove(struct pci_dev *pdev)
+=======
+	kfree(pd);
+	return err;
+}
+
+static void pch_dma_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pch_dma *pd = pci_get_drvdata(pdev);
 	struct pch_dma_chan *pd_chan;
@@ -970,16 +1097,28 @@ static void __devexit pch_dma_remove(struct pci_dev *pdev)
 	if (pd) {
 		dma_async_device_unregister(&pd->dma);
 
+<<<<<<< HEAD
+=======
+		free_irq(pdev->irq, pd);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_for_each_entry_safe(chan, _c, &pd->dma.channels,
 					 device_node) {
 			pd_chan = to_pd_chan(chan);
 
+<<<<<<< HEAD
 			tasklet_disable(&pd_chan->tasklet);
 			tasklet_kill(&pd_chan->tasklet);
 		}
 
 		pci_pool_destroy(pd->pool);
 		free_irq(pdev->irq, pd);
+=======
+			tasklet_kill(&pd_chan->tasklet);
+		}
+
+		dma_pool_destroy(pd->pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_iounmap(pdev, pd->membase);
 		pci_release_regions(pdev);
 		pci_disable_device(pdev);
@@ -988,7 +1127,10 @@ static void __devexit pch_dma_remove(struct pci_dev *pdev)
 }
 
 /* PCI Device ID of DMA device */
+<<<<<<< HEAD
 #define PCI_VENDOR_ID_ROHM             0x10DB
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_EG20T_PCH_DMA_8CH        0x8810
 #define PCI_DEVICE_ID_EG20T_PCH_DMA_4CH        0x8815
 #define PCI_DEVICE_ID_ML7213_DMA1_8CH	0x8026
@@ -1002,7 +1144,11 @@ static void __devexit pch_dma_remove(struct pci_dev *pdev)
 #define PCI_DEVICE_ID_ML7831_DMA1_8CH	0x8810
 #define PCI_DEVICE_ID_ML7831_DMA2_4CH	0x8815
 
+<<<<<<< HEAD
 DEFINE_PCI_DEVICE_TABLE(pch_dma_id_table) = {
+=======
+static const struct pci_device_id pch_dma_id_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_EG20T_PCH_DMA_8CH), 8 },
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_EG20T_PCH_DMA_4CH), 4 },
 	{ PCI_VDEVICE(ROHM, PCI_DEVICE_ID_ML7213_DMA1_8CH), 8}, /* UART Video */
@@ -1018,10 +1164,16 @@ DEFINE_PCI_DEVICE_TABLE(pch_dma_id_table) = {
 	{ 0, },
 };
 
+<<<<<<< HEAD
+=======
+static SIMPLE_DEV_PM_OPS(pch_dma_pm_ops, pch_dma_suspend, pch_dma_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver pch_dma_driver = {
 	.name		= DRV_NAME,
 	.id_table	= pch_dma_id_table,
 	.probe		= pch_dma_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(pch_dma_remove),
 #ifdef CONFIG_PM
 	.suspend	= pch_dma_suspend,
@@ -1041,8 +1193,19 @@ static void __exit pch_dma_exit(void)
 
 module_init(pch_dma_init);
 module_exit(pch_dma_exit);
+=======
+	.remove		= pch_dma_remove,
+	.driver.pm	= &pch_dma_pm_ops,
+};
+
+module_pci_driver(pch_dma_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Intel EG20T PCH / LAPIS Semicon ML7213/ML7223/ML7831 IOH "
 		   "DMA controller driver");
 MODULE_AUTHOR("Yong Wang <yong.y.wang@intel.com>");
 MODULE_LICENSE("GPL v2");
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(pci, pch_dma_id_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

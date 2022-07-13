@@ -1,6 +1,9 @@
 /******************************************************************************
+<<<<<<< HEAD
  * evtchn.h
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Interface to /dev/xen/xenbus_backend.
  *
  * Copyright (c) 2011 Bastian Blank <waldi@debian.org>
@@ -38,4 +41,10 @@
 #define IOCTL_XENBUS_BACKEND_EVTCHN			\
 	_IOC(_IOC_NONE, 'B', 0, 0)
 
+<<<<<<< HEAD
+=======
+#define IOCTL_XENBUS_BACKEND_SETUP			\
+	_IOC(_IOC_NONE, 'B', 1, 0)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_XEN_XENBUS_DEV_H__ */

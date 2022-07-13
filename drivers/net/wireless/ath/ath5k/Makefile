@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: ISC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ath5k-y				+= caps.o
 ath5k-y				+= initvals.o
 ath5k-y				+= eeprom.o
@@ -10,6 +14,10 @@ ath5k-y				+= phy.o
 ath5k-y				+= reset.o
 ath5k-y				+= attach.o
 ath5k-y				+= base.o
+<<<<<<< HEAD
+=======
+CFLAGS_base.o			+= -I$(src)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ath5k-y				+= led.o
 ath5k-y				+= rfkill.o
 ath5k-y				+= ani.o

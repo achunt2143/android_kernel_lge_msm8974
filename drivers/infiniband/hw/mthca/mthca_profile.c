@@ -31,8 +31,11 @@
  * SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/moduleparam.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/slab.h>
 
@@ -77,10 +80,16 @@ s64 mthca_make_profile(struct mthca_dev *dev,
 	u64 mem_base, mem_avail;
 	s64 total_size = 0;
 	struct mthca_resource *profile;
+<<<<<<< HEAD
 	struct mthca_resource tmp;
 	int i, j;
 
 	profile = kzalloc(MTHCA_RES_NUM * sizeof *profile, GFP_KERNEL);
+=======
+	int i, j;
+
+	profile = kcalloc(MTHCA_RES_NUM, sizeof(*profile), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!profile)
 		return -ENOMEM;
 
@@ -136,11 +145,16 @@ s64 mthca_make_profile(struct mthca_dev *dev,
 	 */
 	for (i = MTHCA_RES_NUM; i > 0; --i)
 		for (j = 1; j < i; ++j) {
+<<<<<<< HEAD
 			if (profile[j].size > profile[j - 1].size) {
 				tmp            = profile[j];
 				profile[j]     = profile[j - 1];
 				profile[j - 1] = tmp;
 			}
+=======
+			if (profile[j].size > profile[j - 1].size)
+				swap(profile[j], profile[j - 1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 	for (i = 0; i < MTHCA_RES_NUM; ++i) {

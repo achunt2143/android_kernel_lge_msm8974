@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************
  *                                                                           *
  * File: common.h                                                            *
@@ -6,6 +10,7 @@
  * Description:                                                              *
  *  part of the Chelsio 10Gb Ethernet Driver.                                *
  *                                                                           *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify      *
  * it under the terms of the GNU General Public License, version 2, as       *
  * published by the Free Software Foundation.                                *
@@ -17,6 +22,8 @@
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED    *
  * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF      *
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.                     *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                           *
  * http://www.chelsio.com                                                    *
  *                                                                           *
@@ -50,14 +57,20 @@
 #include <linux/if_vlan.h>
 #include <linux/mdio.h>
 #include <linux/crc32.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <asm/io.h>
 #include <linux/pci_ids.h>
 
 #define DRV_DESCRIPTION "Chelsio 10Gb Ethernet Driver"
 #define DRV_NAME "cxgb"
+<<<<<<< HEAD
 #define DRV_VERSION "2.2"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CH_DEVICE(devid, ssid, idx) \
 	{ PCI_VENDOR_ID_CHELSIO, devid, PCI_ANY_ID, ssid, 0, 0, idx }
@@ -87,6 +100,14 @@ struct t1_rx_mode {
 #define SPEED_INVALID 0xffff
 #define DUPLEX_INVALID 0xff
 
+<<<<<<< HEAD
+=======
+/* Max frame size PM3393 can handle. Includes Ethernet header and CRC. */
+#define PM3393_MAX_FRAME_SIZE 9600
+
+#define VSC7326_MAX_MTU 9600
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum {
 	CHBT_BOARD_N110,
 	CHBT_BOARD_N210,
@@ -220,7 +241,10 @@ struct port_info {
 	struct cmac *mac;
 	struct cphy *phy;
 	struct link_config link_config;
+<<<<<<< HEAD
 	struct net_device_stats netstats;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct sge;
@@ -237,7 +261,10 @@ struct adapter {
 	int msg_enable;
 	u32 mmio_len;
 
+<<<<<<< HEAD
 	struct work_struct ext_intr_handler_task;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct adapter_params params;
 
 	/* Terminator modules. */
@@ -256,6 +283,10 @@ struct adapter {
 
 	/* guards async operations */
 	spinlock_t async_lock ____cacheline_aligned;
+<<<<<<< HEAD
+=======
+	u32 pending_thread_intr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 slow_intr_mask;
 	int t1powersave;
 };
@@ -324,6 +355,7 @@ static inline unsigned int core_ticks_per_usec(const adapter_t *adap)
 	return board_info(adap)->clock_core / 1000000;
 }
 
+<<<<<<< HEAD
 extern int __t1_tpi_read(adapter_t *adapter, u32 addr, u32 *valp);
 extern int __t1_tpi_write(adapter_t *adapter, u32 addr, u32 value);
 extern int t1_tpi_write(adapter_t *adapter, u32 addr, u32 value);
@@ -349,5 +381,30 @@ extern void t1_free_sw_modules(adapter_t *adapter);
 extern void t1_fatal_err(adapter_t *adapter);
 extern void t1_link_changed(adapter_t *adapter, int port_id);
 extern void t1_link_negotiated(adapter_t *adapter, int port_id, int link_stat,
+=======
+int __t1_tpi_read(adapter_t *adapter, u32 addr, u32 *valp);
+int __t1_tpi_write(adapter_t *adapter, u32 addr, u32 value);
+int t1_tpi_write(adapter_t *adapter, u32 addr, u32 value);
+int t1_tpi_read(adapter_t *adapter, u32 addr, u32 *value);
+
+void t1_interrupts_enable(adapter_t *adapter);
+void t1_interrupts_disable(adapter_t *adapter);
+void t1_interrupts_clear(adapter_t *adapter);
+int t1_elmer0_ext_intr_handler(adapter_t *adapter);
+irqreturn_t t1_slow_intr_handler(adapter_t *adapter);
+
+int t1_link_start(struct cphy *phy, struct cmac *mac, struct link_config *lc);
+const struct board_info *t1_get_board_info(unsigned int board_id);
+const struct board_info *t1_get_board_info_from_ids(unsigned int devid,
+						    unsigned short ssid);
+int t1_seeprom_read(adapter_t *adapter, u32 addr, __le32 *data);
+int t1_get_board_rev(adapter_t *adapter, const struct board_info *bi,
+		     struct adapter_params *p);
+int t1_init_hw_modules(adapter_t *adapter);
+int t1_init_sw_modules(adapter_t *adapter, const struct board_info *bi);
+void t1_free_sw_modules(adapter_t *adapter);
+void t1_link_changed(adapter_t *adapter, int port_id);
+void t1_link_negotiated(adapter_t *adapter, int port_id, int link_stat,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    int speed, int duplex, int pause);
 #endif /* _CXGB_COMMON_H_ */

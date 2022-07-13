@@ -18,11 +18,18 @@
 #include <linux/compat.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/errno.h>
 #include <linux/ptrace.h>
 #include <linux/smp.h>
+<<<<<<< HEAD
 #include <linux/user.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/security.h>
 
 #include <asm/cpu.h>
@@ -30,9 +37,16 @@
 #include <asm/fpu.h>
 #include <asm/mipsregs.h>
 #include <asm/mipsmtregs.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/page.h>
 #include <asm/uaccess.h>
+=======
+#include <asm/page.h>
+#include <asm/reg.h>
+#include <asm/syscall.h>
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/bootinfo.h>
 
 /*
@@ -69,8 +83,13 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 		if (get_user(addrOthers, (u32 __user * __user *) (unsigned long) addr) != 0)
 			break;
 
+<<<<<<< HEAD
 		copied = access_process_vm(child, (u64)addrOthers, &tmp,
 				sizeof(tmp), 0);
+=======
+		copied = ptrace_access_vm(child, (u64)addrOthers, &tmp,
+				sizeof(tmp), FOLL_FORCE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copied != sizeof(tmp))
 			break;
 		ret = put_user(tmp, (u32 __user *) (unsigned long) data);
@@ -89,6 +108,7 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 		case 0 ... 31:
 			tmp = regs->regs[addr];
 			break;
+<<<<<<< HEAD
 		case FPR_BASE ... FPR_BASE + 31:
 			if (tsk_used_math(child)) {
 				fpureg_t *fregs = get_fpu_regs(child);
@@ -106,6 +126,39 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 				tmp = -1;	/* FP not yet used  */
 			}
 			break;
+=======
+#ifdef CONFIG_MIPS_FP_SUPPORT
+		case FPR_BASE ... FPR_BASE + 31: {
+			union fpureg *fregs;
+
+			if (!tsk_used_math(child)) {
+				/* FP not yet used */
+				tmp = -1;
+				break;
+			}
+			fregs = get_fpu_regs(child);
+			if (test_tsk_thread_flag(child, TIF_32BIT_FPREGS)) {
+				/*
+				 * The odd registers are actually the high
+				 * order bits of the values stored in the even
+				 * registers.
+				 */
+				tmp = get_fpr32(&fregs[(addr & ~1) - FPR_BASE],
+						addr & 1);
+				break;
+			}
+			tmp = get_fpr64(&fregs[addr - FPR_BASE], 0);
+			break;
+		}
+		case FPC_CSR:
+			tmp = child->thread.fpu.fcr31;
+			break;
+		case FPC_EIR:
+			/* implementation / version register */
+			tmp = boot_cpu_data.fpu_id;
+			break;
+#endif /* CONFIG_MIPS_FP_SUPPORT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case PC:
 			tmp = regs->cp0_epc;
 			break;
@@ -121,6 +174,7 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 		case MMLO:
 			tmp = regs->lo;
 			break;
+<<<<<<< HEAD
 		case FPC_CSR:
 			tmp = child->thread.fpu.fcr31;
 			break;
@@ -164,6 +218,8 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 			preempt_enable();
 			break;
 		}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case DSP_BASE ... DSP_BASE + 5: {
 			dspreg_t *dregs;
 
@@ -173,7 +229,11 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 				goto out;
 			}
 			dregs = __get_dsp_regs(child);
+<<<<<<< HEAD
 			tmp = (unsigned long) (dregs[addr - DSP_BASE]);
+=======
+			tmp = dregs[addr - DSP_BASE];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		case DSP_CONTROL:
@@ -211,8 +271,14 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 		if (get_user(addrOthers, (u32 __user * __user *) (unsigned long) addr) != 0)
 			break;
 		ret = 0;
+<<<<<<< HEAD
 		if (access_process_vm(child, (u64)addrOthers, &data,
 					sizeof(data), 1) == sizeof(data))
+=======
+		if (ptrace_access_vm(child, (u64)addrOthers, &data,
+					sizeof(data),
+					FOLL_FORCE | FOLL_WRITE) == sizeof(data))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		ret = -EIO;
 		break;
@@ -226,9 +292,22 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 		switch (addr) {
 		case 0 ... 31:
 			regs->regs[addr] = data;
+<<<<<<< HEAD
 			break;
 		case FPR_BASE ... FPR_BASE + 31: {
 			fpureg_t *fregs = get_fpu_regs(child);
+=======
+			/* System call number may have been changed */
+			if (addr == 2)
+				mips_syscall_update_nr(child, regs);
+			else if (addr == 4 &&
+				 mips_syscall_is_indirect(child, regs))
+				mips_syscall_update_nr(child, regs);
+			break;
+#ifdef CONFIG_MIPS_FP_SUPPORT
+		case FPR_BASE ... FPR_BASE + 31: {
+			union fpureg *fregs = get_fpu_regs(child);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (!tsk_used_math(child)) {
 				/* FP not yet used  */
@@ -236,6 +315,7 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 				       sizeof(child->thread.fpu));
 				child->thread.fpu.fcr31 = 0;
 			}
+<<<<<<< HEAD
 			/*
 			 * The odd registers are actually the high order bits
 			 * of the values stored in the even registers - unless
@@ -252,6 +332,25 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 			}
 			break;
 		}
+=======
+			if (test_tsk_thread_flag(child, TIF_32BIT_FPREGS)) {
+				/*
+				 * The odd registers are actually the high
+				 * order bits of the values stored in the even
+				 * registers.
+				 */
+				set_fpr32(&fregs[(addr & ~1) - FPR_BASE],
+					  addr & 1, data);
+				break;
+			}
+			set_fpr64(&fregs[addr - FPR_BASE], 0, data);
+			break;
+		}
+		case FPC_CSR:
+			child->thread.fpu.fcr31 = data;
+			break;
+#endif /* CONFIG_MIPS_FP_SUPPORT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case PC:
 			regs->cp0_epc = data;
 			break;
@@ -261,9 +360,12 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 		case MMLO:
 			regs->lo = data;
 			break;
+<<<<<<< HEAD
 		case FPC_CSR:
 			child->thread.fpu.fcr31 = data;
 			break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case DSP_BASE ... DSP_BASE + 5: {
 			dspreg_t *dregs;
 
@@ -292,6 +394,7 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 		}
 
 	case PTRACE_GETREGS:
+<<<<<<< HEAD
 		ret = ptrace_getregs(child, (__s64 __user *) (__u64) data);
 		break;
 
@@ -299,6 +402,18 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 		ret = ptrace_setregs(child, (__s64 __user *) (__u64) data);
 		break;
 
+=======
+		ret = ptrace_getregs(child,
+				(struct user_pt_regs __user *) (__u64) data);
+		break;
+
+	case PTRACE_SETREGS:
+		ret = ptrace_setregs(child,
+				(struct user_pt_regs __user *) (__u64) data);
+		break;
+
+#ifdef CONFIG_MIPS_FP_SUPPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PTRACE_GETFPREGS:
 		ret = ptrace_getfpregs(child, (__u32 __user *) (__u64) data);
 		break;
@@ -306,7 +421,11 @@ long compat_arch_ptrace(struct task_struct *child, compat_long_t request,
 	case PTRACE_SETFPREGS:
 		ret = ptrace_setfpregs(child, (__u32 __user *) (__u64) data);
 		break;
+<<<<<<< HEAD
 
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PTRACE_GET_THREAD_AREA:
 		ret = put_user(task_thread_info(child)->tp_value,
 				(unsigned int __user *) (unsigned long) data);

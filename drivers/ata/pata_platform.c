@@ -13,7 +13,10 @@
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <scsi/scsi_host.h>
 #include <linux/ata.h>
@@ -25,6 +28,11 @@
 #define DRV_VERSION "1.2"
 
 static int pio_mask = 1;
+<<<<<<< HEAD
+=======
+module_param(pio_mask, int, 0);
+MODULE_PARM_DESC(pio_mask, "PIO modes supported, mode 0 only by default");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Provide our own set_mode() as we don't want to change anything that has
@@ -44,6 +52,7 @@ static int pata_platform_set_mode(struct ata_link *link, struct ata_device **unu
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct scsi_host_template pata_platform_sht = {
 	ATA_PIO_SHT(DRV_NAME),
 };
@@ -55,6 +64,12 @@ static struct ata_port_operations pata_platform_port_ops = {
 	.set_mode		= pata_platform_set_mode,
 };
 
+=======
+static const struct scsi_host_template pata_platform_sht = {
+	ATA_PIO_SHT(DRV_NAME),
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pata_platform_setup_port(struct ata_ioports *ioaddr,
 				     unsigned int shift)
 {
@@ -79,6 +94,11 @@ static void pata_platform_setup_port(struct ata_ioports *ioaddr,
  *	@irq_res: Resource representing IRQ and its flags
  *	@ioport_shift: I/O port shift
  *	@__pio_mask: PIO mask
+<<<<<<< HEAD
+=======
+ *	@sht: scsi_host_template to use when registering
+ *	@use16bit: Flag to indicate 16-bit IO instead of 32-bit
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Register a platform bus IDE interface. Such interfaces are PIO and we
  *	assume do not support IRQ sharing.
@@ -98,12 +118,19 @@ static void pata_platform_setup_port(struct ata_ioports *ioaddr,
  *
  *	If no IRQ resource is present, PIO polling mode is used instead.
  */
+<<<<<<< HEAD
 int __devinit __pata_platform_probe(struct device *dev,
 				    struct resource *io_res,
 				    struct resource *ctl_res,
 				    struct resource *irq_res,
 				    unsigned int ioport_shift,
 				    int __pio_mask)
+=======
+int __pata_platform_probe(struct device *dev, struct resource *io_res,
+			  struct resource *ctl_res, struct resource *irq_res,
+			  unsigned int ioport_shift, int __pio_mask,
+			  const struct scsi_host_template *sht, bool use16bit)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_host *host;
 	struct ata_port *ap;
@@ -122,7 +149,11 @@ int __devinit __pata_platform_probe(struct device *dev,
 	 */
 	if (irq_res && irq_res->start > 0) {
 		irq = irq_res->start;
+<<<<<<< HEAD
 		irq_flags = irq_res->flags;
+=======
+		irq_flags = (irq_res->flags & IRQF_TRIGGER_MASK) | IRQF_SHARED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -133,7 +164,21 @@ int __devinit __pata_platform_probe(struct device *dev,
 		return -ENOMEM;
 	ap = host->ports[0];
 
+<<<<<<< HEAD
 	ap->ops = &pata_platform_port_ops;
+=======
+	ap->ops = devm_kzalloc(dev, sizeof(*ap->ops), GFP_KERNEL);
+	if (!ap->ops)
+		return -ENOMEM;
+	ap->ops->inherits = &ata_sff_port_ops;
+	ap->ops->cable_detect = ata_cable_unknown;
+	ap->ops->set_mode = pata_platform_set_mode;
+	if (use16bit)
+		ap->ops->sff_data_xfer = ata_sff_data_xfer;
+	else
+		ap->ops->sff_data_xfer = ata_sff_data_xfer32;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ap->pio_mask = __pio_mask;
 	ap->flags |= ATA_FLAG_SLAVE_POSS;
 
@@ -174,6 +219,7 @@ int __devinit __pata_platform_probe(struct device *dev,
 
 	/* activate */
 	return ata_host_activate(host, irq, irq ? ata_sff_interrupt : NULL,
+<<<<<<< HEAD
 				 irq_flags, &pata_platform_sht);
 }
 EXPORT_SYMBOL_GPL(__pata_platform_probe);
@@ -196,11 +242,22 @@ int __pata_platform_remove(struct device *dev)
 EXPORT_SYMBOL_GPL(__pata_platform_remove);
 
 static int __devinit pata_platform_probe(struct platform_device *pdev)
+=======
+				 irq_flags, sht);
+}
+EXPORT_SYMBOL_GPL(__pata_platform_probe);
+
+static int pata_platform_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *io_res;
 	struct resource *ctl_res;
 	struct resource *irq_res;
+<<<<<<< HEAD
 	struct pata_platform_info *pp_info = pdev->dev.platform_data;
+=======
+	struct pata_platform_info *pp_info = dev_get_platdata(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Simple resource validation ..
@@ -213,27 +270,40 @@ static int __devinit pata_platform_probe(struct platform_device *pdev)
 	/*
 	 * Get the I/O base first
 	 */
+<<<<<<< HEAD
 	io_res = platform_get_resource(pdev, IORESOURCE_IO, 0);
 	if (io_res == NULL) {
 		io_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 		if (unlikely(io_res == NULL))
 			return -EINVAL;
 	}
+=======
+	io_res = platform_get_mem_or_io(pdev, 0);
+	if (!io_res)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Then the CTL base
 	 */
+<<<<<<< HEAD
 	ctl_res = platform_get_resource(pdev, IORESOURCE_IO, 1);
 	if (ctl_res == NULL) {
 		ctl_res = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 		if (unlikely(ctl_res == NULL))
 			return -EINVAL;
 	}
+=======
+	ctl_res = platform_get_mem_or_io(pdev, 1);
+	if (!ctl_res)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * And the IRQ
 	 */
 	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
+<<<<<<< HEAD
 	if (irq_res)
 		irq_res->flags = pp_info ? pp_info->irq_flags : 0;
 
@@ -245,21 +315,36 @@ static int __devinit pata_platform_probe(struct platform_device *pdev)
 static int __devexit pata_platform_remove(struct platform_device *pdev)
 {
 	return __pata_platform_remove(&pdev->dev);
+=======
+
+	return __pata_platform_probe(&pdev->dev, io_res, ctl_res, irq_res,
+				     pp_info ? pp_info->ioport_shift : 0,
+				     pio_mask, &pata_platform_sht, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver pata_platform_driver = {
 	.probe		= pata_platform_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(pata_platform_remove),
 	.driver = {
 		.name		= DRV_NAME,
 		.owner		= THIS_MODULE,
+=======
+	.remove_new	= ata_platform_remove_one,
+	.driver = {
+		.name		= DRV_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
 module_platform_driver(pata_platform_driver);
 
+<<<<<<< HEAD
 module_param(pio_mask, int, 0);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Paul Mundt");
 MODULE_DESCRIPTION("low-level driver for platform device ATA");
 MODULE_LICENSE("GPL");

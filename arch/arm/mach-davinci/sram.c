@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * mach-davinci/sram.c - DaVinci simple SRAM allocator
  *
  * Copyright (C) 2009 David Brownell
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +25,26 @@ static struct gen_pool *sram_pool;
 void *sram_alloc(size_t len, dma_addr_t *dma)
 {
 	unsigned long vaddr;
+=======
+ */
+#include <linux/module.h>
+#include <linux/init.h>
+#include <linux/io.h>
+#include <linux/genalloc.h>
+
+#include "common.h"
+#include "sram.h"
+
+static struct gen_pool *sram_pool;
+
+struct gen_pool *sram_get_gen_pool(void)
+{
+	return sram_pool;
+}
+
+void *sram_alloc(size_t len, dma_addr_t *dma)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t dma_base = davinci_soc_info.sram_dma;
 
 	if (dma)
@@ -27,6 +52,7 @@ void *sram_alloc(size_t len, dma_addr_t *dma)
 	if (!sram_pool || (dma && !dma_base))
 		return NULL;
 
+<<<<<<< HEAD
 	vaddr = gen_pool_alloc(sram_pool, len);
 	if (!vaddr)
 		return NULL;
@@ -34,6 +60,9 @@ void *sram_alloc(size_t len, dma_addr_t *dma)
 	if (dma)
 		*dma = dma_base + (vaddr - SRAM_VIRT);
 	return (void *)vaddr;
+=======
+	return gen_pool_dma_alloc(sram_pool, len, dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 }
 EXPORT_SYMBOL(sram_alloc);
@@ -53,8 +82,15 @@ EXPORT_SYMBOL(sram_free);
  */
 static int __init sram_init(void)
 {
+<<<<<<< HEAD
 	unsigned len = davinci_soc_info.sram_len;
 	int status = 0;
+=======
+	phys_addr_t phys = davinci_soc_info.sram_dma;
+	unsigned len = davinci_soc_info.sram_len;
+	int status = 0;
+	void __iomem *addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len) {
 		len = min_t(unsigned, len, SRAM_SIZE);
@@ -62,8 +98,22 @@ static int __init sram_init(void)
 		if (!sram_pool)
 			status = -ENOMEM;
 	}
+<<<<<<< HEAD
 	if (sram_pool)
 		status = gen_pool_add(sram_pool, SRAM_VIRT, len, -1);
+=======
+
+	if (sram_pool) {
+		addr = ioremap(phys, len);
+		if (!addr)
+			return -ENOMEM;
+		status = gen_pool_add_virt(sram_pool, (unsigned long) addr,
+					   phys, len, -1);
+		if (status < 0)
+			iounmap(addr);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON(status < 0);
 	return status;
 }

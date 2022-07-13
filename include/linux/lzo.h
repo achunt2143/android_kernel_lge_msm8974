@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LZO_H__
 #define __LZO_H__
 /*
@@ -17,12 +21,23 @@
 #define LZO1X_1_MEM_COMPRESS	(8192 * sizeof(unsigned short))
 #define LZO1X_MEM_COMPRESS	LZO1X_1_MEM_COMPRESS
 
+<<<<<<< HEAD
 #define lzo1x_worst_compress(x) ((x) + ((x) / 16) + 64 + 3)
+=======
+#define lzo1x_worst_compress(x) ((x) + ((x) / 16) + 64 + 3 + 2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This requires 'wrkmem' of size LZO1X_1_MEM_COMPRESS */
 int lzo1x_1_compress(const unsigned char *src, size_t src_len,
 		     unsigned char *dst, size_t *dst_len, void *wrkmem);
 
+<<<<<<< HEAD
+=======
+/* This requires 'wrkmem' of size LZO1X_1_MEM_COMPRESS */
+int lzorle1x_1_compress(const unsigned char *src, size_t src_len,
+		     unsigned char *dst, size_t *dst_len, void *wrkmem);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* safe decompression with overrun testing */
 int lzo1x_decompress_safe(const unsigned char *src, size_t src_len,
 			  unsigned char *dst, size_t *dst_len);

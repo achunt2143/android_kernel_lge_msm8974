@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Ignore generated files
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fore200e_mkfirm
 fore200e_pca_fw.c
 pca200e.bin

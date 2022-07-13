@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  FPU helper code to use FPU operations from inside the kernel
  *
  *    Copyright (C) 2010 Alexander Graf (agraf@suse.de)
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -14,6 +19,16 @@
 #include <asm/page.h>
 #include <asm/mmu.h>
 #include <asm/pgtable.h>
+=======
+ */
+
+#include <linux/pgtable.h>
+#include <linux/linkage.h>
+
+#include <asm/reg.h>
+#include <asm/page.h>
+#include <asm/mmu.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cputable.h>
 #include <asm/cache.h>
 #include <asm/thread_info.h>
@@ -115,6 +130,7 @@ FPS_THREE_IN(fsel)
  * R8 = (double*)&param3 [load_three]
  * LR = instruction call function
  */
+<<<<<<< HEAD
 fpd_load_three:
 	lfd	2,0(r8)			/* load param3 */
 fpd_load_two:
@@ -122,11 +138,27 @@ fpd_load_two:
 fpd_load_one:
 	lfd	0,0(r6)			/* load param1 */
 fpd_load_none:
+=======
+SYM_FUNC_START_LOCAL(fpd_load_three)
+	lfd	2,0(r8)			/* load param3 */
+SYM_FUNC_START_LOCAL(fpd_load_two)
+	lfd	1,0(r7)			/* load param2 */
+SYM_FUNC_START_LOCAL(fpd_load_one)
+	lfd	0,0(r6)			/* load param1 */
+SYM_FUNC_START_LOCAL(fpd_load_none)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lfd	3,0(r3)			/* load up fpscr value */
 	MTFSF_L(3)
 	lwz	r6, 0(r4)		/* load cr */
 	mtcr	r6
 	blr
+<<<<<<< HEAD
+=======
+SYM_FUNC_END(fpd_load_none)
+SYM_FUNC_END(fpd_load_one)
+SYM_FUNC_END(fpd_load_two)
+SYM_FUNC_END(fpd_load_three)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * End of double instruction processing
@@ -136,13 +168,21 @@ fpd_load_none:
  * R5 = (double*)&result
  * LR = caller of instruction call function
  */
+<<<<<<< HEAD
 fpd_return:
+=======
+SYM_FUNC_START_LOCAL(fpd_return)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mfcr	r6
 	stfd	0,0(r5)			/* save result */
 	mffs	0
 	stfd	0,0(r3)			/* save new fpscr value */
 	stw	r6,0(r4)		/* save new cr value */
 	blr
+<<<<<<< HEAD
+=======
+SYM_FUNC_END(fpd_return)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Double operation with no input operand

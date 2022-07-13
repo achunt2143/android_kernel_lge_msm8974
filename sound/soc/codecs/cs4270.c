@@ -21,6 +21,10 @@
  * - Power management is supported
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/mod_devicetable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <sound/core.h>
@@ -29,6 +33,7 @@
 #include <linux/i2c.h>
 #include <linux/delay.h>
 #include <linux/regulator/consumer.h>
+<<<<<<< HEAD
 
 /*
  * The codec isn't really big-endian or little-endian, since the I2S
@@ -42,6 +47,13 @@
 			SNDRV_PCM_FMTBIT_S20_3LE | SNDRV_PCM_FMTBIT_S20_3BE | \
 			SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_S24_3BE | \
 			SNDRV_PCM_FMTBIT_S24_LE  | SNDRV_PCM_FMTBIT_S24_BE)
+=======
+#include <linux/gpio/consumer.h>
+
+#define CS4270_FORMATS (SNDRV_PCM_FMTBIT_S8      | SNDRV_PCM_FMTBIT_S16_LE  | \
+			SNDRV_PCM_FMTBIT_S18_3LE | SNDRV_PCM_FMTBIT_S20_3LE | \
+			SNDRV_PCM_FMTBIT_S24_3LE | SNDRV_PCM_FMTBIT_S24_LE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CS4270 registers addresses */
 #define CS4270_CHIPID	0x01	/* Chip ID */
@@ -110,6 +122,7 @@
  * This array contains the power-on default values of the registers, with the
  * exception of the "CHIPID" register (01h).  The lower four bits of that
  * register contain the hardware revision, so it is treated as volatile.
+<<<<<<< HEAD
  *
  * Also note that on the CS4270, the first readable register is 1, but ASoC
  * assumes the first register is 0.  Therfore, the array must have an entry for
@@ -118,6 +131,17 @@
  */
 static const u8 cs4270_default_reg_cache[CS4270_LASTREG + 1] = {
 	0x00, 0x00, 0x00, 0x30, 0x00, 0x60, 0x20, 0x00, 0x00
+=======
+ */
+static const struct reg_default cs4270_reg_defaults[] = {
+	{ 2, 0x00 },
+	{ 3, 0x30 },
+	{ 4, 0x00 },
+	{ 5, 0x60 },
+	{ 6, 0x20 },
+	{ 7, 0x00 },
+	{ 8, 0x00 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const char *supply_names[] = {
@@ -126,7 +150,11 @@ static const char *supply_names[] = {
 
 /* Private data for the CS4270 */
 struct cs4270_private {
+<<<<<<< HEAD
 	enum snd_soc_control_type control_type;
+=======
+	struct regmap *regmap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int mclk; /* Input frequency of the MCLK pin */
 	unsigned int mode; /* The mode (I2S or left-justified) */
 	unsigned int slave_mode;
@@ -134,6 +162,28 @@ struct cs4270_private {
 
 	/* power domain regulators */
 	struct regulator_bulk_data supplies[ARRAY_SIZE(supply_names)];
+<<<<<<< HEAD
+=======
+
+	/* reset gpio */
+	struct gpio_desc *reset_gpio;
+};
+
+static const struct snd_soc_dapm_widget cs4270_dapm_widgets[] = {
+SND_SOC_DAPM_INPUT("AINL"),
+SND_SOC_DAPM_INPUT("AINR"),
+
+SND_SOC_DAPM_OUTPUT("AOUTL"),
+SND_SOC_DAPM_OUTPUT("AOUTR"),
+};
+
+static const struct snd_soc_dapm_route cs4270_dapm_routes[] = {
+	{ "Capture", NULL, "AINL" },
+	{ "Capture", NULL, "AINR" },
+
+	{ "AOUTL", NULL, "Playback" },
+	{ "AOUTR", NULL, "Playback" },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -191,16 +241,28 @@ static struct cs4270_mode_ratios cs4270_mode_ratios[] = {
 /* The number of MCLK/LRCK ratios supported by the CS4270 */
 #define NUM_MCLK_RATIOS		ARRAY_SIZE(cs4270_mode_ratios)
 
+<<<<<<< HEAD
 static int cs4270_reg_is_readable(struct snd_soc_codec *codec, unsigned int reg)
+=======
+static bool cs4270_reg_is_readable(struct device *dev, unsigned int reg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (reg >= CS4270_FIRSTREG) && (reg <= CS4270_LASTREG);
 }
 
+<<<<<<< HEAD
 static int cs4270_reg_is_volatile(struct snd_soc_codec *codec, unsigned int reg)
 {
 	/* Unreadable registers are considered volatile */
 	if ((reg < CS4270_FIRSTREG) || (reg > CS4270_LASTREG))
 		return 1;
+=======
+static bool cs4270_reg_is_volatile(struct device *dev, unsigned int reg)
+{
+	/* Unreadable registers are considered volatile */
+	if ((reg < CS4270_FIRSTREG) || (reg > CS4270_LASTREG))
+		return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return reg == CS4270_CHIPID;
 }
@@ -235,8 +297,13 @@ static int cs4270_reg_is_volatile(struct snd_soc_codec *codec, unsigned int reg)
 static int cs4270_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 				 int clk_id, unsigned int freq, int dir)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct cs4270_private *cs4270 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	struct cs4270_private *cs4270 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cs4270->mclk = freq;
 	return 0;
@@ -258,8 +325,13 @@ static int cs4270_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 static int cs4270_set_dai_fmt(struct snd_soc_dai *codec_dai,
 			      unsigned int format)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct cs4270_private *cs4270 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	struct cs4270_private *cs4270 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set DAI format */
 	switch (format & SND_SOC_DAIFMT_FORMAT_MASK) {
@@ -268,7 +340,11 @@ static int cs4270_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		cs4270->mode = format & SND_SOC_DAIFMT_FORMAT_MASK;
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(codec->dev, "invalid dai format\n");
+=======
+		dev_err(component->dev, "invalid dai format\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -282,7 +358,11 @@ static int cs4270_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		break;
 	default:
 		/* all other modes are unsupported by the hardware */
+<<<<<<< HEAD
 		dev_err(codec->dev, "Unknown master/slave configuration\n");
+=======
+		dev_err(component->dev, "Unknown master/slave configuration\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -307,9 +387,14 @@ static int cs4270_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
 	struct cs4270_private *cs4270 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct cs4270_private *cs4270 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	unsigned int i;
 	unsigned int rate;
@@ -328,13 +413,21 @@ static int cs4270_hw_params(struct snd_pcm_substream *substream,
 
 	if (i == NUM_MCLK_RATIOS) {
 		/* We did not find a matching ratio */
+<<<<<<< HEAD
 		dev_err(codec->dev, "could not find matching ratio\n");
+=======
+		dev_err(component->dev, "could not find matching ratio\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* Set the sample rate */
 
+<<<<<<< HEAD
 	reg = snd_soc_read(codec, CS4270_MODE);
+=======
+	reg = snd_soc_component_read(component, CS4270_MODE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg &= ~(CS4270_MODE_SPEED_MASK | CS4270_MODE_DIV_MASK);
 	reg |= cs4270_mode_ratios[i].mclk;
 
@@ -343,15 +436,25 @@ static int cs4270_hw_params(struct snd_pcm_substream *substream,
 	else
 		reg |= cs4270_mode_ratios[i].speed_mode;
 
+<<<<<<< HEAD
 	ret = snd_soc_write(codec, CS4270_MODE, reg);
 	if (ret < 0) {
 		dev_err(codec->dev, "i2c write failed\n");
+=======
+	ret = snd_soc_component_write(component, CS4270_MODE, reg);
+	if (ret < 0) {
+		dev_err(component->dev, "i2c write failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	/* Set the DAI format */
 
+<<<<<<< HEAD
 	reg = snd_soc_read(codec, CS4270_FORMAT);
+=======
+	reg = snd_soc_component_read(component, CS4270_FORMAT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg &= ~(CS4270_FORMAT_DAC_MASK | CS4270_FORMAT_ADC_MASK);
 
 	switch (cs4270->mode) {
@@ -362,6 +465,7 @@ static int cs4270_hw_params(struct snd_pcm_substream *substream,
 		reg |= CS4270_FORMAT_DAC_LJ | CS4270_FORMAT_ADC_LJ;
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(codec->dev, "unknown dai format\n");
 		return -EINVAL;
 	}
@@ -369,6 +473,15 @@ static int cs4270_hw_params(struct snd_pcm_substream *substream,
 	ret = snd_soc_write(codec, CS4270_FORMAT, reg);
 	if (ret < 0) {
 		dev_err(codec->dev, "i2c write failed\n");
+=======
+		dev_err(component->dev, "unknown dai format\n");
+		return -EINVAL;
+	}
+
+	ret = snd_soc_component_write(component, CS4270_FORMAT, reg);
+	if (ret < 0) {
+		dev_err(component->dev, "i2c write failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -379,12 +492,17 @@ static int cs4270_hw_params(struct snd_pcm_substream *substream,
  * cs4270_dai_mute - enable/disable the CS4270 external mute
  * @dai: the SOC DAI
  * @mute: 0 = disable mute, 1 = enable mute
+<<<<<<< HEAD
+=======
+ * @direction: (ignored)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function toggles the mute bits in the MUTE register.  The CS4270's
  * mute capability is intended for external muting circuitry, so if the
  * board does not have the MUTEA or MUTEB pins connected to such circuitry,
  * then this function will do nothing.
  */
+<<<<<<< HEAD
 static int cs4270_dai_mute(struct snd_soc_dai *dai, int mute)
 {
 	struct snd_soc_codec *codec = dai->codec;
@@ -392,6 +510,15 @@ static int cs4270_dai_mute(struct snd_soc_dai *dai, int mute)
 	int reg6;
 
 	reg6 = snd_soc_read(codec, CS4270_MUTE);
+=======
+static int cs4270_dai_mute(struct snd_soc_dai *dai, int mute, int direction)
+{
+	struct snd_soc_component *component = dai->component;
+	struct cs4270_private *cs4270 = snd_soc_component_get_drvdata(component);
+	int reg6;
+
+	reg6 = snd_soc_component_read(component, CS4270_MUTE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mute)
 		reg6 |= CS4270_MUTE_DAC_A | CS4270_MUTE_DAC_B;
@@ -400,7 +527,11 @@ static int cs4270_dai_mute(struct snd_soc_dai *dai, int mute)
 		reg6 |= cs4270->manual_mute;
 	}
 
+<<<<<<< HEAD
 	return snd_soc_write(codec, CS4270_MUTE, reg6);
+=======
+	return snd_soc_component_write(component, CS4270_MUTE, reg6);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -420,8 +551,13 @@ static int cs4270_dai_mute(struct snd_soc_dai *dai, int mute)
 static int cs4270_soc_put_mute(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct cs4270_private *cs4270 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = snd_soc_kcontrol_component(kcontrol);
+	struct cs4270_private *cs4270 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int left = !ucontrol->value.integer.value[0];
 	int right = !ucontrol->value.integer.value[1];
 
@@ -450,14 +586,23 @@ static const struct snd_soc_dai_ops cs4270_dai_ops = {
 	.hw_params	= cs4270_hw_params,
 	.set_sysclk	= cs4270_set_dai_sysclk,
 	.set_fmt	= cs4270_set_dai_fmt,
+<<<<<<< HEAD
 	.digital_mute	= cs4270_dai_mute,
+=======
+	.mute_stream	= cs4270_dai_mute,
+	.no_capture_mute = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver cs4270_dai = {
 	.name = "cs4270-hifi",
 	.playback = {
 		.stream_name = "Playback",
+<<<<<<< HEAD
 		.channels_min = 1,
+=======
+		.channels_min = 2,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.channels_max = 2,
 		.rates = SNDRV_PCM_RATE_CONTINUOUS,
 		.rate_min = 4000,
@@ -466,7 +611,11 @@ static struct snd_soc_dai_driver cs4270_dai = {
 	},
 	.capture = {
 		.stream_name = "Capture",
+<<<<<<< HEAD
 		.channels_min = 1,
+=======
+		.channels_min = 2,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.channels_max = 2,
 		.rates = SNDRV_PCM_RATE_CONTINUOUS,
 		.rate_min = 4000,
@@ -478,11 +627,16 @@ static struct snd_soc_dai_driver cs4270_dai = {
 
 /**
  * cs4270_probe - ASoC probe function
+<<<<<<< HEAD
  * @pdev: platform device
+=======
+ * @component: ASoC component
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function is called when ASoC has all the pieces it needs to
  * instantiate a sound driver.
  */
+<<<<<<< HEAD
 static int cs4270_probe(struct snd_soc_codec *codec)
 {
 	struct cs4270_private *cs4270 = snd_soc_codec_get_drvdata(codec);
@@ -496,15 +650,27 @@ static int cs4270_probe(struct snd_soc_codec *codec)
 		dev_err(codec->dev, "failed to set cache I/O (ret=%i)\n", ret);
 		return ret;
 	}
+=======
+static int cs4270_probe(struct snd_soc_component *component)
+{
+	struct cs4270_private *cs4270 = snd_soc_component_get_drvdata(component);
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable auto-mute.  This feature appears to be buggy.  In some
 	 * situations, auto-mute will not deactivate when it should, so we want
 	 * this feature disabled by default.  An application (e.g. alsactl) can
 	 * re-enabled it by using the controls.
 	 */
+<<<<<<< HEAD
 	ret = snd_soc_update_bits(codec, CS4270_MUTE, CS4270_MUTE_AUTO, 0);
 	if (ret < 0) {
 		dev_err(codec->dev, "i2c write failed\n");
+=======
+	ret = snd_soc_component_update_bits(component, CS4270_MUTE, CS4270_MUTE_AUTO, 0);
+	if (ret < 0) {
+		dev_err(component->dev, "i2c write failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -513,6 +679,7 @@ static int cs4270_probe(struct snd_soc_codec *codec)
 	 * playback has started.  An application (e.g. alsactl) can
 	 * re-enabled it by using the controls.
 	 */
+<<<<<<< HEAD
 	ret = snd_soc_update_bits(codec, CS4270_TRANS,
 		CS4270_TRANS_SOFT | CS4270_TRANS_ZERO, 0);
 	if (ret < 0) {
@@ -547,12 +714,24 @@ static int cs4270_probe(struct snd_soc_codec *codec)
 error_free_regulators:
 	regulator_bulk_free(ARRAY_SIZE(cs4270->supplies),
 			    cs4270->supplies);
+=======
+	ret = snd_soc_component_update_bits(component, CS4270_TRANS,
+		CS4270_TRANS_SOFT | CS4270_TRANS_ZERO, 0);
+	if (ret < 0) {
+		dev_err(component->dev, "i2c write failed\n");
+		return ret;
+	}
+
+	ret = regulator_bulk_enable(ARRAY_SIZE(cs4270->supplies),
+				    cs4270->supplies);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 /**
  * cs4270_remove - ASoC remove function
+<<<<<<< HEAD
  * @pdev: platform device
  *
  * This function is the counterpart to cs4270_probe().
@@ -565,6 +744,17 @@ static int cs4270_remove(struct snd_soc_codec *codec)
 	regulator_bulk_free(ARRAY_SIZE(cs4270->supplies), cs4270->supplies);
 
 	return 0;
+=======
+ * @component: ASoC component
+ *
+ * This function is the counterpart to cs4270_probe().
+ */
+static void cs4270_remove(struct snd_soc_component *component)
+{
+	struct cs4270_private *cs4270 = snd_soc_component_get_drvdata(component);
+
+	regulator_bulk_disable(ARRAY_SIZE(cs4270->supplies), cs4270->supplies);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_PM
@@ -578,6 +768,7 @@ static int cs4270_remove(struct snd_soc_codec *codec)
  * and all registers are written back to the hardware when resuming.
  */
 
+<<<<<<< HEAD
 static int cs4270_soc_suspend(struct snd_soc_codec *codec)
 {
 	struct cs4270_private *cs4270 = snd_soc_codec_get_drvdata(codec);
@@ -588,6 +779,18 @@ static int cs4270_soc_suspend(struct snd_soc_codec *codec)
 		return reg;
 
 	ret = snd_soc_write(codec, CS4270_PWRCTL, reg);
+=======
+static int cs4270_soc_suspend(struct snd_soc_component *component)
+{
+	struct cs4270_private *cs4270 = snd_soc_component_get_drvdata(component);
+	int reg, ret;
+
+	reg = snd_soc_component_read(component, CS4270_PWRCTL) | CS4270_PWRCTL_PDN_ALL;
+	if (reg < 0)
+		return reg;
+
+	ret = snd_soc_component_write(component, CS4270_PWRCTL, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -597,6 +800,7 @@ static int cs4270_soc_suspend(struct snd_soc_codec *codec)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int cs4270_soc_resume(struct snd_soc_codec *codec)
 {
 	struct cs4270_private *cs4270 = snd_soc_codec_get_drvdata(codec);
@@ -604,12 +808,24 @@ static int cs4270_soc_resume(struct snd_soc_codec *codec)
 
 	regulator_bulk_enable(ARRAY_SIZE(cs4270->supplies),
 			      cs4270->supplies);
+=======
+static int cs4270_soc_resume(struct snd_soc_component *component)
+{
+	struct cs4270_private *cs4270 = snd_soc_component_get_drvdata(component);
+	int reg, ret;
+
+	ret = regulator_bulk_enable(ARRAY_SIZE(cs4270->supplies),
+				    cs4270->supplies);
+	if (ret != 0)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* In case the device was put to hard reset during sleep, we need to
 	 * wait 500ns here before any I2C communication. */
 	ndelay(500);
 
 	/* first restore the entire register cache ... */
+<<<<<<< HEAD
 	snd_soc_cache_sync(codec);
 
 	/* ... then disable the power-down bits */
@@ -617,6 +833,15 @@ static int cs4270_soc_resume(struct snd_soc_codec *codec)
 	reg &= ~CS4270_PWRCTL_PDN_ALL;
 
 	return snd_soc_write(codec, CS4270_PWRCTL, reg);
+=======
+	regcache_sync(cs4270->regmap);
+
+	/* ... then disable the power-down bits */
+	reg = snd_soc_component_read(component, CS4270_PWRCTL);
+	reg &= ~CS4270_PWRCTL_PDN_ALL;
+
+	return snd_soc_component_write(component, CS4270_PWRCTL, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 #define cs4270_soc_suspend	NULL
@@ -626,6 +851,7 @@ static int cs4270_soc_resume(struct snd_soc_codec *codec)
 /*
  * ASoC codec driver structure
  */
+<<<<<<< HEAD
 static const struct snd_soc_codec_driver soc_codec_device_cs4270 = {
 	.probe =		cs4270_probe,
 	.remove =		cs4270_remove,
@@ -642,10 +868,68 @@ static const struct snd_soc_codec_driver soc_codec_device_cs4270 = {
  * cs4270_i2c_probe - initialize the I2C interface of the CS4270
  * @i2c_client: the I2C client object
  * @id: the I2C device ID (ignored)
+=======
+static const struct snd_soc_component_driver soc_component_device_cs4270 = {
+	.probe			= cs4270_probe,
+	.remove			= cs4270_remove,
+	.suspend		= cs4270_soc_suspend,
+	.resume			= cs4270_soc_resume,
+	.controls		= cs4270_snd_controls,
+	.num_controls		= ARRAY_SIZE(cs4270_snd_controls),
+	.dapm_widgets		= cs4270_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(cs4270_dapm_widgets),
+	.dapm_routes		= cs4270_dapm_routes,
+	.num_dapm_routes	= ARRAY_SIZE(cs4270_dapm_routes),
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+};
+
+/*
+ * cs4270_of_match - the device tree bindings
+ */
+static const struct of_device_id cs4270_of_match[] = {
+	{ .compatible = "cirrus,cs4270", },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, cs4270_of_match);
+
+static const struct regmap_config cs4270_regmap = {
+	.reg_bits =		8,
+	.val_bits =		8,
+	.max_register =		CS4270_LASTREG,
+	.reg_defaults =		cs4270_reg_defaults,
+	.num_reg_defaults =	ARRAY_SIZE(cs4270_reg_defaults),
+	.cache_type =		REGCACHE_MAPLE,
+	.write_flag_mask =	CS4270_I2C_INCR,
+
+	.readable_reg =		cs4270_reg_is_readable,
+	.volatile_reg =		cs4270_reg_is_volatile,
+};
+
+/**
+ * cs4270_i2c_remove - deinitialize the I2C interface of the CS4270
+ * @i2c_client: the I2C client object
+ *
+ * This function puts the chip into low power mode when the i2c device
+ * is removed.
+ */
+static void cs4270_i2c_remove(struct i2c_client *i2c_client)
+{
+	struct cs4270_private *cs4270 = i2c_get_clientdata(i2c_client);
+
+	gpiod_set_value_cansleep(cs4270->reset_gpio, 0);
+}
+
+/**
+ * cs4270_i2c_probe - initialize the I2C interface of the CS4270
+ * @i2c_client: the I2C client object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function is called whenever the I2C subsystem finds a device that
  * matches the device ID given via a prior call to i2c_add_driver().
  */
+<<<<<<< HEAD
 static int cs4270_i2c_probe(struct i2c_client *i2c_client,
 	const struct i2c_device_id *id)
 {
@@ -655,13 +939,62 @@ static int cs4270_i2c_probe(struct i2c_client *i2c_client,
 	/* Verify that we have a CS4270 */
 
 	ret = i2c_smbus_read_byte_data(i2c_client, CS4270_CHIPID);
+=======
+static int cs4270_i2c_probe(struct i2c_client *i2c_client)
+{
+	struct cs4270_private *cs4270;
+	unsigned int val;
+	int ret, i;
+
+	cs4270 = devm_kzalloc(&i2c_client->dev, sizeof(struct cs4270_private),
+			      GFP_KERNEL);
+	if (!cs4270)
+		return -ENOMEM;
+
+	/* get the power supply regulators */
+	for (i = 0; i < ARRAY_SIZE(supply_names); i++)
+		cs4270->supplies[i].supply = supply_names[i];
+
+	ret = devm_regulator_bulk_get(&i2c_client->dev,
+				      ARRAY_SIZE(cs4270->supplies),
+				      cs4270->supplies);
+	if (ret < 0)
+		return ret;
+
+	/* reset the device */
+	cs4270->reset_gpio = devm_gpiod_get_optional(&i2c_client->dev, "reset",
+						     GPIOD_OUT_LOW);
+	if (IS_ERR(cs4270->reset_gpio)) {
+		dev_dbg(&i2c_client->dev, "Error getting CS4270 reset GPIO\n");
+		return PTR_ERR(cs4270->reset_gpio);
+	}
+
+	if (cs4270->reset_gpio) {
+		dev_dbg(&i2c_client->dev, "Found reset GPIO\n");
+		gpiod_set_value_cansleep(cs4270->reset_gpio, 1);
+	}
+
+	/* Sleep 500ns before i2c communications */
+	ndelay(500);
+
+	cs4270->regmap = devm_regmap_init_i2c(i2c_client, &cs4270_regmap);
+	if (IS_ERR(cs4270->regmap))
+		return PTR_ERR(cs4270->regmap);
+
+	/* Verify that we have a CS4270 */
+	ret = regmap_read(cs4270->regmap, CS4270_CHIPID, &val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		dev_err(&i2c_client->dev, "failed to read i2c at addr %X\n",
 		       i2c_client->addr);
 		return ret;
 	}
 	/* The top four bits of the chip ID should be 1100. */
+<<<<<<< HEAD
 	if ((ret & 0xF0) != 0xC0) {
+=======
+	if ((val & 0xF0) != 0xC0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&i2c_client->dev, "device at addr %X is not a CS4270\n",
 		       i2c_client->addr);
 		return -ENODEV;
@@ -669,6 +1002,7 @@ static int cs4270_i2c_probe(struct i2c_client *i2c_client,
 
 	dev_info(&i2c_client->dev, "found device at i2c address %X\n",
 		i2c_client->addr);
+<<<<<<< HEAD
 	dev_info(&i2c_client->dev, "hardware revision %X\n", ret & 0xF);
 
 	cs4270 = devm_kzalloc(&i2c_client->dev, sizeof(struct cs4270_private),
@@ -698,6 +1032,17 @@ static int cs4270_i2c_remove(struct i2c_client *i2c_client)
 	return 0;
 }
 
+=======
+	dev_info(&i2c_client->dev, "hardware revision %X\n", val & 0xF);
+
+	i2c_set_clientdata(i2c_client, cs4270);
+
+	ret = devm_snd_soc_register_component(&i2c_client->dev,
+			&soc_component_device_cs4270, &cs4270_dai, 1);
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * cs4270_id - I2C device IDs supported by this driver
  */
@@ -716,13 +1061,18 @@ MODULE_DEVICE_TABLE(i2c, cs4270_id);
 static struct i2c_driver cs4270_i2c_driver = {
 	.driver = {
 		.name = "cs4270",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+		.of_match_table = cs4270_of_match,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.id_table = cs4270_id,
 	.probe = cs4270_i2c_probe,
 	.remove = cs4270_i2c_remove,
 };
 
+<<<<<<< HEAD
 static int __init cs4270_init(void)
 {
 	return i2c_add_driver(&cs4270_i2c_driver);
@@ -734,6 +1084,9 @@ static void __exit cs4270_exit(void)
 	i2c_del_driver(&cs4270_i2c_driver);
 }
 module_exit(cs4270_exit);
+=======
+module_i2c_driver(cs4270_i2c_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Timur Tabi <timur@freescale.com>");
 MODULE_DESCRIPTION("Cirrus Logic CS4270 ALSA SoC Codec Driver");

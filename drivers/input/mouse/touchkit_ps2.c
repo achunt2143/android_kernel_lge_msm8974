@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ----------------------------------------------------------------------------
  * touchkit_ps2.c  --  Driver for eGalax TouchKit PS/2 Touchscreens
  *
@@ -5,6 +9,7 @@
  * Copyright (C) 2004 by Daniel Ritz
  * Copyright (C) by Todd E. Johnson (mtouchusb.c)
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -19,6 +24,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based upon touchkitusb.c
  *
  * Vendor documentation is available at:

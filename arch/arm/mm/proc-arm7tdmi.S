@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/proc-arm7tdmi.S: utility functions for ARM7TDMI
  *
  *  Copyright (C) 2003-2006 Hyok S. Choi <hyok.choi@samsung.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -10,11 +15,20 @@
  */
 #include <linux/linkage.h>
 #include <linux/init.h>
+=======
+ */
+#include <linux/linkage.h>
+#include <linux/init.h>
+#include <linux/pgtable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/assembler.h>
 #include <asm/asm-offsets.h>
 #include <asm/hwcap.h>
 #include <asm/pgtable-hwdef.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ptrace.h>
 
 #include "proc-macros.S"
@@ -32,13 +46,21 @@ ENTRY(cpu_arm7tdmi_proc_init)
 ENTRY(cpu_arm7tdmi_do_idle)
 ENTRY(cpu_arm7tdmi_dcache_clean_area)
 ENTRY(cpu_arm7tdmi_switch_mm)
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * cpu_arm7tdmi_proc_fin()
  */
 ENTRY(cpu_arm7tdmi_proc_fin)
+<<<<<<< HEAD
 		mov	pc, lr
+=======
+		ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Function: cpu_arm7tdmi_reset(loc)
@@ -47,6 +69,7 @@ ENTRY(cpu_arm7tdmi_proc_fin)
  */
 		.pushsection	.idmap.text, "ax"
 ENTRY(cpu_arm7tdmi_reset)
+<<<<<<< HEAD
 		mov	pc, r0
 ENDPROC(cpu_arm7tdmi_reset)
 		.popsection
@@ -56,6 +79,15 @@ ENDPROC(cpu_arm7tdmi_reset)
 		.type	__arm7tdmi_setup, #function
 __arm7tdmi_setup:
 		mov	pc, lr
+=======
+		ret	r0
+ENDPROC(cpu_arm7tdmi_reset)
+		.popsection
+
+		.type	__arm7tdmi_setup, #function
+__arm7tdmi_setup:
+		ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.size	__arm7tdmi_setup, . - __arm7tdmi_setup
 
 		__INITDATA
@@ -78,7 +110,11 @@ __arm7tdmi_setup:
 
 		.align
 
+<<<<<<< HEAD
 		.section ".proc.info.init", #alloc, #execinstr
+=======
+		.section ".proc.info.init", "a"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .macro arm7tdmi_proc_info name:req, cpu_val:req, cpu_mask:req, cpu_name:req, \
 	extra_hwcaps=0
@@ -88,7 +124,11 @@ __\name\()_proc_info:
 		.long	\cpu_mask
 		.long	0
 		.long	0
+<<<<<<< HEAD
 		b	__arm7tdmi_setup
+=======
+		initfn	__arm7tdmi_setup, __\name\()_proc_info
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.long	cpu_arch_name
 		.long	cpu_elf_name
 		.long	HWCAP_SWP | HWCAP_26BIT | ( \extra_hwcaps )

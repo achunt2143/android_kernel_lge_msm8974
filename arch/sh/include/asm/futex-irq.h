@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __ASM_SH_FUTEX_IRQ_H
 #define __ASM_SH_FUTEX_IRQ_H
 
@@ -87,6 +88,12 @@ static inline int atomic_futex_op_xchg_xor(int oparg, u32 __user *uaddr,
 	return ret;
 }
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ASM_SH_FUTEX_IRQ_H
+#define __ASM_SH_FUTEX_IRQ_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int atomic_futex_op_cmpxchg_inatomic(u32 *uval,
 						   u32 __user *uaddr,
 						   u32 oldval, u32 newval)

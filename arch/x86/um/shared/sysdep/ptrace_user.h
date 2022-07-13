@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <generated/user_constants.h>
 
 #define PT_OFFSET(r) ((r) * sizeof(long))
@@ -14,6 +18,7 @@
 #define FP_SIZE ((HOST_FPX_SIZE > HOST_FP_SIZE) ? HOST_FPX_SIZE : HOST_FP_SIZE)
 #else
 #define FP_SIZE HOST_FP_SIZE
+<<<<<<< HEAD
 
 /*
  * x86_64 FC3 doesn't define this in /usr/include/linux/ptrace.h even though
@@ -24,4 +29,14 @@
 #define PTRACE_OLDSETOPTIONS 21
 #endif
 
+=======
+#endif
+
+/*
+ * glibc before 2.27 does not include PTRACE_SYSEMU_SINGLESTEP in its enum,
+ * ensure we have a definition by (re-)defining it here.
+ */
+#ifndef PTRACE_SYSEMU_SINGLESTEP
+#define PTRACE_SYSEMU_SINGLESTEP 32
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

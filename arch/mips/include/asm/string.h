@@ -10,6 +10,7 @@
 #ifndef _ASM_STRING_H
 #define _ASM_STRING_H
 
+<<<<<<< HEAD
 
 /*
  * Most of the inline functions are rather naive implementations so I just
@@ -131,6 +132,8 @@ strncmp(__const__ char *__cs, __const__ char *__ct, size_t __count)
 }
 #endif /* CONFIG_32BIT */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __HAVE_ARCH_MEMSET
 extern void *memset(void *__s, int __c, size_t __count);
 

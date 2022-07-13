@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  LCD/Backlight Driver for Sharp Zaurus Handhelds (various models)
  *
@@ -6,6 +10,7 @@
  *  Based on Sharp's 2.4 Backlight Driver
  *
  *  Copyright (c) 2008 Marvell International Ltd.
+<<<<<<< HEAD
  *  	Converted to SPI device based LCD/Backlight device driver
  *  	by Eric Miao <eric.miao@marvell.com>
  *
@@ -15,11 +20,22 @@
  *
  */
 
+=======
+ *	Converted to SPI device based LCD/Backlight device driver
+ *	by Eric Miao <eric.miao@marvell.com>
+ */
+
+#include <linux/backlight.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/consumer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fb.h>
 #include <linux/lcd.h>
 #include <linux/spi/spi.h>
@@ -94,9 +110,14 @@ struct corgi_lcd {
 	int	mode;
 	char	buf[2];
 
+<<<<<<< HEAD
 	int	gpio_backlight_on;
 	int	gpio_backlight_cont;
 	int	gpio_backlight_cont_inverted;
+=======
+	struct gpio_desc *backlight_on;
+	struct gpio_desc *backlight_cont;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void (*kick_battery)(void);
 };
@@ -143,6 +164,10 @@ static void lcdtg_i2c_send_byte(struct corgi_lcd *lcd,
 				uint8_t base, uint8_t data)
 {
 	int i;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 8; i++) {
 		if (data & 0x80)
 			lcdtg_i2c_send_bit(lcd, base | POWER0_COM_DOUT);
@@ -176,7 +201,11 @@ static int corgi_ssp_lcdtg_send(struct corgi_lcd *lcd, int adrs, uint8_t data)
 	struct spi_message msg;
 	struct spi_transfer xfer = {
 		.len		= 1,
+<<<<<<< HEAD
 		.cs_change	= 1,
+=======
+		.cs_change	= 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.tx_buf		= lcd->buf,
 	};
 
@@ -192,7 +221,11 @@ static void lcdtg_set_phadadj(struct corgi_lcd *lcd, int mode)
 {
 	int adj;
 
+<<<<<<< HEAD
 	switch(mode) {
+=======
+	switch (mode) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CORGI_LCD_MODE_VGA:
 		/* Setting for VGA */
 		adj = sharpsl_param.phadadj;
@@ -337,7 +370,11 @@ static void corgi_lcd_power_off(struct corgi_lcd *lcd)
 
 static int corgi_lcd_set_mode(struct lcd_device *ld, struct fb_videomode *m)
 {
+<<<<<<< HEAD
 	struct corgi_lcd *lcd = dev_get_drvdata(&ld->dev);
+=======
+	struct corgi_lcd *lcd = lcd_get_data(ld);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int mode = CORGI_LCD_MODE_QVGA;
 
 	if (m->xres == 640 || m->xres == 480)
@@ -364,7 +401,11 @@ static int corgi_lcd_set_mode(struct lcd_device *ld, struct fb_videomode *m)
 
 static int corgi_lcd_set_power(struct lcd_device *ld, int power)
 {
+<<<<<<< HEAD
 	struct corgi_lcd *lcd = dev_get_drvdata(&ld->dev);
+=======
+	struct corgi_lcd *lcd = lcd_get_data(ld);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (POWER_IS_ON(power) && !POWER_IS_ON(lcd->power))
 		corgi_lcd_power_on(lcd);
@@ -378,7 +419,11 @@ static int corgi_lcd_set_power(struct lcd_device *ld, int power)
 
 static int corgi_lcd_get_power(struct lcd_device *ld)
 {
+<<<<<<< HEAD
 	struct corgi_lcd *lcd = dev_get_drvdata(&ld->dev);
+=======
+	struct corgi_lcd *lcd = lcd_get_data(ld);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return lcd->power;
 }
@@ -391,7 +436,11 @@ static struct lcd_ops corgi_lcd_ops = {
 
 static int corgi_bl_get_intensity(struct backlight_device *bd)
 {
+<<<<<<< HEAD
 	struct corgi_lcd *lcd = dev_get_drvdata(&bd->dev);
+=======
+	struct corgi_lcd *lcd = bl_get_data(bd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return lcd->intensity;
 }
@@ -406,6 +455,7 @@ static int corgi_bl_set_intensity(struct corgi_lcd *lcd, int intensity)
 	corgi_ssp_lcdtg_send(lcd, DUTYCTRL_ADRS, intensity);
 
 	/* Bit 5 via GPIO_BACKLIGHT_CONT */
+<<<<<<< HEAD
 	cont = !!(intensity & 0x20) ^ lcd->gpio_backlight_cont_inverted;
 
 	if (gpio_is_valid(lcd->gpio_backlight_cont))
@@ -413,6 +463,15 @@ static int corgi_bl_set_intensity(struct corgi_lcd *lcd, int intensity)
 
 	if (gpio_is_valid(lcd->gpio_backlight_on))
 		gpio_set_value(lcd->gpio_backlight_on, intensity);
+=======
+	cont = !!(intensity & 0x20);
+
+	if (lcd->backlight_cont)
+		gpiod_set_value_cansleep(lcd->backlight_cont, cont);
+
+	if (lcd->backlight_on)
+		gpiod_set_value_cansleep(lcd->backlight_on, intensity);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lcd->kick_battery)
 		lcd->kick_battery();
@@ -423,6 +482,7 @@ static int corgi_bl_set_intensity(struct corgi_lcd *lcd, int intensity)
 
 static int corgi_bl_update_status(struct backlight_device *bd)
 {
+<<<<<<< HEAD
 	struct corgi_lcd *lcd = dev_get_drvdata(&bd->dev);
 	int intensity = bd->props.brightness;
 
@@ -431,6 +491,10 @@ static int corgi_bl_update_status(struct backlight_device *bd)
 
 	if (bd->props.fb_blank != FB_BLANK_UNBLANK)
 		intensity = 0;
+=======
+	struct corgi_lcd *lcd = bl_get_data(bd);
+	int intensity = backlight_get_brightness(bd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (corgibl_flags & CORGIBL_SUSPENDED)
 		intensity = 0;
@@ -457,10 +521,17 @@ static const struct backlight_ops corgi_bl_ops = {
 	.update_status  = corgi_bl_update_status,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int corgi_lcd_suspend(struct spi_device *spi, pm_message_t state)
 {
 	struct corgi_lcd *lcd = dev_get_drvdata(&spi->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int corgi_lcd_suspend(struct device *dev)
+{
+	struct corgi_lcd *lcd = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	corgibl_flags |= CORGIBL_SUSPENDED;
 	corgi_bl_set_intensity(lcd, 0);
@@ -468,24 +539,38 @@ static int corgi_lcd_suspend(struct spi_device *spi, pm_message_t state)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int corgi_lcd_resume(struct spi_device *spi)
 {
 	struct corgi_lcd *lcd = dev_get_drvdata(&spi->dev);
+=======
+static int corgi_lcd_resume(struct device *dev)
+{
+	struct corgi_lcd *lcd = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	corgibl_flags &= ~CORGIBL_SUSPENDED;
 	corgi_lcd_set_power(lcd->lcd_dev, FB_BLANK_UNBLANK);
 	backlight_update_status(lcd->bl_dev);
 	return 0;
 }
+<<<<<<< HEAD
 #else
 #define corgi_lcd_suspend	NULL
 #define corgi_lcd_resume	NULL
 #endif
 
+=======
+#endif
+
+static SIMPLE_DEV_PM_OPS(corgi_lcd_pm_ops, corgi_lcd_suspend, corgi_lcd_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int setup_gpio_backlight(struct corgi_lcd *lcd,
 				struct corgi_lcd_platform_data *pdata)
 {
 	struct spi_device *spi = lcd->spi_dev;
+<<<<<<< HEAD
 	int err;
 
 	lcd->gpio_backlight_on = -1;
@@ -536,6 +621,26 @@ static int __devinit corgi_lcd_probe(struct spi_device *spi)
 {
 	struct backlight_properties props;
 	struct corgi_lcd_platform_data *pdata = spi->dev.platform_data;
+=======
+
+	lcd->backlight_on = devm_gpiod_get_optional(&spi->dev,
+						    "BL_ON", GPIOD_OUT_LOW);
+	if (IS_ERR(lcd->backlight_on))
+		return PTR_ERR(lcd->backlight_on);
+
+	lcd->backlight_cont = devm_gpiod_get_optional(&spi->dev, "BL_CONT",
+						      GPIOD_OUT_LOW);
+	if (IS_ERR(lcd->backlight_cont))
+		return PTR_ERR(lcd->backlight_cont);
+
+	return 0;
+}
+
+static int corgi_lcd_probe(struct spi_device *spi)
+{
+	struct backlight_properties props;
+	struct corgi_lcd_platform_data *pdata = dev_get_platdata(&spi->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct corgi_lcd *lcd;
 	int ret = 0;
 
@@ -544,6 +649,7 @@ static int __devinit corgi_lcd_probe(struct spi_device *spi)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	lcd = kzalloc(sizeof(struct corgi_lcd), GFP_KERNEL);
 	if (!lcd) {
 		dev_err(&spi->dev, "failed to allocate memory\n");
@@ -558,34 +664,65 @@ static int __devinit corgi_lcd_probe(struct spi_device *spi)
 		ret = PTR_ERR(lcd->lcd_dev);
 		goto err_free_lcd;
 	}
+=======
+	lcd = devm_kzalloc(&spi->dev, sizeof(struct corgi_lcd), GFP_KERNEL);
+	if (!lcd)
+		return -ENOMEM;
+
+	lcd->spi_dev = spi;
+
+	lcd->lcd_dev = devm_lcd_device_register(&spi->dev, "corgi_lcd",
+						&spi->dev, lcd, &corgi_lcd_ops);
+	if (IS_ERR(lcd->lcd_dev))
+		return PTR_ERR(lcd->lcd_dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lcd->power = FB_BLANK_POWERDOWN;
 	lcd->mode = (pdata) ? pdata->init_mode : CORGI_LCD_MODE_VGA;
 
 	memset(&props, 0, sizeof(struct backlight_properties));
 	props.type = BACKLIGHT_RAW;
 	props.max_brightness = pdata->max_intensity;
+<<<<<<< HEAD
 	lcd->bl_dev = backlight_device_register("corgi_bl", &spi->dev, lcd,
 						&corgi_bl_ops, &props);
 	if (IS_ERR(lcd->bl_dev)) {
 		ret = PTR_ERR(lcd->bl_dev);
 		goto err_unregister_lcd;
 	}
+=======
+	lcd->bl_dev = devm_backlight_device_register(&spi->dev, "corgi_bl",
+						&spi->dev, lcd, &corgi_bl_ops,
+						&props);
+	if (IS_ERR(lcd->bl_dev))
+		return PTR_ERR(lcd->bl_dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lcd->bl_dev->props.brightness = pdata->default_intensity;
 	lcd->bl_dev->props.power = FB_BLANK_UNBLANK;
 
 	ret = setup_gpio_backlight(lcd, pdata);
 	if (ret)
+<<<<<<< HEAD
 		goto err_unregister_bl;
 
 	lcd->kick_battery = pdata->kick_battery;
 
 	dev_set_drvdata(&spi->dev, lcd);
+=======
+		return ret;
+
+	lcd->kick_battery = pdata->kick_battery;
+
+	spi_set_drvdata(spi, lcd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	corgi_lcd_set_power(lcd->lcd_dev, FB_BLANK_UNBLANK);
 	backlight_update_status(lcd->bl_dev);
 
 	lcd->limit_mask = pdata->limit_mask;
 	the_corgi_lcd = lcd;
 	return 0;
+<<<<<<< HEAD
 
 err_unregister_bl:
 	backlight_device_unregister(lcd->bl_dev);
@@ -599,10 +736,18 @@ err_free_lcd:
 static int __devexit corgi_lcd_remove(struct spi_device *spi)
 {
 	struct corgi_lcd *lcd = dev_get_drvdata(&spi->dev);
+=======
+}
+
+static void corgi_lcd_remove(struct spi_device *spi)
+{
+	struct corgi_lcd *lcd = spi_get_drvdata(spi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lcd->bl_dev->props.power = FB_BLANK_UNBLANK;
 	lcd->bl_dev->props.brightness = 0;
 	backlight_update_status(lcd->bl_dev);
+<<<<<<< HEAD
 	backlight_device_unregister(lcd->bl_dev);
 
 	if (gpio_is_valid(lcd->gpio_backlight_on))
@@ -616,17 +761,27 @@ static int __devexit corgi_lcd_remove(struct spi_device *spi)
 	kfree(lcd);
 
 	return 0;
+=======
+	corgi_lcd_set_power(lcd->lcd_dev, FB_BLANK_POWERDOWN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver corgi_lcd_driver = {
 	.driver		= {
 		.name	= "corgi-lcd",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= corgi_lcd_probe,
 	.remove		= __devexit_p(corgi_lcd_remove),
 	.suspend	= corgi_lcd_suspend,
 	.resume		= corgi_lcd_resume,
+=======
+		.pm	= &corgi_lcd_pm_ops,
+	},
+	.probe		= corgi_lcd_probe,
+	.remove		= corgi_lcd_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(corgi_lcd_driver);

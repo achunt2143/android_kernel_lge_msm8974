@@ -142,10 +142,15 @@ static int parport_config(struct pcmcia_device *link)
 			      link->irq, PARPORT_DMA_NONE,
 			      &link->dev, IRQF_SHARED);
     if (p == NULL) {
+<<<<<<< HEAD
 	printk(KERN_NOTICE "parport_cs: parport_pc_probe_port() at "
 	       "0x%3x, irq %u failed\n",
 	       (unsigned int) link->resource[0]->start,
 	       link->irq);
+=======
+	    pr_notice("parport_cs: parport_pc_probe_port() at 0x%3x, irq %u failed\n",
+		      (unsigned int)link->resource[0]->start, link->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto failed;
     }
 
@@ -158,8 +163,14 @@ static int parport_config(struct pcmcia_device *link)
     return 0;
 
 failed:
+<<<<<<< HEAD
     parport_cs_release(link);
     return -ENODEV;
+=======
+	parport_cs_release(link);
+	kfree(link->priv);
+	return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } /* parport_config */
 
 static void parport_cs_release(struct pcmcia_device *link)
@@ -193,6 +204,7 @@ static struct pcmcia_driver parport_cs_driver = {
 	.remove		= parport_detach,
 	.id_table	= parport_ids,
 };
+<<<<<<< HEAD
 
 static int __init init_parport_cs(void)
 {
@@ -206,3 +218,6 @@ static void __exit exit_parport_cs(void)
 
 module_init(init_parport_cs);
 module_exit(exit_parport_cs);
+=======
+module_pcmcia_driver(parport_cs_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

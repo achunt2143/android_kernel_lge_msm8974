@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SH SCI SPI interface
  *
@@ -6,6 +10,7 @@
  * Based on S3C24XX GPIO based SPI driver, which is:
  *   Copyright (c) 2006 Ben Dooks
  *   Copyright (c) 2006 Simtec Electronics
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -18,6 +23,13 @@
 #include <linux/delay.h>
 #include <linux/spinlock.h>
 #include <linux/workqueue.h>
+=======
+ */
+
+#include <linux/kernel.h>
+#include <linux/delay.h>
+#include <linux/spinlock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 
 #include <linux/spi/spi.h>
@@ -62,17 +74,29 @@ static inline void setbits(struct sh_sci_spi *sp, int bits, int on)
 
 static inline void setsck(struct spi_device *dev, int on)
 {
+<<<<<<< HEAD
 	setbits(spi_master_get_devdata(dev->master), PIN_SCK, on);
+=======
+	setbits(spi_controller_get_devdata(dev->controller), PIN_SCK, on);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void setmosi(struct spi_device *dev, int on)
 {
+<<<<<<< HEAD
 	setbits(spi_master_get_devdata(dev->master), PIN_TXD, on);
+=======
+	setbits(spi_controller_get_devdata(dev->controller), PIN_TXD, on);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 getmiso(struct spi_device *dev)
 {
+<<<<<<< HEAD
 	struct sh_sci_spi *sp = spi_master_get_devdata(dev->master);
+=======
+	struct sh_sci_spi *sp = spi_controller_get_devdata(dev->controller);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (ioread8(SCSPTR(sp)) & PIN_RXD) ? 1 : 0;
 }
@@ -82,6 +106,7 @@ static inline u32 getmiso(struct spi_device *dev)
 #include "spi-bitbang-txrx.h"
 
 static u32 sh_sci_spi_txrx_mode0(struct spi_device *spi,
+<<<<<<< HEAD
 				      unsigned nsecs, u32 word, u8 bits)
 {
 	return bitbang_txrx_be_cpha0(spi, nsecs, 0, 0, word, bits);
@@ -103,19 +128,54 @@ static u32 sh_sci_spi_txrx_mode3(struct spi_device *spi,
 				      unsigned nsecs, u32 word, u8 bits)
 {
 	return bitbang_txrx_be_cpha1(spi, nsecs, 1, 0, word, bits);
+=======
+				 unsigned nsecs, u32 word, u8 bits,
+				 unsigned flags)
+{
+	return bitbang_txrx_be_cpha0(spi, nsecs, 0, flags, word, bits);
+}
+
+static u32 sh_sci_spi_txrx_mode1(struct spi_device *spi,
+				 unsigned nsecs, u32 word, u8 bits,
+				 unsigned flags)
+{
+	return bitbang_txrx_be_cpha1(spi, nsecs, 0, flags, word, bits);
+}
+
+static u32 sh_sci_spi_txrx_mode2(struct spi_device *spi,
+				 unsigned nsecs, u32 word, u8 bits,
+				 unsigned flags)
+{
+	return bitbang_txrx_be_cpha0(spi, nsecs, 1, flags, word, bits);
+}
+
+static u32 sh_sci_spi_txrx_mode3(struct spi_device *spi,
+				 unsigned nsecs, u32 word, u8 bits,
+				 unsigned flags)
+{
+	return bitbang_txrx_be_cpha1(spi, nsecs, 1, flags, word, bits);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sh_sci_spi_chipselect(struct spi_device *dev, int value)
 {
+<<<<<<< HEAD
 	struct sh_sci_spi *sp = spi_master_get_devdata(dev->master);
 
 	if (sp->info && sp->info->chip_select)
 		(sp->info->chip_select)(sp->info, dev->chip_select, value);
+=======
+	struct sh_sci_spi *sp = spi_controller_get_devdata(dev->controller);
+
+	if (sp->info->chip_select)
+		(sp->info->chip_select)(sp->info, spi_get_chipselect(dev, 0), value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sh_sci_spi_probe(struct platform_device *dev)
 {
 	struct resource	*r;
+<<<<<<< HEAD
 	struct spi_master *master;
 	struct sh_sci_spi *sp;
 	int ret;
@@ -123,10 +183,20 @@ static int sh_sci_spi_probe(struct platform_device *dev)
 	master = spi_alloc_master(&dev->dev, sizeof(struct sh_sci_spi));
 	if (master == NULL) {
 		dev_err(&dev->dev, "failed to allocate spi master\n");
+=======
+	struct spi_controller *host;
+	struct sh_sci_spi *sp;
+	int ret;
+
+	host = spi_alloc_host(&dev->dev, sizeof(struct sh_sci_spi));
+	if (host == NULL) {
+		dev_err(&dev->dev, "failed to allocate spi host\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto err0;
 	}
 
+<<<<<<< HEAD
 	sp = spi_master_get_devdata(master);
 
 	platform_set_drvdata(dev, sp);
@@ -136,6 +206,22 @@ static int sh_sci_spi_probe(struct platform_device *dev)
 	sp->bitbang.master = spi_master_get(master);
 	sp->bitbang.master->bus_num = sp->info->bus_num;
 	sp->bitbang.master->num_chipselect = sp->info->num_chipselect;
+=======
+	sp = spi_controller_get_devdata(host);
+
+	platform_set_drvdata(dev, sp);
+	sp->info = dev_get_platdata(&dev->dev);
+	if (!sp->info) {
+		dev_err(&dev->dev, "platform data is missing\n");
+		ret = -ENOENT;
+		goto err1;
+	}
+
+	/* setup spi bitbang adaptor */
+	sp->bitbang.ctlr = host;
+	sp->bitbang.ctlr->bus_num = sp->info->bus_num;
+	sp->bitbang.ctlr->num_chipselect = sp->info->num_chipselect;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sp->bitbang.chipselect = sh_sci_spi_chipselect;
 
 	sp->bitbang.txrx_word[SPI_MODE_0] = sh_sci_spi_txrx_mode0;
@@ -163,11 +249,16 @@ static int sh_sci_spi_probe(struct platform_device *dev)
 	setbits(sp, PIN_INIT, 0);
 	iounmap(sp->membase);
  err1:
+<<<<<<< HEAD
 	spi_master_put(sp->bitbang.master);
+=======
+	spi_controller_put(sp->bitbang.ctlr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err0:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int sh_sci_spi_remove(struct platform_device *dev)
 {
 	struct sh_sci_spi *sp = platform_get_drvdata(dev);
@@ -177,14 +268,30 @@ static int sh_sci_spi_remove(struct platform_device *dev)
 	spi_bitbang_stop(&sp->bitbang);
 	spi_master_put(sp->bitbang.master);
 	return 0;
+=======
+static void sh_sci_spi_remove(struct platform_device *dev)
+{
+	struct sh_sci_spi *sp = platform_get_drvdata(dev);
+
+	spi_bitbang_stop(&sp->bitbang);
+	setbits(sp, PIN_INIT, 0);
+	iounmap(sp->membase);
+	spi_controller_put(sp->bitbang.ctlr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver sh_sci_spi_drv = {
 	.probe		= sh_sci_spi_probe,
+<<<<<<< HEAD
 	.remove		= sh_sci_spi_remove,
 	.driver		= {
 		.name	= "spi_sh_sci",
 		.owner	= THIS_MODULE,
+=======
+	.remove_new	= sh_sci_spi_remove,
+	.driver		= {
+		.name	= "spi_sh_sci",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(sh_sci_spi_drv);

@@ -1,24 +1,51 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Freezer declarations */
 
 #ifndef FREEZER_H_INCLUDED
 #define FREEZER_H_INCLUDED
 
+<<<<<<< HEAD
 #include <linux/sched.h>
 #include <linux/wait.h>
 #include <linux/atomic.h>
 
 #ifdef CONFIG_FREEZER
 extern atomic_t system_freezing_cnt;	/* nr of freezing conds in effect */
+=======
+#include <linux/debug_locks.h>
+#include <linux/sched.h>
+#include <linux/wait.h>
+#include <linux/atomic.h>
+#include <linux/jump_label.h>
+
+#ifdef CONFIG_FREEZER
+DECLARE_STATIC_KEY_FALSE(freezer_active);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern bool pm_freezing;		/* PM freezing in effect */
 extern bool pm_nosig_freezing;		/* PM nosig freezing in effect */
 
 /*
+<<<<<<< HEAD
  * Check if a process has been frozen
  */
 static inline bool frozen(struct task_struct *p)
 {
 	return p->flags & PF_FROZEN;
 }
+=======
+ * Timeout for stopping processes
+ */
+extern unsigned int freeze_timeout_msecs;
+
+/*
+ * Check if a process has been frozen
+ */
+extern bool frozen(struct task_struct *p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern bool freezing_slow_path(struct task_struct *p);
 
@@ -27,9 +54,16 @@ extern bool freezing_slow_path(struct task_struct *p);
  */
 static inline bool freezing(struct task_struct *p)
 {
+<<<<<<< HEAD
 	if (likely(!atomic_read(&system_freezing_cnt)))
 		return false;
 	return freezing_slow_path(p);
+=======
+	if (static_branch_unlikely(&freezer_active))
+		return freezing_slow_path(p);
+
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Takes and releases task alloc lock using task_lock() */
@@ -43,12 +77,20 @@ extern void thaw_kernel_threads(void);
 
 static inline bool try_to_freeze(void)
 {
+<<<<<<< HEAD
 /* This causes problems for ARM targets and is a known
  * problem upstream.
  *	might_sleep();
  */
 	if (likely(!freezing(current)))
 		return false;
+=======
+	might_sleep();
+	if (likely(!freezing(current)))
+		return false;
+	if (!(current->flags & PF_NOFREEZE))
+		debug_check_no_locks_held();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return __refrigerator(false);
 }
 
@@ -64,6 +106,7 @@ static inline bool cgroup_freezing(struct task_struct *task)
 }
 #endif /* !CONFIG_CGROUP_FREEZER */
 
+<<<<<<< HEAD
 /*
  * The PF_FREEZER_SKIP flag should be set by a vfork parent right before it
  * calls wait_for_completion(&vfork) and reset right after it returns from this
@@ -253,6 +296,8 @@ static inline int freezable_schedule_hrtimeout_range(ktime_t *expires,
 })
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else /* !CONFIG_FREEZER */
 static inline bool frozen(struct task_struct *p) { return false; }
 static inline bool freezing(struct task_struct *p) { return false; }
@@ -266,6 +311,7 @@ static inline void thaw_kernel_threads(void) {}
 
 static inline bool try_to_freeze(void) { return false; }
 
+<<<<<<< HEAD
 static inline void freezer_do_not_count(void) {}
 static inline void freezer_count(void) {}
 static inline int freezer_should_skip(struct task_struct *p) { return 0; }
@@ -296,6 +342,10 @@ static inline void set_freezable(void) {}
 #define wait_event_freezekillable(wq, condition)		\
 		wait_event_killable(wq, condition)
 
+=======
+static inline void set_freezable(void) {}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !CONFIG_FREEZER */
 
 #endif	/* FREEZER_H_INCLUDED */

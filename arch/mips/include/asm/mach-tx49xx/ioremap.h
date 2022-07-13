@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *	include/asm-mips/mach-tx49xx/ioremap.h
  *
@@ -5,12 +6,18 @@
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *	include/asm-mips/mach-tx49xx/ioremap.h
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_MACH_TX49XX_IOREMAP_H
 #define __ASM_MACH_TX49XX_IOREMAP_H
 
 #include <linux/types.h>
 
+<<<<<<< HEAD
 /*
  * Allow physical addresses to be fixed up to help peripherals located
  * outside the low 32-bit range -- generic pass-through version.
@@ -21,6 +28,9 @@ static inline phys_t fixup_bigphys_addr(phys_t phys_addr, phys_t size)
 }
 
 static inline void __iomem *plat_ioremap(phys_t offset, unsigned long size,
+=======
+static inline void __iomem *plat_ioremap(phys_addr_t offset, unsigned long size,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags)
 {
 #ifdef CONFIG_64BIT

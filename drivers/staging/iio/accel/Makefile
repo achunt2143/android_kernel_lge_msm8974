@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for industrial I/O accelerometer drivers
 #
 
+<<<<<<< HEAD
 adis16201-y             := adis16201_core.o
 adis16201-$(CONFIG_IIO_BUFFER) += adis16201_ring.o adis16201_trigger.o
 obj-$(CONFIG_ADIS16201) += adis16201.o
@@ -33,3 +38,7 @@ obj-$(CONFIG_LIS3L02DQ)	+= lis3l02dq.o
 
 sca3000-y		:= sca3000_core.o sca3000_ring.o
 obj-$(CONFIG_SCA3000)	+= sca3000.o
+=======
+obj-$(CONFIG_ADIS16203) += adis16203.o
+obj-$(CONFIG_ADIS16240) += adis16240.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

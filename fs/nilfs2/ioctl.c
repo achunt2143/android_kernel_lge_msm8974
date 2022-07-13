@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * ioctl.c - NILFS ioctl operations.
  *
@@ -18,6 +19,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Koji Sato <koji@osrg.net>.
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * NILFS ioctl operations.
+ *
+ * Copyright (C) 2007, 2008 Nippon Telegraph and Telephone Corporation.
+ *
+ * Written by Koji Sato.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -29,7 +39,11 @@
 #include <linux/compat.h>	/* compat_ptr() */
 #include <linux/mount.h>	/* mnt_want_write_file(), mnt_drop_write_file() */
 #include <linux/buffer_head.h>
+<<<<<<< HEAD
 #include <linux/nilfs2_fs.h>
+=======
+#include <linux/fileattr.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "nilfs.h"
 #include "segment.h"
 #include "bmap.h"
@@ -37,7 +51,30 @@
 #include "sufile.h"
 #include "dat.h"
 
+<<<<<<< HEAD
 
+=======
+/**
+ * nilfs_ioctl_wrap_copy - wrapping function of get/set metadata info
+ * @nilfs: nilfs object
+ * @argv: vector of arguments from userspace
+ * @dir: set of direction flags
+ * @dofunc: concrete function of get/set metadata info
+ *
+ * Description: nilfs_ioctl_wrap_copy() gets/sets metadata info by means of
+ * calling dofunc() function on the basis of @argv argument.
+ *
+ * Return Value: On success, 0 is returned and requested metadata info
+ * is copied into userspace. On error, one of the following
+ * negative error codes is returned.
+ *
+ * %-EINVAL - Invalid arguments from userspace.
+ *
+ * %-ENOMEM - Insufficient amount of memory available.
+ *
+ * %-EFAULT - Failure during execution of requested operation.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_wrap_copy(struct the_nilfs *nilfs,
 				 struct nilfs_argv *argv, int dir,
 				 ssize_t (*dofunc)(struct the_nilfs *,
@@ -57,7 +94,19 @@ static int nilfs_ioctl_wrap_copy(struct the_nilfs *nilfs,
 	if (argv->v_size > PAGE_SIZE)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	buf = (void *)__get_free_pages(GFP_NOFS, 0);
+=======
+	/*
+	 * Reject pairs of a start item position (argv->v_index) and a
+	 * total count (argv->v_nmembs) which leads position 'pos' to
+	 * overflow by the increment at the end of the loop.
+	 */
+	if (argv->v_index > ~(__u64)0 - argv->v_nmembs)
+		return -EINVAL;
+
+	buf = (void *)get_zeroed_page(GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!buf))
 		return -ENOMEM;
 	maxmembs = PAGE_SIZE / argv->v_size;
@@ -99,6 +148,7 @@ static int nilfs_ioctl_wrap_copy(struct the_nilfs *nilfs,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int nilfs_ioctl_getflags(struct inode *inode, void __user *argp)
 {
 	unsigned int flags = NILFS_I(inode)->i_flags & FS_FL_USER_VISIBLE;
@@ -109,10 +159,32 @@ static int nilfs_ioctl_getflags(struct inode *inode, void __user *argp)
 static int nilfs_ioctl_setflags(struct inode *inode, struct file *filp,
 				void __user *argp)
 {
+=======
+/**
+ * nilfs_fileattr_get - ioctl to support lsattr
+ */
+int nilfs_fileattr_get(struct dentry *dentry, struct fileattr *fa)
+{
+	struct inode *inode = d_inode(dentry);
+
+	fileattr_fill_flags(fa, NILFS_I(inode)->i_flags & FS_FL_USER_VISIBLE);
+
+	return 0;
+}
+
+/**
+ * nilfs_fileattr_set - ioctl to support chattr
+ */
+int nilfs_fileattr_set(struct mnt_idmap *idmap,
+		       struct dentry *dentry, struct fileattr *fa)
+{
+	struct inode *inode = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nilfs_transaction_info ti;
 	unsigned int flags, oldflags;
 	int ret;
 
+<<<<<<< HEAD
 	if (!inode_owner_or_capable(inode))
 		return -EACCES;
 
@@ -147,10 +219,27 @@ static int nilfs_ioctl_setflags(struct inode *inode, struct file *filp,
 
 	nilfs_set_inode_flags(inode);
 	inode->i_ctime = CURRENT_TIME;
+=======
+	if (fileattr_has_fsx(fa))
+		return -EOPNOTSUPP;
+
+	flags = nilfs_mask_flags(inode->i_mode, fa->flags);
+
+	ret = nilfs_transaction_begin(inode->i_sb, &ti, 0);
+	if (ret)
+		return ret;
+
+	oldflags = NILFS_I(inode)->i_flags & ~FS_FL_USER_MODIFIABLE;
+	NILFS_I(inode)->i_flags = oldflags | (flags & FS_FL_USER_MODIFIABLE);
+
+	nilfs_set_inode_flags(inode);
+	inode_set_ctime_current(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_SYNC(inode))
 		nilfs_set_transaction_flag(NILFS_TI_SYNC);
 
 	nilfs_mark_inode_dirty(inode);
+<<<<<<< HEAD
 	ret = nilfs_transaction_commit(inode->i_sb);
 out:
 	mutex_unlock(&inode->i_mutex);
@@ -158,11 +247,41 @@ out:
 	return ret;
 }
 
+=======
+	return nilfs_transaction_commit(inode->i_sb);
+}
+
+/**
+ * nilfs_ioctl_getversion - get info about a file's version (generation number)
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_getversion(struct inode *inode, void __user *argp)
 {
 	return put_user(inode->i_generation, (int __user *)argp);
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_change_cpmode - change checkpoint mode (checkpoint/snapshot)
+ * @inode: inode object
+ * @filp: file object
+ * @cmd: ioctl's request code
+ * @argp: pointer on argument from userspace
+ *
+ * Description: nilfs_ioctl_change_cpmode() function changes mode of
+ * given checkpoint between checkpoint and snapshot state. This ioctl
+ * is used in chcp and mkcp utilities.
+ *
+ * Return Value: On success, 0 is returned and mode of a checkpoint is
+ * changed. On error, one of the following negative error codes
+ * is returned.
+ *
+ * %-EPERM - Operation not permitted.
+ *
+ * %-EFAULT - Failure during checkpoint mode changing.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_change_cpmode(struct inode *inode, struct file *filp,
 				     unsigned int cmd, void __user *argp)
 {
@@ -198,6 +317,28 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_delete_checkpoint - remove checkpoint
+ * @inode: inode object
+ * @filp: file object
+ * @cmd: ioctl's request code
+ * @argp: pointer on argument from userspace
+ *
+ * Description: nilfs_ioctl_delete_checkpoint() function removes
+ * checkpoint from NILFS2 file system. This ioctl is used in rmcp
+ * utility.
+ *
+ * Return Value: On success, 0 is returned and a checkpoint is
+ * removed. On error, one of the following negative error codes
+ * is returned.
+ *
+ * %-EPERM - Operation not permitted.
+ *
+ * %-EFAULT - Failure during checkpoint removing.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 nilfs_ioctl_delete_checkpoint(struct inode *inode, struct file *filp,
 			      unsigned int cmd, void __user *argp)
@@ -229,6 +370,24 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_do_get_cpinfo - callback method getting info about checkpoints
+ * @nilfs: nilfs object
+ * @posp: pointer on array of checkpoint's numbers
+ * @flags: checkpoint mode (checkpoint or snapshot)
+ * @buf: buffer for storing checkponts' info
+ * @size: size in bytes of one checkpoint info item in array
+ * @nmembs: number of checkpoints in array (numbers and infos)
+ *
+ * Description: nilfs_ioctl_do_get_cpinfo() function returns info about
+ * requested checkpoints. The NILFS_IOCTL_GET_CPINFO ioctl is used in
+ * lscp utility and by nilfs_cleanerd daemon.
+ *
+ * Return value: count of nilfs_cpinfo structures in output buffer.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 nilfs_ioctl_do_get_cpinfo(struct the_nilfs *nilfs, __u64 *posp, int flags,
 			  void *buf, size_t size, size_t nmembs)
@@ -242,6 +401,30 @@ nilfs_ioctl_do_get_cpinfo(struct the_nilfs *nilfs, __u64 *posp, int flags,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_get_cpstat - get checkpoints statistics
+ * @inode: inode object
+ * @filp: file object
+ * @cmd: ioctl's request code
+ * @argp: pointer on argument from userspace
+ *
+ * Description: nilfs_ioctl_get_cpstat() returns information about checkpoints.
+ * The NILFS_IOCTL_GET_CPSTAT ioctl is used by lscp, rmcp utilities
+ * and by nilfs_cleanerd daemon.
+ *
+ * Return Value: On success, 0 is returned, and checkpoints information is
+ * copied into userspace pointer @argp. On error, one of the following
+ * negative error codes is returned.
+ *
+ * %-EIO - I/O error.
+ *
+ * %-ENOMEM - Insufficient amount of memory available.
+ *
+ * %-EFAULT - Failure during getting checkpoints statistics.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_get_cpstat(struct inode *inode, struct file *filp,
 				  unsigned int cmd, void __user *argp)
 {
@@ -260,6 +443,24 @@ static int nilfs_ioctl_get_cpstat(struct inode *inode, struct file *filp,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_do_get_suinfo - callback method getting segment usage info
+ * @nilfs: nilfs object
+ * @posp: pointer on array of segment numbers
+ * @flags: *not used*
+ * @buf: buffer for storing suinfo array
+ * @size: size in bytes of one suinfo item in array
+ * @nmembs: count of segment numbers and suinfos in array
+ *
+ * Description: nilfs_ioctl_do_get_suinfo() function returns segment usage
+ * info about requested segments. The NILFS_IOCTL_GET_SUINFO ioctl is used
+ * in lssu, nilfs_resize utilities and by nilfs_cleanerd daemon.
+ *
+ * Return value: count of nilfs_suinfo structures in output buffer.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 nilfs_ioctl_do_get_suinfo(struct the_nilfs *nilfs, __u64 *posp, int flags,
 			  void *buf, size_t size, size_t nmembs)
@@ -273,6 +474,30 @@ nilfs_ioctl_do_get_suinfo(struct the_nilfs *nilfs, __u64 *posp, int flags,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_get_sustat - get segment usage statistics
+ * @inode: inode object
+ * @filp: file object
+ * @cmd: ioctl's request code
+ * @argp: pointer on argument from userspace
+ *
+ * Description: nilfs_ioctl_get_sustat() returns segment usage statistics.
+ * The NILFS_IOCTL_GET_SUSTAT ioctl is used in lssu, nilfs_resize utilities
+ * and by nilfs_cleanerd daemon.
+ *
+ * Return Value: On success, 0 is returned, and segment usage information is
+ * copied into userspace pointer @argp. On error, one of the following
+ * negative error codes is returned.
+ *
+ * %-EIO - I/O error.
+ *
+ * %-ENOMEM - Insufficient amount of memory available.
+ *
+ * %-EFAULT - Failure during getting segment usage statistics.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_get_sustat(struct inode *inode, struct file *filp,
 				  unsigned int cmd, void __user *argp)
 {
@@ -291,6 +516,24 @@ static int nilfs_ioctl_get_sustat(struct inode *inode, struct file *filp,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_do_get_vinfo - callback method getting virtual blocks info
+ * @nilfs: nilfs object
+ * @posp: *not used*
+ * @flags: *not used*
+ * @buf: buffer for storing array of nilfs_vinfo structures
+ * @size: size in bytes of one vinfo item in array
+ * @nmembs: count of vinfos in array
+ *
+ * Description: nilfs_ioctl_do_get_vinfo() function returns information
+ * on virtual block addresses. The NILFS_IOCTL_GET_VINFO ioctl is used
+ * by nilfs_cleanerd daemon.
+ *
+ * Return value: count of nilfs_vinfo structures in output buffer.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 nilfs_ioctl_do_get_vinfo(struct the_nilfs *nilfs, __u64 *posp, int flags,
 			 void *buf, size_t size, size_t nmembs)
@@ -303,6 +546,24 @@ nilfs_ioctl_do_get_vinfo(struct the_nilfs *nilfs, __u64 *posp, int flags,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_do_get_bdescs - callback method getting disk block descriptors
+ * @nilfs: nilfs object
+ * @posp: *not used*
+ * @flags: *not used*
+ * @buf: buffer for storing array of nilfs_bdesc structures
+ * @size: size in bytes of one bdesc item in array
+ * @nmembs: count of bdescs in array
+ *
+ * Description: nilfs_ioctl_do_get_bdescs() function returns information
+ * about descriptors of disk block numbers. The NILFS_IOCTL_GET_BDESCS ioctl
+ * is used by nilfs_cleanerd daemon.
+ *
+ * Return value: count of nilfs_bdescs structures in output buffer.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t
 nilfs_ioctl_do_get_bdescs(struct the_nilfs *nilfs, __u64 *posp, int flags,
 			  void *buf, size_t size, size_t nmembs)
@@ -329,6 +590,32 @@ nilfs_ioctl_do_get_bdescs(struct the_nilfs *nilfs, __u64 *posp, int flags,
 	return nmembs;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_get_bdescs - get disk block descriptors
+ * @inode: inode object
+ * @filp: file object
+ * @cmd: ioctl's request code
+ * @argp: pointer on argument from userspace
+ *
+ * Description: nilfs_ioctl_do_get_bdescs() function returns information
+ * about descriptors of disk block numbers. The NILFS_IOCTL_GET_BDESCS ioctl
+ * is used by nilfs_cleanerd daemon.
+ *
+ * Return Value: On success, 0 is returned, and disk block descriptors are
+ * copied into userspace pointer @argp. On error, one of the following
+ * negative error codes is returned.
+ *
+ * %-EINVAL - Invalid arguments from userspace.
+ *
+ * %-EIO - I/O error.
+ *
+ * %-ENOMEM - Insufficient amount of memory available.
+ *
+ * %-EFAULT - Failure during getting disk block descriptors.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_get_bdescs(struct inode *inode, struct file *filp,
 				  unsigned int cmd, void __user *argp)
 {
@@ -352,6 +639,29 @@ static int nilfs_ioctl_get_bdescs(struct inode *inode, struct file *filp,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_move_inode_block - prepare data/node block for moving by GC
+ * @inode: inode object
+ * @vdesc: descriptor of virtual block number
+ * @buffers: list of moving buffers
+ *
+ * Description: nilfs_ioctl_move_inode_block() function registers data/node
+ * buffer in the GC pagecache and submit read request.
+ *
+ * Return Value: On success, 0 is returned. On error, one of the following
+ * negative error codes is returned.
+ *
+ * %-EIO - I/O error.
+ *
+ * %-ENOMEM - Insufficient amount of memory available.
+ *
+ * %-ENOENT - Requested block doesn't exist.
+ *
+ * %-EEXIST - Blocks conflict is detected.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_move_inode_block(struct inode *inode,
 					struct nilfs_vdesc *vdesc,
 					struct list_head *buffers)
@@ -369,6 +679,7 @@ static int nilfs_ioctl_move_inode_block(struct inode *inode,
 
 	if (unlikely(ret < 0)) {
 		if (ret == -ENOENT)
+<<<<<<< HEAD
 			printk(KERN_CRIT
 			       "%s: invalid virtual block address (%s): "
 			       "ino=%llu, cno=%llu, offset=%llu, "
@@ -390,6 +701,27 @@ static int nilfs_ioctl_move_inode_block(struct inode *inode,
 		       (unsigned long long)vdesc->vd_offset,
 		       (unsigned long long)vdesc->vd_blocknr,
 		       (unsigned long long)vdesc->vd_vblocknr);
+=======
+			nilfs_crit(inode->i_sb,
+				   "%s: invalid virtual block address (%s): ino=%llu, cno=%llu, offset=%llu, blocknr=%llu, vblocknr=%llu",
+				   __func__, vdesc->vd_flags ? "node" : "data",
+				   (unsigned long long)vdesc->vd_ino,
+				   (unsigned long long)vdesc->vd_cno,
+				   (unsigned long long)vdesc->vd_offset,
+				   (unsigned long long)vdesc->vd_blocknr,
+				   (unsigned long long)vdesc->vd_vblocknr);
+		return ret;
+	}
+	if (unlikely(!list_empty(&bh->b_assoc_buffers))) {
+		nilfs_crit(inode->i_sb,
+			   "%s: conflicting %s buffer: ino=%llu, cno=%llu, offset=%llu, blocknr=%llu, vblocknr=%llu",
+			   __func__, vdesc->vd_flags ? "node" : "data",
+			   (unsigned long long)vdesc->vd_ino,
+			   (unsigned long long)vdesc->vd_cno,
+			   (unsigned long long)vdesc->vd_offset,
+			   (unsigned long long)vdesc->vd_blocknr,
+			   (unsigned long long)vdesc->vd_vblocknr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		brelse(bh);
 		return -EEXIST;
 	}
@@ -397,6 +729,22 @@ static int nilfs_ioctl_move_inode_block(struct inode *inode,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_move_blocks - move valid inode's blocks during garbage collection
+ * @sb: superblock object
+ * @argv: vector of arguments from userspace
+ * @buf: array of nilfs_vdesc structures
+ *
+ * Description: nilfs_ioctl_move_blocks() function reads valid data/node
+ * blocks that garbage collector specified with the array of nilfs_vdesc
+ * structures and stores them into page caches of GC inodes.
+ *
+ * Return Value: Number of processed nilfs_vdesc structures or
+ * error code, otherwise.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_move_blocks(struct super_block *sb,
 				   struct nilfs_argv *argv, void *buf)
 {
@@ -462,6 +810,28 @@ static int nilfs_ioctl_move_blocks(struct super_block *sb,
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_delete_checkpoints - delete checkpoints
+ * @nilfs: nilfs object
+ * @argv: vector of arguments from userspace
+ * @buf: array of periods of checkpoints numbers
+ *
+ * Description: nilfs_ioctl_delete_checkpoints() function deletes checkpoints
+ * in the period from p_start to p_end, excluding p_end itself. The checkpoints
+ * which have been already deleted are ignored.
+ *
+ * Return Value: Number of processed nilfs_period structures or
+ * error code, otherwise.
+ *
+ * %-EIO - I/O error.
+ *
+ * %-ENOMEM - Insufficient amount of memory available.
+ *
+ * %-EINVAL - invalid checkpoints.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_delete_checkpoints(struct the_nilfs *nilfs,
 					  struct nilfs_argv *argv, void *buf)
 {
@@ -479,6 +849,27 @@ static int nilfs_ioctl_delete_checkpoints(struct the_nilfs *nilfs,
 	return nmembs;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_free_vblocknrs - free virtual block numbers
+ * @nilfs: nilfs object
+ * @argv: vector of arguments from userspace
+ * @buf: array of virtual block numbers
+ *
+ * Description: nilfs_ioctl_free_vblocknrs() function frees
+ * the virtual block numbers specified by @buf and @argv->v_nmembs.
+ *
+ * Return Value: Number of processed virtual block numbers or
+ * error code, otherwise.
+ *
+ * %-EIO - I/O error.
+ *
+ * %-ENOMEM - Insufficient amount of memory available.
+ *
+ * %-ENOENT - The virtual block number have not been allocated.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_free_vblocknrs(struct the_nilfs *nilfs,
 				      struct nilfs_argv *argv, void *buf)
 {
@@ -490,12 +881,37 @@ static int nilfs_ioctl_free_vblocknrs(struct the_nilfs *nilfs,
 	return (ret < 0) ? ret : nmembs;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_mark_blocks_dirty - mark blocks dirty
+ * @nilfs: nilfs object
+ * @argv: vector of arguments from userspace
+ * @buf: array of block descriptors
+ *
+ * Description: nilfs_ioctl_mark_blocks_dirty() function marks
+ * metadata file or data blocks as dirty.
+ *
+ * Return Value: Number of processed block descriptors or
+ * error code, otherwise.
+ *
+ * %-ENOMEM - Insufficient memory available.
+ *
+ * %-EIO - I/O error
+ *
+ * %-ENOENT - the specified block does not exist (hole block)
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_mark_blocks_dirty(struct the_nilfs *nilfs,
 					 struct nilfs_argv *argv, void *buf)
 {
 	size_t nmembs = argv->v_nmembs;
 	struct nilfs_bmap *bmap = NILFS_I(nilfs->ns_dat)->i_bmap;
 	struct nilfs_bdesc *bdescs = buf;
+<<<<<<< HEAD
+=======
+	struct buffer_head *bh;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret, i;
 
 	for (i = 0; i < nmembs; i++) {
@@ -513,12 +929,25 @@ static int nilfs_ioctl_mark_blocks_dirty(struct the_nilfs *nilfs,
 			/* skip dead block */
 			continue;
 		if (bdescs[i].bd_level == 0) {
+<<<<<<< HEAD
 			ret = nilfs_mdt_mark_block_dirty(nilfs->ns_dat,
 							 bdescs[i].bd_offset);
 			if (ret < 0) {
 				WARN_ON(ret == -ENOENT);
 				return ret;
 			}
+=======
+			ret = nilfs_mdt_get_block(nilfs->ns_dat,
+						  bdescs[i].bd_offset,
+						  false, NULL, &bh);
+			if (unlikely(ret)) {
+				WARN_ON(ret == -ENOENT);
+				return ret;
+			}
+			mark_buffer_dirty(bh);
+			nilfs_mdt_mark_dirty(nilfs->ns_dat);
+			put_bh(bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			ret = nilfs_bmap_mark(bmap, bdescs[i].bd_offset,
 					      bdescs[i].bd_level);
@@ -566,11 +995,32 @@ int nilfs_ioctl_prepare_clean_segments(struct the_nilfs *nilfs,
 	return 0;
 
  failed:
+<<<<<<< HEAD
 	printk(KERN_ERR "NILFS: GC failed during preparation: %s: err=%d\n",
 	       msg, ret);
 	return ret;
 }
 
+=======
+	nilfs_err(nilfs->ns_sb, "error %d preparing GC: %s", ret, msg);
+	return ret;
+}
+
+/**
+ * nilfs_ioctl_clean_segments - clean segments
+ * @inode: inode object
+ * @filp: file object
+ * @cmd: ioctl's request code
+ * @argp: pointer on argument from userspace
+ *
+ * Description: nilfs_ioctl_clean_segments() function makes garbage
+ * collection operation in the environment of requested parameters
+ * from userspace. The NILFS_IOCTL_CLEAN_SEGMENTS ioctl is used by
+ * nilfs_cleanerd daemon.
+ *
+ * Return Value: On success, 0 is returned or error code, otherwise.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_clean_segments(struct inode *inode, struct file *filp,
 				      unsigned int cmd, void __user *argp)
 {
@@ -603,6 +1053,7 @@ static int nilfs_ioctl_clean_segments(struct inode *inode, struct file *filp,
 	nsegs = argv[4].v_nmembs;
 	if (argv[4].v_size != argsz[4])
 		goto out;
+<<<<<<< HEAD
 	if (nsegs > UINT_MAX / sizeof(__u64))
 		goto out;
 
@@ -613,6 +1064,16 @@ static int nilfs_ioctl_clean_segments(struct inode *inode, struct file *filp,
 	 */
 	kbufs[4] = memdup_user((void __user *)(unsigned long)argv[4].v_base,
 			       nsegs * sizeof(__u64));
+=======
+
+	/*
+	 * argv[4] points to segment numbers this ioctl cleans.  We
+	 * use kmalloc() for its buffer because the memory used for the
+	 * segment numbers is small enough.
+	 */
+	kbufs[4] = memdup_array_user((void __user *)(unsigned long)argv[4].v_base,
+				     nsegs, sizeof(__u64));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(kbufs[4])) {
 		ret = PTR_ERR(kbufs[4]);
 		goto out;
@@ -660,6 +1121,7 @@ static int nilfs_ioctl_clean_segments(struct inode *inode, struct file *filp,
 		goto out_free;
 	}
 
+<<<<<<< HEAD
 	vfs_check_frozen(inode->i_sb, SB_FREEZE_WRITE);
 
 	ret = nilfs_ioctl_move_blocks(inode->i_sb, &argv[0], kbufs[0]);
@@ -667,6 +1129,14 @@ static int nilfs_ioctl_clean_segments(struct inode *inode, struct file *filp,
 		printk(KERN_ERR "NILFS: GC failed during preparation: "
 			"cannot read source blocks: err=%d\n", ret);
 	else {
+=======
+	ret = nilfs_ioctl_move_blocks(inode->i_sb, &argv[0], kbufs[0]);
+	if (ret < 0) {
+		nilfs_err(inode->i_sb,
+			  "error %d preparing GC: cannot read source blocks",
+			  ret);
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (nilfs_sb_need_update(nilfs))
 			set_nilfs_discontinued(nilfs);
 		ret = nilfs_clean_segments(inode->i_sb, argv, kbufs);
@@ -684,6 +1154,36 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_sync - make a checkpoint
+ * @inode: inode object
+ * @filp: file object
+ * @cmd: ioctl's request code
+ * @argp: pointer on argument from userspace
+ *
+ * Description: nilfs_ioctl_sync() function constructs a logical segment
+ * for checkpointing.  This function guarantees that all modified data
+ * and metadata are written out to the device when it successfully
+ * returned.
+ *
+ * Return Value: On success, 0 is retured. On errors, one of the following
+ * negative error code is returned.
+ *
+ * %-EROFS - Read only filesystem.
+ *
+ * %-EIO - I/O error
+ *
+ * %-ENOSPC - No space left on device (only in a panic state).
+ *
+ * %-ERESTARTSYS - Interrupted.
+ *
+ * %-ENOMEM - Insufficient memory available.
+ *
+ * %-EFAULT - Failure during execution of requested operation.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_sync(struct inode *inode, struct file *filp,
 			    unsigned int cmd, void __user *argp)
 {
@@ -695,8 +1195,17 @@ static int nilfs_ioctl_sync(struct inode *inode, struct file *filp,
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	if (argp != NULL) {
 		nilfs = inode->i_sb->s_fs_info;
+=======
+	nilfs = inode->i_sb->s_fs_info;
+	ret = nilfs_flush_device(nilfs);
+	if (ret < 0)
+		return ret;
+
+	if (argp != NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		down_read(&nilfs->ns_segctor_sem);
 		cno = nilfs->ns_cno - 1;
 		up_read(&nilfs->ns_segctor_sem);
@@ -706,6 +1215,17 @@ static int nilfs_ioctl_sync(struct inode *inode, struct file *filp,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_resize - resize NILFS2 volume
+ * @inode: inode object
+ * @filp: file object
+ * @argp: pointer on argument from userspace
+ *
+ * Return Value: On success, 0 is returned or error code, otherwise.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_resize(struct inode *inode, struct file *filp,
 			      void __user *argp)
 {
@@ -731,6 +1251,62 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_trim_fs() - trim ioctl handle function
+ * @inode: inode object
+ * @argp: pointer on argument from userspace
+ *
+ * Description: nilfs_ioctl_trim_fs is the FITRIM ioctl handle function. It
+ * checks the arguments from userspace and calls nilfs_sufile_trim_fs, which
+ * performs the actual trim operation.
+ *
+ * Return Value: On success, 0 is returned or negative error code, otherwise.
+ */
+static int nilfs_ioctl_trim_fs(struct inode *inode, void __user *argp)
+{
+	struct the_nilfs *nilfs = inode->i_sb->s_fs_info;
+	struct fstrim_range range;
+	int ret;
+
+	if (!capable(CAP_SYS_ADMIN))
+		return -EPERM;
+
+	if (!bdev_max_discard_sectors(nilfs->ns_bdev))
+		return -EOPNOTSUPP;
+
+	if (copy_from_user(&range, argp, sizeof(range)))
+		return -EFAULT;
+
+	range.minlen = max_t(u64, range.minlen,
+			     bdev_discard_granularity(nilfs->ns_bdev));
+
+	down_read(&nilfs->ns_segctor_sem);
+	ret = nilfs_sufile_trim_fs(nilfs->ns_sufile, &range);
+	up_read(&nilfs->ns_segctor_sem);
+
+	if (ret < 0)
+		return ret;
+
+	if (copy_to_user(argp, &range, sizeof(range)))
+		return -EFAULT;
+
+	return 0;
+}
+
+/**
+ * nilfs_ioctl_set_alloc_range - limit range of segments to be allocated
+ * @inode: inode object
+ * @argp: pointer on argument from userspace
+ *
+ * Description: nilfs_ioctl_set_alloc_range() function defines lower limit
+ * of segments in bytes and upper limit of segments in bytes.
+ * The NILFS_IOCTL_SET_ALLOC_RANGE is used by nilfs_resize utility.
+ *
+ * Return Value: On success, 0 is returned or error code, otherwise.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_set_alloc_range(struct inode *inode, void __user *argp)
 {
 	struct the_nilfs *nilfs = inode->i_sb->s_fs_info;
@@ -747,15 +1323,32 @@ static int nilfs_ioctl_set_alloc_range(struct inode *inode, void __user *argp)
 		goto out;
 
 	ret = -ERANGE;
+<<<<<<< HEAD
 	if (range[1] > i_size_read(inode->i_sb->s_bdev->bd_inode))
+=======
+	if (range[1] > bdev_nr_bytes(inode->i_sb->s_bdev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	segbytes = nilfs->ns_blocks_per_segment * nilfs->ns_blocksize;
 
 	minseg = range[0] + segbytes - 1;
+<<<<<<< HEAD
 	do_div(minseg, segbytes);
 	maxseg = NILFS_SB2_OFFSET_BYTES(range[1]);
 	do_div(maxseg, segbytes);
+=======
+	minseg = div64_ul(minseg, segbytes);
+
+	if (range[1] < 4096)
+		goto out;
+
+	maxseg = NILFS_SB2_OFFSET_BYTES(range[1]);
+	if (maxseg < segbytes)
+		goto out;
+
+	maxseg = div64_ul(maxseg, segbytes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	maxseg--;
 
 	ret = nilfs_sufile_set_alloc_range(nilfs->ns_sufile, minseg, maxseg);
@@ -763,6 +1356,31 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+/**
+ * nilfs_ioctl_get_info - wrapping function of get metadata info
+ * @inode: inode object
+ * @filp: file object
+ * @cmd: ioctl's request code
+ * @argp: pointer on argument from userspace
+ * @membsz: size of an item in bytes
+ * @dofunc: concrete function of getting metadata info
+ *
+ * Description: nilfs_ioctl_get_info() gets metadata info by means of
+ * calling dofunc() function.
+ *
+ * Return Value: On success, 0 is returned and requested metadata info
+ * is copied into userspace. On error, one of the following
+ * negative error codes is returned.
+ *
+ * %-EINVAL - Invalid arguments from userspace.
+ *
+ * %-ENOMEM - Insufficient amount of memory available.
+ *
+ * %-EFAULT - Failure during execution of requested operation.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nilfs_ioctl_get_info(struct inode *inode, struct file *filp,
 				unsigned int cmd, void __user *argp,
 				size_t membsz,
@@ -790,6 +1408,7 @@ static int nilfs_ioctl_get_info(struct inode *inode, struct file *filp,
 	return ret;
 }
 
+<<<<<<< HEAD
 long nilfs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	struct inode *inode = filp->f_dentry->d_inode;
@@ -800,6 +1419,103 @@ long nilfs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		return nilfs_ioctl_getflags(inode, argp);
 	case FS_IOC_SETFLAGS:
 		return nilfs_ioctl_setflags(inode, filp, argp);
+=======
+/**
+ * nilfs_ioctl_set_suinfo - set segment usage info
+ * @inode: inode object
+ * @filp: file object
+ * @cmd: ioctl's request code
+ * @argp: pointer on argument from userspace
+ *
+ * Description: Expects an array of nilfs_suinfo_update structures
+ * encapsulated in nilfs_argv and updates the segment usage info
+ * according to the flags in nilfs_suinfo_update.
+ *
+ * Return Value: On success, 0 is returned. On error, one of the
+ * following negative error codes is returned.
+ *
+ * %-EPERM - Not enough permissions
+ *
+ * %-EFAULT - Error copying input data
+ *
+ * %-EIO - I/O error.
+ *
+ * %-ENOMEM - Insufficient amount of memory available.
+ *
+ * %-EINVAL - Invalid values in input (segment number, flags or nblocks)
+ */
+static int nilfs_ioctl_set_suinfo(struct inode *inode, struct file *filp,
+				unsigned int cmd, void __user *argp)
+{
+	struct the_nilfs *nilfs = inode->i_sb->s_fs_info;
+	struct nilfs_transaction_info ti;
+	struct nilfs_argv argv;
+	size_t len;
+	void __user *base;
+	void *kbuf;
+	int ret;
+
+	if (!capable(CAP_SYS_ADMIN))
+		return -EPERM;
+
+	ret = mnt_want_write_file(filp);
+	if (ret)
+		return ret;
+
+	ret = -EFAULT;
+	if (copy_from_user(&argv, argp, sizeof(argv)))
+		goto out;
+
+	ret = -EINVAL;
+	if (argv.v_size < sizeof(struct nilfs_suinfo_update))
+		goto out;
+
+	if (argv.v_nmembs > nilfs->ns_nsegments)
+		goto out;
+
+	if (argv.v_nmembs >= UINT_MAX / argv.v_size)
+		goto out;
+
+	len = argv.v_size * argv.v_nmembs;
+	if (!len) {
+		ret = 0;
+		goto out;
+	}
+
+	base = (void __user *)(unsigned long)argv.v_base;
+	kbuf = vmalloc(len);
+	if (!kbuf) {
+		ret = -ENOMEM;
+		goto out;
+	}
+
+	if (copy_from_user(kbuf, base, len)) {
+		ret = -EFAULT;
+		goto out_free;
+	}
+
+	nilfs_transaction_begin(inode->i_sb, &ti, 0);
+	ret = nilfs_sufile_set_suinfo(nilfs->ns_sufile, kbuf, argv.v_size,
+			argv.v_nmembs);
+	if (unlikely(ret < 0))
+		nilfs_transaction_abort(inode->i_sb);
+	else
+		nilfs_transaction_commit(inode->i_sb); /* never fails */
+
+out_free:
+	vfree(kbuf);
+out:
+	mnt_drop_write_file(filp);
+	return ret;
+}
+
+long nilfs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
+{
+	struct inode *inode = file_inode(filp);
+	void __user *argp = (void __user *)arg;
+
+	switch (cmd) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FS_IOC_GETVERSION:
 		return nilfs_ioctl_getversion(inode, argp);
 	case NILFS_IOCTL_CHANGE_CPMODE:
@@ -816,6 +1532,11 @@ long nilfs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		return nilfs_ioctl_get_info(inode, filp, cmd, argp,
 					    sizeof(struct nilfs_suinfo),
 					    nilfs_ioctl_do_get_suinfo);
+<<<<<<< HEAD
+=======
+	case NILFS_IOCTL_SET_SUINFO:
+		return nilfs_ioctl_set_suinfo(inode, filp, cmd, argp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NILFS_IOCTL_GET_SUSTAT:
 		return nilfs_ioctl_get_sustat(inode, filp, cmd, argp);
 	case NILFS_IOCTL_GET_VINFO:
@@ -832,6 +1553,11 @@ long nilfs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 		return nilfs_ioctl_resize(inode, filp, argp);
 	case NILFS_IOCTL_SET_ALLOC_RANGE:
 		return nilfs_ioctl_set_alloc_range(inode, argp);
+<<<<<<< HEAD
+=======
+	case FITRIM:
+		return nilfs_ioctl_trim_fs(inode, argp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -ENOTTY;
 	}
@@ -841,12 +1567,15 @@ long nilfs_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 long nilfs_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	switch (cmd) {
+<<<<<<< HEAD
 	case FS_IOC32_GETFLAGS:
 		cmd = FS_IOC_GETFLAGS;
 		break;
 	case FS_IOC32_SETFLAGS:
 		cmd = FS_IOC_SETFLAGS;
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case FS_IOC32_GETVERSION:
 		cmd = FS_IOC_GETVERSION;
 		break;
@@ -855,6 +1584,10 @@ long nilfs_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	case NILFS_IOCTL_GET_CPINFO:
 	case NILFS_IOCTL_GET_CPSTAT:
 	case NILFS_IOCTL_GET_SUINFO:
+<<<<<<< HEAD
+=======
+	case NILFS_IOCTL_SET_SUINFO:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NILFS_IOCTL_GET_SUSTAT:
 	case NILFS_IOCTL_GET_VINFO:
 	case NILFS_IOCTL_GET_BDESCS:
@@ -862,6 +1595,10 @@ long nilfs_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	case NILFS_IOCTL_SYNC:
 	case NILFS_IOCTL_RESIZE:
 	case NILFS_IOCTL_SET_ALLOC_RANGE:
+<<<<<<< HEAD
+=======
+	case FITRIM:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -ENOIOCTLCMD;

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * leon_pci_grpci2.c: GRPCI2 Host PCI driver
  *
@@ -5,11 +9,22 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/of_device.h>
 #include <linux/kernel.h>
 #include <linux/pci.h>
 #include <linux/delay.h>
 #include <linux/export.h>
+=======
+#include <linux/kernel.h>
+#include <linux/pci.h>
+#include <linux/slab.h>
+#include <linux/delay.h>
+#include <linux/export.h>
+#include <linux/of.h>
+#include <linux/platform_device.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/leon.h>
 #include <asm/vaddrs.h>
@@ -186,9 +201,17 @@ struct grpci2_cap_first {
 #define CAP9_IOMAP_OFS 0x20
 #define CAP9_BARSIZE_OFS 0x24
 
+<<<<<<< HEAD
 struct grpci2_priv {
 	struct leon_pci_info	info; /* must be on top of this structure */
 	struct grpci2_regs	*regs;
+=======
+#define TGT 256
+
+struct grpci2_priv {
+	struct leon_pci_info	info; /* must be on top of this structure */
+	struct grpci2_regs __iomem *regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char			irq;
 	char			irq_mode; /* IRQ Mode from CAPSTS REG */
 	char			bt_enabled;
@@ -212,10 +235,17 @@ struct grpci2_priv {
 	struct grpci2_barcfg	tgtbars[6];
 };
 
+<<<<<<< HEAD
 DEFINE_SPINLOCK(grpci2_dev_lock);
 struct grpci2_priv *grpci2priv;
 
 int grpci2_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+=======
+static DEFINE_SPINLOCK(grpci2_dev_lock);
+static struct grpci2_priv *grpci2priv;
+
+static int grpci2_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct grpci2_priv *priv = dev->bus->sysdata;
 	int irq_group;
@@ -237,8 +267,17 @@ static int grpci2_cfg_r32(struct grpci2_priv *priv, unsigned int bus,
 	if (where & 0x3)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (bus == 0 && PCI_SLOT(devfn) != 0)
 		devfn += (0x8 * 6);
+=======
+	if (bus == 0) {
+		devfn += (0x8 * 6); /* start at AD16=Device0 */
+	} else if (bus == TGT) {
+		bus = 0;
+		devfn = 0; /* special case: bridge controller itself */
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Select bus */
 	spin_lock_irqsave(&grpci2_dev_lock, flags);
@@ -263,7 +302,11 @@ static int grpci2_cfg_r32(struct grpci2_priv *priv, unsigned int bus,
 		*val = 0xffffffff;
 	} else {
 		/* Bus always little endian (unaffected by byte-swapping) */
+<<<<<<< HEAD
 		*val = flip_dword(tmp);
+=======
+		*val = swab32(tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -303,8 +346,17 @@ static int grpci2_cfg_w32(struct grpci2_priv *priv, unsigned int bus,
 	if (where & 0x3)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (bus == 0 && PCI_SLOT(devfn) != 0)
 		devfn += (0x8 * 6);
+=======
+	if (bus == 0) {
+		devfn += (0x8 * 6); /* start at AD16=Device0 */
+	} else if (bus == TGT) {
+		bus = 0;
+		devfn = 0; /* special case: bridge controller itself */
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Select bus */
 	spin_lock_irqsave(&grpci2_dev_lock, flags);
@@ -317,7 +369,11 @@ static int grpci2_cfg_w32(struct grpci2_priv *priv, unsigned int bus,
 
 	pci_conf = (unsigned int *) (priv->pci_conf |
 						(devfn << 8) | (where & 0xfc));
+<<<<<<< HEAD
 	LEON3_BYPASS_STORE_PA(pci_conf, flip_dword(val));
+=======
+	LEON3_BYPASS_STORE_PA(pci_conf, swab32(val));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Wait until GRPCI2 signals that CFG access is done, it should be
 	 * done instantaneously unless a DMA operation is ongoing...
@@ -368,7 +424,11 @@ static int grpci2_read_config(struct pci_bus *bus, unsigned int devfn,
 	unsigned int busno = bus->number;
 	int ret;
 
+<<<<<<< HEAD
 	if (PCI_SLOT(devfn) > 15 || (PCI_SLOT(devfn) == 0 && busno == 0)) {
+=======
+	if (PCI_SLOT(devfn) > 15 || busno > 255) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*val = ~0;
 		return 0;
 	}
@@ -406,7 +466,11 @@ static int grpci2_write_config(struct pci_bus *bus, unsigned int devfn,
 	struct grpci2_priv *priv = grpci2priv;
 	unsigned int busno = bus->number;
 
+<<<<<<< HEAD
 	if (PCI_SLOT(devfn) > 15 || (PCI_SLOT(devfn) == 0 && busno == 0))
+=======
+	if (PCI_SLOT(devfn) > 15 || busno > 255)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 #ifdef GRPCI2_DEBUG_CFGACCESS
@@ -487,7 +551,11 @@ static struct irq_chip grpci2_irq = {
 };
 
 /* Handle one or multiple IRQs from the PCI core */
+<<<<<<< HEAD
 static void grpci2_pci_flow_irq(unsigned int irq, struct irq_desc *desc)
+=======
+static void grpci2_pci_flow_irq(struct irq_desc *desc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct grpci2_priv *priv = grpci2priv;
 	int i, ack = 0;
@@ -550,10 +618,17 @@ out:
 	return virq;
 }
 
+<<<<<<< HEAD
 void grpci2_hw_init(struct grpci2_priv *priv)
 {
 	u32 ahbadr, pciadr, bar_sz, capptr, io_map, data;
 	struct grpci2_regs *regs = priv->regs;
+=======
+static void grpci2_hw_init(struct grpci2_priv *priv)
+{
+	u32 ahbadr, pciadr, bar_sz, capptr, io_map, data;
+	struct grpci2_regs __iomem *regs = priv->regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	struct grpci2_barcfg *barcfg = priv->tgtbars;
 
@@ -572,12 +647,17 @@ void grpci2_hw_init(struct grpci2_priv *priv)
 	REGSTORE(regs->io_map, REGLOAD(regs->io_map) & 0x0000ffff);
 
 	/* set 1:1 mapping between AHB -> PCI memory space, for all Masters
+<<<<<<< HEAD
 	 * Each AHB master has it's own mapping registers. Max 16 AHB masters.
+=======
+	 * Each AHB master has its own mapping registers. Max 16 AHB masters.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	for (i = 0; i < 16; i++)
 		REGSTORE(regs->ahbmst_map[i], priv->pci_area);
 
 	/* Get the GRPCI2 Host PCI ID */
+<<<<<<< HEAD
 	grpci2_cfg_r32(priv, 0, 0, PCI_VENDOR_ID, &priv->pciid);
 
 	/* Get address to first (always defined) capability structure */
@@ -587,6 +667,17 @@ void grpci2_hw_init(struct grpci2_priv *priv)
 	grpci2_cfg_r32(priv, 0, 0, capptr+CAP9_IOMAP_OFS, &io_map);
 	io_map = (io_map & ~0x1) | (priv->bt_enabled ? 1 : 0);
 	grpci2_cfg_w32(priv, 0, 0, capptr+CAP9_IOMAP_OFS, io_map);
+=======
+	grpci2_cfg_r32(priv, TGT, 0, PCI_VENDOR_ID, &priv->pciid);
+
+	/* Get address to first (always defined) capability structure */
+	grpci2_cfg_r8(priv, TGT, 0, PCI_CAPABILITY_LIST, &capptr);
+
+	/* Enable/Disable Byte twisting */
+	grpci2_cfg_r32(priv, TGT, 0, capptr+CAP9_IOMAP_OFS, &io_map);
+	io_map = (io_map & ~0x1) | (priv->bt_enabled ? 1 : 0);
+	grpci2_cfg_w32(priv, TGT, 0, capptr+CAP9_IOMAP_OFS, io_map);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup the Host's PCI Target BARs for other peripherals to access,
 	 * and do DMA to the host's memory. The target BARs can be sized and
@@ -617,17 +708,30 @@ void grpci2_hw_init(struct grpci2_priv *priv)
 				pciadr = 0;
 			}
 		}
+<<<<<<< HEAD
 		grpci2_cfg_w32(priv, 0, 0, capptr+CAP9_BARSIZE_OFS+i*4, bar_sz);
 		grpci2_cfg_w32(priv, 0, 0, PCI_BASE_ADDRESS_0+i*4, pciadr);
 		grpci2_cfg_w32(priv, 0, 0, capptr+CAP9_BAR_OFS+i*4, ahbadr);
+=======
+		grpci2_cfg_w32(priv, TGT, 0, capptr+CAP9_BARSIZE_OFS+i*4,
+				bar_sz);
+		grpci2_cfg_w32(priv, TGT, 0, PCI_BASE_ADDRESS_0+i*4, pciadr);
+		grpci2_cfg_w32(priv, TGT, 0, capptr+CAP9_BAR_OFS+i*4, ahbadr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_INFO "        TGT BAR[%d]: 0x%08x (PCI)-> 0x%08x\n",
 			i, pciadr, ahbadr);
 	}
 
 	/* set as bus master and enable pci memory responses */
+<<<<<<< HEAD
 	grpci2_cfg_r32(priv, 0, 0, PCI_COMMAND, &data);
 	data |= (PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
 	grpci2_cfg_w32(priv, 0, 0, PCI_COMMAND, data);
+=======
+	grpci2_cfg_r32(priv, TGT, 0, PCI_COMMAND, &data);
+	data |= (PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER);
+	grpci2_cfg_w32(priv, TGT, 0, PCI_COMMAND, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable Error respone (CPU-TRAP) on illegal memory access. */
 	REGSTORE(regs->ctrl, CTRL_ER | CTRL_PE);
@@ -643,7 +747,11 @@ static irqreturn_t grpci2_jump_interrupt(int irq, void *arg)
 static irqreturn_t grpci2_err_interrupt(int irq, void *arg)
 {
 	struct grpci2_priv *priv = arg;
+<<<<<<< HEAD
 	struct grpci2_regs *regs = priv->regs;
+=======
+	struct grpci2_regs __iomem *regs = priv->regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int status;
 
 	status = REGLOAD(regs->sts_cap);
@@ -668,9 +776,15 @@ static irqreturn_t grpci2_err_interrupt(int irq, void *arg)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int __devinit grpci2_of_probe(struct platform_device *ofdev)
 {
 	struct grpci2_regs *regs;
+=======
+static int grpci2_of_probe(struct platform_device *ofdev)
+{
+	struct grpci2_regs __iomem *regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct grpci2_priv *priv;
 	int err, i, len;
 	const int *tmp;
@@ -711,7 +825,10 @@ static int __devinit grpci2_of_probe(struct platform_device *ofdev)
 		err = -ENOMEM;
 		goto err1;
 	}
+<<<<<<< HEAD
 	memset(grpci2priv, 0, sizeof(*grpci2priv));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->regs = regs;
 	priv->irq = ofdev->archdata.irqs[0]; /* BASE IRQ */
 	priv->irq_mode = (capability & STS_IRQMODE) >> STS_IRQMODE_BIT;
@@ -788,6 +905,14 @@ static int __devinit grpci2_of_probe(struct platform_device *ofdev)
 	if (request_resource(&ioport_resource, &priv->info.io_space) < 0)
 		goto err4;
 
+<<<<<<< HEAD
+=======
+	/* setup maximum supported PCI buses */
+	priv->info.busn.name = "GRPCI2 busn";
+	priv->info.busn.start = 0;
+	priv->info.busn.end = 255;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	grpci2_hw_init(priv);
 
 	/*
@@ -861,7 +986,11 @@ err4:
 	release_resource(&priv->info.mem_space);
 err3:
 	err = -ENOMEM;
+<<<<<<< HEAD
 	iounmap((void *)priv->pci_io_va);
+=======
+	iounmap((void __iomem *)priv->pci_io_va);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err2:
 	kfree(priv);
 err1:
@@ -870,7 +999,11 @@ err1:
 	return err;
 }
 
+<<<<<<< HEAD
 static struct of_device_id grpci2_of_match[] = {
+=======
+static const struct of_device_id grpci2_of_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	 .name = "GAISLER_GRPCI2",
 	 },
@@ -883,7 +1016,10 @@ static struct of_device_id grpci2_of_match[] = {
 static struct platform_driver grpci2_of_driver = {
 	.driver = {
 		.name = "grpci2",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = grpci2_of_match,
 	},
 	.probe = grpci2_of_probe,

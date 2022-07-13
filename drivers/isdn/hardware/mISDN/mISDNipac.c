@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * isac.c   ISAC specific routines
  *
  * Author       Karsten Keil <keil@isdn4linux.de>
  *
  * Copyright 2009  by Karsten Keil <keil@isdn4linux.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -18,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/irqreturn.h>
@@ -80,6 +87,10 @@ isac_ph_state_bh(struct dchannel *dch)
 		l1_event(dch->l1, HW_DEACT_CNF);
 		break;
 	case ISAC_IND_DR:
+<<<<<<< HEAD
+=======
+	case ISAC_IND_DR6:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dch->state = 3;
 		l1_event(dch->l1, HW_DEACT_IND);
 		break;
@@ -112,7 +123,11 @@ isac_ph_state_bh(struct dchannel *dch)
 	pr_debug("%s: TE newstate %x\n", isac->name, dch->state);
 }
 
+<<<<<<< HEAD
 void
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 isac_empty_fifo(struct isac_hw *isac, int count)
 {
 	u8 *ptr;
@@ -171,7 +186,10 @@ isac_fill_fifo(struct isac_hw *isac)
 		pr_debug("%s: %s dbusytimer running\n", isac->name, __func__);
 		del_timer(&isac->dch.timer);
 	}
+<<<<<<< HEAD
 	init_timer(&isac->dch.timer);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	isac->dch.timer.expires = jiffies + ((DBUSY_TIMER_VALUE * HZ)/1000);
 	add_timer(&isac->dch.timer);
 	if (isac->dch.debug & DEBUG_HW_DFIFO) {
@@ -203,8 +221,12 @@ isac_rme_irq(struct isac_hw *isac)
 #endif
 		}
 		WriteISAC(isac, ISAC_CMDR, 0x80);
+<<<<<<< HEAD
 		if (isac->dch.rx_skb)
 			dev_kfree_skb(isac->dch.rx_skb);
+=======
+		dev_kfree_skb(isac->dch.rx_skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		isac->dch.rx_skb = NULL;
 	} else {
 		count = ReadISAC(isac, ISAC_RBCL) & 0x1f;
@@ -223,8 +245,12 @@ isac_xpr_irq(struct isac_hw *isac)
 	if (isac->dch.tx_skb && isac->dch.tx_idx < isac->dch.tx_skb->len) {
 		isac_fill_fifo(isac);
 	} else {
+<<<<<<< HEAD
 		if (isac->dch.tx_skb)
 			dev_kfree_skb(isac->dch.tx_skb);
+=======
+		dev_kfree_skb(isac->dch.tx_skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (get_next_dframe(&isac->dch))
 			isac_fill_fifo(isac);
 	}
@@ -363,8 +389,13 @@ afterMONR1:
 			WriteISAC(isac, ISAC_MOCR, isac->mocr);
 			if (isac->mon_txc && (isac->mon_txp >= isac->mon_txc)) {
 				if (isac->monitor)
+<<<<<<< HEAD
 					ret = isac->monitor(isac->dch.hw,
 							    MONITOR_TX_0, NULL, 0);
+=======
+					isac->monitor(isac->dch.hw,
+						      MONITOR_TX_0, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			kfree(isac->mon_tx);
 			isac->mon_tx = NULL;
@@ -374,8 +405,13 @@ afterMONR1:
 		}
 		if (isac->mon_txc && (isac->mon_txp >= isac->mon_txc)) {
 			if (isac->monitor)
+<<<<<<< HEAD
 				ret = isac->monitor(isac->dch.hw,
 						    MONITOR_TX_0, NULL, 0);
+=======
+				isac->monitor(isac->dch.hw,
+					      MONITOR_TX_0, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(isac->mon_tx);
 			isac->mon_tx = NULL;
 			isac->mon_txc = 0;
@@ -396,8 +432,13 @@ AfterMOX0:
 			WriteISAC(isac, ISAC_MOCR, isac->mocr);
 			if (isac->mon_txc && (isac->mon_txp >= isac->mon_txc)) {
 				if (isac->monitor)
+<<<<<<< HEAD
 					ret = isac->monitor(isac->dch.hw,
 							    MONITOR_TX_1, NULL, 0);
+=======
+					isac->monitor(isac->dch.hw,
+						      MONITOR_TX_1, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			kfree(isac->mon_tx);
 			isac->mon_tx = NULL;
@@ -407,8 +448,13 @@ AfterMOX0:
 		}
 		if (isac->mon_txc && (isac->mon_txp >= isac->mon_txc)) {
 			if (isac->monitor)
+<<<<<<< HEAD
 				ret = isac->monitor(isac->dch.hw,
 						    MONITOR_TX_1, NULL, 0);
+=======
+				isac->monitor(isac->dch.hw,
+					      MONITOR_TX_1, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(isac->mon_tx);
 			isac->mon_tx = NULL;
 			isac->mon_txc = 0;
@@ -477,8 +523,12 @@ isacsx_rme_irq(struct isac_hw *isac)
 			isac->dch.err_crc++;
 #endif
 		WriteISAC(isac, ISACX_CMDRD, ISACX_CMDRD_RMC);
+<<<<<<< HEAD
 		if (isac->dch.rx_skb)
 			dev_kfree_skb(isac->dch.rx_skb);
+=======
+		dev_kfree_skb(isac->dch.rx_skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		isac->dch.rx_skb = NULL;
 	} else {
 		count = ReadISAC(isac, ISACX_RBCLD) & 0x1f;
@@ -603,10 +653,18 @@ isac_l1hw(struct mISDNchannel *ch, struct sk_buff *skb)
 }
 
 static int
+<<<<<<< HEAD
 isac_ctrl(struct isac_hw *isac, u32 cmd, u_long para)
 {
 	u8 tl = 0;
 	u_long flags;
+=======
+isac_ctrl(struct isac_hw *isac, u32 cmd, unsigned long para)
+{
+	u8 tl = 0;
+	unsigned long flags;
+	int ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case HW_TESTLOOP:
@@ -626,12 +684,24 @@ isac_ctrl(struct isac_hw *isac, u32 cmd, u_long para)
 		}
 		spin_unlock_irqrestore(isac->hwlock, flags);
 		break;
+<<<<<<< HEAD
 	default:
 		pr_debug("%s: %s unknown command %x %lx\n", isac->name,
 			 __func__, cmd, para);
 		return -1;
 	}
 	return 0;
+=======
+	case HW_TIMER3_VALUE:
+		ret = l1_event(isac->dch.l1, HW_TIMER3_VALUE | (para & 0xff));
+		break;
+	default:
+		pr_debug("%s: %s unknown command %x %lx\n", isac->name,
+			 __func__, cmd, para);
+		ret = -1;
+	}
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -656,6 +726,10 @@ isac_l1cmd(struct dchannel *dch, u32 cmd)
 		spin_lock_irqsave(isac->hwlock, flags);
 		if ((isac->state == ISAC_IND_EI) ||
 		    (isac->state == ISAC_IND_DR) ||
+<<<<<<< HEAD
+=======
+		    (isac->state == ISAC_IND_DR6) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (isac->state == ISAC_IND_RS))
 			ph_command(isac, ISAC_CMD_TIM);
 		else
@@ -705,7 +779,11 @@ isac_release(struct isac_hw *isac)
 {
 	if (isac->type & IPAC_TYPE_ISACX)
 		WriteISAC(isac, ISACX_MASK, 0xff);
+<<<<<<< HEAD
 	else
+=======
+	else if (isac->type != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		WriteISAC(isac, ISAC_MASK, 0xff);
 	if (isac->dch.timer.function != NULL) {
 		del_timer(&isac->dch.timer);
@@ -721,8 +799,14 @@ isac_release(struct isac_hw *isac)
 }
 
 static void
+<<<<<<< HEAD
 dbusy_timer_handler(struct isac_hw *isac)
 {
+=======
+dbusy_timer_handler(struct timer_list *t)
+{
+	struct isac_hw *isac = from_timer(isac, t, dch.timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rbch, star;
 	u_long flags;
 
@@ -750,10 +834,17 @@ dbusy_timer_handler(struct isac_hw *isac)
 }
 
 static int
+<<<<<<< HEAD
 open_dchannel(struct isac_hw *isac, struct channel_req *rq)
 {
 	pr_debug("%s: %s dev(%d) open from %p\n", isac->name, __func__,
 		 isac->dch.dev.id, __builtin_return_address(1));
+=======
+open_dchannel_caller(struct isac_hw *isac, struct channel_req *rq, void *caller)
+{
+	pr_debug("%s: %s dev(%d) open from %p\n", isac->name, __func__,
+		 isac->dch.dev.id, caller);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rq->protocol != ISDN_P_TE_S0)
 		return -EINVAL;
 	if (rq->adr.channel == 1)
@@ -767,6 +858,15 @@ open_dchannel(struct isac_hw *isac, struct channel_req *rq)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int
+open_dchannel(struct isac_hw *isac, struct channel_req *rq)
+{
+	return open_dchannel_caller(isac, rq, __builtin_return_address(0));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *ISACVer[] =
 {"2086/2186 V1.1", "2085 B1", "2085 B2",
  "2085 V2.3"};
@@ -784,9 +884,13 @@ isac_init(struct isac_hw *isac)
 	}
 	isac->mon_tx = NULL;
 	isac->mon_rx = NULL;
+<<<<<<< HEAD
 	isac->dch.timer.function = (void *) dbusy_timer_handler;
 	isac->dch.timer.data = (long)isac;
 	init_timer(&isac->dch.timer);
+=======
+	timer_setup(&isac->dch.timer, dbusy_timer_handler, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	isac->mocr = 0xaa;
 	if (isac->type & IPAC_TYPE_ISACX) {
 		/* Disable all IRQ */
@@ -929,6 +1033,7 @@ static void
 hscx_empty_fifo(struct hscx_hw *hscx, u8 count)
 {
 	u8 *p;
+<<<<<<< HEAD
 
 	pr_debug("%s: B%1d %d\n", hscx->ip->name, hscx->bch.nr, count);
 	if (!hscx->bch.rx_skb) {
@@ -947,6 +1052,25 @@ hscx_empty_fifo(struct hscx_hw *hscx, u8 count)
 		hscx_cmdr(hscx, 0x80); /* RMC */
 		return;
 	}
+=======
+	int maxlen;
+
+	pr_debug("%s: B%1d %d\n", hscx->ip->name, hscx->bch.nr, count);
+	if (test_bit(FLG_RX_OFF, &hscx->bch.Flags)) {
+		hscx->bch.dropcnt += count;
+		hscx_cmdr(hscx, 0x80); /* RMC */
+		return;
+	}
+	maxlen = bchannel_get_rxbuf(&hscx->bch, count);
+	if (maxlen < 0) {
+		hscx_cmdr(hscx, 0x80); /* RMC */
+		if (hscx->bch.rx_skb)
+			skb_trim(hscx->bch.rx_skb, 0);
+		pr_warn("%s.B%d: No bufferspace for %d bytes\n",
+			hscx->ip->name, hscx->bch.nr, count);
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p = skb_put(hscx->bch.rx_skb, count);
 
 	if (hscx->ip->type & IPAC_TYPE_IPACX)
@@ -971,6 +1095,7 @@ hscx_fill_fifo(struct hscx_hw *hscx)
 	int count, more;
 	u8 *p;
 
+<<<<<<< HEAD
 	if (!hscx->bch.tx_skb)
 		return;
 	count = hscx->bch.tx_skb->len - hscx->bch.tx_idx;
@@ -987,6 +1112,30 @@ hscx_fill_fifo(struct hscx_hw *hscx)
 		 hscx->bch.tx_idx, hscx->bch.tx_skb->len);
 	hscx->bch.tx_idx += count;
 
+=======
+	if (!hscx->bch.tx_skb) {
+		if (!test_bit(FLG_TX_EMPTY, &hscx->bch.Flags))
+			return;
+		count = hscx->fifo_size;
+		more = 1;
+		p = hscx->log;
+		memset(p, hscx->bch.fill[0], count);
+	} else {
+		count = hscx->bch.tx_skb->len - hscx->bch.tx_idx;
+		if (count <= 0)
+			return;
+		p = hscx->bch.tx_skb->data + hscx->bch.tx_idx;
+
+		more = test_bit(FLG_TRANSPARENT, &hscx->bch.Flags) ? 1 : 0;
+		if (count > hscx->fifo_size) {
+			count = hscx->fifo_size;
+			more = 1;
+		}
+		pr_debug("%s: B%1d %d/%d/%d\n", hscx->ip->name, hscx->bch.nr,
+			 count, hscx->bch.tx_idx, hscx->bch.tx_skb->len);
+		hscx->bch.tx_idx += count;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hscx->ip->type & IPAC_TYPE_IPACX)
 		hscx->ip->write_fifo(hscx->ip->hw,
 				     hscx->off + IPACX_XFIFOB, p, count);
@@ -997,7 +1146,11 @@ hscx_fill_fifo(struct hscx_hw *hscx)
 	}
 	hscx_cmdr(hscx, more ? 0x08 : 0x0a);
 
+<<<<<<< HEAD
 	if (hscx->bch.debug & DEBUG_HW_BFIFO) {
+=======
+	if (hscx->bch.tx_skb && (hscx->bch.debug & DEBUG_HW_BFIFO)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snprintf(hscx->log, 64, "B%1d-send %s %d ",
 			 hscx->bch.nr, hscx->ip->name, count);
 		print_hex_dump_bytes(hscx->log, DUMP_PREFIX_OFFSET, p, count);
@@ -1007,6 +1160,7 @@ hscx_fill_fifo(struct hscx_hw *hscx)
 static void
 hscx_xpr(struct hscx_hw *hx)
 {
+<<<<<<< HEAD
 	if (hx->bch.tx_skb && hx->bch.tx_idx < hx->bch.tx_skb->len)
 		hscx_fill_fifo(hx);
 	else {
@@ -1018,6 +1172,18 @@ hscx_xpr(struct hscx_hw *hx)
 		}
 		if (get_next_bframe(&hx->bch))
 			hscx_fill_fifo(hx);
+=======
+	if (hx->bch.tx_skb && hx->bch.tx_idx < hx->bch.tx_skb->len) {
+		hscx_fill_fifo(hx);
+	} else {
+		dev_kfree_skb(hx->bch.tx_skb);
+		if (get_next_bframe(&hx->bch)) {
+			hscx_fill_fifo(hx);
+			test_and_clear_bit(FLG_TX_EMPTY, &hx->bch.Flags);
+		} else if (test_bit(FLG_TX_EMPTY, &hx->bch.Flags)) {
+			hscx_fill_fifo(hx);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1064,12 +1230,20 @@ ipac_rme(struct hscx_hw *hx)
 	if (!hx->bch.rx_skb)
 		return;
 	if (hx->bch.rx_skb->len < 2) {
+<<<<<<< HEAD
 		pr_debug("%s: B%1d frame to short %d\n",
+=======
+		pr_debug("%s: B%1d frame too short %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 hx->ip->name, hx->bch.nr, hx->bch.rx_skb->len);
 		skb_trim(hx->bch.rx_skb, 0);
 	} else {
 		skb_trim(hx->bch.rx_skb, hx->bch.rx_skb->len - 1);
+<<<<<<< HEAD
 		recv_Bchannel(&hx->bch, 0);
+=======
+		recv_Bchannel(&hx->bch, 0, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1120,11 +1294,16 @@ ipac_irq(struct hscx_hw *hx, u8 ista)
 
 	if (istab & IPACX_B_RPF) {
 		hscx_empty_fifo(hx, hx->fifo_size);
+<<<<<<< HEAD
 		if (test_bit(FLG_TRANSPARENT, &hx->bch.Flags)) {
 			/* receive transparent audio data */
 			if (hx->bch.rx_skb)
 				recv_Bchannel(&hx->bch, 0);
 		}
+=======
+		if (test_bit(FLG_TRANSPARENT, &hx->bch.Flags))
+			recv_Bchannel(&hx->bch, 0, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (istab & IPACX_B_RFO) {
@@ -1137,7 +1316,13 @@ ipac_irq(struct hscx_hw *hx, u8 ista)
 
 	if (istab & IPACX_B_XDU) {
 		if (test_bit(FLG_TRANSPARENT, &hx->bch.Flags)) {
+<<<<<<< HEAD
 			hscx_fill_fifo(hx);
+=======
+			if (test_bit(FLG_FILLEMPTY, &hx->bch.Flags))
+				test_and_set_bit(FLG_TX_EMPTY, &hx->bch.Flags);
+			hscx_xpr(hx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		pr_debug("%s: B%1d XDU error at len %d\n", hx->ip->name,
@@ -1337,14 +1522,19 @@ hscx_l2l1(struct mISDNchannel *ch, struct sk_buff *skb)
 	struct hscx_hw	*hx = container_of(bch, struct hscx_hw, bch);
 	int ret = -EINVAL;
 	struct mISDNhead *hh = mISDN_HEAD_P(skb);
+<<<<<<< HEAD
 	u32 id;
 	u_long flags;
+=======
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (hh->prim) {
 	case PH_DATA_REQ:
 		spin_lock_irqsave(hx->ip->hwlock, flags);
 		ret = bchannel_senddata(bch, skb);
 		if (ret > 0) { /* direct TX */
+<<<<<<< HEAD
 			id = hh->id; /* skb can be freed */
 			ret = 0;
 			hscx_fill_fifo(hx);
@@ -1353,6 +1543,12 @@ hscx_l2l1(struct mISDNchannel *ch, struct sk_buff *skb)
 				queue_ch_frame(ch, PH_DATA_CNF, id, NULL);
 		} else
 			spin_unlock_irqrestore(hx->ip->hwlock, flags);
+=======
+			ret = 0;
+			hscx_fill_fifo(hx);
+		}
+		spin_unlock_irqrestore(hx->ip->hwlock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	case PH_ACTIVATE_REQ:
 		spin_lock_irqsave(hx->ip->hwlock, flags);
@@ -1387,6 +1583,7 @@ hscx_l2l1(struct mISDNchannel *ch, struct sk_buff *skb)
 static int
 channel_bctrl(struct bchannel *bch, struct mISDN_ctrl_req *cq)
 {
+<<<<<<< HEAD
 	int	ret = 0;
 
 	switch (cq->op) {
@@ -1401,6 +1598,9 @@ channel_bctrl(struct bchannel *bch, struct mISDN_ctrl_req *cq)
 		break;
 	}
 	return ret;
+=======
+	return mISDN_ctrl_bchannel(bch, cq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -1415,6 +1615,7 @@ hscx_bctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 	switch (cmd) {
 	case CLOSE_CHANNEL:
 		test_and_clear_bit(FLG_OPEN, &bch->Flags);
+<<<<<<< HEAD
 		if (test_bit(FLG_ACTIVE, &bch->Flags)) {
 			spin_lock_irqsave(hx->ip->hwlock, flags);
 			mISDN_freebchannel(bch);
@@ -1424,6 +1625,13 @@ hscx_bctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 			skb_queue_purge(&bch->rqueue);
 			bch->rcount = 0;
 		}
+=======
+		cancel_work_sync(&bch->workq);
+		spin_lock_irqsave(hx->ip->hwlock, flags);
+		mISDN_clear_bchannel(bch);
+		hscx_mode(hx, ISDN_P_NONE);
+		spin_unlock_irqrestore(hx->ip->hwlock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ch->protocol = ISDN_P_NONE;
 		ch->peer = NULL;
 		module_put(hx->ip->owner);
@@ -1525,7 +1733,11 @@ channel_ctrl(struct ipac_hw *ipac, struct mISDN_ctrl_req *cq)
 
 	switch (cq->op) {
 	case MISDN_CTRL_GETOP:
+<<<<<<< HEAD
 		cq->op = MISDN_CTRL_LOOP;
+=======
+		cq->op = MISDN_CTRL_LOOP | MISDN_CTRL_L1_TIMER3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MISDN_CTRL_LOOP:
 		/* cq->channel: 0 disable, 1 B1 loop 2 B2 loop, 3 both */
@@ -1535,6 +1747,12 @@ channel_ctrl(struct ipac_hw *ipac, struct mISDN_ctrl_req *cq)
 		}
 		ret = ipac->ctrl(ipac, HW_TESTLOOP, cq->channel);
 		break;
+<<<<<<< HEAD
+=======
+	case MISDN_CTRL_L1_TIMER3:
+		ret = ipac->isac.ctrl(&ipac->isac, HW_TIMER3_VALUE, cq->p1);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		pr_info("%s: unknown CTRL OP %x\n", ipac->name, cq->op);
 		ret = -EINVAL;
@@ -1558,7 +1776,11 @@ ipac_dctrl(struct mISDNchannel *ch, u32 cmd, void *arg)
 	case OPEN_CHANNEL:
 		rq = arg;
 		if (rq->protocol == ISDN_P_TE_S0)
+<<<<<<< HEAD
 			err = open_dchannel(isac, rq);
+=======
+			err = open_dchannel_caller(isac, rq, __builtin_return_address(0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			err = open_bchannel(ipac, rq);
 		if (err)
@@ -1620,14 +1842,23 @@ mISDNipac_init(struct ipac_hw *ipac, void *hw)
 		set_channelmap(i + 1, ipac->isac.dch.dev.channelmap);
 		list_add(&ipac->hscx[i].bch.ch.list,
 			 &ipac->isac.dch.dev.bchannels);
+<<<<<<< HEAD
 		mISDN_initbchannel(&ipac->hscx[i].bch, MAX_DATA_MEM);
+=======
+		mISDN_initbchannel(&ipac->hscx[i].bch, MAX_DATA_MEM,
+				   ipac->hscx[i].fifo_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ipac->hscx[i].bch.ch.nr = i + 1;
 		ipac->hscx[i].bch.ch.send = &hscx_l2l1;
 		ipac->hscx[i].bch.ch.ctrl = hscx_bctrl;
 		ipac->hscx[i].bch.hw = hw;
 		ipac->hscx[i].ip = ipac;
 		/* default values for IOM time slots
+<<<<<<< HEAD
 		 * can be overwriten by card */
+=======
+		 * can be overwritten by card */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ipac->hscx[i].slot = (i == 0) ? 0x2f : 0x03;
 	}
 

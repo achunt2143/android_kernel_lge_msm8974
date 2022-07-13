@@ -12,6 +12,10 @@
 #include <linux/io.h>
 #include <asm/cacheflush.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
+=======
+#include <asm/kgdb.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pvr.h>
 
 #define GDB_REG		0
@@ -30,6 +34,7 @@
 #define GDB_RTLBLO	55
 #define GDB_RTLBHI	56
 
+<<<<<<< HEAD
 /* keep pvr separately because it is unchangeble */
 struct pvr_s pvr;
 
@@ -38,6 +43,17 @@ void pt_regs_to_gdb_regs(unsigned long *gdb_regs, struct pt_regs *regs)
 	int i;
 	unsigned long *pt_regb = (unsigned long *)regs;
 	int temp;
+=======
+/* keep pvr separately because it is unchangeable */
+static struct pvr_s pvr;
+
+void pt_regs_to_gdb_regs(unsigned long *gdb_regs, struct pt_regs *regs)
+{
+	unsigned int i;
+	unsigned long *pt_regb = (unsigned long *)regs;
+	int temp;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* registers r0 - r31, pc, msr, ear, esr, fsr + do not save pt_mode */
 	for (i = 0; i < (sizeof(struct pt_regs) / 4) - 1; i++)
 		gdb_regs[i] = pt_regb[i];
@@ -67,7 +83,11 @@ void pt_regs_to_gdb_regs(unsigned long *gdb_regs, struct pt_regs *regs)
 
 void gdb_regs_to_pt_regs(unsigned long *gdb_regs, struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	int i;
+=======
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long *pt_regb = (unsigned long *)regs;
 
 	/* pt_regs and gdb_regs have the same 37 values.
@@ -77,7 +97,11 @@ void gdb_regs_to_pt_regs(unsigned long *gdb_regs, struct pt_regs *regs)
 		pt_regb[i] = gdb_regs[i];
 }
 
+<<<<<<< HEAD
 void microblaze_kgdb_break(struct pt_regs *regs)
+=======
+asmlinkage void microblaze_kgdb_break(struct pt_regs *regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (kgdb_handle_exception(1, SIGTRAP, 0, regs) != 0)
 		return;
@@ -91,7 +115,11 @@ void microblaze_kgdb_break(struct pt_regs *regs)
 /* untested */
 void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *p)
 {
+<<<<<<< HEAD
 	int i;
+=======
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long *pt_regb = (unsigned long *)(p->thread.regs);
 
 	/* registers r0 - r31, pc, msr, ear, esr, fsr + do not save pt_mode */
@@ -141,7 +169,11 @@ void kgdb_arch_exit(void)
 /*
  * Global data
  */
+<<<<<<< HEAD
 struct kgdb_arch arch_kgdb_ops = {
+=======
+const struct kgdb_arch arch_kgdb_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __MICROBLAZEEL__
 	.gdb_bpt_instr = {0x18, 0x00, 0x0c, 0xba}, /* brki r16, 0x18 */
 #else

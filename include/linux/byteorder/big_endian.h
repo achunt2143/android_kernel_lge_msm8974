@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_BYTEORDER_BIG_ENDIAN_H
 #define _LINUX_BYTEORDER_BIG_ENDIAN_H
 
@@ -105,4 +106,17 @@ static inline __u16 __be16_to_cpup(const __be16 *p)
 #include <linux/byteorder/generic.h>
 #endif
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_BYTEORDER_BIG_ENDIAN_H
+#define _LINUX_BYTEORDER_BIG_ENDIAN_H
+
+#include <uapi/linux/byteorder/big_endian.h>
+
+#ifndef CONFIG_CPU_BIG_ENDIAN
+#warning inconsistent configuration, needs CONFIG_CPU_BIG_ENDIAN
+#endif
+
+#include <linux/byteorder/generic.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_BYTEORDER_BIG_ENDIAN_H */

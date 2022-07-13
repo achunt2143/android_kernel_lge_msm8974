@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* atomic.h: These still suck, but the I-cache hit rate is higher.
  *
  * Copyright (C) 1996 David S. Miller (davem@davemloft.net)
@@ -14,6 +18,7 @@
 #include <linux/types.h>
 
 #include <asm/cmpxchg.h>
+<<<<<<< HEAD
 #include <asm-generic/atomic64.h>
 
 
@@ -57,5 +62,49 @@ extern void atomic_set(atomic_t *, int);
 #define smp_mb__after_atomic_dec()	barrier()
 #define smp_mb__before_atomic_inc()	barrier()
 #define smp_mb__after_atomic_inc()	barrier()
+=======
+#include <asm/barrier.h>
+#include <asm-generic/atomic64.h>
+
+int arch_atomic_add_return(int, atomic_t *);
+#define arch_atomic_add_return arch_atomic_add_return
+
+int arch_atomic_fetch_add(int, atomic_t *);
+#define arch_atomic_fetch_add arch_atomic_fetch_add
+
+int arch_atomic_fetch_and(int, atomic_t *);
+#define arch_atomic_fetch_and arch_atomic_fetch_and
+
+int arch_atomic_fetch_or(int, atomic_t *);
+#define arch_atomic_fetch_or arch_atomic_fetch_or
+
+int arch_atomic_fetch_xor(int, atomic_t *);
+#define arch_atomic_fetch_xor arch_atomic_fetch_xor
+
+int arch_atomic_cmpxchg(atomic_t *, int, int);
+#define arch_atomic_cmpxchg arch_atomic_cmpxchg
+
+int arch_atomic_xchg(atomic_t *, int);
+#define arch_atomic_xchg arch_atomic_xchg
+
+int arch_atomic_fetch_add_unless(atomic_t *, int, int);
+#define arch_atomic_fetch_add_unless arch_atomic_fetch_add_unless
+
+void arch_atomic_set(atomic_t *, int);
+
+#define arch_atomic_set_release(v, i)	arch_atomic_set((v), (i))
+
+#define arch_atomic_read(v)		READ_ONCE((v)->counter)
+
+#define arch_atomic_add(i, v)	((void)arch_atomic_add_return( (int)(i), (v)))
+#define arch_atomic_sub(i, v)	((void)arch_atomic_add_return(-(int)(i), (v)))
+
+#define arch_atomic_and(i, v)	((void)arch_atomic_fetch_and((i), (v)))
+#define arch_atomic_or(i, v)	((void)arch_atomic_fetch_or((i), (v)))
+#define arch_atomic_xor(i, v)	((void)arch_atomic_fetch_xor((i), (v)))
+
+#define arch_atomic_sub_return(i, v)	(arch_atomic_add_return(-(int)(i), (v)))
+#define arch_atomic_fetch_sub(i, v)	(arch_atomic_fetch_add (-(int)(i), (v)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* !(__ARCH_SPARC_ATOMIC__) */

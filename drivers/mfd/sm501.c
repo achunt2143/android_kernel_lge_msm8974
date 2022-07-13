@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* linux/drivers/mfd/sm501.c
  *
  * Copyright (C) 2006 Simtec Electronics
  *	Ben Dooks <ben@simtec.co.uk>
  *	Vincent Sanders <vince@simtec.co.uk>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * SM501 MFD driver
 */
 
@@ -19,7 +26,13 @@
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/i2c-gpio.h>
+=======
+#include <linux/platform_data/i2c-gpio.h>
+#include <linux/gpio/driver.h>
+#include <linux/gpio/machine.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 #include <linux/sm501.h>
@@ -514,9 +527,15 @@ unsigned long sm501_set_clock(struct device *dev,
 	unsigned long mode = smc501_readl(sm->regs + SM501_POWER_MODE_CONTROL);
 	unsigned long gate = smc501_readl(sm->regs + SM501_CURRENT_GATE);
 	unsigned long clock = smc501_readl(sm->regs + SM501_CURRENT_CLOCK);
+<<<<<<< HEAD
 	unsigned char reg;
 	unsigned int pll_reg = 0;
 	unsigned long sm501_freq; /* the actual frequency achieved */
+=======
+	unsigned int pll_reg = 0;
+	unsigned long sm501_freq; /* the actual frequency achieved */
+	u64 reg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct sm501_clock to;
 
@@ -714,6 +733,10 @@ sm501_create_subdev(struct sm501_devdata *sm, char *name,
 	smdev->pdev.name = name;
 	smdev->pdev.id = sm->pdev_id;
 	smdev->pdev.dev.parent = sm->dev;
+<<<<<<< HEAD
+=======
+	smdev->pdev.dev.coherent_dma_mask = 0xffffffff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (res_count) {
 		smdev->pdev.resource = (struct resource *)(smdev+1);
@@ -840,7 +863,11 @@ static int sm501_register_uart(struct sm501_devdata *sm, int devices)
 	if (!pdev)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	uart_data = pdev->dev.platform_data;
+=======
+	uart_data = dev_get_platdata(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (devices & SM501_USE_UART0) {
 		sm501_setup_uart_data(sm, uart_data++, 0x30000);
@@ -879,11 +906,14 @@ static int sm501_register_display(struct sm501_devdata *sm,
 
 #ifdef CONFIG_MFD_SM501_GPIO
 
+<<<<<<< HEAD
 static inline struct sm501_gpio_chip *to_sm501_gpio(struct gpio_chip *gc)
 {
 	return container_of(gc, struct sm501_gpio_chip, gpio);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct sm501_devdata *sm501_gpio_to_dev(struct sm501_gpio *gpio)
 {
 	return container_of(gpio, struct sm501_devdata, gpio);
@@ -892,7 +922,11 @@ static inline struct sm501_devdata *sm501_gpio_to_dev(struct sm501_gpio *gpio)
 static int sm501_gpio_get(struct gpio_chip *chip, unsigned offset)
 
 {
+<<<<<<< HEAD
 	struct sm501_gpio_chip *smgpio = to_sm501_gpio(chip);
+=======
+	struct sm501_gpio_chip *smgpio = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long result;
 
 	result = smc501_readl(smgpio->regbase + SM501_GPIO_DATA_LOW);
@@ -923,7 +957,11 @@ static void sm501_gpio_ensure_gpio(struct sm501_gpio_chip *smchip,
 static void sm501_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 
 {
+<<<<<<< HEAD
 	struct sm501_gpio_chip *smchip = to_sm501_gpio(chip);
+=======
+	struct sm501_gpio_chip *smchip = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sm501_gpio *smgpio = smchip->ourgpio;
 	unsigned long bit = 1 << offset;
 	void __iomem *regs = smchip->regbase;
@@ -948,7 +986,11 @@ static void sm501_gpio_set(struct gpio_chip *chip, unsigned offset, int value)
 
 static int sm501_gpio_input(struct gpio_chip *chip, unsigned offset)
 {
+<<<<<<< HEAD
 	struct sm501_gpio_chip *smchip = to_sm501_gpio(chip);
+=======
+	struct sm501_gpio_chip *smchip = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sm501_gpio *smgpio = smchip->ourgpio;
 	void __iomem *regs = smchip->regbase;
 	unsigned long bit = 1 << offset;
@@ -974,7 +1016,11 @@ static int sm501_gpio_input(struct gpio_chip *chip, unsigned offset)
 static int sm501_gpio_output(struct gpio_chip *chip,
 			     unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct sm501_gpio_chip *smchip = to_sm501_gpio(chip);
+=======
+	struct sm501_gpio_chip *smchip = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sm501_gpio *smgpio = smchip->ourgpio;
 	unsigned long bit = 1 << offset;
 	void __iomem *regs = smchip->regbase;
@@ -1006,7 +1052,11 @@ static int sm501_gpio_output(struct gpio_chip *chip,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct gpio_chip gpio_chip_template = {
+=======
+static const struct gpio_chip gpio_chip_template = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ngpio			= 32,
 	.direction_input	= sm501_gpio_input,
 	.direction_output	= sm501_gpio_output,
@@ -1014,7 +1064,11 @@ static struct gpio_chip gpio_chip_template = {
 	.get			= sm501_gpio_get,
 };
 
+<<<<<<< HEAD
 static int __devinit sm501_gpio_register_chip(struct sm501_devdata *sm,
+=======
+static int sm501_gpio_register_chip(struct sm501_devdata *sm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      struct sm501_gpio *gpio,
 					      struct sm501_gpio_chip *chip)
 {
@@ -1039,15 +1093,25 @@ static int __devinit sm501_gpio_register_chip(struct sm501_devdata *sm,
 	gchip->base   = base;
 	chip->ourgpio = gpio;
 
+<<<<<<< HEAD
 	return gpiochip_add(gchip);
 }
 
 static int __devinit sm501_register_gpio(struct sm501_devdata *sm)
+=======
+	return gpiochip_add_data(gchip, chip);
+}
+
+static int sm501_register_gpio(struct sm501_devdata *sm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sm501_gpio *gpio = &sm->gpio;
 	resource_size_t iobase = sm->io_res->start + SM501_GPIO;
 	int ret;
+<<<<<<< HEAD
 	int tmp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(sm->dev, "registering gpio block %08llx\n",
 		(unsigned long long)iobase);
@@ -1055,13 +1119,21 @@ static int __devinit sm501_register_gpio(struct sm501_devdata *sm)
 	spin_lock_init(&gpio->lock);
 
 	gpio->regs_res = request_mem_region(iobase, 0x20, "sm501-gpio");
+<<<<<<< HEAD
 	if (gpio->regs_res == NULL) {
+=======
+	if (!gpio->regs_res) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(sm->dev, "gpio: failed to request region\n");
 		return -ENXIO;
 	}
 
 	gpio->regs = ioremap(iobase, 0x20);
+<<<<<<< HEAD
 	if (gpio->regs == NULL) {
+=======
+	if (!gpio->regs) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(sm->dev, "gpio: failed to remap registers\n");
 		ret = -ENXIO;
 		goto err_claimed;
@@ -1086,18 +1158,26 @@ static int __devinit sm501_register_gpio(struct sm501_devdata *sm)
 	return 0;
 
  err_low_chip:
+<<<<<<< HEAD
 	tmp = gpiochip_remove(&gpio->low.gpio);
 	if (tmp) {
 		dev_err(sm->dev, "cannot remove low chip, cannot tidy up\n");
 		return ret;
 	}
+=======
+	gpiochip_remove(&gpio->low.gpio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  err_mapped:
 	iounmap(gpio->regs);
 
  err_claimed:
+<<<<<<< HEAD
 	release_resource(gpio->regs_res);
 	kfree(gpio->regs_res);
+=======
+	release_mem_region(iobase, 0x20);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1105,11 +1185,16 @@ static int __devinit sm501_register_gpio(struct sm501_devdata *sm)
 static void sm501_gpio_remove(struct sm501_devdata *sm)
 {
 	struct sm501_gpio *gpio = &sm->gpio;
+<<<<<<< HEAD
 	int ret;
+=======
+	resource_size_t iobase = sm->io_res->start + SM501_GPIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!sm->gpio.registered)
 		return;
 
+<<<<<<< HEAD
 	ret = gpiochip_remove(&gpio->low.gpio);
 	if (ret)
 		dev_err(sm->dev, "cannot remove low chip, cannot tidy up\n");
@@ -1129,6 +1214,13 @@ static inline int sm501_gpio_pin2nr(struct sm501_devdata *sm, unsigned int pin)
 	int base = (pin < 32) ? gpio->low.gpio.base : gpio->high.gpio.base;
 
 	return (pin % 32) + base;
+=======
+	gpiochip_remove(&gpio->low.gpio);
+	gpiochip_remove(&gpio->high.gpio);
+
+	iounmap(gpio->regs);
+	release_mem_region(iobase, 0x20);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int sm501_gpio_isregistered(struct sm501_devdata *sm)
@@ -1145,11 +1237,14 @@ static inline void sm501_gpio_remove(struct sm501_devdata *sm)
 {
 }
 
+<<<<<<< HEAD
 static inline int sm501_gpio_pin2nr(struct sm501_devdata *sm, unsigned int pin)
 {
 	return -1;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int sm501_gpio_isregistered(struct sm501_devdata *sm)
 {
 	return 0;
@@ -1161,12 +1256,17 @@ static int sm501_register_gpio_i2c_instance(struct sm501_devdata *sm,
 {
 	struct i2c_gpio_platform_data *icd;
 	struct platform_device *pdev;
+<<<<<<< HEAD
+=======
+	struct gpiod_lookup_table *lookup;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdev = sm501_create_subdev(sm, "i2c-gpio", 0,
 				   sizeof(struct i2c_gpio_platform_data));
 	if (!pdev)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	icd = pdev->dev.platform_data;
 
 	/* We keep the pin_sda and pin_scl fields relative in case the
@@ -1175,6 +1275,26 @@ static int sm501_register_gpio_i2c_instance(struct sm501_devdata *sm,
 
 	icd->sda_pin = sm501_gpio_pin2nr(sm, iic->pin_sda);
 	icd->scl_pin = sm501_gpio_pin2nr(sm, iic->pin_scl);
+=======
+	/* Create a gpiod lookup using gpiochip-local offsets */
+	lookup = devm_kzalloc(&pdev->dev, struct_size(lookup, table, 3),
+			      GFP_KERNEL);
+	if (!lookup)
+		return -ENOMEM;
+
+	lookup->dev_id = "i2c-gpio";
+	lookup->table[0] = (struct gpiod_lookup)
+		GPIO_LOOKUP_IDX(iic->pin_sda < 32 ? "SM501-LOW" : "SM501-HIGH",
+				iic->pin_sda % 32, NULL, 0,
+				GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN);
+	lookup->table[1] = (struct gpiod_lookup)
+		GPIO_LOOKUP_IDX(iic->pin_scl < 32 ? "SM501-LOW" : "SM501-HIGH",
+				iic->pin_scl % 32, NULL, 1,
+				GPIO_ACTIVE_HIGH | GPIO_OPEN_DRAIN);
+	gpiod_add_lookup_table(lookup);
+
+	icd = dev_get_platdata(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	icd->timeout = iic->timeout;
 	icd->udelay = iic->udelay;
 
@@ -1186,9 +1306,15 @@ static int sm501_register_gpio_i2c_instance(struct sm501_devdata *sm,
 
 	pdev->id = iic->bus_num;
 
+<<<<<<< HEAD
 	dev_info(sm->dev, "registering i2c-%d: sda=%d (%d), scl=%d (%d)\n",
 		 iic->bus_num,
 		 icd->sda_pin, iic->pin_sda, icd->scl_pin, iic->pin_scl);
+=======
+	dev_info(sm->dev, "registering i2c-%d: sda=%d, scl=%d\n",
+		 iic->bus_num,
+		 iic->pin_sda, iic->pin_scl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sm501_register_device(sm, pdev);
 }
@@ -1209,13 +1335,22 @@ static int sm501_register_gpio_i2c(struct sm501_devdata *sm,
 	return 0;
 }
 
+<<<<<<< HEAD
 /* sm501_dbg_regs
+=======
+/* dbg_regs_show
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Debug attribute to attach to parent device to show core registers
 */
 
+<<<<<<< HEAD
 static ssize_t sm501_dbg_regs(struct device *dev,
 			      struct device_attribute *attr, char *buff)
+=======
+static ssize_t dbg_regs_show(struct device *dev,
+			     struct device_attribute *attr, char *buff)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sm501_devdata *sm = dev_get_drvdata(dev)	;
 	unsigned int reg;
@@ -1232,7 +1367,11 @@ static ssize_t sm501_dbg_regs(struct device *dev,
 }
 
 
+<<<<<<< HEAD
 static DEVICE_ATTR(dbg_regs, 0666, sm501_dbg_regs, NULL);
+=======
+static DEVICE_ATTR_RO(dbg_regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* sm501_init_reg
  *
@@ -1313,7 +1452,11 @@ static unsigned int sm501_mem_local[] = {
  * Common init code for an SM501
 */
 
+<<<<<<< HEAD
 static int __devinit sm501_init_dev(struct sm501_devdata *sm)
+=======
+static int sm501_init_dev(struct sm501_devdata *sm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sm501_initdata *idata;
 	struct sm501_platdata *pdata;
@@ -1369,7 +1512,11 @@ static int __devinit sm501_init_dev(struct sm501_devdata *sm)
 			sm501_register_gpio(sm);
 	}
 
+<<<<<<< HEAD
 	if (pdata && pdata->gpio_i2c != NULL && pdata->gpio_i2c_nr > 0) {
+=======
+	if (pdata && pdata->gpio_i2c && pdata->gpio_i2c_nr > 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!sm501_gpio_isregistered(sm))
 			dev_err(sm->dev, "no gpio available for i2c gpio.\n");
 		else
@@ -1389,20 +1536,30 @@ static int __devinit sm501_init_dev(struct sm501_devdata *sm)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit sm501_plat_probe(struct platform_device *dev)
+=======
+static int sm501_plat_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sm501_devdata *sm;
 	int ret;
 
+<<<<<<< HEAD
 	sm = kzalloc(sizeof(struct sm501_devdata), GFP_KERNEL);
 	if (sm == NULL) {
 		dev_err(&dev->dev, "no memory for device data\n");
+=======
+	sm = kzalloc(sizeof(*sm), GFP_KERNEL);
+	if (!sm) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto err1;
 	}
 
 	sm->dev = &dev->dev;
 	sm->pdev_id = dev->id;
+<<<<<<< HEAD
 	sm->platdata = dev->dev.platform_data;
 
 	ret = platform_get_irq(dev, 0);
@@ -1410,12 +1567,23 @@ static int __devinit sm501_plat_probe(struct platform_device *dev)
 		dev_err(&dev->dev, "failed to get irq resource\n");
 		goto err_res;
 	}
+=======
+	sm->platdata = dev_get_platdata(&dev->dev);
+
+	ret = platform_get_irq(dev, 0);
+	if (ret < 0)
+		goto err_res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sm->irq = ret;
 
 	sm->io_res = platform_get_resource(dev, IORESOURCE_MEM, 1);
 	sm->mem_res = platform_get_resource(dev, IORESOURCE_MEM, 0);
+<<<<<<< HEAD
 
 	if (sm->io_res == NULL || sm->mem_res == NULL) {
+=======
+	if (!sm->io_res || !sm->mem_res) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&dev->dev, "failed to get IO resource\n");
 		ret = -ENOENT;
 		goto err_res;
@@ -1423,8 +1591,12 @@ static int __devinit sm501_plat_probe(struct platform_device *dev)
 
 	sm->regs_claim = request_mem_region(sm->io_res->start,
 					    0x100, "sm501");
+<<<<<<< HEAD
 
 	if (sm->regs_claim == NULL) {
+=======
+	if (!sm->regs_claim) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&dev->dev, "cannot claim registers\n");
 		ret = -EBUSY;
 		goto err_res;
@@ -1433,18 +1605,35 @@ static int __devinit sm501_plat_probe(struct platform_device *dev)
 	platform_set_drvdata(dev, sm);
 
 	sm->regs = ioremap(sm->io_res->start, resource_size(sm->io_res));
+<<<<<<< HEAD
 
 	if (sm->regs == NULL) {
+=======
+	if (!sm->regs) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&dev->dev, "cannot remap registers\n");
 		ret = -EIO;
 		goto err_claim;
 	}
 
+<<<<<<< HEAD
 	return sm501_init_dev(sm);
 
  err_claim:
 	release_resource(sm->regs_claim);
 	kfree(sm->regs_claim);
+=======
+	ret = sm501_init_dev(sm);
+	if (ret)
+		goto err_unmap;
+
+	return 0;
+
+ err_unmap:
+	iounmap(sm->regs);
+ err_claim:
+	release_mem_region(sm->io_res->start, 0x100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_res:
 	kfree(sm);
  err1:
@@ -1452,15 +1641,22 @@ static int __devinit sm501_plat_probe(struct platform_device *dev)
 
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* power management support */
 
 static void sm501_set_power(struct sm501_devdata *sm, int on)
 {
 	struct sm501_platdata *pd = sm->platdata;
 
+<<<<<<< HEAD
 	if (pd == NULL)
+=======
+	if (!pd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (pd->get_power) {
@@ -1529,10 +1725,13 @@ static int sm501_plat_resume(struct platform_device *pdev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #else
 #define sm501_plat_suspend NULL
 #define sm501_plat_resume NULL
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Initialisation data for PCI devices */
 
@@ -1578,15 +1777,24 @@ static struct sm501_platdata sm501_pci_platdata = {
 	.gpio_base	= -1,
 };
 
+<<<<<<< HEAD
 static int __devinit sm501_pci_probe(struct pci_dev *dev,
+=======
+static int sm501_pci_probe(struct pci_dev *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     const struct pci_device_id *id)
 {
 	struct sm501_devdata *sm;
 	int err;
 
+<<<<<<< HEAD
 	sm = kzalloc(sizeof(struct sm501_devdata), GFP_KERNEL);
 	if (sm == NULL) {
 		dev_err(&dev->dev, "no memory for device data\n");
+=======
+	sm = kzalloc(sizeof(*sm), GFP_KERNEL);
+	if (!sm) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		goto err1;
 	}
@@ -1637,15 +1845,23 @@ static int __devinit sm501_pci_probe(struct pci_dev *dev,
 
 	sm->regs_claim = request_mem_region(sm->io_res->start,
 					    0x100, "sm501");
+<<<<<<< HEAD
 	if (sm->regs_claim == NULL) {
+=======
+	if (!sm->regs_claim) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&dev->dev, "cannot claim registers\n");
 		err= -EBUSY;
 		goto err3;
 	}
 
 	sm->regs = pci_ioremap_bar(dev, 1);
+<<<<<<< HEAD
 
 	if (sm->regs == NULL) {
+=======
+	if (!sm->regs) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&dev->dev, "cannot remap registers\n");
 		err = -EIO;
 		goto err4;
@@ -1655,12 +1871,19 @@ static int __devinit sm501_pci_probe(struct pci_dev *dev,
 	return 0;
 
  err4:
+<<<<<<< HEAD
 	release_resource(sm->regs_claim);
 	kfree(sm->regs_claim);
  err3:
 	pci_disable_device(dev);
  err2:
 	pci_set_drvdata(dev, NULL);
+=======
+	release_mem_region(sm->io_res->start, 0x100);
+ err3:
+	pci_disable_device(dev);
+ err2:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(sm);
  err1:
 	return err;
@@ -1685,13 +1908,18 @@ static void sm501_dev_remove(struct sm501_devdata *sm)
 	sm501_gpio_remove(sm);
 }
 
+<<<<<<< HEAD
 static void __devexit sm501_pci_remove(struct pci_dev *dev)
+=======
+static void sm501_pci_remove(struct pci_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sm501_devdata *sm = pci_get_drvdata(dev);
 
 	sm501_dev_remove(sm);
 	iounmap(sm->regs);
 
+<<<<<<< HEAD
 	release_resource(sm->regs_claim);
 	kfree(sm->regs_claim);
 
@@ -1700,12 +1928,21 @@ static void __devexit sm501_pci_remove(struct pci_dev *dev)
 }
 
 static int sm501_plat_remove(struct platform_device *dev)
+=======
+	release_mem_region(sm->io_res->start, 0x100);
+
+	pci_disable_device(dev);
+}
+
+static void sm501_plat_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sm501_devdata *sm = platform_get_drvdata(dev);
 
 	sm501_dev_remove(sm);
 	iounmap(sm->regs);
 
+<<<<<<< HEAD
 	release_resource(sm->regs_claim);
 	kfree(sm->regs_claim);
 
@@ -1713,6 +1950,12 @@ static int sm501_plat_remove(struct platform_device *dev)
 }
 
 static DEFINE_PCI_DEVICE_TABLE(sm501_pci_tbl) = {
+=======
+	release_mem_region(sm->io_res->start, 0x100);
+}
+
+static const struct pci_device_id sm501_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x126f, 0x0501, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0 },
 	{ 0, },
 };
@@ -1723,19 +1966,32 @@ static struct pci_driver sm501_pci_driver = {
 	.name		= "sm501",
 	.id_table	= sm501_pci_tbl,
 	.probe		= sm501_pci_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(sm501_pci_remove),
+=======
+	.remove		= sm501_pci_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 MODULE_ALIAS("platform:sm501");
 
+<<<<<<< HEAD
 static struct of_device_id __devinitdata of_sm501_match_tbl[] = {
 	{ .compatible = "smi,sm501", },
 	{ /* end */ }
 };
+=======
+static const struct of_device_id of_sm501_match_tbl[] = {
+	{ .compatible = "smi,sm501", },
+	{ /* end */ }
+};
+MODULE_DEVICE_TABLE(of, of_sm501_match_tbl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver sm501_plat_driver = {
 	.driver		= {
 		.name	= "sm501",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.of_match_table = of_sm501_match_tbl,
 	},
@@ -1743,11 +1999,28 @@ static struct platform_driver sm501_plat_driver = {
 	.remove		= sm501_plat_remove,
 	.suspend	= sm501_plat_suspend,
 	.resume		= sm501_plat_resume,
+=======
+		.of_match_table = of_sm501_match_tbl,
+	},
+	.probe		= sm501_plat_probe,
+	.remove_new	= sm501_plat_remove,
+	.suspend	= pm_sleep_ptr(sm501_plat_suspend),
+	.resume		= pm_sleep_ptr(sm501_plat_resume),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init sm501_base_init(void)
 {
+<<<<<<< HEAD
 	platform_driver_register(&sm501_plat_driver);
+=======
+	int ret;
+
+	ret = platform_driver_register(&sm501_plat_driver);
+	if (ret < 0)
+		return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return pci_register_driver(&sm501_pci_driver);
 }
 

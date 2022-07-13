@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for the Freescale Semiconductor MC13783 touchscreen.
  *
@@ -6,10 +10,13 @@
  *
  * Initial development of this code was funded by
  * Phytec Messtechnik GmbH, http://www.phytec.de/
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/platform_device.h>
 #include <linux/mfd/mc13783.h>
@@ -37,7 +44,10 @@ struct mc13783_ts_priv {
 	struct input_dev *idev;
 	struct mc13xxx *mc13xxx;
 	struct delayed_work work;
+<<<<<<< HEAD
 	struct workqueue_struct *workq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int sample[4];
 	struct mc13xxx_ts_platform_data *touch;
 };
@@ -54,7 +64,11 @@ static irqreturn_t mc13783_ts_handler(int irq, void *data)
 	 * be rescheduled for immediate execution here. However the rearm
 	 * delay is HZ / 50 which is acceptable.
 	 */
+<<<<<<< HEAD
 	queue_delayed_work(priv->workq, &priv->work, 0);
+=======
+	schedule_delayed_work(&priv->work, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -106,16 +120,29 @@ static void mc13783_ts_report_sample(struct mc13783_ts_priv *priv)
 
 			dev_dbg(&idev->dev, "report (%d, %d, %d)\n",
 					x1, y1, 0x1000 - cr0);
+<<<<<<< HEAD
 			queue_delayed_work(priv->workq, &priv->work, HZ / 50);
 		} else
 			dev_dbg(&idev->dev, "report release\n");
+=======
+			schedule_delayed_work(&priv->work, HZ / 50);
+		} else {
+			dev_dbg(&idev->dev, "report release\n");
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		input_report_abs(idev, ABS_PRESSURE,
 				cr0 ? 0x1000 - cr0 : cr0);
 		input_report_key(idev, BTN_TOUCH, cr0);
 		input_sync(idev);
+<<<<<<< HEAD
 	} else
 		dev_dbg(&idev->dev, "discard event\n");
+=======
+	} else {
+		dev_dbg(&idev->dev, "discard event\n");
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mc13783_ts_work(struct work_struct *work)
@@ -189,6 +216,7 @@ static int __init mc13783_ts_probe(struct platform_device *pdev)
 		goto err_free_mem;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * We need separate workqueue because mc13783_adc_do_conversion
 	 * uses keventd and thus would deadlock.
@@ -197,6 +225,8 @@ static int __init mc13783_ts_probe(struct platform_device *pdev)
 	if (!priv->workq)
 		goto err_free_mem;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	idev->name = MC13783_TS_NAME;
 	idev->dev.parent = &pdev->dev;
 
@@ -215,20 +245,28 @@ static int __init mc13783_ts_probe(struct platform_device *pdev)
 	if (ret) {
 		dev_err(&pdev->dev,
 			"register input device failed with %d\n", ret);
+<<<<<<< HEAD
 		goto err_destroy_wq;
+=======
+		goto err_free_mem;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_set_drvdata(pdev, priv);
 	return 0;
 
+<<<<<<< HEAD
 err_destroy_wq:
 	destroy_workqueue(priv->workq);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free_mem:
 	input_free_device(idev);
 	kfree(priv);
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit mc13783_ts_remove(struct platform_device *pdev)
 {
 	struct mc13783_ts_priv *priv = platform_get_drvdata(pdev);
@@ -246,10 +284,24 @@ static struct platform_driver mc13783_ts_driver = {
 	.remove		= __devexit_p(mc13783_ts_remove),
 	.driver		= {
 		.owner	= THIS_MODULE,
+=======
+static void mc13783_ts_remove(struct platform_device *pdev)
+{
+	struct mc13783_ts_priv *priv = platform_get_drvdata(pdev);
+
+	input_unregister_device(priv->idev);
+	kfree(priv);
+}
+
+static struct platform_driver mc13783_ts_driver = {
+	.remove_new	= mc13783_ts_remove,
+	.driver		= {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name	= MC13783_TS_NAME,
 	},
 };
 
+<<<<<<< HEAD
 static int __init mc13783_ts_init(void)
 {
 	return platform_driver_probe(&mc13783_ts_driver, &mc13783_ts_probe);
@@ -261,6 +313,9 @@ static void __exit mc13783_ts_exit(void)
 	platform_driver_unregister(&mc13783_ts_driver);
 }
 module_exit(mc13783_ts_exit);
+=======
+module_platform_driver_probe(mc13783_ts_driver, mc13783_ts_probe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("MC13783 input touchscreen driver");
 MODULE_AUTHOR("Sascha Hauer <s.hauer@pengutronix.de>");

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * forcedeth: Ethernet driver for NVIDIA nForce media access controllers.
  *
@@ -15,6 +19,7 @@
  *		IRQ rate fixes, bigendian fixes, cleanups, verification)
  * Copyright (c) 2004,2005,2006,2007,2008,2009 NVIDIA Corporation
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -29,6 +34,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Known bugs:
  * We suspect that on some hardware no TX done interrupts are generated.
  * This means recovery from netif_stop_queue only happens if the hw timer
@@ -59,7 +66,10 @@
 #include <linux/skbuff.h>
 #include <linux/mii.h>
 #include <linux/random.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/if_vlan.h>
 #include <linux/dma-mapping.h>
 #include <linux/slab.h>
@@ -70,8 +80,13 @@
 
 #include <asm/irq.h>
 
+<<<<<<< HEAD
 #define TX_WORK_PER_LOOP  64
 #define RX_WORK_PER_LOOP  64
+=======
+#define TX_WORK_PER_LOOP  NAPI_POLL_WEIGHT
+#define RX_WORK_PER_LOOP  NAPI_POLL_WEIGHT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Hardware access:
@@ -408,7 +423,11 @@ union ring_type {
 
 #define NV_RX_DESCRIPTORVALID	(1<<16)
 #define NV_RX_MISSEDFRAME	(1<<17)
+<<<<<<< HEAD
 #define NV_RX_SUBSTRACT1	(1<<18)
+=======
+#define NV_RX_SUBTRACT1		(1<<18)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NV_RX_ERROR1		(1<<23)
 #define NV_RX_ERROR2		(1<<24)
 #define NV_RX_ERROR3		(1<<25)
@@ -425,7 +444,11 @@ union ring_type {
 #define NV_RX2_CHECKSUM_IP_TCP	(0x14000000)
 #define NV_RX2_CHECKSUM_IP_UDP	(0x18000000)
 #define NV_RX2_DESCRIPTORVALID	(1<<29)
+<<<<<<< HEAD
 #define NV_RX2_SUBSTRACT1	(1<<25)
+=======
+#define NV_RX2_SUBTRACT1	(1<<25)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NV_RX2_ERROR1		(1<<18)
 #define NV_RX2_ERROR2		(1<<19)
 #define NV_RX2_ERROR3		(1<<20)
@@ -727,6 +750,24 @@ struct nv_skb_map {
 	struct nv_skb_map *next_tx_ctx;
 };
 
+<<<<<<< HEAD
+=======
+struct nv_txrx_stats {
+	u64 stat_rx_packets;
+	u64 stat_rx_bytes; /* not always available in HW */
+	u64 stat_rx_missed_errors;
+	u64 stat_rx_dropped;
+	u64 stat_tx_packets; /* not always available in HW */
+	u64 stat_tx_bytes;
+	u64 stat_tx_dropped;
+};
+
+#define nv_txrx_stats_inc(member) \
+		__this_cpu_inc(np->txrx_stats->member)
+#define nv_txrx_stats_add(member, count) \
+		__this_cpu_add(np->txrx_stats->member, (count))
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SMP locking:
  * All hardware access under netdev_priv(dev)->lock, except the performance
@@ -795,9 +836,15 @@ struct fe_priv {
 	/* rx specific fields.
 	 * Locking: Within irq hander or disable_irq+spin_lock(&np->lock);
 	 */
+<<<<<<< HEAD
 	union ring_type get_rx, put_rx, first_rx, last_rx;
 	struct nv_skb_map *get_rx_ctx, *put_rx_ctx;
 	struct nv_skb_map *first_rx_ctx, *last_rx_ctx;
+=======
+	union ring_type get_rx, put_rx, last_rx;
+	struct nv_skb_map *get_rx_ctx, *put_rx_ctx;
+	struct nv_skb_map *last_rx_ctx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nv_skb_map *rx_skb;
 
 	union ring_type rx_ring;
@@ -811,10 +858,14 @@ struct fe_priv {
 
 	/* RX software stats */
 	struct u64_stats_sync swstats_rx_syncp;
+<<<<<<< HEAD
 	u64 stat_rx_packets;
 	u64 stat_rx_bytes; /* not always available in HW */
 	u64 stat_rx_missed_errors;
 	u64 stat_rx_dropped;
+=======
+	struct nv_txrx_stats __percpu *txrx_stats;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* media detection workaround.
 	 * Locking: Within irq hander or disable_irq+spin_lock(&np->lock);
@@ -824,9 +875,15 @@ struct fe_priv {
 	/*
 	 * tx specific fields.
 	 */
+<<<<<<< HEAD
 	union ring_type get_tx, put_tx, first_tx, last_tx;
 	struct nv_skb_map *get_tx_ctx, *put_tx_ctx;
 	struct nv_skb_map *first_tx_ctx, *last_tx_ctx;
+=======
+	union ring_type get_tx, put_tx, last_tx;
+	struct nv_skb_map *get_tx_ctx, *put_tx_ctx;
+	struct nv_skb_map *last_tx_ctx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nv_skb_map *tx_skb;
 
 	union ring_type tx_ring;
@@ -840,9 +897,12 @@ struct fe_priv {
 
 	/* TX software stats */
 	struct u64_stats_sync swstats_tx_syncp;
+<<<<<<< HEAD
 	u64 stat_tx_packets; /* not always available in HW */
 	u64 stat_tx_bytes;
 	u64 stat_tx_dropped;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* msi/msi-x fields */
 	u32 msi_flags;
@@ -1026,12 +1086,27 @@ static void free_rings(struct net_device *dev)
 
 	if (!nv_optimized(np)) {
 		if (np->rx_ring.orig)
+<<<<<<< HEAD
 			pci_free_consistent(np->pci_dev, sizeof(struct ring_desc) * (np->rx_ring_size + np->tx_ring_size),
 					    np->rx_ring.orig, np->ring_addr);
 	} else {
 		if (np->rx_ring.ex)
 			pci_free_consistent(np->pci_dev, sizeof(struct ring_desc_ex) * (np->rx_ring_size + np->tx_ring_size),
 					    np->rx_ring.ex, np->ring_addr);
+=======
+			dma_free_coherent(&np->pci_dev->dev,
+					  sizeof(struct ring_desc) *
+					  (np->rx_ring_size +
+					  np->tx_ring_size),
+					  np->rx_ring.orig, np->ring_addr);
+	} else {
+		if (np->rx_ring.ex)
+			dma_free_coherent(&np->pci_dev->dev,
+					  sizeof(struct ring_desc_ex) *
+					  (np->rx_ring_size +
+					  np->tx_ring_size),
+					  np->rx_ring.ex, np->ring_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	kfree(np->rx_skb);
 	kfree(np->tx_skb);
@@ -1042,8 +1117,12 @@ static int using_multi_irqs(struct net_device *dev)
 	struct fe_priv *np = get_nvpriv(dev);
 
 	if (!(np->msi_flags & NV_MSI_X_ENABLED) ||
+<<<<<<< HEAD
 	    ((np->msi_flags & NV_MSI_X_ENABLED) &&
 	     ((np->msi_flags & NV_MSI_X_VECTORS_MASK) == 0x1)))
+=======
+	    ((np->msi_flags & NV_MSI_X_VECTORS_MASK) == 0x1))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	else
 		return 1;
@@ -1483,7 +1562,11 @@ static int phy_init(struct net_device *dev)
 	}
 
 	/* phy vendor specific configuration */
+<<<<<<< HEAD
 	if ((np->phy_oui == PHY_OUI_CICADA)) {
+=======
+	if (np->phy_oui == PHY_OUI_CICADA) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (init_cicada(dev, np, phyinterface)) {
 			netdev_info(dev, "%s: phy init failed\n",
 				    pci_name(np->pci_dev));
@@ -1665,11 +1748,15 @@ static void nv_update_stats(struct net_device *dev)
 	struct fe_priv *np = netdev_priv(dev);
 	u8 __iomem *base = get_hwbase(dev);
 
+<<<<<<< HEAD
 	/* If it happens that this is run in top-half context, then
 	 * replace the spin_lock of hwstats_lock with
 	 * spin_lock_irqsave() in calling functions. */
 	WARN_ONCE(in_irq(), "forcedeth: estats spin_lock(_bh) from top-half");
 	assert_spin_locked(&np->hwstats_lock);
+=======
+	lockdep_assert_held(&np->hwstats_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* query hardware */
 	np->estats.tx_bytes += readl(base + NvRegTxCnt);
@@ -1729,6 +1816,7 @@ static void nv_update_stats(struct net_device *dev)
 	}
 }
 
+<<<<<<< HEAD
 /*
  * nv_get_stats64: dev->ndo_get_stats64 function
  * Get latest stats value from the nic.
@@ -1736,12 +1824,58 @@ static void nv_update_stats(struct net_device *dev)
  * only synchronized against unregister_netdevice.
  */
 static struct rtnl_link_stats64*
+=======
+static void nv_get_stats(int cpu, struct fe_priv *np,
+			 struct rtnl_link_stats64 *storage)
+{
+	struct nv_txrx_stats *src = per_cpu_ptr(np->txrx_stats, cpu);
+	unsigned int syncp_start;
+	u64 rx_packets, rx_bytes, rx_dropped, rx_missed_errors;
+	u64 tx_packets, tx_bytes, tx_dropped;
+
+	do {
+		syncp_start = u64_stats_fetch_begin(&np->swstats_rx_syncp);
+		rx_packets       = src->stat_rx_packets;
+		rx_bytes         = src->stat_rx_bytes;
+		rx_dropped       = src->stat_rx_dropped;
+		rx_missed_errors = src->stat_rx_missed_errors;
+	} while (u64_stats_fetch_retry(&np->swstats_rx_syncp, syncp_start));
+
+	storage->rx_packets       += rx_packets;
+	storage->rx_bytes         += rx_bytes;
+	storage->rx_dropped       += rx_dropped;
+	storage->rx_missed_errors += rx_missed_errors;
+
+	do {
+		syncp_start = u64_stats_fetch_begin(&np->swstats_tx_syncp);
+		tx_packets  = src->stat_tx_packets;
+		tx_bytes    = src->stat_tx_bytes;
+		tx_dropped  = src->stat_tx_dropped;
+	} while (u64_stats_fetch_retry(&np->swstats_tx_syncp, syncp_start));
+
+	storage->tx_packets += tx_packets;
+	storage->tx_bytes   += tx_bytes;
+	storage->tx_dropped += tx_dropped;
+}
+
+/*
+ * nv_get_stats64: dev->ndo_get_stats64 function
+ * Get latest stats value from the nic.
+ * Called with rcu_read_lock() held -
+ * only synchronized against unregister_netdevice.
+ */
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 nv_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *storage)
 	__acquires(&netdev_priv(dev)->hwstats_lock)
 	__releases(&netdev_priv(dev)->hwstats_lock)
 {
 	struct fe_priv *np = netdev_priv(dev);
+<<<<<<< HEAD
 	unsigned int syncp_start;
+=======
+	int cpu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Note: because HW stats are not always available and for
@@ -1754,6 +1888,7 @@ nv_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *storage)
 	 */
 
 	/* software stats */
+<<<<<<< HEAD
 	do {
 		syncp_start = u64_stats_fetch_begin_irq(&np->swstats_rx_syncp);
 		storage->rx_packets       = np->stat_rx_packets;
@@ -1768,6 +1903,10 @@ nv_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *storage)
 		storage->tx_bytes   = np->stat_tx_bytes;
 		storage->tx_dropped = np->stat_tx_dropped;
 	} while (u64_stats_fetch_retry_irq(&np->swstats_tx_syncp, syncp_start));
+=======
+	for_each_online_cpu(cpu)
+		nv_get_stats(cpu, np, storage);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If the nic supports hw counters then retrieve latest values */
 	if (np->driver_data & DEV_HAS_STATISTICS_V123) {
@@ -1795,8 +1934,11 @@ nv_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *storage)
 
 		spin_unlock_bh(&np->hwstats_lock);
 	}
+<<<<<<< HEAD
 
 	return storage;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1810,28 +1952,56 @@ static int nv_alloc_rx(struct net_device *dev)
 	struct ring_desc *less_rx;
 
 	less_rx = np->get_rx.orig;
+<<<<<<< HEAD
 	if (less_rx-- == np->first_rx.orig)
+=======
+	if (less_rx-- == np->rx_ring.orig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		less_rx = np->last_rx.orig;
 
 	while (np->put_rx.orig != less_rx) {
 		struct sk_buff *skb = netdev_alloc_skb(dev, np->rx_buf_sz + NV_RX_ALLOC_PAD);
+<<<<<<< HEAD
 		if (skb) {
 			np->put_rx_ctx->skb = skb;
 			np->put_rx_ctx->dma = pci_map_single(np->pci_dev,
 							     skb->data,
 							     skb_tailroom(skb),
 							     PCI_DMA_FROMDEVICE);
+=======
+		if (likely(skb)) {
+			np->put_rx_ctx->skb = skb;
+			np->put_rx_ctx->dma = dma_map_single(&np->pci_dev->dev,
+							     skb->data,
+							     skb_tailroom(skb),
+							     DMA_FROM_DEVICE);
+			if (unlikely(dma_mapping_error(&np->pci_dev->dev,
+						       np->put_rx_ctx->dma))) {
+				kfree_skb(skb);
+				goto packet_dropped;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			np->put_rx_ctx->dma_len = skb_tailroom(skb);
 			np->put_rx.orig->buf = cpu_to_le32(np->put_rx_ctx->dma);
 			wmb();
 			np->put_rx.orig->flaglen = cpu_to_le32(np->rx_buf_sz | NV_RX_AVAIL);
 			if (unlikely(np->put_rx.orig++ == np->last_rx.orig))
+<<<<<<< HEAD
 				np->put_rx.orig = np->first_rx.orig;
 			if (unlikely(np->put_rx_ctx++ == np->last_rx_ctx))
 				np->put_rx_ctx = np->first_rx_ctx;
 		} else {
 			u64_stats_update_begin(&np->swstats_rx_syncp);
 			np->stat_rx_dropped++;
+=======
+				np->put_rx.orig = np->rx_ring.orig;
+			if (unlikely(np->put_rx_ctx++ == np->last_rx_ctx))
+				np->put_rx_ctx = np->rx_skb;
+		} else {
+packet_dropped:
+			u64_stats_update_begin(&np->swstats_rx_syncp);
+			nv_txrx_stats_inc(stat_rx_dropped);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u64_stats_update_end(&np->swstats_rx_syncp);
 			return 1;
 		}
@@ -1845,29 +2015,57 @@ static int nv_alloc_rx_optimized(struct net_device *dev)
 	struct ring_desc_ex *less_rx;
 
 	less_rx = np->get_rx.ex;
+<<<<<<< HEAD
 	if (less_rx-- == np->first_rx.ex)
+=======
+	if (less_rx-- == np->rx_ring.ex)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		less_rx = np->last_rx.ex;
 
 	while (np->put_rx.ex != less_rx) {
 		struct sk_buff *skb = netdev_alloc_skb(dev, np->rx_buf_sz + NV_RX_ALLOC_PAD);
+<<<<<<< HEAD
 		if (skb) {
 			np->put_rx_ctx->skb = skb;
 			np->put_rx_ctx->dma = pci_map_single(np->pci_dev,
 							     skb->data,
 							     skb_tailroom(skb),
 							     PCI_DMA_FROMDEVICE);
+=======
+		if (likely(skb)) {
+			np->put_rx_ctx->skb = skb;
+			np->put_rx_ctx->dma = dma_map_single(&np->pci_dev->dev,
+							     skb->data,
+							     skb_tailroom(skb),
+							     DMA_FROM_DEVICE);
+			if (unlikely(dma_mapping_error(&np->pci_dev->dev,
+						       np->put_rx_ctx->dma))) {
+				kfree_skb(skb);
+				goto packet_dropped;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			np->put_rx_ctx->dma_len = skb_tailroom(skb);
 			np->put_rx.ex->bufhigh = cpu_to_le32(dma_high(np->put_rx_ctx->dma));
 			np->put_rx.ex->buflow = cpu_to_le32(dma_low(np->put_rx_ctx->dma));
 			wmb();
 			np->put_rx.ex->flaglen = cpu_to_le32(np->rx_buf_sz | NV_RX2_AVAIL);
 			if (unlikely(np->put_rx.ex++ == np->last_rx.ex))
+<<<<<<< HEAD
 				np->put_rx.ex = np->first_rx.ex;
 			if (unlikely(np->put_rx_ctx++ == np->last_rx_ctx))
 				np->put_rx_ctx = np->first_rx_ctx;
 		} else {
 			u64_stats_update_begin(&np->swstats_rx_syncp);
 			np->stat_rx_dropped++;
+=======
+				np->put_rx.ex = np->rx_ring.ex;
+			if (unlikely(np->put_rx_ctx++ == np->last_rx_ctx))
+				np->put_rx_ctx = np->rx_skb;
+		} else {
+packet_dropped:
+			u64_stats_update_begin(&np->swstats_rx_syncp);
+			nv_txrx_stats_inc(stat_rx_dropped);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u64_stats_update_end(&np->swstats_rx_syncp);
 			return 1;
 		}
@@ -1876,10 +2074,16 @@ static int nv_alloc_rx_optimized(struct net_device *dev)
 }
 
 /* If rx bufs are exhausted called after 50ms to attempt to refresh */
+<<<<<<< HEAD
 static void nv_do_rx_refill(unsigned long data)
 {
 	struct net_device *dev = (struct net_device *) data;
 	struct fe_priv *np = netdev_priv(dev);
+=======
+static void nv_do_rx_refill(struct timer_list *t)
+{
+	struct fe_priv *np = from_timer(np, t, oom_kick);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Just reschedule NAPI rx processing */
 	napi_schedule(&np->napi);
@@ -1890,13 +2094,23 @@ static void nv_init_rx(struct net_device *dev)
 	struct fe_priv *np = netdev_priv(dev);
 	int i;
 
+<<<<<<< HEAD
 	np->get_rx = np->put_rx = np->first_rx = np->rx_ring;
+=======
+	np->get_rx = np->rx_ring;
+	np->put_rx = np->rx_ring;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!nv_optimized(np))
 		np->last_rx.orig = &np->rx_ring.orig[np->rx_ring_size-1];
 	else
 		np->last_rx.ex = &np->rx_ring.ex[np->rx_ring_size-1];
+<<<<<<< HEAD
 	np->get_rx_ctx = np->put_rx_ctx = np->first_rx_ctx = np->rx_skb;
+=======
+	np->get_rx_ctx = np->rx_skb;
+	np->put_rx_ctx = np->rx_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np->last_rx_ctx = &np->rx_skb[np->rx_ring_size-1];
 
 	for (i = 0; i < np->rx_ring_size; i++) {
@@ -1919,13 +2133,23 @@ static void nv_init_tx(struct net_device *dev)
 	struct fe_priv *np = netdev_priv(dev);
 	int i;
 
+<<<<<<< HEAD
 	np->get_tx = np->put_tx = np->first_tx = np->tx_ring;
+=======
+	np->get_tx = np->tx_ring;
+	np->put_tx = np->tx_ring;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!nv_optimized(np))
 		np->last_tx.orig = &np->tx_ring.orig[np->tx_ring_size-1];
 	else
 		np->last_tx.ex = &np->tx_ring.ex[np->tx_ring_size-1];
+<<<<<<< HEAD
 	np->get_tx_ctx = np->put_tx_ctx = np->first_tx_ctx = np->tx_skb;
+=======
+	np->get_tx_ctx = np->tx_skb;
+	np->put_tx_ctx = np->tx_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np->last_tx_ctx = &np->tx_skb[np->tx_ring_size-1];
 	netdev_reset_queue(np->dev);
 	np->tx_pkts_in_progress = 0;
@@ -1969,6 +2193,7 @@ static void nv_unmap_txskb(struct fe_priv *np, struct nv_skb_map *tx_skb)
 {
 	if (tx_skb->dma) {
 		if (tx_skb->dma_single)
+<<<<<<< HEAD
 			pci_unmap_single(np->pci_dev, tx_skb->dma,
 					 tx_skb->dma_len,
 					 PCI_DMA_TODEVICE);
@@ -1976,6 +2201,15 @@ static void nv_unmap_txskb(struct fe_priv *np, struct nv_skb_map *tx_skb)
 			pci_unmap_page(np->pci_dev, tx_skb->dma,
 				       tx_skb->dma_len,
 				       PCI_DMA_TODEVICE);
+=======
+			dma_unmap_single(&np->pci_dev->dev, tx_skb->dma,
+					 tx_skb->dma_len,
+					 DMA_TO_DEVICE);
+		else
+			dma_unmap_page(&np->pci_dev->dev, tx_skb->dma,
+				       tx_skb->dma_len,
+				       DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tx_skb->dma = 0;
 	}
 }
@@ -2008,7 +2242,11 @@ static void nv_drain_tx(struct net_device *dev)
 		}
 		if (nv_release_txskb(np, &np->tx_skb[i])) {
 			u64_stats_update_begin(&np->swstats_tx_syncp);
+<<<<<<< HEAD
 			np->stat_tx_dropped++;
+=======
+			nv_txrx_stats_inc(stat_tx_dropped);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u64_stats_update_end(&np->swstats_tx_syncp);
 		}
 		np->tx_skb[i].dma = 0;
@@ -2039,10 +2277,17 @@ static void nv_drain_rx(struct net_device *dev)
 		}
 		wmb();
 		if (np->rx_skb[i].skb) {
+<<<<<<< HEAD
 			pci_unmap_single(np->pci_dev, np->rx_skb[i].dma,
 					 (skb_end_pointer(np->rx_skb[i].skb) -
 					  np->rx_skb[i].skb->data),
 					 PCI_DMA_FROMDEVICE);
+=======
+			dma_unmap_single(&np->pci_dev->dev, np->rx_skb[i].dma,
+					 (skb_end_pointer(np->rx_skb[i].skb) -
+					 np->rx_skb[i].skb->data),
+					 DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(np->rx_skb[i].skb);
 			np->rx_skb[i].skb = NULL;
 		}
@@ -2188,7 +2433,13 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct ring_desc *start_tx;
 	struct ring_desc *prev_tx;
 	struct nv_skb_map *prev_tx_ctx;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+	struct nv_skb_map *tmp_tx_ctx = NULL, *start_tx_ctx = NULL;
+	unsigned long flags;
+	netdev_tx_t ret = NETDEV_TX_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* add fragments to entries count */
 	for (i = 0; i < fragments; i++) {
@@ -2204,7 +2455,16 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		netif_stop_queue(dev);
 		np->tx_stop = 1;
 		spin_unlock_irqrestore(&np->lock, flags);
+<<<<<<< HEAD
 		return NETDEV_TX_BUSY;
+=======
+
+		/* When normal packets and/or xmit_more packets fill up
+		 * tx_desc, it is necessary to trigger NIC tx reg.
+		 */
+		ret = NETDEV_TX_BUSY;
+		goto txkick;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&np->lock, flags);
 
@@ -2212,11 +2472,30 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	/* setup the header buffer */
 	do {
+<<<<<<< HEAD
 		prev_tx = put_tx;
 		prev_tx_ctx = np->put_tx_ctx;
 		bcnt = (size > NV_TX2_TSO_MAX_SIZE) ? NV_TX2_TSO_MAX_SIZE : size;
 		np->put_tx_ctx->dma = pci_map_single(np->pci_dev, skb->data + offset, bcnt,
 						PCI_DMA_TODEVICE);
+=======
+		bcnt = (size > NV_TX2_TSO_MAX_SIZE) ? NV_TX2_TSO_MAX_SIZE : size;
+		np->put_tx_ctx->dma = dma_map_single(&np->pci_dev->dev,
+						     skb->data + offset, bcnt,
+						     DMA_TO_DEVICE);
+		if (unlikely(dma_mapping_error(&np->pci_dev->dev,
+					       np->put_tx_ctx->dma))) {
+			/* on DMA mapping error - drop the packet */
+			dev_kfree_skb_any(skb);
+			u64_stats_update_begin(&np->swstats_tx_syncp);
+			nv_txrx_stats_inc(stat_tx_dropped);
+			u64_stats_update_end(&np->swstats_tx_syncp);
+
+			ret = NETDEV_TX_OK;
+
+			goto dma_error;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np->put_tx_ctx->dma_len = bcnt;
 		np->put_tx_ctx->dma_single = 1;
 		put_tx->buf = cpu_to_le32(np->put_tx_ctx->dma);
@@ -2226,9 +2505,15 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		offset += bcnt;
 		size -= bcnt;
 		if (unlikely(put_tx++ == np->last_tx.orig))
+<<<<<<< HEAD
 			put_tx = np->first_tx.orig;
 		if (unlikely(np->put_tx_ctx++ == np->last_tx_ctx))
 			np->put_tx_ctx = np->first_tx_ctx;
+=======
+			put_tx = np->tx_ring.orig;
+		if (unlikely(np->put_tx_ctx++ == np->last_tx_ctx))
+			np->put_tx_ctx = np->tx_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (size);
 
 	/* setup the fragments */
@@ -2238,14 +2523,43 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		offset = 0;
 
 		do {
+<<<<<<< HEAD
 			prev_tx = put_tx;
 			prev_tx_ctx = np->put_tx_ctx;
+=======
+			if (!start_tx_ctx)
+				start_tx_ctx = tmp_tx_ctx = np->put_tx_ctx;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bcnt = (frag_size > NV_TX2_TSO_MAX_SIZE) ? NV_TX2_TSO_MAX_SIZE : frag_size;
 			np->put_tx_ctx->dma = skb_frag_dma_map(
 							&np->pci_dev->dev,
 							frag, offset,
 							bcnt,
 							DMA_TO_DEVICE);
+<<<<<<< HEAD
+=======
+			if (unlikely(dma_mapping_error(&np->pci_dev->dev,
+						       np->put_tx_ctx->dma))) {
+
+				/* Unwind the mapped fragments */
+				do {
+					nv_unmap_txskb(np, start_tx_ctx);
+					if (unlikely(tmp_tx_ctx++ == np->last_tx_ctx))
+						tmp_tx_ctx = np->tx_skb;
+				} while (tmp_tx_ctx != np->put_tx_ctx);
+				dev_kfree_skb_any(skb);
+				np->put_tx_ctx = start_tx_ctx;
+				u64_stats_update_begin(&np->swstats_tx_syncp);
+				nv_txrx_stats_inc(stat_tx_dropped);
+				u64_stats_update_end(&np->swstats_tx_syncp);
+
+				ret = NETDEV_TX_OK;
+
+				goto dma_error;
+			}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			np->put_tx_ctx->dma_len = bcnt;
 			np->put_tx_ctx->dma_single = 0;
 			put_tx->buf = cpu_to_le32(np->put_tx_ctx->dma);
@@ -2254,12 +2568,31 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
 			offset += bcnt;
 			frag_size -= bcnt;
 			if (unlikely(put_tx++ == np->last_tx.orig))
+<<<<<<< HEAD
 				put_tx = np->first_tx.orig;
 			if (unlikely(np->put_tx_ctx++ == np->last_tx_ctx))
 				np->put_tx_ctx = np->first_tx_ctx;
 		} while (frag_size);
 	}
 
+=======
+				put_tx = np->tx_ring.orig;
+			if (unlikely(np->put_tx_ctx++ == np->last_tx_ctx))
+				np->put_tx_ctx = np->tx_skb;
+		} while (frag_size);
+	}
+
+	if (unlikely(put_tx == np->tx_ring.orig))
+		prev_tx = np->last_tx.orig;
+	else
+		prev_tx = put_tx - 1;
+
+	if (unlikely(np->put_tx_ctx == np->tx_skb))
+		prev_tx_ctx = np->last_tx_ctx;
+	else
+		prev_tx_ctx = np->put_tx_ctx - 1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set last fragment flag  */
 	prev_tx->flaglen |= cpu_to_le32(tx_flags_extra);
 
@@ -2279,12 +2612,29 @@ static netdev_tx_t nv_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	netdev_sent_queue(np->dev, skb->len);
 
+<<<<<<< HEAD
+=======
+	skb_tx_timestamp(skb);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np->put_tx.orig = put_tx;
 
 	spin_unlock_irqrestore(&np->lock, flags);
 
+<<<<<<< HEAD
 	writel(NVREG_TXRXCTL_KICK|np->txrxctl_bits, get_hwbase(dev) + NvRegTxRxControl);
 	return NETDEV_TX_OK;
+=======
+txkick:
+	if (netif_queue_stopped(dev) || !netdev_xmit_more()) {
+		u32 txrxctl_kick;
+dma_error:
+		txrxctl_kick = NVREG_TXRXCTL_KICK | np->txrxctl_bits;
+		writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
+	}
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
@@ -2304,8 +2654,15 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
 	struct ring_desc_ex *start_tx;
 	struct ring_desc_ex *prev_tx;
 	struct nv_skb_map *prev_tx_ctx;
+<<<<<<< HEAD
 	struct nv_skb_map *start_tx_ctx;
 	unsigned long flags;
+=======
+	struct nv_skb_map *start_tx_ctx = NULL;
+	struct nv_skb_map *tmp_tx_ctx = NULL;
+	unsigned long flags;
+	netdev_tx_t ret = NETDEV_TX_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* add fragments to entries count */
 	for (i = 0; i < fragments; i++) {
@@ -2321,7 +2678,17 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
 		netif_stop_queue(dev);
 		np->tx_stop = 1;
 		spin_unlock_irqrestore(&np->lock, flags);
+<<<<<<< HEAD
 		return NETDEV_TX_BUSY;
+=======
+
+		/* When normal packets and/or xmit_more packets fill up
+		 * tx_desc, it is necessary to trigger NIC tx reg.
+		 */
+		ret = NETDEV_TX_BUSY;
+
+		goto txkick;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&np->lock, flags);
 
@@ -2330,11 +2697,30 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
 
 	/* setup the header buffer */
 	do {
+<<<<<<< HEAD
 		prev_tx = put_tx;
 		prev_tx_ctx = np->put_tx_ctx;
 		bcnt = (size > NV_TX2_TSO_MAX_SIZE) ? NV_TX2_TSO_MAX_SIZE : size;
 		np->put_tx_ctx->dma = pci_map_single(np->pci_dev, skb->data + offset, bcnt,
 						PCI_DMA_TODEVICE);
+=======
+		bcnt = (size > NV_TX2_TSO_MAX_SIZE) ? NV_TX2_TSO_MAX_SIZE : size;
+		np->put_tx_ctx->dma = dma_map_single(&np->pci_dev->dev,
+						     skb->data + offset, bcnt,
+						     DMA_TO_DEVICE);
+		if (unlikely(dma_mapping_error(&np->pci_dev->dev,
+					       np->put_tx_ctx->dma))) {
+			/* on DMA mapping error - drop the packet */
+			dev_kfree_skb_any(skb);
+			u64_stats_update_begin(&np->swstats_tx_syncp);
+			nv_txrx_stats_inc(stat_tx_dropped);
+			u64_stats_update_end(&np->swstats_tx_syncp);
+
+			ret = NETDEV_TX_OK;
+
+			goto dma_error;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np->put_tx_ctx->dma_len = bcnt;
 		np->put_tx_ctx->dma_single = 1;
 		put_tx->bufhigh = cpu_to_le32(dma_high(np->put_tx_ctx->dma));
@@ -2345,9 +2731,15 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
 		offset += bcnt;
 		size -= bcnt;
 		if (unlikely(put_tx++ == np->last_tx.ex))
+<<<<<<< HEAD
 			put_tx = np->first_tx.ex;
 		if (unlikely(np->put_tx_ctx++ == np->last_tx_ctx))
 			np->put_tx_ctx = np->first_tx_ctx;
+=======
+			put_tx = np->tx_ring.ex;
+		if (unlikely(np->put_tx_ctx++ == np->last_tx_ctx))
+			np->put_tx_ctx = np->tx_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (size);
 
 	/* setup the fragments */
@@ -2357,14 +2749,43 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
 		offset = 0;
 
 		do {
+<<<<<<< HEAD
 			prev_tx = put_tx;
 			prev_tx_ctx = np->put_tx_ctx;
 			bcnt = (frag_size > NV_TX2_TSO_MAX_SIZE) ? NV_TX2_TSO_MAX_SIZE : frag_size;
+=======
+			bcnt = (frag_size > NV_TX2_TSO_MAX_SIZE) ? NV_TX2_TSO_MAX_SIZE : frag_size;
+			if (!start_tx_ctx)
+				start_tx_ctx = tmp_tx_ctx = np->put_tx_ctx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			np->put_tx_ctx->dma = skb_frag_dma_map(
 							&np->pci_dev->dev,
 							frag, offset,
 							bcnt,
 							DMA_TO_DEVICE);
+<<<<<<< HEAD
+=======
+
+			if (unlikely(dma_mapping_error(&np->pci_dev->dev,
+						       np->put_tx_ctx->dma))) {
+
+				/* Unwind the mapped fragments */
+				do {
+					nv_unmap_txskb(np, start_tx_ctx);
+					if (unlikely(tmp_tx_ctx++ == np->last_tx_ctx))
+						tmp_tx_ctx = np->tx_skb;
+				} while (tmp_tx_ctx != np->put_tx_ctx);
+				dev_kfree_skb_any(skb);
+				np->put_tx_ctx = start_tx_ctx;
+				u64_stats_update_begin(&np->swstats_tx_syncp);
+				nv_txrx_stats_inc(stat_tx_dropped);
+				u64_stats_update_end(&np->swstats_tx_syncp);
+
+				ret = NETDEV_TX_OK;
+
+				goto dma_error;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			np->put_tx_ctx->dma_len = bcnt;
 			np->put_tx_ctx->dma_single = 0;
 			put_tx->bufhigh = cpu_to_le32(dma_high(np->put_tx_ctx->dma));
@@ -2374,12 +2795,31 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
 			offset += bcnt;
 			frag_size -= bcnt;
 			if (unlikely(put_tx++ == np->last_tx.ex))
+<<<<<<< HEAD
 				put_tx = np->first_tx.ex;
 			if (unlikely(np->put_tx_ctx++ == np->last_tx_ctx))
 				np->put_tx_ctx = np->first_tx_ctx;
 		} while (frag_size);
 	}
 
+=======
+				put_tx = np->tx_ring.ex;
+			if (unlikely(np->put_tx_ctx++ == np->last_tx_ctx))
+				np->put_tx_ctx = np->tx_skb;
+		} while (frag_size);
+	}
+
+	if (unlikely(put_tx == np->tx_ring.ex))
+		prev_tx = np->last_tx.ex;
+	else
+		prev_tx = put_tx - 1;
+
+	if (unlikely(np->put_tx_ctx == np->tx_skb))
+		prev_tx_ctx = np->last_tx_ctx;
+	else
+		prev_tx_ctx = np->put_tx_ctx - 1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set last fragment flag  */
 	prev_tx->flaglen |= cpu_to_le32(NV_TX2_LASTPACKET);
 
@@ -2393,9 +2833,15 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
 			 NV_TX2_CHECKSUM_L3 | NV_TX2_CHECKSUM_L4 : 0;
 
 	/* vlan tag */
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb))
 		start_tx->txvlan = cpu_to_le32(NV_TX3_VLAN_TAG_PRESENT |
 					vlan_tx_tag_get(skb));
+=======
+	if (skb_vlan_tag_present(skb))
+		start_tx->txvlan = cpu_to_le32(NV_TX3_VLAN_TAG_PRESENT |
+					skb_vlan_tag_get(skb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		start_tx->txvlan = 0;
 
@@ -2426,12 +2872,29 @@ static netdev_tx_t nv_start_xmit_optimized(struct sk_buff *skb,
 
 	netdev_sent_queue(np->dev, skb->len);
 
+<<<<<<< HEAD
+=======
+	skb_tx_timestamp(skb);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np->put_tx.ex = put_tx;
 
 	spin_unlock_irqrestore(&np->lock, flags);
 
+<<<<<<< HEAD
 	writel(NVREG_TXRXCTL_KICK|np->txrxctl_bits, get_hwbase(dev) + NvRegTxRxControl);
 	return NETDEV_TX_OK;
+=======
+txkick:
+	if (netif_queue_stopped(dev) || !netdev_xmit_more()) {
+		u32 txrxctl_kick;
+dma_error:
+		txrxctl_kick = NVREG_TXRXCTL_KICK | np->txrxctl_bits;
+		writel(txrxctl_kick, get_hwbase(dev) + NvRegTxRxControl);
+	}
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void nv_tx_flip_ownership(struct net_device *dev)
@@ -2473,14 +2936,27 @@ static int nv_tx_done(struct net_device *dev, int limit)
 
 		if (np->desc_ver == DESC_VER_1) {
 			if (flags & NV_TX_LASTPACKET) {
+<<<<<<< HEAD
 				if (flags & NV_TX_ERROR) {
+=======
+				if (unlikely(flags & NV_TX_ERROR)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if ((flags & NV_TX_RETRYERROR)
 					    && !(flags & NV_TX_RETRYCOUNT_MASK))
 						nv_legacybackoff_reseed(dev);
 				} else {
+<<<<<<< HEAD
 					u64_stats_update_begin(&np->swstats_tx_syncp);
 					np->stat_tx_packets++;
 					np->stat_tx_bytes += np->get_tx_ctx->skb->len;
+=======
+					unsigned int len;
+
+					u64_stats_update_begin(&np->swstats_tx_syncp);
+					nv_txrx_stats_inc(stat_tx_packets);
+					len = np->get_tx_ctx->skb->len;
+					nv_txrx_stats_add(stat_tx_bytes, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					u64_stats_update_end(&np->swstats_tx_syncp);
 				}
 				bytes_compl += np->get_tx_ctx->skb->len;
@@ -2490,14 +2966,27 @@ static int nv_tx_done(struct net_device *dev, int limit)
 			}
 		} else {
 			if (flags & NV_TX2_LASTPACKET) {
+<<<<<<< HEAD
 				if (flags & NV_TX2_ERROR) {
+=======
+				if (unlikely(flags & NV_TX2_ERROR)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if ((flags & NV_TX2_RETRYERROR)
 					    && !(flags & NV_TX2_RETRYCOUNT_MASK))
 						nv_legacybackoff_reseed(dev);
 				} else {
+<<<<<<< HEAD
 					u64_stats_update_begin(&np->swstats_tx_syncp);
 					np->stat_tx_packets++;
 					np->stat_tx_bytes += np->get_tx_ctx->skb->len;
+=======
+					unsigned int len;
+
+					u64_stats_update_begin(&np->swstats_tx_syncp);
+					nv_txrx_stats_inc(stat_tx_packets);
+					len = np->get_tx_ctx->skb->len;
+					nv_txrx_stats_add(stat_tx_bytes, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					u64_stats_update_end(&np->swstats_tx_syncp);
 				}
 				bytes_compl += np->get_tx_ctx->skb->len;
@@ -2507,9 +2996,15 @@ static int nv_tx_done(struct net_device *dev, int limit)
 			}
 		}
 		if (unlikely(np->get_tx.orig++ == np->last_tx.orig))
+<<<<<<< HEAD
 			np->get_tx.orig = np->first_tx.orig;
 		if (unlikely(np->get_tx_ctx++ == np->last_tx_ctx))
 			np->get_tx_ctx = np->first_tx_ctx;
+=======
+			np->get_tx.orig = np->tx_ring.orig;
+		if (unlikely(np->get_tx_ctx++ == np->last_tx_ctx))
+			np->get_tx_ctx = np->tx_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	netdev_completed_queue(np->dev, tx_work, bytes_compl);
@@ -2536,7 +3031,11 @@ static int nv_tx_done_optimized(struct net_device *dev, int limit)
 		nv_unmap_txskb(np, np->get_tx_ctx);
 
 		if (flags & NV_TX2_LASTPACKET) {
+<<<<<<< HEAD
 			if (flags & NV_TX2_ERROR) {
+=======
+			if (unlikely(flags & NV_TX2_ERROR)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if ((flags & NV_TX2_RETRYERROR)
 				    && !(flags & NV_TX2_RETRYCOUNT_MASK)) {
 					if (np->driver_data & DEV_HAS_GEAR_MODE)
@@ -2545,9 +3044,18 @@ static int nv_tx_done_optimized(struct net_device *dev, int limit)
 						nv_legacybackoff_reseed(dev);
 				}
 			} else {
+<<<<<<< HEAD
 				u64_stats_update_begin(&np->swstats_tx_syncp);
 				np->stat_tx_packets++;
 				np->stat_tx_bytes += np->get_tx_ctx->skb->len;
+=======
+				unsigned int len;
+
+				u64_stats_update_begin(&np->swstats_tx_syncp);
+				nv_txrx_stats_inc(stat_tx_packets);
+				len = np->get_tx_ctx->skb->len;
+				nv_txrx_stats_add(stat_tx_bytes, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				u64_stats_update_end(&np->swstats_tx_syncp);
 			}
 
@@ -2561,9 +3069,15 @@ static int nv_tx_done_optimized(struct net_device *dev, int limit)
 		}
 
 		if (unlikely(np->get_tx.ex++ == np->last_tx.ex))
+<<<<<<< HEAD
 			np->get_tx.ex = np->first_tx.ex;
 		if (unlikely(np->get_tx_ctx++ == np->last_tx_ctx))
 			np->get_tx_ctx = np->first_tx_ctx;
+=======
+			np->get_tx.ex = np->tx_ring.ex;
+		if (unlikely(np->get_tx_ctx++ == np->last_tx_ctx))
+			np->get_tx_ctx = np->tx_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	netdev_completed_queue(np->dev, tx_work, bytes_cleaned);
@@ -2579,7 +3093,11 @@ static int nv_tx_done_optimized(struct net_device *dev, int limit)
  * nv_tx_timeout: dev->tx_timeout function
  * Called with netif_tx_lock held.
  */
+<<<<<<< HEAD
 static void nv_tx_timeout(struct net_device *dev)
+=======
+static void nv_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fe_priv *np = netdev_priv(dev);
 	u8 __iomem *base = get_hwbase(dev);
@@ -2724,6 +3242,18 @@ static int nv_getlen(struct net_device *dev, void *packet, int datalen)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void rx_missing_handler(u32 flags, struct fe_priv *np)
+{
+	if (flags & NV_RX_MISSEDFRAME) {
+		u64_stats_update_begin(&np->swstats_rx_syncp);
+		nv_txrx_stats_inc(stat_rx_missed_errors);
+		u64_stats_update_end(&np->swstats_rx_syncp);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nv_rx_process(struct net_device *dev, int limit)
 {
 	struct fe_priv *np = netdev_priv(dev);
@@ -2741,9 +3271,15 @@ static int nv_rx_process(struct net_device *dev, int limit)
 		 * TODO: check if a prefetch of the first cacheline improves
 		 * the performance.
 		 */
+<<<<<<< HEAD
 		pci_unmap_single(np->pci_dev, np->get_rx_ctx->dma,
 				np->get_rx_ctx->dma_len,
 				PCI_DMA_FROMDEVICE);
+=======
+		dma_unmap_single(&np->pci_dev->dev, np->get_rx_ctx->dma,
+				 np->get_rx_ctx->dma_len,
+				 DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb = np->get_rx_ctx->skb;
 		np->get_rx_ctx->skb = NULL;
 
@@ -2761,16 +3297,24 @@ static int nv_rx_process(struct net_device *dev, int limit)
 					}
 					/* framing errors are soft errors */
 					else if ((flags & NV_RX_ERROR_MASK) == NV_RX_FRAMINGERR) {
+<<<<<<< HEAD
 						if (flags & NV_RX_SUBSTRACT1)
+=======
+						if (flags & NV_RX_SUBTRACT1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							len--;
 					}
 					/* the rest are hard errors */
 					else {
+<<<<<<< HEAD
 						if (flags & NV_RX_MISSEDFRAME) {
 							u64_stats_update_begin(&np->swstats_rx_syncp);
 							np->stat_rx_missed_errors++;
 							u64_stats_update_end(&np->swstats_rx_syncp);
 						}
+=======
+						rx_missing_handler(flags, np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						dev_kfree_skb(skb);
 						goto next_pkt;
 					}
@@ -2792,7 +3336,11 @@ static int nv_rx_process(struct net_device *dev, int limit)
 					}
 					/* framing errors are soft errors */
 					else if ((flags & NV_RX2_ERROR_MASK) == NV_RX2_FRAMINGERR) {
+<<<<<<< HEAD
 						if (flags & NV_RX2_SUBSTRACT1)
+=======
+						if (flags & NV_RX2_SUBTRACT1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							len--;
 					}
 					/* the rest are hard errors */
@@ -2814,6 +3362,7 @@ static int nv_rx_process(struct net_device *dev, int limit)
 		skb->protocol = eth_type_trans(skb, dev);
 		napi_gro_receive(&np->napi, skb);
 		u64_stats_update_begin(&np->swstats_rx_syncp);
+<<<<<<< HEAD
 		np->stat_rx_packets++;
 		np->stat_rx_bytes += len;
 		u64_stats_update_end(&np->swstats_rx_syncp);
@@ -2822,6 +3371,16 @@ next_pkt:
 			np->get_rx.orig = np->first_rx.orig;
 		if (unlikely(np->get_rx_ctx++ == np->last_rx_ctx))
 			np->get_rx_ctx = np->first_rx_ctx;
+=======
+		nv_txrx_stats_inc(stat_rx_packets);
+		nv_txrx_stats_add(stat_rx_bytes, len);
+		u64_stats_update_end(&np->swstats_rx_syncp);
+next_pkt:
+		if (unlikely(np->get_rx.orig++ == np->last_rx.orig))
+			np->get_rx.orig = np->rx_ring.orig;
+		if (unlikely(np->get_rx_ctx++ == np->last_rx_ctx))
+			np->get_rx_ctx = np->rx_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rx_work++;
 	}
@@ -2847,9 +3406,15 @@ static int nv_rx_process_optimized(struct net_device *dev, int limit)
 		 * TODO: check if a prefetch of the first cacheline improves
 		 * the performance.
 		 */
+<<<<<<< HEAD
 		pci_unmap_single(np->pci_dev, np->get_rx_ctx->dma,
 				np->get_rx_ctx->dma_len,
 				PCI_DMA_FROMDEVICE);
+=======
+		dma_unmap_single(&np->pci_dev->dev, np->get_rx_ctx->dma,
+				 np->get_rx_ctx->dma_len,
+				 DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb = np->get_rx_ctx->skb;
 		np->get_rx_ctx->skb = NULL;
 
@@ -2866,7 +3431,11 @@ static int nv_rx_process_optimized(struct net_device *dev, int limit)
 				}
 				/* framing errors are soft errors */
 				else if ((flags & NV_RX2_ERROR_MASK) == NV_RX2_FRAMINGERR) {
+<<<<<<< HEAD
 					if (flags & NV_RX2_SUBSTRACT1)
+=======
+					if (flags & NV_RX2_SUBTRACT1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						len--;
 				}
 				/* the rest are hard errors */
@@ -2888,6 +3457,7 @@ static int nv_rx_process_optimized(struct net_device *dev, int limit)
 			vlanflags = le32_to_cpu(np->get_rx.ex->buflow);
 
 			/*
+<<<<<<< HEAD
 			 * There's need to check for NETIF_F_HW_VLAN_RX here.
 			 * Even if vlan rx accel is disabled,
 			 * NV_RX3_VLAN_TAG_PRESENT is pseudo randomly set.
@@ -2902,15 +3472,37 @@ static int nv_rx_process_optimized(struct net_device *dev, int limit)
 			u64_stats_update_begin(&np->swstats_rx_syncp);
 			np->stat_rx_packets++;
 			np->stat_rx_bytes += len;
+=======
+			 * There's need to check for NETIF_F_HW_VLAN_CTAG_RX
+			 * here. Even if vlan rx accel is disabled,
+			 * NV_RX3_VLAN_TAG_PRESENT is pseudo randomly set.
+			 */
+			if (dev->features & NETIF_F_HW_VLAN_CTAG_RX &&
+			    vlanflags & NV_RX3_VLAN_TAG_PRESENT) {
+				u16 vid = vlanflags & NV_RX3_VLAN_TAG_MASK;
+
+				__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vid);
+			}
+			napi_gro_receive(&np->napi, skb);
+			u64_stats_update_begin(&np->swstats_rx_syncp);
+			nv_txrx_stats_inc(stat_rx_packets);
+			nv_txrx_stats_add(stat_rx_bytes, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u64_stats_update_end(&np->swstats_rx_syncp);
 		} else {
 			dev_kfree_skb(skb);
 		}
 next_pkt:
 		if (unlikely(np->get_rx.ex++ == np->last_rx.ex))
+<<<<<<< HEAD
 			np->get_rx.ex = np->first_rx.ex;
 		if (unlikely(np->get_rx_ctx++ == np->last_rx_ctx))
 			np->get_rx_ctx = np->first_rx_ctx;
+=======
+			np->get_rx.ex = np->rx_ring.ex;
+		if (unlikely(np->get_rx_ctx++ == np->last_rx_ctx))
+			np->get_rx_ctx = np->rx_skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		rx_work++;
 	}
@@ -2930,24 +3522,34 @@ static void set_bufsize(struct net_device *dev)
 
 /*
  * nv_change_mtu: dev->change_mtu function
+<<<<<<< HEAD
  * Called with dev_base_lock held for read.
+=======
+ * Called with RTNL held for read.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int nv_change_mtu(struct net_device *dev, int new_mtu)
 {
 	struct fe_priv *np = netdev_priv(dev);
 	int old_mtu;
 
+<<<<<<< HEAD
 	if (new_mtu < 64 || new_mtu > np->pkt_limit)
 		return -EINVAL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	old_mtu = dev->mtu;
 	dev->mtu = new_mtu;
 
 	/* return early if the buffer sizes will not change */
 	if (old_mtu <= ETH_DATA_LEN && new_mtu <= ETH_DATA_LEN)
 		return 0;
+<<<<<<< HEAD
 	if (old_mtu == new_mtu)
 		return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* synchronized against open : rtnl_lock() held by caller */
 	if (netif_running(dev)) {
@@ -3020,8 +3622,12 @@ static int nv_set_mac_address(struct net_device *dev, void *addr)
 		return -EADDRNOTAVAIL;
 
 	/* synchronized against open : rtnl_lock() held by caller */
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, macaddr->sa_data, ETH_ALEN);
 	dev->addr_assign_type &= ~NET_ADDR_RANDOM;
+=======
+	eth_hw_addr_set(dev, macaddr->sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_running(dev)) {
 		netif_tx_lock_bh(dev);
@@ -3209,12 +3815,19 @@ static void nv_force_linkspeed(struct net_device *dev, int speed, int duplex)
 	pci_push(base);
 	writel(np->linkspeed, base + NvRegLinkSpeed);
 	pci_push(base);
+<<<<<<< HEAD
 
 	return;
 }
 
 /**
  * nv_update_linkspeed: Setup the MAC according to the link partner
+=======
+}
+
+/**
+ * nv_update_linkspeed - Setup the MAC according to the link partner
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: Network device to be configured
  *
  * The function queries the PHY and checks if there is a link partner.
@@ -3405,7 +4018,11 @@ set_speed:
 
 	pause_flags = 0;
 	/* setup pause frame */
+<<<<<<< HEAD
 	if (np->duplex != 0) {
+=======
+	if (netif_running(dev) && (np->duplex != 0)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (np->autoneg && np->pause_flags & NV_PAUSEFRAME_AUTONEG) {
 			adv_pause = adv & (ADVERTISE_PAUSE_CAP | ADVERTISE_PAUSE_ASYM);
 			lpa_pause = lpa & (LPA_PAUSE_CAP | LPA_PAUSE_ASYM);
@@ -3548,8 +4165,12 @@ static irqreturn_t nv_nic_irq(int foo, void *data)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 /**
  * All _optimized functions are used to help increase performance
+=======
+/* All _optimized functions are used to help increase performance
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * (reduce CPU and increase throughput). They use descripter version 3,
  * compiler directives, and reduce memory accesses.
  */
@@ -3687,7 +4308,11 @@ static int nv_napi_poll(struct napi_struct *napi, int budget)
 	if (rx_work < budget) {
 		/* re-enable interrupts
 		   (msix not enabled in napi) */
+<<<<<<< HEAD
 		napi_complete(napi);
+=======
+		napi_complete_done(napi, rx_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		writel(np->irqmask, base + NvRegIrqMask);
 	}
@@ -3772,7 +4397,11 @@ static irqreturn_t nv_nic_irq_other(int foo, void *data)
 			np->link_timeout = jiffies + LINK_TIMEOUT;
 		}
 		if (events & NVREG_IRQ_RECOVER_ERROR) {
+<<<<<<< HEAD
 			spin_lock_irq(&np->lock);
+=======
+			spin_lock_irqsave(&np->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* disable interrupts on the nic */
 			writel(NVREG_IRQ_OTHER, base + NvRegIrqMask);
 			pci_push(base);
@@ -3782,7 +4411,11 @@ static irqreturn_t nv_nic_irq_other(int foo, void *data)
 				np->recover_error = 1;
 				mod_timer(&np->nic_poll, jiffies + POLL_WAIT);
 			}
+<<<<<<< HEAD
 			spin_unlock_irq(&np->lock);
+=======
+			spin_unlock_irqrestore(&np->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		if (unlikely(i > max_interrupt_work)) {
@@ -3861,7 +4494,11 @@ static int nv_request_irq(struct net_device *dev, int intr_test)
 {
 	struct fe_priv *np = get_nvpriv(dev);
 	u8 __iomem *base = get_hwbase(dev);
+<<<<<<< HEAD
 	int ret = 1;
+=======
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	irqreturn_t (*handler)(int foo, void *data);
 
@@ -3877,14 +4514,28 @@ static int nv_request_irq(struct net_device *dev, int intr_test)
 	if (np->msi_flags & NV_MSI_X_CAPABLE) {
 		for (i = 0; i < (np->msi_flags & NV_MSI_X_VECTORS_MASK); i++)
 			np->msi_x_entry[i].entry = i;
+<<<<<<< HEAD
 		ret = pci_enable_msix(np->pci_dev, np->msi_x_entry, (np->msi_flags & NV_MSI_X_VECTORS_MASK));
 		if (ret == 0) {
+=======
+		ret = pci_enable_msix_range(np->pci_dev,
+					    np->msi_x_entry,
+					    np->msi_flags & NV_MSI_X_VECTORS_MASK,
+					    np->msi_flags & NV_MSI_X_VECTORS_MASK);
+		if (ret > 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			np->msi_flags |= NV_MSI_X_ENABLED;
 			if (optimization_mode == NV_OPTIMIZATION_MODE_THROUGHPUT && !intr_test) {
 				/* Request irq for rx handling */
 				sprintf(np->name_rx, "%s-rx", dev->name);
+<<<<<<< HEAD
 				if (request_irq(np->msi_x_entry[NV_MSI_X_VECTOR_RX].vector,
 						nv_nic_irq_rx, IRQF_SHARED, np->name_rx, dev) != 0) {
+=======
+				ret = request_irq(np->msi_x_entry[NV_MSI_X_VECTOR_RX].vector,
+						  nv_nic_irq_rx, IRQF_SHARED, np->name_rx, dev);
+				if (ret) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					netdev_info(dev,
 						    "request_irq failed for rx %d\n",
 						    ret);
@@ -3894,8 +4545,14 @@ static int nv_request_irq(struct net_device *dev, int intr_test)
 				}
 				/* Request irq for tx handling */
 				sprintf(np->name_tx, "%s-tx", dev->name);
+<<<<<<< HEAD
 				if (request_irq(np->msi_x_entry[NV_MSI_X_VECTOR_TX].vector,
 						nv_nic_irq_tx, IRQF_SHARED, np->name_tx, dev) != 0) {
+=======
+				ret = request_irq(np->msi_x_entry[NV_MSI_X_VECTOR_TX].vector,
+						  nv_nic_irq_tx, IRQF_SHARED, np->name_tx, dev);
+				if (ret) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					netdev_info(dev,
 						    "request_irq failed for tx %d\n",
 						    ret);
@@ -3905,8 +4562,14 @@ static int nv_request_irq(struct net_device *dev, int intr_test)
 				}
 				/* Request irq for link and timer handling */
 				sprintf(np->name_other, "%s-other", dev->name);
+<<<<<<< HEAD
 				if (request_irq(np->msi_x_entry[NV_MSI_X_VECTOR_OTHER].vector,
 						nv_nic_irq_other, IRQF_SHARED, np->name_other, dev) != 0) {
+=======
+				ret = request_irq(np->msi_x_entry[NV_MSI_X_VECTOR_OTHER].vector,
+						  nv_nic_irq_other, IRQF_SHARED, np->name_other, dev);
+				if (ret) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					netdev_info(dev,
 						    "request_irq failed for link %d\n",
 						    ret);
@@ -3922,7 +4585,13 @@ static int nv_request_irq(struct net_device *dev, int intr_test)
 				set_msix_vector_map(dev, NV_MSI_X_VECTOR_OTHER, NVREG_IRQ_OTHER);
 			} else {
 				/* Request irq for all interrupts */
+<<<<<<< HEAD
 				if (request_irq(np->msi_x_entry[NV_MSI_X_VECTOR_ALL].vector, handler, IRQF_SHARED, dev->name, dev) != 0) {
+=======
+				ret = request_irq(np->msi_x_entry[NV_MSI_X_VECTOR_ALL].vector,
+						  handler, IRQF_SHARED, dev->name, dev);
+				if (ret) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					netdev_info(dev,
 						    "request_irq failed %d\n",
 						    ret);
@@ -3936,6 +4605,7 @@ static int nv_request_irq(struct net_device *dev, int intr_test)
 				writel(0, base + NvRegMSIXMap1);
 			}
 			netdev_info(dev, "MSI-X enabled\n");
+<<<<<<< HEAD
 		}
 	}
 	if (ret != 0 && np->msi_flags & NV_MSI_CAPABLE) {
@@ -3944,11 +4614,25 @@ static int nv_request_irq(struct net_device *dev, int intr_test)
 			np->msi_flags |= NV_MSI_ENABLED;
 			dev->irq = np->pci_dev->irq;
 			if (request_irq(np->pci_dev->irq, handler, IRQF_SHARED, dev->name, dev) != 0) {
+=======
+			return 0;
+		}
+	}
+	if (np->msi_flags & NV_MSI_CAPABLE) {
+		ret = pci_enable_msi(np->pci_dev);
+		if (ret == 0) {
+			np->msi_flags |= NV_MSI_ENABLED;
+			ret = request_irq(np->pci_dev->irq, handler, IRQF_SHARED, dev->name, dev);
+			if (ret) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				netdev_info(dev, "request_irq failed %d\n",
 					    ret);
 				pci_disable_msi(np->pci_dev);
 				np->msi_flags &= ~NV_MSI_ENABLED;
+<<<<<<< HEAD
 				dev->irq = np->pci_dev->irq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out_err;
 			}
 
@@ -3958,6 +4642,7 @@ static int nv_request_irq(struct net_device *dev, int intr_test)
 			/* enable msi vector 0 */
 			writel(NVREG_MSI_VECTOR_0_ENABLED, base + NvRegMSIIrqMask);
 			netdev_info(dev, "MSI enabled\n");
+<<<<<<< HEAD
 		}
 	}
 	if (ret != 0) {
@@ -3965,6 +4650,14 @@ static int nv_request_irq(struct net_device *dev, int intr_test)
 			goto out_err;
 
 	}
+=======
+			return 0;
+		}
+	}
+
+	if (request_irq(np->pci_dev->irq, handler, IRQF_SHARED, dev->name, dev) != 0)
+		goto out_err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 out_free_tx:
@@ -3994,12 +4687,23 @@ static void nv_free_irq(struct net_device *dev)
 	}
 }
 
+<<<<<<< HEAD
 static void nv_do_nic_poll(unsigned long data)
 {
 	struct net_device *dev = (struct net_device *) data;
 	struct fe_priv *np = netdev_priv(dev);
 	u8 __iomem *base = get_hwbase(dev);
 	u32 mask = 0;
+=======
+static void nv_do_nic_poll(struct timer_list *t)
+{
+	struct fe_priv *np = from_timer(np, t, nic_poll);
+	struct net_device *dev = np->dev;
+	u8 __iomem *base = get_hwbase(dev);
+	u32 mask = 0;
+	unsigned long flags;
+	unsigned int irq = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * First disable irq(s) and then
@@ -4009,6 +4713,7 @@ static void nv_do_nic_poll(unsigned long data)
 
 	if (!using_multi_irqs(dev)) {
 		if (np->msi_flags & NV_MSI_X_ENABLED)
+<<<<<<< HEAD
 			disable_irq_lockdep(np->msi_x_entry[NV_MSI_X_VECTOR_ALL].vector);
 		else
 			disable_irq_lockdep(np->pci_dev->irq);
@@ -4028,6 +4733,29 @@ static void nv_do_nic_poll(unsigned long data)
 		}
 	}
 	/* disable_irq() contains synchronize_irq, thus no irq handler can run now */
+=======
+			irq = np->msi_x_entry[NV_MSI_X_VECTOR_ALL].vector;
+		else
+			irq = np->pci_dev->irq;
+		mask = np->irqmask;
+	} else {
+		if (np->nic_poll_irq & NVREG_IRQ_RX_ALL) {
+			irq = np->msi_x_entry[NV_MSI_X_VECTOR_RX].vector;
+			mask |= NVREG_IRQ_RX_ALL;
+		}
+		if (np->nic_poll_irq & NVREG_IRQ_TX_ALL) {
+			irq = np->msi_x_entry[NV_MSI_X_VECTOR_TX].vector;
+			mask |= NVREG_IRQ_TX_ALL;
+		}
+		if (np->nic_poll_irq & NVREG_IRQ_OTHER) {
+			irq = np->msi_x_entry[NV_MSI_X_VECTOR_OTHER].vector;
+			mask |= NVREG_IRQ_OTHER;
+		}
+	}
+
+	disable_irq_nosync_lockdep_irqsave(irq, &flags);
+	synchronize_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (np->recover_error) {
 		np->recover_error = 0;
@@ -4080,33 +4808,50 @@ static void nv_do_nic_poll(unsigned long data)
 			nv_nic_irq_optimized(0, dev);
 		else
 			nv_nic_irq(0, dev);
+<<<<<<< HEAD
 		if (np->msi_flags & NV_MSI_X_ENABLED)
 			enable_irq_lockdep(np->msi_x_entry[NV_MSI_X_VECTOR_ALL].vector);
 		else
 			enable_irq_lockdep(np->pci_dev->irq);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (np->nic_poll_irq & NVREG_IRQ_RX_ALL) {
 			np->nic_poll_irq &= ~NVREG_IRQ_RX_ALL;
 			nv_nic_irq_rx(0, dev);
+<<<<<<< HEAD
 			enable_irq_lockdep(np->msi_x_entry[NV_MSI_X_VECTOR_RX].vector);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (np->nic_poll_irq & NVREG_IRQ_TX_ALL) {
 			np->nic_poll_irq &= ~NVREG_IRQ_TX_ALL;
 			nv_nic_irq_tx(0, dev);
+<<<<<<< HEAD
 			enable_irq_lockdep(np->msi_x_entry[NV_MSI_X_VECTOR_TX].vector);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (np->nic_poll_irq & NVREG_IRQ_OTHER) {
 			np->nic_poll_irq &= ~NVREG_IRQ_OTHER;
 			nv_nic_irq_other(0, dev);
+<<<<<<< HEAD
 			enable_irq_lockdep(np->msi_x_entry[NV_MSI_X_VECTOR_OTHER].vector);
 		}
 	}
 
+=======
+		}
+	}
+
+	enable_irq_lockdep_irqrestore(irq, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_NET_POLL_CONTROLLER
 static void nv_poll_controller(struct net_device *dev)
 {
+<<<<<<< HEAD
 	nv_do_nic_poll((unsigned long) dev);
 }
 #endif
@@ -4117,6 +4862,20 @@ static void nv_do_stats_poll(unsigned long data)
 {
 	struct net_device *dev = (struct net_device *) data;
 	struct fe_priv *np = netdev_priv(dev);
+=======
+	struct fe_priv *np = netdev_priv(dev);
+
+	nv_do_nic_poll(&np->nic_poll);
+}
+#endif
+
+static void nv_do_stats_poll(struct timer_list *t)
+	__acquires(&netdev_priv(dev)->hwstats_lock)
+	__releases(&netdev_priv(dev)->hwstats_lock)
+{
+	struct fe_priv *np = from_timer(np, t, stats_poll);
+	struct net_device *dev = np->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If lock is currently taken, the stats are being refreshed
 	 * and hence fresh enough */
@@ -4133,9 +4892,15 @@ static void nv_do_stats_poll(unsigned long data)
 static void nv_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
 	struct fe_priv *np = netdev_priv(dev);
+<<<<<<< HEAD
 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strlcpy(info->version, FORCEDETH_VERSION, sizeof(info->version));
 	strlcpy(info->bus_info, pci_name(np->pci_dev), sizeof(info->bus_info));
+=======
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	strscpy(info->version, FORCEDETH_VERSION, sizeof(info->version));
+	strscpy(info->bus_info, pci_name(np->pci_dev), sizeof(info->bus_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nv_get_wol(struct net_device *dev, struct ethtool_wolinfo *wolinfo)
@@ -4170,6 +4935,7 @@ static int nv_set_wol(struct net_device *dev, struct ethtool_wolinfo *wolinfo)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int nv_get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 {
 	struct fe_priv *np = netdev_priv(dev);
@@ -4178,15 +4944,32 @@ static int nv_get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 
 	spin_lock_irq(&np->lock);
 	ecmd->port = PORT_MII;
+=======
+static int nv_get_link_ksettings(struct net_device *dev,
+				 struct ethtool_link_ksettings *cmd)
+{
+	struct fe_priv *np = netdev_priv(dev);
+	u32 speed, supported, advertising;
+	int adv;
+
+	spin_lock_irq(&np->lock);
+	cmd->base.port = PORT_MII;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!netif_running(dev)) {
 		/* We do not track link speed / duplex setting if the
 		 * interface is disabled. Force a link check */
 		if (nv_update_linkspeed(dev)) {
+<<<<<<< HEAD
 			if (!netif_carrier_ok(dev))
 				netif_carrier_on(dev);
 		} else {
 			if (netif_carrier_ok(dev))
 				netif_carrier_off(dev);
+=======
+			netif_carrier_on(dev);
+		} else {
+			netif_carrier_off(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -4205,6 +4988,7 @@ static int nv_get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 			speed = -1;
 			break;
 		}
+<<<<<<< HEAD
 		ecmd->duplex = DUPLEX_HALF;
 		if (np->duplex)
 			ecmd->duplex = DUPLEX_FULL;
@@ -4234,20 +5018,63 @@ static int nv_get_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 		}
 	}
 	ecmd->supported = (SUPPORTED_Autoneg |
+=======
+		cmd->base.duplex = DUPLEX_HALF;
+		if (np->duplex)
+			cmd->base.duplex = DUPLEX_FULL;
+	} else {
+		speed = SPEED_UNKNOWN;
+		cmd->base.duplex = DUPLEX_UNKNOWN;
+	}
+	cmd->base.speed = speed;
+	cmd->base.autoneg = np->autoneg;
+
+	advertising = ADVERTISED_MII;
+	if (np->autoneg) {
+		advertising |= ADVERTISED_Autoneg;
+		adv = mii_rw(dev, np->phyaddr, MII_ADVERTISE, MII_READ);
+		if (adv & ADVERTISE_10HALF)
+			advertising |= ADVERTISED_10baseT_Half;
+		if (adv & ADVERTISE_10FULL)
+			advertising |= ADVERTISED_10baseT_Full;
+		if (adv & ADVERTISE_100HALF)
+			advertising |= ADVERTISED_100baseT_Half;
+		if (adv & ADVERTISE_100FULL)
+			advertising |= ADVERTISED_100baseT_Full;
+		if (np->gigabit == PHY_GIGABIT) {
+			adv = mii_rw(dev, np->phyaddr, MII_CTRL1000, MII_READ);
+			if (adv & ADVERTISE_1000FULL)
+				advertising |= ADVERTISED_1000baseT_Full;
+		}
+	}
+	supported = (SUPPORTED_Autoneg |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SUPPORTED_10baseT_Half | SUPPORTED_10baseT_Full |
 		SUPPORTED_100baseT_Half | SUPPORTED_100baseT_Full |
 		SUPPORTED_MII);
 	if (np->gigabit == PHY_GIGABIT)
+<<<<<<< HEAD
 		ecmd->supported |= SUPPORTED_1000baseT_Full;
 
 	ecmd->phy_address = np->phyaddr;
 	ecmd->transceiver = XCVR_EXTERNAL;
+=======
+		supported |= SUPPORTED_1000baseT_Full;
+
+	cmd->base.phy_address = np->phyaddr;
+
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
+						supported);
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
+						advertising);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ignore maxtxpkt, maxrxpkt for now */
 	spin_unlock_irq(&np->lock);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int nv_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 {
 	struct fe_priv *np = netdev_priv(dev);
@@ -4258,11 +5085,30 @@ static int nv_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 	if (ecmd->transceiver != XCVR_EXTERNAL)
 		return -EINVAL;
 	if (ecmd->phy_address != np->phyaddr) {
+=======
+static int nv_set_link_ksettings(struct net_device *dev,
+				 const struct ethtool_link_ksettings *cmd)
+{
+	struct fe_priv *np = netdev_priv(dev);
+	u32 speed = cmd->base.speed;
+	u32 advertising;
+
+	ethtool_convert_link_mode_to_legacy_u32(&advertising,
+						cmd->link_modes.advertising);
+
+	if (cmd->base.port != PORT_MII)
+		return -EINVAL;
+	if (cmd->base.phy_address != np->phyaddr) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* TODO: support switching between multiple phys. Should be
 		 * trivial, but not enabled due to lack of test hardware. */
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	if (ecmd->autoneg == AUTONEG_ENABLE) {
+=======
+	if (cmd->base.autoneg == AUTONEG_ENABLE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u32 mask;
 
 		mask = ADVERTISED_10baseT_Half | ADVERTISED_10baseT_Full |
@@ -4270,16 +5116,28 @@ static int nv_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 		if (np->gigabit == PHY_GIGABIT)
 			mask |= ADVERTISED_1000baseT_Full;
 
+<<<<<<< HEAD
 		if ((ecmd->advertising & mask) == 0)
 			return -EINVAL;
 
 	} else if (ecmd->autoneg == AUTONEG_DISABLE) {
+=======
+		if ((advertising & mask) == 0)
+			return -EINVAL;
+
+	} else if (cmd->base.autoneg == AUTONEG_DISABLE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Note: autonegotiation disable, speed 1000 intentionally
 		 * forbidden - no one should need that. */
 
 		if (speed != SPEED_10 && speed != SPEED_100)
 			return -EINVAL;
+<<<<<<< HEAD
 		if (ecmd->duplex != DUPLEX_HALF && ecmd->duplex != DUPLEX_FULL)
+=======
+		if (cmd->base.duplex != DUPLEX_HALF &&
+		    cmd->base.duplex != DUPLEX_FULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 	} else {
 		return -EINVAL;
@@ -4309,7 +5167,11 @@ static int nv_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 		netif_tx_unlock_bh(dev);
 	}
 
+<<<<<<< HEAD
 	if (ecmd->autoneg == AUTONEG_ENABLE) {
+=======
+	if (cmd->base.autoneg == AUTONEG_ENABLE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int adv, bmcr;
 
 		np->autoneg = 1;
@@ -4317,6 +5179,7 @@ static int nv_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 		/* advertise only what has been requested */
 		adv = mii_rw(dev, np->phyaddr, MII_ADVERTISE, MII_READ);
 		adv &= ~(ADVERTISE_ALL | ADVERTISE_100BASE4 | ADVERTISE_PAUSE_CAP | ADVERTISE_PAUSE_ASYM);
+<<<<<<< HEAD
 		if (ecmd->advertising & ADVERTISED_10baseT_Half)
 			adv |= ADVERTISE_10HALF;
 		if (ecmd->advertising & ADVERTISED_10baseT_Full)
@@ -4324,6 +5187,15 @@ static int nv_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 		if (ecmd->advertising & ADVERTISED_100baseT_Half)
 			adv |= ADVERTISE_100HALF;
 		if (ecmd->advertising & ADVERTISED_100baseT_Full)
+=======
+		if (advertising & ADVERTISED_10baseT_Half)
+			adv |= ADVERTISE_10HALF;
+		if (advertising & ADVERTISED_10baseT_Full)
+			adv |= ADVERTISE_10FULL;
+		if (advertising & ADVERTISED_100baseT_Half)
+			adv |= ADVERTISE_100HALF;
+		if (advertising & ADVERTISED_100baseT_Full)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			adv |= ADVERTISE_100FULL;
 		if (np->pause_flags & NV_PAUSEFRAME_RX_REQ)  /* for rx we set both advertisements but disable tx pause */
 			adv |=  ADVERTISE_PAUSE_CAP | ADVERTISE_PAUSE_ASYM;
@@ -4334,7 +5206,11 @@ static int nv_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 		if (np->gigabit == PHY_GIGABIT) {
 			adv = mii_rw(dev, np->phyaddr, MII_CTRL1000, MII_READ);
 			adv &= ~ADVERTISE_1000FULL;
+<<<<<<< HEAD
 			if (ecmd->advertising & ADVERTISED_1000baseT_Full)
+=======
+			if (advertising & ADVERTISED_1000baseT_Full)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				adv |= ADVERTISE_1000FULL;
 			mii_rw(dev, np->phyaddr, MII_CTRL1000, adv);
 		}
@@ -4361,6 +5237,7 @@ static int nv_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 
 		adv = mii_rw(dev, np->phyaddr, MII_ADVERTISE, MII_READ);
 		adv &= ~(ADVERTISE_ALL | ADVERTISE_100BASE4 | ADVERTISE_PAUSE_CAP | ADVERTISE_PAUSE_ASYM);
+<<<<<<< HEAD
 		if (speed == SPEED_10 && ecmd->duplex == DUPLEX_HALF)
 			adv |= ADVERTISE_10HALF;
 		if (speed == SPEED_10 && ecmd->duplex == DUPLEX_FULL)
@@ -4368,6 +5245,15 @@ static int nv_set_settings(struct net_device *dev, struct ethtool_cmd *ecmd)
 		if (speed == SPEED_100 && ecmd->duplex == DUPLEX_HALF)
 			adv |= ADVERTISE_100HALF;
 		if (speed == SPEED_100 && ecmd->duplex == DUPLEX_FULL)
+=======
+		if (speed == SPEED_10 && cmd->base.duplex == DUPLEX_HALF)
+			adv |= ADVERTISE_10HALF;
+		if (speed == SPEED_10 && cmd->base.duplex == DUPLEX_FULL)
+			adv |= ADVERTISE_10FULL;
+		if (speed == SPEED_100 && cmd->base.duplex == DUPLEX_HALF)
+			adv |= ADVERTISE_100HALF;
+		if (speed == SPEED_100 && cmd->base.duplex == DUPLEX_FULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			adv |= ADVERTISE_100FULL;
 		np->pause_flags &= ~(NV_PAUSEFRAME_AUTONEG|NV_PAUSEFRAME_RX_ENABLE|NV_PAUSEFRAME_TX_ENABLE);
 		if (np->pause_flags & NV_PAUSEFRAME_RX_REQ) {/* for rx we set both advertisements but disable tx pause */
@@ -4434,7 +5320,11 @@ static void nv_get_regs(struct net_device *dev, struct ethtool_regs *regs, void 
 
 	regs->version = FORCEDETH_REGS_VER;
 	spin_lock_irq(&np->lock);
+<<<<<<< HEAD
 	for (i = 0; i <= np->register_size/sizeof(u32); i++)
+=======
+	for (i = 0; i < np->register_size/sizeof(u32); i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rbuf[i] = readl(base + i*sizeof(u32));
 	spin_unlock_irq(&np->lock);
 }
@@ -4486,7 +5376,14 @@ static int nv_nway_reset(struct net_device *dev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void nv_get_ringparam(struct net_device *dev, struct ethtool_ringparam* ring)
+=======
+static void nv_get_ringparam(struct net_device *dev,
+			     struct ethtool_ringparam *ring,
+			     struct kernel_ethtool_ringparam *kernel_ring,
+			     struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fe_priv *np = netdev_priv(dev);
 
@@ -4497,7 +5394,14 @@ static void nv_get_ringparam(struct net_device *dev, struct ethtool_ringparam* r
 	ring->tx_pending = np->tx_ring_size;
 }
 
+<<<<<<< HEAD
 static int nv_set_ringparam(struct net_device *dev, struct ethtool_ringparam* ring)
+=======
+static int nv_set_ringparam(struct net_device *dev,
+			    struct ethtool_ringparam *ring,
+			    struct kernel_ethtool_ringparam *kernel_ring,
+			    struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fe_priv *np = netdev_priv(dev);
 	u8 __iomem *base = get_hwbase(dev);
@@ -4519,6 +5423,7 @@ static int nv_set_ringparam(struct net_device *dev, struct ethtool_ringparam* ri
 
 	/* allocate new rings */
 	if (!nv_optimized(np)) {
+<<<<<<< HEAD
 		rxtx_ring = pci_alloc_consistent(np->pci_dev,
 					    sizeof(struct ring_desc) * (ring->rx_pending + ring->tx_pending),
 					    &ring_addr);
@@ -4529,16 +5434,49 @@ static int nv_set_ringparam(struct net_device *dev, struct ethtool_ringparam* ri
 	}
 	rx_skbuff = kmalloc(sizeof(struct nv_skb_map) * ring->rx_pending, GFP_KERNEL);
 	tx_skbuff = kmalloc(sizeof(struct nv_skb_map) * ring->tx_pending, GFP_KERNEL);
+=======
+		rxtx_ring = dma_alloc_coherent(&np->pci_dev->dev,
+					       sizeof(struct ring_desc) *
+					       (ring->rx_pending +
+					       ring->tx_pending),
+					       &ring_addr, GFP_ATOMIC);
+	} else {
+		rxtx_ring = dma_alloc_coherent(&np->pci_dev->dev,
+					       sizeof(struct ring_desc_ex) *
+					       (ring->rx_pending +
+					       ring->tx_pending),
+					       &ring_addr, GFP_ATOMIC);
+	}
+	rx_skbuff = kmalloc_array(ring->rx_pending, sizeof(struct nv_skb_map),
+				  GFP_KERNEL);
+	tx_skbuff = kmalloc_array(ring->tx_pending, sizeof(struct nv_skb_map),
+				  GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rxtx_ring || !rx_skbuff || !tx_skbuff) {
 		/* fall back to old rings */
 		if (!nv_optimized(np)) {
 			if (rxtx_ring)
+<<<<<<< HEAD
 				pci_free_consistent(np->pci_dev, sizeof(struct ring_desc) * (ring->rx_pending + ring->tx_pending),
 						    rxtx_ring, ring_addr);
 		} else {
 			if (rxtx_ring)
 				pci_free_consistent(np->pci_dev, sizeof(struct ring_desc_ex) * (ring->rx_pending + ring->tx_pending),
 						    rxtx_ring, ring_addr);
+=======
+				dma_free_coherent(&np->pci_dev->dev,
+						  sizeof(struct ring_desc) *
+						  (ring->rx_pending +
+						  ring->tx_pending),
+						  rxtx_ring, ring_addr);
+		} else {
+			if (rxtx_ring)
+				dma_free_coherent(&np->pci_dev->dev,
+						  sizeof(struct ring_desc_ex) *
+						  (ring->rx_pending +
+						  ring->tx_pending),
+						  rxtx_ring, ring_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		kfree(rx_skbuff);
@@ -4747,7 +5685,11 @@ static netdev_features_t nv_fix_features(struct net_device *dev,
 	netdev_features_t features)
 {
 	/* vlan is dependent on rx checksum offload */
+<<<<<<< HEAD
 	if (features & (NETIF_F_HW_VLAN_TX|NETIF_F_HW_VLAN_RX))
+=======
+	if (features & (NETIF_F_HW_VLAN_CTAG_TX|NETIF_F_HW_VLAN_CTAG_RX))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		features |= NETIF_F_RXCSUM;
 
 	return features;
@@ -4759,12 +5701,20 @@ static void nv_vlan_mode(struct net_device *dev, netdev_features_t features)
 
 	spin_lock_irq(&np->lock);
 
+<<<<<<< HEAD
 	if (features & NETIF_F_HW_VLAN_RX)
+=======
+	if (features & NETIF_F_HW_VLAN_CTAG_RX)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np->txrxctl_bits |= NVREG_TXRXCTL_VLANSTRIP;
 	else
 		np->txrxctl_bits &= ~NVREG_TXRXCTL_VLANSTRIP;
 
+<<<<<<< HEAD
 	if (features & NETIF_F_HW_VLAN_TX)
+=======
+	if (features & NETIF_F_HW_VLAN_CTAG_TX)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np->txrxctl_bits |= NVREG_TXRXCTL_VLANINS;
 	else
 		np->txrxctl_bits &= ~NVREG_TXRXCTL_VLANINS;
@@ -4801,7 +5751,11 @@ static int nv_set_features(struct net_device *dev, netdev_features_t features)
 		spin_unlock_irq(&np->lock);
 	}
 
+<<<<<<< HEAD
 	if (changed & (NETIF_F_HW_VLAN_TX | NETIF_F_HW_VLAN_RX))
+=======
+	if (changed & (NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nv_vlan_mode(dev, features);
 
 	return 0;
@@ -4995,6 +5949,7 @@ static int nv_loopback_test(struct net_device *dev)
 	pkt_len = ETH_DATA_LEN;
 	tx_skb = netdev_alloc_skb(dev, pkt_len);
 	if (!tx_skb) {
+<<<<<<< HEAD
 		netdev_err(dev, "netdev_alloc_skb() failed during loopback test\n");
 		ret = 0;
 		goto out;
@@ -5002,6 +5957,19 @@ static int nv_loopback_test(struct net_device *dev)
 	test_dma_addr = pci_map_single(np->pci_dev, tx_skb->data,
 				       skb_tailroom(tx_skb),
 				       PCI_DMA_FROMDEVICE);
+=======
+		ret = 0;
+		goto out;
+	}
+	test_dma_addr = dma_map_single(&np->pci_dev->dev, tx_skb->data,
+				       skb_tailroom(tx_skb),
+				       DMA_FROM_DEVICE);
+	if (unlikely(dma_mapping_error(&np->pci_dev->dev,
+				       test_dma_addr))) {
+		dev_kfree_skb_any(tx_skb);
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pkt_data = skb_put(tx_skb, pkt_len);
 	for (i = 0; i < pkt_len; i++)
 		pkt_data[i] = (u8)(i & 0xff);
@@ -5053,9 +6021,15 @@ static int nv_loopback_test(struct net_device *dev)
 		}
 	}
 
+<<<<<<< HEAD
 	pci_unmap_single(np->pci_dev, test_dma_addr,
 		       (skb_end_pointer(tx_skb) - tx_skb->data),
 		       PCI_DMA_TODEVICE);
+=======
+	dma_unmap_single(&np->pci_dev->dev, test_dma_addr,
+			 (skb_end_pointer(tx_skb) - tx_skb->data),
+			 DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_kfree_skb_any(tx_skb);
  out:
 	/* stop engines */
@@ -5077,8 +6051,15 @@ static void nv_self_test(struct net_device *dev, struct ethtool_test *test, u64 
 {
 	struct fe_priv *np = netdev_priv(dev);
 	u8 __iomem *base = get_hwbase(dev);
+<<<<<<< HEAD
 	int result;
 	memset(buffer, 0, nv_get_sset_count(dev, ETH_SS_TEST)*sizeof(u64));
+=======
+	int result, count;
+
+	count = nv_get_sset_count(dev, ETH_SS_TEST);
+	memset(buffer, 0, count * sizeof(u64));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!nv_link_test(dev)) {
 		test->flags |= ETH_TEST_FL_FAILED;
@@ -5122,7 +6103,11 @@ static void nv_self_test(struct net_device *dev, struct ethtool_test *test, u64 
 			return;
 		}
 
+<<<<<<< HEAD
 		if (!nv_loopback_test(dev)) {
+=======
+		if (count > NV_TEST_COUNT_BASE && !nv_loopback_test(dev)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			test->flags |= ETH_TEST_FL_FAILED;
 			buffer[3] = 1;
 		}
@@ -5168,8 +6153,11 @@ static const struct ethtool_ops ops = {
 	.get_link = ethtool_op_get_link,
 	.get_wol = nv_get_wol,
 	.set_wol = nv_set_wol,
+<<<<<<< HEAD
 	.get_settings = nv_get_settings,
 	.set_settings = nv_set_settings,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_regs_len = nv_get_regs_len,
 	.get_regs = nv_get_regs,
 	.nway_reset = nv_nway_reset,
@@ -5181,6 +6169,12 @@ static const struct ethtool_ops ops = {
 	.get_ethtool_stats = nv_get_ethtool_stats,
 	.get_sset_count = nv_get_sset_count,
 	.self_test = nv_self_test,
+<<<<<<< HEAD
+=======
+	.get_ts_info = ethtool_op_get_ts_info,
+	.get_link_ksettings = nv_get_link_ksettings,
+	.set_link_ksettings = nv_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* The mgmt unit and driver use a semaphore to access the phy during init */
@@ -5395,11 +6389,17 @@ static int nv_open(struct net_device *dev)
 	/* One manual link speed update: Interrupts are enabled, future link
 	 * speed changes cause interrupts and are handled by nv_link_irq().
 	 */
+<<<<<<< HEAD
 	{
 		u32 miistat;
 		miistat = readl(base + NvRegMIIStatus);
 		writel(NVREG_MIISTAT_MASK_ALL, base + NvRegMIIStatus);
 	}
+=======
+	readl(base + NvRegMIIStatus);
+	writel(NVREG_MIISTAT_MASK_ALL, base + NvRegMIIStatus);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set linkspeed to invalid value, thus force nv_update_linkspeed
 	 * to init hw */
 	np->linkspeed = 0;
@@ -5453,6 +6453,10 @@ static int nv_close(struct net_device *dev)
 
 	netif_stop_queue(dev);
 	spin_lock_irq(&np->lock);
+<<<<<<< HEAD
+=======
+	nv_update_pause(dev, 0); /* otherwise stop_tx bricks NIC */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nv_stop_rxtx(dev);
 	nv_txrx_reset(dev);
 
@@ -5517,7 +6521,11 @@ static const struct net_device_ops nv_netdev_ops_optimized = {
 #endif
 };
 
+<<<<<<< HEAD
 static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_id *id)
+=======
+static int nv_probe(struct pci_dev *pci_dev, const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct fe_priv *np;
@@ -5528,6 +6536,10 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 	u32 phystate_orig = 0, phystate;
 	int phyinitialized = 0;
 	static int printed_version;
+<<<<<<< HEAD
+=======
+	u8 mac[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!printed_version++)
 		pr_info("Reverse Engineered nForce ethernet driver. Version %s.\n",
@@ -5546,6 +6558,7 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 	SET_NETDEV_DEV(dev, &pci_dev->dev);
 	u64_stats_init(&np->swstats_rx_syncp);
 	u64_stats_init(&np->swstats_tx_syncp);
+<<<<<<< HEAD
 
 	init_timer(&np->oom_kick);
 	np->oom_kick.data = (unsigned long) dev;
@@ -5556,6 +6569,18 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 	init_timer_deferrable(&np->stats_poll);
 	np->stats_poll.data = (unsigned long) dev;
 	np->stats_poll.function = nv_do_stats_poll;	/* timer handler */
+=======
+	np->txrx_stats = alloc_percpu(struct nv_txrx_stats);
+	if (!np->txrx_stats) {
+		pr_err("np->txrx_stats, alloc memory error.\n");
+		err = -ENOMEM;
+		goto out_alloc_percpu;
+	}
+
+	timer_setup(&np->oom_kick, nv_do_rx_refill, 0);
+	timer_setup(&np->nic_poll, nv_do_nic_poll, 0);
+	timer_setup(&np->stats_poll, nv_do_stats_poll, TIMER_DEFERRABLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = pci_enable_device(pci_dev);
 	if (err)
@@ -5599,15 +6624,22 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 		np->desc_ver = DESC_VER_3;
 		np->txrxctl_bits = NVREG_TXRXCTL_DESC_3;
 		if (dma_64bit) {
+<<<<<<< HEAD
 			if (pci_set_dma_mask(pci_dev, DMA_BIT_MASK(39)))
+=======
+			if (dma_set_mask_and_coherent(&pci_dev->dev, DMA_BIT_MASK(39)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_info(&pci_dev->dev,
 					 "64-bit DMA failed, using 32-bit addressing\n");
 			else
 				dev->features |= NETIF_F_HIGHDMA;
+<<<<<<< HEAD
 			if (pci_set_consistent_dma_mask(pci_dev, DMA_BIT_MASK(39))) {
 				dev_info(&pci_dev->dev,
 					 "64-bit DMA (consistent) failed, using 32-bit ring buffers\n");
 			}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else if (id->driver_data & DEV_HAS_LARGEDESC) {
 		/* packet format 2: supports jumbo frames */
@@ -5632,7 +6664,12 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 	np->vlanctl_bits = 0;
 	if (id->driver_data & DEV_HAS_VLAN) {
 		np->vlanctl_bits = NVREG_VLANCONTROL_ENABLE;
+<<<<<<< HEAD
 		dev->hw_features |= NETIF_F_HW_VLAN_RX | NETIF_F_HW_VLAN_TX;
+=======
+		dev->hw_features |= NETIF_F_HW_VLAN_CTAG_RX |
+				    NETIF_F_HW_VLAN_CTAG_TX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev->features |= dev->hw_features;
@@ -5640,6 +6677,13 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 	/* Add loopback capability to the device. */
 	dev->hw_features |= NETIF_F_LOOPBACK;
 
+<<<<<<< HEAD
+=======
+	/* MTU range: 64 - 1500 or 9100 */
+	dev->min_mtu = ETH_ZLEN + ETH_FCS_LEN;
+	dev->max_mtu = np->pkt_limit;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	np->pause_flags = NV_PAUSEFRAME_RX_CAPABLE | NV_PAUSEFRAME_RX_REQ | NV_PAUSEFRAME_AUTONEG;
 	if ((id->driver_data & DEV_HAS_PAUSEFRAME_TX_V1) ||
 	    (id->driver_data & DEV_HAS_PAUSEFRAME_TX_V2) ||
@@ -5651,24 +6695,44 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 	np->base = ioremap(addr, np->register_size);
 	if (!np->base)
 		goto out_relreg;
+<<<<<<< HEAD
 	dev->base_addr = (unsigned long)np->base;
 
 	dev->irq = pci_dev->irq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	np->rx_ring_size = RX_RING_DEFAULT;
 	np->tx_ring_size = TX_RING_DEFAULT;
 
 	if (!nv_optimized(np)) {
+<<<<<<< HEAD
 		np->rx_ring.orig = pci_alloc_consistent(pci_dev,
 					sizeof(struct ring_desc) * (np->rx_ring_size + np->tx_ring_size),
 					&np->ring_addr);
+=======
+		np->rx_ring.orig = dma_alloc_coherent(&pci_dev->dev,
+						      sizeof(struct ring_desc) *
+						      (np->rx_ring_size +
+						      np->tx_ring_size),
+						      &np->ring_addr,
+						      GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!np->rx_ring.orig)
 			goto out_unmap;
 		np->tx_ring.orig = &np->rx_ring.orig[np->rx_ring_size];
 	} else {
+<<<<<<< HEAD
 		np->rx_ring.ex = pci_alloc_consistent(pci_dev,
 					sizeof(struct ring_desc_ex) * (np->rx_ring_size + np->tx_ring_size),
 					&np->ring_addr);
+=======
+		np->rx_ring.ex = dma_alloc_coherent(&pci_dev->dev,
+						    sizeof(struct ring_desc_ex) *
+						    (np->rx_ring_size +
+						    np->tx_ring_size),
+						    &np->ring_addr, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!np->rx_ring.ex)
 			goto out_unmap;
 		np->tx_ring.ex = &np->rx_ring.ex[np->rx_ring_size];
@@ -5683,8 +6747,13 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 	else
 		dev->netdev_ops = &nv_netdev_ops_optimized;
 
+<<<<<<< HEAD
 	netif_napi_add(dev, &np->napi, nv_napi_poll, RX_WORK_PER_LOOP);
 	SET_ETHTOOL_OPS(dev, &ops);
+=======
+	netif_napi_add(dev, &np->napi, nv_napi_poll);
+	dev->ethtool_ops = &ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->watchdog_timeo = NV_WATCHDOG_TIMEO;
 
 	pci_set_drvdata(pci_dev, dev);
@@ -5698,6 +6767,7 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 	txreg = readl(base + NvRegTransmitPoll);
 	if (id->driver_data & DEV_HAS_CORRECT_MACADDR) {
 		/* mac address is already in correct order */
+<<<<<<< HEAD
 		dev->dev_addr[0] = (np->orig_mac[0] >>  0) & 0xff;
 		dev->dev_addr[1] = (np->orig_mac[0] >>  8) & 0xff;
 		dev->dev_addr[2] = (np->orig_mac[0] >> 16) & 0xff;
@@ -5712,11 +6782,28 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 		dev->dev_addr[3] = (np->orig_mac[0] >> 24) & 0xff;
 		dev->dev_addr[4] = (np->orig_mac[1] >>  0) & 0xff;
 		dev->dev_addr[5] = (np->orig_mac[1] >>  8) & 0xff;
+=======
+		mac[0] = (np->orig_mac[0] >>  0) & 0xff;
+		mac[1] = (np->orig_mac[0] >>  8) & 0xff;
+		mac[2] = (np->orig_mac[0] >> 16) & 0xff;
+		mac[3] = (np->orig_mac[0] >> 24) & 0xff;
+		mac[4] = (np->orig_mac[1] >>  0) & 0xff;
+		mac[5] = (np->orig_mac[1] >>  8) & 0xff;
+	} else if (txreg & NVREG_TRANSMITPOLL_MAC_ADDR_REV) {
+		/* mac address is already in correct order */
+		mac[0] = (np->orig_mac[0] >>  0) & 0xff;
+		mac[1] = (np->orig_mac[0] >>  8) & 0xff;
+		mac[2] = (np->orig_mac[0] >> 16) & 0xff;
+		mac[3] = (np->orig_mac[0] >> 24) & 0xff;
+		mac[4] = (np->orig_mac[1] >>  0) & 0xff;
+		mac[5] = (np->orig_mac[1] >>  8) & 0xff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Set orig mac address back to the reversed version.
 		 * This flag will be cleared during low power transition.
 		 * Therefore, we should always put back the reversed address.
 		 */
+<<<<<<< HEAD
 		np->orig_mac[0] = (dev->dev_addr[5] << 0) + (dev->dev_addr[4] << 8) +
 			(dev->dev_addr[3] << 16) + (dev->dev_addr[2] << 24);
 		np->orig_mac[1] = (dev->dev_addr[1] << 0) + (dev->dev_addr[0] << 8);
@@ -5728,21 +6815,45 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 		dev->dev_addr[3] = (np->orig_mac[0] >> 16) & 0xff;
 		dev->dev_addr[4] = (np->orig_mac[0] >>  8) & 0xff;
 		dev->dev_addr[5] = (np->orig_mac[0] >>  0) & 0xff;
+=======
+		np->orig_mac[0] = (mac[5] << 0) + (mac[4] << 8) +
+			(mac[3] << 16) + (mac[2] << 24);
+		np->orig_mac[1] = (mac[1] << 0) + (mac[0] << 8);
+	} else {
+		/* need to reverse mac address to correct order */
+		mac[0] = (np->orig_mac[1] >>  8) & 0xff;
+		mac[1] = (np->orig_mac[1] >>  0) & 0xff;
+		mac[2] = (np->orig_mac[0] >> 24) & 0xff;
+		mac[3] = (np->orig_mac[0] >> 16) & 0xff;
+		mac[4] = (np->orig_mac[0] >>  8) & 0xff;
+		mac[5] = (np->orig_mac[0] >>  0) & 0xff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(txreg|NVREG_TRANSMITPOLL_MAC_ADDR_REV, base + NvRegTransmitPoll);
 		dev_dbg(&pci_dev->dev,
 			"%s: set workaround bit for reversed mac addr\n",
 			__func__);
 	}
+<<<<<<< HEAD
 	memcpy(dev->perm_addr, dev->dev_addr, dev->addr_len);
 
 	if (!is_valid_ether_addr(dev->perm_addr)) {
+=======
+
+	if (is_valid_ether_addr(mac)) {
+		eth_hw_addr_set(dev, mac);
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Bad mac address. At least one bios sets the mac address
 		 * to 01:23:45:67:89:ab
 		 */
 		dev_err(&pci_dev->dev,
 			"Invalid MAC address detected: %pM - Please complain to your hardware vendor.\n",
+<<<<<<< HEAD
 			dev->dev_addr);
+=======
+			mac);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eth_hw_addr_random(dev);
 		dev_err(&pci_dev->dev,
 			"Using random MAC address: %pM\n", dev->dev_addr);
@@ -5907,11 +7018,27 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 		goto out_error;
 	}
 
+<<<<<<< HEAD
 	if (id->driver_data & DEV_HAS_VLAN)
 		nv_vlan_mode(dev, dev->features);
 
 	netif_carrier_off(dev);
 
+=======
+	netif_carrier_off(dev);
+
+	/* Some NICs freeze when TX pause is enabled while NIC is
+	 * down, and this stays across warm reboots. The sequence
+	 * below should be enough to recover from that state.
+	 */
+	nv_update_pause(dev, 0);
+	nv_start_tx(dev);
+	nv_stop_tx(dev);
+
+	if (id->driver_data & DEV_HAS_VLAN)
+		nv_vlan_mode(dev, dev->features);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(&pci_dev->dev, "ifname %s, PHY OUI 0x%x @ %d, addr %pM\n",
 		 dev->name, np->phy_oui, np->phyaddr, dev->dev_addr);
 
@@ -5919,7 +7046,12 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 		 dev->features & NETIF_F_HIGHDMA ? "highdma " : "",
 		 dev->features & (NETIF_F_IP_CSUM | NETIF_F_SG) ?
 			"csum " : "",
+<<<<<<< HEAD
 		 dev->features & (NETIF_F_HW_VLAN_RX | NETIF_F_HW_VLAN_TX) ?
+=======
+		 dev->features & (NETIF_F_HW_VLAN_CTAG_RX |
+				  NETIF_F_HW_VLAN_CTAG_TX) ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"vlan " : "",
 		 dev->features & (NETIF_F_LOOPBACK) ?
 			"loopback " : "",
@@ -5935,9 +7067,15 @@ static int __devinit nv_probe(struct pci_dev *pci_dev, const struct pci_device_i
 	return 0;
 
 out_error:
+<<<<<<< HEAD
 	if (phystate_orig)
 		writel(phystate|NVREG_ADAPTCTL_RUNNING, base + NvRegAdapterControl);
 	pci_set_drvdata(pci_dev, NULL);
+=======
+	nv_mgmt_release_sema(dev);
+	if (phystate_orig)
+		writel(phystate|NVREG_ADAPTCTL_RUNNING, base + NvRegAdapterControl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_freering:
 	free_rings(dev);
 out_unmap:
@@ -5947,6 +7085,11 @@ out_relreg:
 out_disable:
 	pci_disable_device(pci_dev);
 out_free:
+<<<<<<< HEAD
+=======
+	free_percpu(np->txrx_stats);
+out_alloc_percpu:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_netdev(dev);
 out:
 	return err;
@@ -5989,9 +7132,18 @@ static void nv_restore_mac_addr(struct pci_dev *pci_dev)
 	       base + NvRegTransmitPoll);
 }
 
+<<<<<<< HEAD
 static void __devexit nv_remove(struct pci_dev *pci_dev)
 {
 	struct net_device *dev = pci_get_drvdata(pci_dev);
+=======
+static void nv_remove(struct pci_dev *pci_dev)
+{
+	struct net_device *dev = pci_get_drvdata(pci_dev);
+	struct fe_priv *np = netdev_priv(dev);
+
+	free_percpu(np->txrx_stats);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unregister_netdev(dev);
 
@@ -6008,14 +7160,21 @@ static void __devexit nv_remove(struct pci_dev *pci_dev)
 	pci_release_regions(pci_dev);
 	pci_disable_device(pci_dev);
 	free_netdev(dev);
+<<<<<<< HEAD
 	pci_set_drvdata(pci_dev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM_SLEEP
 static int nv_suspend(struct device *device)
 {
+<<<<<<< HEAD
 	struct pci_dev *pdev = to_pci_dev(device);
 	struct net_device *dev = pci_get_drvdata(pdev);
+=======
+	struct net_device *dev = dev_get_drvdata(device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fe_priv *np = netdev_priv(dev);
 	u8 __iomem *base = get_hwbase(dev);
 	int i;
@@ -6097,7 +7256,11 @@ static void nv_shutdown(struct pci_dev *pdev)
 #define nv_shutdown NULL
 #endif /* CONFIG_PM */
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(pci_tbl) = {
+=======
+static const struct pci_device_id pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{	/* nForce Ethernet Controller */
 		PCI_DEVICE(0x10DE, 0x01C3),
 		.driver_data = DEV_NEED_TIMERIRQ|DEV_NEED_LINKTIMER,
@@ -6261,15 +7424,24 @@ static DEFINE_PCI_DEVICE_TABLE(pci_tbl) = {
 	{0,},
 };
 
+<<<<<<< HEAD
 static struct pci_driver driver = {
 	.name		= DRV_NAME,
 	.id_table	= pci_tbl,
 	.probe		= nv_probe,
 	.remove		= __devexit_p(nv_remove),
+=======
+static struct pci_driver forcedeth_pci_driver = {
+	.name		= DRV_NAME,
+	.id_table	= pci_tbl,
+	.probe		= nv_probe,
+	.remove		= nv_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown	= nv_shutdown,
 	.driver.pm	= NV_PM_OPS,
 };
 
+<<<<<<< HEAD
 static int __init init_nic(void)
 {
 	return pci_register_driver(&driver);
@@ -6280,6 +7452,8 @@ static void __exit exit_nic(void)
 	pci_unregister_driver(&driver);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(max_interrupt_work, int, 0);
 MODULE_PARM_DESC(max_interrupt_work, "forcedeth maximum events handled per interrupt");
 module_param(optimization_mode, int, 0);
@@ -6300,6 +7474,7 @@ module_param(debug_tx_timeout, bool, 0);
 MODULE_PARM_DESC(debug_tx_timeout,
 		 "Dump tx related registers and ring when tx_timeout happens");
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Manfred Spraul <manfred@colorfullife.com>");
 MODULE_DESCRIPTION("Reverse Engineered nForce ethernet driver");
 MODULE_LICENSE("GPL");
@@ -6308,3 +7483,10 @@ MODULE_DEVICE_TABLE(pci, pci_tbl);
 
 module_init(init_nic);
 module_exit(exit_nic);
+=======
+module_pci_driver(forcedeth_pci_driver);
+MODULE_AUTHOR("Manfred Spraul <manfred@colorfullife.com>");
+MODULE_DESCRIPTION("Reverse Engineered nForce ethernet driver");
+MODULE_LICENSE("GPL");
+MODULE_DEVICE_TABLE(pci, pci_tbl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

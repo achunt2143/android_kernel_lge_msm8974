@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * mv643xx.h - MV-643XX Internal registers definition file.
  *
  * Copyright 2002 Momentum Computer, Inc.
  * 	Author: Matthew Dharm <mdharm@momenco.com>
  * Copyright 2002 GALILEO TECHNOLOGY, LTD. 
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_MV643XX_H
 #define __ASM_MV643XX_H
@@ -922,6 +929,7 @@
 
 extern void mv64340_irq_init(unsigned int base);
 
+<<<<<<< HEAD
 /* MPSC Platform Device, Driver Data (Shared register regions) */
 #define	MPSC_SHARED_NAME		"mpsc_shared"
 
@@ -976,4 +984,6 @@ struct mv64x60_wdt_pdata {
 	int	bus_clk;	/* bus clock in MHz, default 133 */
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_MV643XX_H */

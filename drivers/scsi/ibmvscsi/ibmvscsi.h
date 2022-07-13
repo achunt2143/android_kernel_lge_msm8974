@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ------------------------------------------------------------
  * ibmvscsi.h
  * (C) Copyright IBM Corporation 1994, 2003
@@ -5,6 +9,7 @@
  *          Santiago Leon (santil@us.ibm.com)
  *          Dave Boutcher (sleddog@us.ibm.com)
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -20,6 +25,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
  * USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ------------------------------------------------------------
  * Emulation of a SCSI host adapter for Virtual I/O devices
  *
@@ -33,7 +40,11 @@
 #include <linux/list.h>
 #include <linux/completion.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include "viosrp.h"
+=======
+#include <scsi/viosrp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct scsi_cmnd;
 struct Scsi_Host;
@@ -48,6 +59,10 @@ struct Scsi_Host;
 #define IBMVSCSI_CMDS_PER_LUN_DEFAULT 16
 #define IBMVSCSI_MAX_SECTORS_DEFAULT 256 /* 32 * 8 = default max I/O 32 pages */
 #define IBMVSCSI_MAX_CMDS_PER_LUN 64
+<<<<<<< HEAD
+=======
+#define IBMVSCSI_MAX_LUN 32
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ------------------------------------------------------------
  * Data Structures
@@ -87,12 +102,28 @@ struct event_pool {
 	dma_addr_t iu_token;
 };
 
+<<<<<<< HEAD
 /* all driver data associated with a host adapter */
 struct ibmvscsi_host_data {
 	atomic_t request_limit;
 	int client_migrated;
 	int reset_crq;
 	int reenable_crq;
+=======
+enum ibmvscsi_host_action {
+	IBMVSCSI_HOST_ACTION_NONE = 0,
+	IBMVSCSI_HOST_ACTION_RESET,
+	IBMVSCSI_HOST_ACTION_REENABLE,
+	IBMVSCSI_HOST_ACTION_UNBLOCK,
+};
+
+/* all driver data associated with a host adapter */
+struct ibmvscsi_host_data {
+	struct list_head host_list;
+	atomic_t request_limit;
+	int client_migrated;
+	enum ibmvscsi_host_action action;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *dev;
 	struct event_pool pool;
 	struct crq_queue queue;
@@ -107,6 +138,7 @@ struct ibmvscsi_host_data {
 	dma_addr_t adapter_info_addr;
 };
 
+<<<<<<< HEAD
 /* routines for managing a command/response queue */
 void ibmvscsi_handle_crq(struct viosrp_crq *crq,
 			 struct ibmvscsi_host_data *hostdata);
@@ -129,4 +161,6 @@ struct ibmvscsi_ops {
 
 extern struct ibmvscsi_ops rpavscsi_ops;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* IBMVSCSI_H */

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   Driver for the Conexant Riptide Soundchip
  *
  *	Copyright (c) 2004 Peter Gruber <nokos@gmx.net>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
   History:
@@ -99,7 +106,11 @@
 #include <linux/firmware.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/info.h>
 #include <sound/control.h>
@@ -110,14 +121,21 @@
 #include <sound/opl3.h>
 #include <sound/initval.h>
 
+<<<<<<< HEAD
 #if defined(CONFIG_GAMEPORT) || (defined(MODULE) && defined(CONFIG_GAMEPORT_MODULE))
+=======
+#if IS_REACHABLE(CONFIG_GAMEPORT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SUPPORT_JOYSTICK 1
 #endif
 
 MODULE_AUTHOR("Peter Gruber <nokos@gmx.net>");
 MODULE_DESCRIPTION("riptide");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Conexant,Riptide}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_FIRMWARE("riptide.hex");
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;
@@ -137,12 +155,21 @@ MODULE_PARM_DESC(id, "ID string for Riptide soundcard.");
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable Riptide soundcard.");
 #ifdef SUPPORT_JOYSTICK
+<<<<<<< HEAD
 module_param_array(joystick_port, int, NULL, 0444);
 MODULE_PARM_DESC(joystick_port, "Joystick port # for Riptide soundcard.");
 #endif
 module_param_array(mpu_port, int, NULL, 0444);
 MODULE_PARM_DESC(mpu_port, "MPU401 port # for Riptide driver.");
 module_param_array(opl3_port, int, NULL, 0444);
+=======
+module_param_hw_array(joystick_port, int, ioport, NULL, 0444);
+MODULE_PARM_DESC(joystick_port, "Joystick port # for Riptide soundcard.");
+#endif
+module_param_hw_array(mpu_port, int, ioport, NULL, 0444);
+MODULE_PARM_DESC(mpu_port, "MPU401 port # for Riptide driver.");
+module_param_hw_array(opl3_port, int, ioport, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(opl3_port, "OPL3 port # for Riptide driver.");
 
 /*
@@ -375,9 +402,15 @@ enum RT_CHANNEL_IDS {
 enum { SB_CMD = 0, MODEM_CMD, I2S_CMD0, I2S_CMD1, FM_CMD, MAX_CMD };
 
 struct lbuspath {
+<<<<<<< HEAD
 	unsigned char *noconv;
 	unsigned char *stereo;
 	unsigned char *mono;
+=======
+	const unsigned char *noconv;
+	const unsigned char *stereo;
+	const unsigned char *mono;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct cmdport {
@@ -459,11 +492,15 @@ struct snd_riptide {
 	union firmware_version firmware;
 
 	spinlock_t lock;
+<<<<<<< HEAD
 	struct tasklet_struct riptide_tq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_info_entry *proc_entry;
 
 	unsigned long received_irqs;
 	unsigned long handled_irqs;
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	int in_suspend;
 #endif
@@ -474,11 +511,25 @@ struct sgd {			/* scatter gather desriptor */
 	u32 dwSegPtrPhys;
 	u32 dwSegLen;
 	u32 dwStat_Ctl;
+=======
+	int in_suspend;
+};
+
+struct sgd {			/* scatter gather desriptor */
+	__le32 dwNextLink;
+	__le32 dwSegPtrPhys;
+	__le32 dwSegLen;
+	__le32 dwStat_Ctl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct pcmhw {			/* pcm descriptor */
 	struct lbuspath paths;
+<<<<<<< HEAD
 	unsigned char *lbuspath;
+=======
+	const unsigned char *lbuspath;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char source;
 	unsigned char intdec[2];
 	unsigned char mixer;
@@ -508,7 +559,11 @@ static int riptide_reset(struct cmdif *cif, struct snd_riptide *chip);
 /*
  */
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_riptide_ids) = {
+=======
+static const struct pci_device_id snd_riptide_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(0x127a, 0x4310) },
 	{ PCI_DEVICE(0x127a, 0x4320) },
 	{ PCI_DEVICE(0x127a, 0x4330) },
@@ -517,7 +572,11 @@ static DEFINE_PCI_DEVICE_TABLE(snd_riptide_ids) = {
 };
 
 #ifdef SUPPORT_JOYSTICK
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_riptide_joystick_ids) = {
+=======
+static const struct pci_device_id snd_riptide_joystick_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(0x127a, 0x4312) },
 	{ PCI_DEVICE(0x127a, 0x4322) },
 	{ PCI_DEVICE(0x127a, 0x4332) },
@@ -531,7 +590,11 @@ MODULE_DEVICE_TABLE(pci, snd_riptide_ids);
 /*
  */
 
+<<<<<<< HEAD
 static unsigned char lbusin2out[E2SINK_MAX + 1][2] = {
+=======
+static const unsigned char lbusin2out[E2SINK_MAX + 1][2] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{NO_OUT, LS_NONE1}, {NO_OUT, LS_NONE2}, {NO_OUT, LS_NONE1}, {NO_OUT,
 								     LS_NONE2},
 	{NO_OUT, LS_NONE1}, {NO_OUT, LS_NONE2}, {NO_OUT, LS_NONE1}, {NO_OUT,
@@ -571,6 +634,7 @@ static unsigned char lbusin2out[E2SINK_MAX + 1][2] = {
 								     LS_NONE2},
 };
 
+<<<<<<< HEAD
 static unsigned char lbus_play_opl3[] = {
 	DIGITAL_MIXER_IN0 + FM_MIXER, 0xff
 };
@@ -628,6 +692,65 @@ static unsigned char play_sources[] = {
 	ARM2LBUS_FIFO4, ARM2LBUS_FIFO1, ARM2LBUS_FIFO2,
 };
 static struct lbuspath lbus_play_paths[] = {
+=======
+static const unsigned char lbus_play_opl3[] = {
+	DIGITAL_MIXER_IN0 + FM_MIXER, 0xff
+};
+static const unsigned char lbus_play_modem[] = {
+	DIGITAL_MIXER_IN0 + MODEM_MIXER, 0xff
+};
+static const unsigned char lbus_play_i2s[] = {
+	INTER0_IN + I2S_INTDEC, DIGITAL_MIXER_IN0 + I2S_MIXER, 0xff
+};
+static const unsigned char lbus_play_out[] = {
+	PDAC2ACLNK, 0xff
+};
+static const unsigned char lbus_play_outhp[] = {
+	HNDSPK2ACLNK, 0xff
+};
+static const unsigned char lbus_play_noconv1[] = {
+	DIGITAL_MIXER_IN0, 0xff
+};
+static const unsigned char lbus_play_stereo1[] = {
+	INTER0_IN, DIGITAL_MIXER_IN0, 0xff
+};
+static const unsigned char lbus_play_mono1[] = {
+	INTERM0_IN, DIGITAL_MIXER_IN0, 0xff
+};
+static const unsigned char lbus_play_noconv2[] = {
+	DIGITAL_MIXER_IN1, 0xff
+};
+static const unsigned char lbus_play_stereo2[] = {
+	INTER1_IN, DIGITAL_MIXER_IN1, 0xff
+};
+static const unsigned char lbus_play_mono2[] = {
+	INTERM1_IN, DIGITAL_MIXER_IN1, 0xff
+};
+static const unsigned char lbus_play_noconv3[] = {
+	DIGITAL_MIXER_IN2, 0xff
+};
+static const unsigned char lbus_play_stereo3[] = {
+	INTER2_IN, DIGITAL_MIXER_IN2, 0xff
+};
+static const unsigned char lbus_play_mono3[] = {
+	INTERM2_IN, DIGITAL_MIXER_IN2, 0xff
+};
+static const unsigned char lbus_rec_noconv1[] = {
+	LBUS2ARM_FIFO5, 0xff
+};
+static const unsigned char lbus_rec_stereo1[] = {
+	DECIM0_IN, LBUS2ARM_FIFO5, 0xff
+};
+static const unsigned char lbus_rec_mono1[] = {
+	DECIMM3_IN, LBUS2ARM_FIFO5, 0xff
+};
+
+static const unsigned char play_ids[] = { 4, 1, 2, };
+static const unsigned char play_sources[] = {
+	ARM2LBUS_FIFO4, ARM2LBUS_FIFO1, ARM2LBUS_FIFO2,
+};
+static const struct lbuspath lbus_play_paths[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	 .noconv = lbus_play_noconv1,
 	 .stereo = lbus_play_stereo1,
@@ -644,7 +767,11 @@ static struct lbuspath lbus_play_paths[] = {
 	 .mono = lbus_play_mono3,
 	 },
 };
+<<<<<<< HEAD
 static struct lbuspath lbus_rec_path = {
+=======
+static const struct lbuspath lbus_rec_path = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.noconv = lbus_rec_noconv1,
 	.stereo = lbus_rec_stereo1,
 	.mono = lbus_rec_mono1,
@@ -751,7 +878,11 @@ static int loadfirmware(struct cmdif *cif, const unsigned char *img,
 
 static void
 alloclbuspath(struct cmdif *cif, unsigned char source,
+<<<<<<< HEAD
 	      unsigned char *path, unsigned char *mixer, unsigned char *s)
+=======
+	      const unsigned char *path, unsigned char *mixer, unsigned char *s)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (*path != 0xff) {
 		unsigned char sink, type;
@@ -779,7 +910,11 @@ alloclbuspath(struct cmdif *cif, unsigned char source,
 			}
 		}
 		if (*path++ & SPLIT_PATH) {
+<<<<<<< HEAD
 			unsigned char *npath = path;
+=======
+			const unsigned char *npath = path;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			while (*npath != 0xff)
 				npath++;
@@ -789,7 +924,11 @@ alloclbuspath(struct cmdif *cif, unsigned char source,
 }
 
 static void
+<<<<<<< HEAD
 freelbuspath(struct cmdif *cif, unsigned char source, unsigned char *path)
+=======
+freelbuspath(struct cmdif *cif, unsigned char source, const unsigned char *path)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (*path != 0xff) {
 		unsigned char sink;
@@ -801,7 +940,11 @@ freelbuspath(struct cmdif *cif, unsigned char source, unsigned char *path)
 			source = lbusin2out[sink][0];
 		}
 		if (*path++ & SPLIT_PATH) {
+<<<<<<< HEAD
 			unsigned char *npath = path;
+=======
+			const unsigned char *npath = path;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			while (*npath != 0xff)
 				npath++;
@@ -941,7 +1084,11 @@ setmixer(struct cmdif *cif, short num, unsigned short rval, unsigned short lval)
 	union cmdret rptr = CMDRET_ZERO;
 	int i = 0;
 
+<<<<<<< HEAD
 	snd_printdd("sent mixer %d: 0x%d 0x%d\n", num, rval, lval);
+=======
+	snd_printdd("sent mixer %d: 0x%x 0x%x\n", num, rval, lval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		SEND_SDGV(cif, num, num, rval, lval);
 		SEND_RDGV(cif, num, num, &rptr);
@@ -1017,7 +1164,11 @@ getsamplerate(struct cmdif *cif, unsigned char *intdec, unsigned int *rate)
 static int
 setsampleformat(struct cmdif *cif,
 		unsigned char mixer, unsigned char id,
+<<<<<<< HEAD
 		unsigned char channels, unsigned char format)
+=======
+		unsigned char channels, snd_pcm_format_t format)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char w, ch, sig, order;
 
@@ -1080,6 +1231,7 @@ getmixer(struct cmdif *cif, short num, unsigned short *rval,
 		return -EIO;
 	*rval = rptr.retwords[0];
 	*lval = rptr.retwords[1];
+<<<<<<< HEAD
 	snd_printdd("got mixer %d: 0x%d 0x%d\n", num, *rval, *lval);
 	return 0;
 }
@@ -1087,6 +1239,15 @@ getmixer(struct cmdif *cif, short num, unsigned short *rval,
 static void riptide_handleirq(unsigned long dev_id)
 {
 	struct snd_riptide *chip = (void *)dev_id;
+=======
+	snd_printdd("got mixer %d: 0x%x 0x%x\n", num, *rval, *lval);
+	return 0;
+}
+
+static irqreturn_t riptide_handleirq(int irq, void *dev_id)
+{
+	struct snd_riptide *chip = dev_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cmdif *cif = chip->cif;
 	struct snd_pcm_substream *substream[PLAYBACK_SUBSTREAMS + 1];
 	struct snd_pcm_runtime *runtime;
@@ -1097,15 +1258,31 @@ static void riptide_handleirq(unsigned long dev_id)
 	unsigned int flag;
 
 	if (!cif)
+<<<<<<< HEAD
 		return;
+=======
+		return IRQ_HANDLED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < PLAYBACK_SUBSTREAMS; i++)
 		substream[i] = chip->playback_substream[i];
 	substream[i] = chip->capture_substream;
 	for (i = 0; i < PLAYBACK_SUBSTREAMS + 1; i++) {
+<<<<<<< HEAD
 		if (substream[i] &&
 		    (runtime = substream[i]->runtime) &&
 		    (data = runtime->private_data) && data->state != ST_STOP) {
+=======
+		if (!substream[i])
+			continue;
+		runtime = substream[i]->runtime;
+		if (!runtime)
+			continue;
+		data = runtime->private_data;
+		if (!data)
+			continue;
+		if (data->state != ST_STOP) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pos = 0;
 			for (j = 0; j < data->pages; j++) {
 				c = &data->sgdbuf[j];
@@ -1148,16 +1325,27 @@ static void riptide_handleirq(unsigned long dev_id)
 			}
 		}
 	}
+<<<<<<< HEAD
 }
 
 #ifdef CONFIG_PM
 static int riptide_suspend(struct pci_dev *pci, pm_message_t state)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+
+	return IRQ_HANDLED;
+}
+
+static int riptide_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_riptide *chip = card->private_data;
 
 	chip->in_suspend = 1;
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+<<<<<<< HEAD
 	snd_pcm_suspend_all(chip->pcm);
 	snd_ac97_suspend(chip->ac97);
 	pci_disable_device(pci);
@@ -1180,13 +1368,29 @@ static int riptide_resume(struct pci_dev *pci)
 		return -EIO;
 	}
 	pci_set_master(pci);
+=======
+	snd_ac97_suspend(chip->ac97);
+	return 0;
+}
+
+static int riptide_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct snd_riptide *chip = card->private_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_riptide_initialize(chip);
 	snd_ac97_resume(chip->ac97);
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	chip->in_suspend = 0;
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(riptide_pm, riptide_suspend, riptide_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int try_to_load_firmware(struct cmdif *cif, struct snd_riptide *chip)
 {
@@ -1322,7 +1526,11 @@ static int riptide_reset(struct cmdif *cif, struct snd_riptide *chip)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_riptide_playback = {
+=======
+static const struct snd_pcm_hardware snd_riptide_playback = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = (SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 		 SNDRV_PCM_INFO_BLOCK_TRANSFER |
 		 SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_MMAP_VALID),
@@ -1341,7 +1549,11 @@ static struct snd_pcm_hardware snd_riptide_playback = {
 	.periods_max = 64,
 	.fifo_size = 0,
 };
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_riptide_capture = {
+=======
+static const struct snd_pcm_hardware snd_riptide_capture = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = (SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 		 SNDRV_PCM_INFO_BLOCK_TRANSFER |
 		 SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_MMAP_VALID),
@@ -1463,7 +1675,11 @@ static int snd_riptide_prepare(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct pcmhw *data = get_pcmhwdev(substream);
 	struct cmdif *cif = chip->cif;
+<<<<<<< HEAD
 	unsigned char *lbuspath = NULL;
+=======
+	const unsigned char *lbuspath = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int rate, channels;
 	int err = 0;
 	snd_pcm_format_t format;
@@ -1503,7 +1719,11 @@ static int snd_riptide_prepare(struct snd_pcm_substream *substream)
 		f = PAGE_SIZE;
 		while ((size + (f >> 1) - 1) <= (f << 7) && (f << 1) > period)
 			f = f >> 1;
+<<<<<<< HEAD
 		pages = (size + f - 1) / f;
+=======
+		pages = DIV_ROUND_UP(size, f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data->size = size;
 		data->pages = pages;
 		snd_printdd
@@ -1571,17 +1791,28 @@ snd_riptide_hw_params(struct snd_pcm_substream *substream,
 		    (int)sgdlist->bytes);
 	if (sgdlist->area)
 		snd_dma_free_pages(sgdlist);
+<<<<<<< HEAD
 	if ((err = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV,
 				       snd_dma_pci_data(chip->pci),
 				       sizeof(struct sgd) * (DESC_MAX_MASK + 1),
 				       sgdlist)) < 0) {
+=======
+	err = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, &chip->pci->dev,
+				  sizeof(struct sgd) * (DESC_MAX_MASK + 1),
+				  sgdlist);
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk(KERN_ERR "Riptide: failed to alloc %d dma bytes\n",
 			   (int)sizeof(struct sgd) * (DESC_MAX_MASK + 1));
 		return err;
 	}
 	data->sgdbuf = (struct sgd *)sgdlist->area;
+<<<<<<< HEAD
 	return snd_pcm_lib_malloc_pages(substream,
 					params_buffer_bytes(hw_params));
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_riptide_hw_free(struct snd_pcm_substream *substream)
@@ -1603,7 +1834,11 @@ static int snd_riptide_hw_free(struct snd_pcm_substream *substream)
 			data->sgdlist.area = NULL;
 		}
 	}
+<<<<<<< HEAD
 	return snd_pcm_lib_free_pages(substream);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_riptide_playback_open(struct snd_pcm_substream *substream)
@@ -1676,6 +1911,7 @@ static int snd_riptide_capture_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_riptide_playback_ops = {
 	.open = snd_riptide_playback_open,
 	.close = snd_riptide_playback_close,
@@ -1695,21 +1931,48 @@ static struct snd_pcm_ops snd_riptide_capture_ops = {
 	.hw_free = snd_riptide_hw_free,
 	.prepare = snd_riptide_prepare,
 	.page = snd_pcm_sgbuf_ops_page,
+=======
+static const struct snd_pcm_ops snd_riptide_playback_ops = {
+	.open = snd_riptide_playback_open,
+	.close = snd_riptide_playback_close,
+	.hw_params = snd_riptide_hw_params,
+	.hw_free = snd_riptide_hw_free,
+	.prepare = snd_riptide_prepare,
+	.trigger = snd_riptide_trigger,
+	.pointer = snd_riptide_pointer,
+};
+static const struct snd_pcm_ops snd_riptide_capture_ops = {
+	.open = snd_riptide_capture_open,
+	.close = snd_riptide_capture_close,
+	.hw_params = snd_riptide_hw_params,
+	.hw_free = snd_riptide_hw_free,
+	.prepare = snd_riptide_prepare,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.trigger = snd_riptide_trigger,
 	.pointer = snd_riptide_pointer,
 };
 
+<<<<<<< HEAD
 static int __devinit
 snd_riptide_pcm(struct snd_riptide *chip, int device, struct snd_pcm **rpcm)
+=======
+static int snd_riptide_pcm(struct snd_riptide *chip, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 	if ((err =
 	     snd_pcm_new(chip->card, "RIPTIDE", device, PLAYBACK_SUBSTREAMS, 1,
 			 &pcm)) < 0)
+=======
+	err = snd_pcm_new(chip->card, "RIPTIDE", device, PLAYBACK_SUBSTREAMS, 1,
+			  &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK,
 			&snd_riptide_playback_ops);
@@ -1719,11 +1982,16 @@ snd_riptide_pcm(struct snd_riptide *chip, int device, struct snd_pcm **rpcm)
 	pcm->info_flags = 0;
 	strcpy(pcm->name, "RIPTIDE");
 	chip->pcm = pcm;
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV_SG,
 					      snd_dma_pci_data(chip->pci),
 					      64 * 1024, 128 * 1024);
 	if (rpcm)
 		*rpcm = pcm;
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV_SG,
+				       &chip->pci->dev, 64 * 1024, 128 * 1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1732,13 +2000,21 @@ snd_riptide_interrupt(int irq, void *dev_id)
 {
 	struct snd_riptide *chip = dev_id;
 	struct cmdif *cif = chip->cif;
+<<<<<<< HEAD
+=======
+	irqreturn_t ret = IRQ_HANDLED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cif) {
 		chip->received_irqs++;
 		if (IS_EOBIRQ(cif->hwport) || IS_EOSIRQ(cif->hwport) ||
 		    IS_EOCIRQ(cif->hwport)) {
 			chip->handled_irqs++;
+<<<<<<< HEAD
 			tasklet_schedule(&chip->riptide_tq);
+=======
+			ret = IRQ_WAKE_THREAD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (chip->rmidi && IS_MPUIRQ(cif->hwport)) {
 			chip->handled_irqs++;
@@ -1747,7 +2023,11 @@ snd_riptide_interrupt(int irq, void *dev_id)
 		}
 		SET_AIACK(cif->hwport);
 	}
+<<<<<<< HEAD
 	return IRQ_HANDLED;
+=======
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1798,14 +2078,24 @@ static int snd_riptide_initialize(struct snd_riptide *chip)
 
 	cif = chip->cif;
 	if (!cif) {
+<<<<<<< HEAD
 		if ((cif = kzalloc(sizeof(struct cmdif), GFP_KERNEL)) == NULL)
+=======
+		cif = kzalloc(sizeof(struct cmdif), GFP_KERNEL);
+		if (!cif)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		cif->hwport = (struct riptideport *)chip->port;
 		spin_lock_init(&cif->lock);
 		chip->cif = cif;
 	}
 	cif->is_reset = 0;
+<<<<<<< HEAD
 	if ((err = riptide_reset(cif, chip)) != 0)
+=======
+	err = riptide_reset(cif, chip);
+	if (err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	device_id = chip->device_id;
 	switch (device_id) {
@@ -1822,6 +2112,7 @@ static int snd_riptide_initialize(struct snd_riptide *chip)
 	return err;
 }
 
+<<<<<<< HEAD
 static int snd_riptide_free(struct snd_riptide *chip)
 {
 	struct cmdif *cif;
@@ -1830,11 +2121,21 @@ static int snd_riptide_free(struct snd_riptide *chip)
 		return 0;
 
 	if ((cif = chip->cif)) {
+=======
+static void snd_riptide_free(struct snd_card *card)
+{
+	struct snd_riptide *chip = card->private_data;
+	struct cmdif *cif;
+
+	cif = chip->cif;
+	if (cif) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SET_GRESET(cif->hwport);
 		udelay(100);
 		UNSET_GRESET(cif->hwport);
 		kfree(chip->cif);
 	}
+<<<<<<< HEAD
 	if (chip->irq >= 0)
 		free_irq(chip->irq, chip);
 	if (chip->fw_entry)
@@ -1867,6 +2168,21 @@ snd_riptide_create(struct snd_card *card, struct pci_dev *pci,
 		return err;
 	if (!(chip = kzalloc(sizeof(struct snd_riptide), GFP_KERNEL)))
 		return -ENOMEM;
+=======
+	release_firmware(chip->fw_entry);
+}
+
+static int
+snd_riptide_create(struct snd_card *card, struct pci_dev *pci)
+{
+	struct snd_riptide *chip = card->private_data;
+	struct riptideport *hwport;
+	int err;
+
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&chip->lock);
 	chip->card = card;
@@ -1877,6 +2193,7 @@ snd_riptide_create(struct snd_card *card, struct pci_dev *pci,
 	chip->received_irqs = 0;
 	chip->handled_irqs = 0;
 	chip->cif = NULL;
+<<<<<<< HEAD
 	tasklet_init(&chip->riptide_tq, riptide_handleirq, (unsigned long)chip);
 
 	if ((chip->res_port =
@@ -1913,6 +2230,32 @@ snd_riptide_create(struct snd_card *card, struct pci_dev *pci,
 	snd_card_set_dev(card, &pci->dev);
 
 	*rchip = chip;
+=======
+	card->private_free = snd_riptide_free;
+
+	err = pci_request_regions(pci, "RIPTIDE");
+	if (err < 0)
+		return err;
+	hwport = (struct riptideport *)chip->port;
+	UNSET_AIE(hwport);
+
+	if (devm_request_threaded_irq(&pci->dev, pci->irq,
+				      snd_riptide_interrupt,
+				      riptide_handleirq, IRQF_SHARED,
+				      KBUILD_MODNAME, chip)) {
+		snd_printk(KERN_ERR "Riptide: unable to grab IRQ %d\n",
+			   pci->irq);
+		return -EBUSY;
+	}
+	chip->irq = pci->irq;
+	card->sync_irq = chip->irq;
+	chip->device_id = pci->device;
+	pci_set_master(pci);
+	err = snd_riptide_initialize(chip);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1937,7 +2280,12 @@ snd_riptide_proc_read(struct snd_info_entry *entry,
 	for (i = 0; i < 64; i += 4)
 		snd_iprintf(buffer, "%c%02x: %08x",
 			    (i % 16) ? ' ' : '\n', i, inl(chip->port + i));
+<<<<<<< HEAD
 	if ((cif = chip->cif)) {
+=======
+	cif = chip->cif;
+	if (cif) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_iprintf(buffer,
 			    "\nVersion: ASIC: %d CODEC: %d AUXDSP: %d PROG: %d",
 			    chip->firmware.firmware.ASIC,
@@ -1956,10 +2304,18 @@ snd_riptide_proc_read(struct snd_info_entry *entry,
 	}
 	snd_iprintf(buffer, "\nOpen streams %d:\n", chip->openstreams);
 	for (i = 0; i < PLAYBACK_SUBSTREAMS; i++) {
+<<<<<<< HEAD
 		if (chip->playback_substream[i]
 		    && chip->playback_substream[i]->runtime
 		    && (data =
 			chip->playback_substream[i]->runtime->private_data)) {
+=======
+		if (!chip->playback_substream[i] ||
+		    !chip->playback_substream[i]->runtime)
+			continue;
+		data = chip->playback_substream[i]->runtime->private_data;
+		if (data) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_iprintf(buffer,
 				    "stream: %d mixer: %d source: %d (%d,%d)\n",
 				    data->id, data->mixer, data->source,
@@ -1968,6 +2324,7 @@ snd_riptide_proc_read(struct snd_info_entry *entry,
 				snd_iprintf(buffer, "rate: %d\n", rate);
 		}
 	}
+<<<<<<< HEAD
 	if (chip->capture_substream
 	    && chip->capture_substream->runtime
 	    && (data = chip->capture_substream->runtime->private_data)) {
@@ -1977,6 +2334,18 @@ snd_riptide_proc_read(struct snd_info_entry *entry,
 			    data->source, data->intdec[0], data->intdec[1]);
 		if (!(getsamplerate(cif, data->intdec, &rate)))
 			snd_iprintf(buffer, "rate: %d\n", rate);
+=======
+	if (chip->capture_substream && chip->capture_substream->runtime) {
+		data = chip->capture_substream->runtime->private_data;
+		if (data) {
+			snd_iprintf(buffer,
+				    "stream: %d mixer: %d source: %d (%d,%d)\n",
+				    data->id, data->mixer,
+				    data->source, data->intdec[0], data->intdec[1]);
+			if (!(getsamplerate(cif, data->intdec, &rate)))
+				snd_iprintf(buffer, "rate: %d\n", rate);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	snd_iprintf(buffer, "Paths:\n");
 	i = getpaths(cif, p);
@@ -1987,6 +2356,7 @@ snd_riptide_proc_read(struct snd_info_entry *entry,
 	snd_iprintf(buffer, "\n");
 }
 
+<<<<<<< HEAD
 static void __devinit snd_riptide_proc_init(struct snd_riptide *chip)
 {
 	struct snd_info_entry *entry;
@@ -1996,11 +2366,24 @@ static void __devinit snd_riptide_proc_init(struct snd_riptide *chip)
 }
 
 static int __devinit snd_riptide_mixer(struct snd_riptide *chip)
+=======
+static void snd_riptide_proc_init(struct snd_riptide *chip)
+{
+	snd_card_ro_proc_new(chip->card, "riptide", chip,
+			     snd_riptide_proc_read);
+}
+
+static int snd_riptide_mixer(struct snd_riptide *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_ac97_bus *pbus;
 	struct snd_ac97_template ac97;
 	int err = 0;
+<<<<<<< HEAD
 	static struct snd_ac97_bus_ops ops = {
+=======
+	static const struct snd_ac97_bus_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write = snd_riptide_codec_write,
 		.read = snd_riptide_codec_read,
 	};
@@ -2009,19 +2392,33 @@ static int __devinit snd_riptide_mixer(struct snd_riptide *chip)
 	ac97.private_data = chip;
 	ac97.scaps = AC97_SCAP_SKIP_MODEM;
 
+<<<<<<< HEAD
 	if ((err = snd_ac97_bus(chip->card, 0, &ops, chip, &pbus)) < 0)
+=======
+	err = snd_ac97_bus(chip->card, 0, &ops, chip, &pbus);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	chip->ac97_bus = pbus;
 	ac97.pci = chip->pci;
+<<<<<<< HEAD
 	if ((err = snd_ac97_mixer(pbus, &ac97, &chip->ac97)) < 0)
+=======
+	err = snd_ac97_mixer(pbus, &ac97, &chip->ac97);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return err;
 }
 
 #ifdef SUPPORT_JOYSTICK
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_riptide_joystick_probe(struct pci_dev *pci, const struct pci_device_id *id)
 {
 	static int dev;
@@ -2065,19 +2462,31 @@ inc_dev:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_riptide_joystick_remove(struct pci_dev *pci)
+=======
+static void snd_riptide_joystick_remove(struct pci_dev *pci)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gameport *gameport = pci_get_drvdata(pci);
 	if (gameport) {
 		release_region(gameport->io, 8);
 		gameport_unregister_port(gameport);
+<<<<<<< HEAD
 		pci_set_drvdata(pci, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #endif
 
+<<<<<<< HEAD
 static int __devinit
 snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+=======
+static int
+__snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -2092,6 +2501,7 @@ snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
 	if (err < 0)
 		return err;
@@ -2105,6 +2515,22 @@ snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 	err = snd_riptide_mixer(chip);
 	if (err < 0)
 		goto error;
+=======
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(*chip), &card);
+	if (err < 0)
+		return err;
+	chip = card->private_data;
+	err = snd_riptide_create(card, pci);
+	if (err < 0)
+		return err;
+	err = snd_riptide_pcm(chip, 0);
+	if (err < 0)
+		return err;
+	err = snd_riptide_mixer(chip);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = LEGACY_ENABLE_ALL;
 	if (opl3_port[dev])
@@ -2158,6 +2584,7 @@ snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 	strcpy(card->driver, "RIPTIDE");
 	strcpy(card->shortname, "Riptide");
 #ifdef SUPPORT_JOYSTICK
+<<<<<<< HEAD
 	snprintf(card->longname, sizeof(card->longname),
 		 "%s at 0x%lx, irq %i mpu 0x%x opl3 0x%x gameport 0x%x",
 		 card->shortname, chip->port, chip->irq, chip->mpuaddr,
@@ -2167,10 +2594,22 @@ snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
 		 "%s at 0x%lx, irq %i mpu 0x%x opl3 0x%x",
 		 card->shortname, chip->port, chip->irq, chip->mpuaddr,
 		 chip->opladdr);
+=======
+	scnprintf(card->longname, sizeof(card->longname),
+		  "%s at 0x%lx, irq %i mpu 0x%x opl3 0x%x gameport 0x%x",
+		  card->shortname, chip->port, chip->irq, chip->mpuaddr,
+		  chip->opladdr, chip->gameaddr);
+#else
+	scnprintf(card->longname, sizeof(card->longname),
+		  "%s at 0x%lx, irq %i mpu 0x%x opl3 0x%x",
+		  card->shortname, chip->port, chip->irq, chip->mpuaddr,
+		  chip->opladdr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	snd_riptide_proc_init(chip);
 	err = snd_card_register(card);
 	if (err < 0)
+<<<<<<< HEAD
 		goto error;
 	pci_set_drvdata(pci, card);
 	dev++;
@@ -2185,17 +2624,35 @@ static void __devexit snd_card_riptide_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
 	pci_set_drvdata(pci, NULL);
+=======
+		return err;
+	pci_set_drvdata(pci, card);
+	dev++;
+	return 0;
+}
+
+static int
+snd_card_riptide_probe(struct pci_dev *pci, const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_card_riptide_probe(pci, pci_id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct pci_driver driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = snd_riptide_ids,
 	.probe = snd_card_riptide_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(snd_card_riptide_remove),
 #ifdef CONFIG_PM
 	.suspend = riptide_suspend,
 	.resume = riptide_resume,
 #endif
+=======
+	.driver = {
+		.pm = &riptide_pm,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef SUPPORT_JOYSTICK
@@ -2203,7 +2660,11 @@ static struct pci_driver joystick_driver = {
 	.name = KBUILD_MODNAME "-joystick",
 	.id_table = snd_riptide_joystick_ids,
 	.probe = snd_riptide_joystick_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(snd_riptide_joystick_remove),
+=======
+	.remove = snd_riptide_joystick_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif
 

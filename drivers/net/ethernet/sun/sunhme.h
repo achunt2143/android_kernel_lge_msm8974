@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Id: sunhme.h,v 1.33 2001/08/03 06:23:04 davem Exp $
  * sunhme.h: Definitions for Sparc HME/BigMac 10/100baseT ethernet driver.
  *           Also known as the "Happy Meal".
@@ -13,9 +17,15 @@
 /* Happy Meal global registers. */
 #define GREG_SWRESET	0x000UL	/* Software Reset  */
 #define GREG_CFG	0x004UL	/* Config Register */
+<<<<<<< HEAD
 #define GREG_STAT	0x108UL	/* Status          */
 #define GREG_IMASK	0x10cUL	/* Interrupt Mask  */
 #define GREG_REG_SIZE	0x110UL
+=======
+#define GREG_STAT	0x100UL	/* Status          */
+#define GREG_IMASK	0x104UL	/* Interrupt Mask  */
+#define GREG_REG_SIZE	0x108UL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Global reset register. */
 #define GREG_RESET_ETX         0x01
@@ -302,7 +312,11 @@
  * Always write the address first before setting the ownership
  * bits to avoid races with the hardware scanning the ring.
  */
+<<<<<<< HEAD
 typedef u32 __bitwise__ hme32;
+=======
+typedef u32 __bitwise hme32;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct happy_meal_rxd {
 	hme32 rx_flags;
@@ -418,8 +432,11 @@ struct happy_meal {
 
 	int rx_new, tx_new, rx_old, tx_old;
 
+<<<<<<< HEAD
 	struct net_device_stats	  net_stats;      /* Statistical counters              */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_SBUS) && defined(CONFIG_PCI)
 	u32 (*read32)(void __iomem *);
 	void (*write32)(void __iomem *, u32);
@@ -432,6 +449,10 @@ struct happy_meal {
 
 	dma_addr_t                hblock_dvma;    /* DVMA visible address happy block  */
 	unsigned int              happy_flags;    /* Driver state flags                */
+<<<<<<< HEAD
+=======
+	int                       irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum happy_transceiver    tcvr_type;      /* Kind of transceiver in use        */
 	unsigned int              happy_bursts;   /* Get your mind out of the gutter   */
 	unsigned int              paddr;          /* PHY address for transceiver       */
@@ -462,22 +483,33 @@ struct happy_meal {
 };
 
 /* Here are the happy flags. */
+<<<<<<< HEAD
 #define HFLAG_POLL                0x00000001      /* We are doing MIF polling          */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HFLAG_FENABLE             0x00000002      /* The MII frame is enabled          */
 #define HFLAG_LANCE               0x00000004      /* We are using lance-mode           */
 #define HFLAG_RXENABLE            0x00000008      /* Receiver is enabled               */
 #define HFLAG_AUTO                0x00000010      /* Using auto-negotiation, 0 = force */
 #define HFLAG_FULL                0x00000020      /* Full duplex enable                */
 #define HFLAG_MACFULL             0x00000040      /* Using full duplex in the MAC      */
+<<<<<<< HEAD
 #define HFLAG_POLLENABLE          0x00000080      /* Actually try MIF polling          */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HFLAG_RXCV                0x00000100      /* XXX RXCV ENABLE                   */
 #define HFLAG_INIT                0x00000200      /* Init called at least once         */
 #define HFLAG_LINKUP              0x00000400      /* 1 = Link is up                    */
 #define HFLAG_PCI                 0x00000800      /* PCI based Happy Meal              */
 #define HFLAG_QUATTRO		  0x00001000      /* On QFE/Quattro card	       */
 
+<<<<<<< HEAD
 #define HFLAG_20_21  (HFLAG_POLLENABLE | HFLAG_FENABLE)
 #define HFLAG_NOT_A0 (HFLAG_POLLENABLE | HFLAG_FENABLE | HFLAG_LANCE | HFLAG_RXCV)
+=======
+#define HFLAG_20_21  HFLAG_FENABLE
+#define HFLAG_NOT_A0 (HFLAG_FENABLE | HFLAG_LANCE | HFLAG_RXCV)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Support for QFE/Quattro cards. */
 struct quattro {

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file contains low-level cache management functions
  * used for sleep and CPU speed changes on Apple machines.
@@ -6,28 +10,43 @@
  *
  *    Copyright (C) 2004 Paul Mackerras (paulus@samba.org) and
  *                       Benjamin Herrenschmidt (benh@kernel.crashing.org)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <asm/processor.h>
 #include <asm/ppc_asm.h>
 #include <asm/cputable.h>
+<<<<<<< HEAD
+=======
+#include <asm/feature-fixups.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Flush and disable all data caches (dL1, L2, L3). This is used
  * when going to sleep, when doing a PMU based cpufreq transition,
  * or when "offlining" a CPU on SMP machines. This code is over
  * paranoid, but I've had enough issues with various CPU revs and
+<<<<<<< HEAD
  * bugs that I decided it was worth beeing over cautious
  */
 
 _GLOBAL(flush_disable_caches)
 #ifndef CONFIG_6xx
+=======
+ * bugs that I decided it was worth being over cautious
+ */
+
+_GLOBAL(flush_disable_caches)
+#ifndef CONFIG_PPC_BOOK3S_32
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blr
 #else
 BEGIN_FTR_SECTION
@@ -52,7 +71,11 @@ flush_disable_75x:
 
 	/* Stop DST streams */
 BEGIN_FTR_SECTION
+<<<<<<< HEAD
 	DSSALL
+=======
+	PPC_DSSALL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sync
 END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
 
@@ -188,6 +211,10 @@ END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
 
 	mtlr	r10
 	blr
+<<<<<<< HEAD
+=======
+_ASM_NOKPROBE_SYMBOL(flush_disable_75x)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This code is for 745x processors */
 flush_disable_745x:
@@ -200,7 +227,11 @@ flush_disable_745x:
 	isync
 
 	/* Stop prefetch streams */
+<<<<<<< HEAD
 	DSSALL
+=======
+	PPC_DSSALL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sync
 
 	/* Disable L2 prefetching */
@@ -355,4 +386,9 @@ END_FTR_SECTION_IFSET(CPU_FTR_L3CR)
 	mtmsr	r11		/* restore DR and EE */
 	isync
 	blr
+<<<<<<< HEAD
 #endif	/* CONFIG_6xx */
+=======
+_ASM_NOKPROBE_SYMBOL(flush_disable_745x)
+#endif	/* CONFIG_PPC_BOOK3S_32 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2005-2006 by Texas Instruments
  *
@@ -5,12 +6,21 @@
  * can redistribute it and/or modify it under the terms of the GNU
  * General Public License version 2 as published by the Free Software
  * Foundation.
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (C) 2005-2006 by Texas Instruments
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MUSB_OMAP243X_H__
 #define __MUSB_OMAP243X_H__
 
+<<<<<<< HEAD
 #include <plat/usb.h>
+=======
+#include <linux/platform_data/usb-omap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * OMAP2430-specific definitions

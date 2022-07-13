@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * security/tomoyo/common.h
  *
@@ -9,6 +13,11 @@
 #ifndef _SECURITY_TOMOYO_COMMON_H
 #define _SECURITY_TOMOYO_COMMON_H
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ctype.h>
 #include <linux/string.h>
 #include <linux/mm.h>
@@ -28,6 +37,10 @@
 #include <linux/in.h>
 #include <linux/in6.h>
 #include <linux/un.h>
+<<<<<<< HEAD
+=======
+#include <linux/lsm_hooks.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/sock.h>
 #include <net/af_unix.h>
 #include <net/ip.h>
@@ -421,7 +434,11 @@ struct tomoyo_request_info {
 	struct tomoyo_obj_info *obj;
 	/*
 	 * For holding parameters specific to execve() request.
+<<<<<<< HEAD
 	 * NULL if not dealing do_execve().
+=======
+	 * NULL if not dealing execve().
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	struct tomoyo_execve *ee;
 	struct tomoyo_domain_info *domain;
@@ -561,8 +578,13 @@ struct tomoyo_address_group {
 
 /* Subset of "struct stat". Used by conditional ACL and audit logs. */
 struct tomoyo_mini_stat {
+<<<<<<< HEAD
 	uid_t uid;
 	gid_t gid;
+=======
+	kuid_t uid;
+	kgid_t gid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ino_t ino;
 	umode_t mode;
 	dev_t dev;
@@ -680,11 +702,20 @@ struct tomoyo_domain_info {
 	const struct tomoyo_path_info *domainname;
 	/* Namespace for this domain. Never NULL. */
 	struct tomoyo_policy_namespace *ns;
+<<<<<<< HEAD
 	u8 profile;        /* Profile number to use. */
 	u8 group;          /* Group number to use.   */
 	bool is_deleted;   /* Delete flag.           */
 	bool flags[TOMOYO_MAX_DOMAIN_INFO_FLAGS];
 	atomic_t users; /* Number of referring credentials. */
+=======
+	/* Group numbers to use.   */
+	unsigned long group[TOMOYO_MAX_ACL_GROUPS / BITS_PER_LONG];
+	u8 profile;        /* Profile number to use. */
+	bool is_deleted;   /* Delete flag.           */
+	bool flags[TOMOYO_MAX_DOMAIN_INFO_FLAGS];
+	atomic_t users; /* Number of referring tasks. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -786,9 +817,15 @@ struct tomoyo_acl_param {
  * interfaces.
  */
 struct tomoyo_io_buffer {
+<<<<<<< HEAD
 	void (*read) (struct tomoyo_io_buffer *);
 	int (*write) (struct tomoyo_io_buffer *);
 	unsigned int (*poll) (struct file *file, poll_table *wait);
+=======
+	void (*read)(struct tomoyo_io_buffer *head);
+	int (*write)(struct tomoyo_io_buffer *head);
+	__poll_t (*poll)(struct file *file, poll_table *wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Exclusive lock for this structure.   */
 	struct mutex io_sem;
 	char __user *read_user_buf;
@@ -860,7 +897,10 @@ struct tomoyo_aggregator {
 /* Structure for policy manager. */
 struct tomoyo_manager {
 	struct tomoyo_acl_head head;
+<<<<<<< HEAD
 	bool is_domain;  /* True if manager is a domainname. */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* A path to program or a domainname. */
 	const struct tomoyo_path_info *manager;
 };
@@ -906,12 +946,25 @@ struct tomoyo_policy_namespace {
 	struct list_head acl_group[TOMOYO_MAX_ACL_GROUPS];
 	/* List for connecting to tomoyo_namespace_list list. */
 	struct list_head namespace_list;
+<<<<<<< HEAD
 	/* Profile version. Currently only 20110903 is defined. */
+=======
+	/* Profile version. Currently only 20150505 is defined. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int profile_version;
 	/* Name of this namespace (e.g. "<kernel>", "</usr/sbin/httpd>" ). */
 	const char *name;
 };
 
+<<<<<<< HEAD
+=======
+/* Structure for "struct task_struct"->security. */
+struct tomoyo_task {
+	struct tomoyo_domain_info *domain_info;
+	struct tomoyo_domain_info *old_domain_info;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /********** Function prototypes. **********/
 
 bool tomoyo_address_matches_group(const bool is_ipv6, const __be32 *address,
@@ -944,12 +997,20 @@ bool tomoyo_str_starts(char **src, const char *find);
 char *tomoyo_encode(const char *str);
 char *tomoyo_encode2(const char *str, int str_len);
 char *tomoyo_init_log(struct tomoyo_request_info *r, int len, const char *fmt,
+<<<<<<< HEAD
 		      va_list args);
 char *tomoyo_read_token(struct tomoyo_acl_param *param);
 char *tomoyo_realpath_from_path(struct path *path);
 char *tomoyo_realpath_nofollow(const char *pathname);
 const char *tomoyo_get_exe(void);
 const char *tomoyo_yesno(const unsigned int value);
+=======
+		      va_list args) __printf(3, 0);
+char *tomoyo_read_token(struct tomoyo_acl_param *param);
+char *tomoyo_realpath_from_path(const struct path *path);
+char *tomoyo_realpath_nofollow(const char *pathname);
+const char *tomoyo_get_exe(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct tomoyo_path_info *tomoyo_compare_name_union
 (const struct tomoyo_path_info *name, const struct tomoyo_name_union *ptr);
 const struct tomoyo_path_info *tomoyo_get_domainname
@@ -958,8 +1019,13 @@ const struct tomoyo_path_info *tomoyo_get_name(const char *name);
 const struct tomoyo_path_info *tomoyo_path_matches_group
 (const struct tomoyo_path_info *pathname, const struct tomoyo_group *group);
 int tomoyo_check_open_permission(struct tomoyo_domain_info *domain,
+<<<<<<< HEAD
 				 struct path *path, const int flag);
 int tomoyo_close_control(struct tomoyo_io_buffer *head);
+=======
+				 const struct path *path, const int flag);
+void tomoyo_close_control(struct tomoyo_io_buffer *head);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int tomoyo_env_perm(struct tomoyo_request_info *r, const char *env);
 int tomoyo_execute_permission(struct tomoyo_request_info *r,
 			      const struct tomoyo_path_info *filename);
@@ -969,6 +1035,7 @@ int tomoyo_get_mode(const struct tomoyo_policy_namespace *ns, const u8 profile,
 int tomoyo_init_request_info(struct tomoyo_request_info *r,
 			     struct tomoyo_domain_info *domain,
 			     const u8 index);
+<<<<<<< HEAD
 int tomoyo_mkdev_perm(const u8 operation, struct path *path,
 		      const unsigned int mode, unsigned int dev);
 int tomoyo_mount_permission(const char *dev_name, struct path *path,
@@ -983,6 +1050,22 @@ int tomoyo_path_perm(const u8 operation, struct path *path,
 		     const char *target);
 unsigned int tomoyo_poll_control(struct file *file, poll_table *wait);
 unsigned int tomoyo_poll_log(struct file *file, poll_table *wait);
+=======
+int tomoyo_mkdev_perm(const u8 operation, const struct path *path,
+		      const unsigned int mode, unsigned int dev);
+int tomoyo_mount_permission(const char *dev_name, const struct path *path,
+			    const char *type, unsigned long flags,
+			    void *data_page);
+int tomoyo_open_control(const u8 type, struct file *file);
+int tomoyo_path2_perm(const u8 operation, const struct path *path1,
+		      const struct path *path2);
+int tomoyo_path_number_perm(const u8 operation, const struct path *path,
+			    unsigned long number);
+int tomoyo_path_perm(const u8 operation, const struct path *path,
+		     const char *target);
+__poll_t tomoyo_poll_control(struct file *file, poll_table *wait);
+__poll_t tomoyo_poll_log(struct file *file, poll_table *wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int tomoyo_socket_bind_permission(struct socket *sock, struct sockaddr *addr,
 				  int addr_len);
 int tomoyo_socket_connect_permission(struct socket *sock,
@@ -1020,6 +1103,10 @@ ssize_t tomoyo_write_control(struct tomoyo_io_buffer *head,
 struct tomoyo_condition *tomoyo_get_condition(struct tomoyo_acl_param *param);
 struct tomoyo_domain_info *tomoyo_assign_domain(const char *domainname,
 						const bool transit);
+<<<<<<< HEAD
+=======
+struct tomoyo_domain_info *tomoyo_domain(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct tomoyo_domain_info *tomoyo_find_domain(const char *domainname);
 struct tomoyo_group *tomoyo_get_group(struct tomoyo_acl_param *param,
 				      const u8 idx);
@@ -1027,17 +1114,27 @@ struct tomoyo_policy_namespace *tomoyo_assign_namespace
 (const char *domainname);
 struct tomoyo_profile *tomoyo_profile(const struct tomoyo_policy_namespace *ns,
 				      const u8 profile);
+<<<<<<< HEAD
 unsigned int tomoyo_check_flags(const struct tomoyo_domain_info *domain,
 				const u8 index);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 u8 tomoyo_parse_ulong(unsigned long *result, char **str);
 void *tomoyo_commit_ok(void *data, const unsigned int size);
 void __init tomoyo_load_builtin_policy(void);
 void __init tomoyo_mm_init(void);
 void tomoyo_check_acl(struct tomoyo_request_info *r,
+<<<<<<< HEAD
 		      bool (*check_entry) (struct tomoyo_request_info *,
 					   const struct tomoyo_acl_info *));
 void tomoyo_check_profile(void);
 void tomoyo_convert_time(time_t time, struct tomoyo_time *stamp);
+=======
+		      bool (*check_entry)(struct tomoyo_request_info *,
+					  const struct tomoyo_acl_info *));
+void tomoyo_check_profile(void);
+void tomoyo_convert_time(time64_t time, struct tomoyo_time *stamp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void tomoyo_del_condition(struct list_head *element);
 void tomoyo_fill_path_info(struct tomoyo_path_info *ptr);
 void tomoyo_get_attributes(struct tomoyo_obj_info *obj);
@@ -1057,11 +1154,19 @@ void tomoyo_warn_oom(const char *function);
 void tomoyo_write_log(struct tomoyo_request_info *r, const char *fmt, ...)
 	__printf(2, 3);
 void tomoyo_write_log2(struct tomoyo_request_info *r, int len, const char *fmt,
+<<<<<<< HEAD
 		       va_list args);
+=======
+		       va_list args) __printf(3, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /********** External variable definitions. **********/
 
 extern bool tomoyo_policy_loaded;
+<<<<<<< HEAD
+=======
+extern int tomoyo_enabled;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const char * const tomoyo_condition_keyword
 [TOMOYO_MAX_CONDITION_KEYWORD];
 extern const char * const tomoyo_dif[TOMOYO_MAX_DOMAIN_INFO_FLAGS];
@@ -1085,6 +1190,10 @@ extern struct tomoyo_domain_info tomoyo_kernel_domain;
 extern struct tomoyo_policy_namespace tomoyo_kernel_namespace;
 extern unsigned int tomoyo_memory_quota[TOMOYO_MAX_MEMORY_STAT];
 extern unsigned int tomoyo_memory_used[TOMOYO_MAX_MEMORY_STAT];
+<<<<<<< HEAD
+=======
+extern struct lsm_blob_sizes tomoyo_blob_sizes;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /********** Inlined functions. **********/
 
@@ -1121,6 +1230,10 @@ static inline void tomoyo_read_unlock(int idx)
 static inline pid_t tomoyo_sys_getppid(void)
 {
 	pid_t pid;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_lock();
 	pid = task_tgid_vnr(rcu_dereference(current->real_parent));
 	rcu_read_unlock();
@@ -1197,6 +1310,7 @@ static inline void tomoyo_put_group(struct tomoyo_group *group)
 }
 
 /**
+<<<<<<< HEAD
  * tomoyo_domain - Get "struct tomoyo_domain_info" for current thread.
  *
  * Returns pointer to "struct tomoyo_domain_info" for current thread.
@@ -1217,6 +1331,17 @@ static inline struct tomoyo_domain_info *tomoyo_real_domain(struct task_struct
 							    *task)
 {
 	return task_cred_xxx(task, security);
+=======
+ * tomoyo_task - Get "struct tomoyo_task" for specified thread.
+ *
+ * @task - Pointer to "struct task_struct".
+ *
+ * Returns pointer to "struct tomoyo_task" for specified thread.
+ */
+static inline struct tomoyo_task *tomoyo_task(struct task_struct *task)
+{
+	return task->security + tomoyo_blob_sizes.lbs_task;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1274,6 +1399,7 @@ static inline struct tomoyo_policy_namespace *tomoyo_current_namespace(void)
 	return tomoyo_domain()->ns;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_SLOB)
 
 /**
@@ -1318,6 +1444,8 @@ static inline int tomoyo_round2(size_t size)
 
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * list_for_each_cookie - iterate over a list with cookie.
  * @pos:        the &struct list_head to use as a loop cursor.

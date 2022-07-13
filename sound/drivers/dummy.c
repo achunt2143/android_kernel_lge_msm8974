@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Dummy soundcard
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -16,6 +17,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Dummy soundcard
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -39,7 +46,10 @@
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Dummy soundcard (/dev/null)");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{ALSA,Dummy soundcard}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_PCM_DEVICES		4
 #define MAX_PCM_SUBSTREAMS	128
@@ -57,6 +67,11 @@ MODULE_SUPPORTED_DEVICE("{{ALSA,Dummy soundcard}}");
 #define USE_CHANNELS_MAX 	2
 #define USE_PERIODS_MIN 	1
 #define USE_PERIODS_MAX 	1024
+<<<<<<< HEAD
+=======
+#define USE_MIXER_VOLUME_LEVEL_MIN	-50
+#define USE_MIXER_VOLUME_LEVEL_MAX	100
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -65,6 +80,11 @@ static char *model[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = NULL};
 static int pcm_devs[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 1};
 static int pcm_substreams[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 8};
 //static int midi_devs[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 2};
+<<<<<<< HEAD
+=======
+static int mixer_volume_level_min = USE_MIXER_VOLUME_LEVEL_MIN;
+static int mixer_volume_level_max = USE_MIXER_VOLUME_LEVEL_MAX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_HIGH_RES_TIMERS
 static bool hrtimer = 1;
 #endif
@@ -84,6 +104,13 @@ module_param_array(pcm_substreams, int, NULL, 0444);
 MODULE_PARM_DESC(pcm_substreams, "PCM substreams # (1-128) for dummy driver.");
 //module_param_array(midi_devs, int, NULL, 0444);
 //MODULE_PARM_DESC(midi_devs, "MIDI devices # (0-2) for dummy driver.");
+<<<<<<< HEAD
+=======
+module_param(mixer_volume_level_min, int, 0444);
+MODULE_PARM_DESC(mixer_volume_level_min, "Minimum mixer volume level for dummy driver. Default: -50");
+module_param(mixer_volume_level_max, int, 0444);
+MODULE_PARM_DESC(mixer_volume_level_max, "Maximum mixer volume level for dummy driver. Default: 100");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(fake_buffer, bool, 0444);
 MODULE_PARM_DESC(fake_buffer, "Fake buffer allocations.");
 #ifdef CONFIG_HIGH_RES_TIMERS
@@ -109,6 +136,12 @@ struct dummy_timer_ops {
 	snd_pcm_uframes_t (*pointer)(struct snd_pcm_substream *);
 };
 
+<<<<<<< HEAD
+=======
+#define get_dummy_ops(substream) \
+	(*(const struct dummy_timer_ops **)(substream)->runtime->private_data)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct dummy_model {
 	const char *name;
 	int (*playback_constraints)(struct snd_pcm_runtime *runtime);
@@ -128,13 +161,23 @@ struct dummy_model {
 
 struct snd_dummy {
 	struct snd_card *card;
+<<<<<<< HEAD
 	struct dummy_model *model;
+=======
+	const struct dummy_model *model;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_pcm *pcm;
 	struct snd_pcm_hardware pcm_hw;
 	spinlock_t mixer_lock;
 	int mixer_volume[MIXER_ADDR_LAST+1][2];
 	int capture_source[MIXER_ADDR_LAST+1][2];
+<<<<<<< HEAD
 	const struct dummy_timer_ops *timer_ops;
+=======
+	int iobox;
+	struct snd_kcontrol *cd_volume_ctl;
+	struct snd_kcontrol *cd_switch_ctl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -153,13 +196,21 @@ static int emu10k1_playback_constraints(struct snd_pcm_runtime *runtime)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct dummy_model model_emu10k1 = {
+=======
+static const struct dummy_model model_emu10k1 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "emu10k1",
 	.playback_constraints = emu10k1_playback_constraints,
 	.buffer_bytes_max = 128 * 1024,
 };
 
+<<<<<<< HEAD
 struct dummy_model model_rme9652 = {
+=======
+static const struct dummy_model model_rme9652 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "rme9652",
 	.buffer_bytes_max = 26 * 64 * 1024,
 	.formats = SNDRV_PCM_FMTBIT_S32_LE,
@@ -169,7 +220,11 @@ struct dummy_model model_rme9652 = {
 	.periods_max = 2,
 };
 
+<<<<<<< HEAD
 struct dummy_model model_ice1712 = {
+=======
+static const struct dummy_model model_ice1712 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "ice1712",
 	.buffer_bytes_max = 256 * 1024,
 	.formats = SNDRV_PCM_FMTBIT_S32_LE,
@@ -179,7 +234,11 @@ struct dummy_model model_ice1712 = {
 	.periods_max = 1024,
 };
 
+<<<<<<< HEAD
 struct dummy_model model_uda1341 = {
+=======
+static const struct dummy_model model_uda1341 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "uda1341",
 	.buffer_bytes_max = 16380,
 	.formats = SNDRV_PCM_FMTBIT_S16_LE,
@@ -189,7 +248,11 @@ struct dummy_model model_uda1341 = {
 	.periods_max = 255,
 };
 
+<<<<<<< HEAD
 struct dummy_model model_ac97 = {
+=======
+static const struct dummy_model model_ac97 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "ac97",
 	.formats = SNDRV_PCM_FMTBIT_S16_LE,
 	.channels_min = 2,
@@ -199,7 +262,11 @@ struct dummy_model model_ac97 = {
 	.rate_max = 48000,
 };
 
+<<<<<<< HEAD
 struct dummy_model model_ca0106 = {
+=======
+static const struct dummy_model model_ca0106 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "ca0106",
 	.formats = SNDRV_PCM_FMTBIT_S16_LE,
 	.buffer_bytes_max = ((65536-64)*8),
@@ -213,7 +280,11 @@ struct dummy_model model_ca0106 = {
 	.rate_max = 192000,
 };
 
+<<<<<<< HEAD
 struct dummy_model *dummy_models[] = {
+=======
+static const struct dummy_model *dummy_models[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&model_emu10k1,
 	&model_rme9652,
 	&model_ice1712,
@@ -228,6 +299,11 @@ struct dummy_model *dummy_models[] = {
  */
 
 struct dummy_systimer_pcm {
+<<<<<<< HEAD
+=======
+	/* ops must be the first item */
+	const struct dummy_timer_ops *timer_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t lock;
 	struct timer_list timer;
 	unsigned long base_time;
@@ -242,9 +318,14 @@ struct dummy_systimer_pcm {
 
 static void dummy_systimer_rearm(struct dummy_systimer_pcm *dpcm)
 {
+<<<<<<< HEAD
 	dpcm->timer.expires = jiffies +
 		(dpcm->frac_period_rest + dpcm->rate - 1) / dpcm->rate;
 	add_timer(&dpcm->timer);
+=======
+	mod_timer(&dpcm->timer, jiffies +
+		DIV_ROUND_UP(dpcm->frac_period_rest, dpcm->rate));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dummy_systimer_update(struct dummy_systimer_pcm *dpcm)
@@ -300,12 +381,21 @@ static int dummy_systimer_prepare(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void dummy_systimer_callback(unsigned long data)
 {
 	struct dummy_systimer_pcm *dpcm = (struct dummy_systimer_pcm *)data;
 	unsigned long flags;
 	int elapsed = 0;
 	
+=======
+static void dummy_systimer_callback(struct timer_list *t)
+{
+	struct dummy_systimer_pcm *dpcm = from_timer(dpcm, t, timer);
+	unsigned long flags;
+	int elapsed = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&dpcm->lock, flags);
 	dummy_systimer_update(dpcm);
 	dummy_systimer_rearm(dpcm);
@@ -337,9 +427,13 @@ static int dummy_systimer_create(struct snd_pcm_substream *substream)
 	if (!dpcm)
 		return -ENOMEM;
 	substream->runtime->private_data = dpcm;
+<<<<<<< HEAD
 	init_timer(&dpcm->timer);
 	dpcm->timer.data = (unsigned long) dpcm;
 	dpcm->timer.function = dummy_systimer_callback;
+=======
+	timer_setup(&dpcm->timer, dummy_systimer_callback, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&dpcm->lock);
 	dpcm->substream = substream;
 	return 0;
@@ -350,7 +444,11 @@ static void dummy_systimer_free(struct snd_pcm_substream *substream)
 	kfree(substream->runtime->private_data);
 }
 
+<<<<<<< HEAD
 static struct dummy_timer_ops dummy_systimer_ops = {
+=======
+static const struct dummy_timer_ops dummy_systimer_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.create =	dummy_systimer_create,
 	.free =		dummy_systimer_free,
 	.prepare =	dummy_systimer_prepare,
@@ -365,10 +463,16 @@ static struct dummy_timer_ops dummy_systimer_ops = {
  */
 
 struct dummy_hrtimer_pcm {
+<<<<<<< HEAD
+=======
+	/* ops must be the first item */
+	const struct dummy_timer_ops *timer_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ktime_t base_time;
 	ktime_t period_time;
 	atomic_t running;
 	struct hrtimer timer;
+<<<<<<< HEAD
 	struct tasklet_struct tasklet;
 	struct snd_pcm_substream *substream;
 };
@@ -380,6 +484,11 @@ static void dummy_hrtimer_pcm_elapsed(unsigned long priv)
 		snd_pcm_period_elapsed(dpcm->substream);
 }
 
+=======
+	struct snd_pcm_substream *substream;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum hrtimer_restart dummy_hrtimer_callback(struct hrtimer *timer)
 {
 	struct dummy_hrtimer_pcm *dpcm;
@@ -387,7 +496,18 @@ static enum hrtimer_restart dummy_hrtimer_callback(struct hrtimer *timer)
 	dpcm = container_of(timer, struct dummy_hrtimer_pcm, timer);
 	if (!atomic_read(&dpcm->running))
 		return HRTIMER_NORESTART;
+<<<<<<< HEAD
 	tasklet_schedule(&dpcm->tasklet);
+=======
+	/*
+	 * In cases of XRUN and draining, this calls .trigger to stop PCM
+	 * substream.
+	 */
+	snd_pcm_period_elapsed(dpcm->substream);
+	if (!atomic_read(&dpcm->running))
+		return HRTIMER_NORESTART;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hrtimer_forward_now(timer, dpcm->period_time);
 	return HRTIMER_RESTART;
 }
@@ -397,7 +517,11 @@ static int dummy_hrtimer_start(struct snd_pcm_substream *substream)
 	struct dummy_hrtimer_pcm *dpcm = substream->runtime->private_data;
 
 	dpcm->base_time = hrtimer_cb_get_time(&dpcm->timer);
+<<<<<<< HEAD
 	hrtimer_start(&dpcm->timer, dpcm->period_time, HRTIMER_MODE_REL);
+=======
+	hrtimer_start(&dpcm->timer, dpcm->period_time, HRTIMER_MODE_REL_SOFT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_set(&dpcm->running, 1);
 	return 0;
 }
@@ -407,13 +531,22 @@ static int dummy_hrtimer_stop(struct snd_pcm_substream *substream)
 	struct dummy_hrtimer_pcm *dpcm = substream->runtime->private_data;
 
 	atomic_set(&dpcm->running, 0);
+<<<<<<< HEAD
 	hrtimer_cancel(&dpcm->timer);
+=======
+	if (!hrtimer_callback_running(&dpcm->timer))
+		hrtimer_cancel(&dpcm->timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static inline void dummy_hrtimer_sync(struct dummy_hrtimer_pcm *dpcm)
 {
+<<<<<<< HEAD
 	tasklet_kill(&dpcm->tasklet);
+=======
+	hrtimer_cancel(&dpcm->timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static snd_pcm_uframes_t
@@ -458,12 +591,19 @@ static int dummy_hrtimer_create(struct snd_pcm_substream *substream)
 	if (!dpcm)
 		return -ENOMEM;
 	substream->runtime->private_data = dpcm;
+<<<<<<< HEAD
 	hrtimer_init(&dpcm->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	dpcm->timer.function = dummy_hrtimer_callback;
 	dpcm->substream = substream;
 	atomic_set(&dpcm->running, 0);
 	tasklet_init(&dpcm->tasklet, dummy_hrtimer_pcm_elapsed,
 		     (unsigned long)dpcm);
+=======
+	hrtimer_init(&dpcm->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_SOFT);
+	dpcm->timer.function = dummy_hrtimer_callback;
+	dpcm->substream = substream;
+	atomic_set(&dpcm->running, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -474,7 +614,11 @@ static void dummy_hrtimer_free(struct snd_pcm_substream *substream)
 	kfree(dpcm);
 }
 
+<<<<<<< HEAD
 static struct dummy_timer_ops dummy_hrtimer_ops = {
+=======
+static const struct dummy_timer_ops dummy_hrtimer_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.create =	dummy_hrtimer_create,
 	.free =		dummy_hrtimer_free,
 	.prepare =	dummy_hrtimer_prepare,
@@ -491,6 +635,7 @@ static struct dummy_timer_ops dummy_hrtimer_ops = {
 
 static int dummy_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 {
+<<<<<<< HEAD
 	struct snd_dummy *dummy = snd_pcm_substream_chip(substream);
 
 	switch (cmd) {
@@ -500,25 +645,45 @@ static int dummy_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	case SNDRV_PCM_TRIGGER_STOP:
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 		return dummy->timer_ops->stop(substream);
+=======
+	switch (cmd) {
+	case SNDRV_PCM_TRIGGER_START:
+	case SNDRV_PCM_TRIGGER_RESUME:
+		return get_dummy_ops(substream)->start(substream);
+	case SNDRV_PCM_TRIGGER_STOP:
+	case SNDRV_PCM_TRIGGER_SUSPEND:
+		return get_dummy_ops(substream)->stop(substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return -EINVAL;
 }
 
 static int dummy_pcm_prepare(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	struct snd_dummy *dummy = snd_pcm_substream_chip(substream);
 
 	return dummy->timer_ops->prepare(substream);
+=======
+	return get_dummy_ops(substream)->prepare(substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static snd_pcm_uframes_t dummy_pcm_pointer(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	struct snd_dummy *dummy = snd_pcm_substream_chip(substream);
 
 	return dummy->timer_ops->pointer(substream);
 }
 
 static struct snd_pcm_hardware dummy_pcm_hardware = {
+=======
+	return get_dummy_ops(substream)->pointer(substream);
+}
+
+static const struct snd_pcm_hardware dummy_pcm_hardware = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =			(SNDRV_PCM_INFO_MMAP |
 				 SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_RESUME |
@@ -545,6 +710,7 @@ static int dummy_pcm_hw_params(struct snd_pcm_substream *substream,
 		substream->runtime->dma_bytes = params_buffer_bytes(hw_params);
 		return 0;
 	}
+<<<<<<< HEAD
 	return snd_pcm_lib_malloc_pages(substream,
 					params_buffer_bytes(hw_params));
 }
@@ -554,11 +720,15 @@ static int dummy_pcm_hw_free(struct snd_pcm_substream *substream)
 	if (fake_buffer)
 		return 0;
 	return snd_pcm_lib_free_pages(substream);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dummy_pcm_open(struct snd_pcm_substream *substream)
 {
 	struct snd_dummy *dummy = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	struct dummy_model *model = dummy->model;
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int err;
@@ -572,6 +742,23 @@ static int dummy_pcm_open(struct snd_pcm_substream *substream)
 	err = dummy->timer_ops->create(substream);
 	if (err < 0)
 		return err;
+=======
+	const struct dummy_model *model = dummy->model;
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	const struct dummy_timer_ops *ops;
+	int err;
+
+	ops = &dummy_systimer_ops;
+#ifdef CONFIG_HIGH_RES_TIMERS
+	if (hrtimer)
+		ops = &dummy_hrtimer_ops;
+#endif
+
+	err = ops->create(substream);
+	if (err < 0)
+		return err;
+	get_dummy_ops(substream) = ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	runtime->hw = dummy->pcm_hw;
 	if (substream->pcm->device & 1) {
@@ -593,7 +780,11 @@ static int dummy_pcm_open(struct snd_pcm_substream *substream)
 			err = model->capture_constraints(substream->runtime);
 	}
 	if (err < 0) {
+<<<<<<< HEAD
 		dummy->timer_ops->free(substream);
+=======
+		get_dummy_ops(substream)->free(substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	return 0;
@@ -601,8 +792,12 @@ static int dummy_pcm_open(struct snd_pcm_substream *substream)
 
 static int dummy_pcm_close(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	struct snd_dummy *dummy = snd_pcm_substream_chip(substream);
 	dummy->timer_ops->free(substream);
+=======
+	get_dummy_ops(substream)->free(substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -641,15 +836,25 @@ static int alloc_fake_buffer(void)
 }
 
 static int dummy_pcm_copy(struct snd_pcm_substream *substream,
+<<<<<<< HEAD
 			  int channel, snd_pcm_uframes_t pos,
 			  void __user *dst, snd_pcm_uframes_t count)
+=======
+			  int channel, unsigned long pos,
+			  struct iov_iter *iter, unsigned long bytes)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0; /* do nothing */
 }
 
 static int dummy_pcm_silence(struct snd_pcm_substream *substream,
+<<<<<<< HEAD
 			     int channel, snd_pcm_uframes_t pos,
 			     snd_pcm_uframes_t count)
+=======
+			     int channel, unsigned long pos,
+			     unsigned long bytes)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0; /* do nothing */
 }
@@ -660,27 +865,42 @@ static struct page *dummy_pcm_page(struct snd_pcm_substream *substream,
 	return virt_to_page(dummy_page[substream->stream]); /* the same page */
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops dummy_pcm_ops = {
 	.open =		dummy_pcm_open,
 	.close =	dummy_pcm_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	dummy_pcm_hw_params,
 	.hw_free =	dummy_pcm_hw_free,
+=======
+static const struct snd_pcm_ops dummy_pcm_ops = {
+	.open =		dummy_pcm_open,
+	.close =	dummy_pcm_close,
+	.hw_params =	dummy_pcm_hw_params,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	dummy_pcm_prepare,
 	.trigger =	dummy_pcm_trigger,
 	.pointer =	dummy_pcm_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops dummy_pcm_ops_no_buf = {
 	.open =		dummy_pcm_open,
 	.close =	dummy_pcm_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	dummy_pcm_hw_params,
 	.hw_free =	dummy_pcm_hw_free,
+=======
+static const struct snd_pcm_ops dummy_pcm_ops_no_buf = {
+	.open =		dummy_pcm_open,
+	.close =	dummy_pcm_close,
+	.hw_params =	dummy_pcm_hw_params,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	dummy_pcm_prepare,
 	.trigger =	dummy_pcm_trigger,
 	.pointer =	dummy_pcm_pointer,
 	.copy =		dummy_pcm_copy,
+<<<<<<< HEAD
 	.silence =	dummy_pcm_silence,
 	.page =		dummy_pcm_page,
 };
@@ -690,6 +910,17 @@ static int __devinit snd_card_dummy_pcm(struct snd_dummy *dummy, int device,
 {
 	struct snd_pcm *pcm;
 	struct snd_pcm_ops *ops;
+=======
+	.fill_silence =	dummy_pcm_silence,
+	.page =		dummy_pcm_page,
+};
+
+static int snd_card_dummy_pcm(struct snd_dummy *dummy, int device,
+			      int substreams)
+{
+	struct snd_pcm *pcm;
+	const struct snd_pcm_ops *ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = snd_pcm_new(dummy->card, "Dummy PCM", device,
@@ -707,9 +938,15 @@ static int __devinit snd_card_dummy_pcm(struct snd_dummy *dummy, int device,
 	pcm->info_flags = 0;
 	strcpy(pcm->name, "Dummy PCM");
 	if (!fake_buffer) {
+<<<<<<< HEAD
 		snd_pcm_lib_preallocate_pages_for_all(pcm,
 			SNDRV_DMA_TYPE_CONTINUOUS,
 			snd_dma_continuous_data(GFP_KERNEL),
+=======
+		snd_pcm_set_managed_buffer_all(pcm,
+			SNDRV_DMA_TYPE_CONTINUOUS,
+			NULL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			0, 64*1024);
 	}
 	return 0;
@@ -733,11 +970,19 @@ static int snd_dummy_volume_info(struct snd_kcontrol *kcontrol,
 {
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = 2;
+<<<<<<< HEAD
 	uinfo->value.integer.min = -50;
 	uinfo->value.integer.max = 100;
 	return 0;
 }
  
+=======
+	uinfo->value.integer.min = mixer_volume_level_min;
+	uinfo->value.integer.max = mixer_volume_level_max;
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_dummy_volume_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
@@ -759,6 +1004,7 @@ static int snd_dummy_volume_put(struct snd_kcontrol *kcontrol,
 	int left, right;
 
 	left = ucontrol->value.integer.value[0];
+<<<<<<< HEAD
 	if (left < -50)
 		left = -50;
 	if (left > 100)
@@ -768,6 +1014,17 @@ static int snd_dummy_volume_put(struct snd_kcontrol *kcontrol,
 		right = -50;
 	if (right > 100)
 		right = 100;
+=======
+	if (left < mixer_volume_level_min)
+		left = mixer_volume_level_min;
+	if (left > mixer_volume_level_max)
+		left = mixer_volume_level_max;
+	right = ucontrol->value.integer.value[1];
+	if (right < mixer_volume_level_min)
+		right = mixer_volume_level_min;
+	if (right > mixer_volume_level_max)
+		right = mixer_volume_level_max;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&dummy->mixer_lock);
 	change = dummy->mixer_volume[addr][0] != left ||
 	         dummy->mixer_volume[addr][1] != right;
@@ -786,7 +1043,11 @@ static const DECLARE_TLV_DB_SCALE(db_scale_dummy, -4500, 30, 0);
   .private_value = addr }
 
 #define snd_dummy_capsrc_info	snd_ctl_boolean_stereo_info
+<<<<<<< HEAD
  
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_dummy_capsrc_get(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_value *ucontrol)
 {
@@ -817,7 +1078,62 @@ static int snd_dummy_capsrc_put(struct snd_kcontrol *kcontrol, struct snd_ctl_el
 	return change;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_dummy_controls[] = {
+=======
+static int snd_dummy_iobox_info(struct snd_kcontrol *kcontrol,
+				struct snd_ctl_elem_info *info)
+{
+	static const char *const names[] = { "None", "CD Player" };
+
+	return snd_ctl_enum_info(info, 1, 2, names);
+}
+
+static int snd_dummy_iobox_get(struct snd_kcontrol *kcontrol,
+			       struct snd_ctl_elem_value *value)
+{
+	struct snd_dummy *dummy = snd_kcontrol_chip(kcontrol);
+
+	value->value.enumerated.item[0] = dummy->iobox;
+	return 0;
+}
+
+static int snd_dummy_iobox_put(struct snd_kcontrol *kcontrol,
+			       struct snd_ctl_elem_value *value)
+{
+	struct snd_dummy *dummy = snd_kcontrol_chip(kcontrol);
+	int changed;
+
+	if (value->value.enumerated.item[0] > 1)
+		return -EINVAL;
+
+	changed = value->value.enumerated.item[0] != dummy->iobox;
+	if (changed) {
+		dummy->iobox = value->value.enumerated.item[0];
+
+		if (dummy->iobox) {
+			dummy->cd_volume_ctl->vd[0].access &=
+				~SNDRV_CTL_ELEM_ACCESS_INACTIVE;
+			dummy->cd_switch_ctl->vd[0].access &=
+				~SNDRV_CTL_ELEM_ACCESS_INACTIVE;
+		} else {
+			dummy->cd_volume_ctl->vd[0].access |=
+				SNDRV_CTL_ELEM_ACCESS_INACTIVE;
+			dummy->cd_switch_ctl->vd[0].access |=
+				SNDRV_CTL_ELEM_ACCESS_INACTIVE;
+		}
+
+		snd_ctl_notify(dummy->card, SNDRV_CTL_EVENT_MASK_INFO,
+			       &dummy->cd_volume_ctl->id);
+		snd_ctl_notify(dummy->card, SNDRV_CTL_EVENT_MASK_INFO,
+			       &dummy->cd_switch_ctl->id);
+	}
+
+	return changed;
+}
+
+static const struct snd_kcontrol_new snd_dummy_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 DUMMY_VOLUME("Master Volume", 0, MIXER_ADDR_MASTER),
 DUMMY_CAPSRC("Master Capture Switch", 0, MIXER_ADDR_MASTER),
 DUMMY_VOLUME("Synth Volume", 0, MIXER_ADDR_SYNTH),
@@ -827,37 +1143,80 @@ DUMMY_CAPSRC("Line Capture Switch", 0, MIXER_ADDR_LINE),
 DUMMY_VOLUME("Mic Volume", 0, MIXER_ADDR_MIC),
 DUMMY_CAPSRC("Mic Capture Switch", 0, MIXER_ADDR_MIC),
 DUMMY_VOLUME("CD Volume", 0, MIXER_ADDR_CD),
+<<<<<<< HEAD
 DUMMY_CAPSRC("CD Capture Switch", 0, MIXER_ADDR_CD)
 };
 
 static int __devinit snd_card_dummy_new_mixer(struct snd_dummy *dummy)
 {
 	struct snd_card *card = dummy->card;
+=======
+DUMMY_CAPSRC("CD Capture Switch", 0, MIXER_ADDR_CD),
+{
+	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
+	.name  = "External I/O Box",
+	.info  = snd_dummy_iobox_info,
+	.get   = snd_dummy_iobox_get,
+	.put   = snd_dummy_iobox_put,
+},
+};
+
+static int snd_card_dummy_new_mixer(struct snd_dummy *dummy)
+{
+	struct snd_card *card = dummy->card;
+	struct snd_kcontrol *kcontrol;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int idx;
 	int err;
 
 	spin_lock_init(&dummy->mixer_lock);
 	strcpy(card->mixername, "Dummy Mixer");
+<<<<<<< HEAD
 
 	for (idx = 0; idx < ARRAY_SIZE(snd_dummy_controls); idx++) {
 		err = snd_ctl_add(card, snd_ctl_new1(&snd_dummy_controls[idx], dummy));
 		if (err < 0)
 			return err;
+=======
+	dummy->iobox = 1;
+
+	for (idx = 0; idx < ARRAY_SIZE(snd_dummy_controls); idx++) {
+		kcontrol = snd_ctl_new1(&snd_dummy_controls[idx], dummy);
+		err = snd_ctl_add(card, kcontrol);
+		if (err < 0)
+			return err;
+		if (!strcmp(kcontrol->id.name, "CD Volume"))
+			dummy->cd_volume_ctl = kcontrol;
+		else if (!strcmp(kcontrol->id.name, "CD Capture Switch"))
+			dummy->cd_switch_ctl = kcontrol;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_SND_DEBUG) && defined(CONFIG_PROC_FS)
+=======
+#if defined(CONFIG_SND_DEBUG) && defined(CONFIG_SND_PROC_FS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * proc interface
  */
 static void print_formats(struct snd_dummy *dummy,
 			  struct snd_info_buffer *buffer)
 {
+<<<<<<< HEAD
 	int i;
 
 	for (i = 0; i < SNDRV_PCM_FORMAT_LAST; i++) {
 		if (dummy->pcm_hw.formats & (1ULL << i))
+=======
+	snd_pcm_format_t i;
+
+	pcm_for_each_format(i) {
+		if (dummy->pcm_hw.formats & pcm_format_to_bits(i))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_iprintf(buffer, " %s", snd_pcm_format_name(i));
 	}
 }
@@ -865,7 +1224,11 @@ static void print_formats(struct snd_dummy *dummy,
 static void print_rates(struct snd_dummy *dummy,
 			struct snd_info_buffer *buffer)
 {
+<<<<<<< HEAD
 	static int rates[] = {
+=======
+	static const int rates[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		5512, 8000, 11025, 16000, 22050, 32000, 44100, 48000,
 		64000, 88200, 96000, 176400, 192000,
 	};
@@ -897,7 +1260,11 @@ struct dummy_hw_field {
 	.offset = offsetof(struct snd_pcm_hardware, item), \
 	.size = sizeof(dummy_pcm_hardware.item) }
 
+<<<<<<< HEAD
 static struct dummy_hw_field fields[] = {
+=======
+static const struct dummy_hw_field fields[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FIELD_ENTRY(formats, "%#llx"),
 	FIELD_ENTRY(rates, "%#x"),
 	FIELD_ENTRY(rate_min, "%d"),
@@ -953,7 +1320,11 @@ static void dummy_proc_write(struct snd_info_entry *entry,
 		if (i >= ARRAY_SIZE(fields))
 			continue;
 		snd_info_get_str(item, ptr, sizeof(item));
+<<<<<<< HEAD
 		if (strict_strtoull(item, 0, &val))
+=======
+		if (kstrtoull(item, 0, &val))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		if (fields[i].size == sizeof(int))
 			*get_dummy_int_ptr(dummy, fields[i].offset) = val;
@@ -962,6 +1333,7 @@ static void dummy_proc_write(struct snd_info_entry *entry,
 	}
 }
 
+<<<<<<< HEAD
 static void __devinit dummy_proc_init(struct snd_dummy *chip)
 {
 	struct snd_info_entry *entry;
@@ -987,6 +1359,27 @@ static int __devinit snd_dummy_probe(struct platform_device *devptr)
 
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE,
 			      sizeof(struct snd_dummy), &card);
+=======
+static void dummy_proc_init(struct snd_dummy *chip)
+{
+	snd_card_rw_proc_new(chip->card, "dummy_pcm", chip,
+			     dummy_proc_read, dummy_proc_write);
+}
+#else
+#define dummy_proc_init(x)
+#endif /* CONFIG_SND_DEBUG && CONFIG_SND_PROC_FS */
+
+static int snd_dummy_probe(struct platform_device *devptr)
+{
+	struct snd_card *card;
+	struct snd_dummy *dummy;
+	const struct dummy_model *m = NULL, **mdl;
+	int idx, err;
+	int dev = devptr->id;
+
+	err = snd_devm_card_new(&devptr->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(struct snd_dummy), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 	dummy = card->private_data;
@@ -1007,7 +1400,11 @@ static int __devinit snd_dummy_probe(struct platform_device *devptr)
 			pcm_substreams[dev] = MAX_PCM_SUBSTREAMS;
 		err = snd_card_dummy_pcm(dummy, idx, pcm_substreams[dev]);
 		if (err < 0)
+<<<<<<< HEAD
 			goto __nodev;
+=======
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dummy->pcm_hw = dummy_pcm_hardware;
@@ -1036,15 +1433,28 @@ static int __devinit snd_dummy_probe(struct platform_device *devptr)
 			dummy->pcm_hw.channels_max = m->channels_max;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_dummy_new_mixer(dummy);
 	if (err < 0)
 		goto __nodev;
+=======
+	if (mixer_volume_level_min > mixer_volume_level_max) {
+		pr_warn("snd-dummy: Invalid mixer volume level: min=%d, max=%d. Fall back to default value.\n",
+		mixer_volume_level_min, mixer_volume_level_max);
+		mixer_volume_level_min = USE_MIXER_VOLUME_LEVEL_MIN;
+		mixer_volume_level_max = USE_MIXER_VOLUME_LEVEL_MAX;
+	}
+	err = snd_card_dummy_new_mixer(dummy);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strcpy(card->driver, "Dummy");
 	strcpy(card->shortname, "Dummy");
 	sprintf(card->longname, "Dummy %i", dev + 1);
 
 	dummy_proc_init(dummy);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &devptr->dev);
 
 	err = snd_card_register(card);
@@ -1078,16 +1488,42 @@ static int snd_dummy_suspend(struct platform_device *pdev, pm_message_t state)
 static int snd_dummy_resume(struct platform_device *pdev)
 {
 	struct snd_card *card = platform_get_drvdata(pdev);
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+	platform_set_drvdata(devptr, card);
+	return 0;
+}
+
+static int snd_dummy_suspend(struct device *pdev)
+{
+	struct snd_card *card = dev_get_drvdata(pdev);
+
+	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+	return 0;
+}
+
+static int snd_dummy_resume(struct device *pdev)
+{
+	struct snd_card *card = dev_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
+<<<<<<< HEAD
 #endif
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(snd_dummy_pm, snd_dummy_suspend, snd_dummy_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SND_DUMMY_DRIVER	"snd_dummy"
 
 static struct platform_driver snd_dummy_driver = {
 	.probe		= snd_dummy_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_dummy_remove),
 #ifdef CONFIG_PM
 	.suspend	= snd_dummy_suspend,
@@ -1095,6 +1531,11 @@ static struct platform_driver snd_dummy_driver = {
 #endif
 	.driver		= {
 		.name	= SND_DUMMY_DRIVER
+=======
+	.driver		= {
+		.name	= SND_DUMMY_DRIVER,
+		.pm	= &snd_dummy_pm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Inode based directory notification for Linux
  *
  * Copyright (C) 2005 John McCutchan
  */
+<<<<<<< HEAD
 
 #ifndef _LINUX_INOTIFY_H
 #define _LINUX_INOTIFY_H
@@ -73,6 +78,12 @@ struct inotify_event {
 #ifdef __KERNEL__
 #include <linux/sysctl.h>
 extern struct ctl_table inotify_table[]; /* for sysctl */
+=======
+#ifndef _LINUX_INOTIFY_H
+#define _LINUX_INOTIFY_H
+
+#include <uapi/linux/inotify.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ALL_INOTIFY_BITS (IN_ACCESS | IN_MODIFY | IN_ATTRIB | IN_CLOSE_WRITE | \
 			  IN_CLOSE_NOWRITE | IN_OPEN | IN_MOVED_FROM | \
@@ -80,8 +91,12 @@ extern struct ctl_table inotify_table[]; /* for sysctl */
 			  IN_DELETE_SELF | IN_MOVE_SELF | IN_UNMOUNT | \
 			  IN_Q_OVERFLOW | IN_IGNORED | IN_ONLYDIR | \
 			  IN_DONT_FOLLOW | IN_EXCL_UNLINK | IN_MASK_ADD | \
+<<<<<<< HEAD
 			  IN_ISDIR | IN_ONESHOT)
 
 #endif
+=======
+			  IN_MASK_CREATE | IN_ISDIR | IN_ONESHOT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* _LINUX_INOTIFY_H */

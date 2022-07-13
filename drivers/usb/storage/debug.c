@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 /* Driver for USB Mass Storage compliant devices
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Driver for USB Mass Storage compliant devices
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Debugging Functions Source Code File
  *
  * Current development and maintenance by:
@@ -23,6 +29,7 @@
  *
  * Also, for certain devices, the interrupt endpoint is used to convey
  * status of a command.
+<<<<<<< HEAD
  *
  * Please see http://www.one-eyed-alien.net/~mdharm/linux-usb for more
  * information about this driver.
@@ -43,10 +50,18 @@
  */
 
 #include <linux/cdrom.h>
+=======
+ */
+
+#include <linux/device.h>
+#include <linux/cdrom.h>
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_dbg.h>
 
+<<<<<<< HEAD
 #include "debug.h"
 #include "scsi.h"
 
@@ -55,6 +70,15 @@ void usb_stor_show_command(struct scsi_cmnd *srb)
 {
 	char *what = NULL;
 	int i;
+=======
+#include "usb.h"
+#include "debug.h"
+
+
+void usb_stor_show_command(const struct us_data *us, struct scsi_cmnd *srb)
+{
+	char *what = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (srb->cmnd[0]) {
 	case TEST_UNIT_READY: what = "TEST_UNIT_READY"; break;
@@ -149,6 +173,7 @@ void usb_stor_show_command(struct scsi_cmnd *srb)
 	case WRITE_LONG_2: what = "WRITE_LONG_2"; break;
 	default: what = "(unknown command)"; break;
 	}
+<<<<<<< HEAD
 	US_DEBUGP("Command %s (%d bytes)\n", what, srb->cmd_len);
 	US_DEBUGP("");
 	for (i = 0; i < srb->cmd_len && i < 16; i++)
@@ -165,13 +190,49 @@ void usb_stor_show_sense(
 
 	keystr = scsi_sense_key_string(key);
 	what = scsi_extd_sense_format(asc, ascq);
+=======
+	usb_stor_dbg(us, "Command %s (%d bytes)\n", what, srb->cmd_len);
+	usb_stor_dbg(us, "bytes: %*ph\n", min_t(int, srb->cmd_len, 16),
+		     (const unsigned char *)srb->cmnd);
+}
+
+void usb_stor_show_sense(const struct us_data *us,
+			 unsigned char key,
+			 unsigned char asc,
+			 unsigned char ascq)
+{
+	const char *what, *keystr, *fmt;
+
+	keystr = scsi_sense_key_string(key);
+	what = scsi_extd_sense_format(asc, ascq, &fmt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (keystr == NULL)
 		keystr = "(Unknown Key)";
 	if (what == NULL)
 		what = "(unknown ASC/ASCQ)";
 
+<<<<<<< HEAD
 	US_DEBUGP("%s: ", keystr);
 	US_DEBUGPX(what, ascq);
 	US_DEBUGPX("\n");
 }
+=======
+	if (fmt)
+		usb_stor_dbg(us, "%s: %s (%s%x)\n", keystr, what, fmt, ascq);
+	else
+		usb_stor_dbg(us, "%s: %s\n", keystr, what);
+}
+
+void usb_stor_dbg(const struct us_data *us, const char *fmt, ...)
+{
+	va_list args;
+
+	va_start(args, fmt);
+
+	dev_vprintk_emit(LOGLEVEL_DEBUG, &us->pusb_dev->dev, fmt, args);
+
+	va_end(args);
+}
+EXPORT_SYMBOL_GPL(usb_stor_dbg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

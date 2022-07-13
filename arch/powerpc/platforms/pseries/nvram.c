@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  c 2001 PPC 64 Team, IBM Corp
  *
@@ -9,6 +10,13 @@
  * /dev/nvram driver for PPC64
  *
  * This perhaps should live in drivers/char
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  c 2001 PPC 64 Team, IBM Corp
+ *
+ * /dev/nvram driver for PPC64
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -17,6 +25,7 @@
 #include <linux/init.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/kmsg_dump.h>
 #include <linux/ctype.h>
 #include <linux/zlib.h>
@@ -24,6 +33,13 @@
 #include <asm/nvram.h>
 #include <asm/rtas.h>
 #include <asm/prom.h>
+=======
+#include <linux/ctype.h>
+#include <linux/uaccess.h>
+#include <linux/of.h>
+#include <asm/nvram.h>
+#include <asm/rtas.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 
 /* Max bytes to read/write in one go */
@@ -34,6 +50,7 @@ static int nvram_fetch, nvram_store;
 static char nvram_buf[NVRW_CNT];	/* assume this is in the first 4GB */
 static DEFINE_SPINLOCK(nvram_lock);
 
+<<<<<<< HEAD
 struct err_log_info {
 	int error_type;
 	unsigned int seq_num;
@@ -113,6 +130,15 @@ static size_t oops_data_sz;
 #define WINDOW_BITS 12
 #define MEM_LEVEL 4
 static struct z_stream_s stream;
+=======
+/* See clobbering_unread_rtas_event() */
+#define NVRAM_RTAS_READ_TIMEOUT 5		/* seconds */
+static time64_t last_unread_rtas_event;		/* timestamp */
+
+#ifdef CONFIG_PSTORE
+time64_t last_rtas_event;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t pSeries_nvram_read(char *buf, size_t count, loff_t *index)
 {
@@ -205,6 +231,7 @@ static ssize_t pSeries_nvram_get_size(void)
 	return nvram_size ? nvram_size : -ENODEV;
 }
 
+<<<<<<< HEAD
 
 /* nvram_write_os_partition, nvram_write_error_log
  *
@@ -270,13 +297,30 @@ int nvram_write_os_partition(struct nvram_os_partition *part, char * buff,
 	return 0;
 }
 
+=======
+/* nvram_write_error_log
+ *
+ * We need to buffer the error logs into nvram to ensure that we have
+ * the failure information to decode.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int nvram_write_error_log(char * buff, int length,
                           unsigned int err_type, unsigned int error_log_cnt)
 {
 	int rc = nvram_write_os_partition(&rtas_log_partition, buff, length,
 						err_type, error_log_cnt);
+<<<<<<< HEAD
 	if (!rc)
 		last_unread_rtas_event = get_seconds();
+=======
+	if (!rc) {
+		last_unread_rtas_event = ktime_get_real_seconds();
+#ifdef CONFIG_PSTORE
+		last_rtas_event = ktime_get_real_seconds();
+#endif
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -284,6 +328,7 @@ int nvram_write_error_log(char * buff, int length,
  *
  * Reads nvram for error log for at most 'length'
  */
+<<<<<<< HEAD
 int nvram_read_error_log(char * buff, int length,
                          unsigned int * err_type, unsigned int * error_log_cnt)
 {
@@ -315,6 +360,13 @@ int nvram_read_error_log(char * buff, int length,
 	*err_type = info.error_type;
 
 	return 0;
+=======
+int nvram_read_error_log(char *buff, int length,
+			unsigned int *err_type, unsigned int *error_log_cnt)
+{
+	return nvram_read_partition(&rtas_log_partition, buff, length,
+						err_type, error_log_cnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This doesn't actually zero anything, but it sets the event_logged
@@ -341,6 +393,7 @@ int nvram_clear_error_log(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* pseries_nvram_init_os_partition
  *
  * This sets up a partition with an "OS" signature.
@@ -459,13 +512,36 @@ static void __init nvram_init_oops_partition(int rtas_partition_exists)
 		kfree(big_oops_buf);
 		kfree(stream.workspace);
 	}
+=======
+/*
+ * Are we using the ibm,rtas-log for oops/panic reports?  And if so,
+ * would logging this oops/panic overwrite an RTAS event that rtas_errd
+ * hasn't had a chance to read and process?  Return 1 if so, else 0.
+ *
+ * We assume that if rtas_errd hasn't read the RTAS event in
+ * NVRAM_RTAS_READ_TIMEOUT seconds, it's probably not going to.
+ */
+int clobbering_unread_rtas_event(void)
+{
+	return (oops_log_partition.index == rtas_log_partition.index
+		&& last_unread_rtas_event
+		&& ktime_get_real_seconds() - last_unread_rtas_event <=
+						NVRAM_RTAS_READ_TIMEOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init pseries_nvram_init_log_partitions(void)
 {
 	int rc;
 
+<<<<<<< HEAD
 	rc = pseries_nvram_init_os_partition(&rtas_log_partition);
+=======
+	/* Scan nvram for partitions */
+	nvram_scan_partitions();
+
+	rc = nvram_init_os_partition(&rtas_log_partition);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nvram_init_oops_partition(rc == 0);
 	return 0;
 }
@@ -474,7 +550,11 @@ machine_arch_initcall(pseries, pseries_nvram_init_log_partitions);
 int __init pSeries_nvram_init(void)
 {
 	struct device_node *nvram;
+<<<<<<< HEAD
 	const unsigned int *nbytes_p;
+=======
+	const __be32 *nbytes_p;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int proplen;
 
 	nvram = of_find_node_by_type(NULL, "nvram");
@@ -487,10 +567,17 @@ int __init pSeries_nvram_init(void)
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	nvram_size = *nbytes_p;
 
 	nvram_fetch = rtas_token("nvram-fetch");
 	nvram_store = rtas_token("nvram-store");
+=======
+	nvram_size = be32_to_cpup(nbytes_p);
+
+	nvram_fetch = rtas_function_token(RTAS_FN_NVRAM_FETCH);
+	nvram_store = rtas_function_token(RTAS_FN_NVRAM_STORE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO "PPC64 nvram contains %d bytes\n", nvram_size);
 	of_node_put(nvram);
 
@@ -501,6 +588,7 @@ int __init pSeries_nvram_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Are we using the ibm,rtas-log for oops/panic reports?  And if so,
  * would logging this oops/panic overwrite an RTAS event that rtas_errd
@@ -630,3 +718,5 @@ static void oops_to_nvram(struct kmsg_dumper *dumper,
 
 	spin_unlock_irqrestore(&lock, flags);
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

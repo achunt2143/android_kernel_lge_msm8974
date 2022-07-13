@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* $Date: 2006/04/28 19:20:06 $ $RCSfile: vsc7326.c,v $ $Revision: 1.19 $ */
 
 /* Driver for Vitesse VSC7326 (Schaumburg) MAC */
@@ -11,8 +15,11 @@
 /* 30 minutes for full statistics update */
 #define MAJOR_UPDATE_TICKS (1800 / STATS_TICK_SECS)
 
+<<<<<<< HEAD
 #define MAX_MTU 9600
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The egress WM value 0x01a01fff should be used only when the
  * interface is down (MAC port disabled). This is a workaround
  * for disabling the T2/MAC flow-control. When the interface is
@@ -380,7 +387,11 @@ static int mac_intr_clear(struct cmac *mac)
 }
 
 /* Expect MAC address to be in network byte order. */
+<<<<<<< HEAD
 static int mac_set_address(struct cmac* mac, u8 addr[6])
+=======
+static int mac_set_address(struct cmac* mac, const u8 addr[6])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 val;
 	int port = mac->instance->index;
@@ -452,9 +463,12 @@ static int mac_set_mtu(struct cmac *mac, int mtu)
 {
 	int port = mac->instance->index;
 
+<<<<<<< HEAD
 	if (mtu > MAX_MTU)
 		return -EINVAL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* max_len includes header and FCS */
 	vsc_write(mac->adapter, REG_MAX_LEN(port), mtu + 14 + 4);
 	return 0;
@@ -595,7 +609,11 @@ static void port_stats_update(struct cmac *mac)
 	} hw_stats[] = {
 
 #define HW_STAT(reg, stat_name) \
+<<<<<<< HEAD
 	{ reg, (&((struct cmac_statistics *)NULL)->stat_name) - (u64 *)NULL }
+=======
+	{ reg, offsetof(struct cmac_statistics, stat_name) / sizeof(u64) }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Rx stats */
 		HW_STAT(RxUnicast, RxUnicastFramesOK),
@@ -666,7 +684,11 @@ static void mac_destroy(struct cmac *mac)
 	kfree(mac);
 }
 
+<<<<<<< HEAD
 static struct cmac_ops vsc7326_ops = {
+=======
+static const struct cmac_ops vsc7326_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.destroy                  = mac_destroy,
 	.reset                    = mac_reset,
 	.interrupt_handler        = mac_intr_handler,

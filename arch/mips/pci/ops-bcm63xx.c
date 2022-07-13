@@ -9,7 +9,10 @@
 #include <linux/types.h>
 #include <linux/pci.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/io.h>
 
@@ -174,8 +177,13 @@ static int bcm63xx_pci_write(struct pci_bus *bus, unsigned int devfn,
 }
 
 struct pci_ops bcm63xx_pci_ops = {
+<<<<<<< HEAD
 	.read   = bcm63xx_pci_read,
 	.write  = bcm63xx_pci_write
+=======
+	.read	= bcm63xx_pci_read,
+	.write	= bcm63xx_pci_write
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_CARDBUS
@@ -370,8 +378,13 @@ static int bcm63xx_cb_read(struct pci_bus *bus, unsigned int devfn,
 		return fake_cb_bridge_read(where, size, val);
 	}
 
+<<<<<<< HEAD
 	/* a  configuration  cycle for  the  device  behind the  cardbus
 	 * bridge is  actually done as a  type 0 cycle  on the primary
+=======
+	/* a  configuration  cycle for	the  device  behind the	 cardbus
+	 * bridge is  actually done as a  type 0 cycle	on the primary
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * bus. This means that only  one device can be on the cardbus
 	 * bus */
 	if (fake_cb_bridge_regs.bus_assigned &&
@@ -403,8 +416,13 @@ static int bcm63xx_cb_write(struct pci_bus *bus, unsigned int devfn,
 }
 
 struct pci_ops bcm63xx_cb_ops = {
+<<<<<<< HEAD
 	.read   = bcm63xx_cb_read,
 	.write   = bcm63xx_cb_write,
+=======
+	.read	= bcm63xx_cb_read,
+	.write	 = bcm63xx_cb_write,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -414,18 +432,31 @@ struct pci_ops bcm63xx_cb_ops = {
 static void bcm63xx_fixup(struct pci_dev *dev)
 {
 	static int io_window = -1;
+<<<<<<< HEAD
 	int i, found, new_io_window;
+=======
+	int found, new_io_window;
+	struct resource *r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 val;
 
 	/* look for any io resource */
 	found = 0;
+<<<<<<< HEAD
 	for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
 		if (pci_resource_flags(dev, i) & IORESOURCE_IO) {
+=======
+	pci_dev_for_each_resource(dev, r) {
+		if (resource_type(r) == IORESOURCE_IO) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			found = 1;
 			break;
 		}
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!found)
 		return;
 
@@ -465,3 +496,68 @@ static void bcm63xx_fixup(struct pci_dev *dev)
 
 DECLARE_PCI_FIXUP_ENABLE(PCI_ANY_ID, PCI_ANY_ID, bcm63xx_fixup);
 #endif
+<<<<<<< HEAD
+=======
+
+static int bcm63xx_pcie_can_access(struct pci_bus *bus, int devfn)
+{
+	switch (bus->number) {
+	case PCIE_BUS_BRIDGE:
+		return PCI_SLOT(devfn) == 0;
+	case PCIE_BUS_DEVICE:
+		if (PCI_SLOT(devfn) == 0)
+			return bcm_pcie_readl(PCIE_DLSTATUS_REG)
+					& DLSTATUS_PHYLINKUP;
+		fallthrough;
+	default:
+		return false;
+	}
+}
+
+static int bcm63xx_pcie_read(struct pci_bus *bus, unsigned int devfn,
+			     int where, int size, u32 *val)
+{
+	u32 data;
+	u32 reg = where & ~3;
+
+	if (!bcm63xx_pcie_can_access(bus, devfn))
+		return PCIBIOS_DEVICE_NOT_FOUND;
+
+	if (bus->number == PCIE_BUS_DEVICE)
+		reg += PCIE_DEVICE_OFFSET;
+
+	data = bcm_pcie_readl(reg);
+
+	*val = postprocess_read(data, where, size);
+
+	return PCIBIOS_SUCCESSFUL;
+
+}
+
+static int bcm63xx_pcie_write(struct pci_bus *bus, unsigned int devfn,
+			      int where, int size, u32 val)
+{
+	u32 data;
+	u32 reg = where & ~3;
+
+	if (!bcm63xx_pcie_can_access(bus, devfn))
+		return PCIBIOS_DEVICE_NOT_FOUND;
+
+	if (bus->number == PCIE_BUS_DEVICE)
+		reg += PCIE_DEVICE_OFFSET;
+
+
+	data = bcm_pcie_readl(reg);
+
+	data = preprocess_write(data, val, where, size);
+	bcm_pcie_writel(data, reg);
+
+	return PCIBIOS_SUCCESSFUL;
+}
+
+
+struct pci_ops bcm63xx_pcie_ops = {
+	.read	= bcm63xx_pcie_read,
+	.write	= bcm63xx_pcie_write
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

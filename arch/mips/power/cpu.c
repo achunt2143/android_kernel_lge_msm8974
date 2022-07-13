@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Suspend support specific for mips.
  *
@@ -8,6 +9,18 @@
  *         Wu Zhangjin <wuzhangjin@gmail.com>
  */
 #include <asm/suspend.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Suspend support specific for mips.
+ *
+ * Copyright (C) 2009 Lemote Inc.
+ * Author: Hu Hongbing <huhb@lemote.com>
+ *	   Wu Zhangjin <wuzhangjin@gmail.com>
+ */
+#include <linux/suspend.h>
+#include <asm/sections.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/fpu.h>
 #include <asm/dsp.h>
 
@@ -20,8 +33,13 @@ void save_processor_state(void)
 
 	if (is_fpu_owner())
 		save_fp(current);
+<<<<<<< HEAD
 	if (cpu_has_dsp)
 		save_dsp(current);
+=======
+
+	save_dsp(current);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void restore_processor_state(void)
@@ -30,8 +48,13 @@ void restore_processor_state(void)
 
 	if (is_fpu_owner())
 		restore_fp(current);
+<<<<<<< HEAD
 	if (cpu_has_dsp)
 		restore_dsp(current);
+=======
+
+	restore_dsp(current);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int pfn_is_nosave(unsigned long pfn)

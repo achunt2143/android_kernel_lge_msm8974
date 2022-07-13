@@ -30,6 +30,10 @@
  * Helper functions for common, but complicated tasks.
  *
  */
+<<<<<<< HEAD
+=======
+#include <linux/bug.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/octeon/octeon.h>
 
 #include <asm/octeon/cvmx-config.h>
@@ -43,6 +47,7 @@
 #include <asm/octeon/cvmx-helper-board.h>
 
 #include <asm/octeon/cvmx-pip-defs.h>
+<<<<<<< HEAD
 #include <asm/octeon/cvmx-smix-defs.h>
 #include <asm/octeon/cvmx-asxx-defs.h>
 
@@ -72,6 +77,12 @@ static int interface_port_count[4] = { 0, 0, 0, 0 };
 /* Port last configured link info index by IPD/PKO port */
 static cvmx_helper_link_info_t
     port_link_info[CVMX_PIP_NUM_INPUT_PORTS];
+=======
+#include <asm/octeon/cvmx-asxx-defs.h>
+
+/* Port count per interface */
+static int interface_port_count[9];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Return the number of interfaces the chip has. Each interface
@@ -83,11 +94,30 @@ static cvmx_helper_link_info_t
  */
 int cvmx_helper_get_number_of_interfaces(void)
 {
+<<<<<<< HEAD
 	if (OCTEON_IS_MODEL(OCTEON_CN56XX) || OCTEON_IS_MODEL(OCTEON_CN52XX))
 		return 4;
 	else
 		return 3;
 }
+=======
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+		return 9;
+	if (OCTEON_IS_MODEL(OCTEON_CN66XX)) {
+		if (OCTEON_IS_MODEL(OCTEON_CN66XX_PASS1_0))
+			return 7;
+		else
+			return 8;
+	}
+	if (OCTEON_IS_MODEL(OCTEON_CN56XX) || OCTEON_IS_MODEL(OCTEON_CN52XX))
+		return 4;
+	if (OCTEON_IS_MODEL(OCTEON_CN7XXX))
+		return 5;
+	else
+		return 3;
+}
+EXPORT_SYMBOL_GPL(cvmx_helper_get_number_of_interfaces);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Return the number of ports on an interface. Depending on the
@@ -102,6 +132,198 @@ int cvmx_helper_ports_on_interface(int interface)
 {
 	return interface_port_count[interface];
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cvmx_helper_ports_on_interface);
+
+/**
+ * @INTERNAL
+ * Return interface mode for CN68xx.
+ */
+static cvmx_helper_interface_mode_t __cvmx_get_mode_cn68xx(int interface)
+{
+	union cvmx_mio_qlmx_cfg qlm_cfg;
+	switch (interface) {
+	case 0:
+		qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(0));
+		/* QLM is disabled when QLM SPD is 15. */
+		if (qlm_cfg.s.qlm_spd == 15)
+			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+
+		if (qlm_cfg.s.qlm_cfg == 2)
+			return CVMX_HELPER_INTERFACE_MODE_SGMII;
+		else if (qlm_cfg.s.qlm_cfg == 3)
+			return CVMX_HELPER_INTERFACE_MODE_XAUI;
+		else
+			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+	case 2:
+	case 3:
+	case 4:
+		qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(interface));
+		/* QLM is disabled when QLM SPD is 15. */
+		if (qlm_cfg.s.qlm_spd == 15)
+			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+
+		if (qlm_cfg.s.qlm_cfg == 2)
+			return CVMX_HELPER_INTERFACE_MODE_SGMII;
+		else if (qlm_cfg.s.qlm_cfg == 3)
+			return CVMX_HELPER_INTERFACE_MODE_XAUI;
+		else
+			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+	case 7:
+		qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(3));
+		/* QLM is disabled when QLM SPD is 15. */
+		if (qlm_cfg.s.qlm_spd == 15) {
+			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		} else if (qlm_cfg.s.qlm_cfg != 0) {
+			qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(1));
+			if (qlm_cfg.s.qlm_cfg != 0)
+				return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		}
+		return CVMX_HELPER_INTERFACE_MODE_NPI;
+	case 8:
+		return CVMX_HELPER_INTERFACE_MODE_LOOP;
+	default:
+		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+	}
+}
+
+/**
+ * @INTERNAL
+ * Return interface mode for an Octeon II
+ */
+static cvmx_helper_interface_mode_t __cvmx_get_mode_octeon2(int interface)
+{
+	union cvmx_gmxx_inf_mode mode;
+
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+		return __cvmx_get_mode_cn68xx(interface);
+
+	if (interface == 2)
+		return CVMX_HELPER_INTERFACE_MODE_NPI;
+
+	if (interface == 3)
+		return CVMX_HELPER_INTERFACE_MODE_LOOP;
+
+	/* Only present in CN63XX & CN66XX Octeon model */
+	if ((OCTEON_IS_MODEL(OCTEON_CN63XX) &&
+	     (interface == 4 || interface == 5)) ||
+	    (OCTEON_IS_MODEL(OCTEON_CN66XX) &&
+	     interface >= 4 && interface <= 7)) {
+		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+	}
+
+	if (OCTEON_IS_MODEL(OCTEON_CN66XX)) {
+		union cvmx_mio_qlmx_cfg mio_qlm_cfg;
+
+		/* QLM2 is SGMII0 and QLM1 is SGMII1 */
+		if (interface == 0)
+			mio_qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(2));
+		else if (interface == 1)
+			mio_qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(1));
+		else
+			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+
+		if (mio_qlm_cfg.s.qlm_spd == 15)
+			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+
+		if (mio_qlm_cfg.s.qlm_cfg == 9)
+			return CVMX_HELPER_INTERFACE_MODE_SGMII;
+		else if (mio_qlm_cfg.s.qlm_cfg == 11)
+			return CVMX_HELPER_INTERFACE_MODE_XAUI;
+		else
+			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+	} else if (OCTEON_IS_MODEL(OCTEON_CN61XX)) {
+		union cvmx_mio_qlmx_cfg qlm_cfg;
+
+		if (interface == 0) {
+			qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(2));
+			if (qlm_cfg.s.qlm_cfg == 2)
+				return CVMX_HELPER_INTERFACE_MODE_SGMII;
+			else if (qlm_cfg.s.qlm_cfg == 3)
+				return CVMX_HELPER_INTERFACE_MODE_XAUI;
+			else
+				return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		} else if (interface == 1) {
+			qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(0));
+			if (qlm_cfg.s.qlm_cfg == 2)
+				return CVMX_HELPER_INTERFACE_MODE_SGMII;
+			else if (qlm_cfg.s.qlm_cfg == 3)
+				return CVMX_HELPER_INTERFACE_MODE_XAUI;
+			else
+				return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		}
+	} else if (OCTEON_IS_MODEL(OCTEON_CNF71XX)) {
+		if (interface == 0) {
+			union cvmx_mio_qlmx_cfg qlm_cfg;
+			qlm_cfg.u64 = cvmx_read_csr(CVMX_MIO_QLMX_CFG(0));
+			if (qlm_cfg.s.qlm_cfg == 2)
+				return CVMX_HELPER_INTERFACE_MODE_SGMII;
+		}
+		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+	}
+
+	if (interface == 1 && OCTEON_IS_MODEL(OCTEON_CN63XX))
+		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+
+	mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(interface));
+
+	if (OCTEON_IS_MODEL(OCTEON_CN63XX)) {
+		switch (mode.cn61xx.mode) {
+		case 0:
+			return CVMX_HELPER_INTERFACE_MODE_SGMII;
+		case 1:
+			return CVMX_HELPER_INTERFACE_MODE_XAUI;
+		default:
+			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		}
+	} else {
+		if (!mode.s.en)
+			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+
+		if (mode.s.type)
+			return CVMX_HELPER_INTERFACE_MODE_GMII;
+		else
+			return CVMX_HELPER_INTERFACE_MODE_RGMII;
+	}
+}
+
+/**
+ * @INTERNAL
+ * Return interface mode for CN7XXX.
+ */
+static cvmx_helper_interface_mode_t __cvmx_get_mode_cn7xxx(int interface)
+{
+	union cvmx_gmxx_inf_mode mode;
+
+	mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(interface));
+
+	switch (interface) {
+	case 0:
+	case 1:
+		switch (mode.cn68xx.mode) {
+		case 0:
+			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+		case 1:
+		case 2:
+			return CVMX_HELPER_INTERFACE_MODE_SGMII;
+		case 3:
+			return CVMX_HELPER_INTERFACE_MODE_XAUI;
+		default:
+			return CVMX_HELPER_INTERFACE_MODE_SGMII;
+		}
+	case 2:
+		return CVMX_HELPER_INTERFACE_MODE_NPI;
+	case 3:
+		return CVMX_HELPER_INTERFACE_MODE_LOOP;
+	case 4:
+		/* TODO: Implement support for AGL (RGMII). */
+		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+	default:
+		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Get the operating mode of an interface. Depending on the Octeon
@@ -111,11 +333,38 @@ int cvmx_helper_ports_on_interface(int interface)
  * @interface: Interface to probe
  *
  * Returns Mode of the interface. Unknown or unsupported interfaces return
+<<<<<<< HEAD
  *         DISABLED.
+=======
+ *	   DISABLED.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 cvmx_helper_interface_mode_t cvmx_helper_interface_get_mode(int interface)
 {
 	union cvmx_gmxx_inf_mode mode;
+<<<<<<< HEAD
+=======
+
+	if (interface < 0 ||
+	    interface >= cvmx_helper_get_number_of_interfaces())
+		return CVMX_HELPER_INTERFACE_MODE_DISABLED;
+
+	/*
+	 * OCTEON III models
+	 */
+	if (OCTEON_IS_MODEL(OCTEON_CN7XXX))
+		return __cvmx_get_mode_cn7xxx(interface);
+
+	/*
+	 * Octeon II models
+	 */
+	if (OCTEON_IS_MODEL(OCTEON_CN6XXX) || OCTEON_IS_MODEL(OCTEON_CNF71XX))
+		return __cvmx_get_mode_octeon2(interface);
+
+	/*
+	 * Octeon and Octeon Plus models
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (interface == 2)
 		return CVMX_HELPER_INTERFACE_MODE_NPI;
 
@@ -127,6 +376,7 @@ cvmx_helper_interface_mode_t cvmx_helper_interface_get_mode(int interface)
 			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
 	}
 
+<<<<<<< HEAD
 	if (interface == 0
 	    && cvmx_sysinfo_get()->board_type == CVMX_BOARD_TYPE_CN3005_EVB_HS5
 	    && cvmx_sysinfo_get()->board_rev_major == 1) {
@@ -143,6 +393,8 @@ cvmx_helper_interface_mode_t cvmx_helper_interface_get_mode(int interface)
 		return CVMX_HELPER_INTERFACE_MODE_GMII;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Interface 1 is always disabled on CN31XX and CN30XX */
 	if ((interface == 1)
 	    && (OCTEON_IS_MODEL(OCTEON_CN31XX) || OCTEON_IS_MODEL(OCTEON_CN30XX)
@@ -153,7 +405,11 @@ cvmx_helper_interface_mode_t cvmx_helper_interface_get_mode(int interface)
 	mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(interface));
 
 	if (OCTEON_IS_MODEL(OCTEON_CN56XX) || OCTEON_IS_MODEL(OCTEON_CN52XX)) {
+<<<<<<< HEAD
 		switch (mode.cn56xx.mode) {
+=======
+		switch (mode.cn52xx.mode) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0:
 			return CVMX_HELPER_INTERFACE_MODE_DISABLED;
 		case 1:
@@ -179,6 +435,10 @@ cvmx_helper_interface_mode_t cvmx_helper_interface_get_mode(int interface)
 			return CVMX_HELPER_INTERFACE_MODE_RGMII;
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cvmx_helper_interface_get_mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Configure the IPD/PIP tagging and QoS options for a specific
@@ -187,7 +447,11 @@ cvmx_helper_interface_mode_t cvmx_helper_interface_get_mode(int interface)
  * the defines in executive-config.h.
  *
  * @ipd_port: Port to configure. This follows the IPD numbering, not the
+<<<<<<< HEAD
  *                 per interface numbering
+=======
+ *		   per interface numbering
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns Zero on success, negative on failure
  */
@@ -226,10 +490,13 @@ static int __cvmx_helper_port_setup_ipd(int ipd_port)
 
 	cvmx_pip_config_port(ipd_port, port_config, tag_config);
 
+<<<<<<< HEAD
 	/* Give the user a chance to override our setting for each port */
 	if (cvmx_override_ipd_port_setup)
 		cvmx_override_ipd_port_setup(ipd_port);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -453,6 +720,7 @@ static int __cvmx_helper_interface_setup_pko(int interface)
 	int ipd_port = cvmx_helper_get_ipd_port(interface, 0);
 	int num_ports = interface_port_count[interface];
 	while (num_ports--) {
+<<<<<<< HEAD
 		/*
 		 * Give the user a chance to override the per queue
 		 * priorities.
@@ -460,6 +728,8 @@ static int __cvmx_helper_interface_setup_pko(int interface)
 		if (cvmx_override_pko_queue_priority)
 			cvmx_override_pko_queue_priority(ipd_port, priorities);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cvmx_pko_config_port(ipd_port,
 				     cvmx_pko_get_base_queue_per_core(ipd_port,
 								      0),
@@ -487,6 +757,24 @@ static int __cvmx_helper_global_setup_pko(void)
 	fau_to.s.tout_val = 0xfff;
 	fau_to.s.tout_enb = 0;
 	cvmx_write_csr(CVMX_IOB_FAU_TIMEOUT, fau_to.u64);
+<<<<<<< HEAD
+=======
+
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
+		union cvmx_pko_reg_min_pkt min_pkt;
+
+		min_pkt.u64 = 0;
+		min_pkt.s.size1 = 59;
+		min_pkt.s.size2 = 59;
+		min_pkt.s.size3 = 59;
+		min_pkt.s.size4 = 59;
+		min_pkt.s.size5 = 59;
+		min_pkt.s.size6 = 59;
+		min_pkt.s.size7 = 59;
+		cvmx_write_csr(CVMX_PKO_REG_MIN_PKT, min_pkt.u64);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -583,7 +871,10 @@ static int __cvmx_helper_packet_hardware_enable(int interface)
 		result = __cvmx_helper_loop_enable(interface);
 		break;
 	}
+<<<<<<< HEAD
 	result |= __cvmx_helper_board_hardware_enable(interface);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -591,9 +882,15 @@ static int __cvmx_helper_packet_hardware_enable(int interface)
  * Function to adjust internal IPD pointer alignments
  *
  * Returns 0 on success
+<<<<<<< HEAD
  *         !0 on failure
  */
 int __cvmx_helper_errata_fix_ipd_ptr_alignment(void)
+=======
+ *	   !0 on failure
+ */
+static int __cvmx_helper_errata_fix_ipd_ptr_alignment(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #define FIX_IPD_FIRST_BUFF_PAYLOAD_BYTES \
      (CVMX_FPA_PACKET_POOL_SIZE-8-CVMX_HELPER_FIRST_MBUFF_SKIP)
@@ -604,15 +901,24 @@ int __cvmx_helper_errata_fix_ipd_ptr_alignment(void)
 #define INTERFACE(port) (port >> 4)
 #define INDEX(port) (port & 0xf)
 	uint64_t *p64;
+<<<<<<< HEAD
 	cvmx_pko_command_word0_t pko_command;
 	union cvmx_buf_ptr g_buffer, pkt_buffer;
 	cvmx_wqe_t *work;
+=======
+	union cvmx_pko_command_word0 pko_command;
+	union cvmx_buf_ptr g_buffer, pkt_buffer;
+	struct cvmx_wqe *work;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int size, num_segs = 0, wqe_pcnt, pkt_pcnt;
 	union cvmx_gmxx_prtx_cfg gmx_cfg;
 	int retry_cnt;
 	int retry_loop_cnt;
 	int i;
+<<<<<<< HEAD
 	cvmx_helper_link_info_t link_info;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Save values for restore at end */
 	uint64_t prtx_cfg =
@@ -638,7 +944,11 @@ int __cvmx_helper_errata_fix_ipd_ptr_alignment(void)
 	 */
 	cvmx_write_csr(CVMX_ASXX_RX_PRT_EN(INTERFACE(FIX_IPD_OUTPORT)), 0);
 
+<<<<<<< HEAD
 	cvmx_wait(100000000ull);
+=======
+	__delay(100000000ull);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (retry_loop_cnt = 0; retry_loop_cnt < 10; retry_loop_cnt++) {
 		retry_cnt = 100000;
@@ -773,6 +1083,7 @@ fix_ipd_exit:
 		       (INDEX(FIX_IPD_OUTPORT), INTERFACE(FIX_IPD_OUTPORT)),
 		       frame_max);
 	cvmx_write_csr(CVMX_ASXX_PRT_LOOP(INTERFACE(FIX_IPD_OUTPORT)), 0);
+<<<<<<< HEAD
 	/* Set link to down so autonegotiation will set it up again */
 	link_info.u64 = 0;
 	cvmx_helper_link_set(FIX_IPD_OUTPORT, link_info);
@@ -782,6 +1093,8 @@ fix_ipd_exit:
 	 * user applications.
 	 */
 	cvmx_helper_link_autoconf(FIX_IPD_OUTPORT);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	CVMX_SYNC;
 	if (num_segs)
@@ -825,6 +1138,10 @@ int cvmx_helper_ipd_and_packet_input_enable(void)
 		__cvmx_helper_errata_fix_ipd_ptr_alignment();
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cvmx_helper_ipd_and_packet_input_enable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Initialize the PIP, IPD, and PKO hardware to support
@@ -840,7 +1157,10 @@ int cvmx_helper_initialize_packet_io_global(void)
 	int result = 0;
 	int interface;
 	union cvmx_l2c_cfg l2c_cfg;
+<<<<<<< HEAD
 	union cvmx_smix_en smix_en;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const int num_interfaces = cvmx_helper_get_number_of_interfaces();
 
 	/*
@@ -860,6 +1180,7 @@ int cvmx_helper_initialize_packet_io_global(void)
 	l2c_cfg.s.rfb_arb_mode = 0;
 	cvmx_write_csr(CVMX_L2C_CFG, l2c_cfg.u64);
 
+<<<<<<< HEAD
 	/* Make sure SMI/MDIO is enabled so we can query PHYs */
 	smix_en.u64 = cvmx_read_csr(CVMX_SMIX_EN(0));
 	if (!smix_en.s.en) {
@@ -878,6 +1199,8 @@ int cvmx_helper_initialize_packet_io_global(void)
 		}
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cvmx_pko_initialize_global();
 	for (interface = 0; interface < num_interfaces; interface++) {
 		result |= cvmx_helper_interface_probe(interface);
@@ -903,6 +1226,7 @@ int cvmx_helper_initialize_packet_io_global(void)
 #endif
 	return result;
 }
+<<<<<<< HEAD
 
 /**
  * Does core local initialization for packet io
@@ -947,6 +1271,9 @@ cvmx_helper_link_info_t cvmx_helper_link_autoconf(int ipd_port)
 	 */
 	return port_link_info[ipd_port];
 }
+=======
+EXPORT_SYMBOL_GPL(cvmx_helper_initialize_packet_io_global);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Return the link state of an IPD/PKO port as returned by
@@ -958,9 +1285,15 @@ cvmx_helper_link_info_t cvmx_helper_link_autoconf(int ipd_port)
  *
  * Returns Link state
  */
+<<<<<<< HEAD
 cvmx_helper_link_info_t cvmx_helper_link_get(int ipd_port)
 {
 	cvmx_helper_link_info_t result;
+=======
+union cvmx_helper_link_info cvmx_helper_link_get(int ipd_port)
+{
+	union cvmx_helper_link_info result;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int interface = cvmx_helper_get_interface_num(ipd_port);
 	int index = cvmx_helper_get_interface_index_num(ipd_port);
 
@@ -983,6 +1316,10 @@ cvmx_helper_link_info_t cvmx_helper_link_get(int ipd_port)
 		if (index == 0)
 			result = __cvmx_helper_rgmii_link_get(ipd_port);
 		else {
+<<<<<<< HEAD
+=======
+			WARN_ONCE(1, "Using deprecated link status - please update your DT");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result.s.full_duplex = 1;
 			result.s.link_up = 1;
 			result.s.speed = 1000;
@@ -1005,20 +1342,32 @@ cvmx_helper_link_info_t cvmx_helper_link_get(int ipd_port)
 	}
 	return result;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(cvmx_helper_link_get);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Configure an IPD/PKO port for the specified link state. This
  * function does not influence auto negotiation at the PHY level.
  * The passed link state must always match the link state returned
+<<<<<<< HEAD
  * by cvmx_helper_link_get(). It is normally best to use
  * cvmx_helper_link_autoconf() instead.
+=======
+ * by cvmx_helper_link_get().
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @ipd_port:  IPD/PKO port to configure
  * @link_info: The new link state
  *
  * Returns Zero on success, negative on failure
  */
+<<<<<<< HEAD
 int cvmx_helper_link_set(int ipd_port, cvmx_helper_link_info_t link_info)
+=======
+int cvmx_helper_link_set(int ipd_port, union cvmx_helper_link_info link_info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result = -1;
 	int interface = cvmx_helper_get_interface_num(ipd_port);
@@ -1053,6 +1402,7 @@ int cvmx_helper_link_set(int ipd_port, cvmx_helper_link_info_t link_info)
 	case CVMX_HELPER_INTERFACE_MODE_LOOP:
 		break;
 	}
+<<<<<<< HEAD
 	/* Set the port_link_info here so that the link status is updated
 	   no matter how cvmx_helper_link_set is called. We don't change
 	   the value if link_set failed */
@@ -1114,3 +1464,8 @@ int cvmx_helper_configure_loopback(int ipd_port, int enable_internal,
 	}
 	return result;
 }
+=======
+	return result;
+}
+EXPORT_SYMBOL_GPL(cvmx_helper_link_set);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

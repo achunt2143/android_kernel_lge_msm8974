@@ -1,6 +1,23 @@
+<<<<<<< HEAD
 ifdef CONFIG_FUNCTION_TRACER
 CFLAGS_REMOVE_clock.o = -pg
 endif
+=======
+# SPDX-License-Identifier: GPL-2.0
+
+# The compilers are complaining about unused variables inside an if(0) scope
+# block. This is daft, shut them up.
+ccflags-y += $(call cc-disable-warning, unused-but-set-variable)
+
+# These files are disabled because they produce non-interesting flaky coverage
+# that is not a function of syscall inputs. E.g. involuntary context switches.
+KCOV_INSTRUMENT := n
+
+# Disable KCSAN to avoid excessive noise and performance degradation. To avoid
+# false positives ensure barriers implied by sched functions are instrumented.
+KCSAN_SANITIZE := n
+KCSAN_INSTRUMENT_BARRIERS := y
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ifneq ($(CONFIG_SCHED_OMIT_FRAME_POINTER),y)
 # According to Alan Modra <alan@linuxcare.com.au>, the -fno-omit-frame-pointer is
@@ -11,6 +28,7 @@ ifneq ($(CONFIG_SCHED_OMIT_FRAME_POINTER),y)
 CFLAGS_core.o := $(PROFILING) -fno-omit-frame-pointer
 endif
 
+<<<<<<< HEAD
 obj-y += core.o clock.o idle_task.o fair.o rt.o stop_task.o sched_avg.o
 obj-$(CONFIG_SMP) += cpupri.o
 obj-$(CONFIG_SCHED_AUTOGROUP) += auto_group.o
@@ -18,3 +36,15 @@ obj-$(CONFIG_SCHEDSTATS) += stats.o
 obj-$(CONFIG_SCHED_DEBUG) += debug.o
 
 
+=======
+#
+# Build efficiency:
+#
+# These compilation units have roughly the same size and complexity - so their
+# build parallelizes well and finishes roughly at once:
+#
+obj-y += core.o
+obj-y += fair.o
+obj-y += build_policy.o
+obj-y += build_utility.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

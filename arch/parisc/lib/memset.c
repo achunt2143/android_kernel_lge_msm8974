@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Copyright (C) 1991, 1997 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
 
@@ -18,6 +19,9 @@
 
 /* Slight modifications for pa-risc linux - Paul Bame <bame@debian.org> */
 
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <asm/string.h>
 

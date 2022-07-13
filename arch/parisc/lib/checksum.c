@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -8,11 +12,14 @@
  * Authors:	Ralf Baechle, <ralf@waldorf-gmbh.de>
  *		Lots of code moved from tcp.c and ip.c; see those files
  *		for more names.
+<<<<<<< HEAD
  *
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/types.h>
@@ -20,7 +27,11 @@
 #include <net/checksum.h>
 #include <asm/byteorder.h>
 #include <asm/string.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define addc(_t,_r)                     \
 	__asm__ __volatile__ (          \
@@ -110,6 +121,7 @@ __wsum csum_partial(const void *buff, int len, __wsum sum)
 }
 
 EXPORT_SYMBOL(csum_partial);
+<<<<<<< HEAD
 
 /*
  * copy while checksumming, otherwise like csum_partial
@@ -147,3 +159,5 @@ __wsum csum_partial_copy_from_user(const void __user *src,
 	return csum_partial(dst, len, sum);
 }
 EXPORT_SYMBOL(csum_partial_copy_from_user);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

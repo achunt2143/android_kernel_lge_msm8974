@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * include/asm-m68k/processor.h
  *
@@ -7,6 +11,7 @@
 #ifndef __ASM_M68K_PROCESSOR_H
 #define __ASM_M68K_PROCESSOR_H
 
+<<<<<<< HEAD
 /*
  * Default implementation of macro that returns current
  * instruction pointer ("program counter").
@@ -15,6 +20,10 @@
 
 #include <linux/thread_info.h>
 #include <asm/segment.h>
+=======
+#include <linux/preempt.h>
+#include <linux/thread_info.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/fpu.h>
 #include <asm/ptrace.h>
 
@@ -80,11 +89,44 @@ static inline void wrusp(unsigned long usp)
 #define TASK_UNMAPPED_BASE	0
 #endif
 
+<<<<<<< HEAD
+=======
+/* Address spaces (or Function Codes in Motorola lingo) */
+#define USER_DATA     1
+#define USER_PROGRAM  2
+#define SUPER_DATA    5
+#define SUPER_PROGRAM 6
+#define CPU_SPACE     7
+
+#ifdef CONFIG_CPU_HAS_ADDRESS_SPACES
+/*
+ * Set the SFC/DFC registers for special MM operations.  For most normal
+ * operation these remain set to USER_DATA for the uaccess routines.
+ */
+static inline void set_fc(unsigned long val)
+{
+	WARN_ON_ONCE(in_interrupt());
+
+	__asm__ __volatile__ ("movec %0,%/sfc\n\t"
+			      "movec %0,%/dfc\n\t"
+			      : /* no outputs */ : "r" (val) : "memory");
+}
+#else
+static inline void set_fc(unsigned long val)
+{
+}
+#endif /* CONFIG_CPU_HAS_ADDRESS_SPACES */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct thread_struct {
 	unsigned long  ksp;		/* kernel stack pointer */
 	unsigned long  usp;		/* user stack pointer */
 	unsigned short sr;		/* saved status register */
+<<<<<<< HEAD
 	unsigned short fs;		/* saved fs (sfc, dfc) */
+=======
+	unsigned short fc;		/* saved fc (sfc, dfc) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long  crp[2];		/* cpu root pointer */
 	unsigned long  esp0;		/* points to SR of stack frame */
 	unsigned long  faddr;		/* info about last fault */
@@ -97,10 +139,26 @@ struct thread_struct {
 #define INIT_THREAD  {							\
 	.ksp	= sizeof(init_stack) + (unsigned long) init_stack,	\
 	.sr	= PS_S,							\
+<<<<<<< HEAD
 	.fs	= __KERNEL_DS,						\
 }
 
 #ifdef CONFIG_MMU
+=======
+	.fc	= USER_DATA,						\
+}
+
+/*
+ * ColdFire stack format sbould be 0x4 for an aligned usp (will always be
+ * true on thread creation). We need to set this explicitly.
+ */
+#ifdef CONFIG_COLDFIRE
+#define setframeformat(_regs)	do { (_regs)->format = 0x4; } while(0)
+#else
+#define setframeformat(_regs)	do { } while (0)
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Do necessary setup to start up a newly executed thread.
  */
@@ -109,6 +167,7 @@ static inline void start_thread(struct pt_regs * regs, unsigned long pc,
 {
 	regs->pc = pc;
 	regs->sr &= ~0x2000;
+<<<<<<< HEAD
 	wrusp(usp);
 }
 
@@ -168,6 +227,17 @@ static inline void exit_thread(void)
 extern unsigned long thread_saved_pc(struct task_struct *tsk);
 
 unsigned long get_wchan(struct task_struct *p);
+=======
+	setframeformat(regs);
+	wrusp(usp);
+}
+
+/* Forward declaration, a strange C thing */
+struct task_struct;
+
+unsigned long __get_wchan(struct task_struct *p);
+void show_registers(struct pt_regs *regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	KSTK_EIP(tsk)	\
     ({			\

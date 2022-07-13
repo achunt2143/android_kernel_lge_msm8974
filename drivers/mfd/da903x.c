@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Base driver for Dialog Semiconductor DA9030/DA9034
  *
  * Copyright (C) 2008 Compulab, Ltd.
+<<<<<<< HEAD
  * 	Mike Rapoport <mike@compulab.co.il>
  *
  * Copyright (C) 2006-2008 Marvell International Ltd.
@@ -10,6 +15,12 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+ *	Mike Rapoport <mike@compulab.co.il>
+ *
+ * Copyright (C) 2006-2008 Marvell International Ltd.
+ *	Eric Miao <eric.miao@marvell.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -60,7 +71,11 @@ struct da903x_chip_ops {
 struct da903x_chip {
 	struct i2c_client	*client;
 	struct device		*dev;
+<<<<<<< HEAD
 	struct da903x_chip_ops	*ops;
+=======
+	const struct da903x_chip_ops *ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int			type;
 	uint32_t		events_mask;
@@ -246,7 +261,11 @@ int da903x_query_status(struct device *dev, unsigned int sbits)
 }
 EXPORT_SYMBOL(da903x_query_status);
 
+<<<<<<< HEAD
 static int __devinit da9030_init_chip(struct da903x_chip *chip)
+=======
+static int da9030_init_chip(struct da903x_chip *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint8_t chip_id;
 	int err;
@@ -424,7 +443,11 @@ static irqreturn_t da903x_irq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static struct da903x_chip_ops da903x_ops[] = {
+=======
+static const struct da903x_chip_ops da903x_ops[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[0] = {
 		.init_chip	= da9030_init_chip,
 		.unmask_events	= da9030_unmask_events,
@@ -459,7 +482,11 @@ static int da903x_remove_subdevs(struct da903x_chip *chip)
 	return device_for_each_child(chip->dev, NULL, __remove_subdev);
 }
 
+<<<<<<< HEAD
 static int __devinit da903x_add_subdevs(struct da903x_chip *chip,
+=======
+static int da903x_add_subdevs(struct da903x_chip *chip,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct da903x_platform_data *pdata)
 {
 	struct da903x_subdev_info *subdev;
@@ -491,15 +518,27 @@ failed:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devinit da903x_probe(struct i2c_client *client,
 				  const struct i2c_device_id *id)
 {
 	struct da903x_platform_data *pdata = client->dev.platform_data;
+=======
+static int da903x_probe(struct i2c_client *client)
+{
+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+	struct da903x_platform_data *pdata = dev_get_platdata(&client->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct da903x_chip *chip;
 	unsigned int tmp;
 	int ret;
 
+<<<<<<< HEAD
 	chip = kzalloc(sizeof(struct da903x_chip), GFP_KERNEL);
+=======
+	chip = devm_kzalloc(&client->dev, sizeof(struct da903x_chip),
+				GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip == NULL)
 		return -ENOMEM;
 
@@ -515,19 +554,28 @@ static int __devinit da903x_probe(struct i2c_client *client,
 
 	ret = chip->ops->init_chip(chip);
 	if (ret)
+<<<<<<< HEAD
 		goto out_free_chip;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* mask and clear all IRQs */
 	chip->events_mask = 0xffffffff;
 	chip->ops->mask_events(chip, chip->events_mask);
 	chip->ops->read_events(chip, &tmp);
 
+<<<<<<< HEAD
 	ret = request_irq(client->irq, da903x_irq_handler,
+=======
+	ret = devm_request_irq(&client->dev, client->irq, da903x_irq_handler,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			IRQF_TRIGGER_FALLING,
 			"da903x", chip);
 	if (ret) {
 		dev_err(&client->dev, "failed to request irq %d\n",
 				client->irq);
+<<<<<<< HEAD
 		goto out_free_chip;
 	}
 
@@ -545,22 +593,40 @@ out_free_chip:
 }
 
 static int __devexit da903x_remove(struct i2c_client *client)
+=======
+		return ret;
+	}
+
+	return da903x_add_subdevs(chip, pdata);
+}
+
+static void da903x_remove(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct da903x_chip *chip = i2c_get_clientdata(client);
 
 	da903x_remove_subdevs(chip);
+<<<<<<< HEAD
 	free_irq(client->irq, chip);
 	kfree(chip);
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct i2c_driver da903x_driver = {
 	.driver	= {
 		.name	= "da903x",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= da903x_probe,
 	.remove		= __devexit_p(da903x_remove),
+=======
+	},
+	.probe		= da903x_probe,
+	.remove		= da903x_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= da903x_id_table,
 };
 
@@ -577,6 +643,11 @@ static void __exit da903x_exit(void)
 module_exit(da903x_exit);
 
 MODULE_DESCRIPTION("PMIC Driver for Dialog Semiconductor DA9034");
+<<<<<<< HEAD
 MODULE_AUTHOR("Eric Miao <eric.miao@marvell.com>"
 	      "Mike Rapoport <mike@compulab.co.il>");
 MODULE_LICENSE("GPL");
+=======
+MODULE_AUTHOR("Eric Miao <eric.miao@marvell.com>");
+MODULE_AUTHOR("Mike Rapoport <mike@compulab.co.il>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

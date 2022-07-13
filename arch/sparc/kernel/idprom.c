@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * idprom.c: Routines to load the idprom into kernel addresses and
  *           interpret the data contained within.
@@ -9,6 +13,10 @@
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/etherdevice.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/oplib.h>
 #include <asm/idprom.h>
@@ -25,6 +33,7 @@ static struct idprom idprom_buffer;
  * of the Sparc CPU and have a meaningful IDPROM machtype value that we
  * know about.  See asm-sparc/machines.h for empirical constants.
  */
+<<<<<<< HEAD
 static struct Sun_Machine_Models Sun_Machines[NUM_SUN_MACHINES] = {
 /* First, Sun4's */
 { .name = "Sun 4/100 Series",        .id_machtype = (SM_SUN4 | SM_4_110) },
@@ -41,6 +50,11 @@ static struct Sun_Machine_Models Sun_Machines[NUM_SUN_MACHINES] = {
 { .name = "Sun4c SparcStation 2",    .id_machtype = (SM_SUN4C | SM_4C_SS2) },
 { .name = "Sun4c SparcStation ELC",  .id_machtype = (SM_SUN4C | SM_4C_ELC) },
 { .name = "Sun4c SparcStation IPX",  .id_machtype = (SM_SUN4C | SM_4C_IPX) },
+=======
+static struct Sun_Machine_Models Sun_Machines[] = {
+/* First, Leon */
+{ .name = "Leon3 System-on-a-Chip",  .id_machtype = (M_LEON | M_LEON3_SOC) },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Finally, early Sun4m's */
 { .name = "Sun4m SparcSystem600",    .id_machtype = (SM_SUN4M | SM_4M_SS60) },
 { .name = "Sun4m SparcStation10/20", .id_machtype = (SM_SUN4M | SM_4M_SS50) },
@@ -53,7 +67,11 @@ static void __init display_system_type(unsigned char machtype)
 	char sysname[128];
 	register int i;
 
+<<<<<<< HEAD
 	for (i = 0; i < NUM_SUN_MACHINES; i++) {
+=======
+	for (i = 0; i < ARRAY_SIZE(Sun_Machines); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (Sun_Machines[i].id_machtype == machtype) {
 			if (machtype != (SM_SUN4M_OBP | 0x00) ||
 			    prom_getproperty(prom_root_node, "banner-name",
@@ -73,6 +91,15 @@ static void __init display_system_type(unsigned char machtype)
 {
 }
 #endif
+<<<<<<< HEAD
+=======
+
+unsigned char *arch_get_platform_mac_address(void)
+{
+	return idprom->id_ethaddr;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Calculate the IDPROM checksum (xor of the data bytes). */
 static unsigned char __init calc_idprom_cksum(struct idprom *idprom)
 {

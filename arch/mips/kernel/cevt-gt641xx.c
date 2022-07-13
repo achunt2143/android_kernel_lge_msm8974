@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  GT641xx clockevent routines.
  *
@@ -16,6 +17,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  GT641xx clockevent routines.
+ *
+ *  Copyright (C) 2007	Yoichi Yuasa <yuasa@linux-mips.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/clockchips.h>
 #include <linux/init.h>
@@ -64,8 +72,12 @@ static int gt641xx_timer0_set_next_event(unsigned long delta,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void gt641xx_timer0_set_mode(enum clock_event_mode mode,
 				    struct clock_event_device *evt)
+=======
+static int gt641xx_timer0_shutdown(struct clock_event_device *evt)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 ctrl;
 
@@ -73,6 +85,7 @@ static void gt641xx_timer0_set_mode(enum clock_event_mode mode,
 
 	ctrl = GT_READ(GT_TC_CONTROL_OFS);
 	ctrl &= ~(GT_TC_CONTROL_ENTC0_MSK | GT_TC_CONTROL_SELTC0_MSK);
+<<<<<<< HEAD
 
 	switch (mode) {
 	case CLOCK_EVT_MODE_PERIODIC:
@@ -88,6 +101,41 @@ static void gt641xx_timer0_set_mode(enum clock_event_mode mode,
 	GT_WRITE(GT_TC_CONTROL_OFS, ctrl);
 
 	raw_spin_unlock(&gt641xx_timer_lock);
+=======
+	GT_WRITE(GT_TC_CONTROL_OFS, ctrl);
+
+	raw_spin_unlock(&gt641xx_timer_lock);
+	return 0;
+}
+
+static int gt641xx_timer0_set_oneshot(struct clock_event_device *evt)
+{
+	u32 ctrl;
+
+	raw_spin_lock(&gt641xx_timer_lock);
+
+	ctrl = GT_READ(GT_TC_CONTROL_OFS);
+	ctrl &= ~GT_TC_CONTROL_SELTC0_MSK;
+	ctrl |= GT_TC_CONTROL_ENTC0_MSK;
+	GT_WRITE(GT_TC_CONTROL_OFS, ctrl);
+
+	raw_spin_unlock(&gt641xx_timer_lock);
+	return 0;
+}
+
+static int gt641xx_timer0_set_periodic(struct clock_event_device *evt)
+{
+	u32 ctrl;
+
+	raw_spin_lock(&gt641xx_timer_lock);
+
+	ctrl = GT_READ(GT_TC_CONTROL_OFS);
+	ctrl |= GT_TC_CONTROL_ENTC0_MSK | GT_TC_CONTROL_SELTC0_MSK;
+	GT_WRITE(GT_TC_CONTROL_OFS, ctrl);
+
+	raw_spin_unlock(&gt641xx_timer_lock);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void gt641xx_timer0_event_handler(struct clock_event_device *dev)
@@ -95,12 +143,25 @@ static void gt641xx_timer0_event_handler(struct clock_event_device *dev)
 }
 
 static struct clock_event_device gt641xx_timer0_clockevent = {
+<<<<<<< HEAD
 	.name		= "gt641xx-timer0",
 	.features	= CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT,
 	.irq		= GT641XX_TIMER0_IRQ,
 	.set_next_event	= gt641xx_timer0_set_next_event,
 	.set_mode	= gt641xx_timer0_set_mode,
 	.event_handler	= gt641xx_timer0_event_handler,
+=======
+	.name			= "gt641xx-timer0",
+	.features		= CLOCK_EVT_FEAT_PERIODIC |
+				  CLOCK_EVT_FEAT_ONESHOT,
+	.irq			= GT641XX_TIMER0_IRQ,
+	.set_next_event		= gt641xx_timer0_set_next_event,
+	.set_state_shutdown	= gt641xx_timer0_shutdown,
+	.set_state_periodic	= gt641xx_timer0_set_periodic,
+	.set_state_oneshot	= gt641xx_timer0_set_oneshot,
+	.tick_resume		= gt641xx_timer0_shutdown,
+	.event_handler		= gt641xx_timer0_event_handler,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t gt641xx_timer0_interrupt(int irq, void *dev_id)
@@ -112,12 +173,15 @@ static irqreturn_t gt641xx_timer0_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static struct irqaction gt641xx_timer0_irqaction = {
 	.handler	= gt641xx_timer0_interrupt,
 	.flags		= IRQF_PERCPU | IRQF_TIMER,
 	.name		= "gt641xx_timer0",
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init gt641xx_timer0_clockevent_init(void)
 {
 	struct clock_event_device *cd;
@@ -131,11 +195,22 @@ static int __init gt641xx_timer0_clockevent_init(void)
 	cd->rating = 200 + gt641xx_base_clock / 10000000;
 	clockevent_set_clock(cd, gt641xx_base_clock);
 	cd->max_delta_ns = clockevent_delta2ns(0x7fffffff, cd);
+<<<<<<< HEAD
 	cd->min_delta_ns = clockevent_delta2ns(0x300, cd);
+=======
+	cd->max_delta_ticks = 0x7fffffff;
+	cd->min_delta_ns = clockevent_delta2ns(0x300, cd);
+	cd->min_delta_ticks = 0x300;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cd->cpumask = cpumask_of(0);
 
 	clockevents_register_device(&gt641xx_timer0_clockevent);
 
+<<<<<<< HEAD
 	return setup_irq(GT641XX_TIMER0_IRQ, &gt641xx_timer0_irqaction);
+=======
+	return request_irq(GT641XX_TIMER0_IRQ, gt641xx_timer0_interrupt,
+			   IRQF_PERCPU | IRQF_TIMER, "gt641xx_timer0", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 arch_initcall(gt641xx_timer0_clockevent_init);

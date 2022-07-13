@@ -1,21 +1,34 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
+=======
+#include <linux/dmaengine.h>
+#include <linux/dma/pxa-dma.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
 #include <sound/pxa2xx-lib.h>
+<<<<<<< HEAD
 
 #include <mach/dma.h>
 
 #include "pxa2xx-pcm.h"
+=======
+#include <sound/dmaengine_pcm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct snd_pcm_hardware pxa2xx_pcm_hardware = {
 	.info			= SNDRV_PCM_INFO_MMAP |
@@ -24,16 +37,26 @@ static const struct snd_pcm_hardware pxa2xx_pcm_hardware = {
 				  SNDRV_PCM_INFO_PAUSE |
 				  SNDRV_PCM_INFO_RESUME,
 	.formats		= SNDRV_PCM_FMTBIT_S16_LE |
+<<<<<<< HEAD
 					SNDRV_PCM_FMTBIT_S24_LE |
 					SNDRV_PCM_FMTBIT_S32_LE,
 	.period_bytes_min	= 32,
 	.period_bytes_max	= 8192 - 32,
 	.periods_min		= 1,
 	.periods_max		= PAGE_SIZE/sizeof(pxa_dma_desc),
+=======
+				  SNDRV_PCM_FMTBIT_S24_LE |
+				  SNDRV_PCM_FMTBIT_S32_LE,
+	.period_bytes_min	= 32,
+	.period_bytes_max	= 8192 - 32,
+	.periods_min		= 1,
+	.periods_max		= 256,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.buffer_bytes_max	= 128 * 1024,
 	.fifo_size		= 32,
 };
 
+<<<<<<< HEAD
 int __pxa2xx_pcm_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params)
 {
@@ -114,12 +137,47 @@ int pxa2xx_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	}
 
 	return ret;
+=======
+int pxa2xx_pcm_hw_params(struct snd_pcm_substream *substream,
+			 struct snd_pcm_hw_params *params)
+{
+	struct dma_chan *chan = snd_dmaengine_pcm_get_chan(substream);
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_dmaengine_dai_dma_data *dma_params;
+	struct dma_slave_config config;
+	int ret;
+
+	dma_params = snd_soc_dai_get_dma_data(snd_soc_rtd_to_cpu(rtd, 0), substream);
+	if (!dma_params)
+		return 0;
+
+	ret = snd_hwparams_to_dma_slave_config(substream, params, &config);
+	if (ret)
+		return ret;
+
+	snd_dmaengine_pcm_set_config_from_dai_data(substream,
+			snd_soc_dai_get_dma_data(snd_soc_rtd_to_cpu(rtd, 0), substream),
+			&config);
+
+	ret = dmaengine_slave_config(chan, &config);
+	if (ret)
+		return ret;
+
+	return 0;
+}
+EXPORT_SYMBOL(pxa2xx_pcm_hw_params);
+
+int pxa2xx_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
+{
+	return snd_dmaengine_pcm_trigger(substream, cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(pxa2xx_pcm_trigger);
 
 snd_pcm_uframes_t
 pxa2xx_pcm_pointer(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct pxa2xx_runtime_data *prtd = runtime->private_data;
 
@@ -177,10 +235,34 @@ int __pxa2xx_pcm_open(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct pxa2xx_runtime_data *rtd;
+=======
+	return snd_dmaengine_pcm_pointer(substream);
+}
+EXPORT_SYMBOL(pxa2xx_pcm_pointer);
+
+int pxa2xx_pcm_prepare(struct snd_pcm_substream *substream)
+{
+	return 0;
+}
+EXPORT_SYMBOL(pxa2xx_pcm_prepare);
+
+int pxa2xx_pcm_open(struct snd_pcm_substream *substream)
+{
+	struct snd_soc_pcm_runtime *rtd = substream->private_data;
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct snd_dmaengine_dai_dma_data *dma_params;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	runtime->hw = pxa2xx_pcm_hardware;
 
+<<<<<<< HEAD
+=======
+	dma_params = snd_soc_dai_get_dma_data(snd_soc_rtd_to_cpu(rtd, 0), substream);
+	if (!dma_params)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * For mysterious reasons (and despite what the manual says)
 	 * playback samples are lost if the DMA count is not a multiple
@@ -189,16 +271,25 @@ int __pxa2xx_pcm_open(struct snd_pcm_substream *substream)
 	ret = snd_pcm_hw_constraint_step(runtime, 0,
 		SNDRV_PCM_HW_PARAM_PERIOD_BYTES, 32);
 	if (ret)
+<<<<<<< HEAD
 		goto out;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = snd_pcm_hw_constraint_step(runtime, 0,
 		SNDRV_PCM_HW_PARAM_BUFFER_BYTES, 32);
 	if (ret)
+<<<<<<< HEAD
 		goto out;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = snd_pcm_hw_constraint_integer(runtime,
 					    SNDRV_PCM_HW_PARAM_PERIODS);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto out;
 
 	ret = -ENOMEM;
@@ -281,6 +372,89 @@ void pxa2xx_pcm_free_dma_buffers(struct snd_pcm *pcm)
 	}
 }
 EXPORT_SYMBOL(pxa2xx_pcm_free_dma_buffers);
+=======
+		return ret;
+
+	return snd_dmaengine_pcm_open(
+		substream, dma_request_slave_channel(snd_soc_rtd_to_cpu(rtd, 0)->dev,
+						     dma_params->chan_name));
+}
+EXPORT_SYMBOL(pxa2xx_pcm_open);
+
+int pxa2xx_pcm_close(struct snd_pcm_substream *substream)
+{
+	return snd_dmaengine_pcm_close_release_chan(substream);
+}
+EXPORT_SYMBOL(pxa2xx_pcm_close);
+
+int pxa2xx_pcm_preallocate_dma_buffer(struct snd_pcm *pcm)
+{
+	size_t size = pxa2xx_pcm_hardware.buffer_bytes_max;
+
+	return snd_pcm_set_fixed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV_WC,
+					    pcm->card->dev, size);
+}
+EXPORT_SYMBOL(pxa2xx_pcm_preallocate_dma_buffer);
+
+int pxa2xx_soc_pcm_new(struct snd_soc_component *component,
+		       struct snd_soc_pcm_runtime *rtd)
+{
+	struct snd_card *card = rtd->card->snd_card;
+	struct snd_pcm *pcm = rtd->pcm;
+	int ret;
+
+	ret = dma_coerce_mask_and_coherent(card->dev, DMA_BIT_MASK(32));
+	if (ret)
+		return ret;
+
+	return pxa2xx_pcm_preallocate_dma_buffer(pcm);
+}
+EXPORT_SYMBOL(pxa2xx_soc_pcm_new);
+
+int pxa2xx_soc_pcm_open(struct snd_soc_component *component,
+			struct snd_pcm_substream *substream)
+{
+	return pxa2xx_pcm_open(substream);
+}
+EXPORT_SYMBOL(pxa2xx_soc_pcm_open);
+
+int pxa2xx_soc_pcm_close(struct snd_soc_component *component,
+			 struct snd_pcm_substream *substream)
+{
+	return pxa2xx_pcm_close(substream);
+}
+EXPORT_SYMBOL(pxa2xx_soc_pcm_close);
+
+int pxa2xx_soc_pcm_hw_params(struct snd_soc_component *component,
+			     struct snd_pcm_substream *substream,
+			     struct snd_pcm_hw_params *params)
+{
+	return pxa2xx_pcm_hw_params(substream, params);
+}
+EXPORT_SYMBOL(pxa2xx_soc_pcm_hw_params);
+
+int pxa2xx_soc_pcm_prepare(struct snd_soc_component *component,
+			   struct snd_pcm_substream *substream)
+{
+	return pxa2xx_pcm_prepare(substream);
+}
+EXPORT_SYMBOL(pxa2xx_soc_pcm_prepare);
+
+int pxa2xx_soc_pcm_trigger(struct snd_soc_component *component,
+			   struct snd_pcm_substream *substream, int cmd)
+{
+	return pxa2xx_pcm_trigger(substream, cmd);
+}
+EXPORT_SYMBOL(pxa2xx_soc_pcm_trigger);
+
+snd_pcm_uframes_t
+pxa2xx_soc_pcm_pointer(struct snd_soc_component *component,
+		       struct snd_pcm_substream *substream)
+{
+	return pxa2xx_pcm_pointer(substream);
+}
+EXPORT_SYMBOL(pxa2xx_soc_pcm_pointer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Nicolas Pitre");
 MODULE_DESCRIPTION("Intel PXA2xx sound library");

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PowerPC version
  *    Copyright (C) 1995-1996 Gary Thomas (gdt@linuxppc.org)
@@ -9,12 +13,15 @@
  *
  *  Derived from "arch/i386/mm/init.c"
  *    Copyright (C) 1991, 1992, 1993, 1994  Linus Torvalds
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version
  *  2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -26,7 +33,10 @@
 #include <linux/mm.h>
 #include <linux/stddef.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/highmem.h>
 #include <linux/initrd.h>
 #include <linux/pagemap.h>
@@ -35,10 +45,14 @@
 #include <linux/slab.h>
 #include <linux/hugetlb.h>
 
+<<<<<<< HEAD
 #include <asm/pgalloc.h>
 #include <asm/prom.h>
 #include <asm/io.h>
 #include <asm/pgtable.h>
+=======
+#include <asm/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mmu.h>
 #include <asm/smp.h>
 #include <asm/machdep.h>
@@ -46,13 +60,25 @@
 #include <asm/tlb.h>
 #include <asm/sections.h>
 #include <asm/hugetlb.h>
+<<<<<<< HEAD
 
 #include "mmu_decl.h"
+=======
+#include <asm/kup.h>
+#include <asm/kasan.h>
+#include <asm/fixmap.h>
+
+#include <mm/mmu_decl.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_KERNEL_START_BOOL) || defined(CONFIG_LOWMEM_SIZE_BOOL)
 /* The amount of lowmem must be within 0xF0000000 - KERNELBASE. */
 #if (CONFIG_LOWMEM_SIZE > (0xF0000000 - PAGE_OFFSET))
+<<<<<<< HEAD
 #error "You must adjust CONFIG_LOWMEM_SIZE or CONFIG_START_KERNEL"
+=======
+#error "You must adjust CONFIG_LOWMEM_SIZE or CONFIG_KERNEL_START"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #endif
 #define MAX_LOW_MEM	CONFIG_LOWMEM_SIZE
@@ -60,12 +86,16 @@
 phys_addr_t total_memory;
 phys_addr_t total_lowmem;
 
+<<<<<<< HEAD
 phys_addr_t memstart_addr = (phys_addr_t)~0ull;
 EXPORT_SYMBOL(memstart_addr);
 phys_addr_t kernstart_addr;
 EXPORT_SYMBOL(kernstart_addr);
 
 #ifdef CONFIG_RELOCATABLE_PPC32
+=======
+#ifdef CONFIG_RELOCATABLE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Used in __va()/__pa() */
 long long virt_phys_offset;
 EXPORT_SYMBOL(virt_phys_offset);
@@ -81,6 +111,7 @@ EXPORT_SYMBOL(agp_special_page);
 
 void MMU_init(void);
 
+<<<<<<< HEAD
 /* XXX should be in current.h  -- paulus */
 extern struct task_struct *current_set[NR_CPUS];
 
@@ -97,10 +128,13 @@ int __map_without_ltlbs;
  */
 int __allow_ioremap_reserved;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* max amount of low RAM to map in */
 unsigned long __max_low_memory = MAX_LOW_MEM;
 
 /*
+<<<<<<< HEAD
  * Check for command-line options that affect what MMU_init will do.
  */
 void MMU_setup(void)
@@ -120,6 +154,8 @@ void MMU_setup(void)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * MMU_init sets up the basic memory mappings for the kernel,
  * including both RAM and possibly some I/O regions,
  * and sets up the page tables and the MMU hardware ready to go.
@@ -129,6 +165,7 @@ void __init MMU_init(void)
 	if (ppc_md.progress)
 		ppc_md.progress("MMU:enter", 0x111);
 
+<<<<<<< HEAD
 	/* parse args from command line */
 	MMU_setup();
 
@@ -151,11 +188,21 @@ void __init MMU_init(void)
 	lowmem_end_addr = memstart_addr + total_lowmem;
 
 #ifdef CONFIG_FSL_BOOKE
+=======
+	total_lowmem = total_memory = memblock_end_of_DRAM() - memstart_addr;
+	lowmem_end_addr = memstart_addr + total_lowmem;
+
+#ifdef CONFIG_PPC_85xx
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Freescale Book-E parts expect lowmem to be mapped by fixed TLB
 	 * entries, so we need to adjust lowmem to match the amount we can map
 	 * in the fixed entries */
 	adjust_total_lowmem();
+<<<<<<< HEAD
 #endif /* CONFIG_FSL_BOOKE */
+=======
+#endif /* CONFIG_PPC_85xx */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (total_lowmem > __max_low_memory) {
 		total_lowmem = __max_low_memory;
@@ -179,10 +226,13 @@ void __init MMU_init(void)
 	/* Initialize early top-down ioremap allocator */
 	ioremap_bot = IOREMAP_TOP;
 
+<<<<<<< HEAD
 	/* Map in I/O resources */
 	if (ppc_md.progress)
 		ppc_md.progress("MMU:setio", 0x302);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ppc_md.progress)
 		ppc_md.progress("MMU:exit", 0x211);
 
@@ -191,6 +241,7 @@ void __init MMU_init(void)
 	btext_unmap();
 #endif
 
+<<<<<<< HEAD
 	/* Shortly after that, the entire linear mapping will be available */
 	memblock_set_current_limit(lowmem_end_addr);
 }
@@ -217,3 +268,14 @@ void setup_initial_memory_limit(phys_addr_t first_memblock_base,
 	memblock_set_current_limit(min_t(u64, first_memblock_size, 0x00800000));
 }
 #endif /* CONFIG_8xx */
+=======
+	kasan_mmu_init();
+
+	setup_kup();
+
+	update_mmu_feature_fixups(MMU_FTR_KUAP);
+
+	/* Shortly after that, the entire linear mapping will be available */
+	memblock_set_current_limit(lowmem_end_addr);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

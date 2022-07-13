@@ -6,6 +6,7 @@
 #ifndef __SYSDEP_I386_PTRACE_H
 #define __SYSDEP_I386_PTRACE_H
 
+<<<<<<< HEAD
 #include <generated/user_constants.h>
 #include "sysdep/faultinfo.h"
 
@@ -108,6 +109,16 @@ struct syscall_args {
 #define UPT_SYSCALL_RET(r) UPT_EAX(r)
 
 #define UPT_FAULTINFO(r) (&(r)->faultinfo)
+=======
+#define MAX_FP_NR HOST_FPX_SIZE
+
+#define UPT_SYSCALL_ARG1(r) UPT_BX(r)
+#define UPT_SYSCALL_ARG2(r) UPT_CX(r)
+#define UPT_SYSCALL_ARG3(r) UPT_DX(r)
+#define UPT_SYSCALL_ARG4(r) UPT_SI(r)
+#define UPT_SYSCALL_ARG5(r) UPT_DI(r)
+#define UPT_SYSCALL_ARG6(r) UPT_BP(r)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void arch_init_registers(int pid);
 

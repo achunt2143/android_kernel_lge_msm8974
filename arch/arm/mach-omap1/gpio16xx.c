@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * OMAP16xx specific gpio init
  *
@@ -17,6 +18,24 @@
  */
 
 #include <linux/gpio.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * OMAP16xx specific gpio init
+ *
+ * Copyright (C) 2010 Texas Instruments Incorporated - https://www.ti.com/
+ *
+ * Author:
+ *	Charulatha V <charu@ti.com>
+ */
+
+#include <linux/platform_data/gpio-omap.h>
+#include <linux/soc/ti/omap1-io.h>
+
+#include "hardware.h"
+#include "irqs.h"
+#include "soc.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define OMAP1610_GPIO1_BASE		0xfffbe400
 #define OMAP1610_GPIO2_BASE		0xfffbec00
@@ -28,7 +47,11 @@
 #define SYSCONFIG_WORD			0x14
 
 /* mpu gpio */
+<<<<<<< HEAD
 static struct __initdata resource omap16xx_mpu_gpio_resources[] = {
+=======
+static struct resource omap16xx_mpu_gpio_resources[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.start	= OMAP1_MPUIO_VBASE,
 		.end	= OMAP1_MPUIO_VBASE + SZ_2K - 1,
@@ -51,8 +74,12 @@ static struct omap_gpio_reg_offs omap16xx_mpuio_regs = {
 	.irqctrl	= OMAP_MPUIO_GPIO_INT_EDGE,
 };
 
+<<<<<<< HEAD
 static struct __initdata omap_gpio_platform_data omap16xx_mpu_gpio_config = {
 	.virtual_irq_start	= IH_MPUIO_BASE,
+=======
+static struct omap_gpio_platform_data omap16xx_mpu_gpio_config = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.is_mpuio		= true,
 	.bank_width		= 16,
 	.bank_stride		= 1,
@@ -70,7 +97,11 @@ static struct platform_device omap16xx_mpu_gpio = {
 };
 
 /* gpio1 */
+<<<<<<< HEAD
 static struct __initdata resource omap16xx_gpio1_resources[] = {
+=======
+static struct resource omap16xx_gpio1_resources[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.start	= OMAP1610_GPIO1_BASE,
 		.end	= OMAP1610_GPIO1_BASE + SZ_2K - 1,
@@ -98,8 +129,12 @@ static struct omap_gpio_reg_offs omap16xx_gpio_regs = {
 	.edgectrl2	= OMAP1610_GPIO_EDGE_CTRL2,
 };
 
+<<<<<<< HEAD
 static struct __initdata omap_gpio_platform_data omap16xx_gpio1_config = {
 	.virtual_irq_start	= IH_GPIO_BASE,
+=======
+static struct omap_gpio_platform_data omap16xx_gpio1_config = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bank_width		= 16,
 	.regs                   = &omap16xx_gpio_regs,
 };
@@ -115,7 +150,11 @@ static struct platform_device omap16xx_gpio1 = {
 };
 
 /* gpio2 */
+<<<<<<< HEAD
 static struct __initdata resource omap16xx_gpio2_resources[] = {
+=======
+static struct resource omap16xx_gpio2_resources[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.start	= OMAP1610_GPIO2_BASE,
 		.end	= OMAP1610_GPIO2_BASE + SZ_2K - 1,
@@ -127,8 +166,12 @@ static struct __initdata resource omap16xx_gpio2_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct __initdata omap_gpio_platform_data omap16xx_gpio2_config = {
 	.virtual_irq_start	= IH_GPIO_BASE + 16,
+=======
+static struct omap_gpio_platform_data omap16xx_gpio2_config = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bank_width		= 16,
 	.regs                   = &omap16xx_gpio_regs,
 };
@@ -144,7 +187,11 @@ static struct platform_device omap16xx_gpio2 = {
 };
 
 /* gpio3 */
+<<<<<<< HEAD
 static struct __initdata resource omap16xx_gpio3_resources[] = {
+=======
+static struct resource omap16xx_gpio3_resources[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.start	= OMAP1610_GPIO3_BASE,
 		.end	= OMAP1610_GPIO3_BASE + SZ_2K - 1,
@@ -156,8 +203,12 @@ static struct __initdata resource omap16xx_gpio3_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct __initdata omap_gpio_platform_data omap16xx_gpio3_config = {
 	.virtual_irq_start	= IH_GPIO_BASE + 32,
+=======
+static struct omap_gpio_platform_data omap16xx_gpio3_config = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bank_width		= 16,
 	.regs                   = &omap16xx_gpio_regs,
 };
@@ -173,7 +224,11 @@ static struct platform_device omap16xx_gpio3 = {
 };
 
 /* gpio4 */
+<<<<<<< HEAD
 static struct __initdata resource omap16xx_gpio4_resources[] = {
+=======
+static struct resource omap16xx_gpio4_resources[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.start	= OMAP1610_GPIO4_BASE,
 		.end	= OMAP1610_GPIO4_BASE + SZ_2K - 1,
@@ -185,8 +240,12 @@ static struct __initdata resource omap16xx_gpio4_resources[] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct __initdata omap_gpio_platform_data omap16xx_gpio4_config = {
 	.virtual_irq_start	= IH_GPIO_BASE + 48,
+=======
+static struct omap_gpio_platform_data omap16xx_gpio4_config = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bank_width		= 16,
 	.regs                   = &omap16xx_gpio_regs,
 };
@@ -201,7 +260,11 @@ static struct platform_device omap16xx_gpio4 = {
 	.resource = omap16xx_gpio4_resources,
 };
 
+<<<<<<< HEAD
 static struct __initdata platform_device * omap16xx_gpio_dev[] = {
+=======
+static struct platform_device *omap16xx_gpio_dev[] __initdata = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&omap16xx_mpu_gpio,
 	&omap16xx_gpio1,
 	&omap16xx_gpio2,

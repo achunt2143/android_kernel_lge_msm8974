@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
     NetWinder Floating Point Emulator
@@ -6,6 +10,7 @@
 
     Direct questions, comments to Scott Bambrough <scottb@netwinder.org>
 
+<<<<<<< HEAD
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +24,8 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include "fpa11.h"
@@ -31,7 +38,11 @@
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/signal.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 
 #include <asm/thread_notify.h>
@@ -86,20 +97,33 @@ extern void nwfpe_enter(void);
 static int __init fpe_init(void)
 {
 	if (sizeof(FPA11) > sizeof(union fp_state)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "nwfpe: bad structure size\n");
+=======
+		pr_err("nwfpe: bad structure size\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (sizeof(FPREG) != 12) {
+<<<<<<< HEAD
 		printk(KERN_ERR "nwfpe: bad register size\n");
+=======
+		pr_err("nwfpe: bad register size\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	if (fpe_type[0] && strcmp(fpe_type, "nwfpe"))
 		return 0;
 
 	/* Display title, version and copyright information. */
+<<<<<<< HEAD
 	printk(KERN_WARNING "NetWinder Floating Point Emulator V0.97 ("
 	       NWFPE_BITS " precision)\n");
+=======
+	pr_info("NetWinder Floating Point Emulator V0.97 ("
+	        NWFPE_BITS " precision)\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	thread_register_notifier(&nwfpe_notifier_block);
 
@@ -147,7 +171,11 @@ void float_raise(signed char flags)
 #ifdef CONFIG_DEBUG_USER
 	if (flags & debug)
  		printk(KERN_DEBUG
+<<<<<<< HEAD
 		       "NWFPE: %s[%d] takes exception %08x at %p from %08lx\n",
+=======
+		       "NWFPE: %s[%d] takes exception %08x at %ps from %08lx\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       current->comm, current->pid, flags,
 		       __builtin_return_address(0), GET_USERREG()->ARM_pc);
 #endif

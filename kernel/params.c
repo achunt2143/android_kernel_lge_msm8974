@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Helpers for initial module or kernel cmdline parsing
    Copyright (C) 2001 Rusty Russell.
 
@@ -27,22 +28,78 @@
 /* Protects all parameters, and incidentally kmalloced_param list. */
 static DEFINE_MUTEX(param_lock);
 
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Helpers for initial module or kernel cmdline parsing
+ * Copyright (C) 2001 Rusty Russell.
+ */
+#include <linux/ctype.h>
+#include <linux/device.h>
+#include <linux/err.h>
+#include <linux/errno.h>
+#include <linux/kernel.h>
+#include <linux/kstrtox.h>
+#include <linux/module.h>
+#include <linux/moduleparam.h>
+#include <linux/overflow.h>
+#include <linux/security.h>
+#include <linux/slab.h>
+#include <linux/string.h>
+
+#ifdef CONFIG_SYSFS
+/* Protects all built-in parameters, modules use their own param_lock */
+static DEFINE_MUTEX(param_lock);
+
+/* Use the module's mutex, or if built-in use the built-in mutex */
+#ifdef CONFIG_MODULES
+#define KPARAM_MUTEX(mod)	((mod) ? &(mod)->param_lock : &param_lock)
+#else
+#define KPARAM_MUTEX(mod)	(&param_lock)
+#endif
+
+static inline void check_kparam_locked(struct module *mod)
+{
+	BUG_ON(!mutex_is_locked(KPARAM_MUTEX(mod)));
+}
+#else
+static inline void check_kparam_locked(struct module *mod)
+{
+}
+#endif /* !CONFIG_SYSFS */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This just allows us to keep track of which parameters are kmalloced. */
 struct kmalloced_param {
 	struct list_head list;
 	char val[];
 };
 static LIST_HEAD(kmalloced_params);
+<<<<<<< HEAD
+=======
+static DEFINE_SPINLOCK(kmalloced_params_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void *kmalloc_parameter(unsigned int size)
 {
 	struct kmalloced_param *p;
 
+<<<<<<< HEAD
 	p = kmalloc(sizeof(*p) + size, GFP_KERNEL);
 	if (!p)
 		return NULL;
 
 	list_add(&p->list, &kmalloced_params);
+=======
+	p = kmalloc(size_add(sizeof(*p), size), GFP_KERNEL);
+	if (!p)
+		return NULL;
+
+	spin_lock(&kmalloced_params_lock);
+	list_add(&p->list, &kmalloced_params);
+	spin_unlock(&kmalloced_params_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return p->val;
 }
 
@@ -51,6 +108,10 @@ static void maybe_kfree_parameter(void *param)
 {
 	struct kmalloced_param *p;
 
+<<<<<<< HEAD
+=======
+	spin_lock(&kmalloced_params_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(p, &kmalloced_params, list) {
 		if (p->val == param) {
 			list_del(&p->list);
@@ -58,6 +119,10 @@ static void maybe_kfree_parameter(void *param)
 			break;
 		}
 	}
+<<<<<<< HEAD
+=======
+	spin_unlock(&kmalloced_params_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static char dash2underscore(char c)
@@ -83,13 +148,38 @@ bool parameq(const char *a, const char *b)
 	return parameqn(a, b, strlen(a)+1);
 }
 
+<<<<<<< HEAD
 static int parse_one(char *param,
 		     char *val,
+=======
+static bool param_check_unsafe(const struct kernel_param *kp)
+{
+	if (kp->flags & KERNEL_PARAM_FL_HWPARAM &&
+	    security_locked_down(LOCKDOWN_MODULE_PARAMETERS))
+		return false;
+
+	if (kp->flags & KERNEL_PARAM_FL_UNSAFE) {
+		pr_notice("Setting dangerous option %s - tainting kernel\n",
+			  kp->name);
+		add_taint(TAINT_USER, LOCKDEP_STILL_OK);
+	}
+
+	return true;
+}
+
+static int parse_one(char *param,
+		     char *val,
+		     const char *doing,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     const struct kernel_param *params,
 		     unsigned num_params,
 		     s16 min_level,
 		     s16 max_level,
+<<<<<<< HEAD
 		     int (*handle_unknown)(char *param, char *val))
+=======
+		     void *arg, parse_unknown_fn handle_unknown)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 	int err;
@@ -101,6 +191,7 @@ static int parse_one(char *param,
 			    || params[i].level > max_level)
 				return 0;
 			/* No one handled NULL, so do it here. */
+<<<<<<< HEAD
 			if (!val && params[i].ops->set != param_set_bool
 			    && params[i].ops->set != param_set_bint)
 				return -EINVAL;
@@ -109,11 +200,25 @@ static int parse_one(char *param,
 			mutex_lock(&param_lock);
 			err = params[i].ops->set(val, &params[i]);
 			mutex_unlock(&param_lock);
+=======
+			if (!val &&
+			    !(params[i].ops->flags & KERNEL_PARAM_OPS_FL_NOARG))
+				return -EINVAL;
+			pr_debug("handling %s with %p\n", param,
+				params[i].ops->set);
+			kernel_param_lock(params[i].mod);
+			if (param_check_unsafe(&params[i]))
+				err = params[i].ops->set(val, &params[i]);
+			else
+				err = -EPERM;
+			kernel_param_unlock(params[i].mod);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 	}
 
 	if (handle_unknown) {
+<<<<<<< HEAD
 		pr_debug("Unknown argument: calling %p\n", handle_unknown);
 		return handle_unknown(param, val);
 	}
@@ -186,15 +291,42 @@ int parse_args(const char *name,
 	char *param, *val;
 
 	pr_debug("Parsing ARGS: %s\n", args);
+=======
+		pr_debug("doing %s: %s='%s'\n", doing, param, val);
+		return handle_unknown(param, val, doing, arg);
+	}
+
+	pr_debug("Unknown argument '%s'\n", param);
+	return -ENOENT;
+}
+
+/* Args looks like "foo=bar,bar2 baz=fuz wiz". */
+char *parse_args(const char *doing,
+		 char *args,
+		 const struct kernel_param *params,
+		 unsigned num,
+		 s16 min_level,
+		 s16 max_level,
+		 void *arg, parse_unknown_fn unknown)
+{
+	char *param, *val, *err = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Chew leading spaces */
 	args = skip_spaces(args);
 
+<<<<<<< HEAD
+=======
+	if (*args)
+		pr_debug("doing %s, parsing ARGS: '%s'\n", doing, args);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (*args) {
 		int ret;
 		int irq_was_disabled;
 
 		args = next_arg(args, &param, &val);
+<<<<<<< HEAD
 		irq_was_disabled = irqs_disabled();
 		ret = parse_one(param, val, params, num,
 				min_level, max_level, unknown);
@@ -244,6 +376,52 @@ int parse_args(const char *name,
 		return sprintf(buffer, format, *((type *)kp->arg));	\
 	}								\
 	struct kernel_param_ops param_ops_##name = {			\
+=======
+		/* Stop at -- */
+		if (!val && strcmp(param, "--") == 0)
+			return err ?: args;
+		irq_was_disabled = irqs_disabled();
+		ret = parse_one(param, val, doing, params, num,
+				min_level, max_level, arg, unknown);
+		if (irq_was_disabled && !irqs_disabled())
+			pr_warn("%s: option '%s' enabled irq's!\n",
+				doing, param);
+
+		switch (ret) {
+		case 0:
+			continue;
+		case -ENOENT:
+			pr_err("%s: Unknown parameter `%s'\n", doing, param);
+			break;
+		case -ENOSPC:
+			pr_err("%s: `%s' too large for parameter `%s'\n",
+			       doing, val ?: "", param);
+			break;
+		default:
+			pr_err("%s: `%s' invalid for parameter `%s'\n",
+			       doing, val ?: "", param);
+			break;
+		}
+
+		err = ERR_PTR(ret);
+	}
+
+	return err;
+}
+
+/* Lazy bastard, eh? */
+#define STANDARD_PARAM_DEF(name, type, format, strtolfn)      		\
+	int param_set_##name(const char *val, const struct kernel_param *kp) \
+	{								\
+		return strtolfn(val, 0, (type *)kp->arg);		\
+	}								\
+	int param_get_##name(char *buffer, const struct kernel_param *kp) \
+	{								\
+		return scnprintf(buffer, PAGE_SIZE, format "\n",	\
+				*((type *)kp->arg));			\
+	}								\
+	const struct kernel_param_ops param_ops_##name = {			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.set = param_set_##name,				\
 		.get = param_get_##name,				\
 	};								\
@@ -252,6 +430,7 @@ int parse_args(const char *name,
 	EXPORT_SYMBOL(param_ops_##name)
 
 
+<<<<<<< HEAD
 STANDARD_PARAM_DEF(byte, unsigned char, "%c", unsigned long, strict_strtoul);
 STANDARD_PARAM_DEF(short, short, "%hi", long, strict_strtol);
 STANDARD_PARAM_DEF(ushort, unsigned short, "%hu", unsigned long, strict_strtoul);
@@ -265,15 +444,61 @@ int param_set_charp(const char *val, const struct kernel_param *kp)
 	if (strlen(val) > 1024) {
 		printk(KERN_ERR "%s: string parameter too long\n",
 		       kp->name);
+=======
+STANDARD_PARAM_DEF(byte,	unsigned char,		"%hhu",		kstrtou8);
+STANDARD_PARAM_DEF(short,	short,			"%hi",		kstrtos16);
+STANDARD_PARAM_DEF(ushort,	unsigned short,		"%hu",		kstrtou16);
+STANDARD_PARAM_DEF(int,		int,			"%i",		kstrtoint);
+STANDARD_PARAM_DEF(uint,	unsigned int,		"%u",		kstrtouint);
+STANDARD_PARAM_DEF(long,	long,			"%li",		kstrtol);
+STANDARD_PARAM_DEF(ulong,	unsigned long,		"%lu",		kstrtoul);
+STANDARD_PARAM_DEF(ullong,	unsigned long long,	"%llu",		kstrtoull);
+STANDARD_PARAM_DEF(hexint,	unsigned int,		"%#08x", 	kstrtouint);
+
+int param_set_uint_minmax(const char *val, const struct kernel_param *kp,
+		unsigned int min, unsigned int max)
+{
+	unsigned int num;
+	int ret;
+
+	if (!val)
+		return -EINVAL;
+	ret = kstrtouint(val, 0, &num);
+	if (ret)
+		return ret;
+	if (num < min || num > max)
+		return -EINVAL;
+	*((unsigned int *)kp->arg) = num;
+	return 0;
+}
+EXPORT_SYMBOL_GPL(param_set_uint_minmax);
+
+int param_set_charp(const char *val, const struct kernel_param *kp)
+{
+	size_t len, maxlen = 1024;
+
+	len = strnlen(val, maxlen + 1);
+	if (len == maxlen + 1) {
+		pr_err("%s: string parameter too long\n", kp->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSPC;
 	}
 
 	maybe_kfree_parameter(*(char **)kp->arg);
 
+<<<<<<< HEAD
 	/* This is a hack.  We can't kmalloc in early boot, and we
 	 * don't need to; this mangled commandline is preserved. */
 	if (slab_is_available()) {
 		*(char **)kp->arg = kmalloc_parameter(strlen(val)+1);
+=======
+	/*
+	 * This is a hack. We can't kmalloc() in early boot, and we
+	 * don't need to; this mangled commandline is preserved.
+	 */
+	if (slab_is_available()) {
+		*(char **)kp->arg = kmalloc_parameter(len + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!*(char **)kp->arg)
 			return -ENOMEM;
 		strcpy(*(char **)kp->arg, val);
@@ -286,6 +511,7 @@ EXPORT_SYMBOL(param_set_charp);
 
 int param_get_charp(char *buffer, const struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	return sprintf(buffer, "%s", *((char **)kp->arg));
 }
 EXPORT_SYMBOL(param_get_charp);
@@ -296,6 +522,19 @@ static void param_free_charp(void *arg)
 }
 
 struct kernel_param_ops param_ops_charp = {
+=======
+	return scnprintf(buffer, PAGE_SIZE, "%s\n", *((char **)kp->arg));
+}
+EXPORT_SYMBOL(param_get_charp);
+
+void param_free_charp(void *arg)
+{
+	maybe_kfree_parameter(*((char **)arg));
+}
+EXPORT_SYMBOL(param_free_charp);
+
+const struct kernel_param_ops param_ops_charp = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_set_charp,
 	.get = param_get_charp,
 	.free = param_free_charp,
@@ -309,23 +548,70 @@ int param_set_bool(const char *val, const struct kernel_param *kp)
 	if (!val) val = "1";
 
 	/* One of =[yYnN01] */
+<<<<<<< HEAD
 	return strtobool(val, kp->arg);
+=======
+	return kstrtobool(val, kp->arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(param_set_bool);
 
 int param_get_bool(char *buffer, const struct kernel_param *kp)
 {
 	/* Y and N chosen as being relatively non-coder friendly */
+<<<<<<< HEAD
 	return sprintf(buffer, "%c", *(bool *)kp->arg ? 'Y' : 'N');
 }
 EXPORT_SYMBOL(param_get_bool);
 
 struct kernel_param_ops param_ops_bool = {
+=======
+	return sprintf(buffer, "%c\n", *(bool *)kp->arg ? 'Y' : 'N');
+}
+EXPORT_SYMBOL(param_get_bool);
+
+const struct kernel_param_ops param_ops_bool = {
+	.flags = KERNEL_PARAM_OPS_FL_NOARG,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_set_bool,
 	.get = param_get_bool,
 };
 EXPORT_SYMBOL(param_ops_bool);
 
+<<<<<<< HEAD
+=======
+int param_set_bool_enable_only(const char *val, const struct kernel_param *kp)
+{
+	int err;
+	bool new_value;
+	bool orig_value = *(bool *)kp->arg;
+	struct kernel_param dummy_kp = *kp;
+
+	dummy_kp.arg = &new_value;
+
+	err = param_set_bool(val, &dummy_kp);
+	if (err)
+		return err;
+
+	/* Don't let them unset it once it's set! */
+	if (!new_value && orig_value)
+		return -EROFS;
+
+	if (new_value)
+		err = param_set_bool(val, kp);
+
+	return err;
+}
+EXPORT_SYMBOL_GPL(param_set_bool_enable_only);
+
+const struct kernel_param_ops param_ops_bool_enable_only = {
+	.flags = KERNEL_PARAM_OPS_FL_NOARG,
+	.set = param_set_bool_enable_only,
+	.get = param_get_bool,
+};
+EXPORT_SYMBOL_GPL(param_ops_bool_enable_only);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This one must be bool. */
 int param_set_invbool(const char *val, const struct kernel_param *kp)
 {
@@ -343,11 +629,19 @@ EXPORT_SYMBOL(param_set_invbool);
 
 int param_get_invbool(char *buffer, const struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	return sprintf(buffer, "%c", (*(bool *)kp->arg) ? 'N' : 'Y');
 }
 EXPORT_SYMBOL(param_get_invbool);
 
 struct kernel_param_ops param_ops_invbool = {
+=======
+	return sprintf(buffer, "%c\n", (*(bool *)kp->arg) ? 'N' : 'Y');
+}
+EXPORT_SYMBOL(param_get_invbool);
+
+const struct kernel_param_ops param_ops_invbool = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_set_invbool,
 	.get = param_get_invbool,
 };
@@ -355,12 +649,20 @@ EXPORT_SYMBOL(param_ops_invbool);
 
 int param_set_bint(const char *val, const struct kernel_param *kp)
 {
+<<<<<<< HEAD
 	struct kernel_param boolkp;
 	bool v;
 	int ret;
 
 	/* Match bool exactly, by re-using it. */
 	boolkp = *kp;
+=======
+	/* Match bool exactly, by re-using it. */
+	struct kernel_param boolkp = *kp;
+	bool v;
+	int ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	boolkp.arg = &v;
 
 	ret = param_set_bool(val, &boolkp);
@@ -370,14 +672,24 @@ int param_set_bint(const char *val, const struct kernel_param *kp)
 }
 EXPORT_SYMBOL(param_set_bint);
 
+<<<<<<< HEAD
 struct kernel_param_ops param_ops_bint = {
+=======
+const struct kernel_param_ops param_ops_bint = {
+	.flags = KERNEL_PARAM_OPS_FL_NOARG,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_set_bint,
 	.get = param_get_int,
 };
 EXPORT_SYMBOL(param_ops_bint);
 
 /* We break the rule and mangle the string. */
+<<<<<<< HEAD
 static int param_array(const char *name,
+=======
+static int param_array(struct module *mod,
+		       const char *name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       const char *val,
 		       unsigned int min, unsigned int max,
 		       void *elem, int elemsize,
@@ -400,8 +712,12 @@ static int param_array(const char *name,
 		int len;
 
 		if (*num == max) {
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: can only take %i arguments\n",
 			       name, max);
+=======
+			pr_err("%s: can only take %i arguments\n", name, max);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		len = strcspn(val, ",");
@@ -409,7 +725,11 @@ static int param_array(const char *name,
 		/* nul-terminate and parse */
 		save = val[len];
 		((char *)val)[len] = '\0';
+<<<<<<< HEAD
 		BUG_ON(!mutex_is_locked(&param_lock));
+=======
+		check_kparam_locked(mod);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = set(val, &kp);
 
 		if (ret != 0)
@@ -420,8 +740,12 @@ static int param_array(const char *name,
 	} while (save == ',');
 
 	if (*num < min) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: needs at least %i arguments\n",
 		       name, min);
+=======
+		pr_err("%s: needs at least %i arguments\n", name, min);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	return 0;
@@ -432,7 +756,11 @@ static int param_array_set(const char *val, const struct kernel_param *kp)
 	const struct kparam_array *arr = kp->arr;
 	unsigned int temp_num;
 
+<<<<<<< HEAD
 	return param_array(kp->name, val, 1, arr->max, arr->elem,
+=======
+	return param_array(kp->mod, kp->name, val, 1, arr->max, arr->elem,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   arr->elemsize, arr->ops->set, kp->level,
 			   arr->num ?: &temp_num);
 }
@@ -441,6 +769,7 @@ static int param_array_get(char *buffer, const struct kernel_param *kp)
 {
 	int i, off, ret;
 	const struct kparam_array *arr = kp->arr;
+<<<<<<< HEAD
 	struct kernel_param p;
 
 	p = *kp;
@@ -449,6 +778,16 @@ static int param_array_get(char *buffer, const struct kernel_param *kp)
 			buffer[off++] = ',';
 		p.arg = arr->elem + arr->elemsize * i;
 		BUG_ON(!mutex_is_locked(&param_lock));
+=======
+	struct kernel_param p = *kp;
+
+	for (i = off = 0; i < (arr->num ? *arr->num : arr->max); i++) {
+		/* Replace \n with comma */
+		if (i)
+			buffer[off - 1] = ',';
+		p.arg = arr->elem + arr->elemsize * i;
+		check_kparam_locked(p.mod);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = arr->ops->get(buffer + off, &p);
 		if (ret < 0)
 			return ret;
@@ -468,7 +807,11 @@ static void param_array_free(void *arg)
 			arr->ops->free(arr->elem + arr->elemsize * i);
 }
 
+<<<<<<< HEAD
 struct kernel_param_ops param_array_ops = {
+=======
+const struct kernel_param_ops param_array_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_array_set,
 	.get = param_array_get,
 	.free = param_array_free,
@@ -479,8 +822,13 @@ int param_set_copystring(const char *val, const struct kernel_param *kp)
 {
 	const struct kparam_string *kps = kp->str;
 
+<<<<<<< HEAD
 	if (strlen(val)+1 > kps->maxlen) {
 		printk(KERN_ERR "%s: string doesn't fit in %u chars.\n",
+=======
+	if (strnlen(val, kps->maxlen) == kps->maxlen) {
+		pr_err("%s: string doesn't fit in %u chars.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       kp->name, kps->maxlen-1);
 		return -ENOSPC;
 	}
@@ -492,11 +840,19 @@ EXPORT_SYMBOL(param_set_copystring);
 int param_get_string(char *buffer, const struct kernel_param *kp)
 {
 	const struct kparam_string *kps = kp->str;
+<<<<<<< HEAD
 	return strlcpy(buffer, kps->string, kps->maxlen);
 }
 EXPORT_SYMBOL(param_get_string);
 
 struct kernel_param_ops param_ops_string = {
+=======
+	return scnprintf(buffer, PAGE_SIZE, "%s\n", kps->string);
+}
+EXPORT_SYMBOL(param_get_string);
+
+const struct kernel_param_ops param_ops_string = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set = param_set_copystring,
 	.get = param_get_string,
 };
@@ -506,8 +862,11 @@ EXPORT_SYMBOL(param_ops_string);
 #define to_module_attr(n) container_of(n, struct module_attribute, attr)
 #define to_module_kobject(n) container_of(n, struct module_kobject, kobj)
 
+<<<<<<< HEAD
 extern struct kernel_param __start___param[], __stop___param[];
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct param_attribute
 {
 	struct module_attribute mattr;
@@ -518,7 +877,11 @@ struct module_param_attrs
 {
 	unsigned int num;
 	struct attribute_group grp;
+<<<<<<< HEAD
 	struct param_attribute attrs[0];
+=======
+	struct param_attribute attrs[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_SYSFS
@@ -533,6 +896,7 @@ static ssize_t param_attr_show(struct module_attribute *mattr,
 	if (!attribute->param->ops->get)
 		return -EPERM;
 
+<<<<<<< HEAD
 	mutex_lock(&param_lock);
 	count = attribute->param->ops->get(buf, attribute->param);
 	mutex_unlock(&param_lock);
@@ -540,12 +904,21 @@ static ssize_t param_attr_show(struct module_attribute *mattr,
 		strcat(buf, "\n");
 		++count;
 	}
+=======
+	kernel_param_lock(mk->mod);
+	count = attribute->param->ops->get(buf, attribute->param);
+	kernel_param_unlock(mk->mod);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return count;
 }
 
 /* sysfs always hands a nul-terminated string in buf.  We rely on that. */
 static ssize_t param_attr_store(struct module_attribute *mattr,
+<<<<<<< HEAD
 				struct module_kobject *km,
+=======
+				struct module_kobject *mk,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				const char *buf, size_t len)
 {
  	int err;
@@ -554,9 +927,18 @@ static ssize_t param_attr_store(struct module_attribute *mattr,
 	if (!attribute->param->ops->set)
 		return -EPERM;
 
+<<<<<<< HEAD
 	mutex_lock(&param_lock);
 	err = attribute->param->ops->set(buf, attribute->param);
 	mutex_unlock(&param_lock);
+=======
+	kernel_param_lock(mk->mod);
+	if (param_check_unsafe(attribute->param))
+		err = attribute->param->ops->set(buf, attribute->param);
+	else
+		err = -EPERM;
+	kernel_param_unlock(mk->mod);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!err)
 		return len;
 	return err;
@@ -570,6 +952,7 @@ static ssize_t param_attr_store(struct module_attribute *mattr,
 #endif
 
 #ifdef CONFIG_SYSFS
+<<<<<<< HEAD
 void __kernel_param_lock(void)
 {
 	mutex_lock(&param_lock);
@@ -581,11 +964,29 @@ void __kernel_param_unlock(void)
 	mutex_unlock(&param_lock);
 }
 EXPORT_SYMBOL(__kernel_param_unlock);
+=======
+void kernel_param_lock(struct module *mod)
+{
+	mutex_lock(KPARAM_MUTEX(mod));
+}
+
+void kernel_param_unlock(struct module *mod)
+{
+	mutex_unlock(KPARAM_MUTEX(mod));
+}
+
+EXPORT_SYMBOL(kernel_param_lock);
+EXPORT_SYMBOL(kernel_param_unlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * add_sysfs_param - add a parameter to sysfs
  * @mk: struct module_kobject
+<<<<<<< HEAD
  * @kparam: the actual parameter definition to add to sysfs
+=======
+ * @kp: the actual parameter definition to add to sysfs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @name: name of parameter
  *
  * Create a kobject if for a (per-module) parameter if mp NULL, and
@@ -596,14 +997,21 @@ static __modinit int add_sysfs_param(struct module_kobject *mk,
 				     const struct kernel_param *kp,
 				     const char *name)
 {
+<<<<<<< HEAD
 	struct module_param_attrs *new;
 	struct attribute **attrs;
 	int err, num;
+=======
+	struct module_param_attrs *new_mp;
+	struct attribute **new_attrs;
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We don't bother calling this with invisible parameters. */
 	BUG_ON(!kp->perm);
 
 	if (!mk->mp) {
+<<<<<<< HEAD
 		num = 0;
 		attrs = NULL;
 	} else {
@@ -655,12 +1063,68 @@ fail_free_new:
 fail:
 	mk->mp = NULL;
 	return err;
+=======
+		/* First allocation. */
+		mk->mp = kzalloc(sizeof(*mk->mp), GFP_KERNEL);
+		if (!mk->mp)
+			return -ENOMEM;
+		mk->mp->grp.name = "parameters";
+		/* NULL-terminated attribute array. */
+		mk->mp->grp.attrs = kzalloc(sizeof(mk->mp->grp.attrs[0]),
+					    GFP_KERNEL);
+		/* Caller will cleanup via free_module_param_attrs */
+		if (!mk->mp->grp.attrs)
+			return -ENOMEM;
+	}
+
+	/* Enlarge allocations. */
+	new_mp = krealloc(mk->mp,
+			  sizeof(*mk->mp) +
+			  sizeof(mk->mp->attrs[0]) * (mk->mp->num + 1),
+			  GFP_KERNEL);
+	if (!new_mp)
+		return -ENOMEM;
+	mk->mp = new_mp;
+
+	/* Extra pointer for NULL terminator */
+	new_attrs = krealloc(mk->mp->grp.attrs,
+			     sizeof(mk->mp->grp.attrs[0]) * (mk->mp->num + 2),
+			     GFP_KERNEL);
+	if (!new_attrs)
+		return -ENOMEM;
+	mk->mp->grp.attrs = new_attrs;
+
+	/* Tack new one on the end. */
+	memset(&mk->mp->attrs[mk->mp->num], 0, sizeof(mk->mp->attrs[0]));
+	sysfs_attr_init(&mk->mp->attrs[mk->mp->num].mattr.attr);
+	mk->mp->attrs[mk->mp->num].param = kp;
+	mk->mp->attrs[mk->mp->num].mattr.show = param_attr_show;
+	/* Do not allow runtime DAC changes to make param writable. */
+	if ((kp->perm & (S_IWUSR | S_IWGRP | S_IWOTH)) != 0)
+		mk->mp->attrs[mk->mp->num].mattr.store = param_attr_store;
+	else
+		mk->mp->attrs[mk->mp->num].mattr.store = NULL;
+	mk->mp->attrs[mk->mp->num].mattr.attr.name = (char *)name;
+	mk->mp->attrs[mk->mp->num].mattr.attr.mode = kp->perm;
+	mk->mp->num++;
+
+	/* Fix up all the pointers, since krealloc can move us */
+	for (i = 0; i < mk->mp->num; i++)
+		mk->mp->grp.attrs[i] = &mk->mp->attrs[i].mattr.attr;
+	mk->mp->grp.attrs[mk->mp->num] = NULL;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_MODULES
 static void free_module_param_attrs(struct module_kobject *mk)
 {
+<<<<<<< HEAD
 	kfree(mk->mp->grp.attrs);
+=======
+	if (mk->mp)
+		kfree(mk->mp->grp.attrs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(mk->mp);
 	mk->mp = NULL;
 }
@@ -685,8 +1149,15 @@ int module_param_sysfs_setup(struct module *mod,
 		if (kparam[i].perm == 0)
 			continue;
 		err = add_sysfs_param(&mod->mkobj, &kparam[i], kparam[i].name);
+<<<<<<< HEAD
 		if (err)
 			return err;
+=======
+		if (err) {
+			free_module_param_attrs(&mod->mkobj);
+			return err;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		params = true;
 	}
 
@@ -711,8 +1182,15 @@ void module_param_sysfs_remove(struct module *mod)
 {
 	if (mod->mkobj.mp) {
 		sysfs_remove_group(&mod->mkobj.kobj, &mod->mkobj.mp->grp);
+<<<<<<< HEAD
 		/* We are positive that no one is using any param
 		 * attrs at this point.  Deallocate immediately. */
+=======
+		/*
+		 * We are positive that no one is using any param
+		 * attrs at this point. Deallocate immediately.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_module_param_attrs(&mod->mkobj);
 	}
 }
@@ -750,11 +1228,16 @@ static struct module_kobject * __init locate_module_kobject(const char *name)
 #endif
 		if (err) {
 			kobject_put(&mk->kobj);
+<<<<<<< HEAD
 			printk(KERN_ERR
 				"Module '%s' failed add to sysfs, error number %d\n",
 				name, err);
 			printk(KERN_ERR
 				"The system will be unstable now.\n");
+=======
+			pr_crit("Adding module '%s' to sysfs failed (%d), the system may be unstable.\n",
+				name, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NULL;
 		}
 
@@ -766,7 +1249,11 @@ static struct module_kobject * __init locate_module_kobject(const char *name)
 }
 
 static void __init kernel_add_sysfs_param(const char *name,
+<<<<<<< HEAD
 					  struct kernel_param *kparam,
+=======
+					  const struct kernel_param *kparam,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  unsigned int name_skip)
 {
 	struct module_kobject *mk;
@@ -790,7 +1277,11 @@ static void __init kernel_add_sysfs_param(const char *name,
 }
 
 /*
+<<<<<<< HEAD
  * param_sysfs_builtin - add contents in /sys/parameters for built-in modules
+=======
+ * param_sysfs_builtin - add sysfs parameters for built-in modules
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Add module_parameters to sysfs for "modules" built into the kernel.
  *
@@ -801,7 +1292,11 @@ static void __init kernel_add_sysfs_param(const char *name,
  */
 static void __init param_sysfs_builtin(void)
 {
+<<<<<<< HEAD
 	struct kernel_param *kp;
+=======
+	const struct kernel_param *kp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int name_len;
 	char modname[MODULE_NAME_LEN];
 
@@ -818,7 +1313,11 @@ static void __init param_sysfs_builtin(void)
 			name_len = 0;
 		} else {
 			name_len = dot - kp->name + 1;
+<<<<<<< HEAD
 			strlcpy(modname, kp->name, name_len);
+=======
+			strscpy(modname, kp->name, name_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		kernel_add_sysfs_param(modname, kp, name_len);
 	}
@@ -830,6 +1329,7 @@ ssize_t __modver_version_show(struct module_attribute *mattr,
 	struct module_version_attribute *vattr =
 		container_of(mattr, struct module_version_attribute, mattr);
 
+<<<<<<< HEAD
 	return sprintf(buf, "%s\n", vattr->version);
 }
 
@@ -848,6 +1348,25 @@ static void __init version_sysfs_builtin(void)
 		mk = locate_module_kobject(vattr->module_name);
 		if (mk) {
 			err = sysfs_create_file(&mk->kobj, &vattr->mattr.attr);
+=======
+	return scnprintf(buf, PAGE_SIZE, "%s\n", vattr->version);
+}
+
+extern const struct module_version_attribute __start___modver[];
+extern const struct module_version_attribute __stop___modver[];
+
+static void __init version_sysfs_builtin(void)
+{
+	const struct module_version_attribute *vattr;
+	struct module_kobject *mk;
+	int err;
+
+	for (vattr = __start___modver; vattr < __stop___modver; vattr++) {
+		mk = locate_module_kobject(vattr->module_name);
+		if (mk) {
+			err = sysfs_create_file(&mk->kobj, &vattr->mattr.attr);
+			WARN_ON_ONCE(err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kobject_uevent(&mk->kobj, KOBJ_ADD);
 			kobject_put(&mk->kobj);
 		}
@@ -899,9 +1418,15 @@ static const struct sysfs_ops module_sysfs_ops = {
 	.store = module_attr_store,
 };
 
+<<<<<<< HEAD
 static int uevent_filter(struct kset *kset, struct kobject *kobj)
 {
 	struct kobj_type *ktype = get_ktype(kobj);
+=======
+static int uevent_filter(const struct kobject *kobj)
+{
+	const struct kobj_type *ktype = get_ktype(kobj);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ktype == &module_ktype)
 		return 1;
@@ -913,14 +1438,34 @@ static const struct kset_uevent_ops module_uevent_ops = {
 };
 
 struct kset *module_kset;
+<<<<<<< HEAD
 int module_sysfs_initialized;
 
 struct kobj_type module_ktype = {
+=======
+
+static void module_kobj_release(struct kobject *kobj)
+{
+	struct module_kobject *mk = to_module_kobject(kobj);
+	complete(mk->kobj_completion);
+}
+
+const struct kobj_type module_ktype = {
+	.release   =	module_kobj_release,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sysfs_ops =	&module_sysfs_ops,
 };
 
 /*
+<<<<<<< HEAD
  * param_sysfs_init - wrapper for built-in params support
+=======
+ * param_sysfs_init - create "module" kset
+ *
+ * This must be done before the initramfs is unpacked and
+ * request_module() thus becomes possible, because otherwise the
+ * module load would fail in mod_sysfs_init.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int __init param_sysfs_init(void)
 {
@@ -930,13 +1475,33 @@ static int __init param_sysfs_init(void)
 			__FILE__, __LINE__);
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	module_sysfs_initialized = 1;
+=======
+
+	return 0;
+}
+subsys_initcall(param_sysfs_init);
+
+/*
+ * param_sysfs_builtin_init - add sysfs version and parameter
+ * attributes for built-in modules
+ */
+static int __init param_sysfs_builtin_init(void)
+{
+	if (!module_kset)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	version_sysfs_builtin();
 	param_sysfs_builtin();
 
 	return 0;
 }
+<<<<<<< HEAD
 subsys_initcall(param_sysfs_init);
+=======
+late_initcall(param_sysfs_builtin_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_SYSFS */

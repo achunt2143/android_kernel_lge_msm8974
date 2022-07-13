@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/bitops.h>
 #include <linux/delay.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/bitops.h>
+#include <linux/delay.h>
+#include <linux/isa-dma.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <asm/dma.h>
 #include <linux/io.h>
@@ -9,13 +16,23 @@
 #include <linux/timer.h>
 #include <asm/pci-direct.h>
 #include <asm/tsc.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpufeature.h>
+#include <linux/sched.h>
+#include <linux/sched/clock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "cpu.h"
 
 /*
  * Read NSC/Cyrix DEVID registers (DIR) to get more detailed info. about the CPU
  */
+<<<<<<< HEAD
 static void __cpuinit __do_cyrix_devid(unsigned char *dir0, unsigned char *dir1)
+=======
+static void __do_cyrix_devid(unsigned char *dir0, unsigned char *dir1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char ccr2, ccr3;
 
@@ -44,7 +61,11 @@ static void __cpuinit __do_cyrix_devid(unsigned char *dir0, unsigned char *dir1)
 	}
 }
 
+<<<<<<< HEAD
 static void __cpuinit do_cyrix_devid(unsigned char *dir0, unsigned char *dir1)
+=======
+static void do_cyrix_devid(unsigned char *dir0, unsigned char *dir1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -59,6 +80,7 @@ static void __cpuinit do_cyrix_devid(unsigned char *dir0, unsigned char *dir1)
  * Actually since bugs.h doesn't even reference this perhaps someone should
  * fix the documentation ???
  */
+<<<<<<< HEAD
 static unsigned char Cx86_dir0_msb __cpuinitdata = 0;
 
 static const char __cpuinitconst Cx86_model[][9] = {
@@ -78,6 +100,27 @@ static const char __cpuinitconst Cx486D_name[][4] = {
 static char Cx86_cb[] __cpuinitdata = "?.5x Core/Bus Clock";
 static const char __cpuinitconst cyrix_model_mult1[] = "12??43";
 static const char __cpuinitconst cyrix_model_mult2[] = "12233445";
+=======
+static unsigned char Cx86_dir0_msb = 0;
+
+static const char Cx86_model[][9] = {
+	"Cx486", "Cx486", "5x86 ", "6x86", "MediaGX ", "6x86MX ",
+	"M II ", "Unknown"
+};
+static const char Cx486_name[][5] = {
+	"SLC", "DLC", "SLC2", "DLC2", "SRx", "DRx",
+	"SRx2", "DRx2"
+};
+static const char Cx486S_name[][4] = {
+	"S", "S2", "Se", "S2e"
+};
+static const char Cx486D_name[][4] = {
+	"DX", "DX2", "?", "?", "?", "DX4"
+};
+static char Cx86_cb[] = "?.5x Core/Bus Clock";
+static const char cyrix_model_mult1[] = "12??43";
+static const char cyrix_model_mult2[] = "12233445";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Reset the slow-loop (SLOP) bit on the 686(L) which is set by some old
@@ -87,7 +130,11 @@ static const char __cpuinitconst cyrix_model_mult2[] = "12233445";
  * FIXME: our newer udelay uses the tsc. We don't need to frob with SLOP
  */
 
+<<<<<<< HEAD
 static void __cpuinit check_cx686_slop(struct cpuinfo_x86 *c)
+=======
+static void check_cx686_slop(struct cpuinfo_x86 *c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -104,7 +151,11 @@ static void __cpuinit check_cx686_slop(struct cpuinfo_x86 *c)
 		local_irq_restore(flags);
 
 		if (ccr5 & 2) { /* possible wrong calibration done */
+<<<<<<< HEAD
 			printk(KERN_INFO "Recalibrating delay loop with SLOP bit reset\n");
+=======
+			pr_info("Recalibrating delay loop with SLOP bit reset\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			calibrate_delay();
 			c->loops_per_jiffy = loops_per_jiffy;
 		}
@@ -112,21 +163,34 @@ static void __cpuinit check_cx686_slop(struct cpuinfo_x86 *c)
 }
 
 
+<<<<<<< HEAD
 static void __cpuinit set_cx86_reorder(void)
 {
 	u8 ccr3;
 
 	printk(KERN_INFO "Enable Memory access reorder on Cyrix/NSC processor.\n");
+=======
+static void set_cx86_reorder(void)
+{
+	u8 ccr3;
+
+	pr_info("Enable Memory access reorder on Cyrix/NSC processor.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ccr3 = getCx86(CX86_CCR3);
 	setCx86(CX86_CCR3, (ccr3 & 0x0f) | 0x10); /* enable MAPEN */
 
 	/* Load/Store Serialize to mem access disable (=reorder it) */
+<<<<<<< HEAD
 	setCx86_old(CX86_PCR0, getCx86_old(CX86_PCR0) & ~0x80);
+=======
+	setCx86(CX86_PCR0, getCx86(CX86_PCR0) & ~0x80);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set load/store serialize from 1GB to 4GB */
 	ccr3 |= 0xe0;
 	setCx86(CX86_CCR3, ccr3);
 }
 
+<<<<<<< HEAD
 static void __cpuinit set_cx86_memwb(void)
 {
 	printk(KERN_INFO "Enable Memory-Write-back mode on Cyrix/NSC processor.\n");
@@ -137,27 +201,51 @@ static void __cpuinit set_cx86_memwb(void)
 	write_cr0(read_cr0() | X86_CR0_NW);
 	/* CCR2 bit 2: lock NW bit and set WT1 */
 	setCx86_old(CX86_CCR2, getCx86_old(CX86_CCR2) | 0x14);
+=======
+static void set_cx86_memwb(void)
+{
+	pr_info("Enable Memory-Write-back mode on Cyrix/NSC processor.\n");
+
+	/* CCR2 bit 2: unlock NW bit */
+	setCx86(CX86_CCR2, getCx86(CX86_CCR2) & ~0x04);
+	/* set 'Not Write-through' */
+	write_cr0(read_cr0() | X86_CR0_NW);
+	/* CCR2 bit 2: lock NW bit and set WT1 */
+	setCx86(CX86_CCR2, getCx86(CX86_CCR2) | 0x14);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  *	Configure later MediaGX and/or Geode processor.
  */
 
+<<<<<<< HEAD
 static void __cpuinit geode_configure(void)
+=======
+static void geode_configure(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	u8 ccr3;
 	local_irq_save(flags);
 
 	/* Suspend on halt power saving and enable #SUSP pin */
+<<<<<<< HEAD
 	setCx86_old(CX86_CCR2, getCx86_old(CX86_CCR2) | 0x88);
+=======
+	setCx86(CX86_CCR2, getCx86(CX86_CCR2) | 0x88);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ccr3 = getCx86(CX86_CCR3);
 	setCx86(CX86_CCR3, (ccr3 & 0x0f) | 0x10);	/* enable MAPEN */
 
 
 	/* FPU fast, DTE cache, Mem bypass */
+<<<<<<< HEAD
 	setCx86_old(CX86_CCR4, getCx86_old(CX86_CCR4) | 0x38);
+=======
+	setCx86(CX86_CCR4, getCx86(CX86_CCR4) | 0x38);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	setCx86(CX86_CCR3, ccr3);			/* disable MAPEN */
 
 	set_cx86_memwb();
@@ -166,7 +254,11 @@ static void __cpuinit geode_configure(void)
 	local_irq_restore(flags);
 }
 
+<<<<<<< HEAD
 static void __cpuinit early_init_cyrix(struct cpuinfo_x86 *c)
+=======
+static void early_init_cyrix(struct cpuinfo_x86 *c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char dir0, dir0_msn, dir1 = 0;
 
@@ -185,7 +277,11 @@ static void __cpuinit early_init_cyrix(struct cpuinfo_x86 *c)
 	}
 }
 
+<<<<<<< HEAD
 static void __cpuinit init_cyrix(struct cpuinfo_x86 *c)
+=======
+static void init_cyrix(struct cpuinfo_x86 *c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char dir0, dir0_msn, dir0_lsn, dir1 = 0;
 	char *buf = c->x86_model_id;
@@ -212,7 +308,11 @@ static void __cpuinit init_cyrix(struct cpuinfo_x86 *c)
 
 	/* common case step number/rev -- exceptions handled below */
 	c->x86_model = (dir1 >> 4) + 1;
+<<<<<<< HEAD
 	c->x86_mask = dir1 & 0xf;
+=======
+	c->x86_stepping = dir1 & 0xf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Now cook; the original recipe is by Channing Corn, from Cyrix.
 	 * We do the same thing for each generation: we work out
@@ -249,10 +349,18 @@ static void __cpuinit init_cyrix(struct cpuinfo_x86 *c)
 		/* Emulate MTRRs using Cyrix's ARRs. */
 		set_cpu_cap(c, X86_FEATURE_CYRIX_ARR);
 		/* 6x86's contain this bug */
+<<<<<<< HEAD
 		c->coma_bug = 1;
 		break;
 
 	case 4: /* MediaGX/GXm or Geode GXM/GXLV/GX1 */
+=======
+		set_cpu_bug(c, X86_BUG_COMA);
+		break;
+
+	case 4: /* MediaGX/GXm or Geode GXM/GXLV/GX1 */
+	case 11: /* GX1 with inverted Device ID */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PCI
 	{
 		u32 vendor, device;
@@ -269,7 +377,11 @@ static void __cpuinit init_cyrix(struct cpuinfo_x86 *c)
 		 *  VSA1 we work around however.
 		 */
 
+<<<<<<< HEAD
 		printk(KERN_INFO "Working around Cyrix MediaGX virtual DMA bugs.\n");
+=======
+		pr_info("Working around Cyrix MediaGX virtual DMA bugs.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		isa_dma_bridge_buggy = 2;
 
 		/* We do this before the PCI layer is running. However we
@@ -287,12 +399,20 @@ static void __cpuinit init_cyrix(struct cpuinfo_x86 *c)
 			mark_tsc_unstable("cyrix 5510/5520 detected");
 	}
 #endif
+<<<<<<< HEAD
 		c->x86_cache_size = 16;	/* Yep 16K integrated cache thats it */
+=======
+		c->x86_cache_size = 16;	/* Yep 16K integrated cache that's it */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* GXm supports extended cpuid levels 'ala' AMD */
 		if (c->cpuid_level == 2) {
 			/* Enable cxMMX extensions (GX1 Datasheet 54) */
+<<<<<<< HEAD
 			setCx86_old(CX86_CCR7, getCx86_old(CX86_CCR7) | 1);
+=======
+			setCx86(CX86_CCR7, getCx86(CX86_CCR7) | 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/*
 			 * GXm : 0x30 ... 0x5f GXm  datasheet 51
@@ -315,9 +435,16 @@ static void __cpuinit init_cyrix(struct cpuinfo_x86 *c)
 		if (dir1 > 7) {
 			dir0_msn++;  /* M II */
 			/* Enable MMX extensions (App note 108) */
+<<<<<<< HEAD
 			setCx86_old(CX86_CCR7, getCx86_old(CX86_CCR7)|1);
 		} else {
 			c->coma_bug = 1;      /* 6x86MX, it has the bug. */
+=======
+			setCx86(CX86_CCR7, getCx86(CX86_CCR7)|1);
+		} else {
+			/* A 6x86MX - it has the bug. */
+			set_cpu_bug(c, X86_BUG_COMA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		tmp = (!(dir0_lsn & 7) || dir0_lsn & 1) ? 2 : 0;
 		Cx86_cb[tmp] = cyrix_model_mult2[dir0_lsn & 7];
@@ -332,7 +459,11 @@ static void __cpuinit init_cyrix(struct cpuinfo_x86 *c)
 		switch (dir0_lsn) {
 		case 0xd:  /* either a 486SLC or DLC w/o DEVID */
 			dir0_msn = 0;
+<<<<<<< HEAD
 			p = Cx486_name[(c->hard_math) ? 1 : 0];
+=======
+			p = Cx486_name[!!boot_cpu_has(X86_FEATURE_FPU)];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case 0xe:  /* a 486S A step */
@@ -355,7 +486,11 @@ static void __cpuinit init_cyrix(struct cpuinfo_x86 *c)
 /*
  * Handle National Semiconductor branded processors
  */
+<<<<<<< HEAD
 static void __cpuinit init_nsc(struct cpuinfo_x86 *c)
+=======
+static void init_nsc(struct cpuinfo_x86 *c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * There may be GX1 processors in the wild that are branded
@@ -404,7 +539,11 @@ static inline int test_cyrix_52div(void)
 	return (unsigned char) (test >> 8) == 0x02;
 }
 
+<<<<<<< HEAD
 static void __cpuinit cyrix_identify(struct cpuinfo_x86 *c)
+=======
+static void cyrix_identify(struct cpuinfo_x86 *c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Detect Cyrix with disabled CPUID */
 	if (c->x86 == 4 && test_cyrix_52div()) {
@@ -426,13 +565,21 @@ static void __cpuinit cyrix_identify(struct cpuinfo_x86 *c)
 		if (dir0 == 5 || dir0 == 3) {
 			unsigned char ccr3;
 			unsigned long flags;
+<<<<<<< HEAD
 			printk(KERN_INFO "Enabling CPUID on Cyrix processor.\n");
+=======
+			pr_info("Enabling CPUID on Cyrix processor.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			local_irq_save(flags);
 			ccr3 = getCx86(CX86_CCR3);
 			/* enable MAPEN  */
 			setCx86(CX86_CCR3, (ccr3 & 0x0f) | 0x10);
 			/* enable cpuid  */
+<<<<<<< HEAD
 			setCx86_old(CX86_CCR4, getCx86_old(CX86_CCR4) | 0x80);
+=======
+			setCx86(CX86_CCR4, getCx86(CX86_CCR4) | 0x80);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* disable MAPEN */
 			setCx86(CX86_CCR3, ccr3);
 			local_irq_restore(flags);
@@ -440,7 +587,11 @@ static void __cpuinit cyrix_identify(struct cpuinfo_x86 *c)
 	}
 }
 
+<<<<<<< HEAD
 static const struct cpu_dev __cpuinitconst cyrix_cpu_dev = {
+=======
+static const struct cpu_dev cyrix_cpu_dev = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.c_vendor	= "Cyrix",
 	.c_ident	= { "CyrixInstead" },
 	.c_early_init	= early_init_cyrix,
@@ -451,7 +602,11 @@ static const struct cpu_dev __cpuinitconst cyrix_cpu_dev = {
 
 cpu_dev_register(cyrix_cpu_dev);
 
+<<<<<<< HEAD
 static const struct cpu_dev __cpuinitconst nsc_cpu_dev = {
+=======
+static const struct cpu_dev nsc_cpu_dev = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.c_vendor	= "NSC",
 	.c_ident	= { "Geode by NSC" },
 	.c_init		= init_nsc,

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * llc_output.c - LLC minimal output path
  *
  * Copyright (c) 1997 by Procom Technology, Inc.
  * 		 2001-2003 by Arnaldo Carvalho de Melo <acme@conectiva.com.br>
+<<<<<<< HEAD
  *
  * This program can be redistributed or modified under the terms of the
  * GNU General Public License version 2 as published by the Free Software
@@ -17,6 +22,12 @@
 #include <linux/if_tr.h>
 #include <linux/netdevice.h>
 #include <linux/trdevice.h>
+=======
+ */
+
+#include <linux/if_arp.h>
+#include <linux/netdevice.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/skbuff.h>
 #include <linux/export.h>
 #include <net/llc.h>
@@ -37,7 +48,10 @@ int llc_mac_hdr_init(struct sk_buff *skb,
 	int rc = -EINVAL;
 
 	switch (skb->dev->type) {
+<<<<<<< HEAD
 	case ARPHRD_IEEE802_TR:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ARPHRD_ETHER:
 	case ARPHRD_LOOPBACK:
 		rc = dev_hard_header(skb, skb->dev, ETH_P_802_2, da, sa,
@@ -46,7 +60,11 @@ int llc_mac_hdr_init(struct sk_buff *skb,
 			rc = 0;
 		break;
 	default:
+<<<<<<< HEAD
 		WARN(1, "device type not supported: %d\n", skb->dev->type);
+=======
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return rc;
 }
@@ -66,7 +84,11 @@ int llc_mac_hdr_init(struct sk_buff *skb,
  *	package primitive as an event and send to SAP event handler
  */
 int llc_build_and_send_ui_pkt(struct llc_sap *sap, struct sk_buff *skb,
+<<<<<<< HEAD
 			      unsigned char *dmac, unsigned char dsap)
+=======
+			      const unsigned char *dmac, unsigned char dsap)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc;
 	llc_pdu_header_init(skb, LLC_PDU_TYPE_U, sap->laddr.lsap,
@@ -75,6 +97,11 @@ int llc_build_and_send_ui_pkt(struct llc_sap *sap, struct sk_buff *skb,
 	rc = llc_mac_hdr_init(skb, skb->dev->dev_addr, dmac);
 	if (likely(!rc))
 		rc = dev_queue_xmit(skb);
+<<<<<<< HEAD
+=======
+	else
+		kfree_skb(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 

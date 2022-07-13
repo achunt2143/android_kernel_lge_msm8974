@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Watchdog driver for the wm8350
  *
  * Copyright (C) 2007, 2008 Wolfson Microelectronics <linux@wolfsonmicro.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -140,7 +147,11 @@ static struct watchdog_device wm8350_wdt = {
 	.max_timeout = 4,
 };
 
+<<<<<<< HEAD
 static int __devinit wm8350_wdt_probe(struct platform_device *pdev)
+=======
+static int wm8350_wdt_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8350 *wm8350 = platform_get_drvdata(pdev);
 
@@ -151,10 +162,15 @@ static int __devinit wm8350_wdt_probe(struct platform_device *pdev)
 
 	watchdog_set_nowayout(&wm8350_wdt, nowayout);
 	watchdog_set_drvdata(&wm8350_wdt, wm8350);
+<<<<<<< HEAD
+=======
+	wm8350_wdt.parent = &pdev->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Default to 4s timeout */
 	wm8350_wdt_set_timeout(&wm8350_wdt, 4);
 
+<<<<<<< HEAD
 	return watchdog_register_device(&wm8350_wdt);
 }
 
@@ -162,11 +178,17 @@ static int __devexit wm8350_wdt_remove(struct platform_device *pdev)
 {
 	watchdog_unregister_device(&wm8350_wdt);
 	return 0;
+=======
+	return devm_watchdog_register_device(&pdev->dev, &wm8350_wdt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver wm8350_wdt_driver = {
 	.probe = wm8350_wdt_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(wm8350_wdt_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.name = "wm8350-wdt",
 	},

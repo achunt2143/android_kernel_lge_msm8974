@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/usb/core/endpoint.c
  *
@@ -5,14 +9,23 @@
  * (C) Copyright 2002,2004 IBM Corp.
  * (C) Copyright 2006 Novell Inc.
  *
+<<<<<<< HEAD
  * Endpoint sysfs stuff
  *
+=======
+ * Released under the GPLv2 only.
+ *
+ * Endpoint sysfs stuff
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/idr.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/usb.h>
 #include "usb.h"
 
@@ -24,10 +37,13 @@ struct ep_device {
 #define to_ep_device(_dev) \
 	container_of(_dev, struct ep_device, dev)
 
+<<<<<<< HEAD
 struct device_type usb_ep_device_type = {
 	.name =		"usb_endpoint",
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ep_attribute {
 	struct attribute attr;
 	ssize_t (*show)(struct usb_device *,
@@ -37,13 +53,18 @@ struct ep_attribute {
 	container_of(_attr, struct ep_attribute, attr)
 
 #define usb_ep_attr(field, format_string)			\
+<<<<<<< HEAD
 static ssize_t show_ep_##field(struct device *dev,		\
+=======
+static ssize_t field##_show(struct device *dev,			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct device_attribute *attr,	\
 			       char *buf)			\
 {								\
 	struct ep_device *ep = to_ep_device(dev);		\
 	return sprintf(buf, format_string, ep->desc->field);	\
 }								\
+<<<<<<< HEAD
 static DEVICE_ATTR(field, S_IRUGO, show_ep_##field, NULL);
 
 usb_ep_attr(bLength, "%02x\n")
@@ -62,6 +83,25 @@ static DEVICE_ATTR(wMaxPacketSize, S_IRUGO, show_ep_wMaxPacketSize, NULL);
 
 static ssize_t show_ep_type(struct device *dev, struct device_attribute *attr,
 			    char *buf)
+=======
+static DEVICE_ATTR_RO(field)
+
+usb_ep_attr(bLength, "%02x\n");
+usb_ep_attr(bEndpointAddress, "%02x\n");
+usb_ep_attr(bmAttributes, "%02x\n");
+usb_ep_attr(bInterval, "%02x\n");
+
+static ssize_t wMaxPacketSize_show(struct device *dev,
+				   struct device_attribute *attr, char *buf)
+{
+	struct ep_device *ep = to_ep_device(dev);
+	return sprintf(buf, "%04x\n", usb_endpoint_maxp(ep->desc));
+}
+static DEVICE_ATTR_RO(wMaxPacketSize);
+
+static ssize_t type_show(struct device *dev, struct device_attribute *attr,
+			 char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ep_device *ep = to_ep_device(dev);
 	char *type = "unknown";
@@ -82,6 +122,7 @@ static ssize_t show_ep_type(struct device *dev, struct device_attribute *attr,
 	}
 	return sprintf(buf, "%s\n", type);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(type, S_IRUGO, show_ep_type, NULL);
 
 static ssize_t show_ep_interval(struct device *dev,
@@ -122,16 +163,38 @@ static ssize_t show_ep_interval(struct device *dev,
 	if (interval % 1000)
 		unit = 'u';
 	else {
+=======
+static DEVICE_ATTR_RO(type);
+
+static ssize_t interval_show(struct device *dev, struct device_attribute *attr,
+			     char *buf)
+{
+	struct ep_device *ep = to_ep_device(dev);
+	unsigned int interval;
+	char unit;
+
+	interval = usb_decode_interval(ep->desc, ep->udev->speed);
+	if (interval % 1000) {
+		unit = 'u';
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unit = 'm';
 		interval /= 1000;
 	}
 
 	return sprintf(buf, "%d%cs\n", interval, unit);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(interval, S_IRUGO, show_ep_interval, NULL);
 
 static ssize_t show_ep_direction(struct device *dev,
 				 struct device_attribute *attr, char *buf)
+=======
+static DEVICE_ATTR_RO(interval);
+
+static ssize_t direction_show(struct device *dev, struct device_attribute *attr,
+			      char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ep_device *ep = to_ep_device(dev);
 	char *direction;
@@ -144,7 +207,11 @@ static ssize_t show_ep_direction(struct device *dev,
 		direction = "out";
 	return sprintf(buf, "%s\n", direction);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(direction, S_IRUGO, show_ep_direction, NULL);
+=======
+static DEVICE_ATTR_RO(direction);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *ep_dev_attrs[] = {
 	&dev_attr_bLength.attr,
@@ -157,7 +224,11 @@ static struct attribute *ep_dev_attrs[] = {
 	&dev_attr_direction.attr,
 	NULL,
 };
+<<<<<<< HEAD
 static struct attribute_group ep_dev_attr_grp = {
+=======
+static const struct attribute_group ep_dev_attr_grp = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = ep_dev_attrs,
 };
 static const struct attribute_group *ep_dev_groups[] = {
@@ -172,6 +243,14 @@ static void ep_device_release(struct device *dev)
 	kfree(ep_dev);
 }
 
+<<<<<<< HEAD
+=======
+const struct device_type usb_ep_device_type = {
+	.name =		"usb_endpoint",
+	.release = ep_device_release,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int usb_create_ep_devs(struct device *parent,
 			struct usb_host_endpoint *endpoint,
 			struct usb_device *udev)
@@ -190,7 +269,10 @@ int usb_create_ep_devs(struct device *parent,
 	ep_dev->dev.groups = ep_dev_groups;
 	ep_dev->dev.type = &usb_ep_device_type;
 	ep_dev->dev.parent = parent;
+<<<<<<< HEAD
 	ep_dev->dev.release = ep_device_release;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_set_name(&ep_dev->dev, "ep_%02x", endpoint->desc.bEndpointAddress);
 
 	retval = device_register(&ep_dev->dev);

@@ -10,7 +10,11 @@
  *
  *	© Copyright 1995 Apple Computer, Inc. All rights reserved.
  *
+<<<<<<< HEAD
  *  It's available online from http://www.cpu.lu/~mlan/ftp/MacTech.pdf
+=======
+ *  It's available online from https://www.cpu.lu/~mlan/ftp/MacTech.pdf
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  You can obtain paper copies of this book from computer bookstores or by
  *  writing Morgan Kaufmann Publishers, Inc., 340 Pine Street, Sixth Floor, San
  *  Francisco, CA 94104. Reference ISBN 1-55860-393-X.
@@ -89,14 +93,21 @@ extern volatile struct Hydra __iomem *Hydra;
 #define HYDRA_INT_EXT2		13	/* PCI IRQX */
 #define HYDRA_INT_EXT3		14	/* PCI IRQY */
 #define HYDRA_INT_EXT4		15	/* PCI IRQZ */
+<<<<<<< HEAD
 #define HYDRA_INT_EXT5		16	/* IDE Primay/Secondary */
+=======
+#define HYDRA_INT_EXT5		16	/* IDE Primary/Secondary */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define HYDRA_INT_EXT6		17	/* IDE Secondary */
 #define HYDRA_INT_EXT7		18	/* Power Off Request */
 #define HYDRA_INT_SPARE		19
 
+<<<<<<< HEAD
 extern int hydra_init(void);
 extern void macio_adb_init(void);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __KERNEL__ */
 
 #endif /* _ASMPPC_HYDRA_H */

@@ -28,7 +28,11 @@ sub trace_end
 sub irq::softirq_entry
 {
 	my ($event_name, $context, $common_cpu, $common_secs, $common_nsecs,
+<<<<<<< HEAD
 	    $common_pid, $common_comm,
+=======
+	    $common_pid, $common_comm, $common_callchain,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    $vec) = @_;
 
 	print_header($event_name, $common_cpu, $common_secs, $common_nsecs,
@@ -43,7 +47,11 @@ sub irq::softirq_entry
 sub kmem::kmalloc
 {
 	my ($event_name, $context, $common_cpu, $common_secs, $common_nsecs,
+<<<<<<< HEAD
 	    $common_pid, $common_comm,
+=======
+	    $common_pid, $common_comm, $common_callchain,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    $call_site, $ptr, $bytes_req, $bytes_alloc,
 	    $gfp_flags) = @_;
 
@@ -92,7 +100,11 @@ sub print_unhandled
 sub trace_unhandled
 {
     my ($event_name, $context, $common_cpu, $common_secs, $common_nsecs,
+<<<<<<< HEAD
 	$common_pid, $common_comm) = @_;
+=======
+	$common_pid, $common_comm, $common_callchain) = @_;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     $unhandled{$event_name}++;
 }

@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Au12x0/Au1550 PSC ALSA ASoC audio support.
  *
  * (c) 2007-2008 MSC Vertriebsges.m.b.H.,
  *	Manuel Lauss <manuel.lauss@gmail.com>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Au1xxx-PSC I2S glue.
  *
  * NOTE: so far only PSC slave mode (bit- and frameclock) is supported.
@@ -93,12 +100,21 @@ static int au1xpsc_i2s_set_fmt(struct snd_soc_dai *cpu_dai,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBM_CFM:	/* CODEC master */
 		ct |= PSC_I2SCFG_MS;	/* PSC I2S slave mode */
 		break;
 	case SND_SOC_DAIFMT_CBS_CFS:	/* CODEC slave */
 		ct &= ~PSC_I2SCFG_MS;	/* PSC I2S Master mode */
+=======
+	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
+	case SND_SOC_DAIFMT_BC_FC:	/* CODEC provider */
+		ct |= PSC_I2SCFG_MS;	/* PSC I2S consumer mode */
+		break;
+	case SND_SOC_DAIFMT_BP_FP:	/* CODEC consumer */
+		ct &= ~PSC_I2SCFG_MS;	/* PSC I2S provider mode */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		goto out;
@@ -120,10 +136,17 @@ static int au1xpsc_i2s_hw_params(struct snd_pcm_substream *substream,
 	unsigned long stat;
 
 	/* check if the PSC is already streaming data */
+<<<<<<< HEAD
 	stat = au_readl(I2S_STAT(pscdata));
 	if (stat & (PSC_I2SSTAT_TB | PSC_I2SSTAT_RB)) {
 		/* reject parameters not currently set up in hardware */
 		cfgbits = au_readl(I2S_CFG(pscdata));
+=======
+	stat = __raw_readl(I2S_STAT(pscdata));
+	if (stat & (PSC_I2SSTAT_TB | PSC_I2SSTAT_RB)) {
+		/* reject parameters not currently set up in hardware */
+		cfgbits = __raw_readl(I2S_CFG(pscdata));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((PSC_I2SCFG_GET_LEN(cfgbits) != params->msbits) ||
 		    (params_rate(params) != pscdata->rate))
 			return -EINVAL;
@@ -149,16 +172,25 @@ static int au1xpsc_i2s_configure(struct au1xpsc_audio_data *pscdata)
 	unsigned long tmo;
 
 	/* bring PSC out of sleep, and configure I2S unit */
+<<<<<<< HEAD
 	au_writel(PSC_CTRL_ENABLE, PSC_CTRL(pscdata));
 	au_sync();
 
 	tmo = 1000000;
 	while (!(au_readl(I2S_STAT(pscdata)) & PSC_I2SSTAT_SR) && tmo)
+=======
+	__raw_writel(PSC_CTRL_ENABLE, PSC_CTRL(pscdata));
+	wmb(); /* drain writebuffer */
+
+	tmo = 1000000;
+	while (!(__raw_readl(I2S_STAT(pscdata)) & PSC_I2SSTAT_SR) && tmo)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmo--;
 
 	if (!tmo)
 		goto psc_err;
 
+<<<<<<< HEAD
 	au_writel(0, I2S_CFG(pscdata));
 	au_sync();
 	au_writel(pscdata->cfg | PSC_I2SCFG_DE_ENABLE, I2S_CFG(pscdata));
@@ -167,15 +199,31 @@ static int au1xpsc_i2s_configure(struct au1xpsc_audio_data *pscdata)
 	/* wait for I2S controller to become ready */
 	tmo = 1000000;
 	while (!(au_readl(I2S_STAT(pscdata)) & PSC_I2SSTAT_DR) && tmo)
+=======
+	__raw_writel(0, I2S_CFG(pscdata));
+	wmb(); /* drain writebuffer */
+	__raw_writel(pscdata->cfg | PSC_I2SCFG_DE_ENABLE, I2S_CFG(pscdata));
+	wmb(); /* drain writebuffer */
+
+	/* wait for I2S controller to become ready */
+	tmo = 1000000;
+	while (!(__raw_readl(I2S_STAT(pscdata)) & PSC_I2SSTAT_DR) && tmo)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmo--;
 
 	if (tmo)
 		return 0;
 
 psc_err:
+<<<<<<< HEAD
 	au_writel(0, I2S_CFG(pscdata));
 	au_writel(PSC_CTRL_SUSPEND, PSC_CTRL(pscdata));
 	au_sync();
+=======
+	__raw_writel(0, I2S_CFG(pscdata));
+	__raw_writel(PSC_CTRL_SUSPEND, PSC_CTRL(pscdata));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ETIMEDOUT;
 }
 
@@ -187,13 +235,18 @@ static int au1xpsc_i2s_start(struct au1xpsc_audio_data *pscdata, int stype)
 	ret = 0;
 
 	/* if both TX and RX are idle, configure the PSC  */
+<<<<<<< HEAD
 	stat = au_readl(I2S_STAT(pscdata));
+=======
+	stat = __raw_readl(I2S_STAT(pscdata));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(stat & (PSC_I2SSTAT_TB | PSC_I2SSTAT_RB))) {
 		ret = au1xpsc_i2s_configure(pscdata);
 		if (ret)
 			goto out;
 	}
 
+<<<<<<< HEAD
 	au_writel(I2SPCR_CLRFIFO(stype), I2S_PCR(pscdata));
 	au_sync();
 	au_writel(I2SPCR_START(stype), I2S_PCR(pscdata));
@@ -207,6 +260,21 @@ static int au1xpsc_i2s_start(struct au1xpsc_audio_data *pscdata, int stype)
 	if (!tmo) {
 		au_writel(I2SPCR_STOP(stype), I2S_PCR(pscdata));
 		au_sync();
+=======
+	__raw_writel(I2SPCR_CLRFIFO(stype), I2S_PCR(pscdata));
+	wmb(); /* drain writebuffer */
+	__raw_writel(I2SPCR_START(stype), I2S_PCR(pscdata));
+	wmb(); /* drain writebuffer */
+
+	/* wait for start confirmation */
+	tmo = 1000000;
+	while (!(__raw_readl(I2S_STAT(pscdata)) & I2SSTAT_BUSY(stype)) && tmo)
+		tmo--;
+
+	if (!tmo) {
+		__raw_writel(I2SPCR_STOP(stype), I2S_PCR(pscdata));
+		wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ETIMEDOUT;
 	}
 out:
@@ -217,6 +285,7 @@ static int au1xpsc_i2s_stop(struct au1xpsc_audio_data *pscdata, int stype)
 {
 	unsigned long tmo, stat;
 
+<<<<<<< HEAD
 	au_writel(I2SPCR_STOP(stype), I2S_PCR(pscdata));
 	au_sync();
 
@@ -232,6 +301,23 @@ static int au1xpsc_i2s_stop(struct au1xpsc_audio_data *pscdata, int stype)
 		au_sync();
 		au_writel(PSC_CTRL_SUSPEND, PSC_CTRL(pscdata));
 		au_sync();
+=======
+	__raw_writel(I2SPCR_STOP(stype), I2S_PCR(pscdata));
+	wmb(); /* drain writebuffer */
+
+	/* wait for stop confirmation */
+	tmo = 1000000;
+	while ((__raw_readl(I2S_STAT(pscdata)) & I2SSTAT_BUSY(stype)) && tmo)
+		tmo--;
+
+	/* if both TX and RX are idle, disable PSC */
+	stat = __raw_readl(I2S_STAT(pscdata));
+	if (!(stat & (PSC_I2SSTAT_TB | PSC_I2SSTAT_RB))) {
+		__raw_writel(0, I2S_CFG(pscdata));
+		wmb(); /* drain writebuffer */
+		__raw_writel(PSC_CTRL_SUSPEND, PSC_CTRL(pscdata));
+		wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -288,11 +374,23 @@ static const struct snd_soc_dai_driver au1xpsc_i2s_dai_template = {
 	.ops = &au1xpsc_i2s_dai_ops,
 };
 
+<<<<<<< HEAD
 static int __devinit au1xpsc_i2s_drvprobe(struct platform_device *pdev)
 {
 	struct resource *iores, *dmares;
 	unsigned long sel;
 	int ret;
+=======
+static const struct snd_soc_component_driver au1xpsc_i2s_component = {
+	.name			= "au1xpsc-i2s",
+	.legacy_dai_naming	= 1,
+};
+
+static int au1xpsc_i2s_drvprobe(struct platform_device *pdev)
+{
+	struct resource *dmares;
+	unsigned long sel;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct au1xpsc_audio_data *wd;
 
 	wd = devm_kzalloc(&pdev->dev, sizeof(struct au1xpsc_audio_data),
@@ -300,6 +398,7 @@ static int __devinit au1xpsc_i2s_drvprobe(struct platform_device *pdev)
 	if (!wd)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!iores)
 		return -ENODEV;
@@ -314,6 +413,11 @@ static int __devinit au1xpsc_i2s_drvprobe(struct platform_device *pdev)
 				resource_size(iores));
 	if (!wd->mmio)
 		return -EBUSY;
+=======
+	wd->mmio = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(wd->mmio))
+		return PTR_ERR(wd->mmio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dmares = platform_get_resource(pdev, IORESOURCE_DMA, 0);
 	if (!dmares)
@@ -328,12 +432,21 @@ static int __devinit au1xpsc_i2s_drvprobe(struct platform_device *pdev)
 	/* preserve PSC clock source set up by platform (dev.platform_data
 	 * is already occupied by soc layer)
 	 */
+<<<<<<< HEAD
 	sel = au_readl(PSC_SEL(wd)) & PSC_SEL_CLK_MASK;
 	au_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
 	au_sync();
 	au_writel(PSC_SEL_PS_I2SMODE | sel, PSC_SEL(wd));
 	au_writel(0, I2S_CFG(wd));
 	au_sync();
+=======
+	sel = __raw_readl(PSC_SEL(wd)) & PSC_SEL_CLK_MASK;
+	__raw_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(PSC_SEL_PS_I2SMODE | sel, PSC_SEL(wd));
+	__raw_writel(0, I2S_CFG(wd));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* preconfigure: set max rx/tx fifo depths */
 	wd->cfg |= PSC_I2SCFG_RT_FIFO8 | PSC_I2SCFG_TT_FIFO8;
@@ -350,6 +463,7 @@ static int __devinit au1xpsc_i2s_drvprobe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, wd);
 
+<<<<<<< HEAD
 	return snd_soc_register_dai(&pdev->dev, &wd->dai_drv);
 }
 
@@ -365,6 +479,20 @@ static int __devexit au1xpsc_i2s_drvremove(struct platform_device *pdev)
 	au_sync();
 
 	return 0;
+=======
+	return devm_snd_soc_register_component(&pdev->dev,
+				&au1xpsc_i2s_component, &wd->dai_drv, 1);
+}
+
+static void au1xpsc_i2s_drvremove(struct platform_device *pdev)
+{
+	struct au1xpsc_audio_data *wd = platform_get_drvdata(pdev);
+
+	__raw_writel(0, I2S_CFG(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -373,12 +501,21 @@ static int au1xpsc_i2s_drvsuspend(struct device *dev)
 	struct au1xpsc_audio_data *wd = dev_get_drvdata(dev);
 
 	/* save interesting register and disable PSC */
+<<<<<<< HEAD
 	wd->pm[0] = au_readl(PSC_SEL(wd));
 
 	au_writel(0, I2S_CFG(wd));
 	au_sync();
 	au_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
 	au_sync();
+=======
+	wd->pm[0] = __raw_readl(PSC_SEL(wd));
+
+	__raw_writel(0, I2S_CFG(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -388,17 +525,30 @@ static int au1xpsc_i2s_drvresume(struct device *dev)
 	struct au1xpsc_audio_data *wd = dev_get_drvdata(dev);
 
 	/* select I2S mode and PSC clock */
+<<<<<<< HEAD
 	au_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
 	au_sync();
 	au_writel(0, PSC_SEL(wd));
 	au_sync();
 	au_writel(wd->pm[0], PSC_SEL(wd));
 	au_sync();
+=======
+	__raw_writel(PSC_CTRL_DISABLE, PSC_CTRL(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(0, PSC_SEL(wd));
+	wmb(); /* drain writebuffer */
+	__raw_writel(wd->pm[0], PSC_SEL(wd));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dev_pm_ops au1xpsci2s_pmops = {
+=======
+static const struct dev_pm_ops au1xpsci2s_pmops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= au1xpsc_i2s_drvsuspend,
 	.resume		= au1xpsc_i2s_drvresume,
 };
@@ -414,11 +564,18 @@ static struct dev_pm_ops au1xpsci2s_pmops = {
 static struct platform_driver au1xpsc_i2s_driver = {
 	.driver		= {
 		.name	= "au1xpsc_i2s",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= AU1XPSCI2S_PMOPS,
 	},
 	.probe		= au1xpsc_i2s_drvprobe,
 	.remove		= __devexit_p(au1xpsc_i2s_drvremove),
+=======
+		.pm	= AU1XPSCI2S_PMOPS,
+	},
+	.probe		= au1xpsc_i2s_drvprobe,
+	.remove_new	= au1xpsc_i2s_drvremove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(au1xpsc_i2s_driver);

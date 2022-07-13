@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * twl-regulator.c -- support regulators in twl4030/twl6030 family chips
  *
  * Copyright (C) 2008 David Brownell
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +29,25 @@
 
 /*
  * The TWL4030/TW5030/TPS659x0/TWL6030 family chips include power management, a
+=======
+ */
+
+#include <linux/module.h>
+#include <linux/string.h>
+#include <linux/slab.h>
+#include <linux/init.h>
+#include <linux/err.h>
+#include <linux/platform_device.h>
+#include <linux/of.h>
+#include <linux/regulator/driver.h>
+#include <linux/regulator/machine.h>
+#include <linux/regulator/of_regulator.h>
+#include <linux/mfd/twl.h>
+#include <linux/delay.h>
+
+/*
+ * The TWL4030/TW5030/TPS659x0 family chips include power management, a
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * USB OTG transceiver, an RTC, ADC, PWM, and lots more.  Some versions
  * include an audio codec, battery charger, and more voltage regulators.
  * These chips are often used in OMAP-based systems.
@@ -44,6 +68,7 @@ struct twlreg_info {
 	u8			table_len;
 	const u16		*table;
 
+<<<<<<< HEAD
 	/* regulator specific turn-on delay */
 	u16			delay;
 
@@ -56,10 +81,16 @@ struct twlreg_info {
 
 	u8			flags;
 
+=======
+	/* State REMAP default configuration */
+	u8			remap;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* used by regulator core */
 	struct regulator_desc	desc;
 
 	/* chip specific features */
+<<<<<<< HEAD
 	unsigned long 		features;
 
 	/*
@@ -68,6 +99,9 @@ struct twlreg_info {
 	 */
 	int			(*get_voltage)(void *data);
 	int			(*set_voltage)(void *data, int target_uV);
+=======
+	unsigned long		features;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* data passed from board for external get/set voltage */
 	void			*data;
@@ -90,6 +124,7 @@ struct twlreg_info {
 #define VREG_STATE		2
 #define VREG_VOLTAGE		3
 #define VREG_VOLTAGE_SMPS	4
+<<<<<<< HEAD
 /* TWL6030 Misc register offsets */
 #define VREG_BC_ALL		1
 #define VREG_BC_REF		2
@@ -117,6 +152,8 @@ struct twlreg_info {
 #define SMPS_MULTOFFSET_SMPS4	BIT(0)
 #define SMPS_MULTOFFSET_VIO	BIT(1)
 #define SMPS_MULTOFFSET_SMPS3	BIT(6)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int
 twlreg_read(struct twlreg_info *info, unsigned slave_subgp, unsigned offset)
@@ -170,6 +207,7 @@ static int twl4030reg_is_enabled(struct regulator_dev *rdev)
 	return state & P1_GRP_4030;
 }
 
+<<<<<<< HEAD
 static int twl6030reg_is_enabled(struct regulator_dev *rdev)
 {
 	struct twlreg_info	*info = rdev_get_drvdata(rdev);
@@ -189,20 +227,94 @@ static int twl6030reg_is_enabled(struct regulator_dev *rdev)
 	val = TWL6030_CFG_STATE_APP(val);
 
 	return grp && (val == TWL6030_CFG_STATE_ON);
+=======
+#define PB_I2C_BUSY	BIT(0)
+#define PB_I2C_BWEN	BIT(1)
+
+/* Wait until buffer empty/ready to send a word on power bus. */
+static int twl4030_wait_pb_ready(void)
+{
+
+	int	ret;
+	int	timeout = 10;
+	u8	val;
+
+	do {
+		ret = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &val,
+				      TWL4030_PM_MASTER_PB_CFG);
+		if (ret < 0)
+			return ret;
+
+		if (!(val & PB_I2C_BUSY))
+			return 0;
+
+		mdelay(1);
+		timeout--;
+	} while (timeout);
+
+	return -ETIMEDOUT;
+}
+
+/* Send a word over the powerbus */
+static int twl4030_send_pb_msg(unsigned msg)
+{
+	u8	val;
+	int	ret;
+
+	/* save powerbus configuration */
+	ret = twl_i2c_read_u8(TWL_MODULE_PM_MASTER, &val,
+			      TWL4030_PM_MASTER_PB_CFG);
+	if (ret < 0)
+		return ret;
+
+	/* Enable i2c access to powerbus */
+	ret = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, val | PB_I2C_BWEN,
+			       TWL4030_PM_MASTER_PB_CFG);
+	if (ret < 0)
+		return ret;
+
+	ret = twl4030_wait_pb_ready();
+	if (ret < 0)
+		return ret;
+
+	ret = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, msg >> 8,
+			       TWL4030_PM_MASTER_PB_WORD_MSB);
+	if (ret < 0)
+		return ret;
+
+	ret = twl_i2c_write_u8(TWL_MODULE_PM_MASTER, msg & 0xff,
+			       TWL4030_PM_MASTER_PB_WORD_LSB);
+	if (ret < 0)
+		return ret;
+
+	ret = twl4030_wait_pb_ready();
+	if (ret < 0)
+		return ret;
+
+	/* Restore powerbus configuration */
+	return twl_i2c_write_u8(TWL_MODULE_PM_MASTER, val,
+				TWL4030_PM_MASTER_PB_CFG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int twl4030reg_enable(struct regulator_dev *rdev)
 {
 	struct twlreg_info	*info = rdev_get_drvdata(rdev);
 	int			grp;
+<<<<<<< HEAD
 	int			ret;
 
 	grp = twlreg_read(info, TWL_MODULE_PM_RECEIVER, VREG_GRP);
+=======
+
+	grp = twlreg_grp(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (grp < 0)
 		return grp;
 
 	grp |= P1_GRP_4030;
 
+<<<<<<< HEAD
 	ret = twlreg_write(info, TWL_MODULE_PM_RECEIVER, VREG_GRP, grp);
 
 	udelay(info->delay);
@@ -228,20 +340,29 @@ static int twl6030reg_enable(struct regulator_dev *rdev)
 	udelay(info->delay);
 
 	return ret;
+=======
+	return twlreg_write(info, TWL_MODULE_PM_RECEIVER, VREG_GRP, grp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int twl4030reg_disable(struct regulator_dev *rdev)
 {
 	struct twlreg_info	*info = rdev_get_drvdata(rdev);
 	int			grp;
+<<<<<<< HEAD
 	int			ret;
 
 	grp = twlreg_read(info, TWL_MODULE_PM_RECEIVER, VREG_GRP);
+=======
+
+	grp = twlreg_grp(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (grp < 0)
 		return grp;
 
 	grp &= ~(P1_GRP_4030 | P2_GRP_4030 | P3_GRP_4030);
 
+<<<<<<< HEAD
 	ret = twlreg_write(info, TWL_MODULE_PM_RECEIVER, VREG_GRP, grp);
 
 	return ret;
@@ -262,6 +383,9 @@ static int twl6030reg_disable(struct regulator_dev *rdev)
 			TWL6030_CFG_STATE_OFF);
 
 	return ret;
+=======
+	return twlreg_write(info, TWL_MODULE_PM_RECEIVER, VREG_GRP, grp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int twl4030reg_get_status(struct regulator_dev *rdev)
@@ -280,6 +404,7 @@ static int twl4030reg_get_status(struct regulator_dev *rdev)
 		: REGULATOR_STATUS_STANDBY;
 }
 
+<<<<<<< HEAD
 static int twl6030reg_get_status(struct regulator_dev *rdev)
 {
 	struct twlreg_info	*info = rdev_get_drvdata(rdev);
@@ -307,11 +432,16 @@ static int twl6030reg_get_status(struct regulator_dev *rdev)
 	return REGULATOR_STATUS_OFF;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int twl4030reg_set_mode(struct regulator_dev *rdev, unsigned mode)
 {
 	struct twlreg_info	*info = rdev_get_drvdata(rdev);
 	unsigned		message;
+<<<<<<< HEAD
 	int			status;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We can only set the mode through state machine commands... */
 	switch (mode) {
@@ -325,6 +455,7 @@ static int twl4030reg_set_mode(struct regulator_dev *rdev, unsigned mode)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/* Ensure the resource is associated with some group */
 	status = twlreg_grp(rdev);
 	if (status < 0)
@@ -369,6 +500,21 @@ static int twl6030reg_set_mode(struct regulator_dev *rdev, unsigned mode)
 	}
 
 	return twlreg_write(info, TWL_MODULE_PM_RECEIVER, VREG_STATE, val);
+=======
+	return twl4030_send_pb_msg(message);
+}
+
+static inline unsigned int twl4030reg_map_mode(unsigned int mode)
+{
+	switch (mode) {
+	case RES_STATE_ACTIVE:
+		return REGULATOR_MODE_NORMAL;
+	case RES_STATE_SLEEP:
+		return REGULATOR_MODE_STANDBY;
+	default:
+		return REGULATOR_MODE_INVALID;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*----------------------------------------------------------------------*/
@@ -388,6 +534,7 @@ static int twl6030reg_set_mode(struct regulator_dev *rdev, unsigned mode)
  * VAUX3 at 3V is incorrectly listed in some TI manuals as unsupported.
  * TI are revising the twl5030/tps659x0 specs to support that 3.0V setting.
  */
+<<<<<<< HEAD
 #ifdef CONFIG_TWL4030_ALLOW_UNSUPPORTED
 #define UNSUP_MASK	0x0000
 #else
@@ -396,6 +543,14 @@ static int twl6030reg_set_mode(struct regulator_dev *rdev, unsigned mode)
 
 #define UNSUP(x)	(UNSUP_MASK | (x))
 #define IS_UNSUP(x)	(UNSUP_MASK & (x))
+=======
+#define UNSUP_MASK	0x8000
+
+#define UNSUP(x)	(UNSUP_MASK | (x))
+#define IS_UNSUP(info, x)			\
+	((UNSUP_MASK & (x)) &&			\
+	 !((info)->features & TWL4030_ALLOW_UNSUPPORTED))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LDO_MV(x)	(~UNSUP_MASK & (x))
 
 
@@ -451,12 +606,15 @@ static const u16 VSIM_VSEL_table[] = {
 static const u16 VDAC_VSEL_table[] = {
 	1200, 1300, 1800, 1800,
 };
+<<<<<<< HEAD
 static const u16 VDD1_VSEL_table[] = {
 	800, 1450,
 };
 static const u16 VDD2_VSEL_table[] = {
 	800, 1450, 1500,
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const u16 VIO_VSEL_table[] = {
 	1800, 1850,
 };
@@ -464,11 +622,26 @@ static const u16 VINTANA2_VSEL_table[] = {
 	2500, 2750,
 };
 
+<<<<<<< HEAD
+=======
+/* 600mV to 1450mV in 12.5 mV steps */
+static const struct linear_range VDD1_ranges[] = {
+	REGULATOR_LINEAR_RANGE(600000, 0, 68, 12500)
+};
+
+/* 600mV to 1450mV in 12.5 mV steps, everything above = 1500mV */
+static const struct linear_range VDD2_ranges[] = {
+	REGULATOR_LINEAR_RANGE(600000, 0, 68, 12500),
+	REGULATOR_LINEAR_RANGE(1500000, 69, 69, 12500)
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int twl4030ldo_list_voltage(struct regulator_dev *rdev, unsigned index)
 {
 	struct twlreg_info	*info = rdev_get_drvdata(rdev);
 	int			mV = info->table[index];
 
+<<<<<<< HEAD
 	return IS_UNSUP(mV) ? 0 : (LDO_MV(mV) * 1000);
 }
 
@@ -505,11 +678,30 @@ static int twl4030ldo_get_voltage(struct regulator_dev *rdev)
 	struct twlreg_info	*info = rdev_get_drvdata(rdev);
 	int		vsel = twlreg_read(info, TWL_MODULE_PM_RECEIVER,
 								VREG_VOLTAGE);
+=======
+	return IS_UNSUP(info, mV) ? 0 : (LDO_MV(mV) * 1000);
+}
+
+static int
+twl4030ldo_set_voltage_sel(struct regulator_dev *rdev, unsigned selector)
+{
+	struct twlreg_info	*info = rdev_get_drvdata(rdev);
+
+	return twlreg_write(info, TWL_MODULE_PM_RECEIVER, VREG_VOLTAGE,
+			    selector);
+}
+
+static int twl4030ldo_get_voltage_sel(struct regulator_dev *rdev)
+{
+	struct twlreg_info	*info = rdev_get_drvdata(rdev);
+	int vsel = twlreg_read(info, TWL_MODULE_PM_RECEIVER, VREG_VOLTAGE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (vsel < 0)
 		return vsel;
 
 	vsel &= info->table_len - 1;
+<<<<<<< HEAD
 	return LDO_MV(info->table[vsel]) * 1000;
 }
 
@@ -518,6 +710,16 @@ static struct regulator_ops twl4030ldo_ops = {
 
 	.set_voltage	= twl4030ldo_set_voltage,
 	.get_voltage	= twl4030ldo_get_voltage,
+=======
+	return vsel;
+}
+
+static const struct regulator_ops twl4030ldo_ops = {
+	.list_voltage	= twl4030ldo_list_voltage,
+
+	.set_voltage_sel = twl4030ldo_set_voltage_sel,
+	.get_voltage_sel = twl4030ldo_get_voltage_sel,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.enable		= twl4030reg_enable,
 	.disable	= twl4030reg_disable,
@@ -535,12 +737,16 @@ twl4030smps_set_voltage(struct regulator_dev *rdev, int min_uV, int max_uV,
 	struct twlreg_info *info = rdev_get_drvdata(rdev);
 	int vsel = DIV_ROUND_UP(min_uV - 600000, 12500);
 
+<<<<<<< HEAD
 	if (info->set_voltage) {
 		return info->set_voltage(info->data, min_uV);
 	} else {
 		twlreg_write(info, TWL_MODULE_PM_RECEIVER,
 			VREG_VOLTAGE_SMPS_4030, vsel);
 	}
+=======
+	twlreg_write(info, TWL_MODULE_PM_RECEIVER, VREG_VOLTAGE_SMPS_4030, vsel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -550,20 +756,30 @@ static int twl4030smps_get_voltage(struct regulator_dev *rdev)
 	struct twlreg_info *info = rdev_get_drvdata(rdev);
 	int vsel;
 
+<<<<<<< HEAD
 	if (info->get_voltage)
 		return info->get_voltage(info->data);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vsel = twlreg_read(info, TWL_MODULE_PM_RECEIVER,
 		VREG_VOLTAGE_SMPS_4030);
 
 	return vsel * 12500 + 600000;
 }
 
+<<<<<<< HEAD
 static struct regulator_ops twl4030smps_ops = {
+=======
+static const struct regulator_ops twl4030smps_ops = {
+	.list_voltage   = regulator_list_voltage_linear_range,
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_voltage	= twl4030smps_set_voltage,
 	.get_voltage	= twl4030smps_get_voltage,
 };
 
+<<<<<<< HEAD
 static int twl6030coresmps_set_voltage(struct regulator_dev *rdev, int min_uV,
 	int max_uV, unsigned *selector)
 {
@@ -671,6 +887,12 @@ static struct regulator_ops twl4030fixed_ops = {
 	.list_voltage	= twlfixed_list_voltage,
 
 	.get_voltage	= twlfixed_get_voltage,
+=======
+/*----------------------------------------------------------------------*/
+
+static const struct regulator_ops twl4030fixed_ops = {
+	.list_voltage	= regulator_list_voltage_linear,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.enable		= twl4030reg_enable,
 	.disable	= twl4030reg_disable,
@@ -681,6 +903,7 @@ static struct regulator_ops twl4030fixed_ops = {
 	.get_status	= twl4030reg_get_status,
 };
 
+<<<<<<< HEAD
 static struct regulator_ops twl6030fixed_ops = {
 	.list_voltage	= twlfixed_list_voltage,
 
@@ -925,11 +1148,20 @@ static struct regulator_ops twlsmps_ops = {
 
 #define TWL4030_ADJUSTABLE_LDO(label, offset, num, turnon_delay, remap_conf) \
 static struct twlreg_info TWL4030_INFO_##label = { \
+=======
+/*----------------------------------------------------------------------*/
+
+#define TWL4030_ADJUSTABLE_LDO(label, offset, num, turnon_delay, remap_conf) \
+static const struct twlreg_info TWL4030_INFO_##label = { \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.base = offset, \
 	.id = num, \
 	.table_len = ARRAY_SIZE(label##_VSEL_table), \
 	.table = label##_VSEL_table, \
+<<<<<<< HEAD
 	.delay = turnon_delay, \
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.remap = remap_conf, \
 	.desc = { \
 		.name = #label, \
@@ -938,6 +1170,7 @@ static struct twlreg_info TWL4030_INFO_##label = { \
 		.ops = &twl4030ldo_ops, \
 		.type = REGULATOR_VOLTAGE, \
 		.owner = THIS_MODULE, \
+<<<<<<< HEAD
 		}, \
 	}
 
@@ -946,6 +1179,18 @@ static struct twlreg_info TWL4030_INFO_##label = { \
 	.base = offset, \
 	.id = num, \
 	.delay = turnon_delay, \
+=======
+		.enable_time = turnon_delay, \
+		.of_map_mode = twl4030reg_map_mode, \
+		}, \
+	}
+
+#define TWL4030_ADJUSTABLE_SMPS(label, offset, num, turnon_delay, remap_conf, \
+		n_volt) \
+static const struct twlreg_info TWL4030_INFO_##label = { \
+	.base = offset, \
+	.id = num, \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.remap = remap_conf, \
 	.desc = { \
 		.name = #label, \
@@ -953,6 +1198,7 @@ static struct twlreg_info TWL4030_INFO_##label = { \
 		.ops = &twl4030smps_ops, \
 		.type = REGULATOR_VOLTAGE, \
 		.owner = THIS_MODULE, \
+<<<<<<< HEAD
 		}, \
 	}
 
@@ -1040,6 +1286,32 @@ static struct twlreg_info TWLSMPS_INFO_##label = { \
 		.ops = &twlsmps_ops, \
 		.type = REGULATOR_VOLTAGE, \
 		.owner = THIS_MODULE, \
+=======
+		.enable_time = turnon_delay, \
+		.of_map_mode = twl4030reg_map_mode, \
+		.n_voltages = n_volt, \
+		.n_linear_ranges = ARRAY_SIZE(label ## _ranges), \
+		.linear_ranges = label ## _ranges, \
+		}, \
+	}
+
+#define TWL4030_FIXED_LDO(label, offset, mVolts, num, turnon_delay, \
+			remap_conf) \
+static const struct twlreg_info TWLFIXED_INFO_##label = { \
+	.base = offset, \
+	.id = num, \
+	.remap = remap_conf, \
+	.desc = { \
+		.name = #label, \
+		.id = TWL4030##_REG_##label, \
+		.n_voltages = 1, \
+		.ops = &twl4030fixed_ops, \
+		.type = REGULATOR_VOLTAGE, \
+		.owner = THIS_MODULE, \
+		.min_uV = mVolts * 1000, \
+		.enable_time = turnon_delay, \
+		.of_map_mode = twl4030reg_map_mode, \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}, \
 	}
 
@@ -1060,6 +1332,7 @@ TWL4030_ADJUSTABLE_LDO(VSIM, 0x37, 9, 100, 0x00);
 TWL4030_ADJUSTABLE_LDO(VDAC, 0x3b, 10, 100, 0x08);
 TWL4030_ADJUSTABLE_LDO(VINTANA2, 0x43, 12, 100, 0x08);
 TWL4030_ADJUSTABLE_LDO(VIO, 0x4b, 14, 1000, 0x08);
+<<<<<<< HEAD
 TWL4030_ADJUSTABLE_SMPS(VDD1, 0x55, 15, 1000, 0x08);
 TWL4030_ADJUSTABLE_SMPS(VDD2, 0x63, 16, 1000, 0x08);
 /* VUSBCP is managed *only* by the USB subchip */
@@ -1085,11 +1358,17 @@ TWL6025_ADJUSTABLE_LDO(LDO7, 0x74, 1000, 3300);
 TWL6025_ADJUSTABLE_LDO(LDO6, 0x60, 1000, 3300);
 TWL6025_ADJUSTABLE_LDO(LDOLN, 0x64, 1000, 3300);
 TWL6025_ADJUSTABLE_LDO(LDOUSB, 0x70, 1000, 3300);
+=======
+TWL4030_ADJUSTABLE_SMPS(VDD1, 0x55, 15, 1000, 0x08, 68);
+TWL4030_ADJUSTABLE_SMPS(VDD2, 0x63, 16, 1000, 0x08, 69);
+/* VUSBCP is managed *only* by the USB subchip */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 TWL4030_FIXED_LDO(VINTANA1, 0x3f, 1500, 11, 100, 0x08);
 TWL4030_FIXED_LDO(VINTDIG, 0x47, 1500, 13, 100, 0x08);
 TWL4030_FIXED_LDO(VUSB1V5, 0x71, 1500, 17, 100, 0x08);
 TWL4030_FIXED_LDO(VUSB1V8, 0x74, 1800, 18, 100, 0x08);
 TWL4030_FIXED_LDO(VUSB3V1, 0x77, 3100, 19, 150, 0x08);
+<<<<<<< HEAD
 TWL6030_FIXED_LDO(VANA, 0x50, 2100, 0);
 TWL6030_FIXED_LDO(VCXIO, 0x60, 1800, 0);
 TWL6030_FIXED_LDO(VDAC, 0x64, 1800, 0);
@@ -1118,6 +1397,8 @@ static u8 twl_get_smps_mult(void)
 			TWL6030_SMPS_MULT);
 	return value;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TWL_OF_MATCH(comp, family, label) \
 	{ \
@@ -1127,12 +1408,20 @@ static u8 twl_get_smps_mult(void)
 
 #define TWL4030_OF_MATCH(comp, label) TWL_OF_MATCH(comp, TWL4030, label)
 #define TWL6030_OF_MATCH(comp, label) TWL_OF_MATCH(comp, TWL6030, label)
+<<<<<<< HEAD
 #define TWL6025_OF_MATCH(comp, label) TWL_OF_MATCH(comp, TWL6025, label)
 #define TWLFIXED_OF_MATCH(comp, label) TWL_OF_MATCH(comp, TWLFIXED, label)
 #define TWLRES_OF_MATCH(comp, label) TWL_OF_MATCH(comp, TWLRES, label)
 #define TWLSMPS_OF_MATCH(comp, label) TWL_OF_MATCH(comp, TWLSMPS, label)
 
 static const struct of_device_id twl_of_match[] __devinitconst = {
+=======
+#define TWL6032_OF_MATCH(comp, label) TWL_OF_MATCH(comp, TWL6032, label)
+#define TWLFIXED_OF_MATCH(comp, label) TWL_OF_MATCH(comp, TWLFIXED, label)
+#define TWLSMPS_OF_MATCH(comp, label) TWL_OF_MATCH(comp, TWLSMPS, label)
+
+static const struct of_device_id twl_of_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TWL4030_OF_MATCH("ti,twl4030-vaux1", VAUX1),
 	TWL4030_OF_MATCH("ti,twl4030-vaux2", VAUX2_4030),
 	TWL4030_OF_MATCH("ti,twl5030-vaux2", VAUX2),
@@ -1148,6 +1437,7 @@ static const struct of_device_id twl_of_match[] __devinitconst = {
 	TWL4030_OF_MATCH("ti,twl4030-vio", VIO),
 	TWL4030_OF_MATCH("ti,twl4030-vdd1", VDD1),
 	TWL4030_OF_MATCH("ti,twl4030-vdd2", VDD2),
+<<<<<<< HEAD
 	TWL6030_OF_MATCH("ti,twl6030-vdd1", VDD1),
 	TWL6030_OF_MATCH("ti,twl6030-vdd2", VDD2),
 	TWL6030_OF_MATCH("ti,twl6030-vdd3", VDD3),
@@ -1166,11 +1456,14 @@ static const struct of_device_id twl_of_match[] __devinitconst = {
 	TWL6025_OF_MATCH("ti,twl6025-ldo6", LDO6),
 	TWL6025_OF_MATCH("ti,twl6025-ldoln", LDOLN),
 	TWL6025_OF_MATCH("ti,twl6025-ldousb", LDOUSB),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TWLFIXED_OF_MATCH("ti,twl4030-vintana1", VINTANA1),
 	TWLFIXED_OF_MATCH("ti,twl4030-vintdig", VINTDIG),
 	TWLFIXED_OF_MATCH("ti,twl4030-vusb1v5", VUSB1V5),
 	TWLFIXED_OF_MATCH("ti,twl4030-vusb1v8", VUSB1V8),
 	TWLFIXED_OF_MATCH("ti,twl4030-vusb3v1", VUSB3V1),
+<<<<<<< HEAD
 	TWLFIXED_OF_MATCH("ti,twl6030-vana", VANA),
 	TWLFIXED_OF_MATCH("ti,twl6030-vcxio", VCXIO),
 	TWLFIXED_OF_MATCH("ti,twl6030-vdac", VDAC),
@@ -1181,10 +1474,13 @@ static const struct of_device_id twl_of_match[] __devinitconst = {
 	TWLSMPS_OF_MATCH("ti,twl6025-smps3", SMPS3),
 	TWLSMPS_OF_MATCH("ti,twl6025-smps4", SMPS4),
 	TWLSMPS_OF_MATCH("ti,twl6025-vio", VIO),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{},
 };
 MODULE_DEVICE_TABLE(of, twl_of_match);
 
+<<<<<<< HEAD
 static int __devinit twlreg_probe(struct platform_device *pdev)
 {
 	int				i, id;
@@ -1229,6 +1525,31 @@ static int __devinit twlreg_probe(struct platform_device *pdev)
 		info->set_voltage = drvdata->set_voltage;
 		info->get_voltage = drvdata->get_voltage;
 	}
+=======
+static int twlreg_probe(struct platform_device *pdev)
+{
+	int id;
+	struct twlreg_info		*info;
+	const struct twlreg_info	*template;
+	struct regulator_init_data	*initdata;
+	struct regulation_constraints	*c;
+	struct regulator_dev		*rdev;
+	struct regulator_config		config = { };
+
+	template = of_device_get_match_data(&pdev->dev);
+	if (!template)
+		return -ENODEV;
+
+	id = template->desc.id;
+	initdata = of_get_regulator_init_data(&pdev->dev, pdev->dev.of_node,
+						&template->desc);
+	if (!initdata)
+		return -EINVAL;
+
+	info = devm_kmemdup(&pdev->dev, template, sizeof(*info), GFP_KERNEL);
+	if (!info)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Constrain board-specific capabilities according to what
 	 * this driver and the chip itself can actually do.
@@ -1252,6 +1573,7 @@ static int __devinit twlreg_probe(struct platform_device *pdev)
 		break;
 	}
 
+<<<<<<< HEAD
 	switch (id) {
 	case TWL6025_REG_SMPS3:
 		if (twl_get_smps_mult() & SMPS_MULTOFFSET_SMPS3)
@@ -1275,6 +1597,14 @@ static int __devinit twlreg_probe(struct platform_device *pdev)
 
 	rdev = regulator_register(&info->desc, &pdev->dev, initdata, info,
 							pdev->dev.of_node);
+=======
+	config.dev = &pdev->dev;
+	config.init_data = initdata;
+	config.driver_data = info;
+	config.of_node = pdev->dev.of_node;
+
+	rdev = devm_regulator_register(&pdev->dev, &info->desc, &config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(rdev)) {
 		dev_err(&pdev->dev, "can't register %s, %ld\n",
 				info->desc.name, PTR_ERR(rdev));
@@ -1282,9 +1612,13 @@ static int __devinit twlreg_probe(struct platform_device *pdev)
 	}
 	platform_set_drvdata(pdev, rdev);
 
+<<<<<<< HEAD
 	if (twl_class_is_4030())
 		twlreg_write(info, TWL_MODULE_PM_RECEIVER, VREG_REMAP,
 						info->remap);
+=======
+	twlreg_write(info, TWL_MODULE_PM_RECEIVER, VREG_REMAP, info->remap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* NOTE:  many regulators support short-circuit IRQs (presentable
 	 * as REGULATOR_OVER_CURRENT notifications?) configured via:
@@ -1297,6 +1631,7 @@ static int __devinit twlreg_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit twlreg_remove(struct platform_device *pdev)
 {
 	regulator_unregister(platform_get_drvdata(pdev));
@@ -1308,12 +1643,23 @@ MODULE_ALIAS("platform:twl_reg");
 static struct platform_driver twlreg_driver = {
 	.probe		= twlreg_probe,
 	.remove		= __devexit_p(twlreg_remove),
+=======
+MODULE_ALIAS("platform:twl4030_reg");
+
+static struct platform_driver twlreg_driver = {
+	.probe		= twlreg_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* NOTE: short name, to work around driver model truncation of
 	 * "twl_regulator.12" (and friends) to "twl_regulator.1".
 	 */
 	.driver  = {
+<<<<<<< HEAD
 		.name  = "twl_reg",
 		.owner = THIS_MODULE,
+=======
+		.name  = "twl4030_reg",
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = of_match_ptr(twl_of_match),
 	},
 };
@@ -1330,5 +1676,9 @@ static void __exit twlreg_exit(void)
 }
 module_exit(twlreg_exit)
 
+<<<<<<< HEAD
 MODULE_DESCRIPTION("TWL regulator driver");
+=======
+MODULE_DESCRIPTION("TWL4030 regulator driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

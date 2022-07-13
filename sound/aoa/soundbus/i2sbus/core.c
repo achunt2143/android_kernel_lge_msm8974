@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * i2sbus driver
  *
  * Copyright 2006-2008 Johannes Berg <johannes@sipsolutions.net>
+<<<<<<< HEAD
  *
  * GPL v2, can be found in COPYING.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -11,6 +18,12 @@
 #include <linux/pci.h>
 #include <linux/interrupt.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 
@@ -29,7 +42,11 @@ module_param(force, int, 0444);
 MODULE_PARM_DESC(force, "Force loading i2sbus even when"
 			" no layout-id property is present");
 
+<<<<<<< HEAD
 static struct of_device_id i2sbus_match[] = {
+=======
+static const struct of_device_id i2sbus_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .name = "i2s" },
 	{ }
 };
@@ -45,6 +62,7 @@ static int alloc_dbdma_descriptor_ring(struct i2sbus_dev *i2sdev,
 	/* We use the PCI APIs for now until the generic one gets fixed
 	 * enough or until we get some macio-specific versions
 	 */
+<<<<<<< HEAD
 	r->space = dma_alloc_coherent(
 			&macio_get_pci_dev(i2sdev->macio)->dev,
 			r->size,
@@ -54,6 +72,13 @@ static int alloc_dbdma_descriptor_ring(struct i2sbus_dev *i2sdev,
 	if (!r->space) return -ENOMEM;
 
 	memset(r->space, 0, r->size);
+=======
+	r->space = dma_alloc_coherent(&macio_get_pci_dev(i2sdev->macio)->dev,
+				      r->size, &r->bus_addr, GFP_KERNEL);
+	if (!r->space)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r->cmds = (void*)DBDMA_ALIGN(r->space);
 	r->bus_cmd_start = r->bus_addr +
 			   (dma_addr_t)((char*)r->cmds - (char*)r->space);
@@ -76,6 +101,7 @@ static void i2sbus_release_dev(struct device *dev)
 	int i;
 
 	i2sdev = container_of(dev, struct i2sbus_dev, sound.ofdev.dev);
+<<<<<<< HEAD
 
  	if (i2sdev->intfregs) iounmap(i2sdev->intfregs);
  	if (i2sdev->out.dbdma) iounmap(i2sdev->out.dbdma);
@@ -83,6 +109,13 @@ static void i2sbus_release_dev(struct device *dev)
 	for (i = aoa_resource_i2smmio; i <= aoa_resource_rxdbdma; i++)
 		if (i2sdev->allocated_resource[i])
 			release_and_free_resource(i2sdev->allocated_resource[i]);
+=======
+	iounmap(i2sdev->intfregs);
+	iounmap(i2sdev->out.dbdma);
+	iounmap(i2sdev->in.dbdma);
+	for (i = aoa_resource_i2smmio; i <= aoa_resource_rxdbdma; i++)
+		release_and_free_resource(i2sdev->allocated_resource[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_dbdma_descriptor_ring(i2sdev, &i2sdev->out.dbdma_ring);
 	free_dbdma_descriptor_ring(i2sdev, &i2sdev->in.dbdma_ring);
 	for (i = aoa_resource_i2smmio; i <= aoa_resource_rxdbdma; i++)
@@ -152,12 +185,17 @@ static int i2sbus_get_and_fixup_rsrc(struct device_node *np, int index,
 	return rc;
 }
 
+<<<<<<< HEAD
+=======
+/* Returns 1 if added, 0 for otherwise; don't return a negative value! */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* FIXME: look at device node refcounting */
 static int i2sbus_add_dev(struct macio_dev *macio,
 			  struct i2sbus_control *control,
 			  struct device_node *np)
 {
 	struct i2sbus_dev *dev;
+<<<<<<< HEAD
 	struct device_node *child = NULL, *sound = NULL;
 	struct resource *r;
 	int i, layout = 0, rlen, ok = force;
@@ -165,14 +203,30 @@ static int i2sbus_add_dev(struct macio_dev *macio,
 					"i2sbus: %s (tx)",
 					"i2sbus: %s (rx)" };
 	static irq_handler_t ints[] = {
+=======
+	struct device_node *child, *sound = NULL;
+	struct resource *r;
+	int i, layout = 0, rlen, ok = force;
+	char node_name[8];
+	static const char *rnames[] = { "i2sbus: %pOFn (control)",
+					"i2sbus: %pOFn (tx)",
+					"i2sbus: %pOFn (rx)" };
+	static const irq_handler_t ints[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i2sbus_bus_intr,
 		i2sbus_tx_intr,
 		i2sbus_rx_intr
 	};
 
+<<<<<<< HEAD
 	if (strlen(np->name) != 5)
 		return 0;
 	if (strncmp(np->name, "i2s-", 4))
+=======
+	if (snprintf(node_name, sizeof(node_name), "%pOFn", np) != 5)
+		return 0;
+	if (strncmp(node_name, "i2s-", 4))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	dev = kzalloc(sizeof(struct i2sbus_dev), GFP_KERNEL);
@@ -180,8 +234,13 @@ static int i2sbus_add_dev(struct macio_dev *macio,
 		return 0;
 
 	i = 0;
+<<<<<<< HEAD
 	while ((child = of_get_next_child(np, child))) {
 		if (strcmp(child->name, "sound") == 0) {
+=======
+	for_each_child_of_node(np, child) {
+		if (of_node_name_eq(child, "sound")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			i++;
 			sound = child;
 		}
@@ -200,7 +259,12 @@ static int i2sbus_add_dev(struct macio_dev *macio,
 			 * We probably cannot handle all device-id machines,
 			 * so restrict to those we do handle for now.
 			 */
+<<<<<<< HEAD
 			if (id && (*id == 22 || *id == 14 || *id == 35)) {
+=======
+			if (id && (*id == 22 || *id == 14 || *id == 35 ||
+				   *id == 31 || *id == 44)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				snprintf(dev->sound.modalias, 32,
 					 "aoa-device-id-%d", *id);
 				ok = 1;
@@ -216,7 +280,11 @@ static int i2sbus_add_dev(struct macio_dev *macio,
 	 * either as the second one in that case is just a modem. */
 	if (!ok) {
 		kfree(dev);
+<<<<<<< HEAD
 		return -ENODEV;
+=======
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_init(&dev->lock);
@@ -231,13 +299,21 @@ static int i2sbus_add_dev(struct macio_dev *macio,
 	dev->sound.pcmid = -1;
 	dev->macio = macio;
 	dev->control = control;
+<<<<<<< HEAD
 	dev->bus_number = np->name[4] - 'a';
+=======
+	dev->bus_number = node_name[4] - 'a';
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&dev->sound.codec_list);
 
 	for (i = aoa_resource_i2smmio; i <= aoa_resource_rxdbdma; i++) {
 		dev->interrupts[i] = -1;
 		snprintf(dev->rnames[i], sizeof(dev->rnames[i]),
+<<<<<<< HEAD
 			 rnames[i], np->name);
+=======
+			 rnames[i], np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	for (i = aoa_resource_i2smmio; i <= aoa_resource_rxdbdma; i++) {
 		int irq = irq_of_parse_and_map(np, i);
@@ -305,6 +381,13 @@ static int i2sbus_add_dev(struct macio_dev *macio,
 
 	if (soundbus_add_one(&dev->sound)) {
 		printk(KERN_DEBUG "i2sbus: device registration error!\n");
+<<<<<<< HEAD
+=======
+		if (dev->sound.ofdev.dev.kobj.state_initialized) {
+			soundbus_dev_put(&dev->sound);
+			return 0;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
@@ -320,12 +403,20 @@ static int i2sbus_add_dev(struct macio_dev *macio,
 			free_irq(dev->interrupts[i], dev);
 	free_dbdma_descriptor_ring(dev, &dev->out.dbdma_ring);
 	free_dbdma_descriptor_ring(dev, &dev->in.dbdma_ring);
+<<<<<<< HEAD
 	if (dev->intfregs) iounmap(dev->intfregs);
 	if (dev->out.dbdma) iounmap(dev->out.dbdma);
 	if (dev->in.dbdma) iounmap(dev->in.dbdma);
 	for (i=0;i<3;i++)
 		if (dev->allocated_resource[i])
 			release_and_free_resource(dev->allocated_resource[i]);
+=======
+	iounmap(dev->intfregs);
+	iounmap(dev->out.dbdma);
+	iounmap(dev->in.dbdma);
+	for (i=0;i<3;i++)
+		release_and_free_resource(dev->allocated_resource[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_destroy(&dev->lock);
 	kfree(dev);
 	return 0;
@@ -363,15 +454,22 @@ static int i2sbus_probe(struct macio_dev* dev, const struct of_device_id *match)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int i2sbus_remove(struct macio_dev* dev)
+=======
+static void i2sbus_remove(struct macio_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i2sbus_control *control = dev_get_drvdata(&dev->ofdev.dev);
 	struct i2sbus_dev *i2sdev, *tmp;
 
 	list_for_each_entry_safe(i2sdev, tmp, &control->list, item)
 		soundbus_remove_one(&i2sdev->sound);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -383,12 +481,15 @@ static int i2sbus_suspend(struct macio_dev* dev, pm_message_t state)
 	int err, ret = 0;
 
 	list_for_each_entry(i2sdev, &control->list, item) {
+<<<<<<< HEAD
 		/* Notify Alsa */
 		if (i2sdev->sound.pcm) {
 			/* Suspend PCM streams */
 			snd_pcm_suspend_all(i2sdev->sound.pcm);
 		}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Notify codecs */
 		list_for_each_entry(cii, &i2sdev->sound.codec_list, list) {
 			err = 0;

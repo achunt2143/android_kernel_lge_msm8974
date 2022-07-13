@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This interface is used for compatibility with old U-boots *ONLY*.
  * Please do not imitate or extend this.
@@ -6,6 +10,7 @@
 /*
  * (C) Copyright 2000, 2001
  * Wolfgang Denk, DENX Software Engineering, wd@denx.de.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -21,6 +26,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __PPCBOOT_H__
@@ -43,7 +50,11 @@ typedef struct bd_info {
 	unsigned long	bi_sramstart;	/* start of SRAM memory */
 	unsigned long	bi_sramsize;	/* size	 of SRAM memory */
 #if defined(TARGET_8xx) || defined(TARGET_CPM2) || defined(TARGET_85xx) ||\
+<<<<<<< HEAD
 	defined(TARGET_83xx)
+=======
+	defined(TARGET_83xx) || defined(TARGET_86xx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long	bi_immr_base;	/* base of IMMR register */
 #endif
 #if defined(TARGET_PPC_MPC52xx)

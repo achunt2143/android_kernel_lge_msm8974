@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * max6639.c - Support for Maxim MAX6639
  *
@@ -7,6 +11,7 @@
  *
  * based on the initial MAX6639 support from semptian.net
  * by He Changqing <hechangqing@semptian.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +26,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -32,10 +39,17 @@
 #include <linux/hwmon-sysfs.h>
 #include <linux/err.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <linux/i2c/max6639.h>
 
 /* Addresses to scan */
 static unsigned short normal_i2c[] = { 0x2c, 0x2e, 0x2f, I2C_CLIENT_END };
+=======
+#include <linux/platform_data/max6639.h>
+
+/* Addresses to scan */
+static const unsigned short normal_i2c[] = { 0x2c, 0x2e, 0x2f, I2C_CLIENT_END };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The MAX6639 registers, valid channel numbers: 0, 1 */
 #define MAX6639_REG_TEMP(ch)			(0x00 + (ch))
@@ -74,15 +88,25 @@ static const int rpm_ranges[] = { 2000, 4000, 8000, 16000 };
 
 #define FAN_FROM_REG(val, rpm_range)	((val) == 0 || (val) == 255 ? \
 				0 : (rpm_ranges[rpm_range] * 30) / (val))
+<<<<<<< HEAD
 #define TEMP_LIMIT_TO_REG(val)	SENSORS_LIMIT((val) / 1000, 0, 255)
+=======
+#define TEMP_LIMIT_TO_REG(val)	clamp_val((val) / 1000, 0, 255)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Client data (each client gets its own)
  */
 struct max6639_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
 	struct mutex update_lock;
 	char valid;		/* !=0 if following fields are valid */
+=======
+	struct i2c_client *client;
+	struct mutex update_lock;
+	bool valid;		/* true if following fields are valid */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated;	/* In jiffies */
 
 	/* Register values sampled regularly */
@@ -100,12 +124,23 @@ struct max6639_data {
 	/* Register values initialized only once */
 	u8 ppr;			/* Pulses per rotation 0..3 for 1..4 ppr */
 	u8 rpm_range;		/* Index in above rpm_ranges table */
+<<<<<<< HEAD
+=======
+
+	/* Optional regulator for FAN supply */
+	struct regulator *reg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct max6639_data *max6639_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct max6639_data *data = i2c_get_clientdata(client);
+=======
+	struct max6639_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max6639_data *ret = data;
 	int i;
 	int status_reg;
@@ -154,7 +189,11 @@ static struct max6639_data *max6639_update_device(struct device *dev)
 		}
 
 		data->last_updated = jiffies;
+<<<<<<< HEAD
 		data->valid = 1;
+=======
+		data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 abort:
 	mutex_unlock(&data->update_lock);
@@ -162,7 +201,11 @@ abort:
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_input(struct device *dev,
+=======
+static ssize_t temp_input_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct device_attribute *dev_attr, char *buf)
 {
 	long temp;
@@ -176,7 +219,11 @@ static ssize_t show_temp_input(struct device *dev,
 	return sprintf(buf, "%ld\n", temp);
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_fault(struct device *dev,
+=======
+static ssize_t temp_fault_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct device_attribute *dev_attr, char *buf)
 {
 	struct max6639_data *data = max6639_update_device(dev);
@@ -188,16 +235,25 @@ static ssize_t show_temp_fault(struct device *dev,
 	return sprintf(buf, "%d\n", data->temp_fault[attr->index]);
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_max(struct device *dev,
 			     struct device_attribute *dev_attr, char *buf)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct max6639_data *data = i2c_get_clientdata(client);
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+=======
+static ssize_t temp_max_show(struct device *dev,
+			     struct device_attribute *dev_attr, char *buf)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+	struct max6639_data *data = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sprintf(buf, "%d\n", (data->temp_therm[attr->index] * 1000));
 }
 
+<<<<<<< HEAD
 static ssize_t set_temp_max(struct device *dev,
 			    struct device_attribute *dev_attr,
 			    const char *buf, size_t count)
@@ -205,6 +261,15 @@ static ssize_t set_temp_max(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct max6639_data *data = i2c_get_clientdata(client);
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+=======
+static ssize_t temp_max_store(struct device *dev,
+			      struct device_attribute *dev_attr,
+			      const char *buf, size_t count)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+	struct max6639_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long val;
 	int res;
 
@@ -221,16 +286,25 @@ static ssize_t set_temp_max(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_crit(struct device *dev,
 			      struct device_attribute *dev_attr, char *buf)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct max6639_data *data = i2c_get_clientdata(client);
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+=======
+static ssize_t temp_crit_show(struct device *dev,
+			      struct device_attribute *dev_attr, char *buf)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+	struct max6639_data *data = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sprintf(buf, "%d\n", (data->temp_alert[attr->index] * 1000));
 }
 
+<<<<<<< HEAD
 static ssize_t set_temp_crit(struct device *dev,
 			     struct device_attribute *dev_attr,
 			     const char *buf, size_t count)
@@ -238,6 +312,15 @@ static ssize_t set_temp_crit(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct max6639_data *data = i2c_get_clientdata(client);
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+=======
+static ssize_t temp_crit_store(struct device *dev,
+			       struct device_attribute *dev_attr,
+			       const char *buf, size_t count)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+	struct max6639_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long val;
 	int res;
 
@@ -254,6 +337,7 @@ static ssize_t set_temp_crit(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_emergency(struct device *dev,
 				   struct device_attribute *dev_attr,
 				   char *buf)
@@ -261,10 +345,19 @@ static ssize_t show_temp_emergency(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct max6639_data *data = i2c_get_clientdata(client);
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+=======
+static ssize_t temp_emergency_show(struct device *dev,
+				   struct device_attribute *dev_attr,
+				   char *buf)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+	struct max6639_data *data = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sprintf(buf, "%d\n", (data->temp_ot[attr->index] * 1000));
 }
 
+<<<<<<< HEAD
 static ssize_t set_temp_emergency(struct device *dev,
 				  struct device_attribute *dev_attr,
 				  const char *buf, size_t count)
@@ -272,6 +365,15 @@ static ssize_t set_temp_emergency(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct max6639_data *data = i2c_get_clientdata(client);
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+=======
+static ssize_t temp_emergency_store(struct device *dev,
+				    struct device_attribute *dev_attr,
+				    const char *buf, size_t count)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+	struct max6639_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long val;
 	int res;
 
@@ -288,16 +390,25 @@ static ssize_t set_temp_emergency(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t show_pwm(struct device *dev,
 			struct device_attribute *dev_attr, char *buf)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct max6639_data *data = i2c_get_clientdata(client);
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+=======
+static ssize_t pwm_show(struct device *dev, struct device_attribute *dev_attr,
+			char *buf)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+	struct max6639_data *data = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sprintf(buf, "%d\n", data->pwm[attr->index] * 255 / 120);
 }
 
+<<<<<<< HEAD
 static ssize_t set_pwm(struct device *dev,
 		       struct device_attribute *dev_attr,
 		       const char *buf, size_t count)
@@ -305,6 +416,15 @@ static ssize_t set_pwm(struct device *dev,
 	struct i2c_client *client = to_i2c_client(dev);
 	struct max6639_data *data = i2c_get_clientdata(client);
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+=======
+static ssize_t pwm_store(struct device *dev,
+			 struct device_attribute *dev_attr, const char *buf,
+			 size_t count)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(dev_attr);
+	struct max6639_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long val;
 	int res;
 
@@ -312,7 +432,11 @@ static ssize_t set_pwm(struct device *dev,
 	if (res)
 		return res;
 
+<<<<<<< HEAD
 	val = SENSORS_LIMIT(val, 0, 255);
+=======
+	val = clamp_val(val, 0, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&data->update_lock);
 	data->pwm[attr->index] = (u8)(val * 120 / 255);
@@ -323,7 +447,11 @@ static ssize_t set_pwm(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t show_fan_input(struct device *dev,
+=======
+static ssize_t fan_input_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      struct device_attribute *dev_attr, char *buf)
 {
 	struct max6639_data *data = max6639_update_device(dev);
@@ -336,7 +464,11 @@ static ssize_t show_fan_input(struct device *dev,
 		       data->rpm_range));
 }
 
+<<<<<<< HEAD
 static ssize_t show_alarm(struct device *dev,
+=======
+static ssize_t alarm_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct device_attribute *dev_attr, char *buf)
 {
 	struct max6639_data *data = max6639_update_device(dev);
@@ -348,6 +480,7 @@ static ssize_t show_alarm(struct device *dev,
 	return sprintf(buf, "%d\n", !!(data->status & (1 << attr->index)));
 }
 
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, show_temp_input, NULL, 0);
 static SENSOR_DEVICE_ATTR(temp2_input, S_IRUGO, show_temp_input, NULL, 1);
 static SENSOR_DEVICE_ATTR(temp1_fault, S_IRUGO, show_temp_fault, NULL, 0);
@@ -379,6 +512,33 @@ static SENSOR_DEVICE_ATTR(temp2_emergency_alarm, S_IRUGO, show_alarm, NULL, 4);
 
 
 static struct attribute *max6639_attributes[] = {
+=======
+static SENSOR_DEVICE_ATTR_RO(temp1_input, temp_input, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_input, temp_input, 1);
+static SENSOR_DEVICE_ATTR_RO(temp1_fault, temp_fault, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_fault, temp_fault, 1);
+static SENSOR_DEVICE_ATTR_RW(temp1_max, temp_max, 0);
+static SENSOR_DEVICE_ATTR_RW(temp2_max, temp_max, 1);
+static SENSOR_DEVICE_ATTR_RW(temp1_crit, temp_crit, 0);
+static SENSOR_DEVICE_ATTR_RW(temp2_crit, temp_crit, 1);
+static SENSOR_DEVICE_ATTR_RW(temp1_emergency, temp_emergency, 0);
+static SENSOR_DEVICE_ATTR_RW(temp2_emergency, temp_emergency, 1);
+static SENSOR_DEVICE_ATTR_RW(pwm1, pwm, 0);
+static SENSOR_DEVICE_ATTR_RW(pwm2, pwm, 1);
+static SENSOR_DEVICE_ATTR_RO(fan1_input, fan_input, 0);
+static SENSOR_DEVICE_ATTR_RO(fan2_input, fan_input, 1);
+static SENSOR_DEVICE_ATTR_RO(fan1_fault, alarm, 1);
+static SENSOR_DEVICE_ATTR_RO(fan2_fault, alarm, 0);
+static SENSOR_DEVICE_ATTR_RO(temp1_max_alarm, alarm, 3);
+static SENSOR_DEVICE_ATTR_RO(temp2_max_alarm, alarm, 2);
+static SENSOR_DEVICE_ATTR_RO(temp1_crit_alarm, alarm, 7);
+static SENSOR_DEVICE_ATTR_RO(temp2_crit_alarm, alarm, 6);
+static SENSOR_DEVICE_ATTR_RO(temp1_emergency_alarm, alarm, 5);
+static SENSOR_DEVICE_ATTR_RO(temp2_emergency_alarm, alarm, 4);
+
+
+static struct attribute *max6639_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
 	&sensor_dev_attr_temp2_input.dev_attr.attr,
 	&sensor_dev_attr_temp1_fault.dev_attr.attr,
@@ -403,10 +563,14 @@ static struct attribute *max6639_attributes[] = {
 	&sensor_dev_attr_temp2_emergency_alarm.dev_attr.attr,
 	NULL
 };
+<<<<<<< HEAD
 
 static const struct attribute_group max6639_group = {
 	.attrs = max6639_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(max6639);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  returns respective index in rpm_ranges table
@@ -424,11 +588,19 @@ static int rpm_range_to_reg(int range)
 	return 1; /* default: 4000 RPM */
 }
 
+<<<<<<< HEAD
 static int max6639_init_client(struct i2c_client *client)
 {
 	struct max6639_data *data = i2c_get_clientdata(client);
 	struct max6639_platform_data *max6639_info =
 		client->dev.platform_data;
+=======
+static int max6639_init_client(struct i2c_client *client,
+			       struct max6639_data *data)
+{
+	struct max6639_platform_data *max6639_info =
+		dev_get_platdata(&client->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	int rpm_range = 1; /* default: 4000 RPM */
 	int err;
@@ -537,11 +709,16 @@ static int max6639_detect(struct i2c_client *client,
 	if (dev_id != 0x58 || manu_id != 0x4D)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	strlcpy(info->type, "max6639", I2C_NAME_SIZE);
+=======
+	strscpy(info->type, "max6639", I2C_NAME_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int max6639_probe(struct i2c_client *client,
 			 const struct i2c_device_id *id)
 {
@@ -606,11 +783,80 @@ static int max6639_suspend(struct device *dev)
 
 	return i2c_smbus_write_byte_data(client,
 			MAX6639_REG_GCONFIG, data | MAX6639_GCONFIG_STANDBY);
+=======
+static void max6639_regulator_disable(void *data)
+{
+	regulator_disable(data);
+}
+
+static int max6639_probe(struct i2c_client *client)
+{
+	struct device *dev = &client->dev;
+	struct max6639_data *data;
+	struct device *hwmon_dev;
+	int err;
+
+	data = devm_kzalloc(dev, sizeof(struct max6639_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+
+	data->reg = devm_regulator_get_optional(dev, "fan");
+	if (IS_ERR(data->reg)) {
+		if (PTR_ERR(data->reg) != -ENODEV)
+			return PTR_ERR(data->reg);
+
+		data->reg = NULL;
+	} else {
+		/* Spin up fans */
+		err = regulator_enable(data->reg);
+		if (err) {
+			dev_err(dev, "Failed to enable fan supply: %d\n", err);
+			return err;
+		}
+		err = devm_add_action_or_reset(dev, max6639_regulator_disable,
+					       data->reg);
+		if (err) {
+			dev_err(dev, "Failed to register action: %d\n", err);
+			return err;
+		}
+	}
+
+	mutex_init(&data->update_lock);
+
+	/* Initialize the max6639 chip */
+	err = max6639_init_client(client, data);
+	if (err < 0)
+		return err;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data,
+							   max6639_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+}
+
+static int max6639_suspend(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+	struct max6639_data *data = dev_get_drvdata(dev);
+	int ret = i2c_smbus_read_byte_data(client, MAX6639_REG_GCONFIG);
+
+	if (ret < 0)
+		return ret;
+
+	if (data->reg)
+		regulator_disable(data->reg);
+
+	return i2c_smbus_write_byte_data(client,
+			MAX6639_REG_GCONFIG, ret | MAX6639_GCONFIG_STANDBY);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int max6639_resume(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
+<<<<<<< HEAD
 	int data = i2c_smbus_read_byte_data(client, MAX6639_REG_GCONFIG);
 	if (data < 0)
 		return data;
@@ -619,6 +865,26 @@ static int max6639_resume(struct device *dev)
 			MAX6639_REG_GCONFIG, data & ~MAX6639_GCONFIG_STANDBY);
 }
 #endif /* CONFIG_PM_SLEEP */
+=======
+	struct max6639_data *data = dev_get_drvdata(dev);
+	int ret;
+
+	if (data->reg) {
+		ret = regulator_enable(data->reg);
+		if (ret) {
+			dev_err(dev, "Failed to enable fan supply: %d\n", ret);
+			return ret;
+		}
+	}
+
+	ret = i2c_smbus_read_byte_data(client, MAX6639_REG_GCONFIG);
+	if (ret < 0)
+		return ret;
+
+	return i2c_smbus_write_byte_data(client,
+			MAX6639_REG_GCONFIG, ret & ~MAX6639_GCONFIG_STANDBY);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct i2c_device_id max6639_id[] = {
 	{"max6639", 0},
@@ -627,18 +893,33 @@ static const struct i2c_device_id max6639_id[] = {
 
 MODULE_DEVICE_TABLE(i2c, max6639_id);
 
+<<<<<<< HEAD
 static const struct dev_pm_ops max6639_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(max6639_suspend, max6639_resume)
+=======
+static DEFINE_SIMPLE_DEV_PM_OPS(max6639_pm_ops, max6639_suspend, max6639_resume);
+
+static const struct of_device_id max6639_of_match[] = {
+	{ .compatible = "maxim,max6639", },
+	{ },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct i2c_driver max6639_driver = {
 	.class = I2C_CLASS_HWMON,
 	.driver = {
 		   .name = "max6639",
+<<<<<<< HEAD
 		   .pm = &max6639_pm_ops,
 		   },
 	.probe = max6639_probe,
 	.remove = max6639_remove,
+=======
+		   .pm = pm_sleep_ptr(&max6639_pm_ops),
+		   .of_match_table = max6639_of_match,
+		   },
+	.probe = max6639_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = max6639_id,
 	.detect = max6639_detect,
 	.address_list = normal_i2c,

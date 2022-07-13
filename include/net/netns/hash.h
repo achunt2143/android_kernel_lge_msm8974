@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __NET_NS_HASH_H__
 #define __NET_NS_HASH_H__
 
@@ -17,5 +18,16 @@ static inline unsigned net_hash_mix(struct net *net)
 #else
 	return 0;
 #endif
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __NET_NS_HASH_H__
+#define __NET_NS_HASH_H__
+
+#include <net/net_namespace.h>
+
+static inline u32 net_hash_mix(const struct net *net)
+{
+	return net->hash_mix;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif

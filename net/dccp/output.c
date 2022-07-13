@@ -1,19 +1,30 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  net/dccp/output.c
  *
  *  An implementation of the DCCP protocol
  *  Arnaldo Carvalho de Melo <acme@conectiva.com.br>
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/dccp.h>
 #include <linux/kernel.h>
 #include <linux/skbuff.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/inet_sock.h>
 #include <net/sock.h>
@@ -65,7 +76,11 @@ static int dccp_transmit_skb(struct sock *sk, struct sk_buff *skb)
 		switch (dcb->dccpd_type) {
 		case DCCP_PKT_DATA:
 			set_ack = 0;
+<<<<<<< HEAD
 			/* fall through */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case DCCP_PKT_DATAACK:
 		case DCCP_PKT_RESET:
 			break;
@@ -75,12 +90,20 @@ static int dccp_transmit_skb(struct sock *sk, struct sk_buff *skb)
 			/* Use ISS on the first (non-retransmitted) Request. */
 			if (icsk->icsk_retransmits == 0)
 				dcb->dccpd_seq = dp->dccps_iss;
+<<<<<<< HEAD
 			/* fall through */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		case DCCP_PKT_SYNC:
 		case DCCP_PKT_SYNCACK:
 			ackno = dcb->dccpd_ack_seq;
+<<<<<<< HEAD
 			/* fall through */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			/*
 			 * Set owner/destructor: some skbs are allocated via
@@ -138,7 +161,11 @@ static int dccp_transmit_skb(struct sock *sk, struct sk_buff *skb)
 
 		DCCP_INC_STATS(DCCP_MIB_OUTSEGS);
 
+<<<<<<< HEAD
 		err = icsk->icsk_af_ops->queue_xmit(skb, &inet->cork.fl);
+=======
+		err = icsk->icsk_af_ops->queue_xmit(sk, skb, &inet->cork.fl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return net_xmit_eval(err);
 	}
 	return -ENOBUFS;
@@ -146,6 +173,11 @@ static int dccp_transmit_skb(struct sock *sk, struct sk_buff *skb)
 
 /**
  * dccp_determine_ccmps  -  Find out about CCID-specific packet-size limits
+<<<<<<< HEAD
+=======
+ * @dp: socket to find packet size limits of
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * We only consider the HC-sender CCID for setting the CCMPS (RFC 4340, 14.),
  * since the RX CCID is restricted to feedback packets (Acks), which are small
  * in comparison with the data traffic. A value of 0 means "no current CCMPS".
@@ -188,7 +220,11 @@ unsigned int dccp_sync_mss(struct sock *sk, u32 pmtu)
 
 	/* And store cached results */
 	icsk->icsk_pmtu_cookie = pmtu;
+<<<<<<< HEAD
 	dp->dccps_mss_cache = cur_mps;
+=======
+	WRITE_ONCE(dp->dccps_mss_cache, cur_mps);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return cur_mps;
 }
@@ -201,7 +237,11 @@ void dccp_write_space(struct sock *sk)
 
 	rcu_read_lock();
 	wq = rcu_dereference(sk->sk_wq);
+<<<<<<< HEAD
 	if (wq_has_sleeper(wq))
+=======
+	if (skwq_has_sleeper(wq))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up_interruptible(&wq->wait);
 	/* Should agree with poll, otherwise some programs break */
 	if (sock_writeable(sk))
@@ -214,6 +254,10 @@ void dccp_write_space(struct sock *sk)
  * dccp_wait_for_ccid  -  Await CCID send permission
  * @sk:    socket to wait for
  * @delay: timeout in jiffies
+<<<<<<< HEAD
+=======
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This is used by CCIDs which need to delay the send time in process context.
  */
 static int dccp_wait_for_ccid(struct sock *sk, unsigned long delay)
@@ -238,6 +282,11 @@ static int dccp_wait_for_ccid(struct sock *sk, unsigned long delay)
 
 /**
  * dccp_xmit_packet  -  Send data packet under control of CCID
+<<<<<<< HEAD
+=======
+ * @sk: socket to send data packet on
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Transmits next-queued payload and informs CCID to account for the packet.
  */
 static void dccp_xmit_packet(struct sock *sk)
@@ -298,6 +347,12 @@ static void dccp_xmit_packet(struct sock *sk)
 
 /**
  * dccp_flush_write_queue  -  Drain queue at end of connection
+<<<<<<< HEAD
+=======
+ * @sk: socket to be drained
+ * @time_budget: time allowed to drain the queue
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Since dccp_sendmsg queues packets without waiting for them to be sent, it may
  * happen that the TX queue is not empty at the end of a connection. We give the
  * HC-sender CCID a grace period of up to @time_budget jiffies. If this function
@@ -369,6 +424,11 @@ void dccp_write_xmit(struct sock *sk)
 
 /**
  * dccp_retransmit_skb  -  Retransmit Request, Close, or CloseReq packets
+<<<<<<< HEAD
+=======
+ * @sk: socket to perform retransmit on
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * There are only four retransmittable packet types in DCCP:
  * - Request  in client-REQUEST  state (sec. 8.1.1),
  * - CloseReq in server-CLOSEREQ state (sec. 8.3),
@@ -389,7 +449,11 @@ int dccp_retransmit_skb(struct sock *sk)
 	return dccp_transmit_skb(sk, skb_clone(sk->sk_send_head, GFP_ATOMIC));
 }
 
+<<<<<<< HEAD
 struct sk_buff *dccp_make_response(struct sock *sk, struct dst_entry *dst,
+=======
+struct sk_buff *dccp_make_response(const struct sock *sk, struct dst_entry *dst,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   struct request_sock *req)
 {
 	struct dccp_hdr *dh;
@@ -397,6 +461,7 @@ struct sk_buff *dccp_make_response(struct sock *sk, struct dst_entry *dst,
 	const u32 dccp_header_size = sizeof(struct dccp_hdr) +
 				     sizeof(struct dccp_hdr_ext) +
 				     sizeof(struct dccp_hdr_response);
+<<<<<<< HEAD
 	struct sk_buff *skb = sock_wmalloc(sk, sk->sk_prot->max_header, 1,
 					   GFP_ATOMIC);
 	if (skb == NULL)
@@ -404,6 +469,20 @@ struct sk_buff *dccp_make_response(struct sock *sk, struct dst_entry *dst,
 
 	/* Reserve space for headers. */
 	skb_reserve(skb, sk->sk_prot->max_header);
+=======
+	struct sk_buff *skb;
+
+	/* sk is marked const to clearly express we dont hold socket lock.
+	 * sock_wmalloc() will atomically change sk->sk_wmem_alloc,
+	 * it is safe to promote sk to non const.
+	 */
+	skb = sock_wmalloc((struct sock *)sk, MAX_DCCP_HEADER, 1,
+			   GFP_ATOMIC);
+	if (!skb)
+		return NULL;
+
+	skb_reserve(skb, MAX_DCCP_HEADER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_dst_set(skb, dst_clone(dst));
 
@@ -423,8 +502,13 @@ struct sk_buff *dccp_make_response(struct sock *sk, struct dst_entry *dst,
 	/* Build and checksum header */
 	dh = dccp_zeroed_hdr(skb, dccp_header_size);
 
+<<<<<<< HEAD
 	dh->dccph_sport	= inet_rsk(req)->loc_port;
 	dh->dccph_dport	= inet_rsk(req)->rmt_port;
+=======
+	dh->dccph_sport	= htons(inet_rsk(req)->ir_num);
+	dh->dccph_dport	= inet_rsk(req)->ir_rmt_port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dh->dccph_doff	= (dccp_header_size +
 			   DCCP_SKB_CB(skb)->dccpd_opt_len) / 4;
 	dh->dccph_type	= DCCP_PKT_RESPONSE;
@@ -478,7 +562,11 @@ struct sk_buff *dccp_ctl_make_reset(struct sock *sk, struct sk_buff *rcv_skb)
 	case DCCP_RESET_CODE_PACKET_ERROR:
 		dhr->dccph_reset_data[0] = rxdh->dccph_type;
 		break;
+<<<<<<< HEAD
 	case DCCP_RESET_CODE_OPTION_ERROR:	/* fall through */
+=======
+	case DCCP_RESET_CODE_OPTION_ERROR:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case DCCP_RESET_CODE_MANDATORY_ERROR:
 		memcpy(dhr->dccph_reset_data, dcb->dccpd_reset_data, 3);
 		break;

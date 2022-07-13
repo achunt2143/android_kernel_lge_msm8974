@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/kernel/power/swap.c
  *
@@ -7,16 +11,26 @@
  * Copyright (C) 1998,2001-2005 Pavel Machek <pavel@ucw.cz>
  * Copyright (C) 2006 Rafael J. Wysocki <rjw@sisk.pl>
  * Copyright (C) 2010-2012 Bojan Smojver <bojan@rexursive.com>
+<<<<<<< HEAD
  *
  * This file is released under the GPLv2.
  *
  */
 
+=======
+ */
+
+#define pr_fmt(fmt) "PM: " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/file.h>
 #include <linux/delay.h>
 #include <linux/bitops.h>
+<<<<<<< HEAD
 #include <linux/genhd.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/bio.h>
 #include <linux/blkdev.h>
@@ -24,17 +38,37 @@
 #include <linux/swapops.h>
 #include <linux/pm.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/lzo.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/vmalloc.h>
 #include <linux/cpumask.h>
 #include <linux/atomic.h>
 #include <linux/kthread.h>
 #include <linux/crc32.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "power.h"
 
 #define HIBERNATE_SIG	"S1SUSPEND"
 
+<<<<<<< HEAD
+=======
+u32 swsusp_hardware_signature;
+
+/*
+ * When reading an {un,}compressed image, we may restore pages in place,
+ * in which case some architectures need these pages cleaning before they
+ * can be executed. We don't know which pages these may be, so clean the lot.
+ */
+static bool clean_pages_on_read;
+static bool clean_pages_on_decompress;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	The swap map is a data structure used for keeping track of each page
  *	written to a swap partition.  It consists of many swap_map_page
@@ -78,7 +112,11 @@ struct swap_map_page_list {
 	struct swap_map_page_list *next;
 };
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The swap_map_handle structure is used for handling swap in
  *	a file-alike way
  */
@@ -95,17 +133,30 @@ struct swap_map_handle {
 
 struct swsusp_header {
 	char reserved[PAGE_SIZE - 20 - sizeof(sector_t) - sizeof(int) -
+<<<<<<< HEAD
 	              sizeof(u32)];
+=======
+	              sizeof(u32) - sizeof(u32)];
+	u32	hw_sig;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	crc32;
 	sector_t image;
 	unsigned int flags;	/* Flags to pass to the "boot" kernel */
 	char	orig_sig[10];
 	char	sig[10];
+<<<<<<< HEAD
 } __attribute__((packed));
 
 static struct swsusp_header *swsusp_header;
 
 /**
+=======
+} __packed;
+
+static struct swsusp_header *swsusp_header;
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The following functions are used for tracing the allocated
  *	swap pages, so that they can be freed in case of an error.
  */
@@ -126,7 +177,11 @@ static int swsusp_extents_insert(unsigned long swap_offset)
 
 	/* Figure out where to put the new node */
 	while (*new) {
+<<<<<<< HEAD
 		ext = container_of(*new, struct swsusp_extent, node);
+=======
+		ext = rb_entry(*new, struct swsusp_extent, node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		parent = *new;
 		if (swap_offset < ext->start) {
 			/* Try to merge */
@@ -159,7 +214,11 @@ static int swsusp_extents_insert(unsigned long swap_offset)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	alloc_swapdev_block - allocate a swap page and register that it has
  *	been allocated, so that it can be freed in case of an error.
  */
@@ -178,7 +237,11 @@ sector_t alloc_swapdev_block(int swap)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	free_all_swap_pages - free swap pages allocated for saving image data.
  *	It also frees the extents used to register which swap entries had been
  *	allocated.
@@ -192,7 +255,11 @@ void free_all_swap_pages(int swap)
 		struct swsusp_extent *ext;
 		unsigned long offset;
 
+<<<<<<< HEAD
 		ext = container_of(node, struct swsusp_extent, node);
+=======
+		ext = rb_entry(node, struct swsusp_extent, node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rb_erase(node, &swsusp_extents);
 		for (offset = ext->start; offset <= ext->end; offset++)
 			swap_free(swp_entry(swap, offset));
@@ -211,22 +278,120 @@ int swsusp_swap_in_use(void)
  */
 
 static unsigned short root_swap = 0xffff;
+<<<<<<< HEAD
 struct block_device *hib_resume_bdev;
+=======
+static struct file *hib_resume_bdev_file;
+
+struct hib_bio_batch {
+	atomic_t		count;
+	wait_queue_head_t	wait;
+	blk_status_t		error;
+	struct blk_plug		plug;
+};
+
+static void hib_init_batch(struct hib_bio_batch *hb)
+{
+	atomic_set(&hb->count, 0);
+	init_waitqueue_head(&hb->wait);
+	hb->error = BLK_STS_OK;
+	blk_start_plug(&hb->plug);
+}
+
+static void hib_finish_batch(struct hib_bio_batch *hb)
+{
+	blk_finish_plug(&hb->plug);
+}
+
+static void hib_end_io(struct bio *bio)
+{
+	struct hib_bio_batch *hb = bio->bi_private;
+	struct page *page = bio_first_page_all(bio);
+
+	if (bio->bi_status) {
+		pr_alert("Read-error on swap-device (%u:%u:%Lu)\n",
+			 MAJOR(bio_dev(bio)), MINOR(bio_dev(bio)),
+			 (unsigned long long)bio->bi_iter.bi_sector);
+	}
+
+	if (bio_data_dir(bio) == WRITE)
+		put_page(page);
+	else if (clean_pages_on_read)
+		flush_icache_range((unsigned long)page_address(page),
+				   (unsigned long)page_address(page) + PAGE_SIZE);
+
+	if (bio->bi_status && !hb->error)
+		hb->error = bio->bi_status;
+	if (atomic_dec_and_test(&hb->count))
+		wake_up(&hb->wait);
+
+	bio_put(bio);
+}
+
+static int hib_submit_io(blk_opf_t opf, pgoff_t page_off, void *addr,
+			 struct hib_bio_batch *hb)
+{
+	struct page *page = virt_to_page(addr);
+	struct bio *bio;
+	int error = 0;
+
+	bio = bio_alloc(file_bdev(hib_resume_bdev_file), 1, opf,
+			GFP_NOIO | __GFP_HIGH);
+	bio->bi_iter.bi_sector = page_off * (PAGE_SIZE >> 9);
+
+	if (bio_add_page(bio, page, PAGE_SIZE, 0) < PAGE_SIZE) {
+		pr_err("Adding page to bio failed at %llu\n",
+		       (unsigned long long)bio->bi_iter.bi_sector);
+		bio_put(bio);
+		return -EFAULT;
+	}
+
+	if (hb) {
+		bio->bi_end_io = hib_end_io;
+		bio->bi_private = hb;
+		atomic_inc(&hb->count);
+		submit_bio(bio);
+	} else {
+		error = submit_bio_wait(bio);
+		bio_put(bio);
+	}
+
+	return error;
+}
+
+static int hib_wait_io(struct hib_bio_batch *hb)
+{
+	/*
+	 * We are relying on the behavior of blk_plug that a thread with
+	 * a plug will flush the plug list before sleeping.
+	 */
+	wait_event(hb->wait, atomic_read(&hb->count) == 0);
+	return blk_status_to_errno(hb->error);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Saving part
  */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mark_swapfiles(struct swap_map_handle *handle, unsigned int flags)
 {
 	int error;
 
+<<<<<<< HEAD
 	hib_bio_read_page(swsusp_resume_block, swsusp_header, NULL);
+=======
+	hib_submit_io(REQ_OP_READ, swsusp_resume_block, swsusp_header, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!memcmp("SWAP-SPACE",swsusp_header->sig, 10) ||
 	    !memcmp("SWAPSPACE2",swsusp_header->sig, 10)) {
 		memcpy(swsusp_header->orig_sig,swsusp_header->sig, 10);
 		memcpy(swsusp_header->sig, HIBERNATE_SIG, 10);
 		swsusp_header->image = handle->first_sector;
+<<<<<<< HEAD
 		swsusp_header->flags = flags;
 		if (flags & SF_CRC32_MODE)
 			swsusp_header->crc32 = handle->crc32;
@@ -234,11 +399,34 @@ static int mark_swapfiles(struct swap_map_handle *handle, unsigned int flags)
 					swsusp_header, NULL);
 	} else {
 		printk(KERN_ERR "PM: Swap header not found!\n");
+=======
+		if (swsusp_hardware_signature) {
+			swsusp_header->hw_sig = swsusp_hardware_signature;
+			flags |= SF_HW_SIG;
+		}
+		swsusp_header->flags = flags;
+		if (flags & SF_CRC32_MODE)
+			swsusp_header->crc32 = handle->crc32;
+		error = hib_submit_io(REQ_OP_WRITE | REQ_SYNC,
+				      swsusp_resume_block, swsusp_header, NULL);
+	} else {
+		pr_err("Swap header not found!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = -ENODEV;
 	}
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Hold the swsusp_header flag. This is used in software_resume() in
+ * 'kernel/power/hibernate' to check if the image is compressed and query
+ * for the compression algorithm support(if so).
+ */
+unsigned int swsusp_header_flags;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *	swsusp_swap_check - check if the resume device is a swap device
  *	and get its index (if so)
@@ -249,6 +437,7 @@ static int swsusp_swap_check(void)
 {
 	int res;
 
+<<<<<<< HEAD
 	res = swap_type_of(swsusp_resume_device, swsusp_resume_block,
 			&hib_resume_bdev);
 	if (res < 0)
@@ -262,6 +451,24 @@ static int swsusp_swap_check(void)
 	res = set_blocksize(hib_resume_bdev, PAGE_SIZE);
 	if (res < 0)
 		blkdev_put(hib_resume_bdev, FMODE_WRITE);
+=======
+	if (swsusp_resume_device)
+		res = swap_type_of(swsusp_resume_device, swsusp_resume_block);
+	else
+		res = find_first_swap(&swsusp_resume_device);
+	if (res < 0)
+		return res;
+	root_swap = res;
+
+	hib_resume_bdev_file = bdev_file_open_by_dev(swsusp_resume_device,
+			BLK_OPEN_WRITE, NULL, NULL);
+	if (IS_ERR(hib_resume_bdev_file))
+		return PTR_ERR(hib_resume_bdev_file);
+
+	res = set_blocksize(file_bdev(hib_resume_bdev_file), PAGE_SIZE);
+	if (res < 0)
+		fput(hib_resume_bdev_file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return res;
 }
@@ -270,10 +477,17 @@ static int swsusp_swap_check(void)
  *	write_page - Write one page to given swap location.
  *	@buf:		Address we're writing.
  *	@offset:	Offset of the swap page we're writing to.
+<<<<<<< HEAD
  *	@bio_chain:	Link the next write BIO here
  */
 
 static int write_page(void *buf, sector_t offset, struct bio **bio_chain)
+=======
+ *	@hb:		bio completion batch
+ */
+
+static int write_page(void *buf, sector_t offset, struct hib_bio_batch *hb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *src;
 	int ret;
@@ -281,30 +495,50 @@ static int write_page(void *buf, sector_t offset, struct bio **bio_chain)
 	if (!offset)
 		return -ENOSPC;
 
+<<<<<<< HEAD
 	if (bio_chain) {
 		src = (void *)__get_free_page(__GFP_WAIT | __GFP_NOWARN |
+=======
+	if (hb) {
+		src = (void *)__get_free_page(GFP_NOIO | __GFP_NOWARN |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		                              __GFP_NORETRY);
 		if (src) {
 			copy_page(src, buf);
 		} else {
+<<<<<<< HEAD
 			ret = hib_wait_on_bio_chain(bio_chain); /* Free pages */
 			if (ret)
 				return ret;
 			src = (void *)__get_free_page(__GFP_WAIT |
+=======
+			ret = hib_wait_io(hb); /* Free pages */
+			if (ret)
+				return ret;
+			src = (void *)__get_free_page(GFP_NOIO |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			                              __GFP_NOWARN |
 			                              __GFP_NORETRY);
 			if (src) {
 				copy_page(src, buf);
 			} else {
 				WARN_ON_ONCE(1);
+<<<<<<< HEAD
 				bio_chain = NULL;	/* Go synchronous */
+=======
+				hb = NULL;	/* Go synchronous */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				src = buf;
 			}
 		}
 	} else {
 		src = buf;
 	}
+<<<<<<< HEAD
 	return hib_bio_write_page(offset, src, bio_chain);
+=======
+	return hib_submit_io(REQ_OP_WRITE | REQ_SYNC, offset, src, hb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void release_swap_writer(struct swap_map_handle *handle)
@@ -321,8 +555,12 @@ static int get_swap_writer(struct swap_map_handle *handle)
 	ret = swsusp_swap_check();
 	if (ret) {
 		if (ret != -ENOSPC)
+<<<<<<< HEAD
 			printk(KERN_ERR "PM: Cannot find swap device, try "
 					"swapon -a.\n");
+=======
+			pr_err("Cannot find swap device, try swapon -a\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	handle->cur = (struct swap_map_page *)get_zeroed_page(GFP_KERNEL);
@@ -342,20 +580,34 @@ static int get_swap_writer(struct swap_map_handle *handle)
 err_rel:
 	release_swap_writer(handle);
 err_close:
+<<<<<<< HEAD
 	swsusp_close(FMODE_WRITE);
+=======
+	swsusp_close();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static int swap_write_page(struct swap_map_handle *handle, void *buf,
+<<<<<<< HEAD
 				struct bio **bio_chain)
 {
 	int error = 0;
+=======
+		struct hib_bio_batch *hb)
+{
+	int error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sector_t offset;
 
 	if (!handle->cur)
 		return -EINVAL;
 	offset = alloc_swapdev_block(root_swap);
+<<<<<<< HEAD
 	error = write_page(buf, offset, bio_chain);
+=======
+	error = write_page(buf, offset, hb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 	handle->cur->entries[handle->k++] = offset;
@@ -364,15 +616,24 @@ static int swap_write_page(struct swap_map_handle *handle, void *buf,
 		if (!offset)
 			return -ENOSPC;
 		handle->cur->next_swap = offset;
+<<<<<<< HEAD
 		error = write_page(handle->cur, handle->cur_swap, bio_chain);
+=======
+		error = write_page(handle->cur, handle->cur_swap, hb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			goto out;
 		clear_page(handle->cur);
 		handle->cur_swap = offset;
 		handle->k = 0;
 
+<<<<<<< HEAD
 		if (bio_chain && low_free_pages() <= handle->reqd_free_pages) {
 			error = hib_wait_on_bio_chain(bio_chain);
+=======
+		if (hb && low_free_pages() <= handle->reqd_free_pages) {
+			error = hib_wait_io(hb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (error)
 				goto out;
 			/*
@@ -398,20 +659,32 @@ static int swap_writer_finish(struct swap_map_handle *handle,
 		unsigned int flags, int error)
 {
 	if (!error) {
+<<<<<<< HEAD
 		flush_swap_writer(handle);
 		printk(KERN_INFO "PM: S");
 		error = mark_swapfiles(handle, flags);
 		printk("|\n");
+=======
+		pr_info("S");
+		error = mark_swapfiles(handle, flags);
+		pr_cont("|\n");
+		flush_swap_writer(handle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (error)
 		free_all_swap_pages(root_swap);
 	release_swap_writer(handle);
+<<<<<<< HEAD
 	swsusp_close(FMODE_WRITE);
+=======
+	swsusp_close();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
 
+<<<<<<< HEAD
 /* We need to remember how much compressed data we need to read. */
 #define LZO_HEADER	sizeof(size_t)
 
@@ -431,6 +704,32 @@ static int swap_writer_finish(struct swap_map_handle *handle,
 #define LZO_MIN_RD_PAGES	1024
 #define LZO_MAX_RD_PAGES	8192
 
+=======
+/*
+ * Bytes we need for compressed data in worst case. We assume(limitation)
+ * this is the worst of all the compression algorithms.
+ */
+#define bytes_worst_compress(x) ((x) + ((x) / 16) + 64 + 3 + 2)
+
+/* We need to remember how much compressed data we need to read. */
+#define CMP_HEADER	sizeof(size_t)
+
+/* Number of pages/bytes we'll compress at one time. */
+#define UNC_PAGES	32
+#define UNC_SIZE	(UNC_PAGES * PAGE_SIZE)
+
+/* Number of pages we need for compressed data (worst case). */
+#define CMP_PAGES	DIV_ROUND_UP(bytes_worst_compress(UNC_SIZE) + \
+				CMP_HEADER, PAGE_SIZE)
+#define CMP_SIZE	(CMP_PAGES * PAGE_SIZE)
+
+/* Maximum number of threads for compression/decompression. */
+#define CMP_THREADS	3
+
+/* Minimum/maximum number of pages for read buffering. */
+#define CMP_MIN_RD_PAGES	1024
+#define CMP_MAX_RD_PAGES	8192
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	save_image - save the suspend image data
@@ -444,6 +743,7 @@ static int save_image(struct swap_map_handle *handle,
 	int ret;
 	int nr_pages;
 	int err2;
+<<<<<<< HEAD
 	struct bio *bio;
 	struct timeval start;
 	struct timeval stop;
@@ -456,10 +756,26 @@ static int save_image(struct swap_map_handle *handle,
 	nr_pages = 0;
 	bio = NULL;
 	do_gettimeofday(&start);
+=======
+	struct hib_bio_batch hb;
+	ktime_t start;
+	ktime_t stop;
+
+	hib_init_batch(&hb);
+
+	pr_info("Saving image data pages (%u pages)...\n",
+		nr_to_write);
+	m = nr_to_write / 10;
+	if (!m)
+		m = 1;
+	nr_pages = 0;
+	start = ktime_get();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (1) {
 		ret = snapshot_read_next(snapshot);
 		if (ret <= 0)
 			break;
+<<<<<<< HEAD
 		ret = swap_write_page(handle, data_of(*snapshot), &bio);
 		if (ret)
 			break;
@@ -480,6 +796,28 @@ static int save_image(struct swap_map_handle *handle,
 }
 
 /**
+=======
+		ret = swap_write_page(handle, data_of(*snapshot), &hb);
+		if (ret)
+			break;
+		if (!(nr_pages % m))
+			pr_info("Image saving progress: %3d%%\n",
+				nr_pages / m * 10);
+		nr_pages++;
+	}
+	err2 = hib_wait_io(&hb);
+	hib_finish_batch(&hb);
+	stop = ktime_get();
+	if (!ret)
+		ret = err2;
+	if (!ret)
+		pr_info("Image saving done\n");
+	swsusp_show_speed(start, stop, nr_to_write, "Wrote");
+	return ret;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Structure used for CRC32.
  */
 struct crc_data {
@@ -490,11 +828,19 @@ struct crc_data {
 	wait_queue_head_t go;                     /* start crc update */
 	wait_queue_head_t done;                   /* crc update done */
 	u32 *crc32;                               /* points to handle's crc32 */
+<<<<<<< HEAD
 	size_t *unc_len[LZO_THREADS];             /* uncompressed lengths */
 	unsigned char *unc[LZO_THREADS];          /* uncompressed data */
 };
 
 /**
+=======
+	size_t *unc_len[CMP_THREADS];             /* uncompressed lengths */
+	unsigned char *unc[CMP_THREADS];          /* uncompressed data */
+};
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * CRC32 update function that runs in its own thread.
  */
 static int crc32_threadfn(void *data)
@@ -503,11 +849,19 @@ static int crc32_threadfn(void *data)
 	unsigned i;
 
 	while (1) {
+<<<<<<< HEAD
 		wait_event(d->go, atomic_read(&d->ready) ||
 		                  kthread_should_stop());
 		if (kthread_should_stop()) {
 			d->thr = NULL;
 			atomic_set(&d->stop, 1);
+=======
+		wait_event(d->go, atomic_read_acquire(&d->ready) ||
+		                  kthread_should_stop());
+		if (kthread_should_stop()) {
+			d->thr = NULL;
+			atomic_set_release(&d->stop, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wake_up(&d->done);
 			break;
 		}
@@ -516,16 +870,29 @@ static int crc32_threadfn(void *data)
 		for (i = 0; i < d->run_threads; i++)
 			*d->crc32 = crc32_le(*d->crc32,
 			                     d->unc[i], *d->unc_len[i]);
+<<<<<<< HEAD
 		atomic_set(&d->stop, 1);
+=======
+		atomic_set_release(&d->stop, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up(&d->done);
 	}
 	return 0;
 }
+<<<<<<< HEAD
 /**
  * Structure used for LZO data compression.
  */
 struct cmp_data {
 	struct task_struct *thr;                  /* thread */
+=======
+/*
+ * Structure used for data compression.
+ */
+struct cmp_data {
+	struct task_struct *thr;                  /* thread */
+	struct crypto_comp *cc;                   /* crypto compressor stream */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_t ready;                           /* ready to start flag */
 	atomic_t stop;                            /* ready to stop flag */
 	int ret;                                  /* return code */
@@ -533,6 +900,7 @@ struct cmp_data {
 	wait_queue_head_t done;                   /* compression done */
 	size_t unc_len;                           /* uncompressed length */
 	size_t cmp_len;                           /* compressed length */
+<<<<<<< HEAD
 	unsigned char unc[LZO_UNC_SIZE];          /* uncompressed buffer */
 	unsigned char cmp[LZO_CMP_SIZE];          /* compressed buffer */
 	unsigned char wrk[LZO1X_1_MEM_COMPRESS];  /* compression workspace */
@@ -547,26 +915,61 @@ static int lzo_compress_threadfn(void *data)
 
 	while (1) {
 		wait_event(d->go, atomic_read(&d->ready) ||
+=======
+	unsigned char unc[UNC_SIZE];              /* uncompressed buffer */
+	unsigned char cmp[CMP_SIZE];              /* compressed buffer */
+};
+
+/* Indicates the image size after compression */
+static atomic_t compressed_size = ATOMIC_INIT(0);
+
+/*
+ * Compression function that runs in its own thread.
+ */
+static int compress_threadfn(void *data)
+{
+	struct cmp_data *d = data;
+	unsigned int cmp_len = 0;
+
+	while (1) {
+		wait_event(d->go, atomic_read_acquire(&d->ready) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		                  kthread_should_stop());
 		if (kthread_should_stop()) {
 			d->thr = NULL;
 			d->ret = -1;
+<<<<<<< HEAD
 			atomic_set(&d->stop, 1);
+=======
+			atomic_set_release(&d->stop, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wake_up(&d->done);
 			break;
 		}
 		atomic_set(&d->ready, 0);
 
+<<<<<<< HEAD
 		d->ret = lzo1x_1_compress(d->unc, d->unc_len,
 		                          d->cmp + LZO_HEADER, &d->cmp_len,
 		                          d->wrk);
 		atomic_set(&d->stop, 1);
+=======
+		cmp_len = CMP_SIZE - CMP_HEADER;
+		d->ret = crypto_comp_compress(d->cc, d->unc, d->unc_len,
+					      d->cmp + CMP_HEADER,
+					      &cmp_len);
+		d->cmp_len = cmp_len;
+
+		atomic_set(&compressed_size, atomic_read(&compressed_size) + d->cmp_len);
+		atomic_set_release(&d->stop, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up(&d->done);
 	}
 	return 0;
 }
 
 /**
+<<<<<<< HEAD
  * save_image_lzo - Save the suspend image data compressed with LZO.
  * @handle: Swap mam handle to use for saving the image.
  * @snapshot: Image to read data from.
@@ -575,34 +978,66 @@ static int lzo_compress_threadfn(void *data)
 static int save_image_lzo(struct swap_map_handle *handle,
                           struct snapshot_handle *snapshot,
                           unsigned int nr_to_write)
+=======
+ * save_compressed_image - Save the suspend image data after compression.
+ * @handle: Swap map handle to use for saving the image.
+ * @snapshot: Image to read data from.
+ * @nr_to_write: Number of pages to save.
+ */
+static int save_compressed_image(struct swap_map_handle *handle,
+				 struct snapshot_handle *snapshot,
+				 unsigned int nr_to_write)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int m;
 	int ret = 0;
 	int nr_pages;
 	int err2;
+<<<<<<< HEAD
 	struct bio *bio;
 	struct timeval start;
 	struct timeval stop;
+=======
+	struct hib_bio_batch hb;
+	ktime_t start;
+	ktime_t stop;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t off;
 	unsigned thr, run_threads, nr_threads;
 	unsigned char *page = NULL;
 	struct cmp_data *data = NULL;
 	struct crc_data *crc = NULL;
 
+<<<<<<< HEAD
+=======
+	hib_init_batch(&hb);
+
+	atomic_set(&compressed_size, 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We'll limit the number of threads for compression to limit memory
 	 * footprint.
 	 */
 	nr_threads = num_online_cpus() - 1;
+<<<<<<< HEAD
 	nr_threads = clamp_val(nr_threads, 1, LZO_THREADS);
 
 	page = (void *)__get_free_page(__GFP_WAIT | __GFP_HIGH);
 	if (!page) {
 		printk(KERN_ERR "PM: Failed to allocate LZO page\n");
+=======
+	nr_threads = clamp_val(nr_threads, 1, CMP_THREADS);
+
+	page = (void *)__get_free_page(GFP_NOIO | __GFP_HIGH);
+	if (!page) {
+		pr_err("Failed to allocate %s page\n", hib_comp_algo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto out_clean;
 	}
 
+<<<<<<< HEAD
 	data = vmalloc(sizeof(*data) * nr_threads);
 	if (!data) {
 		printk(KERN_ERR "PM: Failed to allocate LZO data\n");
@@ -619,6 +1054,21 @@ static int save_image_lzo(struct swap_map_handle *handle,
 		goto out_clean;
 	}
 	memset(crc, 0, offsetof(struct crc_data, go));
+=======
+	data = vzalloc(array_size(nr_threads, sizeof(*data)));
+	if (!data) {
+		pr_err("Failed to allocate %s data\n", hib_comp_algo);
+		ret = -ENOMEM;
+		goto out_clean;
+	}
+
+	crc = kzalloc(sizeof(*crc), GFP_KERNEL);
+	if (!crc) {
+		pr_err("Failed to allocate crc\n");
+		ret = -ENOMEM;
+		goto out_clean;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Start the compression threads.
@@ -627,13 +1077,28 @@ static int save_image_lzo(struct swap_map_handle *handle,
 		init_waitqueue_head(&data[thr].go);
 		init_waitqueue_head(&data[thr].done);
 
+<<<<<<< HEAD
 		data[thr].thr = kthread_run(lzo_compress_threadfn,
+=======
+		data[thr].cc = crypto_alloc_comp(hib_comp_algo, 0, 0);
+		if (IS_ERR_OR_NULL(data[thr].cc)) {
+			pr_err("Could not allocate comp stream %ld\n", PTR_ERR(data[thr].cc));
+			ret = -EFAULT;
+			goto out_clean;
+		}
+
+		data[thr].thr = kthread_run(compress_threadfn,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		                            &data[thr],
 		                            "image_compress/%u", thr);
 		if (IS_ERR(data[thr].thr)) {
 			data[thr].thr = NULL;
+<<<<<<< HEAD
 			printk(KERN_ERR
 			       "PM: Cannot start compression threads\n");
+=======
+			pr_err("Cannot start compression threads\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -ENOMEM;
 			goto out_clean;
 		}
@@ -655,7 +1120,11 @@ static int save_image_lzo(struct swap_map_handle *handle,
 	crc->thr = kthread_run(crc32_threadfn, crc, "image_crc32");
 	if (IS_ERR(crc->thr)) {
 		crc->thr = NULL;
+<<<<<<< HEAD
 		printk(KERN_ERR "PM: Cannot start CRC32 thread\n");
+=======
+		pr_err("Cannot start CRC32 thread\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto out_clean;
 	}
@@ -666,6 +1135,7 @@ static int save_image_lzo(struct swap_map_handle *handle,
 	 */
 	handle->reqd_free_pages = reqd_free_pages();
 
+<<<<<<< HEAD
 	printk(KERN_INFO
 		"PM: Using %u thread(s) for compression.\n"
 		"PM: Compressing and saving image data (%u pages) ...     ",
@@ -679,6 +1149,19 @@ static int save_image_lzo(struct swap_map_handle *handle,
 	for (;;) {
 		for (thr = 0; thr < nr_threads; thr++) {
 			for (off = 0; off < LZO_UNC_SIZE; off += PAGE_SIZE) {
+=======
+	pr_info("Using %u thread(s) for %s compression\n", nr_threads, hib_comp_algo);
+	pr_info("Compressing and saving image data (%u pages)...\n",
+		nr_to_write);
+	m = nr_to_write / 10;
+	if (!m)
+		m = 1;
+	nr_pages = 0;
+	start = ktime_get();
+	for (;;) {
+		for (thr = 0; thr < nr_threads; thr++) {
+			for (off = 0; off < UNC_SIZE; off += PAGE_SIZE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = snapshot_read_next(snapshot);
 				if (ret < 0)
 					goto out_finish;
@@ -690,8 +1173,13 @@ static int save_image_lzo(struct swap_map_handle *handle,
 				       data_of(*snapshot), PAGE_SIZE);
 
 				if (!(nr_pages % m))
+<<<<<<< HEAD
 					printk(KERN_CONT "\b\b\b\b%3d%%",
 				               nr_pages / m);
+=======
+					pr_info("Image saving progress: %3d%%\n",
+						nr_pages / m * 10);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				nr_pages++;
 			}
 			if (!off)
@@ -699,7 +1187,11 @@ static int save_image_lzo(struct swap_map_handle *handle,
 
 			data[thr].unc_len = off;
 
+<<<<<<< HEAD
 			atomic_set(&data[thr].ready, 1);
+=======
+			atomic_set_release(&data[thr].ready, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wake_up(&data[thr].go);
 		}
 
@@ -707,26 +1199,43 @@ static int save_image_lzo(struct swap_map_handle *handle,
 			break;
 
 		crc->run_threads = thr;
+<<<<<<< HEAD
 		atomic_set(&crc->ready, 1);
+=======
+		atomic_set_release(&crc->ready, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up(&crc->go);
 
 		for (run_threads = thr, thr = 0; thr < run_threads; thr++) {
 			wait_event(data[thr].done,
+<<<<<<< HEAD
 			           atomic_read(&data[thr].stop));
+=======
+				atomic_read_acquire(&data[thr].stop));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atomic_set(&data[thr].stop, 0);
 
 			ret = data[thr].ret;
 
 			if (ret < 0) {
+<<<<<<< HEAD
 				printk(KERN_ERR "PM: LZO compression failed\n");
+=======
+				pr_err("%s compression failed\n", hib_comp_algo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out_finish;
 			}
 
 			if (unlikely(!data[thr].cmp_len ||
 			             data[thr].cmp_len >
+<<<<<<< HEAD
 			             lzo1x_worst_compress(data[thr].unc_len))) {
 				printk(KERN_ERR
 				       "PM: Invalid LZO compressed length\n");
+=======
+				     bytes_worst_compress(data[thr].unc_len))) {
+				pr_err("Invalid %s compressed length\n", hib_comp_algo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -1;
 				goto out_finish;
 			}
@@ -742,21 +1251,34 @@ static int save_image_lzo(struct swap_map_handle *handle,
 			 * read it.
 			 */
 			for (off = 0;
+<<<<<<< HEAD
 			     off < LZO_HEADER + data[thr].cmp_len;
 			     off += PAGE_SIZE) {
 				memcpy(page, data[thr].cmp + off, PAGE_SIZE);
 
 				ret = swap_write_page(handle, page, &bio);
+=======
+			     off < CMP_HEADER + data[thr].cmp_len;
+			     off += PAGE_SIZE) {
+				memcpy(page, data[thr].cmp + off, PAGE_SIZE);
+
+				ret = swap_write_page(handle, page, &hb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (ret)
 					goto out_finish;
 			}
 		}
 
+<<<<<<< HEAD
 		wait_event(crc->done, atomic_read(&crc->stop));
+=======
+		wait_event(crc->done, atomic_read_acquire(&crc->stop));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_set(&crc->stop, 0);
 	}
 
 out_finish:
+<<<<<<< HEAD
 	err2 = hib_wait_on_bio_chain(&bio);
 	do_gettimeofday(&stop);
 	if (!ret)
@@ -768,15 +1290,38 @@ out_finish:
 	}
 	swsusp_show_speed(&start, &stop, nr_to_write, "Wrote");
 out_clean:
+=======
+	err2 = hib_wait_io(&hb);
+	stop = ktime_get();
+	if (!ret)
+		ret = err2;
+	if (!ret)
+		pr_info("Image saving done\n");
+	swsusp_show_speed(start, stop, nr_to_write, "Wrote");
+	pr_info("Image size after compression: %d kbytes\n",
+		(atomic_read(&compressed_size) / 1024));
+
+out_clean:
+	hib_finish_batch(&hb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (crc) {
 		if (crc->thr)
 			kthread_stop(crc->thr);
 		kfree(crc);
 	}
 	if (data) {
+<<<<<<< HEAD
 		for (thr = 0; thr < nr_threads; thr++)
 			if (data[thr].thr)
 				kthread_stop(data[thr].thr);
+=======
+		for (thr = 0; thr < nr_threads; thr++) {
+			if (data[thr].thr)
+				kthread_stop(data[thr].thr);
+			if (data[thr].cc)
+				crypto_free_comp(data[thr].cc);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vfree(data);
 	}
 	if (page) free_page((unsigned long)page);
@@ -788,15 +1333,26 @@ out_clean:
  *	enough_swap - Make sure we have enough swap to save the image.
  *
  *	Returns TRUE or FALSE after checking the total amount of swap
+<<<<<<< HEAD
  *	space avaiable from the resume partition.
  */
 
 static int enough_swap(unsigned int nr_pages, unsigned int flags)
+=======
+ *	space available from the resume partition.
+ */
+
+static int enough_swap(unsigned int nr_pages)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int free_swap = count_swap_pages(root_swap, 1);
 	unsigned int required;
 
+<<<<<<< HEAD
 	pr_debug("PM: Free swap pages: %u\n", free_swap);
+=======
+	pr_debug("Free swap pages: %u\n", free_swap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	required = PAGES_FOR_IO + nr_pages;
 	return free_swap > required;
@@ -823,19 +1379,32 @@ int swsusp_write(unsigned int flags)
 	pages = snapshot_get_image_size();
 	error = get_swap_writer(&handle);
 	if (error) {
+<<<<<<< HEAD
 		printk(KERN_ERR "PM: Cannot get swap writer\n");
 		return error;
 	}
 	if (flags & SF_NOCOMPRESS_MODE) {
 		if (!enough_swap(pages, flags)) {
 			printk(KERN_ERR "PM: Not enough free swap\n");
+=======
+		pr_err("Cannot get swap writer\n");
+		return error;
+	}
+	if (flags & SF_NOCOMPRESS_MODE) {
+		if (!enough_swap(pages)) {
+			pr_err("Not enough free swap\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = -ENOSPC;
 			goto out_finish;
 		}
 	}
 	memset(&snapshot, 0, sizeof(struct snapshot_handle));
 	error = snapshot_read_next(&snapshot);
+<<<<<<< HEAD
 	if (error < PAGE_SIZE) {
+=======
+	if (error < (int)PAGE_SIZE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error >= 0)
 			error = -EFAULT;
 
@@ -846,16 +1415,26 @@ int swsusp_write(unsigned int flags)
 	if (!error) {
 		error = (flags & SF_NOCOMPRESS_MODE) ?
 			save_image(&handle, &snapshot, pages - 1) :
+<<<<<<< HEAD
 			save_image_lzo(&handle, &snapshot, pages - 1);
+=======
+			save_compressed_image(&handle, &snapshot, pages - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out_finish:
 	error = swap_writer_finish(&handle, flags, error);
 	return error;
 }
 
+<<<<<<< HEAD
 /**
  *	The following functions allow us to read data using a swap map
  *	in a file-alike way
+=======
+/*
+ *	The following functions allow us to read data using a swap map
+ *	in a file-like way.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static void release_swap_reader(struct swap_map_handle *handle)
@@ -888,12 +1467,19 @@ static int get_swap_reader(struct swap_map_handle *handle,
 	last = handle->maps = NULL;
 	offset = swsusp_header->image;
 	while (offset) {
+<<<<<<< HEAD
 		tmp = kmalloc(sizeof(*handle->maps), GFP_KERNEL);
+=======
+		tmp = kzalloc(sizeof(*handle->maps), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!tmp) {
 			release_swap_reader(handle);
 			return -ENOMEM;
 		}
+<<<<<<< HEAD
 		memset(tmp, 0, sizeof(*tmp));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!handle->maps)
 			handle->maps = tmp;
 		if (last)
@@ -901,13 +1487,21 @@ static int get_swap_reader(struct swap_map_handle *handle,
 		last = tmp;
 
 		tmp->map = (struct swap_map_page *)
+<<<<<<< HEAD
 		           __get_free_page(__GFP_WAIT | __GFP_HIGH);
+=======
+			   __get_free_page(GFP_NOIO | __GFP_HIGH);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!tmp->map) {
 			release_swap_reader(handle);
 			return -ENOMEM;
 		}
 
+<<<<<<< HEAD
 		error = hib_bio_read_page(offset, tmp->map, NULL);
+=======
+		error = hib_submit_io(REQ_OP_READ, offset, tmp->map, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error) {
 			release_swap_reader(handle);
 			return error;
@@ -920,7 +1514,11 @@ static int get_swap_reader(struct swap_map_handle *handle,
 }
 
 static int swap_read_page(struct swap_map_handle *handle, void *buf,
+<<<<<<< HEAD
 				struct bio **bio_chain)
+=======
+		struct hib_bio_batch *hb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sector_t offset;
 	int error;
@@ -931,7 +1529,11 @@ static int swap_read_page(struct swap_map_handle *handle, void *buf,
 	offset = handle->cur->entries[handle->k];
 	if (!offset)
 		return -EFAULT;
+<<<<<<< HEAD
 	error = hib_bio_read_page(offset, buf, bio_chain);
+=======
+	error = hib_submit_io(REQ_OP_READ, offset, buf, hb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 	if (++handle->k >= MAP_PAGE_ENTRIES) {
@@ -967,6 +1569,7 @@ static int load_image(struct swap_map_handle *handle,
 {
 	unsigned int m;
 	int ret = 0;
+<<<<<<< HEAD
 	struct timeval start;
 	struct timeval stop;
 	struct bio *bio;
@@ -981,10 +1584,28 @@ static int load_image(struct swap_map_handle *handle,
 	nr_pages = 0;
 	bio = NULL;
 	do_gettimeofday(&start);
+=======
+	ktime_t start;
+	ktime_t stop;
+	struct hib_bio_batch hb;
+	int err2;
+	unsigned nr_pages;
+
+	hib_init_batch(&hb);
+
+	clean_pages_on_read = true;
+	pr_info("Loading image data pages (%u pages)...\n", nr_to_read);
+	m = nr_to_read / 10;
+	if (!m)
+		m = 1;
+	nr_pages = 0;
+	start = ktime_get();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for ( ; ; ) {
 		ret = snapshot_write_next(snapshot);
 		if (ret <= 0)
 			break;
+<<<<<<< HEAD
 		ret = swap_read_page(handle, data_of(*snapshot), &bio);
 		if (ret)
 			break;
@@ -1016,6 +1637,41 @@ static int load_image(struct swap_map_handle *handle,
  */
 struct dec_data {
 	struct task_struct *thr;                  /* thread */
+=======
+		ret = swap_read_page(handle, data_of(*snapshot), &hb);
+		if (ret)
+			break;
+		if (snapshot->sync_read)
+			ret = hib_wait_io(&hb);
+		if (ret)
+			break;
+		if (!(nr_pages % m))
+			pr_info("Image loading progress: %3d%%\n",
+				nr_pages / m * 10);
+		nr_pages++;
+	}
+	err2 = hib_wait_io(&hb);
+	hib_finish_batch(&hb);
+	stop = ktime_get();
+	if (!ret)
+		ret = err2;
+	if (!ret) {
+		pr_info("Image loading done\n");
+		ret = snapshot_write_finalize(snapshot);
+		if (!ret && !snapshot_image_loaded(snapshot))
+			ret = -ENODATA;
+	}
+	swsusp_show_speed(start, stop, nr_to_read, "Read");
+	return ret;
+}
+
+/*
+ * Structure used for data decompression.
+ */
+struct dec_data {
+	struct task_struct *thr;                  /* thread */
+	struct crypto_comp *cc;                   /* crypto compressor stream */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_t ready;                           /* ready to start flag */
 	atomic_t stop;                            /* ready to stop flag */
 	int ret;                                  /* return code */
@@ -1023,6 +1679,7 @@ struct dec_data {
 	wait_queue_head_t done;                   /* decompression done */
 	size_t unc_len;                           /* uncompressed length */
 	size_t cmp_len;                           /* compressed length */
+<<<<<<< HEAD
 	unsigned char unc[LZO_UNC_SIZE];          /* uncompressed buffer */
 	unsigned char cmp[LZO_CMP_SIZE];          /* compressed buffer */
 };
@@ -1036,41 +1693,90 @@ static int lzo_decompress_threadfn(void *data)
 
 	while (1) {
 		wait_event(d->go, atomic_read(&d->ready) ||
+=======
+	unsigned char unc[UNC_SIZE];              /* uncompressed buffer */
+	unsigned char cmp[CMP_SIZE];              /* compressed buffer */
+};
+
+/*
+ * Decompression function that runs in its own thread.
+ */
+static int decompress_threadfn(void *data)
+{
+	struct dec_data *d = data;
+	unsigned int unc_len = 0;
+
+	while (1) {
+		wait_event(d->go, atomic_read_acquire(&d->ready) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		                  kthread_should_stop());
 		if (kthread_should_stop()) {
 			d->thr = NULL;
 			d->ret = -1;
+<<<<<<< HEAD
 			atomic_set(&d->stop, 1);
+=======
+			atomic_set_release(&d->stop, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wake_up(&d->done);
 			break;
 		}
 		atomic_set(&d->ready, 0);
 
+<<<<<<< HEAD
 		d->unc_len = LZO_UNC_SIZE;
 		d->ret = lzo1x_decompress_safe(d->cmp + LZO_HEADER, d->cmp_len,
 		                               d->unc, &d->unc_len);
 		atomic_set(&d->stop, 1);
+=======
+		unc_len = UNC_SIZE;
+		d->ret = crypto_comp_decompress(d->cc, d->cmp + CMP_HEADER, d->cmp_len,
+						d->unc, &unc_len);
+		d->unc_len = unc_len;
+
+		if (clean_pages_on_decompress)
+			flush_icache_range((unsigned long)d->unc,
+					   (unsigned long)d->unc + d->unc_len);
+
+		atomic_set_release(&d->stop, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up(&d->done);
 	}
 	return 0;
 }
 
 /**
+<<<<<<< HEAD
  * load_image_lzo - Load compressed image data and decompress them with LZO.
+=======
+ * load_compressed_image - Load compressed image data and decompress it.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @handle: Swap map handle to use for loading data.
  * @snapshot: Image to copy uncompressed data into.
  * @nr_to_read: Number of pages to load.
  */
+<<<<<<< HEAD
 static int load_image_lzo(struct swap_map_handle *handle,
                           struct snapshot_handle *snapshot,
                           unsigned int nr_to_read)
+=======
+static int load_compressed_image(struct swap_map_handle *handle,
+				 struct snapshot_handle *snapshot,
+				 unsigned int nr_to_read)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int m;
 	int ret = 0;
 	int eof = 0;
+<<<<<<< HEAD
 	struct bio *bio;
 	struct timeval start;
 	struct timeval stop;
+=======
+	struct hib_bio_batch hb;
+	ktime_t start;
+	ktime_t stop;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned nr_pages;
 	size_t off;
 	unsigned i, thr, run_threads, nr_threads;
@@ -1081,20 +1787,34 @@ static int load_image_lzo(struct swap_map_handle *handle,
 	struct dec_data *data = NULL;
 	struct crc_data *crc = NULL;
 
+<<<<<<< HEAD
+=======
+	hib_init_batch(&hb);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We'll limit the number of threads for decompression to limit memory
 	 * footprint.
 	 */
 	nr_threads = num_online_cpus() - 1;
+<<<<<<< HEAD
 	nr_threads = clamp_val(nr_threads, 1, LZO_THREADS);
 
 	page = vmalloc(sizeof(*page) * LZO_MAX_RD_PAGES);
 	if (!page) {
 		printk(KERN_ERR "PM: Failed to allocate LZO page\n");
+=======
+	nr_threads = clamp_val(nr_threads, 1, CMP_THREADS);
+
+	page = vmalloc(array_size(CMP_MAX_RD_PAGES, sizeof(*page)));
+	if (!page) {
+		pr_err("Failed to allocate %s page\n", hib_comp_algo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto out_clean;
 	}
 
+<<<<<<< HEAD
 	data = vmalloc(sizeof(*data) * nr_threads);
 	if (!data) {
 		printk(KERN_ERR "PM: Failed to allocate LZO data\n");
@@ -1111,6 +1831,23 @@ static int load_image_lzo(struct swap_map_handle *handle,
 		goto out_clean;
 	}
 	memset(crc, 0, offsetof(struct crc_data, go));
+=======
+	data = vzalloc(array_size(nr_threads, sizeof(*data)));
+	if (!data) {
+		pr_err("Failed to allocate %s data\n", hib_comp_algo);
+		ret = -ENOMEM;
+		goto out_clean;
+	}
+
+	crc = kzalloc(sizeof(*crc), GFP_KERNEL);
+	if (!crc) {
+		pr_err("Failed to allocate crc\n");
+		ret = -ENOMEM;
+		goto out_clean;
+	}
+
+	clean_pages_on_decompress = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Start the decompression threads.
@@ -1119,13 +1856,28 @@ static int load_image_lzo(struct swap_map_handle *handle,
 		init_waitqueue_head(&data[thr].go);
 		init_waitqueue_head(&data[thr].done);
 
+<<<<<<< HEAD
 		data[thr].thr = kthread_run(lzo_decompress_threadfn,
+=======
+		data[thr].cc = crypto_alloc_comp(hib_comp_algo, 0, 0);
+		if (IS_ERR_OR_NULL(data[thr].cc)) {
+			pr_err("Could not allocate comp stream %ld\n", PTR_ERR(data[thr].cc));
+			ret = -EFAULT;
+			goto out_clean;
+		}
+
+		data[thr].thr = kthread_run(decompress_threadfn,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		                            &data[thr],
 		                            "image_decompress/%u", thr);
 		if (IS_ERR(data[thr].thr)) {
 			data[thr].thr = NULL;
+<<<<<<< HEAD
 			printk(KERN_ERR
 			       "PM: Cannot start decompression threads\n");
+=======
+			pr_err("Cannot start decompression threads\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -ENOMEM;
 			goto out_clean;
 		}
@@ -1147,7 +1899,11 @@ static int load_image_lzo(struct swap_map_handle *handle,
 	crc->thr = kthread_run(crc32_threadfn, crc, "image_crc32");
 	if (IS_ERR(crc->thr)) {
 		crc->thr = NULL;
+<<<<<<< HEAD
 		printk(KERN_ERR "PM: Cannot start CRC32 thread\n");
+=======
+		pr_err("Cannot start CRC32 thread\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOMEM;
 		goto out_clean;
 	}
@@ -1161,6 +1917,7 @@ static int load_image_lzo(struct swap_map_handle *handle,
 	 */
 	if (low_free_pages() > snapshot_get_image_size())
 		read_pages = (low_free_pages() - snapshot_get_image_size()) / 2;
+<<<<<<< HEAD
 	read_pages = clamp_val(read_pages, LZO_MIN_RD_PAGES, LZO_MAX_RD_PAGES);
 
 	for (i = 0; i < read_pages; i++) {
@@ -1174,6 +1931,20 @@ static int load_image_lzo(struct swap_map_handle *handle,
 				ring_size = i;
 				printk(KERN_ERR
 				       "PM: Failed to allocate LZO pages\n");
+=======
+	read_pages = clamp_val(read_pages, CMP_MIN_RD_PAGES, CMP_MAX_RD_PAGES);
+
+	for (i = 0; i < read_pages; i++) {
+		page[i] = (void *)__get_free_page(i < CMP_PAGES ?
+						  GFP_NOIO | __GFP_HIGH :
+						  GFP_NOIO | __GFP_NOWARN |
+						  __GFP_NORETRY);
+
+		if (!page[i]) {
+			if (i < CMP_PAGES) {
+				ring_size = i;
+				pr_err("Failed to allocate %s pages\n", hib_comp_algo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -ENOMEM;
 				goto out_clean;
 			} else {
@@ -1183,6 +1954,7 @@ static int load_image_lzo(struct swap_map_handle *handle,
 	}
 	want = ring_size = i;
 
+<<<<<<< HEAD
 	printk(KERN_INFO
 		"PM: Using %u thread(s) for decompression.\n"
 		"PM: Loading and decompressing image data (%u pages) ...     ",
@@ -1193,6 +1965,16 @@ static int load_image_lzo(struct swap_map_handle *handle,
 	nr_pages = 0;
 	bio = NULL;
 	do_gettimeofday(&start);
+=======
+	pr_info("Using %u thread(s) for %s decompression\n", nr_threads, hib_comp_algo);
+	pr_info("Loading and decompressing image data (%u pages)...\n",
+		nr_to_read);
+	m = nr_to_read / 10;
+	if (!m)
+		m = 1;
+	nr_pages = 0;
+	start = ktime_get();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = snapshot_write_next(snapshot);
 	if (ret <= 0)
@@ -1200,7 +1982,11 @@ static int load_image_lzo(struct swap_map_handle *handle,
 
 	for(;;) {
 		for (i = 0; !eof && i < want; i++) {
+<<<<<<< HEAD
 			ret = swap_read_page(handle, page[ring], &bio);
+=======
+			ret = swap_read_page(handle, page[ring], &hb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret) {
 				/*
 				 * On real read error, finish. On end of data,
@@ -1227,7 +2013,11 @@ static int load_image_lzo(struct swap_map_handle *handle,
 			if (!asked)
 				break;
 
+<<<<<<< HEAD
 			ret = hib_wait_on_bio_chain(&bio);
+=======
+			ret = hib_wait_io(&hb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret)
 				goto out_finish;
 			have += asked;
@@ -1237,7 +2027,11 @@ static int load_image_lzo(struct swap_map_handle *handle,
 		}
 
 		if (crc->run_threads) {
+<<<<<<< HEAD
 			wait_event(crc->done, atomic_read(&crc->stop));
+=======
+			wait_event(crc->done, atomic_read_acquire(&crc->stop));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atomic_set(&crc->stop, 0);
 			crc->run_threads = 0;
 		}
@@ -1246,14 +2040,23 @@ static int load_image_lzo(struct swap_map_handle *handle,
 			data[thr].cmp_len = *(size_t *)page[pg];
 			if (unlikely(!data[thr].cmp_len ||
 			             data[thr].cmp_len >
+<<<<<<< HEAD
 			             lzo1x_worst_compress(LZO_UNC_SIZE))) {
 				printk(KERN_ERR
 				       "PM: Invalid LZO compressed length\n");
+=======
+					bytes_worst_compress(UNC_SIZE))) {
+				pr_err("Invalid %s compressed length\n", hib_comp_algo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -1;
 				goto out_finish;
 			}
 
+<<<<<<< HEAD
 			need = DIV_ROUND_UP(data[thr].cmp_len + LZO_HEADER,
+=======
+			need = DIV_ROUND_UP(data[thr].cmp_len + CMP_HEADER,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			                    PAGE_SIZE);
 			if (need > have) {
 				if (eof > 1) {
@@ -1264,7 +2067,11 @@ static int load_image_lzo(struct swap_map_handle *handle,
 			}
 
 			for (off = 0;
+<<<<<<< HEAD
 			     off < LZO_HEADER + data[thr].cmp_len;
+=======
+			     off < CMP_HEADER + data[thr].cmp_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     off += PAGE_SIZE) {
 				memcpy(data[thr].cmp + off,
 				       page[pg], PAGE_SIZE);
@@ -1274,15 +2081,24 @@ static int load_image_lzo(struct swap_map_handle *handle,
 					pg = 0;
 			}
 
+<<<<<<< HEAD
 			atomic_set(&data[thr].ready, 1);
+=======
+			atomic_set_release(&data[thr].ready, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wake_up(&data[thr].go);
 		}
 
 		/*
 		 * Wait for more data while we are decompressing.
 		 */
+<<<<<<< HEAD
 		if (have < LZO_CMP_PAGES && asked) {
 			ret = hib_wait_on_bio_chain(&bio);
+=======
+		if (have < CMP_PAGES && asked) {
+			ret = hib_wait_io(&hb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret)
 				goto out_finish;
 			have += asked;
@@ -1293,22 +2109,36 @@ static int load_image_lzo(struct swap_map_handle *handle,
 
 		for (run_threads = thr, thr = 0; thr < run_threads; thr++) {
 			wait_event(data[thr].done,
+<<<<<<< HEAD
 			           atomic_read(&data[thr].stop));
+=======
+				atomic_read_acquire(&data[thr].stop));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atomic_set(&data[thr].stop, 0);
 
 			ret = data[thr].ret;
 
 			if (ret < 0) {
+<<<<<<< HEAD
 				printk(KERN_ERR
 				       "PM: LZO decompression failed\n");
+=======
+				pr_err("%s decompression failed\n", hib_comp_algo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out_finish;
 			}
 
 			if (unlikely(!data[thr].unc_len ||
+<<<<<<< HEAD
 			             data[thr].unc_len > LZO_UNC_SIZE ||
 			             data[thr].unc_len & (PAGE_SIZE - 1))) {
 				printk(KERN_ERR
 				       "PM: Invalid LZO uncompressed length\n");
+=======
+				data[thr].unc_len > UNC_SIZE ||
+				data[thr].unc_len & (PAGE_SIZE - 1))) {
+				pr_err("Invalid %s uncompressed length\n", hib_comp_algo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = -1;
 				goto out_finish;
 			}
@@ -1319,13 +2149,22 @@ static int load_image_lzo(struct swap_map_handle *handle,
 				       data[thr].unc + off, PAGE_SIZE);
 
 				if (!(nr_pages % m))
+<<<<<<< HEAD
 					printk("\b\b\b\b%3d%%", nr_pages / m);
+=======
+					pr_info("Image loading progress: %3d%%\n",
+						nr_pages / m * 10);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				nr_pages++;
 
 				ret = snapshot_write_next(snapshot);
 				if (ret <= 0) {
 					crc->run_threads = thr + 1;
+<<<<<<< HEAD
 					atomic_set(&crc->ready, 1);
+=======
+					atomic_set_release(&crc->ready, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					wake_up(&crc->go);
 					goto out_finish;
 				}
@@ -1333,12 +2172,17 @@ static int load_image_lzo(struct swap_map_handle *handle,
 		}
 
 		crc->run_threads = thr;
+<<<<<<< HEAD
 		atomic_set(&crc->ready, 1);
+=======
+		atomic_set_release(&crc->ready, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wake_up(&crc->go);
 	}
 
 out_finish:
 	if (crc->run_threads) {
+<<<<<<< HEAD
 		wait_event(crc->done, atomic_read(&crc->stop));
 		atomic_set(&crc->stop, 0);
 	}
@@ -1347,20 +2191,41 @@ out_finish:
 		printk("\b\b\b\bdone\n");
 		snapshot_write_finalize(snapshot);
 		if (!snapshot_image_loaded(snapshot))
+=======
+		wait_event(crc->done, atomic_read_acquire(&crc->stop));
+		atomic_set(&crc->stop, 0);
+	}
+	stop = ktime_get();
+	if (!ret) {
+		pr_info("Image loading done\n");
+		ret = snapshot_write_finalize(snapshot);
+		if (!ret && !snapshot_image_loaded(snapshot))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -ENODATA;
 		if (!ret) {
 			if (swsusp_header->flags & SF_CRC32_MODE) {
 				if(handle->crc32 != swsusp_header->crc32) {
+<<<<<<< HEAD
 					printk(KERN_ERR
 					       "PM: Invalid image CRC32!\n");
+=======
+					pr_err("Invalid image CRC32!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					ret = -ENODATA;
 				}
 			}
 		}
+<<<<<<< HEAD
 	} else
 		printk("\n");
 	swsusp_show_speed(&start, &stop, nr_to_read, "Read");
 out_clean:
+=======
+	}
+	swsusp_show_speed(start, stop, nr_to_read, "Read");
+out_clean:
+	hib_finish_batch(&hb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ring_size; i++)
 		free_page((unsigned long)page[i]);
 	if (crc) {
@@ -1369,12 +2234,24 @@ out_clean:
 		kfree(crc);
 	}
 	if (data) {
+<<<<<<< HEAD
 		for (thr = 0; thr < nr_threads; thr++)
 			if (data[thr].thr)
 				kthread_stop(data[thr].thr);
 		vfree(data);
 	}
 	if (page) vfree(page);
+=======
+		for (thr = 0; thr < nr_threads; thr++) {
+			if (data[thr].thr)
+				kthread_stop(data[thr].thr);
+			if (data[thr].cc)
+				crypto_free_comp(data[thr].cc);
+		}
+		vfree(data);
+	}
+	vfree(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1394,7 +2271,11 @@ int swsusp_read(unsigned int *flags_p)
 
 	memset(&snapshot, 0, sizeof(struct snapshot_handle));
 	error = snapshot_write_next(&snapshot);
+<<<<<<< HEAD
 	if (error < PAGE_SIZE)
+=======
+	if (error < (int)PAGE_SIZE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return error < 0 ? error : -EFAULT;
 	header = (struct swsusp_info *)data_of(snapshot);
 	error = get_swap_reader(&handle, flags_p);
@@ -1405,11 +2286,16 @@ int swsusp_read(unsigned int *flags_p)
 	if (!error) {
 		error = (*flags_p & SF_NOCOMPRESS_MODE) ?
 			load_image(&handle, &snapshot, header->pages - 1) :
+<<<<<<< HEAD
 			load_image_lzo(&handle, &snapshot, header->pages - 1);
+=======
+			load_compressed_image(&handle, &snapshot, header->pages - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	swap_reader_finish(&handle);
 end:
 	if (!error)
+<<<<<<< HEAD
 		pr_debug("PM: Image successfully loaded\n");
 	else
 		pr_debug("PM: Error %d resuming\n", error);
@@ -1430,18 +2316,52 @@ int swsusp_check(void)
 		set_blocksize(hib_resume_bdev, PAGE_SIZE);
 		clear_page(swsusp_header);
 		error = hib_bio_read_page(swsusp_resume_block,
+=======
+		pr_debug("Image successfully loaded\n");
+	else
+		pr_debug("Error %d resuming\n", error);
+	return error;
+}
+
+static void *swsusp_holder;
+
+/**
+ * swsusp_check - Open the resume device and check for the swsusp signature.
+ * @exclusive: Open the resume device exclusively.
+ */
+
+int swsusp_check(bool exclusive)
+{
+	void *holder = exclusive ? &swsusp_holder : NULL;
+	int error;
+
+	hib_resume_bdev_file = bdev_file_open_by_dev(swsusp_resume_device,
+				BLK_OPEN_READ, holder, NULL);
+	if (!IS_ERR(hib_resume_bdev_file)) {
+		set_blocksize(file_bdev(hib_resume_bdev_file), PAGE_SIZE);
+		clear_page(swsusp_header);
+		error = hib_submit_io(REQ_OP_READ, swsusp_resume_block,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					swsusp_header, NULL);
 		if (error)
 			goto put;
 
 		if (!memcmp(HIBERNATE_SIG, swsusp_header->sig, 10)) {
 			memcpy(swsusp_header->sig, swsusp_header->orig_sig, 10);
+<<<<<<< HEAD
 			/* Reset swap signature now */
 			error = hib_bio_write_page(swsusp_resume_block,
+=======
+			swsusp_header_flags = swsusp_header->flags;
+			/* Reset swap signature now */
+			error = hib_submit_io(REQ_OP_WRITE | REQ_SYNC,
+						swsusp_resume_block,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						swsusp_header, NULL);
 		} else {
 			error = -EINVAL;
 		}
+<<<<<<< HEAD
 
 put:
 		if (error)
@@ -1454,11 +2374,32 @@ put:
 
 	if (error)
 		pr_debug("PM: Image not found (code %d)\n", error);
+=======
+		if (!error && swsusp_header->flags & SF_HW_SIG &&
+		    swsusp_header->hw_sig != swsusp_hardware_signature) {
+			pr_info("Suspend image hardware signature mismatch (%08x now %08x); aborting resume.\n",
+				swsusp_header->hw_sig, swsusp_hardware_signature);
+			error = -EINVAL;
+		}
+
+put:
+		if (error)
+			fput(hib_resume_bdev_file);
+		else
+			pr_debug("Image signature found, resuming\n");
+	} else {
+		error = PTR_ERR(hib_resume_bdev_file);
+	}
+
+	if (error)
+		pr_debug("Image not found (code %d)\n", error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
 
 /**
+<<<<<<< HEAD
  *	swsusp_close - close swap device.
  */
 
@@ -1473,6 +2414,52 @@ void swsusp_close(fmode_t mode)
 }
 
 static int swsusp_header_init(void)
+=======
+ * swsusp_close - close resume device.
+ */
+
+void swsusp_close(void)
+{
+	if (IS_ERR(hib_resume_bdev_file)) {
+		pr_debug("Image device not initialised\n");
+		return;
+	}
+
+	fput(hib_resume_bdev_file);
+}
+
+/**
+ *      swsusp_unmark - Unmark swsusp signature in the resume device
+ */
+
+#ifdef CONFIG_SUSPEND
+int swsusp_unmark(void)
+{
+	int error;
+
+	hib_submit_io(REQ_OP_READ, swsusp_resume_block,
+			swsusp_header, NULL);
+	if (!memcmp(HIBERNATE_SIG,swsusp_header->sig, 10)) {
+		memcpy(swsusp_header->sig,swsusp_header->orig_sig, 10);
+		error = hib_submit_io(REQ_OP_WRITE | REQ_SYNC,
+					swsusp_resume_block,
+					swsusp_header, NULL);
+	} else {
+		pr_err("Cannot find swsusp signature!\n");
+		error = -ENODEV;
+	}
+
+	/*
+	 * We just returned from suspend, we don't need the image any more.
+	 */
+	free_all_swap_pages(root_swap);
+
+	return error;
+}
+#endif
+
+static int __init swsusp_header_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	swsusp_header = (struct swsusp_header*) __get_free_page(GFP_KERNEL);
 	if (!swsusp_header)

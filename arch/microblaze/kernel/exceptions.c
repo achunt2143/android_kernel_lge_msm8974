@@ -13,11 +13,20 @@
  * This file handles the architecture-dependent parts of hardware exceptions
  */
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/signal.h>
 #include <linux/sched.h>
 #include <linux/kallsyms.h>
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+#include <linux/kernel.h>
+#include <linux/signal.h>
+#include <linux/sched.h>
+#include <linux/sched/debug.h>
+#include <linux/kallsyms.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/exceptions.h>
 #include <asm/entry.h>		/* For KM CPU var */
@@ -40,6 +49,7 @@ void die(const char *str, struct pt_regs *fp, long err)
 {
 	console_verbose();
 	spin_lock_irq(&die_lock);
+<<<<<<< HEAD
 	printk(KERN_WARNING "Oops: %s, sig: %ld\n", str, err);
 	show_regs(fp);
 	spin_unlock_irq(&die_lock);
@@ -47,6 +57,15 @@ void die(const char *str, struct pt_regs *fp, long err)
 	 * context so we don't handle it here
 	 */
 	do_exit(err);
+=======
+	pr_warn("Oops: %s, sig: %ld\n", str, err);
+	show_regs(fp);
+	spin_unlock_irq(&die_lock);
+	/* make_task_dead() should take care of panic'ing from an interrupt
+	 * context so we don't handle it here
+	 */
+	make_task_dead(err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* for user application debugging */
@@ -59,6 +78,7 @@ asmlinkage void sw_exception(struct pt_regs *regs)
 
 void _exception(int signr, struct pt_regs *regs, int code, unsigned long addr)
 {
+<<<<<<< HEAD
 	siginfo_t info;
 
 	if (kernel_mode(regs)) {
@@ -69,11 +89,18 @@ void _exception(int signr, struct pt_regs *regs, int code, unsigned long addr)
 	info.si_code = code;
 	info.si_addr = (void __user *) addr;
 	force_sig_info(signr, &info, current);
+=======
+	if (kernel_mode(regs))
+		die("Exception in kernel mode", regs, signr);
+
+	force_sig_fault(signr, code, (void __user *)addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 asmlinkage void full_exception(struct pt_regs *regs, unsigned int type,
 							int fsr, int addr)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
 	addr = regs->pc;
 #endif
@@ -81,6 +108,12 @@ asmlinkage void full_exception(struct pt_regs *regs, unsigned int type,
 #if 0
 	printk(KERN_WARNING "Exception %02x in %s mode, FSR=%08x PC=%08x " \
 							"ESR=%08x\n",
+=======
+	addr = regs->pc;
+
+#if 0
+	pr_warn("Exception %02x in %s mode, FSR=%08x PC=%08x ESR=%08x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			type, user_mode(regs) ? "user" : "kernel", fsr,
 			(unsigned int) regs->pc, (unsigned int) regs->esr);
 #endif
@@ -92,8 +125,12 @@ asmlinkage void full_exception(struct pt_regs *regs, unsigned int type,
 			_exception(SIGILL, regs, ILL_ILLOPC, addr);
 			return;
 		}
+<<<<<<< HEAD
 		printk(KERN_WARNING "Illegal opcode exception " \
 							"in kernel mode.\n");
+=======
+		pr_warn("Illegal opcode exception in kernel mode.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		die("opcode exception", regs, SIGBUS);
 		break;
 	case MICROBLAZE_IBUS_EXCEPTION:
@@ -102,8 +139,12 @@ asmlinkage void full_exception(struct pt_regs *regs, unsigned int type,
 			_exception(SIGBUS, regs, BUS_ADRERR, addr);
 			return;
 		}
+<<<<<<< HEAD
 		printk(KERN_WARNING "Instruction bus error exception " \
 							"in kernel mode.\n");
+=======
+		pr_warn("Instruction bus error exception in kernel mode.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		die("bus exception", regs, SIGBUS);
 		break;
 	case MICROBLAZE_DBUS_EXCEPTION:
@@ -112,8 +153,12 @@ asmlinkage void full_exception(struct pt_regs *regs, unsigned int type,
 			_exception(SIGBUS, regs, BUS_ADRERR, addr);
 			return;
 		}
+<<<<<<< HEAD
 		printk(KERN_WARNING "Data bus error exception " \
 							"in kernel mode.\n");
+=======
+		pr_warn("Data bus error exception in kernel mode.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		die("bus exception", regs, SIGBUS);
 		break;
 	case MICROBLAZE_DIV_ZERO_EXCEPTION:
@@ -122,8 +167,12 @@ asmlinkage void full_exception(struct pt_regs *regs, unsigned int type,
 			_exception(SIGFPE, regs, FPE_INTDIV, addr);
 			return;
 		}
+<<<<<<< HEAD
 		printk(KERN_WARNING "Divide by zero exception " \
 							"in kernel mode.\n");
+=======
+		pr_warn("Divide by zero exception in kernel mode.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		die("Divide by zero exception", regs, SIGBUS);
 		break;
 	case MICROBLAZE_FPU_EXCEPTION:
@@ -142,17 +191,27 @@ asmlinkage void full_exception(struct pt_regs *regs, unsigned int type,
 			fsr = FPE_FLTRES;
 		_exception(SIGFPE, regs, fsr, addr);
 		break;
+<<<<<<< HEAD
 
 #ifdef CONFIG_MMU
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MICROBLAZE_PRIVILEGED_EXCEPTION:
 		pr_debug("Privileged exception\n");
 		_exception(SIGILL, regs, ILL_PRVOPC, addr);
 		break;
+<<<<<<< HEAD
 #endif
 	default:
 	/* FIXME what to do in unexpected exception */
 		printk(KERN_WARNING "Unexpected exception %02x "
 			"PC=%08x in %s mode\n", type, (unsigned int) addr,
+=======
+	default:
+	/* FIXME what to do in unexpected exception */
+		pr_warn("Unexpected exception %02x PC=%08x in %s mode\n",
+			type, (unsigned int) addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kernel_mode(regs) ? "kernel" : "user");
 	}
 	return;

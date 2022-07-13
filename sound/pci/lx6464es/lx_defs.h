@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- *
  *
  * ALSA driver for the digigram lx6464es interface
  * adapted upstream headers
  *
  * Copyright (c) 2009 Tim Blechmann <tim@klingt.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef LX_DEFS_H
@@ -175,7 +182,11 @@ enum buffer_flags {
 	BF_ZERO		= 0x00,	/* no flags (init).*/
 };
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 *	Stream Flags definitions
 */
 enum stream_flags {

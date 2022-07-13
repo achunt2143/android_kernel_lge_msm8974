@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * spu_switch.c
  *
@@ -15,6 +19,7 @@
  * this is not possible, this sequence may be used to premptively
  * save, and then later (optionally) restore the context of a
  * program executing on an SPE.
+<<<<<<< HEAD
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -30,6 +35,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/export.h>
@@ -191,7 +198,11 @@ static inline void save_mfc_cntl(struct spu_state *csa, struct spu *spu)
 		POLL_WHILE_FALSE((in_be64(&priv2->mfc_control_RW) &
 				  MFC_CNTL_SUSPEND_DMA_STATUS_MASK) ==
 				 MFC_CNTL_SUSPEND_COMPLETE);
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MFC_CNTL_SUSPEND_COMPLETE:
 		if (csa)
 			csa->priv2.mfc_control_RW =
@@ -1671,14 +1682,21 @@ static inline void restore_spu_mb(struct spu_state *csa, struct spu *spu)
 static inline void check_ppu_mb_stat(struct spu_state *csa, struct spu *spu)
 {
 	struct spu_problem __iomem *prob = spu->problem;
+<<<<<<< HEAD
 	u32 dummy = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Restore, Step 66:
 	 *     If CSA.MB_Stat[P]=0 (mailbox empty) then
 	 *     read from the PPU_MB register.
 	 */
 	if ((csa->prob.mb_stat_R & 0xFF) == 0) {
+<<<<<<< HEAD
 		dummy = in_be32(&prob->pu_mb_R);
+=======
+		in_be32(&prob->pu_mb_R);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eieio();
 	}
 }
@@ -1686,14 +1704,21 @@ static inline void check_ppu_mb_stat(struct spu_state *csa, struct spu *spu)
 static inline void check_ppuint_mb_stat(struct spu_state *csa, struct spu *spu)
 {
 	struct spu_priv2 __iomem *priv2 = spu->priv2;
+<<<<<<< HEAD
 	u64 dummy = 0UL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Restore, Step 66:
 	 *     If CSA.MB_Stat[I]=0 (mailbox empty) then
 	 *     read from the PPUINT_MB register.
 	 */
 	if ((csa->prob.mb_stat_R & 0xFF0000) == 0) {
+<<<<<<< HEAD
 		dummy = in_be64(&priv2->puint_mb_R);
+=======
+		in_be64(&priv2->puint_mb_R);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eieio();
 		spu_int_stat_clear(spu, 2, CLASS2_ENABLE_MAILBOX_INTR);
 		eieio();

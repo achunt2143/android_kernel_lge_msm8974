@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hpfs/file.c
  *
@@ -7,6 +11,12 @@
  */
 
 #include "hpfs_fn.h"
+<<<<<<< HEAD
+=======
+#include <linux/mpage.h>
+#include <linux/iomap.h>
+#include <linux/fiemap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BLOCKS(size) (((size) + 511) >> 9)
 
@@ -23,7 +33,11 @@ int hpfs_file_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 	struct inode *inode = file->f_mapping->host;
 	int ret;
 
+<<<<<<< HEAD
 	ret = filemap_write_and_wait_range(file->f_mapping, start, end);
+=======
+	ret = file_write_and_wait_range(file, start, end);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 	return sync_blockdev(inode->i_sb->s_bdev);
@@ -34,7 +48,11 @@ int hpfs_file_fsync(struct file *file, loff_t start, loff_t end, int datasync)
  * so we must ignore such errors.
  */
 
+<<<<<<< HEAD
 static secno hpfs_bmap(struct inode *inode, unsigned file_secno)
+=======
+static secno hpfs_bmap(struct inode *inode, unsigned file_secno, unsigned *n_secs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hpfs_inode_info *hpfs_inode = hpfs_i(inode);
 	unsigned n, disk_secno;
@@ -42,15 +60,35 @@ static secno hpfs_bmap(struct inode *inode, unsigned file_secno)
 	struct buffer_head *bh;
 	if (BLOCKS(hpfs_i(inode)->mmu_private) <= file_secno) return 0;
 	n = file_secno - hpfs_inode->i_file_sec;
+<<<<<<< HEAD
 	if (n < hpfs_inode->i_n_secs) return hpfs_inode->i_disk_sec + n;
+=======
+	if (n < hpfs_inode->i_n_secs) {
+		*n_secs = hpfs_inode->i_n_secs - n;
+		return hpfs_inode->i_disk_sec + n;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(fnode = hpfs_map_fnode(inode->i_sb, inode->i_ino, &bh))) return 0;
 	disk_secno = hpfs_bplus_lookup(inode->i_sb, inode, &fnode->btree, file_secno, bh);
 	if (disk_secno == -1) return 0;
 	if (hpfs_chk_sectors(inode->i_sb, disk_secno, 1, "bmap")) return 0;
+<<<<<<< HEAD
 	return disk_secno;
 }
 
 static void hpfs_truncate(struct inode *i)
+=======
+	n = file_secno - hpfs_inode->i_file_sec;
+	if (n < hpfs_inode->i_n_secs) {
+		*n_secs = hpfs_inode->i_n_secs - n;
+		return hpfs_inode->i_disk_sec + n;
+	}
+	*n_secs = 1;
+	return disk_secno;
+}
+
+void hpfs_truncate(struct inode *i)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (IS_IMMUTABLE(i)) return /*-EPERM*/;
 	hpfs_lock_assert(i->i_sb);
@@ -67,10 +105,26 @@ static int hpfs_get_block(struct inode *inode, sector_t iblock, struct buffer_he
 {
 	int r;
 	secno s;
+<<<<<<< HEAD
 	hpfs_lock(inode->i_sb);
 	s = hpfs_bmap(inode, iblock);
 	if (s) {
 		map_bh(bh_result, inode->i_sb, s);
+=======
+	unsigned n_secs;
+	hpfs_lock(inode->i_sb);
+	s = hpfs_bmap(inode, iblock, &n_secs);
+	if (s) {
+		if (bh_result->b_size >> 9 < n_secs)
+			n_secs = bh_result->b_size >> 9;
+		n_secs = hpfs_search_hotfix_map_for_range(inode->i_sb, s, n_secs);
+		if (unlikely(!n_secs)) {
+			s = hpfs_search_hotfix_map(inode->i_sb, s);
+			n_secs = 1;
+		}
+		map_bh(bh_result, inode->i_sb, s);
+		bh_result->b_size = n_secs << 9;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto ret_0;
 	}
 	if (!create) goto ret_0;
@@ -87,7 +141,11 @@ static int hpfs_get_block(struct inode *inode, sector_t iblock, struct buffer_he
 	inode->i_blocks++;
 	hpfs_i(inode)->mmu_private += 512;
 	set_buffer_new(bh_result);
+<<<<<<< HEAD
 	map_bh(bh_result, inode->i_sb, s);
+=======
+	map_bh(bh_result, inode->i_sb, hpfs_search_hotfix_map(inode->i_sb, s));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret_0:
 	r = 0;
 	ret_r:
@@ -95,6 +153,7 @@ static int hpfs_get_block(struct inode *inode, sector_t iblock, struct buffer_he
 	return r;
 }
 
+<<<<<<< HEAD
 static int hpfs_writepage(struct page *page, struct writeback_control *wbc)
 {
 	return block_write_full_page(page,hpfs_get_block, wbc);
@@ -107,11 +166,87 @@ static int hpfs_readpage(struct file *file, struct page *page)
 
 static int hpfs_write_begin(struct file *file, struct address_space *mapping,
 			loff_t pos, unsigned len, unsigned flags,
+=======
+static int hpfs_iomap_begin(struct inode *inode, loff_t offset, loff_t length,
+		unsigned flags, struct iomap *iomap, struct iomap *srcmap)
+{
+	struct super_block *sb = inode->i_sb;
+	unsigned int blkbits = inode->i_blkbits;
+	unsigned int n_secs;
+	secno s;
+
+	if (WARN_ON_ONCE(flags & (IOMAP_WRITE | IOMAP_ZERO)))
+		return -EINVAL;
+
+	iomap->bdev = inode->i_sb->s_bdev;
+	iomap->offset = offset;
+
+	hpfs_lock(sb);
+	s = hpfs_bmap(inode, offset >> blkbits, &n_secs);
+	if (s) {
+		n_secs = hpfs_search_hotfix_map_for_range(sb, s,
+				min_t(loff_t, n_secs, length));
+		if (unlikely(!n_secs)) {
+			s = hpfs_search_hotfix_map(sb, s);
+			n_secs = 1;
+		}
+		iomap->type = IOMAP_MAPPED;
+		iomap->flags = IOMAP_F_MERGED;
+		iomap->addr = (u64)s << blkbits;
+		iomap->length = (u64)n_secs << blkbits;
+	} else {
+		iomap->type = IOMAP_HOLE;
+		iomap->addr = IOMAP_NULL_ADDR;
+		iomap->length = 1 << blkbits;
+	}
+
+	hpfs_unlock(sb);
+	return 0;
+}
+
+static const struct iomap_ops hpfs_iomap_ops = {
+	.iomap_begin		= hpfs_iomap_begin,
+};
+
+static int hpfs_read_folio(struct file *file, struct folio *folio)
+{
+	return mpage_read_folio(folio, hpfs_get_block);
+}
+
+static void hpfs_readahead(struct readahead_control *rac)
+{
+	mpage_readahead(rac, hpfs_get_block);
+}
+
+static int hpfs_writepages(struct address_space *mapping,
+			   struct writeback_control *wbc)
+{
+	return mpage_writepages(mapping, wbc, hpfs_get_block);
+}
+
+static void hpfs_write_failed(struct address_space *mapping, loff_t to)
+{
+	struct inode *inode = mapping->host;
+
+	hpfs_lock(inode->i_sb);
+
+	if (to > inode->i_size) {
+		truncate_pagecache(inode, inode->i_size);
+		hpfs_truncate(inode);
+	}
+
+	hpfs_unlock(inode->i_sb);
+}
+
+static int hpfs_write_begin(struct file *file, struct address_space *mapping,
+			loff_t pos, unsigned len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct page **pagep, void **fsdata)
 {
 	int ret;
 
 	*pagep = NULL;
+<<<<<<< HEAD
 	ret = cont_write_begin(file, mapping, pos, len, flags, pagep, fsdata,
 				hpfs_get_block,
 				&hpfs_i(mapping->host)->mmu_private);
@@ -123,10 +258,18 @@ static int hpfs_write_begin(struct file *file, struct address_space *mapping,
 			vmtruncate(mapping->host, isize);
 		hpfs_unlock(mapping->host->i_sb);
 	}
+=======
+	ret = cont_write_begin(file, mapping, pos, len, pagep, fsdata,
+				hpfs_get_block,
+				&hpfs_i(mapping->host)->mmu_private);
+	if (unlikely(ret))
+		hpfs_write_failed(mapping, pos + len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static sector_t _hpfs_bmap(struct address_space *mapping, sector_t block)
 {
 	return generic_block_bmap(mapping,block,hpfs_get_block);
@@ -165,10 +308,75 @@ const struct file_operations hpfs_file_ops =
 	.release	= hpfs_file_release,
 	.fsync		= hpfs_file_fsync,
 	.splice_read	= generic_file_splice_read,
+=======
+static int hpfs_write_end(struct file *file, struct address_space *mapping,
+			loff_t pos, unsigned len, unsigned copied,
+			struct page *pagep, void *fsdata)
+{
+	struct inode *inode = mapping->host;
+	int err;
+	err = generic_write_end(file, mapping, pos, len, copied, pagep, fsdata);
+	if (err < len)
+		hpfs_write_failed(mapping, pos + len);
+	if (!(err < 0)) {
+		/* make sure we write it on close, if not earlier */
+		hpfs_lock(inode->i_sb);
+		hpfs_i(inode)->i_dirty = 1;
+		hpfs_unlock(inode->i_sb);
+	}
+	return err;
+}
+
+static sector_t _hpfs_bmap(struct address_space *mapping, sector_t block)
+{
+	return generic_block_bmap(mapping, block, hpfs_get_block);
+}
+
+static int hpfs_fiemap(struct inode *inode, struct fiemap_extent_info *fieinfo, u64 start, u64 len)
+{
+	int ret;
+
+	inode_lock(inode);
+	len = min_t(u64, len, i_size_read(inode));
+	ret = iomap_fiemap(inode, fieinfo, start, len, &hpfs_iomap_ops);
+	inode_unlock(inode);
+
+	return ret;
+}
+
+const struct address_space_operations hpfs_aops = {
+	.dirty_folio	= block_dirty_folio,
+	.invalidate_folio = block_invalidate_folio,
+	.read_folio = hpfs_read_folio,
+	.readahead = hpfs_readahead,
+	.writepages = hpfs_writepages,
+	.write_begin = hpfs_write_begin,
+	.write_end = hpfs_write_end,
+	.bmap = _hpfs_bmap,
+	.migrate_folio = buffer_migrate_folio,
+};
+
+const struct file_operations hpfs_file_ops =
+{
+	.llseek		= generic_file_llseek,
+	.read_iter	= generic_file_read_iter,
+	.write_iter	= generic_file_write_iter,
+	.mmap		= generic_file_mmap,
+	.release	= hpfs_file_release,
+	.fsync		= hpfs_file_fsync,
+	.splice_read	= filemap_splice_read,
+	.unlocked_ioctl	= hpfs_ioctl,
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const struct inode_operations hpfs_file_iops =
 {
+<<<<<<< HEAD
 	.truncate	= hpfs_truncate,
 	.setattr	= hpfs_setattr,
+=======
+	.setattr	= hpfs_setattr,
+	.fiemap		= hpfs_fiemap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

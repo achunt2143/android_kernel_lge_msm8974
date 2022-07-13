@@ -1,22 +1,38 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *******************************************************************************
 **
 **  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
 **  Copyright (C) 2004-2011 Red Hat, Inc.  All rights reserved.
 **
+<<<<<<< HEAD
 **  This copyrighted material is made available to anyone wishing to use,
 **  modify, copy, or redistribute it subject to the terms and conditions
 **  of the GNU General Public License v.2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 *******************************************************************************
 ******************************************************************************/
 
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "dlm_internal.h"
 #include "lockspace.h"
 #include "member.h"
 #include "recoverd.h"
 #include "dir.h"
+<<<<<<< HEAD
 #include "lowcomms.h"
+=======
+#include "midcomms.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "config.h"
 #include "memory.h"
 #include "lock.h"
@@ -35,8 +51,16 @@ static struct task_struct *	scand_task;
 static ssize_t dlm_control_store(struct dlm_ls *ls, const char *buf, size_t len)
 {
 	ssize_t ret = len;
+<<<<<<< HEAD
 	int n = simple_strtol(buf, NULL, 0);
 
+=======
+	int n;
+	int rc = kstrtoint(buf, 0, &n);
+
+	if (rc)
+		return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ls = dlm_find_lockspace_local(ls->ls_local_handle);
 	if (!ls)
 		return -EINVAL;
@@ -57,7 +81,14 @@ static ssize_t dlm_control_store(struct dlm_ls *ls, const char *buf, size_t len)
 
 static ssize_t dlm_event_store(struct dlm_ls *ls, const char *buf, size_t len)
 {
+<<<<<<< HEAD
 	ls->ls_uevent_result = simple_strtol(buf, NULL, 0);
+=======
+	int rc = kstrtoint(buf, 0, &ls->ls_uevent_result);
+
+	if (rc)
+		return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(LSFL_UEVENT_WAIT, &ls->ls_flags);
 	wake_up(&ls->ls_uevent_wait);
 	return len;
@@ -70,7 +101,31 @@ static ssize_t dlm_id_show(struct dlm_ls *ls, char *buf)
 
 static ssize_t dlm_id_store(struct dlm_ls *ls, const char *buf, size_t len)
 {
+<<<<<<< HEAD
 	ls->ls_global_id = simple_strtoul(buf, NULL, 0);
+=======
+	int rc = kstrtouint(buf, 0, &ls->ls_global_id);
+
+	if (rc)
+		return rc;
+	return len;
+}
+
+static ssize_t dlm_nodir_show(struct dlm_ls *ls, char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "%u\n", dlm_no_directory(ls));
+}
+
+static ssize_t dlm_nodir_store(struct dlm_ls *ls, const char *buf, size_t len)
+{
+	int val;
+	int rc = kstrtoint(buf, 0, &val);
+
+	if (rc)
+		return rc;
+	if (val == 1)
+		set_bit(LSFL_NODIR, &ls->ls_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
@@ -107,6 +162,15 @@ static struct dlm_attr dlm_attr_id = {
 	.store = dlm_id_store
 };
 
+<<<<<<< HEAD
+=======
+static struct dlm_attr dlm_attr_nodir = {
+	.attr  = {.name = "nodir", .mode = S_IRUGO | S_IWUSR},
+	.show  = dlm_nodir_show,
+	.store = dlm_nodir_store
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct dlm_attr dlm_attr_recover_status = {
 	.attr  = {.name = "recover_status", .mode = S_IRUGO},
 	.show  = dlm_recover_status_show
@@ -121,10 +185,18 @@ static struct attribute *dlm_attrs[] = {
 	&dlm_attr_control.attr,
 	&dlm_attr_event.attr,
 	&dlm_attr_id.attr,
+<<<<<<< HEAD
+=======
+	&dlm_attr_nodir.attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dlm_attr_recover_status.attr,
 	&dlm_attr_recover_nodeid.attr,
 	NULL,
 };
+<<<<<<< HEAD
+=======
+ATTRIBUTE_GROUPS(dlm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t dlm_attr_show(struct kobject *kobj, struct attribute *attr,
 			     char *buf)
@@ -154,7 +226,11 @@ static const struct sysfs_ops dlm_attr_ops = {
 };
 
 static struct kobj_type dlm_ktype = {
+<<<<<<< HEAD
 	.default_attrs = dlm_attrs,
+=======
+	.default_groups = dlm_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sysfs_ops     = &dlm_attr_ops,
 	.release       = lockspace_kobj_release,
 };
@@ -163,18 +239,26 @@ static struct kset *dlm_kset;
 
 static int do_uevent(struct dlm_ls *ls, int in)
 {
+<<<<<<< HEAD
 	int error;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (in)
 		kobject_uevent(&ls->ls_kobj, KOBJ_ONLINE);
 	else
 		kobject_uevent(&ls->ls_kobj, KOBJ_OFFLINE);
 
+<<<<<<< HEAD
 	log_debug(ls, "%s the lockspace group...", in ? "joining" : "leaving");
+=======
+	log_rinfo(ls, "%s the lockspace group...", in ? "joining" : "leaving");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* dlm_controld will see the uevent, do the necessary group management
 	   and then write to sysfs to wake us */
 
+<<<<<<< HEAD
 	error = wait_event_interruptible(ls->ls_uevent_wait,
 			test_and_clear_bit(LSFL_UEVENT_WAIT, &ls->ls_flags));
 
@@ -195,12 +279,29 @@ static int dlm_uevent(struct kset *kset, struct kobject *kobj,
 		      struct kobj_uevent_env *env)
 {
 	struct dlm_ls *ls = container_of(kobj, struct dlm_ls, ls_kobj);
+=======
+	wait_event(ls->ls_uevent_wait,
+		   test_and_clear_bit(LSFL_UEVENT_WAIT, &ls->ls_flags));
+
+	log_rinfo(ls, "group event done %d", ls->ls_uevent_result);
+
+	return ls->ls_uevent_result;
+}
+
+static int dlm_uevent(const struct kobject *kobj, struct kobj_uevent_env *env)
+{
+	const struct dlm_ls *ls = container_of(kobj, struct dlm_ls, ls_kobj);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	add_uevent_var(env, "LOCKSPACE=%s", ls->ls_name);
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct kset_uevent_ops dlm_uevent_ops = {
+=======
+static const struct kset_uevent_ops dlm_uevent_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.uevent = dlm_uevent,
 };
 
@@ -250,8 +351,11 @@ static int dlm_scand(void *data)
 			if (dlm_lock_recovery_try(ls)) {
 				ls->ls_scan_time = jiffies;
 				dlm_scan_rsbs(ls);
+<<<<<<< HEAD
 				dlm_scan_timeout(ls);
 				dlm_scan_waiters(ls);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dlm_unlock_recovery(ls);
 			} else {
 				ls->ls_scan_time += HZ;
@@ -289,7 +393,11 @@ struct dlm_ls *dlm_find_lockspace_global(uint32_t id)
 
 	list_for_each_entry(ls, &lslist, ls_list) {
 		if (ls->ls_global_id == id) {
+<<<<<<< HEAD
 			ls->ls_count++;
+=======
+			atomic_inc(&ls->ls_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 	}
@@ -306,7 +414,11 @@ struct dlm_ls *dlm_find_lockspace_local(dlm_lockspace_t *lockspace)
 	spin_lock(&lslist_lock);
 	list_for_each_entry(ls, &lslist, ls_list) {
 		if (ls->ls_local_handle == lockspace) {
+<<<<<<< HEAD
 			ls->ls_count++;
+=======
+			atomic_inc(&ls->ls_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 	}
@@ -323,7 +435,11 @@ struct dlm_ls *dlm_find_lockspace_device(int minor)
 	spin_lock(&lslist_lock);
 	list_for_each_entry(ls, &lslist, ls_list) {
 		if (ls->ls_device.minor == minor) {
+<<<<<<< HEAD
 			ls->ls_count++;
+=======
+			atomic_inc(&ls->ls_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		}
 	}
@@ -335,13 +451,19 @@ struct dlm_ls *dlm_find_lockspace_device(int minor)
 
 void dlm_put_lockspace(struct dlm_ls *ls)
 {
+<<<<<<< HEAD
 	spin_lock(&lslist_lock);
 	ls->ls_count--;
 	spin_unlock(&lslist_lock);
+=======
+	if (atomic_dec_and_test(&ls->ls_count))
+		wake_up(&ls->ls_count_wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void remove_lockspace(struct dlm_ls *ls)
 {
+<<<<<<< HEAD
 	for (;;) {
 		spin_lock(&lslist_lock);
 		if (ls->ls_count == 0) {
@@ -353,12 +475,27 @@ static void remove_lockspace(struct dlm_ls *ls)
 		spin_unlock(&lslist_lock);
 		ssleep(1);
 	}
+=======
+retry:
+	wait_event(ls->ls_count_wait, atomic_read(&ls->ls_count) == 0);
+
+	spin_lock(&lslist_lock);
+	if (atomic_read(&ls->ls_count) != 0) {
+		spin_unlock(&lslist_lock);
+		goto retry;
+	}
+
+	WARN_ON(ls->ls_create_count != 0);
+	list_del(&ls->ls_list);
+	spin_unlock(&lslist_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int threads_start(void)
 {
 	int error;
 
+<<<<<<< HEAD
 	error = dlm_scand_start();
 	if (error) {
 		log_print("cannot start dlm_scand thread %d", error);
@@ -370,22 +507,43 @@ static int threads_start(void)
 	if (error) {
 		log_print("cannot start dlm lowcomms %d", error);
 		goto scand_fail;
+=======
+	/* Thread for sending/receiving messages for all lockspace's */
+	error = dlm_midcomms_start();
+	if (error) {
+		log_print("cannot start dlm midcomms %d", error);
+		goto fail;
+	}
+
+	error = dlm_scand_start();
+	if (error) {
+		log_print("cannot start dlm_scand thread %d", error);
+		goto midcomms_fail;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
+<<<<<<< HEAD
  scand_fail:
 	dlm_scand_stop();
+=======
+ midcomms_fail:
+	dlm_midcomms_stop();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  fail:
 	return error;
 }
 
+<<<<<<< HEAD
 static void threads_stop(void)
 {
 	dlm_scand_stop();
 	dlm_lowcomms_stop();
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int new_lockspace(const char *name, const char *cluster,
 			 uint32_t flags, int lvblen,
 			 const struct dlm_lockspace_ops *ops, void *ops_arg,
@@ -396,10 +554,17 @@ static int new_lockspace(const char *name, const char *cluster,
 	int do_unreg = 0;
 	int namelen = strlen(name);
 
+<<<<<<< HEAD
 	if (namelen > DLM_LOCKSPACE_LEN)
 		return -EINVAL;
 
 	if (!lvblen || (lvblen % 8))
+=======
+	if (namelen > DLM_LOCKSPACE_LEN || namelen == 0)
+		return -EINVAL;
+
+	if (lvblen % 8)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (!try_module_get(THIS_MODULE))
@@ -418,9 +583,20 @@ static int new_lockspace(const char *name, const char *cluster,
 			*ops_result = 0;
 	}
 
+<<<<<<< HEAD
 	if (dlm_config.ci_recover_callbacks && cluster &&
 	    strncmp(cluster, dlm_config.ci_cluster_name, DLM_LOCKSPACE_LEN)) {
 		log_print("dlm cluster name %s mismatch %s",
+=======
+	if (!cluster)
+		log_print("dlm cluster name '%s' is being used without an application provided cluster name",
+			  dlm_config.ci_cluster_name);
+
+	if (dlm_config.ci_recover_callbacks && cluster &&
+	    strncmp(cluster, dlm_config.ci_cluster_name, DLM_LOCKSPACE_LEN)) {
+		log_print("dlm cluster name '%s' does not match "
+			  "the application cluster name '%s'",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  dlm_config.ci_cluster_name, cluster);
 		error = -EBADR;
 		goto out;
@@ -451,13 +627,22 @@ static int new_lockspace(const char *name, const char *cluster,
 
 	error = -ENOMEM;
 
+<<<<<<< HEAD
 	ls = kzalloc(sizeof(struct dlm_ls) + namelen, GFP_NOFS);
+=======
+	ls = kzalloc(sizeof(*ls), GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ls)
 		goto out;
 	memcpy(ls->ls_name, name, namelen);
 	ls->ls_namelen = namelen;
 	ls->ls_lvblen = lvblen;
+<<<<<<< HEAD
 	ls->ls_count = 0;
+=======
+	atomic_set(&ls->ls_count, 0);
+	init_waitqueue_head(&ls->ls_count_wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ls->ls_flags = 0;
 	ls->ls_scan_time = jiffies;
 
@@ -466,6 +651,7 @@ static int new_lockspace(const char *name, const char *cluster,
 		ls->ls_ops_arg = ops_arg;
 	}
 
+<<<<<<< HEAD
 	if (flags & DLM_LSFL_TIMEWARN)
 		set_bit(LSFL_TIMEWARN, &ls->ls_flags);
 
@@ -478,6 +664,17 @@ static int new_lockspace(const char *name, const char *cluster,
 	ls->ls_rsbtbl_size = size;
 
 	ls->ls_rsbtbl = vmalloc(sizeof(struct dlm_rsbtable) * size);
+=======
+	/* ls_exflags are forced to match among nodes, and we don't
+	 * need to require all nodes to have some flags set
+	 */
+	ls->ls_exflags = (flags & ~(DLM_LSFL_FS | DLM_LSFL_NEWEXCL));
+
+	size = READ_ONCE(dlm_config.ci_rsbtbl_size);
+	ls->ls_rsbtbl_size = size;
+
+	ls->ls_rsbtbl = vmalloc(array_size(size, sizeof(struct dlm_rsbtable)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ls->ls_rsbtbl)
 		goto out_lsfree;
 	for (i = 0; i < size; i++) {
@@ -486,6 +683,7 @@ static int new_lockspace(const char *name, const char *cluster,
 		spin_lock_init(&ls->ls_rsbtbl[i].lock);
 	}
 
+<<<<<<< HEAD
 	idr_init(&ls->ls_lkbidr);
 	spin_lock_init(&ls->ls_lkbidr_spin);
 
@@ -500,12 +698,27 @@ static int new_lockspace(const char *name, const char *cluster,
 		spin_lock_init(&ls->ls_dirtbl[i].lock);
 	}
 
+=======
+	for (i = 0; i < DLM_REMOVE_NAMES_MAX; i++) {
+		ls->ls_remove_names[i] = kzalloc(DLM_RESNAME_MAXLEN+1,
+						 GFP_KERNEL);
+		if (!ls->ls_remove_names[i])
+			goto out_rsbtbl;
+	}
+
+	idr_init(&ls->ls_lkbidr);
+	spin_lock_init(&ls->ls_lkbidr_spin);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&ls->ls_waiters);
 	mutex_init(&ls->ls_waiters_mutex);
 	INIT_LIST_HEAD(&ls->ls_orphans);
 	mutex_init(&ls->ls_orphans_mutex);
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&ls->ls_timeout);
 	mutex_init(&ls->ls_timeout_mutex);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&ls->ls_new_rsb);
 	spin_lock_init(&ls->ls_new_rsb_spin);
@@ -517,18 +730,30 @@ static int new_lockspace(const char *name, const char *cluster,
 	ls->ls_total_weight = 0;
 	ls->ls_node_array = NULL;
 
+<<<<<<< HEAD
 	memset(&ls->ls_stub_rsb, 0, sizeof(struct dlm_rsb));
 	ls->ls_stub_rsb.res_ls = ls;
+=======
+	memset(&ls->ls_local_rsb, 0, sizeof(struct dlm_rsb));
+	ls->ls_local_rsb.res_ls = ls;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ls->ls_debug_rsb_dentry = NULL;
 	ls->ls_debug_waiters_dentry = NULL;
 
 	init_waitqueue_head(&ls->ls_uevent_wait);
 	ls->ls_uevent_result = 0;
+<<<<<<< HEAD
 	init_completion(&ls->ls_members_done);
 	ls->ls_members_result = -1;
 
 	mutex_init(&ls->ls_cb_mutex);
+=======
+	init_completion(&ls->ls_recovery_done);
+	ls->ls_recovery_result = -1;
+
+	spin_lock_init(&ls->ls_cb_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&ls->ls_cb_delay);
 
 	ls->ls_recoverd_task = NULL;
@@ -537,17 +762,37 @@ static int new_lockspace(const char *name, const char *cluster,
 	spin_lock_init(&ls->ls_rcom_spin);
 	get_random_bytes(&ls->ls_rcom_seq, sizeof(uint64_t));
 	ls->ls_recover_status = 0;
+<<<<<<< HEAD
 	ls->ls_recover_seq = 0;
+=======
+	ls->ls_recover_seq = get_random_u64();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ls->ls_recover_args = NULL;
 	init_rwsem(&ls->ls_in_recovery);
 	init_rwsem(&ls->ls_recv_active);
 	INIT_LIST_HEAD(&ls->ls_requestqueue);
+<<<<<<< HEAD
 	mutex_init(&ls->ls_requestqueue_mutex);
 	mutex_init(&ls->ls_clear_proc_locks);
 
 	ls->ls_recover_buf = kmalloc(dlm_config.ci_buffer_size, GFP_NOFS);
 	if (!ls->ls_recover_buf)
 		goto out_dirfree;
+=======
+	atomic_set(&ls->ls_requestqueue_cnt, 0);
+	init_waitqueue_head(&ls->ls_requestqueue_wait);
+	mutex_init(&ls->ls_requestqueue_mutex);
+	spin_lock_init(&ls->ls_clear_proc_locks);
+
+	/* Due backwards compatibility with 3.1 we need to use maximum
+	 * possible dlm message size to be sure the message will fit and
+	 * not having out of bounds issues. However on sending side 3.2
+	 * might send less.
+	 */
+	ls->ls_recover_buf = kmalloc(DLM_MAX_SOCKET_BUFSIZE, GFP_NOFS);
+	if (!ls->ls_recover_buf)
+		goto out_lkbidr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ls->ls_slot = 0;
 	ls->ls_num_slots = 0;
@@ -556,14 +801,22 @@ static int new_lockspace(const char *name, const char *cluster,
 
 	INIT_LIST_HEAD(&ls->ls_recover_list);
 	spin_lock_init(&ls->ls_recover_list_lock);
+<<<<<<< HEAD
+=======
+	idr_init(&ls->ls_recover_idr);
+	spin_lock_init(&ls->ls_recover_idr_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ls->ls_recover_list_count = 0;
 	ls->ls_local_handle = ls;
 	init_waitqueue_head(&ls->ls_wait_general);
 	INIT_LIST_HEAD(&ls->ls_root_list);
 	init_rwsem(&ls->ls_root_sem);
 
+<<<<<<< HEAD
 	down_write(&ls->ls_in_recovery);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&lslist_lock);
 	ls->ls_create_count = 1;
 	list_add(&ls->ls_list, &lslist);
@@ -577,13 +830,34 @@ static int new_lockspace(const char *name, const char *cluster,
 		}
 	}
 
+<<<<<<< HEAD
 	/* needs to find ls in lslist */
+=======
+	init_waitqueue_head(&ls->ls_recover_lock_wait);
+
+	/*
+	 * Once started, dlm_recoverd first looks for ls in lslist, then
+	 * initializes ls_in_recovery as locked in "down" mode.  We need
+	 * to wait for the wakeup from dlm_recoverd because in_recovery
+	 * has to start out in down mode.
+	 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = dlm_recoverd_start(ls);
 	if (error) {
 		log_error(ls, "can't start dlm_recoverd %d", error);
 		goto out_callback;
 	}
 
+<<<<<<< HEAD
+=======
+	wait_event(ls->ls_recover_lock_wait,
+		   test_bit(LSFL_RECOVER_LOCK, &ls->ls_flags));
+
+	/* let kobject handle freeing of ls if there's an error */
+	do_unreg = 1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ls->ls_kobj.kset = dlm_kset;
 	error = kobject_init_and_add(&ls->ls_kobj, &dlm_ktype, NULL,
 				     "%s", ls->ls_name);
@@ -591,9 +865,12 @@ static int new_lockspace(const char *name, const char *cluster,
 		goto out_recoverd;
 	kobject_uevent(&ls->ls_kobj, KOBJ_ADD);
 
+<<<<<<< HEAD
 	/* let kobject handle freeing of ls if there's an error */
 	do_unreg = 1;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* This uevent triggers dlm_controld in userspace to add us to the
 	   group of nodes that are members of this lockspace (managed by the
 	   cluster infrastructure.)  Once it's done that, it tells us who the
@@ -604,14 +881,24 @@ static int new_lockspace(const char *name, const char *cluster,
 	if (error)
 		goto out_recoverd;
 
+<<<<<<< HEAD
 	wait_for_completion(&ls->ls_members_done);
 	error = ls->ls_members_result;
+=======
+	/* wait until recovery is successful or failed */
+	wait_for_completion(&ls->ls_recovery_done);
+	error = ls->ls_recovery_result;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out_members;
 
 	dlm_create_debug_file(ls);
 
+<<<<<<< HEAD
 	log_debug(ls, "join complete");
+=======
+	log_rinfo(ls, "join complete");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*lockspace = ls;
 	return 0;
 
@@ -627,11 +914,21 @@ static int new_lockspace(const char *name, const char *cluster,
 	spin_lock(&lslist_lock);
 	list_del(&ls->ls_list);
 	spin_unlock(&lslist_lock);
+<<<<<<< HEAD
 	kfree(ls->ls_recover_buf);
  out_dirfree:
 	vfree(ls->ls_dirtbl);
  out_lkbfree:
 	idr_destroy(&ls->ls_lkbidr);
+=======
+	idr_destroy(&ls->ls_recover_idr);
+	kfree(ls->ls_recover_buf);
+ out_lkbidr:
+	idr_destroy(&ls->ls_lkbidr);
+ out_rsbtbl:
+	for (i = 0; i < DLM_REMOVE_NAMES_MAX; i++)
+		kfree(ls->ls_remove_names[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vfree(ls->ls_rsbtbl);
  out_lsfree:
 	if (do_unreg)
@@ -643,10 +940,18 @@ static int new_lockspace(const char *name, const char *cluster,
 	return error;
 }
 
+<<<<<<< HEAD
 int dlm_new_lockspace(const char *name, const char *cluster,
 		      uint32_t flags, int lvblen,
 		      const struct dlm_lockspace_ops *ops, void *ops_arg,
 		      int *ops_result, dlm_lockspace_t **lockspace)
+=======
+static int __dlm_new_lockspace(const char *name, const char *cluster,
+			       uint32_t flags, int lvblen,
+			       const struct dlm_lockspace_ops *ops,
+			       void *ops_arg, int *ops_result,
+			       dlm_lockspace_t **lockspace)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error = 0;
 
@@ -662,20 +967,54 @@ int dlm_new_lockspace(const char *name, const char *cluster,
 		ls_count++;
 	if (error > 0)
 		error = 0;
+<<<<<<< HEAD
 	if (!ls_count)
 		threads_stop();
+=======
+	if (!ls_count) {
+		dlm_scand_stop();
+		dlm_midcomms_shutdown();
+		dlm_midcomms_stop();
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	mutex_unlock(&ls_lock);
 	return error;
 }
 
+<<<<<<< HEAD
+=======
+int dlm_new_lockspace(const char *name, const char *cluster, uint32_t flags,
+		      int lvblen, const struct dlm_lockspace_ops *ops,
+		      void *ops_arg, int *ops_result,
+		      dlm_lockspace_t **lockspace)
+{
+	return __dlm_new_lockspace(name, cluster, flags | DLM_LSFL_FS, lvblen,
+				   ops, ops_arg, ops_result, lockspace);
+}
+
+int dlm_new_user_lockspace(const char *name, const char *cluster,
+			   uint32_t flags, int lvblen,
+			   const struct dlm_lockspace_ops *ops,
+			   void *ops_arg, int *ops_result,
+			   dlm_lockspace_t **lockspace)
+{
+	return __dlm_new_lockspace(name, cluster, flags, lvblen, ops,
+				   ops_arg, ops_result, lockspace);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int lkb_idr_is_local(int id, void *p, void *data)
 {
 	struct dlm_lkb *lkb = p;
 
+<<<<<<< HEAD
 	if (!lkb->lkb_nodeid)
 		return 1;
 	return 0;
+=======
+	return lkb->lkb_nodeid == 0 && lkb->lkb_grmode != DLM_LOCK_IV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int lkb_idr_is_any(int id, void *p, void *data)
@@ -687,7 +1026,11 @@ static int lkb_idr_free(int id, void *p, void *data)
 {
 	struct dlm_lkb *lkb = p;
 
+<<<<<<< HEAD
 	if (lkb->lkb_lvbptr && lkb->lkb_flags & DLM_IFL_MSTCPY)
+=======
+	if (lkb->lkb_lvbptr && test_bit(DLM_IFL_MSTCPY_BIT, &lkb->lkb_iflags))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dlm_free_lvb(lkb->lkb_lvbptr);
 
 	dlm_free_lkb(lkb);
@@ -743,6 +1086,12 @@ static int release_lockspace(struct dlm_ls *ls, int force)
 		return rv;
 	}
 
+<<<<<<< HEAD
+=======
+	if (ls_count == 1)
+		dlm_midcomms_version_wait();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlm_device_deregister(ls);
 
 	if (force < 3 && dlm_user_daemon_available())
@@ -750,12 +1099,22 @@ static int release_lockspace(struct dlm_ls *ls, int force)
 
 	dlm_recoverd_stop(ls);
 
+<<<<<<< HEAD
+=======
+	if (ls_count == 1) {
+		dlm_scand_stop();
+		dlm_clear_members(ls);
+		dlm_midcomms_shutdown();
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlm_callback_stop(ls);
 
 	remove_lockspace(ls);
 
 	dlm_delete_debug_file(ls);
 
+<<<<<<< HEAD
 	kfree(ls->ls_recover_buf);
 
 	/*
@@ -766,11 +1125,20 @@ static int release_lockspace(struct dlm_ls *ls, int force)
 	vfree(ls->ls_dirtbl);
 
 	/*
+=======
+	idr_destroy(&ls->ls_recover_idr);
+	kfree(ls->ls_recover_buf);
+
+	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Free all lkb's in idr
 	 */
 
 	idr_for_each(&ls->ls_lkbidr, lkb_idr_free, ls);
+<<<<<<< HEAD
 	idr_remove_all(&ls->ls_lkbidr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	idr_destroy(&ls->ls_lkbidr);
 
 	/*
@@ -793,6 +1161,12 @@ static int release_lockspace(struct dlm_ls *ls, int force)
 
 	vfree(ls->ls_rsbtbl);
 
+<<<<<<< HEAD
+=======
+	for (i = 0; i < DLM_REMOVE_NAMES_MAX; i++)
+		kfree(ls->ls_remove_names[i]);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (!list_empty(&ls->ls_new_rsb)) {
 		rsb = list_first_entry(&ls->ls_new_rsb, struct dlm_rsb,
 				       res_hashchain);
@@ -806,11 +1180,18 @@ static int release_lockspace(struct dlm_ls *ls, int force)
 
 	dlm_purge_requestqueue(ls);
 	kfree(ls->ls_recover_args);
+<<<<<<< HEAD
 	dlm_clear_free_entries(ls);
 	dlm_clear_members(ls);
 	dlm_clear_members_gone(ls);
 	kfree(ls->ls_node_array);
 	log_debug(ls, "release_lockspace final free");
+=======
+	dlm_clear_members(ls);
+	dlm_clear_members_gone(ls);
+	kfree(ls->ls_node_array);
+	log_rinfo(ls, "release_lockspace final free");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kobject_put(&ls->ls_kobj);
 	/* The ls structure will be freed when the kobject is done with */
 
@@ -826,7 +1207,11 @@ static int release_lockspace(struct dlm_ls *ls, int force)
  * until this returns.
  *
  * Force has 4 possible values:
+<<<<<<< HEAD
  * 0 - don't destroy locksapce if it has any LKBs
+=======
+ * 0 - don't destroy lockspace if it has any LKBs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 1 - destroy lockspace if it has remote LKBs but not if it has local LKBs
  * 2 - destroy lockspace regardless of LKBs
  * 3 - destroy lockspace as part of a forced shutdown
@@ -847,7 +1232,11 @@ int dlm_release_lockspace(void *lockspace, int force)
 	if (!error)
 		ls_count--;
 	if (!ls_count)
+<<<<<<< HEAD
 		threads_stop();
+=======
+		dlm_midcomms_stop();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&ls_lock);
 
 	return error;
@@ -856,17 +1245,36 @@ int dlm_release_lockspace(void *lockspace, int force)
 void dlm_stop_lockspaces(void)
 {
 	struct dlm_ls *ls;
+<<<<<<< HEAD
 
  restart:
 	spin_lock(&lslist_lock);
 	list_for_each_entry(ls, &lslist, ls_list) {
 		if (!test_bit(LSFL_RUNNING, &ls->ls_flags))
 			continue;
+=======
+	int count;
+
+ restart:
+	count = 0;
+	spin_lock(&lslist_lock);
+	list_for_each_entry(ls, &lslist, ls_list) {
+		if (!test_bit(LSFL_RUNNING, &ls->ls_flags)) {
+			count++;
+			continue;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&lslist_lock);
 		log_error(ls, "no userland control daemon, stopping lockspace");
 		dlm_ls_stop(ls);
 		goto restart;
 	}
 	spin_unlock(&lslist_lock);
+<<<<<<< HEAD
+=======
+
+	if (count)
+		log_print("dlm user daemon left %d lockspaces", count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

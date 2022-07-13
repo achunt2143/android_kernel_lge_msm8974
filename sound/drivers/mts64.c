@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*     
  *   ALSA Driver for Ego Systems Inc. (ESI) Miditerminal 4140
  *   Copyright (c) 2006 by Matthias König <mk@phasorlab.de>
@@ -16,6 +17,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*     
+ *   ALSA Driver for Ego Systems Inc. (ESI) Miditerminal 4140
+ *   Copyright (c) 2006 by Matthias König <mk@phasorlab.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -41,17 +48,28 @@ static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;
 static struct platform_device *platform_devices[SNDRV_CARDS]; 
 static int device_count;
 
+<<<<<<< HEAD
 module_param_array(index, int, NULL, S_IRUGO);
 MODULE_PARM_DESC(index, "Index value for " CARD_NAME " soundcard.");
 module_param_array(id, charp, NULL, S_IRUGO);
 MODULE_PARM_DESC(id, "ID string for " CARD_NAME " soundcard.");
 module_param_array(enable, bool, NULL, S_IRUGO);
+=======
+module_param_array(index, int, NULL, 0444);
+MODULE_PARM_DESC(index, "Index value for " CARD_NAME " soundcard.");
+module_param_array(id, charp, NULL, 0444);
+MODULE_PARM_DESC(id, "ID string for " CARD_NAME " soundcard.");
+module_param_array(enable, bool, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(enable, "Enable " CARD_NAME " soundcard.");
 
 MODULE_AUTHOR("Matthias Koenig <mk@phasorlab.de>");
 MODULE_DESCRIPTION("ESI Miditerminal 4140");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{ESI,Miditerminal 4140}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*********************************************************************
  * Chip specific
@@ -65,8 +83,11 @@ struct mts64 {
 	struct snd_card *card;
 	struct snd_rawmidi *rmidi;
 	struct pardevice *pardev;
+<<<<<<< HEAD
 	int pardev_claimed;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int open_count;
 	int current_midi_output_port;
 	int current_midi_input_port;
@@ -83,9 +104,15 @@ static int snd_mts64_free(struct mts64 *mts)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_mts64_create(struct snd_card *card, 
 				      struct pardevice *pardev, 
 				      struct mts64 **rchip)
+=======
+static int snd_mts64_create(struct snd_card *card,
+			    struct pardevice *pardev,
+			    struct mts64 **rchip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mts64 *mts;
 
@@ -214,7 +241,11 @@ static int mts64_device_ready(struct parport *p)
  *  0 init ok
  *  -EIO failure
  */
+<<<<<<< HEAD
 static int __devinit mts64_device_init(struct parport *p)
+=======
+static int mts64_device_init(struct parport *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -277,7 +308,11 @@ static int mts64_device_close(struct mts64 *mts)
  */
 static u8 mts64_map_midi_input(u8 c)
 {
+<<<<<<< HEAD
 	static u8 map[] = { 0, 1, 4, 2, 3 };
+=======
+	static const u8 map[] = { 0, 1, 4, 2, 3 };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return map[c];
 }
@@ -290,7 +325,11 @@ static u8 mts64_map_midi_input(u8 c)
  *  0       device found
  *  -ENODEV no device
  */
+<<<<<<< HEAD
 static int __devinit mts64_probe(struct parport *p)
+=======
+static int mts64_probe(struct parport *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 c;
 
@@ -369,7 +408,11 @@ static void mts64_smpte_start(struct parport *p,
 			      u8 seconds, u8 frames,
 			      u8 idx)
 {
+<<<<<<< HEAD
 	static u8 fps[5] = { MTS64_CMD_SMPTE_FPS_24, 
+=======
+	static const u8 fps[5] = { MTS64_CMD_SMPTE_FPS_24,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     MTS64_CMD_SMPTE_FPS_25,
 			     MTS64_CMD_SMPTE_FPS_2997, 
 			     MTS64_CMD_SMPTE_FPS_30D,
@@ -483,7 +526,11 @@ __out:
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new mts64_ctl_smpte_switch __devinitdata = {
+=======
+static const struct snd_kcontrol_new mts64_ctl_smpte_switch = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_RAWMIDI,
 	.name  = "SMPTE Playback Switch",
 	.index = 0,
@@ -556,7 +603,11 @@ static int snd_mts64_ctl_smpte_time_put(struct snd_kcontrol *kctl,
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new mts64_ctl_smpte_time_hours __devinitdata = {
+=======
+static const struct snd_kcontrol_new mts64_ctl_smpte_time_hours = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_RAWMIDI,
 	.name  = "SMPTE Time Hours",
 	.index = 0,
@@ -567,7 +618,11 @@ static struct snd_kcontrol_new mts64_ctl_smpte_time_hours __devinitdata = {
 	.put  = snd_mts64_ctl_smpte_time_put
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new mts64_ctl_smpte_time_minutes __devinitdata = {
+=======
+static const struct snd_kcontrol_new mts64_ctl_smpte_time_minutes = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_RAWMIDI,
 	.name  = "SMPTE Time Minutes",
 	.index = 0,
@@ -578,7 +633,11 @@ static struct snd_kcontrol_new mts64_ctl_smpte_time_minutes __devinitdata = {
 	.put  = snd_mts64_ctl_smpte_time_put
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new mts64_ctl_smpte_time_seconds __devinitdata = {
+=======
+static const struct snd_kcontrol_new mts64_ctl_smpte_time_seconds = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_RAWMIDI,
 	.name  = "SMPTE Time Seconds",
 	.index = 0,
@@ -589,7 +648,11 @@ static struct snd_kcontrol_new mts64_ctl_smpte_time_seconds __devinitdata = {
 	.put  = snd_mts64_ctl_smpte_time_put
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new mts64_ctl_smpte_time_frames __devinitdata = {
+=======
+static const struct snd_kcontrol_new mts64_ctl_smpte_time_frames = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_RAWMIDI,
 	.name  = "SMPTE Time Frames",
 	.index = 0,
@@ -604,6 +667,7 @@ static struct snd_kcontrol_new mts64_ctl_smpte_time_frames __devinitdata = {
 static int snd_mts64_ctl_smpte_fps_info(struct snd_kcontrol *kctl,
 					struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *texts[5] = { "24",
 				  "25",
 				  "29.97",
@@ -619,6 +683,13 @@ static int snd_mts64_ctl_smpte_fps_info(struct snd_kcontrol *kctl,
 	       texts[uinfo->value.enumerated.item]);
 	
 	return 0;
+=======
+	static const char * const texts[5] = {
+		"24", "25", "29.97", "30D", "30"
+	};
+
+	return snd_ctl_enum_info(uinfo, 1, 5, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_mts64_ctl_smpte_fps_get(struct snd_kcontrol *kctl,
@@ -651,7 +722,11 @@ static int snd_mts64_ctl_smpte_fps_put(struct snd_kcontrol *kctl,
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new mts64_ctl_smpte_fps __devinitdata = {
+=======
+static const struct snd_kcontrol_new mts64_ctl_smpte_fps = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_RAWMIDI,
 	.name  = "SMPTE Fps",
 	.index = 0,
@@ -663,11 +738,19 @@ static struct snd_kcontrol_new mts64_ctl_smpte_fps __devinitdata = {
 };
 
 
+<<<<<<< HEAD
 static int __devinit snd_mts64_ctl_create(struct snd_card *card, 
 					  struct mts64 *mts) 
 {
 	int err, i;
 	static struct snd_kcontrol_new *control[] __devinitdata = {
+=======
+static int snd_mts64_ctl_create(struct snd_card *card,
+				struct mts64 *mts)
+{
+	int err, i;
+	static const struct snd_kcontrol_new *control[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		&mts64_ctl_smpte_switch,
 		&mts64_ctl_smpte_time_hours,
 		&mts64_ctl_smpte_time_minutes,
@@ -761,20 +844,32 @@ static void snd_mts64_rawmidi_input_trigger(struct snd_rawmidi_substream *substr
 	spin_unlock_irqrestore(&mts->lock, flags);
 }
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops snd_mts64_rawmidi_output_ops = {
+=======
+static const struct snd_rawmidi_ops snd_mts64_rawmidi_output_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open    = snd_mts64_rawmidi_open,
 	.close   = snd_mts64_rawmidi_close,
 	.trigger = snd_mts64_rawmidi_output_trigger
 };
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops snd_mts64_rawmidi_input_ops = {
+=======
+static const struct snd_rawmidi_ops snd_mts64_rawmidi_input_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open    = snd_mts64_rawmidi_open,
 	.close   = snd_mts64_rawmidi_close,
 	.trigger = snd_mts64_rawmidi_input_trigger
 };
 
 /* Create and initialize the rawmidi component */
+<<<<<<< HEAD
 static int __devinit snd_mts64_rawmidi_create(struct snd_card *card)
+=======
+static int snd_mts64_rawmidi_create(struct snd_card *card)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mts64 *mts = card->private_data;
 	struct snd_rawmidi *rmidi;
@@ -842,6 +937,12 @@ static void snd_mts64_interrupt(void *private)
 	u8 status, data;
 	struct snd_rawmidi_substream *substream;
 
+<<<<<<< HEAD
+=======
+	if (!mts)
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&mts->lock);
 	ret = mts64_read(mts->pardev->port);
 	data = ret & 0x00ff;
@@ -860,6 +961,7 @@ __out:
 	spin_unlock(&mts->lock);
 }
 
+<<<<<<< HEAD
 static int __devinit snd_mts64_probe_port(struct parport *p)
 {
 	struct pardevice *pardev;
@@ -885,6 +987,9 @@ static int __devinit snd_mts64_probe_port(struct parport *p)
 }
 
 static void __devinit snd_mts64_attach(struct parport *p)
+=======
+static void snd_mts64_attach(struct parport *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platform_device *device;
 
@@ -917,10 +1022,27 @@ static void snd_mts64_detach(struct parport *p)
 	/* nothing to do here */
 }
 
+<<<<<<< HEAD
 static struct parport_driver mts64_parport_driver = {
 	.name   = "mts64",
 	.attach = snd_mts64_attach,
 	.detach = snd_mts64_detach
+=======
+static int snd_mts64_dev_probe(struct pardevice *pardev)
+{
+	if (strcmp(pardev->name, DRIVER_NAME))
+		return -ENODEV;
+
+	return 0;
+}
+
+static struct parport_driver mts64_parport_driver = {
+	.name		= "mts64",
+	.probe		= snd_mts64_dev_probe,
+	.match_port	= snd_mts64_attach,
+	.detach		= snd_mts64_detach,
+	.devmodel	= true,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*********************************************************************
@@ -932,15 +1054,23 @@ static void snd_mts64_card_private_free(struct snd_card *card)
 	struct pardevice *pardev = mts->pardev;
 
 	if (pardev) {
+<<<<<<< HEAD
 		if (mts->pardev_claimed)
 			parport_release(pardev);
+=======
+		parport_release(pardev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		parport_unregister_device(pardev);
 	}
 
 	snd_mts64_free(mts);
 }
 
+<<<<<<< HEAD
 static int __devinit snd_mts64_probe(struct platform_device *pdev)
+=======
+static int snd_mts64_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pardevice *pardev;
 	struct parport *p;
@@ -948,6 +1078,15 @@ static int __devinit snd_mts64_probe(struct platform_device *pdev)
 	struct snd_card *card = NULL;
 	struct mts64 *mts = NULL;
 	int err;
+<<<<<<< HEAD
+=======
+	struct pardev_cb mts64_cb = {
+		.preempt = NULL,
+		.wakeup = NULL,
+		.irq_func = snd_mts64_interrupt,	/* ISR */
+		.flags = PARPORT_DEV_EXCL,		/* flags */
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = platform_get_drvdata(pdev);
 	platform_set_drvdata(pdev, NULL);
@@ -956,10 +1095,16 @@ static int __devinit snd_mts64_probe(struct platform_device *pdev)
 		return -ENODEV;
 	if (!enable[dev]) 
 		return -ENOENT;
+<<<<<<< HEAD
 	if ((err = snd_mts64_probe_port(p)) < 0)
 		return err;
 
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
+=======
+
+	err = snd_card_new(&pdev->dev, index[dev], id[dev], THIS_MODULE,
+			   0, &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 		snd_printd("Cannot create card\n");
 		return err;
@@ -969,6 +1114,7 @@ static int __devinit snd_mts64_probe(struct platform_device *pdev)
 	sprintf(card->longname,  "%s at 0x%lx, irq %i", 
 		card->shortname, p->base, p->irq);
 
+<<<<<<< HEAD
 	pardev = parport_register_device(p,                   /* port */
 					 DRIVER_NAME,         /* name */
 					 NULL,                /* preempt */
@@ -977,11 +1123,20 @@ static int __devinit snd_mts64_probe(struct platform_device *pdev)
 					 PARPORT_DEV_EXCL,    /* flags */
 					 (void *)card);       /* private */
 	if (pardev == NULL) {
+=======
+	mts64_cb.private = card;			 /* private */
+	pardev = parport_register_dev_model(p,		 /* port */
+					    DRIVER_NAME, /* name */
+					    &mts64_cb,	 /* callbacks */
+					    pdev->id);	 /* device number */
+	if (!pardev) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printd("Cannot register pardevice\n");
 		err = -EIO;
 		goto __err;
 	}
 
+<<<<<<< HEAD
 	if ((err = snd_mts64_create(card, pardev, &mts)) < 0) {
 		snd_printd("Cannot create main component\n");
 		parport_unregister_device(pardev);
@@ -995,24 +1150,61 @@ static int __devinit snd_mts64_probe(struct platform_device *pdev)
 		goto __err;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* claim parport */
 	if (parport_claim(pardev)) {
 		snd_printd("Cannot claim parport 0x%lx\n", pardev->port->base);
 		err = -EIO;
+<<<<<<< HEAD
 		goto __err;
 	}
 	mts->pardev_claimed = 1;
 
 	/* init device */
 	if ((err = mts64_device_init(p)) < 0)
+=======
+		goto free_pardev;
+	}
+
+	err = snd_mts64_create(card, pardev, &mts);
+	if (err < 0) {
+		snd_printd("Cannot create main component\n");
+		goto release_pardev;
+	}
+	card->private_data = mts;
+	card->private_free = snd_mts64_card_private_free;
+
+	err = mts64_probe(p);
+	if (err) {
+		err = -EIO;
+		goto __err;
+	}
+	
+	err = snd_mts64_rawmidi_create(card);
+	if (err < 0) {
+		snd_printd("Creating Rawmidi component failed\n");
+		goto __err;
+	}
+
+	/* init device */
+	err = mts64_device_init(p);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto __err;
 
 	platform_set_drvdata(pdev, card);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pdev->dev);
 
 	/* At this point card will be usable */
 	if ((err = snd_card_register(card)) < 0) {
+=======
+	/* At this point card will be usable */
+	err = snd_card_register(card);
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printd("Cannot register card\n");
 		goto __err;
 	}
@@ -1020,17 +1212,29 @@ static int __devinit snd_mts64_probe(struct platform_device *pdev)
 	snd_printk(KERN_INFO "ESI Miditerminal 4140 on 0x%lx\n", p->base);
 	return 0;
 
+<<<<<<< HEAD
+=======
+release_pardev:
+	parport_release(pardev);
+free_pardev:
+	parport_unregister_device(pardev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __err:
 	snd_card_free(card);
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit snd_mts64_remove(struct platform_device *pdev)
+=======
+static void snd_mts64_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = platform_get_drvdata(pdev);
 
 	if (card)
 		snd_card_free(card);
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -1041,6 +1245,15 @@ static struct platform_driver snd_mts64_driver = {
 	.remove = __devexit_p(snd_mts64_remove),
 	.driver = {
 		.name = PLATFORM_DRIVER
+=======
+}
+
+static struct platform_driver snd_mts64_driver = {
+	.probe  = snd_mts64_probe,
+	.remove_new = snd_mts64_remove,
+	.driver = {
+		.name = PLATFORM_DRIVER,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -1065,7 +1278,12 @@ static int __init snd_mts64_module_init(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	if ((err = platform_driver_register(&snd_mts64_driver)) < 0)
+=======
+	err = platform_driver_register(&snd_mts64_driver);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	if (parport_register_driver(&mts64_parport_driver) != 0) {

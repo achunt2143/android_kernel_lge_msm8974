@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * asb100.c - Part of lm_sensors, Linux kernel modules for hardware
  *	      monitoring
@@ -9,6 +13,7 @@
  * Copyright (C) 1998 - 2003  Frodo Looijaard <frodol@dds.nl>,
  *			      Philip Edelbrock <phil@netroedge.com>, and
  *			      Mark Studebaker <mdsxyz123@yahoo.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +28,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -32,7 +39,11 @@
  * ASB100-A supports pwm1, while plain ASB100 does not.  There is no known
  * way for the driver to tell which one is there.
  *
+<<<<<<< HEAD
  * Chip	#vin	#fanin	#pwm	#temp	wchipid	vendid	i2c	ISA
+=======
+ * Chip		#vin	#fanin	#pwm	#temp	wchipid	vendid	i2c	ISA
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * asb100	7	3	1	4	0x31	0x0694	yes	no
  */
 
@@ -55,8 +66,13 @@ static const unsigned short normal_i2c[] = { 0x2d, I2C_CLIENT_END };
 
 static unsigned short force_subclients[4];
 module_param_array(force_subclients, short, NULL, 0);
+<<<<<<< HEAD
 MODULE_PARM_DESC(force_subclients, "List of subclient addresses: "
 	"{bus, clientaddr, subclientaddr1, subclientaddr2}");
+=======
+MODULE_PARM_DESC(force_subclients,
+	"List of subclient addresses: {bus, clientaddr, subclientaddr1, subclientaddr2}");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Voltage IN registers 0-6 */
 #define ASB100_REG_IN(nr)	(0x20 + (nr))
@@ -114,7 +130,11 @@ static const u16 asb100_reg_temp_hyst[]	= {0, 0x3a, 0x153, 0x253, 0x19};
  */
 static u8 IN_TO_REG(unsigned val)
 {
+<<<<<<< HEAD
 	unsigned nval = SENSORS_LIMIT(val, ASB100_IN_MIN, ASB100_IN_MAX);
+=======
+	unsigned nval = clamp_val(val, ASB100_IN_MIN, ASB100_IN_MAX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (nval + 8) / 16;
 }
 
@@ -129,8 +149,13 @@ static u8 FAN_TO_REG(long rpm, int div)
 		return 0;
 	if (rpm == 0)
 		return 255;
+<<<<<<< HEAD
 	rpm = SENSORS_LIMIT(rpm, 1, 1000000);
 	return SENSORS_LIMIT((1350000 + rpm * div / 2) / (rpm * div), 1, 254);
+=======
+	rpm = clamp_val(rpm, 1, 1000000);
+	return clamp_val((1350000 + rpm * div / 2) / (rpm * div), 1, 254);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int FAN_FROM_REG(u8 val, int div)
@@ -148,7 +173,11 @@ static int FAN_FROM_REG(u8 val, int div)
  */
 static u8 TEMP_TO_REG(long temp)
 {
+<<<<<<< HEAD
 	int ntemp = SENSORS_LIMIT(temp, ASB100_TEMP_MIN, ASB100_TEMP_MAX);
+=======
+	int ntemp = clamp_val(temp, ASB100_TEMP_MIN, ASB100_TEMP_MAX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ntemp += (ntemp < 0 ? -500 : 500);
 	return (u8)(ntemp / 1000);
 }
@@ -164,7 +193,11 @@ static int TEMP_FROM_REG(u8 reg)
  */
 static u8 ASB100_PWM_TO_REG(int pwm)
 {
+<<<<<<< HEAD
 	pwm = SENSORS_LIMIT(pwm, 0, 255);
+=======
+	pwm = clamp_val(pwm, 0, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (u8)(pwm / 16);
 }
 
@@ -199,7 +232,11 @@ struct asb100_data {
 	/* array of 2 pointers to subclients */
 	struct i2c_client *lm75[2];
 
+<<<<<<< HEAD
 	char valid;		/* !=0 if following fields are valid */
+=======
+	bool valid;		/* true if following fields are valid */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 in[7];		/* Register value */
 	u8 in_max[7];		/* Register value */
 	u8 in_min[7];		/* Register value */
@@ -218,11 +255,18 @@ struct asb100_data {
 static int asb100_read_value(struct i2c_client *client, u16 reg);
 static void asb100_write_value(struct i2c_client *client, u16 reg, u16 val);
 
+<<<<<<< HEAD
 static int asb100_probe(struct i2c_client *client,
 			const struct i2c_device_id *id);
 static int asb100_detect(struct i2c_client *client,
 			 struct i2c_board_info *info);
 static int asb100_remove(struct i2c_client *client);
+=======
+static int asb100_probe(struct i2c_client *client);
+static int asb100_detect(struct i2c_client *client,
+			 struct i2c_board_info *info);
+static void asb100_remove(struct i2c_client *client);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct asb100_data *asb100_update_device(struct device *dev);
 static void asb100_init_client(struct i2c_client *client);
 
@@ -483,25 +527,42 @@ sysfs_temp(3);
 sysfs_temp(4);
 
 /* VID */
+<<<<<<< HEAD
 static ssize_t show_vid(struct device *dev, struct device_attribute *attr,
 		char *buf)
+=======
+static ssize_t cpu0_vid_show(struct device *dev,
+			     struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asb100_data *data = asb100_update_device(dev);
 	return sprintf(buf, "%d\n", vid_from_reg(data->vid, data->vrm));
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(cpu0_vid, S_IRUGO, show_vid, NULL);
 
 /* VRM */
 static ssize_t show_vrm(struct device *dev, struct device_attribute *attr,
+=======
+static DEVICE_ATTR_RO(cpu0_vid);
+
+/* VRM */
+static ssize_t vrm_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		char *buf)
 {
 	struct asb100_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%d\n", data->vrm);
 }
 
+<<<<<<< HEAD
 static ssize_t set_vrm(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
+=======
+static ssize_t vrm_store(struct device *dev, struct device_attribute *attr,
+			 const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asb100_data *data = dev_get_drvdata(dev);
 	unsigned long val;
@@ -510,21 +571,38 @@ static ssize_t set_vrm(struct device *dev, struct device_attribute *attr,
 	err = kstrtoul(buf, 10, &val);
 	if (err)
 		return err;
+<<<<<<< HEAD
+=======
+
+	if (val > 255)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->vrm = val;
 	return count;
 }
 
 /* Alarms */
+<<<<<<< HEAD
 static DEVICE_ATTR(vrm, S_IRUGO | S_IWUSR, show_vrm, set_vrm);
 
 static ssize_t show_alarms(struct device *dev, struct device_attribute *attr,
+=======
+static DEVICE_ATTR_RW(vrm);
+
+static ssize_t alarms_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		char *buf)
 {
 	struct asb100_data *data = asb100_update_device(dev);
 	return sprintf(buf, "%u\n", data->alarms);
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(alarms, S_IRUGO, show_alarms, NULL);
+=======
+static DEVICE_ATTR_RO(alarms);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t show_alarm(struct device *dev, struct device_attribute *attr,
 		char *buf)
@@ -546,15 +624,24 @@ static SENSOR_DEVICE_ATTR(temp2_alarm, S_IRUGO, show_alarm, NULL, 5);
 static SENSOR_DEVICE_ATTR(temp3_alarm, S_IRUGO, show_alarm, NULL, 13);
 
 /* 1 PWM */
+<<<<<<< HEAD
 static ssize_t show_pwm1(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t pwm1_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		char *buf)
 {
 	struct asb100_data *data = asb100_update_device(dev);
 	return sprintf(buf, "%d\n", ASB100_PWM_FROM_REG(data->pwm & 0x0f));
 }
 
+<<<<<<< HEAD
 static ssize_t set_pwm1(struct device *dev, struct device_attribute *attr,
 		const char *buf, size_t count)
+=======
+static ssize_t pwm1_store(struct device *dev, struct device_attribute *attr,
+			  const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct asb100_data *data = i2c_get_clientdata(client);
@@ -573,15 +660,25 @@ static ssize_t set_pwm1(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t show_pwm_enable1(struct device *dev,
+=======
+static ssize_t pwm1_enable_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct device_attribute *attr, char *buf)
 {
 	struct asb100_data *data = asb100_update_device(dev);
 	return sprintf(buf, "%d\n", (data->pwm & 0x80) ? 1 : 0);
 }
 
+<<<<<<< HEAD
 static ssize_t set_pwm_enable1(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
+=======
+static ssize_t pwm1_enable_store(struct device *dev,
+				 struct device_attribute *attr,
+				 const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct asb100_data *data = i2c_get_clientdata(client);
@@ -600,9 +697,14 @@ static ssize_t set_pwm_enable1(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(pwm1, S_IRUGO | S_IWUSR, show_pwm1, set_pwm1);
 static DEVICE_ATTR(pwm1_enable, S_IRUGO | S_IWUSR,
 		show_pwm_enable1, set_pwm_enable1);
+=======
+static DEVICE_ATTR_RW(pwm1);
+static DEVICE_ATTR_RW(pwm1_enable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *asb100_attributes[] = {
 	&sensor_dev_attr_in0_input.dev_attr.attr,
@@ -689,8 +791,13 @@ static int asb100_detect_subclients(struct i2c_client *client)
 		for (i = 2; i <= 3; i++) {
 			if (force_subclients[i] < 0x48 ||
 			    force_subclients[i] > 0x4f) {
+<<<<<<< HEAD
 				dev_err(&client->dev, "invalid subclient "
 					"address %d; must be 0x48-0x4f\n",
+=======
+				dev_err(&client->dev,
+					"invalid subclient address %d; must be 0x48-0x4f\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					force_subclients[i]);
 				err = -ENODEV;
 				goto ERROR_SC_2;
@@ -708,12 +815,19 @@ static int asb100_detect_subclients(struct i2c_client *client)
 	}
 
 	if (sc_addr[0] == sc_addr[1]) {
+<<<<<<< HEAD
 		dev_err(&client->dev, "duplicate addresses 0x%x "
 				"for subclients\n", sc_addr[0]);
+=======
+		dev_err(&client->dev,
+			"duplicate addresses 0x%x for subclients\n",
+			sc_addr[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENODEV;
 		goto ERROR_SC_2;
 	}
 
+<<<<<<< HEAD
 	data->lm75[0] = i2c_new_dummy(adapter, sc_addr[0]);
 	if (!data->lm75[0]) {
 		dev_err(&client->dev, "subclient %d registration "
@@ -727,6 +841,23 @@ static int asb100_detect_subclients(struct i2c_client *client)
 		dev_err(&client->dev, "subclient %d registration "
 			"at address 0x%x failed.\n", 2, sc_addr[1]);
 		err = -ENOMEM;
+=======
+	data->lm75[0] = i2c_new_dummy_device(adapter, sc_addr[0]);
+	if (IS_ERR(data->lm75[0])) {
+		dev_err(&client->dev,
+			"subclient %d registration at address 0x%x failed.\n",
+			1, sc_addr[0]);
+		err = PTR_ERR(data->lm75[0]);
+		goto ERROR_SC_2;
+	}
+
+	data->lm75[1] = i2c_new_dummy_device(adapter, sc_addr[1]);
+	if (IS_ERR(data->lm75[1])) {
+		dev_err(&client->dev,
+			"subclient %d registration at address 0x%x failed.\n",
+			2, sc_addr[1]);
+		err = PTR_ERR(data->lm75[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto ERROR_SC_3;
 	}
 
@@ -776,23 +907,38 @@ static int asb100_detect(struct i2c_client *client,
 	if (val1 != 0x31 || val2 != 0x06)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	strlcpy(info->type, "asb100", I2C_NAME_SIZE);
+=======
+	strscpy(info->type, "asb100", I2C_NAME_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int asb100_probe(struct i2c_client *client,
 			const struct i2c_device_id *id)
+=======
+static int asb100_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	struct asb100_data *data;
 
+<<<<<<< HEAD
 	data = kzalloc(sizeof(struct asb100_data), GFP_KERNEL);
 	if (!data) {
 		pr_debug("probe failed, kzalloc failed!\n");
 		err = -ENOMEM;
 		goto ERROR0;
 	}
+=======
+	data = devm_kzalloc(&client->dev, sizeof(struct asb100_data),
+			    GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i2c_set_clientdata(client, data);
 	mutex_init(&data->lock);
@@ -801,7 +947,11 @@ static int asb100_probe(struct i2c_client *client,
 	/* Attach secondary lm75 clients */
 	err = asb100_detect_subclients(client);
 	if (err)
+<<<<<<< HEAD
 		goto ERROR1;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the chip */
 	asb100_init_client(client);
@@ -829,6 +979,7 @@ ERROR4:
 ERROR3:
 	i2c_unregister_device(data->lm75[1]);
 	i2c_unregister_device(data->lm75[0]);
+<<<<<<< HEAD
 ERROR1:
 	kfree(data);
 ERROR0:
@@ -836,6 +987,12 @@ ERROR0:
 }
 
 static int asb100_remove(struct i2c_client *client)
+=======
+	return err;
+}
+
+static void asb100_remove(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct asb100_data *data = i2c_get_clientdata(client);
 
@@ -844,10 +1001,13 @@ static int asb100_remove(struct i2c_client *client)
 
 	i2c_unregister_device(data->lm75[1]);
 	i2c_unregister_device(data->lm75[0]);
+<<<<<<< HEAD
 
 	kfree(data);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1008,7 +1168,11 @@ static struct asb100_data *asb100_update_device(struct device *dev)
 			(asb100_read_value(client, ASB100_REG_ALARM2) << 8);
 
 		data->last_updated = jiffies;
+<<<<<<< HEAD
 		data->valid = 1;
+=======
+		data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dev_dbg(&client->dev, "... device update complete\n");
 	}

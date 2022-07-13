@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Red Hat, Inc.
  *
@@ -9,6 +13,12 @@
 #include "dm-transaction-manager.h"
 
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/device-mapper.h>
+
+#define DM_MSG_PREFIX "btree"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Removing an entry from a btree
@@ -79,6 +89,7 @@ static void node_shift(struct btree_node *n, int shift)
 	}
 }
 
+<<<<<<< HEAD
 static void node_copy(struct btree_node *left, struct btree_node *right, int shift)
 {
 	uint32_t nr_left = le32_to_cpu(left->header.nr_entries);
@@ -88,6 +99,26 @@ static void node_copy(struct btree_node *left, struct btree_node *right, int shi
 	if (shift < 0) {
 		shift = -shift;
 		BUG_ON(nr_left + shift > le32_to_cpu(left->header.max_entries));
+=======
+static int node_copy(struct btree_node *left, struct btree_node *right, int shift)
+{
+	uint32_t nr_left = le32_to_cpu(left->header.nr_entries);
+	uint32_t value_size = le32_to_cpu(left->header.value_size);
+
+	if (value_size != le32_to_cpu(right->header.value_size)) {
+		DMERR("mismatched value size");
+		return -EILSEQ;
+	}
+
+	if (shift < 0) {
+		shift = -shift;
+
+		if (nr_left + shift > le32_to_cpu(left->header.max_entries)) {
+			DMERR("bad shift");
+			return -EINVAL;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(key_ptr(left, nr_left),
 		       key_ptr(right, 0),
 		       shift * sizeof(__le64));
@@ -95,7 +126,15 @@ static void node_copy(struct btree_node *left, struct btree_node *right, int shi
 		       value_ptr(right, 0),
 		       shift * value_size);
 	} else {
+<<<<<<< HEAD
 		BUG_ON(shift > le32_to_cpu(right->header.max_entries));
+=======
+		if (shift > le32_to_cpu(right->header.max_entries)) {
+			DMERR("bad shift");
+			return -EINVAL;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(key_ptr(right, 0),
 		       key_ptr(left, nr_left - shift),
 		       shift * sizeof(__le64));
@@ -103,16 +142,29 @@ static void node_copy(struct btree_node *left, struct btree_node *right, int shi
 		       value_ptr(left, nr_left - shift),
 		       shift * value_size);
 	}
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Delete a specific entry from a leaf node.
  */
+<<<<<<< HEAD
 static void delete_at(struct btree_node *n, unsigned index)
 {
 	unsigned nr_entries = le32_to_cpu(n->header.nr_entries);
 	unsigned nr_to_copy = nr_entries - (index + 1);
 	uint32_t value_size = le32_to_cpu(n->header.value_size);
+=======
+static void delete_at(struct btree_node *n, unsigned int index)
+{
+	unsigned int nr_entries = le32_to_cpu(n->header.nr_entries);
+	unsigned int nr_to_copy = nr_entries - (index + 1);
+	uint32_t value_size = le32_to_cpu(n->header.value_size);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(index >= nr_entries);
 
 	if (nr_to_copy) {
@@ -128,20 +180,32 @@ static void delete_at(struct btree_node *n, unsigned index)
 	n->header.nr_entries = cpu_to_le32(nr_entries - 1);
 }
 
+<<<<<<< HEAD
 static unsigned merge_threshold(struct btree_node *n)
+=======
+static unsigned int merge_threshold(struct btree_node *n)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return le32_to_cpu(n->header.max_entries) / 3;
 }
 
 struct child {
+<<<<<<< HEAD
 	unsigned index;
+=======
+	unsigned int index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_block *block;
 	struct btree_node *n;
 };
 
 static int init_child(struct dm_btree_info *info, struct dm_btree_value_type *vt,
 		      struct btree_node *parent,
+<<<<<<< HEAD
 		      unsigned index, struct child *result)
+=======
+		      unsigned int index, struct child *result)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r, inc;
 	dm_block_t root;
@@ -165,6 +229,7 @@ static int init_child(struct dm_btree_info *info, struct dm_btree_value_type *vt
 	return 0;
 }
 
+<<<<<<< HEAD
 static int exit_child(struct dm_btree_info *info, struct child *c)
 {
 	return dm_tm_unlock(info->tm, c->block);
@@ -172,11 +237,22 @@ static int exit_child(struct dm_btree_info *info, struct child *c)
 
 static void shift(struct btree_node *left, struct btree_node *right, int count)
 {
+=======
+static void exit_child(struct dm_btree_info *info, struct child *c)
+{
+	dm_tm_unlock(info->tm, c->block);
+}
+
+static int shift(struct btree_node *left, struct btree_node *right, int count)
+{
+	int r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t nr_left = le32_to_cpu(left->header.nr_entries);
 	uint32_t nr_right = le32_to_cpu(right->header.nr_entries);
 	uint32_t max_entries = le32_to_cpu(left->header.max_entries);
 	uint32_t r_max_entries = le32_to_cpu(right->header.max_entries);
 
+<<<<<<< HEAD
 	BUG_ON(max_entries != r_max_entries);
 	BUG_ON(nr_left - count > max_entries);
 	BUG_ON(nr_right + count > max_entries);
@@ -189,21 +265,71 @@ static void shift(struct btree_node *left, struct btree_node *right, int count)
 		node_copy(left, right, count);
 	} else {
 		node_copy(left, right, count);
+=======
+	if (max_entries != r_max_entries) {
+		DMERR("node max_entries mismatch");
+		return -EILSEQ;
+	}
+
+	if (nr_left - count > max_entries) {
+		DMERR("node shift out of bounds");
+		return -EINVAL;
+	}
+
+	if (nr_right + count > max_entries) {
+		DMERR("node shift out of bounds");
+		return -EINVAL;
+	}
+
+	if (!count)
+		return 0;
+
+	if (count > 0) {
+		node_shift(right, count);
+		r = node_copy(left, right, count);
+		if (r)
+			return r;
+	} else {
+		r = node_copy(left, right, count);
+		if (r)
+			return r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		node_shift(right, count);
 	}
 
 	left->header.nr_entries = cpu_to_le32(nr_left - count);
 	right->header.nr_entries = cpu_to_le32(nr_right + count);
+<<<<<<< HEAD
 }
 
 static void __rebalance2(struct dm_btree_info *info, struct btree_node *parent,
 			 struct child *l, struct child *r)
 {
+=======
+
+	return 0;
+}
+
+static int __rebalance2(struct dm_btree_info *info, struct btree_node *parent,
+			struct child *l, struct child *r)
+{
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct btree_node *left = l->n;
 	struct btree_node *right = r->n;
 	uint32_t nr_left = le32_to_cpu(left->header.nr_entries);
 	uint32_t nr_right = le32_to_cpu(right->header.nr_entries);
+<<<<<<< HEAD
 	unsigned threshold = 2 * merge_threshold(left) + 1;
+=======
+	/*
+	 * Ensure the number of entries in each child will be greater
+	 * than or equal to (max_entries / 3 + 1), so no matter which
+	 * child is used for removal, the number will still be not
+	 * less than (max_entries / 3).
+	 */
+	unsigned int threshold = 2 * (merge_threshold(left) + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (nr_left + nr_right < threshold) {
 		/*
@@ -222,6 +348,7 @@ static void __rebalance2(struct dm_btree_info *info, struct btree_node *parent,
 		/*
 		 * Rebalance.
 		 */
+<<<<<<< HEAD
 		unsigned target_left = (nr_left + nr_right) / 2;
 		shift(left, right, nr_left - target_left);
 		*key_ptr(parent, r->index) = right->keys[0];
@@ -230,6 +357,20 @@ static void __rebalance2(struct dm_btree_info *info, struct btree_node *parent,
 
 static int rebalance2(struct shadow_spine *s, struct dm_btree_info *info,
 		      struct dm_btree_value_type *vt, unsigned left_index)
+=======
+		unsigned int target_left = (nr_left + nr_right) / 2;
+
+		ret = shift(left, right, nr_left - target_left);
+		if (ret)
+			return ret;
+		*key_ptr(parent, r->index) = right->keys[0];
+	}
+	return 0;
+}
+
+static int rebalance2(struct shadow_spine *s, struct dm_btree_info *info,
+		      struct dm_btree_value_type *vt, unsigned int left_index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	struct btree_node *parent;
@@ -247,6 +388,7 @@ static int rebalance2(struct shadow_spine *s, struct dm_btree_info *info,
 		return r;
 	}
 
+<<<<<<< HEAD
 	__rebalance2(info, parent, &left, &right);
 
 	r = exit_child(info, &left);
@@ -256,6 +398,14 @@ static int rebalance2(struct shadow_spine *s, struct dm_btree_info *info,
 	}
 
 	return exit_child(info, &right);
+=======
+	r = __rebalance2(info, parent, &left, &right);
+
+	exit_child(info, &left);
+	exit_child(info, &right);
+
+	return r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -263,6 +413,7 @@ static int rebalance2(struct shadow_spine *s, struct dm_btree_info *info,
  * in right, then rebalance2.  This wastes some cpu, but I want something
  * simple atm.
  */
+<<<<<<< HEAD
 static void delete_center_node(struct dm_btree_info *info, struct btree_node *parent,
 			       struct child *l, struct child *c, struct child *r,
 			       struct btree_node *left, struct btree_node *center, struct btree_node *right,
@@ -272,12 +423,36 @@ static void delete_center_node(struct dm_btree_info *info, struct btree_node *pa
 	unsigned shift = min(max_entries - nr_left, nr_center);
 
 	BUG_ON(nr_left + shift > max_entries);
+=======
+static int delete_center_node(struct dm_btree_info *info, struct btree_node *parent,
+			      struct child *l, struct child *c, struct child *r,
+			      struct btree_node *left, struct btree_node *center, struct btree_node *right,
+			      uint32_t nr_left, uint32_t nr_center, uint32_t nr_right)
+{
+	uint32_t max_entries = le32_to_cpu(left->header.max_entries);
+	unsigned int shift = min(max_entries - nr_left, nr_center);
+
+	if (nr_left + shift > max_entries) {
+		DMERR("node shift out of bounds");
+		return -EINVAL;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	node_copy(left, center, -shift);
 	left->header.nr_entries = cpu_to_le32(nr_left + shift);
 
 	if (shift != nr_center) {
 		shift = nr_center - shift;
+<<<<<<< HEAD
 		BUG_ON((nr_right + shift) > max_entries);
+=======
+
+		if ((nr_right + shift) > max_entries) {
+			DMERR("node shift out of bounds");
+			return -EINVAL;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		node_shift(right, shift);
 		node_copy(center, right, shift);
 		right->header.nr_entries = cpu_to_le32(nr_right + shift);
@@ -288,12 +463,17 @@ static void delete_center_node(struct dm_btree_info *info, struct btree_node *pa
 	r->index--;
 
 	dm_tm_dec(info->tm, dm_block_location(c->block));
+<<<<<<< HEAD
 	__rebalance2(info, parent, l, r);
+=======
+	return __rebalance2(info, parent, l, r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Redistributes entries among 3 sibling nodes.
  */
+<<<<<<< HEAD
 static void redistribute3(struct dm_btree_info *info, struct btree_node *parent,
 			  struct child *l, struct child *c, struct child *r,
 			  struct btree_node *left, struct btree_node *center, struct btree_node *right,
@@ -305,6 +485,19 @@ static void redistribute3(struct dm_btree_info *info, struct btree_node *parent,
 	unsigned target_right = total / 3;
 	unsigned remainder = (target_right * 3) != total;
 	unsigned target_left = target_right + remainder;
+=======
+static int redistribute3(struct dm_btree_info *info, struct btree_node *parent,
+			 struct child *l, struct child *c, struct child *r,
+			 struct btree_node *left, struct btree_node *center, struct btree_node *right,
+			 uint32_t nr_left, uint32_t nr_center, uint32_t nr_right)
+{
+	int s, ret;
+	uint32_t max_entries = le32_to_cpu(left->header.max_entries);
+	unsigned int total = nr_left + nr_center + nr_right;
+	unsigned int target_right = total / 3;
+	unsigned int remainder = (target_right * 3) != total;
+	unsigned int target_left = target_right + remainder;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(target_left > max_entries);
 	BUG_ON(target_right > max_entries);
@@ -314,6 +507,7 @@ static void redistribute3(struct dm_btree_info *info, struct btree_node *parent,
 
 		if (s < 0 && nr_center < -s) {
 			/* not enough in central node */
+<<<<<<< HEAD
 			shift(left, center, -nr_center);
 			s += nr_center;
 			shift(left, right, s);
@@ -323,10 +517,32 @@ static void redistribute3(struct dm_btree_info *info, struct btree_node *parent,
 
 		shift(center, right, target_right - nr_right);
 
+=======
+			ret = shift(left, center, -nr_center);
+			if (ret)
+				return ret;
+
+			s += nr_center;
+			ret = shift(left, right, s);
+			if (ret)
+				return ret;
+
+			nr_right += s;
+		} else {
+			ret = shift(left, center, s);
+			if (ret)
+				return ret;
+		}
+
+		ret = shift(center, right, target_right - nr_right);
+		if (ret)
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		s = target_right - nr_right;
 		if (s > 0 && nr_center < s) {
 			/* not enough in central node */
+<<<<<<< HEAD
 			shift(center, right, nr_center);
 			s -= nr_center;
 			shift(left, right, s);
@@ -335,14 +551,41 @@ static void redistribute3(struct dm_btree_info *info, struct btree_node *parent,
 			shift(center, right, s);
 
 		shift(left, center, nr_left - target_left);
+=======
+			ret = shift(center, right, nr_center);
+			if (ret)
+				return ret;
+			s -= nr_center;
+			ret = shift(left, right, s);
+			if (ret)
+				return ret;
+			nr_left -= s;
+		} else {
+			ret = shift(center, right, s);
+			if (ret)
+				return ret;
+		}
+
+		ret = shift(left, center, nr_left - target_left);
+		if (ret)
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	*key_ptr(parent, c->index) = center->keys[0];
 	*key_ptr(parent, r->index) = right->keys[0];
+<<<<<<< HEAD
 }
 
 static void __rebalance3(struct dm_btree_info *info, struct btree_node *parent,
 			 struct child *l, struct child *c, struct child *r)
+=======
+	return 0;
+}
+
+static int __rebalance3(struct dm_btree_info *info, struct btree_node *parent,
+			struct child *l, struct child *c, struct child *r)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct btree_node *left = l->n;
 	struct btree_node *center = c->n;
@@ -352,6 +595,7 @@ static void __rebalance3(struct dm_btree_info *info, struct btree_node *parent,
 	uint32_t nr_center = le32_to_cpu(center->header.nr_entries);
 	uint32_t nr_right = le32_to_cpu(right->header.nr_entries);
 
+<<<<<<< HEAD
 	unsigned threshold = merge_threshold(left) * 4 + 1;
 
 	BUG_ON(left->header.max_entries != center->header.max_entries);
@@ -367,6 +611,27 @@ static void __rebalance3(struct dm_btree_info *info, struct btree_node *parent,
 
 static int rebalance3(struct shadow_spine *s, struct dm_btree_info *info,
 		      struct dm_btree_value_type *vt, unsigned left_index)
+=======
+	unsigned int threshold = merge_threshold(left) * 4 + 1;
+
+	if ((left->header.max_entries != center->header.max_entries) ||
+	    (center->header.max_entries != right->header.max_entries)) {
+		DMERR("bad btree metadata, max_entries differ");
+		return -EILSEQ;
+	}
+
+	if ((nr_left + nr_center + nr_right) < threshold) {
+		return delete_center_node(info, parent, l, c, r, left, center, right,
+					  nr_left, nr_center, nr_right);
+	}
+
+	return redistribute3(info, parent, l, c, r, left, center, right,
+			     nr_left, nr_center, nr_right);
+}
+
+static int rebalance3(struct shadow_spine *s, struct dm_btree_info *info,
+		      struct dm_btree_value_type *vt, unsigned int left_index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	struct btree_node *parent = dm_block_data(shadow_current(s));
@@ -392,6 +657,7 @@ static int rebalance3(struct shadow_spine *s, struct dm_btree_info *info,
 		return r;
 	}
 
+<<<<<<< HEAD
 	__rebalance3(info, parent, &left, &center, &right);
 
 	r = exit_child(info, &left);
@@ -429,6 +695,15 @@ static int get_nr_entries(struct dm_transaction_manager *tm,
 	*result = le32_to_cpu(n->header.nr_entries);
 
 	return dm_tm_unlock(tm, block);
+=======
+	r = __rebalance3(info, parent, &left, &center, &right);
+
+	exit_child(info, &left);
+	exit_child(info, &center);
+	exit_child(info, &right);
+
+	return r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rebalance_children(struct shadow_spine *s,
@@ -436,7 +711,10 @@ static int rebalance_children(struct shadow_spine *s,
 			      struct dm_btree_value_type *vt, uint64_t key)
 {
 	int i, r, has_left_sibling, has_right_sibling;
+<<<<<<< HEAD
 	uint32_t child_entries;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct btree_node *n;
 
 	n = dm_block_data(shadow_current(s));
@@ -451,11 +729,17 @@ static int rebalance_children(struct shadow_spine *s,
 
 		memcpy(n, dm_block_data(child),
 		       dm_bm_block_size(dm_tm_get_bm(info->tm)));
+<<<<<<< HEAD
 		r = dm_tm_unlock(info->tm, child);
 		if (r)
 			return r;
 
 		dm_tm_dec(info->tm, dm_block_location(child));
+=======
+
+		dm_tm_dec(info->tm, dm_block_location(child));
+		dm_tm_unlock(info->tm, child);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -463,10 +747,13 @@ static int rebalance_children(struct shadow_spine *s,
 	if (i < 0)
 		return -ENODATA;
 
+<<<<<<< HEAD
 	r = get_nr_entries(info->tm, value64(n, i), &child_entries);
 	if (r)
 		return r;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	has_left_sibling = i > 0;
 	has_right_sibling = i < (le32_to_cpu(n->header.nr_entries) - 1);
 
@@ -482,7 +769,11 @@ static int rebalance_children(struct shadow_spine *s,
 	return r;
 }
 
+<<<<<<< HEAD
 static int do_leaf(struct btree_node *n, uint64_t key, unsigned *index)
+=======
+static int do_leaf(struct btree_node *n, uint64_t key, unsigned int *index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i = lower_bound(n, key);
 
@@ -502,7 +793,11 @@ static int do_leaf(struct btree_node *n, uint64_t key, unsigned *index)
  */
 static int remove_raw(struct shadow_spine *s, struct dm_btree_info *info,
 		      struct dm_btree_value_type *vt, dm_block_t root,
+<<<<<<< HEAD
 		      uint64_t key, unsigned *index)
+=======
+		      uint64_t key, unsigned int *index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i = *index, r;
 	struct btree_node *n;
@@ -519,6 +814,10 @@ static int remove_raw(struct shadow_spine *s, struct dm_btree_info *info,
 		 */
 		if (shadow_has_parent(s)) {
 			__le64 location = cpu_to_le64(dm_block_location(shadow_current(s)));
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy(value_ptr(dm_block_data(shadow_parent(s)), i),
 			       &location, sizeof(__le64));
 		}
@@ -552,7 +851,11 @@ static int remove_raw(struct shadow_spine *s, struct dm_btree_info *info,
 int dm_btree_remove(struct dm_btree_info *info, dm_block_t root,
 		    uint64_t *keys, dm_block_t *new_root)
 {
+<<<<<<< HEAD
 	unsigned level, last_level = info->levels - 1;
+=======
+	unsigned int level, last_level = info->levels - 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int index = 0, r = 0;
 	struct shadow_spine spine;
 	struct btree_node *n;
@@ -564,7 +867,11 @@ int dm_btree_remove(struct dm_btree_info *info, dm_block_t root,
 		r = remove_raw(&spine, info,
 			       (level == last_level ?
 				&info->value_type : &le64_vt),
+<<<<<<< HEAD
 			       root, keys[level], (unsigned *)&index);
+=======
+			       root, keys[level], (unsigned int *)&index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r < 0)
 			break;
 
@@ -578,14 +885,157 @@ int dm_btree_remove(struct dm_btree_info *info, dm_block_t root,
 
 		if (info->value_type.dec)
 			info->value_type.dec(info->value_type.context,
+<<<<<<< HEAD
 					     value_ptr(n, index));
+=======
+					     value_ptr(n, index), 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		delete_at(n, index);
 	}
 
+<<<<<<< HEAD
 	*new_root = shadow_root(&spine);
+=======
+	if (!r)
+		*new_root = shadow_root(&spine);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	exit_shadow_spine(&spine);
 
 	return r;
 }
 EXPORT_SYMBOL_GPL(dm_btree_remove);
+<<<<<<< HEAD
+=======
+
+/*----------------------------------------------------------------*/
+
+static int remove_nearest(struct shadow_spine *s, struct dm_btree_info *info,
+			  struct dm_btree_value_type *vt, dm_block_t root,
+			  uint64_t key, int *index)
+{
+	int i = *index, r;
+	struct btree_node *n;
+
+	for (;;) {
+		r = shadow_step(s, root, vt);
+		if (r < 0)
+			break;
+
+		/*
+		 * We have to patch up the parent node, ugly, but I don't
+		 * see a way to do this automatically as part of the spine
+		 * op.
+		 */
+		if (shadow_has_parent(s)) {
+			__le64 location = cpu_to_le64(dm_block_location(shadow_current(s)));
+
+			memcpy(value_ptr(dm_block_data(shadow_parent(s)), i),
+			       &location, sizeof(__le64));
+		}
+
+		n = dm_block_data(shadow_current(s));
+
+		if (le32_to_cpu(n->header.flags) & LEAF_NODE) {
+			*index = lower_bound(n, key);
+			return 0;
+		}
+
+		r = rebalance_children(s, info, vt, key);
+		if (r)
+			break;
+
+		n = dm_block_data(shadow_current(s));
+		if (le32_to_cpu(n->header.flags) & LEAF_NODE) {
+			*index = lower_bound(n, key);
+			return 0;
+		}
+
+		i = lower_bound(n, key);
+
+		/*
+		 * We know the key is present, or else
+		 * rebalance_children would have returned
+		 * -ENODATA
+		 */
+		root = value64(n, i);
+	}
+
+	return r;
+}
+
+static int remove_one(struct dm_btree_info *info, dm_block_t root,
+		      uint64_t *keys, uint64_t end_key,
+		      dm_block_t *new_root, unsigned int *nr_removed)
+{
+	unsigned int level, last_level = info->levels - 1;
+	int index = 0, r = 0;
+	struct shadow_spine spine;
+	struct btree_node *n;
+	struct dm_btree_value_type le64_vt;
+	uint64_t k;
+
+	init_le64_type(info->tm, &le64_vt);
+	init_shadow_spine(&spine, info);
+	for (level = 0; level < last_level; level++) {
+		r = remove_raw(&spine, info, &le64_vt,
+			       root, keys[level], (unsigned int *) &index);
+		if (r < 0)
+			goto out;
+
+		n = dm_block_data(shadow_current(&spine));
+		root = value64(n, index);
+	}
+
+	r = remove_nearest(&spine, info, &info->value_type,
+			   root, keys[last_level], &index);
+	if (r < 0)
+		goto out;
+
+	n = dm_block_data(shadow_current(&spine));
+
+	if (index < 0)
+		index = 0;
+
+	if (index >= le32_to_cpu(n->header.nr_entries)) {
+		r = -ENODATA;
+		goto out;
+	}
+
+	k = le64_to_cpu(n->keys[index]);
+	if (k >= keys[last_level] && k < end_key) {
+		if (info->value_type.dec)
+			info->value_type.dec(info->value_type.context,
+					     value_ptr(n, index), 1);
+
+		delete_at(n, index);
+		keys[last_level] = k + 1ull;
+
+	} else
+		r = -ENODATA;
+
+out:
+	*new_root = shadow_root(&spine);
+	exit_shadow_spine(&spine);
+
+	return r;
+}
+
+int dm_btree_remove_leaves(struct dm_btree_info *info, dm_block_t root,
+			   uint64_t *first_key, uint64_t end_key,
+			   dm_block_t *new_root, unsigned int *nr_removed)
+{
+	int r;
+
+	*nr_removed = 0;
+	do {
+		r = remove_one(info, root, first_key, end_key, &root, nr_removed);
+		if (!r)
+			(*nr_removed)++;
+	} while (!r);
+
+	*new_root = root;
+	return r == -ENODATA ? 0 : r;
+}
+EXPORT_SYMBOL_GPL(dm_btree_remove_leaves);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

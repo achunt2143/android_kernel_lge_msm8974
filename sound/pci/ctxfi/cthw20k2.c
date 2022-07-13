@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
  *
@@ -5,6 +6,12 @@
  * See the COPYING file included in the main directory of this source
  * distribution for the license terms and conditions.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @File	cthw20k2.c
  *
  * @Brief
@@ -12,7 +19,10 @@
  *
  * @Author	Liu Chun
  * @Date 	May 14 2008
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -26,12 +36,15 @@
 #include "cthw20k2.h"
 #include "ct20k2reg.h"
 
+<<<<<<< HEAD
 #if BITS_PER_LONG == 32
 #define CT_XFI_DMA_MASK		DMA_BIT_MASK(32) /* 32 bit PTE */
 #else
 #define CT_XFI_DMA_MASK		DMA_BIT_MASK(64) /* 64 bit PTE */
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hw20k2 {
 	struct hw hw;
 	/* for i2c */
@@ -1001,7 +1014,11 @@ static int daio_mgr_dao_init(void *blk, unsigned int idx, unsigned int conf)
 
 	if (idx < 4) {
 		/* S/PDIF output */
+<<<<<<< HEAD
 		switch ((conf & 0x7)) {
+=======
+		switch ((conf & 0xf)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 1:
 			set_field(&ctl->txctl[idx], ATXCTL_NUC, 0);
 			break;
@@ -1187,7 +1204,12 @@ static int hw_daio_init(struct hw *hw, const struct daio_conf *info)
 		hw_write_20kx(hw, AUDIO_IO_TX_BLRCLK, 0x21212121);
 		hw_write_20kx(hw, AUDIO_IO_RX_BLRCLK, 0);
 	} else {
+<<<<<<< HEAD
 		printk(KERN_ALERT "ctxfi: ERROR!!! Invalid sampling rate!!!\n");
+=======
+		dev_alert(hw->card->dev,
+			  "ERROR!!! Invalid sampling rate!!!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -1246,8 +1268,13 @@ static int hw_trn_init(struct hw *hw, const struct trn_conf *info)
 
 	/* Set up device page table */
 	if ((~0UL) == info->vm_pgt_phys) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "ctxfi: "
 		       "Wrong device page table page address!!!\n");
+=======
+		dev_alert(hw->card->dev,
+			  "Wrong device page table page address!!!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -1321,12 +1348,20 @@ static int hw_pll_init(struct hw *hw, unsigned int rsr)
 	set_field(&pllctl, PLLCTL_FD, 48000 == rsr ? 16 - 4 : 147 - 4);
 	set_field(&pllctl, PLLCTL_RD, 48000 == rsr ? 1 - 1 : 10 - 1);
 	hw_write_20kx(hw, PLL_CTL, pllctl);
+<<<<<<< HEAD
 	mdelay(40);
+=======
+	msleep(40);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pllctl = hw_read_20kx(hw, PLL_CTL);
 	set_field(&pllctl, PLLCTL_FD, 48000 == rsr ? 16 - 2 : 147 - 2);
 	hw_write_20kx(hw, PLL_CTL, pllctl);
+<<<<<<< HEAD
 	mdelay(40);
+=======
+	msleep(40);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < 1000; i++) {
 		pllstat = hw_read_20kx(hw, PLL_STAT);
@@ -1352,7 +1387,12 @@ static int hw_pll_init(struct hw *hw, unsigned int rsr)
 		break;
 	}
 	if (i >= 1000) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "ctxfi: PLL initialization failed!!!\n");
+=======
+		dev_alert(hw->card->dev,
+			  "PLL initialization failed!!!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
@@ -1376,7 +1416,11 @@ static int hw_auto_init(struct hw *hw)
 			break;
 	}
 	if (!get_field(gctl, GCTL_AID)) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "ctxfi: Card Auto-init failed!!!\n");
+=======
+		dev_alert(hw->card->dev, "Card Auto-init failed!!!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
@@ -1588,7 +1632,11 @@ static void hw_dac_stop(struct hw *hw)
 	data = hw_read_20kx(hw, GPIO_DATA);
 	data &= 0xFFFFFFFD;
 	hw_write_20kx(hw, GPIO_DATA, data);
+<<<<<<< HEAD
 	mdelay(10);
+=======
+	usleep_range(10000, 11000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hw_dac_start(struct hw *hw)
@@ -1597,7 +1645,11 @@ static void hw_dac_start(struct hw *hw)
 	data = hw_read_20kx(hw, GPIO_DATA);
 	data |= 0x2;
 	hw_write_20kx(hw, GPIO_DATA, data);
+<<<<<<< HEAD
 	mdelay(50);
+=======
+	msleep(50);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hw_dac_reset(struct hw *hw)
@@ -1613,6 +1665,7 @@ static int hw_dac_init(struct hw *hw, const struct dac_conf *info)
 	int i;
 	struct regs_cs4382 cs_read = {0};
 	struct regs_cs4382 cs_def = {
+<<<<<<< HEAD
 				   0x00000001,  /* Mode Control 1 */
 				   0x00000000,  /* Mode Control 2 */
 				   0x00000084,  /* Mode Control 3 */
@@ -1630,6 +1683,25 @@ static int hw_dac_init(struct hw *hw, const struct dac_conf *info)
 				   0x00000024,  /* Mixing Control Pair 4 */
 				   0x00000000,  /* Vol Control A4 */
 				   0x00000000   /* Vol Control B4 */
+=======
+		.mode_control_1 = 0x00000001, /* Mode Control 1 */
+		.mode_control_2 = 0x00000000, /* Mode Control 2 */
+		.mode_control_3 = 0x00000084, /* Mode Control 3 */
+		.filter_control = 0x00000000, /* Filter Control */
+		.invert_control = 0x00000000, /* Invert Control */
+		.mix_control_P1 = 0x00000024, /* Mixing Control Pair 1 */
+		.vol_control_A1 = 0x00000000, /* Vol Control A1 */
+		.vol_control_B1 = 0x00000000, /* Vol Control B1 */
+		.mix_control_P2 = 0x00000024, /* Mixing Control Pair 2 */
+		.vol_control_A2 = 0x00000000, /* Vol Control A2 */
+		.vol_control_B2 = 0x00000000, /* Vol Control B2 */
+		.mix_control_P3 = 0x00000024, /* Mixing Control Pair 3 */
+		.vol_control_A3 = 0x00000000, /* Vol Control A3 */
+		.vol_control_B3 = 0x00000000, /* Vol Control B3 */
+		.mix_control_P4 = 0x00000024, /* Mixing Control Pair 4 */
+		.vol_control_A4 = 0x00000000, /* Vol Control A4 */
+		.vol_control_B4 = 0x00000000  /* Vol Control B4 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 };
 
 	if (hw->model == CTSB1270) {
@@ -1847,7 +1919,11 @@ static int hw_adc_init(struct hw *hw, const struct adc_conf *info)
 	/* Initialize I2C */
 	err = hw20k2_i2c_init(hw, 0x1A, 1, 1);
 	if (err < 0) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "ctxfi: Failure to acquire I2C!!!\n");
+=======
+		dev_alert(hw->card->dev, "Failure to acquire I2C!!!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
@@ -1868,11 +1944,19 @@ static int hw_adc_init(struct hw *hw, const struct adc_conf *info)
 		hw_write_20kx(hw, GPIO_DATA, data);
 	}
 
+<<<<<<< HEAD
 	mdelay(10);
 	/* Return the ADC to normal operation. */
 	data |= (0x1 << 15);
 	hw_write_20kx(hw, GPIO_DATA, data);
 	mdelay(50);
+=======
+	usleep_range(10000, 11000);
+	/* Return the ADC to normal operation. */
+	data |= (0x1 << 15);
+	hw_write_20kx(hw, GPIO_DATA, data);
+	msleep(50);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* I2C write to register offset 0x0B to set ADC LRCLK polarity */
 	/* invert bit, interface format to I2S, word length to 24-bit, */
@@ -1890,8 +1974,14 @@ static int hw_adc_init(struct hw *hw, const struct adc_conf *info)
 		hw20k2_i2c_write(hw, MAKE_WM8775_ADDR(WM8775_MMC, 0x0A),
 						MAKE_WM8775_DATA(0x0A));
 	} else {
+<<<<<<< HEAD
 		printk(KERN_ALERT "ctxfi: Invalid master sampling "
 				  "rate (msr %d)!!!\n", info->msr);
+=======
+		dev_alert(hw->card->dev,
+			  "Invalid master sampling rate (msr %d)!!!\n",
+			  info->msr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EINVAL;
 		goto error;
 	}
@@ -2026,12 +2116,17 @@ static int hw_card_start(struct hw *hw)
 	int err = 0;
 	struct pci_dev *pci = hw->pci;
 	unsigned int gctl;
+<<<<<<< HEAD
+=======
+	const unsigned int dma_bits = BITS_PER_LONG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = pci_enable_device(pci);
 	if (err < 0)
 		return err;
 
 	/* Set DMA transfer mask */
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, CT_XFI_DMA_MASK) < 0 ||
 	    pci_set_consistent_dma_mask(pci, CT_XFI_DMA_MASK) < 0) {
 		printk(KERN_ERR "ctxfi: architecture does not support PCI "
@@ -2039,6 +2134,10 @@ static int hw_card_start(struct hw *hw)
 		err = -ENXIO;
 		goto error1;
 	}
+=======
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(dma_bits)))
+		dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!hw->io_base) {
 		err = pci_request_regions(pci, "XFi");
@@ -2046,8 +2145,13 @@ static int hw_card_start(struct hw *hw)
 			goto error1;
 
 		hw->io_base = pci_resource_start(hw->pci, 2);
+<<<<<<< HEAD
 		hw->mem_base = (unsigned long)ioremap(hw->io_base,
 					pci_resource_len(hw->pci, 2));
+=======
+		hw->mem_base = ioremap(hw->io_base,
+				       pci_resource_len(hw->pci, 2));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!hw->mem_base) {
 			err = -ENOENT;
 			goto error2;
@@ -2063,10 +2167,19 @@ static int hw_card_start(struct hw *hw)
 		err = request_irq(pci->irq, ct_20k2_interrupt, IRQF_SHARED,
 				  KBUILD_MODNAME, hw);
 		if (err < 0) {
+<<<<<<< HEAD
 			printk(KERN_ERR "XFi: Cannot get irq %d\n", pci->irq);
 			goto error2;
 		}
 		hw->irq = pci->irq;
+=======
+			dev_err(hw->card->dev,
+				"XFi: Cannot get irq %d\n", pci->irq);
+			goto error2;
+		}
+		hw->irq = pci->irq;
+		hw->card->sync_irq = hw->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pci_set_master(pci);
@@ -2105,11 +2218,16 @@ static int hw_card_shutdown(struct hw *hw)
 		free_irq(hw->irq, hw);
 
 	hw->irq	= -1;
+<<<<<<< HEAD
 
 	if (hw->mem_base)
 		iounmap((void *)hw->mem_base);
 
 	hw->mem_base = (unsigned long)NULL;
+=======
+	iounmap(hw->mem_base);
+	hw->mem_base = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hw->io_base)
 		pci_release_regions(hw->pci);
@@ -2201,6 +2319,7 @@ static int hw_card_init(struct hw *hw, struct card_conf *info)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int hw_suspend(struct hw *hw, pm_message_t state)
 {
@@ -2212,16 +2331,25 @@ static int hw_suspend(struct hw *hw, pm_message_t state)
 	pci_save_state(pci);
 	pci_set_power_state(pci, pci_choose_state(pci, state));
 
+=======
+#ifdef CONFIG_PM_SLEEP
+static int hw_suspend(struct hw *hw)
+{
+	hw_card_stop(hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int hw_resume(struct hw *hw, struct card_conf *info)
 {
+<<<<<<< HEAD
 	struct pci_dev *pci = hw->pci;
 
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Re-initialize card hardware. */
 	return hw_card_init(hw, info);
 }
@@ -2229,15 +2357,26 @@ static int hw_resume(struct hw *hw, struct card_conf *info)
 
 static u32 hw_read_20kx(struct hw *hw, u32 reg)
 {
+<<<<<<< HEAD
 	return readl((void *)(hw->mem_base + reg));
+=======
+	return readl(hw->mem_base + reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hw_write_20kx(struct hw *hw, u32 reg, u32 data)
 {
+<<<<<<< HEAD
 	writel(data, (void *)(hw->mem_base + reg));
 }
 
 static struct hw ct20k2_preset __devinitdata = {
+=======
+	writel(data, hw->mem_base + reg);
+}
+
+static const struct hw ct20k2_preset = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.irq = -1,
 
 	.card_init = hw_card_init,
@@ -2250,7 +2389,11 @@ static struct hw ct20k2_preset __devinitdata = {
 	.output_switch_put = hw_output_switch_put,
 	.mic_source_switch_get = hw_mic_source_switch_get,
 	.mic_source_switch_put = hw_mic_source_switch_put,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend = hw_suspend,
 	.resume = hw_resume,
 #endif
@@ -2345,7 +2488,11 @@ static struct hw ct20k2_preset __devinitdata = {
 	.get_wc = get_wc,
 };
 
+<<<<<<< HEAD
 int __devinit create_20k2_hw_obj(struct hw **rhw)
+=======
+int create_20k2_hw_obj(struct hw **rhw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hw20k2 *hw20k2;
 

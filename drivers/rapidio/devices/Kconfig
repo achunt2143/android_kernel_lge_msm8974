@@ -1,10 +1,21 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # RapidIO master port configuration
 #
 
 config RAPIDIO_TSI721
+<<<<<<< HEAD
 	bool "IDT Tsi721 PCI Express SRIO Controller support"
 	depends on RAPIDIO && PCIEPORTBUS
 	default "n"
 	---help---
+=======
+	tristate "IDT Tsi721 PCI Express SRIO Controller support"
+	depends on RAPIDIO && PCIEPORTBUS
+	default "n"
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Include support for IDT Tsi721 PCI Express Serial RapidIO controller.

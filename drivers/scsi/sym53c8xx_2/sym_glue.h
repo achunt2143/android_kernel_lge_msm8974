@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Device driver for the SYMBIOS/LSILOGIC 53C8XX and 53C1010 family 
  * of PCI-SCSI IO processors.
@@ -21,6 +25,7 @@
  * Copyright (C) 1997 Richard Waltham <dormouse@farsrobt.demon.co.uk>
  *
  *-----------------------------------------------------------------------------
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,6 +40,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef SYM_GLUE_H
@@ -174,7 +181,11 @@ struct sym_slcb {
  */
 struct sym_shcb {
 	/*
+<<<<<<< HEAD
 	 *  Chip and controller indentification.
+=======
+	 *  Chip and controller identification.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	int		unit;
 	char		inst_name[16];
@@ -256,7 +267,11 @@ sym_get_cam_status(struct scsi_cmnd *cmd)
 static inline void sym_set_cam_result_ok(struct sym_ccb *cp, struct scsi_cmnd *cmd, int resid)
 {
 	scsi_set_resid(cmd, resid);
+<<<<<<< HEAD
 	cmd->result = (((DID_OK) << 16) + ((cp->ssss_status) & 0x7f));
+=======
+	cmd->result = (DID_OK << 16) | (cp->ssss_status & 0x7f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 void sym_set_cam_result_error(struct sym_hcb *np, struct sym_ccb *cp, int resid);
 

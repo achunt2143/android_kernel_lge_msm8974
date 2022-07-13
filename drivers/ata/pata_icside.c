@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -201,6 +205,7 @@ static void pata_icside_set_dmamode(struct ata_port *ap, struct ata_device *adev
 	 * Choose the IOMD cycle timing which ensure that the interface
 	 * satisfies the measured active, recovery and cycle times.
 	 */
+<<<<<<< HEAD
 	if (t.active <= 50 && t.recover <= 375 && t.cycle <= 425)
 		iomd_type = 'D', cycle = 187;
 	else if (t.active <= 125 && t.recover <= 375 && t.cycle <= 500)
@@ -209,6 +214,21 @@ static void pata_icside_set_dmamode(struct ata_port *ap, struct ata_device *adev
 		iomd_type = 'B', cycle = 437;
 	else
 		iomd_type = 'A', cycle = 562;
+=======
+	if (t.active <= 50 && t.recover <= 375 && t.cycle <= 425) {
+		iomd_type = 'D';
+		cycle = 187;
+	} else if (t.active <= 125 && t.recover <= 375 && t.cycle <= 500) {
+		iomd_type = 'C';
+		cycle = 250;
+	} else if (t.active <= 200 && t.recover <= 550 && t.cycle <= 750) {
+		iomd_type = 'B';
+		cycle = 437;
+	} else {
+		iomd_type = 'A';
+		cycle = 562;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ata_dev_info(adev, "timings: act %dns rec %dns cyc %dns (%c)\n",
 		     t.active, t.recover, t.cycle, iomd_type);
@@ -292,9 +312,15 @@ static int icside_dma_init(struct pata_icside_info *info)
 }
 
 
+<<<<<<< HEAD
 static struct scsi_host_template pata_icside_sht = {
 	ATA_BASE_SHT(DRV_NAME),
 	.sg_tablesize		= SCSI_MAX_SG_CHAIN_SEGMENTS,
+=======
+static const struct scsi_host_template pata_icside_sht = {
+	ATA_BASE_SHT(DRV_NAME),
+	.sg_tablesize		= SG_MAX_SEGMENTS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dma_boundary		= IOMD_DMA_BOUNDARY,
 };
 
@@ -324,7 +350,11 @@ static struct ata_port_operations pata_icside_port_ops = {
 	.inherits		= &ata_bmdma_port_ops,
 	/* no need to build any PRD tables for DMA */
 	.qc_prep		= ata_noop_qc_prep,
+<<<<<<< HEAD
 	.sff_data_xfer		= ata_sff_data_xfer_noirq,
+=======
+	.sff_data_xfer		= ata_sff_data_xfer32,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bmdma_setup		= pata_icside_bmdma_setup,
 	.bmdma_start		= pata_icside_bmdma_start,
 	.bmdma_stop		= pata_icside_bmdma_stop,
@@ -337,10 +367,16 @@ static struct ata_port_operations pata_icside_port_ops = {
 	.port_start		= ATA_OP_NULL,	/* don't need PRD table */
 };
 
+<<<<<<< HEAD
 static void __devinit
 pata_icside_setup_ioaddr(struct ata_port *ap, void __iomem *base,
 			 struct pata_icside_info *info,
 			 const struct portinfo *port)
+=======
+static void pata_icside_setup_ioaddr(struct ata_port *ap, void __iomem *base,
+				     struct pata_icside_info *info,
+				     const struct portinfo *port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_ioports *ioaddr = &ap->ioaddr;
 	void __iomem *cmd = base + port->dataoffset;
@@ -368,7 +404,11 @@ pata_icside_setup_ioaddr(struct ata_port *ap, void __iomem *base,
 		ata_port_desc(ap, "iocbase 0x%lx", info->raw_ioc_base);
 }
 
+<<<<<<< HEAD
 static int __devinit pata_icside_register_v5(struct pata_icside_info *info)
+=======
+static int pata_icside_register_v5(struct pata_icside_info *info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pata_icside_state *state = info->state;
 	void __iomem *base;
@@ -391,7 +431,11 @@ static int __devinit pata_icside_register_v5(struct pata_icside_info *info)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit pata_icside_register_v6(struct pata_icside_info *info)
+=======
+static int pata_icside_register_v6(struct pata_icside_info *info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pata_icside_state *state = info->state;
 	struct expansion_card *ec = info->ec;
@@ -434,7 +478,11 @@ static int __devinit pata_icside_register_v6(struct pata_icside_info *info)
 	return icside_dma_init(info);
 }
 
+<<<<<<< HEAD
 static int __devinit pata_icside_add_ports(struct pata_icside_info *info)
+=======
+static int pata_icside_add_ports(struct pata_icside_info *info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct expansion_card *ec = info->ec;
 	struct ata_host *host;
@@ -474,8 +522,13 @@ static int __devinit pata_icside_add_ports(struct pata_icside_info *info)
 				 &pata_icside_sht);
 }
 
+<<<<<<< HEAD
 static int __devinit
 pata_icside_probe(struct expansion_card *ec, const struct ecard_id *id)
+=======
+static int pata_icside_probe(struct expansion_card *ec,
+			     const struct ecard_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pata_icside_state *state;
 	struct pata_icside_info info;
@@ -575,7 +628,11 @@ static void pata_icside_shutdown(struct expansion_card *ec)
 	}
 }
 
+<<<<<<< HEAD
 static void __devexit pata_icside_remove(struct expansion_card *ec)
+=======
+static void pata_icside_remove(struct expansion_card *ec)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ata_host *host = ecard_get_drvdata(ec);
 	struct pata_icside_state *state = host->private_data;
@@ -602,7 +659,11 @@ static const struct ecard_id pata_icside_ids[] = {
 
 static struct ecard_driver pata_icside_driver = {
 	.probe		= pata_icside_probe,
+<<<<<<< HEAD
 	.remove 	= __devexit_p(pata_icside_remove),
+=======
+	.remove 	= pata_icside_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown	= pata_icside_shutdown,
 	.id_table	= pata_icside_ids,
 	.drv = {

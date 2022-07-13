@@ -25,6 +25,7 @@
  *          Alex Deucher
  *          Jerome Glisse
  */
+<<<<<<< HEAD
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <drm/drmP.h>
@@ -38,6 +39,25 @@
 #include "r300d.h"
 #include "rv350d.h"
 #include "r300_reg_safe.h"
+=======
+
+#include <linux/pci.h>
+#include <linux/seq_file.h>
+#include <linux/slab.h>
+
+#include <drm/drm.h>
+#include <drm/drm_device.h>
+#include <drm/drm_file.h>
+#include <drm/radeon_drm.h>
+
+#include "r100_track.h"
+#include "r300_reg_safe.h"
+#include "r300d.h"
+#include "radeon.h"
+#include "radeon_asic.h"
+#include "radeon_reg.h"
+#include "rv350d.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This files gather functions specifics to: r300,r350,rv350,rv370,rv380
  *
@@ -50,9 +70,40 @@
  */
 
 /*
+<<<<<<< HEAD
  * rv370,rv380 PCIE GART
  */
 static int rv370_debugfs_pcie_gart_info_init(struct radeon_device *rdev);
+=======
+ * Indirect registers accessor
+ */
+uint32_t rv370_pcie_rreg(struct radeon_device *rdev, uint32_t reg)
+{
+	unsigned long flags;
+	uint32_t r;
+
+	spin_lock_irqsave(&rdev->pcie_idx_lock, flags);
+	WREG32(RADEON_PCIE_INDEX, ((reg) & rdev->pcie_reg_mask));
+	r = RREG32(RADEON_PCIE_DATA);
+	spin_unlock_irqrestore(&rdev->pcie_idx_lock, flags);
+	return r;
+}
+
+void rv370_pcie_wreg(struct radeon_device *rdev, uint32_t reg, uint32_t v)
+{
+	unsigned long flags;
+
+	spin_lock_irqsave(&rdev->pcie_idx_lock, flags);
+	WREG32(RADEON_PCIE_INDEX, ((reg) & rdev->pcie_reg_mask));
+	WREG32(RADEON_PCIE_DATA, (v));
+	spin_unlock_irqrestore(&rdev->pcie_idx_lock, flags);
+}
+
+/*
+ * rv370,rv380 PCIE GART
+ */
+static void rv370_debugfs_pcie_gart_info_init(struct radeon_device *rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void rv370_pcie_gart_tlb_flush(struct radeon_device *rdev)
 {
@@ -69,6 +120,7 @@ void rv370_pcie_gart_tlb_flush(struct radeon_device *rdev)
 	mb();
 }
 
+<<<<<<< HEAD
 #define R300_PTE_WRITEABLE (1 << 2)
 #define R300_PTE_READABLE  (1 << 3)
 
@@ -87,6 +139,34 @@ int rv370_pcie_gart_set_page(struct radeon_device *rdev, int i, uint64_t addr)
 	 * into VRAM - so no need for cpu_to_le32 on VRAM tables */
 	writel(addr, ((void __iomem *)ptr) + (i * 4));
 	return 0;
+=======
+#define R300_PTE_UNSNOOPED (1 << 0)
+#define R300_PTE_WRITEABLE (1 << 2)
+#define R300_PTE_READABLE  (1 << 3)
+
+uint64_t rv370_pcie_gart_get_page_entry(uint64_t addr, uint32_t flags)
+{
+	addr = (lower_32_bits(addr) >> 8) |
+		((upper_32_bits(addr) & 0xff) << 24);
+	if (flags & RADEON_GART_PAGE_READ)
+		addr |= R300_PTE_READABLE;
+	if (flags & RADEON_GART_PAGE_WRITE)
+		addr |= R300_PTE_WRITEABLE;
+	if (!(flags & RADEON_GART_PAGE_SNOOP))
+		addr |= R300_PTE_UNSNOOPED;
+	return addr;
+}
+
+void rv370_pcie_gart_set_page(struct radeon_device *rdev, unsigned i,
+			      uint64_t entry)
+{
+	void __iomem *ptr = rdev->gart.ptr;
+
+	/* on x86 we want this to be CPU endian, on powerpc
+	 * on powerpc without HW swappers, it'll get swapped on way
+	 * into VRAM - so no need for cpu_to_le32 on VRAM tables */
+	writel(entry, ((void __iomem *)ptr) + (i * 4));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int rv370_pcie_gart_init(struct radeon_device *rdev)
@@ -101,11 +181,19 @@ int rv370_pcie_gart_init(struct radeon_device *rdev)
 	r = radeon_gart_init(rdev);
 	if (r)
 		return r;
+<<<<<<< HEAD
 	r = rv370_debugfs_pcie_gart_info_init(rdev);
 	if (r)
 		DRM_ERROR("Failed to register debugfs file for PCIE gart !\n");
 	rdev->gart.table_size = rdev->gart.num_gpu_pages * 4;
 	rdev->asic->gart.tlb_flush = &rv370_pcie_gart_tlb_flush;
+=======
+	rv370_debugfs_pcie_gart_info_init(rdev);
+
+	rdev->gart.table_size = rdev->gart.num_gpu_pages * 4;
+	rdev->asic->gart.tlb_flush = &rv370_pcie_gart_tlb_flush;
+	rdev->asic->gart.get_page_entry = &rv370_pcie_gart_get_page_entry;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->asic->gart.set_page = &rv370_pcie_gart_set_page;
 	return radeon_gart_table_vram_alloc(rdev);
 }
@@ -123,7 +211,10 @@ int rv370_pcie_gart_enable(struct radeon_device *rdev)
 	r = radeon_gart_table_vram_pin(rdev);
 	if (r)
 		return r;
+<<<<<<< HEAD
 	radeon_gart_restore(rdev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* discard memory request outside of configured range */
 	tmp = RADEON_PCIE_TX_GART_UNMAPPED_ACCESS_DISCARD;
 	WREG32_PCIE(RADEON_PCIE_TX_GART_CNTL, tmp);
@@ -213,7 +304,11 @@ void r300_ring_start(struct radeon_device *rdev, struct radeon_ring *ring)
 
 	/* Sub pixel 1/12 so we can have 4K rendering according to doc */
 	gb_tile_config = (R300_ENABLE_TILING | R300_TILE_SIZE_16);
+<<<<<<< HEAD
 	switch(rdev->num_gb_pipes) {
+=======
+	switch (rdev->num_gb_pipes) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 2:
 		gb_tile_config |= R300_PIPE_COUNT_R300;
 		break;
@@ -293,10 +388,17 @@ void r300_ring_start(struct radeon_device *rdev, struct radeon_ring *ring)
 	radeon_ring_write(ring,
 			  R300_GEOMETRY_ROUND_NEAREST |
 			  R300_COLOR_ROUND_NEAREST);
+<<<<<<< HEAD
 	radeon_ring_unlock_commit(rdev, ring);
 }
 
 void r300_errata(struct radeon_device *rdev)
+=======
+	radeon_ring_unlock_commit(rdev, ring, false);
+}
+
+static void r300_errata(struct radeon_device *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	rdev->pll_errata = 0;
 
@@ -317,12 +419,20 @@ int r300_mc_wait_for_idle(struct radeon_device *rdev)
 		if (tmp & R300_MC_IDLE) {
 			return 0;
 		}
+<<<<<<< HEAD
 		DRM_UDELAY(1);
+=======
+		udelay(1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return -1;
 }
 
+<<<<<<< HEAD
 void r300_gpu_init(struct radeon_device *rdev)
+=======
+static void r300_gpu_init(struct radeon_device *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	uint32_t gb_tile_config, tmp;
 
@@ -354,8 +464,12 @@ void r300_gpu_init(struct radeon_device *rdev)
 	WREG32(R300_GB_TILE_CONFIG, gb_tile_config);
 
 	if (r100_gui_wait_for_idle(rdev)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "Failed to wait GUI idle while "
 		       "programming pipes. Bad things might happen.\n");
+=======
+		pr_warn("Failed to wait GUI idle while programming pipes. Bad things might happen.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tmp = RREG32(R300_DST_PIPE_CONFIG);
@@ -366,6 +480,7 @@ void r300_gpu_init(struct radeon_device *rdev)
 	       R300_DC_DC_DISABLE_IGNORE_PE);
 
 	if (r100_gui_wait_for_idle(rdev)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "Failed to wait GUI idle while "
 		       "programming pipes. Bad things might happen.\n");
 	}
@@ -400,6 +515,18 @@ bool r300_gpu_is_lockup(struct radeon_device *rdev, struct radeon_ring *ring)
 }
 
 int r300_asic_reset(struct radeon_device *rdev)
+=======
+		pr_warn("Failed to wait GUI idle while programming pipes. Bad things might happen.\n");
+	}
+	if (r300_mc_wait_for_idle(rdev)) {
+		pr_warn("Failed to wait MC idle while programming pipes. Bad things might happen.\n");
+	}
+	DRM_INFO("radeon: %d quad pipes, %d Z pipes initialized\n",
+		 rdev->num_gb_pipes, rdev->num_z_pipes);
+}
+
+int r300_asic_reset(struct radeon_device *rdev, bool hard)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct r100_mc_save save;
 	u32 status, tmp;
@@ -449,7 +576,10 @@ int r300_asic_reset(struct radeon_device *rdev)
 	/* Check if GPU is idle */
 	if (G_000E40_GA_BUSY(status) || G_000E40_VAP_BUSY(status)) {
 		dev_err(rdev->dev, "failed to reset GPU\n");
+<<<<<<< HEAD
 		rdev->gpu_lockup = true;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -1;
 	} else
 		dev_info(rdev->dev, "GPU reset succeed\n");
@@ -577,11 +707,17 @@ int rv370_get_pcie_lanes(struct radeon_device *rdev)
 }
 
 #if defined(CONFIG_DEBUG_FS)
+<<<<<<< HEAD
 static int rv370_debugfs_pcie_gart_info(struct seq_file *m, void *data)
 {
 	struct drm_info_node *node = (struct drm_info_node *) m->private;
 	struct drm_device *dev = node->minor->dev;
 	struct radeon_device *rdev = dev->dev_private;
+=======
+static int rv370_debugfs_pcie_gart_info_show(struct seq_file *m, void *unused)
+{
+	struct radeon_device *rdev = m->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t tmp;
 
 	tmp = RREG32_PCIE(RADEON_PCIE_TX_GART_CNTL);
@@ -601,6 +737,7 @@ static int rv370_debugfs_pcie_gart_info(struct seq_file *m, void *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct drm_info_list rv370_pcie_gart_info_list[] = {
 	{"rv370_pcie_gart_info", rv370_debugfs_pcie_gart_info, 0, NULL},
 };
@@ -612,6 +749,18 @@ static int rv370_debugfs_pcie_gart_info_init(struct radeon_device *rdev)
 	return radeon_debugfs_add_files(rdev, rv370_pcie_gart_info_list, 1);
 #else
 	return 0;
+=======
+DEFINE_SHOW_ATTRIBUTE(rv370_debugfs_pcie_gart_info);
+#endif
+
+static void rv370_debugfs_pcie_gart_info_init(struct radeon_device *rdev)
+{
+#if defined(CONFIG_DEBUG_FS)
+	struct dentry *root = rdev->ddev->primary->debugfs_root;
+
+	debugfs_create_file("rv370_pcie_gart_info", 0444, root, rdev,
+			    &rv370_debugfs_pcie_gart_info_fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -619,7 +768,11 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 		struct radeon_cs_packet *pkt,
 		unsigned idx, unsigned reg)
 {
+<<<<<<< HEAD
 	struct radeon_cs_reloc *reloc;
+=======
+	struct radeon_bo_list *reloc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct r100_cs_track *track;
 	volatile uint32_t *ib;
 	uint32_t tmp, tile_flags = 0;
@@ -627,18 +780,30 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 	int r;
 	u32 idx_value;
 
+<<<<<<< HEAD
 	ib = p->ib->ptr;
 	track = (struct r100_cs_track *)p->track;
 	idx_value = radeon_get_ib_value(p, idx);
 
 	switch(reg) {
+=======
+	ib = p->ib.ptr;
+	track = (struct r100_cs_track *)p->track;
+	idx_value = radeon_get_ib_value(p, idx);
+
+	switch (reg) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case AVIVO_D1MODE_VLINE_START_END:
 	case RADEON_CRTC_GUI_TRIG_VLINE:
 		r = r100_cs_packet_parse_vline(p);
 		if (r) {
 			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
 					idx, reg);
+<<<<<<< HEAD
 			r100_cs_dump_packet(p, pkt);
+=======
+			radeon_cs_dump_packet(p, pkt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return r;
 		}
 		break;
@@ -653,16 +818,25 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 	case R300_RB3D_COLOROFFSET2:
 	case R300_RB3D_COLOROFFSET3:
 		i = (reg - R300_RB3D_COLOROFFSET0) >> 2;
+<<<<<<< HEAD
 		r = r100_cs_packet_next_reloc(p, &reloc);
 		if (r) {
 			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
 					idx, reg);
 			r100_cs_dump_packet(p, pkt);
+=======
+		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
+		if (r) {
+			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
+					idx, reg);
+			radeon_cs_dump_packet(p, pkt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return r;
 		}
 		track->cb[i].robj = reloc->robj;
 		track->cb[i].offset = idx_value;
 		track->cb_dirty = true;
+<<<<<<< HEAD
 		ib[idx] = idx_value + ((u32)reloc->lobj.gpu_offset);
 		break;
 	case R300_ZB_DEPTHOFFSET:
@@ -671,12 +845,26 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
 					idx, reg);
 			r100_cs_dump_packet(p, pkt);
+=======
+		ib[idx] = idx_value + ((u32)reloc->gpu_offset);
+		break;
+	case R300_ZB_DEPTHOFFSET:
+		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
+		if (r) {
+			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
+					idx, reg);
+			radeon_cs_dump_packet(p, pkt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return r;
 		}
 		track->zb.robj = reloc->robj;
 		track->zb.offset = idx_value;
 		track->zb_dirty = true;
+<<<<<<< HEAD
 		ib[idx] = idx_value + ((u32)reloc->lobj.gpu_offset);
+=======
+		ib[idx] = idx_value + ((u32)reloc->gpu_offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case R300_TX_OFFSET_0:
 	case R300_TX_OFFSET_0+4:
@@ -695,16 +883,25 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 	case R300_TX_OFFSET_0+56:
 	case R300_TX_OFFSET_0+60:
 		i = (reg - R300_TX_OFFSET_0) >> 2;
+<<<<<<< HEAD
 		r = r100_cs_packet_next_reloc(p, &reloc);
 		if (r) {
 			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
 					idx, reg);
 			r100_cs_dump_packet(p, pkt);
+=======
+		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
+		if (r) {
+			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
+					idx, reg);
+			radeon_cs_dump_packet(p, pkt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return r;
 		}
 
 		if (p->cs_flags & RADEON_CS_KEEP_TILING_FLAGS) {
 			ib[idx] = (idx_value & 31) | /* keep the 1st 5 bits */
+<<<<<<< HEAD
 				  ((idx_value & ~31) + (u32)reloc->lobj.gpu_offset);
 		} else {
 			if (reloc->lobj.tiling_flags & RADEON_TILING_MACRO)
@@ -715,6 +912,18 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 				tile_flags |= R300_TXO_MICRO_TILE_SQUARE;
 
 			tmp = idx_value + ((u32)reloc->lobj.gpu_offset);
+=======
+				  ((idx_value & ~31) + (u32)reloc->gpu_offset);
+		} else {
+			if (reloc->tiling_flags & RADEON_TILING_MACRO)
+				tile_flags |= R300_TXO_MACRO_TILE;
+			if (reloc->tiling_flags & RADEON_TILING_MICRO)
+				tile_flags |= R300_TXO_MICRO_TILE;
+			else if (reloc->tiling_flags & RADEON_TILING_MICRO_SQUARE)
+				tile_flags |= R300_TXO_MICRO_TILE_SQUARE;
+
+			tmp = idx_value + ((u32)reloc->gpu_offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tmp |= tile_flags;
 			ib[idx] = tmp;
 		}
@@ -768,6 +977,7 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 		/* RB3D_COLORPITCH2 */
 		/* RB3D_COLORPITCH3 */
 		if (!(p->cs_flags & RADEON_CS_KEEP_TILING_FLAGS)) {
+<<<<<<< HEAD
 			r = r100_cs_packet_next_reloc(p, &reloc);
 			if (r) {
 				DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
@@ -781,6 +991,21 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 			if (reloc->lobj.tiling_flags & RADEON_TILING_MICRO)
 				tile_flags |= R300_COLOR_MICROTILE_ENABLE;
 			else if (reloc->lobj.tiling_flags & RADEON_TILING_MICRO_SQUARE)
+=======
+			r = radeon_cs_packet_next_reloc(p, &reloc, 0);
+			if (r) {
+				DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
+					  idx, reg);
+				radeon_cs_dump_packet(p, pkt);
+				return r;
+			}
+
+			if (reloc->tiling_flags & RADEON_TILING_MACRO)
+				tile_flags |= R300_COLOR_TILE_ENABLE;
+			if (reloc->tiling_flags & RADEON_TILING_MICRO)
+				tile_flags |= R300_COLOR_MICROTILE_ENABLE;
+			else if (reloc->tiling_flags & RADEON_TILING_MICRO_SQUARE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				tile_flags |= R300_COLOR_MICROTILE_SQUARE_ENABLE;
 
 			tmp = idx_value & ~(0x7 << 16);
@@ -807,7 +1032,11 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 					  ((idx_value >> 21) & 0xF));
 				return -EINVAL;
 			}
+<<<<<<< HEAD
 			/* Pass through. */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 6:
 			track->cb[i].cpp = 4;
 			break;
@@ -853,6 +1082,7 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 	case 0x4F24:
 		/* ZB_DEPTHPITCH */
 		if (!(p->cs_flags & RADEON_CS_KEEP_TILING_FLAGS)) {
+<<<<<<< HEAD
 			r = r100_cs_packet_next_reloc(p, &reloc);
 			if (r) {
 				DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
@@ -866,6 +1096,21 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 			if (reloc->lobj.tiling_flags & RADEON_TILING_MICRO)
 				tile_flags |= R300_DEPTHMICROTILE_TILED;
 			else if (reloc->lobj.tiling_flags & RADEON_TILING_MICRO_SQUARE)
+=======
+			r = radeon_cs_packet_next_reloc(p, &reloc, 0);
+			if (r) {
+				DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
+					  idx, reg);
+				radeon_cs_dump_packet(p, pkt);
+				return r;
+			}
+
+			if (reloc->tiling_flags & RADEON_TILING_MACRO)
+				tile_flags |= R300_DEPTHMACROTILE_ENABLE;
+			if (reloc->tiling_flags & RADEON_TILING_MICRO)
+				tile_flags |= R300_DEPTHMICROTILE_TILED;
+			else if (reloc->tiling_flags & RADEON_TILING_MICRO_SQUARE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				tile_flags |= R300_DEPTHMICROTILE_TILED_SQUARE;
 
 			tmp = idx_value & ~(0x7 << 16);
@@ -958,7 +1203,11 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 				return -EINVAL;
 			}
 			/* The same rules apply as for DXT3/5. */
+<<<<<<< HEAD
 			/* Pass through. */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case R300_TX_FORMAT_DXT3:
 		case R300_TX_FORMAT_DXT5:
 			track->textures[i].cpp = 1;
@@ -1068,6 +1317,7 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 		track->tex_dirty = true;
 		break;
 	case R300_ZB_ZPASS_ADDR:
+<<<<<<< HEAD
 		r = r100_cs_packet_next_reloc(p, &reloc);
 		if (r) {
 			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
@@ -1076,6 +1326,16 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 			return r;
 		}
 		ib[idx] = idx_value + ((u32)reloc->lobj.gpu_offset);
+=======
+		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
+		if (r) {
+			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
+					idx, reg);
+			radeon_cs_dump_packet(p, pkt);
+			return r;
+		}
+		ib[idx] = idx_value + ((u32)reloc->gpu_offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 0x4e0c:
 		/* RB3D_COLOR_CHANNEL_MASK */
@@ -1110,17 +1370,29 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 		track->cb_dirty = true;
 		break;
 	case R300_RB3D_AARESOLVE_OFFSET:
+<<<<<<< HEAD
 		r = r100_cs_packet_next_reloc(p, &reloc);
 		if (r) {
 			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
 				  idx, reg);
 			r100_cs_dump_packet(p, pkt);
+=======
+		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
+		if (r) {
+			DRM_ERROR("No reloc for ib[%d]=0x%04X\n",
+				  idx, reg);
+			radeon_cs_dump_packet(p, pkt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return r;
 		}
 		track->aa.robj = reloc->robj;
 		track->aa.offset = idx_value;
 		track->aa_dirty = true;
+<<<<<<< HEAD
 		ib[idx] = idx_value + ((u32)reloc->lobj.gpu_offset);
+=======
+		ib[idx] = idx_value + ((u32)reloc->gpu_offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case R300_RB3D_AARESOLVE_PITCH:
 		track->aa.pitch = idx_value & 0x3FFE;
@@ -1149,13 +1421,21 @@ static int r300_packet0_check(struct radeon_cs_parser *p,
 		/* valid register only on RV530 */
 		if (p->rdev->family == CHIP_RV530)
 			break;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* fallthrough do not move */
 	default:
 		goto fail;
 	}
 	return 0;
 fail:
+<<<<<<< HEAD
 	printk(KERN_ERR "Forbidden register 0x%04X in cs at %d (val=%08x)\n",
+=======
+	pr_err("Forbidden register 0x%04X in cs at %d (val=%08x)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       reg, idx, idx_value);
 	return -EINVAL;
 }
@@ -1163,22 +1443,34 @@ fail:
 static int r300_packet3_check(struct radeon_cs_parser *p,
 			      struct radeon_cs_packet *pkt)
 {
+<<<<<<< HEAD
 	struct radeon_cs_reloc *reloc;
+=======
+	struct radeon_bo_list *reloc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct r100_cs_track *track;
 	volatile uint32_t *ib;
 	unsigned idx;
 	int r;
 
+<<<<<<< HEAD
 	ib = p->ib->ptr;
 	idx = pkt->idx + 1;
 	track = (struct r100_cs_track *)p->track;
 	switch(pkt->opcode) {
+=======
+	ib = p->ib.ptr;
+	idx = pkt->idx + 1;
+	track = (struct r100_cs_track *)p->track;
+	switch (pkt->opcode) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PACKET3_3D_LOAD_VBPNTR:
 		r = r100_packet3_load_vbpntr(p, pkt, idx);
 		if (r)
 			return r;
 		break;
 	case PACKET3_INDX_BUFFER:
+<<<<<<< HEAD
 		r = r100_cs_packet_next_reloc(p, &reloc);
 		if (r) {
 			DRM_ERROR("No reloc for packet3 %d\n", pkt->opcode);
@@ -1186,6 +1478,15 @@ static int r300_packet3_check(struct radeon_cs_parser *p,
 			return r;
 		}
 		ib[idx+1] = radeon_get_ib_value(p, idx + 1) + ((u32)reloc->lobj.gpu_offset);
+=======
+		r = radeon_cs_packet_next_reloc(p, &reloc, 0);
+		if (r) {
+			DRM_ERROR("No reloc for packet3 %d\n", pkt->opcode);
+			radeon_cs_dump_packet(p, pkt);
+			return r;
+		}
+		ib[idx+1] = radeon_get_ib_value(p, idx + 1) + ((u32)reloc->gpu_offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = r100_cs_track_check_pkt3_indx_buffer(p, pkt, reloc->robj);
 		if (r) {
 			return r;
@@ -1280,21 +1581,35 @@ int r300_cs_parse(struct radeon_cs_parser *p)
 	r100_cs_track_clear(p->rdev, track);
 	p->track = track;
 	do {
+<<<<<<< HEAD
 		r = r100_cs_packet_parse(p, &pkt, p->idx);
+=======
+		r = radeon_cs_packet_parse(p, &pkt, p->idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r) {
 			return r;
 		}
 		p->idx += pkt.count + 2;
 		switch (pkt.type) {
+<<<<<<< HEAD
 		case PACKET_TYPE0:
+=======
+		case RADEON_PACKET_TYPE0:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r = r100_cs_parse_packet0(p, &pkt,
 						  p->rdev->config.r300.reg_safe_bm,
 						  p->rdev->config.r300.reg_safe_bm_size,
 						  &r300_packet0_check);
 			break;
+<<<<<<< HEAD
 		case PACKET_TYPE2:
 			break;
 		case PACKET_TYPE3:
+=======
+		case RADEON_PACKET_TYPE2:
+			break;
+		case RADEON_PACKET_TYPE3:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			r = r300_packet3_check(p, &pkt);
 			break;
 		default:
@@ -1304,7 +1619,11 @@ int r300_cs_parse(struct radeon_cs_parser *p)
 		if (r) {
 			return r;
 		}
+<<<<<<< HEAD
 	} while (p->idx < p->chunks[p->chunk_ib_idx].length_dw);
+=======
+	} while (p->idx < p->chunk_ib->length_dw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1317,12 +1636,17 @@ void r300_set_reg_safe(struct radeon_device *rdev)
 void r300_mc_program(struct radeon_device *rdev)
 {
 	struct r100_mc_save save;
+<<<<<<< HEAD
 	int r;
 
 	r = r100_debugfs_mc_info_init(rdev);
 	if (r) {
 		dev_err(rdev->dev, "Failed to create r100_mc debugfs file.\n");
 	}
+=======
+
+	r100_debugfs_mc_info_init(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Stops all mc clients */
 	r100_mc_stop(rdev, &save);
@@ -1420,6 +1744,7 @@ static int r300_startup(struct radeon_device *rdev)
 		return r;
 	}
 
+<<<<<<< HEAD
 	r = radeon_ib_pool_start(rdev);
 	if (r)
 		return r;
@@ -1428,6 +1753,11 @@ static int r300_startup(struct radeon_device *rdev)
 	if (r) {
 		dev_err(rdev->dev, "failed testing IB (%d).\n", r);
 		rdev->accel_working = false;
+=======
+	r = radeon_ib_pool_init(rdev);
+	if (r) {
+		dev_err(rdev->dev, "IB initialization failed (%d).\n", r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return r;
 	}
 
@@ -1468,7 +1798,11 @@ int r300_resume(struct radeon_device *rdev)
 
 int r300_suspend(struct radeon_device *rdev)
 {
+<<<<<<< HEAD
 	radeon_ib_pool_suspend(rdev);
+=======
+	radeon_pm_suspend(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r100_cp_disable(rdev);
 	radeon_wb_disable(rdev);
 	r100_irq_disable(rdev);
@@ -1481,9 +1815,16 @@ int r300_suspend(struct radeon_device *rdev)
 
 void r300_fini(struct radeon_device *rdev)
 {
+<<<<<<< HEAD
 	r100_cp_fini(rdev);
 	radeon_wb_fini(rdev);
 	r100_ib_fini(rdev);
+=======
+	radeon_pm_fini(rdev);
+	r100_cp_fini(rdev);
+	radeon_wb_fini(rdev);
+	radeon_ib_pool_fini(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_gem_fini(rdev);
 	if (rdev->flags & RADEON_IS_PCIE)
 		rv370_pcie_gart_fini(rdev);
@@ -1548,9 +1889,13 @@ int r300_init(struct radeon_device *rdev)
 	/* initialize memory controller */
 	r300_mc_init(rdev);
 	/* Fence driver */
+<<<<<<< HEAD
 	r = radeon_fence_driver_init(rdev);
 	if (r)
 		return r;
+=======
+	radeon_fence_driver_init(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Memory manager */
 	r = radeon_bo_init(rdev);
 	if (r)
@@ -1567,6 +1912,7 @@ int r300_init(struct radeon_device *rdev)
 	}
 	r300_set_reg_safe(rdev);
 
+<<<<<<< HEAD
 	r = radeon_ib_pool_init(rdev);
 	rdev->accel_working = true;
 	if (r) {
@@ -1581,6 +1927,19 @@ int r300_init(struct radeon_device *rdev)
 		r100_cp_fini(rdev);
 		radeon_wb_fini(rdev);
 		r100_ib_fini(rdev);
+=======
+	/* Initialize power management */
+	radeon_pm_init(rdev);
+
+	rdev->accel_working = true;
+	r = r300_startup(rdev);
+	if (r) {
+		/* Something went wrong with the accel init, so stop accel */
+		dev_err(rdev->dev, "Disabling GPU acceleration\n");
+		r100_cp_fini(rdev);
+		radeon_wb_fini(rdev);
+		radeon_ib_pool_fini(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_irq_kms_fini(rdev);
 		if (rdev->flags & RADEON_IS_PCIE)
 			rv370_pcie_gart_fini(rdev);

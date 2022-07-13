@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Linux INET6 implementation 
  *
  *	Authors:
  *	Pedro Roque		<roque@di.fc.ul.pt>	
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
@@ -60,3 +65,14 @@ struct in6_rtmsg {
 #define RTMSG_DELROUTE		0x22
 
 #endif
+=======
+ */
+#ifndef _LINUX_IPV6_ROUTE_H
+#define _LINUX_IPV6_ROUTE_H
+
+#include <uapi/linux/ipv6_route.h>
+
+#define IPV6_EXTRACT_PREF(flag)	(((flag) & RTF_PREF_MASK) >> 27)
+#define IPV6_DECODE_PREF(pref)	((pref) ^ 2)	/* 1:low,2:med,3:high */
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

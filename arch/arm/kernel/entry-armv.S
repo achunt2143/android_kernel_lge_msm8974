@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/entry-armv.S
  *
@@ -5,16 +9,20 @@
  *  ARM700 fix by Matthew Godbolt (linux-user@willothewisp.demon.co.uk)
  *  nommu support by Hyok S. Choi (hyok.choi@samsung.com)
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Low-level vector interface routines
  *
  *  Note:  there is a StrongARM bug in the STMIA rn, {regs}^ instruction
  *  that causes it to save wrong values...  Be aware!
  */
 
+<<<<<<< HEAD
 #include <asm/assembler.h>
 #include <asm/memory.h>
 #include <asm/glue-df.h>
@@ -23,18 +31,35 @@
 #ifndef CONFIG_MULTI_IRQ_HANDLER
 #include <mach/entry-macro.S>
 #endif
+=======
+#include <linux/init.h>
+
+#include <asm/assembler.h>
+#include <asm/page.h>
+#include <asm/glue-df.h>
+#include <asm/glue-pf.h>
+#include <asm/vfpmacros.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/thread_notify.h>
 #include <asm/unwind.h>
 #include <asm/unistd.h>
 #include <asm/tls.h>
 #include <asm/system_info.h>
+<<<<<<< HEAD
 
 #include "entry-header.S"
 #include <asm/entry-macro-multi.S>
+=======
+#include <asm/uaccess-asm.h>
+
+#include "entry-header.S"
+#include <asm/probes.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Interrupt handling.
  */
+<<<<<<< HEAD
 	.macro	irq_handler
 #ifdef CONFIG_MULTI_IRQ_HANDLER
 	ldr	r1, =handle_arch_irq
@@ -45,14 +70,45 @@
 	arch_irq_handler_default
 #endif
 9997:
+=======
+	.macro	irq_handler, from_user:req
+	mov	r1, sp
+	ldr_this_cpu r2, irq_stack_ptr, r2, r3
+	.if	\from_user == 0
+	@
+	@ If we took the interrupt while running in the kernel, we may already
+	@ be using the IRQ stack, so revert to the original value in that case.
+	@
+	subs	r3, r2, r1		@ SP above bottom of IRQ stack?
+	rsbscs	r3, r3, #THREAD_SIZE	@ ... and below the top?
+#ifdef CONFIG_VMAP_STACK
+	ldr_va	r3, high_memory, cc	@ End of the linear region
+	cmpcc	r3, r1			@ Stack pointer was below it?
+#endif
+	bcc	0f			@ If not, switch to the IRQ stack
+	mov	r0, r1
+	bl	generic_handle_arch_irq
+	b	1f
+0:
+	.endif
+
+	mov_l	r0, generic_handle_arch_irq
+	bl	call_with_stack
+1:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 	.macro	pabt_helper
 	@ PABORT handler takes pt_regs in r2, fault address in r4 and psr in r5
 #ifdef MULTI_PABORT
+<<<<<<< HEAD
 	ldr	ip, .LCprocfns
 	mov	lr, pc
 	ldr	pc, [ip, #PROCESSOR_PABT_FUNC]
+=======
+	ldr_va	ip, processor, offset=PROCESSOR_PABT_FUNC
+	bl_r	ip
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	bl	CPU_PABORT_HANDLER
 #endif
@@ -71,25 +127,38 @@
 	@ the fault status register in r1.  r9 must be preserved.
 	@
 #ifdef MULTI_DABORT
+<<<<<<< HEAD
 	ldr	ip, .LCprocfns
 	mov	lr, pc
 	ldr	pc, [ip, #PROCESSOR_DABT_FUNC]
+=======
+	ldr_va	ip, processor, offset=PROCESSOR_DABT_FUNC
+	bl_r	ip
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	bl	CPU_DABORT_HANDLER
 #endif
 	.endm
 
+<<<<<<< HEAD
 #ifdef CONFIG_KPROBES
 	.section	.kprobes.text,"ax",%progbits
 #else
 	.text
 #endif
+=======
+	.section	.entry.text,"ax",%progbits
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Invalid mode handlers
  */
 	.macro	inv_entry, reason
+<<<<<<< HEAD
 	sub	sp, sp, #S_FRAME_SIZE
+=======
+	sub	sp, sp, #PT_REGS_SIZE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ARM(	stmib	sp, {r1 - lr}		)
  THUMB(	stmia	sp, {r0 - r12}		)
  THUMB(	str	sp, [sp, #S_SP]		)
@@ -146,6 +215,7 @@ ENDPROC(__und_invalid)
 #define SPFIX(code...)
 #endif
 
+<<<<<<< HEAD
 	.macro	svc_entry, stack_hole=0
  UNWIND(.fnstart		)
  UNWIND(.save {r0 - pc}		)
@@ -167,6 +237,37 @@ ENDPROC(__und_invalid)
 	add	r2, sp, #(S_FRAME_SIZE + \stack_hole - 4)
  SPFIX(	addeq	r2, r2, #4	)
 	str	r3, [sp, #-4]!		@ save the "real" r0 copied
+=======
+	.macro	svc_entry, stack_hole=0, trace=1, uaccess=1, overflow_check=1
+ UNWIND(.fnstart		)
+	sub	sp, sp, #(SVC_REGS_SIZE + \stack_hole)
+ THUMB(	add	sp, r1		)	@ get SP in a GPR without
+ THUMB(	sub	r1, sp, r1	)	@ using a temp register
+
+	.if	\overflow_check
+ UNWIND(.save	{r0 - pc}	)
+	do_overflow_check (SVC_REGS_SIZE + \stack_hole)
+	.endif
+
+#ifdef CONFIG_THUMB2_KERNEL
+	tst	r1, #4			@ test stack pointer alignment
+	sub	r1, sp, r1		@ restore original R1
+	sub	sp, r1			@ restore original SP
+#else
+ SPFIX(	tst	sp, #4		)
+#endif
+ SPFIX(	subne	sp, sp, #4	)
+
+ ARM(	stmib	sp, {r1 - r12}	)
+ THUMB(	stmia	sp, {r0 - r12}	)	@ No STMIB in Thumb-2
+
+	ldmia	r0, {r3 - r5}
+	add	r7, sp, #S_SP		@ here for interlock avoidance
+	mov	r6, #-1			@  ""  ""      ""       ""
+	add	r2, sp, #(SVC_REGS_SIZE + \stack_hole)
+ SPFIX(	addne	r2, r2, #4	)
+	str	r3, [sp]		@ save the "real" r0 copied
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					@ from the exception stack
 
 	mov	r3, lr
@@ -182,13 +283,25 @@ ENDPROC(__und_invalid)
 	@
 	stmia	r7, {r2 - r6}
 
+<<<<<<< HEAD
 #ifdef CONFIG_TRACE_IRQFLAGS
 	bl	trace_hardirqs_off
 #endif
+=======
+	get_thread_info tsk
+	uaccess_entry tsk, r0, r1, r2, \uaccess
+
+	.if \trace
+#ifdef CONFIG_TRACE_IRQFLAGS
+	bl	trace_hardirqs_off
+#endif
+	.endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 	.align	5
 __dabt_svc:
+<<<<<<< HEAD
 	svc_entry
 	mov	r2, sp
 	dabt_helper
@@ -204,6 +317,12 @@ __dabt_svc:
 	tst	r5, #PSR_I_BIT
 	blne	trace_hardirqs_off
 #endif
+=======
+	svc_entry uaccess=0
+	mov	r2, sp
+	dabt_helper
+ THUMB(	ldr	r5, [sp, #S_PSR]	)	@ potentially updated CPSR
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	svc_exit r5				@ return from exception
  UNWIND(.fnend		)
 ENDPROC(__dabt_svc)
@@ -211,10 +330,16 @@ ENDPROC(__dabt_svc)
 	.align	5
 __irq_svc:
 	svc_entry
+<<<<<<< HEAD
 	irq_handler
 
 #ifdef CONFIG_PREEMPT
 	get_thread_info tsk
+=======
+	irq_handler from_user=0
+
+#ifdef CONFIG_PREEMPTION
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldr	r8, [tsk, #TI_PREEMPT]		@ get preempt count
 	ldr	r0, [tsk, #TI_FLAGS]		@ get flags
 	teq	r8, #0				@ if preempt count != 0
@@ -223,24 +348,36 @@ __irq_svc:
 	blne	svc_preempt
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_TRACE_IRQFLAGS
 	@ The parent context IRQs must have been enabled to get here in
 	@ the first place, so there's no point checking the PSR I bit.
 	bl	trace_hardirqs_on
 #endif
 	svc_exit r5				@ return from exception
+=======
+	svc_exit r5, irq = 1			@ return from exception
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  UNWIND(.fnend		)
 ENDPROC(__irq_svc)
 
 	.ltorg
 
+<<<<<<< HEAD
 #ifdef CONFIG_PREEMPT
+=======
+#ifdef CONFIG_PREEMPTION
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 svc_preempt:
 	mov	r8, lr
 1:	bl	preempt_schedule_irq		@ irq en/disable is done inside
 	ldr	r0, [tsk, #TI_FLAGS]		@ get new tasks TI_FLAGS
 	tst	r0, #_TIF_NEED_RESCHED
+<<<<<<< HEAD
 	moveq	pc, r8				@ go again
+=======
+	reteq	r8				@ go again
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b	1b
 #endif
 
@@ -263,6 +400,7 @@ __und_svc:
 	@ If a kprobe is about to simulate a "stmdb sp..." instruction,
 	@ it obviously needs free stack space which then will belong to
 	@ the saved context.
+<<<<<<< HEAD
 	svc_entry 64
 #else
 	svc_entry
@@ -311,6 +449,22 @@ __und_svc_finish:
 	tst	r5, #PSR_I_BIT
 	blne	trace_hardirqs_off
 #endif
+=======
+	svc_entry MAX_STACK_SIZE
+#else
+	svc_entry
+#endif
+
+	mov	r1, #4				@ PC correction to apply
+ THUMB(	tst	r5, #PSR_T_BIT		)	@ exception taken in Thumb mode?
+ THUMB(	movne	r1, #2			)	@ if so, fix up PC correction
+	mov	r0, sp				@ struct pt_regs *regs
+	bl	__und_fault
+
+__und_svc_finish:
+	get_thread_info tsk
+	ldr	r5, [sp, #S_PSR]		@ Get SVC cpsr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	svc_exit r5				@ return from exception
  UNWIND(.fnend		)
 ENDPROC(__und_svc)
@@ -320,6 +474,7 @@ __pabt_svc:
 	svc_entry
 	mov	r2, sp				@ regs
 	pabt_helper
+<<<<<<< HEAD
 
 	@
 	@ IRQs off again before pulling preserved data off the stack
@@ -332,11 +487,14 @@ __pabt_svc:
 	tst	r5, #PSR_I_BIT
 	blne	trace_hardirqs_off
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	svc_exit r5				@ return from exception
  UNWIND(.fnend		)
 ENDPROC(__pabt_svc)
 
 	.align	5
+<<<<<<< HEAD
 .LCcralign:
 	.word	cr_alignment
 #ifdef MULTI_DABORT
@@ -345,10 +503,60 @@ ENDPROC(__pabt_svc)
 #endif
 .LCfp:
 	.word	fp_enter
+=======
+__fiq_svc:
+	svc_entry trace=0
+	mov	r0, sp				@ struct pt_regs *regs
+	bl	handle_fiq_as_nmi
+	svc_exit_via_fiq
+ UNWIND(.fnend		)
+ENDPROC(__fiq_svc)
+
+/*
+ * Abort mode handlers
+ */
+
+@
+@ Taking a FIQ in abort mode is similar to taking a FIQ in SVC mode
+@ and reuses the same macros. However in abort mode we must also
+@ save/restore lr_abt and spsr_abt to make nested aborts safe.
+@
+	.align 5
+__fiq_abt:
+	svc_entry trace=0
+
+ ARM(	msr	cpsr_c, #ABT_MODE | PSR_I_BIT | PSR_F_BIT )
+ THUMB( mov	r0, #ABT_MODE | PSR_I_BIT | PSR_F_BIT )
+ THUMB( msr	cpsr_c, r0 )
+	mov	r1, lr		@ Save lr_abt
+	mrs	r2, spsr	@ Save spsr_abt, abort is now safe
+ ARM(	msr	cpsr_c, #SVC_MODE | PSR_I_BIT | PSR_F_BIT )
+ THUMB( mov	r0, #SVC_MODE | PSR_I_BIT | PSR_F_BIT )
+ THUMB( msr	cpsr_c, r0 )
+	stmfd	sp!, {r1 - r2}
+
+	add	r0, sp, #8			@ struct pt_regs *regs
+	bl	handle_fiq_as_nmi
+
+	ldmfd	sp!, {r1 - r2}
+ ARM(	msr	cpsr_c, #ABT_MODE | PSR_I_BIT | PSR_F_BIT )
+ THUMB( mov	r0, #ABT_MODE | PSR_I_BIT | PSR_F_BIT )
+ THUMB( msr	cpsr_c, r0 )
+	mov	lr, r1		@ Restore lr_abt, abort is unsafe
+	msr	spsr_cxsf, r2	@ Restore spsr_abt
+ ARM(	msr	cpsr_c, #SVC_MODE | PSR_I_BIT | PSR_F_BIT )
+ THUMB( mov	r0, #SVC_MODE | PSR_I_BIT | PSR_F_BIT )
+ THUMB( msr	cpsr_c, r0 )
+
+	svc_exit_via_fiq
+ UNWIND(.fnend		)
+ENDPROC(__fiq_abt)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * User mode handlers
  *
+<<<<<<< HEAD
  * EABI note: sp_svc is always 64-bit aligned here, so should S_FRAME_SIZE
  */
 
@@ -363,6 +571,25 @@ ENDPROC(__pabt_svc)
  ARM(	stmib	sp, {r1 - r12}	)
  THUMB(	stmia	sp, {r0 - r12}	)
 
+=======
+ * EABI note: sp_svc is always 64-bit aligned here, so should PT_REGS_SIZE
+ */
+
+#if defined(CONFIG_AEABI) && (__LINUX_ARM_ARCH__ >= 5) && (PT_REGS_SIZE & 7)
+#error "sizeof(struct pt_regs) must be a multiple of 8"
+#endif
+
+	.macro	usr_entry, trace=1, uaccess=1
+ UNWIND(.fnstart	)
+ UNWIND(.cantunwind	)	@ don't unwind the user space
+	sub	sp, sp, #PT_REGS_SIZE
+ ARM(	stmib	sp, {r1 - r12}	)
+ THUMB(	stmia	sp, {r0 - r12}	)
+
+ ATRAP(	mrc	p15, 0, r7, c1, c0, 0)
+ ATRAP(	ldr_va	r8, cr_alignment)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ldmia	r0, {r3 - r5}
 	add	r0, sp, #S_PC		@ here for interlock avoidance
 	mov	r6, #-1			@  ""  ""     ""        ""
@@ -383,16 +610,29 @@ ENDPROC(__pabt_svc)
  ARM(	stmdb	r0, {sp, lr}^			)
  THUMB(	store_user_sp_lr r0, r1, S_SP - S_PC	)
 
+<<<<<<< HEAD
 	@
 	@ Enable the alignment trap while in kernel mode
 	@
 	alignment_trap r0
+=======
+	.if \uaccess
+	uaccess_disable ip
+	.endif
+
+	@ Enable the alignment trap while in kernel mode
+ ATRAP(	teq	r8, r7)
+ ATRAP( mcrne	p15, 0, r8, c1, c0, 0)
+
+	reload_current r7, r8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	@
 	@ Clear FP to mark the first stack frame
 	@
 	zero_fp
 
+<<<<<<< HEAD
 #ifdef CONFIG_IRQSOFF_TRACER
 	bl	trace_hardirqs_off
 #endif
@@ -400,6 +640,18 @@ ENDPROC(__pabt_svc)
 
 	.macro	kuser_cmpxchg_check
 #if !defined(CONFIG_CPU_32v6K) && !defined(CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG)
+=======
+	.if	\trace
+#ifdef CONFIG_TRACE_IRQFLAGS
+	bl	trace_hardirqs_off
+#endif
+	ct_user_exit save = 0
+	.endif
+	.endm
+
+	.macro	kuser_cmpxchg_check
+#if !defined(CONFIG_CPU_32v6K) && defined(CONFIG_KUSER_HELPERS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_MMU
 #warning "NPTL on non MMU needs fixing"
 #else
@@ -407,7 +659,12 @@ ENDPROC(__pabt_svc)
 	@ if it was interrupted in a critical region.  Here we
 	@ perform a quick test inline since it should be false
 	@ 99.9999% of the time.  The rest is done out of line.
+<<<<<<< HEAD
 	cmp	r4, #TASK_SIZE
+=======
+	ldr	r0, =TASK_SIZE
+	cmp	r4, r0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blhs	kuser_cmpxchg64_fixup
 #endif
 #endif
@@ -415,7 +672,11 @@ ENDPROC(__pabt_svc)
 
 	.align	5
 __dabt_usr:
+<<<<<<< HEAD
 	usr_entry
+=======
+	usr_entry uaccess=0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kuser_cmpxchg_check
 	mov	r2, sp
 	dabt_helper
@@ -427,7 +688,11 @@ ENDPROC(__dabt_usr)
 __irq_usr:
 	usr_entry
 	kuser_cmpxchg_check
+<<<<<<< HEAD
 	irq_handler
+=======
+	irq_handler from_user=1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	get_thread_info tsk
 	mov	why, #0
 	b	ret_to_user_from_irq
@@ -438,6 +703,7 @@ ENDPROC(__irq_usr)
 
 	.align	5
 __und_usr:
+<<<<<<< HEAD
 	usr_entry
 
 	mov	r2, r4
@@ -702,6 +968,30 @@ __und_usr_fault_16:
 ENDPROC(__und_usr_fault_32)
 ENDPROC(__und_usr_fault_16)
 
+=======
+	usr_entry uaccess=0
+
+	@ IRQs must be enabled before attempting to read the instruction from
+	@ user space since that could cause a page/translation fault if the
+	@ page table was modified by another CPU.
+	enable_irq
+
+	tst	r5, #PSR_T_BIT			@ Thumb mode?
+	mov	r1, #2				@ set insn size to 2 for Thumb
+	bne	0f				@ handle as Thumb undef exception
+#ifdef CONFIG_FPE_NWFPE
+	adr	r9, ret_from_exception
+	bl	call_fpe			@ returns via R9 on success
+#endif
+	mov	r1, #4				@ set insn size to 4 for ARM
+0:	mov	r0, sp
+	uaccess_disable ip
+	bl	__und_fault
+	b	ret_from_exception
+ UNWIND(.fnend)
+ENDPROC(__und_usr)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.align	5
 __pabt_usr:
 	usr_entry
@@ -722,6 +1012,20 @@ ENTRY(ret_from_exception)
 ENDPROC(__pabt_usr)
 ENDPROC(ret_from_exception)
 
+<<<<<<< HEAD
+=======
+	.align	5
+__fiq_usr:
+	usr_entry trace=0
+	kuser_cmpxchg_check
+	mov	r0, sp				@ struct pt_regs *regs
+	bl	handle_fiq_as_nmi
+	get_thread_info tsk
+	restore_user_regs fast = 0, offset = 0
+ UNWIND(.fnend		)
+ENDPROC(__fiq_usr)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Register switch for ARMv3 and ARMv4 processors
  * r0 = previous task_struct, r1 = previous thread_info, r2 = next thread_info
@@ -738,6 +1042,7 @@ ENTRY(__switch_to)
 	ldr	r4, [r2, #TI_TP_VALUE]
 	ldr	r5, [r2, #TI_TP_VALUE + 4]
 #ifdef CONFIG_CPU_USE_DOMAINS
+<<<<<<< HEAD
 	ldr	r6, [r2, #TI_CPU_DOMAIN]
 #endif
 	switch_tls r1, r4, r5, r3, r7
@@ -746,6 +1051,24 @@ ENTRY(__switch_to)
 	ldr	r8, =__stack_chk_guard
 	ldr	r7, [r7, #TSK_STACK_CANARY]
 #endif
+=======
+	mrc	p15, 0, r6, c3, c0, 0		@ Get domain register
+	str	r6, [r1, #TI_CPU_DOMAIN]	@ Save old domain register
+	ldr	r6, [r2, #TI_CPU_DOMAIN]
+#endif
+	switch_tls r1, r4, r5, r3, r7
+#if defined(CONFIG_STACKPROTECTOR) && !defined(CONFIG_SMP) && \
+    !defined(CONFIG_STACKPROTECTOR_PER_TASK)
+	ldr	r8, =__stack_chk_guard
+	.if (TSK_STACK_CANARY > IMM12_MASK)
+	add	r9, r2, #TSK_STACK_CANARY & ~IMM12_MASK
+	ldr	r9, [r9, #TSK_STACK_CANARY & IMM12_MASK]
+	.else
+	ldr	r9, [r2, #TSK_STACK_CANARY & IMM12_MASK]
+	.endif
+#endif
+	mov	r7, r2				@ Preserve 'next'
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_CPU_USE_DOMAINS
 	mcr	p15, 0, r6, c3, c0, 0		@ Set domain register
 #endif
@@ -754,6 +1077,7 @@ ENTRY(__switch_to)
 	ldr	r0, =thread_notify_head
 	mov	r1, #THREAD_NOTIFY_SWITCH
 	bl	atomic_notifier_call_chain
+<<<<<<< HEAD
 #if defined(CONFIG_CC_STACKPROTECTOR) && !defined(CONFIG_SMP)
 	str	r7, [r8]
 #endif
@@ -766,6 +1090,104 @@ ENTRY(__switch_to)
  UNWIND(.fnend		)
 ENDPROC(__switch_to)
 
+=======
+#if defined(CONFIG_STACKPROTECTOR) && !defined(CONFIG_SMP) && \
+    !defined(CONFIG_STACKPROTECTOR_PER_TASK)
+	str	r9, [r8]
+#endif
+	mov	r0, r5
+#if !defined(CONFIG_THUMB2_KERNEL) && !defined(CONFIG_VMAP_STACK)
+	set_current r7, r8
+	ldmia	r4, {r4 - sl, fp, sp, pc}	@ Load all regs saved previously
+#else
+	mov	r1, r7
+	ldmia	r4, {r4 - sl, fp, ip, lr}	@ Load all regs saved previously
+#ifdef CONFIG_VMAP_STACK
+	@
+	@ Do a dummy read from the new stack while running from the old one so
+	@ that we can rely on do_translation_fault() to fix up any stale PMD
+	@ entries covering the vmalloc region.
+	@
+	ldr	r2, [ip]
+#endif
+
+	@ When CONFIG_THREAD_INFO_IN_TASK=n, the update of SP itself is what
+	@ effectuates the task switch, as that is what causes the observable
+	@ values of current and current_thread_info to change. When
+	@ CONFIG_THREAD_INFO_IN_TASK=y, setting current (and therefore
+	@ current_thread_info) is done explicitly, and the update of SP just
+	@ switches us to another stack, with few other side effects. In order
+	@ to prevent this distinction from causing any inconsistencies, let's
+	@ keep the 'set_current' call as close as we can to the update of SP.
+	set_current r1, r2
+	mov	sp, ip
+	ret	lr
+#endif
+ UNWIND(.fnend		)
+ENDPROC(__switch_to)
+
+#ifdef CONFIG_VMAP_STACK
+	.text
+	.align	2
+__bad_stack:
+	@
+	@ We've just detected an overflow. We need to load the address of this
+	@ CPU's overflow stack into the stack pointer register. We have only one
+	@ scratch register so let's use a sequence of ADDs including one
+	@ involving the PC, and decorate them with PC-relative group
+	@ relocations. As these are ARM only, switch to ARM mode first.
+	@
+	@ We enter here with IP clobbered and its value stashed on the mode
+	@ stack.
+	@
+THUMB(	bx	pc		)
+THUMB(	nop			)
+THUMB(	.arm			)
+	ldr_this_cpu_armv6 ip, overflow_stack_ptr
+
+	str	sp, [ip, #-4]!			@ Preserve original SP value
+	mov	sp, ip				@ Switch to overflow stack
+	pop	{ip}				@ Original SP in IP
+
+#if defined(CONFIG_UNWINDER_FRAME_POINTER) && defined(CONFIG_CC_IS_GCC)
+	mov	ip, ip				@ mov expected by unwinder
+	push	{fp, ip, lr, pc}		@ GCC flavor frame record
+#else
+	str	ip, [sp, #-8]!			@ store original SP
+	push	{fpreg, lr}			@ Clang flavor frame record
+#endif
+UNWIND( ldr	ip, [r0, #4]	)		@ load exception LR
+UNWIND( str	ip, [sp, #12]	)		@ store in the frame record
+	ldr	ip, [r0, #12]			@ reload IP
+
+	@ Store the original GPRs to the new stack.
+	svc_entry uaccess=0, overflow_check=0
+
+UNWIND( .save   {sp, pc}	)
+UNWIND( .save   {fpreg, lr}	)
+UNWIND( .setfp  fpreg, sp	)
+
+	ldr	fpreg, [sp, #S_SP]		@ Add our frame record
+						@ to the linked list
+#if defined(CONFIG_UNWINDER_FRAME_POINTER) && defined(CONFIG_CC_IS_GCC)
+	ldr	r1, [fp, #4]			@ reload SP at entry
+	add	fp, fp, #12
+#else
+	ldr	r1, [fpreg, #8]
+#endif
+	str	r1, [sp, #S_SP]			@ store in pt_regs
+
+	@ Stash the regs for handle_bad_stack
+	mov	r0, sp
+
+	@ Time to die
+	bl	handle_bad_stack
+	nop
+UNWIND( .fnend			)
+ENDPROC(__bad_stack)
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__INIT
 
 /*
@@ -776,7 +1198,11 @@ ENDPROC(__switch_to)
  * existing ones.  This mechanism should be used only for things that are
  * really small and justified, and not be abused freely.
  *
+<<<<<<< HEAD
  * See Documentation/arm/kernel_user_helpers.txt for formal definitions.
+=======
+ * See Documentation/arch/arm/kernel_user_helpers.rst for formal definitions.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
  THUMB(	.arm	)
 
@@ -784,7 +1210,11 @@ ENDPROC(__switch_to)
 #ifdef CONFIG_ARM_THUMB
 	bx	\reg
 #else
+<<<<<<< HEAD
 	mov	pc, \reg
+=======
+	ret	\reg
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	.endm
 
@@ -803,6 +1233,7 @@ ENDPROC(__switch_to)
 	.align	5
 	.globl	__kuser_helper_start
 __kuser_helper_start:
+<<<<<<< HEAD
 #ifdef GENERIC_TIME_VSYSCALL
 /*
  * Reference declaration:
@@ -894,6 +1325,8 @@ __kuser_gtod_timeval:  @0xffff0f40
 	.word	0
 	.align	5
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Due to the length of some sequences, __kuser_cmpxchg64 spans 2 regular
@@ -902,6 +1335,7 @@ __kuser_gtod_timeval:  @0xffff0f40
 
 __kuser_cmpxchg64:				@ 0xffff0f60
 
+<<<<<<< HEAD
 #if defined(CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG)
 
 	/*
@@ -916,6 +1350,9 @@ __kuser_cmpxchg64:				@ 0xffff0f60
 1:	.word	__ARM_NR_cmpxchg64
 
 #elif defined(CONFIG_CPU_32v6K)
+=======
+#if defined(CONFIG_CPU_32v6K)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	stmfd	sp!, {r4, r5, r6, r7}
 	ldrd	r4, r5, [r0]			@ load old val
@@ -923,7 +1360,11 @@ __kuser_cmpxchg64:				@ 0xffff0f60
 	smp_dmb	arm
 1:	ldrexd	r0, r1, [r2]			@ load current val
 	eors	r3, r0, r4			@ compare with oldval (1)
+<<<<<<< HEAD
 	eoreqs	r3, r1, r5			@ compare with oldval (2)
+=======
+	eorseq	r3, r1, r5			@ compare with oldval (2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strexdeq r3, r6, r7, [r2]		@ store newval if eq
 	teqeq	r3, #1				@ success?
 	beq	1b				@ if no then retry
@@ -947,8 +1388,13 @@ __kuser_cmpxchg64:				@ 0xffff0f60
 	ldmia	r1, {r6, lr}			@ load new val
 1:	ldmia	r2, {r0, r1}			@ load current val
 	eors	r3, r0, r4			@ compare with oldval (1)
+<<<<<<< HEAD
 	eoreqs	r3, r1, r5			@ compare with oldval (2)
 2:	stmeqia	r2, {r6, lr}			@ store newval if eq
+=======
+	eorseq	r3, r1, r5			@ compare with oldval (2)
+2:	stmiaeq	r2, {r6, lr}			@ store newval if eq
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rsbs	r0, r3, #0			@ set return val and C flag
 	ldmfd	sp!, {r4, r5, r6, pc}
 
@@ -962,12 +1408,20 @@ kuser_cmpxchg64_fixup:
 	mov	r7, #0xffff0fff
 	sub	r7, r7, #(0xffff0fff - (0xffff0f60 + (1b - __kuser_cmpxchg64)))
 	subs	r8, r4, r7
+<<<<<<< HEAD
 	rsbcss	r8, r8, #(2b - 1b)
+=======
+	rsbscs	r8, r8, #(2b - 1b)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strcs	r7, [sp, #S_PC]
 #if __LINUX_ARM_ARCH__ < 6
 	bcc	kuser_cmpxchg32_fixup
 #endif
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.previous
 
 #else
@@ -991,6 +1445,7 @@ __kuser_memory_barrier:				@ 0xffff0fa0
 
 __kuser_cmpxchg:				@ 0xffff0fc0
 
+<<<<<<< HEAD
 #if defined(CONFIG_NEEDS_SYSCALL_FOR_CMPXCHG)
 
 	/*
@@ -1005,6 +1460,9 @@ __kuser_cmpxchg:				@ 0xffff0fc0
 1:	.word	__ARM_NR_cmpxchg
 
 #elif __LINUX_ARM_ARCH__ < 6
+=======
+#if __LINUX_ARM_ARCH__ < 6
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_MMU
 
@@ -1033,9 +1491,15 @@ kuser_cmpxchg32_fixup:
 	mov	r7, #0xffff0fff
 	sub	r7, r7, #(0xffff0fff - (0xffff0fc0 + (1b - __kuser_cmpxchg)))
 	subs	r8, r4, r7
+<<<<<<< HEAD
 	rsbcss	r8, r8, #(2b - 1b)
 	strcs	r7, [sp, #S_PC]
 	mov	pc, lr
+=======
+	rsbscs	r8, r8, #(2b - 1b)
+	strcs	r7, [sp, #S_PC]
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.previous
 
 #else
@@ -1094,19 +1558,38 @@ __kuser_helper_end:
  * SP points to a minimal amount of processor-private memory, the address
  * of which is copied into r0 for the mode specific abort handler.
  */
+<<<<<<< HEAD
 	.macro	vector_stub, name, mode, fixup, correction=0
 	.align	5
+=======
+	.macro	vector_stub, name, mode, correction=0
+	.align	5
+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
+vector_bhb_bpiall_\name:
+	mcr	p15, 0, r0, c7, c5, 6	@ BPIALL
+	@ isb not needed due to "movs pc, lr" in the vector stub
+	@ which gives a "context synchronisation".
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 vector_\name:
 	.if \correction
 	sub	lr, lr, #\correction
 	.endif
 
+<<<<<<< HEAD
 	@
 	@ Save r0, lr_<exception> (parent PC) and spsr_<exception>
 	@ (parent CPSR)
 	@
 	stmia	sp, {r0, lr}		@ save r0, lr
+=======
+	@ Save r0, lr_<exception> (parent PC)
+	stmia	sp, {r0, lr}		@ save r0, lr
+
+	@ Save spsr_<exception> (parent CPSR)
+.Lvec_\name:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mrs	lr, spsr
 	str	lr, [sp, #8]		@ save spsr
 
@@ -1123,6 +1606,7 @@ vector_\name:
 	and	lr, lr, #0x0f
  THUMB(	adr	r0, 1f			)
  THUMB(	ldr	lr, [r0, lr, lsl #2]	)
+<<<<<<< HEAD
 	.if	\fixup
 #ifdef CONFIG_MSM_KRAIT_WFE_FIXUP
 	ldr	r0, .krait_fixup
@@ -1135,20 +1619,63 @@ vector_\name:
 10:	isb
 #endif
 	.endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov	r0, sp
  ARM(	ldr	lr, [pc, lr, lsl #2]	)
 	movs	pc, lr			@ branch to handler in SVC mode
 ENDPROC(vector_\name)
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
+	.subsection 1
+	.align 5
+vector_bhb_loop8_\name:
+	.if \correction
+	sub	lr, lr, #\correction
+	.endif
+
+	@ Save r0, lr_<exception> (parent PC)
+	stmia	sp, {r0, lr}
+
+	@ bhb workaround
+	mov	r0, #8
+3:	W(b)	. + 4
+	subs	r0, r0, #1
+	bne	3b
+	dsb	nsh
+	@ isb not needed due to "movs pc, lr" in the vector stub
+	@ which gives a "context synchronisation".
+	b	.Lvec_\name
+ENDPROC(vector_bhb_loop8_\name)
+	.previous
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.align	2
 	@ handler addresses follow this label
 1:
 	.endm
 
 	.section .stubs, "ax", %progbits
+<<<<<<< HEAD
 __stubs_start:
 	@ This must be the first word
 	.word	vector_swi
+=======
+	@ These need to remain at the start of the section so that
+	@ they are in range of the 'SWI' entries in the vector tables
+	@ located 4k down.
+.L__vector_swi:
+	.word	vector_swi
+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
+.L__vector_bhb_loop8_swi:
+	.word	vector_bhb_loop8_swi
+.L__vector_bhb_bpiall_swi:
+	.word	vector_bhb_bpiall_swi
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 vector_rst:
  ARM(	swi	SYS_ERROR0	)
@@ -1159,7 +1686,11 @@ vector_rst:
 /*
  * Interrupt dispatcher
  */
+<<<<<<< HEAD
 	vector_stub	irq, IRQ_MODE, 1, 4
+=======
+	vector_stub	irq, IRQ_MODE, 4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.long	__irq_usr			@  0  (USR_26 / USR_32)
 	.long	__irq_invalid			@  1  (FIQ_26 / FIQ_32)
@@ -1182,7 +1713,11 @@ vector_rst:
  * Data abort dispatcher
  * Enter in ABT mode, spsr = USR CPSR, lr = USR PC
  */
+<<<<<<< HEAD
 	vector_stub	dabt, ABT_MODE, 0, 8
+=======
+	vector_stub	dabt, ABT_MODE, 8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.long	__dabt_usr			@  0  (USR_26 / USR_32)
 	.long	__dabt_invalid			@  1  (FIQ_26 / FIQ_32)
@@ -1205,7 +1740,11 @@ vector_rst:
  * Prefetch abort dispatcher
  * Enter in ABT mode, spsr = USR CPSR, lr = USR PC
  */
+<<<<<<< HEAD
 	vector_stub	pabt, ABT_MODE, 0, 4
+=======
+	vector_stub	pabt, ABT_MODE, 4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.long	__pabt_usr			@  0 (USR_26 / USR_32)
 	.long	__pabt_invalid			@  1 (FIQ_26 / FIQ_32)
@@ -1228,7 +1767,11 @@ vector_rst:
  * Undef instr entry dispatcher
  * Enter in UND mode, spsr = SVC/USR CPSR, lr = SVC/USR PC
  */
+<<<<<<< HEAD
 	vector_stub	und, UND_MODE, 0
+=======
+	vector_stub	und, UND_MODE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.long	__und_usr			@  0 (USR_26 / USR_32)
 	.long	__und_invalid			@  1 (FIQ_26 / FIQ_32)
@@ -1260,6 +1803,7 @@ vector_addrexcptn:
 	b	vector_addrexcptn
 
 /*=============================================================================
+<<<<<<< HEAD
  * Undefined FIQs
  *-----------------------------------------------------------------------------
  * Enter in FIQ mode, spsr = ANY CPSR, lr = ANY PC
@@ -1283,12 +1827,49 @@ __vectors_start:
 	W(b)	vector_rst
 	W(b)	vector_und
 	W(ldr)	pc, __vectors_start + 0x1000
+=======
+ * FIQ "NMI" handler
+ *-----------------------------------------------------------------------------
+ * Handle a FIQ using the SVC stack allowing FIQ act like NMI on x86
+ * systems. This must be the last vector stub, so lets place it in its own
+ * subsection.
+ */
+	.subsection 2
+	vector_stub	fiq, FIQ_MODE, 4
+
+	.long	__fiq_usr			@  0  (USR_26 / USR_32)
+	.long	__fiq_svc			@  1  (FIQ_26 / FIQ_32)
+	.long	__fiq_svc			@  2  (IRQ_26 / IRQ_32)
+	.long	__fiq_svc			@  3  (SVC_26 / SVC_32)
+	.long	__fiq_svc			@  4
+	.long	__fiq_svc			@  5
+	.long	__fiq_svc			@  6
+	.long	__fiq_abt			@  7
+	.long	__fiq_svc			@  8
+	.long	__fiq_svc			@  9
+	.long	__fiq_svc			@  a
+	.long	__fiq_svc			@  b
+	.long	__fiq_svc			@  c
+	.long	__fiq_svc			@  d
+	.long	__fiq_svc			@  e
+	.long	__fiq_svc			@  f
+
+	.globl	vector_fiq
+
+	.section .vectors, "ax", %progbits
+	W(b)	vector_rst
+	W(b)	vector_und
+ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_swi		)
+THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_swi		)
+	W(ldr)	pc, .
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	W(b)	vector_pabt
 	W(b)	vector_dabt
 	W(b)	vector_addrexcptn
 	W(b)	vector_irq
 	W(b)	vector_fiq
 
+<<<<<<< HEAD
 	.data
 
 	.globl	cr_alignment
@@ -1303,3 +1884,37 @@ cr_no_alignment:
 handle_arch_irq:
 	.space	4
 #endif
+=======
+#ifdef CONFIG_HARDEN_BRANCH_HISTORY
+	.section .vectors.bhb.loop8, "ax", %progbits
+	W(b)	vector_rst
+	W(b)	vector_bhb_loop8_und
+ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_bhb_loop8_swi	)
+THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_bhb_loop8_swi	)
+	W(ldr)	pc, .
+	W(b)	vector_bhb_loop8_pabt
+	W(b)	vector_bhb_loop8_dabt
+	W(b)	vector_addrexcptn
+	W(b)	vector_bhb_loop8_irq
+	W(b)	vector_bhb_loop8_fiq
+
+	.section .vectors.bhb.bpiall, "ax", %progbits
+	W(b)	vector_rst
+	W(b)	vector_bhb_bpiall_und
+ARM(	.reloc	., R_ARM_LDR_PC_G0, .L__vector_bhb_bpiall_swi	)
+THUMB(	.reloc	., R_ARM_THM_PC12, .L__vector_bhb_bpiall_swi	)
+	W(ldr)	pc, .
+	W(b)	vector_bhb_bpiall_pabt
+	W(b)	vector_bhb_bpiall_dabt
+	W(b)	vector_addrexcptn
+	W(b)	vector_bhb_bpiall_irq
+	W(b)	vector_bhb_bpiall_fiq
+#endif
+
+	.data
+	.align	2
+
+	.globl	cr_alignment
+cr_alignment:
+	.space	4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

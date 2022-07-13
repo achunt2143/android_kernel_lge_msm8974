@@ -1,12 +1,23 @@
+<<<<<<< HEAD
 /*
  * Copytight (C) 1999, 2000, 05, 06 Ralf Baechle (ralf@linux-mips.org)
  * Copytight (C) 1999, 2000 Silicon Graphics, Inc.
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 1999, 2000, 05, 06 Ralf Baechle (ralf@linux-mips.org)
+ * Copyright (C) 1999, 2000 Silicon Graphics, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/bcd.h>
 #include <linux/clockchips.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched_clock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/kernel_stat.h>
 #include <linux/param.h>
@@ -17,6 +28,7 @@
 #include <linux/platform_device.h>
 
 #include <asm/time.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/sgialib.h>
 #include <asm/sn/ioc3.h>
@@ -49,6 +61,15 @@ static struct irq_chip rt_irq_type = {
 	.irq_mask	= disable_rt_irq,
 	.irq_unmask	= enable_rt_irq,
 };
+=======
+#include <asm/sgialib.h>
+#include <asm/sn/klconfig.h>
+#include <asm/sn/arch.h>
+#include <asm/sn/addrs.h>
+#include <asm/sn/agent.h>
+
+#include "ip27-common.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int rt_next_event(unsigned long delta, struct clock_event_device *evt)
 {
@@ -63,6 +84,7 @@ static int rt_next_event(unsigned long delta, struct clock_event_device *evt)
 	return LOCAL_HUB_L(PI_RT_COUNT) >= cnt ? -ETIME : 0;
 }
 
+<<<<<<< HEAD
 static void rt_set_mode(enum clock_event_mode mode,
 		struct clock_event_device *evt)
 {
@@ -71,6 +93,8 @@ static void rt_set_mode(enum clock_event_mode mode,
 
 int rt_timer_irq;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_PER_CPU(struct clock_event_device, hub_rt_clockevent);
 static DEFINE_PER_CPU(char [11], hub_rt_name);
 
@@ -91,6 +115,10 @@ static irqreturn_t hub_rt_counter_handler(int irq, void *dev_id)
 
 struct irqaction hub_rt_irqaction = {
 	.handler	= hub_rt_counter_handler,
+<<<<<<< HEAD
+=======
+	.percpu_dev_id	= &hub_rt_clockevent,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flags		= IRQF_PERCPU | IRQF_TIMER,
 	.name		= "hub-rt",
 };
@@ -106,17 +134,25 @@ struct irqaction hub_rt_irqaction = {
 #define NSEC_PER_CYCLE		800
 #define CYCLES_PER_SEC		(NSEC_PER_SEC / NSEC_PER_CYCLE)
 
+<<<<<<< HEAD
 void __cpuinit hub_rt_clock_event_init(void)
+=======
+void hub_rt_clock_event_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int cpu = smp_processor_id();
 	struct clock_event_device *cd = &per_cpu(hub_rt_clockevent, cpu);
 	unsigned char *name = per_cpu(hub_rt_name, cpu);
+<<<<<<< HEAD
 	int irq = rt_timer_irq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sprintf(name, "hub-rt %d", cpu);
 	cd->name		= name;
 	cd->features		= CLOCK_EVT_FEAT_ONESHOT;
 	clockevent_set_clock(cd, CYCLES_PER_SEC);
+<<<<<<< HEAD
 	cd->max_delta_ns        = clockevent_delta2ns(0xfffffffffffff, cd);
 	cd->min_delta_ns        = clockevent_delta2ns(0x300, cd);
 	cd->rating		= 200;
@@ -125,10 +161,24 @@ void __cpuinit hub_rt_clock_event_init(void)
 	cd->set_next_event	= rt_next_event;
 	cd->set_mode		= rt_set_mode;
 	clockevents_register_device(cd);
+=======
+	cd->max_delta_ns	= clockevent_delta2ns(0xfffffffffffff, cd);
+	cd->max_delta_ticks	= 0xfffffffffffff;
+	cd->min_delta_ns	= clockevent_delta2ns(0x300, cd);
+	cd->min_delta_ticks	= 0x300;
+	cd->rating		= 200;
+	cd->irq			= IP27_RT_TIMER_IRQ;
+	cd->cpumask		= cpumask_of(cpu);
+	cd->set_next_event	= rt_next_event;
+	clockevents_register_device(cd);
+
+	enable_percpu_irq(IP27_RT_TIMER_IRQ, IRQ_TYPE_NONE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init hub_rt_clock_event_global_init(void)
 {
+<<<<<<< HEAD
 	int irq;
 
 	do {
@@ -147,23 +197,48 @@ static void __init hub_rt_clock_event_global_init(void)
 }
 
 static cycle_t hub_rt_read(struct clocksource *cs)
+=======
+	irq_set_handler(IP27_RT_TIMER_IRQ, handle_percpu_devid_irq);
+	irq_set_percpu_devid(IP27_RT_TIMER_IRQ);
+	setup_percpu_irq(IP27_RT_TIMER_IRQ, &hub_rt_irqaction);
+}
+
+static u64 hub_rt_read(struct clocksource *cs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return REMOTE_HUB_L(cputonasid(0), PI_RT_COUNT);
 }
 
 struct clocksource hub_rt_clocksource = {
 	.name	= "HUB-RT",
+<<<<<<< HEAD
 	.rating	= 200,
+=======
+	.rating = 200,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.read	= hub_rt_read,
 	.mask	= CLOCKSOURCE_MASK(52),
 	.flags	= CLOCK_SOURCE_IS_CONTINUOUS,
 };
 
+<<<<<<< HEAD
+=======
+static u64 notrace hub_rt_read_sched_clock(void)
+{
+	return REMOTE_HUB_L(cputonasid(0), PI_RT_COUNT);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __init hub_rt_clocksource_init(void)
 {
 	struct clocksource *cs = &hub_rt_clocksource;
 
 	clocksource_register_hz(cs, CYCLES_PER_SEC);
+<<<<<<< HEAD
+=======
+
+	sched_clock_register(hub_rt_read_sched_clock, 52, CYCLES_PER_SEC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init plat_time_init(void)
@@ -173,6 +248,7 @@ void __init plat_time_init(void)
 	hub_rt_clock_event_init();
 }
 
+<<<<<<< HEAD
 void __cpuinit cpu_time_init(void)
 {
 	lboard_t *board;
@@ -195,6 +271,9 @@ void __cpuinit cpu_time_init(void)
 }
 
 void __cpuinit hub_rtc_init(cnodeid_t cnode)
+=======
+void hub_rtc_init(nasid_t nasid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	/*
@@ -202,7 +281,11 @@ void __cpuinit hub_rtc_init(cnodeid_t cnode)
 	 * If this is not the current node then it is a cpuless
 	 * node and timeouts will not happen there.
 	 */
+<<<<<<< HEAD
 	if (get_compact_nodeid() == cnode) {
+=======
+	if (get_nasid() == nasid) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		LOCAL_HUB_S(PI_RT_EN_A, 1);
 		LOCAL_HUB_S(PI_RT_EN_B, 1);
 		LOCAL_HUB_S(PI_PROF_EN_A, 0);
@@ -212,6 +295,7 @@ void __cpuinit hub_rtc_init(cnodeid_t cnode)
 		LOCAL_HUB_S(PI_RT_PEND_B, 0);
 	}
 }
+<<<<<<< HEAD
 
 static int __init sgi_ip27_rtc_devinit(void)
 {
@@ -232,3 +316,5 @@ static int __init sgi_ip27_rtc_devinit(void)
  * are resolved
  */
 late_initcall(sgi_ip27_rtc_devinit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

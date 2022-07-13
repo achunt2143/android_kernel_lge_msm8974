@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * String handling functions for PowerPC.
  *
  * Copyright (C) 1996 Paul Mackerras.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,6 +30,15 @@ _GLOBAL(strcpy)
 	bne	1b
 	blr
 
+=======
+ */
+#include <linux/export.h>
+#include <asm/ppc_asm.h>
+#include <asm/cache.h>
+
+	.text
+	
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This clears out any unused part of the destination buffer,
    just as the libc version does.  -- paulus */
 _GLOBAL(strncpy)
@@ -33,6 +47,10 @@ _GLOBAL(strncpy)
 	mtctr	r5
 	addi	r6,r3,-1
 	addi	r4,r4,-1
+<<<<<<< HEAD
+=======
+	.balign IFETCH_ALIGN_BYTES
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	lbzu	r0,1(r4)
 	cmpwi	0,r0,0
 	stbu	r0,1(r6)
@@ -44,6 +62,7 @@ _GLOBAL(strncpy)
 2:	stbu	r0,1(r6)	/* clear it out if so */
 	bdnz	2b
 	blr
+<<<<<<< HEAD
 
 _GLOBAL(strcat)
 	addi	r5,r3,-1
@@ -68,6 +87,9 @@ _GLOBAL(strcmp)
 	beqlr	1
 	beq	1b
 	blr
+=======
+EXPORT_SYMBOL(strncpy)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 _GLOBAL(strncmp)
 	PPC_LCMPI 0,r5,0
@@ -75,6 +97,10 @@ _GLOBAL(strncmp)
 	mtctr	r5
 	addi	r5,r3,-1
 	addi	r4,r4,-1
+<<<<<<< HEAD
+=======
+	.balign IFETCH_ALIGN_BYTES
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	lbzu	r3,1(r5)
 	cmpwi	1,r3,0
 	lbzu	r0,1(r4)
@@ -84,6 +110,7 @@ _GLOBAL(strncmp)
 	blr
 2:	li	r3,0
 	blr
+<<<<<<< HEAD
 
 _GLOBAL(strlen)
 	addi	r4,r3,-1
@@ -106,18 +133,26 @@ _GLOBAL(memcmp)
 	blr
 2:	li	r3,0
 	blr
+=======
+EXPORT_SYMBOL(strncmp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 _GLOBAL(memchr)
 	PPC_LCMPI 0,r5,0
 	beq-	2f
 	mtctr	r5
 	addi	r3,r3,-1
+<<<<<<< HEAD
+=======
+	.balign IFETCH_ALIGN_BYTES
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	lbzu	r0,1(r3)
 	cmpw	0,r0,r4
 	bdnzf	2,1b
 	beqlr
 2:	li	r3,0
 	blr
+<<<<<<< HEAD
 
 _GLOBAL(__clear_user)
 	addi	r6,r3,-4
@@ -205,3 +240,6 @@ _GLOBAL(__strnlen_user)
 
 	.section __ex_table,"a"
 	PPC_LONG	1b,99b
+=======
+EXPORT_SYMBOL(memchr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

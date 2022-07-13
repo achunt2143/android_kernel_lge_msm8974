@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/buffer_head.h>
 #include "minix.h"
 
@@ -26,6 +30,7 @@ static inline block_t *i_data(struct inode *inode)
 static int block_to_path(struct inode * inode, long block, int offsets[DEPTH])
 {
 	int n = 0;
+<<<<<<< HEAD
 	char b[BDEVNAME_SIZE];
 	struct super_block *sb = inode->i_sb;
 
@@ -38,6 +43,19 @@ static int block_to_path(struct inode * inode, long block, int offsets[DEPTH])
 			       "block %ld too big on dev %s\n",
 				block, bdevname(sb->s_bdev, b));
 	} else if (block < DIRCOUNT) {
+=======
+	struct super_block *sb = inode->i_sb;
+
+	if (block < 0) {
+		printk("MINIX-fs: block_to_path: block %ld < 0 on dev %pg\n",
+			block, sb->s_bdev);
+		return 0;
+	}
+	if ((u64)block * (u64)sb->s_blocksize >= sb->s_maxbytes)
+		return 0;
+
+	if (block < DIRCOUNT) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		offsets[n++] = block;
 	} else if ((block -= DIRCOUNT) < INDIRCOUNT(sb)) {
 		offsets[n++] = DIRCOUNT;

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/media/radio/si470x/radio-si470x-i2c.c
  *
@@ -5,6 +9,7 @@
  *
  * Copyright (c) 2009 Samsung Electronics Co.Ltd
  * Author: Joonyoung Shim <jy0922.shim@samsung.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,12 +24,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
 /* driver definitions */
 #define DRIVER_AUTHOR "Joonyoung Shim <jy0922.shim@samsung.com>";
+<<<<<<< HEAD
 #define DRIVER_CARD "Silicon Labs Si470x FM Radio Receiver"
+=======
+#define DRIVER_CARD "Silicon Labs Si470x FM Radio"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_DESC "I2C radio driver for Si470x FM Radio Receivers"
 #define DRIVER_VERSION "1.0.2"
 
@@ -32,6 +43,10 @@
 #include <linux/i2c.h>
 #include <linux/slab.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/gpio/consumer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 
 #include "radio-si470x.h"
@@ -47,7 +62,10 @@ static const struct i2c_device_id si470x_i2c_id[] = {
 MODULE_DEVICE_TABLE(i2c, si470x_i2c_id);
 
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************************************
  * Module Parameters
  **************************************************************************/
@@ -94,12 +112,25 @@ MODULE_PARM_DESC(max_rds_errors, "RDS maximum block errors: *1*");
 /*
  * si470x_get_register - read register
  */
+<<<<<<< HEAD
 int si470x_get_register(struct si470x_device *radio, int regnr)
 {
 	u16 buf[READ_REG_NUM];
 	struct i2c_msg msgs[1] = {
 		{ radio->client->addr, I2C_M_RD, sizeof(u16) * READ_REG_NUM,
 			(void *)buf },
+=======
+static int si470x_get_register(struct si470x_device *radio, int regnr)
+{
+	__be16 buf[READ_REG_NUM];
+	struct i2c_msg msgs[1] = {
+		{
+			.addr = radio->client->addr,
+			.flags = I2C_M_RD,
+			.len = sizeof(u16) * READ_REG_NUM,
+			.buf = (void *)buf
+		},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	if (i2c_transfer(radio->client->adapter, msgs, 1) != 1)
@@ -114,6 +145,7 @@ int si470x_get_register(struct si470x_device *radio, int regnr)
 /*
  * si470x_set_register - write register
  */
+<<<<<<< HEAD
 int si470x_set_register(struct si470x_device *radio, int regnr)
 {
 	int i;
@@ -121,6 +153,18 @@ int si470x_set_register(struct si470x_device *radio, int regnr)
 	struct i2c_msg msgs[1] = {
 		{ radio->client->addr, 0, sizeof(u16) * WRITE_REG_NUM,
 			(void *)buf },
+=======
+static int si470x_set_register(struct si470x_device *radio, int regnr)
+{
+	int i;
+	__be16 buf[WRITE_REG_NUM];
+	struct i2c_msg msgs[1] = {
+		{
+			.addr = radio->client->addr,
+			.len = sizeof(u16) * WRITE_REG_NUM,
+			.buf = (void *)buf
+		},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	for (i = 0; i < WRITE_REG_NUM; i++)
@@ -144,10 +188,21 @@ int si470x_set_register(struct si470x_device *radio, int regnr)
 static int si470x_get_all_registers(struct si470x_device *radio)
 {
 	int i;
+<<<<<<< HEAD
 	u16 buf[READ_REG_NUM];
 	struct i2c_msg msgs[1] = {
 		{ radio->client->addr, I2C_M_RD, sizeof(u16) * READ_REG_NUM,
 			(void *)buf },
+=======
+	__be16 buf[READ_REG_NUM];
+	struct i2c_msg msgs[1] = {
+		{
+			.addr = radio->client->addr,
+			.flags = I2C_M_RD,
+			.len = sizeof(u16) * READ_REG_NUM,
+			.buf = (void *)buf
+		},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	if (i2c_transfer(radio->client->adapter, msgs, 1) != 1)
@@ -162,6 +217,7 @@ static int si470x_get_all_registers(struct si470x_device *radio)
 
 
 /**************************************************************************
+<<<<<<< HEAD
  * General Driver Functions - DISCONNECT_CHECK
  **************************************************************************/
 
@@ -176,12 +232,15 @@ int si470x_disconnect_check(struct si470x_device *radio)
 
 
 /**************************************************************************
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * File Operations Interface
  **************************************************************************/
 
 /*
  * si470x_fops_open - file open
  */
+<<<<<<< HEAD
 int si470x_fops_open(struct file *file)
 {
 	struct si470x_device *radio = video_drvdata(file);
@@ -191,6 +250,17 @@ int si470x_fops_open(struct file *file)
 	radio->users++;
 
 	if (radio->users == 1) {
+=======
+static int si470x_fops_open(struct file *file)
+{
+	struct si470x_device *radio = video_drvdata(file);
+	int retval = v4l2_fh_open(file);
+
+	if (retval)
+		return retval;
+
+	if (v4l2_fh_is_singular_file(file)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* start radio */
 		retval = si470x_start(radio);
 		if (retval < 0)
@@ -205,7 +275,12 @@ int si470x_fops_open(struct file *file)
 	}
 
 done:
+<<<<<<< HEAD
 	mutex_unlock(&radio->lock);
+=======
+	if (retval)
+		v4l2_fh_release(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -213,6 +288,7 @@ done:
 /*
  * si470x_fops_release - file release
  */
+<<<<<<< HEAD
 int si470x_fops_release(struct file *file)
 {
 	struct si470x_device *radio = video_drvdata(file);
@@ -231,6 +307,17 @@ int si470x_fops_release(struct file *file)
 	mutex_unlock(&radio->lock);
 
 	return retval;
+=======
+static int si470x_fops_release(struct file *file)
+{
+	struct si470x_device *radio = video_drvdata(file);
+
+	if (v4l2_fh_is_singular_file(file))
+		/* stop radio */
+		si470x_stop(radio);
+
+	return v4l2_fh_release(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -242,6 +329,7 @@ int si470x_fops_release(struct file *file)
 /*
  * si470x_vidioc_querycap - query device capabilities
  */
+<<<<<<< HEAD
 int si470x_vidioc_querycap(struct file *file, void *priv,
 		struct v4l2_capability *capability)
 {
@@ -250,6 +338,13 @@ int si470x_vidioc_querycap(struct file *file, void *priv,
 	capability->capabilities = V4L2_CAP_HW_FREQ_SEEK |
 		V4L2_CAP_TUNER | V4L2_CAP_RADIO;
 
+=======
+static int si470x_vidioc_querycap(struct file *file, void *priv,
+				  struct v4l2_capability *capability)
+{
+	strscpy(capability->driver, DRIVER_NAME, sizeof(capability->driver));
+	strscpy(capability->card, DRIVER_CARD, sizeof(capability->card));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -318,7 +413,11 @@ static irqreturn_t si470x_i2c_interrupt(int irq, void *dev_id)
 					READCHAN_BLERD) >> 10;
 			rds = radio->registers[RDSD];
 			break;
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Fill the V4L2 RDS buffer */
 		put_unaligned_le16(rds, &tmpbuf);
@@ -357,6 +456,7 @@ end:
 /*
  * si470x_i2c_probe - probe for the device
  */
+<<<<<<< HEAD
 static int __devinit si470x_i2c_probe(struct i2c_client *client,
 		const struct i2c_device_id *id)
 {
@@ -366,11 +466,21 @@ static int __devinit si470x_i2c_probe(struct i2c_client *client,
 
 	/* private data allocation and initialization */
 	radio = kzalloc(sizeof(struct si470x_device), GFP_KERNEL);
+=======
+static int si470x_i2c_probe(struct i2c_client *client)
+{
+	struct si470x_device *radio;
+	int retval = 0;
+
+	/* private data allocation and initialization */
+	radio = devm_kzalloc(&client->dev, sizeof(*radio), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!radio) {
 		retval = -ENOMEM;
 		goto err_initial;
 	}
 
+<<<<<<< HEAD
 	radio->users = 0;
 	radio->client = client;
 	mutex_init(&radio->lock);
@@ -384,18 +494,74 @@ static int __devinit si470x_i2c_probe(struct i2c_client *client,
 	memcpy(radio->videodev, &si470x_viddev_template,
 			sizeof(si470x_viddev_template));
 	video_set_drvdata(radio->videodev, radio);
+=======
+	radio->client = client;
+	radio->band = 1; /* Default to 76 - 108 MHz */
+	mutex_init(&radio->lock);
+	init_completion(&radio->completion);
+
+	radio->get_register = si470x_get_register;
+	radio->set_register = si470x_set_register;
+	radio->fops_open = si470x_fops_open;
+	radio->fops_release = si470x_fops_release;
+	radio->vidioc_querycap = si470x_vidioc_querycap;
+
+	retval = v4l2_device_register(&client->dev, &radio->v4l2_dev);
+	if (retval < 0) {
+		dev_err(&client->dev, "couldn't register v4l2_device\n");
+		goto err_initial;
+	}
+
+	v4l2_ctrl_handler_init(&radio->hdl, 2);
+	v4l2_ctrl_new_std(&radio->hdl, &si470x_ctrl_ops,
+			V4L2_CID_AUDIO_MUTE, 0, 1, 1, 1);
+	v4l2_ctrl_new_std(&radio->hdl, &si470x_ctrl_ops,
+			V4L2_CID_AUDIO_VOLUME, 0, 15, 1, 15);
+	if (radio->hdl.error) {
+		retval = radio->hdl.error;
+		dev_err(&client->dev, "couldn't register control\n");
+		goto err_all;
+	}
+
+	/* video device initialization */
+	radio->videodev = si470x_viddev_template;
+	radio->videodev.ctrl_handler = &radio->hdl;
+	radio->videodev.lock = &radio->lock;
+	radio->videodev.v4l2_dev = &radio->v4l2_dev;
+	radio->videodev.release = video_device_release_empty;
+	radio->videodev.device_caps =
+		V4L2_CAP_HW_FREQ_SEEK | V4L2_CAP_READWRITE | V4L2_CAP_TUNER |
+		V4L2_CAP_RADIO | V4L2_CAP_RDS_CAPTURE;
+	video_set_drvdata(&radio->videodev, radio);
+
+	radio->gpio_reset = devm_gpiod_get_optional(&client->dev, "reset",
+						    GPIOD_OUT_LOW);
+	if (IS_ERR(radio->gpio_reset)) {
+		retval = PTR_ERR(radio->gpio_reset);
+		dev_err(&client->dev, "Failed to request gpio: %d\n", retval);
+		goto err_all;
+	}
+
+	if (radio->gpio_reset)
+		gpiod_set_value(radio->gpio_reset, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* power up : need 110ms */
 	radio->registers[POWERCFG] = POWERCFG_ENABLE;
 	if (si470x_set_register(radio, POWERCFG) < 0) {
 		retval = -EIO;
+<<<<<<< HEAD
 		goto err_video;
+=======
+		goto err_all;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	msleep(110);
 
 	/* get device and chip versions */
 	if (si470x_get_all_registers(radio) < 0) {
 		retval = -EIO;
+<<<<<<< HEAD
 		goto err_video;
 	}
 	dev_info(&client->dev, "DeviceID=0x%4.4hx ChipID=0x%4.4hx\n",
@@ -417,6 +583,18 @@ static int __devinit si470x_i2c_probe(struct i2c_client *client,
 		dev_warn(&client->dev,
 			"please report to V4L ML at "
 			"linux-media@vger.kernel.org\n");
+=======
+		goto err_all;
+	}
+	dev_info(&client->dev, "DeviceID=0x%4.4hx ChipID=0x%4.4hx\n",
+			radio->registers[DEVICEID], radio->registers[SI_CHIPID]);
+	if ((radio->registers[SI_CHIPID] & SI_CHIPID_FIRMWARE) < RADIO_FW_VERSION) {
+		dev_warn(&client->dev,
+			"This driver is known to work with firmware version %u, but the device has firmware version %u.\n"
+			"If you have some trouble using this driver, please report to V4L ML at linux-media@vger.kernel.org\n",
+			RADIO_FW_VERSION,
+			radio->registers[SI_CHIPID] & SI_CHIPID_FIRMWARE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* set initial frequency */
@@ -424,10 +602,17 @@ static int __devinit si470x_i2c_probe(struct i2c_client *client,
 
 	/* rds buffer allocation */
 	radio->buf_size = rds_buf * 3;
+<<<<<<< HEAD
 	radio->buffer = kmalloc(radio->buf_size, GFP_KERNEL);
 	if (!radio->buffer) {
 		retval = -EIO;
 		goto err_video;
+=======
+	radio->buffer = devm_kmalloc(&client->dev, radio->buf_size, GFP_KERNEL);
+	if (!radio->buffer) {
+		retval = -EIO;
+		goto err_all;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* rds buffer configuration */
@@ -435,6 +620,7 @@ static int __devinit si470x_i2c_probe(struct i2c_client *client,
 	radio->rd_index = 0;
 	init_waitqueue_head(&radio->read_queue);
 
+<<<<<<< HEAD
 	/* mark Seek/Tune Complete Interrupt enabled */
 	radio->stci_enabled = true;
 	init_completion(&radio->completion);
@@ -448,6 +634,19 @@ static int __devinit si470x_i2c_probe(struct i2c_client *client,
 
 	/* register video device */
 	retval = video_register_device(radio->videodev, VFL_TYPE_RADIO,
+=======
+	retval = devm_request_threaded_irq(&client->dev, client->irq, NULL,
+					   si470x_i2c_interrupt,
+					   IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
+					   DRIVER_NAME, radio);
+	if (retval) {
+		dev_err(&client->dev, "Failed to register interrupt\n");
+		goto err_all;
+	}
+
+	/* register video device */
+	retval = video_register_device(&radio->videodev, VFL_TYPE_RADIO,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			radio_nr);
 	if (retval) {
 		dev_warn(&client->dev, "Could not register video device\n");
@@ -457,6 +656,7 @@ static int __devinit si470x_i2c_probe(struct i2c_client *client,
 
 	return 0;
 err_all:
+<<<<<<< HEAD
 	free_irq(client->irq, radio);
 err_rds:
 	kfree(radio->buffer);
@@ -464,6 +664,10 @@ err_video:
 	video_device_release(radio->videodev);
 err_radio:
 	kfree(radio);
+=======
+	v4l2_ctrl_handler_free(&radio->hdl);
+	v4l2_device_unregister(&radio->v4l2_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_initial:
 	return retval;
 }
@@ -472,6 +676,7 @@ err_initial:
 /*
  * si470x_i2c_remove - remove the device
  */
+<<<<<<< HEAD
 static __devexit int si470x_i2c_remove(struct i2c_client *client)
 {
 	struct si470x_device *radio = i2c_get_clientdata(client);
@@ -485,6 +690,23 @@ static __devexit int si470x_i2c_remove(struct i2c_client *client)
 
 
 #ifdef CONFIG_PM
+=======
+static void si470x_i2c_remove(struct i2c_client *client)
+{
+	struct si470x_device *radio = i2c_get_clientdata(client);
+
+	video_unregister_device(&radio->videodev);
+
+	if (radio->gpio_reset)
+		gpiod_set_value(radio->gpio_reset, 0);
+
+	v4l2_ctrl_handler_free(&radio->hdl);
+	v4l2_device_unregister(&radio->v4l2_dev);
+}
+
+
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * si470x_i2c_suspend - suspend the device
  */
@@ -522,6 +744,16 @@ static int si470x_i2c_resume(struct device *dev)
 static SIMPLE_DEV_PM_OPS(si470x_i2c_pm, si470x_i2c_suspend, si470x_i2c_resume);
 #endif
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_OF)
+static const struct of_device_id si470x_of_match[] = {
+	{ .compatible = "silabs,si470x" },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, si470x_of_match);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * si470x_i2c_driver - i2c driver interface
@@ -529,13 +761,22 @@ static SIMPLE_DEV_PM_OPS(si470x_i2c_pm, si470x_i2c_suspend, si470x_i2c_resume);
 static struct i2c_driver si470x_i2c_driver = {
 	.driver = {
 		.name		= "si470x",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
 #ifdef CONFIG_PM
+=======
+		.of_match_table = of_match_ptr(si470x_of_match),
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pm		= &si470x_i2c_pm,
 #endif
 	},
 	.probe			= si470x_i2c_probe,
+<<<<<<< HEAD
 	.remove			= __devexit_p(si470x_i2c_remove),
+=======
+	.remove			= si470x_i2c_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table		= si470x_i2c_id,
 };
 

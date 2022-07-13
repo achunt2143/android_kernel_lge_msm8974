@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/core_apecs.c
  *
@@ -345,7 +349,12 @@ apecs_init_arch(void)
 	 * Window 1 is direct access 1GB at 1GB
 	 * Window 2 is scatter-gather 8MB at 8MB (for isa)
 	 */
+<<<<<<< HEAD
 	hose->sg_isa = iommu_arena_new(hose, 0x00800000, 0x00800000, 0);
+=======
+	hose->sg_isa = iommu_arena_new(hose, 0x00800000, 0x00800000,
+				       SMP_CACHE_BYTES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hose->sg_pci = NULL;
 	__direct_map_base = 0x40000000;
 	__direct_map_size = 0x40000000;

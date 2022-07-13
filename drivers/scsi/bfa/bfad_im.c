@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
@@ -13,6 +14,16 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -69,6 +80,7 @@ bfa_cb_ioim_done(void *drv, struct bfad_ioim_s *dio,
 				host_status = DID_ERROR;
 			}
 		}
+<<<<<<< HEAD
 		cmnd->result = ScsiResult(host_status, scsi_status);
 
 		break;
@@ -79,6 +91,20 @@ bfa_cb_ioim_done(void *drv, struct bfad_ioim_s *dio,
 	default:
 		host_status = DID_ERROR;
 		cmnd->result = ScsiResult(host_status, 0);
+=======
+		cmnd->result = host_status << 16 | scsi_status;
+
+		break;
+
+	case BFI_IOIM_STS_TIMEDOUT:
+		cmnd->result = DID_TIME_OUT << 16;
+		break;
+	case BFI_IOIM_STS_PATHTOV:
+		cmnd->result = DID_TRANSPORT_DISRUPTED << 16;
+		break;
+	default:
+		cmnd->result = DID_ERROR << 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Unmap DMA, if host is NULL, it means a scsi passthru cmd */
@@ -101,7 +127,11 @@ bfa_cb_ioim_done(void *drv, struct bfad_ioim_s *dio,
 		}
 	}
 
+<<<<<<< HEAD
 	cmnd->scsi_done(cmnd);
+=======
+	scsi_done(cmnd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
@@ -111,7 +141,11 @@ bfa_cb_ioim_good_comp(void *drv, struct bfad_ioim_s *dio)
 	struct bfad_itnim_data_s *itnim_data;
 	struct bfad_itnim_s *itnim;
 
+<<<<<<< HEAD
 	cmnd->result = ScsiResult(DID_OK, SCSI_STATUS_GOOD);
+=======
+	cmnd->result = DID_OK << 16 | SAM_STAT_GOOD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Unmap DMA, if host is NULL, it means a scsi passthru cmd */
 	if (cmnd->device->host != NULL)
@@ -129,7 +163,11 @@ bfa_cb_ioim_good_comp(void *drv, struct bfad_ioim_s *dio)
 		}
 	}
 
+<<<<<<< HEAD
 	cmnd->scsi_done(cmnd);
+=======
+	scsi_done(cmnd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
@@ -138,7 +176,11 @@ bfa_cb_ioim_abort(void *drv, struct bfad_ioim_s *dio)
 	struct scsi_cmnd *cmnd = (struct scsi_cmnd *)dio;
 	struct bfad_s         *bfad = drv;
 
+<<<<<<< HEAD
 	cmnd->result = ScsiResult(DID_ERROR, 0);
+=======
+	cmnd->result = DID_ERROR << 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Unmap DMA, if host is NULL, it means a scsi passthru cmd */
 	if (cmnd->device->host != NULL)
@@ -155,10 +197,17 @@ bfa_cb_tskim_done(void *bfad, struct bfad_tskim_s *dtsk,
 	struct scsi_cmnd *cmnd = (struct scsi_cmnd *)dtsk;
 	wait_queue_head_t *wq;
 
+<<<<<<< HEAD
 	cmnd->SCp.Status |= tsk_status << 1;
 	set_bit(IO_DONE_BIT, (unsigned long *)&cmnd->SCp.Status);
 	wq = (wait_queue_head_t *) cmnd->SCp.ptr;
 	cmnd->SCp.ptr = NULL;
+=======
+	bfad_priv(cmnd)->status |= tsk_status << 1;
+	set_bit(IO_DONE_BIT, &bfad_priv(cmnd)->status);
+	wq = bfad_priv(cmnd)->wq;
+	bfad_priv(cmnd)->wq = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (wq)
 		wake_up(wq);
@@ -180,7 +229,11 @@ bfad_im_info(struct Scsi_Host *shost)
 
 	memset(bfa_buf, 0, sizeof(bfa_buf));
 	snprintf(bfa_buf, sizeof(bfa_buf),
+<<<<<<< HEAD
 		"Brocade FC/FCOE Adapter, " "hwpath: %s driver: %s",
+=======
+		"QLogic BR-series FC/FCOE Adapter, hwpath: %s driver: %s",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bfad->pci_name, BFAD_DRIVER_VERSION);
 
 	return bfa_buf;
@@ -206,7 +259,11 @@ bfad_im_abort_handler(struct scsi_cmnd *cmnd)
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	hal_io = (struct bfa_ioim_s *) cmnd->host_scribble;
 	if (!hal_io) {
+<<<<<<< HEAD
 		/* IO has been completed, retrun success */
+=======
+		/* IO has been completed, return success */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = SUCCESS;
 		goto out;
 	}
@@ -231,7 +288,11 @@ bfad_im_abort_handler(struct scsi_cmnd *cmnd)
 			timeout *= 2;
 	}
 
+<<<<<<< HEAD
 	cmnd->scsi_done(cmnd);
+=======
+	scsi_done(cmnd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bfa_trc(bfad, hal_io->iotag);
 	BFA_LOG(KERN_INFO, bfad, bfa_log_level,
 		"scsi%d: complete abort 0x%p iotag 0x%x\n",
@@ -264,8 +325,26 @@ bfad_im_target_reset_send(struct bfad_s *bfad, struct scsi_cmnd *cmnd,
 	 * happens.
 	 */
 	cmnd->host_scribble = NULL;
+<<<<<<< HEAD
 	cmnd->SCp.Status = 0;
 	bfa_itnim = bfa_fcs_itnim_get_halitn(&itnim->fcs_itnim);
+=======
+	bfad_priv(cmnd)->status = 0;
+	bfa_itnim = bfa_fcs_itnim_get_halitn(&itnim->fcs_itnim);
+	/*
+	 * bfa_itnim can be NULL if the port gets disconnected and the bfa
+	 * and fcs layers have cleaned up their nexus with the targets and
+	 * the same has not been cleaned up by the shim
+	 */
+	if (bfa_itnim == NULL) {
+		bfa_tskim_free(tskim);
+		BFA_LOG(KERN_ERR, bfad, bfa_log_level,
+			"target reset, bfa_itnim is NULL\n");
+		rc = BFA_STATUS_FAILED;
+		goto out;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(&scsilun, 0, sizeof(scsilun));
 	bfa_tskim_start(tskim, bfa_itnim, scsilun,
 			    FCP_TM_TARGET_RESET, BFAD_TARGET_RESET_TMO);
@@ -318,18 +397,43 @@ bfad_im_reset_lun_handler(struct scsi_cmnd *cmnd)
 	 * if happens.
 	 */
 	cmnd->host_scribble = NULL;
+<<<<<<< HEAD
 	cmnd->SCp.ptr = (char *)&wq;
 	cmnd->SCp.Status = 0;
 	bfa_itnim = bfa_fcs_itnim_get_halitn(&itnim->fcs_itnim);
+=======
+	bfad_priv(cmnd)->wq = &wq;
+	bfad_priv(cmnd)->status = 0;
+	bfa_itnim = bfa_fcs_itnim_get_halitn(&itnim->fcs_itnim);
+	/*
+	 * bfa_itnim can be NULL if the port gets disconnected and the bfa
+	 * and fcs layers have cleaned up their nexus with the targets and
+	 * the same has not been cleaned up by the shim
+	 */
+	if (bfa_itnim == NULL) {
+		bfa_tskim_free(tskim);
+		BFA_LOG(KERN_ERR, bfad, bfa_log_level,
+			"lun reset, bfa_itnim is NULL\n");
+		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+		rc = FAILED;
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int_to_scsilun(cmnd->device->lun, &scsilun);
 	bfa_tskim_start(tskim, bfa_itnim, scsilun,
 			    FCP_TM_LUN_RESET, BFAD_LUN_RESET_TMO);
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 
+<<<<<<< HEAD
 	wait_event(wq, test_bit(IO_DONE_BIT,
 			(unsigned long *)&cmnd->SCp.Status));
 
 	task_status = cmnd->SCp.Status >> 1;
+=======
+	wait_event(wq, test_bit(IO_DONE_BIT, &bfad_priv(cmnd)->status));
+
+	task_status = bfad_priv(cmnd)->status >> 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (task_status != BFI_TSKIM_STS_OK) {
 		BFA_LOG(KERN_ERR, bfad, bfa_log_level,
 			"LUN reset failure, status: %d\n", task_status);
@@ -341,22 +445,37 @@ out:
 }
 
 /*
+<<<<<<< HEAD
  * Scsi_Host template entry, resets the bus and abort all commands.
  */
 static int
 bfad_im_reset_bus_handler(struct scsi_cmnd *cmnd)
 {
 	struct Scsi_Host *shost = cmnd->device->host;
+=======
+ * Scsi_Host template entry, resets the target and abort all commands.
+ */
+static int
+bfad_im_reset_target_handler(struct scsi_cmnd *cmnd)
+{
+	struct Scsi_Host *shost = cmnd->device->host;
+	struct scsi_target *starget = scsi_target(cmnd->device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfad_im_port_s *im_port =
 				(struct bfad_im_port_s *) shost->hostdata[0];
 	struct bfad_s         *bfad = im_port->bfad;
 	struct bfad_itnim_s   *itnim;
 	unsigned long   flags;
+<<<<<<< HEAD
 	u32        i, rc, err_cnt = 0;
+=======
+	u32        rc, rtn = FAILED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DECLARE_WAIT_QUEUE_HEAD_ONSTACK(wq);
 	enum bfi_tskim_status task_status;
 
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
+<<<<<<< HEAD
 	for (i = 0; i < MAX_FCP_TARGET; i++) {
 		itnim = bfad_get_itnim(im_port, i);
 		if (itnim) {
@@ -380,14 +499,38 @@ bfad_im_reset_bus_handler(struct scsi_cmnd *cmnd)
 					" status: %d\n", task_status);
 				err_cnt++;
 			}
+=======
+	itnim = bfad_get_itnim(im_port, starget->id);
+	if (itnim) {
+		bfad_priv(cmnd)->wq = &wq;
+		rc = bfad_im_target_reset_send(bfad, cmnd, itnim);
+		if (rc == BFA_STATUS_OK) {
+			/* wait target reset to complete */
+			spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+			wait_event(wq, test_bit(IO_DONE_BIT,
+						&bfad_priv(cmnd)->status));
+			spin_lock_irqsave(&bfad->bfad_lock, flags);
+
+			task_status = bfad_priv(cmnd)->status >> 1;
+			if (task_status != BFI_TSKIM_STS_OK)
+				BFA_LOG(KERN_ERR, bfad, bfa_log_level,
+					"target reset failure,"
+					" status: %d\n", task_status);
+			else
+				rtn = SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 
+<<<<<<< HEAD
 	if (err_cnt)
 		return FAILED;
 
 	return SUCCESS;
+=======
+	return rtn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -408,13 +551,21 @@ bfad_im_slave_destroy(struct scsi_device *sdev)
  * BFA FCS itnim alloc callback, after successful PRLI
  * Context: Interrupt
  */
+<<<<<<< HEAD
 void
+=======
+int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfa_fcb_itnim_alloc(struct bfad_s *bfad, struct bfa_fcs_itnim_s **itnim,
 		    struct bfad_itnim_s **itnim_drv)
 {
 	*itnim_drv = kzalloc(sizeof(struct bfad_itnim_s), GFP_ATOMIC);
 	if (*itnim_drv == NULL)
+<<<<<<< HEAD
 		return;
+=======
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	(*itnim_drv)->im = bfad->im;
 	*itnim = &(*itnim_drv)->fcs_itnim;
@@ -425,6 +576,10 @@ bfa_fcb_itnim_alloc(struct bfad_s *bfad, struct bfa_fcs_itnim_s **itnim,
 	 */
 	INIT_WORK(&(*itnim_drv)->itnim_work, bfad_im_itnim_work_handler);
 	bfad->bfad_flags |= BFAD_RPORT_ONLINE;
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -520,6 +675,7 @@ int
 bfad_im_scsi_host_alloc(struct bfad_s *bfad, struct bfad_im_port_s *im_port,
 			struct device *dev)
 {
+<<<<<<< HEAD
 	int error = 1;
 
 	mutex_lock(&bfad_mutex);
@@ -537,6 +693,19 @@ bfad_im_scsi_host_alloc(struct bfad_s *bfad, struct bfad_im_port_s *im_port,
 		goto out;
 	}
 
+=======
+	struct bfad_im_port_pointer *im_portp;
+	int error;
+
+	mutex_lock(&bfad_mutex);
+	error = idr_alloc(&bfad_im_port_index, im_port, 0, 0, GFP_KERNEL);
+	if (error < 0) {
+		mutex_unlock(&bfad_mutex);
+		printk(KERN_WARNING "idr_alloc failure\n");
+		goto out;
+	}
+	im_port->idr_id = error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&bfad_mutex);
 
 	im_port->shost = bfad_scsi_host_alloc(im_port, bfad);
@@ -545,7 +714,12 @@ bfad_im_scsi_host_alloc(struct bfad_s *bfad, struct bfad_im_port_s *im_port,
 		goto out_free_idr;
 	}
 
+<<<<<<< HEAD
 	im_port->shost->hostdata[0] = (unsigned long)im_port;
+=======
+	im_portp = shost_priv(im_port->shost);
+	im_portp->p = im_port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	im_port->shost->unique_id = im_port->idr_id;
 	im_port->shost->this_id = -1;
 	im_port->shost->max_id = MAX_FCP_TARGET;
@@ -687,6 +861,7 @@ bfa_status_t
 bfad_im_probe(struct bfad_s *bfad)
 {
 	struct bfad_im_s      *im;
+<<<<<<< HEAD
 	bfa_status_t    rc = BFA_STATUS_OK;
 
 	im = kzalloc(sizeof(struct bfad_im_s), GFP_KERNEL);
@@ -694,18 +869,32 @@ bfad_im_probe(struct bfad_s *bfad)
 		rc = BFA_STATUS_ENOMEM;
 		goto ext;
 	}
+=======
+
+	im = kzalloc(sizeof(struct bfad_im_s), GFP_KERNEL);
+	if (im == NULL)
+		return BFA_STATUS_ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bfad->im = im;
 	im->bfad = bfad;
 
 	if (bfad_thread_workq(bfad) != BFA_STATUS_OK) {
 		kfree(im);
+<<<<<<< HEAD
 		rc = BFA_STATUS_FAILED;
 	}
 
 	INIT_WORK(&im->aen_im_notify_work, bfad_aen_im_notify_handler);
 ext:
 	return rc;
+=======
+		return BFA_STATUS_FAILED;
+	}
+
+	INIT_WORK(&im->aen_im_notify_work, bfad_aen_im_notify_handler);
+	return BFA_STATUS_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
@@ -733,7 +922,11 @@ bfad_scsi_host_alloc(struct bfad_im_port_s *im_port, struct bfad_s *bfad)
 
 	sht->sg_tablesize = bfad->cfg_data.io_max_sge;
 
+<<<<<<< HEAD
 	return scsi_host_alloc(sht, sizeof(unsigned long));
+=======
+	return scsi_host_alloc(sht, sizeof(struct bfad_im_port_pointer));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
@@ -750,7 +943,10 @@ void
 bfad_destroy_workq(struct bfad_im_s *im)
 {
 	if (im && im->drv_workq) {
+<<<<<<< HEAD
 		flush_workqueue(im->drv_workq);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		destroy_workqueue(im->drv_workq);
 		im->drv_workq = NULL;
 	}
@@ -782,11 +978,15 @@ bfad_thread_workq(struct bfad_s *bfad)
 static int
 bfad_im_slave_configure(struct scsi_device *sdev)
 {
+<<<<<<< HEAD
 	if (sdev->tagged_supported)
 		scsi_activate_tcq(sdev, bfa_lun_queue_depth);
 	else
 		scsi_deactivate_tcq(sdev, bfa_lun_queue_depth);
 
+=======
+	scsi_change_queue_depth(sdev, bfa_lun_queue_depth);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -795,9 +995,17 @@ struct scsi_host_template bfad_im_scsi_host_template = {
 	.name = BFAD_DRIVER_NAME,
 	.info = bfad_im_info,
 	.queuecommand = bfad_im_queuecommand,
+<<<<<<< HEAD
 	.eh_abort_handler = bfad_im_abort_handler,
 	.eh_device_reset_handler = bfad_im_reset_lun_handler,
 	.eh_bus_reset_handler = bfad_im_reset_bus_handler,
+=======
+	.cmd_size = sizeof(struct bfad_cmd_priv),
+	.eh_timed_out = fc_eh_timed_out,
+	.eh_abort_handler = bfad_im_abort_handler,
+	.eh_device_reset_handler = bfad_im_reset_lun_handler,
+	.eh_target_reset_handler = bfad_im_reset_target_handler,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.slave_alloc = bfad_im_slave_alloc,
 	.slave_configure = bfad_im_slave_configure,
@@ -806,8 +1014,12 @@ struct scsi_host_template bfad_im_scsi_host_template = {
 	.this_id = -1,
 	.sg_tablesize = BFAD_IO_MAX_SGE,
 	.cmd_per_lun = 3,
+<<<<<<< HEAD
 	.use_clustering = ENABLE_CLUSTERING,
 	.shost_attrs = bfad_im_host_attrs,
+=======
+	.shost_groups = bfad_im_host_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.max_sectors = BFAD_MAX_SECTORS,
 	.vendor_id = BFA_PCI_VENDOR_ID_BROCADE,
 };
@@ -817,9 +1029,17 @@ struct scsi_host_template bfad_im_vport_template = {
 	.name = BFAD_DRIVER_NAME,
 	.info = bfad_im_info,
 	.queuecommand = bfad_im_queuecommand,
+<<<<<<< HEAD
 	.eh_abort_handler = bfad_im_abort_handler,
 	.eh_device_reset_handler = bfad_im_reset_lun_handler,
 	.eh_bus_reset_handler = bfad_im_reset_bus_handler,
+=======
+	.cmd_size = sizeof(struct bfad_cmd_priv),
+	.eh_timed_out = fc_eh_timed_out,
+	.eh_abort_handler = bfad_im_abort_handler,
+	.eh_device_reset_handler = bfad_im_reset_lun_handler,
+	.eh_target_reset_handler = bfad_im_reset_target_handler,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.slave_alloc = bfad_im_slave_alloc,
 	.slave_configure = bfad_im_slave_configure,
@@ -828,8 +1048,12 @@ struct scsi_host_template bfad_im_vport_template = {
 	.this_id = -1,
 	.sg_tablesize = BFAD_IO_MAX_SGE,
 	.cmd_per_lun = 3,
+<<<<<<< HEAD
 	.use_clustering = ENABLE_CLUSTERING,
 	.shost_attrs = bfad_im_vport_attrs,
+=======
+	.shost_groups = bfad_im_vport_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.max_sectors = BFAD_MAX_SECTORS,
 };
 
@@ -859,6 +1083,11 @@ bfad_im_module_exit(void)
 
 	if (bfad_im_scsi_vport_transport_template)
 		fc_release_transport(bfad_im_scsi_vport_transport_template);
+<<<<<<< HEAD
+=======
+
+	idr_destroy(&bfad_im_port_index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void
@@ -874,6 +1103,7 @@ bfad_ramp_up_qdepth(struct bfad_itnim_s *itnim, struct scsi_device *sdev)
 			if (bfa_lun_queue_depth > tmp_sdev->queue_depth) {
 				if (tmp_sdev->id != sdev->id)
 					continue;
+<<<<<<< HEAD
 				if (tmp_sdev->ordered_tags)
 					scsi_adjust_queue_depth(tmp_sdev,
 						MSG_ORDERED_TAG,
@@ -882,6 +1112,10 @@ bfad_ramp_up_qdepth(struct bfad_itnim_s *itnim, struct scsi_device *sdev)
 					scsi_adjust_queue_depth(tmp_sdev,
 						MSG_SIMPLE_TAG,
 						tmp_sdev->queue_depth + 1);
+=======
+				scsi_change_queue_depth(tmp_sdev,
+					tmp_sdev->queue_depth + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				itnim->last_ramp_up_time = jiffies;
 			}
@@ -955,13 +1189,24 @@ static int
 bfad_im_slave_alloc(struct scsi_device *sdev)
 {
 	struct fc_rport *rport = starget_to_rport(scsi_target(sdev));
+<<<<<<< HEAD
 	struct bfad_itnim_data_s *itnim_data =
 				(struct bfad_itnim_data_s *) rport->dd_data;
 	struct bfa_s *bfa = itnim_data->itnim->bfa_itnim->bfa;
+=======
+	struct bfad_itnim_data_s *itnim_data;
+	struct bfa_s *bfa;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!rport || fc_remote_port_chkready(rport))
 		return -ENXIO;
 
+<<<<<<< HEAD
+=======
+	itnim_data = (struct bfad_itnim_data_s *) rport->dd_data;
+	bfa = itnim_data->itnim->bfa_itnim->bfa;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bfa_get_lun_mask_status(bfa) == BFA_LUNMASK_ENABLED) {
 		/*
 		 * We should not mask LUN 0 - since this will translate
@@ -987,7 +1232,11 @@ done:
 	return 0;
 }
 
+<<<<<<< HEAD
 static u32
+=======
+u32
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_im_supported_speeds(struct bfa_s *bfa)
 {
 	struct bfa_ioc_attr_s *ioc_attr;
@@ -1046,7 +1295,11 @@ bfad_fc_host_init(struct bfad_im_port_s *im_port)
 	/* For fibre channel services type 0x20 */
 	fc_host_supported_fc4s(host)[7] = 1;
 
+<<<<<<< HEAD
 	strncpy(symname, bfad->bfa_fcs.fabric.bport.port_cfg.sym_name.symname,
+=======
+	strscpy(symname, bfad->bfa_fcs.fabric.bport.port_cfg.sym_name.symname,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BFA_SYMNAME_MAXLEN);
 	sprintf(fc_host_symbolic_name(host), "%s", symname);
 
@@ -1199,9 +1452,15 @@ bfad_im_itnim_work_handler(struct work_struct *work)
 /*
  * Scsi_Host template entry, queue a SCSI command to the BFAD.
  */
+<<<<<<< HEAD
 static int
 bfad_im_queuecommand_lck(struct scsi_cmnd *cmnd, void (*done) (struct scsi_cmnd *))
 {
+=======
+static int bfad_im_queuecommand_lck(struct scsi_cmnd *cmnd)
+{
+	void (*done)(struct scsi_cmnd *) = scsi_done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfad_im_port_s *im_port =
 		(struct bfad_im_port_s *) cmnd->device->host->hostdata[0];
 	struct bfad_s         *bfad = im_port->bfad;
@@ -1220,25 +1479,48 @@ bfad_im_queuecommand_lck(struct scsi_cmnd *cmnd, void (*done) (struct scsi_cmnd 
 		return 0;
 	}
 
+<<<<<<< HEAD
+=======
+	if (bfad->bfad_flags & BFAD_EEH_BUSY) {
+		if (bfad->bfad_flags & BFAD_EEH_PCI_CHANNEL_IO_PERM_FAILURE)
+			cmnd->result = DID_NO_CONNECT << 16;
+		else
+			cmnd->result = DID_REQUEUE << 16;
+		done(cmnd);
+		return 0;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sg_cnt = scsi_dma_map(cmnd);
 	if (sg_cnt < 0)
 		return SCSI_MLQUEUE_HOST_BUSY;
 
+<<<<<<< HEAD
 	cmnd->scsi_done = done;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&bfad->bfad_lock, flags);
 	if (!(bfad->bfad_flags & BFAD_HAL_START_DONE)) {
 		printk(KERN_WARNING
 			"bfad%d, queuecommand %p %x failed, BFA stopped\n",
 		       bfad->inst_no, cmnd, cmnd->cmnd[0]);
+<<<<<<< HEAD
 		cmnd->result = ScsiResult(DID_NO_CONNECT, 0);
+=======
+		cmnd->result = DID_NO_CONNECT << 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_fail_cmd;
 	}
 
 
 	itnim = itnim_data->itnim;
 	if (!itnim) {
+<<<<<<< HEAD
 		cmnd->result = ScsiResult(DID_IMM_RETRY, 0);
+=======
+		cmnd->result = DID_IMM_RETRY << 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_fail_cmd;
 	}
 

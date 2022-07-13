@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2004
  *
@@ -14,6 +15,11 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *   Copyright (C) International Business Machines Corp., 2000-2004
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -124,6 +130,7 @@ struct dtsplit {
 #define DT_PAGE(IP, MP) BT_PAGE(IP, MP, dtpage_t, i_dtroot)
 
 /* get page buffer for specified block address */
+<<<<<<< HEAD
 #define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)\
 {\
 	BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot)\
@@ -139,6 +146,23 @@ struct dtsplit {
 		}\
 	}\
 }
+=======
+#define DT_GETPAGE(IP, BN, MP, SIZE, P, RC)				\
+do {									\
+	BT_GETPAGE(IP, BN, MP, dtpage_t, SIZE, P, RC, i_dtroot);	\
+	if (!(RC)) {							\
+		if (((P)->header.nextindex >				\
+		     (((BN) == 0) ? DTROOTMAXSLOT : (P)->header.maxslot)) || \
+		    ((BN) && ((P)->header.maxslot > DTPAGEMAXSLOT))) {	\
+			BT_PUTPAGE(MP);					\
+			jfs_error((IP)->i_sb,				\
+				  "DT_GETPAGE: dtree page corrupt\n");	\
+			MP = NULL;					\
+			RC = -EIO;					\
+		}							\
+	}								\
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* for consistency */
 #define DT_PUTPAGE(MP) BT_PUTPAGE(MP)
@@ -594,7 +618,12 @@ int dtSearch(struct inode *ip, struct component_name * key, ino_t * data,
 	struct component_name ciKey;
 	struct super_block *sb = ip->i_sb;
 
+<<<<<<< HEAD
 	ciKey.name = kmalloc((JFS_NAME_MAX + 1) * sizeof(wchar_t), GFP_NOFS);
+=======
+	ciKey.name = kmalloc_array(JFS_NAME_MAX + 1, sizeof(wchar_t),
+				   GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ciKey.name) {
 		rc = -ENOMEM;
 		goto dtSearch_Exit2;
@@ -645,6 +674,14 @@ int dtSearch(struct inode *ip, struct component_name * key, ino_t * data,
 		for (base = 0, lim = p->header.nextindex; lim; lim >>= 1) {
 			index = base + (lim >> 1);
 
+<<<<<<< HEAD
+=======
+			if (stbl[index] < 0) {
+				rc = -EIO;
+				goto out;
+			}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (p->header.flag & BT_LEAF) {
 				/* uppercase leaf name to compare */
 				cmp =
@@ -776,7 +813,11 @@ int dtSearch(struct inode *ip, struct component_name * key, ino_t * data,
 			/* Something's corrupted, mark filesystem dirty so
 			 * chkdsk will fix it.
 			 */
+<<<<<<< HEAD
 			jfs_error(sb, "stack overrun in dtSearch!");
+=======
+			jfs_error(sb, "stack overrun!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BT_STACK_DUMP(btstack);
 			rc = -EIO;
 			goto out;
@@ -957,7 +998,11 @@ static int dtSplitUp(tid_t tid,
 	smp = split->mp;
 	sp = DT_PAGE(ip, smp);
 
+<<<<<<< HEAD
 	key.name = kmalloc((JFS_NAME_MAX + 2) * sizeof(wchar_t), GFP_NOFS);
+=======
+	key.name = kmalloc_array(JFS_NAME_MAX + 2, sizeof(wchar_t), GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!key.name) {
 		DT_PUTPAGE(smp);
 		rc = -ENOMEM;
@@ -1040,8 +1085,13 @@ static int dtSplitUp(tid_t tid,
 		pxdlist.maxnpxd = 1;
 		pxdlist.npxd = 0;
 		pxd = &pxdlist.pxd[0];
+<<<<<<< HEAD
 		PXDaddress(pxd, nxaddr)
 		    PXDlength(pxd, xlen + n);
+=======
+		PXDaddress(pxd, nxaddr);
+		PXDlength(pxd, xlen + n);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		split->pxdlist = &pxdlist;
 		if ((rc = dtExtendPage(tid, ip, split, btstack))) {
 			nxaddr = addressPXD(pxd);
@@ -1982,7 +2032,11 @@ static int dtSplitRoot(tid_t tid,
 		do {
 			f = &rp->slot[fsi];
 			fsi = f->next;
+<<<<<<< HEAD
 		} while (fsi != -1);
+=======
+		} while (fsi >= 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		f->next = n;
 	}
@@ -2435,6 +2489,7 @@ static int dtDeleteUp(tid_t tid, struct inode *ip,
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef _NOTYET
 /*
  * NAME:	dtRelocate()
@@ -2733,6 +2788,8 @@ static int dtSearchNode(struct inode *ip, s64 lmxaddr, pxd_t * kpxd,
 }
 #endif /* _NOTYET */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	dtRelink()
  *
@@ -2976,7 +3033,11 @@ struct jfs_dirent {
 	loff_t position;
 	int ino;
 	u16 name_len;
+<<<<<<< HEAD
 	char name[0];
+=======
+	char name[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -3002,9 +3063,15 @@ static inline struct jfs_dirent *next_jfs_dirent(struct jfs_dirent *dirent)
  * return: offset = (pn, index) of start entry
  *	of next jfs_readdir()/dtRead()
  */
+<<<<<<< HEAD
 int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 {
 	struct inode *ip = filp->f_path.dentry->d_inode;
+=======
+int jfs_readdir(struct file *file, struct dir_context *ctx)
+{
+	struct inode *ip = file_inode(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nls_table *codepage = JFS_SBI(ip->i_sb)->nls_tab;
 	int rc = 0;
 	loff_t dtpos;	/* legacy OS/2 style position */
@@ -3033,7 +3100,11 @@ int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 	int overflow, fix_page, page_fixed = 0;
 	static int unique_pos = 2;	/* If we can't fix broken index */
 
+<<<<<<< HEAD
 	if (filp->f_pos == DIREND)
+=======
+	if (ctx->pos == DIREND)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (DO_INDEX(ip)) {
@@ -3045,12 +3116,21 @@ int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		 */
 		do_index = 1;
 
+<<<<<<< HEAD
 		dir_index = (u32) filp->f_pos;
 
 		/*
 		 * NFSv4 reserves cookies 1 and 2 for . and .. so we add
 		 * the value we return to the vfs is one greater than the
 		 * one we use internally.
+=======
+		dir_index = (u32) ctx->pos;
+
+		/*
+		 * NFSv4 reserves cookies 1 and 2 for . and .. so the value
+		 * we return to the vfs is one greater than the one we use
+		 * internally.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (dir_index)
 			dir_index--;
@@ -3061,25 +3141,42 @@ int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 			if (dtEmpty(ip) ||
 			    (dir_index >= JFS_IP(ip)->next_index)) {
 				/* Stale position.  Directory has shrunk */
+<<<<<<< HEAD
 				filp->f_pos = DIREND;
+=======
+				ctx->pos = DIREND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 		      repeat:
 			rc = read_index(ip, dir_index, &dirtab_slot);
 			if (rc) {
+<<<<<<< HEAD
 				filp->f_pos = DIREND;
+=======
+				ctx->pos = DIREND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return rc;
 			}
 			if (dirtab_slot.flag == DIR_INDEX_FREE) {
 				if (loop_count++ > JFS_IP(ip)->next_index) {
+<<<<<<< HEAD
 					jfs_err("jfs_readdir detected "
 						   "infinite loop!");
 					filp->f_pos = DIREND;
+=======
+					jfs_err("jfs_readdir detected infinite loop!");
+					ctx->pos = DIREND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return 0;
 				}
 				dir_index = le32_to_cpu(dirtab_slot.addr2);
 				if (dir_index == -1) {
+<<<<<<< HEAD
 					filp->f_pos = DIREND;
+=======
+					ctx->pos = DIREND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return 0;
 				}
 				goto repeat;
@@ -3088,13 +3185,21 @@ int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 			index = dirtab_slot.slot;
 			DT_GETPAGE(ip, bn, mp, PSIZE, p, rc);
 			if (rc) {
+<<<<<<< HEAD
 				filp->f_pos = DIREND;
+=======
+				ctx->pos = DIREND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 			if (p->header.flag & BT_INTERNAL) {
 				jfs_err("jfs_readdir: bad index table");
 				DT_PUTPAGE(mp);
+<<<<<<< HEAD
 				filp->f_pos = DIREND;
+=======
+				ctx->pos = DIREND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 		} else {
@@ -3102,23 +3207,37 @@ int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 				/*
 				 * self "."
 				 */
+<<<<<<< HEAD
 				filp->f_pos = 1;
 				if (filldir(dirent, ".", 1, 1, ip->i_ino,
 					    DT_DIR))
+=======
+				ctx->pos = 1;
+				if (!dir_emit(ctx, ".", 1, ip->i_ino, DT_DIR))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return 0;
 			}
 			/*
 			 * parent ".."
 			 */
+<<<<<<< HEAD
 			filp->f_pos = 2;
 			if (filldir(dirent, "..", 2, 2, PARENT(ip), DT_DIR))
+=======
+			ctx->pos = 2;
+			if (!dir_emit(ctx, "..", 2, PARENT(ip), DT_DIR))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 
 			/*
 			 * Find first entry of left-most leaf
 			 */
 			if (dtEmpty(ip)) {
+<<<<<<< HEAD
 				filp->f_pos = DIREND;
+=======
+				ctx->pos = DIREND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 			}
 
@@ -3136,6 +3255,7 @@ int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		 * pn > 0:		Real entries, pn=1 -> leftmost page
 		 * pn = index = -1:	No more entries
 		 */
+<<<<<<< HEAD
 		dtpos = filp->f_pos;
 		if (dtpos < 2) {
 			/* build "." entry */
@@ -3146,11 +3266,22 @@ int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 				return 0;
 			dtoffset->index = 2;
 			filp->f_pos = dtpos;
+=======
+		dtpos = ctx->pos;
+		if (dtpos < 2) {
+			/* build "." entry */
+			ctx->pos = 1;
+			if (!dir_emit(ctx, ".", 1, ip->i_ino, DT_DIR))
+				return 0;
+			dtoffset->index = 2;
+			ctx->pos = dtpos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (dtoffset->pn == 0) {
 			if (dtoffset->index == 2) {
 				/* build ".." entry */
+<<<<<<< HEAD
 
 				if (filldir(dirent, "..", 2, filp->f_pos,
 					    PARENT(ip), DT_DIR))
@@ -3173,6 +3304,27 @@ int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 			jfs_err("jfs_readdir: unexpected rc = %d "
 				"from dtReadNext", rc);
 			filp->f_pos = DIREND;
+=======
+				if (!dir_emit(ctx, "..", 2, PARENT(ip), DT_DIR))
+					return 0;
+			} else {
+				jfs_err("jfs_readdir called with invalid offset!");
+			}
+			dtoffset->pn = 1;
+			dtoffset->index = 0;
+			ctx->pos = dtpos;
+		}
+
+		if (dtEmpty(ip)) {
+			ctx->pos = DIREND;
+			return 0;
+		}
+
+		if ((rc = dtReadNext(ip, &ctx->pos, &btstack))) {
+			jfs_err("jfs_readdir: unexpected rc = %d from dtReadNext",
+				rc);
+			ctx->pos = DIREND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 		/* get start leaf page and index */
@@ -3180,7 +3332,11 @@ int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 
 		/* offset beyond directory eof ? */
 		if (bn < 0) {
+<<<<<<< HEAD
 			filp->f_pos = DIREND;
+=======
+			ctx->pos = DIREND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 	}
@@ -3189,7 +3345,11 @@ int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 	if (dirent_buf == 0) {
 		DT_PUTPAGE(mp);
 		jfs_warn("jfs_readdir: __get_free_page failed!");
+<<<<<<< HEAD
 		filp->f_pos = DIREND;
+=======
+		ctx->pos = DIREND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -3267,8 +3427,12 @@ int jfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 				/* Sanity Check */
 				if (d_namleft == 0) {
 					jfs_error(ip->i_sb,
+<<<<<<< HEAD
 						  "JFS:Dtree error: ino = "
 						  "%ld, bn=%Ld, index = %d",
+=======
+						  "JFS:Dtree error: ino = %ld, bn=%lld, index = %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  (long)ip->i_ino,
 						  (long long)bn,
 						  i);
@@ -3310,9 +3474,15 @@ skip_one:
 
 		jfs_dirent = (struct jfs_dirent *) dirent_buf;
 		while (jfs_dirents--) {
+<<<<<<< HEAD
 			filp->f_pos = jfs_dirent->position;
 			if (filldir(dirent, jfs_dirent->name,
 				    jfs_dirent->name_len, filp->f_pos,
+=======
+			ctx->pos = jfs_dirent->position;
+			if (!dir_emit(ctx, jfs_dirent->name,
+				    jfs_dirent->name_len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    jfs_dirent->ino, DT_UNKNOWN))
 				goto out;
 			jfs_dirent = next_jfs_dirent(jfs_dirent);
@@ -3324,7 +3494,11 @@ skip_one:
 		}
 
 		if (!overflow && (bn == 0)) {
+<<<<<<< HEAD
 			filp->f_pos = DIREND;
+=======
+			ctx->pos = DIREND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -3388,7 +3562,11 @@ static int dtReadFirst(struct inode *ip, struct btstack * btstack)
 		 */
 		if (BT_STACK_FULL(btstack)) {
 			DT_PUTPAGE(mp);
+<<<<<<< HEAD
 			jfs_error(ip->i_sb, "dtReadFirst: btstack overrun");
+=======
+			jfs_error(ip->i_sb, "btstack overrun\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BT_STACK_DUMP(btstack);
 			return -EIO;
 		}
@@ -3787,12 +3965,20 @@ static int ciGetLeafPrefixKey(dtpage_t * lp, int li, dtpage_t * rp,
 	struct component_name lkey;
 	struct component_name rkey;
 
+<<<<<<< HEAD
 	lkey.name = kmalloc((JFS_NAME_MAX + 1) * sizeof(wchar_t),
+=======
+	lkey.name = kmalloc_array(JFS_NAME_MAX + 1, sizeof(wchar_t),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					GFP_KERNEL);
 	if (lkey.name == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	rkey.name = kmalloc((JFS_NAME_MAX + 1) * sizeof(wchar_t),
+=======
+	rkey.name = kmalloc_array(JFS_NAME_MAX + 1, sizeof(wchar_t),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					GFP_KERNEL);
 	if (rkey.name == NULL) {
 		kfree(lkey.name);

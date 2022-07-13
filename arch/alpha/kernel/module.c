@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*  Kernel module help for Alpha.
     Copyright (C) 2002 Richard Henderson.
 
@@ -14,6 +15,12 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*  Kernel module help for Alpha.
+    Copyright (C) 2002 Richard Henderson.
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 #include <linux/moduleloader.h>
 #include <linux/elf.h>
@@ -158,10 +165,15 @@ apply_relocate_add(Elf64_Shdr *sechdrs, const char *strtab,
 	base = (void *)sechdrs[sechdrs[relsec].sh_info].sh_addr;
 	symtab = (Elf64_Sym *)sechdrs[symindex].sh_addr;
 
+<<<<<<< HEAD
 	/* The small sections were sorted to the end of the segment.
 	   The following should definitely cover them.  */
 	gp = (u64)me->module_core + me->core_size - 0x8000;
 	got = sechdrs[me->arch.gotsecindex].sh_addr;
+=======
+	got = sechdrs[me->arch.gotsecindex].sh_addr;
+	gp = got + 0x8000;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < n; i++) {
 		unsigned long r_sym = ELF64_R_SYM (rela[i].r_info);
@@ -181,6 +193,12 @@ apply_relocate_add(Elf64_Shdr *sechdrs, const char *strtab,
 		switch (r_type) {
 		case R_ALPHA_NONE:
 			break;
+<<<<<<< HEAD
+=======
+		case R_ALPHA_REFLONG:
+			*(u32 *)location = value;
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case R_ALPHA_REFQUAD:
 			/* BUG() can produce misaligned relocations. */
 			((u32 *)location)[0] = value;
@@ -221,7 +239,11 @@ apply_relocate_add(Elf64_Shdr *sechdrs, const char *strtab,
 			    STO_ALPHA_STD_GPLOAD)
 				/* Omit the prologue. */
 				value += 8;
+<<<<<<< HEAD
 			/* FALLTHRU */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case R_ALPHA_BRADDR:
 			value -= (u64)location + 4;
 			if (value & 3)

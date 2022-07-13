@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/file.h>
 #include <linux/fs.h>
 #include <linux/export.h>
@@ -5,7 +9,11 @@
 #include <linux/namei.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "spufs.h"
 
@@ -47,7 +55,11 @@ static long do_spu_run(struct file *filp,
 	if (filp->f_op != &spufs_context_fops)
 		goto out;
 
+<<<<<<< HEAD
 	i = SPUFS_I(filp->f_path.dentry->d_inode);
+=======
+	i = SPUFS_I(file_inode(filp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = spufs_run_spu(i->i_ctx, &npc, &status);
 
 	if (put_user(npc, unpc))
@@ -66,7 +78,11 @@ static long do_spu_create(const char __user *pathname, unsigned int flags,
 	struct dentry *dentry;
 	int ret;
 
+<<<<<<< HEAD
 	dentry = user_path_create(AT_FDCWD, pathname, &path, 1);
+=======
+	dentry = user_path_create(AT_FDCWD, pathname, &path, LOOKUP_DIRECTORY);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = PTR_ERR(dentry);
 	if (!IS_ERR(dentry)) {
 		ret = spufs_create(&path, dentry, flags, mode, neighbor);
@@ -79,8 +95,17 @@ static long do_spu_create(const char __user *pathname, unsigned int flags,
 struct spufs_calls spufs_calls = {
 	.create_thread = do_spu_create,
 	.spu_run = do_spu_run,
+<<<<<<< HEAD
 	.coredump_extra_notes_size = spufs_coredump_extra_notes_size,
 	.coredump_extra_notes_write = spufs_coredump_extra_notes_write,
 	.notify_spus_active = do_notify_spus_active,
 	.owner = THIS_MODULE,
+=======
+	.notify_spus_active = do_notify_spus_active,
+	.owner = THIS_MODULE,
+#ifdef CONFIG_COREDUMP
+	.coredump_extra_notes_size = spufs_coredump_extra_notes_size,
+	.coredump_extra_notes_write = spufs_coredump_extra_notes_write,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

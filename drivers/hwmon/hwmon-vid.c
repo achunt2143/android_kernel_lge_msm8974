@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * hwmon-vid.c - VID/VRM/VRD voltage conversions
  *
@@ -6,6 +10,7 @@
  * Partly imported from i2c-vid.h of the lm_sensors project
  * Copyright (c) 2002 Mark D. Studebaker <mdsxyz123@yahoo.com>
  * With assistance from Trent Piepho <xyzzy@speakeasy.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -62,15 +69,26 @@
  * The 13 specification corresponds to the Intel Pentium M series. There
  * doesn't seem to be any named specification for these. The conversion
  * tables are detailed directly in the various Pentium M datasheets:
+<<<<<<< HEAD
  * http://www.intel.com/design/intarch/pentiumm/docs_pentiumm.htm
+=======
+ * https://www.intel.com/design/intarch/pentiumm/docs_pentiumm.htm
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The 14 specification corresponds to Intel Core series. There
  * doesn't seem to be any named specification for these. The conversion
  * tables are detailed directly in the various Pentium Core datasheets:
+<<<<<<< HEAD
  * http://www.intel.com/design/mobile/datashts/309221.htm
  *
  * The 110 (VRM 11) specification corresponds to Intel Conroe based series.
  * http://www.intel.com/design/processor/applnots/313214.htm
+=======
+ * https://www.intel.com/design/mobile/datashts/309221.htm
+ *
+ * The 110 (VRM 11) specification corresponds to Intel Conroe based series.
+ * https://www.intel.com/design/processor/applnots/313214.htm
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -109,12 +127,25 @@ int vid_from_reg(int val, u8 vrm)
 		val &= 0x1f;
 		if (val == 0x1f)
 			return 0;
+<<<<<<< HEAD
 				/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 25:		/* AMD NPT 0Fh */
 		val &= 0x3f;
 		return (val < 32) ? 1550 - 25 * val
 			: 775 - (25 * (val - 31)) / 2;
 
+<<<<<<< HEAD
+=======
+	case 26:		/* AMD family 10h to 15h, serial VID */
+		val &= 0x7f;
+		if (val >= 0x7c)
+			return 0;
+		return DIV_ROUND_CLOSEST(15500 - 125 * val, 10);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 91:		/* VRM 9.1 */
 	case 90:		/* VRM 9.0 */
 		val &= 0x1f;
@@ -129,7 +160,11 @@ int vid_from_reg(int val, u8 vrm)
 
 	case 84:		/* VRM 8.4 */
 		val &= 0x0f;
+<<<<<<< HEAD
 				/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 82:		/* VRM 8.2 */
 		val &= 0x1f;
 		return val == 0x1f ? 0 :
@@ -195,6 +230,13 @@ static struct vrm_model vrm_models[] = {
 	{X86_VENDOR_AMD, 0xF, 0x40, 0x7F, ANY, 24},	/* NPT family 0Fh */
 	{X86_VENDOR_AMD, 0xF, 0x80, ANY, ANY, 25},	/* future fam. 0Fh */
 	{X86_VENDOR_AMD, 0x10, 0x0, ANY, ANY, 25},	/* NPT family 10h */
+<<<<<<< HEAD
+=======
+	{X86_VENDOR_AMD, 0x11, 0x0, ANY, ANY, 26},	/* family 11h */
+	{X86_VENDOR_AMD, 0x12, 0x0, ANY, ANY, 26},	/* family 12h */
+	{X86_VENDOR_AMD, 0x14, 0x0, ANY, ANY, 26},	/* family 14h */
+	{X86_VENDOR_AMD, 0x15, 0x0, ANY, ANY, 26},	/* family 15h */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{X86_VENDOR_INTEL, 0x6, 0x0, 0x6, ANY, 82},	/* Pentium Pro,
 							 * Pentium II, Xeon,
@@ -236,7 +278,11 @@ static struct vrm_model vrm_models[] = {
  */
 static u8 get_via_model_d_vrm(void)
 {
+<<<<<<< HEAD
 	unsigned int vid, brand, dummy;
+=======
+	unsigned int vid, brand, __maybe_unused dummy;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static const char *brands[4] = {
 		"C7-M", "C7", "Eden", "C7-D"
 	};
@@ -283,7 +329,11 @@ u8 vid_which_vrm(void)
 	if (c->x86 < 6)		/* Any CPU with family lower than 6 */
 		return 0;	/* doesn't have VID */
 
+<<<<<<< HEAD
 	vrm_ret = find_vrm(c->x86, c->x86_model, c->x86_mask, c->x86_vendor);
+=======
+	vrm_ret = find_vrm(c->x86, c->x86_model, c->x86_stepping, c->x86_vendor);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vrm_ret == 134)
 		vrm_ret = get_via_model_d_vrm();
 	if (vrm_ret == 0)

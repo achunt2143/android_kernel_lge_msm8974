@@ -21,13 +21,24 @@
 #include "hw.h"
 #include "hw-ops.h"
 
+<<<<<<< HEAD
 /* Common header for Atheros 802.11n base driver cores */
 
 #define WME_NUM_TID             16
+=======
+#include "common-init.h"
+#include "common-beacon.h"
+#include "common-debug.h"
+#include "common-spectral.h"
+
+/* Common header for Atheros 802.11n base driver cores */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WME_BA_BMP_SIZE         64
 #define WME_MAX_BA              WME_BA_BMP_SIZE
 #define ATH_TID_MAX_BUFS        (2 * WME_MAX_BA)
 
+<<<<<<< HEAD
 /* These must match mac80211 skb queue mapping numbers */
 #define WME_AC_VO   0
 #define WME_AC_VI   1
@@ -35,6 +46,8 @@
 #define WME_AC_BK   3
 #define WME_NUM_AC  4
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATH_RSSI_DUMMY_MARKER   127
 #define ATH_RSSI_LPF_LEN 		10
 #define RSSI_LPF_THRESHOLD		-20
@@ -48,6 +61,7 @@
 	x = ATH_LPF_RSSI((x), ATH_RSSI_IN((y)), ATH_RSSI_LPF_LEN);  	\
 } while (0)
 #define ATH_EP_RND(x, mul) 						\
+<<<<<<< HEAD
 	((((x)%(mul)) >= ((mul)/2)) ? ((x) + ((mul) - 1)) / (mul) : (x)/(mul))
 
 int ath9k_cmn_padpos(__le16 frame_control);
@@ -60,6 +74,48 @@ struct ath9k_channel *ath9k_cmn_get_curchannel(struct ieee80211_hw *hw,
 int ath9k_cmn_count_streams(unsigned int chainmask, int max);
 void ath9k_cmn_btcoex_bt_stomp(struct ath_common *common,
 				  enum ath_stomp_type stomp_type);
+=======
+	(((x) + ((mul)/2)) / (mul))
+
+#define IEEE80211_MS_TO_TU(x)   (((x) * 1000) / 1024)
+
+struct ath_beacon_config {
+	struct ieee80211_vif *main_vif;
+	int beacon_interval;
+	u16 dtim_period;
+	u16 bmiss_timeout;
+	u8 dtim_count;
+	u8 enable_beacon;
+	bool ibss_creator;
+	u32 nexttbtt;
+	u32 intval;
+};
+
+bool ath9k_cmn_rx_accept(struct ath_common *common,
+			 struct ieee80211_hdr *hdr,
+			 struct ieee80211_rx_status *rxs,
+			 struct ath_rx_status *rx_stats,
+			 bool *decrypt_error,
+			 unsigned int rxfilter);
+void ath9k_cmn_rx_skb_postprocess(struct ath_common *common,
+				  struct sk_buff *skb,
+				  struct ath_rx_status *rx_stats,
+				  struct ieee80211_rx_status *rxs,
+				  bool decrypt_error);
+int ath9k_cmn_process_rate(struct ath_common *common,
+			   struct ieee80211_hw *hw,
+			   struct ath_rx_status *rx_stats,
+			   struct ieee80211_rx_status *rxs);
+void ath9k_cmn_process_rssi(struct ath_common *common,
+			    struct ieee80211_hw *hw,
+			    struct ath_rx_status *rx_stats,
+			    struct ieee80211_rx_status *rxs);
+int ath9k_cmn_get_hw_crypto_keytype(struct sk_buff *skb);
+struct ath9k_channel *ath9k_cmn_get_channel(struct ieee80211_hw *hw,
+					    struct ath_hw *ah,
+					    struct cfg80211_chan_def *chandef);
+int ath9k_cmn_count_streams(unsigned int chainmask, int max);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ath9k_cmn_update_txpow(struct ath_hw *ah, u16 cur_txpow,
 			    u16 new_txpow, u16 *txpower);
 void ath9k_cmn_init_crypto(struct ath_hw *ah);

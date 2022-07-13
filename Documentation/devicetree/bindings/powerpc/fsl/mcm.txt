@@ -57,8 +57,11 @@ PROPERTIES
       Usage: required
       Value type: <prop-encoded-array>
 
+<<<<<<< HEAD
    - interrupt-parent
       Usage: required
       Value type: <phandle>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 =====================================================================

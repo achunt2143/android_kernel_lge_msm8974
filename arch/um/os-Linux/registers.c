@@ -1,12 +1,20 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2004 PathScale, Inc
  * Copyright (C) 2004 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2004 PathScale, Inc
+ * Copyright (C) 2004 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <errno.h>
 #include <string.h>
 #include <sys/ptrace.h>
+<<<<<<< HEAD
 #include "sysdep/ptrace.h"
 #include "sysdep/ptrace_user.h"
 #include "registers.h"
@@ -30,13 +38,22 @@ int restore_registers(int pid, struct uml_pt_regs *regs)
 		return -errno;
 	return 0;
 }
+=======
+#include <sysdep/ptrace.h>
+#include <sysdep/ptrace_user.h>
+#include <registers.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This is set once at boot time and not changed thereafter */
 
 static unsigned long exec_regs[MAX_REG_NR];
 static unsigned long exec_fp_regs[FP_SIZE];
 
+<<<<<<< HEAD
 int init_registers(int pid)
+=======
+int init_pid_registers(int pid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 

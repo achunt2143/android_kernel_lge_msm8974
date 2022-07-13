@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver definitions for the FTDI USB Single Port Serial Converter -
  * known as FTDI_SIO (Serial Input/Output application of the chipset)
@@ -34,6 +38,7 @@
 #define FTDI_SIO_SET_EVENT_CHAR		6 /* Set the event character */
 #define FTDI_SIO_SET_ERROR_CHAR		7 /* Set the error character */
 #define FTDI_SIO_SET_LATENCY_TIMER	9 /* Set the latency timer */
+<<<<<<< HEAD
 #define FTDI_SIO_GET_LATENCY_TIMER	10 /* Get the latency timer */
 
 /* Interface indices for FT2232, FT2232H and FT4232H devices */
@@ -41,6 +46,18 @@
 #define INTERFACE_B		2
 #define INTERFACE_C		3
 #define INTERFACE_D		4
+=======
+#define FTDI_SIO_GET_LATENCY_TIMER	0x0a /* Get the latency timer */
+#define FTDI_SIO_SET_BITMODE		0x0b /* Set bitbang mode */
+#define FTDI_SIO_READ_PINS		0x0c /* Read immediate value of pins */
+#define FTDI_SIO_READ_EEPROM		0x90 /* Read EEPROM */
+
+/* Channel indices for FT2232, FT2232H and FT4232H devices */
+#define CHANNEL_A		1
+#define CHANNEL_B		2
+#define CHANNEL_C		3
+#define CHANNEL_D		4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -149,6 +166,7 @@
  * not supported by the FT8U232AM).
  */
 
+<<<<<<< HEAD
 enum ftdi_chip_type {
 	SIO = 1,
 	FT8U232AM = 2,
@@ -161,6 +179,8 @@ enum ftdi_chip_type {
 	FTX     = 9,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum ftdi_sio_baudrate {
 	ftdi_sio_b300 = 0,
 	ftdi_sio_b600 = 1,
@@ -239,11 +259,19 @@ enum ftdi_sio_baudrate {
  */
 
 #define FTDI_SIO_SET_DTR_MASK 0x1
+<<<<<<< HEAD
 #define FTDI_SIO_SET_DTR_HIGH (1 | (FTDI_SIO_SET_DTR_MASK  << 8))
 #define FTDI_SIO_SET_DTR_LOW  (0 | (FTDI_SIO_SET_DTR_MASK  << 8))
 #define FTDI_SIO_SET_RTS_MASK 0x2
 #define FTDI_SIO_SET_RTS_HIGH (2 | (FTDI_SIO_SET_RTS_MASK << 8))
 #define FTDI_SIO_SET_RTS_LOW (0 | (FTDI_SIO_SET_RTS_MASK << 8))
+=======
+#define FTDI_SIO_SET_DTR_HIGH ((FTDI_SIO_SET_DTR_MASK  << 8) | 1)
+#define FTDI_SIO_SET_DTR_LOW  ((FTDI_SIO_SET_DTR_MASK  << 8) | 0)
+#define FTDI_SIO_SET_RTS_MASK 0x2
+#define FTDI_SIO_SET_RTS_HIGH ((FTDI_SIO_SET_RTS_MASK << 8) | 2)
+#define FTDI_SIO_SET_RTS_LOW  ((FTDI_SIO_SET_RTS_MASK << 8) | 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ControlValue
@@ -298,7 +326,11 @@ enum ftdi_sio_baudrate {
 /*
  * FTDI_SIO_GET_LATENCY_TIMER
  *
+<<<<<<< HEAD
  * Set the timeout interval. The FTDI collects data from the slave
+=======
+ * Set the timeout interval. The FTDI collects data from the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * device, transmitting it to the host when either A) 62 bytes are
  * received, or B) the timeout interval has elapsed and the buffer
  * contains at least 1 byte.  Setting this value to a small number
@@ -320,7 +352,11 @@ enum ftdi_sio_baudrate {
 /*
  * FTDI_SIO_SET_LATENCY_TIMER
  *
+<<<<<<< HEAD
  * Set the timeout interval. The FTDI collects data from the slave
+=======
+ * Set the timeout interval. The FTDI collects data from the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * device, transmitting it to the host when either A) 62 bytes are
  * received, or B) the timeout interval has elapsed and the buffer
  * contains at least 1 byte.  Setting this value to a small number
@@ -432,6 +468,32 @@ enum ftdi_sio_baudrate {
  *         1 = active
  */
 
+<<<<<<< HEAD
+=======
+/* FTDI_SIO_SET_BITMODE */
+#define FTDI_SIO_SET_BITMODE_REQUEST_TYPE 0x40
+#define FTDI_SIO_SET_BITMODE_REQUEST FTDI_SIO_SET_BITMODE
+
+/* Possible bitmodes for FTDI_SIO_SET_BITMODE_REQUEST */
+#define FTDI_SIO_BITMODE_RESET		0x00
+#define FTDI_SIO_BITMODE_CBUS		0x20
+
+/* FTDI_SIO_READ_PINS */
+#define FTDI_SIO_READ_PINS_REQUEST_TYPE 0xc0
+#define FTDI_SIO_READ_PINS_REQUEST FTDI_SIO_READ_PINS
+
+/*
+ * FTDI_SIO_READ_EEPROM
+ *
+ * EEPROM format found in FTDI AN_201, "FT-X MTP memory Configuration",
+ * http://www.ftdichip.com/Support/Documents/AppNotes/AN_201_FT-X%20MTP%20Memory%20Configuration.pdf
+ */
+#define FTDI_SIO_READ_EEPROM_REQUEST_TYPE 0xc0
+#define FTDI_SIO_READ_EEPROM_REQUEST FTDI_SIO_READ_EEPROM
+
+#define FTDI_FTX_CBUS_MUX_GPIO		0x8
+#define FTDI_FT232R_CBUS_MUX_GPIO	0xa
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* Descriptors returned by the device

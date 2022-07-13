@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *                   Abramo Bagnara <abramo@alsa-project.org>
@@ -28,6 +32,7 @@
  *           references to be able to implement all fancy feutures
  *           supported by the cs46xx DSP's. 
  *           Benny <benny@hostmobility.com>
+<<<<<<< HEAD
  *                
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -43,6 +48,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -54,16 +61,27 @@
 #include <linux/gameport.h>
 #include <linux/mutex.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 
+=======
+#include <linux/module.h>
+#include <linux/firmware.h>
+#include <linux/vmalloc.h>
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sound/core.h>
 #include <sound/control.h>
 #include <sound/info.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
+<<<<<<< HEAD
 #include <sound/cs46xx.h>
 
 #include <asm/io.h>
+=======
+#include "cs46xx.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "cs46xx_lib.h"
 #include "dsp_spos.h"
@@ -71,6 +89,7 @@
 static void amp_voyetra(struct snd_cs46xx *chip, int change);
 
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs46xx_playback_rear_ops;
 static struct snd_pcm_ops snd_cs46xx_playback_indirect_rear_ops;
 static struct snd_pcm_ops snd_cs46xx_playback_clfe_ops;
@@ -83,6 +102,20 @@ static struct snd_pcm_ops snd_cs46xx_playback_ops;
 static struct snd_pcm_ops snd_cs46xx_playback_indirect_ops;
 static struct snd_pcm_ops snd_cs46xx_capture_ops;
 static struct snd_pcm_ops snd_cs46xx_capture_indirect_ops;
+=======
+static const struct snd_pcm_ops snd_cs46xx_playback_rear_ops;
+static const struct snd_pcm_ops snd_cs46xx_playback_indirect_rear_ops;
+static const struct snd_pcm_ops snd_cs46xx_playback_clfe_ops;
+static const struct snd_pcm_ops snd_cs46xx_playback_indirect_clfe_ops;
+static const struct snd_pcm_ops snd_cs46xx_playback_iec958_ops;
+static const struct snd_pcm_ops snd_cs46xx_playback_indirect_iec958_ops;
+#endif
+
+static const struct snd_pcm_ops snd_cs46xx_playback_ops;
+static const struct snd_pcm_ops snd_cs46xx_playback_indirect_ops;
+static const struct snd_pcm_ops snd_cs46xx_capture_ops;
+static const struct snd_pcm_ops snd_cs46xx_capture_indirect_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned short snd_cs46xx_codec_read(struct snd_cs46xx *chip,
 					    unsigned short reg,
@@ -94,7 +127,11 @@ static unsigned short snd_cs46xx_codec_read(struct snd_cs46xx *chip,
 
 	if (snd_BUG_ON(codec_index != CS46XX_PRIMARY_CODEC_INDEX &&
 		       codec_index != CS46XX_SECONDARY_CODEC_INDEX))
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return 0xffff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->active_ctrl(chip, 1);
 
@@ -114,7 +151,11 @@ static unsigned short snd_cs46xx_codec_read(struct snd_cs46xx *chip,
 
 	tmp = snd_cs46xx_peekBA0(chip, BA0_ACCTL);
 	if ((tmp & ACCTL_VFRM) == 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_WARNING  "cs46xx: ACCTL_VFRM not set 0x%x\n",tmp);
+=======
+		dev_warn(chip->card->dev, "ACCTL_VFRM not set 0x%x\n", tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_cs46xx_pokeBA0(chip, BA0_ACCTL, (tmp & (~ACCTL_ESYN)) | ACCTL_VFRM );
 		msleep(50);
 		tmp = snd_cs46xx_peekBA0(chip, BA0_ACCTL + offset);
@@ -166,7 +207,12 @@ static unsigned short snd_cs46xx_codec_read(struct snd_cs46xx *chip,
 			goto ok1;
 	}
 
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "AC'97 read problem (ACCTL_DCV), reg = 0x%x\n", reg);
+=======
+	dev_err(chip->card->dev,
+		"AC'97 read problem (ACCTL_DCV), reg = 0x%x\n", reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = 0xffff;
 	goto end;
 	
@@ -185,7 +231,13 @@ static unsigned short snd_cs46xx_codec_read(struct snd_cs46xx *chip,
 		udelay(10);
 	}
 	
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "AC'97 read problem (ACSTS_VSTS), codec_index %d, reg = 0x%x\n", codec_index, reg);
+=======
+	dev_err(chip->card->dev,
+		"AC'97 read problem (ACSTS_VSTS), codec_index %d, reg = 0x%x\n",
+		codec_index, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	result = 0xffff;
 	goto end;
 
@@ -195,7 +247,12 @@ static unsigned short snd_cs46xx_codec_read(struct snd_cs46xx *chip,
 	 *  ACSDA = Status Data Register = 474h
 	 */
 #if 0
+<<<<<<< HEAD
 	printk(KERN_DEBUG "e) reg = 0x%x, val = 0x%x, BA0_ACCAD = 0x%x\n", reg,
+=======
+	dev_dbg(chip->card->dev,
+		"e) reg = 0x%x, val = 0x%x, BA0_ACCAD = 0x%x\n", reg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_cs46xx_peekBA0(chip, BA0_ACSDA),
 			snd_cs46xx_peekBA0(chip, BA0_ACCAD));
 #endif
@@ -284,7 +341,13 @@ static void snd_cs46xx_codec_write(struct snd_cs46xx *chip,
 			goto end;
 		}
 	}
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "AC'97 write problem, codec_index = %d, reg = 0x%x, val = 0x%x\n", codec_index, reg, val);
+=======
+	dev_err(chip->card->dev,
+		"AC'97 write problem, codec_index = %d, reg = 0x%x, val = 0x%x\n",
+		codec_index, reg, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  end:
 	chip->active_ctrl(chip, -1);
 }
@@ -330,6 +393,7 @@ int snd_cs46xx_download(struct snd_cs46xx *chip,
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
 
 #include "imgs/cwc4630.h"
@@ -337,6 +401,149 @@ int snd_cs46xx_download(struct snd_cs46xx *chip,
 #include "imgs/cwcsnoop.h"
 #include "imgs/cwcbinhack.h"
 #include "imgs/cwcdma.h"
+=======
+static inline void memcpy_le32(void *dst, const void *src, unsigned int len)
+{
+#ifdef __LITTLE_ENDIAN
+	memcpy(dst, src, len);
+#else
+	u32 *_dst = dst;
+	const __le32 *_src = src;
+	len /= 4;
+	while (len-- > 0)
+		*_dst++ = le32_to_cpu(*_src++);
+#endif
+}
+
+#ifdef CONFIG_SND_CS46XX_NEW_DSP
+
+static const char *module_names[CS46XX_DSP_MODULES] = {
+	"cwc4630", "cwcasync", "cwcsnoop", "cwcbinhack", "cwcdma"
+};
+
+MODULE_FIRMWARE("cs46xx/cwc4630");
+MODULE_FIRMWARE("cs46xx/cwcasync");
+MODULE_FIRMWARE("cs46xx/cwcsnoop");
+MODULE_FIRMWARE("cs46xx/cwcbinhack");
+MODULE_FIRMWARE("cs46xx/cwcdma");
+
+static void free_module_desc(struct dsp_module_desc *module)
+{
+	if (!module)
+		return;
+	kfree(module->module_name);
+	kfree(module->symbol_table.symbols);
+	if (module->segments) {
+		int i;
+		for (i = 0; i < module->nsegments; i++)
+			kfree(module->segments[i].data);
+		kfree(module->segments);
+	}
+	kfree(module);
+}
+
+/* firmware binary format:
+ * le32 nsymbols;
+ * struct {
+ *	le32 address;
+ *	char symbol_name[DSP_MAX_SYMBOL_NAME];
+ *	le32 symbol_type;
+ * } symbols[nsymbols];
+ * le32 nsegments;
+ * struct {
+ *	le32 segment_type;
+ *	le32 offset;
+ *	le32 size;
+ *	le32 data[size];
+ * } segments[nsegments];
+ */
+
+static int load_firmware(struct snd_cs46xx *chip,
+			 struct dsp_module_desc **module_ret,
+			 const char *fw_name)
+{
+	int i, err;
+	unsigned int nums, fwlen, fwsize;
+	const __le32 *fwdat;
+	struct dsp_module_desc *module = NULL;
+	const struct firmware *fw;
+	char fw_path[32];
+
+	sprintf(fw_path, "cs46xx/%s", fw_name);
+	err = request_firmware(&fw, fw_path, &chip->pci->dev);
+	if (err < 0)
+		return err;
+	fwsize = fw->size / 4;
+	if (fwsize < 2) {
+		err = -EINVAL;
+		goto error;
+	}
+
+	err = -ENOMEM;
+	module = kzalloc(sizeof(*module), GFP_KERNEL);
+	if (!module)
+		goto error;
+	module->module_name = kstrdup(fw_name, GFP_KERNEL);
+	if (!module->module_name)
+		goto error;
+
+	fwlen = 0;
+	fwdat = (const __le32 *)fw->data;
+	nums = module->symbol_table.nsymbols = le32_to_cpu(fwdat[fwlen++]);
+	if (nums >= 40)
+		goto error_inval;
+	module->symbol_table.symbols =
+		kcalloc(nums, sizeof(struct dsp_symbol_entry), GFP_KERNEL);
+	if (!module->symbol_table.symbols)
+		goto error;
+	for (i = 0; i < nums; i++) {
+		struct dsp_symbol_entry *entry =
+			&module->symbol_table.symbols[i];
+		if (fwlen + 2 + DSP_MAX_SYMBOL_NAME / 4 > fwsize)
+			goto error_inval;
+		entry->address = le32_to_cpu(fwdat[fwlen++]);
+		memcpy(entry->symbol_name, &fwdat[fwlen], DSP_MAX_SYMBOL_NAME - 1);
+		fwlen += DSP_MAX_SYMBOL_NAME / 4;
+		entry->symbol_type = le32_to_cpu(fwdat[fwlen++]);
+	}
+
+	if (fwlen >= fwsize)
+		goto error_inval;
+	nums = module->nsegments = le32_to_cpu(fwdat[fwlen++]);
+	if (nums > 10)
+		goto error_inval;
+	module->segments =
+		kcalloc(nums, sizeof(struct dsp_segment_desc), GFP_KERNEL);
+	if (!module->segments)
+		goto error;
+	for (i = 0; i < nums; i++) {
+		struct dsp_segment_desc *entry = &module->segments[i];
+		if (fwlen + 3 > fwsize)
+			goto error_inval;
+		entry->segment_type = le32_to_cpu(fwdat[fwlen++]);
+		entry->offset = le32_to_cpu(fwdat[fwlen++]);
+		entry->size = le32_to_cpu(fwdat[fwlen++]);
+		if (fwlen + entry->size > fwsize)
+			goto error_inval;
+		entry->data = kmalloc_array(entry->size, 4, GFP_KERNEL);
+		if (!entry->data)
+			goto error;
+		memcpy_le32(entry->data, &fwdat[fwlen], entry->size * 4);
+		fwlen += entry->size;
+	}
+
+	*module_ret = module;
+	release_firmware(fw);
+	return 0;
+
+ error_inval:
+	err = -EINVAL;
+ error:
+	free_module_desc(module);
+	release_firmware(fw);
+	return err;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int snd_cs46xx_clear_BA1(struct snd_cs46xx *chip,
                          unsigned long offset,
@@ -361,6 +568,7 @@ int snd_cs46xx_clear_BA1(struct snd_cs46xx *chip,
 
 #else /* old DSP image */
 
+<<<<<<< HEAD
 #include "cs46xx_image.h"
 
 int snd_cs46xx_download_image(struct snd_cs46xx *chip)
@@ -375,6 +583,65 @@ int snd_cs46xx_download_image(struct snd_cs46xx *chip)
 					       BA1Struct.memory[idx].size)) < 0)
 			return err;
 		offset += BA1Struct.memory[idx].size >> 2;
+=======
+struct ba1_struct {
+	struct {
+		u32 offset;
+		u32 size;
+	} memory[BA1_MEMORY_COUNT];
+	u32 map[BA1_DWORD_SIZE];
+};
+
+MODULE_FIRMWARE("cs46xx/ba1");
+
+static int load_firmware(struct snd_cs46xx *chip)
+{
+	const struct firmware *fw;
+	int i, size, err;
+
+	err = request_firmware(&fw, "cs46xx/ba1", &chip->pci->dev);
+	if (err < 0)
+		return err;
+	if (fw->size != sizeof(*chip->ba1)) {
+		err = -EINVAL;
+		goto error;
+	}
+
+	chip->ba1 = vmalloc(sizeof(*chip->ba1));
+	if (!chip->ba1) {
+		err = -ENOMEM;
+		goto error;
+	}
+
+	memcpy_le32(chip->ba1, fw->data, sizeof(*chip->ba1));
+
+	/* sanity check */
+	size = 0;
+	for (i = 0; i < BA1_MEMORY_COUNT; i++)
+		size += chip->ba1->memory[i].size;
+	if (size > BA1_DWORD_SIZE * 4)
+		err = -EINVAL;
+
+ error:
+	release_firmware(fw);
+	return err;
+}
+
+static __maybe_unused int snd_cs46xx_download_image(struct snd_cs46xx *chip)
+{
+	int idx, err;
+	unsigned int offset = 0;
+	struct ba1_struct *ba1 = chip->ba1;
+
+	for (idx = 0; idx < BA1_MEMORY_COUNT; idx++) {
+		err = snd_cs46xx_download(chip,
+					  &ba1->map[offset],
+					  ba1->memory[idx].offset,
+					  ba1->memory[idx].size);
+		if (err < 0)
+			return err;
+		offset += ba1->memory[idx].size >> 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}	
 	return 0;
 }
@@ -429,8 +696,13 @@ static int cs46xx_wait_for_fifo(struct snd_cs46xx * chip,int retry_timeout)
 	}
   
 	if(status & SERBST_WBSY) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "cs46xx: failure waiting for "
 			   "FIFO command to complete\n");
+=======
+		dev_err(chip->card->dev,
+			"failure waiting for FIFO command to complete\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -467,7 +739,13 @@ static void snd_cs46xx_clear_serial_FIFOs(struct snd_cs46xx *chip)
 		 *  Make sure the previous FIFO write operation has completed.
 		 */
 		if (cs46xx_wait_for_fifo(chip,1)) {
+<<<<<<< HEAD
 			snd_printdd ("failed waiting for FIFO at addr (%02X)\n",idx);
+=======
+			dev_dbg(chip->card->dev,
+				"failed waiting for FIFO at addr (%02X)\n",
+				idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (powerdown)
 				snd_cs46xx_pokeBA0(chip, BA0_CLKCR1, tmp);
@@ -515,7 +793,11 @@ static void snd_cs46xx_proc_start(struct snd_cs46xx *chip)
 	}
 
 	if (snd_cs46xx_peek(chip, BA1_SPCR) & SPCR_RUNFR)
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "SPCR_RUNFR never reset\n");
+=======
+		dev_err(chip->card->dev, "SPCR_RUNFR never reset\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void snd_cs46xx_proc_stop(struct snd_cs46xx *chip)
@@ -594,7 +876,11 @@ static void snd_cs46xx_set_capture_sample_rate(struct snd_cs46xx *chip, unsigned
 		rate = 48000 / 9;
 
 	/*
+<<<<<<< HEAD
 	 *  We can not capture at at rate greater than the Input Rate (48000).
+=======
+	 *  We can not capture at a rate greater than the Input Rate (48000).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *  Return an error if an attempt is made to stray outside that limit.
 	 */
 	if (rate > 48000)
@@ -641,7 +927,11 @@ static void snd_cs46xx_set_capture_sample_rate(struct snd_cs46xx *chip, unsigned
 	correctionPerGOF = tmp1 / GOF_PER_SEC;
 	tmp1 -= correctionPerGOF * GOF_PER_SEC;
 	correctionPerSec = tmp1;
+<<<<<<< HEAD
 	initialDelay = ((48000 * 24) + rate - 1) / rate;
+=======
+	initialDelay = DIV_ROUND_UP(48000 * 24, rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *  Fill in the VariDecimate control block.
@@ -701,8 +991,13 @@ static int snd_cs46xx_playback_transfer(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_cs46xx_pcm * cpcm = runtime->private_data;
+<<<<<<< HEAD
 	snd_pcm_indirect_playback_transfer(substream, &cpcm->pcm_rec, snd_cs46xx_pb_trans_copy);
 	return 0;
+=======
+	return snd_pcm_indirect_playback_transfer(substream, &cpcm->pcm_rec,
+						  snd_cs46xx_pb_trans_copy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void snd_cs46xx_cp_trans_copy(struct snd_pcm_substream *substream,
@@ -717,8 +1012,13 @@ static void snd_cs46xx_cp_trans_copy(struct snd_pcm_substream *substream,
 static int snd_cs46xx_capture_transfer(struct snd_pcm_substream *substream)
 {
 	struct snd_cs46xx *chip = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	snd_pcm_indirect_capture_transfer(substream, &chip->capt.pcm_rec, snd_cs46xx_cp_trans_copy);
 	return 0;
+=======
+	return snd_pcm_indirect_capture_transfer(substream, &chip->capt.pcm_rec,
+						 snd_cs46xx_cp_trans_copy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static snd_pcm_uframes_t snd_cs46xx_playback_direct_pointer(struct snd_pcm_substream *substream)
@@ -875,7 +1175,12 @@ static int _cs46xx_adjust_sample_rate (struct snd_cs46xx *chip, struct snd_cs46x
 		cpcm->pcm_channel = cs46xx_dsp_create_pcm_channel (chip, sample_rate, 
 								   cpcm, cpcm->hw_buf.addr,cpcm->pcm_channel_id);
 		if (cpcm->pcm_channel == NULL) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "cs46xx: failed to create virtual PCM channel\n");
+=======
+			dev_err(chip->card->dev,
+				"failed to create virtual PCM channel\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 		cpcm->pcm_channel->sample_rate = sample_rate;
@@ -885,10 +1190,19 @@ static int _cs46xx_adjust_sample_rate (struct snd_cs46xx *chip, struct snd_cs46x
 		int unlinked = cpcm->pcm_channel->unlinked;
 		cs46xx_dsp_destroy_pcm_channel (chip,cpcm->pcm_channel);
 
+<<<<<<< HEAD
 		if ( (cpcm->pcm_channel = cs46xx_dsp_create_pcm_channel (chip, sample_rate, cpcm, 
 									 cpcm->hw_buf.addr,
 									 cpcm->pcm_channel_id)) == NULL) {
 			snd_printk(KERN_ERR "cs46xx: failed to re-create virtual PCM channel\n");
+=======
+		cpcm->pcm_channel = cs46xx_dsp_create_pcm_channel(chip, sample_rate, cpcm,
+								  cpcm->hw_buf.addr,
+								  cpcm->pcm_channel_id);
+		if (!cpcm->pcm_channel) {
+			dev_err(chip->card->dev,
+				"failed to re-create virtual PCM channel\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 
@@ -937,7 +1251,12 @@ static int snd_cs46xx_playback_hw_params(struct snd_pcm_substream *substream,
 		 return -EINVAL;
 	 }
 
+<<<<<<< HEAD
 	snd_printdd ("period_size (%d), periods (%d) buffer_size(%d)\n",
+=======
+	dev_dbg(chip->card->dev,
+		"period_size (%d), periods (%d) buffer_size(%d)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     period_size, params_periods(hw_params),
 		     params_buffer_bytes(hw_params));
 #endif
@@ -945,9 +1264,13 @@ static int snd_cs46xx_playback_hw_params(struct snd_pcm_substream *substream,
 	if (params_periods(hw_params) == CS46XX_FRAGS) {
 		if (runtime->dma_area != cpcm->hw_buf.area)
 			snd_pcm_lib_free_pages(substream);
+<<<<<<< HEAD
 		runtime->dma_area = cpcm->hw_buf.area;
 		runtime->dma_addr = cpcm->hw_buf.addr;
 		runtime->dma_bytes = cpcm->hw_buf.bytes;
+=======
+		snd_pcm_set_runtime_buffer(substream, &cpcm->hw_buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
@@ -967,12 +1290,19 @@ static int snd_cs46xx_playback_hw_params(struct snd_pcm_substream *substream,
 #endif
 
 	} else {
+<<<<<<< HEAD
 		if (runtime->dma_area == cpcm->hw_buf.area) {
 			runtime->dma_area = NULL;
 			runtime->dma_addr = 0;
 			runtime->dma_bytes = 0;
 		}
 		if ((err = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params))) < 0) {
+=======
+		if (runtime->dma_area == cpcm->hw_buf.area)
+			snd_pcm_set_runtime_buffer(substream, NULL);
+		err = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
+		if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
 			mutex_unlock(&chip->spos_mutex);
 #endif
@@ -1019,9 +1349,13 @@ static int snd_cs46xx_playback_hw_free(struct snd_pcm_substream *substream)
 	if (runtime->dma_area != cpcm->hw_buf.area)
 		snd_pcm_lib_free_pages(substream);
     
+<<<<<<< HEAD
 	runtime->dma_area = NULL;
 	runtime->dma_addr = 0;
 	runtime->dma_bytes = 0;
+=======
+	snd_pcm_set_runtime_buffer(substream, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1110,6 +1444,7 @@ static int snd_cs46xx_capture_hw_params(struct snd_pcm_substream *substream,
 	if (runtime->periods == CS46XX_FRAGS) {
 		if (runtime->dma_area != chip->capt.hw_buf.area)
 			snd_pcm_lib_free_pages(substream);
+<<<<<<< HEAD
 		runtime->dma_area = chip->capt.hw_buf.area;
 		runtime->dma_addr = chip->capt.hw_buf.addr;
 		runtime->dma_bytes = chip->capt.hw_buf.bytes;
@@ -1121,6 +1456,15 @@ static int snd_cs46xx_capture_hw_params(struct snd_pcm_substream *substream,
 			runtime->dma_bytes = 0;
 		}
 		if ((err = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params))) < 0)
+=======
+		snd_pcm_set_runtime_buffer(substream, &chip->capt.hw_buf);
+		substream->ops = &snd_cs46xx_capture_ops;
+	} else {
+		if (runtime->dma_area == chip->capt.hw_buf.area)
+			snd_pcm_set_runtime_buffer(substream, NULL);
+		err = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		substream->ops = &snd_cs46xx_capture_indirect_ops;
 	}
@@ -1135,9 +1479,13 @@ static int snd_cs46xx_capture_hw_free(struct snd_pcm_substream *substream)
 
 	if (runtime->dma_area != chip->capt.hw_buf.area)
 		snd_pcm_lib_free_pages(substream);
+<<<<<<< HEAD
 	runtime->dma_area = NULL;
 	runtime->dma_addr = 0;
 	runtime->dma_bytes = 0;
+=======
+	snd_pcm_set_runtime_buffer(substream, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1249,12 +1597,21 @@ static irqreturn_t snd_cs46xx_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_cs46xx_playback =
+=======
+static const struct snd_pcm_hardware snd_cs46xx_playback =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP |
 				 SNDRV_PCM_INFO_INTERLEAVED | 
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER /*|*/
+<<<<<<< HEAD
 				 /*SNDRV_PCM_INFO_RESUME*/),
+=======
+				 /*SNDRV_PCM_INFO_RESUME*/ |
+				 SNDRV_PCM_INFO_SYNC_APPLPTR),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.formats =		(SNDRV_PCM_FMTBIT_S8 | SNDRV_PCM_FMTBIT_U8 |
 				 SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S16_BE |
 				 SNDRV_PCM_FMTBIT_U16_LE | SNDRV_PCM_FMTBIT_U16_BE),
@@ -1271,12 +1628,21 @@ static struct snd_pcm_hardware snd_cs46xx_playback =
 	.fifo_size =		0,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_cs46xx_capture =
+=======
+static const struct snd_pcm_hardware snd_cs46xx_capture =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP |
 				 SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER /*|*/
+<<<<<<< HEAD
 				 /*SNDRV_PCM_INFO_RESUME*/),
+=======
+				 /*SNDRV_PCM_INFO_RESUME*/ |
+				 SNDRV_PCM_INFO_SYNC_APPLPTR),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.formats =		SNDRV_PCM_FMTBIT_S16_LE,
 	.rates =		SNDRV_PCM_RATE_CONTINUOUS | SNDRV_PCM_RATE_8000_48000,
 	.rate_min =		5500,
@@ -1293,9 +1659,15 @@ static struct snd_pcm_hardware snd_cs46xx_capture =
 
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
 
+<<<<<<< HEAD
 static unsigned int period_sizes[] = { 32, 64, 128, 256, 512, 1024, 2048 };
 
 static struct snd_pcm_hw_constraint_list hw_constraints_period_sizes = {
+=======
+static const unsigned int period_sizes[] = { 32, 64, 128, 256, 512, 1024, 2048 };
+
+static const struct snd_pcm_hw_constraint_list hw_constraints_period_sizes = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = ARRAY_SIZE(period_sizes),
 	.list = period_sizes,
 	.mask = 0
@@ -1317,7 +1689,11 @@ static int _cs46xx_playback_open_channel (struct snd_pcm_substream *substream,in
 	cpcm = kzalloc(sizeof(*cpcm), GFP_KERNEL);
 	if (cpcm == NULL)
 		return -ENOMEM;
+<<<<<<< HEAD
 	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(chip->pci),
+=======
+	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, &chip->pci->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				PAGE_SIZE, &cpcm->hw_buf) < 0) {
 		kfree(cpcm);
 		return -ENOMEM;
@@ -1352,22 +1728,34 @@ static int _cs46xx_playback_open_channel (struct snd_pcm_substream *substream,in
 
 static int snd_cs46xx_playback_open(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	snd_printdd("open front channel\n");
+=======
+	dev_dbg(substream->pcm->card->dev, "open front channel\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return _cs46xx_playback_open_channel(substream,DSP_PCM_MAIN_CHANNEL);
 }
 
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
 static int snd_cs46xx_playback_open_rear(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	snd_printdd("open rear channel\n");
 
+=======
+	dev_dbg(substream->pcm->card->dev, "open rear channel\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return _cs46xx_playback_open_channel(substream,DSP_PCM_REAR_CHANNEL);
 }
 
 static int snd_cs46xx_playback_open_clfe(struct snd_pcm_substream *substream)
 {
+<<<<<<< HEAD
 	snd_printdd("open center - LFE channel\n");
 
+=======
+	dev_dbg(substream->pcm->card->dev, "open center - LFE channel\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return _cs46xx_playback_open_channel(substream,DSP_PCM_CENTER_LFE_CHANNEL);
 }
 
@@ -1375,7 +1763,11 @@ static int snd_cs46xx_playback_open_iec958(struct snd_pcm_substream *substream)
 {
 	struct snd_cs46xx *chip = snd_pcm_substream_chip(substream);
 
+<<<<<<< HEAD
 	snd_printdd("open raw iec958 channel\n");
+=======
+	dev_dbg(chip->card->dev, "open raw iec958 channel\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&chip->spos_mutex);
 	cs46xx_iec958_pre_open (chip);
@@ -1391,7 +1783,11 @@ static int snd_cs46xx_playback_close_iec958(struct snd_pcm_substream *substream)
 	int err;
 	struct snd_cs46xx *chip = snd_pcm_substream_chip(substream);
   
+<<<<<<< HEAD
 	snd_printdd("close raw iec958 channel\n");
+=======
+	dev_dbg(chip->card->dev, "close raw iec958 channel\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = snd_cs46xx_playback_close(substream);
 
@@ -1407,7 +1803,11 @@ static int snd_cs46xx_capture_open(struct snd_pcm_substream *substream)
 {
 	struct snd_cs46xx *chip = snd_pcm_substream_chip(substream);
 
+<<<<<<< HEAD
 	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(chip->pci),
+=======
+	if (snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, &chip->pci->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				PAGE_SIZE, &chip->capt.hw_buf) < 0)
 		return -ENOMEM;
 	chip->capt.substream = substream;
@@ -1467,10 +1867,16 @@ static int snd_cs46xx_capture_close(struct snd_pcm_substream *substream)
 }
 
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs46xx_playback_rear_ops = {
 	.open =			snd_cs46xx_playback_open_rear,
 	.close =		snd_cs46xx_playback_close,
 	.ioctl =		snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_cs46xx_playback_rear_ops = {
+	.open =			snd_cs46xx_playback_open_rear,
+	.close =		snd_cs46xx_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =		snd_cs46xx_playback_hw_params,
 	.hw_free =		snd_cs46xx_playback_hw_free,
 	.prepare =		snd_cs46xx_playback_prepare,
@@ -1478,10 +1884,16 @@ static struct snd_pcm_ops snd_cs46xx_playback_rear_ops = {
 	.pointer =		snd_cs46xx_playback_direct_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs46xx_playback_indirect_rear_ops = {
 	.open =			snd_cs46xx_playback_open_rear,
 	.close =		snd_cs46xx_playback_close,
 	.ioctl =		snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_cs46xx_playback_indirect_rear_ops = {
+	.open =			snd_cs46xx_playback_open_rear,
+	.close =		snd_cs46xx_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =		snd_cs46xx_playback_hw_params,
 	.hw_free =		snd_cs46xx_playback_hw_free,
 	.prepare =		snd_cs46xx_playback_prepare,
@@ -1490,10 +1902,16 @@ static struct snd_pcm_ops snd_cs46xx_playback_indirect_rear_ops = {
 	.ack =			snd_cs46xx_playback_transfer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs46xx_playback_clfe_ops = {
 	.open =			snd_cs46xx_playback_open_clfe,
 	.close =		snd_cs46xx_playback_close,
 	.ioctl =		snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_cs46xx_playback_clfe_ops = {
+	.open =			snd_cs46xx_playback_open_clfe,
+	.close =		snd_cs46xx_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =		snd_cs46xx_playback_hw_params,
 	.hw_free =		snd_cs46xx_playback_hw_free,
 	.prepare =		snd_cs46xx_playback_prepare,
@@ -1501,10 +1919,16 @@ static struct snd_pcm_ops snd_cs46xx_playback_clfe_ops = {
 	.pointer =		snd_cs46xx_playback_direct_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs46xx_playback_indirect_clfe_ops = {
 	.open =			snd_cs46xx_playback_open_clfe,
 	.close =		snd_cs46xx_playback_close,
 	.ioctl =		snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_cs46xx_playback_indirect_clfe_ops = {
+	.open =			snd_cs46xx_playback_open_clfe,
+	.close =		snd_cs46xx_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =		snd_cs46xx_playback_hw_params,
 	.hw_free =		snd_cs46xx_playback_hw_free,
 	.prepare =		snd_cs46xx_playback_prepare,
@@ -1513,10 +1937,16 @@ static struct snd_pcm_ops snd_cs46xx_playback_indirect_clfe_ops = {
 	.ack =			snd_cs46xx_playback_transfer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs46xx_playback_iec958_ops = {
 	.open =			snd_cs46xx_playback_open_iec958,
 	.close =		snd_cs46xx_playback_close_iec958,
 	.ioctl =		snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_cs46xx_playback_iec958_ops = {
+	.open =			snd_cs46xx_playback_open_iec958,
+	.close =		snd_cs46xx_playback_close_iec958,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =		snd_cs46xx_playback_hw_params,
 	.hw_free =		snd_cs46xx_playback_hw_free,
 	.prepare =		snd_cs46xx_playback_prepare,
@@ -1524,10 +1954,16 @@ static struct snd_pcm_ops snd_cs46xx_playback_iec958_ops = {
 	.pointer =		snd_cs46xx_playback_direct_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs46xx_playback_indirect_iec958_ops = {
 	.open =			snd_cs46xx_playback_open_iec958,
 	.close =		snd_cs46xx_playback_close_iec958,
 	.ioctl =		snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_cs46xx_playback_indirect_iec958_ops = {
+	.open =			snd_cs46xx_playback_open_iec958,
+	.close =		snd_cs46xx_playback_close_iec958,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =		snd_cs46xx_playback_hw_params,
 	.hw_free =		snd_cs46xx_playback_hw_free,
 	.prepare =		snd_cs46xx_playback_prepare,
@@ -1538,10 +1974,16 @@ static struct snd_pcm_ops snd_cs46xx_playback_indirect_iec958_ops = {
 
 #endif
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs46xx_playback_ops = {
 	.open =			snd_cs46xx_playback_open,
 	.close =		snd_cs46xx_playback_close,
 	.ioctl =		snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_cs46xx_playback_ops = {
+	.open =			snd_cs46xx_playback_open,
+	.close =		snd_cs46xx_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =		snd_cs46xx_playback_hw_params,
 	.hw_free =		snd_cs46xx_playback_hw_free,
 	.prepare =		snd_cs46xx_playback_prepare,
@@ -1549,10 +1991,16 @@ static struct snd_pcm_ops snd_cs46xx_playback_ops = {
 	.pointer =		snd_cs46xx_playback_direct_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs46xx_playback_indirect_ops = {
 	.open =			snd_cs46xx_playback_open,
 	.close =		snd_cs46xx_playback_close,
 	.ioctl =		snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_cs46xx_playback_indirect_ops = {
+	.open =			snd_cs46xx_playback_open,
+	.close =		snd_cs46xx_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =		snd_cs46xx_playback_hw_params,
 	.hw_free =		snd_cs46xx_playback_hw_free,
 	.prepare =		snd_cs46xx_playback_prepare,
@@ -1561,10 +2009,16 @@ static struct snd_pcm_ops snd_cs46xx_playback_indirect_ops = {
 	.ack =			snd_cs46xx_playback_transfer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs46xx_capture_ops = {
 	.open =			snd_cs46xx_capture_open,
 	.close =		snd_cs46xx_capture_close,
 	.ioctl =		snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_cs46xx_capture_ops = {
+	.open =			snd_cs46xx_capture_open,
+	.close =		snd_cs46xx_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =		snd_cs46xx_capture_hw_params,
 	.hw_free =		snd_cs46xx_capture_hw_free,
 	.prepare =		snd_cs46xx_capture_prepare,
@@ -1572,10 +2026,16 @@ static struct snd_pcm_ops snd_cs46xx_capture_ops = {
 	.pointer =		snd_cs46xx_capture_direct_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cs46xx_capture_indirect_ops = {
 	.open =			snd_cs46xx_capture_open,
 	.close =		snd_cs46xx_capture_close,
 	.ioctl =		snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_cs46xx_capture_indirect_ops = {
+	.open =			snd_cs46xx_capture_open,
+	.close =		snd_cs46xx_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =		snd_cs46xx_capture_hw_params,
 	.hw_free =		snd_cs46xx_capture_hw_free,
 	.prepare =		snd_cs46xx_capture_prepare,
@@ -1590,14 +2050,23 @@ static struct snd_pcm_ops snd_cs46xx_capture_indirect_ops = {
 #define MAX_PLAYBACK_CHANNELS	1
 #endif
 
+<<<<<<< HEAD
 int __devinit snd_cs46xx_pcm(struct snd_cs46xx *chip, int device, struct snd_pcm ** rpcm)
+=======
+int snd_cs46xx_pcm(struct snd_cs46xx *chip, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 	if ((err = snd_pcm_new(chip->card, "CS46xx", device, MAX_PLAYBACK_CHANNELS, 1, &pcm)) < 0)
+=======
+	err = snd_pcm_new(chip->card, "CS46xx", device, MAX_PLAYBACK_CHANNELS, 1, &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	pcm->private_data = chip;
@@ -1611,25 +2080,39 @@ int __devinit snd_cs46xx_pcm(struct snd_cs46xx *chip, int device, struct snd_pcm
 	chip->pcm = pcm;
 
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
+<<<<<<< HEAD
 					      snd_dma_pci_data(chip->pci), 64*1024, 256*1024);
 
 	if (rpcm)
 		*rpcm = pcm;
+=======
+					      &chip->pci->dev,
+					      64*1024, 256*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
+<<<<<<< HEAD
 int __devinit snd_cs46xx_pcm_rear(struct snd_cs46xx *chip, int device, struct snd_pcm ** rpcm)
+=======
+int snd_cs46xx_pcm_rear(struct snd_cs46xx *chip, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
 	if ((err = snd_pcm_new(chip->card, "CS46xx - Rear", device, MAX_PLAYBACK_CHANNELS, 0, &pcm)) < 0)
+=======
+	err = snd_pcm_new(chip->card, "CS46xx - Rear", device, MAX_PLAYBACK_CHANNELS, 0, &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	pcm->private_data = chip;
@@ -1642,23 +2125,37 @@ int __devinit snd_cs46xx_pcm_rear(struct snd_cs46xx *chip, int device, struct sn
 	chip->pcm_rear = pcm;
 
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
+<<<<<<< HEAD
 					      snd_dma_pci_data(chip->pci), 64*1024, 256*1024);
 
 	if (rpcm)
 		*rpcm = pcm;
+=======
+					      &chip->pci->dev,
+					      64*1024, 256*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 int __devinit snd_cs46xx_pcm_center_lfe(struct snd_cs46xx *chip, int device, struct snd_pcm ** rpcm)
+=======
+int snd_cs46xx_pcm_center_lfe(struct snd_cs46xx *chip, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
 	if ((err = snd_pcm_new(chip->card, "CS46xx - Center LFE", device, MAX_PLAYBACK_CHANNELS, 0, &pcm)) < 0)
+=======
+	err = snd_pcm_new(chip->card, "CS46xx - Center LFE", device, MAX_PLAYBACK_CHANNELS, 0, &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	pcm->private_data = chip;
@@ -1671,23 +2168,37 @@ int __devinit snd_cs46xx_pcm_center_lfe(struct snd_cs46xx *chip, int device, str
 	chip->pcm_center_lfe = pcm;
 
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
+<<<<<<< HEAD
 					      snd_dma_pci_data(chip->pci), 64*1024, 256*1024);
 
 	if (rpcm)
 		*rpcm = pcm;
+=======
+					      &chip->pci->dev,
+					      64*1024, 256*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 int __devinit snd_cs46xx_pcm_iec958(struct snd_cs46xx *chip, int device, struct snd_pcm ** rpcm)
+=======
+int snd_cs46xx_pcm_iec958(struct snd_cs46xx *chip, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
 	if ((err = snd_pcm_new(chip->card, "CS46xx - IEC958", device, 1, 0, &pcm)) < 0)
+=======
+	err = snd_pcm_new(chip->card, "CS46xx - IEC958", device, 1, 0, &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	pcm->private_data = chip;
@@ -1697,6 +2208,7 @@ int __devinit snd_cs46xx_pcm_iec958(struct snd_cs46xx *chip, int device, struct 
 	/* global setup */
 	pcm->info_flags = 0;
 	strcpy(pcm->name, "CS46xx - IEC958");
+<<<<<<< HEAD
 	chip->pcm_rear = pcm;
 
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
@@ -1704,6 +2216,13 @@ int __devinit snd_cs46xx_pcm_iec958(struct snd_cs46xx *chip, int device, struct 
 
 	if (rpcm)
 		*rpcm = pcm;
+=======
+	chip->pcm_iec958 = pcm;
+
+	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
+					      &chip->pci->dev,
+					      64*1024, 256*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1712,6 +2231,7 @@ int __devinit snd_cs46xx_pcm_iec958(struct snd_cs46xx *chip, int device, struct 
 /*
  *  Mixer routines
  */
+<<<<<<< HEAD
 static void snd_cs46xx_mixer_free_ac97_bus(struct snd_ac97_bus *bus)
 {
 	struct snd_cs46xx *chip = bus->private_data;
@@ -1719,6 +2239,8 @@ static void snd_cs46xx_mixer_free_ac97_bus(struct snd_ac97_bus *bus)
 	chip->ac97_bus = NULL;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void snd_cs46xx_mixer_free_ac97(struct snd_ac97 *ac97)
 {
 	struct snd_cs46xx *chip = ac97->private_data;
@@ -2092,7 +2614,11 @@ static int snd_cs46xx_spdif_stream_put(struct snd_kcontrol *kcontrol,
 #endif /* CONFIG_SND_CS46XX_NEW_DSP */
 
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cs46xx_controls[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_cs46xx_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "DAC Volume",
@@ -2207,7 +2733,11 @@ static int snd_cs46xx_front_dup_put(struct snd_kcontrol *kcontrol,
 				    ucontrol->value.integer.value[0] ? 0 : 0x200);
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cs46xx_front_dup_ctl = {
+=======
+static const struct snd_kcontrol_new snd_cs46xx_front_dup_ctl = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Duplicate Front",
 	.info = snd_mixer_boolean_info,
@@ -2218,7 +2748,11 @@ static struct snd_kcontrol_new snd_cs46xx_front_dup_ctl = {
 
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
 /* Only available on the Hercules Game Theater XP soundcard */
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_hercules_controls[] = {
+=======
+static const struct snd_kcontrol_new snd_hercules_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Optical/Coaxial SPDIF Input Switch",
@@ -2239,10 +2773,17 @@ static void snd_cs46xx_codec_reset (struct snd_ac97 * ac97)
 
 	/* set the desired CODEC mode */
 	if (ac97->num == CS46XX_PRIMARY_CODEC_INDEX) {
+<<<<<<< HEAD
 		snd_printdd("cs46xx: CODEC1 mode %04x\n", 0x0);
 		snd_cs46xx_ac97_write(ac97, AC97_CSR_ACMODE, 0x0);
 	} else if (ac97->num == CS46XX_SECONDARY_CODEC_INDEX) {
 		snd_printdd("cs46xx: CODEC2 mode %04x\n", 0x3);
+=======
+		dev_dbg(ac97->bus->card->dev, "CODEC1 mode %04x\n", 0x0);
+		snd_cs46xx_ac97_write(ac97, AC97_CSR_ACMODE, 0x0);
+	} else if (ac97->num == CS46XX_SECONDARY_CODEC_INDEX) {
+		dev_dbg(ac97->bus->card->dev, "CODEC2 mode %04x\n", 0x3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_cs46xx_ac97_write(ac97, AC97_CSR_ACMODE, 0x3);
 	} else {
 		snd_BUG(); /* should never happen ... */
@@ -2268,17 +2809,31 @@ static void snd_cs46xx_codec_reset (struct snd_ac97 * ac97)
 
 		/* test if we can write to the record gain volume register */
 		snd_ac97_write(ac97, AC97_REC_GAIN, 0x8a05);
+<<<<<<< HEAD
 		if ((err = snd_ac97_read(ac97, AC97_REC_GAIN)) == 0x8a05)
+=======
+		err = snd_ac97_read(ac97, AC97_REC_GAIN);
+		if (err == 0x8a05)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 
 		msleep(10);
 	} while (time_after_eq(end_time, jiffies));
 
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "CS46xx secondary codec doesn't respond!\n");  
 }
 #endif
 
 static int __devinit cs46xx_detect_codec(struct snd_cs46xx *chip, int codec)
+=======
+	dev_err(ac97->bus->card->dev,
+		"CS46xx secondary codec doesn't respond!\n");
+}
+#endif
+
+static int cs46xx_detect_codec(struct snd_cs46xx *chip, int codec)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int idx, err;
 	struct snd_ac97_template ac97;
@@ -2294,7 +2849,12 @@ static int __devinit cs46xx_detect_codec(struct snd_cs46xx *chip, int codec)
 		snd_cs46xx_codec_write(chip, AC97_RESET, 0, codec);
 		udelay(10);
 		if (snd_cs46xx_codec_read(chip, AC97_RESET, codec) & 0x8000) {
+<<<<<<< HEAD
 			snd_printdd("snd_cs46xx: seconadry codec not present\n");
+=======
+			dev_dbg(chip->card->dev,
+				"secondary codec not present\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENXIO;
 		}
 	}
@@ -2307,6 +2867,7 @@ static int __devinit cs46xx_detect_codec(struct snd_cs46xx *chip, int codec)
 		}
 		msleep(10);
 	}
+<<<<<<< HEAD
 	snd_printdd("snd_cs46xx: codec %d detection timeout\n", codec);
 	return -ENXIO;
 }
@@ -2318,6 +2879,18 @@ int __devinit snd_cs46xx_mixer(struct snd_cs46xx *chip, int spdif_device)
 	int err;
 	unsigned int idx;
 	static struct snd_ac97_bus_ops ops = {
+=======
+	dev_dbg(chip->card->dev, "codec %d detection timeout\n", codec);
+	return -ENXIO;
+}
+
+int snd_cs46xx_mixer(struct snd_cs46xx *chip, int spdif_device)
+{
+	struct snd_card *card = chip->card;
+	int err;
+	unsigned int idx;
+	static const struct snd_ac97_bus_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
 		.reset = snd_cs46xx_codec_reset,
 #endif
@@ -2327,17 +2900,28 @@ int __devinit snd_cs46xx_mixer(struct snd_cs46xx *chip, int spdif_device)
 
 	/* detect primary codec */
 	chip->nr_ac97_codecs = 0;
+<<<<<<< HEAD
 	snd_printdd("snd_cs46xx: detecting primary codec\n");
 	if ((err = snd_ac97_bus(card, 0, &ops, chip, &chip->ac97_bus)) < 0)
 		return err;
 	chip->ac97_bus->private_free = snd_cs46xx_mixer_free_ac97_bus;
+=======
+	dev_dbg(chip->card->dev, "detecting primary codec\n");
+	err = snd_ac97_bus(card, 0, &ops, chip, &chip->ac97_bus);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cs46xx_detect_codec(chip, CS46XX_PRIMARY_CODEC_INDEX) < 0)
 		return -ENXIO;
 	chip->nr_ac97_codecs = 1;
 
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
+<<<<<<< HEAD
 	snd_printdd("snd_cs46xx: detecting seconadry codec\n");
+=======
+	dev_dbg(chip->card->dev, "detecting secondary codec\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* try detect a secondary codec */
 	if (! cs46xx_detect_codec(chip, CS46XX_SECONDARY_CODEC_INDEX))
 		chip->nr_ac97_codecs = 2;
@@ -2349,20 +2933,34 @@ int __devinit snd_cs46xx_mixer(struct snd_cs46xx *chip, int spdif_device)
 		kctl = snd_ctl_new1(&snd_cs46xx_controls[idx], chip);
 		if (kctl && kctl->id.iface == SNDRV_CTL_ELEM_IFACE_PCM)
 			kctl->id.device = spdif_device;
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(card, kctl)) < 0)
+=======
+		err = snd_ctl_add(card, kctl);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 
 	/* get EAPD mixer switch (for voyetra hack) */
+<<<<<<< HEAD
 	memset(&id, 0, sizeof(id));
 	id.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
 	strcpy(id.name, "External Amplifier");
 	chip->eapd_switch = snd_ctl_find_id(chip->card, &id);
+=======
+	chip->eapd_switch = snd_ctl_find_id_mixer(chip->card,
+						  "External Amplifier");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
 	if (chip->nr_ac97_codecs == 1) {
 		unsigned int id2 = chip->ac97[CS46XX_PRIMARY_CODEC_INDEX]->id & 0xffff;
+<<<<<<< HEAD
 		if (id2 == 0x592b || id2 == 0x592d) {
+=======
+		if ((id2 & 0xfff0) == 0x5920) {	/* CS4294 and CS4298 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = snd_ctl_add(card, snd_ctl_new1(&snd_cs46xx_front_dup_ctl, chip));
 			if (err < 0)
 				return err;
@@ -2372,7 +2970,11 @@ int __devinit snd_cs46xx_mixer(struct snd_cs46xx *chip, int spdif_device)
 	}
 	/* do soundcard specific mixer setup */
 	if (chip->mixer_init) {
+<<<<<<< HEAD
 		snd_printdd ("calling chip->mixer_init(chip);\n");
+=======
+		dev_dbg(chip->card->dev, "calling chip->mixer_init(chip);\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->mixer_init(chip);
 	}
 #endif
@@ -2517,28 +3119,45 @@ static void snd_cs46xx_midi_output_trigger(struct snd_rawmidi_substream *substre
 	spin_unlock_irqrestore(&chip->reg_lock, flags);
 }
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops snd_cs46xx_midi_output =
+=======
+static const struct snd_rawmidi_ops snd_cs46xx_midi_output =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_cs46xx_midi_output_open,
 	.close =	snd_cs46xx_midi_output_close,
 	.trigger =	snd_cs46xx_midi_output_trigger,
 };
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops snd_cs46xx_midi_input =
+=======
+static const struct snd_rawmidi_ops snd_cs46xx_midi_input =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.open =		snd_cs46xx_midi_input_open,
 	.close =	snd_cs46xx_midi_input_close,
 	.trigger =	snd_cs46xx_midi_input_trigger,
 };
 
+<<<<<<< HEAD
 int __devinit snd_cs46xx_midi(struct snd_cs46xx *chip, int device, struct snd_rawmidi **rrawmidi)
+=======
+int snd_cs46xx_midi(struct snd_cs46xx *chip, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_rawmidi *rmidi;
 	int err;
 
+<<<<<<< HEAD
 	if (rrawmidi)
 		*rrawmidi = NULL;
 	if ((err = snd_rawmidi_new(chip->card, "CS46XX", device, 1, 1, &rmidi)) < 0)
+=======
+	err = snd_rawmidi_new(chip->card, "CS46XX", device, 1, 1, &rmidi);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	strcpy(rmidi->name, "CS46XX");
 	snd_rawmidi_set_ops(rmidi, SNDRV_RAWMIDI_STREAM_OUTPUT, &snd_cs46xx_midi_output);
@@ -2546,8 +3165,11 @@ int __devinit snd_cs46xx_midi(struct snd_cs46xx *chip, int device, struct snd_ra
 	rmidi->info_flags |= SNDRV_RAWMIDI_INFO_OUTPUT | SNDRV_RAWMIDI_INFO_INPUT | SNDRV_RAWMIDI_INFO_DUPLEX;
 	rmidi->private_data = chip;
 	chip->rmidi = rmidi;
+<<<<<<< HEAD
 	if (rrawmidi)
 		*rrawmidi = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2556,7 +3178,11 @@ int __devinit snd_cs46xx_midi(struct snd_cs46xx *chip, int device, struct snd_ra
  * gameport interface
  */
 
+<<<<<<< HEAD
 #if defined(CONFIG_GAMEPORT) || (defined(MODULE) && defined(CONFIG_GAMEPORT_MODULE))
+=======
+#if IS_REACHABLE(CONFIG_GAMEPORT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void snd_cs46xx_gameport_trigger(struct gameport *gameport)
 {
@@ -2613,13 +3239,22 @@ static int snd_cs46xx_gameport_open(struct gameport *gameport, int mode)
 	return 0;
 }
 
+<<<<<<< HEAD
 int __devinit snd_cs46xx_gameport(struct snd_cs46xx *chip)
+=======
+int snd_cs46xx_gameport(struct snd_cs46xx *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gameport *gp;
 
 	chip->gameport = gp = gameport_allocate_port();
 	if (!gp) {
+<<<<<<< HEAD
 		printk(KERN_ERR "cs46xx: cannot allocate memory for gameport\n");
+=======
+		dev_err(chip->card->dev,
+			"cannot allocate memory for gameport\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -2649,11 +3284,19 @@ static inline void snd_cs46xx_remove_gameport(struct snd_cs46xx *chip)
 	}
 }
 #else
+<<<<<<< HEAD
 int __devinit snd_cs46xx_gameport(struct snd_cs46xx *chip) { return -ENOSYS; }
 static inline void snd_cs46xx_remove_gameport(struct snd_cs46xx *chip) { }
 #endif /* CONFIG_GAMEPORT */
 
 #ifdef CONFIG_PROC_FS
+=======
+int snd_cs46xx_gameport(struct snd_cs46xx *chip) { return -ENOSYS; }
+static inline void snd_cs46xx_remove_gameport(struct snd_cs46xx *chip) { }
+#endif /* CONFIG_GAMEPORT */
+
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  proc interface
  */
@@ -2670,11 +3313,19 @@ static ssize_t snd_cs46xx_io_read(struct snd_info_entry *entry,
 	return count;
 }
 
+<<<<<<< HEAD
 static struct snd_info_entry_ops snd_cs46xx_proc_io_ops = {
 	.read = snd_cs46xx_io_read,
 };
 
 static int __devinit snd_cs46xx_proc_init(struct snd_card *card, struct snd_cs46xx *chip)
+=======
+static const struct snd_info_entry_ops snd_cs46xx_proc_io_ops = {
+	.read = snd_cs46xx_io_read,
+};
+
+static int snd_cs46xx_proc_init(struct snd_card *card, struct snd_cs46xx *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_info_entry *entry;
 	int idx;
@@ -2686,7 +3337,11 @@ static int __devinit snd_cs46xx_proc_init(struct snd_card *card, struct snd_cs46
 			entry->private_data = chip;
 			entry->c.ops = &snd_cs46xx_proc_io_ops;
 			entry->size = region->size;
+<<<<<<< HEAD
 			entry->mode = S_IFREG | S_IRUSR;
+=======
+			entry->mode = S_IFREG | 0400;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
@@ -2702,7 +3357,11 @@ static int snd_cs46xx_proc_done(struct snd_cs46xx *chip)
 #endif
 	return 0;
 }
+<<<<<<< HEAD
 #else /* !CONFIG_PROC_FS */
+=======
+#else /* !CONFIG_SND_PROC_FS */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define snd_cs46xx_proc_init(card, chip)
 #define snd_cs46xx_proc_done(chip)
 #endif
@@ -2757,12 +3416,21 @@ static void snd_cs46xx_hw_stop(struct snd_cs46xx *chip)
 }
 
 
+<<<<<<< HEAD
 static int snd_cs46xx_free(struct snd_cs46xx *chip)
 {
 	int idx;
 
 	if (snd_BUG_ON(!chip))
 		return -EINVAL;
+=======
+static void snd_cs46xx_free(struct snd_card *card)
+{
+	struct snd_cs46xx *chip = card->private_data;
+#ifdef CONFIG_SND_CS46XX_NEW_DSP
+	int idx;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (chip->active_ctrl)
 		chip->active_ctrl(chip, 1);
@@ -2774,15 +3442,20 @@ static int snd_cs46xx_free(struct snd_cs46xx *chip)
 	
 	snd_cs46xx_proc_done(chip);
 
+<<<<<<< HEAD
 	if (chip->region.idx[0].resource)
 		snd_cs46xx_hw_stop(chip);
 
 	if (chip->irq >= 0)
 		free_irq(chip->irq, chip);
+=======
+	snd_cs46xx_hw_stop(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (chip->active_ctrl)
 		chip->active_ctrl(chip, -chip->amplifier);
 
+<<<<<<< HEAD
 	for (idx = 0; idx < 5; idx++) {
 		struct snd_cs46xx_region *region = &chip->region.idx[idx];
 		if (region->remap_addr)
@@ -2790,11 +3463,14 @@ static int snd_cs46xx_free(struct snd_cs46xx *chip)
 		release_and_free_resource(region->resource);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
 	if (chip->dsp_spos_instance) {
 		cs46xx_dsp_spos_destroy(chip);
 		chip->dsp_spos_instance = NULL;
 	}
+<<<<<<< HEAD
 #endif
 	
 #ifdef CONFIG_PM
@@ -2810,6 +3486,13 @@ static int snd_cs46xx_dev_free(struct snd_device *device)
 {
 	struct snd_cs46xx *chip = device->device_data;
 	return snd_cs46xx_free(chip);
+=======
+	for (idx = 0; idx < CS46XX_DSP_MODULES; idx++)
+		free_module_desc(chip->modules[idx]);
+#else
+	vfree(chip->ba1);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -2952,8 +3635,15 @@ static int snd_cs46xx_chip_init(struct snd_cs46xx *chip)
 	}
 
 
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "create - never read codec ready from AC'97\n");
 	snd_printk(KERN_ERR "it is not probably bug, try to use CS4236 driver\n");
+=======
+	dev_err(chip->card->dev,
+		"create - never read codec ready from AC'97\n");
+	dev_err(chip->card->dev,
+		"it is not probably bug, try to use CS4236 driver\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
  ok1:
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
@@ -2971,7 +3661,12 @@ static int snd_cs46xx_chip_init(struct snd_cs46xx *chip)
 		 *  Make sure CODEC is READY.
 		 */
 		if (!(snd_cs46xx_peekBA0(chip, BA0_ACSTS2) & ACSTS_CRDY))
+<<<<<<< HEAD
 			snd_printdd("cs46xx: never read card ready from secondary AC'97\n");
+=======
+			dev_dbg(chip->card->dev,
+				"never read card ready from secondary AC'97\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 
@@ -3001,17 +3696,32 @@ static int snd_cs46xx_chip_init(struct snd_cs46xx *chip)
 	}
 
 #ifndef CONFIG_SND_CS46XX_NEW_DSP
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "create - never read ISV3 & ISV4 from AC'97\n");
+=======
+	dev_err(chip->card->dev,
+		"create - never read ISV3 & ISV4 from AC'97\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 #else
 	/* This may happen on a cold boot with a Terratec SiXPack 5.1.
 	   Reloading the driver may help, if there's other soundcards 
 	   with the same problem I would like to know. (Benny) */
 
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "ERROR: snd-cs46xx: never read ISV3 & ISV4 from AC'97\n");
 	snd_printk(KERN_ERR "       Try reloading the ALSA driver, if you find something\n");
         snd_printk(KERN_ERR "       broken or not working on your soundcard upon\n");
 	snd_printk(KERN_ERR "       this message please report to alsa-devel@alsa-project.org\n");
+=======
+	dev_err(chip->card->dev, "never read ISV3 & ISV4 from AC'97\n");
+	dev_err(chip->card->dev,
+		"Try reloading the ALSA driver, if you find something\n");
+	dev_err(chip->card->dev,
+		"broken or not working on your soundcard upon\n");
+	dev_err(chip->card->dev,
+		"this message please report to alsa-devel@alsa-project.org\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -EIO;
 #endif
@@ -3061,9 +3771,20 @@ static void cs46xx_enable_stream_irqs(struct snd_cs46xx *chip)
 	snd_cs46xx_poke(chip, BA1_CIE, tmp);	/* capture interrupt enable */
 }
 
+<<<<<<< HEAD
 int __devinit snd_cs46xx_start_dsp(struct snd_cs46xx *chip)
 {	
 	unsigned int tmp;
+=======
+int snd_cs46xx_start_dsp(struct snd_cs46xx *chip)
+{	
+	unsigned int tmp;
+#ifdef CONFIG_SND_CS46XX_NEW_DSP
+	int i;
+#endif
+	int err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 *  Reset the processor.
 	 */
@@ -3072,6 +3793,7 @@ int __devinit snd_cs46xx_start_dsp(struct snd_cs46xx *chip)
 	 *  Download the image to the processor.
 	 */
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
+<<<<<<< HEAD
 #if 0
 	if (cs46xx_dsp_load_module(chip, &cwcemb80_module) < 0) {
 		snd_printk(KERN_ERR "image download error\n");
@@ -3102,15 +3824,42 @@ int __devinit snd_cs46xx_start_dsp(struct snd_cs46xx *chip)
 	if (cs46xx_dsp_load_module(chip, &cwcdma_module) < 0) {
 		snd_printk(KERN_ERR "image download error [cwcdma]\n");
 		return -EIO;
+=======
+	for (i = 0; i < CS46XX_DSP_MODULES; i++) {
+		err = load_firmware(chip, &chip->modules[i], module_names[i]);
+		if (err < 0) {
+			dev_err(chip->card->dev, "firmware load error [%s]\n",
+				   module_names[i]);
+			return err;
+		}
+		err = cs46xx_dsp_load_module(chip, chip->modules[i]);
+		if (err < 0) {
+			dev_err(chip->card->dev, "image download error [%s]\n",
+				   module_names[i]);
+			return err;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (cs46xx_dsp_scb_and_task_init(chip) < 0)
 		return -EIO;
 #else
+<<<<<<< HEAD
 	/* old image */
 	if (snd_cs46xx_download_image(chip) < 0) {
 		snd_printk(KERN_ERR "image download error\n");
 		return -EIO;
+=======
+	err = load_firmware(chip);
+	if (err < 0)
+		return err;
+
+	/* old image */
+	err = snd_cs46xx_download_image(chip);
+	if (err < 0) {
+		dev_err(chip->card->dev, "image download error\n");
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -3162,7 +3911,11 @@ static int voyetra_setup_eapd_slot(struct snd_cs46xx *chip)
 	u32 idx, valid_slots,tmp,powerdown = 0;
 	u16 modem_power,pin_config,logic_type;
 
+<<<<<<< HEAD
 	snd_printdd ("cs46xx: cs46xx_setup_eapd_slot()+\n");
+=======
+	dev_dbg(chip->card->dev, "cs46xx_setup_eapd_slot()+\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *  See if the devices are powered down.  If so, we must power them up first
@@ -3180,7 +3933,12 @@ static int voyetra_setup_eapd_slot(struct snd_cs46xx *chip)
 	 * stuff.
 	 */
 	if(chip->nr_ac97_codecs != 2) {
+<<<<<<< HEAD
 		snd_printk (KERN_ERR "cs46xx: cs46xx_setup_eapd_slot() - no secondary codec configured\n");
+=======
+		dev_err(chip->card->dev,
+			"cs46xx_setup_eapd_slot() - no secondary codec configured\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -3221,7 +3979,11 @@ static int voyetra_setup_eapd_slot(struct snd_cs46xx *chip)
 	snd_cs46xx_pokeBA0(chip, BA0_ACOSV, valid_slots);
 
 	if ( cs46xx_wait_for_fifo(chip,1) ) {
+<<<<<<< HEAD
 	  snd_printdd("FIFO is busy\n");
+=======
+		dev_dbg(chip->card->dev, "FIFO is busy\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  
 	  return -EINVAL;
 	}
@@ -3242,7 +4004,13 @@ static int voyetra_setup_eapd_slot(struct snd_cs46xx *chip)
 		 * Wait for command to complete
 		 */
 		if ( cs46xx_wait_for_fifo(chip,200) ) {
+<<<<<<< HEAD
 			snd_printdd("failed waiting for FIFO at addr (%02X)\n",idx);
+=======
+			dev_dbg(chip->card->dev,
+				"failed waiting for FIFO at addr (%02X)\n",
+				idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			return -EINVAL;
 		}
@@ -3331,14 +4099,22 @@ static void amp_hercules(struct snd_cs46xx *chip, int change)
 
 	chip->amplifier += change;
 	if (chip->amplifier && !old) {
+<<<<<<< HEAD
 		snd_printdd ("Hercules amplifier ON\n");
+=======
+		dev_dbg(chip->card->dev, "Hercules amplifier ON\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		snd_cs46xx_pokeBA0(chip, BA0_EGPIODR, 
 				   EGPIODR_GPOE2 | val1);     /* enable EGPIO2 output */
 		snd_cs46xx_pokeBA0(chip, BA0_EGPIOPTR, 
 				   EGPIOPTR_GPPT2 | val2);   /* open-drain on output */
 	} else if (old && !chip->amplifier) {
+<<<<<<< HEAD
 		snd_printdd ("Hercules amplifier OFF\n");
+=======
+		dev_dbg(chip->card->dev, "Hercules amplifier OFF\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_cs46xx_pokeBA0(chip, BA0_EGPIODR,  val1 & ~EGPIODR_GPOE2); /* disable */
 		snd_cs46xx_pokeBA0(chip, BA0_EGPIOPTR, val2 & ~EGPIOPTR_GPPT2); /* disable */
 	}
@@ -3346,7 +4122,11 @@ static void amp_hercules(struct snd_cs46xx *chip, int change)
 
 static void voyetra_mixer_init (struct snd_cs46xx *chip)
 {
+<<<<<<< HEAD
 	snd_printdd ("initializing Voyetra mixer\n");
+=======
+	dev_dbg(chip->card->dev, "initializing Voyetra mixer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable SPDIF out */
 	snd_cs46xx_pokeBA0(chip, BA0_EGPIODR, EGPIODR_GPOE0);
@@ -3364,7 +4144,11 @@ static void hercules_mixer_init (struct snd_cs46xx *chip)
 	/* set EGPIO to default */
 	hercules_init(chip);
 
+<<<<<<< HEAD
 	snd_printdd ("initializing Hercules mixer\n");
+=======
+	dev_dbg(chip->card->dev, "initializing Hercules mixer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
 	if (chip->in_suspend)
@@ -3374,8 +4158,16 @@ static void hercules_mixer_init (struct snd_cs46xx *chip)
 		struct snd_kcontrol *kctl;
 
 		kctl = snd_ctl_new1(&snd_hercules_controls[idx], chip);
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(card, kctl)) < 0) {
 			printk (KERN_ERR "cs46xx: failed to initialize Hercules mixer (%d)\n",err);
+=======
+		err = snd_ctl_add(card, kctl);
+		if (err < 0) {
+			dev_err(card->dev,
+				"failed to initialize Hercules mixer (%d)\n",
+				err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -3477,7 +4269,11 @@ struct cs_card_type
 	void (*mixer_init)(struct snd_cs46xx *);
 };
 
+<<<<<<< HEAD
 static struct cs_card_type __devinitdata cards[] = {
+=======
+static struct cs_card_type cards[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.vendor = 0x1489,
 		.id = 0x7001,
@@ -3590,8 +4386,13 @@ static struct cs_card_type __devinitdata cards[] = {
 /*
  * APM support
  */
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static unsigned int saved_regs[] = {
+=======
+#ifdef CONFIG_PM_SLEEP
+static const unsigned int saved_regs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BA0_ACOSV,
 	/*BA0_ASER_FADDR,*/
 	BA0_ASER_MASTER,
@@ -3599,15 +4400,24 @@ static unsigned int saved_regs[] = {
 	BA1_CVOL,
 };
 
+<<<<<<< HEAD
 int snd_cs46xx_suspend(struct pci_dev *pci, pm_message_t state)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+static int snd_cs46xx_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_cs46xx *chip = card->private_data;
 	int i, amp_saved;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 	chip->in_suspend = 1;
+<<<<<<< HEAD
 	snd_pcm_suspend_all(chip->pcm);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	// chip->ac97_powerdown = snd_cs46xx_codec_read(chip, AC97_POWER_CONTROL);
 	// chip->ac97_general_purpose = snd_cs46xx_codec_read(chip, BA0_AC97_GENERAL_PURPOSE);
 
@@ -3625,6 +4435,7 @@ int snd_cs46xx_suspend(struct pci_dev *pci, pm_message_t state)
 	/* disable CLKRUN */
 	chip->active_ctrl(chip, -chip->amplifier);
 	chip->amplifier = amp_saved; /* restore the status */
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
@@ -3635,6 +4446,14 @@ int snd_cs46xx_suspend(struct pci_dev *pci, pm_message_t state)
 int snd_cs46xx_resume(struct pci_dev *pci)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+	return 0;
+}
+
+static int snd_cs46xx_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_cs46xx *chip = card->private_data;
 	int amp_saved;
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
@@ -3642,6 +4461,7 @@ int snd_cs46xx_resume(struct pci_dev *pci)
 #endif
 	unsigned int tmp;
 
+<<<<<<< HEAD
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
 	if (pci_enable_device(pci) < 0) {
@@ -3652,6 +4472,8 @@ int snd_cs46xx_resume(struct pci_dev *pci)
 	}
 	pci_set_master(pci);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	amp_saved = chip->amplifier;
 	chip->amplifier = 0;
 	chip->active_ctrl(chip, 1); /* force to on */
@@ -3707,22 +4529,37 @@ int snd_cs46xx_resume(struct pci_dev *pci)
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
+=======
+
+SIMPLE_DEV_PM_OPS(snd_cs46xx_pm, snd_cs46xx_suspend, snd_cs46xx_resume);
+#endif /* CONFIG_PM_SLEEP */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
  */
 
+<<<<<<< HEAD
 int __devinit snd_cs46xx_create(struct snd_card *card,
 		      struct pci_dev * pci,
 		      int external_amp, int thinkpad,
 		      struct snd_cs46xx ** rchip)
 {
 	struct snd_cs46xx *chip;
+=======
+int snd_cs46xx_create(struct snd_card *card,
+		      struct pci_dev *pci,
+		      int external_amp, int thinkpad)
+{
+	struct snd_cs46xx *chip = card->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err, idx;
 	struct snd_cs46xx_region *region;
 	struct cs_card_type *cp;
 	u16 ss_card, ss_vendor;
+<<<<<<< HEAD
 	static struct snd_device_ops ops = {
 		.dev_free =	snd_cs46xx_dev_free,
 	};
@@ -3738,6 +4575,14 @@ int __devinit snd_cs46xx_create(struct snd_card *card,
 		pci_disable_device(pci);
 		return -ENOMEM;
 	}
+=======
+	
+	/* enable PCI device */
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&chip->reg_lock);
 #ifdef CONFIG_SND_CS46XX_NEW_DSP
 	mutex_init(&chip->spos_mutex);
@@ -3745,13 +4590,26 @@ int __devinit snd_cs46xx_create(struct snd_card *card,
 	chip->card = card;
 	chip->pci = pci;
 	chip->irq = -1;
+<<<<<<< HEAD
+=======
+
+	err = pci_request_regions(pci, "CS46xx");
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->ba0_addr = pci_resource_start(pci, 0);
 	chip->ba1_addr = pci_resource_start(pci, 1);
 	if (chip->ba0_addr == 0 || chip->ba0_addr == (unsigned long)~0 ||
 	    chip->ba1_addr == 0 || chip->ba1_addr == (unsigned long)~0) {
+<<<<<<< HEAD
 	    	snd_printk(KERN_ERR "wrong address(es) - ba0 = 0x%lx, ba1 = 0x%lx\n",
 			   chip->ba0_addr, chip->ba1_addr);
 	    	snd_cs46xx_free(chip);
+=======
+		dev_err(chip->card->dev,
+			"wrong address(es) - ba0 = 0x%lx, ba1 = 0x%lx\n",
+			   chip->ba0_addr, chip->ba1_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    	return -ENOMEM;
 	}
 
@@ -3786,7 +4644,12 @@ int __devinit snd_cs46xx_create(struct snd_card *card,
 
 	for (cp = &cards[0]; cp->name; cp++) {
 		if (cp->vendor == ss_vendor && cp->id == ss_card) {
+<<<<<<< HEAD
 			snd_printdd ("hack for %s enabled\n", cp->name);
+=======
+			dev_dbg(chip->card->dev, "hack for %s enabled\n",
+				cp->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			chip->amplifier_ctrl = cp->amp;
 			chip->active_ctrl = cp->active;
@@ -3799,12 +4662,22 @@ int __devinit snd_cs46xx_create(struct snd_card *card,
 	}
 
 	if (external_amp) {
+<<<<<<< HEAD
 		snd_printk(KERN_INFO "Crystal EAPD support forced on.\n");
+=======
+		dev_info(chip->card->dev,
+			 "Crystal EAPD support forced on.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->amplifier_ctrl = amp_voyetra;
 	}
 
 	if (thinkpad) {
+<<<<<<< HEAD
 		snd_printk(KERN_INFO "Activating CLKRUN hack for Thinkpad.\n");
+=======
+		dev_info(chip->card->dev,
+			 "Activating CLKRUN hack for Thinkpad.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->active_ctrl = clkrun_hack;
 		clkrun_init(chip);
 	}
@@ -3820,6 +4693,7 @@ int __devinit snd_cs46xx_create(struct snd_card *card,
 
 	for (idx = 0; idx < 5; idx++) {
 		region = &chip->region.idx[idx];
+<<<<<<< HEAD
 		if ((region->resource = request_mem_region(region->base, region->size,
 							   region->name)) == NULL) {
 			snd_printk(KERN_ERR "unable to request memory region 0x%lx-0x%lx\n",
@@ -3831,10 +4705,18 @@ int __devinit snd_cs46xx_create(struct snd_card *card,
 		if (region->remap_addr == NULL) {
 			snd_printk(KERN_ERR "%s ioremap problem\n", region->name);
 			snd_cs46xx_free(chip);
+=======
+		region->remap_addr = devm_ioremap(&pci->dev, region->base,
+						  region->size);
+		if (region->remap_addr == NULL) {
+			dev_err(chip->card->dev,
+				"%s ioremap problem\n", region->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 	}
 
+<<<<<<< HEAD
 	if (request_irq(pci->irq, snd_cs46xx_interrupt, IRQF_SHARED,
 			KBUILD_MODNAME, chip)) {
 		snd_printk(KERN_ERR "unable to grab IRQ %d\n", pci->irq);
@@ -3878,5 +4760,38 @@ int __devinit snd_cs46xx_create(struct snd_card *card,
 	snd_card_set_dev(card, &pci->dev);
 
 	*rchip = chip;
+=======
+	if (devm_request_irq(&pci->dev, pci->irq, snd_cs46xx_interrupt,
+			     IRQF_SHARED, KBUILD_MODNAME, chip)) {
+		dev_err(chip->card->dev, "unable to grab IRQ %d\n", pci->irq);
+		return -EBUSY;
+	}
+	chip->irq = pci->irq;
+	card->sync_irq = chip->irq;
+	card->private_free = snd_cs46xx_free;
+
+#ifdef CONFIG_SND_CS46XX_NEW_DSP
+	chip->dsp_spos_instance = cs46xx_dsp_spos_create(chip);
+	if (!chip->dsp_spos_instance)
+		return -ENOMEM;
+#endif
+
+	err = snd_cs46xx_chip_init(chip);
+	if (err < 0)
+		return err;
+	
+	snd_cs46xx_proc_init(card, chip);
+
+#ifdef CONFIG_PM_SLEEP
+	chip->saved_regs = devm_kmalloc_array(&pci->dev,
+					      ARRAY_SIZE(saved_regs),
+					      sizeof(*chip->saved_regs),
+					      GFP_KERNEL);
+	if (!chip->saved_regs)
+		return -ENOMEM;
+#endif
+
+	chip->active_ctrl(chip, -1); /* disable CLKRUN */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * Author	Karsten Keil <kkeil@novell.com>
  *
  * Copyright 2008  by Karsten Keil <kkeil@novell.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -13,6 +18,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include "layer2.h"
 #include <linux/random.h>
@@ -250,7 +257,11 @@ tei_debug(struct FsmInst *fi, char *fmt, ...)
 static int
 get_free_id(struct manager *mgr)
 {
+<<<<<<< HEAD
 	u64		ids = 0;
+=======
+	DECLARE_BITMAP(ids, 64) = { [0 ... BITS_TO_LONGS(64) - 1] = 0 };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		i;
 	struct layer2	*l2;
 
@@ -261,11 +272,19 @@ get_free_id(struct manager *mgr)
 			       __func__);
 			return -EBUSY;
 		}
+<<<<<<< HEAD
 		test_and_set_bit(l2->ch.nr, (u_long *)&ids);
 	}
 	for (i = 1; i < 64; i++)
 		if (!test_bit(i, (u_long *)&ids))
 			return i;
+=======
+		__set_bit(l2->ch.nr, ids);
+	}
+	i = find_next_zero_bit(ids, 64, 1);
+	if (i < 64)
+		return i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_WARNING "%s: more as 63 layer2 for one device\n",
 	       __func__);
 	return -EBUSY;
@@ -274,7 +293,11 @@ get_free_id(struct manager *mgr)
 static int
 get_free_tei(struct manager *mgr)
 {
+<<<<<<< HEAD
 	u64		ids = 0;
+=======
+	DECLARE_BITMAP(ids, 64) = { [0 ... BITS_TO_LONGS(64) - 1] = 0 };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		i;
 	struct layer2	*l2;
 
@@ -288,11 +311,19 @@ get_free_tei(struct manager *mgr)
 			continue;
 		i -= 64;
 
+<<<<<<< HEAD
 		test_and_set_bit(i, (u_long *)&ids);
 	}
 	for (i = 0; i < 64; i++)
 		if (!test_bit(i, (u_long *)&ids))
 			return i + 64;
+=======
+		__set_bit(i, ids);
+	}
+	i = find_first_zero_bit(ids, 64);
+	if (i < 64)
+		return i + 64;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_WARNING "%s: more as 63 dynamic tei for one device\n",
 	       __func__);
 	return -1;
@@ -312,7 +343,11 @@ teiup_create(struct manager *mgr, u_int prim, int len, void *arg)
 	hh->prim = prim;
 	hh->id = (mgr->ch.nr << 16) | mgr->ch.addr;
 	if (len)
+<<<<<<< HEAD
 		memcpy(skb_put(skb, len), arg, len);
+=======
+		skb_put_data(skb, arg, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = mgr->up->send(mgr->up, skb);
 	if (err) {
 		printk(KERN_WARNING "%s: err=%d\n", __func__, err);
@@ -790,18 +825,36 @@ tei_ph_data_ind(struct teimgr *tm, u_int mt, u_char *dp, int len)
 static struct layer2 *
 create_new_tei(struct manager *mgr, int tei, int sapi)
 {
+<<<<<<< HEAD
 	u_long		opt = 0;
 	u_long		flags;
 	int		id;
 	struct layer2	*l2;
+=======
+	unsigned long		opt = 0;
+	unsigned long		flags;
+	int			id;
+	struct layer2		*l2;
+	struct channel_req	rq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!mgr->up)
 		return NULL;
 	if ((tei >= 0) && (tei < 64))
 		test_and_set_bit(OPTION_L2_FIXEDTEI, &opt);
+<<<<<<< HEAD
 	if (mgr->ch.st->dev->Dprotocols
 	    & ((1 << ISDN_P_TE_E1) | (1 << ISDN_P_NT_E1)))
 		test_and_set_bit(OPTION_L2_PMX, &opt);
+=======
+	if (mgr->ch.st->dev->Dprotocols & ((1 << ISDN_P_TE_E1) |
+	    (1 << ISDN_P_NT_E1))) {
+		test_and_set_bit(OPTION_L2_PMX, &opt);
+		rq.protocol = ISDN_P_NT_E1;
+	} else {
+		rq.protocol = ISDN_P_NT_S0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l2 = create_l2(mgr->up, ISDN_P_LAPD_NT, opt, tei, sapi);
 	if (!l2) {
 		printk(KERN_WARNING "%s:no memory for layer2\n", __func__);
@@ -836,6 +889,17 @@ create_new_tei(struct manager *mgr, int tei, int sapi)
 		l2->ch.recv = mgr->ch.recv;
 		l2->ch.peer = mgr->ch.peer;
 		l2->ch.ctrl(&l2->ch, OPEN_CHANNEL, NULL);
+<<<<<<< HEAD
+=======
+		/* We need open here L1 for the manager as well (refcounting) */
+		rq.adr.dev = mgr->ch.st->dev->id;
+		id = mgr->ch.st->own.ctrl(&mgr->ch.st->own, OPEN_CHANNEL, &rq);
+		if (id < 0) {
+			printk(KERN_WARNING "%s: cannot open L1\n", __func__);
+			l2->ch.ctrl(&l2->ch, CLOSE_CHANNEL, NULL);
+			l2 = NULL;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return l2;
 }
@@ -978,10 +1042,18 @@ TEIrelease(struct layer2 *l2)
 static int
 create_teimgr(struct manager *mgr, struct channel_req *crq)
 {
+<<<<<<< HEAD
 	struct layer2	*l2;
 	u_long		opt = 0;
 	u_long		flags;
 	int		id;
+=======
+	struct layer2		*l2;
+	unsigned long		opt = 0;
+	unsigned long		flags;
+	int			id;
+	struct channel_req	l1rq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (*debug & DEBUG_L2_TEI)
 		printk(KERN_DEBUG "%s: %s proto(%x) adr(%d %d %d %d)\n",
@@ -1016,6 +1088,10 @@ create_teimgr(struct manager *mgr, struct channel_req *crq)
 		if (crq->protocol == ISDN_P_LAPD_TE)
 			test_and_set_bit(MGR_OPT_USER, &mgr->options);
 	}
+<<<<<<< HEAD
+=======
+	l1rq.adr = crq->adr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mgr->ch.st->dev->Dprotocols
 	    & ((1 << ISDN_P_TE_E1) | (1 << ISDN_P_NT_E1)))
 		test_and_set_bit(OPTION_L2_PMX, &opt);
@@ -1023,6 +1099,11 @@ create_teimgr(struct manager *mgr, struct channel_req *crq)
 		mgr->up = crq->ch;
 		id = DL_INFO_L2_CONNECT;
 		teiup_create(mgr, DL_INFORMATION_IND, sizeof(id), &id);
+<<<<<<< HEAD
+=======
+		if (test_bit(MGR_PH_ACTIVE, &mgr->options))
+			teiup_create(mgr, PH_ACTIVATE_IND, 0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		crq->ch = NULL;
 		if (!list_empty(&mgr->layer2)) {
 			read_lock_irqsave(&mgr->lock, flags);
@@ -1053,16 +1134,31 @@ create_teimgr(struct manager *mgr, struct channel_req *crq)
 		l2->tm->tei_m.fsm = &teifsmu;
 		l2->tm->tei_m.state = ST_TEI_NOP;
 		l2->tm->tval = 1000; /* T201  1 sec */
+<<<<<<< HEAD
+=======
+		if (test_bit(OPTION_L2_PMX, &opt))
+			l1rq.protocol = ISDN_P_TE_E1;
+		else
+			l1rq.protocol = ISDN_P_TE_S0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		l2->tm->tei_m.fsm = &teifsmn;
 		l2->tm->tei_m.state = ST_TEI_NOP;
 		l2->tm->tval = 2000; /* T202  2 sec */
+<<<<<<< HEAD
+=======
+		if (test_bit(OPTION_L2_PMX, &opt))
+			l1rq.protocol = ISDN_P_NT_E1;
+		else
+			l1rq.protocol = ISDN_P_NT_S0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mISDN_FsmInitTimer(&l2->tm->tei_m, &l2->tm->timer);
 	write_lock_irqsave(&mgr->lock, flags);
 	id = get_free_id(mgr);
 	list_add_tail(&l2->list, &mgr->layer2);
 	write_unlock_irqrestore(&mgr->lock, flags);
+<<<<<<< HEAD
 	if (id < 0) {
 		l2->ch.ctrl(&l2->ch, CLOSE_CHANNEL, NULL);
 	} else {
@@ -1071,6 +1167,18 @@ create_teimgr(struct manager *mgr, struct channel_req *crq)
 		crq->ch = &l2->ch;
 		id = 0;
 	}
+=======
+	if (id >= 0) {
+		l2->ch.nr = id;
+		l2->up->nr = id;
+		crq->ch = &l2->ch;
+		/* We need open here L1 for the manager as well (refcounting) */
+		id = mgr->ch.st->own.ctrl(&mgr->ch.st->own, OPEN_CHANNEL,
+					  &l1rq);
+	}
+	if (id < 0)
+		l2->ch.ctrl(&l2->ch, CLOSE_CHANNEL, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return id;
 }
 
@@ -1096,12 +1204,22 @@ mgr_send(struct mISDNchannel *ch, struct sk_buff *skb)
 		break;
 	case PH_ACTIVATE_IND:
 		test_and_set_bit(MGR_PH_ACTIVE, &mgr->options);
+<<<<<<< HEAD
+=======
+		if (mgr->up)
+			teiup_create(mgr, PH_ACTIVATE_IND, 0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mISDN_FsmEvent(&mgr->deact, EV_ACTIVATE_IND, NULL);
 		do_send(mgr);
 		ret = 0;
 		break;
 	case PH_DEACTIVATE_IND:
 		test_and_clear_bit(MGR_PH_ACTIVE, &mgr->options);
+<<<<<<< HEAD
+=======
+		if (mgr->up)
+			teiup_create(mgr, PH_DEACTIVATE_IND, 0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mISDN_FsmEvent(&mgr->deact, EV_DEACTIVATE_IND, NULL);
 		ret = 0;
 		break;
@@ -1149,8 +1267,12 @@ static int
 ctrl_teimanager(struct manager *mgr, void *arg)
 {
 	/* currently we only have one option */
+<<<<<<< HEAD
 	int	*val = (int *)arg;
 	int	ret = 0;
+=======
+	unsigned int *val = (unsigned int *)arg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (val[0]) {
 	case IMCLEAR_L2:
@@ -1166,9 +1288,15 @@ ctrl_teimanager(struct manager *mgr, void *arg)
 			test_and_clear_bit(OPTION_L1_HOLD, &mgr->options);
 		break;
 	default:
+<<<<<<< HEAD
 		ret = -EINVAL;
 	}
 	return ret;
+=======
+		return -EINVAL;
+	}
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* This function does create a L2 for fixed TEI in NT Mode */
@@ -1263,7 +1391,11 @@ static int
 mgr_bcast(struct mISDNchannel *ch, struct sk_buff *skb)
 {
 	struct manager		*mgr = container_of(ch, struct manager, bcast);
+<<<<<<< HEAD
 	struct mISDNhead	*hh = mISDN_HEAD_P(skb);
+=======
+	struct mISDNhead	*hhc, *hh = mISDN_HEAD_P(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff		*cskb = NULL;
 	struct layer2		*l2;
 	u_long			flags;
@@ -1278,10 +1410,24 @@ mgr_bcast(struct mISDNchannel *ch, struct sk_buff *skb)
 				skb = NULL;
 			} else {
 				if (!cskb)
+<<<<<<< HEAD
 					cskb = skb_copy(skb, GFP_KERNEL);
 			}
 			if (cskb) {
 				ret = l2->ch.send(&l2->ch, cskb);
+=======
+					cskb = skb_copy(skb, GFP_ATOMIC);
+			}
+			if (cskb) {
+				hhc = mISDN_HEAD_P(cskb);
+				/* save original header behind normal header */
+				hhc++;
+				*hhc = *hh;
+				hhc--;
+				hhc->prim = DL_INTERN_MSG;
+				hhc->id = l2->ch.nr;
+				ret = ch->st->own.recv(&ch->st->own, cskb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (ret) {
 					if (*debug & DEBUG_SEND_ERR)
 						printk(KERN_DEBUG
@@ -1300,10 +1446,15 @@ mgr_bcast(struct mISDNchannel *ch, struct sk_buff *skb)
 	}
 out:
 	read_unlock_irqrestore(&mgr->lock, flags);
+<<<<<<< HEAD
 	if (cskb)
 		dev_kfree_skb(cskb);
 	if (skb)
 		dev_kfree_skb(skb);
+=======
+	dev_kfree_skb(cskb);
+	dev_kfree_skb(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1349,23 +1500,53 @@ create_teimanager(struct mISDNdevice *dev)
 
 int TEIInit(u_int *deb)
 {
+<<<<<<< HEAD
+=======
+	int res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	debug = deb;
 	teifsmu.state_count = TEI_STATE_COUNT;
 	teifsmu.event_count = TEI_EVENT_COUNT;
 	teifsmu.strEvent = strTeiEvent;
 	teifsmu.strState = strTeiState;
+<<<<<<< HEAD
 	mISDN_FsmNew(&teifsmu, TeiFnListUser, ARRAY_SIZE(TeiFnListUser));
+=======
+	res = mISDN_FsmNew(&teifsmu, TeiFnListUser, ARRAY_SIZE(TeiFnListUser));
+	if (res)
+		goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	teifsmn.state_count = TEI_STATE_COUNT;
 	teifsmn.event_count = TEI_EVENT_COUNT;
 	teifsmn.strEvent = strTeiEvent;
 	teifsmn.strState = strTeiState;
+<<<<<<< HEAD
 	mISDN_FsmNew(&teifsmn, TeiFnListNet, ARRAY_SIZE(TeiFnListNet));
+=======
+	res = mISDN_FsmNew(&teifsmn, TeiFnListNet, ARRAY_SIZE(TeiFnListNet));
+	if (res)
+		goto error_smn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	deactfsm.state_count =  DEACT_STATE_COUNT;
 	deactfsm.event_count = DEACT_EVENT_COUNT;
 	deactfsm.strEvent = strDeactEvent;
 	deactfsm.strState = strDeactState;
+<<<<<<< HEAD
 	mISDN_FsmNew(&deactfsm, DeactFnList, ARRAY_SIZE(DeactFnList));
 	return 0;
+=======
+	res = mISDN_FsmNew(&deactfsm, DeactFnList, ARRAY_SIZE(DeactFnList));
+	if (res)
+		goto error_deact;
+	return 0;
+
+error_deact:
+	mISDN_FsmFree(&teifsmn);
+error_smn:
+	mISDN_FsmFree(&teifsmu);
+error:
+	return res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void TEIFree(void)

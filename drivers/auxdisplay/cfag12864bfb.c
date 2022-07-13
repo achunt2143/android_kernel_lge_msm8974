@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    Filename: cfag12864bfb.c
  *     Version: 0.1.0
  * Description: cfag12864b LCD framebuffer driver
+<<<<<<< HEAD
  *     License: GPLv2
  *     Depends: cfag12864b
  *
@@ -21,23 +26,39 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+ *     Depends: cfag12864b
+ *
+ *      Author: Copyright (C) Miguel Ojeda <ojeda@kernel.org>
+ *        Date: 2006-10-31
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/fb.h>
 #include <linux/mm.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/string.h>
 #include <linux/uaccess.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cfag12864b.h>
 
 #define CFAG12864BFB_NAME "cfag12864bfb"
 
+<<<<<<< HEAD
 static struct fb_fix_screeninfo cfag12864bfb_fix __devinitdata = {
+=======
+static const struct fb_fix_screeninfo cfag12864bfb_fix = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id = "cfag12864b",
 	.type = FB_TYPE_PACKED_PIXELS,
 	.visual = FB_VISUAL_MONO10,
@@ -48,15 +69,24 @@ static struct fb_fix_screeninfo cfag12864bfb_fix __devinitdata = {
 	.accel = FB_ACCEL_NONE,
 };
 
+<<<<<<< HEAD
 static struct fb_var_screeninfo cfag12864bfb_var __devinitdata = {
+=======
+static const struct fb_var_screeninfo cfag12864bfb_var = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.xres = CFAG12864B_WIDTH,
 	.yres = CFAG12864B_HEIGHT,
 	.xres_virtual = CFAG12864B_WIDTH,
 	.yres_virtual = CFAG12864B_HEIGHT,
 	.bits_per_pixel = 1,
 	.red = { 0, 1, 0 },
+<<<<<<< HEAD
       	.green = { 0, 1, 0 },
       	.blue = { 0, 1, 0 },
+=======
+	.green = { 0, 1, 0 },
+	.blue = { 0, 1, 0 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.left_margin = 0,
 	.right_margin = 0,
 	.upper_margin = 0,
@@ -66,6 +96,7 @@ static struct fb_var_screeninfo cfag12864bfb_var __devinitdata = {
 
 static int cfag12864bfb_mmap(struct fb_info *info, struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 	return vm_insert_page(vma, vma->vm_start,
 		virt_to_page(cfag12864b_buffer));
 }
@@ -84,26 +115,58 @@ static int __devinit cfag12864bfb_probe(struct platform_device *device)
 {
 	int ret = -EINVAL;
  	struct fb_info *info = framebuffer_alloc(0, &device->dev);
+=======
+	struct page *pages = virt_to_page(cfag12864b_buffer);
+
+	vma->vm_page_prot = pgprot_decrypted(vma->vm_page_prot);
+
+	return vm_map_pages_zero(vma, &pages, 1);
+}
+
+static const struct fb_ops cfag12864bfb_ops = {
+	.owner = THIS_MODULE,
+	__FB_DEFAULT_SYSMEM_OPS_RDWR,
+	__FB_DEFAULT_SYSMEM_OPS_DRAW,
+	.fb_mmap = cfag12864bfb_mmap,
+};
+
+static int cfag12864bfb_probe(struct platform_device *device)
+{
+	int ret = -EINVAL;
+	struct fb_info *info = framebuffer_alloc(0, &device->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!info)
 		goto none;
 
+<<<<<<< HEAD
 	info->screen_base = (char __iomem *) cfag12864b_buffer;
+=======
+	info->flags = FBINFO_VIRTFB;
+	info->screen_buffer = cfag12864b_buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->screen_size = CFAG12864B_SIZE;
 	info->fbops = &cfag12864bfb_ops;
 	info->fix = cfag12864bfb_fix;
 	info->var = cfag12864bfb_var;
 	info->pseudo_palette = NULL;
 	info->par = NULL;
+<<<<<<< HEAD
 	info->flags = FBINFO_FLAG_DEFAULT;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (register_framebuffer(info) < 0)
 		goto fballoced;
 
 	platform_set_drvdata(device, info);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "fb%d: %s frame buffer device\n", info->node,
 		info->fix.id);
+=======
+	fb_info(info, "%s frame buffer device\n", info->fix.id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -114,7 +177,11 @@ none:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit cfag12864bfb_remove(struct platform_device *device)
+=======
+static void cfag12864bfb_remove(struct platform_device *device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fb_info *info = platform_get_drvdata(device);
 
@@ -122,13 +189,20 @@ static int __devexit cfag12864bfb_remove(struct platform_device *device)
 		unregister_framebuffer(info);
 		framebuffer_release(info);
 	}
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver cfag12864bfb_driver = {
 	.probe	= cfag12864bfb_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(cfag12864bfb_remove),
+=======
+	.remove_new = cfag12864bfb_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.name	= CFAG12864BFB_NAME,
 	},
@@ -185,5 +259,9 @@ module_init(cfag12864bfb_init);
 module_exit(cfag12864bfb_exit);
 
 MODULE_LICENSE("GPL v2");
+<<<<<<< HEAD
 MODULE_AUTHOR("Miguel Ojeda Sandonis <miguel.ojeda.sandonis@gmail.com>");
+=======
+MODULE_AUTHOR("Miguel Ojeda <ojeda@kernel.org>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("cfag12864b LCD framebuffer driver");

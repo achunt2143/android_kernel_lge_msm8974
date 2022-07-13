@@ -1,10 +1,22 @@
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/init.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/kthread.h>
 #include <linux/workqueue.h>
 #include <linux/memblock.h>
 
 #include <asm/proto.h>
+<<<<<<< HEAD
+=======
+#include <asm/setup.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Some BIOSes seem to corrupt the low 64k of memory during events
@@ -27,21 +39,56 @@ static int num_scan_areas;
 
 static __init int set_corruption_check(char *arg)
 {
+<<<<<<< HEAD
 	char *end;
 
 	memory_corruption_check = simple_strtol(arg, &end, 10);
 
 	return (*end == 0) ? 0 : -EINVAL;
+=======
+	ssize_t ret;
+	unsigned long val;
+
+	if (!arg) {
+		pr_err("memory_corruption_check config string not provided\n");
+		return -EINVAL;
+	}
+
+	ret = kstrtoul(arg, 10, &val);
+	if (ret)
+		return ret;
+
+	memory_corruption_check = val;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 early_param("memory_corruption_check", set_corruption_check);
 
 static __init int set_corruption_check_period(char *arg)
 {
+<<<<<<< HEAD
 	char *end;
 
 	corruption_check_period = simple_strtoul(arg, &end, 10);
 
 	return (*end == 0) ? 0 : -EINVAL;
+=======
+	ssize_t ret;
+	unsigned long val;
+
+	if (!arg) {
+		pr_err("memory_corruption_check_period config string not provided\n");
+		return -EINVAL;
+	}
+
+	ret = kstrtoul(arg, 10, &val);
+	if (ret)
+		return ret;
+
+	corruption_check_period = val;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 early_param("memory_corruption_check_period", set_corruption_check_period);
 
@@ -50,6 +97,14 @@ static __init int set_corruption_check_size(char *arg)
 	char *end;
 	unsigned size;
 
+<<<<<<< HEAD
+=======
+	if (!arg) {
+		pr_err("memory_corruption_check_size config string not provided\n");
+		return -EINVAL;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size = memparse(arg, &end);
 
 	if (*end == '\0')
@@ -83,7 +138,12 @@ void __init setup_bios_corruption_check(void)
 
 	corruption_check_size = round_up(corruption_check_size, PAGE_SIZE);
 
+<<<<<<< HEAD
 	for_each_free_mem_range(i, MAX_NUMNODES, &start, &end, NULL) {
+=======
+	for_each_free_mem_range(i, NUMA_NO_NODE, MEMBLOCK_NONE, &start, &end,
+				NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		start = clamp_t(phys_addr_t, round_up(start, PAGE_SIZE),
 				PAGE_SIZE, corruption_check_size);
 		end = clamp_t(phys_addr_t, round_down(end, PAGE_SIZE),
@@ -103,11 +163,19 @@ void __init setup_bios_corruption_check(void)
 	}
 
 	if (num_scan_areas)
+<<<<<<< HEAD
 		printk(KERN_INFO "Scanning %d areas for low memory corruption\n", num_scan_areas);
 }
 
 
 void check_for_bios_corruption(void)
+=======
+		pr_info("Scanning %d areas for low memory corruption\n", num_scan_areas);
+}
+
+
+static void check_for_bios_corruption(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	int corruption = 0;
@@ -122,8 +190,12 @@ void check_for_bios_corruption(void)
 		for (; size; addr++, size -= sizeof(unsigned long)) {
 			if (!*addr)
 				continue;
+<<<<<<< HEAD
 			printk(KERN_ERR "Corrupted low memory at %p (%lx phys) = %08lx\n",
 			       addr, __pa(addr), *addr);
+=======
+			pr_err("Corrupted low memory at %p (%lx phys) = %08lx\n", addr, __pa(addr), *addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			corruption = 1;
 			*addr = 0;
 		}
@@ -147,6 +219,7 @@ static int start_periodic_check_for_corruption(void)
 	if (!num_scan_areas || !memory_corruption_check || corruption_check_period == 0)
 		return 0;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "Scanning for low memory corruption every %d seconds\n",
 	       corruption_check_period);
 
@@ -156,4 +229,14 @@ static int start_periodic_check_for_corruption(void)
 }
 
 module_init(start_periodic_check_for_corruption);
+=======
+	pr_info("Scanning for low memory corruption every %d seconds\n", corruption_check_period);
+
+	/* First time we run the checks right away */
+	schedule_delayed_work(&bios_check_work, 0);
+
+	return 0;
+}
+device_initcall(start_periodic_check_for_corruption);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 

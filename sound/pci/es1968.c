@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for ESS Maestro 1/2/2E Sound Card (started 21.8.99)
  *  Copyright (c) by Matze Braun <MatzeBraun@gmx.de>.
@@ -10,6 +14,7 @@
  *  TODO:
  *   Perhaps Synth
  *
+<<<<<<< HEAD
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -25,6 +30,8 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Notes from Zach Brown about the driver code
  *
  *  Hardware Description
@@ -94,7 +101,11 @@
  *	places.
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -113,7 +124,11 @@
 #include <sound/initval.h>
 
 #ifdef CONFIG_SND_ES1968_RADIO
+<<<<<<< HEAD
 #include <sound/tea575x-tuner.h>
+=======
+#include <media/drv-intf/tea575x.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define CARD_NAME "ESS Maestro1/2"
@@ -121,12 +136,17 @@
 
 MODULE_DESCRIPTION("ESS Maestro");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{ESS,Maestro 2e},"
 		"{ESS,Maestro 2},"
 		"{ESS,Maestro 1},"
 		"{TerraTec,DMX}}");
 
 #if defined(CONFIG_GAMEPORT) || (defined(MODULE) && defined(CONFIG_GAMEPORT_MODULE))
+=======
+
+#if IS_REACHABLE(CONFIG_GAMEPORT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SUPPORT_JOYSTICK 1
 #endif
 
@@ -491,9 +511,13 @@ struct esschan {
 	/* linked list */
 	struct list_head list;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	u16 wc_map[4];
 #endif
+=======
+	u16 wc_map[4];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct es1968 {
@@ -544,9 +568,13 @@ struct es1968 {
 	struct list_head substream_list;
 	spinlock_t substream_lock;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	u16 apu_map[NR_APUS][NR_APU_REGS];
 #endif
+=======
+	u16 apu_map[NR_APUS][NR_APU_REGS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef SUPPORT_JOYSTICK
 	struct gameport *gameport;
@@ -564,12 +592,20 @@ struct es1968 {
 #ifdef CONFIG_SND_ES1968_RADIO
 	struct v4l2_device v4l2_dev;
 	struct snd_tea575x tea;
+<<<<<<< HEAD
+=======
+	unsigned int tea575x_tuner;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
 static irqreturn_t snd_es1968_interrupt(int irq, void *dev_id);
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_es1968_ids) = {
+=======
+static const struct pci_device_id snd_es1968_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Maestro 1 */
         { 0x1285, 0x0100, PCI_ANY_ID, PCI_ANY_ID, PCI_CLASS_MULTIMEDIA_AUDIO << 8, 0xffff00, TYPE_MAESTRO },
 	/* Maestro 2 */
@@ -631,7 +667,11 @@ static int snd_es1968_ac97_wait(struct es1968 *chip)
 			return 0;
 		cond_resched();
 	}
+<<<<<<< HEAD
 	snd_printd("es1968: ac97 timeout\n");
+=======
+	dev_dbg(chip->card->dev, "ac97 timeout\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1; /* timeout */
 }
 
@@ -643,7 +683,11 @@ static int snd_es1968_ac97_wait_poll(struct es1968 *chip)
 		if (!(inb(chip->io_port + ESM_AC97_INDEX) & 1))
 			return 0;
 	}
+<<<<<<< HEAD
 	snd_printd("es1968: ac97 timeout\n");
+=======
+	dev_dbg(chip->card->dev, "ac97 timeout\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1; /* timeout */
 }
 
@@ -686,7 +730,11 @@ static void apu_index_set(struct es1968 *chip, u16 index)
 	for (i = 0; i < 1000; i++)
 		if (__maestro_read(chip, IDR1_CRAM_POINTER) == index)
 			return;
+<<<<<<< HEAD
 	snd_printd("es1968: APU register select failed. (Timeout)\n");
+=======
+	dev_dbg(chip->card->dev, "APU register select failed. (Timeout)\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* no spinlock */
@@ -698,7 +746,11 @@ static void apu_data_set(struct es1968 *chip, u16 data)
 			return;
 		__maestro_write(chip, IDR0_DATA_PORT, data);
 	}
+<<<<<<< HEAD
 	snd_printd("es1968: APU register set probably failed (Timeout)!\n");
+=======
+	dev_dbg(chip->card->dev, "APU register set probably failed (Timeout)!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* no spinlock */
@@ -706,9 +758,13 @@ static void __apu_set_register(struct es1968 *chip, u16 channel, u8 reg, u16 dat
 {
 	if (snd_BUG_ON(channel >= NR_APUS))
 		return;
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	chip->apu_map[channel][reg] = data;
 #endif
+=======
+	chip->apu_map[channel][reg] = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg |= (channel << 4);
 	apu_index_set(chip, reg);
 	apu_data_set(chip, data);
@@ -993,9 +1049,13 @@ static void snd_es1968_program_wavecache(struct es1968 *chip, struct esschan *es
 	/* set the wavecache control reg */
 	wave_set_register(chip, es->apu[channel] << 3, tmpval);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	es->wc_map[channel] = tmpval;
 #endif
+=======
+	es->wc_map[channel] = tmpval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1289,7 +1349,11 @@ static snd_pcm_uframes_t snd_es1968_pcm_pointer(struct snd_pcm_substream *substr
 	return bytes_to_frames(substream->runtime, ptr % es->dma_size);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_es1968_playback = {
+=======
+static const struct snd_pcm_hardware snd_es1968_playback = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =			(SNDRV_PCM_INFO_MMAP |
                		         SNDRV_PCM_INFO_MMAP_VALID |
 				 SNDRV_PCM_INFO_INTERLEAVED |
@@ -1310,7 +1374,11 @@ static struct snd_pcm_hardware snd_es1968_playback = {
 	.fifo_size =		0,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_es1968_capture = {
+=======
+static const struct snd_pcm_hardware snd_es1968_capture = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =			(SNDRV_PCM_INFO_NONINTERLEAVED |
 				 SNDRV_PCM_INFO_MMAP |
 				 SNDRV_PCM_INFO_MMAP_VALID |
@@ -1421,7 +1489,11 @@ static void snd_es1968_free_dmabuf(struct es1968 *chip)
 
 	if (! chip->dma.area)
 		return;
+<<<<<<< HEAD
 	snd_dma_reserve_buf(&chip->dma, snd_dma_pci_buf_id(chip->pci));
+=======
+	snd_dma_free_pages(&chip->dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while ((p = chip->buf_list.next) != &chip->buf_list) {
 		struct esm_memory *chunk = list_entry(p, struct esm_memory, list);
 		list_del(p);
@@ -1429,12 +1501,17 @@ static void snd_es1968_free_dmabuf(struct es1968 *chip)
 	}
 }
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_es1968_init_dmabuf(struct es1968 *chip)
 {
 	int err;
 	struct esm_memory *chunk;
 
+<<<<<<< HEAD
 	chip->dma.dev.type = SNDRV_DMA_TYPE_DEV;
 	chip->dma.dev.dev = snd_dma_pci_data(chip->pci);
 	if (! snd_dma_get_reserved_buf(&chip->dma, snd_dma_pci_buf_id(chip->pci))) {
@@ -1451,6 +1528,21 @@ snd_es1968_init_dmabuf(struct es1968 *chip)
 			snd_printk(KERN_ERR "es1968: DMA buffer beyond 256MB.\n");
 			return -ENOMEM;
 		}
+=======
+	err = snd_dma_alloc_pages_fallback(SNDRV_DMA_TYPE_DEV,
+					   &chip->pci->dev,
+					   chip->total_bufsize, &chip->dma);
+	if (err < 0 || ! chip->dma.area) {
+		dev_err(chip->card->dev,
+			"can't allocate dma pages for size %d\n",
+			   chip->total_bufsize);
+		return -ENOMEM;
+	}
+	if ((chip->dma.addr + chip->dma.bytes - 1) & ~((1 << 28) - 1)) {
+		snd_dma_free_pages(&chip->dma);
+		dev_err(chip->card->dev, "DMA buffer beyond 256MB.\n");
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	INIT_LIST_HEAD(&chip->buf_list);
@@ -1490,7 +1582,12 @@ static int snd_es1968_hw_params(struct snd_pcm_substream *substream,
 	}
 	chan->memory = snd_es1968_new_memory(chip, size);
 	if (chan->memory == NULL) {
+<<<<<<< HEAD
 		// snd_printd("cannot allocate dma buffer: size = %d\n", size);
+=======
+		dev_dbg(chip->card->dev,
+			"cannot allocate dma buffer: size = %d\n", size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	snd_pcm_set_runtime_buffer(substream, &chan->memory->buf);
@@ -1619,7 +1716,12 @@ static int snd_es1968_capture_open(struct snd_pcm_substream *substream)
 	es->mode = ESM_MODE_CAPTURE;
 
 	/* get mixbuffer */
+<<<<<<< HEAD
 	if ((es->mixbuf = snd_es1968_new_memory(chip, ESM_MIXBUF_SIZE)) == NULL) {
+=======
+	es->mixbuf = snd_es1968_new_memory(chip, ESM_MIXBUF_SIZE);
+	if (!es->mixbuf) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_es1968_free_apu_pair(chip, apu1);
 		snd_es1968_free_apu_pair(chip, apu2);
 		kfree(es);
@@ -1676,10 +1778,16 @@ static int snd_es1968_capture_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_es1968_playback_ops = {
 	.open =		snd_es1968_playback_open,
 	.close =	snd_es1968_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_es1968_playback_ops = {
+	.open =		snd_es1968_playback_open,
+	.close =	snd_es1968_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_es1968_hw_params,
 	.hw_free =	snd_es1968_hw_free,
 	.prepare =	snd_es1968_pcm_prepare,
@@ -1687,10 +1795,16 @@ static struct snd_pcm_ops snd_es1968_playback_ops = {
 	.pointer =	snd_es1968_pcm_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_es1968_capture_ops = {
 	.open =		snd_es1968_capture_open,
 	.close =	snd_es1968_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_es1968_capture_ops = {
+	.open =		snd_es1968_capture_open,
+	.close =	snd_es1968_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_es1968_hw_params,
 	.hw_free =	snd_es1968_hw_free,
 	.prepare =	snd_es1968_pcm_prepare,
@@ -1704,23 +1818,45 @@ static struct snd_pcm_ops snd_es1968_capture_ops = {
  */
 #define CLOCK_MEASURE_BUFSIZE	16768	/* enough large for a single shot */
 
+<<<<<<< HEAD
 static void __devinit es1968_measure_clock(struct es1968 *chip)
+=======
+static void es1968_measure_clock(struct es1968 *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, apu;
 	unsigned int pa, offset, t;
 	struct esm_memory *memory;
+<<<<<<< HEAD
 	struct timeval start_time, stop_time;
+=======
+	ktime_t start_time, stop_time;
+	ktime_t diff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (chip->clock == 0)
 		chip->clock = 48000; /* default clock value */
 
 	/* search 2 APUs (although one apu is enough) */
+<<<<<<< HEAD
 	if ((apu = snd_es1968_alloc_apu_pair(chip, ESM_APU_PCM_PLAY)) < 0) {
 		snd_printk(KERN_ERR "Hmm, cannot find empty APU pair!?\n");
 		return;
 	}
 	if ((memory = snd_es1968_new_memory(chip, CLOCK_MEASURE_BUFSIZE)) == NULL) {
 		snd_printk(KERN_ERR "cannot allocate dma buffer - using default clock %d\n", chip->clock);
+=======
+	apu = snd_es1968_alloc_apu_pair(chip, ESM_APU_PCM_PLAY);
+	if (apu < 0) {
+		dev_err(chip->card->dev, "Hmm, cannot find empty APU pair!?\n");
+		return;
+	}
+	memory = snd_es1968_new_memory(chip, CLOCK_MEASURE_BUFSIZE);
+	if (!memory) {
+		dev_warn(chip->card->dev,
+			 "cannot allocate dma buffer - using default clock %d\n",
+			 chip->clock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_es1968_free_apu_pair(chip, apu);
 		return;
 	}
@@ -1758,12 +1894,20 @@ static void __devinit es1968_measure_clock(struct es1968 *chip)
 	snd_es1968_bob_inc(chip, ESM_BOB_FREQ);
 	__apu_set_register(chip, apu, 5, pa & 0xffff);
 	snd_es1968_trigger_apu(chip, apu, ESM_APU_16BITLINEAR);
+<<<<<<< HEAD
 	do_gettimeofday(&start_time);
+=======
+	start_time = ktime_get();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&chip->reg_lock);
 	msleep(50);
 	spin_lock_irq(&chip->reg_lock);
 	offset = __apu_get_register(chip, apu, 5);
+<<<<<<< HEAD
 	do_gettimeofday(&stop_time);
+=======
+	stop_time = ktime_get();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_es1968_trigger_apu(chip, apu, 0); /* stop */
 	snd_es1968_bob_dec(chip);
 	chip->in_measurement = 0;
@@ -1774,6 +1918,7 @@ static void __devinit es1968_measure_clock(struct es1968 *chip)
 	offset &= 0xfffe;
 	offset += chip->measure_count * (CLOCK_MEASURE_BUFSIZE/2);
 
+<<<<<<< HEAD
 	t = stop_time.tv_sec - start_time.tv_sec;
 	t *= 1000000;
 	if (stop_time.tv_usec < start_time.tv_usec)
@@ -1782,6 +1927,12 @@ static void __devinit es1968_measure_clock(struct es1968 *chip)
 		t += stop_time.tv_usec - start_time.tv_usec;
 	if (t == 0) {
 		snd_printk(KERN_ERR "?? calculation error..\n");
+=======
+	diff = ktime_sub(stop_time, start_time);
+	t = ktime_to_us(diff);
+	if (t == 0) {
+		dev_err(chip->card->dev, "?? calculation error..\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		offset *= 1000;
 		offset = (offset / t) * 1000 + ((offset % t) * 1000) / t;
@@ -1789,7 +1940,11 @@ static void __devinit es1968_measure_clock(struct es1968 *chip)
 			if (offset >= 40000 && offset <= 50000)
 				chip->clock = (chip->clock * offset) / 48000;
 		}
+<<<<<<< HEAD
 		printk(KERN_INFO "es1968: clocking to %d\n", chip->clock);
+=======
+		dev_info(chip->card->dev, "clocking to %d\n", chip->clock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	snd_es1968_free_memory(chip, memory);
 	snd_es1968_free_apu_pair(chip, apu);
@@ -1806,14 +1961,23 @@ static void snd_es1968_pcm_free(struct snd_pcm *pcm)
 	esm->pcm = NULL;
 }
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_es1968_pcm(struct es1968 *chip, int device)
 {
 	struct snd_pcm *pcm;
 	int err;
 
 	/* get DMA buffer */
+<<<<<<< HEAD
 	if ((err = snd_es1968_init_dmabuf(chip)) < 0)
+=======
+	err = snd_es1968_init_dmabuf(chip);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	/* set PCMBAR */
@@ -1822,9 +1986,16 @@ snd_es1968_pcm(struct es1968 *chip, int device)
 	wave_set_register(chip, 0x01FE, chip->dma.addr >> 12);
 	wave_set_register(chip, 0x01FF, chip->dma.addr >> 12);
 
+<<<<<<< HEAD
 	if ((err = snd_pcm_new(chip->card, "ESS Maestro", device,
 			       chip->playback_streams,
 			       chip->capture_streams, &pcm)) < 0)
+=======
+	err = snd_pcm_new(chip->card, "ESS Maestro", device,
+			  chip->playback_streams,
+			  chip->capture_streams, &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	pcm->private_data = chip;
@@ -1975,7 +2146,12 @@ static irqreturn_t snd_es1968_interrupt(int irq, void *dev_id)
 	struct es1968 *chip = dev_id;
 	u32 event;
 
+<<<<<<< HEAD
 	if (!(event = inb(chip->io_port + 0x1A)))
+=======
+	event = inb(chip->io_port + 0x1A);
+	if (!event)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return IRQ_NONE;
 
 	outw(inw(chip->io_port + 4) & 1, chip->io_port + 4);
@@ -2016,31 +2192,51 @@ static irqreturn_t snd_es1968_interrupt(int irq, void *dev_id)
  *  Mixer stuff
  */
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_es1968_mixer(struct es1968 *chip)
 {
 	struct snd_ac97_bus *pbus;
 	struct snd_ac97_template ac97;
+<<<<<<< HEAD
 #ifndef CONFIG_SND_ES1968_INPUT
 	struct snd_ctl_elem_id elem_id;
 #endif
 	int err;
 	static struct snd_ac97_bus_ops ops = {
+=======
+	int err;
+	static const struct snd_ac97_bus_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write = snd_es1968_ac97_write,
 		.read = snd_es1968_ac97_read,
 	};
 
+<<<<<<< HEAD
 	if ((err = snd_ac97_bus(chip->card, 0, &ops, NULL, &pbus)) < 0)
+=======
+	err = snd_ac97_bus(chip->card, 0, &ops, NULL, &pbus);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	pbus->no_vra = 1; /* ES1968 doesn't need VRA */
 
 	memset(&ac97, 0, sizeof(ac97));
 	ac97.private_data = chip;
+<<<<<<< HEAD
 	if ((err = snd_ac97_mixer(pbus, &ac97, &chip->ac97)) < 0)
+=======
+	err = snd_ac97_mixer(pbus, &ac97, &chip->ac97);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 #ifndef CONFIG_SND_ES1968_INPUT
 	/* attach master switch / volumes for h/w volume control */
+<<<<<<< HEAD
 	memset(&elem_id, 0, sizeof(elem_id));
 	elem_id.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
 	strcpy(elem_id.name, "Master Playback Switch");
@@ -2049,6 +2245,12 @@ snd_es1968_mixer(struct es1968 *chip)
 	elem_id.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
 	strcpy(elem_id.name, "Master Playback Volume");
 	chip->master_volume = snd_ctl_find_id(chip->card, &elem_id);
+=======
+	chip->master_switch = snd_ctl_find_id_mixer(chip->card,
+						    "Master Playback Switch");
+	chip->master_volume = snd_ctl_find_id_mixer(chip->card,
+						    "Master Playback Volume");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	return 0;
@@ -2109,7 +2311,11 @@ static void snd_es1968_ac97_reset(struct es1968 *chip)
 	outw(inw(ioaddr + 0x3c) & 0xfffc, ioaddr + 0x3c);
 
 #if 0				/* the loop here needs to be much better if we want it.. */
+<<<<<<< HEAD
 	snd_printk(KERN_INFO "trying software reset\n");
+=======
+	dev_info(chip->card->dev, "trying software reset\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* try and do a software reset */
 	outb(0x80 | 0x7c, ioaddr + 0x30);
 	for (w = 0;; w++) {
@@ -2291,7 +2497,11 @@ static void snd_es1968_chip_init(struct es1968 *chip)
 	outb(0x88, iobase+0x1f);
 
 	/* it appears some maestros (dell 7500) only work if these are set,
+<<<<<<< HEAD
 	   regardless of wether we use the assp or not. */
+=======
+	   regardless of whether we use the assp or not. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	outb(0, iobase + ASSP_CONTROL_B);
 	outb(3, iobase + ASSP_CONTROL_A);	/* M: Reserved bits... */
@@ -2377,6 +2587,7 @@ static void snd_es1968_start_irq(struct es1968 *chip)
 	outw(w, chip->io_port + ESM_PORT_HOST_IRQ);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 /*
  * PM support
@@ -2384,6 +2595,14 @@ static void snd_es1968_start_irq(struct es1968 *chip)
 static int es1968_suspend(struct pci_dev *pci, pm_message_t state)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+/*
+ * PM support
+ */
+static int es1968_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct es1968 *chip = card->private_data;
 
 	if (! chip->do_pm)
@@ -2392,6 +2611,7 @@ static int es1968_suspend(struct pci_dev *pci, pm_message_t state)
 	chip->in_suspend = 1;
 	cancel_work_sync(&chip->hwvol_work);
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+<<<<<<< HEAD
 	snd_pcm_suspend_all(chip->pcm);
 	snd_ac97_suspend(chip->ac97);
 	snd_es1968_bob_stop(chip);
@@ -2405,12 +2625,23 @@ static int es1968_suspend(struct pci_dev *pci, pm_message_t state)
 static int es1968_resume(struct pci_dev *pci)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+	snd_ac97_suspend(chip->ac97);
+	snd_es1968_bob_stop(chip);
+	return 0;
+}
+
+static int es1968_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct es1968 *chip = card->private_data;
 	struct esschan *es;
 
 	if (! chip->do_pm)
 		return 0;
 
+<<<<<<< HEAD
 	/* restore all our config */
 	pci_set_power_state(pci, PCI_D0);
 	pci_restore_state(pci);
@@ -2422,6 +2653,8 @@ static int es1968_resume(struct pci_dev *pci)
 	}
 	pci_set_master(pci);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_es1968_chip_init(chip);
 
 	/* need to restore the base pointers.. */ 
@@ -2454,11 +2687,20 @@ static int es1968_resume(struct pci_dev *pci)
 	chip->in_suspend = 0;
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
 
 #ifdef SUPPORT_JOYSTICK
 #define JOYSTICK_ADDR	0x200
 static int __devinit snd_es1968_create_gameport(struct es1968 *chip, int dev)
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(es1968_pm, es1968_suspend, es1968_resume);
+
+#ifdef SUPPORT_JOYSTICK
+#define JOYSTICK_ADDR	0x200
+static int snd_es1968_create_gameport(struct es1968 *chip, int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gameport *gp;
 	struct resource *r;
@@ -2467,14 +2709,24 @@ static int __devinit snd_es1968_create_gameport(struct es1968 *chip, int dev)
 	if (!joystick[dev])
 		return -ENODEV;
 
+<<<<<<< HEAD
 	r = request_region(JOYSTICK_ADDR, 8, "ES1968 gameport");
+=======
+	r = devm_request_region(&chip->pci->dev, JOYSTICK_ADDR, 8,
+				"ES1968 gameport");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!r)
 		return -EBUSY;
 
 	chip->gameport = gp = gameport_allocate_port();
 	if (!gp) {
+<<<<<<< HEAD
 		printk(KERN_ERR "es1968: cannot allocate memory for gameport\n");
 		release_and_free_resource(r);
+=======
+		dev_err(chip->card->dev,
+			"cannot allocate memory for gameport\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -2485,7 +2737,10 @@ static int __devinit snd_es1968_create_gameport(struct es1968 *chip, int dev)
 	gameport_set_phys(gp, "pci%s/gameport0", pci_name(chip->pci));
 	gameport_set_dev_parent(gp, &chip->pci->dev);
 	gp->io = JOYSTICK_ADDR;
+<<<<<<< HEAD
 	gameport_set_port_data(gp, r);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gameport_register_port(gp);
 
@@ -2495,12 +2750,17 @@ static int __devinit snd_es1968_create_gameport(struct es1968 *chip, int dev)
 static void snd_es1968_free_gameport(struct es1968 *chip)
 {
 	if (chip->gameport) {
+<<<<<<< HEAD
 		struct resource *r = gameport_get_port_data(chip->gameport);
 
 		gameport_unregister_port(chip->gameport);
 		chip->gameport = NULL;
 
 		release_and_free_resource(r);
+=======
+		gameport_unregister_port(chip->gameport);
+		chip->gameport = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #else
@@ -2509,12 +2769,20 @@ static inline void snd_es1968_free_gameport(struct es1968 *chip) { }
 #endif
 
 #ifdef CONFIG_SND_ES1968_INPUT
+<<<<<<< HEAD
 static int __devinit snd_es1968_input_register(struct es1968 *chip)
+=======
+static int snd_es1968_input_register(struct es1968 *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct input_dev *input_dev;
 	int err;
 
+<<<<<<< HEAD
 	input_dev = input_allocate_device();
+=======
+	input_dev = devm_input_allocate_device(&chip->pci->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!input_dev)
 		return -ENOMEM;
 
@@ -2534,10 +2802,15 @@ static int __devinit snd_es1968_input_register(struct es1968 *chip)
 	__set_bit(KEY_VOLUMEUP, input_dev->keybit);
 
 	err = input_register_device(input_dev);
+<<<<<<< HEAD
 	if (err) {
 		input_free_device(input_dev);
 		return err;
 	}
+=======
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->input_dev = input_dev;
 	return 0;
@@ -2550,15 +2823,34 @@ static int __devinit snd_es1968_input_register(struct es1968 *chip)
 				bits 1=unmask write to given bit */
 #define IO_DIR		8      /* direction register offset from GPIO_DATA
 				bits 0/1=read/write direction */
+<<<<<<< HEAD
 /* mask bits for GPIO lines */
 #define STR_DATA	0x0040 /* GPIO6 */
 #define STR_CLK		0x0080 /* GPIO7 */
 #define STR_WREN	0x0100 /* GPIO8 */
 #define STR_MOST	0x0200 /* GPIO9 */
+=======
+
+/* GPIO to TEA575x maps */
+struct snd_es1968_tea575x_gpio {
+	u8 data, clk, wren, most;
+	char *name;
+};
+
+static const struct snd_es1968_tea575x_gpio snd_es1968_tea575x_gpios[] = {
+	{ .data = 6, .clk = 7, .wren = 8, .most = 9, .name = "SF64-PCE2" },
+	{ .data = 7, .clk = 8, .wren = 6, .most = 10, .name = "M56VAP" },
+};
+
+#define get_tea575x_gpio(chip) \
+	(&snd_es1968_tea575x_gpios[(chip)->tea575x_tuner])
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void snd_es1968_tea575x_set_pins(struct snd_tea575x *tea, u8 pins)
 {
 	struct es1968 *chip = tea->private_data;
+<<<<<<< HEAD
 	unsigned long io = chip->io_port + GPIO_DATA;
 	u16 val = 0;
 
@@ -2567,16 +2859,39 @@ static void snd_es1968_tea575x_set_pins(struct snd_tea575x *tea, u8 pins)
 	val |= (pins & TEA575X_WREN) ? STR_WREN : 0;
 
 	outw(val, io);
+=======
+	struct snd_es1968_tea575x_gpio gpio = *get_tea575x_gpio(chip);
+	u16 val = 0;
+
+	val |= (pins & TEA575X_DATA) ? (1 << gpio.data) : 0;
+	val |= (pins & TEA575X_CLK)  ? (1 << gpio.clk)  : 0;
+	val |= (pins & TEA575X_WREN) ? (1 << gpio.wren) : 0;
+
+	outw(val, chip->io_port + GPIO_DATA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u8 snd_es1968_tea575x_get_pins(struct snd_tea575x *tea)
 {
 	struct es1968 *chip = tea->private_data;
+<<<<<<< HEAD
 	unsigned long io = chip->io_port + GPIO_DATA;
 	u16 val = inw(io);
 
 	return  (val & STR_DATA) ? TEA575X_DATA : 0 |
 		(val & STR_MOST) ? TEA575X_MOST : 0;
+=======
+	struct snd_es1968_tea575x_gpio gpio = *get_tea575x_gpio(chip);
+	u16 val = inw(chip->io_port + GPIO_DATA);
+	u8 ret = 0;
+
+	if (val & (1 << gpio.data))
+		ret |= TEA575X_DATA;
+	if (val & (1 << gpio.most))
+		ret |= TEA575X_MOST;
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void snd_es1968_tea575x_set_direction(struct snd_tea575x *tea, bool output)
@@ -2584,6 +2899,7 @@ static void snd_es1968_tea575x_set_direction(struct snd_tea575x *tea, bool outpu
 	struct es1968 *chip = tea->private_data;
 	unsigned long io = chip->io_port + GPIO_DATA;
 	u16 odir = inw(io + IO_DIR);
+<<<<<<< HEAD
 
 	if (output) {
 		outw(~(STR_DATA | STR_CLK | STR_WREN), io + IO_MASK);
@@ -2595,12 +2911,31 @@ static void snd_es1968_tea575x_set_direction(struct snd_tea575x *tea, bool outpu
 }
 
 static struct snd_tea575x_ops snd_es1968_tea_ops = {
+=======
+	struct snd_es1968_tea575x_gpio gpio = *get_tea575x_gpio(chip);
+
+	if (output) {
+		outw(~((1 << gpio.data) | (1 << gpio.clk) | (1 << gpio.wren)),
+			io + IO_MASK);
+		outw(odir | (1 << gpio.data) | (1 << gpio.clk) | (1 << gpio.wren),
+			io + IO_DIR);
+	} else {
+		outw(~((1 << gpio.clk) | (1 << gpio.wren) | (1 << gpio.data) | (1 << gpio.most)),
+			io + IO_MASK);
+		outw((odir & ~((1 << gpio.data) | (1 << gpio.most)))
+			| (1 << gpio.clk) | (1 << gpio.wren), io + IO_DIR);
+	}
+}
+
+static const struct snd_tea575x_ops snd_es1968_tea_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_pins = snd_es1968_tea575x_set_pins,
 	.get_pins = snd_es1968_tea575x_get_pins,
 	.set_direction = snd_es1968_tea575x_set_direction,
 };
 #endif
 
+<<<<<<< HEAD
 static int snd_es1968_free(struct es1968 *chip)
 {
 	cancel_work_sync(&chip->hwvol_work);
@@ -2612,6 +2947,15 @@ static int snd_es1968_free(struct es1968 *chip)
 	if (chip->io_port) {
 		if (chip->irq >= 0)
 			synchronize_irq(chip->irq);
+=======
+static void snd_es1968_free(struct snd_card *card)
+{
+	struct es1968 *chip = card->private_data;
+
+	cancel_work_sync(&chip->hwvol_work);
+
+	if (chip->io_port) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		outw(1, chip->io_port + 0x04); /* clear WP interrupts */
 		outw(0, chip->io_port + ESM_PORT_HOST_IRQ); /* disable IRQ */
 	}
@@ -2621,6 +2965,7 @@ static int snd_es1968_free(struct es1968 *chip)
 	v4l2_device_unregister(&chip->v4l2_dev);
 #endif
 
+<<<<<<< HEAD
 	if (chip->irq >= 0)
 		free_irq(chip->irq, chip);
 	snd_es1968_free_gameport(chip);
@@ -2634,6 +2979,9 @@ static int snd_es1968_dev_free(struct snd_device *device)
 {
 	struct es1968 *chip = device->device_data;
 	return snd_es1968_free(chip);
+=======
+	snd_es1968_free_gameport(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct ess_device_list {
@@ -2641,13 +2989,18 @@ struct ess_device_list {
 	unsigned short vendor;	/* subsystem vendor id */
 };
 
+<<<<<<< HEAD
 static struct ess_device_list pm_whitelist[] __devinitdata = {
+=======
+static const struct ess_device_list pm_allowlist[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ TYPE_MAESTRO2E, 0x0e11 },	/* Compaq Armada */
 	{ TYPE_MAESTRO2E, 0x1028 },
 	{ TYPE_MAESTRO2E, 0x103c },
 	{ TYPE_MAESTRO2E, 0x1179 },
 	{ TYPE_MAESTRO2E, 0x14c0 },	/* HP omnibook 4150 */
 	{ TYPE_MAESTRO2E, 0x1558 },
+<<<<<<< HEAD
 };
 
 static struct ess_device_list mpu_blacklist[] __devinitdata = {
@@ -2689,6 +3042,39 @@ static int __devinit snd_es1968_create(struct snd_card *card,
 		return -ENOMEM;
 	}
 
+=======
+	{ TYPE_MAESTRO2E, 0x125d },	/* a PCI card, e.g. Terratec DMX */
+	{ TYPE_MAESTRO2, 0x125d },	/* a PCI card, e.g. SF64-PCE2 */
+};
+
+static const struct ess_device_list mpu_denylist[] = {
+	{ TYPE_MAESTRO2, 0x125d },
+};
+
+static int snd_es1968_create(struct snd_card *card,
+			     struct pci_dev *pci,
+			     int total_bufsize,
+			     int play_streams,
+			     int capt_streams,
+			     int chip_type,
+			     int do_pm,
+			     int radio_nr)
+{
+	struct es1968 *chip = card->private_data;
+	int i, err;
+
+	/* enable PCI device */
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+	/* check, if we can restrict PCI DMA transfers to 28 bits */
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(28))) {
+		dev_err(card->dev,
+			"architecture does not support 28bit PCI busmaster DMA\n");
+		return -ENXIO;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set Vars */
 	chip->type = chip_type;
 	spin_lock_init(&chip->reg_lock);
@@ -2704,6 +3090,7 @@ static int __devinit snd_es1968_create(struct snd_card *card,
 	chip->playback_streams = play_streams;
 	chip->capture_streams = capt_streams;
 
+<<<<<<< HEAD
 	if ((err = pci_request_regions(pci, "ESS Maestro")) < 0) {
 		kfree(chip);
 		pci_disable_device(pci);
@@ -2717,6 +3104,20 @@ static int __devinit snd_es1968_create(struct snd_card *card,
 		return -EBUSY;
 	}
 	chip->irq = pci->irq;
+=======
+	err = pci_request_regions(pci, "ESS Maestro");
+	if (err < 0)
+		return err;
+	chip->io_port = pci_resource_start(pci, 0);
+	if (devm_request_irq(&pci->dev, pci->irq, snd_es1968_interrupt,
+			     IRQF_SHARED, KBUILD_MODNAME, chip)) {
+		dev_err(card->dev, "unable to grab IRQ %d\n", pci->irq);
+		return -EBUSY;
+	}
+	chip->irq = pci->irq;
+	card->sync_irq = chip->irq;
+	card->private_free = snd_es1968_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	        
 	/* Clear Maestro_map */
 	for (i = 0; i < 32; i++)
@@ -2730,19 +3131,32 @@ static int __devinit snd_es1968_create(struct snd_card *card,
 	pci_set_master(pci);
 
 	if (do_pm > 1) {
+<<<<<<< HEAD
 		/* disable power-management if not on the whitelist */
 		unsigned short vend;
 		pci_read_config_word(chip->pci, PCI_SUBSYSTEM_VENDOR_ID, &vend);
 		for (i = 0; i < (int)ARRAY_SIZE(pm_whitelist); i++) {
 			if (chip->type == pm_whitelist[i].type &&
 			    vend == pm_whitelist[i].vendor) {
+=======
+		/* disable power-management if not on the allowlist */
+		unsigned short vend;
+		pci_read_config_word(chip->pci, PCI_SUBSYSTEM_VENDOR_ID, &vend);
+		for (i = 0; i < (int)ARRAY_SIZE(pm_allowlist); i++) {
+			if (chip->type == pm_allowlist[i].type &&
+			    vend == pm_allowlist[i].vendor) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				do_pm = 1;
 				break;
 			}
 		}
 		if (do_pm > 1) {
 			/* not matched; disabling pm */
+<<<<<<< HEAD
 			printk(KERN_INFO "es1968: not attempting power management.\n");
+=======
+			dev_info(card->dev, "not attempting power management.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			do_pm = 0;
 		}
 	}
@@ -2750,6 +3164,7 @@ static int __devinit snd_es1968_create(struct snd_card *card,
 
 	snd_es1968_chip_init(chip);
 
+<<<<<<< HEAD
 	if ((err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops)) < 0) {
 		snd_es1968_free(chip);
 		return err;
@@ -2763,10 +3178,20 @@ static int __devinit snd_es1968_create(struct snd_card *card,
 		snd_es1968_free(chip);
 		return err;
 	}
+=======
+#ifdef CONFIG_SND_ES1968_RADIO
+	/* don't play with GPIOs on laptops */
+	if (chip->pci->subsystem_vendor != 0x125d)
+		return 0;
+	err = v4l2_device_register(&pci->dev, &chip->v4l2_dev);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->tea.v4l2_dev = &chip->v4l2_dev;
 	chip->tea.private_data = chip;
 	chip->tea.radio_nr = radio_nr;
 	chip->tea.ops = &snd_es1968_tea_ops;
+<<<<<<< HEAD
 	strlcpy(chip->tea.card, "SF64-PCE2", sizeof(chip->tea.card));
 	sprintf(chip->tea.bus_info, "PCI:%s", pci_name(pci));
 	if (!snd_tea575x_init(&chip->tea))
@@ -2775,14 +3200,33 @@ static int __devinit snd_es1968_create(struct snd_card *card,
 
 	*chip_ret = chip;
 
+=======
+	sprintf(chip->tea.bus_info, "PCI:%s", pci_name(pci));
+	for (i = 0; i < ARRAY_SIZE(snd_es1968_tea575x_gpios); i++) {
+		chip->tea575x_tuner = i;
+		if (!snd_tea575x_init(&chip->tea, THIS_MODULE)) {
+			dev_info(card->dev, "detected TEA575x radio type %s\n",
+				   get_tea575x_gpio(chip)->name);
+			strscpy(chip->tea.card, get_tea575x_gpio(chip)->name,
+				sizeof(chip->tea.card));
+			break;
+		}
+	}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
 /*
  */
+<<<<<<< HEAD
 static int __devinit snd_es1968_probe(struct pci_dev *pci,
 				      const struct pci_device_id *pci_id)
+=======
+static int __snd_es1968_probe(struct pci_dev *pci,
+			      const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -2797,14 +3241,23 @@ static int __devinit snd_es1968_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
 	if (err < 0)
 		return err;
+=======
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(*chip), &card);
+	if (err < 0)
+		return err;
+	chip = card->private_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 
 	if (total_bufsize[dev] < 128)
 		total_bufsize[dev] = 128;
 	if (total_bufsize[dev] > 4096)
 		total_bufsize[dev] = 4096;
+<<<<<<< HEAD
 	if ((err = snd_es1968_create(card, pci,
 				     total_bufsize[dev] * 1024, /* in bytes */
 				     pcm_substreams_p[dev], 
@@ -2817,6 +3270,17 @@ static int __devinit snd_es1968_probe(struct pci_dev *pci,
 		return err;
 	}
 	card->private_data = chip;
+=======
+	err = snd_es1968_create(card, pci,
+				total_bufsize[dev] * 1024, /* in bytes */
+				pcm_substreams_p[dev],
+				pcm_substreams_c[dev],
+				pci_id->driver_data,
+				use_pm[dev],
+				radio_nr[dev]);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (chip->type) {
 	case TYPE_MAESTRO2E:
@@ -2833,6 +3297,7 @@ static int __devinit snd_es1968_probe(struct pci_dev *pci,
 		break;
 	}
 
+<<<<<<< HEAD
 	if ((err = snd_es1968_pcm(chip, 0)) < 0) {
 		snd_card_free(card);
 		return err;
@@ -2850,12 +3315,30 @@ static int __devinit snd_es1968_probe(struct pci_dev *pci,
 		for (i = 0; i < ARRAY_SIZE(mpu_blacklist); i++) {
 			if (chip->type == mpu_blacklist[i].type &&
 			    vend == mpu_blacklist[i].vendor) {
+=======
+	err = snd_es1968_pcm(chip, 0);
+	if (err < 0)
+		return err;
+
+	err = snd_es1968_mixer(chip);
+	if (err < 0)
+		return err;
+
+	if (enable_mpu[dev] == 2) {
+		/* check the deny list */
+		unsigned short vend;
+		pci_read_config_word(chip->pci, PCI_SUBSYSTEM_VENDOR_ID, &vend);
+		for (i = 0; i < ARRAY_SIZE(mpu_denylist); i++) {
+			if (chip->type == mpu_denylist[i].type &&
+			    vend == mpu_denylist[i].vendor) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				enable_mpu[dev] = 0;
 				break;
 			}
 		}
 	}
 	if (enable_mpu[dev]) {
+<<<<<<< HEAD
 		if ((err = snd_mpu401_uart_new(card, 0, MPU401_HW_MPU401,
 					       chip->io_port + ESM_MPU401_PORT,
 					       MPU401_INFO_INTEGRATED |
@@ -2863,6 +3346,15 @@ static int __devinit snd_es1968_probe(struct pci_dev *pci,
 					       -1, &chip->rmidi)) < 0) {
 			printk(KERN_WARNING "es1968: skipping MPU-401 MIDI support..\n");
 		}
+=======
+		err = snd_mpu401_uart_new(card, 0, MPU401_HW_MPU401,
+					  chip->io_port + ESM_MPU401_PORT,
+					  MPU401_INFO_INTEGRATED |
+					  MPU401_INFO_IRQ_HOOK,
+					  -1, &chip->rmidi);
+		if (err < 0)
+			dev_warn(card->dev, "skipping MPU-401 MIDI support..\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	snd_es1968_create_gameport(chip, dev);
@@ -2870,8 +3362,13 @@ static int __devinit snd_es1968_probe(struct pci_dev *pci,
 #ifdef CONFIG_SND_ES1968_INPUT
 	err = snd_es1968_input_register(chip);
 	if (err)
+<<<<<<< HEAD
 		snd_printk(KERN_WARNING "Input device registration "
 			"failed with error %i", err);
+=======
+		dev_warn(card->dev,
+			 "Input device registration failed with error %i", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	snd_es1968_start_irq(chip);
@@ -2883,15 +3380,22 @@ static int __devinit snd_es1968_probe(struct pci_dev *pci,
 	sprintf(card->longname, "%s at 0x%lx, irq %i",
 		card->shortname, chip->io_port, chip->irq);
 
+<<<<<<< HEAD
 	if ((err = snd_card_register(card)) < 0) {
 		snd_card_free(card);
 		return err;
 	}
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_drvdata(pci, card);
 	dev++;
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_es1968_remove(struct pci_dev *pci)
 {
 	snd_card_free(pci_get_drvdata(pci));
@@ -2921,3 +3425,21 @@ static void __exit alsa_card_es1968_exit(void)
 
 module_init(alsa_card_es1968_init)
 module_exit(alsa_card_es1968_exit)
+=======
+static int snd_es1968_probe(struct pci_dev *pci,
+			    const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_es1968_probe(pci, pci_id));
+}
+
+static struct pci_driver es1968_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_es1968_ids,
+	.probe = snd_es1968_probe,
+	.driver = {
+		.pm = &es1968_pm,
+	},
+};
+
+module_pci_driver(es1968_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

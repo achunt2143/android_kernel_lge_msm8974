@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Manage a process's keyrings
  *
  * Copyright (C) 2004-2005, 2008 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -12,28 +17,48 @@
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/sched.h>
+=======
+ */
+
+#include <linux/init.h>
+#include <linux/sched.h>
+#include <linux/sched/user.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/keyctl.h>
 #include <linux/fs.h>
 #include <linux/err.h>
 #include <linux/mutex.h>
 #include <linux/security.h>
 #include <linux/user_namespace.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+#include <linux/init_task.h>
+#include <keys/request_key_auth-type.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "internal.h"
 
 /* Session keyring create vs join semaphore */
 static DEFINE_MUTEX(key_session_mutex);
 
+<<<<<<< HEAD
 /* User keyring creation semaphore */
 static DEFINE_MUTEX(key_user_keyring_mutex);
 
 /* The root user's tracking struct */
 struct key_user root_key_user = {
 	.usage		= ATOMIC_INIT(3),
+=======
+/* The root user's tracking struct */
+struct key_user root_key_user = {
+	.usage		= REFCOUNT_INIT(3),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cons_lock	= __MUTEX_INITIALIZER(root_key_user.cons_lock),
 	.lock		= __SPIN_LOCK_UNLOCKED(root_key_user.lock),
 	.nkeys		= ATOMIC_INIT(2),
 	.nikeys		= ATOMIC_INIT(2),
+<<<<<<< HEAD
 	.uid		= 0,
 	.user_ns	= &init_user_ns,
 };
@@ -111,16 +136,199 @@ int install_user_keyrings(void)
 	return 0;
 
 error_release_both:
+=======
+	.uid		= GLOBAL_ROOT_UID,
+};
+
+/*
+ * Get or create a user register keyring.
+ */
+static struct key *get_user_register(struct user_namespace *user_ns)
+{
+	struct key *reg_keyring = READ_ONCE(user_ns->user_keyring_register);
+
+	if (reg_keyring)
+		return reg_keyring;
+
+	down_write(&user_ns->keyring_sem);
+
+	/* Make sure there's a register keyring.  It gets owned by the
+	 * user_namespace's owner.
+	 */
+	reg_keyring = user_ns->user_keyring_register;
+	if (!reg_keyring) {
+		reg_keyring = keyring_alloc(".user_reg",
+					    user_ns->owner, INVALID_GID,
+					    &init_cred,
+					    KEY_POS_WRITE | KEY_POS_SEARCH |
+					    KEY_USR_VIEW | KEY_USR_READ,
+					    0,
+					    NULL, NULL);
+		if (!IS_ERR(reg_keyring))
+			smp_store_release(&user_ns->user_keyring_register,
+					  reg_keyring);
+	}
+
+	up_write(&user_ns->keyring_sem);
+
+	/* We don't return a ref since the keyring is pinned by the user_ns */
+	return reg_keyring;
+}
+
+/*
+ * Look up the user and user session keyrings for the current process's UID,
+ * creating them if they don't exist.
+ */
+int look_up_user_keyrings(struct key **_user_keyring,
+			  struct key **_user_session_keyring)
+{
+	const struct cred *cred = current_cred();
+	struct user_namespace *user_ns = current_user_ns();
+	struct key *reg_keyring, *uid_keyring, *session_keyring;
+	key_perm_t user_keyring_perm;
+	key_ref_t uid_keyring_r, session_keyring_r;
+	uid_t uid = from_kuid(user_ns, cred->user->uid);
+	char buf[20];
+	int ret;
+
+	user_keyring_perm = (KEY_POS_ALL & ~KEY_POS_SETATTR) | KEY_USR_ALL;
+
+	kenter("%u", uid);
+
+	reg_keyring = get_user_register(user_ns);
+	if (IS_ERR(reg_keyring))
+		return PTR_ERR(reg_keyring);
+
+	down_write(&user_ns->keyring_sem);
+	ret = 0;
+
+	/* Get the user keyring.  Note that there may be one in existence
+	 * already as it may have been pinned by a session, but the user_struct
+	 * pointing to it may have been destroyed by setuid.
+	 */
+	snprintf(buf, sizeof(buf), "_uid.%u", uid);
+	uid_keyring_r = keyring_search(make_key_ref(reg_keyring, true),
+				       &key_type_keyring, buf, false);
+	kdebug("_uid %p", uid_keyring_r);
+	if (uid_keyring_r == ERR_PTR(-EAGAIN)) {
+		uid_keyring = keyring_alloc(buf, cred->user->uid, INVALID_GID,
+					    cred, user_keyring_perm,
+					    KEY_ALLOC_UID_KEYRING |
+					    KEY_ALLOC_IN_QUOTA,
+					    NULL, reg_keyring);
+		if (IS_ERR(uid_keyring)) {
+			ret = PTR_ERR(uid_keyring);
+			goto error;
+		}
+	} else if (IS_ERR(uid_keyring_r)) {
+		ret = PTR_ERR(uid_keyring_r);
+		goto error;
+	} else {
+		uid_keyring = key_ref_to_ptr(uid_keyring_r);
+	}
+
+	/* Get a default session keyring (which might also exist already) */
+	snprintf(buf, sizeof(buf), "_uid_ses.%u", uid);
+	session_keyring_r = keyring_search(make_key_ref(reg_keyring, true),
+					   &key_type_keyring, buf, false);
+	kdebug("_uid_ses %p", session_keyring_r);
+	if (session_keyring_r == ERR_PTR(-EAGAIN)) {
+		session_keyring = keyring_alloc(buf, cred->user->uid, INVALID_GID,
+						cred, user_keyring_perm,
+						KEY_ALLOC_UID_KEYRING |
+						KEY_ALLOC_IN_QUOTA,
+						NULL, NULL);
+		if (IS_ERR(session_keyring)) {
+			ret = PTR_ERR(session_keyring);
+			goto error_release;
+		}
+
+		/* We install a link from the user session keyring to
+		 * the user keyring.
+		 */
+		ret = key_link(session_keyring, uid_keyring);
+		if (ret < 0)
+			goto error_release_session;
+
+		/* And only then link the user-session keyring to the
+		 * register.
+		 */
+		ret = key_link(reg_keyring, session_keyring);
+		if (ret < 0)
+			goto error_release_session;
+	} else if (IS_ERR(session_keyring_r)) {
+		ret = PTR_ERR(session_keyring_r);
+		goto error_release;
+	} else {
+		session_keyring = key_ref_to_ptr(session_keyring_r);
+	}
+
+	up_write(&user_ns->keyring_sem);
+
+	if (_user_session_keyring)
+		*_user_session_keyring = session_keyring;
+	else
+		key_put(session_keyring);
+	if (_user_keyring)
+		*_user_keyring = uid_keyring;
+	else
+		key_put(uid_keyring);
+	kleave(" = 0");
+	return 0;
+
+error_release_session:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key_put(session_keyring);
 error_release:
 	key_put(uid_keyring);
 error:
+<<<<<<< HEAD
 	mutex_unlock(&key_user_keyring_mutex);
+=======
+	up_write(&user_ns->keyring_sem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kleave(" = %d", ret);
 	return ret;
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * Get the user session keyring if it exists, but don't create it if it
+ * doesn't.
+ */
+struct key *get_user_session_keyring_rcu(const struct cred *cred)
+{
+	struct key *reg_keyring = READ_ONCE(cred->user_ns->user_keyring_register);
+	key_ref_t session_keyring_r;
+	char buf[20];
+
+	struct keyring_search_context ctx = {
+		.index_key.type		= &key_type_keyring,
+		.index_key.description	= buf,
+		.cred			= cred,
+		.match_data.cmp		= key_default_cmp,
+		.match_data.raw_data	= buf,
+		.match_data.lookup_type	= KEYRING_SEARCH_LOOKUP_DIRECT,
+		.flags			= KEYRING_SEARCH_DO_STATE_CHECK,
+	};
+
+	if (!reg_keyring)
+		return NULL;
+
+	ctx.index_key.desc_len = snprintf(buf, sizeof(buf), "_uid_ses.%u",
+					  from_kuid(cred->user_ns,
+						    cred->user->uid));
+
+	session_keyring_r = keyring_search_rcu(make_key_ref(reg_keyring, true),
+					       &ctx);
+	if (IS_ERR(session_keyring_r))
+		return NULL;
+	return key_ref_to_ptr(session_keyring_r);
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Install a thread keyring to the given credentials struct if it didn't have
  * one already.  This is allowed to overrun the quota.
  *
@@ -134,7 +342,13 @@ int install_thread_keyring_to_cred(struct cred *new)
 		return 0;
 
 	keyring = keyring_alloc("_tid", new->uid, new->gid, new,
+<<<<<<< HEAD
 				KEY_ALLOC_QUOTA_OVERRUN, NULL);
+=======
+				KEY_POS_ALL | KEY_USR_VIEW,
+				KEY_ALLOC_QUOTA_OVERRUN,
+				NULL, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(keyring))
 		return PTR_ERR(keyring);
 
@@ -174,6 +388,7 @@ static int install_thread_keyring(void)
 int install_process_keyring_to_cred(struct cred *new)
 {
 	struct key *keyring;
+<<<<<<< HEAD
 	int ret;
 
 	if (new->tgcred->process_keyring)
@@ -195,6 +410,21 @@ int install_process_keyring_to_cred(struct cred *new)
 	spin_unlock_irq(&new->tgcred->lock);
 	key_put(keyring);
 	return ret;
+=======
+
+	if (new->process_keyring)
+		return 0;
+
+	keyring = keyring_alloc("_pid", new->uid, new->gid, new,
+				KEY_POS_ALL | KEY_USR_VIEW,
+				KEY_ALLOC_QUOTA_OVERRUN,
+				NULL, NULL);
+	if (IS_ERR(keyring))
+		return PTR_ERR(keyring);
+
+	new->process_keyring = keyring;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -224,6 +454,10 @@ static int install_process_keyring(void)
  * Install the given keyring as the session keyring of the given credentials
  * struct, replacing the existing one if any.  If the given keyring is NULL,
  * then install a new anonymous session keyring.
+<<<<<<< HEAD
+=======
+ * @cred can not be in use by any task yet.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Return: 0 on success; -errno on failure.
  */
@@ -237,6 +471,7 @@ int install_session_keyring_to_cred(struct cred *cred, struct key *keyring)
 	/* create an empty session keyring */
 	if (!keyring) {
 		flags = KEY_ALLOC_QUOTA_OVERRUN;
+<<<<<<< HEAD
 		if (cred->tgcred->session_keyring)
 			flags = KEY_ALLOC_IN_QUOTA;
 
@@ -260,6 +495,26 @@ int install_session_keyring_to_cred(struct cred *cred, struct key *keyring)
 		synchronize_rcu();
 		key_put(old);
 	}
+=======
+		if (cred->session_keyring)
+			flags = KEY_ALLOC_IN_QUOTA;
+
+		keyring = keyring_alloc("_ses", cred->uid, cred->gid, cred,
+					KEY_POS_ALL | KEY_USR_VIEW | KEY_USR_READ,
+					flags, NULL, NULL);
+		if (IS_ERR(keyring))
+			return PTR_ERR(keyring);
+	} else {
+		__key_get(keyring);
+	}
+
+	/* install the keyring */
+	old = cred->session_keyring;
+	cred->session_keyring = keyring;
+
+	if (old)
+		key_put(old);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -292,6 +547,7 @@ static int install_session_keyring(struct key *keyring)
 /*
  * Handle the fsuid changing.
  */
+<<<<<<< HEAD
 void key_fsuid_changed(struct task_struct *tsk)
 {
 	/* update the ownership of the thread keyring */
@@ -300,12 +556,22 @@ void key_fsuid_changed(struct task_struct *tsk)
 		down_write(&tsk->cred->thread_keyring->sem);
 		tsk->cred->thread_keyring->uid = tsk->cred->fsuid;
 		up_write(&tsk->cred->thread_keyring->sem);
+=======
+void key_fsuid_changed(struct cred *new_cred)
+{
+	/* update the ownership of the thread keyring */
+	if (new_cred->thread_keyring) {
+		down_write(&new_cred->thread_keyring->sem);
+		new_cred->thread_keyring->uid = new_cred->fsuid;
+		up_write(&new_cred->thread_keyring->sem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /*
  * Handle the fsgid changing.
  */
+<<<<<<< HEAD
 void key_fsgid_changed(struct task_struct *tsk)
 {
 	/* update the ownership of the thread keyring */
@@ -314,12 +580,26 @@ void key_fsgid_changed(struct task_struct *tsk)
 		down_write(&tsk->cred->thread_keyring->sem);
 		tsk->cred->thread_keyring->gid = tsk->cred->fsgid;
 		up_write(&tsk->cred->thread_keyring->sem);
+=======
+void key_fsgid_changed(struct cred *new_cred)
+{
+	/* update the ownership of the thread keyring */
+	if (new_cred->thread_keyring) {
+		down_write(&new_cred->thread_keyring->sem);
+		new_cred->thread_keyring->gid = new_cred->fsgid;
+		up_write(&new_cred->thread_keyring->sem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /*
  * Search the process keyrings attached to the supplied cred for the first
+<<<<<<< HEAD
  * matching key.
+=======
+ * matching key under RCU conditions (the caller must be holding the RCU read
+ * lock).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The search criteria are the type and the match function.  The description is
  * given to the match function as a parameter, but doesn't otherwise influence
@@ -338,6 +618,7 @@ void key_fsgid_changed(struct task_struct *tsk)
  * In the case of a successful return, the possession attribute is set on the
  * returned key reference.
  */
+<<<<<<< HEAD
 key_ref_t search_my_process_keyrings(struct key_type *type,
 				     const void *description,
 				     key_match_func_t match,
@@ -345,6 +626,13 @@ key_ref_t search_my_process_keyrings(struct key_type *type,
 				     const struct cred *cred)
 {
 	key_ref_t key_ref, ret, err;
+=======
+key_ref_t search_cred_keyrings_rcu(struct keyring_search_context *ctx)
+{
+	struct key *user_session;
+	key_ref_t key_ref, ret, err;
+	const struct cred *cred = ctx->cred;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we want to return -EAGAIN or -ENOKEY if any of the keyrings were
 	 * searchable, but we failed to find a key or we found a negative key;
@@ -359,16 +647,24 @@ key_ref_t search_my_process_keyrings(struct key_type *type,
 
 	/* search the thread keyring first */
 	if (cred->thread_keyring) {
+<<<<<<< HEAD
 		key_ref = keyring_search_aux(
 			make_key_ref(cred->thread_keyring, 1),
 			cred, type, description, match, no_state_check);
+=======
+		key_ref = keyring_search_rcu(
+			make_key_ref(cred->thread_keyring, 1), ctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!IS_ERR(key_ref))
 			goto found;
 
 		switch (PTR_ERR(key_ref)) {
 		case -EAGAIN: /* no key */
+<<<<<<< HEAD
 			if (ret)
 				break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case -ENOKEY: /* negative key */
 			ret = key_ref;
 			break;
@@ -379,10 +675,16 @@ key_ref_t search_my_process_keyrings(struct key_type *type,
 	}
 
 	/* search the process keyring second */
+<<<<<<< HEAD
 	if (cred->tgcred->process_keyring) {
 		key_ref = keyring_search_aux(
 			make_key_ref(cred->tgcred->process_keyring, 1),
 			cred, type, description, match, no_state_check);
+=======
+	if (cred->process_keyring) {
+		key_ref = keyring_search_rcu(
+			make_key_ref(cred->process_keyring, 1), ctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!IS_ERR(key_ref))
 			goto found;
 
@@ -390,6 +692,10 @@ key_ref_t search_my_process_keyrings(struct key_type *type,
 		case -EAGAIN: /* no key */
 			if (ret)
 				break;
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case -ENOKEY: /* negative key */
 			ret = key_ref;
 			break;
@@ -400,6 +706,7 @@ key_ref_t search_my_process_keyrings(struct key_type *type,
 	}
 
 	/* search the session keyring */
+<<<<<<< HEAD
 	if (cred->tgcred->session_keyring) {
 		rcu_read_lock();
 		key_ref = keyring_search_aux(
@@ -408,6 +715,11 @@ key_ref_t search_my_process_keyrings(struct key_type *type,
 				     1),
 			cred, type, description, match, no_state_check);
 		rcu_read_unlock();
+=======
+	if (cred->session_keyring) {
+		key_ref = keyring_search_rcu(
+			make_key_ref(cred->session_keyring, 1), ctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!IS_ERR(key_ref))
 			goto found;
@@ -416,6 +728,10 @@ key_ref_t search_my_process_keyrings(struct key_type *type,
 		case -EAGAIN: /* no key */
 			if (ret)
 				break;
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case -ENOKEY: /* negative key */
 			ret = key_ref;
 			break;
@@ -425,10 +741,18 @@ key_ref_t search_my_process_keyrings(struct key_type *type,
 		}
 	}
 	/* or search the user-session keyring */
+<<<<<<< HEAD
 	else if (cred->user->session_keyring) {
 		key_ref = keyring_search_aux(
 			make_key_ref(cred->user->session_keyring, 1),
 			cred, type, description, match, no_state_check);
+=======
+	else if ((user_session = get_user_session_keyring_rcu(cred))) {
+		key_ref = keyring_search_rcu(make_key_ref(user_session, 1),
+					     ctx);
+		key_put(user_session);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!IS_ERR(key_ref))
 			goto found;
 
@@ -436,6 +760,10 @@ key_ref_t search_my_process_keyrings(struct key_type *type,
 		case -EAGAIN: /* no key */
 			if (ret)
 				break;
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case -ENOKEY: /* negative key */
 			ret = key_ref;
 			break;
@@ -458,20 +786,32 @@ found:
  * the keys attached to the assumed authorisation key using its credentials if
  * one is available.
  *
+<<<<<<< HEAD
  * Return same as search_my_process_keyrings().
  */
 key_ref_t search_process_keyrings(struct key_type *type,
 				  const void *description,
 				  key_match_func_t match,
 				  const struct cred *cred)
+=======
+ * The caller must be holding the RCU read lock.
+ *
+ * Return same as search_cred_keyrings_rcu().
+ */
+key_ref_t search_process_keyrings_rcu(struct keyring_search_context *ctx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct request_key_auth *rka;
 	key_ref_t key_ref, ret = ERR_PTR(-EACCES), err;
 
+<<<<<<< HEAD
 	might_sleep();
 
 	key_ref = search_my_process_keyrings(type, description, match,
 					     false, cred);
+=======
+	key_ref = search_cred_keyrings_rcu(ctx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!IS_ERR(key_ref))
 		goto found;
 	err = key_ref;
@@ -480,6 +820,7 @@ key_ref_t search_process_keyrings(struct key_type *type,
 	 * search the keyrings of the process mentioned there
 	 * - we don't permit access to request_key auth keys via this method
 	 */
+<<<<<<< HEAD
 	if (cred->request_key_auth &&
 	    cred == current_cred() &&
 	    type != &key_type_request_key_auth
@@ -501,6 +842,25 @@ key_ref_t search_process_keyrings(struct key_type *type,
 			ret = key_ref;
 		} else {
 			up_read(&cred->request_key_auth->sem);
+=======
+	if (ctx->cred->request_key_auth &&
+	    ctx->cred == current_cred() &&
+	    ctx->index_key.type != &key_type_request_key_auth
+	    ) {
+		const struct cred *cred = ctx->cred;
+
+		if (key_validate(cred->request_key_auth) == 0) {
+			rka = ctx->cred->request_key_auth->payload.data[0];
+
+			//// was search_process_keyrings() [ie. recursive]
+			ctx->cred = rka->cred;
+			key_ref = search_cred_keyrings_rcu(ctx);
+			ctx->cred = cred;
+
+			if (!IS_ERR(key_ref))
+				goto found;
+			ret = key_ref;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -515,6 +875,7 @@ key_ref_t search_process_keyrings(struct key_type *type,
 found:
 	return key_ref;
 }
+<<<<<<< HEAD
 
 /*
  * See if the key we're looking at is the target key.
@@ -522,6 +883,15 @@ found:
 int lookup_user_key_possessed(const struct key *key, const void *target)
 {
 	return key == target;
+=======
+/*
+ * See if the key we're looking at is the target key.
+ */
+bool lookup_user_key_possessed(const struct key *key,
+			       const struct key_match_data *match_data)
+{
+	return key == match_data->raw_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -543,21 +913,42 @@ int lookup_user_key_possessed(const struct key *key, const void *target)
  * returned key reference.
  */
 key_ref_t lookup_user_key(key_serial_t id, unsigned long lflags,
+<<<<<<< HEAD
 			  key_perm_t perm)
 {
 	struct request_key_auth *rka;
 	const struct cred *cred;
 	struct key *key;
+=======
+			  enum key_need_perm need_perm)
+{
+	struct keyring_search_context ctx = {
+		.match_data.cmp		= lookup_user_key_possessed,
+		.match_data.lookup_type	= KEYRING_SEARCH_LOOKUP_DIRECT,
+		.flags			= (KEYRING_SEARCH_NO_STATE_CHECK |
+					   KEYRING_SEARCH_RECURSE),
+	};
+	struct request_key_auth *rka;
+	struct key *key, *user_session;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key_ref_t key_ref, skey_ref;
 	int ret;
 
 try_again:
+<<<<<<< HEAD
 	cred = get_current_cred();
+=======
+	ctx.cred = get_current_cred();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key_ref = ERR_PTR(-ENOKEY);
 
 	switch (id) {
 	case KEY_SPEC_THREAD_KEYRING:
+<<<<<<< HEAD
 		if (!cred->thread_keyring) {
+=======
+		if (!ctx.cred->thread_keyring) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!(lflags & KEY_LOOKUP_CREATE))
 				goto error;
 
@@ -569,13 +960,22 @@ try_again:
 			goto reget_creds;
 		}
 
+<<<<<<< HEAD
 		key = cred->thread_keyring;
 		atomic_inc(&key->usage);
+=======
+		key = ctx.cred->thread_keyring;
+		__key_get(key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		key_ref = make_key_ref(key, 1);
 		break;
 
 	case KEY_SPEC_PROCESS_KEYRING:
+<<<<<<< HEAD
 		if (!cred->tgcred->process_keyring) {
+=======
+		if (!ctx.cred->process_keyring) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!(lflags & KEY_LOOKUP_CREATE))
 				goto error;
 
@@ -587,21 +987,34 @@ try_again:
 			goto reget_creds;
 		}
 
+<<<<<<< HEAD
 		key = cred->tgcred->process_keyring;
 		atomic_inc(&key->usage);
+=======
+		key = ctx.cred->process_keyring;
+		__key_get(key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		key_ref = make_key_ref(key, 1);
 		break;
 
 	case KEY_SPEC_SESSION_KEYRING:
+<<<<<<< HEAD
 		if (!cred->tgcred->session_keyring) {
 			/* always install a session keyring upon access if one
 			 * doesn't exist yet */
 			ret = install_user_keyrings();
+=======
+		if (!ctx.cred->session_keyring) {
+			/* always install a session keyring upon access if one
+			 * doesn't exist yet */
+			ret = look_up_user_keyrings(NULL, &user_session);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret < 0)
 				goto error;
 			if (lflags & KEY_LOOKUP_CREATE)
 				ret = join_session_keyring(NULL);
 			else
+<<<<<<< HEAD
 				ret = install_session_keyring(
 					cred->user->session_keyring);
 
@@ -610,6 +1023,16 @@ try_again:
 			goto reget_creds;
 		} else if (cred->tgcred->session_keyring ==
 			   cred->user->session_keyring &&
+=======
+				ret = install_session_keyring(user_session);
+
+			key_put(user_session);
+			if (ret < 0)
+				goto error;
+			goto reget_creds;
+		} else if (test_bit(KEY_FLAG_UID_KEYRING,
+				    &ctx.cred->session_keyring->flags) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   lflags & KEY_LOOKUP_CREATE) {
 			ret = join_session_keyring(NULL);
 			if (ret < 0)
@@ -617,14 +1040,20 @@ try_again:
 			goto reget_creds;
 		}
 
+<<<<<<< HEAD
 		rcu_read_lock();
 		key = rcu_dereference(cred->tgcred->session_keyring);
 		atomic_inc(&key->usage);
 		rcu_read_unlock();
+=======
+		key = ctx.cred->session_keyring;
+		__key_get(key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		key_ref = make_key_ref(key, 1);
 		break;
 
 	case KEY_SPEC_USER_KEYRING:
+<<<<<<< HEAD
 		if (!cred->user->uid_keyring) {
 			ret = install_user_keyrings();
 			if (ret < 0)
@@ -633,10 +1062,16 @@ try_again:
 
 		key = cred->user->uid_keyring;
 		atomic_inc(&key->usage);
+=======
+		ret = look_up_user_keyrings(&key, NULL);
+		if (ret < 0)
+			goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		key_ref = make_key_ref(key, 1);
 		break;
 
 	case KEY_SPEC_USER_SESSION_KEYRING:
+<<<<<<< HEAD
 		if (!cred->user->session_keyring) {
 			ret = install_user_keyrings();
 			if (ret < 0)
@@ -645,6 +1080,11 @@ try_again:
 
 		key = cred->user->session_keyring;
 		atomic_inc(&key->usage);
+=======
+		ret = look_up_user_keyrings(NULL, &key);
+		if (ret < 0)
+			goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		key_ref = make_key_ref(key, 1);
 		break;
 
@@ -654,15 +1094,24 @@ try_again:
 		goto error;
 
 	case KEY_SPEC_REQKEY_AUTH_KEY:
+<<<<<<< HEAD
 		key = cred->request_key_auth;
 		if (!key)
 			goto error;
 
 		atomic_inc(&key->usage);
+=======
+		key = ctx.cred->request_key_auth;
+		if (!key)
+			goto error;
+
+		__key_get(key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		key_ref = make_key_ref(key, 1);
 		break;
 
 	case KEY_SPEC_REQUESTOR_KEYRING:
+<<<<<<< HEAD
 		if (!cred->request_key_auth)
 			goto error;
 
@@ -677,6 +1126,22 @@ try_again:
 			atomic_inc(&key->usage);
 		}
 		up_read(&cred->request_key_auth->sem);
+=======
+		if (!ctx.cred->request_key_auth)
+			goto error;
+
+		down_read(&ctx.cred->request_key_auth->sem);
+		if (test_bit(KEY_FLAG_REVOKED,
+			     &ctx.cred->request_key_auth->flags)) {
+			key_ref = ERR_PTR(-EKEYREVOKED);
+			key = NULL;
+		} else {
+			rka = ctx.cred->request_key_auth->payload.data[0];
+			key = rka->dest_keyring;
+			__key_get(key);
+		}
+		up_read(&ctx.cred->request_key_auth->sem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!key)
 			goto error;
 		key_ref = make_key_ref(key, 1);
@@ -696,9 +1161,19 @@ try_again:
 		key_ref = make_key_ref(key, 0);
 
 		/* check to see if we possess the key */
+<<<<<<< HEAD
 		skey_ref = search_process_keyrings(key->type, key,
 						   lookup_user_key_possessed,
 						   cred);
+=======
+		ctx.index_key			= key->index_key;
+		ctx.match_data.raw_data		= key;
+		kdebug("check possessed");
+		rcu_read_lock();
+		skey_ref = search_process_keyrings_rcu(&ctx);
+		rcu_read_unlock();
+		kdebug("possessed=%p", skey_ref);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!IS_ERR(skey_ref)) {
 			key_put(key);
@@ -710,6 +1185,7 @@ try_again:
 
 	/* unlink does not use the nominated key in any way, so can skip all
 	 * the permission checks as it is only concerned with the keyring */
+<<<<<<< HEAD
 	if (lflags & KEY_LOOKUP_FOR_UNLINK) {
 		ret = 0;
 		goto error;
@@ -744,6 +1220,43 @@ try_again:
 
 error:
 	put_cred(cred);
+=======
+	if (need_perm != KEY_NEED_UNLINK) {
+		if (!(lflags & KEY_LOOKUP_PARTIAL)) {
+			ret = wait_for_key_construction(key, true);
+			switch (ret) {
+			case -ERESTARTSYS:
+				goto invalid_key;
+			default:
+				if (need_perm != KEY_AUTHTOKEN_OVERRIDE &&
+				    need_perm != KEY_DEFER_PERM_CHECK)
+					goto invalid_key;
+				break;
+			case 0:
+				break;
+			}
+		} else if (need_perm != KEY_DEFER_PERM_CHECK) {
+			ret = key_validate(key);
+			if (ret < 0)
+				goto invalid_key;
+		}
+
+		ret = -EIO;
+		if (!(lflags & KEY_LOOKUP_PARTIAL) &&
+		    key_read_state(key) == KEY_IS_UNINSTANTIATED)
+			goto invalid_key;
+	}
+
+	/* check the permissions */
+	ret = key_task_permission(key_ref, ctx.cred, need_perm);
+	if (ret < 0)
+		goto invalid_key;
+
+	key->last_used_at = ktime_get_real_seconds();
+
+error:
+	put_cred(ctx.cred);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return key_ref;
 
 invalid_key:
@@ -754,9 +1267,16 @@ invalid_key:
 	/* if we attempted to install a keyring, then it may have caused new
 	 * creds to be installed */
 reget_creds:
+<<<<<<< HEAD
 	put_cred(cred);
 	goto try_again;
 }
+=======
+	put_cred(ctx.cred);
+	goto try_again;
+}
+EXPORT_SYMBOL(lookup_user_key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Join the named keyring as the session keyring if possible else attempt to
@@ -776,12 +1296,15 @@ long join_session_keyring(const char *name)
 	struct key *keyring;
 	long ret, serial;
 
+<<<<<<< HEAD
 	/* only permit this if there's a single thread in the thread group -
 	 * this avoids us having to adjust the creds on all threads and risking
 	 * ENOMEM */
 	if (!current_is_single_threaded())
 		return -EMLINK;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new = prepare_creds();
 	if (!new)
 		return -ENOMEM;
@@ -793,7 +1316,11 @@ long join_session_keyring(const char *name)
 		if (ret < 0)
 			goto error;
 
+<<<<<<< HEAD
 		serial = new->tgcred->session_keyring->serial;
+=======
+		serial = new->session_keyring->serial;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = commit_creds(new);
 		if (ret == 0)
 			ret = serial;
@@ -807,8 +1334,15 @@ long join_session_keyring(const char *name)
 	keyring = find_keyring_by_name(name, false);
 	if (PTR_ERR(keyring) == -ENOKEY) {
 		/* not found - try and create a new one */
+<<<<<<< HEAD
 		keyring = keyring_alloc(name, old->uid, old->gid, old,
 					KEY_ALLOC_IN_QUOTA, NULL);
+=======
+		keyring = keyring_alloc(
+			name, old->uid, old->gid, old,
+			KEY_POS_ALL | KEY_USR_VIEW | KEY_USR_READ | KEY_USR_LINK,
+			KEY_ALLOC_IN_QUOTA, NULL, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(keyring)) {
 			ret = PTR_ERR(keyring);
 			goto error2;
@@ -816,12 +1350,22 @@ long join_session_keyring(const char *name)
 	} else if (IS_ERR(keyring)) {
 		ret = PTR_ERR(keyring);
 		goto error2;
+<<<<<<< HEAD
+=======
+	} else if (keyring == new->session_keyring) {
+		ret = 0;
+		goto error3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* we've got a keyring - now to install it */
 	ret = install_session_keyring_to_cred(new, keyring);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto error2;
+=======
+		goto error3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	commit_creds(new);
 	mutex_unlock(&key_session_mutex);
@@ -831,6 +1375,11 @@ long join_session_keyring(const char *name)
 okay:
 	return ret;
 
+<<<<<<< HEAD
+=======
+error3:
+	key_put(keyring);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error2:
 	mutex_unlock(&key_session_mutex);
 error:
@@ -842,6 +1391,7 @@ error:
  * Replace a process's session keyring on behalf of one of its children when
  * the target  process is about to resume userspace execution.
  */
+<<<<<<< HEAD
 void key_replace_session_keyring(void)
 {
 	const struct cred *old;
@@ -859,6 +1409,25 @@ void key_replace_session_keyring(void)
 		return;
 
 	old = current_cred();
+=======
+void key_change_session_keyring(struct callback_head *twork)
+{
+	const struct cred *old = current_cred();
+	struct cred *new = container_of(twork, struct cred, rcu);
+
+	if (unlikely(current->flags & PF_EXITING)) {
+		put_cred(new);
+		return;
+	}
+
+	/* If get_ucounts fails more bits are needed in the refcount */
+	if (unlikely(!get_ucounts(old->ucounts))) {
+		WARN_ONCE(1, "In %s get_ucounts failed\n", __func__);
+		put_cred(new);
+		return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new->  uid	= old->  uid;
 	new-> euid	= old-> euid;
 	new-> suid	= old-> suid;
@@ -868,7 +1437,12 @@ void key_replace_session_keyring(void)
 	new-> sgid	= old-> sgid;
 	new->fsgid	= old->fsgid;
 	new->user	= get_uid(old->user);
+<<<<<<< HEAD
 	new->user_ns	= new->user->user_ns;
+=======
+	new->ucounts	= old->ucounts;
+	new->user_ns	= get_user_ns(old->user_ns);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new->group_info	= get_group_info(old->group_info);
 
 	new->securebits	= old->securebits;
@@ -880,10 +1454,27 @@ void key_replace_session_keyring(void)
 
 	new->jit_keyring	= old->jit_keyring;
 	new->thread_keyring	= key_get(old->thread_keyring);
+<<<<<<< HEAD
 	new->tgcred->tgid	= old->tgcred->tgid;
 	new->tgcred->process_keyring = key_get(old->tgcred->process_keyring);
+=======
+	new->process_keyring	= key_get(old->process_keyring);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	security_transfer_creds(new, old);
 
 	commit_creds(new);
 }
+<<<<<<< HEAD
+=======
+
+/*
+ * Make sure that root's user and user-session keyrings exist.
+ */
+static int __init init_root_keyring(void)
+{
+	return look_up_user_keyrings(NULL, NULL);
+}
+
+late_initcall(init_root_keyring);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *	xt_connmark - Netfilter module to operate on connection marks
  *
@@ -19,6 +20,16 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *	xt_connmark - Netfilter module to operate on connection marks
+ *
+ *	Copyright (C) 2002,2004 MARA Systems AB <https://www.marasystems.com>
+ *	by Henrik Nordstrom <hno@marasystems.com>
+ *	Copyright © CC Computer Consultants GmbH, 2007 - 2008
+ *	Jan Engelhardt <jengelh@medozas.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -37,12 +48,22 @@ MODULE_ALIAS("ipt_connmark");
 MODULE_ALIAS("ip6t_connmark");
 
 static unsigned int
+<<<<<<< HEAD
 connmark_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct xt_connmark_tginfo1 *info = par->targinfo;
 	enum ip_conntrack_info ctinfo;
 	struct nf_conn *ct;
 	u_int32_t newmark;
+=======
+connmark_tg_shift(struct sk_buff *skb, const struct xt_connmark_tginfo2 *info)
+{
+	enum ip_conntrack_info ctinfo;
+	u_int32_t new_targetmark;
+	struct nf_conn *ct;
+	u_int32_t newmark;
+	u_int32_t oldmark;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ct = nf_ct_get(skb, &ctinfo);
 	if (ct == NULL)
@@ -50,21 +71,47 @@ connmark_tg(struct sk_buff *skb, const struct xt_action_param *par)
 
 	switch (info->mode) {
 	case XT_CONNMARK_SET:
+<<<<<<< HEAD
 		newmark = (ct->mark & ~info->ctmask) ^ info->ctmark;
 		if (ct->mark != newmark) {
 			ct->mark = newmark;
+=======
+		oldmark = READ_ONCE(ct->mark);
+		newmark = (oldmark & ~info->ctmask) ^ info->ctmark;
+		if (info->shift_dir == D_SHIFT_RIGHT)
+			newmark >>= info->shift_bits;
+		else
+			newmark <<= info->shift_bits;
+
+		if (READ_ONCE(ct->mark) != newmark) {
+			WRITE_ONCE(ct->mark, newmark);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nf_conntrack_event_cache(IPCT_MARK, ct);
 		}
 		break;
 	case XT_CONNMARK_SAVE:
+<<<<<<< HEAD
 		newmark = (ct->mark & ~info->ctmask) ^
 		          (skb->mark & info->nfmask);
 		if (ct->mark != newmark) {
 			ct->mark = newmark;
+=======
+		new_targetmark = (skb->mark & info->nfmask);
+		if (info->shift_dir == D_SHIFT_RIGHT)
+			new_targetmark >>= info->shift_bits;
+		else
+			new_targetmark <<= info->shift_bits;
+
+		newmark = (READ_ONCE(ct->mark) & ~info->ctmask) ^
+			  new_targetmark;
+		if (READ_ONCE(ct->mark) != newmark) {
+			WRITE_ONCE(ct->mark, newmark);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nf_conntrack_event_cache(IPCT_MARK, ct);
 		}
 		break;
 	case XT_CONNMARK_RESTORE:
+<<<<<<< HEAD
 		newmark = (skb->mark & ~info->nfmask) ^
 		          (ct->mark & info->ctmask);
 		skb->mark = newmark;
@@ -74,20 +121,69 @@ connmark_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	return XT_CONTINUE;
 }
 
+=======
+		new_targetmark = (READ_ONCE(ct->mark) & info->ctmask);
+		if (info->shift_dir == D_SHIFT_RIGHT)
+			new_targetmark >>= info->shift_bits;
+		else
+			new_targetmark <<= info->shift_bits;
+
+		newmark = (skb->mark & ~info->nfmask) ^
+			  new_targetmark;
+		skb->mark = newmark;
+		break;
+	}
+	return XT_CONTINUE;
+}
+
+static unsigned int
+connmark_tg(struct sk_buff *skb, const struct xt_action_param *par)
+{
+	const struct xt_connmark_tginfo1 *info = par->targinfo;
+	const struct xt_connmark_tginfo2 info2 = {
+		.ctmark	= info->ctmark,
+		.ctmask	= info->ctmask,
+		.nfmask	= info->nfmask,
+		.mode	= info->mode,
+	};
+
+	return connmark_tg_shift(skb, &info2);
+}
+
+static unsigned int
+connmark_tg_v2(struct sk_buff *skb, const struct xt_action_param *par)
+{
+	const struct xt_connmark_tginfo2 *info = par->targinfo;
+
+	return connmark_tg_shift(skb, info);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int connmark_tg_check(const struct xt_tgchk_param *par)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = nf_ct_l3proto_try_module_get(par->family);
 	if (ret < 0)
 		pr_info("cannot load conntrack support for proto=%u\n",
 			par->family);
+=======
+	ret = nf_ct_netns_get(par->net, par->family);
+	if (ret < 0)
+		pr_info_ratelimited("cannot load conntrack support for proto=%u\n",
+				    par->family);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static void connmark_tg_destroy(const struct xt_tgdtor_param *par)
 {
+<<<<<<< HEAD
 	nf_ct_l3proto_module_put(par->family);
+=======
+	nf_ct_netns_put(par->net, par->family);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool
@@ -101,22 +197,34 @@ connmark_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	if (ct == NULL)
 		return false;
 
+<<<<<<< HEAD
 	return ((ct->mark & info->mask) == info->mark) ^ info->invert;
+=======
+	return ((READ_ONCE(ct->mark) & info->mask) == info->mark) ^ info->invert;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int connmark_mt_check(const struct xt_mtchk_param *par)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = nf_ct_l3proto_try_module_get(par->family);
 	if (ret < 0)
 		pr_info("cannot load conntrack support for proto=%u\n",
 			par->family);
+=======
+	ret = nf_ct_netns_get(par->net, par->family);
+	if (ret < 0)
+		pr_info_ratelimited("cannot load conntrack support for proto=%u\n",
+				    par->family);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static void connmark_mt_destroy(const struct xt_mtdtor_param *par)
 {
+<<<<<<< HEAD
 	nf_ct_l3proto_module_put(par->family);
 }
 
@@ -129,6 +237,32 @@ static struct xt_target connmark_tg_reg __read_mostly = {
 	.targetsize     = sizeof(struct xt_connmark_tginfo1),
 	.destroy        = connmark_tg_destroy,
 	.me             = THIS_MODULE,
+=======
+	nf_ct_netns_put(par->net, par->family);
+}
+
+static struct xt_target connmark_tg_reg[] __read_mostly = {
+	{
+		.name           = "CONNMARK",
+		.revision       = 1,
+		.family         = NFPROTO_UNSPEC,
+		.checkentry     = connmark_tg_check,
+		.target         = connmark_tg,
+		.targetsize     = sizeof(struct xt_connmark_tginfo1),
+		.destroy        = connmark_tg_destroy,
+		.me             = THIS_MODULE,
+	},
+	{
+		.name           = "CONNMARK",
+		.revision       = 2,
+		.family         = NFPROTO_UNSPEC,
+		.checkentry     = connmark_tg_check,
+		.target         = connmark_tg_v2,
+		.targetsize     = sizeof(struct xt_connmark_tginfo2),
+		.destroy        = connmark_tg_destroy,
+		.me             = THIS_MODULE,
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct xt_match connmark_mt_reg __read_mostly = {
@@ -146,12 +280,22 @@ static int __init connmark_mt_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = xt_register_target(&connmark_tg_reg);
+=======
+	ret = xt_register_targets(connmark_tg_reg,
+				  ARRAY_SIZE(connmark_tg_reg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 	ret = xt_register_match(&connmark_mt_reg);
 	if (ret < 0) {
+<<<<<<< HEAD
 		xt_unregister_target(&connmark_tg_reg);
+=======
+		xt_unregister_targets(connmark_tg_reg,
+				      ARRAY_SIZE(connmark_tg_reg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	return 0;
@@ -160,7 +304,11 @@ static int __init connmark_mt_init(void)
 static void __exit connmark_mt_exit(void)
 {
 	xt_unregister_match(&connmark_mt_reg);
+<<<<<<< HEAD
 	xt_unregister_target(&connmark_tg_reg);
+=======
+	xt_unregister_targets(connmark_tg_reg, ARRAY_SIZE(connmark_tg_reg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(connmark_mt_init);

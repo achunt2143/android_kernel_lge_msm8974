@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  * Filename:  target_core_tmr.c
  *
  * This file contains SPC-3 task management infrastructure
  *
+<<<<<<< HEAD
  * Copyright (c) 2009,2010 Rising Tide Systems
  * Copyright (c) 2009,2010 Linux-iSCSI.org
  *
@@ -22,19 +27,31 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
+=======
+ * (c) Copyright 2009-2013 Datera, Inc.
+ *
+ * Nicholas A. Bellinger <nab@kernel.org>
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ******************************************************************************/
 
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/list.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <target/target_core_base.h>
 #include <target/target_core_backend.h>
 #include <target/target_core_fabric.h>
+<<<<<<< HEAD
 #include <target/target_core_configfs.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "target_core_internal.h"
 #include "target_core_alua.h"
@@ -65,6 +82,7 @@ int core_tmr_alloc_req(
 }
 EXPORT_SYMBOL(core_tmr_alloc_req);
 
+<<<<<<< HEAD
 void core_tmr_release_req(
 	struct se_tmr_req *tmr)
 {
@@ -103,6 +121,13 @@ static void core_tmr_handle_tas_abort(
 	transport_cmd_finish_abort(cmd, 0);
 }
 
+=======
+void core_tmr_release_req(struct se_tmr_req *tmr)
+{
+	kfree(tmr);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int target_check_cdb_and_preempt(struct list_head *list,
 		struct se_cmd *cmd)
 {
@@ -118,11 +143,49 @@ static int target_check_cdb_and_preempt(struct list_head *list,
 	return 1;
 }
 
+<<<<<<< HEAD
+=======
+static bool __target_check_io_state(struct se_cmd *se_cmd,
+				    struct se_session *tmr_sess, bool tas)
+{
+	struct se_session *sess = se_cmd->se_sess;
+
+	lockdep_assert_held(&sess->sess_cmd_lock);
+
+	/*
+	 * If command already reached CMD_T_COMPLETE state within
+	 * target_complete_cmd() or CMD_T_FABRIC_STOP due to shutdown,
+	 * this se_cmd has been passed to fabric driver and will
+	 * not be aborted.
+	 *
+	 * Otherwise, obtain a local se_cmd->cmd_kref now for TMR
+	 * ABORT_TASK + LUN_RESET for CMD_T_ABORTED processing as
+	 * long as se_cmd->cmd_kref is still active unless zero.
+	 */
+	spin_lock(&se_cmd->t_state_lock);
+	if (se_cmd->transport_state & (CMD_T_COMPLETE | CMD_T_FABRIC_STOP)) {
+		pr_debug("Attempted to abort io tag: %llu already complete or"
+			" fabric stop, skipping\n", se_cmd->tag);
+		spin_unlock(&se_cmd->t_state_lock);
+		return false;
+	}
+	se_cmd->transport_state |= CMD_T_ABORTED;
+
+	if ((tmr_sess != se_cmd->se_sess) && tas)
+		se_cmd->transport_state |= CMD_T_TAS;
+
+	spin_unlock(&se_cmd->t_state_lock);
+
+	return kref_get_unless_zero(&se_cmd->cmd_kref);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void core_tmr_abort_task(
 	struct se_device *dev,
 	struct se_tmr_req *tmr,
 	struct se_session *se_sess)
 {
+<<<<<<< HEAD
 	struct se_cmd *se_cmd, *tmp_cmd;
 	unsigned long flags;
 	int ref_tag;
@@ -180,6 +243,71 @@ out:
 	printk("ABORT_TASK: Sending TMR_TASK_DOES_NOT_EXIST for ref_tag: %d\n",
 			tmr->ref_task_tag);
 	tmr->response = TMR_TASK_DOES_NOT_EXIST;
+=======
+	LIST_HEAD(aborted_list);
+	struct se_cmd *se_cmd, *next;
+	unsigned long flags;
+	bool rc;
+	u64 ref_tag;
+	int i;
+
+	for (i = 0; i < dev->queue_cnt; i++) {
+		flush_work(&dev->queues[i].sq.work);
+
+		spin_lock_irqsave(&dev->queues[i].lock, flags);
+		list_for_each_entry_safe(se_cmd, next, &dev->queues[i].state_list,
+					 state_list) {
+			if (se_sess != se_cmd->se_sess)
+				continue;
+
+			/*
+			 * skip task management functions, including
+			 * tmr->task_cmd
+			 */
+			if (se_cmd->se_cmd_flags & SCF_SCSI_TMR_CDB)
+				continue;
+
+			ref_tag = se_cmd->tag;
+			if (tmr->ref_task_tag != ref_tag)
+				continue;
+
+			pr_err("ABORT_TASK: Found referenced %s task_tag: %llu\n",
+			       se_cmd->se_tfo->fabric_name, ref_tag);
+
+			spin_lock(&se_sess->sess_cmd_lock);
+			rc = __target_check_io_state(se_cmd, se_sess, 0);
+			spin_unlock(&se_sess->sess_cmd_lock);
+			if (!rc)
+				continue;
+
+			list_move_tail(&se_cmd->state_list, &aborted_list);
+			se_cmd->state_active = false;
+			spin_unlock_irqrestore(&dev->queues[i].lock, flags);
+
+			if (dev->transport->tmr_notify)
+				dev->transport->tmr_notify(dev, TMR_ABORT_TASK,
+							   &aborted_list);
+
+			list_del_init(&se_cmd->state_list);
+			target_put_cmd_and_wait(se_cmd);
+
+			pr_err("ABORT_TASK: Sending TMR_FUNCTION_COMPLETE for ref_tag: %llu\n",
+			       ref_tag);
+			tmr->response = TMR_FUNCTION_COMPLETE;
+			atomic_long_inc(&dev->aborts_complete);
+			return;
+		}
+		spin_unlock_irqrestore(&dev->queues[i].lock, flags);
+	}
+
+	if (dev->transport->tmr_notify)
+		dev->transport->tmr_notify(dev, TMR_ABORT_TASK, &aborted_list);
+
+	printk("ABORT_TASK: Sending TMR_TASK_DOES_NOT_EXIST for ref_tag: %lld\n",
+			tmr->ref_task_tag);
+	tmr->response = TMR_TASK_DOES_NOT_EXIST;
+	atomic_long_inc(&dev->aborts_no_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void core_tmr_drain_tmr_list(
@@ -188,18 +316,29 @@ static void core_tmr_drain_tmr_list(
 	struct list_head *preempt_and_abort_list)
 {
 	LIST_HEAD(drain_tmr_list);
+<<<<<<< HEAD
 	struct se_tmr_req *tmr_p, *tmr_pp;
 	struct se_cmd *cmd;
 	unsigned long flags;
+=======
+	struct se_session *sess;
+	struct se_tmr_req *tmr_p, *tmr_pp;
+	struct se_cmd *cmd;
+	unsigned long flags;
+	bool rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Release all pending and outgoing TMRs aside from the received
 	 * LUN_RESET tmr..
 	 */
 	spin_lock_irqsave(&dev->se_tmr_lock, flags);
 	list_for_each_entry_safe(tmr_p, tmr_pp, &dev->dev_tmr_list, tmr_list) {
+<<<<<<< HEAD
 		/*
 		 * Allow the received TMR to return with FUNCTION_COMPLETE.
 		 */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tmr_p == tmr)
 			continue;
 
@@ -208,14 +347,30 @@ static void core_tmr_drain_tmr_list(
 			pr_err("Unable to locate struct se_cmd for TMR\n");
 			continue;
 		}
+<<<<<<< HEAD
 		/*
 		 * If this function was called with a valid pr_res_key
 		 * parameter (eg: for PROUT PREEMPT_AND_ABORT service action
 		 * skip non regisration key matching TMRs.
+=======
+
+		/*
+		 * We only execute one LUN_RESET at a time so we can't wait
+		 * on them below.
+		 */
+		if (tmr_p->function == TMR_LUN_RESET)
+			continue;
+
+		/*
+		 * If this function was called with a valid pr_res_key
+		 * parameter (eg: for PROUT PREEMPT_AND_ABORT service action
+		 * skip non registration key matching TMRs.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (target_check_cdb_and_preempt(preempt_and_abort_list, cmd))
 			continue;
 
+<<<<<<< HEAD
 		spin_lock(&cmd->t_state_lock);
 		if (!(cmd->transport_state & CMD_T_ACTIVE)) {
 			spin_unlock(&cmd->t_state_lock);
@@ -228,6 +383,23 @@ static void core_tmr_drain_tmr_list(
 		spin_unlock(&cmd->t_state_lock);
 
 		list_move_tail(&tmr_p->tmr_list, &drain_tmr_list);
+=======
+		sess = cmd->se_sess;
+		if (WARN_ON_ONCE(!sess))
+			continue;
+
+		spin_lock(&sess->sess_cmd_lock);
+		rc = __target_check_io_state(cmd, sess, 0);
+		spin_unlock(&sess->sess_cmd_lock);
+
+		if (!rc) {
+			printk("LUN_RESET TMR: non-zero kref_get_unless_zero\n");
+			continue;
+		}
+
+		list_move_tail(&tmr_p->tmr_list, &drain_tmr_list);
+		tmr_p->tmr_dev = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&dev->se_tmr_lock, flags);
 
@@ -240,6 +412,7 @@ static void core_tmr_drain_tmr_list(
 			(preempt_and_abort_list) ? "Preempt" : "", tmr_p,
 			tmr_p->function, tmr_p->response, cmd->t_state);
 
+<<<<<<< HEAD
 		transport_cmd_finish_abort(cmd, 1);
 	}
 }
@@ -258,6 +431,46 @@ static void core_tmr_drain_task_list(
 	int fe_count;
 	/*
 	 * Complete outstanding struct se_task CDBs with TASK_ABORTED SAM status.
+=======
+		target_put_cmd_and_wait(cmd);
+	}
+}
+
+/**
+ * core_tmr_drain_state_list() - abort SCSI commands associated with a device
+ *
+ * @dev:       Device for which to abort outstanding SCSI commands.
+ * @prout_cmd: Pointer to the SCSI PREEMPT AND ABORT if this function is called
+ *             to realize the PREEMPT AND ABORT functionality.
+ * @tmr_sess:  Session through which the LUN RESET has been received.
+ * @tas:       Task Aborted Status (TAS) bit from the SCSI control mode page.
+ *             A quote from SPC-4, paragraph "7.5.10 Control mode page":
+ *             "A task aborted status (TAS) bit set to zero specifies that
+ *             aborted commands shall be terminated by the device server
+ *             without any response to the application client. A TAS bit set
+ *             to one specifies that commands aborted by the actions of an I_T
+ *             nexus other than the I_T nexus on which the command was
+ *             received shall be completed with TASK ABORTED status."
+ * @preempt_and_abort_list: For the PREEMPT AND ABORT functionality, a list
+ *             with registrations that will be preempted.
+ */
+static void core_tmr_drain_state_list(
+	struct se_device *dev,
+	struct se_cmd *prout_cmd,
+	struct se_session *tmr_sess,
+	bool tas,
+	struct list_head *preempt_and_abort_list)
+{
+	LIST_HEAD(drain_task_list);
+	struct se_session *sess;
+	struct se_cmd *cmd, *next;
+	unsigned long flags;
+	int rc, i;
+
+	/*
+	 * Complete outstanding commands with TASK_ABORTED SAM status.
+	 *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * This is following sam4r17, section 5.6 Aborting commands, Table 38
 	 * for TMR LUN_RESET:
 	 *
@@ -277,6 +490,7 @@ static void core_tmr_drain_task_list(
 	 * Note that this seems to be independent of TAS (Task Aborted Status)
 	 * in the Control Mode Page.
 	 */
+<<<<<<< HEAD
 	spin_lock_irqsave(&dev->execute_task_lock, flags);
 	list_for_each_entry_safe(task, task_tmp, &dev->state_task_list,
 				t_state_list) {
@@ -423,6 +637,59 @@ static void core_tmr_drain_cmd_list(
 
 		core_tmr_handle_tas_abort(tmr_nacl, cmd, tas,
 				atomic_read(&cmd->t_fe_count));
+=======
+	for (i = 0; i < dev->queue_cnt; i++) {
+		flush_work(&dev->queues[i].sq.work);
+
+		spin_lock_irqsave(&dev->queues[i].lock, flags);
+		list_for_each_entry_safe(cmd, next, &dev->queues[i].state_list,
+					 state_list) {
+			/*
+			 * For PREEMPT_AND_ABORT usage, only process commands
+			 * with a matching reservation key.
+			 */
+			if (target_check_cdb_and_preempt(preempt_and_abort_list,
+							 cmd))
+				continue;
+
+			/*
+			 * Not aborting PROUT PREEMPT_AND_ABORT CDB..
+			 */
+			if (prout_cmd == cmd)
+				continue;
+
+			sess = cmd->se_sess;
+			if (WARN_ON_ONCE(!sess))
+				continue;
+
+			spin_lock(&sess->sess_cmd_lock);
+			rc = __target_check_io_state(cmd, tmr_sess, tas);
+			spin_unlock(&sess->sess_cmd_lock);
+			if (!rc)
+				continue;
+
+			list_move_tail(&cmd->state_list, &drain_task_list);
+			cmd->state_active = false;
+		}
+		spin_unlock_irqrestore(&dev->queues[i].lock, flags);
+	}
+
+	if (dev->transport->tmr_notify)
+		dev->transport->tmr_notify(dev, preempt_and_abort_list ?
+					   TMR_LUN_RESET_PRO : TMR_LUN_RESET,
+					   &drain_task_list);
+
+	while (!list_empty(&drain_task_list)) {
+		cmd = list_entry(drain_task_list.next, struct se_cmd, state_list);
+		list_del_init(&cmd->state_list);
+
+		target_show_cmd("LUN_RESET: ", cmd);
+		pr_debug("LUN_RESET: ITT[0x%08llx] - %s pr_res_key: 0x%016Lx\n",
+			 cmd->tag, (preempt_and_abort_list) ? "preempt" : "",
+			 cmd->pr_res_key);
+
+		target_put_cmd_and_wait(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -434,7 +701,12 @@ int core_tmr_lun_reset(
 {
 	struct se_node_acl *tmr_nacl = NULL;
 	struct se_portal_group *tmr_tpg = NULL;
+<<<<<<< HEAD
 	int tas;
+=======
+	struct se_session *tmr_sess = NULL;
+	bool tas;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         /*
 	 * TASK_ABORTED status bit, this is configurable via ConfigFS
 	 * struct se_device attributes.  spc4r17 section 7.4.6 Control mode page
@@ -446,12 +718,17 @@ int core_tmr_lun_reset(
 	 * which the command was received shall be completed with TASK ABORTED
 	 * status (see SAM-4).
 	 */
+<<<<<<< HEAD
 	tas = dev->se_sub_dev->se_dev_attrib.emulate_tas;
+=======
+	tas = dev->dev_attrib.emulate_tas;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Determine if this se_tmr is coming from a $FABRIC_MOD
 	 * or struct se_device passthrough..
 	 */
 	if (tmr && tmr->task_cmd && tmr->task_cmd->se_sess) {
+<<<<<<< HEAD
 		tmr_nacl = tmr->task_cmd->se_sess->se_node_acl;
 		tmr_tpg = tmr->task_cmd->se_sess->se_tpg;
 		if (tmr_nacl && tmr_tpg) {
@@ -470,22 +747,64 @@ int core_tmr_lun_reset(
 				preempt_and_abort_list);
 	core_tmr_drain_cmd_list(dev, prout_cmd, tmr_nacl, tas,
 				preempt_and_abort_list);
+=======
+		tmr_sess = tmr->task_cmd->se_sess;
+		tmr_nacl = tmr_sess->se_node_acl;
+		tmr_tpg = tmr_sess->se_tpg;
+		if (tmr_nacl && tmr_tpg) {
+			pr_debug("LUN_RESET: TMR caller fabric: %s"
+				" initiator port %s\n",
+				tmr_tpg->se_tpg_tfo->fabric_name,
+				tmr_nacl->initiatorname);
+		}
+	}
+
+
+	/*
+	 * We only allow one reset or preempt and abort to execute at a time
+	 * to prevent one call from claiming all the cmds causing a second
+	 * call from returning while cmds it should have waited on are still
+	 * running.
+	 */
+	mutex_lock(&dev->lun_reset_mutex);
+
+	pr_debug("LUN_RESET: %s starting for [%s], tas: %d\n",
+		(preempt_and_abort_list) ? "Preempt" : "TMR",
+		dev->transport->name, tas);
+	core_tmr_drain_tmr_list(dev, tmr, preempt_and_abort_list);
+	core_tmr_drain_state_list(dev, prout_cmd, tmr_sess, tas,
+				preempt_and_abort_list);
+
+	mutex_unlock(&dev->lun_reset_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Clear any legacy SPC-2 reservation when called during
 	 * LOGICAL UNIT RESET
 	 */
 	if (!preempt_and_abort_list &&
+<<<<<<< HEAD
 	     (dev->dev_flags & DF_SPC2_RESERVATIONS)) {
 		spin_lock(&dev->dev_reservation_lock);
 		dev->dev_reserved_node_acl = NULL;
 		dev->dev_flags &= ~DF_SPC2_RESERVATIONS;
+=======
+	     (dev->dev_reservation_flags & DRF_SPC2_RESERVATIONS)) {
+		spin_lock(&dev->dev_reservation_lock);
+		dev->reservation_holder = NULL;
+		dev->dev_reservation_flags &= ~DRF_SPC2_RESERVATIONS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&dev->dev_reservation_lock);
 		pr_debug("LUN_RESET: SCSI-2 Released reservation\n");
 	}
 
+<<<<<<< HEAD
 	spin_lock_irq(&dev->stats_lock);
 	dev->num_resets++;
 	spin_unlock_irq(&dev->stats_lock);
+=======
+	atomic_long_inc(&dev->num_resets);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("LUN_RESET: %s for [%s] Complete\n",
 			(preempt_and_abort_list) ? "Preempt" : "TMR",

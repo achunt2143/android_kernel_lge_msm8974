@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 1999,2000 Arm Limited
  *  Copyright (C) 2000 Deep Blue Solutions Ltd
  *  Copyright (C) 2002 Shane Nay (shane@minirl.com)
  *  Copyright 2005-2007 Freescale Semiconductor, Inc. All Rights Reserved.
  *    - add MX31 specific definitions
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,29 +19,48 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mm.h>
 #include <linux/init.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 
 #include <asm/pgtable.h>
+=======
+#include <linux/io.h>
+#include <linux/of_address.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/system_misc.h>
 #include <asm/hardware/cache-l2x0.h>
 #include <asm/mach/map.h>
 
+<<<<<<< HEAD
 #include <mach/common.h>
 #include <mach/devices-common.h>
 #include <mach/hardware.h>
 #include <mach/iomux-v3.h>
 #include <mach/irqs.h>
+=======
+#include "common.h"
+#include "crmregs-imx3.h"
+#include "hardware.h"
+
+void __iomem *mx3_ccm_base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void imx3_idle(void)
 {
 	unsigned long reg = 0;
 
+<<<<<<< HEAD
 	mx3_cpu_lp_set(MX3_WAIT);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__asm__ __volatile__(
 		/* disable I and D cache */
 		"mrc p15, 0, %0, c1, c0, 0\n"
@@ -62,7 +86,11 @@ static void imx3_idle(void)
 		: "=r" (reg));
 }
 
+<<<<<<< HEAD
 static void __iomem *imx3_ioremap_caller(unsigned long phys_addr, size_t size,
+=======
+static void __iomem *imx3_ioremap_caller(phys_addr_t phys_addr, size_t size,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 unsigned int mtype, void *caller)
 {
 	if (mtype == MT_DEVICE) {
@@ -79,6 +107,7 @@ static void __iomem *imx3_ioremap_caller(unsigned long phys_addr, size_t size,
 	return __arm_ioremap_caller(phys_addr, size, mtype, caller);
 }
 
+<<<<<<< HEAD
 void __init imx3_init_l2x0(void)
 {
 	void __iomem *l2x0_base;
@@ -112,6 +141,8 @@ void __init imx3_init_l2x0(void)
 	l2x0_init(l2x0_base, 0x00030024, 0x00000000);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SOC_IMX31
 static struct map_desc mx31_io_desc[] __initdata = {
 	imx_map_entry(MX31, X_MEMC, MT_DEVICE),
@@ -131,6 +162,7 @@ void __init mx31_map_io(void)
 	iotable_init(mx31_io_desc, ARRAY_SIZE(mx31_io_desc));
 }
 
+<<<<<<< HEAD
 void __init imx31_init_early(void)
 {
 	mxc_set_cpu_type(MXC_CPU_MX31);
@@ -186,6 +218,27 @@ void __init imx31_soc_init(void)
 
 	platform_device_register_simple("imx31-audmux", 0, imx31_audmux_res,
 					ARRAY_SIZE(imx31_audmux_res));
+=======
+static void imx31_idle(void)
+{
+	int reg = imx_readl(mx3_ccm_base + MXC_CCM_CCMR);
+	reg &= ~MXC_CCM_CCMR_LPM_MASK;
+	imx_writel(reg, mx3_ccm_base + MXC_CCM_CCMR);
+
+	imx3_idle();
+}
+
+void __init imx31_init_early(void)
+{
+	struct device_node *np;
+
+	mxc_set_cpu_type(MXC_CPU_MX31);
+	arch_ioremap_caller = imx3_ioremap_caller;
+	arm_pm_idle = imx31_idle;
+	np = of_find_compatible_node(NULL, NULL, "fsl,imx31-ccm");
+	mx3_ccm_base = of_iomap(np, 0);
+	BUG_ON(!mx3_ccm_base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* ifdef CONFIG_SOC_IMX31 */
 
@@ -203,6 +256,7 @@ void __init mx35_map_io(void)
 	iotable_init(mx35_io_desc, ARRAY_SIZE(mx35_io_desc));
 }
 
+<<<<<<< HEAD
 void __init imx35_init_early(void)
 {
 	mxc_set_cpu_type(MXC_CPU_MX35);
@@ -282,5 +336,27 @@ void __init imx35_soc_init(void)
 	/* i.mx35 has the i.mx31 type audmux */
 	platform_device_register_simple("imx31-audmux", 0, imx35_audmux_res,
 					ARRAY_SIZE(imx35_audmux_res));
+=======
+static void imx35_idle(void)
+{
+	int reg = imx_readl(mx3_ccm_base + MXC_CCM_CCMR);
+	reg &= ~MXC_CCM_CCMR_LPM_MASK;
+	reg |= MXC_CCM_CCMR_LPM_WAIT_MX35;
+	imx_writel(reg, mx3_ccm_base + MXC_CCM_CCMR);
+
+	imx3_idle();
+}
+
+void __init imx35_init_early(void)
+{
+	struct device_node *np;
+
+	mxc_set_cpu_type(MXC_CPU_MX35);
+	arm_pm_idle = imx35_idle;
+	arch_ioremap_caller = imx3_ioremap_caller;
+	np = of_find_compatible_node(NULL, NULL, "fsl,imx35-ccm");
+	mx3_ccm_base = of_iomap(np, 0);
+	BUG_ON(!mx3_ccm_base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* ifdef CONFIG_SOC_IMX35 */

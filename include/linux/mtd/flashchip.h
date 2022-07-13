@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright © 2000      Red Hat UK Limited
  * Copyright © 2000-2010 David Woodhouse <dwmw2@infradead.org>
@@ -16,6 +17,12 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright © 2000      Red Hat UK Limited
+ * Copyright © 2000-2010 David Woodhouse <dwmw2@infradead.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MTD_FLASHCHIP_H__
@@ -27,6 +34,10 @@
  */
 #include <linux/sched.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/wait.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef enum {
 	FL_READY,
@@ -54,7 +65,11 @@ typedef enum {
 	FL_READING,
 	FL_CACHEDPRG,
 	/* These 4 come from onenand_state_t, which has been unified here */
+<<<<<<< HEAD
 	FL_RESETING,
+=======
+	FL_RESETTING,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FL_OTPING,
 	FL_PREPARING_ERASE,
 	FL_VERIFYING_ERASE,
@@ -85,6 +100,10 @@ struct flchip {
 	unsigned int write_suspended:1;
 	unsigned int erase_suspended:1;
 	unsigned long in_progress_block_addr;
+<<<<<<< HEAD
+=======
+	unsigned long in_progress_block_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex mutex;
 	wait_queue_head_t wq; /* Wait on here when we're waiting for the chip

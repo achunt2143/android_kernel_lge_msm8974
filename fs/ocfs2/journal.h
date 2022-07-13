@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * journal.h
  *
  * Defines journalling api and structures.
  *
  * Copyright (C) 2003, 2005 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -21,6 +27,8 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef OCFS2_JOURNAL_H
@@ -45,7 +53,11 @@ struct ocfs2_dinode;
 
 struct ocfs2_recovery_map {
 	unsigned int rm_used;
+<<<<<<< HEAD
 	unsigned int *rm_entries;
+=======
+	unsigned int rm_entries[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -158,7 +170,10 @@ static inline void ocfs2_ci_set_new(struct ocfs2_super *osb,
 void ocfs2_orphan_scan_init(struct ocfs2_super *osb);
 void ocfs2_orphan_scan_start(struct ocfs2_super *osb);
 void ocfs2_orphan_scan_stop(struct ocfs2_super *osb);
+<<<<<<< HEAD
 void ocfs2_orphan_scan_exit(struct ocfs2_super *osb);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void ocfs2_complete_recovery(struct work_struct *work);
 void ocfs2_wait_for_recovery(struct ocfs2_super *osb);
@@ -167,10 +182,18 @@ int ocfs2_recovery_init(struct ocfs2_super *osb);
 void ocfs2_recovery_exit(struct ocfs2_super *osb);
 
 int ocfs2_compute_replay_slots(struct ocfs2_super *osb);
+<<<<<<< HEAD
+=======
+void ocfs2_free_replay_slots(struct ocfs2_super *osb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Journal Control:
  *  Initialize, Load, Shutdown, Wipe a journal.
  *
+<<<<<<< HEAD
+=======
+ *  ocfs2_journal_alloc    - Initialize skeleton for journal structure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  ocfs2_journal_init     - Initialize journal structures in the OSB.
  *  ocfs2_journal_load     - Load the given journal off disk. Replay it if
  *                          there's transactions still in there.
@@ -184,8 +207,13 @@ int ocfs2_compute_replay_slots(struct ocfs2_super *osb);
  *  ocfs2_start_checkpoint - Kick the commit thread to do a checkpoint.
  */
 void   ocfs2_set_journal_params(struct ocfs2_super *osb);
+<<<<<<< HEAD
 int    ocfs2_journal_init(struct ocfs2_journal *journal,
 			  int *dirty);
+=======
+int    ocfs2_journal_alloc(struct ocfs2_super *osb);
+int    ocfs2_journal_init(struct ocfs2_super *osb, int *dirty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void   ocfs2_journal_shutdown(struct ocfs2_super *osb);
 int    ocfs2_journal_wipe(struct ocfs2_journal *journal,
 			  int full);
@@ -200,7 +228,10 @@ void ocfs2_complete_quota_recovery(struct ocfs2_super *osb);
 
 static inline void ocfs2_start_checkpoint(struct ocfs2_super *osb)
 {
+<<<<<<< HEAD
 	atomic_set(&osb->needs_checkpoint, 1);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up(&osb->checkpoint_event);
 }
 
@@ -247,8 +278,13 @@ static inline void ocfs2_checkpoint_inode(struct inode *inode)
  *                          ocfs2_journal_access_*() unless you intend to
  *                          manage the checksum by hand.
  *  ocfs2_journal_dirty    - Mark a journalled buffer as having dirty data.
+<<<<<<< HEAD
  *  ocfs2_jbd2_file_inode  - Mark an inode so that its data goes out before
  *                           the current handle commits.
+=======
+ *  ocfs2_jbd2_inode_add_write  - Mark an inode with range so that its data goes
+ *                                out before the current handle commits.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* You must always start_trans with a number of buffs > 0, but it's
@@ -259,6 +295,20 @@ handle_t		    *ocfs2_start_trans(struct ocfs2_super *osb,
 int			     ocfs2_commit_trans(struct ocfs2_super *osb,
 						handle_t *handle);
 int			     ocfs2_extend_trans(handle_t *handle, int nblocks);
+<<<<<<< HEAD
+=======
+int			     ocfs2_allocate_extend_trans(handle_t *handle,
+						int thresh);
+
+/*
+ * Define an arbitrary limit for the amount of data we will anticipate
+ * writing to any given transaction.  For unbounded transactions such as
+ * fallocate(2) we can write more than this, but we always
+ * start off at the maximum transaction size and grow the transaction
+ * optimistically as we go.
+ */
+#define OCFS2_MAX_TRANS_DATA	64U
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Create access is for when we get a newly created buffer and we're
@@ -445,7 +495,11 @@ static inline int ocfs2_mknod_credits(struct super_block *sb, int is_dir,
  * previous dirblock update in the free list */
 static inline int ocfs2_link_credits(struct super_block *sb)
 {
+<<<<<<< HEAD
 	return 2*OCFS2_INODE_UPDATE_CREDITS + 4 +
+=======
+	return 2 * OCFS2_INODE_UPDATE_CREDITS + 4 +
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       ocfs2_quota_trans_credits(sb);
 }
 
@@ -462,6 +516,14 @@ static inline int ocfs2_unlink_credits(struct super_block *sb)
  * orphan dir index leaf */
 #define OCFS2_DELETE_INODE_CREDITS (3 * OCFS2_INODE_UPDATE_CREDITS + 4)
 
+<<<<<<< HEAD
+=======
+/* dinode + orphan dir dinode + extent tree leaf block + orphan dir entry +
+ * orphan dir index root + orphan dir index leaf */
+#define OCFS2_INODE_ADD_TO_ORPHAN_CREDITS  (2 * OCFS2_INODE_UPDATE_CREDITS + 4)
+#define OCFS2_INODE_DEL_FROM_ORPHAN_CREDITS  OCFS2_INODE_ADD_TO_ORPHAN_CREDITS
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* dinode update, old dir dinode update, new dir dinode update, old
  * dir dir entry, new dir dir entry, dir entry update for renaming
  * directory + target unlink + 3 x dir index leaves */
@@ -514,8 +576,12 @@ static inline int ocfs2_calc_dxi_expand_credits(struct super_block *sb)
  * the result may be wrong.
  */
 static inline int ocfs2_calc_extend_credits(struct super_block *sb,
+<<<<<<< HEAD
 					    struct ocfs2_extent_list *root_el,
 					    u32 bits_wanted)
+=======
+					    struct ocfs2_extent_list *root_el)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int bitmap_blocks, sysfile_bitmap_blocks, extent_blocks;
 
@@ -575,6 +641,7 @@ static inline int ocfs2_calc_bg_discontig_credits(struct super_block *sb)
 	return ocfs2_extent_recs_per_gd(sb);
 }
 
+<<<<<<< HEAD
 static inline int ocfs2_calc_tree_trunc_credits(struct super_block *sb,
 						unsigned int clusters_to_del,
 						struct ocfs2_dinode *fe,
@@ -606,6 +673,14 @@ static inline int ocfs2_calc_tree_trunc_credits(struct super_block *sb,
 static inline int ocfs2_jbd2_file_inode(handle_t *handle, struct inode *inode)
 {
 	return jbd2_journal_file_inode(handle, &OCFS2_I(inode)->ip_jinode);
+=======
+static inline int ocfs2_jbd2_inode_add_write(handle_t *handle, struct inode *inode,
+					     loff_t start_byte, loff_t length)
+{
+	return jbd2_journal_inode_ranged_write(handle,
+					       &OCFS2_I(inode)->ip_jinode,
+					       start_byte, length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int ocfs2_begin_ordered_truncate(struct inode *inode,
@@ -617,4 +692,20 @@ static inline int ocfs2_begin_ordered_truncate(struct inode *inode,
 				new_size);
 }
 
+<<<<<<< HEAD
+=======
+static inline void ocfs2_update_inode_fsync_trans(handle_t *handle,
+						  struct inode *inode,
+						  int datasync)
+{
+	struct ocfs2_inode_info *oi = OCFS2_I(inode);
+
+	if (!is_handle_aborted(handle)) {
+		oi->i_sync_tid = handle->h_transaction->t_tid;
+		if (datasync)
+			oi->i_datasync_tid = handle->h_transaction->t_tid;
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* OCFS2_JOURNAL_H */

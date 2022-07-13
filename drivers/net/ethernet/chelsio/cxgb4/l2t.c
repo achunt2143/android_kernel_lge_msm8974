@@ -1,7 +1,11 @@
 /*
  * This file is part of the Chelsio T4 Ethernet driver for Linux.
  *
+<<<<<<< HEAD
  * Copyright (c) 2003-2010 Chelsio Communications, Inc. All rights reserved.
+=======
+ * Copyright (c) 2003-2014 Chelsio Communications, Inc. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This software is available to you under a choice of one of two
  * licenses.  You may choose to be licensed under the terms of the GNU
@@ -45,6 +49,7 @@
 #include "l2t.h"
 #include "t4_msg.h"
 #include "t4fw_api.h"
+<<<<<<< HEAD
 
 #define VLAN_NONE 0xfff
 
@@ -67,11 +72,32 @@ struct l2t_data {
 	atomic_t nfree;             /* number of free entries */
 	struct l2t_entry *rover;    /* starting point for next allocation */
 	struct l2t_entry l2tab[L2T_SIZE];
+=======
+#include "t4_regs.h"
+#include "t4_values.h"
+
+/* identifies sync vs async L2T_WRITE_REQs */
+#define SYNC_WR_S    12
+#define SYNC_WR_V(x) ((x) << SYNC_WR_S)
+#define SYNC_WR_F    SYNC_WR_V(1)
+
+struct l2t_data {
+	unsigned int l2t_start;     /* start index of our piece of the L2T */
+	unsigned int l2t_size;      /* number of entries in l2tab */
+	rwlock_t lock;
+	atomic_t nfree;             /* number of free entries */
+	struct l2t_entry *rover;    /* starting point for next allocation */
+	struct l2t_entry l2tab[] __counted_by(l2t_size);  /* MUST BE LAST */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline unsigned int vlan_prio(const struct l2t_entry *e)
 {
+<<<<<<< HEAD
 	return e->vlan >> 13;
+=======
+	return e->vlan >> VLAN_PRIO_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void l2t_hold(struct l2t_data *d, struct l2t_entry *e)
@@ -83,6 +109,7 @@ static inline void l2t_hold(struct l2t_data *d, struct l2t_entry *e)
 /*
  * To avoid having to check address families we do not allow v4 and v6
  * neighbors to be on the same hash chain.  We keep v4 entries in the first
+<<<<<<< HEAD
  * half of available hash buckets and v6 in the second.
  */
 enum {
@@ -106,6 +133,38 @@ static unsigned int addr_hash(const u32 *addr, int addr_len, int ifindex)
 {
 	return addr_len == 4 ? arp_hash(addr, ifindex) :
 			       ipv6_hash(addr, ifindex);
+=======
+ * half of available hash buckets and v6 in the second.  We need at least two
+ * entries in our L2T for this scheme to work.
+ */
+enum {
+	L2T_MIN_HASH_BUCKETS = 2,
+};
+
+static inline unsigned int arp_hash(struct l2t_data *d, const u32 *key,
+				    int ifindex)
+{
+	unsigned int l2t_size_half = d->l2t_size / 2;
+
+	return jhash_2words(*key, ifindex, 0) % l2t_size_half;
+}
+
+static inline unsigned int ipv6_hash(struct l2t_data *d, const u32 *key,
+				     int ifindex)
+{
+	unsigned int l2t_size_half = d->l2t_size / 2;
+	u32 xor = key[0] ^ key[1] ^ key[2] ^ key[3];
+
+	return (l2t_size_half +
+		(jhash_2words(xor, ifindex, 0) % l2t_size_half));
+}
+
+static unsigned int addr_hash(struct l2t_data *d, const u32 *addr,
+			      int addr_len, int ifindex)
+{
+	return addr_len == 4 ? arp_hash(d, addr, ifindex) :
+			       ipv6_hash(d, addr, ifindex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -137,6 +196,11 @@ static void neigh_replace(struct l2t_entry *e, struct neighbour *n)
  */
 static int write_l2e(struct adapter *adap, struct l2t_entry *e, int sync)
 {
+<<<<<<< HEAD
+=======
+	struct l2t_data *d = adap->l2t;
+	unsigned int l2t_idx = e->idx + d->l2t_start;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb;
 	struct cpl_l2t_write_req *req;
 
@@ -144,6 +208,7 @@ static int write_l2e(struct adapter *adap, struct l2t_entry *e, int sync)
 	if (!skb)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	req = (struct cpl_l2t_write_req *)__skb_put(skb, sizeof(*req));
 	INIT_TP_WR(req, 0);
 
@@ -159,6 +224,22 @@ static int write_l2e(struct adapter *adap, struct l2t_entry *e, int sync)
 
 	set_wr_txq(skb, CPL_PRIORITY_CONTROL, 0);
 	t4_ofld_send(adap, skb);
+=======
+	req = __skb_put(skb, sizeof(*req));
+	INIT_TP_WR(req, 0);
+
+	OPCODE_TID(req) = htonl(MK_OPCODE_TID(CPL_L2T_WRITE_REQ,
+					l2t_idx | (sync ? SYNC_WR_F : 0) |
+					TID_QID_V(adap->sge.fw_evtq.abs_id)));
+	req->params = htons(L2T_W_PORT_V(e->lport) | L2T_W_NOREPLY_V(!sync));
+	req->l2t_idx = htons(l2t_idx);
+	req->vlan = htons(e->vlan);
+	if (e->neigh && !(e->neigh->dev->flags & IFF_LOOPBACK))
+		memcpy(e->dmac, e->neigh->ha, sizeof(e->dmac));
+	memcpy(req->dst_mac, e->dmac, sizeof(req->dst_mac));
+
+	t4_mgmt_tx(adap, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sync && e->state != L2T_STATE_SWITCHING)
 		e->state = L2T_STATE_SYNC_WRITE;
@@ -171,6 +252,7 @@ static int write_l2e(struct adapter *adap, struct l2t_entry *e, int sync)
  */
 static void send_pending(struct adapter *adap, struct l2t_entry *e)
 {
+<<<<<<< HEAD
 	while (e->arpq_head) {
 		struct sk_buff *skb = e->arpq_head;
 
@@ -179,6 +261,12 @@ static void send_pending(struct adapter *adap, struct l2t_entry *e)
 		t4_ofld_send(adap, skb);
 	}
 	e->arpq_tail = NULL;
+=======
+	struct sk_buff *skb;
+
+	while ((skb = __skb_dequeue(&e->arpq)) != NULL)
+		t4_ofld_send(adap, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -188,18 +276,33 @@ static void send_pending(struct adapter *adap, struct l2t_entry *e)
  */
 void do_l2t_write_rpl(struct adapter *adap, const struct cpl_l2t_write_rpl *rpl)
 {
+<<<<<<< HEAD
 	unsigned int tid = GET_TID(rpl);
 	unsigned int idx = tid & (L2T_SIZE - 1);
+=======
+	struct l2t_data *d = adap->l2t;
+	unsigned int tid = GET_TID(rpl);
+	unsigned int l2t_idx = tid % L2T_SIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(rpl->status != CPL_ERR_NONE)) {
 		dev_err(adap->pdev_dev,
 			"Unexpected L2T_WRITE_RPL status %u for entry %u\n",
+<<<<<<< HEAD
 			rpl->status, idx);
 		return;
 	}
 
 	if (tid & F_SYNC_WR) {
 		struct l2t_entry *e = &adap->l2t->l2tab[idx];
+=======
+			rpl->status, l2t_idx);
+		return;
+	}
+
+	if (tid & SYNC_WR_F) {
+		struct l2t_entry *e = &d->l2tab[l2t_idx - d->l2t_start];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		spin_lock(&e->lock);
 		if (e->state != L2T_STATE_SWITCHING) {
@@ -217,12 +320,16 @@ void do_l2t_write_rpl(struct adapter *adap, const struct cpl_l2t_write_rpl *rpl)
  */
 static inline void arpq_enqueue(struct l2t_entry *e, struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	skb->next = NULL;
 	if (e->arpq_head)
 		e->arpq_tail->next = skb;
 	else
 		e->arpq_head = skb;
 	e->arpq_tail = skb;
+=======
+	__skb_queue_tail(&e->arpq, skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int cxgb4_l2t_send(struct net_device *dev, struct sk_buff *skb,
@@ -238,6 +345,10 @@ again:
 		if (e->state == L2T_STATE_STALE)
 			e->state = L2T_STATE_VALID;
 		spin_unlock_bh(&e->lock);
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case L2T_STATE_VALID:     /* fast-path, send the packet on */
 		return t4_ofld_send(adap, skb);
 	case L2T_STATE_RESOLVING:
@@ -254,7 +365,12 @@ again:
 		if (e->state == L2T_STATE_RESOLVING &&
 		    !neigh_event_send(e->neigh, NULL)) {
 			spin_lock_bh(&e->lock);
+<<<<<<< HEAD
 			if (e->state == L2T_STATE_RESOLVING && e->arpq_head)
+=======
+			if (e->state == L2T_STATE_RESOLVING &&
+			    !skb_queue_empty(&e->arpq))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				write_l2e(adap, e, 1);
 			spin_unlock_bh(&e->lock);
 		}
@@ -274,7 +390,11 @@ static struct l2t_entry *alloc_l2e(struct l2t_data *d)
 		return NULL;
 
 	/* there's definitely a free entry */
+<<<<<<< HEAD
 	for (e = d->rover, end = &d->l2tab[L2T_SIZE]; e != end; ++e)
+=======
+	for (e = d->rover, end = &d->l2tab[d->l2t_size]; e != end; ++e)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (atomic_read(&e->refcnt) == 0)
 			goto found;
 
@@ -300,9 +420,82 @@ found:
 	return e;
 }
 
+<<<<<<< HEAD
 /*
  * Called when an L2T entry has no more users.
  */
+=======
+static struct l2t_entry *find_or_alloc_l2e(struct l2t_data *d, u16 vlan,
+					   u8 port, u8 *dmac)
+{
+	struct l2t_entry *end, *e, **p;
+	struct l2t_entry *first_free = NULL;
+
+	for (e = &d->l2tab[0], end = &d->l2tab[d->l2t_size]; e != end; ++e) {
+		if (atomic_read(&e->refcnt) == 0) {
+			if (!first_free)
+				first_free = e;
+		} else {
+			if (e->state == L2T_STATE_SWITCHING) {
+				if (ether_addr_equal(e->dmac, dmac) &&
+				    (e->vlan == vlan) && (e->lport == port))
+					goto exists;
+			}
+		}
+	}
+
+	if (first_free) {
+		e = first_free;
+		goto found;
+	}
+
+	return NULL;
+
+found:
+	/* The entry we found may be an inactive entry that is
+	 * presently in the hash table.  We need to remove it.
+	 */
+	if (e->state < L2T_STATE_SWITCHING)
+		for (p = &d->l2tab[e->hash].first; *p; p = &(*p)->next)
+			if (*p == e) {
+				*p = e->next;
+				e->next = NULL;
+				break;
+			}
+	e->state = L2T_STATE_UNUSED;
+
+exists:
+	return e;
+}
+
+/* Called when an L2T entry has no more users.  The entry is left in the hash
+ * table since it is likely to be reused but we also bump nfree to indicate
+ * that the entry can be reallocated for a different neighbor.  We also drop
+ * the existing neighbor reference in case the neighbor is going away and is
+ * waiting on our reference.
+ *
+ * Because entries can be reallocated to other neighbors once their ref count
+ * drops to 0 we need to take the entry's lock to avoid races with a new
+ * incarnation.
+ */
+static void _t4_l2e_free(struct l2t_entry *e)
+{
+	struct l2t_data *d;
+
+	if (atomic_read(&e->refcnt) == 0) {  /* hasn't been recycled */
+		if (e->neigh) {
+			neigh_release(e->neigh);
+			e->neigh = NULL;
+		}
+		__skb_queue_purge(&e->arpq);
+	}
+
+	d = container_of(e, struct l2t_data, l2tab[e->idx]);
+	atomic_inc(&d->nfree);
+}
+
+/* Locked version of _t4_l2e_free */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void t4_l2e_free(struct l2t_entry *e)
 {
 	struct l2t_data *d;
@@ -313,6 +506,7 @@ static void t4_l2e_free(struct l2t_entry *e)
 			neigh_release(e->neigh);
 			e->neigh = NULL;
 		}
+<<<<<<< HEAD
 		while (e->arpq_head) {
 			struct sk_buff *skb = e->arpq_head;
 
@@ -320,6 +514,9 @@ static void t4_l2e_free(struct l2t_entry *e)
 			kfree_skb(skb);
 		}
 		e->arpq_tail = NULL;
+=======
+		__skb_queue_purge(&e->arpq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_bh(&e->lock);
 
@@ -363,20 +560,36 @@ struct l2t_entry *cxgb4_l2t_get(struct l2t_data *d, struct neighbour *neigh,
 	u8 lport;
 	u16 vlan;
 	struct l2t_entry *e;
+<<<<<<< HEAD
 	int addr_len = neigh->tbl->key_len;
 	u32 *addr = (u32 *)neigh->primary_key;
 	int ifidx = neigh->dev->ifindex;
 	int hash = addr_hash(addr, addr_len, ifidx);
+=======
+	unsigned int addr_len = neigh->tbl->key_len;
+	u32 *addr = (u32 *)neigh->primary_key;
+	int ifidx = neigh->dev->ifindex;
+	int hash = addr_hash(d, addr, addr_len, ifidx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (neigh->dev->flags & IFF_LOOPBACK)
 		lport = netdev2pinfo(physdev)->tx_chan + 4;
 	else
 		lport = netdev2pinfo(physdev)->lport;
 
+<<<<<<< HEAD
 	if (neigh->dev->priv_flags & IFF_802_1Q_VLAN)
 		vlan = vlan_dev_vlan_id(neigh->dev);
 	else
 		vlan = VLAN_NONE;
+=======
+	if (is_vlan_dev(neigh->dev)) {
+		vlan = vlan_dev_vlan_id(neigh->dev);
+		vlan |= vlan_dev_get_egress_qos_mask(neigh->dev, priority);
+	} else {
+		vlan = VLAN_NONE;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_lock_bh(&d->lock);
 	for (e = d->l2tab[hash].first; e; e = e->next)
@@ -393,6 +606,11 @@ struct l2t_entry *cxgb4_l2t_get(struct l2t_data *d, struct neighbour *neigh,
 	if (e) {
 		spin_lock(&e->lock);          /* avoid race with t4_l2t_free */
 		e->state = L2T_STATE_RESOLVING;
+<<<<<<< HEAD
+=======
+		if (neigh->dev->flags & IFF_LOOPBACK)
+			memcpy(e->dmac, physdev->dev_addr, sizeof(e->dmac));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(e->addr, addr, addr_len);
 		e->ifindex = ifidx;
 		e->hash = hash;
@@ -411,6 +629,7 @@ done:
 }
 EXPORT_SYMBOL(cxgb4_l2t_get);
 
+<<<<<<< HEAD
 /*
  * Called when address resolution fails for an L2T entry to handle packets
  * on the arpq head.  If a packet specifies a failure handler it is invoked,
@@ -430,6 +649,38 @@ static void handle_failed_resolution(struct adapter *adap, struct sk_buff *arpq)
 			t4_ofld_send(adap, skb);
 	}
 }
+=======
+u64 cxgb4_select_ntuple(struct net_device *dev,
+			const struct l2t_entry *l2t)
+{
+	struct adapter *adap = netdev2adap(dev);
+	struct tp_params *tp = &adap->params.tp;
+	u64 ntuple = 0;
+
+	/* Initialize each of the fields which we care about which are present
+	 * in the Compressed Filter Tuple.
+	 */
+	if (tp->vlan_shift >= 0 && l2t->vlan != VLAN_NONE)
+		ntuple |= (u64)(FT_VLAN_VLD_F | l2t->vlan) << tp->vlan_shift;
+
+	if (tp->port_shift >= 0)
+		ntuple |= (u64)l2t->lport << tp->port_shift;
+
+	if (tp->protocol_shift >= 0)
+		ntuple |= (u64)IPPROTO_TCP << tp->protocol_shift;
+
+	if (tp->vnic_shift >= 0 && (tp->ingress_config & VNIC_F)) {
+		struct port_info *pi = (struct port_info *)netdev_priv(dev);
+
+		ntuple |= (u64)(FT_VNID_ID_VF_V(pi->vin) |
+				FT_VNID_ID_PF_V(adap->pf) |
+				FT_VNID_ID_VLD_V(pi->vivld)) << tp->vnic_shift;
+	}
+
+	return ntuple;
+}
+EXPORT_SYMBOL(cxgb4_select_ntuple);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Called when the host's neighbor layer makes a change to some entry that is
@@ -437,6 +688,7 @@ static void handle_failed_resolution(struct adapter *adap, struct sk_buff *arpq)
  */
 void t4_l2t_update(struct adapter *adap, struct neighbour *neigh)
 {
+<<<<<<< HEAD
 	struct l2t_entry *e;
 	struct sk_buff *arpq = NULL;
 	struct l2t_data *d = adap->l2t;
@@ -445,6 +697,16 @@ void t4_l2t_update(struct adapter *adap, struct neighbour *neigh)
 	int ifidx = neigh->dev->ifindex;
 	int hash = addr_hash(addr, addr_len, ifidx);
 
+=======
+	unsigned int addr_len = neigh->tbl->key_len;
+	u32 *addr = (u32 *) neigh->primary_key;
+	int hash, ifidx = neigh->dev->ifindex;
+	struct sk_buff_head *arpq = NULL;
+	struct l2t_data *d = adap->l2t;
+	struct l2t_entry *e;
+
+	hash = addr_hash(d, addr, addr_len, ifidx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_lock_bh(&d->lock);
 	for (e = d->l2tab[hash].first; e; e = e->next)
 		if (!addreq(e, addr) && e->ifindex == ifidx) {
@@ -465,10 +727,16 @@ void t4_l2t_update(struct adapter *adap, struct neighbour *neigh)
 
 	if (e->state == L2T_STATE_RESOLVING) {
 		if (neigh->nud_state & NUD_FAILED) {
+<<<<<<< HEAD
 			arpq = e->arpq_head;
 			e->arpq_head = e->arpq_tail = NULL;
 		} else if ((neigh->nud_state & (NUD_CONNECTED | NUD_STALE)) &&
 			   e->arpq_head) {
+=======
+			arpq = &e->arpq;
+		} else if ((neigh->nud_state & (NUD_CONNECTED | NUD_STALE)) &&
+			   !skb_queue_empty(&e->arpq)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			write_l2e(adap, e, 1);
 		}
 	} else {
@@ -478,6 +746,7 @@ void t4_l2t_update(struct adapter *adap, struct neighbour *neigh)
 			write_l2e(adap, e, 0);
 	}
 
+<<<<<<< HEAD
 	spin_unlock_bh(&e->lock);
 
 	if (arpq)
@@ -498,19 +767,134 @@ struct l2t_data *t4_init_l2t(void)
 	rwlock_init(&d->lock);
 
 	for (i = 0; i < L2T_SIZE; ++i) {
+=======
+	if (arpq) {
+		struct sk_buff *skb;
+
+		/* Called when address resolution fails for an L2T
+		 * entry to handle packets on the arpq head. If a
+		 * packet specifies a failure handler it is invoked,
+		 * otherwise the packet is sent to the device.
+		 */
+		while ((skb = __skb_dequeue(&e->arpq)) != NULL) {
+			const struct l2t_skb_cb *cb = L2T_SKB_CB(skb);
+
+			spin_unlock(&e->lock);
+			if (cb->arp_err_handler)
+				cb->arp_err_handler(cb->handle, skb);
+			else
+				t4_ofld_send(adap, skb);
+			spin_lock(&e->lock);
+		}
+	}
+	spin_unlock_bh(&e->lock);
+}
+
+/* Allocate an L2T entry for use by a switching rule.  Such need to be
+ * explicitly freed and while busy they are not on any hash chain, so normal
+ * address resolution updates do not see them.
+ */
+struct l2t_entry *t4_l2t_alloc_switching(struct adapter *adap, u16 vlan,
+					 u8 port, u8 *eth_addr)
+{
+	struct l2t_data *d = adap->l2t;
+	struct l2t_entry *e;
+	int ret;
+
+	write_lock_bh(&d->lock);
+	e = find_or_alloc_l2e(d, vlan, port, eth_addr);
+	if (e) {
+		spin_lock(&e->lock);          /* avoid race with t4_l2t_free */
+		if (!atomic_read(&e->refcnt)) {
+			e->state = L2T_STATE_SWITCHING;
+			e->vlan = vlan;
+			e->lport = port;
+			ether_addr_copy(e->dmac, eth_addr);
+			atomic_set(&e->refcnt, 1);
+			ret = write_l2e(adap, e, 0);
+			if (ret < 0) {
+				_t4_l2e_free(e);
+				spin_unlock(&e->lock);
+				write_unlock_bh(&d->lock);
+				return NULL;
+			}
+		} else {
+			atomic_inc(&e->refcnt);
+		}
+
+		spin_unlock(&e->lock);
+	}
+	write_unlock_bh(&d->lock);
+	return e;
+}
+
+/**
+ * cxgb4_l2t_alloc_switching - Allocates an L2T entry for switch filters
+ * @dev: net_device pointer
+ * @vlan: VLAN Id
+ * @port: Associated port
+ * @dmac: Destination MAC address to add to L2T
+ * Returns pointer to the allocated l2t entry
+ *
+ * Allocates an L2T entry for use by switching rule of a filter
+ */
+struct l2t_entry *cxgb4_l2t_alloc_switching(struct net_device *dev, u16 vlan,
+					    u8 port, u8 *dmac)
+{
+	struct adapter *adap = netdev2adap(dev);
+
+	return t4_l2t_alloc_switching(adap, vlan, port, dmac);
+}
+EXPORT_SYMBOL(cxgb4_l2t_alloc_switching);
+
+struct l2t_data *t4_init_l2t(unsigned int l2t_start, unsigned int l2t_end)
+{
+	unsigned int l2t_size;
+	int i;
+	struct l2t_data *d;
+
+	if (l2t_start >= l2t_end || l2t_end >= L2T_SIZE)
+		return NULL;
+	l2t_size = l2t_end - l2t_start + 1;
+	if (l2t_size < L2T_MIN_HASH_BUCKETS)
+		return NULL;
+
+	d = kvzalloc(struct_size(d, l2tab, l2t_size), GFP_KERNEL);
+	if (!d)
+		return NULL;
+
+	d->l2t_start = l2t_start;
+	d->l2t_size = l2t_size;
+
+	d->rover = d->l2tab;
+	atomic_set(&d->nfree, l2t_size);
+	rwlock_init(&d->lock);
+
+	for (i = 0; i < d->l2t_size; ++i) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		d->l2tab[i].idx = i;
 		d->l2tab[i].state = L2T_STATE_UNUSED;
 		spin_lock_init(&d->l2tab[i].lock);
 		atomic_set(&d->l2tab[i].refcnt, 0);
+<<<<<<< HEAD
+=======
+		skb_queue_head_init(&d->l2tab[i].arpq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return d;
 }
 
 static inline void *l2t_get_idx(struct seq_file *seq, loff_t pos)
 {
+<<<<<<< HEAD
 	struct l2t_entry *l2tab = seq->private;
 
 	return pos >= L2T_SIZE ? NULL : &l2tab[pos];
+=======
+	struct l2t_data *d = seq->private;
+
+	return pos >= d->l2t_size ? NULL : &d->l2tab[pos];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *l2t_seq_start(struct seq_file *seq, loff_t *pos)
@@ -521,8 +905,12 @@ static void *l2t_seq_start(struct seq_file *seq, loff_t *pos)
 static void *l2t_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 {
 	v = l2t_get_idx(seq, *pos);
+<<<<<<< HEAD
 	if (v)
 		++*pos;
+=======
+	++(*pos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return v;
 }
 
@@ -536,13 +924,32 @@ static char l2e_state(const struct l2t_entry *e)
 	case L2T_STATE_VALID: return 'V';
 	case L2T_STATE_STALE: return 'S';
 	case L2T_STATE_SYNC_WRITE: return 'W';
+<<<<<<< HEAD
 	case L2T_STATE_RESOLVING: return e->arpq_head ? 'A' : 'R';
+=======
+	case L2T_STATE_RESOLVING:
+		return skb_queue_empty(&e->arpq) ? 'R' : 'A';
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case L2T_STATE_SWITCHING: return 'X';
 	default:
 		return 'U';
 	}
 }
 
+<<<<<<< HEAD
+=======
+bool cxgb4_check_l2t_valid(struct l2t_entry *e)
+{
+	bool valid;
+
+	spin_lock(&e->lock);
+	valid = (e->state == L2T_STATE_VALID);
+	spin_unlock(&e->lock);
+	return valid;
+}
+EXPORT_SYMBOL(cxgb4_check_l2t_valid);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int l2t_seq_show(struct seq_file *seq, void *v)
 {
 	if (v == SEQ_START_TOKEN)
@@ -550,6 +957,10 @@ static int l2t_seq_show(struct seq_file *seq, void *v)
 			 "Ethernet address  VLAN/P LP State Users Port\n");
 	else {
 		char ip[60];
+<<<<<<< HEAD
+=======
+		struct l2t_data *d = seq->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct l2t_entry *e = v;
 
 		spin_lock_bh(&e->lock);
@@ -558,7 +969,11 @@ static int l2t_seq_show(struct seq_file *seq, void *v)
 		else
 			sprintf(ip, e->v6 ? "%pI6c" : "%pI4", e->addr);
 		seq_printf(seq, "%4u %-25s %17pM %4d %u %2u   %c   %5u %s\n",
+<<<<<<< HEAD
 			   e->idx, ip, e->dmac,
+=======
+			   e->idx + d->l2t_start, ip, e->dmac,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   e->vlan & VLAN_VID_MASK, vlan_prio(e), e->lport,
 			   l2e_state(e), atomic_read(&e->refcnt),
 			   e->neigh ? e->neigh->dev->name : "");
@@ -582,7 +997,11 @@ static int l2t_seq_open(struct inode *inode, struct file *file)
 		struct adapter *adap = inode->i_private;
 		struct seq_file *seq = file->private_data;
 
+<<<<<<< HEAD
 		seq->private = adap->l2t->l2tab;
+=======
+		seq->private = adap->l2t;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return rc;
 }

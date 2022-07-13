@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 /*
  * Copyright 2004 James Cleverdon, IBM.
  * Subject to the GNU Public License, v.2
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright 2004 James Cleverdon, IBM.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Flat APIC subarch code.
  *
@@ -8,6 +14,7 @@
  * Martin Bligh, Andi Kleen, James Bottomley, John Stultz, and
  * James Cleverdon.
  */
+<<<<<<< HEAD
 #include <linux/errno.h>
 #include <linux/threads.h>
 #include <linux/cpumask.h>
@@ -24,11 +31,25 @@
 #ifdef CONFIG_ACPI
 #include <acpi/acpi_bus.h>
 #endif
+=======
+#include <linux/cpumask.h>
+#include <linux/export.h>
+#include <linux/acpi.h>
+
+#include <asm/jailhouse_para.h>
+#include <asm/apic.h>
+
+#include "local.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct apic apic_physflat;
 static struct apic apic_flat;
 
+<<<<<<< HEAD
 struct apic __read_mostly *apic = &apic_flat;
+=======
+struct apic *apic __ro_after_init = &apic_flat;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(apic);
 
 static int flat_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
@@ -36,6 +57,7 @@ static int flat_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
 	return 1;
 }
 
+<<<<<<< HEAD
 static const struct cpumask *flat_target_cpus(void)
 {
 	return cpu_online_mask;
@@ -76,11 +98,18 @@ void flat_init_apic_ldr(void)
 }
 
 static inline void _flat_send_IPI_mask(unsigned long mask, int vector)
+=======
+static void _flat_send_IPI_mask(unsigned long mask, int vector)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
 	local_irq_save(flags);
+<<<<<<< HEAD
 	__default_send_IPI_dest_field(mask, vector, apic->dest_logical);
+=======
+	__default_send_IPI_dest_field(mask, vector, APIC_DEST_LOGICAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 }
 
@@ -92,17 +121,26 @@ static void flat_send_IPI_mask(const struct cpumask *cpumask, int vector)
 }
 
 static void
+<<<<<<< HEAD
  flat_send_IPI_mask_allbutself(const struct cpumask *cpumask, int vector)
+=======
+flat_send_IPI_mask_allbutself(const struct cpumask *cpumask, int vector)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long mask = cpumask_bits(cpumask)[0];
 	int cpu = smp_processor_id();
 
 	if (cpu < BITS_PER_LONG)
+<<<<<<< HEAD
 		clear_bit(cpu, &mask);
+=======
+		__clear_bit(cpu, &mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	_flat_send_IPI_mask(mask, vector);
 }
 
+<<<<<<< HEAD
 static void flat_send_IPI_allbutself(int vector)
 {
 	int cpu = smp_processor_id();
@@ -169,6 +207,11 @@ static int flat_apic_id_registered(void)
 static int flat_phys_pkg_id(int initial_apic_id, int index_msb)
 {
 	return initial_apic_id >> index_msb;
+=======
+static u32 flat_get_apic_id(u32 x)
+{
+	return (x >> 24) & 0xFF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int flat_probe(void)
@@ -176,6 +219,7 @@ static int flat_probe(void)
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct apic apic_flat =  {
 	.name				= "flat",
 	.probe				= flat_probe,
@@ -231,6 +275,40 @@ static struct apic apic_flat =  {
 	.icr_write			= native_apic_icr_write,
 	.wait_icr_idle			= native_apic_wait_icr_idle,
 	.safe_wait_icr_idle		= native_safe_apic_wait_icr_idle,
+=======
+static struct apic apic_flat __ro_after_init = {
+	.name				= "flat",
+	.probe				= flat_probe,
+	.acpi_madt_oem_check		= flat_acpi_madt_oem_check,
+
+	.dest_mode_logical		= true,
+
+	.disable_esr			= 0,
+
+	.init_apic_ldr			= default_init_apic_ldr,
+	.cpu_present_to_apicid		= default_cpu_present_to_apicid,
+
+	.max_apic_id			= 0xFE,
+	.get_apic_id			= flat_get_apic_id,
+
+	.calc_dest_apicid		= apic_flat_calc_apicid,
+
+	.send_IPI			= default_send_IPI_single,
+	.send_IPI_mask			= flat_send_IPI_mask,
+	.send_IPI_mask_allbutself	= flat_send_IPI_mask_allbutself,
+	.send_IPI_allbutself		= default_send_IPI_allbutself,
+	.send_IPI_all			= default_send_IPI_all,
+	.send_IPI_self			= default_send_IPI_self,
+	.nmi_to_offline_cpu		= true,
+
+	.read				= native_apic_mem_read,
+	.write				= native_apic_mem_write,
+	.eoi				= native_apic_mem_eoi,
+	.icr_read			= native_apic_icr_read,
+	.icr_write			= native_apic_icr_write,
+	.wait_icr_idle			= apic_mem_wait_icr_idle,
+	.safe_wait_icr_idle		= apic_mem_wait_icr_idle_timeout,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -261,6 +339,7 @@ static int physflat_acpi_madt_oem_check(char *oem_id, char *oem_table_id)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct cpumask *physflat_target_cpus(void)
 {
 	return cpu_online_mask;
@@ -334,10 +413,19 @@ static int physflat_probe(void)
 }
 
 static struct apic apic_physflat =  {
+=======
+static int physflat_probe(void)
+{
+	return apic == &apic_physflat || num_possible_cpus() > 8 || jailhouse_paravirt();
+}
+
+static struct apic apic_physflat __ro_after_init = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.name				= "physical flat",
 	.probe				= physflat_probe,
 	.acpi_madt_oem_check		= physflat_acpi_madt_oem_check,
+<<<<<<< HEAD
 	.apic_id_valid			= default_apic_id_valid,
 	.apic_id_registered		= flat_apic_id_registered,
 
@@ -390,6 +478,35 @@ static struct apic apic_physflat =  {
 	.icr_write			= native_apic_icr_write,
 	.wait_icr_idle			= native_apic_wait_icr_idle,
 	.safe_wait_icr_idle		= native_safe_apic_wait_icr_idle,
+=======
+
+	.dest_mode_logical		= false,
+
+	.disable_esr			= 0,
+
+	.cpu_present_to_apicid		= default_cpu_present_to_apicid,
+
+	.max_apic_id			= 0xFE,
+	.get_apic_id			= flat_get_apic_id,
+
+	.calc_dest_apicid		= apic_default_calc_apicid,
+
+	.send_IPI			= default_send_IPI_single_phys,
+	.send_IPI_mask			= default_send_IPI_mask_sequence_phys,
+	.send_IPI_mask_allbutself	= default_send_IPI_mask_allbutself_phys,
+	.send_IPI_allbutself		= default_send_IPI_allbutself,
+	.send_IPI_all			= default_send_IPI_all,
+	.send_IPI_self			= default_send_IPI_self,
+	.nmi_to_offline_cpu		= true,
+
+	.read				= native_apic_mem_read,
+	.write				= native_apic_mem_write,
+	.eoi				= native_apic_mem_eoi,
+	.icr_read			= native_apic_icr_read,
+	.icr_write			= native_apic_icr_write,
+	.wait_icr_idle			= apic_mem_wait_icr_idle,
+	.safe_wait_icr_idle		= apic_mem_wait_icr_idle_timeout,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*

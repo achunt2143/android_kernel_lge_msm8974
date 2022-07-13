@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __ASM_SH_UACCESS_H
 #define __ASM_SH_UACCESS_H
 
@@ -24,6 +25,14 @@
 #define access_ok(type, addr, size)	\
 	(__chk_user_ptr(addr),		\
 	 __access_ok((unsigned long __force)(addr), (size)))
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ASM_SH_UACCESS_H
+#define __ASM_SH_UACCESS_H
+
+#include <asm/extable.h>
+#include <asm-generic/access_ok.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Uh, these should become the main single-value transfer routines ...
@@ -58,7 +67,11 @@ struct __large_struct { unsigned long buf[100]; };
 	const __typeof__(*(ptr)) __user *__gu_addr = (ptr);	\
 	__chk_user_ptr(ptr);					\
 	__get_user_size(__gu_val, __gu_addr, (size), __gu_err);	\
+<<<<<<< HEAD
 	(x) = (__typeof__(*(ptr)))__gu_val;			\
+=======
+	(x) = (__force __typeof__(*(ptr)))__gu_val;		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__gu_err;						\
 })
 
@@ -66,10 +79,17 @@ struct __large_struct { unsigned long buf[100]; };
 ({									\
 	long __gu_err = -EFAULT;					\
 	unsigned long __gu_val = 0;					\
+<<<<<<< HEAD
 	const __typeof__(*(ptr)) *__gu_addr = (ptr);			\
 	if (likely(access_ok(VERIFY_READ, __gu_addr, (size))))		\
 		__get_user_size(__gu_val, __gu_addr, (size), __gu_err);	\
 	(x) = (__typeof__(*(ptr)))__gu_val;				\
+=======
+	const __typeof__(*(ptr)) __user *__gu_addr = (ptr);			\
+	if (likely(access_ok(__gu_addr, (size))))		\
+		__get_user_size(__gu_val, __gu_addr, (size), __gu_err);	\
+	(x) = (__force __typeof__(*(ptr)))__gu_val;			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__gu_err;							\
 })
 
@@ -88,29 +108,46 @@ struct __large_struct { unsigned long buf[100]; };
 	long __pu_err = -EFAULT;				\
 	__typeof__(*(ptr)) __user *__pu_addr = (ptr);		\
 	__typeof__(*(ptr)) __pu_val = x;			\
+<<<<<<< HEAD
 	if (likely(access_ok(VERIFY_WRITE, __pu_addr, size)))	\
+=======
+	if (likely(access_ok(__pu_addr, size)))	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__put_user_size(__pu_val, __pu_addr, (size),	\
 				__pu_err);			\
 	__pu_err;						\
 })
 
+<<<<<<< HEAD
 #ifdef CONFIG_SUPERH32
 # include "uaccess_32.h"
 #else
 # include "uaccess_64.h"
 #endif
+=======
+# include <asm/uaccess_32.h>
+
+extern long strncpy_from_user(char *dest, const char __user *src, long count);
+
+extern __must_check long strnlen_user(const char __user *str, long n);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Generic arbitrary sized copy.  */
 /* Return the number of bytes NOT copied */
 __kernel_size_t __copy_user(void *to, const void *from, __kernel_size_t n);
 
 static __always_inline unsigned long
+<<<<<<< HEAD
 __copy_from_user(void *to, const void __user *from, unsigned long n)
+=======
+raw_copy_from_user(void *to, const void __user *from, unsigned long n)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __copy_user(to, (__force void *)from, n);
 }
 
 static __always_inline unsigned long __must_check
+<<<<<<< HEAD
 __copy_to_user(void __user *to, const void *from, unsigned long n)
 {
 	return __copy_user((__force void *)to, from, n);
@@ -118,25 +155,42 @@ __copy_to_user(void __user *to, const void *from, unsigned long n)
 
 #define __copy_to_user_inatomic __copy_to_user
 #define __copy_from_user_inatomic __copy_from_user
+=======
+raw_copy_to_user(void __user *to, const void *from, unsigned long n)
+{
+	return __copy_user((__force void *)to, from, n);
+}
+#define INLINE_COPY_FROM_USER
+#define INLINE_COPY_TO_USER
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Clear the area and return remaining number of bytes
  * (on failure.  Usually it's 0.)
  */
+<<<<<<< HEAD
 __kernel_size_t __clear_user(void *addr, __kernel_size_t size);
+=======
+__kernel_size_t __clear_user(void __user *addr, __kernel_size_t size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define clear_user(addr,n)						\
 ({									\
 	void __user * __cl_addr = (addr);				\
 	unsigned long __cl_size = (n);					\
 									\
+<<<<<<< HEAD
 	if (__cl_size && access_ok(VERIFY_WRITE,			\
 		((unsigned long)(__cl_addr)), __cl_size))		\
+=======
+	if (__cl_size && access_ok(__cl_addr, __cl_size))		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__cl_size = __clear_user(__cl_addr, __cl_size);		\
 									\
 	__cl_size;							\
 })
 
+<<<<<<< HEAD
 /**
  * strncpy_from_user: - Copy a NUL terminated string from userspace.
  * @dst:   Destination address, in kernel space.  This buffer must be at
@@ -254,6 +308,8 @@ int fixup_exception(struct pt_regs *regs);
 unsigned long search_exception_table(unsigned long addr);
 const struct exception_table_entry *search_exception_tables(unsigned long addr);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void *set_exception_table_vec(unsigned int vec, void *handler);
 
 static inline void *set_exception_table_evt(unsigned int evt, void *handler)

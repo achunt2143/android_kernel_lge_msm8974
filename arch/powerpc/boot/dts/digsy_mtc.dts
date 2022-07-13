@@ -1,27 +1,45 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Digsy MTC board Device Tree Source
  *
  * Copyright (C) 2009 Semihalf
  *
  * Based on the CM5200 by M. Balakowicz
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /include/ "mpc5200b.dtsi"
 
+<<<<<<< HEAD
+=======
+&gpt0 { gpio-controller; fsl,has-wdt; };
+&gpt1 { gpio-controller; };
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 / {
 	model = "intercontrol,digsy-mtc";
 	compatible = "intercontrol,digsy-mtc";
 
+<<<<<<< HEAD
 	memory {
+=======
+	memory@0 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg = <0x00000000 0x02000000>;	// 32MB
 	};
 
 	soc5200@f0000000 {
+<<<<<<< HEAD
 		timer@600 {	// General Purpose Timer
 			#gpio-cells = <2>;
 			fsl,has-wdt;
@@ -33,10 +51,13 @@
 			gpio-controller;
 		};
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rtc@800 {
 			status = "disabled";
 		};
 
+<<<<<<< HEAD
 		spi@f00 {
 			msp430@0 {
 				compatible = "spidev";
@@ -45,6 +66,8 @@
 			};
 		};
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psc@2000 {		// PSC1
 			status = "disabled";
 		};
@@ -81,12 +104,20 @@
 
 		i2c@3d00 {
 			eeprom@50 {
+<<<<<<< HEAD
 				compatible = "at,24c08";
+=======
+				compatible = "atmel,24c08";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				reg = <0x50>;
 			};
 
 			rtc@56 {
+<<<<<<< HEAD
 				compatible = "mc,rv3029c2";
+=======
+				compatible = "microcrystal,rv3029";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				reg = <0x56>;
 			};
 
@@ -110,9 +141,15 @@
 		clock-frequency = <0>; // From boot loader
 		interrupts = <2 8 0 2 9 0 2 10 0>;
 		bus-range = <0 0>;
+<<<<<<< HEAD
 		ranges = <0x42000000 0 0x80000000 0x80000000 0 0x10000000
 			  0x02000000 0 0x90000000 0x90000000 0 0x10000000
 			  0x01000000 0 0x00000000 0xa0000000 0 0x01000000>;
+=======
+		ranges = <0x42000000 0 0x80000000 0x80000000 0 0x10000000>,
+			 <0x02000000 0 0x90000000 0x90000000 0 0x10000000>,
+			 <0x01000000 0 0x00000000 0xa0000000 0 0x01000000>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	localbus {

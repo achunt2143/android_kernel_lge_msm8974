@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * cbe_regs.c
  *
@@ -9,12 +13,20 @@
 #include <linux/percpu.h>
 #include <linux/types.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
 
 #include <asm/io.h>
 #include <asm/pgtable.h>
 #include <asm/prom.h>
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/pgtable.h>
+
+#include <asm/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ptrace.h>
 #include <asm/cell-regs.h>
 
@@ -22,7 +34,11 @@
  * Current implementation uses "cpu" nodes. We build our own mapping
  * array of cpu numbers to cpu nodes locally for now to allow interrupt
  * time code to have a fast path rather than call of_get_cpu_node(). If
+<<<<<<< HEAD
  * we implement cpu hotplug, we'll have to install an appropriate norifier
+=======
+ * we implement cpu hotplug, we'll have to install an appropriate notifier
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * in order to release references to the cpu going away
  */
 static struct cbe_regs_map
@@ -53,7 +69,11 @@ static struct cbe_regs_map *cbe_find_map(struct device_node *np)
 	int i;
 	struct device_node *tmp_np;
 
+<<<<<<< HEAD
 	if (strcasecmp(np->type, "spe")) {
+=======
+	if (!of_node_is_type(np, "spe")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < cbe_regs_map_count; i++)
 			if (cbe_regs_maps[i].cpu_node == np ||
 			    cbe_regs_maps[i].be_node == np)
@@ -70,8 +90,13 @@ static struct cbe_regs_map *cbe_find_map(struct device_node *np)
 		tmp_np = tmp_np->parent;
 		/* on a correct devicetree we wont get up to root */
 		BUG_ON(!tmp_np);
+<<<<<<< HEAD
 	} while (strcasecmp(tmp_np->type, "cpu") &&
 		 strcasecmp(tmp_np->type, "be"));
+=======
+	} while (!of_node_is_type(tmp_np, "cpu") ||
+		 !of_node_is_type(tmp_np, "be"));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	np->data = cbe_find_map(tmp_np);
 
@@ -164,7 +189,11 @@ u32 cbe_node_to_cpu(int node)
 }
 EXPORT_SYMBOL_GPL(cbe_node_to_cpu);
 
+<<<<<<< HEAD
 static struct device_node *cbe_get_be_node(int cpu_id)
+=======
+static struct device_node *__init cbe_get_be_node(int cpu_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *np;
 
@@ -181,14 +210,28 @@ static struct device_node *cbe_get_be_node(int cpu_id)
 		if (WARN_ON_ONCE(!cpu_handle))
 			return np;
 
+<<<<<<< HEAD
 		for (i=0; i<len; i++)
 			if (of_find_node_by_phandle(cpu_handle[i]) == of_get_cpu_node(cpu_id, NULL))
 				return np;
+=======
+		for (i = 0; i < len; i++) {
+			struct device_node *ch_np = of_find_node_by_phandle(cpu_handle[i]);
+			struct device_node *ci_np = of_get_cpu_node(cpu_id, NULL);
+
+			of_node_put(ch_np);
+			of_node_put(ci_np);
+
+			if (ch_np == ci_np)
+				return np;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return NULL;
 }
 
+<<<<<<< HEAD
 void __init cbe_fill_regs_map(struct cbe_regs_map *map)
 {
 	if(map->be_node) {
@@ -207,6 +250,35 @@ void __init cbe_fill_regs_map(struct cbe_regs_map *map)
 		for_each_node_by_type(np, "mic-tm")
 			if (of_get_parent(np) == be)
 				map->mic_tm_regs = of_iomap(np, 0);
+=======
+static void __init cbe_fill_regs_map(struct cbe_regs_map *map)
+{
+	if(map->be_node) {
+		struct device_node *be, *np, *parent_np;
+
+		be = map->be_node;
+
+		for_each_node_by_type(np, "pervasive") {
+			parent_np = of_get_parent(np);
+			if (parent_np == be)
+				map->pmd_regs = of_iomap(np, 0);
+			of_node_put(parent_np);
+		}
+
+		for_each_node_by_type(np, "CBEA-Internal-Interrupt-Controller") {
+			parent_np = of_get_parent(np);
+			if (parent_np == be)
+				map->iic_regs = of_iomap(np, 2);
+			of_node_put(parent_np);
+		}
+
+		for_each_node_by_type(np, "mic-tm") {
+			parent_np = of_get_parent(np);
+			if (parent_np == be)
+				map->mic_tm_regs = of_iomap(np, 0);
+			of_node_put(parent_np);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		struct device_node *cpu;
 		/* That hack must die die die ! */
@@ -260,7 +332,12 @@ void __init cbe_regs_init(void)
 			of_node_put(cpu);
 			return;
 		}
+<<<<<<< HEAD
 		map->cpu_node = cpu;
+=======
+		of_node_put(map->cpu_node);
+		map->cpu_node = of_node_get(cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for_each_possible_cpu(i) {
 			struct cbe_thread_map *thread = &cbe_thread_map[i];

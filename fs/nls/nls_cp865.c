@@ -369,7 +369,10 @@ static struct nls_table table = {
 	.char2uni	= char2uni,
 	.charset2lower	= charset2lower,
 	.charset2upper	= charset2upper,
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init init_nls_cp865(void)

@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dlmthread.c
  *
  * standalone DLM module
  *
  * Copyright (C) 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -22,6 +28,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -40,22 +48,35 @@
 #include <linux/delay.h>
 
 
+<<<<<<< HEAD
 #include "cluster/heartbeat.h"
 #include "cluster/nodemanager.h"
 #include "cluster/tcp.h"
+=======
+#include "../cluster/heartbeat.h"
+#include "../cluster/nodemanager.h"
+#include "../cluster/tcp.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dlmapi.h"
 #include "dlmcommon.h"
 #include "dlmdomain.h"
 
 #define MLOG_MASK_PREFIX (ML_DLM|ML_DLM_THREAD)
+<<<<<<< HEAD
 #include "cluster/masklog.h"
+=======
+#include "../cluster/masklog.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int dlm_thread(void *data);
 static void dlm_flush_asts(struct dlm_ctxt *dlm);
 
+<<<<<<< HEAD
 #define dlm_lock_is_remote(dlm, lock)     ((lock)->ml.node != (dlm)->node_num)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* will exit holding res->spinlock, but may drop in function */
 /* waits until flags are cleared on res->state */
 void __dlm_wait_on_lockres_flags(struct dlm_lock_resource *res, int flags)
@@ -106,11 +127,20 @@ int __dlm_lockres_unused(struct dlm_lock_resource *res)
 	if (!list_empty(&res->dirty) || res->state & DLM_LOCK_RES_DIRTY)
 		return 0;
 
+<<<<<<< HEAD
 	if (res->state & DLM_LOCK_RES_RECOVERING)
 		return 0;
 
 	/* Another node has this resource with this node as the master */
 	bit = find_next_bit(res->refmap, O2NM_MAX_NODES, 0);
+=======
+	if (res->state & (DLM_LOCK_RES_RECOVERING|
+			DLM_LOCK_RES_RECOVERY_WAITING))
+		return 0;
+
+	/* Another node has this resource with this node as the master */
+	bit = find_first_bit(res->refmap, O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bit < O2NM_MAX_NODES)
 		return 0;
 
@@ -159,6 +189,55 @@ void dlm_lockres_calc_usage(struct dlm_ctxt *dlm,
 	spin_unlock(&dlm->spinlock);
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Do the real purge work:
+ *     unhash the lockres, and
+ *     clear flag DLM_LOCK_RES_DROPPING_REF.
+ * It requires dlm and lockres spinlock to be taken.
+ */
+void __dlm_do_purge_lockres(struct dlm_ctxt *dlm,
+		struct dlm_lock_resource *res)
+{
+	assert_spin_locked(&dlm->spinlock);
+	assert_spin_locked(&res->spinlock);
+
+	if (!list_empty(&res->purge)) {
+		mlog(0, "%s: Removing res %.*s from purgelist\n",
+		     dlm->name, res->lockname.len, res->lockname.name);
+		list_del_init(&res->purge);
+		dlm_lockres_put(res);
+		dlm->purge_count--;
+	}
+
+	if (!__dlm_lockres_unused(res)) {
+		mlog(ML_ERROR, "%s: res %.*s in use after deref\n",
+		     dlm->name, res->lockname.len, res->lockname.name);
+		__dlm_print_one_lock_resource(res);
+		BUG();
+	}
+
+	__dlm_unhash_lockres(dlm, res);
+
+	spin_lock(&dlm->track_lock);
+	if (!list_empty(&res->tracking))
+		list_del_init(&res->tracking);
+	else {
+		mlog(ML_ERROR, "%s: Resource %.*s not on the Tracking list\n",
+		     dlm->name, res->lockname.len, res->lockname.name);
+		__dlm_print_one_lock_resource(res);
+	}
+	spin_unlock(&dlm->track_lock);
+
+	/*
+	 * lockres is not in the hash now. drop the flag and wake up
+	 * any processes waiting in dlm_get_lock_resource.
+	 */
+	res->state &= ~DLM_LOCK_RES_DROPPING_REF;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dlm_purge_lockres(struct dlm_ctxt *dlm,
 			     struct dlm_lock_resource *res)
 {
@@ -174,6 +253,16 @@ static void dlm_purge_lockres(struct dlm_ctxt *dlm,
 	     res->lockname.len, res->lockname.name, master);
 
 	if (!master) {
+<<<<<<< HEAD
+=======
+		if (res->state & DLM_LOCK_RES_DROPPING_REF) {
+			mlog(ML_NOTICE, "%s: res %.*s already in DLM_LOCK_RES_DROPPING_REF state\n",
+				dlm->name, res->lockname.len, res->lockname.name);
+			spin_unlock(&res->spinlock);
+			return;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res->state |= DLM_LOCK_RES_DROPPING_REF;
 		/* drop spinlock...  retake below */
 		spin_unlock(&res->spinlock);
@@ -202,6 +291,16 @@ static void dlm_purge_lockres(struct dlm_ctxt *dlm,
 		dlm->purge_count--;
 	}
 
+<<<<<<< HEAD
+=======
+	if (!master && ret == DLM_DEREF_RESPONSE_INPROG) {
+		mlog(0, "%s: deref %.*s in progress\n",
+			dlm->name, res->lockname.len, res->lockname.name);
+		spin_unlock(&res->spinlock);
+		return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!__dlm_lockres_unused(res)) {
 		mlog(ML_ERROR, "%s: res %.*s in use after deref\n",
 		     dlm->name, res->lockname.len, res->lockname.name);
@@ -211,6 +310,19 @@ static void dlm_purge_lockres(struct dlm_ctxt *dlm,
 
 	__dlm_unhash_lockres(dlm, res);
 
+<<<<<<< HEAD
+=======
+	spin_lock(&dlm->track_lock);
+	if (!list_empty(&res->tracking))
+		list_del_init(&res->tracking);
+	else {
+		mlog(ML_ERROR, "Resource %.*s not on the Tracking list\n",
+				res->lockname.len, res->lockname.name);
+		__dlm_print_one_lock_resource(res);
+	}
+	spin_unlock(&dlm->track_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* lockres is not in the hash now.  drop the flag and wake up
 	 * any processes waiting in dlm_get_lock_resource. */
 	if (!master) {
@@ -259,12 +371,24 @@ static void dlm_run_purge_list(struct dlm_ctxt *dlm,
 		 * refs on it. */
 		unused = __dlm_lockres_unused(lockres);
 		if (!unused ||
+<<<<<<< HEAD
 		    (lockres->state & DLM_LOCK_RES_MIGRATING)) {
 			mlog(0, "%s: res %.*s is in use or being remastered, "
 			     "used %d, state %d\n", dlm->name,
 			     lockres->lockname.len, lockres->lockname.name,
 			     !unused, lockres->state);
 			list_move_tail(&dlm->purge_list, &lockres->purge);
+=======
+		    (lockres->state & DLM_LOCK_RES_MIGRATING) ||
+		    (lockres->inflight_assert_workers != 0)) {
+			mlog(0, "%s: res %.*s is in use or being remastered, "
+			     "used %d, state %d, assert master workers %u\n",
+			     dlm->name, lockres->lockname.len,
+			     lockres->lockname.name,
+			     !unused, lockres->state,
+			     lockres->inflight_assert_workers);
+			list_move_tail(&lockres->purge, &dlm->purge_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock(&lockres->spinlock);
 			continue;
 		}
@@ -286,8 +410,11 @@ static void dlm_shuffle_lists(struct dlm_ctxt *dlm,
 			      struct dlm_lock_resource *res)
 {
 	struct dlm_lock *lock, *target;
+<<<<<<< HEAD
 	struct list_head *iter;
 	struct list_head *head;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int can_grant = 1;
 
 	/*
@@ -314,9 +441,13 @@ converting:
 		     dlm->name, res->lockname.len, res->lockname.name);
 		BUG();
 	}
+<<<<<<< HEAD
 	head = &res->granted;
 	list_for_each(iter, head) {
 		lock = list_entry(iter, struct dlm_lock, list);
+=======
+	list_for_each_entry(lock, &res->granted, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lock==target)
 			continue;
 		if (!dlm_lock_compatible(lock->ml.type,
@@ -333,9 +464,14 @@ converting:
 					target->ml.convert_type;
 		}
 	}
+<<<<<<< HEAD
 	head = &res->converting;
 	list_for_each(iter, head) {
 		lock = list_entry(iter, struct dlm_lock, list);
+=======
+
+	list_for_each_entry(lock, &res->converting, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lock==target)
 			continue;
 		if (!dlm_lock_compatible(lock->ml.type,
@@ -384,9 +520,13 @@ blocked:
 		goto leave;
 	target = list_entry(res->blocked.next, struct dlm_lock, list);
 
+<<<<<<< HEAD
 	head = &res->granted;
 	list_for_each(iter, head) {
 		lock = list_entry(iter, struct dlm_lock, list);
+=======
+	list_for_each_entry(lock, &res->granted, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lock==target)
 			continue;
 		if (!dlm_lock_compatible(lock->ml.type, target->ml.type)) {
@@ -400,9 +540,13 @@ blocked:
 		}
 	}
 
+<<<<<<< HEAD
 	head = &res->converting;
 	list_for_each(iter, head) {
 		lock = list_entry(iter, struct dlm_lock, list);
+=======
+	list_for_each_entry(lock, &res->converting, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lock==target)
 			continue;
 		if (!dlm_lock_compatible(lock->ml.type, target->ml.type)) {
@@ -466,7 +610,11 @@ void __dlm_dirty_lockres(struct dlm_ctxt *dlm, struct dlm_lock_resource *res)
 	assert_spin_locked(&res->spinlock);
 
 	/* don't shuffle secondary queues */
+<<<<<<< HEAD
 	if ((res->owner == dlm->node_num)) {
+=======
+	if (res->owner == dlm->node_num) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res->state & (DLM_LOCK_RES_MIGRATING |
 				  DLM_LOCK_RES_BLOCK_DIRTY))
 		    return;
@@ -489,7 +637,12 @@ int dlm_launch_thread(struct dlm_ctxt *dlm)
 {
 	mlog(0, "Starting dlm_thread...\n");
 
+<<<<<<< HEAD
 	dlm->dlm_thread_task = kthread_run(dlm_thread, dlm, "dlm_thread");
+=======
+	dlm->dlm_thread_task = kthread_run(dlm_thread, dlm, "dlm-%s",
+			dlm->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(dlm->dlm_thread_task)) {
 		mlog_errno(PTR_ERR(dlm->dlm_thread_task));
 		dlm->dlm_thread_task = NULL;
@@ -629,7 +782,10 @@ static void dlm_flush_asts(struct dlm_ctxt *dlm)
 
 #define DLM_THREAD_TIMEOUT_MS (4 * 1000)
 #define DLM_THREAD_MAX_DIRTY  100
+<<<<<<< HEAD
 #define DLM_THREAD_MAX_ASTS   10
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int dlm_thread(void *data)
 {
@@ -695,7 +851,12 @@ static int dlm_thread(void *data)
 			 * dirty for a short while. */
 			BUG_ON(res->state & DLM_LOCK_RES_MIGRATING);
 			if (res->state & (DLM_LOCK_RES_IN_PROGRESS |
+<<<<<<< HEAD
 					  DLM_LOCK_RES_RECOVERING)) {
+=======
+					  DLM_LOCK_RES_RECOVERING |
+					  DLM_LOCK_RES_RECOVERY_WAITING)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/* move it to the tail and keep going */
 				res->state &= ~DLM_LOCK_RES_DIRTY;
 				spin_unlock(&res->spinlock);

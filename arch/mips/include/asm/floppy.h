@@ -10,11 +10,19 @@
 #ifndef _ASM_FLOPPY_H
 #define _ASM_FLOPPY_H
 
+<<<<<<< HEAD
 #include <linux/dma-mapping.h>
 
 static inline void fd_cacheflush(char * addr, long size)
 {
 	dma_cache_sync(NULL, addr, size, DMA_BIDIRECTIONAL);
+=======
+#include <asm/io.h>
+
+static inline void fd_cacheflush(char * addr, long size)
+{
+	dma_cache_wback_inv((unsigned long)addr, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define MAX_BUFFER_SECTORS 24
@@ -24,9 +32,15 @@ static inline void fd_cacheflush(char * addr, long size)
  * And on Mips's the CMOS info fails also ...
  *
  * FIXME: This information should come from the ARC configuration tree
+<<<<<<< HEAD
  *        or wherever a particular machine has stored this ...
  */
 #define FLOPPY0_TYPE 		fd_drive_type(0)
+=======
+ *	  or wherever a particular machine has stored this ...
+ */
+#define FLOPPY0_TYPE		fd_drive_type(0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FLOPPY1_TYPE		fd_drive_type(1)
 
 #define FDC1			fd_getfdaddr1()

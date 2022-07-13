@@ -20,7 +20,10 @@
 #include <linux/errno.h>
 #include <linux/ioport.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -31,6 +34,7 @@
 #include <linux/bitops.h>
 #include <linux/fs.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 
 #include <asm/irq.h>
@@ -42,6 +46,13 @@
 #include <asm/mpc8xx.h>
 #include <asm/cpm1.h>
 #endif
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+
+#include <asm/irq.h>
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "fs_enet.h"
 
@@ -98,8 +109,13 @@ static int do_pd_setup(struct fs_enet_private *fep)
 {
 	struct platform_device *ofdev = to_platform_device(fep->dev);
 
+<<<<<<< HEAD
 	fep->interrupt = of_irq_to_resource(ofdev->dev.of_node, 0, NULL);
 	if (fep->interrupt == NO_IRQ)
+=======
+	fep->interrupt = irq_of_parse_and_map(ofdev->dev.of_node, 0);
+	if (!fep->interrupt)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	fep->scc.sccp = of_iomap(ofdev->dev.of_node, 0);
@@ -115,9 +131,14 @@ static int do_pd_setup(struct fs_enet_private *fep)
 	return 0;
 }
 
+<<<<<<< HEAD
 #define SCC_NAPI_RX_EVENT_MSK	(SCCE_ENET_RXF | SCCE_ENET_RXB)
 #define SCC_RX_EVENT		(SCCE_ENET_RXF)
 #define SCC_TX_EVENT		(SCCE_ENET_TXB)
+=======
+#define SCC_NAPI_EVENT_MSK	(SCCE_ENET_RXF | SCCE_ENET_RXB | SCCE_ENET_TXB)
+#define SCC_EVENT		(SCCE_ENET_RXF | SCCE_ENET_TXB)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SCC_ERR_EVENT_MSK	(SCCE_ENET_TXE | SCCE_ENET_BSY)
 
 static int setup_data(struct net_device *dev)
@@ -129,9 +150,14 @@ static int setup_data(struct net_device *dev)
 	fep->scc.hthi = 0;
 	fep->scc.htlo = 0;
 
+<<<<<<< HEAD
 	fep->ev_napi_rx = SCC_NAPI_RX_EVENT_MSK;
 	fep->ev_rx = SCC_RX_EVENT;
 	fep->ev_tx = SCC_TX_EVENT | SCCE_ENET_TXE;
+=======
+	fep->ev_napi = SCC_NAPI_EVENT_MSK;
+	fep->ev = SCC_EVENT | SCCE_ENET_TXE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fep->ev_err = SCC_ERR_EVENT_MSK;
 
 	return 0;
@@ -142,13 +168,22 @@ static int allocate_bd(struct net_device *dev)
 	struct fs_enet_private *fep = netdev_priv(dev);
 	const struct fs_platform_info *fpi = fep->fpi;
 
+<<<<<<< HEAD
 	fep->ring_mem_addr = cpm_dpalloc((fpi->tx_ring + fpi->rx_ring) *
 					 sizeof(cbd_t), 8);
+=======
+	fep->ring_mem_addr = cpm_muram_alloc((fpi->tx_ring + fpi->rx_ring) *
+					     sizeof(cbd_t), 8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR_VALUE(fep->ring_mem_addr))
 		return -ENOMEM;
 
 	fep->ring_base = (void __iomem __force*)
+<<<<<<< HEAD
 		cpm_dpram_addr(fep->ring_mem_addr);
+=======
+		cpm_muram_addr(fep->ring_mem_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -158,7 +193,11 @@ static void free_bd(struct net_device *dev)
 	struct fs_enet_private *fep = netdev_priv(dev);
 
 	if (fep->ring_base)
+<<<<<<< HEAD
 		cpm_dpfree(fep->ring_mem_addr);
+=======
+		cpm_muram_free(fep->ring_mem_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cleanup_data(struct net_device *dev)
@@ -350,9 +389,18 @@ static void restart(struct net_device *dev)
 	W16(sccp, scc_psmr, SCC_PSMR_ENCRC | SCC_PSMR_NIB22);
 
 	/* Set full duplex mode if needed */
+<<<<<<< HEAD
 	if (fep->phydev->duplex)
 		S16(sccp, scc_psmr, SCC_PSMR_LPB | SCC_PSMR_FDE);
 
+=======
+	if (dev->phydev->duplex)
+		S16(sccp, scc_psmr, SCC_PSMR_LPB | SCC_PSMR_FDE);
+
+	/* Restore multicast and promiscuous settings */
+	set_multicast_list(dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	S32(sccp, scc_gsmrl, SCC_GSMRL_ENR | SCC_GSMRL_ENT);
 }
 
@@ -374,28 +422,50 @@ static void stop(struct net_device *dev)
 	fs_cleanup_bds(dev);
 }
 
+<<<<<<< HEAD
 static void napi_clear_rx_event(struct net_device *dev)
+=======
+static void napi_clear_event_fs(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fs_enet_private *fep = netdev_priv(dev);
 	scc_t __iomem *sccp = fep->scc.sccp;
 
+<<<<<<< HEAD
 	W16(sccp, scc_scce, SCC_NAPI_RX_EVENT_MSK);
 }
 
 static void napi_enable_rx(struct net_device *dev)
+=======
+	W16(sccp, scc_scce, SCC_NAPI_EVENT_MSK);
+}
+
+static void napi_enable_fs(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fs_enet_private *fep = netdev_priv(dev);
 	scc_t __iomem *sccp = fep->scc.sccp;
 
+<<<<<<< HEAD
 	S16(sccp, scc_sccm, SCC_NAPI_RX_EVENT_MSK);
 }
 
 static void napi_disable_rx(struct net_device *dev)
+=======
+	S16(sccp, scc_sccm, SCC_NAPI_EVENT_MSK);
+}
+
+static void napi_disable_fs(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fs_enet_private *fep = netdev_priv(dev);
 	scc_t __iomem *sccp = fep->scc.sccp;
 
+<<<<<<< HEAD
 	C16(sccp, scc_sccm, SCC_NAPI_RX_EVENT_MSK);
+=======
+	C16(sccp, scc_sccm, SCC_NAPI_EVENT_MSK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rx_bd_done(struct net_device *dev)
@@ -468,9 +538,15 @@ const struct fs_ops fs_scc_ops = {
 	.set_multicast_list	= set_multicast_list,
 	.restart		= restart,
 	.stop			= stop,
+<<<<<<< HEAD
 	.napi_clear_rx_event	= napi_clear_rx_event,
 	.napi_enable_rx		= napi_enable_rx,
 	.napi_disable_rx	= napi_disable_rx,
+=======
+	.napi_clear_event	= napi_clear_event_fs,
+	.napi_enable		= napi_enable_fs,
+	.napi_disable		= napi_disable_fs,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rx_bd_done		= rx_bd_done,
 	.tx_kickstart		= tx_kickstart,
 	.get_int_events		= get_int_events,

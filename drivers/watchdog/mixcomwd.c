@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MixCom Watchdog: A Simple Hardware Watchdog Device
  * Based on Softdog driver by Alan Cox and PC Watchdog driver by Ken Hollis
@@ -6,11 +10,14 @@
  *
  * Copyright (c) 1999 ITConsult-Pro Co. <info@itc.hu>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Version 0.1 (99/04/15):
  *		- first version
  *
@@ -36,7 +43,10 @@
  *		- make mixcomwd_opened unsigned,
  *		  removed lock_kernel/unlock_kernel from mixcomwd_release,
  *		  modified ioctl a bit to conform to API
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -73,7 +83,11 @@
 static struct {
 	int ioport;
 	int id;
+<<<<<<< HEAD
 } mixcomwd_io_info[] __devinitdata = {
+=======
+} mixcomwd_io_info[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The Mixcom cards */
 	{0x0d90, MIXCOM_ID},
 	{0x0e90, MIXCOM_ID},
@@ -99,13 +113,21 @@ static struct {
 	{0x0000, 0},
 };
 
+<<<<<<< HEAD
 static void mixcomwd_timerfun(unsigned long d);
+=======
+static void mixcomwd_timerfun(struct timer_list *unused);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned long mixcomwd_opened; /* long req'd for setbit --RR */
 
 static int watchdog_port;
 static int mixcomwd_timer_alive;
+<<<<<<< HEAD
 static DEFINE_TIMER(mixcomwd_timer, mixcomwd_timerfun, 0, 0);
+=======
+static DEFINE_TIMER(mixcomwd_timer, mixcomwd_timerfun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static char expect_close;
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
@@ -120,7 +142,11 @@ static void mixcomwd_ping(void)
 	return;
 }
 
+<<<<<<< HEAD
 static void mixcomwd_timerfun(unsigned long d)
+=======
+static void mixcomwd_timerfun(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mixcomwd_ping();
 	mod_timer(&mixcomwd_timer, jiffies + 5 * HZ);
@@ -150,7 +176,11 @@ static int mixcomwd_open(struct inode *inode, struct file *file)
 			mixcomwd_timer_alive = 0;
 		}
 	}
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mixcomwd_release(struct inode *inode, struct file *file)
@@ -232,6 +262,10 @@ static const struct file_operations mixcomwd_fops = {
 	.llseek		= no_llseek,
 	.write		= mixcomwd_write,
 	.unlocked_ioctl	= mixcomwd_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= mixcomwd_open,
 	.release	= mixcomwd_release,
 };
@@ -315,4 +349,7 @@ MODULE_AUTHOR("Gergely Madarasz <gorgo@itc.hu>");
 MODULE_DESCRIPTION("MixCom Watchdog driver");
 MODULE_VERSION(VERSION);
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

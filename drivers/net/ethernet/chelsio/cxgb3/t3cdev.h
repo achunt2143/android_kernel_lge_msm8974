@@ -60,7 +60,11 @@ struct t3cdev {
 	int (*ctl)(struct t3cdev *dev, unsigned int req, void *data);
 	void (*neigh_update)(struct t3cdev *dev, struct neighbour *neigh);
 	void *priv;		/* driver private data */
+<<<<<<< HEAD
 	void *l2opt;		/* optional layer 2 data */
+=======
+	void __rcu *l2opt;	/* optional layer 2 data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *l3opt;		/* optional layer 3 data */
 	void *l4opt;		/* optional layer 4 data */
 	void *ulp;		/* ulp stuff */

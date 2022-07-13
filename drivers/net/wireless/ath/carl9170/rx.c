@@ -37,7 +37,10 @@
  *    OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/etherdevice.h>
@@ -161,12 +164,18 @@ static void carl9170_cmd_callback(struct ar9170 *ar, u32 len, void *buffer)
 
 void carl9170_handle_command_response(struct ar9170 *ar, void *buf, u32 len)
 {
+<<<<<<< HEAD
 	struct carl9170_rsp *cmd = (void *) buf;
 	struct ieee80211_vif *vif;
 
 	if (carl9170_check_sequence(ar, cmd->hdr.seq))
 		return;
 
+=======
+	struct carl9170_rsp *cmd = buf;
+	struct ieee80211_vif *vif;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((cmd->hdr.cmd & CARL9170_RSP_FLAG) != CARL9170_RSP_FLAG) {
 		if (!(cmd->hdr.cmd & CARL9170_CMD_ASYNC_FLAG))
 			carl9170_cmd_callback(ar, len, buf);
@@ -206,6 +215,10 @@ void carl9170_handle_command_response(struct ar9170 *ar, void *buf, u32 len)
 
 		case NL80211_IFTYPE_AP:
 		case NL80211_IFTYPE_ADHOC:
+<<<<<<< HEAD
+=======
+		case NL80211_IFTYPE_MESH_POINT:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			carl9170_update_beacon(ar, true);
 			break;
 
@@ -361,7 +374,11 @@ static int carl9170_rx_mac_status(struct ar9170 *ar,
 	switch (mac->status & AR9170_RX_STATUS_MODULATION) {
 	case AR9170_RX_STATUS_MODULATION_CCK:
 		if (mac->status & AR9170_RX_STATUS_SHORT_PREAMBLE)
+<<<<<<< HEAD
 			status->flag |= RX_FLAG_SHORTPRE;
+=======
+			status->enc_flags |= RX_ENC_FLAG_SHORTPRE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (head->plcp[0]) {
 		case AR9170_RX_PHY_RATE_CCK_1M:
 			status->rate_idx = 0;
@@ -420,18 +437,31 @@ static int carl9170_rx_mac_status(struct ar9170 *ar,
 
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		if (status->band == IEEE80211_BAND_2GHZ)
+=======
+		if (status->band == NL80211_BAND_2GHZ)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status->rate_idx += 4;
 		break;
 
 	case AR9170_RX_STATUS_MODULATION_HT:
 		if (head->plcp[3] & 0x80)
+<<<<<<< HEAD
 			status->flag |= RX_FLAG_40MHZ;
 		if (head->plcp[6] & 0x80)
 			status->flag |= RX_FLAG_SHORT_GI;
 
 		status->rate_idx = clamp(0, 75, head->plcp[3] & 0x7f);
 		status->flag |= RX_FLAG_HT;
+=======
+			status->bw = RATE_INFO_BW_40;
+		if (head->plcp[6] & 0x80)
+			status->enc_flags |= RX_ENC_FLAG_SHORT_GI;
+
+		status->rate_idx = clamp(head->plcp[3] & 0x7f, 0, 75);
+		status->encoding = RX_ENC_HT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -456,7 +486,11 @@ static void carl9170_rx_phy_status(struct ar9170 *ar,
 	/* post-process RSSI */
 	for (i = 0; i < 7; i++)
 		if (phy->rssi[i] & 0x80)
+<<<<<<< HEAD
 			phy->rssi[i] = ((phy->rssi[i] & 0x7f) + 1) & 0x7f;
+=======
+			phy->rssi[i] = ((~phy->rssi[i] & 0x7f) + 1) & 0x7f;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* TODO: we could do something with phy_errors */
 	status->signal = ar->noise[0] + phy->rssi_combined;
@@ -484,7 +518,11 @@ static struct sk_buff *carl9170_rx_copy_data(u8 *buf, int len)
 	skb = dev_alloc_skb(len + reserved);
 	if (likely(skb)) {
 		skb_reserve(skb, reserved);
+<<<<<<< HEAD
 		memcpy(skb_put(skb, len), buf, len);
+=======
+		skb_put_data(skb, buf, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return skb;
@@ -520,8 +558,14 @@ static u8 *carl9170_find_ie(u8 *data, unsigned int len, u8 ie)
  */
 static void carl9170_ps_beacon(struct ar9170 *ar, void *data, unsigned int len)
 {
+<<<<<<< HEAD
 	struct ieee80211_hdr *hdr = (void *) data;
 	struct ieee80211_tim_ie *tim_ie;
+=======
+	struct ieee80211_hdr *hdr = data;
+	struct ieee80211_tim_ie *tim_ie;
+	struct ath_common *common = &ar->common;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *tim;
 	u8 tim_len;
 	bool cam;
@@ -529,17 +573,26 @@ static void carl9170_ps_beacon(struct ar9170 *ar, void *data, unsigned int len)
 	if (likely(!(ar->hw->conf.flags & IEEE80211_CONF_PS)))
 		return;
 
+<<<<<<< HEAD
 	/* check if this really is a beacon */
 	if (!ieee80211_is_beacon(hdr->frame_control))
 		return;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* min. beacon length + FCS_LEN */
 	if (len <= 40 + FCS_LEN)
 		return;
 
+<<<<<<< HEAD
 	/* and only beacons from the associated BSSID, please */
 	if (compare_ether_addr(hdr->addr3, ar->common.curbssid) ||
 	    !ar->common.curaid)
+=======
+	/* check if this really is a beacon */
+	/* and only beacons from the associated BSSID, please */
+	if (!ath_is_mybeacon(common, hdr) || !common->curaid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	ar->ps.last_beacon = jiffies;
@@ -576,7 +629,59 @@ static void carl9170_ps_beacon(struct ar9170 *ar, void *data, unsigned int len)
 	}
 }
 
+<<<<<<< HEAD
 static bool carl9170_ampdu_check(struct ar9170 *ar, u8 *buf, u8 ms)
+=======
+static void carl9170_ba_check(struct ar9170 *ar, void *data, unsigned int len)
+{
+	struct ieee80211_bar *bar = data;
+	struct carl9170_bar_list_entry *entry;
+	unsigned int queue;
+
+	if (likely(!ieee80211_is_back(bar->frame_control)))
+		return;
+
+	if (len <= sizeof(*bar) + FCS_LEN)
+		return;
+
+	queue = TID_TO_WME_AC(((le16_to_cpu(bar->control) &
+		IEEE80211_BAR_CTRL_TID_INFO_MASK) >>
+		IEEE80211_BAR_CTRL_TID_INFO_SHIFT) & 7);
+
+	rcu_read_lock();
+	list_for_each_entry_rcu(entry, &ar->bar_list[queue], list) {
+		struct sk_buff *entry_skb = entry->skb;
+		struct _carl9170_tx_superframe *super = (void *)entry_skb->data;
+		struct ieee80211_bar *entry_bar = (void *)super->frame_data;
+
+#define TID_CHECK(a, b) (						\
+	((a) & cpu_to_le16(IEEE80211_BAR_CTRL_TID_INFO_MASK)) ==	\
+	((b) & cpu_to_le16(IEEE80211_BAR_CTRL_TID_INFO_MASK)))		\
+
+		if (bar->start_seq_num == entry_bar->start_seq_num &&
+		    TID_CHECK(bar->control, entry_bar->control) &&
+		    ether_addr_equal_64bits(bar->ra, entry_bar->ta) &&
+		    ether_addr_equal_64bits(bar->ta, entry_bar->ra)) {
+			struct ieee80211_tx_info *tx_info;
+
+			tx_info = IEEE80211_SKB_CB(entry_skb);
+			tx_info->flags |= IEEE80211_TX_STAT_ACK;
+
+			spin_lock_bh(&ar->bar_list_lock[queue]);
+			list_del_rcu(&entry->list);
+			spin_unlock_bh(&ar->bar_list_lock[queue]);
+			kfree_rcu(entry, head);
+			break;
+		}
+	}
+	rcu_read_unlock();
+
+#undef TID_CHECK
+}
+
+static bool carl9170_ampdu_check(struct ar9170 *ar, u8 *buf, u8 ms,
+				 struct ieee80211_rx_status *rx_status)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__le16 fc;
 
@@ -589,6 +694,12 @@ static bool carl9170_ampdu_check(struct ar9170 *ar, u8 *buf, u8 ms)
 		return true;
 	}
 
+<<<<<<< HEAD
+=======
+	rx_status->flag |= RX_FLAG_AMPDU_DETAILS | RX_FLAG_AMPDU_LAST_KNOWN;
+	rx_status->ampdu_reference = ar->ampdu_ref;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * "802.11n - 7.4a.3 A-MPDU contents" describes in which contexts
 	 * certain frame types can be part of an aMPDU.
@@ -611,6 +722,38 @@ static bool carl9170_ampdu_check(struct ar9170 *ar, u8 *buf, u8 ms)
 	return false;
 }
 
+<<<<<<< HEAD
+=======
+static int carl9170_handle_mpdu(struct ar9170 *ar, u8 *buf, int len,
+				struct ieee80211_rx_status *status)
+{
+	struct sk_buff *skb;
+
+	/* (driver) frame trap handler
+	 *
+	 * Because power-saving mode handing has to be implemented by
+	 * the driver/firmware. We have to check each incoming beacon
+	 * from the associated AP, if there's new data for us (either
+	 * broadcast/multicast or unicast) we have to react quickly.
+	 *
+	 * So, if you have you want to add additional frame trap
+	 * handlers, this would be the perfect place!
+	 */
+
+	carl9170_ps_beacon(ar, buf, len);
+
+	carl9170_ba_check(ar, buf, len);
+
+	skb = carl9170_rx_copy_data(buf, len);
+	if (!skb)
+		return -ENOMEM;
+
+	memcpy(IEEE80211_SKB_RXCB(skb), status, sizeof(*status));
+	ieee80211_rx(ar->hw, skb);
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * If the frame alignment is right (or the kernel has
  * CONFIG_HAVE_EFFICIENT_UNALIGNED_ACCESS), and there
@@ -620,14 +763,21 @@ static bool carl9170_ampdu_check(struct ar9170 *ar, u8 *buf, u8 ms)
  * mode, and we need to observe the proper ordering,
  * this is non-trivial.
  */
+<<<<<<< HEAD
 
 static void carl9170_handle_mpdu(struct ar9170 *ar, u8 *buf, int len)
+=======
+static void carl9170_rx_untie_data(struct ar9170 *ar, u8 *buf, int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ar9170_rx_head *head;
 	struct ar9170_rx_macstatus *mac;
 	struct ar9170_rx_phystatus *phy = NULL;
 	struct ieee80211_rx_status status;
+<<<<<<< HEAD
 	struct sk_buff *skb;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int mpdu_len;
 	u8 mac_status;
 
@@ -637,12 +787,21 @@ static void carl9170_handle_mpdu(struct ar9170 *ar, u8 *buf, int len)
 	if (unlikely(len < sizeof(*mac)))
 		goto drop;
 
+<<<<<<< HEAD
+=======
+	memset(&status, 0, sizeof(status));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mpdu_len = len - sizeof(*mac);
 
 	mac = (void *)(buf + mpdu_len);
 	mac_status = mac->status;
 	switch (mac_status & AR9170_RX_STATUS_MPDU) {
 	case AR9170_RX_STATUS_MPDU_FIRST:
+<<<<<<< HEAD
+=======
+		ar->ampdu_ref++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Aggregated MPDUs start with an PLCP header */
 		if (likely(mpdu_len >= sizeof(struct ar9170_rx_head))) {
 			head = (void *) buf;
@@ -673,12 +832,20 @@ static void carl9170_handle_mpdu(struct ar9170 *ar, u8 *buf, int len)
 		break;
 
 	case AR9170_RX_STATUS_MPDU_LAST:
+<<<<<<< HEAD
+=======
+		status.flag |= RX_FLAG_AMPDU_IS_LAST;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * The last frame of an A-MPDU has an extra tail
 		 * which does contain the phy status of the whole
 		 * aggregate.
 		 */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (likely(mpdu_len >= sizeof(struct ar9170_rx_phystatus))) {
 			mpdu_len -= sizeof(struct ar9170_rx_phystatus);
 			phy = (void *)(buf + mpdu_len);
@@ -690,6 +857,10 @@ static void carl9170_handle_mpdu(struct ar9170 *ar, u8 *buf, int len)
 
 			goto drop;
 		}
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case AR9170_RX_STATUS_MPDU_MIDDLE:
 		/*  These are just data + mac status */
@@ -718,7 +889,11 @@ static void carl9170_handle_mpdu(struct ar9170 *ar, u8 *buf, int len)
 		break;
 
 	default:
+<<<<<<< HEAD
 		BUG_ON(1);
+=======
+		BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -726,15 +901,23 @@ static void carl9170_handle_mpdu(struct ar9170 *ar, u8 *buf, int len)
 	if (unlikely(mpdu_len < (2 + 2 + ETH_ALEN + FCS_LEN)))
 		goto drop;
 
+<<<<<<< HEAD
 	memset(&status, 0, sizeof(status));
 	if (unlikely(carl9170_rx_mac_status(ar, head, mac, &status)))
 		goto drop;
 
 	if (!carl9170_ampdu_check(ar, buf, mac_status))
+=======
+	if (unlikely(carl9170_rx_mac_status(ar, head, mac, &status)))
+		goto drop;
+
+	if (!carl9170_ampdu_check(ar, buf, mac_status, &status))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto drop;
 
 	if (phy)
 		carl9170_rx_phy_status(ar, phy, &status);
+<<<<<<< HEAD
 
 	carl9170_ps_beacon(ar, buf, mpdu_len);
 
@@ -746,6 +929,15 @@ static void carl9170_handle_mpdu(struct ar9170 *ar, u8 *buf, int len)
 	ieee80211_rx(ar->hw, skb);
 	return;
 
+=======
+	else
+		status.flag |= RX_FLAG_NO_SIGNAL_VAL;
+
+	if (carl9170_handle_mpdu(ar, buf, mpdu_len, &status))
+		goto drop;
+
+	return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 drop:
 	ar->rx_dropped++;
 }
@@ -763,6 +955,12 @@ static void carl9170_rx_untie_cmds(struct ar9170 *ar, const u8 *respbuf,
 		if (unlikely(i > resplen))
 			break;
 
+<<<<<<< HEAD
+=======
+		if (carl9170_check_sequence(ar, cmd->hdr.seq))
+			break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		carl9170_handle_command_response(ar, cmd, cmd->hdr.len + 4);
 	}
 
@@ -794,7 +992,11 @@ static void __carl9170_rx(struct ar9170 *ar, u8 *buf, unsigned int len)
 	if (i == 12)
 		carl9170_rx_untie_cmds(ar, buf, len);
 	else
+<<<<<<< HEAD
 		carl9170_handle_mpdu(ar, buf, len);
+=======
+		carl9170_rx_untie_data(ar, buf, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void carl9170_rx_stream(struct ar9170 *ar, void *buf, unsigned int len)
@@ -842,7 +1044,11 @@ static void carl9170_rx_stream(struct ar9170 *ar, void *buf, unsigned int len)
 				}
 			}
 
+<<<<<<< HEAD
 			memcpy(skb_put(ar->rx_failover, tlen), tbuf, tlen);
+=======
+			skb_put_data(ar->rx_failover, tbuf, tlen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ar->rx_failover_missing -= tlen;
 
 			if (ar->rx_failover_missing <= 0) {
@@ -884,7 +1090,11 @@ static void carl9170_rx_stream(struct ar9170 *ar, void *buf, unsigned int len)
 			 * the rx - descriptor comes round again.
 			 */
 
+<<<<<<< HEAD
 			memcpy(skb_put(ar->rx_failover, tlen), tbuf, tlen);
+=======
+			skb_put_data(ar->rx_failover, tbuf, tlen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ar->rx_failover_missing = clen - tlen;
 			return;
 		}

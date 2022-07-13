@@ -11,6 +11,10 @@
 /*
  * TLB debugging functions:
  */
+<<<<<<< HEAD
+=======
+extern void dump_tlb_regs(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void dump_tlb_all(void);
 
 #endif /* __ASM_TLBDEBUG_H */

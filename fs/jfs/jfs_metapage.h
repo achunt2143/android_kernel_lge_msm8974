@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2002
  *   Portions Copyright (C) Christoph Hellwig, 2001-2002
@@ -15,6 +16,12 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *   Copyright (C) International Business Machines Corp., 2000-2002
+ *   Portions Copyright (C) Christoph Hellwig, 2001-2002
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef	_H_JFS_METAPAGE
 #define _H_JFS_METAPAGE
@@ -38,6 +45,10 @@ struct metapage {
 
 	/* implementation */
 	struct page *page;
+<<<<<<< HEAD
+=======
+	struct super_block *sb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int logical_size;
 
 	/* Journal management */
@@ -48,7 +59,10 @@ struct metapage {
 
 /* metapage flag */
 #define META_locked	0
+<<<<<<< HEAD
 #define META_free	1
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define META_dirty	2
 #define META_sync	3
 #define META_discard	4
@@ -107,7 +121,11 @@ static inline void metapage_nohomeok(struct metapage *mp)
 	lock_page(page);
 	if (!mp->nohomeok++) {
 		mark_metapage_dirty(mp);
+<<<<<<< HEAD
 		page_cache_get(page);
+=======
+		get_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wait_on_page_writeback(page);
 	}
 	unlock_page(page);
@@ -129,7 +147,11 @@ static inline void metapage_wait_for_io(struct metapage *mp)
 static inline void _metapage_homeok(struct metapage *mp)
 {
 	if (!--mp->nohomeok)
+<<<<<<< HEAD
 		page_cache_release(mp->page);
+=======
+		put_page(mp->page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void metapage_homeok(struct metapage *mp)

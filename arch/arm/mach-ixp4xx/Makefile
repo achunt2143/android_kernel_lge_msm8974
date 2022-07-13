@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #
 # Makefile for the linux kernel.
 #
@@ -41,3 +42,7 @@ obj-$(CONFIG_MACH_ARCOM_VULCAN)	+= vulcan-setup.o
 obj-$(CONFIG_PCI)		+= $(obj-pci-$(CONFIG_PCI)) common-pci.o
 obj-$(CONFIG_IXP4XX_QMGR)	+= ixp4xx_qmgr.o
 obj-$(CONFIG_IXP4XX_NPE)	+= ixp4xx_npe.o
+=======
+# SPDX-License-Identifier: GPL-2.0
+obj-y	+= ixp4xx-of.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

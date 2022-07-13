@@ -1,16 +1,24 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AT91 Power Management
  *
  * Copyright (C) 2005 David Brownell
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ARCH_ARM_MACH_AT91_PM
 #define __ARCH_ARM_MACH_AT91_PM
 
+<<<<<<< HEAD
 #include <mach/at91_ramc.h>
 #ifdef CONFIG_ARCH_AT91RM9200
 #include <mach/at91rm9200_sdramc.h>
@@ -104,6 +112,41 @@ static inline void at91sam9_standby(void)
 
 #define at91_standby at91sam9_standby
 
+=======
+#include <asm/proc-fns.h>
+
+#include <linux/mfd/syscon/atmel-mc.h>
+#include <soc/at91/at91sam9_ddrsdr.h>
+#include <soc/at91/at91sam9_sdramc.h>
+#include <soc/at91/sama7-ddr.h>
+#include <soc/at91/sama7-sfrbu.h>
+
+#define AT91_MEMCTRL_MC		0
+#define AT91_MEMCTRL_SDRAMC	1
+#define AT91_MEMCTRL_DDRSDR	2
+
+#define	AT91_PM_STANDBY		0x00
+#define AT91_PM_ULP0		0x01
+#define AT91_PM_ULP0_FAST	0x02
+#define AT91_PM_ULP1		0x03
+#define	AT91_PM_BACKUP		0x04
+
+#ifndef __ASSEMBLY__
+struct at91_pm_data {
+	void __iomem *pmc;
+	void __iomem *ramc[2];
+	void __iomem *ramc_phy;
+	unsigned long uhp_udp_mask;
+	unsigned int memctrl;
+	unsigned int mode;
+	void __iomem *shdwc;
+	void __iomem *sfrbu;
+	unsigned int standby_mode;
+	unsigned int suspend_mode;
+	unsigned int pmc_mckr_offset;
+	unsigned int pmc_version;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Unusual Devices File for the Datafab USB Compact Flash reader
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -13,6 +14,11 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * Unusual Devices File for the Datafab USB Compact Flash reader
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #if defined(CONFIG_USB_STORAGE_DATAFAB) || \
@@ -79,7 +85,12 @@ UNUSUAL_DEV(  0x07c4, 0xa109, 0x0000, 0xffff,
 		USB_SC_SCSI, USB_PR_DATAFAB, NULL,
 		0),
 
+<<<<<<< HEAD
 /* Reported by Felix Moeller <felix@derklecks.de>
+=======
+/*
+ * Reported by Felix Moeller <felix@derklecks.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * in Germany this is sold by Hama with the productnumber 46952
  * as "DualSlot CompactFlash(TM) & MStick Drive USB"
  */

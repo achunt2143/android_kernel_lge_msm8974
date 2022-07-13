@@ -45,8 +45,14 @@
 #include <linux/mutex.h>
 #include <linux/init.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include "mconsole.h"
+=======
+#include <linux/uaccess.h>
+#include "mconsole.h"
+#include "harddog.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 
@@ -60,8 +66,11 @@ static int harddog_out_fd = -1;
  *	Allow only one person to hold it open
  */
 
+<<<<<<< HEAD
 extern int start_watchdog(int *in_fd_ret, int *out_fd_ret, char *sock);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int harddog_open(struct inode *inode, struct file *file)
 {
 	int err = -EBUSY;
@@ -85,15 +94,22 @@ static int harddog_open(struct inode *inode, struct file *file)
 	timer_alive = 1;
 	spin_unlock(&lock);
 	mutex_unlock(&harddog_mutex);
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	spin_unlock(&lock);
 	mutex_unlock(&harddog_mutex);
 	return err;
 }
 
+<<<<<<< HEAD
 extern void stop_watchdog(int in_fd, int out_fd);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int harddog_release(struct inode *inode, struct file *file)
 {
 	/*
@@ -112,8 +128,11 @@ static int harddog_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
+<<<<<<< HEAD
 extern int ping_watchdog(int fd);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t harddog_write(struct file *file, const char __user *data, size_t len,
 			     loff_t *ppos)
 {
@@ -165,6 +184,10 @@ static const struct file_operations harddog_fops = {
 	.owner		= THIS_MODULE,
 	.write		= harddog_write,
 	.unlocked_ioctl	= harddog_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= harddog_open,
 	.release	= harddog_release,
 	.llseek		= no_llseek,
@@ -175,6 +198,7 @@ static struct miscdevice harddog_miscdev = {
 	.name		= "watchdog",
 	.fops		= &harddog_fops,
 };
+<<<<<<< HEAD
 
 static char banner[] __initdata = KERN_INFO "UML Watchdog Timer\n";
 
@@ -199,3 +223,6 @@ static void __exit harddog_exit(void)
 
 module_init(harddog_init);
 module_exit(harddog_exit);
+=======
+module_misc_device(harddog_miscdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

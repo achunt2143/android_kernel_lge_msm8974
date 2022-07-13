@@ -1,9 +1,18 @@
+<<<<<<< HEAD
 #!/usr/bin/perl -w
+=======
+#!/usr/bin/env perl
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Clean a text file -- or directory of text files -- of stealth whitespace.
 # WARNING: this can be a highly destructive operation.  Use with caution.
 #
 
+<<<<<<< HEAD
+=======
+use warnings;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 use bytes;
 use File::Basename;
 

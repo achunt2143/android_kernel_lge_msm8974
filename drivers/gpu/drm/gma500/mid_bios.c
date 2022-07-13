@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************************************
  * Copyright (c) 2011, Intel Corporation.
  * All Rights Reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
  * version 2, as published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **************************************************************************/
 
 /* TODO
@@ -23,6 +30,7 @@
  * - Check ioremap failures
  */
 
+<<<<<<< HEAD
 #include <drm/drmP.h>
 #include <drm/drm.h>
 #include "gma_drm.h"
@@ -33,13 +41,30 @@ static void mid_get_fuse_settings(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = dev->dev_private;
 	struct pci_dev *pci_root = pci_get_bus_and_slot(0, 0);
+=======
+#include <drm/drm.h>
+
+#include "mid_bios.h"
+#include "psb_drv.h"
+
+static void mid_get_fuse_settings(struct drm_device *dev)
+{
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	struct pci_dev *pdev = to_pci_dev(dev->dev);
+	struct pci_dev *pci_root =
+		pci_get_domain_bus_and_slot(pci_domain_nr(pdev->bus),
+					    0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t fuse_value = 0;
 	uint32_t fuse_value_tmp = 0;
 
 #define FB_REG06 0xD0810600
 #define FB_MIPI_DISABLE  (1 << 11)
 #define FB_REG09 0xD0810900
+<<<<<<< HEAD
 #define FB_REG09 0xD0810900
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FB_SKU_MASK  0x7000
 #define FB_SKU_SHIFT 12
 #define FB_SKU_100 0
@@ -105,7 +130,14 @@ static void mid_get_fuse_settings(struct drm_device *dev)
 static void mid_get_pci_revID(struct drm_psb_private *dev_priv)
 {
 	uint32_t platform_rev_id = 0;
+<<<<<<< HEAD
 	struct pci_dev *pci_gfx_root = pci_get_bus_and_slot(0, PCI_DEVFN(2, 0));
+=======
+	struct pci_dev *pdev = to_pci_dev(dev_priv->dev.dev);
+	int domain = pci_domain_nr(pdev->bus);
+	struct pci_dev *pci_gfx_root =
+		pci_get_domain_bus_and_slot(domain, 0, PCI_DEVFN(2, 0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pci_gfx_root == NULL) {
 		WARN_ON(1);
@@ -114,12 +146,175 @@ static void mid_get_pci_revID(struct drm_psb_private *dev_priv)
 	pci_read_config_dword(pci_gfx_root, 0x08, &platform_rev_id);
 	dev_priv->platform_rev_id = (uint8_t) platform_rev_id;
 	pci_dev_put(pci_gfx_root);
+<<<<<<< HEAD
 	dev_dbg(dev_priv->dev->dev, "platform_rev_id is %x\n",
 					dev_priv->platform_rev_id);
+=======
+	dev_dbg(dev_priv->dev.dev, "platform_rev_id is %x\n", dev_priv->platform_rev_id);
+}
+
+struct mid_vbt_header {
+	u32 signature;
+	u8 revision;
+} __packed;
+
+/* The same for r0 and r1 */
+struct vbt_r0 {
+	struct mid_vbt_header vbt_header;
+	u8 size;
+	u8 checksum;
+} __packed;
+
+struct vbt_r10 {
+	struct mid_vbt_header vbt_header;
+	u8 checksum;
+	u16 size;
+	u8 panel_count;
+	u8 primary_panel_idx;
+	u8 secondary_panel_idx;
+	u8 __reserved[5];
+} __packed;
+
+static int read_vbt_r0(u32 addr, struct vbt_r0 *vbt)
+{
+	void __iomem *vbt_virtual;
+
+	vbt_virtual = ioremap(addr, sizeof(*vbt));
+	if (vbt_virtual == NULL)
+		return -1;
+
+	memcpy_fromio(vbt, vbt_virtual, sizeof(*vbt));
+	iounmap(vbt_virtual);
+
+	return 0;
+}
+
+static int read_vbt_r10(u32 addr, struct vbt_r10 *vbt)
+{
+	void __iomem *vbt_virtual;
+
+	vbt_virtual = ioremap(addr, sizeof(*vbt));
+	if (!vbt_virtual)
+		return -1;
+
+	memcpy_fromio(vbt, vbt_virtual, sizeof(*vbt));
+	iounmap(vbt_virtual);
+
+	return 0;
+}
+
+static int mid_get_vbt_data_r0(struct drm_psb_private *dev_priv, u32 addr)
+{
+	struct vbt_r0 vbt;
+	void __iomem *gct_virtual;
+	struct gct_r0 gct;
+	u8 bpi;
+
+	if (read_vbt_r0(addr, &vbt))
+		return -1;
+
+	gct_virtual = ioremap(addr + sizeof(vbt), vbt.size - sizeof(vbt));
+	if (!gct_virtual)
+		return -1;
+	memcpy_fromio(&gct, gct_virtual, sizeof(gct));
+	iounmap(gct_virtual);
+
+	bpi = gct.PD.BootPanelIndex;
+	dev_priv->gct_data.bpi = bpi;
+	dev_priv->gct_data.pt = gct.PD.PanelType;
+	dev_priv->gct_data.DTD = gct.panel[bpi].DTD;
+	dev_priv->gct_data.Panel_Port_Control =
+		gct.panel[bpi].Panel_Port_Control;
+	dev_priv->gct_data.Panel_MIPI_Display_Descriptor =
+		gct.panel[bpi].Panel_MIPI_Display_Descriptor;
+
+	return 0;
+}
+
+static int mid_get_vbt_data_r1(struct drm_psb_private *dev_priv, u32 addr)
+{
+	struct vbt_r0 vbt;
+	void __iomem *gct_virtual;
+	struct gct_r1 gct;
+	u8 bpi;
+
+	if (read_vbt_r0(addr, &vbt))
+		return -1;
+
+	gct_virtual = ioremap(addr + sizeof(vbt), vbt.size - sizeof(vbt));
+	if (!gct_virtual)
+		return -1;
+	memcpy_fromio(&gct, gct_virtual, sizeof(gct));
+	iounmap(gct_virtual);
+
+	bpi = gct.PD.BootPanelIndex;
+	dev_priv->gct_data.bpi = bpi;
+	dev_priv->gct_data.pt = gct.PD.PanelType;
+	dev_priv->gct_data.DTD = gct.panel[bpi].DTD;
+	dev_priv->gct_data.Panel_Port_Control =
+		gct.panel[bpi].Panel_Port_Control;
+	dev_priv->gct_data.Panel_MIPI_Display_Descriptor =
+		gct.panel[bpi].Panel_MIPI_Display_Descriptor;
+
+	return 0;
+}
+
+static int mid_get_vbt_data_r10(struct drm_psb_private *dev_priv, u32 addr)
+{
+	struct vbt_r10 vbt;
+	void __iomem *gct_virtual;
+	struct gct_r10 *gct;
+	struct oaktrail_timing_info *dp_ti = &dev_priv->gct_data.DTD;
+	struct gct_r10_timing_info *ti;
+	int ret = -1;
+
+	if (read_vbt_r10(addr, &vbt))
+		return -1;
+
+	gct = kmalloc_array(vbt.panel_count, sizeof(*gct), GFP_KERNEL);
+	if (!gct)
+		return -ENOMEM;
+
+	gct_virtual = ioremap(addr + sizeof(vbt),
+			sizeof(*gct) * vbt.panel_count);
+	if (!gct_virtual)
+		goto out;
+	memcpy_fromio(gct, gct_virtual, sizeof(*gct));
+	iounmap(gct_virtual);
+
+	dev_priv->gct_data.bpi = vbt.primary_panel_idx;
+	dev_priv->gct_data.Panel_MIPI_Display_Descriptor =
+		gct[vbt.primary_panel_idx].Panel_MIPI_Display_Descriptor;
+
+	ti = &gct[vbt.primary_panel_idx].DTD;
+	dp_ti->pixel_clock = ti->pixel_clock;
+	dp_ti->hactive_hi = ti->hactive_hi;
+	dp_ti->hactive_lo = ti->hactive_lo;
+	dp_ti->hblank_hi = ti->hblank_hi;
+	dp_ti->hblank_lo = ti->hblank_lo;
+	dp_ti->hsync_offset_hi = ti->hsync_offset_hi;
+	dp_ti->hsync_offset_lo = ti->hsync_offset_lo;
+	dp_ti->hsync_pulse_width_hi = ti->hsync_pulse_width_hi;
+	dp_ti->hsync_pulse_width_lo = ti->hsync_pulse_width_lo;
+	dp_ti->vactive_hi = ti->vactive_hi;
+	dp_ti->vactive_lo = ti->vactive_lo;
+	dp_ti->vblank_hi = ti->vblank_hi;
+	dp_ti->vblank_lo = ti->vblank_lo;
+	dp_ti->vsync_offset_hi = ti->vsync_offset_hi;
+	dp_ti->vsync_offset_lo = ti->vsync_offset_lo;
+	dp_ti->vsync_pulse_width_hi = ti->vsync_pulse_width_hi;
+	dp_ti->vsync_pulse_width_lo = ti->vsync_pulse_width_lo;
+
+	ret = 0;
+out:
+	kfree(gct);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mid_get_vbt_data(struct drm_psb_private *dev_priv)
 {
+<<<<<<< HEAD
 	struct drm_device *dev = dev_priv->dev;
 	struct oaktrail_vbt *vbt = &dev_priv->vbt_data;
 	u32 addr;
@@ -133,11 +328,25 @@ static void mid_get_vbt_data(struct drm_psb_private *dev_priv)
 	struct pci_dev *pci_gfx_root = pci_get_bus_and_slot(0, PCI_DEVFN(2, 0));
 
 	/* Get the address of the platform config vbt, B0:D2:F0;0xFC */
+=======
+	struct drm_device *dev = &dev_priv->dev;
+	struct pci_dev *pdev = to_pci_dev(dev->dev);
+	u32 addr;
+	u8 __iomem *vbt_virtual;
+	struct mid_vbt_header vbt_header;
+	struct pci_dev *pci_gfx_root =
+		pci_get_domain_bus_and_slot(pci_domain_nr(pdev->bus),
+					    0, PCI_DEVFN(2, 0));
+	int ret = -1;
+
+	/* Get the address of the platform config vbt */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_read_config_dword(pci_gfx_root, 0xFC, &addr);
 	pci_dev_put(pci_gfx_root);
 
 	dev_dbg(dev->dev, "drm platform config address is %x\n", addr);
 
+<<<<<<< HEAD
 	/* check for platform config address == 0. */
 	/* this means fw doesn't support vbt */
 
@@ -251,11 +460,52 @@ static void mid_get_vbt_data(struct drm_psb_private *dev_priv)
 		dev_err(dev->dev, "Unknown revision of GCT!\n");
 		vbt->size = 0;
 	}
+=======
+	if (!addr)
+		goto out;
+
+	/* get the virtual address of the vbt */
+	vbt_virtual = ioremap(addr, sizeof(vbt_header));
+	if (!vbt_virtual)
+		goto out;
+
+	memcpy_fromio(&vbt_header, vbt_virtual, sizeof(vbt_header));
+	iounmap(vbt_virtual);
+
+	if (memcmp(&vbt_header.signature, "$GCT", 4))
+		goto out;
+
+	dev_dbg(dev->dev, "GCT revision is %02x\n", vbt_header.revision);
+
+	switch (vbt_header.revision) {
+	case 0x00:
+		ret = mid_get_vbt_data_r0(dev_priv, addr);
+		break;
+	case 0x01:
+		ret = mid_get_vbt_data_r1(dev_priv, addr);
+		break;
+	case 0x10:
+		ret = mid_get_vbt_data_r10(dev_priv, addr);
+		break;
+	default:
+		dev_err(dev->dev, "Unknown revision of GCT!\n");
+	}
+
+out:
+	if (ret)
+		dev_err(dev->dev, "Unable to read GCT!");
+	else
+		dev_priv->has_gct = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mid_chip_setup(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_psb_private *dev_priv = dev->dev_private;
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mid_get_fuse_settings(dev);
 	mid_get_vbt_data(dev_priv);
 	mid_get_pci_revID(dev_priv);

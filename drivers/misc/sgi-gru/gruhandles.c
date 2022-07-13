@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *              GRU KERNEL MCS INSTRUCTIONS
  *
  *  Copyright (c) 2008 Silicon Graphics, Inc.  All Rights Reserved.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -24,6 +31,7 @@
 #include "grutables.h"
 
 /* 10 sec */
+<<<<<<< HEAD
 #ifdef CONFIG_IA64
 #include <asm/processor.h>
 #define GRU_OPERATION_TIMEOUT	(((cycles_t) local_cpu_data->itc_freq)*10)
@@ -33,6 +41,12 @@
 #define GRU_OPERATION_TIMEOUT	((cycles_t) tsc_khz*10*1000)
 #define CLKS2NSEC(c)		((c) * 1000000 / tsc_khz)
 #endif
+=======
+#include <linux/sync_core.h>
+#include <asm/tsc.h>
+#define GRU_OPERATION_TIMEOUT	((cycles_t) tsc_khz*10*1000)
+#define CLKS2NSEC(c)		((c) * 1000000 / tsc_khz)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Extract the status field from a kernel handle */
 #define GET_MSEG_HANDLE_STATUS(h)	(((*(unsigned long *)(h)) >> 16) & 3)
@@ -196,12 +210,15 @@ void tfh_write_restart(struct gru_tlb_fault_handle *tfh,
 	start_instruction(tfh);
 }
 
+<<<<<<< HEAD
 void tfh_restart(struct gru_tlb_fault_handle *tfh)
 {
 	tfh->opc = TFHOP_RESTART;
 	start_instruction(tfh);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void tfh_user_polling_mode(struct gru_tlb_fault_handle *tfh)
 {
 	tfh->opc = TFHOP_USER_POLLING_MODE;

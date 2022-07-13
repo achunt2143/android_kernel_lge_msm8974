@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OSS compatible sequencer driver
  *
  * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "seq_oss_device.h"
@@ -26,6 +33,10 @@
 #include <sound/seq_oss_legacy.h>
 #include "seq_oss_readq.h"
 #include "seq_oss_writeq.h"
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -285,7 +296,16 @@ local_event(struct seq_oss_devinfo *dp, union evrec *q, struct snd_seq_event *ev
 static int
 note_on_event(struct seq_oss_devinfo *dp, int dev, int ch, int note, int vel, struct snd_seq_event *ev)
 {
+<<<<<<< HEAD
 	struct seq_oss_synthinfo *info = &dp->synths[dev];
+=======
+	struct seq_oss_synthinfo *info;
+
+	info = snd_seq_oss_synth_info(dp, dev);
+	if (!info)
+		return -ENXIO;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (info->arg.event_passing) {
 	case SNDRV_SEQ_OSS_PROCESS_EVENTS:
 		if (! info->ch || ch < 0 || ch >= info->nr_voices) {
@@ -293,6 +313,10 @@ note_on_event(struct seq_oss_devinfo *dp, int dev, int ch, int note, int vel, st
 			return set_note_event(dp, dev, SNDRV_SEQ_EVENT_NOTEON, ch, note, vel, ev);
 		}
 
+<<<<<<< HEAD
+=======
+		ch = array_index_nospec(ch, info->nr_voices);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (note == 255 && info->ch[ch].note >= 0) {
 			/* volume control */
 			int type;
@@ -340,7 +364,16 @@ note_on_event(struct seq_oss_devinfo *dp, int dev, int ch, int note, int vel, st
 static int
 note_off_event(struct seq_oss_devinfo *dp, int dev, int ch, int note, int vel, struct snd_seq_event *ev)
 {
+<<<<<<< HEAD
 	struct seq_oss_synthinfo *info = &dp->synths[dev];
+=======
+	struct seq_oss_synthinfo *info;
+
+	info = snd_seq_oss_synth_info(dp, dev);
+	if (!info)
+		return -ENXIO;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (info->arg.event_passing) {
 	case SNDRV_SEQ_OSS_PROCESS_EVENTS:
 		if (! info->ch || ch < 0 || ch >= info->nr_voices) {
@@ -348,6 +381,10 @@ note_off_event(struct seq_oss_devinfo *dp, int dev, int ch, int note, int vel, s
 			return set_note_event(dp, dev, SNDRV_SEQ_EVENT_NOTEON, ch, note, vel, ev);
 		}
 
+<<<<<<< HEAD
+=======
+		ch = array_index_nospec(ch, info->nr_voices);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (info->ch[ch].note >= 0) {
 			note = info->ch[ch].note;
 			info->ch[ch].vel = 0;
@@ -371,7 +408,11 @@ note_off_event(struct seq_oss_devinfo *dp, int dev, int ch, int note, int vel, s
 static int
 set_note_event(struct seq_oss_devinfo *dp, int dev, int type, int ch, int note, int vel, struct snd_seq_event *ev)
 {
+<<<<<<< HEAD
 	if (! snd_seq_oss_synth_is_valid(dp, dev))
+=======
+	if (!snd_seq_oss_synth_info(dp, dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	
 	ev->type = type;
@@ -389,7 +430,11 @@ set_note_event(struct seq_oss_devinfo *dp, int dev, int type, int ch, int note, 
 static int
 set_control_event(struct seq_oss_devinfo *dp, int dev, int type, int ch, int param, int val, struct snd_seq_event *ev)
 {
+<<<<<<< HEAD
 	if (! snd_seq_oss_synth_is_valid(dp, dev))
+=======
+	if (!snd_seq_oss_synth_info(dp, dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENXIO;
 	
 	ev->type = type;

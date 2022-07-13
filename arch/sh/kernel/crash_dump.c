@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	crash_dump.c - Memory preserving reboot related code.
  *
@@ -7,6 +11,7 @@
 #include <linux/errno.h>
 #include <linux/crash_dump.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 /**
@@ -26,11 +31,21 @@ ssize_t copy_oldmem_page(unsigned long pfn, char *buf,
                                size_t csize, unsigned long offset, int userbuf)
 {
 	void  *vaddr;
+=======
+#include <linux/uio.h>
+#include <linux/uaccess.h>
+
+ssize_t copy_oldmem_page(struct iov_iter *iter, unsigned long pfn,
+			 size_t csize, unsigned long offset)
+{
+	void  __iomem *vaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!csize)
 		return 0;
 
 	vaddr = ioremap(pfn << PAGE_SHIFT, PAGE_SIZE);
+<<<<<<< HEAD
 
 	if (userbuf) {
 		if (copy_to_user(buf, (vaddr + offset), csize)) {
@@ -41,5 +56,10 @@ ssize_t copy_oldmem_page(unsigned long pfn, char *buf,
 	memcpy(buf, (vaddr + offset), csize);
 
 	iounmap(vaddr);
+=======
+	csize = copy_to_iter(vaddr + offset, csize, iter);
+	iounmap(vaddr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return csize;
 }

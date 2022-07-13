@@ -1,7 +1,11 @@
 /*
  * Linux driver for VMware's para-virtualized SCSI HBA.
  *
+<<<<<<< HEAD
  * Copyright (C) 2008-2009, VMware, Inc. All Rights Reserved.
+=======
+ * Copyright (C) 2008-2014, VMware, Inc. All Rights Reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -17,8 +21,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
  *
+<<<<<<< HEAD
  * Maintained by: Arvind Kumar <arvindkumar@vmware.com>
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -32,6 +39,10 @@
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_cmnd.h>
 #include <scsi/scsi_device.h>
+<<<<<<< HEAD
+=======
+#include <scsi/scsi_tcq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "vmw_pvscsi.h"
 
@@ -44,7 +55,11 @@ MODULE_VERSION(PVSCSI_DRIVER_VERSION_STRING);
 
 #define PVSCSI_DEFAULT_NUM_PAGES_PER_RING	8
 #define PVSCSI_DEFAULT_NUM_PAGES_MSG_RING	1
+<<<<<<< HEAD
 #define PVSCSI_DEFAULT_QUEUE_DEPTH		64
+=======
+#define PVSCSI_DEFAULT_QUEUE_DEPTH		254
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SGL_SIZE				PAGE_SIZE
 
 struct pvscsi_sg_list {
@@ -62,15 +77,25 @@ struct pvscsi_ctx {
 	dma_addr_t		dataPA;
 	dma_addr_t		sensePA;
 	dma_addr_t		sglPA;
+<<<<<<< HEAD
+=======
+	struct completion	*abort_cmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct pvscsi_adapter {
 	char				*mmioBase;
+<<<<<<< HEAD
 	unsigned int			irq;
 	u8				rev;
 	bool				use_msi;
 	bool				use_msix;
 	bool				use_msg;
+=======
+	u8				rev;
+	bool				use_msg;
+	bool				use_req_threshold;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t			hw_lock;
 
@@ -102,18 +127,33 @@ struct pvscsi_adapter {
 
 
 /* Command line parameters */
+<<<<<<< HEAD
 static int pvscsi_ring_pages     = PVSCSI_DEFAULT_NUM_PAGES_PER_RING;
+=======
+static int pvscsi_ring_pages;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pvscsi_msg_ring_pages = PVSCSI_DEFAULT_NUM_PAGES_MSG_RING;
 static int pvscsi_cmd_per_lun    = PVSCSI_DEFAULT_QUEUE_DEPTH;
 static bool pvscsi_disable_msi;
 static bool pvscsi_disable_msix;
 static bool pvscsi_use_msg       = true;
+<<<<<<< HEAD
+=======
+static bool pvscsi_use_req_threshold = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PVSCSI_RW (S_IRUSR | S_IWUSR)
 
 module_param_named(ring_pages, pvscsi_ring_pages, int, PVSCSI_RW);
 MODULE_PARM_DESC(ring_pages, "Number of pages per req/cmp ring - (default="
+<<<<<<< HEAD
 		 __stringify(PVSCSI_DEFAULT_NUM_PAGES_PER_RING) ")");
+=======
+		 __stringify(PVSCSI_DEFAULT_NUM_PAGES_PER_RING)
+		 "[up to 16 targets],"
+		 __stringify(PVSCSI_SETUP_RINGS_MAX_NUM_PAGES)
+		 "[for 16+ targets])");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_named(msg_ring_pages, pvscsi_msg_ring_pages, int, PVSCSI_RW);
 MODULE_PARM_DESC(msg_ring_pages, "Number of pages for the msg ring - (default="
@@ -121,7 +161,11 @@ MODULE_PARM_DESC(msg_ring_pages, "Number of pages for the msg ring - (default="
 
 module_param_named(cmd_per_lun, pvscsi_cmd_per_lun, int, PVSCSI_RW);
 MODULE_PARM_DESC(cmd_per_lun, "Maximum commands per lun - (default="
+<<<<<<< HEAD
 		 __stringify(PVSCSI_MAX_REQ_QUEUE_DEPTH) ")");
+=======
+		 __stringify(PVSCSI_DEFAULT_QUEUE_DEPTH) ")");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param_named(disable_msi, pvscsi_disable_msi, bool, PVSCSI_RW);
 MODULE_PARM_DESC(disable_msi, "Disable MSI use in driver - (default=0)");
@@ -132,6 +176,13 @@ MODULE_PARM_DESC(disable_msix, "Disable MSI-X use in driver - (default=0)");
 module_param_named(use_msg, pvscsi_use_msg, bool, PVSCSI_RW);
 MODULE_PARM_DESC(use_msg, "Use msg ring when available - (default=1)");
 
+<<<<<<< HEAD
+=======
+module_param_named(use_req_threshold, pvscsi_use_req_threshold,
+		   bool, PVSCSI_RW);
+MODULE_PARM_DESC(use_req_threshold, "Use driver-based request coalescing if configured - (default=1)");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct pci_device_id pvscsi_pci_tbl[] = {
 	{ PCI_VDEVICE(VMWARE, PCI_DEVICE_ID_VMWARE_PVSCSI) },
 	{ 0 }
@@ -177,6 +228,10 @@ static void pvscsi_release_context(struct pvscsi_adapter *adapter,
 				   struct pvscsi_ctx *ctx)
 {
 	ctx->cmd = NULL;
+<<<<<<< HEAD
+=======
+	ctx->abort_cmp = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add(&ctx->list, &adapter->cmd_pool);
 }
 
@@ -280,10 +335,22 @@ static int scsi_is_rw(unsigned char op)
 static void pvscsi_kick_io(const struct pvscsi_adapter *adapter,
 			   unsigned char op)
 {
+<<<<<<< HEAD
 	if (scsi_is_rw(op))
 		pvscsi_kick_rw_io(adapter);
 	else
 		pvscsi_process_request_ring(adapter);
+=======
+	if (scsi_is_rw(op)) {
+		struct PVSCSIRingsState *s = adapter->rings_state;
+
+		if (!adapter->use_req_threshold ||
+		    s->reqProdIdx - s->reqConsIdx >= s->reqCallThreshold)
+			pvscsi_kick_rw_io(adapter);
+	} else {
+		pvscsi_process_request_ring(adapter);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ll_adapter_reset(const struct pvscsi_adapter *adapter)
@@ -295,7 +362,11 @@ static void ll_adapter_reset(const struct pvscsi_adapter *adapter)
 
 static void ll_bus_reset(const struct pvscsi_adapter *adapter)
 {
+<<<<<<< HEAD
 	dev_dbg(pvscsi_dev(adapter), "Reseting bus on %p\n", adapter);
+=======
+	dev_dbg(pvscsi_dev(adapter), "Resetting bus on %p\n", adapter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pvscsi_write_cmd_desc(adapter, PVSCSI_CMD_RESET_BUS, NULL, 0);
 }
@@ -304,7 +375,11 @@ static void ll_device_reset(const struct pvscsi_adapter *adapter, u32 target)
 {
 	struct PVSCSICmdDescResetDevice cmd = { 0 };
 
+<<<<<<< HEAD
 	dev_dbg(pvscsi_dev(adapter), "Reseting device: target=%u\n", target);
+=======
+	dev_dbg(pvscsi_dev(adapter), "Resetting device: target=%u\n", target);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd.target = target;
 
@@ -321,7 +396,11 @@ static void pvscsi_create_sg(struct pvscsi_ctx *ctx,
 	BUG_ON(count > PVSCSI_MAX_NUM_SG_ENTRIES_PER_SEGMENT);
 
 	sge = &ctx->sgl->sge[0];
+<<<<<<< HEAD
 	for (i = 0; i < count; i++, sg++) {
+=======
+	for (i = 0; i < count; i++, sg = sg_next(sg)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sge[i].addr   = sg_dma_address(sg);
 		sge[i].length = sg_dma_len(sg);
 		sge[i].flags  = 0;
@@ -332,9 +411,15 @@ static void pvscsi_create_sg(struct pvscsi_ctx *ctx,
  * Map all data buffers for a command into PCI space and
  * setup the scatter/gather list if needed.
  */
+<<<<<<< HEAD
 static void pvscsi_map_buffers(struct pvscsi_adapter *adapter,
 			       struct pvscsi_ctx *ctx, struct scsi_cmnd *cmd,
 			       struct PVSCSIRingReqDesc *e)
+=======
+static int pvscsi_map_buffers(struct pvscsi_adapter *adapter,
+			      struct pvscsi_ctx *ctx, struct scsi_cmnd *cmd,
+			      struct PVSCSIRingReqDesc *e)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned count;
 	unsigned bufflen = scsi_bufflen(cmd);
@@ -343,18 +428,43 @@ static void pvscsi_map_buffers(struct pvscsi_adapter *adapter,
 	e->dataLen = bufflen;
 	e->dataAddr = 0;
 	if (bufflen == 0)
+<<<<<<< HEAD
 		return;
+=======
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sg = scsi_sglist(cmd);
 	count = scsi_sg_count(cmd);
 	if (count != 0) {
 		int segs = scsi_dma_map(cmd);
+<<<<<<< HEAD
 		if (segs > 1) {
 			pvscsi_create_sg(ctx, sg, segs);
 
 			e->flags |= PVSCSI_FLAG_CMD_WITH_SG_LIST;
 			ctx->sglPA = pci_map_single(adapter->dev, ctx->sgl,
 						    SGL_SIZE, PCI_DMA_TODEVICE);
+=======
+
+		if (segs == -ENOMEM) {
+			scmd_printk(KERN_DEBUG, cmd,
+				    "vmw_pvscsi: Failed to map cmd sglist for DMA.\n");
+			return -ENOMEM;
+		} else if (segs > 1) {
+			pvscsi_create_sg(ctx, sg, segs);
+
+			e->flags |= PVSCSI_FLAG_CMD_WITH_SG_LIST;
+			ctx->sglPA = dma_map_single(&adapter->dev->dev,
+					ctx->sgl, SGL_SIZE, DMA_TO_DEVICE);
+			if (dma_mapping_error(&adapter->dev->dev, ctx->sglPA)) {
+				scmd_printk(KERN_ERR, cmd,
+					    "vmw_pvscsi: Failed to map ctx sglist for DMA.\n");
+				scsi_dma_unmap(cmd);
+				ctx->sglPA = 0;
+				return -ENOMEM;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			e->dataAddr = ctx->sglPA;
 		} else
 			e->dataAddr = sg_dma_address(sg);
@@ -363,10 +473,35 @@ static void pvscsi_map_buffers(struct pvscsi_adapter *adapter,
 		 * In case there is no S/G list, scsi_sglist points
 		 * directly to the buffer.
 		 */
+<<<<<<< HEAD
 		ctx->dataPA = pci_map_single(adapter->dev, sg, bufflen,
 					     cmd->sc_data_direction);
 		e->dataAddr = ctx->dataPA;
 	}
+=======
+		ctx->dataPA = dma_map_single(&adapter->dev->dev, sg, bufflen,
+					     cmd->sc_data_direction);
+		if (dma_mapping_error(&adapter->dev->dev, ctx->dataPA)) {
+			scmd_printk(KERN_DEBUG, cmd,
+				    "vmw_pvscsi: Failed to map direct data buffer for DMA.\n");
+			return -ENOMEM;
+		}
+		e->dataAddr = ctx->dataPA;
+	}
+
+	return 0;
+}
+
+/*
+ * The device incorrectly doesn't clear the first byte of the sense
+ * buffer in some cases. We have to do it ourselves.
+ * Otherwise we run into trouble when SWIOTLB is forced.
+ */
+static void pvscsi_patch_sense(struct scsi_cmnd *cmd)
+{
+	if (cmd->sense_buffer)
+		cmd->sense_buffer[0] = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pvscsi_unmap_buffers(const struct pvscsi_adapter *adapter,
@@ -384,6 +519,7 @@ static void pvscsi_unmap_buffers(const struct pvscsi_adapter *adapter,
 		if (count != 0) {
 			scsi_dma_unmap(cmd);
 			if (ctx->sglPA) {
+<<<<<<< HEAD
 				pci_unmap_single(adapter->dev, ctx->sglPA,
 						 SGL_SIZE, PCI_DMA_TODEVICE);
 				ctx->sglPA = 0;
@@ -401,6 +537,25 @@ static int __devinit pvscsi_allocate_rings(struct pvscsi_adapter *adapter)
 {
 	adapter->rings_state = pci_alloc_consistent(adapter->dev, PAGE_SIZE,
 						    &adapter->ringStatePA);
+=======
+				dma_unmap_single(&adapter->dev->dev, ctx->sglPA,
+						 SGL_SIZE, DMA_TO_DEVICE);
+				ctx->sglPA = 0;
+			}
+		} else
+			dma_unmap_single(&adapter->dev->dev, ctx->dataPA,
+					 bufflen, cmd->sc_data_direction);
+	}
+	if (cmd->sense_buffer)
+		dma_unmap_single(&adapter->dev->dev, ctx->sensePA,
+				 SCSI_SENSE_BUFFERSIZE, DMA_FROM_DEVICE);
+}
+
+static int pvscsi_allocate_rings(struct pvscsi_adapter *adapter)
+{
+	adapter->rings_state = dma_alloc_coherent(&adapter->dev->dev, PAGE_SIZE,
+			&adapter->ringStatePA, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!adapter->rings_state)
 		return -ENOMEM;
 
@@ -408,17 +563,29 @@ static int __devinit pvscsi_allocate_rings(struct pvscsi_adapter *adapter)
 				 pvscsi_ring_pages);
 	adapter->req_depth = adapter->req_pages
 					* PVSCSI_MAX_NUM_REQ_ENTRIES_PER_PAGE;
+<<<<<<< HEAD
 	adapter->req_ring = pci_alloc_consistent(adapter->dev,
 						 adapter->req_pages * PAGE_SIZE,
 						 &adapter->reqRingPA);
+=======
+	adapter->req_ring = dma_alloc_coherent(&adapter->dev->dev,
+			adapter->req_pages * PAGE_SIZE, &adapter->reqRingPA,
+			GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!adapter->req_ring)
 		return -ENOMEM;
 
 	adapter->cmp_pages = min(PVSCSI_MAX_NUM_PAGES_CMP_RING,
 				 pvscsi_ring_pages);
+<<<<<<< HEAD
 	adapter->cmp_ring = pci_alloc_consistent(adapter->dev,
 						 adapter->cmp_pages * PAGE_SIZE,
 						 &adapter->cmpRingPA);
+=======
+	adapter->cmp_ring = dma_alloc_coherent(&adapter->dev->dev,
+			adapter->cmp_pages * PAGE_SIZE, &adapter->cmpRingPA,
+			GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!adapter->cmp_ring)
 		return -ENOMEM;
 
@@ -431,9 +598,15 @@ static int __devinit pvscsi_allocate_rings(struct pvscsi_adapter *adapter)
 
 	adapter->msg_pages = min(PVSCSI_MAX_NUM_PAGES_MSG_RING,
 				 pvscsi_msg_ring_pages);
+<<<<<<< HEAD
 	adapter->msg_ring = pci_alloc_consistent(adapter->dev,
 						 adapter->msg_pages * PAGE_SIZE,
 						 &adapter->msgRingPA);
+=======
+	adapter->msg_ring = dma_alloc_coherent(&adapter->dev->dev,
+			adapter->msg_pages * PAGE_SIZE, &adapter->msgRingPA,
+			GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!adapter->msg_ring)
 		return -ENOMEM;
 	BUG_ON(!IS_ALIGNED(adapter->msgRingPA, PAGE_SIZE));
@@ -487,6 +660,16 @@ static void pvscsi_setup_all_rings(const struct pvscsi_adapter *adapter)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static int pvscsi_change_queue_depth(struct scsi_device *sdev, int qdepth)
+{
+	if (!sdev->tagged_supported)
+		qdepth = 1;
+	return scsi_change_queue_depth(sdev, qdepth);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Pull a completion descriptor off and pass the completion back
  * to the SCSI mid layer.
@@ -496,28 +679,73 @@ static void pvscsi_complete_request(struct pvscsi_adapter *adapter,
 {
 	struct pvscsi_ctx *ctx;
 	struct scsi_cmnd *cmd;
+<<<<<<< HEAD
+=======
+	struct completion *abort_cmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 btstat = e->hostStatus;
 	u32 sdstat = e->scsiStatus;
 
 	ctx = pvscsi_get_context(adapter, e->context);
 	cmd = ctx->cmd;
+<<<<<<< HEAD
 	pvscsi_unmap_buffers(adapter, ctx);
 	pvscsi_release_context(adapter, ctx);
 	cmd->result = 0;
 
+=======
+	abort_cmp = ctx->abort_cmp;
+	pvscsi_unmap_buffers(adapter, ctx);
+	if (sdstat != SAM_STAT_CHECK_CONDITION)
+		pvscsi_patch_sense(cmd);
+	pvscsi_release_context(adapter, ctx);
+	if (abort_cmp) {
+		/*
+		 * The command was requested to be aborted. Just signal that
+		 * the request completed and swallow the actual cmd completion
+		 * here. The abort handler will post a completion for this
+		 * command indicating that it got successfully aborted.
+		 */
+		complete(abort_cmp);
+		return;
+	}
+
+	cmd->result = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sdstat != SAM_STAT_GOOD &&
 	    (btstat == BTSTAT_SUCCESS ||
 	     btstat == BTSTAT_LINKED_COMMAND_COMPLETED ||
 	     btstat == BTSTAT_LINKED_COMMAND_COMPLETED_WITH_FLAG)) {
+<<<<<<< HEAD
 		cmd->result = (DID_OK << 16) | sdstat;
 		if (sdstat == SAM_STAT_CHECK_CONDITION && cmd->sense_buffer)
 			cmd->result |= (DRIVER_SENSE << 24);
+=======
+		if (sdstat == SAM_STAT_COMMAND_TERMINATED) {
+			cmd->result = (DID_RESET << 16);
+		} else {
+			cmd->result = (DID_OK << 16) | sdstat;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		switch (btstat) {
 		case BTSTAT_SUCCESS:
 		case BTSTAT_LINKED_COMMAND_COMPLETED:
 		case BTSTAT_LINKED_COMMAND_COMPLETED_WITH_FLAG:
+<<<<<<< HEAD
 			/* If everything went fine, let's move on..  */
+=======
+			/*
+			 * Commands like INQUIRY may transfer less data than
+			 * requested by the initiator via bufflen. Set residual
+			 * count to make upper layer aware of the actual amount
+			 * of data returned. There are cases when controller
+			 * returns zero dataLen with non zero data - do not set
+			 * residual count in that case.
+			 */
+			if (e->dataLen && (e->dataLen < scsi_bufflen(cmd)))
+				scsi_set_resid(cmd, scsi_bufflen(cmd) - e->dataLen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cmd->result = (DID_OK << 16);
 			break;
 
@@ -536,9 +764,12 @@ static void pvscsi_complete_request(struct pvscsi_adapter *adapter,
 		case BTSTAT_LUNMISMATCH:
 		case BTSTAT_TAGREJECT:
 		case BTSTAT_BADMSG:
+<<<<<<< HEAD
 			cmd->result = (DRIVER_INVALID << 24);
 			/* fall through */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case BTSTAT_HAHARDWARE:
 		case BTSTAT_INVPHASE:
 		case BTSTAT_HATIMEOUT:
@@ -557,7 +788,11 @@ static void pvscsi_complete_request(struct pvscsi_adapter *adapter,
 			break;
 
 		case BTSTAT_ABORTQUEUE:
+<<<<<<< HEAD
 			cmd->result = (DID_ABORT << 16);
+=======
+			cmd->result = (DID_BUS_BUSY << 16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case BTSTAT_SCSIPARITY:
@@ -575,7 +810,11 @@ static void pvscsi_complete_request(struct pvscsi_adapter *adapter,
 		"cmd=%p %x ctx=%p result=0x%x status=0x%x,%x\n",
 		cmd, cmd->cmnd[0], ctx, cmd->result, btstat, sdstat);
 
+<<<<<<< HEAD
 	cmd->scsi_done(cmd);
+=======
+	scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -651,9 +890,21 @@ static int pvscsi_queue_ring(struct pvscsi_adapter *adapter,
 	e->lun[1] = sdev->lun;
 
 	if (cmd->sense_buffer) {
+<<<<<<< HEAD
 		ctx->sensePA = pci_map_single(adapter->dev, cmd->sense_buffer,
 					      SCSI_SENSE_BUFFERSIZE,
 					      PCI_DMA_FROMDEVICE);
+=======
+		ctx->sensePA = dma_map_single(&adapter->dev->dev,
+				cmd->sense_buffer, SCSI_SENSE_BUFFERSIZE,
+				DMA_FROM_DEVICE);
+		if (dma_mapping_error(&adapter->dev->dev, ctx->sensePA)) {
+			scmd_printk(KERN_DEBUG, cmd,
+				    "vmw_pvscsi: Failed to map sense buffer for DMA.\n");
+			ctx->sensePA = 0;
+			return -ENOMEM;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		e->senseAddr = ctx->sensePA;
 		e->senseLen = SCSI_SENSE_BUFFERSIZE;
 	} else {
@@ -665,10 +916,13 @@ static int pvscsi_queue_ring(struct pvscsi_adapter *adapter,
 	memcpy(e->cdb, cmd->cmnd, e->cdbLen);
 
 	e->tag = SIMPLE_QUEUE_TAG;
+<<<<<<< HEAD
 	if (sdev->tagged_supported &&
 	    (cmd->tag == HEAD_OF_QUEUE_TAG ||
 	     cmd->tag == ORDERED_QUEUE_TAG))
 		e->tag = cmd->tag;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cmd->sc_data_direction == DMA_FROM_DEVICE)
 		e->flags = PVSCSI_FLAG_CMD_DIR_TOHOST;
@@ -679,7 +933,19 @@ static int pvscsi_queue_ring(struct pvscsi_adapter *adapter,
 	else
 		e->flags = 0;
 
+<<<<<<< HEAD
 	pvscsi_map_buffers(adapter, ctx, cmd, e);
+=======
+	if (pvscsi_map_buffers(adapter, ctx, cmd, e) != 0) {
+		if (cmd->sense_buffer) {
+			dma_unmap_single(&adapter->dev->dev, ctx->sensePA,
+					 SCSI_SENSE_BUFFERSIZE,
+					 DMA_FROM_DEVICE);
+			ctx->sensePA = 0;
+		}
+		return -ENOMEM;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	e->context = pvscsi_map_context(adapter, ctx);
 
@@ -690,12 +956,20 @@ static int pvscsi_queue_ring(struct pvscsi_adapter *adapter,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pvscsi_queue_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd *))
+=======
+static int pvscsi_queue_lck(struct scsi_cmnd *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *host = cmd->device->host;
 	struct pvscsi_adapter *adapter = shost_priv(host);
 	struct pvscsi_ctx *ctx;
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	unsigned char op;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&adapter->hw_lock, flags);
 
@@ -707,6 +981,7 @@ static int pvscsi_queue_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd
 		return SCSI_MLQUEUE_HOST_BUSY;
 	}
 
+<<<<<<< HEAD
 	cmd->scsi_done = done;
 
 	dev_dbg(&cmd->device->sdev_gendev,
@@ -715,6 +990,16 @@ static int pvscsi_queue_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd
 	spin_unlock_irqrestore(&adapter->hw_lock, flags);
 
 	pvscsi_kick_io(adapter, cmd->cmnd[0]);
+=======
+	op = cmd->cmnd[0];
+
+	dev_dbg(&cmd->device->sdev_gendev,
+		"queued cmd %p, ctx %p, op=%x\n", cmd, ctx, op);
+
+	spin_unlock_irqrestore(&adapter->hw_lock, flags);
+
+	pvscsi_kick_io(adapter, op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -726,6 +1011,12 @@ static int pvscsi_abort(struct scsi_cmnd *cmd)
 	struct pvscsi_adapter *adapter = shost_priv(cmd->device->host);
 	struct pvscsi_ctx *ctx;
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	int result = SUCCESS;
+	DECLARE_COMPLETION_ONSTACK(abort_cmp);
+	int done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	scmd_printk(KERN_DEBUG, cmd, "task abort on host %u, %p\n",
 		    adapter->host->host_no, cmd);
@@ -748,6 +1039,7 @@ static int pvscsi_abort(struct scsi_cmnd *cmd)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	pvscsi_abort_cmd(adapter, ctx);
 
 	pvscsi_process_completion_ring(adapter);
@@ -755,6 +1047,42 @@ static int pvscsi_abort(struct scsi_cmnd *cmd)
 out:
 	spin_unlock_irqrestore(&adapter->hw_lock, flags);
 	return SUCCESS;
+=======
+	/*
+	 * Mark that the command has been requested to be aborted and issue
+	 * the abort.
+	 */
+	ctx->abort_cmp = &abort_cmp;
+
+	pvscsi_abort_cmd(adapter, ctx);
+	spin_unlock_irqrestore(&adapter->hw_lock, flags);
+	/* Wait for 2 secs for the completion. */
+	done = wait_for_completion_timeout(&abort_cmp, msecs_to_jiffies(2000));
+	spin_lock_irqsave(&adapter->hw_lock, flags);
+
+	if (!done) {
+		/*
+		 * Failed to abort the command, unmark the fact that it
+		 * was requested to be aborted.
+		 */
+		ctx->abort_cmp = NULL;
+		result = FAILED;
+		scmd_printk(KERN_DEBUG, cmd,
+			    "Failed to get completion for aborted cmd %p\n",
+			    cmd);
+		goto out;
+	}
+
+	/*
+	 * Successfully aborted the command.
+	 */
+	cmd->result = (DID_ABORT << 16);
+	scsi_done(cmd);
+
+out:
+	spin_unlock_irqrestore(&adapter->hw_lock, flags);
+	return result;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -774,9 +1102,16 @@ static void pvscsi_reset_all(struct pvscsi_adapter *adapter)
 			scmd_printk(KERN_ERR, cmd,
 				    "Forced reset on cmd %p\n", cmd);
 			pvscsi_unmap_buffers(adapter, ctx);
+<<<<<<< HEAD
 			pvscsi_release_context(adapter, ctx);
 			cmd->result = (DID_RESET << 16);
 			cmd->scsi_done(cmd);
+=======
+			pvscsi_patch_sense(cmd);
+			pvscsi_release_context(adapter, ctx);
+			cmd->result = (DID_RESET << 16);
+			scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -795,7 +1130,11 @@ static int pvscsi_host_reset(struct scsi_cmnd *cmd)
 	use_msg = adapter->use_msg;
 
 	if (use_msg) {
+<<<<<<< HEAD
 		adapter->use_msg = 0;
+=======
+		adapter->use_msg = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&adapter->hw_lock, flags);
 
 		/*
@@ -910,7 +1249,11 @@ static struct scsi_host_template pvscsi_template = {
 	.sg_tablesize			= PVSCSI_MAX_NUM_SG_ENTRIES_PER_SEGMENT,
 	.dma_boundary			= UINT_MAX,
 	.max_sectors			= 0xffff,
+<<<<<<< HEAD
 	.use_clustering			= ENABLE_CLUSTERING,
+=======
+	.change_queue_depth		= pvscsi_change_queue_depth,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eh_abort_handler		= pvscsi_abort,
 	.eh_device_reset_handler	= pvscsi_device_reset,
 	.eh_bus_reset_handler		= pvscsi_bus_reset,
@@ -1034,6 +1377,7 @@ static int pvscsi_setup_msg_workqueue(struct pvscsi_adapter *adapter)
 	return 1;
 }
 
+<<<<<<< HEAD
 static irqreturn_t pvscsi_isr(int irq, void *devp)
 {
 	struct pvscsi_adapter *adapter = devp;
@@ -1061,6 +1405,59 @@ static irqreturn_t pvscsi_isr(int irq, void *devp)
 	}
 
 	return IRQ_RETVAL(handled);
+=======
+static bool pvscsi_setup_req_threshold(struct pvscsi_adapter *adapter,
+				      bool enable)
+{
+	u32 val;
+
+	if (!pvscsi_use_req_threshold)
+		return false;
+
+	pvscsi_reg_write(adapter, PVSCSI_REG_OFFSET_COMMAND,
+			 PVSCSI_CMD_SETUP_REQCALLTHRESHOLD);
+	val = pvscsi_reg_read(adapter, PVSCSI_REG_OFFSET_COMMAND_STATUS);
+	if (val == -1) {
+		printk(KERN_INFO "vmw_pvscsi: device does not support req_threshold\n");
+		return false;
+	} else {
+		struct PVSCSICmdDescSetupReqCall cmd_msg = { 0 };
+		cmd_msg.enable = enable;
+		printk(KERN_INFO
+		       "vmw_pvscsi: %sabling reqCallThreshold\n",
+			enable ? "en" : "dis");
+		pvscsi_write_cmd_desc(adapter,
+				      PVSCSI_CMD_SETUP_REQCALLTHRESHOLD,
+				      &cmd_msg, sizeof(cmd_msg));
+		return pvscsi_reg_read(adapter,
+				       PVSCSI_REG_OFFSET_COMMAND_STATUS) != 0;
+	}
+}
+
+static irqreturn_t pvscsi_isr(int irq, void *devp)
+{
+	struct pvscsi_adapter *adapter = devp;
+	unsigned long flags;
+
+	spin_lock_irqsave(&adapter->hw_lock, flags);
+	pvscsi_process_completion_ring(adapter);
+	if (adapter->use_msg && pvscsi_msg_pending(adapter))
+		queue_work(adapter->workqueue, &adapter->work);
+	spin_unlock_irqrestore(&adapter->hw_lock, flags);
+
+	return IRQ_HANDLED;
+}
+
+static irqreturn_t pvscsi_shared_isr(int irq, void *devp)
+{
+	struct pvscsi_adapter *adapter = devp;
+	u32 val = pvscsi_read_intr_status(adapter);
+
+	if (!(val & PVSCSI_INTR_ALL_SUPPORTED))
+		return IRQ_NONE;
+	pvscsi_write_intr_status(devp, val);
+	return pvscsi_isr(irq, devp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pvscsi_free_sgls(const struct pvscsi_adapter *adapter)
@@ -1072,6 +1469,7 @@ static void pvscsi_free_sgls(const struct pvscsi_adapter *adapter)
 		free_pages((unsigned long)ctx->sgl, get_order(SGL_SIZE));
 }
 
+<<<<<<< HEAD
 static int pvscsi_setup_msix(const struct pvscsi_adapter *adapter,
 			     unsigned int *irq)
 {
@@ -1100,12 +1498,21 @@ static void pvscsi_shutdown_intr(struct pvscsi_adapter *adapter)
 		pci_disable_msix(adapter->dev);
 		adapter->use_msix = 0;
 	}
+=======
+static void pvscsi_shutdown_intr(struct pvscsi_adapter *adapter)
+{
+	free_irq(pci_irq_vector(adapter->dev, 0), adapter);
+	pci_free_irq_vectors(adapter->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pvscsi_release_resources(struct pvscsi_adapter *adapter)
 {
+<<<<<<< HEAD
 	pvscsi_shutdown_intr(adapter);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (adapter->workqueue)
 		destroy_workqueue(adapter->workqueue);
 
@@ -1120,21 +1527,37 @@ static void pvscsi_release_resources(struct pvscsi_adapter *adapter)
 	}
 
 	if (adapter->rings_state)
+<<<<<<< HEAD
 		pci_free_consistent(adapter->dev, PAGE_SIZE,
 				    adapter->rings_state, adapter->ringStatePA);
 
 	if (adapter->req_ring)
 		pci_free_consistent(adapter->dev,
+=======
+		dma_free_coherent(&adapter->dev->dev, PAGE_SIZE,
+				    adapter->rings_state, adapter->ringStatePA);
+
+	if (adapter->req_ring)
+		dma_free_coherent(&adapter->dev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    adapter->req_pages * PAGE_SIZE,
 				    adapter->req_ring, adapter->reqRingPA);
 
 	if (adapter->cmp_ring)
+<<<<<<< HEAD
 		pci_free_consistent(adapter->dev,
+=======
+		dma_free_coherent(&adapter->dev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    adapter->cmp_pages * PAGE_SIZE,
 				    adapter->cmp_ring, adapter->cmpRingPA);
 
 	if (adapter->msg_ring)
+<<<<<<< HEAD
 		pci_free_consistent(adapter->dev,
+=======
+		dma_free_coherent(&adapter->dev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    adapter->msg_pages * PAGE_SIZE,
 				    adapter->msg_ring, adapter->msgRingPA);
 }
@@ -1152,7 +1575,11 @@ static void pvscsi_release_resources(struct pvscsi_adapter *adapter)
  * just use a statically allocated scatter list.
  *
  */
+<<<<<<< HEAD
 static int __devinit pvscsi_allocate_sg(struct pvscsi_adapter *adapter)
+=======
+static int pvscsi_allocate_sg(struct pvscsi_adapter *adapter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pvscsi_ctx *ctx;
 	int i;
@@ -1193,8 +1620,13 @@ static u32 pvscsi_get_max_targets(struct pvscsi_adapter *adapter)
 	u32 numPhys = 16;
 
 	dev = pvscsi_dev(adapter);
+<<<<<<< HEAD
 	config_page = pci_alloc_consistent(adapter->dev, PAGE_SIZE,
 					   &configPagePA);
+=======
+	config_page = dma_alloc_coherent(&adapter->dev->dev, PAGE_SIZE,
+			&configPagePA, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!config_page) {
 		dev_warn(dev, "vmw_pvscsi: failed to allocate memory for config page\n");
 		goto exit;
@@ -1213,7 +1645,10 @@ static u32 pvscsi_get_max_targets(struct pvscsi_adapter *adapter)
 	 * indicate success.
 	 */
 	header = config_page;
+<<<<<<< HEAD
 	memset(header, 0, sizeof *header);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	header->hostStatus = BTSTAT_INVPARAM;
 	header->scsiStatus = SDSTAT_CHECK;
 
@@ -1228,11 +1663,17 @@ static u32 pvscsi_get_max_targets(struct pvscsi_adapter *adapter)
 	} else
 		dev_warn(dev, "vmw_pvscsi: PVSCSI_CMD_CONFIG failed. hostStatus = 0x%x, scsiStatus = 0x%x\n",
 			 header->hostStatus, header->scsiStatus);
+<<<<<<< HEAD
 	pci_free_consistent(adapter->dev, PAGE_SIZE, config_page, configPagePA);
+=======
+	dma_free_coherent(&adapter->dev->dev, PAGE_SIZE, config_page,
+			  configPagePA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit:
 	return numPhys;
 }
 
+<<<<<<< HEAD
 static int __devinit pvscsi_probe(struct pci_dev *pdev,
 				  const struct pci_device_id *id)
 {
@@ -1242,23 +1683,41 @@ static int __devinit pvscsi_probe(struct pci_dev *pdev,
 	unsigned int i;
 	unsigned long flags = 0;
 	int error;
+=======
+static int pvscsi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+{
+	unsigned int irq_flag = PCI_IRQ_MSIX | PCI_IRQ_MSI | PCI_IRQ_LEGACY;
+	struct pvscsi_adapter *adapter;
+	struct pvscsi_adapter adapter_temp;
+	struct Scsi_Host *host = NULL;
+	unsigned int i;
+	int error;
+	u32 max_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = -ENODEV;
 
 	if (pci_enable_device(pdev))
 		return error;
 
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pdev, DMA_BIT_MASK(64)) == 0 &&
 	    pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64)) == 0) {
 		printk(KERN_INFO "vmw_pvscsi: using 64bit dma\n");
 	} else if (pci_set_dma_mask(pdev, DMA_BIT_MASK(32)) == 0 &&
 		   pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32)) == 0) {
+=======
+	if (!dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64))) {
+		printk(KERN_INFO "vmw_pvscsi: using 64bit dma\n");
+	} else if (!dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_INFO "vmw_pvscsi: using 32bit dma\n");
 	} else {
 		printk(KERN_ERR "vmw_pvscsi: failed to set DMA mask\n");
 		goto out_disable_device;
 	}
 
+<<<<<<< HEAD
 	pvscsi_template.can_queue =
 		min(PVSCSI_MAX_NUM_PAGES_REQ_RING, pvscsi_ring_pages) *
 		PVSCSI_MAX_NUM_REQ_ENTRIES_PER_PAGE;
@@ -1282,11 +1741,25 @@ static int __devinit pvscsi_probe(struct pci_dev *pdev,
 	host->max_lun     = 1;
 	host->max_cmd_len = 16;
 
+=======
+	/*
+	 * Let's use a temp pvscsi_adapter struct until we find the number of
+	 * targets on the adapter, after that we will switch to the real
+	 * allocated struct.
+	 */
+	adapter = &adapter_temp;
+	memset(adapter, 0, sizeof(*adapter));
+	adapter->dev  = pdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter->rev = pdev->revision;
 
 	if (pci_request_regions(pdev, "vmw_pvscsi")) {
 		printk(KERN_ERR "vmw_pvscsi: pci memory selection failed\n");
+<<<<<<< HEAD
 		goto out_free_host;
+=======
+		goto out_disable_device;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
@@ -1302,7 +1775,11 @@ static int __devinit pvscsi_probe(struct pci_dev *pdev,
 	if (i == DEVICE_COUNT_RESOURCE) {
 		printk(KERN_ERR
 		       "vmw_pvscsi: adapter has no suitable MMIO region\n");
+<<<<<<< HEAD
 		goto out_release_resources;
+=======
+		goto out_release_resources_and_disable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	adapter->mmioBase = pci_iomap(pdev, i, PVSCSI_MEM_SPACE_SIZE);
@@ -1311,10 +1788,67 @@ static int __devinit pvscsi_probe(struct pci_dev *pdev,
 		printk(KERN_ERR
 		       "vmw_pvscsi: can't iomap for BAR %d memsize %lu\n",
 		       i, PVSCSI_MEM_SPACE_SIZE);
+<<<<<<< HEAD
 		goto out_release_resources;
 	}
 
 	pci_set_master(pdev);
+=======
+		goto out_release_resources_and_disable;
+	}
+
+	pci_set_master(pdev);
+
+	/*
+	 * Ask the device for max number of targets before deciding the
+	 * default pvscsi_ring_pages value.
+	 */
+	max_id = pvscsi_get_max_targets(adapter);
+	printk(KERN_INFO "vmw_pvscsi: max_id: %u\n", max_id);
+
+	if (pvscsi_ring_pages == 0)
+		/*
+		 * Set the right default value. Up to 16 it is 8, above it is
+		 * max.
+		 */
+		pvscsi_ring_pages = (max_id > 16) ?
+			PVSCSI_SETUP_RINGS_MAX_NUM_PAGES :
+			PVSCSI_DEFAULT_NUM_PAGES_PER_RING;
+	printk(KERN_INFO
+	       "vmw_pvscsi: setting ring_pages to %d\n",
+	       pvscsi_ring_pages);
+
+	pvscsi_template.can_queue =
+		min(PVSCSI_MAX_NUM_PAGES_REQ_RING, pvscsi_ring_pages) *
+		PVSCSI_MAX_NUM_REQ_ENTRIES_PER_PAGE;
+	pvscsi_template.cmd_per_lun =
+		min(pvscsi_template.can_queue, pvscsi_cmd_per_lun);
+	host = scsi_host_alloc(&pvscsi_template, sizeof(struct pvscsi_adapter));
+	if (!host) {
+		printk(KERN_ERR "vmw_pvscsi: failed to allocate host\n");
+		goto out_release_resources_and_disable;
+	}
+
+	/*
+	 * Let's use the real pvscsi_adapter struct here onwards.
+	 */
+	adapter = shost_priv(host);
+	memset(adapter, 0, sizeof(*adapter));
+	adapter->dev  = pdev;
+	adapter->host = host;
+	/*
+	 * Copy back what we already have to the allocated adapter struct.
+	 */
+	adapter->rev = adapter_temp.rev;
+	adapter->mmioBase = adapter_temp.mmioBase;
+
+	spin_lock_init(&adapter->hw_lock);
+	host->max_channel = 0;
+	host->max_lun     = 1;
+	host->max_cmd_len = 16;
+	host->max_id      = max_id;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_drvdata(pdev, host);
 
 	ll_adapter_reset(adapter);
@@ -1328,6 +1862,7 @@ static int __devinit pvscsi_probe(struct pci_dev *pdev,
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Ask the device for max number of targets.
 	 */
 	host->max_id = pvscsi_get_max_targets(adapter);
@@ -1335,6 +1870,8 @@ static int __devinit pvscsi_probe(struct pci_dev *pdev,
 	dev_info(dev, "vmw_pvscsi: host->max_id: %u\n", host->max_id);
 
 	/*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * From this point on we should reset the adapter if anything goes
 	 * wrong.
 	 */
@@ -1360,6 +1897,7 @@ static int __devinit pvscsi_probe(struct pci_dev *pdev,
 		goto out_reset_adapter;
 	}
 
+<<<<<<< HEAD
 	if (!pvscsi_disable_msix &&
 	    pvscsi_setup_msix(adapter, &adapter->irq) == 0) {
 		printk(KERN_INFO "vmw_pvscsi: using MSI-X\n");
@@ -1380,6 +1918,35 @@ static int __devinit pvscsi_probe(struct pci_dev *pdev,
 		printk(KERN_ERR
 		       "vmw_pvscsi: unable to request IRQ: %d\n", error);
 		adapter->irq = 0;
+=======
+	if (pvscsi_disable_msix)
+		irq_flag &= ~PCI_IRQ_MSIX;
+	if (pvscsi_disable_msi)
+		irq_flag &= ~PCI_IRQ_MSI;
+
+	error = pci_alloc_irq_vectors(adapter->dev, 1, 1, irq_flag);
+	if (error < 0)
+		goto out_reset_adapter;
+
+	adapter->use_req_threshold = pvscsi_setup_req_threshold(adapter, true);
+	printk(KERN_DEBUG "vmw_pvscsi: driver-based request coalescing %sabled\n",
+	       adapter->use_req_threshold ? "en" : "dis");
+
+	if (adapter->dev->msix_enabled || adapter->dev->msi_enabled) {
+		printk(KERN_INFO "vmw_pvscsi: using MSI%s\n",
+			adapter->dev->msix_enabled ? "-X" : "");
+		error = request_irq(pci_irq_vector(pdev, 0), pvscsi_isr,
+				0, "vmw_pvscsi", adapter);
+	} else {
+		printk(KERN_INFO "vmw_pvscsi: using INTx\n");
+		error = request_irq(pci_irq_vector(pdev, 0), pvscsi_shared_isr,
+				IRQF_SHARED, "vmw_pvscsi", adapter);
+	}
+
+	if (error) {
+		printk(KERN_ERR
+		       "vmw_pvscsi: unable to request IRQ: %d\n", error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_reset_adapter;
 	}
 
@@ -1402,6 +1969,7 @@ static int __devinit pvscsi_probe(struct pci_dev *pdev,
 out_reset_adapter:
 	ll_adapter_reset(adapter);
 out_release_resources:
+<<<<<<< HEAD
 	pvscsi_release_resources(adapter);
 out_free_host:
 	scsi_host_put(host);
@@ -1410,6 +1978,20 @@ out_disable_device:
 	pci_disable_device(pdev);
 
 	return error;
+=======
+	pvscsi_shutdown_intr(adapter);
+	pvscsi_release_resources(adapter);
+	scsi_host_put(host);
+out_disable_device:
+	pci_disable_device(pdev);
+
+	return error;
+
+out_release_resources_and_disable:
+	pvscsi_shutdown_intr(adapter);
+	pvscsi_release_resources(adapter);
+	goto out_disable_device;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __pvscsi_shutdown(struct pvscsi_adapter *adapter)
@@ -1446,7 +2028,10 @@ static void pvscsi_remove(struct pci_dev *pdev)
 
 	scsi_host_put(host);
 
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_disable_device(pdev);
 }
 
@@ -1454,7 +2039,11 @@ static struct pci_driver pvscsi_pci_driver = {
 	.name		= "vmw_pvscsi",
 	.id_table	= pvscsi_pci_tbl,
 	.probe		= pvscsi_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(pvscsi_remove),
+=======
+	.remove		= pvscsi_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown       = pvscsi_shutdown,
 };
 

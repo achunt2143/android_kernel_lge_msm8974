@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* devices.c: Initial scan of the prom device tree for important
  *	      Sparc device nodes which we need to find.
  *
@@ -19,9 +23,15 @@
 #include <asm/smp.h>
 #include <asm/cpudata.h>
 #include <asm/cpu_type.h>
+<<<<<<< HEAD
 
 extern void clock_stop_probe(void); /* tadpole.c */
 extern void sun4c_probe_memerr_reg(void);
+=======
+#include <asm/setup.h>
+
+#include "kernel.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static char *cpu_mid_prop(void)
 {
@@ -132,6 +142,7 @@ void __init device_scan(void)
 	}
 #endif /* !CONFIG_SMP */
 
+<<<<<<< HEAD
 	{
 		extern void auxio_probe(void);
 		extern void auxio_power_probe(void);
@@ -142,4 +153,8 @@ void __init device_scan(void)
 
 	if (ARCH_SUN4C)
 		sun4c_probe_memerr_reg();
+=======
+	auxio_probe();
+	auxio_power_probe();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* %o0: devhandle
 	 * %o1:	devino
 	 *
@@ -106,6 +110,20 @@ ENTRY(sun4v_cpu_yield)
 	 nop
 ENDPROC(sun4v_cpu_yield)
 
+<<<<<<< HEAD
+=======
+	/* %o0: cpuid
+	 *
+	 * returns %o0:	status
+	 */
+ENTRY(sun4v_cpu_poke)
+	mov     HV_FAST_CPU_POKE, %o5
+	ta      HV_FAST_TRAP
+	retl
+	 nop
+ENDPROC(sun4v_cpu_poke)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* %o0:	type
 	 * %o1:	queue paddr
 	 * %o2:	num queue entries
@@ -338,10 +356,19 @@ ENTRY(sun4v_mach_set_watchdog)
 	mov	%o1, %o4
 	mov	HV_FAST_MACH_SET_WATCHDOG, %o5
 	ta	HV_FAST_TRAP
+<<<<<<< HEAD
 	stx	%o1, [%o4]
 	retl
 	 nop
 ENDPROC(sun4v_mach_set_watchdog)
+=======
+	brnz,a,pn %o4, 0f
+	stx	%o1, [%o4]
+0:	retl
+	 nop
+ENDPROC(sun4v_mach_set_watchdog)
+EXPORT_SYMBOL(sun4v_mach_set_watchdog)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* No inputs and does not return.  */
 ENTRY(sun4v_mach_sir)
@@ -775,6 +802,10 @@ ENTRY(sun4v_niagara_getperf)
 	retl
 	 nop
 ENDPROC(sun4v_niagara_getperf)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(sun4v_niagara_getperf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(sun4v_niagara_setperf)
 	mov	HV_FAST_SET_PERFREG, %o5
@@ -782,6 +813,10 @@ ENTRY(sun4v_niagara_setperf)
 	retl
 	 nop
 ENDPROC(sun4v_niagara_setperf)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(sun4v_niagara_setperf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(sun4v_niagara2_getperf)
 	mov	%o0, %o4
@@ -791,6 +826,10 @@ ENTRY(sun4v_niagara2_getperf)
 	retl
 	 nop
 ENDPROC(sun4v_niagara2_getperf)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(sun4v_niagara2_getperf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(sun4v_niagara2_setperf)
 	mov	HV_FAST_N2_SET_PERFREG, %o5
@@ -798,6 +837,10 @@ ENTRY(sun4v_niagara2_setperf)
 	retl
 	 nop
 ENDPROC(sun4v_niagara2_setperf)
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(sun4v_niagara2_setperf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(sun4v_reboot_data_set)
 	mov	HV_FAST_REBOOT_DATA_SET, %o5
@@ -805,3 +848,111 @@ ENTRY(sun4v_reboot_data_set)
 	retl
 	 nop
 ENDPROC(sun4v_reboot_data_set)
+<<<<<<< HEAD
+=======
+
+ENTRY(sun4v_vt_get_perfreg)
+	mov	%o1, %o4
+	mov	HV_FAST_VT_GET_PERFREG, %o5
+	ta	HV_FAST_TRAP
+	stx	%o1, [%o4]
+	retl
+	 nop
+ENDPROC(sun4v_vt_get_perfreg)
+
+ENTRY(sun4v_vt_set_perfreg)
+	mov	HV_FAST_VT_SET_PERFREG, %o5
+	ta	HV_FAST_TRAP
+	retl
+	 nop
+ENDPROC(sun4v_vt_set_perfreg)
+
+ENTRY(sun4v_t5_get_perfreg)
+	mov	%o1, %o4
+	mov	HV_FAST_T5_GET_PERFREG, %o5
+	ta	HV_FAST_TRAP
+	stx	%o1, [%o4]
+	retl
+	 nop
+ENDPROC(sun4v_t5_get_perfreg)
+
+ENTRY(sun4v_t5_set_perfreg)
+	mov	HV_FAST_T5_SET_PERFREG, %o5
+	ta	HV_FAST_TRAP
+	retl
+	 nop
+ENDPROC(sun4v_t5_set_perfreg)
+
+ENTRY(sun4v_m7_get_perfreg)
+	mov	%o1, %o4
+	mov	HV_FAST_M7_GET_PERFREG, %o5
+	ta	HV_FAST_TRAP
+	stx	%o1, [%o4]
+	retl
+	nop
+ENDPROC(sun4v_m7_get_perfreg)
+
+ENTRY(sun4v_m7_set_perfreg)
+	mov	HV_FAST_M7_SET_PERFREG, %o5
+	ta	HV_FAST_TRAP
+	retl
+	nop
+ENDPROC(sun4v_m7_set_perfreg)
+
+	/* %o0: address of CCB array
+	 * %o1: size (in bytes) of CCB array
+	 * %o2: flags
+	 * %o3: reserved
+	 *
+	 * returns:
+	 * %o0: status
+	 * %o1: size (in bytes) of the CCB array that was accepted
+	 * %o2: status data
+	 * %o3: reserved
+	 */
+ENTRY(sun4v_ccb_submit)
+	mov	%o5, %g1
+	mov	HV_CCB_SUBMIT, %o5
+	ta	HV_FAST_TRAP
+	stx	%o1, [%o4]
+	retl
+	 stx	%o2, [%g1]
+ENDPROC(sun4v_ccb_submit)
+EXPORT_SYMBOL(sun4v_ccb_submit)
+
+	/* %o0: completion area ra for the ccb to get info
+	 *
+	 * returns:
+	 * %o0: status
+	 * %o1: CCB state
+	 * %o2: position
+	 * %o3: dax unit
+	 * %o4: queue
+	 */
+ENTRY(sun4v_ccb_info)
+	mov	%o1, %g1
+	mov	HV_CCB_INFO, %o5
+	ta	HV_FAST_TRAP
+	sth	%o1, [%g1 + CCB_INFO_OFFSET_CCB_STATE]
+	sth	%o2, [%g1 + CCB_INFO_OFFSET_QUEUE_POS]
+	sth	%o3, [%g1 + CCB_INFO_OFFSET_DAX_UNIT]
+	retl
+	 sth	%o4, [%g1 + CCB_INFO_OFFSET_QUEUE_NUM]
+ENDPROC(sun4v_ccb_info)
+EXPORT_SYMBOL(sun4v_ccb_info)
+
+	/* %o0: completion area ra for the ccb to kill
+	 *
+	 * returns:
+	 * %o0: status
+	 * %o1: result of the kill
+	 */
+ENTRY(sun4v_ccb_kill)
+	mov	%o1, %g1
+	mov	HV_CCB_KILL, %o5
+	ta	HV_FAST_TRAP
+	retl
+	 sth	%o1, [%g1]
+ENDPROC(sun4v_ccb_kill)
+EXPORT_SYMBOL(sun4v_ccb_kill)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

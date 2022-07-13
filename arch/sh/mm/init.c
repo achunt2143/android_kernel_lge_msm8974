@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/sh/mm/init.c
  *
@@ -11,12 +15,19 @@
 #include <linux/swap.h>
 #include <linux/init.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/proc_fs.h>
 #include <linux/pagemap.h>
 #include <linux/percpu.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/memblock.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dma-mapping.h>
 #include <linux/export.h>
 #include <asm/mmu_context.h>
@@ -27,7 +38,13 @@
 #include <asm/sections.h>
 #include <asm/setup.h>
 #include <asm/cache.h>
+<<<<<<< HEAD
 #include <asm/sizes.h>
+=======
+#include <asm/pgalloc.h>
+#include <linux/sizes.h>
+#include "ioremap.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 pgd_t swapper_pg_dir[PTRS_PER_PGD];
 
@@ -45,6 +62,10 @@ void __init __weak plat_mem_setup(void)
 static pte_t *__get_pte_phys(unsigned long addr)
 {
 	pgd_t *pgd;
+<<<<<<< HEAD
+=======
+	p4d_t *p4d;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pud_t *pud;
 	pmd_t *pmd;
 
@@ -54,7 +75,17 @@ static pte_t *__get_pte_phys(unsigned long addr)
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	pud = pud_alloc(NULL, pgd, addr);
+=======
+	p4d = p4d_alloc(NULL, pgd, addr);
+	if (unlikely(!p4d)) {
+		p4d_ERROR(*p4d);
+		return NULL;
+	}
+
+	pud = pud_alloc(NULL, p4d, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!pud)) {
 		pud_ERROR(*pud);
 		return NULL;
@@ -128,7 +159,14 @@ static pmd_t * __init one_md_table_init(pud_t *pud)
 	if (pud_none(*pud)) {
 		pmd_t *pmd;
 
+<<<<<<< HEAD
 		pmd = alloc_bootmem_pages(PAGE_SIZE);
+=======
+		pmd = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
+		if (!pmd)
+			panic("%s: Failed to allocate %lu bytes align=0x%lx\n",
+			      __func__, PAGE_SIZE, PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pud_populate(&init_mm, pud, pmd);
 		BUG_ON(pmd != pmd_offset(pud, 0));
 	}
@@ -141,7 +179,14 @@ static pte_t * __init one_page_table_init(pmd_t *pmd)
 	if (pmd_none(*pmd)) {
 		pte_t *pte;
 
+<<<<<<< HEAD
 		pte = alloc_bootmem_pages(PAGE_SIZE);
+=======
+		pte = memblock_alloc(PAGE_SIZE, PAGE_SIZE);
+		if (!pte)
+			panic("%s: Failed to allocate %lu bytes align=0x%lx\n",
+			      __func__, PAGE_SIZE, PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pmd_populate_kernel(&init_mm, pmd, pte);
 		BUG_ON(pte != pte_offset_kernel(pmd, 0));
 	}
@@ -166,9 +211,15 @@ void __init page_table_range_init(unsigned long start, unsigned long end,
 	unsigned long vaddr;
 
 	vaddr = start;
+<<<<<<< HEAD
 	i = __pgd_offset(vaddr);
 	j = __pud_offset(vaddr);
 	k = __pmd_offset(vaddr);
+=======
+	i = pgd_index(vaddr);
+	j = pud_index(vaddr);
+	k = pmd_index(vaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pgd = pgd_base + i;
 
 	for ( ; (i < PTRS_PER_PGD) && (vaddr != end); pgd++, i++) {
@@ -193,6 +244,7 @@ void __init page_table_range_init(unsigned long start, unsigned long end,
 void __init allocate_pgdat(unsigned int nid)
 {
 	unsigned long start_pfn, end_pfn;
+<<<<<<< HEAD
 #ifdef CONFIG_NEED_MULTIPLE_NODES
 	unsigned long phys;
 #endif
@@ -213,12 +265,25 @@ void __init allocate_pgdat(unsigned int nid)
 	memset(NODE_DATA(nid), 0, sizeof(struct pglist_data));
 
 	NODE_DATA(nid)->bdata = &bootmem_node_data[nid];
+=======
+
+	get_pfn_range_for_nid(nid, &start_pfn, &end_pfn);
+
+#ifdef CONFIG_NUMA
+	NODE_DATA(nid) = memblock_alloc_try_nid(
+				sizeof(struct pglist_data),
+				SMP_CACHE_BYTES, MEMBLOCK_LOW_LIMIT,
+				MEMBLOCK_ALLOC_ACCESSIBLE, nid);
+	if (!NODE_DATA(nid))
+		panic("Can't allocate pgdat for node %d\n", nid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	NODE_DATA(nid)->node_start_pfn = start_pfn;
 	NODE_DATA(nid)->node_spanned_pages = end_pfn - start_pfn;
 }
 
+<<<<<<< HEAD
 static void __init bootmem_init_one_node(unsigned int nid)
 {
 	unsigned long total_pages, paddr;
@@ -272,6 +337,16 @@ static void __init do_init_bootmem(void)
 		end_pfn = memblock_region_memory_end_pfn(reg);
 		__add_active_range(0, start_pfn, end_pfn);
 	}
+=======
+static void __init do_init_bootmem(void)
+{
+	unsigned long start_pfn, end_pfn;
+	int i;
+
+	/* Add active regions with valid PFNs. */
+	for_each_mem_pfn_range(i, MAX_NUMNODES, &start_pfn, &end_pfn, NULL)
+		__add_active_range(0, start_pfn, end_pfn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* All of system RAM sits in node 0 for the non-NUMA case */
 	allocate_pgdat(0);
@@ -279,9 +354,12 @@ static void __init do_init_bootmem(void)
 
 	plat_mem_setup();
 
+<<<<<<< HEAD
 	for_each_online_node(i)
 		bootmem_init_one_node(i);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sparse_init();
 }
 
@@ -322,7 +400,10 @@ void __init paging_init(void)
 {
 	unsigned long max_zone_pfns[MAX_NR_ZONES];
 	unsigned long vaddr, end;
+<<<<<<< HEAD
 	int nid;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sh_mv.mv_mem_init();
 
@@ -345,6 +426,10 @@ void __init paging_init(void)
 	 */
 	max_low_pfn = max_pfn = memblock_end_of_DRAM() >> PAGE_SHIFT;
 	min_low_pfn = __MEMORY_START >> PAGE_SHIFT;
+<<<<<<< HEAD
+=======
+	set_max_mapnr(max_low_pfn - min_low_pfn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nodes_clear(node_online_map);
 
@@ -377,6 +462,7 @@ void __init paging_init(void)
 	kmap_coherent_init();
 
 	memset(max_zone_pfns, 0, sizeof(max_zone_pfns));
+<<<<<<< HEAD
 
 	for_each_online_node(nid) {
 		pg_data_t *pgdat = NODE_DATA(nid);
@@ -401,12 +487,17 @@ void __init paging_init(void)
 static void __init iommu_init(void)
 {
 	no_iommu_init();
+=======
+	max_zone_pfns[ZONE_NORMAL] = max_low_pfn;
+	free_area_init(max_zone_pfns);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 unsigned int mem_init_done = 0;
 
 void __init mem_init(void)
 {
+<<<<<<< HEAD
 	int codesize, datasize, initsize;
 	int nid;
 
@@ -433,6 +524,16 @@ void __init mem_init(void)
 		if (node_high_memory > high_memory)
 			high_memory = node_high_memory;
 	}
+=======
+	pg_data_t *pgdat;
+
+	high_memory = NULL;
+	for_each_online_pgdat(pgdat)
+		high_memory = max_t(void *, high_memory,
+				    __va(pgdat_end_pfn(pgdat) << PAGE_SHIFT));
+
+	memblock_free_all();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set this up early, so we can take care of the zero page */
 	cpu_cache_init();
@@ -443,6 +544,7 @@ void __init mem_init(void)
 
 	vsyscall_init();
 
+<<<<<<< HEAD
 	codesize =  (unsigned long) &_etext - (unsigned long) &_text;
 	datasize =  (unsigned long) &_edata - (unsigned long) &_etext;
 	initsize =  (unsigned long) &__init_end - (unsigned long) &__init_begin;
@@ -460,6 +562,10 @@ void __init mem_init(void)
 #ifdef CONFIG_HIGHMEM
 		"    pkmap   : 0x%08lx - 0x%08lx   (%4ld kB)\n"
 #endif
+=======
+	pr_info("virtual kernel memory layout:\n"
+		"    fixmap  : 0x%08lx - 0x%08lx   (%4ld kB)\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"    vmalloc : 0x%08lx - 0x%08lx   (%4ld MB)\n"
 		"    lowmem  : 0x%08lx - 0x%08lx   (%4ld MB) (cached)\n"
 #ifdef CONFIG_UNCACHED_MAPPING
@@ -471,11 +577,14 @@ void __init mem_init(void)
 		FIXADDR_START, FIXADDR_TOP,
 		(FIXADDR_TOP - FIXADDR_START) >> 10,
 
+<<<<<<< HEAD
 #ifdef CONFIG_HIGHMEM
 		PKMAP_BASE, PKMAP_BASE+LAST_PKMAP*PAGE_SIZE,
 		(LAST_PKMAP*PAGE_SIZE) >> 10,
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(unsigned long)VMALLOC_START, VMALLOC_END,
 		(VMALLOC_END - VMALLOC_START) >> 20,
 
@@ -499,6 +608,7 @@ void __init mem_init(void)
 	mem_init_done = 1;
 }
 
+<<<<<<< HEAD
 void free_initmem(void)
 {
 	unsigned long addr;
@@ -542,11 +652,27 @@ int arch_add_memory(int nid, u64 start, u64 size)
 	/* We only have ZONE_NORMAL, so this is easy.. */
 	ret = __add_pages(nid, pgdat->node_zones + ZONE_NORMAL,
 				start_pfn, nr_pages);
+=======
+#ifdef CONFIG_MEMORY_HOTPLUG
+int arch_add_memory(int nid, u64 start, u64 size,
+		    struct mhp_params *params)
+{
+	unsigned long start_pfn = PFN_DOWN(start);
+	unsigned long nr_pages = size >> PAGE_SHIFT;
+	int ret;
+
+	if (WARN_ON_ONCE(params->pgprot.pgprot != PAGE_KERNEL.pgprot))
+		return -EINVAL;
+
+	/* We only have ZONE_NORMAL, so this is easy.. */
+	ret = __add_pages(nid, start_pfn, nr_pages, params);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(ret))
 		printk("%s: Failed, __add_pages() == %d\n", __func__, ret);
 
 	return ret;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(arch_add_memory);
 
 #ifdef CONFIG_NUMA
@@ -558,4 +684,14 @@ int memory_add_physaddr_to_nid(u64 addr)
 EXPORT_SYMBOL_GPL(memory_add_physaddr_to_nid);
 #endif
 
+=======
+
+void arch_remove_memory(u64 start, u64 size, struct vmem_altmap *altmap)
+{
+	unsigned long start_pfn = PFN_DOWN(start);
+	unsigned long nr_pages = size >> PAGE_SHIFT;
+
+	__remove_pages(start_pfn, nr_pages, altmap);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_MEMORY_HOTPLUG */

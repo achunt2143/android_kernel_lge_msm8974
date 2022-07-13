@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * libata-acpi.c
  * Provides ACPI support for PATA/SATA.
@@ -16,11 +20,18 @@
 #include <linux/libata.h>
 #include <linux/pci.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <scsi/scsi_device.h>
 #include "libata.h"
 
 #include <acpi/acpi_bus.h>
 
+=======
+#include <linux/pm_runtime.h>
+#include <scsi/scsi_device.h>
+#include "libata.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned int ata_acpi_gtf_filter = ATA_ACPI_FILTER_DEFAULT;
 module_param_named(acpi_gtf_filter, ata_acpi_gtf_filter, int, 0644);
 MODULE_PARM_DESC(acpi_gtf_filter, "filter mask for ACPI _GTF commands, set to filter out (0x1=set xfermode, 0x2=lock/freeze lock, 0x4=DIPM, 0x8=FPDMA non-zero offset, 0x10=FPDMA DMA Setup FIS auto-activate)");
@@ -33,6 +44,7 @@ struct ata_acpi_gtf {
 	u8	tf[REGS_PER_GTF];	/* regs. 0x1f1 - 0x1f7 */
 } __packed;
 
+<<<<<<< HEAD
 /*
  *	Helper - belongs in the PCI layer somewhere eventually
  */
@@ -41,12 +53,15 @@ static int is_pci_dev(struct device *dev)
 	return (dev->bus == &pci_bus_type);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ata_acpi_clear_gtf(struct ata_device *dev)
 {
 	kfree(dev->gtf_cache);
 	dev->gtf_cache = NULL;
 }
 
+<<<<<<< HEAD
 /**
  * ata_acpi_associate_sata_port - associate SATA port with ACPI objects
  * @ap: target SATA port
@@ -103,6 +118,30 @@ static void ata_acpi_associate_ide_port(struct ata_port *ap)
 
 	if (ata_acpi_gtm(ap, &ap->__acpi_init_gtm) == 0)
 		ap->pflags |= ATA_PFLAG_INIT_GTM_VALID;
+=======
+struct ata_acpi_hotplug_context {
+	struct acpi_hotplug_context hp;
+	union {
+		struct ata_port *ap;
+		struct ata_device *dev;
+	} data;
+};
+
+#define ata_hotplug_data(context) (container_of((context), struct ata_acpi_hotplug_context, hp)->data)
+
+/**
+ * ata_dev_acpi_handle - provide the acpi_handle for an ata_device
+ * @dev: the acpi_handle returned will correspond to this device
+ *
+ * Returns the acpi_handle for the ACPI namespace object corresponding to
+ * the ata_device passed into the function, or NULL if no such object exists
+ * or ACPI is disabled for this device due to consecutive errors.
+ */
+acpi_handle ata_dev_acpi_handle(struct ata_device *dev)
+{
+	return dev->flags & ATA_DFLAG_ACPI_DISABLED ?
+			NULL : ACPI_HANDLE(&dev->tdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* @ap and @dev are the same as ata_acpi_handle_hotplug() */
@@ -174,6 +213,7 @@ static void ata_acpi_handle_hotplug(struct ata_port *ap, struct ata_device *dev,
 		ata_port_wait_eh(ap);
 }
 
+<<<<<<< HEAD
 static void ata_acpi_dev_notify_dock(acpi_handle handle, u32 event, void *data)
 {
 	struct ata_device *dev = data;
@@ -186,6 +226,19 @@ static void ata_acpi_ap_notify_dock(acpi_handle handle, u32 event, void *data)
 	struct ata_port *ap = data;
 
 	ata_acpi_handle_hotplug(ap, NULL, event);
+=======
+static int ata_acpi_dev_notify_dock(struct acpi_device *adev, u32 event)
+{
+	struct ata_device *dev = ata_hotplug_data(adev->hp).dev;
+	ata_acpi_handle_hotplug(dev->link->ap, dev, event);
+	return 0;
+}
+
+static int ata_acpi_ap_notify_dock(struct acpi_device *adev, u32 event)
+{
+	ata_acpi_handle_hotplug(ata_hotplug_data(adev->hp).ap, NULL, event);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ata_acpi_uevent(struct ata_port *ap, struct ata_device *dev,
@@ -207,6 +260,7 @@ static void ata_acpi_uevent(struct ata_port *ap, struct ata_device *dev,
 	}
 }
 
+<<<<<<< HEAD
 static void ata_acpi_ap_uevent(acpi_handle handle, u32 event, void *data)
 {
 	ata_acpi_uevent(data, NULL, event);
@@ -276,6 +330,87 @@ void ata_acpi_associate(struct ata_host *host)
 			}
 		}
 	}
+=======
+static void ata_acpi_ap_uevent(struct acpi_device *adev, u32 event)
+{
+	ata_acpi_uevent(ata_hotplug_data(adev->hp).ap, NULL, event);
+}
+
+static void ata_acpi_dev_uevent(struct acpi_device *adev, u32 event)
+{
+	struct ata_device *dev = ata_hotplug_data(adev->hp).dev;
+	ata_acpi_uevent(dev->link->ap, dev, event);
+}
+
+/* bind acpi handle to pata port */
+void ata_acpi_bind_port(struct ata_port *ap)
+{
+	struct acpi_device *host_companion = ACPI_COMPANION(ap->host->dev);
+	struct acpi_device *adev;
+	struct ata_acpi_hotplug_context *context;
+
+	if (libata_noacpi || ap->flags & ATA_FLAG_ACPI_SATA || !host_companion)
+		return;
+
+	acpi_preset_companion(&ap->tdev, host_companion, ap->port_no);
+
+	if (ata_acpi_gtm(ap, &ap->__acpi_init_gtm) == 0)
+		ap->pflags |= ATA_PFLAG_INIT_GTM_VALID;
+
+	adev = ACPI_COMPANION(&ap->tdev);
+	if (!adev || adev->hp)
+		return;
+
+	context = kzalloc(sizeof(*context), GFP_KERNEL);
+	if (!context)
+		return;
+
+	context->data.ap = ap;
+	acpi_initialize_hp_context(adev, &context->hp, ata_acpi_ap_notify_dock,
+				   ata_acpi_ap_uevent);
+}
+
+void ata_acpi_bind_dev(struct ata_device *dev)
+{
+	struct ata_port *ap = dev->link->ap;
+	struct acpi_device *port_companion = ACPI_COMPANION(&ap->tdev);
+	struct acpi_device *host_companion = ACPI_COMPANION(ap->host->dev);
+	struct acpi_device *parent, *adev;
+	struct ata_acpi_hotplug_context *context;
+	u64 adr;
+
+	/*
+	 * For both sata/pata devices, host companion device is required.
+	 * For pata device, port companion device is also required.
+	 */
+	if (libata_noacpi || !host_companion ||
+			(!(ap->flags & ATA_FLAG_ACPI_SATA) && !port_companion))
+		return;
+
+	if (ap->flags & ATA_FLAG_ACPI_SATA) {
+		if (!sata_pmp_attached(ap))
+			adr = SATA_ADR(ap->port_no, NO_PORT_MULT);
+		else
+			adr = SATA_ADR(ap->port_no, dev->link->pmp);
+		parent = host_companion;
+	} else {
+		adr = dev->devno;
+		parent = port_companion;
+	}
+
+	acpi_preset_companion(&dev->tdev, parent, adr);
+	adev = ACPI_COMPANION(&dev->tdev);
+	if (!adev || adev->hp)
+		return;
+
+	context = kzalloc(sizeof(*context), GFP_KERNEL);
+	if (!context)
+		return;
+
+	context->data.dev = dev;
+	acpi_initialize_hp_context(adev, &context->hp, ata_acpi_dev_notify_dock,
+				   ata_acpi_dev_uevent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -299,7 +434,11 @@ void ata_acpi_dissociate(struct ata_host *host)
 		struct ata_port *ap = host->ports[i];
 		const struct ata_acpi_gtm *gtm = ata_acpi_init_gtm(ap);
 
+<<<<<<< HEAD
 		if (ap->acpi_handle && gtm)
+=======
+		if (ACPI_HANDLE(&ap->tdev) && gtm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ata_acpi_stm(ap, gtm);
 	}
 }
@@ -323,8 +462,17 @@ int ata_acpi_gtm(struct ata_port *ap, struct ata_acpi_gtm *gtm)
 	union acpi_object *out_obj;
 	acpi_status status;
 	int rc = 0;
+<<<<<<< HEAD
 
 	status = acpi_evaluate_object(ap->acpi_handle, "_GTM", NULL, &output);
+=======
+	acpi_handle handle = ACPI_HANDLE(&ap->tdev);
+
+	if (!handle)
+		return -EINVAL;
+
+	status = acpi_evaluate_object(handle, "_GTM", NULL, &output);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = -ENOENT;
 	if (status == AE_NOT_FOUND)
@@ -394,7 +542,12 @@ int ata_acpi_stm(struct ata_port *ap, const struct ata_acpi_gtm *stm)
 	input.count = 3;
 	input.pointer = in_params;
 
+<<<<<<< HEAD
 	status = acpi_evaluate_object(ap->acpi_handle, "_STM", &input, NULL);
+=======
+	status = acpi_evaluate_object(ACPI_HANDLE(&ap->tdev), "_STM",
+				      &input, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (status == AE_NOT_FOUND)
 		return -ENOENT;
@@ -430,7 +583,10 @@ EXPORT_SYMBOL_GPL(ata_acpi_stm);
  */
 static int ata_dev_get_GTF(struct ata_device *dev, struct ata_acpi_gtf **gtf)
 {
+<<<<<<< HEAD
 	struct ata_port *ap = dev->link->ap;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_status status;
 	struct acpi_buffer output;
 	union acpi_object *out_obj;
@@ -446,12 +602,18 @@ static int ata_dev_get_GTF(struct ata_device *dev, struct ata_acpi_gtf **gtf)
 	output.length = ACPI_ALLOCATE_BUFFER;
 	output.pointer = NULL;	/* ACPI-CA sets this; save/free it later */
 
+<<<<<<< HEAD
 	if (ata_msg_probe(ap))
 		ata_dev_dbg(dev, "%s: ENTER: port#: %d\n",
 			    __func__, ap->port_no);
 
 	/* _GTF has no input parameters */
 	status = acpi_evaluate_object(dev->acpi_handle, "_GTF", NULL, &output);
+=======
+	/* _GTF has no input parameters */
+	status = acpi_evaluate_object(ata_dev_acpi_handle(dev), "_GTF", NULL,
+				      &output);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	out_obj = dev->gtf_cache = output.pointer;
 
 	if (ACPI_FAILURE(status)) {
@@ -464,11 +626,17 @@ static int ata_dev_get_GTF(struct ata_device *dev, struct ata_acpi_gtf **gtf)
 	}
 
 	if (!output.length || !output.pointer) {
+<<<<<<< HEAD
 		if (ata_msg_probe(ap))
 			ata_dev_dbg(dev, "%s: Run _GTF: length or ptr is NULL (0x%llx, 0x%p)\n",
 				    __func__,
 				    (unsigned long long)output.length,
 				    output.pointer);
+=======
+		ata_dev_dbg(dev, "Run _GTF: length or ptr is NULL (0x%llx, 0x%p)\n",
+			    (unsigned long long)output.length,
+			    output.pointer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EINVAL;
 		goto out_free;
 	}
@@ -491,9 +659,14 @@ static int ata_dev_get_GTF(struct ata_device *dev, struct ata_acpi_gtf **gtf)
 	rc = out_obj->buffer.length / REGS_PER_GTF;
 	if (gtf) {
 		*gtf = (void *)out_obj->buffer.pointer;
+<<<<<<< HEAD
 		if (ata_msg_probe(ap))
 			ata_dev_dbg(dev, "%s: returning gtf=%p, gtf_count=%d\n",
 				    __func__, *gtf, rc);
+=======
+		ata_dev_dbg(dev, "returning gtf=%p, gtf_count=%d\n",
+			    *gtf, rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return rc;
 
@@ -503,7 +676,11 @@ static int ata_dev_get_GTF(struct ata_device *dev, struct ata_acpi_gtf **gtf)
 }
 
 /**
+<<<<<<< HEAD
  * ata_acpi_gtm_xfermode - determine xfermode from GTM parameter
+=======
+ * ata_acpi_gtm_xfermask - determine xfermode from GTM parameter
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: target device
  * @gtm: GTM parameter to use
  *
@@ -515,10 +692,17 @@ static int ata_dev_get_GTF(struct ata_device *dev, struct ata_acpi_gtf **gtf)
  * RETURNS:
  * Determined xfermask.
  */
+<<<<<<< HEAD
 unsigned long ata_acpi_gtm_xfermask(struct ata_device *dev,
 				    const struct ata_acpi_gtm *gtm)
 {
 	unsigned long xfer_mask = 0;
+=======
+unsigned int ata_acpi_gtm_xfermask(struct ata_device *dev,
+				   const struct ata_acpi_gtm *gtm)
+{
+	unsigned int xfer_mask = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int type;
 	int unit;
 	u8 mode;
@@ -560,7 +744,11 @@ int ata_acpi_cbl_80wire(struct ata_port *ap, const struct ata_acpi_gtm *gtm)
 	struct ata_device *dev;
 
 	ata_for_each_dev(dev, &ap->link, ENABLED) {
+<<<<<<< HEAD
 		unsigned long xfer_mask, udma_mask;
+=======
+		unsigned int xfer_mask, udma_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		xfer_mask = ata_acpi_gtm_xfermask(dev, gtm);
 		ata_unpack_xfermask(xfer_mask, NULL, NULL, &udma_mask);
@@ -581,13 +769,21 @@ static void ata_acpi_gtf_to_tf(struct ata_device *dev,
 
 	tf->flags |= ATA_TFLAG_ISADDR | ATA_TFLAG_DEVICE;
 	tf->protocol = ATA_PROT_NODATA;
+<<<<<<< HEAD
 	tf->feature = gtf->tf[0];	/* 0x1f1 */
+=======
+	tf->error   = gtf->tf[0];	/* 0x1f1 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tf->nsect   = gtf->tf[1];	/* 0x1f2 */
 	tf->lbal    = gtf->tf[2];	/* 0x1f3 */
 	tf->lbam    = gtf->tf[3];	/* 0x1f4 */
 	tf->lbah    = gtf->tf[4];	/* 0x1f5 */
 	tf->device  = gtf->tf[5];	/* 0x1f6 */
+<<<<<<< HEAD
 	tf->command = gtf->tf[6];	/* 0x1f7 */
+=======
+	tf->status  = gtf->tf[6];	/* 0x1f7 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ata_acpi_filter_tf(struct ata_device *dev,
@@ -651,6 +847,10 @@ static int ata_acpi_filter_tf(struct ata_device *dev,
  * ata_acpi_run_tf - send taskfile registers to host controller
  * @dev: target ATA device
  * @gtf: raw ATA taskfile register set (0x1f1 - 0x1f7)
+<<<<<<< HEAD
+=======
+ * @prev_gtf: previous command
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Outputs ATA taskfile to standard ATA host controller.
  * Writes the control, feature, nsect, lbal, lbam, and lbah registers.
@@ -676,9 +876,13 @@ static int ata_acpi_run_tf(struct ata_device *dev,
 	struct ata_taskfile *pptf = NULL;
 	struct ata_taskfile tf, ptf, rtf;
 	unsigned int err_mask;
+<<<<<<< HEAD
 	const char *level;
 	const char *descr;
 	char msg[60];
+=======
+	const char *descr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	if ((gtf->tf[0] == 0) && (gtf->tf[1] == 0) && (gtf->tf[2] == 0)
@@ -692,6 +896,11 @@ static int ata_acpi_run_tf(struct ata_device *dev,
 		pptf = &ptf;
 	}
 
+<<<<<<< HEAD
+=======
+	descr = ata_get_cmd_name(tf.command);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ata_acpi_filter_tf(dev, &tf, pptf)) {
 		rtf = tf;
 		err_mask = ata_exec_internal(dev, &rtf, NULL,
@@ -699,28 +908,55 @@ static int ata_acpi_run_tf(struct ata_device *dev,
 
 		switch (err_mask) {
 		case 0:
+<<<<<<< HEAD
 			level = KERN_DEBUG;
 			snprintf(msg, sizeof(msg), "succeeded");
+=======
+			ata_dev_dbg(dev,
+				"ACPI cmd %02x/%02x:%02x:%02x:%02x:%02x:%02x"
+				"(%s) succeeded\n",
+				tf.command, tf.feature, tf.nsect, tf.lbal,
+				tf.lbam, tf.lbah, tf.device, descr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = 1;
 			break;
 
 		case AC_ERR_DEV:
+<<<<<<< HEAD
 			level = KERN_INFO;
 			snprintf(msg, sizeof(msg),
 				 "rejected by device (Stat=0x%02x Err=0x%02x)",
 				 rtf.command, rtf.feature);
+=======
+			ata_dev_info(dev,
+				"ACPI cmd %02x/%02x:%02x:%02x:%02x:%02x:%02x"
+				"(%s) rejected by device (Stat=0x%02x Err=0x%02x)",
+				tf.command, tf.feature, tf.nsect, tf.lbal,
+				tf.lbam, tf.lbah, tf.device, descr,
+				rtf.status, rtf.error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = 0;
 			break;
 
 		default:
+<<<<<<< HEAD
 			level = KERN_ERR;
 			snprintf(msg, sizeof(msg),
 				 "failed (Emask=0x%x Stat=0x%02x Err=0x%02x)",
 				 err_mask, rtf.command, rtf.feature);
+=======
+			ata_dev_err(dev,
+				"ACPI cmd %02x/%02x:%02x:%02x:%02x:%02x:%02x"
+				"(%s) failed (Emask=0x%x Stat=0x%02x Err=0x%02x)",
+				tf.command, tf.feature, tf.nsect, tf.lbal,
+				tf.lbam, tf.lbah, tf.device, descr,
+				err_mask, rtf.status, rtf.error);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = -EIO;
 			break;
 		}
 	} else {
+<<<<<<< HEAD
 		level = KERN_INFO;
 		snprintf(msg, sizeof(msg), "filtered out");
 		rc = 0;
@@ -733,6 +969,15 @@ static int ata_acpi_run_tf(struct ata_device *dev,
 		       tf.lbam, tf.lbah, tf.device,
 		       (descr ? descr : "unknown"), msg);
 
+=======
+		ata_dev_info(dev,
+			"ACPI cmd %02x/%02x:%02x:%02x:%02x:%02x:%02x"
+			"(%s) filtered out\n",
+			tf.command, tf.feature, tf.nsect, tf.lbal,
+			tf.lbam, tf.lbah, tf.device, descr);
+		rc = 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -802,9 +1047,14 @@ static int ata_acpi_push_id(struct ata_device *dev)
 	struct acpi_object_list input;
 	union acpi_object in_params[1];
 
+<<<<<<< HEAD
 	if (ata_msg_probe(ap))
 		ata_dev_dbg(dev, "%s: ix = %d, port#: %d\n",
 			    __func__, dev->devno, ap->port_no);
+=======
+	ata_dev_dbg(dev, "%s: ix = %d, port#: %d\n",
+		    __func__, dev->devno, ap->port_no);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Give the drive Identify data to the drive via the _SDD method */
 	/* _SDD: set up input parameters */
@@ -817,7 +1067,12 @@ static int ata_acpi_push_id(struct ata_device *dev)
 
 	/* It's OK for _SDD to be missing too. */
 	swap_buf_le16(dev->id, ATA_ID_WORDS);
+<<<<<<< HEAD
 	status = acpi_evaluate_object(dev->acpi_handle, "_SDD", &input, NULL);
+=======
+	status = acpi_evaluate_object(ata_dev_acpi_handle(dev), "_SDD", &input,
+				      NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	swap_buf_le16(dev->id, ATA_ID_WORDS);
 
 	if (status == AE_NOT_FOUND)
@@ -832,6 +1087,7 @@ static int ata_acpi_push_id(struct ata_device *dev)
 }
 
 /**
+<<<<<<< HEAD
  * ata_acpi_on_suspend - ATA ACPI hook called on suspend
  * @ap: target ATA port
  *
@@ -853,6 +1109,8 @@ int ata_acpi_on_suspend(struct ata_port *ap)
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ata_acpi_on_resume - ATA ACPI hook called on resume
  * @ap: target ATA port
  *
@@ -867,7 +1125,11 @@ void ata_acpi_on_resume(struct ata_port *ap)
 	const struct ata_acpi_gtm *gtm = ata_acpi_init_gtm(ap);
 	struct ata_device *dev;
 
+<<<<<<< HEAD
 	if (ap->acpi_handle && gtm) {
+=======
+	if (ACPI_HANDLE(&ap->tdev) && gtm) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* _GTM valid */
 
 		/* restore timing parameters */
@@ -880,6 +1142,10 @@ void ata_acpi_on_resume(struct ata_port *ap)
 		ata_for_each_dev(dev, &ap->link, ALL) {
 			ata_acpi_clear_gtf(dev);
 			if (ata_dev_enabled(dev) &&
+<<<<<<< HEAD
+=======
+			    ata_dev_acpi_handle(dev) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    ata_dev_get_GTF(dev, NULL) >= 0)
 				dev->flags |= ATA_DFLAG_ACPI_PENDING;
 		}
@@ -896,11 +1162,89 @@ void ata_acpi_on_resume(struct ata_port *ap)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static int ata_acpi_choose_suspend_state(struct ata_device *dev, bool runtime)
+{
+	int d_max_in = ACPI_STATE_D3_COLD;
+	if (!runtime)
+		goto out;
+
+	/*
+	 * For ATAPI, runtime D3 cold is only allowed
+	 * for ZPODD in zero power ready state
+	 */
+	if (dev->class == ATA_DEV_ATAPI &&
+	    !(zpodd_dev_enabled(dev) && zpodd_zpready(dev)))
+		d_max_in = ACPI_STATE_D3_HOT;
+
+out:
+	return acpi_pm_device_sleep_state(&dev->tdev, NULL, d_max_in);
+}
+
+static void sata_acpi_set_state(struct ata_port *ap, pm_message_t state)
+{
+	bool runtime = PMSG_IS_AUTO(state);
+	struct ata_device *dev;
+	acpi_handle handle;
+	int acpi_state;
+
+	ata_for_each_dev(dev, &ap->link, ENABLED) {
+		handle = ata_dev_acpi_handle(dev);
+		if (!handle)
+			continue;
+
+		if (!(state.event & PM_EVENT_RESUME)) {
+			acpi_state = ata_acpi_choose_suspend_state(dev, runtime);
+			if (acpi_state == ACPI_STATE_D0)
+				continue;
+			if (runtime && zpodd_dev_enabled(dev) &&
+			    acpi_state == ACPI_STATE_D3_COLD)
+				zpodd_enable_run_wake(dev);
+			acpi_bus_set_power(handle, acpi_state);
+		} else {
+			if (runtime && zpodd_dev_enabled(dev))
+				zpodd_disable_run_wake(dev);
+			acpi_bus_set_power(handle, ACPI_STATE_D0);
+		}
+	}
+}
+
+/* ACPI spec requires _PS0 when IDE power on and _PS3 when power off */
+static void pata_acpi_set_state(struct ata_port *ap, pm_message_t state)
+{
+	struct ata_device *dev;
+	acpi_handle port_handle;
+
+	port_handle = ACPI_HANDLE(&ap->tdev);
+	if (!port_handle)
+		return;
+
+	/* channel first and then drives for power on and vica versa
+	   for power off */
+	if (state.event & PM_EVENT_RESUME)
+		acpi_bus_set_power(port_handle, ACPI_STATE_D0);
+
+	ata_for_each_dev(dev, &ap->link, ENABLED) {
+		acpi_handle dev_handle = ata_dev_acpi_handle(dev);
+		if (!dev_handle)
+			continue;
+
+		acpi_bus_set_power(dev_handle, state.event & PM_EVENT_RESUME ?
+					ACPI_STATE_D0 : ACPI_STATE_D3_COLD);
+	}
+
+	if (!(state.event & PM_EVENT_RESUME))
+		acpi_bus_set_power(port_handle, ACPI_STATE_D3_COLD);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ata_acpi_set_state - set the port power state
  * @ap: target ATA port
  * @state: state, on/off
  *
+<<<<<<< HEAD
  * This function executes the _PS0/_PS3 ACPI method to set the power state.
  * ACPI spec requires _PS0 when IDE power on and _PS3 when power off
  */
@@ -924,6 +1268,17 @@ void ata_acpi_set_state(struct ata_port *ap, pm_message_t state)
 	}
 	if (state.event != PM_EVENT_ON)
 		acpi_bus_set_power(ap->acpi_handle, ACPI_STATE_D3);
+=======
+ * This function sets a proper ACPI D state for the device on
+ * system and runtime PM operations.
+ */
+void ata_acpi_set_state(struct ata_port *ap, pm_message_t state)
+{
+	if (ap->flags & ATA_FLAG_ACPI_SATA)
+		sata_acpi_set_state(ap, state);
+	else
+		pata_acpi_set_state(ap, state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -948,7 +1303,11 @@ int ata_acpi_on_devcfg(struct ata_device *dev)
 	int nr_executed = 0;
 	int rc;
 
+<<<<<<< HEAD
 	if (!dev->acpi_handle)
+=======
+	if (!ata_dev_acpi_handle(dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* do we need to do _GTF? */
@@ -984,7 +1343,11 @@ int ata_acpi_on_devcfg(struct ata_device *dev)
 
  acpi_err:
 	/* ignore evaluation failure if we can continue safely */
+<<<<<<< HEAD
 	if (rc == -EINVAL && !nr_executed && !(ap->pflags & ATA_PFLAG_FROZEN))
+=======
+	if (rc == -EINVAL && !nr_executed && !ata_port_is_frozen(ap))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* fail and let EH retry once more for unknown IO errors */
@@ -993,13 +1356,22 @@ int ata_acpi_on_devcfg(struct ata_device *dev)
 		return rc;
 	}
 
+<<<<<<< HEAD
 	ata_dev_warn(dev, "ACPI: failed the second time, disabled\n");
 	dev->acpi_handle = NULL;
+=======
+	dev->flags |= ATA_DFLAG_ACPI_DISABLED;
+	ata_dev_warn(dev, "ACPI: failed the second time, disabled\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We can safely continue if no _GTF command has been executed
 	 * and port is not frozen.
 	 */
+<<<<<<< HEAD
 	if (!nr_executed && !(ap->pflags & ATA_PFLAG_FROZEN))
+=======
+	if (!nr_executed && !ata_port_is_frozen(ap))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return rc;

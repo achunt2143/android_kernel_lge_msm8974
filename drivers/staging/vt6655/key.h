@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +24,8 @@
  *
  * File: key.h
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Purpose: Implement functions for 802.11i Key management
  *
  * Author: Jerry Chen
@@ -30,9 +37,13 @@
 #ifndef __KEY_H__
 #define __KEY_H__
 
+<<<<<<< HEAD
 #include "ttype.h"
 #include "tether.h"
 #include "80211mgr.h"
+=======
+#include <net/mac80211.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*---------------------  Export Definitions -------------------------*/
 #define MAX_GROUP_KEY       4
@@ -40,7 +51,10 @@
 #define MAX_KEY_LEN         32
 #define AES_KEY_LEN         16
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AUTHENTICATOR_KEY   0x10000000
 #define USE_KEYRSC          0x20000000
 #define PAIRWISE_KEY        0x40000000
@@ -54,6 +68,7 @@
 #define KEY_CTL_CCMP        0x03
 #define KEY_CTL_INVALID     0xFF
 
+<<<<<<< HEAD
 
 typedef struct tagSKeyItem
 {
@@ -182,3 +197,19 @@ bool KeybSetAllGroupKey (
 
 #endif // __KEY_H__
 
+=======
+#define VNT_KEY_DEFAULTKEY	0x1
+#define VNT_KEY_GROUP_ADDRESS	0x2
+#define VNT_KEY_ALLGROUP	0x4
+#define VNT_KEY_GROUP		0x40
+#define VNT_KEY_PAIRWISE	0x00
+#define VNT_KEY_ONFLY		0x8000
+#define VNT_KEY_ONFLY_ALL	0x4000
+
+struct vnt_private;
+
+int vnt_set_keys(struct ieee80211_hw *hw, struct ieee80211_sta *sta,
+		 struct ieee80211_vif *vif, struct ieee80211_key_conf *key);
+
+#endif /* __KEY_H__ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

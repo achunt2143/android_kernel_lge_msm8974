@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1998-2001 Vojtech Pavlik
  *
@@ -9,6 +13,7 @@
  * ThrustMaster DirectConnect (BSP) joystick family driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,11 +34,16 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/gameport.h>
 #include <linux/input.h>
 #include <linux/jiffies.h>
@@ -100,7 +110,11 @@ static const struct tmdc_model {
 	const signed char *axes;
 	const short *buttons;
 } tmdc_models[] = {
+<<<<<<< HEAD
 	{   1, "ThrustMaster Millenium 3D Inceptor",	  6, 2, { 4, 2 }, { 4, 6 }, tmdc_abs, tmdc_btn_joy },
+=======
+	{   1, "ThrustMaster Millennium 3D Inceptor",	  6, 2, { 4, 2 }, { 4, 6 }, tmdc_abs, tmdc_btn_joy },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{   3, "ThrustMaster Rage 3D Gamepad",		  2, 0, { 8, 2 }, { 0, 0 }, tmdc_abs, tmdc_btn_pad },
 	{   4, "ThrustMaster Attack Throttle",		  5, 2, { 4, 6 }, { 4, 2 }, tmdc_abs_at, tmdc_btn_at },
 	{   8, "ThrustMaster FragMaster",		  4, 0, { 8, 2 }, { 0, 0 }, tmdc_abs_fm, tmdc_btn_fm },
@@ -436,6 +450,7 @@ static struct gameport_driver tmdc_drv = {
 	.disconnect	= tmdc_disconnect,
 };
 
+<<<<<<< HEAD
 static int __init tmdc_init(void)
 {
 	return gameport_register_driver(&tmdc_drv);
@@ -448,3 +463,6 @@ static void __exit tmdc_exit(void)
 
 module_init(tmdc_init);
 module_exit(tmdc_exit);
+=======
+module_gameport_driver(tmdc_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

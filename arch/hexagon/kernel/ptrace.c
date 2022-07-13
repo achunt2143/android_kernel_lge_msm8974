@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Ptrace support for Hexagon
  *
@@ -22,6 +23,18 @@
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Ptrace support for Hexagon
+ *
+ * Copyright (c) 2010-2013, The Linux Foundation. All rights reserved.
+ */
+
+#include <linux/kernel.h>
+#include <linux/sched.h>
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/smp.h>
 #include <linux/errno.h>
@@ -32,6 +45,7 @@
 
 #include <asm/user.h>
 
+<<<<<<< HEAD
 static int genregs_get(struct task_struct *target,
 		   const struct user_regset *regset,
 		   unsigned int pos, unsigned int count,
@@ -45,12 +59,36 @@ static int genregs_get(struct task_struct *target,
 	if (!regs)
 		return -EIO;
 
+=======
+#if arch_has_single_step()
+/*  Both called from ptrace_resume  */
+void user_enable_single_step(struct task_struct *child)
+{
+	pt_set_singlestep(task_pt_regs(child));
+	set_tsk_thread_flag(child, TIF_SINGLESTEP);
+}
+
+void user_disable_single_step(struct task_struct *child)
+{
+	pt_clr_singlestep(task_pt_regs(child));
+	clear_tsk_thread_flag(child, TIF_SINGLESTEP);
+}
+#endif
+
+static int genregs_get(struct task_struct *target,
+		   const struct user_regset *regset,
+		   struct membuf to)
+{
+	struct pt_regs *regs = task_pt_regs(target);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The general idea here is that the copyout must happen in
 	 * exactly the same order in which the userspace expects these
 	 * regs. Now, the sequence in userspace does not match the
 	 * sequence in the kernel, so everything past the 32 gprs
 	 * happens one at a time.
 	 */
+<<<<<<< HEAD
 	ret = user_regset_copyout(&pos, &count, &kbuf, &ubuf,
 				  &regs->r00, 0, 32*sizeof(unsigned long));
 
@@ -82,6 +120,30 @@ static int genregs_get(struct task_struct *target,
 		ret = user_regset_copyout_zero(&pos, &count, &kbuf, &ubuf,
 					offsetof(struct user_regs_struct, pad1), -1);
 	return ret;
+=======
+	membuf_write(&to, &regs->r00, 32*sizeof(unsigned long));
+	/* Must be exactly same sequence as struct user_regs_struct */
+	membuf_store(&to, regs->sa0);
+	membuf_store(&to, regs->lc0);
+	membuf_store(&to, regs->sa1);
+	membuf_store(&to, regs->lc1);
+	membuf_store(&to, regs->m0);
+	membuf_store(&to, regs->m1);
+	membuf_store(&to, regs->usr);
+	membuf_store(&to, regs->preds);
+	membuf_store(&to, regs->gp);
+	membuf_store(&to, regs->ugp);
+	membuf_store(&to, pt_elr(regs)); // pc
+	membuf_store(&to, (unsigned long)pt_cause(regs)); // cause
+	membuf_store(&to, pt_badva(regs)); // badva
+#if CONFIG_HEXAGON_ARCH_VERSION >=4
+	membuf_store(&to, regs->cs0);
+	membuf_store(&to, regs->cs1);
+	return membuf_zero(&to, sizeof(unsigned long));
+#else
+	return membuf_zero(&to, 3 * sizeof(unsigned long));
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int genregs_set(struct task_struct *target,
@@ -89,7 +151,11 @@ static int genregs_set(struct task_struct *target,
 		   unsigned int pos, unsigned int count,
 		   const void *kbuf, const void __user *ubuf)
 {
+<<<<<<< HEAD
 	int ret;
+=======
+	int ret, ignore_offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long bucket;
 	struct pt_regs *regs = task_pt_regs(target);
 
@@ -123,12 +189,28 @@ static int genregs_set(struct task_struct *target,
 	INEXT(&bucket, cause);
 	INEXT(&bucket, badva);
 
+<<<<<<< HEAD
 	/* Ignore the rest, if needed */
 	if (!ret)
 		ret = user_regset_copyin_ignore(&pos, &count, &kbuf, &ubuf,
 					offsetof(struct user_regs_struct, pad1), -1);
 
 	if (ret)
+=======
+#if CONFIG_HEXAGON_ARCH_VERSION >=4
+	INEXT(&regs->cs0, cs0);
+	INEXT(&regs->cs1, cs1);
+	ignore_offset = offsetof(struct user_regs_struct, pad1);
+#else
+	ignore_offset = offsetof(struct user_regs_struct, cs0);
+#endif
+
+	/* Ignore the rest, if needed */
+	if (!ret)
+		user_regset_copyin_ignore(&pos, &count, &kbuf, &ubuf,
+					  ignore_offset, -1);
+	else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 
 	/*
@@ -149,16 +231,28 @@ static const struct user_regset hexagon_regsets[] = {
 		.n = ELF_NGREG,
 		.size = sizeof(unsigned long),
 		.align = sizeof(unsigned long),
+<<<<<<< HEAD
 		.get = genregs_get,
+=======
+		.regset_get = genregs_get,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.set = genregs_set,
 	},
 };
 
 static const struct user_regset_view hexagon_user_view = {
+<<<<<<< HEAD
 	.name = UTS_MACHINE,
 	.e_machine = ELF_ARCH,
 	.ei_osabi = ELF_OSABI,
 	.regsets = hexagon_regsets,
+=======
+	.name = "hexagon",
+	.e_machine = ELF_ARCH,
+	.ei_osabi = ELF_OSABI,
+	.regsets = hexagon_regsets,
+	.e_flags = ELF_CORE_EFLAGS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.n = ARRAY_SIZE(hexagon_regsets)
 };
 

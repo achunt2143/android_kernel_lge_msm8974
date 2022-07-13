@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #
 # Generated files
 #
@@ -21,3 +22,12 @@ nconf
 qconf
 gconf
 kxgettext
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+/conf
+/[gmnq]conf
+/[gmnq]conf-bin
+/[gmnq]conf-cflags
+/[gmnq]conf-libs
+/qconf-moc.cc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

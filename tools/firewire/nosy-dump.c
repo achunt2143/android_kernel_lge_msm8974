@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * nosy-dump - Interface to snoop mode driver for TI PCILynx 1394 controllers
  * Copyright (C) 2002-2006 Kristian Høgsberg
@@ -15,6 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * nosy-dump - Interface to snoop mode driver for TI PCILynx 1394 controllers
+ * Copyright (C) 2002-2006 Kristian Høgsberg
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <byteswap.h>
@@ -150,6 +157,11 @@ subaction_create(uint32_t *data, size_t length)
 
 	/* we put the ack in the subaction struct for easy access. */
 	sa = malloc(sizeof *sa - sizeof sa->packet + length);
+<<<<<<< HEAD
+=======
+	if (!sa)
+		exit(EXIT_FAILURE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sa->ack = data[length / 4 - 1];
 	sa->length = length;
 	memcpy(&sa->packet, data, length);
@@ -180,6 +192,11 @@ link_transaction_lookup(int request_node, int response_node, int tlabel)
 	}
 
 	t = malloc(sizeof *t);
+<<<<<<< HEAD
+=======
+	if (!t)
+		exit(EXIT_FAILURE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t->request_node = request_node;
 	t->response_node = response_node;
 	t->tlabel = tlabel;

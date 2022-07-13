@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SN Platform GRU Driver
  *
@@ -9,6 +13,7 @@
  * from the GRU driver.
  *
  *  Copyright (c) 2008 Silicon Graphics, Inc.  All Rights Reserved.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -23,6 +28,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -219,9 +226,14 @@ void gru_flush_all_tlb(struct gru_state *gru)
 /*
  * MMUOPS notifier callout functions
  */
+<<<<<<< HEAD
 static void gru_invalidate_range_start(struct mmu_notifier *mn,
 				       struct mm_struct *mm,
 				       unsigned long start, unsigned long end)
+=======
+static int gru_invalidate_range_start(struct mmu_notifier *mn,
+			const struct mmu_notifier_range *range)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gru_mm_struct *gms = container_of(mn, struct gru_mm_struct,
 						 ms_notifier);
@@ -229,6 +241,7 @@ static void gru_invalidate_range_start(struct mmu_notifier *mn,
 	STAT(mmu_invalidate_range);
 	atomic_inc(&gms->ms_range_active);
 	gru_dbg(grudev, "gms %p, start 0x%lx, end 0x%lx, act %d\n", gms,
+<<<<<<< HEAD
 		start, end, atomic_read(&gms->ms_range_active));
 	gru_flush_tlb_range(gms, start, end - start);
 }
@@ -236,6 +249,16 @@ static void gru_invalidate_range_start(struct mmu_notifier *mn,
 static void gru_invalidate_range_end(struct mmu_notifier *mn,
 				     struct mm_struct *mm, unsigned long start,
 				     unsigned long end)
+=======
+		range->start, range->end, atomic_read(&gms->ms_range_active));
+	gru_flush_tlb_range(gms, range->start, range->end - range->start);
+
+	return 0;
+}
+
+static void gru_invalidate_range_end(struct mmu_notifier *mn,
+			const struct mmu_notifier_range *range)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gru_mm_struct *gms = container_of(mn, struct gru_mm_struct,
 						 ms_notifier);
@@ -244,6 +267,7 @@ static void gru_invalidate_range_end(struct mmu_notifier *mn,
 	(void)atomic_dec_and_test(&gms->ms_range_active);
 
 	wake_up_all(&gms->ms_wait_queue);
+<<<<<<< HEAD
 	gru_dbg(grudev, "gms %p, start 0x%lx, end 0x%lx\n", gms, start, end);
 }
 
@@ -324,10 +348,53 @@ struct gru_mm_struct *gru_register_mmu_notifier(void)
 error:
 	kfree(gms);
 	return ERR_PTR(err);
+=======
+	gru_dbg(grudev, "gms %p, start 0x%lx, end 0x%lx\n",
+		gms, range->start, range->end);
+}
+
+static struct mmu_notifier *gru_alloc_notifier(struct mm_struct *mm)
+{
+	struct gru_mm_struct *gms;
+
+	gms = kzalloc(sizeof(*gms), GFP_KERNEL);
+	if (!gms)
+		return ERR_PTR(-ENOMEM);
+	STAT(gms_alloc);
+	spin_lock_init(&gms->ms_asid_lock);
+	init_waitqueue_head(&gms->ms_wait_queue);
+
+	return &gms->ms_notifier;
+}
+
+static void gru_free_notifier(struct mmu_notifier *mn)
+{
+	kfree(container_of(mn, struct gru_mm_struct, ms_notifier));
+	STAT(gms_free);
+}
+
+static const struct mmu_notifier_ops gru_mmuops = {
+	.invalidate_range_start	= gru_invalidate_range_start,
+	.invalidate_range_end	= gru_invalidate_range_end,
+	.alloc_notifier		= gru_alloc_notifier,
+	.free_notifier		= gru_free_notifier,
+};
+
+struct gru_mm_struct *gru_register_mmu_notifier(void)
+{
+	struct mmu_notifier *mn;
+
+	mn = mmu_notifier_get_locked(&gru_mmuops, current->mm);
+	if (IS_ERR(mn))
+		return ERR_CAST(mn);
+
+	return container_of(mn, struct gru_mm_struct, ms_notifier);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void gru_drop_mmu_notifier(struct gru_mm_struct *gms)
 {
+<<<<<<< HEAD
 	gru_dbg(grudev, "gms %p, refcnt %d, released %d\n", gms,
 		atomic_read(&gms->ms_refcnt), gms->ms_released);
 	if (atomic_dec_return(&gms->ms_refcnt) == 0) {
@@ -336,6 +403,9 @@ void gru_drop_mmu_notifier(struct gru_mm_struct *gms)
 		kfree(gms);
 		STAT(gms_free);
 	}
+=======
+	mmu_notifier_put(&gms->ms_notifier);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*

@@ -5,6 +5,7 @@
  * Licensed under the GPL
  */
 
+<<<<<<< HEAD
 #include "linux/linkage.h"
 #include "linux/personality.h"
 #include "linux/utsname.h"
@@ -68,12 +69,44 @@ long arch_prctl(struct task_struct *task, int code, unsigned long __user *addr)
 		break;
 	case ARCH_GET_GS:
 		ret = put_user(tmp, addr);
+=======
+#include <linux/sched.h>
+#include <linux/sched/mm.h>
+#include <linux/syscalls.h>
+#include <linux/uaccess.h>
+#include <asm/prctl.h> /* XXX This should get the constants from libc */
+#include <registers.h>
+#include <os.h>
+
+long arch_prctl(struct task_struct *task, int option,
+		unsigned long __user *arg2)
+{
+	long ret = -EINVAL;
+
+	switch (option) {
+	case ARCH_SET_FS:
+		current->thread.regs.regs.gp[FS_BASE / sizeof(unsigned long)] =
+			(unsigned long) arg2;
+		ret = 0;
+		break;
+	case ARCH_SET_GS:
+		current->thread.regs.regs.gp[GS_BASE / sizeof(unsigned long)] =
+			(unsigned long) arg2;
+		ret = 0;
+		break;
+	case ARCH_GET_FS:
+		ret = put_user(current->thread.regs.regs.gp[FS_BASE / sizeof(unsigned long)], arg2);
+		break;
+	case ARCH_GET_GS:
+		ret = put_user(current->thread.regs.regs.gp[GS_BASE / sizeof(unsigned long)], arg2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	return ret;
 }
 
+<<<<<<< HEAD
 long sys_arch_prctl(int code, unsigned long addr)
 {
 	return arch_prctl(current, code, (unsigned long __user *) addr);
@@ -91,12 +124,34 @@ long sys_clone(unsigned long clone_flags, unsigned long newsp,
 		      child_tid);
 	current->thread.forking = 0;
 	return ret;
+=======
+SYSCALL_DEFINE2(arch_prctl, int, option, unsigned long, arg2)
+{
+	return arch_prctl(current, option, (unsigned long __user *) arg2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void arch_switch_to(struct task_struct *to)
 {
+<<<<<<< HEAD
 	if ((to->thread.arch.fs == 0) || (to->mm == NULL))
 		return;
 
 	arch_prctl(to, ARCH_SET_FS, (void __user *) to->thread.arch.fs);
+=======
+	/*
+	 * Nothing needs to be done on x86_64.
+	 * The FS_BASE/GS_BASE registers are saved in the ptrace register set.
+	 */
+}
+
+SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
+		unsigned long, prot, unsigned long, flags,
+		unsigned long, fd, unsigned long, off)
+{
+	if (off & ~PAGE_MASK)
+		return -EINVAL;
+
+	return ksys_mmap_pgoff(addr, len, prot, flags, fd, off >> PAGE_SHIFT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

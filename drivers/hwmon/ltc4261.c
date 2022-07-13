@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Linear Technology LTC4261 I2C Negative Voltage Hot Swap Controller
  *
@@ -9,6 +13,7 @@
  *  Copyright (C) 2008 Ira W. Snyder <iws@ovro.caltech.edu>
  *
  * Datasheet: http://cds.linear.com/docs/Datasheet/42612fb.pdf
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +28,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -33,6 +40,10 @@
 #include <linux/i2c.h>
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
+<<<<<<< HEAD
+=======
+#include <linux/jiffies.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* chip registers */
 #define LTC4261_STATUS	0x00	/* readonly */
@@ -54,7 +65,11 @@
 #define FAULT_OC	(1<<2)
 
 struct ltc4261_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex update_lock;
 	bool valid;
@@ -66,8 +81,13 @@ struct ltc4261_data {
 
 static struct ltc4261_data *ltc4261_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ltc4261_data *data = i2c_get_clientdata(client);
+=======
+	struct ltc4261_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ltc4261_data *ret = data;
 
 	mutex_lock(&data->update_lock);
@@ -85,13 +105,21 @@ static struct ltc4261_data *ltc4261_update_device(struct device *dev)
 					"Failed to read ADC value: error %d\n",
 					val);
 				ret = ERR_PTR(val);
+<<<<<<< HEAD
 				data->valid = 0;
+=======
+				data->valid = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto abort;
 			}
 			data->regs[i] = val;
 		}
 		data->last_updated = jiffies;
+<<<<<<< HEAD
 		data->valid = 1;
+=======
+		data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 abort:
 	mutex_unlock(&data->update_lock);
@@ -131,7 +159,11 @@ static int ltc4261_get_value(struct ltc4261_data *data, u8 reg)
 	return val;
 }
 
+<<<<<<< HEAD
 static ssize_t ltc4261_show_value(struct device *dev,
+=======
+static ssize_t ltc4261_value_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  struct device_attribute *da, char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
@@ -142,6 +174,7 @@ static ssize_t ltc4261_show_value(struct device *dev,
 		return PTR_ERR(data);
 
 	value = ltc4261_get_value(data, attr->index);
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%d\n", value);
 }
 
@@ -150,6 +183,15 @@ static ssize_t ltc4261_show_bool(struct device *dev,
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+	return sysfs_emit(buf, "%d\n", value);
+}
+
+static ssize_t ltc4261_bool_show(struct device *dev,
+				 struct device_attribute *da, char *buf)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ltc4261_data *data = ltc4261_update_device(dev);
 	u8 fault;
 
@@ -158,6 +200,7 @@ static ssize_t ltc4261_show_bool(struct device *dev,
 
 	fault = data->regs[LTC4261_FAULT] & attr->index;
 	if (fault)		/* Clear reported faults in chip register */
+<<<<<<< HEAD
 		i2c_smbus_write_byte_data(client, LTC4261_FAULT, ~fault);
 
 	return snprintf(buf, PAGE_SIZE, "%d\n", fault ? 1 : 0);
@@ -182,6 +225,18 @@ static ssize_t ltc4261_show_bool(struct device *dev,
  */
 LTC4261_VALUE(in1_input, LTC4261_ADIN_H);
 LTC4261_VALUE(in2_input, LTC4261_ADIN2_H);
+=======
+		i2c_smbus_write_byte_data(data->client, LTC4261_FAULT, ~fault);
+
+	return sysfs_emit(buf, "%d\n", fault ? 1 : 0);
+}
+
+/*
+ * Input voltages.
+ */
+static SENSOR_DEVICE_ATTR_RO(in1_input, ltc4261_value, LTC4261_ADIN_H);
+static SENSOR_DEVICE_ATTR_RO(in2_input, ltc4261_value, LTC4261_ADIN2_H);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Voltage alarms. The chip has only one set of voltage alarm status bits,
@@ -191,6 +246,7 @@ LTC4261_VALUE(in2_input, LTC4261_ADIN2_H);
  * To ensure that the alarm condition is reported to the user, report it
  * with both voltage sensors.
  */
+<<<<<<< HEAD
 LTC4261_BOOL(in1_min_alarm, FAULT_UV);
 LTC4261_BOOL(in1_max_alarm, FAULT_OV);
 LTC4261_BOOL(in2_min_alarm, FAULT_UV);
@@ -203,6 +259,20 @@ LTC4261_VALUE(curr1_input, LTC4261_SENSE_H);
 LTC4261_BOOL(curr1_max_alarm, FAULT_OC);
 
 static struct attribute *ltc4261_attributes[] = {
+=======
+static SENSOR_DEVICE_ATTR_RO(in1_min_alarm, ltc4261_bool, FAULT_UV);
+static SENSOR_DEVICE_ATTR_RO(in1_max_alarm, ltc4261_bool, FAULT_OV);
+static SENSOR_DEVICE_ATTR_RO(in2_min_alarm, ltc4261_bool, FAULT_UV);
+static SENSOR_DEVICE_ATTR_RO(in2_max_alarm, ltc4261_bool, FAULT_OV);
+
+/* Currents (via sense resistor) */
+static SENSOR_DEVICE_ATTR_RO(curr1_input, ltc4261_value, LTC4261_SENSE_H);
+
+/* Overcurrent alarm */
+static SENSOR_DEVICE_ATTR_RO(curr1_max_alarm, ltc4261_bool, FAULT_OC);
+
+static struct attribute *ltc4261_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sensor_dev_attr_in1_input.dev_attr.attr,
 	&sensor_dev_attr_in1_min_alarm.dev_attr.attr,
 	&sensor_dev_attr_in1_max_alarm.dev_attr.attr,
@@ -215,6 +285,7 @@ static struct attribute *ltc4261_attributes[] = {
 
 	NULL,
 };
+<<<<<<< HEAD
 
 static const struct attribute_group ltc4261_group = {
 	.attrs = ltc4261_attributes,
@@ -226,11 +297,22 @@ static int ltc4261_probe(struct i2c_client *client,
 	struct i2c_adapter *adapter = client->adapter;
 	struct ltc4261_data *data;
 	int ret;
+=======
+ATTRIBUTE_GROUPS(ltc4261);
+
+static int ltc4261_probe(struct i2c_client *client)
+{
+	struct i2c_adapter *adapter = client->adapter;
+	struct device *dev = &client->dev;
+	struct ltc4261_data *data;
+	struct device *hwmon_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
 	if (i2c_smbus_read_byte_data(client, LTC4261_STATUS) < 0) {
+<<<<<<< HEAD
 		dev_err(&client->dev, "Failed to read status register\n");
 		return -ENODEV;
 	}
@@ -240,11 +322,23 @@ static int ltc4261_probe(struct i2c_client *client,
 		return -ENOMEM;
 
 	i2c_set_clientdata(client, data);
+=======
+		dev_err(dev, "Failed to read status register\n");
+		return -ENODEV;
+	}
+
+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&data->update_lock);
 
 	/* Clear faults */
 	i2c_smbus_write_byte_data(client, LTC4261_FAULT, 0x00);
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	ret = sysfs_create_group(&client->dev.kobj, &ltc4261_group);
 	if (ret)
@@ -271,6 +365,12 @@ static int ltc4261_remove(struct i2c_client *client)
 	sysfs_remove_group(&client->dev.kobj, &ltc4261_group);
 
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data,
+							   ltc4261_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id ltc4261_id[] = {
@@ -286,12 +386,19 @@ static struct i2c_driver ltc4261_driver = {
 		   .name = "ltc4261",
 		   },
 	.probe = ltc4261_probe,
+<<<<<<< HEAD
 	.remove = ltc4261_remove,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = ltc4261_id,
 };
 
 module_i2c_driver(ltc4261_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Guenter Roeck <guenter.roeck@ericsson.com>");
+=======
+MODULE_AUTHOR("Guenter Roeck <linux@roeck-us.net>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("LTC4261 driver");
 MODULE_LICENSE("GPL");

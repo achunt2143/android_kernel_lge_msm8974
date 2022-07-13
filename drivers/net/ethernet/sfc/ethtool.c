@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /****************************************************************************
  * Driver for Solarflare Solarstorm network controllers and boards
  * Copyright 2005-2006 Fen Systems Ltd.
@@ -6,6 +7,13 @@
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation, incorporated herein by reference.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/****************************************************************************
+ * Driver for Solarflare network controllers and boards
+ * Copyright 2005-2006 Fen Systems Ltd.
+ * Copyright 2006-2013 Solarflare Communications Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/netdevice.h>
@@ -16,6 +24,7 @@
 #include "workarounds.h"
 #include "selftest.h"
 #include "efx.h"
+<<<<<<< HEAD
 #include "filter.h"
 #include "nic.h"
 
@@ -159,6 +168,15 @@ static const struct efx_ethtool_stat efx_ethtool_stats[] = {
 /* Number of ethtool statistics */
 #define EFX_ETHTOOL_NUM_STATS ARRAY_SIZE(efx_ethtool_stats)
 
+=======
+#include "efx_channels.h"
+#include "rx_common.h"
+#include "tx_common.h"
+#include "ethtool_common.h"
+#include "filter.h"
+#include "nic.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EFX_ETHTOOL_EEPROM_MAGIC 0xEFAB
 
 /**************************************************************************
@@ -172,7 +190,11 @@ static const struct efx_ethtool_stat efx_ethtool_stats[] = {
 static int efx_ethtool_phys_id(struct net_device *net_dev,
 			       enum ethtool_phys_id_state state)
 {
+<<<<<<< HEAD
 	struct efx_nic *efx = netdev_priv(net_dev);
+=======
+	struct efx_nic *efx = efx_netdev_priv(net_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum efx_led_mode mode = EFX_LED_DEFAULT;
 
 	switch (state) {
@@ -189,6 +211,7 @@ static int efx_ethtool_phys_id(struct net_device *net_dev,
 		return 1;	/* cycle on/off once per second */
 	}
 
+<<<<<<< HEAD
 	efx->type->set_id_led(efx, mode);
 	return 0;
 }
@@ -249,22 +272,34 @@ static void efx_ethtool_get_drvinfo(struct net_device *net_dev,
 		efx_mcdi_print_fwver(efx, info->fw_version,
 				     sizeof(info->fw_version));
 	strlcpy(info->bus_info, pci_name(efx->pci_dev), sizeof(info->bus_info));
+=======
+	return efx_mcdi_set_id_led(efx, mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int efx_ethtool_get_regs_len(struct net_device *net_dev)
 {
+<<<<<<< HEAD
 	return efx_nic_get_regs_len(netdev_priv(net_dev));
+=======
+	return efx_nic_get_regs_len(efx_netdev_priv(net_dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void efx_ethtool_get_regs(struct net_device *net_dev,
 				 struct ethtool_regs *regs, void *buf)
 {
+<<<<<<< HEAD
 	struct efx_nic *efx = netdev_priv(net_dev);
+=======
+	struct efx_nic *efx = efx_netdev_priv(net_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	regs->version = efx->type->revision;
 	efx_nic_get_regs(efx, buf);
 }
 
+<<<<<<< HEAD
 static u32 efx_ethtool_get_msglevel(struct net_device *net_dev)
 {
 	struct efx_nic *efx = netdev_priv(net_dev);
@@ -576,6 +611,8 @@ static int efx_ethtool_nway_reset(struct net_device *net_dev)
 	return mdio45_nway_restart(&efx->mdio);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Each channel has a single IRQ and moderation timer, started by any
  * completion (or other event).  Unless the module parameter
@@ -606,9 +643,17 @@ static int efx_ethtool_nway_reset(struct net_device *net_dev)
  */
 
 static int efx_ethtool_get_coalesce(struct net_device *net_dev,
+<<<<<<< HEAD
 				    struct ethtool_coalesce *coalesce)
 {
 	struct efx_nic *efx = netdev_priv(net_dev);
+=======
+				    struct ethtool_coalesce *coalesce,
+				    struct kernel_ethtool_coalesce *kernel_coal,
+				    struct netlink_ext_ack *extack)
+{
+	struct efx_nic *efx = efx_netdev_priv(net_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int tx_usecs, rx_usecs;
 	bool rx_adaptive;
 
@@ -624,17 +669,28 @@ static int efx_ethtool_get_coalesce(struct net_device *net_dev,
 }
 
 static int efx_ethtool_set_coalesce(struct net_device *net_dev,
+<<<<<<< HEAD
 				    struct ethtool_coalesce *coalesce)
 {
 	struct efx_nic *efx = netdev_priv(net_dev);
+=======
+				    struct ethtool_coalesce *coalesce,
+				    struct kernel_ethtool_coalesce *kernel_coal,
+				    struct netlink_ext_ack *extack)
+{
+	struct efx_nic *efx = efx_netdev_priv(net_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct efx_channel *channel;
 	unsigned int tx_usecs, rx_usecs;
 	bool adaptive, rx_may_override_tx;
 	int rc;
 
+<<<<<<< HEAD
 	if (coalesce->use_adaptive_tx_coalesce)
 		return -EINVAL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	efx_get_irq_moderation(efx, &tx_usecs, &rx_usecs, &adaptive);
 
 	if (coalesce->rx_coalesce_usecs != rx_usecs)
@@ -665,6 +721,7 @@ static int efx_ethtool_set_coalesce(struct net_device *net_dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void efx_ethtool_get_ringparam(struct net_device *net_dev,
 				      struct ethtool_ringparam *ring)
 {
@@ -672,19 +729,45 @@ static void efx_ethtool_get_ringparam(struct net_device *net_dev,
 
 	ring->rx_max_pending = EFX_MAX_DMAQ_SIZE;
 	ring->tx_max_pending = EFX_MAX_DMAQ_SIZE;
+=======
+static void
+efx_ethtool_get_ringparam(struct net_device *net_dev,
+			  struct ethtool_ringparam *ring,
+			  struct kernel_ethtool_ringparam *kernel_ring,
+			  struct netlink_ext_ack *extack)
+{
+	struct efx_nic *efx = efx_netdev_priv(net_dev);
+
+	ring->rx_max_pending = EFX_MAX_DMAQ_SIZE;
+	ring->tx_max_pending = EFX_TXQ_MAX_ENT(efx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ring->rx_pending = efx->rxq_entries;
 	ring->tx_pending = efx->txq_entries;
 }
 
+<<<<<<< HEAD
 static int efx_ethtool_set_ringparam(struct net_device *net_dev,
 				     struct ethtool_ringparam *ring)
 {
 	struct efx_nic *efx = netdev_priv(net_dev);
+=======
+static int
+efx_ethtool_set_ringparam(struct net_device *net_dev,
+			  struct ethtool_ringparam *ring,
+			  struct kernel_ethtool_ringparam *kernel_ring,
+			  struct netlink_ext_ack *extack)
+{
+	struct efx_nic *efx = efx_netdev_priv(net_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 txq_entries;
 
 	if (ring->rx_mini_pending || ring->rx_jumbo_pending ||
 	    ring->rx_pending > EFX_MAX_DMAQ_SIZE ||
+<<<<<<< HEAD
 	    ring->tx_pending > EFX_MAX_DMAQ_SIZE)
+=======
+	    ring->tx_pending > EFX_TXQ_MAX_ENT(efx))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (ring->rx_pending < EFX_RXQ_MIN_ENT) {
@@ -703,6 +786,7 @@ static int efx_ethtool_set_ringparam(struct net_device *net_dev,
 	return efx_realloc_channels(efx, ring->rx_pending, txq_entries);
 }
 
+<<<<<<< HEAD
 static int efx_ethtool_set_pauseparam(struct net_device *net_dev,
 				      struct ethtool_pauseparam *pause)
 {
@@ -791,6 +875,12 @@ static void efx_ethtool_get_wol(struct net_device *net_dev,
 				struct ethtool_wolinfo *wol)
 {
 	struct efx_nic *efx = netdev_priv(net_dev);
+=======
+static void efx_ethtool_get_wol(struct net_device *net_dev,
+				struct ethtool_wolinfo *wol)
+{
+	struct efx_nic *efx = efx_netdev_priv(net_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return efx->type->get_wol(efx, wol);
 }
 
@@ -798,6 +888,7 @@ static void efx_ethtool_get_wol(struct net_device *net_dev,
 static int efx_ethtool_set_wol(struct net_device *net_dev,
 			       struct ethtool_wolinfo *wol)
 {
+<<<<<<< HEAD
 	struct efx_nic *efx = netdev_priv(net_dev);
 	return efx->type->set_wol(efx, wol->wolopts);
 }
@@ -1111,18 +1202,54 @@ static int efx_ethtool_set_rxfh_indir(struct net_device *net_dev,
 
 	memcpy(efx->rx_indir_table, indir, sizeof(efx->rx_indir_table));
 	efx_nic_push_rx_indir_table(efx);
+=======
+	struct efx_nic *efx = efx_netdev_priv(net_dev);
+	return efx->type->set_wol(efx, wol->wolopts);
+}
+
+static void efx_ethtool_get_fec_stats(struct net_device *net_dev,
+				      struct ethtool_fec_stats *fec_stats)
+{
+	struct efx_nic *efx = efx_netdev_priv(net_dev);
+
+	if (efx->type->get_fec_stats)
+		efx->type->get_fec_stats(efx, fec_stats);
+}
+
+static int efx_ethtool_get_ts_info(struct net_device *net_dev,
+				   struct ethtool_ts_info *ts_info)
+{
+	struct efx_nic *efx = efx_netdev_priv(net_dev);
+
+	/* Software capabilities */
+	ts_info->so_timestamping = (SOF_TIMESTAMPING_RX_SOFTWARE |
+				    SOF_TIMESTAMPING_SOFTWARE);
+	ts_info->phc_index = -1;
+
+	efx_ptp_get_ts_info(efx, ts_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 const struct ethtool_ops efx_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings		= efx_ethtool_get_settings,
 	.set_settings		= efx_ethtool_set_settings,
+=======
+	.cap_rss_ctx_supported	= true,
+	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+				     ETHTOOL_COALESCE_USECS_IRQ |
+				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo		= efx_ethtool_get_drvinfo,
 	.get_regs_len		= efx_ethtool_get_regs_len,
 	.get_regs		= efx_ethtool_get_regs,
 	.get_msglevel		= efx_ethtool_get_msglevel,
 	.set_msglevel		= efx_ethtool_set_msglevel,
+<<<<<<< HEAD
 	.nway_reset		= efx_ethtool_nway_reset,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_link		= ethtool_op_get_link,
 	.get_coalesce		= efx_ethtool_get_coalesce,
 	.set_coalesce		= efx_ethtool_set_coalesce,
@@ -1141,6 +1268,20 @@ const struct ethtool_ops efx_ethtool_ops = {
 	.get_rxnfc		= efx_ethtool_get_rxnfc,
 	.set_rxnfc		= efx_ethtool_set_rxnfc,
 	.get_rxfh_indir_size	= efx_ethtool_get_rxfh_indir_size,
+<<<<<<< HEAD
 	.get_rxfh_indir		= efx_ethtool_get_rxfh_indir,
 	.set_rxfh_indir		= efx_ethtool_set_rxfh_indir,
+=======
+	.get_rxfh_key_size	= efx_ethtool_get_rxfh_key_size,
+	.get_rxfh		= efx_ethtool_get_rxfh,
+	.set_rxfh		= efx_ethtool_set_rxfh,
+	.get_ts_info		= efx_ethtool_get_ts_info,
+	.get_module_info	= efx_ethtool_get_module_info,
+	.get_module_eeprom	= efx_ethtool_get_module_eeprom,
+	.get_link_ksettings	= efx_ethtool_get_link_ksettings,
+	.set_link_ksettings	= efx_ethtool_set_link_ksettings,
+	.get_fec_stats		= efx_ethtool_get_fec_stats,
+	.get_fecparam		= efx_ethtool_get_fecparam,
+	.set_fecparam		= efx_ethtool_set_fecparam,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

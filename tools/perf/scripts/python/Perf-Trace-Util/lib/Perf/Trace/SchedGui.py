@@ -11,7 +11,11 @@
 try:
 	import wx
 except ImportError:
+<<<<<<< HEAD
 	raise ImportError, "You need to install the wxpython lib for this script"
+=======
+	raise ImportError("You need to install the wxpython lib for this script")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 class RootFrame(wx.Frame):

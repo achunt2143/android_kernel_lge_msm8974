@@ -15,6 +15,7 @@
 #ifndef _XTENSA_XT2000_HARDWARE_H
 #define _XTENSA_XT2000_HARDWARE_H
 
+<<<<<<< HEAD
 #include <variant/core.h>
 
 /* 
@@ -28,6 +29,10 @@
  * Number of platform IRQs
  */
 #define PLATFORM_NR_IRQS 3
+=======
+#include <asm/core.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * On-board components.
  */

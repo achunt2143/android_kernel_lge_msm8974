@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Because linux/module.h has tracepoints in the header, and ftrace.h
  * used to include this file, define_trace.h includes linux/module.h
@@ -22,8 +26,15 @@ struct module;
 
 #define show_module_flags(flags) __print_flags(flags, "",	\
 	{ (1UL << TAINT_PROPRIETARY_MODULE),	"P" },		\
+<<<<<<< HEAD
 	{ (1UL << TAINT_FORCED_MODULE),		"F" },		\
 	{ (1UL << TAINT_CRAP),			"C" })
+=======
+	{ (1UL << TAINT_OOT_MODULE),		"O" },		\
+	{ (1UL << TAINT_FORCED_MODULE),		"F" },		\
+	{ (1UL << TAINT_CRAP),			"C" },		\
+	{ (1UL << TAINT_UNSIGNED_MODULE),	"E" })
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 TRACE_EVENT(module_load,
 
@@ -78,11 +89,19 @@ DECLARE_EVENT_CLASS(module_refcnt,
 
 	TP_fast_assign(
 		__entry->ip	= ip;
+<<<<<<< HEAD
 		__entry->refcnt	= __this_cpu_read(mod->refptr->incs) - __this_cpu_read(mod->refptr->decs);
 		__assign_str(name, mod->name);
 	),
 
 	TP_printk("%s call_site=%pf refcnt=%d",
+=======
+		__entry->refcnt	= atomic_read(&mod->refcnt);
+		__assign_str(name, mod->name);
+	),
+
+	TP_printk("%s call_site=%ps refcnt=%d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __get_str(name), (void *)__entry->ip, __entry->refcnt)
 );
 
@@ -119,7 +138,11 @@ TRACE_EVENT(module_request,
 		__assign_str(name, name);
 	),
 
+<<<<<<< HEAD
 	TP_printk("%s wait=%d call_site=%pf",
+=======
+	TP_printk("%s wait=%d call_site=%ps",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  __get_str(name), (int)__entry->wait, (void *)__entry->ip)
 );
 

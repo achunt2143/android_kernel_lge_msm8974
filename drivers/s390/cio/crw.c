@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Channel report handling code
  *
@@ -6,14 +7,30 @@
  *		 Martin Schwidefsky <schwidefsky@de.ibm.com>,
  *		 Cornelia Huck <cornelia.huck@de.ibm.com>,
  *		 Heiko Carstens <heiko.carstens@de.ibm.com>,
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ *   Channel report handling code
+ *
+ *    Copyright IBM Corp. 2000, 2009
+ *    Author(s): Ingo Adlung <adlung@de.ibm.com>,
+ *		 Martin Schwidefsky <schwidefsky@de.ibm.com>,
+ *		 Cornelia Huck <cornelia.huck@de.ibm.com>,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mutex.h>
 #include <linux/kthread.h>
 #include <linux/init.h>
 #include <linux/wait.h>
+<<<<<<< HEAD
 #include <asm/crw.h>
 #include <asm/ctl_reg.h>
+=======
+#include <asm/ctlreg.h>
+#include <asm/crw.h>
+#include "ioasm.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_MUTEX(crw_handler_mutex);
 static crw_handler_t crw_handlers[NR_RSCS];
@@ -155,7 +172,11 @@ static int __init crw_machine_check_init(void)
 	task = kthread_run(crw_collect_info, NULL, "kmcheck");
 	if (IS_ERR(task))
 		return PTR_ERR(task);
+<<<<<<< HEAD
 	ctl_set_bit(14, 28);	/* enable channel report MCH */
+=======
+	system_ctl_set_bit(14, CR14_CHANNEL_REPORT_SUBMASK_BIT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 device_initcall(crw_machine_check_init);

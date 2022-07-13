@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
@@ -123,12 +124,22 @@
  */
 
 #ifdef __ASSEMBLY__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+
+#ifndef _ASM_SN_KLDIR_H
+#define _ASM_SN_KLDIR_H
+
+#define KLDIR_MAGIC		0x434d5f53505f5357
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KLDIR_OFF_MAGIC			0x00
 #define KLDIR_OFF_OFFSET		0x08
 #define KLDIR_OFF_POINTER		0x10
 #define KLDIR_OFF_SIZE			0x18
 #define KLDIR_OFF_COUNT			0x20
 #define KLDIR_OFF_STRIDE		0x28
+<<<<<<< HEAD
 #endif /* __ASSEMBLY__ */
 
 /*
@@ -196,12 +207,15 @@
  */
 #define IP27_NMI_EFRAME_OFFSET		0x11800
 #define IP27_NMI_EFRAME_SIZE		0x200
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define KLDIR_ENT_SIZE			0x40
 #define KLDIR_MAX_ENTRIES		(0x400 / 0x40)
 
 #ifndef __ASSEMBLY__
 typedef struct kldir_ent_s {
+<<<<<<< HEAD
 	u64		magic;		/* Indicates validity of entry      */
 	off_t		offset;		/* Offset from start of node space  */
 	unsigned long	pointer;	/* Pointer to area in some cases    */
@@ -209,9 +223,25 @@ typedef struct kldir_ent_s {
 	u64		count;		/* Repeat count if array, 1 if not  */
 	size_t		stride;		/* Stride if array, 0 if not        */
 	char		rsvd[16];	/* Pad entry to 0x40 bytes          */
+=======
+	u64		magic;		/* Indicates validity of entry	    */
+	off_t		offset;		/* Offset from start of node space  */
+	unsigned long	pointer;	/* Pointer to area in some cases    */
+	size_t		size;		/* Size in bytes		    */
+	u64		count;		/* Repeat count if array, 1 if not  */
+	size_t		stride;		/* Stride if array, 0 if not	    */
+	char		rsvd[16];	/* Pad entry to 0x40 bytes	    */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* NOTE: These 16 bytes are used in the Partition KLDIR
 	   entry to store partition info. Refer to klpart.h for this. */
 } kldir_ent_t;
 #endif /* !__ASSEMBLY__ */
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SGI_IP27
+#include <asm/sn/sn0/kldir.h>
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_SN_KLDIR_H */

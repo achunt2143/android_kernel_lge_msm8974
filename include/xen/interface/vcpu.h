@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: MIT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * vcpu.h
  *
  * VCPU initialisation, query, and hotplug.
  *
+<<<<<<< HEAD
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
  * deal in the Software without restriction, including without limitation the
@@ -21,6 +26,8 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2005, Keir Fraser <keir@xensource.com>
  */
 
@@ -75,6 +82,7 @@
  */
 #define VCPUOP_get_runstate_info	 4
 struct vcpu_runstate_info {
+<<<<<<< HEAD
 		/* VCPU's current state (RUNSTATE_*). */
 		int		 state;
 		/* When was current state entered (system time, ns)? */
@@ -84,6 +92,23 @@ struct vcpu_runstate_info {
 		 * guaranteed not to drift from system time.
 		 */
 		uint64_t time[4];
+=======
+	/* VCPU's current state (RUNSTATE_*). */
+	int		 state;
+	/* When was current state entered (system time, ns)? */
+	uint64_t state_entry_time;
+	/*
+	 * Update indicator set in state_entry_time:
+	 * When activated via VMASST_TYPE_runstate_update_flag, set during
+	 * updates in guest memory mapped copy of vcpu_runstate_info.
+	 */
+#define XEN_RUNSTATE_UPDATE	(1ULL << 63)
+	/*
+	 * Time spent in each RUNSTATE_* (ns). The sum of these times is
+	 * guaranteed not to drift from system time.
+	 */
+	uint64_t time[4];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 DEFINE_GUEST_HANDLE_STRUCT(vcpu_runstate_info);
 
@@ -170,4 +195,51 @@ struct vcpu_register_vcpu_info {
 };
 DEFINE_GUEST_HANDLE_STRUCT(vcpu_register_vcpu_info);
 
+<<<<<<< HEAD
+=======
+/* Send an NMI to the specified VCPU. @extra_arg == NULL. */
+#define VCPUOP_send_nmi             11
+
+/*
+ * Get the physical ID information for a pinned vcpu's underlying physical
+ * processor.  The physical ID informmation is architecture-specific.
+ * On x86: id[31:0]=apic_id, id[63:32]=acpi_id.
+ * This command returns -EINVAL if it is not a valid operation for this VCPU.
+ */
+#define VCPUOP_get_physid           12 /* arg == vcpu_get_physid_t */
+struct vcpu_get_physid {
+	uint64_t phys_id;
+};
+DEFINE_GUEST_HANDLE_STRUCT(vcpu_get_physid);
+#define xen_vcpu_physid_to_x86_apicid(physid) ((uint32_t)(physid))
+#define xen_vcpu_physid_to_x86_acpiid(physid) ((uint32_t)((physid) >> 32))
+
+/*
+ * Register a memory location to get a secondary copy of the vcpu time
+ * parameters.  The master copy still exists as part of the vcpu shared
+ * memory area, and this secondary copy is updated whenever the master copy
+ * is updated (and using the same versioning scheme for synchronisation).
+ *
+ * The intent is that this copy may be mapped (RO) into userspace so
+ * that usermode can compute system time using the time info and the
+ * tsc.  Usermode will see an array of vcpu_time_info structures, one
+ * for each vcpu, and choose the right one by an existing mechanism
+ * which allows it to get the current vcpu number (such as via a
+ * segment limit).  It can then apply the normal algorithm to compute
+ * system time from the tsc.
+ *
+ * @extra_arg == pointer to vcpu_register_time_info_memory_area structure.
+ */
+#define VCPUOP_register_vcpu_time_memory_area   13
+DEFINE_GUEST_HANDLE_STRUCT(vcpu_time_info);
+struct vcpu_register_time_memory_area {
+	union {
+		GUEST_HANDLE(vcpu_time_info) h;
+		struct pvclock_vcpu_time_info *v;
+		uint64_t p;
+	} addr;
+};
+DEFINE_GUEST_HANDLE_STRUCT(vcpu_register_time_memory_area);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __XEN_PUBLIC_VCPU_H__ */

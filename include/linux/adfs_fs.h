@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ADFS_FS_H
 #define _ADFS_FS_H
 
@@ -42,6 +43,15 @@ struct adfs_discrecord {
 
 #ifdef __KERNEL__
 /*
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ADFS_FS_H
+#define _ADFS_FS_H
+
+#include <uapi/linux/adfs_fs.h>
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Calculate the boot block checksum on an ADFS drive.  Note that this will
  * appear to be correct if the sector contains all zeros, so also check that
  * the disk size is non-zero!!!
@@ -59,5 +69,8 @@ static inline int adfs_checkbblk(unsigned char *ptr)
 	return (result & 0xff) != ptr[511];
 }
 #endif
+<<<<<<< HEAD
 
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

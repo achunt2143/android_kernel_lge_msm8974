@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
@@ -14,17 +15,36 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright 2008-2010 Cisco Systems, Inc.  All rights reserved.
+ * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _VNIC_RSS_H_
 #define _VNIC_RSS_H_
 
 /* RSS key array */
+<<<<<<< HEAD
 union vnic_rss_key {
 	struct {
 		u8 b[10];
 		u8 b_pad[6];
 	} key[4];
+=======
+
+#define ENIC_RSS_BYTES_PER_KEY	10
+#define ENIC_RSS_KEYS		4
+#define ENIC_RSS_LEN		(ENIC_RSS_BYTES_PER_KEY * ENIC_RSS_KEYS)
+
+union vnic_rss_key {
+	struct {
+		u8 b[ENIC_RSS_BYTES_PER_KEY];
+		u8 b_pad[6];
+	} key[ENIC_RSS_KEYS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 raw[8];
 };
 

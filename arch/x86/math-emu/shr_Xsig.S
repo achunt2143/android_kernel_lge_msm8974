@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.file	"shr_Xsig.S"
 /*---------------------------------------------------------------------------+
  |  shr_Xsig.S                                                               |
@@ -21,7 +25,11 @@
 #include "fpu_emu.h"
 
 .text
+<<<<<<< HEAD
 ENTRY(shr_Xsig)
+=======
+SYM_FUNC_START(shr_Xsig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	push	%ebp
 	movl	%esp,%ebp
 	pushl	%esi
@@ -44,7 +52,11 @@ ENTRY(shr_Xsig)
 	popl	%ebx
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 L_more_than_31:
 	cmpl	$64,%ecx
@@ -60,7 +72,11 @@ L_more_than_31:
 	movl	$0,8(%esi)
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 L_more_than_63:
 	cmpl	$96,%ecx
@@ -75,7 +91,11 @@ L_more_than_63:
 	movl	%edx,8(%esi)
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 L_more_than_95:
 	xorl	%eax,%eax
@@ -84,4 +104,9 @@ L_more_than_95:
 	movl	%eax,8(%esi)
 	popl	%esi
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+SYM_FUNC_END(shr_Xsig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

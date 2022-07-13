@@ -1,11 +1,16 @@
+<<<<<<< HEAD
 #ifndef __SOUND_SB16_CSP_H
 #define __SOUND_SB16_CSP_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999 by Uros Bizjak <uros@kss-loka.si>
  *                        Takashi Iwai <tiwai@suse.de>
  *
  *  SB16ASP/AWE32 CSP control
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify 
  *   it under the terms of the GNU General Public License as published by
@@ -122,6 +127,16 @@ struct snd_sb_csp_info {
 #include "sb.h"
 #include "hwdep.h"
 #include <linux/firmware.h>
+=======
+ */
+#ifndef __SOUND_SB16_CSP_H
+#define __SOUND_SB16_CSP_H
+
+#include <sound/sb.h>
+#include <sound/hwdep.h>
+#include <linux/firmware.h>
+#include <uapi/sound/sb16_csp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct snd_sb_csp;
 
@@ -142,7 +157,11 @@ enum {
 struct snd_sb_csp_ops {
 	int (*csp_use) (struct snd_sb_csp * p);
 	int (*csp_unuse) (struct snd_sb_csp * p);
+<<<<<<< HEAD
 	int (*csp_autoload) (struct snd_sb_csp * p, int pcm_sfmt, int play_rec_mode);
+=======
+	int (*csp_autoload) (struct snd_sb_csp * p, snd_pcm_format_t pcm_sfmt, int play_rec_mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*csp_start) (struct snd_sb_csp * p, int sample_width, int channels);
 	int (*csp_stop) (struct snd_sb_csp * p);
 	int (*csp_qsound_transfer) (struct snd_sb_csp * p);
@@ -183,6 +202,9 @@ struct snd_sb_csp {
 };
 
 int snd_sb_csp_new(struct snd_sb *chip, int device, struct snd_hwdep ** rhwdep);
+<<<<<<< HEAD
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __SOUND_SB16_CSP */

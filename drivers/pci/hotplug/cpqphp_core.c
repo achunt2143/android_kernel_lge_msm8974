@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Compaq Hot Plug Controller Driver
  *
@@ -7,6 +11,7 @@
  *
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
@@ -22,6 +27,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <greg@kroah.com>
  *
  * Jan 12, 2003 -	Added 66/100/133MHz PCI-X support,
@@ -40,7 +47,11 @@
 #include <linux/init.h>
 #include <linux/interrupt.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "cpqphp.h"
 #include "cpqphp_nvram.h"
@@ -94,7 +105,11 @@ static inline int is_slot66mhz(struct slot *slot)
  *
  * Returns pointer to the head of the SMBIOS tables (or %NULL).
  */
+<<<<<<< HEAD
 static void __iomem * detect_SMBIOS_pointer(void __iomem *begin, void __iomem *end)
+=======
+static void __iomem *detect_SMBIOS_pointer(void __iomem *begin, void __iomem *end)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *fp;
 	void __iomem *endp;
@@ -131,11 +146,18 @@ static void __iomem * detect_SMBIOS_pointer(void __iomem *begin, void __iomem *e
  *
  * For unexpected switch opens
  */
+<<<<<<< HEAD
 static int init_SERR(struct controller * ctrl)
 {
 	u32 tempdword;
 	u32 number_of_slots;
 	u8 physical_slot;
+=======
+static int init_SERR(struct controller *ctrl)
+{
+	u32 tempdword;
+	u32 number_of_slots;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ctrl)
 		return 1;
@@ -145,7 +167,10 @@ static int init_SERR(struct controller * ctrl)
 	number_of_slots = readb(ctrl->hpc_reg + SLOT_MASK) & 0x0F;
 	/* Loop through slots */
 	while (number_of_slots) {
+<<<<<<< HEAD
 		physical_slot = tempdword;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writeb(0, ctrl->hpc_reg + SLOT_SERR);
 		tempdword++;
 		number_of_slots--;
@@ -189,7 +214,10 @@ static void pci_print_IRQ_route(void)
 		dbg("%d %d %d %d\n", tbus, tdevice >> 3, tdevice & 0x7, tslot);
 
 	}
+<<<<<<< HEAD
 	return;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -280,6 +308,7 @@ static void __iomem *get_SMBIOS_entry(void __iomem *smbios_start,
 	return previous;
 }
 
+<<<<<<< HEAD
 static void release_slot(struct hotplug_slot *hotplug_slot)
 {
 	struct slot *slot = hotplug_slot->private;
@@ -292,6 +321,9 @@ static void release_slot(struct hotplug_slot *hotplug_slot)
 }
 
 static int ctrl_slot_cleanup (struct controller * ctrl)
+=======
+static int ctrl_slot_cleanup(struct controller *ctrl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slot *old_slot, *next_slot;
 
@@ -299,9 +331,15 @@ static int ctrl_slot_cleanup (struct controller * ctrl)
 	ctrl->slot = NULL;
 
 	while (old_slot) {
+<<<<<<< HEAD
 		/* memory will be freed by the release_slot callback */
 		next_slot = old_slot->next;
 		pci_hp_deregister (old_slot->hotplug_slot);
+=======
+		next_slot = old_slot->next;
+		pci_hp_deregister(&old_slot->hotplug_slot);
+		kfree(old_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		old_slot = next_slot;
 	}
 
@@ -324,9 +362,16 @@ static int ctrl_slot_cleanup (struct controller * ctrl)
  *
  * Won't work for more than one PCI-PCI bridge in a slot.
  *
+<<<<<<< HEAD
  * @bus_num - bus number of PCI device
  * @dev_num - device number of PCI device
  * @slot - Pointer to u8 where slot number will	be returned
+=======
+ * @bus: pointer to the PCI bus structure
+ * @bus_num: bus number of PCI device
+ * @dev_num: device number of PCI device
+ * @slot: Pointer to u8 where slot number will	be returned
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Output:	SUCCESS or FAILURE
  */
@@ -413,9 +458,15 @@ cpqhp_set_attention_status(struct controller *ctrl, struct pci_func *func,
 	mutex_lock(&ctrl->crit_sect);
 
 	if (status == 1)
+<<<<<<< HEAD
 		amber_LED_on (ctrl, hp_slot);
 	else if (status == 0)
 		amber_LED_off (ctrl, hp_slot);
+=======
+		amber_LED_on(ctrl, hp_slot);
+	else if (status == 0)
+		amber_LED_off(ctrl, hp_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		/* Done with exclusive hardware access */
 		mutex_unlock(&ctrl->crit_sect);
@@ -425,7 +476,11 @@ cpqhp_set_attention_status(struct controller *ctrl, struct pci_func *func,
 	set_SOGO(ctrl);
 
 	/* Wait for SOBS to be unset */
+<<<<<<< HEAD
 	wait_for_ctrl_irq (ctrl);
+=======
+	wait_for_ctrl_irq(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Done with exclusive hardware access */
 	mutex_unlock(&ctrl->crit_sect);
@@ -439,10 +494,17 @@ cpqhp_set_attention_status(struct controller *ctrl, struct pci_func *func,
  * @hotplug_slot: slot to change LED on
  * @status: LED control flag
  */
+<<<<<<< HEAD
 static int set_attention_status (struct hotplug_slot *hotplug_slot, u8 status)
 {
 	struct pci_func *slot_func;
 	struct slot *slot = hotplug_slot->private;
+=======
+static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 status)
+{
+	struct pci_func *slot_func;
+	struct slot *slot = to_slot(hotplug_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct controller *ctrl = slot->ctrl;
 	u8 bus;
 	u8 devfn;
@@ -469,7 +531,11 @@ static int set_attention_status (struct hotplug_slot *hotplug_slot, u8 status)
 static int process_SI(struct hotplug_slot *hotplug_slot)
 {
 	struct pci_func *slot_func;
+<<<<<<< HEAD
 	struct slot *slot = hotplug_slot->private;
+=======
+	struct slot *slot = to_slot(hotplug_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct controller *ctrl = slot->ctrl;
 	u8 bus;
 	u8 devfn;
@@ -501,7 +567,11 @@ static int process_SI(struct hotplug_slot *hotplug_slot)
 static int process_SS(struct hotplug_slot *hotplug_slot)
 {
 	struct pci_func *slot_func;
+<<<<<<< HEAD
 	struct slot *slot = hotplug_slot->private;
+=======
+	struct slot *slot = to_slot(hotplug_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct controller *ctrl = slot->ctrl;
 	u8 bus;
 	u8 devfn;
@@ -528,7 +598,11 @@ static int process_SS(struct hotplug_slot *hotplug_slot)
 
 static int hardware_test(struct hotplug_slot *hotplug_slot, u32 value)
 {
+<<<<<<< HEAD
 	struct slot *slot = hotplug_slot->private;
+=======
+	struct slot *slot = to_slot(hotplug_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct controller *ctrl = slot->ctrl;
 
 	dbg("%s - physical_slot = %s\n", __func__, slot_name(slot));
@@ -539,7 +613,11 @@ static int hardware_test(struct hotplug_slot *hotplug_slot, u32 value)
 
 static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
+<<<<<<< HEAD
 	struct slot *slot = hotplug_slot->private;
+=======
+	struct slot *slot = to_slot(hotplug_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct controller *ctrl = slot->ctrl;
 
 	dbg("%s - physical_slot = %s\n", __func__, slot_name(slot));
@@ -550,7 +628,11 @@ static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
 
 static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
+<<<<<<< HEAD
 	struct slot *slot = hotplug_slot->private;
+=======
+	struct slot *slot = to_slot(hotplug_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct controller *ctrl = slot->ctrl;
 
 	dbg("%s - physical_slot = %s\n", __func__, slot_name(slot));
@@ -561,7 +643,11 @@ static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
 
 static int get_latch_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
+<<<<<<< HEAD
 	struct slot *slot = hotplug_slot->private;
+=======
+	struct slot *slot = to_slot(hotplug_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct controller *ctrl = slot->ctrl;
 
 	dbg("%s - physical_slot = %s\n", __func__, slot_name(slot));
@@ -573,7 +659,11 @@ static int get_latch_status(struct hotplug_slot *hotplug_slot, u8 *value)
 
 static int get_adapter_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
+<<<<<<< HEAD
 	struct slot *slot = hotplug_slot->private;
+=======
+	struct slot *slot = to_slot(hotplug_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct controller *ctrl = slot->ctrl;
 
 	dbg("%s - physical_slot = %s\n", __func__, slot_name(slot));
@@ -583,7 +673,11 @@ static int get_adapter_status(struct hotplug_slot *hotplug_slot, u8 *value)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct hotplug_slot_ops cpqphp_hotplug_slot_ops = {
+=======
+static const struct hotplug_slot_ops cpqphp_hotplug_slot_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_attention_status =	set_attention_status,
 	.enable_slot =		process_SI,
 	.disable_slot =		process_SS,
@@ -601,8 +695,11 @@ static int ctrl_slot_setup(struct controller *ctrl,
 			void __iomem *smbios_table)
 {
 	struct slot *slot;
+<<<<<<< HEAD
 	struct hotplug_slot *hotplug_slot;
 	struct hotplug_slot_info *hotplug_slot_info;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_bus *bus = ctrl->pci_bus;
 	u8 number_of_slots;
 	u8 slot_device;
@@ -610,8 +707,13 @@ static int ctrl_slot_setup(struct controller *ctrl,
 	u8 ctrl_slot;
 	u32 tempdword;
 	char name[SLOT_NAME_SIZE];
+<<<<<<< HEAD
 	void __iomem *slot_entry= NULL;
 	int result = -ENOMEM;
+=======
+	void __iomem *slot_entry = NULL;
+	int result;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg("%s\n", __func__);
 
@@ -623,6 +725,7 @@ static int ctrl_slot_setup(struct controller *ctrl,
 
 	while (number_of_slots) {
 		slot = kzalloc(sizeof(*slot), GFP_KERNEL);
+<<<<<<< HEAD
 		if (!slot)
 			goto error;
 
@@ -637,6 +740,12 @@ static int ctrl_slot_setup(struct controller *ctrl,
 		if (!hotplug_slot->info)
 			goto error_hpslot;
 		hotplug_slot_info = hotplug_slot->info;
+=======
+		if (!slot) {
+			result = -ENOMEM;
+			goto error;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		slot->ctrl = ctrl;
 		slot->bus = ctrl->bus;
@@ -655,9 +764,14 @@ static int ctrl_slot_setup(struct controller *ctrl,
 
 		slot->p_sm_slot = slot_entry;
 
+<<<<<<< HEAD
 		init_timer(&slot->task_event);
 		slot->task_event.expires = jiffies + 5 * HZ;
 		slot->task_event.function = cpqhp_pushbutton_thread;
+=======
+		timer_setup(&slot->task_event, cpqhp_pushbutton_thread, 0);
+		slot->task_event.expires = jiffies + 5 * HZ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*FIXME: these capabilities aren't used but if they are
 		 *	 they need to be correctly implemented
@@ -687,6 +801,7 @@ static int ctrl_slot_setup(struct controller *ctrl,
 			((read_slot_enable(ctrl) << 2) >> ctrl_slot) & 0x04;
 
 		/* register this slot with the hotplug pci core */
+<<<<<<< HEAD
 		hotplug_slot->release = &release_slot;
 		hotplug_slot->private = slot;
 		snprintf(name, SLOT_NAME_SIZE, "%u", slot->number);
@@ -706,12 +821,26 @@ static int ctrl_slot_setup(struct controller *ctrl,
 				slot->number, ctrl->slot_device_offset,
 				slot_number);
 		result = pci_hp_register(hotplug_slot,
+=======
+		snprintf(name, SLOT_NAME_SIZE, "%u", slot->number);
+		slot->hotplug_slot.ops = &cpqphp_hotplug_slot_ops;
+
+		dbg("registering bus %d, dev %d, number %d, ctrl->slot_device_offset %d, slot %d\n",
+				slot->bus, slot->device,
+				slot->number, ctrl->slot_device_offset,
+				slot_number);
+		result = pci_hp_register(&slot->hotplug_slot,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 ctrl->pci_dev->bus,
 					 slot->device,
 					 name);
 		if (result) {
 			err("pci_hp_register failed with error %d\n", result);
+<<<<<<< HEAD
 			goto error_info;
+=======
+			goto error_slot;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		slot->next = ctrl->slot;
@@ -723,10 +852,13 @@ static int ctrl_slot_setup(struct controller *ctrl,
 	}
 
 	return 0;
+<<<<<<< HEAD
 error_info:
 	kfree(hotplug_slot_info);
 error_hpslot:
 	kfree(hotplug_slot);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 error_slot:
 	kfree(slot);
 error:
@@ -750,7 +882,11 @@ static int one_time_init(void)
 	if (cpqhp_debug)
 		pci_print_IRQ_route();
 
+<<<<<<< HEAD
 	dbg("Initialize + Start the notification mechanism \n");
+=======
+	dbg("Initialize + Start the notification mechanism\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = cpqhp_event_start_thread();
 	if (retval)
@@ -767,7 +903,11 @@ static int one_time_init(void)
 	/* Map rom address */
 	cpqhp_rom_start = ioremap(ROM_PHY_ADDR, ROM_PHY_LEN);
 	if (!cpqhp_rom_start) {
+<<<<<<< HEAD
 		err ("Could not ioremap memory region for ROM\n");
+=======
+		err("Could not ioremap memory region for ROM\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EIO;
 		goto error;
 	}
@@ -781,7 +921,11 @@ static int one_time_init(void)
 	smbios_table = detect_SMBIOS_pointer(cpqhp_rom_start,
 					cpqhp_rom_start + ROM_PHY_LEN);
 	if (!smbios_table) {
+<<<<<<< HEAD
 		err ("Could not find the SMBIOS pointer in memory\n");
+=======
+		err("Could not find the SMBIOS pointer in memory\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EIO;
 		goto error_rom_start;
 	}
@@ -789,7 +933,11 @@ static int one_time_init(void)
 	smbios_start = ioremap(readl(smbios_table + ST_ADDRESS),
 					readw(smbios_table + ST_LENGTH));
 	if (!smbios_start) {
+<<<<<<< HEAD
 		err ("Could not ioremap memory region taken from SMBIOS values\n");
+=======
+		err("Could not ioremap memory region taken from SMBIOS values\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -EIO;
 		goto error_smbios_start;
 	}
@@ -831,8 +979,12 @@ static int cpqhpc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	bus = pdev->subordinate;
 	if (!bus) {
+<<<<<<< HEAD
 		dev_notice(&pdev->dev, "the device is not a bridge, "
 				"skipping\n");
+=======
+		pci_notice(pdev, "the device is not a bridge, skipping\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		goto err_disable_device;
 	}
@@ -856,6 +1008,7 @@ static int cpqhpc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto err_disable_device;
 	}
 
+<<<<<<< HEAD
 	/* Check for the proper subsystem ID's
 	 * Intel uses a different SSID programming model than Compaq.
 	 * For Intel, each SSID bit identifies a PHP capability.
@@ -864,6 +1017,17 @@ static int cpqhpc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if ((pdev->revision <= 2) && (vendor_id != PCI_VENDOR_ID_INTEL)) {
 		err(msg_HPC_not_supported);
 		return -ENODEV;
+=======
+	/* Check for the proper subsystem IDs
+	 * Intel uses a different SSID programming model than Compaq.
+	 * For Intel, each SSID bit identifies a PHP capability.
+	 * Also Intel HPCs may have RID=0.
+	 */
+	if ((pdev->revision <= 2) && (vendor_id != PCI_VENDOR_ID_INTEL)) {
+		err(msg_HPC_not_supported);
+		rc = -ENODEV;
+		goto err_disable_device;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* TODO: This code can be made to support non-Compaq or Intel
@@ -879,7 +1043,10 @@ static int cpqhpc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	ctrl = kzalloc(sizeof(struct controller), GFP_KERNEL);
 	if (!ctrl) {
+<<<<<<< HEAD
 		err("%s : out of memory\n", __func__);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto err_disable_device;
 	}
@@ -914,12 +1081,20 @@ static int cpqhpc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 				bus->max_bus_speed = PCI_SPEED_100MHz_PCIX;
 				break;
 			}
+<<<<<<< HEAD
 			if (bus_cap & 20) {
+=======
+			if (bus_cap & 0x20) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dbg("bus max supports 66MHz PCI-X\n");
 				bus->max_bus_speed = PCI_SPEED_66MHz_PCIX;
 				break;
 			}
+<<<<<<< HEAD
 			if (bus_cap & 10) {
+=======
+			if (bus_cap & 0x10) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dbg("bus max supports 66MHz PCI\n");
 				bus->max_bus_speed = PCI_SPEED_66MHz;
 				break;
@@ -1092,9 +1267,14 @@ static int cpqhpc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	/* initialize our threads if they haven't already been started up */
 	rc = one_time_init();
+<<<<<<< HEAD
 	if (rc) {
 		goto err_free_bus;
 	}
+=======
+	if (rc)
+		goto err_free_bus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg("pdev = %p\n", pdev);
 	dbg("pci resource start %llx\n", (unsigned long long)pci_resource_start(pdev, 0));
@@ -1178,7 +1358,11 @@ static int cpqhpc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	 * Finish setting up the hot plug ctrl device
 	 */
 	ctrl->slot_device_offset = readb(ctrl->hpc_reg + SLOT_MASK) >> 4;
+<<<<<<< HEAD
 	dbg("NumSlots %d \n", ctrl->slot_device_offset);
+=======
+	dbg("NumSlots %d\n", ctrl->slot_device_offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctrl->next_event = 0;
 
@@ -1195,7 +1379,11 @@ static int cpqhpc_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	writel(0xFFFFFFFFL, ctrl->hpc_reg + INT_MASK);
 
 	/* set up the interrupt */
+<<<<<<< HEAD
 	dbg("HPC interrupt = %d \n", ctrl->interrupt);
+=======
+	dbg("HPC interrupt = %d\n", ctrl->interrupt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (request_irq(ctrl->interrupt, cpqhp_ctrl_intr,
 			IRQF_SHARED, MY_NAME, ctrl)) {
 		err("Can't get irq %d for the hotplug pci controller\n",
@@ -1311,14 +1499,22 @@ static void __exit unload_cpqphpd(void)
 	struct pci_resource *res;
 	struct pci_resource *tres;
 
+<<<<<<< HEAD
 	rc = compaq_nvram_store(cpqhp_rom_start);
+=======
+	compaq_nvram_store(cpqhp_rom_start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ctrl = cpqhp_ctrl_list;
 
 	while (ctrl) {
 		if (ctrl->hpc_reg) {
 			u16 misc;
+<<<<<<< HEAD
 			rc = read_slot_enable (ctrl);
+=======
+			rc = read_slot_enable(ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			writeb(0, ctrl->hpc_reg + SLOT_SERR);
 			writel(0xFFFFFFC0L | ~rc, ctrl->hpc_reg + INT_MASK);
@@ -1358,7 +1554,11 @@ static void __exit unload_cpqphpd(void)
 			kfree(tres);
 		}
 
+<<<<<<< HEAD
 		kfree (ctrl->pci_bus);
+=======
+		kfree(ctrl->pci_bus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tctrl = ctrl;
 		ctrl = ctrl->next;
@@ -1413,7 +1613,11 @@ static void __exit unload_cpqphpd(void)
 		iounmap(smbios_start);
 }
 
+<<<<<<< HEAD
 static struct pci_device_id hpcd_pci_tbl[] = {
+=======
+static const struct pci_device_id hpcd_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	/* handle any PCI Hotplug controller */
 	.class =        ((PCI_CLASS_SYSTEM_PCI_HOTPLUG << 8) | 0x00),
@@ -1443,7 +1647,11 @@ static int __init cpqhpc_init(void)
 
 	cpqhp_debug = debug;
 
+<<<<<<< HEAD
 	info (DRIVER_DESC " version: " DRIVER_VERSION "\n");
+=======
+	info(DRIVER_DESC " version: " DRIVER_VERSION "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpqhp_initialize_debugfs();
 	result = pci_register_driver(&cpqhpc_driver);
 	dbg("pci_register_driver = %d\n", result);

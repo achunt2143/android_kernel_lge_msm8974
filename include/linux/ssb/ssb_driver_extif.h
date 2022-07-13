@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Hardware-specific External Interface I/O core definitions
  * for the BCM47xx family of SiliconBackplane-based chips.
@@ -14,8 +18,11 @@
  *
  * Copyright 2005, Broadcom Corporation
  * Copyright 2006, Michael Buesch
+<<<<<<< HEAD
  *
  * Licensed under the GPL version 2. See COPYING for details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef LINUX_SSB_EXTIFCORE_H_
 #define LINUX_SSB_EXTIFCORE_H_
@@ -152,12 +159,22 @@
 /* watchdog */
 #define SSB_EXTIF_WATCHDOG_CLK		48000000	/* Hz */
 
+<<<<<<< HEAD
+=======
+#define SSB_EXTIF_WATCHDOG_MAX_TIMER	((1 << 28) - 1)
+#define SSB_EXTIF_WATCHDOG_MAX_TIMER_MS	(SSB_EXTIF_WATCHDOG_MAX_TIMER \
+					 / (SSB_EXTIF_WATCHDOG_CLK / 1000))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #ifdef CONFIG_SSB_DRIVER_EXTIF
 
 struct ssb_extif {
 	struct ssb_device *dev;
+<<<<<<< HEAD
+=======
+	spinlock_t gpio_lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline bool ssb_extif_available(struct ssb_extif *extif)
@@ -171,8 +188,12 @@ extern void ssb_extif_get_clockcontrol(struct ssb_extif *extif,
 extern void ssb_extif_timing_init(struct ssb_extif *extif,
 				  unsigned long ns);
 
+<<<<<<< HEAD
 extern void ssb_extif_watchdog_timer_set(struct ssb_extif *extif,
 					 u32 ticks);
+=======
+extern u32 ssb_extif_watchdog_timer_set(struct ssb_extif *extif, u32 ticks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Extif GPIO pin access */
 u32 ssb_extif_gpio_in(struct ssb_extif *extif, u32 mask);
@@ -195,7 +216,11 @@ struct ssb_extif {
 
 static inline bool ssb_extif_available(struct ssb_extif *extif)
 {
+<<<<<<< HEAD
 	return 0;
+=======
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline
@@ -205,10 +230,60 @@ void ssb_extif_get_clockcontrol(struct ssb_extif *extif,
 }
 
 static inline
+<<<<<<< HEAD
 void ssb_extif_watchdog_timer_set(struct ssb_extif *extif,
 				  u32 ticks)
 {
 }
 
+=======
+void ssb_extif_timing_init(struct ssb_extif *extif, unsigned long ns)
+{
+}
+
+static inline
+u32 ssb_extif_watchdog_timer_set(struct ssb_extif *extif, u32 ticks)
+{
+	return 0;
+}
+
+static inline u32 ssb_extif_gpio_in(struct ssb_extif *extif, u32 mask)
+{
+	return 0;
+}
+
+static inline u32 ssb_extif_gpio_out(struct ssb_extif *extif, u32 mask,
+				     u32 value)
+{
+	return 0;
+}
+
+static inline u32 ssb_extif_gpio_outen(struct ssb_extif *extif, u32 mask,
+				       u32 value)
+{
+	return 0;
+}
+
+static inline u32 ssb_extif_gpio_polarity(struct ssb_extif *extif, u32 mask,
+					  u32 value)
+{
+	return 0;
+}
+
+static inline u32 ssb_extif_gpio_intmask(struct ssb_extif *extif, u32 mask,
+					 u32 value)
+{
+	return 0;
+}
+
+#ifdef CONFIG_SSB_SERIAL
+static inline int ssb_extif_serial_init(struct ssb_extif *extif,
+					struct ssb_serial_port *ports)
+{
+	return 0;
+}
+#endif /* CONFIG_SSB_SERIAL */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SSB_DRIVER_EXTIF */
 #endif /* LINUX_SSB_EXTIFCORE_H_ */

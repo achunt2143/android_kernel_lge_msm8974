@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Low-Level PCI Access for i386 machines
  *
@@ -31,10 +35,17 @@
 #include <linux/init.h>
 #include <linux/ioport.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 
 #include <asm/pat.h>
 #include <asm/e820.h>
+=======
+#include <linux/memblock.h>
+
+#include <asm/memtype.h>
+#include <asm/e820/api.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pci_x86.h>
 #include <asm/io_apic.h>
 
@@ -51,13 +62,21 @@ struct pcibios_fwaddrmap {
 
 static LIST_HEAD(pcibios_fwaddrmappings);
 static DEFINE_SPINLOCK(pcibios_fwaddrmap_lock);
+<<<<<<< HEAD
+=======
+static bool pcibios_fw_addr_done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Must be called with 'pcibios_fwaddrmap_lock' lock held. */
 static struct pcibios_fwaddrmap *pcibios_fwaddrmap_lookup(struct pci_dev *dev)
 {
 	struct pcibios_fwaddrmap *map;
 
+<<<<<<< HEAD
 	WARN_ON(!spin_is_locked(&pcibios_fwaddrmap_lock));
+=======
+	lockdep_assert_held(&pcibios_fwaddrmap_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(map, &pcibios_fwaddrmappings, list)
 		if (map->dev == dev)
@@ -72,6 +91,12 @@ pcibios_save_fw_addr(struct pci_dev *dev, int idx, resource_size_t fw_addr)
 	unsigned long flags;
 	struct pcibios_fwaddrmap *map;
 
+<<<<<<< HEAD
+=======
+	if (pcibios_fw_addr_done)
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&pcibios_fwaddrmap_lock, flags);
 	map = pcibios_fwaddrmap_lookup(dev);
 	if (!map) {
@@ -97,6 +122,12 @@ resource_size_t pcibios_retrieve_fw_addr(struct pci_dev *dev, int idx)
 	struct pcibios_fwaddrmap *map;
 	resource_size_t fw_addr = 0;
 
+<<<<<<< HEAD
+=======
+	if (pcibios_fw_addr_done)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&pcibios_fwaddrmap_lock, flags);
 	map = pcibios_fwaddrmap_lookup(dev);
 	if (map)
@@ -106,7 +137,11 @@ resource_size_t pcibios_retrieve_fw_addr(struct pci_dev *dev, int idx)
 	return fw_addr;
 }
 
+<<<<<<< HEAD
 static void pcibios_fw_addr_list_del(void)
+=======
+static void __init pcibios_fw_addr_list_del(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	struct pcibios_fwaddrmap *entry, *next;
@@ -118,6 +153,10 @@ static void pcibios_fw_addr_list_del(void)
 		kfree(entry);
 	}
 	spin_unlock_irqrestore(&pcibios_fwaddrmap_lock, flags);
+<<<<<<< HEAD
+=======
+	pcibios_fw_addr_done = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -154,6 +193,13 @@ pcibios_align_resource(void *data, const struct resource *res,
 			return start;
 		if (start & 0x300)
 			start = (start + 0x3ff) & ~0x3ff;
+<<<<<<< HEAD
+=======
+	} else if (res->flags & IORESOURCE_MEM) {
+		/* The low 1MB range is reserved for ISA cards */
+		if (start < BIOS_END)
+			start = BIOS_END;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return start;
 }
@@ -193,6 +239,7 @@ EXPORT_SYMBOL(pcibios_align_resource);
  *	    as well.
  */
 
+<<<<<<< HEAD
 static void __init pcibios_allocate_bus_resources(struct list_head *bus_list)
 {
 	struct pci_bus *bus;
@@ -225,14 +272,56 @@ static void __init pcibios_allocate_bus_resources(struct list_head *bus_list)
 	}
 }
 
+=======
+static void pcibios_allocate_bridge_resources(struct pci_dev *dev)
+{
+	int idx;
+	struct resource *r;
+
+	for (idx = PCI_BRIDGE_RESOURCES; idx < PCI_NUM_RESOURCES; idx++) {
+		r = &dev->resource[idx];
+		if (!r->flags)
+			continue;
+		if (r->parent)	/* Already allocated */
+			continue;
+		if (!r->start || pci_claim_bridge_resource(dev, idx) < 0) {
+			/*
+			 * Something is wrong with the region.
+			 * Invalidate the resource to prevent
+			 * child resource allocations in this
+			 * range.
+			 */
+			r->start = r->end = 0;
+			r->flags = 0;
+		}
+	}
+}
+
+static void pcibios_allocate_bus_resources(struct pci_bus *bus)
+{
+	struct pci_bus *child;
+
+	/* Depth-First Search on bus tree */
+	if (bus->self)
+		pcibios_allocate_bridge_resources(bus->self);
+	list_for_each_entry(child, &bus->children, node)
+		pcibios_allocate_bus_resources(child);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pci_check_idx_range {
 	int start;
 	int end;
 };
 
+<<<<<<< HEAD
 static void __init pcibios_allocate_resources(int pass)
 {
 	struct pci_dev *dev = NULL;
+=======
+static void pcibios_allocate_dev_resources(struct pci_dev *dev, int pass)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int idx, disabled, i;
 	u16 command;
 	struct resource *r;
@@ -244,6 +333,7 @@ static void __init pcibios_allocate_resources(int pass)
 #endif
 	};
 
+<<<<<<< HEAD
 	for_each_pci_dev(dev) {
 		pci_read_config_word(dev, PCI_COMMAND, &command);
 		for (i = 0; i < ARRAY_SIZE(idx_range); i++)
@@ -252,6 +342,15 @@ static void __init pcibios_allocate_resources(int pass)
 			if (r->parent)		/* Already allocated */
 				continue;
 			if (!r->start)		/* Address not assigned at all */
+=======
+	pci_read_config_word(dev, PCI_COMMAND, &command);
+	for (i = 0; i < ARRAY_SIZE(idx_range); i++)
+		for (idx = idx_range[i].start; idx <= idx_range[i].end; idx++) {
+			r = &dev->resource[idx];
+			if (r->parent)	/* Already allocated */
+				continue;
+			if (!r->start)	/* Address not assigned at all */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			if (r->flags & IORESOURCE_IO)
 				disabled = !(command & PCI_COMMAND_IO);
@@ -262,6 +361,7 @@ static void __init pcibios_allocate_resources(int pass)
 					"BAR %d: reserving %pr (d=%d, p=%d)\n",
 					idx, r, disabled, pass);
 				if (pci_claim_resource(dev, idx) < 0) {
+<<<<<<< HEAD
 					/* We'll assign a new address later */
 					pcibios_save_fw_addr(dev,
 							idx, r->start);
@@ -283,10 +383,37 @@ static void __init pcibios_allocate_resources(int pass)
 				pci_write_config_dword(dev, dev->rom_base_reg,
 						reg & ~PCI_ROM_ADDRESS_ENABLE);
 			}
+=======
+					if (r->flags & IORESOURCE_PCI_FIXED) {
+						dev_info(&dev->dev, "BAR %d %pR is immovable\n",
+							 idx, r);
+					} else {
+						/* We'll assign a new address later */
+						pcibios_save_fw_addr(dev,
+								idx, r->start);
+						r->end -= r->start;
+						r->start = 0;
+					}
+				}
+			}
+		}
+	if (!pass) {
+		r = &dev->resource[PCI_ROM_RESOURCE];
+		if (r->flags & IORESOURCE_ROM_ENABLE) {
+			/* Turn the ROM off, leave the resource region,
+			 * but keep it unregistered. */
+			u32 reg;
+			dev_dbg(&dev->dev, "disabling ROM %pR\n", r);
+			r->flags &= ~IORESOURCE_ROM_ENABLE;
+			pci_read_config_dword(dev, dev->rom_base_reg, &reg);
+			pci_write_config_dword(dev, dev->rom_base_reg,
+						reg & ~PCI_ROM_ADDRESS_ENABLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 
+<<<<<<< HEAD
 static int __init pcibios_assign_resources(void)
 {
 	struct pci_dev *dev = NULL;
@@ -308,6 +435,63 @@ static int __init pcibios_assign_resources(void)
 			}
 		}
 	}
+=======
+static void pcibios_allocate_resources(struct pci_bus *bus, int pass)
+{
+	struct pci_dev *dev;
+	struct pci_bus *child;
+
+	list_for_each_entry(dev, &bus->devices, bus_list) {
+		pcibios_allocate_dev_resources(dev, pass);
+
+		child = dev->subordinate;
+		if (child)
+			pcibios_allocate_resources(child, pass);
+	}
+}
+
+static void pcibios_allocate_dev_rom_resource(struct pci_dev *dev)
+{
+	struct resource *r;
+
+	/*
+	 * Try to use BIOS settings for ROMs, otherwise let
+	 * pci_assign_unassigned_resources() allocate the new
+	 * addresses.
+	 */
+	r = &dev->resource[PCI_ROM_RESOURCE];
+	if (!r->flags || !r->start)
+		return;
+	if (r->parent) /* Already allocated */
+		return;
+
+	if (pci_claim_resource(dev, PCI_ROM_RESOURCE) < 0) {
+		r->end -= r->start;
+		r->start = 0;
+	}
+}
+static void pcibios_allocate_rom_resources(struct pci_bus *bus)
+{
+	struct pci_dev *dev;
+	struct pci_bus *child;
+
+	list_for_each_entry(dev, &bus->devices, bus_list) {
+		pcibios_allocate_dev_rom_resource(dev);
+
+		child = dev->subordinate;
+		if (child)
+			pcibios_allocate_rom_resources(child);
+	}
+}
+
+static int __init pcibios_assign_resources(void)
+{
+	struct pci_bus *bus;
+
+	if (!(pci_probe & PCI_ASSIGN_ROMS))
+		list_for_each_entry(bus, &pci_root_buses, node)
+			pcibios_allocate_rom_resources(bus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_assign_unassigned_resources();
 	pcibios_fw_addr_list_del();
@@ -315,6 +499,7 @@ static int __init pcibios_assign_resources(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 void __init pcibios_resource_survey(void)
 {
 	DBG("PCI: Allocating resources\n");
@@ -323,6 +508,42 @@ void __init pcibios_resource_survey(void)
 	pcibios_allocate_resources(1);
 
 	e820_reserve_resources_late();
+=======
+/*
+ * This is an fs_initcall (one below subsys_initcall) in order to reserve
+ * resources properly.
+ */
+fs_initcall(pcibios_assign_resources);
+
+void pcibios_resource_survey_bus(struct pci_bus *bus)
+{
+	dev_printk(KERN_DEBUG, &bus->dev, "Allocating resources\n");
+
+	pcibios_allocate_bus_resources(bus);
+
+	pcibios_allocate_resources(bus, 0);
+	pcibios_allocate_resources(bus, 1);
+
+	if (!(pci_probe & PCI_ASSIGN_ROMS))
+		pcibios_allocate_rom_resources(bus);
+}
+
+void __init pcibios_resource_survey(void)
+{
+	struct pci_bus *bus;
+
+	DBG("PCI: Allocating resources\n");
+
+	list_for_each_entry(bus, &pci_root_buses, node)
+		pcibios_allocate_bus_resources(bus);
+
+	list_for_each_entry(bus, &pci_root_buses, node)
+		pcibios_allocate_resources(bus, 0);
+	list_for_each_entry(bus, &pci_root_buses, node)
+		pcibios_allocate_resources(bus, 1);
+
+	e820__reserve_resources_late();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Insert the IO APIC resources after PCI initialization has
 	 * occurred to handle IO APICS that are mapped in on a BAR in
@@ -330,6 +551,7 @@ void __init pcibios_resource_survey(void)
 	 */
 	ioapic_insert_resources();
 }
+<<<<<<< HEAD
 
 /**
  * called in fs_initcall (one below subsys_initcall),
@@ -385,3 +607,5 @@ int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 
 	return 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

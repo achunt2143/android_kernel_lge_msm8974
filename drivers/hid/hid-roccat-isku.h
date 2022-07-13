@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __HID_ROCCAT_ISKU_H
 #define __HID_ROCCAT_ISKU_H
 
@@ -6,19 +10,44 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
 
 enum {
+<<<<<<< HEAD
+=======
+	ISKU_SIZE_CONTROL = 0x03,
+	ISKU_SIZE_INFO = 0x06,
+	ISKU_SIZE_KEY_MASK = 0x06,
+	ISKU_SIZE_KEYS_FUNCTION = 0x29,
+	ISKU_SIZE_KEYS_EASYZONE = 0x41,
+	ISKU_SIZE_KEYS_MEDIA = 0x1d,
+	ISKU_SIZE_KEYS_THUMBSTER = 0x17,
+	ISKU_SIZE_KEYS_MACRO = 0x23,
+	ISKU_SIZE_KEYS_CAPSLOCK = 0x06,
+	ISKU_SIZE_LAST_SET = 0x14,
+	ISKU_SIZE_LIGHT = 0x10,
+	ISKU_SIZE_MACRO = 0x823,
+	ISKU_SIZE_RESET = 0x03,
+	ISKU_SIZE_TALK = 0x10,
+	ISKU_SIZE_TALKFX = 0x10,
+};
+
+enum {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ISKU_PROFILE_NUM = 5,
 	ISKU_USB_INTERFACE_PROTOCOL = 0,
 };
 
+<<<<<<< HEAD
 struct isku_control {
 	uint8_t command; /* ISKU_COMMAND_CONTROL */
 	uint8_t value;
@@ -32,12 +61,15 @@ enum isku_control_values {
 	ISKU_CONTROL_VALUE_STATUS_WAIT = 3,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct isku_actual_profile {
 	uint8_t command; /* ISKU_COMMAND_ACTUAL_PROFILE */
 	uint8_t size; /* always 3 */
 	uint8_t actual_profile;
 } __packed;
 
+<<<<<<< HEAD
 struct isku_key_mask {
 	uint8_t command; /* ISKU_COMMAND_KEY_MASK */
 	uint8_t size; /* 6 */
@@ -92,6 +124,8 @@ struct isku_last_set {
 	uint8_t data[0x14];
 } __packed;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum isku_commands {
 	ISKU_COMMAND_CONTROL = 0x4,
 	ISKU_COMMAND_ACTUAL_PROFILE = 0x5,
@@ -104,10 +138,18 @@ enum isku_commands {
 	ISKU_COMMAND_MACRO = 0xe,
 	ISKU_COMMAND_INFO = 0xf,
 	ISKU_COMMAND_LIGHT = 0x10,
+<<<<<<< HEAD
+=======
+	ISKU_COMMAND_RESET = 0x11,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ISKU_COMMAND_KEYS_CAPSLOCK = 0x13,
 	ISKU_COMMAND_LAST_SET = 0x14,
 	ISKU_COMMAND_15 = 0x15,
 	ISKU_COMMAND_TALK = 0x16,
+<<<<<<< HEAD
+=======
+	ISKU_COMMAND_TALKFX = 0x17,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ISKU_COMMAND_FIRMWARE_WRITE = 0x1b,
 	ISKU_COMMAND_FIRMWARE_WRITE_CONTROL = 0x1c,
 };

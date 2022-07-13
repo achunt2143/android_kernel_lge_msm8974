@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /****************************************************************************
  * Driver for Solarflare Solarstorm network controllers and boards
  * Copyright 2007-2009 Solarflare Communications Inc.
@@ -5,6 +6,12 @@
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published
  * by the Free Software Foundation, incorporated herein by reference.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/****************************************************************************
+ * Driver for Solarflare network controllers and boards
+ * Copyright 2007-2013 Solarflare Communications Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef EFX_ENUM_H
@@ -81,7 +88,10 @@ enum efx_loopback_mode {
 			    (1 << LOOPBACK_XAUI) |		\
 			    (1 << LOOPBACK_GMII) |		\
 			    (1 << LOOPBACK_SGMII) |		\
+<<<<<<< HEAD
 			    (1 << LOOPBACK_SGMII) |		\
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    (1 << LOOPBACK_XGBR) |		\
 			    (1 << LOOPBACK_XFI) |		\
 			    (1 << LOOPBACK_XAUI_FAR) |		\
@@ -136,6 +146,7 @@ enum efx_loopback_mode {
  *
  * Reset methods are numbered in order of increasing scope.
  *
+<<<<<<< HEAD
  * @RESET_TYPE_INVISIBLE: don't reset the PHYs or interrupts
  * @RESET_TYPE_ALL: reset everything but PCI core blocks
  * @RESET_TYPE_WORLD: reset everything, save & restore PCI config
@@ -161,6 +172,46 @@ enum reset_type {
 	RESET_TYPE_TX_DESC_FETCH,
 	RESET_TYPE_TX_SKIP,
 	RESET_TYPE_MC_FAILURE,
+=======
+ * @RESET_TYPE_INVISIBLE: Reset datapath and MAC (Falcon only)
+ * @RESET_TYPE_RECOVER_OR_ALL: Try to recover. Apply RESET_TYPE_ALL
+ * if unsuccessful.
+ * @RESET_TYPE_ALL: Reset datapath, MAC and PHY
+ * @RESET_TYPE_WORLD: Reset as much as possible
+ * @RESET_TYPE_RECOVER_OR_DISABLE: Try to recover. Apply RESET_TYPE_DISABLE if
+ * unsuccessful.
+ * @RESET_TYPE_DATAPATH: Reset datapath only.
+ * @RESET_TYPE_MC_BIST: MC entering BIST mode.
+ * @RESET_TYPE_DISABLE: Reset datapath, MAC and PHY; leave NIC disabled
+ * @RESET_TYPE_TX_WATCHDOG: reset due to TX watchdog
+ * @RESET_TYPE_INT_ERROR: reset due to internal error
+ * @RESET_TYPE_DMA_ERROR: DMA error
+ * @RESET_TYPE_TX_SKIP: hardware completed empty tx descriptors
+ * @RESET_TYPE_MC_FAILURE: MC reboot/assertion
+ * @RESET_TYPE_MCDI_TIMEOUT: MCDI timeout.
+ */
+enum reset_type {
+	RESET_TYPE_INVISIBLE,
+	RESET_TYPE_RECOVER_OR_ALL,
+	RESET_TYPE_ALL,
+	RESET_TYPE_WORLD,
+	RESET_TYPE_RECOVER_OR_DISABLE,
+	RESET_TYPE_DATAPATH,
+	RESET_TYPE_MC_BIST,
+	RESET_TYPE_DISABLE,
+	RESET_TYPE_MAX_METHOD,
+	RESET_TYPE_TX_WATCHDOG,
+	RESET_TYPE_INT_ERROR,
+	RESET_TYPE_DMA_ERROR,
+	RESET_TYPE_TX_SKIP,
+	RESET_TYPE_MC_FAILURE,
+	/* RESET_TYPE_MCDI_TIMEOUT is actually a method, not just a reason, but
+	 * it doesn't fit the scope hierarchy (not well-ordered by inclusion).
+	 * We encode this by having its enum value be greater than
+	 * RESET_TYPE_MAX_METHOD.
+	 */
+	RESET_TYPE_MCDI_TIMEOUT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	RESET_TYPE_MAX,
 };
 

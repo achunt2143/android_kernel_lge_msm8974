@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/memmove.S
  *
@@ -6,7 +10,11 @@
  * This is hand-massaged output from the original memcpy.c.  We defer to
  * memcpy whenever possible; the backwards copy loops are not unrolled.
  */
+<<<<<<< HEAD
         
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set noat
 	.set noreorder
 	.text
@@ -179,3 +187,7 @@ $egress:
 	nop
 
 	.end memmove
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(memmove)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

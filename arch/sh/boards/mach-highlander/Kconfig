@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if SH_HIGHLANDER
 
 choice
@@ -18,7 +22,11 @@ config SH_R7780MP
 config SH_R7785RP
 	bool "R7785RP board support"
 	depends on CPU_SUBTYPE_SH7785
+<<<<<<< HEAD
 	select ARCH_REQUIRE_GPIOLIB
+=======
+	select GPIOLIB
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endchoice
 

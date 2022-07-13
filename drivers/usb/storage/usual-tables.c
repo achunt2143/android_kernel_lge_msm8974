@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Driver for USB Mass Storage devices
  * Usual Tables File for usb-storage and libusual
  *
@@ -19,6 +20,14 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Driver for USB Mass Storage devices
+ * Usual Tables File for usb-storage and libusual
+ *
+ * Copyright (C) 2009 Alan Stern (stern@rowland.harvard.edu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -34,6 +43,7 @@
 		    vendorName, productName, useProtocol, useTransport, \
 		    initFunction, flags) \
 { USB_DEVICE_VER(id_vendor, id_product, bcdDeviceMin, bcdDeviceMax), \
+<<<<<<< HEAD
   .driver_info = (flags)|(USB_US_TYPE_STOR<<24) }
 
 #define COMPLIANT_DEV(id_vendor, id_product, bcdDeviceMin, bcdDeviceMax, \
@@ -66,13 +76,29 @@ struct usb_device_id usb_storage_usb_ids[] = {
 };
 EXPORT_SYMBOL_GPL(usb_storage_usb_ids);
 
+=======
+  .driver_info = (kernel_ulong_t)(flags) }
+
+#define COMPLIANT_DEV	UNUSUAL_DEV
+
+#define USUAL_DEV(useProto, useTrans) \
+{ USB_INTERFACE_INFO(USB_CLASS_MASS_STORAGE, useProto, useTrans) }
+
+const struct usb_device_id usb_storage_usb_ids[] = {
+#	include "unusual_devs.h"
+	{ }		/* Terminating entry */
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DEVICE_TABLE(usb, usb_storage_usb_ids);
 
 #undef UNUSUAL_DEV
 #undef COMPLIANT_DEV
 #undef USUAL_DEV
+<<<<<<< HEAD
 #undef UNUSUAL_VENDOR_INTF
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The table of devices to ignore
@@ -91,7 +117,11 @@ struct ignore_entry {
 	.bcdmax = bcdDeviceMax,		\
 }
 
+<<<<<<< HEAD
 static struct ignore_entry ignore_ids[] = {
+=======
+static const struct ignore_entry ignore_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #	include "unusual_alauda.h"
 #	include "unusual_cypress.h"
 #	include "unusual_datafab.h"
@@ -110,13 +140,20 @@ static struct ignore_entry ignore_ids[] = {
 
 #undef UNUSUAL_DEV
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Return an error if a device is in the ignore_ids list */
 int usb_usual_ignore_device(struct usb_interface *intf)
 {
 	struct usb_device *udev;
 	unsigned vid, pid, bcd;
+<<<<<<< HEAD
 	struct ignore_entry *p;
+=======
+	const struct ignore_entry *p;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	udev = interface_to_usbdev(intf);
 	vid = le16_to_cpu(udev->descriptor.idVendor);
@@ -130,4 +167,7 @@ int usb_usual_ignore_device(struct usb_interface *intf)
 	}
 	return 0;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL_GPL(usb_usual_ignore_device);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_SIGNAL_H
 #define _ASM_X86_SIGNAL_H
 
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/time.h>
 #include <linux/compiler.h>
@@ -10,6 +15,8 @@
 struct siginfo;
 
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/linkage.h>
 
 /* Most things should be clean enough to redefine this at will, if care
@@ -31,6 +38,7 @@ typedef struct {
 	unsigned long sig[_NSIG_WORDS];
 } sigset_t;
 
+<<<<<<< HEAD
 #else
 /* Here we must cater to libcs that poke about in kernel headers.  */
 
@@ -187,6 +195,20 @@ typedef struct sigaltstack {
 
 #ifdef __KERNEL__
 #include <asm/sigcontext.h>
+=======
+/* non-uapi in-kernel SA_FLAGS for those indicates ABI for a signal frame */
+#define SA_IA32_ABI	0x02000000u
+#define SA_X32_ABI	0x01000000u
+
+#endif /* __ASSEMBLY__ */
+#include <uapi/asm/signal.h>
+#ifndef __ASSEMBLY__
+
+#define __ARCH_HAS_SA_RESTORER
+
+#include <asm/asm.h>
+#include <uapi/asm/sigcontext.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __i386__
 
@@ -233,9 +255,15 @@ static inline int __const_sigismember(sigset_t *set, int _sig)
 
 static inline int __gen_sigismember(sigset_t *set, int _sig)
 {
+<<<<<<< HEAD
 	int ret;
 	asm("btl %2,%1\n\tsbbl %0,%0"
 	    : "=r"(ret) : "m"(*set), "Ir"(_sig-1) : "cc");
+=======
+	bool ret;
+	asm("btl %2,%1" CC_SET(c)
+	    : CC_OUT(c) (ret) : "m"(*set), "Ir"(_sig-1));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -244,12 +272,15 @@ static inline int __gen_sigismember(sigset_t *set, int _sig)
 	 ? __const_sigismember((set), (sig))	\
 	 : __gen_sigismember((set), (sig)))
 
+<<<<<<< HEAD
 static inline int sigfindinword(unsigned long word)
 {
 	asm("bsfl %1,%0" : "=r"(word) : "rm"(word) : "cc");
 	return word;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pt_regs;
 
 #else /* __i386__ */
@@ -258,9 +289,13 @@ struct pt_regs;
 
 #endif /* !__i386__ */
 
+<<<<<<< HEAD
 #define ptrace_signal_deliver(regs, cookie) do { } while (0)
 
 #endif /* __KERNEL__ */
 #endif /* __ASSEMBLY__ */
 
+=======
+#endif /* __ASSEMBLY__ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_SIGNAL_H */

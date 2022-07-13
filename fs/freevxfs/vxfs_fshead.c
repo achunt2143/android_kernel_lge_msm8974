@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2000-2001 Christoph Hellwig.
  * All rights reserved.
@@ -25,6 +26,12 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2000-2001 Christoph Hellwig.
+ * Copyright (c) 2016 Krzysztof Blaszkowski
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -108,6 +115,7 @@ vxfs_read_fshead(struct super_block *sbp)
 {
 	struct vxfs_sb_info		*infp = VXFS_SBI(sbp);
 	struct vxfs_fsh			*pfp, *sfp;
+<<<<<<< HEAD
 	struct vxfs_inode_info		*vip, *tip;
 
 	vip = vxfs_blkiget(sbp, infp->vsi_iext, infp->vsi_fshino);
@@ -122,17 +130,37 @@ vxfs_read_fshead(struct super_block *sbp)
 	}
 
 
+=======
+	struct vxfs_inode_info		*vip;
+
+	infp->vsi_fship = vxfs_blkiget(sbp, infp->vsi_iext, infp->vsi_fshino);
+	if (!infp->vsi_fship) {
+		printk(KERN_ERR "vxfs: unable to read fsh inode\n");
+		return -EINVAL;
+	}
+
+	vip = VXFS_INO(infp->vsi_fship);
+	if (!VXFS_ISFSH(vip)) {
+		printk(KERN_ERR "vxfs: fsh list inode is of wrong type (%x)\n",
+				vip->vii_mode & VXFS_TYPE_MASK); 
+		goto out_iput_fship;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DIAGNOSTIC
 	printk("vxfs: fsh inode dump:\n");
 	vxfs_dumpi(vip, infp->vsi_fshino);
 #endif
 
+<<<<<<< HEAD
 	infp->vsi_fship = vxfs_get_fake_inode(sbp, vip);
 	if (!infp->vsi_fship) {
 		printk(KERN_ERR "vxfs: unable to get fsh inode\n");
 		goto out_free_fship;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sfp = vxfs_getfsh(infp->vsi_fship, 0);
 	if (!sfp) {
 		printk(KERN_ERR "vxfs: unable to get structural fsh\n");
@@ -153,6 +181,7 @@ vxfs_read_fshead(struct super_block *sbp)
 	vxfs_dumpfsh(pfp);
 #endif
 
+<<<<<<< HEAD
 	tip = vxfs_blkiget(sbp, infp->vsi_iext, sfp->fsh_ilistino[0]);
 	if (!tip)
 		goto out_free_pfp;
@@ -161,6 +190,12 @@ vxfs_read_fshead(struct super_block *sbp)
 	if (!infp->vsi_stilist) {
 		printk(KERN_ERR "vxfs: unable to get structural list inode\n");
 		kfree(tip);
+=======
+	infp->vsi_stilist = vxfs_blkiget(sbp, infp->vsi_iext,
+			fs32_to_cpu(infp, sfp->fsh_ilistino[0]));
+	if (!infp->vsi_stilist) {
+		printk(KERN_ERR "vxfs: unable to get structural list inode\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_pfp;
 	}
 	if (!VXFS_ISILT(VXFS_INO(infp->vsi_stilist))) {
@@ -169,6 +204,7 @@ vxfs_read_fshead(struct super_block *sbp)
 		goto out_iput_stilist;
 	}
 
+<<<<<<< HEAD
 	tip = vxfs_stiget(sbp, pfp->fsh_ilistino[0]);
 	if (!tip)
 		goto out_iput_stilist;
@@ -176,6 +212,11 @@ vxfs_read_fshead(struct super_block *sbp)
 	if (!infp->vsi_ilist) {
 		printk(KERN_ERR "vxfs: unable to get inode list inode\n");
 		kfree(tip);
+=======
+	infp->vsi_ilist = vxfs_stiget(sbp, fs32_to_cpu(infp, pfp->fsh_ilistino[0]));
+	if (!infp->vsi_ilist) {
+		printk(KERN_ERR "vxfs: unable to get inode list inode\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_iput_stilist;
 	}
 	if (!VXFS_ISILT(VXFS_INO(infp->vsi_ilist))) {
@@ -184,6 +225,11 @@ vxfs_read_fshead(struct super_block *sbp)
 		goto out_iput_ilist;
 	}
 
+<<<<<<< HEAD
+=======
+	kfree(pfp);
+	kfree(sfp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  out_iput_ilist:
@@ -197,7 +243,10 @@ vxfs_read_fshead(struct super_block *sbp)
  out_iput_fship:
 	iput(infp->vsi_fship);
 	return -EINVAL;
+<<<<<<< HEAD
  out_free_fship:
  	kfree(vip);
 	return -EINVAL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

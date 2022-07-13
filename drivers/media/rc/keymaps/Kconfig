@@ -1,9 +1,17 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config RC_MAP
 	tristate "Compile Remote Controller keymap modules"
 	depends on RC_CORE
 	default y
 
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   This option enables the compilation of lots of Remote
 	   Controller tables. They are short tables, but if you
 	   don't use a remote controller, or prefer to load the
@@ -12,4 +20,8 @@ config RC_MAP
 	   The ir-keytable program, available at v4l-utils package
 	   provide the tool and the same RC maps for load from
 	   userspace. Its available at
+<<<<<<< HEAD
 			http://git.linuxtv.org/v4l-utils
+=======
+		http://git.linuxtv.org/cgit.cgi/v4l-utils.git/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

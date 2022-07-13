@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson AB 2010
  * Author:	Sjur Brendeland / sjur.brandeland@stericsson.com
  * License terms: GNU General Public License (GPL) version 2
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) ST-Ericsson AB 2010
+ * Author:	Sjur Brendeland
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/hardirq.h>
@@ -21,7 +28,11 @@
 #include <linux/debugfs.h>
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Sjur Brendeland<sjur.brandeland@stericsson.com>");
+=======
+MODULE_AUTHOR("Sjur Brendeland");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("CAIF serial device TTY line discipline");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_LDISC(N_CAIF);
@@ -35,6 +46,7 @@ MODULE_ALIAS_LDISC(N_CAIF);
 #define OFF 0
 #define CAIF_MAX_MTU 4096
 
+<<<<<<< HEAD
 /*This list is protected by the rtnl lock. */
 static LIST_HEAD(ser_list);
 
@@ -44,15 +56,35 @@ MODULE_PARM_DESC(ser_loop, "Run in simulated loopback mode.");
 
 static bool ser_use_stx = true;
 module_param(ser_use_stx, bool, S_IRUGO);
+=======
+static DEFINE_SPINLOCK(ser_lock);
+static LIST_HEAD(ser_list);
+static LIST_HEAD(ser_release_list);
+
+static bool ser_loop;
+module_param(ser_loop, bool, 0444);
+MODULE_PARM_DESC(ser_loop, "Run in simulated loopback mode.");
+
+static bool ser_use_stx = true;
+module_param(ser_use_stx, bool, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(ser_use_stx, "STX enabled or not.");
 
 static bool ser_use_fcs = true;
 
+<<<<<<< HEAD
 module_param(ser_use_fcs, bool, S_IRUGO);
 MODULE_PARM_DESC(ser_use_fcs, "FCS enabled or not.");
 
 static int ser_write_chunk = MAX_WRITE_CHUNK;
 module_param(ser_write_chunk, int, S_IRUGO);
+=======
+module_param(ser_use_fcs, bool, 0444);
+MODULE_PARM_DESC(ser_use_fcs, "FCS enabled or not.");
+
+static int ser_write_chunk = MAX_WRITE_CHUNK;
+module_param(ser_write_chunk, int, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_PARM_DESC(ser_write_chunk, "Maximum size of data written to UART.");
 
@@ -69,7 +101,10 @@ struct ser_device {
 	struct tty_struct *tty;
 	bool tx_started;
 	unsigned long state;
+<<<<<<< HEAD
 	char *tty_name;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_DEBUG_FS
 	struct dentry *debugfs_tty_dir;
 	struct debugfs_blob_wrapper tx_blob;
@@ -87,6 +122,7 @@ static void ldisc_tx_wakeup(struct tty_struct *tty);
 static inline void update_tty_status(struct ser_device *ser)
 {
 	ser->tty_status =
+<<<<<<< HEAD
 		ser->tty->stopped << 5 |
 		ser->tty->hw_stopped << 4 |
 		ser->tty->flow_stopped << 3 |
@@ -116,6 +152,28 @@ static inline void debugfs_init(struct ser_device *ser, struct tty_struct *tty)
 				&ser->tty_status);
 
 	}
+=======
+		ser->tty->flow.stopped << 5 |
+		ser->tty->flow.tco_stopped << 3 |
+		ser->tty->ctrl.packet << 2;
+}
+static inline void debugfs_init(struct ser_device *ser, struct tty_struct *tty)
+{
+	ser->debugfs_tty_dir = debugfs_create_dir(tty->name, debugfsdir);
+
+	debugfs_create_blob("last_tx_msg", 0400, ser->debugfs_tty_dir,
+			    &ser->tx_blob);
+
+	debugfs_create_blob("last_rx_msg", 0400, ser->debugfs_tty_dir,
+			    &ser->rx_blob);
+
+	debugfs_create_xul("ser_state", 0400, ser->debugfs_tty_dir,
+			   &ser->state);
+
+	debugfs_create_x8("tty_status", 0400, ser->debugfs_tty_dir,
+			  &ser->tty_status);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ser->tx_blob.data = ser->tx_data;
 	ser->tx_blob.size = 0;
 	ser->rx_blob.data = ser->rx_data;
@@ -168,12 +226,19 @@ static inline void debugfs_tx(struct ser_device *ser, const u8 *data, int size)
 #endif
 
 static void ldisc_receive(struct tty_struct *tty, const u8 *data,
+<<<<<<< HEAD
 			char *flags, int count)
+=======
+			  const u8 *flags, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *skb = NULL;
 	struct ser_device *ser;
 	int ret;
+<<<<<<< HEAD
 	u8 *p;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ser = tty->disc_data;
 
@@ -200,6 +265,7 @@ static void ldisc_receive(struct tty_struct *tty, const u8 *data,
 	skb = netdev_alloc_skb(ser->dev, count+1);
 	if (skb == NULL)
 		return;
+<<<<<<< HEAD
 	p = skb_put(skb, count);
 	memcpy(p, data, count);
 
@@ -209,6 +275,15 @@ static void ldisc_receive(struct tty_struct *tty, const u8 *data,
 	debugfs_rx(ser, data, count);
 	/* Push received packet up the stack. */
 	ret = netif_rx_ni(skb);
+=======
+	skb_put_data(skb, data, count);
+
+	skb->protocol = htons(ETH_P_CAIF);
+	skb_reset_mac_header(skb);
+	debugfs_rx(ser, data, count);
+	/* Push received packet up the stack. */
+	ret = netif_rx(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ret) {
 		ser->dev->stats.rx_packets++;
 		ser->dev->stats.rx_bytes += count;
@@ -262,10 +337,14 @@ static int handle_tx(struct ser_device *ser)
 		if (skb->len == 0) {
 			struct sk_buff *tmp = skb_dequeue(&ser->head);
 			WARN_ON(tmp != skb);
+<<<<<<< HEAD
 			if (in_interrupt())
 				dev_kfree_skb_irq(skb);
 			else
 				kfree_skb(skb);
+=======
+			dev_consume_skb_any(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	/* Send flow off if queue is empty */
@@ -280,11 +359,18 @@ error:
 	return tty_wr;
 }
 
+<<<<<<< HEAD
 static int caif_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct ser_device *ser;
 
 	BUG_ON(dev == NULL);
+=======
+static netdev_tx_t caif_xmit(struct sk_buff *skb, struct net_device *dev)
+{
+	struct ser_device *ser;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ser = netdev_priv(dev);
 
 	/* Send flow off once, on high water mark */
@@ -310,6 +396,31 @@ static void ldisc_tx_wakeup(struct tty_struct *tty)
 }
 
 
+<<<<<<< HEAD
+=======
+static void ser_release(struct work_struct *work)
+{
+	struct list_head list;
+	struct ser_device *ser, *tmp;
+
+	spin_lock(&ser_lock);
+	list_replace_init(&ser_release_list, &list);
+	spin_unlock(&ser_lock);
+
+	if (!list_empty(&list)) {
+		rtnl_lock();
+		list_for_each_entry_safe(ser, tmp, &list, node) {
+			dev_close(ser->dev);
+			unregister_netdevice(ser->dev);
+			debugfs_deinit(ser);
+		}
+		rtnl_unlock();
+	}
+}
+
+static DECLARE_WORK(ser_release_work, ser_release);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ldisc_open(struct tty_struct *tty)
 {
 	struct ser_device *ser;
@@ -323,8 +434,19 @@ static int ldisc_open(struct tty_struct *tty)
 	if (!capable(CAP_SYS_ADMIN) && !capable(CAP_SYS_TTY_CONFIG))
 		return -EPERM;
 
+<<<<<<< HEAD
 	sprintf(name, "cf%s", tty->name);
 	dev = alloc_netdev(sizeof(*ser), name, caifdev_setup);
+=======
+	/* release devices to avoid name collision */
+	ser_release(NULL);
+
+	result = snprintf(name, sizeof(name), "cf%s", tty->name);
+	if (result >= IFNAMSIZ)
+		return -EINVAL;
+	dev = alloc_netdev(sizeof(*ser), name, NET_NAME_UNKNOWN,
+			   caifdev_setup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev)
 		return -ENOMEM;
 
@@ -338,12 +460,22 @@ static int ldisc_open(struct tty_struct *tty)
 	rtnl_lock();
 	result = register_netdevice(dev);
 	if (result) {
+<<<<<<< HEAD
+=======
+		tty_kref_put(tty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rtnl_unlock();
 		free_netdev(dev);
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	list_add(&ser->node, &ser_list);
+=======
+	spin_lock(&ser_lock);
+	list_add(&ser->node, &ser_list);
+	spin_unlock(&ser_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rtnl_unlock();
 	netif_stop_queue(dev);
 	update_tty_status(ser);
@@ -353,6 +485,7 @@ static int ldisc_open(struct tty_struct *tty)
 static void ldisc_close(struct tty_struct *tty)
 {
 	struct ser_device *ser = tty->disc_data;
+<<<<<<< HEAD
 	/* Remove may be called inside or outside of rtnl_lock */
 	int islocked = rtnl_is_locked();
 
@@ -366,12 +499,25 @@ static void ldisc_close(struct tty_struct *tty)
 	tty_kref_put(ser->tty);
 	if (!islocked)
 		rtnl_unlock();
+=======
+
+	tty_kref_put(ser->tty);
+
+	spin_lock(&ser_lock);
+	list_move(&ser->node, &ser_release_list);
+	spin_unlock(&ser_lock);
+	schedule_work(&ser_release_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* The line discipline structure. */
 static struct tty_ldisc_ops caif_ldisc = {
 	.owner =	THIS_MODULE,
+<<<<<<< HEAD
 	.magic =	TTY_LDISC_MAGIC,
+=======
+	.num =		N_CAIF,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name =		"n_caif",
 	.open =		ldisc_open,
 	.close =	ldisc_close,
@@ -379,6 +525,7 @@ static struct tty_ldisc_ops caif_ldisc = {
 	.write_wakeup =	ldisc_tx_wakeup
 };
 
+<<<<<<< HEAD
 static int register_ldisc(void)
 {
 	int result;
@@ -391,6 +538,8 @@ static int register_ldisc(void)
 	}
 	return result;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops netdev_ops = {
 	.ndo_open = caif_net_open,
 	.ndo_stop = caif_net_close,
@@ -406,8 +555,13 @@ static void caifdev_setup(struct net_device *dev)
 	dev->type = ARPHRD_CAIF;
 	dev->flags = IFF_POINTOPOINT | IFF_NOARP;
 	dev->mtu = CAIF_MAX_MTU;
+<<<<<<< HEAD
 	dev->tx_queue_len = 0;
 	dev->destructor = free_netdev;
+=======
+	dev->priv_flags |= IFF_NO_QUEUE;
+	dev->needs_free_netdev = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_queue_head_init(&serdev->head);
 	serdev->common.link_select = CAIF_LINK_LOW_LATENCY;
 	serdev->common.use_frag = true;
@@ -433,13 +587,21 @@ static int __init caif_ser_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = register_ldisc();
+=======
+	ret = tty_register_ldisc(&caif_ldisc);
+	if (ret < 0)
+		pr_err("cannot register CAIF ldisc=%d err=%d\n", N_CAIF, ret);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	debugfsdir = debugfs_create_dir("caif_serial", NULL);
 	return ret;
 }
 
 static void __exit caif_ser_exit(void)
 {
+<<<<<<< HEAD
 	struct ser_device *ser = NULL;
 	struct list_head *node;
 	struct list_head *_tmp;
@@ -451,6 +613,14 @@ static void __exit caif_ser_exit(void)
 		list_del(node);
 	}
 	tty_unregister_ldisc(N_CAIF);
+=======
+	spin_lock(&ser_lock);
+	list_splice(&ser_list, &ser_release_list);
+	spin_unlock(&ser_lock);
+	ser_release(NULL);
+	cancel_work_sync(&ser_release_work);
+	tty_unregister_ldisc(&caif_ldisc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	debugfs_remove_recursive(debugfsdir);
 }
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/cache.h
  */
@@ -23,6 +27,10 @@
 #define ARCH_SLAB_MINALIGN 8
 #endif
 
+<<<<<<< HEAD
 #define __read_mostly __attribute__((__section__(".data..read_mostly")))
+=======
+#define __read_mostly __section(".data..read_mostly")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -40,8 +47,13 @@ u8 r8712_set_802_11_authentication_mode(struct _adapter *pdapter,
 
 u8 r8712_set_802_11_bssid(struct _adapter *padapter, u8 *bssid);
 
+<<<<<<< HEAD
 u8 r8712_set_802_11_add_wep(struct _adapter *padapter,
 			    struct NDIS_802_11_WEP *wep);
+=======
+int r8712_set_802_11_add_wep(struct _adapter *padapter,
+			     struct NDIS_802_11_WEP *wep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 u8 r8712_set_802_11_disassociate(struct _adapter *padapter);
 

@@ -1,7 +1,15 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __DMI_H__
 #define __DMI_H__
 
 #include <linux/list.h>
+<<<<<<< HEAD
+=======
+#include <linux/kobject.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mod_devicetable.h>
 
 /* enum dmi_field is in mod_devicetable.h */
@@ -21,6 +29,10 @@ enum dmi_device_type {
 	DMI_DEV_TYPE_IPMI = -1,
 	DMI_DEV_TYPE_OEM_STRING = -2,
 	DMI_DEV_TYPE_DEV_ONBOARD = -3,
+<<<<<<< HEAD
+=======
+	DMI_DEV_TYPE_DEV_SLOT = -4,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum dmi_entry_type {
@@ -74,7 +86,11 @@ struct dmi_header {
 	u8 type;
 	u8 length;
 	u16 handle;
+<<<<<<< HEAD
 };
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct dmi_device {
 	struct list_head list;
@@ -93,19 +109,36 @@ struct dmi_dev_onboard {
 	int devfn;
 };
 
+<<<<<<< HEAD
+=======
+extern struct kobject *dmi_kobj;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int dmi_check_system(const struct dmi_system_id *list);
 const struct dmi_system_id *dmi_first_match(const struct dmi_system_id *list);
 extern const char * dmi_get_system_info(int field);
 extern const struct dmi_device * dmi_find_device(int type, const char *name,
 	const struct dmi_device *from);
+<<<<<<< HEAD
 extern void dmi_scan_machine(void);
 extern bool dmi_get_date(int field, int *yearp, int *monthp, int *dayp);
+=======
+extern void dmi_setup(void);
+extern bool dmi_get_date(int field, int *yearp, int *monthp, int *dayp);
+extern int dmi_get_bios_year(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int dmi_name_in_vendors(const char *str);
 extern int dmi_name_in_serial(const char *str);
 extern int dmi_available;
 extern int dmi_walk(void (*decode)(const struct dmi_header *, void *),
 	void *private_data);
 extern bool dmi_match(enum dmi_field f, const char *str);
+<<<<<<< HEAD
+=======
+extern void dmi_memdev_name(u16 handle, const char **bank, const char **device);
+extern u64 dmi_memdev_size(u16 handle);
+extern u8 dmi_memdev_type(u16 handle);
+extern u16 dmi_memdev_handle(int slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 
@@ -113,7 +146,11 @@ static inline int dmi_check_system(const struct dmi_system_id *list) { return 0;
 static inline const char * dmi_get_system_info(int field) { return NULL; }
 static inline const struct dmi_device * dmi_find_device(int type, const char *name,
 	const struct dmi_device *from) { return NULL; }
+<<<<<<< HEAD
 static inline void dmi_scan_machine(void) { return; }
+=======
+static inline void dmi_setup(void) { }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool dmi_get_date(int field, int *yearp, int *monthp, int *dayp)
 {
 	if (yearp)
@@ -124,13 +161,28 @@ static inline bool dmi_get_date(int field, int *yearp, int *monthp, int *dayp)
 		*dayp = 0;
 	return false;
 }
+<<<<<<< HEAD
+=======
+static inline int dmi_get_bios_year(void) { return -ENXIO; }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int dmi_name_in_vendors(const char *s) { return 0; }
 static inline int dmi_name_in_serial(const char *s) { return 0; }
 #define dmi_available 0
 static inline int dmi_walk(void (*decode)(const struct dmi_header *, void *),
+<<<<<<< HEAD
 	void *private_data) { return -1; }
 static inline bool dmi_match(enum dmi_field f, const char *str)
 	{ return false; }
+=======
+	void *private_data) { return -ENXIO; }
+static inline bool dmi_match(enum dmi_field f, const char *str)
+	{ return false; }
+static inline void dmi_memdev_name(u16 handle, const char **bank,
+		const char **device) { }
+static inline u64 dmi_memdev_size(u16 handle) { return ~0ul; }
+static inline u8 dmi_memdev_type(u16 handle) { return 0x0; }
+static inline u16 dmi_memdev_handle(int slot) { return 0xffff; }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline const struct dmi_system_id *
 	dmi_first_match(const struct dmi_system_id *list) { return NULL; }
 

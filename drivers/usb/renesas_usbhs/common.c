@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-1.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Renesas USB driver
  *
  * Copyright (C) 2011 Renesas Solutions Corp.
+<<<<<<< HEAD
  * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
  *
  * This program is distributed in the hope that it will be useful,
@@ -20,6 +25,25 @@
 #include <linux/slab.h>
 #include <linux/sysfs.h>
 #include "./common.h"
+=======
+ * Copyright (C) 2019 Renesas Electronics Corporation
+ * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+ */
+#include <linux/clk.h>
+#include <linux/err.h>
+#include <linux/gpio/consumer.h>
+#include <linux/io.h>
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/pm_runtime.h>
+#include <linux/reset.h>
+#include <linux/slab.h>
+#include <linux/sysfs.h>
+#include "common.h"
+#include "rcar2.h"
+#include "rcar3.h"
+#include "rza.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *		image of renesas_usbhs
@@ -43,6 +67,7 @@
  *			| ....  |	+-----------+
  */
 
+<<<<<<< HEAD
 
 #define USBHSF_RUNTIME_PWCTRL	(1 << 0)
 
@@ -52,6 +77,8 @@
 #define usbhsc_flags_clr(p, b) ((p)->flags &= ~(b))
 #define usbhsc_flags_has(p, b) ((p)->flags &   (b))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * platform call back
  *
@@ -61,8 +88,13 @@
  */
 #define usbhs_platform_call(priv, func, args...)\
 	(!(priv) ? -ENODEV :			\
+<<<<<<< HEAD
 	 !((priv)->pfunc.func) ? 0 :		\
 	 (priv)->pfunc.func(args))
+=======
+	 !((priv)->pfunc->func) ? 0 :		\
+	 (priv)->pfunc->func(args))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *		common functions
@@ -92,6 +124,14 @@ struct usbhs_priv *usbhs_pdev_to_priv(struct platform_device *pdev)
 	return dev_get_drvdata(&pdev->dev);
 }
 
+<<<<<<< HEAD
+=======
+int usbhs_get_id_as_gadget(struct platform_device *pdev)
+{
+	return USBHS_GADGET;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *		syscfg functions
  */
@@ -104,10 +144,13 @@ void usbhs_sys_host_ctrl(struct usbhs_priv *priv, int enable)
 {
 	u16 mask = DCFM | DRPD | DPRPU | HSE | USBE;
 	u16 val  = DCFM | DRPD | HSE | USBE;
+<<<<<<< HEAD
 	int has_otg = usbhs_get_dparam(priv, has_otg);
 
 	if (has_otg)
 		usbhs_bset(priv, DVSTCTR, (EXTLP | PWEN), (EXTLP | PWEN));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * if enable
@@ -121,17 +164,41 @@ void usbhs_sys_host_ctrl(struct usbhs_priv *priv, int enable)
 void usbhs_sys_function_ctrl(struct usbhs_priv *priv, int enable)
 {
 	u16 mask = DCFM | DRPD | DPRPU | HSE | USBE;
+<<<<<<< HEAD
 	u16 val  = DPRPU | HSE | USBE;
+=======
+	u16 val  = HSE | USBE;
+
+	/* CNEN bit is required for function operation */
+	if (usbhs_get_dparam(priv, has_cnen)) {
+		mask |= CNEN;
+		val  |= CNEN;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * if enable
 	 *
 	 * - select Function mode
+<<<<<<< HEAD
 	 * - D+ Line Pull-up
+=======
+	 * - D+ Line Pull-up is disabled
+	 *      When D+ Line Pull-up is enabled,
+	 *      calling usbhs_sys_function_pullup(,1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	usbhs_bset(priv, SYSCFG, mask, enable ? val : 0);
 }
 
+<<<<<<< HEAD
+=======
+void usbhs_sys_function_pullup(struct usbhs_priv *priv, int enable)
+{
+	usbhs_bset(priv, SYSCFG, DPRPU, enable ? DPRPU : 0);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void usbhs_sys_set_test_mode(struct usbhs_priv *priv, u16 mode)
 {
 	usbhs_write(priv, TESTMODE, mode);
@@ -156,17 +223,29 @@ void usbhs_usbreq_get_val(struct usbhs_priv *priv, struct usb_ctrlrequest *req)
 	req->bRequest		= (val >> 8) & 0xFF;
 	req->bRequestType	= (val >> 0) & 0xFF;
 
+<<<<<<< HEAD
 	req->wValue	= usbhs_read(priv, USBVAL);
 	req->wIndex	= usbhs_read(priv, USBINDX);
 	req->wLength	= usbhs_read(priv, USBLENG);
+=======
+	req->wValue	= cpu_to_le16(usbhs_read(priv, USBVAL));
+	req->wIndex	= cpu_to_le16(usbhs_read(priv, USBINDX));
+	req->wLength	= cpu_to_le16(usbhs_read(priv, USBLENG));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void usbhs_usbreq_set_val(struct usbhs_priv *priv, struct usb_ctrlrequest *req)
 {
 	usbhs_write(priv, USBREQ,  (req->bRequest << 8) | req->bRequestType);
+<<<<<<< HEAD
 	usbhs_write(priv, USBVAL,  req->wValue);
 	usbhs_write(priv, USBINDX, req->wIndex);
 	usbhs_write(priv, USBLENG, req->wLength);
+=======
+	usbhs_write(priv, USBVAL,  le16_to_cpu(req->wValue));
+	usbhs_write(priv, USBINDX, le16_to_cpu(req->wIndex));
+	usbhs_write(priv, USBLENG, le16_to_cpu(req->wLength));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usbhs_bset(priv, DCPCTR, SUREQ, SUREQ);
 }
@@ -264,6 +343,19 @@ int usbhs_set_device_config(struct usbhs_priv *priv, int devnum,
 }
 
 /*
+<<<<<<< HEAD
+=======
+ *		interrupt functions
+ */
+void usbhs_xxxsts_clear(struct usbhs_priv *priv, u16 sts_reg, u16 bit)
+{
+	u16 pipe_mask = (u16)GENMASK(usbhs_get_dparam(priv, pipe_size), 0);
+
+	usbhs_write(priv, sts_reg, ~(1 << bit) & pipe_mask);
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		local functions
  */
 static void usbhsc_set_buswait(struct usbhs_priv *priv)
@@ -275,6 +367,7 @@ static void usbhsc_set_buswait(struct usbhs_priv *priv)
 		usbhs_bset(priv, BUSWAIT, 0x000F, wait);
 }
 
+<<<<<<< HEAD
 /*
  *		platform default param
  */
@@ -289,6 +382,113 @@ static u32 usbhsc_default_pipe_type[] = {
 		USB_ENDPOINT_XFER_INT,
 		USB_ENDPOINT_XFER_INT,
 		USB_ENDPOINT_XFER_INT,
+=======
+static bool usbhsc_is_multi_clks(struct usbhs_priv *priv)
+{
+	return priv->dparam.multi_clks;
+}
+
+static int usbhsc_clk_get(struct device *dev, struct usbhs_priv *priv)
+{
+	if (!usbhsc_is_multi_clks(priv))
+		return 0;
+
+	/* The first clock should exist */
+	priv->clks[0] = of_clk_get(dev_of_node(dev), 0);
+	if (IS_ERR(priv->clks[0]))
+		return PTR_ERR(priv->clks[0]);
+
+	/*
+	 * To backward compatibility with old DT, this driver checks the return
+	 * value if it's -ENOENT or not.
+	 */
+	priv->clks[1] = of_clk_get(dev_of_node(dev), 1);
+	if (PTR_ERR(priv->clks[1]) == -ENOENT)
+		priv->clks[1] = NULL;
+	else if (IS_ERR(priv->clks[1]))
+		return PTR_ERR(priv->clks[1]);
+
+	return 0;
+}
+
+static void usbhsc_clk_put(struct usbhs_priv *priv)
+{
+	int i;
+
+	if (!usbhsc_is_multi_clks(priv))
+		return;
+
+	for (i = 0; i < ARRAY_SIZE(priv->clks); i++)
+		clk_put(priv->clks[i]);
+}
+
+static int usbhsc_clk_prepare_enable(struct usbhs_priv *priv)
+{
+	int i, ret;
+
+	if (!usbhsc_is_multi_clks(priv))
+		return 0;
+
+	for (i = 0; i < ARRAY_SIZE(priv->clks); i++) {
+		ret = clk_prepare_enable(priv->clks[i]);
+		if (ret) {
+			while (--i >= 0)
+				clk_disable_unprepare(priv->clks[i]);
+			return ret;
+		}
+	}
+
+	return ret;
+}
+
+static void usbhsc_clk_disable_unprepare(struct usbhs_priv *priv)
+{
+	int i;
+
+	if (!usbhsc_is_multi_clks(priv))
+		return;
+
+	for (i = 0; i < ARRAY_SIZE(priv->clks); i++)
+		clk_disable_unprepare(priv->clks[i]);
+}
+
+/*
+ *		platform default param
+ */
+
+/* commonly used on old SH-Mobile SoCs */
+static struct renesas_usbhs_driver_pipe_config usbhsc_default_pipe[] = {
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_CONTROL, 64, 0x00, false),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_ISOC, 1024, 0x08, false),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_ISOC, 1024, 0x18, false),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0x28, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0x38, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0x48, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_INT, 64, 0x04, false),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_INT, 64, 0x05, false),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_INT, 64, 0x06, false),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_INT, 64, 0x07, false),
+};
+
+/* commonly used on newer SH-Mobile and R-Car SoCs */
+static struct renesas_usbhs_driver_pipe_config usbhsc_new_pipe[] = {
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_CONTROL, 64, 0x00, false),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_ISOC, 1024, 0x08, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_ISOC, 1024, 0x28, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0x48, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0x58, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0x68, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_INT, 64, 0x04, false),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_INT, 64, 0x05, false),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_INT, 64, 0x06, false),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0x78, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0x88, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0x98, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0xa8, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0xb8, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0xc8, true),
+	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0xd8, true),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -303,6 +503,13 @@ static void usbhsc_power_ctrl(struct usbhs_priv *priv, int enable)
 		/* enable PM */
 		pm_runtime_get_sync(dev);
 
+<<<<<<< HEAD
+=======
+		/* enable clks */
+		if (usbhsc_clk_prepare_enable(priv))
+			return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* enable platform power */
 		usbhs_platform_call(priv, power_ctrl, pdev, priv->base, enable);
 
@@ -315,6 +522,12 @@ static void usbhsc_power_ctrl(struct usbhs_priv *priv, int enable)
 		/* disable platform power */
 		usbhs_platform_call(priv, power_ctrl, pdev, priv->base, enable);
 
+<<<<<<< HEAD
+=======
+		/* disable clks */
+		usbhsc_clk_disable_unprepare(priv);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* disable PM */
 		pm_runtime_put_sync(dev);
 	}
@@ -329,12 +542,20 @@ static void usbhsc_hotplug(struct usbhs_priv *priv)
 	struct usbhs_mod *mod = usbhs_mod_get_current(priv);
 	int id;
 	int enable;
+<<<<<<< HEAD
+=======
+	int cable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/*
 	 * get vbus status from platform
 	 */
+<<<<<<< HEAD
 	enable = usbhs_platform_call(priv, get_vbus, pdev);
+=======
+	enable = usbhs_mod_info_call(priv, get_vbus, pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * get id from platform
@@ -342,6 +563,19 @@ static void usbhsc_hotplug(struct usbhs_priv *priv)
 	id = usbhs_platform_call(priv, get_id, pdev);
 
 	if (enable && !mod) {
+<<<<<<< HEAD
+=======
+		if (priv->edev) {
+			cable = extcon_get_state(priv->edev, EXTCON_USB_HOST);
+			if ((cable > 0 && id != USBHS_HOST) ||
+			    (!cable && id != USBHS_GADGET)) {
+				dev_info(&pdev->dev,
+					 "USB cable plugged in doesn't match the selected role!\n");
+				return;
+			}
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = usbhs_mod_change(priv, id);
 		if (ret < 0)
 			return;
@@ -349,7 +583,11 @@ static void usbhsc_hotplug(struct usbhs_priv *priv)
 		dev_dbg(&pdev->dev, "%s enable\n", __func__);
 
 		/* power on */
+<<<<<<< HEAD
 		if (usbhsc_flags_has(priv, USBHSF_RUNTIME_PWCTRL))
+=======
+		if (usbhs_get_dparam(priv, runtime_pwctrl))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			usbhsc_power_ctrl(priv, enable);
 
 		/* bus init */
@@ -369,7 +607,11 @@ static void usbhsc_hotplug(struct usbhs_priv *priv)
 		usbhsc_bus_init(priv);
 
 		/* power off */
+<<<<<<< HEAD
 		if (usbhsc_flags_has(priv, USBHSF_RUNTIME_PWCTRL))
+=======
+		if (usbhs_get_dparam(priv, runtime_pwctrl))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			usbhsc_power_ctrl(priv, enable);
 
 		usbhs_mod_change(priv, -1);
@@ -390,7 +632,11 @@ static void usbhsc_notify_hotplug(struct work_struct *work)
 	usbhsc_hotplug(priv);
 }
 
+<<<<<<< HEAD
 static int usbhsc_drvcllbck_notify_hotplug(struct platform_device *pdev)
+=======
+int usbhsc_schedule_notify_hotplug(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbhs_priv *priv = usbhs_pdev_to_priv(pdev);
 	int delay = usbhs_get_dparam(priv, detection_delay);
@@ -408,6 +654,7 @@ static int usbhsc_drvcllbck_notify_hotplug(struct platform_device *pdev)
 /*
  *		platform functions
  */
+<<<<<<< HEAD
 static int usbhs_probe(struct platform_device *pdev)
 {
 	struct renesas_usbhs_platform_info *info = pdev->dev.platform_data;
@@ -420,10 +667,85 @@ static int usbhs_probe(struct platform_device *pdev)
 	if (!info ||
 	    !info->platform_callback.get_id) {
 		dev_err(&pdev->dev, "no platform information\n");
+=======
+static const struct of_device_id usbhs_of_match[] = {
+	{
+		.compatible = "renesas,usbhs-r8a774c0",
+		.data = &usbhs_rcar_gen3_with_pll_plat_info,
+	},
+	{
+		.compatible = "renesas,usbhs-r8a7790",
+		.data = &usbhs_rcar_gen2_plat_info,
+	},
+	{
+		.compatible = "renesas,usbhs-r8a7791",
+		.data = &usbhs_rcar_gen2_plat_info,
+	},
+	{
+		.compatible = "renesas,usbhs-r8a7794",
+		.data = &usbhs_rcar_gen2_plat_info,
+	},
+	{
+		.compatible = "renesas,usbhs-r8a7795",
+		.data = &usbhs_rcar_gen3_plat_info,
+	},
+	{
+		.compatible = "renesas,usbhs-r8a7796",
+		.data = &usbhs_rcar_gen3_plat_info,
+	},
+	{
+		.compatible = "renesas,usbhs-r8a77990",
+		.data = &usbhs_rcar_gen3_with_pll_plat_info,
+	},
+	{
+		.compatible = "renesas,usbhs-r8a77995",
+		.data = &usbhs_rcar_gen3_with_pll_plat_info,
+	},
+	{
+		.compatible = "renesas,rcar-gen2-usbhs",
+		.data = &usbhs_rcar_gen2_plat_info,
+	},
+	{
+		.compatible = "renesas,rcar-gen3-usbhs",
+		.data = &usbhs_rcar_gen3_plat_info,
+	},
+	{
+		.compatible = "renesas,rza1-usbhs",
+		.data = &usbhs_rza1_plat_info,
+	},
+	{
+		.compatible = "renesas,rza2-usbhs",
+		.data = &usbhs_rza2_plat_info,
+	},
+	{ },
+};
+MODULE_DEVICE_TABLE(of, usbhs_of_match);
+
+static int usbhs_probe(struct platform_device *pdev)
+{
+	const struct renesas_usbhs_platform_info *info;
+	struct usbhs_priv *priv;
+	struct device *dev = &pdev->dev;
+	struct gpio_desc *gpiod;
+	int ret;
+	u32 tmp;
+	int irq;
+
+	/* check device node */
+	if (dev_of_node(dev))
+		info = of_device_get_match_data(dev);
+	else
+		info = renesas_usbhs_get_info(pdev);
+
+	/* check platform information */
+	if (!info) {
+		dev_err(dev, "no platform information\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	/* platform data */
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	irq_res = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 	if (!res || !irq_res) {
@@ -444,10 +766,35 @@ static int usbhs_probe(struct platform_device *pdev)
 		ret = -ENOMEM;
 		goto probe_end_kfree;
 	}
+=======
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		return irq;
+
+	/* usb private data */
+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+	priv->base = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(priv->base))
+		return PTR_ERR(priv->base);
+
+	if (of_property_read_bool(dev_of_node(dev), "extcon")) {
+		priv->edev = extcon_get_edev_by_phandle(dev, 0);
+		if (IS_ERR(priv->edev))
+			return PTR_ERR(priv->edev);
+	}
+
+	priv->rsts = devm_reset_control_array_get_optional_shared(dev);
+	if (IS_ERR(priv->rsts))
+		return PTR_ERR(priv->rsts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * care platform info
 	 */
+<<<<<<< HEAD
 	memcpy(&priv->pfunc,
 	       &info->platform_callback,
 	       sizeof(struct renesas_usbhs_platform_callback));
@@ -471,13 +818,48 @@ static int usbhs_probe(struct platform_device *pdev)
 	/* runtime power control ? */
 	if (priv->pfunc.get_vbus)
 		usbhsc_flags_set(priv, USBHSF_RUNTIME_PWCTRL);
+=======
+
+	priv->dparam = info->driver_param;
+
+	if (!info->platform_callback.get_id) {
+		dev_err(dev, "no platform callbacks\n");
+		return -EINVAL;
+	}
+	priv->pfunc = &info->platform_callback;
+
+	/* set default param if platform doesn't have */
+	if (usbhs_get_dparam(priv, has_new_pipe_configs)) {
+		priv->dparam.pipe_configs = usbhsc_new_pipe;
+		priv->dparam.pipe_size = ARRAY_SIZE(usbhsc_new_pipe);
+	} else if (!priv->dparam.pipe_configs) {
+		priv->dparam.pipe_configs = usbhsc_default_pipe;
+		priv->dparam.pipe_size = ARRAY_SIZE(usbhsc_default_pipe);
+	}
+	if (!priv->dparam.pio_dma_border)
+		priv->dparam.pio_dma_border = 64; /* 64byte */
+	if (!of_property_read_u32(dev_of_node(dev), "renesas,buswait", &tmp))
+		priv->dparam.buswait_bwait = tmp;
+	gpiod = devm_gpiod_get_optional(dev, "renesas,enable", GPIOD_IN);
+	if (IS_ERR(gpiod))
+		return PTR_ERR(gpiod);
+
+	/* FIXME */
+	/* runtime power control ? */
+	if (priv->pfunc->get_vbus)
+		usbhs_get_dparam(priv, runtime_pwctrl) = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * priv settings
 	 */
+<<<<<<< HEAD
 	priv->irq	= irq_res->start;
 	if (irq_res->flags & IORESOURCE_IRQ_SHAREABLE)
 		priv->irqflags = IRQF_SHARED;
+=======
+	priv->irq = irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->pdev	= pdev;
 	INIT_DELAYED_WORK(&priv->notify_hotplug_work, usbhsc_notify_hotplug);
 	spin_lock_init(usbhs_priv_to_lock(priv));
@@ -485,7 +867,11 @@ static int usbhs_probe(struct platform_device *pdev)
 	/* call pipe and module init */
 	ret = usbhs_pipe_probe(priv);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto probe_end_iounmap;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = usbhs_fifo_probe(priv);
 	if (ret < 0)
@@ -496,7 +882,19 @@ static int usbhs_probe(struct platform_device *pdev)
 		goto probe_end_fifo_exit;
 
 	/* dev_set_drvdata should be called after usbhs_mod_init */
+<<<<<<< HEAD
 	dev_set_drvdata(&pdev->dev, priv);
+=======
+	platform_set_drvdata(pdev, priv);
+
+	ret = reset_control_deassert(priv->rsts);
+	if (ret)
+		goto probe_fail_rst;
+
+	ret = usbhsc_clk_get(dev, priv);
+	if (ret)
+		goto probe_fail_clks;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * deviece reset here because
@@ -504,6 +902,19 @@ static int usbhs_probe(struct platform_device *pdev)
 	 */
 	usbhs_sys_clock_ctrl(priv, 0);
 
+<<<<<<< HEAD
+=======
+	/* check GPIO determining if USB function should be enabled */
+	if (gpiod) {
+		ret = !gpiod_get_value(gpiod);
+		if (ret) {
+			dev_warn(dev, "USB function not selected (GPIO)\n");
+			ret = -ENOTSUPP;
+			goto probe_end_mod_exit;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * platform call
 	 *
@@ -513,7 +924,11 @@ static int usbhs_probe(struct platform_device *pdev)
 	 */
 	ret = usbhs_platform_call(priv, hardware_init, pdev);
 	if (ret < 0) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "platform prove failed.\n");
+=======
+		dev_err(dev, "platform init failed.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto probe_end_mod_exit;
 	}
 
@@ -521,15 +936,25 @@ static int usbhs_probe(struct platform_device *pdev)
 	usbhs_platform_call(priv, phy_reset, pdev);
 
 	/* power control */
+<<<<<<< HEAD
 	pm_runtime_enable(&pdev->dev);
 	if (!usbhsc_flags_has(priv, USBHSF_RUNTIME_PWCTRL)) {
 		usbhsc_power_ctrl(priv, 1);
 		usbhs_mod_autonomy_mode(priv);
+=======
+	pm_runtime_enable(dev);
+	if (!usbhs_get_dparam(priv, runtime_pwctrl)) {
+		usbhsc_power_ctrl(priv, 1);
+		usbhs_mod_autonomy_mode(priv);
+	} else {
+		usbhs_mod_non_autonomy_mode(priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * manual call notify_hotplug for cold plug
 	 */
+<<<<<<< HEAD
 	ret = usbhsc_drvcllbck_notify_hotplug(pdev);
 	if (ret < 0)
 		goto probe_end_call_remove;
@@ -541,21 +966,40 @@ static int usbhs_probe(struct platform_device *pdev)
 probe_end_call_remove:
 	usbhs_platform_call(priv, hardware_exit, pdev);
 probe_end_mod_exit:
+=======
+	usbhsc_schedule_notify_hotplug(pdev);
+
+	dev_info(dev, "probed\n");
+
+	return ret;
+
+probe_end_mod_exit:
+	usbhsc_clk_put(priv);
+probe_fail_clks:
+	reset_control_assert(priv->rsts);
+probe_fail_rst:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usbhs_mod_remove(priv);
 probe_end_fifo_exit:
 	usbhs_fifo_remove(priv);
 probe_end_pipe_exit:
 	usbhs_pipe_remove(priv);
+<<<<<<< HEAD
 probe_end_iounmap:
 	iounmap(priv->base);
 probe_end_kfree:
 	kfree(priv);
 
 	dev_info(&pdev->dev, "probe failed\n");
+=======
+
+	dev_info(dev, "probe failed (%d)\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit usbhs_remove(struct platform_device *pdev)
 {
 	struct usbhs_priv *priv = usbhs_pdev_to_priv(pdev);
@@ -568,11 +1012,22 @@ static int __devexit usbhs_remove(struct platform_device *pdev)
 
 	/* power off */
 	if (!usbhsc_flags_has(priv, USBHSF_RUNTIME_PWCTRL))
+=======
+static void usbhs_remove(struct platform_device *pdev)
+{
+	struct usbhs_priv *priv = usbhs_pdev_to_priv(pdev);
+
+	dev_dbg(&pdev->dev, "usb remove\n");
+
+	/* power off */
+	if (!usbhs_get_dparam(priv, runtime_pwctrl))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usbhsc_power_ctrl(priv, 0);
 
 	pm_runtime_disable(&pdev->dev);
 
 	usbhs_platform_call(priv, hardware_exit, pdev);
+<<<<<<< HEAD
 	usbhs_mod_remove(priv);
 	usbhs_fifo_remove(priv);
 	usbhs_pipe_remove(priv);
@@ -583,6 +1038,16 @@ static int __devexit usbhs_remove(struct platform_device *pdev)
 }
 
 static int usbhsc_suspend(struct device *dev)
+=======
+	usbhsc_clk_put(priv);
+	reset_control_assert(priv->rsts);
+	usbhs_mod_remove(priv);
+	usbhs_fifo_remove(priv);
+	usbhs_pipe_remove(priv);
+}
+
+static __maybe_unused int usbhsc_suspend(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbhs_priv *priv = dev_get_drvdata(dev);
 	struct usbhs_mod *mod = usbhs_mod_get_current(priv);
@@ -592,27 +1057,47 @@ static int usbhsc_suspend(struct device *dev)
 		usbhs_mod_change(priv, -1);
 	}
 
+<<<<<<< HEAD
 	if (mod || !usbhsc_flags_has(priv, USBHSF_RUNTIME_PWCTRL))
+=======
+	if (mod || !usbhs_get_dparam(priv, runtime_pwctrl))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usbhsc_power_ctrl(priv, 0);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int usbhsc_resume(struct device *dev)
+=======
+static __maybe_unused int usbhsc_resume(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usbhs_priv *priv = dev_get_drvdata(dev);
 	struct platform_device *pdev = usbhs_priv_to_pdev(priv);
 
+<<<<<<< HEAD
 	usbhs_platform_call(priv, phy_reset, pdev);
 
 	if (!usbhsc_flags_has(priv, USBHSF_RUNTIME_PWCTRL))
 		usbhsc_power_ctrl(priv, 1);
 
 	usbhsc_hotplug(priv);
+=======
+	if (!usbhs_get_dparam(priv, runtime_pwctrl)) {
+		usbhsc_power_ctrl(priv, 1);
+		usbhs_mod_autonomy_mode(priv);
+	}
+
+	usbhs_platform_call(priv, phy_reset, pdev);
+
+	usbhsc_schedule_notify_hotplug(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int usbhsc_runtime_nop(struct device *dev)
 {
 	/* Runtime PM callback shared between ->runtime_suspend()
@@ -631,14 +1116,24 @@ static const struct dev_pm_ops usbhsc_pm_ops = {
 	.runtime_suspend	= usbhsc_runtime_nop,
 	.runtime_resume		= usbhsc_runtime_nop,
 };
+=======
+static SIMPLE_DEV_PM_OPS(usbhsc_pm_ops, usbhsc_suspend, usbhsc_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver renesas_usbhs_driver = {
 	.driver		= {
 		.name	= "renesas_usbhs",
 		.pm	= &usbhsc_pm_ops,
+<<<<<<< HEAD
 	},
 	.probe		= usbhs_probe,
 	.remove		= __devexit_p(usbhs_remove),
+=======
+		.of_match_table = usbhs_of_match,
+	},
+	.probe		= usbhs_probe,
+	.remove_new	= usbhs_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(renesas_usbhs_driver);

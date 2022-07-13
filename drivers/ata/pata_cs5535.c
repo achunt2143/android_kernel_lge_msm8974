@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata-cs5535.c 	- CS5535 PATA for new ATA layer
  *			  (C) 2005-2006 Red Hat Inc
@@ -7,6 +11,7 @@
  * made readable and Linux style by Wolfgang Zuleger <wolfgang.zuleger@gmx.de>
  * and Alexander Kiausch <alex.kiausch@t-online.de>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
@@ -20,6 +25,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Loosely based on the piix & svwks drivers.
  *
  * Documentation:
@@ -31,7 +38,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -103,7 +113,11 @@ static void cs5535_set_piomode(struct ata_port *ap, struct ata_device *adev)
 	static const u16 pio_cmd_timings[5] = {
 		0xF7F4, 0x53F3, 0x13F1, 0x5131, 0x1131
 	};
+<<<<<<< HEAD
 	u32 reg, dummy;
+=======
+	u32 reg, __maybe_unused dummy;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ata_device *pair = ata_dev_pair(adev);
 
 	int mode = adev->pio_mode - XFER_PIO_0;
@@ -142,7 +156,11 @@ static void cs5535_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 	static const u32 mwdma_timings[3] = {
 		0x7F0FFFF3, 0x7F035352, 0x7F024241
 	};
+<<<<<<< HEAD
 	u32 reg, dummy;
+=======
+	u32 reg, __maybe_unused dummy;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int mode = adev->dma_mode;
 
 	rdmsr(ATAC_CH0D0_DMA + 2 * adev->devno, reg, dummy);
@@ -154,7 +172,11 @@ static void cs5535_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 	wrmsr(ATAC_CH0D0_DMA + 2 * adev->devno, reg, 0);
 }
 
+<<<<<<< HEAD
 static struct scsi_host_template cs5535_sht = {
+=======
+static const struct scsi_host_template cs5535_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -201,12 +223,17 @@ static struct pci_driver cs5535_pci_driver = {
 	.id_table	= cs5535,
 	.probe 		= cs5535_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= ata_pci_device_resume,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init cs5535_init(void)
 {
 	return pci_register_driver(&cs5535_pci_driver);
@@ -216,12 +243,18 @@ static void __exit cs5535_exit(void)
 {
 	pci_unregister_driver(&cs5535_pci_driver);
 }
+=======
+module_pci_driver(cs5535_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox, Jens Altmann, Wolfgan Zuleger, Alexander Kiausch");
 MODULE_DESCRIPTION("low-level driver for the NS/AMD 5535");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, cs5535);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(cs5535_init);
 module_exit(cs5535_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

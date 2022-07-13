@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-
  * Finger Sensing Pad PS/2 mouse driver.
  *
  * Copyright (C) 2005-2007 Asia Vital Components Co., Ltd.
  * Copyright (C) 2005-2012 Tai-hwa Liang, Sentelic Corporation.
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License
@@ -17,6 +22,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -41,7 +48,11 @@
 #define	GET_ABS_Y(packet)	((packet[2] << 2) | (packet[3] & 0x03))
 
 /** Driver version. */
+<<<<<<< HEAD
 static const char fsp_drv_ver[] = "1.0.0-K";
+=======
+static const char fsp_drv_ver[] = "1.1.0-K";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Make sure that the value being sent to FSP will not conflict with
@@ -303,6 +314,30 @@ static int fsp_get_revision(struct psmouse *psmouse, int *rev)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int fsp_get_sn(struct psmouse *psmouse, int *sn)
+{
+	int v0, v1, v2;
+	int rc = -EIO;
+
+	/* production number since Cx is available at: 0x0b40 ~ 0x0b42 */
+	if (fsp_page_reg_write(psmouse, FSP_PAGE_0B))
+		goto out;
+	if (fsp_reg_read(psmouse, FSP_REG_SN0, &v0))
+		goto out;
+	if (fsp_reg_read(psmouse, FSP_REG_SN1, &v1))
+		goto out;
+	if (fsp_reg_read(psmouse, FSP_REG_SN2, &v2))
+		goto out;
+	*sn = (v0 << 16) | (v1 << 8) | v2;
+	rc = 0;
+out:
+	fsp_page_reg_write(psmouse, FSP_PAGE_DEFAULT);
+	return rc;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int fsp_get_buttons(struct psmouse *psmouse, int *btn)
 {
 	static const int buttons[] = {
@@ -411,7 +446,11 @@ static int fsp_onpad_hscr(struct psmouse *psmouse, bool enable)
 static ssize_t fsp_attr_set_setreg(struct psmouse *psmouse, void *data,
 				   const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	int reg, val;
+=======
+	unsigned int reg, val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *rest;
 	ssize_t retval;
 
@@ -419,7 +458,11 @@ static ssize_t fsp_attr_set_setreg(struct psmouse *psmouse, void *data,
 	if (rest == buf || *rest != ' ' || reg > 0xff)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	retval = kstrtoint(rest + 1, 16, &val);
+=======
+	retval = kstrtouint(rest + 1, 16, &val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		return retval;
 
@@ -433,7 +476,11 @@ static ssize_t fsp_attr_set_setreg(struct psmouse *psmouse, void *data,
 
 	fsp_reg_write_enable(psmouse, false);
 
+<<<<<<< HEAD
 	return count;
+=======
+	return retval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 PSMOUSE_DEFINE_WO_ATTR(setreg, S_IWUSR, NULL, fsp_attr_set_setreg);
@@ -455,9 +502,16 @@ static ssize_t fsp_attr_set_getreg(struct psmouse *psmouse, void *data,
 					const char *buf, size_t count)
 {
 	struct fsp_data *pad = psmouse->private;
+<<<<<<< HEAD
 	int reg, val, err;
 
 	err = kstrtoint(buf, 16, &reg);
+=======
+	unsigned int reg, val;
+	int err;
+
+	err = kstrtouint(buf, 16, &reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -490,9 +544,16 @@ static ssize_t fsp_attr_show_pagereg(struct psmouse *psmouse,
 static ssize_t fsp_attr_set_pagereg(struct psmouse *psmouse, void *data,
 					const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	int val, err;
 
 	err = kstrtoint(buf, 16, &val);
+=======
+	unsigned int val;
+	int err;
+
+	err = kstrtouint(buf, 16, &val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -687,7 +748,10 @@ static psmouse_ret_t fsp_process_byte(struct psmouse *psmouse)
 	unsigned char *packet = psmouse->packet;
 	unsigned char button_status = 0, lscroll = 0, rscroll = 0;
 	unsigned short abs_x, abs_y, fgrs = 0;
+<<<<<<< HEAD
 	int rel_x, rel_y;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (psmouse->pktcnt < 4)
 		return PSMOUSE_GOOD_DATA;
@@ -700,6 +764,20 @@ static psmouse_ret_t fsp_process_byte(struct psmouse *psmouse)
 
 	switch (psmouse->packet[0] >> FSP_PKT_TYPE_SHIFT) {
 	case FSP_PKT_TYPE_ABS:
+<<<<<<< HEAD
+=======
+
+		if ((packet[0] == 0x48 || packet[0] == 0x49) &&
+		    packet[1] == 0 && packet[2] == 0) {
+			/*
+			 * Ignore coordinate noise when finger leaving the
+			 * surface, otherwise cursor may jump to upper-left
+			 * corner.
+			 */
+			packet[3] &= 0xf0;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		abs_x = GET_ABS_X(packet);
 		abs_y = GET_ABS_Y(packet);
 
@@ -774,7 +852,11 @@ static psmouse_ret_t fsp_process_byte(struct psmouse *psmouse)
 		/* on-pad click, filter it if necessary */
 		if ((ad->flags & FSPDRV_FLAG_EN_OPC) != FSPDRV_FLAG_EN_OPC)
 			packet[0] &= ~FSP_PB0_LBTN;
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case FSP_PKT_TYPE_NORMAL:
 		/* normal packet */
@@ -806,6 +888,7 @@ static psmouse_ret_t fsp_process_byte(struct psmouse *psmouse)
 		/*
 		 * Standard PS/2 Mouse
 		 */
+<<<<<<< HEAD
 		input_report_key(dev, BTN_LEFT, packet[0] & 1);
 		input_report_key(dev, BTN_MIDDLE, (packet[0] >> 2) & 1);
 		input_report_key(dev, BTN_RIGHT, (packet[0] >> 1) & 1);
@@ -815,6 +898,9 @@ static psmouse_ret_t fsp_process_byte(struct psmouse *psmouse)
 
 		input_report_rel(dev, REL_X, rel_x);
 		input_report_rel(dev, REL_Y, rel_y);
+=======
+		psmouse_report_standard_packet(dev, packet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -939,7 +1025,11 @@ static int fsp_set_input_params(struct psmouse *psmouse)
 
 		input_set_abs_params(dev, ABS_X, 0, abs_x, 0, 0);
 		input_set_abs_params(dev, ABS_Y, 0, abs_y, 0, 0);
+<<<<<<< HEAD
 		input_mt_init_slots(dev, 2);
+=======
+		input_mt_init_slots(dev, 2, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_set_abs_params(dev, ABS_MT_POSITION_X, 0, abs_x, 0, 0);
 		input_set_abs_params(dev, ABS_MT_POSITION_Y, 0, abs_y, 0, 0);
 	}
@@ -1000,16 +1090,31 @@ static int fsp_reconnect(struct psmouse *psmouse)
 int fsp_init(struct psmouse *psmouse)
 {
 	struct fsp_data *priv;
+<<<<<<< HEAD
 	int ver, rev;
+=======
+	int ver, rev, sn = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error;
 
 	if (fsp_get_version(psmouse, &ver) ||
 	    fsp_get_revision(psmouse, &rev)) {
 		return -ENODEV;
 	}
+<<<<<<< HEAD
 
 	psmouse_info(psmouse, "Finger Sensing Pad, hw: %d.%d.%d, sw: %s\n",
 		     ver >> 4, ver & 0x0F, rev, fsp_drv_ver);
+=======
+	if (ver >= FSP_VER_STL3888_C0) {
+		/* firmware information is only available since C0 */
+		fsp_get_sn(psmouse, &sn);
+	}
+
+	psmouse_info(psmouse,
+		     "Finger Sensing Pad, hw: %d.%d.%d, sn: %x, sw: %s\n",
+		     ver >> 4, ver & 0x0F, rev, sn, fsp_drv_ver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	psmouse->private = priv = kzalloc(sizeof(struct fsp_data), GFP_KERNEL);
 	if (!priv)

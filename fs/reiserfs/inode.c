@@ -11,30 +11,50 @@
 #include <linux/pagemap.h>
 #include <linux/highmem.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/unaligned.h>
 #include <linux/buffer_head.h>
 #include <linux/mpage.h>
 #include <linux/writeback.h>
 #include <linux/quotaops.h>
 #include <linux/swap.h>
+<<<<<<< HEAD
+=======
+#include <linux/uio.h>
+#include <linux/bio.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int reiserfs_commit_write(struct file *f, struct page *page,
 			  unsigned from, unsigned to);
 
 void reiserfs_evict_inode(struct inode *inode)
 {
+<<<<<<< HEAD
 	/* We need blocks for transaction + (user+group) quota update (possibly delete) */
+=======
+	/*
+	 * We need blocks for transaction + (user+group) quota
+	 * update (possibly delete)
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int jbegin_count =
 	    JOURNAL_PER_BALANCE_CNT * 2 +
 	    2 * REISERFS_QUOTA_INIT_BLOCKS(inode->i_sb);
 	struct reiserfs_transaction_handle th;
+<<<<<<< HEAD
 	int depth;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (!inode->i_nlink && !is_bad_inode(inode))
 		dquot_initialize(inode);
 
+<<<<<<< HEAD
 	truncate_inode_pages(&inode->i_data, 0);
 	if (inode->i_nlink)
 		goto no_delete;
@@ -45,6 +65,23 @@ void reiserfs_evict_inode(struct inode *inode)
 	if (!(inode->i_state & I_NEW) && INODE_PKEY(inode)->k_objectid != 0) {	/* also handles bad_inode case */
 		reiserfs_delete_xattrs(inode);
 
+=======
+	truncate_inode_pages_final(&inode->i_data);
+	if (inode->i_nlink)
+		goto no_delete;
+
+	/*
+	 * The = 0 happens when we abort creating a new inode
+	 * for some reason like lack of space..
+	 * also handles bad_inode case
+	 */
+	if (!(inode->i_state & I_NEW) && INODE_PKEY(inode)->k_objectid != 0) {
+
+		reiserfs_delete_xattrs(inode);
+
+		reiserfs_write_lock(inode->i_sb);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (journal_begin(&th, inode->i_sb, jbegin_count))
 			goto out;
 		reiserfs_update_inode_transaction(inode);
@@ -53,6 +90,7 @@ void reiserfs_evict_inode(struct inode *inode)
 
 		err = reiserfs_delete_object(&th, inode);
 
+<<<<<<< HEAD
 		/* Do quota update inside a transaction for journaled quotas. We must do that
 		 * after delete_object so that quota updates go into the same transaction as
 		 * stat data deletion */
@@ -63,18 +101,48 @@ void reiserfs_evict_inode(struct inode *inode)
 			goto out;
 
 		/* check return value from reiserfs_delete_object after
+=======
+		/*
+		 * Do quota update inside a transaction for journaled quotas.
+		 * We must do that after delete_object so that quota updates
+		 * go into the same transaction as stat data deletion
+		 */
+		if (!err) {
+			int depth = reiserfs_write_unlock_nested(inode->i_sb);
+			dquot_free_inode(inode);
+			reiserfs_write_lock_nested(inode->i_sb, depth);
+		}
+
+		if (journal_end(&th))
+			goto out;
+
+		/*
+		 * check return value from reiserfs_delete_object after
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * ending the transaction
 		 */
 		if (err)
 		    goto out;
 
+<<<<<<< HEAD
 		/* all items of file are deleted, so we can remove "save" link */
 		remove_save_link(inode, 0 /* not truncate */ );	/* we can't do anything
 								 * about an error here */
+=======
+		/*
+		 * all items of file are deleted, so we can remove
+		 * "save" link
+		 * we can't do anything about an error here
+		 */
+		remove_save_link(inode, 0 /* not truncate */);
+out:
+		reiserfs_write_unlock(inode->i_sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* no object items are in the tree */
 		;
 	}
+<<<<<<< HEAD
       out:
 	end_writeback(inode);	/* note this must go after the journal_end to prevent deadlock */
 	dquot_drop(inode);
@@ -84,6 +152,18 @@ void reiserfs_evict_inode(struct inode *inode)
 
 no_delete:
 	end_writeback(inode);
+=======
+
+	/* note this must go after the journal_end to prevent deadlock */
+	clear_inode(inode);
+
+	dquot_drop(inode);
+	inode->i_blocks = 0;
+	return;
+
+no_delete:
+	clear_inode(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dquot_drop(inode);
 }
 
@@ -99,8 +179,15 @@ static void _make_cpu_key(struct cpu_key *key, int version, __u32 dirid,
 	key->key_length = length;
 }
 
+<<<<<<< HEAD
 /* take base of inode_key (it comes from inode always) (dirid, objectid) and version from an inode, set
    offset and type of key */
+=======
+/*
+ * take base of inode_key (it comes from inode always) (dirid, objectid)
+ * and version from an inode, set offset and type of key
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void make_cpu_key(struct cpu_key *key, struct inode *inode, loff_t offset,
 		  int type, int length)
 {
@@ -110,9 +197,13 @@ void make_cpu_key(struct cpu_key *key, struct inode *inode, loff_t offset,
 		      length);
 }
 
+<<<<<<< HEAD
 //
 // when key is 0, do not set version and short key
 //
+=======
+/* when key is 0, do not set version and short key */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 inline void make_le_item_head(struct item_head *ih, const struct cpu_key *key,
 			      int version,
 			      loff_t offset, int type, int length,
@@ -128,6 +219,7 @@ inline void make_le_item_head(struct item_head *ih, const struct cpu_key *key,
 	set_le_ih_k_type(ih, type);
 	put_ih_item_len(ih, length);
 	/*    set_ih_free_space (ih, 0); */
+<<<<<<< HEAD
 	// for directory items it is entry count, for directs and stat
 	// datas - 0xffff, for indirects - 0
 	put_ih_entry_count(ih, entry_count);
@@ -165,6 +257,49 @@ inline void make_le_item_head(struct item_head *ih, const struct cpu_key *key,
 ** to be unmapped, so that __block_write_begin will correctly call
 ** reiserfs_get_block to convert the tail into an unformatted node
 */
+=======
+	/*
+	 * for directory items it is entry count, for directs and stat
+	 * datas - 0xffff, for indirects - 0
+	 */
+	put_ih_entry_count(ih, entry_count);
+}
+
+/*
+ * FIXME: we might cache recently accessed indirect item
+ * Ugh.  Not too eager for that....
+ * I cut the code until such time as I see a convincing argument (benchmark).
+ * I don't want a bloated inode struct..., and I don't like code complexity....
+ */
+
+/*
+ * cutting the code is fine, since it really isn't in use yet and is easy
+ * to add back in.  But, Vladimir has a really good idea here.  Think
+ * about what happens for reading a file.  For each page,
+ * The VFS layer calls reiserfs_read_folio, who searches the tree to find
+ * an indirect item.  This indirect item has X number of pointers, where
+ * X is a big number if we've done the block allocation right.  But,
+ * we only use one or two of these pointers during each call to read_folio,
+ * needlessly researching again later on.
+ *
+ * The size of the cache could be dynamic based on the size of the file.
+ *
+ * I'd also like to see us cache the location the stat data item, since
+ * we are needlessly researching for that frequently.
+ *
+ * --chris
+ */
+
+/*
+ * If this page has a file tail in it, and
+ * it was read in by get_block_create_0, the page data is valid,
+ * but tail is still sitting in a direct item, and we can't write to
+ * it.  So, look through this page, and check all the mapped buffers
+ * to make sure they have valid block numbers.  Any that don't need
+ * to be unmapped, so that __block_write_begin will correctly call
+ * reiserfs_get_block to convert the tail into an unformatted node
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void fix_tail_page_for_writing(struct page *page)
 {
 	struct buffer_head *head, *next, *bh;
@@ -182,8 +317,15 @@ static inline void fix_tail_page_for_writing(struct page *page)
 	}
 }
 
+<<<<<<< HEAD
 /* reiserfs_get_block does not need to allocate a block only if it has been
    done already or non-hole position has been found in the indirect item */
+=======
+/*
+ * reiserfs_get_block does not need to allocate a block only if it has been
+ * done already or non-hole position has been found in the indirect item
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int allocation_needed(int retval, b_blocknr_t allocated,
 				    struct item_head *ih,
 				    __le32 * item, int pos_in_item)
@@ -207,6 +349,7 @@ static inline void set_block_dev_mapped(struct buffer_head *bh,
 	map_bh(bh, inode->i_sb, block);
 }
 
+<<<<<<< HEAD
 //
 // files which were created in the earlier version can not be longer,
 // than 2 gb
@@ -215,6 +358,18 @@ static int file_capable(struct inode *inode, sector_t block)
 {
 	if (get_inode_item_key_version(inode) != KEY_FORMAT_3_5 ||	// it is new file.
 	    block < (1 << (31 - inode->i_sb->s_blocksize_bits)))	// old file, but 'block' is inside of 2gb
+=======
+/*
+ * files which were created in the earlier version can not be longer,
+ * than 2 gb
+ */
+static int file_capable(struct inode *inode, sector_t block)
+{
+	/* it is new file. */
+	if (get_inode_item_key_version(inode) != KEY_FORMAT_3_5 ||
+	    /* old file, but 'block' is inside of 2gb */
+	    block < (1 << (31 - inode->i_sb->s_blocksize_bits)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	return 0;
@@ -224,7 +379,10 @@ static int restart_transaction(struct reiserfs_transaction_handle *th,
 			       struct inode *inode, struct treepath *path)
 {
 	struct super_block *s = th->t_super;
+<<<<<<< HEAD
 	int len = th->t_blocks_allocated;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	BUG_ON(!th->t_trans_id);
@@ -237,7 +395,11 @@ static int restart_transaction(struct reiserfs_transaction_handle *th,
 		return 0;
 	}
 	reiserfs_update_sd(th, inode);
+<<<<<<< HEAD
 	err = journal_end(th, s, len);
+=======
+	err = journal_end(th);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!err) {
 		err = journal_begin(th, s, JOURNAL_PER_BALANCE_CNT * 6);
 		if (!err)
@@ -246,6 +408,7 @@ static int restart_transaction(struct reiserfs_transaction_handle *th,
 	return err;
 }
 
+<<<<<<< HEAD
 // it is called by get_block when create == 0. Returns block number
 // for 'block'-th logical block of file. When it hits direct item it
 // returns 0 (being called from bmap) or read direct item into piece
@@ -254,6 +417,16 @@ static int restart_transaction(struct reiserfs_transaction_handle *th,
 // Please improve the english/clarity in the comment above, as it is
 // hard to understand.
 
+=======
+/*
+ * it is called by get_block when create == 0. Returns block number
+ * for 'block'-th logical block of file. When it hits direct item it
+ * returns 0 (being called from bmap) or read direct item into piece
+ * of page (bh_result)
+ * Please improve the english/clarity in the comment above, as it is
+ * hard to understand.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int _get_block_create_0(struct inode *inode, sector_t block,
 			       struct buffer_head *bh_result, int args)
 {
@@ -262,14 +435,22 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
 	struct buffer_head *bh;
 	struct item_head *ih, tmp_ih;
 	b_blocknr_t blocknr;
+<<<<<<< HEAD
 	char *p = NULL;
+=======
+	char *p;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int chars;
 	int ret;
 	int result;
 	int done = 0;
 	unsigned long offset;
 
+<<<<<<< HEAD
 	// prepare the key to look for the 'block'-th block of file
+=======
+	/* prepare the key to look for the 'block'-th block of file */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	make_cpu_key(&key, inode,
 		     (loff_t) block * inode->i_sb->s_blocksize + 1, TYPE_ANY,
 		     3);
@@ -277,18 +458,29 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
 	result = search_for_position_by_key(inode->i_sb, &key, &path);
 	if (result != POSITION_FOUND) {
 		pathrelse(&path);
+<<<<<<< HEAD
 		if (p)
 			kunmap(bh_result->b_page);
 		if (result == IO_ERROR)
 			return -EIO;
 		// We do not return -ENOENT if there is a hole but page is uptodate, because it means
 		// That there is some MMAPED data associated with it that is yet to be written to disk.
+=======
+		if (result == IO_ERROR)
+			return -EIO;
+		/*
+		 * We do not return -ENOENT if there is a hole but page is
+		 * uptodate, because it means that there is some MMAPED data
+		 * associated with it that is yet to be written to disk.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((args & GET_BLOCK_NO_HOLE)
 		    && !PageUptodate(bh_result->b_page)) {
 			return -ENOENT;
 		}
 		return 0;
 	}
+<<<<<<< HEAD
 	//
 	bh = get_last_bh(&path);
 	ih = get_ih(&path);
@@ -298,6 +490,19 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
 		/* FIXME: here we could cache indirect item or part of it in
 		   the inode to avoid search_by_key in case of subsequent
 		   access to file */
+=======
+
+	bh = get_last_bh(&path);
+	ih = tp_item_head(&path);
+	if (is_indirect_le_ih(ih)) {
+		__le32 *ind_item = (__le32 *) ih_item_body(bh, ih);
+
+		/*
+		 * FIXME: here we could cache indirect item or part of it in
+		 * the inode to avoid search_by_key in case of subsequent
+		 * access to file
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		blocknr = get_block_num(ind_item, path.pos_in_item);
 		ret = 0;
 		if (blocknr) {
@@ -307,14 +512,24 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
 				set_buffer_boundary(bh_result);
 			}
 		} else
+<<<<<<< HEAD
 			// We do not return -ENOENT if there is a hole but page is uptodate, because it means
 			// That there is some MMAPED data associated with it that is yet to  be written to disk.
+=======
+			/*
+			 * We do not return -ENOENT if there is a hole but
+			 * page is uptodate, because it means that there is
+			 * some MMAPED data associated with it that is
+			 * yet to be written to disk.
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((args & GET_BLOCK_NO_HOLE)
 			    && !PageUptodate(bh_result->b_page)) {
 			ret = -ENOENT;
 		}
 
 		pathrelse(&path);
+<<<<<<< HEAD
 		if (p)
 			kunmap(bh_result->b_page);
 		return ret;
@@ -332,20 +547,46 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
 	/* if we've got a direct item, and the buffer or page was uptodate,
 	 ** we don't want to pull data off disk again.  skip to the
 	 ** end, where we map the buffer and return
+=======
+		return ret;
+	}
+	/* requested data are in direct item(s) */
+	if (!(args & GET_BLOCK_READ_DIRECT)) {
+		/*
+		 * we are called by bmap. FIXME: we can not map block of file
+		 * when it is stored in direct item(s)
+		 */
+		pathrelse(&path);
+		return -ENOENT;
+	}
+
+	/*
+	 * if we've got a direct item, and the buffer or page was uptodate,
+	 * we don't want to pull data off disk again.  skip to the
+	 * end, where we map the buffer and return
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (buffer_uptodate(bh_result)) {
 		goto finished;
 	} else
 		/*
+<<<<<<< HEAD
 		 ** grab_tail_page can trigger calls to reiserfs_get_block on up to date
 		 ** pages without any buffers.  If the page is up to date, we don't want
 		 ** read old data off disk.  Set the up to date bit on the buffer instead
 		 ** and jump to the end
+=======
+		 * grab_tail_page can trigger calls to reiserfs_get_block on
+		 * up to date pages without any buffers.  If the page is up
+		 * to date, we don't want read old data off disk.  Set the up
+		 * to date bit on the buffer instead and jump to the end
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 	if (!bh_result->b_page || PageUptodate(bh_result->b_page)) {
 		set_buffer_uptodate(bh_result);
 		goto finished;
 	}
+<<<<<<< HEAD
 	// read file tail into part of page
 	offset = (cpu_key_k_offset(&key) - 1) & (PAGE_CACHE_SIZE - 1);
 	copy_item_head(&tmp_ih, ih);
@@ -358,16 +599,37 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
 	if (!p)
 		p = (char *)kmap(bh_result->b_page);
 
+=======
+	/* read file tail into part of page */
+	offset = (cpu_key_k_offset(&key) - 1) & (PAGE_SIZE - 1);
+	copy_item_head(&tmp_ih, ih);
+
+	/*
+	 * we only want to kmap if we are reading the tail into the page.
+	 * this is not the common case, so we don't kmap until we are
+	 * sure we need to.  But, this means the item might move if
+	 * kmap schedules
+	 */
+	p = (char *)kmap(bh_result->b_page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	p += offset;
 	memset(p, 0, inode->i_sb->s_blocksize);
 	do {
 		if (!is_direct_le_ih(ih)) {
 			BUG();
 		}
+<<<<<<< HEAD
 		/* make sure we don't read more bytes than actually exist in
 		 ** the file.  This can happen in odd cases where i_size isn't
 		 ** correct, and when direct item padding results in a few
 		 ** extra bytes at the end of the direct item
+=======
+		/*
+		 * make sure we don't read more bytes than actually exist in
+		 * the file.  This can happen in odd cases where i_size isn't
+		 * correct, and when direct item padding results in a few
+		 * extra bytes at the end of the direct item
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if ((le_ih_k_offset(ih) + path.pos_in_item) > inode->i_size)
 			break;
@@ -379,13 +641,18 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
 		} else {
 			chars = ih_item_len(ih) - path.pos_in_item;
 		}
+<<<<<<< HEAD
 		memcpy(p, B_I_PITEM(bh, ih) + path.pos_in_item, chars);
+=======
+		memcpy(p, ih_item_body(bh, ih) + path.pos_in_item, chars);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (done)
 			break;
 
 		p += chars;
 
+<<<<<<< HEAD
 		if (PATH_LAST_POSITION(&path) != (B_NR_ITEMS(bh) - 1))
 			// we done, if read direct item is not the last item of
 			// node FIXME: we could try to check right delimiting key
@@ -401,18 +668,46 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
 			break;
 		bh = get_last_bh(&path);
 		ih = get_ih(&path);
+=======
+		/*
+		 * we done, if read direct item is not the last item of
+		 * node FIXME: we could try to check right delimiting key
+		 * to see whether direct item continues in the right
+		 * neighbor or rely on i_size
+		 */
+		if (PATH_LAST_POSITION(&path) != (B_NR_ITEMS(bh) - 1))
+			break;
+
+		/* update key to look for the next piece */
+		set_cpu_key_k_offset(&key, cpu_key_k_offset(&key) + chars);
+		result = search_for_position_by_key(inode->i_sb, &key, &path);
+		if (result != POSITION_FOUND)
+			/* i/o error most likely */
+			break;
+		bh = get_last_bh(&path);
+		ih = tp_item_head(&path);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (1);
 
 	flush_dcache_page(bh_result->b_page);
 	kunmap(bh_result->b_page);
 
+<<<<<<< HEAD
       finished:
+=======
+finished:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pathrelse(&path);
 
 	if (result == IO_ERROR)
 		return -EIO;
 
+<<<<<<< HEAD
 	/* this buffer has valid data, but isn't valid for io.  mapping it to
+=======
+	/*
+	 * this buffer has valid data, but isn't valid for io.  mapping it to
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * block #0 tells the rest of reiserfs it just has a tail in it
 	 */
 	map_bh(bh_result, inode->i_sb, 0);
@@ -420,8 +715,15 @@ static int _get_block_create_0(struct inode *inode, sector_t block,
 	return 0;
 }
 
+<<<<<<< HEAD
 // this is called to create file map. So, _get_block_create_0 will not
 // read direct item
+=======
+/*
+ * this is called to create file map. So, _get_block_create_0 will not
+ * read direct item
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int reiserfs_bmap(struct inode *inode, sector_t block,
 			 struct buffer_head *bh_result, int create)
 {
@@ -435,6 +737,7 @@ static int reiserfs_bmap(struct inode *inode, sector_t block,
 	return 0;
 }
 
+<<<<<<< HEAD
 /* special version of get_block that is only used by grab_tail_page right
 ** now.  It is sent to __block_write_begin, and when you try to get a
 ** block past the end of the file (or a block from a hole) it returns
@@ -451,6 +754,25 @@ static int reiserfs_bmap(struct inode *inode, sector_t block,
 ** though the VFS layer is calling this function with create==1.  If you
 ** don't want to send create == GET_BLOCK_NO_HOLE to reiserfs_get_block,
 ** don't use this function.
+=======
+/*
+ * special version of get_block that is only used by grab_tail_page right
+ * now.  It is sent to __block_write_begin, and when you try to get a
+ * block past the end of the file (or a block from a hole) it returns
+ * -ENOENT instead of a valid buffer.  __block_write_begin expects to
+ * be able to do i/o on the buffers returned, unless an error value
+ * is also returned.
+ *
+ * So, this allows __block_write_begin to be used for reading a single block
+ * in a page.  Where it does not produce a valid page for holes, or past the
+ * end of the file.  This turns out to be exactly what we need for reading
+ * tails for conversion.
+ *
+ * The point of the wrapper is forcing a certain value for create, even
+ * though the VFS layer is calling this function with create==1.  If you
+ * don't want to send create == GET_BLOCK_NO_HOLE to reiserfs_get_block,
+ * don't use this function.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 static int reiserfs_get_block_create_0(struct inode *inode, sector_t block,
 				       struct buffer_head *bh_result,
@@ -459,8 +781,15 @@ static int reiserfs_get_block_create_0(struct inode *inode, sector_t block,
 	return reiserfs_get_block(inode, block, bh_result, GET_BLOCK_NO_HOLE);
 }
 
+<<<<<<< HEAD
 /* This is special helper for reiserfs_get_block in case we are executing
    direct_IO request. */
+=======
+/*
+ * This is special helper for reiserfs_get_block in case we are executing
+ * direct_IO request.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int reiserfs_get_blocks_direct_io(struct inode *inode,
 					 sector_t iblock,
 					 struct buffer_head *bh_result,
@@ -470,10 +799,19 @@ static int reiserfs_get_blocks_direct_io(struct inode *inode,
 
 	bh_result->b_page = NULL;
 
+<<<<<<< HEAD
 	/* We set the b_size before reiserfs_get_block call since it is
 	   referenced in convert_tail_for_hole() that may be called from
 	   reiserfs_get_block() */
 	bh_result->b_size = (1 << inode->i_blkbits);
+=======
+	/*
+	 * We set the b_size before reiserfs_get_block call since it is
+	 * referenced in convert_tail_for_hole() that may be called from
+	 * reiserfs_get_block()
+	 */
+	bh_result->b_size = i_blocksize(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = reiserfs_get_block(inode, iblock, bh_result,
 				 create | GET_BLOCK_NO_DANGLE);
@@ -482,14 +820,28 @@ static int reiserfs_get_blocks_direct_io(struct inode *inode,
 
 	/* don't allow direct io onto tail pages */
 	if (buffer_mapped(bh_result) && bh_result->b_blocknr == 0) {
+<<<<<<< HEAD
 		/* make sure future calls to the direct io funcs for this offset
 		 ** in the file fail by unmapping the buffer
+=======
+		/*
+		 * make sure future calls to the direct io funcs for this
+		 * offset in the file fail by unmapping the buffer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		clear_buffer_mapped(bh_result);
 		ret = -EINVAL;
 	}
+<<<<<<< HEAD
 	/* Possible unpacked tail. Flush the data before pages have
 	   disappeared */
+=======
+
+	/*
+	 * Possible unpacked tail. Flush the data before pages have
+	 * disappeared
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (REISERFS_I(inode)->i_flags & i_pack_on_close_mask) {
 		int err;
 
@@ -503,11 +855,16 @@ static int reiserfs_get_blocks_direct_io(struct inode *inode,
 		if (err < 0)
 			ret = err;
 	}
+<<<<<<< HEAD
       out:
+=======
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 /*
+<<<<<<< HEAD
 ** helper function for when reiserfs_get_block is called for a hole
 ** but the file tail is still in a direct item
 ** bh_result is the buffer head for the hole
@@ -517,6 +874,17 @@ static int reiserfs_get_blocks_direct_io(struct inode *inode,
 ** you should not be in a transaction, or have any paths held when you
 ** call this.
 */
+=======
+ * helper function for when reiserfs_get_block is called for a hole
+ * but the file tail is still in a direct item
+ * bh_result is the buffer head for the hole
+ * tail_offset is the offset of the start of the tail in the file
+ *
+ * This calls prepare_write, which will start a new transaction
+ * you should not be in a transaction, or have any paths held when you
+ * call this.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int convert_tail_for_hole(struct inode *inode,
 				 struct buffer_head *bh_result,
 				 loff_t tail_offset)
@@ -532,6 +900,7 @@ static int convert_tail_for_hole(struct inode *inode,
 		return -EIO;
 
 	/* always try to read until the end of the block */
+<<<<<<< HEAD
 	tail_start = tail_offset & (PAGE_CACHE_SIZE - 1);
 	tail_end = (tail_start | (bh_result->b_size - 1)) + 1;
 
@@ -539,6 +908,16 @@ static int convert_tail_for_hole(struct inode *inode,
 	/* hole_page can be zero in case of direct_io, we are sure
 	   that we cannot get here if we write with O_DIRECT into
 	   tail page */
+=======
+	tail_start = tail_offset & (PAGE_SIZE - 1);
+	tail_end = (tail_start | (bh_result->b_size - 1)) + 1;
+
+	index = tail_offset >> PAGE_SHIFT;
+	/*
+	 * hole_page can be zero in case of direct_io, we are sure
+	 * that we cannot get here if we write with O_DIRECT into tail page
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hole_page || index != hole_page->index) {
 		tail_page = grab_cache_page(inode->i_mapping, index);
 		retval = -ENOMEM;
@@ -549,6 +928,7 @@ static int convert_tail_for_hole(struct inode *inode,
 		tail_page = hole_page;
 	}
 
+<<<<<<< HEAD
 	/* we don't have to make sure the conversion did not happen while
 	 ** we were locking the page because anyone that could convert
 	 ** must first take i_mutex.
@@ -557,6 +937,17 @@ static int convert_tail_for_hole(struct inode *inode,
 	 ** that are mapped, but have a block number of 0.  This indicates tail
 	 ** data that has been read directly into the page, and
 	 ** __block_write_begin won't trigger a get_block in this case.
+=======
+	/*
+	 * we don't have to make sure the conversion did not happen while
+	 * we were locking the page because anyone that could convert
+	 * must first take i_mutex.
+	 *
+	 * We must fix the tail page for writing because it might have buffers
+	 * that are mapped, but have a block number of 0.  This indicates tail
+	 * data that has been read directly into the page, and
+	 * __block_write_begin won't trigger a get_block in this case.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	fix_tail_page_for_writing(tail_page);
 	retval = __reiserfs_write_begin(tail_page, tail_start,
@@ -569,12 +960,21 @@ static int convert_tail_for_hole(struct inode *inode,
 
 	retval = reiserfs_commit_write(NULL, tail_page, tail_start, tail_end);
 
+<<<<<<< HEAD
       unlock:
 	if (tail_page != hole_page) {
 		unlock_page(tail_page);
 		page_cache_release(tail_page);
 	}
       out:
+=======
+unlock:
+	if (tail_page != hole_page) {
+		unlock_page(tail_page);
+		put_page(tail_page);
+	}
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -600,7 +1000,12 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 		       struct buffer_head *bh_result, int create)
 {
 	int repeat, retval = 0;
+<<<<<<< HEAD
 	b_blocknr_t allocated_block_nr = 0;	// b_blocknr_t is (unsigned) 32 bit int
+=======
+	/* b_blocknr_t is (unsigned) 32 bit int*/
+	b_blocknr_t allocated_block_nr = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INITIALIZE_PATH(path);
 	int pos_in_item;
 	struct cpu_key key;
@@ -609,6 +1014,7 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 	__le32 *item;
 	int done;
 	int fs_gen;
+<<<<<<< HEAD
 	int lock_depth;
 	struct reiserfs_transaction_handle *th = NULL;
 	/* space reserved in transaction batch:
@@ -617,6 +1023,17 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 	   XXX in practically impossible worst case direct2indirect()
 	   can incur (much) more than 3 balancings.
 	   quota update for user, group */
+=======
+	struct reiserfs_transaction_handle *th = NULL;
+	/*
+	 * space reserved in transaction batch:
+	 * . 3 balancings in direct->indirect conversion
+	 * . 1 block involved into reiserfs_update_sd()
+	 * XXX in practically impossible worst case direct2indirect()
+	 * can incur (much) more than 3 balancings.
+	 * quota update for user, group
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int jbegin_count =
 	    JOURNAL_PER_BALANCE_CNT * 3 + 1 +
 	    2 * REISERFS_QUOTA_TRANS_BLOCKS(inode->i_sb);
@@ -625,6 +1042,7 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 	loff_t new_offset =
 	    (((loff_t) block) << inode->i_sb->s_blocksize_bits) + 1;
 
+<<<<<<< HEAD
 	lock_depth = reiserfs_write_lock_once(inode->i_sb);
 	version = get_inode_item_key_version(inode);
 
@@ -635,15 +1053,35 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 
 	/* if !create, we aren't changing the FS, so we don't need to
 	 ** log anything, so we don't need to start a transaction
+=======
+	reiserfs_write_lock(inode->i_sb);
+	version = get_inode_item_key_version(inode);
+
+	if (!file_capable(inode, block)) {
+		reiserfs_write_unlock(inode->i_sb);
+		return -EFBIG;
+	}
+
+	/*
+	 * if !create, we aren't changing the FS, so we don't need to
+	 * log anything, so we don't need to start a transaction
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (!(create & GET_BLOCK_CREATE)) {
 		int ret;
 		/* find number of block-th logical block of the file */
 		ret = _get_block_create_0(inode, block, bh_result,
 					  create | GET_BLOCK_READ_DIRECT);
+<<<<<<< HEAD
 		reiserfs_write_unlock_once(inode->i_sb, lock_depth);
 		return ret;
 	}
+=======
+		reiserfs_write_unlock(inode->i_sb);
+		return ret;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * if we're already in a transaction, make sure to close
 	 * any new transactions we start in this func
@@ -652,8 +1090,15 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 	    reiserfs_transaction_running(inode->i_sb))
 		dangle = 0;
 
+<<<<<<< HEAD
 	/* If file is of such a size, that it might have a tail and tails are enabled
 	 ** we should mark it as possibly needing tail packing on close
+=======
+	/*
+	 * If file is of such a size, that it might have a tail and
+	 * tails are enabled  we should mark it as possibly needing
+	 * tail packing on close
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if ((have_large_tails(inode->i_sb)
 	     && inode->i_size < i_block_size(inode) * 4)
@@ -664,7 +1109,11 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 	/* set the key of the first byte in the 'block'-th block of file */
 	make_cpu_key(&key, inode, new_offset, TYPE_ANY, 3 /*key length */ );
 	if ((new_offset + inode->i_sb->s_blocksize - 1) > inode->i_size) {
+<<<<<<< HEAD
 	      start_trans:
+=======
+start_trans:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		th = reiserfs_persistent_transaction(inode->i_sb, jbegin_count);
 		if (!th) {
 			retval = -ENOMEM;
@@ -672,7 +1121,11 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 		}
 		reiserfs_update_inode_transaction(inode);
 	}
+<<<<<<< HEAD
       research:
+=======
+research:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = search_for_position_by_key(inode->i_sb, &key, &path);
 	if (retval == IO_ERROR) {
@@ -681,8 +1134,13 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 	}
 
 	bh = get_last_bh(&path);
+<<<<<<< HEAD
 	ih = get_ih(&path);
 	item = get_item(&path);
+=======
+	ih = tp_item_head(&path);
+	item = tp_item_body(&path);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pos_in_item = path.pos_in_item;
 
 	fs_gen = get_generation(inode->i_sb);
@@ -700,11 +1158,20 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 		    _allocate_block(th, block, inode, &allocated_block_nr,
 				    &path, create);
 
+<<<<<<< HEAD
 		if (repeat == NO_DISK_SPACE || repeat == QUOTA_EXCEEDED) {
 			/* restart the transaction to give the journal a chance to free
 			 ** some blocks.  releases the path, so we have to go back to
 			 ** research if we succeed on the second try
 			 */
+=======
+		/*
+		 * restart the transaction to give the journal a chance to free
+		 * some blocks.  releases the path, so we have to go back to
+		 * research if we succeed on the second try
+		 */
+		if (repeat == NO_DISK_SPACE || repeat == QUOTA_EXCEEDED) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SB_JOURNAL(inode->i_sb)->j_next_async_flush = 1;
 			retval = restart_transaction(th, inode, &path);
 			if (retval)
@@ -731,9 +1198,17 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 
 	if (indirect_item_found(retval, ih)) {
 		b_blocknr_t unfm_ptr;
+<<<<<<< HEAD
 		/* 'block'-th block is in the file already (there is
 		   corresponding cell in some indirect item). But it may be
 		   zero unformatted node pointer (hole) */
+=======
+		/*
+		 * 'block'-th block is in the file already (there is
+		 * corresponding cell in some indirect item). But it may be
+		 * zero unformatted node pointer (hole)
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unfm_ptr = get_block_num(item, pos_in_item);
 		if (unfm_ptr == 0) {
 			/* use allocated block to plug the hole */
@@ -750,7 +1225,11 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 				reiserfs_add_ordered_list(inode, bh_result);
 			put_block_num(item, pos_in_item, allocated_block_nr);
 			unfm_ptr = allocated_block_nr;
+<<<<<<< HEAD
 			journal_mark_dirty(th, inode->i_sb, bh);
+=======
+			journal_mark_dirty(th, bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			reiserfs_update_sd(th, inode);
 		}
 		set_block_dev_mapped(bh_result, unfm_ptr, inode);
@@ -759,11 +1238,20 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 		if (!dangle && th)
 			retval = reiserfs_end_persistent_transaction(th);
 
+<<<<<<< HEAD
 		reiserfs_write_unlock_once(inode->i_sb, lock_depth);
 
 		/* the item was found, so new blocks were not added to the file
 		 ** there is no need to make sure the inode is updated with this
 		 ** transaction
+=======
+		reiserfs_write_unlock(inode->i_sb);
+
+		/*
+		 * the item was found, so new blocks were not added to the file
+		 * there is no need to make sure the inode is updated with this
+		 * transaction
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		return retval;
 	}
@@ -773,9 +1261,17 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 		goto start_trans;
 	}
 
+<<<<<<< HEAD
 	/* desired position is not found or is in the direct item. We have
 	   to append file with holes up to 'block'-th block converting
 	   direct items to indirect one if necessary */
+=======
+	/*
+	 * desired position is not found or is in the direct item. We have
+	 * to append file with holes up to 'block'-th block converting
+	 * direct items to indirect one if necessary
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	done = 0;
 	do {
 		if (is_statdata_le_ih(ih)) {
@@ -787,16 +1283,28 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 					  TYPE_INDIRECT, UNFM_P_SIZE,
 					  0 /* free_space */ );
 
+<<<<<<< HEAD
 			if (cpu_key_k_offset(&key) == 1) {
 				/* we are going to add 'block'-th block to the file. Use
 				   allocated block for that */
+=======
+			/*
+			 * we are going to add 'block'-th block to the file.
+			 * Use allocated block for that
+			 */
+			if (cpu_key_k_offset(&key) == 1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				unp = cpu_to_le32(allocated_block_nr);
 				set_block_dev_mapped(bh_result,
 						     allocated_block_nr, inode);
 				set_buffer_new(bh_result);
 				done = 1;
 			}
+<<<<<<< HEAD
 			tmp_key = key;	// ;)
+=======
+			tmp_key = key;	/* ;) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			set_cpu_key_k_offset(&tmp_key, 1);
 			PATH_LAST_POSITION(&path)++;
 
@@ -806,9 +1314,18 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 			if (retval) {
 				reiserfs_free_block(th, inode,
 						    allocated_block_nr, 1);
+<<<<<<< HEAD
 				goto failure;	// retval == -ENOSPC, -EDQUOT or -EIO or -EEXIST
 			}
 			//mark_tail_converted (inode);
+=======
+				/*
+				 * retval == -ENOSPC, -EDQUOT or -EIO
+				 * or -EEXIST
+				 */
+				goto failure;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (is_direct_le_ih(ih)) {
 			/* direct item has to be converted */
 			loff_t tail_offset;
@@ -816,18 +1333,37 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 			tail_offset =
 			    ((le_ih_k_offset(ih) -
 			      1) & ~(inode->i_sb->s_blocksize - 1)) + 1;
+<<<<<<< HEAD
 			if (tail_offset == cpu_key_k_offset(&key)) {
 				/* direct item we just found fits into block we have
 				   to map. Convert it into unformatted node: use
 				   bh_result for the conversion */
+=======
+
+			/*
+			 * direct item we just found fits into block we have
+			 * to map. Convert it into unformatted node: use
+			 * bh_result for the conversion
+			 */
+			if (tail_offset == cpu_key_k_offset(&key)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				set_block_dev_mapped(bh_result,
 						     allocated_block_nr, inode);
 				unbh = bh_result;
 				done = 1;
 			} else {
+<<<<<<< HEAD
 				/* we have to padd file tail stored in direct item(s)
 				   up to block size and convert it to unformatted
 				   node. FIXME: this should also get into page cache */
+=======
+				/*
+				 * we have to pad file tail stored in direct
+				 * item(s) up to block size and convert it
+				 * to unformatted node. FIXME: this should
+				 * also get into page cache
+				 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				pathrelse(&path);
 				/*
@@ -856,7 +1392,14 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 							inode->i_ino,
 							retval);
 					if (allocated_block_nr) {
+<<<<<<< HEAD
 						/* the bitmap, the super, and the stat data == 3 */
+=======
+						/*
+						 * the bitmap, the super,
+						 * and the stat data == 3
+						 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						if (!th)
 							th = reiserfs_persistent_transaction(inode->i_sb, 3);
 						if (th)
@@ -878,6 +1421,7 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 						    allocated_block_nr, 1);
 				goto failure;
 			}
+<<<<<<< HEAD
 			/* it is important the set_buffer_uptodate is done after
 			 ** the direct2indirect.  The buffer might contain valid
 			 ** data newer than the data on disk (read by readpage, changed,
@@ -905,16 +1449,68 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 				 * It's still atomic, but it sets the page dirty too,
 				 * which makes it eligible for writeback at any time by the
 				 * VM (which was also the case with __mark_buffer_dirty())
+=======
+			/*
+			 * it is important the set_buffer_uptodate is done
+			 * after the direct2indirect.  The buffer might
+			 * contain valid data newer than the data on disk
+			 * (read by read_folio, changed, and then sent here by
+			 * writepage).  direct2indirect needs to know if unbh
+			 * was already up to date, so it can decide if the
+			 * data in unbh needs to be replaced with data from
+			 * the disk
+			 */
+			set_buffer_uptodate(unbh);
+
+			/*
+			 * unbh->b_page == NULL in case of DIRECT_IO request,
+			 * this means buffer will disappear shortly, so it
+			 * should not be added to
+			 */
+			if (unbh->b_page) {
+				/*
+				 * we've converted the tail, so we must
+				 * flush unbh before the transaction commits
+				 */
+				reiserfs_add_tail_list(inode, unbh);
+
+				/*
+				 * mark it dirty now to prevent commit_write
+				 * from adding this buffer to the inode's
+				 * dirty buffer list
+				 */
+				/*
+				 * AKPM: changed __mark_buffer_dirty to
+				 * mark_buffer_dirty().  It's still atomic,
+				 * but it sets the page dirty too, which makes
+				 * it eligible for writeback at any time by the
+				 * VM (which was also the case with
+				 * __mark_buffer_dirty())
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 */
 				mark_buffer_dirty(unbh);
 			}
 		} else {
+<<<<<<< HEAD
 			/* append indirect item with holes if needed, when appending
 			   pointer to 'block'-th block use block, which is already
 			   allocated */
 			struct cpu_key tmp_key;
 			unp_t unf_single = 0;	// We use this in case we need to allocate only
 			// one block which is a fastpath
+=======
+			/*
+			 * append indirect item with holes if needed, when
+			 * appending pointer to 'block'-th block use block,
+			 * which is already allocated
+			 */
+			struct cpu_key tmp_key;
+			/*
+			 * We use this in case we need to allocate
+			 * only one block which is a fastpath
+			 */
+			unp_t unf_single = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unp_t *un;
 			__u64 max_to_insert =
 			    MAX_ITEM_LEN(inode->i_sb->s_blocksize) /
@@ -923,6 +1519,7 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 
 			RFALSE(pos_in_item != ih_item_len(ih) / UNFM_P_SIZE,
 			       "vs-804: invalid position for append");
+<<<<<<< HEAD
 			/* indirect item has to be appended, set up key of that position */
 			make_cpu_key(&tmp_key, inode,
 				     le_key_k_offset(version,
@@ -931,6 +1528,19 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 						     inode->i_sb->s_blocksize),
 				     //pos_in_item * inode->i_sb->s_blocksize,
 				     TYPE_INDIRECT, 3);	// key type is unimportant
+=======
+			/*
+			 * indirect item has to be appended,
+			 * set up key of that position
+			 * (key type is unimportant)
+			 */
+			make_cpu_key(&tmp_key, inode,
+				     le_key_k_offset(version,
+						     &ih->ih_key) +
+				     op_bytes_number(ih,
+						     inode->i_sb->s_blocksize),
+				     TYPE_INDIRECT, 3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			RFALSE(cpu_key_k_offset(&tmp_key) > cpu_key_k_offset(&key),
 			       "green-805: invalid offset");
@@ -943,7 +1553,12 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 			if (blocks_needed == 1) {
 				un = &unf_single;
 			} else {
+<<<<<<< HEAD
 				un = kzalloc(min(blocks_needed, max_to_insert) * UNFM_P_SIZE, GFP_NOFS);
+=======
+				un = kcalloc(min(blocks_needed, max_to_insert),
+					     UNFM_P_SIZE, GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (!un) {
 					un = &unf_single;
 					blocks_needed = 1;
@@ -951,8 +1566,15 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 				}
 			}
 			if (blocks_needed <= max_to_insert) {
+<<<<<<< HEAD
 				/* we are going to add target block to the file. Use allocated
 				   block for that */
+=======
+				/*
+				 * we are going to add target block to
+				 * the file. Use allocated block for that
+				 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				un[blocks_needed - 1] =
 				    cpu_to_le32(allocated_block_nr);
 				set_block_dev_mapped(bh_result,
@@ -961,8 +1583,16 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 				done = 1;
 			} else {
 				/* paste hole to the indirect item */
+<<<<<<< HEAD
 				/* If kmalloc failed, max_to_insert becomes zero and it means we
 				   only have space for one block */
+=======
+				/*
+				 * If kcalloc failed, max_to_insert becomes
+				 * zero and it means we only have space for
+				 * one block
+				 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				blocks_needed =
 				    max_to_insert ? max_to_insert : 1;
 			}
@@ -981,9 +1611,18 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 				goto failure;
 			}
 			if (!done) {
+<<<<<<< HEAD
 				/* We need to mark new file size in case this function will be
 				   interrupted/aborted later on. And we may do this only for
 				   holes. */
+=======
+				/*
+				 * We need to mark new file size in case
+				 * this function will be interrupted/aborted
+				 * later on. And we may do this only for
+				 * holes.
+				 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				inode->i_size +=
 				    inode->i_sb->s_blocksize * blocks_needed;
 			}
@@ -992,6 +1631,7 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 		if (done == 1)
 			break;
 
+<<<<<<< HEAD
 		/* this loop could log more blocks than we had originally asked
 		 ** for.  So, we have to allow the transaction to end if it is
 		 ** too big or too full.  Update the inode so things are
@@ -999,6 +1639,15 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 		 **
 		 ** release the path so that anybody waiting on the path before
 		 ** ending their transaction will be able to continue.
+=======
+		/*
+		 * this loop could log more blocks than we had originally
+		 * asked for.  So, we have to allow the transaction to end
+		 * if it is too big or too full.  Update the inode so things
+		 * are consistent if we crash before the function returns
+		 * release the path so that anybody waiting on the path before
+		 * ending their transaction will be able to continue.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (journal_transaction_should_end(th, th->t_blocks_allocated)) {
 			retval = restart_transaction(th, inode, &path);
@@ -1010,11 +1659,15 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 		 * long time.  reschedule if needed and also release the write
 		 * lock for others.
 		 */
+<<<<<<< HEAD
 		if (need_resched()) {
 			reiserfs_write_unlock_once(inode->i_sb, lock_depth);
 			schedule();
 			lock_depth = reiserfs_write_lock_once(inode->i_sb);
 		}
+=======
+		reiserfs_cond_resched(inode->i_sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		retval = search_for_position_by_key(inode->i_sb, &key, &path);
 		if (retval == IO_ERROR) {
@@ -1032,14 +1685,23 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 			goto failure;
 		}
 		bh = get_last_bh(&path);
+<<<<<<< HEAD
 		ih = get_ih(&path);
 		item = get_item(&path);
+=======
+		ih = tp_item_head(&path);
+		item = tp_item_body(&path);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pos_in_item = path.pos_in_item;
 	} while (1);
 
 	retval = 0;
 
+<<<<<<< HEAD
       failure:
+=======
+failure:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (th && (!dangle || (retval && !th->t_trans_id))) {
 		int err;
 		if (th->t_trans_id)
@@ -1049,11 +1711,16 @@ int reiserfs_get_block(struct inode *inode, sector_t block,
 			retval = err;
 	}
 
+<<<<<<< HEAD
 	reiserfs_write_unlock_once(inode->i_sb, lock_depth);
+=======
+	reiserfs_write_unlock(inode->i_sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reiserfs_check_path(&path);
 	return retval;
 }
 
+<<<<<<< HEAD
 static int
 reiserfs_readpages(struct file *file, struct address_space *mapping,
 		   struct list_head *pages, unsigned nr_pages)
@@ -1063,6 +1730,17 @@ reiserfs_readpages(struct file *file, struct address_space *mapping,
 
 /* Compute real number of used bytes by file
  * Following three functions can go away when we'll have enough space in stat item
+=======
+static void reiserfs_readahead(struct readahead_control *rac)
+{
+	mpage_readahead(rac, reiserfs_get_block);
+}
+
+/*
+ * Compute real number of used bytes by file
+ * Following three functions can go away when we'll have enough space in
+ * stat item
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int real_space_diff(struct inode *inode, int sd_size)
 {
@@ -1072,6 +1750,7 @@ static int real_space_diff(struct inode *inode, int sd_size)
 	if (S_ISLNK(inode->i_mode) || S_ISDIR(inode->i_mode))
 		return sd_size;
 
+<<<<<<< HEAD
 	/* End of file is also in full block with indirect reference, so round
 	 ** up to the next block.
 	 **
@@ -1079,6 +1758,16 @@ static int real_space_diff(struct inode *inode, int sd_size)
 	 ** on the file, so we have to assume it isn't.  When we pack the
 	 ** tail, we add 4 bytes to pretend there really is an unformatted
 	 ** node pointer
+=======
+	/*
+	 * End of file is also in full block with indirect reference, so round
+	 * up to the next block.
+	 *
+	 * there is just no way to know if the tail is actually packed
+	 * on the file, so we have to assume it isn't.  When we pack the
+	 * tail, we add 4 bytes to pretend there really is an unformatted
+	 * node pointer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	bytes =
 	    ((inode->i_size +
@@ -1109,15 +1798,23 @@ static inline ulong to_fake_used_blocks(struct inode *inode, int sd_size)
 		bytes += (loff_t) 511;
 	}
 
+<<<<<<< HEAD
 	/* files from before the quota patch might i_blocks such that
 	 ** bytes < real_space.  Deal with that here to prevent it from
 	 ** going negative.
+=======
+	/*
+	 * files from before the quota patch might i_blocks such that
+	 * bytes < real_space.  Deal with that here to prevent it from
+	 * going negative.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (bytes < real_space)
 		return 0;
 	return (bytes - real_space) >> 9;
 }
 
+<<<<<<< HEAD
 //
 // BAD: new directories have stat data of new type and all other items
 // of old type. Version stored in the inode says about body items, so
@@ -1126,11 +1823,22 @@ static inline ulong to_fake_used_blocks(struct inode *inode, int sd_size)
 //
 
 // called by read_locked_inode
+=======
+/*
+ * BAD: new directories have stat data of new type and all other items
+ * of old type. Version stored in the inode says about body items, so
+ * in update_stat_data we can not rely on inode, but have to check
+ * item version directly
+ */
+
+/* called by read_locked_inode */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void init_inode(struct inode *inode, struct treepath *path)
 {
 	struct buffer_head *bh;
 	struct item_head *ih;
 	__u32 rdev;
+<<<<<<< HEAD
 	//int version = ITEM_VERSION_1;
 
 	bh = PATH_PLAST_BUFFER(path);
@@ -1139,6 +1847,15 @@ static void init_inode(struct inode *inode, struct treepath *path)
 	copy_key(INODE_PKEY(inode), &(ih->ih_key));
 
 	INIT_LIST_HEAD(&(REISERFS_I(inode)->i_prealloc_list));
+=======
+
+	bh = PATH_PLAST_BUFFER(path);
+	ih = tp_item_head(path);
+
+	copy_key(INODE_PKEY(inode), &ih->ih_key);
+
+	INIT_LIST_HEAD(&REISERFS_I(inode)->i_prealloc_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	REISERFS_I(inode)->i_flags = 0;
 	REISERFS_I(inode)->i_prealloc_block = 0;
 	REISERFS_I(inode)->i_prealloc_count = 0;
@@ -1148,13 +1865,18 @@ static void init_inode(struct inode *inode, struct treepath *path)
 
 	if (stat_data_v1(ih)) {
 		struct stat_data_v1 *sd =
+<<<<<<< HEAD
 		    (struct stat_data_v1 *)B_I_PITEM(bh, ih);
+=======
+		    (struct stat_data_v1 *)ih_item_body(bh, ih);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long blocks;
 
 		set_inode_item_key_version(inode, KEY_FORMAT_3_5);
 		set_inode_sd_version(inode, STAT_DATA_V1);
 		inode->i_mode = sd_v1_mode(sd);
 		set_nlink(inode, sd_v1_nlink(sd));
+<<<<<<< HEAD
 		inode->i_uid = sd_v1_uid(sd);
 		inode->i_gid = sd_v1_gid(sd);
 		inode->i_size = sd_v1_size(sd);
@@ -1164,25 +1886,53 @@ static void init_inode(struct inode *inode, struct treepath *path)
 		inode->i_atime.tv_nsec = 0;
 		inode->i_ctime.tv_nsec = 0;
 		inode->i_mtime.tv_nsec = 0;
+=======
+		i_uid_write(inode, sd_v1_uid(sd));
+		i_gid_write(inode, sd_v1_gid(sd));
+		inode->i_size = sd_v1_size(sd);
+		inode_set_atime(inode, sd_v1_atime(sd), 0);
+		inode_set_mtime(inode, sd_v1_mtime(sd), 0);
+		inode_set_ctime(inode, sd_v1_ctime(sd), 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		inode->i_blocks = sd_v1_blocks(sd);
 		inode->i_generation = le32_to_cpu(INODE_PKEY(inode)->k_dir_id);
 		blocks = (inode->i_size + 511) >> 9;
 		blocks = _ROUND_UP(blocks, inode->i_sb->s_blocksize >> 9);
+<<<<<<< HEAD
 		if (inode->i_blocks > blocks) {
 			// there was a bug in <=3.5.23 when i_blocks could take negative
 			// values. Starting from 3.5.17 this value could even be stored in
 			// stat data. For such files we set i_blocks based on file
 			// size. Just 2 notes: this can be wrong for sparce files. On-disk value will be
 			// only updated if file's inode will ever change
+=======
+
+		/*
+		 * there was a bug in <=3.5.23 when i_blocks could take
+		 * negative values. Starting from 3.5.17 this value could
+		 * even be stored in stat data. For such files we set
+		 * i_blocks based on file size. Just 2 notes: this can be
+		 * wrong for sparse files. On-disk value will be only
+		 * updated if file's inode will ever change
+		 */
+		if (inode->i_blocks > blocks) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			inode->i_blocks = blocks;
 		}
 
 		rdev = sd_v1_rdev(sd);
 		REISERFS_I(inode)->i_first_direct_byte =
 		    sd_v1_first_direct_byte(sd);
+<<<<<<< HEAD
 		/* an early bug in the quota code can give us an odd number for the
 		 ** block count.  This is incorrect, fix it here.
+=======
+
+		/*
+		 * an early bug in the quota code can give us an odd
+		 * number for the block count.  This is incorrect, fix it here.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (inode->i_blocks & 1) {
 			inode->i_blocks++;
@@ -1190,6 +1940,7 @@ static void init_inode(struct inode *inode, struct treepath *path)
 		inode_set_bytes(inode,
 				to_real_used_space(inode, inode->i_blocks,
 						   SD_V1_SIZE));
+<<<<<<< HEAD
 		/* nopack is initially zero for v1 objects. For v2 objects,
 		   nopack is initialised from sd_attrs */
 		REISERFS_I(inode)->i_flags &= ~i_nopack_mask;
@@ -1209,6 +1960,28 @@ static void init_inode(struct inode *inode, struct treepath *path)
 		inode->i_ctime.tv_nsec = 0;
 		inode->i_mtime.tv_nsec = 0;
 		inode->i_atime.tv_nsec = 0;
+=======
+		/*
+		 * nopack is initially zero for v1 objects. For v2 objects,
+		 * nopack is initialised from sd_attrs
+		 */
+		REISERFS_I(inode)->i_flags &= ~i_nopack_mask;
+	} else {
+		/*
+		 * new stat data found, but object may have old items
+		 * (directories and symlinks)
+		 */
+		struct stat_data *sd = (struct stat_data *)ih_item_body(bh, ih);
+
+		inode->i_mode = sd_v2_mode(sd);
+		set_nlink(inode, sd_v2_nlink(sd));
+		i_uid_write(inode, sd_v2_uid(sd));
+		inode->i_size = sd_v2_size(sd);
+		i_gid_write(inode, sd_v2_gid(sd));
+		inode_set_mtime(inode, sd_v2_mtime(sd), 0);
+		inode_set_atime(inode, sd_v2_atime(sd), 0);
+		inode_set_ctime(inode, sd_v2_ctime(sd), 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode->i_blocks = sd_v2_blocks(sd);
 		rdev = sd_v2_rdev(sd);
 		if (S_ISCHR(inode->i_mode) || S_ISBLK(inode->i_mode))
@@ -1226,8 +1999,15 @@ static void init_inode(struct inode *inode, struct treepath *path)
 		inode_set_bytes(inode,
 				to_real_used_space(inode, inode->i_blocks,
 						   SD_V2_SIZE));
+<<<<<<< HEAD
 		/* read persistent inode attributes from sd and initialise
 		   generic inode flags from them */
+=======
+		/*
+		 * read persistent inode attributes from sd and initialise
+		 * generic inode flags from them
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		REISERFS_I(inode)->i_attrs = sd_v2_attrs(sd);
 		sd_attrs_to_i_attrs(sd_v2_attrs(sd), inode);
 	}
@@ -1242,6 +2022,10 @@ static void init_inode(struct inode *inode, struct treepath *path)
 		inode->i_fop = &reiserfs_dir_operations;
 	} else if (S_ISLNK(inode->i_mode)) {
 		inode->i_op = &reiserfs_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode->i_mapping->a_ops = &reiserfs_address_space_operations;
 	} else {
 		inode->i_blocks = 0;
@@ -1250,6 +2034,7 @@ static void init_inode(struct inode *inode, struct treepath *path)
 	}
 }
 
+<<<<<<< HEAD
 // update new stat data with inode fields
 static void inode2sd(void *sd, struct inode *inode, loff_t size)
 {
@@ -1264,22 +2049,45 @@ static void inode2sd(void *sd, struct inode *inode, loff_t size)
 	set_sd_v2_mtime(sd_v2, inode->i_mtime.tv_sec);
 	set_sd_v2_atime(sd_v2, inode->i_atime.tv_sec);
 	set_sd_v2_ctime(sd_v2, inode->i_ctime.tv_sec);
+=======
+/* update new stat data with inode fields */
+static void inode2sd(void *sd, struct inode *inode, loff_t size)
+{
+	struct stat_data *sd_v2 = (struct stat_data *)sd;
+
+	set_sd_v2_mode(sd_v2, inode->i_mode);
+	set_sd_v2_nlink(sd_v2, inode->i_nlink);
+	set_sd_v2_uid(sd_v2, i_uid_read(inode));
+	set_sd_v2_size(sd_v2, size);
+	set_sd_v2_gid(sd_v2, i_gid_read(inode));
+	set_sd_v2_mtime(sd_v2, inode_get_mtime_sec(inode));
+	set_sd_v2_atime(sd_v2, inode_get_atime_sec(inode));
+	set_sd_v2_ctime(sd_v2, inode_get_ctime_sec(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_sd_v2_blocks(sd_v2, to_fake_used_blocks(inode, SD_V2_SIZE));
 	if (S_ISCHR(inode->i_mode) || S_ISBLK(inode->i_mode))
 		set_sd_v2_rdev(sd_v2, new_encode_dev(inode->i_rdev));
 	else
 		set_sd_v2_generation(sd_v2, inode->i_generation);
+<<<<<<< HEAD
 	flags = REISERFS_I(inode)->i_attrs;
 	i_attrs_to_sd_attrs(inode, &flags);
 	set_sd_v2_attrs(sd_v2, flags);
 }
 
 // used to copy inode's fields to old stat data
+=======
+	set_sd_v2_attrs(sd_v2, REISERFS_I(inode)->i_attrs);
+}
+
+/* used to copy inode's fields to old stat data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void inode2sd_v1(void *sd, struct inode *inode, loff_t size)
 {
 	struct stat_data_v1 *sd_v1 = (struct stat_data_v1 *)sd;
 
 	set_sd_v1_mode(sd_v1, inode->i_mode);
+<<<<<<< HEAD
 	set_sd_v1_uid(sd_v1, inode->i_uid);
 	set_sd_v1_gid(sd_v1, inode->i_gid);
 	set_sd_v1_nlink(sd_v1, inode->i_nlink);
@@ -1287,20 +2095,40 @@ static void inode2sd_v1(void *sd, struct inode *inode, loff_t size)
 	set_sd_v1_atime(sd_v1, inode->i_atime.tv_sec);
 	set_sd_v1_ctime(sd_v1, inode->i_ctime.tv_sec);
 	set_sd_v1_mtime(sd_v1, inode->i_mtime.tv_sec);
+=======
+	set_sd_v1_uid(sd_v1, i_uid_read(inode));
+	set_sd_v1_gid(sd_v1, i_gid_read(inode));
+	set_sd_v1_nlink(sd_v1, inode->i_nlink);
+	set_sd_v1_size(sd_v1, size);
+	set_sd_v1_atime(sd_v1, inode_get_atime_sec(inode));
+	set_sd_v1_ctime(sd_v1, inode_get_ctime_sec(inode));
+	set_sd_v1_mtime(sd_v1, inode_get_mtime_sec(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (S_ISCHR(inode->i_mode) || S_ISBLK(inode->i_mode))
 		set_sd_v1_rdev(sd_v1, new_encode_dev(inode->i_rdev));
 	else
 		set_sd_v1_blocks(sd_v1, to_fake_used_blocks(inode, SD_V1_SIZE));
 
+<<<<<<< HEAD
 	// Sigh. i_first_direct_byte is back
+=======
+	/* Sigh. i_first_direct_byte is back */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_sd_v1_first_direct_byte(sd_v1,
 				    REISERFS_I(inode)->i_first_direct_byte);
 }
 
+<<<<<<< HEAD
 /* NOTE, you must prepare the buffer head before sending it here,
 ** and then log it after the call
 */
+=======
+/*
+ * NOTE, you must prepare the buffer head before sending it here,
+ * and then log it after the call
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void update_stat_data(struct treepath *path, struct inode *inode,
 			     loff_t size)
 {
@@ -1308,17 +2136,29 @@ static void update_stat_data(struct treepath *path, struct inode *inode,
 	struct item_head *ih;
 
 	bh = PATH_PLAST_BUFFER(path);
+<<<<<<< HEAD
 	ih = PATH_PITEM_HEAD(path);
+=======
+	ih = tp_item_head(path);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!is_statdata_le_ih(ih))
 		reiserfs_panic(inode->i_sb, "vs-13065", "key %k, found item %h",
 			       INODE_PKEY(inode), ih);
 
+<<<<<<< HEAD
 	if (stat_data_v1(ih)) {
 		// path points to old stat data
 		inode2sd_v1(B_I_PITEM(bh, ih), inode, size);
 	} else {
 		inode2sd(B_I_PITEM(bh, ih), inode, size);
+=======
+	/* path points to old stat data */
+	if (stat_data_v1(ih)) {
+		inode2sd_v1(ih_item_body(bh, ih), inode, size);
+	} else {
+		inode2sd(ih_item_body(bh, ih), inode, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return;
@@ -1336,7 +2176,12 @@ void reiserfs_update_sd_size(struct reiserfs_transaction_handle *th,
 
 	BUG_ON(!th->t_trans_id);
 
+<<<<<<< HEAD
 	make_cpu_key(&key, inode, SD_OFFSET, TYPE_STAT_DATA, 3);	//key type is unimportant
+=======
+	/* key type is unimportant */
+	make_cpu_key(&key, inode, SD_OFFSET, TYPE_STAT_DATA, 3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (;;) {
 		int pos;
@@ -1364,6 +2209,7 @@ void reiserfs_update_sd_size(struct reiserfs_transaction_handle *th,
 			return;
 		}
 
+<<<<<<< HEAD
 		/* sigh, prepare_for_journal might schedule.  When it schedules the
 		 ** FS might change.  We have to detect that, and loop back to the
 		 ** search if the stat data item has moved
@@ -1377,32 +2223,71 @@ void reiserfs_update_sd_size(struct reiserfs_transaction_handle *th,
 		    && item_moved(&tmp_ih, &path)) {
 			reiserfs_restore_prepared_buffer(inode->i_sb, bh);
 			continue;	/* Stat_data item has been moved after scheduling. */
+=======
+		/*
+		 * sigh, prepare_for_journal might schedule.  When it
+		 * schedules the FS might change.  We have to detect that,
+		 * and loop back to the search if the stat data item has moved
+		 */
+		bh = get_last_bh(&path);
+		ih = tp_item_head(&path);
+		copy_item_head(&tmp_ih, ih);
+		fs_gen = get_generation(inode->i_sb);
+		reiserfs_prepare_for_journal(inode->i_sb, bh, 1);
+
+		/* Stat_data item has been moved after scheduling. */
+		if (fs_changed(fs_gen, inode->i_sb)
+		    && item_moved(&tmp_ih, &path)) {
+			reiserfs_restore_prepared_buffer(inode->i_sb, bh);
+			continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	}
 	update_stat_data(&path, inode, size);
+<<<<<<< HEAD
 	journal_mark_dirty(th, th->t_super, bh);
+=======
+	journal_mark_dirty(th, bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pathrelse(&path);
 	return;
 }
 
+<<<<<<< HEAD
 /* reiserfs_read_locked_inode is called to read the inode off disk, and it
 ** does a make_bad_inode when things go wrong.  But, we need to make sure
 ** and clear the key in the private portion of the inode, otherwise a
 ** corresponding iput might try to delete whatever object the inode last
 ** represented.
 */
+=======
+/*
+ * reiserfs_read_locked_inode is called to read the inode off disk, and it
+ * does a make_bad_inode when things go wrong.  But, we need to make sure
+ * and clear the key in the private portion of the inode, otherwise a
+ * corresponding iput might try to delete whatever object the inode last
+ * represented.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void reiserfs_make_bad_inode(struct inode *inode)
 {
 	memset(INODE_PKEY(inode), 0, KEY_SIZE);
 	make_bad_inode(inode);
 }
 
+<<<<<<< HEAD
 //
 // initially this function was derived from minix or ext2's analog and
 // evolved as the prototype did
 //
 
+=======
+/*
+ * initially this function was derived from minix or ext2's analog and
+ * evolved as the prototype did
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int reiserfs_init_locked_inode(struct inode *inode, void *p)
 {
 	struct reiserfs_iget_args *args = (struct reiserfs_iget_args *)p;
@@ -1411,8 +2296,15 @@ int reiserfs_init_locked_inode(struct inode *inode, void *p)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* looks for stat data in the tree, and fills up the fields of in-core
    inode stat data fields */
+=======
+/*
+ * looks for stat data in the tree, and fills up the fields of in-core
+ * inode stat data fields
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void reiserfs_read_locked_inode(struct inode *inode,
 				struct reiserfs_iget_args *args)
 {
@@ -1423,6 +2315,7 @@ void reiserfs_read_locked_inode(struct inode *inode,
 
 	dirino = args->dirid;
 
+<<<<<<< HEAD
 	/* set version 1, version 2 could be used too, because stat data
 	   key is the same in both versions */
 	key.version = KEY_FORMAT_3_5;
@@ -1430,6 +2323,13 @@ void reiserfs_read_locked_inode(struct inode *inode,
 	key.on_disk_key.k_objectid = inode->i_ino;
 	key.on_disk_key.k_offset = 0;
 	key.on_disk_key.k_type = 0;
+=======
+	/*
+	 * set version 1, version 2 could be used too, because stat data
+	 * key is the same in both versions
+	 */
+	_make_cpu_key(&key, KEY_FORMAT_3_5, dirino, inode->i_ino, 0, 0, 3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* look for the object's stat data */
 	retval = search_item(inode->i_sb, &key, &path_to_sd);
@@ -1440,8 +2340,14 @@ void reiserfs_read_locked_inode(struct inode *inode,
 		reiserfs_make_bad_inode(inode);
 		return;
 	}
+<<<<<<< HEAD
 	if (retval != ITEM_FOUND) {
 		/* a stale NFS handle can trigger this without it being an error */
+=======
+
+	/* a stale NFS handle can trigger this without it being an error */
+	if (retval != ITEM_FOUND) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pathrelse(&path_to_sd);
 		reiserfs_make_bad_inode(inode);
 		clear_nlink(inode);
@@ -1450,6 +2356,7 @@ void reiserfs_read_locked_inode(struct inode *inode,
 
 	init_inode(inode, &path_to_sd);
 
+<<<<<<< HEAD
 	/* It is possible that knfsd is trying to access inode of a file
 	   that is being removed from the disk by some other thread. As we
 	   update sd on unlink all that is required is to check for nlink
@@ -1464,6 +2371,27 @@ void reiserfs_read_locked_inode(struct inode *inode,
 	/* Currently there is one place where it's ok to meet inode with
 	   nlink==0: processing of open-unlinked and half-truncated files
 	   during mount (fs/reiserfs/super.c:finish_unfinished()). */
+=======
+	/*
+	 * It is possible that knfsd is trying to access inode of a file
+	 * that is being removed from the disk by some other thread. As we
+	 * update sd on unlink all that is required is to check for nlink
+	 * here. This bug was first found by Sizif when debugging
+	 * SquidNG/Butterfly, forgotten, and found again after Philippe
+	 * Gramoulle <philippe.gramoulle@mmania.com> reproduced it.
+
+	 * More logical fix would require changes in fs/inode.c:iput() to
+	 * remove inode from hash-table _after_ fs cleaned disk stuff up and
+	 * in iget() to return NULL if I_FREEING inode is found in
+	 * hash-table.
+	 */
+
+	/*
+	 * Currently there is one place where it's ok to meet inode with
+	 * nlink==0: processing of open-unlinked and half-truncated files
+	 * during mount (fs/reiserfs/super.c:finish_unfinished()).
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((inode->i_nlink == 0) &&
 	    !REISERFS_SB(inode->i_sb)->s_is_unlinked_ok) {
 		reiserfs_warning(inode->i_sb, "vs-13075",
@@ -1473,7 +2401,12 @@ void reiserfs_read_locked_inode(struct inode *inode,
 		reiserfs_make_bad_inode(inode);
 	}
 
+<<<<<<< HEAD
 	reiserfs_check_path(&path_to_sd);	/* init inode should be relsing */
+=======
+	/* init inode should be relsing */
+	reiserfs_check_path(&path_to_sd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Stat data v1 doesn't support ACLs.
@@ -1482,7 +2415,11 @@ void reiserfs_read_locked_inode(struct inode *inode,
 		cache_no_acl(inode);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * reiserfs_find_actor() - "find actor" reiserfs supplies to iget5_locked().
  *
  * @inode:    inode from hash table to check
@@ -1508,6 +2445,7 @@ struct inode *reiserfs_iget(struct super_block *s, const struct cpu_key *key)
 {
 	struct inode *inode;
 	struct reiserfs_iget_args args;
+<<<<<<< HEAD
 
 	args.objectid = key->on_disk_key.k_objectid;
 	args.dirid = key->on_disk_key.k_dir_id;
@@ -1516,6 +2454,17 @@ struct inode *reiserfs_iget(struct super_block *s, const struct cpu_key *key)
 			     reiserfs_find_actor, reiserfs_init_locked_inode,
 			     (void *)(&args));
 	reiserfs_write_lock(s);
+=======
+	int depth;
+
+	args.objectid = key->on_disk_key.k_objectid;
+	args.dirid = key->on_disk_key.k_dir_id;
+	depth = reiserfs_write_unlock_nested(s);
+	inode = iget5_locked(s, key->on_disk_key.k_objectid,
+			     reiserfs_find_actor, reiserfs_init_locked_inode,
+			     (void *)(&args));
+	reiserfs_write_lock_nested(s, depth);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!inode)
 		return ERR_PTR(-ENOMEM);
 
@@ -1556,7 +2505,12 @@ static struct dentry *reiserfs_get_dentry(struct super_block *sb,
 struct dentry *reiserfs_fh_to_dentry(struct super_block *sb, struct fid *fid,
 		int fh_len, int fh_type)
 {
+<<<<<<< HEAD
 	/* fhtype happens to reflect the number of u32s encoded.
+=======
+	/*
+	 * fhtype happens to reflect the number of u32s encoded.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * due to a bug in earlier code, fhtype might indicate there
 	 * are more u32s then actually fitted.
 	 * so if fhtype seems to be more than len, reduce fhtype.
@@ -1596,6 +2550,7 @@ struct dentry *reiserfs_fh_to_parent(struct super_block *sb, struct fid *fid,
 		(fh_type == 6) ? fid->raw[5] : 0);
 }
 
+<<<<<<< HEAD
 int reiserfs_encode_fh(struct dentry *dentry, __u32 * data, int *lenp,
 		       int need_parent)
 {
@@ -1608,12 +2563,26 @@ int reiserfs_encode_fh(struct dentry *dentry, __u32 * data, int *lenp,
 	} else if (maxlen < 3) {
 		*lenp = 3;
 		return 255;
+=======
+int reiserfs_encode_fh(struct inode *inode, __u32 * data, int *lenp,
+		       struct inode *parent)
+{
+	int maxlen = *lenp;
+
+	if (parent && (maxlen < 5)) {
+		*lenp = 5;
+		return FILEID_INVALID;
+	} else if (maxlen < 3) {
+		*lenp = 3;
+		return FILEID_INVALID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	data[0] = inode->i_ino;
 	data[1] = le32_to_cpu(INODE_PKEY(inode)->k_dir_id);
 	data[2] = inode->i_generation;
 	*lenp = 3;
+<<<<<<< HEAD
 	/* no room for directory info? return what we've stored so far */
 	if (maxlen < 5 || !need_parent)
 		return 3;
@@ -1638,31 +2607,77 @@ int reiserfs_encode_fh(struct dentry *dentry, __u32 * data, int *lenp,
 ** to properly mark inodes for datasync and such, but only actually
 ** does something when called for a synchronous update.
 */
+=======
+	if (parent) {
+		data[3] = parent->i_ino;
+		data[4] = le32_to_cpu(INODE_PKEY(parent)->k_dir_id);
+		*lenp = 5;
+		if (maxlen >= 6) {
+			data[5] = parent->i_generation;
+			*lenp = 6;
+		}
+	}
+	return *lenp;
+}
+
+/*
+ * looks for stat data, then copies fields to it, marks the buffer
+ * containing stat data as dirty
+ */
+/*
+ * reiserfs inodes are never really dirty, since the dirty inode call
+ * always logs them.  This call allows the VFS inode marking routines
+ * to properly mark inodes for datasync and such, but only actually
+ * does something when called for a synchronous update.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int reiserfs_write_inode(struct inode *inode, struct writeback_control *wbc)
 {
 	struct reiserfs_transaction_handle th;
 	int jbegin_count = 1;
 
+<<<<<<< HEAD
 	if (inode->i_sb->s_flags & MS_RDONLY)
 		return -EROFS;
 	/* memory pressure can sometimes initiate write_inode calls with sync == 1,
 	 ** these cases are just when the system needs ram, not when the
 	 ** inode needs to reach disk for safety, and they can safely be
 	 ** ignored because the altered inode has already been logged.
+=======
+	if (sb_rdonly(inode->i_sb))
+		return -EROFS;
+	/*
+	 * memory pressure can sometimes initiate write_inode calls with
+	 * sync == 1,
+	 * these cases are just when the system needs ram, not when the
+	 * inode needs to reach disk for safety, and they can safely be
+	 * ignored because the altered inode has already been logged.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (wbc->sync_mode == WB_SYNC_ALL && !(current->flags & PF_MEMALLOC)) {
 		reiserfs_write_lock(inode->i_sb);
 		if (!journal_begin(&th, inode->i_sb, jbegin_count)) {
 			reiserfs_update_sd(&th, inode);
+<<<<<<< HEAD
 			journal_end_sync(&th, inode->i_sb, jbegin_count);
+=======
+			journal_end_sync(&th);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		reiserfs_write_unlock(inode->i_sb);
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 /* stat data of new object is inserted already, this inserts the item
    containing "." and ".." entries */
+=======
+/*
+ * stat data of new object is inserted already, this inserts the item
+ * containing "." and ".." entries
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int reiserfs_new_directory(struct reiserfs_transaction_handle *th,
 				  struct inode *inode,
 				  struct item_head *ih, struct treepath *path,
@@ -1680,9 +2695,17 @@ static int reiserfs_new_directory(struct reiserfs_transaction_handle *th,
 		      le32_to_cpu(ih->ih_key.k_objectid), DOT_OFFSET,
 		      TYPE_DIRENTRY, 3 /*key length */ );
 
+<<<<<<< HEAD
 	/* compose item head for new item. Directories consist of items of
 	   old type (ITEM_VERSION_1). Do not set key (second arg is 0), it
 	   is done by reiserfs_new_inode */
+=======
+	/*
+	 * compose item head for new item. Directories consist of items of
+	 * old type (ITEM_VERSION_1). Do not set key (second arg is 0), it
+	 * is done by reiserfs_new_inode
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (old_format_only(sb)) {
 		make_le_item_head(ih, NULL, KEY_FORMAT_3_5, DOT_OFFSET,
 				  TYPE_DIRENTRY, EMPTY_DIR_SIZE_V1, 2);
@@ -1720,9 +2743,18 @@ static int reiserfs_new_directory(struct reiserfs_transaction_handle *th,
 	return reiserfs_insert_item(th, path, &key, ih, inode, body);
 }
 
+<<<<<<< HEAD
 /* stat data of object has been inserted, this inserts the item
    containing the body of symlink */
 static int reiserfs_new_symlink(struct reiserfs_transaction_handle *th, struct inode *inode,	/* Inode of symlink */
+=======
+/*
+ * stat data of object has been inserted, this inserts the item
+ * containing the body of symlink
+ */
+static int reiserfs_new_symlink(struct reiserfs_transaction_handle *th,
+				struct inode *inode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct item_head *ih,
 				struct treepath *path, const char *symname,
 				int item_len)
@@ -1760,6 +2792,7 @@ static int reiserfs_new_symlink(struct reiserfs_transaction_handle *th, struct i
 	return reiserfs_insert_item(th, path, &key, ih, inode, symname);
 }
 
+<<<<<<< HEAD
 /* inserts the stat data into the tree, and then calls
    reiserfs_new_directory (to insert ".", ".." item if new object is
    directory) or reiserfs_new_symlink (to insert symlink body if new
@@ -1769,6 +2802,28 @@ static int reiserfs_new_symlink(struct reiserfs_transaction_handle *th, struct i
    non-zero due to an error, we have to drop the quota previously allocated
    for the fresh inode.  This can only be done outside a transaction, so
    if we return non-zero, we also end the transaction.  */
+=======
+/*
+ * inserts the stat data into the tree, and then calls
+ * reiserfs_new_directory (to insert ".", ".." item if new object is
+ * directory) or reiserfs_new_symlink (to insert symlink body if new
+ * object is symlink) or nothing (if new object is regular file)
+
+ * NOTE! uid and gid must already be set in the inode.  If we return
+ * non-zero due to an error, we have to drop the quota previously allocated
+ * for the fresh inode.  This can only be done outside a transaction, so
+ * if we return non-zero, we also end the transaction.
+ *
+ * @th: active transaction handle
+ * @dir: parent directory for new inode
+ * @mode: mode of new inode
+ * @symname: symlink contents if inode is symlink
+ * @isize: 0 for regular file, EMPTY_DIR_SIZE for dirs, strlen(symname) for
+ *         symlinks
+ * @inode: inode to be filled
+ * @security: optional security context to associate with this inode
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 		       struct inode *dir, umode_t mode, const char *symname,
 		       /* 0 for regular, EMTRY_DIR_SIZE for dirs,
@@ -1777,7 +2832,11 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 		       struct inode *inode,
 		       struct reiserfs_security_handle *security)
 {
+<<<<<<< HEAD
 	struct super_block *sb;
+=======
+	struct super_block *sb = dir->i_sb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct reiserfs_iget_args args;
 	INITIALIZE_PATH(path_to_key);
 	struct cpu_key key;
@@ -1785,12 +2844,22 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 	struct stat_data sd;
 	int retval;
 	int err;
+<<<<<<< HEAD
 
 	BUG_ON(!th->t_trans_id);
 
 	reiserfs_write_unlock(inode->i_sb);
 	err = dquot_alloc_inode(inode);
 	reiserfs_write_lock(inode->i_sb);
+=======
+	int depth;
+
+	BUG_ON(!th->t_trans_id);
+
+	depth = reiserfs_write_unlock_nested(sb);
+	err = dquot_alloc_inode(inode);
+	reiserfs_write_lock_nested(sb, depth);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out_end_trans;
 	if (!dir->i_nlink) {
@@ -1798,8 +2867,11 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 		goto out_bad_inode;
 	}
 
+<<<<<<< HEAD
 	sb = dir->i_sb;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* item head of new item */
 	ih.ih_key.k_dir_id = reiserfs_choose_packing(dir);
 	ih.ih_key.k_objectid = cpu_to_le32(reiserfs_get_unused_objectid(th));
@@ -1814,6 +2886,7 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 	else
 		make_le_item_head(&ih, NULL, KEY_FORMAT_3_6, SD_OFFSET,
 				  TYPE_STAT_DATA, SD_SIZE, MAX_US_INT);
+<<<<<<< HEAD
 	memcpy(INODE_PKEY(inode), &(ih.ih_key), KEY_SIZE);
 	args.dirid = le32_to_cpu(ih.ih_key.k_dir_id);
 	if (insert_inode_locked4(inode, args.objectid,
@@ -1826,6 +2899,26 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 		 ** this is as good as reiserfs can do right now.
 		 ** note that the private part of inode isn't filled in yet, we have
 		 ** to use the directory.
+=======
+	memcpy(INODE_PKEY(inode), &ih.ih_key, KEY_SIZE);
+	args.dirid = le32_to_cpu(ih.ih_key.k_dir_id);
+
+	depth = reiserfs_write_unlock_nested(inode->i_sb);
+	err = insert_inode_locked4(inode, args.objectid,
+			     reiserfs_find_actor, &args);
+	reiserfs_write_lock_nested(inode->i_sb, depth);
+	if (err) {
+		err = -EINVAL;
+		goto out_bad_inode;
+	}
+
+	if (old_format_only(sb))
+		/*
+		 * not a perfect generation count, as object ids can be reused,
+		 * but this is as good as reiserfs can do right now.
+		 * note that the private part of inode isn't filled in yet,
+		 * we have to use the directory.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		inode->i_generation = le32_to_cpu(INODE_PKEY(dir)->k_objectid);
 	else
@@ -1841,18 +2934,26 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 
 	/* uid and gid must already be set by the caller for quota init */
 
+<<<<<<< HEAD
 	/* symlink cannot be immutable or append only, right? */
 	if (S_ISLNK(inode->i_mode))
 		inode->i_flags &= ~(S_IMMUTABLE | S_APPEND);
 
 	inode->i_mtime = inode->i_atime = inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	simple_inode_init_ts(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_size = i_size;
 	inode->i_blocks = 0;
 	inode->i_bytes = 0;
 	REISERFS_I(inode)->i_first_direct_byte = S_ISLNK(mode) ? 1 :
 	    U32_MAX /*NO_BYTES_IN_DIRECT_ITEM */ ;
 
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&(REISERFS_I(inode)->i_prealloc_list));
+=======
+	INIT_LIST_HEAD(&REISERFS_I(inode)->i_prealloc_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	REISERFS_I(inode)->i_flags = 0;
 	REISERFS_I(inode)->i_prealloc_block = 0;
 	REISERFS_I(inode)->i_prealloc_count = 0;
@@ -1880,9 +2981,15 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 		goto out_bad_inode;
 	}
 	if (old_format_only(sb)) {
+<<<<<<< HEAD
 		if (inode->i_uid & ~0xffff || inode->i_gid & ~0xffff) {
 			pathrelse(&path_to_key);
 			/* i_uid or i_gid is too big to be stored in stat data v3.5 */
+=======
+		/* i_uid or i_gid is too big to be stored in stat data v3.5 */
+		if (i_uid_read(inode) & ~0xffff || i_gid_read(inode) & ~0xffff) {
+			pathrelse(&path_to_key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			goto out_bad_inode;
 		}
@@ -1890,9 +2997,17 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 	} else {
 		inode2sd(&sd, inode, inode->i_size);
 	}
+<<<<<<< HEAD
 	// store in in-core inode the key of stat data and version all
 	// object items will have (directory items will have old offset
 	// format, other new objects will consist of new items)
+=======
+	/*
+	 * store in in-core inode the key of stat data and version all
+	 * object items will have (directory items will have old offset
+	 * format, other new objects will consist of new items)
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (old_format_only(sb) || S_ISDIR(mode) || S_ISLNK(mode))
 		set_inode_item_key_version(inode, KEY_FORMAT_3_5);
 	else
@@ -1936,6 +3051,7 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 	if (retval) {
 		err = retval;
 		reiserfs_check_path(&path_to_key);
+<<<<<<< HEAD
 		journal_end(th, th->t_super, th->t_blocks_allocated);
 		goto out_inserted_sd;
 	}
@@ -1962,6 +3078,43 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 			reiserfs_check_path(&path_to_key);
 			retval = journal_end(th, th->t_super,
 					     th->t_blocks_allocated);
+=======
+		journal_end(th);
+		goto out_inserted_sd;
+	}
+
+	/*
+	 * Mark it private if we're creating the privroot
+	 * or something under it.
+	 */
+	if (IS_PRIVATE(dir) || dentry == REISERFS_SB(sb)->priv_root)
+		reiserfs_init_priv_inode(inode);
+
+	if (reiserfs_posixacl(inode->i_sb)) {
+		reiserfs_write_unlock(inode->i_sb);
+		retval = reiserfs_inherit_default_acl(th, dir, dentry, inode);
+		reiserfs_write_lock(inode->i_sb);
+		if (retval) {
+			err = retval;
+			reiserfs_check_path(&path_to_key);
+			journal_end(th);
+			goto out_inserted_sd;
+		}
+	} else if (inode->i_sb->s_flags & SB_POSIXACL) {
+		reiserfs_warning(inode->i_sb, "jdm-13090",
+				 "ACLs aren't enabled in the fs, "
+				 "but vfs thinks they are!");
+	}
+
+	if (security->name) {
+		reiserfs_write_unlock(inode->i_sb);
+		retval = reiserfs_security_write(th, inode, security);
+		reiserfs_write_lock(inode->i_sb);
+		if (retval) {
+			err = retval;
+			reiserfs_check_path(&path_to_key);
+			retval = journal_end(th);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (retval)
 				err = retval;
 			goto out_inserted_sd;
@@ -1973,15 +3126,20 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 
 	return 0;
 
+<<<<<<< HEAD
 /* it looks like you can easily compress these two goto targets into
  * one.  Keeping it like this doesn't actually hurt anything, and they
  * are place holders for what the quota code actually needs.
  */
       out_bad_inode:
+=======
+out_bad_inode:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Invalidate the object, nothing was inserted yet */
 	INODE_PKEY(inode)->k_objectid = 0;
 
 	/* Quota change must be inside a transaction for journaling */
+<<<<<<< HEAD
 	dquot_free_inode(inode);
 
       out_end_trans:
@@ -1997,11 +3155,35 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 	clear_nlink(inode);
 	th->t_trans_id = 0;	/* so the caller can't use this handle later */
 	unlock_new_inode(inode); /* OK to do even if we hadn't locked it */
+=======
+	depth = reiserfs_write_unlock_nested(inode->i_sb);
+	dquot_free_inode(inode);
+	reiserfs_write_lock_nested(inode->i_sb, depth);
+
+out_end_trans:
+	journal_end(th);
+	/*
+	 * Drop can be outside and it needs more credits so it's better
+	 * to have it outside
+	 */
+	depth = reiserfs_write_unlock_nested(inode->i_sb);
+	dquot_drop(inode);
+	reiserfs_write_lock_nested(inode->i_sb, depth);
+	inode->i_flags |= S_NOQUOTA;
+	make_bad_inode(inode);
+
+out_inserted_sd:
+	clear_nlink(inode);
+	th->t_trans_id = 0;	/* so the caller can't use this handle later */
+	if (inode->i_state & I_NEW)
+		unlock_new_inode(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iput(inode);
 	return err;
 }
 
 /*
+<<<<<<< HEAD
 ** finds the tail page in the page cache,
 ** reads the last block in.
 **
@@ -2014,11 +3196,26 @@ int reiserfs_new_inode(struct reiserfs_transaction_handle *th,
 **
 ** on failure, nonzero is returned, page_result and bh_result are untouched.
 */
+=======
+ * finds the tail page in the page cache,
+ * reads the last block in.
+ *
+ * On success, page_result is set to a locked, pinned page, and bh_result
+ * is set to an up to date buffer for the last block in the file.  returns 0.
+ *
+ * tail conversion is not done, so bh_result might not be valid for writing
+ * check buffer_mapped(bh_result) and bh_result->b_blocknr != 0 before
+ * trying to write the block.
+ *
+ * on failure, nonzero is returned, page_result and bh_result are untouched.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int grab_tail_page(struct inode *inode,
 			  struct page **page_result,
 			  struct buffer_head **bh_result)
 {
 
+<<<<<<< HEAD
 	/* we want the page with the last byte in the file,
 	 ** not the page that will hold the next byte for appending
 	 */
@@ -2027,15 +3224,34 @@ static int grab_tail_page(struct inode *inode,
 	unsigned long start = 0;
 	unsigned long blocksize = inode->i_sb->s_blocksize;
 	unsigned long offset = (inode->i_size) & (PAGE_CACHE_SIZE - 1);
+=======
+	/*
+	 * we want the page with the last byte in the file,
+	 * not the page that will hold the next byte for appending
+	 */
+	unsigned long index = (inode->i_size - 1) >> PAGE_SHIFT;
+	unsigned long pos = 0;
+	unsigned long start = 0;
+	unsigned long blocksize = inode->i_sb->s_blocksize;
+	unsigned long offset = (inode->i_size) & (PAGE_SIZE - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct buffer_head *bh;
 	struct buffer_head *head;
 	struct page *page;
 	int error;
 
+<<<<<<< HEAD
 	/* we know that we are only called with inode->i_size > 0.
 	 ** we also know that a file tail can never be as big as a block
 	 ** If i_size % blocksize == 0, our file is currently block aligned
 	 ** and it won't need converting or zeroing after a truncate.
+=======
+	/*
+	 * we know that we are only called with inode->i_size > 0.
+	 * we also know that a file tail can never be as big as a block
+	 * If i_size % blocksize == 0, our file is currently block aligned
+	 * and it won't need converting or zeroing after a truncate.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if ((offset & (blocksize - 1)) == 0) {
 		return -ENOENT;
@@ -2064,10 +3280,18 @@ static int grab_tail_page(struct inode *inode,
 	} while (bh != head);
 
 	if (!buffer_uptodate(bh)) {
+<<<<<<< HEAD
 		/* note, this should never happen, prepare_write should
 		 ** be taking care of this for us.  If the buffer isn't up to date,
 		 ** I've screwed up the code to find the buffer, or the code to
 		 ** call prepare_write
+=======
+		/*
+		 * note, this should never happen, prepare_write should be
+		 * taking care of this for us.  If the buffer isn't up to
+		 * date, I've screwed up the code to find the buffer, or the
+		 * code to call prepare_write
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		reiserfs_error(inode->i_sb, "clm-6000",
 			       "error reading block %lu", bh->b_blocknr);
@@ -2077,42 +3301,76 @@ static int grab_tail_page(struct inode *inode,
 	*bh_result = bh;
 	*page_result = page;
 
+<<<<<<< HEAD
       out:
 	return error;
 
       unlock:
 	unlock_page(page);
 	page_cache_release(page);
+=======
+out:
+	return error;
+
+unlock:
+	unlock_page(page);
+	put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 /*
+<<<<<<< HEAD
 ** vfs version of truncate file.  Must NOT be called with
 ** a transaction already started.
 **
 ** some code taken from block_truncate_page
 */
+=======
+ * vfs version of truncate file.  Must NOT be called with
+ * a transaction already started.
+ *
+ * some code taken from block_truncate_page
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int reiserfs_truncate_file(struct inode *inode, int update_timestamps)
 {
 	struct reiserfs_transaction_handle th;
 	/* we want the offset for the first byte after the end of the file */
+<<<<<<< HEAD
 	unsigned long offset = inode->i_size & (PAGE_CACHE_SIZE - 1);
+=======
+	unsigned long offset = inode->i_size & (PAGE_SIZE - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned blocksize = inode->i_sb->s_blocksize;
 	unsigned length;
 	struct page *page = NULL;
 	int error;
 	struct buffer_head *bh = NULL;
 	int err2;
+<<<<<<< HEAD
 	int lock_depth;
 
 	lock_depth = reiserfs_write_lock_once(inode->i_sb);
+=======
+
+	reiserfs_write_lock(inode->i_sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (inode->i_size > 0) {
 		error = grab_tail_page(inode, &page, &bh);
 		if (error) {
+<<<<<<< HEAD
 			// -ENOENT means we truncated past the end of the file,
 			// and get_block_create_0 could not find a block to read in,
 			// which is ok.
+=======
+			/*
+			 * -ENOENT means we truncated past the end of the
+			 * file, and get_block_create_0 could not find a
+			 * block to read in, which is ok.
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (error != -ENOENT)
 				reiserfs_error(inode->i_sb, "clm-6001",
 					       "grab_tail_page failed %d",
@@ -2122,6 +3380,7 @@ int reiserfs_truncate_file(struct inode *inode, int update_timestamps)
 		}
 	}
 
+<<<<<<< HEAD
 	/* so, if page != NULL, we have a buffer head for the offset at
 	 ** the end of the file. if the bh is mapped, and bh->b_blocknr != 0,
 	 ** then we have an unformatted node.  Otherwise, we have a direct item,
@@ -2132,12 +3391,27 @@ int reiserfs_truncate_file(struct inode *inode, int update_timestamps)
 	/* it is enough to reserve space in transaction for 2 balancings:
 	   one for "save" link adding and another for the first
 	   cut_from_item. 1 is for update_sd */
+=======
+	/*
+	 * so, if page != NULL, we have a buffer head for the offset at
+	 * the end of the file. if the bh is mapped, and bh->b_blocknr != 0,
+	 * then we have an unformatted node.  Otherwise, we have a direct item,
+	 * and no zeroing is required on disk.  We zero after the truncate,
+	 * because the truncate might pack the item anyway
+	 * (it will unmap bh if it packs).
+	 *
+	 * it is enough to reserve space in transaction for 2 balancings:
+	 * one for "save" link adding and another for the first
+	 * cut_from_item. 1 is for update_sd
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = journal_begin(&th, inode->i_sb,
 			      JOURNAL_PER_BALANCE_CNT * 2 + 1);
 	if (error)
 		goto out;
 	reiserfs_update_inode_transaction(inode);
 	if (update_timestamps)
+<<<<<<< HEAD
 		/* we are doing real truncate: if the system crashes before the last
 		   transaction of truncating gets committed - on reboot the file
 		   either appears truncated properly or not truncated at all */
@@ -2145,6 +3419,17 @@ int reiserfs_truncate_file(struct inode *inode, int update_timestamps)
 	err2 = reiserfs_do_truncate(&th, inode, page, update_timestamps);
 	error =
 	    journal_end(&th, inode->i_sb, JOURNAL_PER_BALANCE_CNT * 2 + 1);
+=======
+		/*
+		 * we are doing real truncate: if the system crashes
+		 * before the last transaction of truncating gets committed
+		 * - on reboot the file either appears truncated properly
+		 * or not truncated at all
+		 */
+		add_save_link(&th, inode, 1);
+	err2 = reiserfs_do_truncate(&th, inode, page, update_timestamps);
+	error = journal_end(&th);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto out;
 
@@ -2171,6 +3456,7 @@ int reiserfs_truncate_file(struct inode *inode, int update_timestamps)
 			}
 		}
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
 	}
 
@@ -2184,6 +3470,21 @@ int reiserfs_truncate_file(struct inode *inode, int update_timestamps)
 	}
 
 	reiserfs_write_unlock_once(inode->i_sb, lock_depth);
+=======
+		put_page(page);
+	}
+
+	reiserfs_write_unlock(inode->i_sb);
+
+	return 0;
+out:
+	if (page) {
+		unlock_page(page);
+		put_page(page);
+	}
+
+	reiserfs_write_unlock(inode->i_sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
@@ -2209,7 +3510,14 @@ static int map_block_for_writepage(struct inode *inode,
 	int copy_size;
 	int trans_running = 0;
 
+<<<<<<< HEAD
 	/* catch places below that try to log something without starting a trans */
+=======
+	/*
+	 * catch places below that try to log something without
+	 * starting a trans
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	th.t_trans_id = 0;
 
 	if (!buffer_uptodate(bh_result)) {
@@ -2217,11 +3525,19 @@ static int map_block_for_writepage(struct inode *inode,
 	}
 
 	kmap(bh_result->b_page);
+<<<<<<< HEAD
       start_over:
 	reiserfs_write_lock(inode->i_sb);
 	make_cpu_key(&key, inode, byte_offset, TYPE_ANY, 3);
 
       research:
+=======
+start_over:
+	reiserfs_write_lock(inode->i_sb);
+	make_cpu_key(&key, inode, byte_offset, TYPE_ANY, 3);
+
+research:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = search_for_position_by_key(inode->i_sb, &key, &path);
 	if (retval != POSITION_FOUND) {
 		use_get_block = 1;
@@ -2229,8 +3545,13 @@ static int map_block_for_writepage(struct inode *inode,
 	}
 
 	bh = get_last_bh(&path);
+<<<<<<< HEAD
 	ih = get_ih(&path);
 	item = get_item(&path);
+=======
+	ih = tp_item_head(&path);
+	item = tp_item_body(&path);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pos_in_item = path.pos_in_item;
 
 	/* we've found an unformatted node */
@@ -2249,7 +3570,11 @@ static int map_block_for_writepage(struct inode *inode,
 	} else if (is_direct_le_ih(ih)) {
 		char *p;
 		p = page_address(bh_result->b_page);
+<<<<<<< HEAD
 		p += (byte_offset - 1) & (PAGE_CACHE_SIZE - 1);
+=======
+		p += (byte_offset - 1) & (PAGE_SIZE - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		copy_size = ih_item_len(ih) - pos_in_item;
 
 		fs_gen = get_generation(inode->i_sb);
@@ -2278,10 +3603,17 @@ static int map_block_for_writepage(struct inode *inode,
 			goto research;
 		}
 
+<<<<<<< HEAD
 		memcpy(B_I_PITEM(bh, ih) + pos_in_item, p + bytes_copied,
 		       copy_size);
 
 		journal_mark_dirty(&th, inode->i_sb, bh);
+=======
+		memcpy(ih_item_body(bh, ih) + pos_in_item, p + bytes_copied,
+		       copy_size);
+
+		journal_mark_dirty(&th, bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bytes_copied += copy_size;
 		set_block_dev_mapped(bh_result, 0, inode);
 
@@ -2301,10 +3633,17 @@ static int map_block_for_writepage(struct inode *inode,
 	}
 	retval = 0;
 
+<<<<<<< HEAD
       out:
 	pathrelse(&path);
 	if (trans_running) {
 		int err = journal_end(&th, inode->i_sb, jbegin_count);
+=======
+out:
+	pathrelse(&path);
+	if (trans_running) {
+		int err = journal_end(&th);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			retval = err;
 		trans_running = 0;
@@ -2328,7 +3667,12 @@ static int map_block_for_writepage(struct inode *inode,
 	kunmap(bh_result->b_page);
 
 	if (!retval && buffer_mapped(bh_result) && bh_result->b_blocknr == 0) {
+<<<<<<< HEAD
 		/* we've copied data from the page into the direct item, so the
+=======
+		/*
+		 * we've copied data from the page into the direct item, so the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * buffer in the page is now clean, mark it to reflect that.
 		 */
 		lock_buffer(bh_result);
@@ -2340,6 +3684,7 @@ static int map_block_for_writepage(struct inode *inode,
 
 /*
  * mason@suse.com: updated in 2.5.54 to follow the same general io
+<<<<<<< HEAD
  * start/recovery path as __block_write_full_page, along with special
  * code to handle reiserfs tails.
  */
@@ -2348,20 +3693,38 @@ static int reiserfs_write_full_page(struct page *page,
 {
 	struct inode *inode = page->mapping->host;
 	unsigned long end_index = inode->i_size >> PAGE_CACHE_SHIFT;
+=======
+ * start/recovery path as __block_write_full_folio, along with special
+ * code to handle reiserfs tails.
+ */
+static int reiserfs_write_full_folio(struct folio *folio,
+				    struct writeback_control *wbc)
+{
+	struct inode *inode = folio->mapping->host;
+	unsigned long end_index = inode->i_size >> PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int error = 0;
 	unsigned long block;
 	sector_t last_block;
 	struct buffer_head *head, *bh;
 	int partial = 0;
 	int nr = 0;
+<<<<<<< HEAD
 	int checked = PageChecked(page);
 	struct reiserfs_transaction_handle th;
 	struct super_block *s = inode->i_sb;
 	int bh_per_page = PAGE_CACHE_SIZE / s->s_blocksize;
+=======
+	int checked = folio_test_checked(folio);
+	struct reiserfs_transaction_handle th;
+	struct super_block *s = inode->i_sb;
+	int bh_per_page = PAGE_SIZE / s->s_blocksize;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	th.t_trans_id = 0;
 
 	/* no logging allowed when nonblocking or from PF_MEMALLOC */
 	if (checked && (current->flags & PF_MEMALLOC)) {
+<<<<<<< HEAD
 		redirty_page_for_writepage(wbc, page);
 		unlock_page(page);
 		return 0;
@@ -2394,22 +3757,67 @@ static int reiserfs_write_full_page(struct page *page,
 	}
 	bh = head;
 	block = page->index << (PAGE_CACHE_SHIFT - s->s_blocksize_bits);
+=======
+		folio_redirty_for_writepage(wbc, folio);
+		folio_unlock(folio);
+		return 0;
+	}
+
+	/*
+	 * The folio dirty bit is cleared before writepage is called, which
+	 * means we have to tell create_empty_buffers to make dirty buffers
+	 * The folio really should be up to date at this point, so tossing
+	 * in the BH_Uptodate is just a sanity check.
+	 */
+	head = folio_buffers(folio);
+	if (!head)
+		head = create_empty_buffers(folio, s->s_blocksize,
+				     (1 << BH_Dirty) | (1 << BH_Uptodate));
+
+	/*
+	 * last folio in the file, zero out any contents past the
+	 * last byte in the file
+	 */
+	if (folio->index >= end_index) {
+		unsigned last_offset;
+
+		last_offset = inode->i_size & (PAGE_SIZE - 1);
+		/* no file contents in this folio */
+		if (folio->index >= end_index + 1 || !last_offset) {
+			folio_unlock(folio);
+			return 0;
+		}
+		folio_zero_segment(folio, last_offset, folio_size(folio));
+	}
+	bh = head;
+	block = folio->index << (PAGE_SHIFT - s->s_blocksize_bits);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	last_block = (i_size_read(inode) - 1) >> inode->i_blkbits;
 	/* first map all the buffers, logging any direct items we find */
 	do {
 		if (block > last_block) {
 			/*
 			 * This can happen when the block size is less than
+<<<<<<< HEAD
 			 * the page size.  The corresponding bytes in the page
+=======
+			 * the folio size.  The corresponding bytes in the folio
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * were zero filled above
 			 */
 			clear_buffer_dirty(bh);
 			set_buffer_uptodate(bh);
 		} else if ((checked || buffer_dirty(bh)) &&
+<<<<<<< HEAD
 		           (!buffer_mapped(bh) || (buffer_mapped(bh)
 						       && bh->b_blocknr ==
 						       0))) {
 			/* not mapped yet, or it points to a direct item, search
+=======
+			   (!buffer_mapped(bh) || bh->b_blocknr == 0)) {
+			/*
+			 * not mapped yet, or it points to a direct item, search
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 * the btree for the mapping info, and log any direct
 			 * items found
 			 */
@@ -2428,7 +3836,11 @@ static int reiserfs_write_full_page(struct page *page,
 	 * blocks we're going to log
 	 */
 	if (checked) {
+<<<<<<< HEAD
 		ClearPageChecked(page);
+=======
+		folio_clear_checked(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reiserfs_write_lock(s);
 		error = journal_begin(&th, s, bh_per_page + 1);
 		if (error) {
@@ -2437,7 +3849,11 @@ static int reiserfs_write_full_page(struct page *page,
 		}
 		reiserfs_update_inode_transaction(inode);
 	}
+<<<<<<< HEAD
 	/* now go through and lock any dirty buffers on the page */
+=======
+	/* now go through and lock any dirty buffers on the folio */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		get_bh(bh);
 		if (!buffer_mapped(bh))
@@ -2447,17 +3863,29 @@ static int reiserfs_write_full_page(struct page *page,
 
 		if (checked) {
 			reiserfs_prepare_for_journal(s, bh, 1);
+<<<<<<< HEAD
 			journal_mark_dirty(&th, s, bh);
 			continue;
 		}
 		/* from this point on, we know the buffer is mapped to a
+=======
+			journal_mark_dirty(&th, bh);
+			continue;
+		}
+		/*
+		 * from this point on, we know the buffer is mapped to a
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * real block and not a direct item
 		 */
 		if (wbc->sync_mode != WB_SYNC_NONE) {
 			lock_buffer(bh);
 		} else {
 			if (!trylock_buffer(bh)) {
+<<<<<<< HEAD
 				redirty_page_for_writepage(wbc, page);
+=======
+				folio_redirty_for_writepage(wbc, folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 		}
@@ -2469,11 +3897,16 @@ static int reiserfs_write_full_page(struct page *page,
 	} while ((bh = bh->b_this_page) != head);
 
 	if (checked) {
+<<<<<<< HEAD
 		error = journal_end(&th, s, bh_per_page + 1);
+=======
+		error = journal_end(&th);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reiserfs_write_unlock(s);
 		if (error)
 			goto fail;
 	}
+<<<<<<< HEAD
 	BUG_ON(PageWriteback(page));
 	set_page_writeback(page);
 	unlock_page(page);
@@ -2481,12 +3914,25 @@ static int reiserfs_write_full_page(struct page *page,
 	/*
 	 * since any buffer might be the only dirty buffer on the page,
 	 * the first submit_bh can bring the page out of writeback.
+=======
+	BUG_ON(folio_test_writeback(folio));
+	folio_start_writeback(folio);
+	folio_unlock(folio);
+
+	/*
+	 * since any buffer might be the only dirty buffer on the folio,
+	 * the first submit_bh can bring the folio out of writeback.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * be careful with the buffers.
 	 */
 	do {
 		struct buffer_head *next = bh->b_this_page;
 		if (buffer_async_write(bh)) {
+<<<<<<< HEAD
 			submit_bh(WRITE, bh);
+=======
+			submit_bh(REQ_OP_WRITE, bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nr++;
 		}
 		put_bh(bh);
@@ -2494,6 +3940,7 @@ static int reiserfs_write_full_page(struct page *page,
 	} while (bh != head);
 
 	error = 0;
+<<<<<<< HEAD
       done:
 	if (nr == 0) {
 		/*
@@ -2501,6 +3948,15 @@ static int reiserfs_write_full_page(struct page *page,
 		 * no io to be required without there being an error.  Or,
 		 * someone else could have locked them and sent them down the
 		 * pipe without locking the page
+=======
+done:
+	if (nr == 0) {
+		/*
+		 * if this folio only had a direct item, it is very possible for
+		 * no io to be required without there being an error.  Or,
+		 * someone else could have locked them and sent them down the
+		 * pipe without locking the folio
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		bh = head;
 		do {
@@ -2511,6 +3967,7 @@ static int reiserfs_write_full_page(struct page *page,
 			bh = bh->b_this_page;
 		} while (bh != head);
 		if (!partial)
+<<<<<<< HEAD
 			SetPageUptodate(page);
 		end_page_writeback(page);
 	}
@@ -2522,6 +3979,20 @@ static int reiserfs_write_full_page(struct page *page,
 	 * writeback
 	 */
 	ClearPageUptodate(page);
+=======
+			folio_mark_uptodate(folio);
+		folio_end_writeback(folio);
+	}
+	return error;
+
+fail:
+	/*
+	 * catches various errors, we need to make sure any valid dirty blocks
+	 * get to the media.  The folio is currently locked and not marked for
+	 * writeback
+	 */
+	folio_clear_uptodate(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bh = head;
 	do {
 		get_bh(bh);
@@ -2530,22 +4001,38 @@ static int reiserfs_write_full_page(struct page *page,
 			mark_buffer_async_write(bh);
 		} else {
 			/*
+<<<<<<< HEAD
 			 * clear any dirty bits that might have come from getting
 			 * attached to a dirty page
+=======
+			 * clear any dirty bits that might have come from
+			 * getting attached to a dirty folio
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			clear_buffer_dirty(bh);
 		}
 		bh = bh->b_this_page;
 	} while (bh != head);
+<<<<<<< HEAD
 	SetPageError(page);
 	BUG_ON(PageWriteback(page));
 	set_page_writeback(page);
 	unlock_page(page);
+=======
+	folio_set_error(folio);
+	BUG_ON(folio_test_writeback(folio));
+	folio_start_writeback(folio);
+	folio_unlock(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		struct buffer_head *next = bh->b_this_page;
 		if (buffer_async_write(bh)) {
 			clear_buffer_dirty(bh);
+<<<<<<< HEAD
 			submit_bh(WRITE, bh);
+=======
+			submit_bh(REQ_OP_WRITE, bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			nr++;
 		}
 		put_bh(bh);
@@ -2554,16 +4041,29 @@ static int reiserfs_write_full_page(struct page *page,
 	goto done;
 }
 
+<<<<<<< HEAD
 static int reiserfs_readpage(struct file *f, struct page *page)
 {
 	return block_read_full_page(page, reiserfs_get_block);
+=======
+static int reiserfs_read_folio(struct file *f, struct folio *folio)
+{
+	return block_read_full_folio(folio, reiserfs_get_block);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int reiserfs_writepage(struct page *page, struct writeback_control *wbc)
 {
+<<<<<<< HEAD
 	struct inode *inode = page->mapping->host;
 	reiserfs_wait_on_write_block(inode->i_sb);
 	return reiserfs_write_full_page(page, wbc);
+=======
+	struct folio *folio = page_folio(page);
+	struct inode *inode = folio->mapping->host;
+	reiserfs_wait_on_write_block(inode->i_sb);
+	return reiserfs_write_full_folio(folio, wbc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void reiserfs_truncate_failed_write(struct inode *inode)
@@ -2574,7 +4074,11 @@ static void reiserfs_truncate_failed_write(struct inode *inode)
 
 static int reiserfs_write_begin(struct file *file,
 				struct address_space *mapping,
+<<<<<<< HEAD
 				loff_t pos, unsigned len, unsigned flags,
+=======
+				loff_t pos, unsigned len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct page **pagep, void **fsdata)
 {
 	struct inode *inode;
@@ -2584,6 +4088,7 @@ static int reiserfs_write_begin(struct file *file,
 	int old_ref = 0;
 
  	inode = mapping->host;
+<<<<<<< HEAD
 	*fsdata = 0;
  	if (flags & AOP_FLAG_CONT_EXPAND &&
  	    (pos & (inode->i_sb->s_blocksize - 1)) == 0) {
@@ -2593,6 +4098,10 @@ static int reiserfs_write_begin(struct file *file,
 
 	index = pos >> PAGE_CACHE_SHIFT;
 	page = grab_cache_page_write_begin(mapping, index, flags);
+=======
+	index = pos >> PAGE_SHIFT;
+	page = grab_cache_page_write_begin(mapping, index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!page)
 		return -ENOMEM;
 	*pagep = page;
@@ -2611,15 +4120,28 @@ static int reiserfs_write_begin(struct file *file,
 	ret = __block_write_begin(page, pos, len, reiserfs_get_block);
 	if (ret && reiserfs_transaction_running(inode->i_sb)) {
 		struct reiserfs_transaction_handle *th = current->journal_info;
+<<<<<<< HEAD
 		/* this gets a little ugly.  If reiserfs_get_block returned an
 		 * error and left a transacstion running, we've got to close it,
 		 * and we've got to free handle if it was a persistent transaction.
+=======
+		/*
+		 * this gets a little ugly.  If reiserfs_get_block returned an
+		 * error and left a transacstion running, we've got to close
+		 * it, and we've got to free handle if it was a persistent
+		 * transaction.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 *
 		 * But, if we had nested into an existing transaction, we need
 		 * to just drop the ref count on the handle.
 		 *
 		 * If old_ref == 0, the transaction is from reiserfs_get_block,
+<<<<<<< HEAD
 		 * and it was a persistent trans.  Otherwise, it was nested above.
+=======
+		 * and it was a persistent trans.  Otherwise, it was nested
+		 * above.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (th->t_refcount > old_ref) {
 			if (old_ref)
@@ -2636,7 +4158,11 @@ static int reiserfs_write_begin(struct file *file,
 	}
 	if (ret) {
 		unlock_page(page);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Truncate allocated blocks */
 		reiserfs_truncate_failed_write(inode);
 	}
@@ -2648,10 +4174,18 @@ int __reiserfs_write_begin(struct page *page, unsigned from, unsigned len)
 	struct inode *inode = page->mapping->host;
 	int ret;
 	int old_ref = 0;
+<<<<<<< HEAD
 
 	reiserfs_write_unlock(inode->i_sb);
 	reiserfs_wait_on_write_block(inode->i_sb);
 	reiserfs_write_lock(inode->i_sb);
+=======
+	int depth;
+
+	depth = reiserfs_write_unlock_nested(inode->i_sb);
+	reiserfs_wait_on_write_block(inode->i_sb);
+	reiserfs_write_lock_nested(inode->i_sb, depth);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fix_tail_page_for_writing(page);
 	if (reiserfs_transaction_running(inode->i_sb)) {
@@ -2667,15 +4201,28 @@ int __reiserfs_write_begin(struct page *page, unsigned from, unsigned len)
 	ret = __block_write_begin(page, from, len, reiserfs_get_block);
 	if (ret && reiserfs_transaction_running(inode->i_sb)) {
 		struct reiserfs_transaction_handle *th = current->journal_info;
+<<<<<<< HEAD
 		/* this gets a little ugly.  If reiserfs_get_block returned an
 		 * error and left a transacstion running, we've got to close it,
 		 * and we've got to free handle if it was a persistent transaction.
+=======
+		/*
+		 * this gets a little ugly.  If reiserfs_get_block returned an
+		 * error and left a transacstion running, we've got to close
+		 * it, and we've got to free handle if it was a persistent
+		 * transaction.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 *
 		 * But, if we had nested into an existing transaction, we need
 		 * to just drop the ref count on the handle.
 		 *
 		 * If old_ref == 0, the transaction is from reiserfs_get_block,
+<<<<<<< HEAD
 		 * and it was a persistent trans.  Otherwise, it was nested above.
+=======
+		 * and it was a persistent trans.  Otherwise, it was nested
+		 * above.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (th->t_refcount > old_ref) {
 			if (old_ref)
@@ -2703,23 +4250,33 @@ static int reiserfs_write_end(struct file *file, struct address_space *mapping,
 			      loff_t pos, unsigned len, unsigned copied,
 			      struct page *page, void *fsdata)
 {
+<<<<<<< HEAD
+=======
+	struct folio *folio = page_folio(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct inode *inode = page->mapping->host;
 	int ret = 0;
 	int update_sd = 0;
 	struct reiserfs_transaction_handle *th;
 	unsigned start;
+<<<<<<< HEAD
 	int lock_depth = 0;
 	bool locked = false;
 
 	if ((unsigned long)fsdata & AOP_FLAG_CONT_EXPAND)
 		pos ++;
 
+=======
+	bool locked = false;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reiserfs_wait_on_write_block(inode->i_sb);
 	if (reiserfs_transaction_running(inode->i_sb))
 		th = current->journal_info;
 	else
 		th = NULL;
 
+<<<<<<< HEAD
 	start = pos & (PAGE_CACHE_SIZE - 1);
 	if (unlikely(copied < len)) {
 		if (!PageUptodate(page))
@@ -2742,6 +4299,33 @@ static int reiserfs_write_end(struct file *file, struct address_space *mapping,
 		/* If the file have grown beyond the border where it
 		   can have a tail, unmark it as needing a tail
 		   packing */
+=======
+	start = pos & (PAGE_SIZE - 1);
+	if (unlikely(copied < len)) {
+		if (!folio_test_uptodate(folio))
+			copied = 0;
+
+		folio_zero_new_buffers(folio, start + copied, start + len);
+	}
+	flush_dcache_folio(folio);
+
+	reiserfs_commit_page(inode, page, start, start + copied);
+
+	/*
+	 * generic_commit_write does this for us, but does not update the
+	 * transaction tracking stuff when the size changes.  So, we have
+	 * to do the i_size updates here.
+	 */
+	if (pos + copied > inode->i_size) {
+		struct reiserfs_transaction_handle myth;
+		reiserfs_write_lock(inode->i_sb);
+		locked = true;
+		/*
+		 * If the file have grown beyond the border where it
+		 * can have a tail, unmark it as needing a tail
+		 * packing
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((have_large_tails(inode->i_sb)
 		     && inode->i_size > i_block_size(inode) * 4)
 		    || (have_small_tails(inode->i_sb)
@@ -2756,19 +4340,32 @@ static int reiserfs_write_end(struct file *file, struct address_space *mapping,
 		inode->i_size = pos + copied;
 		/*
 		 * this will just nest into our transaction.  It's important
+<<<<<<< HEAD
 		 * to use mark_inode_dirty so the inode gets pushed around on the
 		 * dirty lists, and so that O_SYNC works as expected
+=======
+		 * to use mark_inode_dirty so the inode gets pushed around on
+		 * the dirty lists, and so that O_SYNC works as expected
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		mark_inode_dirty(inode);
 		reiserfs_update_sd(&myth, inode);
 		update_sd = 1;
+<<<<<<< HEAD
 		ret = journal_end(&myth, inode->i_sb, 1);
+=======
+		ret = journal_end(&myth);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			goto journal_error;
 	}
 	if (th) {
 		if (!locked) {
+<<<<<<< HEAD
 			lock_depth = reiserfs_write_lock_once(inode->i_sb);
+=======
+			reiserfs_write_lock(inode->i_sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			locked = true;
 		}
 		if (!update_sd)
@@ -2778,19 +4375,32 @@ static int reiserfs_write_end(struct file *file, struct address_space *mapping,
 			goto out;
 	}
 
+<<<<<<< HEAD
       out:
 	if (locked)
 		reiserfs_write_unlock_once(inode->i_sb, lock_depth);
 	unlock_page(page);
 	page_cache_release(page);
+=======
+out:
+	if (locked)
+		reiserfs_write_unlock(inode->i_sb);
+	unlock_page(page);
+	put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pos + len > inode->i_size)
 		reiserfs_truncate_failed_write(inode);
 
 	return ret == 0 ? copied : ret;
 
+<<<<<<< HEAD
       journal_error:
 	reiserfs_write_unlock_once(inode->i_sb, lock_depth);
+=======
+journal_error:
+	reiserfs_write_unlock(inode->i_sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	locked = false;
 	if (th) {
 		if (!update_sd)
@@ -2804,6 +4414,7 @@ int reiserfs_commit_write(struct file *f, struct page *page,
 			  unsigned from, unsigned to)
 {
 	struct inode *inode = page->mapping->host;
+<<<<<<< HEAD
 	loff_t pos = ((loff_t) page->index << PAGE_CACHE_SHIFT) + to;
 	int ret = 0;
 	int update_sd = 0;
@@ -2812,12 +4423,24 @@ int reiserfs_commit_write(struct file *f, struct page *page,
 	reiserfs_write_unlock(inode->i_sb);
 	reiserfs_wait_on_write_block(inode->i_sb);
 	reiserfs_write_lock(inode->i_sb);
+=======
+	loff_t pos = ((loff_t) page->index << PAGE_SHIFT) + to;
+	int ret = 0;
+	int update_sd = 0;
+	struct reiserfs_transaction_handle *th = NULL;
+	int depth;
+
+	depth = reiserfs_write_unlock_nested(inode->i_sb);
+	reiserfs_wait_on_write_block(inode->i_sb);
+	reiserfs_write_lock_nested(inode->i_sb, depth);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (reiserfs_transaction_running(inode->i_sb)) {
 		th = current->journal_info;
 	}
 	reiserfs_commit_page(inode, page, from, to);
 
+<<<<<<< HEAD
 	/* generic_commit_write does this for us, but does not update the
 	 ** transaction tracking stuff when the size changes.  So, we have
 	 ** to do the i_size updates here.
@@ -2827,6 +4450,20 @@ int reiserfs_commit_write(struct file *f, struct page *page,
 		/* If the file have grown beyond the border where it
 		   can have a tail, unmark it as needing a tail
 		   packing */
+=======
+	/*
+	 * generic_commit_write does this for us, but does not update the
+	 * transaction tracking stuff when the size changes.  So, we have
+	 * to do the i_size updates here.
+	 */
+	if (pos > inode->i_size) {
+		struct reiserfs_transaction_handle myth;
+		/*
+		 * If the file have grown beyond the border where it
+		 * can have a tail, unmark it as needing a tail
+		 * packing
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((have_large_tails(inode->i_sb)
 		     && inode->i_size > i_block_size(inode) * 4)
 		    || (have_small_tails(inode->i_sb)
@@ -2841,13 +4478,22 @@ int reiserfs_commit_write(struct file *f, struct page *page,
 		inode->i_size = pos;
 		/*
 		 * this will just nest into our transaction.  It's important
+<<<<<<< HEAD
 		 * to use mark_inode_dirty so the inode gets pushed around on the
 		 * dirty lists, and so that O_SYNC works as expected
+=======
+		 * to use mark_inode_dirty so the inode gets pushed around
+		 * on the dirty lists, and so that O_SYNC works as expected
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		mark_inode_dirty(inode);
 		reiserfs_update_sd(&myth, inode);
 		update_sd = 1;
+<<<<<<< HEAD
 		ret = journal_end(&myth, inode->i_sb, 1);
+=======
+		ret = journal_end(&myth);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			goto journal_error;
 	}
@@ -2859,10 +4505,17 @@ int reiserfs_commit_write(struct file *f, struct page *page,
 			goto out;
 	}
 
+<<<<<<< HEAD
       out:
 	return ret;
 
       journal_error:
+=======
+out:
+	return ret;
+
+journal_error:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (th) {
 		if (!update_sd)
 			reiserfs_update_sd(th, inode);
@@ -2898,6 +4551,7 @@ void sd_attrs_to_i_attrs(__u16 sd_attrs, struct inode *inode)
 	}
 }
 
+<<<<<<< HEAD
 void i_attrs_to_sd_attrs(struct inode *inode, __u16 * sd_attrs)
 {
 	if (reiserfs_attrs(inode->i_sb)) {
@@ -2924,6 +4578,13 @@ void i_attrs_to_sd_attrs(struct inode *inode, __u16 * sd_attrs)
 ** write purposes
 */
 static int invalidatepage_can_drop(struct inode *inode, struct buffer_head *bh)
+=======
+/*
+ * decide if this buffer needs to stay around for data logging or ordered
+ * write purposes
+ */
+static int invalidate_folio_can_drop(struct inode *inode, struct buffer_head *bh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 1;
 	struct reiserfs_journal *j = SB_JOURNAL(inode->i_sb);
@@ -2933,7 +4594,12 @@ static int invalidatepage_can_drop(struct inode *inode, struct buffer_head *bh)
 	if (!buffer_mapped(bh)) {
 		goto free_jh;
 	}
+<<<<<<< HEAD
 	/* the page is locked, and the only places that log a data buffer
+=======
+	/*
+	 * the page is locked, and the only places that log a data buffer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * also lock the page.
 	 */
 	if (reiserfs_file_data_log(inode)) {
@@ -2948,7 +4614,12 @@ static int invalidatepage_can_drop(struct inode *inode, struct buffer_head *bh)
 		struct reiserfs_journal_list *jl;
 		struct reiserfs_jh *jh = bh->b_private;
 
+<<<<<<< HEAD
 		/* why is this safe?
+=======
+		/*
+		 * why is this safe?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * reiserfs_setattr updates i_size in the on disk
 		 * stat data before allowing vmtruncate to be called.
 		 *
@@ -2965,7 +4636,11 @@ static int invalidatepage_can_drop(struct inode *inode, struct buffer_head *bh)
 		    && jl != SB_JOURNAL(inode->i_sb)->j_current_jl)
 			ret = 0;
 	}
+<<<<<<< HEAD
       free_jh:
+=======
+free_jh:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret && bh->b_private) {
 		reiserfs_free_jh(bh);
 	}
@@ -2974,6 +4649,7 @@ static int invalidatepage_can_drop(struct inode *inode, struct buffer_head *bh)
 	return ret;
 }
 
+<<<<<<< HEAD
 /* clm -- taken from fs/buffer.c:block_invalidate_page */
 static void reiserfs_invalidatepage(struct page *page, unsigned long offset)
 {
@@ -2991,16 +4667,48 @@ static void reiserfs_invalidatepage(struct page *page, unsigned long offset)
 		goto out;
 
 	head = page_buffers(page);
+=======
+/* clm -- taken from fs/buffer.c:block_invalidate_folio */
+static void reiserfs_invalidate_folio(struct folio *folio, size_t offset,
+				    size_t length)
+{
+	struct buffer_head *head, *bh, *next;
+	struct inode *inode = folio->mapping->host;
+	unsigned int curr_off = 0;
+	unsigned int stop = offset + length;
+	int partial_page = (offset || length < folio_size(folio));
+	int ret = 1;
+
+	BUG_ON(!folio_test_locked(folio));
+
+	if (!partial_page)
+		folio_clear_checked(folio);
+
+	head = folio_buffers(folio);
+	if (!head)
+		goto out;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bh = head;
 	do {
 		unsigned int next_off = curr_off + bh->b_size;
 		next = bh->b_this_page;
 
+<<<<<<< HEAD
+=======
+		if (next_off > stop)
+			goto out;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * is this block fully invalidated?
 		 */
 		if (offset <= curr_off) {
+<<<<<<< HEAD
 			if (invalidatepage_can_drop(inode, bh))
+=======
+			if (invalidate_folio_can_drop(inode, bh))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				reiserfs_unmap_buffer(bh);
 			else
 				ret = 0;
@@ -3014,6 +4722,7 @@ static void reiserfs_invalidatepage(struct page *page, unsigned long offset)
 	 * The get_block cached value has been unconditionally invalidated,
 	 * so real IO is not possible anymore.
 	 */
+<<<<<<< HEAD
 	if (!offset && ret) {
 		ret = try_to_release_page(page, 0);
 		/* maybe should BUG_ON(!ret); - neilb */
@@ -3037,10 +4746,36 @@ static int reiserfs_set_page_dirty(struct page *page)
  *
  * Takes j_dirty_buffers_lock to protect the b_assoc_buffers list_heads
  * in the buffers at page_buffers(page).
+=======
+	if (!partial_page && ret) {
+		ret = filemap_release_folio(folio, 0);
+		/* maybe should BUG_ON(!ret); - neilb */
+	}
+out:
+	return;
+}
+
+static bool reiserfs_dirty_folio(struct address_space *mapping,
+		struct folio *folio)
+{
+	if (reiserfs_file_data_log(mapping->host)) {
+		folio_set_checked(folio);
+		return filemap_dirty_folio(mapping, folio);
+	}
+	return block_dirty_folio(mapping, folio);
+}
+
+/*
+ * Returns true if the folio's buffers were dropped.  The folio is locked.
+ *
+ * Takes j_dirty_buffers_lock to protect the b_assoc_buffers list_heads
+ * in the buffers at folio_buffers(folio).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * even in -o notail mode, we can't be sure an old mount without -o notail
  * didn't create files with tails.
  */
+<<<<<<< HEAD
 static int reiserfs_releasepage(struct page *page, gfp_t unused_gfp_flags)
 {
 	struct inode *inode = page->mapping->host;
@@ -3052,24 +4787,46 @@ static int reiserfs_releasepage(struct page *page, gfp_t unused_gfp_flags)
 	WARN_ON(PageChecked(page));
 	spin_lock(&j->j_dirty_buffers_lock);
 	head = page_buffers(page);
+=======
+static bool reiserfs_release_folio(struct folio *folio, gfp_t unused_gfp_flags)
+{
+	struct inode *inode = folio->mapping->host;
+	struct reiserfs_journal *j = SB_JOURNAL(inode->i_sb);
+	struct buffer_head *head;
+	struct buffer_head *bh;
+	bool ret = true;
+
+	WARN_ON(folio_test_checked(folio));
+	spin_lock(&j->j_dirty_buffers_lock);
+	head = folio_buffers(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bh = head;
 	do {
 		if (bh->b_private) {
 			if (!buffer_dirty(bh) && !buffer_locked(bh)) {
 				reiserfs_free_jh(bh);
 			} else {
+<<<<<<< HEAD
 				ret = 0;
+=======
+				ret = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
 		bh = bh->b_this_page;
 	} while (bh != head);
 	if (ret)
+<<<<<<< HEAD
 		ret = try_to_free_buffers(page);
+=======
+		ret = try_to_free_buffers(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&j->j_dirty_buffers_lock);
 	return ret;
 }
 
+<<<<<<< HEAD
 /* We thank Mingming Cao for helping us understand in great detail what
    to do in this section of the code. */
 static ssize_t reiserfs_direct_IO(int rw, struct kiocb *iocb,
@@ -3082,22 +4839,49 @@ static ssize_t reiserfs_direct_IO(int rw, struct kiocb *iocb,
 
 	ret = blockdev_direct_IO(rw, iocb, inode, iov, offset, nr_segs,
 				  reiserfs_get_blocks_direct_io);
+=======
+/*
+ * We thank Mingming Cao for helping us understand in great detail what
+ * to do in this section of the code.
+ */
+static ssize_t reiserfs_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
+{
+	struct file *file = iocb->ki_filp;
+	struct inode *inode = file->f_mapping->host;
+	size_t count = iov_iter_count(iter);
+	ssize_t ret;
+
+	ret = blockdev_direct_IO(iocb, inode, iter,
+				 reiserfs_get_blocks_direct_io);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * In case of error extending write may have instantiated a few
 	 * blocks outside i_size. Trim these off again.
 	 */
+<<<<<<< HEAD
 	if (unlikely((rw & WRITE) && ret < 0)) {
 		loff_t isize = i_size_read(inode);
 		loff_t end = offset + iov_length(iov, nr_segs);
 
 		if (end > isize)
 			vmtruncate(inode, isize);
+=======
+	if (unlikely(iov_iter_rw(iter) == WRITE && ret < 0)) {
+		loff_t isize = i_size_read(inode);
+		loff_t end = iocb->ki_pos + count;
+
+		if ((end > isize) && inode_newsize_ok(inode, isize) == 0) {
+			truncate_setsize(inode, isize);
+			reiserfs_vfs_truncate_file(inode);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 }
 
+<<<<<<< HEAD
 int reiserfs_setattr(struct dentry *dentry, struct iattr *attr)
 {
 	struct inode *inode = dentry->d_inode;
@@ -3106,12 +4890,23 @@ int reiserfs_setattr(struct dentry *dentry, struct iattr *attr)
 	int error;
 
 	error = inode_change_ok(inode, attr);
+=======
+int reiserfs_setattr(struct mnt_idmap *idmap, struct dentry *dentry,
+		     struct iattr *attr)
+{
+	struct inode *inode = d_inode(dentry);
+	unsigned int ia_valid;
+	int error;
+
+	error = setattr_prepare(&nop_mnt_idmap, dentry, attr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		return error;
 
 	/* must be turned off for recursive notify_change calls */
 	ia_valid = attr->ia_valid &= ~(ATTR_KILL_SUID|ATTR_KILL_SGID);
 
+<<<<<<< HEAD
 	if (is_quota_modification(inode, attr))
 		dquot_initialize(inode);
 	depth = reiserfs_write_lock_once(inode->i_sb);
@@ -3121,6 +4916,22 @@ int reiserfs_setattr(struct dentry *dentry, struct iattr *attr)
 		 */
 		if (get_inode_item_key_version(inode) == KEY_FORMAT_3_5 &&
 		    attr->ia_size > MAX_NON_LFS) {
+=======
+	if (is_quota_modification(&nop_mnt_idmap, inode, attr)) {
+		error = dquot_initialize(inode);
+		if (error)
+			return error;
+	}
+	reiserfs_write_lock(inode->i_sb);
+	if (attr->ia_valid & ATTR_SIZE) {
+		/*
+		 * version 2 items will be caught by the s_maxbytes check
+		 * done for us in vmtruncate
+		 */
+		if (get_inode_item_key_version(inode) == KEY_FORMAT_3_5 &&
+		    attr->ia_size > MAX_NON_LFS) {
+			reiserfs_write_unlock(inode->i_sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = -EFBIG;
 			goto out;
 		}
@@ -3129,7 +4940,15 @@ int reiserfs_setattr(struct dentry *dentry, struct iattr *attr)
 
 		/* fill in hole pointers in the expanding truncate case. */
 		if (attr->ia_size > inode->i_size) {
+<<<<<<< HEAD
 			error = generic_cont_expand_simple(inode, attr->ia_size);
+=======
+			loff_t pos = attr->ia_size;
+
+			if ((pos & (inode->i_sb->s_blocksize - 1)) == 0)
+				pos++;
+			error = generic_cont_expand_simple(inode, pos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (REISERFS_I(inode)->i_prealloc_count > 0) {
 				int err;
 				struct reiserfs_transaction_handle th;
@@ -3137,13 +4956,24 @@ int reiserfs_setattr(struct dentry *dentry, struct iattr *attr)
 				err = journal_begin(&th, inode->i_sb, 4);
 				if (!err) {
 					reiserfs_discard_prealloc(&th, inode);
+<<<<<<< HEAD
 					err = journal_end(&th, inode->i_sb, 4);
+=======
+					err = journal_end(&th);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 				if (err)
 					error = err;
 			}
+<<<<<<< HEAD
 			if (error)
 				goto out;
+=======
+			if (error) {
+				reiserfs_write_unlock(inode->i_sb);
+				goto out;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * file size is changed, ctime and mtime are
 			 * to be updated
@@ -3151,17 +4981,29 @@ int reiserfs_setattr(struct dentry *dentry, struct iattr *attr)
 			attr->ia_valid |= (ATTR_MTIME | ATTR_CTIME);
 		}
 	}
+<<<<<<< HEAD
 
 	if ((((attr->ia_valid & ATTR_UID) && (attr->ia_uid & ~0xffff)) ||
 	     ((attr->ia_valid & ATTR_GID) && (attr->ia_gid & ~0xffff))) &&
+=======
+	reiserfs_write_unlock(inode->i_sb);
+
+	if ((((attr->ia_valid & ATTR_UID) && (from_kuid(&init_user_ns, attr->ia_uid) & ~0xffff)) ||
+	     ((attr->ia_valid & ATTR_GID) && (from_kgid(&init_user_ns, attr->ia_gid) & ~0xffff))) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (get_inode_sd_version(inode) == STAT_DATA_V1)) {
 		/* stat data of format v3.5 has 16 bit uid and gid */
 		error = -EINVAL;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if ((ia_valid & ATTR_UID && attr->ia_uid != inode->i_uid) ||
 	    (ia_valid & ATTR_GID && attr->ia_gid != inode->i_gid)) {
+=======
+	if ((ia_valid & ATTR_UID && !uid_eq(attr->ia_uid, inode->i_uid)) ||
+	    (ia_valid & ATTR_GID && !gid_eq(attr->ia_gid, inode->i_gid))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct reiserfs_transaction_handle th;
 		int jbegin_count =
 		    2 *
@@ -3174,6 +5016,7 @@ int reiserfs_setattr(struct dentry *dentry, struct iattr *attr)
 		if (error)
 			return error;
 
+<<<<<<< HEAD
 		/* (user+group)*(old+new) structure - we count quota info and , inode write (sb, inode) */
 		error = journal_begin(&th, inode->i_sb, jbegin_count);
 		if (error)
@@ -3188,16 +5031,45 @@ int reiserfs_setattr(struct dentry *dentry, struct iattr *attr)
 
 		/* Update corresponding info in inode so that everything is in
 		 * one transaction */
+=======
+		/*
+		 * (user+group)*(old+new) structure - we count quota
+		 * info and , inode write (sb, inode)
+		 */
+		reiserfs_write_lock(inode->i_sb);
+		error = journal_begin(&th, inode->i_sb, jbegin_count);
+		reiserfs_write_unlock(inode->i_sb);
+		if (error)
+			goto out;
+		error = dquot_transfer(&nop_mnt_idmap, inode, attr);
+		reiserfs_write_lock(inode->i_sb);
+		if (error) {
+			journal_end(&th);
+			reiserfs_write_unlock(inode->i_sb);
+			goto out;
+		}
+
+		/*
+		 * Update corresponding info in inode so that everything
+		 * is in one transaction
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (attr->ia_valid & ATTR_UID)
 			inode->i_uid = attr->ia_uid;
 		if (attr->ia_valid & ATTR_GID)
 			inode->i_gid = attr->ia_gid;
 		mark_inode_dirty(inode);
+<<<<<<< HEAD
 		error = journal_end(&th, inode->i_sb, jbegin_count);
+=======
+		error = journal_end(&th);
+		reiserfs_write_unlock(inode->i_sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (error)
 			goto out;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Relax the lock here, as it might truncate the
 	 * inode pages and wait for inode pages locks.
@@ -3223,18 +5095,57 @@ int reiserfs_setattr(struct dentry *dentry, struct iattr *attr)
       out:
 	reiserfs_write_unlock_once(inode->i_sb, depth);
 
+=======
+	if ((attr->ia_valid & ATTR_SIZE) &&
+	    attr->ia_size != i_size_read(inode)) {
+		error = inode_newsize_ok(inode, attr->ia_size);
+		if (!error) {
+			/*
+			 * Could race against reiserfs_file_release
+			 * if called from NFS, so take tailpack mutex.
+			 */
+			mutex_lock(&REISERFS_I(inode)->tailpack);
+			truncate_setsize(inode, attr->ia_size);
+			reiserfs_truncate_file(inode, 1);
+			mutex_unlock(&REISERFS_I(inode)->tailpack);
+		}
+	}
+
+	if (!error) {
+		setattr_copy(&nop_mnt_idmap, inode, attr);
+		mark_inode_dirty(inode);
+	}
+
+	if (!error && reiserfs_posixacl(inode->i_sb)) {
+		if (attr->ia_valid & ATTR_MODE)
+			error = reiserfs_acl_chmod(dentry);
+	}
+
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 const struct address_space_operations reiserfs_address_space_operations = {
 	.writepage = reiserfs_writepage,
+<<<<<<< HEAD
 	.readpage = reiserfs_readpage,
 	.readpages = reiserfs_readpages,
 	.releasepage = reiserfs_releasepage,
 	.invalidatepage = reiserfs_invalidatepage,
+=======
+	.read_folio = reiserfs_read_folio,
+	.readahead = reiserfs_readahead,
+	.release_folio = reiserfs_release_folio,
+	.invalidate_folio = reiserfs_invalidate_folio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write_begin = reiserfs_write_begin,
 	.write_end = reiserfs_write_end,
 	.bmap = reiserfs_aop_bmap,
 	.direct_IO = reiserfs_direct_IO,
+<<<<<<< HEAD
 	.set_page_dirty = reiserfs_set_page_dirty,
+=======
+	.dirty_folio = reiserfs_dirty_folio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

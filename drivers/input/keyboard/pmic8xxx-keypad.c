@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Copyright (c) 2009-2011, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -8,6 +9,10 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/* Copyright (c) 2009-2011, Code Aurora Forum. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -19,10 +24,16 @@
 #include <linux/bitops.h>
 #include <linux/delay.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 
 #include <linux/mfd/pm8xxx/core.h>
 #include <linux/mfd/pm8xxx/gpio.h>
 #include <linux/input/pmic8xxx-keypad.h>
+=======
+#include <linux/regmap.h>
+#include <linux/of.h>
+#include <linux/input/matrix_keypad.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PM8XXX_MAX_ROWS		18
 #define PM8XXX_MAX_COLS		8
@@ -85,6 +96,7 @@
 
 /**
  * struct pmic8xxx_kp - internal keypad data structure
+<<<<<<< HEAD
  * @pdata - keypad platform data pointer
  * @input - input device pointer for keypad
  * @key_sense_irq - key press/release irq number
@@ -98,6 +110,25 @@
 struct pmic8xxx_kp {
 	const struct pm8xxx_keypad_platform_data *pdata;
 	struct input_dev *input;
+=======
+ * @num_cols: number of columns of keypad
+ * @num_rows: number of row of keypad
+ * @input: input device pointer for keypad
+ * @regmap: regmap handle
+ * @key_sense_irq: key press/release irq number
+ * @key_stuck_irq: key stuck notification irq number
+ * @keycodes: array to hold the key codes
+ * @dev: parent device pointer
+ * @keystate: present key press/release state
+ * @stuckstate: present state when key stuck irq
+ * @ctrl_reg: control register value
+ */
+struct pmic8xxx_kp {
+	unsigned int num_rows;
+	unsigned int num_cols;
+	struct input_dev *input;
+	struct regmap *regmap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int key_sense_irq;
 	int key_stuck_irq;
 
@@ -110,6 +141,7 @@ struct pmic8xxx_kp {
 	u8 ctrl_reg;
 };
 
+<<<<<<< HEAD
 static int pmic8xxx_kp_write_u8(struct pmic8xxx_kp *kp,
 				 u8 data, u16 reg)
 {
@@ -147,13 +179,21 @@ static int pmic8xxx_kp_read_u8(struct pmic8xxx_kp *kp,
 	return rc;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u8 pmic8xxx_col_state(struct pmic8xxx_kp *kp, u8 col)
 {
 	/* all keys pressed on that particular row? */
 	if (col == 0x00)
+<<<<<<< HEAD
 		return 1 << kp->pdata->num_cols;
 	else
 		return col & ((1 << kp->pdata->num_cols) - 1);
+=======
+		return 1 << kp->num_cols;
+	else
+		return col & ((1 << kp->num_cols) - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -171,9 +211,15 @@ static u8 pmic8xxx_col_state(struct pmic8xxx_kp *kp, u8 col)
 static int pmic8xxx_chk_sync_read(struct pmic8xxx_kp *kp)
 {
 	int rc;
+<<<<<<< HEAD
 	u8 scan_val;
 
 	rc = pmic8xxx_kp_read_u8(kp, &scan_val, KEYP_SCAN);
+=======
+	unsigned int scan_val;
+
+	rc = regmap_read(kp->regmap, KEYP_SCAN, &scan_val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0) {
 		dev_err(kp->dev, "Error reading KEYP_SCAN reg, rc=%d\n", rc);
 		return rc;
@@ -181,7 +227,11 @@ static int pmic8xxx_chk_sync_read(struct pmic8xxx_kp *kp)
 
 	scan_val |= 0x1;
 
+<<<<<<< HEAD
 	rc = pmic8xxx_kp_write_u8(kp, scan_val, KEYP_SCAN);
+=======
+	rc = regmap_write(kp->regmap, KEYP_SCAN, scan_val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0) {
 		dev_err(kp->dev, "Error writing KEYP_SCAN reg, rc=%d\n", rc);
 		return rc;
@@ -197,6 +247,7 @@ static int pmic8xxx_kp_read_data(struct pmic8xxx_kp *kp, u16 *state,
 					u16 data_reg, int read_rows)
 {
 	int rc, row;
+<<<<<<< HEAD
 	u8 new_data[PM8XXX_MAX_ROWS];
 
 	rc = pmic8xxx_kp_read(kp, new_data, data_reg, read_rows);
@@ -210,18 +261,40 @@ static int pmic8xxx_kp_read_data(struct pmic8xxx_kp *kp, u16 *state,
 	}
 
 	return rc;
+=======
+	unsigned int val;
+
+	for (row = 0; row < read_rows; row++) {
+		rc = regmap_read(kp->regmap, data_reg, &val);
+		if (rc)
+			return rc;
+		dev_dbg(kp->dev, "%d = %d\n", row, val);
+		state[row] = pmic8xxx_col_state(kp, val);
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pmic8xxx_kp_read_matrix(struct pmic8xxx_kp *kp, u16 *new_state,
 					 u16 *old_state)
 {
 	int rc, read_rows;
+<<<<<<< HEAD
 	u8 scan_val;
 
 	if (kp->pdata->num_rows < PM8XXX_MIN_ROWS)
 		read_rows = PM8XXX_MIN_ROWS;
 	else
 		read_rows = kp->pdata->num_rows;
+=======
+	unsigned int scan_val;
+
+	if (kp->num_rows < PM8XXX_MIN_ROWS)
+		read_rows = PM8XXX_MIN_ROWS;
+	else
+		read_rows = kp->num_rows;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pmic8xxx_chk_sync_read(kp);
 
@@ -246,14 +319,22 @@ static int pmic8xxx_kp_read_matrix(struct pmic8xxx_kp *kp, u16 *new_state,
 	/* 4 * 32KHz clocks */
 	udelay((4 * DIV_ROUND_UP(USEC_PER_SEC, KEYP_CLOCK_FREQ)) + 1);
 
+<<<<<<< HEAD
 	rc = pmic8xxx_kp_read_u8(kp, &scan_val, KEYP_SCAN);
+=======
+	rc = regmap_read(kp->regmap, KEYP_SCAN, &scan_val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0) {
 		dev_err(kp->dev, "Error reading KEYP_SCAN reg, rc=%d\n", rc);
 		return rc;
 	}
 
 	scan_val &= 0xFE;
+<<<<<<< HEAD
 	rc = pmic8xxx_kp_write_u8(kp, scan_val, KEYP_SCAN);
+=======
+	rc = regmap_write(kp->regmap, KEYP_SCAN, scan_val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0)
 		dev_err(kp->dev, "Error writing KEYP_SCAN reg, rc=%d\n", rc);
 
@@ -265,13 +346,21 @@ static void __pmic8xxx_kp_scan_matrix(struct pmic8xxx_kp *kp, u16 *new_state,
 {
 	int row, col, code;
 
+<<<<<<< HEAD
 	for (row = 0; row < kp->pdata->num_rows; row++) {
+=======
+	for (row = 0; row < kp->num_rows; row++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int bits_changed = new_state[row] ^ old_state[row];
 
 		if (!bits_changed)
 			continue;
 
+<<<<<<< HEAD
 		for (col = 0; col < kp->pdata->num_cols; col++) {
+=======
+		for (col = 0; col < kp->num_cols; col++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!(bits_changed & (1 << col)))
 				continue;
 
@@ -297,9 +386,15 @@ static bool pmic8xxx_detect_ghost_keys(struct pmic8xxx_kp *kp, u16 *new_state)
 	u16 check, row_state;
 
 	check = 0;
+<<<<<<< HEAD
 	for (row = 0; row < kp->pdata->num_rows; row++) {
 		row_state = (~new_state[row]) &
 				 ((1 << kp->pdata->num_cols) - 1);
+=======
+	for (row = 0; row < kp->num_rows; row++) {
+		row_state = (~new_state[row]) &
+				 ((1 << kp->num_cols) - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (hweight16(row_state) > 1) {
 			if (found_first == -1)
@@ -389,10 +484,17 @@ static irqreturn_t pmic8xxx_kp_stuck_irq(int irq, void *data)
 static irqreturn_t pmic8xxx_kp_irq(int irq, void *data)
 {
 	struct pmic8xxx_kp *kp = data;
+<<<<<<< HEAD
 	u8 ctrl_val, events;
 	int rc;
 
 	rc = pmic8xxx_kp_read(kp, &ctrl_val, KEYP_CTRL, 1);
+=======
+	unsigned int ctrl_val, events;
+	int rc;
+
+	rc = regmap_read(kp->regmap, KEYP_CTRL, &ctrl_val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0) {
 		dev_err(kp->dev, "failed to read keyp_ctrl register\n");
 		return IRQ_HANDLED;
@@ -407,8 +509,18 @@ static irqreturn_t pmic8xxx_kp_irq(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int __devinit pmic8xxx_kpd_init(struct pmic8xxx_kp *kp)
 {
+=======
+static int pmic8xxx_kpd_init(struct pmic8xxx_kp *kp,
+			     struct platform_device *pdev)
+{
+	const struct device_node *of_node = pdev->dev.of_node;
+	unsigned int scan_delay_ms;
+	unsigned int row_hold_ns;
+	unsigned int debounce_ms;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int bits, rc, cycles;
 	u8 scan_val = 0, ctrl_val = 0;
 	static const u8 row_bits[] = {
@@ -416,14 +528,22 @@ static int __devinit pmic8xxx_kpd_init(struct pmic8xxx_kp *kp)
 	};
 
 	/* Find column bits */
+<<<<<<< HEAD
 	if (kp->pdata->num_cols < KEYP_CTRL_SCAN_COLS_MIN)
 		bits = 0;
 	else
 		bits = kp->pdata->num_cols - KEYP_CTRL_SCAN_COLS_MIN;
+=======
+	if (kp->num_cols < KEYP_CTRL_SCAN_COLS_MIN)
+		bits = 0;
+	else
+		bits = kp->num_cols - KEYP_CTRL_SCAN_COLS_MIN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctrl_val = (bits & KEYP_CTRL_SCAN_COLS_BITS) <<
 		KEYP_CTRL_SCAN_COLS_SHIFT;
 
 	/* Find row bits */
+<<<<<<< HEAD
 	if (kp->pdata->num_rows < KEYP_CTRL_SCAN_ROWS_MIN)
 		bits = 0;
 	else
@@ -432,11 +552,22 @@ static int __devinit pmic8xxx_kpd_init(struct pmic8xxx_kp *kp)
 	ctrl_val |= (bits << KEYP_CTRL_SCAN_ROWS_SHIFT);
 
 	rc = pmic8xxx_kp_write_u8(kp, ctrl_val, KEYP_CTRL);
+=======
+	if (kp->num_rows < KEYP_CTRL_SCAN_ROWS_MIN)
+		bits = 0;
+	else
+		bits = row_bits[kp->num_rows - KEYP_CTRL_SCAN_ROWS_MIN];
+
+	ctrl_val |= (bits << KEYP_CTRL_SCAN_ROWS_SHIFT);
+
+	rc = regmap_write(kp->regmap, KEYP_CTRL, ctrl_val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0) {
 		dev_err(kp->dev, "Error writing KEYP_CTRL reg, rc=%d\n", rc);
 		return rc;
 	}
 
+<<<<<<< HEAD
 	bits = (kp->pdata->debounce_ms / 5) - 1;
 
 	scan_val |= (bits << KEYP_SCAN_DBOUNCE_SHIFT);
@@ -450,6 +581,50 @@ static int __devinit pmic8xxx_kpd_init(struct pmic8xxx_kp *kp)
 	scan_val |= (cycles << KEYP_SCAN_ROW_HOLD_SHIFT);
 
 	rc = pmic8xxx_kp_write_u8(kp, scan_val, KEYP_SCAN);
+=======
+	if (of_property_read_u32(of_node, "scan-delay", &scan_delay_ms))
+		scan_delay_ms = MIN_SCAN_DELAY;
+
+	if (scan_delay_ms > MAX_SCAN_DELAY || scan_delay_ms < MIN_SCAN_DELAY ||
+	    !is_power_of_2(scan_delay_ms)) {
+		dev_err(&pdev->dev, "invalid keypad scan time supplied\n");
+		return -EINVAL;
+	}
+
+	if (of_property_read_u32(of_node, "row-hold", &row_hold_ns))
+		row_hold_ns = MIN_ROW_HOLD_DELAY;
+
+	if (row_hold_ns > MAX_ROW_HOLD_DELAY ||
+	    row_hold_ns < MIN_ROW_HOLD_DELAY ||
+	    ((row_hold_ns % MIN_ROW_HOLD_DELAY) != 0)) {
+		dev_err(&pdev->dev, "invalid keypad row hold time supplied\n");
+		return -EINVAL;
+	}
+
+	if (of_property_read_u32(of_node, "debounce", &debounce_ms))
+		debounce_ms = MIN_DEBOUNCE_TIME;
+
+	if (((debounce_ms % 5) != 0) ||
+	    debounce_ms > MAX_DEBOUNCE_TIME ||
+	    debounce_ms < MIN_DEBOUNCE_TIME) {
+		dev_err(&pdev->dev, "invalid debounce time supplied\n");
+		return -EINVAL;
+	}
+
+	bits = (debounce_ms / 5) - 1;
+
+	scan_val |= (bits << KEYP_SCAN_DBOUNCE_SHIFT);
+
+	bits = fls(scan_delay_ms) - 1;
+	scan_val |= (bits << KEYP_SCAN_PAUSE_SHIFT);
+
+	/* Row hold time is a multiple of 32KHz cycles. */
+	cycles = (row_hold_ns * KEYP_CLOCK_FREQ) / NSEC_PER_SEC;
+
+	scan_val |= (cycles << KEYP_SCAN_ROW_HOLD_SHIFT);
+
+	rc = regmap_write(kp->regmap, KEYP_SCAN, scan_val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		dev_err(kp->dev, "Error writing KEYP_SCAN reg, rc=%d\n", rc);
 
@@ -457,6 +632,7 @@ static int __devinit pmic8xxx_kpd_init(struct pmic8xxx_kp *kp)
 
 }
 
+<<<<<<< HEAD
 static int  __devinit pmic8xxx_kp_config_gpio(int gpio_start, int num_gpios,
 			struct pmic8xxx_kp *kp, struct pm_gpio *gpio_config)
 {
@@ -478,13 +654,19 @@ static int  __devinit pmic8xxx_kp_config_gpio(int gpio_start, int num_gpios,
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pmic8xxx_kp_enable(struct pmic8xxx_kp *kp)
 {
 	int rc;
 
 	kp->ctrl_reg |= KEYP_CTRL_KEYP_EN;
 
+<<<<<<< HEAD
 	rc = pmic8xxx_kp_write_u8(kp, kp->ctrl_reg, KEYP_CTRL);
+=======
+	rc = regmap_write(kp->regmap, KEYP_CTRL, kp->ctrl_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0)
 		dev_err(kp->dev, "Error writing KEYP_CTRL reg, rc=%d\n", rc);
 
@@ -497,7 +679,11 @@ static int pmic8xxx_kp_disable(struct pmic8xxx_kp *kp)
 
 	kp->ctrl_reg &= ~KEYP_CTRL_KEYP_EN;
 
+<<<<<<< HEAD
 	rc = pmic8xxx_kp_write_u8(kp, kp->ctrl_reg, KEYP_CTRL);
+=======
+	rc = regmap_write(kp->regmap, KEYP_CTRL, kp->ctrl_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0)
 		return rc;
 
@@ -528,6 +714,7 @@ static void pmic8xxx_kp_close(struct input_dev *dev)
  * - set irq edge type.
  * - enable the keypad controller.
  */
+<<<<<<< HEAD
 static int __devinit pmic8xxx_kp_probe(struct platform_device *pdev)
 {
 	const struct pm8xxx_keypad_platform_data *pdata =
@@ -562,10 +749,29 @@ static int __devinit pmic8xxx_kp_probe(struct platform_device *pdev)
 		pdata->num_cols > PM8XXX_MAX_COLS ||
 		pdata->num_rows > PM8XXX_MAX_ROWS ||
 		pdata->num_cols < PM8XXX_MIN_COLS) {
+=======
+static int pmic8xxx_kp_probe(struct platform_device *pdev)
+{
+	struct device_node *np = pdev->dev.of_node;
+	unsigned int rows, cols;
+	bool repeat;
+	bool wakeup;
+	struct pmic8xxx_kp *kp;
+	int rc;
+	unsigned int ctrl_val;
+
+	rc = matrix_keypad_parse_properties(&pdev->dev, &rows, &cols);
+	if (rc)
+		return rc;
+
+	if (cols > PM8XXX_MAX_COLS || rows > PM8XXX_MAX_ROWS ||
+	    cols < PM8XXX_MIN_COLS) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "invalid platform data\n");
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (!pdata->scan_delay_ms ||
 		pdata->scan_delay_ms > MAX_SCAN_DELAY ||
 		pdata->scan_delay_ms < MIN_SCAN_DELAY ||
@@ -630,12 +836,51 @@ static int __devinit pmic8xxx_kp_probe(struct platform_device *pdev)
 	kp->input->phys = pdata->input_phys_device ? : "pmic8xxx_keypad/input0";
 
 	kp->input->dev.parent	= &pdev->dev;
+=======
+	repeat = !of_property_read_bool(np, "linux,input-no-autorepeat");
+
+	wakeup = of_property_read_bool(np, "wakeup-source") ||
+		 /* legacy name */
+		 of_property_read_bool(np, "linux,keypad-wakeup");
+
+	kp = devm_kzalloc(&pdev->dev, sizeof(*kp), GFP_KERNEL);
+	if (!kp)
+		return -ENOMEM;
+
+	kp->regmap = dev_get_regmap(pdev->dev.parent, NULL);
+	if (!kp->regmap)
+		return -ENODEV;
+
+	platform_set_drvdata(pdev, kp);
+
+	kp->num_rows	= rows;
+	kp->num_cols	= cols;
+	kp->dev		= &pdev->dev;
+
+	kp->input = devm_input_allocate_device(&pdev->dev);
+	if (!kp->input) {
+		dev_err(&pdev->dev, "unable to allocate input device\n");
+		return -ENOMEM;
+	}
+
+	kp->key_sense_irq = platform_get_irq(pdev, 0);
+	if (kp->key_sense_irq < 0)
+		return kp->key_sense_irq;
+
+	kp->key_stuck_irq = platform_get_irq(pdev, 1);
+	if (kp->key_stuck_irq < 0)
+		return kp->key_stuck_irq;
+
+	kp->input->name = "PMIC8XXX keypad";
+	kp->input->phys = "pmic8xxx_keypad/input0";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kp->input->id.bustype	= BUS_I2C;
 	kp->input->id.version	= 0x0001;
 	kp->input->id.product	= 0x0001;
 	kp->input->id.vendor	= 0x0001;
 
+<<<<<<< HEAD
 	kp->input->evbit[0]	= BIT_MASK(EV_KEY);
 
 	if (pdata->rep)
@@ -651,12 +896,30 @@ static int __devinit pmic8xxx_kp_probe(struct platform_device *pdev)
 					kp->input->keycode, kp->input->keybit);
 
 	input_set_capability(kp->input, EV_MSC, MSC_SCAN);
+=======
+	kp->input->open		= pmic8xxx_kp_open;
+	kp->input->close	= pmic8xxx_kp_close;
+
+	rc = matrix_keypad_build_keymap(NULL, NULL,
+					PM8XXX_MAX_ROWS, PM8XXX_MAX_COLS,
+					kp->keycodes, kp->input);
+	if (rc) {
+		dev_err(&pdev->dev, "failed to build keymap\n");
+		return rc;
+	}
+
+	if (repeat)
+		__set_bit(EV_REP, kp->input->evbit);
+	input_set_capability(kp->input, EV_MSC, MSC_SCAN);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_set_drvdata(kp->input, kp);
 
 	/* initialize keypad state */
 	memset(kp->keystate, 0xff, sizeof(kp->keystate));
 	memset(kp->stuckstate, 0xff, sizeof(kp->stuckstate));
 
+<<<<<<< HEAD
 	rc = pmic8xxx_kpd_init(kp);
 	if (rc < 0) {
 		dev_err(&pdev->dev, "unable to initialize keypad controller\n");
@@ -695,6 +958,34 @@ static int __devinit pmic8xxx_kp_probe(struct platform_device *pdev)
 	if (rc < 0) {
 		dev_err(&pdev->dev, "failed to read KEYP_CTRL register\n");
 		goto err_pmic_reg_read;
+=======
+	rc = pmic8xxx_kpd_init(kp, pdev);
+	if (rc < 0) {
+		dev_err(&pdev->dev, "unable to initialize keypad controller\n");
+		return rc;
+	}
+
+	rc = devm_request_any_context_irq(&pdev->dev, kp->key_sense_irq,
+			pmic8xxx_kp_irq, IRQF_TRIGGER_RISING, "pmic-keypad",
+			kp);
+	if (rc < 0) {
+		dev_err(&pdev->dev, "failed to request keypad sense irq\n");
+		return rc;
+	}
+
+	rc = devm_request_any_context_irq(&pdev->dev, kp->key_stuck_irq,
+			pmic8xxx_kp_stuck_irq, IRQF_TRIGGER_RISING,
+			"pmic-keypad-stuck", kp);
+	if (rc < 0) {
+		dev_err(&pdev->dev, "failed to request keypad stuck irq\n");
+		return rc;
+	}
+
+	rc = regmap_read(kp->regmap, KEYP_CTRL, &ctrl_val);
+	if (rc < 0) {
+		dev_err(&pdev->dev, "failed to read KEYP_CTRL register\n");
+		return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kp->ctrl_reg = ctrl_val;
@@ -702,6 +993,7 @@ static int __devinit pmic8xxx_kp_probe(struct platform_device *pdev)
 	rc = input_register_device(kp->input);
 	if (rc < 0) {
 		dev_err(&pdev->dev, "unable to register keypad input device\n");
+<<<<<<< HEAD
 		goto err_pmic_reg_read;
 	}
 
@@ -737,6 +1029,16 @@ static int __devexit pmic8xxx_kp_remove(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_PM_SLEEP
+=======
+		return rc;
+	}
+
+	device_init_wakeup(&pdev->dev, wakeup);
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pmic8xxx_kp_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -748,7 +1050,11 @@ static int pmic8xxx_kp_suspend(struct device *dev)
 	} else {
 		mutex_lock(&input_dev->mutex);
 
+<<<<<<< HEAD
 		if (input_dev->users)
+=======
+		if (input_device_enabled(input_dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pmic8xxx_kp_disable(kp);
 
 		mutex_unlock(&input_dev->mutex);
@@ -768,7 +1074,11 @@ static int pmic8xxx_kp_resume(struct device *dev)
 	} else {
 		mutex_lock(&input_dev->mutex);
 
+<<<<<<< HEAD
 		if (input_dev->users)
+=======
+		if (input_device_enabled(input_dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pmic8xxx_kp_enable(kp);
 
 		mutex_unlock(&input_dev->mutex);
@@ -776,6 +1086,7 @@ static int pmic8xxx_kp_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static SIMPLE_DEV_PM_OPS(pm8xxx_kp_pm_ops,
@@ -788,12 +1099,34 @@ static struct platform_driver pmic8xxx_kp_driver = {
 		.name = PM8XXX_KEYPAD_DEV_NAME,
 		.owner = THIS_MODULE,
 		.pm = &pm8xxx_kp_pm_ops,
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(pm8xxx_kp_pm_ops,
+				pmic8xxx_kp_suspend, pmic8xxx_kp_resume);
+
+static const struct of_device_id pm8xxx_match_table[] = {
+	{ .compatible = "qcom,pm8058-keypad" },
+	{ .compatible = "qcom,pm8921-keypad" },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, pm8xxx_match_table);
+
+static struct platform_driver pmic8xxx_kp_driver = {
+	.probe		= pmic8xxx_kp_probe,
+	.driver		= {
+		.name = "pm8xxx-keypad",
+		.pm = pm_sleep_ptr(&pm8xxx_kp_pm_ops),
+		.of_match_table = pm8xxx_match_table,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 module_platform_driver(pmic8xxx_kp_driver);
 
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("PMIC8XXX keypad driver");
+<<<<<<< HEAD
 MODULE_VERSION("1.0");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:pmic8xxx_keypad");
 MODULE_AUTHOR("Trilok Soni <tsoni@codeaurora.org>");

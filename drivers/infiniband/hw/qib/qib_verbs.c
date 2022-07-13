@@ -1,6 +1,11 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2006, 2007, 2008, 2009, 2010 QLogic Corporation.
  * All rights reserved.
+=======
+ * Copyright (c) 2012 - 2018 Intel Corporation.  All rights reserved.
+ * Copyright (c) 2006 - 2012 QLogic Corporation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2005, 2006 PathScale, Inc. All rights reserved.
  *
  * This software is available to you under a choice of one of two
@@ -39,8 +44,13 @@
 #include <linux/utsname.h>
 #include <linux/rculist.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/random.h>
 #include <linux/vmalloc.h>
+=======
+#include <linux/vmalloc.h>
+#include <rdma/rdma_vt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "qib.h"
 #include "qib_common.h"
@@ -49,8 +59,13 @@ static unsigned int ib_qib_qp_table_size = 256;
 module_param_named(qp_table_size, ib_qib_qp_table_size, uint, S_IRUGO);
 MODULE_PARM_DESC(qp_table_size, "QP table size");
 
+<<<<<<< HEAD
 unsigned int ib_qib_lkey_table_size = 16;
 module_param_named(lkey_table_size, ib_qib_lkey_table_size, uint,
+=======
+static unsigned int qib_lkey_table_size = 16;
+module_param_named(lkey_table_size, qib_lkey_table_size, uint,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   S_IRUGO);
 MODULE_PARM_DESC(lkey_table_size,
 		 "LKEY table size in bits (2^n, 1 <= n <= 23)");
@@ -113,6 +128,7 @@ module_param_named(disable_sma, ib_qib_disable_sma, uint, S_IWUSR | S_IRUGO);
 MODULE_PARM_DESC(disable_sma, "Disable the SMA");
 
 /*
+<<<<<<< HEAD
  * Note that it is OK to post send work requests in the SQE and ERR
  * states; qib_do_send() will process them and generate error
  * completions as per IB 1.2 C10-96.
@@ -143,6 +159,8 @@ static inline struct qib_ucontext *to_iucontext(struct ib_ucontext
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Translate ib_wr_opcode into ib_wc_opcode.
  */
 const enum ib_wc_opcode ib_qib_wc_opcode[] = {
@@ -160,6 +178,7 @@ const enum ib_wc_opcode ib_qib_wc_opcode[] = {
  */
 __be64 ib_qib_sys_image_guid;
 
+<<<<<<< HEAD
 /**
  * qib_copy_sge - copy data to SGE memory
  * @ss: the SGE state
@@ -243,19 +262,29 @@ void qib_skip_sge(struct qib_sge_state *ss, u32 length, int release)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Count the number of DMA descriptors needed to send length bytes of data.
  * Don't modify the qib_sge_state to get the count.
  * Return zero if any of the segments is not aligned.
  */
+<<<<<<< HEAD
 static u32 qib_count_sge(struct qib_sge_state *ss, u32 length)
 {
 	struct qib_sge *sg_list = ss->sg_list;
 	struct qib_sge sge = ss->sge;
+=======
+static u32 qib_count_sge(struct rvt_sge_state *ss, u32 length)
+{
+	struct rvt_sge *sg_list = ss->sg_list;
+	struct rvt_sge sge = ss->sge;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 num_sge = ss->num_sge;
 	u32 ndesc = 1;  /* count the header */
 
 	while (length) {
+<<<<<<< HEAD
 		u32 len = sge.length;
 
 		if (len > length)
@@ -263,6 +292,10 @@ static u32 qib_count_sge(struct qib_sge_state *ss, u32 length)
 		if (len > sge.sge_length)
 			len = sge.sge_length;
 		BUG_ON(len == 0);
+=======
+		u32 len = rvt_get_sge_length(&sge, length);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (((long) sge.vaddr & (sizeof(u32) - 1)) ||
 		    (len != length && (len & (sizeof(u32) - 1)))) {
 			ndesc = 0;
@@ -276,7 +309,11 @@ static u32 qib_count_sge(struct qib_sge_state *ss, u32 length)
 			if (--num_sge)
 				sge = *sg_list++;
 		} else if (sge.length == 0 && sge.mr->lkey) {
+<<<<<<< HEAD
 			if (++sge.n >= QIB_SEGSZ) {
+=======
+			if (++sge.n >= RVT_SEGSZ) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (++sge.m >= sge.mr->mapsz)
 					break;
 				sge.n = 0;
@@ -294,6 +331,7 @@ static u32 qib_count_sge(struct qib_sge_state *ss, u32 length)
 /*
  * Copy from the SGEs to the data buffer.
  */
+<<<<<<< HEAD
 static void qib_copy_from_sge(void *data, struct qib_sge_state *ss, u32 length)
 {
 	struct qib_sge *sge = &ss->sge;
@@ -306,6 +344,15 @@ static void qib_copy_from_sge(void *data, struct qib_sge_state *ss, u32 length)
 		if (len > sge->sge_length)
 			len = sge->sge_length;
 		BUG_ON(len == 0);
+=======
+static void qib_copy_from_sge(void *data, struct rvt_sge_state *ss, u32 length)
+{
+	struct rvt_sge *sge = &ss->sge;
+
+	while (length) {
+		u32 len = rvt_get_sge_length(sge, length);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(data, sge->vaddr, len);
 		sge->vaddr += len;
 		sge->length -= len;
@@ -314,7 +361,11 @@ static void qib_copy_from_sge(void *data, struct qib_sge_state *ss, u32 length)
 			if (--ss->num_sge)
 				*sge = *ss->sg_list++;
 		} else if (sge->length == 0 && sge->mr->lkey) {
+<<<<<<< HEAD
 			if (++sge->n >= QIB_SEGSZ) {
+=======
+			if (++sge->n >= RVT_SEGSZ) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (++sge->m >= sge->mr->mapsz)
 					break;
 				sge->n = 0;
@@ -330,6 +381,7 @@ static void qib_copy_from_sge(void *data, struct qib_sge_state *ss, u32 length)
 }
 
 /**
+<<<<<<< HEAD
  * qib_post_one_send - post one RC, UC, or UD send work request
  * @qp: the QP to post on
  * @wr: the work request to send
@@ -536,6 +588,8 @@ bail:
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * qib_qp_rcv - processing an incoming packet on a QP
  * @rcd: the context pointer
  * @hdr: the packet header
@@ -548,16 +602,26 @@ bail:
  * for the given QP.
  * Called at interrupt level.
  */
+<<<<<<< HEAD
 static void qib_qp_rcv(struct qib_ctxtdata *rcd, struct qib_ib_header *hdr,
 		       int has_grh, void *data, u32 tlen, struct qib_qp *qp)
+=======
+static void qib_qp_rcv(struct qib_ctxtdata *rcd, struct ib_header *hdr,
+		       int has_grh, void *data, u32 tlen, struct rvt_qp *qp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qib_ibport *ibp = &rcd->ppd->ibport_data;
 
 	spin_lock(&qp->r_lock);
 
 	/* Check for valid receive state. */
+<<<<<<< HEAD
 	if (!(ib_qib_state_ops[qp->state] & QIB_PROCESS_RECV_OK)) {
 		ibp->n_pkt_drops++;
+=======
+	if (!(ib_rvt_state_ops[qp->state] & RVT_PROCESS_RECV_OK)) {
+		ibp->rvp.n_pkt_drops++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unlock;
 	}
 
@@ -566,7 +630,11 @@ static void qib_qp_rcv(struct qib_ctxtdata *rcd, struct qib_ib_header *hdr,
 	case IB_QPT_GSI:
 		if (ib_qib_disable_sma)
 			break;
+<<<<<<< HEAD
 		/* FALLTHROUGH */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IB_QPT_UD:
 		qib_ud_rcv(ibp, hdr, has_grh, data, tlen, qp);
 		break;
@@ -601,9 +669,17 @@ void qib_ib_rcv(struct qib_ctxtdata *rcd, void *rhdr, void *data, u32 tlen)
 {
 	struct qib_pportdata *ppd = rcd->ppd;
 	struct qib_ibport *ibp = &ppd->ibport_data;
+<<<<<<< HEAD
 	struct qib_ib_header *hdr = rhdr;
 	struct qib_other_headers *ohdr;
 	struct qib_qp *qp;
+=======
+	struct ib_header *hdr = rhdr;
+	struct qib_devdata *dd = ppd->dd;
+	struct rvt_dev_info *rdi = &dd->verbs_dev.rdi;
+	struct ib_other_headers *ohdr;
+	struct rvt_qp *qp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 qp_num;
 	int lnh;
 	u8 opcode;
@@ -615,7 +691,11 @@ void qib_ib_rcv(struct qib_ctxtdata *rcd, void *rhdr, void *data, u32 tlen)
 
 	/* Check for a valid destination LID (see ch. 7.11.1). */
 	lid = be16_to_cpu(hdr->lrh[1]);
+<<<<<<< HEAD
 	if (lid < QIB_MULTICAST_LID_BASE) {
+=======
+	if (lid < be16_to_cpu(IB_MULTICAST_LID_BASE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lid &= ~((1 << ppd->lmc) - 1);
 		if (unlikely(lid != ppd->lid))
 			goto drop;
@@ -637,6 +717,7 @@ void qib_ib_rcv(struct qib_ctxtdata *rcd, void *rhdr, void *data, u32 tlen)
 	} else
 		goto drop;
 
+<<<<<<< HEAD
 	opcode = be32_to_cpu(ohdr->bth[0]) >> 24;
 	ibp->opstats[opcode & 0x7f].n_bytes += tlen;
 	ibp->opstats[opcode & 0x7f].n_packets++;
@@ -657,11 +738,38 @@ void qib_ib_rcv(struct qib_ctxtdata *rcd, void *rhdr, void *data, u32 tlen)
 			qib_qp_rcv(rcd, hdr, 1, data, tlen, p->qp);
 		/*
 		 * Notify qib_multicast_detach() if it is waiting for us
+=======
+	opcode = (be32_to_cpu(ohdr->bth[0]) >> 24) & 0x7f;
+#ifdef CONFIG_DEBUG_FS
+	rcd->opstats->stats[opcode].n_bytes += tlen;
+	rcd->opstats->stats[opcode].n_packets++;
+#endif
+
+	/* Get the destination QP number. */
+	qp_num = be32_to_cpu(ohdr->bth[1]) & RVT_QPN_MASK;
+	if (qp_num == QIB_MULTICAST_QPN) {
+		struct rvt_mcast *mcast;
+		struct rvt_mcast_qp *p;
+
+		if (lnh != QIB_LRH_GRH)
+			goto drop;
+		mcast = rvt_mcast_find(&ibp->rvp, &hdr->u.l.grh.dgid, lid);
+		if (mcast == NULL)
+			goto drop;
+		this_cpu_inc(ibp->pmastats->n_multicast_rcv);
+		rcu_read_lock();
+		list_for_each_entry_rcu(p, &mcast->qp_list, list)
+			qib_qp_rcv(rcd, hdr, 1, data, tlen, p->qp);
+		rcu_read_unlock();
+		/*
+		 * Notify rvt_multicast_detach() if it is waiting for us
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * to finish.
 		 */
 		if (atomic_dec_return(&mcast->refcount) <= 1)
 			wake_up(&mcast->wait);
 	} else {
+<<<<<<< HEAD
 		if (rcd->lookaside_qp) {
 			if (rcd->lookaside_qpn != qp_num) {
 				if (atomic_dec_and_test(
@@ -681,17 +789,33 @@ void qib_ib_rcv(struct qib_ctxtdata *rcd, void *rhdr, void *data, u32 tlen)
 			qp = rcd->lookaside_qp;
 		ibp->n_unicast_rcv++;
 		qib_qp_rcv(rcd, hdr, lnh == QIB_LRH_GRH, data, tlen, qp);
+=======
+		rcu_read_lock();
+		qp = rvt_lookup_qpn(rdi, &ibp->rvp, qp_num);
+		if (!qp) {
+			rcu_read_unlock();
+			goto drop;
+		}
+		this_cpu_inc(ibp->pmastats->n_unicast_rcv);
+		qib_qp_rcv(rcd, hdr, lnh == QIB_LRH_GRH, data, tlen, qp);
+		rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return;
 
 drop:
+<<<<<<< HEAD
 	ibp->n_pkt_drops++;
+=======
+	ibp->rvp.n_pkt_drops++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * This is called from a timer to check for QPs
  * which need kernel memory in order to send a packet.
  */
+<<<<<<< HEAD
 static void mem_timer(unsigned long data)
 {
 	struct qib_ibdev *dev = (struct qib_ibdev *) data;
@@ -739,6 +863,35 @@ static void update_sge(struct qib_sge_state *ss, u32 length)
 		}
 		sge->vaddr = sge->mr->map[sge->m]->segs[sge->n].vaddr;
 		sge->length = sge->mr->map[sge->m]->segs[sge->n].length;
+=======
+static void mem_timer(struct timer_list *t)
+{
+	struct qib_ibdev *dev = from_timer(dev, t, mem_timer);
+	struct list_head *list = &dev->memwait;
+	struct rvt_qp *qp = NULL;
+	struct qib_qp_priv *priv = NULL;
+	unsigned long flags;
+
+	spin_lock_irqsave(&dev->rdi.pending_lock, flags);
+	if (!list_empty(list)) {
+		priv = list_entry(list->next, struct qib_qp_priv, iowait);
+		qp = priv->owner;
+		list_del_init(&priv->iowait);
+		rvt_get_qp(qp);
+		if (!list_empty(list))
+			mod_timer(&dev->mem_timer, jiffies + 1);
+	}
+	spin_unlock_irqrestore(&dev->rdi.pending_lock, flags);
+
+	if (qp) {
+		spin_lock_irqsave(&qp->s_lock, flags);
+		if (qp->s_flags & RVT_S_WAIT_KMEM) {
+			qp->s_flags &= ~RVT_S_WAIT_KMEM;
+			qib_schedule_send(qp);
+		}
+		spin_unlock_irqrestore(&qp->s_lock, flags);
+		rvt_put_qp(qp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -778,7 +931,11 @@ static inline u32 clear_upper_bytes(u32 data, u32 n, u32 off)
 }
 #endif
 
+<<<<<<< HEAD
 static void copy_io(u32 __iomem *piobuf, struct qib_sge_state *ss,
+=======
+static void qib_copy_io(u32 __iomem *piobuf, struct rvt_sge_state *ss,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    u32 length, unsigned flush_wc)
 {
 	u32 extra = 0;
@@ -786,6 +943,7 @@ static void copy_io(u32 __iomem *piobuf, struct qib_sge_state *ss,
 	u32 last;
 
 	while (1) {
+<<<<<<< HEAD
 		u32 len = ss->sge.length;
 		u32 off;
 
@@ -794,6 +952,11 @@ static void copy_io(u32 __iomem *piobuf, struct qib_sge_state *ss,
 		if (len > ss->sge.sge_length)
 			len = ss->sge.sge_length;
 		BUG_ON(len == 0);
+=======
+		u32 len = rvt_get_sge_length(&ss->sge, length);
+		u32 off;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* If the source address is not aligned, try to align it. */
 		off = (unsigned long)ss->sge.vaddr & (sizeof(u32) - 1);
 		if (off) {
@@ -899,11 +1062,19 @@ static void copy_io(u32 __iomem *piobuf, struct qib_sge_state *ss,
 				data = clear_upper_bytes(v, extra, 0);
 			}
 		}
+<<<<<<< HEAD
 		update_sge(ss, len);
 		length -= len;
 	}
 	/* Update address before sending packet. */
 	update_sge(ss, length);
+=======
+		rvt_update_sge(ss, len, false);
+		length -= len;
+	}
+	/* Update address before sending packet. */
+	rvt_update_sge(ss, length, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (flush_wc) {
 		/* must flush early everything before trigger word */
 		qib_flush_wc();
@@ -915,18 +1086,29 @@ static void copy_io(u32 __iomem *piobuf, struct qib_sge_state *ss,
 }
 
 static noinline struct qib_verbs_txreq *__get_txreq(struct qib_ibdev *dev,
+<<<<<<< HEAD
 					   struct qib_qp *qp)
 {
+=======
+					   struct rvt_qp *qp)
+{
+	struct qib_qp_priv *priv = qp->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qib_verbs_txreq *tx;
 	unsigned long flags;
 
 	spin_lock_irqsave(&qp->s_lock, flags);
+<<<<<<< HEAD
 	spin_lock(&dev->pending_lock);
+=======
+	spin_lock(&dev->rdi.pending_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!list_empty(&dev->txreq_free)) {
 		struct list_head *l = dev->txreq_free.next;
 
 		list_del(l);
+<<<<<<< HEAD
 		spin_unlock(&dev->pending_lock);
 		spin_unlock_irqrestore(&qp->s_lock, flags);
 		tx = list_entry(l, struct qib_verbs_txreq, txreq.list);
@@ -939,6 +1121,20 @@ static noinline struct qib_verbs_txreq *__get_txreq(struct qib_ibdev *dev,
 		}
 		qp->s_flags &= ~QIB_S_BUSY;
 		spin_unlock(&dev->pending_lock);
+=======
+		spin_unlock(&dev->rdi.pending_lock);
+		spin_unlock_irqrestore(&qp->s_lock, flags);
+		tx = list_entry(l, struct qib_verbs_txreq, txreq.list);
+	} else {
+		if (ib_rvt_state_ops[qp->state] & RVT_PROCESS_RECV_OK &&
+		    list_empty(&priv->iowait)) {
+			dev->n_txwait++;
+			qp->s_flags |= RVT_S_WAIT_TX;
+			list_add_tail(&priv->iowait, &dev->txwait);
+		}
+		qp->s_flags &= ~RVT_S_BUSY;
+		spin_unlock(&dev->rdi.pending_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&qp->s_lock, flags);
 		tx = ERR_PTR(-EBUSY);
 	}
@@ -946,22 +1142,38 @@ static noinline struct qib_verbs_txreq *__get_txreq(struct qib_ibdev *dev,
 }
 
 static inline struct qib_verbs_txreq *get_txreq(struct qib_ibdev *dev,
+<<<<<<< HEAD
 					 struct qib_qp *qp)
+=======
+					 struct rvt_qp *qp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qib_verbs_txreq *tx;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&dev->pending_lock, flags);
+=======
+	spin_lock_irqsave(&dev->rdi.pending_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* assume the list non empty */
 	if (likely(!list_empty(&dev->txreq_free))) {
 		struct list_head *l = dev->txreq_free.next;
 
 		list_del(l);
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&dev->pending_lock, flags);
 		tx = list_entry(l, struct qib_verbs_txreq, txreq.list);
 	} else {
 		/* call slow path to get the extra lock */
 		spin_unlock_irqrestore(&dev->pending_lock, flags);
+=======
+		spin_unlock_irqrestore(&dev->rdi.pending_lock, flags);
+		tx = list_entry(l, struct qib_verbs_txreq, txreq.list);
+	} else {
+		/* call slow path to get the extra lock */
+		spin_unlock_irqrestore(&dev->rdi.pending_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tx =  __get_txreq(dev, qp);
 	}
 	return tx;
@@ -970,16 +1182,26 @@ static inline struct qib_verbs_txreq *get_txreq(struct qib_ibdev *dev,
 void qib_put_txreq(struct qib_verbs_txreq *tx)
 {
 	struct qib_ibdev *dev;
+<<<<<<< HEAD
 	struct qib_qp *qp;
+=======
+	struct rvt_qp *qp;
+	struct qib_qp_priv *priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	qp = tx->qp;
 	dev = to_idev(qp->ibqp.device);
 
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&qp->refcount))
 		wake_up(&qp->wait);
 	if (tx->mr) {
 		atomic_dec(&tx->mr->refcount);
+=======
+	if (tx->mr) {
+		rvt_put_mr(tx->mr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tx->mr = NULL;
 	}
 	if (tx->txreq.flags & QIB_SDMA_TXREQ_F_FREEBUF) {
@@ -990,13 +1212,18 @@ void qib_put_txreq(struct qib_verbs_txreq *tx)
 		kfree(tx->align_buf);
 	}
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&dev->pending_lock, flags);
+=======
+	spin_lock_irqsave(&dev->rdi.pending_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Put struct back on free list */
 	list_add(&tx->txreq.list, &dev->txreq_free);
 
 	if (!list_empty(&dev->txwait)) {
 		/* Wake up first QP wanting a free struct */
+<<<<<<< HEAD
 		qp = list_entry(dev->txwait.next, struct qib_qp, iowait);
 		list_del_init(&qp->iowait);
 		atomic_inc(&qp->refcount);
@@ -1005,14 +1232,32 @@ void qib_put_txreq(struct qib_verbs_txreq *tx)
 		spin_lock_irqsave(&qp->s_lock, flags);
 		if (qp->s_flags & QIB_S_WAIT_TX) {
 			qp->s_flags &= ~QIB_S_WAIT_TX;
+=======
+		priv = list_entry(dev->txwait.next, struct qib_qp_priv,
+				  iowait);
+		qp = priv->owner;
+		list_del_init(&priv->iowait);
+		rvt_get_qp(qp);
+		spin_unlock_irqrestore(&dev->rdi.pending_lock, flags);
+
+		spin_lock_irqsave(&qp->s_lock, flags);
+		if (qp->s_flags & RVT_S_WAIT_TX) {
+			qp->s_flags &= ~RVT_S_WAIT_TX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			qib_schedule_send(qp);
 		}
 		spin_unlock_irqrestore(&qp->s_lock, flags);
 
+<<<<<<< HEAD
 		if (atomic_dec_and_test(&qp->refcount))
 			wake_up(&qp->wait);
 	} else
 		spin_unlock_irqrestore(&dev->pending_lock, flags);
+=======
+		rvt_put_qp(qp);
+	} else
+		spin_unlock_irqrestore(&dev->rdi.pending_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1023,21 +1268,36 @@ void qib_put_txreq(struct qib_verbs_txreq *tx)
  */
 void qib_verbs_sdma_desc_avail(struct qib_pportdata *ppd, unsigned avail)
 {
+<<<<<<< HEAD
 	struct qib_qp *qp, *nqp;
 	struct qib_qp *qps[20];
+=======
+	struct rvt_qp *qp;
+	struct qib_qp_priv *qpp, *nqpp;
+	struct rvt_qp *qps[20];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qib_ibdev *dev;
 	unsigned i, n;
 
 	n = 0;
 	dev = &ppd->dd->verbs_dev;
+<<<<<<< HEAD
 	spin_lock(&dev->pending_lock);
 
 	/* Search wait list for first QP wanting DMA descriptors. */
 	list_for_each_entry_safe(qp, nqp, &dev->dmawait, iowait) {
+=======
+	spin_lock(&dev->rdi.pending_lock);
+
+	/* Search wait list for first QP wanting DMA descriptors. */
+	list_for_each_entry_safe(qpp, nqpp, &dev->dmawait, iowait) {
+		qp = qpp->owner;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (qp->port_num != ppd->port)
 			continue;
 		if (n == ARRAY_SIZE(qps))
 			break;
+<<<<<<< HEAD
 		if (qp->s_tx->txreq.sg_count > avail)
 			break;
 		avail -= qp->s_tx->txreq.sg_count;
@@ -1047,10 +1307,22 @@ void qib_verbs_sdma_desc_avail(struct qib_pportdata *ppd, unsigned avail)
 	}
 
 	spin_unlock(&dev->pending_lock);
+=======
+		if (qpp->s_tx->txreq.sg_count > avail)
+			break;
+		avail -= qpp->s_tx->txreq.sg_count;
+		list_del_init(&qpp->iowait);
+		rvt_get_qp(qp);
+		qps[n++] = qp;
+	}
+
+	spin_unlock(&dev->rdi.pending_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < n; i++) {
 		qp = qps[i];
 		spin_lock(&qp->s_lock);
+<<<<<<< HEAD
 		if (qp->s_flags & QIB_S_WAIT_DMA_DESC) {
 			qp->s_flags &= ~QIB_S_WAIT_DMA_DESC;
 			qib_schedule_send(qp);
@@ -1058,6 +1330,14 @@ void qib_verbs_sdma_desc_avail(struct qib_pportdata *ppd, unsigned avail)
 		spin_unlock(&qp->s_lock);
 		if (atomic_dec_and_test(&qp->refcount))
 			wake_up(&qp->wait);
+=======
+		if (qp->s_flags & RVT_S_WAIT_DMA_DESC) {
+			qp->s_flags &= ~RVT_S_WAIT_DMA_DESC;
+			qib_schedule_send(qp);
+		}
+		spin_unlock(&qp->s_lock);
+		rvt_put_qp(qp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1068,6 +1348,7 @@ static void sdma_complete(struct qib_sdma_txreq *cookie, int status)
 {
 	struct qib_verbs_txreq *tx =
 		container_of(cookie, struct qib_verbs_txreq, txreq);
+<<<<<<< HEAD
 	struct qib_qp *qp = tx->qp;
 
 	spin_lock(&qp->s_lock);
@@ -1075,6 +1356,16 @@ static void sdma_complete(struct qib_sdma_txreq *cookie, int status)
 		qib_send_complete(qp, tx->wqe, IB_WC_SUCCESS);
 	else if (qp->ibqp.qp_type == IB_QPT_RC) {
 		struct qib_ib_header *hdr;
+=======
+	struct rvt_qp *qp = tx->qp;
+	struct qib_qp_priv *priv = qp->priv;
+
+	spin_lock(&qp->s_lock);
+	if (tx->wqe)
+		rvt_send_complete(qp, tx->wqe, IB_WC_SUCCESS);
+	else if (qp->ibqp.qp_type == IB_QPT_RC) {
+		struct ib_header *hdr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (tx->txreq.flags & QIB_SDMA_TXREQ_F_FREEBUF)
 			hdr = &tx->align_buf->hdr;
@@ -1085,11 +1376,19 @@ static void sdma_complete(struct qib_sdma_txreq *cookie, int status)
 		}
 		qib_rc_send_complete(qp, hdr);
 	}
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&qp->s_dma_busy)) {
 		if (qp->state == IB_QPS_RESET)
 			wake_up(&qp->wait_dma);
 		else if (qp->s_flags & QIB_S_WAIT_DMA) {
 			qp->s_flags &= ~QIB_S_WAIT_DMA;
+=======
+	if (atomic_dec_and_test(&priv->s_dma_busy)) {
+		if (qp->state == IB_QPS_RESET)
+			wake_up(&priv->wait_dma);
+		else if (qp->s_flags & RVT_S_WAIT_DMA) {
+			qp->s_flags &= ~RVT_S_WAIT_DMA;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			qib_schedule_send(qp);
 		}
 	}
@@ -1098,12 +1397,19 @@ static void sdma_complete(struct qib_sdma_txreq *cookie, int status)
 	qib_put_txreq(tx);
 }
 
+<<<<<<< HEAD
 static int wait_kmem(struct qib_ibdev *dev, struct qib_qp *qp)
 {
+=======
+static int wait_kmem(struct qib_ibdev *dev, struct rvt_qp *qp)
+{
+	struct qib_qp_priv *priv = qp->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int ret = 0;
 
 	spin_lock_irqsave(&qp->s_lock, flags);
+<<<<<<< HEAD
 	if (ib_qib_state_ops[qp->state] & QIB_PROCESS_RECV_OK) {
 		spin_lock(&dev->pending_lock);
 		if (list_empty(&qp->iowait)) {
@@ -1114,6 +1420,18 @@ static int wait_kmem(struct qib_ibdev *dev, struct qib_qp *qp)
 		}
 		spin_unlock(&dev->pending_lock);
 		qp->s_flags &= ~QIB_S_BUSY;
+=======
+	if (ib_rvt_state_ops[qp->state] & RVT_PROCESS_RECV_OK) {
+		spin_lock(&dev->rdi.pending_lock);
+		if (list_empty(&priv->iowait)) {
+			if (list_empty(&dev->memwait))
+				mod_timer(&dev->mem_timer, jiffies + 1);
+			qp->s_flags |= RVT_S_WAIT_KMEM;
+			list_add_tail(&priv->iowait, &dev->memwait);
+		}
+		spin_unlock(&dev->rdi.pending_lock);
+		qp->s_flags &= ~RVT_S_BUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBUSY;
 	}
 	spin_unlock_irqrestore(&qp->s_lock, flags);
@@ -1121,10 +1439,18 @@ static int wait_kmem(struct qib_ibdev *dev, struct qib_qp *qp)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int qib_verbs_send_dma(struct qib_qp *qp, struct qib_ib_header *hdr,
 			      u32 hdrwords, struct qib_sge_state *ss, u32 len,
 			      u32 plen, u32 dwords)
 {
+=======
+static int qib_verbs_send_dma(struct rvt_qp *qp, struct ib_header *hdr,
+			      u32 hdrwords, struct rvt_sge_state *ss, u32 len,
+			      u32 plen, u32 dwords)
+{
+	struct qib_qp_priv *priv = qp->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qib_ibdev *dev = to_idev(qp->ibqp.device);
 	struct qib_devdata *dd = dd_from_dev(dev);
 	struct qib_ibport *ibp = to_iport(qp->ibqp.device, qp->port_num);
@@ -1135,9 +1461,15 @@ static int qib_verbs_send_dma(struct qib_qp *qp, struct qib_ib_header *hdr,
 	u32 ndesc;
 	int ret;
 
+<<<<<<< HEAD
 	tx = qp->s_tx;
 	if (tx) {
 		qp->s_tx = NULL;
+=======
+	tx = priv->s_tx;
+	if (tx) {
+		priv->s_tx = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* resend previously constructed packet */
 		ret = qib_sdma_verbs_send(ppd, tx->ss, tx->dwords, tx);
 		goto bail;
@@ -1150,7 +1482,10 @@ static int qib_verbs_send_dma(struct qib_qp *qp, struct qib_ib_header *hdr,
 	control = dd->f_setpbc_control(ppd, plen, qp->s_srate,
 				       be16_to_cpu(hdr->lrh[0]) >> 12);
 	tx->qp = qp;
+<<<<<<< HEAD
 	atomic_inc(&qp->refcount);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tx->wqe = qp->s_wqe;
 	tx->mr = qp->s_rdma_mr;
 	if (qp->s_rdma_mr)
@@ -1213,7 +1548,11 @@ err_tx:
 	qib_put_txreq(tx);
 	ret = wait_kmem(dev, qp);
 unaligned:
+<<<<<<< HEAD
 	ibp->n_unaligned++;
+=======
+	ibp->rvp.n_unaligned++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bail:
 	return ret;
 bail_tx:
@@ -1225,8 +1564,14 @@ bail_tx:
  * If we are now in the error state, return zero to flush the
  * send work request.
  */
+<<<<<<< HEAD
 static int no_bufs_available(struct qib_qp *qp)
 {
+=======
+static int no_bufs_available(struct rvt_qp *qp)
+{
+	struct qib_qp_priv *priv = qp->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct qib_ibdev *dev = to_idev(qp->ibqp.device);
 	struct qib_devdata *dd;
 	unsigned long flags;
@@ -1239,6 +1584,7 @@ static int no_bufs_available(struct qib_qp *qp)
 	 * enabling the PIO avail interrupt.
 	 */
 	spin_lock_irqsave(&qp->s_lock, flags);
+<<<<<<< HEAD
 	if (ib_qib_state_ops[qp->state] & QIB_PROCESS_RECV_OK) {
 		spin_lock(&dev->pending_lock);
 		if (list_empty(&qp->iowait)) {
@@ -1250,14 +1596,32 @@ static int no_bufs_available(struct qib_qp *qp)
 		}
 		spin_unlock(&dev->pending_lock);
 		qp->s_flags &= ~QIB_S_BUSY;
+=======
+	if (ib_rvt_state_ops[qp->state] & RVT_PROCESS_RECV_OK) {
+		spin_lock(&dev->rdi.pending_lock);
+		if (list_empty(&priv->iowait)) {
+			dev->n_piowait++;
+			qp->s_flags |= RVT_S_WAIT_PIO;
+			list_add_tail(&priv->iowait, &dev->piowait);
+			dd = dd_from_dev(dev);
+			dd->f_wantpiobuf_intr(dd, 1);
+		}
+		spin_unlock(&dev->rdi.pending_lock);
+		qp->s_flags &= ~RVT_S_BUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBUSY;
 	}
 	spin_unlock_irqrestore(&qp->s_lock, flags);
 	return ret;
 }
 
+<<<<<<< HEAD
 static int qib_verbs_send_pio(struct qib_qp *qp, struct qib_ib_header *ibhdr,
 			      u32 hdrwords, struct qib_sge_state *ss, u32 len,
+=======
+static int qib_verbs_send_pio(struct rvt_qp *qp, struct ib_header *ibhdr,
+			      u32 hdrwords, struct rvt_sge_state *ss, u32 len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      u32 plen, u32 dwords)
 {
 	struct qib_devdata *dd = dd_from_ibdev(qp->ibqp.device);
@@ -1316,7 +1680,11 @@ static int qib_verbs_send_pio(struct qib_qp *qp, struct qib_ib_header *ibhdr,
 		u32 *addr = (u32 *) ss->sge.vaddr;
 
 		/* Update address before sending packet. */
+<<<<<<< HEAD
 		update_sge(ss, len);
+=======
+		rvt_update_sge(ss, len, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (flush_wc) {
 			qib_pio_copy(piobuf, addr, dwords - 1);
 			/* must flush early everything before trigger word */
@@ -1328,21 +1696,37 @@ static int qib_verbs_send_pio(struct qib_qp *qp, struct qib_ib_header *ibhdr,
 			qib_pio_copy(piobuf, addr, dwords);
 		goto done;
 	}
+<<<<<<< HEAD
 	copy_io(piobuf, ss, len, flush_wc);
 done:
 	if (dd->flags & QIB_USE_SPCL_TRIG) {
 		u32 spcl_off = (pbufn >= dd->piobcnt2k) ? 2047 : 1023;
+=======
+	qib_copy_io(piobuf, ss, len, flush_wc);
+done:
+	if (dd->flags & QIB_USE_SPCL_TRIG) {
+		u32 spcl_off = (pbufn >= dd->piobcnt2k) ? 2047 : 1023;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qib_flush_wc();
 		__raw_writel(0xaebecede, piobuf_orig + spcl_off);
 	}
 	qib_sendbuf_done(dd, pbufn);
 	if (qp->s_rdma_mr) {
+<<<<<<< HEAD
 		atomic_dec(&qp->s_rdma_mr->refcount);
+=======
+		rvt_put_mr(qp->s_rdma_mr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qp->s_rdma_mr = NULL;
 	}
 	if (qp->s_wqe) {
 		spin_lock_irqsave(&qp->s_lock, flags);
+<<<<<<< HEAD
 		qib_send_complete(qp, qp->s_wqe, IB_WC_SUCCESS);
+=======
+		rvt_send_complete(qp, qp->s_wqe, IB_WC_SUCCESS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&qp->s_lock, flags);
 	} else if (qp->ibqp.qp_type == IB_QPT_RC) {
 		spin_lock_irqsave(&qp->s_lock, flags);
@@ -1361,10 +1745,17 @@ done:
  * @len: the length of the packet in bytes
  *
  * Return zero if packet is sent or queued OK.
+<<<<<<< HEAD
  * Return non-zero and clear qp->s_flags QIB_S_BUSY otherwise.
  */
 int qib_verbs_send(struct qib_qp *qp, struct qib_ib_header *hdr,
 		   u32 hdrwords, struct qib_sge_state *ss, u32 len)
+=======
+ * Return non-zero and clear qp->s_flags RVT_S_BUSY otherwise.
+ */
+int qib_verbs_send(struct rvt_qp *qp, struct ib_header *hdr,
+		   u32 hdrwords, struct rvt_sge_state *ss, u32 len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qib_devdata *dd = dd_from_ibdev(qp->ibqp.device);
 	u32 plen;
@@ -1419,7 +1810,11 @@ bail:
 
 /**
  * qib_get_counters - get various chip counters
+<<<<<<< HEAD
  * @dd: the qlogic_ib device
+=======
+ * @ppd: the qlogic_ib device
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cntrs: counters are placed here
  *
  * Return the counters needed by recv_pma_get_portcounters().
@@ -1496,10 +1891,18 @@ void qib_ib_piobufavail(struct qib_devdata *dd)
 {
 	struct qib_ibdev *dev = &dd->verbs_dev;
 	struct list_head *list;
+<<<<<<< HEAD
 	struct qib_qp *qps[5];
 	struct qib_qp *qp;
 	unsigned long flags;
 	unsigned i, n;
+=======
+	struct rvt_qp *qps[5];
+	struct rvt_qp *qp;
+	unsigned long flags;
+	unsigned i, n;
+	struct qib_qp_priv *priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list = &dev->piowait;
 	n = 0;
@@ -1510,6 +1913,7 @@ void qib_ib_piobufavail(struct qib_devdata *dd)
 	 * could end up with QPs on the wait list with the interrupt
 	 * disabled.
 	 */
+<<<<<<< HEAD
 	spin_lock_irqsave(&dev->pending_lock, flags);
 	while (!list_empty(list)) {
 		if (n == ARRAY_SIZE(qps))
@@ -1517,23 +1921,43 @@ void qib_ib_piobufavail(struct qib_devdata *dd)
 		qp = list_entry(list->next, struct qib_qp, iowait);
 		list_del_init(&qp->iowait);
 		atomic_inc(&qp->refcount);
+=======
+	spin_lock_irqsave(&dev->rdi.pending_lock, flags);
+	while (!list_empty(list)) {
+		if (n == ARRAY_SIZE(qps))
+			goto full;
+		priv = list_entry(list->next, struct qib_qp_priv, iowait);
+		qp = priv->owner;
+		list_del_init(&priv->iowait);
+		rvt_get_qp(qp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qps[n++] = qp;
 	}
 	dd->f_wantpiobuf_intr(dd, 0);
 full:
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&dev->pending_lock, flags);
+=======
+	spin_unlock_irqrestore(&dev->rdi.pending_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < n; i++) {
 		qp = qps[i];
 
 		spin_lock_irqsave(&qp->s_lock, flags);
+<<<<<<< HEAD
 		if (qp->s_flags & QIB_S_WAIT_PIO) {
 			qp->s_flags &= ~QIB_S_WAIT_PIO;
+=======
+		if (qp->s_flags & RVT_S_WAIT_PIO) {
+			qp->s_flags &= ~RVT_S_WAIT_PIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			qib_schedule_send(qp);
 		}
 		spin_unlock_irqrestore(&qp->s_lock, flags);
 
 		/* Notify qib_destroy_qp() if it is waiting. */
+<<<<<<< HEAD
 		if (atomic_dec_and_test(&qp->refcount))
 			wake_up(&qp->wait);
 	}
@@ -1607,11 +2031,35 @@ static int qib_query_port(struct ib_device *ibdev, u8 port,
 	props->pkey_tbl_len = qib_get_npkeys(dd);
 	props->bad_pkey_cntr = ibp->pkey_violations;
 	props->qkey_viol_cntr = ibp->qkey_violations;
+=======
+		rvt_put_qp(qp);
+	}
+}
+
+static int qib_query_port(struct rvt_dev_info *rdi, u32 port_num,
+			  struct ib_port_attr *props)
+{
+	struct qib_ibdev *ibdev = container_of(rdi, struct qib_ibdev, rdi);
+	struct qib_devdata *dd = dd_from_dev(ibdev);
+	struct qib_pportdata *ppd = &dd->pport[port_num - 1];
+	enum ib_mtu mtu;
+	u16 lid = ppd->lid;
+
+	/* props being zeroed by the caller, avoid zeroing it here */
+	props->lid = lid ? lid : be16_to_cpu(IB_LID_PERMISSIVE);
+	props->lmc = ppd->lmc;
+	props->state = dd->f_iblink_state(ppd->lastibcstat);
+	props->phys_state = dd->f_ibphys_portstate(ppd->lastibcstat);
+	props->gid_tbl_len = QIB_GUIDS_PER_PORT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	props->active_width = ppd->link_width_active;
 	/* See rate_show() */
 	props->active_speed = ppd->link_speed_active;
 	props->max_vl_num = qib_num_vls(ppd->vls_supported);
+<<<<<<< HEAD
 	props->init_type_reply = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	props->max_mtu = qib_ibmtu ? qib_ibmtu : IB_MTU_4096;
 	switch (ppd->ibmtu) {
@@ -1634,7 +2082,10 @@ static int qib_query_port(struct ib_device *ibdev, u8 port,
 		mtu = IB_MTU_2048;
 	}
 	props->active_mtu = mtu;
+<<<<<<< HEAD
 	props->subnet_timeout = ibp->subnet_timeout;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1654,7 +2105,12 @@ static int qib_modify_device(struct ib_device *device,
 	}
 
 	if (device_modify_mask & IB_DEVICE_MODIFY_NODE_DESC) {
+<<<<<<< HEAD
 		memcpy(device->node_desc, device_modify->node_desc, 64);
+=======
+		memcpy(device->node_desc, device_modify->node_desc,
+		       IB_DEVICE_NODE_DESC_MAX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < dd->num_pports; i++) {
 			struct qib_ibport *ibp = &dd->pport[i].ibport_data;
 
@@ -1678,6 +2134,7 @@ bail:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int qib_modify_port(struct ib_device *ibdev, u8 port,
 			   int port_modify_mask, struct ib_port_modify *props)
 {
@@ -1878,10 +2335,53 @@ static int qib_modify_ah(struct ib_ah *ibah, struct ib_ah_attr *ah_attr)
 		return -EINVAL;
 
 	ah->attr = *ah_attr;
+=======
+static int qib_shut_down_port(struct rvt_dev_info *rdi, u32 port_num)
+{
+	struct qib_ibdev *ibdev = container_of(rdi, struct qib_ibdev, rdi);
+	struct qib_devdata *dd = dd_from_dev(ibdev);
+	struct qib_pportdata *ppd = &dd->pport[port_num - 1];
+
+	qib_set_linkstate(ppd, QIB_IB_LINKDOWN);
 
 	return 0;
 }
 
+static int qib_get_guid_be(struct rvt_dev_info *rdi, struct rvt_ibport *rvp,
+			   int guid_index, __be64 *guid)
+{
+	struct qib_ibport *ibp = container_of(rvp, struct qib_ibport, rvp);
+	struct qib_pportdata *ppd = ppd_from_ibp(ibp);
+
+	if (guid_index == 0)
+		*guid = ppd->guid;
+	else if (guid_index < QIB_GUIDS_PER_PORT)
+		*guid = ibp->guids[guid_index - 1];
+	else
+		return -EINVAL;
+
+	return 0;
+}
+
+int qib_check_ah(struct ib_device *ibdev, struct rdma_ah_attr *ah_attr)
+{
+	if (rdma_ah_get_sl(ah_attr) > 15)
+		return -EINVAL;
+
+	if (rdma_ah_get_dlid(ah_attr) == 0)
+		return -EINVAL;
+	if (rdma_ah_get_dlid(ah_attr) >=
+		be16_to_cpu(IB_MULTICAST_LID_BASE) &&
+	    rdma_ah_get_dlid(ah_attr) !=
+		be16_to_cpu(IB_LID_PERMISSIVE) &&
+	    !(rdma_ah_get_ah_flags(ah_attr) & IB_AH_GRH))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
+
+	return 0;
+}
+
+<<<<<<< HEAD
 static int qib_query_ah(struct ib_ah *ibah, struct ib_ah_attr *ah_attr)
 {
 	struct qib_ah *ah = to_iah(ibah);
@@ -1889,6 +2389,45 @@ static int qib_query_ah(struct ib_ah *ibah, struct ib_ah_attr *ah_attr)
 	*ah_attr = ah->attr;
 
 	return 0;
+=======
+static void qib_notify_new_ah(struct ib_device *ibdev,
+			      struct rdma_ah_attr *ah_attr,
+			      struct rvt_ah *ah)
+{
+	struct qib_ibport *ibp;
+	struct qib_pportdata *ppd;
+
+	/*
+	 * Do not trust reading anything from rvt_ah at this point as it is not
+	 * done being setup. We can however modify things which we need to set.
+	 */
+
+	ibp = to_iport(ibdev, rdma_ah_get_port_num(ah_attr));
+	ppd = ppd_from_ibp(ibp);
+	ah->vl = ibp->sl_to_vl[rdma_ah_get_sl(&ah->attr)];
+	ah->log_pmtu = ilog2(ppd->ibmtu);
+}
+
+struct ib_ah *qib_create_qp0_ah(struct qib_ibport *ibp, u16 dlid)
+{
+	struct rdma_ah_attr attr;
+	struct ib_ah *ah = ERR_PTR(-EINVAL);
+	struct rvt_qp *qp0;
+	struct qib_pportdata *ppd = ppd_from_ibp(ibp);
+	struct qib_devdata *dd = dd_from_ppd(ppd);
+	u32 port_num = ppd->port;
+
+	memset(&attr, 0, sizeof(attr));
+	attr.type = rdma_ah_find_type(&dd->verbs_dev.rdi.ibdev, port_num);
+	rdma_ah_set_dlid(&attr, dlid);
+	rdma_ah_set_port_num(&attr, port_num);
+	rcu_read_lock();
+	qp0 = rcu_dereference(ibp->rvp.qp[0]);
+	if (qp0)
+		ah = rdma_create_ah(qp0->ibqp.pd, &attr, 0);
+	rcu_read_unlock();
+	return ah;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1920,6 +2459,7 @@ unsigned qib_get_pkey(struct qib_ibport *ibp, unsigned index)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int qib_query_pkey(struct ib_device *ibdev, u8 port, u16 index,
 			  u16 *pkey)
 {
@@ -1968,27 +2508,46 @@ static int qib_dealloc_ucontext(struct ib_ucontext *context)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void init_ibport(struct qib_pportdata *ppd)
 {
 	struct qib_verbs_counters cntrs;
 	struct qib_ibport *ibp = &ppd->ibport_data;
 
+<<<<<<< HEAD
 	spin_lock_init(&ibp->lock);
 	/* Set the prefix to the default value (see ch. 4.1.1) */
 	ibp->gid_prefix = IB_DEFAULT_GID_PREFIX;
 	ibp->sm_lid = be16_to_cpu(IB_LID_PERMISSIVE);
 	ibp->port_cap_flags = IB_PORT_SYS_IMAGE_GUID_SUP |
+=======
+	spin_lock_init(&ibp->rvp.lock);
+	/* Set the prefix to the default value (see ch. 4.1.1) */
+	ibp->rvp.gid_prefix = IB_DEFAULT_GID_PREFIX;
+	ibp->rvp.sm_lid = be16_to_cpu(IB_LID_PERMISSIVE);
+	ibp->rvp.port_cap_flags = IB_PORT_SYS_IMAGE_GUID_SUP |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		IB_PORT_CLIENT_REG_SUP | IB_PORT_SL_MAP_SUP |
 		IB_PORT_TRAP_SUP | IB_PORT_AUTO_MIGR_SUP |
 		IB_PORT_DR_NOTICE_SUP | IB_PORT_CAP_MASK_NOTICE_SUP |
 		IB_PORT_OTHER_LOCAL_CHANGES_SUP;
 	if (ppd->dd->flags & QIB_HAS_LINK_LATENCY)
+<<<<<<< HEAD
 		ibp->port_cap_flags |= IB_PORT_LINK_LATENCY_SUP;
 	ibp->pma_counter_select[0] = IB_PMA_PORT_XMIT_DATA;
 	ibp->pma_counter_select[1] = IB_PMA_PORT_RCV_DATA;
 	ibp->pma_counter_select[2] = IB_PMA_PORT_XMIT_PKTS;
 	ibp->pma_counter_select[3] = IB_PMA_PORT_RCV_PKTS;
 	ibp->pma_counter_select[4] = IB_PMA_PORT_XMIT_WAIT;
+=======
+		ibp->rvp.port_cap_flags |= IB_PORT_LINK_LATENCY_SUP;
+	ibp->rvp.pma_counter_select[0] = IB_PMA_PORT_XMIT_DATA;
+	ibp->rvp.pma_counter_select[1] = IB_PMA_PORT_RCV_DATA;
+	ibp->rvp.pma_counter_select[2] = IB_PMA_PORT_XMIT_PKTS;
+	ibp->rvp.pma_counter_select[3] = IB_PMA_PORT_RCV_PKTS;
+	ibp->rvp.pma_counter_select[4] = IB_PMA_PORT_XMIT_WAIT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Snapshot current HW counters to "clear" them. */
 	qib_get_counters(ppd, &cntrs);
@@ -2008,11 +2567,79 @@ static void init_ibport(struct qib_pportdata *ppd)
 	ibp->z_excessive_buffer_overrun_errors =
 		cntrs.excessive_buffer_overrun_errors;
 	ibp->z_vl15_dropped = cntrs.vl15_dropped;
+<<<<<<< HEAD
 	RCU_INIT_POINTER(ibp->qp0, NULL);
 	RCU_INIT_POINTER(ibp->qp1, NULL);
 }
 
 /**
+=======
+	RCU_INIT_POINTER(ibp->rvp.qp[0], NULL);
+	RCU_INIT_POINTER(ibp->rvp.qp[1], NULL);
+}
+
+/**
+ * qib_fill_device_attr - Fill in rvt dev info device attributes.
+ * @dd: the device data structure
+ */
+static void qib_fill_device_attr(struct qib_devdata *dd)
+{
+	struct rvt_dev_info *rdi = &dd->verbs_dev.rdi;
+
+	memset(&rdi->dparms.props, 0, sizeof(rdi->dparms.props));
+
+	rdi->dparms.props.max_pd = ib_qib_max_pds;
+	rdi->dparms.props.max_ah = ib_qib_max_ahs;
+	rdi->dparms.props.device_cap_flags = IB_DEVICE_BAD_PKEY_CNTR |
+		IB_DEVICE_BAD_QKEY_CNTR | IB_DEVICE_SHUTDOWN_PORT |
+		IB_DEVICE_SYS_IMAGE_GUID | IB_DEVICE_RC_RNR_NAK_GEN |
+		IB_DEVICE_PORT_ACTIVE_EVENT | IB_DEVICE_SRQ_RESIZE;
+	rdi->dparms.props.page_size_cap = PAGE_SIZE;
+	rdi->dparms.props.vendor_id =
+		QIB_SRC_OUI_1 << 16 | QIB_SRC_OUI_2 << 8 | QIB_SRC_OUI_3;
+	rdi->dparms.props.vendor_part_id = dd->deviceid;
+	rdi->dparms.props.hw_ver = dd->minrev;
+	rdi->dparms.props.sys_image_guid = ib_qib_sys_image_guid;
+	rdi->dparms.props.max_mr_size = ~0ULL;
+	rdi->dparms.props.max_qp = ib_qib_max_qps;
+	rdi->dparms.props.max_qp_wr = ib_qib_max_qp_wrs;
+	rdi->dparms.props.max_send_sge = ib_qib_max_sges;
+	rdi->dparms.props.max_recv_sge = ib_qib_max_sges;
+	rdi->dparms.props.max_sge_rd = ib_qib_max_sges;
+	rdi->dparms.props.max_cq = ib_qib_max_cqs;
+	rdi->dparms.props.max_cqe = ib_qib_max_cqes;
+	rdi->dparms.props.max_ah = ib_qib_max_ahs;
+	rdi->dparms.props.max_qp_rd_atom = QIB_MAX_RDMA_ATOMIC;
+	rdi->dparms.props.max_qp_init_rd_atom = 255;
+	rdi->dparms.props.max_srq = ib_qib_max_srqs;
+	rdi->dparms.props.max_srq_wr = ib_qib_max_srq_wrs;
+	rdi->dparms.props.max_srq_sge = ib_qib_max_srq_sges;
+	rdi->dparms.props.atomic_cap = IB_ATOMIC_GLOB;
+	rdi->dparms.props.max_pkeys = qib_get_npkeys(dd);
+	rdi->dparms.props.max_mcast_grp = ib_qib_max_mcast_grps;
+	rdi->dparms.props.max_mcast_qp_attach = ib_qib_max_mcast_qp_attached;
+	rdi->dparms.props.max_total_mcast_qp_attach =
+					rdi->dparms.props.max_mcast_qp_attach *
+					rdi->dparms.props.max_mcast_grp;
+	/* post send table */
+	dd->verbs_dev.rdi.post_parms = qib_post_parms;
+
+	/* opcode translation table */
+	dd->verbs_dev.rdi.wc_opcode = ib_qib_wc_opcode;
+}
+
+static const struct ib_device_ops qib_dev_ops = {
+	.owner = THIS_MODULE,
+	.driver_id = RDMA_DRIVER_QIB,
+
+	.port_groups = qib_attr_port_groups,
+	.device_group = &qib_attr_group,
+	.modify_device = qib_modify_device,
+	.process_mad = qib_process_mad,
+};
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * qib_register_ib_device - register our device with the infiniband core
  * @dd: the device data structure
  * Return the allocated qib_ibdev pointer or NULL on error.
@@ -2020,6 +2647,7 @@ static void init_ibport(struct qib_pportdata *ppd)
 int qib_register_ib_device(struct qib_devdata *dd)
 {
 	struct qib_ibdev *dev = &dd->verbs_dev;
+<<<<<<< HEAD
 	struct ib_device *ibdev = &dev->ibdev;
 	struct qib_pportdata *ppd = dd->pport;
 	unsigned i, lk_tab_size;
@@ -2036,10 +2664,18 @@ int qib_register_ib_device(struct qib_devdata *dd)
 	for (i = 0; i < dev->qp_table_size; i++)
 		RCU_INIT_POINTER(dev->qp_table[i], NULL);
 
+=======
+	struct ib_device *ibdev = &dev->rdi.ibdev;
+	struct qib_pportdata *ppd = dd->pport;
+	unsigned i, ctxt;
+	int ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < dd->num_pports; i++)
 		init_ibport(ppd + i);
 
 	/* Only need to initialize non-zero fields. */
+<<<<<<< HEAD
 	spin_lock_init(&dev->qpt_lock);
 	spin_lock_init(&dev->n_pds_lock);
 	spin_lock_init(&dev->n_ahs_lock);
@@ -2078,6 +2714,10 @@ int qib_register_ib_device(struct qib_devdata *dd)
 	spin_lock_init(&dev->pending_lock);
 	dev->mmap_offset = PAGE_SIZE;
 	spin_lock_init(&dev->mmap_offset_lock);
+=======
+	timer_setup(&dev->mem_timer, mem_timer, 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_LIST_HEAD(&dev->piowait);
 	INIT_LIST_HEAD(&dev->dmawait);
 	INIT_LIST_HEAD(&dev->txwait);
@@ -2099,7 +2739,11 @@ int qib_register_ib_device(struct qib_devdata *dd)
 	for (i = 0; i < ppd->sdma_descq_cnt; i++) {
 		struct qib_verbs_txreq *tx;
 
+<<<<<<< HEAD
 		tx = kzalloc(sizeof *tx, GFP_KERNEL);
+=======
+		tx = kzalloc(sizeof(*tx), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!tx) {
 			ret = -ENOMEM;
 			goto err_tx;
@@ -2116,6 +2760,7 @@ int qib_register_ib_device(struct qib_devdata *dd)
 	if (!ib_qib_sys_image_guid)
 		ib_qib_sys_image_guid = ppd->guid;
 
+<<<<<<< HEAD
 	strlcpy(ibdev->name, "qib%d", IB_DEVICE_NAME_MAX);
 	ibdev->owner = THIS_MODULE;
 	ibdev->node_guid = ppd->guid;
@@ -2223,6 +2868,83 @@ err_class:
 err_agents:
 	ib_unregister_device(ibdev);
 err_reg:
+=======
+	ibdev->node_guid = ppd->guid;
+	ibdev->phys_port_cnt = dd->num_pports;
+	ibdev->dev.parent = &dd->pcidev->dev;
+
+	snprintf(ibdev->node_desc, sizeof(ibdev->node_desc),
+		 "Intel Infiniband HCA %s", init_utsname()->nodename);
+
+	/*
+	 * Fill in rvt info object.
+	 */
+	dd->verbs_dev.rdi.driver_f.get_pci_dev = qib_get_pci_dev;
+	dd->verbs_dev.rdi.driver_f.check_ah = qib_check_ah;
+	dd->verbs_dev.rdi.driver_f.setup_wqe = qib_check_send_wqe;
+	dd->verbs_dev.rdi.driver_f.notify_new_ah = qib_notify_new_ah;
+	dd->verbs_dev.rdi.driver_f.alloc_qpn = qib_alloc_qpn;
+	dd->verbs_dev.rdi.driver_f.qp_priv_alloc = qib_qp_priv_alloc;
+	dd->verbs_dev.rdi.driver_f.qp_priv_free = qib_qp_priv_free;
+	dd->verbs_dev.rdi.driver_f.free_all_qps = qib_free_all_qps;
+	dd->verbs_dev.rdi.driver_f.notify_qp_reset = qib_notify_qp_reset;
+	dd->verbs_dev.rdi.driver_f.do_send = qib_do_send;
+	dd->verbs_dev.rdi.driver_f.schedule_send = qib_schedule_send;
+	dd->verbs_dev.rdi.driver_f.quiesce_qp = qib_quiesce_qp;
+	dd->verbs_dev.rdi.driver_f.stop_send_queue = qib_stop_send_queue;
+	dd->verbs_dev.rdi.driver_f.flush_qp_waiters = qib_flush_qp_waiters;
+	dd->verbs_dev.rdi.driver_f.notify_error_qp = qib_notify_error_qp;
+	dd->verbs_dev.rdi.driver_f.notify_restart_rc = qib_restart_rc;
+	dd->verbs_dev.rdi.driver_f.mtu_to_path_mtu = qib_mtu_to_path_mtu;
+	dd->verbs_dev.rdi.driver_f.mtu_from_qp = qib_mtu_from_qp;
+	dd->verbs_dev.rdi.driver_f.get_pmtu_from_attr = qib_get_pmtu_from_attr;
+	dd->verbs_dev.rdi.driver_f.schedule_send_no_lock = _qib_schedule_send;
+	dd->verbs_dev.rdi.driver_f.query_port_state = qib_query_port;
+	dd->verbs_dev.rdi.driver_f.shut_down_port = qib_shut_down_port;
+	dd->verbs_dev.rdi.driver_f.cap_mask_chg = qib_cap_mask_chg;
+	dd->verbs_dev.rdi.driver_f.notify_create_mad_agent =
+						qib_notify_create_mad_agent;
+	dd->verbs_dev.rdi.driver_f.notify_free_mad_agent =
+						qib_notify_free_mad_agent;
+
+	dd->verbs_dev.rdi.dparms.max_rdma_atomic = QIB_MAX_RDMA_ATOMIC;
+	dd->verbs_dev.rdi.driver_f.get_guid_be = qib_get_guid_be;
+	dd->verbs_dev.rdi.dparms.lkey_table_size = qib_lkey_table_size;
+	dd->verbs_dev.rdi.dparms.qp_table_size = ib_qib_qp_table_size;
+	dd->verbs_dev.rdi.dparms.qpn_start = 1;
+	dd->verbs_dev.rdi.dparms.qpn_res_start = QIB_KD_QP;
+	dd->verbs_dev.rdi.dparms.qpn_res_end = QIB_KD_QP; /* Reserve one QP */
+	dd->verbs_dev.rdi.dparms.qpn_inc = 1;
+	dd->verbs_dev.rdi.dparms.qos_shift = 1;
+	dd->verbs_dev.rdi.dparms.psn_mask = QIB_PSN_MASK;
+	dd->verbs_dev.rdi.dparms.psn_shift = QIB_PSN_SHIFT;
+	dd->verbs_dev.rdi.dparms.psn_modify_mask = QIB_PSN_MASK;
+	dd->verbs_dev.rdi.dparms.nports = dd->num_pports;
+	dd->verbs_dev.rdi.dparms.npkeys = qib_get_npkeys(dd);
+	dd->verbs_dev.rdi.dparms.node = dd->assigned_node_id;
+	dd->verbs_dev.rdi.dparms.core_cap_flags = RDMA_CORE_PORT_IBA_IB;
+	dd->verbs_dev.rdi.dparms.max_mad_size = IB_MGMT_MAD_SIZE;
+	dd->verbs_dev.rdi.dparms.sge_copy_mode = RVT_SGE_COPY_MEMCPY;
+
+	qib_fill_device_attr(dd);
+
+	ppd = dd->pport;
+	for (i = 0; i < dd->num_pports; i++, ppd++) {
+		ctxt = ppd->hw_pidx;
+		rvt_init_port(&dd->verbs_dev.rdi,
+			      &ppd->ibport_data.rvp,
+			      i,
+			      dd->rcd[ctxt]->pkeys);
+	}
+
+	ib_set_device_ops(ibdev, &qib_dev_ops);
+	ret = rvt_register_device(&dd->verbs_dev.rdi);
+	if (ret)
+		goto err_tx;
+
+	return ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_tx:
 	while (!list_empty(&dev->txreq_free)) {
 		struct list_head *l = dev->txreq_free.next;
@@ -2238,18 +2960,23 @@ err_tx:
 					sizeof(struct qib_pio_header),
 				  dev->pio_hdrs, dev->pio_hdrs_phys);
 err_hdrs:
+<<<<<<< HEAD
 	vfree(dev->lk_table.table);
 err_lk:
 	kfree(dev->qp_table);
 err_qpt:
 	qib_dev_err(dd, "cannot register verbs: %d!\n", -ret);
 bail:
+=======
+	qib_dev_err(dd, "cannot register verbs: %d!\n", -ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 void qib_unregister_ib_device(struct qib_devdata *dd)
 {
 	struct qib_ibdev *dev = &dd->verbs_dev;
+<<<<<<< HEAD
 	struct ib_device *ibdev = &dev->ibdev;
 	u32 qps_inuse;
 	unsigned lk_tab_size;
@@ -2259,6 +2986,10 @@ void qib_unregister_ib_device(struct qib_devdata *dd)
 	qib_free_agents(dev);
 
 	ib_unregister_device(ibdev);
+=======
+
+	rvt_unregister_device(&dd->verbs_dev.rdi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!list_empty(&dev->piowait))
 		qib_dev_err(dd, "piowait list not empty!\n");
@@ -2268,6 +2999,7 @@ void qib_unregister_ib_device(struct qib_devdata *dd)
 		qib_dev_err(dd, "txwait list not empty!\n");
 	if (!list_empty(&dev->memwait))
 		qib_dev_err(dd, "memwait list not empty!\n");
+<<<<<<< HEAD
 	if (dev->dma_mr)
 		qib_dev_err(dd, "DMA MR not NULL!\n");
 
@@ -2278,6 +3010,10 @@ void qib_unregister_ib_device(struct qib_devdata *dd)
 
 	del_timer_sync(&dev->mem_timer);
 	qib_free_qpn_table(&dev->qpn_table);
+=======
+
+	del_timer_sync(&dev->mem_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (!list_empty(&dev->txreq_free)) {
 		struct list_head *l = dev->txreq_free.next;
 		struct qib_verbs_txreq *tx;
@@ -2291,7 +3027,43 @@ void qib_unregister_ib_device(struct qib_devdata *dd)
 				  dd->pport->sdma_descq_cnt *
 					sizeof(struct qib_pio_header),
 				  dev->pio_hdrs, dev->pio_hdrs_phys);
+<<<<<<< HEAD
 	lk_tab_size = dev->lk_table.max * sizeof(*dev->lk_table.table);
 	vfree(dev->lk_table.table);
 	kfree(dev->qp_table);
+=======
+}
+
+/**
+ * _qib_schedule_send - schedule progress
+ * @qp: the qp
+ *
+ * This schedules progress w/o regard to the s_flags.
+ *
+ * It is only used in post send, which doesn't hold
+ * the s_lock.
+ */
+bool _qib_schedule_send(struct rvt_qp *qp)
+{
+	struct qib_ibport *ibp =
+		to_iport(qp->ibqp.device, qp->port_num);
+	struct qib_pportdata *ppd = ppd_from_ibp(ibp);
+	struct qib_qp_priv *priv = qp->priv;
+
+	return queue_work(ppd->qib_wq, &priv->s_work);
+}
+
+/**
+ * qib_schedule_send - schedule progress
+ * @qp: the qp
+ *
+ * This schedules qp progress.  The s_lock
+ * should be held.
+ */
+bool qib_schedule_send(struct rvt_qp *qp)
+{
+	if (qib_send_ok(qp))
+		return _qib_schedule_send(qp);
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

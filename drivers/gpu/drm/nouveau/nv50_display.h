@@ -27,6 +27,7 @@
 #ifndef __NV50_DISPLAY_H__
 #define __NV50_DISPLAY_H__
 
+<<<<<<< HEAD
 #include "drmP.h"
 #include "drm.h"
 #include "nouveau_drv.h"
@@ -89,5 +90,11 @@ void nv50_evo_dmaobj_init(struct nouveau_gpuobj *, u32 memtype, u64 base,
 			  u64 size);
 int  nv50_evo_dmaobj_new(struct nouveau_channel *, u32 handle, u32 memtype,
 			 u64 base, u64 size, struct nouveau_gpuobj **);
+=======
+#include "nouveau_display.h"
+#include "nouveau_reg.h"
+
+int  nv50_display_create(struct drm_device *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __NV50_DISPLAY_H__ */

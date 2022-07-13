@@ -1,12 +1,24 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * soundbus
  *
  * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
+<<<<<<< HEAD
  *
  * GPL v2, can be found in COPYING.
  */
 
 #include <linux/module.h>
+=======
+ */
+
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/of_platform.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "soundbus.h"
 
 MODULE_AUTHOR("Johannes Berg <johannes@sipsolutions.net>");
@@ -56,10 +68,17 @@ static int soundbus_probe(struct device *dev)
 }
 
 
+<<<<<<< HEAD
 static int soundbus_uevent(struct device *dev, struct kobj_uevent_env *env)
 {
 	struct soundbus_dev * soundbus_dev;
 	struct platform_device * of;
+=======
+static int soundbus_uevent(const struct device *dev, struct kobj_uevent_env *env)
+{
+	const struct soundbus_dev * soundbus_dev;
+	const struct platform_device * of;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *compat;
 	int retval = 0;
 	int cplen, seen = 0;
@@ -74,11 +93,19 @@ static int soundbus_uevent(struct device *dev, struct kobj_uevent_env *env)
 	of = &soundbus_dev->ofdev;
 
 	/* stuff we want to pass to /sbin/hotplug */
+<<<<<<< HEAD
 	retval = add_uevent_var(env, "OF_NAME=%s", of->dev.of_node->name);
 	if (retval)
 		return retval;
 
 	retval = add_uevent_var(env, "OF_TYPE=%s", of->dev.of_node->type);
+=======
+	retval = add_uevent_var(env, "OF_NAME=%pOFn", of->dev.of_node);
+	if (retval)
+		return retval;
+
+	retval = add_uevent_var(env, "OF_TYPE=%s", of_node_get_device_type(of->dev.of_node));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		return retval;
 
@@ -105,7 +132,11 @@ static int soundbus_uevent(struct device *dev, struct kobj_uevent_env *env)
 	return retval;
 }
 
+<<<<<<< HEAD
 static int soundbus_device_remove(struct device *dev)
+=======
+static void soundbus_device_remove(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct soundbus_dev * soundbus_dev = to_soundbus_device(dev);
 	struct soundbus_driver * drv = to_soundbus_driver(dev->driver);
@@ -113,8 +144,11 @@ static int soundbus_device_remove(struct device *dev)
 	if (dev->driver && drv->remove)
 		drv->remove(soundbus_dev);
 	soundbus_dev_put(soundbus_dev);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void soundbus_device_shutdown(struct device *dev)
@@ -126,6 +160,7 @@ static void soundbus_device_shutdown(struct device *dev)
 		drv->shutdown(soundbus_dev);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
 static int soundbus_device_suspend(struct device *dev, pm_message_t state)
@@ -151,16 +186,25 @@ static int soundbus_device_resume(struct device * dev)
 #endif /* CONFIG_PM */
 
 static struct bus_type soundbus_bus_type = {
+=======
+/* soundbus_dev_attrs is declared in sysfs.c */
+ATTRIBUTE_GROUPS(soundbus_dev);
+static const struct bus_type soundbus_bus_type = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "aoa-soundbus",
 	.probe		= soundbus_probe,
 	.uevent		= soundbus_uevent,
 	.remove		= soundbus_device_remove,
 	.shutdown	= soundbus_device_shutdown,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	.suspend	= soundbus_device_suspend,
 	.resume		= soundbus_device_resume,
 #endif
 	.dev_attrs	= soundbus_dev_attrs,
+=======
+	.dev_groups	= soundbus_dev_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int soundbus_add_one(struct soundbus_dev *dev)

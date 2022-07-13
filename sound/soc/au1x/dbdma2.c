@@ -1,15 +1,23 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Au12x0/Au1550 PSC ALSA ASoC audio support.
  *
  * (c) 2007-2008 MSC Vertriebsges.m.b.H.,
  *	Manuel Lauss <manuel.lauss@gmail.com>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
  * DMA glue for Au1x-PSC audio.
  *
+=======
+ * DMA glue for Au1x-PSC audio.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -32,6 +40,11 @@
 
 /*#define PCM_DEBUG*/
 
+<<<<<<< HEAD
+=======
+#define DRV_NAME "dbdma2"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSG(x...)	printk(KERN_INFO "au1xpsc_pcm: " x)
 #ifdef PCM_DEBUG
 #define DBG		MSG
@@ -65,6 +78,7 @@ struct au1xpsc_audio_dmadata {
 #define AU1XPSC_PERIOD_MIN_BYTES	1024
 #define AU1XPSC_BUFFER_MIN_BYTES	65536
 
+<<<<<<< HEAD
 #define AU1XPSC_PCM_FMTS					\
 	(SNDRV_PCM_FMTBIT_S8     | SNDRV_PCM_FMTBIT_U8 |	\
 	 SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S16_BE |	\
@@ -73,11 +87,16 @@ struct au1xpsc_audio_dmadata {
 	 SNDRV_PCM_FMTBIT_U32_LE | SNDRV_PCM_FMTBIT_U32_BE |	\
 	 0)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PCM hardware DMA capabilities - platform specific */
 static const struct snd_pcm_hardware au1xpsc_pcm_hardware = {
 	.info		  = SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_MMAP_VALID |
 			    SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BATCH,
+<<<<<<< HEAD
 	.formats	  = AU1XPSC_PCM_FMTS,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.period_bytes_min = AU1XPSC_PERIOD_MIN_BYTES,
 	.period_bytes_max = 4096 * 1024 - 1,
 	.periods_min	  = 2,
@@ -193,6 +212,7 @@ out:
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline struct au1xpsc_audio_dmadata *to_dmadata(struct snd_pcm_substream *ss)
 {
 	struct snd_soc_pcm_runtime *rtd = ss->private_data;
@@ -202,12 +222,24 @@ static inline struct au1xpsc_audio_dmadata *to_dmadata(struct snd_pcm_substream 
 }
 
 static int au1xpsc_pcm_hw_params(struct snd_pcm_substream *substream,
+=======
+static inline struct au1xpsc_audio_dmadata *to_dmadata(struct snd_pcm_substream *ss,
+						       struct snd_soc_component *component)
+{
+	struct au1xpsc_audio_dmadata *pcd = snd_soc_component_get_drvdata(component);
+	return &pcd[ss->stream];
+}
+
+static int au1xpsc_pcm_hw_params(struct snd_soc_component *component,
+				 struct snd_pcm_substream *substream,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 struct snd_pcm_hw_params *params)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct au1xpsc_audio_dmadata *pcd;
 	int stype, ret;
 
+<<<<<<< HEAD
 	ret = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(params));
 	if (ret < 0)
 		goto out;
@@ -217,6 +249,13 @@ static int au1xpsc_pcm_hw_params(struct snd_pcm_substream *substream,
 
 	DBG("runtime->dma_area = 0x%08lx dma_addr_t = 0x%08lx dma_size = %d "
 	    "runtime->min_align %d\n",
+=======
+	stype = substream->stream;
+	pcd = to_dmadata(substream, component);
+
+	DBG("runtime->dma_area = 0x%08lx dma_addr_t = 0x%08lx dma_size = %zu "
+	    "runtime->min_align %lu\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(unsigned long)runtime->dma_area,
 		(unsigned long)runtime->dma_addr, runtime->dma_bytes,
 		runtime->min_align);
@@ -243,6 +282,7 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int au1xpsc_pcm_hw_free(struct snd_pcm_substream *substream)
 {
 	snd_pcm_lib_free_pages(substream);
@@ -252,6 +292,12 @@ static int au1xpsc_pcm_hw_free(struct snd_pcm_substream *substream)
 static int au1xpsc_pcm_prepare(struct snd_pcm_substream *substream)
 {
 	struct au1xpsc_audio_dmadata *pcd = to_dmadata(substream);
+=======
+static int au1xpsc_pcm_prepare(struct snd_soc_component *component,
+			       struct snd_pcm_substream *substream)
+{
+	struct au1xpsc_audio_dmadata *pcd = to_dmadata(substream, component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	au1xxx_dbdma_reset(pcd->ddma_chan);
 
@@ -266,9 +312,16 @@ static int au1xpsc_pcm_prepare(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int au1xpsc_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 {
 	u32 c = to_dmadata(substream)->ddma_chan;
+=======
+static int au1xpsc_pcm_trigger(struct snd_soc_component *component,
+			       struct snd_pcm_substream *substream, int cmd)
+{
+	u32 c = to_dmadata(substream, component)->ddma_chan;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
@@ -286,6 +339,7 @@ static int au1xpsc_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 }
 
 static snd_pcm_uframes_t
+<<<<<<< HEAD
 au1xpsc_pcm_pointer(struct snd_pcm_substream *substream)
 {
 	return bytes_to_frames(substream->runtime, to_dmadata(substream)->pos);
@@ -298,6 +352,23 @@ static int au1xpsc_pcm_open(struct snd_pcm_substream *substream)
 	int stype = substream->stream, *dmaids;
 
 	dmaids = snd_soc_dai_get_dma_data(rtd->cpu_dai, substream);
+=======
+au1xpsc_pcm_pointer(struct snd_soc_component *component,
+		    struct snd_pcm_substream *substream)
+{
+	return bytes_to_frames(substream->runtime,
+			       to_dmadata(substream, component)->pos);
+}
+
+static int au1xpsc_pcm_open(struct snd_soc_component *component,
+			    struct snd_pcm_substream *substream)
+{
+	struct au1xpsc_audio_dmadata *pcd = to_dmadata(substream, component);
+	struct snd_soc_pcm_runtime *rtd = snd_soc_substream_to_rtd(substream);
+	int stype = substream->stream, *dmaids;
+
+	dmaids = snd_soc_dai_get_dma_data(snd_soc_rtd_to_cpu(rtd, 0), substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dmaids)
 		return -ENODEV;	/* whoa, has ordering changed? */
 
@@ -307,6 +378,7 @@ static int au1xpsc_pcm_open(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int au1xpsc_pcm_close(struct snd_pcm_substream *substream)
 {
 	au1x_pcm_dbdma_free(to_dmadata(substream));
@@ -330,17 +402,33 @@ static void au1xpsc_pcm_free_dma_buffers(struct snd_pcm *pcm)
 }
 
 static int au1xpsc_pcm_new(struct snd_soc_pcm_runtime *rtd)
+=======
+static int au1xpsc_pcm_close(struct snd_soc_component *component,
+			     struct snd_pcm_substream *substream)
+{
+	au1x_pcm_dbdma_free(to_dmadata(substream, component));
+	return 0;
+}
+
+static int au1xpsc_pcm_new(struct snd_soc_component *component,
+			   struct snd_soc_pcm_runtime *rtd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = rtd->card->snd_card;
 	struct snd_pcm *pcm = rtd->pcm;
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		card->dev, AU1XPSC_BUFFER_MIN_BYTES, (4096 * 1024) - 1);
 
 	return 0;
 }
 
 /* au1xpsc audio platform */
+<<<<<<< HEAD
 static struct snd_soc_platform_driver au1xpsc_soc_platform = {
 	.ops		= &au1xpsc_pcm_ops,
 	.pcm_new	= au1xpsc_pcm_new,
@@ -353,12 +441,32 @@ static int __devinit au1xpsc_pcm_drvprobe(struct platform_device *pdev)
 
 	dmadata = devm_kzalloc(&pdev->dev,
 			       2 * sizeof(struct au1xpsc_audio_dmadata),
+=======
+static struct snd_soc_component_driver au1xpsc_soc_component = {
+	.name		= DRV_NAME,
+	.open		= au1xpsc_pcm_open,
+	.close		= au1xpsc_pcm_close,
+	.hw_params	= au1xpsc_pcm_hw_params,
+	.prepare	= au1xpsc_pcm_prepare,
+	.trigger	= au1xpsc_pcm_trigger,
+	.pointer	= au1xpsc_pcm_pointer,
+	.pcm_construct	= au1xpsc_pcm_new,
+};
+
+static int au1xpsc_pcm_drvprobe(struct platform_device *pdev)
+{
+	struct au1xpsc_audio_dmadata *dmadata;
+
+	dmadata = devm_kcalloc(&pdev->dev,
+			       2, sizeof(struct au1xpsc_audio_dmadata),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       GFP_KERNEL);
 	if (!dmadata)
 		return -ENOMEM;
 
 	platform_set_drvdata(pdev, dmadata);
 
+<<<<<<< HEAD
 	return snd_soc_register_platform(&pdev->dev, &au1xpsc_soc_platform);
 }
 
@@ -367,15 +475,24 @@ static int __devexit au1xpsc_pcm_drvremove(struct platform_device *pdev)
 	snd_soc_unregister_platform(&pdev->dev);
 
 	return 0;
+=======
+	return devm_snd_soc_register_component(&pdev->dev,
+					&au1xpsc_soc_component, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver au1xpsc_pcm_driver = {
 	.driver	= {
 		.name	= "au1xpsc-pcm",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= au1xpsc_pcm_drvprobe,
 	.remove		= __devexit_p(au1xpsc_pcm_drvremove),
+=======
+	},
+	.probe		= au1xpsc_pcm_drvprobe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(au1xpsc_pcm_driver);

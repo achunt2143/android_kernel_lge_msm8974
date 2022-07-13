@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /*
  * Copyright 2003 PathScale Inc
  * Derived from include/asm-i386/pgtable.h
  * Licensed under the GPL
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright 2003 PathScale Inc
+ * Derived from include/asm-i386/pgtable.h
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __UM_PGTABLE_3LEVEL_H
@@ -41,7 +48,10 @@
 #endif
 
 #define USER_PTRS_PER_PGD ((TASK_SIZE + (PGDIR_SIZE - 1)) / PGDIR_SIZE)
+<<<<<<< HEAD
 #define FIRST_USER_ADDRESS	0
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pte_ERROR(e) \
         printk("%s:%d: bad pte %p(%016lx).\n", __FILE__, __LINE__, &(e), \
@@ -59,11 +69,15 @@
 #define pud_populate(mm, pud, pmd) \
 	set_pud(pud, __pud(_PAGE_TABLE + __pa(pmd)))
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 #define set_pud(pudptr, pudval) set_64bit((u64 *) (pudptr), pud_val(pudval))
 #else
 #define set_pud(pudptr, pudval) (*(pudptr) = (pudval))
 #endif
+=======
+#define set_pud(pudptr, pudval) (*(pudptr) = (pudval))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int pgd_newpage(pgd_t pgd)
 {
@@ -72,6 +86,7 @@ static inline int pgd_newpage(pgd_t pgd)
 
 static inline void pgd_mkuptodate(pgd_t pgd) { pgd_val(pgd) &= ~_PAGE_NEWPAGE; }
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 #define set_pmd(pmdptr, pmdval) set_64bit((u64 *) (pmdptr), pmd_val(pmdval))
 #else
@@ -80,6 +95,9 @@ static inline void pgd_mkuptodate(pgd_t pgd) { pgd_val(pgd) &= ~_PAGE_NEWPAGE; }
 
 struct mm_struct;
 extern pmd_t *pmd_alloc_one(struct mm_struct *mm, unsigned long address);
+=======
+#define set_pmd(pmdptr, pmdval) (*(pmdptr) = (pmdval))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void pud_clear (pud_t *pud)
 {
@@ -87,18 +105,26 @@ static inline void pud_clear (pud_t *pud)
 }
 
 #define pud_page(pud) phys_to_page(pud_val(pud) & PAGE_MASK)
+<<<<<<< HEAD
 #define pud_page_vaddr(pud) ((unsigned long) __va(pud_val(pud) & PAGE_MASK))
 
 /* Find an entry in the second-level page table.. */
 #define pmd_offset(pud, address) ((pmd_t *) pud_page_vaddr(*(pud)) + \
 			pmd_index(address))
+=======
+#define pud_pgtable(pud) ((pmd_t *) __va(pud_val(pud) & PAGE_MASK))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned long pte_pfn(pte_t pte)
 {
 	return phys_to_pfn(pte_val(pte));
 }
 
+<<<<<<< HEAD
 static inline pte_t pfn_pte(pfn_t page_nr, pgprot_t pgprot)
+=======
+static inline pte_t pfn_pte(unsigned long page_nr, pgprot_t pgprot)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pte_t pte;
 	phys_t phys = pfn_to_phys(page_nr);
@@ -107,11 +133,16 @@ static inline pte_t pfn_pte(pfn_t page_nr, pgprot_t pgprot)
 	return pte;
 }
 
+<<<<<<< HEAD
 static inline pmd_t pfn_pmd(pfn_t page_nr, pgprot_t pgprot)
+=======
+static inline pmd_t pfn_pmd(unsigned long page_nr, pgprot_t pgprot)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __pmd((page_nr << PAGE_SHIFT) | pgprot_val(pgprot));
 }
 
+<<<<<<< HEAD
 /*
  * Bits 0 through 3 are taken in the low part of the pte,
  * put the 32 bits of offset into the high part.
@@ -132,5 +163,7 @@ static inline pmd_t pfn_pmd(pfn_t page_nr, pgprot_t pgprot)
 
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 

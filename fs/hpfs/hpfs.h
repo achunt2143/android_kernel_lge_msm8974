@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hpfs/hpfs.h
  *
@@ -51,11 +55,19 @@ struct hpfs_boot_block
   u8 n_rootdir_entries[2];
   u8 n_sectors_s[2];
   u8 media_byte;
+<<<<<<< HEAD
   u16 sectors_per_fat;
   u16 sectors_per_track;
   u16 heads_per_cyl;
   u32 n_hidden_sectors;
   u32 n_sectors_l;		/* size of partition */
+=======
+  __le16 sectors_per_fat;
+  __le16 sectors_per_track;
+  __le16 heads_per_cyl;
+  __le32 n_hidden_sectors;
+  __le32 n_sectors_l;		/* size of partition */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   u8 drive_number;
   u8 mbz;
   u8 sig_28h;			/* 28h */
@@ -63,7 +75,11 @@ struct hpfs_boot_block
   u8 vol_label[11];
   u8 sig_hpfs[8];		/* "HPFS    " */
   u8 pad[448];
+<<<<<<< HEAD
   u16 magic;			/* aa55 */
+=======
+  __le16 magic;			/* aa55 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -75,12 +91,18 @@ struct hpfs_boot_block
 
 struct hpfs_super_block
 {
+<<<<<<< HEAD
   u32 magic;				/* f995 e849 */
   u32 magic1;				/* fa53 e9c5, more magic? */
+=======
+  __le32 magic;				/* f995 e849 */
+  __le32 magic1;			/* fa53 e9c5, more magic? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   u8 version;				/* version of a filesystem  usually 2 */
   u8 funcversion;			/* functional version - oldest version
   					   of filesystem that can understand
 					   this disk */
+<<<<<<< HEAD
   u16 zero;				/* 0 */
   fnode_secno root;			/* fnode of root directory */
   secno n_sectors;			/* size of filesystem */
@@ -97,6 +119,24 @@ struct hpfs_super_block
   secno dir_band_bitmap;		/* free space map, 1 dnode per bit */
   u8 volume_name[32];			/* not used */
   secno user_id_table;			/* 8 preallocated sectors - user id */
+=======
+  __le16 zero;				/* 0 */
+  __le32 root;				/* fnode of root directory */
+  __le32 n_sectors;			/* size of filesystem */
+  __le32 n_badblocks;			/* number of bad blocks */
+  __le32 bitmaps;			/* pointers to free space bit maps */
+  __le32 zero1;				/* 0 */
+  __le32 badblocks;			/* bad block list */
+  __le32 zero3;				/* 0 */
+  __le32 last_chkdsk;			/* date last checked, 0 if never */
+  __le32 last_optimize;			/* date last optimized, 0 if never */
+  __le32 n_dir_band;			/* number of sectors in dir band */
+  __le32 dir_band_start;			/* first sector in dir band */
+  __le32 dir_band_end;			/* last sector in dir band */
+  __le32 dir_band_bitmap;		/* free space map, 1 dnode per bit */
+  u8 volume_name[32];			/* not used */
+  __le32 user_id_table;			/* 8 preallocated sectors - user id */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   u32 zero6[103];			/* 0 */
 };
 
@@ -109,8 +149,13 @@ struct hpfs_super_block
 
 struct hpfs_spare_block
 {
+<<<<<<< HEAD
   u32 magic;				/* f991 1849 */
   u32 magic1;				/* fa52 29c5, more magic? */
+=======
+  __le32 magic;				/* f991 1849 */
+  __le32 magic1;				/* fa52 29c5, more magic? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __LITTLE_ENDIAN
   u8 dirty: 1;				/* 0 clean, 1 "improperly stopped" */
@@ -119,11 +164,19 @@ struct hpfs_spare_block
   u8 bad_sector: 1;			/* bad sector, corrupted disk (???) */
   u8 bad_bitmap: 1;			/* bad bitmap */
   u8 fast: 1;				/* partition was fast formatted */
+<<<<<<< HEAD
   u8 old_wrote: 1;			/* old version wrote to partion */
   u8 old_wrote_1: 1;			/* old version wrote to partion (?) */
 #else
   u8 old_wrote_1: 1;			/* old version wrote to partion (?) */
   u8 old_wrote: 1;			/* old version wrote to partion */
+=======
+  u8 old_wrote: 1;			/* old version wrote to partition */
+  u8 old_wrote_1: 1;			/* old version wrote to partition (?) */
+#else
+  u8 old_wrote_1: 1;			/* old version wrote to partition (?) */
+  u8 old_wrote: 1;			/* old version wrote to partition */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   u8 fast: 1;				/* partition was fast formatted */
   u8 bad_bitmap: 1;			/* bad bitmap */
   u8 bad_sector: 1;			/* bad sector, corrupted disk (???) */
@@ -153,6 +206,7 @@ struct hpfs_spare_block
   u8 mm_contlgulty;
   u8 unused;
 
+<<<<<<< HEAD
   secno hotfix_map;			/* info about remapped bad sectors */
   u32 n_spares_used;			/* number of hotfixes */
   u32 n_spares;				/* number of spares in hotfix map */
@@ -168,6 +222,23 @@ struct hpfs_spare_block
   u32 zero1[15];			/* unused */
   dnode_secno spare_dnodes[100];	/* emergency free dnode list */
   u32 zero2[1];				/* room for more? */
+=======
+  __le32 hotfix_map;			/* info about remapped bad sectors */
+  __le32 n_spares_used;			/* number of hotfixes */
+  __le32 n_spares;			/* number of spares in hotfix map */
+  __le32 n_dnode_spares_free;		/* spare dnodes unused */
+  __le32 n_dnode_spares;		/* length of spare_dnodes[] list,
+					   follows in this block*/
+  __le32 code_page_dir;			/* code page directory block */
+  __le32 n_code_pages;			/* number of code pages */
+  __le32 super_crc;			/* on HPFS386 and LAN Server this is
+  					   checksum of superblock, on normal
+					   OS/2 unused */
+  __le32 spare_crc;			/* on HPFS386 checksum of spareblock */
+  __le32 zero1[15];			/* unused */
+  __le32 spare_dnodes[100];		/* emergency free dnode list */
+  __le32 zero2[1];			/* room for more? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* The bad block list is 4 sectors long.  The first word must be zero,
@@ -202,6 +273,7 @@ struct hpfs_spare_block
 
 struct code_page_directory
 {
+<<<<<<< HEAD
   u32 magic;				/* 4945 21f7 */
   u32 n_code_pages;			/* number of pointers following */
   u32 zero1[2];
@@ -214,6 +286,20 @@ struct code_page_directory
 					   containing c.p. array */
     u16 index;				/* index in c.p. array in that sector*/
     u16 unknown;			/* some unknown value; usually 0;
+=======
+  __le32 magic;				/* 4945 21f7 */
+  __le32 n_code_pages;			/* number of pointers following */
+  __le32 zero1[2];
+  struct {
+    __le16 ix;				/* index */
+    __le16 code_page_number;		/* code page number */
+    __le32 bounds;			/* matches corresponding word
+					   in data block */
+    __le32 code_page_data;		/* sector number of a code_page_data
+					   containing c.p. array */
+    __le16 index;			/* index in c.p. array in that sector*/
+    __le16 unknown;			/* some unknown value; usually 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     					   2 in Japanese version */
   } array[31];				/* unknown length */
 };
@@ -224,6 +310,7 @@ struct code_page_directory
 
 struct code_page_data
 {
+<<<<<<< HEAD
   u32 magic;				/* 8945 21f7 */
   u32 n_used;				/* # elements used in c_p_data[] */
   u32 bounds[3];			/* looks a bit like
@@ -237,6 +324,21 @@ struct code_page_data
     u16 unknown;			/* the same as in cp directory */
     u8 map[128];			/* upcase table for chars 80..ff */
     u16 zero2;
+=======
+  __le32 magic;				/* 8945 21f7 */
+  __le32 n_used;			/* # elements used in c_p_data[] */
+  __le32 bounds[3];			/* looks a bit like
+					     (beg1,end1), (beg2,end2)
+					   one byte each */
+  __le16 offs[3];			/* offsets from start of sector
+					   to start of c_p_data[ix] */
+  struct {
+    __le16 ix;				/* index */
+    __le16 code_page_number;		/* code page number */
+    __le16 unknown;			/* the same as in cp directory */
+    u8 map[128];			/* upcase table for chars 80..ff */
+    __le16 zero2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   } code_page[3];
   u8 incognita[78];
 };
@@ -278,8 +380,13 @@ struct code_page_data
 #define DNODE_MAGIC   0x77e40aae
 
 struct dnode {
+<<<<<<< HEAD
   u32 magic;				/* 77e4 0aae */
   u32 first_free;			/* offset from start of dnode to
+=======
+  __le32 magic;				/* 77e4 0aae */
+  __le32 first_free;			/* offset from start of dnode to
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   first free dir entry */
 #ifdef __LITTLE_ENDIAN
   u8 root_dnode: 1;			/* Is it root dnode? */
@@ -293,14 +400,24 @@ struct dnode {
   u8 root_dnode: 1;			/* Is it root dnode? */
 #endif
   u8 increment_me2[3];
+<<<<<<< HEAD
   secno up;				/* (root dnode) directory's fnode
 					   (nonroot) parent dnode */
   dnode_secno self;			/* pointer to this dnode */
+=======
+  __le32 up;				/* (root dnode) directory's fnode
+					   (nonroot) parent dnode */
+  __le32 self;			/* pointer to this dnode */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   u8 dirent[2028];			/* one or more dirents */
 };
 
 struct hpfs_dirent {
+<<<<<<< HEAD
   u16 length;				/* offset to next dirent */
+=======
+  __le16 length;			/* offset to next dirent */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __LITTLE_ENDIAN
   u8 first: 1;				/* set on phony ^A^A (".") entry */
@@ -346,6 +463,7 @@ struct hpfs_dirent {
   u8 read_only: 1;			/* dos attrib */
 #endif
 
+<<<<<<< HEAD
   fnode_secno fnode;			/* fnode giving allocation info */
   time32_t write_date;			/* mtime */
   u32 file_size;			/* file length, bytes */
@@ -356,6 +474,19 @@ struct hpfs_dirent {
   u8 ix;				/* code page index (of filename), see
 					   struct code_page_data */
   u8 namelen, name[1];			/* file name */
+=======
+  __le32 fnode;				/* fnode giving allocation info */
+  __le32 write_date;			/* mtime */
+  __le32 file_size;			/* file length, bytes */
+  __le32 read_date;			/* atime */
+  __le32 creation_date;			/* ctime */
+  __le32 ea_size;			/* total EA length, bytes */
+  u8 no_of_acls;			/* number of ACL's (low 3 bits) */
+  u8 ix;				/* code page index (of filename), see
+					   struct code_page_data */
+  u8 namelen;				/* file name length */
+  u8 name[];				/* file name */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   /* dnode_secno down;	  btree down pointer, if present,
      			  follows name on next word boundary, or maybe it
 			  precedes next dirent, which is on a word boundary. */
@@ -375,13 +506,20 @@ struct hpfs_dirent {
 
 struct bplus_leaf_node
 {
+<<<<<<< HEAD
   u32 file_secno;			/* first file sector in extent */
   u32 length;				/* length, sectors */
   secno disk_secno;			/* first corresponding disk sector */
+=======
+  __le32 file_secno;			/* first file sector in extent */
+  __le32 length;			/* length, sectors */
+  __le32 disk_secno;			/* first corresponding disk sector */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct bplus_internal_node
 {
+<<<<<<< HEAD
   u32 file_secno;			/* subtree maps sectors < this  */
   anode_secno down;			/* pointer to subtree */
 };
@@ -428,6 +566,50 @@ struct bplus_header
   } u;
 };
 
+=======
+  __le32 file_secno;			/* subtree maps sectors < this  */
+  __le32 down;				/* pointer to subtree */
+};
+
+enum {
+	BP_hbff = 1,
+	BP_fnode_parent = 0x20,
+	BP_binary_search = 0x40,
+	BP_internal = 0x80
+};
+struct bplus_header
+{
+  u8 flags;				/* bit 0 - high bit of first free entry offset
+					   bit 5 - we're pointed to by an fnode,
+					   the data btree or some ea or the
+					   main ea bootage pointer ea_secno
+					   bit 6 - suggest binary search (unused)
+					   bit 7 - 1 -> (internal) tree of anodes
+						   0 -> (leaf) list of extents */
+  u8 fill[3];
+  u8 n_free_nodes;			/* free nodes in following array */
+  u8 n_used_nodes;			/* used nodes in following array */
+  __le16 first_free;			/* offset from start of header to
+					   first free node in array */
+  union {
+	/* (internal) 2-word entries giving subtree pointers */
+	DECLARE_FLEX_ARRAY(struct bplus_internal_node, internal);
+	/* (external) 3-word entries giving sector runs */
+	DECLARE_FLEX_ARRAY(struct bplus_leaf_node, external);
+  } u;
+};
+
+static inline bool bp_internal(struct bplus_header *bp)
+{
+	return bp->flags & BP_internal;
+}
+
+static inline bool bp_fnode_parent(struct bplus_header *bp)
+{
+	return bp->flags & BP_fnode_parent;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* fnode: root of allocation b+ tree, and EA's */
 
 /* Every file and every directory has one fnode, pointed to by the directory
@@ -436,6 +618,7 @@ struct bplus_header
 
 #define FNODE_MAGIC 0xf7e40aae
 
+<<<<<<< HEAD
 struct fnode
 {
   u32 magic;				/* f7e4 0aae */
@@ -471,12 +654,34 @@ struct fnode
 					   points to dnode. */
 #endif
 
+=======
+enum {FNODE_anode = cpu_to_le16(2), FNODE_dir = cpu_to_le16(256)};
+struct fnode
+{
+  __le32 magic;				/* f7e4 0aae */
+  __le32 zero1[2];			/* read history */
+  u8 len, name[15];			/* true length, truncated name */
+  __le32 up;				/* pointer to file's directory fnode */
+  __le32 acl_size_l;
+  __le32 acl_secno;
+  __le16 acl_size_s;
+  u8 acl_anode;
+  u8 zero2;				/* history bit count */
+  __le32 ea_size_l;			/* length of disk-resident ea's */
+  __le32 ea_secno;			/* first sector of disk-resident ea's*/
+  __le16 ea_size_s;			/* length of fnode-resident ea's */
+
+  __le16 flags;				/* bit 1 set -> ea_secno is an anode */
+					/* bit 8 set -> directory.  first & only extent
+					   points to dnode. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   struct bplus_header btree;		/* b+ tree, 8 extents or 12 subtrees */
   union {
     struct bplus_leaf_node external[8];
     struct bplus_internal_node internal[12];
   } u;
 
+<<<<<<< HEAD
   u32 file_size;			/* file length, bytes */
   u32 n_needea;				/* number of EA's with NEEDEA set */
   u8 user_id[16];			/* unused */
@@ -486,12 +691,36 @@ struct fnode
   u8 dasd_limit_delta;
   u32 dasd_limit;
   u32 dasd_usage;
+=======
+  __le32 file_size;			/* file length, bytes */
+  __le32 n_needea;			/* number of EA's with NEEDEA set */
+  u8 user_id[16];			/* unused */
+  __le16 ea_offs;			/* offset from start of fnode
+					   to first fnode-resident ea */
+  u8 dasd_limit_treshhold;
+  u8 dasd_limit_delta;
+  __le32 dasd_limit;
+  __le32 dasd_usage;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   u8 ea[316];				/* zero or more EA's, packed together
 					   with no alignment padding.
 					   (Do not use this name, get here
 					   via fnode + ea_offs. I think.) */
 };
 
+<<<<<<< HEAD
+=======
+static inline bool fnode_in_anode(struct fnode *p)
+{
+	return (p->flags & FNODE_anode) != 0;
+}
+
+static inline bool fnode_is_dir(struct fnode *p)
+{
+	return (p->flags & FNODE_dir) != 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* anode: 99.44% pure allocation tree */
 
@@ -499,9 +728,15 @@ struct fnode
 
 struct anode
 {
+<<<<<<< HEAD
   u32 magic;				/* 37e4 0aae */
   anode_secno self;			/* pointer to this anode */
   secno up;				/* parent anode or fnode */
+=======
+  __le32 magic;				/* 37e4 0aae */
+  __le32 self;				/* pointer to this anode */
+  __le32 up;				/* parent anode or fnode */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
   struct bplus_header btree;		/* b+tree, 40 extents or 60 subtrees */
   union {
@@ -509,7 +744,11 @@ struct anode
     struct bplus_internal_node internal[60];
   } u;
 
+<<<<<<< HEAD
   u32 fill[3];				/* unused */
+=======
+  __le32 fill[3];			/* unused */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -528,6 +767,7 @@ struct anode
    run, or in multiple runs.  Flags in the fnode tell whether the EA list
    is immediate, in a single run, or in multiple runs. */
 
+<<<<<<< HEAD
 struct extended_attribute
 {
 #ifdef __LITTLE_ENDIAN
@@ -549,11 +789,29 @@ struct extended_attribute
   u8 valuelen_lo;			/* length of value, bytes */
   u8 valuelen_hi;			/* length of value, bytes */
   u8 name[0];
+=======
+enum {EA_indirect = 1, EA_anode = 2, EA_needea = 128 };
+struct extended_attribute
+{
+  u8 flags;				/* bit 0 set -> value gives sector number
+					   where real value starts */
+					/* bit 1 set -> sector is an anode
+					   that points to fragmented value */
+					/* bit 7 set -> required ea */
+  u8 namelen;				/* length of name, bytes */
+  u8 valuelen_lo;			/* length of value, bytes */
+  u8 valuelen_hi;			/* length of value, bytes */
+  u8 name[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   /*
     u8 name[namelen];			ascii attrib name
     u8 nul;				terminating '\0', not counted
     u8 value[valuelen];			value, arbitrary
+<<<<<<< HEAD
       if this.indirect, valuelen is 8 and the value is
+=======
+      if this.flags & 1, valuelen is 8 and the value is
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         u32 length;			real length of value, bytes
         secno secno;			sector address where it starts
       if this.anode, the above sector number is the root of an anode tree
@@ -561,6 +819,19 @@ struct extended_attribute
   */
 };
 
+<<<<<<< HEAD
+=======
+static inline bool ea_indirect(struct extended_attribute *ea)
+{
+	return ea->flags & EA_indirect;
+}
+
+static inline bool ea_in_anode(struct extended_attribute *ea)
+{
+	return ea->flags & EA_anode;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
    Local Variables:
    comment-column: 40

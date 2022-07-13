@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 filesystems/dnotify_test
 laptops/dslm
 timers/hpet_example
@@ -5,3 +6,8 @@ vm/hugepage-mmap
 vm/hugepage-shm
 vm/map_hugetlb
 
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+output
+*.pyc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

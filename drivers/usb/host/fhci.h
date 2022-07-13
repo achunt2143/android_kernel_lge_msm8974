@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale QUICC Engine USB Host Controller Driver
  *
@@ -8,11 +12,14 @@
  *               Peter Barada <peterb@logicpd.com>
  * Copyright (c) MontaVista Software, Inc. 2008.
  *               Anton Vorontsov <avorontsov@ru.mvista.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __FHCI_H
@@ -27,7 +34,13 @@
 #include <linux/io.h>
 #include <linux/usb.h>
 #include <linux/usb/hcd.h>
+<<<<<<< HEAD
 #include <asm/qe.h>
+=======
+#include <linux/gpio/consumer.h>
+#include <soc/fsl/qe/qe.h>
+#include <soc/fsl/qe/immap_qe.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define USB_CLOCK	48000000
 
@@ -173,6 +186,7 @@
 #define USB_E_TXB_MASK		0x0002
 #define USB_E_RXB_MASK		0x0001
 
+<<<<<<< HEAD
 /* Freescale USB Host controller registers */
 struct fhci_regs {
 	u8 usb_mod;		/* mode register */
@@ -192,6 +206,8 @@ struct fhci_regs {
 	u8 reserved6[1];
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Freescale USB HOST */
 struct fhci_pram {
 	__be16 ep_ptr[4];	/* Endpoint porter reg */
@@ -264,10 +280,16 @@ struct fhci_hcd {
 	enum qe_clock fullspeed_clk;
 	enum qe_clock lowspeed_clk;
 	struct qe_pin *pins[NUM_PINS];
+<<<<<<< HEAD
 	int gpios[NUM_GPIOS];
 	bool alow_gpios[NUM_GPIOS];
 
 	struct fhci_regs __iomem *regs;	/* I/O memory used to communicate */
+=======
+	struct gpio_desc *gpiods[NUM_GPIOS];
+
+	struct qe_usb_ctlr __iomem *regs; /* I/O memory used to communicate */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fhci_pram __iomem *pram;	/* Parameter RAM */
 	struct gtm_timer *timer;
 
@@ -284,8 +306,11 @@ struct fhci_hcd {
 #ifdef CONFIG_FHCI_DEBUG
 	int usb_irq_stat[13];
 	struct dentry *dfs_root;
+<<<<<<< HEAD
 	struct dentry *dfs_regs;
 	struct dentry *dfs_irq_stat;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
@@ -356,7 +381,11 @@ struct ed {
 
 	/* read only parameters, should be cleared upon initialization */
 	u8 toggle_carry;	/* toggle carry from the last TD submitted */
+<<<<<<< HEAD
 	u32 last_iso;		/* time stamp of last queued ISO transfer */
+=======
+	u16 next_iso;		/* time stamp of next queued ISO transfer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct td *td_head;	/* a pointer to the current TD handled */
 };
 

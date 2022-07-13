@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sst25l.c
  *
@@ -8,6 +12,7 @@
  * Author: Ryan Mallon
  *
  * Based on m25p80.c
+<<<<<<< HEAD
  *
  * This code is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +21,10 @@
  */
 
 #include <linux/init.h>
+=======
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/mutex.h>
@@ -64,7 +73,11 @@ struct flash_info {
 
 #define to_sst25l_flash(x) container_of(x, struct sst25l_flash, mtd)
 
+<<<<<<< HEAD
 static struct flash_info __devinitdata sst25l_flash_info[] = {
+=======
+static struct flash_info sst25l_flash_info[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"sst25lf020a", 0xbf43, 256, 1024, 4096},
 	{"sst25lf040a",	0xbf44,	256, 2048, 4096},
 };
@@ -196,7 +209,10 @@ static int sst25l_erase(struct mtd_info *mtd, struct erase_info *instr)
 		err = sst25l_erase_sector(flash, addr);
 		if (err) {
 			mutex_unlock(&flash->lock);
+<<<<<<< HEAD
 			instr->state = MTD_ERASE_FAILED;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_err(&flash->spi->dev, "Erase failed\n");
 			return err;
 		}
@@ -206,8 +222,11 @@ static int sst25l_erase(struct mtd_info *mtd, struct erase_info *instr)
 
 	mutex_unlock(&flash->lock);
 
+<<<<<<< HEAD
 	instr->state = MTD_ERASE_DONE;
 	mtd_erase_callback(instr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -313,7 +332,11 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct flash_info *__devinit sst25l_match_device(struct spi_device *spi)
+=======
+static struct flash_info *sst25l_match_device(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct flash_info *flash_info = NULL;
 	struct spi_message m;
@@ -353,7 +376,11 @@ static struct flash_info *__devinit sst25l_match_device(struct spi_device *spi)
 	return flash_info;
 }
 
+<<<<<<< HEAD
 static int __devinit sst25l_probe(struct spi_device *spi)
+=======
+static int sst25l_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct flash_info *flash_info;
 	struct sst25l_flash *flash;
@@ -364,12 +391,17 @@ static int __devinit sst25l_probe(struct spi_device *spi)
 	if (!flash_info)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	flash = kzalloc(sizeof(struct sst25l_flash), GFP_KERNEL);
+=======
+	flash = devm_kzalloc(&spi->dev, sizeof(*flash), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!flash)
 		return -ENOMEM;
 
 	flash->spi = spi;
 	mutex_init(&flash->lock);
+<<<<<<< HEAD
 	dev_set_drvdata(&spi->dev, flash);
 
 	data = spi->dev.platform_data;
@@ -378,6 +410,15 @@ static int __devinit sst25l_probe(struct spi_device *spi)
 	else
 		flash->mtd.name = dev_name(&spi->dev);
 
+=======
+	spi_set_drvdata(spi, flash);
+
+	data = dev_get_platdata(&spi->dev);
+	if (data && data->name)
+		flash->mtd.name = data->name;
+
+	flash->mtd.dev.parent   = &spi->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flash->mtd.type		= MTD_NORFLASH;
 	flash->mtd.flags	= MTD_CAP_NORFLASH;
 	flash->mtd.erasesize	= flash_info->erase_size;
@@ -399,6 +440,7 @@ static int __devinit sst25l_probe(struct spi_device *spi)
 	      flash->mtd.numeraseregions);
 
 
+<<<<<<< HEAD
 	ret = mtd_device_parse_register(&flash->mtd, NULL, NULL,
 					data ? data->parts : NULL,
 					data ? data->nr_parts : 0);
@@ -407,10 +449,17 @@ static int __devinit sst25l_probe(struct spi_device *spi)
 		dev_set_drvdata(&spi->dev, NULL);
 		return -ENODEV;
 	}
+=======
+	ret = mtd_device_register(&flash->mtd, data ? data->parts : NULL,
+				  data ? data->nr_parts : 0);
+	if (ret)
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit sst25l_remove(struct spi_device *spi)
 {
 	struct sst25l_flash *flash = dev_get_drvdata(&spi->dev);
@@ -420,15 +469,28 @@ static int __devexit sst25l_remove(struct spi_device *spi)
 	if (ret == 0)
 		kfree(flash);
 	return ret;
+=======
+static void sst25l_remove(struct spi_device *spi)
+{
+	struct sst25l_flash *flash = spi_get_drvdata(spi);
+
+	WARN_ON(mtd_device_unregister(&flash->mtd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver sst25l_driver = {
 	.driver = {
 		.name	= "sst25l",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= sst25l_probe,
 	.remove		= __devexit_p(sst25l_remove),
+=======
+	},
+	.probe		= sst25l_probe,
+	.remove		= sst25l_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(sst25l_driver);

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OSS compatible sequencer driver
  * read fifo queue
  *
  * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __SEQ_OSS_READQ_H
@@ -44,6 +51,11 @@ void snd_seq_oss_readq_delete(struct seq_oss_readq *q);
 void snd_seq_oss_readq_clear(struct seq_oss_readq *readq);
 unsigned int snd_seq_oss_readq_poll(struct seq_oss_readq *readq, struct file *file, poll_table *wait);
 int snd_seq_oss_readq_puts(struct seq_oss_readq *readq, int dev, unsigned char *data, int len);
+<<<<<<< HEAD
+=======
+int snd_seq_oss_readq_sysex(struct seq_oss_readq *q, int dev,
+			    struct snd_seq_event *ev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_seq_oss_readq_put_event(struct seq_oss_readq *readq, union evrec *ev);
 int snd_seq_oss_readq_put_timestamp(struct seq_oss_readq *readq, unsigned long curt, int seq_mode);
 int snd_seq_oss_readq_pick(struct seq_oss_readq *q, union evrec *rec);

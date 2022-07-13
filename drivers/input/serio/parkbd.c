@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Parallel port to Keyboard port adapter driver for Linux
  *
  *  Copyright (c) 1999-2004 Vojtech Pavlik
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * To connect an AT or XT keyboard to the parallel port, a fairly simple adapter
@@ -141,6 +148,7 @@ static void parkbd_interrupt(void *dev_id)
 	parkbd_last = jiffies;
 }
 
+<<<<<<< HEAD
 static int parkbd_getport(void)
 {
 	struct parport *pp;
@@ -154,6 +162,18 @@ static int parkbd_getport(void)
 
 	parkbd_dev = parport_register_device(pp, "parkbd", NULL, NULL, parkbd_interrupt, PARPORT_DEV_EXCL, NULL);
 	parport_put_port(pp);
+=======
+static int parkbd_getport(struct parport *pp)
+{
+	struct pardev_cb parkbd_parport_cb;
+
+	memset(&parkbd_parport_cb, 0, sizeof(parkbd_parport_cb));
+	parkbd_parport_cb.irq_func = parkbd_interrupt;
+	parkbd_parport_cb.flags = PARPORT_FLAG_EXCL;
+
+	parkbd_dev = parport_register_dev_model(pp, "parkbd",
+						&parkbd_parport_cb, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!parkbd_dev)
 		return -ENODEV;
@@ -168,21 +188,31 @@ static int parkbd_getport(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct serio * __init parkbd_allocate_serio(void)
+=======
+static struct serio *parkbd_allocate_serio(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct serio *serio;
 
 	serio = kzalloc(sizeof(struct serio), GFP_KERNEL);
 	if (serio) {
 		serio->id.type = parkbd_mode;
+<<<<<<< HEAD
 		serio->write = parkbd_write,
 		strlcpy(serio->name, "PARKBD AT/XT keyboard adapter", sizeof(serio->name));
+=======
+		serio->write = parkbd_write;
+		strscpy(serio->name, "PARKBD AT/XT keyboard adapter", sizeof(serio->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snprintf(serio->phys, sizeof(serio->phys), "%s/serio0", parkbd_dev->port->name);
 	}
 
 	return serio;
 }
 
+<<<<<<< HEAD
 static int __init parkbd_init(void)
 {
 	int err;
@@ -190,11 +220,27 @@ static int __init parkbd_init(void)
 	err = parkbd_getport();
 	if (err)
 		return err;
+=======
+static void parkbd_attach(struct parport *pp)
+{
+	if (pp->number != parkbd_pp_no) {
+		pr_debug("Not using parport%d.\n", pp->number);
+		return;
+	}
+
+	if (parkbd_getport(pp))
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	parkbd_port = parkbd_allocate_serio();
 	if (!parkbd_port) {
 		parport_release(parkbd_dev);
+<<<<<<< HEAD
 		return -ENOMEM;
+=======
+		parport_unregister_device(parkbd_dev);
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	parkbd_writelines(3);
@@ -204,6 +250,7 @@ static int __init parkbd_init(void)
 	printk(KERN_INFO "serio: PARKBD %s adapter on %s\n",
                         parkbd_mode ? "AT" : "XT", parkbd_dev->port->name);
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -216,3 +263,26 @@ static void __exit parkbd_exit(void)
 
 module_init(parkbd_init);
 module_exit(parkbd_exit);
+=======
+	return;
+}
+
+static void parkbd_detach(struct parport *port)
+{
+	if (!parkbd_port || port->number != parkbd_pp_no)
+		return;
+
+	parport_release(parkbd_dev);
+	serio_unregister_port(parkbd_port);
+	parport_unregister_device(parkbd_dev);
+	parkbd_port = NULL;
+}
+
+static struct parport_driver parkbd_parport_driver = {
+	.name = "parkbd",
+	.match_port = parkbd_attach,
+	.detach = parkbd_detach,
+	.devmodel = true,
+};
+module_parport_driver(parkbd_parport_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

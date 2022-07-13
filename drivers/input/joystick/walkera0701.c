@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Parallel port to Walkera WK-0701 TX joystick
  *
  *  Copyright (c) 2008 Peter Popovec
  *
+<<<<<<< HEAD
  *  More about driver:  <file:Documentation/input/walkera0701.txt>
  */
 
@@ -13,6 +18,13 @@
 */
 
 /* #define WK0701_DEBUG */
+=======
+ *  More about driver:  <file:Documentation/input/devices/walkera0701.rst>
+ */
+
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RESERVE 20000
 #define SYNC_PULSE 1306000
@@ -67,6 +79,10 @@ static inline void walkera0701_parse_frame(struct walkera_dev *w)
 {
 	int i;
 	int val1, val2, val3, val4, val5, val6, val7, val8;
+<<<<<<< HEAD
+=======
+	int magic, magic_bit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int crc1, crc2;
 
 	for (crc1 = crc2 = i = 0; i < 10; i++) {
@@ -102,6 +118,7 @@ static inline void walkera0701_parse_frame(struct walkera_dev *w)
 	val8 = (w->buf[18] & 1) << 8 | (w->buf[19] << 4) | w->buf[20];
 	val8 *= (w->buf[18] & 2) - 1;	/*sign */
 
+<<<<<<< HEAD
 #ifdef WK0701_DEBUG
 	{
 		int magic, magic_bit;
@@ -113,6 +130,14 @@ static inline void walkera0701_parse_frame(struct walkera_dev *w)
 		       magic_bit);
 	}
 #endif
+=======
+	magic = (w->buf[21] << 4) | w->buf[22];
+	magic_bit = (w->buf[24] & 8) >> 3;
+	pr_debug("%4d %4d %4d %4d  %4d %4d %4d %4d (magic %2x %d)\n",
+		 val1, val2, val3, val4, val5, val6, val7, val8,
+		 magic, magic_bit);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_report_abs(w->input_dev, ABS_X, val2);
 	input_report_abs(w->input_dev, ABS_Y, val1);
 	input_report_abs(w->input_dev, ABS_Z, val6);
@@ -169,7 +194,11 @@ static void walkera0701_irq_handler(void *handler_data)
 				RESERVE + BIN1_PULSE - BIN0_PULSE)	/* frame sync .. */
 		w->counter = 0;
 
+<<<<<<< HEAD
 	hrtimer_start(&w->timer, ktime_set(0, BIN_SAMPLE), HRTIMER_MODE_REL);
+=======
+	hrtimer_start(&w->timer, BIN_SAMPLE, HRTIMER_MODE_REL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum hrtimer_restart timer_handler(struct hrtimer
@@ -187,6 +216,12 @@ static int walkera0701_open(struct input_dev *dev)
 {
 	struct walkera_dev *w = input_get_drvdata(dev);
 
+<<<<<<< HEAD
+=======
+	if (parport_claim(w->pardevice))
+		return -EBUSY;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parport_enable_irq(w->parport);
 	return 0;
 }
@@ -197,6 +232,7 @@ static void walkera0701_close(struct input_dev *dev)
 
 	parport_disable_irq(w->parport);
 	hrtimer_cancel(&w->timer);
+<<<<<<< HEAD
 }
 
 static int walkera0701_connect(struct walkera_dev *w, int parport)
@@ -224,13 +260,61 @@ static int walkera0701_connect(struct walkera_dev *w, int parport)
 
 	if (parport_claim(w->pardevice))
 		goto init_err1;
+=======
+
+	parport_release(w->pardevice);
+}
+
+static void walkera0701_attach(struct parport *pp)
+{
+	struct pardev_cb walkera0701_parport_cb;
+	struct walkera_dev *w = &w_dev;
+
+	if (pp->number != walkera0701_pp_no) {
+		pr_debug("Not using parport%d.\n", pp->number);
+		return;
+	}
+
+	if (pp->irq == -1) {
+		pr_err("parport %d does not have interrupt assigned\n",
+			pp->number);
+		return;
+	}
+
+	w->parport = pp;
+
+	memset(&walkera0701_parport_cb, 0, sizeof(walkera0701_parport_cb));
+	walkera0701_parport_cb.flags = PARPORT_FLAG_EXCL;
+	walkera0701_parport_cb.irq_func = walkera0701_irq_handler;
+	walkera0701_parport_cb.private = w;
+
+	w->pardevice = parport_register_dev_model(pp, "walkera0701",
+						  &walkera0701_parport_cb, 0);
+
+	if (!w->pardevice) {
+		pr_err("failed to register parport device\n");
+		return;
+	}
+
+	if (parport_negotiate(w->pardevice->port, IEEE1284_MODE_COMPAT)) {
+		pr_err("failed to negotiate parport mode\n");
+		goto err_unregister_device;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hrtimer_init(&w->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	w->timer.function = timer_handler;
 
 	w->input_dev = input_allocate_device();
+<<<<<<< HEAD
 	if (!w->input_dev)
 		goto init_err2;
+=======
+	if (!w->input_dev) {
+		pr_err("failed to allocate input device\n");
+		goto err_unregister_device;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_set_drvdata(w->input_dev, w);
 	w->input_dev->name = "Walkera WK-0701 TX";
@@ -241,6 +325,10 @@ static int walkera0701_connect(struct walkera_dev *w, int parport)
 	w->input_dev->id.vendor = 0x0001;
 	w->input_dev->id.product = 0x0001;
 	w->input_dev->id.version = 0x0100;
+<<<<<<< HEAD
+=======
+	w->input_dev->dev.parent = w->parport->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	w->input_dev->open = walkera0701_open;
 	w->input_dev->close = walkera0701_close;
 
@@ -254,6 +342,7 @@ static int walkera0701_connect(struct walkera_dev *w, int parport)
 	input_set_abs_params(w->input_dev, ABS_RUDDER, -512, 512, 0, 0);
 	input_set_abs_params(w->input_dev, ABS_MISC, -512, 512, 0, 0);
 
+<<<<<<< HEAD
 	err = input_register_device(w->input_dev);
 	if (err)
 		goto init_err3;
@@ -291,3 +380,38 @@ static void __exit walkera0701_exit(void)
 
 module_init(walkera0701_init);
 module_exit(walkera0701_exit);
+=======
+	if (input_register_device(w->input_dev)) {
+		pr_err("failed to register input device\n");
+		goto err_free_input_dev;
+	}
+
+	return;
+
+err_free_input_dev:
+	input_free_device(w->input_dev);
+err_unregister_device:
+	parport_unregister_device(w->pardevice);
+}
+
+static void walkera0701_detach(struct parport *port)
+{
+	struct walkera_dev *w = &w_dev;
+
+	if (!w->pardevice || w->parport->number != port->number)
+		return;
+
+	input_unregister_device(w->input_dev);
+	parport_unregister_device(w->pardevice);
+	w->parport = NULL;
+}
+
+static struct parport_driver walkera0701_parport_driver = {
+	.name = "walkera0701",
+	.match_port = walkera0701_attach,
+	.detach = walkera0701_detach,
+	.devmodel = true,
+};
+
+module_parport_driver(walkera0701_parport_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

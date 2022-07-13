@@ -1,9 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ALPHA_PGALLOC_H
 #define _ALPHA_PGALLOC_H
 
 #include <linux/mm.h>
 #include <linux/mmzone.h>
 
+<<<<<<< HEAD
+=======
+#include <asm-generic/pgalloc.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*      
  * Allocate and free page tables. The xxx_kernel() versions are
  * used to allocate a kernel page table - this turns on ASN bits
@@ -15,7 +24,10 @@ pmd_populate(struct mm_struct *mm, pmd_t *pmd, pgtable_t pte)
 {
 	pmd_set(pmd, (pte_t *)(page_to_pa(pte) + PAGE_OFFSET));
 }
+<<<<<<< HEAD
 #define pmd_pgtable(pmd) pmd_page(pmd)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void
 pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmd, pte_t *pte)
@@ -24,13 +36,20 @@ pmd_populate_kernel(struct mm_struct *mm, pmd_t *pmd, pte_t *pte)
 }
 
 static inline void
+<<<<<<< HEAD
 pgd_populate(struct mm_struct *mm, pgd_t *pgd, pmd_t *pmd)
 {
 	pgd_set(pgd, pmd);
+=======
+pud_populate(struct mm_struct *mm, pud_t *pud, pmd_t *pmd)
+{
+	pud_set(pud, pmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 extern pgd_t *pgd_alloc(struct mm_struct *mm);
 
+<<<<<<< HEAD
 static inline void
 pgd_free(struct mm_struct *mm, pgd_t *pgd)
 {
@@ -85,4 +104,6 @@ pte_free(struct mm_struct *mm, pgtable_t page)
 
 #define check_pgt_cache()	do { } while (0)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ALPHA_PGALLOC_H */

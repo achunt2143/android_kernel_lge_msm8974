@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MM context support for the Hexagon architecture
  *
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,24 +21,35 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_MMU_CONTEXT_H
 #define _ASM_MMU_CONTEXT_H
 
+<<<<<<< HEAD
+=======
+#include <linux/mm_types.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/setup.h>
 #include <asm/page.h>
 #include <asm/pgalloc.h>
 #include <asm/mem-layout.h>
 
+<<<<<<< HEAD
 static inline void destroy_context(struct mm_struct *mm)
 {
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * VM port hides all TLB management, so "lazy TLB" isn't very
  * meaningful.  Even for ports to architectures with visble TLBs,
  * this is almost invariably a null function.
+<<<<<<< HEAD
  */
 static inline void enter_lazy_tlb(struct mm_struct *mm,
 	struct task_struct *tsk)
@@ -59,6 +75,11 @@ static inline int init_new_context(struct task_struct *tsk,
 	/* mm->context is set up by pgd_alloc */
 	return 0;
 }
+=======
+ *
+ * mm->context is set up by pgd_alloc, so no init_new_context required.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Switch active mm context
@@ -85,6 +106,10 @@ static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
 /*
  *  Activate new memory map for task
  */
+<<<<<<< HEAD
+=======
+#define activate_mm activate_mm
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void activate_mm(struct mm_struct *prev, struct mm_struct *next)
 {
 	unsigned long flags;
@@ -97,4 +122,9 @@ static inline void activate_mm(struct mm_struct *prev, struct mm_struct *next)
 /*  Generic hooks for arch_dup_mmap and arch_exit_mmap  */
 #include <asm-generic/mm_hooks.h>
 
+<<<<<<< HEAD
+=======
+#include <asm-generic/mmu_context.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

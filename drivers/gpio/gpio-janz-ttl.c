@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Janz MODULbus VMOD-TTL GPIO Driver
  *
  * Copyright (c) 2010 Ira W. Snyder <iws@ovro.caltech.edu>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -16,8 +23,14 @@
 #include <linux/delay.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <linux/slab.h>
+=======
+#include <linux/gpio/driver.h>
+#include <linux/slab.h>
+#include <linux/bitops.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mfd/janz.h>
 
@@ -33,9 +46,15 @@
 #define MASTER_INT_CTL		0x00
 #define MASTER_CONF_CTL		0x01
 
+<<<<<<< HEAD
 #define CONF_PAE		(1 << 2)
 #define CONF_PBE		(1 << 7)
 #define CONF_PCE		(1 << 4)
+=======
+#define CONF_PAE		BIT(2)
+#define CONF_PBE		BIT(7)
+#define CONF_PCE		BIT(4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ttl_control_regs {
 	__be16 portc;
@@ -59,7 +78,11 @@ struct ttl_module {
 
 static int ttl_get_value(struct gpio_chip *gpio, unsigned offset)
 {
+<<<<<<< HEAD
 	struct ttl_module *mod = dev_get_drvdata(gpio->dev);
+=======
+	struct ttl_module *mod = dev_get_drvdata(gpio->parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 *shadow;
 	int ret;
 
@@ -74,14 +97,24 @@ static int ttl_get_value(struct gpio_chip *gpio, unsigned offset)
 	}
 
 	spin_lock(&mod->lock);
+<<<<<<< HEAD
 	ret = *shadow & (1 << offset);
 	spin_unlock(&mod->lock);
 	return ret;
+=======
+	ret = *shadow & BIT(offset);
+	spin_unlock(&mod->lock);
+	return !!ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ttl_set_value(struct gpio_chip *gpio, unsigned offset, int value)
 {
+<<<<<<< HEAD
 	struct ttl_module *mod = dev_get_drvdata(gpio->dev);
+=======
+	struct ttl_module *mod = dev_get_drvdata(gpio->parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *port;
 	u8 *shadow;
 
@@ -100,21 +133,35 @@ static void ttl_set_value(struct gpio_chip *gpio, unsigned offset, int value)
 
 	spin_lock(&mod->lock);
 	if (value)
+<<<<<<< HEAD
 		*shadow |= (1 << offset);
 	else
 		*shadow &= ~(1 << offset);
+=======
+		*shadow |= BIT(offset);
+	else
+		*shadow &= ~BIT(offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iowrite16be(*shadow, port);
 	spin_unlock(&mod->lock);
 }
 
+<<<<<<< HEAD
 static void __devinit ttl_write_reg(struct ttl_module *mod, u8 reg, u16 val)
+=======
+static void ttl_write_reg(struct ttl_module *mod, u8 reg, u16 val)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	iowrite16be(reg, &mod->regs->control);
 	iowrite16be(val, &mod->regs->control);
 }
 
+<<<<<<< HEAD
 static void __devinit ttl_setup_device(struct ttl_module *mod)
+=======
+static void ttl_setup_device(struct ttl_module *mod)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* reset the device to a known state */
 	iowrite16be(0x0000, &mod->regs->control);
@@ -140,6 +187,7 @@ static void __devinit ttl_setup_device(struct ttl_module *mod)
 	ttl_write_reg(mod, MASTER_CONF_CTL, CONF_PAE | CONF_PBE | CONF_PCE);
 }
 
+<<<<<<< HEAD
 static int __devinit ttl_probe(struct platform_device *pdev)
 {
 	struct janz_platform_data *pdata;
@@ -162,11 +210,30 @@ static int __devinit ttl_probe(struct platform_device *pdev)
 		ret = -ENOMEM;
 		goto out_return;
 	}
+=======
+static int ttl_probe(struct platform_device *pdev)
+{
+	struct janz_platform_data *pdata;
+	struct ttl_module *mod;
+	struct gpio_chip *gpio;
+	int ret;
+
+	pdata = dev_get_platdata(&pdev->dev);
+	if (!pdata) {
+		dev_err(&pdev->dev, "no platform data\n");
+		return -ENXIO;
+	}
+
+	mod = devm_kzalloc(&pdev->dev, sizeof(*mod), GFP_KERNEL);
+	if (!mod)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(pdev, mod);
 	spin_lock_init(&mod->lock);
 
 	/* get access to the MODULbus registers for this module */
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		dev_err(dev, "MODULbus registers not found\n");
@@ -180,12 +247,21 @@ static int __devinit ttl_probe(struct platform_device *pdev)
 		ret = -ENOMEM;
 		goto out_free_mod;
 	}
+=======
+	mod->regs = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(mod->regs))
+		return PTR_ERR(mod->regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ttl_setup_device(mod);
 
 	/* Initialize the GPIO data structures */
 	gpio = &mod->gpio;
+<<<<<<< HEAD
 	gpio->dev = &pdev->dev;
+=======
+	gpio->parent = &pdev->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gpio->label = pdev->name;
 	gpio->get = ttl_get_value;
 	gpio->set = ttl_set_value;
@@ -195,6 +271,7 @@ static int __devinit ttl_probe(struct platform_device *pdev)
 	gpio->base = -1;
 	gpio->ngpio = 20;
 
+<<<<<<< HEAD
 	ret = gpiochip_add(gpio);
 	if (ret) {
 		dev_err(dev, "unable to add GPIO chip\n");
@@ -225,16 +302,29 @@ static int __devexit ttl_remove(struct platform_device *pdev)
 
 	iounmap(mod->regs);
 	kfree(mod);
+=======
+	ret = devm_gpiochip_add_data(&pdev->dev, gpio, NULL);
+	if (ret) {
+		dev_err(&pdev->dev, "unable to add GPIO chip\n");
+		return ret;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static struct platform_driver ttl_driver = {
 	.driver		= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= ttl_probe,
 	.remove		= __devexit_p(ttl_remove),
+=======
+	},
+	.probe		= ttl_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(ttl_driver);

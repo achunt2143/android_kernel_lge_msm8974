@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Qualcomm Serial USB driver
  *
@@ -9,6 +10,15 @@
  *	modify it under the terms of the GNU General Public License version
  *	2 as published by the Free Software Foundation.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Qualcomm Serial USB driver
+ *
+ *	Copyright (c) 2008 QUALCOMM Incorporated.
+ *	Copyright (c) 2009 Greg Kroah-Hartman <gregkh@suse.de>
+ *	Copyright (c) 2009 Novell Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/tty.h>
@@ -22,10 +32,29 @@
 #define DRIVER_AUTHOR "Qualcomm Inc"
 #define DRIVER_DESC "Qualcomm USB Serial driver"
 
+<<<<<<< HEAD
 static bool debug;
 
 #define DEVICE_G1K(v, p) \
 	USB_DEVICE(v, p), .driver_info = 1
+=======
+#define QUECTEL_EC20_PID	0x9215
+
+/* standard device layouts supported by this driver */
+enum qcserial_layouts {
+	QCSERIAL_G2K = 0,	/* Gobi 2000 */
+	QCSERIAL_G1K = 1,	/* Gobi 1000 */
+	QCSERIAL_SWI = 2,	/* Sierra Wireless */
+	QCSERIAL_HWI = 3,	/* Huawei */
+};
+
+#define DEVICE_G1K(v, p) \
+	USB_DEVICE(v, p), .driver_info = QCSERIAL_G1K
+#define DEVICE_SWI(v, p) \
+	USB_DEVICE(v, p), .driver_info = QCSERIAL_SWI
+#define DEVICE_HWI(v, p) \
+	USB_DEVICE(v, p), .driver_info = QCSERIAL_HWI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct usb_device_id id_table[] = {
 	/* Gobi 1000 devices */
@@ -112,6 +141,14 @@ static const struct usb_device_id id_table[] = {
 	{USB_DEVICE(0x1410, 0xa021)},	/* Novatel Gobi 3000 Composite */
 	{USB_DEVICE(0x413c, 0x8193)},	/* Dell Gobi 3000 QDL */
 	{USB_DEVICE(0x413c, 0x8194)},	/* Dell Gobi 3000 Composite */
+<<<<<<< HEAD
+=======
+	{USB_DEVICE(0x413c, 0x81a6)},	/* Dell DW5570 QDL (MC8805) */
+	{USB_DEVICE(0x1199, 0x68a4)},	/* Sierra Wireless QDL */
+	{USB_DEVICE(0x1199, 0x68a5)},	/* Sierra Wireless Modem */
+	{USB_DEVICE(0x1199, 0x68a8)},	/* Sierra Wireless QDL */
+	{USB_DEVICE(0x1199, 0x68a9)},	/* Sierra Wireless Modem */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{USB_DEVICE(0x1199, 0x9010)},	/* Sierra Wireless Gobi 3000 QDL */
 	{USB_DEVICE(0x1199, 0x9012)},	/* Sierra Wireless Gobi 3000 QDL */
 	{USB_DEVICE(0x1199, 0x9013)},	/* Sierra Wireless Gobi 3000 Modem device (MC8355) */
@@ -119,15 +156,77 @@ static const struct usb_device_id id_table[] = {
 	{USB_DEVICE(0x1199, 0x9015)},	/* Sierra Wireless Gobi 3000 Modem device */
 	{USB_DEVICE(0x1199, 0x9018)},	/* Sierra Wireless Gobi 3000 QDL */
 	{USB_DEVICE(0x1199, 0x9019)},	/* Sierra Wireless Gobi 3000 Modem device */
+<<<<<<< HEAD
 	{USB_DEVICE(0x12D1, 0x14F0)},	/* Sony Gobi 3000 QDL */
 	{USB_DEVICE(0x12D1, 0x14F1)},	/* Sony Gobi 3000 Composite */
 	{USB_DEVICE(0x05c6, 0x9048)},	/* MDM9x15 device */
 	{USB_DEVICE(0x05c6, 0x904C)},	/* MDM9x15 device */
 	{USB_DEVICE(0x0AF0, 0x8120)},	/* Option GTM681W */
+=======
+	{USB_DEVICE(0x1199, 0x901b)},	/* Sierra Wireless MC7770 */
+	{USB_DEVICE(0x12D1, 0x14F0)},	/* Sony Gobi 3000 QDL */
+	{USB_DEVICE(0x12D1, 0x14F1)},	/* Sony Gobi 3000 Composite */
+	{USB_DEVICE(0x0AF0, 0x8120)},	/* Option GTM681W */
+
+	/* non-Gobi Sierra Wireless devices */
+	{DEVICE_SWI(0x03f0, 0x4e1d)},	/* HP lt4111 LTE/EV-DO/HSPA+ Gobi 4G Module */
+	{DEVICE_SWI(0x0f3d, 0x68a2)},	/* Sierra Wireless MC7700 */
+	{DEVICE_SWI(0x114f, 0x68a2)},	/* Sierra Wireless MC7750 */
+	{DEVICE_SWI(0x1199, 0x68a2)},	/* Sierra Wireless MC7710 */
+	{DEVICE_SWI(0x1199, 0x68c0)},	/* Sierra Wireless MC7304/MC7354 */
+	{DEVICE_SWI(0x1199, 0x901c)},	/* Sierra Wireless EM7700 */
+	{DEVICE_SWI(0x1199, 0x901e)},	/* Sierra Wireless EM7355 QDL */
+	{DEVICE_SWI(0x1199, 0x901f)},	/* Sierra Wireless EM7355 */
+	{DEVICE_SWI(0x1199, 0x9040)},	/* Sierra Wireless Modem */
+	{DEVICE_SWI(0x1199, 0x9041)},	/* Sierra Wireless MC7305/MC7355 */
+	{DEVICE_SWI(0x1199, 0x9051)},	/* Netgear AirCard 340U */
+	{DEVICE_SWI(0x1199, 0x9053)},	/* Sierra Wireless Modem */
+	{DEVICE_SWI(0x1199, 0x9054)},	/* Sierra Wireless Modem */
+	{DEVICE_SWI(0x1199, 0x9055)},	/* Netgear AirCard 341U */
+	{DEVICE_SWI(0x1199, 0x9056)},	/* Sierra Wireless Modem */
+	{DEVICE_SWI(0x1199, 0x9060)},	/* Sierra Wireless Modem */
+	{DEVICE_SWI(0x1199, 0x9061)},	/* Sierra Wireless Modem */
+	{DEVICE_SWI(0x1199, 0x9062)},	/* Sierra Wireless EM7305 QDL */
+	{DEVICE_SWI(0x1199, 0x9063)},	/* Sierra Wireless EM7305 */
+	{DEVICE_SWI(0x1199, 0x9070)},	/* Sierra Wireless MC74xx */
+	{DEVICE_SWI(0x1199, 0x9071)},	/* Sierra Wireless MC74xx */
+	{DEVICE_SWI(0x1199, 0x9078)},	/* Sierra Wireless EM74xx */
+	{DEVICE_SWI(0x1199, 0x9079)},	/* Sierra Wireless EM74xx */
+	{DEVICE_SWI(0x1199, 0x907a)},	/* Sierra Wireless EM74xx QDL */
+	{DEVICE_SWI(0x1199, 0x907b)},	/* Sierra Wireless EM74xx */
+	{DEVICE_SWI(0x1199, 0x9090)},	/* Sierra Wireless EM7565 QDL */
+	{DEVICE_SWI(0x1199, 0x9091)},	/* Sierra Wireless EM7565 */
+	{DEVICE_SWI(0x1199, 0x90d2)},	/* Sierra Wireless EM9191 QDL */
+	{DEVICE_SWI(0x1199, 0xc080)},	/* Sierra Wireless EM7590 QDL */
+	{DEVICE_SWI(0x1199, 0xc081)},	/* Sierra Wireless EM7590 */
+	{DEVICE_SWI(0x413c, 0x81a2)},	/* Dell Wireless 5806 Gobi(TM) 4G LTE Mobile Broadband Card */
+	{DEVICE_SWI(0x413c, 0x81a3)},	/* Dell Wireless 5570 HSPA+ (42Mbps) Mobile Broadband Card */
+	{DEVICE_SWI(0x413c, 0x81a4)},	/* Dell Wireless 5570e HSPA+ (42Mbps) Mobile Broadband Card */
+	{DEVICE_SWI(0x413c, 0x81a8)},	/* Dell Wireless 5808 Gobi(TM) 4G LTE Mobile Broadband Card */
+	{DEVICE_SWI(0x413c, 0x81a9)},	/* Dell Wireless 5808e Gobi(TM) 4G LTE Mobile Broadband Card */
+	{DEVICE_SWI(0x413c, 0x81b1)},	/* Dell Wireless 5809e Gobi(TM) 4G LTE Mobile Broadband Card */
+	{DEVICE_SWI(0x413c, 0x81b3)},	/* Dell Wireless 5809e Gobi(TM) 4G LTE Mobile Broadband Card (rev3) */
+	{DEVICE_SWI(0x413c, 0x81b5)},	/* Dell Wireless 5811e QDL */
+	{DEVICE_SWI(0x413c, 0x81b6)},	/* Dell Wireless 5811e QDL */
+	{DEVICE_SWI(0x413c, 0x81c2)},	/* Dell Wireless 5811e */
+	{DEVICE_SWI(0x413c, 0x81cb)},	/* Dell Wireless 5816e QDL */
+	{DEVICE_SWI(0x413c, 0x81cc)},	/* Dell Wireless 5816e */
+	{DEVICE_SWI(0x413c, 0x81cf)},   /* Dell Wireless 5819 */
+	{DEVICE_SWI(0x413c, 0x81d0)},   /* Dell Wireless 5819 */
+	{DEVICE_SWI(0x413c, 0x81d1)},   /* Dell Wireless 5818 */
+	{DEVICE_SWI(0x413c, 0x81d2)},   /* Dell Wireless 5818 */
+	{DEVICE_SWI(0x413c, 0x8217)},	/* Dell Wireless DW5826e */
+	{DEVICE_SWI(0x413c, 0x8218)},	/* Dell Wireless DW5826e QDL */
+
+	/* Huawei devices */
+	{DEVICE_HWI(0x03f0, 0x581d)},	/* HP lt4112 LTE/HSPA+ Gobi 4G Modem (Huawei me906e) */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }				/* Terminating entry */
 };
 MODULE_DEVICE_TABLE(usb, id_table);
 
+<<<<<<< HEAD
 #define EFS_SYNC_IFC_NUM	2
 
 static struct usb_driver qcdriver = {
@@ -206,12 +305,127 @@ static int qcprobe(struct usb_serial *serial, const struct usb_device_id *id)
 		 * 2: AT-capable modem port
 		 * 3: QMI/net
 		 *
+=======
+static int handle_quectel_ec20(struct device *dev, int ifnum)
+{
+	int altsetting = 0;
+
+	/*
+	 * Quectel EC20 Mini PCIe LTE module layout:
+	 * 0: DM/DIAG (use libqcdm from ModemManager for communication)
+	 * 1: NMEA
+	 * 2: AT-capable modem port
+	 * 3: Modem interface
+	 * 4: NDIS
+	 */
+	switch (ifnum) {
+	case 0:
+		dev_dbg(dev, "Quectel EC20 DM/DIAG interface found\n");
+		break;
+	case 1:
+		dev_dbg(dev, "Quectel EC20 NMEA GPS interface found\n");
+		break;
+	case 2:
+	case 3:
+		dev_dbg(dev, "Quectel EC20 Modem port found\n");
+		break;
+	case 4:
+		/* Don't claim the QMI/net interface */
+		altsetting = -1;
+		break;
+	}
+
+	return altsetting;
+}
+
+static int qcprobe(struct usb_serial *serial, const struct usb_device_id *id)
+{
+	struct usb_host_interface *intf = serial->interface->cur_altsetting;
+	struct device *dev = &serial->dev->dev;
+	int retval = -ENODEV;
+	__u8 nintf;
+	__u8 ifnum;
+	int altsetting = -1;
+	bool sendsetup = false;
+
+	/* we only support vendor specific functions */
+	if (intf->desc.bInterfaceClass != USB_CLASS_VENDOR_SPEC)
+		goto done;
+
+	nintf = serial->dev->actconfig->desc.bNumInterfaces;
+	dev_dbg(dev, "Num Interfaces = %d\n", nintf);
+	ifnum = intf->desc.bInterfaceNumber;
+	dev_dbg(dev, "This Interface = %d\n", ifnum);
+
+	if (nintf == 1) {
+		/* QDL mode */
+		/* Gobi 2000 has a single altsetting, older ones have two */
+		if (serial->interface->num_altsetting == 2)
+			intf = usb_altnum_to_altsetting(serial->interface, 1);
+		else if (serial->interface->num_altsetting > 2)
+			goto done;
+
+		if (intf && intf->desc.bNumEndpoints == 2 &&
+		    usb_endpoint_is_bulk_in(&intf->endpoint[0].desc) &&
+		    usb_endpoint_is_bulk_out(&intf->endpoint[1].desc)) {
+			dev_dbg(dev, "QDL port found\n");
+
+			if (serial->interface->num_altsetting == 1)
+				retval = 0; /* Success */
+			else
+				altsetting = 1;
+		}
+		goto done;
+
+	}
+
+	/* default to enabling interface */
+	altsetting = 0;
+
+	/*
+	 * Composite mode; don't bind to the QMI/net interface as that
+	 * gets handled by other drivers.
+	 */
+
+	switch (id->driver_info) {
+	case QCSERIAL_G1K:
+		/*
+		 * Gobi 1K USB layout:
+		 * 0: DM/DIAG (use libqcdm from ModemManager for communication)
+		 * 1: serial port (doesn't respond)
+		 * 2: AT-capable modem port
+		 * 3: QMI/net
+		 */
+		if (nintf < 3 || nintf > 4) {
+			dev_err(dev, "unknown number of interfaces: %d\n", nintf);
+			altsetting = -1;
+			goto done;
+		}
+
+		if (ifnum == 0) {
+			dev_dbg(dev, "Gobi 1K DM/DIAG interface found\n");
+			altsetting = 1;
+		} else if (ifnum == 2)
+			dev_dbg(dev, "Modem port found\n");
+		else
+			altsetting = -1;
+		break;
+	case QCSERIAL_G2K:
+		/* handle non-standard layouts */
+		if (nintf == 5 && id->idProduct == QUECTEL_EC20_PID) {
+			altsetting = handle_quectel_ec20(dev, ifnum);
+			goto done;
+		}
+
+		/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * Gobi 2K+ USB layout:
 		 * 0: QMI/net
 		 * 1: DM/DIAG (use libqcdm from ModemManager for communication)
 		 * 2: AT-capable modem port
 		 * 3: NMEA
 		 */
+<<<<<<< HEAD
 
 		if (ifnum == 1 && !is_gobi1k) {
 			dbg("Gobi 2K+ DM/DIAG interface found");
@@ -234,11 +448,32 @@ static int qcprobe(struct usb_serial *serial, const struct usb_device_id *id)
 				kfree(data);
 			}
 		} else if (ifnum==3 && !is_gobi1k) {
+=======
+		if (nintf < 3 || nintf > 4) {
+			dev_err(dev, "unknown number of interfaces: %d\n", nintf);
+			altsetting = -1;
+			goto done;
+		}
+
+		switch (ifnum) {
+		case 0:
+			/* Don't claim the QMI/net interface */
+			altsetting = -1;
+			break;
+		case 1:
+			dev_dbg(dev, "Gobi 2K+ DM/DIAG interface found\n");
+			break;
+		case 2:
+			dev_dbg(dev, "Modem port found\n");
+			break;
+		case 3:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * NMEA (serial line 9600 8N1)
 			 * # echo "\$GPS_START" > /dev/ttyUSBx
 			 * # echo "\$GPS_STOP"  > /dev/ttyUSBx
 			 */
+<<<<<<< HEAD
 			dbg("Gobi 2K+ NMEA GPS interface found");
 			retval = usb_set_interface(serial->dev, ifnum, 0);
 			if (retval < 0) {
@@ -272,14 +507,128 @@ static int qcprobe(struct usb_serial *serial, const struct usb_device_id *id)
 	return retval;
 }
 
+=======
+			dev_dbg(dev, "Gobi 2K+ NMEA GPS interface found\n");
+			break;
+		}
+		break;
+	case QCSERIAL_SWI:
+		/*
+		 * Sierra Wireless layout:
+		 * 0: DM/DIAG (use libqcdm from ModemManager for communication)
+		 * 2: NMEA
+		 * 3: AT-capable modem port
+		 * 8: QMI/net
+		 */
+		switch (ifnum) {
+		case 0:
+			dev_dbg(dev, "DM/DIAG interface found\n");
+			break;
+		case 2:
+			dev_dbg(dev, "NMEA GPS interface found\n");
+			sendsetup = true;
+			break;
+		case 3:
+			dev_dbg(dev, "Modem port found\n");
+			sendsetup = true;
+			break;
+		default:
+			/* don't claim any unsupported interface */
+			altsetting = -1;
+			break;
+		}
+		break;
+	case QCSERIAL_HWI:
+		/*
+		 * Huawei devices map functions by subclass + protocol
+		 * instead of interface numbers. The protocol identify
+		 * a specific function, while the subclass indicate a
+		 * specific firmware source
+		 *
+		 * This is a list of functions known to be non-serial.  The rest
+		 * are assumed to be serial and will be handled by this driver
+		 */
+		switch (intf->desc.bInterfaceProtocol) {
+			/* QMI combined (qmi_wwan) */
+		case 0x07:
+		case 0x37:
+		case 0x67:
+			/* QMI data (qmi_wwan) */
+		case 0x08:
+		case 0x38:
+		case 0x68:
+			/* QMI control (qmi_wwan) */
+		case 0x09:
+		case 0x39:
+		case 0x69:
+			/* NCM like (huawei_cdc_ncm) */
+		case 0x16:
+		case 0x46:
+		case 0x76:
+			altsetting = -1;
+			break;
+		default:
+			dev_dbg(dev, "Huawei type serial port found (%02x/%02x/%02x)\n",
+				intf->desc.bInterfaceClass,
+				intf->desc.bInterfaceSubClass,
+				intf->desc.bInterfaceProtocol);
+		}
+		break;
+	default:
+		dev_err(dev, "unsupported device layout type: %lu\n",
+			id->driver_info);
+		break;
+	}
+
+done:
+	if (altsetting >= 0) {
+		retval = usb_set_interface(serial->dev, ifnum, altsetting);
+		if (retval < 0) {
+			dev_err(dev,
+				"Could not set interface, error %d\n",
+				retval);
+			retval = -ENODEV;
+		}
+	}
+
+	if (!retval)
+		usb_set_serial_data(serial, (void *)(unsigned long)sendsetup);
+
+	return retval;
+}
+
+static int qc_attach(struct usb_serial *serial)
+{
+	struct usb_wwan_intf_private *data;
+	bool sendsetup;
+
+	data = kzalloc(sizeof(*data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	sendsetup = !!(unsigned long)(usb_get_serial_data(serial));
+	if (sendsetup)
+		data->use_send_setup = 1;
+
+	spin_lock_init(&data->susp_lock);
+
+	usb_set_serial_data(serial, data);
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void qc_release(struct usb_serial *serial)
 {
 	struct usb_wwan_intf_private *priv = usb_get_serial_data(serial);
 
+<<<<<<< HEAD
 	dbg("%s", __func__);
 
 	/* Call usb_wwan release & free the private data allocated in qcprobe */
 	usb_wwan_release(serial);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_set_serial_data(serial, NULL);
 	kfree(priv);
 }
@@ -295,6 +644,7 @@ static struct usb_serial_driver qcdevice = {
 	.probe               = qcprobe,
 	.open		     = usb_wwan_open,
 	.close		     = usb_wwan_close,
+<<<<<<< HEAD
 	.write		     = usb_wwan_write,
 	.write_room	     = usb_wwan_write_room,
 	.chars_in_buffer     = usb_wwan_chars_in_buffer,
@@ -303,6 +653,18 @@ static struct usb_serial_driver qcdevice = {
 	.attach		     = usb_wwan_startup,
 	.disconnect	     = usb_wwan_disconnect,
 	.release	     = qc_release,
+=======
+	.dtr_rts	     = usb_wwan_dtr_rts,
+	.write		     = usb_wwan_write,
+	.write_room	     = usb_wwan_write_room,
+	.chars_in_buffer     = usb_wwan_chars_in_buffer,
+	.tiocmget            = usb_wwan_tiocmget,
+	.tiocmset            = usb_wwan_tiocmset,
+	.attach              = qc_attach,
+	.release	     = qc_release,
+	.port_probe          = usb_wwan_port_probe,
+	.port_remove	     = usb_wwan_port_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	     = usb_wwan_suspend,
 	.resume		     = usb_wwan_resume,
@@ -313,11 +675,18 @@ static struct usb_serial_driver * const serial_drivers[] = {
 	&qcdevice, NULL
 };
 
+<<<<<<< HEAD
 module_usb_serial_driver(qcdriver, serial_drivers);
+=======
+module_usb_serial_driver(serial_drivers, id_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL v2");
+<<<<<<< HEAD
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug enabled or not");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

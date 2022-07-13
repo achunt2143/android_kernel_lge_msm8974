@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright © 1999-2010 David Woodhouse <dwmw2@infradead.org>
  *
@@ -15,6 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright © 1999-2010 David Woodhouse <dwmw2@infradead.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MTD_NFTL_H__
@@ -50,7 +56,10 @@ struct NFTLrecord {
         unsigned int nb_blocks;		/* number of physical blocks */
         unsigned int nb_boot_blocks;	/* number of blocks used by the bios */
         struct erase_info instr;
+<<<<<<< HEAD
 	struct nand_ecclayout oobinfo;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int NFTL_mount(struct NFTLrecord *s);

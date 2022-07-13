@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * s390 (re)ipl support
  *
@@ -7,6 +11,7 @@
 #ifndef _ASM_S390_IPL_H
 #define _ASM_S390_IPL_H
 
+<<<<<<< HEAD
 #include <asm/types.h>
 #include <asm/cio.h>
 #include <asm/setup.h>
@@ -101,6 +106,64 @@ enum {
 	IPL_PARMBLOCK_VALID	= 2,
 	IPL_NSS_VALID		= 4,
 };
+=======
+#include <asm/lowcore.h>
+#include <asm/types.h>
+#include <asm/cio.h>
+#include <asm/setup.h>
+#include <asm/page.h>
+#include <uapi/asm/ipl.h>
+
+struct ipl_parameter_block {
+	struct ipl_pl_hdr hdr;
+	union {
+		struct ipl_pb_hdr pb0_hdr;
+		struct ipl_pb0_common common;
+		struct ipl_pb0_fcp fcp;
+		struct ipl_pb0_ccw ccw;
+		struct ipl_pb0_eckd eckd;
+		struct ipl_pb0_nvme nvme;
+		char raw[PAGE_SIZE - sizeof(struct ipl_pl_hdr)];
+	};
+} __packed __aligned(PAGE_SIZE);
+
+#define NSS_NAME_SIZE 8
+
+#define IPL_BP_FCP_LEN (sizeof(struct ipl_pl_hdr) + \
+			      sizeof(struct ipl_pb0_fcp))
+#define IPL_BP0_FCP_LEN (sizeof(struct ipl_pb0_fcp))
+
+#define IPL_BP_NVME_LEN (sizeof(struct ipl_pl_hdr) + \
+			      sizeof(struct ipl_pb0_nvme))
+#define IPL_BP0_NVME_LEN (sizeof(struct ipl_pb0_nvme))
+
+#define IPL_BP_CCW_LEN (sizeof(struct ipl_pl_hdr) + \
+			      sizeof(struct ipl_pb0_ccw))
+#define IPL_BP0_CCW_LEN (sizeof(struct ipl_pb0_ccw))
+
+#define IPL_BP_ECKD_LEN (sizeof(struct ipl_pl_hdr) + \
+			      sizeof(struct ipl_pb0_eckd))
+#define IPL_BP0_ECKD_LEN (sizeof(struct ipl_pb0_eckd))
+
+#define IPL_MAX_SUPPORTED_VERSION (0)
+
+#define IPL_RB_CERT_UNKNOWN ((unsigned short)-1)
+
+#define DIAG308_VMPARM_SIZE (64)
+#define DIAG308_SCPDATA_OFFSET offsetof(struct ipl_parameter_block, \
+					fcp.scp_data)
+#define DIAG308_SCPDATA_SIZE (PAGE_SIZE - DIAG308_SCPDATA_OFFSET)
+
+struct save_area;
+struct save_area * __init save_area_alloc(bool is_boot_cpu);
+struct save_area * __init save_area_boot_cpu(void);
+void __init save_area_add_regs(struct save_area *, void *regs);
+void __init save_area_add_vxrs(struct save_area *, __vector128 *vxrs);
+
+extern void s390_reset_system(void);
+extern size_t ipl_block_get_ascii_vmparm(char *dest, size_t size,
+					 const struct ipl_parameter_block *ipb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum ipl_type {
 	IPL_TYPE_UNKNOWN	= 1,
@@ -108,6 +171,13 @@ enum ipl_type {
 	IPL_TYPE_FCP		= 4,
 	IPL_TYPE_FCP_DUMP	= 8,
 	IPL_TYPE_NSS		= 16,
+<<<<<<< HEAD
+=======
+	IPL_TYPE_NVME		= 32,
+	IPL_TYPE_NVME_DUMP	= 64,
+	IPL_TYPE_ECKD		= 128,
+	IPL_TYPE_ECKD_DUMP	= 256,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ipl_info
@@ -119,10 +189,23 @@ struct ipl_info
 		} ccw;
 		struct {
 			struct ccw_dev_id dev_id;
+<<<<<<< HEAD
+=======
+		} eckd;
+		struct {
+			struct ccw_dev_id dev_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u64 wwpn;
 			u64 lun;
 		} fcp;
 		struct {
+<<<<<<< HEAD
+=======
+			u32 fid;
+			u32 nsid;
+		} nvme;
+		struct {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			char name[NSS_NAME_SIZE + 1];
 		} nss;
 	} data;
@@ -130,11 +213,50 @@ struct ipl_info
 
 extern struct ipl_info ipl_info;
 extern void setup_ipl(void);
+<<<<<<< HEAD
+=======
+extern void set_os_info_reipl_block(void);
+
+static inline bool is_ipl_type_dump(void)
+{
+	return (ipl_info.type == IPL_TYPE_FCP_DUMP) ||
+		(ipl_info.type == IPL_TYPE_ECKD_DUMP) ||
+		(ipl_info.type == IPL_TYPE_NVME_DUMP);
+}
+
+struct ipl_report {
+	struct ipl_parameter_block *ipib;
+	struct list_head components;
+	struct list_head certificates;
+	size_t size;
+};
+
+struct ipl_report_component {
+	struct list_head list;
+	struct ipl_rb_component_entry entry;
+};
+
+struct ipl_report_certificate {
+	struct list_head list;
+	struct ipl_rb_certificate_entry entry;
+	void *key;
+};
+
+struct kexec_buf;
+struct ipl_report *ipl_report_init(struct ipl_parameter_block *ipib);
+void *ipl_report_finish(struct ipl_report *report);
+int ipl_report_free(struct ipl_report *report);
+int ipl_report_add_component(struct ipl_report *report, struct kexec_buf *kbuf,
+			     unsigned char flags, unsigned short cert);
+int ipl_report_add_certificate(struct ipl_report *report, void *key,
+			       unsigned long addr, unsigned long len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * DIAG 308 support
  */
 enum diag308_subcode  {
+<<<<<<< HEAD
 	DIAG308_REL_HSA	= 2,
 	DIAG308_IPL	= 3,
 	DIAG308_DUMP	= 4,
@@ -159,6 +281,20 @@ enum diag308_flags {
 enum diag308_vm_flags {
 	DIAG308_VM_FLAGS_NSS_VALID	= 0x80,
 	DIAG308_VM_FLAGS_VP_VALID	= 0x40,
+=======
+	DIAG308_CLEAR_RESET = 0,
+	DIAG308_LOAD_NORMAL_RESET = 1,
+	DIAG308_REL_HSA = 2,
+	DIAG308_LOAD_CLEAR = 3,
+	DIAG308_LOAD_NORMAL_DUMP = 4,
+	DIAG308_SET = 5,
+	DIAG308_STORE = 6,
+	DIAG308_LOAD_NORMAL = 7,
+};
+
+enum diag308_subcode_flags {
+	DIAG308_FLAG_EI = 1UL << 16,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum diag308_rc {
@@ -167,8 +303,12 @@ enum diag308_rc {
 };
 
 extern int diag308(unsigned long subcode, void *addr);
+<<<<<<< HEAD
 extern void diag308_reset(void);
 extern void store_status(void);
+=======
+extern void store_status(void (*fn)(void *), void *data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void lgr_info_log(void);
 
 #endif /* _ASM_S390_IPL_H */

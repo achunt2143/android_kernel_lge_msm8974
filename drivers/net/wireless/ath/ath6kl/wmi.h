@@ -48,7 +48,11 @@
 
 #define A_BAND_24GHZ           0
 #define A_BAND_5GHZ            1
+<<<<<<< HEAD
 #define A_NUM_BANDS            2
+=======
+#define ATH6KL_NUM_BANDS       2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* in ms */
 #define WMI_IMPLICIT_PSTREAM_INACTIVITY_INT 5000
@@ -106,6 +110,11 @@ struct wmi_data_sync_bufs {
 #define WMM_AC_VI   2		/* video */
 #define WMM_AC_VO   3		/* voice */
 
+<<<<<<< HEAD
+=======
+#define WMI_VOICE_USER_PRIORITY		0x7
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct wmi {
 	u16 stream_exist_for_ac[WMM_NUM_AC];
 	u8 fat_pipe_exist;
@@ -182,6 +191,12 @@ enum wmi_data_hdr_flags {
 #define WMI_DATA_HDR_META_MASK      0x7
 #define WMI_DATA_HDR_META_SHIFT     13
 
+<<<<<<< HEAD
+=======
+#define WMI_DATA_HDR_PAD_BEFORE_DATA_MASK               0xFF
+#define WMI_DATA_HDR_PAD_BEFORE_DATA_SHIFT              0x8
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Macros for operating on WMI_DATA_HDR (info3) field */
 #define WMI_DATA_HDR_IF_IDX_MASK    0xF
 
@@ -423,6 +438,10 @@ enum wmi_cmd_id {
 	WMI_SET_FRAMERATES_CMDID,
 	WMI_SET_AP_PS_CMDID,
 	WMI_SET_QOS_SUPP_CMDID,
+<<<<<<< HEAD
+=======
+	WMI_SET_IE_CMDID,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* WMI_THIN_RESERVED_... mark the start and end
 	 * values for WMI_THIN_RESERVED command IDs. These
@@ -618,6 +637,27 @@ enum wmi_cmd_id {
 	WMI_SEND_MGMT_CMDID,
 	WMI_BEGIN_SCAN_CMDID,
 
+<<<<<<< HEAD
+=======
+	WMI_SET_BLACK_LIST,
+	WMI_SET_MCASTRATE,
+
+	WMI_STA_BMISS_ENHANCE_CMDID,
+
+	WMI_SET_REGDOMAIN_CMDID,
+
+	WMI_SET_RSSI_FILTER_CMDID,
+
+	WMI_SET_KEEP_ALIVE_EXT,
+
+	WMI_VOICE_DETECTION_ENABLE_CMDID,
+
+	WMI_SET_TXE_NOTIFY_CMDID,
+
+	WMI_SET_RECOVERY_TEST_PARAMETER_CMDID, /*0xf094*/
+
+	WMI_ENABLE_SCHED_SCAN_CMDID,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum wmi_mgmt_frame_type {
@@ -629,6 +669,14 @@ enum wmi_mgmt_frame_type {
 	WMI_NUM_MGMT_FRAME
 };
 
+<<<<<<< HEAD
+=======
+enum wmi_ie_field_type {
+	WMI_RSN_IE_CAPB	= 0x1,
+	WMI_IE_FULL	= 0xFF,  /* indicats full IE */
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* WMI_CONNECT_CMDID  */
 enum network_type {
 	INFRA_NETWORK = 0x01,
@@ -669,7 +717,11 @@ enum auth_mode {
 
 /*
  * NB: these values are ordered carefully; there are lots of
+<<<<<<< HEAD
  * of implications in any reordering.  In particular beware
+=======
+ * implications in any reordering.  In particular beware
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * that 4 is not used to avoid conflicting with IEEE80211_F_PRIVACY.
  */
 #define ATH6KL_CIPHER_WEP            0
@@ -828,13 +880,21 @@ struct wmi_begin_scan_cmd {
 	u8 scan_type;
 
 	/* Supported rates to advertise in the probe request frames */
+<<<<<<< HEAD
 	struct wmi_supp_rates supp_rates[IEEE80211_NUM_BANDS];
+=======
+	struct wmi_supp_rates supp_rates[ATH6KL_NUM_BANDS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* how many channels follow */
 	u8 num_ch;
 
 	/* channels in Mhz */
+<<<<<<< HEAD
 	__le16 ch_list[1];
+=======
+	__le16 ch_list[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* wmi_start_scan_cmd is to be deprecated. Use
@@ -860,7 +920,11 @@ struct wmi_start_scan_cmd {
 	u8 num_ch;
 
 	/* channels in Mhz */
+<<<<<<< HEAD
 	__le16 ch_list[1];
+=======
+	__le16 ch_list[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /*
@@ -869,7 +933,10 @@ struct wmi_start_scan_cmd {
  *  flags here
  */
 enum wmi_scan_ctrl_flags_bits {
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set if can scan in the connect cmd */
 	CONNECT_SCAN_CTRL_FLAGS = 0x01,
 
@@ -926,6 +993,14 @@ struct wmi_scan_params_cmd {
 	__le32 max_dfsch_act_time;
 } __packed;
 
+<<<<<<< HEAD
+=======
+/* WMI_ENABLE_SCHED_SCAN_CMDID */
+struct wmi_enable_sched_scan_cmd {
+	u8 enable;
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* WMI_SET_BSS_FILTER_CMDID */
 enum wmi_bss_filter {
 	/* no beacons forwarded */
@@ -949,6 +1024,12 @@ enum wmi_bss_filter {
 	/* beacons matching probed ssid */
 	PROBED_SSID_FILTER,
 
+<<<<<<< HEAD
+=======
+	/* beacons matching matched ssid */
+	MATCHED_SSID_FILTER,
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* marker only */
 	LAST_BSS_FILTER,
 };
@@ -967,7 +1048,11 @@ struct wmi_bss_filter_cmd {
 } __packed;
 
 /* WMI_SET_PROBED_SSID_CMDID */
+<<<<<<< HEAD
 #define MAX_PROBED_SSID_INDEX   9
+=======
+#define MAX_PROBED_SSIDS   16
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum wmi_ssid_flag {
 	/* disables entry */
@@ -978,10 +1063,20 @@ enum wmi_ssid_flag {
 
 	/* probes for any ssid */
 	ANY_SSID_FLAG = 0x02,
+<<<<<<< HEAD
 };
 
 struct wmi_probed_ssid_cmd {
 	/* 0 to MAX_PROBED_SSID_INDEX */
+=======
+
+	/* match for ssid */
+	MATCH_SSID_FLAG = 0x08,
+};
+
+struct wmi_probed_ssid_cmd {
+	/* 0 to MAX_PROBED_SSIDS - 1 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 entry_index;
 
 	/* see, enum wmi_ssid_flg */
@@ -1006,6 +1101,19 @@ struct wmi_bmiss_time_cmd {
 	__le16 num_beacons;
 };
 
+<<<<<<< HEAD
+=======
+/* WMI_STA_ENHANCE_BMISS_CMDID */
+struct wmi_sta_bmiss_enhance_cmd {
+	u8 enable;
+} __packed;
+
+struct wmi_set_regdomain_cmd {
+	u8 length;
+	u8 iso_name[2];
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* WMI_SET_POWER_MODE_CMDID */
 enum wmi_power_mode {
 	REC_POWER = 0x01,
@@ -1018,7 +1126,11 @@ struct wmi_power_mode_cmd {
 } __packed;
 
 /*
+<<<<<<< HEAD
  * Policy to determnine whether power save failure event should be sent to
+=======
+ * Policy to determine whether power save failure event should be sent to
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * host during scanning
  */
 enum power_save_fail_event_policy {
@@ -1037,6 +1149,39 @@ struct wmi_power_params_cmd {
 	__le16 ps_fail_event_policy;
 } __packed;
 
+<<<<<<< HEAD
+=======
+/*
+ * Ratemask for below modes should be passed
+ * to WMI_SET_TX_SELECT_RATES_CMDID.
+ * AR6003 has 32 bit mask for each modes.
+ * First 12 bits for legacy rates, 13 to 20
+ * bits for HT 20 rates and 21 to 28 bits for
+ * HT 40 rates
+ */
+enum wmi_mode_phy {
+	WMI_RATES_MODE_11A = 0,
+	WMI_RATES_MODE_11G,
+	WMI_RATES_MODE_11B,
+	WMI_RATES_MODE_11GONLY,
+	WMI_RATES_MODE_11A_HT20,
+	WMI_RATES_MODE_11G_HT20,
+	WMI_RATES_MODE_11A_HT40,
+	WMI_RATES_MODE_11G_HT40,
+	WMI_RATES_MODE_MAX
+};
+
+/* WMI_SET_TX_SELECT_RATES_CMDID */
+struct wmi_set_tx_select_rates32_cmd {
+	__le32 ratemask[WMI_RATES_MODE_MAX];
+} __packed;
+
+/* WMI_SET_TX_SELECT_RATES_CMDID */
+struct wmi_set_tx_select_rates64_cmd {
+	__le64 ratemask[WMI_RATES_MODE_MAX];
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* WMI_SET_DISC_TIMEOUT_CMDID */
 struct wmi_disc_timeout_cmd {
 	/* seconds */
@@ -1142,6 +1287,10 @@ enum wmi_phy_mode {
 	WMI_11AG_MODE = 0x3,
 	WMI_11B_MODE = 0x4,
 	WMI_11GONLY_MODE = 0x5,
+<<<<<<< HEAD
+=======
+	WMI_11G_HT20	= 0x6,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define WMI_MAX_CHANNELS        32
@@ -1198,7 +1347,11 @@ struct wmi_snr_threshold_params_cmd {
 	/* "alpha" */
 	u8 weight;
 
+<<<<<<< HEAD
 	/* lowest of uppper */
+=======
+	/* lowest of upper */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 thresh_above1_val;
 
 	u8 thresh_above2_val;
@@ -1219,6 +1372,14 @@ struct wmi_snr_threshold_params_cmd {
 	u8 reserved[3];
 } __packed;
 
+<<<<<<< HEAD
+=======
+/* Don't report BSSs with signal (RSSI) below this threshold */
+struct wmi_set_rssi_filter_cmd {
+	s8 rssi;
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum wmi_preamble_policy {
 	WMI_IGNORE_BARKER_IN_ERP = 0,
 	WMI_FOLLOW_BARKER_IN_ERP,
@@ -1268,6 +1429,19 @@ struct wmi_mcast_filter_add_del_cmd {
 	u8 mcast_mac[ATH6KL_MCAST_FILTER_MAC_ADDR_SIZE];
 } __packed;
 
+<<<<<<< HEAD
+=======
+struct wmi_set_htcap_cmd {
+	u8 band;
+	u8 ht_enable;
+	u8 ht40_supported;
+	u8 ht20_sgi;
+	u8 ht40_sgi;
+	u8 intolerant_40mhz;
+	u8 max_ampdu_len_exp;
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Command Replies */
 
 /* WMI_GET_CHANNEL_LIST_CMDID reply */
@@ -1278,7 +1452,11 @@ struct wmi_channel_list_reply {
 	u8 num_ch;
 
 	/* channel in Mhz */
+<<<<<<< HEAD
 	__le16 ch_list[1];
+=======
+	__le16 ch_list[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* List of Events (target to host) */
@@ -1388,6 +1566,23 @@ enum wmi_event_id {
 	WMI_P2P_CAPABILITIES_EVENTID,
 	WMI_RX_ACTION_EVENTID,
 	WMI_P2P_INFO_EVENTID,
+<<<<<<< HEAD
+=======
+
+	/* WPS Events */
+	WMI_WPS_GET_STATUS_EVENTID,
+	WMI_WPS_PROFILE_EVENTID,
+
+	/* more P2P events */
+	WMI_NOA_INFO_EVENTID,
+	WMI_OPPPS_INFO_EVENTID,
+	WMI_PORT_STATUS_EVENTID,
+
+	/* 802.11w */
+	WMI_GET_RSN_CAP_EVENTID,
+
+	WMI_TXE_NOTIFY_EVENTID,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct wmi_ready_event_2 {
@@ -1397,6 +1592,19 @@ struct wmi_ready_event_2 {
 	u8 phy_cap;
 } __packed;
 
+<<<<<<< HEAD
+=======
+/* WMI_PHY_CAPABILITY */
+enum wmi_phy_cap {
+	WMI_11A_CAP = 0x01,
+	WMI_11G_CAP = 0x02,
+	WMI_11AG_CAP = 0x03,
+	WMI_11AN_CAP = 0x04,
+	WMI_11GN_CAP = 0x05,
+	WMI_11AGN_CAP = 0x06,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Connect Event */
 struct wmi_connect_event {
 	union {
@@ -1408,8 +1616,13 @@ struct wmi_connect_event {
 			__le32 nw_type;
 		} sta;
 		struct {
+<<<<<<< HEAD
 			u8 phymode;
 			u8 aid;
+=======
+			u8 aid;
+			u8 phymode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u8 mac_addr[ETH_ALEN];
 			u8 auth;
 			u8 keymgmt;
@@ -1426,7 +1639,11 @@ struct wmi_connect_event {
 	u8 beacon_ie_len;
 	u8 assoc_req_len;
 	u8 assoc_resp_len;
+<<<<<<< HEAD
 	u8 assoc_info[1];
+=======
+	u8 assoc_info[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* Disconnect Event */
@@ -1449,6 +1666,20 @@ enum wmi_disconnect_reason {
 	IBSS_MERGE = 0xe,
 };
 
+<<<<<<< HEAD
+=======
+/* AP mode disconnect proto_reasons */
+enum ap_disconnect_reason {
+	WMI_AP_REASON_STA_LEFT		= 101,
+	WMI_AP_REASON_FROM_HOST		= 102,
+	WMI_AP_REASON_COMM_TIMEOUT	= 103,
+	WMI_AP_REASON_MAX_STA		= 104,
+	WMI_AP_REASON_ACL		= 105,
+	WMI_AP_REASON_STA_ROAM		= 106,
+	WMI_AP_REASON_DFS_CHANNEL	= 107,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ATH6KL_COUNTRY_RD_SHIFT        16
 
 struct ath6kl_wmi_regdomain {
@@ -1466,7 +1697,11 @@ struct wmi_disconnect_event {
 	u8 disconn_reason;
 
 	u8 assoc_resp_len;
+<<<<<<< HEAD
 	u8 assoc_info[1];
+=======
+	u8 assoc_info[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /*
@@ -1507,7 +1742,11 @@ struct bss_bias {
 
 struct bss_bias_info {
 	u8 num_bss;
+<<<<<<< HEAD
 	struct bss_bias bss_bias[0];
+=======
+	struct bss_bias bss_bias[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct low_rssi_scan_params {
@@ -1529,6 +1768,17 @@ struct roam_ctrl_cmd {
 	u8 roam_ctrl;
 } __packed;
 
+<<<<<<< HEAD
+=======
+struct set_beacon_int_cmd {
+	__le32 beacon_intvl;
+} __packed;
+
+struct set_dtim_cmd {
+	__le32 dtim_period;
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* BSS INFO HDR version 2.0 */
 struct wmi_bss_info_hdr2 {
 	__le16 ch; /* frequency in MHz */
@@ -1582,7 +1832,11 @@ struct wmi_neighbor_info {
 
 struct wmi_neighbor_report_event {
 	u8 num_neighbors;
+<<<<<<< HEAD
 	struct wmi_neighbor_info neighbor[0];
+=======
+	struct wmi_neighbor_info neighbor[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* TKIP MIC Error Event */
@@ -1657,6 +1911,12 @@ struct rx_stats {
 	a_sle32 ucast_rate;
 } __packed;
 
+<<<<<<< HEAD
+=======
+#define RATE_INDEX_WITHOUT_SGI_MASK     0x7f
+#define RATE_INDEX_MSB     0x80
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct tkip_ccmp_stats {
 	__le32 tkip_local_mic_fail;
 	__le32 tkip_cnter_measures_invoked;
@@ -1816,7 +2076,11 @@ union wmi_ap_info {
 struct wmi_aplist_event {
 	u8 ap_list_ver;
 	u8 num_ap;
+<<<<<<< HEAD
 	union wmi_ap_info ap_list[1];
+=======
+	union wmi_ap_info ap_list[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* Developer Commands */
@@ -1910,7 +2174,19 @@ struct wmi_get_keepalive_cmd {
 struct wmi_set_appie_cmd {
 	u8 mgmt_frm_type; /* enum wmi_mgmt_frame_type */
 	u8 ie_len;
+<<<<<<< HEAD
 	u8 ie_info[0];
+=======
+	u8 ie_info[];
+} __packed;
+
+struct wmi_set_ie_cmd {
+	u8 ie_id;
+	u8 ie_field;	/* enum wmi_ie_field_type */
+	u8 ie_len;
+	u8 reserved;
+	u8 ie_info[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* Notify the WSC registration status to the target */
@@ -1919,7 +2195,10 @@ struct wmi_set_appie_cmd {
 
 #define WOW_MAX_FILTERS_PER_LIST 4
 #define WOW_PATTERN_SIZE	 64
+<<<<<<< HEAD
 #define WOW_MASK_SIZE		 64
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAC_MAX_FILTERS_PER_LIST 4
 
@@ -1928,7 +2207,11 @@ struct wow_filter {
 	u8 wow_filter_id;
 	u8 wow_filter_size;
 	u8 wow_filter_offset;
+<<<<<<< HEAD
 	u8 wow_filter_mask[WOW_MASK_SIZE];
+=======
+	u8 wow_filter_mask[WOW_PATTERN_SIZE];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 wow_filter_pattern[WOW_PATTERN_SIZE];
 } __packed;
 
@@ -1979,7 +2262,11 @@ struct wmi_add_wow_pattern_cmd {
 	u8 filter_list_id;
 	u8 filter_size;
 	u8 filter_offset;
+<<<<<<< HEAD
 	u8 filter[0];
+=======
+	u8 filter[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct wmi_del_wow_pattern_cmd {
@@ -1987,6 +2274,22 @@ struct wmi_del_wow_pattern_cmd {
 	__le16 filter_id;
 } __packed;
 
+<<<<<<< HEAD
+=======
+/* WMI_SET_TXE_NOTIFY_CMDID */
+struct wmi_txe_notify_cmd {
+	__le32 rate;
+	__le32 pkts;
+	__le32 intvl;
+} __packed;
+
+/* WMI_TXE_NOTIFY_EVENTID */
+struct wmi_txe_notify_event {
+	__le32 rate;
+	__le32 pkts;
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* WMI_SET_AKMP_PARAMS_CMD */
 
 struct wmi_pmkid {
@@ -2141,6 +2444,14 @@ struct wmi_ap_hidden_ssid_cmd {
 	u8 hidden_ssid;
 } __packed;
 
+<<<<<<< HEAD
+=======
+struct wmi_set_inact_period_cmd {
+	__le32 inact_period;
+	u8 num_null_func;
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* AP mode events */
 struct wmi_ap_set_apsd_cmd {
 	u8 enable;
@@ -2194,7 +2505,11 @@ struct wmi_send_action_cmd {
 	__le32 freq;
 	__le32 wait;
 	__le16 len;
+<<<<<<< HEAD
 	u8 data[0];
+=======
+	u8 data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct wmi_send_mgmt_cmd {
@@ -2203,7 +2518,11 @@ struct wmi_send_mgmt_cmd {
 	__le32 wait;
 	__le32 no_cck;
 	__le16 len;
+<<<<<<< HEAD
 	u8 data[0];
+=======
+	u8 data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct wmi_tx_status_event {
@@ -2223,7 +2542,11 @@ struct wmi_set_appie_extended_cmd {
 	u8 role_id;
 	u8 mgmt_frm_type;
 	u8 ie_len;
+<<<<<<< HEAD
 	u8 ie_info[0];
+=======
+	u8 ie_info[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct wmi_remain_on_chnl_event {
@@ -2240,18 +2563,30 @@ struct wmi_cancel_remain_on_chnl_event {
 struct wmi_rx_action_event {
 	__le32 freq;
 	__le16 len;
+<<<<<<< HEAD
 	u8 data[0];
+=======
+	u8 data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct wmi_p2p_capabilities_event {
 	__le16 len;
+<<<<<<< HEAD
 	u8 data[0];
+=======
+	u8 data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct wmi_p2p_rx_probe_req_event {
 	__le32 freq;
 	__le16 len;
+<<<<<<< HEAD
 	u8 data[0];
+=======
+	u8 data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 #define P2P_FLAG_CAPABILITIES_REQ   (0x00000001)
@@ -2265,7 +2600,11 @@ struct wmi_get_p2p_info {
 struct wmi_p2p_info_event {
 	__le32 info_req_flags;
 	__le16 len;
+<<<<<<< HEAD
 	u8 data[0];
+=======
+	u8 data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 struct wmi_p2p_capabilities {
@@ -2284,7 +2623,11 @@ struct wmi_p2p_probe_response_cmd {
 	__le32 freq;
 	u8 destination_addr[ETH_ALEN];
 	__le16 len;
+<<<<<<< HEAD
 	u8 data[0];
+=======
+	u8 data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* Extended WMI (WMIX)
@@ -2390,9 +2733,15 @@ int ath6kl_wmi_connect_cmd(struct wmi *wmi, u8 if_idx,
 			   enum network_type nw_type,
 			   enum dot11_auth_mode dot11_auth_mode,
 			   enum auth_mode auth_mode,
+<<<<<<< HEAD
 			   enum crypto_type pairwise_crypto,
 			   u8 pairwise_crypto_len,
 			   enum crypto_type group_crypto,
+=======
+			   enum ath6kl_crypto_type pairwise_crypto,
+			   u8 pairwise_crypto_len,
+			   enum ath6kl_crypto_type group_crypto,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   u8 group_crypto_len, int ssid_len, u8 *ssid,
 			   u8 *bssid, u16 channel, u32 ctrl_flags,
 			   u8 nw_subtype);
@@ -2400,11 +2749,14 @@ int ath6kl_wmi_connect_cmd(struct wmi *wmi, u8 if_idx,
 int ath6kl_wmi_reconnect_cmd(struct wmi *wmi, u8 if_idx, u8 *bssid,
 			     u16 channel);
 int ath6kl_wmi_disconnect_cmd(struct wmi *wmi, u8 if_idx);
+<<<<<<< HEAD
 int ath6kl_wmi_startscan_cmd(struct wmi *wmi, u8 if_idx,
 			     enum wmi_scan_type scan_type,
 			     u32 force_fgscan, u32 is_legacy,
 			     u32 home_dwell_time, u32 force_scan_interval,
 			     s8 num_chan, u16 *ch_list);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int ath6kl_wmi_beginscan_cmd(struct wmi *wmi, u8 if_idx,
 			     enum wmi_scan_type scan_type,
@@ -2412,6 +2764,10 @@ int ath6kl_wmi_beginscan_cmd(struct wmi *wmi, u8 if_idx,
 			     u32 home_dwell_time, u32 force_scan_interval,
 			     s8 num_chan, u16 *ch_list, u32 no_cck,
 			     u32 *rates);
+<<<<<<< HEAD
+=======
+int ath6kl_wmi_enable_sched_scan_cmd(struct wmi *wmi, u8 if_idx, bool enable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int ath6kl_wmi_scanparams_cmd(struct wmi *wmi, u8 if_idx, u16 fg_start_sec,
 			      u16 fg_end_sec, u16 bg_sec,
@@ -2448,13 +2804,21 @@ int ath6kl_wmi_config_debug_module_cmd(struct wmi *wmi, u32 valid, u32 config);
 
 int ath6kl_wmi_get_stats_cmd(struct wmi *wmi, u8 if_idx);
 int ath6kl_wmi_addkey_cmd(struct wmi *wmi, u8 if_idx, u8 key_index,
+<<<<<<< HEAD
 			  enum crypto_type key_type,
+=======
+			  enum ath6kl_crypto_type key_type,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  u8 key_usage, u8 key_len,
 			  u8 *key_rsc, unsigned int key_rsc_len,
 			  u8 *key_material,
 			  u8 key_op_ctrl, u8 *mac_addr,
 			  enum wmi_sync_flag sync_flag);
+<<<<<<< HEAD
 int ath6kl_wmi_add_krk_cmd(struct wmi *wmi, u8 if_idx, u8 *krk);
+=======
+int ath6kl_wmi_add_krk_cmd(struct wmi *wmi, u8 if_idx, const u8 *krk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ath6kl_wmi_deletekey_cmd(struct wmi *wmi, u8 if_idx, u8 key_index);
 int ath6kl_wmi_setpmkid_cmd(struct wmi *wmi, u8 if_idx, const u8 *bssid,
 			    const u8 *pmkid, bool set);
@@ -2465,14 +2829,28 @@ int ath6kl_wmi_get_roam_tbl_cmd(struct wmi *wmi);
 int ath6kl_wmi_set_wmm_txop(struct wmi *wmi, u8 if_idx, enum wmi_txop_cfg cfg);
 int ath6kl_wmi_set_keepalive_cmd(struct wmi *wmi, u8 if_idx,
 				 u8 keep_alive_intvl);
+<<<<<<< HEAD
 int ath6kl_wmi_test_cmd(struct wmi *wmi, void *buf, size_t len);
 
 s32 ath6kl_wmi_get_rate(s8 rate_index);
+=======
+int ath6kl_wmi_set_htcap_cmd(struct wmi *wmi, u8 if_idx,
+			     enum nl80211_band band,
+			     struct ath6kl_htcap *htcap);
+int ath6kl_wmi_test_cmd(struct wmi *wmi, void *buf, size_t len);
+
+s32 ath6kl_wmi_get_rate(struct wmi *wmi, s8 rate_index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int ath6kl_wmi_set_ip_cmd(struct wmi *wmi, u8 if_idx,
 			  __be32 ips0, __be32 ips1);
 int ath6kl_wmi_set_host_sleep_mode_cmd(struct wmi *wmi, u8 if_idx,
 				       enum ath6kl_host_mode host_mode);
+<<<<<<< HEAD
+=======
+int ath6kl_wmi_set_bitrate_mask(struct wmi *wmi, u8 if_idx,
+				const struct cfg80211_bitrate_mask *mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ath6kl_wmi_set_wow_mode_cmd(struct wmi *wmi, u8 if_idx,
 				enum ath6kl_wow_mode wow_mode,
 				u32 filter, u16 host_req_delay);
@@ -2482,12 +2860,28 @@ int ath6kl_wmi_add_wow_pattern_cmd(struct wmi *wmi, u8 if_idx,
 				   const u8 *mask);
 int ath6kl_wmi_del_wow_pattern_cmd(struct wmi *wmi, u8 if_idx,
 				   u16 list_id, u16 filter_id);
+<<<<<<< HEAD
 int ath6kl_wmi_set_roam_lrssi_cmd(struct wmi *wmi, u8 lrssi);
+=======
+int ath6kl_wmi_set_rssi_filter_cmd(struct wmi *wmi, u8 if_idx, s8 rssi);
+int ath6kl_wmi_set_roam_lrssi_cmd(struct wmi *wmi, u8 lrssi);
+int ath6kl_wmi_ap_set_dtim_cmd(struct wmi *wmi, u8 if_idx, u32 dtim_period);
+int ath6kl_wmi_ap_set_beacon_intvl_cmd(struct wmi *wmi, u8 if_idx,
+				       u32 beacon_interval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ath6kl_wmi_force_roam_cmd(struct wmi *wmi, const u8 *bssid);
 int ath6kl_wmi_set_roam_mode_cmd(struct wmi *wmi, enum wmi_roam_mode mode);
 int ath6kl_wmi_mcast_filter_cmd(struct wmi *wmi, u8 if_idx, bool mc_all_on);
 int ath6kl_wmi_add_del_mcast_filter_cmd(struct wmi *wmi, u8 if_idx,
 					u8 *filter, bool add_filter);
+<<<<<<< HEAD
+=======
+int ath6kl_wmi_sta_bmiss_enhance_cmd(struct wmi *wmi, u8 if_idx, bool enable);
+int ath6kl_wmi_set_txe_notify(struct wmi *wmi, u8 idx,
+			      u32 rate, u32 pkts, u32 intvl);
+int ath6kl_wmi_set_regdomain_cmd(struct wmi *wmi, const char *alpha2);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* AP mode uAPSD */
 int ath6kl_wmi_ap_set_apsd(struct wmi *wmi, u8 if_idx, u8 enable);
 
@@ -2515,6 +2909,12 @@ int ath6kl_wmi_set_rx_frame_format_cmd(struct wmi *wmi, u8 if_idx,
 int ath6kl_wmi_set_appie_cmd(struct wmi *wmi, u8 if_idx, u8 mgmt_frm_type,
 			     const u8 *ie, u8 ie_len);
 
+<<<<<<< HEAD
+=======
+int ath6kl_wmi_set_ie_cmd(struct wmi *wmi, u8 if_idx, u8 ie_id, u8 ie_field,
+			  const u8 *ie_info, u8 ie_len);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* P2P */
 int ath6kl_wmi_disable_11b_rates_cmd(struct wmi *wmi, bool disable);
 
@@ -2538,7 +2938,15 @@ int ath6kl_wmi_cancel_remain_on_chnl_cmd(struct wmi *wmi, u8 if_idx);
 int ath6kl_wmi_set_appie_cmd(struct wmi *wmi, u8 if_idx, u8 mgmt_frm_type,
 			     const u8 *ie, u8 ie_len);
 
+<<<<<<< HEAD
 void ath6kl_wmi_sscan_timer(unsigned long ptr);
+=======
+int ath6kl_wmi_set_inact_period(struct wmi *wmi, u8 if_idx, int inact_timeout);
+
+void ath6kl_wmi_sscan_timer(struct timer_list *t);
+
+int ath6kl_wmi_get_challenge_resp_cmd(struct wmi *wmi, u32 cookie, u32 source);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ath6kl_vif *ath6kl_get_vif_by_index(struct ath6kl *ar, u8 if_idx);
 void *ath6kl_wmi_init(struct ath6kl *devt);

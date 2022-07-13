@@ -19,7 +19,10 @@
 #define KDB_CMD_GO	(-1001)
 #define KDB_CMD_CPU	(-1002)
 #define KDB_CMD_SS	(-1003)
+<<<<<<< HEAD
 #define KDB_CMD_SSB	(-1004)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KDB_CMD_KGDB (-1005)
 
 /* Internal debug flags */
@@ -65,7 +68,11 @@
 
 /*
  * KDB_MAXBPT describes the total number of breakpoints
+<<<<<<< HEAD
  * supported by this architecure.
+=======
+ * supported by this architecture.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define KDB_MAXBPT	16
 
@@ -84,7 +91,11 @@ typedef struct __ksymtab {
 		unsigned long sym_start;
 		unsigned long sym_end;
 		} kdb_symtab_t;
+<<<<<<< HEAD
 extern int kallsyms_symbol_next(char *prefix_name, int flag);
+=======
+extern int kallsyms_symbol_next(char *prefix_name, int flag, int buf_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int kallsyms_symbol_complete(char *prefix_name, int max_len);
 
 /* Exported Symbols for kernel loadable modules to use. */
@@ -110,7 +121,10 @@ extern int kdbgetaddrarg(int, const char **, int*, unsigned long *,
 			 long *, char **);
 extern int kdbgetsymval(const char *, kdb_symtab_t *);
 extern int kdbnearsym(unsigned long, kdb_symtab_t *);
+<<<<<<< HEAD
 extern void kdbnearsym_cleanup(void);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern char *kdb_strdup(const char *str, gfp_t type);
 extern void kdb_symbol_print(unsigned long, const kdb_symtab_t *, unsigned int);
 
@@ -125,8 +139,11 @@ extern int kdb_state;
 						 * kdb control */
 #define KDB_STATE_HOLD_CPU	0x00000010	/* Hold this cpu inside kdb */
 #define KDB_STATE_DOING_SS	0x00000020	/* Doing ss command */
+<<<<<<< HEAD
 #define KDB_STATE_DOING_SSB	0x00000040	/* Doing ssb command,
 						 * DOING_SS is also set */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KDB_STATE_SSBPT		0x00000080	/* Install breakpoint
 						 * after one ss, independent of
 						 * DOING_SS */
@@ -135,7 +152,10 @@ extern int kdb_state;
 #define KDB_STATE_PAGER		0x00000400	/* pager is available */
 #define KDB_STATE_GO_SWITCH	0x00000800	/* go is switching
 						 * back to initial cpu */
+<<<<<<< HEAD
 #define KDB_STATE_PRINTF_LOCK	0x00001000	/* Holds kdb_printf lock */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define KDB_STATE_WAIT_IPI	0x00002000	/* Waiting for kdb_ipi() NMI */
 #define KDB_STATE_RECURSE	0x00004000	/* Recursive entry to kdb */
 #define KDB_STATE_IP_ADJUSTED	0x00008000	/* Restart IP has been
@@ -169,6 +189,7 @@ typedef struct _kdb_bp {
 #ifdef CONFIG_KGDB_KDB
 extern kdb_bp_t kdb_breakpoints[/* KDB_MAXBPT */];
 
+<<<<<<< HEAD
 /* The KDB shell command table */
 typedef struct _kdbtab {
 	char    *cmd_name;		/* Command name */
@@ -181,6 +202,9 @@ typedef struct _kdbtab {
 	kdb_repeat_t cmd_repeat;	/* Does command auto repeat on enter? */
 } kdbtab_t;
 
+=======
+extern void kdb_register_table(kdbtab_t *kp, size_t len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int kdb_bt(int, const char **);	/* KDB display back trace */
 
 /* KDB breakpoint management functions */
@@ -191,7 +215,10 @@ extern void kdb_bp_remove(void);
 typedef enum {
 	KDB_DB_BPT,	/* Breakpoint */
 	KDB_DB_SS,	/* Single-step trap */
+<<<<<<< HEAD
 	KDB_DB_SSB,	/* Single step to branch */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	KDB_DB_SSBPT,	/* Single step over breakpoint */
 	KDB_DB_NOBPT	/* Spurious breakpoint */
 } kdb_dbtrap_t;
@@ -201,6 +228,7 @@ extern int kdb_main_loop(kdb_reason_t, kdb_reason_t,
 
 /* Miscellaneous functions and data areas */
 extern int kdb_grepping_flag;
+<<<<<<< HEAD
 extern char kdb_grep_string[];
 extern int kdb_grep_leading;
 extern int kdb_grep_trailing;
@@ -216,6 +244,20 @@ extern void kdb_print_nameval(const char *name, unsigned long val);
 extern void kdb_send_sig_info(struct task_struct *p, struct siginfo *info);
 extern void kdb_meminfo_proc_show(void);
 extern char *kdb_getstr(char *, size_t, char *);
+=======
+#define KDB_GREPPING_FLAG_SEARCH 0x8000
+extern char kdb_grep_string[];
+#define KDB_GREP_STRLEN 256
+extern int kdb_grep_leading;
+extern int kdb_grep_trailing;
+extern char *kdb_cmds[];
+extern char kdb_task_state_char (const struct task_struct *);
+extern bool kdb_task_state(const struct task_struct *p, const char *mask);
+extern void kdb_ps_suppressed(void);
+extern void kdb_ps1(const struct task_struct *p);
+extern char kdb_getchar(void);
+extern char *kdb_getstr(char *, size_t, const char *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void kdb_gdb_state_pass(char *buf);
 
 /* Defines for kdb_symbol_print */
@@ -234,6 +276,7 @@ extern struct task_struct *kdb_curr_task(int);
 
 #define kdb_task_has_cpu(p) (task_curr(p))
 
+<<<<<<< HEAD
 /* Simplify coexistence with NPTL */
 #define	kdb_do_each_thread(g, p) do_each_thread(g, p)
 #define	kdb_while_each_thread(g, p) while_each_thread(g, p)
@@ -246,6 +289,12 @@ extern void debug_kusage(void);
 
 extern void kdb_set_current_task(struct task_struct *);
 extern struct task_struct *kdb_current_task;
+=======
+#define GFP_KDB (in_dbg_master() ? GFP_ATOMIC : GFP_KERNEL)
+
+extern struct task_struct *kdb_current_task;
+extern struct pt_regs *kdb_current_regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_KDB_KEYBOARD
 extern void kdb_kbd_cleanup_state(void);
@@ -253,13 +302,29 @@ extern void kdb_kbd_cleanup_state(void);
 #define kdb_kbd_cleanup_state()
 #endif /* ! CONFIG_KDB_KEYBOARD */
 
+<<<<<<< HEAD
 #ifdef CONFIG_MODULES
 extern struct list_head *kdb_modules;
 #endif /* CONFIG_MODULES */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern char kdb_prompt_str[];
 
 #define	KDB_WORD_SIZE	((int)sizeof(unsigned long))
 
 #endif /* CONFIG_KGDB_KDB */
+<<<<<<< HEAD
+=======
+
+#define kdb_func_printf(format, args...) \
+	kdb_printf("%s: " format, __func__, ## args)
+
+#define kdb_dbg_printf(mask, format, args...) \
+	do { \
+		if (KDB_DEBUG(mask)) \
+			kdb_func_printf(format, ## args); \
+	} while (0)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* !_KDBPRIVATE_H */

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   ALSA sequencer FIFO
  *   Copyright (c) 1998 by Frank van de Pol <fvdpol@coil.demon.nl>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *   ALSA sequencer FIFO
+ *   Copyright (c) 1998 by Frank van de Pol <fvdpol@coil.demon.nl>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __SND_SEQ_FIFO_H
 #define __SND_SEQ_FIFO_H
@@ -68,5 +75,10 @@ int snd_seq_fifo_poll_wait(struct snd_seq_fifo *f, struct file *file, poll_table
 /* resize pool in fifo */
 int snd_seq_fifo_resize(struct snd_seq_fifo *f, int poolsize);
 
+<<<<<<< HEAD
+=======
+/* get the number of unused cells safely */
+int snd_seq_fifo_unused_cells(struct snd_seq_fifo *f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

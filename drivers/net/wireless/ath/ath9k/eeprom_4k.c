@@ -20,28 +20,49 @@
 
 static int ath9k_hw_4k_get_eeprom_ver(struct ath_hw *ah)
 {
+<<<<<<< HEAD
 	return ((ah->eeprom.map4k.baseEepHeader.version >> 12) & 0xF);
+=======
+	u16 version = le16_to_cpu(ah->eeprom.map4k.baseEepHeader.version);
+
+	return (version & AR5416_EEP_VER_MAJOR_MASK) >>
+		AR5416_EEP_VER_MAJOR_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath9k_hw_4k_get_eeprom_rev(struct ath_hw *ah)
 {
+<<<<<<< HEAD
 	return ((ah->eeprom.map4k.baseEepHeader.version) & 0xFFF);
+=======
+	u16 version = le16_to_cpu(ah->eeprom.map4k.baseEepHeader.version);
+
+	return version & AR5416_EEP_VER_MINOR_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define SIZE_EEPROM_4K (sizeof(struct ar5416_eeprom_4k) / sizeof(u16))
 
 static bool __ath9k_hw_4k_fill_eeprom(struct ath_hw *ah)
 {
+<<<<<<< HEAD
 	struct ath_common *common = ath9k_hw_common(ah);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 *eep_data = (u16 *)&ah->eeprom.map4k;
 	int addr, eep_start_loc = 64;
 
 	for (addr = 0; addr < SIZE_EEPROM_4K; addr++) {
+<<<<<<< HEAD
 		if (!ath9k_hw_nvram_read(common, addr + eep_start_loc, eep_data)) {
 			ath_dbg(common, EEPROM,
 				"Unable to read eeprom region\n");
 			return false;
 		}
+=======
+		if (!ath9k_hw_nvram_read(ah, addr + eep_start_loc, eep_data))
+			return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		eep_data++;
 	}
 
@@ -71,12 +92,21 @@ static bool ath9k_hw_4k_fill_eeprom(struct ath_hw *ah)
 		return __ath9k_hw_4k_fill_eeprom(ah);
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_ATH9K_DEBUGFS) || defined(CONFIG_ATH9K_HTC_DEBUGFS)
 static u32 ath9k_dump_4k_modal_eeprom(char *buf, u32 len, u32 size,
 				      struct modal_eep_4k_header *modal_hdr)
 {
 	PR_EEP("Chain0 Ant. Control", modal_hdr->antCtrlChain[0]);
 	PR_EEP("Ant. Common Control", modal_hdr->antCtrlCommon);
+=======
+#ifdef CONFIG_ATH9K_COMMON_DEBUG
+static u32 ath9k_dump_4k_modal_eeprom(char *buf, u32 len, u32 size,
+				      struct modal_eep_4k_header *modal_hdr)
+{
+	PR_EEP("Chain0 Ant. Control", le16_to_cpu(modal_hdr->antCtrlChain[0]));
+	PR_EEP("Ant. Common Control", le32_to_cpu(modal_hdr->antCtrlCommon));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PR_EEP("Chain0 Ant. Gain", modal_hdr->antennaGainCh[0]);
 	PR_EEP("Switch Settle", modal_hdr->switchSettling);
 	PR_EEP("Chain0 TxRxAtten", modal_hdr->txRxAttenCh[0]);
@@ -131,6 +161,7 @@ static u32 ath9k_hw_4k_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 {
 	struct ar5416_eeprom_4k *eep = &ah->eeprom.map4k;
 	struct base_eep_header_4k *pBase = &eep->baseEepHeader;
+<<<<<<< HEAD
 
 	if (!dump_base_hdr) {
 		len += snprintf(buf + len, size - len,
@@ -146,6 +177,24 @@ static u32 ath9k_hw_4k_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 	PR_EEP("Length", pBase->length);
 	PR_EEP("RegDomain1", pBase->regDmn[0]);
 	PR_EEP("RegDomain2", pBase->regDmn[1]);
+=======
+	u32 binBuildNumber = le32_to_cpu(pBase->binBuildNumber);
+
+	if (!dump_base_hdr) {
+		len += scnprintf(buf + len, size - len,
+				 "%20s :\n", "2GHz modal Header");
+		len = ath9k_dump_4k_modal_eeprom(buf, len, size,
+						 &eep->modalHeader);
+		goto out;
+	}
+
+	PR_EEP("Major Version", ath9k_hw_4k_get_eeprom_ver(ah));
+	PR_EEP("Minor Version", ath9k_hw_4k_get_eeprom_rev(ah));
+	PR_EEP("Checksum", le16_to_cpu(pBase->checksum));
+	PR_EEP("Length", le16_to_cpu(pBase->length));
+	PR_EEP("RegDomain1", le16_to_cpu(pBase->regDmn[0]));
+	PR_EEP("RegDomain2", le16_to_cpu(pBase->regDmn[1]));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	PR_EEP("TX Mask", pBase->txMask);
 	PR_EEP("RX Mask", pBase->rxMask);
 	PR_EEP("Allow 5GHz", !!(pBase->opCapFlags & AR5416_OPFLAGS_11A));
@@ -158,6 +207,7 @@ static u32 ath9k_hw_4k_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 					AR5416_OPFLAGS_N_5G_HT20));
 	PR_EEP("Disable 5Ghz HT40", !!(pBase->opCapFlags &
 					AR5416_OPFLAGS_N_5G_HT40));
+<<<<<<< HEAD
 	PR_EEP("Big Endian", !!(pBase->eepMisc & 0x01));
 	PR_EEP("Cal Bin Major Ver", (pBase->binBuildNumber >> 24) & 0xFF);
 	PR_EEP("Cal Bin Minor Ver", (pBase->binBuildNumber >> 16) & 0xFF);
@@ -166,6 +216,16 @@ static u32 ath9k_hw_4k_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 
 	len += snprintf(buf + len, size - len, "%20s : %pM\n", "MacAddress",
 			pBase->macAddr);
+=======
+	PR_EEP("Big Endian", !!(pBase->eepMisc & AR5416_EEPMISC_BIG_ENDIAN));
+	PR_EEP("Cal Bin Major Ver", (binBuildNumber >> 24) & 0xFF);
+	PR_EEP("Cal Bin Minor Ver", (binBuildNumber >> 16) & 0xFF);
+	PR_EEP("Cal Bin Build", (binBuildNumber >> 8) & 0xFF);
+	PR_EEP("TX Gain type", pBase->txGainType);
+
+	len += scnprintf(buf + len, size - len, "%20s : %pM\n", "MacAddress",
+			 pBase->macAddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	if (len > size)
@@ -181,6 +241,7 @@ static u32 ath9k_hw_4k_dump_eeprom(struct ath_hw *ah, bool dump_base_hdr,
 }
 #endif
 
+<<<<<<< HEAD
 
 #undef SIZE_EEPROM_4K
 
@@ -299,15 +360,68 @@ static int ath9k_hw_4k_check_eeprom(struct ath_hw *ah)
 #undef EEPROM_4K_SIZE
 }
 
+=======
+static int ath9k_hw_4k_check_eeprom(struct ath_hw *ah)
+{
+	struct ar5416_eeprom_4k *eep = &ah->eeprom.map4k;
+	u32 el;
+	bool need_swap;
+	int i, err;
+
+	err = ath9k_hw_nvram_swap_data(ah, &need_swap, SIZE_EEPROM_4K);
+	if (err)
+		return err;
+
+	if (need_swap)
+		el = swab16((__force u16)eep->baseEepHeader.length);
+	else
+		el = le16_to_cpu(eep->baseEepHeader.length);
+
+	el = min(el / sizeof(u16), SIZE_EEPROM_4K);
+	if (!ath9k_hw_nvram_validate_checksum(ah, el))
+		return -EINVAL;
+
+	if (need_swap) {
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.length);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.checksum);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.version);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.regDmn[0]);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.regDmn[1]);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.rfSilent);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.blueToothOptions);
+		EEPROM_FIELD_SWAB16(eep->baseEepHeader.deviceCap);
+		EEPROM_FIELD_SWAB32(eep->modalHeader.antCtrlCommon);
+
+		for (i = 0; i < AR5416_EEP4K_MAX_CHAINS; i++)
+			EEPROM_FIELD_SWAB32(eep->modalHeader.antCtrlChain[i]);
+
+		for (i = 0; i < AR_EEPROM_MODAL_SPURS; i++)
+			EEPROM_FIELD_SWAB16(
+				eep->modalHeader.spurChans[i].spurChan);
+	}
+
+	if (!ath9k_hw_nvram_check_version(ah, AR5416_EEP_VER,
+	    AR5416_EEP_NO_BACK_VER))
+		return -EINVAL;
+
+	return 0;
+}
+
+#undef SIZE_EEPROM_4K
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 ath9k_hw_4k_get_eeprom(struct ath_hw *ah,
 				  enum eeprom_param param)
 {
 	struct ar5416_eeprom_4k *eep = &ah->eeprom.map4k;
 	struct modal_eep_4k_header *pModal = &eep->modalHeader;
 	struct base_eep_header_4k *pBase = &eep->baseEepHeader;
+<<<<<<< HEAD
 	u16 ver_minor;
 
 	ver_minor = pBase->version & AR5416_EEP_VER_MINOR_MASK;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (param) {
 	case EEP_NFTHRESH_2:
@@ -319,6 +433,7 @@ static u32 ath9k_hw_4k_get_eeprom(struct ath_hw *ah,
 	case EEP_MAC_MSW:
 		return get_unaligned_be16(pBase->macAddr + 4);
 	case EEP_REG_0:
+<<<<<<< HEAD
 		return pBase->regDmn[0];
 	case EEP_OP_CAP:
 		return pBase->deviceCap;
@@ -326,12 +441,24 @@ static u32 ath9k_hw_4k_get_eeprom(struct ath_hw *ah,
 		return pBase->opCapFlags;
 	case EEP_RF_SILENT:
 		return pBase->rfSilent;
+=======
+		return le16_to_cpu(pBase->regDmn[0]);
+	case EEP_OP_CAP:
+		return le16_to_cpu(pBase->deviceCap);
+	case EEP_OP_MODE:
+		return pBase->opCapFlags;
+	case EEP_RF_SILENT:
+		return le16_to_cpu(pBase->rfSilent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case EEP_OB_2:
 		return pModal->ob_0;
 	case EEP_DB_2:
 		return pModal->db1_1;
+<<<<<<< HEAD
 	case EEP_MINOR_REV:
 		return ver_minor;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case EEP_TX_MASK:
 		return pBase->txMask;
 	case EEP_RX_MASK:
@@ -370,6 +497,7 @@ static void ath9k_hw_set_4k_power_cal_table(struct ath_hw *ah,
 
 	xpdMask = pEepData->modalHeader.xpdGain;
 
+<<<<<<< HEAD
 	if ((pEepData->baseEepHeader.version & AR5416_EEP_VER_MINOR_MASK) >=
 	    AR5416_EEP_MINOR_VER_2) {
 		pdGainOverlap_t2 =
@@ -378,6 +506,14 @@ static void ath9k_hw_set_4k_power_cal_table(struct ath_hw *ah,
 		pdGainOverlap_t2 = (u16)(MS(REG_READ(ah, AR_PHY_TPCRG5),
 					    AR_PHY_TPCRG5_PD_GAIN_OVERLAP));
 	}
+=======
+	if (ath9k_hw_4k_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_2)
+		pdGainOverlap_t2 =
+			pEepData->modalHeader.pdGainOverlap;
+	else
+		pdGainOverlap_t2 = (u16)(MS(REG_READ(ah, AR_PHY_TPCRG5),
+					    AR_PHY_TPCRG5_PD_GAIN_OVERLAP));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pCalBChans = pEepData->calFreqPier2G;
 	numPiers = AR5416_EEP4K_NUM_2G_CAL_PIERS;
@@ -394,6 +530,10 @@ static void ath9k_hw_set_4k_power_cal_table(struct ath_hw *ah,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	ENABLE_REG_RMW_BUFFER(ah);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	REG_RMW_FIELD(ah, AR_PHY_TPCRG1, AR_PHY_TPCRG1_NUM_PD_GAIN,
 		      (numXpdGain - 1) & 0x3);
 	REG_RMW_FIELD(ah, AR_PHY_TPCRG1, AR_PHY_TPCRG1_PD_GAIN_1,
@@ -401,6 +541,10 @@ static void ath9k_hw_set_4k_power_cal_table(struct ath_hw *ah,
 	REG_RMW_FIELD(ah, AR_PHY_TPCRG1, AR_PHY_TPCRG1_PD_GAIN_2,
 		      xpdGainValues[1]);
 	REG_RMW_FIELD(ah, AR_PHY_TPCRG1, AR_PHY_TPCRG1_PD_GAIN_3, 0);
+<<<<<<< HEAD
+=======
+	REG_RMW_BUFFER_FLUSH(ah);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < AR5416_EEP4K_MAX_CHAINS; i++) {
 		regChainOffset = i * 0x1000;
@@ -497,6 +641,10 @@ static void ath9k_hw_set_4k_power_per_rate_table(struct ath_hw *ah,
 	ath9k_hw_get_channel_centers(ah, chan, &centers);
 
 	scaledPower = powerLimit - antenna_reduction;
+<<<<<<< HEAD
+=======
+	scaledPower = min_t(u16, scaledPower, MAX_RATE_POWER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	numCtlModes = ARRAY_SIZE(ctlModesFor11g) - SUB_NUM_CTL_MODES_AT_2G_40;
 	pCtlMode = ctlModesFor11g;
 
@@ -661,10 +809,15 @@ static void ath9k_hw_4k_set_txpower(struct ath_hw *ah,
 
 	memset(ratesArray, 0, sizeof(ratesArray));
 
+<<<<<<< HEAD
 	if ((pEepData->baseEepHeader.version & AR5416_EEP_VER_MINOR_MASK) >=
 	    AR5416_EEP_MINOR_VER_2) {
 		ht40PowerIncForPdadc = pModal->ht40PowerIncForPdadc;
 	}
+=======
+	if (ath9k_hw_4k_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_2)
+		ht40PowerIncForPdadc = pModal->ht40PowerIncForPdadc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath9k_hw_set_4k_power_per_rate_table(ah, chan,
 					     &ratesArray[0], cfgCtl,
@@ -753,6 +906,23 @@ static void ath9k_hw_4k_set_txpower(struct ath_hw *ah,
 			  | ATH9K_POW_SM(ratesArray[rateDupCck], 0));
 	}
 
+<<<<<<< HEAD
+=======
+	/* TPC initializations */
+	if (ah->tpc_enabled) {
+		int ht40_delta;
+
+		ht40_delta = (IS_CHAN_HT40(chan)) ? ht40PowerIncForPdadc : 0;
+		ar5008_hw_init_rate_txpower(ah, ratesArray, chan, ht40_delta);
+		/* Enable TPC */
+		REG_WRITE(ah, AR_PHY_POWER_TX_RATE_MAX,
+			MAX_RATE_POWER | AR_PHY_POWER_TX_RATE_MAX_TPC_ENABLE);
+	} else {
+		/* Disable TPC */
+		REG_WRITE(ah, AR_PHY_POWER_TX_RATE_MAX, MAX_RATE_POWER);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	REGWRITE_BUFFER_FLUSH(ah);
 }
 
@@ -761,6 +931,7 @@ static void ath9k_hw_4k_set_gain(struct ath_hw *ah,
 				 struct ar5416_eeprom_4k *eep,
 				 u8 txRxAttenLocal)
 {
+<<<<<<< HEAD
 	REG_WRITE(ah, AR_PHY_SWITCH_CHAIN_0,
 		  pModal->antCtrlChain[0]);
 
@@ -773,6 +944,18 @@ static void ath9k_hw_4k_set_gain(struct ath_hw *ah,
 
 	if ((eep->baseEepHeader.version & AR5416_EEP_VER_MINOR_MASK) >=
 	    AR5416_EEP_MINOR_VER_3) {
+=======
+	ENABLE_REG_RMW_BUFFER(ah);
+	REG_RMW(ah, AR_PHY_SWITCH_CHAIN_0,
+		le32_to_cpu(pModal->antCtrlChain[0]), 0);
+
+	REG_RMW(ah, AR_PHY_TIMING_CTRL4(0),
+		SM(pModal->iqCalICh[0], AR_PHY_TIMING_CTRL4_IQCORR_Q_I_COFF) |
+		SM(pModal->iqCalQCh[0], AR_PHY_TIMING_CTRL4_IQCORR_Q_Q_COFF),
+		AR_PHY_TIMING_CTRL4_IQCORR_Q_Q_COFF | AR_PHY_TIMING_CTRL4_IQCORR_Q_I_COFF);
+
+	if (ath9k_hw_4k_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_3) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		txRxAttenLocal = pModal->txRxAttenCh[0];
 
 		REG_RMW_FIELD(ah, AR_PHY_GAIN_2GHZ,
@@ -808,6 +991,10 @@ static void ath9k_hw_4k_set_gain(struct ath_hw *ah,
 		      AR9280_PHY_RXGAIN_TXRX_ATTEN, txRxAttenLocal);
 	REG_RMW_FIELD(ah, AR_PHY_RXGAIN + 0x1000,
 		      AR9280_PHY_RXGAIN_TXRX_MARGIN, pModal->rxTxMarginCh[0]);
+<<<<<<< HEAD
+=======
+	REG_RMW_BUFFER_FLUSH(ah);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -817,6 +1004,10 @@ static void ath9k_hw_4k_set_gain(struct ath_hw *ah,
 static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 					 struct ath9k_channel *chan)
 {
+<<<<<<< HEAD
+=======
+	struct ath9k_hw_capabilities *pCap = &ah->caps;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct modal_eep_4k_header *pModal;
 	struct ar5416_eeprom_4k *eep = &ah->eeprom.map4k;
 	struct base_eep_header_4k *pBase = &eep->baseEepHeader;
@@ -829,7 +1020,11 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 	pModal = &eep->modalHeader;
 	txRxAttenLocal = 23;
 
+<<<<<<< HEAD
 	REG_WRITE(ah, AR_PHY_SWITCH_COM, pModal->antCtrlCommon);
+=======
+	REG_WRITE(ah, AR_PHY_SWITCH_COM, le32_to_cpu(pModal->antCtrlCommon));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Single chain for 4K EEPROM*/
 	ath9k_hw_4k_set_gain(ah, pModal, eep, txRxAttenLocal);
@@ -863,6 +1058,27 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 
 		REG_WRITE(ah, AR_PHY_CCK_DETECT, regVal);
 		regVal = REG_READ(ah, AR_PHY_CCK_DETECT);
+<<<<<<< HEAD
+=======
+
+		if (pCap->hw_caps & ATH9K_HW_CAP_ANT_DIV_COMB) {
+			/*
+			 * If diversity combining is enabled,
+			 * set MAIN to LNA1 and ALT to LNA2 initially.
+			 */
+			regVal = REG_READ(ah, AR_PHY_MULTICHAIN_GAIN_CTL);
+			regVal &= (~(AR_PHY_9285_ANT_DIV_MAIN_LNACONF |
+				     AR_PHY_9285_ANT_DIV_ALT_LNACONF));
+
+			regVal |= (ATH_ANT_DIV_COMB_LNA1 <<
+				   AR_PHY_9285_ANT_DIV_MAIN_LNACONF_S);
+			regVal |= (ATH_ANT_DIV_COMB_LNA2 <<
+				   AR_PHY_9285_ANT_DIV_ALT_LNACONF_S);
+			regVal &= (~(AR_PHY_9285_FAST_DIV_BIAS));
+			regVal |= (0 << AR_PHY_9285_FAST_DIV_BIAS_S);
+			REG_WRITE(ah, AR_PHY_MULTICHAIN_GAIN_CTL, regVal);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (pModal->version >= 2) {
@@ -900,6 +1116,10 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	ENABLE_REG_RMW_BUFFER(ah);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (AR_SREV_9271(ah)) {
 		ath9k_hw_analog_shift_rmw(ah,
 					  AR9285_AN_RF2G3,
@@ -1004,18 +1224,32 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 					  AR9285_AN_RF2G4_DB2_4_S,
 					  db2[4]);
 	}
+<<<<<<< HEAD
 
 
+=======
+	REG_RMW_BUFFER_FLUSH(ah);
+
+	ENABLE_REG_RMW_BUFFER(ah);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	REG_RMW_FIELD(ah, AR_PHY_SETTLING, AR_PHY_SETTLING_SWITCH,
 		      pModal->switchSettling);
 	REG_RMW_FIELD(ah, AR_PHY_DESIRED_SZ, AR_PHY_DESIRED_SZ_ADC,
 		      pModal->adcDesiredSize);
 
+<<<<<<< HEAD
 	REG_WRITE(ah, AR_PHY_RF_CTL4,
 		  SM(pModal->txEndToXpaOff, AR_PHY_RF_CTL4_TX_END_XPAA_OFF) |
 		  SM(pModal->txEndToXpaOff, AR_PHY_RF_CTL4_TX_END_XPAB_OFF) |
 		  SM(pModal->txFrameToXpaOn, AR_PHY_RF_CTL4_FRAME_XPAA_ON)  |
 		  SM(pModal->txFrameToXpaOn, AR_PHY_RF_CTL4_FRAME_XPAB_ON));
+=======
+	REG_RMW(ah, AR_PHY_RF_CTL4,
+		SM(pModal->txEndToXpaOff, AR_PHY_RF_CTL4_TX_END_XPAA_OFF) |
+		SM(pModal->txEndToXpaOff, AR_PHY_RF_CTL4_TX_END_XPAB_OFF) |
+		SM(pModal->txFrameToXpaOn, AR_PHY_RF_CTL4_FRAME_XPAA_ON)  |
+		SM(pModal->txFrameToXpaOn, AR_PHY_RF_CTL4_FRAME_XPAB_ON), 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	REG_RMW_FIELD(ah, AR_PHY_RF_CTL3, AR_PHY_TX_END_TO_A2_RX_ON,
 		      pModal->txEndToRxOn);
@@ -1028,22 +1262,35 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 	REG_RMW_FIELD(ah, AR_PHY_EXT_CCA0, AR_PHY_EXT_CCA0_THRESH62,
 		      pModal->thresh62);
 
+<<<<<<< HEAD
 	if ((eep->baseEepHeader.version & AR5416_EEP_VER_MINOR_MASK) >=
 						AR5416_EEP_MINOR_VER_2) {
+=======
+	if (ath9k_hw_4k_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_2) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		REG_RMW_FIELD(ah, AR_PHY_RF_CTL2, AR_PHY_TX_END_DATA_START,
 			      pModal->txFrameToDataStart);
 		REG_RMW_FIELD(ah, AR_PHY_RF_CTL2, AR_PHY_TX_END_PA_ON,
 			      pModal->txFrameToPaOn);
 	}
 
+<<<<<<< HEAD
 	if ((eep->baseEepHeader.version & AR5416_EEP_VER_MINOR_MASK) >=
 						AR5416_EEP_MINOR_VER_3) {
+=======
+	if (ath9k_hw_4k_get_eeprom_rev(ah) >= AR5416_EEP_MINOR_VER_3) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_CHAN_HT40(chan))
 			REG_RMW_FIELD(ah, AR_PHY_SETTLING,
 				      AR_PHY_SETTLING_SWITCH,
 				      pModal->swSettleHt40);
 	}
 
+<<<<<<< HEAD
+=======
+	REG_RMW_BUFFER_FLUSH(ah);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bb_desired_scale = (pModal->bb_scale_smrt_antenna &
 			EEP_4K_BB_DESIRED_SCALE_MASK);
 	if ((pBase->txGainType == 0) && (bb_desired_scale != 0)) {
@@ -1052,6 +1299,10 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 		mask = BIT(0)|BIT(5)|BIT(10)|BIT(15)|BIT(20)|BIT(25);
 		pwrctrl = mask * bb_desired_scale;
 		clr = mask * 0x1f;
+<<<<<<< HEAD
+=======
+		ENABLE_REG_RMW_BUFFER(ah);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		REG_RMW(ah, AR_PHY_TX_PWRCTRL8, pwrctrl, clr);
 		REG_RMW(ah, AR_PHY_TX_PWRCTRL10, pwrctrl, clr);
 		REG_RMW(ah, AR_PHY_CH0_TX_PWRCTRL12, pwrctrl, clr);
@@ -1066,11 +1317,16 @@ static void ath9k_hw_4k_set_board_values(struct ath_hw *ah,
 		clr = mask * 0x1f;
 		REG_RMW(ah, AR_PHY_CH0_TX_PWRCTRL11, pwrctrl, clr);
 		REG_RMW(ah, AR_PHY_CH0_TX_PWRCTRL13, pwrctrl, clr);
+<<<<<<< HEAD
+=======
+		REG_RMW_BUFFER_FLUSH(ah);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static u16 ath9k_hw_4k_get_spur_channel(struct ath_hw *ah, u16 i, bool is2GHz)
 {
+<<<<<<< HEAD
 #define EEP_MAP4K_SPURCHAN \
 	(ah->eeprom.map4k.modalHeader.spurChans[i].spurChan)
 	struct ath_common *common = ath9k_hw_common(ah);
@@ -1096,6 +1352,14 @@ static u16 ath9k_hw_4k_get_spur_channel(struct ath_hw *ah, u16 i, bool is2GHz)
 	return spur_val;
 
 #undef EEP_MAP4K_SPURCHAN
+=======
+	return le16_to_cpu(ah->eeprom.map4k.modalHeader.spurChans[i].spurChan);
+}
+
+static u8 ath9k_hw_4k_get_eepmisc(struct ath_hw *ah)
+{
+	return ah->eeprom.map4k.baseEepHeader.eepMisc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct eeprom_ops eep_4k_ops = {
@@ -1107,5 +1371,10 @@ const struct eeprom_ops eep_4k_ops = {
 	.get_eeprom_rev		= ath9k_hw_4k_get_eeprom_rev,
 	.set_board_values	= ath9k_hw_4k_set_board_values,
 	.set_txpower		= ath9k_hw_4k_set_txpower,
+<<<<<<< HEAD
 	.get_spur_channel	= ath9k_hw_4k_get_spur_channel
+=======
+	.get_spur_channel	= ath9k_hw_4k_get_spur_channel,
+	.get_eepmisc		= ath9k_hw_4k_get_eepmisc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

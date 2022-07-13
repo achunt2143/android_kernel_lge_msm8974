@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_PARISC_PARISC_DEVICE_H_
 #define _ASM_PARISC_PARISC_DEVICE_H_
 
@@ -23,6 +27,10 @@ struct parisc_device {
 	/* generic info returned from pdc_pat_cell_module() */
 	unsigned long	mod_info;	/* PAT specific - Misc Module info */
 	unsigned long	pmod_loc;	/* physical Module location */
+<<<<<<< HEAD
+=======
+	unsigned long	mod0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	u64		dma_mask;	/* DMA mask for I/O */
 	struct device 	dev;
@@ -32,8 +40,13 @@ struct parisc_driver {
 	struct parisc_driver *next;
 	char *name; 
 	const struct parisc_device_id *id_table;
+<<<<<<< HEAD
 	int (*probe) (struct parisc_device *dev); /* New device discovered */
 	int (*remove) (struct parisc_device *dev);
+=======
+	int (*probe)(struct parisc_device *dev); /* New device discovered */
+	void (*remove)(struct parisc_device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_driver drv;
 };
 
@@ -59,6 +72,12 @@ parisc_get_drvdata(struct parisc_device *d)
 	return dev_get_drvdata(&d->dev);
 }
 
+<<<<<<< HEAD
 extern struct bus_type parisc_bus_type;
+=======
+extern const struct bus_type parisc_bus_type;
+
+int iosapic_serial_irq(struct parisc_device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /*_ASM_PARISC_PARISC_DEVICE_H_*/

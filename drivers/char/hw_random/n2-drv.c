@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* n2-drv.c: Niagara-2 RNG driver.
  *
  * Copyright (C) 2008, 2011 David S. Miller <davem@davemloft.net>
@@ -7,14 +11,22 @@
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/workqueue.h>
 #include <linux/preempt.h>
 #include <linux/hw_random.h>
 
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/platform_device.h>
+#include <linux/property.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/hypervisor.h>
 
@@ -22,6 +34,7 @@
 
 #define DRV_MODULE_NAME		"n2rng"
 #define PFX DRV_MODULE_NAME	": "
+<<<<<<< HEAD
 #define DRV_MODULE_VERSION	"0.2"
 #define DRV_MODULE_RELDATE	"July 27, 2011"
 
@@ -29,6 +42,15 @@ static char version[] __devinitdata =
 	DRV_MODULE_NAME ".c:v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
 
 MODULE_AUTHOR("David S. Miller (davem@davemloft.net)");
+=======
+#define DRV_MODULE_VERSION	"0.3"
+#define DRV_MODULE_RELDATE	"Jan 7, 2017"
+
+static char version[] =
+	DRV_MODULE_NAME " v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
+
+MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Niagara2 RNG driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
@@ -303,6 +325,7 @@ static int n2rng_try_read_ctl(struct n2rng *np)
 	return n2rng_hv_err_trans(hv_err);
 }
 
+<<<<<<< HEAD
 #define CONTROL_DEFAULT_BASE		\
 	((2 << RNG_CTL_ASEL_SHIFT) |	\
 	 (N2RNG_ACCUM_CYCLES_DEFAULT << RNG_CTL_WAIT_SHIFT) |	\
@@ -323,6 +346,59 @@ static int n2rng_try_read_ctl(struct n2rng *np)
 #define CONTROL_DEFAULT_3		\
 	(CONTROL_DEFAULT_BASE |		\
 	 RNG_CTL_ES1 | RNG_CTL_ES2 | RNG_CTL_ES3)
+=======
+static u64 n2rng_control_default(struct n2rng *np, int ctl)
+{
+	u64 val = 0;
+
+	if (np->data->chip_version == 1) {
+		val = ((2 << RNG_v1_CTL_ASEL_SHIFT) |
+			(N2RNG_ACCUM_CYCLES_DEFAULT << RNG_v1_CTL_WAIT_SHIFT) |
+			 RNG_CTL_LFSR);
+
+		switch (ctl) {
+		case 0:
+			val |= (1 << RNG_v1_CTL_VCO_SHIFT) | RNG_CTL_ES1;
+			break;
+		case 1:
+			val |= (2 << RNG_v1_CTL_VCO_SHIFT) | RNG_CTL_ES2;
+			break;
+		case 2:
+			val |= (3 << RNG_v1_CTL_VCO_SHIFT) | RNG_CTL_ES3;
+			break;
+		case 3:
+			val |= RNG_CTL_ES1 | RNG_CTL_ES2 | RNG_CTL_ES3;
+			break;
+		default:
+			break;
+		}
+
+	} else {
+		val = ((2 << RNG_v2_CTL_ASEL_SHIFT) |
+			(N2RNG_ACCUM_CYCLES_DEFAULT << RNG_v2_CTL_WAIT_SHIFT) |
+			 RNG_CTL_LFSR);
+
+		switch (ctl) {
+		case 0:
+			val |= (1 << RNG_v2_CTL_VCO_SHIFT) | RNG_CTL_ES1;
+			break;
+		case 1:
+			val |= (2 << RNG_v2_CTL_VCO_SHIFT) | RNG_CTL_ES2;
+			break;
+		case 2:
+			val |= (3 << RNG_v2_CTL_VCO_SHIFT) | RNG_CTL_ES3;
+			break;
+		case 3:
+			val |= RNG_CTL_ES1 | RNG_CTL_ES2 | RNG_CTL_ES3;
+			break;
+		default:
+			break;
+		}
+	}
+
+	return val;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void n2rng_control_swstate_init(struct n2rng *np)
 {
@@ -337,10 +413,17 @@ static void n2rng_control_swstate_init(struct n2rng *np)
 	for (i = 0; i < np->num_units; i++) {
 		struct n2rng_unit *up = &np->units[i];
 
+<<<<<<< HEAD
 		up->control[0] = CONTROL_DEFAULT_0;
 		up->control[1] = CONTROL_DEFAULT_1;
 		up->control[2] = CONTROL_DEFAULT_2;
 		up->control[3] = CONTROL_DEFAULT_3;
+=======
+		up->control[0] = n2rng_control_default(np, 0);
+		up->control[1] = n2rng_control_default(np, 1);
+		up->control[2] = n2rng_control_default(np, 2);
+		up->control[3] = n2rng_control_default(np, 3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	np->hv_state = HV_RNG_STATE_UNCONFIGURED;
@@ -400,11 +483,19 @@ static int n2rng_data_read(struct hwrng *rng, u32 *data)
 	} else {
 		int err = n2rng_generic_read_data(ra);
 		if (!err) {
+<<<<<<< HEAD
+=======
+			np->flags |= N2RNG_FLAG_BUFFER_VALID;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			np->buffer = np->test_data >> 32;
 			*data = np->test_data & 0xffffffff;
 			len = 4;
 		} else {
+<<<<<<< HEAD
 			dev_err(&np->op->dev, "RNG error, restesting\n");
+=======
+			dev_err(&np->op->dev, "RNG error, retesting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			np->flags &= ~N2RNG_FLAG_READY;
 			if (!(np->flags & N2RNG_FLAG_SHUTDOWN))
 				schedule_delayed_work(&np->work, 0);
@@ -488,9 +579,27 @@ static void n2rng_dump_test_buffer(struct n2rng *np)
 
 static int n2rng_check_selftest_buffer(struct n2rng *np, unsigned long unit)
 {
+<<<<<<< HEAD
 	u64 val = SELFTEST_VAL;
 	int err, matches, limit;
 
+=======
+	u64 val;
+	int err, matches, limit;
+
+	switch (np->data->id) {
+	case N2_n2_rng:
+	case N2_vf_rng:
+	case N2_kt_rng:
+	case N2_m4_rng:  /* yes, m4 uses the old value */
+		val = RNG_v1_SELFTEST_VAL;
+		break;
+	default:
+		val = RNG_v2_SELFTEST_VAL;
+		break;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	matches = 0;
 	for (limit = 0; limit < SELFTEST_LOOPS_MAX; limit++) {
 		matches += n2rng_test_buffer_find(np, val);
@@ -513,6 +622,7 @@ static int n2rng_check_selftest_buffer(struct n2rng *np, unsigned long unit)
 static int n2rng_control_selftest(struct n2rng *np, unsigned long unit)
 {
 	int err;
+<<<<<<< HEAD
 
 	np->test_control[0] = (0x2 << RNG_CTL_ASEL_SHIFT);
 	np->test_control[1] = (0x2 << RNG_CTL_ASEL_SHIFT);
@@ -521,6 +631,34 @@ static int n2rng_control_selftest(struct n2rng *np, unsigned long unit)
 			       RNG_CTL_LFSR |
 			       ((SELFTEST_TICKS - 2) << RNG_CTL_WAIT_SHIFT));
 
+=======
+	u64 base, base3;
+
+	switch (np->data->id) {
+	case N2_n2_rng:
+	case N2_vf_rng:
+	case N2_kt_rng:
+		base = RNG_v1_CTL_ASEL_NOOUT << RNG_v1_CTL_ASEL_SHIFT;
+		base3 = base | RNG_CTL_LFSR |
+			((RNG_v1_SELFTEST_TICKS - 2) << RNG_v1_CTL_WAIT_SHIFT);
+		break;
+	case N2_m4_rng:
+		base = RNG_v2_CTL_ASEL_NOOUT << RNG_v2_CTL_ASEL_SHIFT;
+		base3 = base | RNG_CTL_LFSR |
+			((RNG_v1_SELFTEST_TICKS - 2) << RNG_v2_CTL_WAIT_SHIFT);
+		break;
+	default:
+		base = RNG_v2_CTL_ASEL_NOOUT << RNG_v2_CTL_ASEL_SHIFT;
+		base3 = base | RNG_CTL_LFSR |
+			(RNG_v2_SELFTEST_TICKS << RNG_v2_CTL_WAIT_SHIFT);
+		break;
+	}
+
+	np->test_control[0] = base;
+	np->test_control[1] = base;
+	np->test_control[2] = base;
+	np->test_control[3] = base3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = n2rng_entropy_diag_read(np, unit, np->test_control,
 				      HV_RNG_STATE_HEALTHCHECK,
@@ -558,11 +696,27 @@ static int n2rng_control_configure_units(struct n2rng *np)
 		struct n2rng_unit *up = &np->units[unit];
 		unsigned long ctl_ra = __pa(&up->control[0]);
 		int esrc;
+<<<<<<< HEAD
 		u64 base;
 
 		base = ((np->accum_cycles << RNG_CTL_WAIT_SHIFT) |
 			(2 << RNG_CTL_ASEL_SHIFT) |
 			RNG_CTL_LFSR);
+=======
+		u64 base, shift;
+
+		if (np->data->chip_version == 1) {
+			base = ((np->accum_cycles << RNG_v1_CTL_WAIT_SHIFT) |
+			      (RNG_v1_CTL_ASEL_NOOUT << RNG_v1_CTL_ASEL_SHIFT) |
+			      RNG_CTL_LFSR);
+			shift = RNG_v1_CTL_VCO_SHIFT;
+		} else {
+			base = ((np->accum_cycles << RNG_v2_CTL_WAIT_SHIFT) |
+			      (RNG_v2_CTL_ASEL_NOOUT << RNG_v2_CTL_ASEL_SHIFT) |
+			      RNG_CTL_LFSR);
+			shift = RNG_v2_CTL_VCO_SHIFT;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* XXX This isn't the best.  We should fetch a bunch
 		 * XXX of words using each entropy source combined XXX
@@ -571,7 +725,11 @@ static int n2rng_control_configure_units(struct n2rng *np)
 		 */
 		for (esrc = 0; esrc < 3; esrc++)
 			up->control[esrc] = base |
+<<<<<<< HEAD
 				(esrc << RNG_CTL_VCO_SHIFT) |
+=======
+				(esrc << shift) |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(RNG_CTL_ES1 << esrc);
 
 		up->control[3] = base |
@@ -590,6 +748,10 @@ static void n2rng_work(struct work_struct *work)
 {
 	struct n2rng *np = container_of(work, struct n2rng, work.work);
 	int err = 0;
+<<<<<<< HEAD
+=======
+	static int retries = 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(np->flags & N2RNG_FLAG_CONTROL)) {
 		err = n2rng_guest_check(np);
@@ -607,11 +769,21 @@ static void n2rng_work(struct work_struct *work)
 		dev_info(&np->op->dev, "RNG ready\n");
 	}
 
+<<<<<<< HEAD
 	if (err && !(np->flags & N2RNG_FLAG_SHUTDOWN))
 		schedule_delayed_work(&np->work, HZ * 2);
 }
 
 static void __devinit n2rng_driver_version(void)
+=======
+	if (--retries == 0)
+		dev_err(&np->op->dev, "Self-test retries failed, RNG not ready\n");
+	else if (err && !(np->flags & N2RNG_FLAG_SHUTDOWN))
+		schedule_delayed_work(&np->work, HZ * 2);
+}
+
+static void n2rng_driver_version(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int n2rng_version_printed;
 
@@ -620,6 +792,7 @@ static void __devinit n2rng_driver_version(void)
 }
 
 static const struct of_device_id n2rng_match[];
+<<<<<<< HEAD
 static int __devinit n2rng_probe(struct platform_device *op)
 {
 	const struct of_device_id *match;
@@ -641,6 +814,23 @@ static int __devinit n2rng_probe(struct platform_device *op)
 	INIT_DELAYED_WORK(&np->work, n2rng_work);
 
 	if (multi_capable)
+=======
+static int n2rng_probe(struct platform_device *op)
+{
+	int err = -ENOMEM;
+	struct n2rng *np;
+
+	n2rng_driver_version();
+	np = devm_kzalloc(&op->dev, sizeof(*np), GFP_KERNEL);
+	if (!np)
+		goto out;
+	np->op = op;
+	np->data = (struct n2rng_template *)device_get_match_data(&op->dev);
+
+	INIT_DELAYED_WORK(&np->work, n2rng_work);
+
+	if (np->data->multi_capable)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np->flags |= N2RNG_FLAG_MULTI;
 
 	err = -ENODEV;
@@ -654,7 +844,11 @@ static int __devinit n2rng_probe(struct platform_device *op)
 					 &np->hvapi_minor)) {
 			dev_err(&op->dev, "Cannot register suitable "
 				"HVAPI version.\n");
+<<<<<<< HEAD
 			goto out_free;
+=======
+			goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -671,6 +865,7 @@ static int __devinit n2rng_probe(struct platform_device *op)
 			dev_err(&op->dev, "VF RNG lacks rng-#units property\n");
 			goto out_hvapi_unregister;
 		}
+<<<<<<< HEAD
 	} else
 		np->num_units = 1;
 
@@ -679,19 +874,34 @@ static int __devinit n2rng_probe(struct platform_device *op)
 
 	np->units = kzalloc(sizeof(struct n2rng_unit) * np->num_units,
 			    GFP_KERNEL);
+=======
+	} else {
+		np->num_units = 1;
+	}
+
+	dev_info(&op->dev, "Registered RNG HVAPI major %lu minor %lu\n",
+		 np->hvapi_major, np->hvapi_minor);
+	np->units = devm_kcalloc(&op->dev, np->num_units, sizeof(*np->units),
+				 GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -ENOMEM;
 	if (!np->units)
 		goto out_hvapi_unregister;
 
 	err = n2rng_init_control(np);
 	if (err)
+<<<<<<< HEAD
 		goto out_free_units;
+=======
+		goto out_hvapi_unregister;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(&op->dev, "Found %s RNG, units: %d\n",
 		 ((np->flags & N2RNG_FLAG_MULTI) ?
 		  "multi-unit-capable" : "single-unit"),
 		 np->num_units);
 
+<<<<<<< HEAD
 	np->hwrng.name = "n2rng";
 	np->hwrng.data_read = n2rng_data_read;
 	np->hwrng.priv = (unsigned long) np;
@@ -701,11 +911,23 @@ static int __devinit n2rng_probe(struct platform_device *op)
 		goto out_free_units;
 
 	dev_set_drvdata(&op->dev, np);
+=======
+	np->hwrng.name = DRV_MODULE_NAME;
+	np->hwrng.data_read = n2rng_data_read;
+	np->hwrng.priv = (unsigned long) np;
+
+	err = devm_hwrng_register(&op->dev, &np->hwrng);
+	if (err)
+		goto out_hvapi_unregister;
+
+	platform_set_drvdata(op, np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	schedule_delayed_work(&np->work, 0);
 
 	return 0;
 
+<<<<<<< HEAD
 out_free_units:
 	kfree(np->units);
 	np->units = NULL;
@@ -715,18 +937,30 @@ out_hvapi_unregister:
 
 out_free:
 	kfree(np);
+=======
+out_hvapi_unregister:
+	sun4v_hvapi_unregister(HV_GRP_RNG);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit n2rng_remove(struct platform_device *op)
 {
 	struct n2rng *np = dev_get_drvdata(&op->dev);
+=======
+static void n2rng_remove(struct platform_device *op)
+{
+	struct n2rng *np = platform_get_drvdata(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	np->flags |= N2RNG_FLAG_SHUTDOWN;
 
 	cancel_delayed_work_sync(&np->work);
 
+<<<<<<< HEAD
 	hwrng_unregister(&np->hwrng);
 
 	sun4v_hvapi_unregister(HV_GRP_RNG);
@@ -741,20 +975,77 @@ static int __devexit n2rng_remove(struct platform_device *op)
 	return 0;
 }
 
+=======
+	sun4v_hvapi_unregister(HV_GRP_RNG);
+}
+
+static struct n2rng_template n2_template = {
+	.id = N2_n2_rng,
+	.multi_capable = 0,
+	.chip_version = 1,
+};
+
+static struct n2rng_template vf_template = {
+	.id = N2_vf_rng,
+	.multi_capable = 1,
+	.chip_version = 1,
+};
+
+static struct n2rng_template kt_template = {
+	.id = N2_kt_rng,
+	.multi_capable = 1,
+	.chip_version = 1,
+};
+
+static struct n2rng_template m4_template = {
+	.id = N2_m4_rng,
+	.multi_capable = 1,
+	.chip_version = 2,
+};
+
+static struct n2rng_template m7_template = {
+	.id = N2_m7_rng,
+	.multi_capable = 1,
+	.chip_version = 2,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct of_device_id n2rng_match[] = {
 	{
 		.name		= "random-number-generator",
 		.compatible	= "SUNW,n2-rng",
+<<<<<<< HEAD
+=======
+		.data		= &n2_template,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name		= "random-number-generator",
 		.compatible	= "SUNW,vf-rng",
+<<<<<<< HEAD
 		.data		= (void *) 1,
+=======
+		.data		= &vf_template,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name		= "random-number-generator",
 		.compatible	= "SUNW,kt-rng",
+<<<<<<< HEAD
 		.data		= (void *) 1,
+=======
+		.data		= &kt_template,
+	},
+	{
+		.name		= "random-number-generator",
+		.compatible	= "ORCL,m4-rng",
+		.data		= &m4_template,
+	},
+	{
+		.name		= "random-number-generator",
+		.compatible	= "ORCL,m7-rng",
+		.data		= &m7_template,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{},
 };
@@ -763,11 +1054,18 @@ MODULE_DEVICE_TABLE(of, n2rng_match);
 static struct platform_driver n2rng_driver = {
 	.driver = {
 		.name = "n2rng",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = n2rng_match,
 	},
 	.probe		= n2rng_probe,
 	.remove		= __devexit_p(n2rng_remove),
+=======
+		.of_match_table = n2rng_match,
+	},
+	.probe		= n2rng_probe,
+	.remove_new	= n2rng_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(n2rng_driver);

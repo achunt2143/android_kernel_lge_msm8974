@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * r2300.c: R2000 and R3000 specific mmu/cache code.
  *
@@ -10,25 +14,39 @@
  * Copyright (C) 2002  Ralf Baechle
  * Copyright (C) 2002  Maciej W. Rozycki
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/smp.h>
 #include <linux/mm.h>
 
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mmu_context.h>
 #include <asm/tlbmisc.h>
 #include <asm/isadep.h>
 #include <asm/io.h>
 #include <asm/bootinfo.h>
 #include <asm/cpu.h>
+<<<<<<< HEAD
 
 #undef DEBUG_TLB
 
 extern void build_tlb_refill_handler(void);
 
+=======
+#include <asm/setup.h>
+#include <asm/tlbex.h>
+
+#undef DEBUG_TLB
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* CP0 hazard avoidance. */
 #define BARRIER				\
 	__asm__ __volatile__(		\
@@ -37,6 +55,7 @@ extern void build_tlb_refill_handler(void);
 		"nop\n\t"		\
 		".set	pop\n\t")
 
+<<<<<<< HEAD
 int r3k_have_wired_reg;		/* should be in cpu_data? */
 
 /* TLB operations. */
@@ -45,10 +64,32 @@ void local_flush_tlb_all(void)
 	unsigned long flags;
 	unsigned long old_ctx;
 	int entry;
+=======
+/* TLB operations. */
+static void local_flush_tlb_from(int entry)
+{
+	unsigned long old_ctx;
+
+	old_ctx = read_c0_entryhi() & cpu_asid_mask(&current_cpu_data);
+	write_c0_entrylo0(0);
+	while (entry < current_cpu_data.tlbsize) {
+		write_c0_index(entry << 8);
+		write_c0_entryhi((entry | 0x80000) << 12);
+		entry++;				/* BARRIER */
+		tlb_write_indexed();
+	}
+	write_c0_entryhi(old_ctx);
+}
+
+void local_flush_tlb_all(void)
+{
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef DEBUG_TLB
 	printk("[tlball]");
 #endif
+<<<<<<< HEAD
 
 	local_irq_save(flags);
 	old_ctx = read_c0_entryhi() & ASID_MASK;
@@ -79,6 +120,17 @@ void local_flush_tlb_mm(struct mm_struct *mm)
 void local_flush_tlb_range(struct vm_area_struct *vma, unsigned long start,
 			   unsigned long end)
 {
+=======
+	local_irq_save(flags);
+	local_flush_tlb_from(8);
+	local_irq_restore(flags);
+}
+
+void local_flush_tlb_range(struct vm_area_struct *vma, unsigned long start,
+			   unsigned long end)
+{
+	unsigned long asid_mask = cpu_asid_mask(&current_cpu_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mm_struct *mm = vma->vm_mm;
 	int cpu = smp_processor_id();
 
@@ -87,13 +139,22 @@ void local_flush_tlb_range(struct vm_area_struct *vma, unsigned long start,
 
 #ifdef DEBUG_TLB
 		printk("[tlbrange<%lu,0x%08lx,0x%08lx>]",
+<<<<<<< HEAD
 			cpu_context(cpu, mm) & ASID_MASK, start, end);
+=======
+			cpu_context(cpu, mm) & asid_mask, start, end);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		local_irq_save(flags);
 		size = (end - start + (PAGE_SIZE - 1)) >> PAGE_SHIFT;
 		if (size <= current_cpu_data.tlbsize) {
+<<<<<<< HEAD
 			int oldpid = read_c0_entryhi() & ASID_MASK;
 			int newpid = cpu_context(cpu, mm) & ASID_MASK;
+=======
+			int oldpid = read_c0_entryhi() & asid_mask;
+			int newpid = cpu_context(cpu, mm) & asid_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			start &= PAGE_MASK;
 			end += PAGE_SIZE - 1;
@@ -113,7 +174,11 @@ void local_flush_tlb_range(struct vm_area_struct *vma, unsigned long start,
 			}
 			write_c0_entryhi(oldpid);
 		} else {
+<<<<<<< HEAD
 			drop_mmu_context(mm, cpu);
+=======
+			drop_mmu_context(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		local_irq_restore(flags);
 	}
@@ -157,19 +222,33 @@ void local_flush_tlb_kernel_range(unsigned long start, unsigned long end)
 
 void local_flush_tlb_page(struct vm_area_struct *vma, unsigned long page)
 {
+<<<<<<< HEAD
 	int cpu = smp_processor_id();
 
 	if (!vma || cpu_context(cpu, vma->vm_mm) != 0) {
+=======
+	unsigned long asid_mask = cpu_asid_mask(&current_cpu_data);
+	int cpu = smp_processor_id();
+
+	if (cpu_context(cpu, vma->vm_mm) != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long flags;
 		int oldpid, newpid, idx;
 
 #ifdef DEBUG_TLB
 		printk("[tlbpage<%lu,0x%08lx>]", cpu_context(cpu, vma->vm_mm), page);
 #endif
+<<<<<<< HEAD
 		newpid = cpu_context(cpu, vma->vm_mm) & ASID_MASK;
 		page &= PAGE_MASK;
 		local_irq_save(flags);
 		oldpid = read_c0_entryhi() & ASID_MASK;
+=======
+		newpid = cpu_context(cpu, vma->vm_mm) & asid_mask;
+		page &= PAGE_MASK;
+		local_irq_save(flags);
+		oldpid = read_c0_entryhi() & asid_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		write_c0_entryhi(page | newpid);
 		BARRIER;
 		tlb_probe();
@@ -188,19 +267,34 @@ finish:
 
 void __update_tlb(struct vm_area_struct *vma, unsigned long address, pte_t pte)
 {
+<<<<<<< HEAD
+=======
+	unsigned long asid_mask = cpu_asid_mask(&current_cpu_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int idx, pid;
 
 	/*
+<<<<<<< HEAD
 	 * Handle debugger faulting in for debugee.
+=======
+	 * Handle debugger faulting in for debuggee.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (current->active_mm != vma->vm_mm)
 		return;
 
+<<<<<<< HEAD
 	pid = read_c0_entryhi() & ASID_MASK;
 
 #ifdef DEBUG_TLB
 	if ((pid != (cpu_context(cpu, vma->vm_mm) & ASID_MASK)) || (cpu_context(cpu, vma->vm_mm) == 0)) {
+=======
+	pid = read_c0_entryhi() & asid_mask;
+
+#ifdef DEBUG_TLB
+	if ((pid != (cpu_context(cpu, vma->vm_mm) & asid_mask)) || (cpu_context(cpu, vma->vm_mm) == 0)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk("update_mmu_cache: Wheee, bogus tlbpid mmpid=%lu tlbpid=%d\n",
 		       (cpu_context(cpu, vma->vm_mm)), pid);
 	}
@@ -226,10 +320,15 @@ void __update_tlb(struct vm_area_struct *vma, unsigned long address, pte_t pte)
 void add_wired_entry(unsigned long entrylo0, unsigned long entrylo1,
 		     unsigned long entryhi, unsigned long pagemask)
 {
+<<<<<<< HEAD
+=======
+	unsigned long asid_mask = cpu_asid_mask(&current_cpu_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	unsigned long old_ctx;
 	static unsigned long wired = 0;
 
+<<<<<<< HEAD
 	if (r3k_have_wired_reg) {			/* TX39XX */
 		unsigned long old_pagemask;
 		unsigned long w;
@@ -258,13 +357,20 @@ void add_wired_entry(unsigned long entrylo0, unsigned long entrylo1,
 		local_irq_restore(flags);
 
 	} else if (wired < 8) {
+=======
+	if (wired < 8) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG_TLB
 		printk("[tlbwired<entry lo0 %8x, hi %8x\n>]\n",
 		       entrylo0, entryhi);
 #endif
 
 		local_irq_save(flags);
+<<<<<<< HEAD
 		old_ctx = read_c0_entryhi() & ASID_MASK;
+=======
+		old_ctx = read_c0_entryhi() & asid_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		write_c0_entrylo0(entrylo0);
 		write_c0_entryhi(entryhi);
 		write_c0_index(wired);
@@ -276,9 +382,15 @@ void add_wired_entry(unsigned long entrylo0, unsigned long entrylo1,
 	}
 }
 
+<<<<<<< HEAD
 void __cpuinit tlb_init(void)
 {
 	local_flush_tlb_all();
 
+=======
+void tlb_init(void)
+{
+	local_flush_tlb_from(0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	build_tlb_refill_handler();
 }

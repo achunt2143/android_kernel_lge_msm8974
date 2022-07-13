@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_FD_H
 #define _LINUX_FD_H
 
@@ -379,6 +380,14 @@ struct floppy_raw_cmd {
 
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_FD_H
+#define _LINUX_FD_H
+
+#include <uapi/linux/fd.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_COMPAT
 #include <linux/compat.h>
 
@@ -398,5 +407,8 @@ struct compat_floppy_struct {
 #define FDGETPRM32 _IOR(2, 0x04, struct compat_floppy_struct)
 #endif
 #endif
+<<<<<<< HEAD
 
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

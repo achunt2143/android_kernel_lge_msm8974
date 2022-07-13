@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Sound Core PDAudioCF soundcards
  *
  * PCM part
  *
  * Copyright (c) 2003 by Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -58,7 +65,11 @@ static int pdacf_pcm_trigger(struct snd_pcm_substream *subs, int cmd)
 	case SNDRV_PCM_TRIGGER_START:
 		chip->pcm_hwptr = 0;
 		chip->pcm_tdone = 0;
+<<<<<<< HEAD
 		/* fall thru */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
 	case SNDRV_PCM_TRIGGER_RESUME:
 		mask = 0;
@@ -77,7 +88,11 @@ static int pdacf_pcm_trigger(struct snd_pcm_substream *subs, int cmd)
 	default:
 		return -EINVAL;
 	}
+<<<<<<< HEAD
 	spin_lock(&chip->reg_lock);
+=======
+	mutex_lock(&chip->reg_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->pcm_running += inc;
 	tmp = pdacf_reg_read(chip, PDAUDIOCF_REG_SCR);
 	if (chip->pcm_running) {
@@ -91,12 +106,17 @@ static int pdacf_pcm_trigger(struct snd_pcm_substream *subs, int cmd)
 	tmp |= val;
 	pdacf_reg_write(chip, PDAUDIOCF_REG_SCR, tmp);
       __end:
+<<<<<<< HEAD
 	spin_unlock(&chip->reg_lock);
+=======
+	mutex_unlock(&chip->reg_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_ak4117_check_rate_and_errors(chip->ak4117, AK4117_CHECK_NO_RATE);
 	return ret;
 }
 
 /*
+<<<<<<< HEAD
  * pdacf_pcm_hw_params - hw_params callback for playback and capture
  */
 static int pdacf_pcm_hw_params(struct snd_pcm_substream *subs,
@@ -115,6 +135,8 @@ static int pdacf_pcm_hw_free(struct snd_pcm_substream *subs)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pdacf_pcm_prepare - prepare callback for playback and capture
  */
 static int pdacf_pcm_prepare(struct snd_pcm_substream *subs)
@@ -163,7 +185,11 @@ static int pdacf_pcm_prepare(struct snd_pcm_substream *subs)
 	case SNDRV_PCM_FORMAT_S24_3LE:
 	case SNDRV_PCM_FORMAT_S24_3BE:
 		chip->pcm_sample = 3;
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default: /* 24-bit */
 		aval = AK4117_DIF_24R;
 		chip->pcm_frame = 3;
@@ -193,7 +219,11 @@ static int pdacf_pcm_prepare(struct snd_pcm_substream *subs)
  * capture hw information
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware pdacf_pcm_capture_hw = {
+=======
+static const struct snd_pcm_hardware pdacf_pcm_capture_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_RESUME |
 				 SNDRV_PCM_INFO_MMAP_VALID |
@@ -266,6 +296,7 @@ static snd_pcm_uframes_t pdacf_pcm_capture_pointer(struct snd_pcm_substream *sub
 /*
  * operators for PCM capture
  */
+<<<<<<< HEAD
 static struct snd_pcm_ops pdacf_pcm_capture_ops = {
 	.open =		pdacf_pcm_capture_open,
 	.close =	pdacf_pcm_capture_close,
@@ -277,6 +308,14 @@ static struct snd_pcm_ops pdacf_pcm_capture_ops = {
 	.pointer =	pdacf_pcm_capture_pointer,
 	.page =		snd_pcm_lib_get_vmalloc_page,
 	.mmap =		snd_pcm_lib_mmap_vmalloc,
+=======
+static const struct snd_pcm_ops pdacf_pcm_capture_ops = {
+	.open =		pdacf_pcm_capture_open,
+	.close =	pdacf_pcm_capture_close,
+	.prepare =	pdacf_pcm_prepare,
+	.trigger =	pdacf_pcm_trigger,
+	.pointer =	pdacf_pcm_capture_pointer,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -293,9 +332,18 @@ int snd_pdacf_pcm_new(struct snd_pdacf *chip)
 		return err;
 		
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &pdacf_pcm_capture_ops);
+<<<<<<< HEAD
 
 	pcm->private_data = chip;
 	pcm->info_flags = 0;
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_VMALLOC, NULL,
+				       0, 0);
+
+	pcm->private_data = chip;
+	pcm->info_flags = 0;
+	pcm->nonatomic = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strcpy(pcm->name, chip->card->shortname);
 	chip->pcm = pcm;
 	

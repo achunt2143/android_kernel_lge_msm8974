@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 config NET_CALXEDA_XGMAC
 	tristate "Calxeda 1G/10G XGMAC Ethernet driver"
 	depends on HAS_IOMEM
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config NET_CALXEDA_XGMAC
+	tristate "Calxeda 1G/10G XGMAC Ethernet driver"
+	depends on HAS_IOMEM
+	depends on ARCH_HIGHBANK || COMPILE_TEST
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select CRC32
 	help
 	  This is the driver for the XGMAC Ethernet IP block found on Calxeda

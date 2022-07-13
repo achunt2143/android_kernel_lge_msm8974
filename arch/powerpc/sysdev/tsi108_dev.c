@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * tsi108/109 device setup code
  *
  * Maintained by Roy Zang < tie-fei.zang@freescale.com >
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
@@ -18,14 +25,24 @@
 #include <linux/irq.h>
 #include <linux/export.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
+=======
+#include <linux/etherdevice.h>
+#include <linux/platform_device.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_net.h>
 #include <asm/tsi108.h>
 
 #include <linux/atomic.h>
 #include <asm/io.h>
 #include <asm/irq.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mm/mmu_decl.h>
 
 #undef DEBUG
@@ -47,6 +64,7 @@ phys_addr_t get_csrbase(void)
 
 	tsi = of_find_node_by_type(NULL, "tsi-bridge");
 	if (tsi) {
+<<<<<<< HEAD
 		unsigned int size;
 		const void *prop = of_get_property(tsi, "reg", &size);
 		tsi108_csr_base = of_translate_address(tsi, prop);
@@ -54,13 +72,26 @@ phys_addr_t get_csrbase(void)
 	};
 	return tsi108_csr_base;
 }
+=======
+		struct resource res;
+		of_address_to_resource(tsi, 0, &res);
+		tsi108_csr_base = res.start;
+		of_node_put(tsi);
+	}
+	return tsi108_csr_base;
+}
+EXPORT_SYMBOL(get_csrbase);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 u32 get_vir_csrbase(void)
 {
 	return (u32) (ioremap(get_csrbase(), 0x10000));
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(get_csrbase);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(get_vir_csrbase);
 
 static int __init tsi108_eth_of_init(void)
@@ -76,7 +107,10 @@ static int __init tsi108_eth_of_init(void)
 		struct device_node *phy, *mdio;
 		hw_info tsi_eth_data;
 		const unsigned int *phy_id;
+<<<<<<< HEAD
 		const void *mac_addr;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const phandle *ph;
 
 		memset(r, 0, sizeof(r));
@@ -104,9 +138,13 @@ static int __init tsi108_eth_of_init(void)
 			goto err;
 		}
 
+<<<<<<< HEAD
 		mac_addr = of_get_mac_address(np);
 		if (mac_addr)
 			memcpy(tsi_eth_data.mac_addr, mac_addr, 6);
+=======
+		of_get_mac_address(np, tsi_eth_data.mac_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ph = of_get_property(np, "mdio-handle", NULL);
 		mdio = of_find_node_by_phandle(*ph);
@@ -138,7 +176,11 @@ static int __init tsi108_eth_of_init(void)
 		 * driver itself to phylib and use a non-misleading
 		 * name for the workaround flag - it's not actually to
 		 * do with the model of PHY in use */
+<<<<<<< HEAD
 		if (of_get_property(phy, "txc-rxc-delay-disable", NULL))
+=======
+		if (of_property_read_bool(phy, "txc-rxc-delay-disable"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tsi_eth_data.phy_type = TSI108_PHY_BCM54XX;
 		of_node_put(phy);
 

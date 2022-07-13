@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2011 Red Hat, Inc.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2011-2012 Red Hat, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is released under the GPL.
  */
@@ -14,7 +20,12 @@
 #include <linux/device-mapper.h>
 #include <linux/workqueue.h>
 
+<<<<<<< HEAD
 /*--------------------------------------------------------------------------
+=======
+/*
+ *--------------------------------------------------------------------------
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * As far as the metadata goes, there is:
  *
  * - A superblock in block zero, taking up fewer than 512 bytes for
@@ -28,7 +39,11 @@
  *
  * - A hierarchical btree, with 2 levels which effectively maps (thin
  *   dev id, virtual block) -> block_time.  Block time is a 64-bit
+<<<<<<< HEAD
  *   field holding the time in the low 24 bits, and block in the top 48
+=======
+ *   field holding the time in the low 24 bits, and block in the top 40
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   bits.
  *
  * BTrees consist solely of btree_nodes, that fill a block.  Some are
@@ -70,16 +85,37 @@
  *
  * All metadata io is in THIN_METADATA_BLOCK_SIZE sized/aligned chunks
  * from the block manager.
+<<<<<<< HEAD
  *--------------------------------------------------------------------------*/
+=======
+ *--------------------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DM_MSG_PREFIX   "thin metadata"
 
 #define THIN_SUPERBLOCK_MAGIC 27022010
 #define THIN_SUPERBLOCK_LOCATION 0
+<<<<<<< HEAD
 #define THIN_VERSION 1
 #define THIN_METADATA_CACHE_SIZE 64
 #define SECTOR_TO_BLOCK_SHIFT 3
 
+=======
+#define THIN_VERSION 2
+#define SECTOR_TO_BLOCK_SHIFT 3
+
+/*
+ * For btree insert:
+ *  3 for btree insert +
+ *  2 for btree lookup used within space map
+ * For btree remove:
+ *  2 for shadow spine +
+ *  4 for rebalance 3 child node
+ */
+#define THIN_MAX_CONCURRENT_LOCKS 6
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This should be plenty */
 #define SPACE_MAP_ROOT_SIZE 128
 
@@ -172,13 +208,55 @@ struct dm_pool_metadata {
 
 	struct rw_semaphore root_lock;
 	uint32_t time;
+<<<<<<< HEAD
 	int need_commit;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dm_block_t root;
 	dm_block_t details_root;
 	struct list_head thin_devices;
 	uint64_t trans_id;
 	unsigned long flags;
 	sector_t data_block_size;
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Pre-commit callback.
+	 *
+	 * This allows the thin provisioning target to run a callback before
+	 * the metadata are committed.
+	 */
+	dm_pool_pre_commit_fn pre_commit_fn;
+	void *pre_commit_context;
+
+	/*
+	 * We reserve a section of the metadata for commit overhead.
+	 * All reported space does *not* include this.
+	 */
+	dm_block_t metadata_reserve;
+
+	/*
+	 * Set if a transaction has to be aborted but the attempt to roll back
+	 * to the previous (good) transaction failed.  The only pool metadata
+	 * operation possible in this state is the closing of the device.
+	 */
+	bool fail_io:1;
+
+	/*
+	 * Set once a thin-pool has been accessed through one of the interfaces
+	 * that imply the pool is in-service (e.g. thin devices created/deleted,
+	 * thin-pool message, metadata snapshots, etc).
+	 */
+	bool in_service:1;
+
+	/*
+	 * Reading the space map roots can fail, so we read it into these
+	 * buffers before the superblock is locked and updated.
+	 */
+	__u8 data_space_map_root[SPACE_MAP_ROOT_SIZE];
+	__u8 metadata_space_map_root[SPACE_MAP_ROOT_SIZE];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct dm_thin_device {
@@ -187,17 +265,30 @@ struct dm_thin_device {
 	dm_thin_id id;
 
 	int open_count;
+<<<<<<< HEAD
 	int changed;
+=======
+	bool changed:1;
+	bool aborted_with_changes:1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint64_t mapped_blocks;
 	uint64_t transaction_id;
 	uint32_t creation_time;
 	uint32_t snapshotted_time;
 };
 
+<<<<<<< HEAD
 /*----------------------------------------------------------------
  * superblock validator
  *--------------------------------------------------------------*/
 
+=======
+/*
+ *--------------------------------------------------------------
+ * superblock validator
+ *--------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SUPERBLOCK_CSUM_XOR 160774
 
 static void sb_prepare_for_write(struct dm_block_validator *v,
@@ -220,15 +311,25 @@ static int sb_check(struct dm_block_validator *v,
 	__le32 csum_le;
 
 	if (dm_block_location(b) != le64_to_cpu(disk_super->blocknr)) {
+<<<<<<< HEAD
 		DMERR("sb_check failed: blocknr %llu: "
 		      "wanted %llu", le64_to_cpu(disk_super->blocknr),
+=======
+		DMERR("%s failed: blocknr %llu: wanted %llu",
+		      __func__, le64_to_cpu(disk_super->blocknr),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      (unsigned long long)dm_block_location(b));
 		return -ENOTBLK;
 	}
 
 	if (le64_to_cpu(disk_super->magic) != THIN_SUPERBLOCK_MAGIC) {
+<<<<<<< HEAD
 		DMERR("sb_check failed: magic %llu: "
 		      "wanted %llu", le64_to_cpu(disk_super->magic),
+=======
+		DMERR("%s failed: magic %llu: wanted %llu",
+		      __func__, le64_to_cpu(disk_super->magic),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      (unsigned long long)THIN_SUPERBLOCK_MAGIC);
 		return -EILSEQ;
 	}
@@ -237,8 +338,13 @@ static int sb_check(struct dm_block_validator *v,
 					     block_size - sizeof(__le32),
 					     SUPERBLOCK_CSUM_XOR));
 	if (csum_le != disk_super->csum) {
+<<<<<<< HEAD
 		DMERR("sb_check failed: csum %u: wanted %u",
 		      le32_to_cpu(csum_le), le32_to_cpu(disk_super->csum));
+=======
+		DMERR("%s failed: csum %u: wanted %u",
+		      __func__, le32_to_cpu(csum_le), le32_to_cpu(disk_super->csum));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EILSEQ;
 	}
 
@@ -251,10 +357,18 @@ static struct dm_block_validator sb_validator = {
 	.check = sb_check
 };
 
+<<<<<<< HEAD
 /*----------------------------------------------------------------
  * Methods for the btree value types
  *--------------------------------------------------------------*/
 
+=======
+/*
+ *--------------------------------------------------------------
+ * Methods for the btree value types
+ *--------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static uint64_t pack_block_time(dm_block_t b, uint32_t t)
 {
 	return (b << 24) | t;
@@ -266,6 +380,7 @@ static void unpack_block_time(uint64_t v, dm_block_t *b, uint32_t *t)
 	*t = v & ((1 << 24) - 1);
 }
 
+<<<<<<< HEAD
 static void data_block_inc(void *context, void *value_le)
 {
 	struct dm_space_map *sm = context;
@@ -291,6 +406,58 @@ static void data_block_dec(void *context, void *value_le)
 }
 
 static int data_block_equal(void *context, void *value1_le, void *value2_le)
+=======
+/*
+ * It's more efficient to call dm_sm_{inc,dec}_blocks as few times as
+ * possible.  'with_runs' reads contiguous runs of blocks, and calls the
+ * given sm function.
+ */
+typedef int (*run_fn)(struct dm_space_map *, dm_block_t, dm_block_t);
+
+static void with_runs(struct dm_space_map *sm, const __le64 *value_le, unsigned int count, run_fn fn)
+{
+	uint64_t b, begin, end;
+	uint32_t t;
+	bool in_run = false;
+	unsigned int i;
+
+	for (i = 0; i < count; i++, value_le++) {
+		/* We know value_le is 8 byte aligned */
+		unpack_block_time(le64_to_cpu(*value_le), &b, &t);
+
+		if (in_run) {
+			if (b == end) {
+				end++;
+			} else {
+				fn(sm, begin, end);
+				begin = b;
+				end = b + 1;
+			}
+		} else {
+			in_run = true;
+			begin = b;
+			end = b + 1;
+		}
+	}
+
+	if (in_run)
+		fn(sm, begin, end);
+}
+
+static void data_block_inc(void *context, const void *value_le, unsigned int count)
+{
+	with_runs((struct dm_space_map *) context,
+		  (const __le64 *) value_le, count, dm_sm_inc_blocks);
+}
+
+static void data_block_dec(void *context, const void *value_le, unsigned int count)
+{
+	with_runs((struct dm_space_map *) context,
+		  (const __le64 *) value_le, count, dm_sm_dec_blocks);
+}
+
+static int data_block_equal(void *context, const void *value1_le, const void *value2_le)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__le64 v1_le, v2_le;
 	uint64_t b1, b2;
@@ -304,6 +471,7 @@ static int data_block_equal(void *context, void *value1_le, void *value2_le)
 	return b1 == b2;
 }
 
+<<<<<<< HEAD
 static void subtree_inc(void *context, void *value)
 {
 	struct dm_btree_info *info = context;
@@ -330,6 +498,33 @@ static void subtree_dec(void *context, void *value)
 static int subtree_equal(void *context, void *value1_le, void *value2_le)
 {
 	__le64 v1_le, v2_le;
+=======
+static void subtree_inc(void *context, const void *value, unsigned int count)
+{
+	struct dm_btree_info *info = context;
+	const __le64 *root_le = value;
+	unsigned int i;
+
+	for (i = 0; i < count; i++, root_le++)
+		dm_tm_inc(info->tm, le64_to_cpu(*root_le));
+}
+
+static void subtree_dec(void *context, const void *value, unsigned int count)
+{
+	struct dm_btree_info *info = context;
+	const __le64 *root_le = value;
+	unsigned int i;
+
+	for (i = 0; i < count; i++, root_le++)
+		if (dm_btree_del(info, le64_to_cpu(*root_le)))
+			DMERR("btree delete failed");
+}
+
+static int subtree_equal(void *context, const void *value1_le, const void *value2_le)
+{
+	__le64 v1_le, v2_le;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(&v1_le, value1_le, sizeof(v1_le));
 	memcpy(&v2_le, value2_le, sizeof(v2_le));
 
@@ -338,6 +533,7 @@ static int subtree_equal(void *context, void *value1_le, void *value2_le)
 
 /*----------------------------------------------------------------*/
 
+<<<<<<< HEAD
 static int superblock_all_zeroes(struct dm_block_manager *bm, int *result)
 {
 	int r;
@@ -345,6 +541,54 @@ static int superblock_all_zeroes(struct dm_block_manager *bm, int *result)
 	struct dm_block *b;
 	__le64 *data_le, zero = cpu_to_le64(0);
 	unsigned block_size = dm_bm_block_size(bm) / sizeof(__le64);
+=======
+/*
+ * Variant that is used for in-core only changes or code that
+ * shouldn't put the pool in service on its own (e.g. commit).
+ */
+static inline void pmd_write_lock_in_core(struct dm_pool_metadata *pmd)
+	__acquires(pmd->root_lock)
+{
+	down_write(&pmd->root_lock);
+}
+
+static inline void pmd_write_lock(struct dm_pool_metadata *pmd)
+{
+	pmd_write_lock_in_core(pmd);
+	if (unlikely(!pmd->in_service))
+		pmd->in_service = true;
+}
+
+static inline void pmd_write_unlock(struct dm_pool_metadata *pmd)
+	__releases(pmd->root_lock)
+{
+	up_write(&pmd->root_lock);
+}
+
+/*----------------------------------------------------------------*/
+
+static int superblock_lock_zero(struct dm_pool_metadata *pmd,
+				struct dm_block **sblock)
+{
+	return dm_bm_write_lock_zero(pmd->bm, THIN_SUPERBLOCK_LOCATION,
+				     &sb_validator, sblock);
+}
+
+static int superblock_lock(struct dm_pool_metadata *pmd,
+			   struct dm_block **sblock)
+{
+	return dm_bm_write_lock(pmd->bm, THIN_SUPERBLOCK_LOCATION,
+				&sb_validator, sblock);
+}
+
+static int __superblock_all_zeroes(struct dm_block_manager *bm, int *result)
+{
+	int r;
+	unsigned int i;
+	struct dm_block *b;
+	__le64 *data_le, zero = cpu_to_le64(0);
+	unsigned int block_size = dm_bm_block_size(bm) / sizeof(__le64);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We can't use a validator here - it may be all zeroes.
@@ -362,6 +606,7 @@ static int superblock_all_zeroes(struct dm_block_manager *bm, int *result)
 		}
 	}
 
+<<<<<<< HEAD
 	return dm_bm_unlock(b);
 }
 
@@ -431,6 +676,16 @@ static int init_pmd(struct dm_pool_metadata *pmd,
 	}
 
 	pmd->info.tm = tm;
+=======
+	dm_bm_unlock(b);
+
+	return 0;
+}
+
+static void __setup_btree_details(struct dm_pool_metadata *pmd)
+{
+	pmd->info.tm = pmd->tm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmd->info.levels = 2;
 	pmd->info.value_type.context = pmd->data_sm;
 	pmd->info.value_type.size = sizeof(__le64);
@@ -441,15 +696,25 @@ static int init_pmd(struct dm_pool_metadata *pmd,
 	memcpy(&pmd->nb_info, &pmd->info, sizeof(pmd->nb_info));
 	pmd->nb_info.tm = pmd->nb_tm;
 
+<<<<<<< HEAD
 	pmd->tl_info.tm = tm;
 	pmd->tl_info.levels = 1;
 	pmd->tl_info.value_type.context = &pmd->info;
+=======
+	pmd->tl_info.tm = pmd->tm;
+	pmd->tl_info.levels = 1;
+	pmd->tl_info.value_type.context = &pmd->bl_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmd->tl_info.value_type.size = sizeof(__le64);
 	pmd->tl_info.value_type.inc = subtree_inc;
 	pmd->tl_info.value_type.dec = subtree_dec;
 	pmd->tl_info.value_type.equal = subtree_equal;
 
+<<<<<<< HEAD
 	pmd->bl_info.tm = tm;
+=======
+	pmd->bl_info.tm = pmd->tm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmd->bl_info.levels = 1;
 	pmd->bl_info.value_type.context = pmd->data_sm;
 	pmd->bl_info.value_type.size = sizeof(__le64);
@@ -457,13 +722,18 @@ static int init_pmd(struct dm_pool_metadata *pmd,
 	pmd->bl_info.value_type.dec = data_block_dec;
 	pmd->bl_info.value_type.equal = data_block_equal;
 
+<<<<<<< HEAD
 	pmd->details_info.tm = tm;
+=======
+	pmd->details_info.tm = pmd->tm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pmd->details_info.levels = 1;
 	pmd->details_info.value_type.context = NULL;
 	pmd->details_info.value_type.size = sizeof(struct disk_device_details);
 	pmd->details_info.value_type.inc = NULL;
 	pmd->details_info.value_type.dec = NULL;
 	pmd->details_info.value_type.equal = NULL;
+<<<<<<< HEAD
 
 	pmd->root = 0;
 
@@ -482,23 +752,333 @@ bad_data_sm:
 bad:
 	dm_tm_destroy(tm);
 	dm_sm_destroy(sm);
+=======
+}
+
+static int save_sm_roots(struct dm_pool_metadata *pmd)
+{
+	int r;
+	size_t len;
+
+	r = dm_sm_root_size(pmd->metadata_sm, &len);
+	if (r < 0)
+		return r;
+
+	r = dm_sm_copy_root(pmd->metadata_sm, &pmd->metadata_space_map_root, len);
+	if (r < 0)
+		return r;
+
+	r = dm_sm_root_size(pmd->data_sm, &len);
+	if (r < 0)
+		return r;
+
+	return dm_sm_copy_root(pmd->data_sm, &pmd->data_space_map_root, len);
+}
+
+static void copy_sm_roots(struct dm_pool_metadata *pmd,
+			  struct thin_disk_superblock *disk)
+{
+	memcpy(&disk->metadata_space_map_root,
+	       &pmd->metadata_space_map_root,
+	       sizeof(pmd->metadata_space_map_root));
+
+	memcpy(&disk->data_space_map_root,
+	       &pmd->data_space_map_root,
+	       sizeof(pmd->data_space_map_root));
+}
+
+static int __write_initial_superblock(struct dm_pool_metadata *pmd)
+{
+	int r;
+	struct dm_block *sblock;
+	struct thin_disk_superblock *disk_super;
+	sector_t bdev_size = bdev_nr_sectors(pmd->bdev);
+
+	if (bdev_size > THIN_METADATA_MAX_SECTORS)
+		bdev_size = THIN_METADATA_MAX_SECTORS;
+
+	r = dm_sm_commit(pmd->data_sm);
+	if (r < 0)
+		return r;
+
+	r = dm_tm_pre_commit(pmd->tm);
+	if (r < 0)
+		return r;
+
+	r = save_sm_roots(pmd);
+	if (r < 0)
+		return r;
+
+	r = superblock_lock_zero(pmd, &sblock);
+	if (r)
+		return r;
+
+	disk_super = dm_block_data(sblock);
+	disk_super->flags = 0;
+	memset(disk_super->uuid, 0, sizeof(disk_super->uuid));
+	disk_super->magic = cpu_to_le64(THIN_SUPERBLOCK_MAGIC);
+	disk_super->version = cpu_to_le32(THIN_VERSION);
+	disk_super->time = 0;
+	disk_super->trans_id = 0;
+	disk_super->held_root = 0;
+
+	copy_sm_roots(pmd, disk_super);
+
+	disk_super->data_mapping_root = cpu_to_le64(pmd->root);
+	disk_super->device_details_root = cpu_to_le64(pmd->details_root);
+	disk_super->metadata_block_size = cpu_to_le32(THIN_METADATA_BLOCK_SIZE);
+	disk_super->metadata_nr_blocks = cpu_to_le64(bdev_size >> SECTOR_TO_BLOCK_SHIFT);
+	disk_super->data_block_size = cpu_to_le32(pmd->data_block_size);
+
+	return dm_tm_commit(pmd->tm, sblock);
+}
+
+static int __format_metadata(struct dm_pool_metadata *pmd)
+{
+	int r;
+
+	r = dm_tm_create_with_sm(pmd->bm, THIN_SUPERBLOCK_LOCATION,
+				 &pmd->tm, &pmd->metadata_sm);
+	if (r < 0) {
+		pmd->tm = NULL;
+		pmd->metadata_sm = NULL;
+		DMERR("tm_create_with_sm failed");
+		return r;
+	}
+
+	pmd->data_sm = dm_sm_disk_create(pmd->tm, 0);
+	if (IS_ERR(pmd->data_sm)) {
+		DMERR("sm_disk_create failed");
+		r = PTR_ERR(pmd->data_sm);
+		pmd->data_sm = NULL;
+		goto bad_cleanup_tm;
+	}
+
+	pmd->nb_tm = dm_tm_create_non_blocking_clone(pmd->tm);
+	if (!pmd->nb_tm) {
+		DMERR("could not create non-blocking clone tm");
+		r = -ENOMEM;
+		goto bad_cleanup_data_sm;
+	}
+
+	__setup_btree_details(pmd);
+
+	r = dm_btree_empty(&pmd->info, &pmd->root);
+	if (r < 0)
+		goto bad_cleanup_nb_tm;
+
+	r = dm_btree_empty(&pmd->details_info, &pmd->details_root);
+	if (r < 0) {
+		DMERR("couldn't create devices root");
+		goto bad_cleanup_nb_tm;
+	}
+
+	r = __write_initial_superblock(pmd);
+	if (r)
+		goto bad_cleanup_nb_tm;
+
+	return 0;
+
+bad_cleanup_nb_tm:
+	dm_tm_destroy(pmd->nb_tm);
+	pmd->nb_tm = NULL;
+bad_cleanup_data_sm:
+	dm_sm_destroy(pmd->data_sm);
+	pmd->data_sm = NULL;
+bad_cleanup_tm:
+	dm_tm_destroy(pmd->tm);
+	pmd->tm = NULL;
+	dm_sm_destroy(pmd->metadata_sm);
+	pmd->metadata_sm = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
+}
+
+<<<<<<< HEAD
+static int __begin_transaction(struct dm_pool_metadata *pmd)
+{
+	int r;
+	u32 features;
+=======
+static int __check_incompat_features(struct thin_disk_superblock *disk_super,
+				     struct dm_pool_metadata *pmd)
+{
+	uint32_t features;
+
+	features = le32_to_cpu(disk_super->incompat_flags) & ~THIN_FEATURE_INCOMPAT_SUPP;
+	if (features) {
+		DMERR("could not access metadata due to unsupported optional features (%lx).",
+		      (unsigned long)features);
+		return -EINVAL;
+	}
+
+	/*
+	 * Check for read-only metadata to skip the following RDWR checks.
+	 */
+	if (bdev_read_only(pmd->bdev))
+		return 0;
+
+	features = le32_to_cpu(disk_super->compat_ro_flags) & ~THIN_FEATURE_COMPAT_RO_SUPP;
+	if (features) {
+		DMERR("could not access metadata RDWR due to unsupported optional features (%lx).",
+		      (unsigned long)features);
+		return -EINVAL;
+	}
+
+	return 0;
+}
+
+static int __open_metadata(struct dm_pool_metadata *pmd)
+{
+	int r;
+	struct dm_block *sblock;
+	struct thin_disk_superblock *disk_super;
+
+	r = dm_bm_read_lock(pmd->bm, THIN_SUPERBLOCK_LOCATION,
+			    &sb_validator, &sblock);
+	if (r < 0) {
+		DMERR("couldn't read superblock");
+		return r;
+	}
+
+	disk_super = dm_block_data(sblock);
+
+	/* Verify the data block size hasn't changed */
+	if (le32_to_cpu(disk_super->data_block_size) != pmd->data_block_size) {
+		DMERR("changing the data block size (from %u to %llu) is not supported",
+		      le32_to_cpu(disk_super->data_block_size),
+		      (unsigned long long)pmd->data_block_size);
+		r = -EINVAL;
+		goto bad_unlock_sblock;
+	}
+
+	r = __check_incompat_features(disk_super, pmd);
+	if (r < 0)
+		goto bad_unlock_sblock;
+
+	r = dm_tm_open_with_sm(pmd->bm, THIN_SUPERBLOCK_LOCATION,
+			       disk_super->metadata_space_map_root,
+			       sizeof(disk_super->metadata_space_map_root),
+			       &pmd->tm, &pmd->metadata_sm);
+	if (r < 0) {
+		pmd->tm = NULL;
+		pmd->metadata_sm = NULL;
+		DMERR("tm_open_with_sm failed");
+		goto bad_unlock_sblock;
+	}
+
+	pmd->data_sm = dm_sm_disk_open(pmd->tm, disk_super->data_space_map_root,
+				       sizeof(disk_super->data_space_map_root));
+	if (IS_ERR(pmd->data_sm)) {
+		DMERR("sm_disk_open failed");
+		r = PTR_ERR(pmd->data_sm);
+		pmd->data_sm = NULL;
+		goto bad_cleanup_tm;
+	}
+
+	pmd->nb_tm = dm_tm_create_non_blocking_clone(pmd->tm);
+	if (!pmd->nb_tm) {
+		DMERR("could not create non-blocking clone tm");
+		r = -ENOMEM;
+		goto bad_cleanup_data_sm;
+	}
+
+	/*
+	 * For pool metadata opening process, root setting is redundant
+	 * because it will be set again in __begin_transaction(). But dm
+	 * pool aborting process really needs to get last transaction's
+	 * root to avoid accessing broken btree.
+	 */
+	pmd->root = le64_to_cpu(disk_super->data_mapping_root);
+	pmd->details_root = le64_to_cpu(disk_super->device_details_root);
+
+	__setup_btree_details(pmd);
+	dm_bm_unlock(sblock);
+
+	return 0;
+
+bad_cleanup_data_sm:
+	dm_sm_destroy(pmd->data_sm);
+	pmd->data_sm = NULL;
+bad_cleanup_tm:
+	dm_tm_destroy(pmd->tm);
+	pmd->tm = NULL;
+	dm_sm_destroy(pmd->metadata_sm);
+	pmd->metadata_sm = NULL;
+bad_unlock_sblock:
+	dm_bm_unlock(sblock);
+
+	return r;
+}
+
+static int __open_or_format_metadata(struct dm_pool_metadata *pmd, bool format_device)
+{
+	int r, unformatted;
+
+	r = __superblock_all_zeroes(pmd->bm, &unformatted);
+	if (r)
+		return r;
+
+	if (unformatted)
+		return format_device ? __format_metadata(pmd) : -EPERM;
+
+	return __open_metadata(pmd);
+}
+
+static int __create_persistent_data_objects(struct dm_pool_metadata *pmd, bool format_device)
+{
+	int r;
+
+	pmd->bm = dm_block_manager_create(pmd->bdev, THIN_METADATA_BLOCK_SIZE << SECTOR_SHIFT,
+					  THIN_MAX_CONCURRENT_LOCKS);
+	if (IS_ERR(pmd->bm)) {
+		DMERR("could not create block manager");
+		r = PTR_ERR(pmd->bm);
+		pmd->bm = NULL;
+		return r;
+	}
+
+	r = __open_or_format_metadata(pmd, format_device);
+	if (r) {
+		dm_block_manager_destroy(pmd->bm);
+		pmd->bm = NULL;
+	}
+
+	return r;
+}
+
+static void __destroy_persistent_data_objects(struct dm_pool_metadata *pmd,
+					      bool destroy_bm)
+{
+	dm_sm_destroy(pmd->data_sm);
+	pmd->data_sm = NULL;
+	dm_sm_destroy(pmd->metadata_sm);
+	pmd->metadata_sm = NULL;
+	dm_tm_destroy(pmd->nb_tm);
+	pmd->nb_tm = NULL;
+	dm_tm_destroy(pmd->tm);
+	pmd->tm = NULL;
+	if (destroy_bm)
+		dm_block_manager_destroy(pmd->bm);
 }
 
 static int __begin_transaction(struct dm_pool_metadata *pmd)
 {
 	int r;
-	u32 features;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct thin_disk_superblock *disk_super;
 	struct dm_block *sblock;
 
 	/*
+<<<<<<< HEAD
 	 * __maybe_commit_transaction() resets these
 	 */
 	WARN_ON(pmd->need_commit);
 
 	/*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * We re-read the superblock every time.  Shouldn't need to do this
 	 * really.
 	 */
@@ -515,6 +1095,7 @@ static int __begin_transaction(struct dm_pool_metadata *pmd)
 	pmd->flags = le32_to_cpu(disk_super->flags);
 	pmd->data_block_size = le32_to_cpu(disk_super->data_block_size);
 
+<<<<<<< HEAD
 	features = le32_to_cpu(disk_super->incompat_flags) & ~THIN_FEATURE_INCOMPAT_SUPP;
 	if (features) {
 		DMERR("could not access metadata due to "
@@ -541,6 +1122,10 @@ static int __begin_transaction(struct dm_pool_metadata *pmd)
 out:
 	dm_bm_unlock(sblock);
 	return r;
+=======
+	dm_bm_unlock(sblock);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __write_changed_details(struct dm_pool_metadata *pmd)
@@ -568,13 +1153,20 @@ static int __write_changed_details(struct dm_pool_metadata *pmd)
 			return r;
 
 		if (td->open_count)
+<<<<<<< HEAD
 			td->changed = 0;
+=======
+			td->changed = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {
 			list_del(&td->list);
 			kfree(td);
 		}
+<<<<<<< HEAD
 
 		pmd->need_commit = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -582,11 +1174,15 @@ static int __write_changed_details(struct dm_pool_metadata *pmd)
 
 static int __commit_transaction(struct dm_pool_metadata *pmd)
 {
+<<<<<<< HEAD
 	/*
 	 * FIXME: Associated pool should be made read-only on failure.
 	 */
 	int r;
 	size_t metadata_len, data_len;
+=======
+	int r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct thin_disk_superblock *disk_super;
 	struct dm_block *sblock;
 
@@ -594,6 +1190,7 @@ static int __commit_transaction(struct dm_pool_metadata *pmd)
 	 * We need to know if the thin_disk_superblock exceeds a 512-byte sector.
 	 */
 	BUILD_BUG_ON(sizeof(struct thin_disk_superblock) > 512);
+<<<<<<< HEAD
 
 	r = __write_changed_details(pmd);
 	if (r < 0)
@@ -622,6 +1219,40 @@ static int __commit_transaction(struct dm_pool_metadata *pmd)
 			     &sb_validator, &sblock);
 	if (r)
 		goto out;
+=======
+	BUG_ON(!rwsem_is_locked(&pmd->root_lock));
+
+	if (unlikely(!pmd->in_service))
+		return 0;
+
+	if (pmd->pre_commit_fn) {
+		r = pmd->pre_commit_fn(pmd->pre_commit_context);
+		if (r < 0) {
+			DMERR("pre-commit callback failed");
+			return r;
+		}
+	}
+
+	r = __write_changed_details(pmd);
+	if (r < 0)
+		return r;
+
+	r = dm_sm_commit(pmd->data_sm);
+	if (r < 0)
+		return r;
+
+	r = dm_tm_pre_commit(pmd->tm);
+	if (r < 0)
+		return r;
+
+	r = save_sm_roots(pmd);
+	if (r < 0)
+		return r;
+
+	r = superblock_lock(pmd, &sblock);
+	if (r)
+		return r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	disk_super = dm_block_data(sblock);
 	disk_super->time = cpu_to_le32(pmd->time);
@@ -630,6 +1261,7 @@ static int __commit_transaction(struct dm_pool_metadata *pmd)
 	disk_super->trans_id = cpu_to_le64(pmd->trans_id);
 	disk_super->flags = cpu_to_le32(pmd->flags);
 
+<<<<<<< HEAD
 	r = dm_sm_copy_root(pmd->metadata_sm, &disk_super->metadata_space_map_root,
 			    metadata_len);
 	if (r < 0)
@@ -662,6 +1294,33 @@ struct dm_pool_metadata *dm_pool_metadata_open(struct block_device *bdev,
 	struct dm_block_manager *bm;
 	int create;
 	struct dm_block *sblock;
+=======
+	copy_sm_roots(pmd, disk_super);
+
+	return dm_tm_commit(pmd->tm, sblock);
+}
+
+static void __set_metadata_reserve(struct dm_pool_metadata *pmd)
+{
+	int r;
+	dm_block_t total;
+	dm_block_t max_blocks = 4096; /* 16M */
+
+	r = dm_sm_get_nr_blocks(pmd->metadata_sm, &total);
+	if (r) {
+		DMERR("could not get size of metadata device");
+		pmd->metadata_reserve = max_blocks;
+	} else
+		pmd->metadata_reserve = min(max_blocks, div_u64(total, 10));
+}
+
+struct dm_pool_metadata *dm_pool_metadata_open(struct block_device *bdev,
+					       sector_t data_block_size,
+					       bool format_device)
+{
+	int r;
+	struct dm_pool_metadata *pmd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pmd = kmalloc(sizeof(*pmd), GFP_KERNEL);
 	if (!pmd) {
@@ -669,6 +1328,7 @@ struct dm_pool_metadata *dm_pool_metadata_open(struct block_device *bdev,
 		return ERR_PTR(-ENOMEM);
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Max hex locks:
 	 *  3 for btree insert +
@@ -753,12 +1413,44 @@ bad:
 	if (dm_pool_metadata_close(pmd) < 0)
 		DMWARN("%s: dm_pool_metadata_close() failed.", __func__);
 	return ERR_PTR(r);
+=======
+	init_rwsem(&pmd->root_lock);
+	pmd->time = 0;
+	INIT_LIST_HEAD(&pmd->thin_devices);
+	pmd->fail_io = false;
+	pmd->in_service = false;
+	pmd->bdev = bdev;
+	pmd->data_block_size = data_block_size;
+	pmd->pre_commit_fn = NULL;
+	pmd->pre_commit_context = NULL;
+
+	r = __create_persistent_data_objects(pmd, format_device);
+	if (r) {
+		kfree(pmd);
+		return ERR_PTR(r);
+	}
+
+	r = __begin_transaction(pmd);
+	if (r < 0) {
+		if (dm_pool_metadata_close(pmd) < 0)
+			DMWARN("%s: dm_pool_metadata_close() failed.", __func__);
+		return ERR_PTR(r);
+	}
+
+	__set_metadata_reserve(pmd);
+
+	return pmd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int dm_pool_metadata_close(struct dm_pool_metadata *pmd)
 {
 	int r;
+<<<<<<< HEAD
 	unsigned open_devices = 0;
+=======
+	unsigned int open_devices = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_thin_device *td, *tmp;
 
 	down_read(&pmd->root_lock);
@@ -778,6 +1470,7 @@ int dm_pool_metadata_close(struct dm_pool_metadata *pmd)
 		return -EBUSY;
 	}
 
+<<<<<<< HEAD
 	r = __commit_transaction(pmd);
 	if (r < 0)
 		DMWARN("%s: __commit_transaction() failed, error = %d",
@@ -790,6 +1483,19 @@ int dm_pool_metadata_close(struct dm_pool_metadata *pmd)
 	dm_sm_destroy(pmd->data_sm);
 	kfree(pmd);
 
+=======
+	pmd_write_lock_in_core(pmd);
+	if (!pmd->fail_io && !dm_bm_is_read_only(pmd->bm)) {
+		r = __commit_transaction(pmd);
+		if (r < 0)
+			DMWARN("%s: __commit_transaction() failed, error = %d",
+			       __func__, r);
+	}
+	pmd_write_unlock(pmd);
+	__destroy_persistent_data_objects(pmd, true);
+
+	kfree(pmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -850,6 +1556,10 @@ static int __open_device(struct dm_pool_metadata *pmd,
 	(*td)->id = dev;
 	(*td)->open_count = 1;
 	(*td)->changed = changed;
+<<<<<<< HEAD
+=======
+	(*td)->aborted_with_changes = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(*td)->mapped_blocks = le64_to_cpu(details_le.mapped_blocks);
 	(*td)->transaction_id = le64_to_cpu(details_le.transaction_id);
 	(*td)->creation_time = le32_to_cpu(details_le.creation_time);
@@ -871,12 +1581,19 @@ static int __create_thin(struct dm_pool_metadata *pmd,
 	int r;
 	dm_block_t dev_root;
 	uint64_t key = dev;
+<<<<<<< HEAD
 	struct disk_device_details details_le;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_thin_device *td;
 	__le64 value;
 
 	r = dm_btree_lookup(&pmd->details_info, pmd->details_root,
+<<<<<<< HEAD
 			    &key, &details_le);
+=======
+			    &key, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!r)
 		return -EEXIST;
 
@@ -911,11 +1628,20 @@ static int __create_thin(struct dm_pool_metadata *pmd,
 
 int dm_pool_create_thin(struct dm_pool_metadata *pmd, dm_thin_id dev)
 {
+<<<<<<< HEAD
 	int r;
 
 	down_write(&pmd->root_lock);
 	r = __create_thin(pmd, dev);
 	up_write(&pmd->root_lock);
+=======
+	int r = -EINVAL;
+
+	pmd_write_lock(pmd);
+	if (!pmd->fail_io)
+		r = __create_thin(pmd, dev);
+	pmd_write_unlock(pmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
@@ -931,7 +1657,11 @@ static int __set_snapshot_details(struct dm_pool_metadata *pmd,
 	if (r)
 		return r;
 
+<<<<<<< HEAD
 	td->changed = 1;
+=======
+	td->changed = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	td->snapshotted_time = time;
 
 	snap->mapped_blocks = td->mapped_blocks;
@@ -948,12 +1678,19 @@ static int __create_snap(struct dm_pool_metadata *pmd,
 	dm_block_t origin_root;
 	uint64_t key = origin, dev_key = dev;
 	struct dm_thin_device *td;
+<<<<<<< HEAD
 	struct disk_device_details details_le;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le64 value;
 
 	/* check this device is unused */
 	r = dm_btree_lookup(&pmd->details_info, pmd->details_root,
+<<<<<<< HEAD
 			    &dev_key, &details_le);
+=======
+			    &dev_key, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!r)
 		return -EEXIST;
 
@@ -1001,11 +1738,20 @@ int dm_pool_create_snap(struct dm_pool_metadata *pmd,
 				 dm_thin_id dev,
 				 dm_thin_id origin)
 {
+<<<<<<< HEAD
 	int r;
 
 	down_write(&pmd->root_lock);
 	r = __create_snap(pmd, dev, origin);
 	up_write(&pmd->root_lock);
+=======
+	int r = -EINVAL;
+
+	pmd_write_lock(pmd);
+	if (!pmd->fail_io)
+		r = __create_snap(pmd, dev, origin);
+	pmd_write_unlock(pmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
@@ -1037,19 +1783,31 @@ static int __delete_device(struct dm_pool_metadata *pmd, dm_thin_id dev)
 	if (r)
 		return r;
 
+<<<<<<< HEAD
 	pmd->need_commit = 1;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int dm_pool_delete_thin_device(struct dm_pool_metadata *pmd,
 			       dm_thin_id dev)
 {
+<<<<<<< HEAD
 	int r;
 
 	down_write(&pmd->root_lock);
 	r = __delete_device(pmd, dev);
 	up_write(&pmd->root_lock);
+=======
+	int r = -EINVAL;
+
+	pmd_write_lock(pmd);
+	if (!pmd->fail_io)
+		r = __delete_device(pmd, dev);
+	pmd_write_unlock(pmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
@@ -1058,6 +1816,7 @@ int dm_pool_set_metadata_transaction_id(struct dm_pool_metadata *pmd,
 					uint64_t current_id,
 					uint64_t new_id)
 {
+<<<<<<< HEAD
 	down_write(&pmd->root_lock);
 	if (pmd->trans_id != current_id) {
 		up_write(&pmd->root_lock);
@@ -1070,11 +1829,33 @@ int dm_pool_set_metadata_transaction_id(struct dm_pool_metadata *pmd,
 	up_write(&pmd->root_lock);
 
 	return 0;
+=======
+	int r = -EINVAL;
+
+	pmd_write_lock(pmd);
+
+	if (pmd->fail_io)
+		goto out;
+
+	if (pmd->trans_id != current_id) {
+		DMERR("mismatched transaction id");
+		goto out;
+	}
+
+	pmd->trans_id = new_id;
+	r = 0;
+
+out:
+	pmd_write_unlock(pmd);
+
+	return r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int dm_pool_get_metadata_transaction_id(struct dm_pool_metadata *pmd,
 					uint64_t *result)
 {
+<<<<<<< HEAD
 	down_read(&pmd->root_lock);
 	*result = pmd->trans_id;
 	up_read(&pmd->root_lock);
@@ -1084,19 +1865,171 @@ int dm_pool_get_metadata_transaction_id(struct dm_pool_metadata *pmd,
 
 static int __get_held_metadata_root(struct dm_pool_metadata *pmd,
 				    dm_block_t *result)
+=======
+	int r = -EINVAL;
+
+	down_read(&pmd->root_lock);
+	if (!pmd->fail_io) {
+		*result = pmd->trans_id;
+		r = 0;
+	}
+	up_read(&pmd->root_lock);
+
+	return r;
+}
+
+static int __reserve_metadata_snap(struct dm_pool_metadata *pmd)
+{
+	int r, inc;
+	struct thin_disk_superblock *disk_super;
+	struct dm_block *copy, *sblock;
+	dm_block_t held_root;
+
+	/*
+	 * We commit to ensure the btree roots which we increment in a
+	 * moment are up to date.
+	 */
+	r = __commit_transaction(pmd);
+	if (r < 0) {
+		DMWARN("%s: __commit_transaction() failed, error = %d",
+		       __func__, r);
+		return r;
+	}
+
+	/*
+	 * Copy the superblock.
+	 */
+	dm_sm_inc_block(pmd->metadata_sm, THIN_SUPERBLOCK_LOCATION);
+	r = dm_tm_shadow_block(pmd->tm, THIN_SUPERBLOCK_LOCATION,
+			       &sb_validator, &copy, &inc);
+	if (r)
+		return r;
+
+	BUG_ON(!inc);
+
+	held_root = dm_block_location(copy);
+	disk_super = dm_block_data(copy);
+
+	if (le64_to_cpu(disk_super->held_root)) {
+		DMWARN("Pool metadata snapshot already exists: release this before taking another.");
+
+		dm_tm_dec(pmd->tm, held_root);
+		dm_tm_unlock(pmd->tm, copy);
+		return -EBUSY;
+	}
+
+	/*
+	 * Wipe the spacemap since we're not publishing this.
+	 */
+	memset(&disk_super->data_space_map_root, 0,
+	       sizeof(disk_super->data_space_map_root));
+	memset(&disk_super->metadata_space_map_root, 0,
+	       sizeof(disk_super->metadata_space_map_root));
+
+	/*
+	 * Increment the data structures that need to be preserved.
+	 */
+	dm_tm_inc(pmd->tm, le64_to_cpu(disk_super->data_mapping_root));
+	dm_tm_inc(pmd->tm, le64_to_cpu(disk_super->device_details_root));
+	dm_tm_unlock(pmd->tm, copy);
+
+	/*
+	 * Write the held root into the superblock.
+	 */
+	r = superblock_lock(pmd, &sblock);
+	if (r) {
+		dm_tm_dec(pmd->tm, held_root);
+		return r;
+	}
+
+	disk_super = dm_block_data(sblock);
+	disk_super->held_root = cpu_to_le64(held_root);
+	dm_bm_unlock(sblock);
+	return 0;
+}
+
+int dm_pool_reserve_metadata_snap(struct dm_pool_metadata *pmd)
+{
+	int r = -EINVAL;
+
+	pmd_write_lock(pmd);
+	if (!pmd->fail_io)
+		r = __reserve_metadata_snap(pmd);
+	pmd_write_unlock(pmd);
+
+	return r;
+}
+
+static int __release_metadata_snap(struct dm_pool_metadata *pmd)
+{
+	int r;
+	struct thin_disk_superblock *disk_super;
+	struct dm_block *sblock, *copy;
+	dm_block_t held_root;
+
+	r = superblock_lock(pmd, &sblock);
+	if (r)
+		return r;
+
+	disk_super = dm_block_data(sblock);
+	held_root = le64_to_cpu(disk_super->held_root);
+	disk_super->held_root = cpu_to_le64(0);
+
+	dm_bm_unlock(sblock);
+
+	if (!held_root) {
+		DMWARN("No pool metadata snapshot found: nothing to release.");
+		return -EINVAL;
+	}
+
+	r = dm_tm_read_lock(pmd->tm, held_root, &sb_validator, &copy);
+	if (r)
+		return r;
+
+	disk_super = dm_block_data(copy);
+	dm_btree_del(&pmd->info, le64_to_cpu(disk_super->data_mapping_root));
+	dm_btree_del(&pmd->details_info, le64_to_cpu(disk_super->device_details_root));
+	dm_sm_dec_block(pmd->metadata_sm, held_root);
+
+	dm_tm_unlock(pmd->tm, copy);
+
+	return 0;
+}
+
+int dm_pool_release_metadata_snap(struct dm_pool_metadata *pmd)
+{
+	int r = -EINVAL;
+
+	pmd_write_lock(pmd);
+	if (!pmd->fail_io)
+		r = __release_metadata_snap(pmd);
+	pmd_write_unlock(pmd);
+
+	return r;
+}
+
+static int __get_metadata_snap(struct dm_pool_metadata *pmd,
+			       dm_block_t *result)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	struct thin_disk_superblock *disk_super;
 	struct dm_block *sblock;
 
+<<<<<<< HEAD
 	r = dm_bm_write_lock(pmd->bm, THIN_SUPERBLOCK_LOCATION,
 			     &sb_validator, &sblock);
+=======
+	r = dm_bm_read_lock(pmd->bm, THIN_SUPERBLOCK_LOCATION,
+			    &sb_validator, &sblock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r)
 		return r;
 
 	disk_super = dm_block_data(sblock);
 	*result = le64_to_cpu(disk_super->held_root);
 
+<<<<<<< HEAD
 	return dm_bm_unlock(sblock);
 }
 
@@ -1107,6 +2040,21 @@ int dm_pool_get_held_metadata_root(struct dm_pool_metadata *pmd,
 
 	down_read(&pmd->root_lock);
 	r = __get_held_metadata_root(pmd, result);
+=======
+	dm_bm_unlock(sblock);
+
+	return 0;
+}
+
+int dm_pool_get_metadata_snap(struct dm_pool_metadata *pmd,
+			      dm_block_t *result)
+{
+	int r = -EINVAL;
+
+	down_read(&pmd->root_lock);
+	if (!pmd->fail_io)
+		r = __get_metadata_snap(pmd, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_read(&pmd->root_lock);
 
 	return r;
@@ -1115,20 +2063,35 @@ int dm_pool_get_held_metadata_root(struct dm_pool_metadata *pmd,
 int dm_pool_open_thin_device(struct dm_pool_metadata *pmd, dm_thin_id dev,
 			     struct dm_thin_device **td)
 {
+<<<<<<< HEAD
 	int r;
 
 	down_write(&pmd->root_lock);
 	r = __open_device(pmd, dev, 0, td);
 	up_write(&pmd->root_lock);
+=======
+	int r = -EINVAL;
+
+	pmd_write_lock_in_core(pmd);
+	if (!pmd->fail_io)
+		r = __open_device(pmd, dev, 0, td);
+	pmd_write_unlock(pmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
 
 int dm_pool_close_thin_device(struct dm_thin_device *td)
 {
+<<<<<<< HEAD
 	down_write(&td->pmd->root_lock);
 	__close_device(td);
 	up_write(&td->pmd->root_lock);
+=======
+	pmd_write_lock_in_core(td->pmd);
+	__close_device(td);
+	pmd_write_unlock(td->pmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1138,20 +2101,91 @@ dm_thin_id dm_thin_dev_id(struct dm_thin_device *td)
 	return td->id;
 }
 
+<<<<<<< HEAD
 static int __snapshotted_since(struct dm_thin_device *td, uint32_t time)
+=======
+/*
+ * Check whether @time (of block creation) is older than @td's last snapshot.
+ * If so then the associated block is shared with the last snapshot device.
+ * Any block on a device created *after* the device last got snapshotted is
+ * necessarily not shared.
+ */
+static bool __snapshotted_since(struct dm_thin_device *td, uint32_t time)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return td->snapshotted_time > time;
 }
 
+<<<<<<< HEAD
 int dm_thin_find_block(struct dm_thin_device *td, dm_block_t block,
 		       int can_block, struct dm_thin_lookup_result *result)
 {
 	int r;
 	uint64_t block_time = 0;
+=======
+static void unpack_lookup_result(struct dm_thin_device *td, __le64 value,
+				 struct dm_thin_lookup_result *result)
+{
+	uint64_t block_time = 0;
+	dm_block_t exception_block;
+	uint32_t exception_time;
+
+	block_time = le64_to_cpu(value);
+	unpack_block_time(block_time, &exception_block, &exception_time);
+	result->block = exception_block;
+	result->shared = __snapshotted_since(td, exception_time);
+}
+
+static int __find_block(struct dm_thin_device *td, dm_block_t block,
+			int can_issue_io, struct dm_thin_lookup_result *result)
+{
+	int r;
+	__le64 value;
+	struct dm_pool_metadata *pmd = td->pmd;
+	dm_block_t keys[2] = { td->id, block };
+	struct dm_btree_info *info;
+
+	if (can_issue_io)
+		info = &pmd->info;
+	else
+		info = &pmd->nb_info;
+
+	r = dm_btree_lookup(info, pmd->root, keys, &value);
+	if (!r)
+		unpack_lookup_result(td, value, result);
+
+	return r;
+}
+
+int dm_thin_find_block(struct dm_thin_device *td, dm_block_t block,
+		       int can_issue_io, struct dm_thin_lookup_result *result)
+{
+	int r;
+	struct dm_pool_metadata *pmd = td->pmd;
+
+	down_read(&pmd->root_lock);
+	if (pmd->fail_io) {
+		up_read(&pmd->root_lock);
+		return -EINVAL;
+	}
+
+	r = __find_block(td, block, can_issue_io, result);
+
+	up_read(&pmd->root_lock);
+	return r;
+}
+
+static int __find_next_mapped_block(struct dm_thin_device *td, dm_block_t block,
+					  dm_block_t *vblock,
+					  struct dm_thin_lookup_result *result)
+{
+	int r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__le64 value;
 	struct dm_pool_metadata *pmd = td->pmd;
 	dm_block_t keys[2] = { td->id, block };
 
+<<<<<<< HEAD
 	if (can_block) {
 		down_read(&pmd->root_lock);
 		r = dm_btree_lookup(&pmd->info, pmd->root, keys, &value);
@@ -1177,6 +2211,76 @@ int dm_thin_find_block(struct dm_thin_device *td, dm_block_t block,
 		result->shared = __snapshotted_since(td, exception_time);
 	}
 
+=======
+	r = dm_btree_lookup_next(&pmd->info, pmd->root, keys, vblock, &value);
+	if (!r)
+		unpack_lookup_result(td, value, result);
+
+	return r;
+}
+
+static int __find_mapped_range(struct dm_thin_device *td,
+			       dm_block_t begin, dm_block_t end,
+			       dm_block_t *thin_begin, dm_block_t *thin_end,
+			       dm_block_t *pool_begin, bool *maybe_shared)
+{
+	int r;
+	dm_block_t pool_end;
+	struct dm_thin_lookup_result lookup;
+
+	if (end < begin)
+		return -ENODATA;
+
+	r = __find_next_mapped_block(td, begin, &begin, &lookup);
+	if (r)
+		return r;
+
+	if (begin >= end)
+		return -ENODATA;
+
+	*thin_begin = begin;
+	*pool_begin = lookup.block;
+	*maybe_shared = lookup.shared;
+
+	begin++;
+	pool_end = *pool_begin + 1;
+	while (begin != end) {
+		r = __find_block(td, begin, true, &lookup);
+		if (r) {
+			if (r == -ENODATA)
+				break;
+
+			return r;
+		}
+
+		if ((lookup.block != pool_end) ||
+		    (lookup.shared != *maybe_shared))
+			break;
+
+		pool_end++;
+		begin++;
+	}
+
+	*thin_end = begin;
+	return 0;
+}
+
+int dm_thin_find_mapped_range(struct dm_thin_device *td,
+			      dm_block_t begin, dm_block_t end,
+			      dm_block_t *thin_begin, dm_block_t *thin_end,
+			      dm_block_t *pool_begin, bool *maybe_shared)
+{
+	int r = -EINVAL;
+	struct dm_pool_metadata *pmd = td->pmd;
+
+	down_read(&pmd->root_lock);
+	if (!pmd->fail_io) {
+		r = __find_mapped_range(td, begin, end, thin_begin, thin_end,
+					pool_begin, maybe_shared);
+	}
+	up_read(&pmd->root_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
@@ -1188,7 +2292,10 @@ static int __insert(struct dm_thin_device *td, dm_block_t block,
 	struct dm_pool_metadata *pmd = td->pmd;
 	dm_block_t keys[2] = { td->id, block };
 
+<<<<<<< HEAD
 	pmd->need_commit = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	value = cpu_to_le64(pack_block_time(data_block, pmd->time));
 	__dm_bless_for_disk(&value);
 
@@ -1197,10 +2304,16 @@ static int __insert(struct dm_thin_device *td, dm_block_t block,
 	if (r)
 		return r;
 
+<<<<<<< HEAD
 	if (inserted) {
 		td->mapped_blocks++;
 		td->changed = 1;
 	}
+=======
+	td->changed = true;
+	if (inserted)
+		td->mapped_blocks++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1208,15 +2321,25 @@ static int __insert(struct dm_thin_device *td, dm_block_t block,
 int dm_thin_insert_block(struct dm_thin_device *td, dm_block_t block,
 			 dm_block_t data_block)
 {
+<<<<<<< HEAD
 	int r;
 
 	down_write(&td->pmd->root_lock);
 	r = __insert(td, block, data_block);
 	up_write(&td->pmd->root_lock);
+=======
+	int r = -EINVAL;
+
+	pmd_write_lock(td->pmd);
+	if (!td->pmd->fail_io)
+		r = __insert(td, block, data_block);
+	pmd_write_unlock(td->pmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
 
+<<<<<<< HEAD
 static int __remove(struct dm_thin_device *td, dm_block_t block)
 {
 	int r;
@@ -1241,12 +2364,162 @@ int dm_thin_remove_block(struct dm_thin_device *td, dm_block_t block)
 	down_write(&td->pmd->root_lock);
 	r = __remove(td, block);
 	up_write(&td->pmd->root_lock);
+=======
+static int __remove_range(struct dm_thin_device *td, dm_block_t begin, dm_block_t end)
+{
+	int r;
+	unsigned int count, total_count = 0;
+	struct dm_pool_metadata *pmd = td->pmd;
+	dm_block_t keys[1] = { td->id };
+	__le64 value;
+	dm_block_t mapping_root;
+
+	/*
+	 * Find the mapping tree
+	 */
+	r = dm_btree_lookup(&pmd->tl_info, pmd->root, keys, &value);
+	if (r)
+		return r;
+
+	/*
+	 * Remove from the mapping tree, taking care to inc the
+	 * ref count so it doesn't get deleted.
+	 */
+	mapping_root = le64_to_cpu(value);
+	dm_tm_inc(pmd->tm, mapping_root);
+	r = dm_btree_remove(&pmd->tl_info, pmd->root, keys, &pmd->root);
+	if (r)
+		return r;
+
+	/*
+	 * Remove leaves stops at the first unmapped entry, so we have to
+	 * loop round finding mapped ranges.
+	 */
+	while (begin < end) {
+		r = dm_btree_lookup_next(&pmd->bl_info, mapping_root, &begin, &begin, &value);
+		if (r == -ENODATA)
+			break;
+
+		if (r)
+			return r;
+
+		if (begin >= end)
+			break;
+
+		r = dm_btree_remove_leaves(&pmd->bl_info, mapping_root, &begin, end, &mapping_root, &count);
+		if (r)
+			return r;
+
+		total_count += count;
+	}
+
+	td->mapped_blocks -= total_count;
+	td->changed = true;
+
+	/*
+	 * Reinsert the mapping tree.
+	 */
+	value = cpu_to_le64(mapping_root);
+	__dm_bless_for_disk(&value);
+	return dm_btree_insert(&pmd->tl_info, pmd->root, keys, &value, &pmd->root);
+}
+
+int dm_thin_remove_range(struct dm_thin_device *td,
+			 dm_block_t begin, dm_block_t end)
+{
+	int r = -EINVAL;
+
+	pmd_write_lock(td->pmd);
+	if (!td->pmd->fail_io)
+		r = __remove_range(td, begin, end);
+	pmd_write_unlock(td->pmd);
+
+	return r;
+}
+
+int dm_pool_block_is_shared(struct dm_pool_metadata *pmd, dm_block_t b, bool *result)
+{
+	int r = -EINVAL;
+	uint32_t ref_count;
+
+	down_read(&pmd->root_lock);
+	if (!pmd->fail_io) {
+		r = dm_sm_get_count(pmd->data_sm, b, &ref_count);
+		if (!r)
+			*result = (ref_count > 1);
+	}
+	up_read(&pmd->root_lock);
+
+	return r;
+}
+
+int dm_pool_inc_data_range(struct dm_pool_metadata *pmd, dm_block_t b, dm_block_t e)
+{
+	int r = -EINVAL;
+
+	pmd_write_lock(pmd);
+	if (!pmd->fail_io)
+		r = dm_sm_inc_blocks(pmd->data_sm, b, e);
+	pmd_write_unlock(pmd);
+
+	return r;
+}
+
+int dm_pool_dec_data_range(struct dm_pool_metadata *pmd, dm_block_t b, dm_block_t e)
+{
+	int r = -EINVAL;
+
+	pmd_write_lock(pmd);
+	if (!pmd->fail_io)
+		r = dm_sm_dec_blocks(pmd->data_sm, b, e);
+	pmd_write_unlock(pmd);
+
+	return r;
+}
+
+bool dm_thin_changed_this_transaction(struct dm_thin_device *td)
+{
+	int r;
+
+	down_read(&td->pmd->root_lock);
+	r = td->changed;
+	up_read(&td->pmd->root_lock);
+
+	return r;
+}
+
+bool dm_pool_changed_this_transaction(struct dm_pool_metadata *pmd)
+{
+	bool r = false;
+	struct dm_thin_device *td, *tmp;
+
+	down_read(&pmd->root_lock);
+	list_for_each_entry_safe(td, tmp, &pmd->thin_devices, list) {
+		if (td->changed) {
+			r = td->changed;
+			break;
+		}
+	}
+	up_read(&pmd->root_lock);
+
+	return r;
+}
+
+bool dm_thin_aborted_changes(struct dm_thin_device *td)
+{
+	bool r;
+
+	down_read(&td->pmd->root_lock);
+	r = td->aborted_with_changes;
+	up_read(&td->pmd->root_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
 
 int dm_pool_alloc_data_block(struct dm_pool_metadata *pmd, dm_block_t *result)
 {
+<<<<<<< HEAD
 	int r;
 
 	down_write(&pmd->root_lock);
@@ -1255,18 +2528,41 @@ int dm_pool_alloc_data_block(struct dm_pool_metadata *pmd, dm_block_t *result)
 	pmd->need_commit = 1;
 
 	up_write(&pmd->root_lock);
+=======
+	int r = -EINVAL;
+
+	pmd_write_lock(pmd);
+	if (!pmd->fail_io)
+		r = dm_sm_new_block(pmd->data_sm, result);
+	pmd_write_unlock(pmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
 
 int dm_pool_commit_metadata(struct dm_pool_metadata *pmd)
 {
+<<<<<<< HEAD
 	int r;
 
 	down_write(&pmd->root_lock);
 
 	r = __commit_transaction(pmd);
 	if (r <= 0)
+=======
+	int r = -EINVAL;
+
+	/*
+	 * Care is taken to not have commit be what
+	 * triggers putting the thin-pool in-service.
+	 */
+	pmd_write_lock_in_core(pmd);
+	if (pmd->fail_io)
+		goto out;
+
+	r = __commit_transaction(pmd);
+	if (r < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	/*
@@ -1274,16 +2570,65 @@ int dm_pool_commit_metadata(struct dm_pool_metadata *pmd)
 	 */
 	r = __begin_transaction(pmd);
 out:
+<<<<<<< HEAD
 	up_write(&pmd->root_lock);
+=======
+	pmd_write_unlock(pmd);
+	return r;
+}
+
+static void __set_abort_with_changes_flags(struct dm_pool_metadata *pmd)
+{
+	struct dm_thin_device *td;
+
+	list_for_each_entry(td, &pmd->thin_devices, list)
+		td->aborted_with_changes = td->changed;
+}
+
+int dm_pool_abort_metadata(struct dm_pool_metadata *pmd)
+{
+	int r = -EINVAL;
+
+	/* fail_io is double-checked with pmd->root_lock held below */
+	if (unlikely(pmd->fail_io))
+		return r;
+
+	pmd_write_lock(pmd);
+	if (pmd->fail_io) {
+		pmd_write_unlock(pmd);
+		return r;
+	}
+	__set_abort_with_changes_flags(pmd);
+
+	/* destroy data_sm/metadata_sm/nb_tm/tm */
+	__destroy_persistent_data_objects(pmd, false);
+
+	/* reset bm */
+	dm_block_manager_reset(pmd->bm);
+
+	/* rebuild data_sm/metadata_sm/nb_tm/tm */
+	r = __open_or_format_metadata(pmd, false);
+	if (r)
+		pmd->fail_io = true;
+	pmd_write_unlock(pmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
 int dm_pool_get_free_block_count(struct dm_pool_metadata *pmd, dm_block_t *result)
 {
+<<<<<<< HEAD
 	int r;
 
 	down_read(&pmd->root_lock);
 	r = dm_sm_get_nr_free(pmd->data_sm, result);
+=======
+	int r = -EINVAL;
+
+	down_read(&pmd->root_lock);
+	if (!pmd->fail_io)
+		r = dm_sm_get_nr_free(pmd->data_sm, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_read(&pmd->root_lock);
 
 	return r;
@@ -1292,10 +2637,25 @@ int dm_pool_get_free_block_count(struct dm_pool_metadata *pmd, dm_block_t *resul
 int dm_pool_get_free_metadata_block_count(struct dm_pool_metadata *pmd,
 					  dm_block_t *result)
 {
+<<<<<<< HEAD
 	int r;
 
 	down_read(&pmd->root_lock);
 	r = dm_sm_get_nr_free(pmd->metadata_sm, result);
+=======
+	int r = -EINVAL;
+
+	down_read(&pmd->root_lock);
+	if (!pmd->fail_io)
+		r = dm_sm_get_nr_free(pmd->metadata_sm, result);
+
+	if (!r) {
+		if (*result < pmd->metadata_reserve)
+			*result = 0;
+		else
+			*result -= pmd->metadata_reserve;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_read(&pmd->root_lock);
 
 	return r;
@@ -1304,15 +2664,24 @@ int dm_pool_get_free_metadata_block_count(struct dm_pool_metadata *pmd,
 int dm_pool_get_metadata_dev_size(struct dm_pool_metadata *pmd,
 				  dm_block_t *result)
 {
+<<<<<<< HEAD
 	int r;
 
 	down_read(&pmd->root_lock);
 	r = dm_sm_get_nr_blocks(pmd->metadata_sm, result);
+=======
+	int r = -EINVAL;
+
+	down_read(&pmd->root_lock);
+	if (!pmd->fail_io)
+		r = dm_sm_get_nr_blocks(pmd->metadata_sm, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_read(&pmd->root_lock);
 
 	return r;
 }
 
+<<<<<<< HEAD
 int dm_pool_get_data_block_size(struct dm_pool_metadata *pmd, sector_t *result)
 {
 	down_read(&pmd->root_lock);
@@ -1328,6 +2697,15 @@ int dm_pool_get_data_dev_size(struct dm_pool_metadata *pmd, dm_block_t *result)
 
 	down_read(&pmd->root_lock);
 	r = dm_sm_get_nr_blocks(pmd->data_sm, result);
+=======
+int dm_pool_get_data_dev_size(struct dm_pool_metadata *pmd, dm_block_t *result)
+{
+	int r = -EINVAL;
+
+	down_read(&pmd->root_lock);
+	if (!pmd->fail_io)
+		r = dm_sm_get_nr_blocks(pmd->data_sm, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_read(&pmd->root_lock);
 
 	return r;
@@ -1335,6 +2713,7 @@ int dm_pool_get_data_dev_size(struct dm_pool_metadata *pmd, dm_block_t *result)
 
 int dm_thin_get_mapped_count(struct dm_thin_device *td, dm_block_t *result)
 {
+<<<<<<< HEAD
 	struct dm_pool_metadata *pmd = td->pmd;
 
 	down_read(&pmd->root_lock);
@@ -1342,6 +2721,19 @@ int dm_thin_get_mapped_count(struct dm_thin_device *td, dm_block_t *result)
 	up_read(&pmd->root_lock);
 
 	return 0;
+=======
+	int r = -EINVAL;
+	struct dm_pool_metadata *pmd = td->pmd;
+
+	down_read(&pmd->root_lock);
+	if (!pmd->fail_io) {
+		*result = td->mapped_blocks;
+		r = 0;
+	}
+	up_read(&pmd->root_lock);
+
+	return r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __highest_block(struct dm_thin_device *td, dm_block_t *result)
@@ -1363,22 +2755,39 @@ static int __highest_block(struct dm_thin_device *td, dm_block_t *result)
 int dm_thin_get_highest_mapped_block(struct dm_thin_device *td,
 				     dm_block_t *result)
 {
+<<<<<<< HEAD
 	int r;
 	struct dm_pool_metadata *pmd = td->pmd;
 
 	down_read(&pmd->root_lock);
 	r = __highest_block(td, result);
+=======
+	int r = -EINVAL;
+	struct dm_pool_metadata *pmd = td->pmd;
+
+	down_read(&pmd->root_lock);
+	if (!pmd->fail_io)
+		r = __highest_block(td, result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up_read(&pmd->root_lock);
 
 	return r;
 }
 
+<<<<<<< HEAD
 static int __resize_data_dev(struct dm_pool_metadata *pmd, dm_block_t new_count)
+=======
+static int __resize_space_map(struct dm_space_map *sm, dm_block_t new_count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r;
 	dm_block_t old_count;
 
+<<<<<<< HEAD
 	r = dm_sm_get_nr_blocks(pmd->data_sm, &old_count);
+=======
+	r = dm_sm_get_nr_blocks(sm, &old_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r)
 		return r;
 
@@ -1386,6 +2795,7 @@ static int __resize_data_dev(struct dm_pool_metadata *pmd, dm_block_t new_count)
 		return 0;
 
 	if (new_count < old_count) {
+<<<<<<< HEAD
 		DMERR("cannot reduce size of data device");
 		return -EINVAL;
 	}
@@ -1395,10 +2805,18 @@ static int __resize_data_dev(struct dm_pool_metadata *pmd, dm_block_t new_count)
 		pmd->need_commit = 1;
 
 	return r;
+=======
+		DMERR("cannot reduce size of space map");
+		return -EINVAL;
+	}
+
+	return dm_sm_extend(sm, new_count - old_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int dm_pool_resize_data_dev(struct dm_pool_metadata *pmd, dm_block_t new_count)
 {
+<<<<<<< HEAD
 	int r;
 
 	down_write(&pmd->root_lock);
@@ -1407,3 +2825,116 @@ int dm_pool_resize_data_dev(struct dm_pool_metadata *pmd, dm_block_t new_count)
 
 	return r;
 }
+=======
+	int r = -EINVAL;
+
+	pmd_write_lock(pmd);
+	if (!pmd->fail_io)
+		r = __resize_space_map(pmd->data_sm, new_count);
+	pmd_write_unlock(pmd);
+
+	return r;
+}
+
+int dm_pool_resize_metadata_dev(struct dm_pool_metadata *pmd, dm_block_t new_count)
+{
+	int r = -EINVAL;
+
+	pmd_write_lock(pmd);
+	if (!pmd->fail_io) {
+		r = __resize_space_map(pmd->metadata_sm, new_count);
+		if (!r)
+			__set_metadata_reserve(pmd);
+	}
+	pmd_write_unlock(pmd);
+
+	return r;
+}
+
+void dm_pool_metadata_read_only(struct dm_pool_metadata *pmd)
+{
+	pmd_write_lock_in_core(pmd);
+	dm_bm_set_read_only(pmd->bm);
+	pmd_write_unlock(pmd);
+}
+
+void dm_pool_metadata_read_write(struct dm_pool_metadata *pmd)
+{
+	pmd_write_lock_in_core(pmd);
+	dm_bm_set_read_write(pmd->bm);
+	pmd_write_unlock(pmd);
+}
+
+int dm_pool_register_metadata_threshold(struct dm_pool_metadata *pmd,
+					dm_block_t threshold,
+					dm_sm_threshold_fn fn,
+					void *context)
+{
+	int r = -EINVAL;
+
+	pmd_write_lock_in_core(pmd);
+	if (!pmd->fail_io) {
+		r = dm_sm_register_threshold_callback(pmd->metadata_sm,
+						      threshold, fn, context);
+	}
+	pmd_write_unlock(pmd);
+
+	return r;
+}
+
+void dm_pool_register_pre_commit_callback(struct dm_pool_metadata *pmd,
+					  dm_pool_pre_commit_fn fn,
+					  void *context)
+{
+	pmd_write_lock_in_core(pmd);
+	pmd->pre_commit_fn = fn;
+	pmd->pre_commit_context = context;
+	pmd_write_unlock(pmd);
+}
+
+int dm_pool_metadata_set_needs_check(struct dm_pool_metadata *pmd)
+{
+	int r = -EINVAL;
+	struct dm_block *sblock;
+	struct thin_disk_superblock *disk_super;
+
+	pmd_write_lock(pmd);
+	if (pmd->fail_io)
+		goto out;
+
+	pmd->flags |= THIN_METADATA_NEEDS_CHECK_FLAG;
+
+	r = superblock_lock(pmd, &sblock);
+	if (r) {
+		DMERR("couldn't lock superblock");
+		goto out;
+	}
+
+	disk_super = dm_block_data(sblock);
+	disk_super->flags = cpu_to_le32(pmd->flags);
+
+	dm_bm_unlock(sblock);
+out:
+	pmd_write_unlock(pmd);
+	return r;
+}
+
+bool dm_pool_metadata_needs_check(struct dm_pool_metadata *pmd)
+{
+	bool needs_check;
+
+	down_read(&pmd->root_lock);
+	needs_check = pmd->flags & THIN_METADATA_NEEDS_CHECK_FLAG;
+	up_read(&pmd->root_lock);
+
+	return needs_check;
+}
+
+void dm_pool_issue_prefetches(struct dm_pool_metadata *pmd)
+{
+	down_read(&pmd->root_lock);
+	if (!pmd->fail_io)
+		dm_tm_issue_prefetches(pmd->tm);
+	up_read(&pmd->root_lock);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

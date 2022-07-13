@@ -11,7 +11,11 @@
 #include <linux/interrupt.h>
 #include <linux/time.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/moduleparam.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/octeon/octeon.h>
 #include <asm/octeon/cvmx-npei-defs.h>
@@ -43,7 +47,11 @@ union cvmx_pcie_address {
 		uint64_t upper:2;	/* Normally 2 for XKPHYS */
 		uint64_t reserved_49_61:13;	/* Must be zero */
 		uint64_t io:1;	/* 1 for IO space access */
+<<<<<<< HEAD
 		uint64_t did:5;	/* PCIe DID = 3 */
+=======
+		uint64_t did:5; /* PCIe DID = 3 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t subdid:3;	/* PCIe SubDID = 1 */
 		uint64_t reserved_36_39:4;	/* Must be zero */
 		uint64_t es:2;	/* Endian swap = 1 */
@@ -74,7 +82,11 @@ union cvmx_pcie_address {
 		uint64_t upper:2;	/* Normally 2 for XKPHYS */
 		uint64_t reserved_49_61:13;	/* Must be zero */
 		uint64_t io:1;	/* 1 for IO space access */
+<<<<<<< HEAD
 		uint64_t did:5;	/* PCIe DID = 3 */
+=======
+		uint64_t did:5; /* PCIe DID = 3 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t subdid:3;	/* PCIe SubDID = 2 */
 		uint64_t reserved_36_39:4;	/* Must be zero */
 		uint64_t es:2;	/* Endian swap = 1 */
@@ -85,7 +97,11 @@ union cvmx_pcie_address {
 		uint64_t upper:2;	/* Normally 2 for XKPHYS */
 		uint64_t reserved_49_61:13;	/* Must be zero */
 		uint64_t io:1;	/* 1 for IO space access */
+<<<<<<< HEAD
 		uint64_t did:5;	/* PCIe DID = 3 */
+=======
+		uint64_t did:5; /* PCIe DID = 3 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t subdid:3;	/* PCIe SubDID = 3-6 */
 		uint64_t reserved_36_39:4;	/* Must be zero */
 		uint64_t address:36;	/* PCIe Mem address */
@@ -94,8 +110,11 @@ union cvmx_pcie_address {
 
 static int cvmx_pcie_rc_initialize(int pcie_port);
 
+<<<<<<< HEAD
 #include <dma-coherence.h>
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * Return the Core virtual base address for PCIe IO access. IOs are
  * read/written as an offset from this address.
@@ -166,7 +185,11 @@ static inline uint64_t cvmx_pcie_get_mem_size(int pcie_port)
  * Read a PCIe config space register indirectly. This is used for
  * registers of the form PCIEEP_CFG??? and PCIERC?_CFG???.
  *
+<<<<<<< HEAD
  * @pcie_port:  PCIe port to read from
+=======
+ * @pcie_port:	PCIe port to read from
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @cfg_offset: Address to read
  *
  * Returns Value read
@@ -194,9 +217,15 @@ static uint32_t cvmx_pcie_cfgx_read(int pcie_port, uint32_t cfg_offset)
  * Write a PCIe config space register indirectly. This is used for
  * registers of the form PCIEEP_CFG??? and PCIERC?_CFG???.
  *
+<<<<<<< HEAD
  * @pcie_port:  PCIe port to write to
  * @cfg_offset: Address to write
  * @val:        Value to write
+=======
+ * @pcie_port:	PCIe port to write to
+ * @cfg_offset: Address to write
+ * @val:	Value to write
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void cvmx_pcie_cfgx_write(int pcie_port, uint32_t cfg_offset,
 				 uint32_t val)
@@ -222,7 +251,11 @@ static void cvmx_pcie_cfgx_write(int pcie_port, uint32_t cfg_offset,
  * @pcie_port: PCIe port to access
  * @bus:       Sub bus
  * @dev:       Device ID
+<<<<<<< HEAD
  * @fn:        Device sub function
+=======
+ * @fn:	       Device sub function
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg:       Register to access
  *
  * Returns 64bit Octeon IO address
@@ -259,7 +292,11 @@ static inline uint64_t __cvmx_pcie_build_config_addr(int pcie_port, int bus,
  * @pcie_port: PCIe port the device is on
  * @bus:       Sub bus
  * @dev:       Device ID
+<<<<<<< HEAD
  * @fn:        Device sub function
+=======
+ * @fn:	       Device sub function
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg:       Register to access
  *
  * Returns Result of the read
@@ -281,7 +318,11 @@ static uint8_t cvmx_pcie_config_read8(int pcie_port, int bus, int dev,
  * @pcie_port: PCIe port the device is on
  * @bus:       Sub bus
  * @dev:       Device ID
+<<<<<<< HEAD
  * @fn:        Device sub function
+=======
+ * @fn:	       Device sub function
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg:       Register to access
  *
  * Returns Result of the read
@@ -303,7 +344,11 @@ static uint16_t cvmx_pcie_config_read16(int pcie_port, int bus, int dev,
  * @pcie_port: PCIe port the device is on
  * @bus:       Sub bus
  * @dev:       Device ID
+<<<<<<< HEAD
  * @fn:        Device sub function
+=======
+ * @fn:	       Device sub function
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg:       Register to access
  *
  * Returns Result of the read
@@ -325,7 +370,11 @@ static uint32_t cvmx_pcie_config_read32(int pcie_port, int bus, int dev,
  * @pcie_port: PCIe port the device is on
  * @bus:       Sub bus
  * @dev:       Device ID
+<<<<<<< HEAD
  * @fn:        Device sub function
+=======
+ * @fn:	       Device sub function
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg:       Register to access
  * @val:       Value to write
  */
@@ -344,7 +393,11 @@ static void cvmx_pcie_config_write8(int pcie_port, int bus, int dev, int fn,
  * @pcie_port: PCIe port the device is on
  * @bus:       Sub bus
  * @dev:       Device ID
+<<<<<<< HEAD
  * @fn:        Device sub function
+=======
+ * @fn:	       Device sub function
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg:       Register to access
  * @val:       Value to write
  */
@@ -363,7 +416,11 @@ static void cvmx_pcie_config_write16(int pcie_port, int bus, int dev, int fn,
  * @pcie_port: PCIe port the device is on
  * @bus:       Sub bus
  * @dev:       Device ID
+<<<<<<< HEAD
  * @fn:        Device sub function
+=======
+ * @fn:	       Device sub function
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @reg:       Register to access
  * @val:       Value to write
  */
@@ -639,7 +696,11 @@ static int __cvmx_pcie_rc_initialize_link_gen1(int pcie_port)
 			cvmx_dprintf("PCIe: Port %d link timeout\n", pcie_port);
 			return -1;
 		}
+<<<<<<< HEAD
 		cvmx_wait(10000);
+=======
+		__delay(10000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pciercx_cfg032.u32 = cvmx_pcie_cfgx_read(pcie_port, CVMX_PCIERCX_CFG032(pcie_port));
 	} while (pciercx_cfg032.s.dlla == 0);
 
@@ -679,7 +740,11 @@ static void __cvmx_increment_ba(union cvmx_sli_mem_access_subidx *pmas)
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
 		pmas->cn68xx.ba++;
 	else
+<<<<<<< HEAD
 		pmas->cn63xx.ba++;
+=======
+		pmas->s.ba++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -821,7 +886,11 @@ retry:
 	 * don't poll PESCX_CTL_STATUS2[PCIERST], but simply wait a
 	 * fixed number of cycles.
 	 */
+<<<<<<< HEAD
 	cvmx_wait(400000);
+=======
+	__delay(400000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * PESCX_BIST_STATUS2[PCLK_RUN] was missing on pass 1 of
@@ -883,21 +952,34 @@ retry:
 
 	/* Store merge control (NPEI_MEM_ACCESS_CTL[TIMER,MAX_WORD]) */
 	npei_mem_access_ctl.u64 = cvmx_read_csr(CVMX_PEXP_NPEI_MEM_ACCESS_CTL);
+<<<<<<< HEAD
 	npei_mem_access_ctl.s.max_word = 0;     /* Allow 16 words to combine */
 	npei_mem_access_ctl.s.timer = 127;      /* Wait up to 127 cycles for more data */
+=======
+	npei_mem_access_ctl.s.max_word = 0;	/* Allow 16 words to combine */
+	npei_mem_access_ctl.s.timer = 127;	/* Wait up to 127 cycles for more data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cvmx_write_csr(CVMX_PEXP_NPEI_MEM_ACCESS_CTL, npei_mem_access_ctl.u64);
 
 	/* Setup Mem access SubDIDs */
 	mem_access_subid.u64 = 0;
 	mem_access_subid.s.port = pcie_port; /* Port the request is sent to. */
+<<<<<<< HEAD
 	mem_access_subid.s.nmerge = 1;  /* Due to an errata on pass 1 chips, no merging is allowed. */
+=======
+	mem_access_subid.s.nmerge = 1;	/* Due to an errata on pass 1 chips, no merging is allowed. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mem_access_subid.s.esr = 1;	/* Endian-swap for Reads. */
 	mem_access_subid.s.esw = 1;	/* Endian-swap for Writes. */
 	mem_access_subid.s.nsr = 0;	/* Enable Snooping for Reads. Octeon doesn't care, but devices might want this more conservative setting */
 	mem_access_subid.s.nsw = 0;	/* Enable Snoop for Writes. */
 	mem_access_subid.s.ror = 0;	/* Disable Relaxed Ordering for Reads. */
 	mem_access_subid.s.row = 0;	/* Disable Relaxed Ordering for Writes. */
+<<<<<<< HEAD
 	mem_access_subid.s.ba = 0;	/* PCIe Adddress Bits <63:34>. */
+=======
+	mem_access_subid.s.ba = 0;	/* PCIe Address Bits <63:34>. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Setup mem access 12-15 for port 0, 16-19 for port 1,
@@ -926,7 +1008,11 @@ retry:
 
 	bar1_index.u32 = 0;
 	bar1_index.s.addr_idx = (CVMX_PCIE_BAR1_PHYS_BASE >> 22);
+<<<<<<< HEAD
 	bar1_index.s.ca = 1;       /* Not Cached */
+=======
+	bar1_index.s.ca = 1;	   /* Not Cached */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bar1_index.s.end_swp = 1;  /* Endian Swap mode */
 	bar1_index.s.addr_v = 1;   /* Valid entry */
 
@@ -1018,7 +1104,11 @@ retry:
 		i = in_p_offset;
 		while (i--) {
 			cvmx_write64_uint32(write_address, 0);
+<<<<<<< HEAD
 			cvmx_wait(10000);
+=======
+			__delay(10000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/*
@@ -1034,12 +1124,20 @@ retry:
 			dbg_data.u64 = cvmx_read_csr(CVMX_PEXP_NPEI_DBG_DATA);
 			old_in_fif_p_count = dbg_data.s.data & 0xff;
 			cvmx_write64_uint32(write_address, 0);
+<<<<<<< HEAD
 			cvmx_wait(10000);
+=======
+			__delay(10000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dbg_data.u64 = cvmx_read_csr(CVMX_PEXP_NPEI_DBG_DATA);
 			in_fif_p_count = dbg_data.s.data & 0xff;
 		} while (in_fif_p_count != ((old_in_fif_p_count+1) & 0xff));
 
+<<<<<<< HEAD
 		/* Update in_fif_p_count for it's offset with respect to out_p_count */
+=======
+		/* Update in_fif_p_count for its offset with respect to out_p_count */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		in_fif_p_count = (in_fif_p_count + in_p_offset) & 0xff;
 
 		/* Read the OUT_P_COUNT from the debug select */
@@ -1053,7 +1151,11 @@ retry:
 			cvmx_dprintf("PCIe: Port %d aligning TLP counters as workaround to maintain ordering\n", pcie_port);
 			while (in_fif_p_count != 0) {
 				cvmx_write64_uint32(write_address, 0);
+<<<<<<< HEAD
 				cvmx_wait(10000);
+=======
+				__delay(10000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				in_fif_p_count = (in_fif_p_count + 1) & 0xff;
 			}
 			/*
@@ -1105,7 +1207,11 @@ static int __cvmx_pcie_rc_initialize_link_gen2(int pcie_port)
 	do {
 		if (cvmx_get_cycle() - start_cycle >  octeon_get_clock_rate())
 			return -1;
+<<<<<<< HEAD
 		cvmx_wait(10000);
+=======
+		__delay(10000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pciercx_cfg032.u32 = cvmx_pcie_cfgx_read(pcie_port, CVMX_PCIERCX_CFG032(pcie_port));
 	} while ((pciercx_cfg032.s.dlla == 0) || (pciercx_cfg032.s.lt == 1));
 
@@ -1239,14 +1345,22 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 	/* CN63XX Pass 1.0 errata G-14395 requires the QLM De-emphasis be programmed */
 	if (OCTEON_IS_MODEL(OCTEON_CN63XX_PASS1_0)) {
 		if (pcie_port) {
+<<<<<<< HEAD
 			union cvmx_ciu_qlm1 ciu_qlm;
+=======
+			union cvmx_ciu_qlm ciu_qlm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ciu_qlm.u64 = cvmx_read_csr(CVMX_CIU_QLM1);
 			ciu_qlm.s.txbypass = 1;
 			ciu_qlm.s.txdeemph = 5;
 			ciu_qlm.s.txmargin = 0x17;
 			cvmx_write_csr(CVMX_CIU_QLM1, ciu_qlm.u64);
 		} else {
+<<<<<<< HEAD
 			union cvmx_ciu_qlm0 ciu_qlm;
+=======
+			union cvmx_ciu_qlm ciu_qlm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ciu_qlm.u64 = cvmx_read_csr(CVMX_CIU_QLM0);
 			ciu_qlm.s.txbypass = 1;
 			ciu_qlm.s.txdeemph = 5;
@@ -1342,6 +1456,7 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 	/* Setup Mem access SubDIDs */
 	mem_access_subid.u64 = 0;
 	mem_access_subid.s.port = pcie_port; /* Port the request is sent to. */
+<<<<<<< HEAD
 	mem_access_subid.s.nmerge = 0;  /* Allow merging as it works on CN6XXX. */
 	mem_access_subid.s.esr = 1;     /* Endian-swap for Reads. */
 	mem_access_subid.s.esw = 1;     /* Endian-swap for Writes. */
@@ -1352,6 +1467,18 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 		mem_access_subid.cn68xx.ba = 0;
 	else
 		mem_access_subid.cn63xx.ba = 0;
+=======
+	mem_access_subid.s.nmerge = 0;	/* Allow merging as it works on CN6XXX. */
+	mem_access_subid.s.esr = 1;	/* Endian-swap for Reads. */
+	mem_access_subid.s.esw = 1;	/* Endian-swap for Writes. */
+	mem_access_subid.s.wtype = 0;	/* "No snoop" and "Relaxed ordering" are not set */
+	mem_access_subid.s.rtype = 0;	/* "No snoop" and "Relaxed ordering" are not set */
+	/* PCIe Address Bits <63:34>. */
+	if (OCTEON_IS_MODEL(OCTEON_CN68XX))
+		mem_access_subid.cn68xx.ba = 0;
+	else
+		mem_access_subid.s.ba = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Setup mem access 12-15 for port 0, 16-19 for port 1,
@@ -1409,7 +1536,11 @@ static int __cvmx_pcie_rc_initialize_gen2(int pcie_port)
 
 	bar1_index.u64 = 0;
 	bar1_index.s.addr_idx = (CVMX_PCIE_BAR1_PHYS_BASE >> 22);
+<<<<<<< HEAD
 	bar1_index.s.ca = 1;       /* Not Cached */
+=======
+	bar1_index.s.ca = 1;	   /* Not Cached */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bar1_index.s.end_swp = 1;  /* Endian Swap mode */
 	bar1_index.s.addr_v = 1;   /* Valid entry */
 
@@ -1458,6 +1589,7 @@ static int cvmx_pcie_rc_initialize(int pcie_port)
  *
  * @dev:    The Linux PCI device structure for the device to map
  * @slot:   The slot number for this device on __BUS 0__. Linux
+<<<<<<< HEAD
  *               enumerates through all the bridges and figures out the
  *               slot on Bus 0 where this device eventually hooks to.
  * @pin:    The PCI interrupt pin read from the device, then swizzled
@@ -1466,6 +1598,15 @@ static int cvmx_pcie_rc_initialize(int pcie_port)
  */
 int __init octeon_pcie_pcibios_map_irq(const struct pci_dev *dev,
 				       u8 slot, u8 pin)
+=======
+ *		 enumerates through all the bridges and figures out the
+ *		 slot on Bus 0 where this device eventually hooks to.
+ * @pin:    The PCI interrupt pin read from the device, then swizzled
+ *		 as it goes through each bridge.
+ * Returns Interrupt number for the device
+ */
+int octeon_pcie_pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * The EBH5600 board with the PCI to PCIe bridge mistakenly
@@ -1503,7 +1644,11 @@ int __init octeon_pcie_pcibios_map_irq(const struct pci_dev *dev,
 	return pin - 1 + OCTEON_IRQ_PCI_INT0;
 }
 
+<<<<<<< HEAD
 static  void set_cfg_read_retry(u32 retry_cnt)
+=======
+static	void set_cfg_read_retry(u32 retry_cnt)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union cvmx_pemx_ctl_status pemx_ctl;
 	pemx_ctl.u64 = cvmx_read_csr(CVMX_PEMX_CTL_STATUS(1));
@@ -1762,6 +1907,7 @@ static int octeon_pcie_write_config(unsigned int pcie_port, struct pci_bus *bus,
 	default:
 		return PCIBIOS_FUNC_NOT_SUPPORTED;
 	}
+<<<<<<< HEAD
 #if PCI_CONFIG_SPACE_DELAY
 	/*
 	 * Delay on writes so that devices have time to come up. Some
@@ -1770,6 +1916,8 @@ static int octeon_pcie_write_config(unsigned int pcie_port, struct pci_bus *bus,
 	 */
 	udelay(PCI_CONFIG_SPACE_DELAY);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return PCIBIOS_SUCCESSFUL;
 }
 
@@ -1792,8 +1940,13 @@ static int octeon_dummy_write_config(struct pci_bus *bus, unsigned int devfn,
 }
 
 static struct pci_ops octeon_pcie0_ops = {
+<<<<<<< HEAD
 	octeon_pcie0_read_config,
 	octeon_pcie0_write_config,
+=======
+	.read	= octeon_pcie0_read_config,
+	.write	= octeon_pcie0_write_config,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource octeon_pcie0_mem_resource = {
@@ -1813,8 +1966,13 @@ static struct pci_controller octeon_pcie0_controller = {
 };
 
 static struct pci_ops octeon_pcie1_ops = {
+<<<<<<< HEAD
 	octeon_pcie1_read_config,
 	octeon_pcie1_write_config,
+=======
+	.read	= octeon_pcie1_read_config,
+	.write	= octeon_pcie1_write_config,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource octeon_pcie1_mem_resource = {
@@ -1834,8 +1992,13 @@ static struct pci_controller octeon_pcie1_controller = {
 };
 
 static struct pci_ops octeon_dummy_ops = {
+<<<<<<< HEAD
 	octeon_dummy_read_config,
 	octeon_dummy_write_config,
+=======
+	.read	= octeon_dummy_read_config,
+	.write	= octeon_dummy_write_config,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource octeon_dummy_mem_resource = {
@@ -1931,7 +2094,11 @@ static int __init octeon_pcie_setup(void)
 			OCTEON_IS_MODEL(OCTEON_CN63XX_PASS2_0)) {
 			sriox_status_reg.u64 = cvmx_read_csr(CVMX_SRIOX_STATUS_REG(0));
 			if (sriox_status_reg.s.srio) {
+<<<<<<< HEAD
 				srio_war15205 += 1;      /* Port is SRIO */
+=======
+				srio_war15205 += 1;	 /* Port is SRIO */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				port = 0;
 			}
 		}
@@ -2004,7 +2171,11 @@ static int __init octeon_pcie_setup(void)
 			OCTEON_IS_MODEL(OCTEON_CN63XX_PASS2_0)) {
 			sriox_status_reg.u64 = cvmx_read_csr(CVMX_SRIOX_STATUS_REG(1));
 			if (sriox_status_reg.s.srio) {
+<<<<<<< HEAD
 				srio_war15205 += 1;      /* Port is SRIO */
+=======
+				srio_war15205 += 1;	 /* Port is SRIO */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				port = 1;
 			}
 		}

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 /******************************************************************************
  *
@@ -42,6 +43,17 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+/******************************************************************************
+ *
+ * Module Name: exstorob - AML object store support, store to object
+ *
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
@@ -101,23 +113,39 @@ acpi_ex_store_buffer_to_buffer(union acpi_operand_object *source_desc,
 
 		/* Clear existing buffer and copy in the new one */
 
+<<<<<<< HEAD
 		ACPI_MEMSET(target_desc->buffer.pointer, 0,
 			    target_desc->buffer.length);
 		ACPI_MEMCPY(target_desc->buffer.pointer, buffer, length);
+=======
+		memset(target_desc->buffer.pointer, 0,
+		       target_desc->buffer.length);
+		memcpy(target_desc->buffer.pointer, buffer, length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef ACPI_OBSOLETE_BEHAVIOR
 		/*
 		 * NOTE: ACPI versions up to 3.0 specified that the buffer must be
+<<<<<<< HEAD
 		 * truncated if the string is smaller than the buffer.  However, "other"
 		 * implementations of ACPI never did this and thus became the defacto
 		 * standard. ACPI 3.0_a changes this behavior such that the buffer
+=======
+		 * truncated if the string is smaller than the buffer. However, "other"
+		 * implementations of ACPI never did this and thus became the defacto
+		 * standard. ACPI 3.0A changes this behavior such that the buffer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * is no longer truncated.
 		 */
 
 		/*
 		 * OBSOLETE BEHAVIOR:
 		 * If the original source was a string, we must truncate the buffer,
+<<<<<<< HEAD
 		 * according to the ACPI spec.  Integer-to-Buffer and Buffer-to-Buffer
+=======
+		 * according to the ACPI spec. Integer-to-Buffer and Buffer-to-Buffer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * copy must not truncate the original buffer.
 		 */
 		if (original_src_type == ACPI_TYPE_STRING) {
@@ -130,8 +158,13 @@ acpi_ex_store_buffer_to_buffer(union acpi_operand_object *source_desc,
 	} else {
 		/* Truncate the source, copy only what will fit */
 
+<<<<<<< HEAD
 		ACPI_MEMCPY(target_desc->buffer.pointer, buffer,
 			    target_desc->buffer.length);
+=======
+		memcpy(target_desc->buffer.pointer, buffer,
+		       target_desc->buffer.length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 				  "Truncating source buffer from %X to %X\n",
@@ -188,9 +221,15 @@ acpi_ex_store_string_to_string(union acpi_operand_object *source_desc,
 		 * String will fit in existing non-static buffer.
 		 * Clear old string and copy in the new one
 		 */
+<<<<<<< HEAD
 		ACPI_MEMSET(target_desc->string.pointer, 0,
 			    (acpi_size) target_desc->string.length + 1);
 		ACPI_MEMCPY(target_desc->string.pointer, buffer, length);
+=======
+		memset(target_desc->string.pointer, 0,
+		       (acpi_size)target_desc->string.length + 1);
+		memcpy(target_desc->string.pointer, buffer, length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/*
 		 * Free the current buffer, then allocate a new buffer
@@ -204,14 +243,24 @@ acpi_ex_store_string_to_string(union acpi_operand_object *source_desc,
 			ACPI_FREE(target_desc->string.pointer);
 		}
 
+<<<<<<< HEAD
 		target_desc->string.pointer = ACPI_ALLOCATE_ZEROED((acpi_size)
 								   length + 1);
+=======
+		target_desc->string.pointer =
+		    ACPI_ALLOCATE_ZEROED((acpi_size)length + 1);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!target_desc->string.pointer) {
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
 
 		target_desc->common.flags &= ~AOPOBJ_STATIC_POINTER;
+<<<<<<< HEAD
 		ACPI_MEMCPY(target_desc->string.pointer, buffer, length);
+=======
+		memcpy(target_desc->string.pointer, buffer, length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Set the new target length */

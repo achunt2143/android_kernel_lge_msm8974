@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/atmmpc.h>
 #include <linux/slab.h>
@@ -40,7 +44,11 @@ static in_cache_entry *in_cache_get(__be32 dst_ip,
 	entry = client->in_cache;
 	while (entry != NULL) {
 		if (entry->ctrl_info.in_dst_ip == dst_ip) {
+<<<<<<< HEAD
 			atomic_inc(&entry->use);
+=======
+			refcount_inc(&entry->use);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			read_unlock_bh(&client->ingress_lock);
 			return entry;
 		}
@@ -61,7 +69,11 @@ static in_cache_entry *in_cache_get_with_mask(__be32 dst_ip,
 	entry = client->in_cache;
 	while (entry != NULL) {
 		if ((entry->ctrl_info.in_dst_ip & mask) == (dst_ip & mask)) {
+<<<<<<< HEAD
 			atomic_inc(&entry->use);
+=======
+			refcount_inc(&entry->use);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			read_unlock_bh(&client->ingress_lock);
 			return entry;
 		}
@@ -82,7 +94,11 @@ static in_cache_entry *in_cache_get_by_vcc(struct atm_vcc *vcc,
 	entry = client->in_cache;
 	while (entry != NULL) {
 		if (entry->shortcut == vcc) {
+<<<<<<< HEAD
 			atomic_inc(&entry->use);
+=======
+			refcount_inc(&entry->use);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			read_unlock_bh(&client->ingress_lock);
 			return entry;
 		}
@@ -105,7 +121,11 @@ static in_cache_entry *in_cache_add_entry(__be32 dst_ip,
 
 	dprintk("adding an ingress entry, ip = %pI4\n", &dst_ip);
 
+<<<<<<< HEAD
 	atomic_set(&entry->use, 1);
+=======
+	refcount_set(&entry->use, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dprintk("new_in_cache_entry: about to lock\n");
 	write_lock_bh(&client->ingress_lock);
 	entry->next = client->in_cache;
@@ -116,12 +136,20 @@ static in_cache_entry *in_cache_add_entry(__be32 dst_ip,
 
 	memcpy(entry->MPS_ctrl_ATM_addr, client->mps_ctrl_addr, ATM_ESA_LEN);
 	entry->ctrl_info.in_dst_ip = dst_ip;
+<<<<<<< HEAD
 	do_gettimeofday(&(entry->tv));
+=======
+	entry->time = ktime_get_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->retry_time = client->parameters.mpc_p4;
 	entry->count = 1;
 	entry->entry_state = INGRESS_INVALID;
 	entry->ctrl_info.holding_time = HOLDING_TIME_DEFAULT;
+<<<<<<< HEAD
 	atomic_inc(&entry->use);
+=======
+	refcount_inc(&entry->use);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_unlock_bh(&client->ingress_lock);
 	dprintk("new_in_cache_entry: unlocked\n");
@@ -147,7 +175,11 @@ static int cache_hit(in_cache_entry *entry, struct mpoa_client *mpc)
 			if (qos != NULL)
 				msg.qos = qos->qos;
 			msg_to_mpoad(&msg, mpc);
+<<<<<<< HEAD
 			do_gettimeofday(&(entry->reply_wait));
+=======
+			entry->reply_wait = ktime_get_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			entry->entry_state = INGRESS_RESOLVING;
 		}
 		if (entry->shortcut != NULL)
@@ -170,7 +202,11 @@ static int cache_hit(in_cache_entry *entry, struct mpoa_client *mpc)
 		if (qos != NULL)
 			msg.qos = qos->qos;
 		msg_to_mpoad(&msg, mpc);
+<<<<<<< HEAD
 		do_gettimeofday(&(entry->reply_wait));
+=======
+		entry->reply_wait = ktime_get_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return CLOSED;
@@ -178,9 +214,14 @@ static int cache_hit(in_cache_entry *entry, struct mpoa_client *mpc)
 
 static void in_cache_put(in_cache_entry *entry)
 {
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&entry->use)) {
 		memset(entry, 0, sizeof(in_cache_entry));
 		kfree(entry);
+=======
+	if (refcount_dec_and_test(&entry->use)) {
+		kfree_sensitive(entry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -226,17 +267,27 @@ static void in_cache_remove_entry(in_cache_entry *entry,
 static void clear_count_and_expired(struct mpoa_client *client)
 {
 	in_cache_entry *entry, *next_entry;
+<<<<<<< HEAD
 	struct timeval now;
 
 	do_gettimeofday(&now);
+=======
+	time64_t now;
+
+	now = ktime_get_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_lock_bh(&client->ingress_lock);
 	entry = client->in_cache;
 	while (entry != NULL) {
 		entry->count = 0;
 		next_entry = entry->next;
+<<<<<<< HEAD
 		if ((now.tv_sec - entry->tv.tv_sec)
 		   > entry->ctrl_info.holding_time) {
+=======
+		if ((now - entry->time) > entry->ctrl_info.holding_time) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dprintk("holding time expired, ip = %pI4\n",
 				&entry->ctrl_info.in_dst_ip);
 			client->in_ops->remove_entry(entry, client);
@@ -252,15 +303,23 @@ static void check_resolving_entries(struct mpoa_client *client)
 
 	struct atm_mpoa_qos *qos;
 	in_cache_entry *entry;
+<<<<<<< HEAD
 	struct timeval now;
 	struct k_message msg;
 
 	do_gettimeofday(&now);
+=======
+	time64_t now;
+	struct k_message msg;
+
+	now = ktime_get_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	read_lock_bh(&client->ingress_lock);
 	entry = client->in_cache;
 	while (entry != NULL) {
 		if (entry->entry_state == INGRESS_RESOLVING) {
+<<<<<<< HEAD
 			if ((now.tv_sec - entry->hold_down.tv_sec) <
 			    client->parameters.mpc_p6) {
 				entry = entry->next;	/* Entry in hold down */
@@ -268,19 +327,36 @@ static void check_resolving_entries(struct mpoa_client *client)
 			}
 			if ((now.tv_sec - entry->reply_wait.tv_sec) >
 			    entry->retry_time) {
+=======
+
+			if ((now - entry->hold_down)
+					< client->parameters.mpc_p6) {
+				entry = entry->next;	/* Entry in hold down */
+				continue;
+			}
+			if ((now - entry->reply_wait) > entry->retry_time) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				entry->retry_time = MPC_C1 * (entry->retry_time);
 				/*
 				 * Retry time maximum exceeded,
 				 * put entry in hold down.
 				 */
 				if (entry->retry_time > client->parameters.mpc_p5) {
+<<<<<<< HEAD
 					do_gettimeofday(&(entry->hold_down));
+=======
+					entry->hold_down = ktime_get_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					entry->retry_time = client->parameters.mpc_p4;
 					entry = entry->next;
 					continue;
 				}
 				/* Ask daemon to send a resolution request. */
+<<<<<<< HEAD
 				memset(&(entry->hold_down), 0, sizeof(struct timeval));
+=======
+				memset(&entry->hold_down, 0, sizeof(time64_t));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				msg.type = SND_MPOA_RES_RTRY;
 				memcpy(msg.MPS_ctrl, client->mps_ctrl_addr, ATM_ESA_LEN);
 				msg.content.in_info = entry->ctrl_info;
@@ -288,7 +364,11 @@ static void check_resolving_entries(struct mpoa_client *client)
 				if (qos != NULL)
 					msg.qos = qos->qos;
 				msg_to_mpoad(&msg, client);
+<<<<<<< HEAD
 				do_gettimeofday(&(entry->reply_wait));
+=======
+				entry->reply_wait = ktime_get_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		entry = entry->next;
@@ -299,18 +379,30 @@ static void check_resolving_entries(struct mpoa_client *client)
 /* Call this every MPC-p5 seconds. */
 static void refresh_entries(struct mpoa_client *client)
 {
+<<<<<<< HEAD
 	struct timeval now;
 	struct in_cache_entry *entry = client->in_cache;
 
 	ddprintk("refresh_entries\n");
 	do_gettimeofday(&now);
+=======
+	time64_t now;
+	struct in_cache_entry *entry = client->in_cache;
+
+	ddprintk("refresh_entries\n");
+	now = ktime_get_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	read_lock_bh(&client->ingress_lock);
 	while (entry != NULL) {
 		if (entry->entry_state == INGRESS_RESOLVED) {
 			if (!(entry->refresh_time))
 				entry->refresh_time = (2 * (entry->ctrl_info.holding_time))/3;
+<<<<<<< HEAD
 			if ((now.tv_sec - entry->reply_wait.tv_sec) >
+=======
+			if ((now - entry->reply_wait) >
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    entry->refresh_time) {
 				dprintk("refreshing an entry.\n");
 				entry->entry_state = INGRESS_REFRESHING;
@@ -339,7 +431,11 @@ static eg_cache_entry *eg_cache_get_by_cache_id(__be32 cache_id,
 	entry = mpc->eg_cache;
 	while (entry != NULL) {
 		if (entry->ctrl_info.cache_id == cache_id) {
+<<<<<<< HEAD
 			atomic_inc(&entry->use);
+=======
+			refcount_inc(&entry->use);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			read_unlock_irq(&mpc->egress_lock);
 			return entry;
 		}
@@ -360,7 +456,11 @@ static eg_cache_entry *eg_cache_get_by_tag(__be32 tag, struct mpoa_client *mpc)
 	entry = mpc->eg_cache;
 	while (entry != NULL) {
 		if (entry->ctrl_info.tag == tag) {
+<<<<<<< HEAD
 			atomic_inc(&entry->use);
+=======
+			refcount_inc(&entry->use);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			read_unlock_irqrestore(&mpc->egress_lock, flags);
 			return entry;
 		}
@@ -382,7 +482,11 @@ static eg_cache_entry *eg_cache_get_by_vcc(struct atm_vcc *vcc,
 	entry = mpc->eg_cache;
 	while (entry != NULL) {
 		if (entry->shortcut == vcc) {
+<<<<<<< HEAD
 			atomic_inc(&entry->use);
+=======
+			refcount_inc(&entry->use);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			read_unlock_irqrestore(&mpc->egress_lock, flags);
 			return entry;
 		}
@@ -402,7 +506,11 @@ static eg_cache_entry *eg_cache_get_by_src_ip(__be32 ipaddr,
 	entry = mpc->eg_cache;
 	while (entry != NULL) {
 		if (entry->latest_ip_addr == ipaddr) {
+<<<<<<< HEAD
 			atomic_inc(&entry->use);
+=======
+			refcount_inc(&entry->use);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			read_unlock_irq(&mpc->egress_lock);
 			return entry;
 		}
@@ -415,9 +523,14 @@ static eg_cache_entry *eg_cache_get_by_src_ip(__be32 ipaddr,
 
 static void eg_cache_put(eg_cache_entry *entry)
 {
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&entry->use)) {
 		memset(entry, 0, sizeof(eg_cache_entry));
 		kfree(entry);
+=======
+	if (refcount_dec_and_test(&entry->use)) {
+		kfree_sensitive(entry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -468,7 +581,11 @@ static eg_cache_entry *eg_cache_add_entry(struct k_message *msg,
 	dprintk("adding an egress entry, ip = %pI4, this should be our IP\n",
 		&msg->content.eg_info.eg_dst_ip);
 
+<<<<<<< HEAD
 	atomic_set(&entry->use, 1);
+=======
+	refcount_set(&entry->use, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dprintk("new_eg_cache_entry: about to lock\n");
 	write_lock_irq(&client->egress_lock);
 	entry->next = client->eg_cache;
@@ -479,12 +596,20 @@ static eg_cache_entry *eg_cache_add_entry(struct k_message *msg,
 
 	memcpy(entry->MPS_ctrl_ATM_addr, client->mps_ctrl_addr, ATM_ESA_LEN);
 	entry->ctrl_info = msg->content.eg_info;
+<<<<<<< HEAD
 	do_gettimeofday(&(entry->tv));
+=======
+	entry->time = ktime_get_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->entry_state = EGRESS_RESOLVED;
 	dprintk("new_eg_cache_entry cache_id %u\n",
 		ntohl(entry->ctrl_info.cache_id));
 	dprintk("mps_ip = %pI4\n", &entry->ctrl_info.mps_ip);
+<<<<<<< HEAD
 	atomic_inc(&entry->use);
+=======
+	refcount_inc(&entry->use);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_unlock_irq(&client->egress_lock);
 	dprintk("new_eg_cache_entry: unlocked\n");
@@ -494,7 +619,11 @@ static eg_cache_entry *eg_cache_add_entry(struct k_message *msg,
 
 static void update_eg_cache_entry(eg_cache_entry *entry, uint16_t holding_time)
 {
+<<<<<<< HEAD
 	do_gettimeofday(&(entry->tv));
+=======
+	entry->time = ktime_get_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->entry_state = EGRESS_RESOLVED;
 	entry->ctrl_info.holding_time = holding_time;
 }
@@ -502,17 +631,28 @@ static void update_eg_cache_entry(eg_cache_entry *entry, uint16_t holding_time)
 static void clear_expired(struct mpoa_client *client)
 {
 	eg_cache_entry *entry, *next_entry;
+<<<<<<< HEAD
 	struct timeval now;
 	struct k_message msg;
 
 	do_gettimeofday(&now);
+=======
+	time64_t now;
+	struct k_message msg;
+
+	now = ktime_get_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	write_lock_irq(&client->egress_lock);
 	entry = client->eg_cache;
 	while (entry != NULL) {
 		next_entry = entry->next;
+<<<<<<< HEAD
 		if ((now.tv_sec - entry->tv.tv_sec)
 		   > entry->ctrl_info.holding_time) {
+=======
+		if ((now - entry->time) > entry->ctrl_info.holding_time) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			msg.type = SND_EGRESS_PURGE;
 			msg.content.eg_info = entry->ctrl_info;
 			dprintk("egress_cache: holding time expired, cache_id = %u.\n",
@@ -534,6 +674,7 @@ static void eg_destroy_cache(struct mpoa_client *mpc)
 }
 
 
+<<<<<<< HEAD
 static struct in_cache_ops ingress_ops = {
 	in_cache_add_entry,               /* add_entry       */
 	in_cache_get,                     /* get             */
@@ -562,6 +703,35 @@ static struct eg_cache_ops egress_ops = {
 };
 
 
+=======
+static const struct in_cache_ops ingress_ops = {
+	.add_entry = in_cache_add_entry,
+	.get = in_cache_get,
+	.get_with_mask = in_cache_get_with_mask,
+	.get_by_vcc = in_cache_get_by_vcc,
+	.put = in_cache_put,
+	.remove_entry = in_cache_remove_entry,
+	.cache_hit = cache_hit,
+	.clear_count = clear_count_and_expired,
+	.check_resolving = check_resolving_entries,
+	.refresh = refresh_entries,
+	.destroy_cache = in_destroy_cache
+};
+
+static const struct eg_cache_ops egress_ops = {
+	.add_entry = eg_cache_add_entry,
+	.get_by_cache_id = eg_cache_get_by_cache_id,
+	.get_by_tag = eg_cache_get_by_tag,
+	.get_by_vcc = eg_cache_get_by_vcc,
+	.get_by_src_ip = eg_cache_get_by_src_ip,
+	.put = eg_cache_put,
+	.remove_entry = eg_cache_remove_entry,
+	.update = update_eg_cache_entry,
+	.clear_expired = clear_expired,
+	.destroy_cache = eg_destroy_cache
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void atm_mpoa_init_cache(struct mpoa_client *mpc)
 {
 	mpc->in_ops = &ingress_ops;

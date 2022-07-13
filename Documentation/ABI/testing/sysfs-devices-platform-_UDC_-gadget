@@ -3,8 +3,14 @@ Date:		April 2010
 Contact:	Fabien Chouteau <fabien.chouteau@barco.com>
 Description:
 		Show the suspend state of an USB composite gadget.
+<<<<<<< HEAD
 		1 -> suspended
 		0 -> resumed
+=======
+
+		- 1 -> suspended
+		- 0 -> resumed
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		(_UDC_ is the name of the USB Device Controller driver)
 
@@ -17,5 +23,11 @@ Description:
 		Storage mode.
 
 		Possible values are:
+<<<<<<< HEAD
 			1 -> ignore the FUA flag
 			0 -> obey the FUA flag
+=======
+
+			- 1 -> ignore the FUA flag
+			- 0 -> obey the FUA flag
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

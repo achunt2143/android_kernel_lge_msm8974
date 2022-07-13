@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ARM_USER_H
 #define _ARM_USER_H
 
@@ -76,10 +80,13 @@ struct user{
   struct user_fp_struct * u_fp0;/* Used by gdb to help find the values for */
   				/* the FP registers. */
 };
+<<<<<<< HEAD
 #define NBPG PAGE_SIZE
 #define UPAGES 1
 #define HOST_TEXT_START_ADDR (u.start_code)
 #define HOST_STACK_END_ADDR (u.start_stack + u.u_ssize * NBPG)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * User specific VFP registers. If only VFPv2 is present, registers 16 to 31

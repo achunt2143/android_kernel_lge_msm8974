@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: nsload - namespace loading/expanding/contracting procedures
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,11 +46,21 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
 #include "acdispat.h"
 #include "actables.h"
+<<<<<<< HEAD
+=======
+#include "acinterp.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_NAMESPACE
 ACPI_MODULE_NAME("nsload")
@@ -57,13 +72,20 @@ acpi_status acpi_ns_unload_namespace(acpi_handle handle);
 static acpi_status acpi_ns_delete_subtree(acpi_handle start_handle);
 #endif
 
+<<<<<<< HEAD
 #ifndef ACPI_NO_METHOD_EXECUTION
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ns_load_table
  *
  * PARAMETERS:  table_index     - Index for table to be loaded
+<<<<<<< HEAD
  *              Node            - Owning NS node
+=======
+ *              node            - Owning NS node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -78,6 +100,7 @@ acpi_ns_load_table(u32 table_index, struct acpi_namespace_node *node)
 
 	ACPI_FUNCTION_TRACE(ns_load_table);
 
+<<<<<<< HEAD
 	/*
 	 * Parse the table and load the namespace with all named
 	 * objects found within.  Control methods are NOT parsed
@@ -92,6 +115,8 @@ acpi_ns_load_table(u32 table_index, struct acpi_namespace_node *node)
 		return_ACPI_STATUS(status);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If table already loaded into namespace, just return */
 
 	if (acpi_tb_is_table_loaded(table_index)) {
@@ -107,33 +132,80 @@ acpi_ns_load_table(u32 table_index, struct acpi_namespace_node *node)
 		goto unlock;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Parse the table and load the namespace with all named
+	 * objects found within. Control methods are NOT parsed
+	 * at this time. In fact, the control methods cannot be
+	 * parsed until the entire namespace is loaded, because
+	 * if a control method makes a forward reference (call)
+	 * to another control method, we can't continue parsing
+	 * because we don't know how many arguments to parse next!
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = acpi_ns_parse_table(table_index, node);
 	if (ACPI_SUCCESS(status)) {
 		acpi_tb_set_table_loaded_flag(table_index, TRUE);
 	} else {
+<<<<<<< HEAD
 		(void)acpi_tb_release_owner_id(table_index);
 	}
 
       unlock:
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 
+=======
+		/*
+		 * On error, delete any namespace objects created by this table.
+		 * We cannot initialize these objects, so delete them. There are
+		 * a couple of especially bad cases:
+		 * AE_ALREADY_EXISTS - namespace collision.
+		 * AE_NOT_FOUND - the target of a Scope operator does not
+		 * exist. This target of Scope must already exist in the
+		 * namespace, as per the ACPI specification.
+		 */
+		acpi_ns_delete_namespace_by_owner(acpi_gbl_root_table_list.
+						  tables[table_index].owner_id);
+
+		acpi_tb_release_owner_id(table_index);
+		return_ACPI_STATUS(status);
+	}
+
+unlock:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Now we can parse the control methods.  We always parse
+=======
+	 * Now we can parse the control methods. We always parse
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * them here for a sanity check, and if configured for
 	 * just-in-time parsing, we delete the control method
 	 * parse trees.
 	 */
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+<<<<<<< HEAD
 			  "**** Begin Table Method Parsing and Object Initialization\n"));
 
 	status = acpi_ds_initialize_objects(table_index, node);
 
 	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
 			  "**** Completed Table Method Parsing and Object Initialization\n"));
+=======
+			  "**** Begin Table Object Initialization\n"));
+
+	acpi_ex_enter_interpreter();
+	status = acpi_ds_initialize_objects(table_index, node);
+	acpi_ex_exit_interpreter();
+
+	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+			  "**** Completed Table Object Initialization\n"));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return_ACPI_STATUS(status);
 }
@@ -166,7 +238,11 @@ acpi_status acpi_ns_load_namespace(void)
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Load the namespace.  The DSDT is required,
+=======
+	 * Load the namespace. The DSDT is required,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * but the SSDT and PSDT tables are optional.
 	 */
 	status = acpi_ns_load_table_by_type(ACPI_TABLE_ID_DSDT);
@@ -278,12 +354,20 @@ static acpi_status acpi_ns_delete_subtree(acpi_handle start_handle)
  *
  *  FUNCTION:       acpi_ns_unload_name_space
  *
+<<<<<<< HEAD
  *  PARAMETERS:     Handle          - Root of namespace subtree to be deleted
+=======
+ *  PARAMETERS:     handle          - Root of namespace subtree to be deleted
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  RETURN:         Status
  *
  *  DESCRIPTION:    Shrinks the namespace, typically in response to an undocking
+<<<<<<< HEAD
  *                  event.  Deletes an entire subtree starting from (and
+=======
+ *                  event. Deletes an entire subtree starting from (and
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                  including) the given handle.
  *
  ******************************************************************************/
@@ -307,8 +391,14 @@ acpi_status acpi_ns_unload_namespace(acpi_handle handle)
 	/* This function does the real work */
 
 	status = acpi_ns_delete_subtree(handle);
+<<<<<<< HEAD
 
 	return_ACPI_STATUS(status);
 }
 #endif
 #endif
+=======
+	return_ACPI_STATUS(status);
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

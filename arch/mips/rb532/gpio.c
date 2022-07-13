@@ -32,11 +32,28 @@
 #include <linux/export.h>
 #include <linux/spinlock.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mach-rc32434/rb.h>
 #include <asm/mach-rc32434/gpio.h>
 
+<<<<<<< HEAD
+=======
+#define GPIOBASE	0x050000
+/* Offsets relative to GPIOBASE */
+#define GPIOFUNC	0x00
+#define GPIOCFG		0x04
+#define GPIOD		0x08
+#define GPIOILEVEL	0x0C
+#define GPIOISTAT	0x10
+#define GPIONMIEN	0x14
+#define IMASK6		0x38
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rb532_gpio_chip {
 	struct gpio_chip chip;
 	void __iomem	 *regbase;
@@ -44,10 +61,17 @@ struct rb532_gpio_chip {
 
 static struct resource rb532_gpio_reg0_res[] = {
 	{
+<<<<<<< HEAD
 		.name 	= "gpio_reg0",
 		.start 	= REGBASE + GPIOBASE,
 		.end 	= REGBASE + GPIOBASE + sizeof(struct rb532_gpio_reg) - 1,
 		.flags 	= IORESOURCE_MEM,
+=======
+		.name	= "gpio_reg0",
+		.start	= REGBASE + GPIOBASE,
+		.end	= REGBASE + GPIOBASE + sizeof(struct rb532_gpio_reg) - 1,
+		.flags	= IORESOURCE_MEM,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -79,7 +103,11 @@ static inline void rb532_set_bit(unsigned bitval,
  */
 static inline int rb532_get_bit(unsigned offset, void __iomem *ioaddr)
 {
+<<<<<<< HEAD
 	return (readl(ioaddr) & (1 << offset));
+=======
+	return readl(ioaddr) & (1 << offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -88,8 +116,13 @@ static int rb532_gpio_get(struct gpio_chip *chip, unsigned offset)
 {
 	struct rb532_gpio_chip	*gpch;
 
+<<<<<<< HEAD
 	gpch = container_of(chip, struct rb532_gpio_chip, chip);
 	return rb532_get_bit(offset, gpch->regbase + GPIOD);
+=======
+	gpch = gpiochip_get_data(chip);
+	return !!rb532_get_bit(offset, gpch->regbase + GPIOD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -100,7 +133,11 @@ static void rb532_gpio_set(struct gpio_chip *chip,
 {
 	struct rb532_gpio_chip	*gpch;
 
+<<<<<<< HEAD
 	gpch = container_of(chip, struct rb532_gpio_chip, chip);
+=======
+	gpch = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rb532_set_bit(value, offset, gpch->regbase + GPIOD);
 }
 
@@ -111,7 +148,11 @@ static int rb532_gpio_direction_input(struct gpio_chip *chip, unsigned offset)
 {
 	struct rb532_gpio_chip	*gpch;
 
+<<<<<<< HEAD
 	gpch = container_of(chip, struct rb532_gpio_chip, chip);
+=======
+	gpch = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable alternate function in case it's set */
 	rb532_set_bit(0, offset, gpch->regbase + GPIOFUNC);
@@ -128,7 +169,11 @@ static int rb532_gpio_direction_output(struct gpio_chip *chip,
 {
 	struct rb532_gpio_chip	*gpch;
 
+<<<<<<< HEAD
 	gpch = container_of(chip, struct rb532_gpio_chip, chip);
+=======
+	gpch = gpiochip_get_data(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable alternate function in case it's set */
 	rb532_set_bit(0, offset, gpch->regbase + GPIOFUNC);
@@ -140,6 +185,14 @@ static int rb532_gpio_direction_output(struct gpio_chip *chip,
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int rb532_gpio_to_irq(struct gpio_chip *chip, unsigned gpio)
+{
+	return 8 + 4 * 32 + gpio;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct rb532_gpio_chip rb532_gpio_chip[] = {
 	[0] = {
 		.chip = {
@@ -148,6 +201,10 @@ static struct rb532_gpio_chip rb532_gpio_chip[] = {
 			.direction_output	= rb532_gpio_direction_output,
 			.get			= rb532_gpio_get,
 			.set			= rb532_gpio_set,
+<<<<<<< HEAD
+=======
+			.to_irq			= rb532_gpio_to_irq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.base			= 0,
 			.ngpio			= 32,
 		},
@@ -186,7 +243,11 @@ int __init rb532_gpio_init(void)
 	struct resource *r;
 
 	r = rb532_gpio_reg0_res;
+<<<<<<< HEAD
 	rb532_gpio_chip->regbase = ioremap_nocache(r->start, resource_size(r));
+=======
+	rb532_gpio_chip->regbase = ioremap(r->start, resource_size(r));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!rb532_gpio_chip->regbase) {
 		printk(KERN_ERR "rb532: cannot remap GPIO register 0\n");
@@ -194,7 +255,11 @@ int __init rb532_gpio_init(void)
 	}
 
 	/* Register our GPIO chip */
+<<<<<<< HEAD
 	gpiochip_add(&rb532_gpio_chip->chip);
+=======
+	gpiochip_add_data(&rb532_gpio_chip->chip, rb532_gpio_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

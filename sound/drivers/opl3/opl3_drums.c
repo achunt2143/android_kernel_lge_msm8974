@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Uros Bizjak <uros@kss-loka.si>
  *
  *   OPL2/OPL3/OPL4 FM routines for internal percussion channels
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,13 +22,19 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "opl3_voice.h"
 
+<<<<<<< HEAD
 extern char snd_opl3_regmap[MAX_OPL2_VOICES][4];
 
 static char snd_opl3_drum_table[47] =
+=======
+static const char snd_opl3_drum_table[47] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	OPL3_BASSDRUM_ON,  OPL3_BASSDRUM_ON,  OPL3_HIHAT_ON,	/* 35 - 37 */
 	OPL3_SNAREDRUM_ON, OPL3_HIHAT_ON,     OPL3_SNAREDRUM_ON, /* 38 - 40 */
@@ -63,6 +74,7 @@ struct snd_opl3_drum_note {
 	unsigned char feedback_connection;
 };
 
+<<<<<<< HEAD
 static struct snd_opl3_drum_voice bass_op0 = {6, 0, 0x00, 0x32, 0xf8, 0x66, 0x30, 0x00};
 static struct snd_opl3_drum_voice bass_op1 = {6, 1, 0x00, 0x03, 0xf6, 0x57, 0x30, 0x00};
 static struct snd_opl3_drum_note bass_note = {6, 0x90, 0x09};
@@ -76,12 +88,31 @@ static struct snd_opl3_drum_voice tomtom = {8, 0, 0x02, 0x03, 0xf0, 0x06, 0x10, 
 static struct snd_opl3_drum_note tomtom_note = {8, 0xf4, 0x09};
 
 static struct snd_opl3_drum_voice cymbal = {8, 1, 0x04, 0x03, 0xf0, 0x06, 0x10, 0x00};
+=======
+static const struct snd_opl3_drum_voice bass_op0 = {6, 0, 0x00, 0x32, 0xf8, 0x66, 0x30, 0x00};
+static const struct snd_opl3_drum_voice bass_op1 = {6, 1, 0x00, 0x03, 0xf6, 0x57, 0x30, 0x00};
+static const struct snd_opl3_drum_note bass_note = {6, 0x90, 0x09};
+
+static const struct snd_opl3_drum_voice hihat = {7, 0, 0x00, 0x03, 0xf0, 0x06, 0x20, 0x00};
+
+static const struct snd_opl3_drum_voice snare = {7, 1, 0x00, 0x03, 0xf0, 0x07, 0x20, 0x02};
+static const struct snd_opl3_drum_note snare_note = {7, 0xf4, 0x0d};
+
+static const struct snd_opl3_drum_voice tomtom = {8, 0, 0x02, 0x03, 0xf0, 0x06, 0x10, 0x00};
+static const struct snd_opl3_drum_note tomtom_note = {8, 0xf4, 0x09};
+
+static const struct snd_opl3_drum_voice cymbal = {8, 1, 0x04, 0x03, 0xf0, 0x06, 0x10, 0x00};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * set drum voice characteristics
  */
 static void snd_opl3_drum_voice_set(struct snd_opl3 *opl3,
+<<<<<<< HEAD
 				    struct snd_opl3_drum_voice *data)
+=======
+				    const struct snd_opl3_drum_voice *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char op_offset = snd_opl3_regmap[data->voice][data->op];
 	unsigned char voice_offset = data->voice;
@@ -116,7 +147,11 @@ static void snd_opl3_drum_voice_set(struct snd_opl3 *opl3,
  * Set drum voice pitch
  */
 static void snd_opl3_drum_note_set(struct snd_opl3 *opl3,
+<<<<<<< HEAD
 				   struct snd_opl3_drum_note *data)
+=======
+				   const struct snd_opl3_drum_note *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char voice_offset = data->voice;
 	unsigned short opl3_reg;
@@ -134,7 +169,11 @@ static void snd_opl3_drum_note_set(struct snd_opl3 *opl3,
  * Set drum voice volume and position
  */
 static void snd_opl3_drum_vol_set(struct snd_opl3 *opl3,
+<<<<<<< HEAD
 				  struct snd_opl3_drum_voice *data,
+=======
+				  const struct snd_opl3_drum_voice *data,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  int vel, struct snd_midi_channel *chan)
 {
 	unsigned char op_offset = snd_opl3_regmap[data->voice][data->op];
@@ -186,7 +225,11 @@ void snd_opl3_drum_switch(struct snd_opl3 *opl3, int note, int vel, int on_off,
 			  struct snd_midi_channel *chan)
 {
 	unsigned char drum_mask;
+<<<<<<< HEAD
 	struct snd_opl3_drum_voice *drum_voice;
+=======
+	const struct snd_opl3_drum_voice *drum_voice;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(opl3->drum_reg & OPL3_PERCUSSION_ENABLE))
 		return;

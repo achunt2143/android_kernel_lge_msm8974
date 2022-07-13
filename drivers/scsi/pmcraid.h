@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pmcraid.h -- PMC Sierra MaxRAID controller driver header file
  *
@@ -5,6 +9,7 @@
  *             PMC-Sierra Inc
  *
  * Copyright (C) 2008, 2009 PMC Sierra Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _PMCRAID_H
@@ -60,8 +67,13 @@
 /*
  * MAX_CMD          : maximum commands that can be outstanding with IOA
  * MAX_IO_CMD       : command blocks available for IO commands
+<<<<<<< HEAD
  * MAX_HCAM_CMD     : command blocks avaibale for HCAMS
  * MAX_INTERNAL_CMD : command blocks avaible for internal commands like reset
+=======
+ * MAX_HCAM_CMD     : command blocks available for HCAMS
+ * MAX_INTERNAL_CMD : command blocks available for internal commands like reset
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define PMCRAID_MAX_CMD				1024
 #define PMCRAID_MAX_IO_CMD			1020
@@ -257,7 +269,11 @@ struct pmcraid_ioarcb {
 	__u8  hrrq_id;
 	__u8  cdb[PMCRAID_MAX_CDB_LEN];
 	struct pmcraid_ioarcb_add_data add_data;
+<<<<<<< HEAD
 } __attribute__((packed, aligned(PMCRAID_IOARCB_ALIGNMENT)));
+=======
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* well known resource handle values */
 #define PMCRAID_IOA_RES_HANDLE        0xffffffff
@@ -542,8 +558,12 @@ struct pmcraid_sglist {
 	u32 order;
 	u32 num_sg;
 	u32 num_dma_sg;
+<<<<<<< HEAD
 	u32 buffer_len;
 	struct scatterlist scatterlist[1];
+=======
+	struct scatterlist *scatterlist;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* page D0 inquiry data of focal point resource */
@@ -554,7 +574,11 @@ struct pmcraid_inquiry_data {
 	__u8	add_page_len;
 	__u8	length;
 	__u8	reserved2;
+<<<<<<< HEAD
 	__le16	fw_version;
+=======
+	__be16	fw_version;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8	reserved3[16];
 };
 
@@ -628,7 +652,10 @@ struct pmcraid_interrupts {
 /* ISR parameters LLD allocates (one for each MSI-X if enabled) vectors */
 struct pmcraid_isr_param {
 	struct pmcraid_instance *drv_inst;
+<<<<<<< HEAD
 	u16 vector;			/* allocated msi-x vector */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 hrrq_id;			/* hrrq entry index */
 };
 
@@ -638,7 +665,11 @@ struct pmcraid_aen_msg {
 	u32 hostno;
 	u32 length;
 	u8  reserved[8];
+<<<<<<< HEAD
 	u8  data[0];
+=======
+	u8  data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Controller state event message type */
@@ -698,6 +729,7 @@ struct pmcraid_instance {
 	dma_addr_t hrrq_start_bus_addr[PMCRAID_NUM_MSIX_VECTORS];
 
 	/* Pointer to 1st entry of HRRQ */
+<<<<<<< HEAD
 	__be32 *hrrq_start[PMCRAID_NUM_MSIX_VECTORS];
 
 	/* Pointer to last entry of HRRQ */
@@ -705,6 +737,15 @@ struct pmcraid_instance {
 
 	/* Pointer to current pointer of hrrq */
 	__be32 *hrrq_curr[PMCRAID_NUM_MSIX_VECTORS];
+=======
+	__le32 *hrrq_start[PMCRAID_NUM_MSIX_VECTORS];
+
+	/* Pointer to last entry of HRRQ */
+	__le32 *hrrq_end[PMCRAID_NUM_MSIX_VECTORS];
+
+	/* Pointer to current pointer of hrrq */
+	__le32 *hrrq_curr[PMCRAID_NUM_MSIX_VECTORS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Lock for HRRQ access */
 	spinlock_t hrrq_lock[PMCRAID_NUM_MSIX_VECTORS];
@@ -756,7 +797,11 @@ struct pmcraid_instance {
 
 	/* structures related to command blocks */
 	struct kmem_cache *cmd_cachep;		/* cache for cmd blocks */
+<<<<<<< HEAD
 	struct pci_pool *control_pool;		/* pool for control blocks */
+=======
+	struct dma_pool *control_pool;		/* pool for control blocks */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char   cmd_pool_name[64];		/* name of cmd cache */
 	char   ctl_pool_name[64];		/* name of control cache */
 
@@ -1038,6 +1083,7 @@ struct pmcraid_ioctl_header {
 #define PMCRAID_IOCTL_SIGNATURE      "PMCRAID"
 
 /*
+<<<<<<< HEAD
  * pmcraid_passthrough_ioctl_buffer - structure given as argument to
  * passthrough(or firmware handled) IOCTL commands. Note that ioarcb requires
  * 32-byte alignment so, it is necessary to pack this structure to avoid any
@@ -1059,19 +1105,27 @@ struct pmcraid_passthrough_ioctl_buffer {
 } __attribute__ ((packed));
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * keys to differentiate between driver handled IOCTLs and passthrough
  * IOCTLs passed to IOA. driver determines the ioctl type using macro
  * _IOC_TYPE
  */
 #define PMCRAID_DRIVER_IOCTL         'D'
+<<<<<<< HEAD
 #define PMCRAID_PASSTHROUGH_IOCTL    'F'
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRV_IOCTL(n, size) \
 	_IOC(_IOC_READ|_IOC_WRITE, PMCRAID_DRIVER_IOCTL, (n), (size))
 
+<<<<<<< HEAD
 #define FMW_IOCTL(n, size) \
 	_IOC(_IOC_READ|_IOC_WRITE, PMCRAID_PASSTHROUGH_IOCTL,  (n), (size))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * _ARGSIZE: macro that gives size of the argument type passed to an IOCTL cmd.
  * This is to facilitate applications avoiding un-necessary memory allocations.
@@ -1084,6 +1138,7 @@ struct pmcraid_passthrough_ioctl_buffer {
 #define PMCRAID_IOCTL_RESET_ADAPTER          \
 	DRV_IOCTL(5, sizeof(struct pmcraid_ioctl_header))
 
+<<<<<<< HEAD
 /* passthrough/firmware handled commands */
 #define PMCRAID_IOCTL_PASSTHROUGH_COMMAND         \
 	FMW_IOCTL(1, sizeof(struct pmcraid_passthrough_ioctl_buffer))
@@ -1092,4 +1147,6 @@ struct pmcraid_passthrough_ioctl_buffer {
 	FMW_IOCTL(2, sizeof(struct pmcraid_passthrough_ioctl_buffer))
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _PMCRAID_H */

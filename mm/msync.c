@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/mm/msync.c
  *
@@ -36,9 +40,17 @@ SYSCALL_DEFINE3(msync, unsigned long, start, size_t, len, int, flags)
 	int unmapped_error = 0;
 	int error = -EINVAL;
 
+<<<<<<< HEAD
 	if (flags & ~(MS_ASYNC | MS_INVALIDATE | MS_SYNC))
 		goto out;
 	if (start & ~PAGE_MASK)
+=======
+	start = untagged_addr(start);
+
+	if (flags & ~(MS_ASYNC | MS_INVALIDATE | MS_SYNC))
+		goto out;
+	if (offset_in_page(start))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	if ((flags & MS_ASYNC) && (flags & MS_SYNC))
 		goto out;
@@ -52,12 +64,24 @@ SYSCALL_DEFINE3(msync, unsigned long, start, size_t, len, int, flags)
 		goto out;
 	/*
 	 * If the interval [start,end) covers some unmapped address ranges,
+<<<<<<< HEAD
 	 * just ignore them, but return -ENOMEM at the end.
 	 */
 	down_read(&mm->mmap_sem);
 	vma = find_vma(mm, start);
 	for (;;) {
 		struct file *file;
+=======
+	 * just ignore them, but return -ENOMEM at the end. Besides, if the
+	 * flag is MS_ASYNC (w/o MS_INVALIDATE) the result would be -ENOMEM
+	 * anyway and there is nothing left to do, so return immediately.
+	 */
+	mmap_read_lock(mm);
+	vma = find_vma(mm, start);
+	for (;;) {
+		struct file *file;
+		loff_t fstart, fend;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Still start < end. */
 		error = -ENOMEM;
@@ -65,6 +89,11 @@ SYSCALL_DEFINE3(msync, unsigned long, start, size_t, len, int, flags)
 			goto out_unlock;
 		/* Here start < vma->vm_end. */
 		if (start < vma->vm_start) {
+<<<<<<< HEAD
+=======
+			if (flags == MS_ASYNC)
+				goto out_unlock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start = vma->vm_start;
 			if (start >= end)
 				goto out_unlock;
@@ -77,27 +106,50 @@ SYSCALL_DEFINE3(msync, unsigned long, start, size_t, len, int, flags)
 			goto out_unlock;
 		}
 		file = vma->vm_file;
+<<<<<<< HEAD
+=======
+		fstart = (start - vma->vm_start) +
+			 ((loff_t)vma->vm_pgoff << PAGE_SHIFT);
+		fend = fstart + (min(end, vma->vm_end) - start) - 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		start = vma->vm_end;
 		if ((flags & MS_SYNC) && file &&
 				(vma->vm_flags & VM_SHARED)) {
 			get_file(file);
+<<<<<<< HEAD
 			up_read(&mm->mmap_sem);
 			error = vfs_fsync(file, 0);
 			fput(file);
 			if (error || start >= end)
 				goto out;
 			down_read(&mm->mmap_sem);
+=======
+			mmap_read_unlock(mm);
+			error = vfs_fsync_range(file, fstart, fend, 1);
+			fput(file);
+			if (error || start >= end)
+				goto out;
+			mmap_read_lock(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			vma = find_vma(mm, start);
 		} else {
 			if (start >= end) {
 				error = 0;
 				goto out_unlock;
 			}
+<<<<<<< HEAD
 			vma = vma->vm_next;
 		}
 	}
 out_unlock:
 	up_read(&mm->mmap_sem);
+=======
+			vma = find_vma(mm, vma->vm_end);
+		}
+	}
+out_unlock:
+	mmap_read_unlock(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return error ? : unmapped_error;
 }

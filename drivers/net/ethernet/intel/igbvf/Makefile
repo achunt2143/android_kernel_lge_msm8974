@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ################################################################################
 #
 # Intel(R) 82576 Virtual Function Linux driver
@@ -25,6 +26,10 @@
 #
 ################################################################################
 
+=======
+# SPDX-License-Identifier: GPL-2.0
+# Copyright(c) 2009 - 2018 Intel Corporation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the Intel(R) 82576 VF ethernet driver
 #

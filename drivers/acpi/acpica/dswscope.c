@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: dswscope - Scope stack manipulation
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acdispat.h"
@@ -77,6 +88,10 @@ void acpi_ds_scope_stack_clear(struct acpi_walk_state *walk_state)
 				  "Popped object type (%s)\n",
 				  acpi_ut_get_type_name(scope_info->common.
 							value)));
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acpi_ut_delete_generic_state(scope_info);
 	}
 }
@@ -85,8 +100,13 @@ void acpi_ds_scope_stack_clear(struct acpi_walk_state *walk_state)
  *
  * FUNCTION:    acpi_ds_scope_stack_push
  *
+<<<<<<< HEAD
  * PARAMETERS:  Node            - Name to be made current
  *              Type            - Type of frame being pushed
+=======
+ * PARAMETERS:  node            - Name to be made current
+ *              type            - Type of frame being pushed
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              walk_state      - Current state
  *
  * RETURN:      Status
@@ -148,7 +168,11 @@ acpi_ds_scope_stack_push(struct acpi_namespace_node *node,
 				      acpi_ut_get_type_name(old_scope_info->
 							    common.value)));
 	} else {
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_EXEC, "[\\___] (%s)", "ROOT"));
+=======
+		ACPI_DEBUG_PRINT_RAW((ACPI_DB_EXEC, ACPI_NAMESPACE_ROOT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ACPI_DEBUG_PRINT_RAW((ACPI_DB_EXEC,
@@ -199,14 +223,23 @@ acpi_status acpi_ds_scope_stack_pop(struct acpi_walk_state *walk_state)
 
 	new_scope_info = walk_state->scope_info;
 	if (new_scope_info) {
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_EXEC,
 				      "[%4.4s] (%s)\n",
+=======
+		ACPI_DEBUG_PRINT_RAW((ACPI_DB_EXEC, "[%4.4s] (%s)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      acpi_ut_get_node_name(new_scope_info->
 							    scope.node),
 				      acpi_ut_get_type_name(new_scope_info->
 							    common.value)));
 	} else {
+<<<<<<< HEAD
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_EXEC, "[\\___] (ROOT)\n"));
+=======
+		ACPI_DEBUG_PRINT_RAW((ACPI_DB_EXEC, "%s\n",
+				      ACPI_NAMESPACE_ROOT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	acpi_ut_delete_generic_state(scope_info);

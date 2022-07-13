@@ -1,21 +1,33 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _POWERPC_SYSDEV_MPIC_H
 #define _POWERPC_SYSDEV_MPIC_H
 
 /*
  * Copyright 2006-2007, Michael Ellerman, IBM Corporation.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; version 2 of the
  * License.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifdef CONFIG_PCI_MSI
 extern void mpic_msi_reserve_hwirq(struct mpic *mpic, irq_hw_number_t hwirq);
+<<<<<<< HEAD
 extern int mpic_msi_init_allocator(struct mpic *mpic);
 extern int mpic_u3msi_init(struct mpic *mpic);
 extern int mpic_pasemi_msi_init(struct mpic *mpic);
+=======
+int __init mpic_msi_init_allocator(struct mpic *mpic);
+int __init mpic_u3msi_init(struct mpic *mpic);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline void mpic_msi_reserve_hwirq(struct mpic *mpic,
 					  irq_hw_number_t hwirq)
@@ -27,11 +39,20 @@ static inline int mpic_u3msi_init(struct mpic *mpic)
 {
 	return -1;
 }
+<<<<<<< HEAD
 
 static inline int mpic_pasemi_msi_init(struct mpic *mpic)
 {
 	return -1;
 }
+=======
+#endif
+
+#if defined(CONFIG_PCI_MSI) && defined(CONFIG_PPC_PASEMI)
+int __init mpic_pasemi_msi_init(struct mpic *mpic);
+#else
+static inline int mpic_pasemi_msi_init(struct mpic *mpic) { return -1; }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 extern int mpic_set_irq_type(struct irq_data *d, unsigned int flow_type);
@@ -40,4 +61,29 @@ extern int mpic_set_affinity(struct irq_data *d,
 			     const struct cpumask *cpumask, bool force);
 extern void mpic_reset_core(int cpu);
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_FSL_SOC
+extern int mpic_map_error_int(struct mpic *mpic, unsigned int virq, irq_hw_number_t  hw);
+void __init mpic_err_int_init(struct mpic *mpic, irq_hw_number_t irqnum);
+int __init mpic_setup_error_int(struct mpic *mpic, int intvec);
+#else
+static inline int mpic_map_error_int(struct mpic *mpic, unsigned int virq, irq_hw_number_t  hw)
+{
+	return 0;
+}
+
+
+static inline void mpic_err_int_init(struct mpic *mpic, irq_hw_number_t irqnum)
+{
+	return;
+}
+
+static inline int mpic_setup_error_int(struct mpic *mpic, int intvec)
+{
+	return -1;
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _POWERPC_SYSDEV_MPIC_H */

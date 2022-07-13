@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * QNX6 file system, Linux implementation.
  *
@@ -29,14 +33,22 @@ static const struct super_operations qnx6_sops;
 
 static void qnx6_put_super(struct super_block *sb);
 static struct inode *qnx6_alloc_inode(struct super_block *sb);
+<<<<<<< HEAD
 static void qnx6_destroy_inode(struct inode *inode);
+=======
+static void qnx6_free_inode(struct inode *inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int qnx6_remount(struct super_block *sb, int *flags, char *data);
 static int qnx6_statfs(struct dentry *dentry, struct kstatfs *buf);
 static int qnx6_show_options(struct seq_file *seq, struct dentry *root);
 
 static const struct super_operations qnx6_sops = {
 	.alloc_inode	= qnx6_alloc_inode,
+<<<<<<< HEAD
 	.destroy_inode	= qnx6_destroy_inode,
+=======
+	.free_inode	= qnx6_free_inode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.put_super	= qnx6_put_super,
 	.statfs		= qnx6_statfs,
 	.remount_fs	= qnx6_remount,
@@ -55,7 +67,12 @@ static int qnx6_show_options(struct seq_file *seq, struct dentry *root)
 
 static int qnx6_remount(struct super_block *sb, int *flags, char *data)
 {
+<<<<<<< HEAD
 	*flags |= MS_RDONLY;
+=======
+	sync_filesystem(sb);
+	*flags |= SB_RDONLY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -72,8 +89,13 @@ static int qnx6_get_block(struct inode *inode, sector_t iblock,
 {
 	unsigned phys;
 
+<<<<<<< HEAD
 	QNX6DEBUG((KERN_INFO "qnx6: qnx6_get_block inode=[%ld] iblock=[%ld]\n",
 			inode->i_ino, (unsigned long)iblock));
+=======
+	pr_debug("qnx6_get_block inode=[%ld] iblock=[%ld]\n",
+		 inode->i_ino, (unsigned long)iblock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	phys = qnx6_block_map(inode, iblock);
 	if (phys) {
@@ -86,12 +108,17 @@ static int qnx6_get_block(struct inode *inode, sector_t iblock,
 static int qnx6_check_blockptr(__fs32 ptr)
 {
 	if (ptr == ~(__fs32)0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: hit unused blockpointer.\n");
+=======
+		pr_err("hit unused blockpointer.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	return 1;
 }
 
+<<<<<<< HEAD
 static int qnx6_readpage(struct file *file, struct page *page)
 {
 	return mpage_readpage(page, qnx6_get_block);
@@ -101,6 +128,16 @@ static int qnx6_readpages(struct file *file, struct address_space *mapping,
 		   struct list_head *pages, unsigned nr_pages)
 {
 	return mpage_readpages(mapping, pages, nr_pages, qnx6_get_block);
+=======
+static int qnx6_read_folio(struct file *file, struct folio *folio)
+{
+	return mpage_read_folio(folio, qnx6_get_block);
+}
+
+static void qnx6_readahead(struct readahead_control *rac)
+{
+	mpage_readahead(rac, qnx6_get_block);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -126,8 +163,12 @@ static unsigned qnx6_block_map(struct inode *inode, unsigned no)
 	levelptr = no >> bitdelta;
 
 	if (levelptr > QNX6_NO_DIRECT_POINTERS - 1) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6:Requested file block number (%u) too big.",
 				no);
+=======
+		pr_err("Requested file block number (%u) too big.", no);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -136,8 +177,12 @@ static unsigned qnx6_block_map(struct inode *inode, unsigned no)
 	for (i = 0; i < depth; i++) {
 		bh = sb_bread(s, block);
 		if (!bh) {
+<<<<<<< HEAD
 			printk(KERN_ERR "qnx6:Error reading block (%u)\n",
 					block);
+=======
+			pr_err("Error reading block (%u)\n", block);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 		bitdelta -= ptrbits;
@@ -167,8 +212,12 @@ static int qnx6_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_ffree   = fs32_to_cpu(sbi, sbi->sb->sb_free_inodes);
 	buf->f_bavail  = buf->f_bfree;
 	buf->f_namelen = QNX6_LONG_NAME_MAX;
+<<<<<<< HEAD
 	buf->f_fsid.val[0] = (u32)id;
 	buf->f_fsid.val[1] = (u32)(id >> 32);
+=======
+	buf->f_fsid    = u64_to_fsid(id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -183,7 +232,11 @@ static const char *qnx6_checkroot(struct super_block *s)
 	static char match_root[2][3] = {".\0\0", "..\0"};
 	int i, error = 0;
 	struct qnx6_dir_entry *dir_entry;
+<<<<<<< HEAD
 	struct inode *root = s->s_root->d_inode;
+=======
+	struct inode *root = d_inode(s->s_root);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct address_space *mapping = root->i_mapping;
 	struct page *page = read_mapping_page(mapping, 0, NULL);
 	if (IS_ERR(page))
@@ -206,6 +259,7 @@ void qnx6_superblock_debug(struct qnx6_super_block *sb, struct super_block *s)
 {
 	struct qnx6_sb_info *sbi = QNX6_SB(s);
 
+<<<<<<< HEAD
 	QNX6DEBUG((KERN_INFO "magic: %08x\n",
 				fs32_to_cpu(sbi, sb->sb_magic)));
 	QNX6DEBUG((KERN_INFO "checksum: %08x\n",
@@ -226,6 +280,18 @@ void qnx6_superblock_debug(struct qnx6_super_block *sb, struct super_block *s)
 				fs32_to_cpu(sbi, sb->sb_free_blocks)));
 	QNX6DEBUG((KERN_INFO "inode_levels: %02x\n",
 				sb->Inode.levels));
+=======
+	pr_debug("magic: %08x\n", fs32_to_cpu(sbi, sb->sb_magic));
+	pr_debug("checksum: %08x\n", fs32_to_cpu(sbi, sb->sb_checksum));
+	pr_debug("serial: %llx\n", fs64_to_cpu(sbi, sb->sb_serial));
+	pr_debug("flags: %08x\n", fs32_to_cpu(sbi, sb->sb_flags));
+	pr_debug("blocksize: %08x\n", fs32_to_cpu(sbi, sb->sb_blocksize));
+	pr_debug("num_inodes: %08x\n", fs32_to_cpu(sbi, sb->sb_num_inodes));
+	pr_debug("free_inodes: %08x\n", fs32_to_cpu(sbi, sb->sb_free_inodes));
+	pr_debug("num_blocks: %08x\n", fs32_to_cpu(sbi, sb->sb_num_blocks));
+	pr_debug("free_blocks: %08x\n", fs32_to_cpu(sbi, sb->sb_free_blocks));
+	pr_debug("inode_levels: %02x\n", sb->Inode.levels);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -276,7 +342,11 @@ static struct buffer_head *qnx6_check_first_superblock(struct super_block *s,
 	   start with the first superblock */
 	bh = sb_bread(s, offset);
 	if (!bh) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: unable to read the first superblock\n");
+=======
+		pr_err("unable to read the first superblock\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 	sb = (struct qnx6_super_block *)bh->b_data;
@@ -284,13 +354,18 @@ static struct buffer_head *qnx6_check_first_superblock(struct super_block *s,
 		sbi->s_bytesex = BYTESEX_BE;
 		if (fs32_to_cpu(sbi, sb->sb_magic) == QNX6_SUPER_MAGIC) {
 			/* we got a big endian fs */
+<<<<<<< HEAD
 			QNX6DEBUG((KERN_INFO "qnx6: fs got different"
 					" endianess.\n"));
+=======
+			pr_debug("fs got different endianness.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return bh;
 		} else
 			sbi->s_bytesex = BYTESEX_LE;
 		if (!silent) {
 			if (offset == 0) {
+<<<<<<< HEAD
 				printk(KERN_ERR "qnx6: wrong signature (magic)"
 					" in superblock #1.\n");
 			} else {
@@ -298,6 +373,12 @@ static struct buffer_head *qnx6_check_first_superblock(struct super_block *s,
 					" at position (0x%lx) - will try"
 					" alternative position (0x0000).\n",
 						offset * s->s_blocksize);
+=======
+				pr_err("wrong signature (magic) in superblock #1.\n");
+			} else {
+				pr_info("wrong signature (magic) at position (0x%lx) - will try alternative position (0x0000).\n",
+					offset * s->s_blocksize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		brelse(bh);
@@ -328,13 +409,21 @@ static int qnx6_fill_super(struct super_block *s, void *data, int silent)
 
 	/* Superblock always is 512 Byte long */
 	if (!sb_set_blocksize(s, QNX6_SUPERBLOCK_SIZE)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: unable to set blocksize\n");
+=======
+		pr_err("unable to set blocksize\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto outnobh;
 	}
 
 	/* parse the mount-options */
 	if (!qnx6_parse_options((char *) data, s)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: invalid mount options.\n");
+=======
+		pr_err("invalid mount options.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto outnobh;
 	}
 	if (test_opt(s, MMI_FS)) {
@@ -354,7 +443,11 @@ static int qnx6_fill_super(struct super_block *s, void *data, int silent)
 		/* try again without bootblock offset */
 		bh1 = qnx6_check_first_superblock(s, 0, silent);
 		if (!bh1) {
+<<<<<<< HEAD
 			printk(KERN_ERR "qnx6: unable to read the first superblock\n");
+=======
+			pr_err("unable to read the first superblock\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto outnobh;
 		}
 		/* seems that no bootblock at partition start */
@@ -369,13 +462,21 @@ static int qnx6_fill_super(struct super_block *s, void *data, int silent)
 	/* checksum check - start at byte 8 and end at byte 512 */
 	if (fs32_to_cpu(sbi, sb1->sb_checksum) !=
 			crc32_be(0, (char *)(bh1->b_data + 8), 504)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: superblock #1 checksum error\n");
+=======
+		pr_err("superblock #1 checksum error\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	/* set new blocksize */
 	if (!sb_set_blocksize(s, fs32_to_cpu(sbi, sb1->sb_blocksize))) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: unable to set blocksize\n");
+=======
+		pr_err("unable to set blocksize\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	/* blocksize invalidates bh - pull it back in */
@@ -397,21 +498,33 @@ static int qnx6_fill_super(struct super_block *s, void *data, int silent)
 	/* next the second superblock */
 	bh2 = sb_bread(s, offset);
 	if (!bh2) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: unable to read the second superblock\n");
+=======
+		pr_err("unable to read the second superblock\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	sb2 = (struct qnx6_super_block *)bh2->b_data;
 	if (fs32_to_cpu(sbi, sb2->sb_magic) != QNX6_SUPER_MAGIC) {
 		if (!silent)
+<<<<<<< HEAD
 			printk(KERN_ERR "qnx6: wrong signature (magic)"
 					" in superblock #2.\n");
+=======
+			pr_err("wrong signature (magic) in superblock #2.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	/* checksum check - start at byte 8 and end at byte 512 */
 	if (fs32_to_cpu(sbi, sb2->sb_checksum) !=
 				crc32_be(0, (char *)(bh2->b_data + 8), 504)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: superblock #2 checksum error\n");
+=======
+		pr_err("superblock #2 checksum error\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -421,17 +534,26 @@ static int qnx6_fill_super(struct super_block *s, void *data, int silent)
 		sbi->sb_buf = bh1;
 		sbi->sb = (struct qnx6_super_block *)bh1->b_data;
 		brelse(bh2);
+<<<<<<< HEAD
 		printk(KERN_INFO "qnx6: superblock #1 active\n");
+=======
+		pr_info("superblock #1 active\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* superblock #2 active */
 		sbi->sb_buf = bh2;
 		sbi->sb = (struct qnx6_super_block *)bh2->b_data;
 		brelse(bh1);
+<<<<<<< HEAD
 		printk(KERN_INFO "qnx6: superblock #2 active\n");
+=======
+		pr_info("superblock #2 active\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 mmi_success:
 	/* sanity check - limit maximum indirect pointer levels */
 	if (sb1->Inode.levels > QNX6_PTR_MAX_LEVELS) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: too many inode levels (max %i, sb %i)\n",
 			QNX6_PTR_MAX_LEVELS, sb1->Inode.levels);
 		goto out;
@@ -440,11 +562,26 @@ mmi_success:
 		printk(KERN_ERR "qnx6: too many longfilename levels"
 				" (max %i, sb %i)\n",
 			QNX6_PTR_MAX_LEVELS, sb1->Longfile.levels);
+=======
+		pr_err("too many inode levels (max %i, sb %i)\n",
+		       QNX6_PTR_MAX_LEVELS, sb1->Inode.levels);
+		goto out;
+	}
+	if (sb1->Longfile.levels > QNX6_PTR_MAX_LEVELS) {
+		pr_err("too many longfilename levels (max %i, sb %i)\n",
+		       QNX6_PTR_MAX_LEVELS, sb1->Longfile.levels);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	s->s_op = &qnx6_sops;
 	s->s_magic = QNX6_SUPER_MAGIC;
+<<<<<<< HEAD
 	s->s_flags |= MS_RDONLY;        /* Yup, read-only yet */
+=======
+	s->s_flags |= SB_RDONLY;        /* Yup, read-only yet */
+	s->s_time_min = 0;
+	s->s_time_max = U32_MAX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ease the later tree level calculations */
 	sbi = QNX6_SB(s);
@@ -459,7 +596,11 @@ mmi_success:
 	/* prefetch root inode */
 	root = qnx6_iget(s, QNX6_ROOT_INO);
 	if (IS_ERR(root)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: get inode failed\n");
+=======
+		pr_err("get inode failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = PTR_ERR(root);
 		goto out2;
 	}
@@ -473,7 +614,11 @@ mmi_success:
 	errmsg = qnx6_checkroot(s);
 	if (errmsg != NULL) {
 		if (!silent)
+<<<<<<< HEAD
 			printk(KERN_ERR "qnx6: %s\n", errmsg);
+=======
+			pr_err("%s\n", errmsg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out3;
 	}
 	return 0;
@@ -486,10 +631,15 @@ out2:
 out1:
 	iput(sbi->inodes);
 out:
+<<<<<<< HEAD
 	if (bh1)
 		brelse(bh1);
 	if (bh2)
 		brelse(bh2);
+=======
+	brelse(bh1);
+	brelse(bh2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 outnobh:
 	kfree(qs);
 	s->s_fs_info = NULL;
@@ -512,8 +662,13 @@ static sector_t qnx6_bmap(struct address_space *mapping, sector_t block)
 	return generic_block_bmap(mapping, block, qnx6_get_block);
 }
 static const struct address_space_operations qnx6_aops = {
+<<<<<<< HEAD
 	.readpage	= qnx6_readpage,
 	.readpages	= qnx6_readpages,
+=======
+	.read_folio	= qnx6_read_folio,
+	.readahead	= qnx6_readahead,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bmap		= qnx6_bmap
 };
 
@@ -554,12 +709,17 @@ struct inode *qnx6_iget(struct super_block *sb, unsigned ino)
 	inode->i_mode = 0;
 
 	if (ino == 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "qnx6: bad inode number on dev %s: %u is "
 				"out of range\n",
+=======
+		pr_err("bad inode number on dev %s: %u is out of range\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       sb->s_id, ino);
 		iget_failed(inode);
 		return ERR_PTR(-EIO);
 	}
+<<<<<<< HEAD
 	n = (ino - 1) >> (PAGE_CACHE_SHIFT - QNX6_INODE_SIZE_BITS);
 	offs = (ino - 1) & (~PAGE_CACHE_MASK >> QNX6_INODE_SIZE_BITS);
 	mapping = sbi->inodes->i_mapping;
@@ -567,6 +727,15 @@ struct inode *qnx6_iget(struct super_block *sb, unsigned ino)
 	if (IS_ERR(page)) {
 		printk(KERN_ERR "qnx6: major problem: unable to read inode from "
 		       "dev %s\n", sb->s_id);
+=======
+	n = (ino - 1) >> (PAGE_SHIFT - QNX6_INODE_SIZE_BITS);
+	offs = (ino - 1) & (~PAGE_MASK >> QNX6_INODE_SIZE_BITS);
+	mapping = sbi->inodes->i_mapping;
+	page = read_mapping_page(mapping, n, NULL);
+	if (IS_ERR(page)) {
+		pr_err("major problem: unable to read inode from dev %s\n",
+		       sb->s_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iget_failed(inode);
 		return ERR_CAST(page);
 	}
@@ -574,6 +743,7 @@ struct inode *qnx6_iget(struct super_block *sb, unsigned ino)
 	raw_inode = ((struct qnx6_inode_entry *)page_address(page)) + offs;
 
 	inode->i_mode    = fs16_to_cpu(sbi, raw_inode->di_mode);
+<<<<<<< HEAD
 	inode->i_uid     = (uid_t)fs32_to_cpu(sbi, raw_inode->di_uid);
 	inode->i_gid     = (gid_t)fs32_to_cpu(sbi, raw_inode->di_gid);
 	inode->i_size    = fs64_to_cpu(sbi, raw_inode->di_size);
@@ -583,6 +753,14 @@ struct inode *qnx6_iget(struct super_block *sb, unsigned ino)
 	inode->i_atime.tv_nsec = 0;
 	inode->i_ctime.tv_sec   = fs32_to_cpu(sbi, raw_inode->di_ctime);
 	inode->i_ctime.tv_nsec = 0;
+=======
+	i_uid_write(inode, (uid_t)fs32_to_cpu(sbi, raw_inode->di_uid));
+	i_gid_write(inode, (gid_t)fs32_to_cpu(sbi, raw_inode->di_gid));
+	inode->i_size    = fs64_to_cpu(sbi, raw_inode->di_size);
+	inode_set_mtime(inode, fs32_to_cpu(sbi, raw_inode->di_mtime), 0);
+	inode_set_atime(inode, fs32_to_cpu(sbi, raw_inode->di_atime), 0);
+	inode_set_ctime(inode, fs32_to_cpu(sbi, raw_inode->di_ctime), 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* calc blocks based on 512 byte blocksize */
 	inode->i_blocks = (inode->i_size + 511) >> 9;
@@ -600,6 +778,10 @@ struct inode *qnx6_iget(struct super_block *sb, unsigned ino)
 		inode->i_mapping->a_ops = &qnx6_aops;
 	} else if (S_ISLNK(inode->i_mode)) {
 		inode->i_op = &page_symlink_inode_operations;
+<<<<<<< HEAD
+=======
+		inode_nohighmem(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inode->i_mapping->a_ops = &qnx6_aops;
 	} else
 		init_special_inode(inode, inode->i_mode, 0);
@@ -613,12 +795,17 @@ static struct kmem_cache *qnx6_inode_cachep;
 static struct inode *qnx6_alloc_inode(struct super_block *sb)
 {
 	struct qnx6_inode_info *ei;
+<<<<<<< HEAD
 	ei = kmem_cache_alloc(qnx6_inode_cachep, GFP_KERNEL);
+=======
+	ei = alloc_inode_sb(sb, qnx6_inode_cachep, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ei)
 		return NULL;
 	return &ei->vfs_inode;
 }
 
+<<<<<<< HEAD
 static void qnx6_i_callback(struct rcu_head *head)
 {
 	struct inode *inode = container_of(head, struct inode, i_rcu);
@@ -631,6 +818,13 @@ static void qnx6_destroy_inode(struct inode *inode)
 	call_rcu(&inode->i_rcu, qnx6_i_callback);
 }
 
+=======
+static void qnx6_free_inode(struct inode *inode)
+{
+	kmem_cache_free(qnx6_inode_cachep, QNX6_I(inode));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void init_once(void *foo)
 {
 	struct qnx6_inode_info *ei = (struct qnx6_inode_info *) foo;
@@ -643,7 +837,11 @@ static int init_inodecache(void)
 	qnx6_inode_cachep = kmem_cache_create("qnx6_inode_cache",
 					     sizeof(struct qnx6_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 						SLAB_MEM_SPREAD),
+=======
+						SLAB_ACCOUNT),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     init_once);
 	if (!qnx6_inode_cachep)
 		return -ENOMEM;
@@ -689,7 +887,11 @@ static int __init init_qnx6_fs(void)
 		return err;
 	}
 
+<<<<<<< HEAD
 	printk(KERN_INFO "QNX6 filesystem 1.0.0 registered.\n");
+=======
+	pr_info("QNX6 filesystem 1.0.0 registered.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

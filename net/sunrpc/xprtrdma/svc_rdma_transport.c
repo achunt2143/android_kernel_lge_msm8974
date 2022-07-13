@@ -1,4 +1,11 @@
+<<<<<<< HEAD
 /*
+=======
+// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
+/*
+ * Copyright (c) 2015-2018 Oracle. All rights reserved.
+ * Copyright (c) 2014 Open Grid Computing, Inc. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2005-2007 Network Appliance, Inc. All rights reserved.
  *
  * This software is available to you under a choice of one of two
@@ -39,14 +46,18 @@
  * Author: Tom Tucker <tom@opengridcomputing.com>
  */
 
+<<<<<<< HEAD
 #include <linux/sunrpc/svc_xprt.h>
 #include <linux/sunrpc/debug.h>
 #include <linux/sunrpc/rpc_rdma.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
 #include <linux/spinlock.h>
 #include <linux/workqueue.h>
+<<<<<<< HEAD
 #include <rdma/ib_verbs.h>
 #include <rdma/rdma_cm.h>
 #include <linux/sunrpc/svc_rdma.h>
@@ -55,11 +66,32 @@
 
 #define RPCDBG_FACILITY	RPCDBG_SVCXPRT
 
+=======
+#include <linux/export.h>
+
+#include <rdma/ib_verbs.h>
+#include <rdma/rdma_cm.h>
+#include <rdma/rw.h>
+
+#include <linux/sunrpc/addr.h>
+#include <linux/sunrpc/debug.h>
+#include <linux/sunrpc/svc_xprt.h>
+#include <linux/sunrpc/svc_rdma.h>
+
+#include "xprt_rdma.h"
+#include <trace/events/rpcrdma.h>
+
+#define RPCDBG_FACILITY	RPCDBG_SVCXPRT
+
+static struct svcxprt_rdma *svc_rdma_create_xprt(struct svc_serv *serv,
+						 struct net *net, int node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct svc_xprt *svc_rdma_create(struct svc_serv *serv,
 					struct net *net,
 					struct sockaddr *sa, int salen,
 					int flags);
 static struct svc_xprt *svc_rdma_accept(struct svc_xprt *xprt);
+<<<<<<< HEAD
 static void svc_rdma_release_rqst(struct svc_rqst *);
 static void dto_tasklet_func(unsigned long data);
 static void svc_rdma_detach(struct svc_xprt *xprt);
@@ -82,12 +114,31 @@ static struct svc_xprt_ops svc_rdma_ops = {
 	.xpo_prep_reply_hdr = svc_rdma_prep_reply_hdr,
 	.xpo_has_wspace = svc_rdma_has_wspace,
 	.xpo_accept = svc_rdma_accept,
+=======
+static void svc_rdma_detach(struct svc_xprt *xprt);
+static void svc_rdma_free(struct svc_xprt *xprt);
+static int svc_rdma_has_wspace(struct svc_xprt *xprt);
+static void svc_rdma_kill_temp_xprt(struct svc_xprt *);
+
+static const struct svc_xprt_ops svc_rdma_ops = {
+	.xpo_create = svc_rdma_create,
+	.xpo_recvfrom = svc_rdma_recvfrom,
+	.xpo_sendto = svc_rdma_sendto,
+	.xpo_result_payload = svc_rdma_result_payload,
+	.xpo_release_ctxt = svc_rdma_release_ctxt,
+	.xpo_detach = svc_rdma_detach,
+	.xpo_free = svc_rdma_free,
+	.xpo_has_wspace = svc_rdma_has_wspace,
+	.xpo_accept = svc_rdma_accept,
+	.xpo_kill_temp_xprt = svc_rdma_kill_temp_xprt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct svc_xprt_class svc_rdma_class = {
 	.xcl_name = "rdma",
 	.xcl_owner = THIS_MODULE,
 	.xcl_ops = &svc_rdma_ops,
+<<<<<<< HEAD
 	.xcl_max_payload = RPCSVC_MAXPAYLOAD_TCP,
 };
 
@@ -178,20 +229,35 @@ static void cq_event_handler(struct ib_event *event, void *context)
 	set_bit(XPT_CLOSE, &xprt->xpt_flags);
 }
 
+=======
+	.xcl_max_payload = RPCSVC_MAXPAYLOAD_RDMA,
+	.xcl_ident = XPRT_TRANSPORT_RDMA,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* QP event handler */
 static void qp_event_handler(struct ib_event *event, void *context)
 {
 	struct svc_xprt *xprt = context;
 
+<<<<<<< HEAD
+=======
+	trace_svcrdma_qp_error(event, (struct sockaddr *)&xprt->xpt_remote);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (event->event) {
 	/* These are considered benign events */
 	case IB_EVENT_PATH_MIG:
 	case IB_EVENT_COMM_EST:
 	case IB_EVENT_SQ_DRAINED:
 	case IB_EVENT_QP_LAST_WQE_REACHED:
+<<<<<<< HEAD
 		dprintk("svcrdma: QP event %d received for QP=%p\n",
 			event->event, event->element.qp);
 		break;
+=======
+		break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* These are considered fatal events */
 	case IB_EVENT_PATH_MIG_ERR:
 	case IB_EVENT_QP_FATAL:
@@ -199,14 +265,19 @@ static void qp_event_handler(struct ib_event *event, void *context)
 	case IB_EVENT_QP_ACCESS_ERR:
 	case IB_EVENT_DEVICE_FATAL:
 	default:
+<<<<<<< HEAD
 		dprintk("svcrdma: QP ERROR event %d received for QP=%p, "
 			"closing transport\n",
 			event->event, event->element.qp);
 		set_bit(XPT_CLOSE, &xprt->xpt_flags);
+=======
+		svc_xprt_deferred_close(xprt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
+<<<<<<< HEAD
 /*
  * Data Transfer Operation Tasklet
  *
@@ -451,10 +522,32 @@ static struct svcxprt_rdma *rdma_create_xprt(struct svc_serv *serv,
 	INIT_LIST_HEAD(&cma_xprt->sc_rq_dto_q);
 	INIT_LIST_HEAD(&cma_xprt->sc_read_complete_q);
 	INIT_LIST_HEAD(&cma_xprt->sc_frmr_q);
+=======
+static struct svcxprt_rdma *svc_rdma_create_xprt(struct svc_serv *serv,
+						 struct net *net, int node)
+{
+	static struct lock_class_key svcrdma_rwctx_lock;
+	static struct lock_class_key svcrdma_sctx_lock;
+	static struct lock_class_key svcrdma_dto_lock;
+	struct svcxprt_rdma *cma_xprt;
+
+	cma_xprt = kzalloc_node(sizeof(*cma_xprt), GFP_KERNEL, node);
+	if (!cma_xprt)
+		return NULL;
+
+	svc_xprt_init(net, &svc_rdma_class, &cma_xprt->sc_xprt, serv);
+	INIT_LIST_HEAD(&cma_xprt->sc_accept_q);
+	INIT_LIST_HEAD(&cma_xprt->sc_rq_dto_q);
+	INIT_LIST_HEAD(&cma_xprt->sc_read_complete_q);
+	init_llist_head(&cma_xprt->sc_send_ctxts);
+	init_llist_head(&cma_xprt->sc_recv_ctxts);
+	init_llist_head(&cma_xprt->sc_rw_ctxts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	init_waitqueue_head(&cma_xprt->sc_send_wait);
 
 	spin_lock_init(&cma_xprt->sc_lock);
 	spin_lock_init(&cma_xprt->sc_rq_dto_lock);
+<<<<<<< HEAD
 	spin_lock_init(&cma_xprt->sc_frmr_q_lock);
 
 	cma_xprt->sc_ord = svcrdma_ord;
@@ -467,10 +560,26 @@ static struct svcxprt_rdma *rdma_create_xprt(struct svc_serv *serv,
 
 	if (listener)
 		set_bit(XPT_LISTENER, &cma_xprt->sc_xprt.xpt_flags);
+=======
+	lockdep_set_class(&cma_xprt->sc_rq_dto_lock, &svcrdma_dto_lock);
+	spin_lock_init(&cma_xprt->sc_send_lock);
+	lockdep_set_class(&cma_xprt->sc_send_lock, &svcrdma_sctx_lock);
+	spin_lock_init(&cma_xprt->sc_rw_ctxt_lock);
+	lockdep_set_class(&cma_xprt->sc_rw_ctxt_lock, &svcrdma_rwctx_lock);
+
+	/*
+	 * Note that this implies that the underlying transport support
+	 * has some form of congestion control (see RFC 7530 section 3.1
+	 * paragraph 2). For now, we assume that all supported RDMA
+	 * transports are suitable here.
+	 */
+	set_bit(XPT_CONG_CTRL, &cma_xprt->sc_xprt.xpt_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return cma_xprt;
 }
 
+<<<<<<< HEAD
 struct page *svc_rdma_get_page(void)
 {
 	struct page *page;
@@ -531,6 +640,26 @@ int svc_rdma_post_recv(struct svcxprt_rdma *xprt)
 	svc_rdma_unmap_dma(ctxt);
 	svc_rdma_put_context(ctxt, 1);
 	return -ENOMEM;
+=======
+static void
+svc_rdma_parse_connect_private(struct svcxprt_rdma *newxprt,
+			       struct rdma_conn_param *param)
+{
+	const struct rpcrdma_connect_private *pmsg = param->private_data;
+
+	if (pmsg &&
+	    pmsg->cp_magic == rpcrdma_cmp_magic &&
+	    pmsg->cp_version == RPCRDMA_CMP_VERSION) {
+		newxprt->sc_snd_w_inv = pmsg->cp_flags &
+					RPCRDMA_CMP_F_SND_W_INV_OK;
+
+		dprintk("svcrdma: client send_size %u, recv_size %u "
+			"remote inv %ssupported\n",
+			rpcrdma_decode_buffer_size(pmsg->cp_send_size),
+			rpcrdma_decode_buffer_size(pmsg->cp_recv_size),
+			newxprt->sc_snd_w_inv ? "" : "un");
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -544,12 +673,18 @@ int svc_rdma_post_recv(struct svcxprt_rdma *xprt)
  * will call the recvfrom method on the listen xprt which will accept the new
  * connection.
  */
+<<<<<<< HEAD
 static void handle_connect_req(struct rdma_cm_id *new_cma_id, size_t client_ird)
+=======
+static void handle_connect_req(struct rdma_cm_id *new_cma_id,
+			       struct rdma_conn_param *param)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct svcxprt_rdma *listen_xprt = new_cma_id->context;
 	struct svcxprt_rdma *newxprt;
 	struct sockaddr *sa;
 
+<<<<<<< HEAD
 	/* Create a new transport */
 	newxprt = rdma_create_xprt(listen_xprt->sc_xprt.xpt_server, 0);
 	if (!newxprt) {
@@ -567,6 +702,33 @@ static void handle_connect_req(struct rdma_cm_id *new_cma_id, size_t client_ird)
 	/* Set the local and remote addresses in the transport */
 	sa = (struct sockaddr *)&newxprt->sc_cm_id->route.addr.dst_addr;
 	svc_xprt_set_remote(&newxprt->sc_xprt, sa, svc_addr_len(sa));
+=======
+	newxprt = svc_rdma_create_xprt(listen_xprt->sc_xprt.xpt_server,
+				       listen_xprt->sc_xprt.xpt_net,
+				       ibdev_to_node(new_cma_id->device));
+	if (!newxprt)
+		return;
+	newxprt->sc_cm_id = new_cma_id;
+	new_cma_id->context = newxprt;
+	svc_rdma_parse_connect_private(newxprt, param);
+
+	/* Save client advertised inbound read limit for use later in accept. */
+	newxprt->sc_ord = param->initiator_depth;
+
+	sa = (struct sockaddr *)&newxprt->sc_cm_id->route.addr.dst_addr;
+	newxprt->sc_xprt.xpt_remotelen = svc_addr_len(sa);
+	memcpy(&newxprt->sc_xprt.xpt_remote, sa,
+	       newxprt->sc_xprt.xpt_remotelen);
+	snprintf(newxprt->sc_xprt.xpt_remotebuf,
+		 sizeof(newxprt->sc_xprt.xpt_remotebuf) - 1, "%pISc", sa);
+
+	/* The remote port is arbitrary and not under the control of the
+	 * client ULP. Set it to a fixed value so that the DRC continues
+	 * to be effective after a reconnect.
+	 */
+	rpc_set_port((struct sockaddr *)&newxprt->sc_xprt.xpt_remote, 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sa = (struct sockaddr *)&newxprt->sc_cm_id->route.addr.src_addr;
 	svc_xprt_set_local(&newxprt->sc_xprt, sa, svc_addr_len(sa));
 
@@ -574,6 +736,7 @@ static void handle_connect_req(struct rdma_cm_id *new_cma_id, size_t client_ird)
 	 * Enqueue the new transport on the accept queue of the listening
 	 * transport
 	 */
+<<<<<<< HEAD
 	spin_lock_bh(&listen_xprt->sc_lock);
 	list_add_tail(&newxprt->sc_accept_q, &listen_xprt->sc_accept_q);
 	spin_unlock_bh(&listen_xprt->sc_lock);
@@ -582,10 +745,17 @@ static void handle_connect_req(struct rdma_cm_id *new_cma_id, size_t client_ird)
 	 * Can't use svc_xprt_received here because we are not on a
 	 * rqstp thread
 	*/
+=======
+	spin_lock(&listen_xprt->sc_lock);
+	list_add_tail(&newxprt->sc_accept_q, &listen_xprt->sc_accept_q);
+	spin_unlock(&listen_xprt->sc_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(XPT_CONN, &listen_xprt->sc_xprt.xpt_flags);
 	svc_xprt_enqueue(&listen_xprt->sc_xprt);
 }
 
+<<<<<<< HEAD
 /*
  * Handles events generated on the listening endpoint. These events will be
  * either be incoming connect requests or adapter removal  events.
@@ -661,6 +831,60 @@ static int rdma_cma_handler(struct rdma_cm_id *cma_id,
 	default:
 		dprintk("svcrdma: Unexpected event on DTO endpoint %p, "
 			"event=%d\n", cma_id, event->event);
+=======
+/**
+ * svc_rdma_listen_handler - Handle CM events generated on a listening endpoint
+ * @cma_id: the server's listener rdma_cm_id
+ * @event: details of the event
+ *
+ * Return values:
+ *     %0: Do not destroy @cma_id
+ *     %1: Destroy @cma_id (never returned here)
+ *
+ * NB: There is never a DEVICE_REMOVAL event for INADDR_ANY listeners.
+ */
+static int svc_rdma_listen_handler(struct rdma_cm_id *cma_id,
+				   struct rdma_cm_event *event)
+{
+	switch (event->event) {
+	case RDMA_CM_EVENT_CONNECT_REQUEST:
+		handle_connect_req(cma_id, &event->param.conn);
+		break;
+	default:
+		break;
+	}
+	return 0;
+}
+
+/**
+ * svc_rdma_cma_handler - Handle CM events on client connections
+ * @cma_id: the server's listener rdma_cm_id
+ * @event: details of the event
+ *
+ * Return values:
+ *     %0: Do not destroy @cma_id
+ *     %1: Destroy @cma_id (never returned here)
+ */
+static int svc_rdma_cma_handler(struct rdma_cm_id *cma_id,
+				struct rdma_cm_event *event)
+{
+	struct svcxprt_rdma *rdma = cma_id->context;
+	struct svc_xprt *xprt = &rdma->sc_xprt;
+
+	switch (event->event) {
+	case RDMA_CM_EVENT_ESTABLISHED:
+		clear_bit(RDMAXPRT_CONN_PENDING, &rdma->sc_flags);
+
+		/* Handle any requests that were received while
+		 * CONN_PENDING was set. */
+		svc_xprt_enqueue(xprt);
+		break;
+	case RDMA_CM_EVENT_DISCONNECTED:
+	case RDMA_CM_EVENT_DEVICE_REMOVAL:
+		svc_xprt_deferred_close(xprt);
+		break;
+	default:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	return 0;
@@ -676,6 +900,7 @@ static struct svc_xprt *svc_rdma_create(struct svc_serv *serv,
 {
 	struct rdma_cm_id *listen_id;
 	struct svcxprt_rdma *cma_xprt;
+<<<<<<< HEAD
 	struct svc_xprt *xprt;
 	int ret;
 
@@ -709,6 +934,41 @@ static struct svc_xprt *svc_rdma_create(struct svc_serv *serv,
 		dprintk("svcrdma: rdma_listen failed = %d\n", ret);
 		goto err1;
 	}
+=======
+	int ret;
+
+	if (sa->sa_family != AF_INET && sa->sa_family != AF_INET6)
+		return ERR_PTR(-EAFNOSUPPORT);
+	cma_xprt = svc_rdma_create_xprt(serv, net, NUMA_NO_NODE);
+	if (!cma_xprt)
+		return ERR_PTR(-ENOMEM);
+	set_bit(XPT_LISTENER, &cma_xprt->sc_xprt.xpt_flags);
+	strcpy(cma_xprt->sc_xprt.xpt_remotebuf, "listener");
+
+	listen_id = rdma_create_id(net, svc_rdma_listen_handler, cma_xprt,
+				   RDMA_PS_TCP, IB_QPT_RC);
+	if (IS_ERR(listen_id)) {
+		ret = PTR_ERR(listen_id);
+		goto err0;
+	}
+
+	/* Allow both IPv4 and IPv6 sockets to bind a single port
+	 * at the same time.
+	 */
+#if IS_ENABLED(CONFIG_IPV6)
+	ret = rdma_set_afonly(listen_id, 1);
+	if (ret)
+		goto err1;
+#endif
+	ret = rdma_bind_addr(listen_id, sa);
+	if (ret)
+		goto err1;
+	cma_xprt->sc_cm_id = listen_id;
+
+	ret = rdma_listen(listen_id, RPCRDMA_LISTEN_BACKLOG);
+	if (ret)
+		goto err1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We need to use the address from the cm_id in case the
@@ -726,6 +986,7 @@ static struct svc_xprt *svc_rdma_create(struct svc_serv *serv,
 	return ERR_PTR(ret);
 }
 
+<<<<<<< HEAD
 static struct svc_rdma_fastreg_mr *rdma_alloc_frmr(struct svcxprt_rdma *xprt)
 {
 	struct ib_mr *mr;
@@ -817,6 +1078,8 @@ void svc_rdma_put_frmr(struct svcxprt_rdma *rdma,
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is the xpo_recvfrom function for listening endpoints. Its
  * purpose is to accept incoming connections. The CMA callback handler
@@ -833,17 +1096,30 @@ static struct svc_xprt *svc_rdma_accept(struct svc_xprt *xprt)
 	struct svcxprt_rdma *listen_rdma;
 	struct svcxprt_rdma *newxprt = NULL;
 	struct rdma_conn_param conn_param;
+<<<<<<< HEAD
 	struct ib_qp_init_attr qp_attr;
 	struct ib_device_attr devattr;
 	int uninitialized_var(dma_mr_acc);
 	int need_dma_mr;
 	int ret;
 	int i;
+=======
+	struct rpcrdma_connect_private pmsg;
+	struct ib_qp_init_attr qp_attr;
+	unsigned int ctxts, rq_depth;
+	struct ib_device *dev;
+	int ret = 0;
+	RPC_IFDEBUG(struct sockaddr *sap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	listen_rdma = container_of(xprt, struct svcxprt_rdma, sc_xprt);
 	clear_bit(XPT_CONN, &xprt->xpt_flags);
 	/* Get the next entry off the accept list */
+<<<<<<< HEAD
 	spin_lock_bh(&listen_rdma->sc_lock);
+=======
+	spin_lock(&listen_rdma->sc_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!list_empty(&listen_rdma->sc_accept_q)) {
 		newxprt = list_entry(listen_rdma->sc_accept_q.next,
 				     struct svcxprt_rdma, sc_accept_q);
@@ -851,6 +1127,7 @@ static struct svc_xprt *svc_rdma_accept(struct svc_xprt *xprt)
 	}
 	if (!list_empty(&listen_rdma->sc_accept_q))
 		set_bit(XPT_CONN, &listen_rdma->sc_xprt.xpt_flags);
+<<<<<<< HEAD
 	spin_unlock_bh(&listen_rdma->sc_lock);
 	if (!newxprt)
 		return NULL;
@@ -905,18 +1182,86 @@ static struct svc_xprt *svc_rdma_accept(struct svc_xprt *xprt)
 		dprintk("svcrdma: error creating RQ CQ for connect request\n");
 		goto errout;
 	}
+=======
+	spin_unlock(&listen_rdma->sc_lock);
+	if (!newxprt)
+		return NULL;
+
+	dev = newxprt->sc_cm_id->device;
+	newxprt->sc_port_num = newxprt->sc_cm_id->port_num;
+
+	newxprt->sc_max_req_size = svcrdma_max_req_size;
+	newxprt->sc_max_requests = svcrdma_max_requests;
+	newxprt->sc_max_bc_requests = svcrdma_max_bc_requests;
+	newxprt->sc_recv_batch = RPCRDMA_MAX_RECV_BATCH;
+	newxprt->sc_fc_credits = cpu_to_be32(newxprt->sc_max_requests);
+
+	/* Qualify the transport's resource defaults with the
+	 * capabilities of this particular device.
+	 */
+
+	/* Transport header, head iovec, tail iovec */
+	newxprt->sc_max_send_sges = 3;
+	/* Add one SGE per page list entry */
+	newxprt->sc_max_send_sges += (svcrdma_max_req_size / PAGE_SIZE) + 1;
+	if (newxprt->sc_max_send_sges > dev->attrs.max_send_sge)
+		newxprt->sc_max_send_sges = dev->attrs.max_send_sge;
+	rq_depth = newxprt->sc_max_requests + newxprt->sc_max_bc_requests +
+		   newxprt->sc_recv_batch + 1 /* drain */;
+	if (rq_depth > dev->attrs.max_qp_wr) {
+		rq_depth = dev->attrs.max_qp_wr;
+		newxprt->sc_recv_batch = 1;
+		newxprt->sc_max_requests = rq_depth - 2;
+		newxprt->sc_max_bc_requests = 2;
+	}
+
+	/* Arbitrarily estimate the number of rw_ctxs needed for
+	 * this transport. This is enough rw_ctxs to make forward
+	 * progress even if the client is using one rkey per page
+	 * in each Read chunk.
+	 */
+	ctxts = 3 * RPCSVC_MAXPAGES;
+	newxprt->sc_sq_depth = rq_depth + ctxts;
+	if (newxprt->sc_sq_depth > dev->attrs.max_qp_wr)
+		newxprt->sc_sq_depth = dev->attrs.max_qp_wr;
+	atomic_set(&newxprt->sc_sq_avail, newxprt->sc_sq_depth);
+
+	newxprt->sc_pd = ib_alloc_pd(dev, 0);
+	if (IS_ERR(newxprt->sc_pd)) {
+		trace_svcrdma_pd_err(newxprt, PTR_ERR(newxprt->sc_pd));
+		goto errout;
+	}
+	newxprt->sc_sq_cq = ib_alloc_cq_any(dev, newxprt, newxprt->sc_sq_depth,
+					    IB_POLL_WORKQUEUE);
+	if (IS_ERR(newxprt->sc_sq_cq))
+		goto errout;
+	newxprt->sc_rq_cq =
+		ib_alloc_cq_any(dev, newxprt, rq_depth, IB_POLL_WORKQUEUE);
+	if (IS_ERR(newxprt->sc_rq_cq))
+		goto errout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(&qp_attr, 0, sizeof qp_attr);
 	qp_attr.event_handler = qp_event_handler;
 	qp_attr.qp_context = &newxprt->sc_xprt;
+<<<<<<< HEAD
 	qp_attr.cap.max_send_wr = newxprt->sc_sq_depth;
 	qp_attr.cap.max_recv_wr = newxprt->sc_max_requests;
 	qp_attr.cap.max_send_sge = newxprt->sc_max_sge;
 	qp_attr.cap.max_recv_sge = newxprt->sc_max_sge;
+=======
+	qp_attr.port_num = newxprt->sc_port_num;
+	qp_attr.cap.max_rdma_ctxs = ctxts;
+	qp_attr.cap.max_send_wr = newxprt->sc_sq_depth - ctxts;
+	qp_attr.cap.max_recv_wr = rq_depth;
+	qp_attr.cap.max_send_sge = newxprt->sc_max_send_sges;
+	qp_attr.cap.max_recv_sge = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	qp_attr.sq_sig_type = IB_SIGNAL_REQ_WR;
 	qp_attr.qp_type = IB_QPT_RC;
 	qp_attr.send_cq = newxprt->sc_sq_cq;
 	qp_attr.recv_cq = newxprt->sc_rq_cq;
+<<<<<<< HEAD
 	dprintk("svcrdma: newxprt->sc_cm_id=%p, newxprt->sc_pd=%p\n"
 		"    cm_id->device=%p, sc_pd->device=%p\n"
 		"    cap.max_send_wr = %d\n"
@@ -1041,11 +1386,45 @@ static struct svc_xprt *svc_rdma_accept(struct svc_xprt *xprt)
 	 */
 	ib_req_notify_cq(newxprt->sc_sq_cq, IB_CQ_NEXT_COMP);
 	ib_req_notify_cq(newxprt->sc_rq_cq, IB_CQ_NEXT_COMP);
+=======
+	dprintk("    cap.max_send_wr = %d, cap.max_recv_wr = %d\n",
+		qp_attr.cap.max_send_wr, qp_attr.cap.max_recv_wr);
+	dprintk("    cap.max_send_sge = %d, cap.max_recv_sge = %d\n",
+		qp_attr.cap.max_send_sge, qp_attr.cap.max_recv_sge);
+	dprintk("    send CQ depth = %u, recv CQ depth = %u\n",
+		newxprt->sc_sq_depth, rq_depth);
+	ret = rdma_create_qp(newxprt->sc_cm_id, newxprt->sc_pd, &qp_attr);
+	if (ret) {
+		trace_svcrdma_qp_err(newxprt, ret);
+		goto errout;
+	}
+	newxprt->sc_max_send_sges = qp_attr.cap.max_send_sge;
+	newxprt->sc_qp = newxprt->sc_cm_id->qp;
+
+	if (!(dev->attrs.device_cap_flags & IB_DEVICE_MEM_MGT_EXTENSIONS))
+		newxprt->sc_snd_w_inv = false;
+	if (!rdma_protocol_iwarp(dev, newxprt->sc_port_num) &&
+	    !rdma_ib_or_roce(dev, newxprt->sc_port_num)) {
+		trace_svcrdma_fabric_err(newxprt, -EINVAL);
+		goto errout;
+	}
+
+	if (!svc_rdma_post_recvs(newxprt))
+		goto errout;
+
+	/* Construct RDMA-CM private message */
+	pmsg.cp_magic = rpcrdma_cmp_magic;
+	pmsg.cp_version = RPCRDMA_CMP_VERSION;
+	pmsg.cp_flags = 0;
+	pmsg.cp_send_size = pmsg.cp_recv_size =
+		rpcrdma_encode_buffer_size(newxprt->sc_max_req_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Accept Connection */
 	set_bit(RDMAXPRT_CONN_PENDING, &newxprt->sc_flags);
 	memset(&conn_param, 0, sizeof conn_param);
 	conn_param.responder_resources = 0;
+<<<<<<< HEAD
 	conn_param.initiator_depth = newxprt->sc_ord;
 	ret = rdma_accept(newxprt->sc_cm_id, &conn_param);
 	if (ret) {
@@ -1077,11 +1456,46 @@ static struct svc_xprt *svc_rdma_accept(struct svc_xprt *xprt)
 		newxprt->sc_sq_depth,
 		newxprt->sc_max_requests,
 		newxprt->sc_ord);
+=======
+	conn_param.initiator_depth = min_t(int, newxprt->sc_ord,
+					   dev->attrs.max_qp_init_rd_atom);
+	if (!conn_param.initiator_depth) {
+		ret = -EINVAL;
+		trace_svcrdma_initdepth_err(newxprt, ret);
+		goto errout;
+	}
+	conn_param.private_data = &pmsg;
+	conn_param.private_data_len = sizeof(pmsg);
+	rdma_lock_handler(newxprt->sc_cm_id);
+	newxprt->sc_cm_id->event_handler = svc_rdma_cma_handler;
+	ret = rdma_accept(newxprt->sc_cm_id, &conn_param);
+	rdma_unlock_handler(newxprt->sc_cm_id);
+	if (ret) {
+		trace_svcrdma_accept_err(newxprt, ret);
+		goto errout;
+	}
+
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+	dprintk("svcrdma: new connection accepted on device %s:\n", dev->name);
+	sap = (struct sockaddr *)&newxprt->sc_cm_id->route.addr.src_addr;
+	dprintk("    local address   : %pIS:%u\n", sap, rpc_get_port(sap));
+	sap = (struct sockaddr *)&newxprt->sc_cm_id->route.addr.dst_addr;
+	dprintk("    remote address  : %pIS:%u\n", sap, rpc_get_port(sap));
+	dprintk("    max_sge         : %d\n", newxprt->sc_max_send_sges);
+	dprintk("    sq_depth        : %d\n", newxprt->sc_sq_depth);
+	dprintk("    rdma_rw_ctxs    : %d\n", ctxts);
+	dprintk("    max_requests    : %d\n", newxprt->sc_max_requests);
+	dprintk("    ord             : %d\n", conn_param.initiator_depth);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return &newxprt->sc_xprt;
 
  errout:
+<<<<<<< HEAD
 	dprintk("svcrdma: failure accepting new connection rc=%d.\n", ret);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Take a reference in case the DTO handler runs */
 	svc_xprt_get(&newxprt->sc_xprt);
 	if (newxprt->sc_qp && !IS_ERR(newxprt->sc_qp))
@@ -1092,6 +1506,7 @@ static struct svc_xprt *svc_rdma_accept(struct svc_xprt *xprt)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static void svc_rdma_release_rqst(struct svc_rqst *rqstp)
 {
 }
@@ -1108,13 +1523,19 @@ static void svc_rdma_release_rqst(struct svc_rqst *rqstp)
  *
  * At a minimum one references should still be held.
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void svc_rdma_detach(struct svc_xprt *xprt)
 {
 	struct svcxprt_rdma *rdma =
 		container_of(xprt, struct svcxprt_rdma, sc_xprt);
+<<<<<<< HEAD
 	dprintk("svc: svc_rdma_detach(%p)\n", xprt);
 
 	/* Disconnect and flush posted WQE */
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdma_disconnect(rdma->sc_cm_id);
 }
 
@@ -1122,6 +1543,7 @@ static void __svc_rdma_free(struct work_struct *work)
 {
 	struct svcxprt_rdma *rdma =
 		container_of(work, struct svcxprt_rdma, sc_work);
+<<<<<<< HEAD
 	dprintk("svcrdma: svc_rdma_free(%p)\n", rdma);
 
 	/* We should only be called from kref_put */
@@ -1158,12 +1580,26 @@ static void __svc_rdma_free(struct work_struct *work)
 
 	/* De-allocate fastreg mr */
 	rdma_dealloc_frmr_q(rdma);
+=======
+
+	/* This blocks until the Completion Queues are empty */
+	if (rdma->sc_qp && !IS_ERR(rdma->sc_qp))
+		ib_drain_qp(rdma->sc_qp);
+	flush_workqueue(svcrdma_wq);
+
+	svc_rdma_flush_recv_queues(rdma);
+
+	svc_rdma_destroy_rw_ctxts(rdma);
+	svc_rdma_send_ctxts_destroy(rdma);
+	svc_rdma_recv_ctxts_destroy(rdma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Destroy the QP if present (not a listener) */
 	if (rdma->sc_qp && !IS_ERR(rdma->sc_qp))
 		ib_destroy_qp(rdma->sc_qp);
 
 	if (rdma->sc_sq_cq && !IS_ERR(rdma->sc_sq_cq))
+<<<<<<< HEAD
 		ib_destroy_cq(rdma->sc_sq_cq);
 
 	if (rdma->sc_rq_cq && !IS_ERR(rdma->sc_rq_cq))
@@ -1171,6 +1607,12 @@ static void __svc_rdma_free(struct work_struct *work)
 
 	if (rdma->sc_phys_mr && !IS_ERR(rdma->sc_phys_mr))
 		ib_dereg_mr(rdma->sc_phys_mr);
+=======
+		ib_free_cq(rdma->sc_sq_cq);
+
+	if (rdma->sc_rq_cq && !IS_ERR(rdma->sc_rq_cq))
+		ib_free_cq(rdma->sc_rq_cq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rdma->sc_pd && !IS_ERR(rdma->sc_pd))
 		ib_dealloc_pd(rdma->sc_pd);
@@ -1185,8 +1627,14 @@ static void svc_rdma_free(struct svc_xprt *xprt)
 {
 	struct svcxprt_rdma *rdma =
 		container_of(xprt, struct svcxprt_rdma, sc_xprt);
+<<<<<<< HEAD
 	INIT_WORK(&rdma->sc_work, __svc_rdma_free);
 	queue_work(svc_rdma_wq, &rdma->sc_work);
+=======
+
+	INIT_WORK(&rdma->sc_work, __svc_rdma_free);
+	schedule_work(&rdma->sc_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int svc_rdma_has_wspace(struct svc_xprt *xprt)
@@ -1195,6 +1643,7 @@ static int svc_rdma_has_wspace(struct svc_xprt *xprt)
 		container_of(xprt, struct svcxprt_rdma, sc_xprt);
 
 	/*
+<<<<<<< HEAD
 	 * If there are fewer SQ WR available than required to send a
 	 * simple response, return false.
 	 */
@@ -1203,6 +1652,9 @@ static int svc_rdma_has_wspace(struct svc_xprt *xprt)
 
 	/*
 	 * ...or there are already waiters on the SQ,
+=======
+	 * If there are already waiters on the SQ,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * return false.
 	 */
 	if (waitqueue_active(&rdma->sc_send_wait))
@@ -1212,6 +1664,7 @@ static int svc_rdma_has_wspace(struct svc_xprt *xprt)
 	return 1;
 }
 
+<<<<<<< HEAD
 /*
  * Attempt to register the kvec representing the RPC memory with the
  * device.
@@ -1354,4 +1807,8 @@ void svc_rdma_send_error(struct svcxprt_rdma *xprt, struct rpcrdma_msg *rmsgp,
 		svc_rdma_unmap_dma(ctxt);
 		svc_rdma_put_context(ctxt, 1);
 	}
+=======
+static void svc_rdma_kill_temp_xprt(struct svc_xprt *xprt)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

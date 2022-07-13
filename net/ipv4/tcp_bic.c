@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Binary Increase Congestion control for TCP
  * Home page:
@@ -17,7 +21,10 @@
 #include <linux/module.h>
 #include <net/tcp.h>
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BICTCP_BETA_SCALE    1024	/* Scale factor beta calculation
 					 * max_cwnd = snd_cwnd * beta
 					 */
@@ -46,12 +53,19 @@ MODULE_PARM_DESC(initial_ssthresh, "initial value of slow start threshold");
 module_param(smooth_part, int, 0644);
 MODULE_PARM_DESC(smooth_part, "log(B/(B*Smin))/log(B/(B-1))+B, # of RTT from Wmax-B to Wmax");
 
+<<<<<<< HEAD
 
 /* BIC TCP Parameters */
 struct bictcp {
 	u32	cnt;		/* increase cwnd by 1 after ACKs */
 	u32 	last_max_cwnd;	/* last maximum snd_cwnd */
 	u32	loss_cwnd;	/* congestion window at last loss */
+=======
+/* BIC TCP Parameters */
+struct bictcp {
+	u32	cnt;		/* increase cwnd by 1 after ACKs */
+	u32	last_max_cwnd;	/* last maximum snd_cwnd */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	last_cwnd;	/* the last snd_cwnd */
 	u32	last_time;	/* time when updated last_cwnd */
 	u32	epoch_start;	/* beginning of an epoch */
@@ -74,7 +88,10 @@ static void bictcp_init(struct sock *sk)
 	struct bictcp *ca = inet_csk_ca(sk);
 
 	bictcp_reset(ca);
+<<<<<<< HEAD
 	ca->loss_cwnd = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (initial_ssthresh)
 		tcp_sk(sk)->snd_ssthresh = initial_ssthresh;
@@ -86,6 +103,7 @@ static void bictcp_init(struct sock *sk)
 static inline void bictcp_update(struct bictcp *ca, u32 cwnd)
 {
 	if (ca->last_cwnd == cwnd &&
+<<<<<<< HEAD
 	    (s32)(tcp_time_stamp - ca->last_time) <= HZ / 32)
 		return;
 
@@ -94,6 +112,16 @@ static inline void bictcp_update(struct bictcp *ca, u32 cwnd)
 
 	if (ca->epoch_start == 0) /* record the beginning of an epoch */
 		ca->epoch_start = tcp_time_stamp;
+=======
+	    (s32)(tcp_jiffies32 - ca->last_time) <= HZ / 32)
+		return;
+
+	ca->last_cwnd = cwnd;
+	ca->last_time = tcp_jiffies32;
+
+	if (ca->epoch_start == 0) /* record the beginning of an epoch */
+		ca->epoch_start = tcp_jiffies32;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* start off normal */
 	if (cwnd <= low_window) {
@@ -103,7 +131,11 @@ static inline void bictcp_update(struct bictcp *ca, u32 cwnd)
 
 	/* binary increase */
 	if (cwnd < ca->last_max_cwnd) {
+<<<<<<< HEAD
 		__u32 	dist = (ca->last_max_cwnd - cwnd)
+=======
+		__u32	dist = (ca->last_max_cwnd - cwnd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/ BICTCP_B;
 
 		if (dist > max_increment)
@@ -140,11 +172,16 @@ static inline void bictcp_update(struct bictcp *ca, u32 cwnd)
 		ca->cnt = 1;
 }
 
+<<<<<<< HEAD
 static void bictcp_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
+=======
+static void bictcp_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct bictcp *ca = inet_csk_ca(sk);
 
+<<<<<<< HEAD
 	if (!tcp_is_cwnd_limited(sk, in_flight))
 		return;
 
@@ -155,6 +192,18 @@ static void bictcp_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
 		tcp_cong_avoid_ai(tp, ca->cnt);
 	}
 
+=======
+	if (!tcp_is_cwnd_limited(sk))
+		return;
+
+	if (tcp_in_slow_start(tp)) {
+		acked = tcp_slow_start(tp, acked);
+		if (!acked)
+			return;
+	}
+	bictcp_update(ca, tcp_snd_cwnd(tp));
+	tcp_cong_avoid_ai(tp, ca->cnt, acked);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -169,6 +218,7 @@ static u32 bictcp_recalc_ssthresh(struct sock *sk)
 	ca->epoch_start = 0;	/* end of epoch */
 
 	/* Wmax and fast convergence */
+<<<<<<< HEAD
 	if (tp->snd_cwnd < ca->last_max_cwnd && fast_convergence)
 		ca->last_max_cwnd = (tp->snd_cwnd * (BICTCP_BETA_SCALE + beta))
 			/ (2 * BICTCP_BETA_SCALE);
@@ -189,6 +239,18 @@ static u32 bictcp_undo_cwnd(struct sock *sk)
 	const struct tcp_sock *tp = tcp_sk(sk);
 	const struct bictcp *ca = inet_csk_ca(sk);
 	return max(tp->snd_cwnd, ca->loss_cwnd);
+=======
+	if (tcp_snd_cwnd(tp) < ca->last_max_cwnd && fast_convergence)
+		ca->last_max_cwnd = (tcp_snd_cwnd(tp) * (BICTCP_BETA_SCALE + beta))
+			/ (2 * BICTCP_BETA_SCALE);
+	else
+		ca->last_max_cwnd = tcp_snd_cwnd(tp);
+
+	if (tcp_snd_cwnd(tp) <= low_window)
+		return max(tcp_snd_cwnd(tp) >> 1U, 2U);
+	else
+		return max((tcp_snd_cwnd(tp) * beta) / BICTCP_BETA_SCALE, 2U);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bictcp_state(struct sock *sk, u8 new_state)
@@ -200,24 +262,41 @@ static void bictcp_state(struct sock *sk, u8 new_state)
 /* Track delayed acknowledgment ratio using sliding window
  * ratio = (15*ratio + sample) / 16
  */
+<<<<<<< HEAD
 static void bictcp_acked(struct sock *sk, u32 cnt, s32 rtt)
+=======
+static void bictcp_acked(struct sock *sk, const struct ack_sample *sample)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct inet_connection_sock *icsk = inet_csk(sk);
 
 	if (icsk->icsk_ca_state == TCP_CA_Open) {
 		struct bictcp *ca = inet_csk_ca(sk);
+<<<<<<< HEAD
 		cnt -= ca->delayed_ack >> ACK_RATIO_SHIFT;
 		ca->delayed_ack += cnt;
 	}
 }
 
 
+=======
+
+		ca->delayed_ack += sample->pkts_acked -
+			(ca->delayed_ack >> ACK_RATIO_SHIFT);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct tcp_congestion_ops bictcp __read_mostly = {
 	.init		= bictcp_init,
 	.ssthresh	= bictcp_recalc_ssthresh,
 	.cong_avoid	= bictcp_cong_avoid,
 	.set_state	= bictcp_state,
+<<<<<<< HEAD
 	.undo_cwnd	= bictcp_undo_cwnd,
+=======
+	.undo_cwnd	= tcp_reno_undo_cwnd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pkts_acked     = bictcp_acked,
 	.owner		= THIS_MODULE,
 	.name		= "bic",

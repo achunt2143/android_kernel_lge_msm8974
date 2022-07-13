@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Advanced  Micro Devices Inc. AMD8111E Linux Network Driver
  * Copyright (C) 2003 Advanced Micro Devices
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,6 +21,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307
  * USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Module Name:
 
@@ -23,14 +30,22 @@ Module Name:
 
 Abstract:
 
+<<<<<<< HEAD
  	 AMD8111 based 10/100 Ethernet Controller driver definitions.
+=======
+	 AMD8111 based 10/100 Ethernet Controller driver definitions.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Environment:
 
 	Kernel Mode
 
 Revision History:
+<<<<<<< HEAD
  	3.0.0
+=======
+	3.0.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   Initial Revision.
 	3.0.1
 */
@@ -50,7 +65,11 @@ eg., if the value 10011010b is written into the least significant byte of a comm
 /* 32 bit registers */
 
 #define  ASF_STAT		0x00	/* ASF status register */
+<<<<<<< HEAD
 #define CHIPID			0x04	/* Chip ID regsiter */
+=======
+#define CHIPID			0x04	/* Chip ID register */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	MIB_DATA		0x10	/* MIB data register */
 #define MIB_ADDR		0x14	/* MIB address register */
 #define STAT0			0x30	/* Status0 register */
@@ -613,10 +632,17 @@ typedef enum {
 #define CSTATE  1
 #define SSTATE  2
 
+<<<<<<< HEAD
 /* Assume contoller gets data 10 times the maximum processing time */
 #define  REPEAT_CNT			10
 
 /* amd8111e decriptor flag definitions */
+=======
+/* Assume controller gets data 10 times the maximum processing time */
+#define  REPEAT_CNT			10
+
+/* amd8111e descriptor flag definitions */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef enum {
 
 	OWN_BIT		=	(1 << 15),
@@ -650,7 +676,11 @@ typedef enum {
 /* driver ioctl parameters */
 #define AMD8111E_REG_DUMP_LEN	 13*sizeof(u32)
 
+<<<<<<< HEAD
 /* amd8111e desriptor format */
+=======
+/* amd8111e descriptor format */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct amd8111e_tx_dr{
 
@@ -705,7 +735,11 @@ enum coal_type{
 };
 
 enum coal_mode{
+<<<<<<< HEAD
        	RX_INTR_COAL,
+=======
+	RX_INTR_COAL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TX_INTR_COAL,
 	DISABLE_COAL,
 	ENABLE_COAL,
@@ -753,7 +787,11 @@ struct amd8111e_priv{
 	const char *name;
 	struct pci_dev *pci_dev;	/* Ptr to the associated pci_dev */
 	struct net_device* amd8111e_net_dev; 	/* ptr to associated net_device */
+<<<<<<< HEAD
 	/* Transmit and recive skbs */
+=======
+	/* Transmit and receive skbs */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *tx_skbuff[NUM_TX_BUFFERS];
 	struct sk_buff *rx_skbuff[NUM_RX_BUFFERS];
 	/* Transmit and receive dma mapped addr */

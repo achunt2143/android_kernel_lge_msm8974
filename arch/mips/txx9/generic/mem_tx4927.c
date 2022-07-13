@@ -2,7 +2,11 @@
  * common tx4927 memory interface
  *
  * Author: MontaVista Software, Inc.
+<<<<<<< HEAD
  *         source@mvista.com
+=======
+ *	   source@mvista.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright 2001-2002 MontaVista Software Inc.
  *

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xt_LED.c - netfilter target to make LEDs blink upon packet matches
  *
  * Copyright (C) 2008 Adam Nielsen <a.nielsen@shikadi.net>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301 USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
@@ -50,6 +57,11 @@ struct xt_led_info_internal {
 	struct timer_list timer;
 };
 
+<<<<<<< HEAD
+=======
+#define XT_LED_BLINK_DELAY 50 /* ms */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int
 led_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
@@ -62,9 +74,16 @@ led_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	 */
 	if ((ledinfo->delay > 0) && ledinfo->always_blink &&
 	    timer_pending(&ledinternal->timer))
+<<<<<<< HEAD
 		led_trigger_event(&ledinternal->netfilter_led_trigger, LED_OFF);
 
 	led_trigger_event(&ledinternal->netfilter_led_trigger, LED_FULL);
+=======
+		led_trigger_blink_oneshot(&ledinternal->netfilter_led_trigger,
+					  XT_LED_BLINK_DELAY, XT_LED_BLINK_DELAY, 1);
+	else
+		led_trigger_event(&ledinternal->netfilter_led_trigger, LED_FULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If there's a positive delay, start/update the timer */
 	if (ledinfo->delay > 0) {
@@ -81,9 +100,16 @@ led_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	return XT_CONTINUE;
 }
 
+<<<<<<< HEAD
 static void led_timeout_callback(unsigned long data)
 {
 	struct xt_led_info_internal *ledinternal = (struct xt_led_info_internal *)data;
+=======
+static void led_timeout_callback(struct timer_list *t)
+{
+	struct xt_led_info_internal *ledinternal = from_timer(ledinternal, t,
+							      timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	led_trigger_event(&ledinternal->netfilter_led_trigger, LED_OFF);
 }
@@ -106,10 +132,15 @@ static int led_tg_check(const struct xt_tgchk_param *par)
 	struct xt_led_info_internal *ledinternal;
 	int err;
 
+<<<<<<< HEAD
 	if (ledinfo->id[0] == '\0') {
 		pr_info("No 'id' parameter given.\n");
 		return -EINVAL;
 	}
+=======
+	if (ledinfo->id[0] == '\0')
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&xt_led_mutex);
 
@@ -133,6 +164,7 @@ static int led_tg_check(const struct xt_tgchk_param *par)
 
 	err = led_trigger_register(&ledinternal->netfilter_led_trigger);
 	if (err) {
+<<<<<<< HEAD
 		pr_warning("led_trigger_register() failed\n");
 		if (err == -EEXIST)
 			pr_warning("Trigger name is already in use.\n");
@@ -143,6 +175,16 @@ static int led_tg_check(const struct xt_tgchk_param *par)
 	if (ledinfo->delay > 0)
 		setup_timer(&ledinternal->timer, led_timeout_callback,
 			    (unsigned long)ledinternal);
+=======
+		pr_info_ratelimited("Trigger name is already in use.\n");
+		goto exit_alloc;
+	}
+
+	/* Since the letinternal timer can be shared between multiple targets,
+	 * always set it up, even if the current target does not need it
+	 */
+	timer_setup(&ledinternal->timer, led_timeout_callback, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_add_tail(&ledinternal->list, &xt_led_triggers);
 
@@ -179,8 +221,12 @@ static void led_tg_destroy(const struct xt_tgdtor_param *par)
 
 	list_del(&ledinternal->list);
 
+<<<<<<< HEAD
 	if (ledinfo->delay > 0)
 		del_timer_sync(&ledinternal->timer);
+=======
+	timer_shutdown_sync(&ledinternal->timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	led_trigger_unregister(&ledinternal->netfilter_led_trigger);
 
@@ -196,6 +242,10 @@ static struct xt_target led_tg_reg __read_mostly = {
 	.family		= NFPROTO_UNSPEC,
 	.target		= led_tg,
 	.targetsize	= sizeof(struct xt_led_info),
+<<<<<<< HEAD
+=======
+	.usersize	= offsetof(struct xt_led_info, internal_data),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.checkentry	= led_tg_check,
 	.destroy	= led_tg_destroy,
 	.me		= THIS_MODULE,

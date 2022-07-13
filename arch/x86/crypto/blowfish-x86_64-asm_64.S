@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Blowfish Cipher Algorithm (x86_64)
  *
  * Copyright (C) 2011 Jussi Kivilinna <jussi.kivilinna@mbnet.fi>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +25,12 @@
  *
  */
 
+=======
+ */
+
+#include <linux/linkage.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .file "blowfish-x86_64-asm.S"
 .text
 
@@ -31,7 +42,11 @@
 #define s3	((16 + 2 + (3 * 256)) * 4)
 
 /* register macros */
+<<<<<<< HEAD
 #define CTX %rdi
+=======
+#define CTX %r12
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RIO %rsi
 
 #define RX0 %rax
@@ -54,12 +69,20 @@
 #define RX2bh %ch
 #define RX3bh %dh
 
+<<<<<<< HEAD
 #define RT0 %rbp
+=======
+#define RT0 %rdi
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RT1 %rsi
 #define RT2 %r8
 #define RT3 %r9
 
+<<<<<<< HEAD
 #define RT0d %ebp
+=======
+#define RT0d %edi
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RT1d %esi
 #define RT2d %r8d
 #define RT3d %r9d
@@ -112,6 +135,7 @@
 	bswapq 			RX0; \
 	movq RX0, 		(RIO);
 
+<<<<<<< HEAD
 #define xor_block() \
 	bswapq 			RX0; \
 	xorq RX0, 		(RIO);
@@ -129,6 +153,17 @@ __blowfish_enc_blk:
 	 */
 	movq %rbp, %r11;
 
+=======
+SYM_FUNC_START(blowfish_enc_blk)
+	/* input:
+	 *	%rdi: ctx
+	 *	%rsi: dst
+	 *	%rdx: src
+	 */
+	movq %r12, %r11;
+
+	movq %rdi, CTX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movq %rsi, %r10;
 	movq %rdx, RIO;
 
@@ -144,6 +179,7 @@ __blowfish_enc_blk:
 	round_enc(14);
 	add_roundkey_enc(16);
 
+<<<<<<< HEAD
 	movq %r11, %rbp;
 
 	movq %r10, RIO;
@@ -168,6 +204,24 @@ blowfish_dec_blk:
 	 */
 	movq %rbp, %r11;
 
+=======
+	movq %r11, %r12;
+	movq %r10, RIO;
+
+	write_block();
+	RET;
+SYM_FUNC_END(blowfish_enc_blk)
+
+SYM_FUNC_START(blowfish_dec_blk)
+	/* input:
+	 *	%rdi: ctx
+	 *	%rsi: dst
+	 *	%rdx: src
+	 */
+	movq %r12, %r11;
+
+	movq %rdi, CTX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movq %rsi, %r10;
 	movq %rdx, RIO;
 
@@ -186,9 +240,16 @@ blowfish_dec_blk:
 	movq %r10, RIO;
 	write_block();
 
+<<<<<<< HEAD
 	movq %r11, %rbp;
 
 	ret;
+=======
+	movq %r11, %r12;
+
+	RET;
+SYM_FUNC_END(blowfish_dec_blk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**********************************************************************
   4-way blowfish, four blocks parallel
@@ -288,6 +349,7 @@ blowfish_dec_blk:
 	movq RX3,		24(RIO);
 
 #define xor_block4() \
+<<<<<<< HEAD
 	bswapq 			RX0; \
 	xorq RX0,		(RIO); \
 	\
@@ -320,6 +382,35 @@ __blowfish_enc_blk_4way:
 	movq %rsi, %r11;
 	movq %rdx, RIO;
 
+=======
+	movq (RIO),		RT0; \
+	bswapq			RT0; \
+	xorq RT0,		RX1; \
+	\
+	movq 8(RIO),		RT2; \
+	bswapq			RT2; \
+	xorq RT2,		RX2; \
+	\
+	movq 16(RIO),		RT3; \
+	bswapq			RT3; \
+	xorq RT3,		RX3;
+
+SYM_FUNC_START(blowfish_enc_blk_4way)
+	/* input:
+	 *	%rdi: ctx
+	 *	%rsi: dst
+	 *	%rdx: src
+	 */
+	pushq %r12;
+	pushq %rbx;
+
+	movq %rdi, CTX
+	movq %rsi, %r11;
+	movq %rdx, RIO;
+
+	preload_roundkey_enc(0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_block4();
 
 	round_enc4(0);
@@ -332,6 +423,7 @@ __blowfish_enc_blk_4way:
 	round_enc4(14);
 	add_preloaded_roundkey4();
 
+<<<<<<< HEAD
 	popq %rbp;
 	movq %r11, RIO;
 
@@ -368,6 +460,33 @@ blowfish_dec_blk_4way:
 	movq %rsi, %r11;
 	movq %rdx, RIO;
 
+=======
+	movq %r11, RIO;
+	write_block4();
+
+	popq %rbx;
+	popq %r12;
+	RET;
+SYM_FUNC_END(blowfish_enc_blk_4way)
+
+SYM_FUNC_START(__blowfish_dec_blk_4way)
+	/* input:
+	 *	%rdi: ctx
+	 *	%rsi: dst
+	 *	%rdx: src
+	 *	%rcx: cbc (bool)
+	 */
+	pushq %r12;
+	pushq %rbx;
+	pushq %rcx;
+	pushq %rdx;
+
+	movq %rdi, CTX;
+	movq %rsi, %r11;
+	movq %rdx, RIO;
+
+	preload_roundkey_dec(17);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	read_block4();
 
 	round_dec4(17);
@@ -380,11 +499,29 @@ blowfish_dec_blk_4way:
 	round_dec4(3);
 	add_preloaded_roundkey4();
 
+<<<<<<< HEAD
+=======
+	popq RIO;
+	popq %r12;
+	testq %r12, %r12;
+	jz .L_no_cbc_xor;
+
+	xor_block4();
+
+.L_no_cbc_xor:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movq %r11, RIO;
 	write_block4();
 
 	popq %rbx;
+<<<<<<< HEAD
 	popq %rbp;
 
 	ret;
 
+=======
+	popq %r12;
+
+	RET;
+SYM_FUNC_END(__blowfish_dec_blk_4way)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

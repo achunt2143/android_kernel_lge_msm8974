@@ -52,11 +52,19 @@ static int kdb_parsebp(int argc, const char **argv, int *nextargp, kdb_bp_t *bp)
 
 	bp->bph_length = 1;
 	if ((argc + 1) != nextarg) {
+<<<<<<< HEAD
 		if (strnicmp(argv[nextarg], "datar", sizeof("datar")) == 0)
 			bp->bp_type = BP_ACCESS_WATCHPOINT;
 		else if (strnicmp(argv[nextarg], "dataw", sizeof("dataw")) == 0)
 			bp->bp_type = BP_WRITE_WATCHPOINT;
 		else if (strnicmp(argv[nextarg], "inst", sizeof("inst")) == 0)
+=======
+		if (strncasecmp(argv[nextarg], "datar", sizeof("datar")) == 0)
+			bp->bp_type = BP_ACCESS_WATCHPOINT;
+		else if (strncasecmp(argv[nextarg], "dataw", sizeof("dataw")) == 0)
+			bp->bp_type = BP_WRITE_WATCHPOINT;
+		else if (strncasecmp(argv[nextarg], "inst", sizeof("inst")) == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bp->bp_type = BP_HARDWARE_BREAKPOINT;
 		else
 			return KDB_ARGCOUNT;
@@ -153,6 +161,7 @@ static int _kdb_bp_install(struct pt_regs *regs, kdb_bp_t *bp)
 	} else {
 		kdb_printf("%s: failed to set breakpoint at 0x%lx\n",
 			   __func__, bp->bp_addr);
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_RODATA
 		if (!bp->bp_type) {
 			kdb_printf("Software breakpoints are unavailable.\n"
@@ -160,6 +169,13 @@ static int _kdb_bp_install(struct pt_regs *regs, kdb_bp_t *bp)
 				   "  OR use hw breaks: help bph\n");
 		}
 #endif
+=======
+		if (!bp->bp_type) {
+			kdb_printf("Software breakpoints are unavailable.\n"
+				   "  Boot the kernel with rodata=off\n"
+				   "  OR use hw breaks: help bph\n");
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 	return 0;
@@ -244,11 +260,19 @@ static void kdb_printbp(kdb_bp_t *bp, int i)
 	kdb_symbol_print(bp->bp_addr, NULL, KDB_SP_DEFAULT);
 
 	if (bp->bp_enabled)
+<<<<<<< HEAD
 		kdb_printf("\n    is enabled");
 	else
 		kdb_printf("\n    is disabled");
 
 	kdb_printf("\taddr at %016lx, hardtype=%d installed=%d\n",
+=======
+		kdb_printf("\n    is enabled ");
+	else
+		kdb_printf("\n    is disabled");
+
+	kdb_printf("  addr at %016lx, hardtype=%d installed=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   bp->bp_addr, bp->bp_type, bp->bp_installed);
 
 	kdb_printf("\n");
@@ -309,6 +333,18 @@ static int kdb_bp(int argc, const char **argv)
 		return KDB_BADINT;
 
 	/*
+<<<<<<< HEAD
+=======
+	 * This check is redundant (since the breakpoint machinery should
+	 * be doing the same check during kdb_bp_install) but gives the
+	 * user immediate feedback.
+	 */
+	diag = kgdb_validate_break_address(template.bp_addr);
+	if (diag)
+		return diag;
+
+	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Find an empty bp structure to allocate
 	 */
 	for (bpno = 0, bp = kdb_breakpoints; bpno < KDB_MAXBPT; bpno++, bp++) {
@@ -414,7 +450,10 @@ static int kdb_bc(int argc, const char **argv)
 		 * assume that the breakpoint number is desired.
 		 */
 		if (addr < KDB_MAXBPT) {
+<<<<<<< HEAD
 			bp = &kdb_breakpoints[addr];
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lowbp = highbp = addr;
 			highbp++;
 		} else {
@@ -486,11 +525,17 @@ static int kdb_bc(int argc, const char **argv)
 /*
  * kdb_ss
  *
+<<<<<<< HEAD
  *	Process the 'ss' (Single Step) and 'ssb' (Single Step to Branch)
  *	commands.
  *
  *	ss
  *	ssb
+=======
+ *	Process the 'ss' (Single Step) command.
+ *
+ *	ss
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Parameters:
  *	argc	Argument count
@@ -498,31 +543,42 @@ static int kdb_bc(int argc, const char **argv)
  * Outputs:
  *	None.
  * Returns:
+<<<<<<< HEAD
  *	KDB_CMD_SS[B] for success, a kdb error if failure.
+=======
+ *	KDB_CMD_SS for success, a kdb error if failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Locking:
  *	None.
  * Remarks:
  *
  *	Set the arch specific option to trigger a debug trap after the next
  *	instruction.
+<<<<<<< HEAD
  *
  *	For 'ssb', set the trace flag in the debug trap handler
  *	after printing the current insn and return directly without
  *	invoking the kdb command processor, until a branch instruction
  *	is encountered.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static int kdb_ss(int argc, const char **argv)
 {
+<<<<<<< HEAD
 	int ssb = 0;
 
 	ssb = (strcmp(argv[0], "ssb") == 0);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (argc != 0)
 		return KDB_ARGCOUNT;
 	/*
 	 * Set trace flag and go.
 	 */
 	KDB_STATE_SET(DOING_SS);
+<<<<<<< HEAD
 	if (ssb) {
 		KDB_STATE_SET(DOING_SSB);
 		return KDB_CMD_SSB;
@@ -530,6 +586,59 @@ static int kdb_ss(int argc, const char **argv)
 	return KDB_CMD_SS;
 }
 
+=======
+	return KDB_CMD_SS;
+}
+
+static kdbtab_t bptab[] = {
+	{	.name = "bp",
+		.func = kdb_bp,
+		.usage = "[<vaddr>]",
+		.help = "Set/Display breakpoints",
+		.flags = KDB_ENABLE_FLOW_CTRL | KDB_REPEAT_NO_ARGS,
+	},
+	{	.name = "bl",
+		.func = kdb_bp,
+		.usage = "[<vaddr>]",
+		.help = "Display breakpoints",
+		.flags = KDB_ENABLE_FLOW_CTRL | KDB_REPEAT_NO_ARGS,
+	},
+	{	.name = "bc",
+		.func = kdb_bc,
+		.usage = "<bpnum>",
+		.help = "Clear Breakpoint",
+		.flags = KDB_ENABLE_FLOW_CTRL,
+	},
+	{	.name = "be",
+		.func = kdb_bc,
+		.usage = "<bpnum>",
+		.help = "Enable Breakpoint",
+		.flags = KDB_ENABLE_FLOW_CTRL,
+	},
+	{	.name = "bd",
+		.func = kdb_bc,
+		.usage = "<bpnum>",
+		.help = "Disable Breakpoint",
+		.flags = KDB_ENABLE_FLOW_CTRL,
+	},
+	{	.name = "ss",
+		.func = kdb_ss,
+		.usage = "",
+		.help = "Single Step",
+		.minlen = 1,
+		.flags = KDB_ENABLE_FLOW_CTRL | KDB_REPEAT_NO_ARGS,
+	},
+};
+
+static kdbtab_t bphcmd = {
+	.name = "bph",
+	.func = kdb_bp,
+	.usage = "[<vaddr>]",
+	.help = "[datar [length]|dataw [length]]   Set hw brk",
+	.flags = KDB_ENABLE_FLOW_CTRL | KDB_REPEAT_NO_ARGS,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Initialize the breakpoint table and register	breakpoint commands. */
 
 void __init kdb_initbptab(void)
@@ -545,6 +654,7 @@ void __init kdb_initbptab(void)
 	for (i = 0, bp = kdb_breakpoints; i < KDB_MAXBPT; i++, bp++)
 		bp->bp_free = 1;
 
+<<<<<<< HEAD
 	kdb_register_repeat("bp", kdb_bp, "[<vaddr>]",
 		"Set/Display breakpoints", 0, KDB_REPEAT_NO_ARGS);
 	kdb_register_repeat("bl", kdb_bp, "[<vaddr>]",
@@ -566,4 +676,9 @@ void __init kdb_initbptab(void)
 	/*
 	 * Architecture dependent initialization.
 	 */
+=======
+	kdb_register_table(bptab, ARRAY_SIZE(bptab));
+	if (arch_kgdb_ops.flags & KGDB_HW_BREAKPOINT)
+		kdb_register_table(&bphcmd, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

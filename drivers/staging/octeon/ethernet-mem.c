@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**********************************************************************
  * Author: Cavium Networks
  *
@@ -24,16 +25,32 @@
  * This file may also be available under a different license from Cavium.
  * Contact Cavium Networks for more information
 **********************************************************************/
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * This file is based on code from OCTEON SDK by Cavium Networks.
+ *
+ * Copyright (c) 2003-2010 Cavium Networks
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #include <asm/octeon/octeon.h>
 
 #include "ethernet-defines.h"
 
 #include <asm/octeon/cvmx-fpa.h>
 
+=======
+#include "octeon-ethernet.h"
+#include "ethernet-mem.h"
+#include "ethernet-defines.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * cvm_oct_fill_hw_skbuff - fill the supplied hardware pool with skbuffs
  * @pool:     Pool to allocate an skbuff for
@@ -45,6 +62,7 @@
 static int cvm_oct_fill_hw_skbuff(int pool, int size, int elements)
 {
 	int freed = elements;
+<<<<<<< HEAD
 	while (freed) {
 
 		struct sk_buff *skb = dev_alloc_skb(size + 256);
@@ -58,6 +76,17 @@ static int cvm_oct_fill_hw_skbuff(int pool, int size, int elements)
 		skb_reserve(skb, 256 - (((unsigned long)skb->data) & 0x7f));
 		*(struct sk_buff **)(skb->data - sizeof(void *)) = skb;
 		cvmx_fpa_free(skb->data, pool, DONT_WRITEBACK(size / 128));
+=======
+
+	while (freed) {
+		struct sk_buff *skb = dev_alloc_skb(size + 256);
+
+		if (unlikely(!skb))
+			break;
+		skb_reserve(skb, 256 - (((unsigned long)skb->data) & 0x7f));
+		*(struct sk_buff **)(skb->data - sizeof(void *)) = skb;
+		cvmx_fpa_free(skb->data, pool, size / 128);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		freed--;
 	}
 	return elements - freed;
@@ -84,11 +113,19 @@ static void cvm_oct_free_hw_skbuff(int pool, int size, int elements)
 	} while (memory);
 
 	if (elements < 0)
+<<<<<<< HEAD
 		pr_warning("Freeing of pool %u had too many skbuffs (%d)\n",
 		     pool, elements);
 	else if (elements > 0)
 		pr_warning("Freeing of pool %u is missing %d skbuffs\n",
 		       pool, elements);
+=======
+		pr_warn("Freeing of pool %u had too many skbuffs (%d)\n",
+			pool, elements);
+	else if (elements > 0)
+		pr_warn("Freeing of pool %u is missing %d skbuffs\n",
+			pool, elements);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -117,9 +154,15 @@ static int cvm_oct_fill_hw_memory(int pool, int size, int elements)
 		 * just before the block.
 		 */
 		memory = kmalloc(size + 256, GFP_ATOMIC);
+<<<<<<< HEAD
 		if (unlikely(memory == NULL)) {
 			pr_warning("Unable to allocate %u bytes for FPA pool %d\n",
 				   elements * size, pool);
+=======
+		if (unlikely(!memory)) {
+			pr_warn("Unable to allocate %u bytes for FPA pool %d\n",
+				elements * size, pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		fpa = (char *)(((unsigned long)memory + 256) & ~0x7fUL);
@@ -140,6 +183,10 @@ static void cvm_oct_free_hw_memory(int pool, int size, int elements)
 {
 	char *memory;
 	char *fpa;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		fpa = cvmx_fpa_alloc(pool);
 		if (fpa) {
@@ -151,17 +198,29 @@ static void cvm_oct_free_hw_memory(int pool, int size, int elements)
 	} while (fpa);
 
 	if (elements < 0)
+<<<<<<< HEAD
 		pr_warning("Freeing of pool %u had too many buffers (%d)\n",
 			pool, elements);
 	else if (elements > 0)
 		pr_warning("Warning: Freeing of pool %u is missing %d buffers\n",
+=======
+		pr_warn("Freeing of pool %u had too many buffers (%d)\n",
+			pool, elements);
+	else if (elements > 0)
+		pr_warn("Warning: Freeing of pool %u is missing %d buffers\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pool, elements);
 }
 
 int cvm_oct_mem_fill_fpa(int pool, int size, int elements)
 {
 	int freed;
+<<<<<<< HEAD
 	if (USE_SKBUFFS_IN_HW && pool == CVMX_FPA_PACKET_POOL)
+=======
+
+	if (pool == CVMX_FPA_PACKET_POOL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		freed = cvm_oct_fill_hw_skbuff(pool, size, elements);
 	else
 		freed = cvm_oct_fill_hw_memory(pool, size, elements);
@@ -170,7 +229,11 @@ int cvm_oct_mem_fill_fpa(int pool, int size, int elements)
 
 void cvm_oct_mem_empty_fpa(int pool, int size, int elements)
 {
+<<<<<<< HEAD
 	if (USE_SKBUFFS_IN_HW && pool == CVMX_FPA_PACKET_POOL)
+=======
+	if (pool == CVMX_FPA_PACKET_POOL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cvm_oct_free_hw_skbuff(pool, size, elements);
 	else
 		cvm_oct_free_hw_memory(pool, size, elements);

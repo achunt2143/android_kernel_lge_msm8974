@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/mmc/host/au1xmmc.c - AU1XX0 MMC driver
  *
@@ -16,9 +20,12 @@
  *     All Rights Reserved.
  *
 
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Why don't we use the SD controllers' carddetect feature?
@@ -32,6 +39,10 @@
  * (the low to high transition will not occur).
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -39,6 +50,10 @@
 #include <linux/interrupt.h>
 #include <linux/dma-mapping.h>
 #include <linux/scatterlist.h>
+<<<<<<< HEAD
+=======
+#include <linux/highmem.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/leds.h>
 #include <linux/mmc/host.h>
 #include <linux/slab.h>
@@ -90,7 +105,11 @@ struct au1xmmc_host {
 	struct mmc_request *mrq;
 
 	u32 flags;
+<<<<<<< HEAD
 	u32 iobase;
+=======
+	void __iomem *iobase;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 clock;
 	u32 bus_width;
 	u32 power_mode;
@@ -118,6 +137,10 @@ struct au1xmmc_host {
 	struct au1xmmc_platform_data *platdata;
 	struct platform_device *pdev;
 	struct resource *ioarea;
+<<<<<<< HEAD
+=======
+	struct clk *clk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Status flags used by the host structure */
@@ -162,32 +185,59 @@ static inline int has_dbdma(void)
 
 static inline void IRQ_ON(struct au1xmmc_host *host, u32 mask)
 {
+<<<<<<< HEAD
 	u32 val = au_readl(HOST_CONFIG(host));
 	val |= mask;
 	au_writel(val, HOST_CONFIG(host));
 	au_sync();
+=======
+	u32 val = __raw_readl(HOST_CONFIG(host));
+	val |= mask;
+	__raw_writel(val, HOST_CONFIG(host));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void FLUSH_FIFO(struct au1xmmc_host *host)
 {
+<<<<<<< HEAD
 	u32 val = au_readl(HOST_CONFIG2(host));
 
 	au_writel(val | SD_CONFIG2_FF, HOST_CONFIG2(host));
 	au_sync_delay(1);
+=======
+	u32 val = __raw_readl(HOST_CONFIG2(host));
+
+	__raw_writel(val | SD_CONFIG2_FF, HOST_CONFIG2(host));
+	wmb(); /* drain writebuffer */
+	mdelay(1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SEND_STOP will turn off clock control - this re-enables it */
 	val &= ~SD_CONFIG2_DF;
 
+<<<<<<< HEAD
 	au_writel(val, HOST_CONFIG2(host));
 	au_sync();
+=======
+	__raw_writel(val, HOST_CONFIG2(host));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void IRQ_OFF(struct au1xmmc_host *host, u32 mask)
 {
+<<<<<<< HEAD
 	u32 val = au_readl(HOST_CONFIG(host));
 	val &= ~mask;
 	au_writel(val, HOST_CONFIG(host));
 	au_sync();
+=======
+	u32 val = __raw_readl(HOST_CONFIG(host));
+	val &= ~mask;
+	__raw_writel(val, HOST_CONFIG(host));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void SEND_STOP(struct au1xmmc_host *host)
@@ -197,12 +247,22 @@ static inline void SEND_STOP(struct au1xmmc_host *host)
 	WARN_ON(host->status != HOST_S_DATA);
 	host->status = HOST_S_STOP;
 
+<<<<<<< HEAD
 	config2 = au_readl(HOST_CONFIG2(host));
 	au_writel(config2 | SD_CONFIG2_DF, HOST_CONFIG2(host));
 	au_sync();
 
 	/* Send the stop command */
 	au_writel(STOP_CMD, HOST_CMD(host));
+=======
+	config2 = __raw_readl(HOST_CONFIG2(host));
+	__raw_writel(config2 | SD_CONFIG2_DF, HOST_CONFIG2(host));
+	wmb(); /* drain writebuffer */
+
+	/* Send the stop command */
+	__raw_writel(STOP_CMD, HOST_CMD(host));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void au1xmmc_set_power(struct au1xmmc_host *host, int state)
@@ -250,6 +310,7 @@ static void au1xmmc_finish_request(struct au1xmmc_host *host)
 	mmc_request_done(host->mmc, mrq);
 }
 
+<<<<<<< HEAD
 static void au1xmmc_tasklet_finish(unsigned long param)
 {
 	struct au1xmmc_host *host = (struct au1xmmc_host *) param;
@@ -257,6 +318,15 @@ static void au1xmmc_tasklet_finish(unsigned long param)
 }
 
 static int au1xmmc_send_command(struct au1xmmc_host *host, int wait,
+=======
+static void au1xmmc_tasklet_finish(struct tasklet_struct *t)
+{
+	struct au1xmmc_host *host = from_tasklet(host, t, finish_task);
+	au1xmmc_finish_request(host);
+}
+
+static int au1xmmc_send_command(struct au1xmmc_host *host,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct mmc_command *cmd, struct mmc_data *data)
 {
 	u32 mmccmd = (cmd->opcode << SD_CMD_CI_SHIFT);
@@ -296,6 +366,7 @@ static int au1xmmc_send_command(struct au1xmmc_host *host, int wait,
 		}
 	}
 
+<<<<<<< HEAD
 	au_writel(cmd->arg, HOST_CMDARG(host));
 	au_sync();
 
@@ -322,6 +393,18 @@ static int au1xmmc_send_command(struct au1xmmc_host *host, int wait,
 		IRQ_ON(host, SD_CONFIG_CR);
 	}
 
+=======
+	__raw_writel(cmd->arg, HOST_CMDARG(host));
+	wmb(); /* drain writebuffer */
+
+	__raw_writel((mmccmd | SD_CMD_GO), HOST_CMD(host));
+	wmb(); /* drain writebuffer */
+
+	/* Wait for the command to go on the line */
+	while (__raw_readl(HOST_CMD(host)) & SD_CMD_GO)
+		/* nop */;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -339,11 +422,19 @@ static void au1xmmc_data_complete(struct au1xmmc_host *host, u32 status)
 	data = mrq->cmd->data;
 
 	if (status == 0)
+<<<<<<< HEAD
 		status = au_readl(HOST_STATUS(host));
 
 	/* The transaction is really over when the SD_STATUS_DB bit is clear */
 	while ((host->flags & HOST_F_XMIT) && (status & SD_STATUS_DB))
 		status = au_readl(HOST_STATUS(host));
+=======
+		status = __raw_readl(HOST_STATUS(host));
+
+	/* The transaction is really over when the SD_STATUS_DB bit is clear */
+	while ((host->flags & HOST_F_XMIT) && (status & SD_STATUS_DB))
+		status = __raw_readl(HOST_STATUS(host));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->error = 0;
 	dma_unmap_sg(mmc_dev(host->mmc), data->sg, data->sg_len, host->dma.dir);
@@ -357,7 +448,11 @@ static void au1xmmc_data_complete(struct au1xmmc_host *host, u32 status)
 		data->error = -EILSEQ;
 
 	/* Clear the CRC bits */
+<<<<<<< HEAD
 	au_writel(SD_STATUS_WC | SD_STATUS_RC, HOST_STATUS(host));
+=======
+	__raw_writel(SD_STATUS_WC | SD_STATUS_RC, HOST_STATUS(host));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->bytes_xfered = 0;
 
@@ -376,11 +471,19 @@ static void au1xmmc_data_complete(struct au1xmmc_host *host, u32 status)
 	au1xmmc_finish_request(host);
 }
 
+<<<<<<< HEAD
 static void au1xmmc_tasklet_data(unsigned long param)
 {
 	struct au1xmmc_host *host = (struct au1xmmc_host *)param;
 
 	u32 status = au_readl(HOST_STATUS(host));
+=======
+static void au1xmmc_tasklet_data(struct tasklet_struct *t)
+{
+	struct au1xmmc_host *host = from_tasklet(host, t, data_task);
+
+	u32 status = __raw_readl(HOST_STATUS(host));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	au1xmmc_data_complete(host, status);
 }
 
@@ -401,7 +504,11 @@ static void au1xmmc_send_pio(struct au1xmmc_host *host)
 
 	/* This is the pointer to the data buffer */
 	sg = &data->sg[host->pio.index];
+<<<<<<< HEAD
 	sg_ptr = sg_virt(sg) + host->pio.offset;
+=======
+	sg_ptr = kmap_local_page(sg_page(sg)) + sg->offset + host->pio.offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This is the space left inside the buffer */
 	sg_len = data->sg[host->pio.index].length - host->pio.offset;
@@ -412,16 +519,29 @@ static void au1xmmc_send_pio(struct au1xmmc_host *host)
 		max = AU1XMMC_MAX_TRANSFER;
 
 	for (count = 0; count < max; count++) {
+<<<<<<< HEAD
 		status = au_readl(HOST_STATUS(host));
+=======
+		status = __raw_readl(HOST_STATUS(host));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(status & SD_STATUS_TH))
 			break;
 
+<<<<<<< HEAD
 		val = *sg_ptr++;
 
 		au_writel((unsigned long)val, HOST_TXPORT(host));
 		au_sync();
 	}
+=======
+		val = sg_ptr[count];
+
+		__raw_writel((unsigned long)val, HOST_TXPORT(host));
+		wmb(); /* drain writebuffer */
+	}
+	kunmap_local(sg_ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host->pio.len -= count;
 	host->pio.offset += count;
@@ -458,7 +578,11 @@ static void au1xmmc_receive_pio(struct au1xmmc_host *host)
 
 	if (host->pio.index < host->dma.len) {
 		sg = &data->sg[host->pio.index];
+<<<<<<< HEAD
 		sg_ptr = sg_virt(sg) + host->pio.offset;
+=======
+		sg_ptr = kmap_local_page(sg_page(sg)) + sg->offset + host->pio.offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* This is the space left inside the buffer */
 		sg_len = sg_dma_len(&data->sg[host->pio.index]) - host->pio.offset;
@@ -472,7 +596,11 @@ static void au1xmmc_receive_pio(struct au1xmmc_host *host)
 		max = AU1XMMC_MAX_TRANSFER;
 
 	for (count = 0; count < max; count++) {
+<<<<<<< HEAD
 		status = au_readl(HOST_STATUS(host));
+=======
+		status = __raw_readl(HOST_STATUS(host));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(status & SD_STATUS_NE))
 			break;
@@ -494,11 +622,21 @@ static void au1xmmc_receive_pio(struct au1xmmc_host *host)
 			break;
 		}
 
+<<<<<<< HEAD
 		val = au_readl(HOST_RXPORT(host));
 
 		if (sg_ptr)
 			*sg_ptr++ = (unsigned char)(val & 0xFF);
 	}
+=======
+		val = __raw_readl(HOST_RXPORT(host));
+
+		if (sg_ptr)
+			sg_ptr[count] = (unsigned char)(val & 0xFF);
+	}
+	if (sg_ptr)
+		kunmap_local(sg_ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host->pio.len -= count;
 	host->pio.offset += count;
@@ -537,10 +675,17 @@ static void au1xmmc_cmd_complete(struct au1xmmc_host *host, u32 status)
 
 	if (cmd->flags & MMC_RSP_PRESENT) {
 		if (cmd->flags & MMC_RSP_136) {
+<<<<<<< HEAD
 			r[0] = au_readl(host->iobase + SD_RESP3);
 			r[1] = au_readl(host->iobase + SD_RESP2);
 			r[2] = au_readl(host->iobase + SD_RESP1);
 			r[3] = au_readl(host->iobase + SD_RESP0);
+=======
+			r[0] = __raw_readl(host->iobase + SD_RESP3);
+			r[1] = __raw_readl(host->iobase + SD_RESP2);
+			r[2] = __raw_readl(host->iobase + SD_RESP1);
+			r[3] = __raw_readl(host->iobase + SD_RESP0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* The CRC is omitted from the response, so really
 			 * we only got 120 bytes, but the engine expects
@@ -559,7 +704,11 @@ static void au1xmmc_cmd_complete(struct au1xmmc_host *host, u32 status)
 			 * that means that the OSR data starts at bit 31,
 			 * so we can just read RESP0 and return that.
 			 */
+<<<<<<< HEAD
 			cmd->resp[0] = au_readl(host->iobase + SD_RESP0);
+=======
+			cmd->resp[0] = __raw_readl(host->iobase + SD_RESP0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -586,7 +735,11 @@ static void au1xmmc_cmd_complete(struct au1xmmc_host *host, u32 status)
 			u32 mask = SD_STATUS_DB | SD_STATUS_NE;
 
 			while((status & mask) != mask)
+<<<<<<< HEAD
 				status = au_readl(HOST_STATUS(host));
+=======
+				status = __raw_readl(HOST_STATUS(host));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		au1xxx_dbdma_start(channel);
@@ -595,6 +748,7 @@ static void au1xmmc_cmd_complete(struct au1xmmc_host *host, u32 status)
 
 static void au1xmmc_set_clock(struct au1xmmc_host *host, int rate)
 {
+<<<<<<< HEAD
 	unsigned int pbus = get_au1x00_speed();
 	unsigned int divisor;
 	u32 config;
@@ -607,12 +761,24 @@ static void au1xmmc_set_clock(struct au1xmmc_host *host, int rate)
 	divisor = ((pbus / rate) / 2) - 1;
 
 	config = au_readl(HOST_CONFIG(host));
+=======
+	unsigned int pbus = clk_get_rate(host->clk);
+	unsigned int divisor = ((pbus / rate) / 2) - 1;
+	u32 config;
+
+	config = __raw_readl(HOST_CONFIG(host));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	config &= ~(SD_CONFIG_DIV);
 	config |= (divisor & SD_CONFIG_DIV) | SD_CONFIG_DE;
 
+<<<<<<< HEAD
 	au_writel(config, HOST_CONFIG(host));
 	au_sync();
+=======
+	__raw_writel(config, HOST_CONFIG(host));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int au1xmmc_prepare_data(struct au1xmmc_host *host,
@@ -636,7 +802,11 @@ static int au1xmmc_prepare_data(struct au1xmmc_host *host,
 	if (host->dma.len == 0)
 		return -ETIMEDOUT;
 
+<<<<<<< HEAD
 	au_writel(data->blksz - 1, HOST_BLKSIZE(host));
+=======
+	__raw_writel(data->blksz - 1, HOST_BLKSIZE(host));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (host->flags & (HOST_F_DMA | HOST_F_DBDMA)) {
 		int i;
@@ -712,7 +882,11 @@ static void au1xmmc_request(struct mmc_host* mmc, struct mmc_request* mrq)
 	}
 
 	if (!ret)
+<<<<<<< HEAD
 		ret = au1xmmc_send_command(host, 0, mrq->cmd, mrq->data);
+=======
+		ret = au1xmmc_send_command(host, mrq->cmd, mrq->data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret) {
 		mrq->cmd->error = ret;
@@ -723,6 +897,7 @@ static void au1xmmc_request(struct mmc_host* mmc, struct mmc_request* mrq)
 static void au1xmmc_reset_controller(struct au1xmmc_host *host)
 {
 	/* Apply the clock */
+<<<<<<< HEAD
 	au_writel(SD_ENABLE_CE, HOST_ENABLE(host));
         au_sync_delay(1);
 
@@ -748,6 +923,36 @@ static void au1xmmc_reset_controller(struct au1xmmc_host *host)
 	/* Configure interrupts */
 	au_writel(AU1XMMC_INTERRUPTS, HOST_CONFIG(host));
 	au_sync();
+=======
+	__raw_writel(SD_ENABLE_CE, HOST_ENABLE(host));
+	wmb(); /* drain writebuffer */
+	mdelay(1);
+
+	__raw_writel(SD_ENABLE_R | SD_ENABLE_CE, HOST_ENABLE(host));
+	wmb(); /* drain writebuffer */
+	mdelay(5);
+
+	__raw_writel(~0, HOST_STATUS(host));
+	wmb(); /* drain writebuffer */
+
+	__raw_writel(0, HOST_BLKSIZE(host));
+	__raw_writel(0x001fffff, HOST_TIMEOUT(host));
+	wmb(); /* drain writebuffer */
+
+	__raw_writel(SD_CONFIG2_EN, HOST_CONFIG2(host));
+	wmb(); /* drain writebuffer */
+
+	__raw_writel(SD_CONFIG2_EN | SD_CONFIG2_FF, HOST_CONFIG2(host));
+	wmb(); /* drain writebuffer */
+	mdelay(1);
+
+	__raw_writel(SD_CONFIG2_EN, HOST_CONFIG2(host));
+	wmb(); /* drain writebuffer */
+
+	/* Configure interrupts */
+	__raw_writel(AU1XMMC_INTERRUPTS, HOST_CONFIG(host));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -767,7 +972,11 @@ static void au1xmmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		host->clock = ios->clock;
 	}
 
+<<<<<<< HEAD
 	config2 = au_readl(HOST_CONFIG2(host));
+=======
+	config2 = __raw_readl(HOST_CONFIG2(host));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (ios->bus_width) {
 	case MMC_BUS_WIDTH_8:
 		config2 |= SD_CONFIG2_BB;
@@ -780,8 +989,13 @@ static void au1xmmc_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		config2 &= ~(SD_CONFIG2_WB | SD_CONFIG2_BB);
 		break;
 	}
+<<<<<<< HEAD
 	au_writel(config2, HOST_CONFIG2(host));
 	au_sync();
+=======
+	__raw_writel(config2, HOST_CONFIG2(host));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define STATUS_TIMEOUT (SD_STATUS_RAT | SD_STATUS_DT)
@@ -793,7 +1007,11 @@ static irqreturn_t au1xmmc_irq(int irq, void *dev_id)
 	struct au1xmmc_host *host = dev_id;
 	u32 status;
 
+<<<<<<< HEAD
 	status = au_readl(HOST_STATUS(host));
+=======
+	status = __raw_readl(HOST_STATUS(host));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(status & SD_STATUS_I))
 		return IRQ_NONE;	/* not ours */
@@ -839,8 +1057,13 @@ static irqreturn_t au1xmmc_irq(int irq, void *dev_id)
 				status);
 	}
 
+<<<<<<< HEAD
 	au_writel(status, HOST_STATUS(host));
 	au_sync();
+=======
+	__raw_writel(status, HOST_STATUS(host));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -943,7 +1166,11 @@ static const struct mmc_host_ops au1xmmc_ops = {
 	.enable_sdio_irq = au1xmmc_enable_sdio_irq,
 };
 
+<<<<<<< HEAD
 static int __devinit au1xmmc_probe(struct platform_device *pdev)
+=======
+static int au1xmmc_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mmc_host *mmc;
 	struct au1xmmc_host *host;
@@ -976,18 +1203,30 @@ static int __devinit au1xmmc_probe(struct platform_device *pdev)
 		goto out1;
 	}
 
+<<<<<<< HEAD
 	host->iobase = (unsigned long)ioremap(r->start, 0x3c);
+=======
+	host->iobase = ioremap(r->start, 0x3c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!host->iobase) {
 		dev_err(&pdev->dev, "cannot remap mmio\n");
 		goto out2;
 	}
 
+<<<<<<< HEAD
 	r = platform_get_resource(pdev, IORESOURCE_IRQ, 0);
 	if (!r) {
 		dev_err(&pdev->dev, "no IRQ defined\n");
 		goto out3;
 	}
 	host->irq = r->start;
+=======
+	host->irq = platform_get_irq(pdev, 0);
+	if (host->irq < 0) {
+		ret = host->irq;
+		goto out3;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmc->ops = &au1xmmc_ops;
 
@@ -1025,6 +1264,22 @@ static int __devinit au1xmmc_probe(struct platform_device *pdev)
 		goto out3;
 	}
 
+<<<<<<< HEAD
+=======
+	host->clk = clk_get(&pdev->dev, ALCHEMY_PERIPH_CLK);
+	if (IS_ERR(host->clk)) {
+		dev_err(&pdev->dev, "cannot find clock\n");
+		ret = PTR_ERR(host->clk);
+		goto out_irq;
+	}
+
+	ret = clk_prepare_enable(host->clk);
+	if (ret) {
+		dev_err(&pdev->dev, "cannot enable clock\n");
+		goto out_clk;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host->status = HOST_S_IDLE;
 
 	/* board-specific carddetect setup, if any */
@@ -1041,11 +1296,17 @@ static int __devinit au1xmmc_probe(struct platform_device *pdev)
 	if (host->platdata)
 		mmc->caps &= ~(host->platdata->mask_host_caps);
 
+<<<<<<< HEAD
 	tasklet_init(&host->data_task, au1xmmc_tasklet_data,
 			(unsigned long)host);
 
 	tasklet_init(&host->finish_task, au1xmmc_tasklet_finish,
 			(unsigned long)host);
+=======
+	tasklet_setup(&host->data_task, au1xmmc_tasklet_data);
+
+	tasklet_setup(&host->finish_task, au1xmmc_tasklet_finish);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (has_dbdma()) {
 		ret = au1xmmc_dbdma_init(host);
@@ -1075,7 +1336,11 @@ static int __devinit au1xmmc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, host);
 
+<<<<<<< HEAD
 	pr_info(DRIVER_NAME ": MMC Controller %d set up at %8.8X"
+=======
+	pr_info(DRIVER_NAME ": MMC Controller %d set up at %p"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		" (mode=%s)\n", pdev->id, host->iobase,
 		host->flags & HOST_F_DMA ? "dma" : "pio");
 
@@ -1087,10 +1352,17 @@ out6:
 		led_classdev_unregister(host->platdata->led);
 out5:
 #endif
+<<<<<<< HEAD
 	au_writel(0, HOST_ENABLE(host));
 	au_writel(0, HOST_CONFIG(host));
 	au_writel(0, HOST_CONFIG2(host));
 	au_sync();
+=======
+	__raw_writel(0, HOST_ENABLE(host));
+	__raw_writel(0, HOST_CONFIG(host));
+	__raw_writel(0, HOST_CONFIG2(host));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (host->flags & HOST_F_DBDMA)
 		au1xmmc_dbdma_shutdown(host);
@@ -1102,6 +1374,13 @@ out5:
 	    !(mmc->caps & MMC_CAP_NEEDS_POLL))
 		host->platdata->cd_setup(mmc, 0);
 
+<<<<<<< HEAD
+=======
+	clk_disable_unprepare(host->clk);
+out_clk:
+	clk_put(host->clk);
+out_irq:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_irq(host->irq, host);
 out3:
 	iounmap((void *)host->iobase);
@@ -1114,7 +1393,11 @@ out0:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit au1xmmc_remove(struct platform_device *pdev)
+=======
+static void au1xmmc_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct au1xmmc_host *host = platform_get_drvdata(pdev);
 
@@ -1130,10 +1413,17 @@ static int __devexit au1xmmc_remove(struct platform_device *pdev)
 		    !(host->mmc->caps & MMC_CAP_NEEDS_POLL))
 			host->platdata->cd_setup(host->mmc, 0);
 
+<<<<<<< HEAD
 		au_writel(0, HOST_ENABLE(host));
 		au_writel(0, HOST_CONFIG(host));
 		au_writel(0, HOST_CONFIG2(host));
 		au_sync();
+=======
+		__raw_writel(0, HOST_ENABLE(host));
+		__raw_writel(0, HOST_CONFIG(host));
+		__raw_writel(0, HOST_CONFIG2(host));
+		wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		tasklet_kill(&host->data_task);
 		tasklet_kill(&host->finish_task);
@@ -1143,21 +1433,32 @@ static int __devexit au1xmmc_remove(struct platform_device *pdev)
 
 		au1xmmc_set_power(host, 0);
 
+<<<<<<< HEAD
+=======
+		clk_disable_unprepare(host->clk);
+		clk_put(host->clk);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_irq(host->irq, host);
 		iounmap((void *)host->iobase);
 		release_resource(host->ioarea);
 		kfree(host->ioarea);
 
 		mmc_free_host(host->mmc);
+<<<<<<< HEAD
 		platform_set_drvdata(pdev, NULL);
 	}
 	return 0;
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
 static int au1xmmc_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	struct au1xmmc_host *host = platform_get_drvdata(pdev);
+<<<<<<< HEAD
 	int ret;
 
 	ret = mmc_suspend_host(host->mmc);
@@ -1169,6 +1470,14 @@ static int au1xmmc_suspend(struct platform_device *pdev, pm_message_t state)
 	au_writel(0xffffffff, HOST_STATUS(host));
 	au_writel(0, HOST_ENABLE(host));
 	au_sync();
+=======
+
+	__raw_writel(0, HOST_CONFIG2(host));
+	__raw_writel(0, HOST_CONFIG(host));
+	__raw_writel(0xffffffff, HOST_STATUS(host));
+	__raw_writel(0, HOST_ENABLE(host));
+	wmb(); /* drain writebuffer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1179,7 +1488,11 @@ static int au1xmmc_resume(struct platform_device *pdev)
 
 	au1xmmc_reset_controller(host);
 
+<<<<<<< HEAD
 	return mmc_resume_host(host->mmc);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 #define au1xmmc_suspend NULL
@@ -1188,12 +1501,20 @@ static int au1xmmc_resume(struct platform_device *pdev)
 
 static struct platform_driver au1xmmc_driver = {
 	.probe         = au1xmmc_probe,
+<<<<<<< HEAD
 	.remove        = au1xmmc_remove,
+=======
+	.remove_new    = au1xmmc_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend       = au1xmmc_suspend,
 	.resume        = au1xmmc_resume,
 	.driver        = {
 		.name  = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
+=======
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

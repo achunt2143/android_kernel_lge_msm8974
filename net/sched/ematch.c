@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * net/sched/ematch.c		Extended Match API
  *
@@ -6,6 +7,12 @@
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * net/sched/ematch.c		Extended Match API
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:	Thomas Graf <tgraf@suug.ch>
  *
  * ==========================================================================
@@ -145,7 +152,11 @@ errout:
 EXPORT_SYMBOL(tcf_em_register);
 
 /**
+<<<<<<< HEAD
  * tcf_em_unregister - unregster and extended match
+=======
+ * tcf_em_unregister - unregister and extended match
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @ops: ematch operations lookup table
  *
@@ -178,6 +189,10 @@ static int tcf_em_validate(struct tcf_proto *tp,
 	struct tcf_ematch_hdr *em_hdr = nla_data(nla);
 	int data_len = nla_len(nla) - sizeof(*em_hdr);
 	void *data = (void *) em_hdr + sizeof(*em_hdr);
+<<<<<<< HEAD
+=======
+	struct net *net = tp->chain->block->net;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!TCF_EM_REL_VALID(em_hdr->flags))
 		goto errout;
@@ -227,6 +242,10 @@ static int tcf_em_validate(struct tcf_proto *tp,
 				 * to replay the request.
 				 */
 				module_put(em->ops->owner);
+<<<<<<< HEAD
+=======
+				em->ops = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = -EAGAIN;
 			}
 #endif
@@ -240,7 +259,14 @@ static int tcf_em_validate(struct tcf_proto *tp,
 			goto errout;
 
 		if (em->ops->change) {
+<<<<<<< HEAD
 			err = em->ops->change(tp, data, data_len, em);
+=======
+			err = -EINVAL;
+			if (em_hdr->flags & TCF_EM_SIMPLE)
+				goto errout;
+			err = em->ops->change(net, data, data_len, em);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err < 0)
 				goto errout;
 		} else if (data_len > 0) {
@@ -254,6 +280,11 @@ static int tcf_em_validate(struct tcf_proto *tp,
 			 * the value carried.
 			 */
 			if (em_hdr->flags & TCF_EM_SIMPLE) {
+<<<<<<< HEAD
+=======
+				if (em->ops->datalen > 0)
+					goto errout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (data_len < sizeof(u32))
 					goto errout;
 				em->data = *(u32 *) data;
@@ -265,12 +296,20 @@ static int tcf_em_validate(struct tcf_proto *tp,
 				}
 				em->data = (unsigned long) v;
 			}
+<<<<<<< HEAD
+=======
+			em->datalen = data_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	em->matchid = em_hdr->matchid;
 	em->flags = em_hdr->flags;
+<<<<<<< HEAD
 	em->datalen = data_len;
+=======
+	em->net = net;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = 0;
 errout:
@@ -311,7 +350,12 @@ int tcf_em_tree_validate(struct tcf_proto *tp, struct nlattr *nla,
 	if (!nla)
 		return 0;
 
+<<<<<<< HEAD
 	err = nla_parse_nested(tb, TCA_EMATCH_TREE_MAX, nla, em_policy);
+=======
+	err = nla_parse_nested_deprecated(tb, TCA_EMATCH_TREE_MAX, nla,
+					  em_policy, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		goto errout;
 
@@ -378,7 +422,11 @@ errout:
 	return err;
 
 errout_abort:
+<<<<<<< HEAD
 	tcf_em_tree_destroy(tp, tree);
+=======
+	tcf_em_tree_destroy(tree);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 EXPORT_SYMBOL(tcf_em_tree_validate);
@@ -386,14 +434,21 @@ EXPORT_SYMBOL(tcf_em_tree_validate);
 /**
  * tcf_em_tree_destroy - destroy an ematch tree
  *
+<<<<<<< HEAD
  * @tp: classifier kind handle
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @tree: ematch tree to be deleted
  *
  * This functions destroys an ematch tree previously created by
  * tcf_em_tree_validate()/tcf_em_tree_change(). You must ensure that
  * the ematch tree is not in use before calling this function.
  */
+<<<<<<< HEAD
 void tcf_em_tree_destroy(struct tcf_proto *tp, struct tcf_ematch_tree *tree)
+=======
+void tcf_em_tree_destroy(struct tcf_ematch_tree *tree)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -405,7 +460,11 @@ void tcf_em_tree_destroy(struct tcf_proto *tp, struct tcf_ematch_tree *tree)
 
 		if (em->ops) {
 			if (em->ops->destroy)
+<<<<<<< HEAD
 				em->ops->destroy(tp, em);
+=======
+				em->ops->destroy(em);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else if (!tcf_em_is_simple(em))
 				kfree((void *) em->data);
 			module_put(em->ops->owner);
@@ -422,7 +481,11 @@ EXPORT_SYMBOL(tcf_em_tree_destroy);
  * tcf_em_tree_dump - dump ematch tree into a rtnl message
  *
  * @skb: skb holding the rtnl message
+<<<<<<< HEAD
  * @t: ematch tree to be dumped
+=======
+ * @tree: ematch tree to be dumped
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @tlv: TLV type to be used to encapsulate the tree
  *
  * This function dumps a ematch tree into a rtnl message. It is valid to
@@ -437,6 +500,7 @@ int tcf_em_tree_dump(struct sk_buff *skb, struct tcf_ematch_tree *tree, int tlv)
 	struct nlattr *top_start;
 	struct nlattr *list_start;
 
+<<<<<<< HEAD
 	top_start = nla_nest_start(skb, tlv);
 	if (top_start == NULL)
 		goto nla_put_failure;
@@ -444,6 +508,16 @@ int tcf_em_tree_dump(struct sk_buff *skb, struct tcf_ematch_tree *tree, int tlv)
 	NLA_PUT(skb, TCA_EMATCH_TREE_HDR, sizeof(tree->hdr), &tree->hdr);
 
 	list_start = nla_nest_start(skb, TCA_EMATCH_TREE_LIST);
+=======
+	top_start = nla_nest_start_noflag(skb, tlv);
+	if (top_start == NULL)
+		goto nla_put_failure;
+
+	if (nla_put(skb, TCA_EMATCH_TREE_HDR, sizeof(tree->hdr), &tree->hdr))
+		goto nla_put_failure;
+
+	list_start = nla_nest_start_noflag(skb, TCA_EMATCH_TREE_LIST);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (list_start == NULL)
 		goto nla_put_failure;
 
@@ -457,7 +531,12 @@ int tcf_em_tree_dump(struct sk_buff *skb, struct tcf_ematch_tree *tree, int tlv)
 			.flags = em->flags
 		};
 
+<<<<<<< HEAD
 		NLA_PUT(skb, i + 1, sizeof(em_hdr), &em_hdr);
+=======
+		if (nla_put(skb, i + 1, sizeof(em_hdr), &em_hdr))
+			goto nla_put_failure;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (em->ops && em->ops->dump) {
 			if (em->ops->dump(skb, em) < 0)
@@ -524,9 +603,18 @@ pop_stack:
 		match_idx = stack[--stackp];
 		cur_match = tcf_em_get_match(tree, match_idx);
 
+<<<<<<< HEAD
 		if (tcf_em_early_end(cur_match, res))
 			goto pop_stack;
 		else {
+=======
+		if (tcf_em_is_inverted(cur_match))
+			res = !res;
+
+		if (tcf_em_early_end(cur_match, res)) {
+			goto pop_stack;
+		} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			match_idx++;
 			goto proceed;
 		}
@@ -535,9 +623,13 @@ pop_stack:
 	return res;
 
 stack_overflow:
+<<<<<<< HEAD
 	if (net_ratelimit())
 		pr_warning("tc ematch: local stack overflow,"
 			   " increase NET_EMATCH_STACK\n");
+=======
+	net_warn_ratelimited("tc ematch: local stack overflow, increase NET_EMATCH_STACK\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 }
 EXPORT_SYMBOL(__tcf_em_tree_match);

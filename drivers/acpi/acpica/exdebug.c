@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: exdebug - Support for stores to the AML Debug Object
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
@@ -54,8 +65,13 @@ ACPI_MODULE_NAME("exdebug")
  * FUNCTION:    acpi_ex_do_debug_object
  *
  * PARAMETERS:  source_desc         - Object to be output to "Debug Object"
+<<<<<<< HEAD
  *              Level               - Indentation level (used for packages)
  *              Index               - Current package element, zero if not pkg
+=======
+ *              level               - Indentation level (used for packages)
+ *              index               - Current package element, zero if not pkg
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -75,6 +91,12 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 			u32 level, u32 index)
 {
 	u32 i;
+<<<<<<< HEAD
+=======
+	u32 timer;
+	union acpi_operand_object *object_desc;
+	u32 value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE_PTR(ex_do_debug_object, source_desc);
 
@@ -85,12 +107,46 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 		return_VOID;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Newline -- don't emit the line header */
+
+	if (source_desc &&
+	    (ACPI_GET_DESCRIPTOR_TYPE(source_desc) == ACPI_DESC_TYPE_OPERAND) &&
+	    (source_desc->common.type == ACPI_TYPE_STRING)) {
+		if ((source_desc->string.length == 1) &&
+		    (*source_desc->string.pointer == '\n')) {
+			acpi_os_printf("\n");
+			return_VOID;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Print line header as long as we are not in the middle of an
 	 * object display
 	 */
 	if (!((level > 0) && index == 0)) {
+<<<<<<< HEAD
 		acpi_os_printf("[ACPI Debug] %*s", level, " ");
+=======
+		if (acpi_gbl_display_debug_timer) {
+			/*
+			 * We will emit the current timer value (in microseconds) with each
+			 * debug output. Only need the lower 26 bits. This allows for 67
+			 * million microseconds or 67 seconds before rollover.
+			 *
+			 * Convert 100 nanosecond units to microseconds
+			 */
+			timer = ((u32)acpi_os_get_timer() / 10);
+			timer &= 0x03FFFFFF;
+
+			acpi_os_printf("ACPI Debug: T=0x%8.8X %*s", timer,
+				       level, " ");
+		} else {
+			acpi_os_printf("ACPI Debug: %*s", level, " ");
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Display the index for package output only */
@@ -105,8 +161,20 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 	}
 
 	if (ACPI_GET_DESCRIPTOR_TYPE(source_desc) == ACPI_DESC_TYPE_OPERAND) {
+<<<<<<< HEAD
 		acpi_os_printf("%s ",
 			       acpi_ut_get_object_type_name(source_desc));
+=======
+
+		/* No object type prefix needed for integers and strings */
+
+		if ((source_desc->common.type != ACPI_TYPE_INTEGER) &&
+		    (source_desc->common.type != ACPI_TYPE_STRING)) {
+			acpi_os_printf("%s ",
+				       acpi_ut_get_object_type_name
+				       (source_desc));
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!acpi_ut_valid_internal_object(source_desc)) {
 			acpi_os_printf("%p, Invalid Internal Object!\n",
@@ -115,7 +183,11 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 		}
 	} else if (ACPI_GET_DESCRIPTOR_TYPE(source_desc) ==
 		   ACPI_DESC_TYPE_NAMED) {
+<<<<<<< HEAD
 		acpi_os_printf("%s: %p\n",
+=======
+		acpi_os_printf("%s (Node %p)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       acpi_ut_get_type_name(((struct
 						       acpi_namespace_node *)
 						      source_desc)->type),
@@ -145,22 +217,37 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 	case ACPI_TYPE_BUFFER:
 
 		acpi_os_printf("[0x%.2X]\n", (u32)source_desc->buffer.length);
+<<<<<<< HEAD
 		acpi_ut_dump_buffer2(source_desc->buffer.pointer,
 				     (source_desc->buffer.length < 256) ?
 				     source_desc->buffer.length : 256,
 				     DB_BYTE_DISPLAY);
+=======
+		acpi_ut_dump_buffer(source_desc->buffer.pointer,
+				    (source_desc->buffer.length < 256) ?
+				    source_desc->buffer.length : 256,
+				    DB_BYTE_DISPLAY, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ACPI_TYPE_STRING:
 
+<<<<<<< HEAD
 		acpi_os_printf("[0x%.2X] \"%s\"\n",
 			       source_desc->string.length,
 			       source_desc->string.pointer);
+=======
+		acpi_os_printf("\"%s\"\n", source_desc->string.pointer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ACPI_TYPE_PACKAGE:
 
+<<<<<<< HEAD
 		acpi_os_printf("[Contains 0x%.2X Elements]\n",
+=======
+		acpi_os_printf("(Contains 0x%.2X Elements):\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       source_desc->package.count);
 
 		/* Output the entire contents of the package */
@@ -190,9 +277,16 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 
 			acpi_os_printf("Table Index 0x%X\n",
 				       source_desc->reference.value);
+<<<<<<< HEAD
 			return;
 
 		default:
+=======
+			return_VOID;
+
+		default:
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -226,6 +320,10 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 					break;
 
 				default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					acpi_ex_do_debug_object((source_desc->
 								 reference.
 								 node)->object,
@@ -237,6 +335,7 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 			if (ACPI_GET_DESCRIPTOR_TYPE
 			    (source_desc->reference.object) ==
 			    ACPI_DESC_TYPE_NAMED) {
+<<<<<<< HEAD
 				acpi_ex_do_debug_object(((struct
 							  acpi_namespace_node *)
 							 source_desc->reference.
@@ -245,13 +344,71 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 			} else {
 				acpi_ex_do_debug_object(source_desc->reference.
 							object, level + 4, 0);
+=======
+
+				/* Reference object is a namespace node */
+
+				acpi_ex_do_debug_object(ACPI_CAST_PTR
+							(union
+							 acpi_operand_object,
+							 source_desc->reference.
+							 object), level + 4, 0);
+			} else {
+				object_desc = source_desc->reference.object;
+				value = source_desc->reference.value;
+
+				switch (object_desc->common.type) {
+				case ACPI_TYPE_BUFFER:
+
+					acpi_os_printf("Buffer[%u] = 0x%2.2X\n",
+						       value,
+						       *source_desc->reference.
+						       index_pointer);
+					break;
+
+				case ACPI_TYPE_STRING:
+
+					acpi_os_printf
+					    ("String[%u] = \"%c\" (0x%2.2X)\n",
+					     value,
+					     *source_desc->reference.
+					     index_pointer,
+					     *source_desc->reference.
+					     index_pointer);
+					break;
+
+				case ACPI_TYPE_PACKAGE:
+
+					acpi_os_printf("Package[%u] = ", value);
+					if (!(*source_desc->reference.where)) {
+						acpi_os_printf
+						    ("[Uninitialized Package Element]\n");
+					} else {
+						acpi_ex_do_debug_object
+						    (*source_desc->reference.
+						     where, level + 4, 0);
+					}
+					break;
+
+				default:
+
+					acpi_os_printf
+					    ("Unknown Reference object type %X\n",
+					     object_desc->common.type);
+					break;
+				}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		break;
 
 	default:
 
+<<<<<<< HEAD
 		acpi_os_printf("%p\n", source_desc);
+=======
+		acpi_os_printf("(Descriptor %p)\n", source_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 

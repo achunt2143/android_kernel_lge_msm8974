@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mach-footbridge/irq.c
  *
  *  Copyright (C) 1996-2000 Russell King
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Changelog:
  *   22-Aug-1998 RMK	Restructured IRQ routines
  *   03-Sep-1998 PJB	Merged CATS support
@@ -87,24 +94,35 @@ static struct irq_chip isa_hi_chip = {
 	.irq_unmask	= isa_unmask_pic_hi_irq,
 };
 
+<<<<<<< HEAD
 static void
 isa_irq_handler(unsigned int irq, struct irq_desc *desc)
+=======
+static void isa_irq_handler(struct irq_desc *desc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int isa_irq = *(unsigned char *)PCIIACK_BASE;
 
 	if (isa_irq < _ISA_IRQ(0) || isa_irq >= _ISA_IRQ(16)) {
+<<<<<<< HEAD
 		do_bad_IRQ(isa_irq, desc);
+=======
+		do_bad_IRQ(desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	generic_handle_irq(isa_irq);
 }
 
+<<<<<<< HEAD
 static struct irqaction irq_cascade = {
 	.handler = no_action,
 	.name = "cascade",
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource pic1_resource = {
 	.name	= "pic1",
 	.start	= 0x20,
@@ -153,18 +171,33 @@ void __init isa_init_irq(unsigned int host_irq)
 		for (irq = _ISA_IRQ(0); irq < _ISA_IRQ(8); irq++) {
 			irq_set_chip_and_handler(irq, &isa_lo_chip,
 						 handle_level_irq);
+<<<<<<< HEAD
 			set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
+=======
+			irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		for (irq = _ISA_IRQ(8); irq < _ISA_IRQ(16); irq++) {
 			irq_set_chip_and_handler(irq, &isa_hi_chip,
 						 handle_level_irq);
+<<<<<<< HEAD
 			set_irq_flags(irq, IRQF_VALID | IRQF_PROBE);
+=======
+			irq_clear_status_flags(irq, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		request_resource(&ioport_resource, &pic1_resource);
 		request_resource(&ioport_resource, &pic2_resource);
+<<<<<<< HEAD
 		setup_irq(IRQ_ISA_CASCADE, &irq_cascade);
+=======
+
+		irq = IRQ_ISA_CASCADE;
+		if (request_irq(irq, no_action, 0, "cascade", NULL))
+			pr_err("Failed to request irq %u (cascade)\n", irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		irq_set_chained_handler(host_irq, isa_irq_handler);
 
@@ -175,8 +208,13 @@ void __init isa_init_irq(unsigned int host_irq)
 		 * resistor on this line.
 		 */
 		if (machine_is_netwinder())
+<<<<<<< HEAD
 			set_irq_flags(_ISA_IRQ(11), IRQF_VALID |
 				      IRQF_PROBE | IRQF_NOAUTOEN);
+=======
+			irq_modify_status(_ISA_IRQ(11),
+				IRQ_NOREQUEST | IRQ_NOPROBE, IRQ_NOAUTOEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 

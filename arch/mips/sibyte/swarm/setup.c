@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000, 2001, 2002, 2003, 2004 Broadcom Corporation
  * Copyright (C) 2004 by Ralf Baechle (ralf@linux-mips.org)
@@ -15,6 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (C) 2000, 2001, 2002, 2003, 2004 Broadcom Corporation
+ * Copyright (C) 2004 by Ralf Baechle (ralf@linux-mips.org)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -23,10 +30,17 @@
 
 #include <linux/spinlock.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/blkdev.h>
 #include <linux/init.h>
 #include <linux/kernel.h>
+=======
+#include <linux/memblock.h>
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/console.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/screen_info.h>
 #include <linux/initrd.h>
 
@@ -38,7 +52,11 @@
 #include <asm/time.h>
 #include <asm/traps.h>
 #include <asm/sibyte/sb1250.h>
+<<<<<<< HEAD
 #if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
+=======
+#ifdef CONFIG_SIBYTE_BCM1x80
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sibyte/bcm1480_regs.h>
 #elif defined(CONFIG_SIBYTE_SB1250) || defined(CONFIG_SIBYTE_BCM112X)
 #include <asm/sibyte/sb1250_regs.h>
@@ -48,7 +66,11 @@
 #include <asm/sibyte/sb1250_genbus.h>
 #include <asm/sibyte/board.h>
 
+<<<<<<< HEAD
 #if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
+=======
+#ifdef CONFIG_SIBYTE_BCM1x80
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void bcm1480_setup(void);
 #elif defined(CONFIG_SIBYTE_SB1250) || defined(CONFIG_SIBYTE_BCM112X)
 extern void sb1250_setup(void);
@@ -57,12 +79,21 @@ extern void sb1250_setup(void);
 #endif
 
 extern int xicor_probe(void);
+<<<<<<< HEAD
 extern int xicor_set_time(unsigned long);
 extern unsigned long xicor_get_time(void);
 
 extern int m41t81_probe(void);
 extern int m41t81_set_time(unsigned long);
 extern unsigned long m41t81_get_time(void);
+=======
+extern int xicor_set_time(time64_t);
+extern time64_t xicor_get_time(void);
+
+extern int m41t81_probe(void);
+extern int m41t81_set_time(time64_t);
+extern time64_t m41t81_get_time(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const char *get_system_type(void)
 {
@@ -76,7 +107,11 @@ int swarm_be_handler(struct pt_regs *regs, int is_fixup)
 		printk("DBE physical address: %010Lx\n",
 		       __read_64bit_c0_register($26, 1));
 	}
+<<<<<<< HEAD
 	return (is_fixup ? MIPS_BE_FIXUP : MIPS_BE_FATAL);
+=======
+	return is_fixup ? MIPS_BE_FIXUP : MIPS_BE_FATAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 enum swarm_rtc_type {
@@ -87,9 +122,15 @@ enum swarm_rtc_type {
 
 enum swarm_rtc_type swarm_rtc_type;
 
+<<<<<<< HEAD
 void read_persistent_clock(struct timespec *ts)
 {
 	unsigned long sec;
+=======
+void read_persistent_clock64(struct timespec64 *ts)
+{
+	time64_t sec;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (swarm_rtc_type) {
 	case RTC_XICOR:
@@ -102,15 +143,26 @@ void read_persistent_clock(struct timespec *ts)
 
 	case RTC_NONE:
 	default:
+<<<<<<< HEAD
 		sec = mktime(2000, 1, 1, 0, 0, 0);
+=======
+		sec = mktime64(2000, 1, 1, 0, 0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	ts->tv_sec = sec;
 	ts->tv_nsec = 0;
 }
 
+<<<<<<< HEAD
 int rtc_mips_set_time(unsigned long sec)
 {
+=======
+int update_persistent_clock64(struct timespec64 now)
+{
+	time64_t sec = now.tv_sec;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (swarm_rtc_type) {
 	case RTC_XICOR:
 		return xicor_set_time(sec);
@@ -124,9 +176,28 @@ int rtc_mips_set_time(unsigned long sec)
 	}
 }
 
+<<<<<<< HEAD
 void __init plat_mem_setup(void)
 {
 #if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
+=======
+#ifdef CONFIG_VGA_CONSOLE
+static struct screen_info vgacon_screen_info = {
+	.orig_video_page	= 52,
+	.orig_video_mode	= 3,
+	.orig_video_cols	= 80,
+	.flags			= 12,
+	.orig_video_ega_bx	= 3,
+	.orig_video_lines	= 25,
+	.orig_video_isVGA	= 0x22,
+	.orig_video_points	= 16,
+};
+#endif
+
+void __init plat_mem_setup(void)
+{
+#ifdef CONFIG_SIBYTE_BCM1x80
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bcm1480_setup();
 #elif defined(CONFIG_SIBYTE_SB1250) || defined(CONFIG_SIBYTE_BCM112X)
 	sb1250_setup();
@@ -134,15 +205,20 @@ void __init plat_mem_setup(void)
 #error invalid SiByte board configuration
 #endif
 
+<<<<<<< HEAD
 	panic_timeout = 5;  /* For debug.  */
 
 	board_be_handler = swarm_be_handler;
+=======
+	mips_set_be_handler(swarm_be_handler);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (xicor_probe())
 		swarm_rtc_type = RTC_XICOR;
 	if (m41t81_probe())
 		swarm_rtc_type = RTC_M41T81;
 
+<<<<<<< HEAD
 #ifdef CONFIG_VT
 	screen_info = (struct screen_info) {
 		.orig_video_page	= 52,
@@ -154,18 +230,25 @@ void __init plat_mem_setup(void)
 		.orig_video_isVGA	= 0x22,
 		.orig_video_points	= 16,
        };
+=======
+#ifdef CONFIG_VGA_CONSOLE
+	vgacon_register_screen(&vgacon_screen_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
        /* XXXKW for CFE, get lines/cols from environment */
 #endif
 }
 
 #ifdef LEDS_PHYS
 
+<<<<<<< HEAD
 #ifdef CONFIG_SIBYTE_CARMEL
 /* XXXKW need to detect Monterey/LittleSur/etc */
 #undef LEDS_PHYS
 #define LEDS_PHYS MLEDS_PHYS
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void setleds(char *str)
 {
 	void *reg;

@@ -1,20 +1,30 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/xtensa/kernel/pci.c
  *
  * PCI bios-type initialisation for PCI machines
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2001-2005 Tensilica Inc.
  *
  * Based largely on work from Cort (ppc/kernel/pci.c)
  * IO functions copied from sparc.
  *
  * Chris Zankel <chris@zankel.net>
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -24,11 +34,16 @@
 #include <linux/init.h>
 #include <linux/sched.h>
 #include <linux/errno.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/pci-bridge.h>
 #include <asm/platform.h>
 
+<<<<<<< HEAD
 #undef DEBUG
 
 #ifdef DEBUG
@@ -56,6 +71,8 @@ struct pci_controller** pci_ctrl_tail = &pci_ctrl_head;
 
 static int pci_bus_count;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We need to avoid collisions with `mirrored' VGA ports
  * and other strange ISA hardware, so we always want the
@@ -78,9 +95,15 @@ pcibios_align_resource(void *data, const struct resource *res,
 
 	if (res->flags & IORESOURCE_IO) {
 		if (size > 0x100) {
+<<<<<<< HEAD
 			printk(KERN_ERR "PCI: I/O Region %s/%d too large"
 			       " (%ld bytes)\n", pci_name(dev),
 			       dev->resource - res, size);
+=======
+			pr_err("PCI: I/O Region %s/%d too large (%u bytes)\n",
+					pci_name(dev), dev->resource - res,
+					size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (start & 0x300)
@@ -90,6 +113,7 @@ pcibios_align_resource(void *data, const struct resource *res,
 	return start;
 }
 
+<<<<<<< HEAD
 int
 pcibios_enable_resources(struct pci_dev *dev, int mask)
 {
@@ -199,6 +223,9 @@ static int __init pcibios_init(void)
 subsys_initcall(pcibios_init);
 
 void __init pcibios_fixup_bus(struct pci_bus *bus)
+=======
+void pcibios_fixup_bus(struct pci_bus *bus)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (bus->parent) {
 		/* This is a subordinate bridge */
@@ -206,6 +233,7 @@ void __init pcibios_fixup_bus(struct pci_bus *bus)
 	}
 }
 
+<<<<<<< HEAD
 char __init *pcibios_setup(char *str)
 {
 	return str;
@@ -381,4 +409,24 @@ int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 			         vma->vm_end - vma->vm_start,vma->vm_page_prot);
 
 	return ret;
+=======
+/*
+ * Platform support for /proc/bus/pci/X/Y mmap()s.
+ *  -- paulus.
+ */
+
+int pci_iobar_pfn(struct pci_dev *pdev, int bar, struct vm_area_struct *vma)
+{
+	struct pci_controller *pci_ctrl = (struct pci_controller*) pdev->sysdata;
+	resource_size_t ioaddr = pci_resource_start(pdev, bar);
+
+	if (!pci_ctrl)
+		return -EINVAL;		/* should never happen */
+
+	/* Convert to an offset within this PCI controller */
+	ioaddr -= (unsigned long)pci_ctrl->io_space.base;
+
+	vma->vm_pgoff += (ioaddr + pci_ctrl->io_space.start) >> PAGE_SHIFT;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

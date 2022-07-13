@@ -81,6 +81,7 @@ void mlx4_do_sense_ports(struct mlx4_dev *dev,
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Adjust port configuration:
 	 * If port 1 sensed nothing and port 2 is IB, set both as IB
 	 * If port 2 sensed nothing and port 1 is Eth, set both as Eth
@@ -95,6 +96,8 @@ void mlx4_do_sense_ports(struct mlx4_dev *dev,
 	}
 
 	/*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * If sensed nothing, remain in current configuration.
 	 */
 	for (i = 0; i < dev->caps.num_ports; i++)
@@ -153,5 +156,9 @@ void  mlx4_sense_init(struct mlx4_dev *dev)
 	for (port = 1; port <= dev->caps.num_ports; port++)
 		sense->do_sense_port[port] = 1;
 
+<<<<<<< HEAD
 	INIT_DELAYED_WORK_DEFERRABLE(&sense->sense_poll, mlx4_sense_port);
+=======
+	INIT_DEFERRABLE_WORK(&sense->sense_poll, mlx4_sense_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

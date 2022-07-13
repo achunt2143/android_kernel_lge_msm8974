@@ -110,9 +110,12 @@
 #define N_SWITCH		2
 #define N_REGULATORS		(N_DCDC + N_LDO + N_SWITCH)
 
+<<<<<<< HEAD
 #define FIXED_ILIMSEL		BIT(0)
 #define FIXED_VOLTAGE		BIT(1)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CMD_READ(reg)		((reg) << 6)
 #define CMD_WRITE(reg)		(BIT(5) | (reg) << 6)
 #define STAT_CLK		BIT(3)
@@ -129,12 +132,18 @@ struct field {
 struct supply_info {
 	const char	*name;
 	int		n_voltages;
+<<<<<<< HEAD
 	const int	*voltages;
 	int		fixed_voltage;
 	int		n_ilimsels;
 	const int	*ilimsels;
 	int		fixed_ilimsel;
 	int		flags;
+=======
+	const unsigned int *voltages;
+	int		n_ilimsels;
+	const unsigned int *ilimsels;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct field	enable, voltage, ilimsel;
 };
 
@@ -143,7 +152,10 @@ struct tps6524x {
 	struct spi_device	*spi;
 	struct mutex		lock;
 	struct regulator_desc	desc[N_REGULATORS];
+<<<<<<< HEAD
 	struct regulator_dev	*rdev[N_REGULATORS];
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __read_reg(struct tps6524x *hw, int reg)
@@ -307,7 +319,11 @@ static int write_field(struct tps6524x *hw, const struct field *field,
 				    val << field->shift);
 }
 
+<<<<<<< HEAD
 static const int dcdc1_voltages[] = {
+=======
+static const unsigned int dcdc1_voltages[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 800000,  825000,  850000,  875000,
 	 900000,  925000,  950000,  975000,
 	1000000, 1025000, 1050000, 1075000,
@@ -318,7 +334,11 @@ static const int dcdc1_voltages[] = {
 	1500000, 1525000, 1550000, 1575000,
 };
 
+<<<<<<< HEAD
 static const int dcdc2_voltages[] = {
+=======
+static const unsigned int dcdc2_voltages[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	1400000, 1450000, 1500000, 1550000,
 	1600000, 1650000, 1700000, 1750000,
 	1800000, 1850000, 1900000, 1950000,
@@ -329,7 +349,11 @@ static const int dcdc2_voltages[] = {
 	2800000, 2850000, 2900000, 2950000,
 };
 
+<<<<<<< HEAD
 static const int dcdc3_voltages[] = {
+=======
+static const unsigned int dcdc3_voltages[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	2400000, 2450000, 2500000, 2550000, 2600000,
 	2650000, 2700000, 2750000, 2800000, 2850000,
 	2900000, 2950000, 3000000, 3050000, 3100000,
@@ -337,20 +361,29 @@ static const int dcdc3_voltages[] = {
 	3400000, 3450000, 3500000, 3550000, 3600000,
 };
 
+<<<<<<< HEAD
 static const int ldo1_voltages[] = {
+=======
+static const unsigned int ldo1_voltages[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	4300000, 4350000, 4400000, 4450000,
 	4500000, 4550000, 4600000, 4650000,
 	4700000, 4750000, 4800000, 4850000,
 	4900000, 4950000, 5000000, 5050000,
 };
 
+<<<<<<< HEAD
 static const int ldo2_voltages[] = {
+=======
+static const unsigned int ldo2_voltages[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	1100000, 1150000, 1200000, 1250000,
 	1300000, 1700000, 1750000, 1800000,
 	1850000, 1900000, 3150000, 3200000,
 	3250000, 3300000, 3350000, 3400000,
 };
 
+<<<<<<< HEAD
 static const int ldo_ilimsel[] = {
 	400000, 1500000
 };
@@ -359,16 +392,49 @@ static const int usb_ilimsel[] = {
 	200000, 400000, 800000, 1000000
 };
 
+=======
+static const unsigned int fixed_5000000_voltage[] = {
+	5000000
+};
+
+static const unsigned int ldo_ilimsel[] = {
+	400000, 1500000
+};
+
+static const unsigned int usb_ilimsel[] = {
+	200000, 400000, 800000, 1000000
+};
+
+static const unsigned int fixed_2400000_ilimsel[] = {
+	2400000
+};
+
+static const unsigned int fixed_1200000_ilimsel[] = {
+	1200000
+};
+
+static const unsigned int fixed_400000_ilimsel[] = {
+	400000
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __MK_FIELD(_reg, _mask, _shift) \
 	{ .reg = (_reg), .mask = (_mask), .shift = (_shift), }
 
 static const struct supply_info supply_info[N_REGULATORS] = {
 	{
 		.name		= "DCDC1",
+<<<<<<< HEAD
 		.flags		= FIXED_ILIMSEL,
 		.n_voltages	= ARRAY_SIZE(dcdc1_voltages),
 		.voltages	= dcdc1_voltages,
 		.fixed_ilimsel	= 2400000,
+=======
+		.n_voltages	= ARRAY_SIZE(dcdc1_voltages),
+		.voltages	= dcdc1_voltages,
+		.n_ilimsels	= ARRAY_SIZE(fixed_2400000_ilimsel),
+		.ilimsels	= fixed_2400000_ilimsel,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.enable		= __MK_FIELD(REG_DCDC_EN, DCDCDCDC_EN_MASK,
 					     DCDCDCDC1_EN_SHIFT),
 		.voltage	= __MK_FIELD(REG_DCDC_SET, DCDC_VDCDC_MASK,
@@ -376,10 +442,17 @@ static const struct supply_info supply_info[N_REGULATORS] = {
 	},
 	{
 		.name		= "DCDC2",
+<<<<<<< HEAD
 		.flags		= FIXED_ILIMSEL,
 		.n_voltages	= ARRAY_SIZE(dcdc2_voltages),
 		.voltages	= dcdc2_voltages,
 		.fixed_ilimsel	= 1200000,
+=======
+		.n_voltages	= ARRAY_SIZE(dcdc2_voltages),
+		.voltages	= dcdc2_voltages,
+		.n_ilimsels	= ARRAY_SIZE(fixed_1200000_ilimsel),
+		.ilimsels	= fixed_1200000_ilimsel,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.enable		= __MK_FIELD(REG_DCDC_EN, DCDCDCDC_EN_MASK,
 					     DCDCDCDC2_EN_SHIFT),
 		.voltage	= __MK_FIELD(REG_DCDC_SET, DCDC_VDCDC_MASK,
@@ -387,10 +460,17 @@ static const struct supply_info supply_info[N_REGULATORS] = {
 	},
 	{
 		.name		= "DCDC3",
+<<<<<<< HEAD
 		.flags		= FIXED_ILIMSEL,
 		.n_voltages	= ARRAY_SIZE(dcdc3_voltages),
 		.voltages	= dcdc3_voltages,
 		.fixed_ilimsel	= 1200000,
+=======
+		.n_voltages	= ARRAY_SIZE(dcdc3_voltages),
+		.voltages	= dcdc3_voltages,
+		.n_ilimsels	= ARRAY_SIZE(fixed_1200000_ilimsel),
+		.ilimsels	= fixed_1200000_ilimsel,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.enable		= __MK_FIELD(REG_DCDC_EN, DCDCDCDC_EN_MASK,
 					DCDCDCDC3_EN_SHIFT),
 		.voltage	= __MK_FIELD(REG_DCDC_SET, DCDC_VDCDC_MASK,
@@ -424,8 +504,13 @@ static const struct supply_info supply_info[N_REGULATORS] = {
 	},
 	{
 		.name		= "USB",
+<<<<<<< HEAD
 		.flags		= FIXED_VOLTAGE,
 		.fixed_voltage	= 5000000,
+=======
+		.n_voltages	= ARRAY_SIZE(fixed_5000000_voltage),
+		.voltages	= fixed_5000000_voltage,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.n_ilimsels	= ARRAY_SIZE(usb_ilimsel),
 		.ilimsels	= usb_ilimsel,
 		.enable		= __MK_FIELD(REG_BLOCK_EN, BLOCK_MASK,
@@ -435,15 +520,26 @@ static const struct supply_info supply_info[N_REGULATORS] = {
 	},
 	{
 		.name		= "LCD",
+<<<<<<< HEAD
 		.flags		= FIXED_VOLTAGE | FIXED_ILIMSEL,
 		.fixed_voltage	= 5000000,
 		.fixed_ilimsel	=  400000,
+=======
+		.n_voltages	= ARRAY_SIZE(fixed_5000000_voltage),
+		.voltages	= fixed_5000000_voltage,
+		.n_ilimsels	= ARRAY_SIZE(fixed_400000_ilimsel),
+		.ilimsels	= fixed_400000_ilimsel,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.enable		= __MK_FIELD(REG_BLOCK_EN, BLOCK_MASK,
 					     BLOCK_LCD_SHIFT),
 	},
 };
 
+<<<<<<< HEAD
 static int list_voltage(struct regulator_dev *rdev, unsigned selector)
+=======
+static int set_voltage_sel(struct regulator_dev *rdev, unsigned selector)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct supply_info *info;
 	struct tps6524x *hw;
@@ -451,6 +547,7 @@ static int list_voltage(struct regulator_dev *rdev, unsigned selector)
 	hw	= rdev_get_drvdata(rdev);
 	info	= &supply_info[rdev_get_id(rdev)];
 
+<<<<<<< HEAD
 	if (info->flags & FIXED_VOLTAGE)
 		return selector ? -EINVAL : info->fixed_voltage;
 
@@ -485,6 +582,15 @@ static int set_voltage(struct regulator_dev *rdev, int min_uV, int max_uV,
 }
 
 static int get_voltage(struct regulator_dev *rdev)
+=======
+	if (rdev->desc->n_voltages == 1)
+		return -EINVAL;
+
+	return write_field(hw, &info->voltage, selector);
+}
+
+static int get_voltage_sel(struct regulator_dev *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct supply_info *info;
 	struct tps6524x *hw;
@@ -493,8 +599,13 @@ static int get_voltage(struct regulator_dev *rdev)
 	hw	= rdev_get_drvdata(rdev);
 	info	= &supply_info[rdev_get_id(rdev)];
 
+<<<<<<< HEAD
 	if (info->flags & FIXED_VOLTAGE)
 		return info->fixed_voltage;
+=======
+	if (rdev->desc->n_voltages == 1)
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = read_field(hw, &info->voltage);
 	if (ret < 0)
@@ -502,7 +613,11 @@ static int get_voltage(struct regulator_dev *rdev)
 	if (WARN_ON(ret >= info->n_voltages))
 		return -EIO;
 
+<<<<<<< HEAD
 	return info->voltages[ret];
+=======
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int set_current_limit(struct regulator_dev *rdev, int min_uA,
@@ -515,6 +630,7 @@ static int set_current_limit(struct regulator_dev *rdev, int min_uA,
 	hw	= rdev_get_drvdata(rdev);
 	info	= &supply_info[rdev_get_id(rdev)];
 
+<<<<<<< HEAD
 	if (info->flags & FIXED_ILIMSEL)
 		return -EINVAL;
 
@@ -527,6 +643,18 @@ static int set_current_limit(struct regulator_dev *rdev, int min_uA,
 		return -EINVAL;
 
 	return write_field(hw, &info->ilimsel, i);
+=======
+	if (info->n_ilimsels == 1)
+		return -EINVAL;
+
+	for (i = info->n_ilimsels - 1; i >= 0; i--) {
+		if (min_uA <= info->ilimsels[i] &&
+		    max_uA >= info->ilimsels[i])
+			return write_field(hw, &info->ilimsel, i);
+	}
+
+	return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int get_current_limit(struct regulator_dev *rdev)
@@ -538,8 +666,13 @@ static int get_current_limit(struct regulator_dev *rdev)
 	hw	= rdev_get_drvdata(rdev);
 	info	= &supply_info[rdev_get_id(rdev)];
 
+<<<<<<< HEAD
 	if (info->flags & FIXED_ILIMSEL)
 		return info->fixed_ilimsel;
+=======
+	if (info->n_ilimsels == 1)
+		return info->ilimsels[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = read_field(hw, &info->ilimsel);
 	if (ret < 0)
@@ -583,6 +716,7 @@ static int is_supply_enabled(struct regulator_dev *rdev)
 	return read_field(hw, &info->enable);
 }
 
+<<<<<<< HEAD
 static struct regulator_ops regulator_ops = {
 	.is_enabled		= is_supply_enabled,
 	.enable			= enable_supply,
@@ -590,10 +724,21 @@ static struct regulator_ops regulator_ops = {
 	.get_voltage		= get_voltage,
 	.set_voltage		= set_voltage,
 	.list_voltage		= list_voltage,
+=======
+static const struct regulator_ops regulator_ops = {
+	.is_enabled		= is_supply_enabled,
+	.enable			= enable_supply,
+	.disable		= disable_supply,
+	.get_voltage_sel	= get_voltage_sel,
+	.set_voltage_sel	= set_voltage_sel,
+	.list_voltage		= regulator_list_voltage_table,
+	.map_voltage		= regulator_map_voltage_ascend,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_current_limit	= set_current_limit,
 	.get_current_limit	= get_current_limit,
 };
 
+<<<<<<< HEAD
 static int pmic_remove(struct spi_device *spi)
 {
 	struct tps6524x *hw = spi_get_drvdata(spi);
@@ -612,39 +757,66 @@ static int pmic_remove(struct spi_device *spi)
 }
 
 static int __devinit pmic_probe(struct spi_device *spi)
+=======
+static int pmic_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tps6524x *hw;
 	struct device *dev = &spi->dev;
 	const struct supply_info *info = supply_info;
 	struct regulator_init_data *init_data;
+<<<<<<< HEAD
 	int ret = 0, i;
 
 	init_data = dev->platform_data;
+=======
+	struct regulator_config config = { };
+	struct regulator_dev *rdev;
+	int i;
+
+	init_data = dev_get_platdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!init_data) {
 		dev_err(dev, "could not find regulator platform data\n");
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	hw = kzalloc(sizeof(struct tps6524x), GFP_KERNEL);
 	if (!hw) {
 		dev_err(dev, "cannot allocate regulator private data\n");
 		return -ENOMEM;
 	}
+=======
+	hw = devm_kzalloc(&spi->dev, sizeof(struct tps6524x), GFP_KERNEL);
+	if (!hw)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spi_set_drvdata(spi, hw);
 
 	memset(hw, 0, sizeof(struct tps6524x));
 	hw->dev = dev;
+<<<<<<< HEAD
 	hw->spi = spi_dev_get(spi);
+=======
+	hw->spi = spi;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&hw->lock);
 
 	for (i = 0; i < N_REGULATORS; i++, info++, init_data++) {
 		hw->desc[i].name	= info->name;
 		hw->desc[i].id		= i;
 		hw->desc[i].n_voltages	= info->n_voltages;
+<<<<<<< HEAD
+=======
+		hw->desc[i].volt_table	= info->voltages;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hw->desc[i].ops		= &regulator_ops;
 		hw->desc[i].type	= REGULATOR_VOLTAGE;
 		hw->desc[i].owner	= THIS_MODULE;
 
+<<<<<<< HEAD
 		if (info->flags & FIXED_VOLTAGE)
 			hw->desc[i].n_voltages = 1;
 
@@ -662,10 +834,23 @@ static int __devinit pmic_probe(struct spi_device *spi)
 fail:
 	pmic_remove(spi);
 	return ret;
+=======
+		config.dev = dev;
+		config.init_data = init_data;
+		config.driver_data = hw;
+
+		rdev = devm_regulator_register(dev, &hw->desc[i], &config);
+		if (IS_ERR(rdev))
+			return PTR_ERR(rdev);
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver pmic_driver = {
 	.probe		= pmic_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(pmic_remove),
 	.driver		= {
 		.name	= "tps6524x",
@@ -684,6 +869,15 @@ static void __exit pmic_driver_exit(void)
 	spi_unregister_driver(&pmic_driver);
 }
 module_exit(pmic_driver_exit);
+=======
+	.driver		= {
+		.name	= "tps6524x",
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+	},
+};
+
+module_spi_driver(pmic_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("TPS6524X PMIC Driver");
 MODULE_AUTHOR("Cyril Chemparathy");

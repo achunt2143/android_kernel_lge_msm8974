@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* p80211mgmt.h
 *
 * Macros, types, and functions to handle 802.11 mgmt frames
@@ -96,6 +97,86 @@
 *    and must be handled individually by the client code.
 * --------------------------------------------------------------------
 */
+=======
+/* SPDX-License-Identifier: (GPL-2.0 OR MPL-1.1) */
+/*
+ *
+ * Macros, types, and functions to handle 802.11 mgmt frames
+ *
+ * Copyright (C) 1999 AbsoluteValue Systems, Inc.  All Rights Reserved.
+ * --------------------------------------------------------------------
+ *
+ * linux-wlan
+ *
+ * --------------------------------------------------------------------
+ *
+ * Inquiries regarding the linux-wlan Open Source project can be
+ * made directly to:
+ *
+ * AbsoluteValue Systems Inc.
+ * info@linux-wlan.com
+ * http://www.linux-wlan.com
+ *
+ * --------------------------------------------------------------------
+ *
+ * Portions of the development of this software were funded by
+ * Intersil Corporation as part of PRISM(R) chipset product development.
+ *
+ * --------------------------------------------------------------------
+ *
+ * This file declares the constants and types used in the interface
+ * between a wlan driver and the user mode utilities.
+ *
+ * Notes:
+ *  - Constant values are always in HOST byte order.  To assign
+ *    values to multi-byte fields they _must_ be converted to
+ *    ieee byte order.  To retrieve multi-byte values from incoming
+ *    frames, they must be converted to host order.
+ *
+ *  - The len member of the frame structure does NOT!!! include
+ *    the MAC CRC.  Therefore, the len field on rx'd frames should
+ *    have 4 subtracted from it.
+ *
+ * All functions declared here are implemented in p80211.c
+ *
+ * The types, macros, and functions defined here are primarily
+ * used for encoding and decoding management frames.  They are
+ * designed to follow these patterns of use:
+ *
+ * DECODE:
+ * 1) a frame of length len is received into buffer b
+ * 2) using the hdr structure and macros, we determine the type
+ * 3) an appropriate mgmt frame structure, mf, is allocated and zeroed
+ * 4) mf.hdr = b
+ *    mf.buf = b
+ *    mf.len = len
+ * 5) call mgmt_decode( mf )
+ * 6) the frame field pointers in mf are now set.  Note that any
+ *    multi-byte frame field values accessed using the frame field
+ *    pointers are in ieee byte order and will have to be converted
+ *    to host order.
+ *
+ * ENCODE:
+ * 1) Library client allocates buffer space for maximum length
+ *    frame of the desired type
+ * 2) Library client allocates a mgmt frame structure, called mf,
+ *    of the desired type
+ * 3) Set the following:
+ *    mf.type = <desired type>
+ *    mf.buf = <allocated buffer address>
+ * 4) call mgmt_encode( mf )
+ * 5) all of the fixed field pointers and fixed length information element
+ *    pointers in mf are now set to their respective locations in the
+ *    allocated space (fortunately, all variable length information elements
+ *    fall at the end of their respective frames).
+ * 5a) The length field is set to include the last of the fixed and fixed
+ *     length fields.  It may have to be updated for optional or variable
+ *	length information elements.
+ * 6) Optional and variable length information elements are special cases
+ *    and must be handled individually by the client code.
+ * --------------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _P80211MGMT_H
 #define _P80211MGMT_H
@@ -216,6 +297,7 @@
 #define WLAN_SET_MGMT_CAP_INFO_PBCC(n)		((n) << 6)
 #define WLAN_SET_MGMT_CAP_INFO_AGILITY(n)	((n) << 7)
 
+<<<<<<< HEAD
 /*-- Information Element Types --------------------*/
 /* prototype structure, all IEs start with these members */
 
@@ -517,4 +599,6 @@ void wlan_mgmt_decode_authen(wlan_fr_authen_t *f);
 void wlan_mgmt_encode_deauthen(wlan_fr_deauthen_t *f);
 void wlan_mgmt_decode_deauthen(wlan_fr_deauthen_t *f);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _P80211MGMT_H */

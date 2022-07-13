@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Feature Integration Technology Inc. (aka Fintek) LPC CIR
  *
@@ -6,6 +10,7 @@
  * Special thanks to Fintek for providing hardware and spec sheets.
  * This driver is based upon the nuvoton, ite and ene drivers for
  * similar hardware.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -21,6 +26,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/spinlock.h>
@@ -76,8 +83,13 @@ struct fintek_dev {
 	} tx;
 
 	/* Config register index/data port pair */
+<<<<<<< HEAD
 	u8 cr_ip;
 	u8 cr_dp;
+=======
+	u32 cr_ip;
+	u32 cr_dp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* hardware I/O settings */
 	unsigned long cir_addr;
@@ -181,7 +193,11 @@ struct fintek_dev {
 #define CIR_CR_IRCS		0x05 /* Before host writes command to IR, host
 					must set to 1. When host finshes write
 					command to IR, host must clear to 0. */
+<<<<<<< HEAD
 #define CIR_CR_COMMAND_DATA	0x06 /* Host read or write comand data */
+=======
+#define CIR_CR_COMMAND_DATA	0x06 /* Host read or write command data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CIR_CR_CLASS		0x07 /* 0xff = rx-only, 0x66 = rx + 2 tx,
 					0x33 = rx + 1 tx */
 #define CIR_CR_DEV_EN		0x30 /* bit0 = 1 enables CIR */

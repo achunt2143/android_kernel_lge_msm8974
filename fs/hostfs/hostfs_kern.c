@@ -7,22 +7,40 @@
  */
 
 #include <linux/fs.h>
+<<<<<<< HEAD
+=======
+#include <linux/magic.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/mm.h>
 #include <linux/pagemap.h>
 #include <linux/statfs.h>
 #include <linux/slab.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
 #include <linux/mount.h>
 #include <linux/namei.h>
 #include "hostfs.h"
 #include "init.h"
 #include "kern.h"
+=======
+#include <linux/writeback.h>
+#include <linux/mount.h>
+#include <linux/namei.h>
+#include "hostfs.h"
+#include <init.h>
+#include <kern.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hostfs_inode_info {
 	int fd;
 	fmode_t mode;
 	struct inode vfs_inode;
+<<<<<<< HEAD
+=======
+	struct mutex open_mutex;
+	dev_t dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct hostfs_inode_info *HOSTFS_I(struct inode *inode)
@@ -30,6 +48,7 @@ static inline struct hostfs_inode_info *HOSTFS_I(struct inode *inode)
 	return list_entry(inode, struct hostfs_inode_info, vfs_inode);
 }
 
+<<<<<<< HEAD
 #define FILE_HOSTFS_I(file) HOSTFS_I((file)->f_path.dentry->d_inode)
 
 static int hostfs_d_delete(const struct dentry *dentry)
@@ -40,13 +59,21 @@ static int hostfs_d_delete(const struct dentry *dentry)
 static const struct dentry_operations hostfs_dentry_ops = {
 	.d_delete		= hostfs_d_delete,
 };
+=======
+#define FILE_HOSTFS_I(file) HOSTFS_I(file_inode(file))
+
+static struct kmem_cache *hostfs_inode_cache;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Changed in hostfs_args before the kernel starts running */
 static char *root_ino = "";
 static int append = 0;
 
+<<<<<<< HEAD
 #define HOSTFS_SUPER_MAGIC 0x00c0ffee
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct inode_operations hostfs_iops;
 static const struct inode_operations hostfs_dir_iops;
 static const struct inode_operations hostfs_link_iops;
@@ -102,16 +129,34 @@ static char *__dentry_name(struct dentry *dentry, char *name)
 		__putname(name);
 		return NULL;
 	}
+<<<<<<< HEAD
 	strlcpy(name, root, PATH_MAX);
+=======
+
+	/*
+	 * This function relies on the fact that dentry_path_raw() will place
+	 * the path name at the end of the provided buffer.
+	 */
+	BUG_ON(p + strlen(p) + 1 != name + PATH_MAX);
+
+	strscpy(name, root, PATH_MAX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len > p - name) {
 		__putname(name);
 		return NULL;
 	}
+<<<<<<< HEAD
 	if (p > name + len) {
 		char *s = name + len;
 		while ((*s++ = *p++) != '\0')
 			;
 	}
+=======
+
+	if (p > name + len)
+		strcpy(name + len, p);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return name;
 }
 
@@ -121,7 +166,11 @@ static char *dentry_name(struct dentry *dentry)
 	if (!name)
 		return NULL;
 
+<<<<<<< HEAD
 	return __dentry_name(dentry, name); /* will unlock */
+=======
+	return __dentry_name(dentry, name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static char *inode_name(struct inode *ino)
@@ -142,6 +191,7 @@ static char *inode_name(struct inode *ino)
 
 static char *follow_link(char *link)
 {
+<<<<<<< HEAD
 	int len, n;
 	char *name, *resolved, *end;
 
@@ -160,6 +210,24 @@ static char *follow_link(char *link)
 	}
 	if (n < 0)
 		goto out_free;
+=======
+	char *name, *resolved, *end;
+	int n;
+
+	name = kmalloc(PATH_MAX, GFP_KERNEL);
+	if (!name) {
+		n = -ENOMEM;
+		goto out_free;
+	}
+
+	n = hostfs_do_readlink(link, name, PATH_MAX);
+	if (n < 0)
+		goto out_free;
+	else if (n == PATH_MAX) {
+		n = -E2BIG;
+		goto out_free;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (*name == '/')
 		return name;
@@ -169,21 +237,31 @@ static char *follow_link(char *link)
 		return name;
 
 	*(end + 1) = '\0';
+<<<<<<< HEAD
 	len = strlen(link) + strlen(name) + 1;
 
 	resolved = kmalloc(len, GFP_KERNEL);
+=======
+
+	resolved = kasprintf(GFP_KERNEL, "%s%s", link, name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (resolved == NULL) {
 		n = -ENOMEM;
 		goto out_free;
 	}
 
+<<<<<<< HEAD
 	sprintf(resolved, "%s%s", link, name);
 	kfree(name);
 	kfree(link);
+=======
+	kfree(name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return resolved;
 
  out_free:
 	kfree(name);
+<<<<<<< HEAD
  out:
 	return ERR_PTR(n);
 }
@@ -197,6 +275,12 @@ static struct inode *hostfs_iget(struct super_block *sb)
 }
 
 int hostfs_statfs(struct dentry *dentry, struct kstatfs *sf)
+=======
+	return ERR_PTR(n);
+}
+
+static int hostfs_statfs(struct dentry *dentry, struct kstatfs *sf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * do_statfs uses struct statfs64 internally, but the linux kernel
@@ -229,16 +313,28 @@ static struct inode *hostfs_alloc_inode(struct super_block *sb)
 {
 	struct hostfs_inode_info *hi;
 
+<<<<<<< HEAD
 	hi = kzalloc(sizeof(*hi), GFP_KERNEL);
 	if (hi == NULL)
 		return NULL;
 	hi->fd = -1;
 	inode_init_once(&hi->vfs_inode);
+=======
+	hi = alloc_inode_sb(sb, hostfs_inode_cache, GFP_KERNEL_ACCOUNT);
+	if (hi == NULL)
+		return NULL;
+	hi->fd = -1;
+	hi->mode = 0;
+	hi->dev = 0;
+	inode_init_once(&hi->vfs_inode);
+	mutex_init(&hi->open_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return &hi->vfs_inode;
 }
 
 static void hostfs_evict_inode(struct inode *inode)
 {
+<<<<<<< HEAD
 	truncate_inode_pages(&inode->i_data, 0);
 	end_writeback(inode);
 	if (HOSTFS_I(inode)->fd != -1) {
@@ -256,6 +352,20 @@ static void hostfs_i_callback(struct rcu_head *head)
 static void hostfs_destroy_inode(struct inode *inode)
 {
 	call_rcu(&inode->i_rcu, hostfs_i_callback);
+=======
+	truncate_inode_pages_final(&inode->i_data);
+	clear_inode(inode);
+	if (HOSTFS_I(inode)->fd != -1) {
+		close_file(&HOSTFS_I(inode)->fd);
+		HOSTFS_I(inode)->fd = -1;
+		HOSTFS_I(inode)->dev = 0;
+	}
+}
+
+static void hostfs_free_inode(struct inode *inode)
+{
+	kmem_cache_free(hostfs_inode_cache, HOSTFS_I(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hostfs_show_options(struct seq_file *seq, struct dentry *root)
@@ -266,18 +376,33 @@ static int hostfs_show_options(struct seq_file *seq, struct dentry *root)
 	if (strlen(root_path) > offset)
 		seq_show_option(seq, root_path + offset, NULL);
 
+<<<<<<< HEAD
+=======
+	if (append)
+		seq_puts(seq, ",append");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static const struct super_operations hostfs_sbops = {
 	.alloc_inode	= hostfs_alloc_inode,
+<<<<<<< HEAD
 	.destroy_inode	= hostfs_destroy_inode,
+=======
+	.free_inode	= hostfs_free_inode,
+	.drop_inode	= generic_delete_inode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.evict_inode	= hostfs_evict_inode,
 	.statfs		= hostfs_statfs,
 	.show_options	= hostfs_show_options,
 };
 
+<<<<<<< HEAD
 int hostfs_readdir(struct file *file, void *ent, filldir_t filldir)
+=======
+static int hostfs_readdir(struct file *file, struct dir_context *ctx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *dir;
 	char *name;
@@ -292,17 +417,27 @@ int hostfs_readdir(struct file *file, void *ent, filldir_t filldir)
 	__putname(name);
 	if (dir == NULL)
 		return -error;
+<<<<<<< HEAD
 	next = file->f_pos;
 	while ((name = read_dir(dir, &next, &ino, &len, &type)) != NULL) {
 		error = (*filldir)(ent, name, len, file->f_pos,
 				   ino, type);
 		if (error) break;
 		file->f_pos = next;
+=======
+	next = ctx->pos;
+	seek_dir(dir, next);
+	while ((name = read_dir(dir, &next, &ino, &len, &type)) != NULL) {
+		if (!dir_emit(ctx, name, len, ino, type))
+			break;
+		ctx->pos = next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	close_dir(dir);
 	return 0;
 }
 
+<<<<<<< HEAD
 int hostfs_file_open(struct inode *ino, struct file *file)
 {
 	static DEFINE_MUTEX(open_mutex);
@@ -310,6 +445,14 @@ int hostfs_file_open(struct inode *ino, struct file *file)
 	fmode_t mode = 0;
 	int err;
 	int r = 0, w = 0, fd;
+=======
+static int hostfs_open(struct inode *ino, struct file *file)
+{
+	char *name;
+	fmode_t mode;
+	int err;
+	int r, w, fd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mode = file->f_mode & (FMODE_READ | FMODE_WRITE);
 	if ((mode & HOSTFS_I(ino)->mode) == mode)
@@ -318,6 +461,7 @@ int hostfs_file_open(struct inode *ino, struct file *file)
 	mode |= HOSTFS_I(ino)->mode;
 
 retry:
+<<<<<<< HEAD
 	if (mode & FMODE_READ)
 		r = 1;
 	if (mode & FMODE_WRITE)
@@ -326,6 +470,16 @@ retry:
 		r = 1;
 
 	name = dentry_name(file->f_path.dentry);
+=======
+	r = w = 0;
+
+	if (mode & FMODE_READ)
+		r = 1;
+	if (mode & FMODE_WRITE)
+		r = w = 1;
+
+	name = dentry_name(file_dentry(file));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (name == NULL)
 		return -ENOMEM;
 
@@ -334,15 +488,27 @@ retry:
 	if (fd < 0)
 		return fd;
 
+<<<<<<< HEAD
 	mutex_lock(&open_mutex);
 	/* somebody else had handled it first? */
 	if ((mode & HOSTFS_I(ino)->mode) == mode) {
 		mutex_unlock(&open_mutex);
+=======
+	mutex_lock(&HOSTFS_I(ino)->open_mutex);
+	/* somebody else had handled it first? */
+	if ((mode & HOSTFS_I(ino)->mode) == mode) {
+		mutex_unlock(&HOSTFS_I(ino)->open_mutex);
+		close_file(&fd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	if ((mode | HOSTFS_I(ino)->mode) != mode) {
 		mode |= HOSTFS_I(ino)->mode;
+<<<<<<< HEAD
 		mutex_unlock(&open_mutex);
+=======
+		mutex_unlock(&HOSTFS_I(ino)->open_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		close_file(&fd);
 		goto retry;
 	}
@@ -352,21 +518,42 @@ retry:
 		err = replace_file(fd, HOSTFS_I(ino)->fd);
 		close_file(&fd);
 		if (err < 0) {
+<<<<<<< HEAD
 			mutex_unlock(&open_mutex);
+=======
+			mutex_unlock(&HOSTFS_I(ino)->open_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 	}
 	HOSTFS_I(ino)->mode = mode;
+<<<<<<< HEAD
 	mutex_unlock(&open_mutex);
+=======
+	mutex_unlock(&HOSTFS_I(ino)->open_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 int hostfs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
+=======
+static int hostfs_file_release(struct inode *inode, struct file *file)
+{
+	filemap_write_and_wait(inode->i_mapping);
+
+	return 0;
+}
+
+static int hostfs_fsync(struct file *file, loff_t start, loff_t end,
+			int datasync)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode = file->f_mapping->host;
 	int ret;
 
+<<<<<<< HEAD
 	ret = filemap_write_and_wait_range(inode->i_mapping, start, end);
 	if (ret)
 		return ret;
@@ -374,12 +561,22 @@ int hostfs_fsync(struct file *file, loff_t start, loff_t end, int datasync)
 	mutex_lock(&inode->i_mutex);
 	ret = fsync_file(HOSTFS_I(inode)->fd, datasync);
 	mutex_unlock(&inode->i_mutex);
+=======
+	ret = file_write_and_wait_range(file, start, end);
+	if (ret)
+		return ret;
+
+	inode_lock(inode);
+	ret = fsync_file(HOSTFS_I(inode)->fd, datasync);
+	inode_unlock(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 static const struct file_operations hostfs_file_fops = {
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.read		= do_sync_read,
 	.splice_read	= generic_file_splice_read,
 	.aio_read	= generic_file_aio_read,
@@ -388,20 +585,40 @@ static const struct file_operations hostfs_file_fops = {
 	.mmap		= generic_file_mmap,
 	.open		= hostfs_file_open,
 	.release	= NULL,
+=======
+	.splice_read	= filemap_splice_read,
+	.splice_write	= iter_file_splice_write,
+	.read_iter	= generic_file_read_iter,
+	.write_iter	= generic_file_write_iter,
+	.mmap		= generic_file_mmap,
+	.open		= hostfs_open,
+	.release	= hostfs_file_release,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fsync		= hostfs_fsync,
 };
 
 static const struct file_operations hostfs_dir_fops = {
 	.llseek		= generic_file_llseek,
+<<<<<<< HEAD
 	.readdir	= hostfs_readdir,
 	.read		= generic_read_dir,
 };
 
 int hostfs_writepage(struct page *page, struct writeback_control *wbc)
+=======
+	.iterate_shared	= hostfs_readdir,
+	.read		= generic_read_dir,
+	.open		= hostfs_open,
+	.fsync		= hostfs_fsync,
+};
+
+static int hostfs_writepage(struct page *page, struct writeback_control *wbc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct address_space *mapping = page->mapping;
 	struct inode *inode = mapping->host;
 	char *buffer;
+<<<<<<< HEAD
 	unsigned long long base;
 	int count = PAGE_CACHE_SIZE;
 	int end_index = inode->i_size >> PAGE_CACHE_SHIFT;
@@ -416,12 +633,30 @@ int hostfs_writepage(struct page *page, struct writeback_control *wbc)
 	err = write_file(HOSTFS_I(inode)->fd, &base, buffer, count);
 	if (err != count) {
 		ClearPageUptodate(page);
+=======
+	loff_t base = page_offset(page);
+	int count = PAGE_SIZE;
+	int end_index = inode->i_size >> PAGE_SHIFT;
+	int err;
+
+	if (page->index >= end_index)
+		count = inode->i_size & (PAGE_SIZE-1);
+
+	buffer = kmap_local_page(page);
+
+	err = write_file(HOSTFS_I(inode)->fd, &base, buffer, count);
+	if (err != count) {
+		if (err >= 0)
+			err = -EIO;
+		mapping_set_error(mapping, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	if (base > inode->i_size)
 		inode->i_size = base;
 
+<<<<<<< HEAD
 	if (PageError(page))
 		ClearPageError(page);
 	err = 0;
@@ -465,11 +700,60 @@ int hostfs_write_begin(struct file *file, struct address_space *mapping,
 	pgoff_t index = pos >> PAGE_CACHE_SHIFT;
 
 	*pagep = grab_cache_page_write_begin(mapping, index, flags);
+=======
+	err = 0;
+
+ out:
+	kunmap_local(buffer);
+	unlock_page(page);
+
+	return err;
+}
+
+static int hostfs_read_folio(struct file *file, struct folio *folio)
+{
+	struct page *page = &folio->page;
+	char *buffer;
+	loff_t start = page_offset(page);
+	int bytes_read, ret = 0;
+
+	buffer = kmap_local_page(page);
+	bytes_read = read_file(FILE_HOSTFS_I(file)->fd, &start, buffer,
+			PAGE_SIZE);
+	if (bytes_read < 0) {
+		ClearPageUptodate(page);
+		SetPageError(page);
+		ret = bytes_read;
+		goto out;
+	}
+
+	memset(buffer + bytes_read, 0, PAGE_SIZE - bytes_read);
+
+	ClearPageError(page);
+	SetPageUptodate(page);
+
+ out:
+	flush_dcache_page(page);
+	kunmap_local(buffer);
+	unlock_page(page);
+
+	return ret;
+}
+
+static int hostfs_write_begin(struct file *file, struct address_space *mapping,
+			      loff_t pos, unsigned len,
+			      struct page **pagep, void **fsdata)
+{
+	pgoff_t index = pos >> PAGE_SHIFT;
+
+	*pagep = grab_cache_page_write_begin(mapping, index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!*pagep)
 		return -ENOMEM;
 	return 0;
 }
 
+<<<<<<< HEAD
 int hostfs_write_end(struct file *file, struct address_space *mapping,
 			loff_t pos, unsigned len, unsigned copied,
 			struct page *page, void *fsdata)
@@ -484,6 +768,22 @@ int hostfs_write_end(struct file *file, struct address_space *mapping,
 	kunmap(page);
 
 	if (!PageUptodate(page) && err == PAGE_CACHE_SIZE)
+=======
+static int hostfs_write_end(struct file *file, struct address_space *mapping,
+			    loff_t pos, unsigned len, unsigned copied,
+			    struct page *page, void *fsdata)
+{
+	struct inode *inode = mapping->host;
+	void *buffer;
+	unsigned from = pos & (PAGE_SIZE - 1);
+	int err;
+
+	buffer = kmap_local_page(page);
+	err = write_file(FILE_HOSTFS_I(file)->fd, &pos, buffer + from, copied);
+	kunmap_local(buffer);
+
+	if (!PageUptodate(page) && err == PAGE_SIZE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SetPageUptodate(page);
 
 	/*
@@ -493,19 +793,29 @@ int hostfs_write_end(struct file *file, struct address_space *mapping,
 	if (err > 0 && (pos > inode->i_size))
 		inode->i_size = pos;
 	unlock_page(page);
+<<<<<<< HEAD
 	page_cache_release(page);
+=======
+	put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
 static const struct address_space_operations hostfs_aops = {
 	.writepage 	= hostfs_writepage,
+<<<<<<< HEAD
 	.readpage	= hostfs_readpage,
 	.set_page_dirty = __set_page_dirty_nobuffers,
+=======
+	.read_folio	= hostfs_read_folio,
+	.dirty_folio	= filemap_dirty_folio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write_begin	= hostfs_write_begin,
 	.write_end	= hostfs_write_end,
 };
 
+<<<<<<< HEAD
 static int read_name(struct inode *ino, char *name)
 {
 	dev_t rdev;
@@ -518,6 +828,36 @@ static int read_name(struct inode *ino, char *name)
 	rdev = MKDEV(st.maj, st.min);
 
 	switch (st.mode & S_IFMT) {
+=======
+static int hostfs_inode_update(struct inode *ino, const struct hostfs_stat *st)
+{
+	set_nlink(ino, st->nlink);
+	i_uid_write(ino, st->uid);
+	i_gid_write(ino, st->gid);
+	inode_set_atime_to_ts(ino, (struct timespec64){
+			st->atime.tv_sec,
+			st->atime.tv_nsec,
+		});
+	inode_set_mtime_to_ts(ino, (struct timespec64){
+			st->mtime.tv_sec,
+			st->mtime.tv_nsec,
+		});
+	inode_set_ctime(ino, st->ctime.tv_sec, st->ctime.tv_nsec);
+	ino->i_size = st->size;
+	ino->i_blocks = st->blocks;
+	return 0;
+}
+
+static int hostfs_inode_set(struct inode *ino, void *data)
+{
+	struct hostfs_stat *st = data;
+	dev_t rdev;
+
+	/* Reencode maj and min with the kernel encoding.*/
+	rdev = MKDEV(st->maj, st->min);
+
+	switch (st->mode & S_IFMT) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case S_IFLNK:
 		ino->i_op = &hostfs_link_iops;
 		break;
@@ -529,6 +869,7 @@ static int read_name(struct inode *ino, char *name)
 	case S_IFBLK:
 	case S_IFIFO:
 	case S_IFSOCK:
+<<<<<<< HEAD
 		init_special_inode(ino, st.mode & S_IFMT, rdev);
 		ino->i_op = &hostfs_iops;
 		break;
@@ -582,11 +923,85 @@ int hostfs_create(struct inode *dir, struct dentry *dentry, umode_t mode,
 	__putname(name);
 	if (error)
 		goto out_put;
+=======
+		init_special_inode(ino, st->mode & S_IFMT, rdev);
+		ino->i_op = &hostfs_iops;
+		break;
+	case S_IFREG:
+		ino->i_op = &hostfs_iops;
+		ino->i_fop = &hostfs_file_fops;
+		ino->i_mapping->a_ops = &hostfs_aops;
+		break;
+	default:
+		return -EIO;
+	}
+
+	HOSTFS_I(ino)->dev = st->dev;
+	ino->i_ino = st->ino;
+	ino->i_mode = st->mode;
+	return hostfs_inode_update(ino, st);
+}
+
+static int hostfs_inode_test(struct inode *inode, void *data)
+{
+	const struct hostfs_stat *st = data;
+
+	return inode->i_ino == st->ino && HOSTFS_I(inode)->dev == st->dev;
+}
+
+static struct inode *hostfs_iget(struct super_block *sb, char *name)
+{
+	struct inode *inode;
+	struct hostfs_stat st;
+	int err = stat_file(name, &st, -1);
+
+	if (err)
+		return ERR_PTR(err);
+
+	inode = iget5_locked(sb, st.ino, hostfs_inode_test, hostfs_inode_set,
+			     &st);
+	if (!inode)
+		return ERR_PTR(-ENOMEM);
+
+	if (inode->i_state & I_NEW) {
+		unlock_new_inode(inode);
+	} else {
+		spin_lock(&inode->i_lock);
+		hostfs_inode_update(inode, &st);
+		spin_unlock(&inode->i_lock);
+	}
+
+	return inode;
+}
+
+static int hostfs_create(struct mnt_idmap *idmap, struct inode *dir,
+			 struct dentry *dentry, umode_t mode, bool excl)
+{
+	struct inode *inode;
+	char *name;
+	int fd;
+
+	name = dentry_name(dentry);
+	if (name == NULL)
+		return -ENOMEM;
+
+	fd = file_create(name, mode & 0777);
+	if (fd < 0) {
+		__putname(name);
+		return fd;
+	}
+
+	inode = hostfs_iget(dir->i_sb, name);
+	__putname(name);
+	if (IS_ERR(inode))
+		return PTR_ERR(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	HOSTFS_I(inode)->fd = fd;
 	HOSTFS_I(inode)->mode = FMODE_READ | FMODE_WRITE;
 	d_instantiate(dentry, inode);
 	return 0;
+<<<<<<< HEAD
 
  out_put:
 	iput(inode);
@@ -632,6 +1047,30 @@ struct dentry *hostfs_lookup(struct inode *ino, struct dentry *dentry,
 }
 
 int hostfs_link(struct dentry *to, struct inode *ino, struct dentry *from)
+=======
+}
+
+static struct dentry *hostfs_lookup(struct inode *ino, struct dentry *dentry,
+				    unsigned int flags)
+{
+	struct inode *inode = NULL;
+	char *name;
+
+	name = dentry_name(dentry);
+	if (name == NULL)
+		return ERR_PTR(-ENOMEM);
+
+	inode = hostfs_iget(ino->i_sb, name);
+	__putname(name);
+	if (inode == ERR_PTR(-ENOENT))
+		inode = NULL;
+
+	return d_splice_alias(inode, dentry);
+}
+
+static int hostfs_link(struct dentry *to, struct inode *ino,
+		       struct dentry *from)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *from_name, *to_name;
 	int err;
@@ -649,7 +1088,11 @@ int hostfs_link(struct dentry *to, struct inode *ino, struct dentry *from)
 	return err;
 }
 
+<<<<<<< HEAD
 int hostfs_unlink(struct inode *ino, struct dentry *dentry)
+=======
+static int hostfs_unlink(struct inode *ino, struct dentry *dentry)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *file;
 	int err;
@@ -665,7 +1108,12 @@ int hostfs_unlink(struct inode *ino, struct dentry *dentry)
 	return err;
 }
 
+<<<<<<< HEAD
 int hostfs_symlink(struct inode *ino, struct dentry *dentry, const char *to)
+=======
+static int hostfs_symlink(struct mnt_idmap *idmap, struct inode *ino,
+			  struct dentry *dentry, const char *to)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *file;
 	int err;
@@ -677,7 +1125,12 @@ int hostfs_symlink(struct inode *ino, struct dentry *dentry, const char *to)
 	return err;
 }
 
+<<<<<<< HEAD
 int hostfs_mkdir(struct inode *ino, struct dentry *dentry, umode_t mode)
+=======
+static int hostfs_mkdir(struct mnt_idmap *idmap, struct inode *ino,
+			struct dentry *dentry, umode_t mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *file;
 	int err;
@@ -689,24 +1142,38 @@ int hostfs_mkdir(struct inode *ino, struct dentry *dentry, umode_t mode)
 	return err;
 }
 
+<<<<<<< HEAD
 int hostfs_rmdir(struct inode *ino, struct dentry *dentry)
+=======
+static int hostfs_rmdir(struct inode *ino, struct dentry *dentry)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *file;
 	int err;
 
 	if ((file = dentry_name(dentry)) == NULL)
 		return -ENOMEM;
+<<<<<<< HEAD
 	err = do_rmdir(file);
+=======
+	err = hostfs_do_rmdir(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__putname(file);
 	return err;
 }
 
+<<<<<<< HEAD
 static int hostfs_mknod(struct inode *dir, struct dentry *dentry, umode_t mode, dev_t dev)
+=======
+static int hostfs_mknod(struct mnt_idmap *idmap, struct inode *dir,
+			struct dentry *dentry, umode_t mode, dev_t dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode;
 	char *name;
 	int err;
 
+<<<<<<< HEAD
 	inode = hostfs_iget(dir->i_sb);
 	if (IS_ERR(inode)) {
 		err = PTR_ERR(inode);
@@ -760,6 +1227,58 @@ int hostfs_rename(struct inode *from_ino, struct dentry *from,
 }
 
 int hostfs_permission(struct inode *ino, int desired)
+=======
+	name = dentry_name(dentry);
+	if (name == NULL)
+		return -ENOMEM;
+
+	err = do_mknod(name, mode, MAJOR(dev), MINOR(dev));
+	if (err) {
+		__putname(name);
+		return err;
+	}
+
+	inode = hostfs_iget(dir->i_sb, name);
+	__putname(name);
+	if (IS_ERR(inode))
+		return PTR_ERR(inode);
+
+	d_instantiate(dentry, inode);
+	return 0;
+}
+
+static int hostfs_rename2(struct mnt_idmap *idmap,
+			  struct inode *old_dir, struct dentry *old_dentry,
+			  struct inode *new_dir, struct dentry *new_dentry,
+			  unsigned int flags)
+{
+	char *old_name, *new_name;
+	int err;
+
+	if (flags & ~(RENAME_NOREPLACE | RENAME_EXCHANGE))
+		return -EINVAL;
+
+	old_name = dentry_name(old_dentry);
+	if (old_name == NULL)
+		return -ENOMEM;
+	new_name = dentry_name(new_dentry);
+	if (new_name == NULL) {
+		__putname(old_name);
+		return -ENOMEM;
+	}
+	if (!flags)
+		err = rename_file(old_name, new_name);
+	else
+		err = rename2_file(old_name, new_name, flags);
+
+	__putname(old_name);
+	__putname(new_name);
+	return err;
+}
+
+static int hostfs_permission(struct mnt_idmap *idmap,
+			     struct inode *ino, int desired)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *name;
 	int r = 0, w = 0, x = 0, err;
@@ -781,6 +1300,7 @@ int hostfs_permission(struct inode *ino, int desired)
 		err = access_file(name, r, w, x);
 	__putname(name);
 	if (!err)
+<<<<<<< HEAD
 		err = generic_permission(ino, desired);
 	return err;
 }
@@ -788,13 +1308,27 @@ int hostfs_permission(struct inode *ino, int desired)
 int hostfs_setattr(struct dentry *dentry, struct iattr *attr)
 {
 	struct inode *inode = dentry->d_inode;
+=======
+		err = generic_permission(&nop_mnt_idmap, ino, desired);
+	return err;
+}
+
+static int hostfs_setattr(struct mnt_idmap *idmap,
+			  struct dentry *dentry, struct iattr *attr)
+{
+	struct inode *inode = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hostfs_iattr attrs;
 	char *name;
 	int err;
 
 	int fd = HOSTFS_I(inode)->fd;
 
+<<<<<<< HEAD
 	err = inode_change_ok(inode, attr);
+=======
+	err = setattr_prepare(&nop_mnt_idmap, dentry, attr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -808,11 +1342,19 @@ int hostfs_setattr(struct dentry *dentry, struct iattr *attr)
 	}
 	if (attr->ia_valid & ATTR_UID) {
 		attrs.ia_valid |= HOSTFS_ATTR_UID;
+<<<<<<< HEAD
 		attrs.ia_uid = attr->ia_uid;
 	}
 	if (attr->ia_valid & ATTR_GID) {
 		attrs.ia_valid |= HOSTFS_ATTR_GID;
 		attrs.ia_gid = attr->ia_gid;
+=======
+		attrs.ia_uid = from_kuid(&init_user_ns, attr->ia_uid);
+	}
+	if (attr->ia_valid & ATTR_GID) {
+		attrs.ia_valid |= HOSTFS_ATTR_GID;
+		attrs.ia_gid = from_kgid(&init_user_ns, attr->ia_gid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (attr->ia_valid & ATTR_SIZE) {
 		attrs.ia_valid |= HOSTFS_ATTR_SIZE;
@@ -820,6 +1362,7 @@ int hostfs_setattr(struct dentry *dentry, struct iattr *attr)
 	}
 	if (attr->ia_valid & ATTR_ATIME) {
 		attrs.ia_valid |= HOSTFS_ATTR_ATIME;
+<<<<<<< HEAD
 		attrs.ia_atime = attr->ia_atime;
 	}
 	if (attr->ia_valid & ATTR_MTIME) {
@@ -829,6 +1372,20 @@ int hostfs_setattr(struct dentry *dentry, struct iattr *attr)
 	if (attr->ia_valid & ATTR_CTIME) {
 		attrs.ia_valid |= HOSTFS_ATTR_CTIME;
 		attrs.ia_ctime = attr->ia_ctime;
+=======
+		attrs.ia_atime = (struct hostfs_timespec)
+			{ attr->ia_atime.tv_sec, attr->ia_atime.tv_nsec };
+	}
+	if (attr->ia_valid & ATTR_MTIME) {
+		attrs.ia_valid |= HOSTFS_ATTR_MTIME;
+		attrs.ia_mtime = (struct hostfs_timespec)
+			{ attr->ia_mtime.tv_sec, attr->ia_mtime.tv_nsec };
+	}
+	if (attr->ia_valid & ATTR_CTIME) {
+		attrs.ia_valid |= HOSTFS_ATTR_CTIME;
+		attrs.ia_ctime = (struct hostfs_timespec)
+			{ attr->ia_ctime.tv_sec, attr->ia_ctime.tv_nsec };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (attr->ia_valid & ATTR_ATIME_SET) {
 		attrs.ia_valid |= HOSTFS_ATTR_ATIME_SET;
@@ -845,6 +1402,7 @@ int hostfs_setattr(struct dentry *dentry, struct iattr *attr)
 		return err;
 
 	if ((attr->ia_valid & ATTR_SIZE) &&
+<<<<<<< HEAD
 	    attr->ia_size != i_size_read(inode)) {
 		int error;
 
@@ -854,11 +1412,18 @@ int hostfs_setattr(struct dentry *dentry, struct iattr *attr)
 	}
 
 	setattr_copy(inode, attr);
+=======
+	    attr->ia_size != i_size_read(inode))
+		truncate_setsize(inode, attr->ia_size);
+
+	setattr_copy(&nop_mnt_idmap, inode, attr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 	return 0;
 }
 
 static const struct inode_operations hostfs_iops = {
+<<<<<<< HEAD
 	.create		= hostfs_create,
 	.link		= hostfs_link,
 	.unlink		= hostfs_unlink,
@@ -867,6 +1432,8 @@ static const struct inode_operations hostfs_iops = {
 	.rmdir		= hostfs_rmdir,
 	.mknod		= hostfs_mknod,
 	.rename		= hostfs_rename,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.permission	= hostfs_permission,
 	.setattr	= hostfs_setattr,
 };
@@ -880,14 +1447,29 @@ static const struct inode_operations hostfs_dir_iops = {
 	.mkdir		= hostfs_mkdir,
 	.rmdir		= hostfs_rmdir,
 	.mknod		= hostfs_mknod,
+<<<<<<< HEAD
 	.rename		= hostfs_rename,
+=======
+	.rename		= hostfs_rename2,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.permission	= hostfs_permission,
 	.setattr	= hostfs_setattr,
 };
 
+<<<<<<< HEAD
 static void *hostfs_follow_link(struct dentry *dentry, struct nameidata *nd)
 {
 	char *link = __getname();
+=======
+static const char *hostfs_get_link(struct dentry *dentry,
+				   struct inode *inode,
+				   struct delayed_call *done)
+{
+	char *link;
+	if (!dentry)
+		return ERR_PTR(-ECHILD);
+	link = kmalloc(PATH_MAX, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (link) {
 		char *path = dentry_name(dentry);
 		int err = -ENOMEM;
@@ -898,6 +1480,7 @@ static void *hostfs_follow_link(struct dentry *dentry, struct nameidata *nd)
 			__putname(path);
 		}
 		if (err < 0) {
+<<<<<<< HEAD
 			__putname(link);
 			link = ERR_PTR(err);
 		}
@@ -920,6 +1503,21 @@ static const struct inode_operations hostfs_link_iops = {
 	.readlink	= generic_readlink,
 	.follow_link	= hostfs_follow_link,
 	.put_link	= hostfs_put_link,
+=======
+			kfree(link);
+			return ERR_PTR(err);
+		}
+	} else {
+		return ERR_PTR(-ENOMEM);
+	}
+
+	set_delayed_call(done, kfree_link, link);
+	return link;
+}
+
+static const struct inode_operations hostfs_link_iops = {
+	.get_link	= hostfs_get_link,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int hostfs_fill_sb_common(struct super_block *sb, void *d, int silent)
@@ -932,6 +1530,7 @@ static int hostfs_fill_sb_common(struct super_block *sb, void *d, int silent)
 	sb->s_blocksize_bits = 10;
 	sb->s_magic = HOSTFS_SUPER_MAGIC;
 	sb->s_op = &hostfs_sbops;
+<<<<<<< HEAD
 	sb->s_d_op = &hostfs_dentry_ops;
 	sb->s_maxbytes = MAX_LFS_FILESIZE;
 
@@ -977,6 +1576,46 @@ out_put:
 	iput(root_inode);
 out:
 	return err;
+=======
+	sb->s_d_op = &simple_dentry_operations;
+	sb->s_maxbytes = MAX_LFS_FILESIZE;
+	err = super_setup_bdi(sb);
+	if (err)
+		return err;
+
+	/* NULL is printed as '(null)' by printf(): avoid that. */
+	if (req_root == NULL)
+		req_root = "";
+
+	sb->s_fs_info = host_root_path =
+		kasprintf(GFP_KERNEL, "%s/%s", root_ino, req_root);
+	if (host_root_path == NULL)
+		return -ENOMEM;
+
+	root_inode = hostfs_iget(sb, host_root_path);
+	if (IS_ERR(root_inode))
+		return PTR_ERR(root_inode);
+
+	if (S_ISLNK(root_inode->i_mode)) {
+		char *name;
+
+		iput(root_inode);
+		name = follow_link(host_root_path);
+		if (IS_ERR(name))
+			return PTR_ERR(name);
+
+		root_inode = hostfs_iget(sb, name);
+		kfree(name);
+		if (IS_ERR(root_inode))
+			return PTR_ERR(root_inode);
+	}
+
+	sb->s_root = d_make_root(root_inode);
+	if (sb->s_root == NULL)
+		return -ENOMEM;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dentry *hostfs_read_sb(struct file_system_type *type,
@@ -999,15 +1638,29 @@ static struct file_system_type hostfs_type = {
 	.kill_sb	= hostfs_kill_sb,
 	.fs_flags 	= 0,
 };
+<<<<<<< HEAD
 
 static int __init init_hostfs(void)
 {
+=======
+MODULE_ALIAS_FS("hostfs");
+
+static int __init init_hostfs(void)
+{
+	hostfs_inode_cache = KMEM_CACHE(hostfs_inode_info, 0);
+	if (!hostfs_inode_cache)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return register_filesystem(&hostfs_type);
 }
 
 static void __exit exit_hostfs(void)
 {
 	unregister_filesystem(&hostfs_type);
+<<<<<<< HEAD
+=======
+	kmem_cache_destroy(hostfs_inode_cache);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(init_hostfs)

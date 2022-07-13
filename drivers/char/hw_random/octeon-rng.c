@@ -10,7 +10,10 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/device.h>
 #include <linux/hw_random.h>
@@ -34,7 +37,11 @@ static int octeon_rng_init(struct hwrng *rng)
 	ctl.u64 = 0;
 	ctl.s.ent_en = 1; /* Enable the entropy source.  */
 	ctl.s.rng_en = 1; /* Enable the RNG hardware.  */
+<<<<<<< HEAD
 	cvmx_write_csr((u64)p->control_status, ctl.u64);
+=======
+	cvmx_write_csr((unsigned long)p->control_status, ctl.u64);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -45,18 +52,30 @@ static void octeon_rng_cleanup(struct hwrng *rng)
 
 	ctl.u64 = 0;
 	/* Disable everything.  */
+<<<<<<< HEAD
 	cvmx_write_csr((u64)p->control_status, ctl.u64);
+=======
+	cvmx_write_csr((unsigned long)p->control_status, ctl.u64);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int octeon_rng_data_read(struct hwrng *rng, u32 *data)
 {
 	struct octeon_rng *p = container_of(rng, struct octeon_rng, ops);
 
+<<<<<<< HEAD
 	*data = cvmx_read64_uint32((u64)p->result);
 	return sizeof(u32);
 }
 
 static int __devinit octeon_rng_probe(struct platform_device *pdev)
+=======
+	*data = cvmx_read64_uint32((unsigned long)p->result);
+	return sizeof(u32);
+}
+
+static int octeon_rng_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *res_ports;
 	struct resource *res_result;
@@ -75,6 +94,7 @@ static int __devinit octeon_rng_probe(struct platform_device *pdev)
 
 	res_ports = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res_ports)
+<<<<<<< HEAD
 		goto err_ports;
 
 	res_result = platform_get_resource(pdev, IORESOURCE_MEM, 1);
@@ -100,10 +120,38 @@ static int __devinit octeon_rng_probe(struct platform_device *pdev)
 	ret = hwrng_register(&rng->ops);
 	if (ret)
 		goto err;
+=======
+		return -ENOENT;
+
+	res_result = platform_get_resource(pdev, IORESOURCE_MEM, 1);
+	if (!res_result)
+		return -ENOENT;
+
+
+	rng->control_status = devm_ioremap(&pdev->dev,
+						   res_ports->start,
+						   sizeof(u64));
+	if (!rng->control_status)
+		return -ENOENT;
+
+	rng->result = devm_ioremap(&pdev->dev,
+					   res_result->start,
+					   sizeof(u64));
+	if (!rng->result)
+		return -ENOENT;
+
+	rng->ops = ops;
+
+	platform_set_drvdata(pdev, &rng->ops);
+	ret = devm_hwrng_register(&pdev->dev, &rng->ops);
+	if (ret)
+		return -ENOENT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(&pdev->dev, "Octeon Random Number Generator\n");
 
 	return 0;
+<<<<<<< HEAD
 err:
 	devm_iounmap(&pdev->dev, rng->control_status);
 err_r:
@@ -120,15 +168,22 @@ static int __exit octeon_rng_remove(struct platform_device *pdev)
 	hwrng_unregister(rng);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver octeon_rng_driver = {
 	.driver = {
 		.name		= "octeon_rng",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
 	},
 	.probe		= octeon_rng_probe,
 	.remove		= __exit_p(octeon_rng_remove),
+=======
+	},
+	.probe		= octeon_rng_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(octeon_rng_driver);

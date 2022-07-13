@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -16,6 +21,8 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Adrian Hunter
  *          Artem Bityutskiy (Битюцкий Артём)
  */
@@ -34,6 +41,10 @@
 
 #include "ubifs.h"
 #include <linux/list_sort.h>
+<<<<<<< HEAD
+=======
+#include <crypto/hash.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct replay_entry - replay list entry.
@@ -56,12 +67,20 @@ struct replay_entry {
 	int lnum;
 	int offs;
 	int len;
+<<<<<<< HEAD
+=======
+	u8 hash[UBIFS_HASH_ARR_SZ];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int deletion:1;
 	unsigned long long sqnum;
 	struct list_head list;
 	union ubifs_key key;
 	union {
+<<<<<<< HEAD
 		struct qstr nm;
+=======
+		struct fscrypt_name nm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct {
 			loff_t old_size;
 			loff_t new_size;
@@ -115,7 +134,11 @@ static int set_bud_lprops(struct ubifs_info *c, struct bud_entry *b)
 		 * property values should be @lp->free == @c->leb_size and
 		 * @lp->dirty == 0, but that is not the case. The reason is that
 		 * the LEB had been garbage collected before it became the bud,
+<<<<<<< HEAD
 		 * and there was not commit inbetween. The garbage collector
+=======
+		 * and there was no commit in between. The garbage collector
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * resets the free and dirty space without recording it
 		 * anywhere except lprops, so if there was no commit then
 		 * lprops does not have that information.
@@ -141,9 +164,15 @@ static int set_bud_lprops(struct ubifs_info *c, struct bud_entry *b)
 		 * during the replay.
 		 */
 		if (dirty != 0)
+<<<<<<< HEAD
 			dbg_msg("LEB %d lp: %d free %d dirty "
 				"replay: %d free %d dirty", b->bud->lnum,
 				lp->free, lp->dirty, b->free, b->dirty);
+=======
+			dbg_mnt("LEB %d lp: %d free %d dirty replay: %d free %d dirty",
+				b->bud->lnum, lp->free, lp->dirty, b->free,
+				b->dirty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	lp = ubifs_change_lp(c, lp, b->free, dirty + b->dirty,
 			     lp->flags | LPROPS_TAKEN, 0);
@@ -154,8 +183,12 @@ static int set_bud_lprops(struct ubifs_info *c, struct bud_entry *b)
 
 	/* Make sure the journal head points to the latest bud */
 	err = ubifs_wbuf_seek_nolock(&c->jheads[b->bud->jhead].wbuf,
+<<<<<<< HEAD
 				     b->bud->lnum, c->leb_size - b->free,
 				     UBI_SHORTTERM);
+=======
+				     b->bud->lnum, c->leb_size - b->free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	ubifs_release_lprops(c);
@@ -211,6 +244,42 @@ static int trun_remove_range(struct ubifs_info *c, struct replay_entry *r)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * inode_still_linked - check whether inode in question will be re-linked.
+ * @c: UBIFS file-system description object
+ * @rino: replay entry to test
+ *
+ * O_TMPFILE files can be re-linked, this means link count goes from 0 to 1.
+ * This case needs special care, otherwise all references to the inode will
+ * be removed upon the first replay entry of an inode with link count 0
+ * is found.
+ */
+static bool inode_still_linked(struct ubifs_info *c, struct replay_entry *rino)
+{
+	struct replay_entry *r;
+
+	ubifs_assert(c, rino->deletion);
+	ubifs_assert(c, key_type(c, &rino->key) == UBIFS_INO_KEY);
+
+	/*
+	 * Find the most recent entry for the inode behind @rino and check
+	 * whether it is a deletion.
+	 */
+	list_for_each_entry_reverse(r, &c->replay_list, list) {
+		ubifs_assert(c, r->sqnum >= rino->sqnum);
+		if (key_inum(c, &r->key) == key_inum(c, &rino->key) &&
+		    key_type(c, &r->key) == UBIFS_INO_KEY)
+			return r->deletion == 0;
+
+	}
+
+	ubifs_assert(c, 0);
+	return false;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * apply_replay_entry - apply a replay entry to the TNC.
  * @c: UBIFS file-system description object
  * @r: replay entry to apply
@@ -224,15 +293,22 @@ static int apply_replay_entry(struct ubifs_info *c, struct replay_entry *r)
 	dbg_mntk(&r->key, "LEB %d:%d len %d deletion %d sqnum %llu key ",
 		 r->lnum, r->offs, r->len, r->deletion, r->sqnum);
 
+<<<<<<< HEAD
 	/* Set c->replay_sqnum to help deal with dangling branches. */
 	c->replay_sqnum = r->sqnum;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (is_hash_key(c, &r->key)) {
 		if (r->deletion)
 			err = ubifs_tnc_remove_nm(c, &r->key, &r->nm);
 		else
 			err = ubifs_tnc_add_nm(c, &r->key, r->lnum, r->offs,
+<<<<<<< HEAD
 					       r->len, &r->nm);
+=======
+					       r->len, r->hash, &r->nm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (r->deletion)
 			switch (key_type(c, &r->key)) {
@@ -240,6 +316,14 @@ static int apply_replay_entry(struct ubifs_info *c, struct replay_entry *r)
 			{
 				ino_t inum = key_inum(c, &r->key);
 
+<<<<<<< HEAD
+=======
+				if (inode_still_linked(c, r)) {
+					err = 0;
+					break;
+				}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = ubifs_tnc_remove_ino(c, inum);
 				break;
 			}
@@ -252,7 +336,11 @@ static int apply_replay_entry(struct ubifs_info *c, struct replay_entry *r)
 			}
 		else
 			err = ubifs_tnc_add(c, &r->key, r->lnum, r->offs,
+<<<<<<< HEAD
 					    r->len);
+=======
+					    r->len, r->hash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 
@@ -268,6 +356,7 @@ static int apply_replay_entry(struct ubifs_info *c, struct replay_entry *r)
  * replay_entries_cmp - compare 2 replay entries.
  * @priv: UBIFS file-system description object
  * @a: first replay entry
+<<<<<<< HEAD
  * @a: second replay entry
  *
  * This is a comparios function for 'list_sort()' which compares 2 replay
@@ -277,6 +366,18 @@ static int apply_replay_entry(struct ubifs_info *c, struct replay_entry *r)
 static int replay_entries_cmp(void *priv, struct list_head *a,
 			      struct list_head *b)
 {
+=======
+ * @b: second replay entry
+ *
+ * This is a comparios function for 'list_sort()' which compares 2 replay
+ * entries @a and @b by comparing their sequence number.  Returns %1 if @a has
+ * greater sequence number and %-1 otherwise.
+ */
+static int replay_entries_cmp(void *priv, const struct list_head *a,
+			      const struct list_head *b)
+{
+	struct ubifs_info *c = priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct replay_entry *ra, *rb;
 
 	cond_resched();
@@ -285,7 +386,11 @@ static int replay_entries_cmp(void *priv, struct list_head *a,
 
 	ra = list_entry(a, struct replay_entry, list);
 	rb = list_entry(b, struct replay_entry, list);
+<<<<<<< HEAD
 	ubifs_assert(ra->sqnum != rb->sqnum);
+=======
+	ubifs_assert(c, ra->sqnum != rb->sqnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ra->sqnum > rb->sqnum)
 		return 1;
 	return -1;
@@ -328,7 +433,11 @@ static void destroy_replay_list(struct ubifs_info *c)
 
 	list_for_each_entry_safe(r, tmp, &c->replay_list, list) {
 		if (is_hash_key(c, &r->key))
+<<<<<<< HEAD
 			kfree(r->nm.name);
+=======
+			kfree(fname_name(&r->nm));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del(&r->list);
 		kfree(r);
 	}
@@ -340,6 +449,10 @@ static void destroy_replay_list(struct ubifs_info *c)
  * @lnum: node logical eraseblock number
  * @offs: node offset
  * @len: node length
+<<<<<<< HEAD
+=======
+ * @hash: node hash
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @key: node key
  * @sqnum: sequence number
  * @deletion: non-zero if this is a deletion
@@ -355,9 +468,15 @@ static void destroy_replay_list(struct ubifs_info *c)
  * in case of success and a negative error code in case of failure.
  */
 static int insert_node(struct ubifs_info *c, int lnum, int offs, int len,
+<<<<<<< HEAD
 		       union ubifs_key *key, unsigned long long sqnum,
 		       int deletion, int *used, loff_t old_size,
 		       loff_t new_size)
+=======
+		       const u8 *hash, union ubifs_key *key,
+		       unsigned long long sqnum, int deletion, int *used,
+		       loff_t old_size, loff_t new_size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct replay_entry *r;
 
@@ -375,6 +494,10 @@ static int insert_node(struct ubifs_info *c, int lnum, int offs, int len,
 	r->lnum = lnum;
 	r->offs = offs;
 	r->len = len;
+<<<<<<< HEAD
+=======
+	ubifs_copy_hash(c, hash, r->hash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r->deletion = !!deletion;
 	r->sqnum = sqnum;
 	key_copy(c, key, &r->key);
@@ -391,6 +514,10 @@ static int insert_node(struct ubifs_info *c, int lnum, int offs, int len,
  * @lnum: node logical eraseblock number
  * @offs: node offset
  * @len: node length
+<<<<<<< HEAD
+=======
+ * @hash: node hash
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @key: node key
  * @name: directory entry name
  * @nlen: directory entry name length
@@ -403,8 +530,14 @@ static int insert_node(struct ubifs_info *c, int lnum, int offs, int len,
  * negative error code in case of failure.
  */
 static int insert_dent(struct ubifs_info *c, int lnum, int offs, int len,
+<<<<<<< HEAD
 		       union ubifs_key *key, const char *name, int nlen,
 		       unsigned long long sqnum, int deletion, int *used)
+=======
+		       const u8 *hash, union ubifs_key *key,
+		       const char *name, int nlen, unsigned long long sqnum,
+		       int deletion, int *used)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct replay_entry *r;
 	char *nbuf;
@@ -428,6 +561,7 @@ static int insert_dent(struct ubifs_info *c, int lnum, int offs, int len,
 	r->lnum = lnum;
 	r->offs = offs;
 	r->len = len;
+<<<<<<< HEAD
 	r->deletion = !!deletion;
 	r->sqnum = sqnum;
 	key_copy(c, key, &r->key);
@@ -435,6 +569,16 @@ static int insert_dent(struct ubifs_info *c, int lnum, int offs, int len,
 	memcpy(nbuf, name, nlen);
 	nbuf[nlen] = '\0';
 	r->nm.name = nbuf;
+=======
+	ubifs_copy_hash(c, hash, r->hash);
+	r->deletion = !!deletion;
+	r->sqnum = sqnum;
+	key_copy(c, key, &r->key);
+	fname_len(&r->nm) = nlen;
+	memcpy(nbuf, name, nlen);
+	nbuf[nlen] = '\0';
+	fname_name(&r->nm) = nbuf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_add_tail(&r->list, &c->replay_list);
 	return 0;
@@ -457,15 +601,25 @@ int ubifs_validate_entry(struct ubifs_info *c,
 	if (le32_to_cpu(dent->ch.len) != nlen + UBIFS_DENT_NODE_SZ + 1 ||
 	    dent->type >= UBIFS_ITYPES_CNT ||
 	    nlen > UBIFS_MAX_NLEN || dent->name[nlen] != 0 ||
+<<<<<<< HEAD
 	    strnlen(dent->name, nlen) != nlen ||
 	    le64_to_cpu(dent->inum) > MAX_INUM) {
 		ubifs_err("bad %s node", key_type == UBIFS_DENT_KEY ?
+=======
+	    (key_type == UBIFS_XENT_KEY && strnlen(dent->name, nlen) != nlen) ||
+	    le64_to_cpu(dent->inum) > MAX_INUM) {
+		ubifs_err(c, "bad %s node", key_type == UBIFS_DENT_KEY ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  "directory entry" : "extended attribute entry");
 		return -EINVAL;
 	}
 
 	if (key_type != UBIFS_DENT_KEY && key_type != UBIFS_XENT_KEY) {
+<<<<<<< HEAD
 		ubifs_err("bad key type %d", key_type);
+=======
+		ubifs_err(c, "bad key type %d", key_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -530,6 +684,104 @@ static int is_last_bud(struct ubifs_info *c, struct ubifs_bud *bud)
 	return data == 0xFFFFFFFF;
 }
 
+<<<<<<< HEAD
+=======
+/* authenticate_sleb_hash is split out for stack usage */
+static int noinline_for_stack
+authenticate_sleb_hash(struct ubifs_info *c,
+		       struct shash_desc *log_hash, u8 *hash)
+{
+	SHASH_DESC_ON_STACK(hash_desc, c->hash_tfm);
+
+	hash_desc->tfm = c->hash_tfm;
+
+	ubifs_shash_copy_state(c, log_hash, hash_desc);
+	return crypto_shash_final(hash_desc, hash);
+}
+
+/**
+ * authenticate_sleb - authenticate one scan LEB
+ * @c: UBIFS file-system description object
+ * @sleb: the scan LEB to authenticate
+ * @log_hash:
+ * @is_last: if true, this is the last LEB
+ *
+ * This function iterates over the buds of a single LEB authenticating all buds
+ * with the authentication nodes on this LEB. Authentication nodes are written
+ * after some buds and contain a HMAC covering the authentication node itself
+ * and the buds between the last authentication node and the current
+ * authentication node. It can happen that the last buds cannot be authenticated
+ * because a powercut happened when some nodes were written but not the
+ * corresponding authentication node. This function returns the number of nodes
+ * that could be authenticated or a negative error code.
+ */
+static int authenticate_sleb(struct ubifs_info *c, struct ubifs_scan_leb *sleb,
+			     struct shash_desc *log_hash, int is_last)
+{
+	int n_not_auth = 0;
+	struct ubifs_scan_node *snod;
+	int n_nodes = 0;
+	int err;
+	u8 hash[UBIFS_HASH_ARR_SZ];
+	u8 hmac[UBIFS_HMAC_ARR_SZ];
+
+	if (!ubifs_authenticated(c))
+		return sleb->nodes_cnt;
+
+	list_for_each_entry(snod, &sleb->nodes, list) {
+
+		n_nodes++;
+
+		if (snod->type == UBIFS_AUTH_NODE) {
+			struct ubifs_auth_node *auth = snod->node;
+
+			err = authenticate_sleb_hash(c, log_hash, hash);
+			if (err)
+				goto out;
+
+			err = crypto_shash_tfm_digest(c->hmac_tfm, hash,
+						      c->hash_len, hmac);
+			if (err)
+				goto out;
+
+			err = ubifs_check_hmac(c, auth->hmac, hmac);
+			if (err) {
+				err = -EPERM;
+				goto out;
+			}
+			n_not_auth = 0;
+		} else {
+			err = crypto_shash_update(log_hash, snod->node,
+						  snod->len);
+			if (err)
+				goto out;
+			n_not_auth++;
+		}
+	}
+
+	/*
+	 * A powercut can happen when some nodes were written, but not yet
+	 * the corresponding authentication node. This may only happen on
+	 * the last bud though.
+	 */
+	if (n_not_auth) {
+		if (is_last) {
+			dbg_mnt("%d unauthenticated nodes found on LEB %d, Ignoring them",
+				n_not_auth, sleb->lnum);
+			err = 0;
+		} else {
+			dbg_mnt("%d unauthenticated nodes found on non-last LEB %d",
+				n_not_auth, sleb->lnum);
+			err = -EPERM;
+		}
+	} else {
+		err = 0;
+	}
+out:
+	return err ? err : n_nodes - n_not_auth;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * replay_bud - replay a bud logical eraseblock.
  * @c: UBIFS file-system description object
@@ -543,6 +795,10 @@ static int replay_bud(struct ubifs_info *c, struct bud_entry *b)
 {
 	int is_last = is_last_bud(c, b->bud);
 	int err = 0, used = 0, lnum = b->bud->lnum, offs = b->bud->start;
+<<<<<<< HEAD
+=======
+	int n_nodes, n = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ubifs_scan_leb *sleb;
 	struct ubifs_scan_node *snod;
 
@@ -562,6 +818,18 @@ static int replay_bud(struct ubifs_info *c, struct bud_entry *b)
 	if (IS_ERR(sleb))
 		return PTR_ERR(sleb);
 
+<<<<<<< HEAD
+=======
+	n_nodes = authenticate_sleb(c, sleb, b->bud->log_hash, is_last);
+	if (n_nodes < 0) {
+		err = n_nodes;
+		goto out;
+	}
+
+	ubifs_shash_copy_state(c, b->bud->log_hash,
+			       c->jheads[b->bud->jhead].log_hash);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The bud does not have to start from offset zero - the beginning of
 	 * the 'lnum' LEB may contain previously committed data. One of the
@@ -585,15 +853,28 @@ static int replay_bud(struct ubifs_info *c, struct bud_entry *b)
 	 */
 
 	list_for_each_entry(snod, &sleb->nodes, list) {
+<<<<<<< HEAD
+=======
+		u8 hash[UBIFS_HASH_ARR_SZ];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int deletion = 0;
 
 		cond_resched();
 
 		if (snod->sqnum >= SQNUM_WATERMARK) {
+<<<<<<< HEAD
 			ubifs_err("file system's life ended");
 			goto out_dump;
 		}
 
+=======
+			ubifs_err(c, "file system's life ended");
+			goto out_dump;
+		}
+
+		ubifs_node_calc_hash(c, snod->node, hash);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (snod->sqnum > c->max_sqnum)
 			c->max_sqnum = snod->sqnum;
 
@@ -605,7 +886,11 @@ static int replay_bud(struct ubifs_info *c, struct bud_entry *b)
 
 			if (le32_to_cpu(ino->nlink) == 0)
 				deletion = 1;
+<<<<<<< HEAD
 			err = insert_node(c, lnum, snod->offs, snod->len,
+=======
+			err = insert_node(c, lnum, snod->offs, snod->len, hash,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  &snod->key, snod->sqnum, deletion,
 					  &used, 0, new_size);
 			break;
@@ -617,7 +902,11 @@ static int replay_bud(struct ubifs_info *c, struct bud_entry *b)
 					  key_block(c, &snod->key) *
 					  UBIFS_BLOCK_SIZE;
 
+<<<<<<< HEAD
 			err = insert_node(c, lnum, snod->offs, snod->len,
+=======
+			err = insert_node(c, lnum, snod->offs, snod->len, hash,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  &snod->key, snod->sqnum, deletion,
 					  &used, 0, new_size);
 			break;
@@ -631,7 +920,11 @@ static int replay_bud(struct ubifs_info *c, struct bud_entry *b)
 			if (err)
 				goto out_dump;
 
+<<<<<<< HEAD
 			err = insert_dent(c, lnum, snod->offs, snod->len,
+=======
+			err = insert_dent(c, lnum, snod->offs, snod->len, hash,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  &snod->key, dent->name,
 					  le16_to_cpu(dent->nlen), snod->sqnum,
 					  !le64_to_cpu(dent->inum), &used);
@@ -648,7 +941,11 @@ static int replay_bud(struct ubifs_info *c, struct bud_entry *b)
 			if (old_size < 0 || old_size > c->max_inode_sz ||
 			    new_size < 0 || new_size > c->max_inode_sz ||
 			    old_size <= new_size) {
+<<<<<<< HEAD
 				ubifs_err("bad truncation node");
+=======
+				ubifs_err(c, "bad truncation node");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out_dump;
 			}
 
@@ -657,19 +954,31 @@ static int replay_bud(struct ubifs_info *c, struct bud_entry *b)
 			 * functions which expect nodes to have keys.
 			 */
 			trun_key_init(c, &key, le32_to_cpu(trun->inum));
+<<<<<<< HEAD
 			err = insert_node(c, lnum, snod->offs, snod->len,
+=======
+			err = insert_node(c, lnum, snod->offs, snod->len, hash,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  &key, snod->sqnum, 1, &used,
 					  old_size, new_size);
 			break;
 		}
+<<<<<<< HEAD
 		default:
 			ubifs_err("unexpected node type %d in bud LEB %d:%d",
+=======
+		case UBIFS_AUTH_NODE:
+			break;
+		default:
+			ubifs_err(c, "unexpected node type %d in bud LEB %d:%d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  snod->type, lnum, snod->offs);
 			err = -EINVAL;
 			goto out_dump;
 		}
 		if (err)
 			goto out;
+<<<<<<< HEAD
 	}
 
 	ubifs_assert(ubifs_search_bud(c, lnum));
@@ -679,14 +988,35 @@ static int replay_bud(struct ubifs_info *c, struct bud_entry *b)
 	b->dirty = sleb->endpt - offs - used;
 	b->free = c->leb_size - sleb->endpt;
 	dbg_mnt("bud LEB %d replied: dirty %d, free %d", lnum, b->dirty, b->free);
+=======
+
+		n++;
+		if (n == n_nodes)
+			break;
+	}
+
+	ubifs_assert(c, ubifs_search_bud(c, lnum));
+	ubifs_assert(c, sleb->endpt - offs >= used);
+	ubifs_assert(c, sleb->endpt % c->min_io_size == 0);
+
+	b->dirty = sleb->endpt - offs - used;
+	b->free = c->leb_size - sleb->endpt;
+	dbg_mnt("bud LEB %d replied: dirty %d, free %d",
+		lnum, b->dirty, b->free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	ubifs_scan_destroy(sleb);
 	return err;
 
 out_dump:
+<<<<<<< HEAD
 	ubifs_err("bad node is at LEB %d:%d", lnum, snod->offs);
 	dbg_dump_node(c, snod->node);
+=======
+	ubifs_err(c, "bad node is at LEB %d:%d", lnum, snod->offs);
+	ubifs_dump_node(c, snod->node, c->leb_size - snod->offs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ubifs_scan_destroy(sleb);
 	return -EINVAL;
 }
@@ -709,7 +1039,11 @@ static int replay_buds(struct ubifs_info *c)
 		if (err)
 			return err;
 
+<<<<<<< HEAD
 		ubifs_assert(b->sqnum > prev_sqnum);
+=======
+		ubifs_assert(c, b->sqnum > prev_sqnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		prev_sqnum = b->sqnum;
 	}
 
@@ -747,6 +1081,10 @@ static int add_replay_bud(struct ubifs_info *c, int lnum, int offs, int jhead,
 {
 	struct ubifs_bud *bud;
 	struct bud_entry *b;
+<<<<<<< HEAD
+=======
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg_mnt("add replay bud LEB %d:%d, head %d", lnum, offs, jhead);
 
@@ -756,13 +1094,29 @@ static int add_replay_bud(struct ubifs_info *c, int lnum, int offs, int jhead,
 
 	b = kmalloc(sizeof(struct bud_entry), GFP_KERNEL);
 	if (!b) {
+<<<<<<< HEAD
 		kfree(bud);
 		return -ENOMEM;
+=======
+		err = -ENOMEM;
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	bud->lnum = lnum;
 	bud->start = offs;
 	bud->jhead = jhead;
+<<<<<<< HEAD
+=======
+	bud->log_hash = ubifs_hash_get_desc(c);
+	if (IS_ERR(bud->log_hash)) {
+		err = PTR_ERR(bud->log_hash);
+		goto out;
+	}
+
+	ubifs_shash_copy_state(c, c->log_hash, bud->log_hash);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ubifs_add_bud(c, bud);
 
 	b->bud = bud;
@@ -770,14 +1124,25 @@ static int add_replay_bud(struct ubifs_info *c, int lnum, int offs, int jhead,
 	list_add_tail(&b->list, &c->replay_buds);
 
 	return 0;
+<<<<<<< HEAD
+=======
+out:
+	kfree(bud);
+	kfree(b);
+
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * validate_ref - validate a reference node.
  * @c: UBIFS file-system description object
  * @ref: the reference node to validate
+<<<<<<< HEAD
  * @ref_lnum: LEB number of the reference node
  * @ref_offs: reference node offset
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function returns %1 if a bud reference already exists for the LEB. %0 is
  * returned if the reference node is new, otherwise %-EINVAL is returned if
@@ -805,7 +1170,11 @@ static int validate_ref(struct ubifs_info *c, const struct ubifs_ref_node *ref)
 	if (bud) {
 		if (bud->jhead == jhead && bud->start <= offs)
 			return 1;
+<<<<<<< HEAD
 		ubifs_err("bud at LEB %d:%d was already referred", lnum, offs);
+=======
+		ubifs_err(c, "bud at LEB %d:%d was already referred", lnum, offs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -861,6 +1230,7 @@ static int replay_log_leb(struct ubifs_info *c, int lnum, int offs, void *sbuf)
 		 * numbers.
 		 */
 		if (snod->type != UBIFS_CS_NODE) {
+<<<<<<< HEAD
 			dbg_err("first log node at LEB %d:%d is not CS node",
 				lnum, offs);
 			goto out_dump;
@@ -871,11 +1241,33 @@ static int replay_log_leb(struct ubifs_info *c, int lnum, int offs, void *sbuf)
 				lnum, offs,
 				(unsigned long long)le64_to_cpu(node->cmt_no),
 				c->cmt_no);
+=======
+			ubifs_err(c, "first log node at LEB %d:%d is not CS node",
+				  lnum, offs);
+			goto out_dump;
+		}
+		if (le64_to_cpu(node->cmt_no) != c->cmt_no) {
+			ubifs_err(c, "first CS node at LEB %d:%d has wrong commit number %llu expected %llu",
+				  lnum, offs,
+				  (unsigned long long)le64_to_cpu(node->cmt_no),
+				  c->cmt_no);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_dump;
 		}
 
 		c->cs_sqnum = le64_to_cpu(node->ch.sqnum);
 		dbg_mnt("commit start sqnum %llu", c->cs_sqnum);
+<<<<<<< HEAD
+=======
+
+		err = ubifs_shash_init(c, c->log_hash);
+		if (err)
+			goto out;
+
+		err = ubifs_shash_update(c, c->log_hash, node, UBIFS_CS_NODE_SZ);
+		if (err < 0)
+			goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (snod->sqnum < c->cs_sqnum) {
@@ -892,7 +1284,11 @@ static int replay_log_leb(struct ubifs_info *c, int lnum, int offs, void *sbuf)
 
 	/* Make sure the first node sits at offset zero of the LEB */
 	if (snod->offs != 0) {
+<<<<<<< HEAD
 		dbg_err("first node is not at zero offset");
+=======
+		ubifs_err(c, "first node is not at zero offset");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_dump;
 	}
 
@@ -900,13 +1296,22 @@ static int replay_log_leb(struct ubifs_info *c, int lnum, int offs, void *sbuf)
 		cond_resched();
 
 		if (snod->sqnum >= SQNUM_WATERMARK) {
+<<<<<<< HEAD
 			ubifs_err("file system's life ended");
+=======
+			ubifs_err(c, "file system's life ended");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_dump;
 		}
 
 		if (snod->sqnum < c->cs_sqnum) {
+<<<<<<< HEAD
 			dbg_err("bad sqnum %llu, commit sqnum %llu",
 				snod->sqnum, c->cs_sqnum);
+=======
+			ubifs_err(c, "bad sqnum %llu, commit sqnum %llu",
+				  snod->sqnum, c->cs_sqnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_dump;
 		}
 
@@ -923,6 +1328,14 @@ static int replay_log_leb(struct ubifs_info *c, int lnum, int offs, void *sbuf)
 			if (err)
 				goto out_dump;
 
+<<<<<<< HEAD
+=======
+			err = ubifs_shash_update(c, c->log_hash, ref,
+						 UBIFS_REF_NODE_SZ);
+			if (err)
+				goto out;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = add_replay_bud(c, le32_to_cpu(ref->lnum),
 					     le32_to_cpu(ref->offs),
 					     le32_to_cpu(ref->jhead),
@@ -935,12 +1348,20 @@ static int replay_log_leb(struct ubifs_info *c, int lnum, int offs, void *sbuf)
 		case UBIFS_CS_NODE:
 			/* Make sure it sits at the beginning of LEB */
 			if (snod->offs != 0) {
+<<<<<<< HEAD
 				ubifs_err("unexpected node in log");
+=======
+				ubifs_err(c, "unexpected node in log");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto out_dump;
 			}
 			break;
 		default:
+<<<<<<< HEAD
 			ubifs_err("unexpected node in log");
+=======
+			ubifs_err(c, "unexpected node in log");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out_dump;
 		}
 	}
@@ -956,9 +1377,15 @@ out:
 	return err;
 
 out_dump:
+<<<<<<< HEAD
 	ubifs_err("log error detected while replaying the log at LEB %d:%d",
 		  lnum, offs + snod->offs);
 	dbg_dump_node(c, snod->node);
+=======
+	ubifs_err(c, "log error detected while replaying the log at LEB %d:%d",
+		  lnum, offs + snod->offs);
+	ubifs_dump_node(c, snod->node, c->leb_size - snod->offs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ubifs_scan_destroy(sleb);
 	return -EINVAL;
 }
@@ -1008,7 +1435,11 @@ out:
  */
 int ubifs_replay_journal(struct ubifs_info *c)
 {
+<<<<<<< HEAD
 	int err, i, lnum, offs, free;
+=======
+	int err, lnum, free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUILD_BUG_ON(UBIFS_TRUN_KEY > 5);
 
@@ -1018,7 +1449,11 @@ int ubifs_replay_journal(struct ubifs_info *c)
 		return free; /* Error code */
 
 	if (c->ihead_offs != c->leb_size - free) {
+<<<<<<< HEAD
 		ubifs_err("bad index head LEB %d:%d", c->ihead_lnum,
+=======
+		ubifs_err(c, "bad index head LEB %d:%d", c->ihead_lnum,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  c->ihead_offs);
 		return -EINVAL;
 	}
@@ -1026,6 +1461,7 @@ int ubifs_replay_journal(struct ubifs_info *c)
 	dbg_mnt("start replaying the journal");
 	c->replaying = 1;
 	lnum = c->ltail_lnum = c->lhead_lnum;
+<<<<<<< HEAD
 	offs = c->lhead_offs;
 
 	for (i = 0; i < c->log_lebs; i++, lnum++) {
@@ -1045,6 +1481,31 @@ int ubifs_replay_journal(struct ubifs_info *c)
 			goto out;
 		offs = 0;
 	}
+=======
+
+	do {
+		err = replay_log_leb(c, lnum, 0, c->sbuf);
+		if (err == 1) {
+			if (lnum != c->lhead_lnum)
+				/* We hit the end of the log */
+				break;
+
+			/*
+			 * The head of the log must always start with the
+			 * "commit start" node on a properly formatted UBIFS.
+			 * But we found no nodes at all, which means that
+			 * something went wrong and we cannot proceed mounting
+			 * the file-system.
+			 */
+			ubifs_err(c, "no UBIFS nodes found at the log head LEB %d:%d, possibly corrupted",
+				  lnum, 0);
+			err = -EINVAL;
+		}
+		if (err)
+			goto out;
+		lnum = ubifs_next_log_lnum(c, lnum);
+	} while (lnum != c->ltail_lnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = replay_buds(c);
 	if (err)
@@ -1067,9 +1528,15 @@ int ubifs_replay_journal(struct ubifs_info *c)
 	c->bi.uncommitted_idx = atomic_long_read(&c->dirty_zn_cnt);
 	c->bi.uncommitted_idx *= c->max_idx_node_sz;
 
+<<<<<<< HEAD
 	ubifs_assert(c->bud_bytes <= c->max_bud_bytes || c->need_recovery);
 	dbg_mnt("finished, log head LEB %d:%d, max_sqnum %llu, "
 		"highest_inum %lu", c->lhead_lnum, c->lhead_offs, c->max_sqnum,
+=======
+	ubifs_assert(c, c->bud_bytes <= c->max_bud_bytes || c->need_recovery);
+	dbg_mnt("finished, log head LEB %d:%d, max_sqnum %llu, highest_inum %lu",
+		c->lhead_lnum, c->lhead_offs, c->max_sqnum,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(unsigned long)c->highest_inum);
 out:
 	destroy_replay_list(c);

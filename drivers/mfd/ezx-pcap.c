@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Motorola PCAP2 as present in EZX phones
  *
  * Copyright (C) 2006 Harald Welte <laforge@openezx.org>
  * Copyright (C) 2009 Daniel Ribeiro <drwyrm@gmail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -39,7 +46,11 @@ struct pcap_chip {
 
 	/* IO */
 	u32 buf;
+<<<<<<< HEAD
 	struct mutex io_mutex;
+=======
+	spinlock_t io_lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* IRQ */
 	unsigned int irq_base;
@@ -52,7 +63,11 @@ struct pcap_chip {
 	struct pcap_adc_request *adc_queue[PCAP_ADC_MAXQ];
 	u8 adc_head;
 	u8 adc_tail;
+<<<<<<< HEAD
 	struct mutex adc_mutex;
+=======
+	spinlock_t adc_lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* IO */
@@ -62,7 +77,11 @@ static int ezx_pcap_putget(struct pcap_chip *pcap, u32 *data)
 	struct spi_message m;
 	int status;
 
+<<<<<<< HEAD
 	memset(&t, 0, sizeof t);
+=======
+	memset(&t, 0, sizeof(t));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spi_message_init(&m);
 	t.len = sizeof(u32);
 	spi_message_add_tail(&t, &m);
@@ -80,14 +99,25 @@ static int ezx_pcap_putget(struct pcap_chip *pcap, u32 *data)
 
 int ezx_pcap_write(struct pcap_chip *pcap, u8 reg_num, u32 value)
 {
+<<<<<<< HEAD
 	int ret;
 
 	mutex_lock(&pcap->io_mutex);
+=======
+	unsigned long flags;
+	int ret;
+
+	spin_lock_irqsave(&pcap->io_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	value &= PCAP_REGISTER_VALUE_MASK;
 	value |= PCAP_REGISTER_WRITE_OP_BIT
 		| (reg_num << PCAP_REGISTER_ADDRESS_SHIFT);
 	ret = ezx_pcap_putget(pcap, &value);
+<<<<<<< HEAD
 	mutex_unlock(&pcap->io_mutex);
+=======
+	spin_unlock_irqrestore(&pcap->io_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -95,14 +125,25 @@ EXPORT_SYMBOL_GPL(ezx_pcap_write);
 
 int ezx_pcap_read(struct pcap_chip *pcap, u8 reg_num, u32 *value)
 {
+<<<<<<< HEAD
 	int ret;
 
 	mutex_lock(&pcap->io_mutex);
+=======
+	unsigned long flags;
+	int ret;
+
+	spin_lock_irqsave(&pcap->io_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*value = PCAP_REGISTER_READ_OP_BIT
 		| (reg_num << PCAP_REGISTER_ADDRESS_SHIFT);
 
 	ret = ezx_pcap_putget(pcap, value);
+<<<<<<< HEAD
 	mutex_unlock(&pcap->io_mutex);
+=======
+	spin_unlock_irqrestore(&pcap->io_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -110,11 +151,19 @@ EXPORT_SYMBOL_GPL(ezx_pcap_read);
 
 int ezx_pcap_set_bits(struct pcap_chip *pcap, u8 reg_num, u32 mask, u32 val)
 {
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	u32 tmp = PCAP_REGISTER_READ_OP_BIT |
 		(reg_num << PCAP_REGISTER_ADDRESS_SHIFT);
 
+<<<<<<< HEAD
 	mutex_lock(&pcap->io_mutex);
+=======
+	spin_lock_irqsave(&pcap->io_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ezx_pcap_putget(pcap, &tmp);
 	if (ret)
 		goto out_unlock;
@@ -125,7 +174,11 @@ int ezx_pcap_set_bits(struct pcap_chip *pcap, u8 reg_num, u32 mask, u32 val)
 
 	ret = ezx_pcap_putget(pcap, &tmp);
 out_unlock:
+<<<<<<< HEAD
 	mutex_unlock(&pcap->io_mutex);
+=======
+	spin_unlock_irqrestore(&pcap->io_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -177,7 +230,11 @@ static void pcap_msr_work(struct work_struct *work)
 static void pcap_isr_work(struct work_struct *work)
 {
 	struct pcap_chip *pcap = container_of(work, struct pcap_chip, isr_work);
+<<<<<<< HEAD
 	struct pcap_platform_data *pdata = pcap->spi->dev.platform_data;
+=======
+	struct pcap_platform_data *pdata = dev_get_platdata(&pcap->spi->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 msr, isr, int_sel, service;
 	int irq;
 
@@ -194,6 +251,7 @@ static void pcap_isr_work(struct work_struct *work)
 		ezx_pcap_write(pcap, PCAP_REG_MSR, isr | msr);
 		ezx_pcap_write(pcap, PCAP_REG_ISR, isr);
 
+<<<<<<< HEAD
 		local_irq_disable();
 		service = isr & ~msr;
 		for (irq = pcap->irq_base; service; service >>= 1, irq++) {
@@ -201,10 +259,18 @@ static void pcap_isr_work(struct work_struct *work)
 				generic_handle_irq(irq);
 		}
 		local_irq_enable();
+=======
+		service = isr & ~msr;
+		for (irq = pcap->irq_base; service; service >>= 1, irq++) {
+			if (service & 1)
+				generic_handle_irq_safe(irq);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ezx_pcap_write(pcap, PCAP_REG_MSR, pcap->msr);
 	} while (gpio_get_value(pdata->gpio));
 }
 
+<<<<<<< HEAD
 static void pcap_irq_handler(unsigned int irq, struct irq_desc *desc)
 {
 	struct pcap_chip *pcap = irq_get_handler_data(irq);
@@ -212,19 +278,38 @@ static void pcap_irq_handler(unsigned int irq, struct irq_desc *desc)
 	desc->irq_data.chip->irq_ack(&desc->irq_data);
 	queue_work(pcap->workqueue, &pcap->isr_work);
 	return;
+=======
+static void pcap_irq_handler(struct irq_desc *desc)
+{
+	struct pcap_chip *pcap = irq_desc_get_handler_data(desc);
+
+	desc->irq_data.chip->irq_ack(&desc->irq_data);
+	queue_work(pcap->workqueue, &pcap->isr_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ADC */
 void pcap_set_ts_bits(struct pcap_chip *pcap, u32 bits)
 {
+<<<<<<< HEAD
 	u32 tmp;
 
 	mutex_lock(&pcap->adc_mutex);
+=======
+	unsigned long flags;
+	u32 tmp;
+
+	spin_lock_irqsave(&pcap->adc_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ezx_pcap_read(pcap, PCAP_REG_ADC, &tmp);
 	tmp &= ~(PCAP_ADC_TS_M_MASK | PCAP_ADC_TS_REF_LOWPWR);
 	tmp |= bits & (PCAP_ADC_TS_M_MASK | PCAP_ADC_TS_REF_LOWPWR);
 	ezx_pcap_write(pcap, PCAP_REG_ADC, tmp);
+<<<<<<< HEAD
 	mutex_unlock(&pcap->adc_mutex);
+=======
+	spin_unlock_irqrestore(&pcap->adc_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(pcap_set_ts_bits);
 
@@ -239,15 +324,27 @@ static void pcap_disable_adc(struct pcap_chip *pcap)
 
 static void pcap_adc_trigger(struct pcap_chip *pcap)
 {
+<<<<<<< HEAD
 	u32 tmp;
 	u8 head;
 
 	mutex_lock(&pcap->adc_mutex);
+=======
+	unsigned long flags;
+	u32 tmp;
+	u8 head;
+
+	spin_lock_irqsave(&pcap->adc_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	head = pcap->adc_head;
 	if (!pcap->adc_queue[head]) {
 		/* queue is empty, save power */
 		pcap_disable_adc(pcap);
+<<<<<<< HEAD
 		mutex_unlock(&pcap->adc_mutex);
+=======
+		spin_unlock_irqrestore(&pcap->adc_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	/* start conversion on requested bank, save TS_M bits */
@@ -259,7 +356,11 @@ static void pcap_adc_trigger(struct pcap_chip *pcap)
 		tmp |= PCAP_ADC_AD_SEL1;
 
 	ezx_pcap_write(pcap, PCAP_REG_ADC, tmp);
+<<<<<<< HEAD
 	mutex_unlock(&pcap->adc_mutex);
+=======
+	spin_unlock_irqrestore(&pcap->adc_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ezx_pcap_write(pcap, PCAP_REG_ADR, PCAP_ADR_ASC);
 }
 
@@ -270,11 +371,19 @@ static irqreturn_t pcap_adc_irq(int irq, void *_pcap)
 	u16 res[2];
 	u32 tmp;
 
+<<<<<<< HEAD
 	mutex_lock(&pcap->adc_mutex);
 	req = pcap->adc_queue[pcap->adc_head];
 
 	if (WARN(!req, "adc irq without pending request\n")) {
 		mutex_unlock(&pcap->adc_mutex);
+=======
+	spin_lock(&pcap->adc_lock);
+	req = pcap->adc_queue[pcap->adc_head];
+
+	if (WARN(!req, "adc irq without pending request\n")) {
+		spin_unlock(&pcap->adc_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return IRQ_HANDLED;
 	}
 
@@ -290,7 +399,11 @@ static irqreturn_t pcap_adc_irq(int irq, void *_pcap)
 
 	pcap->adc_queue[pcap->adc_head] = NULL;
 	pcap->adc_head = (pcap->adc_head + 1) & (PCAP_ADC_MAXQ - 1);
+<<<<<<< HEAD
 	mutex_unlock(&pcap->adc_mutex);
+=======
+	spin_unlock(&pcap->adc_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* pass the results and release memory */
 	req->callback(req->data, res);
@@ -306,6 +419,10 @@ int pcap_adc_async(struct pcap_chip *pcap, u8 bank, u32 flags, u8 ch[],
 						void *callback, void *data)
 {
 	struct pcap_adc_request *req;
+<<<<<<< HEAD
+=======
+	unsigned long irq_flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This will be freed after we have a result */
 	req = kmalloc(sizeof(struct pcap_adc_request), GFP_KERNEL);
@@ -319,15 +436,25 @@ int pcap_adc_async(struct pcap_chip *pcap, u8 bank, u32 flags, u8 ch[],
 	req->callback = callback;
 	req->data = data;
 
+<<<<<<< HEAD
 	mutex_lock(&pcap->adc_mutex);
 	if (pcap->adc_queue[pcap->adc_tail]) {
 		mutex_unlock(&pcap->adc_mutex);
+=======
+	spin_lock_irqsave(&pcap->adc_lock, irq_flags);
+	if (pcap->adc_queue[pcap->adc_tail]) {
+		spin_unlock_irqrestore(&pcap->adc_lock, irq_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(req);
 		return -EBUSY;
 	}
 	pcap->adc_queue[pcap->adc_tail] = req;
 	pcap->adc_tail = (pcap->adc_tail + 1) & (PCAP_ADC_MAXQ - 1);
+<<<<<<< HEAD
 	mutex_unlock(&pcap->adc_mutex);
+=======
+	spin_unlock_irqrestore(&pcap->adc_lock, irq_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* start conversion */
 	pcap_adc_trigger(pcap);
@@ -371,7 +498,11 @@ static int pcap_remove_subdev(struct device *dev, void *unused)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit pcap_add_subdev(struct pcap_chip *pcap,
+=======
+static int pcap_add_subdev(struct pcap_chip *pcap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						struct pcap_subdev *subdev)
 {
 	struct platform_device *pdev;
@@ -391,16 +522,25 @@ static int __devinit pcap_add_subdev(struct pcap_chip *pcap,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit ezx_pcap_remove(struct spi_device *spi)
 {
 	struct pcap_chip *pcap = dev_get_drvdata(&spi->dev);
 	struct pcap_platform_data *pdata = spi->dev.platform_data;
 	int i, adc_irq;
+=======
+static void ezx_pcap_remove(struct spi_device *spi)
+{
+	struct pcap_chip *pcap = spi_get_drvdata(spi);
+	unsigned long flags;
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* remove all registered subdevs */
 	device_for_each_child(&spi->dev, NULL, pcap_remove_subdev);
 
 	/* cleanup ADC */
+<<<<<<< HEAD
 	adc_irq = pcap_to_irq(pcap, (pdata->config & PCAP_SECOND_PORT) ?
 				PCAP_IRQ_ADCDONE2 : PCAP_IRQ_ADCDONE);
 	free_irq(adc_irq, pcap);
@@ -408,12 +548,19 @@ static int __devexit ezx_pcap_remove(struct spi_device *spi)
 	for (i = 0; i < PCAP_ADC_MAXQ; i++)
 		kfree(pcap->adc_queue[i]);
 	mutex_unlock(&pcap->adc_mutex);
+=======
+	spin_lock_irqsave(&pcap->adc_lock, flags);
+	for (i = 0; i < PCAP_ADC_MAXQ; i++)
+		kfree(pcap->adc_queue[i]);
+	spin_unlock_irqrestore(&pcap->adc_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* cleanup irqchip */
 	for (i = pcap->irq_base; i < (pcap->irq_base + PCAP_NIRQS); i++)
 		irq_set_chip_and_handler(i, NULL, NULL);
 
 	destroy_workqueue(pcap->workqueue);
+<<<<<<< HEAD
 
 	kfree(pcap);
 
@@ -423,6 +570,13 @@ static int __devexit ezx_pcap_remove(struct spi_device *spi)
 static int __devinit ezx_pcap_probe(struct spi_device *spi)
 {
 	struct pcap_platform_data *pdata = spi->dev.platform_data;
+=======
+}
+
+static int ezx_pcap_probe(struct spi_device *spi)
+{
+	struct pcap_platform_data *pdata = dev_get_platdata(&spi->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pcap_chip *pcap;
 	int i, adc_irq;
 	int ret = -ENODEV;
@@ -431,24 +585,40 @@ static int __devinit ezx_pcap_probe(struct spi_device *spi)
 	if (!pdata)
 		goto ret;
 
+<<<<<<< HEAD
 	pcap = kzalloc(sizeof(*pcap), GFP_KERNEL);
+=======
+	pcap = devm_kzalloc(&spi->dev, sizeof(*pcap), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pcap) {
 		ret = -ENOMEM;
 		goto ret;
 	}
 
+<<<<<<< HEAD
 	mutex_init(&pcap->io_mutex);
 	mutex_init(&pcap->adc_mutex);
 	INIT_WORK(&pcap->isr_work, pcap_isr_work);
 	INIT_WORK(&pcap->msr_work, pcap_msr_work);
 	dev_set_drvdata(&spi->dev, pcap);
+=======
+	spin_lock_init(&pcap->io_lock);
+	spin_lock_init(&pcap->adc_lock);
+	INIT_WORK(&pcap->isr_work, pcap_isr_work);
+	INIT_WORK(&pcap->msr_work, pcap_msr_work);
+	spi_set_drvdata(spi, pcap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* setup spi */
 	spi->bits_per_word = 32;
 	spi->mode = SPI_MODE_0 | (pdata->config & PCAP_CS_AH ? SPI_CS_HIGH : 0);
 	ret = spi_setup(spi);
 	if (ret)
+<<<<<<< HEAD
 		goto free_pcap;
+=======
+		goto ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcap->spi = spi;
 
@@ -458,7 +628,11 @@ static int __devinit ezx_pcap_probe(struct spi_device *spi)
 	if (!pcap->workqueue) {
 		ret = -ENOMEM;
 		dev_err(&spi->dev, "can't create pcap thread\n");
+<<<<<<< HEAD
 		goto free_pcap;
+=======
+		goto ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* redirect interrupts to AP, except adcdone2 */
@@ -470,11 +644,15 @@ static int __devinit ezx_pcap_probe(struct spi_device *spi)
 	for (i = pcap->irq_base; i < (pcap->irq_base + PCAP_NIRQS); i++) {
 		irq_set_chip_and_handler(i, &pcap_irq_chip, handle_simple_irq);
 		irq_set_chip_data(i, pcap);
+<<<<<<< HEAD
 #ifdef CONFIG_ARM
 		set_irq_flags(i, IRQF_VALID);
 #else
 		irq_set_noprobe(i);
 #endif
+=======
+		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* mask/ack all PCAP interrupts */
@@ -483,15 +661,24 @@ static int __devinit ezx_pcap_probe(struct spi_device *spi)
 	pcap->msr = PCAP_MASK_ALL_INTERRUPT;
 
 	irq_set_irq_type(spi->irq, IRQ_TYPE_EDGE_RISING);
+<<<<<<< HEAD
 	irq_set_handler_data(spi->irq, pcap);
 	irq_set_chained_handler(spi->irq, pcap_irq_handler);
+=======
+	irq_set_chained_handler_and_data(spi->irq, pcap_irq_handler, pcap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq_set_irq_wake(spi->irq, 1);
 
 	/* ADC */
 	adc_irq = pcap_to_irq(pcap, (pdata->config & PCAP_SECOND_PORT) ?
 					PCAP_IRQ_ADCDONE2 : PCAP_IRQ_ADCDONE);
 
+<<<<<<< HEAD
 	ret = request_irq(adc_irq, pcap_adc_irq, 0, "ADC", pcap);
+=======
+	ret = devm_request_irq(&spi->dev, adc_irq, pcap_adc_irq, 0, "ADC",
+				pcap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto free_irqchip;
 
@@ -510,25 +697,37 @@ static int __devinit ezx_pcap_probe(struct spi_device *spi)
 
 remove_subdevs:
 	device_for_each_child(&spi->dev, NULL, pcap_remove_subdev);
+<<<<<<< HEAD
 /* free_adc: */
 	free_irq(adc_irq, pcap);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 free_irqchip:
 	for (i = pcap->irq_base; i < (pcap->irq_base + PCAP_NIRQS); i++)
 		irq_set_chip_and_handler(i, NULL, NULL);
 /* destroy_workqueue: */
 	destroy_workqueue(pcap->workqueue);
+<<<<<<< HEAD
 free_pcap:
 	kfree(pcap);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ret:
 	return ret;
 }
 
 static struct spi_driver ezxpcap_driver = {
 	.probe	= ezx_pcap_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(ezx_pcap_remove),
 	.driver = {
 		.name	= "ezx-pcap",
 		.owner	= THIS_MODULE,
+=======
+	.remove = ezx_pcap_remove,
+	.driver = {
+		.name	= "ezx-pcap",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -545,7 +744,10 @@ static void __exit ezx_pcap_exit(void)
 subsys_initcall(ezx_pcap_init);
 module_exit(ezx_pcap_exit);
 
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Daniel Ribeiro / Harald Welte");
 MODULE_DESCRIPTION("Motorola PCAP2 ASIC Driver");
 MODULE_ALIAS("spi:ezx-pcap");

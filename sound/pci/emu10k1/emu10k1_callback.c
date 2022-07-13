@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  synth callback routines for Emu10k1
  *
  *  Copyright (C) 2000 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/export.h>
@@ -46,9 +53,15 @@ static void release_voice(struct snd_emux_voice *vp);
 static void update_voice(struct snd_emux_voice *vp, int update);
 static void terminate_voice(struct snd_emux_voice *vp);
 static void free_voice(struct snd_emux_voice *vp);
+<<<<<<< HEAD
 static void set_fmmod(struct snd_emu10k1 *hw, struct snd_emux_voice *vp);
 static void set_fm2frq2(struct snd_emu10k1 *hw, struct snd_emux_voice *vp);
 static void set_filterQ(struct snd_emu10k1 *hw, struct snd_emux_voice *vp);
+=======
+static u32 make_fmmod(struct snd_emux_voice *vp);
+static u32 make_fm2frq2(struct snd_emux_voice *vp);
+static int get_pitch_shift(struct snd_emux *emu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Ensure a value is between two points
@@ -61,7 +74,11 @@ static void set_filterQ(struct snd_emu10k1 *hw, struct snd_emux_voice *vp);
 /*
  * set up operators
  */
+<<<<<<< HEAD
 static struct snd_emux_operators emu10k1_ops = {
+=======
+static const struct snd_emux_operators emu10k1_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner =	THIS_MODULE,
 	.get_voice =	get_voice,
 	.prepare =	start_voice,
@@ -72,6 +89,10 @@ static struct snd_emux_operators emu10k1_ops = {
 	.free_voice =	free_voice,
 	.sample_new =	snd_emu10k1_sample_new,
 	.sample_free =	snd_emu10k1_sample_free,
+<<<<<<< HEAD
+=======
+	.get_pitch_shift = get_pitch_shift,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void
@@ -103,9 +124,16 @@ snd_emu10k1_synth_get_voice(struct snd_emu10k1 *hw)
 		if (best[i].voice >= 0) {
 			int ch;
 			vp = &emu->voices[best[i].voice];
+<<<<<<< HEAD
 			if ((ch = vp->ch) < 0) {
 				/*
 				printk(KERN_WARNING
+=======
+			ch = vp->ch;
+			if (ch < 0) {
+				/*
+				dev_warn(emu->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       "synth_get_voice: ch < 0 (%d) ??", i);
 				*/
 				continue;
@@ -128,6 +156,7 @@ snd_emu10k1_synth_get_voice(struct snd_emu10k1 *hw)
 static void
 release_voice(struct snd_emux_voice *vp)
 {
+<<<<<<< HEAD
 	int dcysusv;
 	struct snd_emu10k1 *hw;
 	
@@ -136,6 +165,15 @@ release_voice(struct snd_emux_voice *vp)
 	snd_emu10k1_ptr_write(hw, DCYSUSM, vp->ch, dcysusv);
 	dcysusv = 0x8000 | (unsigned char)vp->reg.parm.volrelease | DCYSUSV_CHANNELENABLE_MASK;
 	snd_emu10k1_ptr_write(hw, DCYSUSV, vp->ch, dcysusv);
+=======
+	struct snd_emu10k1 *hw;
+	
+	hw = vp->hw;
+	snd_emu10k1_ptr_write_multiple(hw, vp->ch,
+		DCYSUSM, (unsigned char)vp->reg.parm.modrelease | DCYSUSM_PHASE1_MASK,
+		DCYSUSV, (unsigned char)vp->reg.parm.volrelease | DCYSUSV_PHASE1_MASK | DCYSUSV_CHANNELENABLE_MASK,
+		REGLIST_END);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -150,7 +188,17 @@ terminate_voice(struct snd_emux_voice *vp)
 	if (snd_BUG_ON(!vp))
 		return;
 	hw = vp->hw;
+<<<<<<< HEAD
 	snd_emu10k1_ptr_write(hw, DCYSUSV, vp->ch, 0x807f | DCYSUSV_CHANNELENABLE_MASK);
+=======
+	snd_emu10k1_ptr_write_multiple(hw, vp->ch,
+		DCYSUSV, 0,
+		VTFT, VTFT_FILTERTARGET_MASK,
+		CVCF, CVCF_CURRENTFILTER_MASK,
+		PTRX, 0,
+		CPF, 0,
+		REGLIST_END);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (vp->block) {
 		struct snd_emu10k1_memblk *emem;
 		emem = (struct snd_emu10k1_memblk *)vp->block;
@@ -173,11 +221,14 @@ free_voice(struct snd_emux_voice *vp)
 	/* Problem apparent on plug, unplug then plug */
 	/* on the Audigy 2 ZS Notebook. */
 	if (hw && (vp->ch >= 0)) {
+<<<<<<< HEAD
 		snd_emu10k1_ptr_write(hw, IFATN, vp->ch, 0xff00);
 		snd_emu10k1_ptr_write(hw, DCYSUSV, vp->ch, 0x807f | DCYSUSV_CHANNELENABLE_MASK);
 		// snd_emu10k1_ptr_write(hw, DCYSUSV, vp->ch, 0);
 		snd_emu10k1_ptr_write(hw, VTFT, vp->ch, 0xffff);
 		snd_emu10k1_ptr_write(hw, CVCF, vp->ch, 0xffff);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_emu10k1_voice_free(hw, &hw->voices[vp->ch]);
 		vp->emu->num_voices--;
 		vp->ch = -1;
@@ -203,6 +254,7 @@ update_voice(struct snd_emux_voice *vp, int update)
 		snd_emu10k1_ptr_write(hw, PTRX_FXSENDAMOUNT_B, vp->ch, vp->aaux);
 	}
 	if (update & SNDRV_EMUX_UPDATE_FMMOD)
+<<<<<<< HEAD
 		set_fmmod(hw, vp);
 	if (update & SNDRV_EMUX_UPDATE_TREMFREQ)
 		snd_emu10k1_ptr_write(hw, TREMFRQ, vp->ch, vp->reg.parm.tremfrq);
@@ -210,6 +262,15 @@ update_voice(struct snd_emux_voice *vp, int update)
 		set_fm2frq2(hw, vp);
 	if (update & SNDRV_EMUX_UPDATE_Q)
 		set_filterQ(hw, vp);
+=======
+		snd_emu10k1_ptr_write(hw, FMMOD, vp->ch, make_fmmod(vp));
+	if (update & SNDRV_EMUX_UPDATE_TREMFREQ)
+		snd_emu10k1_ptr_write(hw, TREMFRQ, vp->ch, vp->reg.parm.tremfrq);
+	if (update & SNDRV_EMUX_UPDATE_FM2FRQ2)
+		snd_emu10k1_ptr_write(hw, FM2FRQ2, vp->ch, make_fm2frq2(vp));
+	if (update & SNDRV_EMUX_UPDATE_Q)
+		snd_emu10k1_ptr_write(hw, CCCA_RESONANCE, vp->ch, vp->reg.parm.filterQ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -226,7 +287,11 @@ lookup_voices(struct snd_emux *emu, struct snd_emu10k1 *hw,
 	int  i;
 
 	for (i = 0; i < V_END; i++) {
+<<<<<<< HEAD
 		best[i].time = (unsigned int)-1; /* XXX MAX_?INT really */;
+=======
+		best[i].time = (unsigned int)-1; /* XXX MAX_?INT really */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		best[i].voice = -1;
 	}
 
@@ -300,7 +365,11 @@ get_voice(struct snd_emux *emu, struct snd_emux_port *port)
 			if (vp->ch < 0) {
 				/* allocate a voice */
 				struct snd_emu10k1_voice *hwvoice;
+<<<<<<< HEAD
 				if (snd_emu10k1_voice_alloc(hw, EMU10K1_SYNTH, 1, &hwvoice) < 0 || hwvoice == NULL)
+=======
+				if (snd_emu10k1_voice_alloc(hw, EMU10K1_SYNTH, 1, 1, NULL, &hwvoice) < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					continue;
 				vp->ch = hwvoice->number;
 				emu->num_voices++;
@@ -321,6 +390,10 @@ start_voice(struct snd_emux_voice *vp)
 {
 	unsigned int temp;
 	int ch;
+<<<<<<< HEAD
+=======
+	u32 psst, dsl, map, ccca, vtarget;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int addr, mapped_offset;
 	struct snd_midi_channel *chan;
 	struct snd_emu10k1 *hw;
@@ -337,7 +410,11 @@ start_voice(struct snd_emux_voice *vp)
 		return -EINVAL;
 	emem->map_locked++;
 	if (snd_emu10k1_memblk_map(hw, emem) < 0) {
+<<<<<<< HEAD
 		/* printk(KERN_ERR "emu: cannot map!\n"); */
+=======
+		/* dev_err(hw->card->devK, "emu: cannot map!\n"); */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	mapped_offset = snd_emu10k1_memblk_offset(emem) >> 1;
@@ -358,6 +435,7 @@ start_voice(struct snd_emux_voice *vp)
 		snd_emu10k1_ptr_write(hw, FXRT, ch, temp);
 	}
 
+<<<<<<< HEAD
 	/* channel to be silent and idle */
 	snd_emu10k1_ptr_write(hw, DCYSUSV, ch, 0x0000);
 	snd_emu10k1_ptr_write(hw, VTFT, ch, 0x0000FFFF);
@@ -396,17 +474,25 @@ start_voice(struct snd_emux_voice *vp)
 	set_fm2frq2(hw, vp);
 
 	/* reverb and loop start (reverb 8bit, MSB) */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	temp = vp->reg.parm.reverb;
 	temp += (int)vp->chan->control[MIDI_CTL_E1_REVERB_DEPTH] * 9 / 10;
 	LIMITMAX(temp, 255);
 	addr = vp->reg.loopstart;
+<<<<<<< HEAD
 	snd_emu10k1_ptr_write(hw, PSST, vp->ch, (temp << 24) | addr);
 
 	/* chorus & loop end (chorus 8bit, MSB) */
+=======
+	psst = (temp << 24) | addr;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addr = vp->reg.loopend;
 	temp = vp->reg.parm.chorus;
 	temp += (int)chan->control[MIDI_CTL_E3_CHORUS_DEPTH] * 9 / 10;
 	LIMITMAX(temp, 255);
+<<<<<<< HEAD
 	temp = (temp <<24) | addr;
 	snd_emu10k1_ptr_write(hw, DSL, ch, temp);
 
@@ -466,6 +552,87 @@ start_voice(struct snd_emux_voice *vp)
 	temp = (unsigned int)vp->vtarget << 16;
 	snd_emu10k1_ptr_write(hw, VTFT, ch, temp | vp->ftarget);
 	snd_emu10k1_ptr_write(hw, CVCF, ch, temp | 0xff00);
+=======
+	dsl = (temp << 24) | addr;
+
+	map = (hw->silent_page.addr << hw->address_mode) | (hw->address_mode ? MAP_PTI_MASK1 : MAP_PTI_MASK0);
+
+	addr = vp->reg.start;
+	temp = vp->reg.parm.filterQ;
+	ccca = (temp << 28) | addr;
+	if (vp->apitch < 0xe400)
+		ccca |= CCCA_INTERPROM_0;
+	else {
+		unsigned int shift = (vp->apitch - 0xe000) >> 10;
+		ccca |= shift << 25;
+	}
+	if (vp->reg.sample_mode & SNDRV_SFNT_SAMPLE_8BITS)
+		ccca |= CCCA_8BITSELECT;
+
+	vtarget = (unsigned int)vp->vtarget << 16;
+
+	snd_emu10k1_ptr_write_multiple(hw, ch,
+		/* channel to be silent and idle */
+		DCYSUSV, 0,
+		VTFT, VTFT_FILTERTARGET_MASK,
+		CVCF, CVCF_CURRENTFILTER_MASK,
+		PTRX, 0,
+		CPF, 0,
+
+		/* set pitch offset */
+		IP, vp->apitch,
+
+		/* set envelope parameters */
+		ENVVAL, vp->reg.parm.moddelay,
+		ATKHLDM, vp->reg.parm.modatkhld,
+		DCYSUSM, vp->reg.parm.moddcysus,
+		ENVVOL, vp->reg.parm.voldelay,
+		ATKHLDV, vp->reg.parm.volatkhld,
+		/* decay/sustain parameter for volume envelope is used
+		   for triggerg the voice */
+
+		/* cutoff and volume */
+		IFATN, (unsigned int)vp->acutoff << 8 | (unsigned char)vp->avol,
+
+		/* modulation envelope heights */
+		PEFE, vp->reg.parm.pefe,
+
+		/* lfo1/2 delay */
+		LFOVAL1, vp->reg.parm.lfo1delay,
+		LFOVAL2, vp->reg.parm.lfo2delay,
+
+		/* lfo1 pitch & cutoff shift */
+		FMMOD, make_fmmod(vp),
+		/* lfo1 volume & freq */
+		TREMFRQ, vp->reg.parm.tremfrq,
+		/* lfo2 pitch & freq */
+		FM2FRQ2, make_fm2frq2(vp),
+
+		/* reverb and loop start (reverb 8bit, MSB) */
+		PSST, psst,
+
+		/* chorus & loop end (chorus 8bit, MSB) */
+		DSL, dsl,
+
+		/* clear filter delay memory */
+		Z1, 0,
+		Z2, 0,
+
+		/* invalidate maps */
+		MAPA, map,
+		MAPB, map,
+
+		/* Q & current address (Q 4bit value, MSB) */
+		CCCA, ccca,
+
+		/* reset volume */
+		VTFT, vtarget | vp->ftarget,
+		CVCF, vtarget | CVCF_CURRENTFILTER_MASK,
+
+		REGLIST_END);
+
+	hw->voices[ch].dirty = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -475,7 +642,11 @@ start_voice(struct snd_emux_voice *vp)
 static void
 trigger_voice(struct snd_emux_voice *vp)
 {
+<<<<<<< HEAD
 	unsigned int temp, ptarget;
+=======
+	unsigned int ptarget;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emu10k1 *hw;
 	struct snd_emu10k1_memblk *emem;
 	
@@ -490,6 +661,7 @@ trigger_voice(struct snd_emux_voice *vp)
 #else
 	ptarget = IP_TO_CP(vp->apitch);
 #endif
+<<<<<<< HEAD
 	/* set pitch target and pan (volume) */
 	temp = ptarget | (vp->apan << 8) | vp->aaux;
 	snd_emu10k1_ptr_write(hw, PTRX, vp->ch, temp);
@@ -499,15 +671,35 @@ trigger_voice(struct snd_emux_voice *vp)
 
 	/* trigger voice */
 	snd_emu10k1_ptr_write(hw, DCYSUSV, vp->ch, vp->reg.parm.voldcysus|DCYSUSV_CHANNELENABLE_MASK);
+=======
+	snd_emu10k1_ptr_write_multiple(hw, vp->ch,
+		/* set pitch target and pan (volume) */
+		PTRX, ptarget | (vp->apan << 8) | vp->aaux,
+
+		/* current pitch and fractional address */
+		CPF, ptarget,
+
+		/* enable envelope engine */
+		DCYSUSV, vp->reg.parm.voldcysus | DCYSUSV_CHANNELENABLE_MASK,
+
+		REGLIST_END);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define MOD_SENSE 18
 
+<<<<<<< HEAD
 /* set lfo1 modulation height and cutoff */
 static void
 set_fmmod(struct snd_emu10k1 *hw, struct snd_emux_voice *vp)
 {
 	unsigned short fmmod;
+=======
+/* calculate lfo1 modulation height and cutoff register */
+static u32
+make_fmmod(struct snd_emux_voice *vp)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	short pitch;
 	unsigned char cutoff;
 	int modulation;
@@ -517,6 +709,7 @@ set_fmmod(struct snd_emu10k1 *hw, struct snd_emux_voice *vp)
 	modulation = vp->chan->gm_modulation + vp->chan->midi_pressure;
 	pitch += (MOD_SENSE * modulation) / 1200;
 	LIMITVALUE(pitch, -128, 127);
+<<<<<<< HEAD
 	fmmod = ((unsigned char)pitch<<8) | cutoff;
 	snd_emu10k1_ptr_write(hw, FMMOD, vp->ch, fmmod);
 }
@@ -526,6 +719,15 @@ static void
 set_fm2frq2(struct snd_emu10k1 *hw, struct snd_emux_voice *vp)
 {
 	unsigned short fm2frq2;
+=======
+	return ((unsigned char)pitch << 8) | cutoff;
+}
+
+/* calculate set lfo2 pitch & frequency register */
+static u32
+make_fm2frq2(struct snd_emux_voice *vp)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	short pitch;
 	unsigned char freq;
 	int modulation;
@@ -535,6 +737,7 @@ set_fm2frq2(struct snd_emu10k1 *hw, struct snd_emux_voice *vp)
 	modulation = vp->chan->gm_modulation + vp->chan->midi_pressure;
 	pitch += (MOD_SENSE * modulation) / 1200;
 	LIMITVALUE(pitch, -128, 127);
+<<<<<<< HEAD
 	fm2frq2 = ((unsigned char)pitch<<8) | freq;
 	snd_emu10k1_ptr_write(hw, FM2FRQ2, vp->ch, fm2frq2);
 }
@@ -547,4 +750,15 @@ set_filterQ(struct snd_emu10k1 *hw, struct snd_emux_voice *vp)
 	val = snd_emu10k1_ptr_read(hw, CCCA, vp->ch) & ~CCCA_RESONANCE;
 	val |= (vp->reg.parm.filterQ << 28);
 	snd_emu10k1_ptr_write(hw, CCCA, vp->ch, val);
+=======
+	return ((unsigned char)pitch << 8) | freq;
+}
+
+static int get_pitch_shift(struct snd_emux *emu)
+{
+	struct snd_emu10k1 *hw = emu->hw;
+
+	return (hw->card_capabilities->emu_model &&
+			hw->emu1010.word_clock == 44100) ? 0 : -501;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

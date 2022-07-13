@@ -1,21 +1,34 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support for OLPC XO-1.5 System Control Interrupts (SCI)
  *
  * Copyright (C) 2009-2010 One Laptop per Child
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
 #include <linux/slab.h>
 #include <linux/workqueue.h>
 #include <linux/power_supply.h>
+<<<<<<< HEAD
 
 #include <acpi/acpi_bus.h>
 #include <acpi/acpi_drivers.h>
+=======
+#include <linux/olpc-ec.h>
+
+#include <linux/acpi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/olpc.h>
 
 #define DRV_NAME			"olpc-xo15-sci"
@@ -31,7 +44,11 @@ static bool				lid_wake_on_close;
  * wake-on-close. This is implemented as standard by the XO-1.5 DSDT.
  *
  * We provide here a sysfs attribute that will additionally enable
+<<<<<<< HEAD
  * wake-on-close behavior. This is useful (e.g.) when we oportunistically
+=======
+ * wake-on-close behavior. This is useful (e.g.) when we opportunistically
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * suspend with the display running; if the lid is then closed, we want to
  * wake up to turn the display off.
  *
@@ -39,6 +56,7 @@ static bool				lid_wake_on_close;
  */
 static int set_lid_wake_behavior(bool wake_on_close)
 {
+<<<<<<< HEAD
 	struct acpi_object_list arg_list;
 	union acpi_object arg;
 	acpi_status status;
@@ -51,6 +69,13 @@ static int set_lid_wake_behavior(bool wake_on_close)
 	status = acpi_evaluate_object(NULL, "\\_SB.PCI0.LID.LIDW", &arg_list, NULL);
 	if (ACPI_FAILURE(status)) {
 		pr_warning(PFX "failed to set lid behavior\n");
+=======
+	acpi_status status;
+
+	status = acpi_execute_simple_method(NULL, "\\_SB.PCI0.LID.LIDW", wake_on_close);
+	if (ACPI_FAILURE(status)) {
+		pr_warn(PFX "failed to set lid behavior\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
@@ -86,21 +111,37 @@ static struct kobj_attribute lid_wake_on_close_attr =
 
 static void battery_status_changed(void)
 {
+<<<<<<< HEAD
 	struct power_supply *psy = power_supply_get_by_name("olpc-battery");
 
 	if (psy) {
 		power_supply_changed(psy);
 		put_device(psy->dev);
+=======
+	struct power_supply *psy = power_supply_get_by_name("olpc_battery");
+
+	if (psy) {
+		power_supply_changed(psy);
+		power_supply_put(psy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void ac_status_changed(void)
 {
+<<<<<<< HEAD
 	struct power_supply *psy = power_supply_get_by_name("olpc-ac");
 
 	if (psy) {
 		power_supply_changed(psy);
 		put_device(psy->dev);
+=======
+	struct power_supply *psy = power_supply_get_by_name("olpc_ac");
+
+	if (psy) {
+		power_supply_changed(psy);
+		power_supply_put(psy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -194,16 +235,27 @@ err_sysfs:
 	return r;
 }
 
+<<<<<<< HEAD
 static int xo15_sci_remove(struct acpi_device *device, int type)
+=======
+static void xo15_sci_remove(struct acpi_device *device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	acpi_disable_gpe(NULL, xo15_sci_gpe);
 	acpi_remove_gpe_handler(NULL, xo15_sci_gpe, xo15_sci_gpe_handler);
 	cancel_work_sync(&sci_work);
 	sysfs_remove_file(&device->dev.kobj, &lid_wake_on_close_attr.attr);
+<<<<<<< HEAD
 	return 0;
 }
 
 static int xo15_sci_resume(struct acpi_device *device)
+=======
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int xo15_sci_resume(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Enable all EC events */
 	olpc_ec_mask_write(EC_SCI_SRC_ALL);
@@ -214,6 +266,12 @@ static int xo15_sci_resume(struct acpi_device *device)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+#endif
+
+static SIMPLE_DEV_PM_OPS(xo15_sci_pm, NULL, xo15_sci_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct acpi_device_id xo15_sci_device_ids[] = {
 	{"XO15EC", 0},
@@ -227,8 +285,13 @@ static struct acpi_driver xo15_sci_drv = {
 	.ops = {
 		.add = xo15_sci_add,
 		.remove = xo15_sci_remove,
+<<<<<<< HEAD
 		.resume = xo15_sci_resume,
 	},
+=======
+	},
+	.drv.pm = &xo15_sci_pm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init xo15_sci_init(void)

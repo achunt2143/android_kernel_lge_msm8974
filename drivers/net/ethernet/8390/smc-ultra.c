@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-1.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* smc-ultra.c: A SMC Ultra ethernet driver for linux. */
 /*
 	This is a driver for the SMC Ultra and SMC EtherEZ ISA ethercards.
@@ -7,9 +11,12 @@
 	Copyright 1993 United States Government as represented by the
 	Director, National Security Agency.
 
+<<<<<<< HEAD
 	This software may be used and distributed according to the terms
 	of the GNU General Public License, incorporated herein by reference.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	The author may be reached as becker@scyld.com, or C/O
 	Scyld Computing Corporation
 	410 Severn Ave., Suite 210
@@ -66,6 +73,10 @@ static const char version[] =
 #include <linux/isapnp.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
+<<<<<<< HEAD
+=======
+#include <net/Space.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 #include <asm/irq.h>
@@ -111,6 +122,10 @@ static struct isapnp_device_id ultra_device_ids[] __initdata = {
 MODULE_DEVICE_TABLE(isapnp, ultra_device_ids);
 #endif
 
+<<<<<<< HEAD
+=======
+static u32 ultra_msg_enable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define START_PG		0x00	/* First page of TX buffer */
 
@@ -194,7 +209,10 @@ static const struct net_device_ops ultra_netdev_ops = {
 	.ndo_set_rx_mode	= ei_set_multicast_list,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address 	= eth_mac_addr,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller 	= ultra_poll,
 #endif
@@ -204,6 +222,10 @@ static int __init ultra_probe1(struct net_device *dev, int ioaddr)
 {
 	int i, retval;
 	int checksum = 0;
+<<<<<<< HEAD
+=======
+	u8 macaddr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *model_name;
 	unsigned char eeprom_irq = 0;
 	static unsigned version_printed;
@@ -211,6 +233,10 @@ static int __init ultra_probe1(struct net_device *dev, int ioaddr)
 	unsigned char num_pages, irqreg, addr, piomode;
 	unsigned char idreg = inb(ioaddr + 7);
 	unsigned char reg4 = inb(ioaddr + 4) & 0x7f;
+<<<<<<< HEAD
+=======
+	struct ei_device *ei_local = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!request_region(ioaddr, ULTRA_IO_EXTENT, DRV_NAME))
 		return -EBUSY;
@@ -232,16 +258,29 @@ static int __init ultra_probe1(struct net_device *dev, int ioaddr)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (ei_debug  &&  version_printed++ == 0)
 		printk(version);
+=======
+	if ((ultra_msg_enable & NETIF_MSG_DRV) && (version_printed++ == 0))
+		netdev_info(dev, version);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	model_name = (idreg & 0xF0) == 0x20 ? "SMC Ultra" : "SMC EtherEZ";
 
 	for (i = 0; i < 6; i++)
+<<<<<<< HEAD
 		dev->dev_addr[i] = inb(ioaddr + 8 + i);
 
 	printk("%s: %s at %#3x, %pM", dev->name, model_name,
 	       ioaddr, dev->dev_addr);
+=======
+		macaddr[i] = inb(ioaddr + 8 + i);
+	eth_hw_addr_set(dev, macaddr);
+
+	netdev_info(dev, "%s at %#3x, %pM", model_name,
+		    ioaddr, dev->dev_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Switch from the station address to the alternate register set and
 	   read the useful registers there. */
@@ -265,7 +304,11 @@ static int __init ultra_probe1(struct net_device *dev, int ioaddr)
 		irq = irqmap[((irqreg & 0x40) >> 4) + ((irqreg & 0x0c) >> 2)];
 
 		if (irq == 0) {
+<<<<<<< HEAD
 			printk(", failed to detect IRQ line.\n");
+=======
+			pr_cont(", failed to detect IRQ line.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retval =  -EAGAIN;
 			goto out;
 		}
@@ -296,7 +339,11 @@ static int __init ultra_probe1(struct net_device *dev, int ioaddr)
 
 	ei_status.mem = ioremap(dev->mem_start, (ei_status.stop_page - START_PG)*256);
 	if (!ei_status.mem) {
+<<<<<<< HEAD
 		printk(", failed to ioremap.\n");
+=======
+		pr_cont(", failed to ioremap.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval =  -ENOMEM;
 		goto out;
 	}
@@ -304,14 +351,25 @@ static int __init ultra_probe1(struct net_device *dev, int ioaddr)
 	dev->mem_end = dev->mem_start + (ei_status.stop_page - START_PG)*256;
 
 	if (piomode) {
+<<<<<<< HEAD
 		printk(",%s IRQ %d programmed-I/O mode.\n",
 			   eeprom_irq ? "EEPROM" : "assigned ", dev->irq);
+=======
+		pr_cont(", %s IRQ %d programmed-I/O mode.\n",
+			eeprom_irq ? "EEPROM" : "assigned ", dev->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ei_status.block_input = &ultra_pio_input;
 		ei_status.block_output = &ultra_pio_output;
 		ei_status.get_8390_hdr = &ultra_pio_get_hdr;
 	} else {
+<<<<<<< HEAD
 		printk(",%s IRQ %d memory %#lx-%#lx.\n", eeprom_irq ? "" : "assigned ",
 			   dev->irq, dev->mem_start, dev->mem_end-1);
+=======
+		pr_cont(", %s IRQ %d memory %#lx-%#lx.\n",
+			eeprom_irq ? "" : "assigned ", dev->irq, dev->mem_start,
+			dev->mem_end-1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ei_status.block_input = &ultra_block_input;
 		ei_status.block_output = &ultra_block_output;
 		ei_status.get_8390_hdr = &ultra_get_8390_hdr;
@@ -320,6 +378,10 @@ static int __init ultra_probe1(struct net_device *dev, int ioaddr)
 
 	dev->netdev_ops = &ultra_netdev_ops;
 	NS8390_init(dev, 0);
+<<<<<<< HEAD
+=======
+	ei_local->msg_enable = ultra_msg_enable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = register_netdev(dev);
 	if (retval)
@@ -344,11 +406,19 @@ static int __init ultra_probe_isapnp(struct net_device *dev)
                                             idev))) {
                         /* Avoid already found cards from previous calls */
                         if (pnp_device_attach(idev) < 0)
+<<<<<<< HEAD
                         	continue;
                         if (pnp_activate_dev(idev) < 0) {
                               __again:
                         	pnp_device_detach(idev);
                         	continue;
+=======
+				continue;
+                        if (pnp_activate_dev(idev) < 0) {
+                              __again:
+				pnp_device_detach(idev);
+				continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                         }
 			/* if no io and irq, search for next */
 			if (!pnp_port_valid(idev, 0) || !pnp_irq_valid(idev, 0))
@@ -356,12 +426,24 @@ static int __init ultra_probe_isapnp(struct net_device *dev)
                         /* found it */
 			dev->base_addr = pnp_port_start(idev, 0);
 			dev->irq = pnp_irq(idev, 0);
+<<<<<<< HEAD
                         printk(KERN_INFO "smc-ultra.c: ISAPnP reports %s at i/o %#lx, irq %d.\n",
                                 (char *) ultra_device_ids[i].driver_data,
                                 dev->base_addr, dev->irq);
                         if (ultra_probe1(dev, dev->base_addr) != 0) {      /* Shouldn't happen. */
                                 printk(KERN_ERR "smc-ultra.c: Probe of ISAPnP card at %#lx failed.\n", dev->base_addr);
                                 pnp_device_detach(idev);
+=======
+			netdev_info(dev,
+				    "smc-ultra.c: ISAPnP reports %s at i/o %#lx, irq %d.\n",
+				    (char *) ultra_device_ids[i].driver_data,
+				    dev->base_addr, dev->irq);
+                        if (ultra_probe1(dev, dev->base_addr) != 0) {      /* Shouldn't happen. */
+				netdev_err(dev,
+					   "smc-ultra.c: Probe of ISAPnP card at %#lx failed.\n",
+					   dev->base_addr);
+				pnp_device_detach(idev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENXIO;
                         }
                         ei_status.priv = (unsigned long)idev;
@@ -412,9 +494,16 @@ static void
 ultra_reset_8390(struct net_device *dev)
 {
 	int cmd_port = dev->base_addr - ULTRA_NIC_OFFSET; /* ASIC base addr */
+<<<<<<< HEAD
 
 	outb(ULTRA_RESET, cmd_port);
 	if (ei_debug > 1) printk("resetting Ultra, t=%ld...", jiffies);
+=======
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	outb(ULTRA_RESET, cmd_port);
+	netif_dbg(ei_local, hw, dev, "resetting Ultra, t=%ld...\n", jiffies);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ei_status.txing = 0;
 
 	outb(0x00, cmd_port);	/* Disable shared memory for safety. */
@@ -424,7 +513,11 @@ ultra_reset_8390(struct net_device *dev)
 	else
 		outb(0x01, cmd_port + 6);		/* Enable interrupts and memory. */
 
+<<<<<<< HEAD
 	if (ei_debug > 1) printk("reset done\n");
+=======
+	netif_dbg(ei_local, hw, dev, "reset done\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Grab the 8390 specific header. Similar to the block_input routine, but
@@ -515,7 +608,10 @@ static void ultra_pio_input(struct net_device *dev, int count,
 	/* We know skbuffs are padded to at least word alignment. */
 	insw(ioaddr + IOPD, buf, (count+1)>>1);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ultra_pio_output(struct net_device *dev, int count,
 							const unsigned char *buf, const int start_page)
 {
@@ -530,11 +626,19 @@ static int
 ultra_close_card(struct net_device *dev)
 {
 	int ioaddr = dev->base_addr - ULTRA_NIC_OFFSET; /* CMDREG */
+<<<<<<< HEAD
 
 	netif_stop_queue(dev);
 
 	if (ei_debug > 1)
 		printk("%s: Shutting down ethercard.\n", dev->name);
+=======
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	netif_stop_queue(dev);
+
+	netif_dbg(ei_local, ifdown, dev, "Shutting down ethercard.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	outb(0x00, ioaddr + 6);		/* Disable interrupts. */
 	free_irq(dev->irq, dev);
@@ -554,17 +658,30 @@ static struct net_device *dev_ultra[MAX_ULTRA_CARDS];
 static int io[MAX_ULTRA_CARDS];
 static int irq[MAX_ULTRA_CARDS];
 
+<<<<<<< HEAD
 module_param_array(io, int, NULL, 0);
 module_param_array(irq, int, NULL, 0);
 MODULE_PARM_DESC(io, "I/O base address(es)");
 MODULE_PARM_DESC(irq, "IRQ number(s) (assigned)");
+=======
+module_param_hw_array(io, int, ioport, NULL, 0);
+module_param_hw_array(irq, int, irq, NULL, 0);
+module_param_named(msg_enable, ultra_msg_enable, uint, 0444);
+MODULE_PARM_DESC(io, "I/O base address(es)");
+MODULE_PARM_DESC(irq, "IRQ number(s) (assigned)");
+MODULE_PARM_DESC(msg_enable, "Debug message level (see linux/netdevice.h for bitmap)");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("SMC Ultra/EtherEZ ISA/PnP Ethernet driver");
 MODULE_LICENSE("GPL");
 
 /* This is set up so that only a single autoprobe takes place per call.
 ISA device autoprobes on a running machine are not recommended. */
+<<<<<<< HEAD
 int __init
 init_module(void)
+=======
+static int __init ultra_init_module(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	int this_dev, found = 0;
@@ -591,6 +708,10 @@ init_module(void)
 		return 0;
 	return -ENXIO;
 }
+<<<<<<< HEAD
+=======
+module_init(ultra_init_module);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void cleanup_card(struct net_device *dev)
 {
@@ -604,8 +725,12 @@ static void cleanup_card(struct net_device *dev)
 	iounmap(ei_status.mem);
 }
 
+<<<<<<< HEAD
 void __exit
 cleanup_module(void)
+=======
+static void __exit ultra_cleanup_module(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int this_dev;
 
@@ -618,4 +743,8 @@ cleanup_module(void)
 		}
 	}
 }
+<<<<<<< HEAD
+=======
+module_exit(ultra_cleanup_module);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* MODULE */

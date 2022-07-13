@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ifeq ($(CONFIG_MMU),y)
 UTS_SYSNAME = -DUTS_SYSNAME=\"Linux\"
 else
@@ -10,6 +11,19 @@ CPU_VER   := $(shell echo $(CONFIG_XILINX_MICROBLAZE0_HW_VER))
 CPU_MAJOR := $(shell echo $(CPU_VER) | cut -d '.' -f 1)
 CPU_MINOR := $(shell echo $(CPU_VER) | cut -d '.' -f 2)
 CPU_REV   := $(shell echo $(CPU_VER) | cut -d '.' -f 3)
+=======
+# SPDX-License-Identifier: GPL-2.0
+KBUILD_DEFCONFIG := mmu_defconfig
+
+UTS_SYSNAME = -DUTS_SYSNAME=\"Linux\"
+
+# What CPU version are we building for, and crack it open
+# as major.minor.rev
+CPU_VER   := $(CONFIG_XILINX_MICROBLAZE0_HW_VER)
+CPU_MAJOR := $(word 1, $(subst ., , $(CPU_VER)))
+CPU_MINOR := $(word 2, $(subst ., , $(CPU_VER)))
+CPU_REV   := $(word 3, $(subst ., , $(CPU_VER)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 export CPU_VER CPU_MAJOR CPU_MINOR CPU_REV
 
@@ -34,6 +48,7 @@ CPUFLAGS-$(CONFIG_XILINX_MICROBLAZE0_USE_DIV) += -mno-xl-soft-div
 CPUFLAGS-$(CONFIG_XILINX_MICROBLAZE0_USE_BARREL) += -mxl-barrel-shift
 CPUFLAGS-$(CONFIG_XILINX_MICROBLAZE0_USE_PCMP_INSTR) += -mxl-pattern-compare
 
+<<<<<<< HEAD
 CPUFLAGS-1 += $(call cc-option,-mcpu=v$(CPU_VER))
 
 # r31 holds current when in kernel mode
@@ -50,12 +65,31 @@ core-y += arch/microblaze/platform/
 core-$(CONFIG_PCI) += arch/microblaze/pci/
 
 drivers-$(CONFIG_OPROFILE) += arch/microblaze/oprofile/
+=======
+ifdef CONFIG_CPU_BIG_ENDIAN
+KBUILD_CFLAGS += -mbig-endian
+KBUILD_AFLAGS += -mbig-endian
+KBUILD_LDFLAGS += -EB
+else
+KBUILD_CFLAGS += -mlittle-endian
+KBUILD_AFLAGS += -mlittle-endian
+KBUILD_LDFLAGS += -EL
+endif
+
+CPUFLAGS-1 += $(call cc-option,-mcpu=v$(CPU_VER))
+
+# r31 holds current when in kernel mode
+KBUILD_CFLAGS += -ffixed-r31 $(CPUFLAGS-y) $(CPUFLAGS-1) $(CPUFLAGS-2)
+
+libs-y += arch/microblaze/lib/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 boot := arch/microblaze/boot
 
 # Are we making a simpleImage.<boardname> target? If so, crack out the boardname
 DTB:=$(subst simpleImage.,,$(filter simpleImage.%, $(MAKECMDGOALS)))
 
+<<<<<<< HEAD
 ifneq ($(DTB),)
 	core-y	+= $(boot)/
 endif
@@ -80,15 +114,44 @@ $(BOOT_TARGETS1): vmlinux
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
 $(BOOT_TARGETS2): vmlinux
 	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
+=======
+export DTB
+
+all: linux.bin
+
+archheaders:
+	$(Q)$(MAKE) $(build)=arch/microblaze/kernel/syscalls all
+
+PHONY += linux.bin linux.bin.gz linux.bin.ub
+linux.bin.ub linux.bin.gz: linux.bin
+linux.bin: vmlinux
+linux.bin linux.bin.gz linux.bin.ub:
+	$(Q)$(MAKE) $(build)=$(boot) $(boot)/$@
+	@echo 'Kernel: $(boot)/$@ is ready' ' (#'$(or $(KBUILD_BUILD_VERSION),`cat .version`)')'
+
+PHONY += simpleImage.$(DTB)
+simpleImage.$(DTB): vmlinux
+	$(Q)$(MAKE) $(build)=$(boot) $(addprefix $(boot)/$@., ub unstrip strip)
+	@echo 'Kernel: $(boot)/$@ is ready' ' (#'$(or $(KBUILD_BUILD_VERSION),`cat .version`)')'
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 define archhelp
   echo '* linux.bin    - Create raw binary'
   echo '  linux.bin.gz - Create compressed raw binary'
+<<<<<<< HEAD
   echo '  simpleImage.<dt> - ELF image with $(arch)/boot/dts/<dt>.dts linked in'
   echo '                   - stripped elf with fdt blob'
   echo '  simpleImage.<dt>.unstrip - full ELF image with fdt blob'
   echo '  *_defconfig      - Select default config from arch/microblaze/configs'
   echo ''
+=======
+  echo '  linux.bin.ub - Create U-Boot wrapped raw binary'
+  echo '  simpleImage.<dt> - Create the following images with <dt>.dtb linked in'
+  echo '                    simpleImage.<dt>        : raw image'
+  echo '                    simpleImage.<dt>.ub     : raw image with U-Boot header'
+  echo '                    simpleImage.<dt>.unstrip: ELF (identical to vmlinux)'
+  echo '                    simpleImage.<dt>.strip  : stripped ELF'
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   echo '  Targets with <dt> embed a device tree blob inside the image'
   echo '  These targets support board with firmware that does not'
   echo '  support passing a device tree directly. Replace <dt> with the'

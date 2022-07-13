@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TCP Low Priority (TCP-LP)
  *
@@ -37,7 +41,11 @@
 #include <net/tcp.h>
 
 /* resolution of owd */
+<<<<<<< HEAD
 #define LP_RESOL       1000
+=======
+#define LP_RESOL       TCP_TS_HZ
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * enum tcp_lp_state
@@ -62,7 +70,11 @@ enum tcp_lp_state {
  * @sowd: smoothed OWD << 3
  * @owd_min: min OWD
  * @owd_max: max OWD
+<<<<<<< HEAD
  * @owd_max_rsv: resrved max owd
+=======
+ * @owd_max_rsv: reserved max owd
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @remote_hz: estimated remote HZ
  * @remote_ref_time: remote reference time
  * @local_ref_time: local reference time
@@ -88,6 +100,10 @@ struct lp {
 
 /**
  * tcp_lp_init
+<<<<<<< HEAD
+=======
+ * @sk: socket to initialize congestion control algorithm for
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Init all required variables.
  * Clone the handling from Vegas module implementation.
@@ -110,21 +126,37 @@ static void tcp_lp_init(struct sock *sk)
 
 /**
  * tcp_lp_cong_avoid
+<<<<<<< HEAD
+=======
+ * @sk: socket to avoid congesting
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Implementation of cong_avoid.
  * Will only call newReno CA when away from inference.
  * From TCP-LP's paper, this will be handled in additive increasement.
  */
+<<<<<<< HEAD
 static void tcp_lp_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
+=======
+static void tcp_lp_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lp *lp = inet_csk_ca(sk);
 
 	if (!(lp->flag & LP_WITHIN_INF))
+<<<<<<< HEAD
 		tcp_reno_cong_avoid(sk, ack, in_flight);
+=======
+		tcp_reno_cong_avoid(sk, ack, acked);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * tcp_lp_remote_hz_estimator
+<<<<<<< HEAD
+=======
+ * @sk: socket which needs an estimate for the remote HZs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Estimate remote HZ.
  * We keep on updating the estimated value, where original TCP-LP
@@ -147,9 +179,15 @@ static u32 tcp_lp_remote_hz_estimator(struct sock *sk)
 	    tp->rx_opt.rcv_tsecr == lp->local_ref_time)
 		goto out;
 
+<<<<<<< HEAD
 	m = HZ * (tp->rx_opt.rcv_tsval -
 		  lp->remote_ref_time) / (tp->rx_opt.rcv_tsecr -
 					  lp->local_ref_time);
+=======
+	m = TCP_TS_HZ *
+	    (tp->rx_opt.rcv_tsval - lp->remote_ref_time) /
+	    (tp->rx_opt.rcv_tsecr - lp->local_ref_time);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (m < 0)
 		m = -m;
 
@@ -175,6 +213,10 @@ static u32 tcp_lp_remote_hz_estimator(struct sock *sk)
 
 /**
  * tcp_lp_owd_calculator
+<<<<<<< HEAD
+=======
+ * @sk: socket to calculate one way delay for
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Calculate one way delay (in relative format).
  * Original implement OWD as minus of remote time difference to local time
@@ -194,7 +236,11 @@ static u32 tcp_lp_owd_calculator(struct sock *sk)
 	if (lp->flag & LP_VALID_RHZ) {
 		owd =
 		    tp->rx_opt.rcv_tsval * (LP_RESOL / lp->remote_hz) -
+<<<<<<< HEAD
 		    tp->rx_opt.rcv_tsecr * (LP_RESOL / HZ);
+=======
+		    tp->rx_opt.rcv_tsecr * (LP_RESOL / TCP_TS_HZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (owd < 0)
 			owd = -owd;
 	}
@@ -209,6 +255,11 @@ static u32 tcp_lp_owd_calculator(struct sock *sk)
 
 /**
  * tcp_lp_rtt_sample
+<<<<<<< HEAD
+=======
+ * @sk: socket to add a rtt sample to
+ * @rtt: round trip time, which is ignored!
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Implementation or rtt_sample.
  * Will take the following action,
@@ -253,6 +304,10 @@ static void tcp_lp_rtt_sample(struct sock *sk, u32 rtt)
 
 /**
  * tcp_lp_pkts_acked
+<<<<<<< HEAD
+=======
+ * @sk: socket requiring congestion avoidance calculations
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Implementation of pkts_acked.
  * Deal with active drop under Early Congestion Indication.
@@ -260,6 +315,7 @@ static void tcp_lp_rtt_sample(struct sock *sk, u32 rtt)
  * newReno in increase case.
  * We work it out by following the idea from TCP-LP's paper directly
  */
+<<<<<<< HEAD
 static void tcp_lp_pkts_acked(struct sock *sk, u32 num_acked, s32 rtt_us)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
@@ -274,6 +330,25 @@ static void tcp_lp_pkts_acked(struct sock *sk, u32 num_acked, s32 rtt_us)
 
 	/* test if within inference */
 	if (lp->last_drop && (tcp_time_stamp - lp->last_drop < lp->inference))
+=======
+static void tcp_lp_pkts_acked(struct sock *sk, const struct ack_sample *sample)
+{
+	struct tcp_sock *tp = tcp_sk(sk);
+	struct lp *lp = inet_csk_ca(sk);
+	u32 now = tcp_time_stamp_ts(tp);
+	u32 delta;
+
+	if (sample->rtt_us > 0)
+		tcp_lp_rtt_sample(sk, sample->rtt_us);
+
+	/* calc inference */
+	delta = now - tp->rx_opt.rcv_tsecr;
+	if ((s32)delta > 0)
+		lp->inference = 3 * delta;
+
+	/* test if within inference */
+	if (lp->last_drop && (now - lp->last_drop < lp->inference))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lp->flag |= LP_WITHIN_INF;
 	else
 		lp->flag &= ~LP_WITHIN_INF;
@@ -286,7 +361,11 @@ static void tcp_lp_pkts_acked(struct sock *sk, u32 num_acked, s32 rtt_us)
 		lp->flag &= ~LP_WITHIN_THR;
 
 	pr_debug("TCP-LP: %05o|%5u|%5u|%15u|%15u|%15u\n", lp->flag,
+<<<<<<< HEAD
 		 tp->snd_cwnd, lp->remote_hz, lp->owd_min, lp->owd_max,
+=======
+		 tcp_snd_cwnd(tp), lp->remote_hz, lp->owd_min, lp->owd_max,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 lp->sowd >> 3);
 
 	if (lp->flag & LP_WITHIN_THR)
@@ -294,7 +373,11 @@ static void tcp_lp_pkts_acked(struct sock *sk, u32 num_acked, s32 rtt_us)
 
 	/* FIXME: try to reset owd_min and owd_max here
 	 * so decrease the chance the min/max is no longer suitable
+<<<<<<< HEAD
 	 * and will usually within threshold when whithin inference */
+=======
+	 * and will usually within threshold when within inference */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lp->owd_min = lp->sowd >> 3;
 	lp->owd_max = lp->sowd >> 2;
 	lp->owd_max_rsv = lp->sowd >> 2;
@@ -302,11 +385,16 @@ static void tcp_lp_pkts_acked(struct sock *sk, u32 num_acked, s32 rtt_us)
 	/* happened within inference
 	 * drop snd_cwnd into 1 */
 	if (lp->flag & LP_WITHIN_INF)
+<<<<<<< HEAD
 		tp->snd_cwnd = 1U;
+=======
+		tcp_snd_cwnd_set(tp, 1U);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* happened after inference
 	 * cut snd_cwnd into half */
 	else
+<<<<<<< HEAD
 		tp->snd_cwnd = max(tp->snd_cwnd >> 1U, 1U);
 
 	/* record this drop time */
@@ -319,6 +407,19 @@ static struct tcp_congestion_ops tcp_lp __read_mostly = {
 	.ssthresh = tcp_reno_ssthresh,
 	.cong_avoid = tcp_lp_cong_avoid,
 	.min_cwnd = tcp_reno_min_cwnd,
+=======
+		tcp_snd_cwnd_set(tp, max(tcp_snd_cwnd(tp) >> 1U, 1U));
+
+	/* record this drop time */
+	lp->last_drop = now;
+}
+
+static struct tcp_congestion_ops tcp_lp __read_mostly = {
+	.init = tcp_lp_init,
+	.ssthresh = tcp_reno_ssthresh,
+	.undo_cwnd = tcp_reno_undo_cwnd,
+	.cong_avoid = tcp_lp_cong_avoid,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.pkts_acked = tcp_lp_pkts_acked,
 
 	.owner = THIS_MODULE,

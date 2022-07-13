@@ -24,6 +24,7 @@
  * Version 2.  See the file COPYING for more details.
  */
 
+<<<<<<< HEAD
 /* see: Documentation/crc32.txt for a description of algorithms */
 
 #include <linux/crc32.h>
@@ -33,12 +34,29 @@
 
 #if CRC_LE_BITS > 8
 # define tole(x) ((__force u32) __constant_cpu_to_le32(x))
+=======
+/* see: Documentation/staging/crc32.rst for a description of algorithms */
+
+#include <linux/crc32.h>
+#include <linux/crc32poly.h>
+#include <linux/module.h>
+#include <linux/types.h>
+#include <linux/sched.h>
+#include "crc32defs.h"
+
+#if CRC_LE_BITS > 8
+# define tole(x) ((__force u32) cpu_to_le32(x))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 # define tole(x) (x)
 #endif
 
 #if CRC_BE_BITS > 8
+<<<<<<< HEAD
 # define tobe(x) ((__force u32) __constant_cpu_to_be32(x))
+=======
+# define tobe(x) ((__force u32) cpu_to_be32(x))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 # define tobe(x) (x)
 #endif
@@ -52,7 +70,11 @@ MODULE_LICENSE("GPL");
 #if CRC_LE_BITS > 8 || CRC_BE_BITS > 8
 
 /* implements slicing-by-4 or slicing-by-8 algorithm */
+<<<<<<< HEAD
 static inline u32
+=======
+static inline u32 __pure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 crc32_body(u32 crc, unsigned char const *buf, size_t len, const u32 (*tab)[256])
 {
 # ifdef __LITTLE_ENDIAN
@@ -74,7 +96,13 @@ crc32_body(u32 crc, unsigned char const *buf, size_t len, const u32 (*tab)[256])
 	size_t i;
 # endif
 	const u32 *t0=tab[0], *t1=tab[1], *t2=tab[2], *t3=tab[3];
+<<<<<<< HEAD
 	const u32 *t4 = tab[4], *t5 = tab[5], *t6 = tab[6], *t7 = tab[7];
+=======
+# if CRC_LE_BITS != 32
+	const u32 *t4 = tab[4], *t5 = tab[5], *t6 = tab[6], *t7 = tab[7];
+# endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 q;
 
 	/* Align it */
@@ -128,12 +156,25 @@ crc32_body(u32 crc, unsigned char const *buf, size_t len, const u32 (*tab)[256])
 }
 #endif
 
+<<<<<<< HEAD
 /**
  * crc32_le() - Calculate bitwise little-endian Ethernet AUTODIN II CRC32
  * @crc: seed value for computation.  ~0 for Ethernet, sometimes 0 for
  *	other uses, or the previous crc32 value if computing incrementally.
  * @p: pointer to buffer over which CRC is run
  * @len: length of buffer @p
+=======
+
+/**
+ * crc32_le_generic() - Calculate bitwise little-endian Ethernet AUTODIN II
+ *			CRC32/CRC32C
+ * @crc: seed value for computation.  ~0 for Ethernet, sometimes 0 for other
+ *	 uses, or the previous crc32/crc32c value if computing incrementally.
+ * @p: pointer to buffer over which CRC32/CRC32C is run
+ * @len: length of buffer @p
+ * @tab: little-endian Ethernet table
+ * @polynomial: CRC32/CRC32c LE polynomial
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline u32 __pure crc32_le_generic(u32 crc, unsigned char const *p,
 					  size_t len, const u32 (*tab)[256],
@@ -175,20 +216,36 @@ static inline u32 __pure crc32_le_generic(u32 crc, unsigned char const *p,
 }
 
 #if CRC_LE_BITS == 1
+<<<<<<< HEAD
 u32 __pure crc32_le(u32 crc, unsigned char const *p, size_t len)
 {
 	return crc32_le_generic(crc, p, len, NULL, CRCPOLY_LE);
 }
 u32 __pure __crc32c_le(u32 crc, unsigned char const *p, size_t len)
+=======
+u32 __pure __weak crc32_le(u32 crc, unsigned char const *p, size_t len)
+{
+	return crc32_le_generic(crc, p, len, NULL, CRC32_POLY_LE);
+}
+u32 __pure __weak __crc32c_le(u32 crc, unsigned char const *p, size_t len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return crc32_le_generic(crc, p, len, NULL, CRC32C_POLY_LE);
 }
 #else
+<<<<<<< HEAD
 u32 __pure crc32_le(u32 crc, unsigned char const *p, size_t len)
 {
 	return crc32_le_generic(crc, p, len, crc32table_le, CRCPOLY_LE);
 }
 u32 __pure __crc32c_le(u32 crc, unsigned char const *p, size_t len)
+=======
+u32 __pure __weak crc32_le(u32 crc, unsigned char const *p, size_t len)
+{
+	return crc32_le_generic(crc, p, len, crc32table_le, CRC32_POLY_LE);
+}
+u32 __pure __weak __crc32c_le(u32 crc, unsigned char const *p, size_t len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return crc32_le_generic(crc, p, len, crc32ctable_le, CRC32C_POLY_LE);
 }
@@ -196,12 +253,100 @@ u32 __pure __crc32c_le(u32 crc, unsigned char const *p, size_t len)
 EXPORT_SYMBOL(crc32_le);
 EXPORT_SYMBOL(__crc32c_le);
 
+<<<<<<< HEAD
 /**
  * crc32_be() - Calculate bitwise big-endian Ethernet AUTODIN II CRC32
  * @crc: seed value for computation.  ~0 for Ethernet, sometimes 0 for
  *	other uses, or the previous crc32 value if computing incrementally.
  * @p: pointer to buffer over which CRC is run
  * @len: length of buffer @p
+=======
+u32 __pure crc32_le_base(u32, unsigned char const *, size_t) __alias(crc32_le);
+u32 __pure __crc32c_le_base(u32, unsigned char const *, size_t) __alias(__crc32c_le);
+u32 __pure crc32_be_base(u32, unsigned char const *, size_t) __alias(crc32_be);
+
+/*
+ * This multiplies the polynomials x and y modulo the given modulus.
+ * This follows the "little-endian" CRC convention that the lsbit
+ * represents the highest power of x, and the msbit represents x^0.
+ */
+static u32 __attribute_const__ gf2_multiply(u32 x, u32 y, u32 modulus)
+{
+	u32 product = x & 1 ? y : 0;
+	int i;
+
+	for (i = 0; i < 31; i++) {
+		product = (product >> 1) ^ (product & 1 ? modulus : 0);
+		x >>= 1;
+		product ^= x & 1 ? y : 0;
+	}
+
+	return product;
+}
+
+/**
+ * crc32_generic_shift - Append @len 0 bytes to crc, in logarithmic time
+ * @crc: The original little-endian CRC (i.e. lsbit is x^31 coefficient)
+ * @len: The number of bytes. @crc is multiplied by x^(8*@len)
+ * @polynomial: The modulus used to reduce the result to 32 bits.
+ *
+ * It's possible to parallelize CRC computations by computing a CRC
+ * over separate ranges of a buffer, then summing them.
+ * This shifts the given CRC by 8*len bits (i.e. produces the same effect
+ * as appending len bytes of zero to the data), in time proportional
+ * to log(len).
+ */
+static u32 __attribute_const__ crc32_generic_shift(u32 crc, size_t len,
+						   u32 polynomial)
+{
+	u32 power = polynomial;	/* CRC of x^32 */
+	int i;
+
+	/* Shift up to 32 bits in the simple linear way */
+	for (i = 0; i < 8 * (int)(len & 3); i++)
+		crc = (crc >> 1) ^ (crc & 1 ? polynomial : 0);
+
+	len >>= 2;
+	if (!len)
+		return crc;
+
+	for (;;) {
+		/* "power" is x^(2^i), modulo the polynomial */
+		if (len & 1)
+			crc = gf2_multiply(crc, power, polynomial);
+
+		len >>= 1;
+		if (!len)
+			break;
+
+		/* Square power, advancing to x^(2^(i+1)) */
+		power = gf2_multiply(power, power, polynomial);
+	}
+
+	return crc;
+}
+
+u32 __attribute_const__ crc32_le_shift(u32 crc, size_t len)
+{
+	return crc32_generic_shift(crc, len, CRC32_POLY_LE);
+}
+
+u32 __attribute_const__ __crc32c_le_shift(u32 crc, size_t len)
+{
+	return crc32_generic_shift(crc, len, CRC32C_POLY_LE);
+}
+EXPORT_SYMBOL(crc32_le_shift);
+EXPORT_SYMBOL(__crc32c_le_shift);
+
+/**
+ * crc32_be_generic() - Calculate bitwise big-endian Ethernet AUTODIN II CRC32
+ * @crc: seed value for computation.  ~0 for Ethernet, sometimes 0 for
+ *	other uses, or the previous crc32 value if computing incrementally.
+ * @p: pointer to buffer over which CRC32 is run
+ * @len: length of buffer @p
+ * @tab: big-endian Ethernet table
+ * @polynomial: CRC32 BE polynomial
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline u32 __pure crc32_be_generic(u32 crc, unsigned char const *p,
 					  size_t len, const u32 (*tab)[256],
@@ -243,6 +388,7 @@ static inline u32 __pure crc32_be_generic(u32 crc, unsigned char const *p,
 	return crc;
 }
 
+<<<<<<< HEAD
 #if CRC_LE_BITS == 1
 u32 __pure crc32_be(u32 crc, unsigned char const *p, size_t len)
 {
@@ -1113,3 +1259,17 @@ static void __exit crc32_exit(void)
 module_init(crc32test_init);
 module_exit(crc32_exit);
 #endif /* CONFIG_CRC32_SELFTEST */
+=======
+#if CRC_BE_BITS == 1
+u32 __pure __weak crc32_be(u32 crc, unsigned char const *p, size_t len)
+{
+	return crc32_be_generic(crc, p, len, NULL, CRC32_POLY_BE);
+}
+#else
+u32 __pure __weak crc32_be(u32 crc, unsigned char const *p, size_t len)
+{
+	return crc32_be_generic(crc, p, len, crc32table_be, CRC32_POLY_BE);
+}
+#endif
+EXPORT_SYMBOL(crc32_be);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

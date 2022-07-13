@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* chmc.c: Driver for UltraSPARC-III memory controller.
  *
  * Copyright (C) 2001, 2007, 2008 David S. Miller (davem@davemloft.net)
@@ -14,7 +18,12 @@
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/of_platform.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/spitfire.h>
 #include <asm/chmctrl.h>
 #include <asm/cpudata.h>
@@ -28,7 +37,11 @@
 #define PFX DRV_MODULE_NAME	": "
 #define DRV_MODULE_VERSION	"0.2"
 
+<<<<<<< HEAD
 MODULE_AUTHOR("David S. Miller (davem@davemloft.net)");
+=======
+MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("UltraSPARC-III memory controller driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
@@ -336,9 +349,15 @@ static int jbusmc_print_dimm(int syndrome_code,
 	return 0;
 }
 
+<<<<<<< HEAD
 static u64 __devinit jbusmc_dimm_group_size(u64 base,
 					    const struct linux_prom64_registers *mem_regs,
 					    int num_mem_regs)
+=======
+static u64 jbusmc_dimm_group_size(u64 base,
+				  const struct linux_prom64_registers *mem_regs,
+				  int num_mem_regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 max = base + (8UL * 1024 * 1024 * 1024);
 	u64 max_seen = base;
@@ -363,10 +382,17 @@ static u64 __devinit jbusmc_dimm_group_size(u64 base,
 	return max_seen - base;
 }
 
+<<<<<<< HEAD
 static void __devinit jbusmc_construct_one_dimm_group(struct jbusmc *p,
 						      unsigned long index,
 						      const struct linux_prom64_registers *mem_regs,
 						      int num_mem_regs)
+=======
+static void jbusmc_construct_one_dimm_group(struct jbusmc *p,
+					    unsigned long index,
+					    const struct linux_prom64_registers *mem_regs,
+					    int num_mem_regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct jbusmc_dimm_group *dp = &p->dimm_groups[index];
 
@@ -378,9 +404,15 @@ static void __devinit jbusmc_construct_one_dimm_group(struct jbusmc *p,
 	dp->size = jbusmc_dimm_group_size(dp->base_addr, mem_regs, num_mem_regs);
 }
 
+<<<<<<< HEAD
 static void __devinit jbusmc_construct_dimm_groups(struct jbusmc *p,
 						   const struct linux_prom64_registers *mem_regs,
 						   int num_mem_regs)
+=======
+static void jbusmc_construct_dimm_groups(struct jbusmc *p,
+					 const struct linux_prom64_registers *mem_regs,
+					 int num_mem_regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (p->mc_reg_1 & JB_MC_REG1_DIMM1_BANK0) {
 		jbusmc_construct_one_dimm_group(p, 0, mem_regs, num_mem_regs);
@@ -392,7 +424,11 @@ static void __devinit jbusmc_construct_dimm_groups(struct jbusmc *p,
 	}
 }
 
+<<<<<<< HEAD
 static int __devinit jbusmc_probe(struct platform_device *op)
+=======
+static int jbusmc_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct linux_prom64_registers *mem_regs;
 	struct device_node *mem_node;
@@ -464,8 +500,13 @@ static int __devinit jbusmc_probe(struct platform_device *op)
 
 	mc_list_add(&p->list);
 
+<<<<<<< HEAD
 	printk(KERN_INFO PFX "UltraSPARC-IIIi memory controller at %s\n",
 	       op->dev.of_node->full_name);
+=======
+	printk(KERN_INFO PFX "UltraSPARC-IIIi memory controller at %pOF\n",
+	       op->dev.of_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_set_drvdata(&op->dev, p);
 
@@ -689,7 +730,11 @@ static void chmc_fetch_decode_regs(struct chmc *p)
 				      chmc_read_mcreg(p, CHMCTRL_DECODE4));
 }
 
+<<<<<<< HEAD
 static int __devinit chmc_probe(struct platform_device *op)
+=======
+static int chmc_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dp = op->dev.of_node;
 	unsigned long ver;
@@ -747,8 +792,13 @@ static int __devinit chmc_probe(struct platform_device *op)
 
 	mc_list_add(&p->list);
 
+<<<<<<< HEAD
 	printk(KERN_INFO PFX "UltraSPARC-III memory controller at %s [%s]\n",
 	       dp->full_name,
+=======
+	printk(KERN_INFO PFX "UltraSPARC-III memory controller at %pOF [%s]\n",
+	       dp,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       (p->layout_size ? "ACTIVE" : "INACTIVE"));
 
 	dev_set_drvdata(&op->dev, p);
@@ -763,7 +813,11 @@ out_free:
 	goto out;
 }
 
+<<<<<<< HEAD
 static int __devinit us3mc_probe(struct platform_device *op)
+=======
+static int us3mc_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (mc_type == MC_TYPE_SAFARI)
 		return chmc_probe(op);
@@ -772,21 +826,33 @@ static int __devinit us3mc_probe(struct platform_device *op)
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static void __devexit chmc_destroy(struct platform_device *op, struct chmc *p)
+=======
+static void chmc_destroy(struct platform_device *op, struct chmc *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	list_del(&p->list);
 	of_iounmap(&op->resource[0], p->regs, 0x48);
 	kfree(p);
 }
 
+<<<<<<< HEAD
 static void __devexit jbusmc_destroy(struct platform_device *op, struct jbusmc *p)
+=======
+static void jbusmc_destroy(struct platform_device *op, struct jbusmc *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mc_list_del(&p->list);
 	of_iounmap(&op->resource[0], p->regs, JBUSMC_REGS_SIZE);
 	kfree(p);
 }
 
+<<<<<<< HEAD
 static int __devexit us3mc_remove(struct platform_device *op)
+=======
+static int us3mc_remove(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *p = dev_get_drvdata(&op->dev);
 
@@ -810,11 +876,18 @@ MODULE_DEVICE_TABLE(of, us3mc_match);
 static struct platform_driver us3mc_driver = {
 	.driver = {
 		.name = "us3mc",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = us3mc_match,
 	},
 	.probe		= us3mc_probe,
 	.remove		= __devexit_p(us3mc_remove),
+=======
+		.of_match_table = us3mc_match,
+	},
+	.probe		= us3mc_probe,
+	.remove		= us3mc_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline bool us3mc_platform(void)

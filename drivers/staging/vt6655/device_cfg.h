@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -18,12 +23,15 @@
  *
  * File: device_cfg.h
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Purpose: Driver configuration header
  * Author: Lyndon Chen
  *
  * Date: Dec 17, 2002
  *
  */
+<<<<<<< HEAD
 #ifndef __DEVICE_CONFIG_H
 #define __DEVICE_CONFIG_H
 
@@ -39,6 +47,14 @@ struct _version {
     unsigned char   build;
 } version_t, *pversion_t;
 
+=======
+
+#ifndef __DEVICE_CONFIG_H
+#define __DEVICE_CONFIG_H
+
+#include <linux/types.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define VID_TABLE_SIZE      64
 #define MCAST_TABLE_SIZE    64
 #define MCAM_SIZE           32
@@ -60,6 +76,7 @@ struct _version {
 #define DEVICE_VERSION       "1.19.12"
 #endif
 
+<<<<<<< HEAD
 //config file
 #include <linux/fs.h>
 #include <linux/fcntl.h>
@@ -97,4 +114,11 @@ typedef enum  _chip_type{
 #endif
 
 
+=======
+#include <linux/fs.h>
+#include <linux/fcntl.h>
+
+#define PKT_BUF_SZ          2390
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

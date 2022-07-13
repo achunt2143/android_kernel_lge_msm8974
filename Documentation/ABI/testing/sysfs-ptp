@@ -6,7 +6,11 @@ Description:
 		providing a standardized interface to the ancillary
 		features of PTP hardware clocks.
 
+<<<<<<< HEAD
 What:		/sys/class/ptp/ptpN/
+=======
+What:		/sys/class/ptp/ptp<N>/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		September 2010
 Contact:	Richard Cochran <richardcochran@gmail.com>
 Description:
@@ -14,14 +18,28 @@ Description:
 		hardware clock registered into the PTP class driver
 		subsystem.
 
+<<<<<<< HEAD
 What:		/sys/class/ptp/ptpN/clock_name
+=======
+What:		/sys/class/ptp/ptp<N>/clock_name
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		September 2010
 Contact:	Richard Cochran <richardcochran@gmail.com>
 Description:
 		This file contains the name of the PTP hardware clock
+<<<<<<< HEAD
 		as a human readable string.
 
 What:		/sys/class/ptp/ptpN/max_adjustment
+=======
+		as a human readable string. The purpose of this
+		attribute is to provide the user with a "friendly
+		name" and to help distinguish PHY based devices from
+		MAC based ones. The string does not necessarily have
+		to be any kind of unique id.
+
+What:		/sys/class/ptp/ptp<N>/max_adjustment
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		September 2010
 Contact:	Richard Cochran <richardcochran@gmail.com>
 Description:
@@ -29,28 +47,84 @@ Description:
 		frequency adjustment value (a positive integer) in
 		parts per billion.
 
+<<<<<<< HEAD
 What:		/sys/class/ptp/ptpN/n_alarms
+=======
+What:		/sys/class/ptp/ptp<N>/max_vclocks
+Date:		May 2021
+Contact:	Yangbo Lu <yangbo.lu@nxp.com>
+Description:
+		This file contains the maximum number of ptp vclocks.
+		Write integer to re-configure it.
+
+What:		/sys/class/ptp/ptp<N>/n_alarms
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		September 2010
 Contact:	Richard Cochran <richardcochran@gmail.com>
 Description:
 		This file contains the number of periodic or one shot
 		alarms offer by the PTP hardware clock.
 
+<<<<<<< HEAD
 What:		/sys/class/ptp/ptpN/n_external_timestamps
+=======
+What:		/sys/class/ptp/ptp<N>/n_external_timestamps
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		September 2010
 Contact:	Richard Cochran <richardcochran@gmail.com>
 Description:
 		This file contains the number of external timestamp
 		channels offered by the PTP hardware clock.
 
+<<<<<<< HEAD
 What:		/sys/class/ptp/ptpN/n_periodic_outputs
+=======
+What:		/sys/class/ptp/ptp<N>/n_periodic_outputs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		September 2010
 Contact:	Richard Cochran <richardcochran@gmail.com>
 Description:
 		This file contains the number of programmable periodic
 		output channels offered by the PTP hardware clock.
 
+<<<<<<< HEAD
 What:		/sys/class/ptp/ptpN/pps_avaiable
+=======
+What:		/sys/class/ptp/ptp<N>/n_pins
+Date:		March 2014
+Contact:	Richard Cochran <richardcochran@gmail.com>
+Description:
+		This file contains the number of programmable pins
+		offered by the PTP hardware clock.
+
+What:		/sys/class/ptp/ptp<N>/n_vclocks
+Date:		May 2021
+Contact:	Yangbo Lu <yangbo.lu@nxp.com>
+Description:
+		This file contains the number of virtual PTP clocks in
+		use.  By default, the value is 0 meaning that only the
+		physical clock is in use.  Setting the value creates
+		the corresponding number of virtual clocks and causes
+		the physical clock to become free running.  Setting the
+		value back to 0 deletes the virtual clocks and
+		switches the physical clock back to normal, adjustable
+		operation.
+
+What:		/sys/class/ptp/ptp<N>/pins
+Date:		March 2014
+Contact:	Richard Cochran <richardcochran@gmail.com>
+Description:
+		This directory contains one file for each programmable
+		pin offered by the PTP hardware clock. The file name
+		is the hardware dependent pin name. Reading from this
+		file produces two numbers, the assigned function (see
+		the `PTP_PF_` enumeration values in linux/ptp_clock.h)
+		and the channel number. The function and channel
+		assignment may be changed by two writing numbers into
+		the file.
+
+What:		/sys/class/ptp/ptp<N>/pps_available
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		September 2010
 Contact:	Richard Cochran <richardcochran@gmail.com>
 Description:
@@ -59,7 +133,11 @@ Description:
 		"1" means that the PPS is supported, while "0" means
 		not supported.
 
+<<<<<<< HEAD
 What:		/sys/class/ptp/ptpN/extts_enable
+=======
+What:		/sys/class/ptp/ptp<N>/extts_enable
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		September 2010
 Contact:	Richard Cochran <richardcochran@gmail.com>
 Description:
@@ -69,7 +147,11 @@ Description:
 		To disable external timestamps, write the channel
 		index followed by a "0" into the file.
 
+<<<<<<< HEAD
 What:		/sys/class/ptp/ptpN/fifo
+=======
+What:		/sys/class/ptp/ptp<N>/fifo
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		September 2010
 Contact:	Richard Cochran <richardcochran@gmail.com>
 Description:
@@ -77,7 +159,11 @@ Description:
 		the form of three integers: channel index, seconds,
 		and nanoseconds.
 
+<<<<<<< HEAD
 What:		/sys/class/ptp/ptpN/period
+=======
+What:		/sys/class/ptp/ptp<N>/period
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		September 2010
 Contact:	Richard Cochran <richardcochran@gmail.com>
 Description:
@@ -88,7 +174,11 @@ Description:
 		period nanoseconds. To disable a periodic output, set
 		all the seconds and nanoseconds values to zero.
 
+<<<<<<< HEAD
 What:		/sys/class/ptp/ptpN/pps_enable
+=======
+What:		/sys/class/ptp/ptp<N>/pps_enable
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Date:		September 2010
 Contact:	Richard Cochran <richardcochran@gmail.com>
 Description:

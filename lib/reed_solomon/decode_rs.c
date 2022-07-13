@@ -1,14 +1,21 @@
+<<<<<<< HEAD
 /*
  * lib/reed_solomon/decode_rs.c
  *
  * Overview:
  *   Generic Reed Solomon encoder / decoder library
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Generic Reed Solomon encoder / decoder library
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright 2002, Phil Karn, KA9Q
  * May be used under the terms of the GNU General Public License (GPL)
  *
  * Adaption to the kernel by Thomas Gleixner (tglx@linutronix.de)
  *
+<<<<<<< HEAD
  * $Id: decode_rs.c,v 1.7 2005/11/07 11:14:59 gleixner Exp $
  *
  */
@@ -17,6 +24,12 @@
  * wrappers.
  */
 {
+=======
+ * Generic data width independent code which is included by the wrappers.
+ */
+{
+	struct rs_codec *rs = rsc->codec;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int deg_lambda, el, deg_omega;
 	int i, j, r, k, pad;
 	int nn = rs->nn;
@@ -27,6 +40,7 @@
 	uint16_t *alpha_to = rs->alpha_to;
 	uint16_t *index_of = rs->index_of;
 	uint16_t u, q, tmp, num1, num2, den, discr_r, syn_error;
+<<<<<<< HEAD
 	/* Err+Eras Locator poly and syndrome poly The maximum value
 	 * of nroots is 8. So the necessary stack size will be about
 	 * 220 bytes max.
@@ -44,6 +58,42 @@
 	/* Does the caller provide the syndrome ? */
 	if (s != NULL)
 		goto decode;
+=======
+	int count = 0;
+	int num_corrected;
+	uint16_t msk = (uint16_t) rs->nn;
+
+	/*
+	 * The decoder buffers are in the rs control struct. They are
+	 * arrays sized [nroots + 1]
+	 */
+	uint16_t *lambda = rsc->buffers + RS_DECODE_LAMBDA * (nroots + 1);
+	uint16_t *syn = rsc->buffers + RS_DECODE_SYN * (nroots + 1);
+	uint16_t *b = rsc->buffers + RS_DECODE_B * (nroots + 1);
+	uint16_t *t = rsc->buffers + RS_DECODE_T * (nroots + 1);
+	uint16_t *omega = rsc->buffers + RS_DECODE_OMEGA * (nroots + 1);
+	uint16_t *root = rsc->buffers + RS_DECODE_ROOT * (nroots + 1);
+	uint16_t *reg = rsc->buffers + RS_DECODE_REG * (nroots + 1);
+	uint16_t *loc = rsc->buffers + RS_DECODE_LOC * (nroots + 1);
+
+	/* Check length parameter for validity */
+	pad = nn - nroots - len;
+	BUG_ON(pad < 0 || pad >= nn - nroots);
+
+	/* Does the caller provide the syndrome ? */
+	if (s != NULL) {
+		for (i = 0; i < nroots; i++) {
+			/* The syndrome is in index form,
+			 * so nn represents zero
+			 */
+			if (s[i] != nn)
+				goto decode;
+		}
+
+		/* syndrome is zero, no errors to correct  */
+		return 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* form the syndromes; i.e., evaluate data(x) at roots of
 	 * g(x) */
@@ -88,8 +138,12 @@
 		/* if syndrome is zero, data[] is a codeword and there are no
 		 * errors to correct. So return data[] unmodified
 		 */
+<<<<<<< HEAD
 		count = 0;
 		goto finish;
+=======
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
  decode:
@@ -99,9 +153,15 @@
 	if (no_eras > 0) {
 		/* Init lambda to be the erasure locator polynomial */
 		lambda[1] = alpha_to[rs_modnn(rs,
+<<<<<<< HEAD
 					      prim * (nn - 1 - eras_pos[0]))];
 		for (i = 1; i < no_eras; i++) {
 			u = rs_modnn(rs, prim * (nn - 1 - eras_pos[i]));
+=======
+					prim * (nn - 1 - (eras_pos[0] + pad)))];
+		for (i = 1; i < no_eras; i++) {
+			u = rs_modnn(rs, prim * (nn - 1 - (eras_pos[i] + pad)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (j = i + 1; j > 0; j--) {
 				tmp = index_of[lambda[j - 1]];
 				if (tmp != nn) {
@@ -175,6 +235,18 @@
 		if (lambda[i] != nn)
 			deg_lambda = i;
 	}
+<<<<<<< HEAD
+=======
+
+	if (deg_lambda == 0) {
+		/*
+		 * deg(lambda) is zero even though the syndrome is non-zero
+		 * => uncorrectable error detected
+		 */
+		return -EBADMSG;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Find roots of error+erasure locator polynomial by Chien search */
 	memcpy(&reg[1], &lambda[1], nroots * sizeof(reg[0]));
 	count = 0;		/* Number of roots of lambda(x) */
@@ -188,6 +260,15 @@
 		}
 		if (q != 0)
 			continue;	/* Not a root */
+<<<<<<< HEAD
+=======
+
+		if (k < pad) {
+			/* Impossible error location. Uncorrectable error. */
+			return -EBADMSG;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* store root (index-form) and error location number */
 		root[count] = i;
 		loc[count] = k;
@@ -202,8 +283,12 @@
 		 * deg(lambda) unequal to number of roots => uncorrectable
 		 * error detected
 		 */
+<<<<<<< HEAD
 		count = -EBADMSG;
 		goto finish;
+=======
+		return -EBADMSG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/*
 	 * Compute err+eras evaluator poly omega(x) = s(x)*lambda(x) (modulo
@@ -223,7 +308,13 @@
 	/*
 	 * Compute error values in poly-form. num1 = omega(inv(X(l))), num2 =
 	 * inv(X(l))**(fcr-1) and den = lambda_pr(inv(X(l))) all in poly-form
+<<<<<<< HEAD
 	 */
+=======
+	 * Note: we reuse the buffer for b to store the correction pattern
+	 */
+	num_corrected = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (j = count - 1; j >= 0; j--) {
 		num1 = 0;
 		for (i = deg_omega; i >= 0; i--) {
@@ -231,6 +322,16 @@
 				num1 ^= alpha_to[rs_modnn(rs, omega[i] +
 							i * root[j])];
 		}
+<<<<<<< HEAD
+=======
+
+		if (num1 == 0) {
+			/* Nothing to correct at this position */
+			b[j] = 0;
+			continue;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		num2 = alpha_to[rs_modnn(rs, root[j] * (fcr - 1) + nn)];
 		den = 0;
 
@@ -242,6 +343,7 @@
 						       i * root[j])];
 			}
 		}
+<<<<<<< HEAD
 		/* Apply error to data */
 		if (num1 != 0 && loc[j] >= pad) {
 			uint16_t cor = alpha_to[rs_modnn(rs,index_of[num1] +
@@ -268,4 +370,54 @@ finish:
 	}
 	return count;
 
+=======
+
+		b[j] = alpha_to[rs_modnn(rs, index_of[num1] +
+					       index_of[num2] +
+					       nn - index_of[den])];
+		num_corrected++;
+	}
+
+	/*
+	 * We compute the syndrome of the 'error' and check that it matches
+	 * the syndrome of the received word
+	 */
+	for (i = 0; i < nroots; i++) {
+		tmp = 0;
+		for (j = 0; j < count; j++) {
+			if (b[j] == 0)
+				continue;
+
+			k = (fcr + i) * prim * (nn-loc[j]-1);
+			tmp ^= alpha_to[rs_modnn(rs, index_of[b[j]] + k)];
+		}
+
+		if (tmp != alpha_to[s[i]])
+			return -EBADMSG;
+	}
+
+	/*
+	 * Store the error correction pattern, if a
+	 * correction buffer is available
+	 */
+	if (corr && eras_pos) {
+		j = 0;
+		for (i = 0; i < count; i++) {
+			if (b[i]) {
+				corr[j] = b[i];
+				eras_pos[j++] = loc[i] - pad;
+			}
+		}
+	} else if (data && par) {
+		/* Apply error to data and parity */
+		for (i = 0; i < count; i++) {
+			if (loc[i] < (nn - nroots))
+				data[loc[i] - pad] ^= b[i];
+			else
+				par[loc[i] - pad - len] ^= b[i];
+		}
+	}
+
+	return  num_corrected;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

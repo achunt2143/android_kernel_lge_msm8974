@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 /* sunvnet.c: Sun LDOM Virtual Network Driver.
  *
  * Copyright (C) 2007, 2008 David S. Miller <davem@davemloft.net>
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* sunvnet.c: Sun LDOM Virtual Network Driver.
+ *
+ * Copyright (C) 2007, 2008 David S. Miller <davem@davemloft.net>
+ * Copyright (C) 2016-2017 Oracle. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -15,10 +23,24 @@
 #include <linux/ethtool.h>
 #include <linux/etherdevice.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/highmem.h>
+#include <linux/if_vlan.h>
+
+#if IS_ENABLED(CONFIG_IPV6)
+#include <linux/icmpv6.h>
+#endif
+
+#include <net/ip.h>
+#include <net/icmp.h>
+#include <net/route.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/vio.h>
 #include <asm/ldc.h>
 
+<<<<<<< HEAD
 #include "sunvnet.h"
 
 #define DRV_MODULE_NAME		"sunvnet"
@@ -28,12 +50,29 @@
 static char version[] __devinitdata =
 	DRV_MODULE_NAME ".c:v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
 MODULE_AUTHOR("David S. Miller (davem@davemloft.net)");
+=======
+#include "sunvnet_common.h"
+
+/* length of time before we decide the hardware is borked,
+ * and dev->tx_timeout() should be called to fix the problem
+ */
+#define VNET_TX_TIMEOUT			(5 * HZ)
+
+#define DRV_MODULE_NAME		"sunvnet"
+#define DRV_MODULE_VERSION	"2.0"
+#define DRV_MODULE_RELDATE	"February 3, 2017"
+
+static char version[] =
+	DRV_MODULE_NAME " " DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")";
+MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Sun LDOM virtual network driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
 
 /* Ordered from largest major to lowest */
 static struct vio_version vnet_versions[] = {
+<<<<<<< HEAD
 	{ .major = 1, .minor = 0 },
 };
 
@@ -884,25 +923,161 @@ static void vnet_get_drvinfo(struct net_device *dev,
 {
 	strcpy(info->driver, DRV_MODULE_NAME);
 	strcpy(info->version, DRV_MODULE_VERSION);
+=======
+	{ .major = 1, .minor = 8 },
+	{ .major = 1, .minor = 7 },
+	{ .major = 1, .minor = 6 },
+	{ .major = 1, .minor = 0 },
+};
+
+static void vnet_get_drvinfo(struct net_device *dev,
+			     struct ethtool_drvinfo *info)
+{
+	strscpy(info->driver, DRV_MODULE_NAME, sizeof(info->driver));
+	strscpy(info->version, DRV_MODULE_VERSION, sizeof(info->version));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 vnet_get_msglevel(struct net_device *dev)
 {
 	struct vnet *vp = netdev_priv(dev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return vp->msg_enable;
 }
 
 static void vnet_set_msglevel(struct net_device *dev, u32 value)
 {
 	struct vnet *vp = netdev_priv(dev);
+<<<<<<< HEAD
 	vp->msg_enable = value;
 }
 
+=======
+
+	vp->msg_enable = value;
+}
+
+static const struct {
+	const char string[ETH_GSTRING_LEN];
+} ethtool_stats_keys[] = {
+	{ "rx_packets" },
+	{ "tx_packets" },
+	{ "rx_bytes" },
+	{ "tx_bytes" },
+	{ "rx_errors" },
+	{ "tx_errors" },
+	{ "rx_dropped" },
+	{ "tx_dropped" },
+	{ "multicast" },
+	{ "rx_length_errors" },
+	{ "rx_frame_errors" },
+	{ "rx_missed_errors" },
+	{ "tx_carrier_errors" },
+	{ "nports" },
+};
+
+static int vnet_get_sset_count(struct net_device *dev, int sset)
+{
+	struct vnet *vp = (struct vnet *)netdev_priv(dev);
+
+	switch (sset) {
+	case ETH_SS_STATS:
+		return ARRAY_SIZE(ethtool_stats_keys)
+			+ (NUM_VNET_PORT_STATS * vp->nports);
+	default:
+		return -EOPNOTSUPP;
+	}
+}
+
+static void vnet_get_strings(struct net_device *dev, u32 stringset, u8 *buf)
+{
+	struct vnet *vp = (struct vnet *)netdev_priv(dev);
+	struct vnet_port *port;
+	char *p = (char *)buf;
+
+	switch (stringset) {
+	case ETH_SS_STATS:
+		memcpy(buf, &ethtool_stats_keys, sizeof(ethtool_stats_keys));
+		p += sizeof(ethtool_stats_keys);
+
+		rcu_read_lock();
+		list_for_each_entry_rcu(port, &vp->port_list, list) {
+			snprintf(p, ETH_GSTRING_LEN, "p%u.%s-%pM",
+				 port->q_index, port->switch_port ? "s" : "q",
+				 port->raddr);
+			p += ETH_GSTRING_LEN;
+			snprintf(p, ETH_GSTRING_LEN, "p%u.rx_packets",
+				 port->q_index);
+			p += ETH_GSTRING_LEN;
+			snprintf(p, ETH_GSTRING_LEN, "p%u.tx_packets",
+				 port->q_index);
+			p += ETH_GSTRING_LEN;
+			snprintf(p, ETH_GSTRING_LEN, "p%u.rx_bytes",
+				 port->q_index);
+			p += ETH_GSTRING_LEN;
+			snprintf(p, ETH_GSTRING_LEN, "p%u.tx_bytes",
+				 port->q_index);
+			p += ETH_GSTRING_LEN;
+			snprintf(p, ETH_GSTRING_LEN, "p%u.event_up",
+				 port->q_index);
+			p += ETH_GSTRING_LEN;
+			snprintf(p, ETH_GSTRING_LEN, "p%u.event_reset",
+				 port->q_index);
+			p += ETH_GSTRING_LEN;
+		}
+		rcu_read_unlock();
+		break;
+	default:
+		WARN_ON(1);
+		break;
+	}
+}
+
+static void vnet_get_ethtool_stats(struct net_device *dev,
+				   struct ethtool_stats *estats, u64 *data)
+{
+	struct vnet *vp = (struct vnet *)netdev_priv(dev);
+	struct vnet_port *port;
+	int i = 0;
+
+	data[i++] = dev->stats.rx_packets;
+	data[i++] = dev->stats.tx_packets;
+	data[i++] = dev->stats.rx_bytes;
+	data[i++] = dev->stats.tx_bytes;
+	data[i++] = dev->stats.rx_errors;
+	data[i++] = dev->stats.tx_errors;
+	data[i++] = dev->stats.rx_dropped;
+	data[i++] = dev->stats.tx_dropped;
+	data[i++] = dev->stats.multicast;
+	data[i++] = dev->stats.rx_length_errors;
+	data[i++] = dev->stats.rx_frame_errors;
+	data[i++] = dev->stats.rx_missed_errors;
+	data[i++] = dev->stats.tx_carrier_errors;
+	data[i++] = vp->nports;
+
+	rcu_read_lock();
+	list_for_each_entry_rcu(port, &vp->port_list, list) {
+		data[i++] = port->q_index;
+		data[i++] = port->stats.rx_packets;
+		data[i++] = port->stats.tx_packets;
+		data[i++] = port->stats.rx_bytes;
+		data[i++] = port->stats.tx_bytes;
+		data[i++] = port->stats.event_up;
+		data[i++] = port->stats.event_reset;
+	}
+	rcu_read_unlock();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct ethtool_ops vnet_ethtool_ops = {
 	.get_drvinfo		= vnet_get_drvinfo,
 	.get_msglevel		= vnet_get_msglevel,
 	.set_msglevel		= vnet_set_msglevel,
 	.get_link		= ethtool_op_get_link,
+<<<<<<< HEAD
 };
 
 static void vnet_port_free_tx_bufs(struct vnet_port *port)
@@ -1033,6 +1208,112 @@ static struct vnet * __devinit vnet_new(const u64 *local_mac)
 		dev->dev_addr[i] = (*local_mac >> (5 - i) * 8) & 0xff;
 
 	memcpy(dev->perm_addr, dev->dev_addr, dev->addr_len);
+=======
+	.get_sset_count		= vnet_get_sset_count,
+	.get_strings		= vnet_get_strings,
+	.get_ethtool_stats	= vnet_get_ethtool_stats,
+};
+
+static LIST_HEAD(vnet_list);
+static DEFINE_MUTEX(vnet_list_mutex);
+
+static struct vnet_port *__tx_port_find(struct vnet *vp, struct sk_buff *skb)
+{
+	unsigned int hash = vnet_hashfn(skb->data);
+	struct hlist_head *hp = &vp->port_hash[hash];
+	struct vnet_port *port;
+
+	hlist_for_each_entry_rcu(port, hp, hash) {
+		if (!sunvnet_port_is_up_common(port))
+			continue;
+		if (ether_addr_equal(port->raddr, skb->data))
+			return port;
+	}
+	list_for_each_entry_rcu(port, &vp->port_list, list) {
+		if (!port->switch_port)
+			continue;
+		if (!sunvnet_port_is_up_common(port))
+			continue;
+		return port;
+	}
+	return NULL;
+}
+
+/* func arg to vnet_start_xmit_common() to get the proper tx port */
+static struct vnet_port *vnet_tx_port_find(struct sk_buff *skb,
+					   struct net_device *dev)
+{
+	struct vnet *vp = netdev_priv(dev);
+
+	return __tx_port_find(vp, skb);
+}
+
+static u16 vnet_select_queue(struct net_device *dev, struct sk_buff *skb,
+			     struct net_device *sb_dev)
+{
+	struct vnet *vp = netdev_priv(dev);
+	struct vnet_port *port = __tx_port_find(vp, skb);
+
+	if (!port)
+		return 0;
+
+	return port->q_index;
+}
+
+/* Wrappers to common functions */
+static netdev_tx_t vnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
+{
+	return sunvnet_start_xmit_common(skb, dev, vnet_tx_port_find);
+}
+
+static void vnet_set_rx_mode(struct net_device *dev)
+{
+	struct vnet *vp = netdev_priv(dev);
+
+	return sunvnet_set_rx_mode_common(dev, vp);
+}
+
+#ifdef CONFIG_NET_POLL_CONTROLLER
+static void vnet_poll_controller(struct net_device *dev)
+{
+	struct vnet *vp = netdev_priv(dev);
+
+	return sunvnet_poll_controller_common(dev, vp);
+}
+#endif
+
+static const struct net_device_ops vnet_ops = {
+	.ndo_open		= sunvnet_open_common,
+	.ndo_stop		= sunvnet_close_common,
+	.ndo_set_rx_mode	= vnet_set_rx_mode,
+	.ndo_set_mac_address	= sunvnet_set_mac_addr_common,
+	.ndo_validate_addr	= eth_validate_addr,
+	.ndo_tx_timeout		= sunvnet_tx_timeout_common,
+	.ndo_start_xmit		= vnet_start_xmit,
+	.ndo_select_queue	= vnet_select_queue,
+#ifdef CONFIG_NET_POLL_CONTROLLER
+	.ndo_poll_controller	= vnet_poll_controller,
+#endif
+};
+
+static struct vnet *vnet_new(const u64 *local_mac,
+			     struct vio_dev *vdev)
+{
+	struct net_device *dev;
+	u8 addr[ETH_ALEN];
+	struct vnet *vp;
+	int err, i;
+
+	dev = alloc_etherdev_mqs(sizeof(*vp), VNET_MAX_TXQS, 1);
+	if (!dev)
+		return ERR_PTR(-ENOMEM);
+	dev->needed_headroom = VNET_PACKET_SKIP + 8;
+	dev->needed_tailroom = 8;
+
+	for (i = 0; i < ETH_ALEN; i++)
+		addr[i] = (*local_mac >> (5 - i) * 8) & 0xff;
+	eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vp = netdev_priv(dev);
 
@@ -1049,6 +1330,19 @@ static struct vnet * __devinit vnet_new(const u64 *local_mac)
 	dev->ethtool_ops = &vnet_ethtool_ops;
 	dev->watchdog_timeo = VNET_TX_TIMEOUT;
 
+<<<<<<< HEAD
+=======
+	dev->hw_features = NETIF_F_TSO | NETIF_F_GSO | NETIF_F_ALL_TSO |
+			   NETIF_F_HW_CSUM | NETIF_F_SG;
+	dev->features = dev->hw_features;
+
+	/* MTU range: 68 - 65535 */
+	dev->min_mtu = ETH_MIN_MTU;
+	dev->max_mtu = VNET_MAX_MTU;
+
+	SET_NETDEV_DEV(dev, &vdev->dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = register_netdev(dev);
 	if (err) {
 		pr_err("Cannot register net device, aborting\n");
@@ -1067,7 +1361,12 @@ err_out_free_dev:
 	return ERR_PTR(err);
 }
 
+<<<<<<< HEAD
 static struct vnet * __devinit vnet_find_or_create(const u64 *local_mac)
+=======
+static struct vnet *vnet_find_or_create(const u64 *local_mac,
+					struct vio_dev *vdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vnet *iter, *vp;
 
@@ -1080,7 +1379,11 @@ static struct vnet * __devinit vnet_find_or_create(const u64 *local_mac)
 		}
 	}
 	if (!vp)
+<<<<<<< HEAD
 		vp = vnet_new(local_mac);
+=======
+		vp = vnet_new(local_mac, vdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&vnet_list_mutex);
 
 	return vp;
@@ -1106,8 +1409,14 @@ static void vnet_cleanup(void)
 
 static const char *local_mac_prop = "local-mac-address";
 
+<<<<<<< HEAD
 static struct vnet * __devinit vnet_find_parent(struct mdesc_handle *hp,
 						u64 port_node)
+=======
+static struct vnet *vnet_find_parent(struct mdesc_handle *hp,
+				     u64 port_node,
+				     struct vio_dev *vdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const u64 *local_mac = NULL;
 	u64 a;
@@ -1128,16 +1437,25 @@ static struct vnet * __devinit vnet_find_parent(struct mdesc_handle *hp,
 	if (!local_mac)
 		return ERR_PTR(-ENODEV);
 
+<<<<<<< HEAD
 	return vnet_find_or_create(local_mac);
 }
 
 static struct ldc_channel_config vnet_ldc_cfg = {
 	.event		= vnet_event,
+=======
+	return vnet_find_or_create(local_mac, vdev);
+}
+
+static struct ldc_channel_config vnet_ldc_cfg = {
+	.event		= sunvnet_event_common,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mtu		= 64,
 	.mode		= LDC_MODE_UNRELIABLE,
 };
 
 static struct vio_driver_ops vnet_vio_ops = {
+<<<<<<< HEAD
 	.send_attr		= vnet_send_attr,
 	.handle_attr		= vnet_handle_attr,
 	.handshake_complete	= vnet_handshake_complete,
@@ -1152,6 +1470,16 @@ const char *remote_macaddr_prop = "remote-mac-address";
 
 static int __devinit vnet_port_probe(struct vio_dev *vdev,
 				     const struct vio_device_id *id)
+=======
+	.send_attr		= sunvnet_send_attr_common,
+	.handle_attr		= sunvnet_handle_attr_common,
+	.handshake_complete	= sunvnet_handshake_complete_common,
+};
+
+const char *remote_macaddr_prop = "remote-mac-address";
+
+static int vnet_port_probe(struct vio_dev *vdev, const struct vio_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mdesc_handle *hp;
 	struct vnet_port *port;
@@ -1160,11 +1488,20 @@ static int __devinit vnet_port_probe(struct vio_dev *vdev,
 	const u64 *rmac;
 	int len, i, err, switch_port;
 
+<<<<<<< HEAD
 	print_version();
 
 	hp = mdesc_grab();
 
 	vp = vnet_find_parent(hp, vdev->mp);
+=======
+	hp = mdesc_grab();
+
+	if (!hp)
+		return -ENODEV;
+
+	vp = vnet_find_parent(hp, vdev->mp, vdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(vp)) {
 		pr_err("Cannot find port parent vnet\n");
 		err = PTR_ERR(vp);
@@ -1198,14 +1535,19 @@ static int __devinit vnet_port_probe(struct vio_dev *vdev,
 	if (err)
 		goto err_out_free_port;
 
+<<<<<<< HEAD
 	err = vnet_port_alloc_tx_bufs(port);
 	if (err)
 		goto err_out_free_ldc;
+=======
+	netif_napi_add(port->vp->dev, &port->napi, sunvnet_poll_common);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_HLIST_NODE(&port->hash);
 	INIT_LIST_HEAD(&port->list);
 
 	switch_port = 0;
+<<<<<<< HEAD
 	if (mdesc_get_property(hp, vdev->mp, "switch-port", NULL) != NULL)
 		switch_port = 1;
 	port->switch_port = switch_port;
@@ -1216,6 +1558,22 @@ static int __devinit vnet_port_probe(struct vio_dev *vdev,
 	else
 		list_add_tail(&port->list, &vp->port_list);
 	hlist_add_head(&port->hash, &vp->port_hash[vnet_hashfn(port->raddr)]);
+=======
+	if (mdesc_get_property(hp, vdev->mp, "switch-port", NULL))
+		switch_port = 1;
+	port->switch_port = switch_port;
+	port->tso = true;
+	port->tsolen = 0;
+
+	spin_lock_irqsave(&vp->lock, flags);
+	if (switch_port)
+		list_add_rcu(&port->list, &vp->port_list);
+	else
+		list_add_tail_rcu(&port->list, &vp->port_list);
+	hlist_add_head_rcu(&port->hash,
+			   &vp->port_hash[vnet_hashfn(port->raddr)]);
+	sunvnet_port_add_txq_common(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&vp->lock, flags);
 
 	dev_set_drvdata(&vdev->dev, port);
@@ -1223,15 +1581,24 @@ static int __devinit vnet_port_probe(struct vio_dev *vdev,
 	pr_info("%s: PORT ( remote-mac %pM%s )\n",
 		vp->dev->name, port->raddr, switch_port ? " switch-port" : "");
 
+<<<<<<< HEAD
+=======
+	timer_setup(&port->clean_timer, sunvnet_clean_timer_expire_common, 0);
+
+	napi_enable(&port->napi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vio_port_up(&port->vio);
 
 	mdesc_release(hp);
 
 	return 0;
 
+<<<<<<< HEAD
 err_out_free_ldc:
 	vio_ldc_free(&port->vio);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_free_port:
 	kfree(port);
 
@@ -1240,11 +1607,16 @@ err_out_put_mdesc:
 	return err;
 }
 
+<<<<<<< HEAD
 static int vnet_port_remove(struct vio_dev *vdev)
+=======
+static void vnet_port_remove(struct vio_dev *vdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vnet_port *port = dev_get_drvdata(&vdev->dev);
 
 	if (port) {
+<<<<<<< HEAD
 		struct vnet *vp = port->vp;
 		unsigned long flags;
 
@@ -1256,14 +1628,32 @@ static int vnet_port_remove(struct vio_dev *vdev)
 		spin_unlock_irqrestore(&vp->lock, flags);
 
 		vnet_port_free_tx_bufs(port);
+=======
+		del_timer_sync(&port->vio.timer);
+
+		napi_disable(&port->napi);
+
+		list_del_rcu(&port->list);
+		hlist_del_rcu(&port->hash);
+
+		synchronize_rcu();
+		timer_shutdown_sync(&port->clean_timer);
+		sunvnet_port_rm_txq_common(port);
+		netif_napi_del(&port->napi);
+		sunvnet_port_free_tx_bufs_common(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vio_ldc_free(&port->vio);
 
 		dev_set_drvdata(&vdev->dev, NULL);
 
 		kfree(port);
+<<<<<<< HEAD
 
 	}
 	return 0;
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct vio_device_id vnet_port_match[] = {
@@ -1283,6 +1673,10 @@ static struct vio_driver vnet_port_driver = {
 
 static int __init vnet_init(void)
 {
+<<<<<<< HEAD
+=======
+	pr_info("%s\n", version);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return vio_register_driver(&vnet_port_driver);
 }
 

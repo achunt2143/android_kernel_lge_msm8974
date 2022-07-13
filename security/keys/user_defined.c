@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* user_defined.c: user defined key type
  *
  * Copyright (C) 2004 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -10,12 +15,21 @@
  */
 
 #include <linux/module.h>
+=======
+ */
+
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/seq_file.h>
 #include <linux/err.h>
 #include <keys/user-type.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "internal.h"
 
 static int logon_vet_description(const char *desc);
@@ -25,6 +39,7 @@ static int logon_vet_description(const char *desc);
  * arbitrary blob of data as the payload
  */
 struct key_type key_type_user = {
+<<<<<<< HEAD
 	.name		= "user",
 	.instantiate	= user_instantiate,
 	.update		= user_update,
@@ -33,6 +48,17 @@ struct key_type key_type_user = {
 	.destroy	= user_destroy,
 	.describe	= user_describe,
 	.read		= user_read,
+=======
+	.name			= "user",
+	.preparse		= user_preparse,
+	.free_preparse		= user_free_preparse,
+	.instantiate		= generic_key_instantiate,
+	.update			= user_update,
+	.revoke			= user_revoke,
+	.destroy		= user_destroy,
+	.describe		= user_describe,
+	.read			= user_read,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 EXPORT_SYMBOL_GPL(key_type_user);
@@ -45,9 +71,16 @@ EXPORT_SYMBOL_GPL(key_type_user);
  */
 struct key_type key_type_logon = {
 	.name			= "logon",
+<<<<<<< HEAD
 	.instantiate		= user_instantiate,
 	.update			= user_update,
 	.match			= user_match,
+=======
+	.preparse		= user_preparse,
+	.free_preparse		= user_free_preparse,
+	.instantiate		= generic_key_instantiate,
+	.update			= user_update,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.revoke			= user_revoke,
 	.destroy		= user_destroy,
 	.describe		= user_describe,
@@ -56,6 +89,7 @@ struct key_type key_type_logon = {
 EXPORT_SYMBOL_GPL(key_type_logon);
 
 /*
+<<<<<<< HEAD
  * instantiate a user defined key
  */
 int user_instantiate(struct key *key, const void *data, size_t datalen)
@@ -87,11 +121,53 @@ error:
 }
 
 EXPORT_SYMBOL_GPL(user_instantiate);
+=======
+ * Preparse a user defined key payload
+ */
+int user_preparse(struct key_preparsed_payload *prep)
+{
+	struct user_key_payload *upayload;
+	size_t datalen = prep->datalen;
+
+	if (datalen <= 0 || datalen > 32767 || !prep->data)
+		return -EINVAL;
+
+	upayload = kmalloc(sizeof(*upayload) + datalen, GFP_KERNEL);
+	if (!upayload)
+		return -ENOMEM;
+
+	/* attach the data */
+	prep->quotalen = datalen;
+	prep->payload.data[0] = upayload;
+	upayload->datalen = datalen;
+	memcpy(upayload->data, prep->data, datalen);
+	return 0;
+}
+EXPORT_SYMBOL_GPL(user_preparse);
+
+/*
+ * Free a preparse of a user defined key payload
+ */
+void user_free_preparse(struct key_preparsed_payload *prep)
+{
+	kfree_sensitive(prep->payload.data[0]);
+}
+EXPORT_SYMBOL_GPL(user_free_preparse);
+
+static void user_free_payload_rcu(struct rcu_head *head)
+{
+	struct user_key_payload *payload;
+
+	payload = container_of(head, struct user_key_payload, rcu);
+	kfree_sensitive(payload);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * update a user defined key
  * - the key's semaphore is write-locked
  */
+<<<<<<< HEAD
 int user_update(struct key *key, const void *data, size_t datalen)
 {
 	struct user_key_payload *upayload, *zap;
@@ -145,19 +221,53 @@ int user_match(const struct key *key, const void *description)
 EXPORT_SYMBOL_GPL(user_match);
 
 /*
+=======
+int user_update(struct key *key, struct key_preparsed_payload *prep)
+{
+	struct user_key_payload *zap = NULL;
+	int ret;
+
+	/* check the quota and attach the new data */
+	ret = key_payload_reserve(key, prep->datalen);
+	if (ret < 0)
+		return ret;
+
+	/* attach the new data, displacing the old */
+	key->expiry = prep->expiry;
+	if (key_is_positive(key))
+		zap = dereference_key_locked(key);
+	rcu_assign_keypointer(key, prep->payload.data[0]);
+	prep->payload.data[0] = NULL;
+
+	if (zap)
+		call_rcu(&zap->rcu, user_free_payload_rcu);
+	return ret;
+}
+EXPORT_SYMBOL_GPL(user_update);
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dispose of the links from a revoked keyring
  * - called with the key sem write-locked
  */
 void user_revoke(struct key *key)
 {
+<<<<<<< HEAD
 	struct user_key_payload *upayload = key->payload.data;
+=======
+	struct user_key_payload *upayload = user_key_payload_locked(key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* clear the quota */
 	key_payload_reserve(key, 0);
 
 	if (upayload) {
 		rcu_assign_keypointer(key, NULL);
+<<<<<<< HEAD
 		kfree_rcu(upayload, rcu);
+=======
+		call_rcu(&upayload->rcu, user_free_payload_rcu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -168,9 +278,15 @@ EXPORT_SYMBOL(user_revoke);
  */
 void user_destroy(struct key *key)
 {
+<<<<<<< HEAD
 	struct user_key_payload *upayload = key->payload.data;
 
 	kfree(upayload);
+=======
+	struct user_key_payload *upayload = key->payload.data[0];
+
+	kfree_sensitive(upayload);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL_GPL(user_destroy);
@@ -181,7 +297,11 @@ EXPORT_SYMBOL_GPL(user_destroy);
 void user_describe(const struct key *key, struct seq_file *m)
 {
 	seq_puts(m, key->description);
+<<<<<<< HEAD
 	if (key_is_instantiated(key))
+=======
+	if (key_is_positive(key))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_printf(m, ": %u", key->datalen);
 }
 
@@ -191,12 +311,21 @@ EXPORT_SYMBOL_GPL(user_describe);
  * read the key data
  * - the key's semaphore is read-locked
  */
+<<<<<<< HEAD
 long user_read(const struct key *key, char __user *buffer, size_t buflen)
 {
 	struct user_key_payload *upayload;
 	long ret;
 
 	upayload = rcu_dereference_key(key);
+=======
+long user_read(const struct key *key, char *buffer, size_t buflen)
+{
+	const struct user_key_payload *upayload;
+	long ret;
+
+	upayload = user_key_payload_locked(key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = upayload->datalen;
 
 	/* we can return the data as is */
@@ -204,8 +333,12 @@ long user_read(const struct key *key, char __user *buffer, size_t buflen)
 		if (buflen > upayload->datalen)
 			buflen = upayload->datalen;
 
+<<<<<<< HEAD
 		if (copy_to_user(buffer, upayload->data, buflen) != 0)
 			ret = -EFAULT;
+=======
+		memcpy(buffer, upayload->data, buflen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;

@@ -1,13 +1,23 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{linux.intel,addtoit}.com)
  * Licensed under the GPL
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{linux.intel,addtoit}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stddef.h>
 #include <errno.h>
 #include <fcntl.h>
 #include "chan_user.h"
+<<<<<<< HEAD
 #include "os.h"
+=======
+#include <os.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This address is used only as a unique identifier */
 static int null_chan;
@@ -28,7 +38,11 @@ static int null_open(int input, int output, int primary, void *d,
 	return (fd < 0) ? -errno : fd;
 }
 
+<<<<<<< HEAD
 static int null_read(int fd, char *c_out, void *unused)
+=======
+static int null_read(int fd, __u8 *c_out, void *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENODEV;
 }

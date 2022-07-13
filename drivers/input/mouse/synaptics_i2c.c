@@ -29,7 +29,11 @@
  * after soft reset, we should wait for 1 ms
  * before the device becomes operational
  */
+<<<<<<< HEAD
 #define SOFT_RESET_DELAY_MS	3
+=======
+#define SOFT_RESET_DELAY_US	3000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* and after hard reset, we should wait for max 500ms */
 #define HARD_RESET_DELAY_MS	500
 
@@ -185,7 +189,11 @@
 #define NO_DATA_SLEEP_MSECS	(MSEC_PER_SEC / 4)
 
 /* Control touchpad's No Deceleration option */
+<<<<<<< HEAD
 static bool no_decel = 1;
+=======
+static bool no_decel = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(no_decel, bool, 0644);
 MODULE_PARM_DESC(no_decel, "No Deceleration. Default = 1 (on)");
 
@@ -219,7 +227,10 @@ struct synaptics_i2c {
 	struct i2c_client	*client;
 	struct input_dev	*input;
 	struct delayed_work	dwork;
+<<<<<<< HEAD
 	spinlock_t		lock;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			no_data_count;
 	int			no_decel_param;
 	int			reduce_report_param;
@@ -311,7 +322,11 @@ static int synaptics_i2c_reset_config(struct i2c_client *client)
 	if (ret) {
 		dev_err(&client->dev, "Unable to reset device\n");
 	} else {
+<<<<<<< HEAD
 		msleep(SOFT_RESET_DELAY_MS);
+=======
+		usleep_range(SOFT_RESET_DELAY_US, SOFT_RESET_DELAY_US + 100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = synaptics_i2c_config(client);
 		if (ret)
 			dev_err(&client->dev, "Unable to config device\n");
@@ -340,9 +355,15 @@ static bool synaptics_i2c_get_input(struct synaptics_i2c *touch)
 	s32 data;
 	s8 x_delta, y_delta;
 
+<<<<<<< HEAD
 	/* Deal with spontanious resets and errors */
 	if (synaptics_i2c_check_error(touch->client))
 		return 0;
+=======
+	/* Deal with spontaneous resets and errors */
+	if (synaptics_i2c_check_error(touch->client))
+		return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get Gesture Bit */
 	data = synaptics_i2c_reg_get(touch->client, DATA_REG0);
@@ -369,6 +390,7 @@ static bool synaptics_i2c_get_input(struct synaptics_i2c *touch)
 	return xy_delta || gesture;
 }
 
+<<<<<<< HEAD
 static void synaptics_i2c_reschedule_work(struct synaptics_i2c *touch,
 					  unsigned long delay)
 {
@@ -386,11 +408,17 @@ static void synaptics_i2c_reschedule_work(struct synaptics_i2c *touch,
 	spin_unlock_irqrestore(&touch->lock, flags);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t synaptics_i2c_irq(int irq, void *dev_id)
 {
 	struct synaptics_i2c *touch = dev_id;
 
+<<<<<<< HEAD
 	synaptics_i2c_reschedule_work(touch, 0);
+=======
+	mod_delayed_work(system_wq, &touch->dwork, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -466,7 +494,11 @@ static void synaptics_i2c_work_handler(struct work_struct *work)
 	 * We poll the device once in THREAD_IRQ_SLEEP_SECS and
 	 * if error is detected, we try to reset and reconfigure the touchpad.
 	 */
+<<<<<<< HEAD
 	synaptics_i2c_reschedule_work(touch, delay);
+=======
+	mod_delayed_work(system_wq, &touch->dwork, delay);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int synaptics_i2c_open(struct input_dev *input)
@@ -479,7 +511,11 @@ static int synaptics_i2c_open(struct input_dev *input)
 		return ret;
 
 	if (polling_req)
+<<<<<<< HEAD
 		synaptics_i2c_reschedule_work(touch,
+=======
+		mod_delayed_work(system_wq, &touch->dwork,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				msecs_to_jiffies(NO_DATA_SLEEP_MSECS));
 
 	return 0;
@@ -535,13 +571,20 @@ static struct synaptics_i2c *synaptics_i2c_touch_create(struct i2c_client *clien
 	touch->scan_rate_param = scan_rate;
 	set_scan_rate(touch, scan_rate);
 	INIT_DELAYED_WORK(&touch->dwork, synaptics_i2c_work_handler);
+<<<<<<< HEAD
 	spin_lock_init(&touch->lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return touch;
 }
 
+<<<<<<< HEAD
 static int __devinit synaptics_i2c_probe(struct i2c_client *client,
 			       const struct i2c_device_id *dev_id)
+=======
+static int synaptics_i2c_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct synaptics_i2c *touch;
@@ -606,7 +649,11 @@ err_mem_free:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit synaptics_i2c_remove(struct i2c_client *client)
+=======
+static void synaptics_i2c_remove(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct synaptics_i2c *touch = i2c_get_clientdata(client);
 
@@ -615,11 +662,16 @@ static int __devexit synaptics_i2c_remove(struct i2c_client *client)
 
 	input_unregister_device(touch->input);
 	kfree(touch);
+<<<<<<< HEAD
 
 	return 0;
 }
 
 #ifdef CONFIG_PM_SLEEP
+=======
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int synaptics_i2c_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -643,15 +695,25 @@ static int synaptics_i2c_resume(struct device *dev)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	synaptics_i2c_reschedule_work(touch,
+=======
+	mod_delayed_work(system_wq, &touch->dwork,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				msecs_to_jiffies(NO_DATA_SLEEP_MSECS));
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static SIMPLE_DEV_PM_OPS(synaptics_i2c_pm, synaptics_i2c_suspend,
 			 synaptics_i2c_resume);
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(synaptics_i2c_pm, synaptics_i2c_suspend,
+				synaptics_i2c_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct i2c_device_id synaptics_i2c_id_table[] = {
 	{ "synaptics_i2c", 0 },
@@ -659,6 +721,7 @@ static const struct i2c_device_id synaptics_i2c_id_table[] = {
 };
 MODULE_DEVICE_TABLE(i2c, synaptics_i2c_id_table);
 
+<<<<<<< HEAD
 static struct i2c_driver synaptics_i2c_driver = {
 	.driver = {
 		.name	= DRIVER_NAME,
@@ -668,6 +731,25 @@ static struct i2c_driver synaptics_i2c_driver = {
 
 	.probe		= synaptics_i2c_probe,
 	.remove		= __devexit_p(synaptics_i2c_remove),
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id synaptics_i2c_of_match[] = {
+	{ .compatible = "synaptics,synaptics_i2c", },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, synaptics_i2c_of_match);
+#endif
+
+static struct i2c_driver synaptics_i2c_driver = {
+	.driver = {
+		.name	= DRIVER_NAME,
+		.of_match_table = of_match_ptr(synaptics_i2c_of_match),
+		.pm	= pm_sleep_ptr(&synaptics_i2c_pm),
+	},
+
+	.probe		= synaptics_i2c_probe,
+	.remove		= synaptics_i2c_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.id_table	= synaptics_i2c_id_table,
 };

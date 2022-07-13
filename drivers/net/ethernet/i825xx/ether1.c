@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/acorn/net/ether1.c
  *
  *  Copyright (C) 1996-2000 Russell King
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Acorn ether1 driver (82586 chip) for Acorn machines
  *
  * We basically keep two queues in the cards memory - one for transmit
@@ -23,7 +30,11 @@
  * 1.02	RMK	25/05/1997	Added code to restart RU if it goes not ready
  * 1.03	RMK	14/09/1997	Cleaned up the handling of a reset during the TX interrupt.
  *				Should prevent lockup.
+<<<<<<< HEAD
  * 1.04 RMK	17/09/1997	Added more info when initialsation of chip goes wrong.
+=======
+ * 1.04 RMK	17/09/1997	Added more info when initialisation of chip goes wrong.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *				TDR now only reports failure when chip reports non-zero
  *				TDR time-distance.
  * 1.05	RMK	31/12/1997	Removed calls to dev_tint for 2.1
@@ -64,6 +75,7 @@ static unsigned int net_debug = NET_DEBUG;
 #define RX_AREA_END	0x0fc00
 
 static int ether1_open(struct net_device *dev);
+<<<<<<< HEAD
 static int ether1_sendpacket(struct sk_buff *skb, struct net_device *dev);
 static irqreturn_t ether1_interrupt(int irq, void *dev_id);
 static int ether1_close(struct net_device *dev);
@@ -73,6 +85,18 @@ static void ether1_timeout(struct net_device *dev);
 /* ------------------------------------------------------------------------- */
 
 static char version[] __devinitdata = "ether1 ethernet driver (c) 2000 Russell King v1.07\n";
+=======
+static netdev_tx_t ether1_sendpacket(struct sk_buff *skb,
+				     struct net_device *dev);
+static irqreturn_t ether1_interrupt(int irq, void *dev_id);
+static int ether1_close(struct net_device *dev);
+static void ether1_setmulticastlist(struct net_device *dev);
+static void ether1_timeout(struct net_device *dev, unsigned int txqueue);
+
+/* ------------------------------------------------------------------------- */
+
+static char version[] = "ether1 ethernet driver (c) 2000 Russell King v1.07\n";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BUS_16 16
 #define BUS_8  8
@@ -119,7 +143,11 @@ ether1_outw_p (struct net_device *dev, unsigned short val, int addr, int svflgs)
  * Some inline assembler to allow fast transfers on to/off of the card.
  * Since this driver depends on some features presented by the ARM
  * specific architecture, and that you can't configure this driver
+<<<<<<< HEAD
  * without specifiing ARM mode, this is not a problem.
+=======
+ * without specifying ARM mode, this is not a problem.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is essentially an optimised memcpy from the card's
  * onboard RAM to kernel memory.
@@ -250,7 +278,11 @@ ether1_readbuffer (struct net_device *dev, void *data, unsigned int start, unsig
 	} while (thislen);
 }
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ether1_ramtest(struct net_device *dev, unsigned char byte)
 {
 	unsigned char *buffer = kmalloc (BUFFER_SIZE, GFP_KERNEL);
@@ -304,7 +336,11 @@ ether1_reset (struct net_device *dev)
 	return BUS_16;
 }
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ether1_init_2(struct net_device *dev)
 {
 	int i;
@@ -638,12 +674,15 @@ ether1_txalloc (struct net_device *dev, int size)
 static int
 ether1_open (struct net_device *dev)
 {
+<<<<<<< HEAD
 	if (!is_valid_ether_addr(dev->dev_addr)) {
 		printk(KERN_WARNING "%s: invalid ethernet MAC address\n",
 			dev->name);
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (request_irq(dev->irq, ether1_interrupt, 0, "ether1", dev))
 		return -EAGAIN;
 
@@ -658,7 +697,11 @@ ether1_open (struct net_device *dev)
 }
 
 static void
+<<<<<<< HEAD
 ether1_timeout(struct net_device *dev)
+=======
+ether1_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	printk(KERN_WARNING "%s: transmit timeout, network cable problem?\n",
 		dev->name);
@@ -673,7 +716,11 @@ ether1_timeout(struct net_device *dev)
 	netif_wake_queue(dev);
 }
 
+<<<<<<< HEAD
 static int
+=======
+static netdev_tx_t
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ether1_sendpacket (struct sk_buff *skb, struct net_device *dev)
 {
 	int tmp, tst, nopaddr, txaddr, tbdaddr, dataddr;
@@ -972,7 +1019,11 @@ ether1_setmulticastlist (struct net_device *dev)
 
 /* ------------------------------------------------------------------------- */
 
+<<<<<<< HEAD
 static void __devinit ether1_banner(void)
+=======
+static void ether1_banner(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static unsigned int version_printed = 0;
 
@@ -987,6 +1038,7 @@ static const struct net_device_ops ether1_netdev_ops = {
 	.ndo_set_rx_mode	= ether1_setmulticastlist,
 	.ndo_tx_timeout		= ether1_timeout,
 	.ndo_validate_addr	= eth_validate_addr,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
 	.ndo_set_mac_address	= eth_mac_addr,
 };
@@ -995,6 +1047,16 @@ static int __devinit
 ether1_probe(struct expansion_card *ec, const struct ecard_id *id)
 {
 	struct net_device *dev;
+=======
+	.ndo_set_mac_address	= eth_mac_addr,
+};
+
+static int
+ether1_probe(struct expansion_card *ec, const struct ecard_id *id)
+{
+	struct net_device *dev;
+	u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, ret = 0;
 
 	ether1_banner();
@@ -1024,7 +1086,12 @@ ether1_probe(struct expansion_card *ec, const struct ecard_id *id)
 	}
 
 	for (i = 0; i < 6; i++)
+<<<<<<< HEAD
 		dev->dev_addr[i] = readb(IDPROM_ADDRESS + (i << 2));
+=======
+		addr[i] = readb(IDPROM_ADDRESS + (i << 2));
+	eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ether1_init_2(dev)) {
 		ret = -ENODEV;
@@ -1052,7 +1119,11 @@ ether1_probe(struct expansion_card *ec, const struct ecard_id *id)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __devexit ether1_remove(struct expansion_card *ec)
+=======
+static void ether1_remove(struct expansion_card *ec)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = ecard_get_drvdata(ec);
 
@@ -1070,7 +1141,11 @@ static const struct ecard_id ether1_ids[] = {
 
 static struct ecard_driver ether1_driver = {
 	.probe		= ether1_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(ether1_remove),
+=======
+	.remove		= ether1_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= ether1_ids,
 	.drv = {
 		.name	= "ether1",

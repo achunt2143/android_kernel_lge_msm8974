@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel PRO/1000 Linux driver
@@ -41,6 +42,13 @@ enum e1000_mng_mode {
 /* Intel(R) Active Management Technology signature */
 #define E1000_IAMT_SIGNATURE		0x544D4149
 
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* Copyright(c) 1999 - 2018 Intel Corporation. */
+
+#include "e1000.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  *  e1000_calculate_checksum - Calculate checksum for buffer
  *  @buffer: pointer to EEPROM
@@ -67,7 +75,11 @@ static u8 e1000_calculate_checksum(u8 *buffer, u32 length)
  *  e1000_mng_enable_host_if - Checks host interface is enabled
  *  @hw: pointer to the HW structure
  *
+<<<<<<< HEAD
  *  Returns E1000_success upon success, else E1000_ERR_HOST_INTERFACE_COMMAND
+=======
+ *  Returns 0 upon success, else -E1000_ERR_HOST_INTERFACE_COMMAND
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  This function checks whether the HOST IF is enabled for command operation
  *  and also checks whether the previous command is completed.  It busy waits
@@ -85,7 +97,11 @@ static s32 e1000_mng_enable_host_if(struct e1000_hw *hw)
 
 	/* Check that the host interface is enabled. */
 	hicr = er32(HICR);
+<<<<<<< HEAD
 	if ((hicr & E1000_HICR_EN) == 0) {
+=======
+	if (!(hicr & E1000_HICR_EN)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		e_dbg("E1000_HOST_EN bit disabled.\n");
 		return -E1000_ERR_HOST_INTERFACE_COMMAND;
 	}
@@ -98,7 +114,11 @@ static s32 e1000_mng_enable_host_if(struct e1000_hw *hw)
 	}
 
 	if (i == E1000_MNG_DHCP_COMMAND_TIMEOUT) {
+<<<<<<< HEAD
 		e_dbg("Previous command timeout failed .\n");
+=======
+		e_dbg("Previous command timeout failed.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -E1000_ERR_HOST_INTERFACE_COMMAND;
 	}
 
@@ -143,8 +163,12 @@ bool e1000e_enable_tx_pkt_filtering(struct e1000_hw *hw)
 		return hw->mac.tx_pkt_filtering;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * If we can't read from the host interface for whatever
+=======
+	/* If we can't read from the host interface for whatever
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * reason, disable filtering.
 	 */
 	ret_val = e1000_mng_enable_host_if(hw);
@@ -163,8 +187,12 @@ bool e1000e_enable_tx_pkt_filtering(struct e1000_hw *hw)
 	hdr->checksum = 0;
 	csum = e1000_calculate_checksum((u8 *)hdr,
 					E1000_MNG_DHCP_COOKIE_LENGTH);
+<<<<<<< HEAD
 	/*
 	 * If either the checksums or signature don't match, then
+=======
+	/* If either the checksums or signature don't match, then
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the cookie area isn't considered valid, in which case we
 	 * take the safe route of assuming Tx filtering is enabled.
 	 */
@@ -252,8 +280,12 @@ static s32 e1000_mng_host_if_write(struct e1000_hw *hw, u8 *buffer,
 	/* Calculate length in DWORDs */
 	length >>= 2;
 
+<<<<<<< HEAD
 	/*
 	 * The device driver writes the relevant command block into the
+=======
+	/* The device driver writes the relevant command block into the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * ram area.
 	 */
 	for (i = 0; i < length; i++) {
@@ -350,9 +382,18 @@ bool e1000e_enable_mng_pass_thru(struct e1000_hw *hw)
 	} else if ((hw->mac.type == e1000_82574) ||
 		   (hw->mac.type == e1000_82583)) {
 		u16 data;
+<<<<<<< HEAD
 
 		factps = er32(FACTPS);
 		e1000_read_nvm(hw, NVM_INIT_CONTROL2_REG, 1, &data);
+=======
+		s32 ret_val;
+
+		factps = er32(FACTPS);
+		ret_val = e1000_read_nvm(hw, NVM_INIT_CONTROL2_REG, 1, &data);
+		if (ret_val)
+			return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!(factps & E1000_FACTPS_MNGCG) &&
 		    ((data & E1000_NVM_INIT_CTRL2_MNGM) ==

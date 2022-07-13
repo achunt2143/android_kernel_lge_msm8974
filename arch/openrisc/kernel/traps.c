@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC traps.c
  *
@@ -9,6 +13,7 @@
  * Copyright (C) 2003 Matjaz Breskvar <phoenix@bsemi.com>
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
  *
+<<<<<<< HEAD
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
  *      as published by the Free Software Foundation; either version
@@ -18,12 +23,24 @@
  *  mechanism, as well as some general stack/register dumping
  *  things.
  *
+=======
+ *  Here we handle the break vectors not used by the system call
+ *  mechanism, as well as some general stack/register dumping
+ *  things.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/module.h>
+=======
+#include <linux/sched/debug.h>
+#include <linux/sched/task_stack.h>
+#include <linux/kernel.h>
+#include <linux/extable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kmod.h>
 #include <linux/string.h>
 #include <linux/errno.h>
@@ -31,6 +48,7 @@
 #include <linux/timer.h>
 #include <linux/mm.h>
 #include <linux/kallsyms.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 #include <asm/segment.h>
@@ -116,19 +134,76 @@ void dump_stack(void)
 }
 EXPORT_SYMBOL(dump_stack);
 
+=======
+#include <linux/uaccess.h>
+
+#include <asm/bug.h>
+#include <asm/io.h>
+#include <asm/processor.h>
+#include <asm/unwinder.h>
+#include <asm/sections.h>
+
+int lwa_flag;
+static unsigned long __user *lwa_addr;
+
+asmlinkage void unhandled_exception(struct pt_regs *regs, int ea, int vector);
+asmlinkage void do_trap(struct pt_regs *regs, unsigned long address);
+asmlinkage void do_fpe_trap(struct pt_regs *regs, unsigned long address);
+asmlinkage void do_unaligned_access(struct pt_regs *regs, unsigned long address);
+asmlinkage void do_bus_fault(struct pt_regs *regs, unsigned long address);
+asmlinkage void do_illegal_instruction(struct pt_regs *regs,
+				       unsigned long address);
+
+static void print_trace(void *data, unsigned long addr, int reliable)
+{
+	const char *loglvl = data;
+
+	printk("%s[<%p>] %s%pS\n", loglvl, (void *) addr, reliable ? "" : "? ",
+	       (void *) addr);
+}
+
+static void print_data(unsigned long base_addr, unsigned long word, int i)
+{
+	if (i == 0)
+		printk("(%08lx:)\t%08lx", base_addr + (i * 4), word);
+	else
+		printk(" %08lx:\t%08lx", base_addr + (i * 4), word);
+}
+
+/* displays a short stack trace */
+void show_stack(struct task_struct *task, unsigned long *esp, const char *loglvl)
+{
+	if (esp == NULL)
+		esp = (unsigned long *)&esp;
+
+	printk("%sCall trace:\n", loglvl);
+	unwind_stack((void *)loglvl, esp, print_trace);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void show_registers(struct pt_regs *regs)
 {
 	int i;
 	int in_kernel = 1;
 	unsigned long esp;
 
+<<<<<<< HEAD
 	esp = (unsigned long)(&regs->sp);
+=======
+	esp = (unsigned long)(regs->sp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (user_mode(regs))
 		in_kernel = 0;
 
 	printk("CPU #: %d\n"
+<<<<<<< HEAD
 	       "   PC: %08lx    SR: %08lx    SP: %08lx\n",
 	       smp_processor_id(), regs->pc, regs->sr, regs->sp);
+=======
+	       "   PC: %08lx    SR: %08lx    SP: %08lx FPCSR: %08lx\n",
+	       smp_processor_id(), regs->pc, regs->sr, regs->sp,
+	       regs->fpcsr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("GPR00: %08lx GPR01: %08lx GPR02: %08lx GPR03: %08lx\n",
 	       0L, regs->gpr[1], regs->gpr[2], regs->gpr[3]);
 	printk("GPR04: %08lx GPR05: %08lx GPR06: %08lx GPR07: %08lx\n",
@@ -157,29 +232,61 @@ void show_registers(struct pt_regs *regs)
 	if (in_kernel) {
 
 		printk("\nStack: ");
+<<<<<<< HEAD
 		show_stack(NULL, (unsigned long *)esp);
+=======
+		show_stack(NULL, (unsigned long *)esp, KERN_EMERG);
+
+		if (esp < PAGE_OFFSET)
+			goto bad_stack;
+
+		printk("\n");
+		for (i = -8; i < 24; i += 1) {
+			unsigned long word;
+
+			if (__get_user(word, &((unsigned long *)esp)[i])) {
+bad_stack:
+				printk(" Bad Stack value.");
+				break;
+			}
+
+			print_data(esp, word, i);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		printk("\nCode: ");
 		if (regs->pc < PAGE_OFFSET)
 			goto bad;
 
+<<<<<<< HEAD
 		for (i = -24; i < 24; i++) {
 			unsigned char c;
 			if (__get_user(c, &((unsigned char *)regs->pc)[i])) {
+=======
+		for (i = -6; i < 6; i += 1) {
+			unsigned long word;
+
+			if (__get_user(word, &((unsigned long *)regs->pc)[i])) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bad:
 				printk(" Bad PC value.");
 				break;
 			}
 
+<<<<<<< HEAD
 			if (i == 0)
 				printk("(%02x) ", c);
 			else
 				printk("%02x ", c);
+=======
+			print_data(regs->pc, word, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	printk("\n");
 }
 
+<<<<<<< HEAD
 void nommu_dump_state(struct pt_regs *regs,
 		      unsigned long ea, unsigned long vector)
 {
@@ -258,6 +365,10 @@ void nommu_dump_state(struct pt_regs *regs,
 
 /* This is normally the 'Oops' routine */
 void die(const char *str, struct pt_regs *regs, long err)
+=======
+/* This is normally the 'Oops' routine */
+void __noreturn die(const char *str, struct pt_regs *regs, long err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	console_verbose();
@@ -272,6 +383,7 @@ void die(const char *str, struct pt_regs *regs, long err)
 	__asm__ __volatile__("l.nop   1");
 	do {} while (1);
 #endif
+<<<<<<< HEAD
 	do_exit(SIGSEGV);
 }
 
@@ -285,19 +397,49 @@ void die_if_kernel(const char *str, struct pt_regs *regs, long err)
 }
 
 void unhandled_exception(struct pt_regs *regs, int ea, int vector)
+=======
+	make_task_dead(SIGSEGV);
+}
+
+asmlinkage void unhandled_exception(struct pt_regs *regs, int ea, int vector)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	printk("Unable to handle exception at EA =0x%x, vector 0x%x",
 	       ea, vector);
 	die("Oops", regs, 9);
 }
 
+<<<<<<< HEAD
 void __init trap_init(void)
 {
 	/* Nothing needs to be done */
+=======
+asmlinkage void do_fpe_trap(struct pt_regs *regs, unsigned long address)
+{
+	int code = FPE_FLTUNK;
+	unsigned long fpcsr = regs->fpcsr;
+
+	if (fpcsr & SPR_FPCSR_IVF)
+		code = FPE_FLTINV;
+	else if (fpcsr & SPR_FPCSR_OVF)
+		code = FPE_FLTOVF;
+	else if (fpcsr & SPR_FPCSR_UNF)
+		code = FPE_FLTUND;
+	else if (fpcsr & SPR_FPCSR_DZF)
+		code = FPE_FLTDIV;
+	else if (fpcsr & SPR_FPCSR_IXF)
+		code = FPE_FLTRES;
+
+	/* Clear all flags */
+	regs->fpcsr &= ~SPR_FPCSR_ALLF;
+
+	force_sig_fault(SIGFPE, code, (void __user *)regs->pc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 asmlinkage void do_trap(struct pt_regs *regs, unsigned long address)
 {
+<<<<<<< HEAD
 	siginfo_t info;
 	memset(&info, 0, sizeof(info));
 	info.si_signo = SIGTRAP;
@@ -306,10 +448,14 @@ asmlinkage void do_trap(struct pt_regs *regs, unsigned long address)
 	force_sig_info(SIGTRAP, &info, current);
 
 	regs->pc += 4;
+=======
+	force_sig_fault(SIGTRAP, TRAP_BRKPT, (void __user *)regs->pc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 asmlinkage void do_unaligned_access(struct pt_regs *regs, unsigned long address)
 {
+<<<<<<< HEAD
 	siginfo_t info;
 
 	if (user_mode(regs)) {
@@ -319,6 +465,11 @@ asmlinkage void do_unaligned_access(struct pt_regs *regs, unsigned long address)
 		/* info.si_code has been set above */
 		info.si_addr = (void *)address;
 		force_sig_info(SIGSEGV, &info, current);
+=======
+	if (user_mode(regs)) {
+		/* Send a SIGBUS */
+		force_sig_fault(SIGBUS, BUS_ADRALN, (void __user *)address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		printk("KERNEL: Unaligned Access 0x%.8lx\n", address);
 		show_registers(regs);
@@ -329,6 +480,7 @@ asmlinkage void do_unaligned_access(struct pt_regs *regs, unsigned long address)
 
 asmlinkage void do_bus_fault(struct pt_regs *regs, unsigned long address)
 {
+<<<<<<< HEAD
 	siginfo_t info;
 
 	if (user_mode(regs)) {
@@ -338,6 +490,11 @@ asmlinkage void do_bus_fault(struct pt_regs *regs, unsigned long address)
 		info.si_code = BUS_ADRERR;
 		info.si_addr = (void *)address;
 		force_sig_info(SIGBUS, &info, current);
+=======
+	if (user_mode(regs)) {
+		/* Send a SIGBUS */
+		force_sig_fault(SIGBUS, BUS_ADRERR, (void __user *)address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {		/* Kernel mode */
 		printk("KERNEL: Bus error (SIGBUS) 0x%.8lx\n", address);
 		show_registers(regs);
@@ -345,6 +502,7 @@ asmlinkage void do_bus_fault(struct pt_regs *regs, unsigned long address)
 	}
 }
 
+<<<<<<< HEAD
 asmlinkage void do_illegal_instruction(struct pt_regs *regs,
 				       unsigned long address)
 {
@@ -357,6 +515,196 @@ asmlinkage void do_illegal_instruction(struct pt_regs *regs,
 		info.si_code = ILL_ILLOPC;
 		info.si_addr = (void *)address;
 		force_sig_info(SIGBUS, &info, current);
+=======
+static inline int in_delay_slot(struct pt_regs *regs)
+{
+#ifdef CONFIG_OPENRISC_NO_SPR_SR_DSX
+	/* No delay slot flag, do the old way */
+	unsigned int op, insn;
+
+	insn = *((unsigned int *)regs->pc);
+	op = insn >> 26;
+	switch (op) {
+	case 0x00: /* l.j */
+	case 0x01: /* l.jal */
+	case 0x03: /* l.bnf */
+	case 0x04: /* l.bf */
+	case 0x11: /* l.jr */
+	case 0x12: /* l.jalr */
+		return 1;
+	default:
+		return 0;
+	}
+#else
+	return mfspr(SPR_SR) & SPR_SR_DSX;
+#endif
+}
+
+static inline void adjust_pc(struct pt_regs *regs, unsigned long address)
+{
+	int displacement;
+	unsigned int rb, op, jmp;
+
+	if (unlikely(in_delay_slot(regs))) {
+		/* In delay slot, instruction at pc is a branch, simulate it */
+		jmp = *((unsigned int *)regs->pc);
+
+		displacement = sign_extend32(((jmp) & 0x3ffffff) << 2, 27);
+		rb = (jmp & 0x0000ffff) >> 11;
+		op = jmp >> 26;
+
+		switch (op) {
+		case 0x00: /* l.j */
+			regs->pc += displacement;
+			return;
+		case 0x01: /* l.jal */
+			regs->pc += displacement;
+			regs->gpr[9] = regs->pc + 8;
+			return;
+		case 0x03: /* l.bnf */
+			if (regs->sr & SPR_SR_F)
+				regs->pc += 8;
+			else
+				regs->pc += displacement;
+			return;
+		case 0x04: /* l.bf */
+			if (regs->sr & SPR_SR_F)
+				regs->pc += displacement;
+			else
+				regs->pc += 8;
+			return;
+		case 0x11: /* l.jr */
+			regs->pc = regs->gpr[rb];
+			return;
+		case 0x12: /* l.jalr */
+			regs->pc = regs->gpr[rb];
+			regs->gpr[9] = regs->pc + 8;
+			return;
+		default:
+			break;
+		}
+	} else {
+		regs->pc += 4;
+	}
+}
+
+static inline void simulate_lwa(struct pt_regs *regs, unsigned long address,
+				unsigned int insn)
+{
+	unsigned int ra, rd;
+	unsigned long value;
+	unsigned long orig_pc;
+	long imm;
+
+	const struct exception_table_entry *entry;
+
+	orig_pc = regs->pc;
+	adjust_pc(regs, address);
+
+	ra = (insn >> 16) & 0x1f;
+	rd = (insn >> 21) & 0x1f;
+	imm = (short)insn;
+	lwa_addr = (unsigned long __user *)(regs->gpr[ra] + imm);
+
+	if ((unsigned long)lwa_addr & 0x3) {
+		do_unaligned_access(regs, address);
+		return;
+	}
+
+	if (get_user(value, lwa_addr)) {
+		if (user_mode(regs)) {
+			force_sig(SIGSEGV);
+			return;
+		}
+
+		if ((entry = search_exception_tables(orig_pc))) {
+			regs->pc = entry->fixup;
+			return;
+		}
+
+		/* kernel access in kernel space, load it directly */
+		value = *((unsigned long *)lwa_addr);
+	}
+
+	lwa_flag = 1;
+	regs->gpr[rd] = value;
+}
+
+static inline void simulate_swa(struct pt_regs *regs, unsigned long address,
+				unsigned int insn)
+{
+	unsigned long __user *vaddr;
+	unsigned long orig_pc;
+	unsigned int ra, rb;
+	long imm;
+
+	const struct exception_table_entry *entry;
+
+	orig_pc = regs->pc;
+	adjust_pc(regs, address);
+
+	ra = (insn >> 16) & 0x1f;
+	rb = (insn >> 11) & 0x1f;
+	imm = (short)(((insn & 0x2200000) >> 10) | (insn & 0x7ff));
+	vaddr = (unsigned long __user *)(regs->gpr[ra] + imm);
+
+	if (!lwa_flag || vaddr != lwa_addr) {
+		regs->sr &= ~SPR_SR_F;
+		return;
+	}
+
+	if ((unsigned long)vaddr & 0x3) {
+		do_unaligned_access(regs, address);
+		return;
+	}
+
+	if (put_user(regs->gpr[rb], vaddr)) {
+		if (user_mode(regs)) {
+			force_sig(SIGSEGV);
+			return;
+		}
+
+		if ((entry = search_exception_tables(orig_pc))) {
+			regs->pc = entry->fixup;
+			return;
+		}
+
+		/* kernel access in kernel space, store it directly */
+		*((unsigned long *)vaddr) = regs->gpr[rb];
+	}
+
+	lwa_flag = 0;
+	regs->sr |= SPR_SR_F;
+}
+
+#define INSN_LWA	0x1b
+#define INSN_SWA	0x33
+
+asmlinkage void do_illegal_instruction(struct pt_regs *regs,
+				       unsigned long address)
+{
+	unsigned int op;
+	unsigned int insn = *((unsigned int *)address);
+
+	op = insn >> 26;
+
+	switch (op) {
+	case INSN_LWA:
+		simulate_lwa(regs, address, insn);
+		return;
+
+	case INSN_SWA:
+		simulate_swa(regs, address, insn);
+		return;
+
+	default:
+		break;
+	}
+
+	if (user_mode(regs)) {
+		/* Send a SIGILL */
+		force_sig_fault(SIGILL, ILL_ILLOPC, (void __user *)address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {		/* Kernel mode */
 		printk("KERNEL: Illegal instruction (SIGILL) 0x%.8lx\n",
 		       address);

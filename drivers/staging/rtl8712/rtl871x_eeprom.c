@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * rtl871x_eeprom.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,6 +22,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -49,7 +56,11 @@ static void shift_out_bits(struct _adapter *padapter, u16 data, u16 count)
 {
 	u16 x, mask;
 
+<<<<<<< HEAD
 	if (padapter->bSurpriseRemoved == true)
+=======
+	if (padapter->surprise_removed)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	mask = 0x01 << (count - 1);
 	x = r8712_read8(padapter, EE_9346CR);
@@ -58,15 +69,25 @@ static void shift_out_bits(struct _adapter *padapter, u16 data, u16 count)
 		x &= ~_EEDI;
 		if (data & mask)
 			x |= _EEDI;
+<<<<<<< HEAD
 		if (padapter->bSurpriseRemoved == true)
+=======
+		if (padapter->surprise_removed)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		r8712_write8(padapter, EE_9346CR, (u8)x);
 		udelay(CLOCK_RATE);
 		up_clk(padapter, &x);
 		down_clk(padapter, &x);
+<<<<<<< HEAD
 		mask = mask >> 1;
 	} while (mask);
 	if (padapter->bSurpriseRemoved == true)
+=======
+		mask >>= 1;
+	} while (mask);
+	if (padapter->surprise_removed)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	x &= ~_EEDI;
 	r8712_write8(padapter, EE_9346CR, (u8)x);
@@ -77,15 +98,25 @@ static u16 shift_in_bits(struct _adapter *padapter)
 {
 	u16 x, d = 0, i;
 
+<<<<<<< HEAD
 	if (padapter->bSurpriseRemoved == true)
+=======
+	if (padapter->surprise_removed)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	x = r8712_read8(padapter, EE_9346CR);
 	x &= ~(_EEDO | _EEDI);
 	d = 0;
 	for (i = 0; i < 16; i++) {
+<<<<<<< HEAD
 		d = d << 1;
 		up_clk(padapter, &x);
 		if (padapter->bSurpriseRemoved == true)
+=======
+		d <<= 1;
+		up_clk(padapter, &x);
+		if (padapter->surprise_removed)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 		x = r8712_read8(padapter, EE_9346CR);
 		x &= ~(_EEDI);
@@ -129,6 +160,7 @@ static void eeprom_clean(struct _adapter *padapter)
 {
 	u16 x;
 
+<<<<<<< HEAD
 	if (padapter->bSurpriseRemoved == true)
 		return;
 	x = r8712_read8(padapter, EE_9346CR);
@@ -140,6 +172,19 @@ static void eeprom_clean(struct _adapter *padapter)
 		return;
 	up_clk(padapter, &x);
 	if (padapter->bSurpriseRemoved == true)
+=======
+	if (padapter->surprise_removed)
+		return;
+	x = r8712_read8(padapter, EE_9346CR);
+	if (padapter->surprise_removed)
+		return;
+	x &= ~(_EECS | _EEDI);
+	r8712_write8(padapter, EE_9346CR, (u8)x);
+	if (padapter->surprise_removed)
+		return;
+	up_clk(padapter, &x);
+	if (padapter->surprise_removed)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	down_clk(padapter, &x);
 }
@@ -162,7 +207,11 @@ void r8712_eeprom_write16(struct _adapter *padapter, u16 reg, u16 data)
 	x |= _EEM1 | _EECS;
 	r8712_write8(padapter, EE_9346CR, x);
 	shift_out_bits(padapter, EEPROM_EWEN_OPCODE, 5);
+<<<<<<< HEAD
 	if (padapter->EepromAddressSize == 8)	/*CF+ and SDIO*/
+=======
+	if (padapter->eeprom_address_size == 8)	/*CF+ and SDIO*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		shift_out_bits(padapter, 0, 6);
 	else	/* USB */
 		shift_out_bits(padapter, 0, 4);
@@ -177,7 +226,11 @@ void r8712_eeprom_write16(struct _adapter *padapter, u16 reg, u16 data)
 	 */
 	shift_out_bits(padapter, EEPROM_WRITE_OPCODE, 3);
 	/* select which word in the EEPROM that we are writing to. */
+<<<<<<< HEAD
 	shift_out_bits(padapter, reg, padapter->EepromAddressSize);
+=======
+	shift_out_bits(padapter, reg, padapter->eeprom_address_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* write the data to the selected EEPROM word. */
 	shift_out_bits(padapter, data, 16);
 	if (wait_eeprom_cmd_done(padapter)) {
@@ -206,11 +259,19 @@ u16 r8712_eeprom_read16(struct _adapter *padapter, u16 reg) /*ReadEEprom*/
 	tmp8_clk_new = tmp8_clk_ori | 0x20;
 	if (tmp8_clk_new != tmp8_clk_ori)
 		r8712_write8(padapter, 0x10250003, tmp8_clk_new);
+<<<<<<< HEAD
 	if (padapter->bSurpriseRemoved == true)
 		goto out;
 	/* select EEPROM, reset bits, set _EECS */
 	x = r8712_read8(padapter, EE_9346CR);
 	if (padapter->bSurpriseRemoved == true)
+=======
+	if (padapter->surprise_removed)
+		goto out;
+	/* select EEPROM, reset bits, set _EECS */
+	x = r8712_read8(padapter, EE_9346CR);
+	if (padapter->surprise_removed)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	x &= ~(_EEDI | _EEDO | _EESK | _EEM0);
 	x |= _EEM1 | _EECS;
@@ -219,7 +280,11 @@ u16 r8712_eeprom_read16(struct _adapter *padapter, u16 reg) /*ReadEEprom*/
 	 * The opcode is 3bits in length, reg is 6 bits long
 	 */
 	shift_out_bits(padapter, EEPROM_READ_OPCODE, 3);
+<<<<<<< HEAD
 	shift_out_bits(padapter, reg, padapter->EepromAddressSize);
+=======
+	shift_out_bits(padapter, reg, padapter->eeprom_address_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Now read the data (16 bits) in from the selected EEPROM word */
 	data = shift_in_bits(padapter);
 	eeprom_clean(padapter);
@@ -230,4 +295,7 @@ out:
 		r8712_write8(padapter, 0x102502f1, tmp8_ori);
 	return data;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

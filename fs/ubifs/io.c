@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  * Copyright (C) 2006, 2007 University of Szeged, Hungary
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -17,6 +22,8 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Artem Bityutskiy (Битюцкий Артём)
  *          Adrian Hunter
  *          Zoltan Sogor
@@ -84,8 +91,13 @@ void ubifs_ro_mode(struct ubifs_info *c, int err)
 	if (!c->ro_error) {
 		c->ro_error = 1;
 		c->no_chk_data_crc = 0;
+<<<<<<< HEAD
 		c->vfs_sb->s_flags |= MS_RDONLY;
 		ubifs_warn("switched to read-only mode, error %d", err);
+=======
+		c->vfs_sb->s_flags |= SB_RDONLY;
+		ubifs_warn(c, "switched to read-only mode, error %d", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dump_stack();
 	}
 }
@@ -107,14 +119,21 @@ int ubifs_leb_read(const struct ubifs_info *c, int lnum, void *buf, int offs,
 	 * @even_ebadmsg is true.
 	 */
 	if (err && (err != -EBADMSG || even_ebadmsg)) {
+<<<<<<< HEAD
 		ubifs_err("reading %d bytes from LEB %d:%d failed, error %d",
 			  len, lnum, offs, err);
 		dbg_dump_stack();
+=======
+		ubifs_err(c, "reading %d bytes from LEB %d:%d failed, error %d",
+			  len, lnum, offs, err);
+		dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
 
 int ubifs_leb_write(struct ubifs_info *c, int lnum, const void *buf, int offs,
+<<<<<<< HEAD
 		    int len, int dtype)
 {
 	int err;
@@ -131,10 +150,29 @@ int ubifs_leb_write(struct ubifs_info *c, int lnum, const void *buf, int offs,
 			  len, lnum, offs, err);
 		ubifs_ro_mode(c, err);
 		dbg_dump_stack();
+=======
+		    int len)
+{
+	int err;
+
+	ubifs_assert(c, !c->ro_media && !c->ro_mount);
+	if (c->ro_error)
+		return -EROFS;
+	if (!dbg_is_tst_rcvry(c))
+		err = ubi_leb_write(c->ubi, lnum, buf, offs, len);
+	else
+		err = dbg_leb_write(c, lnum, buf, offs, len);
+	if (err) {
+		ubifs_err(c, "writing %d bytes to LEB %d:%d failed, error %d",
+			  len, lnum, offs, err);
+		ubifs_ro_mode(c, err);
+		dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
 
+<<<<<<< HEAD
 int ubifs_leb_change(struct ubifs_info *c, int lnum, const void *buf, int len,
 		     int dtype)
 {
@@ -152,6 +190,24 @@ int ubifs_leb_change(struct ubifs_info *c, int lnum, const void *buf, int len,
 			  len, lnum, err);
 		ubifs_ro_mode(c, err);
 		dbg_dump_stack();
+=======
+int ubifs_leb_change(struct ubifs_info *c, int lnum, const void *buf, int len)
+{
+	int err;
+
+	ubifs_assert(c, !c->ro_media && !c->ro_mount);
+	if (c->ro_error)
+		return -EROFS;
+	if (!dbg_is_tst_rcvry(c))
+		err = ubi_leb_change(c->ubi, lnum, buf, len);
+	else
+		err = dbg_leb_change(c, lnum, buf, len);
+	if (err) {
+		ubifs_err(c, "changing %d bytes in LEB %d failed, error %d",
+			  len, lnum, err);
+		ubifs_ro_mode(c, err);
+		dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
@@ -160,7 +216,11 @@ int ubifs_leb_unmap(struct ubifs_info *c, int lnum)
 {
 	int err;
 
+<<<<<<< HEAD
 	ubifs_assert(!c->ro_media && !c->ro_mount);
+=======
+	ubifs_assert(c, !c->ro_media && !c->ro_mount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (c->ro_error)
 		return -EROFS;
 	if (!dbg_is_tst_rcvry(c))
@@ -168,13 +228,20 @@ int ubifs_leb_unmap(struct ubifs_info *c, int lnum)
 	else
 		err = dbg_leb_unmap(c, lnum);
 	if (err) {
+<<<<<<< HEAD
 		ubifs_err("unmap LEB %d failed, error %d", lnum, err);
 		ubifs_ro_mode(c, err);
 		dbg_dump_stack();
+=======
+		ubifs_err(c, "unmap LEB %d failed, error %d", lnum, err);
+		ubifs_ro_mode(c, err);
+		dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
 
+<<<<<<< HEAD
 int ubifs_leb_map(struct ubifs_info *c, int lnum, int dtype)
 {
 	int err;
@@ -190,6 +257,23 @@ int ubifs_leb_map(struct ubifs_info *c, int lnum, int dtype)
 		ubifs_err("mapping LEB %d failed, error %d", lnum, err);
 		ubifs_ro_mode(c, err);
 		dbg_dump_stack();
+=======
+int ubifs_leb_map(struct ubifs_info *c, int lnum)
+{
+	int err;
+
+	ubifs_assert(c, !c->ro_media && !c->ro_mount);
+	if (c->ro_error)
+		return -EROFS;
+	if (!dbg_is_tst_rcvry(c))
+		err = ubi_leb_map(c->ubi, lnum);
+	else
+		err = dbg_leb_map(c, lnum);
+	if (err) {
+		ubifs_err(c, "mapping LEB %d failed, error %d", lnum, err);
+		ubifs_ro_mode(c, err);
+		dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
@@ -200,17 +284,48 @@ int ubifs_is_mapped(const struct ubifs_info *c, int lnum)
 
 	err = ubi_is_mapped(c->ubi, lnum);
 	if (err < 0) {
+<<<<<<< HEAD
 		ubifs_err("ubi_is_mapped failed for LEB %d, error %d",
 			  lnum, err);
 		dbg_dump_stack();
+=======
+		ubifs_err(c, "ubi_is_mapped failed for LEB %d, error %d",
+			  lnum, err);
+		dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static void record_magic_error(struct ubifs_stats_info *stats)
+{
+	if (stats)
+		stats->magic_errors++;
+}
+
+static void record_node_error(struct ubifs_stats_info *stats)
+{
+	if (stats)
+		stats->node_errors++;
+}
+
+static void record_crc_error(struct ubifs_stats_info *stats)
+{
+	if (stats)
+		stats->crc_errors++;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ubifs_check_node - check node.
  * @c: UBIFS file-system description object
  * @buf: node to check
+<<<<<<< HEAD
+=======
+ * @len: node length
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @lnum: logical eraseblock number
  * @offs: offset within the logical eraseblock
  * @quiet: print no messages
@@ -235,21 +350,37 @@ int ubifs_is_mapped(const struct ubifs_info *c, int lnum)
  * This function returns zero in case of success and %-EUCLEAN in case of bad
  * CRC or magic.
  */
+<<<<<<< HEAD
 int ubifs_check_node(const struct ubifs_info *c, const void *buf, int lnum,
 		     int offs, int quiet, int must_chk_crc)
+=======
+int ubifs_check_node(const struct ubifs_info *c, const void *buf, int len,
+		     int lnum, int offs, int quiet, int must_chk_crc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = -EINVAL, type, node_len;
 	uint32_t crc, node_crc, magic;
 	const struct ubifs_ch *ch = buf;
 
+<<<<<<< HEAD
 	ubifs_assert(lnum >= 0 && lnum < c->leb_cnt && offs >= 0);
 	ubifs_assert(!(offs & 7) && offs < c->leb_size);
+=======
+	ubifs_assert(c, lnum >= 0 && lnum < c->leb_cnt && offs >= 0);
+	ubifs_assert(c, !(offs & 7) && offs < c->leb_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	magic = le32_to_cpu(ch->magic);
 	if (magic != UBIFS_NODE_MAGIC) {
 		if (!quiet)
+<<<<<<< HEAD
 			ubifs_err("bad magic %#08x, expected %#08x",
 				  magic, UBIFS_NODE_MAGIC);
+=======
+			ubifs_err(c, "bad magic %#08x, expected %#08x",
+				  magic, UBIFS_NODE_MAGIC);
+		record_magic_error(c->stats);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EUCLEAN;
 		goto out;
 	}
@@ -257,7 +388,12 @@ int ubifs_check_node(const struct ubifs_info *c, const void *buf, int lnum,
 	type = ch->node_type;
 	if (type < 0 || type >= UBIFS_NODE_TYPES_CNT) {
 		if (!quiet)
+<<<<<<< HEAD
 			ubifs_err("bad node type %d", type);
+=======
+			ubifs_err(c, "bad node type %d", type);
+		record_node_error(c->stats);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -280,8 +416,14 @@ int ubifs_check_node(const struct ubifs_info *c, const void *buf, int lnum,
 	node_crc = le32_to_cpu(ch->crc);
 	if (crc != node_crc) {
 		if (!quiet)
+<<<<<<< HEAD
 			ubifs_err("bad CRC: calculated %#08x, read %#08x",
 				  crc, node_crc);
+=======
+			ubifs_err(c, "bad CRC: calculated %#08x, read %#08x",
+				  crc, node_crc);
+		record_crc_error(c->stats);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -EUCLEAN;
 		goto out;
 	}
@@ -290,12 +432,21 @@ int ubifs_check_node(const struct ubifs_info *c, const void *buf, int lnum,
 
 out_len:
 	if (!quiet)
+<<<<<<< HEAD
 		ubifs_err("bad node length %d", node_len);
 out:
 	if (!quiet) {
 		ubifs_err("bad node at LEB %d:%d", lnum, offs);
 		dbg_dump_node(c, buf);
 		dbg_dump_stack();
+=======
+		ubifs_err(c, "bad node length %d", node_len);
+out:
+	if (!quiet) {
+		ubifs_err(c, "bad node at LEB %d:%d", lnum, offs);
+		ubifs_dump_node(c, buf, len);
+		dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return err;
 }
@@ -320,7 +471,11 @@ void ubifs_pad(const struct ubifs_info *c, void *buf, int pad)
 {
 	uint32_t crc;
 
+<<<<<<< HEAD
 	ubifs_assert(pad >= 0 && !(pad & 7));
+=======
+	ubifs_assert(c, pad >= 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pad >= UBIFS_PAD_NODE_SZ) {
 		struct ubifs_ch *ch = buf;
@@ -356,16 +511,89 @@ static unsigned long long next_sqnum(struct ubifs_info *c)
 
 	if (unlikely(sqnum >= SQNUM_WARN_WATERMARK)) {
 		if (sqnum >= SQNUM_WATERMARK) {
+<<<<<<< HEAD
 			ubifs_err("sequence number overflow %llu, end of life",
 				  sqnum);
 			ubifs_ro_mode(c, -EINVAL);
 		}
 		ubifs_warn("running out of sequence numbers, end of life soon");
+=======
+			ubifs_err(c, "sequence number overflow %llu, end of life",
+				  sqnum);
+			ubifs_ro_mode(c, -EINVAL);
+		}
+		ubifs_warn(c, "running out of sequence numbers, end of life soon");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return sqnum;
 }
 
+<<<<<<< HEAD
+=======
+void ubifs_init_node(struct ubifs_info *c, void *node, int len, int pad)
+{
+	struct ubifs_ch *ch = node;
+	unsigned long long sqnum = next_sqnum(c);
+
+	ubifs_assert(c, len >= UBIFS_CH_SZ);
+
+	ch->magic = cpu_to_le32(UBIFS_NODE_MAGIC);
+	ch->len = cpu_to_le32(len);
+	ch->group_type = UBIFS_NO_NODE_GROUP;
+	ch->sqnum = cpu_to_le64(sqnum);
+	ch->padding[0] = ch->padding[1] = 0;
+
+	if (pad) {
+		len = ALIGN(len, 8);
+		pad = ALIGN(len, c->min_io_size) - len;
+		ubifs_pad(c, node + len, pad);
+	}
+}
+
+void ubifs_crc_node(struct ubifs_info *c, void *node, int len)
+{
+	struct ubifs_ch *ch = node;
+	uint32_t crc;
+
+	crc = crc32(UBIFS_CRC32_INIT, node + 8, len - 8);
+	ch->crc = cpu_to_le32(crc);
+}
+
+/**
+ * ubifs_prepare_node_hmac - prepare node to be written to flash.
+ * @c: UBIFS file-system description object
+ * @node: the node to pad
+ * @len: node length
+ * @hmac_offs: offset of the HMAC in the node
+ * @pad: if the buffer has to be padded
+ *
+ * This function prepares node at @node to be written to the media - it
+ * calculates node CRC, fills the common header, and adds proper padding up to
+ * the next minimum I/O unit if @pad is not zero. if @hmac_offs is positive then
+ * a HMAC is inserted into the node at the given offset.
+ *
+ * This function returns 0 for success or a negative error code otherwise.
+ */
+int ubifs_prepare_node_hmac(struct ubifs_info *c, void *node, int len,
+			    int hmac_offs, int pad)
+{
+	int err;
+
+	ubifs_init_node(c, node, len, pad);
+
+	if (hmac_offs > 0) {
+		err = ubifs_node_insert_hmac(c, node, len, hmac_offs);
+		if (err)
+			return err;
+	}
+
+	ubifs_crc_node(c, node, len);
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ubifs_prepare_node - prepare node to be written to flash.
  * @c: UBIFS file-system description object
@@ -379,6 +607,7 @@ static unsigned long long next_sqnum(struct ubifs_info *c)
  */
 void ubifs_prepare_node(struct ubifs_info *c, void *node, int len, int pad)
 {
+<<<<<<< HEAD
 	uint32_t crc;
 	struct ubifs_ch *ch = node;
 	unsigned long long sqnum = next_sqnum(c);
@@ -398,6 +627,13 @@ void ubifs_prepare_node(struct ubifs_info *c, void *node, int len, int pad)
 		pad = ALIGN(len, c->min_io_size) - len;
 		ubifs_pad(c, node + len, pad);
 	}
+=======
+	/*
+	 * Deliberately ignore return value since this function can only fail
+	 * when a hmac offset is given.
+	 */
+	ubifs_prepare_node_hmac(c, node, len, 0, pad);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -416,7 +652,11 @@ void ubifs_prep_grp_node(struct ubifs_info *c, void *node, int len, int last)
 	struct ubifs_ch *ch = node;
 	unsigned long long sqnum = next_sqnum(c);
 
+<<<<<<< HEAD
 	ubifs_assert(len >= UBIFS_CH_SZ);
+=======
+	ubifs_assert(c, len >= UBIFS_CH_SZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ch->magic = cpu_to_le32(UBIFS_NODE_MAGIC);
 	ch->len = cpu_to_le32(len);
@@ -431,8 +671,13 @@ void ubifs_prep_grp_node(struct ubifs_info *c, void *node, int len, int last)
 }
 
 /**
+<<<<<<< HEAD
  * wbuf_timer_callback - write-buffer timer callback function.
  * @data: timer data (write-buffer descriptor)
+=======
+ * wbuf_timer_callback_nolock - write-buffer timer callback function.
+ * @timer: timer data (write-buffer descriptor)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function is called when the write-buffer timer expires.
  */
@@ -448,26 +693,53 @@ static enum hrtimer_restart wbuf_timer_callback_nolock(struct hrtimer *timer)
 }
 
 /**
+<<<<<<< HEAD
  * new_wbuf_timer - start new write-buffer timer.
  * @wbuf: write-buffer descriptor
  */
 static void new_wbuf_timer_nolock(struct ubifs_wbuf *wbuf)
 {
 	ubifs_assert(!hrtimer_active(&wbuf->timer));
+=======
+ * new_wbuf_timer_nolock - start new write-buffer timer.
+ * @c: UBIFS file-system description object
+ * @wbuf: write-buffer descriptor
+ */
+static void new_wbuf_timer_nolock(struct ubifs_info *c, struct ubifs_wbuf *wbuf)
+{
+	ktime_t softlimit = ms_to_ktime(dirty_writeback_interval * 10);
+	unsigned long long delta = dirty_writeback_interval;
+
+	/* centi to milli, milli to nano, then 10% */
+	delta *= 10ULL * NSEC_PER_MSEC / 10ULL;
+
+	ubifs_assert(c, !hrtimer_active(&wbuf->timer));
+	ubifs_assert(c, delta <= ULONG_MAX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (wbuf->no_timer)
 		return;
 	dbg_io("set timer for jhead %s, %llu-%llu millisecs",
 	       dbg_jhead(wbuf->jhead),
+<<<<<<< HEAD
 	       div_u64(ktime_to_ns(wbuf->softlimit), USEC_PER_SEC),
 	       div_u64(ktime_to_ns(wbuf->softlimit) + wbuf->delta,
 		       USEC_PER_SEC));
 	hrtimer_start_range_ns(&wbuf->timer, wbuf->softlimit, wbuf->delta,
+=======
+	       div_u64(ktime_to_ns(softlimit), USEC_PER_SEC),
+	       div_u64(ktime_to_ns(softlimit) + delta, USEC_PER_SEC));
+	hrtimer_start_range_ns(&wbuf->timer, softlimit, delta,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       HRTIMER_MODE_REL);
 }
 
 /**
+<<<<<<< HEAD
  * cancel_wbuf_timer - cancel write-buffer timer.
+=======
+ * cancel_wbuf_timer_nolock - cancel write-buffer timer.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @wbuf: write-buffer descriptor
  */
 static void cancel_wbuf_timer_nolock(struct ubifs_wbuf *wbuf)
@@ -503,6 +775,7 @@ int ubifs_wbuf_sync_nolock(struct ubifs_wbuf *wbuf)
 
 	dbg_io("LEB %d:%d, %d bytes, jhead %s",
 	       wbuf->lnum, wbuf->offs, wbuf->used, dbg_jhead(wbuf->jhead));
+<<<<<<< HEAD
 	ubifs_assert(!(wbuf->avail & 7));
 	ubifs_assert(wbuf->offs + wbuf->size <= c->leb_size);
 	ubifs_assert(wbuf->size >= c->min_io_size);
@@ -511,6 +784,16 @@ int ubifs_wbuf_sync_nolock(struct ubifs_wbuf *wbuf)
 	ubifs_assert(!c->ro_media && !c->ro_mount);
 	if (c->leb_size - wbuf->offs >= c->max_write_size)
 		ubifs_assert(!((wbuf->offs + wbuf->size) % c->max_write_size));
+=======
+	ubifs_assert(c, !(wbuf->avail & 7));
+	ubifs_assert(c, wbuf->offs + wbuf->size <= c->leb_size);
+	ubifs_assert(c, wbuf->size >= c->min_io_size);
+	ubifs_assert(c, wbuf->size <= c->max_write_size);
+	ubifs_assert(c, wbuf->size % c->min_io_size == 0);
+	ubifs_assert(c, !c->ro_media && !c->ro_mount);
+	if (c->leb_size - wbuf->offs >= c->max_write_size)
+		ubifs_assert(c, !((wbuf->offs + wbuf->size) % c->max_write_size));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (c->ro_error)
 		return -EROFS;
@@ -523,8 +806,12 @@ int ubifs_wbuf_sync_nolock(struct ubifs_wbuf *wbuf)
 	dirt = sync_len - wbuf->used;
 	if (dirt)
 		ubifs_pad(c, wbuf->buf + wbuf->used, dirt);
+<<<<<<< HEAD
 	err = ubifs_leb_write(c, wbuf->lnum, wbuf->buf, wbuf->offs, sync_len,
 			      wbuf->dtype);
+=======
+	err = ubifs_leb_write(c, wbuf->lnum, wbuf->buf, wbuf->offs, sync_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return err;
 
@@ -562,23 +849,38 @@ int ubifs_wbuf_sync_nolock(struct ubifs_wbuf *wbuf)
  * @wbuf: write-buffer
  * @lnum: logical eraseblock number to seek to
  * @offs: logical eraseblock offset to seek to
+<<<<<<< HEAD
  * @dtype: data type
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function targets the write-buffer to logical eraseblock @lnum:@offs.
  * The write-buffer has to be empty. Returns zero in case of success and a
  * negative error code in case of failure.
  */
+<<<<<<< HEAD
 int ubifs_wbuf_seek_nolock(struct ubifs_wbuf *wbuf, int lnum, int offs,
 			   int dtype)
+=======
+int ubifs_wbuf_seek_nolock(struct ubifs_wbuf *wbuf, int lnum, int offs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct ubifs_info *c = wbuf->c;
 
 	dbg_io("LEB %d:%d, jhead %s", lnum, offs, dbg_jhead(wbuf->jhead));
+<<<<<<< HEAD
 	ubifs_assert(lnum >= 0 && lnum < c->leb_cnt);
 	ubifs_assert(offs >= 0 && offs <= c->leb_size);
 	ubifs_assert(offs % c->min_io_size == 0 && !(offs & 7));
 	ubifs_assert(lnum != wbuf->lnum);
 	ubifs_assert(wbuf->used == 0);
+=======
+	ubifs_assert(c, lnum >= 0 && lnum < c->leb_cnt);
+	ubifs_assert(c, offs >= 0 && offs <= c->leb_size);
+	ubifs_assert(c, offs % c->min_io_size == 0 && !(offs & 7));
+	ubifs_assert(c, lnum != wbuf->lnum);
+	ubifs_assert(c, wbuf->used == 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&wbuf->lock);
 	wbuf->lnum = lnum;
@@ -592,7 +894,10 @@ int ubifs_wbuf_seek_nolock(struct ubifs_wbuf *wbuf, int lnum, int offs,
 	wbuf->avail = wbuf->size;
 	wbuf->used = 0;
 	spin_unlock(&wbuf->lock);
+<<<<<<< HEAD
 	wbuf->dtype = dtype;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -609,7 +914,11 @@ int ubifs_bg_wbufs_sync(struct ubifs_info *c)
 {
 	int err, i;
 
+<<<<<<< HEAD
 	ubifs_assert(!c->ro_media && !c->ro_mount);
+=======
+	ubifs_assert(c, !c->ro_media && !c->ro_mount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!c->need_wbuf_sync)
 		return 0;
 	c->need_wbuf_sync = 0;
@@ -641,7 +950,11 @@ int ubifs_bg_wbufs_sync(struct ubifs_info *c)
 		err = ubifs_wbuf_sync_nolock(wbuf);
 		mutex_unlock(&wbuf->io_mutex);
 		if (err) {
+<<<<<<< HEAD
 			ubifs_err("cannot sync write-buffer, error %d", err);
+=======
+			ubifs_err(c, "cannot sync write-buffer, error %d", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ubifs_ro_mode(c, err);
 			goto out_timers;
 		}
@@ -680,11 +993,16 @@ out_timers:
 int ubifs_wbuf_write_nolock(struct ubifs_wbuf *wbuf, void *buf, int len)
 {
 	struct ubifs_info *c = wbuf->c;
+<<<<<<< HEAD
 	int err, written, n, aligned_len = ALIGN(len, 8);
+=======
+	int err, n, written = 0, aligned_len = ALIGN(len, 8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg_io("%d bytes (%s) to jhead %s wbuf at LEB %d:%d", len,
 	       dbg_ntype(((struct ubifs_ch *)buf)->node_type),
 	       dbg_jhead(wbuf->jhead), wbuf->lnum, wbuf->offs + wbuf->used);
+<<<<<<< HEAD
 	ubifs_assert(len > 0 && wbuf->lnum >= 0 && wbuf->lnum < c->leb_cnt);
 	ubifs_assert(wbuf->offs >= 0 && wbuf->offs % c->min_io_size == 0);
 	ubifs_assert(!(wbuf->offs & 7) && wbuf->offs <= c->leb_size);
@@ -697,6 +1015,20 @@ int ubifs_wbuf_write_nolock(struct ubifs_wbuf *wbuf, void *buf, int len)
 	ubifs_assert(!c->space_fixup);
 	if (c->leb_size - wbuf->offs >= c->max_write_size)
 		ubifs_assert(!((wbuf->offs + wbuf->size) % c->max_write_size));
+=======
+	ubifs_assert(c, len > 0 && wbuf->lnum >= 0 && wbuf->lnum < c->leb_cnt);
+	ubifs_assert(c, wbuf->offs >= 0 && wbuf->offs % c->min_io_size == 0);
+	ubifs_assert(c, !(wbuf->offs & 7) && wbuf->offs <= c->leb_size);
+	ubifs_assert(c, wbuf->avail > 0 && wbuf->avail <= wbuf->size);
+	ubifs_assert(c, wbuf->size >= c->min_io_size);
+	ubifs_assert(c, wbuf->size <= c->max_write_size);
+	ubifs_assert(c, wbuf->size % c->min_io_size == 0);
+	ubifs_assert(c, mutex_is_locked(&wbuf->io_mutex));
+	ubifs_assert(c, !c->ro_media && !c->ro_mount);
+	ubifs_assert(c, !c->space_fixup);
+	if (c->leb_size - wbuf->offs >= c->max_write_size)
+		ubifs_assert(c, !((wbuf->offs + wbuf->size) % c->max_write_size));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (c->leb_size - wbuf->offs - wbuf->used < aligned_len) {
 		err = -ENOSPC;
@@ -714,13 +1046,24 @@ int ubifs_wbuf_write_nolock(struct ubifs_wbuf *wbuf, void *buf, int len)
 		 * write-buffer.
 		 */
 		memcpy(wbuf->buf + wbuf->used, buf, len);
+<<<<<<< HEAD
+=======
+		if (aligned_len > len) {
+			ubifs_assert(c, aligned_len - len < 8);
+			ubifs_pad(c, wbuf->buf + wbuf->used + len, aligned_len - len);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (aligned_len == wbuf->avail) {
 			dbg_io("flush jhead %s wbuf to LEB %d:%d",
 			       dbg_jhead(wbuf->jhead), wbuf->lnum, wbuf->offs);
 			err = ubifs_leb_write(c, wbuf->lnum, wbuf->buf,
+<<<<<<< HEAD
 					      wbuf->offs, wbuf->size,
 					      wbuf->dtype);
+=======
+					      wbuf->offs, wbuf->size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (err)
 				goto out;
 
@@ -744,8 +1087,11 @@ int ubifs_wbuf_write_nolock(struct ubifs_wbuf *wbuf, void *buf, int len)
 		goto exit;
 	}
 
+<<<<<<< HEAD
 	written = 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (wbuf->used) {
 		/*
 		 * The node is large enough and does not fit entirely within
@@ -756,7 +1102,11 @@ int ubifs_wbuf_write_nolock(struct ubifs_wbuf *wbuf, void *buf, int len)
 		       dbg_jhead(wbuf->jhead), wbuf->lnum, wbuf->offs);
 		memcpy(wbuf->buf + wbuf->used, buf, wbuf->avail);
 		err = ubifs_leb_write(c, wbuf->lnum, wbuf->buf, wbuf->offs,
+<<<<<<< HEAD
 				      wbuf->size, wbuf->dtype);
+=======
+				      wbuf->size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto out;
 
@@ -775,7 +1125,11 @@ int ubifs_wbuf_write_nolock(struct ubifs_wbuf *wbuf, void *buf, int len)
 		dbg_io("write %d bytes to LEB %d:%d",
 		       wbuf->size, wbuf->lnum, wbuf->offs);
 		err = ubifs_leb_write(c, wbuf->lnum, buf, wbuf->offs,
+<<<<<<< HEAD
 				      wbuf->size, wbuf->dtype);
+=======
+				      wbuf->size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto out;
 
@@ -793,27 +1147,77 @@ int ubifs_wbuf_write_nolock(struct ubifs_wbuf *wbuf, void *buf, int len)
 	 */
 	n = aligned_len >> c->max_write_shift;
 	if (n) {
+<<<<<<< HEAD
 		n <<= c->max_write_shift;
 		dbg_io("write %d bytes to LEB %d:%d", n, wbuf->lnum,
 		       wbuf->offs);
 		err = ubifs_leb_write(c, wbuf->lnum, buf + written,
 				      wbuf->offs, n, wbuf->dtype);
+=======
+		int m = n - 1;
+
+		dbg_io("write %d bytes to LEB %d:%d", n, wbuf->lnum,
+		       wbuf->offs);
+
+		if (m) {
+			/* '(n-1)<<c->max_write_shift < len' is always true. */
+			m <<= c->max_write_shift;
+			err = ubifs_leb_write(c, wbuf->lnum, buf + written,
+					      wbuf->offs, m);
+			if (err)
+				goto out;
+			wbuf->offs += m;
+			aligned_len -= m;
+			len -= m;
+			written += m;
+		}
+
+		/*
+		 * The non-written len of buf may be less than 'n' because
+		 * parameter 'len' is not 8 bytes aligned, so here we read
+		 * min(len, n) bytes from buf.
+		 */
+		n = 1 << c->max_write_shift;
+		memcpy(wbuf->buf, buf + written, min(len, n));
+		if (n > len) {
+			ubifs_assert(c, n - len < 8);
+			ubifs_pad(c, wbuf->buf + len, n - len);
+		}
+
+		err = ubifs_leb_write(c, wbuf->lnum, wbuf->buf, wbuf->offs, n);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			goto out;
 		wbuf->offs += n;
 		aligned_len -= n;
+<<<<<<< HEAD
 		len -= n;
+=======
+		len -= min(len, n);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		written += n;
 	}
 
 	spin_lock(&wbuf->lock);
+<<<<<<< HEAD
 	if (aligned_len)
+=======
+	if (aligned_len) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * And now we have what's left and what does not take whole
 		 * max. write unit, so write it to the write-buffer and we are
 		 * done.
 		 */
 		memcpy(wbuf->buf, buf + written, len);
+<<<<<<< HEAD
+=======
+		if (aligned_len > len) {
+			ubifs_assert(c, aligned_len - len < 8);
+			ubifs_pad(c, wbuf->buf + len, aligned_len - len);
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (c->leb_size - wbuf->offs >= c->max_write_size)
 		wbuf->size = c->max_write_size;
@@ -834,16 +1238,70 @@ exit:
 	}
 
 	if (wbuf->used)
+<<<<<<< HEAD
 		new_wbuf_timer_nolock(wbuf);
+=======
+		new_wbuf_timer_nolock(c, wbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 out:
+<<<<<<< HEAD
 	ubifs_err("cannot write %d bytes to LEB %d:%d, error %d",
 		  len, wbuf->lnum, wbuf->offs, err);
 	dbg_dump_node(c, buf);
 	dbg_dump_stack();
 	dbg_dump_leb(c, wbuf->lnum);
+=======
+	ubifs_err(c, "cannot write %d bytes to LEB %d:%d, error %d",
+		  len, wbuf->lnum, wbuf->offs, err);
+	ubifs_dump_node(c, buf, written + len);
+	dump_stack();
+	ubifs_dump_leb(c, wbuf->lnum);
+	return err;
+}
+
+/**
+ * ubifs_write_node_hmac - write node to the media.
+ * @c: UBIFS file-system description object
+ * @buf: the node to write
+ * @len: node length
+ * @lnum: logical eraseblock number
+ * @offs: offset within the logical eraseblock
+ * @hmac_offs: offset of the HMAC within the node
+ *
+ * This function automatically fills node magic number, assigns sequence
+ * number, and calculates node CRC checksum. The length of the @buf buffer has
+ * to be aligned to the minimal I/O unit size. This function automatically
+ * appends padding node and padding bytes if needed. Returns zero in case of
+ * success and a negative error code in case of failure.
+ */
+int ubifs_write_node_hmac(struct ubifs_info *c, void *buf, int len, int lnum,
+			  int offs, int hmac_offs)
+{
+	int err, buf_len = ALIGN(len, c->min_io_size);
+
+	dbg_io("LEB %d:%d, %s, length %d (aligned %d)",
+	       lnum, offs, dbg_ntype(((struct ubifs_ch *)buf)->node_type), len,
+	       buf_len);
+	ubifs_assert(c, lnum >= 0 && lnum < c->leb_cnt && offs >= 0);
+	ubifs_assert(c, offs % c->min_io_size == 0 && offs < c->leb_size);
+	ubifs_assert(c, !c->ro_media && !c->ro_mount);
+	ubifs_assert(c, !c->space_fixup);
+
+	if (c->ro_error)
+		return -EROFS;
+
+	err = ubifs_prepare_node_hmac(c, buf, len, hmac_offs, 1);
+	if (err)
+		return err;
+
+	err = ubifs_leb_write(c, lnum, buf, offs, buf_len);
+	if (err)
+		ubifs_dump_node(c, buf, len);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -854,7 +1312,10 @@ out:
  * @len: node length
  * @lnum: logical eraseblock number
  * @offs: offset within the logical eraseblock
+<<<<<<< HEAD
  * @dtype: node life-time hint (%UBI_LONGTERM, %UBI_SHORTTERM, %UBI_UNKNOWN)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function automatically fills node magic number, assigns sequence
  * number, and calculates node CRC checksum. The length of the @buf buffer has
@@ -863,6 +1324,7 @@ out:
  * success and a negative error code in case of failure.
  */
 int ubifs_write_node(struct ubifs_info *c, void *buf, int len, int lnum,
+<<<<<<< HEAD
 		     int offs, int dtype)
 {
 	int err, buf_len = ALIGN(len, c->min_io_size);
@@ -884,6 +1346,11 @@ int ubifs_write_node(struct ubifs_info *c, void *buf, int len, int lnum,
 		dbg_dump_node(c, buf);
 
 	return err;
+=======
+		     int offs)
+{
+	return ubifs_write_node_hmac(c, buf, len, lnum, offs, -1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -910,9 +1377,15 @@ int ubifs_read_node_wbuf(struct ubifs_wbuf *wbuf, void *buf, int type, int len,
 
 	dbg_io("LEB %d:%d, %s, length %d, jhead %s", lnum, offs,
 	       dbg_ntype(type), len, dbg_jhead(wbuf->jhead));
+<<<<<<< HEAD
 	ubifs_assert(wbuf && lnum >= 0 && lnum < c->leb_cnt && offs >= 0);
 	ubifs_assert(!(offs & 7) && offs < c->leb_size);
 	ubifs_assert(type >= 0 && type < UBIFS_NODE_TYPES_CNT);
+=======
+	ubifs_assert(c, wbuf && lnum >= 0 && lnum < c->leb_cnt && offs >= 0);
+	ubifs_assert(c, !(offs & 7) && offs < c->leb_size);
+	ubifs_assert(c, type >= 0 && type < UBIFS_NODE_TYPES_CNT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&wbuf->lock);
 	overlap = (lnum == wbuf->lnum && offs + len > wbuf->offs);
@@ -939,29 +1412,49 @@ int ubifs_read_node_wbuf(struct ubifs_wbuf *wbuf, void *buf, int type, int len,
 	}
 
 	if (type != ch->node_type) {
+<<<<<<< HEAD
 		ubifs_err("bad node type (%d but expected %d)",
+=======
+		ubifs_err(c, "bad node type (%d but expected %d)",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  ch->node_type, type);
 		goto out;
 	}
 
+<<<<<<< HEAD
 	err = ubifs_check_node(c, buf, lnum, offs, 0, 0);
 	if (err) {
 		ubifs_err("expected node type %d", type);
+=======
+	err = ubifs_check_node(c, buf, len, lnum, offs, 0, 0);
+	if (err) {
+		ubifs_err(c, "expected node type %d", type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	rlen = le32_to_cpu(ch->len);
 	if (rlen != len) {
+<<<<<<< HEAD
 		ubifs_err("bad node length %d, expected %d", rlen, len);
+=======
+		ubifs_err(c, "bad node length %d, expected %d", rlen, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	return 0;
 
 out:
+<<<<<<< HEAD
 	ubifs_err("bad node at LEB %d:%d", lnum, offs);
 	dbg_dump_node(c, buf);
 	dbg_dump_stack();
+=======
+	ubifs_err(c, "bad node at LEB %d:%d", lnum, offs);
+	ubifs_dump_node(c, buf, len);
+	dump_stack();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
@@ -974,7 +1467,11 @@ out:
  * @lnum: logical eraseblock number
  * @offs: offset within the logical eraseblock
  *
+<<<<<<< HEAD
  * This function reads a node of known type and and length, checks it and
+=======
+ * This function reads a node of known type and length, checks it and
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * stores in @buf. Returns zero in case of success, %-EUCLEAN if CRC mismatched
  * and a negative error code in case of failure.
  */
@@ -985,16 +1482,24 @@ int ubifs_read_node(const struct ubifs_info *c, void *buf, int type, int len,
 	struct ubifs_ch *ch = buf;
 
 	dbg_io("LEB %d:%d, %s, length %d", lnum, offs, dbg_ntype(type), len);
+<<<<<<< HEAD
 	ubifs_assert(lnum >= 0 && lnum < c->leb_cnt && offs >= 0);
 	ubifs_assert(len >= UBIFS_CH_SZ && offs + len <= c->leb_size);
 	ubifs_assert(!(offs & 7) && offs < c->leb_size);
 	ubifs_assert(type >= 0 && type < UBIFS_NODE_TYPES_CNT);
+=======
+	ubifs_assert(c, lnum >= 0 && lnum < c->leb_cnt && offs >= 0);
+	ubifs_assert(c, len >= UBIFS_CH_SZ && offs + len <= c->leb_size);
+	ubifs_assert(c, !(offs & 7) && offs < c->leb_size);
+	ubifs_assert(c, type >= 0 && type < UBIFS_NODE_TYPES_CNT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = ubifs_leb_read(c, lnum, buf, offs, len, 0);
 	if (err && err != -EBADMSG)
 		return err;
 
 	if (type != ch->node_type) {
+<<<<<<< HEAD
 		ubifs_err("bad node type (%d but expected %d)",
 			  ch->node_type, type);
 		goto out;
@@ -1003,22 +1508,45 @@ int ubifs_read_node(const struct ubifs_info *c, void *buf, int type, int len,
 	err = ubifs_check_node(c, buf, lnum, offs, 0, 0);
 	if (err) {
 		ubifs_err("expected node type %d", type);
+=======
+		ubifs_errc(c, "bad node type (%d but expected %d)",
+			   ch->node_type, type);
+		goto out;
+	}
+
+	err = ubifs_check_node(c, buf, len, lnum, offs, 0, 0);
+	if (err) {
+		ubifs_errc(c, "expected node type %d", type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	l = le32_to_cpu(ch->len);
 	if (l != len) {
+<<<<<<< HEAD
 		ubifs_err("bad node length %d, expected %d", l, len);
+=======
+		ubifs_errc(c, "bad node length %d, expected %d", l, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	return 0;
 
 out:
+<<<<<<< HEAD
 	ubifs_err("bad node at LEB %d:%d, LEB mapping status %d", lnum, offs,
 		  ubi_is_mapped(c->ubi, lnum));
 	dbg_dump_node(c, buf);
 	dbg_dump_stack();
+=======
+	ubifs_errc(c, "bad node at LEB %d:%d, LEB mapping status %d", lnum,
+		   offs, ubi_is_mapped(c->ubi, lnum));
+	if (!c->probing) {
+		ubifs_dump_node(c, buf, len);
+		dump_stack();
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EINVAL;
 }
 
@@ -1056,7 +1584,10 @@ int ubifs_wbuf_init(struct ubifs_info *c, struct ubifs_wbuf *wbuf)
 	 */
 	size = c->max_write_size - (c->leb_start % c->max_write_size);
 	wbuf->avail = wbuf->size = size;
+<<<<<<< HEAD
 	wbuf->dtype = UBI_UNKNOWN;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wbuf->sync_callback = NULL;
 	mutex_init(&wbuf->io_mutex);
 	spin_lock_init(&wbuf->lock);
@@ -1065,10 +1596,13 @@ int ubifs_wbuf_init(struct ubifs_info *c, struct ubifs_wbuf *wbuf)
 
 	hrtimer_init(&wbuf->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	wbuf->timer.function = wbuf_timer_callback_nolock;
+<<<<<<< HEAD
 	wbuf->softlimit = ktime_set(WBUF_TIMEOUT_SOFTLIMIT, 0);
 	wbuf->delta = WBUF_TIMEOUT_HARDLIMIT - WBUF_TIMEOUT_SOFTLIMIT;
 	wbuf->delta *= 1000000000ULL;
 	ubifs_assert(wbuf->delta <= ULONG_MAX);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

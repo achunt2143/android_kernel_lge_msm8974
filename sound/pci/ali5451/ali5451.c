@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Matt Wu <Matt_Wu@acersoftech.com.cn>
  *  Apr 26, 2001
@@ -8,6 +12,7 @@
  *
  *  TODO:
  *    --
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public Lcodecnse as published by
@@ -26,6 +31,11 @@
  */
 
 #include <asm/io.h>
+=======
+ */
+
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -43,7 +53,10 @@
 MODULE_AUTHOR("Matt Wu <Matt_Wu@acersoftech.com.cn>");
 MODULE_DESCRIPTION("ALI M5451");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{ALI,M5451,pci},{ALI,M5451}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index = SNDRV_DEFAULT_IDX1;	/* Index */
 static char *id = SNDRV_DEFAULT_STR1;	/* ID for this card */
@@ -65,6 +78,7 @@ module_param(enable, bool, 0444);
 
 
 /*
+<<<<<<< HEAD
  *  Debug part definitions
  */
 
@@ -77,6 +91,8 @@ module_param(enable, bool, 0444);
 #endif
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Constants definition
  */
 
@@ -270,12 +286,19 @@ struct snd_ali {
 	spinlock_t	reg_lock;
 	spinlock_t	voice_alloc;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	struct snd_ali_image *image;
 #endif
 };
 
 static DEFINE_PCI_DEVICE_TABLE(snd_ali_ids) = {
+=======
+	struct snd_ali_image image;
+};
+
+static const struct pci_device_id snd_ali_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_DEVICE(PCI_VENDOR_ID_AL, PCI_DEVICE_ID_AL_M5451), 0, 0, 0},
 	{0, }
 };
@@ -321,7 +344,11 @@ static int snd_ali_codec_ready(struct snd_ali *codec,
 	}
 
 	snd_ali_5451_poke(codec, port, res & ~0x8000);
+<<<<<<< HEAD
 	snd_printdd("ali_codec_ready: codec is not ready.\n ");
+=======
+	dev_dbg(codec->card->dev, "ali_codec_ready: codec is not ready.\n ");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
@@ -342,7 +369,11 @@ static int snd_ali_stimer_ready(struct snd_ali *codec)
 		schedule_timeout_uninterruptible(1);
 	}
 
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "ali_stimer_read: stimer is not ready.\n");
+=======
+	dev_err(codec->card->dev, "ali_stimer_read: stimer is not ready.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
@@ -354,7 +385,12 @@ static void snd_ali_codec_poke(struct snd_ali *codec,int secondary,
 	unsigned int port;
 
 	if (reg >= 0x80) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "ali_codec_poke: reg(%xh) invalid.\n", reg);
+=======
+		dev_err(codec->card->dev,
+			"ali_codec_poke: reg(%xh) invalid.\n", reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -385,7 +421,12 @@ static unsigned short snd_ali_codec_peek(struct snd_ali *codec,
 	unsigned int port;
 
 	if (reg >= 0x80) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "ali_codec_peek: reg(%xh) invalid.\n", reg);
+=======
+		dev_err(codec->card->dev,
+			"ali_codec_peek: reg(%xh) invalid.\n", reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ~0;
 	}
 
@@ -417,7 +458,11 @@ static void snd_ali_codec_write(struct snd_ac97 *ac97,
 {
 	struct snd_ali *codec = ac97->private_data;
 
+<<<<<<< HEAD
 	snd_ali_printk("codec_write: reg=%xh data=%xh.\n", reg, val);
+=======
+	dev_dbg(codec->card->dev, "codec_write: reg=%xh data=%xh.\n", reg, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (reg == AC97_GPIO_STATUS) {
 		outl((val << ALI_AC97_GPIO_DATA_SHIFT) | ALI_AC97_GPIO_ENABLE,
 		     ALI_REG(codec, ALI_AC97_GPIO));
@@ -433,7 +478,11 @@ static unsigned short snd_ali_codec_read(struct snd_ac97 *ac97,
 {
 	struct snd_ali *codec = ac97->private_data;
 
+<<<<<<< HEAD
 	snd_ali_printk("codec_read reg=%xh.\n", reg);
+=======
+	dev_dbg(codec->card->dev, "codec_read reg=%xh.\n", reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return snd_ali_codec_peek(codec, ac97->num, reg);
 }
 
@@ -451,10 +500,17 @@ static int snd_ali_reset_5451(struct snd_ali *codec)
 	if (pci_dev) {
 		pci_read_config_dword(pci_dev, 0x7c, &dwVal);
 		pci_write_config_dword(pci_dev, 0x7c, dwVal | 0x08000000);
+<<<<<<< HEAD
 		udelay(5000);
 		pci_read_config_dword(pci_dev, 0x7c, &dwVal);
 		pci_write_config_dword(pci_dev, 0x7c, dwVal & 0xf7ffffff);
 		udelay(5000);
+=======
+		mdelay(5);
+		pci_read_config_dword(pci_dev, 0x7c, &dwVal);
+		pci_write_config_dword(pci_dev, 0x7c, dwVal & 0xf7ffffff);
+		mdelay(5);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	
 	pci_dev = codec->pci;
@@ -463,18 +519,30 @@ static int snd_ali_reset_5451(struct snd_ali *codec)
 	udelay(500);
 	pci_read_config_dword(pci_dev, 0x44, &dwVal);
 	pci_write_config_dword(pci_dev, 0x44, dwVal & 0xfffbffff);
+<<<<<<< HEAD
 	udelay(5000);
+=======
+	mdelay(5);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	wCount = 200;
 	while(wCount--) {
 		wReg = snd_ali_codec_peek(codec, 0, AC97_POWERDOWN);
 		if ((wReg & 0x000f) == 0x000f)
 			return 0;
+<<<<<<< HEAD
 		udelay(5000);
 	}
 
 	/* non-fatal if you have a non PM capable codec */
 	/* snd_printk(KERN_WARNING "ali5451: reset time out\n"); */
+=======
+		mdelay(5);
+	}
+
+	/* non-fatal if you have a non PM capable codec */
+	/* dev_warn(codec->card->dev, "ali5451: reset time out\n"); */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -528,7 +596,11 @@ static void snd_ali_disable_voice_irq(struct snd_ali *codec,
 	unsigned int mask;
 	struct snd_ali_channel_control *pchregs = &(codec->chregs);
 
+<<<<<<< HEAD
 	snd_ali_printk("disable_voice_irq channel=%d\n",channel);
+=======
+	dev_dbg(codec->card->dev, "disable_voice_irq channel=%d\n", channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mask = 1 << (channel & 0x1f);
 	pchregs->data.ainten  = inl(ALI_REG(codec, pchregs->regs.ainten));
@@ -541,7 +613,11 @@ static int snd_ali_alloc_pcm_channel(struct snd_ali *codec, int channel)
 	unsigned int idx =  channel & 0x1f;
 
 	if (codec->synth.chcnt >= ALI_CHANNELS){
+<<<<<<< HEAD
 		snd_printk(KERN_ERR
+=======
+		dev_err(codec->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   "ali_alloc_pcm_channel: no free channels.\n");
 		return -1;
 	}
@@ -549,7 +625,11 @@ static int snd_ali_alloc_pcm_channel(struct snd_ali *codec, int channel)
 	if (!(codec->synth.chmap & (1 << idx))) {
 		codec->synth.chmap |= 1 << idx;
 		codec->synth.chcnt++;
+<<<<<<< HEAD
 		snd_ali_printk("alloc_pcm_channel no. %d.\n",idx);
+=======
+		dev_dbg(codec->card->dev, "alloc_pcm_channel no. %d.\n", idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return idx;
 	}
 	return -1;
@@ -560,7 +640,12 @@ static int snd_ali_find_free_channel(struct snd_ali * codec, int rec)
 	int idx;
 	int result = -1;
 
+<<<<<<< HEAD
 	snd_ali_printk("find_free_channel: for %s\n",rec ? "rec" : "pcm");
+=======
+	dev_dbg(codec->card->dev,
+		"find_free_channel: for %s\n", rec ? "rec" : "pcm");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* recording */
 	if (rec) {
@@ -575,8 +660,13 @@ static int snd_ali_find_free_channel(struct snd_ali * codec, int rec)
 		if (result >= 0)
 			return result;
 		else {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "ali_find_free_channel: "
 				   "record channel is busy now.\n");
+=======
+			dev_err(codec->card->dev,
+				"ali_find_free_channel: record channel is busy now.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 		}
 	}
@@ -590,8 +680,13 @@ static int snd_ali_find_free_channel(struct snd_ali * codec, int rec)
 		if (result >= 0)
 			return result;
 		else
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "ali_find_free_channel: "
 				   "S/PDIF out channel is in busy now.\n");
+=======
+			dev_err(codec->card->dev,
+				"ali_find_free_channel: S/PDIF out channel is in busy now.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (idx = 0; idx < ALI_CHANNELS; idx++) {
@@ -599,7 +694,11 @@ static int snd_ali_find_free_channel(struct snd_ali * codec, int rec)
 		if (result >= 0)
 			return result;
 	}
+<<<<<<< HEAD
 	snd_printk(KERN_ERR "ali_find_free_channel: no free channels.\n");
+=======
+	dev_err(codec->card->dev, "ali_find_free_channel: no free channels.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -1;
 }
 
@@ -607,14 +706,24 @@ static void snd_ali_free_channel_pcm(struct snd_ali *codec, int channel)
 {
 	unsigned int idx = channel & 0x0000001f;
 
+<<<<<<< HEAD
 	snd_ali_printk("free_channel_pcm channel=%d\n",channel);
+=======
+	dev_dbg(codec->card->dev, "free_channel_pcm channel=%d\n", channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (channel < 0 || channel >= ALI_CHANNELS)
 		return;
 
 	if (!(codec->synth.chmap & (1 << idx))) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "ali_free_channel_pcm: "
 			   "channel %d is not in use.\n", channel);
+=======
+		dev_err(codec->card->dev,
+			"ali_free_channel_pcm: channel %d is not in use.\n",
+			channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	} else {
 		codec->synth.chmap &= ~(1 << idx);
@@ -626,7 +735,11 @@ static void snd_ali_stop_voice(struct snd_ali *codec, unsigned int channel)
 {
 	unsigned int mask = 1 << (channel & 0x1f);
 
+<<<<<<< HEAD
 	snd_ali_printk("stop_voice: channel=%d\n",channel);
+=======
+	dev_dbg(codec->card->dev, "stop_voice: channel=%d\n", channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	outl(mask, ALI_REG(codec, codec->chregs.regs.stop));
 }
 
@@ -667,7 +780,11 @@ static void snd_ali_detect_spdif_rate(struct snd_ali *codec)
 	}
 
 	if (count > 50000) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "ali_detect_spdif_rate: timeout!\n");
+=======
+		dev_err(codec->card->dev, "ali_detect_spdif_rate: timeout!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -682,7 +799,11 @@ static void snd_ali_detect_spdif_rate(struct snd_ali *codec)
 	}
 
 	if (count > 50000) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "ali_detect_spdif_rate: timeout!\n");
+=======
+		dev_err(codec->card->dev, "ali_detect_spdif_rate: timeout!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -855,12 +976,17 @@ static void snd_ali_disable_spdif_out(struct snd_ali *codec)
 static void snd_ali_update_ptr(struct snd_ali *codec, int channel)
 {
 	struct snd_ali_voice *pvoice;
+<<<<<<< HEAD
 	struct snd_pcm_runtime *runtime;
 	struct snd_ali_channel_control *pchregs;
 	unsigned int old, mask;
 #ifdef ALI_DEBUG
 	unsigned int temp, cspf;
 #endif
+=======
+	struct snd_ali_channel_control *pchregs;
+	unsigned int old, mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pchregs = &(codec->chregs);
 
@@ -872,13 +998,17 @@ static void snd_ali_update_ptr(struct snd_ali *codec, int channel)
 		return;
 
 	pvoice = &codec->synth.voices[channel];
+<<<<<<< HEAD
 	runtime = pvoice->substream->runtime;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	udelay(100);
 	spin_lock(&codec->reg_lock);
 
 	if (pvoice->pcm && pvoice->substream) {
 		/* pcm interrupt */
+<<<<<<< HEAD
 #ifdef ALI_DEBUG
 		outb((u8)(pvoice->number), ALI_REG(codec, ALI_GC_CIR));
 		temp = inw(ALI_REG(codec, ALI_CSO_ALPHA_FMS + 2));
@@ -887,6 +1017,13 @@ static void snd_ali_update_ptr(struct snd_ali *codec, int channel)
 		if (pvoice->running) {
 			snd_ali_printk("update_ptr: cso=%4.4x cspf=%d.\n",
 				       (u16)temp, cspf);
+=======
+		if (pvoice->running) {
+			dev_dbg(codec->card->dev,
+				"update_ptr: cso=%4.4x cspf=%d.\n",
+				inw(ALI_REG(codec, ALI_CSO_ALPHA_FMS + 2)),
+				(inl(ALI_REG(codec, ALI_CSPF)) & mask) == mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock(&codec->reg_lock);
 			snd_pcm_period_elapsed(pvoice->substream);
 			spin_lock(&codec->reg_lock);
@@ -942,14 +1079,22 @@ static struct snd_ali_voice *snd_ali_alloc_voice(struct snd_ali * codec,
 	struct snd_ali_voice *pvoice;
 	int idx;
 
+<<<<<<< HEAD
 	snd_ali_printk("alloc_voice: type=%d rec=%d\n", type, rec);
+=======
+	dev_dbg(codec->card->dev, "alloc_voice: type=%d rec=%d\n", type, rec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&codec->voice_alloc);
 	if (type == SNDRV_ALI_VOICE_TYPE_PCM) {
 		idx = channel > 0 ? snd_ali_alloc_pcm_channel(codec, channel) :
 			snd_ali_find_free_channel(codec,rec);
 		if (idx < 0) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR "ali_alloc_voice: err.\n");
+=======
+			dev_err(codec->card->dev, "ali_alloc_voice: err.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock_irq(&codec->voice_alloc);
 			return NULL;
 		}
@@ -972,7 +1117,11 @@ static void snd_ali_free_voice(struct snd_ali * codec,
 	void (*private_free)(void *);
 	void *private_data;
 
+<<<<<<< HEAD
 	snd_ali_printk("free_voice: channel=%d\n",pvoice->number);
+=======
+	dev_dbg(codec->card->dev, "free_voice: channel=%d\n", pvoice->number);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pvoice->use)
 		return;
 	snd_ali_clear_voices(codec, pvoice->number, pvoice->number);
@@ -1100,7 +1249,11 @@ static int snd_ali_trigger(struct snd_pcm_substream *substream,
 {
 	struct snd_ali *codec = snd_pcm_substream_chip(substream);
 	struct snd_pcm_substream *s;
+<<<<<<< HEAD
 	unsigned int what, whati, capture_flag;
+=======
+	unsigned int what, whati;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_ali_voice *pvoice, *evoice;
 	unsigned int val;
 	int do_start;
@@ -1118,7 +1271,11 @@ static int snd_ali_trigger(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	what = whati = capture_flag = 0;
+=======
+	what = whati = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_pcm_group_for_each_entry(s, substream) {
 		if ((struct snd_ali *) snd_pcm_substream_chip(s) == codec) {
 			pvoice = s->runtime->private_data;
@@ -1140,8 +1297,11 @@ static int snd_ali_trigger(struct snd_pcm_substream *substream,
 					evoice->running = 0;
 			}
 			snd_pcm_trigger_done(s, substream);
+<<<<<<< HEAD
 			if (pvoice->mode)
 				capture_flag = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	spin_lock(&codec->reg_lock);
@@ -1155,7 +1315,11 @@ static int snd_ali_trigger(struct snd_pcm_substream *substream,
 	outl(val, ALI_REG(codec, ALI_AINTEN));
 	if (do_start)
 		outl(what, ALI_REG(codec, ALI_START));
+<<<<<<< HEAD
 	snd_ali_printk("trigger: what=%xh whati=%xh\n", what, whati);
+=======
+	dev_dbg(codec->card->dev, "trigger: what=%xh whati=%xh\n", what, whati);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&codec->reg_lock);
 
 	return 0;
@@ -1168,6 +1332,7 @@ static int snd_ali_playback_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_ali_voice *pvoice = runtime->private_data;
 	struct snd_ali_voice *evoice = pvoice->extra;
+<<<<<<< HEAD
 	int err;
 
 	err = snd_pcm_lib_malloc_pages(substream,
@@ -1175,6 +1340,9 @@ static int snd_ali_playback_hw_params(struct snd_pcm_substream *substream,
 	if (err < 0)
 		return err;
 	
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* voice management */
 
 	if (params_buffer_size(hw_params) / 2 !=
@@ -1205,7 +1373,10 @@ static int snd_ali_playback_hw_free(struct snd_pcm_substream *substream)
 	struct snd_ali_voice *pvoice = runtime->private_data;
 	struct snd_ali_voice *evoice = pvoice ? pvoice->extra : NULL;
 
+<<<<<<< HEAD
 	snd_pcm_lib_free_pages(substream);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (evoice) {
 		snd_ali_free_voice(codec, evoice);
 		pvoice->extra = NULL;
@@ -1213,6 +1384,7 @@ static int snd_ali_playback_hw_free(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int snd_ali_hw_params(struct snd_pcm_substream *substream,
 			     struct snd_pcm_hw_params *hw_params)
 {
@@ -1225,6 +1397,8 @@ static int snd_ali_hw_free(struct snd_pcm_substream *substream)
 	return snd_pcm_lib_free_pages(substream);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_ali_playback_prepare(struct snd_pcm_substream *substream)
 {
 	struct snd_ali *codec = snd_pcm_substream_chip(substream);
@@ -1241,7 +1415,11 @@ static int snd_ali_playback_prepare(struct snd_pcm_substream *substream)
 	unsigned int VOL;
 	unsigned int EC;
 	
+<<<<<<< HEAD
 	snd_ali_printk("playback_prepare ...\n");
+=======
+	dev_dbg(codec->card->dev, "playback_prepare ...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&codec->reg_lock);	
 	
@@ -1268,7 +1446,11 @@ static int snd_ali_playback_prepare(struct snd_pcm_substream *substream)
 	/* set target ESO for channel */
 	pvoice->eso = runtime->buffer_size; 
 
+<<<<<<< HEAD
 	snd_ali_printk("playback_prepare: eso=%xh count=%xh\n",
+=======
+	dev_dbg(codec->card->dev, "playback_prepare: eso=%xh count=%xh\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       pvoice->eso, pvoice->count);
 
 	/* set ESO to capture first MIDLP interrupt */
@@ -1280,8 +1462,14 @@ static int snd_ali_playback_prepare(struct snd_pcm_substream *substream)
 	PAN = 0;
 	VOL = 0;
 	EC = 0;
+<<<<<<< HEAD
 	snd_ali_printk("playback_prepare:\n");
 	snd_ali_printk("ch=%d, Rate=%d Delta=%xh,GVSEL=%xh,PAN=%xh,CTRL=%xh\n",
+=======
+	dev_dbg(codec->card->dev, "playback_prepare:\n");
+	dev_dbg(codec->card->dev,
+		"ch=%d, Rate=%d Delta=%xh,GVSEL=%xh,PAN=%xh,CTRL=%xh\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       pvoice->number,runtime->rate,Delta,GVSEL,PAN,CTRL);
 	snd_ali_write_voice_regs(codec,
 				 pvoice->number,
@@ -1334,7 +1522,11 @@ static int snd_ali_prepare(struct snd_pcm_substream *substream)
 
 	spin_lock_irq(&codec->reg_lock);
 
+<<<<<<< HEAD
 	snd_ali_printk("ali_prepare...\n");
+=======
+	dev_dbg(codec->card->dev, "ali_prepare...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_ali_enable_special_channel(codec,pvoice->number);
 
@@ -1353,15 +1545,25 @@ static int snd_ali_prepare(struct snd_pcm_substream *substream)
 
 		rate = snd_ali_get_spdif_in_rate(codec);
 		if (rate == 0) {
+<<<<<<< HEAD
 			snd_printk(KERN_WARNING "ali_capture_preapre: "
 				   "spdif rate detect err!\n");
+=======
+			dev_warn(codec->card->dev,
+				 "ali_capture_prepare: spdif rate detect err!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rate = 48000;
 		}
 		spin_lock_irq(&codec->reg_lock);
 		bValue = inb(ALI_REG(codec,ALI_SPDIF_CTRL));
 		if (bValue & 0x10) {
 			outb(bValue,ALI_REG(codec,ALI_SPDIF_CTRL));
+<<<<<<< HEAD
 			printk(KERN_WARNING "clear SPDIF parity error flag.\n");
+=======
+			dev_warn(codec->card->dev,
+				 "clear SPDIF parity error flag.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (rate != 48000)
@@ -1420,8 +1622,14 @@ snd_ali_playback_pointer(struct snd_pcm_substream *substream)
 	outb(pvoice->number, ALI_REG(codec, ALI_GC_CIR));
 	cso = inw(ALI_REG(codec, ALI_CSO_ALPHA_FMS + 2));
 	spin_unlock(&codec->reg_lock);
+<<<<<<< HEAD
 	snd_ali_printk("playback pointer returned cso=%xh.\n", cso);
 
+=======
+	dev_dbg(codec->card->dev, "playback pointer returned cso=%xh.\n", cso);
+
+	cso %= runtime->buffer_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cso;
 }
 
@@ -1442,10 +1650,18 @@ static snd_pcm_uframes_t snd_ali_pointer(struct snd_pcm_substream *substream)
 	cso = inw(ALI_REG(codec, ALI_CSO_ALPHA_FMS + 2));
 	spin_unlock(&codec->reg_lock);
 
+<<<<<<< HEAD
 	return cso;
 }
 
 static struct snd_pcm_hardware snd_ali_playback =
+=======
+	cso %= runtime->buffer_size;
+	return cso;
+}
+
+static const struct snd_pcm_hardware snd_ali_playback =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =		(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 			 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -1471,7 +1687,11 @@ static struct snd_pcm_hardware snd_ali_playback =
  *  Capture support device description
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_ali_capture =
+=======
+static const struct snd_pcm_hardware snd_ali_capture =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =		(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 			 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -1496,6 +1716,7 @@ static struct snd_pcm_hardware snd_ali_capture =
 static void snd_ali_pcm_free_substream(struct snd_pcm_runtime *runtime)
 {
 	struct snd_ali_voice *pvoice = runtime->private_data;
+<<<<<<< HEAD
 	struct snd_ali *codec;
 
 	if (pvoice) {
@@ -1506,6 +1727,15 @@ static void snd_ali_pcm_free_substream(struct snd_pcm_runtime *runtime)
 
 static int snd_ali_open(struct snd_pcm_substream *substream, int rec,
 			int channel, struct snd_pcm_hardware *phw)
+=======
+
+	if (pvoice)
+		snd_ali_free_voice(pvoice->codec, pvoice);
+}
+
+static int snd_ali_open(struct snd_pcm_substream *substream, int rec,
+			int channel, const struct snd_pcm_hardware *phw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_ali *codec = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -1552,10 +1782,16 @@ static int snd_ali_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ali_playback_ops = {
 	.open =		snd_ali_playback_open,
 	.close =	snd_ali_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_ali_playback_ops = {
+	.open =		snd_ali_playback_open,
+	.close =	snd_ali_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_ali_playback_hw_params,
 	.hw_free =	snd_ali_playback_hw_free,
 	.prepare =	snd_ali_playback_prepare,
@@ -1563,12 +1799,18 @@ static struct snd_pcm_ops snd_ali_playback_ops = {
 	.pointer =	snd_ali_playback_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ali_capture_ops = {
 	.open =		snd_ali_capture_open,
 	.close =	snd_ali_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_ali_hw_params,
 	.hw_free =	snd_ali_hw_free,
+=======
+static const struct snd_pcm_ops snd_ali_capture_ops = {
+	.open =		snd_ali_capture_open,
+	.close =	snd_ali_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_ali_prepare,
 	.trigger =	snd_ali_trigger,
 	.pointer =	snd_ali_pointer,
@@ -1586,10 +1828,17 @@ static int snd_ali_modem_hw_params(struct snd_pcm_substream *substream,
 	snd_ac97_write(chip->ac97[modem_num], AC97_LINE1_RATE,
 		       params_rate(hw_params));
 	snd_ac97_write(chip->ac97[modem_num], AC97_LINE1_LEVEL, 0);
+<<<<<<< HEAD
 	return snd_ali_hw_params(substream, hw_params);
 }
 
 static struct snd_pcm_hardware snd_ali_modem =
+=======
+	return 0;
+}
+
+static const struct snd_pcm_hardware snd_ali_modem =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =		(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 			 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -1614,8 +1863,13 @@ static struct snd_pcm_hardware snd_ali_modem =
 static int snd_ali_modem_open(struct snd_pcm_substream *substream, int rec,
 			      int channel)
 {
+<<<<<<< HEAD
 	static unsigned int rates[] = {8000, 9600, 12000, 16000};
 	static struct snd_pcm_hw_constraint_list hw_constraint_rates = {
+=======
+	static const unsigned int rates[] = {8000, 9600, 12000, 16000};
+	static const struct snd_pcm_hw_constraint_list hw_constraint_rates = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.count = ARRAY_SIZE(rates),
 		.list = rates,
 		.mask = 0,
@@ -1638,23 +1892,37 @@ static int snd_ali_modem_capture_open(struct snd_pcm_substream *substream)
 	return snd_ali_modem_open(substream, 1, ALI_MODEM_IN_CHANNEL);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ali_modem_playback_ops = {
 	.open =		snd_ali_modem_playback_open,
 	.close =	snd_ali_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_ali_modem_hw_params,
 	.hw_free =	snd_ali_hw_free,
+=======
+static const struct snd_pcm_ops snd_ali_modem_playback_ops = {
+	.open =		snd_ali_modem_playback_open,
+	.close =	snd_ali_close,
+	.hw_params =	snd_ali_modem_hw_params,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_ali_prepare,
 	.trigger =	snd_ali_trigger,
 	.pointer =	snd_ali_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_ali_modem_capture_ops = {
 	.open =		snd_ali_modem_capture_open,
 	.close =	snd_ali_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_ali_modem_hw_params,
 	.hw_free =	snd_ali_hw_free,
+=======
+static const struct snd_pcm_ops snd_ali_modem_capture_ops = {
+	.open =		snd_ali_modem_capture_open,
+	.close =	snd_ali_close,
+	.hw_params =	snd_ali_modem_hw_params,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_ali_prepare,
 	.trigger =	snd_ali_trigger,
 	.pointer =	snd_ali_pointer,
@@ -1665,8 +1933,13 @@ struct ali_pcm_description {
 	char *name;
 	unsigned int playback_num;
 	unsigned int capture_num;
+<<<<<<< HEAD
 	struct snd_pcm_ops *playback_ops;
 	struct snd_pcm_ops *capture_ops;
+=======
+	const struct snd_pcm_ops *playback_ops;
+	const struct snd_pcm_ops *capture_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short class;
 };
 
@@ -1678,8 +1951,13 @@ static void snd_ali_pcm_free(struct snd_pcm *pcm)
 }
 
 
+<<<<<<< HEAD
 static int __devinit snd_ali_pcm(struct snd_ali * codec, int device,
 				 struct ali_pcm_description *desc)
+=======
+static int snd_ali_pcm(struct snd_ali *codec, int device,
+		       struct ali_pcm_description *desc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -1687,7 +1965,12 @@ static int __devinit snd_ali_pcm(struct snd_ali * codec, int device,
 	err = snd_pcm_new(codec->card, desc->name, device,
 			  desc->playback_num, desc->capture_num, &pcm);
 	if (err < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "snd_ali_pcm: err called snd_pcm_new.\n");
+=======
+		dev_err(codec->card->dev,
+			"snd_ali_pcm: err called snd_pcm_new.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	pcm->private_data = codec;
@@ -1699,9 +1982,14 @@ static int __devinit snd_ali_pcm(struct snd_ali * codec, int device,
 		snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE,
 				desc->capture_ops);
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(codec->pci),
 					      64*1024, 128*1024);
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+				       &codec->pci->dev, 64*1024, 128*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcm->info_flags = 0;
 	pcm->dev_class = desc->class;
@@ -1727,7 +2015,11 @@ static struct ali_pcm_description ali_pcms[] = {
 	}
 };
 
+<<<<<<< HEAD
 static int __devinit snd_ali_build_pcms(struct snd_ali *codec)
+=======
+static int snd_ali_build_pcms(struct snd_ali *codec)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, err;
 	for (i = 0; i < codec->num_of_codecs && i < ARRAY_SIZE(ali_pcms); i++) {
@@ -1832,7 +2124,11 @@ static int snd_ali5451_spdif_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_ali5451_mixer_spdif[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_ali5451_mixer_spdif[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* spdif aplayback switch */
 	/* FIXME: "IEC958 Playback Switch" may conflict with one on ac97_codec */
 	ALI5451_SPDIF(SNDRV_CTL_NAME_IEC958("Output ",NONE,SWITCH), 0, 0),
@@ -1842,12 +2138,20 @@ static struct snd_kcontrol_new snd_ali5451_mixer_spdif[] __devinitdata = {
 	ALI5451_SPDIF(SNDRV_CTL_NAME_IEC958("",CAPTURE,SWITCH), 0, 2)
 };
 
+<<<<<<< HEAD
 static int __devinit snd_ali_mixer(struct snd_ali * codec)
+=======
+static int snd_ali_mixer(struct snd_ali *codec)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_ac97_template ac97;
 	unsigned int idx;
 	int i, err;
+<<<<<<< HEAD
 	static struct snd_ac97_bus_ops ops = {
+=======
+	static const struct snd_ac97_bus_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.write = snd_ali_codec_write,
 		.read = snd_ali_codec_read,
 	};
@@ -1863,7 +2167,11 @@ static int __devinit snd_ali_mixer(struct snd_ali * codec)
 		ac97.num = i;
 		err = snd_ac97_mixer(codec->ac97_bus, &ac97, &codec->ac97[i]);
 		if (err < 0) {
+<<<<<<< HEAD
 			snd_printk(KERN_ERR
+=======
+			dev_err(codec->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   "ali mixer %d creating error.\n", i);
 			if (i == 0)
 				return err;
@@ -1883,6 +2191,7 @@ static int __devinit snd_ali_mixer(struct snd_ali * codec)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int ali_suspend(struct pci_dev *pci, pm_message_t state)
 {
@@ -1900,6 +2209,18 @@ static int ali_suspend(struct pci_dev *pci, pm_message_t state)
 		snd_pcm_suspend_all(chip->pcm[i]);
 		snd_ac97_suspend(chip->ac97[i]);
 	}
+=======
+static int ali_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct snd_ali *chip = card->private_data;
+	struct snd_ali_image *im = &chip->image;
+	int i, j;
+
+	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+	for (i = 0; i < chip->num_of_codecs; i++)
+		snd_ac97_suspend(chip->ac97[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&chip->reg_lock);
 	
@@ -1926,6 +2247,7 @@ static int ali_suspend(struct pci_dev *pci, pm_message_t state)
 	outl(0xffffffff, ALI_REG(chip, ALI_STOP));
 
 	spin_unlock_irq(&chip->reg_lock);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
@@ -1954,6 +2276,18 @@ static int ali_resume(struct pci_dev *pci)
 	}
 	pci_set_master(pci);
 
+=======
+	return 0;
+}
+
+static int ali_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct snd_ali *chip = card->private_data;
+	struct snd_ali_image *im = &chip->image;
+	int i, j;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&chip->reg_lock);
 	
 	for (i = 0; i < ALI_CHANNELS; i++) {
@@ -1982,6 +2316,7 @@ static int ali_resume(struct pci_dev *pci)
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
 
 static int snd_ali_free(struct snd_ali * codec)
@@ -2000,6 +2335,19 @@ static int snd_ali_free(struct snd_ali * codec)
 	pci_dev_put(codec->pci_m7101);
 	kfree(codec);
 	return 0;
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(ali_pm, ali_suspend, ali_resume);
+
+static void snd_ali_free(struct snd_card *card)
+{
+	struct snd_ali *codec = card->private_data;
+
+	if (codec->hw_initialized)
+		snd_ali_disable_address_interrupt(codec);
+	pci_dev_put(codec->pci_m1533);
+	pci_dev_put(codec->pci_m7101);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_ali_chip_init(struct snd_ali *codec)
@@ -2008,10 +2356,17 @@ static int snd_ali_chip_init(struct snd_ali *codec)
 	unsigned char temp;
 	struct pci_dev *pci_dev;
 
+<<<<<<< HEAD
 	snd_ali_printk("chip initializing ... \n");
 
 	if (snd_ali_reset_5451(codec)) {
 		snd_printk(KERN_ERR "ali_chip_init: reset 5451 error.\n");
+=======
+	dev_dbg(codec->card->dev, "chip initializing ...\n");
+
+	if (snd_ali_reset_5451(codec)) {
+		dev_err(codec->card->dev, "ali_chip_init: reset 5451 error.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -2057,7 +2412,11 @@ static int snd_ali_chip_init(struct snd_ali *codec)
 		     ALI_REG(codec, ALI_SCTRL));
 	}
 
+<<<<<<< HEAD
 	snd_ali_printk("chip initialize succeed.\n");
+=======
+	dev_dbg(codec->card->dev, "chip initialize succeed.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 }
@@ -2072,6 +2431,7 @@ static void snd_ali_proc_read(struct snd_info_entry *entry,
 		snd_iprintf(buf, "%02x: %08x\n", i, inl(ALI_REG(codec, i)));
 }
 
+<<<<<<< HEAD
 static void __devinit snd_ali_proc_init(struct snd_ali *codec)
 {
 	struct snd_info_entry *entry;
@@ -2084,11 +2444,24 @@ static int __devinit snd_ali_resources(struct snd_ali *codec)
 	int err;
 
 	snd_ali_printk("resources allocation ...\n");
+=======
+static void snd_ali_proc_init(struct snd_ali *codec)
+{
+	snd_card_ro_proc_new(codec->card, "ali5451", codec, snd_ali_proc_read);
+}
+
+static int snd_ali_resources(struct snd_ali *codec)
+{
+	int err;
+
+	dev_dbg(codec->card->dev, "resources allocation ...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = pci_request_regions(codec->pci, "ALI 5451");
 	if (err < 0)
 		return err;
 	codec->port = pci_resource_start(codec->pci, 0);
 
+<<<<<<< HEAD
 	if (request_irq(codec->pci->irq, snd_ali_card_interrupt,
 			IRQF_SHARED, KBUILD_MODNAME, codec)) {
 		snd_printk(KERN_ERR "Unable to request irq.\n");
@@ -2141,6 +2514,42 @@ static int __devinit snd_ali_create(struct snd_card *card,
 		return -ENOMEM;
 	}
 
+=======
+	if (devm_request_irq(&codec->pci->dev, codec->pci->irq,
+			     snd_ali_card_interrupt,
+			     IRQF_SHARED, KBUILD_MODNAME, codec)) {
+		dev_err(codec->card->dev, "Unable to request irq.\n");
+		return -EBUSY;
+	}
+	codec->irq = codec->pci->irq;
+	codec->card->sync_irq = codec->irq;
+	dev_dbg(codec->card->dev, "resources allocated.\n");
+	return 0;
+}
+
+static int snd_ali_create(struct snd_card *card,
+			  struct pci_dev *pci,
+			  int pcm_streams,
+			  int spdif_support)
+{
+	struct snd_ali *codec = card->private_data;
+	int i, err;
+	unsigned short cmdw;
+
+	dev_dbg(card->dev, "creating ...\n");
+
+	/* enable PCI device */
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+	/* check, if we can restrict PCI DMA transfers to 31 bits */
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(31))) {
+		dev_err(card->dev,
+			"architecture does not support 31bit PCI busmaster DMA\n");
+		return -ENXIO;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&codec->reg_lock);
 	spin_lock_init(&codec->voice_alloc);
 
@@ -2161,6 +2570,7 @@ static int __devinit snd_ali_create(struct snd_card *card,
 		cmdw |= PCI_COMMAND_IO;
 		pci_write_config_word(pci, PCI_COMMAND, cmdw);
 	}
+<<<<<<< HEAD
 	pci_set_master(pci);
 	
 	if (snd_ali_resources(codec)) {
@@ -2169,6 +2579,12 @@ static int __devinit snd_ali_create(struct snd_card *card,
 	}
 
 	synchronize_irq(pci->irq);
+=======
+	
+	if (snd_ali_resources(codec))
+		return -EBUSY;
+	card->private_free = snd_ali_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	codec->synth.chmap = 0;
 	codec->synth.chcnt = 0;
@@ -2194,13 +2610,18 @@ static int __devinit snd_ali_create(struct snd_card *card,
 	/* M1533: southbridge */
 	codec->pci_m1533 = pci_get_device(0x10b9, 0x1533, NULL);
 	if (!codec->pci_m1533) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "ali5451: cannot find ALi 1533 chip.\n");
 		snd_ali_free(codec);
+=======
+		dev_err(card->dev, "cannot find ALi 1533 chip.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 	/* M7101: power management */
 	codec->pci_m7101 = pci_get_device(0x10b9, 0x7101, NULL);
 	if (!codec->pci_m7101 && codec->revision == ALI_5451_V02) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "ali5451: cannot find ALi 7101 chip.\n");
 		snd_ali_free(codec);
 		return -ENODEV;
@@ -2215,12 +2636,19 @@ static int __devinit snd_ali_create(struct snd_card *card,
 
 	snd_card_set_dev(card, &pci->dev);
 
+=======
+		dev_err(card->dev, "cannot find ALi 7101 chip.\n");
+		return -ENODEV;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* initialise synth voices*/
 	for (i = 0; i < ALI_CHANNELS; i++)
 		codec->synth.voices[i].number = i;
 
 	err = snd_ali_chip_init(codec);
 	if (err < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR "ali create: chip init error.\n");
 		return err;
 	}
@@ -2241,11 +2669,25 @@ static int __devinit snd_ali_create(struct snd_card *card,
 
 static int __devinit snd_ali_probe(struct pci_dev *pci,
 				   const struct pci_device_id *pci_id)
+=======
+		dev_err(card->dev, "ali create: chip init error.\n");
+		return err;
+	}
+
+	snd_ali_enable_address_interrupt(codec);
+	codec->hw_initialized = 1;
+	return 0;
+}
+
+static int __snd_ali_probe(struct pci_dev *pci,
+			   const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct snd_ali *codec;
 	int err;
 
+<<<<<<< HEAD
 	snd_ali_printk("probe ...\n");
 
 	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
@@ -2266,6 +2708,29 @@ static int __devinit snd_ali_probe(struct pci_dev *pci,
 	err = snd_ali_build_pcms(codec);
 	if (err < 0)
 		goto error;
+=======
+	dev_dbg(&pci->dev, "probe ...\n");
+
+	err = snd_devm_card_new(&pci->dev, index, id, THIS_MODULE,
+				sizeof(*codec), &card);
+	if (err < 0)
+		return err;
+	codec = card->private_data;
+
+	err = snd_ali_create(card, pci, pcm_channels, spdif);
+	if (err < 0)
+		return err;
+
+	dev_dbg(&pci->dev, "mixer building ...\n");
+	err = snd_ali_mixer(codec);
+	if (err < 0)
+		return err;
+	
+	dev_dbg(&pci->dev, "pcm building ...\n");
+	err = snd_ali_build_pcms(codec);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_ali_proc_init(codec);
 
@@ -2275,6 +2740,7 @@ static int __devinit snd_ali_probe(struct pci_dev *pci,
 	sprintf(card->longname, "%s at 0x%lx, irq %i",
 		card->shortname, codec->port, codec->irq);
 
+<<<<<<< HEAD
 	snd_ali_printk("register card.\n");
 	err = snd_card_register(card);
 	if (err < 0)
@@ -2317,3 +2783,30 @@ static void __exit alsa_card_ali_exit(void)
 
 module_init(alsa_card_ali_init)
 module_exit(alsa_card_ali_exit)
+=======
+	dev_dbg(&pci->dev, "register card.\n");
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+
+	pci_set_drvdata(pci, card);
+	return 0;
+}
+
+static int snd_ali_probe(struct pci_dev *pci,
+			 const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_ali_probe(pci, pci_id));
+}
+
+static struct pci_driver ali5451_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_ali_ids,
+	.probe = snd_ali_probe,
+	.driver = {
+		.pm = &ali_pm,
+	},
+};                                
+
+module_pci_driver(ali5451_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

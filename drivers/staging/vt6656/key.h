@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +24,8 @@
  *
  * File: key.h
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Purpose: Implement functions for 802.11i Key management
  *
  * Author: Jerry Chen
@@ -30,6 +37,7 @@
 #ifndef __KEY_H__
 #define __KEY_H__
 
+<<<<<<< HEAD
 #include "ttype.h"
 #include "tether.h"
 #include "80211mgr.h"
@@ -47,11 +55,17 @@
 #define TRANSMIT_KEY        0x80000000
 
 #define GROUP_KEY           0x00000000
+=======
+#include "device.h"
+
+#define MAX_KEY_TABLE       11
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define KEY_CTL_WEP         0x00
 #define KEY_CTL_NONE        0x01
 #define KEY_CTL_TKIP        0x02
 #define KEY_CTL_CCMP        0x03
+<<<<<<< HEAD
 #define KEY_CTL_INVALID     0xFF
 
 
@@ -161,5 +175,21 @@ BOOL KeybSetAllGroupKey(
     PBYTE           pbyKey,
     BYTE            byKeyDecMode
     );
+=======
+
+#define VNT_KEY_ONFLY_ALL	0x4000
+#define VNT_KEY_ONFLY		0x8000
+#define VNT_KEY_ALLGROUP	0x04
+#define VNT_KEY_GROUP		0x40
+#define VNT_KEY_PAIRWISE	VNT_KEY_ONFLY
+#define VNT_KEY_GROUP_ADDRESS	(VNT_KEY_ALLGROUP | VNT_KEY_GROUP)
+#define VNT_KEY_DEFAULTKEY	(VNT_KEY_GROUP_ADDRESS | VNT_KEY_ONFLY |\
+				VNT_KEY_ONFLY_ALL)
+
+int vnt_key_init_table(struct vnt_private *priv);
+
+int vnt_set_keys(struct ieee80211_hw *hw, struct ieee80211_sta *sta,
+		 struct ieee80211_vif *vif, struct ieee80211_key_conf *key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __KEY_H__ */

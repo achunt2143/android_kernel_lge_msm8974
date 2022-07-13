@@ -4,7 +4,11 @@
  * Support of SDHCI platform devices for spear soc family
  *
  * Copyright (C) 2010 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar<viresh.kumar@st.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Inspired by sdhci-pltfm.c
  *
@@ -15,21 +19,33 @@
 
 #include <linux/clk.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/highmem.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/pm.h>
 #include <linux/slab.h>
 #include <linux/mmc/host.h>
+<<<<<<< HEAD
 #include <linux/mmc/sdhci-spear.h>
+=======
+#include <linux/mmc/slot-gpio.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 #include "sdhci.h"
 
 struct spear_sdhci {
 	struct clk *clk;
+<<<<<<< HEAD
 	struct sdhci_plat_data *data;
 };
 
@@ -125,11 +141,44 @@ static int __devinit sdhci_probe(struct platform_device *pdev)
 		ret = PTR_ERR(host);
 		dev_dbg(&pdev->dev, "error allocating host\n");
 		goto err_alloc_host;
+=======
+};
+
+/* sdhci ops */
+static const struct sdhci_ops sdhci_pltfm_ops = {
+	.set_clock = sdhci_set_clock,
+	.set_bus_width = sdhci_set_bus_width,
+	.reset = sdhci_reset,
+	.set_uhs_signaling = sdhci_set_uhs_signaling,
+};
+
+static int sdhci_probe(struct platform_device *pdev)
+{
+	struct sdhci_host *host;
+	struct spear_sdhci *sdhci;
+	struct device *dev;
+	int ret;
+
+	dev = pdev->dev.parent ? pdev->dev.parent : &pdev->dev;
+	host = sdhci_alloc_host(dev, sizeof(*sdhci));
+	if (IS_ERR(host)) {
+		ret = PTR_ERR(host);
+		dev_dbg(&pdev->dev, "cannot allocate memory for sdhci\n");
+		goto err;
+	}
+
+	host->ioaddr = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(host->ioaddr)) {
+		ret = PTR_ERR(host->ioaddr);
+		dev_dbg(&pdev->dev, "unable to map iomem: %d\n", ret);
+		goto err_host;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	host->hw_name = "sdhci";
 	host->ops = &sdhci_pltfm_ops;
 	host->irq = platform_get_irq(pdev, 0);
+<<<<<<< HEAD
 	host->quirks = SDHCI_QUIRK_BROKEN_ADMA;
 
 	host->ioaddr = ioremap(iomem->start, resource_size(iomem));
@@ -231,11 +280,61 @@ err_clk_get:
 	kfree(sdhci);
 err_kzalloc:
 	release_mem_region(iomem->start, resource_size(iomem));
+=======
+	if (host->irq < 0) {
+		ret = host->irq;
+		goto err_host;
+	}
+	host->quirks = SDHCI_QUIRK_BROKEN_ADMA;
+
+	sdhci = sdhci_priv(host);
+
+	/* clk enable */
+	sdhci->clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(sdhci->clk)) {
+		ret = PTR_ERR(sdhci->clk);
+		dev_dbg(&pdev->dev, "Error getting clock\n");
+		goto err_host;
+	}
+
+	ret = clk_prepare_enable(sdhci->clk);
+	if (ret) {
+		dev_dbg(&pdev->dev, "Error enabling clock\n");
+		goto err_host;
+	}
+
+	ret = clk_set_rate(sdhci->clk, 50000000);
+	if (ret)
+		dev_dbg(&pdev->dev, "Error setting desired clk, clk=%lu\n",
+				clk_get_rate(sdhci->clk));
+
+	/*
+	 * It is optional to use GPIOs for sdhci card detection. If we
+	 * find a descriptor using slot GPIO, we use it.
+	 */
+	ret = mmc_gpiod_request_cd(host->mmc, "cd", 0, false, 0);
+	if (ret == -EPROBE_DEFER)
+		goto disable_clk;
+
+	ret = sdhci_add_host(host);
+	if (ret)
+		goto disable_clk;
+
+	platform_set_drvdata(pdev, host);
+
+	return 0;
+
+disable_clk:
+	clk_disable_unprepare(sdhci->clk);
+err_host:
+	sdhci_free_host(host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err:
 	dev_err(&pdev->dev, "spear-sdhci probe failed: %d\n", ret);
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit sdhci_remove(struct platform_device *pdev)
 {
 	struct sdhci_host *host = platform_get_drvdata(pdev);
@@ -256,11 +355,21 @@ static int __devexit sdhci_remove(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, NULL);
 	dead = 0;
+=======
+static void sdhci_remove(struct platform_device *pdev)
+{
+	struct sdhci_host *host = platform_get_drvdata(pdev);
+	struct spear_sdhci *sdhci = sdhci_priv(host);
+	int dead = 0;
+	u32 scratch;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	scratch = readl(host->ioaddr + SDHCI_INT_STATUS);
 	if (scratch == (u32)-1)
 		dead = 1;
 
 	sdhci_remove_host(host, dead);
+<<<<<<< HEAD
 	iounmap(host->ioaddr);
 	sdhci_free_host(host);
 	clk_disable(sdhci->clk);
@@ -279,6 +388,22 @@ static int sdhci_suspend(struct device *dev)
 	struct spear_sdhci *sdhci = dev_get_platdata(dev);
 	int ret;
 
+=======
+	clk_disable_unprepare(sdhci->clk);
+	sdhci_free_host(host);
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int sdhci_suspend(struct device *dev)
+{
+	struct sdhci_host *host = dev_get_drvdata(dev);
+	struct spear_sdhci *sdhci = sdhci_priv(host);
+	int ret;
+
+	if (host->tuning_mode != SDHCI_TUNING_MODE_3)
+		mmc_retune_needed(host->mmc);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = sdhci_suspend_host(host);
 	if (!ret)
 		clk_disable(sdhci->clk);
@@ -289,7 +414,11 @@ static int sdhci_suspend(struct device *dev)
 static int sdhci_resume(struct device *dev)
 {
 	struct sdhci_host *host = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	struct spear_sdhci *sdhci = dev_get_platdata(dev);
+=======
+	struct spear_sdhci *sdhci = sdhci_priv(host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	ret = clk_enable(sdhci->clk);
@@ -304,6 +433,7 @@ static int sdhci_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(sdhci_pm_ops, sdhci_suspend, sdhci_resume);
 
+<<<<<<< HEAD
 static struct platform_driver sdhci_driver = {
 	.driver = {
 		.name	= "sdhci",
@@ -312,10 +442,31 @@ static struct platform_driver sdhci_driver = {
 	},
 	.probe		= sdhci_probe,
 	.remove		= __devexit_p(sdhci_remove),
+=======
+static const struct of_device_id sdhci_spear_id_table[] = {
+	{ .compatible = "st,spear300-sdhci" },
+	{}
+};
+MODULE_DEVICE_TABLE(of, sdhci_spear_id_table);
+
+static struct platform_driver sdhci_driver = {
+	.driver = {
+		.name	= "sdhci",
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+		.pm	= &sdhci_pm_ops,
+		.of_match_table = sdhci_spear_id_table,
+	},
+	.probe		= sdhci_probe,
+	.remove_new	= sdhci_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(sdhci_driver);
 
 MODULE_DESCRIPTION("SPEAr Secure Digital Host Controller Interface driver");
+<<<<<<< HEAD
 MODULE_AUTHOR("Viresh Kumar <viresh.kumar@st.com>");
+=======
+MODULE_AUTHOR("Viresh Kumar <vireshk@kernel.org>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL v2");

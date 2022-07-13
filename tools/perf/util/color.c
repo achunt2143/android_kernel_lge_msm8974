@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include "cache.h"
 #include "color.h"
@@ -167,6 +168,20 @@ int perf_color_default_config(const char *var, const char *value, void *cb)
 	return perf_default_config(var, value, cb);
 }
 
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/kernel.h>
+#include <subcmd/pager.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <string.h>
+#include "color.h"
+#include <math.h>
+#include <unistd.h>
+
+int perf_use_color_default = -1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __color_vsnprintf(char *bf, size_t size, const char *color,
 			     const char *fmt, va_list args, const char *trail)
 {
@@ -192,8 +207,14 @@ static int __color_vsnprintf(char *bf, size_t size, const char *color,
 	return r;
 }
 
+<<<<<<< HEAD
 static int __color_vfprintf(FILE *fp, const char *color, const char *fmt,
 		va_list args, const char *trail)
+=======
+/* Colors are not included in return value */
+static int __color_vfprintf(FILE *fp, const char *color, const char *fmt,
+		va_list args)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r = 0;
 
@@ -208,12 +229,19 @@ static int __color_vfprintf(FILE *fp, const char *color, const char *fmt,
 	}
 
 	if (perf_use_color_default && *color)
+<<<<<<< HEAD
 		r += fprintf(fp, "%s", color);
 	r += vfprintf(fp, fmt, args);
 	if (perf_use_color_default && *color)
 		r += fprintf(fp, "%s", PERF_COLOR_RESET);
 	if (trail)
 		r += fprintf(fp, "%s", trail);
+=======
+		fprintf(fp, "%s", color);
+	r += vfprintf(fp, fmt, args);
+	if (perf_use_color_default && *color)
+		fprintf(fp, "%s", PERF_COLOR_RESET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
@@ -225,7 +253,11 @@ int color_vsnprintf(char *bf, size_t size, const char *color,
 
 int color_vfprintf(FILE *fp, const char *color, const char *fmt, va_list args)
 {
+<<<<<<< HEAD
 	return __color_vfprintf(fp, color, fmt, args, NULL);
+=======
+	return __color_vfprintf(fp, color, fmt, args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int color_snprintf(char *bf, size_t size, const char *color,
@@ -251,6 +283,7 @@ int color_fprintf(FILE *fp, const char *color, const char *fmt, ...)
 	return r;
 }
 
+<<<<<<< HEAD
 int color_fprintf_ln(FILE *fp, const char *color, const char *fmt, ...)
 {
 	va_list args;
@@ -261,6 +294,8 @@ int color_fprintf_ln(FILE *fp, const char *color, const char *fmt, ...)
 	return r;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This function splits the buffer by newlines and colors the lines individually.
  *
@@ -298,10 +333,17 @@ const char *get_percent_color(double percent)
 	 * entries in green - and keep the low overhead places
 	 * normal:
 	 */
+<<<<<<< HEAD
 	if (percent >= MIN_RED)
 		color = PERF_COLOR_RED;
 	else {
 		if (percent > MIN_GREEN)
+=======
+	if (fabs(percent) >= MIN_RED)
+		color = PERF_COLOR_RED;
+	else {
+		if (fabs(percent) > MIN_GREEN)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			color = PERF_COLOR_GREEN;
 	}
 	return color;
@@ -318,8 +360,42 @@ int percent_color_fprintf(FILE *fp, const char *fmt, double percent)
 	return r;
 }
 
+<<<<<<< HEAD
 int percent_color_snprintf(char *bf, size_t size, const char *fmt, double percent)
 {
 	const char *color = get_percent_color(percent);
 	return color_snprintf(bf, size, color, fmt, percent);
+=======
+int value_color_snprintf(char *bf, size_t size, const char *fmt, double value)
+{
+	const char *color = get_percent_color(value);
+	return color_snprintf(bf, size, color, fmt, value);
+}
+
+int percent_color_snprintf(char *bf, size_t size, const char *fmt, ...)
+{
+	va_list args;
+	double percent;
+
+	va_start(args, fmt);
+	percent = va_arg(args, double);
+	va_end(args);
+	return value_color_snprintf(bf, size, fmt, percent);
+}
+
+int percent_color_len_snprintf(char *bf, size_t size, const char *fmt, ...)
+{
+	va_list args;
+	int len;
+	double percent;
+	const char *color;
+
+	va_start(args, fmt);
+	len = va_arg(args, int);
+	percent = va_arg(args, double);
+	va_end(args);
+
+	color = get_percent_color(percent);
+	return color_snprintf(bf, size, color, fmt, len, percent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

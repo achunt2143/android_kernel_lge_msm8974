@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xfrm_replay.c - xfrm replay detection, derived from xfrm_state.c.
  *
  * Copyright (C) 2010 secunet Security Networks AG
  * Copyright (C) 2010 Steffen Klassert <steffen.klassert@secunet.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/export.h>
@@ -45,8 +52,17 @@ u32 xfrm_replay_seqhi(struct xfrm_state *x, __be32 net_seq)
 
 	return seq_hi;
 }
+<<<<<<< HEAD
 
 static void xfrm_replay_notify(struct xfrm_state *x, int event)
+=======
+EXPORT_SYMBOL(xfrm_replay_seqhi);
+
+static void xfrm_replay_notify_bmp(struct xfrm_state *x, int event);
+static void xfrm_replay_notify_esn(struct xfrm_state *x, int event);
+
+void xfrm_replay_notify(struct xfrm_state *x, int event)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct km_event c;
 	/* we send notify messages in case
@@ -59,11 +75,30 @@ static void xfrm_replay_notify(struct xfrm_state *x, int event)
 	 *  The state structure must be locked!
 	 */
 
+<<<<<<< HEAD
 	switch (event) {
 	case XFRM_REPLAY_UPDATE:
 		if (x->replay_maxdiff &&
 		    (x->replay.seq - x->preplay.seq < x->replay_maxdiff) &&
 		    (x->replay.oseq - x->preplay.oseq < x->replay_maxdiff)) {
+=======
+	switch (x->repl_mode) {
+	case XFRM_REPLAY_MODE_LEGACY:
+		break;
+	case XFRM_REPLAY_MODE_BMP:
+		xfrm_replay_notify_bmp(x, event);
+		return;
+	case XFRM_REPLAY_MODE_ESN:
+		xfrm_replay_notify_esn(x, event);
+		return;
+	}
+
+	switch (event) {
+	case XFRM_REPLAY_UPDATE:
+		if (!x->replay_maxdiff ||
+		    ((x->replay.seq - x->preplay.seq < x->replay_maxdiff) &&
+		    (x->replay.oseq - x->preplay.oseq < x->replay_maxdiff))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (x->xflags & XFRM_TIME_DEFER)
 				event = XFRM_REPLAY_TIMEOUT;
 			else
@@ -92,14 +127,24 @@ static void xfrm_replay_notify(struct xfrm_state *x, int event)
 		x->xflags &= ~XFRM_TIME_DEFER;
 }
 
+<<<<<<< HEAD
 static int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+=======
+static int __xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 	struct net *net = xs_net(x);
 
 	if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
 		XFRM_SKB_CB(skb)->seq.output.low = ++x->replay.oseq;
+<<<<<<< HEAD
 		if (unlikely(x->replay.oseq == 0)) {
+=======
+		XFRM_SKB_CB(skb)->seq.output.hi = 0;
+		if (unlikely(x->replay.oseq == 0) &&
+		    !(x->props.extra_flags & XFRM_SA_XFLAG_OSEQ_MAY_WRAP)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			x->replay.oseq--;
 			xfrm_audit_state_replay_overflow(x, skb);
 			err = -EOVERFLOW;
@@ -107,14 +152,23 @@ static int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
 			return err;
 		}
 		if (xfrm_aevent_is_on(net))
+<<<<<<< HEAD
 			x->repl->notify(x, XFRM_REPLAY_UPDATE);
+=======
+			xfrm_replay_notify(x, XFRM_REPLAY_UPDATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
 }
 
+<<<<<<< HEAD
 static int xfrm_replay_check(struct xfrm_state *x,
 		      struct sk_buff *skb, __be32 net_seq)
+=======
+static int xfrm_replay_check_legacy(struct xfrm_state *x,
+				    struct sk_buff *skb, __be32 net_seq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 diff;
 	u32 seq = ntohl(net_seq);
@@ -129,8 +183,12 @@ static int xfrm_replay_check(struct xfrm_state *x,
 		return 0;
 
 	diff = x->replay.seq - seq;
+<<<<<<< HEAD
 	if (diff >= min_t(unsigned int, x->props.replay_window,
 			  sizeof(x->replay.bitmap) * 8)) {
+=======
+	if (diff >= x->props.replay_window) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		x->stats.replay_window++;
 		goto err;
 	}
@@ -146,14 +204,36 @@ err:
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static void xfrm_replay_advance(struct xfrm_state *x, __be32 net_seq)
 {
 	u32 diff;
 	u32 seq = ntohl(net_seq);
+=======
+static void xfrm_replay_advance_bmp(struct xfrm_state *x, __be32 net_seq);
+static void xfrm_replay_advance_esn(struct xfrm_state *x, __be32 net_seq);
+
+void xfrm_replay_advance(struct xfrm_state *x, __be32 net_seq)
+{
+	u32 diff, seq;
+
+	switch (x->repl_mode) {
+	case XFRM_REPLAY_MODE_LEGACY:
+		break;
+	case XFRM_REPLAY_MODE_BMP:
+		return xfrm_replay_advance_bmp(x, net_seq);
+	case XFRM_REPLAY_MODE_ESN:
+		return xfrm_replay_advance_esn(x, net_seq);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!x->props.replay_window)
 		return;
 
+<<<<<<< HEAD
+=======
+	seq = ntohl(net_seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (seq > x->replay.seq) {
 		diff = seq - x->replay.seq;
 		if (diff < x->props.replay_window)
@@ -167,7 +247,11 @@ static void xfrm_replay_advance(struct xfrm_state *x, __be32 net_seq)
 	}
 
 	if (xfrm_aevent_is_on(xs_net(x)))
+<<<<<<< HEAD
 		x->repl->notify(x, XFRM_REPLAY_UPDATE);
+=======
+		xfrm_replay_notify(x, XFRM_REPLAY_UPDATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int xfrm_replay_overflow_bmp(struct xfrm_state *x, struct sk_buff *skb)
@@ -178,7 +262,13 @@ static int xfrm_replay_overflow_bmp(struct xfrm_state *x, struct sk_buff *skb)
 
 	if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
 		XFRM_SKB_CB(skb)->seq.output.low = ++replay_esn->oseq;
+<<<<<<< HEAD
 		if (unlikely(replay_esn->oseq == 0)) {
+=======
+		XFRM_SKB_CB(skb)->seq.output.hi = 0;
+		if (unlikely(replay_esn->oseq == 0) &&
+		    !(x->props.extra_flags & XFRM_SA_XFLAG_OSEQ_MAY_WRAP)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			replay_esn->oseq--;
 			xfrm_audit_state_replay_overflow(x, skb);
 			err = -EOVERFLOW;
@@ -186,7 +276,11 @@ static int xfrm_replay_overflow_bmp(struct xfrm_state *x, struct sk_buff *skb)
 			return err;
 		}
 		if (xfrm_aevent_is_on(net))
+<<<<<<< HEAD
 			x->repl->notify(x, XFRM_REPLAY_UPDATE);
+=======
+			xfrm_replay_notify(x, XFRM_REPLAY_UPDATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
@@ -242,11 +336,20 @@ static void xfrm_replay_advance_bmp(struct xfrm_state *x, __be32 net_seq)
 	u32 diff;
 	struct xfrm_replay_state_esn *replay_esn = x->replay_esn;
 	u32 seq = ntohl(net_seq);
+<<<<<<< HEAD
 	u32 pos = (replay_esn->seq - 1) % replay_esn->replay_window;
+=======
+	u32 pos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!replay_esn->replay_window)
 		return;
 
+<<<<<<< HEAD
+=======
+	pos = (replay_esn->seq - 1) % replay_esn->replay_window;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (seq > replay_esn->seq) {
 		diff = seq - replay_esn->seq;
 
@@ -279,7 +382,11 @@ static void xfrm_replay_advance_bmp(struct xfrm_state *x, __be32 net_seq)
 	replay_esn->bmp[nr] |= (1U << bitnr);
 
 	if (xfrm_aevent_is_on(xs_net(x)))
+<<<<<<< HEAD
 		x->repl->notify(x, XFRM_REPLAY_UPDATE);
+=======
+		xfrm_replay_notify(x, XFRM_REPLAY_UPDATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void xfrm_replay_notify_bmp(struct xfrm_state *x, int event)
@@ -300,9 +407,16 @@ static void xfrm_replay_notify_bmp(struct xfrm_state *x, int event)
 
 	switch (event) {
 	case XFRM_REPLAY_UPDATE:
+<<<<<<< HEAD
 		if (x->replay_maxdiff &&
 		    (replay_esn->seq - preplay_esn->seq < x->replay_maxdiff) &&
 		    (replay_esn->oseq - preplay_esn->oseq < x->replay_maxdiff)) {
+=======
+		if (!x->replay_maxdiff ||
+		    ((replay_esn->seq - preplay_esn->seq < x->replay_maxdiff) &&
+		    (replay_esn->oseq - preplay_esn->oseq
+		     < x->replay_maxdiff))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (x->xflags & XFRM_TIME_DEFER)
 				event = XFRM_REPLAY_TIMEOUT;
 			else
@@ -332,6 +446,75 @@ static void xfrm_replay_notify_bmp(struct xfrm_state *x, int event)
 		x->xflags &= ~XFRM_TIME_DEFER;
 }
 
+<<<<<<< HEAD
+=======
+static void xfrm_replay_notify_esn(struct xfrm_state *x, int event)
+{
+	u32 seq_diff, oseq_diff;
+	struct km_event c;
+	struct xfrm_replay_state_esn *replay_esn = x->replay_esn;
+	struct xfrm_replay_state_esn *preplay_esn = x->preplay_esn;
+
+	/* we send notify messages in case
+	 *  1. we updated on of the sequence numbers, and the seqno difference
+	 *     is at least x->replay_maxdiff, in this case we also update the
+	 *     timeout of our timer function
+	 *  2. if x->replay_maxage has elapsed since last update,
+	 *     and there were changes
+	 *
+	 *  The state structure must be locked!
+	 */
+
+	switch (event) {
+	case XFRM_REPLAY_UPDATE:
+		if (x->replay_maxdiff) {
+			if (replay_esn->seq_hi == preplay_esn->seq_hi)
+				seq_diff = replay_esn->seq - preplay_esn->seq;
+			else
+				seq_diff = ~preplay_esn->seq + replay_esn->seq
+					   + 1;
+
+			if (replay_esn->oseq_hi == preplay_esn->oseq_hi)
+				oseq_diff = replay_esn->oseq
+					    - preplay_esn->oseq;
+			else
+				oseq_diff = ~preplay_esn->oseq
+					    + replay_esn->oseq + 1;
+
+			if (seq_diff >= x->replay_maxdiff ||
+			    oseq_diff >= x->replay_maxdiff)
+				break;
+		}
+
+		if (x->xflags & XFRM_TIME_DEFER)
+			event = XFRM_REPLAY_TIMEOUT;
+		else
+			return;
+
+		break;
+
+	case XFRM_REPLAY_TIMEOUT:
+		if (memcmp(x->replay_esn, x->preplay_esn,
+			   xfrm_replay_state_esn_len(replay_esn)) == 0) {
+			x->xflags |= XFRM_TIME_DEFER;
+			return;
+		}
+
+		break;
+	}
+
+	memcpy(x->preplay_esn, x->replay_esn,
+	       xfrm_replay_state_esn_len(replay_esn));
+	c.event = XFRM_MSG_NEWAE;
+	c.data.aevent = event;
+	km_state_notify(x, &c);
+
+	if (x->replay_maxage &&
+	    !mod_timer(&x->rtimer, jiffies + x->replay_maxage))
+		x->xflags &= ~XFRM_TIME_DEFER;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int xfrm_replay_overflow_esn(struct xfrm_state *x, struct sk_buff *skb)
 {
 	int err = 0;
@@ -355,7 +538,11 @@ static int xfrm_replay_overflow_esn(struct xfrm_state *x, struct sk_buff *skb)
 			}
 		}
 		if (xfrm_aevent_is_on(net))
+<<<<<<< HEAD
 			x->repl->notify(x, XFRM_REPLAY_UPDATE);
+=======
+			xfrm_replay_notify(x, XFRM_REPLAY_UPDATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return err;
@@ -420,6 +607,24 @@ err:
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
+=======
+int xfrm_replay_check(struct xfrm_state *x,
+		      struct sk_buff *skb, __be32 net_seq)
+{
+	switch (x->repl_mode) {
+	case XFRM_REPLAY_MODE_LEGACY:
+		break;
+	case XFRM_REPLAY_MODE_BMP:
+		return xfrm_replay_check_bmp(x, skb, net_seq);
+	case XFRM_REPLAY_MODE_ESN:
+		return xfrm_replay_check_esn(x, skb, net_seq);
+	}
+
+	return xfrm_replay_check_legacy(x, skb, net_seq);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int xfrm_replay_recheck_esn(struct xfrm_state *x,
 				   struct sk_buff *skb, __be32 net_seq)
 {
@@ -432,6 +637,25 @@ static int xfrm_replay_recheck_esn(struct xfrm_state *x,
 	return xfrm_replay_check_esn(x, skb, net_seq);
 }
 
+<<<<<<< HEAD
+=======
+int xfrm_replay_recheck(struct xfrm_state *x,
+			struct sk_buff *skb, __be32 net_seq)
+{
+	switch (x->repl_mode) {
+	case XFRM_REPLAY_MODE_LEGACY:
+		break;
+	case XFRM_REPLAY_MODE_BMP:
+		/* no special recheck treatment */
+		return xfrm_replay_check_bmp(x, skb, net_seq);
+	case XFRM_REPLAY_MODE_ESN:
+		return xfrm_replay_recheck_esn(x, skb, net_seq);
+	}
+
+	return xfrm_replay_check_legacy(x, skb, net_seq);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void xfrm_replay_advance_esn(struct xfrm_state *x, __be32 net_seq)
 {
 	unsigned int bitnr, nr, i;
@@ -480,11 +704,17 @@ static void xfrm_replay_advance_esn(struct xfrm_state *x, __be32 net_seq)
 			bitnr = replay_esn->replay_window - (diff - pos);
 	}
 
+<<<<<<< HEAD
+=======
+	xfrm_dev_state_advance_esn(x);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nr = bitnr >> 5;
 	bitnr = bitnr & 0x1F;
 	replay_esn->bmp[nr] |= (1U << bitnr);
 
 	if (xfrm_aevent_is_on(xs_net(x)))
+<<<<<<< HEAD
 		x->repl->notify(x, XFRM_REPLAY_UPDATE);
 }
 
@@ -513,11 +743,176 @@ static struct xfrm_replay xfrm_replay_esn = {
 };
 
 int xfrm_init_replay(struct xfrm_state *x)
+=======
+		xfrm_replay_notify(x, XFRM_REPLAY_UPDATE);
+}
+
+#ifdef CONFIG_XFRM_OFFLOAD
+static int xfrm_replay_overflow_offload(struct xfrm_state *x, struct sk_buff *skb)
+{
+	int err = 0;
+	struct net *net = xs_net(x);
+	struct xfrm_offload *xo = xfrm_offload(skb);
+	__u32 oseq = x->replay.oseq;
+
+	if (!xo)
+		return __xfrm_replay_overflow(x, skb);
+
+	if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
+		if (!skb_is_gso(skb)) {
+			XFRM_SKB_CB(skb)->seq.output.low = ++oseq;
+			xo->seq.low = oseq;
+		} else {
+			XFRM_SKB_CB(skb)->seq.output.low = oseq + 1;
+			xo->seq.low = oseq + 1;
+			oseq += skb_shinfo(skb)->gso_segs;
+		}
+
+		XFRM_SKB_CB(skb)->seq.output.hi = 0;
+		xo->seq.hi = 0;
+		if (unlikely(oseq < x->replay.oseq) &&
+		    !(x->props.extra_flags & XFRM_SA_XFLAG_OSEQ_MAY_WRAP)) {
+			xfrm_audit_state_replay_overflow(x, skb);
+			err = -EOVERFLOW;
+
+			return err;
+		}
+
+		x->replay.oseq = oseq;
+
+		if (xfrm_aevent_is_on(net))
+			xfrm_replay_notify(x, XFRM_REPLAY_UPDATE);
+	}
+
+	return err;
+}
+
+static int xfrm_replay_overflow_offload_bmp(struct xfrm_state *x, struct sk_buff *skb)
+{
+	int err = 0;
+	struct xfrm_offload *xo = xfrm_offload(skb);
+	struct xfrm_replay_state_esn *replay_esn = x->replay_esn;
+	struct net *net = xs_net(x);
+	__u32 oseq = replay_esn->oseq;
+
+	if (!xo)
+		return xfrm_replay_overflow_bmp(x, skb);
+
+	if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
+		if (!skb_is_gso(skb)) {
+			XFRM_SKB_CB(skb)->seq.output.low = ++oseq;
+			xo->seq.low = oseq;
+		} else {
+			XFRM_SKB_CB(skb)->seq.output.low = oseq + 1;
+			xo->seq.low = oseq + 1;
+			oseq += skb_shinfo(skb)->gso_segs;
+		}
+
+		XFRM_SKB_CB(skb)->seq.output.hi = 0;
+		xo->seq.hi = 0;
+		if (unlikely(oseq < replay_esn->oseq) &&
+		    !(x->props.extra_flags & XFRM_SA_XFLAG_OSEQ_MAY_WRAP)) {
+			xfrm_audit_state_replay_overflow(x, skb);
+			err = -EOVERFLOW;
+
+			return err;
+		} else {
+			replay_esn->oseq = oseq;
+		}
+
+		if (xfrm_aevent_is_on(net))
+			xfrm_replay_notify(x, XFRM_REPLAY_UPDATE);
+	}
+
+	return err;
+}
+
+static int xfrm_replay_overflow_offload_esn(struct xfrm_state *x, struct sk_buff *skb)
+{
+	int err = 0;
+	struct xfrm_offload *xo = xfrm_offload(skb);
+	struct xfrm_replay_state_esn *replay_esn = x->replay_esn;
+	struct net *net = xs_net(x);
+	__u32 oseq = replay_esn->oseq;
+	__u32 oseq_hi = replay_esn->oseq_hi;
+
+	if (!xo)
+		return xfrm_replay_overflow_esn(x, skb);
+
+	if (x->type->flags & XFRM_TYPE_REPLAY_PROT) {
+		if (!skb_is_gso(skb)) {
+			XFRM_SKB_CB(skb)->seq.output.low = ++oseq;
+			XFRM_SKB_CB(skb)->seq.output.hi = oseq_hi;
+			xo->seq.low = oseq;
+			xo->seq.hi = oseq_hi;
+		} else {
+			XFRM_SKB_CB(skb)->seq.output.low = oseq + 1;
+			XFRM_SKB_CB(skb)->seq.output.hi = oseq_hi;
+			xo->seq.low = oseq + 1;
+			xo->seq.hi = oseq_hi;
+			oseq += skb_shinfo(skb)->gso_segs;
+		}
+
+		if (unlikely(xo->seq.low < replay_esn->oseq)) {
+			XFRM_SKB_CB(skb)->seq.output.hi = ++oseq_hi;
+			xo->seq.hi = oseq_hi;
+			replay_esn->oseq_hi = oseq_hi;
+			if (replay_esn->oseq_hi == 0) {
+				replay_esn->oseq--;
+				replay_esn->oseq_hi--;
+				xfrm_audit_state_replay_overflow(x, skb);
+				err = -EOVERFLOW;
+
+				return err;
+			}
+		}
+
+		replay_esn->oseq = oseq;
+
+		if (xfrm_aevent_is_on(net))
+			xfrm_replay_notify(x, XFRM_REPLAY_UPDATE);
+	}
+
+	return err;
+}
+
+int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+{
+	switch (x->repl_mode) {
+	case XFRM_REPLAY_MODE_LEGACY:
+		break;
+	case XFRM_REPLAY_MODE_BMP:
+		return xfrm_replay_overflow_offload_bmp(x, skb);
+	case XFRM_REPLAY_MODE_ESN:
+		return xfrm_replay_overflow_offload_esn(x, skb);
+	}
+
+	return xfrm_replay_overflow_offload(x, skb);
+}
+#else
+int xfrm_replay_overflow(struct xfrm_state *x, struct sk_buff *skb)
+{
+	switch (x->repl_mode) {
+	case XFRM_REPLAY_MODE_LEGACY:
+		break;
+	case XFRM_REPLAY_MODE_BMP:
+		return xfrm_replay_overflow_bmp(x, skb);
+	case XFRM_REPLAY_MODE_ESN:
+		return xfrm_replay_overflow_esn(x, skb);
+	}
+
+	return __xfrm_replay_overflow(x, skb);
+}
+#endif
+
+int xfrm_init_replay(struct xfrm_state *x, struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct xfrm_replay_state_esn *replay_esn = x->replay_esn;
 
 	if (replay_esn) {
 		if (replay_esn->replay_window >
+<<<<<<< HEAD
 		    replay_esn->bmp_len * sizeof(__u32) * 8)
 			return -EINVAL;
 
@@ -530,6 +925,25 @@ int xfrm_init_replay(struct xfrm_state *x)
 		x->repl = &xfrm_replay_bmp;
 	} else
 		x->repl = &xfrm_replay_legacy;
+=======
+		    replay_esn->bmp_len * sizeof(__u32) * 8) {
+			NL_SET_ERR_MSG(extack, "ESN replay window is too large for the chosen bitmap size");
+			return -EINVAL;
+		}
+
+		if (x->props.flags & XFRM_STATE_ESN) {
+			if (replay_esn->replay_window == 0) {
+				NL_SET_ERR_MSG(extack, "ESN replay window must be > 0");
+				return -EINVAL;
+			}
+			x->repl_mode = XFRM_REPLAY_MODE_ESN;
+		} else {
+			x->repl_mode = XFRM_REPLAY_MODE_BMP;
+		}
+	} else {
+		x->repl_mode = XFRM_REPLAY_MODE_LEGACY;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

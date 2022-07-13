@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 /*
  * (C) 2002 - 2003  Dominik Brodowski <linux@brodo.de>
  *
  *  Licensed under the terms of the GNU GPL License version 2.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * (C) 2002 - 2003  Dominik Brodowski <linux@brodo.de>
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  BIG FAT DISCLAIMER: Work in progress code. Possibly *dangerous*
  */
 
@@ -33,7 +40,11 @@ static unsigned int longrun_low_freq, longrun_high_freq;
  * Reads the current LongRun policy by access to MSR_TMTA_LONGRUN_FLAGS
  * and MSR_TMTA_LONGRUN_CTRL
  */
+<<<<<<< HEAD
 static void __cpuinit longrun_get_policy(struct cpufreq_policy *policy)
+=======
+static void longrun_get_policy(struct cpufreq_policy *policy)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 msr_lo, msr_hi;
 
@@ -123,12 +134,17 @@ static int longrun_set_policy(struct cpufreq_policy *policy)
  * Validates a new CPUFreq policy. This function has to be called with
  * cpufreq_driver locked.
  */
+<<<<<<< HEAD
 static int longrun_verify_policy(struct cpufreq_policy *policy)
+=======
+static int longrun_verify_policy(struct cpufreq_policy_data *policy)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!policy)
 		return -EINVAL;
 
 	policy->cpu = 0;
+<<<<<<< HEAD
 	cpufreq_verify_within_limits(policy,
 		policy->cpuinfo.min_freq,
 		policy->cpuinfo.max_freq);
@@ -136,6 +152,9 @@ static int longrun_verify_policy(struct cpufreq_policy *policy)
 	if ((policy->policy != CPUFREQ_POLICY_POWERSAVE) &&
 	    (policy->policy != CPUFREQ_POLICY_PERFORMANCE))
 		return -EINVAL;
+=======
+	cpufreq_verify_within_cpu_limits(policy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -163,7 +182,11 @@ static unsigned int longrun_get(unsigned int cpu)
  * TMTA rules:
  * performance_pctg = (target_freq - low_freq)/(high_freq - low_freq)
  */
+<<<<<<< HEAD
 static int __cpuinit longrun_determine_freqs(unsigned int *low_freq,
+=======
+static int longrun_determine_freqs(unsigned int *low_freq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      unsigned int *high_freq)
 {
 	u32 msr_lo, msr_hi;
@@ -256,7 +279,11 @@ static int __cpuinit longrun_determine_freqs(unsigned int *low_freq,
 }
 
 
+<<<<<<< HEAD
 static int __cpuinit longrun_cpu_init(struct cpufreq_policy *policy)
+=======
+static int longrun_cpu_init(struct cpufreq_policy *policy)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result = 0;
 
@@ -272,7 +299,10 @@ static int __cpuinit longrun_cpu_init(struct cpufreq_policy *policy)
 	/* cpuinfo and default policy values */
 	policy->cpuinfo.min_freq = longrun_low_freq;
 	policy->cpuinfo.max_freq = longrun_high_freq;
+<<<<<<< HEAD
 	policy->cpuinfo.transition_latency = CPUFREQ_ETERNAL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	longrun_get_policy(policy);
 
 	return 0;
@@ -286,12 +316,19 @@ static struct cpufreq_driver longrun_driver = {
 	.get		= longrun_get,
 	.init		= longrun_cpu_init,
 	.name		= "longrun",
+<<<<<<< HEAD
 	.owner		= THIS_MODULE,
 };
 
 static const struct x86_cpu_id longrun_ids[] = {
 	{ X86_VENDOR_TRANSMETA, X86_FAMILY_ANY, X86_MODEL_ANY,
 	  X86_FEATURE_LONGRUN },
+=======
+};
+
+static const struct x86_cpu_id longrun_ids[] = {
+	X86_MATCH_VENDOR_FEATURE(TRANSMETA, X86_FEATURE_LONGRUN, NULL),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 MODULE_DEVICE_TABLE(x86cpu, longrun_ids);

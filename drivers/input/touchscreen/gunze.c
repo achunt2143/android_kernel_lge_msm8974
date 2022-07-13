@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000-2001 Vojtech Pavlik
  */
@@ -6,6 +10,7 @@
  * Gunze AHL-51S touchscreen driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,13 +31,18 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/serio.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"Gunze AHL-51S touchscreen driver"
 
@@ -58,7 +68,11 @@ struct gunze {
 	char phys[32];
 };
 
+<<<<<<< HEAD
 static void gunze_process_packet(struct gunze* gunze)
+=======
+static void gunze_process_packet(struct gunze *gunze)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct input_dev *dev = gunze->dev;
 
@@ -77,7 +91,11 @@ static void gunze_process_packet(struct gunze* gunze)
 static irqreturn_t gunze_interrupt(struct serio *serio,
 		unsigned char data, unsigned int flags)
 {
+<<<<<<< HEAD
 	struct gunze* gunze = serio_get_drvdata(serio);
+=======
+	struct gunze *gunze = serio_get_drvdata(serio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (data == '\r') {
 		gunze_process_packet(gunze);
@@ -163,7 +181,11 @@ static int gunze_connect(struct serio *serio, struct serio_driver *drv)
  * The serio driver structure.
  */
 
+<<<<<<< HEAD
 static struct serio_device_id gunze_serio_ids[] = {
+=======
+static const struct serio_device_id gunze_serio_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_GUNZE,
@@ -186,6 +208,7 @@ static struct serio_driver gunze_drv = {
 	.disconnect	= gunze_disconnect,
 };
 
+<<<<<<< HEAD
 /*
  * The functions for inserting/removing us as a module.
  */
@@ -202,3 +225,6 @@ static void __exit gunze_exit(void)
 
 module_init(gunze_init);
 module_exit(gunze_exit);
+=======
+module_serio_driver(gunze_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

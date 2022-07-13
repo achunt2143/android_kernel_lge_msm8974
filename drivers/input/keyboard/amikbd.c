@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000-2001 Vojtech Pavlik
  *
@@ -9,6 +13,7 @@
  * Amiga keyboard driver for Linux/m68k
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +34,8 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/input.h>
@@ -45,6 +52,10 @@ MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
 MODULE_DESCRIPTION("Amiga keyboard driver");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_VT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned char amikbd_keycode[0x78] __initdata = {
 	[0]	 = KEY_GRAVE,
 	[1]	 = KEY_1,
@@ -144,6 +155,35 @@ static unsigned char amikbd_keycode[0x78] __initdata = {
 	[103]	 = KEY_RIGHTMETA
 };
 
+<<<<<<< HEAD
+=======
+static void __init amikbd_init_console_keymaps(void)
+{
+	/* We can spare 512 bytes on stack for temp_map in init path. */
+	unsigned short temp_map[NR_KEYS];
+	int i, j;
+
+	for (i = 0; i < MAX_NR_KEYMAPS; i++) {
+		if (!key_maps[i])
+			continue;
+		memset(temp_map, 0, sizeof(temp_map));
+		for (j = 0; j < 0x78; j++) {
+			if (!amikbd_keycode[j])
+				continue;
+			temp_map[j] = key_maps[i][amikbd_keycode[j]];
+		}
+		for (j = 0; j < NR_KEYS; j++) {
+			if (!temp_map[j])
+				temp_map[j] = 0xf200;
+		}
+		memcpy(key_maps[i], temp_map, sizeof(temp_map));
+	}
+}
+#else /* !CONFIG_VT */
+static inline void amikbd_init_console_keymaps(void) {}
+#endif /* !CONFIG_VT */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char *amikbd_messages[8] = {
 	[0] = KERN_ALERT "amikbd: Ctrl-Amiga-Amiga reset warning!!\n",
 	[1] = KERN_WARNING "amikbd: keyboard lost sync\n",
@@ -186,9 +226,15 @@ static irqreturn_t amikbd_interrupt(int irq, void *data)
 static int __init amikbd_probe(struct platform_device *pdev)
 {
 	struct input_dev *dev;
+<<<<<<< HEAD
 	int i, j, err;
 
 	dev = input_allocate_device();
+=======
+	int i, err;
+
+	dev = devm_input_allocate_device(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev) {
 		dev_err(&pdev->dev, "Not enough memory for input device\n");
 		return -ENOMEM;
@@ -200,13 +246,17 @@ static int __init amikbd_probe(struct platform_device *pdev)
 	dev->id.vendor = 0x0001;
 	dev->id.product = 0x0001;
 	dev->id.version = 0x0100;
+<<<<<<< HEAD
 	dev->dev.parent = &pdev->dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_REP);
 
 	for (i = 0; i < 0x78; i++)
 		set_bit(i, dev->keybit);
 
+<<<<<<< HEAD
 	for (i = 0; i < MAX_NR_KEYMAPS; i++) {
 		static u_short temp_map[NR_KEYS] __initdata;
 		if (!key_maps[i])
@@ -232,10 +282,24 @@ static int __init amikbd_probe(struct platform_device *pdev)
 	err = input_register_device(dev);
 	if (err)
 		goto fail3;
+=======
+	amikbd_init_console_keymaps();
+
+	ciaa.cra &= ~0x41;	 /* serial data in, turn off TA */
+	err = devm_request_irq(&pdev->dev, IRQ_AMIGA_CIAA_SP, amikbd_interrupt,
+			       0, "amikbd", dev);
+	if (err)
+		return err;
+
+	err = input_register_device(dev);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(pdev, dev);
 
 	return 0;
+<<<<<<< HEAD
 
  fail3:	free_irq(IRQ_AMIGA_CIAA_SP, dev);
  fail2:	input_free_device(dev);
@@ -273,5 +337,16 @@ static void __exit amikbd_exit(void)
 }
 
 module_exit(amikbd_exit);
+=======
+}
+
+static struct platform_driver amikbd_driver = {
+	.driver   = {
+		.name	= "amiga-keyboard",
+	},
+};
+
+module_platform_driver_probe(amikbd_driver, amikbd_probe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_ALIAS("platform:amiga-keyboard");

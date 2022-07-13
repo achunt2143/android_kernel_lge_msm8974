@@ -31,21 +31,39 @@
  *  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+<<<<<<< HEAD
 #include <linux/sunrpc/clnt.h>
+=======
+#include <linux/nfs4.h>
+#include <linux/sunrpc/clnt.h>
+#include <linux/sunrpc/xprt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sunrpc/svc_xprt.h>
 #include <linux/slab.h>
 #include "nfsd.h"
 #include "state.h"
+<<<<<<< HEAD
 
 #define NFSDDBG_FACILITY                NFSDDBG_PROC
 
 static void nfsd4_mark_cb_fault(struct nfs4_client *, int reason);
+=======
+#include "netns.h"
+#include "trace.h"
+#include "xdr4cb.h"
+#include "xdr4.h"
+
+#define NFSDDBG_FACILITY                NFSDDBG_PROC
+
+static void nfsd4_mark_cb_fault(struct nfs4_client *clp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NFSPROC4_CB_NULL 0
 #define NFSPROC4_CB_COMPOUND 1
 
 /* Index of predefined Linux callback client operations */
 
+<<<<<<< HEAD
 enum {
 	NFSPROC4_CLNT_CB_NULL = 0,
 	NFSPROC4_CLNT_CB_RECALL,
@@ -76,6 +94,8 @@ enum {
 					cb_sequence_dec_sz +            \
 					op_dec_sz)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nfs4_cb_compound_hdr {
 	/* args */
 	u32		ident;	/* minorversion 0 only */
@@ -86,6 +106,7 @@ struct nfs4_cb_compound_hdr {
 	int		status;
 };
 
+<<<<<<< HEAD
 /*
  * Handle decode buffer overflows out-of-line.
  */
@@ -96,6 +117,8 @@ static void print_overflow_msg(const char *func, const struct xdr_stream *xdr)
 		func, xdr->end - xdr->p);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __be32 *xdr_encode_empty_array(__be32 *p)
 {
 	*p++ = xdr_zero;
@@ -111,6 +134,7 @@ static __be32 *xdr_encode_empty_array(__be32 *p)
  * 1 Protocol"
  */
 
+<<<<<<< HEAD
 /*
  *	nfs_cb_opnum4
  *
@@ -134,6 +158,32 @@ enum nfs_cb_opnum4 {
 	OP_CB_NOTIFY_DEVICEID		= 14,
 	OP_CB_ILLEGAL			= 10044
 };
+=======
+static void encode_uint32(struct xdr_stream *xdr, u32 n)
+{
+	WARN_ON_ONCE(xdr_stream_encode_u32(xdr, n) < 0);
+}
+
+static void encode_bitmap4(struct xdr_stream *xdr, const __u32 *bitmap,
+			   size_t len)
+{
+	xdr_stream_encode_uint32_array(xdr, bitmap, len);
+}
+
+static int decode_cb_fattr4(struct xdr_stream *xdr, uint32_t *bitmap,
+				struct nfs4_cb_fattr *fattr)
+{
+	fattr->ncf_cb_change = 0;
+	fattr->ncf_cb_fsize = 0;
+	if (bitmap[0] & FATTR4_WORD0_CHANGE)
+		if (xdr_stream_decode_u64(xdr, &fattr->ncf_cb_change) < 0)
+			return -NFSERR_BAD_XDR;
+	if (bitmap[0] & FATTR4_WORD0_SIZE)
+		if (xdr_stream_decode_u64(xdr, &fattr->ncf_cb_fsize) < 0)
+			return -NFSERR_BAD_XDR;
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void encode_nfs_cb_opnum4(struct xdr_stream *xdr, enum nfs_cb_opnum4 op)
 {
@@ -155,7 +205,11 @@ static void encode_nfs_fh4(struct xdr_stream *xdr, const struct knfsd_fh *fh)
 
 	BUG_ON(length > NFS4_FHSIZE);
 	p = xdr_reserve_space(xdr, 4 + length);
+<<<<<<< HEAD
 	xdr_encode_opaque(p, &fh->fh_base, length);
+=======
+	xdr_encode_opaque(p, &fh->fh_raw, length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -250,8 +304,13 @@ static int nfs_cb_stat_to_errno(int status)
 	return -status;
 }
 
+<<<<<<< HEAD
 static int decode_cb_op_status(struct xdr_stream *xdr, enum nfs_opnum4 expected,
 			       enum nfsstat4 *status)
+=======
+static int decode_cb_op_status(struct xdr_stream *xdr,
+			       enum nfs_cb_opnum4 expected, int *status)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32 *p;
 	u32 op;
@@ -262,10 +321,16 @@ static int decode_cb_op_status(struct xdr_stream *xdr, enum nfs_opnum4 expected,
 	op = be32_to_cpup(p++);
 	if (unlikely(op != expected))
 		goto out_unexpected;
+<<<<<<< HEAD
 	*status = be32_to_cpup(p);
 	return 0;
 out_overflow:
 	print_overflow_msg(__func__, xdr);
+=======
+	*status = nfs_cb_stat_to_errno(be32_to_cpup(p));
+	return 0;
+out_overflow:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 out_unexpected:
 	dprintk("NFSD: Callback server returned operation %d but "
@@ -330,10 +395,17 @@ static int decode_cb_compound4res(struct xdr_stream *xdr,
 	p = xdr_inline_decode(xdr, length + 4);
 	if (unlikely(p == NULL))
 		goto out_overflow;
+<<<<<<< HEAD
 	hdr->nops = be32_to_cpup(p);
 	return 0;
 out_overflow:
 	print_overflow_msg(__func__, xdr);
+=======
+	p += XDR_QUADLEN(length);
+	hdr->nops = be32_to_cpup(p);
+	return 0;
+out_overflow:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EIO;
 }
 
@@ -358,12 +430,61 @@ static void encode_cb_recall4args(struct xdr_stream *xdr,
 	p = xdr_reserve_space(xdr, 4);
 	*p++ = xdr_zero;			/* truncate */
 
+<<<<<<< HEAD
 	encode_nfs_fh4(xdr, &dp->dl_fh);
+=======
+	encode_nfs_fh4(xdr, &dp->dl_stid.sc_file->fi_fhandle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdr->nops++;
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * CB_RECALLANY4args
+ *
+ *	struct CB_RECALLANY4args {
+ *		uint32_t	craa_objects_to_keep;
+ *		bitmap4		craa_type_mask;
+ *	};
+ */
+static void
+encode_cb_recallany4args(struct xdr_stream *xdr,
+	struct nfs4_cb_compound_hdr *hdr, struct nfsd4_cb_recall_any *ra)
+{
+	encode_nfs_cb_opnum4(xdr, OP_CB_RECALL_ANY);
+	encode_uint32(xdr, ra->ra_keep);
+	encode_bitmap4(xdr, ra->ra_bmval, ARRAY_SIZE(ra->ra_bmval));
+	hdr->nops++;
+}
+
+/*
+ * CB_GETATTR4args
+ *	struct CB_GETATTR4args {
+ *	   nfs_fh4 fh;
+ *	   bitmap4 attr_request;
+ *	};
+ *
+ * The size and change attributes are the only one
+ * guaranteed to be serviced by the client.
+ */
+static void
+encode_cb_getattr4args(struct xdr_stream *xdr, struct nfs4_cb_compound_hdr *hdr,
+			struct nfs4_cb_fattr *fattr)
+{
+	struct nfs4_delegation *dp =
+		container_of(fattr, struct nfs4_delegation, dl_cb_fattr);
+	struct knfsd_fh *fh = &dp->dl_stid.sc_file->fi_fhandle;
+
+	encode_nfs_cb_opnum4(xdr, OP_CB_GETATTR);
+	encode_nfs_fh4(xdr, fh);
+	encode_bitmap4(xdr, fattr->ncf_cb_bmap, ARRAY_SIZE(fattr->ncf_cb_bmap));
+	hdr->nops++;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * CB_SEQUENCE4args
  *
  *	struct CB_SEQUENCE4args {
@@ -423,6 +544,7 @@ static int decode_cb_sequence4resok(struct xdr_stream *xdr,
 				    struct nfsd4_callback *cb)
 {
 	struct nfsd4_session *session = cb->cb_clp->cl_cb_session;
+<<<<<<< HEAD
 	struct nfs4_sessionid id;
 	int status;
 	__be32 *p;
@@ -430,6 +552,12 @@ static int decode_cb_sequence4resok(struct xdr_stream *xdr,
 
 	status = -ESERVERFAULT;
 
+=======
+	int status = -ESERVERFAULT;
+	__be32 *p;
+	u32 dummy;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If the server returns different values for sessionID, slotID or
 	 * sequence number, the server is looney tunes.
@@ -437,9 +565,14 @@ static int decode_cb_sequence4resok(struct xdr_stream *xdr,
 	p = xdr_inline_decode(xdr, NFS4_MAX_SESSIONID_LEN + 4 + 4 + 4 + 4);
 	if (unlikely(p == NULL))
 		goto out_overflow;
+<<<<<<< HEAD
 	memcpy(id.data, p, NFS4_MAX_SESSIONID_LEN);
 	if (memcmp(id.data, session->se_sessionid.data,
 					NFS4_MAX_SESSIONID_LEN) != 0) {
+=======
+
+	if (memcmp(p, session->se_sessionid.data, NFS4_MAX_SESSIONID_LEN)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dprintk("NFS: %s Invalid session id\n", __func__);
 		goto out;
 	}
@@ -462,17 +595,26 @@ static int decode_cb_sequence4resok(struct xdr_stream *xdr,
 	 */
 	status = 0;
 out:
+<<<<<<< HEAD
 	if (status)
 		nfsd4_mark_cb_fault(cb->cb_clp, status);
 	return status;
 out_overflow:
 	print_overflow_msg(__func__, xdr);
 	return -EIO;
+=======
+	cb->cb_seq_status = status;
+	return status;
+out_overflow:
+	status = -EIO;
+	goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int decode_cb_sequence4res(struct xdr_stream *xdr,
 				  struct nfsd4_callback *cb)
 {
+<<<<<<< HEAD
 	enum nfsstat4 nfserr;
 	int status;
 
@@ -489,6 +631,18 @@ out:
 	return status;
 out_default:
 	return nfs_cb_stat_to_errno(nfserr);
+=======
+	int status;
+
+	if (cb->cb_clp->cl_minorversion == 0)
+		return 0;
+
+	status = decode_cb_op_status(xdr, OP_CB_SEQUENCE, &cb->cb_seq_status);
+	if (unlikely(status || cb->cb_seq_status))
+		return status;
+
+	return decode_cb_sequence4resok(xdr, cb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -504,12 +658,17 @@ out_default:
  * NB: Without this zero space reservation, callbacks over krb5p fail
  */
 static void nfs4_xdr_enc_cb_null(struct rpc_rqst *req, struct xdr_stream *xdr,
+<<<<<<< HEAD
 				 void *__unused)
+=======
+				 const void *__unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	xdr_reserve_space(xdr, 0);
 }
 
 /*
+<<<<<<< HEAD
  * 20.2. Operation 4: CB_RECALL - Recall a Delegation
  */
 static void nfs4_xdr_enc_cb_recall(struct rpc_rqst *req, struct xdr_stream *xdr,
@@ -519,14 +678,73 @@ static void nfs4_xdr_enc_cb_recall(struct rpc_rqst *req, struct xdr_stream *xdr,
 	struct nfs4_cb_compound_hdr hdr = {
 		.ident = cb->cb_clp->cl_cb_ident,
 		.minorversion = cb->cb_minorversion,
+=======
+ * 20.1.  Operation 3: CB_GETATTR - Get Attributes
+ */
+static void nfs4_xdr_enc_cb_getattr(struct rpc_rqst *req,
+		struct xdr_stream *xdr, const void *data)
+{
+	const struct nfsd4_callback *cb = data;
+	struct nfs4_cb_fattr *ncf =
+		container_of(cb, struct nfs4_cb_fattr, ncf_getattr);
+	struct nfs4_cb_compound_hdr hdr = {
+		.ident = cb->cb_clp->cl_cb_ident,
+		.minorversion = cb->cb_clp->cl_minorversion,
 	};
 
 	encode_cb_compound4args(xdr, &hdr);
 	encode_cb_sequence4args(xdr, cb, &hdr);
+	encode_cb_getattr4args(xdr, &hdr, ncf);
+	encode_cb_nops(&hdr);
+}
+
+/*
+ * 20.2. Operation 4: CB_RECALL - Recall a Delegation
+ */
+static void nfs4_xdr_enc_cb_recall(struct rpc_rqst *req, struct xdr_stream *xdr,
+				   const void *data)
+{
+	const struct nfsd4_callback *cb = data;
+	const struct nfs4_delegation *dp = cb_to_delegation(cb);
+	struct nfs4_cb_compound_hdr hdr = {
+		.ident = cb->cb_clp->cl_cb_ident,
+		.minorversion = cb->cb_clp->cl_minorversion,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
+	};
+
+	encode_cb_compound4args(xdr, &hdr);
+	encode_cb_sequence4args(xdr, cb, &hdr);
+<<<<<<< HEAD
 	encode_cb_recall4args(xdr, args, &hdr);
 	encode_cb_nops(&hdr);
 }
 
+=======
+	encode_cb_recall4args(xdr, dp, &hdr);
+	encode_cb_nops(&hdr);
+}
+
+/*
+ * 20.6. Operation 8: CB_RECALL_ANY - Keep Any N Recallable Objects
+ */
+static void
+nfs4_xdr_enc_cb_recall_any(struct rpc_rqst *req,
+		struct xdr_stream *xdr, const void *data)
+{
+	const struct nfsd4_callback *cb = data;
+	struct nfsd4_cb_recall_any *ra;
+	struct nfs4_cb_compound_hdr hdr = {
+		.ident = cb->cb_clp->cl_cb_ident,
+		.minorversion = cb->cb_clp->cl_minorversion,
+	};
+
+	ra = container_of(cb, struct nfsd4_cb_recall_any, ra_cb);
+	encode_cb_compound4args(xdr, &hdr);
+	encode_cb_sequence4args(xdr, cb, &hdr);
+	encode_cb_recallany4args(xdr, &hdr, ra);
+	encode_cb_nops(&hdr);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * NFSv4.0 and NFSv4.1 XDR decode functions
@@ -544,18 +762,65 @@ static int nfs4_xdr_dec_cb_null(struct rpc_rqst *req, struct xdr_stream *xdr,
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * 20.1.  Operation 3: CB_GETATTR - Get Attributes
+ */
+static int nfs4_xdr_dec_cb_getattr(struct rpc_rqst *rqstp,
+				  struct xdr_stream *xdr,
+				  void *data)
+{
+	struct nfsd4_callback *cb = data;
+	struct nfs4_cb_compound_hdr hdr;
+	int status;
+	u32 bitmap[3] = {0};
+	u32 attrlen;
+	struct nfs4_cb_fattr *ncf =
+		container_of(cb, struct nfs4_cb_fattr, ncf_getattr);
+
+	status = decode_cb_compound4res(xdr, &hdr);
+	if (unlikely(status))
+		return status;
+
+	status = decode_cb_sequence4res(xdr, cb);
+	if (unlikely(status || cb->cb_seq_status))
+		return status;
+
+	status = decode_cb_op_status(xdr, OP_CB_GETATTR, &cb->cb_status);
+	if (status)
+		return status;
+	if (xdr_stream_decode_uint32_array(xdr, bitmap, 3) < 0)
+		return -NFSERR_BAD_XDR;
+	if (xdr_stream_decode_u32(xdr, &attrlen) < 0)
+		return -NFSERR_BAD_XDR;
+	if (attrlen > (sizeof(ncf->ncf_cb_change) + sizeof(ncf->ncf_cb_fsize)))
+		return -NFSERR_BAD_XDR;
+	status = decode_cb_fattr4(xdr, bitmap, ncf);
+	return status;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 20.2. Operation 4: CB_RECALL - Recall a Delegation
  */
 static int nfs4_xdr_dec_cb_recall(struct rpc_rqst *rqstp,
 				  struct xdr_stream *xdr,
+<<<<<<< HEAD
 				  struct nfsd4_callback *cb)
 {
 	struct nfs4_cb_compound_hdr hdr;
 	enum nfsstat4 nfserr;
+=======
+				  void *data)
+{
+	struct nfsd4_callback *cb = data;
+	struct nfs4_cb_compound_hdr hdr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status;
 
 	status = decode_cb_compound4res(xdr, &hdr);
 	if (unlikely(status))
+<<<<<<< HEAD
 		goto out;
 
 	if (cb != NULL) {
@@ -573,26 +838,322 @@ out:
 	return status;
 }
 
+=======
+		return status;
+
+	status = decode_cb_sequence4res(xdr, cb);
+	if (unlikely(status || cb->cb_seq_status))
+		return status;
+
+	return decode_cb_op_status(xdr, OP_CB_RECALL, &cb->cb_status);
+}
+
+/*
+ * 20.6. Operation 8: CB_RECALL_ANY - Keep Any N Recallable Objects
+ */
+static int
+nfs4_xdr_dec_cb_recall_any(struct rpc_rqst *rqstp,
+				  struct xdr_stream *xdr,
+				  void *data)
+{
+	struct nfsd4_callback *cb = data;
+	struct nfs4_cb_compound_hdr hdr;
+	int status;
+
+	status = decode_cb_compound4res(xdr, &hdr);
+	if (unlikely(status))
+		return status;
+	status = decode_cb_sequence4res(xdr, cb);
+	if (unlikely(status || cb->cb_seq_status))
+		return status;
+	status =  decode_cb_op_status(xdr, OP_CB_RECALL_ANY, &cb->cb_status);
+	return status;
+}
+
+#ifdef CONFIG_NFSD_PNFS
+/*
+ * CB_LAYOUTRECALL4args
+ *
+ *	struct layoutrecall_file4 {
+ *		nfs_fh4         lor_fh;
+ *		offset4         lor_offset;
+ *		length4         lor_length;
+ *		stateid4        lor_stateid;
+ *	};
+ *
+ *	union layoutrecall4 switch(layoutrecall_type4 lor_recalltype) {
+ *	case LAYOUTRECALL4_FILE:
+ *		layoutrecall_file4 lor_layout;
+ *	case LAYOUTRECALL4_FSID:
+ *		fsid4              lor_fsid;
+ *	case LAYOUTRECALL4_ALL:
+ *		void;
+ *	};
+ *
+ *	struct CB_LAYOUTRECALL4args {
+ *		layouttype4             clora_type;
+ *		layoutiomode4           clora_iomode;
+ *		bool                    clora_changed;
+ *		layoutrecall4           clora_recall;
+ *	};
+ */
+static void encode_cb_layout4args(struct xdr_stream *xdr,
+				  const struct nfs4_layout_stateid *ls,
+				  struct nfs4_cb_compound_hdr *hdr)
+{
+	__be32 *p;
+
+	BUG_ON(hdr->minorversion == 0);
+
+	p = xdr_reserve_space(xdr, 5 * 4);
+	*p++ = cpu_to_be32(OP_CB_LAYOUTRECALL);
+	*p++ = cpu_to_be32(ls->ls_layout_type);
+	*p++ = cpu_to_be32(IOMODE_ANY);
+	*p++ = cpu_to_be32(1);
+	*p = cpu_to_be32(RETURN_FILE);
+
+	encode_nfs_fh4(xdr, &ls->ls_stid.sc_file->fi_fhandle);
+
+	p = xdr_reserve_space(xdr, 2 * 8);
+	p = xdr_encode_hyper(p, 0);
+	xdr_encode_hyper(p, NFS4_MAX_UINT64);
+
+	encode_stateid4(xdr, &ls->ls_recall_sid);
+
+	hdr->nops++;
+}
+
+static void nfs4_xdr_enc_cb_layout(struct rpc_rqst *req,
+				   struct xdr_stream *xdr,
+				   const void *data)
+{
+	const struct nfsd4_callback *cb = data;
+	const struct nfs4_layout_stateid *ls =
+		container_of(cb, struct nfs4_layout_stateid, ls_recall);
+	struct nfs4_cb_compound_hdr hdr = {
+		.ident = 0,
+		.minorversion = cb->cb_clp->cl_minorversion,
+	};
+
+	encode_cb_compound4args(xdr, &hdr);
+	encode_cb_sequence4args(xdr, cb, &hdr);
+	encode_cb_layout4args(xdr, ls, &hdr);
+	encode_cb_nops(&hdr);
+}
+
+static int nfs4_xdr_dec_cb_layout(struct rpc_rqst *rqstp,
+				  struct xdr_stream *xdr,
+				  void *data)
+{
+	struct nfsd4_callback *cb = data;
+	struct nfs4_cb_compound_hdr hdr;
+	int status;
+
+	status = decode_cb_compound4res(xdr, &hdr);
+	if (unlikely(status))
+		return status;
+
+	status = decode_cb_sequence4res(xdr, cb);
+	if (unlikely(status || cb->cb_seq_status))
+		return status;
+
+	return decode_cb_op_status(xdr, OP_CB_LAYOUTRECALL, &cb->cb_status);
+}
+#endif /* CONFIG_NFSD_PNFS */
+
+static void encode_stateowner(struct xdr_stream *xdr, struct nfs4_stateowner *so)
+{
+	__be32	*p;
+
+	p = xdr_reserve_space(xdr, 8 + 4 + so->so_owner.len);
+	p = xdr_encode_opaque_fixed(p, &so->so_client->cl_clientid, 8);
+	xdr_encode_opaque(p, so->so_owner.data, so->so_owner.len);
+}
+
+static void nfs4_xdr_enc_cb_notify_lock(struct rpc_rqst *req,
+					struct xdr_stream *xdr,
+					const void *data)
+{
+	const struct nfsd4_callback *cb = data;
+	const struct nfsd4_blocked_lock *nbl =
+		container_of(cb, struct nfsd4_blocked_lock, nbl_cb);
+	struct nfs4_lockowner *lo = (struct nfs4_lockowner *)nbl->nbl_lock.c.flc_owner;
+	struct nfs4_cb_compound_hdr hdr = {
+		.ident = 0,
+		.minorversion = cb->cb_clp->cl_minorversion,
+	};
+
+	__be32 *p;
+
+	BUG_ON(hdr.minorversion == 0);
+
+	encode_cb_compound4args(xdr, &hdr);
+	encode_cb_sequence4args(xdr, cb, &hdr);
+
+	p = xdr_reserve_space(xdr, 4);
+	*p = cpu_to_be32(OP_CB_NOTIFY_LOCK);
+	encode_nfs_fh4(xdr, &nbl->nbl_fh);
+	encode_stateowner(xdr, &lo->lo_owner);
+	hdr.nops++;
+
+	encode_cb_nops(&hdr);
+}
+
+static int nfs4_xdr_dec_cb_notify_lock(struct rpc_rqst *rqstp,
+					struct xdr_stream *xdr,
+					void *data)
+{
+	struct nfsd4_callback *cb = data;
+	struct nfs4_cb_compound_hdr hdr;
+	int status;
+
+	status = decode_cb_compound4res(xdr, &hdr);
+	if (unlikely(status))
+		return status;
+
+	status = decode_cb_sequence4res(xdr, cb);
+	if (unlikely(status || cb->cb_seq_status))
+		return status;
+
+	return decode_cb_op_status(xdr, OP_CB_NOTIFY_LOCK, &cb->cb_status);
+}
+
+/*
+ * struct write_response4 {
+ *	stateid4	wr_callback_id<1>;
+ *	length4		wr_count;
+ *	stable_how4	wr_committed;
+ *	verifier4	wr_writeverf;
+ * };
+ * union offload_info4 switch (nfsstat4 coa_status) {
+ *	case NFS4_OK:
+ *		write_response4	coa_resok4;
+ *	default:
+ *		length4		coa_bytes_copied;
+ * };
+ * struct CB_OFFLOAD4args {
+ *	nfs_fh4		coa_fh;
+ *	stateid4	coa_stateid;
+ *	offload_info4	coa_offload_info;
+ * };
+ */
+static void encode_offload_info4(struct xdr_stream *xdr,
+				 const struct nfsd4_cb_offload *cbo)
+{
+	__be32 *p;
+
+	p = xdr_reserve_space(xdr, 4);
+	*p = cbo->co_nfserr;
+	switch (cbo->co_nfserr) {
+	case nfs_ok:
+		p = xdr_reserve_space(xdr, 4 + 8 + 4 + NFS4_VERIFIER_SIZE);
+		p = xdr_encode_empty_array(p);
+		p = xdr_encode_hyper(p, cbo->co_res.wr_bytes_written);
+		*p++ = cpu_to_be32(cbo->co_res.wr_stable_how);
+		p = xdr_encode_opaque_fixed(p, cbo->co_res.wr_verifier.data,
+					    NFS4_VERIFIER_SIZE);
+		break;
+	default:
+		p = xdr_reserve_space(xdr, 8);
+		/* We always return success if bytes were written */
+		p = xdr_encode_hyper(p, 0);
+	}
+}
+
+static void encode_cb_offload4args(struct xdr_stream *xdr,
+				   const struct nfsd4_cb_offload *cbo,
+				   struct nfs4_cb_compound_hdr *hdr)
+{
+	__be32 *p;
+
+	p = xdr_reserve_space(xdr, 4);
+	*p = cpu_to_be32(OP_CB_OFFLOAD);
+	encode_nfs_fh4(xdr, &cbo->co_fh);
+	encode_stateid4(xdr, &cbo->co_res.cb_stateid);
+	encode_offload_info4(xdr, cbo);
+
+	hdr->nops++;
+}
+
+static void nfs4_xdr_enc_cb_offload(struct rpc_rqst *req,
+				    struct xdr_stream *xdr,
+				    const void *data)
+{
+	const struct nfsd4_callback *cb = data;
+	const struct nfsd4_cb_offload *cbo =
+		container_of(cb, struct nfsd4_cb_offload, co_cb);
+	struct nfs4_cb_compound_hdr hdr = {
+		.ident = 0,
+		.minorversion = cb->cb_clp->cl_minorversion,
+	};
+
+	encode_cb_compound4args(xdr, &hdr);
+	encode_cb_sequence4args(xdr, cb, &hdr);
+	encode_cb_offload4args(xdr, cbo, &hdr);
+	encode_cb_nops(&hdr);
+}
+
+static int nfs4_xdr_dec_cb_offload(struct rpc_rqst *rqstp,
+				   struct xdr_stream *xdr,
+				   void *data)
+{
+	struct nfsd4_callback *cb = data;
+	struct nfs4_cb_compound_hdr hdr;
+	int status;
+
+	status = decode_cb_compound4res(xdr, &hdr);
+	if (unlikely(status))
+		return status;
+
+	status = decode_cb_sequence4res(xdr, cb);
+	if (unlikely(status || cb->cb_seq_status))
+		return status;
+
+	return decode_cb_op_status(xdr, OP_CB_OFFLOAD, &cb->cb_status);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RPC procedure tables
  */
 #define PROC(proc, call, argtype, restype)				\
 [NFSPROC4_CLNT_##proc] = {						\
 	.p_proc    = NFSPROC4_CB_##call,				\
+<<<<<<< HEAD
 	.p_encode  = (kxdreproc_t)nfs4_xdr_enc_##argtype,		\
 	.p_decode  = (kxdrdproc_t)nfs4_xdr_dec_##restype,		\
+=======
+	.p_encode  = nfs4_xdr_enc_##argtype,		\
+	.p_decode  = nfs4_xdr_dec_##restype,				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.p_arglen  = NFS4_enc_##argtype##_sz,				\
 	.p_replen  = NFS4_dec_##restype##_sz,				\
 	.p_statidx = NFSPROC4_CB_##call,				\
 	.p_name    = #proc,						\
 }
 
+<<<<<<< HEAD
 static struct rpc_procinfo nfs4_cb_procedures[] = {
 	PROC(CB_NULL,	NULL,		cb_null,	cb_null),
 	PROC(CB_RECALL,	COMPOUND,	cb_recall,	cb_recall),
 };
 
 static struct rpc_version nfs_cb_version4 = {
+=======
+static const struct rpc_procinfo nfs4_cb_procedures[] = {
+	PROC(CB_NULL,	NULL,		cb_null,	cb_null),
+	PROC(CB_RECALL,	COMPOUND,	cb_recall,	cb_recall),
+#ifdef CONFIG_NFSD_PNFS
+	PROC(CB_LAYOUT,	COMPOUND,	cb_layout,	cb_layout),
+#endif
+	PROC(CB_NOTIFY_LOCK,	COMPOUND,	cb_notify_lock,	cb_notify_lock),
+	PROC(CB_OFFLOAD,	COMPOUND,	cb_offload,	cb_offload),
+	PROC(CB_RECALL_ANY,	COMPOUND,	cb_recall_any,	cb_recall_any),
+	PROC(CB_GETATTR,	COMPOUND,	cb_getattr,	cb_getattr),
+};
+
+static unsigned int nfs4_cb_counts[ARRAY_SIZE(nfs4_cb_procedures)];
+static const struct rpc_version nfs_cb_version4 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Note on the callback rpc program version number: despite language in rfc
  * 5661 section 18.36.3 requiring servers to use 4 in this field, the
@@ -602,11 +1163,20 @@ static struct rpc_version nfs_cb_version4 = {
  */
 	.number			= 1,
 	.nrprocs		= ARRAY_SIZE(nfs4_cb_procedures),
+<<<<<<< HEAD
 	.procs			= nfs4_cb_procedures
 };
 
 static const struct rpc_version *nfs_cb_version[] = {
 	&nfs_cb_version4,
+=======
+	.procs			= nfs4_cb_procedures,
+	.counts			= nfs4_cb_counts,
+};
+
+static const struct rpc_version *nfs_cb_version[2] = {
+	[1] = &nfs_cb_version4,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct rpc_program cb_program;
@@ -625,6 +1195,7 @@ static const struct rpc_program cb_program = {
 	.pipe_dir_name		= "nfsd4_cb",
 };
 
+<<<<<<< HEAD
 static int max_cb_time(void)
 {
 	return max(nfsd4_lease/10, (time_t)1) * HZ;
@@ -639,11 +1210,85 @@ static int setup_callback_client(struct nfs4_client *clp, struct nfs4_cb_conn *c
 	};
 	struct rpc_create_args args = {
 		.net		= &init_net,
+=======
+static int max_cb_time(struct net *net)
+{
+	struct nfsd_net *nn = net_generic(net, nfsd_net_id);
+
+	/*
+	 * nfsd4_lease is set to at most one hour in __nfsd4_write_time,
+	 * so we can use 32-bit math on it. Warn if that assumption
+	 * ever stops being true.
+	 */
+	if (WARN_ON_ONCE(nn->nfsd4_lease > 3600))
+		return 360 * HZ;
+
+	return max(((u32)nn->nfsd4_lease)/10, 1u) * HZ;
+}
+
+static struct workqueue_struct *callback_wq;
+
+static bool nfsd4_queue_cb(struct nfsd4_callback *cb)
+{
+	trace_nfsd_cb_queue(cb->cb_clp, cb);
+	return queue_work(callback_wq, &cb->cb_work);
+}
+
+static void nfsd41_cb_inflight_begin(struct nfs4_client *clp)
+{
+	atomic_inc(&clp->cl_cb_inflight);
+}
+
+static void nfsd41_cb_inflight_end(struct nfs4_client *clp)
+{
+
+	if (atomic_dec_and_test(&clp->cl_cb_inflight))
+		wake_up_var(&clp->cl_cb_inflight);
+}
+
+static void nfsd41_cb_inflight_wait_complete(struct nfs4_client *clp)
+{
+	wait_var_event(&clp->cl_cb_inflight,
+			!atomic_read(&clp->cl_cb_inflight));
+}
+
+static const struct cred *get_backchannel_cred(struct nfs4_client *clp, struct rpc_clnt *client, struct nfsd4_session *ses)
+{
+	if (clp->cl_minorversion == 0) {
+		client->cl_principal = clp->cl_cred.cr_targ_princ ?
+			clp->cl_cred.cr_targ_princ : "nfs";
+
+		return get_cred(rpc_machine_cred());
+	} else {
+		struct cred *kcred;
+
+		kcred = prepare_kernel_cred(&init_task);
+		if (!kcred)
+			return NULL;
+
+		kcred->fsuid = ses->se_cb_sec.uid;
+		kcred->fsgid = ses->se_cb_sec.gid;
+		return kcred;
+	}
+}
+
+static int setup_callback_client(struct nfs4_client *clp, struct nfs4_cb_conn *conn, struct nfsd4_session *ses)
+{
+	int maxtime = max_cb_time(clp->net);
+	struct rpc_timeout	timeparms = {
+		.to_initval	= maxtime,
+		.to_retries	= 0,
+		.to_maxval	= maxtime,
+	};
+	struct rpc_create_args args = {
+		.net		= clp->net,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.address	= (struct sockaddr *) &conn->cb_addr,
 		.addrsize	= conn->cb_addrlen,
 		.saddress	= (struct sockaddr *) &conn->cb_saddr,
 		.timeout	= &timeparms,
 		.program	= &cb_program,
+<<<<<<< HEAD
 		.version	= 0,
 		.flags		= (RPC_CLNT_CREATE_NOPING | RPC_CLNT_CREATE_QUIET),
 	};
@@ -656,20 +1301,49 @@ static int setup_callback_client(struct nfs4_client *clp, struct nfs4_cb_conn *c
 		args.prognumber	= conn->cb_prog,
 		args.protocol = XPRT_TRANSPORT_TCP;
 		args.authflavor = clp->cl_flavor;
+=======
+		.version	= 1,
+		.flags		= (RPC_CLNT_CREATE_NOPING | RPC_CLNT_CREATE_QUIET),
+		.cred		= current_cred(),
+	};
+	struct rpc_clnt *client;
+	const struct cred *cred;
+
+	if (clp->cl_minorversion == 0) {
+		if (!clp->cl_cred.cr_principal &&
+		    (clp->cl_cred.cr_flavor >= RPC_AUTH_GSS_KRB5)) {
+			trace_nfsd_cb_setup_err(clp, -EINVAL);
+			return -EINVAL;
+		}
+		args.client_name = clp->cl_cred.cr_principal;
+		args.prognumber	= conn->cb_prog;
+		args.protocol = XPRT_TRANSPORT_TCP;
+		args.authflavor = clp->cl_cred.cr_flavor;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		clp->cl_cb_ident = conn->cb_ident;
 	} else {
 		if (!conn->cb_xprt)
 			return -EINVAL;
+<<<<<<< HEAD
 		clp->cl_cb_conn.cb_xprt = conn->cb_xprt;
 		clp->cl_cb_session = ses;
 		args.bc_xprt = conn->cb_xprt;
 		args.prognumber = clp->cl_cb_session->se_cb_prog;
 		args.protocol = XPRT_TRANSPORT_BC_TCP;
 		args.authflavor = RPC_AUTH_UNIX;
+=======
+		clp->cl_cb_session = ses;
+		args.bc_xprt = conn->cb_xprt;
+		args.prognumber = clp->cl_cb_session->se_cb_prog;
+		args.protocol = conn->cb_xprt->xpt_class->xcl_ident |
+				XPRT_TRANSPORT_BC;
+		args.authflavor = ses->se_cb_sec.flavor;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Create RPC client */
 	client = rpc_create(&args);
 	if (IS_ERR(client)) {
+<<<<<<< HEAD
 		dprintk("NFSD: couldn't create callback client: %ld\n",
 			PTR_ERR(client));
 		return PTR_ERR(client);
@@ -695,6 +1369,49 @@ static void nfsd4_mark_cb_fault(struct nfs4_client *clp, int reason)
 {
 	clp->cl_cb_state = NFSD4_CB_FAULT;
 	warn_no_callback_path(clp, reason);
+=======
+		trace_nfsd_cb_setup_err(clp, PTR_ERR(client));
+		return PTR_ERR(client);
+	}
+	cred = get_backchannel_cred(clp, client, ses);
+	if (!cred) {
+		trace_nfsd_cb_setup_err(clp, -ENOMEM);
+		rpc_shutdown_client(client);
+		return -ENOMEM;
+	}
+
+	if (clp->cl_minorversion != 0)
+		clp->cl_cb_conn.cb_xprt = conn->cb_xprt;
+	clp->cl_cb_client = client;
+	clp->cl_cb_cred = cred;
+	rcu_read_lock();
+	trace_nfsd_cb_setup(clp, rpc_peeraddr2str(client, RPC_DISPLAY_NETID),
+			    args.authflavor);
+	rcu_read_unlock();
+	return 0;
+}
+
+static void nfsd4_mark_cb_state(struct nfs4_client *clp, int newstate)
+{
+	if (clp->cl_cb_state != newstate) {
+		clp->cl_cb_state = newstate;
+		trace_nfsd_cb_new_state(clp);
+	}
+}
+
+static void nfsd4_mark_cb_down(struct nfs4_client *clp)
+{
+	if (test_bit(NFSD4_CLIENT_CB_UPDATE, &clp->cl_flags))
+		return;
+	nfsd4_mark_cb_state(clp, NFSD4_CB_DOWN);
+}
+
+static void nfsd4_mark_cb_fault(struct nfs4_client *clp)
+{
+	if (test_bit(NFSD4_CLIENT_CB_UPDATE, &clp->cl_flags))
+		return;
+	nfsd4_mark_cb_state(clp, NFSD4_CB_FAULT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nfsd4_cb_probe_done(struct rpc_task *task, void *calldata)
@@ -702,15 +1419,30 @@ static void nfsd4_cb_probe_done(struct rpc_task *task, void *calldata)
 	struct nfs4_client *clp = container_of(calldata, struct nfs4_client, cl_cb_null);
 
 	if (task->tk_status)
+<<<<<<< HEAD
 		nfsd4_mark_cb_down(clp, task->tk_status);
 	else
 		clp->cl_cb_state = NFSD4_CB_UP;
+=======
+		nfsd4_mark_cb_down(clp);
+	else
+		nfsd4_mark_cb_state(clp, NFSD4_CB_UP);
+}
+
+static void nfsd4_cb_probe_release(void *calldata)
+{
+	struct nfs4_client *clp = container_of(calldata, struct nfs4_client, cl_cb_null);
+
+	nfsd41_cb_inflight_end(clp);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct rpc_call_ops nfsd4_cb_probe_ops = {
 	/* XXX: release method to ensure we set the cb channel down if
 	 * necessary on early failure? */
 	.rpc_call_done = nfsd4_cb_probe_done,
+<<<<<<< HEAD
 };
 
 static struct rpc_cred *callback_cred;
@@ -749,16 +1481,28 @@ static void do_probe_callback(struct nfs4_client *clp)
 	run_nfsd4_cb(cb);
 }
 
+=======
+	.rpc_release = nfsd4_cb_probe_release,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Poke the callback thread to process any updates to the callback
  * parameters, and send a null probe.
  */
 void nfsd4_probe_callback(struct nfs4_client *clp)
 {
+<<<<<<< HEAD
 	/* XXX: atomicity?  Also, should we be using cl_flags? */
 	clp->cl_cb_state = NFSD4_CB_UNKNOWN;
 	set_bit(NFSD4_CLIENT_CB_UPDATE, &clp->cl_flags);
 	do_probe_callback(clp);
+=======
+	trace_nfsd_cb_probe(clp);
+	nfsd4_mark_cb_state(clp, NFSD4_CB_UNKNOWN);
+	set_bit(NFSD4_CLIENT_CB_UPDATE, &clp->cl_flags);
+	nfsd4_run_cb(&clp->cl_cb_null);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nfsd4_probe_callback_sync(struct nfs4_client *clp)
@@ -769,7 +1513,11 @@ void nfsd4_probe_callback_sync(struct nfs4_client *clp)
 
 void nfsd4_change_callback(struct nfs4_client *clp, struct nfs4_cb_conn *conn)
 {
+<<<<<<< HEAD
 	clp->cl_cb_state = NFSD4_CB_UNKNOWN;
+=======
+	nfsd4_mark_cb_state(clp, NFSD4_CB_UNKNOWN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&clp->cl_lock);
 	memcpy(&clp->cl_cb_conn, conn, sizeof(struct nfs4_cb_conn));
 	spin_unlock(&clp->cl_lock);
@@ -780,9 +1528,18 @@ void nfsd4_change_callback(struct nfs4_client *clp, struct nfs4_cb_conn *conn)
  * If the slot is available, then mark it busy.  Otherwise, set the
  * thread for sleeping on the callback RPC wait queue.
  */
+<<<<<<< HEAD
 static bool nfsd41_cb_get_slot(struct nfs4_client *clp, struct rpc_task *task)
 {
 	if (test_and_set_bit(0, &clp->cl_cb_slot_busy) != 0) {
+=======
+static bool nfsd41_cb_get_slot(struct nfsd4_callback *cb, struct rpc_task *task)
+{
+	struct nfs4_client *clp = cb->cb_clp;
+
+	if (!cb->cb_holds_slot &&
+	    test_and_set_bit(0, &clp->cl_cb_slot_busy) != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rpc_sleep_on(&clp->cl_cb_waitq, task, NULL);
 		/* Race breaker */
 		if (test_and_set_bit(0, &clp->cl_cb_slot_busy) != 0) {
@@ -791,9 +1548,38 @@ static bool nfsd41_cb_get_slot(struct nfs4_client *clp, struct rpc_task *task)
 		}
 		rpc_wake_up_queued_task(&clp->cl_cb_waitq, task);
 	}
+<<<<<<< HEAD
 	return true;
 }
 
+=======
+	cb->cb_holds_slot = true;
+	return true;
+}
+
+static void nfsd41_cb_release_slot(struct nfsd4_callback *cb)
+{
+	struct nfs4_client *clp = cb->cb_clp;
+
+	if (cb->cb_holds_slot) {
+		cb->cb_holds_slot = false;
+		clear_bit(0, &clp->cl_cb_slot_busy);
+		rpc_wake_up_next(&clp->cl_cb_waitq);
+	}
+}
+
+static void nfsd41_destroy_cb(struct nfsd4_callback *cb)
+{
+	struct nfs4_client *clp = cb->cb_clp;
+
+	trace_nfsd_cb_destroy(clp, cb);
+	nfsd41_cb_release_slot(cb);
+	if (cb->cb_ops && cb->cb_ops->release)
+		cb->cb_ops->release(cb);
+	nfsd41_cb_inflight_end(clp);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TODO: cb_sequence should support referring call lists, cachethis, multiple
  * slots, and mark callback channel down on communication errors.
@@ -801,6 +1587,7 @@ static bool nfsd41_cb_get_slot(struct nfs4_client *clp, struct rpc_task *task)
 static void nfsd4_cb_prepare(struct rpc_task *task, void *calldata)
 {
 	struct nfsd4_callback *cb = calldata;
+<<<<<<< HEAD
 	struct nfs4_delegation *dp = container_of(cb, struct nfs4_delegation, dl_recall);
 	struct nfs4_client *clp = dp->dl_stid.sc_client;
 	u32 minorversion = clp->cl_minorversion;
@@ -902,11 +1689,171 @@ static const struct rpc_call_ops nfsd4_cb_recall_ops = {
 	.rpc_call_prepare = nfsd4_cb_prepare,
 	.rpc_call_done = nfsd4_cb_recall_done,
 	.rpc_release = nfsd4_cb_recall_release,
+=======
+	struct nfs4_client *clp = cb->cb_clp;
+	u32 minorversion = clp->cl_minorversion;
+
+	/*
+	 * cb_seq_status is only set in decode_cb_sequence4res,
+	 * and so will remain 1 if an rpc level failure occurs.
+	 */
+	cb->cb_seq_status = 1;
+	cb->cb_status = 0;
+	if (minorversion && !nfsd41_cb_get_slot(cb, task))
+		return;
+	rpc_call_start(task);
+}
+
+static bool nfsd4_cb_sequence_done(struct rpc_task *task, struct nfsd4_callback *cb)
+{
+	struct nfs4_client *clp = cb->cb_clp;
+	struct nfsd4_session *session = clp->cl_cb_session;
+	bool ret = true;
+
+	if (!clp->cl_minorversion) {
+		/*
+		 * If the backchannel connection was shut down while this
+		 * task was queued, we need to resubmit it after setting up
+		 * a new backchannel connection.
+		 *
+		 * Note that if we lost our callback connection permanently
+		 * the submission code will error out, so we don't need to
+		 * handle that case here.
+		 */
+		if (RPC_SIGNALLED(task))
+			goto need_restart;
+
+		return true;
+	}
+
+	if (!cb->cb_holds_slot)
+		goto need_restart;
+
+	/* This is the operation status code for CB_SEQUENCE */
+	trace_nfsd_cb_seq_status(task, cb);
+	switch (cb->cb_seq_status) {
+	case 0:
+		/*
+		 * No need for lock, access serialized in nfsd4_cb_prepare
+		 *
+		 * RFC5661 20.9.3
+		 * If CB_SEQUENCE returns an error, then the state of the slot
+		 * (sequence ID, cached reply) MUST NOT change.
+		 */
+		++session->se_cb_seq_nr;
+		break;
+	case -ESERVERFAULT:
+		++session->se_cb_seq_nr;
+		nfsd4_mark_cb_fault(cb->cb_clp);
+		ret = false;
+		break;
+	case 1:
+		/*
+		 * cb_seq_status remains 1 if an RPC Reply was never
+		 * received. NFSD can't know if the client processed
+		 * the CB_SEQUENCE operation. Ask the client to send a
+		 * DESTROY_SESSION to recover.
+		 */
+		fallthrough;
+	case -NFS4ERR_BADSESSION:
+		nfsd4_mark_cb_fault(cb->cb_clp);
+		ret = false;
+		goto need_restart;
+	case -NFS4ERR_DELAY:
+		cb->cb_seq_status = 1;
+		if (!rpc_restart_call(task))
+			goto out;
+
+		rpc_delay(task, 2 * HZ);
+		return false;
+	case -NFS4ERR_BADSLOT:
+		goto retry_nowait;
+	case -NFS4ERR_SEQ_MISORDERED:
+		if (session->se_cb_seq_nr != 1) {
+			session->se_cb_seq_nr = 1;
+			goto retry_nowait;
+		}
+		break;
+	default:
+		nfsd4_mark_cb_fault(cb->cb_clp);
+	}
+	nfsd41_cb_release_slot(cb);
+
+	trace_nfsd_cb_free_slot(task, cb);
+
+	if (RPC_SIGNALLED(task))
+		goto need_restart;
+out:
+	return ret;
+retry_nowait:
+	if (rpc_restart_call_prepare(task))
+		ret = false;
+	goto out;
+need_restart:
+	if (!test_bit(NFSD4_CLIENT_CB_KILL, &clp->cl_flags)) {
+		trace_nfsd_cb_restart(clp, cb);
+		task->tk_status = 0;
+		cb->cb_need_restart = true;
+	}
+	return false;
+}
+
+static void nfsd4_cb_done(struct rpc_task *task, void *calldata)
+{
+	struct nfsd4_callback *cb = calldata;
+	struct nfs4_client *clp = cb->cb_clp;
+
+	if (!nfsd4_cb_sequence_done(task, cb))
+		return;
+
+	if (cb->cb_status) {
+		WARN_ON_ONCE(task->tk_status);
+		task->tk_status = cb->cb_status;
+	}
+
+	switch (cb->cb_ops->done(cb, task)) {
+	case 0:
+		task->tk_status = 0;
+		rpc_restart_call_prepare(task);
+		return;
+	case 1:
+		switch (task->tk_status) {
+		case -EIO:
+		case -ETIMEDOUT:
+		case -EACCES:
+			nfsd4_mark_cb_down(clp);
+		}
+		break;
+	default:
+		BUG();
+	}
+}
+
+static void nfsd4_cb_release(void *calldata)
+{
+	struct nfsd4_callback *cb = calldata;
+
+	if (cb->cb_need_restart)
+		nfsd4_queue_cb(cb);
+	else
+		nfsd41_destroy_cb(cb);
+
+}
+
+static const struct rpc_call_ops nfsd4_cb_ops = {
+	.rpc_call_prepare = nfsd4_cb_prepare,
+	.rpc_call_done = nfsd4_cb_done,
+	.rpc_release = nfsd4_cb_release,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int nfsd4_create_callback_queue(void)
 {
+<<<<<<< HEAD
 	callback_wq = create_singlethread_workqueue("nfsd4_callbacks");
+=======
+	callback_wq = alloc_ordered_workqueue("nfsd4_callbacks", 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!callback_wq)
 		return -ENOMEM;
 	return 0;
@@ -920,6 +1867,7 @@ void nfsd4_destroy_callback_queue(void)
 /* must be called under the state lock */
 void nfsd4_shutdown_callback(struct nfs4_client *clp)
 {
+<<<<<<< HEAD
 	set_bit(NFSD4_CLIENT_CB_KILL, &clp->cl_flags);
 	/*
 	 * Note this won't actually result in a null callback;
@@ -937,11 +1885,32 @@ static void nfsd4_release_cb(struct nfsd4_callback *cb)
 }
 
 /* requires cl_lock: */
+=======
+	if (clp->cl_cb_state != NFSD4_CB_UNKNOWN)
+		trace_nfsd_cb_shutdown(clp);
+
+	set_bit(NFSD4_CLIENT_CB_KILL, &clp->cl_flags);
+	/*
+	 * Note this won't actually result in a null callback;
+	 * instead, nfsd4_run_cb_null() will detect the killed
+	 * client, destroy the rpc client, and stop:
+	 */
+	nfsd4_run_cb(&clp->cl_cb_null);
+	flush_workqueue(callback_wq);
+	nfsd41_cb_inflight_wait_complete(clp);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct nfsd4_conn * __nfsd4_find_backchannel(struct nfs4_client *clp)
 {
 	struct nfsd4_session *s;
 	struct nfsd4_conn *c;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&clp->cl_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(s, &clp->cl_sessions, se_perclnt) {
 		list_for_each_entry(c, &s->se_conns, cn_persession) {
 			if (c->cn_flags & NFS4_CDFC4_BACK)
@@ -951,6 +1920,15 @@ static struct nfsd4_conn * __nfsd4_find_backchannel(struct nfs4_client *clp)
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+/*
+ * Note there isn't a lot of locking in this code; instead we depend on
+ * the fact that it is run from the callback_wq, which won't run two
+ * work items at once.  So, for example, callback_wq handles all access
+ * of cl_cb_client and all calls to rpc_create or rpc_shutdown_client.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void nfsd4_process_cb_update(struct nfsd4_callback *cb)
 {
 	struct nfs4_cb_conn conn;
@@ -959,13 +1937,26 @@ static void nfsd4_process_cb_update(struct nfsd4_callback *cb)
 	struct nfsd4_conn *c;
 	int err;
 
+<<<<<<< HEAD
+=======
+	trace_nfsd_cb_bc_update(clp, cb);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * This is either an update, or the client dying; in either case,
 	 * kill the old client:
 	 */
 	if (clp->cl_cb_client) {
+<<<<<<< HEAD
 		rpc_shutdown_client(clp->cl_cb_client);
 		clp->cl_cb_client = NULL;
+=======
+		trace_nfsd_cb_bc_shutdown(clp, cb);
+		rpc_shutdown_client(clp->cl_cb_client);
+		clp->cl_cb_client = NULL;
+		put_cred(clp->cl_cb_cred);
+		clp->cl_cb_cred = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (clp->cl_cb_conn.cb_xprt) {
 		svc_xprt_put(clp->cl_cb_conn.cb_xprt);
@@ -973,13 +1964,23 @@ static void nfsd4_process_cb_update(struct nfsd4_callback *cb)
 	}
 	if (test_bit(NFSD4_CLIENT_CB_KILL, &clp->cl_flags))
 		return;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&clp->cl_lock);
 	/*
 	 * Only serialized callback code is allowed to clear these
 	 * flags; main nfsd code can only set them:
 	 */
+<<<<<<< HEAD
 	BUG_ON(!(clp->cl_flags & NFSD4_CLIENT_CB_FLAG_MASK));
 	clear_bit(NFSD4_CLIENT_CB_UPDATE, &clp->cl_flags);
+=======
+	WARN_ON(!(clp->cl_flags & NFSD4_CLIENT_CB_FLAG_MASK));
+	clear_bit(NFSD4_CLIENT_CB_UPDATE, &clp->cl_flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(&conn, &cb->cb_clp->cl_cb_conn, sizeof(struct nfs4_cb_conn));
 	c = __nfsd4_find_backchannel(clp);
 	if (c) {
@@ -991,6 +1992,7 @@ static void nfsd4_process_cb_update(struct nfsd4_callback *cb)
 
 	err = setup_callback_client(clp, &conn, ses);
 	if (err) {
+<<<<<<< HEAD
 		nfsd4_mark_cb_down(clp, err);
 		return;
 	}
@@ -1004,6 +2006,25 @@ void nfsd4_do_callback_rpc(struct work_struct *w)
 	struct nfsd4_callback *cb = container_of(w, struct nfsd4_callback, cb_work);
 	struct nfs4_client *clp = cb->cb_clp;
 	struct rpc_clnt *clnt;
+=======
+		nfsd4_mark_cb_down(clp);
+		if (c)
+			svc_xprt_put(c->cn_xprt);
+		return;
+	}
+}
+
+static void
+nfsd4_run_cb_work(struct work_struct *work)
+{
+	struct nfsd4_callback *cb =
+		container_of(work, struct nfsd4_callback, cb_work);
+	struct nfs4_client *clp = cb->cb_clp;
+	struct rpc_clnt *clnt;
+	int flags;
+
+	trace_nfsd_cb_start(clp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (clp->cl_flags & NFSD4_CLIENT_CB_FLAG_MASK)
 		nfsd4_process_cb_update(cb);
@@ -1011,6 +2032,7 @@ void nfsd4_do_callback_rpc(struct work_struct *w)
 	clnt = clp->cl_cb_client;
 	if (!clnt) {
 		/* Callback channel broken, or client killed; give up: */
+<<<<<<< HEAD
 		nfsd4_release_cb(cb);
 		return;
 	}
@@ -1038,4 +2060,62 @@ void nfsd4_cb_recall(struct nfs4_delegation *dp)
 	cb->cb_done = true;
 
 	run_nfsd4_cb(&dp->dl_recall);
+=======
+		nfsd41_destroy_cb(cb);
+		return;
+	}
+
+	/*
+	 * Don't send probe messages for 4.1 or later.
+	 */
+	if (!cb->cb_ops && clp->cl_minorversion) {
+		nfsd4_mark_cb_state(clp, NFSD4_CB_UP);
+		nfsd41_destroy_cb(cb);
+		return;
+	}
+
+	if (cb->cb_need_restart) {
+		cb->cb_need_restart = false;
+	} else {
+		if (cb->cb_ops && cb->cb_ops->prepare)
+			cb->cb_ops->prepare(cb);
+	}
+	cb->cb_msg.rpc_cred = clp->cl_cb_cred;
+	flags = clp->cl_minorversion ? RPC_TASK_NOCONNECT : RPC_TASK_SOFTCONN;
+	rpc_call_async(clnt, &cb->cb_msg, RPC_TASK_SOFT | flags,
+			cb->cb_ops ? &nfsd4_cb_ops : &nfsd4_cb_probe_ops, cb);
+}
+
+void nfsd4_init_cb(struct nfsd4_callback *cb, struct nfs4_client *clp,
+		const struct nfsd4_callback_ops *ops, enum nfsd4_cb_op op)
+{
+	cb->cb_clp = clp;
+	cb->cb_msg.rpc_proc = &nfs4_cb_procedures[op];
+	cb->cb_msg.rpc_argp = cb;
+	cb->cb_msg.rpc_resp = cb;
+	cb->cb_ops = ops;
+	INIT_WORK(&cb->cb_work, nfsd4_run_cb_work);
+	cb->cb_status = 0;
+	cb->cb_need_restart = false;
+	cb->cb_holds_slot = false;
+}
+
+/**
+ * nfsd4_run_cb - queue up a callback job to run
+ * @cb: callback to queue
+ *
+ * Kick off a callback to do its thing. Returns false if it was already
+ * on a queue, true otherwise.
+ */
+bool nfsd4_run_cb(struct nfsd4_callback *cb)
+{
+	struct nfs4_client *clp = cb->cb_clp;
+	bool queued;
+
+	nfsd41_cb_inflight_begin(clp);
+	queued = nfsd4_queue_cb(cb);
+	if (!queued)
+		nfsd41_cb_inflight_end(clp);
+	return queued;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

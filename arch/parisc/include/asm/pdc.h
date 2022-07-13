@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _PARISC_PDC_H
 #define _PARISC_PDC_H
 
@@ -344,6 +345,22 @@
 #ifdef __KERNEL__
 
 extern int pdc_type;
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _PARISC_PDC_H
+#define _PARISC_PDC_H
+
+#include <uapi/asm/pdc.h>
+
+#if !defined(__ASSEMBLY__)
+
+extern int parisc_narrow_firmware;
+
+extern int pdc_type;
+extern unsigned long parisc_cell_num; /* cell number the CPU runs on (PAT) */
+extern unsigned long parisc_cell_loc; /* cell location of CPU (PAT)	   */
+extern unsigned long parisc_pat_pdc_cap; /* PDC capabilities (PAT) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Values for pdc_type */
 #define PDC_TYPE_ILLEGAL	-1
@@ -351,6 +368,7 @@ extern int pdc_type;
 #define PDC_TYPE_SYSTEM_MAP	 1 /* 32-bit, but supports PDC_SYSTEM_MAP */
 #define PDC_TYPE_SNAKE		 2 /* Doesn't support SYSTEM_MAP */
 
+<<<<<<< HEAD
 struct pdc_chassis_info {       /* for PDC_CHASSIS_INFO */
 	unsigned long actcnt;   /* actual number of bytes returned */
 	unsigned long maxcnt;   /* maximum number of bytes that could be returned */
@@ -597,11 +615,17 @@ struct pdc_hpmc_pim_20 { /* PDC_PIM */
 void pdc_console_init(void);	/* in pdc_console.c */
 void pdc_console_restart(void);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void setup_pdc(void);		/* in inventory.c */
 
 /* wrapper-functions from pdc.c */
 
 int pdc_add_valid(unsigned long address);
+<<<<<<< HEAD
+=======
+int pdc_instr(unsigned int *instr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int pdc_chassis_info(struct pdc_chassis_info *chassis_info, void *led_info, unsigned long len);
 int pdc_chassis_disp(unsigned long disp);
 int pdc_chassis_warn(unsigned long *warn);
@@ -614,6 +638,7 @@ int pdc_system_map_find_mods(struct pdc_system_map_mod_info *pdc_mod_info,
 int pdc_system_map_find_addrs(struct pdc_system_map_addr_info *pdc_addr_info,
 			      long mod_index, long addr_index);
 int pdc_model_info(struct pdc_model *model);
+<<<<<<< HEAD
 int pdc_model_sysmodel(char *name);
 int pdc_model_cpuid(unsigned long *cpu_id);
 int pdc_model_versions(unsigned long *versions, int id);
@@ -624,6 +649,22 @@ int pdc_spaceid_bits(unsigned long *space_bits);
 int pdc_btlb_info(struct pdc_btlb_info *btlb);
 int pdc_mem_map_hpa(struct pdc_memory_map *r_addr, struct pdc_module_path *mod_path);
 #endif /* !CONFIG_PA20 */
+=======
+int pdc_model_sysmodel(unsigned int os_id, char *name);
+int pdc_model_cpuid(unsigned long *cpu_id);
+int pdc_model_versions(unsigned long *versions, int id);
+int pdc_model_capabilities(unsigned long *capabilities);
+int pdc_model_platform_info(char *orig_prod_num, char *current_prod_num, char *serial_no);
+int pdc_cache_info(struct pdc_cache_info *cache);
+int pdc_spaceid_bits(unsigned long *space_bits);
+int pdc_btlb_info(struct pdc_btlb_info *btlb);
+int pdc_btlb_insert(unsigned long long vpage, unsigned long physpage, unsigned long len,
+                    unsigned long entry_info, unsigned long slot);
+int pdc_btlb_purge_all(void);
+int pdc_mem_map_hpa(struct pdc_memory_map *r_addr, struct pdc_module_path *mod_path);
+int pdc_pim_toc11(struct pdc_toc_pim_11 *ret);
+int pdc_pim_toc20(struct pdc_toc_pim_20 *ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int pdc_lan_station_id(char *lan_addr, unsigned long net_hpa);
 
 int pdc_stable_read(unsigned long staddr, void *memaddr, unsigned long count);
@@ -639,6 +680,13 @@ int pdc_get_initiator(struct hardware_path *, struct pdc_initiator *);
 int pdc_tod_read(struct pdc_tod *tod);
 int pdc_tod_set(unsigned long sec, unsigned long usec);
 
+<<<<<<< HEAD
+=======
+void pdc_pdt_init(void);	/* in pdt.c */
+int pdc_mem_pdt_info(struct pdc_mem_retinfo *rinfo);
+int pdc_mem_pdt_read_entries(struct pdc_mem_read_pdt *rpdt_read,
+		unsigned long *pdt_entries_ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_64BIT
 int pdc_mem_mem_table(struct pdc_memory_table_raddr *r_addr,
 		struct pdc_memory_table *tbl, unsigned long entries);
@@ -650,6 +698,10 @@ int pdc_do_firm_test_reset(unsigned long ftc_bitmap);
 int pdc_do_reset(void);
 int pdc_soft_power_info(unsigned long *power_reg);
 int pdc_soft_power_button(int sw_control);
+<<<<<<< HEAD
+=======
+int pdc_soft_power_button_panic(int sw_control);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void pdc_io_reset(void);
 void pdc_io_reset_devices(void);
 int pdc_iodc_getc(void);
@@ -657,8 +709,17 @@ int pdc_iodc_print(const unsigned char *str, unsigned count);
 
 void pdc_emergency_unlock(void);
 int pdc_sti_call(unsigned long func, unsigned long flags,
+<<<<<<< HEAD
                  unsigned long inptr, unsigned long outputr,
                  unsigned long glob_cfg);
+=======
+		unsigned long inptr, unsigned long outputr,
+		unsigned long glob_cfg, int do_call64);
+
+int __pdc_cpu_rendezvous(void);
+void pdc_cpu_rendezvous_lock(void);
+void pdc_cpu_rendezvous_unlock(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline char * os_id_to_string(u16 os_id) {
 	switch(os_id) {
@@ -673,6 +734,7 @@ static inline char * os_id_to_string(u16 os_id) {
 	}
 }
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
 /* flags of the device_path */
@@ -757,4 +819,7 @@ struct zeropage {
 
 #endif /* !defined(__ASSEMBLY__) */
 
+=======
+#endif /* !defined(__ASSEMBLY__) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _PARISC_PDC_H */

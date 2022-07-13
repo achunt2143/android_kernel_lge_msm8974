@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Support for Digigram Lola PCI-e boards
  *
  *  Copyright (c) 2011 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License as published by the Free
@@ -16,6 +21,8 @@
  *  You should have received a copy of the GNU General Public License along with
  *  this program; if not, write to the Free Software Foundation, Inc., 59
  *  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -67,7 +74,10 @@ MODULE_PARM_DESC(sample_rate_min, "Minimal sample rate");
  */
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Digigram, Lola}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Digigram Lola driver");
 MODULE_AUTHOR("Takashi Iwai <tiwai@suse.de>");
 
@@ -75,7 +85,11 @@ MODULE_AUTHOR("Takashi Iwai <tiwai@suse.de>");
 static int debug;
 module_param(debug, int, 0644);
 #define verbose_debug(fmt, args...)			\
+<<<<<<< HEAD
 	do { if (debug > 1) printk(KERN_DEBUG SFX fmt, ##args); } while (0)
+=======
+	do { if (debug > 1) pr_debug(SFX fmt, ##args); } while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define verbose_debug(fmt, args...)
 #endif
@@ -168,7 +182,11 @@ static int rirb_get_response(struct lola *chip, unsigned int *val,
 			verbose_debug("get_response: %x, %x\n",
 				      chip->res, chip->res_ex);
 			if (chip->res_ex & LOLA_RIRB_EX_ERROR) {
+<<<<<<< HEAD
 				printk(KERN_WARNING SFX "RIRB ERROR: "
+=======
+				dev_warn(chip->card->dev, "RIRB ERROR: "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       "NID=%x, verb=%x, data=%x, ext=%x\n",
 				       chip->last_cmd_nid,
 				       chip->last_verb, chip->last_data,
@@ -182,9 +200,15 @@ static int rirb_get_response(struct lola *chip, unsigned int *val,
 		udelay(20);
 		cond_resched();
 	}
+<<<<<<< HEAD
 	printk(KERN_WARNING SFX "RIRB response error\n");
 	if (!chip->polling_mode) {
 		printk(KERN_WARNING SFX "switching to polling mode\n");
+=======
+	dev_warn(chip->card->dev, "RIRB response error\n");
+	if (!chip->polling_mode) {
+		dev_warn(chip->card->dev, "switching to polling mode\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->polling_mode = 1;
 		goto again;
 	}
@@ -327,7 +351,11 @@ static int reset_controller(struct lola *chip)
 			break;
 	} while (time_before(jiffies, end_time));
 	if (!gctl) {
+<<<<<<< HEAD
 		printk(KERN_ERR SFX "cannot reset controller\n");
+=======
+		dev_err(chip->card->dev, "cannot reset controller\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 	return 0;
@@ -358,6 +386,7 @@ static void lola_irq_disable(struct lola *chip)
 
 static int setup_corb_rirb(struct lola *chip)
 {
+<<<<<<< HEAD
 	int err;
 	unsigned char tmp;
 	unsigned long end_time;
@@ -372,6 +401,20 @@ static int setup_corb_rirb(struct lola *chip)
 	chip->corb.buf = (u32 *)chip->rb.area;
 	chip->rirb.addr = chip->rb.addr + 2048;
 	chip->rirb.buf = (u32 *)(chip->rb.area + 2048);
+=======
+	unsigned char tmp;
+	unsigned long end_time;
+
+	chip->rb = snd_devm_alloc_pages(&chip->pci->dev, SNDRV_DMA_TYPE_DEV,
+					PAGE_SIZE);
+	if (!chip->rb)
+		return -ENOMEM;
+
+	chip->corb.addr = chip->rb->addr;
+	chip->corb.buf = (__le32 *)chip->rb->area;
+	chip->rirb.addr = chip->rb->addr + 2048;
+	chip->rirb.buf = (__le32 *)(chip->rb->area + 2048);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable ringbuffer DMAs */
 	lola_writeb(chip, BAR0, RIRBCTL, 0);
@@ -445,47 +488,79 @@ static void lola_reset_setups(struct lola *chip)
 	lola_setup_all_analog_gains(chip, PLAY, false); /* output, update */
 }
 
+<<<<<<< HEAD
 static int __devinit lola_parse_tree(struct lola *chip)
+=======
+static int lola_parse_tree(struct lola *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int val;
 	int nid, err;
 
 	err = lola_read_param(chip, 0, LOLA_PAR_VENDOR_ID, &val);
 	if (err < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR SFX "Can't read VENDOR_ID\n");
+=======
+		dev_err(chip->card->dev, "Can't read VENDOR_ID\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	val >>= 16;
 	if (val != 0x1369) {
+<<<<<<< HEAD
 		printk(KERN_ERR SFX "Unknown codec vendor 0x%x\n", val);
+=======
+		dev_err(chip->card->dev, "Unknown codec vendor 0x%x\n", val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	err = lola_read_param(chip, 1, LOLA_PAR_FUNCTION_TYPE, &val);
 	if (err < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR SFX "Can't read FUNCTION_TYPE for 0x%x\n", nid);
 		return err;
 	}
 	if (val != 1) {
 		printk(KERN_ERR SFX "Unknown function type %d\n", val);
+=======
+		dev_err(chip->card->dev, "Can't read FUNCTION_TYPE\n");
+		return err;
+	}
+	if (val != 1) {
+		dev_err(chip->card->dev, "Unknown function type %d\n", val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	err = lola_read_param(chip, 1, LOLA_PAR_SPECIFIC_CAPS, &val);
 	if (err < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR SFX "Can't read SPECCAPS\n");
+=======
+		dev_err(chip->card->dev, "Can't read SPECCAPS\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	chip->lola_caps = val;
 	chip->pin[CAPT].num_pins = LOLA_AFG_INPUT_PIN_COUNT(chip->lola_caps);
 	chip->pin[PLAY].num_pins = LOLA_AFG_OUTPUT_PIN_COUNT(chip->lola_caps);
+<<<<<<< HEAD
 	snd_printdd(SFX "speccaps=0x%x, pins in=%d, out=%d\n",
+=======
+	dev_dbg(chip->card->dev, "speccaps=0x%x, pins in=%d, out=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    chip->lola_caps,
 		    chip->pin[CAPT].num_pins, chip->pin[PLAY].num_pins);
 
 	if (chip->pin[CAPT].num_pins > MAX_AUDIO_INOUT_COUNT ||
 	    chip->pin[PLAY].num_pins > MAX_AUDIO_INOUT_COUNT) {
+<<<<<<< HEAD
 		printk(KERN_ERR SFX "Invalid Lola-spec caps 0x%x\n", val);
+=======
+		dev_err(chip->card->dev, "Invalid Lola-spec caps 0x%x\n", val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -543,6 +618,7 @@ static void lola_stop_hw(struct lola *chip)
 	lola_irq_disable(chip);
 }
 
+<<<<<<< HEAD
 static void lola_free(struct lola *chip)
 {
 	if (chip->initialized)
@@ -591,11 +667,36 @@ static int __devinit lola_create(struct snd_card *card, struct pci_dev *pci,
 		return -ENOMEM;
 	}
 
+=======
+static void lola_free(struct snd_card *card)
+{
+	struct lola *chip = card->private_data;
+
+	if (chip->initialized)
+		lola_stop_hw(chip);
+	lola_free_mixer(chip);
+}
+
+static int lola_create(struct snd_card *card, struct pci_dev *pci, int dev)
+{
+	struct lola *chip = card->private_data;
+	int err;
+	unsigned int dever;
+
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&chip->reg_lock);
 	mutex_init(&chip->open_mutex);
 	chip->card = card;
 	chip->pci = pci;
 	chip->irq = -1;
+<<<<<<< HEAD
+=======
+	card->private_free = lola_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->granularity = granularity[dev];
 	switch (chip->granularity) {
@@ -609,7 +710,11 @@ static int __devinit lola_create(struct snd_card *card, struct pci_dev *pci,
 		chip->sample_rate_max = 192000;
 		break;
 	default:
+<<<<<<< HEAD
 		snd_printk(KERN_WARNING SFX
+=======
+		dev_warn(chip->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   "Invalid granularity %d, reset to %d\n",
 			   chip->granularity, LOLA_GRANULARITY_MAX);
 		chip->granularity = LOLA_GRANULARITY_MAX;
@@ -618,12 +723,17 @@ static int __devinit lola_create(struct snd_card *card, struct pci_dev *pci,
 	}
 	chip->sample_rate_min = sample_rate_min[dev];
 	if (chip->sample_rate_min > chip->sample_rate_max) {
+<<<<<<< HEAD
 		snd_printk(KERN_WARNING SFX
+=======
+		dev_warn(chip->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   "Invalid sample_rate_min %d, reset to 16000\n",
 			   chip->sample_rate_min);
 		chip->sample_rate_min = 16000;
 	}
 
+<<<<<<< HEAD
 	err = pci_request_regions(pci, DRVNAME);
 	if (err < 0) {
 		kfree(chip);
@@ -640,11 +750,22 @@ static int __devinit lola_create(struct snd_card *card, struct pci_dev *pci,
 		err = -ENXIO;
 		goto errout;
 	}
+=======
+	err = pcim_iomap_regions(pci, (1 << 0) | (1 << 2), DRVNAME);
+	if (err < 0)
+		return err;
+
+	chip->bar[0].addr = pci_resource_start(pci, 0);
+	chip->bar[0].remap_addr = pcim_iomap_table(pci)[0];
+	chip->bar[1].addr = pci_resource_start(pci, 2);
+	chip->bar[1].remap_addr = pcim_iomap_table(pci)[2];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_master(pci);
 
 	err = reset_controller(chip);
 	if (err < 0)
+<<<<<<< HEAD
 		goto errout;
 
 	if (request_irq(pci->irq, lola_interrupt, IRQF_SHARED,
@@ -655,12 +776,27 @@ static int __devinit lola_create(struct snd_card *card, struct pci_dev *pci,
 	}
 	chip->irq = pci->irq;
 	synchronize_irq(chip->irq);
+=======
+		return err;
+
+	if (devm_request_irq(&pci->dev, pci->irq, lola_interrupt, IRQF_SHARED,
+			     KBUILD_MODNAME, chip)) {
+		dev_err(chip->card->dev, "unable to grab IRQ %d\n", pci->irq);
+		return -EBUSY;
+	}
+	chip->irq = pci->irq;
+	card->sync_irq = chip->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dever = lola_readl(chip, BAR1, DEVER);
 	chip->pcm[CAPT].num_streams = (dever >> 0) & 0x3ff;
 	chip->pcm[PLAY].num_streams = (dever >> 10) & 0x3ff;
 	chip->version = (dever >> 24) & 0xff;
+<<<<<<< HEAD
 	snd_printdd(SFX "streams in=%d, out=%d, version=0x%x\n",
+=======
+	dev_dbg(chip->card->dev, "streams in=%d, out=%d, version=0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    chip->pcm[CAPT].num_streams, chip->pcm[PLAY].num_streams,
 		    chip->version);
 
@@ -669,13 +805,19 @@ static int __devinit lola_create(struct snd_card *card, struct pci_dev *pci,
 	    chip->pcm[PLAY].num_streams > MAX_STREAM_OUT_COUNT ||
 	    (!chip->pcm[CAPT].num_streams &&
 	     !chip->pcm[PLAY].num_streams)) {
+<<<<<<< HEAD
 		printk(KERN_ERR SFX "invalid DEVER = %x\n", dever);
 		err = -EINVAL;
 		goto errout;
+=======
+		dev_err(chip->card->dev, "invalid DEVER = %x\n", dever);
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = setup_corb_rirb(chip);
 	if (err < 0)
+<<<<<<< HEAD
 		goto errout;
 
 	err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops);
@@ -686,6 +828,12 @@ static int __devinit lola_create(struct snd_card *card, struct pci_dev *pci,
 
 	strcpy(card->driver, "Lola");
 	strlcpy(card->shortname, "Digigram Lola", sizeof(card->shortname));
+=======
+		return err;
+
+	strcpy(card->driver, "Lola");
+	strscpy(card->shortname, "Digigram Lola", sizeof(card->shortname));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snprintf(card->longname, sizeof(card->longname),
 		 "%s at 0x%lx irq %i",
 		 card->shortname, chip->bar[0].addr, chip->irq);
@@ -694,6 +842,7 @@ static int __devinit lola_create(struct snd_card *card, struct pci_dev *pci,
 	lola_irq_enable(chip);
 
 	chip->initialized = 1;
+<<<<<<< HEAD
 	*rchip = chip;
 	return 0;
 
@@ -704,6 +853,13 @@ static int __devinit lola_create(struct snd_card *card, struct pci_dev *pci,
 
 static int __devinit lola_probe(struct pci_dev *pci,
 				const struct pci_device_id *pci_id)
+=======
+	return 0;
+}
+
+static int __lola_probe(struct pci_dev *pci,
+			const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -717,6 +873,7 @@ static int __devinit lola_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
 	if (err < 0) {
 		snd_printk(KERN_ERR SFX "Error creating card!\n");
@@ -741,11 +898,37 @@ static int __devinit lola_probe(struct pci_dev *pci,
 	err = lola_create_mixer(chip);
 	if (err < 0)
 		goto out_free;
+=======
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(*chip), &card);
+	if (err < 0) {
+		dev_err(&pci->dev, "Error creating card!\n");
+		return err;
+	}
+	chip = card->private_data;
+
+	err = lola_create(card, pci, dev);
+	if (err < 0)
+		return err;
+
+	err = lola_parse_tree(chip);
+	if (err < 0)
+		return err;
+
+	err = lola_create_pcm(chip);
+	if (err < 0)
+		return err;
+
+	err = lola_create_mixer(chip);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lola_proc_debug_new(chip);
 
 	err = snd_card_register(card);
 	if (err < 0)
+<<<<<<< HEAD
 		goto out_free;
 
 	pci_set_drvdata(pci, card);
@@ -764,12 +947,30 @@ static void __devexit lola_remove(struct pci_dev *pci)
 
 /* PCI IDs */
 static DEFINE_PCI_DEVICE_TABLE(lola_ids) = {
+=======
+		return err;
+
+	pci_set_drvdata(pci, card);
+	dev++;
+	return 0;
+}
+
+static int lola_probe(struct pci_dev *pci,
+		      const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __lola_probe(pci, pci_id));
+}
+
+/* PCI IDs */
+static const struct pci_device_id lola_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(DIGIGRAM, 0x0001) },
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, lola_ids);
 
 /* pci_driver definition */
+<<<<<<< HEAD
 static struct pci_driver driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = lola_ids,
@@ -789,3 +990,12 @@ static void __exit alsa_card_lola_exit(void)
 
 module_init(alsa_card_lola_init)
 module_exit(alsa_card_lola_exit)
+=======
+static struct pci_driver lola_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = lola_ids,
+	.probe = lola_probe,
+};
+
+module_pci_driver(lola_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

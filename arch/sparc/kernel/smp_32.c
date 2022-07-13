@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* smp.c: Sparc SMP support.
  *
  * Copyright (C) 1996 David S. Miller (davem@caip.rutgers.edu)
@@ -20,18 +24,27 @@
 #include <linux/seq_file.h>
 #include <linux/cache.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
+=======
+#include <linux/profile.h>
+#include <linux/cpu.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/ptrace.h>
 #include <linux/atomic.h>
 
 #include <asm/irq.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/pgalloc.h>
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/oplib.h>
 #include <asm/cacheflush.h>
 #include <asm/tlbflush.h>
 #include <asm/cpudata.h>
+<<<<<<< HEAD
 #include <asm/leon.h>
 
 #include "irq.h"
@@ -40,6 +53,20 @@ volatile unsigned long cpu_callin_map[NR_CPUS] __cpuinitdata = {0,};
 
 cpumask_t smp_commenced_mask = CPU_MASK_NONE;
 
+=======
+#include <asm/timer.h>
+#include <asm/leon.h>
+
+#include "kernel.h"
+#include "irq.h"
+
+volatile unsigned long cpu_callin_map[NR_CPUS] = {0,};
+
+cpumask_t smp_commenced_mask = CPU_MASK_NONE;
+
+const struct sparc32_ipi_ops *sparc32_ipi_ops;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The only guaranteed locking primitive available on all Sparc
  * processors is 'ldstub [%reg + immediate], %dest_reg' which atomically
  * places the current byte at the effective address into dest_reg and
@@ -48,7 +75,11 @@ cpumask_t smp_commenced_mask = CPU_MASK_NONE;
  * instruction which is much better...
  */
 
+<<<<<<< HEAD
 void __cpuinit smp_store_cpu_info(int id)
+=======
+void smp_store_cpu_info(int id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cpu_node;
 	int mid;
@@ -62,7 +93,11 @@ void __cpuinit smp_store_cpu_info(int id)
 	mid = cpu_get_hwmid(cpu_node);
 
 	if (mid < 0) {
+<<<<<<< HEAD
 		printk(KERN_NOTICE "No MID found for CPU%d at node 0x%08d", id, cpu_node);
+=======
+		printk(KERN_NOTICE "No MID found for CPU%d at node 0x%08x", id, cpu_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mid = 0;
 	}
 	cpu_data(id).mid = mid;
@@ -70,8 +105,11 @@ void __cpuinit smp_store_cpu_info(int id)
 
 void __init smp_cpus_done(unsigned int max_cpus)
 {
+<<<<<<< HEAD
 	extern void smp4m_smp_done(void);
 	extern void smp4d_smp_done(void);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long bogosum = 0;
 	int cpu, num = 0;
 
@@ -85,6 +123,7 @@ void __init smp_cpus_done(unsigned int max_cpus)
 		(bogosum/(5000/HZ))%100);
 
 	switch(sparc_cpu_model) {
+<<<<<<< HEAD
 	case sun4:
 		printk("SUN4\n");
 		BUG();
@@ -93,6 +132,8 @@ void __init smp_cpus_done(unsigned int max_cpus)
 		printk("SUN4C\n");
 		BUG();
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case sun4m:
 		smp4m_smp_done();
 		break;
@@ -123,16 +164,26 @@ void cpu_panic(void)
 	panic("SMP bolixed\n");
 }
 
+<<<<<<< HEAD
 struct linux_prom_registers smp_penguin_ctable __cpuinitdata = { 0 };
 
 void smp_send_reschedule(int cpu)
+=======
+struct linux_prom_registers smp_penguin_ctable = { 0 };
+
+void arch_smp_send_reschedule(int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * CPU model dependent way of implementing IPI generation targeting
 	 * a single CPU. The trap handler needs only to do trap entry/return
 	 * to call schedule.
 	 */
+<<<<<<< HEAD
 	BTFIXUP_CALL(smp_ipi_resched)(cpu);
+=======
+	sparc32_ipi_ops->resched(cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void smp_send_stop(void)
@@ -142,7 +193,11 @@ void smp_send_stop(void)
 void arch_send_call_function_single_ipi(int cpu)
 {
 	/* trigger one IPI single call on one CPU */
+<<<<<<< HEAD
 	BTFIXUP_CALL(smp_ipi_single)(cpu);
+=======
+	sparc32_ipi_ops->single(cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void arch_send_call_function_ipi_mask(const struct cpumask *mask)
@@ -151,7 +206,11 @@ void arch_send_call_function_ipi_mask(const struct cpumask *mask)
 
 	/* trigger IPI mask call on each CPU */
 	for_each_cpu(cpu, mask)
+<<<<<<< HEAD
 		BTFIXUP_CALL(smp_ipi_mask_one)(cpu);
+=======
+		sparc32_ipi_ops->mask_one(cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void smp_resched_interrupt(void)
@@ -179,6 +238,7 @@ void smp_call_function_interrupt(void)
 	irq_exit();
 }
 
+<<<<<<< HEAD
 void smp_flush_cache_all(void)
 {
 	xc0((smpfunc_t) BTFIXUP_CALL(local_flush_cache_all));
@@ -329,6 +389,10 @@ void __init smp_prepare_cpus(unsigned int max_cpus)
 {
 	extern void __init smp4m_boot_cpus(void);
 	extern void __init smp4d_boot_cpus(void);
+=======
+void __init smp_prepare_cpus(unsigned int max_cpus)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, cpuid, extra;
 
 	printk("Entering SMP Mode...\n");
@@ -345,6 +409,7 @@ void __init smp_prepare_cpus(unsigned int max_cpus)
 	smp_store_cpu_info(boot_cpu_id);
 
 	switch(sparc_cpu_model) {
+<<<<<<< HEAD
 	case sun4:
 		printk("SUN4\n");
 		BUG();
@@ -353,6 +418,8 @@ void __init smp_prepare_cpus(unsigned int max_cpus)
 		printk("SUN4C\n");
 		BUG();
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case sun4m:
 		smp4m_boot_cpus();
 		break;
@@ -411,6 +478,7 @@ void __init smp_prepare_boot_cpu(void)
 	set_cpu_possible(cpuid, true);
 }
 
+<<<<<<< HEAD
 int __cpuinit __cpu_up(unsigned int cpu)
 {
 	extern int __cpuinit smp4m_boot_one_cpu(int);
@@ -434,6 +502,21 @@ int __cpuinit __cpu_up(unsigned int cpu)
 		break;
 	case sparc_leon:
 		ret = leon_boot_one_cpu(cpu);
+=======
+int __cpu_up(unsigned int cpu, struct task_struct *tidle)
+{
+	int ret=0;
+
+	switch(sparc_cpu_model) {
+	case sun4m:
+		ret = smp4m_boot_one_cpu(cpu, tidle);
+		break;
+	case sun4d:
+		ret = smp4d_boot_one_cpu(cpu, tidle);
+		break;
+	case sparc_leon:
+		ret = leon_boot_one_cpu(cpu, tidle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case sun4e:
 		printk("SUN4E\n");
@@ -457,6 +540,89 @@ int __cpuinit __cpu_up(unsigned int cpu)
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static void arch_cpu_pre_starting(void *arg)
+{
+	local_ops->cache_all();
+	local_ops->tlb_all();
+
+	switch(sparc_cpu_model) {
+	case sun4m:
+		sun4m_cpu_pre_starting(arg);
+		break;
+	case sun4d:
+		sun4d_cpu_pre_starting(arg);
+		break;
+	case sparc_leon:
+		leon_cpu_pre_starting(arg);
+		break;
+	default:
+		BUG();
+	}
+}
+
+static void arch_cpu_pre_online(void *arg)
+{
+	unsigned int cpuid = hard_smp_processor_id();
+
+	register_percpu_ce(cpuid);
+
+	calibrate_delay();
+	smp_store_cpu_info(cpuid);
+
+	local_ops->cache_all();
+	local_ops->tlb_all();
+
+	switch(sparc_cpu_model) {
+	case sun4m:
+		sun4m_cpu_pre_online(arg);
+		break;
+	case sun4d:
+		sun4d_cpu_pre_online(arg);
+		break;
+	case sparc_leon:
+		leon_cpu_pre_online(arg);
+		break;
+	default:
+		BUG();
+	}
+}
+
+static void sparc_start_secondary(void *arg)
+{
+	unsigned int cpu;
+
+	/*
+	 * SMP booting is extremely fragile in some architectures. So run
+	 * the cpu initialization code first before anything else.
+	 */
+	arch_cpu_pre_starting(arg);
+
+	cpu = smp_processor_id();
+
+	notify_cpu_starting(cpu);
+	arch_cpu_pre_online(arg);
+
+	/* Set the CPU in the cpu_online_mask */
+	set_cpu_online(cpu, true);
+
+	/* Enable local interrupts now */
+	local_irq_enable();
+
+	wmb();
+	cpu_startup_entry(CPUHP_AP_ONLINE_IDLE);
+
+	/* We should never reach here! */
+	BUG();
+}
+
+void smp_callin(void)
+{
+	sparc_start_secondary(NULL);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void smp_bogo(struct seq_file *m)
 {
 	int i;

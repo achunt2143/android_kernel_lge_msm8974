@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2008 Nir Tzachar <nir.tzachar@gmail.com?
  * Released under the terms of the GNU GPL v2.0.
@@ -188,10 +189,204 @@ load_config_text[] = N_(
 "last retrieved.  Leave blank to abort."),
 load_config_help[] = N_(
 "\n"
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2008 Nir Tzachar <nir.tzachar@gmail.com>
+ *
+ * Derived from menuconfig.
+ */
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
+#include <string.h>
+#include <strings.h>
+#include <stdlib.h>
+
+#include "list.h"
+#include "lkc.h"
+#include "mnconf-common.h"
+#include "nconf.h"
+#include <ctype.h>
+
+static const char nconf_global_help[] =
+"Help windows\n"
+"------------\n"
+"o  Global help:  Unless in a data entry window, pressing <F1> will give \n"
+"   you the global help window, which you are just reading.\n"
+"\n"
+"o  A short version of the global help is available by pressing <F3>.\n"
+"\n"
+"o  Local help:  To get help related to the current menu entry, use any\n"
+"   of <?> <h>, or if in a data entry window then press <F1>.\n"
+"\n"
+"\n"
+"Menu entries\n"
+"------------\n"
+"This interface lets you select features and parameters for the kernel\n"
+"build.  Kernel features can either be built-in, modularized, or removed.\n"
+"Parameters must be entered as text or decimal or hexadecimal numbers.\n"
+"\n"
+"Menu entries beginning with following braces represent features that\n"
+"  [ ]  can be built in or removed\n"
+"  < >  can be built in, modularized or removed\n"
+"  { }  can be built in or modularized, are selected by another feature\n"
+"  - -  are selected by another feature\n"
+"  XXX  cannot be selected.  Symbol Info <F2> tells you why.\n"
+"*, M or whitespace inside braces means to build in, build as a module\n"
+"or to exclude the feature respectively.\n"
+"\n"
+"To change any of these features, highlight it with the movement keys\n"
+"listed below and press <y> to build it in, <m> to make it a module or\n"
+"<n> to remove it.  You may press the <Space> key to cycle through the\n"
+"available options.\n"
+"\n"
+"A trailing \"--->\" designates a submenu, a trailing \"----\" an\n"
+"empty submenu.\n"
+"\n"
+"Menu navigation keys\n"
+"----------------------------------------------------------------------\n"
+"Linewise up                 <Up>    <k>\n"
+"Linewise down               <Down>  <j>\n"
+"Pagewise up                 <Page Up>\n"
+"Pagewise down               <Page Down>\n"
+"First entry                 <Home>\n"
+"Last entry                  <End>\n"
+"Enter a submenu             <Right>  <Enter>\n"
+"Go back to parent menu      <Left>   <Esc>  <F5>\n"
+"Close a help window         <Enter>  <Esc>  <F5>\n"
+"Close entry window, apply   <Enter>\n"
+"Close entry window, forget  <Esc>  <F5>\n"
+"Start incremental, case-insensitive search for STRING in menu entries,\n"
+"    no regex support, STRING is displayed in upper left corner\n"
+"                            </>STRING\n"
+"    Remove last character   <Backspace>\n"
+"    Jump to next hit        <Down>\n"
+"    Jump to previous hit    <Up>\n"
+"Exit menu search mode       </>  <Esc>\n"
+"Search for configuration variables with or without leading CONFIG_\n"
+"                            <F8>RegExpr<Enter>\n"
+"Verbose search help         <F8><F1>\n"
+"----------------------------------------------------------------------\n"
+"\n"
+"Unless in a data entry window, key <1> may be used instead of <F1>,\n"
+"<2> instead of <F2>, etc.\n"
+"\n"
+"\n"
+"Radiolist (Choice list)\n"
+"-----------------------\n"
+"Use the movement keys listed above to select the option you wish to set\n"
+"and press <Space>.\n"
+"\n"
+"\n"
+"Data entry\n"
+"----------\n"
+"Enter the requested information and press <Enter>.  Hexadecimal values\n"
+"may be entered without the \"0x\" prefix.\n"
+"\n"
+"\n"
+"Text Box (Help Window)\n"
+"----------------------\n"
+"Use movement keys as listed in table above.\n"
+"\n"
+"Press any of <Enter> <Esc> <q> <F5> <F9> to exit.\n"
+"\n"
+"\n"
+"Alternate configuration files\n"
+"-----------------------------\n"
+"nconfig supports switching between different configurations.\n"
+"Press <F6> to save your current configuration.  Press <F7> and enter\n"
+"a file name to load a previously saved configuration.\n"
+"\n"
+"\n"
+"Terminal configuration\n"
+"----------------------\n"
+"If you use nconfig in a xterm window, make sure your TERM environment\n"
+"variable specifies a terminal configuration which supports at least\n"
+"16 colors.  Otherwise nconfig will look rather bad.\n"
+"\n"
+"If the \"stty size\" command reports the current terminalsize correctly,\n"
+"nconfig will adapt to sizes larger than the traditional 80x25 \"standard\"\n"
+"and display longer menus properly.\n"
+"\n"
+"\n"
+"Single menu mode\n"
+"----------------\n"
+"If you prefer to have all of the menu entries listed in a single menu,\n"
+"rather than the default multimenu hierarchy, run nconfig with\n"
+"NCONFIG_MODE environment variable set to single_menu.  Example:\n"
+"\n"
+"make NCONFIG_MODE=single_menu nconfig\n"
+"\n"
+"<Enter> will then unfold the appropriate category, or fold it if it\n"
+"is already unfolded.  Folded menu entries will be designated by a\n"
+"leading \"++>\" and unfolded entries by a leading \"-->\".\n"
+"\n"
+"Note that this mode can eventually be a little more CPU expensive than\n"
+"the default mode, especially with a larger number of unfolded submenus.\n"
+"\n",
+menu_no_f_instructions[] =
+"Legend:  [*] built-in  [ ] excluded  <M> module  < > module capable.\n"
+"Submenus are designated by a trailing \"--->\", empty ones by \"----\".\n"
+"\n"
+"Use the following keys to navigate the menus:\n"
+"Move up or down with <Up> and <Down>.\n"
+"Enter a submenu with <Enter> or <Right>.\n"
+"Exit a submenu to its parent menu with <Esc> or <Left>.\n"
+"Pressing <y> includes, <n> excludes, <m> modularizes features.\n"
+"Pressing <Space> cycles through the available options.\n"
+"To search for menu entries press </>.\n"
+"<Esc> always leaves the current window.\n"
+"\n"
+"You do not have function keys support.\n"
+"Press <1> instead of <F1>, <2> instead of <F2>, etc.\n"
+"For verbose global help use key <1>.\n"
+"For help related to the current menu entry press <?> or <h>.\n",
+menu_instructions[] =
+"Legend:  [*] built-in  [ ] excluded  <M> module  < > module capable.\n"
+"Submenus are designated by a trailing \"--->\", empty ones by \"----\".\n"
+"\n"
+"Use the following keys to navigate the menus:\n"
+"Move up or down with <Up> or <Down>.\n"
+"Enter a submenu with <Enter> or <Right>.\n"
+"Exit a submenu to its parent menu with <Esc> or <Left>.\n"
+"Pressing <y> includes, <n> excludes, <m> modularizes features.\n"
+"Pressing <Space> cycles through the available options.\n"
+"To search for menu entries press </>.\n"
+"<Esc> always leaves the current window.\n"
+"\n"
+"Pressing <1> may be used instead of <F1>, <2> instead of <F2>, etc.\n"
+"For verbose global help press <F1>.\n"
+"For help related to the current menu entry press <?> or <h>.\n",
+radiolist_instructions[] =
+"Press <Up>, <Down>, <Home> or <End> to navigate a radiolist, select\n"
+"with <Space>.\n"
+"For help related to the current entry press <?> or <h>.\n"
+"For global help press <F1>.\n",
+inputbox_instructions_int[] =
+"Please enter a decimal value.\n"
+"Fractions will not be accepted.\n"
+"Press <Enter> to apply, <Esc> to cancel.",
+inputbox_instructions_hex[] =
+"Please enter a hexadecimal value.\n"
+"Press <Enter> to apply, <Esc> to cancel.",
+inputbox_instructions_string[] =
+"Please enter a string value.\n"
+"Press <Enter> to apply, <Esc> to cancel.",
+setmod_text[] =
+"This feature depends on another feature which has been configured as a\n"
+"module.  As a result, the current feature will be built as a module too.",
+load_config_text[] =
+"Enter the name of the configuration file you wish to load.\n"
+"Accept the name shown to restore the configuration you last\n"
+"retrieved.  Leave empty to abort.",
+load_config_help[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "For various reasons, one may wish to keep several different\n"
 "configurations available on a single machine.\n"
 "\n"
 "If you have saved a previous configuration in a file other than the\n"
+<<<<<<< HEAD
 "default one, entering its name here will allow you to modify that\n"
 "configuration.\n"
 "\n"
@@ -204,11 +399,24 @@ save_config_help[] = N_(
 "\n"
 "For various reasons, one may wish to keep different configurations\n"
 "available on a single machine.\n"
+=======
+"default one, entering its name here will allow you to load and modify\n"
+"that configuration.\n"
+"\n"
+"Leave empty to abort.\n",
+save_config_text[] =
+"Enter a filename to which this configuration should be saved\n"
+"as an alternate.  Leave empty to abort.",
+save_config_help[] =
+"For various reasons, one may wish to keep several different\n"
+"configurations available on a single machine.\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "\n"
 "Entering a file name here will allow you to later retrieve, modify\n"
 "and use the current configuration as an alternate to whatever\n"
 "configuration options you have selected at that time.\n"
 "\n"
+<<<<<<< HEAD
 "If you are uncertain what all this means then you should probably\n"
 "leave this blank.\n"),
 search_help[] = N_(
@@ -216,11 +424,19 @@ search_help[] = N_(
 "Search for symbols and display their relations. Regular expressions\n"
 "are allowed.\n"
 "Example: search for \"^FOO\"\n"
+=======
+"Leave empty to abort.\n",
+search_help[] =
+"Search for symbols (configuration variable names CONFIG_*) and display\n"
+"their relations.  Regular expressions are supported.\n"
+"Example:  Search for \"^FOO\".\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "Result:\n"
 "-----------------------------------------------------------------\n"
 "Symbol: FOO [ = m]\n"
 "Prompt: Foo bus is used to drive the bar HW\n"
 "Defined at drivers/pci/Kconfig:47\n"
+<<<<<<< HEAD
 "Depends on: X86_LOCAL_APIC && X86_IO_APIC || IA64\n"
 "Location:\n"
 "  -> Bus options (PCI, PCMCIA, EISA, MCA, ISA)\n"
@@ -242,14 +458,48 @@ search_help[] = N_(
 "o The 'Selects:' line tell what symbol will be automatically\n"
 "  selected if this symbol is selected (y or m)\n"
 "o The 'Selected by' line tell what symbol has selected this symbol\n"
+=======
+"Depends on: X86_LOCAL_APIC && X86_IO_APIC\n"
+"Location:\n"
+"  -> Bus options (PCI, PCMCIA, EISA, ISA)\n"
+"    -> PCI support (PCI [ = y])\n"
+"(1)   -> PCI access mode (<choice> [ = y])\n"
+"Selects: LIBCRC32\n"
+"Selected by: BAR\n"
+"-----------------------------------------------------------------\n"
+"o  The line 'Prompt:' shows the text displayed for this symbol in\n"
+"   the menu hierarchy.\n"
+"o  The 'Defined at' line tells at what file / line number the symbol is\n"
+"   defined.\n"
+"o  The 'Depends on:' line lists symbols that need to be defined for\n"
+"   this symbol to be visible and selectable in the menu.\n"
+"o  The 'Location:' lines tell, where in the menu structure this symbol\n"
+"   is located.\n"
+"     A location followed by a [ = y] indicates that this is\n"
+"     a selectable menu item, and the current value is displayed inside\n"
+"     brackets.\n"
+"     Press the key in the (#) prefix to jump directly to that\n"
+"     location. You will be returned to the current search results\n"
+"     after exiting this new menu.\n"
+"o  The 'Selects:' line tells, what symbol will be automatically selected\n"
+"   if this symbol is selected (y or m).\n"
+"o  The 'Selected by' line tells what symbol has selected this symbol.\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "\n"
 "Only relevant lines are shown.\n"
 "\n\n"
 "Search examples:\n"
+<<<<<<< HEAD
 "Examples: USB  => find all symbols containing USB\n"
 "          ^USB => find all symbols starting with USB\n"
 "          USB$ => find all symbols ending with USB\n"
 "\n");
+=======
+"USB  => find all symbols containing USB\n"
+"^USB => find all symbols starting with USB\n"
+"USB$ => find all symbols ending with USB\n"
+"\n";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mitem {
 	char str[256];
@@ -273,14 +523,25 @@ static int mwin_max_cols;
 static MENU *curses_menu;
 static ITEM *curses_menu_items[MAX_MENU_ITEMS];
 static struct mitem k_menu_items[MAX_MENU_ITEMS];
+<<<<<<< HEAD
 static int items_num;
 static int global_exit;
 /* the currently selected button */
 const char *current_instructions = menu_instructions;
+=======
+static unsigned int items_num;
+static int global_exit;
+/* the currently selected button */
+static const char *current_instructions = menu_instructions;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static char *dialog_input_result;
 static int dialog_input_result_len;
 
+<<<<<<< HEAD
+=======
+static void selected_conf(struct menu *menu, struct menu *active_menu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void conf(struct menu *menu);
 static void conf_choice(struct menu *menu);
 static void conf_string(struct menu *menu);
@@ -310,7 +571,11 @@ struct function_keys {
 };
 
 static const int function_keys_num = 9;
+<<<<<<< HEAD
 struct function_keys function_keys[] = {
+=======
+static struct function_keys function_keys[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.key_str = "F1",
 		.func = "Help",
@@ -319,19 +584,31 @@ struct function_keys function_keys[] = {
 	},
 	{
 		.key_str = "F2",
+<<<<<<< HEAD
 		.func = "Sym Info",
+=======
+		.func = "SymInfo",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.key = F_SYMBOL,
 		.handler = handle_f2,
 	},
 	{
 		.key_str = "F3",
+<<<<<<< HEAD
 		.func = "Insts",
+=======
+		.func = "Help 2",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.key = F_INSTS,
 		.handler = handle_f3,
 	},
 	{
 		.key_str = "F4",
+<<<<<<< HEAD
 		.func = "Config",
+=======
+		.func = "ShowAll",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.key = F_CONF,
 		.handler = handle_f4,
 	},
@@ -355,7 +632,11 @@ struct function_keys function_keys[] = {
 	},
 	{
 		.key_str = "F8",
+<<<<<<< HEAD
 		.func = "Sym Search",
+=======
+		.func = "SymSearch",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.key = F_SEARCH,
 		.handler = handle_f8,
 	},
@@ -372,6 +653,7 @@ static void print_function_line(void)
 	int i;
 	int offset = 1;
 	const int skip = 1;
+<<<<<<< HEAD
 
 	for (i = 0; i < function_keys_num; i++) {
 		(void) wattrset(main_window, attributes[FUNCTION_HIGHLIGHT]);
@@ -381,18 +663,38 @@ static void print_function_line(void)
 		(void) wattrset(main_window, attributes[FUNCTION_TEXT]);
 		offset += strlen(function_keys[i].key_str);
 		mvwprintw(main_window, LINES-3,
+=======
+	int lines = getmaxy(stdscr);
+
+	for (i = 0; i < function_keys_num; i++) {
+		wattrset(main_window, attr_function_highlight);
+		mvwprintw(main_window, lines-3, offset,
+				"%s",
+				function_keys[i].key_str);
+		wattrset(main_window, attr_function_text);
+		offset += strlen(function_keys[i].key_str);
+		mvwprintw(main_window, lines-3,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				offset, "%s",
 				function_keys[i].func);
 		offset += strlen(function_keys[i].func) + skip;
 	}
+<<<<<<< HEAD
 	(void) wattrset(main_window, attributes[NORMAL]);
+=======
+	wattrset(main_window, attr_normal);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* help */
 static void handle_f1(int *key, struct menu *current_item)
 {
 	show_scroll_win(main_window,
+<<<<<<< HEAD
 			_("README"), _(nconf_readme));
+=======
+			"Global help", nconf_global_help);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -407,8 +709,13 @@ static void handle_f2(int *key, struct menu *current_item)
 static void handle_f3(int *key, struct menu *current_item)
 {
 	show_scroll_win(main_window,
+<<<<<<< HEAD
 			_("Instructions"),
 			_(current_instructions));
+=======
+			"Short help",
+			current_instructions);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -416,7 +723,11 @@ static void handle_f3(int *key, struct menu *current_item)
 static void handle_f4(int *key, struct menu *current_item)
 {
 	int res = btn_dialog(main_window,
+<<<<<<< HEAD
 			_("Show all symbols?"),
+=======
+			"Show all symbols?",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			2,
 			"   <Show All>   ",
 			"<Don't show all>");
@@ -500,19 +811,36 @@ typedef enum {MATCH_TINKER_PATTERN_UP, MATCH_TINKER_PATTERN_DOWN,
 /* return the index of the matched item, or -1 if no such item exists */
 static int get_mext_match(const char *match_str, match_f flag)
 {
+<<<<<<< HEAD
 	int match_start = item_index(current_item(curses_menu));
 	int index;
+=======
+	int match_start, index;
+
+	/* Do not search if the menu is empty (i.e. items_num == 0) */
+	match_start = item_index(current_item(curses_menu));
+	if (match_start == ERR)
+		return -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (flag == FIND_NEXT_MATCH_DOWN)
 		++match_start;
 	else if (flag == FIND_NEXT_MATCH_UP)
 		--match_start;
 
+<<<<<<< HEAD
 	index = match_start;
 	index = (index + items_num) % items_num;
 	while (true) {
 		char *str = k_menu_items[index].str;
 		if (strcasestr(str, match_str) != 0)
+=======
+	match_start = (match_start + items_num) % items_num;
+	index = match_start;
+	while (true) {
+		char *str = k_menu_items[index].str;
+		if (strcasestr(str, match_str) != NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return index;
 		if (flag == FIND_NEXT_MATCH_UP ||
 		    flag == MATCH_TINKER_PATTERN_UP)
@@ -631,6 +959,7 @@ static int item_is_tag(char tag)
 
 static char filename[PATH_MAX+1];
 static char menu_backtitle[PATH_MAX+128];
+<<<<<<< HEAD
 static const char *set_config_filename(const char *config_filename)
 {
 	int size;
@@ -644,6 +973,14 @@ static const char *set_config_filename(const char *config_filename)
 	if (size >= sizeof(filename))
 		filename[sizeof(filename)-1] = '\0';
 	return menu_backtitle;
+=======
+static void set_config_filename(const char *config_filename)
+{
+	snprintf(menu_backtitle, sizeof(menu_backtitle), "%s - %s",
+		 config_filename, rootmenu.prompt->text);
+
+	snprintf(filename, sizeof(filename), "%s", config_filename);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* return = 0 means we are successful.
@@ -657,8 +994,13 @@ static int do_exit(void)
 		return 0;
 	}
 	res = btn_dialog(main_window,
+<<<<<<< HEAD
 			_("Do you wish to save your new configuration?\n"
 				"<ESC> to cancel and resume nconfig."),
+=======
+			"Do you wish to save your new configuration?\n"
+				"<ESC> to cancel and resume nconfig.",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			2,
 			"   <save>   ",
 			"<don't save>");
@@ -674,15 +1016,27 @@ static int do_exit(void)
 		if (res)
 			btn_dialog(
 				main_window,
+<<<<<<< HEAD
 				_("Error during writing of configuration.\n"
 				  "Your configuration changes were NOT saved."),
 				  1,
 				  "<OK>");
+=======
+				"Error during writing of configuration.\n"
+				  "Your configuration changes were NOT saved.",
+				  1,
+				  "<OK>");
+		conf_write_autoconf(0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		btn_dialog(
 			main_window,
+<<<<<<< HEAD
 			_("Your configuration changes were NOT saved."),
+=======
+			"Your configuration changes were NOT saved.",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			1,
 			"<OK>");
 		break;
@@ -696,6 +1050,7 @@ static void search_conf(void)
 {
 	struct symbol **sym_arr;
 	struct gstr res;
+<<<<<<< HEAD
 	char *dialog_input;
 	int dres;
 again:
@@ -703,15 +1058,37 @@ again:
 			_("Search Configuration Parameter"),
 			_("Enter " CONFIG_ " (sub)string to search for "
 				"(with or without \"" CONFIG_ "\")"),
+=======
+	struct gstr title;
+	char *dialog_input;
+	int dres, vscroll = 0, hscroll = 0;
+	bool again;
+
+	title = str_new();
+	str_printf( &title, "Enter (sub)string or regexp to search for "
+			      "(with or without \"%s\")", CONFIG_);
+
+again:
+	dres = dialog_inputbox(main_window,
+			"Search Configuration Parameter",
+			str_get(&title),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"", &dialog_input_result, &dialog_input_result_len);
 	switch (dres) {
 	case 0:
 		break;
 	case 1:
 		show_scroll_win(main_window,
+<<<<<<< HEAD
 				_("Search Configuration"), search_help);
 		goto again;
 	default:
+=======
+				"Search Configuration", search_help);
+		goto again;
+	default:
+		str_free(&title);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -721,11 +1098,37 @@ again:
 		dialog_input += strlen(CONFIG_);
 
 	sym_arr = sym_re_search(dialog_input);
+<<<<<<< HEAD
 	res = get_relations_str(sym_arr);
 	free(sym_arr);
 	show_scroll_win(main_window,
 			_("Search Results"), str_get(&res));
 	str_free(&res);
+=======
+
+	do {
+		LIST_HEAD(head);
+		struct search_data data = {
+			.head = &head,
+			.target = NULL,
+		};
+		jump_key_char = 0;
+		res = get_relations_str(sym_arr, &head);
+		dres = show_scroll_win_ext(main_window,
+				"Search Results", str_get(&res),
+				&vscroll, &hscroll,
+				handle_search_keys, &data);
+		again = false;
+		if (dres >= '1' && dres <= '9') {
+			assert(data.target != NULL);
+			selected_conf(data.target->parent, data.target);
+			again = true;
+		}
+		str_free(&res);
+	} while (again);
+	free(sym_arr);
+	str_free(&title);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -751,7 +1154,10 @@ static void build_conf(struct menu *menu)
 			switch (ptype) {
 			case P_MENU:
 				child_count++;
+<<<<<<< HEAD
 				prompt = _(prompt);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (single_menu_mode) {
 					item_make(menu, 'm',
 						"%s%*c%s",
@@ -759,9 +1165,15 @@ static void build_conf(struct menu *menu)
 						indent + 1, ' ', prompt);
 				} else
 					item_make(menu, 'm',
+<<<<<<< HEAD
 						"   %*c%s  --->",
 						indent + 1,
 						' ', prompt);
+=======
+						  "   %*c%s  %s",
+						  indent + 1, ' ', prompt,
+						  menu_is_empty(menu) ? "----" : "--->");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				if (single_menu_mode && menu->data)
 					goto conf_childs;
@@ -772,7 +1184,11 @@ static void build_conf(struct menu *menu)
 					item_make(menu, ':',
 						"   %*c*** %s ***",
 						indent + 1, ' ',
+<<<<<<< HEAD
 						_(prompt));
+=======
+						prompt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 				break;
 			default:
@@ -780,7 +1196,11 @@ static void build_conf(struct menu *menu)
 					child_count++;
 					item_make(menu, ':', "---%*c%s",
 						indent + 1, ' ',
+<<<<<<< HEAD
 						_(prompt));
+=======
+						prompt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 		} else
@@ -800,7 +1220,11 @@ static void build_conf(struct menu *menu)
 		}
 
 		val = sym_get_tristate_value(sym);
+<<<<<<< HEAD
 		if (sym_is_changable(sym)) {
+=======
+		if (sym_is_changeable(sym)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			switch (type) {
 			case S_BOOLEAN:
 				item_make(menu, 't', "[%c]",
@@ -826,11 +1250,19 @@ static void build_conf(struct menu *menu)
 		}
 
 		item_add_str("%*c%s", indent + 1,
+<<<<<<< HEAD
 				' ', _(menu_get_prompt(menu)));
 		if (val == yes) {
 			if (def_menu) {
 				item_add_str(" (%s)",
 					_(menu_get_prompt(def_menu)));
+=======
+				' ', menu_get_prompt(menu));
+		if (val == yes) {
+			if (def_menu) {
+				item_add_str(" (%s)",
+					menu_get_prompt(def_menu));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				item_add_str("  --->");
 				if (def_menu->list) {
 					indent += 2;
@@ -844,7 +1276,11 @@ static void build_conf(struct menu *menu)
 		if (menu == current_menu) {
 			item_make(menu, ':',
 				"---%*c%s", indent + 1,
+<<<<<<< HEAD
 				' ', _(menu_get_prompt(menu)));
+=======
+				' ', menu_get_prompt(menu));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto conf_childs;
 		}
 		child_count++;
@@ -854,7 +1290,11 @@ static void build_conf(struct menu *menu)
 		} else {
 			switch (type) {
 			case S_BOOLEAN:
+<<<<<<< HEAD
 				if (sym_is_changable(sym))
+=======
+				if (sym_is_changeable(sym))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					item_make(menu, 't', "[%c]",
 						val == no ? ' ' : '*');
 				else
@@ -873,7 +1313,11 @@ static void build_conf(struct menu *menu)
 					ch = ' ';
 					break;
 				}
+<<<<<<< HEAD
 				if (sym_is_changable(sym)) {
+=======
+				if (sym_is_changeable(sym)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (sym->rev_dep.tri == mod)
 						item_make(menu,
 							't', "{%c}", ch);
@@ -891,19 +1335,34 @@ static void build_conf(struct menu *menu)
 				if (tmp < 0)
 					tmp = 0;
 				item_add_str("%*c%s%s", tmp, ' ',
+<<<<<<< HEAD
 						_(menu_get_prompt(menu)),
 						(sym_has_value(sym) ||
 						 !sym_is_changable(sym)) ? "" :
 						_(" (NEW)"));
+=======
+						menu_get_prompt(menu),
+						(sym_has_value(sym) ||
+						 !sym_is_changeable(sym)) ? "" :
+						" (NEW)");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto conf_childs;
 			}
 		}
 		item_add_str("%*c%s%s", indent + 1, ' ',
+<<<<<<< HEAD
 				_(menu_get_prompt(menu)),
 				(sym_has_value(sym) || !sym_is_changable(sym)) ?
 				"" : _(" (NEW)"));
 		if (menu->prompt && menu->prompt->type == P_MENU) {
 			item_add_str("  --->");
+=======
+				menu_get_prompt(menu),
+				(sym_has_value(sym) || !sym_is_changeable(sym)) ?
+				"" : " (NEW)");
+		if (menu->prompt && menu->prompt->type == P_MENU) {
+			item_add_str("  %s", menu_is_empty(menu) ? "----" : "--->");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 	}
@@ -953,6 +1412,7 @@ static void show_menu(const char *prompt, const char *instructions,
 	current_instructions = instructions;
 
 	clear();
+<<<<<<< HEAD
 	(void) wattrset(main_window, attributes[NORMAL]);
 	print_in_middle(stdscr, 1, 0, COLS,
 			menu_backtitle,
@@ -963,6 +1423,17 @@ static void show_menu(const char *prompt, const char *instructions,
 	(void) wattrset(main_window, attributes[MAIN_MENU_HEADING]);
 	mvwprintw(main_window, 0, 3, " %s ", prompt);
 	(void) wattrset(main_window, attributes[NORMAL]);
+=======
+	print_in_middle(stdscr, 1, getmaxx(stdscr),
+			menu_backtitle,
+			attr_main_heading);
+
+	wattrset(main_window, attr_main_menu_box);
+	box(main_window, 0, 0);
+	wattrset(main_window, attr_main_menu_heading);
+	mvwprintw(main_window, 0, 3, " %s ", prompt);
+	wattrset(main_window, attr_normal);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_menu_items(curses_menu, curses_menu_items);
 
@@ -1045,7 +1516,11 @@ static int do_match(int key, struct match_state *state, int *ans)
 		state->match_direction = FIND_NEXT_MATCH_UP;
 		*ans = get_mext_match(state->pattern,
 				state->match_direction);
+<<<<<<< HEAD
 	} else if (key == KEY_BACKSPACE || key == 127) {
+=======
+	} else if (key == KEY_BACKSPACE || key == 8 || key == 127) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		state->pattern[strlen(state->pattern)-1] = '\0';
 		adj_match_dir(&state->match_direction);
 	} else
@@ -1064,10 +1539,21 @@ static int do_match(int key, struct match_state *state, int *ans)
 
 static void conf(struct menu *menu)
 {
+<<<<<<< HEAD
 	struct menu *submenu = 0;
 	const char *prompt = menu_get_prompt(menu);
 	struct symbol *sym;
 	int res;
+=======
+	selected_conf(menu, NULL);
+}
+
+static void selected_conf(struct menu *menu, struct menu *active_menu)
+{
+	struct menu *submenu = NULL;
+	struct symbol *sym;
+	int i, res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int current_index = 0;
 	int last_top_row = 0;
 	struct match_state match_state = {
@@ -1083,9 +1569,27 @@ static void conf(struct menu *menu)
 		if (!child_count)
 			break;
 
+<<<<<<< HEAD
 		show_menu(prompt ? _(prompt) : _("Main Menu"),
 				_(menu_instructions),
 				current_index, &last_top_row);
+=======
+		if (active_menu != NULL) {
+			for (i = 0; i < items_num; i++) {
+				struct mitem *mcur;
+
+				mcur = (struct mitem *) item_userptr(curses_menu_items[i]);
+				if ((struct menu *) mcur->usrptr == active_menu) {
+					current_index = i;
+					break;
+				}
+			}
+			active_menu = NULL;
+		}
+
+		show_menu(menu_get_prompt(menu), menu_instructions,
+			  current_index, &last_top_row);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		keypad((menu_win(curses_menu)), TRUE);
 		while (!global_exit) {
 			if (match_state.in_search) {
@@ -1108,9 +1612,17 @@ static void conf(struct menu *menu)
 				break;
 			switch (res) {
 			case KEY_DOWN:
+<<<<<<< HEAD
 				menu_driver(curses_menu, REQ_DOWN_ITEM);
 				break;
 			case KEY_UP:
+=======
+			case 'j':
+				menu_driver(curses_menu, REQ_DOWN_ITEM);
+				break;
+			case KEY_UP:
+			case 'k':
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				menu_driver(curses_menu, REQ_UP_ITEM);
 				break;
 			case KEY_NPAGE:
@@ -1207,12 +1719,18 @@ static void conf(struct menu *menu)
 	}
 }
 
+<<<<<<< HEAD
 static void conf_message_callback(const char *fmt, va_list ap)
 {
 	char buf[1024];
 
 	vsnprintf(buf, sizeof(buf), fmt, ap);
 	btn_dialog(main_window, buf, 1, "<OK>");
+=======
+static void conf_message_callback(const char *s)
+{
+	btn_dialog(main_window, s, 1, "<OK>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void show_help(struct menu *menu)
@@ -1224,14 +1742,23 @@ static void show_help(struct menu *menu)
 
 	help = str_new();
 	menu_get_ext_help(menu, &help);
+<<<<<<< HEAD
 	show_scroll_win(main_window, _(menu_get_prompt(menu)), str_get(&help));
+=======
+	show_scroll_win(main_window, menu_get_prompt(menu), str_get(&help));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	str_free(&help);
 }
 
 static void conf_choice(struct menu *menu)
 {
+<<<<<<< HEAD
 	const char *prompt = _(menu_get_prompt(menu));
 	struct menu *child = 0;
+=======
+	const char *prompt = menu_get_prompt(menu);
+	struct menu *child = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct symbol *active;
 	int selected_index = 0;
 	int last_top_row = 0;
@@ -1253,6 +1780,7 @@ static void conf_choice(struct menu *menu)
 
 			if (child->sym == sym_get_choice_value(menu->sym))
 				item_make(child, ':', "<X> %s",
+<<<<<<< HEAD
 						_(menu_get_prompt(child)));
 			else if (child->sym)
 				item_make(child, ':', "    %s",
@@ -1260,6 +1788,15 @@ static void conf_choice(struct menu *menu)
 			else
 				item_make(child, ':', "*** %s ***",
 						_(menu_get_prompt(child)));
+=======
+						menu_get_prompt(child));
+			else if (child->sym)
+				item_make(child, ':', "    %s",
+						menu_get_prompt(child));
+			else
+				item_make(child, ':', "*** %s ***",
+						menu_get_prompt(child));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (child->sym == active){
 				last_top_row = top_row(curses_menu);
@@ -1267,8 +1804,13 @@ static void conf_choice(struct menu *menu)
 			}
 			i++;
 		}
+<<<<<<< HEAD
 		show_menu(prompt ? _(prompt) : _("Choice Menu"),
 				_(radiolist_instructions),
+=======
+		show_menu(prompt ? prompt : "Choice Menu",
+				radiolist_instructions,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				selected_index,
 				&last_top_row);
 		while (!global_exit) {
@@ -1293,9 +1835,17 @@ static void conf_choice(struct menu *menu)
 				break;
 			switch (res) {
 			case KEY_DOWN:
+<<<<<<< HEAD
 				menu_driver(curses_menu, REQ_DOWN_ITEM);
 				break;
 			case KEY_UP:
+=======
+			case 'j':
+				menu_driver(curses_menu, REQ_DOWN_ITEM);
+				break;
+			case KEY_UP:
+			case 'k':
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				menu_driver(curses_menu, REQ_UP_ITEM);
 				break;
 			case KEY_NPAGE:
@@ -1355,6 +1905,7 @@ static void conf_string(struct menu *menu)
 
 		switch (sym_get_type(menu->sym)) {
 		case S_INT:
+<<<<<<< HEAD
 			heading = _(inputbox_instructions_int);
 			break;
 		case S_HEX:
@@ -1368,6 +1919,21 @@ static void conf_string(struct menu *menu)
 		}
 		res = dialog_inputbox(main_window,
 				prompt ? _(prompt) : _("Main Menu"),
+=======
+			heading = inputbox_instructions_int;
+			break;
+		case S_HEX:
+			heading = inputbox_instructions_hex;
+			break;
+		case S_STRING:
+			heading = inputbox_instructions_string;
+			break;
+		default:
+			heading = "Internal nconf error!";
+		}
+		res = dialog_inputbox(main_window,
+				prompt ? prompt : "Main Menu",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				heading,
 				sym_get_string_value(menu->sym),
 				&dialog_input_result,
@@ -1378,7 +1944,11 @@ static void conf_string(struct menu *menu)
 						dialog_input_result))
 				return;
 			btn_dialog(main_window,
+<<<<<<< HEAD
 				_("You have made an invalid entry."), 0);
+=======
+				"You have made an invalid entry.", 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 1:
 			show_help(menu);
@@ -1404,6 +1974,7 @@ static void conf_load(void)
 				return;
 			if (!conf_read(dialog_input_result)) {
 				set_config_filename(dialog_input_result);
+<<<<<<< HEAD
 				sym_set_change_count(1);
 				return;
 			}
@@ -1412,6 +1983,16 @@ static void conf_load(void)
 		case 1:
 			show_scroll_win(main_window,
 					_("Load Alternate Configuration"),
+=======
+				conf_set_changed(true);
+				return;
+			}
+			btn_dialog(main_window, "File does not exist!", 0);
+			break;
+		case 1:
+			show_scroll_win(main_window,
+					"Load Alternate Configuration",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					load_config_help);
 			break;
 		case KEY_EXIT:
@@ -1438,13 +2019,21 @@ static void conf_save(void)
 				set_config_filename(dialog_input_result);
 				return;
 			}
+<<<<<<< HEAD
 			btn_dialog(main_window, _("Can't create file! "
 				"Probably a nonexistent directory."),
+=======
+			btn_dialog(main_window, "Can't create file!",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				1, "<OK>");
 			break;
 		case 1:
 			show_scroll_win(main_window,
+<<<<<<< HEAD
 				_("Save Alternate Configuration"),
+=======
+				"Save Alternate Configuration",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				save_config_help);
 			break;
 		case KEY_EXIT:
@@ -1453,16 +2042,32 @@ static void conf_save(void)
 	}
 }
 
+<<<<<<< HEAD
 void setup_windows(void)
 {
+=======
+static void setup_windows(void)
+{
+	int lines, columns;
+
+	getmaxyx(stdscr, lines, columns);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (main_window != NULL)
 		delwin(main_window);
 
 	/* set up the menu and menu window */
+<<<<<<< HEAD
 	main_window = newwin(LINES-2, COLS-2, 2, 1);
 	keypad(main_window, TRUE);
 	mwin_max_lines = LINES-7;
 	mwin_max_cols = COLS-6;
+=======
+	main_window = newwin(lines-2, columns-2, 2, 1);
+	keypad(main_window, TRUE);
+	mwin_max_lines = lines-7;
+	mwin_max_cols = columns-6;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* panels order is from bottom to top */
 	new_panel(main_window);
@@ -1470,12 +2075,23 @@ void setup_windows(void)
 
 int main(int ac, char **av)
 {
+<<<<<<< HEAD
 	char *mode;
 
 	setlocale(LC_ALL, "");
 	bindtextdomain(PACKAGE, LOCALEDIR);
 	textdomain(PACKAGE);
 
+=======
+	int lines, columns;
+	char *mode;
+
+	if (ac > 1 && strcmp(av[1], "-s") == 0) {
+		/* Silence conf_read() until the real callback is set up */
+		conf_set_message_callback(NULL);
+		av++;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	conf_parse(av[1]);
 	conf_read(NULL);
 
@@ -1495,7 +2111,12 @@ int main(int ac, char **av)
 	keypad(stdscr, TRUE);
 	curs_set(0);
 
+<<<<<<< HEAD
 	if (COLS < 75 || LINES < 20) {
+=======
+	getmaxyx(stdscr, lines, columns);
+	if (columns < 75 || lines < 20) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		endwin();
 		printf("Your terminal should have at "
 			"least 20 lines and 75 columns\n");
@@ -1503,7 +2124,15 @@ int main(int ac, char **av)
 	}
 
 	notimeout(stdscr, FALSE);
+<<<<<<< HEAD
 	ESCDELAY = 1;
+=======
+#if NCURSES_REENTRANT
+	set_escdelay(1);
+#else
+	ESCDELAY = 1;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set btns menu */
 	curses_menu = new_menu(curses_menu_items);
@@ -1513,9 +2142,15 @@ int main(int ac, char **av)
 	menu_opts_on(curses_menu, O_NONCYCLIC);
 	menu_opts_on(curses_menu, O_IGNORECASE);
 	set_menu_mark(curses_menu, " ");
+<<<<<<< HEAD
 	set_menu_fore(curses_menu, attributes[MAIN_MENU_FORE]);
 	set_menu_back(curses_menu, attributes[MAIN_MENU_BACK]);
 	set_menu_grey(curses_menu, attributes[MAIN_MENU_GREY]);
+=======
+	set_menu_fore(curses_menu, attr_main_menu_fore);
+	set_menu_back(curses_menu, attr_main_menu_back);
+	set_menu_grey(curses_menu, attr_main_menu_grey);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_config_filename(conf_get_configname());
 	setup_windows();
@@ -1523,8 +2158,13 @@ int main(int ac, char **av)
 	/* check for KEY_FUNC(1) */
 	if (has_key(KEY_F(1)) == FALSE) {
 		show_scroll_win(main_window,
+<<<<<<< HEAD
 				_("Instructions"),
 				_(menu_no_f_instructions));
+=======
+				"Instructions",
+				menu_no_f_instructions);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	conf_set_message_callback(conf_message_callback);
@@ -1543,4 +2183,7 @@ int main(int ac, char **av)
 	endwin();
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

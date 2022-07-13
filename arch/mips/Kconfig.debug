@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 menu "Kernel hacking"
 
 config TRACE_IRQFLAGS_SUPPORT
@@ -5,6 +6,9 @@ config TRACE_IRQFLAGS_SUPPORT
 	default y
 
 source "lib/Kconfig.debug"
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config EARLY_PRINTK
 	bool "Early printk" if EXPERT
@@ -20,9 +24,26 @@ config EARLY_PRINTK
 	  doesn't cooperate with an X server. You should normally say N here,
 	  unless you want to debug such a crash.
 
+<<<<<<< HEAD
 config CMDLINE_BOOL
 	bool "Built-in kernel command line"
 	default n
+=======
+config EARLY_PRINTK_8250
+	bool
+	depends on EARLY_PRINTK && USE_GENERIC_EARLY_PRINTK_8250
+	default y
+	help
+	  "8250/16550 and compatible serial early printk driver"
+	  If you say Y here, it will be possible to use a 8250/16550 serial
+	  port as the boot console.
+
+config USE_GENERIC_EARLY_PRINTK_8250
+	bool
+
+config CMDLINE_BOOL
+	bool "Built-in kernel command line"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  For most systems, it is firmware or second stage bootloader that
 	  by default specifies the kernel command line options.  However,
@@ -43,7 +64,10 @@ config CMDLINE_BOOL
 config CMDLINE
 	string "Default kernel command string"
 	depends on CMDLINE_BOOL
+<<<<<<< HEAD
 	default ""
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  On some platforms, there is currently no way for the boot loader to
 	  pass arguments to the kernel.  For these platforms, and for the cases
@@ -57,8 +81,12 @@ config CMDLINE
 	  options.
 
 config CMDLINE_OVERRIDE
+<<<<<<< HEAD
 	bool "Built-in command line overrides firware arguments"
 	default n
+=======
+	bool "Built-in command line overrides firmware arguments"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on CMDLINE_BOOL
 	help
 	  By setting this option to 'Y' you will have your kernel ignore
@@ -67,6 +95,7 @@ config CMDLINE_OVERRIDE
 
 	  Normally, you will choose 'N' here.
 
+<<<<<<< HEAD
 config DEBUG_STACKOVERFLOW
 	bool "Check for stack overflows"
 	depends on DEBUG_KERNEL
@@ -89,10 +118,18 @@ config SB1XXX_CORELIS
 	bool "Corelis Debugger"
 	depends on SIBYTE_SB1xxx_SOC
 	select DEBUG_INFO
+=======
+config SB1XXX_CORELIS
+	bool "Corelis Debugger"
+	depends on SIBYTE_SB1xxx_SOC
+	select DEBUG_KERNEL if !COMPILE_TEST
+	select DEBUG_INFO if !COMPILE_TEST
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Select compile flags that produce code that can be processed by the
 	  Corelis mksym utility and UDB Emulator.
 
+<<<<<<< HEAD
 config RUNTIME_DEBUG
 	bool "Enable run-time debugging"
 	depends on DEBUG_KERNEL
@@ -102,6 +139,8 @@ config RUNTIME_DEBUG
 	  arch/mips/include/asm/debug.h for debugging macros.
 	  If unsure, say N.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config DEBUG_ZBOOT
 	bool "Enable compressed kernel support debugging"
 	depends on DEBUG_KERNEL && SYS_SUPPORTS_ZBOOT
@@ -121,6 +160,17 @@ config DEBUG_ZBOOT
 	  to reduce the kernel image size and speed up the booting procedure a
 	  little.
 
+<<<<<<< HEAD
+=======
+config ZBOOT_INGENIC_UART
+	int "UART to use for compressed kernel debugging"
+	depends on DEBUG_ZBOOT && MACH_INGENIC_SOC
+	default 0
+	range 0 4
+	help
+	  Specify the UART that should be used for compressed kernel debugging.
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config SPINLOCK_TEST
 	bool "Enable spinlock timing tests in debugfs"
 	depends on DEBUG_FS
@@ -128,4 +178,58 @@ config SPINLOCK_TEST
 	help
 	  Add several files to the debugfs to test spinlock speed.
 
+<<<<<<< HEAD
 endmenu
+=======
+config SCACHE_DEBUGFS
+	bool "L2 cache debugfs entries"
+	depends on DEBUG_FS
+	help
+	  Enable this to allow parts of the L2 cache configuration, such as
+	  whether or not prefetching is enabled, to be exposed to userland
+	  via debugfs.
+
+	  If unsure, say N.
+
+menuconfig MIPS_CPS_NS16550_BOOL
+	bool "CPS SMP NS16550 UART output"
+	depends on MIPS_CPS
+	help
+	  Output debug information via an ns16550 compatible UART if exceptions
+	  occur early in the boot process of a secondary core.
+
+if MIPS_CPS_NS16550_BOOL
+
+config MIPS_CPS_NS16550
+	def_bool MIPS_CPS_NS16550_BASE != 0
+
+config MIPS_CPS_NS16550_BASE
+	hex "UART Base Address"
+	default 0x1b0003f8 if MIPS_MALTA
+	default 0
+	help
+	  The base address of the ns16550 compatible UART on which to output
+	  debug information from the early stages of core startup.
+
+	  This is only used if non-zero.
+
+config MIPS_CPS_NS16550_SHIFT
+	int "UART Register Shift"
+	default 0
+	help
+	  The number of bits to shift ns16550 register indices by in order to
+	  form their addresses. That is, log base 2 of the span between
+	  adjacent ns16550 registers in the system.
+
+config MIPS_CPS_NS16550_WIDTH
+	int "UART Register Width"
+	default 1
+	help
+	  ns16550 registers width. UART registers IO access methods will be
+	  selected in accordance with this parameter. By setting it to 1, 2 or
+	  4 UART registers will be accessed by means of lb/sb, lh/sh or lw/sw
+	  instructions respectively. Any value not from that set activates
+	  lb/sb instructions.
+
+endif # MIPS_CPS_NS16550_BOOL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

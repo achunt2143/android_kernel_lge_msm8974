@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2005
  *
@@ -14,6 +15,11 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *   Copyright (C) International Business Machines Corp., 2000-2005
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  *	jfs_xtree.c: extent allocation descriptor B+-tree manager
@@ -64,6 +70,7 @@
 
 /* get page buffer for specified block address */
 /* ToDo: Replace this ugly macro with a function */
+<<<<<<< HEAD
 #define XT_GETPAGE(IP, BN, MP, SIZE, P, RC)\
 {\
 	BT_GETPAGE(IP, BN, MP, xtpage_t, SIZE, P, RC, i_xtroot)\
@@ -80,6 +87,25 @@
 		}\
 	}\
 }
+=======
+#define XT_GETPAGE(IP, BN, MP, SIZE, P, RC)				\
+do {									\
+	BT_GETPAGE(IP, BN, MP, xtpage_t, SIZE, P, RC, i_xtroot);	\
+	if (!(RC)) {							\
+		if ((le16_to_cpu((P)->header.nextindex) < XTENTRYSTART) || \
+		    (le16_to_cpu((P)->header.nextindex) >		\
+		     le16_to_cpu((P)->header.maxentry)) ||		\
+		    (le16_to_cpu((P)->header.maxentry) >		\
+		     (((BN) == 0) ? XTROOTMAXSLOT : PSIZE >> L2XTSLOTSIZE))) { \
+			jfs_error((IP)->i_sb,				\
+				  "XT_GETPAGE: xtree page corrupt\n");	\
+			BT_PUTPAGE(MP);					\
+			MP = NULL;					\
+			RC = -EIO;					\
+		}							\
+	}								\
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* for consistency */
 #define XT_PUTPAGE(MP) BT_PUTPAGE(MP)
@@ -126,6 +152,7 @@ static int xtSplitPage(tid_t tid, struct inode *ip, struct xtsplit * split,
 static int xtSplitRoot(tid_t tid, struct inode *ip,
 		       struct xtsplit * split, struct metapage ** rmpp);
 
+<<<<<<< HEAD
 #ifdef _STILL_TO_PORT
 static int xtDeleteUp(tid_t tid, struct inode *ip, struct metapage * fmp,
 		      xtpage_t * fp, struct btstack * btstack);
@@ -137,6 +164,8 @@ static int xtSearchNode(struct inode *ip,
 static int xtRelink(tid_t tid, struct inode *ip, xtpage_t * fp);
 #endif				/*  _STILL_TO_PORT */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	xtLookup()
  *
@@ -499,7 +528,11 @@ static int xtSearch(struct inode *ip, s64 xoff,	s64 *nextp,
 
 		/* push (bn, index) of the parent page/entry */
 		if (BT_STACK_FULL(btstack)) {
+<<<<<<< HEAD
 			jfs_error(ip->i_sb, "stack overrun in xtSearch!");
+=======
+			jfs_error(ip->i_sb, "stack overrun!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			XT_PUTPAGE(mp);
 			return -EIO;
 		}
@@ -1236,7 +1269,11 @@ xtSplitRoot(tid_t tid,
 	struct xtlock *xtlck;
 	int rc;
 
+<<<<<<< HEAD
 	sp = &JFS_IP(ip)->i_xtroot;
+=======
+	sp = (xtpage_t *) &JFS_IP(ip)->i_xtroot;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INCREMENT(xtStat.split);
 
@@ -1385,7 +1422,11 @@ int xtExtend(tid_t tid,		/* transaction id */
 
 	if (cmp != 0) {
 		XT_PUTPAGE(mp);
+<<<<<<< HEAD
 		jfs_error(ip->i_sb, "xtExtend: xtSearch did not find extent");
+=======
+		jfs_error(ip->i_sb, "xtSearch did not find extent\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -1393,7 +1434,11 @@ int xtExtend(tid_t tid,		/* transaction id */
 	xad = &p->xad[index];
 	if ((offsetXAD(xad) + lengthXAD(xad)) != xoff) {
 		XT_PUTPAGE(mp);
+<<<<<<< HEAD
 		jfs_error(ip->i_sb, "xtExtend: extension is not contiguous");
+=======
+		jfs_error(ip->i_sb, "extension is not contiguous\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -1505,6 +1550,7 @@ int xtExtend(tid_t tid,		/* transaction id */
 	return rc;
 }
 
+<<<<<<< HEAD
 #ifdef _NOTYET
 /*
  *	xtTailgate()
@@ -1689,6 +1735,8 @@ printf("xtTailgate: xoff:0x%lx xlen:0x%x xaddr:0x%lx\n",
 }
 #endif /* _NOTYET */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	xtUpdate()
  *
@@ -1734,7 +1782,11 @@ int xtUpdate(tid_t tid, struct inode *ip, xad_t * nxad)
 
 	if (cmp != 0) {
 		XT_PUTPAGE(mp);
+<<<<<<< HEAD
 		jfs_error(ip->i_sb, "xtUpdate: Could not find extent");
+=======
+		jfs_error(ip->i_sb, "Could not find extent\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -1758,7 +1810,11 @@ int xtUpdate(tid_t tid, struct inode *ip, xad_t * nxad)
 	    (nxoff + nxlen > xoff + xlen)) {
 		XT_PUTPAGE(mp);
 		jfs_error(ip->i_sb,
+<<<<<<< HEAD
 			  "xtUpdate: nXAD in not completely contained within XAD");
+=======
+			  "nXAD in not completely contained within XAD\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -1766,6 +1822,7 @@ int xtUpdate(tid_t tid, struct inode *ip, xad_t * nxad)
 	newindex = index + 1;
 	nextindex = le16_to_cpu(p->header.nextindex);
 
+<<<<<<< HEAD
 #ifdef  _JFS_WIP_NOCOALESCE
 	if (xoff < nxoff)
 		goto updateRight;
@@ -1785,13 +1842,18 @@ int xtUpdate(tid_t tid, struct inode *ip, xad_t * nxad)
 #endif				/* _JFS_WIP_NOCOALESCE */
 
 /* #ifdef _JFS_WIP_COALESCE */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (xoff < nxoff)
 		goto coalesceRight;
 
 	/*
 	 * coalesce with left XAD
 	 */
+<<<<<<< HEAD
 //coalesceLeft: /* (xoff == nxoff) */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* is XAD first entry of page ? */
 	if (index == XTENTRYSTART)
 		goto replace;
@@ -1907,10 +1969,16 @@ int xtUpdate(tid_t tid, struct inode *ip, xad_t * nxad)
 
 	if (xoff >= nxoff) {
 		XT_PUTPAGE(mp);
+<<<<<<< HEAD
 		jfs_error(ip->i_sb, "xtUpdate: xoff >= nxoff");
 		return -EIO;
 	}
 /* #endif _JFS_WIP_COALESCE */
+=======
+		jfs_error(ip->i_sb, "xoff >= nxoff\n");
+		return -EIO;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * split XAD into (lXAD, nXAD):
@@ -2048,14 +2116,22 @@ int xtUpdate(tid_t tid, struct inode *ip, xad_t * nxad)
 
 		if (cmp != 0) {
 			XT_PUTPAGE(mp);
+<<<<<<< HEAD
 			jfs_error(ip->i_sb, "xtUpdate: xtSearch failed");
+=======
+			jfs_error(ip->i_sb, "xtSearch failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 
 		if (index0 != index) {
 			XT_PUTPAGE(mp);
+<<<<<<< HEAD
 			jfs_error(ip->i_sb,
 				  "xtUpdate: unexpected value of index");
+=======
+			jfs_error(ip->i_sb, "unexpected value of index\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 	}
@@ -2319,6 +2395,7 @@ int xtAppend(tid_t tid,		/* transaction id */
 
 	return rc;
 }
+<<<<<<< HEAD
 #ifdef _STILL_TO_PORT
 
 /* - TBD for defragmentaion/reorganization -
@@ -3065,6 +3142,8 @@ static int xtRelink(tid_t tid, struct inode *ip, xtpage_t * p)
 }
 #endif				/*  _STILL_TO_PORT */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	xtInitRoot()
@@ -3073,7 +3152,11 @@ static int xtRelink(tid_t tid, struct inode *ip, xtpage_t * p)
  */
 void xtInitRoot(tid_t tid, struct inode *ip)
 {
+<<<<<<< HEAD
 	xtpage_t *p;
+=======
+	xtroot_t *p;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * acquire a transaction lock on the root
@@ -3650,7 +3733,11 @@ s64 xtTruncate(tid_t tid, struct inode *ip, s64 newsize, int flag)
       getChild:
 	/* save current parent entry for the child page */
 	if (BT_STACK_FULL(&btstack)) {
+<<<<<<< HEAD
 		jfs_error(ip->i_sb, "stack overrun in xtTruncate!");
+=======
+		jfs_error(ip->i_sb, "stack overrun!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		XT_PUTPAGE(mp);
 		return -EIO;
 	}
@@ -3698,7 +3785,11 @@ s64 xtTruncate(tid_t tid, struct inode *ip, s64 newsize, int flag)
  *
  * function:
  *	Perform truncate to zero length for deleted file, leaving the
+<<<<<<< HEAD
  *	the xtree and working map untouched.  This allows the file to
+=======
+ *	xtree and working map untouched.  This allows the file to
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	be accessed via open file handles, while the delete of the file
  *	is committed to disk.
  *
@@ -3751,8 +3842,12 @@ s64 xtTruncate_pmap(tid_t tid, struct inode *ip, s64 committed_size)
 
 		if (cmp != 0) {
 			XT_PUTPAGE(mp);
+<<<<<<< HEAD
 			jfs_error(ip->i_sb,
 				  "xtTruncate_pmap: did not find extent");
+=======
+			jfs_error(ip->i_sb, "did not find extent\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 	} else {
@@ -3851,7 +3946,11 @@ s64 xtTruncate_pmap(tid_t tid, struct inode *ip, s64 committed_size)
       getChild:
 	/* save current parent entry for the child page */
 	if (BT_STACK_FULL(&btstack)) {
+<<<<<<< HEAD
 		jfs_error(ip->i_sb, "stack overrun in xtTruncate_pmap!");
+=======
+		jfs_error(ip->i_sb, "stack overrun!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		XT_PUTPAGE(mp);
 		return -EIO;
 	}
@@ -3876,7 +3975,11 @@ s64 xtTruncate_pmap(tid_t tid, struct inode *ip, s64 committed_size)
 }
 
 #ifdef CONFIG_JFS_STATISTICS
+<<<<<<< HEAD
 static int jfs_xtstat_proc_show(struct seq_file *m, void *v)
+=======
+int jfs_xtstat_proc_show(struct seq_file *m, void *v)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	seq_printf(m,
 		       "JFS Xtree statistics\n"
@@ -3889,6 +3992,7 @@ static int jfs_xtstat_proc_show(struct seq_file *m, void *v)
 		       xtStat.split);
 	return 0;
 }
+<<<<<<< HEAD
 
 static int jfs_xtstat_proc_open(struct inode *inode, struct file *file)
 {
@@ -3902,4 +4006,6 @@ const struct file_operations jfs_xtstat_proc_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

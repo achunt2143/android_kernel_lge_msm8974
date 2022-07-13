@@ -1,10 +1,18 @@
+<<<<<<< HEAD
 menuconfig CAN_C_CAN
 	tristate "Bosch C_CAN devices"
 	depends on CAN_DEV && HAS_IOMEM
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+menuconfig CAN_C_CAN
+	tristate "Bosch C_CAN/D_CAN devices"
+	depends on HAS_IOMEM
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 if CAN_C_CAN
 
 config CAN_C_CAN_PLATFORM
+<<<<<<< HEAD
 	tristate "Generic Platform Bus based C_CAN driver"
 	---help---
 	  This driver adds support for the C_CAN chips connected to
@@ -12,4 +20,22 @@ config CAN_C_CAN_PLATFORM
 	  processor attached devices) which can be found on various
 	  boards from ST Microelectronics (http://www.st.com)
 	  like the SPEAr1310 and SPEAr320 evaluation boards.
+=======
+	tristate "Generic Platform Bus based C_CAN/D_CAN driver"
+	help
+	  This driver adds support for the C_CAN/D_CAN chips connected
+	  to the "platform bus" (Linux abstraction for directly to the
+	  processor attached devices) which can be found on various
+	  boards from ST Microelectronics (http://www.st.com) like the
+	  SPEAr1310 and SPEAr320 evaluation boards & TI (www.ti.com)
+	  boards like am335x, dm814x, dm813x and dm811x.
+
+config CAN_C_CAN_PCI
+	tristate "Generic PCI Bus based C_CAN/D_CAN driver"
+	depends on PCI
+	help
+	  This driver adds support for the C_CAN/D_CAN chips connected
+	  to the PCI bus. E.g. for the C_CAN controller IP inside the
+	  Intel Atom E6xx series IOH (aka EG20T 'PCH CAN').
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif

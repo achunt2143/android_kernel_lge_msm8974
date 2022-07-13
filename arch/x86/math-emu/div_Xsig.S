@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.file	"div_Xsig.S"
 /*---------------------------------------------------------------------------+
  |  div_Xsig.S                                                               |
@@ -74,7 +78,11 @@ FPU_result_1:
 
 
 .text
+<<<<<<< HEAD
 ENTRY(div_Xsig)
+=======
+SYM_FUNC_START(div_Xsig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl	%ebp
 	movl	%esp,%ebp
 #ifndef NON_REENTRANT_FPU
@@ -340,7 +348,11 @@ L_exit:
 	popl	%esi
 
 	leave
+<<<<<<< HEAD
 	ret
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #ifdef PARANOID
@@ -363,3 +375,7 @@ L_bugged_2:
 	pop	%ebx
 	jmp	L_exit
 #endif /* PARANOID */ 
+<<<<<<< HEAD
+=======
+SYM_FUNC_END(div_Xsig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

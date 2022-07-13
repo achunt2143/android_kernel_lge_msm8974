@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	W83877F Computer Watchdog Timer driver
  *
  *      Based on acquirewdt.c by Alan Cox,
  *           and sbc60xxwdt.c by Jakob Oestergaard <jakob@unthought.net>
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The authors do NOT admit liability nor provide warranty for
  *	any of this software. This material is provided "AS-IS" in
  *      the hope that it may be useful for others.
@@ -97,8 +104,13 @@ MODULE_PARM_DESC(nowayout,
 		"Watchdog cannot be stopped once started (default="
 				__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 
+<<<<<<< HEAD
 static void wdt_timer_ping(unsigned long);
 static DEFINE_TIMER(timer, wdt_timer_ping, 0, 0);
+=======
+static void wdt_timer_ping(struct timer_list *);
+static DEFINE_TIMER(timer, wdt_timer_ping);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long next_heartbeat;
 static unsigned long wdt_is_open;
 static char wdt_expect_close;
@@ -108,7 +120,11 @@ static DEFINE_SPINLOCK(wdt_spinlock);
  *	Whack the dog
  */
 
+<<<<<<< HEAD
 static void wdt_timer_ping(unsigned long data)
+=======
+static void wdt_timer_ping(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* If we got a heartbeat pulse within the WDT_US_INTERVAL
 	 * we agree to ping the WDT
@@ -170,7 +186,11 @@ static void wdt_startup(void)
 static void wdt_turnoff(void)
 {
 	/* Stop the timer */
+<<<<<<< HEAD
 	del_timer(&timer);
+=======
+	del_timer_sync(&timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wdt_change(WDT_DISABLE);
 
@@ -224,7 +244,11 @@ static int fop_open(struct inode *inode, struct file *file)
 
 	/* Good, fire up the show */
 	wdt_startup();
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fop_close(struct inode *inode, struct file *file)
@@ -292,8 +316,13 @@ static long fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		timeout = new_timeout;
 		wdt_keepalive();
+<<<<<<< HEAD
 		/* Fall through */
 	}
+=======
+	}
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		return put_user(timeout, p);
 	default:
@@ -308,6 +337,10 @@ static const struct file_operations wdt_fops = {
 	.open		= fop_open,
 	.release	= fop_close,
 	.unlocked_ioctl	= fop_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct miscdevice wdt_miscdev = {
@@ -406,4 +439,7 @@ module_exit(w83877f_wdt_unload);
 MODULE_AUTHOR("Scott and Bill Jennings");
 MODULE_DESCRIPTION("Driver for watchdog timer in w83877f chip");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

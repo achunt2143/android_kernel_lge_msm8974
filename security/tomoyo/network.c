@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * security/tomoyo/network.c
  *
@@ -232,14 +236,22 @@ static bool tomoyo_merge_inet_acl(struct tomoyo_acl_info *a,
 {
 	u8 * const a_perm =
 		&container_of(a, struct tomoyo_inet_acl, head)->perm;
+<<<<<<< HEAD
 	u8 perm = *a_perm;
+=======
+	u8 perm = READ_ONCE(*a_perm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const u8 b_perm = container_of(b, struct tomoyo_inet_acl, head)->perm;
 
 	if (is_delete)
 		perm &= ~b_perm;
 	else
 		perm |= b_perm;
+<<<<<<< HEAD
 	*a_perm = perm;
+=======
+	WRITE_ONCE(*a_perm, perm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return !perm;
 }
 
@@ -258,14 +270,22 @@ static bool tomoyo_merge_unix_acl(struct tomoyo_acl_info *a,
 {
 	u8 * const a_perm =
 		&container_of(a, struct tomoyo_unix_acl, head)->perm;
+<<<<<<< HEAD
 	u8 perm = *a_perm;
+=======
+	u8 perm = READ_ONCE(*a_perm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const u8 b_perm = container_of(b, struct tomoyo_unix_acl, head)->perm;
 
 	if (is_delete)
 		perm &= ~b_perm;
 	else
 		perm |= b_perm;
+<<<<<<< HEAD
 	*a_perm = perm;
+=======
+	WRITE_ONCE(*a_perm, perm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return !perm;
 }
 
@@ -504,6 +524,11 @@ static int tomoyo_check_inet_address(const struct sockaddr *addr,
 {
 	struct tomoyo_inet_addr_info *i = &address->inet;
 
+<<<<<<< HEAD
+=======
+	if (addr_len < offsetofend(struct sockaddr, sa_family))
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (addr->sa_family) {
 	case AF_INET6:
 		if (addr_len < SIN6_LEN_RFC2133)
@@ -593,6 +618,11 @@ static int tomoyo_check_unix_address(struct sockaddr *addr,
 {
 	struct tomoyo_unix_addr_info *u = &address->unix0;
 
+<<<<<<< HEAD
+=======
+	if (addr_len < offsetofend(struct sockaddr, sa_family))
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (addr->sa_family != AF_UNIX)
 		return 0;
 	u->addr = ((struct sockaddr_un *) addr)->sun_path;
@@ -608,7 +638,11 @@ static int tomoyo_check_unix_address(struct sockaddr *addr,
 static bool tomoyo_kernel_service(void)
 {
 	/* Nothing to do if I am a kernel service. */
+<<<<<<< HEAD
 	return segment_eq(get_fs(), KERNEL_DS);
+=======
+	return current->flags & PF_KTHREAD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -654,10 +688,18 @@ int tomoyo_socket_listen_permission(struct socket *sock)
 		return 0;
 	{
 		const int error = sock->ops->getname(sock, (struct sockaddr *)
+<<<<<<< HEAD
 						     &addr, &addr_len, 0);
 
 		if (error)
 			return error;
+=======
+						     &addr, 0);
+
+		if (error < 0)
+			return error;
+		addr_len = error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	address.protocol = type;
 	address.operation = TOMOYO_NETWORK_LISTEN;

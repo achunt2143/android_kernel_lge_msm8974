@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IPVS:        Locality-Based Least-Connection with Replication scheduler
  *
  * Authors:     Wensong Zhang <wensong@gnuchina.org>
  *
+<<<<<<< HEAD
  *              This program is free software; you can redistribute it and/or
  *              modify it under the terms of the GNU General Public License
  *              as published by the Free Software Foundation; either version
@@ -12,6 +17,11 @@
  *     Julian Anastasov        :    Added the missing (dest->weight>0)
  *                                  condition in the ip_vs_dest_set_max.
  *
+=======
+ * Changes:
+ *     Julian Anastasov        :    Added the missing (dest->weight>0)
+ *                                  condition in the ip_vs_dest_set_max.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -47,6 +57,10 @@
 #include <linux/jiffies.h>
 #include <linux/list.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/hash.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* for sysctl */
 #include <linux/fs.h>
@@ -89,13 +103,19 @@
  */
 struct ip_vs_dest_set_elem {
 	struct list_head	list;          /* list link */
+<<<<<<< HEAD
 	struct ip_vs_dest       *dest;          /* destination server */
+=======
+	struct ip_vs_dest	*dest;		/* destination server */
+	struct rcu_head		rcu_head;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ip_vs_dest_set {
 	atomic_t                size;           /* set size */
 	unsigned long           lastmod;        /* last modified time */
 	struct list_head	list;           /* destination list */
+<<<<<<< HEAD
 	rwlock_t	        lock;           /* lock for this list */
 };
 
@@ -109,10 +129,26 @@ ip_vs_dest_set_insert(struct ip_vs_dest_set *set, struct ip_vs_dest *dest)
 		if (e->dest == dest)
 			/* already existed */
 			return NULL;
+=======
+};
+
+
+static void ip_vs_dest_set_insert(struct ip_vs_dest_set *set,
+				  struct ip_vs_dest *dest, bool check)
+{
+	struct ip_vs_dest_set_elem *e;
+
+	if (check) {
+		list_for_each_entry(e, &set->list, list) {
+			if (e->dest == dest)
+				return;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	e = kmalloc(sizeof(*e), GFP_ATOMIC);
 	if (e == NULL)
+<<<<<<< HEAD
 		return NULL;
 
 	atomic_inc(&dest->refcnt);
@@ -123,6 +159,26 @@ ip_vs_dest_set_insert(struct ip_vs_dest_set *set, struct ip_vs_dest *dest)
 
 	set->lastmod = jiffies;
 	return e;
+=======
+		return;
+
+	ip_vs_dest_hold(dest);
+	e->dest = dest;
+
+	list_add_rcu(&e->list, &set->list);
+	atomic_inc(&set->size);
+
+	set->lastmod = jiffies;
+}
+
+static void ip_vs_lblcr_elem_rcu_free(struct rcu_head *head)
+{
+	struct ip_vs_dest_set_elem *e;
+
+	e = container_of(head, struct ip_vs_dest_set_elem, rcu_head);
+	ip_vs_dest_put_and_free(e->dest);
+	kfree(e);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -135,9 +191,14 @@ ip_vs_dest_set_erase(struct ip_vs_dest_set *set, struct ip_vs_dest *dest)
 			/* HIT */
 			atomic_dec(&set->size);
 			set->lastmod = jiffies;
+<<<<<<< HEAD
 			atomic_dec(&e->dest->refcnt);
 			list_del(&e->list);
 			kfree(e);
+=======
+			list_del_rcu(&e->list);
+			call_rcu(&e->rcu_head, ip_vs_lblcr_elem_rcu_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -147,6 +208,7 @@ static void ip_vs_dest_set_eraseall(struct ip_vs_dest_set *set)
 {
 	struct ip_vs_dest_set_elem *e, *ep;
 
+<<<<<<< HEAD
 	write_lock(&set->lock);
 	list_for_each_entry_safe(e, ep, &set->list, list) {
 		/*
@@ -158,11 +220,18 @@ static void ip_vs_dest_set_eraseall(struct ip_vs_dest_set *set)
 		kfree(e);
 	}
 	write_unlock(&set->lock);
+=======
+	list_for_each_entry_safe(e, ep, &set->list, list) {
+		list_del_rcu(&e->list);
+		call_rcu(&e->rcu_head, ip_vs_lblcr_elem_rcu_free);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* get weighted least-connection node in the destination set */
 static inline struct ip_vs_dest *ip_vs_dest_set_min(struct ip_vs_dest_set *set)
 {
+<<<<<<< HEAD
 	register struct ip_vs_dest_set_elem *e;
 	struct ip_vs_dest *dest, *least;
 	int loh, doh;
@@ -172,6 +241,14 @@ static inline struct ip_vs_dest *ip_vs_dest_set_min(struct ip_vs_dest_set *set)
 
 	/* select the first destination server, whose weight > 0 */
 	list_for_each_entry(e, &set->list, list) {
+=======
+	struct ip_vs_dest_set_elem *e;
+	struct ip_vs_dest *dest, *least;
+	int loh, doh;
+
+	/* select the first destination server, whose weight > 0 */
+	list_for_each_entry_rcu(e, &set->list, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		least = e->dest;
 		if (least->flags & IP_VS_DEST_F_OVERLOAD)
 			continue;
@@ -186,14 +263,23 @@ static inline struct ip_vs_dest *ip_vs_dest_set_min(struct ip_vs_dest_set *set)
 
 	/* find the destination with the weighted least load */
   nextstage:
+<<<<<<< HEAD
 	list_for_each_entry(e, &set->list, list) {
+=======
+	list_for_each_entry_continue_rcu(e, &set->list, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dest = e->dest;
 		if (dest->flags & IP_VS_DEST_F_OVERLOAD)
 			continue;
 
 		doh = ip_vs_dest_conn_overhead(dest);
+<<<<<<< HEAD
 		if ((loh * atomic_read(&dest->weight) >
 		     doh * atomic_read(&least->weight))
+=======
+		if (((__s64)loh * atomic_read(&dest->weight) >
+		     (__s64)doh * atomic_read(&least->weight))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    && (dest->flags & IP_VS_DEST_F_AVAILABLE)) {
 			least = dest;
 			loh = doh;
@@ -206,7 +292,11 @@ static inline struct ip_vs_dest *ip_vs_dest_set_min(struct ip_vs_dest_set *set)
 		      IP_VS_DBG_ADDR(least->af, &least->addr),
 		      ntohs(least->port),
 		      atomic_read(&least->activeconns),
+<<<<<<< HEAD
 		      atomic_read(&least->refcnt),
+=======
+		      refcount_read(&least->refcnt),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      atomic_read(&least->weight), loh);
 	return least;
 }
@@ -215,7 +305,11 @@ static inline struct ip_vs_dest *ip_vs_dest_set_min(struct ip_vs_dest_set *set)
 /* get weighted most-connection node in the destination set */
 static inline struct ip_vs_dest *ip_vs_dest_set_max(struct ip_vs_dest_set *set)
 {
+<<<<<<< HEAD
 	register struct ip_vs_dest_set_elem *e;
+=======
+	struct ip_vs_dest_set_elem *e;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ip_vs_dest *dest, *most;
 	int moh, doh;
 
@@ -234,12 +328,21 @@ static inline struct ip_vs_dest *ip_vs_dest_set_max(struct ip_vs_dest_set *set)
 
 	/* find the destination with the weighted most load */
   nextstage:
+<<<<<<< HEAD
 	list_for_each_entry(e, &set->list, list) {
 		dest = e->dest;
 		doh = ip_vs_dest_conn_overhead(dest);
 		/* moh/mw < doh/dw ==> moh*dw < doh*mw, where mw,dw>0 */
 		if ((moh * atomic_read(&dest->weight) <
 		     doh * atomic_read(&most->weight))
+=======
+	list_for_each_entry_continue(e, &set->list, list) {
+		dest = e->dest;
+		doh = ip_vs_dest_conn_overhead(dest);
+		/* moh/mw < doh/dw ==> moh*dw < doh*mw, where mw,dw>0 */
+		if (((__s64)moh * atomic_read(&dest->weight) <
+		     (__s64)doh * atomic_read(&most->weight))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    && (atomic_read(&dest->weight) > 0)) {
 			most = dest;
 			moh = doh;
@@ -251,7 +354,11 @@ static inline struct ip_vs_dest *ip_vs_dest_set_max(struct ip_vs_dest_set *set)
 		      __func__,
 		      IP_VS_DBG_ADDR(most->af, &most->addr), ntohs(most->port),
 		      atomic_read(&most->activeconns),
+<<<<<<< HEAD
 		      atomic_read(&most->refcnt),
+=======
+		      refcount_read(&most->refcnt),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      atomic_read(&most->weight), moh);
 	return most;
 }
@@ -262,11 +369,19 @@ static inline struct ip_vs_dest *ip_vs_dest_set_max(struct ip_vs_dest_set *set)
  *      IP address and its destination server set
  */
 struct ip_vs_lblcr_entry {
+<<<<<<< HEAD
 	struct list_head        list;
+=======
+	struct hlist_node       list;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			af;		/* address family */
 	union nf_inet_addr      addr;           /* destination IP address */
 	struct ip_vs_dest_set   set;            /* destination server set */
 	unsigned long           lastuse;        /* last used time */
+<<<<<<< HEAD
+=======
+	struct rcu_head		rcu_head;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -274,12 +389,24 @@ struct ip_vs_lblcr_entry {
  *      IPVS lblcr hash table
  */
 struct ip_vs_lblcr_table {
+<<<<<<< HEAD
 	struct list_head        bucket[IP_VS_LBLCR_TAB_SIZE];  /* hash bucket */
 	atomic_t                entries;        /* number of entries */
 	int                     max_size;       /* maximum size of entries */
 	struct timer_list       periodic_timer; /* collect stale entries */
 	int                     rover;          /* rover for expire check */
 	int                     counter;        /* counter for no expire */
+=======
+	struct rcu_head		rcu_head;
+	struct hlist_head	bucket[IP_VS_LBLCR_TAB_SIZE];  /* hash bucket */
+	atomic_t                entries;        /* number of entries */
+	int                     max_size;       /* maximum size of entries */
+	struct timer_list       periodic_timer; /* collect stale entries */
+	struct ip_vs_service	*svc;		/* pointer back to service */
+	int                     rover;          /* rover for expire check */
+	int                     counter;        /* counter for no expire */
+	bool			dead;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -288,7 +415,11 @@ struct ip_vs_lblcr_table {
  *      IPVS LBLCR sysctl table
  */
 
+<<<<<<< HEAD
 static ctl_table vs_vars_table[] = {
+=======
+static struct ctl_table vs_vars_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "lblcr_expiration",
 		.data		= NULL,
@@ -302,16 +433,26 @@ static ctl_table vs_vars_table[] = {
 
 static inline void ip_vs_lblcr_free(struct ip_vs_lblcr_entry *en)
 {
+<<<<<<< HEAD
 	list_del(&en->list);
 	ip_vs_dest_set_eraseall(&en->set);
 	kfree(en);
+=======
+	hlist_del_rcu(&en->list);
+	ip_vs_dest_set_eraseall(&en->set);
+	kfree_rcu(en, rcu_head);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /*
  *	Returns hash value for IPVS LBLCR entry
  */
+<<<<<<< HEAD
 static inline unsigned
+=======
+static inline unsigned int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ip_vs_lblcr_hashkey(int af, const union nf_inet_addr *addr)
 {
 	__be32 addr_fold = addr->ip;
@@ -321,7 +462,11 @@ ip_vs_lblcr_hashkey(int af, const union nf_inet_addr *addr)
 		addr_fold = addr->ip6[0]^addr->ip6[1]^
 			    addr->ip6[2]^addr->ip6[3];
 #endif
+<<<<<<< HEAD
 	return (ntohl(addr_fold)*2654435761UL) & IP_VS_LBLCR_TAB_MASK;
+=======
+	return hash_32(ntohl(addr_fold), IP_VS_LBLCR_TAB_BITS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -332,25 +477,42 @@ ip_vs_lblcr_hashkey(int af, const union nf_inet_addr *addr)
 static void
 ip_vs_lblcr_hash(struct ip_vs_lblcr_table *tbl, struct ip_vs_lblcr_entry *en)
 {
+<<<<<<< HEAD
 	unsigned hash = ip_vs_lblcr_hashkey(en->af, &en->addr);
 
 	list_add(&en->list, &tbl->bucket[hash]);
+=======
+	unsigned int hash = ip_vs_lblcr_hashkey(en->af, &en->addr);
+
+	hlist_add_head_rcu(&en->list, &tbl->bucket[hash]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_inc(&tbl->entries);
 }
 
 
+<<<<<<< HEAD
 /*
  *  Get ip_vs_lblcr_entry associated with supplied parameters. Called under
  *  read lock.
  */
+=======
+/* Get ip_vs_lblcr_entry associated with supplied parameters. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct ip_vs_lblcr_entry *
 ip_vs_lblcr_get(int af, struct ip_vs_lblcr_table *tbl,
 		const union nf_inet_addr *addr)
 {
+<<<<<<< HEAD
 	unsigned hash = ip_vs_lblcr_hashkey(af, addr);
 	struct ip_vs_lblcr_entry *en;
 
 	list_for_each_entry(en, &tbl->bucket[hash], list)
+=======
+	unsigned int hash = ip_vs_lblcr_hashkey(af, addr);
+	struct ip_vs_lblcr_entry *en;
+
+	hlist_for_each_entry_rcu(en, &tbl->bucket[hash], list)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ip_vs_addr_equal(af, &en->addr, addr))
 			return en;
 
@@ -360,6 +522,7 @@ ip_vs_lblcr_get(int af, struct ip_vs_lblcr_table *tbl,
 
 /*
  * Create or update an ip_vs_lblcr_entry, which is a mapping of a destination
+<<<<<<< HEAD
  * IP address to a server. Called under write lock.
  */
 static inline struct ip_vs_lblcr_entry *
@@ -369,18 +532,35 @@ ip_vs_lblcr_new(struct ip_vs_lblcr_table *tbl, const union nf_inet_addr *daddr,
 	struct ip_vs_lblcr_entry *en;
 
 	en = ip_vs_lblcr_get(dest->af, tbl, daddr);
+=======
+ * IP address to a server. Called under spin lock.
+ */
+static inline struct ip_vs_lblcr_entry *
+ip_vs_lblcr_new(struct ip_vs_lblcr_table *tbl, const union nf_inet_addr *daddr,
+		u16 af, struct ip_vs_dest *dest)
+{
+	struct ip_vs_lblcr_entry *en;
+
+	en = ip_vs_lblcr_get(af, tbl, daddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!en) {
 		en = kmalloc(sizeof(*en), GFP_ATOMIC);
 		if (!en)
 			return NULL;
 
+<<<<<<< HEAD
 		en->af = dest->af;
 		ip_vs_addr_copy(dest->af, &en->addr, daddr);
+=======
+		en->af = af;
+		ip_vs_addr_copy(af, &en->addr, daddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		en->lastuse = jiffies;
 
 		/* initialize its dest set */
 		atomic_set(&(en->set.size), 0);
 		INIT_LIST_HEAD(&en->set.list);
+<<<<<<< HEAD
 		rwlock_init(&en->set.lock);
 
 		ip_vs_lblcr_hash(tbl, en);
@@ -389,6 +569,16 @@ ip_vs_lblcr_new(struct ip_vs_lblcr_table *tbl, const union nf_inet_addr *daddr,
 	write_lock(&en->set.lock);
 	ip_vs_dest_set_insert(&en->set, dest);
 	write_unlock(&en->set.lock);
+=======
+
+		ip_vs_dest_set_insert(&en->set, dest, false);
+
+		ip_vs_lblcr_hash(tbl, en);
+		return en;
+	}
+
+	ip_vs_dest_set_insert(&en->set, dest, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return en;
 }
@@ -397,6 +587,7 @@ ip_vs_lblcr_new(struct ip_vs_lblcr_table *tbl, const union nf_inet_addr *daddr,
 /*
  *      Flush all the entries of the specified table.
  */
+<<<<<<< HEAD
 static void ip_vs_lblcr_flush(struct ip_vs_lblcr_table *tbl)
 {
 	int i;
@@ -408,13 +599,34 @@ static void ip_vs_lblcr_flush(struct ip_vs_lblcr_table *tbl)
 			ip_vs_lblcr_free(en);
 		}
 	}
+=======
+static void ip_vs_lblcr_flush(struct ip_vs_service *svc)
+{
+	struct ip_vs_lblcr_table *tbl = svc->sched_data;
+	int i;
+	struct ip_vs_lblcr_entry *en;
+	struct hlist_node *next;
+
+	spin_lock_bh(&svc->sched_lock);
+	tbl->dead = true;
+	for (i = 0; i < IP_VS_LBLCR_TAB_SIZE; i++) {
+		hlist_for_each_entry_safe(en, next, &tbl->bucket[i], list) {
+			ip_vs_lblcr_free(en);
+		}
+	}
+	spin_unlock_bh(&svc->sched_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sysctl_lblcr_expiration(struct ip_vs_service *svc)
 {
 #ifdef CONFIG_SYSCTL
+<<<<<<< HEAD
 	struct netns_ipvs *ipvs = net_ipvs(svc->net);
 	return ipvs->sysctl_lblcr_expiration;
+=======
+	return svc->ipvs->sysctl_lblcr_expiration;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 	return DEFAULT_EXPIRATION;
 #endif
@@ -425,6 +637,7 @@ static inline void ip_vs_lblcr_full_check(struct ip_vs_service *svc)
 	struct ip_vs_lblcr_table *tbl = svc->sched_data;
 	unsigned long now = jiffies;
 	int i, j;
+<<<<<<< HEAD
 	struct ip_vs_lblcr_entry *en, *nxt;
 
 	for (i=0, j=tbl->rover; i<IP_VS_LBLCR_TAB_SIZE; i++) {
@@ -432,6 +645,16 @@ static inline void ip_vs_lblcr_full_check(struct ip_vs_service *svc)
 
 		write_lock(&svc->sched_lock);
 		list_for_each_entry_safe(en, nxt, &tbl->bucket[j], list) {
+=======
+	struct ip_vs_lblcr_entry *en;
+	struct hlist_node *next;
+
+	for (i = 0, j = tbl->rover; i < IP_VS_LBLCR_TAB_SIZE; i++) {
+		j = (j + 1) & IP_VS_LBLCR_TAB_MASK;
+
+		spin_lock(&svc->sched_lock);
+		hlist_for_each_entry_safe(en, next, &tbl->bucket[j], list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (time_after(en->lastuse +
 				       sysctl_lblcr_expiration(svc), now))
 				continue;
@@ -439,7 +662,11 @@ static inline void ip_vs_lblcr_full_check(struct ip_vs_service *svc)
 			ip_vs_lblcr_free(en);
 			atomic_dec(&tbl->entries);
 		}
+<<<<<<< HEAD
 		write_unlock(&svc->sched_lock);
+=======
+		spin_unlock(&svc->sched_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	tbl->rover = j;
 }
@@ -456,6 +683,7 @@ static inline void ip_vs_lblcr_full_check(struct ip_vs_service *svc)
  *             of the table.
  *      The full expiration check is for this purpose now.
  */
+<<<<<<< HEAD
 static void ip_vs_lblcr_check_expire(unsigned long data)
 {
 	struct ip_vs_service *svc = (struct ip_vs_service *) data;
@@ -464,6 +692,17 @@ static void ip_vs_lblcr_check_expire(unsigned long data)
 	int goal;
 	int i, j;
 	struct ip_vs_lblcr_entry *en, *nxt;
+=======
+static void ip_vs_lblcr_check_expire(struct timer_list *t)
+{
+	struct ip_vs_lblcr_table *tbl = from_timer(tbl, t, periodic_timer);
+	struct ip_vs_service *svc = tbl->svc;
+	unsigned long now = jiffies;
+	int goal;
+	int i, j;
+	struct ip_vs_lblcr_entry *en;
+	struct hlist_node *next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((tbl->counter % COUNT_FOR_FULL_EXPIRATION) == 0) {
 		/* do full expiration check */
@@ -481,11 +720,19 @@ static void ip_vs_lblcr_check_expire(unsigned long data)
 	if (goal > tbl->max_size/2)
 		goal = tbl->max_size/2;
 
+<<<<<<< HEAD
 	for (i=0, j=tbl->rover; i<IP_VS_LBLCR_TAB_SIZE; i++) {
 		j = (j + 1) & IP_VS_LBLCR_TAB_MASK;
 
 		write_lock(&svc->sched_lock);
 		list_for_each_entry_safe(en, nxt, &tbl->bucket[j], list) {
+=======
+	for (i = 0, j = tbl->rover; i < IP_VS_LBLCR_TAB_SIZE; i++) {
+		j = (j + 1) & IP_VS_LBLCR_TAB_MASK;
+
+		spin_lock(&svc->sched_lock);
+		hlist_for_each_entry_safe(en, next, &tbl->bucket[j], list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (time_before(now, en->lastuse+ENTRY_TIMEOUT))
 				continue;
 
@@ -493,7 +740,11 @@ static void ip_vs_lblcr_check_expire(unsigned long data)
 			atomic_dec(&tbl->entries);
 			goal--;
 		}
+<<<<<<< HEAD
 		write_unlock(&svc->sched_lock);
+=======
+		spin_unlock(&svc->sched_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (goal <= 0)
 			break;
 	}
@@ -511,40 +762,68 @@ static int ip_vs_lblcr_init_svc(struct ip_vs_service *svc)
 	/*
 	 *    Allocate the ip_vs_lblcr_table for this service
 	 */
+<<<<<<< HEAD
 	tbl = kmalloc(sizeof(*tbl), GFP_ATOMIC);
+=======
+	tbl = kmalloc(sizeof(*tbl), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tbl == NULL)
 		return -ENOMEM;
 
 	svc->sched_data = tbl;
+<<<<<<< HEAD
 	IP_VS_DBG(6, "LBLCR hash table (memory=%Zdbytes) allocated for "
+=======
+	IP_VS_DBG(6, "LBLCR hash table (memory=%zdbytes) allocated for "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  "current service\n", sizeof(*tbl));
 
 	/*
 	 *    Initialize the hash buckets
 	 */
+<<<<<<< HEAD
 	for (i=0; i<IP_VS_LBLCR_TAB_SIZE; i++) {
 		INIT_LIST_HEAD(&tbl->bucket[i]);
+=======
+	for (i = 0; i < IP_VS_LBLCR_TAB_SIZE; i++) {
+		INIT_HLIST_HEAD(&tbl->bucket[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	tbl->max_size = IP_VS_LBLCR_TAB_SIZE*16;
 	tbl->rover = 0;
 	tbl->counter = 1;
+<<<<<<< HEAD
+=======
+	tbl->dead = false;
+	tbl->svc = svc;
+	atomic_set(&tbl->entries, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *    Hook periodic timer for garbage collection
 	 */
+<<<<<<< HEAD
 	setup_timer(&tbl->periodic_timer, ip_vs_lblcr_check_expire,
 			(unsigned long)svc);
+=======
+	timer_setup(&tbl->periodic_timer, ip_vs_lblcr_check_expire, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mod_timer(&tbl->periodic_timer, jiffies + CHECK_EXPIRE_INTERVAL);
 
 	return 0;
 }
 
 
+<<<<<<< HEAD
 static int ip_vs_lblcr_done_svc(struct ip_vs_service *svc)
+=======
+static void ip_vs_lblcr_done_svc(struct ip_vs_service *svc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ip_vs_lblcr_table *tbl = svc->sched_data;
 
 	/* remove periodic timer */
+<<<<<<< HEAD
 	del_timer_sync(&tbl->periodic_timer);
 
 	/* got to clean up table entries here */
@@ -556,6 +835,17 @@ static int ip_vs_lblcr_done_svc(struct ip_vs_service *svc)
 		  sizeof(*tbl));
 
 	return 0;
+=======
+	timer_shutdown_sync(&tbl->periodic_timer);
+
+	/* got to clean up table entries here */
+	ip_vs_lblcr_flush(svc);
+
+	/* release the table itself */
+	kfree_rcu(tbl, rcu_head);
+	IP_VS_DBG(6, "LBLCR hash table (memory=%zdbytes) released\n",
+		  sizeof(*tbl));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -577,7 +867,11 @@ __ip_vs_lblcr_schedule(struct ip_vs_service *svc)
 	 * The server with weight=0 is quiesced and will not receive any
 	 * new connection.
 	 */
+<<<<<<< HEAD
 	list_for_each_entry(dest, &svc->destinations, n_list) {
+=======
+	list_for_each_entry_rcu(dest, &svc->destinations, n_list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dest->flags & IP_VS_DEST_F_OVERLOAD)
 			continue;
 
@@ -593,13 +887,22 @@ __ip_vs_lblcr_schedule(struct ip_vs_service *svc)
 	 *    Find the destination with the least load.
 	 */
   nextstage:
+<<<<<<< HEAD
 	list_for_each_entry_continue(dest, &svc->destinations, n_list) {
+=======
+	list_for_each_entry_continue_rcu(dest, &svc->destinations, n_list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dest->flags & IP_VS_DEST_F_OVERLOAD)
 			continue;
 
 		doh = ip_vs_dest_conn_overhead(dest);
+<<<<<<< HEAD
 		if (loh * atomic_read(&dest->weight) >
 		    doh * atomic_read(&least->weight)) {
+=======
+		if ((__s64)loh * atomic_read(&dest->weight) >
+		    (__s64)doh * atomic_read(&least->weight)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			least = dest;
 			loh = doh;
 		}
@@ -610,7 +913,11 @@ __ip_vs_lblcr_schedule(struct ip_vs_service *svc)
 		      IP_VS_DBG_ADDR(least->af, &least->addr),
 		      ntohs(least->port),
 		      atomic_read(&least->activeconns),
+<<<<<<< HEAD
 		      atomic_read(&least->refcnt),
+=======
+		      refcount_read(&least->refcnt),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      atomic_read(&least->weight), loh);
 
 	return least;
@@ -627,7 +934,11 @@ is_overloaded(struct ip_vs_dest *dest, struct ip_vs_service *svc)
 	if (atomic_read(&dest->activeconns) > atomic_read(&dest->weight)) {
 		struct ip_vs_dest *d;
 
+<<<<<<< HEAD
 		list_for_each_entry(d, &svc->destinations, n_list) {
+=======
+		list_for_each_entry_rcu(d, &svc->destinations, n_list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (atomic_read(&d->activeconns)*2
 			    < atomic_read(&d->weight)) {
 				return 1;
@@ -642,6 +953,7 @@ is_overloaded(struct ip_vs_dest *dest, struct ip_vs_service *svc)
  *    Locality-Based (weighted) Least-Connection scheduling
  */
 static struct ip_vs_dest *
+<<<<<<< HEAD
 ip_vs_lblcr_schedule(struct ip_vs_service *svc, const struct sk_buff *skb)
 {
 	struct ip_vs_lblcr_table *tbl = svc->sched_data;
@@ -683,16 +995,57 @@ ip_vs_lblcr_schedule(struct ip_vs_service *svc, const struct sk_buff *skb)
 			read_unlock(&svc->sched_lock);
 			goto out;
 		}
+=======
+ip_vs_lblcr_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
+		     struct ip_vs_iphdr *iph)
+{
+	struct ip_vs_lblcr_table *tbl = svc->sched_data;
+	struct ip_vs_dest *dest;
+	struct ip_vs_lblcr_entry *en;
+
+	IP_VS_DBG(6, "%s(): Scheduling...\n", __func__);
+
+	/* First look in our cache */
+	en = ip_vs_lblcr_get(svc->af, tbl, &iph->daddr);
+	if (en) {
+		en->lastuse = jiffies;
+
+		/* Get the least loaded destination */
+		dest = ip_vs_dest_set_min(&en->set);
+
+		/* More than one destination + enough time passed by, cleanup */
+		if (atomic_read(&en->set.size) > 1 &&
+		    time_after(jiffies, en->set.lastmod +
+				sysctl_lblcr_expiration(svc))) {
+			spin_lock_bh(&svc->sched_lock);
+			if (atomic_read(&en->set.size) > 1) {
+				struct ip_vs_dest *m;
+
+				m = ip_vs_dest_set_max(&en->set);
+				if (m)
+					ip_vs_dest_set_erase(&en->set, m);
+			}
+			spin_unlock_bh(&svc->sched_lock);
+		}
+
+		/* If the destination is not overloaded, use it */
+		if (dest && !is_overloaded(dest, svc))
+			goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* The cache entry is invalid, time to schedule */
 		dest = __ip_vs_lblcr_schedule(svc);
 		if (!dest) {
 			ip_vs_scheduler_err(svc, "no destination available");
+<<<<<<< HEAD
 			read_unlock(&svc->sched_lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return NULL;
 		}
 
 		/* Update our cache entry */
+<<<<<<< HEAD
 		write_lock(&en->set.lock);
 		ip_vs_dest_set_insert(&en->set, dest);
 		write_unlock(&en->set.lock);
@@ -701,6 +1054,14 @@ ip_vs_lblcr_schedule(struct ip_vs_service *svc, const struct sk_buff *skb)
 
 	if (dest)
 		goto out;
+=======
+		spin_lock_bh(&svc->sched_lock);
+		if (!tbl->dead)
+			ip_vs_dest_set_insert(&en->set, dest, true);
+		spin_unlock_bh(&svc->sched_lock);
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* No cache entry, time to schedule */
 	dest = __ip_vs_lblcr_schedule(svc);
@@ -710,6 +1071,7 @@ ip_vs_lblcr_schedule(struct ip_vs_service *svc, const struct sk_buff *skb)
 	}
 
 	/* If we fail to create a cache entry, we'll just use the valid dest */
+<<<<<<< HEAD
 	write_lock(&svc->sched_lock);
 	ip_vs_lblcr_new(tbl, &iph.daddr, dest);
 	write_unlock(&svc->sched_lock);
@@ -718,6 +1080,17 @@ out:
 	IP_VS_DBG_BUF(6, "LBLCR: destination IP address %s --> server %s:%d\n",
 		      IP_VS_DBG_ADDR(svc->af, &iph.daddr),
 		      IP_VS_DBG_ADDR(svc->af, &dest->addr), ntohs(dest->port));
+=======
+	spin_lock_bh(&svc->sched_lock);
+	if (!tbl->dead)
+		ip_vs_lblcr_new(tbl, &iph->daddr, svc->af, dest);
+	spin_unlock_bh(&svc->sched_lock);
+
+out:
+	IP_VS_DBG_BUF(6, "LBLCR: destination IP address %s --> server %s:%d\n",
+		      IP_VS_DBG_ADDR(svc->af, &iph->daddr),
+		      IP_VS_DBG_ADDR(dest->af, &dest->addr), ntohs(dest->port));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return dest;
 }
@@ -744,6 +1117,10 @@ static struct ip_vs_scheduler ip_vs_lblcr_scheduler =
 static int __net_init __ip_vs_lblcr_init(struct net *net)
 {
 	struct netns_ipvs *ipvs = net_ipvs(net);
+<<<<<<< HEAD
+=======
+	size_t vars_table_size = ARRAY_SIZE(vs_vars_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ipvs)
 		return -ENOENT;
@@ -754,14 +1131,29 @@ static int __net_init __ip_vs_lblcr_init(struct net *net)
 						GFP_KERNEL);
 		if (ipvs->lblcr_ctl_table == NULL)
 			return -ENOMEM;
+<<<<<<< HEAD
+=======
+
+		/* Don't export sysctls to unprivileged users */
+		if (net->user_ns != &init_user_ns) {
+			ipvs->lblcr_ctl_table[0].procname = NULL;
+			vars_table_size = 0;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		ipvs->lblcr_ctl_table = vs_vars_table;
 	ipvs->sysctl_lblcr_expiration = DEFAULT_EXPIRATION;
 	ipvs->lblcr_ctl_table[0].data = &ipvs->sysctl_lblcr_expiration;
 
+<<<<<<< HEAD
 	ipvs->lblcr_ctl_header =
 		register_net_sysctl_table(net, net_vs_ctl_path,
 					  ipvs->lblcr_ctl_table);
+=======
+	ipvs->lblcr_ctl_header = register_net_sysctl_sz(net, "net/ipv4/vs",
+							ipvs->lblcr_ctl_table,
+							vars_table_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ipvs->lblcr_ctl_header) {
 		if (!net_eq(net, &init_net))
 			kfree(ipvs->lblcr_ctl_table);
@@ -811,9 +1203,17 @@ static void __exit ip_vs_lblcr_cleanup(void)
 {
 	unregister_ip_vs_scheduler(&ip_vs_lblcr_scheduler);
 	unregister_pernet_subsys(&ip_vs_lblcr_ops);
+<<<<<<< HEAD
+=======
+	rcu_barrier();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 module_init(ip_vs_lblcr_init);
 module_exit(ip_vs_lblcr_cleanup);
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("ipvs locality-based least-connection with replication scheduler");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

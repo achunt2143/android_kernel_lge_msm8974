@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 /* 
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* 
+ * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __PTRACE_USER_H__
@@ -12,6 +18,7 @@
 extern int ptrace_getregs(long pid, unsigned long *regs_out);
 extern int ptrace_setregs(long pid, unsigned long *regs_in);
 
+<<<<<<< HEAD
 /* syscall emulation path in ptrace */
 
 #ifndef PTRACE_SYSEMU
@@ -53,4 +60,6 @@ extern int sysemu_supported;
 		  PTRACE_SYSEMU_SINGLESTEP } }) \
 		[sysemu_mode][singlestep_mode])
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

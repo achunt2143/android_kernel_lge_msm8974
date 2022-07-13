@@ -232,13 +232,21 @@ int utf16s_to_utf8s(const wchar_t *pwcs, int inlen, enum utf16_endian endian,
 }
 EXPORT_SYMBOL(utf16s_to_utf8s);
 
+<<<<<<< HEAD
 int register_nls(struct nls_table * nls)
+=======
+int __register_nls(struct nls_table *nls, struct module *owner)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nls_table ** tmp = &tables;
 
 	if (nls->next)
 		return -EBUSY;
 
+<<<<<<< HEAD
+=======
+	nls->owner = owner;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&nls_lock);
 	while (*tmp) {
 		if (nls == *tmp) {
@@ -252,6 +260,10 @@ int register_nls(struct nls_table * nls)
 	spin_unlock(&nls_lock);
 	return 0;	
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__register_nls);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int unregister_nls(struct nls_table * nls)
 {
@@ -270,7 +282,11 @@ int unregister_nls(struct nls_table * nls)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static struct nls_table *find_nls(char *charset)
+=======
+static struct nls_table *find_nls(const char *charset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nls_table *nls;
 	spin_lock(&nls_lock);
@@ -286,7 +302,11 @@ static struct nls_table *find_nls(char *charset)
 	return nls;
 }
 
+<<<<<<< HEAD
 struct nls_table *load_nls(char *charset)
+=======
+struct nls_table *load_nls(const char *charset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return try_then_request_module(find_nls(charset), "nls_%s", charset);
 }
@@ -538,7 +558,10 @@ struct nls_table *load_nls_default(void)
 		return &default_table;
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(register_nls);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(unregister_nls);
 EXPORT_SYMBOL(unload_nls);
 EXPORT_SYMBOL(load_nls);

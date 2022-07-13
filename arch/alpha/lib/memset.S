@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/alpha/lib/memset.S
  *
@@ -13,17 +17,31 @@
  * The scheduling comments are according to the EV5 documentation (and done by 
  * hand, so they might well be incorrect, please do tell me about it..)
  */
+<<<<<<< HEAD
 
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set noat
 	.set noreorder
 .text
 	.globl memset
 	.globl __memset
+<<<<<<< HEAD
 	.globl __memsetw
 	.globl __constant_c_memset
 	.ent __memset
 .align 5
 __memset:
+=======
+	.globl ___memset
+	.globl __memset16
+	.globl __constant_c_memset
+
+	.ent ___memset
+.align 5
+___memset:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.frame $30,0,$26,0
 	.prologue 0
 
@@ -103,11 +121,21 @@ within_one_quad:
 
 end:
 	ret $31,($26),1		/* E1 */
+<<<<<<< HEAD
 	.end __memset
 
 	.align 5
 	.ent __memsetw
 __memsetw:
+=======
+	.end ___memset
+EXPORT_SYMBOL(___memset)
+EXPORT_SYMBOL(__constant_c_memset)
+
+	.align 5
+	.ent __memset16
+__memset16:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prologue 0
 
 	inswl $17,0,$1		/* E0 */
@@ -119,6 +147,16 @@ __memsetw:
 	or $1,$4,$17		/* E0 */
 	br __constant_c_memset	/* .. E1 */
 
+<<<<<<< HEAD
 	.end __memsetw
 
 memset = __memset
+=======
+	.end __memset16
+EXPORT_SYMBOL(__memset16)
+
+memset = ___memset
+__memset = ___memset
+	EXPORT_SYMBOL(memset)
+	EXPORT_SYMBOL(__memset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

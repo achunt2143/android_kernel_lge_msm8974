@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/mm/copypage-v4wt.S
  *
  *  Copyright (C) 1995-1999 Russell King
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  This is for CPUs with a writethrough cache and 'flush ID cache' is
  *  the only supported cache operation.
  */
@@ -20,6 +27,7 @@
  * dirty data in the cache.  However, we do have to ensure that
  * subsequent reads are up to date.
  */
+<<<<<<< HEAD
 static void __naked
 v4wt_copy_user_page(void *kto, const void *kfrom)
 {
@@ -41,6 +49,29 @@ v4wt_copy_user_page(void *kto, const void *kfrom)
 	ldmfd	sp!, {r4, pc}			@ 3"
 	:
 	: "r" (kto), "r" (kfrom), "I" (PAGE_SIZE / 64));
+=======
+static void v4wt_copy_user_page(void *kto, const void *kfrom)
+{
+	int tmp;
+
+	asm volatile ("\
+	.syntax unified\n\
+	ldmia	%1!, {r3, r4, ip, lr}		@ 4\n\
+1:	stmia	%0!, {r3, r4, ip, lr}		@ 4\n\
+	ldmia	%1!, {r3, r4, ip, lr}		@ 4+1\n\
+	stmia	%0!, {r3, r4, ip, lr}		@ 4\n\
+	ldmia	%1!, {r3, r4, ip, lr}		@ 4\n\
+	stmia	%0!, {r3, r4, ip, lr}		@ 4\n\
+	ldmia	%1!, {r3, r4, ip, lr}		@ 4\n\
+	subs	%2, %2, #1			@ 1\n\
+	stmia	%0!, {r3, r4, ip, lr}		@ 4\n\
+	ldmiane	%1!, {r3, r4, ip, lr}		@ 4\n\
+	bne	1b				@ 1\n\
+	mcr	p15, 0, %2, c7, c7, 0		@ flush ID cache"
+	: "+&r" (kto), "+&r" (kfrom), "=&r" (tmp)
+	: "2" (PAGE_SIZE / 64)
+	: "r3", "r4", "ip", "lr");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void v4wt_copy_user_highpage(struct page *to, struct page *from,

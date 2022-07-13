@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Windfarm PowerMac thermal control. LM75 sensor
  *
  * (c) Copyright 2005 Benjamin Herrenschmidt, IBM Corp.
  *                    <benh@kernel.crashing.org>
+<<<<<<< HEAD
  *
  * Released under the term of the GNU GPL v2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -15,7 +22,11 @@
 #include <linux/init.h>
 #include <linux/wait.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/io.h>
 #include <asm/sections.h>
@@ -23,7 +34,11 @@
 
 #include "windfarm.h"
 
+<<<<<<< HEAD
 #define VERSION "0.2"
+=======
+#define VERSION "1.0"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef DEBUG
 
@@ -34,10 +49,17 @@
 #endif
 
 struct wf_lm75_sensor {
+<<<<<<< HEAD
 	int			ds1775 : 1;
 	int			inited : 1;
 	struct 	i2c_client	*i2c;
 	struct 	wf_sensor	sens;
+=======
+	unsigned int		ds1775 : 1;
+	unsigned int		inited : 1;
+	struct i2c_client	*i2c;
+	struct wf_sensor	sens;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #define wf_to_lm75(c) container_of(c, struct wf_lm75_sensor, sens)
 
@@ -82,12 +104,17 @@ static void wf_lm75_release(struct wf_sensor *sr)
 	kfree(lm);
 }
 
+<<<<<<< HEAD
 static struct wf_sensor_ops wf_lm75_ops = {
+=======
+static const struct wf_sensor_ops wf_lm75_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_value	= wf_lm75_get,
 	.release	= wf_lm75_release,
 	.owner		= THIS_MODULE,
 };
 
+<<<<<<< HEAD
 static int wf_lm75_probe(struct i2c_client *client,
 			 const struct i2c_device_id *id)
 {
@@ -124,6 +151,28 @@ static struct i2c_client *wf_lm75_create(struct i2c_adapter *adapter,
 
 	DBG("wf_lm75: creating  %s device at address 0x%02x\n",
 	    ds1775 ? "ds1775" : "lm75", addr);
+=======
+static int wf_lm75_probe(struct i2c_client *client)
+{
+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+	struct wf_lm75_sensor *lm;
+	int rc, ds1775;
+	const char *name, *loc;
+
+	if (id)
+		ds1775 = id->driver_data;
+	else
+		ds1775 = !!of_device_get_match_data(&client->dev);
+
+	DBG("wf_lm75: creating  %s device at address 0x%02x\n",
+	    ds1775 ? "ds1775" : "lm75", client->addr);
+
+	loc = of_get_property(client->dev.of_node, "hwsensor-location", NULL);
+	if (!loc) {
+		dev_warn(&client->dev, "Missing hwsensor-location property!\n");
+		return -ENXIO;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Usual rant about sensor names not beeing very consistent in
 	 * the device-tree, oh well ...
@@ -137,6 +186,7 @@ static struct i2c_client *wf_lm75_create(struct i2c_adapter *adapter,
 		name = "optical-drive-temp";
 	else if (!strcmp(loc, "HD Temp"))
 		name = "hard-drive-temp";
+<<<<<<< HEAD
 	else
 		goto fail;
 
@@ -207,11 +257,45 @@ static int wf_lm75_remove(struct i2c_client *client)
 
 	DBG("wf_lm75: i2c detatch called for %s\n", lm->sens.name);
 
+=======
+	else if (!strcmp(loc, "PCI SLOTS"))
+		name = "slots-temp";
+	else if (!strcmp(loc, "CPU A INLET"))
+		name = "cpu-inlet-temp-0";
+	else if (!strcmp(loc, "CPU B INLET"))
+		name = "cpu-inlet-temp-1";
+	else
+		return -ENXIO;
+ 	
+
+	lm = kzalloc(sizeof(struct wf_lm75_sensor), GFP_KERNEL);
+	if (lm == NULL)
+		return -ENODEV;
+
+	lm->inited = 0;
+	lm->ds1775 = ds1775;
+	lm->i2c = client;
+	lm->sens.name = name;
+	lm->sens.ops = &wf_lm75_ops;
+	i2c_set_clientdata(client, lm);
+
+	rc = wf_register_sensor(&lm->sens);
+	if (rc)
+		kfree(lm);
+	return rc;
+}
+
+static void wf_lm75_remove(struct i2c_client *client)
+{
+	struct wf_lm75_sensor *lm = i2c_get_clientdata(client);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Mark client detached */
 	lm->i2c = NULL;
 
 	/* release sensor */
 	wf_unregister_sensor(&lm->sens);
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -221,17 +305,40 @@ static const struct i2c_device_id wf_lm75_id[] = {
 	{ "wf_ds1775", 1 },
 	{ }
 };
+=======
+}
+
+static const struct i2c_device_id wf_lm75_id[] = {
+	{ "MAC,lm75", 0 },
+	{ "MAC,ds1775", 1 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, wf_lm75_id);
+
+static const struct of_device_id wf_lm75_of_id[] = {
+	{ .compatible = "lm75", .data = (void *)0},
+	{ .compatible = "ds1775", .data = (void *)1 },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, wf_lm75_of_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct i2c_driver wf_lm75_driver = {
 	.driver = {
 		.name	= "wf_lm75",
+<<<<<<< HEAD
 	},
 	.attach_adapter	= wf_lm75_attach,
+=======
+		.of_match_table = wf_lm75_of_id,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe		= wf_lm75_probe,
 	.remove		= wf_lm75_remove,
 	.id_table	= wf_lm75_id,
 };
 
+<<<<<<< HEAD
 static int __init wf_lm75_sensor_init(void)
 {
 	/* Don't register on old machines that use therm_pm72 for now */
@@ -250,6 +357,9 @@ static void __exit wf_lm75_sensor_exit(void)
 
 module_init(wf_lm75_sensor_init);
 module_exit(wf_lm75_sensor_exit);
+=======
+module_i2c_driver(wf_lm75_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Benjamin Herrenschmidt <benh@kernel.crashing.org>");
 MODULE_DESCRIPTION("LM75 sensor objects for PowerMacs thermal control");

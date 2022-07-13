@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  The NFC Controller Interface is the communication protocol between an
  *  NFC Controller (NFCC) and a Device Host (DH).
@@ -9,6 +13,7 @@
  *  Acknowledgements:
  *  This file is based on hci_event.c, which was written
  *  by Maxim Krasnyansky.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2
@@ -23,6 +28,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
@@ -38,6 +45,7 @@
 
 /* Handle NCI Response packets */
 
+<<<<<<< HEAD
 static void nci_core_reset_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 {
 	struct nci_core_reset_rsp *rsp = (void *) skb->data;
@@ -57,20 +65,56 @@ static void nci_core_init_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 {
 	struct nci_core_init_rsp_1 *rsp_1 = (void *) skb->data;
 	struct nci_core_init_rsp_2 *rsp_2;
+=======
+static void nci_core_reset_rsp_packet(struct nci_dev *ndev,
+				      const struct sk_buff *skb)
+{
+	const struct nci_core_reset_rsp *rsp = (void *)skb->data;
+
+	pr_debug("status 0x%x\n", rsp->status);
+
+	/* Handle NCI 1.x ver */
+	if (skb->len != 1) {
+		if (rsp->status == NCI_STATUS_OK) {
+			ndev->nci_ver = rsp->nci_ver;
+			pr_debug("nci_ver 0x%x, config_status 0x%x\n",
+				 rsp->nci_ver, rsp->config_status);
+		}
+
+		nci_req_complete(ndev, rsp->status);
+	}
+}
+
+static u8 nci_core_init_rsp_packet_v1(struct nci_dev *ndev,
+				      const struct sk_buff *skb)
+{
+	const struct nci_core_init_rsp_1 *rsp_1 = (void *)skb->data;
+	const struct nci_core_init_rsp_2 *rsp_2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("status 0x%x\n", rsp_1->status);
 
 	if (rsp_1->status != NCI_STATUS_OK)
+<<<<<<< HEAD
 		goto exit;
+=======
+		return rsp_1->status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ndev->nfcc_features = __le32_to_cpu(rsp_1->nfcc_features);
 	ndev->num_supported_rf_interfaces = rsp_1->num_supported_rf_interfaces;
 
+<<<<<<< HEAD
 	if (ndev->num_supported_rf_interfaces >
 	    NCI_MAX_SUPPORTED_RF_INTERFACES) {
 		ndev->num_supported_rf_interfaces =
 			NCI_MAX_SUPPORTED_RF_INTERFACES;
 	}
+=======
+	ndev->num_supported_rf_interfaces =
+		min((int)ndev->num_supported_rf_interfaces,
+		    NCI_MAX_SUPPORTED_RF_INTERFACES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(ndev->supported_rf_interfaces,
 	       rsp_1->supported_rf_interfaces,
@@ -90,6 +134,62 @@ static void nci_core_init_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 	ndev->manufact_specific_info =
 		__le32_to_cpu(rsp_2->manufact_specific_info);
 
+<<<<<<< HEAD
+=======
+	return NCI_STATUS_OK;
+}
+
+static u8 nci_core_init_rsp_packet_v2(struct nci_dev *ndev,
+				      const struct sk_buff *skb)
+{
+	const struct nci_core_init_rsp_nci_ver2 *rsp = (void *)skb->data;
+	const u8 *supported_rf_interface = rsp->supported_rf_interfaces;
+	u8 rf_interface_idx = 0;
+	u8 rf_extension_cnt = 0;
+
+	pr_debug("status %x\n", rsp->status);
+
+	if (rsp->status != NCI_STATUS_OK)
+		return rsp->status;
+
+	ndev->nfcc_features = __le32_to_cpu(rsp->nfcc_features);
+	ndev->num_supported_rf_interfaces = rsp->num_supported_rf_interfaces;
+
+	ndev->num_supported_rf_interfaces =
+		min((int)ndev->num_supported_rf_interfaces,
+		    NCI_MAX_SUPPORTED_RF_INTERFACES);
+
+	while (rf_interface_idx < ndev->num_supported_rf_interfaces) {
+		ndev->supported_rf_interfaces[rf_interface_idx++] = *supported_rf_interface++;
+
+		/* skip rf extension parameters */
+		rf_extension_cnt = *supported_rf_interface++;
+		supported_rf_interface += rf_extension_cnt;
+	}
+
+	ndev->max_logical_connections = rsp->max_logical_connections;
+	ndev->max_routing_table_size =
+			__le16_to_cpu(rsp->max_routing_table_size);
+	ndev->max_ctrl_pkt_payload_len =
+			rsp->max_ctrl_pkt_payload_len;
+	ndev->max_size_for_large_params = NCI_MAX_LARGE_PARAMS_NCI_v2;
+
+	return NCI_STATUS_OK;
+}
+
+static void nci_core_init_rsp_packet(struct nci_dev *ndev, const struct sk_buff *skb)
+{
+	u8 status = 0;
+
+	if (!(ndev->nci_ver & NCI_VER_2_MASK))
+		status = nci_core_init_rsp_packet_v1(ndev, skb);
+	else
+		status = nci_core_init_rsp_packet_v2(ndev, skb);
+
+	if (status != NCI_STATUS_OK)
+		goto exit;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("nfcc_features 0x%x\n",
 		 ndev->nfcc_features);
 	pr_debug("num_supported_rf_interfaces %d\n",
@@ -116,11 +216,29 @@ static void nci_core_init_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 		 ndev->manufact_specific_info);
 
 exit:
+<<<<<<< HEAD
 	nci_req_complete(ndev, rsp_1->status);
 }
 
 static void nci_rf_disc_map_rsp_packet(struct nci_dev *ndev,
 				       struct sk_buff *skb)
+=======
+	nci_req_complete(ndev, status);
+}
+
+static void nci_core_set_config_rsp_packet(struct nci_dev *ndev,
+					   const struct sk_buff *skb)
+{
+	const struct nci_core_set_config_rsp *rsp = (void *)skb->data;
+
+	pr_debug("status 0x%x\n", rsp->status);
+
+	nci_req_complete(ndev, rsp->status);
+}
+
+static void nci_rf_disc_map_rsp_packet(struct nci_dev *ndev,
+				       const struct sk_buff *skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u8 status = skb->data[0];
 
@@ -129,20 +247,54 @@ static void nci_rf_disc_map_rsp_packet(struct nci_dev *ndev,
 	nci_req_complete(ndev, status);
 }
 
+<<<<<<< HEAD
 static void nci_rf_disc_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 {
+=======
+static void nci_rf_disc_rsp_packet(struct nci_dev *ndev,
+				   const struct sk_buff *skb)
+{
+	struct nci_conn_info *conn_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u8 status = skb->data[0];
 
 	pr_debug("status 0x%x\n", status);
 
+<<<<<<< HEAD
 	if (status == NCI_STATUS_OK)
 		atomic_set(&ndev->state, NCI_DISCOVERY);
 
+=======
+	if (status == NCI_STATUS_OK) {
+		atomic_set(&ndev->state, NCI_DISCOVERY);
+
+		conn_info = ndev->rf_conn_info;
+		if (!conn_info) {
+			conn_info = devm_kzalloc(&ndev->nfc_dev->dev,
+						 sizeof(struct nci_conn_info),
+						 GFP_KERNEL);
+			if (!conn_info) {
+				status = NCI_STATUS_REJECTED;
+				goto exit;
+			}
+			conn_info->conn_id = NCI_STATIC_RF_CONN_ID;
+			INIT_LIST_HEAD(&conn_info->list);
+			list_add(&conn_info->list, &ndev->conn_info_list);
+			ndev->rf_conn_info = conn_info;
+		}
+	}
+
+exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nci_req_complete(ndev, status);
 }
 
 static void nci_rf_disc_select_rsp_packet(struct nci_dev *ndev,
+<<<<<<< HEAD
 					  struct sk_buff *skb)
+=======
+					  const struct sk_buff *skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u8 status = skb->data[0];
 
@@ -154,7 +306,11 @@ static void nci_rf_disc_select_rsp_packet(struct nci_dev *ndev,
 }
 
 static void nci_rf_deactivate_rsp_packet(struct nci_dev *ndev,
+<<<<<<< HEAD
 					 struct sk_buff *skb)
+=======
+					 const struct sk_buff *skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u8 status = skb->data[0];
 
@@ -169,6 +325,110 @@ static void nci_rf_deactivate_rsp_packet(struct nci_dev *ndev,
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void nci_nfcee_discover_rsp_packet(struct nci_dev *ndev,
+					  const struct sk_buff *skb)
+{
+	const struct nci_nfcee_discover_rsp *discover_rsp;
+
+	if (skb->len != 2) {
+		nci_req_complete(ndev, NCI_STATUS_NFCEE_PROTOCOL_ERROR);
+		return;
+	}
+
+	discover_rsp = (struct nci_nfcee_discover_rsp *)skb->data;
+
+	if (discover_rsp->status != NCI_STATUS_OK ||
+	    discover_rsp->num_nfcee == 0)
+		nci_req_complete(ndev, discover_rsp->status);
+}
+
+static void nci_nfcee_mode_set_rsp_packet(struct nci_dev *ndev,
+					  const struct sk_buff *skb)
+{
+	__u8 status = skb->data[0];
+
+	pr_debug("status 0x%x\n", status);
+	nci_req_complete(ndev, status);
+}
+
+static void nci_core_conn_create_rsp_packet(struct nci_dev *ndev,
+					    const struct sk_buff *skb)
+{
+	__u8 status = skb->data[0];
+	struct nci_conn_info *conn_info = NULL;
+	const struct nci_core_conn_create_rsp *rsp;
+
+	pr_debug("status 0x%x\n", status);
+
+	if (status == NCI_STATUS_OK) {
+		rsp = (struct nci_core_conn_create_rsp *)skb->data;
+
+		conn_info = devm_kzalloc(&ndev->nfc_dev->dev,
+					 sizeof(*conn_info), GFP_KERNEL);
+		if (!conn_info) {
+			status = NCI_STATUS_REJECTED;
+			goto exit;
+		}
+
+		conn_info->dest_params = devm_kzalloc(&ndev->nfc_dev->dev,
+						sizeof(struct dest_spec_params),
+						GFP_KERNEL);
+		if (!conn_info->dest_params) {
+			status = NCI_STATUS_REJECTED;
+			goto free_conn_info;
+		}
+
+		conn_info->dest_type = ndev->cur_dest_type;
+		conn_info->dest_params->id = ndev->cur_params.id;
+		conn_info->dest_params->protocol = ndev->cur_params.protocol;
+		conn_info->conn_id = rsp->conn_id;
+
+		/* Note: data_exchange_cb and data_exchange_cb_context need to
+		 * be specify out of nci_core_conn_create_rsp_packet
+		 */
+
+		INIT_LIST_HEAD(&conn_info->list);
+		list_add(&conn_info->list, &ndev->conn_info_list);
+
+		if (ndev->cur_params.id == ndev->hci_dev->nfcee_id)
+			ndev->hci_dev->conn_info = conn_info;
+
+		conn_info->conn_id = rsp->conn_id;
+		conn_info->max_pkt_payload_len = rsp->max_ctrl_pkt_payload_len;
+		atomic_set(&conn_info->credits_cnt, rsp->credits_cnt);
+	}
+
+free_conn_info:
+	if (status == NCI_STATUS_REJECTED)
+		devm_kfree(&ndev->nfc_dev->dev, conn_info);
+exit:
+
+	nci_req_complete(ndev, status);
+}
+
+static void nci_core_conn_close_rsp_packet(struct nci_dev *ndev,
+					   const struct sk_buff *skb)
+{
+	struct nci_conn_info *conn_info;
+	__u8 status = skb->data[0];
+
+	pr_debug("status 0x%x\n", status);
+	if (status == NCI_STATUS_OK) {
+		conn_info = nci_get_conn_info_by_conn_id(ndev,
+							 ndev->cur_conn_id);
+		if (conn_info) {
+			list_del(&conn_info->list);
+			if (conn_info == ndev->rf_conn_info)
+				ndev->rf_conn_info = NULL;
+			devm_kfree(&ndev->nfc_dev->dev, conn_info);
+		}
+	}
+	nci_req_complete(ndev, status);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void nci_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 {
 	__u16 rsp_opcode = nci_opcode(skb->data);
@@ -185,6 +445,18 @@ void nci_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 	/* strip the nci control header */
 	skb_pull(skb, NCI_CTRL_HDR_SIZE);
 
+<<<<<<< HEAD
+=======
+	if (nci_opcode_gid(rsp_opcode) == NCI_GID_PROPRIETARY) {
+		if (nci_prop_rsp_packet(ndev, rsp_opcode, skb) == -ENOTSUPP) {
+			pr_err("unsupported rsp opcode 0x%x\n",
+			       rsp_opcode);
+		}
+
+		goto end;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (rsp_opcode) {
 	case NCI_OP_CORE_RESET_RSP:
 		nci_core_reset_rsp_packet(ndev, skb);
@@ -194,6 +466,21 @@ void nci_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 		nci_core_init_rsp_packet(ndev, skb);
 		break;
 
+<<<<<<< HEAD
+=======
+	case NCI_OP_CORE_SET_CONFIG_RSP:
+		nci_core_set_config_rsp_packet(ndev, skb);
+		break;
+
+	case NCI_OP_CORE_CONN_CREATE_RSP:
+		nci_core_conn_create_rsp_packet(ndev, skb);
+		break;
+
+	case NCI_OP_CORE_CONN_CLOSE_RSP:
+		nci_core_conn_close_rsp_packet(ndev, skb);
+		break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case NCI_OP_RF_DISCOVER_MAP_RSP:
 		nci_rf_disc_map_rsp_packet(ndev, skb);
 		break;
@@ -210,11 +497,27 @@ void nci_rsp_packet(struct nci_dev *ndev, struct sk_buff *skb)
 		nci_rf_deactivate_rsp_packet(ndev, skb);
 		break;
 
+<<<<<<< HEAD
+=======
+	case NCI_OP_NFCEE_DISCOVER_RSP:
+		nci_nfcee_discover_rsp_packet(ndev, skb);
+		break;
+
+	case NCI_OP_NFCEE_MODE_SET_RSP:
+		nci_nfcee_mode_set_rsp_packet(ndev, skb);
+		break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		pr_err("unknown rsp opcode 0x%x\n", rsp_opcode);
 		break;
 	}
 
+<<<<<<< HEAD
+=======
+	nci_core_rsp_packet(ndev, rsp_opcode, skb);
+end:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree_skb(skb);
 
 	/* trigger the next cmd */

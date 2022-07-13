@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ipv6header match - matches IPv6 packets based
    on whether they contain certain headers */
 
@@ -5,10 +9,13 @@
  * Rewritten by: Andras Kis-Szabo <kisza@sch.bme.hu> */
 
 /* (C) 2001-2002 Andras Kis-Szabo <kisza@sch.bme.hu>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -19,7 +26,11 @@
 #include <net/ipv6.h>
 
 #include <linux/netfilter/x_tables.h>
+<<<<<<< HEAD
 #include <linux/netfilter_ipv6/ip6_tables.h>
+=======
+#include <linux/netfilter_ipv6.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netfilter_ipv6/ip6t_ipv6header.h>
 
 MODULE_LICENSE("GPL");
@@ -45,7 +56,11 @@ ipv6header_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 	len = skb->len - ptr;
 	temp = 0;
 
+<<<<<<< HEAD
 	while (ip6t_ext_hdr(nexthdr)) {
+=======
+	while (nf_ip6_ext_hdr(nexthdr)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const struct ipv6_opt_hdr *hp;
 		struct ipv6_opt_hdr _hdr;
 		int hdrlen;
@@ -65,13 +80,24 @@ ipv6header_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 		}
 
 		hp = skb_header_pointer(skb, ptr, sizeof(_hdr), &_hdr);
+<<<<<<< HEAD
 		BUG_ON(hp == NULL);
+=======
+		if (!hp) {
+			par->hotdrop = true;
+			return false;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Calculate the header length */
 		if (nexthdr == NEXTHDR_FRAGMENT)
 			hdrlen = 8;
 		else if (nexthdr == NEXTHDR_AUTH)
+<<<<<<< HEAD
 			hdrlen = (hp->hdrlen + 2) << 2;
+=======
+			hdrlen = ipv6_authlen(hp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			hdrlen = ipv6_optlen(hp);
 
@@ -94,7 +120,10 @@ ipv6header_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 			break;
 		default:
 			return false;
+<<<<<<< HEAD
 			break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		nexthdr = hp->nexthdr;

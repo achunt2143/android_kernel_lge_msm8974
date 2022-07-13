@@ -89,16 +89,24 @@
 
 #define SCIC_SDS_CONTROLLER_PHY_START_TIMEOUT      100
 
+<<<<<<< HEAD
 /**
  *
  *
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The number of milliseconds to wait while a given phy is consuming power
  * before allowing another set of phys to consume power. Ultimately, this will
  * be specified by OEM parameter.
  */
 #define SCIC_SDS_CONTROLLER_POWER_CONTROL_INTERVAL 500
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NORMALIZE_PUT_POINTER() -
  *
  * This macro will normalize the completion queue put pointer so its value can
@@ -108,7 +116,11 @@
 	((x) & SMU_COMPLETION_QUEUE_PUT_POINTER_MASK)
 
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NORMALIZE_EVENT_POINTER() -
  *
  * This macro will normalize the completion queue event entry so its value can
@@ -120,7 +132,11 @@
 		>> SMU_COMPLETION_QUEUE_GET_EVENT_POINTER_SHIFT	\
 	)
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NORMALIZE_GET_POINTER() -
  *
  * This macro will normalize the completion queue get pointer so its value can
@@ -129,7 +145,11 @@
 #define NORMALIZE_GET_POINTER(x) \
 	((x) & SMU_COMPLETION_QUEUE_GET_POINTER_MASK)
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NORMALIZE_GET_POINTER_CYCLE_BIT() -
  *
  * This macro will normalize the completion queue cycle pointer so it matches
@@ -138,7 +158,11 @@
 #define NORMALIZE_GET_POINTER_CYCLE_BIT(x) \
 	((SMU_CQGR_CYCLE_BIT & (x)) << (31 - SMU_COMPLETION_QUEUE_GET_CYCLE_BIT_SHIFT))
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * COMPLETION_QUEUE_CYCLE_BIT() -
  *
  * This macro will return the cycle bit of the completion queue entry
@@ -192,6 +216,7 @@ static bool sci_controller_completion_queue_has_entries(struct isci_host *ihost)
 
 static bool sci_controller_isr(struct isci_host *ihost)
 {
+<<<<<<< HEAD
 	if (sci_controller_completion_queue_has_entries(ihost)) {
 		return true;
 	} else {
@@ -208,6 +233,29 @@ static bool sci_controller_isr(struct isci_host *ihost)
 		writel(0xFF000000, &ihost->smu_registers->interrupt_mask);
 		writel(0, &ihost->smu_registers->interrupt_mask);
 	}
+=======
+	if (sci_controller_completion_queue_has_entries(ihost))
+		return true;
+
+	/* we have a spurious interrupt it could be that we have already
+	 * emptied the completion queue from a previous interrupt
+	 * FIXME: really!?
+	 */
+	writel(SMU_ISR_COMPLETION, &ihost->smu_registers->interrupt_status);
+
+	/* There is a race in the hardware that could cause us not to be
+	 * notified of an interrupt completion if we do not take this
+	 * step.  We will mask then unmask the interrupts so if there is
+	 * another interrupt pending the clearing of the interrupt
+	 * source we get the next interrupt message.
+	 */
+	spin_lock(&ihost->scic_lock);
+	if (test_bit(IHOST_IRQ_ENABLED, &ihost->flags)) {
+		writel(0xFF000000, &ihost->smu_registers->interrupt_mask);
+		writel(0, &ihost->smu_registers->interrupt_mask);
+	}
+	spin_unlock(&ihost->scic_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return false;
 }
@@ -410,7 +458,11 @@ static void sci_controller_event_completion(struct isci_host *ihost, u32 ent)
 				dev_warn(&ihost->pdev->dev,
 					 "%s: SCIC Controller 0x%p received "
 					 "event 0x%x for io request object "
+<<<<<<< HEAD
 					 "that doesnt exist.\n",
+=======
+					 "that doesn't exist.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 __func__,
 					 ihost,
 					 ent);
@@ -425,7 +477,11 @@ static void sci_controller_event_completion(struct isci_host *ihost, u32 ent)
 				dev_warn(&ihost->pdev->dev,
 					 "%s: SCIC Controller 0x%p received "
 					 "event 0x%x for remote device object "
+<<<<<<< HEAD
 					 "that doesnt exist.\n",
+=======
+					 "that doesn't exist.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 __func__,
 					 ihost,
 					 ent);
@@ -459,7 +515,11 @@ static void sci_controller_event_completion(struct isci_host *ihost, u32 ent)
 		} else
 			dev_err(&ihost->pdev->dev,
 				"%s: SCIC Controller 0x%p received event 0x%x "
+<<<<<<< HEAD
 				"for remote device object 0x%0x that doesnt "
+=======
+				"for remote device object 0x%0x that doesn't "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"exist.\n",
 				__func__,
 				ihost,
@@ -487,7 +547,11 @@ static void sci_controller_process_completions(struct isci_host *ihost)
 	u32 event_cycle;
 
 	dev_dbg(&ihost->pdev->dev,
+<<<<<<< HEAD
 		"%s: completion queue begining get:0x%08x\n",
+=======
+		"%s: completion queue beginning get:0x%08x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__func__,
 		ihost->completion_queue_get);
 
@@ -632,7 +696,11 @@ irqreturn_t isci_error_isr(int vec, void *data)
 /**
  * isci_host_start_complete() - This function is called by the core library,
  *    through the ISCI Module, to indicate controller start status.
+<<<<<<< HEAD
  * @isci_host: This parameter specifies the ISCI host object
+=======
+ * @ihost: This parameter specifies the ISCI host object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @completion_status: This parameter specifies the completion status from the
  *    core library.
  *
@@ -642,7 +710,10 @@ static void isci_host_start_complete(struct isci_host *ihost, enum sci_status co
 	if (completion_status != SCI_SUCCESS)
 		dev_info(&ihost->pdev->dev,
 			"controller start timed out, continuing...\n");
+<<<<<<< HEAD
 	isci_host_change_state(ihost, isci_ready);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(IHOST_START_PENDING, &ihost->flags);
 	wake_up(&ihost->eventq);
 }
@@ -657,12 +728,16 @@ int isci_host_scan_finished(struct Scsi_Host *shost, unsigned long time)
 
 	sas_drain_work(ha);
 
+<<<<<<< HEAD
 	dev_dbg(&ihost->pdev->dev,
 		"%s: ihost->status = %d, time = %ld\n",
 		 __func__, isci_host_get_state(ihost), time);
 
 	return 1;
 
+=======
+	return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -671,7 +746,11 @@ int isci_host_scan_finished(struct Scsi_Host *shost, unsigned long time)
  *    use any timeout value, but this method provides the suggested minimum
  *    start timeout value.  The returned value is based upon empirical
  *    information determined as a result of interoperability testing.
+<<<<<<< HEAD
  * @controller: the handle to the controller object for which to return the
+=======
+ * @ihost: the handle to the controller object for which to return the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    suggested start timeout.
  *
  * This method returns the number of milliseconds for the suggested start
@@ -704,14 +783,24 @@ static u32 sci_controller_get_suggested_start_timeout(struct isci_host *ihost)
 
 static void sci_controller_enable_interrupts(struct isci_host *ihost)
 {
+<<<<<<< HEAD
 	BUG_ON(ihost->smu_registers == NULL);
+=======
+	set_bit(IHOST_IRQ_ENABLED, &ihost->flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(0, &ihost->smu_registers->interrupt_mask);
 }
 
 void sci_controller_disable_interrupts(struct isci_host *ihost)
 {
+<<<<<<< HEAD
 	BUG_ON(ihost->smu_registers == NULL);
 	writel(0xffffffff, &ihost->smu_registers->interrupt_mask);
+=======
+	clear_bit(IHOST_IRQ_ENABLED, &ihost->flags);
+	writel(0xffffffff, &ihost->smu_registers->interrupt_mask);
+	readl(&ihost->smu_registers->interrupt_mask); /* flush */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sci_controller_enable_port_task_scheduler(struct isci_host *ihost)
@@ -822,7 +911,11 @@ static void sci_controller_initialize_unsolicited_frame_queue(struct isci_host *
 	       &ihost->scu_registers->sdma.unsolicited_frame_put_pointer);
 }
 
+<<<<<<< HEAD
 static void sci_controller_transition_to_ready(struct isci_host *ihost, enum sci_status status)
+=======
+void sci_controller_transition_to_ready(struct isci_host *ihost, enum sci_status status)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ihost->sm.current_state_id == SCIC_STARTING) {
 		/*
@@ -849,6 +942,10 @@ static bool is_phy_starting(struct isci_phy *iphy)
 	case SCI_PHY_SUB_AWAIT_SATA_POWER:
 	case SCI_PHY_SUB_AWAIT_SATA_PHY_EN:
 	case SCI_PHY_SUB_AWAIT_SATA_SPEED_EN:
+<<<<<<< HEAD
+=======
+	case SCI_PHY_SUB_AWAIT_OSSP_EN:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SCI_PHY_SUB_AWAIT_SIG_FIS_UF:
 	case SCI_PHY_SUB_FINAL:
 		return true;
@@ -857,9 +954,48 @@ static bool is_phy_starting(struct isci_phy *iphy)
 	}
 }
 
+<<<<<<< HEAD
 /**
  * sci_controller_start_next_phy - start phy
  * @scic: controller
+=======
+bool is_controller_start_complete(struct isci_host *ihost)
+{
+	int i;
+
+	for (i = 0; i < SCI_MAX_PHYS; i++) {
+		struct isci_phy *iphy = &ihost->phys[i];
+		u32 state = iphy->sm.current_state_id;
+
+		/* in apc mode we need to check every phy, in
+		 * mpc mode we only need to check phys that have
+		 * been configured into a port
+		 */
+		if (is_port_config_apc(ihost))
+			/* pass */;
+		else if (!phy_get_non_dummy_port(iphy))
+			continue;
+
+		/* The controller start operation is complete iff:
+		 * - all links have been given an opportunity to start
+		 * - have no indication of a connected device
+		 * - have an indication of a connected device and it has
+		 *   finished the link training process.
+		 */
+		if ((iphy->is_in_link_training == false && state == SCI_PHY_INITIAL) ||
+		    (iphy->is_in_link_training == false && state == SCI_PHY_STOPPED) ||
+		    (iphy->is_in_link_training == true && is_phy_starting(iphy)) ||
+		    (ihost->port_agent.phy_ready_mask != ihost->port_agent.phy_configured_mask))
+			return false;
+	}
+
+	return true;
+}
+
+/**
+ * sci_controller_start_next_phy - start phy
+ * @ihost: controller
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If all the phys have been started, then attempt to transition the
  * controller to the READY state and inform the user
@@ -877,6 +1013,7 @@ static enum sci_status sci_controller_start_next_phy(struct isci_host *ihost)
 		return status;
 
 	if (ihost->next_phy_to_start >= SCI_MAX_PHYS) {
+<<<<<<< HEAD
 		bool is_controller_start_complete = true;
 		u32 state;
 		u8 index;
@@ -907,6 +1044,9 @@ static enum sci_status sci_controller_start_next_phy(struct isci_host *ihost)
 		 * The controller has successfully finished the start process.
 		 * Inform the SCI Core user and transition to the READY state. */
 		if (is_controller_start_complete == true) {
+=======
+		if (is_controller_start_complete(ihost)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sci_controller_transition_to_ready(ihost, SCI_SUCCESS);
 			sci_del_timer(&ihost->phy_timer);
 			ihost->phy_startup_timer_pending = false;
@@ -953,9 +1093,15 @@ static enum sci_status sci_controller_start_next_phy(struct isci_host *ihost)
 	return status;
 }
 
+<<<<<<< HEAD
 static void phy_startup_timeout(unsigned long data)
 {
 	struct sci_timer *tmr = (struct sci_timer *)data;
+=======
+static void phy_startup_timeout(struct timer_list *t)
+{
+	struct sci_timer *tmr = from_timer(tmr, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct isci_host *ihost = container_of(tmr, typeof(*ihost), phy_timer);
 	unsigned long flags;
 	enum sci_status status;
@@ -987,9 +1133,14 @@ static enum sci_status sci_controller_start(struct isci_host *ihost,
 	u16 index;
 
 	if (ihost->sm.current_state_id != SCIC_INITIALIZED) {
+<<<<<<< HEAD
 		dev_warn(&ihost->pdev->dev,
 			 "SCIC Controller start operation requested in "
 			 "invalid state\n");
+=======
+		dev_warn(&ihost->pdev->dev, "%s invalid state: %d\n",
+			 __func__, ihost->sm.current_state_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCI_FAILURE_INVALID_STATE;
 	}
 
@@ -1040,7 +1191,11 @@ static enum sci_status sci_controller_start(struct isci_host *ihost,
 	return SCI_SUCCESS;
 }
 
+<<<<<<< HEAD
 void isci_host_scan_start(struct Scsi_Host *shost)
+=======
+void isci_host_start(struct Scsi_Host *shost)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct isci_host *ihost = SHOST_TO_SAS_HA(shost)->lldd_ha;
 	unsigned long tmo = sci_controller_get_suggested_start_timeout(ihost);
@@ -1053,9 +1208,14 @@ void isci_host_scan_start(struct Scsi_Host *shost)
 	spin_unlock_irq(&ihost->scic_lock);
 }
 
+<<<<<<< HEAD
 static void isci_host_stop_complete(struct isci_host *ihost, enum sci_status completion_status)
 {
 	isci_host_change_state(ihost, isci_stopped);
+=======
+static void isci_host_stop_complete(struct isci_host *ihost)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sci_controller_disable_interrupts(ihost);
 	clear_bit(IHOST_STOP_PENDING, &ihost->flags);
 	wake_up(&ihost->eventq);
@@ -1074,6 +1234,37 @@ static void sci_controller_completion_handler(struct isci_host *ihost)
 	writel(0, &ihost->smu_registers->interrupt_mask);
 }
 
+<<<<<<< HEAD
+=======
+void ireq_done(struct isci_host *ihost, struct isci_request *ireq, struct sas_task *task)
+{
+	if (!test_bit(IREQ_ABORT_PATH_ACTIVE, &ireq->flags) &&
+	    !(task->task_state_flags & SAS_TASK_STATE_ABORTED)) {
+		if (test_bit(IREQ_COMPLETE_IN_TARGET, &ireq->flags)) {
+			/* Normal notification (task_done) */
+			dev_dbg(&ihost->pdev->dev,
+				"%s: Normal - ireq/task = %p/%p\n",
+				__func__, ireq, task);
+			task->lldd_task = NULL;
+			task->task_done(task);
+		} else {
+			dev_dbg(&ihost->pdev->dev,
+				"%s: Error - ireq/task = %p/%p\n",
+				__func__, ireq, task);
+			if (sas_protocol_ata(task->task_proto))
+				task->lldd_task = NULL;
+			sas_task_abort(task);
+		}
+	} else
+		task->lldd_task = NULL;
+
+	if (test_and_clear_bit(IREQ_ABORT_PATH_ACTIVE, &ireq->flags))
+		wake_up_all(&ihost->eventq);
+
+	if (!test_bit(IREQ_NO_AUTO_FREE_TAG, &ireq->flags))
+		isci_free_tag(ihost, ireq->io_tag);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * isci_host_completion_routine() - This function is the delayed service
  *    routine that calls the sci core library's completion handler. It's
@@ -1082,6 +1273,7 @@ static void sci_controller_completion_handler(struct isci_host *ihost)
  * @data: This parameter specifies the ISCI host object
  *
  */
+<<<<<<< HEAD
 static void isci_host_completion_routine(unsigned long data)
 {
 	struct isci_host *ihost = (struct isci_host *)data;
@@ -1187,6 +1379,27 @@ static void isci_host_completion_routine(unsigned long data)
 	 * update it based on the ilog2 value of the outstanding requests
 	 */
 	active = isci_tci_active(ihost);
+=======
+void isci_host_completion_routine(unsigned long data)
+{
+	struct isci_host *ihost = (struct isci_host *)data;
+	u16 active;
+
+	spin_lock_irq(&ihost->scic_lock);
+	sci_controller_completion_handler(ihost);
+	spin_unlock_irq(&ihost->scic_lock);
+
+	/*
+	 * we subtract SCI_MAX_PORTS to account for the number of dummy TCs
+	 * issued for hardware issue workaround
+	 */
+	active = isci_tci_active(ihost) - SCI_MAX_PORTS;
+
+	/*
+	 * the coalesence timeout doubles at each encoding step, so
+	 * update it based on the ilog2 value of the outstanding requests
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(SMU_ICC_GEN_VAL(NUMBER, active) |
 	       SMU_ICC_GEN_VAL(TIMER, ISCI_COALESCE_BASE + ilog2(active)),
 	       &ihost->smu_registers->interrupt_coalesce_control);
@@ -1200,7 +1413,11 @@ static void isci_host_completion_routine(unsigned long data)
  *    controller has been quiesced. This method will ensure that all IO
  *    requests are quiesced, phys are stopped, and all additional operation by
  *    the hardware is halted.
+<<<<<<< HEAD
  * @controller: the handle to the controller object to stop.
+=======
+ * @ihost: the handle to the controller object to stop.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @timeout: This parameter specifies the number of milliseconds in which the
  *    stop operation should complete.
  *
@@ -1213,9 +1430,14 @@ static void isci_host_completion_routine(unsigned long data)
 static enum sci_status sci_controller_stop(struct isci_host *ihost, u32 timeout)
 {
 	if (ihost->sm.current_state_id != SCIC_READY) {
+<<<<<<< HEAD
 		dev_warn(&ihost->pdev->dev,
 			 "SCIC Controller stop operation requested in "
 			 "invalid state\n");
+=======
+		dev_warn(&ihost->pdev->dev, "%s invalid state: %d\n",
+			 __func__, ihost->sm.current_state_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCI_FAILURE_INVALID_STATE;
 	}
 
@@ -1230,7 +1452,11 @@ static enum sci_status sci_controller_stop(struct isci_host *ihost, u32 timeout)
  *    considered destructive.  In other words, all current operations are wiped
  *    out.  No IO completions for outstanding devices occur.  Outstanding IO
  *    requests are not aborted or completed at the actual remote device.
+<<<<<<< HEAD
  * @controller: the handle to the controller object to reset.
+=======
+ * @ihost: the handle to the controller object to reset.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Indicate if the controller reset method succeeded or failed in some way.
  * SCI_SUCCESS if the reset operation successfully started. SCI_FATAL_ERROR if
@@ -1241,7 +1467,11 @@ static enum sci_status sci_controller_reset(struct isci_host *ihost)
 	switch (ihost->sm.current_state_id) {
 	case SCIC_RESET:
 	case SCIC_READY:
+<<<<<<< HEAD
 	case SCIC_STOPPED:
+=======
+	case SCIC_STOPPING:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SCIC_FAILED:
 		/*
 		 * The reset operation is not a graceful cleanup, just
@@ -1250,13 +1480,59 @@ static enum sci_status sci_controller_reset(struct isci_host *ihost)
 		sci_change_state(&ihost->sm, SCIC_RESETTING);
 		return SCI_SUCCESS;
 	default:
+<<<<<<< HEAD
 		dev_warn(&ihost->pdev->dev,
 			 "SCIC Controller reset operation requested in "
 			 "invalid state\n");
+=======
+		dev_warn(&ihost->pdev->dev, "%s invalid state: %d\n",
+			 __func__, ihost->sm.current_state_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCI_FAILURE_INVALID_STATE;
 	}
 }
 
+<<<<<<< HEAD
+=======
+static enum sci_status sci_controller_stop_phys(struct isci_host *ihost)
+{
+	u32 index;
+	enum sci_status status;
+	enum sci_status phy_status;
+
+	status = SCI_SUCCESS;
+
+	for (index = 0; index < SCI_MAX_PHYS; index++) {
+		phy_status = sci_phy_stop(&ihost->phys[index]);
+
+		if (phy_status != SCI_SUCCESS &&
+		    phy_status != SCI_FAILURE_INVALID_STATE) {
+			status = SCI_FAILURE;
+
+			dev_warn(&ihost->pdev->dev,
+				 "%s: Controller stop operation failed to stop "
+				 "phy %d because of status %d.\n",
+				 __func__,
+				 ihost->phys[index].phy_index, phy_status);
+		}
+	}
+
+	return status;
+}
+
+
+/**
+ * isci_host_deinit - shutdown frame reception and dma
+ * @ihost: host to take down
+ *
+ * This is called in either the driver shutdown or the suspend path.  In
+ * the shutdown case libsas went through port teardown and normal device
+ * removal (i.e. physical links stayed up to service scsi_device removal
+ * commands).  In the suspend case we disable the hardware without
+ * notifying libsas of the link down events since we want libsas to
+ * remember the domain across the suspend/resume cycle
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void isci_host_deinit(struct isci_host *ihost)
 {
 	int i;
@@ -1265,6 +1541,7 @@ void isci_host_deinit(struct isci_host *ihost)
 	for (i = 0; i < isci_gpio_count(ihost); i++)
 		writel(SGPIO_HW_CONTROL, &ihost->scu_registers->peg0.sgpio.output_data_select[i]);
 
+<<<<<<< HEAD
 	isci_host_change_state(ihost, isci_stopping);
 	for (i = 0; i < SCI_MAX_PORTS; i++) {
 		struct isci_port *iport = &ihost->ports[i];
@@ -1276,6 +1553,8 @@ void isci_host_deinit(struct isci_host *ihost)
 		}
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(IHOST_STOP_PENDING, &ihost->flags);
 
 	spin_lock_irq(&ihost->scic_lock);
@@ -1284,12 +1563,28 @@ void isci_host_deinit(struct isci_host *ihost)
 
 	wait_for_stop(ihost);
 
+<<<<<<< HEAD
+=======
+	/* phy stop is after controller stop to allow port and device to
+	 * go idle before shutting down the phys, but the expectation is
+	 * that i/o has been shut off well before we reach this
+	 * function.
+	 */
+	sci_controller_stop_phys(ihost);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable sgpio: where the above wait should give time for the
 	 * enclosure to sample the gpios going inactive
 	 */
 	writel(0, &ihost->scu_registers->peg0.sgpio.interface_control);
 
+<<<<<<< HEAD
 	sci_controller_reset(ihost);
+=======
+	spin_lock_irq(&ihost->scic_lock);
+	sci_controller_reset(ihost);
+	spin_unlock_irq(&ihost->scic_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Cancel any/all outstanding port timers */
 	for (i = 0; i < ihost->logical_port_entries; i++) {
@@ -1328,6 +1623,7 @@ static void __iomem *smu_base(struct isci_host *isci_host)
 	return pcim_iomap_table(pdev)[SCI_SMU_BAR * 2] + SCI_SMU_BAR_SIZE * id;
 }
 
+<<<<<<< HEAD
 static void isci_user_parameters_get(struct sci_user_parameters *u)
 {
 	int i;
@@ -1351,6 +1647,8 @@ static void isci_user_parameters_get(struct sci_user_parameters *u)
 	u->max_concurr_spinup = max_concurr_spinup;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void sci_controller_initial_state_enter(struct sci_base_state_machine *sm)
 {
 	struct isci_host *ihost = container_of(sm, typeof(*ihost), sm);
@@ -1375,7 +1673,11 @@ static inline void sci_controller_starting_state_exit(struct sci_base_state_mach
 /**
  * sci_controller_set_interrupt_coalescence() - This method allows the user to
  *    configure the interrupt coalescence.
+<<<<<<< HEAD
  * @controller: This parameter represents the handle to the controller object
+=======
+ * @ihost: This parameter represents the handle to the controller object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    for which its interrupt coalesce register is overridden.
  * @coalesce_number: Used to control the number of entries in the Completion
  *    Queue before an interrupt is generated. If the number of entries exceed
@@ -1510,6 +1812,7 @@ static void sci_controller_ready_state_exit(struct sci_base_state_machine *sm)
 	sci_controller_set_interrupt_coalescence(ihost, 0, 0);
 }
 
+<<<<<<< HEAD
 static enum sci_status sci_controller_stop_phys(struct isci_host *ihost)
 {
 	u32 index;
@@ -1536,6 +1839,8 @@ static enum sci_status sci_controller_stop_phys(struct isci_host *ihost)
 	return status;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static enum sci_status sci_controller_stop_ports(struct isci_host *ihost)
 {
 	u32 index;
@@ -1595,10 +1900,18 @@ static void sci_controller_stopping_state_enter(struct sci_base_state_machine *s
 {
 	struct isci_host *ihost = container_of(sm, typeof(*ihost), sm);
 
+<<<<<<< HEAD
 	/* Stop all of the components for this controller */
 	sci_controller_stop_phys(ihost);
 	sci_controller_stop_ports(ihost);
 	sci_controller_stop_devices(ihost);
+=======
+	sci_controller_stop_devices(ihost);
+	sci_controller_stop_ports(ihost);
+
+	if (!sci_controller_has_remote_devices_stopping(ihost))
+		isci_host_stop_complete(ihost);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sci_controller_stopping_state_exit(struct sci_base_state_machine *sm)
@@ -1624,6 +1937,12 @@ static void sci_controller_reset_hardware(struct isci_host *ihost)
 
 	/* The write to the UFQGP clears the UFQPR */
 	writel(0, &ihost->scu_registers->sdma.unsolicited_frame_get_pointer);
+<<<<<<< HEAD
+=======
+
+	/* clear all interrupts */
+	writel(~SMU_INTERRUPT_STATUS_RESERVED_MASK, &ihost->smu_registers->interrupt_status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sci_controller_resetting_state_enter(struct sci_base_state_machine *sm)
@@ -1655,6 +1974,7 @@ static const struct sci_base_state sci_controller_state_table[] = {
 		.enter_state = sci_controller_stopping_state_enter,
 		.exit_state = sci_controller_stopping_state_exit,
 	},
+<<<<<<< HEAD
 	[SCIC_STOPPED] = {},
 	[SCIC_FAILED] = {}
 };
@@ -1711,6 +2031,14 @@ static void sci_controller_set_default_config_parameters(struct isci_host *ihost
 static void controller_timeout(unsigned long data)
 {
 	struct sci_timer *tmr = (struct sci_timer *)data;
+=======
+	[SCIC_FAILED] = {}
+};
+
+static void controller_timeout(struct timer_list *t)
+{
+	struct sci_timer *tmr = from_timer(tmr, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct isci_host *ihost = container_of(tmr, typeof(*ihost), timer);
 	struct sci_base_state_machine *sm = &ihost->sm;
 	unsigned long flags;
@@ -1724,7 +2052,11 @@ static void controller_timeout(unsigned long data)
 		sci_controller_transition_to_ready(ihost, SCI_FAILURE_TIMEOUT);
 	else if (sm->current_state_id == SCIC_STOPPING) {
 		sci_change_state(sm, SCIC_FAILED);
+<<<<<<< HEAD
 		isci_host_stop_complete(ihost, SCI_FAILURE_TIMEOUT);
+=======
+		isci_host_stop_complete(ihost);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else	/* / @todo Now what do we want to do in this case? */
 		dev_err(&ihost->pdev->dev,
 			"%s: Controller timer fired when controller was not "
@@ -1764,9 +2096,12 @@ static enum sci_status sci_controller_construct(struct isci_host *ihost,
 
 	sci_init_timer(&ihost->timer, controller_timeout);
 
+<<<<<<< HEAD
 	/* Initialize the User and OEM parameters to default values. */
 	sci_controller_set_default_config_parameters(ihost);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sci_controller_reset(ihost);
 }
 
@@ -1846,6 +2181,7 @@ int sci_oem_parameters_validate(struct sci_oem_params *oem, u8 version)
 	return 0;
 }
 
+<<<<<<< HEAD
 static enum sci_status sci_oem_parameters_set(struct isci_host *ihost)
 {
 	u32 state = ihost->sm.current_state_id;
@@ -1867,6 +2203,8 @@ static enum sci_status sci_oem_parameters_set(struct isci_host *ihost)
 	return SCI_FAILURE_INVALID_STATE;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u8 max_spin_up(struct isci_host *ihost)
 {
 	if (ihost->user_parameters.max_concurr_spinup)
@@ -1877,9 +2215,15 @@ static u8 max_spin_up(struct isci_host *ihost)
 			     MAX_CONCURRENT_DEVICE_SPIN_UP_COUNT);
 }
 
+<<<<<<< HEAD
 static void power_control_timeout(unsigned long data)
 {
 	struct sci_timer *tmr = (struct sci_timer *)data;
+=======
+static void power_control_timeout(struct timer_list *t)
+{
+	struct sci_timer *tmr = from_timer(tmr, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct isci_host *ihost = container_of(tmr, typeof(*ihost), power_control.timer);
 	struct isci_phy *iphy;
 	unsigned long flags;
@@ -1914,7 +2258,11 @@ static void power_control_timeout(unsigned long data)
 		ihost->power_control.phys_granted_power++;
 		sci_phy_consume_power_handler(iphy);
 
+<<<<<<< HEAD
 		if (iphy->protocol == SCIC_SDS_PHY_PROTOCOL_SAS) {
+=======
+		if (iphy->protocol == SAS_PROTOCOL_SSP) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u8 j;
 
 			for (j = 0; j < SCI_MAX_PHYS; j++) {
@@ -1988,7 +2336,11 @@ void sci_controller_power_control_queue_insert(struct isci_host *ihost,
 				       sizeof(current_phy->frame_rcvd.iaf.sas_addr));
 
 			if (current_phy->sm.current_state_id == SCI_PHY_READY &&
+<<<<<<< HEAD
 			    current_phy->protocol == SCIC_SDS_PHY_PROTOCOL_SAS &&
+=======
+			    current_phy->protocol == SAS_PROTOCOL_SSP &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    other == 0) {
 				sci_phy_consume_power_handler(iphy);
 				break;
@@ -2121,7 +2473,11 @@ static void sci_controller_afe_initialization(struct isci_host *ihost)
 	}
 
 	for (phy_id = 0; phy_id < SCI_MAX_PHYS; phy_id++) {
+<<<<<<< HEAD
 		struct scu_afe_transceiver *xcvr = &afe->scu_afe_xcvr[phy_id];
+=======
+		struct scu_afe_transceiver __iomem *xcvr = &afe->scu_afe_xcvr[phy_id];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const struct sci_phy_oem_params *oem_phy = &oem->phys[phy_id];
 		int cable_length_long =
 			is_long_cable(phy_id, cable_selection_mask);
@@ -2279,9 +2635,14 @@ static enum sci_status sci_controller_initialize(struct isci_host *ihost)
 	unsigned long i, state, val;
 
 	if (ihost->sm.current_state_id != SCIC_RESET) {
+<<<<<<< HEAD
 		dev_warn(&ihost->pdev->dev,
 			 "SCIC Controller initialize operation requested "
 			 "in invalid state\n");
+=======
+		dev_warn(&ihost->pdev->dev, "%s invalid state: %d\n",
+			 __func__, ihost->sm.current_state_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCI_FAILURE_INVALID_STATE;
 	}
 
@@ -2384,6 +2745,7 @@ static enum sci_status sci_controller_initialize(struct isci_host *ihost)
 	return result;
 }
 
+<<<<<<< HEAD
 static enum sci_status sci_user_parameters_set(struct isci_host *ihost,
 					       struct sci_user_parameters *sci_parms)
 {
@@ -2435,10 +2797,63 @@ static enum sci_status sci_user_parameters_set(struct isci_host *ihost,
 	}
 
 	return SCI_FAILURE_INVALID_STATE;
+=======
+static int sci_controller_dma_alloc(struct isci_host *ihost)
+{
+	struct device *dev = &ihost->pdev->dev;
+	size_t size;
+	int i;
+
+	/* detect re-initialization */
+	if (ihost->completion_queue)
+		return 0;
+
+	size = SCU_MAX_COMPLETION_QUEUE_ENTRIES * sizeof(u32);
+	ihost->completion_queue = dmam_alloc_coherent(dev, size, &ihost->cq_dma,
+						      GFP_KERNEL);
+	if (!ihost->completion_queue)
+		return -ENOMEM;
+
+	size = ihost->remote_node_entries * sizeof(union scu_remote_node_context);
+	ihost->remote_node_context_table = dmam_alloc_coherent(dev, size, &ihost->rnc_dma,
+							       GFP_KERNEL);
+
+	if (!ihost->remote_node_context_table)
+		return -ENOMEM;
+
+	size = ihost->task_context_entries * sizeof(struct scu_task_context),
+	ihost->task_context_table = dmam_alloc_coherent(dev, size, &ihost->tc_dma,
+							GFP_KERNEL);
+	if (!ihost->task_context_table)
+		return -ENOMEM;
+
+	size = SCI_UFI_TOTAL_SIZE;
+	ihost->ufi_buf = dmam_alloc_coherent(dev, size, &ihost->ufi_dma, GFP_KERNEL);
+	if (!ihost->ufi_buf)
+		return -ENOMEM;
+
+	for (i = 0; i < SCI_MAX_IO_REQUESTS; i++) {
+		struct isci_request *ireq;
+		dma_addr_t dma;
+
+		ireq = dmam_alloc_coherent(dev, sizeof(*ireq), &dma, GFP_KERNEL);
+		if (!ireq)
+			return -ENOMEM;
+
+		ireq->tc = &ihost->task_context_table[i];
+		ireq->owning_controller = ihost;
+		ireq->request_daddr = dma;
+		ireq->isci_host = ihost;
+		ihost->reqs[i] = ireq;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sci_controller_mem_init(struct isci_host *ihost)
 {
+<<<<<<< HEAD
 	struct device *dev = &ihost->pdev->dev;
 	dma_addr_t dma;
 	size_t size;
@@ -2474,6 +2889,24 @@ static int sci_controller_mem_init(struct isci_host *ihost)
 	if (err)
 		return err;
 
+=======
+	int err = sci_controller_dma_alloc(ihost);
+
+	if (err)
+		return err;
+
+	writel(lower_32_bits(ihost->cq_dma), &ihost->smu_registers->completion_queue_lower);
+	writel(upper_32_bits(ihost->cq_dma), &ihost->smu_registers->completion_queue_upper);
+
+	writel(lower_32_bits(ihost->rnc_dma), &ihost->smu_registers->remote_node_context_lower);
+	writel(upper_32_bits(ihost->rnc_dma), &ihost->smu_registers->remote_node_context_upper);
+
+	writel(lower_32_bits(ihost->tc_dma), &ihost->smu_registers->host_task_table_lower);
+	writel(upper_32_bits(ihost->tc_dma), &ihost->smu_registers->host_task_table_upper);
+
+	sci_unsolicited_frame_control_construct(ihost);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Inform the silicon as to the location of the UF headers and
 	 * address table.
@@ -2491,6 +2924,7 @@ static int sci_controller_mem_init(struct isci_host *ihost)
 	return 0;
 }
 
+<<<<<<< HEAD
 int isci_host_init(struct isci_host *ihost)
 {
 	int err = 0, i;
@@ -2507,6 +2941,24 @@ int isci_host_init(struct isci_host *ihost)
 	status = sci_controller_construct(ihost, scu_base(ihost),
 					  smu_base(ihost));
 
+=======
+/**
+ * isci_host_init - (re-)initialize hardware and internal (private) state
+ * @ihost: host to init
+ *
+ * Any public facing objects (like asd_sas_port, and asd_sas_phys), or
+ * one-time initialization objects like locks and waitqueues, are
+ * not touched (they are initialized in isci_host_alloc)
+ */
+int isci_host_init(struct isci_host *ihost)
+{
+	int i, err;
+	enum sci_status status;
+
+	spin_lock_irq(&ihost->scic_lock);
+	status = sci_controller_construct(ihost, scu_base(ihost), smu_base(ihost));
+	spin_unlock_irq(&ihost->scic_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status != SCI_SUCCESS) {
 		dev_err(&ihost->pdev->dev,
 			"%s: sci_controller_construct failed - status = %x\n",
@@ -2515,6 +2967,7 @@ int isci_host_init(struct isci_host *ihost)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	ihost->sas_ha.dev = &ihost->pdev->dev;
 	ihost->sas_ha.lldd_ha = ihost;
 
@@ -2557,6 +3010,8 @@ int isci_host_init(struct isci_host *ihost)
 	INIT_LIST_HEAD(&ihost->requests_to_complete);
 	INIT_LIST_HEAD(&ihost->requests_to_errorback);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irq(&ihost->scic_lock);
 	status = sci_controller_initialize(ihost);
 	spin_unlock_irq(&ihost->scic_lock);
@@ -2572,18 +3027,22 @@ int isci_host_init(struct isci_host *ihost)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	for (i = 0; i < SCI_MAX_PORTS; i++)
 		isci_port_init(&ihost->ports[i], ihost, i);
 
 	for (i = 0; i < SCI_MAX_PHYS; i++)
 		isci_phy_init(&ihost->phys[i], ihost, i);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* enable sgpio */
 	writel(1, &ihost->scu_registers->peg0.sgpio.interface_control);
 	for (i = 0; i < isci_gpio_count(ihost); i++)
 		writel(SGPIO_HW_CONTROL, &ihost->scu_registers->peg0.sgpio.output_data_select[i]);
 	writel(0, &ihost->scu_registers->peg0.sgpio.vendor_specific_code);
 
+<<<<<<< HEAD
 	for (i = 0; i < SCI_MAX_REMOTE_DEVICES; i++) {
 		struct isci_remote_device *idev = &ihost->devices[i];
 
@@ -2609,6 +3068,8 @@ int isci_host_init(struct isci_host *ihost)
 		ihost->reqs[i] = ireq;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2654,7 +3115,11 @@ void sci_controller_link_down(struct isci_host *ihost, struct isci_port *iport,
 	}
 }
 
+<<<<<<< HEAD
 static bool sci_controller_has_remote_devices_stopping(struct isci_host *ihost)
+=======
+bool sci_controller_has_remote_devices_stopping(struct isci_host *ihost)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 index;
 
@@ -2680,7 +3145,11 @@ void sci_controller_remote_device_stopped(struct isci_host *ihost,
 	}
 
 	if (!sci_controller_has_remote_devices_stopping(ihost))
+<<<<<<< HEAD
 		sci_change_state(&ihost->sm, SCIC_STOPPED);
+=======
+		isci_host_stop_complete(ihost);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void sci_controller_post_request(struct isci_host *ihost, u32 request)
@@ -2713,12 +3182,22 @@ struct isci_request *sci_request_by_tag(struct isci_host *ihost, u16 io_tag)
 }
 
 /**
+<<<<<<< HEAD
  * This method allocates remote node index and the reserves the remote node
  *    context space for use. This method can fail if there are no more remote
  *    node index available.
  * @scic: This is the controller object which contains the set of
  *    free remote node ids
  * @sci_dev: This is the device object which is requesting the a remote node
+=======
+ * sci_controller_allocate_remote_node_context()
+ * This method allocates remote node index and the reserves the remote node
+ *    context space for use. This method can fail if there are no more remote
+ *    node index available.
+ * @ihost: This is the controller object which contains the set of
+ *    free remote node ids
+ * @idev: This is the device object which is requesting the a remote node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    id
  * @node_id: This is the remote node id that is assinged to the device if one
  *    is available
@@ -2842,7 +3321,12 @@ enum sci_status sci_controller_start_io(struct isci_host *ihost,
 	enum sci_status status;
 
 	if (ihost->sm.current_state_id != SCIC_READY) {
+<<<<<<< HEAD
 		dev_warn(&ihost->pdev->dev, "invalid state to start I/O");
+=======
+		dev_warn(&ihost->pdev->dev, "%s invalid state: %d\n",
+			 __func__, ihost->sm.current_state_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCI_FAILURE_INVALID_STATE;
 	}
 
@@ -2866,6 +3350,7 @@ enum sci_status sci_controller_terminate_request(struct isci_host *ihost,
 	enum sci_status status;
 
 	if (ihost->sm.current_state_id != SCIC_READY) {
+<<<<<<< HEAD
 		dev_warn(&ihost->pdev->dev,
 			 "invalid state to terminate request\n");
 		return SCI_FAILURE_INVALID_STATE;
@@ -2882,6 +3367,28 @@ enum sci_status sci_controller_terminate_request(struct isci_host *ihost,
 	sci_controller_post_request(ihost,
 				    ireq->post_context | SCU_CONTEXT_COMMAND_REQUEST_POST_TC_ABORT);
 	return SCI_SUCCESS;
+=======
+		dev_warn(&ihost->pdev->dev, "%s invalid state: %d\n",
+			 __func__, ihost->sm.current_state_id);
+		return SCI_FAILURE_INVALID_STATE;
+	}
+	status = sci_io_request_terminate(ireq);
+
+	dev_dbg(&ihost->pdev->dev, "%s: status=%d; ireq=%p; flags=%lx\n",
+		__func__, status, ireq, ireq->flags);
+
+	if ((status == SCI_SUCCESS) &&
+	    !test_bit(IREQ_PENDING_ABORT, &ireq->flags) &&
+	    !test_and_set_bit(IREQ_TC_ABORT_POSTED, &ireq->flags)) {
+		/* Utilize the original post context command and or in the
+		 * POST_TC_ABORT request sub-type.
+		 */
+		sci_controller_post_request(
+			ihost, ireq->post_context |
+				SCU_CONTEXT_COMMAND_REQUEST_POST_TC_ABORT);
+	}
+	return status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2900,7 +3407,10 @@ enum sci_status sci_controller_complete_io(struct isci_host *ihost,
 					   struct isci_request *ireq)
 {
 	enum sci_status status;
+<<<<<<< HEAD
 	u16 index;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (ihost->sm.current_state_id) {
 	case SCIC_STOPPING:
@@ -2911,11 +3421,19 @@ enum sci_status sci_controller_complete_io(struct isci_host *ihost,
 		if (status != SCI_SUCCESS)
 			return status;
 
+<<<<<<< HEAD
 		index = ISCI_TAG_TCI(ireq->io_tag);
 		clear_bit(IREQ_ACTIVE, &ireq->flags);
 		return SCI_SUCCESS;
 	default:
 		dev_warn(&ihost->pdev->dev, "invalid state to complete I/O");
+=======
+		clear_bit(IREQ_ACTIVE, &ireq->flags);
+		return SCI_SUCCESS;
+	default:
+		dev_warn(&ihost->pdev->dev, "%s invalid state: %d\n",
+			 __func__, ihost->sm.current_state_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCI_FAILURE_INVALID_STATE;
 	}
 
@@ -2926,7 +3444,12 @@ enum sci_status sci_controller_continue_io(struct isci_request *ireq)
 	struct isci_host *ihost = ireq->owning_controller;
 
 	if (ihost->sm.current_state_id != SCIC_READY) {
+<<<<<<< HEAD
 		dev_warn(&ihost->pdev->dev, "invalid state to continue I/O");
+=======
+		dev_warn(&ihost->pdev->dev, "%s invalid state: %d\n",
+			 __func__, ihost->sm.current_state_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCI_FAILURE_INVALID_STATE;
 	}
 
@@ -2938,6 +3461,7 @@ enum sci_status sci_controller_continue_io(struct isci_request *ireq)
 /**
  * sci_controller_start_task() - This method is called by the SCIC user to
  *    send/start a framework task management request.
+<<<<<<< HEAD
  * @controller: the handle to the controller object for which to start the task
  *    management request.
  * @remote_device: the handle to the remote device object for which to start
@@ -2947,6 +3471,17 @@ enum sci_status sci_controller_continue_io(struct isci_request *ireq)
 enum sci_task_status sci_controller_start_task(struct isci_host *ihost,
 					       struct isci_remote_device *idev,
 					       struct isci_request *ireq)
+=======
+ * @ihost: the handle to the controller object for which to start the task
+ *    management request.
+ * @idev: the handle to the remote device object for which to start
+ *    the task management request.
+ * @ireq: the handle to the task request object to start.
+ */
+enum sci_status sci_controller_start_task(struct isci_host *ihost,
+					  struct isci_remote_device *idev,
+					  struct isci_request *ireq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	enum sci_status status;
 
@@ -2955,7 +3490,11 @@ enum sci_task_status sci_controller_start_task(struct isci_host *ihost,
 			 "%s: SCIC Controller starting task from invalid "
 			 "state\n",
 			 __func__);
+<<<<<<< HEAD
 		return SCI_TASK_FAILURE_INVALID_STATE;
+=======
+		return SCI_FAILURE_INVALID_STATE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	status = sci_remote_device_start_task(ihost, idev, ireq);
@@ -2993,7 +3532,11 @@ static int sci_write_gpio_tx_gp(struct isci_host *ihost, u8 reg_index, u8 reg_co
 		int i;
 
 		for (i = 0; i < 3; i++) {
+<<<<<<< HEAD
 			int bit = (i << 2) + 2;
+=======
+			int bit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			bit = try_test_sas_gpio_gp_bit(to_sas_gpio_od(d, i),
 						       write_data, reg_index,

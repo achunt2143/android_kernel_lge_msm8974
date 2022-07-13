@@ -6,6 +6,10 @@
  *  Authors:	Andrey V. Savochkin <saw@msu.ru>
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/cache.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/slab.h>
@@ -33,7 +37,11 @@
  *  also be removed if the pool is overloaded i.e. if the total amount of
  *  entries is greater-or-equal than the threshold.
  *
+<<<<<<< HEAD
  *  Node pool is organised as an AVL tree.
+=======
+ *  Node pool is organised as an RB tree.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Such an implementation has been chosen not just for fun.  It's a way to
  *  prevent easy and efficient DoS attacks by creating hash collisions.  A huge
  *  amount of long living nodes in a single hash slot would significantly delay
@@ -45,12 +53,17 @@
  *      AND reference count being 0.
  *  3.  Global variable peer_total is modified under the pool lock.
  *  4.  struct inet_peer fields modification:
+<<<<<<< HEAD
  *		avl_left, avl_right, avl_parent, avl_height: pool lock
+=======
+ *		rb_node: pool lock
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		refcnt: atomically against modifications on other CPU;
  *		   usually under some other lock to prevent node disappearing
  *		daddr: unchangeable
  */
 
+<<<<<<< HEAD
 static struct kmem_cache *peer_cachep __read_mostly;
 
 static LIST_HEAD(gc_list);
@@ -90,10 +103,27 @@ static struct inet_peer_base v6_peers = {
 
 /* Exported for sysctl_net_ipv4.  */
 int inet_peer_threshold __read_mostly = 65536 + 128;	/* start to throw entries more
+=======
+static struct kmem_cache *peer_cachep __ro_after_init;
+
+void inet_peer_base_init(struct inet_peer_base *bp)
+{
+	bp->rb_root = RB_ROOT;
+	seqlock_init(&bp->lock);
+	bp->total = 0;
+}
+EXPORT_SYMBOL_GPL(inet_peer_base_init);
+
+#define PEER_MAX_GC 32
+
+/* Exported for sysctl_net_ipv4.  */
+int inet_peer_threshold __read_mostly;	/* start to throw entries more
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 * aggressively at this stage */
 int inet_peer_minttl __read_mostly = 120 * HZ;	/* TTL under high load: 120 sec */
 int inet_peer_maxttl __read_mostly = 10 * 60 * HZ;	/* usual time to live: 10 min */
 
+<<<<<<< HEAD
 static void inetpeer_gc_worker(struct work_struct *work)
 {
 	struct inet_peer *p, *n;
@@ -350,11 +380,72 @@ do {								\
 	peer_avl_rebalance(stack, stackptr, base);		\
 } while (0)
 
+=======
+/* Called from ip_output.c:ip_init  */
+void __init inet_initpeers(void)
+{
+	u64 nr_entries;
+
+	 /* 1% of physical memory */
+	nr_entries = div64_ul((u64)totalram_pages() << PAGE_SHIFT,
+			      100 * L1_CACHE_ALIGN(sizeof(struct inet_peer)));
+
+	inet_peer_threshold = clamp_val(nr_entries, 4096, 65536 + 128);
+
+	peer_cachep = KMEM_CACHE(inet_peer, SLAB_HWCACHE_ALIGN | SLAB_PANIC);
+}
+
+/* Called with rcu_read_lock() or base->lock held */
+static struct inet_peer *lookup(const struct inetpeer_addr *daddr,
+				struct inet_peer_base *base,
+				unsigned int seq,
+				struct inet_peer *gc_stack[],
+				unsigned int *gc_cnt,
+				struct rb_node **parent_p,
+				struct rb_node ***pp_p)
+{
+	struct rb_node **pp, *parent, *next;
+	struct inet_peer *p;
+
+	pp = &base->rb_root.rb_node;
+	parent = NULL;
+	while (1) {
+		int cmp;
+
+		next = rcu_dereference_raw(*pp);
+		if (!next)
+			break;
+		parent = next;
+		p = rb_entry(parent, struct inet_peer, rb_node);
+		cmp = inetpeer_addr_cmp(daddr, &p->daddr);
+		if (cmp == 0) {
+			if (!refcount_inc_not_zero(&p->refcnt))
+				break;
+			return p;
+		}
+		if (gc_stack) {
+			if (*gc_cnt < PEER_MAX_GC)
+				gc_stack[(*gc_cnt)++] = p;
+		} else if (unlikely(read_seqretry(&base->lock, seq))) {
+			break;
+		}
+		if (cmp == -1)
+			pp = &next->rb_left;
+		else
+			pp = &next->rb_right;
+	}
+	*parent_p = parent;
+	*pp_p = pp;
+	return NULL;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void inetpeer_free_rcu(struct rcu_head *head)
 {
 	kmem_cache_free(peer_cachep, container_of(head, struct inet_peer, rcu));
 }
 
+<<<<<<< HEAD
 static void unlink_from_pool(struct inet_peer *p, struct inet_peer_base *base,
 			     struct inet_peer __rcu **stack[PEER_MAXDEPTH])
 {
@@ -436,14 +527,70 @@ struct inet_peer *inet_getpeer(const struct inetpeer_addr *daddr, int create)
 	struct inet_peer *p;
 	unsigned int sequence;
 	int invalidated, gccnt = 0;
+=======
+/* perform garbage collect on all items stacked during a lookup */
+static void inet_peer_gc(struct inet_peer_base *base,
+			 struct inet_peer *gc_stack[],
+			 unsigned int gc_cnt)
+{
+	int peer_threshold, peer_maxttl, peer_minttl;
+	struct inet_peer *p;
+	__u32 delta, ttl;
+	int i;
+
+	peer_threshold = READ_ONCE(inet_peer_threshold);
+	peer_maxttl = READ_ONCE(inet_peer_maxttl);
+	peer_minttl = READ_ONCE(inet_peer_minttl);
+
+	if (base->total >= peer_threshold)
+		ttl = 0; /* be aggressive */
+	else
+		ttl = peer_maxttl - (peer_maxttl - peer_minttl) / HZ *
+			base->total / peer_threshold * HZ;
+	for (i = 0; i < gc_cnt; i++) {
+		p = gc_stack[i];
+
+		/* The READ_ONCE() pairs with the WRITE_ONCE()
+		 * in inet_putpeer()
+		 */
+		delta = (__u32)jiffies - READ_ONCE(p->dtime);
+
+		if (delta < ttl || !refcount_dec_if_one(&p->refcnt))
+			gc_stack[i] = NULL;
+	}
+	for (i = 0; i < gc_cnt; i++) {
+		p = gc_stack[i];
+		if (p) {
+			rb_erase(&p->rb_node, &base->rb_root);
+			base->total--;
+			call_rcu(&p->rcu, inetpeer_free_rcu);
+		}
+	}
+}
+
+struct inet_peer *inet_getpeer(struct inet_peer_base *base,
+			       const struct inetpeer_addr *daddr,
+			       int create)
+{
+	struct inet_peer *p, *gc_stack[PEER_MAX_GC];
+	struct rb_node **pp, *parent;
+	unsigned int gc_cnt, seq;
+	int invalidated;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Attempt a lockless lookup first.
 	 * Because of a concurrent writer, we might not find an existing entry.
 	 */
 	rcu_read_lock();
+<<<<<<< HEAD
 	sequence = read_seqbegin(&base->lock);
 	p = lookup_rcu(daddr, base);
 	invalidated = read_seqretry(&base->lock, sequence);
+=======
+	seq = read_seqbegin(&base->lock);
+	p = lookup(daddr, base, seq, NULL, &gc_cnt, &parent, &pp);
+	invalidated = read_seqretry(&base->lock, seq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rcu_read_unlock();
 
 	if (p)
@@ -456,6 +603,7 @@ struct inet_peer *inet_getpeer(const struct inetpeer_addr *daddr, int create)
 	/* retry an exact lookup, taking the lock before.
 	 * At least, nodes should be hot in our cache.
 	 */
+<<<<<<< HEAD
 	write_seqlock_bh(&base->lock);
 relookup:
 	p = lookup(daddr, stack, base);
@@ -487,6 +635,35 @@ relookup:
 		link_to_pool(p, base);
 		base->total++;
 	}
+=======
+	parent = NULL;
+	write_seqlock_bh(&base->lock);
+
+	gc_cnt = 0;
+	p = lookup(daddr, base, seq, gc_stack, &gc_cnt, &parent, &pp);
+	if (!p && create) {
+		p = kmem_cache_alloc(peer_cachep, GFP_ATOMIC);
+		if (p) {
+			p->daddr = *daddr;
+			p->dtime = (__u32)jiffies;
+			refcount_set(&p->refcnt, 2);
+			atomic_set(&p->rid, 0);
+			p->metrics[RTAX_LOCK-1] = INETPEER_METRICS_NEW;
+			p->rate_tokens = 0;
+			p->n_redirects = 0;
+			/* 60*HZ is arbitrary, but chosen enough high so that the first
+			 * calculation of tokens is at its maximum.
+			 */
+			p->rate_last = jiffies - 60*HZ;
+
+			rb_link_node(&p->rb_node, parent, pp);
+			rb_insert_color(&p->rb_node, &base->rb_root);
+			base->total++;
+		}
+	}
+	if (gc_cnt)
+		inet_peer_gc(base, gc_stack, gc_cnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	write_sequnlock_bh(&base->lock);
 
 	return p;
@@ -495,9 +672,19 @@ EXPORT_SYMBOL_GPL(inet_getpeer);
 
 void inet_putpeer(struct inet_peer *p)
 {
+<<<<<<< HEAD
 	p->dtime = (__u32)jiffies;
 	smp_mb__before_atomic_dec();
 	atomic_dec(&p->refcnt);
+=======
+	/* The WRITE_ONCE() pairs with itself (we run lockless)
+	 * and the READ_ONCE() in inet_peer_gc()
+	 */
+	WRITE_ONCE(p->dtime, (__u32)jiffies);
+
+	if (refcount_dec_and_test(&p->refcnt))
+		call_rcu(&p->rcu, inetpeer_free_rcu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(inet_putpeer);
 
@@ -542,6 +729,7 @@ bool inet_peer_xrlim_allow(struct inet_peer *peer, int timeout)
 }
 EXPORT_SYMBOL(inet_peer_xrlim_allow);
 
+<<<<<<< HEAD
 static void inetpeer_inval_rcu(struct rcu_head *head)
 {
 	struct inet_peer *p = container_of(head, struct inet_peer, gc_rcu);
@@ -574,5 +762,21 @@ void inetpeer_invalidate_tree(int family)
 
 out:
 	write_sequnlock_bh(&base->lock);
+=======
+void inetpeer_invalidate_tree(struct inet_peer_base *base)
+{
+	struct rb_node *p = rb_first(&base->rb_root);
+
+	while (p) {
+		struct inet_peer *peer = rb_entry(p, struct inet_peer, rb_node);
+
+		p = rb_next(p);
+		rb_erase(&peer->rb_node, &base->rb_root);
+		inet_putpeer(peer);
+		cond_resched();
+	}
+
+	base->total = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(inetpeer_invalidate_tree);

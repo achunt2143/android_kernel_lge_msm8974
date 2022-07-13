@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************
  *                                                                           *
  * File: sge.h                                                               *
@@ -6,6 +10,7 @@
  * Description:                                                              *
  *  part of the Chelsio 10Gb Ethernet Driver.                                *
  *                                                                           *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify      *
  * it under the terms of the GNU General Public License, version 2, as       *
  * published by the Free Software Foundation.                                *
@@ -17,6 +22,8 @@
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED    *
  * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF      *
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.                     *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                           *
  * http://www.chelsio.com                                                    *
  *                                                                           *
@@ -75,6 +82,10 @@ struct sge *t1_sge_create(struct adapter *, struct sge_params *);
 int t1_sge_configure(struct sge *, struct sge_params *);
 int t1_sge_set_coalesce_params(struct sge *, struct sge_params *);
 void t1_sge_destroy(struct sge *);
+<<<<<<< HEAD
+=======
+irqreturn_t t1_interrupt_thread(int irq, void *data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 irqreturn_t t1_interrupt(int irq, void *cookie);
 int t1_poll(struct napi_struct *, int);
 
@@ -82,7 +93,11 @@ netdev_tx_t t1_start_xmit(struct sk_buff *skb, struct net_device *dev);
 void t1_vlan_mode(struct adapter *adapter, netdev_features_t features);
 void t1_sge_start(struct sge *);
 void t1_sge_stop(struct sge *);
+<<<<<<< HEAD
 int t1_sge_intr_error_handler(struct sge *);
+=======
+bool t1_sge_intr_error_handler(struct sge *sge);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void t1_sge_intr_enable(struct sge *);
 void t1_sge_intr_disable(struct sge *);
 void t1_sge_intr_clear(struct sge *);

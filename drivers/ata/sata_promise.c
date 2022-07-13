@@ -1,13 +1,23 @@
+<<<<<<< HEAD
 /*
  *  sata_promise.c - Promise SATA
  *
  *  Maintained by:  Jeff Garzik <jgarzik@pobox.com>
  *		    Mikael Pettersson <mikpe@it.uu.se>
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  sata_promise.c - Promise SATA
+ *
+ *  Maintained by:  Tejun Heo <tj@kernel.org>
+ *		    Mikael Pettersson
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  		    Please ALWAYS copy linux-ide@vger.kernel.org
  *		    on emails.
  *
  *  Copyright 2003-2004 Red Hat, Inc.
  *
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -29,13 +39,22 @@
  *
  *  Hardware information only available under NDA.
  *
+=======
+ *  libata documentation is available via 'make {ps|pdf}docs',
+ *  as Documentation/driver-api/libata.rst
+ *
+ *  Hardware information only available under NDA.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/gfp.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -156,7 +175,11 @@ static int pdc_sata_scr_write(struct ata_link *link, unsigned int sc_reg, u32 va
 static int pdc_ata_init_one(struct pci_dev *pdev, const struct pci_device_id *ent);
 static int pdc_common_port_start(struct ata_port *ap);
 static int pdc_sata_port_start(struct ata_port *ap);
+<<<<<<< HEAD
 static void pdc_qc_prep(struct ata_queued_cmd *qc);
+=======
+static enum ata_completion_errors pdc_qc_prep(struct ata_queued_cmd *qc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pdc_tf_load_mmio(struct ata_port *ap, const struct ata_taskfile *tf);
 static void pdc_exec_command_mmio(struct ata_port *ap, const struct ata_taskfile *tf);
 static int pdc_check_atapi_dma(struct ata_queued_cmd *qc);
@@ -174,9 +197,14 @@ static int pdc_sata_hardreset(struct ata_link *link, unsigned int *class,
 static void pdc_error_handler(struct ata_port *ap);
 static void pdc_post_internal_cmd(struct ata_queued_cmd *qc);
 static int pdc_pata_cable_detect(struct ata_port *ap);
+<<<<<<< HEAD
 static int pdc_sata_cable_detect(struct ata_port *ap);
 
 static struct scsi_host_template pdc_ata_sht = {
+=======
+
+static const struct scsi_host_template pdc_ata_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BASE_SHT(DRV_NAME),
 	.sg_tablesize		= PDC_MAX_PRD,
 	.dma_boundary		= ATA_DMA_BOUNDARY,
@@ -200,7 +228,11 @@ static const struct ata_port_operations pdc_common_ops = {
 
 static struct ata_port_operations pdc_sata_ops = {
 	.inherits		= &pdc_common_ops,
+<<<<<<< HEAD
 	.cable_detect		= pdc_sata_cable_detect,
+=======
+	.cable_detect		= ata_cable_sata,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.freeze			= pdc_sata_freeze,
 	.thaw			= pdc_sata_thaw,
 	.scr_read		= pdc_sata_scr_read,
@@ -476,11 +508,14 @@ static int pdc_pata_cable_detect(struct ata_port *ap)
 	return ATA_CBL_PATA80;
 }
 
+<<<<<<< HEAD
 static int pdc_sata_cable_detect(struct ata_port *ap)
 {
 	return ATA_CBL_SATA;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pdc_sata_scr_read(struct ata_link *link,
 			     unsigned int sc_reg, u32 *val)
 {
@@ -619,7 +654,12 @@ static void pdc_fill_sg(struct ata_queued_cmd *qc)
 
 			prd[idx].addr = cpu_to_le32(addr);
 			prd[idx].flags_len = cpu_to_le32(len & 0xffff);
+<<<<<<< HEAD
 			VPRINTK("PRD[%u] = (0x%X, 0x%X)\n", idx, addr, len);
+=======
+			ata_port_dbg(ap, "PRD[%u] = (0x%X, 0x%X)\n",
+				     idx, addr, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			idx++;
 			sg_len -= len;
@@ -632,17 +672,28 @@ static void pdc_fill_sg(struct ata_queued_cmd *qc)
 	if (len > SG_COUNT_ASIC_BUG) {
 		u32 addr;
 
+<<<<<<< HEAD
 		VPRINTK("Splitting last PRD.\n");
 
 		addr = le32_to_cpu(prd[idx - 1].addr);
 		prd[idx - 1].flags_len = cpu_to_le32(len - SG_COUNT_ASIC_BUG);
 		VPRINTK("PRD[%u] = (0x%X, 0x%X)\n", idx - 1, addr, SG_COUNT_ASIC_BUG);
+=======
+		addr = le32_to_cpu(prd[idx - 1].addr);
+		prd[idx - 1].flags_len = cpu_to_le32(len - SG_COUNT_ASIC_BUG);
+		ata_port_dbg(ap, "PRD[%u] = (0x%X, 0x%X)\n",
+			     idx - 1, addr, SG_COUNT_ASIC_BUG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		addr = addr + len - SG_COUNT_ASIC_BUG;
 		len = SG_COUNT_ASIC_BUG;
 		prd[idx].addr = cpu_to_le32(addr);
 		prd[idx].flags_len = cpu_to_le32(len);
+<<<<<<< HEAD
 		VPRINTK("PRD[%u] = (0x%X, 0x%X)\n", idx, addr, len);
+=======
+		ata_port_dbg(ap, "PRD[%u] = (0x%X, 0x%X)\n", idx, addr, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		idx++;
 	}
@@ -650,17 +701,28 @@ static void pdc_fill_sg(struct ata_queued_cmd *qc)
 	prd[idx - 1].flags_len |= cpu_to_le32(ATA_PRD_EOT);
 }
 
+<<<<<<< HEAD
 static void pdc_qc_prep(struct ata_queued_cmd *qc)
+=======
+static enum ata_completion_errors pdc_qc_prep(struct ata_queued_cmd *qc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pdc_port_priv *pp = qc->ap->private_data;
 	unsigned int i;
 
+<<<<<<< HEAD
 	VPRINTK("ENTER\n");
 
 	switch (qc->tf.protocol) {
 	case ATA_PROT_DMA:
 		pdc_fill_sg(qc);
 		/*FALLTHROUGH*/
+=======
+	switch (qc->tf.protocol) {
+	case ATA_PROT_DMA:
+		pdc_fill_sg(qc);
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATA_PROT_NODATA:
 		i = pdc_pkt_header(&qc->tf, qc->ap->bmdma_prd_dma,
 				   qc->dev->devno, pp->pkt);
@@ -675,13 +737,22 @@ static void pdc_qc_prep(struct ata_queued_cmd *qc)
 		break;
 	case ATAPI_PROT_DMA:
 		pdc_fill_sg(qc);
+<<<<<<< HEAD
 		/*FALLTHROUGH*/
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATAPI_PROT_NODATA:
 		pdc_atapi_pkt(qc);
 		break;
 	default:
 		break;
 	}
+<<<<<<< HEAD
+=======
+
+	return AC_ERR_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pdc_is_sataii_tx4(unsigned long flags)
@@ -840,7 +911,11 @@ static int pdc_sata_hardreset(struct ata_link *link, unsigned int *class,
 
 static void pdc_error_handler(struct ata_port *ap)
 {
+<<<<<<< HEAD
 	if (!(ap->pflags & ATA_PFLAG_FROZEN))
+=======
+	if (!ata_port_is_frozen(ap))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdc_reset_port(ap);
 
 	ata_sff_error_handler(ap);
@@ -851,7 +926,11 @@ static void pdc_post_internal_cmd(struct ata_queued_cmd *qc)
 	struct ata_port *ap = qc->ap;
 
 	/* make DMA engine forget about the failed command */
+<<<<<<< HEAD
 	if (qc->flags & ATA_QCFLAG_FAILED)
+=======
+	if (qc->flags & ATA_QCFLAG_EH)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdc_reset_port(ap);
 }
 
@@ -943,12 +1022,17 @@ static irqreturn_t pdc_interrupt(int irq, void *dev_instance)
 	u32 hotplug_status;
 	int is_sataii_tx4;
 
+<<<<<<< HEAD
 	VPRINTK("ENTER\n");
 
 	if (!host || !host->iomap[PDC_MMIO_BAR]) {
 		VPRINTK("QUICK EXIT\n");
 		return IRQ_NONE;
 	}
+=======
+	if (!host || !host->iomap[PDC_MMIO_BAR])
+		return IRQ_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host_mmio = host->iomap[PDC_MMIO_BAR];
 
@@ -967,6 +1051,7 @@ static irqreturn_t pdc_interrupt(int irq, void *dev_instance)
 	/* reading should also clear interrupts */
 	mask = readl(host_mmio + PDC_INT_SEQMASK);
 
+<<<<<<< HEAD
 	if (mask == 0xffffffff && hotplug_status == 0) {
 		VPRINTK("QUICK EXIT 2\n");
 		goto done_irq;
@@ -977,13 +1062,24 @@ static irqreturn_t pdc_interrupt(int irq, void *dev_instance)
 		VPRINTK("QUICK EXIT 3\n");
 		goto done_irq;
 	}
+=======
+	if (mask == 0xffffffff && hotplug_status == 0)
+		goto done_irq;
+
+	mask &= 0xffff;		/* only 16 SEQIDs possible */
+	if (mask == 0 && hotplug_status == 0)
+		goto done_irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writel(mask, host_mmio + PDC_INT_SEQMASK);
 
 	is_sataii_tx4 = pdc_is_sataii_tx4(host->ports[0]->flags);
 
 	for (i = 0; i < host->n_ports; i++) {
+<<<<<<< HEAD
 		VPRINTK("port %u\n", i);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ap = host->ports[i];
 
 		/* check for a plug or unplug event */
@@ -1010,8 +1106,11 @@ static irqreturn_t pdc_interrupt(int irq, void *dev_instance)
 		}
 	}
 
+<<<<<<< HEAD
 	VPRINTK("EXIT\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done_irq:
 	spin_unlock(&host->lock);
 	return IRQ_RETVAL(handled);
@@ -1026,8 +1125,11 @@ static void pdc_packet_start(struct ata_queued_cmd *qc)
 	unsigned int port_no = ap->port_no;
 	u8 seq = (u8) (port_no + 1);
 
+<<<<<<< HEAD
 	VPRINTK("ENTER, ap %p\n", ap);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(0x00000001, host_mmio + (seq * 4));
 	readl(host_mmio + (seq * 4));	/* flush */
 
@@ -1043,11 +1145,19 @@ static unsigned int pdc_qc_issue(struct ata_queued_cmd *qc)
 	case ATAPI_PROT_NODATA:
 		if (qc->dev->flags & ATA_DFLAG_CDB_INTR)
 			break;
+<<<<<<< HEAD
 		/*FALLTHROUGH*/
 	case ATA_PROT_NODATA:
 		if (qc->tf.flags & ATA_TFLAG_POLLING)
 			break;
 		/*FALLTHROUGH*/
+=======
+		fallthrough;
+	case ATA_PROT_NODATA:
+		if (qc->tf.flags & ATA_TFLAG_POLLING)
+			break;
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATAPI_PROT_DMA:
 	case ATA_PROT_DMA:
 		pdc_packet_start(qc);
@@ -1247,10 +1357,14 @@ static int pdc_ata_init_one(struct pci_dev *pdev,
 	/* initialize adapter */
 	pdc_host_init(host);
 
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pdev, ATA_DMA_MASK);
 	if (rc)
 		return rc;
 	rc = pci_set_consistent_dma_mask(pdev, ATA_DMA_MASK);
+=======
+	rc = dma_set_mask_and_coherent(&pdev->dev, ATA_DMA_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
@@ -1260,6 +1374,7 @@ static int pdc_ata_init_one(struct pci_dev *pdev,
 				 &pdc_ata_sht);
 }
 
+<<<<<<< HEAD
 static int __init pdc_ata_init(void)
 {
 	return pci_register_driver(&pdc_ata_pci_driver);
@@ -1269,12 +1384,18 @@ static void __exit pdc_ata_exit(void)
 {
 	pci_unregister_driver(&pdc_ata_pci_driver);
 }
+=======
+module_pci_driver(pdc_ata_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Jeff Garzik");
 MODULE_DESCRIPTION("Promise ATA TX2/TX4/TX4000 low-level driver");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, pdc_ata_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(pdc_ata_init);
 module_exit(pdc_ata_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

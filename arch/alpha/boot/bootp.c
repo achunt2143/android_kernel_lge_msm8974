@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/boot/bootp.c
  *
@@ -15,15 +19,25 @@
 
 #include <asm/console.h>
 #include <asm/hwrpb.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/io.h>
 
 #include <stdarg.h>
+=======
+#include <asm/io.h>
+
+#include <linux/stdarg.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ksize.h"
 
 extern unsigned long switch_to_osf_pal(unsigned long nr,
+<<<<<<< HEAD
 	struct pcb_struct * pcb_va, struct pcb_struct * pcb_pa,
+=======
+	struct pcb_struct *pcb_va, struct pcb_struct *pcb_pa,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long *vptb);
 
 extern void move_stack(unsigned long new_stack);

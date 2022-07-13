@@ -1,9 +1,17 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2008 Nir Tzachar <nir.tzachar@gmail.com?
  * Released under the terms of the GNU GPL v2.0.
  *
  * Derived from menuconfig.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (C) 2008 Nir Tzachar <nir.tzachar@gmail.com>
+ *
+ * Derived from menuconfig.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <ctype.h>
@@ -14,8 +22,12 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+<<<<<<< HEAD
 #include <locale.h>
 #include <curses.h>
+=======
+#include <ncurses.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <menu.h>
 #include <panel.h>
 #include <form.h>
@@ -24,8 +36,11 @@
 #include <time.h>
 #include <sys/time.h>
 
+<<<<<<< HEAD
 #include "ncurses.h"
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define max(a, b) ({\
 		typeof(a) _a = a;\
 		typeof(b) _b = b;\
@@ -36,6 +51,7 @@
 		typeof(b) _b = b;\
 		_a < _b ? _a : _b; })
 
+<<<<<<< HEAD
 typedef enum {
 	NORMAL = 1,
 	MAIN_HEADING,
@@ -60,6 +76,28 @@ typedef enum {
 	ATTR_MAX
 } attributes_t;
 extern attributes_t attributes[];
+=======
+extern int attr_normal;
+extern int attr_main_heading;
+extern int attr_main_menu_box;
+extern int attr_main_menu_fore;
+extern int attr_main_menu_back;
+extern int attr_main_menu_grey;
+extern int attr_main_menu_heading;
+extern int attr_scrollwin_text;
+extern int attr_scrollwin_heading;
+extern int attr_scrollwin_box;
+extern int attr_dialog_text;
+extern int attr_dialog_menu_fore;
+extern int attr_dialog_menu_back;
+extern int attr_dialog_box;
+extern int attr_input_box;
+extern int attr_input_heading;
+extern int attr_input_text;
+extern int attr_input_field;
+extern int attr_function_text;
+extern int attr_function_highlight;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef enum {
 	F_HELP = 1,
@@ -75,6 +113,7 @@ typedef enum {
 
 void set_colors(void);
 
+<<<<<<< HEAD
 /* this changes the windows attributes !!! */
 void print_in_middle(WINDOW *win,
 		int starty,
@@ -82,6 +121,12 @@ void print_in_middle(WINDOW *win,
 		int width,
 		const char *string,
 		chtype color);
+=======
+typedef int (*extra_key_cb_fn)(int, size_t, size_t, void *);
+
+/* this changes the windows attributes !!! */
+void print_in_middle(WINDOW *win, int y, int width, const char *str, int attrs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int get_line_length(const char *line);
 int get_line_no(const char *text);
 const char *get_line(const char *text, int line_no);
@@ -91,6 +136,12 @@ int dialog_inputbox(WINDOW *main_window,
 		const char *title, const char *prompt,
 		const char *init, char **resultp, int *result_len);
 void refresh_all_windows(WINDOW *main_window);
+<<<<<<< HEAD
+=======
+int show_scroll_win_ext(WINDOW *main_window, const char *title, char *text,
+			int *vscroll, int *hscroll,
+			extra_key_cb_fn extra_key_cb, void *data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void show_scroll_win(WINDOW *main_window,
 		const char *title,
 		const char *text);

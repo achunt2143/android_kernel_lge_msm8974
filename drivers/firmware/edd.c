@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/firmware/edd.c
  *  Copyright (C) 2002, 2003, 2004 Dell Inc.
@@ -17,6 +21,7 @@
  *
  * Please see http://linux.dell.com/edd/results.html for
  * the list of BIOSs which have been reported to implement EDD.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License v2.0 as published by
@@ -27,6 +32,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -350,7 +357,11 @@ edd_show_legacy_max_cylinder(struct edd_device *edev, char *buf)
 	if (!info || !buf)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	p += snprintf(p, left, "%u\n", info->legacy_max_cylinder);
+=======
+	p += scnprintf(p, left, "%u\n", info->legacy_max_cylinder);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (p - buf);
 }
 
@@ -365,7 +376,11 @@ edd_show_legacy_max_head(struct edd_device *edev, char *buf)
 	if (!info || !buf)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	p += snprintf(p, left, "%u\n", info->legacy_max_head);
+=======
+	p += scnprintf(p, left, "%u\n", info->legacy_max_head);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (p - buf);
 }
 
@@ -380,7 +395,11 @@ edd_show_legacy_sectors_per_track(struct edd_device *edev, char *buf)
 	if (!info || !buf)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	p += snprintf(p, left, "%u\n", info->legacy_sectors_per_track);
+=======
+	p += scnprintf(p, left, "%u\n", info->legacy_sectors_per_track);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (p - buf);
 }
 
@@ -583,6 +602,7 @@ static EDD_DEVICE_ATTR(interface, 0444, edd_show_interface, edd_has_edd30);
 static EDD_DEVICE_ATTR(host_bus, 0444, edd_show_host_bus, edd_has_edd30);
 static EDD_DEVICE_ATTR(mbr_signature, 0444, edd_show_mbr_signature, edd_has_mbr_signature);
 
+<<<<<<< HEAD
 
 /* These are default attributes that are added for every edd
  * device discovered.  There are none.
@@ -591,6 +611,8 @@ static struct attribute * def_attrs[] = {
 	NULL,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* These attributes are conditional and only added for some devices. */
 static struct edd_attribute * edd_attrs[] = {
 	&edd_attr_raw_data,
@@ -625,10 +647,16 @@ static void edd_release(struct kobject * kobj)
 	kfree(dev);
 }
 
+<<<<<<< HEAD
 static struct kobj_type edd_ktype = {
 	.release	= edd_release,
 	.sysfs_ops	= &edd_attr_ops,
 	.default_attrs	= def_attrs,
+=======
+static const struct kobj_type edd_ktype = {
+	.release	= edd_release,
+	.sysfs_ops	= &edd_attr_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct kset *edd_kset;
@@ -669,10 +697,17 @@ edd_get_pci_dev(struct edd_device *edev)
 	struct edd_info *info = edd_dev_get_info(edev);
 
 	if (edd_dev_is_type(edev, "PCI") || edd_dev_is_type(edev, "XPRS")) {
+<<<<<<< HEAD
 		return pci_get_bus_and_slot(info->params.interface_path.pci.bus,
 				     PCI_DEVFN(info->params.interface_path.pci.slot,
 					       info->params.interface_path.pci.
 					       function));
+=======
+		return pci_get_domain_bus_and_slot(0,
+				info->params.interface_path.pci.bus,
+				PCI_DEVFN(info->params.interface_path.pci.slot,
+				info->params.interface_path.pci.function));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return NULL;
 }
@@ -703,8 +738,12 @@ static void edd_populate_dir(struct edd_device * edev)
 	int i;
 
 	for (i = 0; (attr = edd_attrs[i]) && !error; i++) {
+<<<<<<< HEAD
 		if (!attr->test ||
 		    (attr->test && attr->test(edev)))
+=======
+		if (!attr->test || attr->test(edev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = sysfs_create_file(&edev->kobj,&attr->attr);
 	}
 
@@ -748,6 +787,7 @@ edd_init(void)
 	int rc=0;
 	struct edd_device *edev;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "BIOS EDD facility v%s %s, %d devices found\n",
 	       EDD_VERSION, EDD_DATE, edd_num_devices());
 
@@ -756,6 +796,14 @@ edd_init(void)
 		return -ENODEV;
 	}
 
+=======
+	if (!edd_num_devices())
+		return -ENODEV;
+
+	printk(KERN_INFO "BIOS EDD facility v%s %s, %d devices found\n",
+	       EDD_VERSION, EDD_DATE, edd_num_devices());
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	edd_kset = kset_create_and_add("edd", NULL, firmware_kobj);
 	if (!edd_kset)
 		return -ENOMEM;

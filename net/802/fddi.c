@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the BSD Socket
@@ -16,11 +20,14 @@
  *			Florian La Roche, <rzsfl@rz.uni-sb.de>
  *			Alan Cox, <gw4pts@gw4pts.ampr.org>
  *
+<<<<<<< HEAD
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Changes
  *		Alan Cox		:	New arp/rebuild header
  *		Maciej W. Rozycki	:	IPv6 support
@@ -51,14 +58,22 @@
 
 static int fddi_header(struct sk_buff *skb, struct net_device *dev,
 		       unsigned short type,
+<<<<<<< HEAD
 		       const void *daddr, const void *saddr, unsigned len)
+=======
+		       const void *daddr, const void *saddr, unsigned int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int hl = FDDI_K_SNAP_HLEN;
 	struct fddihdr *fddi;
 
 	if(type != ETH_P_IP && type != ETH_P_IPV6 && type != ETH_P_ARP)
 		hl=FDDI_K_8022_HLEN-3;
+<<<<<<< HEAD
 	fddi = (struct fddihdr *)skb_push(skb, hl);
+=======
+	fddi = skb_push(skb, hl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fddi->fc			 = FDDI_FC_K_ASYNC_LLC_DEF;
 	if(type == ETH_P_IP || type == ETH_P_IPV6 || type == ETH_P_ARP)
 	{
@@ -87,6 +102,7 @@ static int fddi_header(struct sk_buff *skb, struct net_device *dev,
 	return -hl;
 }
 
+<<<<<<< HEAD
 
 /*
  * Rebuild the FDDI MAC header. This is called after an ARP
@@ -112,6 +128,8 @@ static int fddi_rebuild_header(struct sk_buff	*skb)
 }
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Determine the packet's protocol ID and fill in skb fields.
  * This routine is called before an incoming packet is passed
@@ -166,6 +184,7 @@ __be16 fddi_type_trans(struct sk_buff *skb, struct net_device *dev)
 
 EXPORT_SYMBOL(fddi_type_trans);
 
+<<<<<<< HEAD
 int fddi_change_mtu(struct net_device *dev, int new_mtu)
 {
 	if ((new_mtu < FDDI_K_SNAP_HLEN) || (new_mtu > FDDI_K_SNAP_DLEN))
@@ -178,6 +197,10 @@ EXPORT_SYMBOL(fddi_change_mtu);
 static const struct header_ops fddi_header_ops = {
 	.create		= fddi_header,
 	.rebuild	= fddi_rebuild_header,
+=======
+static const struct header_ops fddi_header_ops = {
+	.create		= fddi_header,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -187,6 +210,11 @@ static void fddi_setup(struct net_device *dev)
 	dev->type		= ARPHRD_FDDI;
 	dev->hard_header_len	= FDDI_K_SNAP_HLEN+3;	/* Assume 802.2 SNAP hdr len + 3 pad bytes */
 	dev->mtu		= FDDI_K_SNAP_DLEN;	/* Assume max payload of 802.2 SNAP frame */
+<<<<<<< HEAD
+=======
+	dev->min_mtu		= FDDI_K_SNAP_HLEN;
+	dev->max_mtu		= FDDI_K_SNAP_DLEN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->addr_len		= FDDI_K_ALEN;
 	dev->tx_queue_len	= 100;			/* Long queues on FDDI */
 	dev->flags		= IFF_BROADCAST | IFF_MULTICAST;
@@ -207,8 +235,17 @@ static void fddi_setup(struct net_device *dev)
  */
 struct net_device *alloc_fddidev(int sizeof_priv)
 {
+<<<<<<< HEAD
 	return alloc_netdev(sizeof_priv, "fddi%d", fddi_setup);
 }
 EXPORT_SYMBOL(alloc_fddidev);
 
+=======
+	return alloc_netdev(sizeof_priv, "fddi%d", NET_NAME_UNKNOWN,
+			    fddi_setup);
+}
+EXPORT_SYMBOL(alloc_fddidev);
+
+MODULE_DESCRIPTION("Core routines for FDDI network devices");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

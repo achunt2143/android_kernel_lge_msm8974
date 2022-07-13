@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Linux network driver for Brocade Converged Network Adapter.
  *
@@ -19,12 +20,27 @@
 /**
  * @file bfa_cs.h BFA common services
  */
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+ */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+ */
+
+/* BFA common services */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __BFA_CS_H__
 #define __BFA_CS_H__
 
 #include "cna.h"
 
+<<<<<<< HEAD
 /**
  * @ BFA state machine interfaces
  */
@@ -62,6 +78,52 @@ typedef void (*bfa_fsm_t)(void *fsm, int event);
 
 /**
  * oc - object class eg. bfa_ioc
+=======
+/* BFA state machine interfaces */
+
+/* For converting from state machine function to state encoding. */
+#define BFA_SM_TABLE(n, s, e, t)				\
+struct s;							\
+enum e;								\
+typedef void (*t)(struct s *, enum e);				\
+								\
+struct n ## _sm_table_s {					\
+	t		sm;	/* state machine function */	\
+	int		state;	/* state machine encoding */	\
+	char		*name;	/* state name for display */	\
+};								\
+								\
+static inline int						\
+n ## _sm_to_state(struct n ## _sm_table_s *smt, t sm)		\
+{								\
+	int	i = 0;						\
+								\
+	while (smt[i].sm && smt[i].sm != sm)			\
+		i++;						\
+	return smt[i].state;					\
+}
+
+BFA_SM_TABLE(iocpf,	bfa_iocpf,	iocpf_event,	bfa_fsm_iocpf_t)
+BFA_SM_TABLE(ioc,	bfa_ioc,	ioc_event,	bfa_fsm_ioc_t)
+BFA_SM_TABLE(cmdq,	bfa_msgq_cmdq,	cmdq_event,	bfa_fsm_msgq_cmdq_t)
+BFA_SM_TABLE(rspq,	bfa_msgq_rspq,	rspq_event,	bfa_fsm_msgq_rspq_t)
+
+BFA_SM_TABLE(ioceth,	bna_ioceth,	bna_ioceth_event, bna_fsm_ioceth_t)
+BFA_SM_TABLE(enet,	bna_enet,	bna_enet_event, bna_fsm_enet_t)
+BFA_SM_TABLE(ethport,	bna_ethport,	bna_ethport_event, bna_fsm_ethport_t)
+BFA_SM_TABLE(tx,	bna_tx,		bna_tx_event,	bna_fsm_tx_t)
+BFA_SM_TABLE(rxf,	bna_rxf,	bna_rxf_event, bna_fsm_rxf_t)
+BFA_SM_TABLE(rx,	bna_rx,		bna_rx_event,	bna_fsm_rx_t)
+
+#undef BFA_SM_TABLE
+
+#define BFA_SM(_sm)	(_sm)
+
+/* State machine with entry actions. */
+typedef void (*bfa_fsm_t)(void *fsm, int event);
+
+/* oc - object class eg. bfa_ioc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * st - state, eg. reset
  * otype - object type, eg. struct bfa_ioc
  * etype - object type, eg. enum ioc_event
@@ -71,11 +133,16 @@ typedef void (*bfa_fsm_t)(void *fsm, int event);
 	static void oc ## _sm_ ## st ## _entry(otype * fsm)
 
 #define bfa_fsm_set_state(_fsm, _state) do {				\
+<<<<<<< HEAD
 	(_fsm)->fsm = (bfa_fsm_t)(_state);				\
+=======
+	(_fsm)->fsm = (_state);						\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_state ## _entry(_fsm);						\
 } while (0)
 
 #define bfa_fsm_send_event(_fsm, _event)	((_fsm)->fsm((_fsm), (_event)))
+<<<<<<< HEAD
 #define bfa_fsm_get_state(_fsm)			((_fsm)->fsm)
 #define bfa_fsm_cmp_state(_fsm, _state)					\
 	((_fsm)->fsm == (bfa_fsm_t)(_state))
@@ -93,6 +160,10 @@ bfa_sm_to_state(const struct bfa_sm_table *smt, bfa_sm_t sm)
 /**
  * @ Generic wait counter.
  */
+=======
+#define bfa_fsm_cmp_state(_fsm, _state)		((_fsm)->fsm == (_state))
+/* Generic wait counter. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef void (*bfa_wc_resume_t) (void *cbarg);
 
@@ -116,9 +187,13 @@ bfa_wc_down(struct bfa_wc *wc)
 		wc->wc_resume(wc->wc_cbarg);
 }
 
+<<<<<<< HEAD
 /**
  * Initialize a waiting counter.
  */
+=======
+/* Initialize a waiting counter. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void
 bfa_wc_init(struct bfa_wc *wc, bfa_wc_resume_t wc_resume, void *wc_cbarg)
 {
@@ -128,9 +203,13 @@ bfa_wc_init(struct bfa_wc *wc, bfa_wc_resume_t wc_resume, void *wc_cbarg)
 	bfa_wc_up(wc);
 }
 
+<<<<<<< HEAD
 /**
  * Wait for counter to reach zero
  */
+=======
+/* Wait for counter to reach zero */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void
 bfa_wc_wait(struct bfa_wc *wc)
 {

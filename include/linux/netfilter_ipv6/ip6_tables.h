@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 25-Jul-1998 Major changes to allow for ip chain table
  *
@@ -11,6 +15,7 @@
  * 	flags are stored in host byte order (of course).
  * 	Port numbers are stored in HOST byte order.
  */
+<<<<<<< HEAD
 
 #ifndef _IP6_TABLES_H
 #define _IP6_TABLES_H
@@ -308,6 +313,29 @@ extern int ipv6_find_hdr(const struct sk_buff *skb, unsigned int *offset,
 			 int target, unsigned short *fragoff, int *fragflg);
 
 #ifdef CONFIG_COMPAT
+=======
+#ifndef _IP6_TABLES_H
+#define _IP6_TABLES_H
+
+#include <linux/if.h>
+#include <linux/in6.h>
+#include <linux/init.h>
+#include <linux/ipv6.h>
+#include <linux/skbuff.h>
+#include <uapi/linux/netfilter_ipv6/ip6_tables.h>
+
+extern void *ip6t_alloc_initial_table(const struct xt_table *);
+
+int ip6t_register_table(struct net *net, const struct xt_table *table,
+			const struct ip6t_replace *repl,
+			const struct nf_hook_ops *ops);
+void ip6t_unregister_table_pre_exit(struct net *net, const char *name);
+void ip6t_unregister_table_exit(struct net *net, const char *name);
+extern unsigned int ip6t_do_table(void *priv, struct sk_buff *skb,
+				  const struct nf_hook_state *state);
+
+#ifdef CONFIG_NETFILTER_XTABLES_COMPAT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/compat.h>
 
 struct compat_ip6t_entry {
@@ -317,7 +345,11 @@ struct compat_ip6t_entry {
 	__u16 next_offset;
 	compat_uint_t comefrom;
 	struct compat_xt_counters counters;
+<<<<<<< HEAD
 	unsigned char elems[0];
+=======
+	unsigned char elems[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct xt_entry_target *
@@ -327,5 +359,8 @@ compat_ip6t_get_target(struct compat_ip6t_entry *e)
 }
 
 #endif /* CONFIG_COMPAT */
+<<<<<<< HEAD
 #endif /*__KERNEL__*/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _IP6_TABLES_H */

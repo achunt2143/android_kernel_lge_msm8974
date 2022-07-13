@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * udbg debug output routine via GELIC UDP broadcasts
  *
@@ -5,6 +9,7 @@
  * Copyright 2006, 2007 Sony Corporation
  * Copyright (C) 2010 Hector Martin <hector@marcansoft.com>
  * Copyright (C) 2011 Andre Heider <a.heider@gmail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -13,6 +18,17 @@
  *
  */
 
+=======
+ */
+
+#include <linux/if_ether.h>
+#include <linux/etherdevice.h>
+#include <linux/if_vlan.h>
+#include <linux/ip.h>
+#include <linux/udp.h>
+
+#include <asm/ps3.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/udbg.h>
 #include <asm/lv1call.h>
@@ -56,6 +72,7 @@ struct debug_block {
 	u8 pkt[1520];
 } __packed;
 
+<<<<<<< HEAD
 struct ethhdr {
 	u8 dest[6];
 	u8 src[6];
@@ -89,6 +106,10 @@ struct udphdr {
 
 static __iomem struct ethhdr *h_eth;
 static __iomem struct vlantag *h_vlan;
+=======
+static __iomem struct ethhdr *h_eth;
+static __iomem struct vlan_hdr *h_vlan;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static __iomem struct iphdr *h_ip;
 static __iomem struct udphdr *h_udp;
 
@@ -143,7 +164,11 @@ static int unmap_dma_mem(int bus_id, int dev_id, u64 bus_addr, size_t len)
 	return lv1_free_device_dma_region(bus_id, dev_id, real_bus_addr);
 }
 
+<<<<<<< HEAD
 static void gelic_debug_init(void)
+=======
+static void __init gelic_debug_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	s64 result;
 	u64 v2;
@@ -173,8 +198,13 @@ static void gelic_debug_init(void)
 
 	h_eth = (struct ethhdr *)dbg.pkt;
 
+<<<<<<< HEAD
 	memset(&h_eth->dest, 0xff, 6);
 	memcpy(&h_eth->src, &mac, 6);
+=======
+	eth_broadcast_addr(h_eth->h_dest);
+	memcpy(&h_eth->h_source, &mac, ETH_ALEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	header_size = sizeof(struct ethhdr);
 
@@ -183,6 +213,7 @@ static void gelic_debug_init(void)
 				 GELIC_LV1_VLAN_TX_ETHERNET_0, 0, 0,
 				 &vlan_id, &v2);
 	if (!result) {
+<<<<<<< HEAD
 		h_eth->type = 0x8100;
 
 		header_size += sizeof(struct vlantag);
@@ -192,10 +223,22 @@ static void gelic_debug_init(void)
 		h_ip = (struct iphdr *)(h_vlan + 1);
 	} else {
 		h_eth->type = 0x0800;
+=======
+		h_eth->h_proto= ETH_P_8021Q;
+
+		header_size += sizeof(struct vlan_hdr);
+		h_vlan = (struct vlan_hdr *)(h_eth + 1);
+		h_vlan->h_vlan_TCI = vlan_id;
+		h_vlan->h_vlan_encapsulated_proto = ETH_P_IP;
+		h_ip = (struct iphdr *)(h_vlan + 1);
+	} else {
+		h_eth->h_proto= 0x0800;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		h_ip = (struct iphdr *)(h_eth + 1);
 	}
 
 	header_size += sizeof(struct iphdr);
+<<<<<<< HEAD
 	h_ip->ver_len = 0x45;
 	h_ip->ttl = 10;
 	h_ip->proto = 0x11;
@@ -205,6 +248,18 @@ static void gelic_debug_init(void)
 	header_size += sizeof(struct udphdr);
 	h_udp = (struct udphdr *)(h_ip + 1);
 	h_udp->src = GELIC_DEBUG_PORT;
+=======
+	h_ip->version = 4;
+	h_ip->ihl = 5;
+	h_ip->ttl = 10;
+	h_ip->protocol = 0x11;
+	h_ip->saddr = 0x00000000;
+	h_ip->daddr = 0xffffffff;
+
+	header_size += sizeof(struct udphdr);
+	h_udp = (struct udphdr *)(h_ip + 1);
+	h_udp->source = GELIC_DEBUG_PORT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h_udp->dest = GELIC_DEBUG_PORT;
 
 	pmsgc = pmsg = (char *)(h_udp + 1);
@@ -225,16 +280,28 @@ static void gelic_sendbuf(int msgsize)
 	int i;
 
 	dbg.descr.buf_size = header_size + msgsize;
+<<<<<<< HEAD
 	h_ip->total_length = msgsize + sizeof(struct udphdr) +
 			     sizeof(struct iphdr);
 	h_udp->len = msgsize + sizeof(struct udphdr);
 
 	h_ip->checksum = 0;
+=======
+	h_ip->tot_len = msgsize + sizeof(struct udphdr) +
+			     sizeof(struct iphdr);
+	h_udp->len = msgsize + sizeof(struct udphdr);
+
+	h_ip->check = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sum = 0;
 	p = (u16 *)h_ip;
 	for (i = 0; i < 5; i++)
 		sum += *p++;
+<<<<<<< HEAD
 	h_ip->checksum = ~(sum + (sum >> 16));
+=======
+	h_ip->check = ~(sum + (sum >> 16));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dbg.descr.dmac_cmd_status = GELIC_DESCR_DMA_CMD_NO_CHKSUM |
 				    GELIC_DESCR_TX_DMA_FRAME_TAIL;

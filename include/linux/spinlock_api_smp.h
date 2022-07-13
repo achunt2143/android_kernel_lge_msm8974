@@ -1,7 +1,11 @@
 #ifndef __LINUX_SPINLOCK_API_SMP_H
 #define __LINUX_SPINLOCK_API_SMP_H
 
+<<<<<<< HEAD
 #ifndef __LINUX_SPINLOCK_H
+=======
+#ifndef __LINUX_INSIDE_SPINLOCK_H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # error "please don't include this file directly"
 #endif
 
@@ -96,7 +100,11 @@ static inline int __raw_spin_trylock(raw_spinlock_t *lock)
 
 /*
  * If lockdep is enabled then we use the non-preemption spin-ops
+<<<<<<< HEAD
  * even on CONFIG_PREEMPT, because lockdep assumes that interrupts are
+=======
+ * even on CONFIG_PREEMPTION, because lockdep assumes that interrupts are
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * not re-enabled during lock-acquire (which the preempt-spin-ops do):
  */
 #if !defined(CONFIG_GENERIC_LOCKBREAK) || defined(CONFIG_DEBUG_LOCK_ALLOC)
@@ -108,6 +116,7 @@ static inline unsigned long __raw_spin_lock_irqsave(raw_spinlock_t *lock)
 	local_irq_save(flags);
 	preempt_disable();
 	spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
+<<<<<<< HEAD
 	/*
 	 * On lockdep we dont want the hand-coded irq-enable of
 	 * do_raw_spin_lock_flags() code, because lockdep assumes
@@ -118,6 +127,9 @@ static inline unsigned long __raw_spin_lock_irqsave(raw_spinlock_t *lock)
 #else
 	do_raw_spin_lock_flags(lock, &flags);
 #endif
+=======
+	LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return flags;
 }
 
@@ -131,8 +143,12 @@ static inline void __raw_spin_lock_irq(raw_spinlock_t *lock)
 
 static inline void __raw_spin_lock_bh(raw_spinlock_t *lock)
 {
+<<<<<<< HEAD
 	local_bh_disable();
 	preempt_disable();
+=======
+	__local_bh_disable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_acquire(&lock->dep_map, 0, 0, _RET_IP_);
 	LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
 }
@@ -144,11 +160,19 @@ static inline void __raw_spin_lock(raw_spinlock_t *lock)
 	LOCK_CONTENDED(lock, do_raw_spin_trylock, do_raw_spin_lock);
 }
 
+<<<<<<< HEAD
 #endif /* CONFIG_PREEMPT */
 
 static inline void __raw_spin_unlock(raw_spinlock_t *lock)
 {
 	spin_release(&lock->dep_map, 1, _RET_IP_);
+=======
+#endif /* !CONFIG_GENERIC_LOCKBREAK || CONFIG_DEBUG_LOCK_ALLOC */
+
+static inline void __raw_spin_unlock(raw_spinlock_t *lock)
+{
+	spin_release(&lock->dep_map, _RET_IP_);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do_raw_spin_unlock(lock);
 	preempt_enable();
 }
@@ -156,7 +180,11 @@ static inline void __raw_spin_unlock(raw_spinlock_t *lock)
 static inline void __raw_spin_unlock_irqrestore(raw_spinlock_t *lock,
 					    unsigned long flags)
 {
+<<<<<<< HEAD
 	spin_release(&lock->dep_map, 1, _RET_IP_);
+=======
+	spin_release(&lock->dep_map, _RET_IP_);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do_raw_spin_unlock(lock);
 	local_irq_restore(flags);
 	preempt_enable();
@@ -164,7 +192,11 @@ static inline void __raw_spin_unlock_irqrestore(raw_spinlock_t *lock,
 
 static inline void __raw_spin_unlock_irq(raw_spinlock_t *lock)
 {
+<<<<<<< HEAD
 	spin_release(&lock->dep_map, 1, _RET_IP_);
+=======
+	spin_release(&lock->dep_map, _RET_IP_);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do_raw_spin_unlock(lock);
 	local_irq_enable();
 	preempt_enable();
@@ -172,25 +204,46 @@ static inline void __raw_spin_unlock_irq(raw_spinlock_t *lock)
 
 static inline void __raw_spin_unlock_bh(raw_spinlock_t *lock)
 {
+<<<<<<< HEAD
 	spin_release(&lock->dep_map, 1, _RET_IP_);
 	do_raw_spin_unlock(lock);
 	preempt_enable_no_resched();
 	local_bh_enable_ip((unsigned long)__builtin_return_address(0));
+=======
+	spin_release(&lock->dep_map, _RET_IP_);
+	do_raw_spin_unlock(lock);
+	__local_bh_enable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int __raw_spin_trylock_bh(raw_spinlock_t *lock)
 {
+<<<<<<< HEAD
 	local_bh_disable();
 	preempt_disable();
+=======
+	__local_bh_disable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (do_raw_spin_trylock(lock)) {
 		spin_acquire(&lock->dep_map, 0, 1, _RET_IP_);
 		return 1;
 	}
+<<<<<<< HEAD
 	preempt_enable_no_resched();
 	local_bh_enable_ip((unsigned long)__builtin_return_address(0));
 	return 0;
 }
 
 #include <linux/rwlock_api_smp.h>
+=======
+	__local_bh_enable_ip(_RET_IP_, SOFTIRQ_LOCK_OFFSET);
+	return 0;
+}
+
+/* PREEMPT_RT has its own rwlock implementation */
+#ifndef CONFIG_PREEMPT_RT
+#include <linux/rwlock_api_smp.h>
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __LINUX_SPINLOCK_API_SMP_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Glue Code for assembler optimized version of Blowfish
  *
@@ -5,6 +9,7 @@
  *
  * CBC & ECB parts based on code (crypto/cbc.c,ecb.c) by:
  *   Copyright (c) 2006 Herbert Xu <herbert@gondor.apana.org.au>
+<<<<<<< HEAD
  * CTR part based on code (crypto/ctr.c) by:
  *   (C) Copyright IBM Corp. 2007 - Joy Latten <latten@us.ibm.com>
  *
@@ -27,10 +32,18 @@
 
 #include <asm/processor.h>
 #include <crypto/blowfish.h>
+=======
+ */
+
+#include <crypto/algapi.h>
+#include <crypto/blowfish.h>
+#include <crypto/internal/skcipher.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/crypto.h>
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <crypto/algapi.h>
 
 /* regular block cipher functions */
@@ -65,6 +78,31 @@ static inline void blowfish_enc_blk_xor_4way(struct bf_ctx *ctx, u8 *dst,
 				      const u8 *src)
 {
 	__blowfish_enc_blk_4way(ctx, dst, src, true);
+=======
+
+#include "ecb_cbc_helpers.h"
+
+/* regular block cipher functions */
+asmlinkage void blowfish_enc_blk(struct bf_ctx *ctx, u8 *dst, const u8 *src);
+asmlinkage void blowfish_dec_blk(struct bf_ctx *ctx, u8 *dst, const u8 *src);
+
+/* 4-way parallel cipher functions */
+asmlinkage void blowfish_enc_blk_4way(struct bf_ctx *ctx, u8 *dst,
+				      const u8 *src);
+asmlinkage void __blowfish_dec_blk_4way(struct bf_ctx *ctx, u8 *dst,
+					const u8 *src, bool cbc);
+
+static inline void blowfish_dec_ecb_4way(struct bf_ctx *ctx, u8 *dst,
+					     const u8 *src)
+{
+	return __blowfish_dec_blk_4way(ctx, dst, src, false);
+}
+
+static inline void blowfish_dec_cbc_4way(struct bf_ctx *ctx, u8 *dst,
+					     const u8 *src)
+{
+	return __blowfish_dec_blk_4way(ctx, dst, src, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void blowfish_encrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
@@ -77,6 +115,7 @@ static void blowfish_decrypt(struct crypto_tfm *tfm, u8 *dst, const u8 *src)
 	blowfish_dec_blk(crypto_tfm_ctx(tfm), dst, src);
 }
 
+<<<<<<< HEAD
 static int ecb_crypt(struct blkcipher_desc *desc, struct blkcipher_walk *walk,
 		     void (*fn)(struct bf_ctx *, u8 *, const u8 *),
 		     void (*fn_4way)(struct bf_ctx *, u8 *, const u8 *))
@@ -359,6 +398,46 @@ static int ctr_crypt(struct blkcipher_desc *desc, struct scatterlist *dst,
 }
 
 static struct crypto_alg bf_algs[4] = { {
+=======
+static int blowfish_setkey_skcipher(struct crypto_skcipher *tfm,
+				    const u8 *key, unsigned int keylen)
+{
+	return blowfish_setkey(&tfm->base, key, keylen);
+}
+
+static int ecb_encrypt(struct skcipher_request *req)
+{
+	ECB_WALK_START(req, BF_BLOCK_SIZE, -1);
+	ECB_BLOCK(4, blowfish_enc_blk_4way);
+	ECB_BLOCK(1, blowfish_enc_blk);
+	ECB_WALK_END();
+}
+
+static int ecb_decrypt(struct skcipher_request *req)
+{
+	ECB_WALK_START(req, BF_BLOCK_SIZE, -1);
+	ECB_BLOCK(4, blowfish_dec_ecb_4way);
+	ECB_BLOCK(1, blowfish_dec_blk);
+	ECB_WALK_END();
+}
+
+static int cbc_encrypt(struct skcipher_request *req)
+{
+	CBC_WALK_START(req, BF_BLOCK_SIZE, -1);
+	CBC_ENC_BLOCK(blowfish_enc_blk);
+	CBC_WALK_END();
+}
+
+static int cbc_decrypt(struct skcipher_request *req)
+{
+	CBC_WALK_START(req, BF_BLOCK_SIZE, -1);
+	CBC_DEC_BLOCK(4, blowfish_dec_cbc_4way);
+	CBC_DEC_BLOCK(1, blowfish_dec_blk);
+	CBC_WALK_END();
+}
+
+static struct crypto_alg bf_cipher_alg = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_name		= "blowfish",
 	.cra_driver_name	= "blowfish-asm",
 	.cra_priority		= 200,
@@ -367,7 +446,10 @@ static struct crypto_alg bf_algs[4] = { {
 	.cra_ctxsize		= sizeof(struct bf_ctx),
 	.cra_alignmask		= 0,
 	.cra_module		= THIS_MODULE,
+<<<<<<< HEAD
 	.cra_list		= LIST_HEAD_INIT(bf_algs[0].cra_list),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cra_u = {
 		.cipher = {
 			.cia_min_keysize	= BF_MIN_KEY_SIZE,
@@ -377,6 +459,7 @@ static struct crypto_alg bf_algs[4] = { {
 			.cia_decrypt		= blowfish_decrypt,
 		}
 	}
+<<<<<<< HEAD
 }, {
 	.cra_name		= "ecb(blowfish)",
 	.cra_driver_name	= "ecb-blowfish-asm",
@@ -440,6 +523,38 @@ static struct crypto_alg bf_algs[4] = { {
 		},
 	},
 } };
+=======
+};
+
+static struct skcipher_alg bf_skcipher_algs[] = {
+	{
+		.base.cra_name		= "ecb(blowfish)",
+		.base.cra_driver_name	= "ecb-blowfish-asm",
+		.base.cra_priority	= 300,
+		.base.cra_blocksize	= BF_BLOCK_SIZE,
+		.base.cra_ctxsize	= sizeof(struct bf_ctx),
+		.base.cra_module	= THIS_MODULE,
+		.min_keysize		= BF_MIN_KEY_SIZE,
+		.max_keysize		= BF_MAX_KEY_SIZE,
+		.setkey			= blowfish_setkey_skcipher,
+		.encrypt		= ecb_encrypt,
+		.decrypt		= ecb_decrypt,
+	}, {
+		.base.cra_name		= "cbc(blowfish)",
+		.base.cra_driver_name	= "cbc-blowfish-asm",
+		.base.cra_priority	= 300,
+		.base.cra_blocksize	= BF_BLOCK_SIZE,
+		.base.cra_ctxsize	= sizeof(struct bf_ctx),
+		.base.cra_module	= THIS_MODULE,
+		.min_keysize		= BF_MIN_KEY_SIZE,
+		.max_keysize		= BF_MAX_KEY_SIZE,
+		.ivsize			= BF_BLOCK_SIZE,
+		.setkey			= blowfish_setkey_skcipher,
+		.encrypt		= cbc_encrypt,
+		.decrypt		= cbc_decrypt,
+	},
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool is_blacklisted_cpu(void)
 {
@@ -462,8 +577,15 @@ static int force;
 module_param(force, int, 0);
 MODULE_PARM_DESC(force, "Force module load, ignore CPU blacklist");
 
+<<<<<<< HEAD
 static int __init init(void)
 {
+=======
+static int __init blowfish_init(void)
+{
+	int err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!force && is_blacklisted_cpu()) {
 		printk(KERN_INFO
 			"blowfish-x86_64: performance on this CPU "
@@ -472,6 +594,7 @@ static int __init init(void)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	return crypto_register_algs(bf_algs, ARRAY_SIZE(bf_algs));
 }
 
@@ -487,3 +610,31 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Blowfish Cipher Algorithm, asm optimized");
 MODULE_ALIAS("blowfish");
 MODULE_ALIAS("blowfish-asm");
+=======
+	err = crypto_register_alg(&bf_cipher_alg);
+	if (err)
+		return err;
+
+	err = crypto_register_skciphers(bf_skcipher_algs,
+					ARRAY_SIZE(bf_skcipher_algs));
+	if (err)
+		crypto_unregister_alg(&bf_cipher_alg);
+
+	return err;
+}
+
+static void __exit blowfish_fini(void)
+{
+	crypto_unregister_alg(&bf_cipher_alg);
+	crypto_unregister_skciphers(bf_skcipher_algs,
+				    ARRAY_SIZE(bf_skcipher_algs));
+}
+
+module_init(blowfish_init);
+module_exit(blowfish_fini);
+
+MODULE_LICENSE("GPL");
+MODULE_DESCRIPTION("Blowfish Cipher Algorithm, asm optimized");
+MODULE_ALIAS_CRYPTO("blowfish");
+MODULE_ALIAS_CRYPTO("blowfish-asm");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

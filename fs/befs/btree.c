@@ -12,8 +12,13 @@
  *
  * Dominic Giampaolo, author of "Practical File System
  * Design with the Be File System", for such a helpful book.
+<<<<<<< HEAD
  * 
  * Marcus J. Ranum, author of the b+tree package in 
+=======
+ *
+ * Marcus J. Ranum, author of the b+tree package in
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * comp.sources.misc volume 10. This code is not copied from that
  * work, but it is partially based on it.
  *
@@ -38,13 +43,18 @@
  */
 
 /* Befs B+tree structure:
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The first thing in the tree is the tree superblock. It tells you
  * all kinds of useful things about the tree, like where the rootnode
  * is located, and the size of the nodes (always 1024 with current version
  * of BeOS).
  *
  * The rest of the tree consists of a series of nodes. Nodes contain a header
+<<<<<<< HEAD
  * (struct befs_btree_nodehead), the packed key data, an array of shorts 
  * containing the ending offsets for each of the keys, and an array of
  * befs_off_t values. In interior nodes, the keys are the ending keys for 
@@ -65,11 +75,37 @@
  *
  * Second, it states that the header of a btree node is sufficient to 
  * distinguish internal nodes from leaf nodes. Without saying exactly how. 
+=======
+ * (struct befs_btree_nodehead), the packed key data, an array of shorts
+ * containing the ending offsets for each of the keys, and an array of
+ * befs_off_t values. In interior nodes, the keys are the ending keys for
+ * the childnode they point to, and the values are offsets into the
+ * datastream containing the tree.
+ */
+
+/* Note:
+ *
+ * The book states 2 confusing things about befs b+trees. First,
+ * it states that the overflow field of node headers is used by internal nodes
+ * to point to another node that "effectively continues this one". Here is what
+ * I believe that means. Each key in internal nodes points to another node that
+ * contains key values less than itself. Inspection reveals that the last key
+ * in the internal node is not the last key in the index. Keys that are
+ * greater than the last key in the internal node go into the overflow node.
+ * I imagine there is a performance reason for this.
+ *
+ * Second, it states that the header of a btree node is sufficient to
+ * distinguish internal nodes from leaf nodes. Without saying exactly how.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * After figuring out the first, it becomes obvious that internal nodes have
  * overflow nodes and leafnodes do not.
  */
 
+<<<<<<< HEAD
 /* 
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Currently, this code is only good for directory B+trees.
  * In order to be used for other BFS indexes, it needs to be extended to handle
  * duplicate keys and non-string keytypes (int32, int64, float, double).
@@ -78,6 +114,7 @@
 /*
  * In memory structure of each btree node
  */
+<<<<<<< HEAD
 typedef struct {
 	befs_host_btree_nodehead head;	/* head of node converted to cpu byteorder */
 	struct buffer_head *bh;
@@ -111,12 +148,51 @@ static int befs_find_key(struct super_block *sb, befs_btree_node * node,
 			 const char *findkey, befs_off_t * value);
 
 static char *befs_bt_get_key(struct super_block *sb, befs_btree_node * node,
+=======
+struct befs_btree_node {
+	befs_host_btree_nodehead head;	/* head of node converted to cpu byteorder */
+	struct buffer_head *bh;
+	befs_btree_nodehead *od_node;	/* on disk node */
+};
+
+/* local constants */
+static const befs_off_t BEFS_BT_INVAL = 0xffffffffffffffffULL;
+
+/* local functions */
+static int befs_btree_seekleaf(struct super_block *sb, const befs_data_stream *ds,
+			       befs_btree_super * bt_super,
+			       struct befs_btree_node *this_node,
+			       befs_off_t * node_off);
+
+static int befs_bt_read_super(struct super_block *sb, const befs_data_stream *ds,
+			      befs_btree_super * sup);
+
+static int befs_bt_read_node(struct super_block *sb, const befs_data_stream *ds,
+			     struct befs_btree_node *node,
+			     befs_off_t node_off);
+
+static int befs_leafnode(struct befs_btree_node *node);
+
+static fs16 *befs_bt_keylen_index(struct befs_btree_node *node);
+
+static fs64 *befs_bt_valarray(struct befs_btree_node *node);
+
+static char *befs_bt_keydata(struct befs_btree_node *node);
+
+static int befs_find_key(struct super_block *sb,
+			 struct befs_btree_node *node,
+			 const char *findkey, befs_off_t * value);
+
+static char *befs_bt_get_key(struct super_block *sb,
+			     struct befs_btree_node *node,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     int index, u16 * keylen);
 
 static int befs_compare_strings(const void *key1, int keylen1,
 				const void *key2, int keylen2);
 
 /**
+<<<<<<< HEAD
  * befs_bt_read_super - read in btree superblock convert to cpu byteorder
  * @sb: Filesystem superblock
  * @ds: Datastream to read from
@@ -138,6 +214,26 @@ befs_bt_read_super(struct super_block *sb, befs_data_stream * ds,
 	befs_disk_btree_super *od_sup = NULL;
 
 	befs_debug(sb, "---> befs_btree_read_super()");
+=======
+ * befs_bt_read_super() - read in btree superblock convert to cpu byteorder
+ * @sb:        Filesystem superblock
+ * @ds:        Datastream to read from
+ * @sup:       Buffer in which to place the btree superblock
+ *
+ * Calls befs_read_datastream to read in the btree superblock and
+ * makes sure it is in cpu byteorder, byteswapping if necessary.
+ * Return: BEFS_OK on success and if *@sup contains the btree superblock in cpu
+ * byte order. Otherwise return BEFS_ERR on error.
+ */
+static int
+befs_bt_read_super(struct super_block *sb, const befs_data_stream *ds,
+		   befs_btree_super * sup)
+{
+	struct buffer_head *bh;
+	befs_disk_btree_super *od_sup;
+
+	befs_debug(sb, "---> %s", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bh = befs_read_datastream(sb, ds, 0, NULL);
 
@@ -153,8 +249,11 @@ befs_bt_read_super(struct super_block *sb, befs_data_stream * ds,
 	sup->max_depth = fs32_to_cpu(sb, od_sup->max_depth);
 	sup->data_type = fs32_to_cpu(sb, od_sup->data_type);
 	sup->root_node_ptr = fs64_to_cpu(sb, od_sup->root_node_ptr);
+<<<<<<< HEAD
 	sup->free_node_ptr = fs64_to_cpu(sb, od_sup->free_node_ptr);
 	sup->max_size = fs64_to_cpu(sb, od_sup->max_size);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	brelse(bh);
 	if (sup->magic != BEFS_BTREE_MAGIC) {
@@ -162,11 +261,19 @@ befs_bt_read_super(struct super_block *sb, befs_data_stream * ds,
 		goto error;
 	}
 
+<<<<<<< HEAD
 	befs_debug(sb, "<--- befs_btree_read_super()");
 	return BEFS_OK;
 
       error:
 	befs_debug(sb, "<--- befs_btree_read_super() ERROR");
+=======
+	befs_debug(sb, "<--- %s", __func__);
+	return BEFS_OK;
+
+      error:
+	befs_debug(sb, "<--- %s ERROR", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return BEFS_ERR;
 }
 
@@ -180,8 +287,13 @@ befs_bt_read_super(struct super_block *sb, befs_data_stream * ds,
  * Calls befs_read_datastream to read in the indicated btree node and
  * makes sure its header fields are in cpu byteorder, byteswapping if
  * necessary.
+<<<<<<< HEAD
  * Note: node->bh must be NULL when this function called first
  * time. Don't forget brelse(node->bh) after last call.
+=======
+ * Note: node->bh must be NULL when this function is called the first time.
+ * Don't forget brelse(node->bh) after last call.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * On success, returns BEFS_OK and *@node contains the btree node that
  * starts at @node_off, with the node->head fields in cpu byte order.
@@ -190,21 +302,36 @@ befs_bt_read_super(struct super_block *sb, befs_data_stream * ds,
  */
 
 static int
+<<<<<<< HEAD
 befs_bt_read_node(struct super_block *sb, befs_data_stream * ds,
 		  befs_btree_node * node, befs_off_t node_off)
 {
 	uint off = 0;
 
 	befs_debug(sb, "---> befs_bt_read_node()");
+=======
+befs_bt_read_node(struct super_block *sb, const befs_data_stream *ds,
+		  struct befs_btree_node *node, befs_off_t node_off)
+{
+	uint off = 0;
+
+	befs_debug(sb, "---> %s", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (node->bh)
 		brelse(node->bh);
 
 	node->bh = befs_read_datastream(sb, ds, node_off, &off);
 	if (!node->bh) {
+<<<<<<< HEAD
 		befs_error(sb, "befs_bt_read_node() failed to read "
 			   "node at %Lu", node_off);
 		befs_debug(sb, "<--- befs_bt_read_node() ERROR");
+=======
+		befs_error(sb, "%s failed to read "
+			   "node at %llu", __func__, node_off);
+		befs_debug(sb, "<--- %s ERROR", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		return BEFS_ERR;
 	}
@@ -221,7 +348,11 @@ befs_bt_read_node(struct super_block *sb, befs_data_stream * ds,
 	node->head.all_key_length =
 	    fs16_to_cpu(sb, node->od_node->all_key_length);
 
+<<<<<<< HEAD
 	befs_debug(sb, "<--- befs_btree_read_node()");
+=======
+	befs_debug(sb, "<--- %s", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return BEFS_OK;
 }
 
@@ -236,6 +367,7 @@ befs_bt_read_node(struct super_block *sb, befs_data_stream * ds,
  * with @key (usually the disk block number of an inode).
  *
  * On failure, returns BEFS_ERR or BEFS_BT_NOT_FOUND.
+<<<<<<< HEAD
  * 
  * Algorithm: 
  *   Read the superblock and rootnode of the b+tree.
@@ -248,11 +380,29 @@ befs_btree_find(struct super_block *sb, befs_data_stream * ds,
 		const char *key, befs_off_t * value)
 {
 	befs_btree_node *this_node = NULL;
+=======
+ *
+ * Algorithm:
+ *   Read the superblock and rootnode of the b+tree.
+ *   Drill down through the interior nodes using befs_find_key().
+ *   Once at the correct leaf node, use befs_find_key() again to get the
+ *   actual value stored with the key.
+ */
+int
+befs_btree_find(struct super_block *sb, const befs_data_stream *ds,
+		const char *key, befs_off_t * value)
+{
+	struct befs_btree_node *this_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	befs_btree_super bt_super;
 	befs_off_t node_off;
 	int res;
 
+<<<<<<< HEAD
 	befs_debug(sb, "---> befs_btree_find() Key: %s", key);
+=======
+	befs_debug(sb, "---> %s Key: %s", __func__, key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (befs_bt_read_super(sb, ds, &bt_super) != BEFS_OK) {
 		befs_error(sb,
@@ -260,11 +410,19 @@ befs_btree_find(struct super_block *sb, befs_data_stream * ds,
 		goto error;
 	}
 
+<<<<<<< HEAD
 	this_node = kmalloc(sizeof (befs_btree_node),
 						GFP_NOFS);
 	if (!this_node) {
 		befs_error(sb, "befs_btree_find() failed to allocate %u "
 			   "bytes of memory", sizeof (befs_btree_node));
+=======
+	this_node = kmalloc(sizeof(struct befs_btree_node),
+						GFP_NOFS);
+	if (!this_node) {
+		befs_error(sb, "befs_btree_find() failed to allocate %zu "
+			   "bytes of memory", sizeof(struct befs_btree_node));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
@@ -274,35 +432,61 @@ befs_btree_find(struct super_block *sb, befs_data_stream * ds,
 	node_off = bt_super.root_node_ptr;
 	if (befs_bt_read_node(sb, ds, this_node, node_off) != BEFS_OK) {
 		befs_error(sb, "befs_btree_find() failed to read "
+<<<<<<< HEAD
 			   "node at %Lu", node_off);
+=======
+			   "node at %llu", node_off);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error_alloc;
 	}
 
 	while (!befs_leafnode(this_node)) {
 		res = befs_find_key(sb, this_node, key, &node_off);
+<<<<<<< HEAD
 		if (res == BEFS_BT_NOT_FOUND)
 			node_off = this_node->head.overflow;
 		/* if no match, go to overflow node */
 		if (befs_bt_read_node(sb, ds, this_node, node_off) != BEFS_OK) {
 			befs_error(sb, "befs_btree_find() failed to read "
 				   "node at %Lu", node_off);
+=======
+		/* if no key set, try the overflow node */
+		if (res == BEFS_BT_OVERFLOW)
+			node_off = this_node->head.overflow;
+		if (befs_bt_read_node(sb, ds, this_node, node_off) != BEFS_OK) {
+			befs_error(sb, "befs_btree_find() failed to read "
+				   "node at %llu", node_off);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error_alloc;
 		}
 	}
 
+<<<<<<< HEAD
 	/* at the correct leaf node now */
 
+=======
+	/* at a leaf node now, check if it is correct */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = befs_find_key(sb, this_node, key, value);
 
 	brelse(this_node->bh);
 	kfree(this_node);
 
 	if (res != BEFS_BT_MATCH) {
+<<<<<<< HEAD
 		befs_debug(sb, "<--- befs_btree_find() Key %s not found", key);
 		*value = 0;
 		return BEFS_BT_NOT_FOUND;
 	}
 	befs_debug(sb, "<--- befs_btree_find() Found key %s, value %Lu",
+=======
+		befs_error(sb, "<--- %s Key %s not found", __func__, key);
+		befs_debug(sb, "<--- %s ERROR", __func__);
+		*value = 0;
+		return BEFS_BT_NOT_FOUND;
+	}
+	befs_debug(sb, "<--- %s Found key %s, value %llu", __func__,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   key, *value);
 	return BEFS_OK;
 
@@ -310,7 +494,11 @@ befs_btree_find(struct super_block *sb, befs_data_stream * ds,
 	kfree(this_node);
       error:
 	*value = 0;
+<<<<<<< HEAD
 	befs_debug(sb, "<--- befs_btree_find() ERROR");
+=======
+	befs_debug(sb, "<--- %s ERROR", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return BEFS_ERR;
 }
 
@@ -318,6 +506,7 @@ befs_btree_find(struct super_block *sb, befs_data_stream * ds,
  * befs_find_key - Search for a key within a node
  * @sb: Filesystem superblock
  * @node: Node to find the key within
+<<<<<<< HEAD
  * @key: Keystring to search for
  * @value: If key is found, the value stored with the key is put here
  *
@@ -334,6 +523,20 @@ befs_btree_find(struct super_block *sb, befs_data_stream * ds,
  */
 static int
 befs_find_key(struct super_block *sb, befs_btree_node * node,
+=======
+ * @findkey: Keystring to search for
+ * @value: If key is found, the value stored with the key is put here
+ *
+ * Finds exact match if one exists, and returns BEFS_BT_MATCH.
+ * If there is no match and node's value array is too small for key, return
+ * BEFS_BT_OVERFLOW.
+ * If no match and node should countain this key, return BEFS_BT_NOT_FOUND.
+ *
+ * Uses binary search instead of a linear.
+ */
+static int
+befs_find_key(struct super_block *sb, struct befs_btree_node *node,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	      const char *findkey, befs_off_t * value)
 {
 	int first, last, mid;
@@ -343,6 +546,7 @@ befs_find_key(struct super_block *sb, befs_btree_node * node,
 	char *thiskey;
 	fs64 *valarray;
 
+<<<<<<< HEAD
 	befs_debug(sb, "---> befs_find_key() %s", findkey);
 
 	*value = 0;
@@ -350,13 +554,25 @@ befs_find_key(struct super_block *sb, befs_btree_node * node,
 	findkey_len = strlen(findkey);
 
 	/* if node can not contain key, just skeep this node */
+=======
+	befs_debug(sb, "---> %s %s", __func__, findkey);
+
+	findkey_len = strlen(findkey);
+
+	/* if node can not contain key, just skip this node */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	last = node->head.all_key_count - 1;
 	thiskey = befs_bt_get_key(sb, node, last, &keylen);
 
 	eq = befs_compare_strings(thiskey, keylen, findkey, findkey_len);
 	if (eq < 0) {
+<<<<<<< HEAD
 		befs_debug(sb, "<--- befs_find_key() %s not found", findkey);
 		return BEFS_BT_NOT_FOUND;
+=======
+		befs_debug(sb, "<--- node can't contain %s", findkey);
+		return BEFS_BT_OVERFLOW;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	valarray = befs_bt_valarray(node);
@@ -373,8 +589,13 @@ befs_find_key(struct super_block *sb, befs_btree_node * node,
 					  findkey_len);
 
 		if (eq == 0) {
+<<<<<<< HEAD
 			befs_debug(sb, "<--- befs_find_key() found %s at %d",
 				   thiskey, mid);
+=======
+			befs_debug(sb, "<--- %s found %s at %d",
+				   __func__, thiskey, mid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			*value = fs64_to_cpu(sb, valarray[mid]);
 			return BEFS_BT_MATCH;
@@ -384,12 +605,23 @@ befs_find_key(struct super_block *sb, befs_btree_node * node,
 		else
 			first = mid + 1;
 	}
+<<<<<<< HEAD
+=======
+
+	/* return an existing value so caller can arrive to a leaf node */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (eq < 0)
 		*value = fs64_to_cpu(sb, valarray[mid + 1]);
 	else
 		*value = fs64_to_cpu(sb, valarray[mid]);
+<<<<<<< HEAD
 	befs_debug(sb, "<--- befs_find_key() found %s at %d", thiskey, mid);
 	return BEFS_BT_PARMATCH;
+=======
+	befs_error(sb, "<--- %s %s not found", __func__, findkey);
+	befs_debug(sb, "<--- %s ERROR", __func__);
+	return BEFS_BT_NOT_FOUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -402,6 +634,7 @@ befs_find_key(struct super_block *sb, befs_btree_node * node,
  * @keysize: Length of the returned key
  * @value: Value stored with the returned key
  *
+<<<<<<< HEAD
  * Heres how it works: Key_no is the index of the key/value pair to 
  * return in keybuf/value.
  * Bufsize is the size of keybuf (BEFS_NAME_LEN+1 is a good size). Keysize is 
@@ -420,6 +653,26 @@ befs_btree_read(struct super_block *sb, befs_data_stream * ds,
 	befs_btree_node *this_node;
 	befs_btree_super bt_super;
 	befs_off_t node_off = 0;
+=======
+ * Here's how it works: Key_no is the index of the key/value pair to
+ * return in keybuf/value.
+ * Bufsize is the size of keybuf (BEFS_NAME_LEN+1 is a good size). Keysize is
+ * the number of characters in the key (just a convenience).
+ *
+ * Algorithm:
+ *   Get the first leafnode of the tree. See if the requested key is in that
+ *   node. If not, follow the node->right link to the next leafnode. Repeat
+ *   until the (key_no)th key is found or the tree is out of keys.
+ */
+int
+befs_btree_read(struct super_block *sb, const befs_data_stream *ds,
+		loff_t key_no, size_t bufsize, char *keybuf, size_t * keysize,
+		befs_off_t * value)
+{
+	struct befs_btree_node *this_node;
+	befs_btree_super bt_super;
+	befs_off_t node_off;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cur_key;
 	fs64 *valarray;
 	char *keystart;
@@ -428,7 +681,11 @@ befs_btree_read(struct super_block *sb, befs_data_stream * ds,
 
 	uint key_sum = 0;
 
+<<<<<<< HEAD
 	befs_debug(sb, "---> befs_btree_read()");
+=======
+	befs_debug(sb, "---> %s", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (befs_bt_read_super(sb, ds, &bt_super) != BEFS_OK) {
 		befs_error(sb,
@@ -436,10 +693,17 @@ befs_btree_read(struct super_block *sb, befs_data_stream * ds,
 		goto error;
 	}
 
+<<<<<<< HEAD
 	if ((this_node = (befs_btree_node *)
 	     kmalloc(sizeof (befs_btree_node), GFP_NOFS)) == NULL) {
 		befs_error(sb, "befs_btree_read() failed to allocate %u "
 			   "bytes of memory", sizeof (befs_btree_node));
+=======
+	this_node = kmalloc(sizeof(struct befs_btree_node), GFP_NOFS);
+	if (this_node == NULL) {
+		befs_error(sb, "befs_btree_read() failed to allocate %zu "
+			   "bytes of memory", sizeof(struct befs_btree_node));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error;
 	}
 
@@ -453,7 +717,11 @@ befs_btree_read(struct super_block *sb, befs_data_stream * ds,
 		kfree(this_node);
 		*value = 0;
 		*keysize = 0;
+<<<<<<< HEAD
 		befs_debug(sb, "<--- befs_btree_read() Tree is EMPTY");
+=======
+		befs_debug(sb, "<--- %s Tree is EMPTY", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return BEFS_BT_EMPTY;
 	} else if (res == BEFS_ERR) {
 		goto error_alloc;
@@ -464,11 +732,20 @@ befs_btree_read(struct super_block *sb, befs_data_stream * ds,
 	while (key_sum + this_node->head.all_key_count <= key_no) {
 
 		/* no more nodes to look in: key_no is too large */
+<<<<<<< HEAD
 		if (this_node->head.right == befs_bt_inval) {
 			*keysize = 0;
 			*value = 0;
 			befs_debug(sb,
 				   "<--- befs_btree_read() END of keys at %Lu",
+=======
+		if (this_node->head.right == BEFS_BT_INVAL) {
+			*keysize = 0;
+			*value = 0;
+			befs_debug(sb,
+				   "<--- %s END of keys at %llu", __func__,
+				   (unsigned long long)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   key_sum + this_node->head.all_key_count);
 			brelse(this_node->bh);
 			kfree(this_node);
@@ -479,8 +756,13 @@ befs_btree_read(struct super_block *sb, befs_data_stream * ds,
 		node_off = this_node->head.right;
 
 		if (befs_bt_read_node(sb, ds, this_node, node_off) != BEFS_OK) {
+<<<<<<< HEAD
 			befs_error(sb, "befs_btree_read() failed to read "
 				   "node at %Lu", node_off);
+=======
+			befs_error(sb, "%s failed to read node at %llu",
+				  __func__, (unsigned long long)node_off);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error_alloc;
 		}
 	}
@@ -493,6 +775,7 @@ befs_btree_read(struct super_block *sb, befs_data_stream * ds,
 
 	keystart = befs_bt_get_key(sb, this_node, cur_key, &keylen);
 
+<<<<<<< HEAD
 	befs_debug(sb, "Read [%Lu,%d]: keysize %d", node_off, cur_key, keylen);
 
 	if (bufsize < keylen + 1) {
@@ -508,12 +791,34 @@ befs_btree_read(struct super_block *sb, befs_data_stream * ds,
 	keybuf[keylen] = '\0';
 
 	befs_debug(sb, "Read [%Lu,%d]: Key \"%.*s\", Value %Lu", node_off,
+=======
+	befs_debug(sb, "Read [%llu,%d]: keysize %d",
+		   (long long unsigned int)node_off, (int)cur_key,
+		   (int)keylen);
+
+	if (bufsize < keylen + 1) {
+		befs_error(sb, "%s keybuf too small (%zu) "
+			   "for key of size %d", __func__, bufsize, keylen);
+		brelse(this_node->bh);
+		goto error_alloc;
+	}
+
+	strscpy(keybuf, keystart, keylen + 1);
+	*value = fs64_to_cpu(sb, valarray[cur_key]);
+	*keysize = keylen;
+
+	befs_debug(sb, "Read [%llu,%d]: Key \"%.*s\", Value %llu", node_off,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   cur_key, keylen, keybuf, *value);
 
 	brelse(this_node->bh);
 	kfree(this_node);
 
+<<<<<<< HEAD
 	befs_debug(sb, "<--- befs_btree_read()");
+=======
+	befs_debug(sb, "<--- %s", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return BEFS_OK;
 
@@ -523,7 +828,11 @@ befs_btree_read(struct super_block *sb, befs_data_stream * ds,
       error:
 	*keysize = 0;
 	*value = 0;
+<<<<<<< HEAD
 	befs_debug(sb, "<--- befs_btree_read() ERROR");
+=======
+	befs_debug(sb, "<--- %s ERROR", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return BEFS_ERR;
 }
 
@@ -536,13 +845,18 @@ befs_btree_read(struct super_block *sb, befs_data_stream * ds,
  * @node_off: Pointer to offset of current node within datastream. Modified
  * 		by the function.
  *
+<<<<<<< HEAD
  *
  * Helper function for btree traverse. Moves the current position to the 
+=======
+ * Helper function for btree traverse. Moves the current position to the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * start of the first leaf node.
  *
  * Also checks for an empty tree. If there are no keys, returns BEFS_BT_EMPTY.
  */
 static int
+<<<<<<< HEAD
 befs_btree_seekleaf(struct super_block *sb, befs_data_stream * ds,
 		    befs_btree_super * bt_super, befs_btree_node * this_node,
 		    befs_off_t * node_off)
@@ -559,15 +873,40 @@ befs_btree_seekleaf(struct super_block *sb, befs_data_stream * ds,
 
 	if (this_node->head.all_key_count == 0 && befs_leafnode(this_node)) {
 		befs_debug(sb, "<--- befs_btree_seekleaf() Tree is EMPTY");
+=======
+befs_btree_seekleaf(struct super_block *sb, const befs_data_stream *ds,
+		    befs_btree_super *bt_super,
+		    struct befs_btree_node *this_node,
+		    befs_off_t * node_off)
+{
+
+	befs_debug(sb, "---> %s", __func__);
+
+	if (befs_bt_read_node(sb, ds, this_node, *node_off) != BEFS_OK) {
+		befs_error(sb, "%s failed to read "
+			   "node at %llu", __func__, *node_off);
+		goto error;
+	}
+	befs_debug(sb, "Seekleaf to root node %llu", *node_off);
+
+	if (this_node->head.all_key_count == 0 && befs_leafnode(this_node)) {
+		befs_debug(sb, "<--- %s Tree is EMPTY", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return BEFS_BT_EMPTY;
 	}
 
 	while (!befs_leafnode(this_node)) {
 
 		if (this_node->head.all_key_count == 0) {
+<<<<<<< HEAD
 			befs_debug(sb, "befs_btree_seekleaf() encountered "
 				   "an empty interior node: %Lu. Using Overflow "
 				   "node: %Lu", *node_off,
+=======
+			befs_debug(sb, "%s encountered "
+				   "an empty interior node: %llu. Using Overflow "
+				   "node: %llu", __func__, *node_off,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   this_node->head.overflow);
 			*node_off = this_node->head.overflow;
 		} else {
@@ -575,6 +914,7 @@ befs_btree_seekleaf(struct super_block *sb, befs_data_stream * ds,
 			*node_off = fs64_to_cpu(sb, valarray[0]);
 		}
 		if (befs_bt_read_node(sb, ds, this_node, *node_off) != BEFS_OK) {
+<<<<<<< HEAD
 			befs_error(sb, "befs_btree_seekleaf() failed to read "
 				   "node at %Lu", *node_off);
 			goto error;
@@ -583,15 +923,30 @@ befs_btree_seekleaf(struct super_block *sb, befs_data_stream * ds,
 		befs_debug(sb, "Seekleaf to child node %Lu", *node_off);
 	}
 	befs_debug(sb, "Node %Lu is a leaf node", *node_off);
+=======
+			befs_error(sb, "%s failed to read "
+				   "node at %llu", __func__, *node_off);
+			goto error;
+		}
+
+		befs_debug(sb, "Seekleaf to child node %llu", *node_off);
+	}
+	befs_debug(sb, "Node %llu is a leaf node", *node_off);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return BEFS_OK;
 
       error:
+<<<<<<< HEAD
 	befs_debug(sb, "<--- befs_btree_seekleaf() ERROR");
+=======
+	befs_debug(sb, "<--- %s ERROR", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return BEFS_ERR;
 }
 
 /**
+<<<<<<< HEAD
  * befs_leafnode - Determine if the btree node is a leaf node or an 
  * interior node
  * @node: Pointer to node structure to test
@@ -603,6 +958,19 @@ befs_leafnode(befs_btree_node * node)
 {
 	/* all interior nodes (and only interior nodes) have an overflow node */
 	if (node->head.overflow == befs_bt_inval)
+=======
+ * befs_leafnode - Determine if the btree node is a leaf node or an
+ * interior node
+ * @node: Pointer to node structure to test
+ *
+ * Return 1 if leaf, 0 if interior
+ */
+static int
+befs_leafnode(struct befs_btree_node *node)
+{
+	/* all interior nodes (and only interior nodes) have an overflow node */
+	if (node->head.overflow == BEFS_BT_INVAL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	else
 		return 0;
@@ -622,7 +990,11 @@ befs_leafnode(befs_btree_node * node)
  * Except that rounding up to 8 works, and rounding up to 4 doesn't.
  */
 static fs16 *
+<<<<<<< HEAD
 befs_bt_keylen_index(befs_btree_node * node)
+=======
+befs_bt_keylen_index(struct befs_btree_node *node)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const int keylen_align = 8;
 	unsigned long int off =
@@ -643,7 +1015,11 @@ befs_bt_keylen_index(befs_btree_node * node)
  * of the node pointed to by the node header
  */
 static fs64 *
+<<<<<<< HEAD
 befs_bt_valarray(befs_btree_node * node)
+=======
+befs_bt_valarray(struct befs_btree_node *node)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void *keylen_index_start = (void *) befs_bt_keylen_index(node);
 	size_t keylen_index_size = node->head.all_key_count * sizeof (fs16);
@@ -656,10 +1032,17 @@ befs_bt_valarray(befs_btree_node * node)
  * @node: Pointer to the node structure to find the keydata array within
  *
  * Returns a pointer to the start of the keydata array
+<<<<<<< HEAD
  * of the node pointed to by the node header 
  */
 static char *
 befs_bt_keydata(befs_btree_node * node)
+=======
+ * of the node pointed to by the node header
+ */
+static char *
+befs_bt_keydata(struct befs_btree_node *node)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (char *) ((void *) node->od_node + sizeof (befs_btree_nodehead));
 }
@@ -675,7 +1058,11 @@ befs_bt_keydata(befs_btree_node * node)
  * Returns NULL on failure (bad input) and sets *@keylen = 0
  */
 static char *
+<<<<<<< HEAD
 befs_bt_get_key(struct super_block *sb, befs_btree_node * node,
+=======
+befs_bt_get_key(struct super_block *sb, struct befs_btree_node *node,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int index, u16 * keylen)
 {
 	int prev_key_end;
@@ -702,6 +1089,7 @@ befs_bt_get_key(struct super_block *sb, befs_btree_node * node,
 
 /**
  * befs_compare_strings - compare two strings
+<<<<<<< HEAD
  * @key1: pointer to the first key to be compared 
  * @keylen1: length in bytes of key1
  * @key2: pointer to the second key to be compared
@@ -710,6 +1098,16 @@ befs_bt_get_key(struct super_block *sb, befs_btree_node * node,
  * Returns 0 if @key1 and @key2 are equal.
  * Returns >0 if @key1 is greater.
  * Returns <0 if @key2 is greater..
+=======
+ * @key1: pointer to the first key to be compared
+ * @keylen1: length in bytes of key1
+ * @key2: pointer to the second key to be compared
+ * @keylen2: length in bytes of key2
+ *
+ * Returns 0 if @key1 and @key2 are equal.
+ * Returns >0 if @key1 is greater.
+ * Returns <0 if @key2 is greater.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 befs_compare_strings(const void *key1, int keylen1,

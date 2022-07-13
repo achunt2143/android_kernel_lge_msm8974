@@ -11,8 +11,11 @@
 #ifndef _XTENSA_PCI_BRIDGE_H
 #define _XTENSA_PCI_BRIDGE_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct device_node;
 struct pci_controller;
 
@@ -35,7 +38,11 @@ struct pci_space {
 struct pci_controller {
 	int index;			/* used for pci_controller_num */
 	struct pci_controller *next;
+<<<<<<< HEAD
         struct pci_bus *bus;
+=======
+	struct pci_bus *bus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *arch_data;
 
 	int first_busno;
@@ -75,6 +82,7 @@ static inline void pcibios_init_resource(struct resource *res,
 	res->child = NULL;
 }
 
+<<<<<<< HEAD
 
 /* These are used for config access before all the PCI probing has been done. */
 int early_read_config_byte(struct pci_controller*, int, int, int, u8*);
@@ -85,4 +93,6 @@ int early_write_config_word(struct pci_controller*, int, int, int, u16);
 int early_write_config_dword(struct pci_controller*, int, int, int, u32);
 
 #endif	/* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _XTENSA_PCI_BRIDGE_H */

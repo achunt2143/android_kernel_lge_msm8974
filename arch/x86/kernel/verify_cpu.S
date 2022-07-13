@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  *	verify_cpu.S - Code for cpu long mode and SSE verification. This
@@ -9,9 +13,12 @@
  *	Copyright (c) 2007  Vivek Goyal (vgoyal@in.ibm.com)
  *	Copyright (c) 2010  Kees Cook (kees.cook@canonical.com)
  *
+<<<<<<< HEAD
  * 	This source code is licensed under the GNU General Public License,
  * 	Version 2.  See the file COPYING for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	This is a common code for verification whether CPU supports
  * 	long mode and SSE or not. It is not called directly instead this
  *	file is included at various places and compiled in that context.
@@ -30,10 +37,17 @@
  * 	appropriately. Either display a message or halt.
  */
 
+<<<<<<< HEAD
 #include <asm/cpufeature.h>
 #include <asm/msr-index.h>
 
 verify_cpu:
+=======
+#include <asm/cpufeatures.h>
+#include <asm/msr-index.h>
+
+SYM_FUNC_START_LOCAL(verify_cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushf				# Save caller passed flags
 	push	$0			# Kill any dangerous flags
 	popf
@@ -48,12 +62,17 @@ verify_cpu:
 	pushfl
 	popl	%eax
 	cmpl	%eax,%ebx
+<<<<<<< HEAD
 	jz	verify_cpu_no_longmode	# cpu has no cpuid
+=======
+	jz	.Lverify_cpu_no_longmode	# cpu has no cpuid
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	movl	$0x0,%eax		# See if cpuid 1 is implemented
 	cpuid
 	cmpl	$0x1,%eax
+<<<<<<< HEAD
 	jb	verify_cpu_no_longmode	# no cpuid 1
 
 	xor	%di,%di
@@ -73,6 +92,27 @@ verify_cpu_noamd:
 	jnz	verify_cpu_check
 	cmpl	$0x6c65746e,%ecx
 	jnz	verify_cpu_check
+=======
+	jb	.Lverify_cpu_no_longmode	# no cpuid 1
+
+	xor	%di,%di
+	cmpl	$0x68747541,%ebx	# AuthenticAMD
+	jnz	.Lverify_cpu_noamd
+	cmpl	$0x69746e65,%edx
+	jnz	.Lverify_cpu_noamd
+	cmpl	$0x444d4163,%ecx
+	jnz	.Lverify_cpu_noamd
+	mov	$1,%di			# cpu is from AMD
+	jmp	.Lverify_cpu_check
+
+.Lverify_cpu_noamd:
+	cmpl	$0x756e6547,%ebx        # GenuineIntel?
+	jnz	.Lverify_cpu_check
+	cmpl	$0x49656e69,%edx
+	jnz	.Lverify_cpu_check
+	cmpl	$0x6c65746e,%ecx
+	jnz	.Lverify_cpu_check
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	# only call IA32_MISC_ENABLE when:
 	# family > 6 || (family == 6 && model >= 0xd)
@@ -83,12 +123,18 @@ verify_cpu_noamd:
 	andl	$0x0ff00f00, %eax	# mask family and extended family
 	shrl	$8, %eax
 	cmpl	$6, %eax
+<<<<<<< HEAD
 	ja	verify_cpu_clear_xd	# family > 6, ok
 	jb	verify_cpu_check	# family < 6, skip
+=======
+	ja	.Lverify_cpu_clear_xd	# family > 6, ok
+	jb	.Lverify_cpu_check	# family < 6, skip
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	andl	$0x000f00f0, %ecx	# mask model and extended model
 	shrl	$4, %ecx
 	cmpl	$0xd, %ecx
+<<<<<<< HEAD
 	jb	verify_cpu_check	# family == 6, model < 0xd, skip
 
 verify_cpu_clear_xd:
@@ -99,36 +145,69 @@ verify_cpu_clear_xd:
 	wrmsr
 
 verify_cpu_check:
+=======
+	jb	.Lverify_cpu_check	# family == 6, model < 0xd, skip
+
+.Lverify_cpu_clear_xd:
+	movl	$MSR_IA32_MISC_ENABLE, %ecx
+	rdmsr
+	btrl	$2, %edx		# clear MSR_IA32_MISC_ENABLE_XD_DISABLE
+	jnc	.Lverify_cpu_check	# only write MSR if bit was changed
+	wrmsr
+
+.Lverify_cpu_check:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl    $0x1,%eax		# Does the cpu have what it takes
 	cpuid
 	andl	$REQUIRED_MASK0,%edx
 	xorl	$REQUIRED_MASK0,%edx
+<<<<<<< HEAD
 	jnz	verify_cpu_no_longmode
+=======
+	jnz	.Lverify_cpu_no_longmode
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	movl    $0x80000000,%eax	# See if extended cpuid is implemented
 	cpuid
 	cmpl    $0x80000001,%eax
+<<<<<<< HEAD
 	jb      verify_cpu_no_longmode	# no extended cpuid
+=======
+	jb      .Lverify_cpu_no_longmode	# no extended cpuid
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	movl    $0x80000001,%eax	# Does the cpu have what it takes
 	cpuid
 	andl    $REQUIRED_MASK1,%edx
 	xorl    $REQUIRED_MASK1,%edx
+<<<<<<< HEAD
 	jnz     verify_cpu_no_longmode
 
 verify_cpu_sse_test:
+=======
+	jnz     .Lverify_cpu_no_longmode
+
+.Lverify_cpu_sse_test:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl	$1,%eax
 	cpuid
 	andl	$SSE_MASK,%edx
 	cmpl	$SSE_MASK,%edx
+<<<<<<< HEAD
 	je	verify_cpu_sse_ok
 	test	%di,%di
 	jz	verify_cpu_no_longmode	# only try to force SSE on AMD
+=======
+	je	.Lverify_cpu_sse_ok
+	test	%di,%di
+	jz	.Lverify_cpu_no_longmode	# only try to force SSE on AMD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl	$MSR_K7_HWCR,%ecx
 	rdmsr
 	btr	$15,%eax		# enable SSE
 	wrmsr
 	xor	%di,%di			# don't loop
+<<<<<<< HEAD
 	jmp	verify_cpu_sse_test	# try again
 
 verify_cpu_no_longmode:
@@ -139,3 +218,16 @@ verify_cpu_sse_ok:
 	popf				# Restore caller passed flags
 	xorl %eax, %eax
 	ret
+=======
+	jmp	.Lverify_cpu_sse_test	# try again
+
+.Lverify_cpu_no_longmode:
+	popf				# Restore caller passed flags
+	movl $1,%eax
+	RET
+.Lverify_cpu_sse_ok:
+	popf				# Restore caller passed flags
+	xorl %eax, %eax
+	RET
+SYM_FUNC_END(verify_cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

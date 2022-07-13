@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ALPHA_TLBFLUSH_H
 #define _ALPHA_TLBFLUSH_H
 
 #include <linux/mm.h>
 #include <linux/sched.h>
 #include <asm/compiler.h>
+<<<<<<< HEAD
 #include <asm/pgalloc.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __EXTERN_INLINE
 #define __EXTERN_INLINE extern inline

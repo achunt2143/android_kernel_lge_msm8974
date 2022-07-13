@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Operating System Services (OSS) chip handling
  *	Written by Joshua M. Thompson (funaho@jurai.org)
@@ -21,33 +25,54 @@
 #include <linux/init.h>
 #include <linux/irq.h>
 
+<<<<<<< HEAD
 #include <asm/bootinfo.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/macintosh.h>
 #include <asm/macints.h>
 #include <asm/mac_via.h>
 #include <asm/mac_oss.h>
 
+<<<<<<< HEAD
+=======
+#include "mac.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int oss_present;
 volatile struct mac_oss *oss;
 
 /*
  * Initialize the OSS
+<<<<<<< HEAD
  *
  * The OSS "detection" code is actually in via_init() which is always called
  * before us. Thus we can count on oss_present being valid on entry.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 void __init oss_init(void)
 {
 	int i;
 
+<<<<<<< HEAD
 	if (!oss_present) return;
 
 	oss = (struct mac_oss *) OSS_BASE;
+=======
+	if (macintosh_config->ident != MAC_MODEL_IIFX)
+		return;
+
+	oss = (struct mac_oss *) OSS_BASE;
+	pr_debug("OSS detected at %p", oss);
+	oss_present = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable all interrupts. Unlike a VIA it looks like we    */
 	/* do this by setting the source's interrupt level to zero. */
 
+<<<<<<< HEAD
 	for (i = 0; i <= OSS_NUM_SOURCES; i++) {
 		oss->irq_level[i] = 0;
 	}
@@ -124,6 +149,48 @@ static void oss_nubus_irq(unsigned int irq, struct irq_desc *desc)
 			generic_handle_irq(NUBUS_SOURCE_BASE + i);
 		}
 	} while(events & (irq_bit - 1));
+=======
+	for (i = 0; i < OSS_NUM_SOURCES; i++)
+		oss->irq_level[i] = 0;
+}
+
+/*
+ * Handle OSS interrupts.
+ * XXX how do you clear a pending IRQ? is it even necessary?
+ */
+
+static void oss_iopism_irq(struct irq_desc *desc)
+{
+	generic_handle_irq(IRQ_MAC_ADB);
+}
+
+static void oss_scsi_irq(struct irq_desc *desc)
+{
+	generic_handle_irq(IRQ_MAC_SCSI);
+}
+
+static void oss_nubus_irq(struct irq_desc *desc)
+{
+	u16 events, irq_bit;
+	int irq_num;
+
+	events = oss->irq_pending & OSS_IP_NUBUS;
+	irq_num = NUBUS_SOURCE_BASE + 5;
+	irq_bit = OSS_IP_NUBUS5;
+	do {
+		if (events & irq_bit) {
+			events &= ~irq_bit;
+			generic_handle_irq(irq_num);
+		}
+		--irq_num;
+		irq_bit >>= 1;
+	} while (events);
+}
+
+static void oss_iopscc_irq(struct irq_desc *desc)
+{
+	generic_handle_irq(IRQ_MAC_SCC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -143,6 +210,7 @@ static void oss_nubus_irq(unsigned int irq, struct irq_desc *desc)
 
 void __init oss_register_interrupts(void)
 {
+<<<<<<< HEAD
 	irq_set_chained_handler(OSS_IRQLEV_IOPISM, oss_irq);
 	irq_set_chained_handler(OSS_IRQLEV_SCSI,   oss_irq);
 	irq_set_chained_handler(OSS_IRQLEV_NUBUS,  oss_nubus_irq);
@@ -151,6 +219,16 @@ void __init oss_register_interrupts(void)
 
 	/* OSS_VIA1 gets enabled here because it has no machspec interrupt. */
 	oss->irq_level[OSS_VIA1] = IRQ_AUTO_6;
+=======
+	irq_set_chained_handler(OSS_IRQLEV_IOPISM, oss_iopism_irq);
+	irq_set_chained_handler(OSS_IRQLEV_SCSI,   oss_scsi_irq);
+	irq_set_chained_handler(OSS_IRQLEV_NUBUS,  oss_nubus_irq);
+	irq_set_chained_handler(OSS_IRQLEV_IOPSCC, oss_iopscc_irq);
+	irq_set_chained_handler(OSS_IRQLEV_VIA1,   via1_irq);
+
+	/* OSS_VIA1 gets enabled here because it has no machspec interrupt. */
+	oss->irq_level[OSS_VIA1] = OSS_IRQLEV_VIA1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -163,9 +241,12 @@ void __init oss_register_interrupts(void)
  */
 
 void oss_irq_enable(int irq) {
+<<<<<<< HEAD
 #ifdef DEBUG_IRQUSE
 	printk("oss_irq_enable(%d)\n", irq);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch(irq) {
 		case IRQ_MAC_SCC:
 			oss->irq_level[OSS_IOPSCC] = OSS_IRQLEV_IOPSCC;
@@ -199,9 +280,12 @@ void oss_irq_enable(int irq) {
  */
 
 void oss_irq_disable(int irq) {
+<<<<<<< HEAD
 #ifdef DEBUG_IRQUSE
 	printk("oss_irq_disable(%d)\n", irq);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch(irq) {
 		case IRQ_MAC_SCC:
 			oss->irq_level[OSS_IOPSCC] = 0;

@@ -1,22 +1,37 @@
+<<<<<<< HEAD
 /*
  * drivers/power/process.c - Functions for starting/stopping processes on 
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * drivers/power/process.c - Functions for starting/stopping processes on
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                           suspend transitions.
  *
  * Originally from swsusp.
  */
 
+<<<<<<< HEAD
 
 #undef DEBUG
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/oom.h>
 #include <linux/suspend.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/debug.h>
+#include <linux/sched/task.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/syscalls.h>
 #include <linux/freezer.h>
 #include <linux/delay.h>
 #include <linux/workqueue.h>
 #include <linux/kmod.h>
+<<<<<<< HEAD
 #include <linux/wakelock.h>
 #include "power.h"
 
@@ -27,10 +42,25 @@
 
 static int try_to_freeze_tasks(bool user_only)
 {
+=======
+#include <trace/events/power.h>
+#include <linux/cpuset.h>
+
+/*
+ * Timeout for stopping processes
+ */
+unsigned int __read_mostly freeze_timeout_msecs = 20 * MSEC_PER_SEC;
+
+static int try_to_freeze_tasks(bool user_only)
+{
+	const char *what = user_only ? "user space processes" :
+					"remaining freezable tasks";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct task_struct *g, *p;
 	unsigned long end_time;
 	unsigned int todo;
 	bool wq_busy = false;
+<<<<<<< HEAD
 	struct timeval start, end;
 	u64 elapsed_csecs64;
 	unsigned int elapsed_csecs;
@@ -40,6 +70,18 @@ static int try_to_freeze_tasks(bool user_only)
 	do_gettimeofday(&start);
 
 	end_time = jiffies + TIMEOUT;
+=======
+	ktime_t start, end, elapsed;
+	unsigned int elapsed_msecs;
+	bool wakeup = false;
+	int sleep_usecs = USEC_PER_MSEC;
+
+	pr_info("Freezing %s\n", what);
+
+	start = ktime_get_boottime();
+
+	end_time = jiffies + msecs_to_jiffies(freeze_timeout_msecs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!user_only)
 		freeze_workqueues_begin();
@@ -47,6 +89,7 @@ static int try_to_freeze_tasks(bool user_only)
 	while (true) {
 		todo = 0;
 		read_lock(&tasklist_lock);
+<<<<<<< HEAD
 		do_each_thread(g, p) {
 			if (p == current || !freeze_task(p))
 				continue;
@@ -65,6 +108,14 @@ static int try_to_freeze_tasks(bool user_only)
 			    !freezer_should_skip(p))
 				todo++;
 		} while_each_thread(g, p);
+=======
+		for_each_process_thread(g, p) {
+			if (p == current || !freeze_task(p))
+				continue;
+
+			todo++;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		read_unlock(&tasklist_lock);
 
 		if (!user_only) {
@@ -90,6 +141,7 @@ static int try_to_freeze_tasks(bool user_only)
 			sleep_usecs *= 2;
 	}
 
+<<<<<<< HEAD
 	do_gettimeofday(&end);
 	elapsed_csecs64 = timeval_to_ns(&end) - timeval_to_ns(&start);
 	do_div(elapsed_csecs64, NSEC_PER_SEC / 100);
@@ -128,11 +180,39 @@ static int try_to_freeze_tasks(bool user_only)
 	} else {
 		printk("(elapsed %d.%02d seconds) ", elapsed_csecs / 100,
 			elapsed_csecs % 100);
+=======
+	end = ktime_get_boottime();
+	elapsed = ktime_sub(end, start);
+	elapsed_msecs = ktime_to_ms(elapsed);
+
+	if (todo) {
+		pr_err("Freezing %s %s after %d.%03d seconds "
+		       "(%d tasks refusing to freeze, wq_busy=%d):\n", what,
+		       wakeup ? "aborted" : "failed",
+		       elapsed_msecs / 1000, elapsed_msecs % 1000,
+		       todo - wq_busy, wq_busy);
+
+		if (wq_busy)
+			show_freezable_workqueues();
+
+		if (!wakeup || pm_debug_messages_on) {
+			read_lock(&tasklist_lock);
+			for_each_process_thread(g, p) {
+				if (p != current && freezing(p) && !frozen(p))
+					sched_show_task(p);
+			}
+			read_unlock(&tasklist_lock);
+		}
+	} else {
+		pr_info("Freezing %s completed (elapsed %d.%03d seconds)\n",
+			what, elapsed_msecs / 1000, elapsed_msecs % 1000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return todo ? -EBUSY : 0;
 }
 
+<<<<<<< HEAD
 /*
  * Returns true if all freezable tasks (except for current) are frozen already
  */
@@ -157,18 +237,28 @@ done:
 
 /**
  * freeze_processes - Signal user space processes to enter the refrigerator.
+=======
+/**
+ * freeze_processes - Signal user space processes to enter the refrigerator.
+ * The current thread will not be frozen.  The same process that calls
+ * freeze_processes must later call thaw_processes.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * On success, returns 0.  On failure, -errno and system is fully thawed.
  */
 int freeze_processes(void)
 {
 	int error;
+<<<<<<< HEAD
 	int oom_kills_saved;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = __usermodehelper_disable(UMH_FREEZING);
 	if (error)
 		return error;
 
+<<<<<<< HEAD
 	if (!pm_freezing)
 		atomic_inc(&system_freezing_cnt);
 
@@ -198,6 +288,31 @@ done:
 	printk("\n");
 	BUG_ON(in_atomic());
 
+=======
+	/* Make sure this task doesn't get frozen */
+	current->flags |= PF_SUSPEND_TASK;
+
+	if (!pm_freezing)
+		static_branch_inc(&freezer_active);
+
+	pm_wakeup_clear(0);
+	pm_freezing = true;
+	error = try_to_freeze_tasks(true);
+	if (!error)
+		__usermodehelper_set_disable_depth(UMH_DISABLED);
+
+	BUG_ON(in_atomic());
+
+	/*
+	 * Now that the whole userspace is frozen we need to disable
+	 * the OOM killer to disallow any further interference with
+	 * killable tasks. There is no guarantee oom victims will
+	 * ever reach a point they go away we have to wait with a timeout.
+	 */
+	if (!error && !oom_killer_disable(msecs_to_jiffies(freeze_timeout_msecs)))
+		error = -EBUSY;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		thaw_processes();
 	return error;
@@ -215,6 +330,7 @@ int freeze_kernel_threads(void)
 {
 	int error;
 
+<<<<<<< HEAD
 	printk("Freezing remaining freezable tasks ... ");
 	pm_nosig_freezing = true;
 	error = try_to_freeze_tasks(false);
@@ -222,6 +338,11 @@ int freeze_kernel_threads(void)
 		printk("done.");
 
 	printk("\n");
+=======
+	pm_nosig_freezing = true;
+	error = try_to_freeze_tasks(false);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(in_atomic());
 
 	if (error)
@@ -232,19 +353,32 @@ int freeze_kernel_threads(void)
 void thaw_processes(void)
 {
 	struct task_struct *g, *p;
+<<<<<<< HEAD
 
 	if (pm_freezing)
 		atomic_dec(&system_freezing_cnt);
+=======
+	struct task_struct *curr = current;
+
+	trace_suspend_resume(TPS("thaw_processes"), 0, true);
+	if (pm_freezing)
+		static_branch_dec(&freezer_active);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pm_freezing = false;
 	pm_nosig_freezing = false;
 
 	oom_killer_enable();
 
+<<<<<<< HEAD
 	printk("Restarting tasks ... ");
+=======
+	pr_info("Restarting tasks ... ");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__usermodehelper_set_disable_depth(UMH_FREEZING);
 	thaw_workqueues();
 
+<<<<<<< HEAD
 	read_lock(&tasklist_lock);
 	do_each_thread(g, p) {
 		__thaw_task(p);
@@ -255,6 +389,26 @@ void thaw_processes(void)
 
 	schedule();
 	printk("done.\n");
+=======
+	cpuset_wait_for_hotplug();
+
+	read_lock(&tasklist_lock);
+	for_each_process_thread(g, p) {
+		/* No other threads should have PF_SUSPEND_TASK set */
+		WARN_ON((p != curr) && (p->flags & PF_SUSPEND_TASK));
+		__thaw_task(p);
+	}
+	read_unlock(&tasklist_lock);
+
+	WARN_ON(!(curr->flags & PF_SUSPEND_TASK));
+	curr->flags &= ~PF_SUSPEND_TASK;
+
+	usermodehelper_enable();
+
+	schedule();
+	pr_cont("done.\n");
+	trace_suspend_resume(TPS("thaw_processes"), 0, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void thaw_kernel_threads(void)
@@ -262,11 +416,16 @@ void thaw_kernel_threads(void)
 	struct task_struct *g, *p;
 
 	pm_nosig_freezing = false;
+<<<<<<< HEAD
 	printk("Restarting kernel threads ... ");
+=======
+	pr_info("Restarting kernel threads ... ");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	thaw_workqueues();
 
 	read_lock(&tasklist_lock);
+<<<<<<< HEAD
 	do_each_thread(g, p) {
 		if (p->flags & (PF_KTHREAD | PF_WQ_WORKER))
 			__thaw_task(p);
@@ -275,4 +434,14 @@ void thaw_kernel_threads(void)
 
 	schedule();
 	printk("done.\n");
+=======
+	for_each_process_thread(g, p) {
+		if (p->flags & PF_KTHREAD)
+			__thaw_task(p);
+	}
+	read_unlock(&tasklist_lock);
+
+	schedule();
+	pr_cont("done.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

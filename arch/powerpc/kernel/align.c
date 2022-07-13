@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* align.c - handle alignment exceptions for the Power PC.
  *
  * Copyright (c) 1996 Paul Mackerras <paulus@cs.anu.edu.au>
@@ -10,29 +14,46 @@
  * Copyright (c) 2005 Benjamin Herrenschmidt, IBM Corp
  *                    <benh@kernel.crashing.org>
  *   Merge ppc32 and ppc64 implementations
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cache.h>
 #include <asm/cputable.h>
 #include <asm/emulated_ops.h>
 #include <asm/switch_to.h>
+<<<<<<< HEAD
+=======
+#include <asm/disassemble.h>
+#include <asm/cpu_has_feature.h>
+#include <asm/sstep.h>
+#include <asm/inst.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct aligninfo {
 	unsigned char len;
 	unsigned char flags;
 };
 
+<<<<<<< HEAD
 #define IS_XFORM(inst)	(((inst) >> 26) == 31)
 #define IS_DSFORM(inst)	(((inst) >> 26) >= 56)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define INVALID	{ 0, 0 }
 
@@ -40,6 +61,7 @@ struct aligninfo {
 #define LD	0	/* load */
 #define ST	1	/* store */
 #define SE	2	/* sign-extend value, or FP ld/st as word */
+<<<<<<< HEAD
 #define F	4	/* to/from fp regs */
 #define U	8	/* update index register */
 #define M	0x10	/* multiple load/store */
@@ -392,6 +414,11 @@ static int emulate_fp_pair(unsigned char __user *addr, unsigned int reg,
 		return -EFAULT;
 	return 1;	/* exception handled and fixed up */
 }
+=======
+#define SW	0x20	/* byte swap */
+#define E4	0x40	/* SPE endianness is word */
+#define E8	0x80	/* SPE endianness is double word */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SPE
 
@@ -456,9 +483,14 @@ static struct aligninfo spe_aligninfo[32] = {
  * so we don't need the address swizzling.
  */
 static int emulate_spe(struct pt_regs *regs, unsigned int reg,
+<<<<<<< HEAD
 		       unsigned int instr)
 {
 	int t, ret;
+=======
+		       ppc_inst_t ppc_instr)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union {
 		u64 ll;
 		u32 w[2];
@@ -467,8 +499,14 @@ static int emulate_spe(struct pt_regs *regs, unsigned int reg,
 	} data, temp;
 	unsigned char __user *p, *addr;
 	unsigned long *evr = &current->thread.evr[reg];
+<<<<<<< HEAD
 	unsigned int nb, flags;
 
+=======
+	unsigned int nb, flags, instr;
+
+	instr = ppc_inst_val(ppc_instr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	instr = (instr >> 1) & 0x1f;
 
 	/* DAR has the operand effective address */
@@ -477,12 +515,15 @@ static int emulate_spe(struct pt_regs *regs, unsigned int reg,
 	nb = spe_aligninfo[instr].len;
 	flags = spe_aligninfo[instr].flags;
 
+<<<<<<< HEAD
 	/* Verify the address of the operand */
 	if (unlikely(user_mode(regs) &&
 		     !access_ok((flags & ST ? VERIFY_WRITE : VERIFY_READ),
 				addr, nb)))
 		return -EFAULT;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* userland only */
 	if (unlikely(!user_mode(regs)))
 		return 0;
@@ -520,6 +561,7 @@ static int emulate_spe(struct pt_regs *regs, unsigned int reg,
 		}
 	} else {
 		temp.ll = data.ll = 0;
+<<<<<<< HEAD
 		ret = 0;
 		p = addr;
 
@@ -538,6 +580,29 @@ static int emulate_spe(struct pt_regs *regs, unsigned int reg,
 			if (unlikely(ret))
 				return -EFAULT;
 		}
+=======
+		p = addr;
+
+		if (!user_read_access_begin(addr, nb))
+			return -EFAULT;
+
+		switch (nb) {
+		case 8:
+			unsafe_get_user(temp.v[0], p++, Efault_read);
+			unsafe_get_user(temp.v[1], p++, Efault_read);
+			unsafe_get_user(temp.v[2], p++, Efault_read);
+			unsafe_get_user(temp.v[3], p++, Efault_read);
+			fallthrough;
+		case 4:
+			unsafe_get_user(temp.v[4], p++, Efault_read);
+			unsafe_get_user(temp.v[5], p++, Efault_read);
+			fallthrough;
+		case 2:
+			unsafe_get_user(temp.v[6], p++, Efault_read);
+			unsafe_get_user(temp.v[7], p++, Efault_read);
+		}
+		user_read_access_end();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (instr) {
 		case EVLDD:
@@ -581,6 +646,7 @@ static int emulate_spe(struct pt_regs *regs, unsigned int reg,
 	if (flags & SW) {
 		switch (flags & 0xf0) {
 		case E8:
+<<<<<<< HEAD
 			SWAP(data.v[0], data.v[7]);
 			SWAP(data.v[1], data.v[6]);
 			SWAP(data.v[2], data.v[5]);
@@ -599,6 +665,20 @@ static int emulate_spe(struct pt_regs *regs, unsigned int reg,
 			SWAP(data.v[2], data.v[3]);
 			SWAP(data.v[4], data.v[5]);
 			SWAP(data.v[6], data.v[7]);
+=======
+			data.ll = swab64(data.ll);
+			break;
+		case E4:
+			data.w[0] = swab32(data.w[0]);
+			data.w[1] = swab32(data.w[1]);
+			break;
+		/* Its half word endian */
+		default:
+			data.h[0] = swab16(data.h[0]);
+			data.h[1] = swab16(data.h[1]);
+			data.h[2] = swab16(data.h[2]);
+			data.h[3] = swab16(data.h[3]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
@@ -610,6 +690,7 @@ static int emulate_spe(struct pt_regs *regs, unsigned int reg,
 
 	/* Store result to memory or update registers */
 	if (flags & ST) {
+<<<<<<< HEAD
 		ret = 0;
 		p = addr;
 		switch (nb) {
@@ -627,12 +708,36 @@ static int emulate_spe(struct pt_regs *regs, unsigned int reg,
 		}
 		if (unlikely(ret))
 			return -EFAULT;
+=======
+		p = addr;
+
+		if (!user_write_access_begin(addr, nb))
+			return -EFAULT;
+
+		switch (nb) {
+		case 8:
+			unsafe_put_user(data.v[0], p++, Efault_write);
+			unsafe_put_user(data.v[1], p++, Efault_write);
+			unsafe_put_user(data.v[2], p++, Efault_write);
+			unsafe_put_user(data.v[3], p++, Efault_write);
+			fallthrough;
+		case 4:
+			unsafe_put_user(data.v[4], p++, Efault_write);
+			unsafe_put_user(data.v[5], p++, Efault_write);
+			fallthrough;
+		case 2:
+			unsafe_put_user(data.v[6], p++, Efault_write);
+			unsafe_put_user(data.v[7], p++, Efault_write);
+		}
+		user_write_access_end();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		*evr = data.w[0];
 		regs->gpr[reg] = data.w[1];
 	}
 
 	return 1;
+<<<<<<< HEAD
 }
 #endif /* CONFIG_SPE */
 
@@ -691,16 +796,35 @@ static int emulate_vsx(unsigned char __user *addr, unsigned int reg,
 }
 #endif
 
+=======
+
+Efault_read:
+	user_read_access_end();
+	return -EFAULT;
+
+Efault_write:
+	user_write_access_end();
+	return -EFAULT;
+}
+#endif /* CONFIG_SPE */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Called on alignment exception. Attempts to fixup
  *
  * Return 1 on success
  * Return 0 if unable to handle the interrupt
  * Return -EFAULT if data address is bad
+<<<<<<< HEAD
+=======
+ * Other negative return values indicate that the instruction can't
+ * be emulated, and the process should be given a SIGBUS.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 int fix_alignment(struct pt_regs *regs)
 {
+<<<<<<< HEAD
 	unsigned int instr, nb, flags, instruction = 0;
 	unsigned int reg, areg;
 	unsigned int dsisr;
@@ -752,11 +876,35 @@ int fix_alignment(struct pt_regs *regs)
 
 #ifdef CONFIG_SPE
 	if ((instr >> 26) == 0x4) {
+=======
+	ppc_inst_t instr;
+	struct instruction_op op;
+	int r, type;
+
+	if (is_kernel_addr(regs->nip))
+		r = copy_inst_from_kernel_nofault(&instr, (void *)regs->nip);
+	else
+		r = __get_user_instr(instr, (void __user *)regs->nip);
+
+	if (unlikely(r))
+		return -EFAULT;
+	if ((regs->msr & MSR_LE) != (MSR_KERNEL & MSR_LE)) {
+		/* We don't handle PPC little-endian any more... */
+		if (cpu_has_feature(CPU_FTR_PPC_LE))
+			return -EIO;
+		instr = ppc_inst_swab(instr);
+	}
+
+#ifdef CONFIG_SPE
+	if (ppc_inst_primary_opcode(instr) == 0x4) {
+		int reg = (ppc_inst_val(instr) >> 21) & 0x1f;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		PPC_WARN_ALIGNMENT(spe, regs);
 		return emulate_spe(regs, reg, instr);
 	}
 #endif
 
+<<<<<<< HEAD
 	instr = (dsisr >> 10) & 0x7f;
 	instr |= (dsisr >> 13) & 0x60;
 
@@ -980,4 +1128,41 @@ int fix_alignment(struct pt_regs *regs)
 		regs->gpr[areg] = regs->dar;
 
 	return 1;
+=======
+
+	/*
+	 * ISA 3.0 (such as P9) copy, copy_first, paste and paste_last alignment
+	 * check.
+	 *
+	 * Send a SIGBUS to the process that caused the fault.
+	 *
+	 * We do not emulate these because paste may contain additional metadata
+	 * when pasting to a co-processor. Furthermore, paste_last is the
+	 * synchronisation point for preceding copy/paste sequences.
+	 */
+	if ((ppc_inst_val(instr) & 0xfc0006fe) == (PPC_INST_COPY & 0xfc0006fe))
+		return -EIO;
+
+	r = analyse_instr(&op, regs, instr);
+	if (r < 0)
+		return -EINVAL;
+
+	type = GETTYPE(op.type);
+	if (!OP_IS_LOAD_STORE(type)) {
+		if (op.type != CACHEOP + DCBZ)
+			return -EINVAL;
+		PPC_WARN_ALIGNMENT(dcbz, regs);
+		WARN_ON_ONCE(!user_mode(regs));
+		r = emulate_dcbz(op.ea, regs);
+	} else {
+		if (type == LARX || type == STCX)
+			return -EIO;
+		PPC_WARN_ALIGNMENT(unaligned, regs);
+		r = emulate_loadstore(regs, &op);
+	}
+
+	if (!r)
+		return 1;
+	return r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

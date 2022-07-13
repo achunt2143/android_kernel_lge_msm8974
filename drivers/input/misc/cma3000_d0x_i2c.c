@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Implements I2C interface for VTI CMA300_D0x Accelerometer driver
  *
  * Copyright (C) 2010 Texas Instruments
  * Author: Hemanth V <hemanthv@ti.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
@@ -15,6 +20,8 @@
  *
  * You should have received a copy of the GNU General Public License along with
  * this program.  If not, see <http://www.gnu.org/licenses/>.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -55,8 +62,12 @@ static const struct cma3000_bus_ops cma3000_i2c_bops = {
 	.write		= cma3000_i2c_set,
 };
 
+<<<<<<< HEAD
 static int __devinit cma3000_i2c_probe(struct i2c_client *client,
 					const struct i2c_device_id *id)
+=======
+static int cma3000_i2c_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cma3000_accl_data *data;
 
@@ -69,16 +80,25 @@ static int __devinit cma3000_i2c_probe(struct i2c_client *client,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit cma3000_i2c_remove(struct i2c_client *client)
+=======
+static void cma3000_i2c_remove(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cma3000_accl_data *data = i2c_get_clientdata(client);
 
 	cma3000_exit(data);
+<<<<<<< HEAD
 
 	return 0;
 }
 
 #ifdef CONFIG_PM
+=======
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int cma3000_i2c_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -103,7 +123,10 @@ static const struct dev_pm_ops cma3000_i2c_pm_ops = {
 	.suspend	= cma3000_i2c_suspend,
 	.resume		= cma3000_i2c_resume,
 };
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct i2c_device_id cma3000_i2c_id[] = {
 	{ "cma3000_d01", 0 },
@@ -114,6 +137,7 @@ MODULE_DEVICE_TABLE(i2c, cma3000_i2c_id);
 
 static struct i2c_driver cma3000_i2c_driver = {
 	.probe		= cma3000_i2c_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(cma3000_i2c_remove),
 	.id_table	= cma3000_i2c_id,
 	.driver = {
@@ -122,6 +146,13 @@ static struct i2c_driver cma3000_i2c_driver = {
 #ifdef CONFIG_PM
 		.pm	= &cma3000_i2c_pm_ops,
 #endif
+=======
+	.remove		= cma3000_i2c_remove,
+	.id_table	= cma3000_i2c_id,
+	.driver = {
+		.name	= "cma3000_i2c_accl",
+		.pm	= pm_sleep_ptr(&cma3000_i2c_pm_ops),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

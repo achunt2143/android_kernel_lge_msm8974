@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2000, 2001 Broadcom Corporation
  *
  * Copyright (C) 2002 MontaVista Software Inc.
  * Author: jsun@mvista.com or jsun@junsun.net
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute	it and/or modify it
  * under  the terms of	the GNU General	 Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/bcd.h>
 #include <linux/types.h>
@@ -109,7 +116,11 @@ static int m41t81_read(uint8_t addr)
 		return -1;
 	}
 
+<<<<<<< HEAD
 	return (__raw_readq(SMB_CSR(R_SMB_DATA)) & 0xff);
+=======
+	return __raw_readq(SMB_CSR(R_SMB_DATA)) & 0xff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int m41t81_write(uint8_t addr, int b)
@@ -141,13 +152,21 @@ static int m41t81_write(uint8_t addr, int b)
 	return 0;
 }
 
+<<<<<<< HEAD
 int m41t81_set_time(unsigned long t)
+=======
+int m41t81_set_time(time64_t t)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtc_time tm;
 	unsigned long flags;
 
 	/* Note we don't care about the century */
+<<<<<<< HEAD
 	rtc_time_to_tm(t, &tm);
+=======
+	rtc_time64_to_tm(t, &tm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Note the write order matters as it ensures the correctness.
@@ -188,7 +207,11 @@ int m41t81_set_time(unsigned long t)
 	return 0;
 }
 
+<<<<<<< HEAD
 unsigned long m41t81_get_time(void)
+=======
+time64_t m41t81_get_time(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int year, mon, day, hour, min, sec;
 	unsigned long flags;
@@ -218,7 +241,11 @@ unsigned long m41t81_get_time(void)
 
 	year += 2000;
 
+<<<<<<< HEAD
 	return mktime(year, mon, day, hour, min, sec);
+=======
+	return mktime64(year, mon, day, hour, min, sec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int m41t81_probe(void)
@@ -229,5 +256,9 @@ int m41t81_probe(void)
 	tmp = m41t81_read(M41T81REG_SC);
 	m41t81_write(M41T81REG_SC, tmp & 0x7f);
 
+<<<<<<< HEAD
 	return (m41t81_read(M41T81REG_SC) != -1);
+=======
+	return m41t81_read(M41T81REG_SC) != -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

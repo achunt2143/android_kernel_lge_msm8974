@@ -32,7 +32,11 @@
 #ifndef __CVMX_ASM_H__
 #define __CVMX_ASM_H__
 
+<<<<<<< HEAD
 #include "octeon-model.h"
+=======
+#include <asm/octeon/octeon-model.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* other useful stuff */
 #define CVMX_SYNC asm volatile ("sync" : : : "memory")

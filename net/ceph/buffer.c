@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/ceph/ceph_debug.h>
 
@@ -6,6 +10,10 @@
 
 #include <linux/ceph/buffer.h>
 #include <linux/ceph/decode.h>
+<<<<<<< HEAD
+=======
+#include <linux/ceph/libceph.h> /* for kvmalloc */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp)
 {
@@ -15,6 +23,7 @@ struct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp)
 	if (!b)
 		return NULL;
 
+<<<<<<< HEAD
 	b->vec.iov_base = kmalloc(len, gfp | __GFP_NOWARN);
 	if (b->vec.iov_base) {
 		b->is_vmalloc = false;
@@ -25,6 +34,12 @@ struct ceph_buffer *ceph_buffer_new(size_t len, gfp_t gfp)
 			return NULL;
 		}
 		b->is_vmalloc = true;
+=======
+	b->vec.iov_base = kvmalloc(len, gfp);
+	if (!b->vec.iov_base) {
+		kfree(b);
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kref_init(&b->kref);
@@ -40,12 +55,16 @@ void ceph_buffer_release(struct kref *kref)
 	struct ceph_buffer *b = container_of(kref, struct ceph_buffer, kref);
 
 	dout("buffer_release %p\n", b);
+<<<<<<< HEAD
 	if (b->vec.iov_base) {
 		if (b->is_vmalloc)
 			vfree(b->vec.iov_base);
 		else
 			kfree(b->vec.iov_base);
 	}
+=======
+	kvfree(b->vec.iov_base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(b);
 }
 EXPORT_SYMBOL(ceph_buffer_release);

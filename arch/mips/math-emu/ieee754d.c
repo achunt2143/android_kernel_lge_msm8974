@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Some debug functions
  *
@@ -5,6 +9,7 @@
  *
  * Copyright (C) 1994-2000 Algorithmics Ltd.
  *
+<<<<<<< HEAD
  *  This program is free software; you can distribute it and/or modify it
  *  under the terms of the GNU General Public License (Version 2) as
  *  published by the Free Software Foundation.
@@ -18,6 +23,8 @@
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  59 Temple Place - Suite 330, Boston MA 02111-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Nov 7, 2000
  *  Modified to build and operate in Linux kernel environment.
  *
@@ -25,6 +32,7 @@
  *  Copyright (C) 2000 MIPS Technologies, Inc. All rights reserved.
  */
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include "ieee754.h"
 
@@ -57,6 +65,15 @@
 #define DPMANT(dp)	(dp.parts.mant)
 
 ieee754dp ieee754dp_dump(char *m, ieee754dp x)
+=======
+#include <linux/types.h>
+#include <linux/printk.h>
+#include "ieee754.h"
+#include "ieee754sp.h"
+#include "ieee754dp.h"
+
+union ieee754dp ieee754dp_dump(char *m, union ieee754dp x)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -96,7 +113,11 @@ ieee754dp ieee754dp_dump(char *m, ieee754dp x)
 	return x;
 }
 
+<<<<<<< HEAD
 ieee754sp ieee754sp_dump(char *m, ieee754sp x)
+=======
+union ieee754sp ieee754sp_dump(char *m, union ieee754sp x)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 

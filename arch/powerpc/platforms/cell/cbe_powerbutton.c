@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * driver for powerbutton on IBM cell blades
  *
  * (C) Copyright IBM Corp. 2005-2008
  *
  * Author: Christian Krafft <krafft@de.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +23,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/input.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <asm/pmi.h>
 #include <asm/prom.h>
+=======
+#include <linux/of.h>
+#include <linux/platform_device.h>
+#include <asm/pmi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct input_dev *button_dev;
 static struct platform_device *button_pdev;

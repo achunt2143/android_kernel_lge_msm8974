@@ -8,6 +8,7 @@
 #ifndef _ASM_ERRNO_H
 #define _ASM_ERRNO_H
 
+<<<<<<< HEAD
 /*
  * These error numbers are intended to be MIPS ABI compatible
  */
@@ -126,10 +127,17 @@
 #define EDQUOT		1133	/* Quota exceeded */
 
 #ifdef __KERNEL__
+=======
+#include <uapi/asm/errno.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The biggest error number defined here or in <linux/errno.h>. */
 #define EMAXERRNO	1133
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_ERRNO_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  HID driver for some cypress "special" devices
  *
@@ -5,15 +9,21 @@
  *  Copyright (c) 2000-2005 Vojtech Pavlik <vojtech@suse.cz>
  *  Copyright (c) 2005 Michael Haboustak <mike-@cinci.rr.com> for Concept2, Inc
  *  Copyright (c) 2006-2007 Jiri Kosina
+<<<<<<< HEAD
  *  Copyright (c) 2007 Paul Walmsley
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Copyright (c) 2008 Jiri Slaby
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -27,10 +37,16 @@
 #define CP_2WHEEL_MOUSE_HACK		0x02
 #define CP_2WHEEL_MOUSE_HACK_ON		0x04
 
+<<<<<<< HEAD
+=======
+#define VA_INVAL_LOGICAL_BOUNDARY	0x08
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Some USB barcode readers from cypress have usage min and usage max in
  * the wrong order
  */
+<<<<<<< HEAD
 static __u8 *cp_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 		unsigned int *rsize)
 {
@@ -38,10 +54,19 @@ static __u8 *cp_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 	unsigned int i;
 
 	if (!(quirks & CP_RDESC_SWAPPED_MIN_MAX))
+=======
+static __u8 *cp_rdesc_fixup(struct hid_device *hdev, __u8 *rdesc,
+		unsigned int *rsize)
+{
+	unsigned int i;
+
+	if (*rsize < 4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rdesc;
 
 	for (i = 0; i < *rsize - 4; i++)
 		if (rdesc[i] == 0x29 && rdesc[i + 2] == 0x19) {
+<<<<<<< HEAD
 			__u8 tmp;
 
 			rdesc[i] = 0x19;
@@ -49,10 +74,52 @@ static __u8 *cp_report_fixup(struct hid_device *hdev, __u8 *rdesc,
 			tmp = rdesc[i + 3];
 			rdesc[i + 3] = rdesc[i + 1];
 			rdesc[i + 1] = tmp;
+=======
+			rdesc[i] = 0x19;
+			rdesc[i + 2] = 0x29;
+			swap(rdesc[i + 3], rdesc[i + 1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	return rdesc;
 }
 
+<<<<<<< HEAD
+=======
+static __u8 *va_logical_boundary_fixup(struct hid_device *hdev, __u8 *rdesc,
+		unsigned int *rsize)
+{
+	/*
+	 * Varmilo VA104M (with VID Cypress and device ID 07B1) incorrectly
+	 * reports Logical Minimum of its Consumer Control device as 572
+	 * (0x02 0x3c). Fix this by setting its Logical Minimum to zero.
+	 */
+	if (*rsize == 25 &&
+			rdesc[0] == 0x05 && rdesc[1] == 0x0c &&
+			rdesc[2] == 0x09 && rdesc[3] == 0x01 &&
+			rdesc[6] == 0x19 && rdesc[7] == 0x00 &&
+			rdesc[11] == 0x16 && rdesc[12] == 0x3c && rdesc[13] == 0x02) {
+		hid_info(hdev,
+			 "fixing up varmilo VA104M consumer control report descriptor\n");
+		rdesc[12] = 0x00;
+		rdesc[13] = 0x00;
+	}
+	return rdesc;
+}
+
+static __u8 *cp_report_fixup(struct hid_device *hdev, __u8 *rdesc,
+		unsigned int *rsize)
+{
+	unsigned long quirks = (unsigned long)hid_get_drvdata(hdev);
+
+	if (quirks & CP_RDESC_SWAPPED_MIN_MAX)
+		rdesc = cp_rdesc_fixup(hdev, rdesc, rsize);
+	if (quirks & VA_INVAL_LOGICAL_BOUNDARY)
+		rdesc = va_logical_boundary_fixup(hdev, rdesc, rsize);
+
+	return rdesc;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int cp_input_mapped(struct hid_device *hdev, struct hid_input *hi,
 		struct hid_field *field, struct hid_usage *usage,
 		unsigned long **bit, int *max)
@@ -133,6 +200,11 @@ static const struct hid_device_id cp_devices[] = {
 		.driver_data = CP_RDESC_SWAPPED_MIN_MAX },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_CYPRESS, USB_DEVICE_ID_CYPRESS_MOUSE),
 		.driver_data = CP_2WHEEL_MOUSE_HACK },
+<<<<<<< HEAD
+=======
+	{ HID_USB_DEVICE(USB_VENDOR_ID_CYPRESS, USB_DEVICE_ID_CYPRESS_VARMILO_VA104M_07B1),
+		.driver_data = VA_INVAL_LOGICAL_BOUNDARY },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(hid, cp_devices);
@@ -145,6 +217,7 @@ static struct hid_driver cp_driver = {
 	.event = cp_event,
 	.probe = cp_probe,
 };
+<<<<<<< HEAD
 
 static int __init cp_init(void)
 {
@@ -158,4 +231,8 @@ static void __exit cp_exit(void)
 
 module_init(cp_init);
 module_exit(cp_exit);
+=======
+module_hid_driver(cp_driver);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

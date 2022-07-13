@@ -1,10 +1,19 @@
+<<<<<<< HEAD
 #ifndef __LINUX_SERIAL_SCI_H
 #define __LINUX_SERIAL_SCI_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __LINUX_SERIAL_SCI_H
+#define __LINUX_SERIAL_SCI_H
+
+#include <linux/bitops.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial_core.h>
 #include <linux/sh_dma.h>
 
 /*
+<<<<<<< HEAD
  * Generic header for SuperH SCI(F) (used by sh/sh64/h8300 and related parts)
  */
 
@@ -74,6 +83,21 @@ enum {
 
 	SCIx_NR_FNS,
 };
+=======
+ * Generic header for SuperH (H)SCI(F) (used by sh/sh64 and related parts)
+ */
+
+/* Serial Control Register (@ = not supported by all parts) */
+#define SCSCR_TIE	BIT(7)	/* Transmit Interrupt Enable */
+#define SCSCR_RIE	BIT(6)	/* Receive Interrupt Enable */
+#define SCSCR_TE	BIT(5)	/* Transmit Enable */
+#define SCSCR_RE	BIT(4)	/* Receive Enable */
+#define SCSCR_REIE	BIT(3)	/* Receive Error Interrupt Enable @ */
+#define SCSCR_TOIE	BIT(2)	/* Timeout Interrupt Enable @ */
+#define SCSCR_CKE1	BIT(1)	/* Clock Enable 1 */
+#define SCSCR_CKE0	BIT(0)	/* Clock Enable 0 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	SCIx_PROBE_REGTYPE,
@@ -85,13 +109,23 @@ enum {
 	SCIx_SH2_SCIF_FIFODATA_REGTYPE,
 	SCIx_SH3_SCIF_REGTYPE,
 	SCIx_SH4_SCIF_REGTYPE,
+<<<<<<< HEAD
 	SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
 	SCIx_SH4_SCIF_FIFODATA_REGTYPE,
 	SCIx_SH7705_SCIF_REGTYPE,
+=======
+	SCIx_SH4_SCIF_BRG_REGTYPE,
+	SCIx_SH4_SCIF_NO_SCSPTR_REGTYPE,
+	SCIx_SH4_SCIF_FIFODATA_REGTYPE,
+	SCIx_SH7705_SCIF_REGTYPE,
+	SCIx_HSCIF_REGTYPE,
+	SCIx_RZ_SCIFA_REGTYPE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SCIx_NR_REGTYPES,
 };
 
+<<<<<<< HEAD
 #define SCIx_IRQ_MUXED(irq)		\
 {					\
 	[SCIx_ERI_IRQ]	= (irq),	\
@@ -119,11 +153,14 @@ enum {
 
 struct device;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct plat_sci_port_ops {
 	void (*init_pins)(struct uart_port *, unsigned int cflag);
 };
 
 /*
+<<<<<<< HEAD
  * Port-specific capabilities
  */
 #define SCIx_HAVE_RTSCTS	(1 << 0)
@@ -140,11 +177,21 @@ struct plat_sci_port {
 	unsigned long	capabilities;		/* Port features/capabilities */
 
 	unsigned int	scbrr_algo_id;		/* SCBRR calculation algo */
+=======
+ * Platform device specific platform_data struct
+ */
+struct plat_sci_port {
+	unsigned int	type;			/* SCI / SCIF / IRDA / HSCIF */
+	upf_t		flags;			/* UPF_* flags */
+
+	unsigned int	sampling_rate;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int	scscr;			/* SCSCR initialization */
 
 	/*
 	 * Platform overrides if necessary, defaults otherwise.
 	 */
+<<<<<<< HEAD
 	int		overrun_bit;
 	unsigned int	error_mask;
 
@@ -156,6 +203,11 @@ struct plat_sci_port {
 
 	unsigned int	dma_slave_tx;
 	unsigned int	dma_slave_rx;
+=======
+	unsigned char	regtype;
+
+	struct plat_sci_port_ops	*ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif /* __LINUX_SERIAL_SCI_H */

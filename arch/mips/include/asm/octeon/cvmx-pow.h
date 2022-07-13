@@ -53,8 +53,13 @@
 
 #include <asm/octeon/cvmx-pow-defs.h>
 
+<<<<<<< HEAD
 #include "cvmx-scratch.h"
 #include "cvmx-wqe.h"
+=======
+#include <asm/octeon/cvmx-scratch.h>
+#include <asm/octeon/cvmx-wqe.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Default to having all POW constancy checks turned on */
 #ifndef CVMX_ENABLE_POW_CHECKS
@@ -70,7 +75,11 @@ enum cvmx_pow_tag_type {
 	 * The work queue entry from the order - NEVER tag switch from
 	 * NULL to NULL
 	 */
+<<<<<<< HEAD
 	CVMX_POW_TAG_TYPE_NULL      = 2L,
+=======
+	CVMX_POW_TAG_TYPE_NULL	    = 2L,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* A tag switch to NULL, and there is no space reserved in POW
 	 * - NEVER tag switch to NULL_NULL
 	 * - NEVER tag switch from NULL_NULL
@@ -90,7 +99,11 @@ typedef enum {
 } cvmx_pow_wait_t;
 
 /**
+<<<<<<< HEAD
  *  POW tag operations.  These are used in the data stored to the POW.
+=======
+ *  POW tag operations.	 These are used in the data stored to the POW.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 typedef enum {
 	/*
@@ -178,6 +191,10 @@ typedef enum {
 typedef union {
 	uint64_t u64;
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Don't reschedule this entry. no_sched is used for
 		 * CVMX_POW_TAG_OP_SWTAG_DESCH and
@@ -217,6 +234,20 @@ typedef union {
 		 * CVMX_POW_TAG_OP_*_NSCHED
 		 */
 		uint64_t tag:32;
+<<<<<<< HEAD
+=======
+#else
+		uint64_t tag:32;
+		uint64_t type:3;
+		uint64_t grp:4;
+		uint64_t qos:3;
+		uint64_t unused2:2;
+		cvmx_pow_tag_op_t op:4;
+		uint64_t index:13;
+		uint64_t unused:2;
+		uint64_t no_sched:1;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s;
 } cvmx_pow_tag_req_t;
 
@@ -230,6 +261,10 @@ typedef union {
      * Address for new work request loads (did<2:0> == 0)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Mips64 address region. Should be CVMX_IO_SEG */
 		uint64_t mem_region:2;
 		/* Must be zero */
@@ -247,12 +282,28 @@ typedef union {
 		uint64_t wait:1;
 		/* Must be zero */
 		uint64_t reserved_0_2:3;
+<<<<<<< HEAD
+=======
+#else
+		uint64_t reserved_0_2:3;
+		uint64_t wait:1;
+		uint64_t reserved_4_39:36;
+		uint64_t did:8;
+		uint64_t is_io:1;
+		uint64_t reserved_49_61:13;
+		uint64_t mem_region:2;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} swork;
 
     /**
      * Address for loads to get POW internal status
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Mips64 address region. Should be CVMX_IO_SEG */
 		uint64_t mem_region:2;
 		/* Must be zero */
@@ -282,12 +333,31 @@ typedef union {
 		uint64_t get_wqp:1;
 		/* Must be zero */
 		uint64_t reserved_0_2:3;
+<<<<<<< HEAD
+=======
+#else
+		uint64_t reserved_0_2:3;
+		uint64_t get_wqp:1;
+		uint64_t get_cur:1;
+		uint64_t get_rev:1;
+		uint64_t coreid:4;
+		uint64_t reserved_10_39:30;
+		uint64_t did:8;
+		uint64_t is_io:1;
+		uint64_t reserved_49_61:13;
+		uint64_t mem_region:2;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} sstatus;
 
     /**
      * Address for memory loads to get POW internal state
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Mips64 address region. Should be CVMX_IO_SEG */
 		uint64_t mem_region:2;
 		/* Must be zero */
@@ -314,12 +384,30 @@ typedef union {
 		uint64_t get_wqp:1;
 		/* Must be zero */
 		uint64_t reserved_0_2:3;
+<<<<<<< HEAD
+=======
+#else
+		uint64_t reserved_0_2:3;
+		uint64_t get_wqp:1;
+		uint64_t get_des:1;
+		uint64_t index:11;
+		uint64_t reserved_16_39:24;
+		uint64_t did:8;
+		uint64_t is_io:1;
+		uint64_t reserved_49_61:13;
+		uint64_t mem_region:2;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} smemload;
 
     /**
      * Address for index/pointer loads
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Mips64 address region. Should be CVMX_IO_SEG */
 		uint64_t mem_region:2;
 		/* Must be zero */
@@ -341,6 +429,7 @@ typedef union {
 		 * lists.  The two memory-input queue lists associated
 		 * with each QOS level are:
 		 *
+<<<<<<< HEAD
 		 * - qosgrp = 0, qosgrp = 8:      QOS0
 		 * - qosgrp = 1, qosgrp = 9:      QOS1
 		 * - qosgrp = 2, qosgrp = 10:     QOS2
@@ -349,6 +438,16 @@ typedef union {
 		 * - qosgrp = 5, qosgrp = 13:     QOS5
 		 * - qosgrp = 6, qosgrp = 14:     QOS6
 		 * - qosgrp = 7, qosgrp = 15:     QOS7
+=======
+		 * - qosgrp = 0, qosgrp = 8:	  QOS0
+		 * - qosgrp = 1, qosgrp = 9:	  QOS1
+		 * - qosgrp = 2, qosgrp = 10:	  QOS2
+		 * - qosgrp = 3, qosgrp = 11:	  QOS3
+		 * - qosgrp = 4, qosgrp = 12:	  QOS4
+		 * - qosgrp = 5, qosgrp = 13:	  QOS5
+		 * - qosgrp = 6, qosgrp = 14:	  QOS6
+		 * - qosgrp = 7, qosgrp = 15:	  QOS7
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		uint64_t qosgrp:4;
 		/*
@@ -366,6 +465,20 @@ typedef union {
 		uint64_t get_rmt:1;
 		/* Must be zero */
 		uint64_t reserved_0_2:3;
+<<<<<<< HEAD
+=======
+#else
+		uint64_t reserved_0_2:3;
+		uint64_t get_rmt:1;
+		uint64_t get_des_get_tail:1;
+		uint64_t qosgrp:4;
+		uint64_t reserved_9_39:31;
+		uint64_t did:8;
+		uint64_t is_io:1;
+		uint64_t reserved_49_61:13;
+		uint64_t mem_region:2;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} sindexload;
 
     /**
@@ -377,6 +490,10 @@ typedef union {
      * available.)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Mips64 address region. Should be CVMX_IO_SEG */
 		uint64_t mem_region:2;
 		/* Must be zero */
@@ -387,6 +504,16 @@ typedef union {
 		uint64_t did:8;
 		/* Must be zero */
 		uint64_t reserved_0_39:40;
+<<<<<<< HEAD
+=======
+#else
+		uint64_t reserved_0_39:40;
+		uint64_t did:8;
+		uint64_t is_io:1;
+		uint64_t reserved_49_61:13;
+		uint64_t mem_region:2;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} snull_rd;
 } cvmx_pow_load_addr_t;
 
@@ -401,6 +528,10 @@ typedef union {
      * Response to new work request loads
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Set when no new work queue entry was returned.  *
 		 * If there was de-scheduled work, the HW will
@@ -419,12 +550,24 @@ typedef union {
 		uint64_t reserved_40_62:23;
 		/* 36 in O1 -- the work queue pointer */
 		uint64_t addr:40;
+<<<<<<< HEAD
+=======
+#else
+		uint64_t addr:40;
+		uint64_t reserved_40_62:23;
+		uint64_t no_work:1;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s_work;
 
     /**
      * Result for a POW Status Load (when get_cur==0 and get_wqp==0)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_62_63:2;
 		/* Set when there is a pending non-NULL SWTAG or
 		 * SWTAG_FULL, and the POW entry has not left the list
@@ -476,12 +619,38 @@ typedef union {
 		 *    AND pend_desched_switch) are set.
 		 */
 		uint64_t pend_tag:32;
+<<<<<<< HEAD
+=======
+#else
+		uint64_t pend_tag:32;
+		uint64_t pend_type:2;
+		uint64_t reserved_34_35:2;
+		uint64_t pend_grp:4;
+		uint64_t pend_index:11;
+		uint64_t reserved_51:1;
+		uint64_t pend_nosched_clr:1;
+		uint64_t pend_null_rd:1;
+		uint64_t pend_new_work_wait:1;
+		uint64_t pend_new_work:1;
+		uint64_t pend_nosched:1;
+		uint64_t pend_desched_switch:1;
+		uint64_t pend_desched:1;
+		uint64_t pend_switch_null:1;
+		uint64_t pend_switch_full:1;
+		uint64_t pend_switch:1;
+		uint64_t reserved_62_63:2;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s_sstatus0;
 
     /**
      * Result for a POW Status Load (when get_cur==0 and get_wqp==1)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_62_63:2;
 		/*
 		 * Set when there is a pending non-NULL SWTAG or
@@ -529,6 +698,26 @@ typedef union {
 		uint64_t pend_grp:4;
 		/* This is the wqp when pend_nosched_clr is set. */
 		uint64_t pend_wqp:36;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t pend_wqp:36;
+	        uint64_t pend_grp:4;
+	        uint64_t pend_index:11;
+	        uint64_t reserved_51:1;
+	        uint64_t pend_nosched_clr:1;
+	        uint64_t pend_null_rd:1;
+	        uint64_t pend_new_work_wait:1;
+	        uint64_t pend_new_work:1;
+	        uint64_t pend_nosched:1;
+	        uint64_t pend_desched_switch:1;
+	        uint64_t pend_desched:1;
+	        uint64_t pend_switch_null:1;
+	        uint64_t pend_switch_full:1;
+	        uint64_t pend_switch:1;
+	        uint64_t reserved_62_63:2;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s_sstatus1;
 
     /**
@@ -536,6 +725,10 @@ typedef union {
      * get_rev==0)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_62_63:2;
 		/*
 		 * Points to the next POW entry in the tag list when
@@ -573,12 +766,29 @@ typedef union {
 		 * SWTAG_DESCHED).
 		 */
 		uint64_t tag:32;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t tag:32;
+	        uint64_t tag_type:2;
+	        uint64_t tail:1;
+	        uint64_t head:1;
+	        uint64_t grp:4;
+	        uint64_t index:11;
+	        uint64_t link_index:11;
+	        uint64_t reserved_62_63:2;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s_sstatus2;
 
     /**
      * Result for a POW Status Load (when get_cur==1, get_wqp==0, and get_rev==1)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_62_63:2;
 		/*
 		 * Points to the prior POW entry in the tag list when
@@ -617,6 +827,19 @@ typedef union {
 		 * SWTAG_DESCHED).
 		 */
 		uint64_t tag:32;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t tag:32;
+	        uint64_t tag_type:2;
+	        uint64_t tail:1;
+	        uint64_t head:1;
+	        uint64_t grp:4;
+	        uint64_t index:11;
+	        uint64_t revlink_index:11;
+	        uint64_t reserved_62_63:2;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s_sstatus3;
 
     /**
@@ -624,6 +847,10 @@ typedef union {
      * get_rev==0)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_62_63:2;
 		/*
 		 * Points to the next POW entry in the tag list when
@@ -642,6 +869,16 @@ typedef union {
 		 * list entered on SWTAG_FULL).
 		 */
 		uint64_t wqp:36;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t wqp:36;
+	        uint64_t grp:4;
+	        uint64_t index:11;
+	        uint64_t link_index:11;
+	        uint64_t reserved_62_63:2;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s_sstatus4;
 
     /**
@@ -649,6 +886,10 @@ typedef union {
      * get_rev==1)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_62_63:2;
 		/*
 		 * Points to the prior POW entry in the tag list when
@@ -669,12 +910,26 @@ typedef union {
 		 * list entered on SWTAG_FULL).
 		 */
 		uint64_t wqp:36;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t wqp:36;
+	        uint64_t grp:4;
+	        uint64_t index:11;
+	        uint64_t revlink_index:11;
+	        uint64_t reserved_62_63:2;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s_sstatus5;
 
     /**
      * Result For POW Memory Load (get_des == 0 and get_wqp == 0)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_51_63:13;
 		/*
 		 * The next entry in the input, free, descheduled_head
@@ -695,12 +950,28 @@ typedef union {
 		uint64_t tag_type:2;
 		/* The tag of the POW entry. */
 		uint64_t tag:32;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t tag:32;
+	        uint64_t tag_type:2;
+	        uint64_t tail:1;
+	        uint64_t reserved_35:1;
+	        uint64_t grp:4;
+	        uint64_t next_index:11;
+	        uint64_t reserved_51_63:13;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s_smemload0;
 
     /**
      * Result For POW Memory Load (get_des == 0 and get_wqp == 1)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_51_63:13;
 		/*
 		 * The next entry in the input, free, descheduled_head
@@ -712,12 +983,25 @@ typedef union {
 		uint64_t grp:4;
 		/* The WQP held in the POW entry. */
 		uint64_t wqp:36;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t wqp:36;
+	        uint64_t grp:4;
+	        uint64_t next_index:11;
+	        uint64_t reserved_51_63:13;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s_smemload1;
 
     /**
      * Result For POW Memory Load (get_des == 1)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_51_63:13;
 		/*
 		 * The next entry in the tag list connected to the
@@ -740,12 +1024,28 @@ typedef union {
 		 * is set.
 		 */
 		uint64_t pend_tag:32;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t pend_tag:32;
+	        uint64_t pend_type:2;
+	        uint64_t pend_switch:1;
+	        uint64_t nosched:1;
+	        uint64_t grp:4;
+	        uint64_t fwd_index:11;
+	        uint64_t reserved_51_63:13;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s_smemload2;
 
     /**
      * Result For POW Index/Pointer Load (get_rmt == 0/get_des_get_tail == 0)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_52_63:12;
 		/*
 		 * set when there is one or more POW entries on the
@@ -791,12 +1091,34 @@ typedef union {
 		 * the input Q list selected by qosgrp.
 		 */
 		uint64_t loc_tail:11;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t loc_tail:11;
+	        uint64_t reserved_11:1;
+	        uint64_t loc_head:11;
+	        uint64_t reserved_23:1;
+	        uint64_t loc_one:1;
+	        uint64_t loc_val:1;
+	        uint64_t free_tail:11;
+	        uint64_t reserved_37:1;
+	        uint64_t free_head:11;
+	        uint64_t reserved_49:1;
+	        uint64_t free_one:1;
+	        uint64_t free_val:1;
+	        uint64_t reserved_52_63:12;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} sindexload0;
 
     /**
      * Result For POW Index/Pointer Load (get_rmt == 0/get_des_get_tail == 1)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_52_63:12;
 		/*
 		 * set when there is one or more POW entries on the
@@ -843,12 +1165,34 @@ typedef union {
 		 * head on the descheduled list selected by qosgrp.
 		 */
 		uint64_t des_tail:11;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t des_tail:11;
+	        uint64_t reserved_11:1;
+	        uint64_t des_head:11;
+	        uint64_t reserved_23:1;
+	        uint64_t des_one:1;
+	        uint64_t des_val:1;
+	        uint64_t nosched_tail:11;
+	        uint64_t reserved_37:1;
+	        uint64_t nosched_head:11;
+	        uint64_t reserved_49:1;
+	        uint64_t nosched_one:1;
+	        uint64_t nosched_val:1;
+	        uint64_t reserved_52_63:12;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} sindexload1;
 
     /**
      * Result For POW Index/Pointer Load (get_rmt == 1/get_des_get_tail == 0)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_39_63:25;
 		/*
 		 * Set when this DRAM list is the current head
@@ -877,6 +1221,16 @@ typedef union {
 		 * qosgrp.
 		 */
 		uint64_t rmt_head:36;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t rmt_head:36;
+	        uint64_t rmt_one:1;
+	        uint64_t rmt_val:1;
+	        uint64_t rmt_is_head:1;
+	        uint64_t reserved_39_63:25;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} sindexload2;
 
     /**
@@ -884,6 +1238,10 @@ typedef union {
      * 1/get_des_get_tail == 1)
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t reserved_39_63:25;
 		/*
 		 * set when this DRAM list is the current head
@@ -912,12 +1270,26 @@ typedef union {
 		 * qosgrp.
 		 */
 		uint64_t rmt_tail:36;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t rmt_tail:36;
+	        uint64_t rmt_one:1;
+	        uint64_t rmt_val:1;
+	        uint64_t rmt_is_head:1;
+	        uint64_t reserved_39_63:25;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} sindexload3;
 
     /**
      * Response to NULL_RD request loads
      */
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint64_t unused:62;
 		/* of type cvmx_pow_tag_type_t. state is one of the
 		 * following:
@@ -928,6 +1300,13 @@ typedef union {
 		 * - CVMX_POW_TAG_TYPE_NULL_NULL
 		 */
 		uint64_t state:2;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t state:2;
+	        uint64_t unused:62;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s_null_rd;
 
 } cvmx_pow_tag_load_resp_t;
@@ -942,11 +1321,19 @@ typedef union {
  *  operations.
  *
  *  NOTE: The following is the behavior of the pending switch bit at the PP
+<<<<<<< HEAD
  *       for POW stores (i.e. when did<7:3> == 0xc)
  *     - did<2:0> == 0      => pending switch bit is set
  *     - did<2:0> == 1      => no affect on the pending switch bit
  *     - did<2:0> == 3      => pending switch bit is cleared
  *     - did<2:0> == 7      => no affect on the pending switch bit
+=======
+ *	 for POW stores (i.e. when did<7:3> == 0xc)
+ *     - did<2:0> == 0	    => pending switch bit is set
+ *     - did<2:0> == 1	    => no affect on the pending switch bit
+ *     - did<2:0> == 3	    => pending switch bit is cleared
+ *     - did<2:0> == 7	    => no affect on the pending switch bit
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *     - did<2:0> == others => must not be used
  *     - No other loads/stores have an affect on the pending switch bit
  *     - The switch bus from POW can clear the pending switch bit
@@ -962,6 +1349,10 @@ typedef union {
 	uint64_t u64;
 
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Memory region.  Should be CVMX_IO_SEG in most cases */
 		uint64_t mem_reg:2;
 		uint64_t reserved_49_61:13;	/* Must be zero */
@@ -971,6 +1362,17 @@ typedef union {
 		uint64_t reserved_36_39:4;	/* Must be zero */
 		/* Address field. addr<2:0> must be zero */
 		uint64_t addr:36;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t addr:36;
+	        uint64_t reserved_36_39:4;
+	        uint64_t did:8;
+	        uint64_t is_io:1;
+	        uint64_t reserved_49_61:13;
+	        uint64_t mem_reg:2;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} stag;
 } cvmx_pow_tag_store_addr_t;
 
@@ -981,6 +1383,10 @@ typedef union {
 	uint64_t u64;
 
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * the (64-bit word) location in scratchpad to write
 		 * to (if len != 0)
@@ -994,6 +1400,17 @@ typedef union {
 		/* if set, don't return load response until work is available */
 		uint64_t wait:1;
 		uint64_t unused2:3;
+<<<<<<< HEAD
+=======
+#else
+	        uint64_t unused2:3;
+	        uint64_t wait:1;
+	        uint64_t unused:36;
+	        uint64_t did:8;
+	        uint64_t len:8;
+	        uint64_t scraddr:8;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s;
 
 } cvmx_pow_iobdma_store_t;
@@ -1036,7 +1453,11 @@ static inline cvmx_pow_tag_req_t cvmx_pow_get_current_tag(void)
  *
  * Returns WQE pointer
  */
+<<<<<<< HEAD
 static inline cvmx_wqe_t *cvmx_pow_get_current_wqp(void)
+=======
+static inline struct cvmx_wqe *cvmx_pow_get_current_wqp(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	cvmx_pow_load_addr_t load_addr;
 	cvmx_pow_tag_load_resp_t load_resp;
@@ -1049,11 +1470,19 @@ static inline cvmx_wqe_t *cvmx_pow_get_current_wqp(void)
 	load_addr.sstatus.get_cur = 1;
 	load_addr.sstatus.get_wqp = 1;
 	load_resp.u64 = cvmx_read_csr(load_addr.u64);
+<<<<<<< HEAD
 	return (cvmx_wqe_t *) cvmx_phys_to_ptr(load_resp.s_sstatus4.wqp);
 }
 
 #ifndef CVMX_MF_CHORD
 #define CVMX_MF_CHORD(dest)         CVMX_RDHWR(dest, 30)
+=======
+	return (struct cvmx_wqe *) cvmx_phys_to_ptr(load_resp.s_sstatus4.wqp);
+}
+
+#ifndef CVMX_MF_CHORD
+#define CVMX_MF_CHORD(dest)	    CVMX_RDHWR(dest, 30)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /**
@@ -1066,7 +1495,11 @@ static inline void __cvmx_pow_warn_if_pending_switch(const char *function)
 	uint64_t switch_complete;
 	CVMX_MF_CHORD(switch_complete);
 	if (!switch_complete)
+<<<<<<< HEAD
 		pr_warning("%s called with tag switch in progress\n", function);
+=======
+		pr_warn("%s called with tag switch in progress\n", function);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1084,8 +1517,12 @@ static inline void cvmx_pow_tag_sw_wait(void)
 		if (unlikely(switch_complete))
 			break;
 		if (unlikely(cvmx_get_cycle() > start_cycle + MAX_CYCLES)) {
+<<<<<<< HEAD
 			pr_warning("Tag switch is taking a long time, "
 				   "possible deadlock\n");
+=======
+			pr_warn("Tag switch is taking a long time, possible deadlock\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			start_cycle = -MAX_CYCLES - 1;
 		}
 	}
@@ -1096,6 +1533,7 @@ static inline void cvmx_pow_tag_sw_wait(void)
  * This function does NOT wait for previous tag switches to complete,
  * so the caller must ensure that there is not a pending tag switch.
  *
+<<<<<<< HEAD
  * @wait:   When set, call stalls until work becomes avaiable, or times out.
  *               If not set, returns immediately.
  *
@@ -1103,6 +1541,15 @@ static inline void cvmx_pow_tag_sw_wait(void)
  * was available.
  */
 static inline cvmx_wqe_t *cvmx_pow_work_request_sync_nocheck(cvmx_pow_wait_t
+=======
+ * @wait:   When set, call stalls until work becomes available, or times out.
+ *		 If not set, returns immediately.
+ *
+ * Returns: the WQE pointer from POW. Returns NULL if no work
+ * was available.
+ */
+static inline struct cvmx_wqe *cvmx_pow_work_request_sync_nocheck(cvmx_pow_wait_t
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							     wait)
 {
 	cvmx_pow_load_addr_t ptr;
@@ -1122,7 +1569,11 @@ static inline cvmx_wqe_t *cvmx_pow_work_request_sync_nocheck(cvmx_pow_wait_t
 	if (result.s_work.no_work)
 		return NULL;
 	else
+<<<<<<< HEAD
 		return (cvmx_wqe_t *) cvmx_phys_to_ptr(result.s_work.addr);
+=======
+		return (struct cvmx_wqe *) cvmx_phys_to_ptr(result.s_work.addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1130,6 +1581,7 @@ static inline cvmx_wqe_t *cvmx_pow_work_request_sync_nocheck(cvmx_pow_wait_t
  * This function waits for any previous tag switch to complete before
  * requesting the new work.
  *
+<<<<<<< HEAD
  * @wait:   When set, call stalls until work becomes avaiable, or times out.
  *               If not set, returns immediately.
  *
@@ -1137,6 +1589,15 @@ static inline cvmx_wqe_t *cvmx_pow_work_request_sync_nocheck(cvmx_pow_wait_t
  * was available.
  */
 static inline cvmx_wqe_t *cvmx_pow_work_request_sync(cvmx_pow_wait_t wait)
+=======
+ * @wait:   When set, call stalls until work becomes available, or times out.
+ *		 If not set, returns immediately.
+ *
+ * Returns: the WQE pointer from POW. Returns NULL if no work
+ * was available.
+ */
+static inline struct cvmx_wqe *cvmx_pow_work_request_sync(cvmx_pow_wait_t wait)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (CVMX_ENABLE_POW_CHECKS)
 		__cvmx_pow_warn_if_pending_switch(__func__);
@@ -1148,11 +1609,19 @@ static inline cvmx_wqe_t *cvmx_pow_work_request_sync(cvmx_pow_wait_t wait)
 }
 
 /**
+<<<<<<< HEAD
  * Synchronous null_rd request.  Requests a switch out of NULL_NULL POW state.
  * This function waits for any previous tag switch to complete before
  * requesting the null_rd.
  *
  * Returns Returns the POW state of type cvmx_pow_tag_type_t.
+=======
+ * Synchronous null_rd request.	 Requests a switch out of NULL_NULL POW state.
+ * This function waits for any previous tag switch to complete before
+ * requesting the null_rd.
+ *
+ * Returns: the POW state of type cvmx_pow_tag_type_t.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline enum cvmx_pow_tag_type cvmx_pow_work_request_null_rd(void)
 {
@@ -1183,11 +1652,19 @@ static inline enum cvmx_pow_tag_type cvmx_pow_work_request_null_rd(void)
  * there is not a pending tag switch.
  *
  * @scr_addr: Scratch memory address that response will be returned
+<<<<<<< HEAD
  *            to, which is either a valid WQE, or a response with the
  *            invalid bit set.  Byte address, must be 8 byte aligned.
  *
  * @wait: 1 to cause response to wait for work to become available (or
  *        timeout), 0 to cause response to return immediately
+=======
+ *	      to, which is either a valid WQE, or a response with the
+ *	      invalid bit set.	Byte address, must be 8 byte aligned.
+ *
+ * @wait: 1 to cause response to wait for work to become available (or
+ *	  timeout), 0 to cause response to return immediately
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void cvmx_pow_work_request_async_nocheck(int scr_addr,
 						       cvmx_pow_wait_t wait)
@@ -1212,11 +1689,19 @@ static inline void cvmx_pow_work_request_async_nocheck(int scr_addr,
  * tag switch to complete before requesting the new work.
  *
  * @scr_addr: Scratch memory address that response will be returned
+<<<<<<< HEAD
  *            to, which is either a valid WQE, or a response with the
  *            invalid bit set.  Byte address, must be 8 byte aligned.
  *
  * @wait: 1 to cause response to wait for work to become available (or
  *                  timeout), 0 to cause response to return immediately
+=======
+ *	      to, which is either a valid WQE, or a response with the
+ *	      invalid bit set.	Byte address, must be 8 byte aligned.
+ *
+ * @wait: 1 to cause response to wait for work to become available (or
+ *		    timeout), 0 to cause response to return immediately
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void cvmx_pow_work_request_async(int scr_addr,
 					       cvmx_pow_wait_t wait)
@@ -1234,12 +1719,21 @@ static inline void cvmx_pow_work_request_async(int scr_addr,
  * to wait for the response.
  *
  * @scr_addr: Scratch memory address to get result from Byte address,
+<<<<<<< HEAD
  *            must be 8 byte aligned.
  *
  * Returns Returns the WQE from the scratch register, or NULL if no
  * work was available.
  */
 static inline cvmx_wqe_t *cvmx_pow_work_response_async(int scr_addr)
+=======
+ *	      must be 8 byte aligned.
+ *
+ * Returns: the WQE from the scratch register, or NULL if no
+ * work was available.
+ */
+static inline struct cvmx_wqe *cvmx_pow_work_response_async(int scr_addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	cvmx_pow_tag_load_resp_t result;
 
@@ -1249,7 +1743,11 @@ static inline cvmx_wqe_t *cvmx_pow_work_response_async(int scr_addr)
 	if (result.s_work.no_work)
 		return NULL;
 	else
+<<<<<<< HEAD
 		return (cvmx_wqe_t *) cvmx_phys_to_ptr(result.s_work.addr);
+=======
+		return (struct cvmx_wqe *) cvmx_phys_to_ptr(result.s_work.addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1260,9 +1758,15 @@ static inline cvmx_wqe_t *cvmx_pow_work_response_async(int scr_addr)
  * @wqe_ptr: pointer to a work queue entry returned by the POW
  *
  * Returns 0 if pointer is valid
+<<<<<<< HEAD
  *         1 if invalid (no work was returned)
  */
 static inline uint64_t cvmx_pow_work_invalid(cvmx_wqe_t *wqe_ptr)
+=======
+ *	   1 if invalid (no work was returned)
+ */
+static inline uint64_t cvmx_pow_work_invalid(struct cvmx_wqe *wqe_ptr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return wqe_ptr == NULL;
 }
@@ -1296,6 +1800,7 @@ static inline void cvmx_pow_tag_sw_nocheck(uint32_t tag,
 		__cvmx_pow_warn_if_pending_switch(__func__);
 		current_tag = cvmx_pow_get_current_tag();
 		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL_NULL)
+<<<<<<< HEAD
 			pr_warning("%s called with NULL_NULL tag\n",
 				   __func__);
 		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL)
@@ -1309,12 +1814,28 @@ static inline void cvmx_pow_tag_sw_nocheck(uint32_t tag,
 			pr_warning("%s called to perform a tag switch to "
 				   "NULL. Use cvmx_pow_tag_sw_null() instead\n",
 			     __func__);
+=======
+			pr_warn("%s called with NULL_NULL tag\n", __func__);
+		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL)
+			pr_warn("%s called with NULL tag\n", __func__);
+		if ((current_tag.s.type == tag_type)
+		   && (current_tag.s.tag == tag))
+			pr_warn("%s called to perform a tag switch to the same tag\n",
+				__func__);
+		if (tag_type == CVMX_POW_TAG_TYPE_NULL)
+			pr_warn("%s called to perform a tag switch to NULL. Use cvmx_pow_tag_sw_null() instead\n",
+				__func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Note that WQE in DRAM is not updated here, as the POW does
 	 * not read from DRAM once the WQE is in flight.  See hardware
+<<<<<<< HEAD
 	 * manual for complete details.  It is the application's
+=======
+	 * manual for complete details.	 It is the application's
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * responsibility to keep track of the current tag value if
 	 * that is important.
 	 */
@@ -1361,7 +1882,11 @@ static inline void cvmx_pow_tag_sw(uint32_t tag,
 	/*
 	 * Note that WQE in DRAM is not updated here, as the POW does
 	 * not read from DRAM once the WQE is in flight.  See hardware
+<<<<<<< HEAD
 	 * manual for complete details.  It is the application's
+=======
+	 * manual for complete details.	 It is the application's
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * responsibility to keep track of the current tag value if
 	 * that is important.
 	 */
@@ -1390,12 +1915,20 @@ static inline void cvmx_pow_tag_sw(uint32_t tag,
  * previous tag switch has completed.
  *
  * @wqp:      pointer to work queue entry to submit.  This entry is
+<<<<<<< HEAD
  *            updated to match the other parameters
+=======
+ *	      updated to match the other parameters
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @tag:      tag value to be assigned to work queue entry
  * @tag_type: type of tag
  * @group:    group value for the work queue entry.
  */
+<<<<<<< HEAD
 static inline void cvmx_pow_tag_sw_full_nocheck(cvmx_wqe_t *wqp, uint32_t tag,
+=======
+static inline void cvmx_pow_tag_sw_full_nocheck(struct cvmx_wqe *wqp, uint32_t tag,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						enum cvmx_pow_tag_type tag_type,
 						uint64_t group)
 {
@@ -1407,6 +1940,7 @@ static inline void cvmx_pow_tag_sw_full_nocheck(cvmx_wqe_t *wqp, uint32_t tag,
 		__cvmx_pow_warn_if_pending_switch(__func__);
 		current_tag = cvmx_pow_get_current_tag();
 		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL_NULL)
+<<<<<<< HEAD
 			pr_warning("%s called with NULL_NULL tag\n",
 				   __func__);
 		if ((current_tag.s.type == tag_type)
@@ -1424,12 +1958,31 @@ static inline void cvmx_pow_tag_sw_full_nocheck(cvmx_wqe_t *wqp, uint32_t tag,
 					   "the address in the POW(%p)\n",
 				     __func__, wqp,
 				     cvmx_pow_get_current_wqp());
+=======
+			pr_warn("%s called with NULL_NULL tag\n", __func__);
+		if ((current_tag.s.type == tag_type)
+		   && (current_tag.s.tag == tag))
+			pr_warn("%s called to perform a tag switch to the same tag\n",
+				__func__);
+		if (tag_type == CVMX_POW_TAG_TYPE_NULL)
+			pr_warn("%s called to perform a tag switch to NULL. Use cvmx_pow_tag_sw_null() instead\n",
+				__func__);
+		if (wqp != cvmx_phys_to_ptr(0x80))
+			if (wqp != cvmx_pow_get_current_wqp())
+				pr_warn("%s passed WQE(%p) doesn't match the address in the POW(%p)\n",
+					__func__, wqp,
+					cvmx_pow_get_current_wqp());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Note that WQE in DRAM is not updated here, as the POW does
 	 * not read from DRAM once the WQE is in flight.  See hardware
+<<<<<<< HEAD
 	 * manual for complete details.  It is the application's
+=======
+	 * manual for complete details.	 It is the application's
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * responsibility to keep track of the current tag value if
 	 * that is important.
 	 */
@@ -1468,12 +2021,21 @@ static inline void cvmx_pow_tag_sw_full_nocheck(cvmx_wqe_t *wqp, uint32_t tag,
  * before requesting the tag switch.
  *
  * @wqp:      pointer to work queue entry to submit.  This entry is updated
+<<<<<<< HEAD
  *            to match the other parameters
  * @tag:      tag value to be assigned to work queue entry
  * @tag_type: type of tag
  * @group:      group value for the work queue entry.
  */
 static inline void cvmx_pow_tag_sw_full(cvmx_wqe_t *wqp, uint32_t tag,
+=======
+ *	      to match the other parameters
+ * @tag:      tag value to be assigned to work queue entry
+ * @tag_type: type of tag
+ * @group:	group value for the work queue entry.
+ */
+static inline void cvmx_pow_tag_sw_full(struct cvmx_wqe *wqp, uint32_t tag,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					enum cvmx_pow_tag_type tag_type,
 					uint64_t group)
 {
@@ -1507,12 +2069,19 @@ static inline void cvmx_pow_tag_sw_null_nocheck(void)
 		__cvmx_pow_warn_if_pending_switch(__func__);
 		current_tag = cvmx_pow_get_current_tag();
 		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL_NULL)
+<<<<<<< HEAD
 			pr_warning("%s called with NULL_NULL tag\n",
 				   __func__);
 		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL)
 			pr_warning("%s called when we already have a "
 				   "NULL tag\n",
 			     __func__);
+=======
+			pr_warn("%s called with NULL_NULL tag\n", __func__);
+		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL)
+			pr_warn("%s called when we already have a NULL tag\n",
+				__func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tag_req.u64 = 0;
@@ -1560,23 +2129,39 @@ static inline void cvmx_pow_tag_sw_null(void)
  * unrelated to the tag that the core currently holds.
  *
  * @wqp:      pointer to work queue entry to submit.  This entry is
+<<<<<<< HEAD
  *            updated to match the other parameters
+=======
+ *	      updated to match the other parameters
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @tag:      tag value to be assigned to work queue entry
  * @tag_type: type of tag
  * @qos:      Input queue to add to.
  * @grp:      group value for the work queue entry.
  */
+<<<<<<< HEAD
 static inline void cvmx_pow_work_submit(cvmx_wqe_t *wqp, uint32_t tag,
+=======
+static inline void cvmx_pow_work_submit(struct cvmx_wqe *wqp, uint32_t tag,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					enum cvmx_pow_tag_type tag_type,
 					uint64_t qos, uint64_t grp)
 {
 	cvmx_addr_t ptr;
 	cvmx_pow_tag_req_t tag_req;
 
+<<<<<<< HEAD
 	wqp->qos = qos;
 	wqp->tag = tag;
 	wqp->tag_type = tag_type;
 	wqp->grp = grp;
+=======
+	wqp->word1.tag = tag;
+	wqp->word1.tag_type = tag_type;
+
+	cvmx_wqe_set_qos(wqp, qos);
+	cvmx_wqe_set_grp(wqp, grp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tag_req.u64 = 0;
 	tag_req.s.op = CVMX_POW_TAG_OP_ADDWQ;
@@ -1592,7 +2177,11 @@ static inline void cvmx_pow_work_submit(cvmx_wqe_t *wqp, uint32_t tag,
 	ptr.sio.offset = cvmx_ptr_to_phys(wqp);
 
 	/*
+<<<<<<< HEAD
 	 * SYNC write to memory before the work submit.  This is
+=======
+	 * SYNC write to memory before the work submit.	 This is
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * necessary as POW may read values from DRAM at this time.
 	 */
 	CVMX_SYNCWS;
@@ -1604,11 +2193,19 @@ static inline void cvmx_pow_work_submit(cvmx_wqe_t *wqp, uint32_t tag,
  * indicates which groups each core will accept work from. There are
  * 16 groups.
  *
+<<<<<<< HEAD
  * @core_num:   core to apply mask to
  * @mask:   Group mask. There are 16 groups, so only bits 0-15 are valid,
  *               representing groups 0-15.
  *               Each 1 bit in the mask enables the core to accept work from
  *               the corresponding group.
+=======
+ * @core_num:	core to apply mask to
+ * @mask:   Group mask. There are 16 groups, so only bits 0-15 are valid,
+ *		 representing groups 0-15.
+ *		 Each 1 bit in the mask enables the core to accept work from
+ *		 the corresponding group.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void cvmx_pow_set_group_mask(uint64_t core_num, uint64_t mask)
 {
@@ -1623,6 +2220,7 @@ static inline void cvmx_pow_set_group_mask(uint64_t core_num, uint64_t mask)
  * This function sets POW static priorities for a core. Each input queue has
  * an associated priority value.
  *
+<<<<<<< HEAD
  * @core_num:   core to apply priorities to
  * @priority:   Vector of 8 priorities, one per POW Input Queue (0-7).
  *                   Highest priority is 0 and lowest is 7. A priority value
@@ -1631,6 +2229,16 @@ static inline void cvmx_pow_set_group_mask(uint64_t core_num, uint64_t mask)
  *                   NOTE: priorities should not have gaps in values, meaning
  *                         {0,1,1,1,1,1,1,1} is a valid configuration while
  *                         {0,2,2,2,2,2,2,2} is not.
+=======
+ * @core_num:	core to apply priorities to
+ * @priority:	Vector of 8 priorities, one per POW Input Queue (0-7).
+ *		     Highest priority is 0 and lowest is 7. A priority value
+ *		     of 0xF instructs POW to skip the Input Queue when
+ *		     scheduling to this specific core.
+ *		     NOTE: priorities should not have gaps in values, meaning
+ *			   {0,1,1,1,1,1,1,1} is a valid configuration while
+ *			   {0,2,2,2,2,2,2,2} is not.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void cvmx_pow_set_priority(uint64_t core_num,
 					 const uint8_t priority[])
@@ -1708,8 +2316,13 @@ static inline void cvmx_pow_set_priority(uint64_t core_num,
  * @tag_type: New tag type
  * @group:    New group value
  * @no_sched: Control whether this work queue entry will be rescheduled.
+<<<<<<< HEAD
  *                 - 1 : don't schedule this work
  *                 - 0 : allow this work to be scheduled.
+=======
+ *		   - 1 : don't schedule this work
+ *		   - 0 : allow this work to be scheduled.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void cvmx_pow_tag_sw_desched_nocheck(
 	uint32_t tag,
@@ -1725,6 +2338,7 @@ static inline void cvmx_pow_tag_sw_desched_nocheck(
 		__cvmx_pow_warn_if_pending_switch(__func__);
 		current_tag = cvmx_pow_get_current_tag();
 		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL_NULL)
+<<<<<<< HEAD
 			pr_warning("%s called with NULL_NULL tag\n",
 				   __func__);
 		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL)
@@ -1736,6 +2350,16 @@ static inline void cvmx_pow_tag_sw_desched_nocheck(
 			pr_warning("%s called where neither the before or "
 				   "after tag is ATOMIC\n",
 			     __func__);
+=======
+			pr_warn("%s called with NULL_NULL tag\n", __func__);
+		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL)
+			pr_warn("%s called with NULL tag. Deschedule not allowed from NULL state\n",
+				__func__);
+		if ((current_tag.s.type != CVMX_POW_TAG_TYPE_ATOMIC)
+			&& (tag_type != CVMX_POW_TAG_TYPE_ATOMIC))
+			pr_warn("%s called where neither the before or after tag is ATOMIC\n",
+				__func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tag_req.u64 = 0;
@@ -1794,8 +2418,13 @@ static inline void cvmx_pow_tag_sw_desched_nocheck(
  * @tag_type: New tag type
  * @group:    New group value
  * @no_sched: Control whether this work queue entry will be rescheduled.
+<<<<<<< HEAD
  *                 - 1 : don't schedule this work
  *                 - 0 : allow this work to be scheduled.
+=======
+ *		   - 1 : don't schedule this work
+ *		   - 0 : allow this work to be scheduled.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void cvmx_pow_tag_sw_desched(uint32_t tag,
 					   enum cvmx_pow_tag_type tag_type,
@@ -1816,11 +2445,19 @@ static inline void cvmx_pow_tag_sw_desched(uint32_t tag,
 }
 
 /**
+<<<<<<< HEAD
  * Descchedules the current work queue entry.
  *
  * @no_sched: no schedule flag value to be set on the work queue
  *            entry.  If this is set the entry will not be
  *            rescheduled.
+=======
+ * Deschedules the current work queue entry.
+ *
+ * @no_sched: no schedule flag value to be set on the work queue
+ *	      entry.  If this is set the entry will not be
+ *	      rescheduled.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void cvmx_pow_desched(uint64_t no_sched)
 {
@@ -1832,12 +2469,19 @@ static inline void cvmx_pow_desched(uint64_t no_sched)
 		__cvmx_pow_warn_if_pending_switch(__func__);
 		current_tag = cvmx_pow_get_current_tag();
 		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL_NULL)
+<<<<<<< HEAD
 			pr_warning("%s called with NULL_NULL tag\n",
 				   __func__);
 		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL)
 			pr_warning("%s called with NULL tag. Deschedule not "
 				   "expected from NULL state\n",
 			     __func__);
+=======
+			pr_warn("%s called with NULL_NULL tag\n", __func__);
+		if (current_tag.s.type == CVMX_POW_TAG_TYPE_NULL)
+			pr_warn("%s called with NULL tag. Deschedule not expected from NULL state\n",
+				__func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Need to make sure any writes to the work queue entry are complete */
@@ -1863,7 +2507,11 @@ static inline void cvmx_pow_desched(uint64_t no_sched)
 *****************************************************/
 
 /*
+<<<<<<< HEAD
  * Number of bits of the tag used by software.  The SW bits are always
+=======
+ * Number of bits of the tag used by software.	The SW bits are always
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * a contiguous block of the high starting at bit 31.  The hardware
  * bits are always the low bits.  By default, the top 8 bits of the
  * tag are reserved for software, and the low 24 are set by the IPD
@@ -1890,7 +2538,11 @@ static inline void cvmx_pow_desched(uint64_t no_sched)
  * are defined here.
  */
 /* Mask for the value portion of the tag */
+<<<<<<< HEAD
 #define CVMX_TAG_SUBGROUP_MASK  0xFFFF
+=======
+#define CVMX_TAG_SUBGROUP_MASK	0xFFFF
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CVMX_TAG_SUBGROUP_SHIFT 16
 #define CVMX_TAG_SUBGROUP_PKO  0x1
 
@@ -1905,12 +2557,21 @@ static inline void cvmx_pow_desched(uint64_t no_sched)
  * This function creates a 32 bit tag value from the two values provided.
  *
  * @sw_bits: The upper bits (number depends on configuration) are set
+<<<<<<< HEAD
  *           to this value.  The remainder of bits are set by the
  *           hw_bits parameter.
  *
  * @hw_bits: The lower bits (number depends on configuration) are set
  *           to this value.  The remainder of bits are set by the
  *           sw_bits parameter.
+=======
+ *	     to this value.  The remainder of bits are set by the
+ *	     hw_bits parameter.
+ *
+ * @hw_bits: The lower bits (number depends on configuration) are set
+ *	     to this value.  The remainder of bits are set by the
+ *	     sw_bits parameter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns 32 bit value of the combined hw and sw bits.
  */
@@ -1957,7 +2618,11 @@ static inline uint32_t cvmx_pow_tag_get_hw_bits(uint64_t tag)
  *
  * @buffer: Buffer to store capture into
  * @buffer_size:
+<<<<<<< HEAD
  *               The size of the supplied buffer
+=======
+ *		 The size of the supplied buffer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns Zero on success, negative on failure
  */
@@ -1968,7 +2633,11 @@ extern int cvmx_pow_capture(void *buffer, int buffer_size);
  *
  * @buffer: POW capture from cvmx_pow_capture()
  * @buffer_size:
+<<<<<<< HEAD
  *               Size of the buffer
+=======
+ *		 Size of the buffer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 extern void cvmx_pow_display(void *buffer, int buffer_size);
 

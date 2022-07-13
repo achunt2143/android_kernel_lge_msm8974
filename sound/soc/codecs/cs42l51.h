@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * cs42l51.h
  *
  * ASoC Driver for Cirrus Logic CS42L51 codecs
  *
  * Copyright (c) 2010 Arnaud Patard <apatard@mandriva.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,13 +19,30 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _CS42L51_H
 #define _CS42L51_H
 
+<<<<<<< HEAD
 #define CS42L51_CHIP_ID			0x1B
 #define CS42L51_CHIP_REV_A		0x00
 #define CS42L51_CHIP_REV_B		0x01
+=======
+struct device;
+
+extern const struct regmap_config cs42l51_regmap;
+int cs42l51_probe(struct device *dev, struct regmap *regmap);
+void cs42l51_remove(struct device *dev);
+int __maybe_unused cs42l51_suspend(struct device *dev);
+int __maybe_unused cs42l51_resume(struct device *dev);
+
+#define CS42L51_CHIP_ID			0x1B
+#define CS42L51_CHIP_REV_A		0x00
+#define CS42L51_CHIP_REV_B		0x01
+#define CS42L51_CHIP_REV_MASK		0x07
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CS42L51_CHIP_REV_ID		0x01
 #define CS42L51_MK_CHIP_REV(a, b)	((a)<<3|(b))

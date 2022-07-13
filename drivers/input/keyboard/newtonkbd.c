@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000 Justin Cormack
  */
@@ -6,6 +10,7 @@
  * Newton keyboard driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +35,11 @@
 #include <linux/module.h>
 #include <linux/input.h>
 #include <linux/init.h>
+=======
+#include <linux/slab.h>
+#include <linux/module.h>
+#include <linux/input.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serio.h>
 
 #define DRIVER_DESC	"Newton keyboard driver"
@@ -143,7 +153,11 @@ static void nkbd_disconnect(struct serio *serio)
 	kfree(nkbd);
 }
 
+<<<<<<< HEAD
 static struct serio_device_id nkbd_serio_ids[] = {
+=======
+static const struct serio_device_id nkbd_serio_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_NEWTON,
@@ -166,6 +180,7 @@ static struct serio_driver nkbd_drv = {
 	.disconnect	= nkbd_disconnect,
 };
 
+<<<<<<< HEAD
 static int __init nkbd_init(void)
 {
 	return serio_register_driver(&nkbd_drv);
@@ -178,3 +193,6 @@ static void __exit nkbd_exit(void)
 
 module_init(nkbd_init);
 module_exit(nkbd_exit);
+=======
+module_serio_driver(nkbd_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

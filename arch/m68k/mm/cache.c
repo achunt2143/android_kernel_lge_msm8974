@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/m68k/mm/cache.c
  *
@@ -7,7 +11,11 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/pgalloc.h>
+=======
+#include <asm/cacheflush.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/traps.h>
 
 
@@ -48,6 +56,7 @@ static unsigned long virt_to_phys_slow(unsigned long vaddr)
 		if (mmusr & MMU_R_040)
 			return (mmusr & PAGE_MASK) | (vaddr & ~PAGE_MASK);
 	} else {
+<<<<<<< HEAD
 		unsigned short mmusr;
 		unsigned long *descaddr;
 
@@ -66,13 +75,20 @@ static unsigned long virt_to_phys_slow(unsigned long vaddr)
 		case 3:
 			return (*descaddr & PAGE_MASK) | (vaddr & ~PAGE_MASK);
 		}
+=======
+		WARN_ON_ONCE(!CPU_IS_040_OR_060);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
 /* Push n pages at kernel virtual address and clear the icache */
 /* RZ: use cpush %bc instead of cpush %dc, cinv %ic */
+<<<<<<< HEAD
 void flush_icache_range(unsigned long address, unsigned long endaddr)
+=======
+void flush_icache_user_range(unsigned long address, unsigned long endaddr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (CPU_IS_COLDFIRE) {
 		unsigned long start, end;
@@ -103,9 +119,22 @@ void flush_icache_range(unsigned long address, unsigned long endaddr)
 			      : "di" (FLUSH_I));
 	}
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(flush_icache_range);
 
 void flush_icache_user_range(struct vm_area_struct *vma, struct page *page,
+=======
+
+void flush_icache_range(unsigned long address, unsigned long endaddr)
+{
+	set_fc(SUPER_DATA);
+	flush_icache_user_range(address, endaddr);
+	set_fc(USER_DATA);
+}
+EXPORT_SYMBOL(flush_icache_range);
+
+void flush_icache_user_page(struct vm_area_struct *vma, struct page *page,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     unsigned long addr, int len)
 {
 	if (CPU_IS_COLDFIRE) {

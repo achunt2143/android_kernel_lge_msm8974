@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Linux network driver for Brocade Converged Network Adapter.
  *
@@ -14,6 +15,17 @@
  * Copyright (c) 2006-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+ */
+/*
+ * Copyright (c) 2006-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __CNA_H__
@@ -37,6 +49,7 @@
 
 extern char bfa_version[];
 
+<<<<<<< HEAD
 #define	CNA_FW_FILE_CT	"ctfw.bin"
 #define	CNA_FW_FILE_CT2	"ct2fw.bin"
 #define FC_SYMNAME_MAX	256	/*!< max name server symbolic name size */
@@ -103,4 +116,10 @@ typedef struct mac { u8 mac[ETH_ALEN]; } mac_t;
 	bfa_q_next(_q) = (struct list_head *) (_qe);			\
 }
 
+=======
+#define CNA_FW_FILE_CT	"ctfw-3.2.5.1.bin"
+#define CNA_FW_FILE_CT2	"ct2fw-3.2.5.1.bin"
+#define FC_SYMNAME_MAX	256	/*!< max name server symbolic name size */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __CNA_H__ */

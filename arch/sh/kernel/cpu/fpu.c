@@ -1,8 +1,19 @@
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/sched/signal.h>
+#include <linux/sched/task.h>
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <asm/processor.h>
 #include <asm/fpu.h>
 #include <asm/traps.h>
+<<<<<<< HEAD
+=======
+#include <asm/ptrace.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int init_fpu(struct task_struct *tsk)
 {
@@ -44,7 +55,11 @@ void __fpu_state_restore(void)
 	restore_fpu(tsk);
 
 	task_thread_info(tsk)->status |= TS_USEDFPU;
+<<<<<<< HEAD
 	tsk->fpu_counter++;
+=======
+	tsk->thread.fpu_counter++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void fpu_state_restore(struct pt_regs *regs)
@@ -58,6 +73,7 @@ void fpu_state_restore(struct pt_regs *regs)
 	}
 
 	if (!tsk_used_math(tsk)) {
+<<<<<<< HEAD
 		local_irq_enable();
 		/*
 		 * does a slab alloc which can sleep
@@ -70,6 +86,22 @@ void fpu_state_restore(struct pt_regs *regs)
 			return;
 		}
 		local_irq_disable();
+=======
+		int ret;
+		/*
+		 * does a slab alloc which can sleep
+		 */
+		local_irq_enable();
+		ret = init_fpu(tsk);
+		local_irq_disable();
+		if (ret) {
+			/*
+			 * ran out of memory!
+			 */
+			force_sig(SIGKILL);
+			return;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	grab_fpu(regs);

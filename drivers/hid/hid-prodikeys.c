@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  HID driver for the Prodikeys PC-MIDI Keyboard
  *  providing midi & extra multimedia keys functionality
@@ -6,6 +10,7 @@
  *
  *  Controls for Octave Shift Up/Down, Channel, and
  *  Sustain Duration available via sysfs.
+<<<<<<< HEAD
  *
  */
 
@@ -14,6 +19,11 @@
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
+=======
+ */
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -26,7 +36,10 @@
 #include <sound/core.h>
 #include <sound/initval.h>
 #include <sound/rawmidi.h>
+<<<<<<< HEAD
 #include "usbhid/usbhid.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "hid-ids.h"
 
 
@@ -37,6 +50,7 @@
 
 struct pcmidi_snd;
 
+<<<<<<< HEAD
 struct pk_device {
 	unsigned long		quirks;
 
@@ -44,6 +58,8 @@ struct pk_device {
 	struct pcmidi_snd	*pm; /* pcmidi device context */
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct pcmidi_sustain {
 	unsigned long		in_use;
 	struct pcmidi_snd	*pm;
@@ -55,7 +71,11 @@ struct pcmidi_sustain {
 
 #define PCMIDI_SUSTAINED_MAX	32
 struct pcmidi_snd {
+<<<<<<< HEAD
 	struct pk_device		*pk;
+=======
+	struct hid_device		*hdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short			ifnum;
 	struct hid_report		*pcmidi_report6;
 	struct input_dev		*input_ep82;
@@ -71,9 +91,13 @@ struct pcmidi_snd {
 	struct snd_card			*card;
 	struct snd_rawmidi		*rwmidi;
 	struct snd_rawmidi_substream	*in_substream;
+<<<<<<< HEAD
 	struct snd_rawmidi_substream	*out_substream;
 	unsigned long			in_triggered;
 	unsigned long			out_active;
+=======
+	unsigned long			in_triggered;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define PK_QUIRK_NOGET	0x00010000
@@ -104,12 +128,21 @@ MODULE_PARM_DESC(enable, "Enable for the PC-MIDI virtual audio driver");
 static ssize_t show_channel(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct hid_device *hdev = container_of(dev, struct hid_device, dev);
 	struct pk_device *pk = (struct pk_device *)hid_get_drvdata(hdev);
 
 	dbg_hid("pcmidi sysfs read channel=%u\n", pk->pm->midi_channel);
 
 	return sprintf(buf, "%u (min:%u, max:%u)\n", pk->pm->midi_channel,
+=======
+	struct hid_device *hdev = to_hid_device(dev);
+	struct pcmidi_snd *pm = hid_get_drvdata(hdev);
+
+	dbg_hid("pcmidi sysfs read channel=%u\n", pm->midi_channel);
+
+	return sprintf(buf, "%u (min:%u, max:%u)\n", pm->midi_channel,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		PCMIDI_CHANNEL_MIN, PCMIDI_CHANNEL_MAX);
 }
 
@@ -117,14 +150,23 @@ static ssize_t show_channel(struct device *dev,
 static ssize_t store_channel(struct device *dev,
 	struct device_attribute *attr, const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct hid_device *hdev = container_of(dev, struct hid_device, dev);
 	struct pk_device *pk = (struct pk_device *)hid_get_drvdata(hdev);
+=======
+	struct hid_device *hdev = to_hid_device(dev);
+	struct pcmidi_snd *pm = hid_get_drvdata(hdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned channel = 0;
 
 	if (sscanf(buf, "%u", &channel) > 0 && channel <= PCMIDI_CHANNEL_MAX) {
 		dbg_hid("pcmidi sysfs write channel=%u\n", channel);
+<<<<<<< HEAD
 		pk->pm->midi_channel = channel;
+=======
+		pm->midi_channel = channel;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return strlen(buf);
 	}
 	return -EINVAL;
@@ -141,12 +183,21 @@ static struct device_attribute *sysfs_device_attr_channel = {
 static ssize_t show_sustain(struct device *dev,
  struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct hid_device *hdev = container_of(dev, struct hid_device, dev);
 	struct pk_device *pk = (struct pk_device *)hid_get_drvdata(hdev);
 
 	dbg_hid("pcmidi sysfs read sustain=%u\n", pk->pm->midi_sustain);
 
 	return sprintf(buf, "%u (off:%u, max:%u (ms))\n", pk->pm->midi_sustain,
+=======
+	struct hid_device *hdev = to_hid_device(dev);
+	struct pcmidi_snd *pm = hid_get_drvdata(hdev);
+
+	dbg_hid("pcmidi sysfs read sustain=%u\n", pm->midi_sustain);
+
+	return sprintf(buf, "%u (off:%u, max:%u (ms))\n", pm->midi_sustain,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		PCMIDI_SUSTAIN_MIN, PCMIDI_SUSTAIN_MAX);
 }
 
@@ -154,16 +205,26 @@ static ssize_t show_sustain(struct device *dev,
 static ssize_t store_sustain(struct device *dev,
 	struct device_attribute *attr, const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct hid_device *hdev = container_of(dev, struct hid_device, dev);
 	struct pk_device *pk = (struct pk_device *)hid_get_drvdata(hdev);
+=======
+	struct hid_device *hdev = to_hid_device(dev);
+	struct pcmidi_snd *pm = hid_get_drvdata(hdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned sustain = 0;
 
 	if (sscanf(buf, "%u", &sustain) > 0 && sustain <= PCMIDI_SUSTAIN_MAX) {
 		dbg_hid("pcmidi sysfs write sustain=%u\n", sustain);
+<<<<<<< HEAD
 		pk->pm->midi_sustain = sustain;
 		pk->pm->midi_sustain_mode =
 			(0 == sustain || !pk->pm->midi_mode) ? 0 : 1;
+=======
+		pm->midi_sustain = sustain;
+		pm->midi_sustain_mode = (0 == sustain || !pm->midi_mode) ? 0 : 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return strlen(buf);
 	}
 	return -EINVAL;
@@ -180,12 +241,21 @@ static struct device_attribute *sysfs_device_attr_sustain = {
 static ssize_t show_octave(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct hid_device *hdev = container_of(dev, struct hid_device, dev);
 	struct pk_device *pk = (struct pk_device *)hid_get_drvdata(hdev);
 
 	dbg_hid("pcmidi sysfs read octave=%d\n", pk->pm->midi_octave);
 
 	return sprintf(buf, "%d (min:%d, max:%d)\n", pk->pm->midi_octave,
+=======
+	struct hid_device *hdev = to_hid_device(dev);
+	struct pcmidi_snd *pm = hid_get_drvdata(hdev);
+
+	dbg_hid("pcmidi sysfs read octave=%d\n", pm->midi_octave);
+
+	return sprintf(buf, "%d (min:%d, max:%d)\n", pm->midi_octave,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		PCMIDI_OCTAVE_MIN, PCMIDI_OCTAVE_MAX);
 }
 
@@ -193,15 +263,24 @@ static ssize_t show_octave(struct device *dev,
 static ssize_t store_octave(struct device *dev,
 	struct device_attribute *attr, const char *buf, size_t count)
 {
+<<<<<<< HEAD
 	struct hid_device *hdev = container_of(dev, struct hid_device, dev);
 	struct pk_device *pk = (struct pk_device *)hid_get_drvdata(hdev);
+=======
+	struct hid_device *hdev = to_hid_device(dev);
+	struct pcmidi_snd *pm = hid_get_drvdata(hdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int octave = 0;
 
 	if (sscanf(buf, "%d", &octave) > 0 &&
 		octave >= PCMIDI_OCTAVE_MIN && octave <= PCMIDI_OCTAVE_MAX) {
 		dbg_hid("pcmidi sysfs write octave=%d\n", octave);
+<<<<<<< HEAD
 		pk->pm->midi_octave = octave;
+=======
+		pm->midi_octave = octave;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return strlen(buf);
 	}
 	return -EINVAL;
@@ -240,9 +319,15 @@ drop_note:
 	return;
 }
 
+<<<<<<< HEAD
 static void pcmidi_sustained_note_release(unsigned long data)
 {
 	struct pcmidi_sustain *pms = (struct pcmidi_sustain *)data;
+=======
+static void pcmidi_sustained_note_release(struct timer_list *t)
+{
+	struct pcmidi_sustain *pms = from_timer(pms, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcmidi_send_note(pms->pm, pms->status, pms->note, pms->velocity);
 	pms->in_use = 0;
@@ -257,8 +342,12 @@ static void init_sustain_timers(struct pcmidi_snd *pm)
 		pms = &pm->sustained_notes[i];
 		pms->in_use = 0;
 		pms->pm = pm;
+<<<<<<< HEAD
 		setup_timer(&pms->timer, pcmidi_sustained_note_release,
 			(unsigned long)pms);
+=======
+		timer_setup(&pms->timer, pcmidi_sustained_note_release, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -276,7 +365,11 @@ static void stop_sustain_timers(struct pcmidi_snd *pm)
 
 static int pcmidi_get_output_report(struct pcmidi_snd *pm)
 {
+<<<<<<< HEAD
 	struct hid_device *hdev = pm->pk->hdev;
+=======
+	struct hid_device *hdev = pm->hdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hid_report *report;
 
 	list_for_each_entry(report,
@@ -301,12 +394,20 @@ static int pcmidi_get_output_report(struct pcmidi_snd *pm)
 
 static void pcmidi_submit_output_report(struct pcmidi_snd *pm, int state)
 {
+<<<<<<< HEAD
 	struct hid_device *hdev = pm->pk->hdev;
+=======
+	struct hid_device *hdev = pm->hdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hid_report *report = pm->pcmidi_report6;
 	report->field[0]->value[0] = 0x01;
 	report->field[0]->value[1] = state;
 
+<<<<<<< HEAD
 	usbhid_submit_report(hdev, report, USB_DIR_OUT);
+=======
+	hid_hw_request(hdev, report, HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pcmidi_handle_report1(struct pcmidi_snd *pm, u8 *data)
@@ -396,11 +497,18 @@ static int pcmidi_handle_report4(struct pcmidi_snd *pm, u8 *data)
 
 	/* break keys */
 	for (bit_index = 0; bit_index < 24; bit_index++) {
+<<<<<<< HEAD
 		key = pm->last_key[bit_index];
 		if (!((0x01 << bit_index) & bit_mask)) {
 			input_event(pm->input_ep82, EV_KEY,
 				pm->last_key[bit_index], 0);
 				pm->last_key[bit_index] = 0;
+=======
+		if (!((0x01 << bit_index) & bit_mask)) {
+			input_event(pm->input_ep82, EV_KEY,
+				pm->last_key[bit_index], 0);
+			pm->last_key[bit_index] = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -429,7 +537,11 @@ static int pcmidi_handle_report4(struct pcmidi_snd *pm, u8 *data)
 					pm->midi_octave = 2;
 				dbg_hid("pcmidi mode: %d octave: %d\n",
 					pm->midi_mode, pm->midi_octave);
+<<<<<<< HEAD
 			    continue;
+=======
+				continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else
 				key = KEY_MESSENGER;
 			break;
@@ -523,7 +635,11 @@ static void pcmidi_setup_extra_keys(
 		MY PICTURES =>	KEY_WORDPROCESSOR
 		MY MUSIC=>	KEY_SPREADSHEET
 	*/
+<<<<<<< HEAD
 	unsigned int keys[] = {
+=======
+	static const unsigned int keys[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		KEY_FN,
 		KEY_MESSENGER, KEY_CALENDAR,
 		KEY_ADDRESSBOOK, KEY_DOCUMENTS,
@@ -539,7 +655,11 @@ static void pcmidi_setup_extra_keys(
 		0
 	};
 
+<<<<<<< HEAD
 	unsigned int *pkeys = &keys[0];
+=======
+	const unsigned int *pkeys = &keys[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short i;
 
 	if (pm->ifnum != 1)  /* only set up ONCE for interace 1 */
@@ -558,10 +678,21 @@ static void pcmidi_setup_extra_keys(
 
 static int pcmidi_set_operational(struct pcmidi_snd *pm)
 {
+<<<<<<< HEAD
 	if (pm->ifnum != 1)
 		return 0; /* only set up ONCE for interace 1 */
 
 	pcmidi_get_output_report(pm);
+=======
+	int rc;
+
+	if (pm->ifnum != 1)
+		return 0; /* only set up ONCE for interace 1 */
+
+	rc = pcmidi_get_output_report(pm);
+	if (rc < 0)
+		return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pcmidi_submit_output_report(pm, 0xc1);
 	return 0;
 }
@@ -595,7 +726,11 @@ static void pcmidi_in_trigger(struct snd_rawmidi_substream *substream, int up)
 	pm->in_triggered = up;
 }
 
+<<<<<<< HEAD
 static struct snd_rawmidi_ops pcmidi_in_ops = {
+=======
+static const struct snd_rawmidi_ops pcmidi_in_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open = pcmidi_in_open,
 	.close = pcmidi_in_close,
 	.trigger = pcmidi_in_trigger
@@ -625,7 +760,12 @@ static int pcmidi_snd_initialise(struct pcmidi_snd *pm)
 
 	/* Setup sound card */
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&pm->hdev->dev, index[dev], id[dev],
+			   THIS_MODULE, 0, &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 		pk_error("failed to create pc-midi sound card\n");
 		err = -ENOMEM;
@@ -641,9 +781,15 @@ static int pcmidi_snd_initialise(struct pcmidi_snd *pm)
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	strncpy(card->driver, shortname, sizeof(card->driver));
 	strncpy(card->shortname, shortname, sizeof(card->shortname));
 	strncpy(card->longname, longname, sizeof(card->longname));
+=======
+	strscpy(card->driver, shortname, sizeof(card->driver));
+	strscpy(card->shortname, shortname, sizeof(card->shortname));
+	strscpy(card->longname, longname, sizeof(card->longname));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set up rawmidi */
 	err = snd_rawmidi_new(card, card->shortname, 0,
@@ -654,17 +800,26 @@ static int pcmidi_snd_initialise(struct pcmidi_snd *pm)
 		goto fail;
 	}
 	pm->rwmidi = rwmidi;
+<<<<<<< HEAD
 	strncpy(rwmidi->name, card->shortname, sizeof(rwmidi->name));
+=======
+	strscpy(rwmidi->name, card->shortname, sizeof(rwmidi->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rwmidi->info_flags = SNDRV_RAWMIDI_INFO_INPUT;
 	rwmidi->private_data = pm;
 
 	snd_rawmidi_set_ops(rwmidi, SNDRV_RAWMIDI_STREAM_INPUT,
 		&pcmidi_in_ops);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pm->pk->hdev->dev);
 
 	/* create sysfs variables */
 	err = device_create_file(&pm->pk->hdev->dev,
+=======
+	/* create sysfs variables */
+	err = device_create_file(&pm->hdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 sysfs_device_attr_channel);
 	if (err < 0) {
 		pk_error("failed to create sysfs attribute channel: error %d\n",
@@ -672,7 +827,11 @@ static int pcmidi_snd_initialise(struct pcmidi_snd *pm)
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	err = device_create_file(&pm->pk->hdev->dev,
+=======
+	err = device_create_file(&pm->hdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sysfs_device_attr_sustain);
 	if (err < 0) {
 		pk_error("failed to create sysfs attribute sustain: error %d\n",
@@ -680,7 +839,11 @@ static int pcmidi_snd_initialise(struct pcmidi_snd *pm)
 		goto fail_attr_sustain;
 	}
 
+<<<<<<< HEAD
 	err = device_create_file(&pm->pk->hdev->dev,
+=======
+	err = device_create_file(&pm->hdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 sysfs_device_attr_octave);
 	if (err < 0) {
 		pk_error("failed to create sysfs attribute octave: error %d\n",
@@ -691,14 +854,26 @@ static int pcmidi_snd_initialise(struct pcmidi_snd *pm)
 	spin_lock_init(&pm->rawmidi_in_lock);
 
 	init_sustain_timers(pm);
+<<<<<<< HEAD
 	pcmidi_set_operational(pm);
+=======
+	err = pcmidi_set_operational(pm);
+	if (err < 0) {
+		pk_error("failed to find output report\n");
+		goto fail_register;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* register it */
 	err = snd_card_register(card);
 	if (err < 0) {
 		pk_error("failed to register pc-midi sound card: error %d\n",
 			 err);
+<<<<<<< HEAD
 			 goto fail_register;
+=======
+		goto fail_register;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dbg_hid("pcmidi_snd_initialise finished ok\n");
@@ -706,11 +881,19 @@ static int pcmidi_snd_initialise(struct pcmidi_snd *pm)
 
 fail_register:
 	stop_sustain_timers(pm);
+<<<<<<< HEAD
 	device_remove_file(&pm->pk->hdev->dev, sysfs_device_attr_octave);
 fail_attr_octave:
 	device_remove_file(&pm->pk->hdev->dev, sysfs_device_attr_sustain);
 fail_attr_sustain:
 	device_remove_file(&pm->pk->hdev->dev, sysfs_device_attr_channel);
+=======
+	device_remove_file(&pm->hdev->dev, sysfs_device_attr_octave);
+fail_attr_octave:
+	device_remove_file(&pm->hdev->dev, sysfs_device_attr_sustain);
+fail_attr_sustain:
+	device_remove_file(&pm->hdev->dev, sysfs_device_attr_channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail:
 	if (pm->card) {
 		snd_card_free(pm->card);
@@ -724,12 +907,18 @@ static int pcmidi_snd_terminate(struct pcmidi_snd *pm)
 	if (pm->card) {
 		stop_sustain_timers(pm);
 
+<<<<<<< HEAD
 		device_remove_file(&pm->pk->hdev->dev,
 			sysfs_device_attr_channel);
 		device_remove_file(&pm->pk->hdev->dev,
 			sysfs_device_attr_sustain);
 		device_remove_file(&pm->pk->hdev->dev,
 			sysfs_device_attr_octave);
+=======
+		device_remove_file(&pm->hdev->dev, sysfs_device_attr_channel);
+		device_remove_file(&pm->hdev->dev, sysfs_device_attr_sustain);
+		device_remove_file(&pm->hdev->dev, sysfs_device_attr_octave);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		snd_card_disconnect(pm->card);
 		snd_card_free_when_closed(pm->card);
@@ -759,10 +948,14 @@ static int pk_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 		struct hid_field *field, struct hid_usage *usage,
 		unsigned long **bit, int *max)
 {
+<<<<<<< HEAD
 	struct pk_device *pk = (struct pk_device *)hid_get_drvdata(hdev);
 	struct pcmidi_snd *pm;
 
 	pm = pk->pm;
+=======
+	struct pcmidi_snd *pm = hid_get_drvdata(hdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (HID_UP_MSVENDOR == (usage->hid & HID_USAGE_PAGE) &&
 		1 == pm->ifnum) {
@@ -777,16 +970,27 @@ static int pk_input_mapping(struct hid_device *hdev, struct hid_input *hi,
 static int pk_raw_event(struct hid_device *hdev, struct hid_report *report,
 	u8 *data, int size)
 {
+<<<<<<< HEAD
 	struct pk_device *pk = (struct pk_device *)hid_get_drvdata(hdev);
 	int ret = 0;
 
 	if (1 == pk->pm->ifnum) {
+=======
+	struct pcmidi_snd *pm = hid_get_drvdata(hdev);
+	int ret = 0;
+
+	if (1 == pm->ifnum) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (report->id == data[0])
 			switch (report->id) {
 			case 0x01: /* midi keys (qwerty)*/
 			case 0x03: /* midi keyboard (musical)*/
 			case 0x04: /* extra/midi keys (qwerty)*/
+<<<<<<< HEAD
 				ret = pcmidi_handle_report(pk->pm,
+=======
+				ret = pcmidi_handle_report(pm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						report->id, data, size);
 				break;
 			}
@@ -798,6 +1002,7 @@ static int pk_raw_event(struct hid_device *hdev, struct hid_report *report,
 static int pk_probe(struct hid_device *hdev, const struct hid_device_id *id)
 {
 	int ret;
+<<<<<<< HEAD
 	struct usb_interface *intf = to_usb_interface(hdev->dev.parent);
 	unsigned short ifnum = intf->cur_altsetting->desc.bInterfaceNumber;
 	unsigned long quirks = id->driver_data;
@@ -811,10 +1016,23 @@ static int pk_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	}
 
 	pk->hdev = hdev;
+=======
+	struct usb_interface *intf;
+	unsigned short ifnum;
+	unsigned long quirks = id->driver_data;
+	struct pcmidi_snd *pm;
+
+	if (!hid_is_usb(hdev))
+		return -EINVAL;
+
+	intf = to_usb_interface(hdev->dev.parent);
+	ifnum = intf->cur_altsetting->desc.bInterfaceNumber;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pm = kzalloc(sizeof(*pm), GFP_KERNEL);
 	if (pm == NULL) {
 		hid_err(hdev, "can't alloc descriptor\n");
+<<<<<<< HEAD
 		ret = -ENOMEM;
 		goto err_free_pk;
 	}
@@ -824,6 +1042,15 @@ static int pk_probe(struct hid_device *hdev, const struct hid_device_id *id)
 	pm->ifnum = ifnum;
 
 	hid_set_drvdata(hdev, pk);
+=======
+		return -ENOMEM;
+	}
+
+	pm->hdev = hdev;
+	pm->ifnum = ifnum;
+
+	hid_set_drvdata(hdev, pm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = hid_parse(hdev);
 	if (ret) {
@@ -850,14 +1077,18 @@ err_stop:
 	hid_hw_stop(hdev);
 err_free:
 	kfree(pm);
+<<<<<<< HEAD
 err_free_pk:
 	kfree(pk);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 static void pk_remove(struct hid_device *hdev)
 {
+<<<<<<< HEAD
 	struct pk_device *pk = (struct pk_device *)hid_get_drvdata(hdev);
 	struct pcmidi_snd *pm;
 
@@ -870,6 +1101,14 @@ static void pk_remove(struct hid_device *hdev)
 	hid_hw_stop(hdev);
 
 	kfree(pk);
+=======
+	struct pcmidi_snd *pm = hid_get_drvdata(hdev);
+
+	pcmidi_snd_terminate(pm);
+	hid_hw_stop(hdev);
+
+	kfree(pm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct hid_device_id pk_devices[] = {
@@ -889,6 +1128,7 @@ static struct hid_driver pk_driver = {
 	.probe = pk_probe,
 	.remove = pk_remove,
 };
+<<<<<<< HEAD
 
 static int pk_init(void)
 {
@@ -908,4 +1148,8 @@ static void pk_exit(void)
 
 module_init(pk_init);
 module_exit(pk_exit);
+=======
+module_hid_driver(pk_driver);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The USB Monitor, inspired by Dave Harding's USBMon.
  *
@@ -8,6 +12,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/fs.h>
 #include <linux/cdev.h>
@@ -18,8 +26,14 @@
 #include <linux/mm.h>
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
+=======
+#include <linux/time64.h>
+
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "usb_mon.h"
 
@@ -92,8 +106,13 @@ struct mon_bin_hdr {
 	unsigned short busnum;	/* Bus number */
 	char flag_setup;
 	char flag_data;
+<<<<<<< HEAD
 	s64 ts_sec;		/* gettimeofday */
 	s32 ts_usec;		/* gettimeofday */
+=======
+	s64 ts_sec;		/* ktime_get_real_ts64 */
+	s32 ts_usec;		/* ktime_get_real_ts64 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status;
 	unsigned int len_urb;	/* Length of data (submitted or actual) */
 	unsigned int len_cap;	/* Delivered length */
@@ -210,7 +229,14 @@ static unsigned char xfer_to_pipe[4] = {
 	PIPE_CONTROL, PIPE_ISOCHRONOUS, PIPE_BULK, PIPE_INTERRUPT
 };
 
+<<<<<<< HEAD
 static struct class *mon_bin_class;
+=======
+static const struct class mon_bin_class = {
+	.name = "usbmon",
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static dev_t mon_bin_dev0;
 static struct cdev mon_bin_cdev;
 
@@ -483,7 +509,11 @@ static void mon_bin_event(struct mon_reader_bin *rp, struct urb *urb,
     char ev_type, int status)
 {
 	const struct usb_endpoint_descriptor *epd = &urb->ep->desc;
+<<<<<<< HEAD
 	struct timeval ts;
+=======
+	struct timespec64 ts;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	unsigned int urb_length;
 	unsigned int offset;
@@ -494,7 +524,11 @@ static void mon_bin_event(struct mon_reader_bin *rp, struct urb *urb,
 	struct mon_bin_hdr *ep;
 	char data_tag = 0;
 
+<<<<<<< HEAD
 	do_gettimeofday(&ts);
+=======
+	ktime_get_real_ts64(&ts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&rp->b_lock, flags);
 
@@ -568,7 +602,11 @@ static void mon_bin_event(struct mon_reader_bin *rp, struct urb *urb,
 	ep->busnum = urb->dev->bus->busnum;
 	ep->id = (unsigned long) urb;
 	ep->ts_sec = ts.tv_sec;
+<<<<<<< HEAD
 	ep->ts_usec = ts.tv_usec;
+=======
+	ep->ts_usec = ts.tv_nsec / NSEC_PER_USEC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ep->status = status;
 	ep->len_urb = urb_length;
 	ep->len_cap = length + lendesc;
@@ -629,12 +667,20 @@ static void mon_bin_complete(void *data, struct urb *urb, int status)
 static void mon_bin_error(void *data, struct urb *urb, int error)
 {
 	struct mon_reader_bin *rp = data;
+<<<<<<< HEAD
 	struct timeval ts;
+=======
+	struct timespec64 ts;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	unsigned int offset;
 	struct mon_bin_hdr *ep;
 
+<<<<<<< HEAD
 	do_gettimeofday(&ts);
+=======
+	ktime_get_real_ts64(&ts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&rp->b_lock, flags);
 
@@ -656,7 +702,11 @@ static void mon_bin_error(void *data, struct urb *urb, int error)
 	ep->busnum = urb->dev->bus->busnum;
 	ep->id = (unsigned long) urb;
 	ep->ts_sec = ts.tv_sec;
+<<<<<<< HEAD
 	ep->ts_usec = ts.tv_usec;
+=======
+	ep->ts_usec = ts.tv_nsec / NSEC_PER_USEC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ep->status = error;
 
 	ep->flag_setup = '-';
@@ -675,7 +725,12 @@ static int mon_bin_open(struct inode *inode, struct file *file)
 	int rc;
 
 	mutex_lock(&mon_lock);
+<<<<<<< HEAD
 	if ((mbus = mon_bus_lookup(iminor(inode))) == NULL) {
+=======
+	mbus = mon_bus_lookup(iminor(inode));
+	if (mbus == NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&mon_lock);
 		return -ENODEV;
 	}
@@ -1000,7 +1055,13 @@ static long mon_bin_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 		break;
 
 	case MON_IOCQ_RING_SIZE:
+<<<<<<< HEAD
 		ret = rp->b_size;
+=======
+		mutex_lock(&rp->fetch_lock);
+		ret = rp->b_size;
+		mutex_unlock(&rp->fetch_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case MON_IOCT_RING_SIZE:
@@ -1018,8 +1079,14 @@ static long mon_bin_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 			return -EINVAL;
 
 		size = CHUNK_ALIGN(arg);
+<<<<<<< HEAD
 		if ((vec = kzalloc(sizeof(struct mon_pgmap) * (size/CHUNK_SIZE),
 		    GFP_KERNEL)) == NULL) {
+=======
+		vec = kcalloc(size / CHUNK_SIZE, sizeof(struct mon_pgmap),
+			      GFP_KERNEL);
+		if (vec == NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -ENOMEM;
 			break;
 		}
@@ -1032,12 +1099,27 @@ static long mon_bin_ioctl(struct file *file, unsigned int cmd, unsigned long arg
 
 		mutex_lock(&rp->fetch_lock);
 		spin_lock_irqsave(&rp->b_lock, flags);
+<<<<<<< HEAD
 		mon_free_buff(rp->b_vec, rp->b_size/CHUNK_SIZE);
 		kfree(rp->b_vec);
 		rp->b_vec  = vec;
 		rp->b_size = size;
 		rp->b_read = rp->b_in = rp->b_out = rp->b_cnt = 0;
 		rp->cnt_lost = 0;
+=======
+		if (rp->mmap_active) {
+			mon_free_buff(vec, size/CHUNK_SIZE);
+			kfree(vec);
+			ret = -EBUSY;
+		} else {
+			mon_free_buff(rp->b_vec, rp->b_size/CHUNK_SIZE);
+			kfree(rp->b_vec);
+			rp->b_vec  = vec;
+			rp->b_size = size;
+			rp->b_read = rp->b_in = rp->b_out = rp->b_cnt = 0;
+			rp->cnt_lost = 0;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&rp->b_lock, flags);
 		mutex_unlock(&rp->fetch_lock);
 		}
@@ -1185,11 +1267,19 @@ static long mon_bin_compat_ioctl(struct file *file,
 }
 #endif /* CONFIG_COMPAT */
 
+<<<<<<< HEAD
 static unsigned int
 mon_bin_poll(struct file *file, struct poll_table_struct *wait)
 {
 	struct mon_reader_bin *rp = file->private_data;
 	unsigned int mask = 0;
+=======
+static __poll_t
+mon_bin_poll(struct file *file, struct poll_table_struct *wait)
+{
+	struct mon_reader_bin *rp = file->private_data;
+	__poll_t mask = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	if (file->f_mode & FMODE_READ)
@@ -1197,7 +1287,11 @@ mon_bin_poll(struct file *file, struct poll_table_struct *wait)
 
 	spin_lock_irqsave(&rp->b_lock, flags);
 	if (!MON_RING_EMPTY(rp))
+<<<<<<< HEAD
 		mask |= POLLIN | POLLRDNORM;    /* readable */
+=======
+		mask |= EPOLLIN | EPOLLRDNORM;    /* readable */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&rp->b_lock, flags);
 	return mask;
 }
@@ -1209,18 +1303,36 @@ mon_bin_poll(struct file *file, struct poll_table_struct *wait)
 static void mon_bin_vma_open(struct vm_area_struct *vma)
 {
 	struct mon_reader_bin *rp = vma->vm_private_data;
+<<<<<<< HEAD
 	rp->mmap_active++;
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&rp->b_lock, flags);
+	rp->mmap_active++;
+	spin_unlock_irqrestore(&rp->b_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mon_bin_vma_close(struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
 	struct mon_reader_bin *rp = vma->vm_private_data;
 	rp->mmap_active--;
+=======
+	unsigned long flags;
+
+	struct mon_reader_bin *rp = vma->vm_private_data;
+	spin_lock_irqsave(&rp->b_lock, flags);
+	rp->mmap_active--;
+	spin_unlock_irqrestore(&rp->b_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Map ring pages to user space.
  */
+<<<<<<< HEAD
 static int mon_bin_vma_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 {
 	struct mon_reader_bin *rp = vma->vm_private_data;
@@ -1230,10 +1342,29 @@ static int mon_bin_vma_fault(struct vm_area_struct *vma, struct vm_fault *vmf)
 	offset = vmf->pgoff << PAGE_SHIFT;
 	if (offset >= rp->b_size)
 		return VM_FAULT_SIGBUS;
+=======
+static vm_fault_t mon_bin_vma_fault(struct vm_fault *vmf)
+{
+	struct mon_reader_bin *rp = vmf->vma->vm_private_data;
+	unsigned long offset, chunk_idx;
+	struct page *pageptr;
+	unsigned long flags;
+
+	spin_lock_irqsave(&rp->b_lock, flags);
+	offset = vmf->pgoff << PAGE_SHIFT;
+	if (offset >= rp->b_size) {
+		spin_unlock_irqrestore(&rp->b_lock, flags);
+		return VM_FAULT_SIGBUS;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chunk_idx = offset / CHUNK_SIZE;
 	pageptr = rp->b_vec[chunk_idx].pg;
 	get_page(pageptr);
 	vmf->page = pageptr;
+<<<<<<< HEAD
+=======
+	spin_unlock_irqrestore(&rp->b_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1247,7 +1378,15 @@ static int mon_bin_mmap(struct file *filp, struct vm_area_struct *vma)
 {
 	/* don't do anything here: "fault" will set up page table entries */
 	vma->vm_ops = &mon_bin_vm_ops;
+<<<<<<< HEAD
 	vma->vm_flags |= VM_RESERVED;
+=======
+
+	if (vma->vm_flags & VM_WRITE)
+		return -EPERM;
+
+	vm_flags_mod(vma, VM_DONTEXPAND | VM_DONTDUMP, VM_MAYWRITE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vma->vm_private_data = filp->private_data;
 	mon_bin_vma_open(vma);
 	return 0;
@@ -1335,7 +1474,11 @@ int mon_bin_add(struct mon_bus *mbus, const struct usb_bus *ubus)
 	if (minor >= MON_BIN_MAX_MINOR)
 		return 0;
 
+<<<<<<< HEAD
 	dev = device_create(mon_bin_class, ubus ? ubus->controller : NULL,
+=======
+	dev = device_create(&mon_bin_class, ubus ? ubus->controller : NULL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    MKDEV(MAJOR(mon_bin_dev0), minor), NULL,
 			    "usbmon%d", minor);
 	if (IS_ERR(dev))
@@ -1347,18 +1490,28 @@ int mon_bin_add(struct mon_bus *mbus, const struct usb_bus *ubus)
 
 void mon_bin_del(struct mon_bus *mbus)
 {
+<<<<<<< HEAD
 	device_destroy(mon_bin_class, mbus->classdev->devt);
+=======
+	device_destroy(&mon_bin_class, mbus->classdev->devt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int __init mon_bin_init(void)
 {
 	int rc;
 
+<<<<<<< HEAD
 	mon_bin_class = class_create(THIS_MODULE, "usbmon");
 	if (IS_ERR(mon_bin_class)) {
 		rc = PTR_ERR(mon_bin_class);
 		goto err_class;
 	}
+=======
+	rc = class_register(&mon_bin_class);
+	if (rc)
+		goto err_class;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = alloc_chrdev_region(&mon_bin_dev0, 0, MON_BIN_MAX_MINOR, "usbmon");
 	if (rc < 0)
@@ -1376,7 +1529,11 @@ int __init mon_bin_init(void)
 err_add:
 	unregister_chrdev_region(mon_bin_dev0, MON_BIN_MAX_MINOR);
 err_dev:
+<<<<<<< HEAD
 	class_destroy(mon_bin_class);
+=======
+	class_unregister(&mon_bin_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_class:
 	return rc;
 }
@@ -1385,5 +1542,9 @@ void mon_bin_exit(void)
 {
 	cdev_del(&mon_bin_cdev);
 	unregister_chrdev_region(mon_bin_dev0, MON_BIN_MAX_MINOR);
+<<<<<<< HEAD
 	class_destroy(mon_bin_class);
+=======
+	class_unregister(&mon_bin_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Force feedback support for PantherLord/GreenAsia based devices
  *
@@ -14,10 +18,16 @@
  *  0e8f:0003 "GASIA USB Gamepad"
  *   - another version of the König gamepad
  *
+<<<<<<< HEAD
+=======
+ *  0f30:0111 "Saitek Color Rumble Pad"
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Copyright (c) 2007, 2009 Anssi Hannula <anssi.hannula@gmail.com>
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -31,6 +41,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -41,16 +53,26 @@
 #include <linux/input.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/usb.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hid.h>
 
 #include "hid-ids.h"
 
 #ifdef CONFIG_PANTHERLORD_FF
+<<<<<<< HEAD
 #include "usbhid/usbhid.h"
 
 struct plff_device {
 	struct hid_report *report;
+=======
+
+struct plff_device {
+	struct hid_report *report;
+	s32 maxval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32 *strong;
 	s32 *weak;
 };
@@ -66,13 +88,22 @@ static int hid_plff_play(struct input_dev *dev, void *data,
 	right = effect->u.rumble.weak_magnitude;
 	debug("called with 0x%04x 0x%04x", left, right);
 
+<<<<<<< HEAD
 	left = left * 0x7f / 0xffff;
 	right = right * 0x7f / 0xffff;
+=======
+	left = left * plff->maxval / 0xffff;
+	right = right * plff->maxval / 0xffff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*plff->strong = left;
 	*plff->weak = right;
 	debug("running with 0x%02x 0x%02x", left, right);
+<<<<<<< HEAD
 	usbhid_submit_report(hid, plff->report, USB_DIR_OUT);
+=======
+	hid_hw_request(hid, plff->report, HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -87,6 +118,10 @@ static int plff_init(struct hid_device *hid)
 	struct list_head *report_ptr = report_list;
 	struct input_dev *dev;
 	int error;
+<<<<<<< HEAD
+=======
+	s32 maxval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32 *strong;
 	s32 *weak;
 
@@ -123,6 +158,10 @@ static int plff_init(struct hid_device *hid)
 			return -ENODEV;
 		}
 
+<<<<<<< HEAD
+=======
+		maxval = 0x7f;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (report->field[0]->report_count >= 4) {
 			report->field[0]->value[0] = 0x00;
 			report->field[0]->value[1] = 0x00;
@@ -141,6 +180,11 @@ static int plff_init(struct hid_device *hid)
 			report->field[1]->value[0] = 0x00;
 			strong = &report->field[2]->value[0];
 			weak = &report->field[3]->value[0];
+<<<<<<< HEAD
+=======
+			if (hid->vendor == USB_VENDOR_ID_JESS2)
+				maxval = 0xff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			debug("detected 4-field device");
 		} else {
 			hid_err(hid, "not enough fields or values\n");
@@ -164,10 +208,18 @@ static int plff_init(struct hid_device *hid)
 		plff->report = report;
 		plff->strong = strong;
 		plff->weak = weak;
+<<<<<<< HEAD
 
 		*strong = 0x00;
 		*weak = 0x00;
 		usbhid_submit_report(hid, plff->report, USB_DIR_OUT);
+=======
+		plff->maxval = maxval;
+
+		*strong = 0x00;
+		*weak = 0x00;
+		hid_hw_request(hid, plff->report, HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hid_info(hid, "Force feedback for PantherLord/GreenAsia devices by Anssi Hannula <anssi.hannula@gmail.com>\n");
@@ -213,6 +265,10 @@ static const struct hid_device_id pl_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_GAMERON, USB_DEVICE_ID_GAMERON_DUAL_PCS_ADAPTOR),
 		.driver_data = 1 }, /* Twin USB Joystick */
 	{ HID_USB_DEVICE(USB_VENDOR_ID_GREENASIA, 0x0003), },
+<<<<<<< HEAD
+=======
+	{ HID_USB_DEVICE(USB_VENDOR_ID_JESS2, USB_DEVICE_ID_JESS2_COLOR_RUMBLE_PAD), },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(hid, pl_devices);
@@ -222,6 +278,7 @@ static struct hid_driver pl_driver = {
 	.id_table = pl_devices,
 	.probe = pl_probe,
 };
+<<<<<<< HEAD
 
 static int __init pl_init(void)
 {
@@ -235,4 +292,8 @@ static void __exit pl_exit(void)
 
 module_init(pl_init);
 module_exit(pl_exit);
+=======
+module_hid_driver(pl_driver);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

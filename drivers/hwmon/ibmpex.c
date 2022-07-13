@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A hwmon driver for the IBM PowerExecutive temperature/power sensors
  * Copyright (C) 2007 IBM
  *
+<<<<<<< HEAD
  * Author: Darrick J. Wong <djwong@us.ibm.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -17,6 +22,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+ * Author: Darrick J. Wong <darrick.wong@oracle.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/ipmi.h>
@@ -26,6 +34,10 @@
 #include <linux/jiffies.h>
 #include <linux/mutex.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/err.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define REFRESH_INTERVAL	(2 * HZ)
 #define DRVNAME			"ibmpex"
@@ -55,6 +67,7 @@ static u8 const temp_sensor_sig[]  = {0x74, 0x65, 0x6D};
 static u8 const watt_sensor_sig[]  = {0x41, 0x43};
 
 #define PEX_NUM_SENSOR_FUNCS	3
+<<<<<<< HEAD
 static char const * const power_sensor_name_templates[] = {
 	"%s%d_average",
 	"%s%d_average_lowest",
@@ -64,6 +77,12 @@ static char const * const temp_sensor_name_templates[] = {
 	"%s%d_input",
 	"%s%d_input_lowest",
 	"%s%d_input_highest"
+=======
+static const char * const sensor_name_suffixes[] = {
+	"",
+	"_lowest",
+	"_highest"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void ibmpex_msg_handler(struct ipmi_recv_msg *msg, void *user_msg_data);
@@ -83,12 +102,20 @@ struct ibmpex_bmc_data {
 	struct device		*hwmon_dev;
 	struct device		*bmc_device;
 	struct mutex		lock;
+<<<<<<< HEAD
 	char			valid;
+=======
+	bool			valid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		last_updated;	/* In jiffies */
 
 	struct ipmi_addr	address;
 	struct completion	read_complete;
+<<<<<<< HEAD
 	ipmi_user_t		user;
+=======
+	struct ipmi_user	*user;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			interface;
 
 	struct kernel_ipmi_msg	tx_message;
@@ -162,8 +189,13 @@ static int ibmpex_ver_check(struct ibmpex_bmc_data *data)
 	data->sensor_major = data->rx_msg_data[0];
 	data->sensor_minor = data->rx_msg_data[1];
 
+<<<<<<< HEAD
 	dev_info(data->bmc_device, "Found BMC with sensor interface "
 		 "v%d.%d %d-%02d-%02d on interface %d\n",
+=======
+	dev_info(data->bmc_device,
+		 "Found BMC with sensor interface v%d.%d %d-%02d-%02d on interface %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 data->sensor_major,
 		 data->sensor_minor,
 		 extract_value(data->rx_msg_data, 2),
@@ -256,7 +288,11 @@ static void ibmpex_update_device(struct ibmpex_bmc_data *data)
 	}
 
 	data->last_updated = jiffies;
+<<<<<<< HEAD
 	data->valid = 1;
+=======
+	data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	mutex_unlock(&data->lock);
@@ -273,12 +309,20 @@ static struct ibmpex_bmc_data *get_bmc_data(int iface)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static ssize_t show_name(struct device *dev, struct device_attribute *devattr,
+=======
+static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 char *buf)
 {
 	return sprintf(buf, "%s\n", DRVNAME);
 }
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(name, S_IRUGO, show_name, NULL, 0);
+=======
+static SENSOR_DEVICE_ATTR_RO(name, name, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t ibmpex_show_sensor(struct device *dev,
 				  struct device_attribute *devattr,
@@ -293,10 +337,16 @@ static ssize_t ibmpex_show_sensor(struct device *dev,
 		       data->sensors[attr->index].values[attr->nr] * mult);
 }
 
+<<<<<<< HEAD
 static ssize_t ibmpex_reset_high_low(struct device *dev,
 				     struct device_attribute *devattr,
 				     const char *buf,
 				     size_t count)
+=======
+static ssize_t ibmpex_high_low_store(struct device *dev,
+				     struct device_attribute *devattr,
+				     const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ibmpex_bmc_data *data = dev_get_drvdata(dev);
 
@@ -305,8 +355,12 @@ static ssize_t ibmpex_reset_high_low(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(reset_high_low, S_IWUSR, NULL,
 			  ibmpex_reset_high_low, 0);
+=======
+static SENSOR_DEVICE_ATTR_WO(reset_high_low, ibmpex_high_low, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int is_power_sensor(const char *sensor_id, int len)
 {
@@ -354,6 +408,7 @@ static int create_sensor(struct ibmpex_bmc_data *data, int type,
 		return -ENOMEM;
 
 	if (type == TEMP_SENSOR)
+<<<<<<< HEAD
 		sprintf(n, temp_sensor_name_templates[func], "temp", counter);
 	else if (type == POWER_SENSOR)
 		sprintf(n, power_sensor_name_templates[func], "power", counter);
@@ -361,6 +416,17 @@ static int create_sensor(struct ibmpex_bmc_data *data, int type,
 	sysfs_attr_init(&data->sensors[sensor].attr[func].dev_attr.attr);
 	data->sensors[sensor].attr[func].dev_attr.attr.name = n;
 	data->sensors[sensor].attr[func].dev_attr.attr.mode = S_IRUGO;
+=======
+		sprintf(n, "temp%d_input%s",
+			counter, sensor_name_suffixes[func]);
+	else if (type == POWER_SENSOR)
+		sprintf(n, "power%d_average%s",
+			counter, sensor_name_suffixes[func]);
+
+	sysfs_attr_init(&data->sensors[sensor].attr[func].dev_attr.attr);
+	data->sensors[sensor].attr[func].dev_attr.attr.name = n;
+	data->sensors[sensor].attr[func].dev_attr.attr.mode = 0444;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->sensors[sensor].attr[func].dev_attr.show = ibmpex_show_sensor;
 	data->sensors[sensor].attr[func].index = sensor;
 	data->sensors[sensor].attr[func].nr = func;
@@ -389,7 +455,11 @@ static int ibmpex_find_sensors(struct ibmpex_bmc_data *data)
 		return -ENOENT;
 	data->num_sensors = err;
 
+<<<<<<< HEAD
 	data->sensors = kzalloc(data->num_sensors * sizeof(*data->sensors),
+=======
+	data->sensors = kcalloc(data->num_sensors, sizeof(*data->sensors),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				GFP_KERNEL);
 	if (!data->sensors)
 		return -ENOMEM;
@@ -462,10 +532,15 @@ static void ibmpex_register_bmc(int iface, struct device *dev)
 	int err;
 
 	data = kzalloc(sizeof(*data), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!data) {
 		dev_err(dev, "Insufficient memory for BMC interface.\n");
 		return;
 	}
+=======
+	if (!data)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->address.addr_type = IPMI_SYSTEM_INTERFACE_ADDR_TYPE;
 	data->address.channel = IPMI_BMC_CHANNEL;
@@ -477,8 +552,14 @@ static void ibmpex_register_bmc(int iface, struct device *dev)
 	err = ipmi_create_user(data->interface, &driver_data.ipmi_hndlrs,
 			       data, &data->user);
 	if (err < 0) {
+<<<<<<< HEAD
 		dev_err(dev, "Unable to register user with IPMI "
 			"interface %d\n", data->interface);
+=======
+		dev_err(dev,
+			"Unable to register user with IPMI interface %d\n",
+			data->interface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -500,8 +581,13 @@ static void ibmpex_register_bmc(int iface, struct device *dev)
 	data->hwmon_dev = hwmon_device_register(data->bmc_device);
 
 	if (IS_ERR(data->hwmon_dev)) {
+<<<<<<< HEAD
 		dev_err(data->bmc_device, "Unable to register hwmon "
 			"device for IPMI interface %d\n",
+=======
+		dev_err(data->bmc_device,
+			"Unable to register hwmon device for IPMI interface %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			data->interface);
 		goto out_user;
 	}
@@ -520,6 +606,10 @@ static void ibmpex_register_bmc(int iface, struct device *dev)
 	return;
 
 out_register:
+<<<<<<< HEAD
+=======
+	list_del(&data->list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hwmon_device_unregister(data->hwmon_dev);
 out_user:
 	ipmi_destroy_user(data->user);
@@ -563,11 +653,19 @@ static void ibmpex_bmc_gone(int iface)
 
 static void ibmpex_msg_handler(struct ipmi_recv_msg *msg, void *user_msg_data)
 {
+<<<<<<< HEAD
 	struct ibmpex_bmc_data *data = (struct ibmpex_bmc_data *)user_msg_data;
 
 	if (msg->msgid != data->tx_msgid) {
 		dev_err(data->bmc_device, "Mismatch between received msgid "
 			"(%02x) and transmitted msgid (%02x)!\n",
+=======
+	struct ibmpex_bmc_data *data = user_msg_data;
+
+	if (msg->msgid != data->tx_msgid) {
+		dev_err(data->bmc_device,
+			"Mismatch between received msgid (%02x) and transmitted msgid (%02x)!\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(int)msg->msgid,
 			(int)data->tx_msgid);
 		ipmi_free_recv_msg(msg);
@@ -604,7 +702,11 @@ static void __exit ibmpex_exit(void)
 		ibmpex_bmc_delete(p);
 }
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Darrick J. Wong <djwong@us.ibm.com>");
+=======
+MODULE_AUTHOR("Darrick J. Wong <darrick.wong@oracle.com>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("IBM PowerExecutive power/temperature sensor driver");
 MODULE_LICENSE("GPL");
 

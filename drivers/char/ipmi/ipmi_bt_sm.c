@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ipmi_bt_sm.c
  *
@@ -5,6 +9,7 @@
  *  of the driver architecture at http://sourceforge.net/projects/openipmi 
  *
  *  Author:	Rocky Craig <first.last@hp.com>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License as published by the
@@ -25,6 +30,11 @@
  *  You should have received a copy of the GNU General Public License along
  *  with this program; if not, write to the Free Software Foundation, Inc.,
  *  675 Mass Ave, Cambridge, MA 02139, USA.  */
+=======
+ */
+
+#define DEBUG /* So dev_dbg() is always available. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kernel.h> /* For printk. */
 #include <linux/string.h>
@@ -77,8 +87,11 @@ enum bt_states {
 	BT_STATE_RESET3,
 	BT_STATE_RESTART,
 	BT_STATE_PRINTME,
+<<<<<<< HEAD
 	BT_STATE_CAPABILITIES_BEGIN,
 	BT_STATE_CAPABILITIES_END,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BT_STATE_LONG_BUSY	/* BT doesn't get hosed :-) */
 };
 
@@ -104,7 +117,10 @@ struct si_sm_data {
 	int		error_retries;	/* end of "common" fields */
 	int		nonzero_status;	/* hung BMCs stay all 0 */
 	enum bt_states	complete;	/* to divert the state machine */
+<<<<<<< HEAD
 	int		BT_CAP_outreqs;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long		BT_CAP_req2rsp;
 	int		BT_CAP_retries;	/* Recommended retries */
 };
@@ -155,8 +171,11 @@ static char *state2txt(unsigned char state)
 	case BT_STATE_RESET3:		return("RESET3");
 	case BT_STATE_RESTART:		return("RESTART");
 	case BT_STATE_LONG_BUSY:	return("LONG_BUSY");
+<<<<<<< HEAD
 	case BT_STATE_CAPABILITIES_BEGIN: return("CAP_BEGIN");
 	case BT_STATE_CAPABILITIES_END:	return("CAP_END");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return("BAD STATE");
 }
@@ -201,9 +220,14 @@ static unsigned int bt_init_data(struct si_sm_data *bt, struct si_sm_io *io)
 	}
 	bt->state = BT_STATE_IDLE;	/* start here */
 	bt->complete = BT_STATE_IDLE;	/* end here */
+<<<<<<< HEAD
 	bt->BT_CAP_req2rsp = BT_NORMAL_TIMEOUT * 1000000;
 	bt->BT_CAP_retries = BT_NORMAL_RETRY_LIMIT;
 	/* BT_CAP_outreqs == zero is a flag to read BT Capabilities */
+=======
+	bt->BT_CAP_req2rsp = BT_NORMAL_TIMEOUT * USEC_PER_SEC;
+	bt->BT_CAP_retries = BT_NORMAL_RETRY_LIMIT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 3; /* We claim 3 bytes of space; ought to check SPMI table */
 }
 
@@ -235,6 +259,7 @@ static int bt_start_transaction(struct si_sm_data *bt,
 	if (bt->state == BT_STATE_LONG_BUSY)
 		return IPMI_NODE_BUSY_ERR;
 
+<<<<<<< HEAD
 	if (bt->state != BT_STATE_IDLE)
 		return IPMI_NOT_IN_MY_STATE_ERR;
 
@@ -244,6 +269,19 @@ static int bt_start_transaction(struct si_sm_data *bt,
 		for (i = 0; i < size; i ++)
 			printk(" %02x", data[i]);
 		printk("\n");
+=======
+	if (bt->state != BT_STATE_IDLE) {
+		dev_warn(bt->io->dev, "BT in invalid state %d\n", bt->state);
+		return IPMI_NOT_IN_MY_STATE_ERR;
+	}
+
+	if (bt_debug & BT_DEBUG_MSG) {
+		dev_dbg(bt->io->dev, "+++++++++++++++++ New command\n");
+		dev_dbg(bt->io->dev, "NetFn/LUN CMD [%d data]:", size - 2);
+		for (i = 0; i < size; i ++)
+			pr_cont(" %02x", data[i]);
+		pr_cont("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	bt->write_data[0] = size + 1;	/* all data plus seq byte */
 	bt->write_data[1] = *data;	/* NetFn/LUN */
@@ -284,10 +322,17 @@ static int bt_get_result(struct si_sm_data *bt,
 		memcpy(data + 2, bt->read_data + 4, msg_len - 2);
 
 	if (bt_debug & BT_DEBUG_MSG) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "BT: result %d bytes:", msg_len);
 		for (i = 0; i < msg_len; i++)
 			printk(" %02x", data[i]);
 		printk("\n");
+=======
+		dev_dbg(bt->io->dev, "result %d bytes:", msg_len);
+		for (i = 0; i < msg_len; i++)
+			pr_cont(" %02x", data[i]);
+		pr_cont("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return msg_len;
 }
@@ -298,8 +343,12 @@ static int bt_get_result(struct si_sm_data *bt,
 static void reset_flags(struct si_sm_data *bt)
 {
 	if (bt_debug)
+<<<<<<< HEAD
 		printk(KERN_WARNING "IPMI BT: flag reset %s\n",
 					status2txt(BT_STATUS));
+=======
+		dev_dbg(bt->io->dev, "flag reset %s\n", status2txt(BT_STATUS));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (BT_STATUS & BT_H_BUSY)
 		BT_CONTROL(BT_H_BUSY);	/* force clear */
 	BT_CONTROL(BT_CLR_WR_PTR);	/* always reset */
@@ -325,14 +374,22 @@ static void drain_BMC2HOST(struct si_sm_data *bt)
 	BT_CONTROL(BT_B2H_ATN);		/* some BMCs are stubborn */
 	BT_CONTROL(BT_CLR_RD_PTR);	/* always reset */
 	if (bt_debug)
+<<<<<<< HEAD
 		printk(KERN_WARNING "IPMI BT: stale response %s; ",
+=======
+		dev_dbg(bt->io->dev, "stale response %s; ",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status2txt(BT_STATUS));
 	size = BMC2HOST;
 	for (i = 0; i < size ; i++)
 		BMC2HOST;
 	BT_CONTROL(BT_H_BUSY);		/* now clear */
 	if (bt_debug)
+<<<<<<< HEAD
 		printk("drained %d bytes\n", size + 1);
+=======
+		pr_cont("drained %d bytes\n", size + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void write_all_bytes(struct si_sm_data *bt)
@@ -340,11 +397,19 @@ static inline void write_all_bytes(struct si_sm_data *bt)
 	int i;
 
 	if (bt_debug & BT_DEBUG_MSG) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "BT: write %d bytes seq=0x%02X",
 			bt->write_count, bt->seq);
 		for (i = 0; i < bt->write_count; i++)
 			printk(" %02x", bt->write_data[i]);
 		printk("\n");
+=======
+		dev_dbg(bt->io->dev, "write %d bytes seq=0x%02X",
+			bt->write_count, bt->seq);
+		for (i = 0; i < bt->write_count; i++)
+			pr_cont(" %02x", bt->write_data[i]);
+		pr_cont("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	for (i = 0; i < bt->write_count; i++)
 		HOST2BMC(bt->write_data[i]);
@@ -364,8 +429,13 @@ static inline int read_all_bytes(struct si_sm_data *bt)
 
 	if (bt->read_count < 4 || bt->read_count >= IPMI_MAX_MSG_LENGTH) {
 		if (bt_debug & BT_DEBUG_MSG)
+<<<<<<< HEAD
 			printk(KERN_WARNING "BT: bad raw rsp len=%d\n",
 				bt->read_count);
+=======
+			dev_dbg(bt->io->dev,
+				"bad raw rsp len=%d\n", bt->read_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bt->truncated = 1;
 		return 1;	/* let next XACTION START clean it up */
 	}
@@ -376,6 +446,7 @@ static inline int read_all_bytes(struct si_sm_data *bt)
 	if (bt_debug & BT_DEBUG_MSG) {
 		int max = bt->read_count;
 
+<<<<<<< HEAD
 		printk(KERN_WARNING "BT: got %d bytes seq=0x%02X",
 			max, bt->read_data[2]);
 		if (max > 16)
@@ -383,6 +454,15 @@ static inline int read_all_bytes(struct si_sm_data *bt)
 		for (i = 0; i < max; i++)
 			printk(KERN_CONT " %02x", bt->read_data[i]);
 		printk(KERN_CONT "%s\n", bt->read_count == max ? "" : " ...");
+=======
+		dev_dbg(bt->io->dev,
+			"got %d bytes seq=0x%02X", max, bt->read_data[2]);
+		if (max > 16)
+			max = 16;
+		for (i = 0; i < max; i++)
+			pr_cont(" %02x", bt->read_data[i]);
+		pr_cont("%s\n", bt->read_count == max ? "" : " ...");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* per the spec, the (NetFn[1], Seq[2], Cmd[3]) tuples must match */
@@ -392,10 +472,18 @@ static inline int read_all_bytes(struct si_sm_data *bt)
 			return 1;
 
 	if (bt_debug & BT_DEBUG_MSG)
+<<<<<<< HEAD
 		printk(KERN_WARNING "IPMI BT: bad packet: "
 		"want 0x(%02X, %02X, %02X) got (%02X, %02X, %02X)\n",
 		bt->write_data[1] | 0x04, bt->write_data[2], bt->write_data[3],
 		bt->read_data[1],  bt->read_data[2],  bt->read_data[3]);
+=======
+		dev_dbg(bt->io->dev,
+			"IPMI BT: bad packet: want 0x(%02X, %02X, %02X) got (%02X, %02X, %02X)\n",
+			bt->write_data[1] | 0x04, bt->write_data[2],
+			bt->write_data[3],
+			bt->read_data[1],  bt->read_data[2],  bt->read_data[3]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -418,8 +506,13 @@ static enum si_sm_result error_recovery(struct si_sm_data *bt,
 		break;
 	}
 
+<<<<<<< HEAD
 	printk(KERN_WARNING "IPMI BT: %s in %s %s ", 	/* open-ended line */
 		reason, STATE2TXT, STATUS2TXT);
+=======
+	dev_warn(bt->io->dev, "IPMI BT: %s in %s %s ", /* open-ended line */
+		 reason, STATE2TXT, STATUS2TXT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Per the IPMI spec, retries are based on the sequence number
@@ -427,12 +520,17 @@ static enum si_sm_result error_recovery(struct si_sm_data *bt,
 	 */
 	(bt->error_retries)++;
 	if (bt->error_retries < bt->BT_CAP_retries) {
+<<<<<<< HEAD
 		printk("%d retries left\n",
+=======
+		pr_cont("%d retries left\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bt->BT_CAP_retries - bt->error_retries);
 		bt->state = BT_STATE_RESTART;
 		return SI_SM_CALL_WITHOUT_DELAY;
 	}
 
+<<<<<<< HEAD
 	printk(KERN_WARNING "failed %d retries, sending error response\n",
 	       bt->BT_CAP_retries);
 	if (!bt->nonzero_status)
@@ -441,6 +539,16 @@ static enum si_sm_result error_recovery(struct si_sm_data *bt,
 	/* this is most likely during insmod */
 	else if (bt->seq <= (unsigned char)(bt->BT_CAP_retries & 0xFF)) {
 		printk(KERN_WARNING "IPMI: BT reset (takes 5 secs)\n");
+=======
+	dev_warn(bt->io->dev, "failed %d retries, sending error response\n",
+		 bt->BT_CAP_retries);
+	if (!bt->nonzero_status)
+		dev_err(bt->io->dev, "stuck, try power cycle\n");
+
+	/* this is most likely during insmod */
+	else if (bt->seq <= (unsigned char)(bt->BT_CAP_retries & 0xFF)) {
+		dev_warn(bt->io->dev, "BT reset (takes 5 secs)\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bt->state = BT_STATE_RESET1;
 		return SI_SM_CALL_WITHOUT_DELAY;
 	}
@@ -469,14 +577,22 @@ static enum si_sm_result error_recovery(struct si_sm_data *bt,
 
 static enum si_sm_result bt_event(struct si_sm_data *bt, long time)
 {
+<<<<<<< HEAD
 	unsigned char status, BT_CAP[8];
+=======
+	unsigned char status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static enum bt_states last_printed = BT_STATE_PRINTME;
 	int i;
 
 	status = BT_STATUS;
 	bt->nonzero_status |= status;
 	if ((bt_debug & BT_DEBUG_STATES) && (bt->state != last_printed)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "BT: %s %s TO=%ld - %ld \n",
+=======
+		dev_dbg(bt->io->dev, "BT: %s %s TO=%ld - %ld\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			STATE2TXT,
 			STATUS2TXT,
 			bt->timeout,
@@ -522,11 +638,14 @@ static enum si_sm_result bt_event(struct si_sm_data *bt, long time)
 		if (status & BT_H_BUSY)		/* clear a leftover H_BUSY */
 			BT_CONTROL(BT_H_BUSY);
 
+<<<<<<< HEAD
 		/* Read BT capabilities if it hasn't been done yet */
 		if (!bt->BT_CAP_outreqs)
 			BT_STATE_CHANGE(BT_STATE_CAPABILITIES_BEGIN,
 					SI_SM_CALL_WITHOUT_DELAY);
 		bt->timeout = bt->BT_CAP_req2rsp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BT_SI_SM_RETURN(SI_SM_IDLE);
 
 	case BT_STATE_XACTION_START:
@@ -613,7 +732,11 @@ static enum si_sm_result bt_event(struct si_sm_data *bt, long time)
 		HOST2BMC(42);		/* Sequence number */
 		HOST2BMC(3);		/* Cmd == Soft reset */
 		BT_CONTROL(BT_H2B_ATN);
+<<<<<<< HEAD
 		bt->timeout = BT_RESET_DELAY * 1000000;
+=======
+		bt->timeout = BT_RESET_DELAY * USEC_PER_SEC;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BT_STATE_CHANGE(BT_STATE_RESET3,
 				SI_SM_CALL_WITH_DELAY);
 
@@ -631,6 +754,7 @@ static enum si_sm_result bt_event(struct si_sm_data *bt, long time)
 		BT_STATE_CHANGE(BT_STATE_XACTION_START,
 				SI_SM_CALL_WITH_DELAY);
 
+<<<<<<< HEAD
 	/*
 	 * Get BT Capabilities, using timing of upper level state machine.
 	 * Set outreqs to prevent infinite loop on timeout.
@@ -662,6 +786,8 @@ static enum si_sm_result bt_event(struct si_sm_data *bt, long time)
 		bt->timeout = bt->BT_CAP_req2rsp;
 		return SI_SM_CALL_WITHOUT_DELAY;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:	/* should never occur */
 		return error_recovery(bt,
 				      status,
@@ -672,6 +798,14 @@ static enum si_sm_result bt_event(struct si_sm_data *bt, long time)
 
 static int bt_detect(struct si_sm_data *bt)
 {
+<<<<<<< HEAD
+=======
+	unsigned char GetBT_CAP[] = { 0x18, 0x36 };
+	unsigned char BT_CAP[8];
+	enum si_sm_result smi_result;
+	int rv;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * It's impossible for the BT status and interrupt registers to be
 	 * all 1's, (assuming a properly functioning, self-initialized BMC)
@@ -682,6 +816,51 @@ static int bt_detect(struct si_sm_data *bt)
 	if ((BT_STATUS == 0xFF) && (BT_INTMASK_R == 0xFF))
 		return 1;
 	reset_flags(bt);
+<<<<<<< HEAD
+=======
+
+	/*
+	 * Try getting the BT capabilities here.
+	 */
+	rv = bt_start_transaction(bt, GetBT_CAP, sizeof(GetBT_CAP));
+	if (rv) {
+		dev_warn(bt->io->dev,
+			 "Can't start capabilities transaction: %d\n", rv);
+		goto out_no_bt_cap;
+	}
+
+	smi_result = SI_SM_CALL_WITHOUT_DELAY;
+	for (;;) {
+		if (smi_result == SI_SM_CALL_WITH_DELAY ||
+		    smi_result == SI_SM_CALL_WITH_TICK_DELAY) {
+			schedule_timeout_uninterruptible(1);
+			smi_result = bt_event(bt, jiffies_to_usecs(1));
+		} else if (smi_result == SI_SM_CALL_WITHOUT_DELAY) {
+			smi_result = bt_event(bt, 0);
+		} else
+			break;
+	}
+
+	rv = bt_get_result(bt, BT_CAP, sizeof(BT_CAP));
+	bt_init_data(bt, bt->io);
+	if (rv < 8) {
+		dev_warn(bt->io->dev, "bt cap response too short: %d\n", rv);
+		goto out_no_bt_cap;
+	}
+
+	if (BT_CAP[2]) {
+		dev_warn(bt->io->dev, "Error fetching bt cap: %x\n", BT_CAP[2]);
+out_no_bt_cap:
+		dev_warn(bt->io->dev, "using default values\n");
+	} else {
+		bt->BT_CAP_req2rsp = BT_CAP[6] * USEC_PER_SEC;
+		bt->BT_CAP_retries = BT_CAP[7];
+	}
+
+	dev_info(bt->io->dev, "req2rsp=%ld secs retries=%d\n",
+		 bt->BT_CAP_req2rsp / USEC_PER_SEC, bt->BT_CAP_retries);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -694,7 +873,11 @@ static int bt_size(void)
 	return sizeof(struct si_sm_data);
 }
 
+<<<<<<< HEAD
 struct si_sm_handlers bt_smi_handlers = {
+=======
+const struct si_sm_handlers bt_smi_handlers = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_data		= bt_init_data,
 	.start_transaction	= bt_start_transaction,
 	.get_result		= bt_get_result,

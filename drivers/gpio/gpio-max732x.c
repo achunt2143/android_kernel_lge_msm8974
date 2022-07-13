@@ -1,27 +1,44 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  MAX732x I2C Port Expander with 8/16 I/O
  *
  *  Copyright (C) 2007 Marvell International Ltd.
  *  Copyright (C) 2008 Jack Ren <jack.ren@marvell.com>
  *  Copyright (C) 2008 Eric Miao <eric.miao@marvell.com>
+<<<<<<< HEAD
  *
  *  Derived from drivers/gpio/pca953x.c
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; version 2 of the License.
+=======
+ *  Copyright (C) 2015 Linus Walleij <linus.walleij@linaro.org>
+ *
+ *  Derived from drivers/gpio/pca953x.c
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/string.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/i2c.h>
 #include <linux/i2c/max732x.h>
 
+=======
+#include <linux/gpio/driver.h>
+#include <linux/interrupt.h>
+#include <linux/i2c.h>
+#include <linux/platform_data/max732x.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Each port of MAX732x (including MAX7319) falls into one of the
@@ -116,6 +133,23 @@ static const struct i2c_device_id max732x_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, max732x_id);
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id max732x_of_table[] = {
+	{ .compatible = "maxim,max7319" },
+	{ .compatible = "maxim,max7320" },
+	{ .compatible = "maxim,max7321" },
+	{ .compatible = "maxim,max7322" },
+	{ .compatible = "maxim,max7323" },
+	{ .compatible = "maxim,max7324" },
+	{ .compatible = "maxim,max7325" },
+	{ .compatible = "maxim,max7326" },
+	{ .compatible = "maxim,max7327" },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, max732x_of_table);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct max732x_chip {
 	struct gpio_chip gpio_chip;
 
@@ -132,6 +166,7 @@ struct max732x_chip {
 	uint8_t		reg_out[2];
 
 #ifdef CONFIG_GPIO_MAX732X_IRQ
+<<<<<<< HEAD
 	struct mutex	irq_lock;
 	int		irq_base;
 	uint8_t		irq_mask;
@@ -139,6 +174,14 @@ struct max732x_chip {
 	uint8_t		irq_trig_raise;
 	uint8_t		irq_trig_fall;
 	uint8_t		irq_features;
+=======
+	struct mutex		irq_lock;
+	uint8_t			irq_mask;
+	uint8_t			irq_mask_cur;
+	uint8_t			irq_trig_raise;
+	uint8_t			irq_trig_fall;
+	uint8_t			irq_features;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
@@ -180,6 +223,7 @@ static inline int is_group_a(struct max732x_chip *chip, unsigned off)
 
 static int max732x_gpio_get_value(struct gpio_chip *gc, unsigned off)
 {
+<<<<<<< HEAD
 	struct max732x_chip *chip;
 	uint8_t reg_val;
 	int ret;
@@ -205,6 +249,30 @@ static void max732x_gpio_set_value(struct gpio_chip *gc, unsigned off, int val)
 
 	reg_out = (off > 7) ? chip->reg_out[1] : chip->reg_out[0];
 	reg_out = (val) ? reg_out | mask : reg_out & ~mask;
+=======
+	struct max732x_chip *chip = gpiochip_get_data(gc);
+	uint8_t reg_val;
+	int ret;
+
+	ret = max732x_readb(chip, is_group_a(chip, off), &reg_val);
+	if (ret < 0)
+		return ret;
+
+	return !!(reg_val & (1u << (off & 0x7)));
+}
+
+static void max732x_gpio_set_mask(struct gpio_chip *gc, unsigned off, int mask,
+				  int val)
+{
+	struct max732x_chip *chip = gpiochip_get_data(gc);
+	uint8_t reg_out;
+	int ret;
+
+	mutex_lock(&chip->lock);
+
+	reg_out = (off > 7) ? chip->reg_out[1] : chip->reg_out[0];
+	reg_out = (reg_out & ~mask) | (val & mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = max732x_writeb(chip, is_group_a(chip, off), reg_out);
 	if (ret < 0)
@@ -219,6 +287,7 @@ out:
 	mutex_unlock(&chip->lock);
 }
 
+<<<<<<< HEAD
 static int max732x_gpio_direction_input(struct gpio_chip *gc, unsigned off)
 {
 	struct max732x_chip *chip;
@@ -226,6 +295,33 @@ static int max732x_gpio_direction_input(struct gpio_chip *gc, unsigned off)
 
 	chip = container_of(gc, struct max732x_chip, gpio_chip);
 
+=======
+static void max732x_gpio_set_value(struct gpio_chip *gc, unsigned off, int val)
+{
+	unsigned base = off & ~0x7;
+	uint8_t mask = 1u << (off & 0x7);
+
+	max732x_gpio_set_mask(gc, base, mask, val << (off & 0x7));
+}
+
+static void max732x_gpio_set_multiple(struct gpio_chip *gc,
+				      unsigned long *mask, unsigned long *bits)
+{
+	unsigned mask_lo = mask[0] & 0xff;
+	unsigned mask_hi = (mask[0] >> 8) & 0xff;
+
+	if (mask_lo)
+		max732x_gpio_set_mask(gc, 0, mask_lo, bits[0] & 0xff);
+	if (mask_hi)
+		max732x_gpio_set_mask(gc, 8, mask_hi, (bits[0] >> 8) & 0xff);
+}
+
+static int max732x_gpio_direction_input(struct gpio_chip *gc, unsigned off)
+{
+	struct max732x_chip *chip = gpiochip_get_data(gc);
+	unsigned int mask = 1u << off;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((mask & chip->dir_input) == 0) {
 		dev_dbg(&chip->client->dev, "%s port %d is output only\n",
 			chip->client->name, off);
@@ -245,11 +341,17 @@ static int max732x_gpio_direction_input(struct gpio_chip *gc, unsigned off)
 static int max732x_gpio_direction_output(struct gpio_chip *gc,
 		unsigned off, int val)
 {
+<<<<<<< HEAD
 	struct max732x_chip *chip;
 	unsigned int mask = 1u << off;
 
 	chip = container_of(gc, struct max732x_chip, gpio_chip);
 
+=======
+	struct max732x_chip *chip = gpiochip_get_data(gc);
+	unsigned int mask = 1u << off;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((mask & chip->dir_output) == 0) {
 		dev_dbg(&chip->client->dev, "%s port %d is input only\n",
 			chip->client->name, off);
@@ -319,6 +421,7 @@ static void max732x_irq_update_mask(struct max732x_chip *chip)
 	mutex_unlock(&chip->lock);
 }
 
+<<<<<<< HEAD
 static int max732x_gpio_to_irq(struct gpio_chip *gc, unsigned off)
 {
 	struct max732x_chip *chip;
@@ -332,18 +435,40 @@ static void max732x_irq_mask(struct irq_data *d)
 	struct max732x_chip *chip = irq_data_get_irq_chip_data(d);
 
 	chip->irq_mask_cur &= ~(1 << (d->irq - chip->irq_base));
+=======
+static void max732x_irq_mask(struct irq_data *d)
+{
+	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+	struct max732x_chip *chip = gpiochip_get_data(gc);
+
+	chip->irq_mask_cur &= ~(1 << d->hwirq);
+	gpiochip_disable_irq(gc, irqd_to_hwirq(d));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void max732x_irq_unmask(struct irq_data *d)
 {
+<<<<<<< HEAD
 	struct max732x_chip *chip = irq_data_get_irq_chip_data(d);
 
 	chip->irq_mask_cur |= 1 << (d->irq - chip->irq_base);
+=======
+	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+	struct max732x_chip *chip = gpiochip_get_data(gc);
+
+	gpiochip_enable_irq(gc, irqd_to_hwirq(d));
+	chip->irq_mask_cur |= 1 << d->hwirq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void max732x_irq_bus_lock(struct irq_data *d)
 {
+<<<<<<< HEAD
 	struct max732x_chip *chip = irq_data_get_irq_chip_data(d);
+=======
+	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+	struct max732x_chip *chip = gpiochip_get_data(gc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&chip->irq_lock);
 	chip->irq_mask_cur = chip->irq_mask;
@@ -351,16 +476,39 @@ static void max732x_irq_bus_lock(struct irq_data *d)
 
 static void max732x_irq_bus_sync_unlock(struct irq_data *d)
 {
+<<<<<<< HEAD
 	struct max732x_chip *chip = irq_data_get_irq_chip_data(d);
 
 	max732x_irq_update_mask(chip);
+=======
+	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+	struct max732x_chip *chip = gpiochip_get_data(gc);
+	uint16_t new_irqs;
+	uint16_t level;
+
+	max732x_irq_update_mask(chip);
+
+	new_irqs = chip->irq_trig_fall | chip->irq_trig_raise;
+	while (new_irqs) {
+		level = __ffs(new_irqs);
+		max732x_gpio_direction_input(&chip->gpio_chip, level);
+		new_irqs &= ~(1 << level);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&chip->irq_lock);
 }
 
 static int max732x_irq_set_type(struct irq_data *d, unsigned int type)
 {
+<<<<<<< HEAD
 	struct max732x_chip *chip = irq_data_get_irq_chip_data(d);
 	uint16_t off = d->irq - chip->irq_base;
+=======
+	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
+	struct max732x_chip *chip = gpiochip_get_data(gc);
+	uint16_t off = d->hwirq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t mask = 1 << off;
 
 	if (!(mask & chip->dir_input)) {
@@ -385,16 +533,37 @@ static int max732x_irq_set_type(struct irq_data *d, unsigned int type)
 	else
 		chip->irq_trig_raise &= ~mask;
 
+<<<<<<< HEAD
 	return max732x_gpio_direction_input(&chip->gpio_chip, off);
 }
 
 static struct irq_chip max732x_irq_chip = {
+=======
+	return 0;
+}
+
+static int max732x_irq_set_wake(struct irq_data *data, unsigned int on)
+{
+	struct max732x_chip *chip = irq_data_get_irq_chip_data(data);
+
+	irq_set_irq_wake(chip->client->irq, on);
+	return 0;
+}
+
+static const struct irq_chip max732x_irq_chip = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name			= "max732x",
 	.irq_mask		= max732x_irq_mask,
 	.irq_unmask		= max732x_irq_unmask,
 	.irq_bus_lock		= max732x_irq_bus_lock,
 	.irq_bus_sync_unlock	= max732x_irq_bus_sync_unlock,
 	.irq_set_type		= max732x_irq_set_type,
+<<<<<<< HEAD
+=======
+	.irq_set_wake		= max732x_irq_set_wake,
+	.flags			= IRQCHIP_IMMUTABLE,
+	 GPIOCHIP_IRQ_RESOURCE_HELPERS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static uint8_t max732x_irq_pending(struct max732x_chip *chip)
@@ -441,7 +610,12 @@ static irqreturn_t max732x_irq_handler(int irq, void *devid)
 
 	do {
 		level = __ffs(pending);
+<<<<<<< HEAD
 		handle_nested_irq(level + chip->irq_base);
+=======
+		handle_nested_irq(irq_find_mapping(chip->gpio_chip.irq.domain,
+						   level));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pending &= ~(1 << level);
 	} while (pending);
@@ -453,6 +627,7 @@ static int max732x_irq_setup(struct max732x_chip *chip,
 			     const struct i2c_device_id *id)
 {
 	struct i2c_client *client = chip->client;
+<<<<<<< HEAD
 	struct max732x_platform_data *pdata = client->dev.platform_data;
 	int has_irq = max732x_features[id->driver_data] >> 32;
 	int ret;
@@ -507,19 +682,63 @@ static void max732x_irq_teardown(struct max732x_chip *chip)
 	if (chip->irq_base)
 		free_irq(chip->client->irq, chip);
 }
+=======
+	int has_irq = max732x_features[id->driver_data] >> 32;
+	int irq_base = 0;
+	int ret;
+
+	if (client->irq && has_irq != INT_NONE) {
+		struct gpio_irq_chip *girq;
+
+		chip->irq_features = has_irq;
+		mutex_init(&chip->irq_lock);
+
+		ret = devm_request_threaded_irq(&client->dev, client->irq,
+				NULL, max732x_irq_handler, IRQF_ONESHOT |
+				IRQF_TRIGGER_FALLING | IRQF_SHARED,
+				dev_name(&client->dev), chip);
+		if (ret) {
+			dev_err(&client->dev, "failed to request irq %d\n",
+				client->irq);
+			return ret;
+		}
+
+		girq = &chip->gpio_chip.irq;
+		gpio_irq_chip_set_chip(girq, &max732x_irq_chip);
+		/* This will let us handle the parent IRQ in the driver */
+		girq->parent_handler = NULL;
+		girq->num_parents = 0;
+		girq->parents = NULL;
+		girq->default_type = IRQ_TYPE_NONE;
+		girq->handler = handle_simple_irq;
+		girq->threaded = true;
+		girq->first = irq_base; /* FIXME: get rid of this */
+	}
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else /* CONFIG_GPIO_MAX732X_IRQ */
 static int max732x_irq_setup(struct max732x_chip *chip,
 			     const struct i2c_device_id *id)
 {
 	struct i2c_client *client = chip->client;
+<<<<<<< HEAD
 	struct max732x_platform_data *pdata = client->dev.platform_data;
 	int has_irq = max732x_features[id->driver_data] >> 32;
 
 	if (pdata->irq_base && has_irq != INT_NONE)
+=======
+	int has_irq = max732x_features[id->driver_data] >> 32;
+
+	if (client->irq && has_irq != INT_NONE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_warn(&client->dev, "interrupt support not compiled in\n");
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static void max732x_irq_teardown(struct max732x_chip *chip)
 {
@@ -527,6 +746,11 @@ static void max732x_irq_teardown(struct max732x_chip *chip)
 #endif
 
 static int __devinit max732x_setup_gpio(struct max732x_chip *chip,
+=======
+#endif
+
+static int max732x_setup_gpio(struct max732x_chip *chip,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					const struct i2c_device_id *id,
 					unsigned gpio_start)
 {
@@ -562,39 +786,89 @@ static int __devinit max732x_setup_gpio(struct max732x_chip *chip,
 	if (chip->dir_output) {
 		gc->direction_output = max732x_gpio_direction_output;
 		gc->set = max732x_gpio_set_value;
+<<<<<<< HEAD
 	}
 	gc->get = max732x_gpio_get_value;
 	gc->can_sleep = 1;
+=======
+		gc->set_multiple = max732x_gpio_set_multiple;
+	}
+	gc->get = max732x_gpio_get_value;
+	gc->can_sleep = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	gc->base = gpio_start;
 	gc->ngpio = port;
 	gc->label = chip->client->name;
+<<<<<<< HEAD
+=======
+	gc->parent = &chip->client->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gc->owner = THIS_MODULE;
 
 	return port;
 }
 
+<<<<<<< HEAD
 static int __devinit max732x_probe(struct i2c_client *client,
 				   const struct i2c_device_id *id)
 {
 	struct max732x_platform_data *pdata;
+=======
+static struct max732x_platform_data *of_gpio_max732x(struct device *dev)
+{
+	struct max732x_platform_data *pdata;
+
+	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+	if (!pdata)
+		return NULL;
+
+	pdata->gpio_base = -1;
+
+	return pdata;
+}
+
+static int max732x_probe(struct i2c_client *client)
+{
+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+	struct max732x_platform_data *pdata;
+	struct device_node *node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max732x_chip *chip;
 	struct i2c_client *c;
 	uint16_t addr_a, addr_b;
 	int ret, nr_port;
 
+<<<<<<< HEAD
 	pdata = client->dev.platform_data;
 	if (pdata == NULL) {
+=======
+	pdata = dev_get_platdata(&client->dev);
+	node = client->dev.of_node;
+
+	if (!pdata && node)
+		pdata = of_gpio_max732x(&client->dev);
+
+	if (!pdata) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(&client->dev, "no platform data\n");
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	chip = kzalloc(sizeof(struct max732x_chip), GFP_KERNEL);
+=======
+	chip = devm_kzalloc(&client->dev, sizeof(*chip), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip == NULL)
 		return -ENOMEM;
 	chip->client = client;
 
 	nr_port = max732x_setup_gpio(chip, id, pdata->gpio_base);
+<<<<<<< HEAD
+=======
+	chip->gpio_chip.parent = &client->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	addr_a = (client->addr & 0x0f) | 0x60;
 	addr_b = (client->addr & 0x0f) | 0x50;
@@ -603,26 +877,57 @@ static int __devinit max732x_probe(struct i2c_client *client,
 	case 0x60:
 		chip->client_group_a = client;
 		if (nr_port > 8) {
+<<<<<<< HEAD
 			c = i2c_new_dummy(client->adapter, addr_b);
+=======
+			c = devm_i2c_new_dummy_device(&client->dev,
+						      client->adapter, addr_b);
+			if (IS_ERR(c)) {
+				dev_err(&client->dev,
+					"Failed to allocate I2C device\n");
+				return PTR_ERR(c);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			chip->client_group_b = chip->client_dummy = c;
 		}
 		break;
 	case 0x50:
 		chip->client_group_b = client;
 		if (nr_port > 8) {
+<<<<<<< HEAD
 			c = i2c_new_dummy(client->adapter, addr_a);
+=======
+			c = devm_i2c_new_dummy_device(&client->dev,
+						      client->adapter, addr_a);
+			if (IS_ERR(c)) {
+				dev_err(&client->dev,
+					"Failed to allocate I2C device\n");
+				return PTR_ERR(c);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			chip->client_group_a = chip->client_dummy = c;
 		}
 		break;
 	default:
 		dev_err(&client->dev, "invalid I2C address specified %02x\n",
 				client->addr);
+<<<<<<< HEAD
 		ret = -EINVAL;
 		goto out_failed;
+=======
+		return -EINVAL;
+	}
+
+	if (nr_port > 8 && !chip->client_dummy) {
+		dev_err(&client->dev,
+			"Failed to allocate second group I2C device\n");
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_init(&chip->lock);
 
+<<<<<<< HEAD
 	max732x_readb(chip, is_group_a(chip, 0), &chip->reg_out[0]);
 	if (nr_port > 8)
 		max732x_readb(chip, is_group_a(chip, 8), &chip->reg_out[1]);
@@ -682,15 +987,43 @@ static int __devexit max732x_remove(struct i2c_client *client)
 
 	kfree(chip);
 	return 0;
+=======
+	ret = max732x_readb(chip, is_group_a(chip, 0), &chip->reg_out[0]);
+	if (ret)
+		return ret;
+	if (nr_port > 8) {
+		ret = max732x_readb(chip, is_group_a(chip, 8), &chip->reg_out[1]);
+		if (ret)
+			return ret;
+	}
+
+	ret = max732x_irq_setup(chip, id);
+	if (ret)
+		return ret;
+
+	ret = devm_gpiochip_add_data(&client->dev, &chip->gpio_chip, chip);
+	if (ret)
+		return ret;
+
+	i2c_set_clientdata(client, chip);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct i2c_driver max732x_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.name	= "max732x",
 		.owner	= THIS_MODULE,
 	},
 	.probe		= max732x_probe,
 	.remove		= __devexit_p(max732x_remove),
+=======
+		.name		= "max732x",
+		.of_match_table	= max732x_of_table,
+	},
+	.probe		= max732x_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= max732x_id,
 };
 

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: nsalloc - Namespace allocation and deletion utilities
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -41,6 +46,8 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -52,7 +59,11 @@ ACPI_MODULE_NAME("nsalloc")
  *
  * FUNCTION:    acpi_ns_create_node
  *
+<<<<<<< HEAD
  * PARAMETERS:  Name            - Name of the new node (4 char ACPI name)
+=======
+ * PARAMETERS:  name            - Name of the new node (4 char ACPI name)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      New namespace node (Null on failure)
  *
@@ -92,7 +103,11 @@ struct acpi_namespace_node *acpi_ns_create_node(u32 name)
  *
  * FUNCTION:    acpi_ns_delete_node
  *
+<<<<<<< HEAD
  * PARAMETERS:  Node            - Node to be deleted
+=======
+ * PARAMETERS:  node            - Node to be deleted
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -106,20 +121,41 @@ struct acpi_namespace_node *acpi_ns_create_node(u32 name)
 void acpi_ns_delete_node(struct acpi_namespace_node *node)
 {
 	union acpi_operand_object *obj_desc;
+<<<<<<< HEAD
 
 	ACPI_FUNCTION_NAME(ns_delete_node);
 
+=======
+	union acpi_operand_object *next_desc;
+
+	ACPI_FUNCTION_NAME(ns_delete_node);
+
+	if (!node) {
+		return_VOID;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Detach an object if there is one */
 
 	acpi_ns_detach_object(node);
 
 	/*
+<<<<<<< HEAD
 	 * Delete an attached data object if present (an object that was created
 	 * and attached via acpi_attach_data). Note: After any normal object is
 	 * detached above, the only possible remaining object is a data object.
 	 */
 	obj_desc = node->object;
 	if (obj_desc && (obj_desc->common.type == ACPI_TYPE_LOCAL_DATA)) {
+=======
+	 * Delete an attached data object list if present (objects that were
+	 * attached via acpi_attach_data). Note: After any normal object is
+	 * detached above, the only possible remaining object(s) are data
+	 * objects, in a linked list.
+	 */
+	obj_desc = node->object;
+	while (obj_desc && (obj_desc->common.type == ACPI_TYPE_LOCAL_DATA)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Invoke the attached data deletion handler if present */
 
@@ -127,7 +163,19 @@ void acpi_ns_delete_node(struct acpi_namespace_node *node)
 			obj_desc->data.handler(node, obj_desc->data.pointer);
 		}
 
+<<<<<<< HEAD
 		acpi_ut_remove_reference(obj_desc);
+=======
+		next_desc = obj_desc->common.next_object;
+		acpi_ut_remove_reference(obj_desc);
+		obj_desc = next_desc;
+	}
+
+	/* Special case for the statically allocated root node */
+
+	if (node == acpi_gbl_root_node) {
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Now we can delete the node */
@@ -143,7 +191,11 @@ void acpi_ns_delete_node(struct acpi_namespace_node *node)
  *
  * FUNCTION:    acpi_ns_remove_node
  *
+<<<<<<< HEAD
  * PARAMETERS:  Node            - Node to be removed/deleted
+=======
+ * PARAMETERS:  node            - Node to be removed/deleted
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -196,8 +248,13 @@ void acpi_ns_remove_node(struct acpi_namespace_node *node)
  *
  * PARAMETERS:  walk_state      - Current state of the walk
  *              parent_node     - The parent of the new Node
+<<<<<<< HEAD
  *              Node            - The new Node to install
  *              Type            - ACPI object type of the new Node
+=======
+ *              node            - The new Node to install
+ *              type            - ACPI object type of the new Node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *
@@ -263,7 +320,11 @@ void acpi_ns_install_node(struct acpi_walk_state *walk_state, struct acpi_namesp
 	node->type = (u8) type;
 
 	ACPI_DEBUG_PRINT((ACPI_DB_NAMES,
+<<<<<<< HEAD
 			  "%4.4s (%s) [Node %p Owner %X] added to %4.4s (%s) [Node %p]\n",
+=======
+			  "%4.4s (%s) [Node %p Owner %3.3X] added to %4.4s (%s) [Node %p]\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  acpi_ut_get_node_name(node),
 			  acpi_ut_get_type_name(node->type), node, owner_id,
 			  acpi_ut_get_node_name(parent_node),
@@ -316,7 +377,11 @@ void acpi_ns_delete_children(struct acpi_namespace_node *parent_node)
 		node_to_delete = next_node;
 		next_node = next_node->peer;
 		acpi_ns_delete_node(node_to_delete);
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the parent's child pointer */
 
@@ -332,7 +397,11 @@ void acpi_ns_delete_children(struct acpi_namespace_node *parent_node)
  *
  * RETURN:      None.
  *
+<<<<<<< HEAD
  * DESCRIPTION: Delete a subtree of the namespace.  This includes all objects
+=======
+ * DESCRIPTION: Delete a subtree of the namespace. This includes all objects
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              stored within the subtree.
  *
  ******************************************************************************/
@@ -418,7 +487,11 @@ void acpi_ns_delete_namespace_subtree(struct acpi_namespace_node *parent_node)
  * RETURN:      Status
  *
  * DESCRIPTION: Delete entries within the namespace that are owned by a
+<<<<<<< HEAD
  *              specific ID.  Used to delete entire ACPI tables.  All
+=======
+ *              specific ID. Used to delete entire ACPI tables. All
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              reference counts are updated.
  *
  * MUTEX:       Locks namespace during deletion walk.

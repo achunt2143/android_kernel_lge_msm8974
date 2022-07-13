@@ -459,6 +459,7 @@ static const u32 ar5416Common_9100[][2] = {
 	{0x0000a3e0, 0x000001ce},
 };
 
+<<<<<<< HEAD
 static const u32 ar5416Bank6_9100[][3] = {
 	/* Addr      5G_HT20     5G_HT40   */
 	{0x0000989c, 0x00000000, 0x00000000},
@@ -498,6 +499,10 @@ static const u32 ar5416Bank6_9100[][3] = {
 
 static const u32 ar5416Bank6TPC_9100[][3] = {
 	/* Addr      5G_HT20     5G_HT40   */
+=======
+static const u32 ar5416Bank6TPC_9100[][3] = {
+	/* Addr      5G          2G        */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x0000989c, 0x00000000, 0x00000000},
 	{0x0000989c, 0x00000000, 0x00000000},
 	{0x0000989c, 0x00000000, 0x00000000},

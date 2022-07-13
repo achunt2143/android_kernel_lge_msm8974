@@ -25,9 +25,15 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 			loff_t pos, unsigned len, unsigned copied,
 			struct page *pg, void *fsdata);
 static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+<<<<<<< HEAD
 			loff_t pos, unsigned len, unsigned flags,
 			struct page **pagep, void **fsdata);
 static int jffs2_readpage (struct file *filp, struct page *pg);
+=======
+			loff_t pos, unsigned len,
+			struct page **pagep, void **fsdata);
+static int jffs2_read_folio(struct file *filp, struct folio *folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int jffs2_fsync(struct file *filp, loff_t start, loff_t end, int datasync)
 {
@@ -35,6 +41,7 @@ int jffs2_fsync(struct file *filp, loff_t start, loff_t end, int datasync)
 	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
 	int ret;
 
+<<<<<<< HEAD
 	ret = filemap_write_and_wait_range(inode->i_mapping, start, end);
 	if (ret)
 		return ret;
@@ -43,6 +50,16 @@ int jffs2_fsync(struct file *filp, loff_t start, loff_t end, int datasync)
 	/* Trigger GC to flush any pending writes for this inode */
 	jffs2_flush_wbuf_gc(c, inode->i_ino);
 	mutex_unlock(&inode->i_mutex);
+=======
+	ret = file_write_and_wait_range(filp, start, end);
+	if (ret)
+		return ret;
+
+	inode_lock(inode);
+	/* Trigger GC to flush any pending writes for this inode */
+	jffs2_flush_wbuf_gc(c, inode->i_ino);
+	inode_unlock(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -51,6 +68,7 @@ const struct file_operations jffs2_file_operations =
 {
 	.llseek =	generic_file_llseek,
 	.open =		generic_file_open,
+<<<<<<< HEAD
  	.read =		do_sync_read,
  	.aio_read =	generic_file_aio_read,
  	.write =	do_sync_write,
@@ -59,23 +77,43 @@ const struct file_operations jffs2_file_operations =
 	.mmap =		generic_file_readonly_mmap,
 	.fsync =	jffs2_fsync,
 	.splice_read =	generic_file_splice_read,
+=======
+ 	.read_iter =	generic_file_read_iter,
+ 	.write_iter =	generic_file_write_iter,
+	.unlocked_ioctl=jffs2_ioctl,
+	.mmap =		generic_file_readonly_mmap,
+	.fsync =	jffs2_fsync,
+	.splice_read =	filemap_splice_read,
+	.splice_write = iter_file_splice_write,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* jffs2_file_inode_operations */
 
 const struct inode_operations jffs2_file_inode_operations =
 {
+<<<<<<< HEAD
 	.get_acl =	jffs2_get_acl,
 	.setattr =	jffs2_setattr,
 	.setxattr =	jffs2_setxattr,
 	.getxattr =	jffs2_getxattr,
 	.listxattr =	jffs2_listxattr,
 	.removexattr =	jffs2_removexattr
+=======
+	.get_inode_acl =	jffs2_get_acl,
+	.set_acl =	jffs2_set_acl,
+	.setattr =	jffs2_setattr,
+	.listxattr =	jffs2_listxattr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const struct address_space_operations jffs2_file_address_operations =
 {
+<<<<<<< HEAD
 	.readpage =	jffs2_readpage,
+=======
+	.read_folio =	jffs2_read_folio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write_begin =	jffs2_write_begin,
 	.write_end =	jffs2_write_end,
 };
@@ -88,14 +126,23 @@ static int jffs2_do_readpage_nolock (struct inode *inode, struct page *pg)
 	int ret;
 
 	jffs2_dbg(2, "%s(): ino #%lu, page at offset 0x%lx\n",
+<<<<<<< HEAD
 		  __func__, inode->i_ino, pg->index << PAGE_CACHE_SHIFT);
+=======
+		  __func__, inode->i_ino, pg->index << PAGE_SHIFT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!PageLocked(pg));
 
 	pg_buf = kmap(pg);
 	/* FIXME: Can kmap fail? */
 
+<<<<<<< HEAD
 	ret = jffs2_read_inode_range(c, f, pg_buf, pg->index << PAGE_CACHE_SHIFT, PAGE_CACHE_SIZE);
+=======
+	ret = jffs2_read_inode_range(c, f, pg_buf, pg->index << PAGE_SHIFT,
+				     PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret) {
 		ClearPageUptodate(pg);
@@ -112,6 +159,7 @@ static int jffs2_do_readpage_nolock (struct inode *inode, struct page *pg)
 	return ret;
 }
 
+<<<<<<< HEAD
 int jffs2_do_readpage_unlock(struct inode *inode, struct page *pg)
 {
 	int ret = jffs2_do_readpage_nolock(inode, pg);
@@ -127,26 +175,51 @@ static int jffs2_readpage (struct file *filp, struct page *pg)
 
 	mutex_lock(&f->sem);
 	ret = jffs2_do_readpage_unlock(pg->mapping->host, pg);
+=======
+int __jffs2_read_folio(struct file *file, struct folio *folio)
+{
+	int ret = jffs2_do_readpage_nolock(folio->mapping->host, &folio->page);
+	folio_unlock(folio);
+	return ret;
+}
+
+static int jffs2_read_folio(struct file *file, struct folio *folio)
+{
+	struct jffs2_inode_info *f = JFFS2_INODE_INFO(folio->mapping->host);
+	int ret;
+
+	mutex_lock(&f->sem);
+	ret = __jffs2_read_folio(file, folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&f->sem);
 	return ret;
 }
 
 static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
+<<<<<<< HEAD
 			loff_t pos, unsigned len, unsigned flags,
+=======
+			loff_t pos, unsigned len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct page **pagep, void **fsdata)
 {
 	struct page *pg;
 	struct inode *inode = mapping->host;
 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
 	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
+<<<<<<< HEAD
 	struct jffs2_raw_inode ri;
 	uint32_t alloc_len = 0;
 	pgoff_t index = pos >> PAGE_CACHE_SHIFT;
 	uint32_t pageofs = index << PAGE_CACHE_SHIFT;
+=======
+	pgoff_t index = pos >> PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	jffs2_dbg(1, "%s()\n", __func__);
 
+<<<<<<< HEAD
 	if (pageofs > inode->i_size) {
 		ret = jffs2_reserve_space(c, sizeof(ri), &alloc_len,
 					  ALLOC_NORMAL, JFFS2_SUMMARY_INODE_SIZE);
@@ -171,6 +244,23 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
 		jffs2_dbg(1, "Writing new hole frag 0x%x-0x%x between current EOF and new page\n",
 			  (unsigned int)inode->i_size, pageofs);
 
+=======
+	if (pos > inode->i_size) {
+		/* Make new hole frag from old EOF to new position */
+		struct jffs2_raw_inode ri;
+		struct jffs2_full_dnode *fn;
+		uint32_t alloc_len;
+
+		jffs2_dbg(1, "Writing new hole frag 0x%x-0x%x between current EOF and new position\n",
+			  (unsigned int)inode->i_size, (uint32_t)pos);
+
+		ret = jffs2_reserve_space(c, sizeof(ri), &alloc_len,
+					  ALLOC_NORMAL, JFFS2_SUMMARY_INODE_SIZE);
+		if (ret)
+			goto out_err;
+
+		mutex_lock(&f->sem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(&ri, 0, sizeof(ri));
 
 		ri.magic = cpu_to_je16(JFFS2_MAGIC_BITMASK);
@@ -181,12 +271,21 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
 		ri.ino = cpu_to_je32(f->inocache->ino);
 		ri.version = cpu_to_je32(++f->highest_version);
 		ri.mode = cpu_to_jemode(inode->i_mode);
+<<<<<<< HEAD
 		ri.uid = cpu_to_je16(inode->i_uid);
 		ri.gid = cpu_to_je16(inode->i_gid);
 		ri.isize = cpu_to_je32(max((uint32_t)inode->i_size, pageofs));
 		ri.atime = ri.ctime = ri.mtime = cpu_to_je32(get_seconds());
 		ri.offset = cpu_to_je32(inode->i_size);
 		ri.dsize = cpu_to_je32(pageofs - inode->i_size);
+=======
+		ri.uid = cpu_to_je16(i_uid_read(inode));
+		ri.gid = cpu_to_je16(i_gid_read(inode));
+		ri.isize = cpu_to_je32((uint32_t)pos);
+		ri.atime = ri.ctime = ri.mtime = cpu_to_je32(JFFS2_NOW());
+		ri.offset = cpu_to_je32(inode->i_size);
+		ri.dsize = cpu_to_je32((uint32_t)pos - inode->i_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ri.csize = cpu_to_je32(0);
 		ri.compr = JFFS2_COMPR_ZERO;
 		ri.node_crc = cpu_to_je32(crc32(0, &ri, sizeof(ri)-8));
@@ -197,7 +296,12 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
 		if (IS_ERR(fn)) {
 			ret = PTR_ERR(fn);
 			jffs2_complete_reservation(c);
+<<<<<<< HEAD
 			goto out_page;
+=======
+			mutex_unlock(&f->sem);
+			goto out_err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		ret = jffs2_add_full_dnode_to_inode(c, f, fn);
 		if (f->metadata) {
@@ -211,6 +315,7 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
 			jffs2_mark_node_obsolete(c, fn->raw);
 			jffs2_free_full_dnode(fn);
 			jffs2_complete_reservation(c);
+<<<<<<< HEAD
 			goto out_page;
 		}
 		jffs2_complete_reservation(c);
@@ -218,11 +323,36 @@ static int jffs2_write_begin(struct file *filp, struct address_space *mapping,
 	}
 
 	/*
+=======
+			mutex_unlock(&f->sem);
+			goto out_err;
+		}
+		jffs2_complete_reservation(c);
+		inode->i_size = pos;
+		mutex_unlock(&f->sem);
+	}
+
+	/*
+	 * While getting a page and reading data in, lock c->alloc_sem until
+	 * the page is Uptodate. Otherwise GC task may attempt to read the same
+	 * page in read_cache_page(), which causes a deadlock.
+	 */
+	mutex_lock(&c->alloc_sem);
+	pg = grab_cache_page_write_begin(mapping, index);
+	if (!pg) {
+		ret = -ENOMEM;
+		goto release_sem;
+	}
+	*pagep = pg;
+
+	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Read in the page if it wasn't already present. Cannot optimize away
 	 * the whole page write case until jffs2_write_end can handle the
 	 * case of a short-copy.
 	 */
 	if (!PageUptodate(pg)) {
+<<<<<<< HEAD
 		ret = jffs2_do_readpage_nolock(inode, pg);
 		if (ret)
 			goto out_page;
@@ -235,6 +365,22 @@ out_page:
 	unlock_page(pg);
 	page_cache_release(pg);
 	mutex_unlock(&f->sem);
+=======
+		mutex_lock(&f->sem);
+		ret = jffs2_do_readpage_nolock(inode, pg);
+		mutex_unlock(&f->sem);
+		if (ret) {
+			unlock_page(pg);
+			put_page(pg);
+			goto release_sem;
+		}
+	}
+	jffs2_dbg(1, "end write_begin(). pg->flags %lx\n", pg->flags);
+
+release_sem:
+	mutex_unlock(&c->alloc_sem);
+out_err:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -249,14 +395,22 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
 	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
 	struct jffs2_raw_inode *ri;
+<<<<<<< HEAD
 	unsigned start = pos & (PAGE_CACHE_SIZE - 1);
+=======
+	unsigned start = pos & (PAGE_SIZE - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned end = start + copied;
 	unsigned aligned_start = start & ~3;
 	int ret = 0;
 	uint32_t writtenlen = 0;
 
 	jffs2_dbg(1, "%s(): ino #%lu, page at 0x%lx, range %d-%d, flags %lx\n",
+<<<<<<< HEAD
 		  __func__, inode->i_ino, pg->index << PAGE_CACHE_SHIFT,
+=======
+		  __func__, inode->i_ino, pg->index << PAGE_SHIFT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  start, end, pg->flags);
 
 	/* We need to avoid deadlock with page_cache_read() in
@@ -265,7 +419,11 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 	   to re-lock it. */
 	BUG_ON(!PageUptodate(pg));
 
+<<<<<<< HEAD
 	if (end == PAGE_CACHE_SIZE) {
+=======
+	if (end == PAGE_SIZE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* When writing out the end of a page, write out the
 		   _whole_ page. This helps to reduce the number of
 		   nodes in files which have many short writes, like
@@ -279,24 +437,39 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 		jffs2_dbg(1, "%s(): Allocation of raw inode failed\n",
 			  __func__);
 		unlock_page(pg);
+<<<<<<< HEAD
 		page_cache_release(pg);
+=======
+		put_page(pg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	/* Set the fields that the generic jffs2_write_inode_range() code can't find */
 	ri->ino = cpu_to_je32(inode->i_ino);
 	ri->mode = cpu_to_jemode(inode->i_mode);
+<<<<<<< HEAD
 	ri->uid = cpu_to_je16(inode->i_uid);
 	ri->gid = cpu_to_je16(inode->i_gid);
 	ri->isize = cpu_to_je32((uint32_t)inode->i_size);
 	ri->atime = ri->ctime = ri->mtime = cpu_to_je32(get_seconds());
+=======
+	ri->uid = cpu_to_je16(i_uid_read(inode));
+	ri->gid = cpu_to_je16(i_gid_read(inode));
+	ri->isize = cpu_to_je32((uint32_t)inode->i_size);
+	ri->atime = ri->ctime = ri->mtime = cpu_to_je32(JFFS2_NOW());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* In 2.4, it was already kmapped by generic_file_write(). Doesn't
 	   hurt to do it again. The alternative is ifdefs, which are ugly. */
 	kmap(pg);
 
 	ret = jffs2_write_inode_range(c, f, ri, page_address(pg) + aligned_start,
+<<<<<<< HEAD
 				      (pg->index << PAGE_CACHE_SHIFT) + aligned_start,
+=======
+				      (pg->index << PAGE_SHIFT) + aligned_start,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      end - aligned_start, &writtenlen);
 
 	kunmap(pg);
@@ -314,7 +487,12 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 			inode->i_size = pos + writtenlen;
 			inode->i_blocks = (inode->i_size + 511) >> 9;
 
+<<<<<<< HEAD
 			inode->i_ctime = inode->i_mtime = ITIME(je32_to_cpu(ri->ctime));
+=======
+			inode_set_mtime_to_ts(inode,
+					      inode_set_ctime_to_ts(inode, ITIME(je32_to_cpu(ri->ctime))));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -333,6 +511,10 @@ static int jffs2_write_end(struct file *filp, struct address_space *mapping,
 	jffs2_dbg(1, "%s() returning %d\n",
 		  __func__, writtenlen > 0 ? writtenlen : ret);
 	unlock_page(pg);
+<<<<<<< HEAD
 	page_cache_release(pg);
+=======
+	put_page(pg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return writtenlen > 0 ? writtenlen : ret;
 }

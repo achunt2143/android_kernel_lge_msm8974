@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1996-2001 Vojtech Pavlik
  */
@@ -7,6 +11,7 @@
  * out of the joystick port into the syslog ...
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,11 +32,16 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/gameport.h>
 #include <linux/kernel.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 #define DRIVER_DESC	"Gameport data dumper module"
@@ -81,7 +91,11 @@ static int joydump_connect(struct gameport *gameport, struct gameport_driver *dr
 
 	timeout = gameport_time(gameport, 10000); /* 10 ms */
 
+<<<<<<< HEAD
 	buf = kmalloc(BUF_SIZE * sizeof(struct joydump), GFP_KERNEL);
+=======
+	buf = kmalloc_array(BUF_SIZE, sizeof(struct joydump), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!buf) {
 		printk(KERN_INFO "joydump: no memory for testing\n");
 		goto jd_end;
@@ -159,6 +173,7 @@ static struct gameport_driver joydump_drv = {
 	.disconnect	= joydump_disconnect,
 };
 
+<<<<<<< HEAD
 static int __init joydump_init(void)
 {
 	return gameport_register_driver(&joydump_drv);
@@ -171,3 +186,6 @@ static void __exit joydump_exit(void)
 
 module_init(joydump_init);
 module_exit(joydump_exit);
+=======
+module_gameport_driver(joydump_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

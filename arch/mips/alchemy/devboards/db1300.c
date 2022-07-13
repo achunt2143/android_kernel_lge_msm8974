@@ -1,9 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DBAu1300 init and platform device setup.
  *
  * (c) 2009 Manuel Lauss <manuel.lauss@googlemail.com>
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dma-mapping.h>
 #include <linux/gpio.h>
 #include <linux/gpio_keys.h>
@@ -12,6 +20,7 @@
 #include <linux/i2c.h>
 #include <linux/io.h>
 #include <linux/leds.h>
+<<<<<<< HEAD
 #include <linux/ata_platform.h>
 #include <linux/mmc/host.h>
 #include <linux/module.h>
@@ -22,16 +31,68 @@
 #include <linux/smsc911x.h>
 
 #include <asm/mach-au1x00/au1000.h>
+=======
+#include <linux/interrupt.h>
+#include <linux/ata_platform.h>
+#include <linux/mmc/host.h>
+#include <linux/mtd/mtd.h>
+#include <linux/mtd/platnand.h>
+#include <linux/platform_device.h>
+#include <linux/smsc911x.h>
+#include <linux/wm97xx.h>
+
+#include <asm/mach-au1x00/au1000.h>
+#include <asm/mach-au1x00/gpio-au1300.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mach-au1x00/au1100_mmc.h>
 #include <asm/mach-au1x00/au1200fb.h>
 #include <asm/mach-au1x00/au1xxx_dbdma.h>
 #include <asm/mach-au1x00/au1xxx_psc.h>
+<<<<<<< HEAD
 #include <asm/mach-db1x00/db1300.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mach-db1x00/bcsr.h>
 #include <asm/mach-au1x00/prom.h>
 
 #include "platform.h"
 
+<<<<<<< HEAD
+=======
+/* FPGA (external mux) interrupt sources */
+#define DB1300_FIRST_INT	(ALCHEMY_GPIC_INT_LAST + 1)
+#define DB1300_IDE_INT		(DB1300_FIRST_INT + 0)
+#define DB1300_ETH_INT		(DB1300_FIRST_INT + 1)
+#define DB1300_CF_INT		(DB1300_FIRST_INT + 2)
+#define DB1300_VIDEO_INT	(DB1300_FIRST_INT + 4)
+#define DB1300_HDMI_INT		(DB1300_FIRST_INT + 5)
+#define DB1300_DC_INT		(DB1300_FIRST_INT + 6)
+#define DB1300_FLASH_INT	(DB1300_FIRST_INT + 7)
+#define DB1300_CF_INSERT_INT	(DB1300_FIRST_INT + 8)
+#define DB1300_CF_EJECT_INT	(DB1300_FIRST_INT + 9)
+#define DB1300_AC97_INT		(DB1300_FIRST_INT + 10)
+#define DB1300_AC97_PEN_INT	(DB1300_FIRST_INT + 11)
+#define DB1300_SD1_INSERT_INT	(DB1300_FIRST_INT + 12)
+#define DB1300_SD1_EJECT_INT	(DB1300_FIRST_INT + 13)
+#define DB1300_OTG_VBUS_OC_INT	(DB1300_FIRST_INT + 14)
+#define DB1300_HOST_VBUS_OC_INT (DB1300_FIRST_INT + 15)
+#define DB1300_LAST_INT		(DB1300_FIRST_INT + 15)
+
+/* SMSC9210 CS */
+#define DB1300_ETH_PHYS_ADDR	0x19000000
+#define DB1300_ETH_PHYS_END	0x197fffff
+
+/* ATA CS */
+#define DB1300_IDE_PHYS_ADDR	0x18800000
+#define DB1300_IDE_REG_SHIFT	5
+#define DB1300_IDE_PHYS_LEN	(16 << DB1300_IDE_REG_SHIFT)
+
+/* NAND CS */
+#define DB1300_NAND_PHYS_ADDR	0x20000000
+#define DB1300_NAND_PHYS_END	0x20000fff
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct i2c_board_info db1300_i2c_devs[] __initdata = {
 	{ I2C_BOARD_INFO("wm8731", 0x1b), },	/* I2S audio codec */
 	{ I2C_BOARD_INFO("ne1619", 0x2d), },	/* adm1025-compat hwmon */
@@ -80,7 +141,11 @@ static int db1300_dev_pins[] __initdata = {
 	AU1300_PIN_PSC0D1,
 	AU1300_PIN_PSC1SYNC0, AU1300_PIN_PSC1SYNC1, AU1300_PIN_PSC1D0,
 	AU1300_PIN_PSC1D1,
+<<<<<<< HEAD
 	AU1300_PIN_PSC2SYNC0,                       AU1300_PIN_PSC2D0,
+=======
+	AU1300_PIN_PSC2SYNC0,			    AU1300_PIN_PSC2D0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AU1300_PIN_PSC2D1,
 	AU1300_PIN_PSC3SYNC0, AU1300_PIN_PSC3SYNC1, AU1300_PIN_PSC3D0,
 	AU1300_PIN_PSC3D1,
@@ -110,6 +175,7 @@ static void __init db1300_gpio_config(void)
 	au1300_set_dbdma_gpio(1, AU1300_PIN_FG3AUX);
 }
 
+<<<<<<< HEAD
 char *get_system_type(void)
 {
 	return "DB1300";
@@ -122,6 +188,16 @@ static void au1300_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
 {
 	struct nand_chip *this = mtd->priv;
 	unsigned long ioaddr = (unsigned long)this->IO_ADDR_W;
+=======
+/**********************************************************************/
+
+static u64 au1300_all_dmamask = DMA_BIT_MASK(32);
+
+static void au1300_nand_cmd_ctrl(struct nand_chip *this, int cmd,
+				 unsigned int ctrl)
+{
+	unsigned long ioaddr = (unsigned long)this->legacy.IO_ADDR_W;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ioaddr &= 0xffffff00;
 
@@ -133,13 +209,20 @@ static void au1300_nand_cmd_ctrl(struct mtd_info *mtd, int cmd,
 		/* assume we want to r/w real data  by default */
 		ioaddr += MEM_STNAND_DATA;
 	}
+<<<<<<< HEAD
 	this->IO_ADDR_R = this->IO_ADDR_W = (void __iomem *)ioaddr;
 	if (cmd != NAND_CMD_NONE) {
 		__raw_writeb(cmd, this->IO_ADDR_W);
+=======
+	this->legacy.IO_ADDR_R = this->legacy.IO_ADDR_W = (void __iomem *)ioaddr;
+	if (cmd != NAND_CMD_NONE) {
+		__raw_writeb(cmd, this->legacy.IO_ADDR_W);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wmb();
 	}
 }
 
+<<<<<<< HEAD
 static int au1300_nand_device_ready(struct mtd_info *mtd)
 {
 	return __raw_readl((void __iomem *)MEM_STSTAT) & 1;
@@ -151,11 +234,26 @@ static struct mtd_partition db1300_nand_parts[] = {
 	{
 		.name	= "NAND FS 0",
 		.offset	= 0,
+=======
+static int au1300_nand_device_ready(struct nand_chip *this)
+{
+	return alchemy_rdsmem(AU1000_MEM_STSTAT) & 1;
+}
+
+static struct mtd_partition db1300_nand_parts[] = {
+	{
+		.name	= "NAND FS 0",
+		.offset = 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.size	= 8 * 1024 * 1024,
 	},
 	{
 		.name	= "NAND FS 1",
+<<<<<<< HEAD
 		.offset	= MTDPART_OFS_APPEND,
+=======
+		.offset = MTDPART_OFS_APPEND,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.size	= MTDPART_SIZ_FULL
 	},
 };
@@ -167,7 +265,10 @@ struct platform_nand_data db1300_nand_platdata = {
 		.nr_partitions	= ARRAY_SIZE(db1300_nand_parts),
 		.partitions	= db1300_nand_parts,
 		.chip_delay	= 20,
+<<<<<<< HEAD
 		.part_probe_types = db1300_part_probes,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.ctrl = {
 		.dev_ready	= au1300_nand_device_ready,
@@ -411,6 +512,11 @@ static struct resource db1300_ide_res[] = {
 
 static struct platform_device db1300_ide_dev = {
 	.dev	= {
+<<<<<<< HEAD
+=======
+		.dma_mask		= &au1300_all_dmamask,
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.platform_data	= &db1300_ide_info,
 	},
 	.name		= "pata_platform",
@@ -420,6 +526,7 @@ static struct platform_device db1300_ide_dev = {
 
 /**********************************************************************/
 
+<<<<<<< HEAD
 static irqreturn_t db1300_mmc_cd(int irq, void *ptr)
 {
 	void(*mmc_cd)(struct mmc_host *, unsigned long);
@@ -439,6 +546,24 @@ static irqreturn_t db1300_mmc_cd(int irq, void *ptr)
 	mmc_cd = symbol_get(mmc_detect_change);
 	mmc_cd(ptr, msecs_to_jiffies(500));
 	symbol_put(mmc_detect_change);
+=======
+#ifdef CONFIG_MMC_AU1X
+static irqreturn_t db1300_mmc_cd(int irq, void *ptr)
+{
+	disable_irq_nosync(irq);
+	return IRQ_WAKE_THREAD;
+}
+
+static irqreturn_t db1300_mmc_cdfn(int irq, void *ptr)
+{
+	mmc_detect_change(ptr, msecs_to_jiffies(200));
+
+	msleep(100);	/* debounce */
+	if (irq == DB1300_SD1_INSERT_INT)
+		enable_irq(DB1300_SD1_EJECT_INT);
+	else
+		enable_irq(DB1300_SD1_INSERT_INT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -459,6 +584,7 @@ static int db1300_mmc_cd_setup(void *mmc_host, int en)
 	int ret;
 
 	if (en) {
+<<<<<<< HEAD
 		ret = request_irq(DB1300_SD1_INSERT_INT, db1300_mmc_cd, 0,
 				  "sd_insert", mmc_host);
 		if (ret)
@@ -466,6 +592,15 @@ static int db1300_mmc_cd_setup(void *mmc_host, int en)
 
 		ret = request_irq(DB1300_SD1_EJECT_INT, db1300_mmc_cd, 0,
 				  "sd_eject", mmc_host);
+=======
+		ret = request_threaded_irq(DB1300_SD1_INSERT_INT, db1300_mmc_cd,
+				db1300_mmc_cdfn, 0, "sd_insert", mmc_host);
+		if (ret)
+			goto out;
+
+		ret = request_threaded_irq(DB1300_SD1_EJECT_INT, db1300_mmc_cd,
+				db1300_mmc_cdfn, 0, "sd_eject", mmc_host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret) {
 			free_irq(DB1300_SD1_INSERT_INT, mmc_host);
 			goto out;
@@ -495,7 +630,11 @@ static void db1300_mmcled_set(struct led_classdev *led,
 }
 
 static struct led_classdev db1300_mmc_led = {
+<<<<<<< HEAD
 	.brightness_set	= db1300_mmcled_set,
+=======
+	.brightness_set = db1300_mmcled_set,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct au1xmmc_platform_data db1300_sd1_platdata = {
@@ -530,7 +669,13 @@ static struct resource au1300_sd1_res[] = {
 
 static struct platform_device db1300_sd1_dev = {
 	.dev = {
+<<<<<<< HEAD
 		.platform_data	= &db1300_sd1_platdata,
+=======
+		.dma_mask		= &au1300_all_dmamask,
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+		.platform_data		= &db1300_sd1_platdata,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.name		= "au1xxx-mmc",
 	.id		= 1,
@@ -595,13 +740,23 @@ static struct resource au1300_sd0_res[] = {
 
 static struct platform_device db1300_sd0_dev = {
 	.dev = {
+<<<<<<< HEAD
 		.platform_data	= &db1300_sd0_platdata,
+=======
+		.dma_mask		= &au1300_all_dmamask,
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+		.platform_data		= &db1300_sd0_platdata,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.name		= "au1xxx-mmc",
 	.id		= 0,
 	.resource	= au1300_sd0_res,
 	.num_resources	= ARRAY_SIZE(au1300_sd0_res),
 };
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_MMC_AU1X */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**********************************************************************/
 
@@ -622,10 +777,24 @@ static struct platform_device db1300_i2sdma_dev = {
 
 static struct platform_device db1300_sndac97_dev = {
 	.name		= "db1300-ac97",
+<<<<<<< HEAD
+=======
+	.dev = {
+		.dma_mask		= &au1300_all_dmamask,
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct platform_device db1300_sndi2s_dev = {
 	.name		= "db1300-i2s",
+<<<<<<< HEAD
+=======
+	.dev = {
+		.dma_mask		= &au1300_all_dmamask,
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**********************************************************************/
@@ -654,7 +823,11 @@ static int db1300fb_panel_shutdown(void)
 static struct au1200fb_platdata db1300fb_pd = {
 	.panel_index	= db1300fb_panel_index,
 	.panel_init	= db1300fb_panel_init,
+<<<<<<< HEAD
 	.panel_shutdown	= db1300fb_panel_shutdown,
+=======
+	.panel_shutdown = db1300fb_panel_shutdown,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct resource au1300_lcd_res[] = {
@@ -670,13 +843,20 @@ static struct resource au1300_lcd_res[] = {
 	}
 };
 
+<<<<<<< HEAD
 static u64 au1300_lcd_dmamask = DMA_BIT_MASK(32);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_device db1300_lcd_dev = {
 	.name		= "au1200-lcd",
 	.id		= 0,
 	.dev = {
+<<<<<<< HEAD
 		.dma_mask		= &au1300_lcd_dmamask,
+=======
+		.dma_mask		= &au1300_all_dmamask,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.coherent_dma_mask	= DMA_BIT_MASK(32),
 		.platform_data		= &db1300fb_pd,
 	},
@@ -686,14 +866,62 @@ static struct platform_device db1300_lcd_dev = {
 
 /**********************************************************************/
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_TOUCHSCREEN_WM97XX)
+static struct wm97xx_mach_ops db1300_wm97xx_ops = {
+	.irq_gpio	= WM97XX_GPIO_3,
+};
+
+static int db1300_wm97xx_probe(struct platform_device *pdev)
+{
+	struct wm97xx *wm = platform_get_drvdata(pdev);
+
+	/* external pendown indicator */
+	wm97xx_config_gpio(wm, WM97XX_GPIO_13, WM97XX_GPIO_IN,
+			   WM97XX_GPIO_POL_LOW, WM97XX_GPIO_STICKY,
+			   WM97XX_GPIO_WAKE);
+
+	/* internal "virtual" pendown gpio */
+	wm97xx_config_gpio(wm, WM97XX_GPIO_3, WM97XX_GPIO_OUT,
+			   WM97XX_GPIO_POL_LOW, WM97XX_GPIO_NOTSTICKY,
+			   WM97XX_GPIO_NOWAKE);
+
+	wm->pen_irq = DB1300_AC97_PEN_INT;
+
+	return wm97xx_register_mach_ops(wm, &db1300_wm97xx_ops);
+}
+#else
+static int db1300_wm97xx_probe(struct platform_device *pdev)
+{
+	return -ENODEV;
+}
+#endif
+
+static struct platform_driver db1300_wm97xx_driver = {
+	.driver.name	= "wm97xx-touch",
+	.driver.owner	= THIS_MODULE,
+	.probe		= db1300_wm97xx_probe,
+};
+
+/**********************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_device *db1300_dev[] __initdata = {
 	&db1300_eth_dev,
 	&db1300_i2c_dev,
 	&db1300_5waysw_dev,
 	&db1300_nand_dev,
 	&db1300_ide_dev,
+<<<<<<< HEAD
 	&db1300_sd0_dev,
 	&db1300_sd1_dev,
+=======
+#ifdef CONFIG_MMC_AU1X
+	&db1300_sd0_dev,
+	&db1300_sd1_dev,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&db1300_lcd_dev,
 	&db1300_ac97_dev,
 	&db1300_i2s_dev,
@@ -704,9 +932,16 @@ static struct platform_device *db1300_dev[] __initdata = {
 	&db1300_sndi2s_dev,
 };
 
+<<<<<<< HEAD
 static int __init db1300_device_init(void)
 {
 	int swapped, cpldirq;
+=======
+int __init db1300_dev_setup(void)
+{
+	int swapped, cpldirq;
+	struct clk *c;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* setup CPLD IRQ muxer */
 	cpldirq = au1300_gpio_to_irq(AU1300_PIN_EXTCLK1);
@@ -729,6 +964,12 @@ static int __init db1300_device_init(void)
 	i2c_register_board_info(0, db1300_i2c_devs,
 				ARRAY_SIZE(db1300_i2c_devs));
 
+<<<<<<< HEAD
+=======
+	if (platform_driver_register(&db1300_wm97xx_driver))
+		pr_warn("DB1300: failed to init touch pen irq support!\n");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Audio PSC clock is supplied by codecs (PSC1, 2) */
 	__raw_writel(PSC_SEL_CLK_SERCLK,
 	    (void __iomem *)KSEG1ADDR(AU1300_PSC1_PHYS_ADDR) + PSC_SEL_OFFSET);
@@ -736,7 +977,17 @@ static int __init db1300_device_init(void)
 	__raw_writel(PSC_SEL_CLK_SERCLK,
 	    (void __iomem *)KSEG1ADDR(AU1300_PSC2_PHYS_ADDR) + PSC_SEL_OFFSET);
 	wmb();
+<<<<<<< HEAD
 	/* I2C uses internal 48MHz EXTCLK1 */
+=======
+	/* I2C driver wants 50MHz, get as close as possible */
+	c = clk_get(NULL, "psc3_intclk");
+	if (!IS_ERR(c)) {
+		clk_set_rate(c, 50000000);
+		clk_prepare_enable(c);
+		clk_put(c);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__raw_writel(PSC_SEL_CLK_INTCLK,
 	    (void __iomem *)KSEG1ADDR(AU1300_PSC3_PHYS_ADDR) + PSC_SEL_OFFSET);
 	wmb();
@@ -761,6 +1012,7 @@ static int __init db1300_device_init(void)
 
 	return platform_add_devices(db1300_dev, ARRAY_SIZE(db1300_dev));
 }
+<<<<<<< HEAD
 device_initcall(db1300_device_init);
 
 
@@ -769,10 +1021,26 @@ void __init board_setup(void)
 	unsigned short whoami;
 
 	db1300_gpio_config();
+=======
+
+
+int __init db1300_board_setup(void)
+{
+	unsigned short whoami;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bcsr_init(DB1300_BCSR_PHYS_ADDR,
 		  DB1300_BCSR_PHYS_ADDR + DB1300_BCSR_HEXLED_OFS);
 
 	whoami = bcsr_read(BCSR_WHOAMI);
+<<<<<<< HEAD
+=======
+	if (BCSR_WHOAMI_BOARD(whoami) != BCSR_WHOAMI_DB1300)
+		return -ENODEV;
+
+	db1300_gpio_config();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO "NetLogic DBAu1300 Development Platform.\n\t"
 		"BoardID %d   CPLD Rev %d   DaughtercardID %d\n",
 		BCSR_WHOAMI_BOARD(whoami), BCSR_WHOAMI_CPLD(whoami),
@@ -782,4 +1050,9 @@ void __init board_setup(void)
 	alchemy_uart_enable(AU1300_UART0_PHYS_ADDR);
 	alchemy_uart_enable(AU1300_UART1_PHYS_ADDR);
 	alchemy_uart_enable(AU1300_UART3_PHYS_ADDR);
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

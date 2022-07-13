@@ -1,10 +1,17 @@
+<<<<<<< HEAD
 /*
  * Copyright 2002, 2003 Andi Kleen, SuSE Labs.
  * Subject to the GNU Public License v.2
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright 2002, 2003 Andi Kleen, SuSE Labs.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Wrappers of assembly checksum functions for x86-64.
  */
 #include <asm/checksum.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 
 /**
@@ -14,11 +21,23 @@
  * @len: number of bytes to be copied.
  * @isum: initial sum that is added into the result (32bit unfolded)
  * @errp: set to -EFAULT for an bad source address.
+=======
+#include <linux/export.h>
+#include <linux/uaccess.h>
+#include <asm/smap.h>
+
+/**
+ * csum_and_copy_from_user - Copy and checksum from user space.
+ * @src: source address (user space)
+ * @dst: destination address
+ * @len: number of bytes to be copied.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns an 32bit unfolded checksum of the buffer.
  * src and dst are best aligned to 64bits.
  */
 __wsum
+<<<<<<< HEAD
 csum_partial_copy_from_user(const void __user *src, void *dst,
 			    int len, __wsum isum, int *errp)
 {
@@ -74,11 +93,31 @@ EXPORT_SYMBOL(csum_partial_copy_from_user);
  * @len: number of bytes to be copied.
  * @isum: initial sum that is added into the result (32bit unfolded)
  * @errp: set to -EFAULT for an bad destination address.
+=======
+csum_and_copy_from_user(const void __user *src, void *dst, int len)
+{
+	__wsum sum;
+
+	might_sleep();
+	if (!user_access_begin(src, len))
+		return 0;
+	sum = csum_partial_copy_generic((__force const void *)src, dst, len);
+	user_access_end();
+	return sum;
+}
+
+/**
+ * csum_and_copy_to_user - Copy and checksum to user space.
+ * @src: source address
+ * @dst: destination address (user space)
+ * @len: number of bytes to be copied.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns an 32bit unfolded checksum of the buffer.
  * src and dst are best aligned to 64bits.
  */
 __wsum
+<<<<<<< HEAD
 csum_partial_copy_to_user(const void *src, void __user *dst,
 			  int len, __wsum isum, int *errp)
 {
@@ -109,26 +148,52 @@ csum_partial_copy_to_user(const void *src, void __user *dst,
 					 len, isum, NULL, errp);
 }
 EXPORT_SYMBOL(csum_partial_copy_to_user);
+=======
+csum_and_copy_to_user(const void *src, void __user *dst, int len)
+{
+	__wsum sum;
+
+	might_sleep();
+	if (!user_access_begin(dst, len))
+		return 0;
+	sum = csum_partial_copy_generic(src, (void __force *)dst, len);
+	user_access_end();
+	return sum;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * csum_partial_copy_nocheck - Copy and checksum.
  * @src: source address
  * @dst: destination address
  * @len: number of bytes to be copied.
+<<<<<<< HEAD
  * @isum: initial sum that is added into the result (32bit unfolded)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns an 32bit unfolded checksum of the buffer.
  */
 __wsum
+<<<<<<< HEAD
 csum_partial_copy_nocheck(const void *src, void *dst, int len, __wsum sum)
 {
 	return csum_partial_copy_generic(src, dst, len, sum, NULL, NULL);
+=======
+csum_partial_copy_nocheck(const void *src, void *dst, int len)
+{
+	return csum_partial_copy_generic(src, dst, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(csum_partial_copy_nocheck);
 
 __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 			const struct in6_addr *daddr,
+<<<<<<< HEAD
 			__u32 len, unsigned short proto, __wsum sum)
+=======
+			__u32 len, __u8 proto, __wsum sum)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__u64 rest, sum64;
 

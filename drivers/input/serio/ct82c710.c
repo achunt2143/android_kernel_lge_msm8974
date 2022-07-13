@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999-2001 Vojtech Pavlik
  */
@@ -6,6 +10,7 @@
  *  82C710 C&T mouse port chip driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +31,8 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/ioport.h>
@@ -175,7 +182,11 @@ static int __init ct82c710_detect(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit ct82c710_probe(struct platform_device *dev)
+=======
+static int ct82c710_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ct82c710_port = kzalloc(sizeof(struct serio), GFP_KERNEL);
 	if (!ct82c710_port)
@@ -186,7 +197,11 @@ static int __devinit ct82c710_probe(struct platform_device *dev)
 	ct82c710_port->open = ct82c710_open;
 	ct82c710_port->close = ct82c710_close;
 	ct82c710_port->write = ct82c710_write;
+<<<<<<< HEAD
 	strlcpy(ct82c710_port->name, "C&T 82c710 mouse port",
+=======
+	strscpy(ct82c710_port->name, "C&T 82c710 mouse port",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(ct82c710_port->name));
 	snprintf(ct82c710_port->phys, sizeof(ct82c710_port->phys),
 		 "isa%16llx/serio0", (unsigned long long)CT82C710_DATA);
@@ -199,20 +214,32 @@ static int __devinit ct82c710_probe(struct platform_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit ct82c710_remove(struct platform_device *dev)
 {
 	serio_unregister_port(ct82c710_port);
 
 	return 0;
+=======
+static void ct82c710_remove(struct platform_device *dev)
+{
+	serio_unregister_port(ct82c710_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver ct82c710_driver = {
 	.driver		= {
 		.name	= "ct82c710",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= ct82c710_probe,
 	.remove		= __devexit_p(ct82c710_remove),
+=======
+	},
+	.probe		= ct82c710_probe,
+	.remove_new	= ct82c710_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 

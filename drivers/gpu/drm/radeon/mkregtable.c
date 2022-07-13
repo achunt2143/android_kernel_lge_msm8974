@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: MIT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* utility to create the register check tables
  * this includes inlined list.h safe for userspace.
  *
@@ -42,10 +46,13 @@ struct list_head {
 	struct list_head *next, *prev;
 };
 
+<<<<<<< HEAD
 #define LIST_HEAD_INIT(name) { &(name), &(name) }
 
 #define LIST_HEAD(name) \
 	struct list_head name = LIST_HEAD_INIT(name)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void INIT_LIST_HEAD(struct list_head *list)
 {
@@ -74,6 +81,7 @@ extern void __list_add(struct list_head *new,
 #endif
 
 /**
+<<<<<<< HEAD
  * list_add - add a new entry
  * @new: new entry to be added
  * @head: list head to add it after
@@ -87,6 +95,8 @@ static inline void list_add(struct list_head *new, struct list_head *head)
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * list_add_tail - add a new entry
  * @new: new entry to be added
  * @head: list head to add it before
@@ -99,6 +109,7 @@ static inline void list_add_tail(struct list_head *new, struct list_head *head)
 	__list_add(new, head->prev, head);
 }
 
+<<<<<<< HEAD
 /*
  * Delete a list entry by making the prev/next entries
  * point to each other.
@@ -343,16 +354,23 @@ static inline void list_splice_tail_init(struct list_head *list,
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * list_entry - get the struct for this entry
  * @ptr:	the &struct list_head pointer.
  * @type:	the type of the struct this is embedded in.
+<<<<<<< HEAD
  * @member:	the name of the list_struct within the struct.
+=======
+ * @member:	the name of the list_head within the struct.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define list_entry(ptr, type, member) \
 	container_of(ptr, type, member)
 
 /**
+<<<<<<< HEAD
  * list_first_entry - get the first element from a list
  * @ptr:	the list head to take the element from.
  * @type:	the type of the struct this is embedded in.
@@ -420,12 +438,19 @@ static inline void list_splice_tail_init(struct list_head *list,
  * @pos:	the type * to use as a loop cursor.
  * @head:	the head for your list.
  * @member:	the name of the list_struct within the struct.
+=======
+ * list_for_each_entry	-	iterate over list of given type
+ * @pos:	the type * to use as a loop cursor.
+ * @head:	the head for your list.
+ * @member:	the name of the list_head within the struct.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define list_for_each_entry(pos, head, member)				\
 	for (pos = list_entry((head)->next, typeof(*pos), member);	\
 	     &pos->member != (head); 	\
 	     pos = list_entry(pos->member.next, typeof(*pos), member))
 
+<<<<<<< HEAD
 /**
  * list_for_each_entry_reverse - iterate backwards over list of given type.
  * @pos:	the type * to use as a loop cursor.
@@ -548,6 +573,8 @@ static inline void list_splice_tail_init(struct list_head *list,
 	     &pos->member != (head); 					\
 	     pos = n, n = list_entry(n->member.prev, typeof(*n), member))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct offset {
 	struct list_head list;
 	unsigned offset;
@@ -668,7 +695,11 @@ static int parser_auth(struct table *t, const char *filename)
 
 	/* first line will contain the last register
 	 * and gpu name */
+<<<<<<< HEAD
 	sscanf(buf, "%s %s", gpu_name, last_reg_s);
+=======
+	sscanf(buf, "%9s %9s", gpu_name, last_reg_s);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	t->gpu_prefix = gpu_name;
 	last_reg = strtol(last_reg_s, NULL, 16);
 

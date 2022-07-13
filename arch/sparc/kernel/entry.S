@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* arch/sparc/kernel/entry.S:  Sparc trap low-level entry points.
  *
  * Copyright (C) 1995, 2007 David S. Miller (davem@davemloft.net)
@@ -7,7 +11,14 @@
  * Copyright (C) 1997 Anton Blanchard (anton@progsoc.uts.edu.au)
  */
 
+<<<<<<< HEAD
 #include <linux/errno.h>
+=======
+#include <linux/export.h>
+#include <linux/linkage.h>
+#include <linux/errno.h>
+#include <linux/pgtable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/head.h>
 #include <asm/asi.h>
@@ -17,10 +28,14 @@
 #include <asm/asm-offsets.h>
 #include <asm/psr.h>
 #include <asm/vaddrs.h>
+<<<<<<< HEAD
 #include <asm/memreg.h>
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #include <asm/pgtsun4c.h>
+=======
+#include <asm/page.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/winmacro.h>
 #include <asm/signal.h>
 #include <asm/obio.h>
@@ -125,15 +140,20 @@ floppy_tdone:
 	set	auxio_register, %l7
 	ld	[%l7], %l7
 
+<<<<<<< HEAD
 	set	sparc_cpu_model, %l5
 	ld	[%l5], %l5
 	subcc   %l5, 1, %g0		/* enum { sun4c = 1 }; */
 	be	1f
 	 ldub	[%l7], %l5
+=======
+	ldub	[%l7], %l5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	or	%l5, 0xc2, %l5
 	stb	%l5, [%l7]
 	andn    %l5, 0x02, %l5
+<<<<<<< HEAD
 	b	2f
 	 nop
 
@@ -141,6 +161,8 @@ floppy_tdone:
 	or      %l5, 0xf4, %l5
 	stb     %l5, [%l7]
 	andn    %l5, 0x04, %l5
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 2:
 	/* Kill some time so the bits set */
@@ -266,6 +288,14 @@ smp4m_ticker:
 	WRITE_PAUSE
 	RESTORE_ALL
 
+<<<<<<< HEAD
+=======
+#define GET_PROCESSOR4M_ID(reg)	\
+	rd	%tbr, %reg;	\
+	srl	%reg, 12, %reg;	\
+	and	%reg, 3, %reg;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Here is where we check for possible SMP IPI passed to us
 	 * on some level other than 15 which is the NMI and only used
 	 * for cross calls.  That has a separate entry point below.
@@ -328,7 +358,11 @@ linux_trap_ipi15_sun4m:
 	ld	[%o5 + %o0], %o5
 	ld	[%o5 + 0x00], %o3	! sun4m_irq_percpu[cpu]->pending
 	andcc	%o3, %o2, %g0
+<<<<<<< HEAD
 	be	1f			! Must be an NMI async memory error
+=======
+	be	sun4m_nmi_error		! Must be an NMI async memory error
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 st	%o2, [%o5 + 0x04]	! sun4m_irq_percpu[cpu]->clear=0x80000000
 	WRITE_PAUSE
 	ld	[%o5 + 0x00], %g0	! sun4m_irq_percpu[cpu]->pending
@@ -342,6 +376,7 @@ linux_trap_ipi15_sun4m:
 	 nop
 	b	ret_trap_lockless_ipi
 	 clr	%l6
+<<<<<<< HEAD
 1:
 	/* NMI async memory error handling. */
 	sethi	%hi(0x80000000), %l4
@@ -363,6 +398,8 @@ linux_trap_ipi15_sun4m:
 	ld	[%l5 + 0x00], %g0	! sun4m_irq_global->pending
 	WRITE_PAUSE
 	RESTORE_ALL
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.globl	smp4d_ticker
 	/* SMP per-cpu ticker interrupts are handled specially. */
@@ -421,7 +458,10 @@ linux_trap_ipi15_sun4d:
 	/* FIXME */
 1:	b,a	1b
 
+<<<<<<< HEAD
 #ifdef CONFIG_SPARC_LEON
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.globl	smpleon_ipi
 	.extern leon_ipi_interrupt
 	/* SMP per-cpu IPI interrupts are handled specially. */
@@ -452,8 +492,11 @@ linux_trap_ipi15_leon:
 	b	ret_trap_lockless_ipi
 	 clr	%l6
 
+<<<<<<< HEAD
 #endif /* CONFIG_SPARC_LEON */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_SMP */
 
 	/* This routine handles illegal instructions and privileged
@@ -760,6 +803,7 @@ setcc_trap_handler:
 	jmp	%l2		! advance over trap instruction
 	rett	%l2 + 0x4	! like this...
 
+<<<<<<< HEAD
 	.align	4
 	.globl	linux_trap_nmi_sun4c
 linux_trap_nmi_sun4c:
@@ -1081,14 +1125,56 @@ sun4c_fault_fromuser:
 
 	RESTORE_ALL
 
+=======
+sun4m_nmi_error:
+	/* NMI async memory error handling. */
+	sethi	%hi(0x80000000), %l4
+	sethi	%hi(sun4m_irq_global), %o5
+	ld	[%o5 + %lo(sun4m_irq_global)], %l5
+	st	%l4, [%l5 + 0x0c]	! sun4m_irq_global->mask_set=0x80000000
+	WRITE_PAUSE
+	ld	[%l5 + 0x00], %g0	! sun4m_irq_global->pending
+	WRITE_PAUSE
+	or	%l0, PSR_PIL, %l4
+	wr	%l4, 0x0, %psr
+	WRITE_PAUSE
+	wr	%l4, PSR_ET, %psr
+	WRITE_PAUSE
+	call	sun4m_nmi
+	 nop
+	st	%l4, [%l5 + 0x08]	! sun4m_irq_global->mask_clear=0x80000000
+	WRITE_PAUSE
+	ld	[%l5 + 0x00], %g0	! sun4m_irq_global->pending
+	WRITE_PAUSE
+	RESTORE_ALL
+
+#ifndef CONFIG_SMP
+	.align	4
+	.globl	linux_trap_ipi15_sun4m
+linux_trap_ipi15_sun4m:
+	SAVE_ALL
+
+	ba	sun4m_nmi_error
+	 nop
+#endif /* CONFIG_SMP */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.align	4
 	.globl	srmmu_fault
 srmmu_fault:
 	mov	0x400, %l5
 	mov	0x300, %l4
 
+<<<<<<< HEAD
 	lda	[%l5] ASI_M_MMUREGS, %l6	! read sfar first
 	lda	[%l4] ASI_M_MMUREGS, %l5	! read sfsr last
+=======
+LEON_PI(lda	[%l5] ASI_LEON_MMUREGS, %l6)	! read sfar first
+SUN_PI_(lda	[%l5] ASI_M_MMUREGS, %l6)	! read sfar first
+
+LEON_PI(lda	[%l4] ASI_LEON_MMUREGS, %l5)	! read sfsr last
+SUN_PI_(lda	[%l4] ASI_M_MMUREGS, %l5)	! read sfsr last
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	andn	%l6, 0xfff, %l6
 	srl	%l5, 6, %l5			! and encode all info into l7
@@ -1116,6 +1202,7 @@ srmmu_fault:
 	RESTORE_ALL
 
 	.align	4
+<<<<<<< HEAD
 	.globl	sys_nis_syscall
 sys_nis_syscall:
 	mov	%o7, %l5
@@ -1156,6 +1243,12 @@ sys_sigaltstack:
 	mov	%fp, %o2
 	call	do_sigaltstack
 	 mov	%l5, %o7
+=======
+sunos_execv:
+	.globl	sunos_execv
+	b	sys_execve
+	 clr	%i2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.align	4
 	.globl	sys_sigstack
@@ -1220,6 +1313,7 @@ flush_patch_two:
 	ld	[%curptr + TI_TASK], %o4
 	rd	%psr, %g4
 	WRITE_PAUSE
+<<<<<<< HEAD
 	mov	SIGCHLD, %o0			! arg0:	clone flags
 	rd	%wim, %g5
 	WRITE_PAUSE
@@ -1228,6 +1322,13 @@ flush_patch_two:
 	add	%sp, STACKFRAME_SZ, %o2		! arg2:	pt_regs ptr
 	mov	0, %o3
 	call	sparc_do_fork
+=======
+	rd	%wim, %g5
+	WRITE_PAUSE
+	std	%g4, [%o4 + AOFF_task_thread + AOFF_thread_fork_kpsr]
+	add	%sp, STACKFRAME_SZ, %o0
+	call	sparc_fork
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 mov	%l5, %o7
 
 	/* Whee, kernel threads! */
@@ -1239,6 +1340,7 @@ flush_patch_three:
 	ld	[%curptr + TI_TASK], %o4
 	rd	%psr, %g4
 	WRITE_PAUSE
+<<<<<<< HEAD
 
 	/* arg0,1: flags,usp  -- loaded already */
 	cmp	%o1, 0x0			! Is new_usp NULL?
@@ -1252,6 +1354,13 @@ flush_patch_three:
 	add	%sp, STACKFRAME_SZ, %o2		! arg2:	pt_regs ptr
 	mov	0, %o3
 	call	sparc_do_fork
+=======
+	rd	%wim, %g5
+	WRITE_PAUSE
+	std	%g4, [%o4 + AOFF_task_thread + AOFF_thread_fork_kpsr]
+	add	%sp, STACKFRAME_SZ, %o0
+	call	sparc_clone
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 mov	%l5, %o7
 
 	/* Whee, real vfork! */
@@ -1265,6 +1374,7 @@ flush_patch_four:
 	rd	%wim, %g5
 	WRITE_PAUSE
 	std	%g4, [%o4 + AOFF_task_thread + AOFF_thread_fork_kpsr]
+<<<<<<< HEAD
 	sethi	%hi(0x4000 | 0x0100 | SIGCHLD), %o0
 	mov	%fp, %o1
 	or	%o0, %lo(0x4000 | 0x0100 | SIGCHLD), %o0
@@ -1272,10 +1382,16 @@ flush_patch_four:
 	mov	0, %o3
 	jmpl	%l1 + %lo(sparc_do_fork), %g0
 	 add	%sp, STACKFRAME_SZ, %o2
+=======
+	sethi	%hi(sparc_vfork), %l1
+	jmpl	%l1 + %lo(sparc_vfork), %g0
+	 add	%sp, STACKFRAME_SZ, %o0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         .align  4
 linux_sparc_ni_syscall:
 	sethi   %hi(sys_ni_syscall), %l7
+<<<<<<< HEAD
 	b       syscall_is_too_hard
 	 or     %l7, %lo(sys_ni_syscall), %l7
 
@@ -1287,6 +1403,11 @@ linux_fast_syscall:
 	jmpl	%l7 + %g0, %g0
 	 mov	%i3, %o3
 
+=======
+	b       do_syscall
+	 or     %l7, %lo(sys_ni_syscall), %l7
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 linux_syscall_trace:
 	add	%sp, STACKFRAME_SZ, %o0
 	call	syscall_trace
@@ -1294,7 +1415,28 @@ linux_syscall_trace:
 	cmp	%o0, 0
 	bne	3f
 	 mov	-ENOSYS, %o0
+<<<<<<< HEAD
 	mov	%i0, %o0
+=======
+
+	/* Syscall tracing can modify the registers.  */
+	ld	[%sp + STACKFRAME_SZ + PT_G1], %g1
+	sethi	%hi(sys_call_table), %l7
+	ld	[%sp + STACKFRAME_SZ + PT_I0], %i0
+	or	%l7, %lo(sys_call_table), %l7
+	ld	[%sp + STACKFRAME_SZ + PT_I1], %i1
+	ld	[%sp + STACKFRAME_SZ + PT_I2], %i2
+	ld	[%sp + STACKFRAME_SZ + PT_I3], %i3
+	ld	[%sp + STACKFRAME_SZ + PT_I4], %i4
+	ld	[%sp + STACKFRAME_SZ + PT_I5], %i5
+	cmp	%g1, NR_syscalls
+	bgeu	3f
+	 mov	-ENOSYS, %o0
+
+	sll	%g1, 2, %l4
+	mov	%i0, %o0
+	ld	[%l7 + %l4], %l7
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov	%i1, %o1
 	mov	%i2, %o2
 	mov	%i3, %o3
@@ -1308,6 +1450,26 @@ ret_from_fork:
 	b	ret_sys_call
 	 ld	[%sp + STACKFRAME_SZ + PT_I0], %o0
 
+<<<<<<< HEAD
+=======
+	.globl	ret_from_kernel_thread
+ret_from_kernel_thread:
+	call	schedule_tail
+	 ld	[%g3 + TI_TASK], %o0
+	ld	[%sp + STACKFRAME_SZ + PT_G1], %l0
+	call	%l0
+	 ld	[%sp + STACKFRAME_SZ + PT_G2], %o0
+	rd	%psr, %l1
+	ld	[%sp + STACKFRAME_SZ + PT_PSR], %l0
+	andn	%l0, PSR_CWP, %l0
+	nop
+	and	%l1, PSR_CWP, %l1
+	or	%l0, %l1, %l0
+	st	%l0, [%sp + STACKFRAME_SZ + PT_PSR]
+	b	ret_sys_call
+	 mov	0, %o0
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Linux native system calls enter here... */
 	.align	4
 	.globl	linux_sparc_syscall
@@ -1319,11 +1481,16 @@ linux_sparc_syscall:
 	bgeu	linux_sparc_ni_syscall
 	 sll	%g1, 2, %l4
 	ld	[%l7 + %l4], %l7
+<<<<<<< HEAD
 	andcc	%l7, 1, %g0
 	bne	linux_fast_syscall
 	 /* Just do first insn from SAVE_ALL in the delay slot */
 
 syscall_is_too_hard:
+=======
+
+do_syscall:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SAVE_ALL_HEAD
 	 rd	%wim, %l3
 
@@ -1337,7 +1504,11 @@ syscall_is_too_hard:
 	andcc	%l5, _TIF_SYSCALL_TRACE, %g0
 	mov	%i4, %o4
 	bne	linux_syscall_trace
+<<<<<<< HEAD
 	 mov	%i0, %l5
+=======
+	 mov	%i0, %l6
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 2:
 	call	%l7
 	 mov	%i5, %o5
@@ -1346,16 +1517,27 @@ syscall_is_too_hard:
 	st	%o0, [%sp + STACKFRAME_SZ + PT_I0]
 
 ret_sys_call:
+<<<<<<< HEAD
 	ld	[%curptr + TI_FLAGS], %l6
+=======
+	ld	[%curptr + TI_FLAGS], %l5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmp	%o0, -ERESTART_RESTARTBLOCK
 	ld	[%sp + STACKFRAME_SZ + PT_PSR], %g3
 	set	PSR_C, %g2
 	bgeu	1f
+<<<<<<< HEAD
 	 andcc	%l6, _TIF_SYSCALL_TRACE, %g0
 
 	/* System call success, clear Carry condition code. */
 	andn	%g3, %g2, %g3
 	clr	%l6
+=======
+	 andcc	%l5, _TIF_SYSCALL_TRACE, %g0
+
+	/* System call success, clear Carry condition code. */
+	andn	%g3, %g2, %g3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	st	%g3, [%sp + STACKFRAME_SZ + PT_PSR]	
 	bne	linux_syscall_trace2
 	 ld	[%sp + STACKFRAME_SZ + PT_NPC], %l1 /* pc = npc */
@@ -1370,7 +1552,10 @@ ret_sys_call:
 	sub	%g0, %o0, %o0
 	or	%g3, %g2, %g3
 	st	%o0, [%sp + STACKFRAME_SZ + PT_I0]
+<<<<<<< HEAD
 	mov	1, %l6
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	st	%g3, [%sp + STACKFRAME_SZ + PT_PSR]
 	bne	linux_syscall_trace2
 	 ld	[%sp + STACKFRAME_SZ + PT_NPC], %l1 /* pc = npc */
@@ -1483,11 +1668,21 @@ fpload:
 	.globl	__ndelay
 __ndelay:
 	save	%sp, -STACKFRAME_SZ, %sp
+<<<<<<< HEAD
 	mov	%i0, %o0
 	call	.umul			! round multiplier up so large ns ok
 	 mov	0x1ae, %o1		! 2**32 / (1 000 000 000 / HZ)
 	call	.umul
 	 mov	%i1, %o1		! udelay_val
+=======
+	mov	%i0, %o0		! round multiplier up so large ns ok
+	mov	0x1ae, %o1		! 2**32 / (1 000 000 000 / HZ)
+	umul	%o0, %o1, %o0
+	rd	%y, %o1
+	mov	%i1, %o1		! udelay_val
+	umul	%o0, %o1, %o0
+	rd	%y, %o1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ba	delay_continue
 	 mov	%o1, %o0		! >>32 later for better resolution
 
@@ -1496,18 +1691,33 @@ __udelay:
 	save	%sp, -STACKFRAME_SZ, %sp
 	mov	%i0, %o0
 	sethi	%hi(0x10c7), %o1	! round multiplier up so large us ok
+<<<<<<< HEAD
 	call	.umul
 	 or	%o1, %lo(0x10c7), %o1	! 2**32 / 1 000 000
 	call	.umul
 	 mov	%i1, %o1		! udelay_val
+=======
+	or	%o1, %lo(0x10c7), %o1	! 2**32 / 1 000 000
+	umul	%o0, %o1, %o0
+	rd	%y, %o1
+	mov	%i1, %o1		! udelay_val
+	umul	%o0, %o1, %o0
+	rd	%y, %o1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sethi	%hi(0x028f4b62), %l0	! Add in rounding constant * 2**32,
 	or	%g0, %lo(0x028f4b62), %l0
 	addcc	%o0, %l0, %o0		! 2**32 * 0.009 999
 	bcs,a	3f
 	 add	%o1, 0x01, %o1
 3:
+<<<<<<< HEAD
 	call	.umul
 	 mov	HZ, %o0			! >>32 earlier for wider range
+=======
+	mov	HZ, %o0			! >>32 earlier for wider range
+	umul	%o0, %o1, %o0
+	rd	%y, %o1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 delay_continue:
 	cmp	%o0, 0x0
@@ -1517,6 +1727,11 @@ delay_continue:
 	
 	ret
 	restore
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__udelay)
+EXPORT_SYMBOL(__ndelay)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Handle a software breakpoint */
 	/* We have to inform parent that child has stopped */
@@ -1535,20 +1750,33 @@ breakpoint_trap:
 	RESTORE_ALL
 
 #ifdef CONFIG_KGDB
+<<<<<<< HEAD
 	.align	4
 	.globl	kgdb_trap_low
 	.type	kgdb_trap_low,#function
 kgdb_trap_low:
+=======
+	ENTRY(kgdb_trap_low)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rd	%wim,%l3
 	SAVE_ALL
 	wr 	%l0, PSR_ET, %psr
 	WRITE_PAUSE
 
+<<<<<<< HEAD
 	call	kgdb_trap
 	 add	%sp, STACKFRAME_SZ, %o0
 
 	RESTORE_ALL
 	.size	kgdb_trap_low,.-kgdb_trap_low
+=======
+	mov	%l7, %o0		! trap_level
+	call	kgdb_trap
+	 add	%sp, STACKFRAME_SZ, %o1	! struct pt_regs *regs
+
+	RESTORE_ALL
+	ENDPROC(kgdb_trap_low)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	.align	4
@@ -1565,7 +1793,11 @@ flush_patch_exception:
 kuw_patch1_7win:	sll	%o3, 6, %o3
 
 	/* No matter how much overhead this routine has in the worst
+<<<<<<< HEAD
 	 * case scenerio, it is several times better than taking the
+=======
+	 * case scenario, it is several times better than taking the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * traps with the old method of just doing flush_user_windows().
 	 */
 kill_user_windows:
@@ -1670,4 +1902,29 @@ flushw_all:
 	ret
 	 restore
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+ENTRY(hard_smp_processor_id)
+661:	rd		%tbr, %g1
+	srl		%g1, 12, %o0
+	and		%o0, 3, %o0
+	.section	.cpuid_patch, "ax"
+	/* Instruction location. */
+	.word		661b
+	/* SUN4D implementation. */
+	lda		[%g0] ASI_M_VIKING_TMP1, %o0
+	nop
+	nop
+	/* LEON implementation. */
+	rd		%asr17, %o0
+	srl		%o0, 0x1c, %o0
+	nop
+	.previous
+	retl
+	 nop
+ENDPROC(hard_smp_processor_id)
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* End of entry.S */

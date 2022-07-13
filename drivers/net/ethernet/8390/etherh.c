@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/acorn/net/etherh.c
  *
  *  Copyright (C) 2000-2002 Russell King
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NS8390 I-cubed EtherH and ANT EtherM specific driver
  * Thanks to I-Cubed for information on their cards.
  * EtherM conversion (C) 1999 Chris Kemp and Tim Watterton
@@ -56,6 +63,7 @@
 #define ei_inb_p(_p)	 readb((void __iomem *)_p)
 #define ei_outb_p(_v,_p) writeb(_v,(void __iomem *)_p)
 
+<<<<<<< HEAD
 #define NET_DEBUG  0
 #define DEBUG_INIT 2
 
@@ -63,12 +71,21 @@
 #define DRV_VERSION	"1.11"
 
 static char version[] __initdata =
+=======
+#define DRV_NAME	"etherh"
+#define DRV_VERSION	"1.11"
+
+static char version[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"EtherH/EtherM Driver (c) 2002-2004 Russell King " DRV_VERSION "\n";
 
 #include "lib8390.c"
 
+<<<<<<< HEAD
 static unsigned int net_debug = NET_DEBUG;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct etherh_priv {
 	void __iomem	*ioc_fast;
 	void __iomem	*memc;
@@ -317,9 +334,15 @@ etherh_block_output (struct net_device *dev, int count, const unsigned char *buf
 	void __iomem *dma_base, *addr;
 
 	if (ei_local->dmaing) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: DMAing conflict in etherh_block_input: "
 			" DMAstat %d irqlock %d\n", dev->name,
 			ei_local->dmaing, ei_local->irqlock);
+=======
+		netdev_err(dev, "DMAing conflict in etherh_block_input: "
+			   " DMAstat %d irqlock %d\n",
+			   ei_local->dmaing, ei_local->irqlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -361,8 +384,12 @@ etherh_block_output (struct net_device *dev, int count, const unsigned char *buf
 
 	while ((readb (addr + EN0_ISR) & ENISR_RDC) == 0)
 		if (time_after(jiffies, dma_start + 2*HZ/100)) { /* 20ms */
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: timeout waiting for TX RDC\n",
 				dev->name);
+=======
+			netdev_warn(dev, "timeout waiting for TX RDC\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			etherh_reset (dev);
 			__NS8390_init (dev, 1);
 			break;
@@ -383,9 +410,15 @@ etherh_block_input (struct net_device *dev, int count, struct sk_buff *skb, int 
 	void __iomem *dma_base, *addr;
 
 	if (ei_local->dmaing) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: DMAing conflict in etherh_block_input: "
 			" DMAstat %d irqlock %d\n", dev->name,
 			ei_local->dmaing, ei_local->irqlock);
+=======
+		netdev_err(dev, "DMAing conflict in etherh_block_input: "
+			   " DMAstat %d irqlock %d\n",
+			   ei_local->dmaing, ei_local->irqlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -423,9 +456,15 @@ etherh_get_header (struct net_device *dev, struct e8390_pkt_hdr *hdr, int ring_p
 	void __iomem *dma_base, *addr;
 
 	if (ei_local->dmaing) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: DMAing conflict in etherh_get_header: "
 			" DMAstat %d irqlock %d\n", dev->name,
 			ei_local->dmaing, ei_local->irqlock);
+=======
+		netdev_err(dev, "DMAing conflict in etherh_get_header: "
+			   " DMAstat %d irqlock %d\n",
+			   ei_local->dmaing, ei_local->irqlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -463,12 +502,15 @@ etherh_open(struct net_device *dev)
 {
 	struct ei_device *ei_local = netdev_priv(dev);
 
+<<<<<<< HEAD
 	if (!is_valid_ether_addr(dev->dev_addr)) {
 		printk(KERN_WARNING "%s: invalid ethernet MAC address\n",
 			dev->name);
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (request_irq(dev->irq, __ei_interrupt, 0, dev->name, dev))
 		return -EAGAIN;
 
@@ -512,6 +554,7 @@ etherh_close(struct net_device *dev)
 }
 
 /*
+<<<<<<< HEAD
  * Initialisation
  */
 
@@ -528,12 +571,22 @@ static void __init etherh_banner(void)
  * This is an ascii string...
  */
 static int __devinit etherh_addr(char *addr, struct expansion_card *ec)
+=======
+ * Read the ethernet address string from the on board rom.
+ * This is an ascii string...
+ */
+static int etherh_addr(char *addr, struct expansion_card *ec)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct in_chunk_dir cd;
 	char *s;
 	
 	if (!ecard_readchunk(&cd, ec, 0xf5, 0)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: unable to read podule description string\n",
+=======
+		printk(KERN_ERR "%s: unable to read module description string\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       dev_name(&ec->dev));
 		goto no_addr;
 	}
@@ -582,6 +635,7 @@ static int __init etherm_addr(char *addr)
 
 static void etherh_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
+<<<<<<< HEAD
 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
 	strlcpy(info->bus_info, dev_name(dev->dev.parent),
@@ -602,12 +656,41 @@ static int etherh_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 static int etherh_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	switch (cmd->autoneg) {
+=======
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	strscpy(info->version, DRV_VERSION, sizeof(info->version));
+	strscpy(info->bus_info, dev_name(dev->dev.parent),
+		sizeof(info->bus_info));
+}
+
+static int etherh_get_link_ksettings(struct net_device *dev,
+				     struct ethtool_link_ksettings *cmd)
+{
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
+						etherh_priv(dev)->supported);
+	cmd->base.speed = SPEED_10;
+	cmd->base.duplex = DUPLEX_HALF;
+	cmd->base.port = dev->if_port == IF_PORT_10BASET ? PORT_TP : PORT_BNC;
+	cmd->base.autoneg = (dev->flags & IFF_AUTOMEDIA ? AUTONEG_ENABLE :
+							  AUTONEG_DISABLE);
+	return 0;
+}
+
+static int etherh_set_link_ksettings(struct net_device *dev,
+				     const struct ethtool_link_ksettings *cmd)
+{
+	switch (cmd->base.autoneg) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case AUTONEG_ENABLE:
 		dev->flags |= IFF_AUTOMEDIA;
 		break;
 
 	case AUTONEG_DISABLE:
+<<<<<<< HEAD
 		switch (cmd->port) {
+=======
+		switch (cmd->base.port) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case PORT_TP:
 			dev->if_port = IF_PORT_10BASET;
 			break;
@@ -631,10 +714,34 @@ static int etherh_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct ethtool_ops etherh_ethtool_ops = {
 	.get_settings	= etherh_get_settings,
 	.set_settings	= etherh_set_settings,
 	.get_drvinfo	= etherh_get_drvinfo,
+=======
+static u32 etherh_get_msglevel(struct net_device *dev)
+{
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	return ei_local->msg_enable;
+}
+
+static void etherh_set_msglevel(struct net_device *dev, u32 v)
+{
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	ei_local->msg_enable = v;
+}
+
+static const struct ethtool_ops etherh_ethtool_ops = {
+	.get_drvinfo		= etherh_get_drvinfo,
+	.get_ts_info		= ethtool_op_get_ts_info,
+	.get_msglevel		= etherh_get_msglevel,
+	.set_msglevel		= etherh_set_msglevel,
+	.get_link_ksettings	= etherh_get_link_ksettings,
+	.set_link_ksettings	= etherh_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct net_device_ops etherh_netdev_ops = {
@@ -647,7 +754,10 @@ static const struct net_device_ops etherh_netdev_ops = {
 	.ndo_set_rx_mode	= __ei_set_multicast_list,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= eth_mac_addr,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller	= __ei_poll,
 #endif
@@ -656,17 +766,27 @@ static const struct net_device_ops etherh_netdev_ops = {
 static u32 etherh_regoffsets[16];
 static u32 etherm_regoffsets[16];
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 etherh_probe(struct expansion_card *ec, const struct ecard_id *id)
 {
 	const struct etherh_data *data = id->data;
 	struct ei_device *ei_local;
 	struct net_device *dev;
 	struct etherh_priv *eh;
+<<<<<<< HEAD
 	int ret;
 
 	etherh_banner();
 
+=======
+	u8 addr[ETH_ALEN];
+	int ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = ecard_request_resources(ec);
 	if (ret)
 		goto out;
@@ -734,12 +854,22 @@ etherh_probe(struct expansion_card *ec, const struct ecard_id *id)
 	spin_lock_init(&ei_local->page_lock);
 
 	if (ec->cid.product == PROD_ANT_ETHERM) {
+<<<<<<< HEAD
 		etherm_addr(dev->dev_addr);
 		ei_local->reg_offset = etherm_regoffsets;
 	} else {
 		etherh_addr(dev->dev_addr, ec);
 		ei_local->reg_offset = etherh_regoffsets;
 	}
+=======
+		etherm_addr(addr);
+		ei_local->reg_offset = etherm_regoffsets;
+	} else {
+		etherh_addr(addr, ec);
+		ei_local->reg_offset = etherh_regoffsets;
+	}
+	eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ei_local->name          = dev->name;
 	ei_local->word16        = 1;
@@ -759,8 +889,13 @@ etherh_probe(struct expansion_card *ec, const struct ecard_id *id)
 	if (ret)
 		goto free;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "%s: %s in slot %d, %pM\n",
 		dev->name, data->name, ec->slot_no, dev->dev_addr);
+=======
+	netdev_info(dev, "%s in slot %d, %pM\n",
+		    data->name, ec->slot_no, dev->dev_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ecard_set_drvdata(ec, dev);
 
@@ -774,7 +909,11 @@ etherh_probe(struct expansion_card *ec, const struct ecard_id *id)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __devexit etherh_remove(struct expansion_card *ec)
+=======
+static void etherh_remove(struct expansion_card *ec)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = ecard_get_drvdata(ec);
 
@@ -838,7 +977,11 @@ static const struct ecard_id etherh_ids[] = {
 
 static struct ecard_driver etherh_driver = {
 	.probe		= etherh_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(etherh_remove),
+=======
+	.remove		= etherh_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= etherh_ids,
 	.drv = {
 		.name	= DRV_NAME,

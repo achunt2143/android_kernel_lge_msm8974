@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "libgcc.h"
 
@@ -25,5 +30,8 @@ long long __lshrdi3(long long u, word_type b)
 
 	return w.ll;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(__lshrdi3);

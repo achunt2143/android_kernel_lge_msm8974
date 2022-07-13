@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MPC832x RDB Device Tree Source
  *
  * Copyright 2007 Freescale Semiconductor Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /dts-v1/;
@@ -175,7 +182,11 @@
 				gpio-controller;
 			};
 
+<<<<<<< HEAD
 			ucc2pio:ucc_pin@02 {
+=======
+			ucc2pio:ucc_pin@2 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pio-map = <
 			/* port  pin  dir  open_drain  assignment  has_irq */
 					3  4  3  0  2  0 	/* MDIO */
@@ -197,7 +208,11 @@
 					0 30  1  0  1  0 	/* TX_EN */
 					0 31  2  0  1  0>;      /* CRS */
 			};
+<<<<<<< HEAD
 			ucc3pio:ucc_pin@03 {
+=======
+			ucc3pio:ucc_pin@3 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pio-map = <
 			/* port  pin  dir  open_drain  assignment  has_irq */
 					0 13  2  0  1  0 	/* RX_CLK (CLK9) */
@@ -253,7 +268,11 @@
 			reg = <0x4c0 0x40>;
 			interrupts = <2>;
 			interrupt-parent = <&qeic>;
+<<<<<<< HEAD
 			gpios = <&qe_pio_d 13 0>;
+=======
+			cs-gpios = <&qe_pio_d 13 0>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mode = "cpu-qe";
 
 			mmc-slot@0 {
@@ -310,6 +329,7 @@
 			reg = <0x3120 0x18>;
 			compatible = "fsl,ucc-mdio";
 
+<<<<<<< HEAD
 			phy00:ethernet-phy@00 {
 				interrupt-parent = <&ipic>;
 				interrupts = <0>;
@@ -321,6 +341,13 @@
 				interrupts = <0>;
 				reg = <0x4>;
 				device_type = "ethernet-phy";
+=======
+			phy00:ethernet-phy@0 {
+				reg = <0x0>;
+			};
+			phy04:ethernet-phy@4 {
+				reg = <0x4>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			};
 		};
 

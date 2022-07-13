@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 /*
  * linux/fs/9p/error.c
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Error string handling
  *
  * Plan 9 uses error strings, Unix uses error numbers.  These functions
@@ -9,6 +14,7 @@
  *
  *  Copyright (C) 2004 by Eric Van Hensbergen <ericvh@gmail.com>
  *  Copyright (C) 2002 by Ron Minnich <rminnich@lanl.gov>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2
@@ -25,6 +31,8 @@
  *  51 Franklin Street, Fifth Floor
  *  Boston, MA  02111-1301  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -200,7 +208,11 @@ int p9_error_init(void)
 		INIT_HLIST_HEAD(&hash_errmap[bucket]);
 
 	/* load initial error map into hash table */
+<<<<<<< HEAD
 	for (c = errmap; c->name != NULL; c++) {
+=======
+	for (c = errmap; c->name; c++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		c->namelen = strlen(c->name);
 		bucket = jhash(c->name, c->namelen, 0) % ERRHASHSZ;
 		INIT_HLIST_NODE(&c->list);
@@ -212,7 +224,11 @@ int p9_error_init(void)
 EXPORT_SYMBOL(p9_error_init);
 
 /**
+<<<<<<< HEAD
  * errstr2errno - convert error string to error number
+=======
+ * p9_errstr2errno - convert error string to error number
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @errstr: error string
  * @len: length of error string
  *
@@ -221,15 +237,24 @@ EXPORT_SYMBOL(p9_error_init);
 int p9_errstr2errno(char *errstr, int len)
 {
 	int errno;
+<<<<<<< HEAD
 	struct hlist_node *p;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct errormap *c;
 	int bucket;
 
 	errno = 0;
+<<<<<<< HEAD
 	p = NULL;
 	c = NULL;
 	bucket = jhash(errstr, len, 0) % ERRHASHSZ;
 	hlist_for_each_entry(c, p, &hash_errmap[bucket], list) {
+=======
+	c = NULL;
+	bucket = jhash(errstr, len, 0) % ERRHASHSZ;
+	hlist_for_each_entry(c, &hash_errmap[bucket], list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (c->namelen == len && !memcmp(c->name, errstr, len)) {
 			errno = c->val;
 			break;

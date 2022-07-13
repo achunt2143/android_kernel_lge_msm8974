@@ -15,26 +15,48 @@
 #include <linux/slab.h>
 #include <linux/err.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/natfeat.h>
 
 static int stderr_id;
+<<<<<<< HEAD
 static struct tty_driver *nfcon_tty_driver;
 
 static void nfputs(const char *str, unsigned int count)
 {
 	char buf[68];
+=======
+static struct tty_port nfcon_tty_port;
+static struct tty_driver *nfcon_tty_driver;
+
+static void nfputs(const u8 *str, size_t count)
+{
+	u8 buf[68];
+	unsigned long phys = virt_to_phys(buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf[64] = 0;
 	while (count > 64) {
 		memcpy(buf, str, 64);
+<<<<<<< HEAD
 		nf_call(stderr_id, buf);
+=======
+		nf_call(stderr_id, phys);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		str += 64;
 		count -= 64;
 	}
 	memcpy(buf, str, count);
 	buf[count] = 0;
+<<<<<<< HEAD
 	nf_call(stderr_id, buf);
+=======
+	nf_call(stderr_id, phys);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void nfcon_write(struct console *con, const char *str,
@@ -46,7 +68,11 @@ static void nfcon_write(struct console *con, const char *str,
 static struct tty_driver *nfcon_device(struct console *con, int *index)
 {
 	*index = 0;
+<<<<<<< HEAD
 	return (con->flags & CON_ENABLED) ? nfcon_tty_driver : NULL;
+=======
+	return console_is_registered(con) ? nfcon_tty_driver : NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct console nf_console = {
@@ -67,13 +93,19 @@ static void nfcon_tty_close(struct tty_struct *tty, struct file *filp)
 {
 }
 
+<<<<<<< HEAD
 static int nfcon_tty_write(struct tty_struct *tty, const unsigned char *buf,
 			   int count)
+=======
+static ssize_t nfcon_tty_write(struct tty_struct *tty, const u8 *buf,
+			       size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	nfputs(buf, count);
 	return count;
 }
 
+<<<<<<< HEAD
 static int nfcon_tty_put_char(struct tty_struct *tty, unsigned char ch)
 {
 	char temp[2] = { ch, 0 };
@@ -83,6 +115,17 @@ static int nfcon_tty_put_char(struct tty_struct *tty, unsigned char ch)
 }
 
 static int nfcon_tty_write_room(struct tty_struct *tty)
+=======
+static int nfcon_tty_put_char(struct tty_struct *tty, u8 ch)
+{
+	u8 temp[2] = { ch, 0 };
+
+	nf_call(stderr_id, virt_to_phys(temp));
+	return 1;
+}
+
+static unsigned int nfcon_tty_write_room(struct tty_struct *tty)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 64;
 }
@@ -104,6 +147,14 @@ static int __init nf_debug_setup(char *arg)
 
 	stderr_id = nf_get_id("NF_STDERR");
 	if (stderr_id) {
+<<<<<<< HEAD
+=======
+		/*
+		 * The console will be enabled when debug=nfcon is specified
+		 * as a kernel parameter. Since this is a non-standard way
+		 * of enabling consoles, it must be explicitly enabled.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nf_console.flags |= CON_ENABLED;
 		register_console(&nf_console);
 	}
@@ -117,12 +168,17 @@ early_param("debug", nf_debug_setup);
 
 static int __init nfcon_init(void)
 {
+<<<<<<< HEAD
+=======
+	struct tty_driver *driver;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int res;
 
 	stderr_id = nf_get_id("NF_STDERR");
 	if (!stderr_id)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	nfcon_tty_driver = alloc_tty_driver(1);
 	if (!nfcon_tty_driver)
 		return -ENOMEM;
@@ -143,6 +199,33 @@ static int __init nfcon_init(void)
 	}
 
 	if (!(nf_console.flags & CON_ENABLED))
+=======
+	driver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW);
+	if (IS_ERR(driver))
+		return PTR_ERR(driver);
+
+	tty_port_init(&nfcon_tty_port);
+
+	driver->driver_name = "nfcon";
+	driver->name = "nfcon";
+	driver->type = TTY_DRIVER_TYPE_SYSTEM;
+	driver->subtype = SYSTEM_TYPE_TTY;
+	driver->init_termios = tty_std_termios;
+
+	tty_set_operations(driver, &nfcon_tty_ops);
+	tty_port_link_device(&nfcon_tty_port, driver, 0);
+	res = tty_register_driver(driver);
+	if (res) {
+		pr_err("failed to register nfcon tty driver\n");
+		tty_driver_kref_put(driver);
+		tty_port_destroy(&nfcon_tty_port);
+		return res;
+	}
+
+	nfcon_tty_driver = driver;
+
+	if (!console_is_registered(&nf_console))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		register_console(&nf_console);
 
 	return 0;
@@ -152,7 +235,12 @@ static void __exit nfcon_exit(void)
 {
 	unregister_console(&nf_console);
 	tty_unregister_driver(nfcon_tty_driver);
+<<<<<<< HEAD
 	put_tty_driver(nfcon_tty_driver);
+=======
+	tty_driver_kref_put(nfcon_tty_driver);
+	tty_port_destroy(&nfcon_tty_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(nfcon_init);

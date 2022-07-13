@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000,2001,2004 Broadcom Corporation
  *
@@ -14,6 +15,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (C) 2000,2001,2004 Broadcom Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/clockchips.h>
 #include <linux/interrupt.h>
@@ -40,8 +46,13 @@
  * The general purpose timer ticks at 1MHz independent if
  * the rest of the system
  */
+<<<<<<< HEAD
 static void sibyte_set_mode(enum clock_event_mode mode,
                            struct clock_event_device *evt)
+=======
+
+static int sibyte_set_periodic(struct clock_event_device *evt)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int cpu = smp_processor_id();
 	void __iomem *cfg, *init;
@@ -49,6 +60,7 @@ static void sibyte_set_mode(enum clock_event_mode mode,
 	cfg = IOADDR(A_SCD_TIMER_REGISTER(cpu, R_SCD_TIMER_CFG));
 	init = IOADDR(A_SCD_TIMER_REGISTER(cpu, R_SCD_TIMER_INIT));
 
+<<<<<<< HEAD
 	switch (mode) {
 	case CLOCK_EVT_MODE_PERIODIC:
 		__raw_writeq(0, cfg);
@@ -67,6 +79,24 @@ static void sibyte_set_mode(enum clock_event_mode mode,
 	case CLOCK_EVT_MODE_RESUME:
 		;
 	}
+=======
+	__raw_writeq(0, cfg);
+	__raw_writeq((V_SCD_TIMER_FREQ / HZ) - 1, init);
+	__raw_writeq(M_SCD_TIMER_ENABLE | M_SCD_TIMER_MODE_CONTINUOUS, cfg);
+	return 0;
+}
+
+static int sibyte_shutdown(struct clock_event_device *evt)
+{
+	unsigned int cpu = smp_processor_id();
+	void __iomem *cfg;
+
+	cfg = IOADDR(A_SCD_TIMER_REGISTER(cpu, R_SCD_TIMER_CFG));
+
+	/* Stop the timer until we actually program a shot */
+	__raw_writeq(0, cfg);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sibyte_next_event(unsigned long delta, struct clock_event_device *cd)
@@ -91,7 +121,11 @@ static irqreturn_t sibyte_counter_handler(int irq, void *dev_id)
 	void __iomem *cfg;
 	unsigned long tmode;
 
+<<<<<<< HEAD
 	if (cd->mode == CLOCK_EVT_MODE_PERIODIC)
+=======
+	if (clockevent_state_periodic(cd))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmode = M_SCD_TIMER_ENABLE | M_SCD_TIMER_MODE_CONTINUOUS;
 	else
 		tmode = 0;
@@ -106,6 +140,7 @@ static irqreturn_t sibyte_counter_handler(int irq, void *dev_id)
 }
 
 static DEFINE_PER_CPU(struct clock_event_device, sibyte_hpt_clockevent);
+<<<<<<< HEAD
 static DEFINE_PER_CPU(struct irqaction, sibyte_hpt_irqaction);
 static DEFINE_PER_CPU(char [18], sibyte_hpt_name);
 
@@ -116,6 +151,17 @@ void __cpuinit sb1480_clockevent_init(void)
 	struct irqaction *action = &per_cpu(sibyte_hpt_irqaction, cpu);
 	struct clock_event_device *cd = &per_cpu(sibyte_hpt_clockevent, cpu);
 	unsigned char *name = per_cpu(sibyte_hpt_name, cpu);
+=======
+static DEFINE_PER_CPU(char [18], sibyte_hpt_name);
+
+void sb1480_clockevent_init(void)
+{
+	unsigned int cpu = smp_processor_id();
+	unsigned int irq = K_BCM1480_INT_TIMER_0 + cpu;
+	struct clock_event_device *cd = &per_cpu(sibyte_hpt_clockevent, cpu);
+	unsigned char *name = per_cpu(sibyte_hpt_name, cpu);
+	unsigned long flags =  IRQF_PERCPU | IRQF_TIMER;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(cpu > 3);	/* Only have 4 general purpose timers */
 
@@ -125,12 +171,24 @@ void __cpuinit sb1480_clockevent_init(void)
 				  CLOCK_EVT_FEAT_ONESHOT;
 	clockevent_set_clock(cd, V_SCD_TIMER_FREQ);
 	cd->max_delta_ns	= clockevent_delta2ns(0x7fffff, cd);
+<<<<<<< HEAD
 	cd->min_delta_ns	= clockevent_delta2ns(2, cd);
+=======
+	cd->max_delta_ticks	= 0x7fffff;
+	cd->min_delta_ns	= clockevent_delta2ns(2, cd);
+	cd->min_delta_ticks	= 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cd->rating		= 200;
 	cd->irq			= irq;
 	cd->cpumask		= cpumask_of(cpu);
 	cd->set_next_event	= sibyte_next_event;
+<<<<<<< HEAD
 	cd->set_mode		= sibyte_set_mode;
+=======
+	cd->set_state_shutdown	= sibyte_shutdown;
+	cd->set_state_periodic	= sibyte_set_periodic;
+	cd->set_state_oneshot	= sibyte_shutdown;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clockevents_register_device(cd);
 
 	bcm1480_mask_irq(cpu, irq);
@@ -144,6 +202,7 @@ void __cpuinit sb1480_clockevent_init(void)
 
 	bcm1480_unmask_irq(cpu, irq);
 
+<<<<<<< HEAD
 	action->handler	= sibyte_counter_handler;
 	action->flags	= IRQF_PERCPU | IRQF_TIMER;
 	action->name	= name;
@@ -151,4 +210,9 @@ void __cpuinit sb1480_clockevent_init(void)
 
 	irq_set_affinity(irq, cpumask_of(cpu));
 	setup_irq(irq, action);
+=======
+	irq_set_affinity(irq, cpumask_of(cpu));
+	if (request_irq(irq, sibyte_counter_handler, flags, name, cd))
+		pr_err("Failed to request irq %d (%s)\n", irq, name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

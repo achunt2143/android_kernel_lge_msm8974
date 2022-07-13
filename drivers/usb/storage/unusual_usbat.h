@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Unusual Devices File for SCM Microsystems (a.k.a. Shuttle) USB-ATAPI cable
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -13,6 +14,11 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * Unusual Devices File for SCM Microsystems (a.k.a. Shuttle) USB-ATAPI cable
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #if defined(CONFIG_USB_STORAGE_USBAT) || \

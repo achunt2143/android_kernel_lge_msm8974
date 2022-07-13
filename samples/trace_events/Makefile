@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # builds the trace events example kernel modules;
 # then to use one (as root):  insmod <module_name.ko>
 
@@ -10,5 +14,12 @@
 # Here trace-events-sample.c does the CREATE_TRACE_POINTS.
 #
 CFLAGS_trace-events-sample.o := -I$(src)
+<<<<<<< HEAD
 
 obj-$(CONFIG_SAMPLE_TRACE_EVENTS) += trace-events-sample.o
+=======
+CFLAGS_trace_custom_sched.o := -I$(src)
+
+obj-$(CONFIG_SAMPLE_TRACE_EVENTS) += trace-events-sample.o
+obj-$(CONFIG_SAMPLE_TRACE_CUSTOM_EVENTS) += trace_custom_sched.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

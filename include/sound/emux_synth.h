@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_EMUX_SYNTH_H
 #define __SOUND_EMUX_SYNTH_H
 
@@ -5,6 +9,7 @@
  *  Defines for the Emu-series WaveTable chip
  *
  *  Copyright (C) 2000 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -30,6 +35,17 @@
 #endif
 #include "emux_legacy.h"
 #include "seq_virmidi.h"
+=======
+ */
+
+#include <sound/seq_kernel.h>
+#include <sound/seq_device.h>
+#include <sound/soundfont.h>
+#include <sound/seq_midi_emul.h>
+#include <sound/seq_oss.h>
+#include <sound/emux_legacy.h>
+#include <sound/seq_virmidi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * compile flags
@@ -66,9 +82,16 @@ struct snd_emux_operators {
 		       const void __user *data, long count);
 	void (*sysex)(struct snd_emux *emu, char *buf, int len, int parsed,
 		      struct snd_midi_channel_set *chset);
+<<<<<<< HEAD
 #ifdef CONFIG_SND_SEQUENCER_OSS
 	int (*oss_ioctl)(struct snd_emux *emu, int cmd, int p1, int p2);
 #endif
+=======
+#if IS_ENABLED(CONFIG_SND_SEQUENCER_OSS)
+	int (*oss_ioctl)(struct snd_emux *emu, int cmd, int p1, int p2);
+#endif
+	int (*get_pitch_shift)(struct snd_emux *emu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -97,7 +120,10 @@ struct snd_emux {
 	int max_voices;		/* Number of voices */
 	int mem_size;		/* memory size (in byte) */
 	int num_ports;		/* number of ports to be created */
+<<<<<<< HEAD
 	int pitch_shift;	/* pitch shift value (for Emu10k1) */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_emux_operators ops;	/* operators */
 	void *hw;		/* hardware */
 	unsigned long flags;	/* other conditions */
@@ -118,18 +144,30 @@ struct snd_emux {
 	int ports[SNDRV_EMUX_MAX_PORTS];	/* The ports for this device */
 	struct snd_emux_port *portptrs[SNDRV_EMUX_MAX_PORTS];
 	int used;	/* use counter */
+<<<<<<< HEAD
 	char *name;	/* name of the device (internal) */
+=======
+	const char *name;	/* name of the device (internal) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_rawmidi **vmidi;
 	struct timer_list tlist;	/* for pending note-offs */
 	int timer_active;
 
 	struct snd_util_memhdr *memhdr;	/* memory chunk information */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
 	struct snd_info_entry *proc;
 #endif
 
 #ifdef CONFIG_SND_SEQUENCER_OSS
+=======
+#ifdef CONFIG_SND_PROC_FS
+	struct snd_info_entry *proc;
+#endif
+
+#if IS_ENABLED(CONFIG_SND_SEQUENCER_OSS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_seq_device *oss_synth;
 #endif
 };
@@ -150,7 +188,11 @@ struct snd_emux_port {
 #ifdef SNDRV_EMUX_USE_RAW_EFFECT
 	struct snd_emux_effect_table *effect;
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_SND_SEQUENCER_OSS
+=======
+#if IS_ENABLED(CONFIG_SND_SEQUENCER_OSS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_seq_oss_arg *oss_arg;
 #endif
 };

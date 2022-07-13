@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  linux/fs/partitions/acorn.c
  *
@@ -7,6 +8,12 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ *  Copyright (c) 1996-2000 Russell King.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Scan ADFS partitions on hard disk drives.  Unfortunately, there
  *  isn't a standard for partitioning drives on Acorn machines, so
  *  every single manufacturer of SCSI and IDE cards created their own
@@ -16,7 +23,10 @@
 #include <linux/adfs_fs.h>
 
 #include "check.h"
+<<<<<<< HEAD
 #include "acorn.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Partition types. (Oh for reusability)
@@ -281,20 +291,32 @@ int adfspart_check_ADFS(struct parsed_partitions *state)
 	/*
 	 * Work out start of non-adfs partition.
 	 */
+<<<<<<< HEAD
 	nr_sects = (state->bdev->bd_inode->i_size >> 9) - start_sect;
+=======
+	nr_sects = get_capacity(state->disk) - start_sect;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (start_sect) {
 		switch (id) {
 #ifdef CONFIG_ACORN_PARTITION_RISCIX
 		case PARTITION_RISCIX_SCSI:
 		case PARTITION_RISCIX_MFM:
+<<<<<<< HEAD
 			slot = riscix_partition(state, start_sect, slot,
+=======
+			riscix_partition(state, start_sect, slot,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						nr_sects);
 			break;
 #endif
 
 		case PARTITION_LINUX:
+<<<<<<< HEAD
 			slot = linux_partition(state, start_sect, slot,
+=======
+			linux_partition(state, start_sect, slot,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					       nr_sects);
 			break;
 		}
@@ -546,7 +568,11 @@ int adfspart_check_EESOX(struct parsed_partitions *state)
 	if (i != 0) {
 		sector_t size;
 
+<<<<<<< HEAD
 		size = get_capacity(state->bdev->bd_disk);
+=======
+		size = get_capacity(state->disk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_partition(state, slot++, start, size - start);
 		strlcat(state->pp_buf, "\n", PAGE_SIZE);
 	}

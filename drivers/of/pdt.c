@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* pdt.c: OF PROM device tree support code.
  *
  * Paul Mackerras	August 1996.
@@ -8,11 +12,14 @@
  *
  *  Adapted for sparc by David S. Miller davem@davemloft.net
  *  Adapted for multiple architectures by Andres Salomon <dilinger@queued.net>
+<<<<<<< HEAD
  *
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
  *      as published by the Free Software Foundation; either version
  *      2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -22,6 +29,7 @@
 #include <linux/slab.h>
 #include <linux/of.h>
 #include <linux/of_pdt.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
 
 static struct of_pdt_ops *of_pdt_prom_ops __initdata;
@@ -29,6 +37,11 @@ static struct of_pdt_ops *of_pdt_prom_ops __initdata;
 void __initdata (*of_pdt_build_more)(struct device_node *dp,
 		struct device_node ***nextp);
 
+=======
+
+static struct of_pdt_ops *of_pdt_prom_ops __initdata;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_SPARC)
 unsigned int of_pdt_unique_id __initdata;
 
@@ -38,6 +51,7 @@ unsigned int of_pdt_unique_id __initdata;
 
 static char * __init of_pdt_build_full_name(struct device_node *dp)
 {
+<<<<<<< HEAD
 	int len, ourlen, plen;
 	char *n;
 
@@ -56,6 +70,9 @@ static char * __init of_pdt_build_full_name(struct device_node *dp)
 	strcpy(n + plen, dp->path_component_name);
 
 	return n;
+=======
+	return build_path_component(dp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else /* CONFIG_SPARC */
@@ -66,6 +83,7 @@ static inline void irq_trans_init(struct device_node *dp) { }
 static char * __init of_pdt_build_full_name(struct device_node *dp)
 {
 	static int failsafe_id = 0; /* for generating unique names on failure */
+<<<<<<< HEAD
 	char *buf;
 	int len;
 
@@ -83,6 +101,23 @@ static char * __init of_pdt_build_full_name(struct device_node *dp)
 	sprintf(buf, "%s/%s@unknown%i",
 		of_node_is_root(dp->parent) ? "" : dp->parent->full_name,
 		dp->name, failsafe_id++);
+=======
+	const char *name;
+	char path[256];
+	char *buf;
+	int len;
+
+	if (!of_pdt_prom_ops->pkg2path(dp->phandle, path, sizeof(path), &len)) {
+		name = kbasename(path);
+		buf = prom_early_alloc(strlen(name) + 1);
+		strcpy(buf, name);
+		return buf;
+	}
+
+	name = of_get_property(dp, "name", &len);
+	buf = prom_early_alloc(len + 16);
+	sprintf(buf, "%s@unknown%i", name, failsafe_id++);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_err("%s: pkg2path failed; assigning %s\n", __func__, buf);
 	return buf;
 }
@@ -177,6 +212,7 @@ static struct device_node * __init of_pdt_create_node(phandle node,
 		return NULL;
 
 	dp = prom_early_alloc(sizeof(*dp));
+<<<<<<< HEAD
 	of_pdt_incr_unique_id(dp);
 	dp->parent = parent;
 
@@ -184,18 +220,34 @@ static struct device_node * __init of_pdt_create_node(phandle node,
 
 	dp->name = of_pdt_get_one_property(node, "name");
 	dp->type = of_pdt_get_one_property(node, "device_type");
+=======
+	of_node_init(dp);
+	of_pdt_incr_unique_id(dp);
+	dp->parent = parent;
+
+	dp->name = of_pdt_get_one_property(node, "name");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dp->phandle = node;
 
 	dp->properties = of_pdt_build_prop_list(node);
 
+<<<<<<< HEAD
+=======
+	dp->full_name = of_pdt_build_full_name(dp);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq_trans_init(dp);
 
 	return dp;
 }
 
 static struct device_node * __init of_pdt_build_tree(struct device_node *parent,
+<<<<<<< HEAD
 						   phandle node,
 						   struct device_node ***nextp)
+=======
+						   phandle node)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *ret = NULL, *prev_sibling = NULL;
 	struct device_node *dp;
@@ -212,6 +264,7 @@ static struct device_node * __init of_pdt_build_tree(struct device_node *parent,
 			ret = dp;
 		prev_sibling = dp;
 
+<<<<<<< HEAD
 		*(*nextp) = dp;
 		*nextp = &dp->allnext;
 
@@ -222,6 +275,9 @@ static struct device_node * __init of_pdt_build_tree(struct device_node *parent,
 
 		if (of_pdt_build_more)
 			of_pdt_build_more(dp, nextp);
+=======
+		dp->child = of_pdt_build_tree(dp, of_pdt_prom_ops->getchild(node));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		node = of_pdt_prom_ops->getsibling(node);
 	}
@@ -236,6 +292,7 @@ static void * __init kernel_tree_alloc(u64 size, u64 align)
 
 void __init of_pdt_build_devicetree(phandle root_node, struct of_pdt_ops *ops)
 {
+<<<<<<< HEAD
 	struct device_node **nextp;
 
 	BUG_ON(!ops);
@@ -252,5 +309,17 @@ void __init of_pdt_build_devicetree(phandle root_node, struct of_pdt_ops *ops)
 			of_pdt_prom_ops->getchild(allnodes->phandle), &nextp);
 
 	/* Get pointer to "/chosen" and "/aliasas" nodes for use everywhere */
+=======
+	BUG_ON(!ops);
+	of_pdt_prom_ops = ops;
+
+	of_root = of_pdt_create_node(root_node, NULL);
+	of_root->full_name = "/";
+
+	of_root->child = of_pdt_build_tree(of_root,
+				of_pdt_prom_ops->getchild(of_root->phandle));
+
+	/* Get pointer to "/chosen" and "/aliases" nodes for use everywhere */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	of_alias_scan(kernel_tree_alloc);
 }

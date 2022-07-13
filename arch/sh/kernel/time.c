@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/sh/kernel/time.c
  *
@@ -5,6 +9,7 @@
  *  Copyright (C) 2000  Philipp Rumpf <prumpf@tux.org>
  *  Copyright (C) 2002 - 2009  Paul Mundt
  *  Copyright (C) 2002  M. R. Brown  <mrbrown@linux-sh.org>
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
@@ -12,6 +17,10 @@
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
+=======
+ */
+#include <linux/kernel.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/profile.h>
 #include <linux/timex.h>
@@ -22,6 +31,7 @@
 #include <linux/rtc.h>
 #include <asm/clock.h>
 #include <asm/rtc.h>
+<<<<<<< HEAD
 
 /* Dummy RTC ops */
 static void null_rtc_get_time(struct timespec *tv)
@@ -88,6 +98,9 @@ static int __init rtc_generic_init(void)
 module_init(rtc_generic_init);
 
 void (*board_time_init)(void);
+=======
+#include <asm/platform_early.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __init sh_late_time_init(void)
 {
@@ -100,14 +113,23 @@ static void __init sh_late_time_init(void)
 	 * clocksource and the jiffies clocksource is used transparently
 	 * instead. No error handling is necessary here.
 	 */
+<<<<<<< HEAD
 	early_platform_driver_register_all("earlytimer");
 	early_platform_driver_probe("earlytimer", 2, 0);
+=======
+	sh_early_platform_driver_register_all("earlytimer");
+	sh_early_platform_driver_probe("earlytimer", 2, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init time_init(void)
 {
+<<<<<<< HEAD
 	if (board_time_init)
 		board_time_init();
+=======
+	timer_probe();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clk_init();
 

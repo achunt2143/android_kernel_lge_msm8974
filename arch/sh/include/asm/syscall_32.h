@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 #ifndef __ASM_SH_SYSCALL_32_H
 #define __ASM_SH_SYSCALL_32_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ASM_SH_SYSCALL_32_H
+#define __ASM_SH_SYSCALL_32_H
+
+#include <uapi/linux/audit.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/err.h>
@@ -38,14 +46,19 @@ static inline void syscall_set_return_value(struct task_struct *task,
 					    struct pt_regs *regs,
 					    int error, long val)
 {
+<<<<<<< HEAD
 	if (error)
 		regs->regs[0] = -error;
 	else
 		regs->regs[0] = val;
+=======
+	regs->regs[0] = (long) error ?: val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void syscall_get_arguments(struct task_struct *task,
 					 struct pt_regs *regs,
+<<<<<<< HEAD
 					 unsigned int i, unsigned int n,
 					 unsigned long *args)
 {
@@ -93,4 +106,27 @@ static inline void syscall_set_arguments(struct task_struct *task,
 	}
 }
 
+=======
+					 unsigned long *args)
+{
+
+	/* Argument pattern is: R4, R5, R6, R7, R0, R1 */
+	args[5] = regs->regs[1];
+	args[4] = regs->regs[0];
+	args[3] = regs->regs[7];
+	args[2] = regs->regs[6];
+	args[1] = regs->regs[5];
+	args[0] = regs->regs[4];
+}
+
+static inline int syscall_get_arch(struct task_struct *task)
+{
+	int arch = AUDIT_ARCH_SH;
+
+#ifdef CONFIG_CPU_LITTLE_ENDIAN
+	arch |= __AUDIT_ARCH_LE;
+#endif
+	return arch;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_SYSCALL_32_H */

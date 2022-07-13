@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  sr.c Copyright (C) 1992 David Giller
  *           Copyright (C) 1993, 1994, 1995, 1999 Eric Youngdale
@@ -37,15 +41,31 @@
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/bio.h>
+<<<<<<< HEAD
+=======
+#include <linux/compat.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/errno.h>
 #include <linux/cdrom.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/blkdev.h>
 #include <linux/mutex.h>
 #include <linux/slab.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/major.h>
+#include <linux/blkdev.h>
+#include <linux/blk-pm.h>
+#include <linux/mutex.h>
+#include <linux/slab.h>
+#include <linux/pm_runtime.h>
+#include <linux/uaccess.h>
+
+#include <asm/unaligned.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_dbg.h>
@@ -75,6 +95,7 @@ MODULE_ALIAS_SCSI_DEVICE(TYPE_WORM);
 	 CDC_CD_R|CDC_CD_RW|CDC_DVD|CDC_DVD_R|CDC_DVD_RAM|CDC_GENERIC_PACKET| \
 	 CDC_MRW|CDC_MRW_W|CDC_RAM)
 
+<<<<<<< HEAD
 static DEFINE_MUTEX(sr_mutex);
 static int sr_probe(struct device *);
 static int sr_remove(struct device *);
@@ -87,28 +108,64 @@ static struct scsi_driver sr_template = {
 		.probe		= sr_probe,
 		.remove		= sr_remove,
 	},
+=======
+static int sr_probe(struct device *);
+static int sr_remove(struct device *);
+static blk_status_t sr_init_command(struct scsi_cmnd *SCpnt);
+static int sr_done(struct scsi_cmnd *);
+static int sr_runtime_suspend(struct device *dev);
+
+static const struct dev_pm_ops sr_pm_ops = {
+	.runtime_suspend	= sr_runtime_suspend,
+};
+
+static struct scsi_driver sr_template = {
+	.gendrv = {
+		.name   	= "sr",
+		.owner		= THIS_MODULE,
+		.probe		= sr_probe,
+		.remove		= sr_remove,
+		.pm		= &sr_pm_ops,
+	},
+	.init_command		= sr_init_command,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.done			= sr_done,
 };
 
 static unsigned long sr_index_bits[SR_DISKS / BITS_PER_LONG];
 static DEFINE_SPINLOCK(sr_index_lock);
 
+<<<<<<< HEAD
 /* This semaphore is used to mediate the 0->1 reference get in the
  * face of object destruction (i.e. we can't allow a get on an
  * object after last put) */
 static DEFINE_MUTEX(sr_ref_mutex);
+=======
+static struct lock_class_key sr_bio_compl_lkclass;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int sr_open(struct cdrom_device_info *, int);
 static void sr_release(struct cdrom_device_info *);
 
 static void get_sectorsize(struct scsi_cd *);
+<<<<<<< HEAD
 static void get_capabilities(struct scsi_cd *);
+=======
+static int get_capabilities(struct scsi_cd *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int sr_check_events(struct cdrom_device_info *cdi,
 				    unsigned int clearing, int slot);
 static int sr_packet(struct cdrom_device_info *, struct packet_command *);
+<<<<<<< HEAD
 
 static struct cdrom_device_ops sr_dops = {
+=======
+static int sr_read_cdda_bpc(struct cdrom_device_info *cdi, void __user *ubuf,
+		u32 lba, u32 nr, u8 *last_sense);
+
+static const struct cdrom_device_ops sr_dops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open			= sr_open,
 	.release	 	= sr_release,
 	.drive_status	 	= sr_drive_status,
@@ -120,6 +177,7 @@ static struct cdrom_device_ops sr_dops = {
 	.get_mcn		= sr_get_mcn,
 	.reset			= sr_reset,
 	.audio_ioctl		= sr_audio_ioctl,
+<<<<<<< HEAD
 	.capability		= SR_CAPABILITIES,
 	.generic_packet		= sr_packet,
 };
@@ -164,6 +222,29 @@ static void scsi_cd_put(struct scsi_cd *cd)
 	kref_put(&cd->kref, sr_kref_release);
 	scsi_device_put(sdev);
 	mutex_unlock(&sr_ref_mutex);
+=======
+	.generic_packet		= sr_packet,
+	.read_cdda_bpc		= sr_read_cdda_bpc,
+	.capability		= SR_CAPABILITIES,
+};
+
+static inline struct scsi_cd *scsi_cd(struct gendisk *disk)
+{
+	return disk->private_data;
+}
+
+static int sr_runtime_suspend(struct device *dev)
+{
+	struct scsi_cd *cd = dev_get_drvdata(dev);
+
+	if (!cd)	/* E.g.: runtime suspend following sr_remove() */
+		return 0;
+
+	if (cd->media_present)
+		return -EBUSY;
+	else
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int sr_get_events(struct scsi_device *sdev)
@@ -180,11 +261,23 @@ static unsigned int sr_get_events(struct scsi_device *sdev)
 	struct event_header *eh = (void *)buf;
 	struct media_event_desc *med = (void *)(buf + 4);
 	struct scsi_sense_hdr sshdr;
+<<<<<<< HEAD
 	int result;
 
 	result = scsi_execute_req(sdev, cmd, DMA_FROM_DEVICE, buf, sizeof(buf),
 				  &sshdr, SR_TIMEOUT, MAX_RETRIES, NULL);
 	if (scsi_sense_valid(&sshdr) && sshdr.sense_key == UNIT_ATTENTION)
+=======
+	const struct scsi_exec_args exec_args = {
+		.sshdr = &sshdr,
+	};
+	int result;
+
+	result = scsi_execute_cmd(sdev, cmd, REQ_OP_DRV_IN, buf, sizeof(buf),
+				  SR_TIMEOUT, MAX_RETRIES, &exec_args);
+	if (result > 0 && scsi_sense_valid(&sshdr) &&
+	    sshdr.sense_key == UNIT_ATTENTION)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return DISK_EVENT_MEDIA_CHANGE;
 
 	if (result || be16_to_cpu(eh->data_len) < sizeof(*med))
@@ -197,6 +290,11 @@ static unsigned int sr_get_events(struct scsi_device *sdev)
 		return DISK_EVENT_EJECT_REQUEST;
 	else if (med->media_event_code == 2)
 		return DISK_EVENT_MEDIA_CHANGE;
+<<<<<<< HEAD
+=======
+	else if (med->media_event_code == 3)
+		return DISK_EVENT_MEDIA_CHANGE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -276,8 +374,13 @@ do_tur:
 	if (!cd->tur_changed) {
 		if (cd->get_event_changed) {
 			if (cd->tur_mismatch++ > 8) {
+<<<<<<< HEAD
 				sdev_printk(KERN_WARNING, cd->device,
 					    "GET_EVENT and TUR disagree continuously, suppress GET_EVENT events\n");
+=======
+				sr_printk(KERN_WARNING, cd,
+					  "GET_EVENT and TUR disagree continuously, suppress GET_EVENT events\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cd->ignore_get_event = true;
 			}
 		} else {
@@ -303,10 +406,18 @@ static int sr_done(struct scsi_cmnd *SCpnt)
 	int good_bytes = (result == 0 ? this_count : 0);
 	int block_sectors = 0;
 	long error_sector;
+<<<<<<< HEAD
 	struct scsi_cd *cd = scsi_cd(SCpnt->request->rq_disk);
 
 #ifdef DEBUG
 	printk("sr.c done: %x\n", result);
+=======
+	struct request *rq = scsi_cmd_to_rq(SCpnt);
+	struct scsi_cd *cd = scsi_cd(rq->q->disk);
+
+#ifdef DEBUG
+	scmd_printk(KERN_INFO, SCpnt, "done: %x\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/*
@@ -315,7 +426,11 @@ static int sr_done(struct scsi_cmnd *SCpnt)
 	 * care is taken to avoid unnecessary additional work such as
 	 * memcpy's that could be avoided.
 	 */
+<<<<<<< HEAD
 	if (driver_byte(result) != 0 &&		/* An error occurred */
+=======
+	if (scsi_status_is_check_condition(result) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (SCpnt->sense_buffer[0] & 0x7f) == 0x70) { /* Sense current */
 		switch (SCpnt->sense_buffer[2]) {
 		case MEDIUM_ERROR:
@@ -323,6 +438,7 @@ static int sr_done(struct scsi_cmnd *SCpnt)
 		case ILLEGAL_REQUEST:
 			if (!(SCpnt->sense_buffer[0] & 0x90))
 				break;
+<<<<<<< HEAD
 			error_sector = (SCpnt->sense_buffer[3] << 24) |
 				(SCpnt->sense_buffer[4] << 16) |
 				(SCpnt->sense_buffer[5] << 8) |
@@ -330,13 +446,23 @@ static int sr_done(struct scsi_cmnd *SCpnt)
 			if (SCpnt->request->bio != NULL)
 				block_sectors =
 					bio_sectors(SCpnt->request->bio);
+=======
+			error_sector =
+				get_unaligned_be32(&SCpnt->sense_buffer[3]);
+			if (rq->bio != NULL)
+				block_sectors = bio_sectors(rq->bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (block_sectors < 4)
 				block_sectors = 4;
 			if (cd->device->sector_size == 2048)
 				error_sector <<= 2;
 			error_sector &= ~(block_sectors - 1);
+<<<<<<< HEAD
 			good_bytes = (error_sector -
 				      blk_rq_pos(SCpnt->request)) << 9;
+=======
+			good_bytes = (error_sector - blk_rq_pos(rq)) << 9;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (good_bytes < 0 || good_bytes >= this_count)
 				good_bytes = 0;
 			/*
@@ -364,6 +490,7 @@ static int sr_done(struct scsi_cmnd *SCpnt)
 	return good_bytes;
 }
 
+<<<<<<< HEAD
 static int sr_prep_fn(struct request_queue *q, struct request *rq)
 {
 	int block = 0, this_count, s_size;
@@ -396,6 +523,28 @@ static int sr_prep_fn(struct request_queue *q, struct request *rq)
 		SCSI_LOG_HLQUEUE(2, printk("Finishing %u sectors\n",
 					   blk_rq_sectors(rq)));
 		SCSI_LOG_HLQUEUE(2, printk("Retry with 0x%p\n", SCpnt));
+=======
+static blk_status_t sr_init_command(struct scsi_cmnd *SCpnt)
+{
+	int block = 0, this_count, s_size;
+	struct scsi_cd *cd;
+	struct request *rq = scsi_cmd_to_rq(SCpnt);
+	blk_status_t ret;
+
+	ret = scsi_alloc_sgtables(SCpnt);
+	if (ret != BLK_STS_OK)
+		return ret;
+	cd = scsi_cd(rq->q->disk);
+
+	SCSI_LOG_HLQUEUE(1, scmd_printk(KERN_INFO, SCpnt,
+		"Doing sr request, block = %d\n", block));
+
+	if (!cd->device || !scsi_device_online(cd->device)) {
+		SCSI_LOG_HLQUEUE(2, scmd_printk(KERN_INFO, SCpnt,
+			"Finishing %u sectors\n", blk_rq_sectors(rq)));
+		SCSI_LOG_HLQUEUE(2, scmd_printk(KERN_INFO, SCpnt,
+			"Retry with 0x%p\n", SCpnt));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -407,6 +556,7 @@ static int sr_prep_fn(struct request_queue *q, struct request *rq)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * we do lazy blocksize switching (when reading XA sectors,
 	 * see CDROMREADMODE2 ioctl) 
@@ -419,11 +569,15 @@ static int sr_prep_fn(struct request_queue *q, struct request *rq)
 			printk("sr: can't switch blocksize: in interrupt\n");
 	}
 
+=======
+	s_size = cd->device->sector_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (s_size != 512 && s_size != 1024 && s_size != 2048) {
 		scmd_printk(KERN_ERR, SCpnt, "bad sector size %d\n", s_size);
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (rq_data_dir(rq) == WRITE) {
 		if (!cd->device->writeable)
 			goto out;
@@ -434,6 +588,19 @@ static int sr_prep_fn(struct request_queue *q, struct request *rq)
 		SCpnt->cmnd[0] = READ_10;
 		SCpnt->sc_data_direction = DMA_FROM_DEVICE;
 	} else {
+=======
+	switch (req_op(rq)) {
+	case REQ_OP_WRITE:
+		if (!cd->writeable)
+			goto out;
+		SCpnt->cmnd[0] = WRITE_10;
+		cd->cdi.media_written = 1;
+		break;
+	case REQ_OP_READ:
+		SCpnt->cmnd[0] = READ_10;
+		break;
+	default:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		blk_dump_rq_flags(rq, "Unknown sr command");
 		goto out;
 	}
@@ -466,11 +633,19 @@ static int sr_prep_fn(struct request_queue *q, struct request *rq)
 	this_count = (scsi_bufflen(SCpnt) >> 9) / (s_size >> 9);
 
 
+<<<<<<< HEAD
 	SCSI_LOG_HLQUEUE(2, printk("%s : %s %d/%u 512 byte blocks.\n",
 				cd->cdi.name,
 				(rq_data_dir(rq) == WRITE) ?
 					"writing" : "reading",
 				this_count, blk_rq_sectors(rq)));
+=======
+	SCSI_LOG_HLQUEUE(2, scmd_printk(KERN_INFO, SCpnt,
+					"%s %d/%u 512 byte blocks.\n",
+					(rq_data_dir(rq) == WRITE) ?
+					"writing" : "reading",
+					this_count, blk_rq_sectors(rq)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SCpnt->cmnd[1] = 0;
 	block = (unsigned int)blk_rq_pos(rq) / (s_size >> 9);
@@ -480,6 +655,7 @@ static int sr_prep_fn(struct request_queue *q, struct request *rq)
 		SCpnt->sdb.length = this_count * s_size;
 	}
 
+<<<<<<< HEAD
 	SCpnt->cmnd[2] = (unsigned char) (block >> 24) & 0xff;
 	SCpnt->cmnd[3] = (unsigned char) (block >> 16) & 0xff;
 	SCpnt->cmnd[4] = (unsigned char) (block >> 8) & 0xff;
@@ -487,6 +663,11 @@ static int sr_prep_fn(struct request_queue *q, struct request *rq)
 	SCpnt->cmnd[6] = SCpnt->cmnd[9] = 0;
 	SCpnt->cmnd[7] = (unsigned char) (this_count >> 8) & 0xff;
 	SCpnt->cmnd[8] = (unsigned char) this_count & 0xff;
+=======
+	put_unaligned_be32(block, &SCpnt->cmnd[2]);
+	SCpnt->cmnd[6] = SCpnt->cmnd[9] = 0;
+	put_unaligned_be16(this_count, &SCpnt->cmnd[7]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We shouldn't disconnect in the middle of a sector, so with a dumb
@@ -496,6 +677,7 @@ static int sr_prep_fn(struct request_queue *q, struct request *rq)
 	SCpnt->transfersize = cd->device->sector_size;
 	SCpnt->underflow = this_count << 9;
 	SCpnt->allowed = MAX_RETRIES;
+<<<<<<< HEAD
 
 	/*
 	 * This indicates that the command is ready from our end to be
@@ -534,12 +716,73 @@ static int sr_block_release(struct gendisk *disk, fmode_t mode)
 
 static int sr_block_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd,
 			  unsigned long arg)
+=======
+	SCpnt->cmd_len = 10;
+
+	/*
+	 * This indicates that the command is ready from our end to be queued.
+	 */
+	return BLK_STS_OK;
+ out:
+	scsi_free_sgtables(SCpnt);
+	return BLK_STS_IOERR;
+}
+
+static void sr_revalidate_disk(struct scsi_cd *cd)
+{
+	struct scsi_sense_hdr sshdr;
+
+	/* if the unit is not ready, nothing more to do */
+	if (scsi_test_unit_ready(cd->device, SR_TIMEOUT, MAX_RETRIES, &sshdr))
+		return;
+	sr_cd_check(&cd->cdi);
+	get_sectorsize(cd);
+}
+
+static int sr_block_open(struct gendisk *disk, blk_mode_t mode)
+{
+	struct scsi_cd *cd = scsi_cd(disk);
+	struct scsi_device *sdev = cd->device;
+	int ret;
+
+	if (scsi_device_get(cd->device))
+		return -ENXIO;
+
+	scsi_autopm_get_device(sdev);
+	if (disk_check_media_change(disk))
+		sr_revalidate_disk(cd);
+
+	mutex_lock(&cd->lock);
+	ret = cdrom_open(&cd->cdi, mode);
+	mutex_unlock(&cd->lock);
+
+	scsi_autopm_put_device(sdev);
+	if (ret)
+		scsi_device_put(cd->device);
+	return ret;
+}
+
+static void sr_block_release(struct gendisk *disk)
+{
+	struct scsi_cd *cd = scsi_cd(disk);
+
+	mutex_lock(&cd->lock);
+	cdrom_release(&cd->cdi);
+	mutex_unlock(&cd->lock);
+
+	scsi_device_put(cd->device);
+}
+
+static int sr_block_ioctl(struct block_device *bdev, blk_mode_t mode,
+		unsigned cmd, unsigned long arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scsi_cd *cd = scsi_cd(bdev->bd_disk);
 	struct scsi_device *sdev = cd->device;
 	void __user *argp = (void __user *)arg;
 	int ret;
 
+<<<<<<< HEAD
 	mutex_lock(&sr_mutex);
 
 	/*
@@ -571,12 +814,38 @@ static int sr_block_ioctl(struct block_device *bdev, fmode_t mode, unsigned cmd,
 
 out:
 	mutex_unlock(&sr_mutex);
+=======
+	if (bdev_is_partition(bdev) && !capable(CAP_SYS_RAWIO))
+		return -ENOIOCTLCMD;
+
+	mutex_lock(&cd->lock);
+
+	ret = scsi_ioctl_block_when_processing_errors(sdev, cmd,
+			(mode & BLK_OPEN_NDELAY));
+	if (ret)
+		goto out;
+
+	scsi_autopm_get_device(sdev);
+
+	if (cmd != CDROMCLOSETRAY && cmd != CDROMEJECT) {
+		ret = cdrom_ioctl(&cd->cdi, bdev, cmd, arg);
+		if (ret != -ENOSYS)
+			goto put;
+	}
+	ret = scsi_ioctl(sdev, mode & BLK_OPEN_WRITE, cmd, argp);
+
+put:
+	scsi_autopm_put_device(sdev);
+out:
+	mutex_unlock(&cd->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static unsigned int sr_block_check_events(struct gendisk *disk,
 					  unsigned int clearing)
 {
+<<<<<<< HEAD
 	struct scsi_cd *cd = scsi_cd(disk);
 	return cdrom_check_events(&cd->cdi, clearing);
 }
@@ -593,6 +862,26 @@ static int sr_block_revalidate_disk(struct gendisk *disk)
 	sr_cd_check(&cd->cdi);
 	get_sectorsize(cd);
 	return 0;
+=======
+	struct scsi_cd *cd = disk->private_data;
+
+	if (atomic_read(&cd->device->disk_events_disable_depth))
+		return 0;
+	return cdrom_check_events(&cd->cdi, clearing);
+}
+
+static void sr_free_disk(struct gendisk *disk)
+{
+	struct scsi_cd *cd = disk->private_data;
+
+	spin_lock(&sr_index_lock);
+	clear_bit(MINOR(disk_devt(disk)), sr_index_bits);
+	spin_unlock(&sr_index_lock);
+
+	unregister_cdrom(&cd->cdi);
+	mutex_destroy(&cd->lock);
+	kfree(cd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct block_device_operations sr_bdops =
@@ -601,24 +890,34 @@ static const struct block_device_operations sr_bdops =
 	.open		= sr_block_open,
 	.release	= sr_block_release,
 	.ioctl		= sr_block_ioctl,
+<<<<<<< HEAD
 	.check_events	= sr_block_check_events,
 	.revalidate_disk = sr_block_revalidate_disk,
 	/* 
 	 * No compat_ioctl for now because sr_block_ioctl never
 	 * seems to pass arbitrary ioctls down to host drivers.
 	 */
+=======
+	.compat_ioctl	= blkdev_compat_ptr_ioctl,
+	.check_events	= sr_block_check_events,
+	.free_disk	= sr_free_disk,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int sr_open(struct cdrom_device_info *cdi, int purpose)
 {
 	struct scsi_cd *cd = cdi->handle;
 	struct scsi_device *sdev = cd->device;
+<<<<<<< HEAD
 	int retval;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If the device is in error recovery, wait until it is done.
 	 * If the device is offline, then disallow any access to it.
 	 */
+<<<<<<< HEAD
 	retval = -ENXIO;
 	if (!scsi_block_when_processing_errors(sdev))
 		goto error_out;
@@ -627,15 +926,24 @@ static int sr_open(struct cdrom_device_info *cdi, int purpose)
 
 error_out:
 	return retval;	
+=======
+	if (!scsi_block_when_processing_errors(sdev))
+		return -ENXIO;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sr_release(struct cdrom_device_info *cdi)
 {
+<<<<<<< HEAD
 	struct scsi_cd *cd = cdi->handle;
 
 	if (cd->device->sector_size > 2048)
 		sr_set_blocklength(cd, 2048);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sr_probe(struct device *dev)
@@ -645,6 +953,10 @@ static int sr_probe(struct device *dev)
 	struct scsi_cd *cd;
 	int minor, error;
 
+<<<<<<< HEAD
+=======
+	scsi_autopm_get_device(sdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = -ENODEV;
 	if (sdev->type != TYPE_ROM && sdev->type != TYPE_WORM)
 		goto fail;
@@ -654,11 +966,19 @@ static int sr_probe(struct device *dev)
 	if (!cd)
 		goto fail;
 
+<<<<<<< HEAD
 	kref_init(&cd->kref);
 
 	disk = alloc_disk(1);
 	if (!disk)
 		goto fail_free;
+=======
+	disk = blk_mq_alloc_disk_for_queue(sdev->request_queue,
+					   &sr_bio_compl_lkclass);
+	if (!disk)
+		goto fail_free;
+	mutex_init(&cd->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&sr_index_lock);
 	minor = find_first_zero_bit(sr_index_bits, SR_DISKS);
@@ -672,17 +992,30 @@ static int sr_probe(struct device *dev)
 
 	disk->major = SCSI_CDROM_MAJOR;
 	disk->first_minor = minor;
+<<<<<<< HEAD
 	sprintf(disk->disk_name, "sr%d", minor);
 	disk->fops = &sr_bdops;
 	disk->flags = GENHD_FL_CD | GENHD_FL_BLOCK_EVENTS_ON_EXCL_WRITE;
 	disk->events = DISK_EVENT_MEDIA_CHANGE | DISK_EVENT_EJECT_REQUEST;
+=======
+	disk->minors = 1;
+	sprintf(disk->disk_name, "sr%d", minor);
+	disk->fops = &sr_bdops;
+	disk->flags |= GENHD_FL_REMOVABLE | GENHD_FL_NO_PART;
+	disk->events = DISK_EVENT_MEDIA_CHANGE | DISK_EVENT_EJECT_REQUEST;
+	disk->event_flags = DISK_EVENT_FLAG_POLL | DISK_EVENT_FLAG_UEVENT |
+				DISK_EVENT_FLAG_BLOCK_ON_EXCL_WRITE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	blk_queue_rq_timeout(sdev->request_queue, SR_TIMEOUT);
 
 	cd->device = sdev;
 	cd->disk = disk;
+<<<<<<< HEAD
 	cd->driver = &sr_template;
 	cd->disk = disk;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cd->capacity = 0x1fffff;
 	cd->device->changed = 1;	/* force recheck CD type */
 	cd->media_present = 1;
@@ -698,6 +1031,7 @@ static int sr_probe(struct device *dev)
 
 	sdev->sector_size = 2048;	/* A guess, just in case */
 
+<<<<<<< HEAD
 	/* FIXME: need to handle a get_capabilities failure properly ?? */
 	get_capabilities(cd);
 	blk_queue_prep_rq(sdev->request_queue, sr_prep_fn);
@@ -725,12 +1059,58 @@ fail_put:
 fail_free:
 	kfree(cd);
 fail:
+=======
+	error = -ENOMEM;
+	if (get_capabilities(cd))
+		goto fail_minor;
+	sr_vendor_init(cd);
+
+	set_capacity(disk, cd->capacity);
+	disk->private_data = cd;
+
+	if (register_cdrom(disk, &cd->cdi))
+		goto fail_minor;
+
+	/*
+	 * Initialize block layer runtime PM stuffs before the
+	 * periodic event checking request gets started in add_disk.
+	 */
+	blk_pm_runtime_init(sdev->request_queue, dev);
+
+	dev_set_drvdata(dev, cd);
+	sr_revalidate_disk(cd);
+
+	error = device_add_disk(&sdev->sdev_gendev, disk, NULL);
+	if (error)
+		goto unregister_cdrom;
+
+	sdev_printk(KERN_DEBUG, sdev,
+		    "Attached scsi CD-ROM %s\n", cd->cdi.name);
+	scsi_autopm_put_device(cd->device);
+
+	return 0;
+
+unregister_cdrom:
+	unregister_cdrom(&cd->cdi);
+fail_minor:
+	spin_lock(&sr_index_lock);
+	clear_bit(minor, sr_index_bits);
+	spin_unlock(&sr_index_lock);
+fail_put:
+	put_disk(disk);
+	mutex_destroy(&cd->lock);
+fail_free:
+	kfree(cd);
+fail:
+	scsi_autopm_put_device(sdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error;
 }
 
 
 static void get_sectorsize(struct scsi_cd *cd)
 {
+<<<<<<< HEAD
 	unsigned char cmd[10];
 	unsigned char buffer[8];
 	int the_result, retries = 3;
@@ -752,14 +1132,43 @@ static void get_sectorsize(struct scsi_cd *cd)
 	} while (the_result && retries);
 
 
+=======
+	static const u8 cmd[10] = { READ_CAPACITY };
+	unsigned char buffer[8] = { };
+	int the_result;
+	int sector_size;
+	struct request_queue *queue;
+	struct scsi_failure failure_defs[] = {
+		{
+			.result = SCMD_FAILURE_RESULT_ANY,
+			.allowed = 3,
+		},
+		{}
+	};
+	struct scsi_failures failures = {
+		.failure_definitions = failure_defs,
+	};
+	const struct scsi_exec_args exec_args = {
+		.failures = &failures,
+	};
+
+	/* Do the command and wait.. */
+	the_result = scsi_execute_cmd(cd->device, cmd, REQ_OP_DRV_IN, buffer,
+				      sizeof(buffer), SR_TIMEOUT, MAX_RETRIES,
+				      &exec_args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (the_result) {
 		cd->capacity = 0x1fffff;
 		sector_size = 2048;	/* A guess, just in case */
 	} else {
 		long last_written;
 
+<<<<<<< HEAD
 		cd->capacity = 1 + ((buffer[0] << 24) | (buffer[1] << 16) |
 				    (buffer[2] << 8) | buffer[3]);
+=======
+		cd->capacity = 1 + get_unaligned_be32(&buffer[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * READ_CAPACITY doesn't return the correct size on
 		 * certain UDF media.  If last_written is larger, use
@@ -770,8 +1179,12 @@ static void get_sectorsize(struct scsi_cd *cd)
 		if (!cdrom_get_last_written(&cd->cdi, &last_written))
 			cd->capacity = max_t(long, cd->capacity, last_written);
 
+<<<<<<< HEAD
 		sector_size = (buffer[4] << 24) |
 		    (buffer[5] << 16) | (buffer[6] << 8) | buffer[7];
+=======
+		sector_size = get_unaligned_be32(&buffer[4]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (sector_size) {
 			/*
 			 * HP 4020i CD-Recorder reports 2340 byte sectors
@@ -783,6 +1196,7 @@ static void get_sectorsize(struct scsi_cd *cd)
 		case 2340:
 		case 2352:
 			sector_size = 2048;
+<<<<<<< HEAD
 			/* fall through */
 		case 2048:
 			cd->capacity *= 4;
@@ -792,6 +1206,17 @@ static void get_sectorsize(struct scsi_cd *cd)
 		default:
 			printk("%s: unsupported sector size %d.\n",
 			       cd->cdi.name, sector_size);
+=======
+			fallthrough;
+		case 2048:
+			cd->capacity *= 4;
+			fallthrough;
+		case 512:
+			break;
+		default:
+			sr_printk(KERN_INFO, cd,
+				  "unsupported sector size %d.", sector_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cd->capacity = 0;
 		}
 
@@ -810,11 +1235,19 @@ static void get_sectorsize(struct scsi_cd *cd)
 	return;
 }
 
+<<<<<<< HEAD
 static void get_capabilities(struct scsi_cd *cd)
+=======
+static int get_capabilities(struct scsi_cd *cd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned char *buffer;
 	struct scsi_mode_data data;
 	struct scsi_sense_hdr sshdr;
+<<<<<<< HEAD
+=======
+	unsigned int ms_len = 128;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc, n;
 
 	static const char *loadmech[] =
@@ -831,20 +1264,35 @@ static void get_capabilities(struct scsi_cd *cd)
 
 
 	/* allocate transfer buffer */
+<<<<<<< HEAD
 	buffer = kmalloc(512, GFP_KERNEL | GFP_DMA);
 	if (!buffer) {
 		printk(KERN_ERR "sr: out of memory.\n");
 		return;
+=======
+	buffer = kmalloc(512, GFP_KERNEL);
+	if (!buffer) {
+		sr_printk(KERN_ERR, cd, "out of memory.\n");
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* eat unit attentions */
 	scsi_test_unit_ready(cd->device, SR_TIMEOUT, MAX_RETRIES, &sshdr);
 
 	/* ask for mode page 0x2a */
+<<<<<<< HEAD
 	rc = scsi_mode_sense(cd->device, 0, 0x2a, buffer, 128,
 			     SR_TIMEOUT, 3, &data, NULL);
 
 	if (!scsi_status_is_good(rc)) {
+=======
+	rc = scsi_mode_sense(cd->device, 0, 0x2a, 0, buffer, ms_len,
+			     SR_TIMEOUT, 3, &data, NULL);
+
+	if (rc < 0 || data.length > ms_len ||
+	    data.header_length + data.block_descriptor_length > data.length) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* failed, drive doesn't have capabilities mode page */
 		cd->cdi.speed = 1;
 		cd->cdi.mask |= (CDC_CD_R | CDC_CD_RW | CDC_DVD_R |
@@ -852,6 +1300,7 @@ static void get_capabilities(struct scsi_cd *cd)
 				 CDC_SELECT_DISC | CDC_SELECT_SPEED |
 				 CDC_MRW | CDC_MRW_W | CDC_RAM);
 		kfree(buffer);
+<<<<<<< HEAD
 		printk("%s: scsi-1 drive\n", cd->cdi.name);
 		return;
 	}
@@ -870,13 +1319,38 @@ static void get_capabilities(struct scsi_cd *cd)
 	       buffer[n + 4] & 0x20 ? "xa/form2 " : "",	/* can read xa/from2 */
 	       buffer[n + 5] & 0x01 ? "cdda " : "", /* can read audio data */
 	       loadmech[buffer[n + 6] >> 5]);
+=======
+		sr_printk(KERN_INFO, cd, "scsi-1 drive");
+		return 0;
+	}
+
+	n = data.header_length + data.block_descriptor_length;
+	cd->cdi.speed = get_unaligned_be16(&buffer[n + 8]) / 176;
+	cd->readcd_known = 1;
+	cd->readcd_cdda = buffer[n + 5] & 0x01;
+	/* print some capability bits */
+	sr_printk(KERN_INFO, cd,
+		  "scsi3-mmc drive: %dx/%dx %s%s%s%s%s%s\n",
+		  get_unaligned_be16(&buffer[n + 14]) / 176,
+		  cd->cdi.speed,
+		  buffer[n + 3] & 0x01 ? "writer " : "", /* CD Writer */
+		  buffer[n + 3] & 0x20 ? "dvd-ram " : "",
+		  buffer[n + 2] & 0x02 ? "cd/rw " : "", /* can read rewriteable */
+		  buffer[n + 4] & 0x20 ? "xa/form2 " : "",	/* can read xa/from2 */
+		  buffer[n + 5] & 0x01 ? "cdda " : "", /* can read audio data */
+		  loadmech[buffer[n + 6] >> 5]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((buffer[n + 6] >> 5) == 0)
 		/* caddy drives can't close tray... */
 		cd->cdi.mask |= CDC_CLOSE_TRAY;
 	if ((buffer[n + 2] & 0x8) == 0)
 		/* not a DVD drive */
 		cd->cdi.mask |= CDC_DVD;
+<<<<<<< HEAD
 	if ((buffer[n + 3] & 0x20) == 0) 
+=======
+	if ((buffer[n + 3] & 0x20) == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* can't write DVD-RAM media */
 		cd->cdi.mask |= CDC_DVD_RAM;
 	if ((buffer[n + 3] & 0x10) == 0)
@@ -907,15 +1381,27 @@ static void get_capabilities(struct scsi_cd *cd)
 	 */
 	if ((cd->cdi.mask & (CDC_DVD_RAM | CDC_MRW_W | CDC_RAM | CDC_CD_RW)) !=
 			(CDC_DVD_RAM | CDC_MRW_W | CDC_RAM | CDC_CD_RW)) {
+<<<<<<< HEAD
 		cd->device->writeable = 1;
 	}
 
 	kfree(buffer);
+=======
+		cd->writeable = 1;
+	}
+
+	kfree(buffer);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * sr_packet() is the entry point for the generic commands generated
+<<<<<<< HEAD
  * by the Uniform CD-ROM layer. 
+=======
+ * by the Uniform CD-ROM layer.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int sr_packet(struct cdrom_device_info *cdi,
 		struct packet_command *cgc)
@@ -934,6 +1420,7 @@ static int sr_packet(struct cdrom_device_info *cdi,
 	return cgc->stat;
 }
 
+<<<<<<< HEAD
 /**
  *	sr_kref_release - Called to free the scsi_cd structure
  *	@kref: pointer to embedded kref
@@ -959,18 +1446,75 @@ static void sr_kref_release(struct kref *kref)
 	put_disk(disk);
 
 	kfree(cd);
+=======
+static int sr_read_cdda_bpc(struct cdrom_device_info *cdi, void __user *ubuf,
+		u32 lba, u32 nr, u8 *last_sense)
+{
+	struct gendisk *disk = cdi->disk;
+	u32 len = nr * CD_FRAMESIZE_RAW;
+	struct scsi_cmnd *scmd;
+	struct request *rq;
+	struct bio *bio;
+	int ret;
+
+	rq = scsi_alloc_request(disk->queue, REQ_OP_DRV_IN, 0);
+	if (IS_ERR(rq))
+		return PTR_ERR(rq);
+	scmd = blk_mq_rq_to_pdu(rq);
+
+	ret = blk_rq_map_user(disk->queue, rq, NULL, ubuf, len, GFP_KERNEL);
+	if (ret)
+		goto out_put_request;
+
+	scmd->cmnd[0] = GPCMD_READ_CD;
+	scmd->cmnd[1] = 1 << 2;
+	scmd->cmnd[2] = (lba >> 24) & 0xff;
+	scmd->cmnd[3] = (lba >> 16) & 0xff;
+	scmd->cmnd[4] = (lba >>  8) & 0xff;
+	scmd->cmnd[5] = lba & 0xff;
+	scmd->cmnd[6] = (nr >> 16) & 0xff;
+	scmd->cmnd[7] = (nr >>  8) & 0xff;
+	scmd->cmnd[8] = nr & 0xff;
+	scmd->cmnd[9] = 0xf8;
+	scmd->cmd_len = 12;
+	rq->timeout = 60 * HZ;
+	bio = rq->bio;
+
+	blk_execute_rq(rq, false);
+	if (scmd->result) {
+		struct scsi_sense_hdr sshdr;
+
+		scsi_normalize_sense(scmd->sense_buffer, scmd->sense_len,
+				     &sshdr);
+		*last_sense = sshdr.sense_key;
+		ret = -EIO;
+	}
+
+	if (blk_rq_unmap_user(bio))
+		ret = -EFAULT;
+out_put_request:
+	blk_mq_free_request(rq);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sr_remove(struct device *dev)
 {
 	struct scsi_cd *cd = dev_get_drvdata(dev);
 
+<<<<<<< HEAD
 	blk_queue_prep_rq(cd->device->request_queue, scsi_prep_fn);
 	del_gendisk(cd->disk);
 
 	mutex_lock(&sr_ref_mutex);
 	kref_put(&cd->kref, sr_kref_release);
 	mutex_unlock(&sr_ref_mutex);
+=======
+	scsi_autopm_get_device(cd->device);
+
+	del_gendisk(cd->disk);
+	put_disk(cd->disk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

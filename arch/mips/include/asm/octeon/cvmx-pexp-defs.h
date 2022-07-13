@@ -4,7 +4,11 @@
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
  *
+<<<<<<< HEAD
  * Copyright (c) 2003-2011 Cavium Networks
+=======
+ * Copyright (c) 2003-2012 Cavium Networks
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux Plug and Play Support
  * Copyright by Adam Belay <ambx1@neo.rr.com>
@@ -12,6 +16,10 @@
 #include <linux/list.h>
 #include <linux/errno.h>
 #include <linux/mod_devicetable.h>
+<<<<<<< HEAD
+=======
+#include <linux/console.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PNP_NAME_LEN		50
 
@@ -218,10 +226,15 @@ struct pnp_card {
 #define global_to_pnp_card(n) list_entry(n, struct pnp_card, global_list)
 #define protocol_to_pnp_card(n) list_entry(n, struct pnp_card, protocol_list)
 #define to_pnp_card(n) container_of(n, struct pnp_card, dev)
+<<<<<<< HEAD
 #define pnp_for_each_card(card) \
 	for((card) = global_to_pnp_card(pnp_cards.next); \
 	(card) != global_to_pnp_card(&pnp_cards); \
 	(card) = global_to_pnp_card((card)->global_list.next))
+=======
+#define pnp_for_each_card(card)	\
+	list_for_each_entry(card, &pnp_cards, global_list)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct pnp_card_link {
 	struct pnp_card *card;
@@ -274,6 +287,7 @@ struct pnp_dev {
 #define card_to_pnp_dev(n) list_entry(n, struct pnp_dev, card_list)
 #define protocol_to_pnp_dev(n) list_entry(n, struct pnp_dev, protocol_list)
 #define	to_pnp_dev(n) container_of(n, struct pnp_dev, dev)
+<<<<<<< HEAD
 #define pnp_for_each_dev(dev) \
 	for((dev) = global_to_pnp_dev(pnp_global.next); \
 	(dev) != global_to_pnp_dev(&pnp_global); \
@@ -282,6 +296,11 @@ struct pnp_dev {
 	for((dev) = card_to_pnp_dev((card)->devices.next); \
 	(dev) != card_to_pnp_dev(&(card)->devices); \
 	(dev) = card_to_pnp_dev((dev)->card_list.next))
+=======
+#define pnp_for_each_dev(dev) list_for_each_entry(dev, &pnp_global, global_list)
+#define card_for_each_dev(card, dev)	\
+	list_for_each_entry(dev, &(card)->devices, card_list)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pnp_dev_name(dev) (dev)->name
 
 static inline void *pnp_get_drvdata(struct pnp_dev *pdev)
@@ -296,7 +315,11 @@ static inline void pnp_set_drvdata(struct pnp_dev *pdev, void *data)
 
 struct pnp_fixup {
 	char id[7];
+<<<<<<< HEAD
 	void (*quirk_function) (struct pnp_dev * dev);	/* fixup function */
+=======
+	void (*quirk_function) (struct pnp_dev *dev);	/* fixup function */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* config parameters */
@@ -309,15 +332,32 @@ struct pnp_fixup {
 #define PNP_DISABLE		0x0004
 #define PNP_CONFIGURABLE	0x0008
 #define PNP_REMOVABLE		0x0010
+<<<<<<< HEAD
+=======
+#define PNP_CONSOLE		0x0020
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pnp_can_read(dev)	(((dev)->protocol->get) && \
 				 ((dev)->capabilities & PNP_READ))
 #define pnp_can_write(dev)	(((dev)->protocol->set) && \
 				 ((dev)->capabilities & PNP_WRITE))
+<<<<<<< HEAD
 #define pnp_can_disable(dev)	(((dev)->protocol->disable) && \
 				 ((dev)->capabilities & PNP_DISABLE))
 #define pnp_can_configure(dev)	((!(dev)->active) && \
 				 ((dev)->capabilities & PNP_CONFIGURABLE))
+=======
+#define pnp_can_disable(dev)	(((dev)->protocol->disable) &&		  \
+				 ((dev)->capabilities & PNP_DISABLE) &&	  \
+				 (!((dev)->capabilities & PNP_CONSOLE) || \
+				  console_suspend_enabled))
+#define pnp_can_configure(dev)	((!(dev)->active) && \
+				 ((dev)->capabilities & PNP_CONFIGURABLE))
+#define pnp_can_suspend(dev)	(((dev)->protocol->suspend) &&		  \
+				 (!((dev)->capabilities & PNP_CONSOLE) || \
+				  console_suspend_enabled))
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_ISAPNP
 extern struct pnp_protocol isapnp_protocol;
@@ -329,9 +369,17 @@ extern struct mutex pnp_res_mutex;
 
 #ifdef CONFIG_PNPBIOS
 extern struct pnp_protocol pnpbios_protocol;
+<<<<<<< HEAD
 #define pnp_device_is_pnpbios(dev) ((dev)->protocol == (&pnpbios_protocol))
 #else
 #define pnp_device_is_pnpbios(dev) 0
+=======
+extern bool arch_pnpbios_disabled(void);
+#define pnp_device_is_pnpbios(dev) ((dev)->protocol == (&pnpbios_protocol))
+#else
+#define pnp_device_is_pnpbios(dev) 0
+#define arch_pnpbios_disabled()	false
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_PNPACPI
@@ -368,7 +416,11 @@ struct pnp_id {
 };
 
 struct pnp_driver {
+<<<<<<< HEAD
 	char *name;
+=======
+	const char *name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct pnp_device_id *id_table;
 	unsigned int flags;
 	int (*probe) (struct pnp_dev *dev, const struct pnp_device_id *dev_id);
@@ -415,8 +467,13 @@ struct pnp_protocol {
 
 	/* protocol specific suspend/resume */
 	bool (*can_wakeup) (struct pnp_dev *dev);
+<<<<<<< HEAD
 	int (*suspend) (struct pnp_dev * dev, pm_message_t state);
 	int (*resume) (struct pnp_dev * dev);
+=======
+	int (*suspend) (struct pnp_dev *dev, pm_message_t state);
+	int (*resume) (struct pnp_dev *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* used by pnp layer only (look but don't touch) */
 	unsigned char number;	/* protocol number */
@@ -426,6 +483,7 @@ struct pnp_protocol {
 };
 
 #define to_pnp_protocol(n) list_entry(n, struct pnp_protocol, protocol_list)
+<<<<<<< HEAD
 #define protocol_for_each_card(protocol,card) \
 	for((card) = protocol_to_pnp_card((protocol)->cards.next); \
 	(card) != protocol_to_pnp_card(&(protocol)->cards); \
@@ -436,6 +494,14 @@ struct pnp_protocol {
 	(dev) = protocol_to_pnp_dev((dev)->protocol_list.next))
 
 extern struct bus_type pnp_bus_type;
+=======
+#define protocol_for_each_card(protocol, card)	\
+	list_for_each_entry(card, &(protocol)->cards, protocol_list)
+#define protocol_for_each_dev(protocol, dev)	\
+	list_for_each_entry(dev, &(protocol)->devices, protocol_list)
+
+extern const struct bus_type pnp_bus_type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_PNP)
 
@@ -492,7 +558,11 @@ static inline int pnp_start_dev(struct pnp_dev *dev) { return -ENODEV; }
 static inline int pnp_stop_dev(struct pnp_dev *dev) { return -ENODEV; }
 static inline int pnp_activate_dev(struct pnp_dev *dev) { return -ENODEV; }
 static inline int pnp_disable_dev(struct pnp_dev *dev) { return -ENODEV; }
+<<<<<<< HEAD
 static inline int pnp_range_reserved(resource_size_t start, resource_size_t end) { return 0;}
+=======
+static inline int pnp_range_reserved(resource_size_t start, resource_size_t end) { return 0; }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* protocol helpers */
 static inline int pnp_is_active(struct pnp_dev *dev) { return 0; }
@@ -502,4 +572,19 @@ static inline void pnp_unregister_driver(struct pnp_driver *drv) { }
 
 #endif /* CONFIG_PNP */
 
+<<<<<<< HEAD
+=======
+/**
+ * module_pnp_driver() - Helper macro for registering a PnP driver
+ * @__pnp_driver: pnp_driver struct
+ *
+ * Helper macro for PnP drivers which do not do anything special in module
+ * init/exit. This eliminates a lot of boilerplate. Each module may only
+ * use this macro once, and calling it replaces module_init() and module_exit()
+ */
+#define module_pnp_driver(__pnp_driver) \
+	module_driver(__pnp_driver, pnp_register_driver, \
+				    pnp_unregister_driver)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_PNP_H */

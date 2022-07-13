@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * usblp.c
  *
@@ -31,6 +35,7 @@
  *      none  - Maintained in Linux kernel after v0.13
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,11 +58,22 @@
 #include <linux/signal.h>
 #include <linux/poll.h>
 #include <linux/init.h>
+=======
+#include <linux/module.h>
+#include <linux/kernel.h>
+#include <linux/sched/signal.h>
+#include <linux/signal.h>
+#include <linux/poll.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/lp.h>
 #include <linux/mutex.h>
 #undef DEBUG
 #include <linux/usb.h>
+<<<<<<< HEAD
+=======
+#include <linux/usb/ch9.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ratelimit.h>
 
 /*
@@ -80,12 +96,29 @@
 #define IOCNR_SOFT_RESET		7
 /* Get device_id string: */
 #define LPIOC_GET_DEVICE_ID(len) _IOC(_IOC_READ, 'P', IOCNR_GET_DEVICE_ID, len)
+<<<<<<< HEAD
 /* The following ioctls were added for http://hpoj.sourceforge.net: */
 /* Get two-int array:
  * [0]=current protocol (1=7/1/1, 2=7/1/2, 3=7/1/3),
  * [1]=supported protocol mask (mask&(1<<n)!=0 means 7/1/n supported): */
 #define LPIOC_GET_PROTOCOLS(len) _IOC(_IOC_READ, 'P', IOCNR_GET_PROTOCOLS, len)
 /* Set protocol (arg: 1=7/1/1, 2=7/1/2, 3=7/1/3): */
+=======
+/* The following ioctls were added for http://hpoj.sourceforge.net:
+ * Get two-int array:
+ * [0]=current protocol
+ *     (1=USB_CLASS_PRINTER/1/1, 2=USB_CLASS_PRINTER/1/2,
+ *         3=USB_CLASS_PRINTER/1/3),
+ * [1]=supported protocol mask (mask&(1<<n)!=0 means
+ *     USB_CLASS_PRINTER/1/n supported):
+ */
+#define LPIOC_GET_PROTOCOLS(len) _IOC(_IOC_READ, 'P', IOCNR_GET_PROTOCOLS, len)
+/*
+ * Set protocol
+ *     (arg: 1=USB_CLASS_PRINTER/1/1, 2=USB_CLASS_PRINTER/1/2,
+ *         3=USB_CLASS_PRINTER/1/3):
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LPIOC_SET_PROTOCOL _IOC(_IOC_WRITE, 'P', IOCNR_SET_PROTOCOL, 0)
 /* Set channel number (HP Vendor-specific command): */
 #define LPIOC_HP_SET_CHANNEL _IOC(_IOC_WRITE, 'P', IOCNR_HP_SET_CHANNEL, 0)
@@ -147,8 +180,15 @@ struct usblp {
 	int			readcount;		/* Counter for reads */
 	int			ifnum;			/* Interface number */
 	struct usb_interface	*intf;			/* The interface */
+<<<<<<< HEAD
 	/* Alternate-setting numbers and endpoints for each protocol
 	 * (7/1/{index=1,2,3}) that the device supports: */
+=======
+	/*
+	 * Alternate-setting numbers and endpoints for each protocol
+	 * (USB_CLASS_PRINTER/1/{index=1,2,3}) that the device supports:
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		int				alt_setting;
 		struct usb_endpoint_descriptor	*epwrite;
@@ -172,6 +212,7 @@ struct usblp {
 #ifdef DEBUG
 static void usblp_dump(struct usblp *usblp)
 {
+<<<<<<< HEAD
 	int p;
 
 	dbg("usblp=0x%p", usblp);
@@ -193,6 +234,33 @@ static void usblp_dump(struct usblp *usblp)
 	dbg("used=%d", usblp->used);
 	dbg("bidir=%d", usblp->bidir);
 	dbg("device_id_string=\"%s\"",
+=======
+	struct device *dev = &usblp->intf->dev;
+	int p;
+
+	dev_dbg(dev, "usblp=0x%p\n", usblp);
+	dev_dbg(dev, "dev=0x%p\n", usblp->dev);
+	dev_dbg(dev, "present=%d\n", usblp->present);
+	dev_dbg(dev, "readbuf=0x%p\n", usblp->readbuf);
+	dev_dbg(dev, "readcount=%d\n", usblp->readcount);
+	dev_dbg(dev, "ifnum=%d\n", usblp->ifnum);
+	for (p = USBLP_FIRST_PROTOCOL; p <= USBLP_LAST_PROTOCOL; p++) {
+		dev_dbg(dev, "protocol[%d].alt_setting=%d\n", p,
+			usblp->protocol[p].alt_setting);
+		dev_dbg(dev, "protocol[%d].epwrite=%p\n", p,
+			usblp->protocol[p].epwrite);
+		dev_dbg(dev, "protocol[%d].epread=%p\n", p,
+			usblp->protocol[p].epread);
+	}
+	dev_dbg(dev, "current_protocol=%d\n", usblp->current_protocol);
+	dev_dbg(dev, "minor=%d\n", usblp->minor);
+	dev_dbg(dev, "wstatus=%d\n", usblp->wstatus);
+	dev_dbg(dev, "rstatus=%d\n", usblp->rstatus);
+	dev_dbg(dev, "quirks=%d\n", usblp->quirks);
+	dev_dbg(dev, "used=%d\n", usblp->used);
+	dev_dbg(dev, "bidir=%d\n", usblp->bidir);
+	dev_dbg(dev, "device_id_string=\"%s\"\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usblp->device_id_string ?
 			usblp->device_id_string + 2 :
 			(unsigned char *)"(null)");
@@ -262,7 +330,12 @@ static int usblp_ctrl_msg(struct usblp *usblp, int request, int type, int dir, i
 	retval = usb_control_msg(usblp->dev,
 		dir ? usb_rcvctrlpipe(usblp->dev, 0) : usb_sndctrlpipe(usblp->dev, 0),
 		request, type | dir | recip, value, index, buf, len, USBLP_CTL_TIMEOUT);
+<<<<<<< HEAD
 	dbg("usblp_control_msg: rq: 0x%02x dir: %d recip: %d value: %d idx: %d len: %#x result: %d",
+=======
+	dev_dbg(&usblp->intf->dev,
+		"usblp_control_msg: rq: 0x%02x dir: %d recip: %d value: %d idx: %d len: %#x result: %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		request, !!dir, recip, value, index, len, retval);
 	return retval < 0 ? retval : 0;
 }
@@ -274,12 +347,38 @@ static int usblp_ctrl_msg(struct usblp *usblp, int request, int type, int dir, i
 #define usblp_reset(usblp)\
 	usblp_ctrl_msg(usblp, USBLP_REQ_RESET, USB_TYPE_CLASS, USB_DIR_OUT, USB_RECIP_OTHER, 0, NULL, 0)
 
+<<<<<<< HEAD
 #define usblp_hp_channel_change_request(usblp, channel, buffer) \
 	usblp_ctrl_msg(usblp, USBLP_REQ_HP_CHANNEL_CHANGE_REQUEST, USB_TYPE_VENDOR, USB_DIR_IN, USB_RECIP_INTERFACE, channel, buffer, 1)
 
 /*
  * See the description for usblp_select_alts() below for the usage
  * explanation.  Look into your /proc/bus/usb/devices and dmesg in
+=======
+static int usblp_hp_channel_change_request(struct usblp *usblp, int channel, u8 *new_channel)
+{
+	u8 *buf;
+	int ret;
+
+	buf = kzalloc(1, GFP_KERNEL);
+	if (!buf)
+		return -ENOMEM;
+
+	ret = usblp_ctrl_msg(usblp, USBLP_REQ_HP_CHANNEL_CHANGE_REQUEST,
+			USB_TYPE_VENDOR, USB_DIR_IN, USB_RECIP_INTERFACE,
+			channel, buf, 1);
+	if (ret == 0)
+		*new_channel = buf[0];
+
+	kfree(buf);
+
+	return ret;
+}
+
+/*
+ * See the description for usblp_select_alts() below for the usage
+ * explanation.  Look into your /sys/kernel/debug/usb/devices and dmesg in
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * case of any trouble.
  */
 static int proto_bias = -1;
@@ -292,6 +391,10 @@ static void usblp_bulk_read(struct urb *urb)
 {
 	struct usblp *usblp = urb->context;
 	int status = urb->status;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (usblp->present && usblp->used) {
 		if (status)
@@ -299,14 +402,22 @@ static void usblp_bulk_read(struct urb *urb)
 			    "nonzero read bulk status received: %d\n",
 			    usblp->minor, status);
 	}
+<<<<<<< HEAD
 	spin_lock(&usblp->lock);
+=======
+	spin_lock_irqsave(&usblp->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0)
 		usblp->rstatus = status;
 	else
 		usblp->rstatus = urb->actual_length;
 	usblp->rcomplete = 1;
 	wake_up(&usblp->rwait);
+<<<<<<< HEAD
 	spin_unlock(&usblp->lock);
+=======
+	spin_unlock_irqrestore(&usblp->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_free_urb(urb);
 }
@@ -315,6 +426,10 @@ static void usblp_bulk_write(struct urb *urb)
 {
 	struct usblp *usblp = urb->context;
 	int status = urb->status;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (usblp->present && usblp->used) {
 		if (status)
@@ -322,7 +437,11 @@ static void usblp_bulk_write(struct urb *urb)
 			    "nonzero write bulk status received: %d\n",
 			    usblp->minor, status);
 	}
+<<<<<<< HEAD
 	spin_lock(&usblp->lock);
+=======
+	spin_lock_irqsave(&usblp->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status < 0)
 		usblp->wstatus = status;
 	else
@@ -330,7 +449,11 @@ static void usblp_bulk_write(struct urb *urb)
 	usblp->no_paper = 0;
 	usblp->wcomplete = 1;
 	wake_up(&usblp->wwait);
+<<<<<<< HEAD
 	spin_unlock(&usblp->lock);
+=======
+	spin_unlock_irqrestore(&usblp->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_free_urb(urb);
 }
@@ -443,6 +566,10 @@ static void usblp_cleanup(struct usblp *usblp)
 	kfree(usblp->readbuf);
 	kfree(usblp->device_id_string);
 	kfree(usblp->statusbuf);
+<<<<<<< HEAD
+=======
+	usb_put_intf(usblp->intf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(usblp);
 }
 
@@ -459,16 +586,28 @@ static int usblp_release(struct inode *inode, struct file *file)
 
 	mutex_lock(&usblp_mutex);
 	usblp->used = 0;
+<<<<<<< HEAD
 	if (usblp->present) {
 		usblp_unlink_urbs(usblp);
 		usb_autopm_put_interface(usblp->intf);
 	} else		/* finish cleanup from disconnect */
 		usblp_cleanup(usblp);
+=======
+	if (usblp->present)
+		usblp_unlink_urbs(usblp);
+
+	usb_autopm_put_interface(usblp->intf);
+
+	if (!usblp->present)		/* finish cleanup from disconnect */
+		usblp_cleanup(usblp);	/* any URBs must be dead */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&usblp_mutex);
 	return 0;
 }
 
 /* No kernel lock - fine */
+<<<<<<< HEAD
 static unsigned int usblp_poll(struct file *file, struct poll_table_struct *wait)
 {
 	int ret;
@@ -481,6 +620,28 @@ static unsigned int usblp_poll(struct file *file, struct poll_table_struct *wait
 	spin_lock_irqsave(&usblp->lock, flags);
 	ret = ((usblp->bidir && usblp->rcomplete) ? POLLIN  | POLLRDNORM : 0) |
 	   ((usblp->no_paper || usblp->wcomplete) ? POLLOUT | POLLWRNORM : 0);
+=======
+static __poll_t usblp_poll(struct file *file, struct poll_table_struct *wait)
+{
+	struct usblp *usblp = file->private_data;
+	__poll_t ret = 0;
+	unsigned long flags;
+
+	/* Should we check file->f_mode & FMODE_WRITE before poll_wait()? */
+	poll_wait(file, &usblp->rwait, wait);
+	poll_wait(file, &usblp->wwait, wait);
+
+	mutex_lock(&usblp->mut);
+	if (!usblp->present)
+		ret |= EPOLLHUP;
+	mutex_unlock(&usblp->mut);
+
+	spin_lock_irqsave(&usblp->lock, flags);
+	if (usblp->bidir && usblp->rcomplete)
+		ret |= EPOLLIN  | EPOLLRDNORM;
+	if (usblp->no_paper || usblp->wcomplete)
+		ret |= EPOLLOUT | EPOLLWRNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&usblp->lock, flags);
 	return ret;
 }
@@ -500,8 +661,14 @@ static long usblp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		goto done;
 	}
 
+<<<<<<< HEAD
 	dbg("usblp_ioctl: cmd=0x%x (%c nr=%d len=%d dir=%d)", cmd, _IOC_TYPE(cmd),
 		_IOC_NR(cmd), _IOC_SIZE(cmd), _IOC_DIR(cmd));
+=======
+	dev_dbg(&usblp->intf->dev,
+		"usblp_ioctl: cmd=0x%x (%c nr=%d len=%d dir=%d)\n", cmd,
+		_IOC_TYPE(cmd), _IOC_NR(cmd), _IOC_SIZE(cmd), _IOC_DIR(cmd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (_IOC_TYPE(cmd) == 'P')	/* new-style ioctl number */
 
@@ -594,7 +761,12 @@ static long usblp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 				goto done;
 			}
 
+<<<<<<< HEAD
 			dbg("usblp%d requested/got HP channel %ld/%d",
+=======
+			dev_dbg(&usblp->intf->dev,
+				"usblp%d requested/got HP channel %ld/%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				usblp->minor, arg, newChannel);
 			break;
 
@@ -614,7 +786,12 @@ static long usblp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 				goto done;
 			}
 
+<<<<<<< HEAD
 			dbg("usblp%d is bus=%d, device=%d",
+=======
+			dev_dbg(&usblp->intf->dev,
+				"usblp%d is bus=%d, device=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				usblp->minor, twoints[0], twoints[1]);
 			break;
 
@@ -634,7 +811,12 @@ static long usblp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 				goto done;
 			}
 
+<<<<<<< HEAD
 			dbg("usblp%d is VID=0x%4.4X, PID=0x%4.4X",
+=======
+			dev_dbg(&usblp->intf->dev,
+				"usblp%d is VID=0x%4.4X, PID=0x%4.4X\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				usblp->minor, twoints[0], twoints[1]);
 			break;
 
@@ -652,7 +834,12 @@ static long usblp_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		switch (cmd) {
 
 		case LPGETSTATUS:
+<<<<<<< HEAD
 			if ((retval = usblp_read_status(usblp, usblp->statusbuf))) {
+=======
+			retval = usblp_read_status(usblp, usblp->statusbuf);
+			if (retval) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				printk_ratelimited(KERN_ERR "usblp%d:"
 					    "failed reading printer status (%d)\n",
 					    usblp->minor, retval);
@@ -685,9 +872,17 @@ static struct urb *usblp_new_writeurb(struct usblp *usblp, int transfer_length)
 	struct urb *urb;
 	char *writebuf;
 
+<<<<<<< HEAD
 	if ((writebuf = kmalloc(transfer_length, GFP_KERNEL)) == NULL)
 		return NULL;
 	if ((urb = usb_alloc_urb(0, GFP_KERNEL)) == NULL) {
+=======
+	writebuf = kmalloc(transfer_length, GFP_KERNEL);
+	if (writebuf == NULL)
+		return NULL;
+	urb = usb_alloc_urb(0, GFP_KERNEL);
+	if (urb == NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(writebuf);
 		return NULL;
 	}
@@ -724,7 +919,12 @@ static ssize_t usblp_write(struct file *file, const char __user *buffer, size_t 
 			transfer_length = USBLP_BUF_SIZE;
 
 		rv = -ENOMEM;
+<<<<<<< HEAD
 		if ((writeurb = usblp_new_writeurb(usblp, transfer_length)) == NULL)
+=======
+		writeurb = usblp_new_writeurb(usblp, transfer_length);
+		if (writeurb == NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto raise_urb;
 		usb_anchor_urb(writeurb, &usblp->urbs);
 
@@ -813,6 +1013,14 @@ static ssize_t usblp_read(struct file *file, char __user *buffer, size_t len, lo
 	if (rv < 0)
 		return rv;
 
+<<<<<<< HEAD
+=======
+	if (!usblp->present) {
+		count = -ENODEV;
+		goto done;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((avail = usblp->rstatus) < 0) {
 		printk(KERN_ERR "usblp%d: error %d reading from printer\n",
 		    usblp->minor, (int)avail);
@@ -972,7 +1180,12 @@ static int usblp_submit_read(struct usblp *usblp)
 	int rc;
 
 	rc = -ENOMEM;
+<<<<<<< HEAD
 	if ((urb = usb_alloc_urb(0, GFP_KERNEL)) == NULL)
+=======
+	urb = usb_alloc_urb(0, GFP_KERNEL);
+	if (urb == NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto raise_urb;
 
 	usb_fill_bulk_urb(urb, usblp->dev,
@@ -987,7 +1200,11 @@ static int usblp_submit_read(struct usblp *usblp)
 	usblp->rcomplete = 0;
 	spin_unlock_irqrestore(&usblp->lock, flags);
 	if ((rc = usb_submit_urb(urb, GFP_KERNEL)) < 0) {
+<<<<<<< HEAD
 		dbg("error submitting urb (%d)", rc);
+=======
+		dev_dbg(&usblp->intf->dev, "error submitting urb (%d)\n", rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock_irqsave(&usblp->lock, flags);
 		usblp->rstatus = rc;
 		usblp->rcomplete = 1;
@@ -1045,7 +1262,11 @@ static const struct file_operations usblp_fops = {
 	.llseek =	noop_llseek,
 };
 
+<<<<<<< HEAD
 static char *usblp_devnode(struct device *dev, umode_t *mode)
+=======
+static char *usblp_devnode(const struct device *dev, umode_t *mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return kasprintf(GFP_KERNEL, "usb/%s", dev_name(dev));
 }
@@ -1057,7 +1278,11 @@ static struct usb_class_driver usblp_class = {
 	.minor_base =	USBLP_MINOR_BASE,
 };
 
+<<<<<<< HEAD
 static ssize_t usblp_show_ieee1284_id(struct device *dev, struct device_attribute *attr, char *buf)
+=======
+static ssize_t ieee1284_id_show(struct device *dev, struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_interface *intf = to_usb_interface(dev);
 	struct usblp *usblp = usb_get_intfdata(intf);
@@ -1069,7 +1294,17 @@ static ssize_t usblp_show_ieee1284_id(struct device *dev, struct device_attribut
 	return sprintf(buf, "%s", usblp->device_id_string+2);
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(ieee1284_id, S_IRUGO, usblp_show_ieee1284_id, NULL);
+=======
+static DEVICE_ATTR_RO(ieee1284_id);
+
+static struct attribute *usblp_attrs[] = {
+	&dev_attr_ieee1284_id.attr,
+	NULL,
+};
+ATTRIBUTE_GROUPS(usblp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int usblp_probe(struct usb_interface *intf,
 		       const struct usb_device_id *id)
@@ -1094,7 +1329,11 @@ static int usblp_probe(struct usb_interface *intf,
 	init_waitqueue_head(&usblp->wwait);
 	init_usb_anchor(&usblp->urbs);
 	usblp->ifnum = intf->cur_altsetting->desc.bInterfaceNumber;
+<<<<<<< HEAD
 	usblp->intf = intf;
+=======
+	usblp->intf = usb_get_intf(intf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Malloc device ID string buffer to the largest expected length,
 	 * since we can re-query it on an ioctl and a dynamic string
@@ -1129,7 +1368,12 @@ static int usblp_probe(struct usb_interface *intf,
 	/* Analyze and pick initial alternate settings and endpoints. */
 	protocol = usblp_select_alts(usblp);
 	if (protocol < 0) {
+<<<<<<< HEAD
 		dbg("incompatible printer-class device 0x%4.4X/0x%4.4X",
+=======
+		dev_dbg(&intf->dev,
+			"incompatible printer-class device 0x%4.4X/0x%4.4X\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			le16_to_cpu(dev->descriptor.idVendor),
 			le16_to_cpu(dev->descriptor.idProduct));
 		retval = -ENODEV;
@@ -1144,9 +1388,12 @@ static int usblp_probe(struct usb_interface *intf,
 
 	/* Retrieve and store the device ID string. */
 	usblp_cache_device_id_string(usblp);
+<<<<<<< HEAD
 	retval = device_create_file(&intf->dev, &dev_attr_ieee1284_id);
 	if (retval)
 		goto abort_intfdata;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef DEBUG
 	usblp_check_status(usblp, 0);
@@ -1158,6 +1405,7 @@ static int usblp_probe(struct usb_interface *intf,
 
 	retval = usb_register_dev(intf, &usblp_class);
 	if (retval) {
+<<<<<<< HEAD
 		printk(KERN_ERR "usblp: Not able to get a minor"
 		    " (base %u, slice default): %d\n",
 		    USBLP_MINOR_BASE, retval);
@@ -1166,6 +1414,16 @@ static int usblp_probe(struct usb_interface *intf,
 	usblp->minor = intf->minor;
 	printk(KERN_INFO "usblp%d: USB %sdirectional printer dev %d "
 		"if %d alt %d proto %d vid 0x%4.4X pid 0x%4.4X\n",
+=======
+		dev_err(&intf->dev,
+			"usblp: Not able to get a minor (base %u, slice default): %d\n",
+			USBLP_MINOR_BASE, retval);
+		goto abort_intfdata;
+	}
+	usblp->minor = intf->minor;
+	dev_info(&intf->dev,
+		"usblp%d: USB %sdirectional printer dev %d if %d alt %d proto %d vid 0x%4.4X pid 0x%4.4X\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usblp->minor, usblp->bidir ? "Bi" : "Uni", dev->devnum,
 		usblp->ifnum,
 		usblp->protocol[usblp->current_protocol].alt_setting,
@@ -1177,11 +1435,18 @@ static int usblp_probe(struct usb_interface *intf,
 
 abort_intfdata:
 	usb_set_intfdata(intf, NULL);
+<<<<<<< HEAD
 	device_remove_file(&intf->dev, &dev_attr_ieee1284_id);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 abort:
 	kfree(usblp->readbuf);
 	kfree(usblp->statusbuf);
 	kfree(usblp->device_id_string);
+<<<<<<< HEAD
+=======
+	usb_put_intf(usblp->intf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(usblp);
 abort_ret:
 	return retval;
@@ -1192,6 +1457,7 @@ abort_ret:
  * but our requirements are too intricate for simple match to handle.
  *
  * The "proto_bias" option may be used to specify the preferred protocol
+<<<<<<< HEAD
  * for all USB printers (1=7/1/1, 2=7/1/2, 3=7/1/3).  If the device
  * supports the preferred protocol, then we bind to it.
  *
@@ -1205,13 +1471,38 @@ abort_ret:
  * stream-compatible, because this matches the behaviour of the old code.
  *
  * If nothing else, we bind to 7/1/1 - the unidirectional interface.
+=======
+ * for all USB printers (1=USB_CLASS_PRINTER/1/1, 2=USB_CLASS_PRINTER/1/2,
+ * 3=USB_CLASS_PRINTER/1/3).  If the device supports the preferred protocol,
+ * then we bind to it.
+ *
+ * The best interface for us is USB_CLASS_PRINTER/1/2, because it
+ * is compatible with a stream of characters. If we find it, we bind to it.
+ *
+ * Note that the people from hpoj.sourceforge.net need to be able to
+ * bind to USB_CLASS_PRINTER/1/3 (MLC/1284.4), so we provide them ioctls
+ * for this purpose.
+ *
+ * Failing USB_CLASS_PRINTER/1/2, we look for USB_CLASS_PRINTER/1/3,
+ * even though it's probably not stream-compatible, because this matches
+ * the behaviour of the old code.
+ *
+ * If nothing else, we bind to USB_CLASS_PRINTER/1/1
+ * - the unidirectional interface.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int usblp_select_alts(struct usblp *usblp)
 {
 	struct usb_interface *if_alt;
 	struct usb_host_interface *ifd;
+<<<<<<< HEAD
 	struct usb_endpoint_descriptor *epd, *epwrite, *epread;
 	int p, i, e;
+=======
+	struct usb_endpoint_descriptor *epwrite, *epread;
+	int p, i;
+	int res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if_alt = usblp->intf;
 
@@ -1222,7 +1513,12 @@ static int usblp_select_alts(struct usblp *usblp)
 	for (i = 0; i < if_alt->num_altsetting; i++) {
 		ifd = &if_alt->altsetting[i];
 
+<<<<<<< HEAD
 		if (ifd->desc.bInterfaceClass != 7 || ifd->desc.bInterfaceSubClass != 1)
+=======
+		if (ifd->desc.bInterfaceClass != USB_CLASS_PRINTER ||
+		    ifd->desc.bInterfaceSubClass != 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!(usblp->quirks & USBLP_QUIRK_BAD_CLASS))
 				continue;
 
@@ -1230,6 +1526,7 @@ static int usblp_select_alts(struct usblp *usblp)
 		    ifd->desc.bInterfaceProtocol > USBLP_LAST_PROTOCOL)
 			continue;
 
+<<<<<<< HEAD
 		/* Look for bulk OUT and IN endpoints. */
 		epwrite = epread = NULL;
 		for (e = 0; e < ifd->desc.bNumEndpoints; e++) {
@@ -1253,6 +1550,23 @@ static int usblp_select_alts(struct usblp *usblp)
 		if (ifd->desc.bInterfaceProtocol == 1) {
 			epread = NULL;
 		} else if (usblp->quirks & USBLP_QUIRK_BIDIR) {
+=======
+		/* Look for the expected bulk endpoints. */
+		if (ifd->desc.bInterfaceProtocol > 1) {
+			res = usb_find_common_endpoints(ifd,
+					&epread, &epwrite, NULL, NULL);
+		} else {
+			epread = NULL;
+			res = usb_find_bulk_out_endpoint(ifd, &epwrite);
+		}
+
+		/* Ignore buggy hardware without the right endpoints. */
+		if (res)
+			continue;
+
+		/* Turn off reads for buggy bidirectional printers. */
+		if (usblp->quirks & USBLP_QUIRK_BIDIR) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_INFO "usblp%d: Disabling reads from "
 			    "problematic bidirectional printer\n",
 			    usblp->minor);
@@ -1290,6 +1604,7 @@ static int usblp_set_protocol(struct usblp *usblp, int protocol)
 	if (protocol < USBLP_FIRST_PROTOCOL || protocol > USBLP_LAST_PROTOCOL)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	alts = usblp->protocol[protocol].alt_setting;
 	if (alts < 0)
 		return -EINVAL;
@@ -1298,11 +1613,29 @@ static int usblp_set_protocol(struct usblp *usblp, int protocol)
 		printk(KERN_ERR "usblp: can't set desired altsetting %d on interface %d\n",
 			alts, usblp->ifnum);
 		return r;
+=======
+	/* Don't unnecessarily set the interface if there's a single alt. */
+	if (usblp->intf->num_altsetting > 1) {
+		alts = usblp->protocol[protocol].alt_setting;
+		if (alts < 0)
+			return -EINVAL;
+		r = usb_set_interface(usblp->dev, usblp->ifnum, alts);
+		if (r < 0) {
+			printk(KERN_ERR "usblp: can't set desired altsetting %d on interface %d\n",
+				alts, usblp->ifnum);
+			return r;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	usblp->bidir = (usblp->protocol[protocol].epread != NULL);
 	usblp->current_protocol = protocol;
+<<<<<<< HEAD
 	dbg("usblp%d set protocol %d", usblp->minor, protocol);
+=======
+	dev_dbg(&usblp->intf->dev, "usblp%d set protocol %d\n",
+		usblp->minor, protocol);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1315,7 +1648,12 @@ static int usblp_cache_device_id_string(struct usblp *usblp)
 
 	err = usblp_get_id(usblp, 0, usblp->device_id_string, USBLP_DEVICE_ID_SIZE - 1);
 	if (err < 0) {
+<<<<<<< HEAD
 		dbg("usblp%d: error = %d reading IEEE-1284 Device ID string",
+=======
+		dev_dbg(&usblp->intf->dev,
+			"usblp%d: error = %d reading IEEE-1284 Device ID string\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			usblp->minor, err);
 		usblp->device_id_string[0] = usblp->device_id_string[1] = '\0';
 		return -EIO;
@@ -1331,7 +1669,11 @@ static int usblp_cache_device_id_string(struct usblp *usblp)
 		length = USBLP_DEVICE_ID_SIZE - 1;
 	usblp->device_id_string[length] = '\0';
 
+<<<<<<< HEAD
 	dbg("usblp%d Device ID string [len=%d]=\"%s\"",
+=======
+	dev_dbg(&usblp->intf->dev, "usblp%d Device ID string [len=%d]=\"%s\"\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usblp->minor, length, &usblp->device_id_string[2]);
 
 	return length;
@@ -1348,8 +1690,11 @@ static void usblp_disconnect(struct usb_interface *intf)
 		BUG();
 	}
 
+<<<<<<< HEAD
 	device_remove_file(&intf->dev, &dev_attr_ieee1284_id);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&usblp_mutex);
 	mutex_lock(&usblp->mut);
 	usblp->present = 0;
@@ -1359,9 +1704,17 @@ static void usblp_disconnect(struct usb_interface *intf)
 
 	usblp_unlink_urbs(usblp);
 	mutex_unlock(&usblp->mut);
+<<<<<<< HEAD
 
 	if (!usblp->used)
 		usblp_cleanup(usblp);
+=======
+	usb_poison_anchored_urbs(&usblp->urbs);
+
+	if (!usblp->used)
+		usblp_cleanup(usblp);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&usblp_mutex);
 }
 
@@ -1390,12 +1743,21 @@ static int usblp_resume(struct usb_interface *intf)
 }
 
 static const struct usb_device_id usblp_ids[] = {
+<<<<<<< HEAD
 	{ USB_DEVICE_INFO(7, 1, 1) },
 	{ USB_DEVICE_INFO(7, 1, 2) },
 	{ USB_DEVICE_INFO(7, 1, 3) },
 	{ USB_INTERFACE_INFO(7, 1, 1) },
 	{ USB_INTERFACE_INFO(7, 1, 2) },
 	{ USB_INTERFACE_INFO(7, 1, 3) },
+=======
+	{ USB_DEVICE_INFO(USB_CLASS_PRINTER, 1, 1) },
+	{ USB_DEVICE_INFO(USB_CLASS_PRINTER, 1, 2) },
+	{ USB_DEVICE_INFO(USB_CLASS_PRINTER, 1, 3) },
+	{ USB_INTERFACE_INFO(USB_CLASS_PRINTER, 1, 1) },
+	{ USB_INTERFACE_INFO(USB_CLASS_PRINTER, 1, 2) },
+	{ USB_INTERFACE_INFO(USB_CLASS_PRINTER, 1, 3) },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_DEVICE(0x04b8, 0x0202) },	/* Seiko Epson Receipt Printer M129C */
 	{ }						/* Terminating entry */
 };
@@ -1409,6 +1771,10 @@ static struct usb_driver usblp_driver = {
 	.suspend =	usblp_suspend,
 	.resume =	usblp_resume,
 	.id_table =	usblp_ids,
+<<<<<<< HEAD
+=======
+	.dev_groups =	usblp_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.supports_autosuspend =	1,
 };
 

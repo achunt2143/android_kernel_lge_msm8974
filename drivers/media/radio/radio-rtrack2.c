@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RadioTrack II driver
  * Copyright 1998 Ben Pfaff
@@ -7,16 +11,29 @@
  * Various bugfixes and enhancements by Russell Kroll <rkroll@exploits.org>
  *
  * Converted to the radio-isa framework by Hans Verkuil <hans.verkuil@cisco.com>
+<<<<<<< HEAD
  * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@infradead.org>
  */
 
 #include <linux/module.h>	/* Modules 			*/
+=======
+ * Converted to V4L2 API by Mauro Carvalho Chehab <mchehab@kernel.org>
+ *
+ * Fully tested with actual hardware and the v4l2-compliance tool.
+ */
+
+#include <linux/module.h>	/* Modules			*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>		/* Initdata			*/
 #include <linux/ioport.h>	/* request_region		*/
 #include <linux/delay.h>	/* udelay			*/
 #include <linux/videodev2.h>	/* kernel radio structs		*/
 #include <linux/mutex.h>
 #include <linux/io.h>		/* outb, outb_p			*/
+<<<<<<< HEAD
+=======
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
 #include "radio-isa.h"
@@ -80,8 +97,12 @@ static int rtrack2_s_frequency(struct radio_isa_card *isa, u32 freq)
 			zero(isa);
 
 	outb_p(0xc8, isa->io);
+<<<<<<< HEAD
 	if (!v4l2_ctrl_g_ctrl(isa->mute))
 		outb_p(0, isa->io);
+=======
+	outb_p(v4l2_ctrl_g_ctrl(isa->mute), isa->io);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

@@ -1,24 +1,41 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Generic HDLC support routines for Linux
  * Frame Relay support
  *
  * Copyright (C) 1999 - 2006 Krzysztof Halasa <khc@pm.waw.pl>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License
  * as published by the Free Software Foundation.
  *
 
             Theory of PVC state
+=======
+
+	Theory of PVC state
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  DCE mode:
 
  (exist,new) -> 0,0 when "PVC create" or if "link unreliable"
+<<<<<<< HEAD
          0,x -> 1,1 if "link reliable" when sending FULL STATUS
          1,1 -> 1,0 if received FULL STATUS ACK
 
  (active)    -> 0 when "ifconfig PVC down" or "link unreliable" or "PVC create"
              -> 1 when "PVC up" and (exist,new) = 1,0
+=======
+	 0,x -> 1,1 if "link reliable" when sending FULL STATUS
+	 1,1 -> 1,0 if received FULL STATUS ACK
+
+ (active)    -> 0 when "ifconfig PVC down" or "link unreliable" or "PVC create"
+	     -> 1 when "PVC up" and (exist,new) = 1,0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  DTE mode:
  (exist,new,active) = FULL STATUS if "link reliable"
@@ -63,7 +80,10 @@
 #define NLPID_CCITT_ANSI_LMI	0x08
 #define NLPID_CISCO_LMI		0x09
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LMI_CCITT_ANSI_DLCI	   0 /* LMI DLCI */
 #define LMI_CISCO_DLCI		1023
 
@@ -89,8 +109,12 @@
 #define LMI_CCITT_CISCO_LENGTH	  13 /* LMI frame lengths */
 #define LMI_ANSI_LENGTH		  14
 
+<<<<<<< HEAD
 
 typedef struct {
+=======
+struct fr_hdr {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(__LITTLE_ENDIAN_BITFIELD)
 	unsigned ea1:	1;
 	unsigned cr:	1;
@@ -112,6 +136,7 @@ typedef struct {
 	unsigned de:	1;
 	unsigned ea2:	1;
 #endif
+<<<<<<< HEAD
 }__packed fr_hdr;
 
 
@@ -120,6 +145,15 @@ typedef struct pvc_device_struct {
 	struct net_device *main;
 	struct net_device *ether;	/* bridged Ethernet interface	*/
 	struct pvc_device_struct *next;	/* Sorted in ascending DLCI order */
+=======
+} __packed;
+
+struct pvc_device {
+	struct net_device *frad;
+	struct net_device *main;
+	struct net_device *ether;	/* bridged Ethernet interface	*/
+	struct pvc_device *next;	/* Sorted in ascending DLCI order */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dlci;
 	int open_count;
 
@@ -131,6 +165,7 @@ typedef struct pvc_device_struct {
 		unsigned int fecn: 1;
 		unsigned int becn: 1;
 		unsigned int bandwidth;	/* Cisco LMI reporting only */
+<<<<<<< HEAD
 	}state;
 }pvc_device;
 
@@ -140,6 +175,18 @@ struct frad_state {
 	int dce_pvc_count;
 
 	struct timer_list timer;
+=======
+	} state;
+};
+
+struct frad_state {
+	fr_proto settings;
+	struct pvc_device *first_pvc;
+	int dce_pvc_count;
+
+	struct timer_list timer;
+	struct net_device *dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_poll;
 	int reliable;
 	int dce_changed;
@@ -151,22 +198,30 @@ struct frad_state {
 	u8 rxseq; /* RX sequence number */
 };
 
+<<<<<<< HEAD
 
 static int fr_ioctl(struct net_device *dev, struct ifreq *ifr);
 
+=======
+static int fr_ioctl(struct net_device *dev, struct if_settings *ifs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u16 q922_to_dlci(u8 *hdr)
 {
 	return ((hdr[0] & 0xFC) << 2) | ((hdr[1] & 0xF0) >> 4);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void dlci_to_q922(u8 *hdr, u16 dlci)
 {
 	hdr[0] = (dlci >> 2) & 0xFC;
 	hdr[1] = ((dlci << 4) & 0xF0) | 0x01;
 }
 
+<<<<<<< HEAD
 
 static inline struct frad_state* state(hdlc_device *hdlc)
 {
@@ -177,6 +232,16 @@ static inline struct frad_state* state(hdlc_device *hdlc)
 static inline pvc_device* find_pvc(hdlc_device *hdlc, u16 dlci)
 {
 	pvc_device *pvc = state(hdlc)->first_pvc;
+=======
+static inline struct frad_state *state(hdlc_device *hdlc)
+{
+	return (struct frad_state *)(hdlc->state);
+}
+
+static inline struct pvc_device *find_pvc(hdlc_device *hdlc, u16 dlci)
+{
+	struct pvc_device *pvc = state(hdlc)->first_pvc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (pvc) {
 		if (pvc->dlci == dlci)
@@ -189,11 +254,18 @@ static inline pvc_device* find_pvc(hdlc_device *hdlc, u16 dlci)
 	return NULL;
 }
 
+<<<<<<< HEAD
 
 static pvc_device* add_pvc(struct net_device *dev, u16 dlci)
 {
 	hdlc_device *hdlc = dev_to_hdlc(dev);
 	pvc_device *pvc, **pvc_p = &state(hdlc)->first_pvc;
+=======
+static struct pvc_device *add_pvc(struct net_device *dev, u16 dlci)
+{
+	hdlc_device *hdlc = dev_to_hdlc(dev);
+	struct pvc_device *pvc, **pvc_p = &state(hdlc)->first_pvc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (*pvc_p) {
 		if ((*pvc_p)->dlci == dlci)
@@ -203,7 +275,11 @@ static pvc_device* add_pvc(struct net_device *dev, u16 dlci)
 		pvc_p = &(*pvc_p)->next;
 	}
 
+<<<<<<< HEAD
 	pvc = kzalloc(sizeof(pvc_device), GFP_ATOMIC);
+=======
+	pvc = kzalloc(sizeof(*pvc), GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG_PVC
 	printk(KERN_DEBUG "add_pvc: allocated pvc %p, frad %p\n", pvc, dev);
 #endif
@@ -217,14 +293,22 @@ static pvc_device* add_pvc(struct net_device *dev, u16 dlci)
 	return pvc;
 }
 
+<<<<<<< HEAD
 
 static inline int pvc_is_used(pvc_device *pvc)
+=======
+static inline int pvc_is_used(struct pvc_device *pvc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return pvc->main || pvc->ether;
 }
 
+<<<<<<< HEAD
 
 static inline void pvc_carrier(int on, pvc_device *pvc)
+=======
+static inline void pvc_carrier(int on, struct pvc_device *pvc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (on) {
 		if (pvc->main)
@@ -243,6 +327,7 @@ static inline void pvc_carrier(int on, pvc_device *pvc)
 	}
 }
 
+<<<<<<< HEAD
 
 static inline void delete_unused_pvcs(hdlc_device *hdlc)
 {
@@ -251,6 +336,15 @@ static inline void delete_unused_pvcs(hdlc_device *hdlc)
 	while (*pvc_p) {
 		if (!pvc_is_used(*pvc_p)) {
 			pvc_device *pvc = *pvc_p;
+=======
+static inline void delete_unused_pvcs(hdlc_device *hdlc)
+{
+	struct pvc_device **pvc_p = &state(hdlc)->first_pvc;
+
+	while (*pvc_p) {
+		if (!pvc_is_used(*pvc_p)) {
+			struct pvc_device *pvc = *pvc_p;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG_PVC
 			printk(KERN_DEBUG "freeing unused pvc: %p\n", pvc);
 #endif
@@ -262,8 +356,13 @@ static inline void delete_unused_pvcs(hdlc_device *hdlc)
 	}
 }
 
+<<<<<<< HEAD
 
 static inline struct net_device** get_dev_p(pvc_device *pvc, int type)
+=======
+static inline struct net_device **get_dev_p(struct pvc_device *pvc,
+					    int type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (type == ARPHRD_ETHER)
 		return &pvc->ether;
@@ -271,6 +370,7 @@ static inline struct net_device** get_dev_p(pvc_device *pvc, int type)
 		return &pvc->main;
 }
 
+<<<<<<< HEAD
 
 static int fr_hard_header(struct sk_buff **skb_p, u16 dlci)
 {
@@ -331,6 +431,64 @@ static int fr_hard_header(struct sk_buff **skb_p, u16 dlci)
 		skb->data[6] = FR_PAD;
 		skb->data[7] = FR_PAD;
 		*(__be16*)(skb->data + 8) = skb->protocol;
+=======
+static int fr_hard_header(struct sk_buff *skb, u16 dlci)
+{
+	if (!skb->dev) { /* Control packets */
+		switch (dlci) {
+		case LMI_CCITT_ANSI_DLCI:
+			skb_push(skb, 4);
+			skb->data[3] = NLPID_CCITT_ANSI_LMI;
+			break;
+
+		case LMI_CISCO_DLCI:
+			skb_push(skb, 4);
+			skb->data[3] = NLPID_CISCO_LMI;
+			break;
+
+		default:
+			return -EINVAL;
+		}
+
+	} else if (skb->dev->type == ARPHRD_DLCI) {
+		switch (skb->protocol) {
+		case htons(ETH_P_IP):
+			skb_push(skb, 4);
+			skb->data[3] = NLPID_IP;
+			break;
+
+		case htons(ETH_P_IPV6):
+			skb_push(skb, 4);
+			skb->data[3] = NLPID_IPV6;
+			break;
+
+		default:
+			skb_push(skb, 10);
+			skb->data[3] = FR_PAD;
+			skb->data[4] = NLPID_SNAP;
+			/* OUI 00-00-00 indicates an Ethertype follows */
+			skb->data[5] = 0x00;
+			skb->data[6] = 0x00;
+			skb->data[7] = 0x00;
+			/* This should be an Ethertype: */
+			*(__be16 *)(skb->data + 8) = skb->protocol;
+		}
+
+	} else if (skb->dev->type == ARPHRD_ETHER) {
+		skb_push(skb, 10);
+		skb->data[3] = FR_PAD;
+		skb->data[4] = NLPID_SNAP;
+		/* OUI 00-80-C2 stands for the 802.1 organization */
+		skb->data[5] = 0x00;
+		skb->data[6] = 0x80;
+		skb->data[7] = 0xC2;
+		/* PID 00-07 stands for Ethernet frames without FCS */
+		skb->data[8] = 0x00;
+		skb->data[9] = 0x07;
+
+	} else {
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dlci_to_q922(skb->data, dlci);
@@ -338,17 +496,27 @@ static int fr_hard_header(struct sk_buff **skb_p, u16 dlci)
 	return 0;
 }
 
+<<<<<<< HEAD
 
 
 static int pvc_open(struct net_device *dev)
 {
 	pvc_device *pvc = dev->ml_priv;
+=======
+static int pvc_open(struct net_device *dev)
+{
+	struct pvc_device *pvc = dev->ml_priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((pvc->frad->flags & IFF_UP) == 0)
 		return -EIO;  /* Frad must be UP in order to activate PVC */
 
 	if (pvc->open_count++ == 0) {
 		hdlc_device *hdlc = dev_to_hdlc(pvc->frad);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (state(hdlc)->settings.lmi == LMI_NONE)
 			pvc->state.active = netif_carrier_ok(pvc->frad);
 
@@ -358,6 +526,7 @@ static int pvc_open(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 
 
 static int pvc_close(struct net_device *dev)
@@ -366,6 +535,15 @@ static int pvc_close(struct net_device *dev)
 
 	if (--pvc->open_count == 0) {
 		hdlc_device *hdlc = dev_to_hdlc(pvc->frad);
+=======
+static int pvc_close(struct net_device *dev)
+{
+	struct pvc_device *pvc = dev->ml_priv;
+
+	if (--pvc->open_count == 0) {
+		hdlc_device *hdlc = dev_to_hdlc(pvc->frad);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (state(hdlc)->settings.lmi == LMI_NONE)
 			pvc->state.active = 0;
 
@@ -377,6 +555,7 @@ static int pvc_close(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 
 
 static int pvc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
@@ -393,12 +572,32 @@ static int pvc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 		if (ifr->ifr_settings.size < sizeof(info)) {
 			/* data size wanted */
 			ifr->ifr_settings.size = sizeof(info);
+=======
+static int pvc_ioctl(struct net_device *dev, struct if_settings *ifs)
+{
+	struct pvc_device *pvc = dev->ml_priv;
+	fr_proto_pvc_info info;
+
+	if (ifs->type == IF_GET_PROTO) {
+		if (dev->type == ARPHRD_ETHER)
+			ifs->type = IF_PROTO_FR_ETH_PVC;
+		else
+			ifs->type = IF_PROTO_FR_PVC;
+
+		if (ifs->size < sizeof(info)) {
+			/* data size wanted */
+			ifs->size = sizeof(info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOBUFS;
 		}
 
 		info.dlci = pvc->dlci;
 		memcpy(info.master, pvc->frad->name, IFNAMSIZ);
+<<<<<<< HEAD
 		if (copy_to_user(ifr->ifr_settings.ifs_ifsu.fr_pvc_info,
+=======
+		if (copy_to_user(ifs->ifs_ifsu.fr_pvc_info,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 &info, sizeof(info)))
 			return -EFAULT;
 		return 0;
@@ -409,6 +608,7 @@ static int pvc_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 
 static netdev_tx_t pvc_xmit(struct sk_buff *skb, struct net_device *dev)
 {
+<<<<<<< HEAD
 	pvc_device *pvc = dev->ml_priv;
 
 	if (pvc->state.active) {
@@ -445,6 +645,57 @@ static netdev_tx_t pvc_xmit(struct sk_buff *skb, struct net_device *dev)
 }
 
 static inline void fr_log_dlci_active(pvc_device *pvc)
+=======
+	struct pvc_device *pvc = dev->ml_priv;
+
+	if (!pvc->state.active)
+		goto drop;
+
+	if (dev->type == ARPHRD_ETHER) {
+		int pad = ETH_ZLEN - skb->len;
+
+		if (pad > 0) { /* Pad the frame with zeros */
+			if (__skb_pad(skb, pad, false))
+				goto drop;
+			skb_put(skb, pad);
+		}
+	}
+
+	/* We already requested the header space with dev->needed_headroom.
+	 * So this is just a protection in case the upper layer didn't take
+	 * dev->needed_headroom into consideration.
+	 */
+	if (skb_headroom(skb) < 10) {
+		struct sk_buff *skb2 = skb_realloc_headroom(skb, 10);
+
+		if (!skb2)
+			goto drop;
+		dev_kfree_skb(skb);
+		skb = skb2;
+	}
+
+	skb->dev = dev;
+	if (fr_hard_header(skb, pvc->dlci))
+		goto drop;
+
+	dev->stats.tx_bytes += skb->len;
+	dev->stats.tx_packets++;
+	if (pvc->state.fecn) /* TX Congestion counter */
+		dev->stats.tx_compressed++;
+	skb->dev = pvc->frad;
+	skb->protocol = htons(ETH_P_HDLC);
+	skb_reset_network_header(skb);
+	dev_queue_xmit(skb);
+	return NETDEV_TX_OK;
+
+drop:
+	dev->stats.tx_dropped++;
+	kfree_skb(skb);
+	return NETDEV_TX_OK;
+}
+
+static inline void fr_log_dlci_active(struct pvc_device *pvc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	netdev_info(pvc->frad, "DLCI %d [%s%s%s]%s %s\n",
 		    pvc->dlci,
@@ -456,20 +707,30 @@ static inline void fr_log_dlci_active(pvc_device *pvc)
 		    pvc->state.active ? "active" : "inactive");
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u8 fr_lmi_nextseq(u8 x)
 {
 	x++;
 	return x ? x : 1;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void fr_lmi_send(struct net_device *dev, int fullrep)
 {
 	hdlc_device *hdlc = dev_to_hdlc(dev);
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	pvc_device *pvc = state(hdlc)->first_pvc;
+=======
+	struct pvc_device *pvc = state(hdlc)->first_pvc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int lmi = state(hdlc)->settings.lmi;
 	int dce = state(hdlc)->settings.dce;
 	int len = lmi == LMI_ANSI ? LMI_ANSI_LENGTH : LMI_CCITT_CISCO_LENGTH;
@@ -486,6 +747,7 @@ static void fr_lmi_send(struct net_device *dev, int fullrep)
 	}
 
 	skb = dev_alloc_skb(len);
+<<<<<<< HEAD
 	if (!skb) {
 		netdev_warn(dev, "Memory squeeze on fr_lmi_send()\n");
 		return;
@@ -499,6 +761,18 @@ static void fr_lmi_send(struct net_device *dev, int fullrep)
 		skb->protocol = cpu_to_be16(NLPID_CCITT_ANSI_LMI);
 		fr_hard_header(&skb, LMI_CCITT_ANSI_DLCI);
 	}
+=======
+	if (!skb)
+		return;
+
+	memset(skb->data, 0, len);
+	skb_reserve(skb, 4);
+	if (lmi == LMI_CISCO)
+		fr_hard_header(skb, LMI_CISCO_DLCI);
+	else
+		fr_hard_header(skb, LMI_CCITT_ANSI_DLCI);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data = skb_tail_pointer(skb);
 	data[i++] = LMI_CALLREF;
 	data[i++] = dce ? LMI_STATUS : LMI_STATUS_ENQUIRY;
@@ -556,17 +830,28 @@ static void fr_lmi_send(struct net_device *dev, int fullrep)
 	skb_put(skb, i);
 	skb->priority = TC_PRIO_CONTROL;
 	skb->dev = dev;
+<<<<<<< HEAD
+=======
+	skb->protocol = htons(ETH_P_HDLC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_reset_network_header(skb);
 
 	dev_queue_xmit(skb);
 }
 
+<<<<<<< HEAD
 
 
 static void fr_set_link_state(int reliable, struct net_device *dev)
 {
 	hdlc_device *hdlc = dev_to_hdlc(dev);
 	pvc_device *pvc = state(hdlc)->first_pvc;
+=======
+static void fr_set_link_state(int reliable, struct net_device *dev)
+{
+	hdlc_device *hdlc = dev_to_hdlc(dev);
+	struct pvc_device *pvc = state(hdlc)->first_pvc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	state(hdlc)->reliable = reliable;
 	if (reliable) {
@@ -595,10 +880,17 @@ static void fr_set_link_state(int reliable, struct net_device *dev)
 	}
 }
 
+<<<<<<< HEAD
 
 static void fr_timer(unsigned long arg)
 {
 	struct net_device *dev = (struct net_device *)arg;
+=======
+static void fr_timer(struct timer_list *t)
+{
+	struct frad_state *st = from_timer(st, t, timer);
+	struct net_device *dev = st->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdlc_device *hdlc = dev_to_hdlc(dev);
 	int i, cnt = 0, reliable;
 	u32 list;
@@ -628,10 +920,17 @@ static void fr_timer(unsigned long arg)
 		fr_set_link_state(reliable, dev);
 	}
 
+<<<<<<< HEAD
 	if (state(hdlc)->settings.dce)
 		state(hdlc)->timer.expires = jiffies +
 			state(hdlc)->settings.t392 * HZ;
 	else {
+=======
+	if (state(hdlc)->settings.dce) {
+		state(hdlc)->timer.expires = jiffies +
+			state(hdlc)->settings.t392 * HZ;
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (state(hdlc)->n391cnt)
 			state(hdlc)->n391cnt--;
 
@@ -643,6 +942,7 @@ static void fr_timer(unsigned long arg)
 			state(hdlc)->settings.t391 * HZ;
 	}
 
+<<<<<<< HEAD
 	state(hdlc)->timer.function = fr_timer;
 	state(hdlc)->timer.data = arg;
 	add_timer(&state(hdlc)->timer);
@@ -653,6 +953,15 @@ static int fr_lmi_recv(struct net_device *dev, struct sk_buff *skb)
 {
 	hdlc_device *hdlc = dev_to_hdlc(dev);
 	pvc_device *pvc;
+=======
+	add_timer(&state(hdlc)->timer);
+}
+
+static int fr_lmi_recv(struct net_device *dev, struct sk_buff *skb)
+{
+	hdlc_device *hdlc = dev_to_hdlc(dev);
+	struct pvc_device *pvc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 rxseq, txseq;
 	int lmi = state(hdlc)->settings.lmi;
 	int dce = state(hdlc)->settings.dce;
@@ -689,8 +998,14 @@ static int fr_lmi_recv(struct net_device *dev, struct sk_buff *skb)
 			return 1;
 		}
 		i = 7;
+<<<<<<< HEAD
 	} else
 		i = 6;
+=======
+	} else {
+		i = 6;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (skb->data[i] != (lmi == LMI_CCITT ? LMI_CCITT_REPTYPE :
 			     LMI_ANSI_CISCO_REPTYPE)) {
@@ -807,8 +1122,13 @@ static int fr_lmi_recv(struct net_device *dev, struct sk_buff *skb)
 		}
 		i++;
 
+<<<<<<< HEAD
 		new = !! (skb->data[i + 2] & 0x08);
 		active = !! (skb->data[i + 2] & 0x02);
+=======
+		new = !!(skb->data[i + 2] & 0x08);
+		active = !!(skb->data[i + 2] & 0x02);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lmi == LMI_CISCO) {
 			dlci = (skb->data[i] << 8) | skb->data[i + 1];
 			bw = (skb->data[i + 3] << 16) |
@@ -864,11 +1184,54 @@ static int fr_lmi_recv(struct net_device *dev, struct sk_buff *skb)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int fr_snap_parse(struct sk_buff *skb, struct pvc_device *pvc)
+{
+	/* OUI 00-00-00 indicates an Ethertype follows */
+	if (skb->data[0] == 0x00 &&
+	    skb->data[1] == 0x00 &&
+	    skb->data[2] == 0x00) {
+		if (!pvc->main)
+			return -1;
+		skb->dev = pvc->main;
+		skb->protocol = *(__be16 *)(skb->data + 3); /* Ethertype */
+		skb_pull(skb, 5);
+		skb_reset_mac_header(skb);
+		return 0;
+
+	/* OUI 00-80-C2 stands for the 802.1 organization */
+	} else if (skb->data[0] == 0x00 &&
+		   skb->data[1] == 0x80 &&
+		   skb->data[2] == 0xC2) {
+		/* PID 00-07 stands for Ethernet frames without FCS */
+		if (skb->data[3] == 0x00 &&
+		    skb->data[4] == 0x07) {
+			if (!pvc->ether)
+				return -1;
+			skb_pull(skb, 5);
+			if (skb->len < ETH_HLEN)
+				return -1;
+			skb->protocol = eth_type_trans(skb, pvc->ether);
+			return 0;
+
+		/* PID unsupported */
+		} else {
+			return -1;
+		}
+
+	/* OUI unsupported */
+	} else {
+		return -1;
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int fr_rx(struct sk_buff *skb)
 {
 	struct net_device *frad = skb->dev;
 	hdlc_device *hdlc = dev_to_hdlc(frad);
+<<<<<<< HEAD
 	fr_hdr *fh = (fr_hdr*)skb->data;
 	u8 *data = skb->data;
 	u16 dlci;
@@ -876,6 +1239,15 @@ static int fr_rx(struct sk_buff *skb)
 	struct net_device *dev = NULL;
 
 	if (skb->len <= 4 || fh->ea1 || data[2] != FR_UI)
+=======
+	struct fr_hdr *fh = (struct fr_hdr *)skb->data;
+	u8 *data = skb->data;
+	u16 dlci;
+	struct pvc_device *pvc;
+	struct net_device *dev;
+
+	if (skb->len < 4 || fh->ea1 || !fh->ea2 || data[2] != FR_UI)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto rx_error;
 
 	dlci = q922_to_dlci(skb->data);
@@ -897,8 +1269,12 @@ static int fr_rx(struct sk_buff *skb)
 		netdev_info(frad, "No PVC for received frame's DLCI %d\n",
 			    dlci);
 #endif
+<<<<<<< HEAD
 		dev_kfree_skb_any(skb);
 		return NET_RX_DROP;
+=======
+		goto rx_drop;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (pvc->state.fecn != fh->fecn) {
@@ -917,13 +1293,19 @@ static int fr_rx(struct sk_buff *skb)
 		pvc->state.becn ^= 1;
 	}
 
+<<<<<<< HEAD
 
 	if ((skb = skb_share_check(skb, GFP_ATOMIC)) == NULL) {
+=======
+	skb = skb_share_check(skb, GFP_ATOMIC);
+	if (!skb) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		frad->stats.rx_dropped++;
 		return NET_RX_DROP;
 	}
 
 	if (data[3] == NLPID_IP) {
+<<<<<<< HEAD
 		skb_pull(skb, 4); /* Remove 4-byte header (hdr, UI, NLPID) */
 		dev = pvc->main;
 		skb->protocol = htons(ETH_P_IP);
@@ -981,12 +1363,62 @@ static int fr_rx(struct sk_buff *skb)
 
  rx_error:
 	frad->stats.rx_errors++; /* Mark error */
+=======
+		if (!pvc->main)
+			goto rx_drop;
+		skb_pull(skb, 4); /* Remove 4-byte header (hdr, UI, NLPID) */
+		skb->dev = pvc->main;
+		skb->protocol = htons(ETH_P_IP);
+		skb_reset_mac_header(skb);
+
+	} else if (data[3] == NLPID_IPV6) {
+		if (!pvc->main)
+			goto rx_drop;
+		skb_pull(skb, 4); /* Remove 4-byte header (hdr, UI, NLPID) */
+		skb->dev = pvc->main;
+		skb->protocol = htons(ETH_P_IPV6);
+		skb_reset_mac_header(skb);
+
+	} else if (data[3] == FR_PAD) {
+		if (skb->len < 5)
+			goto rx_error;
+		if (data[4] == NLPID_SNAP) { /* A SNAP header follows */
+			skb_pull(skb, 5);
+			if (skb->len < 5) /* Incomplete SNAP header */
+				goto rx_error;
+			if (fr_snap_parse(skb, pvc))
+				goto rx_drop;
+		} else {
+			goto rx_drop;
+		}
+
+	} else {
+		netdev_info(frad, "Unsupported protocol, NLPID=%x length=%i\n",
+			    data[3], skb->len);
+		goto rx_drop;
+	}
+
+	dev = skb->dev;
+	dev->stats.rx_packets++; /* PVC traffic */
+	dev->stats.rx_bytes += skb->len;
+	if (pvc->state.becn)
+		dev->stats.rx_compressed++;
+	netif_rx(skb);
+	return NET_RX_SUCCESS;
+
+rx_error:
+	frad->stats.rx_errors++; /* Mark error */
+rx_drop:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_kfree_skb_any(skb);
 	return NET_RX_DROP;
 }
 
+<<<<<<< HEAD
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void fr_start(struct net_device *dev)
 {
 	hdlc_device *hdlc = dev_to_hdlc(dev);
@@ -1002,6 +1434,7 @@ static void fr_start(struct net_device *dev)
 		state(hdlc)->n391cnt = 0;
 		state(hdlc)->txseq = state(hdlc)->rxseq = 0;
 
+<<<<<<< HEAD
 		init_timer(&state(hdlc)->timer);
 		/* First poll after 1 s */
 		state(hdlc)->timer.expires = jiffies + HZ;
@@ -1013,6 +1446,18 @@ static void fr_start(struct net_device *dev)
 }
 
 
+=======
+		state(hdlc)->dev = dev;
+		timer_setup(&state(hdlc)->timer, fr_timer, 0);
+		/* First poll after 1 s */
+		state(hdlc)->timer.expires = jiffies + HZ;
+		add_timer(&state(hdlc)->timer);
+	} else {
+		fr_set_link_state(1, dev);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void fr_stop(struct net_device *dev)
 {
 	hdlc_device *hdlc = dev_to_hdlc(dev);
@@ -1024,11 +1469,18 @@ static void fr_stop(struct net_device *dev)
 	fr_set_link_state(0, dev);
 }
 
+<<<<<<< HEAD
 
 static void fr_close(struct net_device *dev)
 {
 	hdlc_device *hdlc = dev_to_hdlc(dev);
 	pvc_device *pvc = state(hdlc)->first_pvc;
+=======
+static void fr_close(struct net_device *dev)
+{
+	hdlc_device *hdlc = dev_to_hdlc(dev);
+	struct pvc_device *pvc = state(hdlc)->first_pvc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (pvc) {		/* Shutdown all PVCs for this FRAD */
 		if (pvc->main)
@@ -1039,32 +1491,55 @@ static void fr_close(struct net_device *dev)
 	}
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void pvc_setup(struct net_device *dev)
 {
 	dev->type = ARPHRD_DLCI;
 	dev->flags = IFF_POINTOPOINT;
+<<<<<<< HEAD
 	dev->hard_header_len = 10;
 	dev->addr_len = 2;
 	dev->priv_flags &= ~IFF_XMIT_DST_RELEASE;
+=======
+	dev->hard_header_len = 0;
+	dev->addr_len = 2;
+	netif_keep_dst(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct net_device_ops pvc_ops = {
 	.ndo_open       = pvc_open,
 	.ndo_stop       = pvc_close,
+<<<<<<< HEAD
 	.ndo_change_mtu = hdlc_change_mtu,
 	.ndo_start_xmit = pvc_xmit,
 	.ndo_do_ioctl   = pvc_ioctl,
+=======
+	.ndo_start_xmit = pvc_xmit,
+	.ndo_siocwandev = pvc_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int fr_add_pvc(struct net_device *frad, unsigned int dlci, int type)
 {
 	hdlc_device *hdlc = dev_to_hdlc(frad);
+<<<<<<< HEAD
 	pvc_device *pvc;
 	struct net_device *dev;
 	int used;
 
 	if ((pvc = add_pvc(frad, dlci)) == NULL) {
+=======
+	struct pvc_device *pvc;
+	struct net_device *dev;
+	int used;
+
+	pvc = add_pvc(frad, dlci);
+	if (!pvc) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netdev_warn(frad, "Memory squeeze on fr_add_pvc()\n");
 		return -ENOBUFS;
 	}
@@ -1074,11 +1549,19 @@ static int fr_add_pvc(struct net_device *frad, unsigned int dlci, int type)
 
 	used = pvc_is_used(pvc);
 
+<<<<<<< HEAD
 	if (type == ARPHRD_ETHER) {
 		dev = alloc_netdev(0, "pvceth%d", ether_setup);
 		dev->priv_flags &= ~IFF_TX_SKB_SHARING;
 	} else
 		dev = alloc_netdev(0, "pvc%d", pvc_setup);
+=======
+	if (type == ARPHRD_ETHER)
+		dev = alloc_netdev(0, "pvceth%d", NET_NAME_UNKNOWN,
+				   ether_setup);
+	else
+		dev = alloc_netdev(0, "pvc%d", NET_NAME_UNKNOWN, pvc_setup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev) {
 		netdev_warn(frad, "Memory squeeze on fr_pvc()\n");
@@ -1086,15 +1569,32 @@ static int fr_add_pvc(struct net_device *frad, unsigned int dlci, int type)
 		return -ENOBUFS;
 	}
 
+<<<<<<< HEAD
 	if (type == ARPHRD_ETHER)
 		eth_hw_addr_random(dev);
 	else {
 		*(__be16*)dev->dev_addr = htons(dlci);
+=======
+	if (type == ARPHRD_ETHER) {
+		dev->priv_flags &= ~IFF_TX_SKB_SHARING;
+		eth_hw_addr_random(dev);
+	} else {
+		__be16 addr = htons(dlci);
+
+		dev_addr_set(dev, (u8 *)&addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dlci_to_q922(dev->broadcast, dlci);
 	}
 	dev->netdev_ops = &pvc_ops;
 	dev->mtu = HDLC_MAX_MTU;
+<<<<<<< HEAD
 	dev->tx_queue_len = 0;
+=======
+	dev->min_mtu = 68;
+	dev->max_mtu = HDLC_MAX_MTU;
+	dev->needed_headroom = 10;
+	dev->priv_flags |= IFF_NO_QUEUE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->ml_priv = pvc;
 
 	if (register_netdevice(dev) != 0) {
@@ -1103,7 +1603,11 @@ static int fr_add_pvc(struct net_device *frad, unsigned int dlci, int type)
 		return -EIO;
 	}
 
+<<<<<<< HEAD
 	dev->destructor = free_netdev;
+=======
+	dev->needs_free_netdev = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*get_dev_p(pvc, type) = dev;
 	if (!used) {
 		state(hdlc)->dce_changed = 1;
@@ -1112,6 +1616,7 @@ static int fr_add_pvc(struct net_device *frad, unsigned int dlci, int type)
 	return 0;
 }
 
+<<<<<<< HEAD
 
 
 static int fr_del_pvc(hdlc_device *hdlc, unsigned int dlci, int type)
@@ -1123,6 +1628,19 @@ static int fr_del_pvc(hdlc_device *hdlc, unsigned int dlci, int type)
 		return -ENOENT;
 
 	if ((dev = *get_dev_p(pvc, type)) == NULL)
+=======
+static int fr_del_pvc(hdlc_device *hdlc, unsigned int dlci, int type)
+{
+	struct pvc_device *pvc;
+	struct net_device *dev;
+
+	pvc = find_pvc(hdlc, dlci);
+	if (!pvc)
+		return -ENOENT;
+
+	dev = *get_dev_p(pvc, type);
+	if (!dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOENT;
 
 	if (dev->flags & IFF_UP)
@@ -1139,18 +1657,30 @@ static int fr_del_pvc(hdlc_device *hdlc, unsigned int dlci, int type)
 	return 0;
 }
 
+<<<<<<< HEAD
 
 
 static void fr_destroy(struct net_device *frad)
 {
 	hdlc_device *hdlc = dev_to_hdlc(frad);
 	pvc_device *pvc = state(hdlc)->first_pvc;
+=======
+static void fr_destroy(struct net_device *frad)
+{
+	hdlc_device *hdlc = dev_to_hdlc(frad);
+	struct pvc_device *pvc = state(hdlc)->first_pvc;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	state(hdlc)->first_pvc = NULL; /* All PVCs destroyed */
 	state(hdlc)->dce_pvc_count = 0;
 	state(hdlc)->dce_changed = 1;
 
 	while (pvc) {
+<<<<<<< HEAD
 		pvc_device *next = pvc->next;
+=======
+		struct pvc_device *next = pvc->next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* destructors will free_netdev() main and ether */
 		if (pvc->main)
 			unregister_netdevice(pvc->main);
@@ -1163,7 +1693,10 @@ static void fr_destroy(struct net_device *frad)
 	}
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct hdlc_proto proto = {
 	.close		= fr_close,
 	.start		= fr_start,
@@ -1174,16 +1707,23 @@ static struct hdlc_proto proto = {
 	.module		= THIS_MODULE,
 };
 
+<<<<<<< HEAD
 
 static int fr_ioctl(struct net_device *dev, struct ifreq *ifr)
 {
 	fr_proto __user *fr_s = ifr->ifr_settings.ifs_ifsu.fr;
+=======
+static int fr_ioctl(struct net_device *dev, struct if_settings *ifs)
+{
+	fr_proto __user *fr_s = ifs->ifs_ifsu.fr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const size_t size = sizeof(fr_proto);
 	fr_proto new_settings;
 	hdlc_device *hdlc = dev_to_hdlc(dev);
 	fr_proto_pvc pvc;
 	int result;
 
+<<<<<<< HEAD
 	switch (ifr->ifr_settings.type) {
 	case IF_GET_PROTO:
 		if (dev_to_hdlc(dev)->proto != &proto) /* Different proto */
@@ -1191,6 +1731,15 @@ static int fr_ioctl(struct net_device *dev, struct ifreq *ifr)
 		ifr->ifr_settings.type = IF_PROTO_FR;
 		if (ifr->ifr_settings.size < size) {
 			ifr->ifr_settings.size = size; /* data size wanted */
+=======
+	switch (ifs->type) {
+	case IF_GET_PROTO:
+		if (dev_to_hdlc(dev)->proto != &proto) /* Different proto */
+			return -EINVAL;
+		ifs->type = IF_PROTO_FR;
+		if (ifs->size < size) {
+			ifs->size = size; /* data size wanted */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOBUFS;
 		}
 		if (copy_to_user(fr_s, &state(hdlc)->settings, size))
@@ -1224,7 +1773,12 @@ static int fr_ioctl(struct net_device *dev, struct ifreq *ifr)
 		     new_settings.dce != 1))
 			return -EINVAL;
 
+<<<<<<< HEAD
 		result=hdlc->attach(dev, ENCODING_NRZ,PARITY_CRC16_PR1_CCITT);
+=======
+		result = hdlc->attach(dev, ENCODING_NRZ,
+				      PARITY_CRC16_PR1_CCITT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (result)
 			return result;
 
@@ -1238,6 +1792,10 @@ static int fr_ioctl(struct net_device *dev, struct ifreq *ifr)
 		}
 		memcpy(&state(hdlc)->settings, &new_settings, size);
 		dev->type = ARPHRD_FRAD;
+<<<<<<< HEAD
+=======
+		call_netdevice_notifiers(NETDEV_POST_TYPE_CHANGE, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	case IF_PROTO_FR_ADD_PVC:
@@ -1250,21 +1808,35 @@ static int fr_ioctl(struct net_device *dev, struct ifreq *ifr)
 		if (!capable(CAP_NET_ADMIN))
 			return -EPERM;
 
+<<<<<<< HEAD
 		if (copy_from_user(&pvc, ifr->ifr_settings.ifs_ifsu.fr_pvc,
+=======
+		if (copy_from_user(&pvc, ifs->ifs_ifsu.fr_pvc,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   sizeof(fr_proto_pvc)))
 			return -EFAULT;
 
 		if (pvc.dlci <= 0 || pvc.dlci >= 1024)
 			return -EINVAL;	/* Only 10 bits, DLCI 0 reserved */
 
+<<<<<<< HEAD
 		if (ifr->ifr_settings.type == IF_PROTO_FR_ADD_ETH_PVC ||
 		    ifr->ifr_settings.type == IF_PROTO_FR_DEL_ETH_PVC)
+=======
+		if (ifs->type == IF_PROTO_FR_ADD_ETH_PVC ||
+		    ifs->type == IF_PROTO_FR_DEL_ETH_PVC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			result = ARPHRD_ETHER; /* bridged Ethernet device */
 		else
 			result = ARPHRD_DLCI;
 
+<<<<<<< HEAD
 		if (ifr->ifr_settings.type == IF_PROTO_FR_ADD_PVC ||
 		    ifr->ifr_settings.type == IF_PROTO_FR_ADD_ETH_PVC)
+=======
+		if (ifs->type == IF_PROTO_FR_ADD_PVC ||
+		    ifs->type == IF_PROTO_FR_ADD_ETH_PVC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return fr_add_pvc(dev, pvc.dlci, result);
 		else
 			return fr_del_pvc(hdlc, pvc.dlci, result);
@@ -1273,22 +1845,35 @@ static int fr_ioctl(struct net_device *dev, struct ifreq *ifr)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 
 static int __init mod_init(void)
+=======
+static int __init hdlc_fr_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	register_hdlc_protocol(&proto);
 	return 0;
 }
 
+<<<<<<< HEAD
 
 static void __exit mod_exit(void)
+=======
+static void __exit hdlc_fr_exit(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unregister_hdlc_protocol(&proto);
 }
 
+<<<<<<< HEAD
 
 module_init(mod_init);
 module_exit(mod_exit);
+=======
+module_init(hdlc_fr_init);
+module_exit(hdlc_fr_exit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Krzysztof Halasa <khc@pm.waw.pl>");
 MODULE_DESCRIPTION("Frame-Relay protocol support for generic HDLC");

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2012 Hauke Mehrtens <hauke@hauke-m.de>
  *
@@ -14,11 +15,22 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Copyright (C) 2012 Hauke Mehrtens <hauke@hauke-m.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __USB_CORE_EHCI_PDRIVER_H
 #define __USB_CORE_EHCI_PDRIVER_H
 
+<<<<<<< HEAD
+=======
+struct platform_device;
+struct usb_hcd;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct usb_ehci_pdata - platform_data for generic ehci driver
  *
@@ -29,6 +41,13 @@
  *			initialization.
  * @port_power_off:	set to 1 if the controller needs to be powered down
  *			after initialization.
+<<<<<<< HEAD
+=======
+ * @no_io_watchdog:	set to 1 if the controller does not need the I/O
+ *			watchdog to run.
+ * @reset_on_resume:	set to 1 if the controller needs to be reset after
+ * 			a suspend / resume cycle (but can't detect that itself).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * These are general configuration options for the EHCI controller. All of
  * these options are activating more or less workarounds for some hardware.
@@ -39,8 +58,24 @@ struct usb_ehci_pdata {
 	unsigned	has_synopsys_hc_bug:1;
 	unsigned	big_endian_desc:1;
 	unsigned	big_endian_mmio:1;
+<<<<<<< HEAD
 	unsigned	port_power_on:1;
 	unsigned	port_power_off:1;
+=======
+	unsigned	no_io_watchdog:1;
+	unsigned	reset_on_resume:1;
+	unsigned	dma_mask_64:1;
+	unsigned	spurious_oc:1;
+
+	/* Turn on all power and clocks */
+	int (*power_on)(struct platform_device *pdev);
+	/* Turn off all power and clocks */
+	void (*power_off)(struct platform_device *pdev);
+	/* Turn on only VBUS suspend power and hotplug detection,
+	 * turn off everything else */
+	void (*power_suspend)(struct platform_device *pdev);
+	int (*pre_setup)(struct usb_hcd *hcd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif /* __USB_CORE_EHCI_PDRIVER_H */

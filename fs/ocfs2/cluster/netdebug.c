@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * netdebug.c
  *
  * debug functionality for o2net
  *
  * Copyright (C) 2005, 2008 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -22,6 +28,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifdef CONFIG_DEBUG_FS
@@ -53,10 +61,13 @@
 #define SHOW_SOCK_STATS		1
 
 static struct dentry *o2net_dentry;
+<<<<<<< HEAD
 static struct dentry *sc_dentry;
 static struct dentry *nst_dentry;
 static struct dentry *stats_dentry;
 static struct dentry *nodes_dentry;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_SPINLOCK(o2net_debug_lock);
 
@@ -65,17 +76,30 @@ static LIST_HEAD(send_tracking);
 
 void o2net_debug_add_nst(struct o2net_send_tracking *nst)
 {
+<<<<<<< HEAD
 	spin_lock(&o2net_debug_lock);
 	list_add(&nst->st_net_debug_item, &send_tracking);
 	spin_unlock(&o2net_debug_lock);
+=======
+	spin_lock_bh(&o2net_debug_lock);
+	list_add(&nst->st_net_debug_item, &send_tracking);
+	spin_unlock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void o2net_debug_del_nst(struct o2net_send_tracking *nst)
 {
+<<<<<<< HEAD
 	spin_lock(&o2net_debug_lock);
 	if (!list_empty(&nst->st_net_debug_item))
 		list_del_init(&nst->st_net_debug_item);
 	spin_unlock(&o2net_debug_lock);
+=======
+	spin_lock_bh(&o2net_debug_lock);
+	if (!list_empty(&nst->st_net_debug_item))
+		list_del_init(&nst->st_net_debug_item);
+	spin_unlock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct o2net_send_tracking
@@ -105,9 +129,15 @@ static void *nst_seq_start(struct seq_file *seq, loff_t *pos)
 {
 	struct o2net_send_tracking *nst, *dummy_nst = seq->private;
 
+<<<<<<< HEAD
 	spin_lock(&o2net_debug_lock);
 	nst = next_nst(dummy_nst);
 	spin_unlock(&o2net_debug_lock);
+=======
+	spin_lock_bh(&o2net_debug_lock);
+	nst = next_nst(dummy_nst);
+	spin_unlock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return nst;
 }
@@ -116,13 +146,21 @@ static void *nst_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 {
 	struct o2net_send_tracking *nst, *dummy_nst = seq->private;
 
+<<<<<<< HEAD
 	spin_lock(&o2net_debug_lock);
+=======
+	spin_lock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nst = next_nst(dummy_nst);
 	list_del_init(&dummy_nst->st_net_debug_item);
 	if (nst)
 		list_add(&dummy_nst->st_net_debug_item,
 			 &nst->st_net_debug_item);
+<<<<<<< HEAD
 	spin_unlock(&o2net_debug_lock);
+=======
+	spin_unlock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return nst; /* unused, just needs to be null when done */
 }
@@ -133,7 +171,11 @@ static int nst_seq_show(struct seq_file *seq, void *v)
 	ktime_t now;
 	s64 sock, send, status;
 
+<<<<<<< HEAD
 	spin_lock(&o2net_debug_lock);
+=======
+	spin_lock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nst = next_nst(dummy_nst);
 	if (!nst)
 		goto out;
@@ -166,7 +208,11 @@ static int nst_seq_show(struct seq_file *seq, void *v)
 		   (long long)status);
 
 out:
+<<<<<<< HEAD
 	spin_unlock(&o2net_debug_lock);
+=======
+	spin_unlock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -185,6 +231,7 @@ static const struct seq_operations nst_seq_ops = {
 static int nst_fop_open(struct inode *inode, struct file *file)
 {
 	struct o2net_send_tracking *dummy_nst;
+<<<<<<< HEAD
 	struct seq_file *seq;
 	int ret;
 
@@ -208,6 +255,15 @@ static int nst_fop_open(struct inode *inode, struct file *file)
 out:
 	kfree(dummy_nst);
 	return ret;
+=======
+
+	dummy_nst = __seq_open_private(file, &nst_seq_ops, sizeof(*dummy_nst));
+	if (!dummy_nst)
+		return -ENOMEM;
+	o2net_debug_add_nst(dummy_nst);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int nst_fop_release(struct inode *inode, struct file *file)
@@ -228,16 +284,28 @@ static const struct file_operations nst_seq_fops = {
 
 void o2net_debug_add_sc(struct o2net_sock_container *sc)
 {
+<<<<<<< HEAD
 	spin_lock(&o2net_debug_lock);
 	list_add(&sc->sc_net_debug_item, &sock_containers);
 	spin_unlock(&o2net_debug_lock);
+=======
+	spin_lock_bh(&o2net_debug_lock);
+	list_add(&sc->sc_net_debug_item, &sock_containers);
+	spin_unlock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void o2net_debug_del_sc(struct o2net_sock_container *sc)
 {
+<<<<<<< HEAD
 	spin_lock(&o2net_debug_lock);
 	list_del_init(&sc->sc_net_debug_item);
 	spin_unlock(&o2net_debug_lock);
+=======
+	spin_lock_bh(&o2net_debug_lock);
+	list_del_init(&sc->sc_net_debug_item);
+	spin_unlock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct o2net_sock_debug {
@@ -273,9 +341,15 @@ static void *sc_seq_start(struct seq_file *seq, loff_t *pos)
 	struct o2net_sock_debug *sd = seq->private;
 	struct o2net_sock_container *sc, *dummy_sc = sd->dbg_sock;
 
+<<<<<<< HEAD
 	spin_lock(&o2net_debug_lock);
 	sc = next_sc(dummy_sc);
 	spin_unlock(&o2net_debug_lock);
+=======
+	spin_lock_bh(&o2net_debug_lock);
+	sc = next_sc(dummy_sc);
+	spin_unlock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sc;
 }
@@ -285,12 +359,20 @@ static void *sc_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 	struct o2net_sock_debug *sd = seq->private;
 	struct o2net_sock_container *sc, *dummy_sc = sd->dbg_sock;
 
+<<<<<<< HEAD
 	spin_lock(&o2net_debug_lock);
+=======
+	spin_lock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sc = next_sc(dummy_sc);
 	list_del_init(&dummy_sc->sc_net_debug_item);
 	if (sc)
 		list_add(&dummy_sc->sc_net_debug_item, &sc->sc_net_debug_item);
+<<<<<<< HEAD
 	spin_unlock(&o2net_debug_lock);
+=======
+	spin_unlock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sc; /* unused, just needs to be null when done */
 }
@@ -365,7 +447,11 @@ static void sc_show_sock_container(struct seq_file *seq,
 		   "  func key:        0x%08x\n"
 		   "  func type:       %u\n",
 		   sc,
+<<<<<<< HEAD
 		   atomic_read(&sc->sc_kref.refcount),
+=======
+		   kref_read(&sc->sc_kref),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   &saddr, inet ? ntohs(sport) : 0,
 		   &daddr, inet ? ntohs(dport) : 0,
 		   sc->sc_node->nd_name,
@@ -386,7 +472,11 @@ static int sc_seq_show(struct seq_file *seq, void *v)
 	struct o2net_sock_debug *sd = seq->private;
 	struct o2net_sock_container *sc, *dummy_sc = sd->dbg_sock;
 
+<<<<<<< HEAD
 	spin_lock(&o2net_debug_lock);
+=======
+	spin_lock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sc = next_sc(dummy_sc);
 
 	if (sc) {
@@ -396,7 +486,11 @@ static int sc_seq_show(struct seq_file *seq, void *v)
 			sc_show_sock_stats(seq, sc);
 	}
 
+<<<<<<< HEAD
 	spin_unlock(&o2net_debug_lock);
+=======
+	spin_unlock_bh(&o2net_debug_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -412,6 +506,7 @@ static const struct seq_operations sc_seq_ops = {
 	.show = sc_seq_show,
 };
 
+<<<<<<< HEAD
 static int sc_common_open(struct file *file, struct o2net_sock_debug *sd)
 {
 	struct o2net_sock_container *dummy_sc;
@@ -439,6 +534,29 @@ static int sc_common_open(struct file *file, struct o2net_sock_debug *sd)
 out:
 	kfree(dummy_sc);
 	return ret;
+=======
+static int sc_common_open(struct file *file, int ctxt)
+{
+	struct o2net_sock_debug *sd;
+	struct o2net_sock_container *dummy_sc;
+
+	dummy_sc = kzalloc(sizeof(*dummy_sc), GFP_KERNEL);
+	if (!dummy_sc)
+		return -ENOMEM;
+
+	sd = __seq_open_private(file, &sc_seq_ops, sizeof(*sd));
+	if (!sd) {
+		kfree(dummy_sc);
+		return -ENOMEM;
+	}
+
+	sd->dbg_ctxt = ctxt;
+	sd->dbg_sock = dummy_sc;
+
+	o2net_debug_add_sc(dummy_sc);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sc_fop_release(struct inode *inode, struct file *file)
@@ -448,11 +566,16 @@ static int sc_fop_release(struct inode *inode, struct file *file)
 	struct o2net_sock_container *dummy_sc = sd->dbg_sock;
 
 	o2net_debug_del_sc(dummy_sc);
+<<<<<<< HEAD
+=======
+	kfree(dummy_sc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return seq_release_private(inode, file);
 }
 
 static int stats_fop_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	struct o2net_sock_debug *sd;
 
 	sd = kmalloc(sizeof(struct o2net_sock_debug), GFP_KERNEL);
@@ -463,6 +586,9 @@ static int stats_fop_open(struct inode *inode, struct file *file)
 	sd->dbg_sock = NULL;
 
 	return sc_common_open(file, sd);
+=======
+	return sc_common_open(file, SHOW_SOCK_STATS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations stats_seq_fops = {
@@ -474,6 +600,7 @@ static const struct file_operations stats_seq_fops = {
 
 static int sc_fop_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	struct o2net_sock_debug *sd;
 
 	sd = kmalloc(sizeof(struct o2net_sock_debug), GFP_KERNEL);
@@ -484,6 +611,9 @@ static int sc_fop_open(struct inode *inode, struct file *file)
 	sd->dbg_sock = NULL;
 
 	return sc_common_open(file, sd);
+=======
+	return sc_common_open(file, SHOW_SOCK_CONTAINERS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations sc_seq_fops = {
@@ -498,11 +628,19 @@ static int o2net_fill_bitmap(char *buf, int len)
 	unsigned long map[BITS_TO_LONGS(O2NM_MAX_NODES)];
 	int i = -1, out = 0;
 
+<<<<<<< HEAD
 	o2net_fill_node_map(map, sizeof(map));
 
 	while ((i = find_next_bit(map, O2NM_MAX_NODES, i + 1)) < O2NM_MAX_NODES)
 		out += snprintf(buf + out, PAGE_SIZE - out, "%d ", i);
 	out += snprintf(buf + out, PAGE_SIZE - out, "\n");
+=======
+	o2net_fill_node_map(map, O2NM_MAX_NODES);
+
+	while ((i = find_next_bit(map, O2NM_MAX_NODES, i + 1)) < O2NM_MAX_NODES)
+		out += scnprintf(buf + out, PAGE_SIZE - out, "%d ", i);
+	out += scnprintf(buf + out, PAGE_SIZE - out, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return out;
 }
@@ -544,6 +682,7 @@ static const struct file_operations nodes_fops = {
 
 void o2net_debugfs_exit(void)
 {
+<<<<<<< HEAD
 	debugfs_remove(nodes_dentry);
 	debugfs_remove(stats_dentry);
 	debugfs_remove(sc_dentry);
@@ -552,10 +691,17 @@ void o2net_debugfs_exit(void)
 }
 
 int o2net_debugfs_init(void)
+=======
+	debugfs_remove_recursive(o2net_dentry);
+}
+
+void o2net_debugfs_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	umode_t mode = S_IFREG|S_IRUSR;
 
 	o2net_dentry = debugfs_create_dir(O2NET_DEBUG_DIR, NULL);
+<<<<<<< HEAD
 	if (o2net_dentry)
 		nst_dentry = debugfs_create_file(NST_DEBUG_NAME, mode,
 					o2net_dentry, NULL, &nst_seq_fops);
@@ -574,6 +720,17 @@ int o2net_debugfs_init(void)
 	o2net_debugfs_exit();
 	mlog_errno(-ENOMEM);
 	return -ENOMEM;
+=======
+
+	debugfs_create_file(NST_DEBUG_NAME, mode, o2net_dentry, NULL,
+			    &nst_seq_fops);
+	debugfs_create_file(SC_DEBUG_NAME, mode, o2net_dentry, NULL,
+			    &sc_seq_fops);
+	debugfs_create_file(STATS_DEBUG_NAME, mode, o2net_dentry, NULL,
+			    &stats_seq_fops);
+	debugfs_create_file(NODES_DEBUG_NAME, mode, o2net_dentry, NULL,
+			    &nodes_fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif	/* CONFIG_DEBUG_FS */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_PGTABLE_32_H
 #define _ASM_X86_PGTABLE_32_H
 
@@ -14,7 +18,10 @@
  */
 #ifndef __ASSEMBLY__
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <asm/fixmap.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/threads.h>
 #include <asm/paravirt.h>
 
@@ -27,6 +34,7 @@ struct vm_area_struct;
 
 extern pgd_t swapper_pg_dir[1024];
 extern pgd_t initial_page_table[1024];
+<<<<<<< HEAD
 
 static inline void pgtable_cache_init(void) { }
 static inline void check_pgt_cache(void) { }
@@ -41,6 +49,12 @@ extern void set_pmd_pfn(unsigned long, unsigned long, pgprot_t);
  * done without a 'access_ok(VERIFY_WRITE,..)'
  */
 #undef TEST_ACCESS_OK
+=======
+extern pmd_t initial_pg_pmd[];
+
+void paging_init(void);
+void sync_initial_page_table(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_X86_PAE
 # include <asm/pgtable-3level.h>
@@ -48,6 +62,7 @@ extern void set_pmd_pfn(unsigned long, unsigned long, pgprot_t);
 # include <asm/pgtable-2level.h>
 #endif
 
+<<<<<<< HEAD
 #if defined(CONFIG_HIGHPTE)
 #define pte_offset_map(dir, address)					\
 	((pte_t *)kmap_atomic(pmd_page(*(dir))) +		\
@@ -59,10 +74,13 @@ extern void set_pmd_pfn(unsigned long, unsigned long, pgprot_t);
 #define pte_unmap(pte) do { } while (0)
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Clear a kernel PTE and flush it from the TLB */
 #define kpte_clear_flush(ptep, vaddr)		\
 do {						\
 	pte_clear(&init_mm, (vaddr), (ptep));	\
+<<<<<<< HEAD
 	__flush_tlb_one((vaddr));		\
 } while (0)
 
@@ -84,4 +102,36 @@ do {						\
 #define kern_addr_valid(kaddr)	(0)
 #endif
 
+=======
+	flush_tlb_one_kernel((vaddr));		\
+} while (0)
+
+#endif /* !__ASSEMBLY__ */
+
+/*
+ * This is used to calculate the .brk reservation for initial pagetables.
+ * Enough space is reserved to allocate pagetables sufficient to cover all
+ * of LOWMEM_PAGES, which is an upper bound on the size of the direct map of
+ * lowmem.
+ *
+ * With PAE paging (PTRS_PER_PMD > 1), we allocate PTRS_PER_PGD == 4 pages for
+ * the PMD's in addition to the pages required for the last level pagetables.
+ */
+#if PTRS_PER_PMD > 1
+#define PAGE_TABLE_SIZE(pages) (((pages) / PTRS_PER_PMD) + PTRS_PER_PGD)
+#else
+#define PAGE_TABLE_SIZE(pages) ((pages) / PTRS_PER_PGD)
+#endif
+
+/*
+ * Number of possible pages in the lowmem region.
+ *
+ * We shift 2 by 31 instead of 1 by 32 to the left in order to avoid a
+ * gas warning about overflowing shift count when gas has been compiled
+ * with only a host target support using a 32-bit type for internal
+ * representation.
+ */
+#define LOWMEM_PAGES ((((_ULL(2)<<31) - __PAGE_OFFSET) >> PAGE_SHIFT))
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_X86_PGTABLE_32_H */

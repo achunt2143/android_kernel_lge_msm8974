@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Aic94xx SAS/SATA driver hardware registers definitions.
  *
@@ -9,6 +13,7 @@
  * agnostic register r/w functions.  Some register corrections, sizes,
  * etc.
  *
+<<<<<<< HEAD
  * This file is licensed under GPLv2.
  *
  * This file is part of the aic94xx driver.
@@ -29,6 +34,9 @@
  *
  * $Id: //depot/aic94xx/aic94xx_reg_def.h#27 $
  *
+=======
+ * $Id: //depot/aic94xx/aic94xx_reg_def.h#27 $
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ADP94XX_REG_DEF_H_

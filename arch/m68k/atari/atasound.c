@@ -26,9 +26,15 @@
 
 #include <asm/atarihw.h>
 #include <asm/irq.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/atariints.h>
 
+=======
+#include <asm/atariints.h>
+
+#include "atari.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * stuff from the old atasound.c

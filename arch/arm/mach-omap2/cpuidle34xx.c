@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-omap2/cpuidle34xx.c
  *
@@ -16,25 +20,34 @@
  * Richard Woodruff <r-woodruff2@ti.com>
  *
  * Based on pm.c for omap2
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/sched.h>
 #include <linux/cpuidle.h>
 #include <linux/export.h>
 #include <linux/cpu_pm.h>
+<<<<<<< HEAD
 
 #include <plat/prcm.h>
 #include <plat/irqs.h>
+=======
+#include <asm/cpuidle.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "powerdomain.h"
 #include "clockdomain.h"
 
 #include "pm.h"
 #include "control.h"
 #include "common.h"
+<<<<<<< HEAD
 
 #ifdef CONFIG_CPU_IDLE
 
@@ -138,12 +151,81 @@ return_sleep_time:
 
 	return index;
 }
+=======
+#include "soc.h"
+
+/* Mach specific information to be recorded in the C-state driver_data */
+struct omap3_idle_statedata {
+	u8 mpu_state;
+	u8 core_state;
+	u8 per_min_state;
+	u8 flags;
+};
+
+static struct powerdomain *mpu_pd, *core_pd, *per_pd, *cam_pd;
+
+/*
+ * Possible flag bits for struct omap3_idle_statedata.flags:
+ *
+ * OMAP_CPUIDLE_CX_NO_CLKDM_IDLE: don't allow the MPU clockdomain to go
+ *    inactive.  This in turn prevents the MPU DPLL from entering autoidle
+ *    mode, so wakeup latency is greatly reduced, at the cost of additional
+ *    energy consumption.  This also prevents the CORE clockdomain from
+ *    entering idle.
+ */
+#define OMAP_CPUIDLE_CX_NO_CLKDM_IDLE		BIT(0)
+
+/*
+ * Prevent PER OFF if CORE is not in RETention or OFF as this would
+ * disable PER wakeups completely.
+ */
+static struct omap3_idle_statedata omap3_idle_data[] = {
+	{
+		.mpu_state = PWRDM_POWER_ON,
+		.core_state = PWRDM_POWER_ON,
+		/* In C1 do not allow PER state lower than CORE state */
+		.per_min_state = PWRDM_POWER_ON,
+		.flags = OMAP_CPUIDLE_CX_NO_CLKDM_IDLE,
+	},
+	{
+		.mpu_state = PWRDM_POWER_ON,
+		.core_state = PWRDM_POWER_ON,
+		.per_min_state = PWRDM_POWER_RET,
+	},
+	{
+		.mpu_state = PWRDM_POWER_RET,
+		.core_state = PWRDM_POWER_ON,
+		.per_min_state = PWRDM_POWER_RET,
+	},
+	{
+		.mpu_state = PWRDM_POWER_OFF,
+		.core_state = PWRDM_POWER_ON,
+		.per_min_state = PWRDM_POWER_RET,
+	},
+	{
+		.mpu_state = PWRDM_POWER_RET,
+		.core_state = PWRDM_POWER_RET,
+		.per_min_state = PWRDM_POWER_OFF,
+	},
+	{
+		.mpu_state = PWRDM_POWER_OFF,
+		.core_state = PWRDM_POWER_RET,
+		.per_min_state = PWRDM_POWER_OFF,
+	},
+	{
+		.mpu_state = PWRDM_POWER_OFF,
+		.core_state = PWRDM_POWER_OFF,
+		.per_min_state = PWRDM_POWER_OFF,
+	},
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * omap3_enter_idle - Programs OMAP3 to enter the specified state
  * @dev: cpuidle device
  * @drv: cpuidle driver
  * @index: the index of state to be entered
+<<<<<<< HEAD
  *
  * Called from the CPUidle framework to program the device to the
  * specified target state selected by the governor.
@@ -153,6 +235,56 @@ static inline int omap3_enter_idle(struct cpuidle_device *dev,
 				int index)
 {
 	return cpuidle_wrap_enter(dev, drv, index, __omap3_enter_idle);
+=======
+ */
+static int omap3_enter_idle(struct cpuidle_device *dev,
+			    struct cpuidle_driver *drv,
+			    int index)
+{
+	struct omap3_idle_statedata *cx = &omap3_idle_data[index];
+	int error;
+
+	if (omap_irq_pending() || need_resched())
+		goto return_sleep_time;
+
+	/* Deny idle for C1 */
+	if (cx->flags & OMAP_CPUIDLE_CX_NO_CLKDM_IDLE) {
+		clkdm_deny_idle(mpu_pd->pwrdm_clkdms[0]);
+	} else {
+		pwrdm_set_next_pwrst(mpu_pd, cx->mpu_state);
+		pwrdm_set_next_pwrst(core_pd, cx->core_state);
+	}
+
+	/*
+	 * Call idle CPU PM enter notifier chain so that
+	 * VFP context is saved.
+	 */
+	if (cx->mpu_state == PWRDM_POWER_OFF) {
+		error = cpu_pm_enter();
+		if (error)
+			goto out_clkdm_set;
+	}
+
+	/* Execute ARM wfi */
+	omap_sram_idle(true);
+
+	/*
+	 * Call idle CPU PM enter notifier chain to restore
+	 * VFP context.
+	 */
+	if (cx->mpu_state == PWRDM_POWER_OFF &&
+	    pwrdm_read_prev_pwrst(mpu_pd) == PWRDM_POWER_OFF)
+		cpu_pm_exit();
+
+out_clkdm_set:
+	/* Re-allow idle for C1 */
+	if (cx->flags & OMAP_CPUIDLE_CX_NO_CLKDM_IDLE)
+		clkdm_allow_idle(mpu_pd->pwrdm_clkdms[0]);
+
+return_sleep_time:
+
+	return index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -169,6 +301,7 @@ static inline int omap3_enter_idle(struct cpuidle_device *dev,
  * if it satisfies the enable_off_mode condition.
  */
 static int next_valid_state(struct cpuidle_device *dev,
+<<<<<<< HEAD
 			struct cpuidle_driver *drv,
 				int index)
 {
@@ -178,6 +311,15 @@ static int next_valid_state(struct cpuidle_device *dev,
 	u32 mpu_deepest_state = PWRDM_POWER_RET;
 	u32 core_deepest_state = PWRDM_POWER_RET;
 	int next_index = -1;
+=======
+			    struct cpuidle_driver *drv, int index)
+{
+	struct omap3_idle_statedata *cx = &omap3_idle_data[index];
+	u32 mpu_deepest_state = PWRDM_POWER_RET;
+	u32 core_deepest_state = PWRDM_POWER_RET;
+	int idx;
+	int next_index = 0; /* C1 is the default value */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (enable_off_mode) {
 		mpu_deepest_state = PWRDM_POWER_OFF;
@@ -191,6 +333,7 @@ static int next_valid_state(struct cpuidle_device *dev,
 	}
 
 	/* Check if current state is valid */
+<<<<<<< HEAD
 	if ((cx->valid) &&
 	    (cx->mpu_state >= mpu_deepest_state) &&
 	    (cx->core_state >= core_deepest_state)) {
@@ -228,6 +371,23 @@ static int next_valid_state(struct cpuidle_device *dev,
 		 * So, no need to check for 'next_index == -1' outside
 		 * this loop.
 		 */
+=======
+	if ((cx->mpu_state >= mpu_deepest_state) &&
+	    (cx->core_state >= core_deepest_state))
+		return index;
+
+	/*
+	 * Drop to next valid state.
+	 * Start search from the next (lower) state.
+	 */
+	for (idx = index - 1; idx >= 0; idx--) {
+		cx = &omap3_idle_data[idx];
+		if ((cx->mpu_state >= mpu_deepest_state) &&
+		    (cx->core_state >= core_deepest_state)) {
+			next_index = idx;
+			break;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return next_index;
@@ -243,6 +403,7 @@ static int next_valid_state(struct cpuidle_device *dev,
  * the device to the specified or a safer state.
  */
 static int omap3_enter_idle_bm(struct cpuidle_device *dev,
+<<<<<<< HEAD
 				struct cpuidle_driver *drv,
 			       int index)
 {
@@ -260,6 +421,23 @@ static int omap3_enter_idle_bm(struct cpuidle_device *dev,
 		new_state_idx = drv->safe_state_index;
 		goto select_state;
 	}
+=======
+			       struct cpuidle_driver *drv,
+			       int index)
+{
+	int new_state_idx, ret;
+	u8 per_next_state, per_saved_state;
+	struct omap3_idle_statedata *cx;
+
+	/*
+	 * Use only C1 if CAM is active.
+	 * CAM does not have wakeup capability in OMAP3.
+	 */
+	if (pwrdm_read_pwrst(cam_pd) == PWRDM_POWER_ON)
+		new_state_idx = drv->safe_state_index;
+	else
+		new_state_idx = next_valid_state(dev, drv, index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * FIXME: we currently manage device-specific idle states
@@ -269,6 +447,7 @@ static int omap3_enter_idle_bm(struct cpuidle_device *dev,
 	 *        its own code.
 	 */
 
+<<<<<<< HEAD
 	/*
 	 * Prevent PER off if CORE is not in retention or off as this
 	 * would disable PER wakeups completely.
@@ -287,6 +466,18 @@ static int omap3_enter_idle_bm(struct cpuidle_device *dev,
 	new_state_idx = next_valid_state(dev, drv, index);
 
 select_state:
+=======
+	/* Program PER state */
+	cx = &omap3_idle_data[new_state_idx];
+
+	per_next_state = pwrdm_read_next_pwrst(per_pd);
+	per_saved_state = per_next_state;
+	if (per_next_state < cx->per_min_state) {
+		per_next_state = cx->per_min_state;
+		pwrdm_set_next_pwrst(per_pd, per_next_state);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = omap3_enter_idle(dev, drv, new_state_idx);
 
 	/* Restore original PER state if it was modified */
@@ -296,6 +487,7 @@ select_state:
 	return ret;
 }
 
+<<<<<<< HEAD
 DEFINE_PER_CPU(struct cpuidle_device, omap3_idle_dev);
 
 void omap3_pm_init_cpuidle(struct cpuidle_params *cpuidle_board_params)
@@ -348,6 +540,144 @@ static inline struct omap3_idle_statedata *_fill_cstate_usage(
 
 	return cx;
 }
+=======
+static struct cpuidle_driver omap3_idle_driver = {
+	.name             = "omap3_idle",
+	.owner            = THIS_MODULE,
+	.states = {
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 2 + 2,
+			.target_residency = 5,
+			.name		  = "C1",
+			.desc		  = "MPU ON + CORE ON",
+		},
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 10 + 10,
+			.target_residency = 30,
+			.name		  = "C2",
+			.desc		  = "MPU ON + CORE ON",
+		},
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 50 + 50,
+			.target_residency = 300,
+			.name		  = "C3",
+			.desc		  = "MPU RET + CORE ON",
+		},
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 1500 + 1800,
+			.target_residency = 4000,
+			.name		  = "C4",
+			.desc		  = "MPU OFF + CORE ON",
+		},
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 2500 + 7500,
+			.target_residency = 12000,
+			.name		  = "C5",
+			.desc		  = "MPU RET + CORE RET",
+		},
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 3000 + 8500,
+			.target_residency = 15000,
+			.name		  = "C6",
+			.desc		  = "MPU OFF + CORE RET",
+		},
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 10000 + 30000,
+			.target_residency = 30000,
+			.name		  = "C7",
+			.desc		  = "MPU OFF + CORE OFF",
+		},
+	},
+	.state_count = ARRAY_SIZE(omap3_idle_data),
+	.safe_state_index = 0,
+};
+
+/*
+ * Numbers based on measurements made in October 2009 for PM optimized kernel
+ * with CPU freq enabled on device Nokia N900. Assumes OPP2 (main idle OPP,
+ * and worst case latencies).
+ */
+static struct cpuidle_driver omap3430_idle_driver = {
+	.name             = "omap3430_idle",
+	.owner            = THIS_MODULE,
+	.states = {
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 110 + 162,
+			.target_residency = 5,
+			.name		  = "C1",
+			.desc		  = "MPU ON + CORE ON",
+		},
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 106 + 180,
+			.target_residency = 309,
+			.name		  = "C2",
+			.desc		  = "MPU ON + CORE ON",
+		},
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 107 + 410,
+			.target_residency = 46057,
+			.name		  = "C3",
+			.desc		  = "MPU RET + CORE ON",
+		},
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 121 + 3374,
+			.target_residency = 46057,
+			.name		  = "C4",
+			.desc		  = "MPU OFF + CORE ON",
+		},
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 855 + 1146,
+			.target_residency = 46057,
+			.name		  = "C5",
+			.desc		  = "MPU RET + CORE RET",
+		},
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 7580 + 4134,
+			.target_residency = 484329,
+			.name		  = "C6",
+			.desc		  = "MPU OFF + CORE RET",
+		},
+		{
+			.flags		  = CPUIDLE_FLAG_RCU_IDLE,
+			.enter		  = omap3_enter_idle_bm,
+			.exit_latency	  = 7505 + 15274,
+			.target_residency = 484329,
+			.name		  = "C7",
+			.desc		  = "MPU OFF + CORE OFF",
+		},
+	},
+	.state_count = ARRAY_SIZE(omap3_idle_data),
+	.safe_state_index = 0,
+};
+
+/* Public functions */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * omap3_idle_init - Init routine for OMAP3 idle
@@ -357,15 +687,19 @@ static inline struct omap3_idle_statedata *_fill_cstate_usage(
  */
 int __init omap3_idle_init(void)
 {
+<<<<<<< HEAD
 	struct cpuidle_device *dev;
 	struct cpuidle_driver *drv = &omap3_idle_driver;
 	struct omap3_idle_statedata *cx;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mpu_pd = pwrdm_lookup("mpu_pwrdm");
 	core_pd = pwrdm_lookup("core_pwrdm");
 	per_pd = pwrdm_lookup("per_pwrdm");
 	cam_pd = pwrdm_lookup("cam_pwrdm");
 
+<<<<<<< HEAD
 
 	drv->safe_state_index = -1;
 	dev = &per_cpu(omap3_idle_dev, smp_processor_id());
@@ -443,3 +777,13 @@ int __init omap3_idle_init(void)
 	return 0;
 }
 #endif /* CONFIG_CPU_IDLE */
+=======
+	if (!mpu_pd || !core_pd || !per_pd || !cam_pd)
+		return -ENODEV;
+
+	if (cpu_is_omap3430())
+		return cpuidle_register(&omap3430_idle_driver, NULL);
+	else
+		return cpuidle_register(&omap3_idle_driver, NULL);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

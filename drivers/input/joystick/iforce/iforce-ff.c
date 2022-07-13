@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000-2002 Vojtech Pavlik <vojtech@ucw.cz>
  *  Copyright (c) 2001-2002, 2007 Johann Deneux <johann.deneux@gmail.com>
@@ -5,6 +9,7 @@
  *  USB/RS232 I-Force joysticks and wheels.
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +30,8 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iforce.h"
 
 /*
@@ -56,7 +63,11 @@ static int make_magnitude_modifier(struct iforce* iforce,
 
 	iforce_send_packet(iforce, FF_CMD_MAGNITUDE, data);
 
+<<<<<<< HEAD
 	iforce_dump_packet("magnitude: ", FF_CMD_MAGNITUDE, data);
+=======
+	iforce_dump_packet(iforce, "magnitude", FF_CMD_MAGNITUDE, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -178,7 +189,11 @@ static int make_condition_modifier(struct iforce* iforce,
 	data[9] = (100 * lsat) >> 16;
 
 	iforce_send_packet(iforce, FF_CMD_CONDITION, data);
+<<<<<<< HEAD
 	iforce_dump_packet("condition", FF_CMD_CONDITION, data);
+=======
+	iforce_dump_packet(iforce, "condition", FF_CMD_CONDITION, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -388,12 +403,21 @@ int iforce_upload_periodic(struct iforce *iforce, struct ff_effect *effect, stru
 	}
 
 	switch (effect->u.periodic.waveform) {
+<<<<<<< HEAD
 		case FF_SQUARE:		wave_code = 0x20; break;
 		case FF_TRIANGLE:	wave_code = 0x21; break;
 		case FF_SINE:		wave_code = 0x22; break;
 		case FF_SAW_UP:		wave_code = 0x23; break;
 		case FF_SAW_DOWN:	wave_code = 0x24; break;
 		default:		wave_code = 0x20; break;
+=======
+	case FF_SQUARE:		wave_code = 0x20; break;
+	case FF_TRIANGLE:	wave_code = 0x21; break;
+	case FF_SINE:		wave_code = 0x22; break;
+	case FF_SAW_UP:		wave_code = 0x23; break;
+	case FF_SAW_DOWN:	wave_code = 0x24; break;
+	default:		wave_code = 0x20; break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!old || need_core(old, effect)) {
@@ -492,9 +516,15 @@ int iforce_upload_condition(struct iforce *iforce, struct ff_effect *effect, str
 	int core_err = 0;
 
 	switch (effect->type) {
+<<<<<<< HEAD
 		case FF_SPRING:	type = 0x40; break;
 		case FF_DAMPER:	type = 0x41; break;
 		default: return -1;
+=======
+	case FF_SPRING:	type = 0x40; break;
+	case FF_DAMPER:	type = 0x41; break;
+	default: return -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!old || need_condition_modifier(iforce, old, effect)) {

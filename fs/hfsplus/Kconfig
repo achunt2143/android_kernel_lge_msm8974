@@ -1,8 +1,19 @@
+<<<<<<< HEAD
 config HFSPLUS_FS
 	tristate "Apple Extended HFS file system support"
 	depends on BLOCK
 	select NLS
 	select NLS_UTF8
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config HFSPLUS_FS
+	tristate "Apple Extended HFS file system support"
+	depends on BLOCK
+	select BUFFER_HEAD
+	select NLS
+	select NLS_UTF8
+	select LEGACY_DIRECT_IO
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  If you say Y here, you will be able to mount extended format
 	  Macintosh-formatted hard drive partitions with full read-write access.

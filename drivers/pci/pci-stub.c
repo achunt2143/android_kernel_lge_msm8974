@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* pci-stub - simple stub driver to reserve a pci device
  *
  * Copyright (C) 2008 Red Hat, Inc.
@@ -9,6 +10,19 @@
  * Usage is simple, allocate a new id to the stub driver and bind the
  * device to it.  For example:
  * 
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Simple stub driver to reserve a PCI device
+ *
+ * Copyright (C) 2008 Red Hat, Inc.
+ * Author:
+ *	Chris Wright
+ *
+ * Usage is simple, allocate a new id to the stub driver and bind the
+ * device to it.  For example:
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * # echo "8086 10f5" > /sys/bus/pci/drivers/pci-stub/new_id
  * # echo -n 0000:00:19.0 > /sys/bus/pci/drivers/e1000e/unbind
  * # echo -n 0000:00:19.0 > /sys/bus/pci/drivers/pci-stub/bind
@@ -28,7 +42,11 @@ MODULE_PARM_DESC(ids, "Initial PCI IDs to add to the stub driver, format is "
 
 static int pci_stub_probe(struct pci_dev *dev, const struct pci_device_id *id)
 {
+<<<<<<< HEAD
 	dev_printk(KERN_INFO, &dev->dev, "claimed by stub\n");
+=======
+	pci_info(dev, "claimed by stub\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -36,6 +54,10 @@ static struct pci_driver stub_driver = {
 	.name		= "pci-stub",
 	.id_table	= NULL,	/* only dynamic id's */
 	.probe		= pci_stub_probe,
+<<<<<<< HEAD
+=======
+	.driver_managed_dma = true,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init pci_stub_init(void)
@@ -55,7 +77,11 @@ static int __init pci_stub_init(void)
 	p = ids;
 	while ((id = strsep(&p, ","))) {
 		unsigned int vendor, device, subvendor = PCI_ANY_ID,
+<<<<<<< HEAD
 			subdevice = PCI_ANY_ID, class=0, class_mask=0;
+=======
+			subdevice = PCI_ANY_ID, class = 0, class_mask = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int fields;
 
 		if (!strlen(id))
@@ -66,6 +92,7 @@ static int __init pci_stub_init(void)
 				&class, &class_mask);
 
 		if (fields < 2) {
+<<<<<<< HEAD
 			printk(KERN_WARNING
 			       "pci-stub: invalid id string \"%s\"\n", id);
 			continue;
@@ -73,13 +100,25 @@ static int __init pci_stub_init(void)
 
 		printk(KERN_INFO
 		       "pci-stub: add %04X:%04X sub=%04X:%04X cls=%08X/%08X\n",
+=======
+			pr_warn("pci-stub: invalid ID string \"%s\"\n", id);
+			continue;
+		}
+
+		pr_info("pci-stub: add %04X:%04X sub=%04X:%04X cls=%08X/%08X\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       vendor, device, subvendor, subdevice, class, class_mask);
 
 		rc = pci_add_dynid(&stub_driver, vendor, device,
 				   subvendor, subdevice, class, class_mask, 0);
 		if (rc)
+<<<<<<< HEAD
 			printk(KERN_WARNING
 			       "pci-stub: failed to add dynamic id (%d)\n", rc);
+=======
+			pr_warn("pci-stub: failed to add dynamic ID (%d)\n",
+				rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;

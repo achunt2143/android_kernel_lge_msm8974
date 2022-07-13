@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
  *
@@ -5,6 +6,12 @@
  * See the COPYING file included in the main directory of this source
  * distribution for the license terms and conditions.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2008, Creative Technology Ltd. All Rights Reserved.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @File	ctdaio.c
  *
  * @Brief
@@ -13,7 +20,10 @@
  *
  * @Author	Liu Chun
  * @Date 	May 23 2008
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ctdaio.h"
@@ -33,7 +43,11 @@ struct daio_rsc_idx {
 	unsigned short right;
 };
 
+<<<<<<< HEAD
 struct daio_rsc_idx idx_20k1[NUM_DAIOTYP] = {
+=======
+static const struct daio_rsc_idx idx_20k1[NUM_DAIOTYP] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[LINEO1] = {.left = 0x00, .right = 0x01},
 	[LINEO2] = {.left = 0x18, .right = 0x19},
 	[LINEO3] = {.left = 0x08, .right = 0x09},
@@ -44,7 +58,11 @@ struct daio_rsc_idx idx_20k1[NUM_DAIOTYP] = {
 	[SPDIFI1] = {.left = 0x95, .right = 0x9d},
 };
 
+<<<<<<< HEAD
 struct daio_rsc_idx idx_20k2[NUM_DAIOTYP] = {
+=======
+static const struct daio_rsc_idx idx_20k2[NUM_DAIOTYP] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[LINEO1] = {.left = 0x40, .right = 0x41},
 	[LINEO2] = {.left = 0x60, .right = 0x61},
 	[LINEO3] = {.left = 0x50, .right = 0x51},
@@ -55,12 +73,20 @@ struct daio_rsc_idx idx_20k2[NUM_DAIOTYP] = {
 	[SPDIFIO] = {.left = 0x05, .right = 0x85},
 };
 
+<<<<<<< HEAD
 static int daio_master(struct rsc *rsc)
+=======
+static void daio_master(struct rsc *rsc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Actually, this is not the resource index of DAIO.
 	 * For DAO, it is the input mapper index. And, for DAI,
 	 * it is the output time-slot index. */
+<<<<<<< HEAD
 	return rsc->conj = rsc->idx;
+=======
+	rsc->conj = rsc->idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int daio_index(const struct rsc *rsc)
@@ -68,6 +94,7 @@ static int daio_index(const struct rsc *rsc)
 	return rsc->conj;
 }
 
+<<<<<<< HEAD
 static int daio_out_next_conj(struct rsc *rsc)
 {
 	return rsc->conj += 2;
@@ -84,20 +111,46 @@ static int daio_in_next_conj_20k2(struct rsc *rsc)
 }
 
 static struct rsc_ops daio_out_rsc_ops = {
+=======
+static void daio_out_next_conj(struct rsc *rsc)
+{
+	rsc->conj += 2;
+}
+
+static void daio_in_next_conj_20k1(struct rsc *rsc)
+{
+	rsc->conj += 0x200;
+}
+
+static void daio_in_next_conj_20k2(struct rsc *rsc)
+{
+	rsc->conj += 0x100;
+}
+
+static const struct rsc_ops daio_out_rsc_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.master		= daio_master,
 	.next_conj	= daio_out_next_conj,
 	.index		= daio_index,
 	.output_slot	= NULL,
 };
 
+<<<<<<< HEAD
 static struct rsc_ops daio_in_rsc_ops_20k1 = {
+=======
+static const struct rsc_ops daio_in_rsc_ops_20k1 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.master		= daio_master,
 	.next_conj	= daio_in_next_conj_20k1,
 	.index		= NULL,
 	.output_slot	= daio_index,
 };
 
+<<<<<<< HEAD
 static struct rsc_ops daio_in_rsc_ops_20k2 = {
+=======
+static const struct rsc_ops daio_in_rsc_ops_20k2 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.master		= daio_master,
 	.next_conj	= daio_in_next_conj_20k2,
 	.index		= NULL,
@@ -140,19 +193,31 @@ static int dao_rsc_reinit(struct dao *dao, const struct dao_desc *desc);
 
 static int dao_spdif_get_spos(struct dao *dao, unsigned int *spos)
 {
+<<<<<<< HEAD
 	((struct hw *)dao->hw)->dao_get_spos(dao->ctrl_blk, spos);
+=======
+	dao->hw->dao_get_spos(dao->ctrl_blk, spos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int dao_spdif_set_spos(struct dao *dao, unsigned int spos)
 {
+<<<<<<< HEAD
 	((struct hw *)dao->hw)->dao_set_spos(dao->ctrl_blk, spos);
+=======
+	dao->hw->dao_set_spos(dao->ctrl_blk, spos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int dao_commit_write(struct dao *dao)
 {
+<<<<<<< HEAD
 	((struct hw *)dao->hw)->dao_commit_write(dao->hw,
+=======
+	dao->hw->dao_commit_write(dao->hw,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		daio_device_index(dao->daio.type, dao->hw), dao->ctrl_blk);
 	return 0;
 }
@@ -263,7 +328,11 @@ static int dao_clear_right_input(struct dao *dao)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dao_rsc_ops dao_ops = {
+=======
+static const struct dao_rsc_ops dao_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_spos		= dao_spdif_set_spos,
 	.commit_write		= dao_commit_write,
 	.get_spos		= dao_spdif_get_spos,
@@ -277,16 +346,24 @@ static struct dao_rsc_ops dao_ops = {
 static int dai_set_srt_srcl(struct dai *dai, struct rsc *src)
 {
 	src->ops->master(src);
+<<<<<<< HEAD
 	((struct hw *)dai->hw)->dai_srt_set_srcm(dai->ctrl_blk,
 						src->ops->index(src));
+=======
+	dai->hw->dai_srt_set_srcm(dai->ctrl_blk, src->ops->index(src));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int dai_set_srt_srcr(struct dai *dai, struct rsc *src)
 {
 	src->ops->master(src);
+<<<<<<< HEAD
 	((struct hw *)dai->hw)->dai_srt_set_srco(dai->ctrl_blk,
 						src->ops->index(src));
+=======
+	dai->hw->dai_srt_set_srco(dai->ctrl_blk, src->ops->index(src));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -297,30 +374,50 @@ static int dai_set_srt_msr(struct dai *dai, unsigned int msr)
 	for (rsr = 0; msr > 1; msr >>= 1)
 		rsr++;
 
+<<<<<<< HEAD
 	((struct hw *)dai->hw)->dai_srt_set_rsr(dai->ctrl_blk, rsr);
+=======
+	dai->hw->dai_srt_set_rsr(dai->ctrl_blk, rsr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int dai_set_enb_src(struct dai *dai, unsigned int enb)
 {
+<<<<<<< HEAD
 	((struct hw *)dai->hw)->dai_srt_set_ec(dai->ctrl_blk, enb);
+=======
+	dai->hw->dai_srt_set_ec(dai->ctrl_blk, enb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int dai_set_enb_srt(struct dai *dai, unsigned int enb)
 {
+<<<<<<< HEAD
 	((struct hw *)dai->hw)->dai_srt_set_et(dai->ctrl_blk, enb);
+=======
+	dai->hw->dai_srt_set_et(dai->ctrl_blk, enb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int dai_commit_write(struct dai *dai)
 {
+<<<<<<< HEAD
 	((struct hw *)dai->hw)->dai_commit_write(dai->hw,
+=======
+	dai->hw->dai_commit_write(dai->hw,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		daio_device_index(dai->daio.type, dai->hw), dai->ctrl_blk);
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dai_rsc_ops dai_ops = {
+=======
+static const struct dai_rsc_ops dai_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_srt_srcl		= dai_set_srt_srcl,
 	.set_srt_srcr		= dai_set_srt_srcr,
 	.set_srt_msr		= dai_set_srt_msr,
@@ -331,12 +428,20 @@ static struct dai_rsc_ops dai_ops = {
 
 static int daio_rsc_init(struct daio *daio,
 			 const struct daio_desc *desc,
+<<<<<<< HEAD
 			 void *hw)
+=======
+			 struct hw *hw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	unsigned int idx_l, idx_r;
 
+<<<<<<< HEAD
 	switch (((struct hw *)hw)->chip_type) {
+=======
+	switch (hw->chip_type) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case ATC20K1:
 		idx_l = idx_20k1[desc->type].left;
 		idx_r = idx_20k1[desc->type].right;
@@ -360,7 +465,11 @@ static int daio_rsc_init(struct daio *daio,
 	if (desc->type <= DAIO_OUT_MAX) {
 		daio->rscl.ops = daio->rscr.ops = &daio_out_rsc_ops;
 	} else {
+<<<<<<< HEAD
 		switch (((struct hw *)hw)->chip_type) {
+=======
+		switch (hw->chip_type) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case ATC20K1:
 			daio->rscl.ops = daio->rscr.ops = &daio_in_rsc_ops_20k1;
 			break;
@@ -400,7 +509,12 @@ static int dao_rsc_init(struct dao *dao,
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	dao->imappers = kzalloc(sizeof(void *)*desc->msr*2, GFP_KERNEL);
+=======
+	dao->imappers = kzalloc(array3_size(sizeof(void *), desc->msr, 2),
+				GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dao->imappers) {
 		err = -ENOMEM;
 		goto error1;
@@ -445,7 +559,11 @@ static int dao_rsc_uninit(struct dao *dao)
 		kfree(dao->imappers);
 		dao->imappers = NULL;
 	}
+<<<<<<< HEAD
 	((struct hw *)dao->hw)->dao_put_ctrl_blk(dao->ctrl_blk);
+=======
+	dao->hw->dao_put_ctrl_blk(dao->ctrl_blk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dao->hw = dao->ctrl_blk = NULL;
 	daio_rsc_uninit(&dao->daio);
 
@@ -502,7 +620,11 @@ error1:
 
 static int dai_rsc_uninit(struct dai *dai)
 {
+<<<<<<< HEAD
 	((struct hw *)dai->hw)->dai_put_ctrl_blk(dai->ctrl_blk);
+=======
+	dai->hw->dai_put_ctrl_blk(dai->ctrl_blk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dai->hw = dai->ctrl_blk = NULL;
 	daio_rsc_uninit(&dai->daio);
 	return 0;
@@ -530,8 +652,11 @@ static int get_daio_rsc(struct daio_mgr *mgr,
 			struct daio **rdaio)
 {
 	int err;
+<<<<<<< HEAD
 	struct dai *dai = NULL;
 	struct dao *dao = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	*rdaio = NULL;
@@ -541,6 +666,7 @@ static int get_daio_rsc(struct daio_mgr *mgr,
 	err = daio_mgr_get_rsc(&mgr->mgr, desc->type);
 	spin_unlock_irqrestore(&mgr->mgr_lock, flags);
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Can't meet DAIO resource request!\n");
 		return err;
 	}
@@ -566,6 +692,37 @@ static int get_daio_rsc(struct daio_mgr *mgr,
 		err = dai_rsc_init(dai, desc, mgr);
 		if (err)
 			goto error;
+=======
+		dev_err(mgr->card->dev,
+			"Can't meet DAIO resource request!\n");
+		return err;
+	}
+
+	err = -ENOMEM;
+	/* Allocate mem for daio resource */
+	if (desc->type <= DAIO_OUT_MAX) {
+		struct dao *dao = kzalloc(sizeof(*dao), GFP_KERNEL);
+		if (!dao)
+			goto error;
+
+		err = dao_rsc_init(dao, desc, mgr);
+		if (err) {
+			kfree(dao);
+			goto error;
+		}
+
+		*rdaio = &dao->daio;
+	} else {
+		struct dai *dai = kzalloc(sizeof(*dai), GFP_KERNEL);
+		if (!dai)
+			goto error;
+
+		err = dai_rsc_init(dai, desc, mgr);
+		if (err) {
+			kfree(dai);
+			goto error;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		*rdaio = &dai->daio;
 	}
@@ -576,11 +733,14 @@ static int get_daio_rsc(struct daio_mgr *mgr,
 	return 0;
 
 error:
+<<<<<<< HEAD
 	if (dao)
 		kfree(dao);
 	else if (dai)
 		kfree(dai);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&mgr->mgr_lock, flags);
 	daio_mgr_put_rsc(&mgr->mgr, desc->type);
 	spin_unlock_irqrestore(&mgr->mgr_lock, flags);
@@ -692,7 +852,11 @@ static int daio_mgr_commit_write(struct daio_mgr *mgr)
 	return 0;
 }
 
+<<<<<<< HEAD
 int daio_mgr_create(void *hw, struct daio_mgr **rdaio_mgr)
+=======
+int daio_mgr_create(struct hw *hw, void **rdaio_mgr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err, i;
 	struct daio_mgr *daio_mgr;
@@ -727,12 +891,22 @@ int daio_mgr_create(void *hw, struct daio_mgr **rdaio_mgr)
 	daio_mgr->imap_add = daio_imap_add;
 	daio_mgr->imap_delete = daio_imap_delete;
 	daio_mgr->commit_write = daio_mgr_commit_write;
+<<<<<<< HEAD
 
 	for (i = 0; i < 8; i++) {
 		((struct hw *)hw)->daio_mgr_dsb_dao(daio_mgr->mgr.ctrl_blk, i);
 		((struct hw *)hw)->daio_mgr_dsb_dai(daio_mgr->mgr.ctrl_blk, i);
 	}
 	((struct hw *)hw)->daio_mgr_commit_write(hw, daio_mgr->mgr.ctrl_blk);
+=======
+	daio_mgr->card = hw->card;
+
+	for (i = 0; i < 8; i++) {
+		hw->daio_mgr_dsb_dao(daio_mgr->mgr.ctrl_blk, i);
+		hw->daio_mgr_dsb_dai(daio_mgr->mgr.ctrl_blk, i);
+	}
+	hw->daio_mgr_commit_write(hw, daio_mgr->mgr.ctrl_blk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*rdaio_mgr = daio_mgr;
 
@@ -745,8 +919,14 @@ error1:
 	return err;
 }
 
+<<<<<<< HEAD
 int daio_mgr_destroy(struct daio_mgr *daio_mgr)
 {
+=======
+int daio_mgr_destroy(void *ptr)
+{
+	struct daio_mgr *daio_mgr = ptr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	/* free daio input mapper list */

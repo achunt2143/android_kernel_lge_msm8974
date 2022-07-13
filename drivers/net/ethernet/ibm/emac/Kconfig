@@ -1,7 +1,15 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config IBM_EMAC
 	tristate "IBM EMAC Ethernet support"
 	depends on PPC_DCR
 	select CRC32
+<<<<<<< HEAD
+=======
+	select PHYLIB
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This driver supports the IBM EMAC family of Ethernet controllers
 	  typically found on 4xx embedded PowerPC chips, but also on the
@@ -27,6 +35,7 @@ config IBM_EMAC_RX_COPY_THRESHOLD
 	depends on IBM_EMAC
 	default "256"
 
+<<<<<<< HEAD
 config IBM_EMAC_RX_SKB_HEADROOM
 	int "Additional RX skb headroom (bytes)"
 	depends on IBM_EMAC
@@ -39,6 +48,8 @@ config IBM_EMAC_RX_SKB_HEADROOM
 
 	  If unsure, set to 0.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config IBM_EMAC_DEBUG
 	bool "Debugging"
 	depends on IBM_EMAC

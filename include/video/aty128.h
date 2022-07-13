@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  $Id: aty128.h,v 1.1 1999/10/12 11:00:40 geert Exp $
  *  linux/drivers/video/aty128.h
  *  Register definitions for ATI Rage128 boards

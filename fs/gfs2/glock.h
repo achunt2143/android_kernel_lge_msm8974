@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
  * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
@@ -5,6 +6,12 @@
  * This copyrighted material is made available to anyone wishing to use,
  * modify, copy, or redistribute it subject to the terms and conditions
  * of the GNU General Public License version 2.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
+ * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __GLOCK_DOT_H__
@@ -13,6 +20,10 @@
 #include <linux/sched.h>
 #include <linux/parser.h>
 #include "incore.h"
+<<<<<<< HEAD
+=======
+#include "util.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Options for hostdata parser */
 
@@ -70,6 +81,7 @@ enum {
  * also be granted in SHARED.  The preferred state is whichever is compatible
  * with other granted locks, or the specified state if no other locks exist.
  *
+<<<<<<< HEAD
  * LM_FLAG_PRIORITY
  * Override fairness considerations.  Suppose a lock is held in a shared state
  * and there is a pending request for the deferred state.  A shared lock
@@ -88,6 +100,25 @@ enum {
 #define GL_EXACT		0x00000080
 #define GL_SKIP			0x00000100
 #define GL_NOCACHE		0x00000400
+=======
+ * LM_FLAG_NODE_SCOPE
+ * This holder agrees to share the lock within this node. In other words,
+ * the glock is held in EX mode according to DLM, but local holders on the
+ * same node can share it.
+ */
+
+#define LM_FLAG_TRY		0x0001
+#define LM_FLAG_TRY_1CB		0x0002
+#define LM_FLAG_NOEXP		0x0004
+#define LM_FLAG_ANY		0x0008
+#define LM_FLAG_NODE_SCOPE	0x0020
+#define GL_ASYNC		0x0040
+#define GL_EXACT		0x0080
+#define GL_SKIP			0x0100
+#define GL_NOPID		0x0200
+#define GL_NOCACHE		0x0400
+#define GL_NOBLOCK		0x0800
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   
 /*
  * lm_async_cb return flags
@@ -134,14 +165,26 @@ struct lm_lockops {
 	const match_table_t *lm_tokens;
 };
 
+<<<<<<< HEAD
 extern struct workqueue_struct *gfs2_delete_workqueue;
+=======
+struct gfs2_glock_aspace {
+	struct gfs2_glock glock;
+	struct address_space mapping;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct gfs2_holder *gfs2_glock_is_locked_by_me(struct gfs2_glock *gl)
 {
 	struct gfs2_holder *gh;
 	struct pid *pid;
 
 	/* Look in glock's list of holders for one with current task as owner */
+<<<<<<< HEAD
 	spin_lock(&gl->gl_spin);
+=======
+	spin_lock(&gl->gl_lockref.lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pid = task_pid(current);
 	list_for_each_entry(gh, &gl->gl_holders, gh_list) {
 		if (!test_bit(HIF_HOLDER, &gh->gh_iflags))
@@ -151,11 +194,16 @@ static inline struct gfs2_holder *gfs2_glock_is_locked_by_me(struct gfs2_glock *
 	}
 	gh = NULL;
 out:
+<<<<<<< HEAD
 	spin_unlock(&gl->gl_spin);
+=======
+	spin_unlock(&gl->gl_lockref.lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return gh;
 }
 
+<<<<<<< HEAD
 static inline int gfs2_glock_is_held_excl(struct gfs2_glock *gl)
 {
 	return gl->gl_state == LM_ST_EXCLUSIVE;
@@ -203,6 +251,64 @@ int gfs2_glock_nq_num(struct gfs2_sbd *sdp,
 int gfs2_glock_nq_m(unsigned int num_gh, struct gfs2_holder *ghs);
 void gfs2_glock_dq_m(unsigned int num_gh, struct gfs2_holder *ghs);
 void gfs2_glock_dq_uninit_m(unsigned int num_gh, struct gfs2_holder *ghs);
+=======
+static inline struct address_space *gfs2_glock2aspace(struct gfs2_glock *gl)
+{
+	if (gl->gl_ops->go_flags & GLOF_ASPACE) {
+		struct gfs2_glock_aspace *gla =
+			container_of(gl, struct gfs2_glock_aspace, glock);
+		return &gla->mapping;
+	}
+	return NULL;
+}
+
+int gfs2_glock_get(struct gfs2_sbd *sdp, u64 number,
+		   const struct gfs2_glock_operations *glops,
+		   int create, struct gfs2_glock **glp);
+struct gfs2_glock *gfs2_glock_hold(struct gfs2_glock *gl);
+void gfs2_glock_put(struct gfs2_glock *gl);
+void gfs2_glock_queue_put(struct gfs2_glock *gl);
+
+void __gfs2_holder_init(struct gfs2_glock *gl, unsigned int state,
+		        u16 flags, struct gfs2_holder *gh,
+		        unsigned long ip);
+static inline void gfs2_holder_init(struct gfs2_glock *gl, unsigned int state,
+				    u16 flags, struct gfs2_holder *gh) {
+	__gfs2_holder_init(gl, state, flags, gh, _RET_IP_);
+}
+
+void gfs2_holder_reinit(unsigned int state, u16 flags,
+		        struct gfs2_holder *gh);
+void gfs2_holder_uninit(struct gfs2_holder *gh);
+int gfs2_glock_nq(struct gfs2_holder *gh);
+int gfs2_glock_poll(struct gfs2_holder *gh);
+int gfs2_instantiate(struct gfs2_holder *gh);
+int gfs2_glock_holder_ready(struct gfs2_holder *gh);
+int gfs2_glock_wait(struct gfs2_holder *gh);
+int gfs2_glock_async_wait(unsigned int num_gh, struct gfs2_holder *ghs);
+void gfs2_glock_dq(struct gfs2_holder *gh);
+void gfs2_glock_dq_wait(struct gfs2_holder *gh);
+void gfs2_glock_dq_uninit(struct gfs2_holder *gh);
+int gfs2_glock_nq_num(struct gfs2_sbd *sdp, u64 number,
+		      const struct gfs2_glock_operations *glops,
+		      unsigned int state, u16 flags,
+		      struct gfs2_holder *gh);
+int gfs2_glock_nq_m(unsigned int num_gh, struct gfs2_holder *ghs);
+void gfs2_glock_dq_m(unsigned int num_gh, struct gfs2_holder *ghs);
+void gfs2_dump_glock(struct seq_file *seq, struct gfs2_glock *gl,
+			    bool fsid);
+#define GLOCK_BUG_ON(gl,x) do { if (unlikely(x)) {		\
+			gfs2_dump_glock(NULL, gl, true);	\
+			BUG(); } } while(0)
+#define gfs2_glock_assert_warn(gl, x) do { if (unlikely(!(x))) {	\
+			gfs2_dump_glock(NULL, gl, true);		\
+			gfs2_assert_warn((gl)->gl_name.ln_sbd, (x)); } } \
+	while (0)
+#define gfs2_glock_assert_withdraw(gl, x) do { if (unlikely(!(x))) {	\
+			gfs2_dump_glock(NULL, gl, true);		\
+			gfs2_assert_withdraw((gl)->gl_name.ln_sbd, (x)); } } \
+	while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 __printf(2, 3)
 void gfs2_print_dbg(struct seq_file *seq, const char *fmt, ...);
@@ -218,12 +324,20 @@ void gfs2_print_dbg(struct seq_file *seq, const char *fmt, ...);
  */
 
 static inline int gfs2_glock_nq_init(struct gfs2_glock *gl,
+<<<<<<< HEAD
 				     unsigned int state, int flags,
+=======
+				     unsigned int state, u16 flags,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     struct gfs2_holder *gh)
 {
 	int error;
 
+<<<<<<< HEAD
 	gfs2_holder_init(gl, state, flags, gh);
+=======
+	__gfs2_holder_init(gl, state, flags, gh, _RET_IP_);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = gfs2_glock_nq(gh);
 	if (error)
@@ -232,6 +346,7 @@ static inline int gfs2_glock_nq_init(struct gfs2_glock *gl,
 	return error;
 }
 
+<<<<<<< HEAD
 extern void gfs2_glock_cb(struct gfs2_glock *gl, unsigned int state);
 extern void gfs2_glock_complete(struct gfs2_glock *gl, int ret);
 extern void gfs2_gl_hash_clear(struct gfs2_sbd *sdp);
@@ -250,4 +365,48 @@ extern void gfs2_unregister_debugfs(void);
 
 extern const struct lm_lockops gfs2_dlm_ops;
 
+=======
+void gfs2_glock_cb(struct gfs2_glock *gl, unsigned int state);
+void gfs2_glock_complete(struct gfs2_glock *gl, int ret);
+bool gfs2_queue_try_to_evict(struct gfs2_glock *gl);
+void gfs2_cancel_delete_work(struct gfs2_glock *gl);
+void gfs2_flush_delete_work(struct gfs2_sbd *sdp);
+void gfs2_gl_hash_clear(struct gfs2_sbd *sdp);
+void gfs2_gl_dq_holders(struct gfs2_sbd *sdp);
+void gfs2_glock_thaw(struct gfs2_sbd *sdp);
+void gfs2_glock_add_to_lru(struct gfs2_glock *gl);
+void gfs2_glock_free(struct gfs2_glock *gl);
+
+int __init gfs2_glock_init(void);
+void gfs2_glock_exit(void);
+
+void gfs2_create_debugfs_file(struct gfs2_sbd *sdp);
+void gfs2_delete_debugfs_file(struct gfs2_sbd *sdp);
+void gfs2_register_debugfs(void);
+void gfs2_unregister_debugfs(void);
+
+void glock_set_object(struct gfs2_glock *gl, void *object);
+void glock_clear_object(struct gfs2_glock *gl, void *object);
+
+extern const struct lm_lockops gfs2_dlm_ops;
+
+static inline void gfs2_holder_mark_uninitialized(struct gfs2_holder *gh)
+{
+	gh->gh_gl = NULL;
+}
+
+static inline bool gfs2_holder_initialized(struct gfs2_holder *gh)
+{
+	return gh->gh_gl;
+}
+
+static inline bool gfs2_holder_queued(struct gfs2_holder *gh)
+{
+	return !list_empty(&gh->gh_list);
+}
+
+void gfs2_inode_remember_delete(struct gfs2_glock *gl, u64 generation);
+bool gfs2_inode_already_deleted(struct gfs2_glock *gl, u64 generation);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __GLOCK_DOT_H__ */

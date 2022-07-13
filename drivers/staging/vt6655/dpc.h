@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -18,6 +23,8 @@
  *
  * File: dpc.h
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Purpose:
  *
  * Author: Jerry Chen
@@ -29,6 +36,7 @@
 #ifndef __DPC_H__
 #define __DPC_H__
 
+<<<<<<< HEAD
 #include "ttype.h"
 #include "device.h"
 #include "wcmd.h"
@@ -53,3 +61,10 @@ void	MngWorkItem(void *Context);
 
 
 
+=======
+#include "device.h"
+
+bool vnt_receive_frame(struct vnt_private *priv, struct vnt_rx_desc *curr_rd);
+
+#endif /* __RXTX_H__ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

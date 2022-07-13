@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP3 Power Management Routines
  *
@@ -12,18 +16,25 @@
  * Richard Woodruff <r-woodruff2@ti.com>
  *
  * Based on pm.c for omap1
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
 
+=======
+ */
+
+#include <linux/cpu_pm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pm.h>
 #include <linux/suspend.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
 #include <linux/list.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -50,6 +61,34 @@
 #include "pm.h"
 #include "sdrc.h"
 #include "control.h"
+=======
+#include <linux/clk.h>
+#include <linux/delay.h>
+#include <linux/slab.h>
+#include <linux/of.h>
+#include <linux/cpuidle.h>
+
+#include <trace/events/power.h>
+
+#include <asm/fncpy.h>
+#include <asm/suspend.h>
+#include <asm/system_misc.h>
+
+#include "clockdomain.h"
+#include "powerdomain.h"
+#include "soc.h"
+#include "common.h"
+#include "cm3xxx.h"
+#include "cm-regbits-34xx.h"
+#include "prm-regbits-34xx.h"
+#include "prm3xxx.h"
+#include "pm.h"
+#include "sdrc.h"
+#include "omap-secure.h"
+#include "sram.h"
+#include "control.h"
+#include "vc.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* pm34xx errata defined in pm.h */
 u16 pm34xx_errata;
@@ -65,11 +104,15 @@ struct power_state {
 
 static LIST_HEAD(pwrst_list);
 
+<<<<<<< HEAD
 static int (*_omap_save_secure_sram)(u32 *addr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void (*omap3_do_wfi_sram)(void);
 
 static struct powerdomain *mpu_pwrdm, *neon_pwrdm;
 static struct powerdomain *core_pwrdm, *per_pwrdm;
+<<<<<<< HEAD
 static struct powerdomain *cam_pwrdm;
 
 static void omap3_enable_io_chain(void)
@@ -98,6 +141,8 @@ static void omap3_disable_io_chain(void)
 	omap2_prm_clear_mod_reg_bits(OMAP3430_EN_IO_CHAIN_MASK, WKUP_MOD,
 				     PM_WKEN);
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void omap3_core_save_context(void)
 {
@@ -112,22 +157,32 @@ static void omap3_core_save_context(void)
 
 	/* Save the Interrupt controller context */
 	omap_intc_save_context();
+<<<<<<< HEAD
 	/* Save the GPMC context */
 	omap3_gpmc_save_context();
 	/* Save the system control module context, padconf already save above*/
 	omap3_control_save_context();
 	omap_dma_global_context_save();
+=======
+	/* Save the system control module context, padconf already save above*/
+	omap3_control_save_context();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void omap3_core_restore_context(void)
 {
 	/* Restore the control module context, padconf restored by h/w */
 	omap3_control_restore_context();
+<<<<<<< HEAD
 	/* Restore the GPMC context */
 	omap3_gpmc_restore_context();
 	/* Restore the interrupt controller context */
 	omap_intc_restore_context();
 	omap_dma_global_context_restore();
+=======
+	/* Restore the interrupt controller context */
+	omap_intc_restore_context();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -148,8 +203,13 @@ static void omap3_save_secure_ram_context(void)
 		 * will hang the system.
 		 */
 		pwrdm_set_next_pwrst(mpu_pwrdm, PWRDM_POWER_ON);
+<<<<<<< HEAD
 		ret = _omap_save_secure_sram((u32 *)
 				__pa(omap3_secure_ram_storage));
+=======
+		ret = omap3_save_secure_ram(omap3_secure_ram_storage,
+					    OMAP3_SAVE_SECURE_RAM_SZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pwrdm_set_next_pwrst(mpu_pwrdm, mpu_next_state);
 		/* Following is for error tracking, it should not happen */
 		if (ret) {
@@ -160,6 +220,7 @@ static void omap3_save_secure_ram_context(void)
 	}
 }
 
+<<<<<<< HEAD
 /*
  * PRCM Interrupt Handler Helper Function
  *
@@ -208,12 +269,19 @@ static int prcm_clear_mod_irqs(s16 module, u8 regs, u32 ignore_bits)
 	return c;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t _prcm_int_handle_io(int irq, void *unused)
 {
 	int c;
 
+<<<<<<< HEAD
 	c = prcm_clear_mod_irqs(WKUP_MOD, 1,
 		~(OMAP3430_ST_IO_MASK | OMAP3430_ST_IO_CHAIN_MASK));
+=======
+	c = omap_prm_clear_mod_irqs(WKUP_MOD, 1, OMAP3430_ST_IO_MASK |
+				    OMAP3430_ST_IO_CHAIN_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return c ? IRQ_HANDLED : IRQ_NONE;
 }
@@ -227,6 +295,7 @@ static irqreturn_t _prcm_int_handle_wakeup(int irq, void *unused)
 	 * these are handled in a separate handler to avoid acking
 	 * IO events before parsing in mux code
 	 */
+<<<<<<< HEAD
 	c = prcm_clear_mod_irqs(WKUP_MOD, 1,
 		OMAP3430_ST_IO_MASK | OMAP3430_ST_IO_CHAIN_MASK);
 	c += prcm_clear_mod_irqs(CORE_MOD, 1, 0);
@@ -234,6 +303,15 @@ static irqreturn_t _prcm_int_handle_wakeup(int irq, void *unused)
 	if (omap_rev() > OMAP3430_REV_ES1_0) {
 		c += prcm_clear_mod_irqs(CORE_MOD, 3, 0);
 		c += prcm_clear_mod_irqs(OMAP3430ES2_USBHOST_MOD, 1, 0);
+=======
+	c = omap_prm_clear_mod_irqs(WKUP_MOD, 1, ~(OMAP3430_ST_IO_MASK |
+						   OMAP3430_ST_IO_CHAIN_MASK));
+	c += omap_prm_clear_mod_irqs(CORE_MOD, 1, ~0);
+	c += omap_prm_clear_mod_irqs(OMAP3430_PER_MOD, 1, ~0);
+	if (omap_rev() > OMAP3430_REV_ES1_0) {
+		c += omap_prm_clear_mod_irqs(CORE_MOD, 3, ~0);
+		c += omap_prm_clear_mod_irqs(OMAP3430ES2_USBHOST_MOD, 1, ~0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return c ? IRQ_HANDLED : IRQ_NONE;
@@ -260,7 +338,11 @@ static int omap34xx_do_sram_idle(unsigned long save_state)
 	return 0;
 }
 
+<<<<<<< HEAD
 void omap_sram_idle(void)
+=======
+__cpuidle void omap_sram_idle(bool rcuidle)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Variable to tell what needs to be saved and restored
 	 * in omap_sram_idle*/
@@ -272,9 +354,14 @@ void omap_sram_idle(void)
 	int mpu_next_state = PWRDM_POWER_ON;
 	int per_next_state = PWRDM_POWER_ON;
 	int core_next_state = PWRDM_POWER_ON;
+<<<<<<< HEAD
 	int per_going_off;
 	int core_prev_state, per_prev_state;
 	u32 sdrc_pwr = 0;
+=======
+	u32 sdrc_pwr = 0;
+	int error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpu_next_state = pwrdm_read_next_pwrst(mpu_pwrdm);
 	switch (mpu_next_state) {
@@ -299,6 +386,7 @@ void omap_sram_idle(void)
 	/* Enable IO-PAD and IO-CHAIN wakeups */
 	per_next_state = pwrdm_read_next_pwrst(per_pwrdm);
 	core_next_state = pwrdm_read_next_pwrst(core_pwrdm);
+<<<<<<< HEAD
 	if (omap3_has_io_wakeup() &&
 	    (per_next_state < PWRDM_POWER_ON ||
 	     core_next_state < PWRDM_POWER_ON)) {
@@ -313,6 +401,16 @@ void omap_sram_idle(void)
 	if (per_next_state < PWRDM_POWER_ON) {
 		per_going_off = (per_next_state == PWRDM_POWER_OFF) ? 1 : 0;
 		omap2_gpio_prepare_for_idle(per_going_off);
+=======
+
+	pwrdm_pre_transition(NULL);
+
+	/* PER */
+	if (per_next_state == PWRDM_POWER_OFF) {
+		error = cpu_cluster_pm_enter();
+		if (error)
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* CORE */
@@ -323,6 +421,12 @@ void omap_sram_idle(void)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/* Configure PMIC signaling for I2C4 or sys_off_mode */
+	omap3_vc_set_pmic_signaling(core_next_state);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	omap3_intc_prepare_idle();
 
 	/*
@@ -344,11 +448,24 @@ void omap_sram_idle(void)
 	 */
 	if (save_state)
 		omap34xx_save_context(omap3_arm_context);
+<<<<<<< HEAD
+=======
+
+	if (rcuidle)
+		ct_cpuidle_enter();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (save_state == 1 || save_state == 3)
 		cpu_suspend(save_state, omap34xx_do_sram_idle);
 	else
 		omap34xx_do_sram_idle(save_state);
 
+<<<<<<< HEAD
+=======
+	if (rcuidle)
+		ct_cpuidle_exit();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Restore normal SDRC POWER settings */
 	if (cpu_is_omap3430() && omap_rev() >= OMAP3430_REV_ES3_0 &&
 	    (omap_type() == OMAP2_DEVICE_TYPE_EMU ||
@@ -357,6 +474,7 @@ void omap_sram_idle(void)
 		sdrc_write_reg(sdrc_pwr, SDRC_POWER);
 
 	/* CORE */
+<<<<<<< HEAD
 	if (core_next_state < PWRDM_POWER_ON) {
 		core_prev_state = pwrdm_read_prev_pwrst(core_pwrdm);
 		if (core_prev_state == PWRDM_POWER_OFF) {
@@ -391,10 +509,33 @@ void omap_sram_idle(void)
 	}
 
 	clkdm_allow_idle(mpu_pwrdm->pwrdm_clkdms[0]);
+=======
+	if (core_next_state < PWRDM_POWER_ON &&
+	    pwrdm_read_prev_pwrst(core_pwrdm) == PWRDM_POWER_OFF) {
+		omap3_core_restore_context();
+		omap3_cm_restore_context();
+		omap3_sram_restore_context();
+		omap2_sms_restore_context();
+	} else {
+		/*
+		 * In off-mode resume path above, omap3_core_restore_context
+		 * also handles the INTC autoidle restore done here so limit
+		 * this to non-off mode resume paths so we don't do it twice.
+		 */
+		omap3_intc_resume_idle();
+	}
+
+	pwrdm_post_transition(NULL);
+
+	/* PER */
+	if (per_next_state == PWRDM_POWER_OFF)
+		cpu_cluster_pm_exit();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void omap3_pm_idle(void)
 {
+<<<<<<< HEAD
 	local_fiq_disable();
 
 	if (omap_irq_pending())
@@ -410,6 +551,12 @@ static void omap3_pm_idle(void)
 
 out:
 	local_fiq_enable();
+=======
+	if (omap_irq_pending())
+		return;
+
+	omap3_do_wfi();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_SUSPEND
@@ -431,16 +578,25 @@ static int omap3_pm_suspend(void)
 
 	omap3_intc_suspend();
 
+<<<<<<< HEAD
 	omap_sram_idle();
+=======
+	omap_sram_idle(false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 restore:
 	/* Restore next_pwrsts */
 	list_for_each_entry(pwrst, &pwrst_list, node) {
 		state = pwrdm_read_prev_pwrst(pwrst->pwrdm);
 		if (state > pwrst->next_state) {
+<<<<<<< HEAD
 			pr_info("Powerdomain (%s) didn't enter "
 				"target state %d\n",
 			       pwrst->pwrdm->name, pwrst->next_state);
+=======
+			pr_info("Powerdomain (%s) didn't enter target state %d\n",
+				pwrst->pwrdm->name, pwrst->next_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -1;
 		}
 		omap_set_pwrdm_state(pwrst->pwrdm, pwrst->saved_state);
@@ -452,6 +608,7 @@ restore:
 
 	return ret;
 }
+<<<<<<< HEAD
 
 #endif /* CONFIG_SUSPEND */
 
@@ -602,6 +759,17 @@ static void __init prcm_setup_regs(void)
 
 	omap3_iva_idle();
 	omap3_d2d_idle();
+=======
+#else
+#define omap3_pm_suspend NULL
+#endif /* CONFIG_SUSPEND */
+
+static void __init prcm_setup_regs(void)
+{
+	omap3_ctrl_init();
+
+	omap3_prm_init_pm(cpu_is_omap3630(), omap3_has_iva());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void omap3_pm_off_mode_enable(int enable)
@@ -663,7 +831,16 @@ static int __init pwrdms_setup(struct powerdomain *pwrdm, void *unused)
 	if (!pwrst)
 		return -ENOMEM;
 	pwrst->pwrdm = pwrdm;
+<<<<<<< HEAD
 	pwrst->next_state = PWRDM_POWER_RET;
+=======
+
+	if (enable_off_mode)
+		pwrst->next_state = PWRDM_POWER_OFF;
+	else
+		pwrst->next_state = PWRDM_POWER_RET;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_add(&pwrst->node, &pwrst_list);
 
 	if (pwrdm_has_hdwr_sar(pwrdm))
@@ -677,15 +854,21 @@ static int __init pwrdms_setup(struct powerdomain *pwrdm, void *unused)
  *
  * The minimum set of functions is pushed to SRAM for execution:
  * - omap3_do_wfi for erratum i581 WA,
+<<<<<<< HEAD
  * - save_secure_ram_context for security extensions.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void omap_push_sram_idle(void)
 {
 	omap3_do_wfi_sram = omap_sram_push(omap3_do_wfi, omap3_do_wfi_sz);
+<<<<<<< HEAD
 
 	if (omap_type() != OMAP2_DEVICE_TYPE_GP)
 		_omap_save_secure_sram = omap_sram_push(save_secure_ram_context,
 				save_secure_ram_context_sz);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init pm_errata_configure(void)
@@ -695,6 +878,7 @@ static void __init pm_errata_configure(void)
 		/* Enable the l2 cache toggling in sleep logic */
 		enable_omap3630_toggle_l2_on_restore();
 		if (omap_rev() < OMAP3630_REV_ES1_2)
+<<<<<<< HEAD
 			pm34xx_errata |= PM_SDRC_WAKEUP_ERRATUM_i583;
 	}
 }
@@ -710,6 +894,39 @@ static int __init omap3_pm_init(void)
 
 	if (!omap3_has_io_chain_ctrl())
 		pr_warning("PM: no software I/O chain control; some wakeups may be lost\n");
+=======
+			pm34xx_errata |= (PM_SDRC_WAKEUP_ERRATUM_i583 |
+					  PM_PER_MEMORIES_ERRATUM_i582);
+	} else if (cpu_is_omap34xx()) {
+		pm34xx_errata |= PM_PER_MEMORIES_ERRATUM_i582;
+	}
+}
+
+static void __init omap3_pm_check_pmic(void)
+{
+	struct device_node *np;
+
+	np = of_find_compatible_node(NULL, NULL, "ti,twl4030-power-idle");
+	if (!np)
+		np = of_find_compatible_node(NULL, NULL, "ti,twl4030-power-idle-osc-off");
+
+	if (np) {
+		of_node_put(np);
+		enable_off_mode = 1;
+	} else {
+		enable_off_mode = 0;
+	}
+}
+
+int __init omap3_pm_init(void)
+{
+	struct power_state *pwrst, *tmp;
+	struct clockdomain *neon_clkdm, *mpu_clkdm, *per_clkdm, *wkup_clkdm;
+	int ret;
+
+	if (!omap3_has_io_chain_ctrl())
+		pr_warn("PM: no software I/O chain control; some wakeups may be lost\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pm_errata_configure();
 
@@ -735,6 +952,11 @@ static int __init omap3_pm_init(void)
 		goto err2;
 	}
 
+<<<<<<< HEAD
+=======
+	omap3_pm_check_pmic();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = pwrdm_for_each(pwrdms_setup, NULL);
 	if (ret) {
 		pr_err("Failed to setup powerdomains\n");
@@ -753,16 +975,25 @@ static int __init omap3_pm_init(void)
 	neon_pwrdm = pwrdm_lookup("neon_pwrdm");
 	per_pwrdm = pwrdm_lookup("per_pwrdm");
 	core_pwrdm = pwrdm_lookup("core_pwrdm");
+<<<<<<< HEAD
 	cam_pwrdm = pwrdm_lookup("cam_pwrdm");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	neon_clkdm = clkdm_lookup("neon_clkdm");
 	mpu_clkdm = clkdm_lookup("mpu_clkdm");
 	per_clkdm = clkdm_lookup("per_clkdm");
+<<<<<<< HEAD
 	core_clkdm = clkdm_lookup("core_clkdm");
 
 #ifdef CONFIG_SUSPEND
 	omap_pm_suspend = omap3_pm_suspend;
 #endif
+=======
+	wkup_clkdm = clkdm_lookup("wkup_clkdm");
+
+	omap_common_suspend_init(omap3_pm_suspend);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	arm_pm_idle = omap3_pm_idle;
 	omap3_idle_init();
@@ -775,6 +1006,7 @@ static int __init omap3_pm_init(void)
 	if (IS_PM34XX_ERRATUM(PM_RTA_ERRATUM_i608))
 		omap3630_ctrl_disable_rta();
 
+<<<<<<< HEAD
 	clkdm_add_wkdep(neon_clkdm, mpu_clkdm);
 	if (omap_type() != OMAP2_DEVICE_TYPE_GP) {
 		omap3_secure_ram_storage =
@@ -792,6 +1024,41 @@ static int __init omap3_pm_init(void)
 
 		local_irq_enable();
 		local_fiq_enable();
+=======
+	/*
+	 * The UART3/4 FIFO and the sidetone memory in McBSP2/3 are
+	 * not correctly reset when the PER powerdomain comes back
+	 * from OFF or OSWR when the CORE powerdomain is kept active.
+	 * See OMAP36xx Erratum i582 "PER Domain reset issue after
+	 * Domain-OFF/OSWR Wakeup".  This wakeup dependency is not a
+	 * complete workaround.  The kernel must also prevent the PER
+	 * powerdomain from going to OSWR/OFF while the CORE
+	 * powerdomain is not going to OSWR/OFF.  And if PER last
+	 * power state was off while CORE last power state was ON, the
+	 * UART3/4 and McBSP2/3 SIDETONE devices need to run a
+	 * self-test using their loopback tests; if that fails, those
+	 * devices are unusable until the PER/CORE can complete a transition
+	 * from ON to OSWR/OFF and then back to ON.
+	 *
+	 * XXX Technically this workaround is only needed if off-mode
+	 * or OSWR is enabled.
+	 */
+	if (IS_PM34XX_ERRATUM(PM_PER_MEMORIES_ERRATUM_i582))
+		clkdm_add_wkdep(per_clkdm, wkup_clkdm);
+
+	clkdm_add_wkdep(neon_clkdm, mpu_clkdm);
+	if (omap_type() != OMAP2_DEVICE_TYPE_GP) {
+		omap3_secure_ram_storage =
+			kmalloc(OMAP3_SAVE_SECURE_RAM_SZ, GFP_KERNEL);
+		if (!omap3_secure_ram_storage)
+			pr_err("Memory allocation failed when allocating for secure sram context\n");
+
+		local_irq_disable();
+
+		omap3_save_secure_ram_context();
+
+		local_irq_enable();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	omap3_save_scratchpad_contents();
@@ -808,5 +1075,8 @@ err2:
 err1:
 	return ret;
 }
+<<<<<<< HEAD
 
 late_initcall(omap3_pm_init);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

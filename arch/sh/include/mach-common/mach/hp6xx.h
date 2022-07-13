@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __ASM_SH_HP6XX_H
 #define __ASM_SH_HP6XX_H
 
@@ -13,6 +14,20 @@
 #define HP680_BTN_IRQ		32	/* IRQ0_IRQ */
 #define HP680_TS_IRQ		35	/* IRQ3_IRQ */
 #define HP680_HD64461_IRQ	36	/* IRQ4_IRQ */
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * Copyright (C) 2003, 2004, 2005  Andriy Skulysh
+ */
+#ifndef __ASM_SH_HP6XX_H
+#define __ASM_SH_HP6XX_H
+
+#include <linux/sh_intc.h>
+
+#define HP680_BTN_IRQ		evt2irq(0x600)	/* IRQ0_IRQ */
+#define HP680_TS_IRQ		evt2irq(0x660)	/* IRQ3_IRQ */
+#define HP680_HD64461_IRQ	evt2irq(0x680)	/* IRQ4_IRQ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DAC_LCD_BRIGHTNESS	0
 #define DAC_SPEAKER_VOLUME	1

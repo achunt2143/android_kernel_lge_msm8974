@@ -25,6 +25,7 @@ Description:
 		4.2.2.
 
 		The files are read only.
+<<<<<<< HEAD
 
 
 What:		/sys/bus/usb/drivers/usbtmc/*/TermChar
@@ -60,3 +61,5 @@ Description:
 		For more details about this, please see the document,
 		"Universal Serial Bus Test and Measurement Class Specification
 		(USBTMC) Revision 1.0" as published by the USB-IF.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

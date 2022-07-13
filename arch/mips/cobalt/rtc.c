@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Registration of Cobalt RTC platform device.
  *
  *  Copyright (C) 2007  Yoichi Yuasa <yuasa@linux-mips.org>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -46,7 +53,11 @@ static __init int cobalt_rtc_add(void)
 		return -ENOMEM;
 
 	retval = platform_device_add_resources(pdev, cobalt_rtc_resource,
+<<<<<<< HEAD
 	                                       ARRAY_SIZE(cobalt_rtc_resource));
+=======
+					       ARRAY_SIZE(cobalt_rtc_resource));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		goto err_free_device;
 

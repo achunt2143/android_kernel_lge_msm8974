@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PCMCIA 16-bit resource management functions
  *
@@ -7,11 +11,14 @@
  *
  * Copyright (C) 1999	     David A. Hinds
  * Copyright (C) 2004-2010   Dominik Brodowski
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -148,7 +155,11 @@ static int alloc_io_space(struct pcmcia_socket *s, struct resource *res,
 }
 
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pcmcia_access_config() - read or write card configuration registers
  *
  * pcmcia_access_config() reads and writes configuration registers in
@@ -188,7 +199,11 @@ static int pcmcia_access_config(struct pcmcia_device *p_dev,
 }
 
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pcmcia_read_config_byte() - read a byte from a card configuration register
  *
  * pcmcia_read_config_byte() reads a byte from a configuration register in
@@ -201,7 +216,11 @@ int pcmcia_read_config_byte(struct pcmcia_device *p_dev, off_t where, u8 *val)
 EXPORT_SYMBOL(pcmcia_read_config_byte);
 
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * pcmcia_write_config_byte() - write a byte to a card configuration register
  *
  * pcmcia_write_config_byte() writes a byte to a configuration register in
@@ -284,7 +303,11 @@ int pcmcia_fixup_iowidth(struct pcmcia_device *p_dev)
 		io_on.stop = s->io[i].res->end;
 
 		s->ops->set_io_map(s, &io_off);
+<<<<<<< HEAD
 		mdelay(40);
+=======
+		msleep(40);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		s->ops->set_io_map(s, &io_on);
 	}
 unlock:
@@ -394,10 +417,16 @@ int pcmcia_release_configuration(struct pcmcia_device *p_dev)
  * "stale", we don't bother checking the port ranges against the
  * current socket values.
  */
+<<<<<<< HEAD
 static int pcmcia_release_io(struct pcmcia_device *p_dev)
 {
 	struct pcmcia_socket *s = p_dev->socket;
 	int ret = -EINVAL;
+=======
+static void pcmcia_release_io(struct pcmcia_device *p_dev)
+{
+	struct pcmcia_socket *s = p_dev->socket;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	config_t *c;
 
 	mutex_lock(&s->ops_mutex);
@@ -416,8 +445,11 @@ static int pcmcia_release_io(struct pcmcia_device *p_dev)
 
 out:
 	mutex_unlock(&s->ops_mutex);
+<<<<<<< HEAD
 
 	return ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } /* pcmcia_release_io */
 
 
@@ -508,8 +540,12 @@ int pcmcia_enable_device(struct pcmcia_device *p_dev)
 	s->socket.Vpp = p_dev->vpp;
 	if (s->ops->set_socket(s, &s->socket)) {
 		mutex_unlock(&s->ops_mutex);
+<<<<<<< HEAD
 		dev_printk(KERN_WARNING, &p_dev->dev,
 			   "Unable to set socket state\n");
+=======
+		dev_warn(&p_dev->dev, "Unable to set socket state\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -568,7 +604,11 @@ int pcmcia_enable_device(struct pcmcia_device *p_dev)
 			!(flags & CONF_ENABLE_PULSE_IRQ))
 			option |= COR_LEVEL_REQ;
 		pcmcia_write_cis_mem(s, 1, (base + CISREG_COR)>>1, 1, &option);
+<<<<<<< HEAD
 		mdelay(40);
+=======
+		msleep(40);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (p_dev->config_regs & PRESENT_STATUS)
 		pcmcia_write_cis_mem(s, 1, (base + CISREG_CCSR)>>1, 1, &status);
@@ -692,7 +732,11 @@ EXPORT_SYMBOL(pcmcia_request_io);
  * pcmcia_request_irq() is a wrapper around request_irq() which allows
  * the PCMCIA core to clean up the registration in pcmcia_disable_device().
  * Drivers are free to use request_irq() directly, but then they need to
+<<<<<<< HEAD
  * call free_irq() themselfves, too. Also, only %IRQF_SHARED capable IRQ
+=======
+ * call free_irq() themselves, too. Also, only %IRQF_SHARED capable IRQ
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * handlers are allowed.
  */
 int __must_check pcmcia_request_irq(struct pcmcia_device *p_dev,
@@ -713,6 +757,7 @@ int __must_check pcmcia_request_irq(struct pcmcia_device *p_dev,
 EXPORT_SYMBOL(pcmcia_request_irq);
 
 
+<<<<<<< HEAD
 /**
  * pcmcia_request_exclusive_irq() - attempt to request an exclusive IRQ first
  * @p_dev: the associated PCMCIA device
@@ -751,6 +796,8 @@ __pcmcia_request_exclusive_irq(struct pcmcia_device *p_dev,
 EXPORT_SYMBOL(__pcmcia_request_exclusive_irq);
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PCMCIA_PROBE
 
 /* mask of IRQs already reserved by other cards, we should avoid using them */
@@ -763,7 +810,12 @@ static irqreturn_t test_action(int cpl, void *dev_id)
 
 /**
  * pcmcia_setup_isa_irq() - determine whether an ISA IRQ can be used
+<<<<<<< HEAD
  * @p_dev - the associated PCMCIA device
+=======
+ * @p_dev: the associated PCMCIA device
+ * @type:  IRQ type (flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * locking note: must be called with ops_mutex locked.
  */
@@ -828,7 +880,11 @@ void pcmcia_cleanup_irq(struct pcmcia_socket *s)
 
 /**
  * pcmcia_setup_irq() - determine IRQ to be used for device
+<<<<<<< HEAD
  * @p_dev - the associated PCMCIA device
+=======
+ * @p_dev: the associated PCMCIA device
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * locking note: must be called with ops_mutex locked.
  */

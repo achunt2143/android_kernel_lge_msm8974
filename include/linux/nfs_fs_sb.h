@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _NFS_FS_SB
 #define _NFS_FS_SB
 
@@ -9,6 +13,10 @@
 #include <linux/sunrpc/xprt.h>
 
 #include <linux/atomic.h>
+<<<<<<< HEAD
+=======
+#include <linux/refcount.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nfs4_session;
 struct nfs_iostats;
@@ -17,14 +25,23 @@ struct nfs4_sequence_args;
 struct nfs4_sequence_res;
 struct nfs_server;
 struct nfs4_minor_version_ops;
+<<<<<<< HEAD
 struct server_scope;
+=======
+struct nfs41_server_scope;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nfs41_impl_id;
 
 /*
  * The nfs_client identifies our client state to the server.
  */
 struct nfs_client {
+<<<<<<< HEAD
 	atomic_t		cl_count;
+=======
+	refcount_t		cl_count;
+	atomic_t		cl_mds_count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			cl_cons_state;	/* current construction state (-ve: init error) */
 #define NFS_CS_READY		0		/* ready to be used */
 #define NFS_CS_INITING		1		/* busy initialising */
@@ -35,20 +52,51 @@ struct nfs_client {
 #define NFS_CS_RENEWD		3		/* - renewd started */
 #define NFS_CS_STOP_RENEW	4		/* no more state to renew */
 #define NFS_CS_CHECK_LEASE_TIME	5		/* need to check lease time */
+<<<<<<< HEAD
 	struct sockaddr_storage	cl_addr;	/* server identifier */
 	size_t			cl_addrlen;
 	char *			cl_hostname;	/* hostname of server */
+=======
+	unsigned long		cl_flags;	/* behavior switches */
+#define NFS_CS_NORESVPORT	0		/* - use ephemeral src port */
+#define NFS_CS_DISCRTRY		1		/* - disconnect on RPC retry */
+#define NFS_CS_MIGRATION	2		/* - transparent state migr */
+#define NFS_CS_INFINITE_SLOTS	3		/* - don't limit TCP slots */
+#define NFS_CS_NO_RETRANS_TIMEOUT	4	/* - Disable retransmit timeouts */
+#define NFS_CS_TSM_POSSIBLE	5		/* - Maybe state migration */
+#define NFS_CS_NOPING		6		/* - don't ping on connect */
+#define NFS_CS_DS		7		/* - Server is a DS */
+#define NFS_CS_REUSEPORT	8		/* - reuse src port on reconnect */
+#define NFS_CS_PNFS		9		/* - Server used for pnfs */
+	struct sockaddr_storage	cl_addr;	/* server identifier */
+	size_t			cl_addrlen;
+	char *			cl_hostname;	/* hostname of server */
+	char *			cl_acceptor;	/* GSSAPI acceptor name */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head	cl_share_link;	/* link in global client list */
 	struct list_head	cl_superblocks;	/* List of nfs_server structs */
 
 	struct rpc_clnt *	cl_rpcclient;
 	const struct nfs_rpc_ops *rpc_ops;	/* NFS protocol vector */
 	int			cl_proto;	/* Network transport protocol */
+<<<<<<< HEAD
 
 	u32			cl_minorversion;/* NFSv4 minorversion */
 	struct rpc_cred		*cl_machine_cred;
 
 #ifdef CONFIG_NFS_V4
+=======
+	struct nfs_subversion *	cl_nfs_mod;	/* pointer to nfs version module */
+
+	u32			cl_minorversion;/* NFSv4 minorversion */
+	unsigned int		cl_nconnect;	/* Number of connections */
+	unsigned int		cl_max_connect; /* max number of xprts allowed */
+	const char *		cl_principal;	/* used for machine cred */
+	struct xprtsec_parms	cl_xprtsec;	/* xprt security policy */
+
+#if IS_ENABLED(CONFIG_NFS_V4)
+	struct list_head	cl_ds_clients; /* auth flavor data servers */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64			cl_clientid;	/* constant */
 	nfs4_verifier		cl_confirm;	/* Clientid verifier */
 	unsigned long		cl_state;
@@ -61,6 +109,7 @@ struct nfs_client {
 
 	struct rpc_wait_queue	cl_rpcwaitq;
 
+<<<<<<< HEAD
 	/* used for the setclientid verifier */
 	struct timespec		cl_boot_time;
 
@@ -74,11 +123,26 @@ struct nfs_client {
 	unsigned char		cl_id_uniquifier;
 	u32			cl_cb_ident;	/* v4.0 callback identifier */
 	const struct nfs4_minor_version_ops *cl_mvops;
+=======
+	/* idmapper */
+	struct idmap *		cl_idmap;
+
+	/* Client owner identifier */
+	const char *		cl_owner_id;
+
+	u32			cl_cb_ident;	/* v4.0 callback identifier */
+	const struct nfs4_minor_version_ops *cl_mvops;
+	unsigned long		cl_mig_gen;
+
+	/* NFSv4.0 transport blocking */
+	struct nfs4_slot_table	*cl_slot_tbl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The sequence id to use for the next CREATE_SESSION */
 	u32			cl_seqid;
 	/* The flags used for obtaining the clientid during EXCHANGE_ID */
 	u32			cl_exchange_flags;
+<<<<<<< HEAD
 	struct nfs4_session	*cl_session; 	/* sharred session */
 #endif /* CONFIG_NFS_V4 */
 
@@ -89,6 +153,35 @@ struct nfs_client {
 	struct server_scope	*server_scope;	/* from exchange_id */
 	struct nfs41_impl_id	*impl_id;	/* from exchange_id */
 	struct net		*net;
+=======
+	struct nfs4_session	*cl_session;	/* shared session */
+	bool			cl_preserve_clid;
+	struct nfs41_server_owner *cl_serverowner;
+	struct nfs41_server_scope *cl_serverscope;
+	struct nfs41_impl_id	*cl_implid;
+	/* nfs 4.1+ state protection modes: */
+	unsigned long		cl_sp4_flags;
+#define NFS_SP4_MACH_CRED_MINIMAL  1	/* Minimal sp4_mach_cred - state ops
+					 * must use machine cred */
+#define NFS_SP4_MACH_CRED_CLEANUP  2	/* CLOSE and LOCKU */
+#define NFS_SP4_MACH_CRED_SECINFO  3	/* SECINFO and SECINFO_NO_NAME */
+#define NFS_SP4_MACH_CRED_STATEID  4	/* TEST_STATEID and FREE_STATEID */
+#define NFS_SP4_MACH_CRED_WRITE    5	/* WRITE */
+#define NFS_SP4_MACH_CRED_COMMIT   6	/* COMMIT */
+#define NFS_SP4_MACH_CRED_PNFS_CLEANUP  7 /* LAYOUTRETURN */
+#if IS_ENABLED(CONFIG_NFS_V4_1)
+	wait_queue_head_t	cl_lock_waitq;
+#endif /* CONFIG_NFS_V4_1 */
+#endif /* CONFIG_NFS_V4 */
+
+	/* Our own IP address, as a null-terminated string.
+	 * This is used to generate the mv0 callback address.
+	 */
+	char			cl_ipaddr[48];
+	struct net		*cl_net;
+	struct list_head	pending_cb_stateids;
+	struct rcu_head		rcu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -104,9 +197,31 @@ struct nfs_server {
 	struct rpc_clnt *	client_acl;	/* ACL RPC client handle */
 	struct nlm_host		*nlm_host;	/* NLM client handle */
 	struct nfs_iostats __percpu *io_stats;	/* I/O statistics */
+<<<<<<< HEAD
 	struct backing_dev_info	backing_dev_info;
 	atomic_long_t		writeback;	/* number of writeback pages */
 	int			flags;		/* various flags */
+=======
+	atomic_long_t		writeback;	/* number of writeback pages */
+	unsigned int		write_congested;/* flag set when writeback gets too high */
+	unsigned int		flags;		/* various flags */
+
+/* The following are for internal use only. Also see uapi/linux/nfs_mount.h */
+#define NFS_MOUNT_LOOKUP_CACHE_NONEG	0x10000
+#define NFS_MOUNT_LOOKUP_CACHE_NONE	0x20000
+#define NFS_MOUNT_NORESVPORT		0x40000
+#define NFS_MOUNT_LEGACY_INTERFACE	0x80000
+#define NFS_MOUNT_LOCAL_FLOCK		0x100000
+#define NFS_MOUNT_LOCAL_FCNTL		0x200000
+#define NFS_MOUNT_SOFTERR		0x400000
+#define NFS_MOUNT_SOFTREVAL		0x800000
+#define NFS_MOUNT_WRITE_EAGER		0x01000000
+#define NFS_MOUNT_WRITE_WAIT		0x02000000
+#define NFS_MOUNT_TRUNK_DISCOVERY	0x04000000
+#define NFS_MOUNT_SHUTDOWN			0x08000000
+
+	unsigned int		fattr_valid;	/* Valid attributes */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		caps;		/* server capabilities */
 	unsigned int		rsize;		/* read size */
 	unsigned int		rpages;		/* read size (in pages) */
@@ -116,12 +231,21 @@ struct nfs_server {
 	unsigned int		dtsize;		/* readdir size */
 	unsigned short		port;		/* "port=" setting */
 	unsigned int		bsize;		/* server block size */
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_NFS_V4_2
+	unsigned int		gxasize;	/* getxattr size */
+	unsigned int		sxasize;	/* setxattr size */
+	unsigned int		lxasize;	/* listxattr size */
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int		acregmin;	/* attr cache timeouts */
 	unsigned int		acregmax;
 	unsigned int		acdirmin;
 	unsigned int		acdirmax;
 	unsigned int		namelen;
 	unsigned int		options;	/* extra options enabled by mount */
+<<<<<<< HEAD
 #define NFS_OPTION_FSCACHE	0x00000001	/* - local caching enabled */
 
 	struct nfs_fsid		fsid;
@@ -141,6 +265,45 @@ struct nfs_server {
 						   of attributes supported on this
 						   filesystem */
 	u32			cache_consistency_bitmask[2];
+=======
+	unsigned int		clone_blksize;	/* granularity of a CLONE operation */
+#define NFS_OPTION_FSCACHE	0x00000001	/* - local caching enabled */
+#define NFS_OPTION_MIGRATION	0x00000002	/* - NFSv4 migration enabled */
+
+	enum nfs4_change_attr_type
+				change_attr_type;/* Description of change attribute */
+
+	struct nfs_fsid		fsid;
+	int			s_sysfs_id;	/* sysfs dentry index */
+	__u64			maxfilesize;	/* maximum file size */
+	struct timespec64	time_delta;	/* smallest time granularity */
+	unsigned long		mount_time;	/* when this fs was mounted */
+	struct super_block	*super;		/* VFS super block */
+	dev_t			s_dev;		/* superblock dev numbers */
+	struct nfs_auth_info	auth_info;	/* parsed auth flavors */
+
+#ifdef CONFIG_NFS_FSCACHE
+	struct fscache_volume	*fscache;	/* superblock cookie */
+	char			*fscache_uniq;	/* Uniquifier (or NULL) */
+#endif
+
+	u32			pnfs_blksize;	/* layout_blksize attr */
+#if IS_ENABLED(CONFIG_NFS_V4)
+	u32			attr_bitmask[3];/* V4 bitmask representing the set
+						   of attributes supported on this
+						   filesystem */
+	u32			attr_bitmask_nl[3];
+						/* V4 bitmask representing the
+						   set of attributes supported
+						   on this filesystem excluding
+						   the label support bit. */
+	u32			exclcreat_bitmask[3];
+						/* V4 bitmask representing the
+						   set of attributes supported
+						   on this filesystem for the
+						   exclusive create. */
+	u32			cache_consistency_bitmask[3];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						/* V4 bitmask representing the subset
 						   of change attribute, size, ctime
 						   and mtime attributes supported by
@@ -163,6 +326,18 @@ struct nfs_server {
 	struct list_head	state_owners_lru;
 	struct list_head	layouts;
 	struct list_head	delegations;
+<<<<<<< HEAD
+=======
+	struct list_head	ss_copies;
+
+	unsigned long		delegation_gen;
+	unsigned long		mig_gen;
+	unsigned long		mig_status;
+#define NFS_MIG_IN_TRANSITION		(1)
+#define NFS_MIG_FAILED			(2)
+#define NFS_MIG_TSM_POSSIBLE		(3)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*destroy)(struct nfs_server *);
 
 	atomic_t active; /* Keep trace of any activity to this server */
@@ -173,6 +348,19 @@ struct nfs_server {
 	u32			mountd_version;
 	unsigned short		mountd_port;
 	unsigned short		mountd_protocol;
+<<<<<<< HEAD
+=======
+	struct rpc_wait_queue	uoc_rpcwaitq;
+
+	/* XDR related information */
+	unsigned int		read_hdrsize;
+
+	/* User namespace info */
+	const struct cred	*cred;
+	bool			has_sec_mnt_opts;
+	struct kobject		kobj;
+	struct rcu_head		rcu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Server capabilities */
@@ -181,6 +369,7 @@ struct nfs_server {
 #define NFS_CAP_SYMLINKS	(1U << 2)
 #define NFS_CAP_ACLS		(1U << 3)
 #define NFS_CAP_ATOMIC_OPEN	(1U << 4)
+<<<<<<< HEAD
 #define NFS_CAP_CHANGE_ATTR	(1U << 5)
 #define NFS_CAP_FILEID		(1U << 6)
 #define NFS_CAP_MODE		(1U << 7)
@@ -240,4 +429,27 @@ struct nfs4_session {
 };
 
 #endif /* CONFIG_NFS_V4 */
+=======
+#define NFS_CAP_LGOPEN		(1U << 5)
+#define NFS_CAP_CASE_INSENSITIVE	(1U << 6)
+#define NFS_CAP_CASE_PRESERVING	(1U << 7)
+#define NFS_CAP_POSIX_LOCK	(1U << 14)
+#define NFS_CAP_UIDGID_NOMAP	(1U << 15)
+#define NFS_CAP_STATEID_NFSV41	(1U << 16)
+#define NFS_CAP_ATOMIC_OPEN_V1	(1U << 17)
+#define NFS_CAP_SECURITY_LABEL	(1U << 18)
+#define NFS_CAP_SEEK		(1U << 19)
+#define NFS_CAP_ALLOCATE	(1U << 20)
+#define NFS_CAP_DEALLOCATE	(1U << 21)
+#define NFS_CAP_LAYOUTSTATS	(1U << 22)
+#define NFS_CAP_CLONE		(1U << 23)
+#define NFS_CAP_COPY		(1U << 24)
+#define NFS_CAP_OFFLOAD_CANCEL	(1U << 25)
+#define NFS_CAP_LAYOUTERROR	(1U << 26)
+#define NFS_CAP_COPY_NOTIFY	(1U << 27)
+#define NFS_CAP_XATTR		(1U << 28)
+#define NFS_CAP_READ_PLUS	(1U << 29)
+#define NFS_CAP_FS_LOCATIONS	(1U << 30)
+#define NFS_CAP_MOVEABLE	(1U << 31)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

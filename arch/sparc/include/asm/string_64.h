@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * string.h: External definitions for optimized assembly string
  *           routines for the Linux Kernel.
@@ -9,6 +13,7 @@
 #ifndef __SPARC64_STRING_H__
 #define __SPARC64_STRING_H__
 
+<<<<<<< HEAD
 /* Really, userland/ksyms should not see any of this stuff. */
 
 #ifdef __KERNEL__
@@ -59,4 +64,8 @@ extern int strncmp(const char *, const char *, __kernel_size_t);
 
 #endif /* __KERNEL__ */
 
+=======
+#include <asm/asi.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(__SPARC64_STRING_H__) */

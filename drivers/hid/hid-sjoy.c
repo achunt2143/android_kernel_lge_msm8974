@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Force feedback support for SmartJoy PLUS PS2->USB adapter
  *
@@ -9,6 +13,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -22,19 +27,27 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* #define DEBUG */
 
 #include <linux/input.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/usb.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/hid.h>
 #include <linux/module.h>
 #include "hid-ids.h"
 
 #ifdef CONFIG_SMARTJOYPLUS_FF
+<<<<<<< HEAD
 #include "usbhid/usbhid.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct sjoyff_device {
 	struct hid_report *report;
@@ -57,7 +70,11 @@ static int hid_sjoyff_play(struct input_dev *dev, void *data,
 	sjoyff->report->field[0]->value[1] = right;
 	sjoyff->report->field[0]->value[2] = left;
 	dev_dbg(&dev->dev, "running with 0x%02x 0x%02x\n", left, right);
+<<<<<<< HEAD
 	usbhid_submit_report(hid, sjoyff->report, USB_DIR_OUT);
+=======
+	hid_hw_request(hid, sjoyff->report, HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -115,7 +132,11 @@ static int sjoyff_init(struct hid_device *hid)
 		sjoyff->report->field[0]->value[0] = 0x01;
 		sjoyff->report->field[0]->value[1] = 0x00;
 		sjoyff->report->field[0]->value[2] = 0x00;
+<<<<<<< HEAD
 		usbhid_submit_report(hid, sjoyff->report, USB_DIR_OUT);
+=======
+		hid_hw_request(hid, sjoyff->report, HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hid_info(hid, "Force feedback for SmartJoy PLUS PS2/USB adapter\n");
@@ -168,6 +189,12 @@ static const struct hid_device_id sjoy_devices[] = {
 	{ HID_USB_DEVICE(USB_VENDOR_ID_WISEGROUP, USB_DEVICE_ID_DUAL_USB_JOYPAD),
 		.driver_data = HID_QUIRK_MULTI_INPUT |
 			       HID_QUIRK_SKIP_OUTPUT_REPORTS },
+<<<<<<< HEAD
+=======
+	{ HID_USB_DEVICE(USB_VENDOR_ID_PLAYDOTCOM, USB_DEVICE_ID_PLAYDOTCOM_EMS_USBII),
+		.driver_data = HID_QUIRK_MULTI_INPUT |
+			       HID_QUIRK_SKIP_OUTPUT_REPORTS },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(hid, sjoy_devices);
@@ -177,6 +204,7 @@ static struct hid_driver sjoy_driver = {
 	.id_table = sjoy_devices,
 	.probe = sjoy_probe,
 };
+<<<<<<< HEAD
 
 static int __init sjoy_init(void)
 {
@@ -190,6 +218,10 @@ static void __exit sjoy_exit(void)
 
 module_init(sjoy_init);
 module_exit(sjoy_exit);
+=======
+module_hid_driver(sjoy_driver);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jussi Kivilinna");
 

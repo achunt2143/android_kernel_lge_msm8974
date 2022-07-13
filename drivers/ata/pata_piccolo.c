@@ -18,7 +18,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -63,7 +66,11 @@ static void tosh_set_dmamode(struct ata_port *ap, struct ata_device *adev)
 }
 
 
+<<<<<<< HEAD
 static struct scsi_host_template tosh_sht = {
+=======
+static const struct scsi_host_template tosh_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -75,7 +82,11 @@ static struct ata_port_operations tosh_port_ops = {
 };
 
 /**
+<<<<<<< HEAD
  *	ata_tosh_init		-	attach generic IDE
+=======
+ *	ata_tosh_init_one		-	attach generic IDE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@dev: PCI device found
  *	@id: match entry
  *
@@ -111,12 +122,17 @@ static struct pci_driver ata_tosh_pci_driver = {
 	.id_table	= ata_tosh,
 	.probe 		= ata_tosh_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= ata_pci_device_resume,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init ata_tosh_init(void)
 {
 	return pci_register_driver(&ata_tosh_pci_driver);
@@ -128,13 +144,19 @@ static void __exit ata_tosh_exit(void)
 	pci_unregister_driver(&ata_tosh_pci_driver);
 }
 
+=======
+module_pci_driver(ata_tosh_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("Low level driver for Toshiba Piccolo ATA");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, ata_tosh);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(ata_tosh_init);
 module_exit(ata_tosh_exit);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

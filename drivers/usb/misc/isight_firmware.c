@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for loading USB isight firmware
  *
  * Copyright (C) 2008 Matthew Garrett <mjg@redhat.com>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation, version 2.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The USB isight cameras in recent Apples are roughly compatible with the USB
  * video class specification, and can be driven by uvcvideo. However, they
  * need firmware to be loaded beforehand. After firmware loading, the device

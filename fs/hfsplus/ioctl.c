@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hfsplus/ioctl.c
  *
@@ -16,8 +20,12 @@
 #include <linux/fs.h>
 #include <linux/mount.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/xattr.h>
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "hfsplus_fs.h"
 
 /*
@@ -27,7 +35,11 @@
 static int hfsplus_ioctl_bless(struct file *file, int __user *user_flags)
 {
 	struct dentry *dentry = file->f_path.dentry;
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hfsplus_sb_info *sbi = HFSPLUS_SB(inode->i_sb);
 	struct hfsplus_vh *vh = sbi->s_vhdr;
 	struct hfsplus_vh *bvh = sbi->s_backup_vhdr;
@@ -57,6 +69,7 @@ static int hfsplus_ioctl_bless(struct file *file, int __user *user_flags)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int hfsplus_ioctl_getflags(struct file *file, int __user *user_flags)
 {
 	struct inode *inode = file->f_path.dentry->d_inode;
@@ -136,21 +149,27 @@ out:
 	return err;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 long hfsplus_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	void __user *argp = (void __user *)arg;
 
 	switch (cmd) {
+<<<<<<< HEAD
 	case HFSPLUS_IOC_EXT2_GETFLAGS:
 		return hfsplus_ioctl_getflags(file, argp);
 	case HFSPLUS_IOC_EXT2_SETFLAGS:
 		return hfsplus_ioctl_setflags(file, argp);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case HFSPLUS_IOC_BLESS:
 		return hfsplus_ioctl_bless(file, argp);
 	default:
 		return -ENOTTY;
 	}
 }
+<<<<<<< HEAD
 
 int hfsplus_setxattr(struct dentry *dentry, const char *name,
 		     const void *value, size_t size, int flags)
@@ -258,3 +277,5 @@ ssize_t hfsplus_listxattr(struct dentry *dentry, char *buffer, size_t size)
 
 	return HFSPLUS_ATTRLIST_SIZE;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

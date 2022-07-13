@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_SPI_EEPROM_H
 #define __LINUX_SPI_EEPROM_H
 
@@ -13,15 +17,32 @@
 struct spi_eeprom {
 	u32		byte_len;
 	char		name[10];
+<<<<<<< HEAD
 	u16		page_size;		/* for writes */
+=======
+	u32		page_size;		/* for writes */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16		flags;
 #define	EE_ADDR1	0x0001			/*  8 bit addrs */
 #define	EE_ADDR2	0x0002			/* 16 bit addrs */
 #define	EE_ADDR3	0x0004			/* 24 bit addrs */
 #define	EE_READONLY	0x0008			/* disallow writes */
 
+<<<<<<< HEAD
 	/* for exporting this chip's data to other kernel code */
 	void (*setup)(struct memory_accessor *mem, void *context);
+=======
+	/*
+	 * Certain EEPROMS have a size that is larger than the number of address
+	 * bytes would allow (e.g. like M95040 from ST that has 512 Byte size
+	 * but uses only one address byte (A0 to A7) for addressing.) For
+	 * the extra address bit (A8, A16 or A24) bit 3 of the instruction byte
+	 * is used. This instruction bit is normally defined as don't care for
+	 * other AT25 like chips.
+	 */
+#define EE_INSTR_BIT3_IS_ADDR	0x0010
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *context;
 };
 

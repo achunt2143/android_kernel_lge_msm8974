@@ -22,6 +22,7 @@
  * SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include "drmP.h"
 #define NV_DEBUG_NOTRACE
 #include "nouveau_drv.h"
@@ -30,6 +31,18 @@
 #include "nouveau_gpio.h"
 
 #include <linux/io-mapping.h>
+=======
+#include "nouveau_drv.h"
+#include "nouveau_bios.h"
+#include "nouveau_reg.h"
+#include "dispnv04/hw.h"
+#include "nouveau_encoder.h"
+
+#include <subdev/gsp.h>
+
+#include <linux/io-mapping.h>
+#include <linux/firmware.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* these defines are made up */
 #define NV_CIO_CRE_44_HEADA 0x0
@@ -64,6 +77,7 @@ static bool nv_cksum(const uint8_t *data, unsigned int length)
 	return false;
 }
 
+<<<<<<< HEAD
 static int
 score_vbios(struct nvbios *bios, const bool writeable)
 {
@@ -3725,6 +3739,8 @@ parse_init_tables(struct nvbios *bios)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static uint16_t clkcmptable(struct nvbios *bios, uint16_t clktable, int pxclk)
 {
 	int compare_record_len, i = 0;
@@ -3753,6 +3769,7 @@ static uint16_t clkcmptable(struct nvbios *bios, uint16_t clktable, int pxclk)
 
 static void
 run_digital_op_script(struct drm_device *dev, uint16_t scriptptr,
+<<<<<<< HEAD
 		      struct dcb_entry *dcbent, int head, bool dl)
 {
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
@@ -3766,16 +3783,39 @@ run_digital_op_script(struct drm_device *dev, uint16_t scriptptr,
 	/* note: if dcb entries have been merged, index may be misleading */
 	NVWriteVgaCrtc5758(dev, head, 0, dcbent->index);
 	parse_init_table(bios, scriptptr, &iexec);
+=======
+		      struct dcb_output *dcbent, int head, bool dl)
+{
+	struct nouveau_drm *drm = nouveau_drm(dev);
+
+	NV_INFO(drm, "0x%04X: Parsing digital output script table\n",
+		 scriptptr);
+	NVWriteVgaCrtc(dev, 0, NV_CIO_CRE_44, head ? NV_CIO_CRE_44_HEADB :
+					         NV_CIO_CRE_44_HEADA);
+	nouveau_bios_run_init_table(dev, scriptptr, dcbent, head);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nv04_dfp_bind_head(dev, dcbent, head, dl);
 }
 
+<<<<<<< HEAD
 static int call_lvds_manufacturer_script(struct drm_device *dev, struct dcb_entry *dcbent, int head, enum LVDS_script script)
 {
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 	struct nvbios *bios = &dev_priv->vbios;
 	uint8_t sub = bios->data[bios->fp.xlated_entry + script] + (bios->fp.link_c_increment && dcbent->or & OUTPUT_C ? 1 : 0);
 	uint16_t scriptofs = ROM16(bios->data[bios->init_script_tbls_ptr + sub * 2]);
+=======
+static int call_lvds_manufacturer_script(struct drm_device *dev, struct dcb_output *dcbent, int head, enum LVDS_script script)
+{
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct nvbios *bios = &drm->vbios;
+	uint8_t sub = bios->data[bios->fp.xlated_entry + script] + (bios->fp.link_c_increment && dcbent->or & DCB_OUTPUT_C ? 1 : 0);
+	uint16_t scriptofs = ROM16(bios->data[bios->init_script_tbls_ptr + sub * 2]);
+#ifdef __powerpc__
+	struct pci_dev *pdev = to_pci_dev(dev->dev);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!bios->fp.xlated_entry || !sub || !scriptofs)
 		return -EINVAL;
@@ -3789,15 +3829,24 @@ static int call_lvds_manufacturer_script(struct drm_device *dev, struct dcb_entr
 #ifdef __powerpc__
 	/* Powerbook specific quirks */
 	if (script == LVDS_RESET &&
+<<<<<<< HEAD
 	    (dev->pci_device == 0x0179 || dev->pci_device == 0x0189 ||
 	     dev->pci_device == 0x0329))
+=======
+	    (pdev->device == 0x0179 || pdev->device == 0x0189 ||
+	     pdev->device == 0x0329))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nv_write_tmds(dev, dcbent->or, 0, 0x02, 0x72);
 #endif
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int run_lvds_table(struct drm_device *dev, struct dcb_entry *dcbent, int head, enum LVDS_script script, int pxclk)
+=======
+static int run_lvds_table(struct drm_device *dev, struct dcb_output *dcbent, int head, enum LVDS_script script, int pxclk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * The BIT LVDS table's header has the information to setup the
@@ -3809,8 +3858,13 @@ static int run_lvds_table(struct drm_device *dev, struct dcb_entry *dcbent, int 
 	 * conf byte. These tables are similar to the TMDS tables, consisting
 	 * of a list of pxclks and script pointers.
 	 */
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 	struct nvbios *bios = &dev_priv->vbios;
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct nvbios *bios = &drm->vbios;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int outputset = (dcbent->or == 4) ? 1 : 0;
 	uint16_t scriptptr = 0, clktable;
 
@@ -3855,14 +3909,22 @@ static int run_lvds_table(struct drm_device *dev, struct dcb_entry *dcbent, int 
 
 		clktable = ROM16(bios->data[clktable]);
 		if (!clktable) {
+<<<<<<< HEAD
 			NV_ERROR(dev, "Pixel clock comparison table not found\n");
+=======
+			NV_ERROR(drm, "Pixel clock comparison table not found\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOENT;
 		}
 		scriptptr = clkcmptable(bios, clktable, pxclk);
 	}
 
 	if (!scriptptr) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "LVDS output init script not found\n");
+=======
+		NV_ERROR(drm, "LVDS output init script not found\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOENT;
 	}
 	run_digital_op_script(dev, scriptptr, dcbent, head, bios->fp.dual_link);
@@ -3870,7 +3932,11 @@ static int run_lvds_table(struct drm_device *dev, struct dcb_entry *dcbent, int 
 	return 0;
 }
 
+<<<<<<< HEAD
 int call_lvds_script(struct drm_device *dev, struct dcb_entry *dcbent, int head, enum LVDS_script script, int pxclk)
+=======
+int call_lvds_script(struct drm_device *dev, struct dcb_output *dcbent, int head, enum LVDS_script script, int pxclk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * LVDS operations are multiplexed in an effort to present a single API
@@ -3878,8 +3944,14 @@ int call_lvds_script(struct drm_device *dev, struct dcb_entry *dcbent, int head,
 	 * This acts as the demux
 	 */
 
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 	struct nvbios *bios = &dev_priv->vbios;
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct nvif_object *device = &drm->client.device.object;
+	struct nvbios *bios = &drm->vbios;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t lvds_ver = bios->data[bios->fp.lvdsmanufacturerpointer];
 	uint32_t sel_clk_binding, sel_clk;
 	int ret;
@@ -3898,10 +3970,17 @@ int call_lvds_script(struct drm_device *dev, struct dcb_entry *dcbent, int head,
 	if (script == LVDS_RESET && bios->fp.power_off_for_reset)
 		call_lvds_script(dev, dcbent, head, LVDS_PANEL_OFF, pxclk);
 
+<<<<<<< HEAD
 	NV_TRACE(dev, "Calling LVDS script %d:\n", script);
 
 	/* don't let script change pll->head binding */
 	sel_clk_binding = bios_rd32(bios, NV_PRAMDAC_SEL_CLK) & 0x50000;
+=======
+	NV_INFO(drm, "Calling LVDS script %d:\n", script);
+
+	/* don't let script change pll->head binding */
+	sel_clk_binding = nvif_rd32(device, NV_PRAMDAC_SEL_CLK) & 0x50000;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lvds_ver < 0x30)
 		ret = call_lvds_manufacturer_script(dev, dcbent, head, script);
@@ -3913,7 +3992,11 @@ int call_lvds_script(struct drm_device *dev, struct dcb_entry *dcbent, int head,
 	sel_clk = NVReadRAMDAC(dev, 0, NV_PRAMDAC_SEL_CLK) & ~0x50000;
 	NVWriteRAMDAC(dev, 0, NV_PRAMDAC_SEL_CLK, sel_clk | sel_clk_binding);
 	/* some scripts set a value in NV_PBUS_POWERCTRL_2 and break video overlay */
+<<<<<<< HEAD
 	nvWriteMC(dev, NV_PBUS_POWERCTRL_2, 0);
+=======
+	nvif_wr32(device, NV_PBUS_POWERCTRL_2, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -3931,12 +4014,20 @@ static int parse_lvds_manufacturer_table_header(struct drm_device *dev, struct n
 	 * the maximum number of records that can be held in the table.
 	 */
 
+<<<<<<< HEAD
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t lvds_ver, headerlen, recordlen;
 
 	memset(lth, 0, sizeof(struct lvdstableheader));
 
 	if (bios->fp.lvdsmanufacturerpointer == 0x0) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "Pointer to LVDS manufacturer table invalid\n");
+=======
+		NV_ERROR(drm, "Pointer to LVDS manufacturer table invalid\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -3950,7 +4041,11 @@ static int parse_lvds_manufacturer_table_header(struct drm_device *dev, struct n
 	case 0x30:	/* NV4x */
 		headerlen = bios->data[bios->fp.lvdsmanufacturerpointer + 1];
 		if (headerlen < 0x1f) {
+<<<<<<< HEAD
 			NV_ERROR(dev, "LVDS table header not understood\n");
+=======
+			NV_ERROR(drm, "LVDS table header not understood\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		recordlen = bios->data[bios->fp.lvdsmanufacturerpointer + 2];
@@ -3958,13 +4053,21 @@ static int parse_lvds_manufacturer_table_header(struct drm_device *dev, struct n
 	case 0x40:	/* G80/G90 */
 		headerlen = bios->data[bios->fp.lvdsmanufacturerpointer + 1];
 		if (headerlen < 0x7) {
+<<<<<<< HEAD
 			NV_ERROR(dev, "LVDS table header not understood\n");
+=======
+			NV_ERROR(drm, "LVDS table header not understood\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		recordlen = bios->data[bios->fp.lvdsmanufacturerpointer + 2];
 		break;
 	default:
+<<<<<<< HEAD
 		NV_ERROR(dev,
+=======
+		NV_ERROR(drm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 "LVDS table revision %d.%d not currently supported\n",
 			 lvds_ver >> 4, lvds_ver & 0xf);
 		return -ENOSYS;
@@ -3980,7 +4083,12 @@ static int parse_lvds_manufacturer_table_header(struct drm_device *dev, struct n
 static int
 get_fp_strap(struct drm_device *dev, struct nvbios *bios)
 {
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct nvif_object *device = &drm->client.device.object;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The fp strap is normally dictated by the "User Strap" in
@@ -3994,25 +4102,44 @@ get_fp_strap(struct drm_device *dev, struct nvbios *bios)
 	if (bios->major_version < 5 && bios->data[0x48] & 0x4)
 		return NVReadVgaCrtc5758(dev, 0, 0xf) & 0xf;
 
+<<<<<<< HEAD
 	if (dev_priv->card_type >= NV_50)
 		return (bios_rd32(bios, NV_PEXTDEV_BOOT_0) >> 24) & 0xf;
 	else
 		return (bios_rd32(bios, NV_PEXTDEV_BOOT_0) >> 16) & 0xf;
+=======
+	if (drm->client.device.info.family >= NV_DEVICE_INFO_V0_MAXWELL)
+		return nvif_rd32(device, 0x001800) & 0x0000000f;
+	else
+	if (drm->client.device.info.family >= NV_DEVICE_INFO_V0_TESLA)
+		return (nvif_rd32(device, NV_PEXTDEV_BOOT_0) >> 24) & 0xf;
+	else
+		return (nvif_rd32(device, NV_PEXTDEV_BOOT_0) >> 16) & 0xf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int parse_fp_mode_table(struct drm_device *dev, struct nvbios *bios)
 {
+<<<<<<< HEAD
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t *fptable;
 	uint8_t fptable_ver, headerlen = 0, recordlen, fpentries = 0xf, fpindex;
 	int ret, ofs, fpstrapping;
 	struct lvdstableheader lth;
 
 	if (bios->fp.fptablepointer == 0x0) {
+<<<<<<< HEAD
 		/* Apple cards don't have the fp table; the laptops use DDC */
 		/* The table is also missing on some x86 IGPs */
 #ifndef __powerpc__
 		NV_ERROR(dev, "Pointer to flat panel table invalid\n");
 #endif
+=======
+		/* Most laptop cards lack an fp table. They use DDC. */
+		NV_DEBUG(drm, "Pointer to flat panel table invalid\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bios->digital_min_front_porch = 0x4b;
 		return 0;
 	}
@@ -4050,7 +4177,11 @@ static int parse_fp_mode_table(struct drm_device *dev, struct nvbios *bios)
 		ofs = -7;
 		break;
 	default:
+<<<<<<< HEAD
 		NV_ERROR(dev,
+=======
+		NV_ERROR(drm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 "FP table revision %d.%d not currently supported\n",
 			 fptable_ver >> 4, fptable_ver & 0xf);
 		return -ENOSYS;
@@ -4069,7 +4200,11 @@ static int parse_fp_mode_table(struct drm_device *dev, struct nvbios *bios)
 		bios->fp.xlatwidth = lth.recordlen;
 	}
 	if (bios->fp.fpxlatetableptr == 0x0) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "Pointer to flat panel xlat table invalid\n");
+=======
+		NV_ERROR(drm, "Pointer to flat panel xlat table invalid\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -4079,7 +4214,11 @@ static int parse_fp_mode_table(struct drm_device *dev, struct nvbios *bios)
 					fpstrapping * bios->fp.xlatwidth];
 
 	if (fpindex > fpentries) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "Bad flat panel table index\n");
+=======
+		NV_ERROR(drm, "Bad flat panel table index\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOENT;
 	}
 
@@ -4098,7 +4237,11 @@ static int parse_fp_mode_table(struct drm_device *dev, struct nvbios *bios)
 	bios->fp.mode_ptr = bios->fp.fptablepointer + headerlen +
 			    recordlen * fpindex + ofs;
 
+<<<<<<< HEAD
 	NV_TRACE(dev, "BIOS FP mode: %dx%d (%dkHz pixel clock)\n",
+=======
+	NV_INFO(drm, "BIOS FP mode: %dx%d (%dkHz pixel clock)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 ROM16(bios->data[bios->fp.mode_ptr + 11]) + 1,
 		 ROM16(bios->data[bios->fp.mode_ptr + 25]) + 1,
 		 ROM16(bios->data[bios->fp.mode_ptr + 7]) * 10);
@@ -4108,8 +4251,13 @@ static int parse_fp_mode_table(struct drm_device *dev, struct nvbios *bios)
 
 bool nouveau_bios_fp_mode(struct drm_device *dev, struct drm_display_mode *mode)
 {
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 	struct nvbios *bios = &dev_priv->vbios;
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct nvbios *bios = &drm->vbios;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t *mode_entry = &bios->data[bios->fp.mode_ptr];
 
 	if (!mode)	/* just checking whether we can produce a mode */
@@ -4179,8 +4327,13 @@ int nouveau_bios_parse_lvds_table(struct drm_device *dev, int pxclk, bool *dl, b
 	 * requiring tests against the native-mode pixel clock, cannot be done
 	 * until later, when this function should be called with non-zero pxclk
 	 */
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 	struct nvbios *bios = &dev_priv->vbios;
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct nvbios *bios = &drm->vbios;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int fpstrapping = get_fp_strap(dev, bios), lvdsmanufacturerindex = 0;
 	struct lvdstableheader lth;
 	uint16_t lvdsofs;
@@ -4241,7 +4394,11 @@ int nouveau_bios_parse_lvds_table(struct drm_device *dev, int pxclk, bool *dl, b
 		lvdsmanufacturerindex = fpstrapping;
 		break;
 	default:
+<<<<<<< HEAD
 		NV_ERROR(dev, "LVDS table revision not currently supported\n");
+=======
+		NV_ERROR(drm, "LVDS table revision not currently supported\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSYS;
 	}
 
@@ -4283,6 +4440,7 @@ int nouveau_bios_parse_lvds_table(struct drm_device *dev, int pxclk, bool *dl, b
 	return 0;
 }
 
+<<<<<<< HEAD
 /* BIT 'U'/'d' table encoder subtables have hashes matching them to
  * a particular set of encoders.
  *
@@ -4484,6 +4642,9 @@ nouveau_bios_run_display_table(struct drm_device *dev, u16 type, int pclk,
 
 
 int run_tmds_table(struct drm_device *dev, struct dcb_entry *dcbent, int head, int pxclk)
+=======
+int run_tmds_table(struct drm_device *dev, struct dcb_output *dcbent, int head, int pxclk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * the pxclk parameter is in kHz
@@ -4494,8 +4655,14 @@ int run_tmds_table(struct drm_device *dev, struct dcb_entry *dcbent, int head, i
 	 * ffs(or) == 3, use the second.
 	 */
 
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 	struct nvbios *bios = &dev_priv->vbios;
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct nvif_object *device = &drm->client.device.object;
+	struct nvbios *bios = &drm->vbios;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int cv = bios->chip_version;
 	uint16_t clktable = 0, scriptptr;
 	uint32_t sel_clk_binding, sel_clk;
@@ -4516,19 +4683,31 @@ int run_tmds_table(struct drm_device *dev, struct dcb_entry *dcbent, int head, i
 	}
 
 	if (!clktable) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "Pixel clock comparison table not found\n");
+=======
+		NV_ERROR(drm, "Pixel clock comparison table not found\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	scriptptr = clkcmptable(bios, clktable, pxclk);
 
 	if (!scriptptr) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "TMDS output init script not found\n");
+=======
+		NV_ERROR(drm, "TMDS output init script not found\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOENT;
 	}
 
 	/* don't let script change pll->head binding */
+<<<<<<< HEAD
 	sel_clk_binding = bios_rd32(bios, NV_PRAMDAC_SEL_CLK) & 0x50000;
+=======
+	sel_clk_binding = nvif_rd32(device, NV_PRAMDAC_SEL_CLK) & 0x50000;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	run_digital_op_script(dev, scriptptr, dcbent, head, pxclk >= 165000);
 	sel_clk = NVReadRAMDAC(dev, 0, NV_PRAMDAC_SEL_CLK) & ~0x50000;
 	NVWriteRAMDAC(dev, 0, NV_PRAMDAC_SEL_CLK, sel_clk | sel_clk_binding);
@@ -4536,6 +4715,7 @@ int run_tmds_table(struct drm_device *dev, struct dcb_entry *dcbent, int head, i
 	return 0;
 }
 
+<<<<<<< HEAD
 struct pll_mapping {
 	u8  type;
 	u32 reg;
@@ -4993,6 +5173,8 @@ static void parse_bios_version(struct drm_device *dev, struct nvbios *bios, uint
 		 bios->data[offset + 1], bios->data[offset]);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void parse_script_table_pointers(struct nvbios *bios, uint16_t offset)
 {
 	/*
@@ -5008,12 +5190,15 @@ static void parse_script_table_pointers(struct nvbios *bios, uint16_t offset)
 	 */
 
 	bios->init_script_tbls_ptr = ROM16(bios->data[offset]);
+<<<<<<< HEAD
 	bios->macro_index_tbl_ptr = ROM16(bios->data[offset + 2]);
 	bios->macro_tbl_ptr = ROM16(bios->data[offset + 4]);
 	bios->condition_tbl_ptr = ROM16(bios->data[offset + 6]);
 	bios->io_condition_tbl_ptr = ROM16(bios->data[offset + 8]);
 	bios->io_flag_condition_tbl_ptr = ROM16(bios->data[offset + 10]);
 	bios->init_function_tbl_ptr = ROM16(bios->data[offset + 12]);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int parse_bit_A_tbl_entry(struct drm_device *dev, struct nvbios *bios, struct bit_entry *bitentry)
@@ -5024,25 +5209,41 @@ static int parse_bit_A_tbl_entry(struct drm_device *dev, struct nvbios *bios, st
 	 * offset + 0 (16 bits): loadval table pointer
 	 */
 
+<<<<<<< HEAD
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t load_table_ptr;
 	uint8_t version, headerlen, entrylen, num_entries;
 
 	if (bitentry->length != 3) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "Do not understand BIT A table\n");
+=======
+		NV_ERROR(drm, "Do not understand BIT A table\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	load_table_ptr = ROM16(bios->data[bitentry->offset]);
 
 	if (load_table_ptr == 0x0) {
+<<<<<<< HEAD
 		NV_DEBUG(dev, "Pointer to BIT loadval table invalid\n");
+=======
+		NV_DEBUG(drm, "Pointer to BIT loadval table invalid\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	version = bios->data[load_table_ptr];
 
 	if (version != 0x10) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "BIT loadval table version %d.%d not supported\n",
+=======
+		NV_ERROR(drm, "BIT loadval table version %d.%d not supported\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 version >> 4, version & 0xF);
 		return -ENOSYS;
 	}
@@ -5052,7 +5253,11 @@ static int parse_bit_A_tbl_entry(struct drm_device *dev, struct nvbios *bios, st
 	num_entries = bios->data[load_table_ptr + 3];
 
 	if (headerlen != 4 || entrylen != 4 || num_entries != 2) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "Do not understand BIT loadval table\n");
+=======
+		NV_ERROR(drm, "Do not understand BIT loadval table\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -5062,6 +5267,7 @@ static int parse_bit_A_tbl_entry(struct drm_device *dev, struct nvbios *bios, st
 	return 0;
 }
 
+<<<<<<< HEAD
 static int parse_bit_C_tbl_entry(struct drm_device *dev, struct nvbios *bios, struct bit_entry *bitentry)
 {
 	/*
@@ -5080,6 +5286,8 @@ static int parse_bit_C_tbl_entry(struct drm_device *dev, struct nvbios *bios, st
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int parse_bit_display_tbl_entry(struct drm_device *dev, struct nvbios *bios, struct bit_entry *bitentry)
 {
 	/*
@@ -5090,9 +5298,16 @@ static int parse_bit_display_tbl_entry(struct drm_device *dev, struct nvbios *bi
 	 * records beginning with a freq.
 	 * offset + 2  (16 bits): mode table pointer
 	 */
+<<<<<<< HEAD
 
 	if (bitentry->length != 4) {
 		NV_ERROR(dev, "Do not understand BIT display table\n");
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+
+	if (bitentry->length != 4) {
+		NV_ERROR(drm, "Do not understand BIT display table\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -5108,19 +5323,29 @@ static int parse_bit_init_tbl_entry(struct drm_device *dev, struct nvbios *bios,
 	 *
 	 * See parse_script_table_pointers for layout
 	 */
+<<<<<<< HEAD
 
 	if (bitentry->length < 14) {
 		NV_ERROR(dev, "Do not understand init table\n");
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+
+	if (bitentry->length < 14) {
+		NV_ERROR(drm, "Do not understand init table\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	parse_script_table_pointers(bios, bitentry->offset);
+<<<<<<< HEAD
 
 	if (bitentry->length >= 16)
 		bios->some_script_ptr = ROM16(bios->data[bitentry->offset + 14]);
 	if (bitentry->length >= 18)
 		bios->init96_tbl_ptr = ROM16(bios->data[bitentry->offset + 16]);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -5137,16 +5362,27 @@ static int parse_bit_i_tbl_entry(struct drm_device *dev, struct nvbios *bios, st
 	 * There's other things in the table, purpose unknown
 	 */
 
+<<<<<<< HEAD
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t daccmpoffset;
 	uint8_t dacver, dacheaderlen;
 
 	if (bitentry->length < 6) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "BIT i table too short for needed information\n");
 		return -EINVAL;
 	}
 
 	parse_bios_version(dev, bios, bitentry->offset);
 
+=======
+		NV_ERROR(drm, "BIT i table too short for needed information\n");
+		return -EINVAL;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * bit 4 seems to indicate a mobile bios (doesn't suffer from BMP's
 	 * Quadro identity crisis), other bits possibly as for BMP feature byte
@@ -5155,7 +5391,11 @@ static int parse_bit_i_tbl_entry(struct drm_device *dev, struct nvbios *bios, st
 	bios->is_mobile = bios->feature_byte & FEATURE_MOBILE;
 
 	if (bitentry->length < 15) {
+<<<<<<< HEAD
 		NV_WARN(dev, "BIT i table not long enough for DAC load "
+=======
+		NV_WARN(drm, "BIT i table not long enough for DAC load "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "detection comparison table\n");
 		return -EINVAL;
 	}
@@ -5176,7 +5416,11 @@ static int parse_bit_i_tbl_entry(struct drm_device *dev, struct nvbios *bios, st
 	dacheaderlen = bios->data[daccmpoffset + 1];
 
 	if (dacver != 0x00 && dacver != 0x10) {
+<<<<<<< HEAD
 		NV_WARN(dev, "DAC load detection comparison table version "
+=======
+		NV_WARN(drm, "DAC load detection comparison table version "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       "%d.%d not known\n", dacver >> 4, dacver & 0xf);
 		return -ENOSYS;
 	}
@@ -5196,8 +5440,15 @@ static int parse_bit_lvds_tbl_entry(struct drm_device *dev, struct nvbios *bios,
 	 * offset + 0  (16 bits): LVDS strap xlate table pointer
 	 */
 
+<<<<<<< HEAD
 	if (bitentry->length != 2) {
 		NV_ERROR(dev, "Do not understand BIT LVDS table\n");
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+
+	if (bitentry->length != 2) {
+		NV_ERROR(drm, "Do not understand BIT LVDS table\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -5267,20 +5518,36 @@ static int parse_bit_tmds_tbl_entry(struct drm_device *dev, struct nvbios *bios,
 	 * "or" from the DCB.
 	 */
 
+<<<<<<< HEAD
 	uint16_t tmdstableptr, script1, script2;
 
 	if (bitentry->length != 2) {
 		NV_ERROR(dev, "Do not understand BIT TMDS table\n");
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	uint16_t tmdstableptr, script1, script2;
+
+	if (bitentry->length != 2) {
+		NV_ERROR(drm, "Do not understand BIT TMDS table\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	tmdstableptr = ROM16(bios->data[bitentry->offset]);
 	if (!tmdstableptr) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "Pointer to TMDS table invalid\n");
 		return -EINVAL;
 	}
 
 	NV_INFO(dev, "TMDS table version %d.%d\n",
+=======
+		NV_INFO(drm, "Pointer to TMDS table not found\n");
+		return -EINVAL;
+	}
+
+	NV_INFO(drm, "TMDS table version %d.%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bios->data[tmdstableptr] >> 4, bios->data[tmdstableptr] & 0xf);
 
 	/* nv50+ has v2.0, but we don't parse it atm */
@@ -5294,7 +5561,11 @@ static int parse_bit_tmds_tbl_entry(struct drm_device *dev, struct nvbios *bios,
 	script1 = ROM16(bios->data[tmdstableptr + 7]);
 	script2 = ROM16(bios->data[tmdstableptr + 9]);
 	if (bios->data[script1] != 'q' || bios->data[script2] != 'q')
+<<<<<<< HEAD
 		NV_WARN(dev, "TMDS table script pointers not stubbed\n");
+=======
+		NV_WARN(drm, "TMDS table script pointers not stubbed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bios->tmds.output0_script_ptr = ROM16(bios->data[tmdstableptr + 11]);
 	bios->tmds.output1_script_ptr = ROM16(bios->data[tmdstableptr + 13]);
@@ -5302,6 +5573,7 @@ static int parse_bit_tmds_tbl_entry(struct drm_device *dev, struct nvbios *bios,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 parse_bit_U_tbl_entry(struct drm_device *dev, struct nvbios *bios,
 		      struct bit_entry *bitentry)
@@ -5326,6 +5598,8 @@ parse_bit_U_tbl_entry(struct drm_device *dev, struct nvbios *bios,
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bit_table {
 	const char id;
 	int (* const parse_fn)(struct drm_device *, struct nvbios *, struct bit_entry *);
@@ -5336,8 +5610,13 @@ struct bit_table {
 int
 bit_table(struct drm_device *dev, u8 id, struct bit_entry *bit)
 {
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 	struct nvbios *bios = &dev_priv->vbios;
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct nvbios *bios = &drm->vbios;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 entries, *entry;
 
 	if (bios->type != NVBIOS_BIT)
@@ -5366,12 +5645,20 @@ parse_bit_table(struct nvbios *bios, const uint16_t bitoffset,
 		struct bit_table *table)
 {
 	struct drm_device *dev = bios->dev;
+<<<<<<< HEAD
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bit_entry bitentry;
 
 	if (bit_table(dev, table->id, &bitentry) == 0)
 		return table->parse_fn(dev, bios, &bitentry);
 
+<<<<<<< HEAD
 	NV_INFO(dev, "BIT table '%c' not found\n", table->id);
+=======
+	NV_INFO(drm, "BIT table '%c' not found\n", table->id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOSYS;
 }
 
@@ -5391,9 +5678,12 @@ parse_bit_structure(struct nvbios *bios, const uint16_t bitoffset)
 		return ret;
 	if (bios->major_version >= 0x60) /* g80+ */
 		parse_bit_table(bios, bitoffset, &BIT_TABLE('A', A));
+<<<<<<< HEAD
 	ret = parse_bit_table(bios, bitoffset, &BIT_TABLE('C', C));
 	if (ret)
 		return ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parse_bit_table(bios, bitoffset, &BIT_TABLE('D', display));
 	ret = parse_bit_table(bios, bitoffset, &BIT_TABLE('I', init));
 	if (ret)
@@ -5401,7 +5691,10 @@ parse_bit_structure(struct nvbios *bios, const uint16_t bitoffset)
 	parse_bit_table(bios, bitoffset, &BIT_TABLE('M', M)); /* memory? */
 	parse_bit_table(bios, bitoffset, &BIT_TABLE('L', lvds));
 	parse_bit_table(bios, bitoffset, &BIT_TABLE('T', tmds));
+<<<<<<< HEAD
 	parse_bit_table(bios, bitoffset, &BIT_TABLE('U', U));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -5451,6 +5744,10 @@ static int parse_bmp_structure(struct drm_device *dev, struct nvbios *bios, unsi
 	 * offset + 156: minimum pixel clock for LVDS dual link
 	 */
 
+<<<<<<< HEAD
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t *bmp = &bios->data[offset], bmp_version_major, bmp_version_minor;
 	uint16_t bmplength;
 	uint16_t legacy_scripts_offset, legacy_i2c_offset;
@@ -5464,7 +5761,11 @@ static int parse_bmp_structure(struct drm_device *dev, struct nvbios *bios, unsi
 	bmp_version_major = bmp[5];
 	bmp_version_minor = bmp[6];
 
+<<<<<<< HEAD
 	NV_TRACE(dev, "BMP version %d.%d\n",
+=======
+	NV_INFO(drm, "BMP version %d.%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 bmp_version_major, bmp_version_minor);
 
 	/*
@@ -5480,7 +5781,11 @@ static int parse_bmp_structure(struct drm_device *dev, struct nvbios *bios, unsi
 	 * happened instead.
 	 */
 	if ((bmp_version_major < 5 && bmp_version_minor != 1) || bmp_version_major > 5) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "You have an unsupported BMP version. "
+=======
+		NV_ERROR(drm, "You have an unsupported BMP version. "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"Please send in your bios\n");
 		return -ENOSYS;
 	}
@@ -5529,7 +5834,11 @@ static int parse_bmp_structure(struct drm_device *dev, struct nvbios *bios, unsi
 
 	/* checksum */
 	if (nv_cksum(bmp, 8)) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "Bad BMP checksum\n");
+=======
+		NV_ERROR(drm, "Bad BMP checksum\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -5541,8 +5850,11 @@ static int parse_bmp_structure(struct drm_device *dev, struct nvbios *bios, unsi
 	 */
 	bios->feature_byte = bmp[9];
 
+<<<<<<< HEAD
 	parse_bios_version(dev, bios, offset + 10);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bmp_version_major < 5 || bmp_version_minor < 0x10)
 		bios->old_style_init = true;
 	legacy_scripts_offset = 18;
@@ -5589,8 +5901,15 @@ static int parse_bmp_structure(struct drm_device *dev, struct nvbios *bios, unsi
 		bios->fp.lvdsmanufacturerpointer = ROM16(bmp[117]);
 		bios->fp.fpxlatemanufacturertableptr = ROM16(bmp[119]);
 	}
+<<<<<<< HEAD
 	if (bmplength > 143)
 		bios->pll_limit_tbl_ptr = ROM16(bmp[142]);
+=======
+#if 0
+	if (bmplength > 143)
+		bios->pll_limit_tbl_ptr = ROM16(bmp[142]);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (bmplength > 157)
 		bios->fp.duallink_transition_clk = ROM16(bmp[156]) * 10;
@@ -5614,6 +5933,7 @@ static uint16_t findstr(uint8_t *data, int n, const uint8_t *str, int len)
 }
 
 void *
+<<<<<<< HEAD
 dcb_table(struct drm_device *dev)
 {
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
@@ -5628,6 +5948,22 @@ dcb_table(struct drm_device *dev)
 
 	if (dcb[0] >= 0x41) {
 		NV_WARNONCE(dev, "DCB version 0x%02x unknown\n", dcb[0]);
+=======
+olddcb_table(struct drm_device *dev)
+{
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	u8 *dcb = NULL;
+
+	if (drm->client.device.info.family > NV_DEVICE_INFO_V0_TNT)
+		dcb = ROMPTR(dev, drm->vbios.data[0x36]);
+	if (!dcb) {
+		NV_WARN(drm, "No DCB data found in VBIOS\n");
+		return NULL;
+	}
+
+	if (dcb[0] >= 0x42) {
+		NV_WARN(drm, "DCB version 0x%02x unknown\n", dcb[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	} else
 	if (dcb[0] >= 0x30) {
@@ -5659,18 +5995,32 @@ dcb_table(struct drm_device *dev)
 		 *
 		 * v1.1 (NV5+, maybe some NV4) is entirely unhelpful
 		 */
+<<<<<<< HEAD
 		NV_WARNONCE(dev, "No useful DCB data in VBIOS\n");
 		return NULL;
 	}
 
 	NV_WARNONCE(dev, "DCB header validation failed\n");
+=======
+		NV_WARN(drm, "No useful DCB data in VBIOS\n");
+		return NULL;
+	}
+
+	NV_WARN(drm, "DCB header validation failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
 void *
+<<<<<<< HEAD
 dcb_outp(struct drm_device *dev, u8 idx)
 {
 	u8 *dcb = dcb_table(dev);
+=======
+olddcb_outp(struct drm_device *dev, u8 idx)
+{
+	u8 *dcb = olddcb_table(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dcb && dcb[0] >= 0x30) {
 		if (idx < dcb[2])
 			return dcb + dcb[1] + (idx * dcb[3]);
@@ -5692,20 +6042,34 @@ dcb_outp(struct drm_device *dev, u8 idx)
 }
 
 int
+<<<<<<< HEAD
 dcb_outp_foreach(struct drm_device *dev, void *data,
+=======
+olddcb_outp_foreach(struct drm_device *dev, void *data,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 int (*exec)(struct drm_device *, void *, int idx, u8 *outp))
 {
 	int ret, idx = -1;
 	u8 *outp = NULL;
+<<<<<<< HEAD
 	while ((outp = dcb_outp(dev, ++idx))) {
+=======
+	while ((outp = olddcb_outp(dev, ++idx))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ROM32(outp[0]) == 0x00000000)
 			break; /* seen on an NV11 with DCB v1.5 */
 		if (ROM32(outp[0]) == 0xffffffff)
 			break; /* seen on an NV17 with DCB v2.0 */
 
+<<<<<<< HEAD
 		if ((outp[0] & 0x0f) == OUTPUT_UNUSED)
 			continue;
 		if ((outp[0] & 0x0f) == OUTPUT_EOL)
+=======
+		if ((outp[0] & 0x0f) == DCB_OUTPUT_UNUSED)
+			continue;
+		if ((outp[0] & 0x0f) == DCB_OUTPUT_EOL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		ret = exec(dev, data, idx, outp);
@@ -5717,9 +6081,15 @@ dcb_outp_foreach(struct drm_device *dev, void *data,
 }
 
 u8 *
+<<<<<<< HEAD
 dcb_conntab(struct drm_device *dev)
 {
 	u8 *dcb = dcb_table(dev);
+=======
+olddcb_conntab(struct drm_device *dev)
+{
+	u8 *dcb = olddcb_table(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dcb && dcb[0] >= 0x30 && dcb[1] >= 0x16) {
 		u8 *conntab = ROMPTR(dev, dcb[0x14]);
 		if (conntab && conntab[0] >= 0x30 && conntab[0] <= 0x40)
@@ -5729,19 +6099,33 @@ dcb_conntab(struct drm_device *dev)
 }
 
 u8 *
+<<<<<<< HEAD
 dcb_conn(struct drm_device *dev, u8 idx)
 {
 	u8 *conntab = dcb_conntab(dev);
+=======
+olddcb_conn(struct drm_device *dev, u8 idx)
+{
+	u8 *conntab = olddcb_conntab(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (conntab && idx < conntab[2])
 		return conntab + conntab[1] + (idx * conntab[3]);
 	return NULL;
 }
 
+<<<<<<< HEAD
 static struct dcb_entry *new_dcb_entry(struct dcb_table *dcb)
 {
 	struct dcb_entry *entry = &dcb->entry[dcb->entries];
 
 	memset(entry, 0, sizeof(struct dcb_entry));
+=======
+static struct dcb_output *new_dcb_entry(struct dcb_table *dcb)
+{
+	struct dcb_output *entry = &dcb->entry[dcb->entries];
+
+	memset(entry, 0, sizeof(struct dcb_output));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->index = dcb->entries++;
 
 	return entry;
@@ -5750,20 +6134,36 @@ static struct dcb_entry *new_dcb_entry(struct dcb_table *dcb)
 static void fabricate_dcb_output(struct dcb_table *dcb, int type, int i2c,
 				 int heads, int or)
 {
+<<<<<<< HEAD
 	struct dcb_entry *entry = new_dcb_entry(dcb);
+=======
+	struct dcb_output *entry = new_dcb_entry(dcb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	entry->type = type;
 	entry->i2c_index = i2c;
 	entry->heads = heads;
+<<<<<<< HEAD
 	if (type != OUTPUT_ANALOG)
+=======
+	if (type != DCB_OUTPUT_ANALOG)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		entry->location = !DCB_LOC_ON_CHIP; /* ie OFF CHIP */
 	entry->or = or;
 }
 
 static bool
 parse_dcb20_entry(struct drm_device *dev, struct dcb_table *dcb,
+<<<<<<< HEAD
 		  uint32_t conn, uint32_t conf, struct dcb_entry *entry)
 {
+=======
+		  uint32_t conn, uint32_t conf, struct dcb_output *entry)
+{
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	int link = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entry->type = conn & 0xf;
 	entry->i2c_index = (conn >> 4) & 0xf;
 	entry->heads = (conn >> 8) & 0xf;
@@ -5773,7 +6173,11 @@ parse_dcb20_entry(struct drm_device *dev, struct dcb_table *dcb,
 	entry->or = (conn >> 24) & 0xf;
 
 	switch (entry->type) {
+<<<<<<< HEAD
 	case OUTPUT_ANALOG:
+=======
+	case DCB_OUTPUT_ANALOG:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Although the rest of a CRT conf dword is usually
 		 * zeros, mac biosen have stuff there so we must mask
@@ -5782,7 +6186,11 @@ parse_dcb20_entry(struct drm_device *dev, struct dcb_table *dcb,
 					 (conf & 0xffff) * 10 :
 					 (conf & 0xff) * 10000;
 		break;
+<<<<<<< HEAD
 	case OUTPUT_LVDS:
+=======
+	case DCB_OUTPUT_LVDS:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{
 		uint32_t mask;
 		if (conf & 0x1)
@@ -5808,6 +6216,10 @@ parse_dcb20_entry(struct drm_device *dev, struct dcb_table *dcb,
 			if (conf & 0x4)
 				entry->lvdsconf.use_power_scripts = true;
 			entry->lvdsconf.sor.link = (conf & 0x00000030) >> 4;
+<<<<<<< HEAD
+=======
+			link = entry->lvdsconf.sor.link;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (conf & mask) {
 			/*
@@ -5817,12 +6229,20 @@ parse_dcb20_entry(struct drm_device *dev, struct dcb_table *dcb,
 			if (dcb->version >= 0x40)
 				break;
 
+<<<<<<< HEAD
 			NV_ERROR(dev, "Unknown LVDS configuration bits, "
+=======
+			NV_ERROR(drm, "Unknown LVDS configuration bits, "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      "please report\n");
 		}
 		break;
 		}
+<<<<<<< HEAD
 	case OUTPUT_TV:
+=======
+	case DCB_OUTPUT_TV:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		if (dcb->version >= 0x30)
 			entry->tvconf.has_component_output = conf & (0x8 << 4);
@@ -5831,12 +6251,19 @@ parse_dcb20_entry(struct drm_device *dev, struct dcb_table *dcb,
 
 		break;
 	}
+<<<<<<< HEAD
 	case OUTPUT_DP:
 		entry->dpconf.sor.link = (conf & 0x00000030) >> 4;
+=======
+	case DCB_OUTPUT_DP:
+		entry->dpconf.sor.link = (conf & 0x00000030) >> 4;
+		entry->extdev = (conf & 0x0000ff00) >> 8;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch ((conf & 0x00e00000) >> 21) {
 		case 0:
 			entry->dpconf.link_bw = 162000;
 			break;
+<<<<<<< HEAD
 		default:
 			entry->dpconf.link_bw = 270000;
 			break;
@@ -5846,23 +6273,59 @@ parse_dcb20_entry(struct drm_device *dev, struct dcb_table *dcb,
 			entry->dpconf.link_nr = 4;
 			break;
 		case 0x3:
+=======
+		case 1:
+			entry->dpconf.link_bw = 270000;
+			break;
+		case 2:
+			entry->dpconf.link_bw = 540000;
+			break;
+		case 3:
+		default:
+			entry->dpconf.link_bw = 810000;
+			break;
+		}
+		switch ((conf & 0x0f000000) >> 24) {
+		case 0xf:
+		case 0x4:
+			entry->dpconf.link_nr = 4;
+			break;
+		case 0x3:
+		case 0x2:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			entry->dpconf.link_nr = 2;
 			break;
 		default:
 			entry->dpconf.link_nr = 1;
 			break;
 		}
+<<<<<<< HEAD
 		break;
 	case OUTPUT_TMDS:
 		if (dcb->version >= 0x40)
 			entry->tmdsconf.sor.link = (conf & 0x00000030) >> 4;
+=======
+		link = entry->dpconf.sor.link;
+		break;
+	case DCB_OUTPUT_TMDS:
+		if (dcb->version >= 0x40) {
+			entry->tmdsconf.sor.link = (conf & 0x00000030) >> 4;
+			entry->extdev = (conf & 0x0000ff00) >> 8;
+			link = entry->tmdsconf.sor.link;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else if (dcb->version >= 0x30)
 			entry->tmdsconf.slave_addr = (conf & 0x00000700) >> 8;
 		else if (dcb->version >= 0x22)
 			entry->tmdsconf.slave_addr = (conf & 0x00000070) >> 4;
+<<<<<<< HEAD
 
 		break;
 	case OUTPUT_EOL:
+=======
+		break;
+	case DCB_OUTPUT_EOL:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* weird g80 mobile type that "nv" treats as a terminator */
 		dcb->entries--;
 		return false;
@@ -5884,11 +6347,18 @@ parse_dcb20_entry(struct drm_device *dev, struct dcb_table *dcb,
 	if (conf & 0x100000)
 		entry->i2c_upper_default = true;
 
+<<<<<<< HEAD
+=======
+	entry->hasht = (entry->extdev << 8) | (entry->location << 4) |
+			entry->type;
+	entry->hashm = (entry->heads << 8) | (link << 6) | entry->or;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
 static bool
 parse_dcb15_entry(struct drm_device *dev, struct dcb_table *dcb,
+<<<<<<< HEAD
 		  uint32_t conn, uint32_t conf, struct dcb_entry *entry)
 {
 	switch (conn & 0x0000000f) {
@@ -5897,10 +6367,23 @@ parse_dcb15_entry(struct drm_device *dev, struct dcb_table *dcb,
 		break;
 	case 1:
 		entry->type = OUTPUT_TV;
+=======
+		  uint32_t conn, uint32_t conf, struct dcb_output *entry)
+{
+	struct nouveau_drm *drm = nouveau_drm(dev);
+
+	switch (conn & 0x0000000f) {
+	case 0:
+		entry->type = DCB_OUTPUT_ANALOG;
+		break;
+	case 1:
+		entry->type = DCB_OUTPUT_TV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case 2:
 	case 4:
 		if (conn & 0x10)
+<<<<<<< HEAD
 			entry->type = OUTPUT_LVDS;
 		else
 			entry->type = OUTPUT_TMDS;
@@ -5910,6 +6393,17 @@ parse_dcb15_entry(struct drm_device *dev, struct dcb_table *dcb,
 		break;
 	default:
 		NV_ERROR(dev, "Unknown DCB type %d\n", conn & 0x0000000f);
+=======
+			entry->type = DCB_OUTPUT_LVDS;
+		else
+			entry->type = DCB_OUTPUT_TMDS;
+		break;
+	case 3:
+		entry->type = DCB_OUTPUT_LVDS;
+		break;
+	default:
+		NV_ERROR(drm, "Unknown DCB type %d\n", conn & 0x0000000f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	}
 
@@ -5921,6 +6415,7 @@ parse_dcb15_entry(struct drm_device *dev, struct dcb_table *dcb,
 	entry->duallink_possible = false;
 
 	switch (entry->type) {
+<<<<<<< HEAD
 	case OUTPUT_ANALOG:
 		entry->crtconf.maxfreq = (conf & 0xffff) * 10;
 		break;
@@ -5928,6 +6423,15 @@ parse_dcb15_entry(struct drm_device *dev, struct dcb_table *dcb,
 		entry->tvconf.has_component_output = false;
 		break;
 	case OUTPUT_LVDS:
+=======
+	case DCB_OUTPUT_ANALOG:
+		entry->crtconf.maxfreq = (conf & 0xffff) * 10;
+		break;
+	case DCB_OUTPUT_TV:
+		entry->tvconf.has_component_output = false;
+		break;
+	case DCB_OUTPUT_LVDS:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((conn & 0x00003f00) >> 8 != 0x10)
 			entry->lvdsconf.use_straps_for_mode = true;
 		entry->lvdsconf.use_power_scripts = true;
@@ -5948,6 +6452,7 @@ void merge_like_dcb_entries(struct drm_device *dev, struct dcb_table *dcb)
 	 * more options
 	 */
 
+<<<<<<< HEAD
 	int i, newentries = 0;
 
 	for (i = 0; i < dcb->entries; i++) {
@@ -5956,6 +6461,17 @@ void merge_like_dcb_entries(struct drm_device *dev, struct dcb_table *dcb)
 
 		for (j = i + 1; j < dcb->entries; j++) {
 			struct dcb_entry *jent = &dcb->entry[j];
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	int i, newentries = 0;
+
+	for (i = 0; i < dcb->entries; i++) {
+		struct dcb_output *ient = &dcb->entry[i];
+		int j;
+
+		for (j = i + 1; j < dcb->entries; j++) {
+			struct dcb_output *jent = &dcb->entry[j];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (jent->type == 100) /* already merged entry */
 				continue;
@@ -5965,7 +6481,11 @@ void merge_like_dcb_entries(struct drm_device *dev, struct dcb_table *dcb)
 			    jent->type == ient->type &&
 			    jent->location == ient->location &&
 			    jent->or == ient->or) {
+<<<<<<< HEAD
 				NV_TRACE(dev, "Merging DCB entries %d and %d\n",
+=======
+				NV_INFO(drm, "Merging DCB entries %d and %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 i, j);
 				ient->heads |= jent->heads;
 				jent->type = 100; /* dummy value */
@@ -5991,8 +6511,13 @@ void merge_like_dcb_entries(struct drm_device *dev, struct dcb_table *dcb)
 static bool
 apply_dcb_encoder_quirks(struct drm_device *dev, int idx, u32 *conn, u32 *conf)
 {
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 	struct dcb_table *dcb = &dev_priv->vbios.dcb;
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct dcb_table *dcb = &drm->vbios.dcb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Dell Precision M6300
 	 *   DCB entry 2: 02025312 00000010
@@ -6018,7 +6543,11 @@ apply_dcb_encoder_quirks(struct drm_device *dev, int idx, u32 *conn, u32 *conf)
 	 */
 	if (nv_match_device(dev, 0x0201, 0x1462, 0x8851)) {
 		if (*conn == 0xf2005014 && *conf == 0xffffffff) {
+<<<<<<< HEAD
 			fabricate_dcb_output(dcb, OUTPUT_TMDS, 1, 1, 1);
+=======
+			fabricate_dcb_output(dcb, DCB_OUTPUT_TMDS, 1, 1, DCB_OUTPUT_B);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return false;
 		}
 	}
@@ -6080,6 +6609,21 @@ apply_dcb_encoder_quirks(struct drm_device *dev, int idx, u32 *conn, u32 *conf)
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	/* fdo#50830: connector indices for VGA and DVI-I are backwards */
+	if (nv_match_device(dev, 0x0421, 0x3842, 0xc793)) {
+		if (idx == 0 && *conn == 0x02000300)
+			*conn = 0x02011300;
+		else
+		if (idx == 1 && *conn == 0x04011310)
+			*conn = 0x04000310;
+		else
+		if (idx == 2 && *conn == 0x02011312)
+			*conn = 0x02000312;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return true;
 }
 
@@ -6092,13 +6636,19 @@ fabricate_dcb_encoder_table(struct drm_device *dev, struct nvbios *bios)
 #ifdef __powerpc__
 	/* Apple iMac G4 NV17 */
 	if (of_machine_is_compatible("PowerMac4,5")) {
+<<<<<<< HEAD
 		fabricate_dcb_output(dcb, OUTPUT_TMDS, 0, all_heads, 1);
 		fabricate_dcb_output(dcb, OUTPUT_ANALOG, 1, all_heads, 2);
+=======
+		fabricate_dcb_output(dcb, DCB_OUTPUT_TMDS, 0, all_heads, DCB_OUTPUT_B);
+		fabricate_dcb_output(dcb, DCB_OUTPUT_ANALOG, 1, all_heads, DCB_OUTPUT_C);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 #endif
 
 	/* Make up some sane defaults */
+<<<<<<< HEAD
 	fabricate_dcb_output(dcb, OUTPUT_ANALOG,
 			     bios->legacy.i2c_indices.crt, 1, 1);
 
@@ -6112,26 +6662,57 @@ fabricate_dcb_encoder_table(struct drm_device *dev, struct nvbios *bios)
 		fabricate_dcb_output(dcb, OUTPUT_TMDS,
 				     bios->legacy.i2c_indices.panel,
 				     all_heads, 1);
+=======
+	fabricate_dcb_output(dcb, DCB_OUTPUT_ANALOG,
+			     bios->legacy.i2c_indices.crt, 1, DCB_OUTPUT_B);
+
+	if (nv04_tv_identify(dev, bios->legacy.i2c_indices.tv) >= 0)
+		fabricate_dcb_output(dcb, DCB_OUTPUT_TV,
+				     bios->legacy.i2c_indices.tv,
+				     all_heads, DCB_OUTPUT_A);
+
+	else if (bios->tmds.output0_script_ptr ||
+		 bios->tmds.output1_script_ptr)
+		fabricate_dcb_output(dcb, DCB_OUTPUT_TMDS,
+				     bios->legacy.i2c_indices.panel,
+				     all_heads, DCB_OUTPUT_B);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 parse_dcb_entry(struct drm_device *dev, void *data, int idx, u8 *outp)
 {
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 	struct dcb_table *dcb = &dev_priv->vbios.dcb;
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct dcb_table *dcb = &drm->vbios.dcb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 conf = (dcb->version >= 0x20) ? ROM32(outp[4]) : ROM32(outp[6]);
 	u32 conn = ROM32(outp[0]);
 	bool ret;
 
 	if (apply_dcb_encoder_quirks(dev, idx, &conn, &conf)) {
+<<<<<<< HEAD
 		struct dcb_entry *entry = new_dcb_entry(dcb);
 
 		NV_TRACEWARN(dev, "DCB outp %02d: %08x %08x\n", idx, conn, conf);
+=======
+		struct dcb_output *entry = new_dcb_entry(dcb);
+
+		NV_INFO(drm, "DCB outp %02d: %08x %08x\n", idx, conn, conf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (dcb->version >= 0x20)
 			ret = parse_dcb20_entry(dev, dcb, conn, conf, entry);
 		else
 			ret = parse_dcb15_entry(dev, dcb, conn, conf, entry);
+<<<<<<< HEAD
+=======
+		entry->id = idx;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ret)
 			return 1; /* stop parsing */
 
@@ -6139,7 +6720,11 @@ parse_dcb_entry(struct drm_device *dev, void *data, int idx, u8 *outp)
 		 * are cards with bogus values (nv31m in bug 23212),
 		 * and it's otherwise useless.
 		 */
+<<<<<<< HEAD
 		if (entry->type == OUTPUT_TV &&
+=======
+		if (entry->type == DCB_OUTPUT_TV &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    entry->location == DCB_LOC_ON_CHIP)
 			entry->i2c_index = 0x0f;
 	}
@@ -6187,7 +6772,11 @@ dcb_fake_connectors(struct nvbios *bios)
 	 * table - just in case it has random, rather than stub, entries.
 	 */
 	if (i > 1) {
+<<<<<<< HEAD
 		u8 *conntab = dcb_conntab(bios->dev);
+=======
+		u8 *conntab = olddcb_conntab(bios->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (conntab)
 			conntab[0] = 0x00;
 	}
@@ -6196,11 +6785,19 @@ dcb_fake_connectors(struct nvbios *bios)
 static int
 parse_dcb_table(struct drm_device *dev, struct nvbios *bios)
 {
+<<<<<<< HEAD
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dcb_table *dcb = &bios->dcb;
 	u8 *dcbt, *conn;
 	int idx;
 
+<<<<<<< HEAD
 	dcbt = dcb_table(dev);
+=======
+	dcbt = olddcb_table(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dcbt) {
 		/* handle pre-DCB boards */
 		if (bios->type == NVBIOS_BMP) {
@@ -6211,10 +6808,17 @@ parse_dcb_table(struct drm_device *dev, struct nvbios *bios)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	NV_TRACE(dev, "DCB version %d.%d\n", dcbt[0] >> 4, dcbt[0] & 0xf);
 
 	dcb->version = dcbt[0];
 	dcb_outp_foreach(dev, NULL, parse_dcb_entry);
+=======
+	NV_INFO(drm, "DCB version %d.%d\n", dcbt[0] >> 4, dcbt[0] & 0xf);
+
+	dcb->version = dcbt[0];
+	olddcb_outp_foreach(dev, NULL, parse_dcb_entry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * apart for v2.1+ not being known for requiring merging, this
@@ -6223,6 +6827,7 @@ parse_dcb_table(struct drm_device *dev, struct nvbios *bios)
 	if (dcb->version < 0x21)
 		merge_like_dcb_entries(dev, dcb);
 
+<<<<<<< HEAD
 	if (!dcb->entries)
 		return -ENXIO;
 
@@ -6235,6 +6840,18 @@ parse_dcb_table(struct drm_device *dev, struct nvbios *bios)
 				printk("%04x\n", ROM16(conn[0]));
 			else
 				printk("%08x\n", ROM32(conn[0]));
+=======
+	/* dump connector table entries to log, if any exist */
+	idx = -1;
+	while ((conn = olddcb_conn(dev, ++idx))) {
+		if (conn[0] != 0xff) {
+			if (olddcb_conntab(dev)[3] < 4)
+				NV_INFO(drm, "DCB conn %02d: %04x\n",
+					idx, ROM16(conn[0]));
+			else
+				NV_INFO(drm, "DCB conn %02d: %08x\n",
+					idx, ROM32(conn[0]));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	dcb_fake_connectors(bios);
@@ -6252,12 +6869,21 @@ static int load_nv17_hwsq_ucode_entry(struct drm_device *dev, struct nvbios *bio
 	 * starting at reg 0x00001400
 	 */
 
+<<<<<<< HEAD
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct nvif_object *device = &drm->client.device.object;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t bytes_to_write;
 	uint16_t hwsq_entry_offset;
 	int i;
 
 	if (bios->data[hwsq_offset] <= entry) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "Too few entries in HW sequencer table for "
+=======
+		NV_ERROR(drm, "Too few entries in HW sequencer table for "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"requested entry\n");
 		return -ENOENT;
 	}
@@ -6265,24 +6891,43 @@ static int load_nv17_hwsq_ucode_entry(struct drm_device *dev, struct nvbios *bio
 	bytes_to_write = bios->data[hwsq_offset + 1];
 
 	if (bytes_to_write != 36) {
+<<<<<<< HEAD
 		NV_ERROR(dev, "Unknown HW sequencer entry size\n");
 		return -EINVAL;
 	}
 
 	NV_TRACE(dev, "Loading NV17 power sequencing microcode\n");
+=======
+		NV_ERROR(drm, "Unknown HW sequencer entry size\n");
+		return -EINVAL;
+	}
+
+	NV_INFO(drm, "Loading NV17 power sequencing microcode\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hwsq_entry_offset = hwsq_offset + 2 + entry * bytes_to_write;
 
 	/* set sequencer control */
+<<<<<<< HEAD
 	bios_wr32(bios, 0x00001304, ROM32(bios->data[hwsq_entry_offset]));
+=======
+	nvif_wr32(device, 0x00001304, ROM32(bios->data[hwsq_entry_offset]));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bytes_to_write -= 4;
 
 	/* write ucode */
 	for (i = 0; i < bytes_to_write; i += 4)
+<<<<<<< HEAD
 		bios_wr32(bios, 0x00001400 + i, ROM32(bios->data[hwsq_entry_offset + i + 4]));
 
 	/* twiddle NV_PBUS_DEBUG_4 */
 	bios_wr32(bios, NV_PBUS_DEBUG_4, bios_rd32(bios, NV_PBUS_DEBUG_4) | 0x18);
+=======
+		nvif_wr32(device, 0x00001400 + i, ROM32(bios->data[hwsq_entry_offset + i + 4]));
+
+	/* twiddle NV_PBUS_DEBUG_4 */
+	nvif_wr32(device, NV_PBUS_DEBUG_4, nvif_rd32(device, NV_PBUS_DEBUG_4) | 0x18);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -6299,7 +6944,11 @@ static int load_nv17_hw_sequencer_ucode(struct drm_device *dev,
 	 * The microcode entries are found by the "HWSQ" signature.
 	 */
 
+<<<<<<< HEAD
 	const uint8_t hwsq_signature[] = { 'H', 'W', 'S', 'Q' };
+=======
+	static const uint8_t hwsq_signature[] = { 'H', 'W', 'S', 'Q' };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const int sz = sizeof(hwsq_signature);
 	int hwsq_offset;
 
@@ -6313,9 +6962,15 @@ static int load_nv17_hw_sequencer_ucode(struct drm_device *dev,
 
 uint8_t *nouveau_bios_embedded_edid(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 	struct nvbios *bios = &dev_priv->vbios;
 	const uint8_t edid_sig[] = {
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct nvbios *bios = &drm->vbios;
+	static const uint8_t edid_sig[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00 };
 	uint16_t offset = 0;
 	uint16_t newoffset;
@@ -6337,11 +6992,16 @@ uint8_t *nouveau_bios_embedded_edid(struct drm_device *dev)
 		offset++;
 	}
 
+<<<<<<< HEAD
 	NV_TRACE(dev, "Found EDID in BIOS\n");
+=======
+	NV_INFO(drm, "Found EDID in BIOS\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return bios->fp.edid = &bios->data[offset];
 }
 
+<<<<<<< HEAD
 void
 nouveau_bios_run_init_table(struct drm_device *dev, uint16_t table,
 			    struct dcb_entry *dcbent, int crtc)
@@ -6408,14 +7068,47 @@ static int nouveau_parse_vbios_struct(struct drm_device *dev)
 
 	NV_ERROR(dev, "No known BIOS signature found\n");
 	return -ENODEV;
+=======
+static bool NVInitVBIOS(struct drm_device *dev)
+{
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct nvkm_bios *bios = nvxx_bios(&drm->client.device);
+	struct nvbios *legacy = &drm->vbios;
+
+	memset(legacy, 0, sizeof(struct nvbios));
+	spin_lock_init(&legacy->lock);
+	legacy->dev = dev;
+
+	legacy->data = bios->data;
+	legacy->length = bios->size;
+	legacy->major_version = bios->version.major;
+	legacy->chip_version = bios->version.chip;
+	if (bios->bit_offset) {
+		legacy->type = NVBIOS_BIT;
+		legacy->offset = bios->bit_offset;
+		return !parse_bit_structure(legacy, legacy->offset + 6);
+	} else
+	if (bios->bmp_offset) {
+		legacy->type = NVBIOS_BMP;
+		legacy->offset = bios->bmp_offset;
+		return !parse_bmp_structure(dev, legacy, legacy->offset);
+	}
+
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int
 nouveau_run_vbios_init(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 	struct nvbios *bios = &dev_priv->vbios;
 	int i, ret = 0;
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct nvbios *bios = &drm->vbios;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Reset the BIOS head to 0. */
 	bios->state.crtchead = 0;
@@ -6428,6 +7121,7 @@ nouveau_run_vbios_init(struct drm_device *dev)
 		bios->fp.lvds_init_run = false;
 	}
 
+<<<<<<< HEAD
 	parse_init_tables(bios);
 
 	/*
@@ -6451,11 +7145,15 @@ nouveau_run_vbios_init(struct drm_device *dev)
 	}
 
 	return ret;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool
 nouveau_bios_posted(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 	unsigned htotal;
 
@@ -6465,19 +7163,30 @@ nouveau_bios_posted(struct drm_device *dev)
 			return false;
 		return true;
 	}
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	unsigned htotal;
+
+	if (drm->client.device.info.family >= NV_DEVICE_INFO_V0_TESLA)
+		return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	htotal  = NVReadVgaCrtc(dev, 0, 0x06);
 	htotal |= (NVReadVgaCrtc(dev, 0, 0x07) & 0x01) << 8;
 	htotal |= (NVReadVgaCrtc(dev, 0, 0x07) & 0x20) << 4;
 	htotal |= (NVReadVgaCrtc(dev, 0, 0x25) & 0x01) << 10;
 	htotal |= (NVReadVgaCrtc(dev, 0, 0x41) & 0x01) << 11;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (htotal != 0);
 }
 
 int
 nouveau_bios_init(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 	struct nvbios *bios = &dev_priv->vbios;
 	int ret;
@@ -6500,6 +7209,25 @@ nouveau_bios_init(struct drm_device *dev)
 	ret = parse_dcb_table(dev, bios);
 	if (ret)
 		return ret;
+=======
+	struct nouveau_drm *drm = nouveau_drm(dev);
+	struct nvbios *bios = &drm->vbios;
+	int ret;
+
+	/* only relevant for PCI devices */
+	if (!dev_is_pci(dev->dev) ||
+	    nvkm_gsp_rm(nvxx_device(&drm->client.device)->gsp))
+		return 0;
+
+	if (!NVInitVBIOS(dev))
+		return -ENODEV;
+
+	if (drm->client.device.info.family < NV_DEVICE_INFO_V0_TESLA) {
+		ret = parse_dcb_table(dev, bios);
+		if (ret)
+			return ret;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!bios->major_version)	/* we don't run version 0 bios */
 		return 0;
@@ -6509,12 +7237,19 @@ nouveau_bios_init(struct drm_device *dev)
 
 	/* ... unless card isn't POSTed already */
 	if (!nouveau_bios_posted(dev)) {
+<<<<<<< HEAD
 		NV_INFO(dev, "Adaptor not initialised, "
 			"running VBIOS init tables.\n");
 		bios->execute = true;
 	}
 	if (nouveau_force_post)
 		bios->execute = true;
+=======
+		NV_INFO(drm, "Adaptor not initialised, "
+			"running VBIOS init tables.\n");
+		bios->execute = true;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = nouveau_run_vbios_init(dev);
 	if (ret)
@@ -6537,10 +7272,13 @@ nouveau_bios_init(struct drm_device *dev)
 void
 nouveau_bios_takedown(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_nouveau_private *dev_priv = dev->dev_private;
 
 	nouveau_mxm_fini(dev);
 	nouveau_i2c_fini(dev);
 
 	kfree(dev_priv->vbios.data);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

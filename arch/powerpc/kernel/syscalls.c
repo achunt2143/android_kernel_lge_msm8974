@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Implementation of various system calls for Linux/PowerPC
  *
@@ -11,12 +15,15 @@
  * This file contains various random system calls that
  * have a non-standard calling sequence on the Linux/PPC
  * platform.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version
  *  2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -34,14 +41,21 @@
 #include <linux/ipc.h>
 #include <linux/utsname.h>
 #include <linux/file.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/personality.h>
 
 #include <asm/uaccess.h>
+=======
+#include <linux/personality.h>
+
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/syscalls.h>
 #include <asm/time.h>
 #include <asm/unistd.h>
 
+<<<<<<< HEAD
 static inline unsigned long do_mmap2(unsigned long addr, size_t len,
 			unsigned long prot, unsigned long flags,
 			unsigned long fd, unsigned long off, int shift)
@@ -65,17 +79,52 @@ out:
 unsigned long sys_mmap2(unsigned long addr, size_t len,
 			unsigned long prot, unsigned long flags,
 			unsigned long fd, unsigned long pgoff)
+=======
+static long do_mmap2(unsigned long addr, size_t len,
+		     unsigned long prot, unsigned long flags,
+		     unsigned long fd, unsigned long off, int shift)
+{
+	if (!arch_validate_prot(prot, addr))
+		return -EINVAL;
+
+	if (!IS_ALIGNED(off, 1 << shift))
+		return -EINVAL;
+
+	return ksys_mmap_pgoff(addr, len, prot, flags, fd, off >> shift);
+}
+
+SYSCALL_DEFINE6(mmap2, unsigned long, addr, size_t, len,
+		unsigned long, prot, unsigned long, flags,
+		unsigned long, fd, unsigned long, pgoff)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return do_mmap2(addr, len, prot, flags, fd, pgoff, PAGE_SHIFT-12);
 }
 
+<<<<<<< HEAD
 unsigned long sys_mmap(unsigned long addr, size_t len,
 		       unsigned long prot, unsigned long flags,
 		       unsigned long fd, off_t offset)
+=======
+#ifdef CONFIG_COMPAT
+COMPAT_SYSCALL_DEFINE6(mmap2,
+		       unsigned long, addr, size_t, len,
+		       unsigned long, prot, unsigned long, flags,
+		       unsigned long, fd, unsigned long, off_4k)
+{
+	return do_mmap2(addr, len, prot, flags, fd, off_4k, PAGE_SHIFT-12);
+}
+#endif
+
+SYSCALL_DEFINE6(mmap, unsigned long, addr, size_t, len,
+		unsigned long, prot, unsigned long, flags,
+		unsigned long, fd, off_t, offset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return do_mmap2(addr, len, prot, flags, fd, offset, PAGE_SHIFT);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC32
 /*
  * Due to some executables calling the wrong select we sometimes
@@ -103,10 +152,15 @@ ppc_select(int n, fd_set __user *inp, fd_set __user *outp, fd_set __user *exp, s
 
 #ifdef CONFIG_PPC64
 long ppc64_personality(unsigned long personality)
+=======
+#ifdef CONFIG_PPC64
+static long do_ppc64_personality(unsigned long personality)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long ret;
 
 	if (personality(current->personality) == PER_LINUX32
+<<<<<<< HEAD
 	    && personality == PER_LINUX)
 		personality = PER_LINUX32;
 	ret = sys_personality(personality);
@@ -135,4 +189,51 @@ void do_show_syscall(unsigned long r3, unsigned long r4, unsigned long r5,
 void do_show_syscall_exit(unsigned long r3)
 {
 	printk(" -> %lx, current=%p cpu=%d\n", r3, current, smp_processor_id());
+=======
+	    && personality(personality) == PER_LINUX)
+		personality = (personality & ~PER_MASK) | PER_LINUX32;
+	ret = ksys_personality(personality);
+	if (personality(ret) == PER_LINUX32)
+		ret = (ret & ~PER_MASK) | PER_LINUX;
+	return ret;
+}
+
+SYSCALL_DEFINE1(ppc64_personality, unsigned long, personality)
+{
+	return do_ppc64_personality(personality);
+}
+
+#ifdef CONFIG_COMPAT
+COMPAT_SYSCALL_DEFINE1(ppc64_personality, unsigned long, personality)
+{
+	return do_ppc64_personality(personality);
+}
+#endif /* CONFIG_COMPAT */
+#endif /* CONFIG_PPC64 */
+
+SYSCALL_DEFINE6(ppc_fadvise64_64,
+		int, fd, int, advice, u32, offset_high, u32, offset_low,
+		u32, len_high, u32, len_low)
+{
+	return ksys_fadvise64_64(fd, merge_64(offset_high, offset_low),
+				 merge_64(len_high, len_low), advice);
+}
+
+SYSCALL_DEFINE0(switch_endian)
+{
+	struct thread_info *ti;
+
+	regs_set_return_msr(current->thread.regs,
+				current->thread.regs->msr ^ MSR_LE);
+
+	/*
+	 * Set TIF_RESTOREALL so that r3 isn't clobbered on return to
+	 * userspace. That also has the effect of restoring the non-volatile
+	 * GPRs, so we saved them on the way in here.
+	 */
+	ti = current_thread_info();
+	ti->flags |= _TIF_RESTOREALL;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

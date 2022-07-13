@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006 Sony Computer Entertainment Inc.
  * Copyright 2006, 2007 Sony Corporation
  *
  * AV backend support for PS3
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -705,11 +712,19 @@ void ps3av_cmd_set_audio_mode(struct ps3av_pkt_audio_mode *audio, u32 avport,
 	switch (ch) {
 	case PS3AV_CMD_AUDIO_NUM_OF_CH_8:
 		audio->audio_enable[3] = 1;
+<<<<<<< HEAD
 		/* fall through */
 	case PS3AV_CMD_AUDIO_NUM_OF_CH_6:
 		audio->audio_enable[2] = 1;
 		audio->audio_enable[1] = 1;
 		/* fall through */
+=======
+		fallthrough;
+	case PS3AV_CMD_AUDIO_NUM_OF_CH_6:
+		audio->audio_enable[2] = 1;
+		audio->audio_enable[1] = 1;
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PS3AV_CMD_AUDIO_NUM_OF_CH_2:
 	default:
 		audio->audio_enable[0] = 1;

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2001-2002 by David Brownell
  *
@@ -14,11 +15,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Copyright (c) 2001-2002 by David Brownell
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_USB_EHCI_DEF_H
 #define __LINUX_USB_EHCI_DEF_H
 
+<<<<<<< HEAD
+=======
+#include <linux/usb/ehci-dbgp.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* EHCI register interface, corresponds to EHCI Revision 0.95 specification */
 
 /* Section 2.2 Host Controller Capability Registers */
@@ -42,6 +53,10 @@ struct ehci_caps {
 #define HCS_PORTROUTED(p)	((p)&(1 << 7))	/* true: port routing */
 #define HCS_PPC(p)		((p)&(1 << 4))	/* true: port power control */
 #define HCS_N_PORTS(p)		(((p)>>0)&0xf)	/* bits 3:0, ports on HC */
+<<<<<<< HEAD
+=======
+#define HCS_N_PORTS_MAX		15		/* N_PORTS valid 0x1-0xF */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u32		hcc_params;      /* HCCPARAMS - offset 0x8 */
 /* EHCI 1.1 addendum */
@@ -111,14 +126,30 @@ struct ehci_regs {
 	/* ASYNCLISTADDR: offset 0x18 */
 	u32		async_next;	/* address of next async queue head */
 
+<<<<<<< HEAD
 	u32		reserved[9];
+=======
+	u32		reserved1[2];
+
+	/* TXFILLTUNING: offset 0x24 */
+	u32		txfill_tuning;	/* TX FIFO Tuning register */
+#define TXFIFO_DEFAULT	(8<<16)		/* FIFO burst threshold 8 */
+
+	u32		reserved2[6];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* CONFIGFLAG: offset 0x40 */
 	u32		configured_flag;
 #define FLAG_CF		(1<<0)		/* true: we'll support "high speed" */
 
+<<<<<<< HEAD
 	/* PORTSC: offset 0x44 */
 	u32		port_status[0];	/* up to N_PORTS */
+=======
+	union {
+		/* PORTSC: offset 0x44 */
+		u32	port_status[HCS_N_PORTS_MAX];	/* up to N_PORTS */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* EHCI 1.1 addendum */
 #define PORTSC_SUSPEND_STS_ACK 0
 #define PORTSC_SUSPEND_STS_NYET 1
@@ -142,7 +173,11 @@ struct ehci_regs {
 #define PORT_OWNER	(1<<13)		/* true: companion hc owns this port */
 #define PORT_POWER	(1<<12)		/* true: has power (see PPC) */
 #define PORT_USB11(x) (((x)&(3<<10)) == (1<<10))	/* USB 1.1 device */
+<<<<<<< HEAD
 /* 11:10 for detecting lowspeed devices (reset vs release ownership) */
+=======
+#define PORT_LS_MASK	(3<<10)		/* Link status (SE0, K or J */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 9 reserved */
 #define PORT_LPM	(1<<9)		/* LPM transaction */
 #define PORT_RESET	(1<<8)		/* reset port */
@@ -155,18 +190,31 @@ struct ehci_regs {
 #define PORT_CSC	(1<<1)		/* connect status change */
 #define PORT_CONNECT	(1<<0)		/* device connected */
 #define PORT_RWC_BITS   (PORT_CSC | PORT_PEC | PORT_OCC)
+<<<<<<< HEAD
 };
 
 #define USBMODE		0x68		/* USB Device mode */
+=======
+		struct {
+			u32	reserved3[9];
+			/* USBMODE: offset 0x68 */
+			u32	usbmode;	/* USB Device mode */
+		};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define USBMODE_SDIS	(1<<3)		/* Stream disable */
 #define USBMODE_BE	(1<<2)		/* BE/LE endianness select */
 #define USBMODE_CM_HC	(3<<0)		/* host controller mode */
 #define USBMODE_CM_IDLE	(0<<0)		/* idle state */
+<<<<<<< HEAD
+=======
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Moorestown has some non-standard registers, partially due to the fact that
  * its EHCI controller has both TT and LPM support. HOSTPCx are extensions to
  * PORTSCx
  */
+<<<<<<< HEAD
 #define HOSTPC0		0x84		/* HOSTPC extension */
 #define HOSTPC_PHCD	(1<<22)		/* Phy clock disable */
 #define HOSTPC_PSPD	(3<<25)		/* Port speed detection */
@@ -222,4 +270,27 @@ static inline int dbgp_external_startup(void)
 }
 #endif
 
+=======
+	union {
+		struct {
+			u32	reserved4;
+			/* HOSTPC: offset 0x84 */
+			u32	hostpc[HCS_N_PORTS_MAX];
+#define HOSTPC_PHCD	(1<<22)		/* Phy clock disable */
+#define HOSTPC_PSPD	(3<<25)		/* Port speed detection */
+		};
+
+		/* Broadcom-proprietary USB_EHCI_INSNREG00 @ 0x80 */
+		u32	brcm_insnreg[4];
+	};
+
+	u32		reserved5[2];
+
+	/* USBMODE_EX: offset 0xc8 */
+	u32		usbmode_ex;	/* USB Device mode extension */
+#define USBMODE_EX_VBPS	(1<<5)		/* VBus Power Select On */
+#define USBMODE_EX_HC	(3<<0)		/* host controller mode */
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_USB_EHCI_DEF_H */

@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dlmfs.c
  *
  * Code which implements the kernel side of a minimal userspace
@@ -9,6 +14,7 @@
  * which was a template for the fs side of this module.
  *
  * Copyright (C) 2003, 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -24,6 +30,8 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Simple VFS hooks based on: */
@@ -45,6 +53,7 @@
 #include <linux/backing-dev.h>
 #include <linux/poll.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 #include "stackglue.h"
@@ -53,6 +62,15 @@
 
 #define MLOG_MASK_PREFIX ML_DLMFS
 #include "cluster/masklog.h"
+=======
+#include <linux/uaccess.h>
+
+#include "../stackglue.h"
+#include "userdlm.h"
+
+#define MLOG_MASK_PREFIX ML_DLMFS
+#include "../cluster/masklog.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static const struct super_operations dlmfs_ops;
@@ -72,7 +90,11 @@ struct workqueue_struct *user_dlm_worker;
  * Over time, dlmfs has added some features that were not part of the
  * initial ABI.  Unfortunately, some of these features are not detectable
  * via standard usage.  For example, Linux's default poll always returns
+<<<<<<< HEAD
  * POLLIN, so there is no way for a caller of poll(2) to know when dlmfs
+=======
+ * EPOLLIN, so there is no way for a caller of poll(2) to know when dlmfs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * added poll support.  Instead, we provide this list of new capabilities.
  *
  * Capabilities is a read-only attribute.  We do it as a module parameter
@@ -84,21 +106,35 @@ struct workqueue_struct *user_dlm_worker;
  * interaction.
  *
  * Capabilities:
+<<<<<<< HEAD
  * - bast	: POLLIN against the file descriptor of a held lock
+=======
+ * - bast	: EPOLLIN against the file descriptor of a held lock
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *		  signifies a bast fired on the lock.
  */
 #define DLMFS_CAPABILITIES "bast stackglue"
 static int param_set_dlmfs_capabilities(const char *val,
+<<<<<<< HEAD
 					struct kernel_param *kp)
+=======
+					const struct kernel_param *kp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	printk(KERN_ERR "%s: readonly parameter\n", kp->name);
 	return -EINVAL;
 }
 static int param_get_dlmfs_capabilities(char *buffer,
+<<<<<<< HEAD
 					struct kernel_param *kp)
 {
 	return strlcpy(buffer, DLMFS_CAPABILITIES,
 		       strlen(DLMFS_CAPABILITIES) + 1);
+=======
+					const struct kernel_param *kp)
+{
+	return sysfs_emit(buffer, DLMFS_CAPABILITIES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 module_param_call(capabilities, param_set_dlmfs_capabilities,
 		  param_get_dlmfs_capabilities, NULL, 0444);
@@ -180,7 +216,11 @@ bail:
 static int dlmfs_file_release(struct inode *inode,
 			      struct file *file)
 {
+<<<<<<< HEAD
 	int level, status;
+=======
+	int level;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dlmfs_inode_private *ip = DLMFS_I(inode);
 	struct dlmfs_filp_private *fp = file->private_data;
 
@@ -189,7 +229,10 @@ static int dlmfs_file_release(struct inode *inode,
 
 	mlog(0, "close called on inode %lu\n", inode->i_ino);
 
+<<<<<<< HEAD
 	status = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (fp) {
 		level = fp->fp_lock_level;
 		if (level != DLM_LOCK_IV)
@@ -206,6 +249,7 @@ static int dlmfs_file_release(struct inode *inode,
  * We do ->setattr() just to override size changes.  Our size is the size
  * of the LVB and nothing else.
  */
+<<<<<<< HEAD
 static int dlmfs_file_setattr(struct dentry *dentry, struct iattr *attr)
 {
 	int error;
@@ -217,31 +261,61 @@ static int dlmfs_file_setattr(struct dentry *dentry, struct iattr *attr)
 		return error;
 
 	setattr_copy(inode, attr);
+=======
+static int dlmfs_file_setattr(struct mnt_idmap *idmap,
+			      struct dentry *dentry, struct iattr *attr)
+{
+	int error;
+	struct inode *inode = d_inode(dentry);
+
+	attr->ia_valid &= ~ATTR_SIZE;
+	error = setattr_prepare(&nop_mnt_idmap, dentry, attr);
+	if (error)
+		return error;
+
+	setattr_copy(&nop_mnt_idmap, inode, attr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty(inode);
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned int dlmfs_file_poll(struct file *file, poll_table *wait)
 {
 	int event = 0;
 	struct inode *inode = file->f_path.dentry->d_inode;
+=======
+static __poll_t dlmfs_file_poll(struct file *file, poll_table *wait)
+{
+	__poll_t event = 0;
+	struct inode *inode = file_inode(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dlmfs_inode_private *ip = DLMFS_I(inode);
 
 	poll_wait(file, &ip->ip_lockres.l_event, wait);
 
 	spin_lock(&ip->ip_lockres.l_lock);
 	if (ip->ip_lockres.l_flags & USER_LOCK_BLOCKED)
+<<<<<<< HEAD
 		event = POLLIN | POLLRDNORM;
+=======
+		event = EPOLLIN | EPOLLRDNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&ip->ip_lockres.l_lock);
 
 	return event;
 }
 
+<<<<<<< HEAD
 static ssize_t dlmfs_file_read(struct file *filp,
+=======
+static ssize_t dlmfs_file_read(struct file *file,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       char __user *buf,
 			       size_t count,
 			       loff_t *ppos)
 {
+<<<<<<< HEAD
 	int bytes_left;
 	ssize_t readlen, got;
 	char *lvb_buf;
@@ -283,6 +357,14 @@ static ssize_t dlmfs_file_read(struct file *filp,
 
 	mlog(0, "read %zd bytes\n", readlen);
 	return readlen;
+=======
+	char lvb[DLM_LVB_LEN];
+
+	if (!user_dlm_read_lvb(file_inode(file), lvb))
+		return 0;
+
+	return simple_read_from_buffer(buf, count, ppos, lvb, sizeof(lvb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t dlmfs_file_write(struct file *filp,
@@ -290,14 +372,21 @@ static ssize_t dlmfs_file_write(struct file *filp,
 				size_t count,
 				loff_t *ppos)
 {
+<<<<<<< HEAD
 	int bytes_left;
 	ssize_t writelen;
 	char *lvb_buf;
 	struct inode *inode = filp->f_path.dentry->d_inode;
+=======
+	char lvb_buf[DLM_LVB_LEN];
+	int bytes_left;
+	struct inode *inode = file_inode(filp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlog(0, "inode %lu, count = %zu, *ppos = %llu\n",
 		inode->i_ino, count, *ppos);
 
+<<<<<<< HEAD
 	if (*ppos >= i_size_read(inode))
 		return -ENOSPC;
 
@@ -327,6 +416,26 @@ static ssize_t dlmfs_file_write(struct file *filp,
 	*ppos = *ppos + writelen;
 	mlog(0, "wrote %zd bytes\n", writelen);
 	return writelen;
+=======
+	if (*ppos >= DLM_LVB_LEN)
+		return -ENOSPC;
+
+	/* don't write past the lvb */
+	if (count > DLM_LVB_LEN - *ppos)
+		count = DLM_LVB_LEN - *ppos;
+
+	if (!count)
+		return 0;
+
+	bytes_left = copy_from_user(lvb_buf, buf, count);
+	count -= bytes_left;
+	if (count)
+		user_dlm_write_lvb(inode, lvb_buf, count);
+
+	*ppos = *ppos + count;
+	mlog(0, "wrote %zu bytes\n", count);
+	return count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dlmfs_init_once(void *foo)
@@ -344,13 +453,18 @@ static struct inode *dlmfs_alloc_inode(struct super_block *sb)
 {
 	struct dlmfs_inode_private *ip;
 
+<<<<<<< HEAD
 	ip = kmem_cache_alloc(dlmfs_inode_cache, GFP_NOFS);
+=======
+	ip = alloc_inode_sb(sb, dlmfs_inode_cache, GFP_NOFS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ip)
 		return NULL;
 
 	return &ip->ip_vfs_inode;
 }
 
+<<<<<<< HEAD
 static void dlmfs_i_callback(struct rcu_head *head)
 {
 	struct inode *inode = container_of(head, struct inode, i_rcu);
@@ -362,21 +476,49 @@ static void dlmfs_destroy_inode(struct inode *inode)
 	call_rcu(&inode->i_rcu, dlmfs_i_callback);
 }
 
+=======
+static void dlmfs_free_inode(struct inode *inode)
+{
+	kmem_cache_free(dlmfs_inode_cache, DLMFS_I(inode));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dlmfs_evict_inode(struct inode *inode)
 {
 	int status;
 	struct dlmfs_inode_private *ip;
+<<<<<<< HEAD
 
 	end_writeback(inode);
+=======
+	struct user_lock_res *lockres;
+	int teardown;
+
+	clear_inode(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlog(0, "inode %lu\n", inode->i_ino);
 
 	ip = DLMFS_I(inode);
+<<<<<<< HEAD
 
 	if (S_ISREG(inode->i_mode)) {
 		status = user_dlm_destroy_lock(&ip->ip_lockres);
 		if (status < 0)
 			mlog_errno(status);
+=======
+	lockres = &ip->ip_lockres;
+
+	if (S_ISREG(inode->i_mode)) {
+		spin_lock(&lockres->l_lock);
+		teardown = !!(lockres->l_flags & USER_LOCK_IN_TEARDOWN);
+		spin_unlock(&lockres->l_lock);
+		if (!teardown) {
+			status = user_dlm_destroy_lock(lockres);
+			if (status < 0)
+				mlog_errno(status);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iput(ip->ip_parent);
 		goto clear_fields;
 	}
@@ -391,16 +533,20 @@ clear_fields:
 	ip->ip_conn = NULL;
 }
 
+<<<<<<< HEAD
 static struct backing_dev_info dlmfs_backing_dev_info = {
 	.name		= "ocfs2-dlmfs",
 	.ra_pages	= 0,	/* No readahead */
 	.capabilities	= BDI_CAP_NO_ACCT_AND_WRITEBACK,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct inode *dlmfs_get_root_inode(struct super_block *sb)
 {
 	struct inode *inode = new_inode(sb);
 	umode_t mode = S_IFDIR | 0755;
+<<<<<<< HEAD
 	struct dlmfs_inode_private *ip;
 
 	if (inode) {
@@ -410,6 +556,13 @@ static struct inode *dlmfs_get_root_inode(struct super_block *sb)
 		inode_init_owner(inode, NULL, mode);
 		inode->i_mapping->backing_dev_info = &dlmfs_backing_dev_info;
 		inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
+=======
+
+	if (inode) {
+		inode->i_ino = get_next_ino();
+		inode_init_owner(&nop_mnt_idmap, inode, NULL, mode);
+		simple_inode_init_ts(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inc_nlink(inode);
 
 		inode->i_fop = &simple_dir_operations;
@@ -431,9 +584,14 @@ static struct inode *dlmfs_get_inode(struct inode *parent,
 		return NULL;
 
 	inode->i_ino = get_next_ino();
+<<<<<<< HEAD
 	inode_init_owner(inode, parent, mode);
 	inode->i_mapping->backing_dev_info = &dlmfs_backing_dev_info;
 	inode->i_atime = inode->i_mtime = inode->i_ctime = CURRENT_TIME;
+=======
+	inode_init_owner(&nop_mnt_idmap, inode, parent, mode);
+	simple_inode_init_ts(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ip = DLMFS_I(inode);
 	ip->ip_conn = DLMFS_I(parent)->ip_conn;
@@ -475,13 +633,22 @@ static struct inode *dlmfs_get_inode(struct inode *parent,
  * File creation. Allocate an inode, and we're done..
  */
 /* SMP-safe */
+<<<<<<< HEAD
 static int dlmfs_mkdir(struct inode * dir,
+=======
+static int dlmfs_mkdir(struct mnt_idmap * idmap,
+		       struct inode * dir,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       struct dentry * dentry,
 		       umode_t mode)
 {
 	int status;
 	struct inode *inode = NULL;
+<<<<<<< HEAD
 	struct qstr *domain = &dentry->d_name;
+=======
+	const struct qstr *domain = &dentry->d_name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dlmfs_inode_private *ip;
 	struct ocfs2_cluster_connection *conn;
 
@@ -523,14 +690,23 @@ bail:
 	return status;
 }
 
+<<<<<<< HEAD
 static int dlmfs_create(struct inode *dir,
+=======
+static int dlmfs_create(struct mnt_idmap *idmap,
+			struct inode *dir,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct dentry *dentry,
 			umode_t mode,
 			bool excl)
 {
 	int status = 0;
 	struct inode *inode;
+<<<<<<< HEAD
 	struct qstr *name = &dentry->d_name;
+=======
+	const struct qstr *name = &dentry->d_name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlog(0, "create %.*s\n", name->len, name->name);
 
@@ -561,7 +737,11 @@ static int dlmfs_unlink(struct inode *dir,
 			struct dentry *dentry)
 {
 	int status;
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mlog(0, "unlink inode %lu\n", inode->i_ino);
 
@@ -569,8 +749,13 @@ static int dlmfs_unlink(struct inode *dir,
 	 * to acquire a lock, this basically destroys our lockres. */
 	status = user_dlm_destroy_lock(&DLMFS_I(inode)->ip_lockres);
 	if (status < 0) {
+<<<<<<< HEAD
 		mlog(ML_ERROR, "unlink %.*s, error %d from destroy\n",
 		     dentry->d_name.len, dentry->d_name.name, status);
+=======
+		mlog(ML_ERROR, "unlink %pd, error %d from destroy\n",
+		     dentry, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 	status = simple_unlink(dir, dentry);
@@ -583,8 +768,13 @@ static int dlmfs_fill_super(struct super_block * sb,
 			    int silent)
 {
 	sb->s_maxbytes = MAX_LFS_FILESIZE;
+<<<<<<< HEAD
 	sb->s_blocksize = PAGE_CACHE_SIZE;
 	sb->s_blocksize_bits = PAGE_CACHE_SHIFT;
+=======
+	sb->s_blocksize = PAGE_SIZE;
+	sb->s_blocksize_bits = PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb->s_magic = DLMFS_MAGIC;
 	sb->s_op = &dlmfs_ops;
 	sb->s_root = d_make_root(dlmfs_get_root_inode(sb));
@@ -618,7 +808,11 @@ static const struct inode_operations dlmfs_root_inode_operations = {
 static const struct super_operations dlmfs_ops = {
 	.statfs		= simple_statfs,
 	.alloc_inode	= dlmfs_alloc_inode,
+<<<<<<< HEAD
 	.destroy_inode	= dlmfs_destroy_inode,
+=======
+	.free_inode	= dlmfs_free_inode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.evict_inode	= dlmfs_evict_inode,
 	.drop_inode	= generic_delete_inode,
 };
@@ -647,6 +841,7 @@ static int __init init_dlmfs_fs(void)
 	int status;
 	int cleanup_inode = 0, cleanup_worker = 0;
 
+<<<<<<< HEAD
 	dlmfs_print_version();
 
 	status = bdi_init(&dlmfs_backing_dev_info);
@@ -657,6 +852,12 @@ static int __init init_dlmfs_fs(void)
 				sizeof(struct dlmfs_inode_private),
 				0, (SLAB_HWCACHE_ALIGN|SLAB_RECLAIM_ACCOUNT|
 					SLAB_MEM_SPREAD),
+=======
+	dlmfs_inode_cache = kmem_cache_create("dlmfs_inode_cache",
+				sizeof(struct dlmfs_inode_private),
+				0, (SLAB_HWCACHE_ALIGN|SLAB_RECLAIM_ACCOUNT|
+					SLAB_ACCOUNT),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dlmfs_init_once);
 	if (!dlmfs_inode_cache) {
 		status = -ENOMEM;
@@ -664,7 +865,11 @@ static int __init init_dlmfs_fs(void)
 	}
 	cleanup_inode = 1;
 
+<<<<<<< HEAD
 	user_dlm_worker = create_singlethread_workqueue("user_dlm");
+=======
+	user_dlm_worker = alloc_workqueue("user_dlm", WQ_MEM_RECLAIM, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!user_dlm_worker) {
 		status = -ENOMEM;
 		goto bail;
@@ -679,7 +884,10 @@ bail:
 			kmem_cache_destroy(dlmfs_inode_cache);
 		if (cleanup_worker)
 			destroy_workqueue(user_dlm_worker);
+<<<<<<< HEAD
 		bdi_destroy(&dlmfs_backing_dev_info);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		printk("OCFS2 User DLM kernel interface loaded\n");
 	return status;
@@ -689,7 +897,10 @@ static void __exit exit_dlmfs_fs(void)
 {
 	unregister_filesystem(&dlmfs_fs_type);
 
+<<<<<<< HEAD
 	flush_workqueue(user_dlm_worker);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	destroy_workqueue(user_dlm_worker);
 
 	/*
@@ -699,11 +910,18 @@ static void __exit exit_dlmfs_fs(void)
 	rcu_barrier();
 	kmem_cache_destroy(dlmfs_inode_cache);
 
+<<<<<<< HEAD
 	bdi_destroy(&dlmfs_backing_dev_info);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MODULE_AUTHOR("Oracle");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("OCFS2 DLM-Filesystem");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_init(init_dlmfs_fs)
 module_exit(exit_dlmfs_fs)

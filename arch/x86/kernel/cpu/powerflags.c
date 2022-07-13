@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Strings for the various x86 power flags
  *
@@ -11,6 +15,7 @@ const char *const x86_power_flags[32] = {
 	"fid",  /* frequency id control */
 	"vid",  /* voltage id control */
 	"ttp",  /* thermal trip */
+<<<<<<< HEAD
 	"tm",
 	"stc",
 	"100mhzsteps",
@@ -18,4 +23,15 @@ const char *const x86_power_flags[32] = {
 	"",	/* tsc invariant mapped to constant_tsc */
 	"cpb",  /* core performance boost */
 	"eff_freq_ro", /* Readonly aperf/mperf */
+=======
+	"tm",	/* hardware thermal control */
+	"stc",	/* software thermal control */
+	"100mhzsteps", /* 100 MHz multiplier control */
+	"hwpstate", /* hardware P-state control */
+	"",	/* tsc invariant mapped to constant_tsc */
+	"cpb",  /* core performance boost */
+	"eff_freq_ro", /* Readonly aperf/mperf */
+	"proc_feedback", /* processor feedback interface */
+	"acc_power", /* accumulated power mechanism */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

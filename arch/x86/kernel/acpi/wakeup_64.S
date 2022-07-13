@@ -1,29 +1,58 @@
+<<<<<<< HEAD
 .text
 #include <linux/linkage.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+.text
+#include <linux/linkage.h>
+#include <linux/objtool.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/segment.h>
 #include <asm/pgtable_types.h>
 #include <asm/page_types.h>
 #include <asm/msr.h>
 #include <asm/asm-offsets.h>
+<<<<<<< HEAD
 
 # Copyright 2003 Pavel Machek <pavel@suse.cz>, distribute under GPLv2
+=======
+#include <asm/frame.h>
+#include <asm/nospec-branch.h>
+
+# Copyright 2003 Pavel Machek <pavel@suse.cz
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .code64
 	/*
 	 * Hooray, we are in Long 64-bit mode (but still running in low memory)
 	 */
+<<<<<<< HEAD
 ENTRY(wakeup_long64)
 	movq	saved_magic, %rax
 	movq	$0x123456789abcdef0, %rdx
 	cmpq	%rdx, %rax
 	jne	bogus_64_magic
 
+=======
+SYM_FUNC_START(wakeup_long64)
+	movq	saved_magic(%rip), %rax
+	movq	$0x123456789abcdef0, %rdx
+	cmpq	%rdx, %rax
+	je	2f
+
+	/* stop here on a saved_magic mismatch */
+	movq $0xbad6d61676963, %rcx
+1:
+	jmp 1b
+2:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movw	$__KERNEL_DS, %ax
 	movw	%ax, %ss	
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %fs
 	movw	%ax, %gs
+<<<<<<< HEAD
 	movq	saved_rsp, %rsp
 
 	movq	saved_rbx, %rbx
@@ -39,6 +68,22 @@ bogus_64_magic:
 	jmp	bogus_64_magic
 
 ENTRY(do_suspend_lowlevel)
+=======
+	movq	saved_rsp(%rip), %rsp
+
+	movq	saved_rbx(%rip), %rbx
+	movq	saved_rdi(%rip), %rdi
+	movq	saved_rsi(%rip), %rsi
+	movq	saved_rbp(%rip), %rbp
+
+	movq	saved_rip(%rip), %rax
+	ANNOTATE_RETPOLINE_SAFE
+	jmp	*%rax
+SYM_FUNC_END(wakeup_long64)
+
+SYM_FUNC_START(do_suspend_lowlevel)
+	FRAME_BEGIN
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	subq	$8, %rsp
 	xorl	%eax, %eax
 	call	save_processor_state
@@ -62,6 +107,7 @@ ENTRY(do_suspend_lowlevel)
 	pushfq
 	popq	pt_regs_flags(%rax)
 
+<<<<<<< HEAD
 	movq	$resume_point, saved_rip(%rip)
 
 	movq	%rsp, saved_rsp
@@ -77,6 +123,25 @@ ENTRY(do_suspend_lowlevel)
 
 	.align 4
 resume_point:
+=======
+	movq	$.Lresume_point, saved_rip(%rip)
+
+	movq	%rsp, saved_rsp(%rip)
+	movq	%rbp, saved_rbp(%rip)
+	movq	%rbx, saved_rbx(%rip)
+	movq	%rdi, saved_rdi(%rip)
+	movq	%rsi, saved_rsi(%rip)
+
+	addq	$8, %rsp
+	movl	$3, %edi
+	xorl	%eax, %eax
+	call	x86_acpi_enter_sleep_state
+	/* in case something went wrong, restore the machine status and go on */
+	jmp	.Lresume_point
+
+	.align 4
+.Lresume_point:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We don't restore %rax, it must be 0 anyway */
 	movq	$saved_context, %rax
 	movq	saved_context_cr4(%rax), %rbx
@@ -105,6 +170,7 @@ resume_point:
 	movq	pt_regs_r14(%rax), %r14
 	movq	pt_regs_r15(%rax), %r15
 
+<<<<<<< HEAD
 	xorl	%eax, %eax
 	addq	$8, %rsp
 	jmp	restore_processor_state
@@ -120,3 +186,31 @@ ENTRY(saved_rip)	.quad	0
 ENTRY(saved_rsp)	.quad	0
 
 ENTRY(saved_magic)	.quad	0
+=======
+#if defined(CONFIG_KASAN) && defined(CONFIG_KASAN_STACK)
+	/*
+	 * The suspend path may have poisoned some areas deeper in the stack,
+	 * which we now need to unpoison.
+	 */
+	movq	%rsp, %rdi
+	call	kasan_unpoison_task_stack_below
+#endif
+
+	xorl	%eax, %eax
+	addq	$8, %rsp
+	FRAME_END
+	jmp	restore_processor_state
+SYM_FUNC_END(do_suspend_lowlevel)
+STACK_FRAME_NON_STANDARD do_suspend_lowlevel
+
+.data
+saved_rbp:		.quad	0
+saved_rsi:		.quad	0
+saved_rdi:		.quad	0
+saved_rbx:		.quad	0
+
+saved_rip:		.quad	0
+saved_rsp:		.quad	0
+
+SYM_DATA(saved_magic,	.quad	0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

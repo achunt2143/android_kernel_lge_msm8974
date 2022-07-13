@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Aic94xx SAS/SATA DDB management
  *
  * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
  * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
  *
+<<<<<<< HEAD
  * This file is licensed under GPLv2.
  *
  * This file is part of the aic94xx driver.
@@ -22,6 +27,8 @@
  * along with the aic94xx driver; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * $Id: //depot/aic94xx/aic94xx_dev.c#21 $
  */
 
@@ -84,7 +91,11 @@ static void asd_set_ddb_type(struct domain_device *dev)
 	struct asd_ha_struct *asd_ha = dev->port->ha->lldd_ha;
 	int ddb = (int) (unsigned long) dev->lldd_dev;
 
+<<<<<<< HEAD
 	if (dev->dev_type == SATA_PM_PORT)
+=======
+	if (dev->dev_type == SAS_SATA_PM_PORT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		asd_ddbsite_write_byte(asd_ha,ddb, DDB_TYPE, DDB_TYPE_PM_PORT);
 	else if (dev->tproto)
 		asd_ddbsite_write_byte(asd_ha,ddb, DDB_TYPE, DDB_TYPE_TARGET);
@@ -116,7 +127,11 @@ void asd_set_dmamode(struct domain_device *dev)
 	int ddb = (int) (unsigned long) dev->lldd_dev;
 	u32 qdepth = 0;
 
+<<<<<<< HEAD
 	if (dev->dev_type == SATA_DEV || dev->dev_type == SATA_PM_PORT) {
+=======
+	if (dev->dev_type == SAS_SATA_DEV || dev->dev_type == SAS_SATA_PM_PORT) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ata_id_has_ncq(ata_dev->id))
 			qdepth = ata_id_queue_depth(ata_dev->id);
 		asd_ddbsite_write_dword(asd_ha, ddb, SATA_TAG_ALLOC_MASK,
@@ -140,8 +155,13 @@ static int asd_init_sata(struct domain_device *dev)
 	int ddb = (int) (unsigned long) dev->lldd_dev;
 
 	asd_ddbsite_write_word(asd_ha, ddb, ATA_CMD_SCBPTR, 0xFFFF);
+<<<<<<< HEAD
 	if (dev->dev_type == SATA_DEV || dev->dev_type == SATA_PM ||
 	    dev->dev_type == SATA_PM_PORT) {
+=======
+	if (dev->dev_type == SAS_SATA_DEV || dev->dev_type == SAS_SATA_PM ||
+	    dev->dev_type == SAS_SATA_PM_PORT) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct dev_to_host_fis *fis = (struct dev_to_host_fis *)
 			dev->frame_rcvd;
 		asd_ddbsite_write_byte(asd_ha, ddb, SATA_STATUS, fis->status);
@@ -174,9 +194,15 @@ static int asd_init_target_ddb(struct domain_device *dev)
 	asd_ddbsite_write_byte(asd_ha, ddb, CONN_MASK, dev->port->phy_mask);
 	if (dev->port->oob_mode != SATA_OOB_MODE) {
 		flags |= OPEN_REQUIRED;
+<<<<<<< HEAD
 		if ((dev->dev_type == SATA_DEV) ||
 		    (dev->tproto & SAS_PROTOCOL_STP)) {
 			struct smp_resp *rps_resp = &dev->sata_dev.rps_resp;
+=======
+		if ((dev->dev_type == SAS_SATA_DEV) ||
+		    (dev->tproto & SAS_PROTOCOL_STP)) {
+			struct smp_rps_resp *rps_resp = &dev->sata_dev.rps_resp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (rps_resp->frame_type == SMP_RESPONSE &&
 			    rps_resp->function == SMP_REPORT_PHY_SATA &&
 			    rps_resp->result == SMP_RESP_FUNC_ACC) {
@@ -187,9 +213,13 @@ static int asd_init_target_ddb(struct domain_device *dev)
 			}
 		} else {
 			flags |= CONCURRENT_CONN_SUPP;
+<<<<<<< HEAD
 			if (!dev->parent &&
 			    (dev->dev_type == EDGE_DEV ||
 			     dev->dev_type == FANOUT_DEV))
+=======
+			if (!dev->parent && dev_is_expander(dev->dev_type))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				asd_ddbsite_write_byte(asd_ha, ddb, MAX_CCONN,
 						       4);
 			else
@@ -198,7 +228,11 @@ static int asd_init_target_ddb(struct domain_device *dev)
 			asd_ddbsite_write_byte(asd_ha, ddb, NUM_CTX, 1);
 		}
 	}
+<<<<<<< HEAD
 	if (dev->dev_type == SATA_PM)
+=======
+	if (dev->dev_type == SAS_SATA_PM)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flags |= SATA_MULTIPORT;
 	asd_ddbsite_write_byte(asd_ha, ddb, DDB_TARG_FLAGS, flags);
 
@@ -211,7 +245,11 @@ static int asd_init_target_ddb(struct domain_device *dev)
 	asd_ddbsite_write_word(asd_ha, ddb, SEND_QUEUE_TAIL, 0xFFFF);
 	asd_ddbsite_write_word(asd_ha, ddb, SISTER_DDB, 0xFFFF);
 
+<<<<<<< HEAD
 	if (dev->dev_type == SATA_DEV || (dev->tproto & SAS_PROTOCOL_STP)) {
+=======
+	if (dev->dev_type == SAS_SATA_DEV || (dev->tproto & SAS_PROTOCOL_STP)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i = asd_init_sata(dev);
 		if (i < 0) {
 			asd_free_ddb(asd_ha, ddb);
@@ -219,7 +257,11 @@ static int asd_init_target_ddb(struct domain_device *dev)
 		}
 	}
 
+<<<<<<< HEAD
 	if (dev->dev_type == SAS_END_DEV) {
+=======
+	if (dev->dev_type == SAS_END_DEVICE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct sas_end_device *rdev = rphy_to_end_device(dev->rphy);
 		if (rdev->I_T_nexus_loss_timeout > 0)
 			asd_ddbsite_write_word(asd_ha, ddb, ITNL_TIMEOUT,
@@ -255,7 +297,11 @@ static int asd_init_sata_pm_table_ddb(struct domain_device *dev)
 
 /**
  * asd_init_sata_pm_port_ddb -- SATA Port Multiplier Port
+<<<<<<< HEAD
  * dev: pointer to domain device
+=======
+ * @dev: pointer to domain device
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * For SATA Port Multiplier Ports we need to allocate one SATA Port
  * Multiplier Port DDB and depending on whether the target on it
@@ -300,7 +346,11 @@ static int asd_init_initiator_ddb(struct domain_device *dev)
 
 /**
  * asd_init_sata_pm_ddb -- SATA Port Multiplier
+<<<<<<< HEAD
  * dev: pointer to domain device
+=======
+ * @dev: pointer to domain device
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * For STP and direct-attached SATA Port Multipliers we need
  * one target port DDB entry and one SATA PM table DDB entry.
@@ -328,10 +378,17 @@ int asd_dev_found(struct domain_device *dev)
 
 	spin_lock_irqsave(&asd_ha->hw_prof.ddb_lock, flags);
 	switch (dev->dev_type) {
+<<<<<<< HEAD
 	case SATA_PM:
 		res = asd_init_sata_pm_ddb(dev);
 		break;
 	case SATA_PM_PORT:
+=======
+	case SAS_SATA_PM:
+		res = asd_init_sata_pm_ddb(dev);
+		break;
+	case SAS_SATA_PM_PORT:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res = asd_init_sata_pm_port_ddb(dev);
 		break;
 	default:

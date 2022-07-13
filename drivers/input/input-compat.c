@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 32bit compatibility wrappers for the input subsystem.
  *
  * Very heavily based on evdev.c - Copyright (c) 1999-2002 Vojtech Pavlik
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
@@ -10,6 +15,12 @@
 
 #include <linux/export.h>
 #include <asm/uaccess.h>
+=======
+ */
+
+#include <linux/export.h>
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "input-compat.h"
 
 #ifdef CONFIG_COMPAT
@@ -17,15 +28,24 @@
 int input_event_from_user(const char __user *buffer,
 			  struct input_event *event)
 {
+<<<<<<< HEAD
 	if (INPUT_COMPAT_TEST && !COMPAT_USE_64BIT_TIME) {
+=======
+	if (in_compat_syscall() && !COMPAT_USE_64BIT_TIME) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct input_event_compat compat_event;
 
 		if (copy_from_user(&compat_event, buffer,
 				   sizeof(struct input_event_compat)))
 			return -EFAULT;
 
+<<<<<<< HEAD
 		event->time.tv_sec = compat_event.time.tv_sec;
 		event->time.tv_usec = compat_event.time.tv_usec;
+=======
+		event->input_event_sec = compat_event.sec;
+		event->input_event_usec = compat_event.usec;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		event->type = compat_event.type;
 		event->code = compat_event.code;
 		event->value = compat_event.value;
@@ -41,11 +61,19 @@ int input_event_from_user(const char __user *buffer,
 int input_event_to_user(char __user *buffer,
 			const struct input_event *event)
 {
+<<<<<<< HEAD
 	if (INPUT_COMPAT_TEST && !COMPAT_USE_64BIT_TIME) {
 		struct input_event_compat compat_event;
 
 		compat_event.time.tv_sec = event->time.tv_sec;
 		compat_event.time.tv_usec = event->time.tv_usec;
+=======
+	if (in_compat_syscall() && !COMPAT_USE_64BIT_TIME) {
+		struct input_event_compat compat_event;
+
+		compat_event.sec = event->input_event_sec;
+		compat_event.usec = event->input_event_usec;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		compat_event.type = event->type;
 		compat_event.code = event->code;
 		compat_event.value = event->value;
@@ -65,7 +93,11 @@ int input_event_to_user(char __user *buffer,
 int input_ff_effect_from_user(const char __user *buffer, size_t size,
 			      struct ff_effect *effect)
 {
+<<<<<<< HEAD
 	if (INPUT_COMPAT_TEST) {
+=======
+	if (in_compat_syscall()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct ff_effect_compat *compat_effect;
 
 		if (size != sizeof(struct ff_effect_compat))

@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * userdlm.h
  *
  * Userspace dlm defines
  *
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -21,6 +27,8 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -80,10 +88,15 @@ void user_dlm_cluster_unlock(struct user_lock_res *lockres,
 void user_dlm_write_lvb(struct inode *inode,
 			const char *val,
 			unsigned int len);
+<<<<<<< HEAD
 ssize_t user_dlm_read_lvb(struct inode *inode,
 			  char *val,
 			  unsigned int len);
 struct ocfs2_cluster_connection *user_dlm_register(struct qstr *name);
+=======
+bool user_dlm_read_lvb(struct inode *inode, char *val);
+struct ocfs2_cluster_connection *user_dlm_register(const struct qstr *name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void user_dlm_unregister(struct ocfs2_cluster_connection *conn);
 void user_dlm_set_locking_protocol(void);
 

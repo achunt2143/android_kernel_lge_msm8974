@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * dlmmod.c
  *
  * standalone DLM module
  *
  * Copyright (C) 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -22,6 +28,8 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -40,9 +48,15 @@
 #include <linux/delay.h>
 
 
+<<<<<<< HEAD
 #include "cluster/heartbeat.h"
 #include "cluster/nodemanager.h"
 #include "cluster/tcp.h"
+=======
+#include "../cluster/heartbeat.h"
+#include "../cluster/nodemanager.h"
+#include "../cluster/tcp.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "dlmapi.h"
 #include "dlmcommon.h"
@@ -50,7 +64,11 @@
 #include "dlmdebug.h"
 
 #define MLOG_MASK_PREFIX (ML_DLM|ML_DLM_MASTER)
+<<<<<<< HEAD
 #include "cluster/masklog.h"
+=======
+#include "../cluster/masklog.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void dlm_mle_node_down(struct dlm_ctxt *dlm,
 			      struct dlm_master_list_entry *mle,
@@ -82,9 +100,15 @@ static inline int dlm_mle_equal(struct dlm_ctxt *dlm,
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct kmem_cache *dlm_lockres_cache = NULL;
 static struct kmem_cache *dlm_lockname_cache = NULL;
 static struct kmem_cache *dlm_mle_cache = NULL;
+=======
+static struct kmem_cache *dlm_lockres_cache;
+static struct kmem_cache *dlm_lockname_cache;
+static struct kmem_cache *dlm_mle_cache;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void dlm_mle_release(struct kref *kref);
 static void dlm_init_mle(struct dlm_master_list_entry *mle,
@@ -233,7 +257,11 @@ static void __dlm_put_mle(struct dlm_master_list_entry *mle)
 
 	assert_spin_locked(&dlm->spinlock);
 	assert_spin_locked(&dlm->master_lock);
+<<<<<<< HEAD
 	if (!atomic_read(&mle->mle_refs.refcount)) {
+=======
+	if (!kref_read(&mle->mle_refs)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* this may or may not crash, but who cares.
 		 * it's a BUG. */
 		mlog(ML_ERROR, "bad mle: %p\n", mle);
@@ -275,12 +303,20 @@ static void dlm_init_mle(struct dlm_master_list_entry *mle,
 	mle->type = type;
 	INIT_HLIST_NODE(&mle->master_hash_node);
 	INIT_LIST_HEAD(&mle->hb_events);
+<<<<<<< HEAD
 	memset(mle->maybe_map, 0, sizeof(mle->maybe_map));
+=======
+	bitmap_zero(mle->maybe_map, O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&mle->spinlock);
 	init_waitqueue_head(&mle->wq);
 	atomic_set(&mle->woken, 0);
 	kref_init(&mle->mle_refs);
+<<<<<<< HEAD
 	memset(mle->response_map, 0, sizeof(mle->response_map));
+=======
+	bitmap_zero(mle->response_map, O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mle->master = O2NM_MAX_NODES;
 	mle->new_master = O2NM_MAX_NODES;
 	mle->inuse = 0;
@@ -307,8 +343,13 @@ static void dlm_init_mle(struct dlm_master_list_entry *mle,
 	atomic_inc(&dlm->mle_cur_count[mle->type]);
 
 	/* copy off the node_map and register hb callbacks on our copy */
+<<<<<<< HEAD
 	memcpy(mle->node_map, dlm->domain_map, sizeof(mle->node_map));
 	memcpy(mle->vote_map, dlm->domain_map, sizeof(mle->vote_map));
+=======
+	bitmap_copy(mle->node_map, dlm->domain_map, O2NM_MAX_NODES);
+	bitmap_copy(mle->vote_map, dlm->domain_map, O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(dlm->node_num, mle->vote_map);
 	clear_bit(dlm->node_num, mle->node_map);
 
@@ -342,16 +383,23 @@ static int dlm_find_mle(struct dlm_ctxt *dlm,
 {
 	struct dlm_master_list_entry *tmpmle;
 	struct hlist_head *bucket;
+<<<<<<< HEAD
 	struct hlist_node *list;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int hash;
 
 	assert_spin_locked(&dlm->master_lock);
 
 	hash = dlm_lockid_hash(name, namelen);
 	bucket = dlm_master_hash(dlm, hash);
+<<<<<<< HEAD
 	hlist_for_each(list, bucket) {
 		tmpmle = hlist_entry(list, struct dlm_master_list_entry,
 				     master_hash_node);
+=======
+	hlist_for_each_entry(tmpmle, bucket, master_hash_node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!dlm_mle_equal(dlm, tmpmle, name, namelen))
 			continue;
 		dlm_get_mle(tmpmle);
@@ -417,8 +465,12 @@ int dlm_init_mle_cache(void)
 
 void dlm_destroy_mle_cache(void)
 {
+<<<<<<< HEAD
 	if (dlm_mle_cache)
 		kmem_cache_destroy(dlm_mle_cache);
+=======
+	kmem_cache_destroy(dlm_mle_cache);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dlm_mle_release(struct kref *kref)
@@ -475,11 +527,19 @@ bail:
 
 void dlm_destroy_master_caches(void)
 {
+<<<<<<< HEAD
 	if (dlm_lockname_cache)
 		kmem_cache_destroy(dlm_lockname_cache);
 
 	if (dlm_lockres_cache)
 		kmem_cache_destroy(dlm_lockres_cache);
+=======
+	kmem_cache_destroy(dlm_lockname_cache);
+	dlm_lockname_cache = NULL;
+
+	kmem_cache_destroy(dlm_lockres_cache);
+	dlm_lockres_cache = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dlm_lockres_release(struct kref *kref)
@@ -497,6 +557,7 @@ static void dlm_lockres_release(struct kref *kref)
 	mlog(0, "destroying lockres %.*s\n", res->lockname.len,
 	     res->lockname.name);
 
+<<<<<<< HEAD
 	spin_lock(&dlm->track_lock);
 	if (!list_empty(&res->tracking))
 		list_del_init(&res->tracking);
@@ -507,6 +568,8 @@ static void dlm_lockres_release(struct kref *kref)
 	}
 	spin_unlock(&dlm->track_lock);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_dec(&dlm->res_cur_count);
 
 	if (!hlist_unhashed(&res->hash_node) ||
@@ -580,6 +643,10 @@ static void dlm_init_lockres(struct dlm_ctxt *dlm,
 	atomic_set(&res->asts_reserved, 0);
 	res->migration_pending = 0;
 	res->inflight_locks = 0;
+<<<<<<< HEAD
+=======
+	res->inflight_assert_workers = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res->dlm = dlm;
 
@@ -597,12 +664,21 @@ static void dlm_init_lockres(struct dlm_ctxt *dlm,
 
 	res->last_used = 0;
 
+<<<<<<< HEAD
 	spin_lock(&dlm->spinlock);
 	list_add_tail(&res->tracking, &dlm->tracking_list);
 	spin_unlock(&dlm->spinlock);
 
 	memset(res->lvb, 0, DLM_LVB_LEN);
 	memset(res->refmap, 0, sizeof(res->refmap));
+=======
+	spin_lock(&dlm->track_lock);
+	list_add_tail(&res->tracking, &dlm->tracking_list);
+	spin_unlock(&dlm->track_lock);
+
+	memset(res->lvb, 0, DLM_LVB_LEN);
+	bitmap_zero(res->refmap, O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct dlm_lock_resource *dlm_new_lockres(struct dlm_ctxt *dlm,
@@ -623,9 +699,12 @@ struct dlm_lock_resource *dlm_new_lockres(struct dlm_ctxt *dlm,
 	return res;
 
 error:
+<<<<<<< HEAD
 	if (res && res->lockname.name)
 		kmem_cache_free(dlm_lockname_cache, (void *)res->lockname.name);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res)
 		kmem_cache_free(dlm_lockres_cache, res);
 	return NULL;
@@ -686,6 +765,38 @@ void dlm_lockres_drop_inflight_ref(struct dlm_ctxt *dlm,
 	wake_up(&res->wq);
 }
 
+<<<<<<< HEAD
+=======
+void __dlm_lockres_grab_inflight_worker(struct dlm_ctxt *dlm,
+		struct dlm_lock_resource *res)
+{
+	assert_spin_locked(&res->spinlock);
+	res->inflight_assert_workers++;
+	mlog(0, "%s:%.*s: inflight assert worker++: now %u\n",
+			dlm->name, res->lockname.len, res->lockname.name,
+			res->inflight_assert_workers);
+}
+
+static void __dlm_lockres_drop_inflight_worker(struct dlm_ctxt *dlm,
+		struct dlm_lock_resource *res)
+{
+	assert_spin_locked(&res->spinlock);
+	BUG_ON(res->inflight_assert_workers == 0);
+	res->inflight_assert_workers--;
+	mlog(0, "%s:%.*s: inflight assert worker--: now %u\n",
+			dlm->name, res->lockname.len, res->lockname.name,
+			res->inflight_assert_workers);
+}
+
+static void dlm_lockres_drop_inflight_worker(struct dlm_ctxt *dlm,
+		struct dlm_lock_resource *res)
+{
+	spin_lock(&res->spinlock);
+	__dlm_lockres_drop_inflight_worker(dlm, res);
+	spin_unlock(&res->spinlock);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * lookup a lock resource by name.
  * may already exist in the hashtable.
@@ -767,8 +878,23 @@ lookup:
 		dlm_lockres_grab_inflight_ref(dlm, tmpres);
 
 		spin_unlock(&tmpres->spinlock);
+<<<<<<< HEAD
 		if (res)
 			dlm_lockres_put(res);
+=======
+		if (res) {
+			spin_lock(&dlm->track_lock);
+			if (!list_empty(&res->tracking))
+				list_del_init(&res->tracking);
+			else
+				mlog(ML_ERROR, "Resource %.*s not "
+						"on the Tracking list\n",
+						res->lockname.len,
+						res->lockname.name);
+			spin_unlock(&dlm->track_lock);
+			dlm_lockres_put(res);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res = tmpres;
 		goto leave;
 	}
@@ -855,7 +981,11 @@ lookup:
 		 * to see if there are any nodes that still need to be
 		 * considered.  these will not appear in the mle nodemap
 		 * but they might own this lockres.  wait on them. */
+<<<<<<< HEAD
 		bit = find_next_bit(dlm->recovery_map, O2NM_MAX_NODES, 0);
+=======
+		bit = find_first_bit(dlm->recovery_map, O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bit < O2NM_MAX_NODES) {
 			mlog(0, "%s: res %.*s, At least one node (%d) "
 			     "to recover before lock mastery can begin\n",
@@ -906,7 +1036,11 @@ redo_request:
 		dlm_wait_for_recovery(dlm);
 
 		spin_lock(&dlm->spinlock);
+<<<<<<< HEAD
 		bit = find_next_bit(dlm->recovery_map, O2NM_MAX_NODES, 0);
+=======
+		bit = find_first_bit(dlm->recovery_map, O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bit < O2NM_MAX_NODES) {
 			mlog(0, "%s: res %.*s, At least one node (%d) "
 			     "to recover before lock mastery can begin\n",
@@ -1030,10 +1164,17 @@ recheck:
 
 	spin_lock(&mle->spinlock);
 	m = mle->master;
+<<<<<<< HEAD
 	map_changed = (memcmp(mle->vote_map, mle->node_map,
 			      sizeof(mle->vote_map)) != 0);
 	voting_done = (memcmp(mle->vote_map, mle->response_map,
 			     sizeof(mle->vote_map)) == 0);
+=======
+	map_changed = !bitmap_equal(mle->vote_map, mle->node_map,
+				    O2NM_MAX_NODES);
+	voting_done = bitmap_equal(mle->vote_map, mle->response_map,
+				   O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* restart if we hit any errors */
 	if (map_changed) {
@@ -1073,7 +1214,11 @@ recheck:
 		sleep = 1;
 		/* have all nodes responded? */
 		if (voting_done && !*blocked) {
+<<<<<<< HEAD
 			bit = find_next_bit(mle->maybe_map, O2NM_MAX_NODES, 0);
+=======
+			bit = find_first_bit(mle->maybe_map, O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (dlm->node_num <= bit) {
 				/* my node number is lowest.
 			 	 * now tell other nodes that I am
@@ -1094,6 +1239,7 @@ recheck:
 	/* sleep if we haven't finished voting yet */
 	if (sleep) {
 		unsigned long timeo = msecs_to_jiffies(DLM_MASTERY_TIMEOUT_MS);
+<<<<<<< HEAD
 
 		/*
 		if (atomic_read(&mle->mle_refs.refcount) < 2)
@@ -1101,6 +1247,8 @@ recheck:
 			atomic_read(&mle->mle_refs.refcount),
 			res->lockname.len, res->lockname.name);
 		*/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_set(&mle->woken, 0);
 		(void)wait_event_timeout(mle->wq,
 					 (atomic_read(&mle->woken) == 1),
@@ -1235,8 +1383,13 @@ static int dlm_restart_lock_mastery(struct dlm_ctxt *dlm,
 		} else {
 			mlog(ML_ERROR, "node down! %d\n", node);
 			if (blocked) {
+<<<<<<< HEAD
 				int lowest = find_next_bit(mle->maybe_map,
 						       O2NM_MAX_NODES, 0);
+=======
+				int lowest = find_first_bit(mle->maybe_map,
+						       O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* act like it was never there */
 				clear_bit(node, mle->maybe_map);
@@ -1278,11 +1431,19 @@ static int dlm_restart_lock_mastery(struct dlm_ctxt *dlm,
 
 			/* now blank out everything, as if we had never
 			 * contacted anyone */
+<<<<<<< HEAD
 			memset(mle->maybe_map, 0, sizeof(mle->maybe_map));
 			memset(mle->response_map, 0, sizeof(mle->response_map));
 			/* reset the vote_map to the current node_map */
 			memcpy(mle->vote_map, mle->node_map,
 			       sizeof(mle->node_map));
+=======
+			bitmap_zero(mle->maybe_map, O2NM_MAX_NODES);
+			bitmap_zero(mle->response_map, O2NM_MAX_NODES);
+			/* reset the vote_map to the current node_map */
+			bitmap_copy(mle->vote_map, mle->node_map,
+				    O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* put myself into the maybe map */
 			if (mle->type != DLM_MLE_BLOCK)
 				set_bit(dlm->node_num, mle->maybe_map);
@@ -1438,6 +1599,21 @@ way_up_top:
 
 		/* take care of the easy cases up front */
 		spin_lock(&res->spinlock);
+<<<<<<< HEAD
+=======
+
+		/*
+		 * Right after dlm spinlock was released, dlm_thread could have
+		 * purged the lockres. Check if lockres got unhashed. If so
+		 * start over.
+		 */
+		if (hlist_unhashed(&res->hash_node)) {
+			spin_unlock(&res->spinlock);
+			dlm_lockres_put(res);
+			goto way_up_top;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (res->state & (DLM_LOCK_RES_RECOVERING|
 				  DLM_LOCK_RES_MIGRATING)) {
 			spin_unlock(&res->spinlock);
@@ -1569,8 +1745,11 @@ way_up_top:
 		__dlm_insert_mle(dlm, mle);
 		response = DLM_MASTER_RESP_NO;
 	} else {
+<<<<<<< HEAD
 		// mlog(0, "mle was found\n");
 		set_maybe = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock(&tmpmle->spinlock);
 		if (tmpmle->master == dlm->node_num) {
 			mlog(ML_ERROR, "no lockres, but an mle with this node as master!\n");
@@ -1585,8 +1764,12 @@ way_up_top:
 			response = DLM_MASTER_RESP_NO;
 		} else
 			response = DLM_MASTER_RESP_MAYBE;
+<<<<<<< HEAD
 		if (set_maybe)
 			set_bit(request->node_idx, tmpmle->maybe_map);
+=======
+		set_bit(request->node_idx, tmpmle->maybe_map);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock(&tmpmle->spinlock);
 	}
 	spin_unlock(&dlm->master_lock);
@@ -1604,6 +1787,7 @@ send_response:
 	 * dlm_assert_master_worker() isn't called, we drop it here.
 	 */
 	if (dispatch_assert) {
+<<<<<<< HEAD
 		if (response != DLM_MASTER_RESP_YES)
 			mlog(ML_ERROR, "invalid response %d\n", response);
 		if (!res) {
@@ -1612,14 +1796,28 @@ send_response:
 		}
 		mlog(0, "%u is the owner of %.*s, cleaning everyone else\n",
 			     dlm->node_num, res->lockname.len, res->lockname.name);
+=======
+		mlog(0, "%u is the owner of %.*s, cleaning everyone else\n",
+			     dlm->node_num, res->lockname.len, res->lockname.name);
+		spin_lock(&res->spinlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = dlm_dispatch_assert_master(dlm, res, 0, request->node_idx,
 						 DLM_ASSERT_MASTER_MLE_CLEANUP);
 		if (ret < 0) {
 			mlog(ML_ERROR, "failed to dispatch assert master work\n");
 			response = DLM_MASTER_RESP_ERROR;
+<<<<<<< HEAD
 			dlm_lockres_put(res);
 		} else {
 			dispatched = 1;
+=======
+			spin_unlock(&res->spinlock);
+			dlm_lockres_put(res);
+		} else {
+			dispatched = 1;
+			__dlm_lockres_grab_inflight_worker(dlm, res);
+			spin_unlock(&res->spinlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		if (res)
@@ -1789,7 +1987,11 @@ int dlm_assert_master_handler(struct o2net_msg *msg, u32 len, void *data,
 		     "MLE for it! (%.*s)\n", assert->node_idx,
 		     namelen, name);
 	} else {
+<<<<<<< HEAD
 		int bit = find_next_bit (mle->maybe_map, O2NM_MAX_NODES, 0);
+=======
+		int bit = find_first_bit(mle->maybe_map, O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bit >= O2NM_MAX_NODES) {
 			/* not necessarily an error, though less likely.
 			 * could be master just re-asserting. */
@@ -1907,8 +2109,15 @@ ok:
 			 * up nodes that this node contacted */
 			while ((nn = find_next_bit (mle->response_map, O2NM_MAX_NODES,
 						    nn+1)) < O2NM_MAX_NODES) {
+<<<<<<< HEAD
 				if (nn != dlm->node_num && nn != assert->node_idx)
 					master_request = 1;
+=======
+				if (nn != dlm->node_num && nn != assert->node_idx) {
+					master_request = 1;
+					break;
+				}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		mle->master = assert->node_idx;
@@ -1942,7 +2151,11 @@ ok:
 		 * on this mle. */
 		spin_lock(&dlm->master_lock);
 
+<<<<<<< HEAD
 		rr = atomic_read(&mle->mle_refs.refcount);
+=======
+		rr = kref_read(&mle->mle_refs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (mle->inuse > 0) {
 			if (extra_ref && rr < 3)
 				err = 1;
@@ -2014,6 +2227,13 @@ kill:
 	     "and killing the other node now!  This node is OK and can continue.\n");
 	__dlm_print_one_lock_resource(res);
 	spin_unlock(&res->spinlock);
+<<<<<<< HEAD
+=======
+	spin_lock(&dlm->master_lock);
+	if (mle)
+		__dlm_put_mle(mle);
+	spin_unlock(&dlm->master_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&dlm->spinlock);
 	*ret_data = (void *)res;
 	dlm_put(dlm);
@@ -2039,7 +2259,11 @@ int dlm_dispatch_assert_master(struct dlm_ctxt *dlm,
 			       int ignore_higher, u8 request_from, u32 flags)
 {
 	struct dlm_work_item *item;
+<<<<<<< HEAD
 	item = kzalloc(sizeof(*item), GFP_NOFS);
+=======
+	item = kzalloc(sizeof(*item), GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!item)
 		return -ENOMEM;
 
@@ -2082,7 +2306,11 @@ static void dlm_assert_master_worker(struct dlm_work_item *item, void *data)
 	flags = item->u.am.flags;
 
 	spin_lock(&dlm->spinlock);
+<<<<<<< HEAD
 	memcpy(nodemap, dlm->domain_map, sizeof(nodemap));
+=======
+	bitmap_copy(nodemap, dlm->domain_map, O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&dlm->spinlock);
 
 	clear_bit(dlm->node_num, nodemap);
@@ -2133,6 +2361,11 @@ static void dlm_assert_master_worker(struct dlm_work_item *item, void *data)
 	dlm_lockres_release_ast(dlm, res);
 
 put:
+<<<<<<< HEAD
+=======
+	dlm_lockres_drop_inflight_worker(dlm, res);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dlm_lockres_put(res);
 
 	mlog(0, "finished with dlm_assert_master_worker\n");
@@ -2145,7 +2378,11 @@ put:
  * think that $RECOVERY is currently mastered by a dead node.  If so,
  * we wait a short time to allow that node to get notified by its own
  * heartbeat stack, then check again.  All $RECOVERY lock resources
+<<<<<<< HEAD
  * mastered by dead nodes are purged when the hearbeat callback is
+=======
+ * mastered by dead nodes are purged when the heartbeat callback is
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fired, so we can know for sure that it is safe to continue once
  * the node returns a live node or no node.  */
 static int dlm_pre_master_reco_lockres(struct dlm_ctxt *dlm,
@@ -2224,8 +2461,16 @@ int dlm_drop_lockres_ref(struct dlm_ctxt *dlm, struct dlm_lock_resource *res)
 		mlog(ML_ERROR, "%s: res %.*s, DEREF to node %u got %d\n",
 		     dlm->name, namelen, lockname, res->owner, r);
 		dlm_print_one_lock_resource(res);
+<<<<<<< HEAD
 		BUG();
 	}
+=======
+		if (r == -ENOMEM)
+			BUG();
+	} else
+		ret = r;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -2293,7 +2538,11 @@ int dlm_deref_lockres_handler(struct o2net_msg *msg, u32 len, void *data,
 		     	res->lockname.len, res->lockname.name, node);
 			dlm_print_one_lock_resource(res);
 		}
+<<<<<<< HEAD
 		ret = 0;
+=======
+		ret = DLM_DEREF_RESPONSE_DONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto done;
 	}
 
@@ -2313,7 +2562,11 @@ int dlm_deref_lockres_handler(struct o2net_msg *msg, u32 len, void *data,
 	spin_unlock(&dlm->work_lock);
 
 	queue_work(dlm->dlm_worker, &dlm->dispatched_work);
+<<<<<<< HEAD
 	return 0;
+=======
+	return DLM_DEREF_RESPONSE_INPROG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 done:
 	if (res)
@@ -2323,6 +2576,105 @@ done:
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+int dlm_deref_lockres_done_handler(struct o2net_msg *msg, u32 len, void *data,
+			      void **ret_data)
+{
+	struct dlm_ctxt *dlm = data;
+	struct dlm_deref_lockres_done *deref
+			= (struct dlm_deref_lockres_done *)msg->buf;
+	struct dlm_lock_resource *res = NULL;
+	char *name;
+	unsigned int namelen;
+	int ret = -EINVAL;
+	u8 node;
+	unsigned int hash;
+
+	if (!dlm_grab(dlm))
+		return 0;
+
+	name = deref->name;
+	namelen = deref->namelen;
+	node = deref->node_idx;
+
+	if (namelen > DLM_LOCKID_NAME_MAX) {
+		mlog(ML_ERROR, "Invalid name length!");
+		goto done;
+	}
+	if (deref->node_idx >= O2NM_MAX_NODES) {
+		mlog(ML_ERROR, "Invalid node number: %u\n", node);
+		goto done;
+	}
+
+	hash = dlm_lockid_hash(name, namelen);
+
+	spin_lock(&dlm->spinlock);
+	res = __dlm_lookup_lockres_full(dlm, name, namelen, hash);
+	if (!res) {
+		spin_unlock(&dlm->spinlock);
+		mlog(ML_ERROR, "%s:%.*s: bad lockres name\n",
+		     dlm->name, namelen, name);
+		goto done;
+	}
+
+	spin_lock(&res->spinlock);
+	if (!(res->state & DLM_LOCK_RES_DROPPING_REF)) {
+		spin_unlock(&res->spinlock);
+		spin_unlock(&dlm->spinlock);
+		mlog(ML_NOTICE, "%s:%.*s: node %u sends deref done "
+			"but it is already derefed!\n", dlm->name,
+			res->lockname.len, res->lockname.name, node);
+		ret = 0;
+		goto done;
+	}
+
+	__dlm_do_purge_lockres(dlm, res);
+	spin_unlock(&res->spinlock);
+	wake_up(&res->wq);
+
+	spin_unlock(&dlm->spinlock);
+
+	ret = 0;
+done:
+	if (res)
+		dlm_lockres_put(res);
+	dlm_put(dlm);
+	return ret;
+}
+
+static void dlm_drop_lockres_ref_done(struct dlm_ctxt *dlm,
+		struct dlm_lock_resource *res, u8 node)
+{
+	struct dlm_deref_lockres_done deref;
+	int ret = 0, r;
+	const char *lockname;
+	unsigned int namelen;
+
+	lockname = res->lockname.name;
+	namelen = res->lockname.len;
+	BUG_ON(namelen > O2NM_MAX_NAME_LEN);
+
+	memset(&deref, 0, sizeof(deref));
+	deref.node_idx = dlm->node_num;
+	deref.namelen = namelen;
+	memcpy(deref.name, lockname, namelen);
+
+	ret = o2net_send_message(DLM_DEREF_LOCKRES_DONE, dlm->key,
+				 &deref, sizeof(deref), node, &r);
+	if (ret < 0) {
+		mlog(ML_ERROR, "%s: res %.*s, error %d send DEREF DONE "
+				" to node %u\n", dlm->name, namelen,
+				lockname, ret, node);
+	} else if (r < 0) {
+		/* ignore the error */
+		mlog(ML_ERROR, "%s: res %.*s, DEREF to node %u got %d\n",
+		     dlm->name, namelen, lockname, node, r);
+		dlm_print_one_lock_resource(res);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void dlm_deref_lockres_worker(struct dlm_work_item *item, void *data)
 {
 	struct dlm_ctxt *dlm;
@@ -2336,13 +2688,23 @@ static void dlm_deref_lockres_worker(struct dlm_work_item *item, void *data)
 
 	spin_lock(&res->spinlock);
 	BUG_ON(res->state & DLM_LOCK_RES_DROPPING_REF);
+<<<<<<< HEAD
 	if (test_bit(node, res->refmap)) {
 		__dlm_wait_on_lockres_flags(res, DLM_LOCK_RES_SETREF_INPROG);
+=======
+	__dlm_wait_on_lockres_flags(res, DLM_LOCK_RES_SETREF_INPROG);
+	if (test_bit(node, res->refmap)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dlm_lockres_clear_refmap_bit(dlm, res, node);
 		cleared = 1;
 	}
 	spin_unlock(&res->spinlock);
 
+<<<<<<< HEAD
+=======
+	dlm_drop_lockres_ref_done(dlm, res, node);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cleared) {
 		mlog(0, "%s:%.*s node %u ref dropped in dispatch\n",
 		     dlm->name, res->lockname.len, res->lockname.name, node);
@@ -2358,13 +2720,21 @@ static void dlm_deref_lockres_worker(struct dlm_work_item *item, void *data)
 }
 
 /*
+<<<<<<< HEAD
  * A migrateable resource is one that is :
+=======
+ * A migratable resource is one that is :
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 1. locally mastered, and,
  * 2. zero local locks, and,
  * 3. one or more non-local locks, or, one or more references
  * Returns 1 if yes, 0 if not.
  */
+<<<<<<< HEAD
 static int dlm_is_lockres_migrateable(struct dlm_ctxt *dlm,
+=======
+static int dlm_is_lockres_migratable(struct dlm_ctxt *dlm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      struct dlm_lock_resource *res)
 {
 	enum dlm_lockres_list idx;
@@ -2375,6 +2745,18 @@ static int dlm_is_lockres_migrateable(struct dlm_ctxt *dlm,
 
 	assert_spin_locked(&res->spinlock);
 
+<<<<<<< HEAD
+=======
+	/* delay migration when the lockres is in MIGRATING state */
+	if (res->state & DLM_LOCK_RES_MIGRATING)
+		return 0;
+
+	/* delay migration when the lockres is in RECOCERING state */
+	if (res->state & (DLM_LOCK_RES_RECOVERING|
+			DLM_LOCK_RES_RECOVERY_WAITING))
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (res->owner != dlm->node_num)
 		return 0;
 
@@ -2386,7 +2768,11 @@ static int dlm_is_lockres_migrateable(struct dlm_ctxt *dlm,
 				continue;
 			}
 			cookie = be64_to_cpu(lock->ml.cookie);
+<<<<<<< HEAD
 			mlog(0, "%s: Not migrateable res %.*s, lock %u:%llu on "
+=======
+			mlog(0, "%s: Not migratable res %.*s, lock %u:%llu on "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     "%s list\n", dlm->name, res->lockname.len,
 			     res->lockname.name,
 			     dlm_get_lock_cookie_node(cookie),
@@ -2397,12 +2783,20 @@ static int dlm_is_lockres_migrateable(struct dlm_ctxt *dlm,
 	}
 
 	if (!nonlocal) {
+<<<<<<< HEAD
 		node_ref = find_next_bit(res->refmap, O2NM_MAX_NODES, 0);
+=======
+		node_ref = find_first_bit(res->refmap, O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (node_ref >= O2NM_MAX_NODES)
 			return 0;
 	}
 
+<<<<<<< HEAD
 	mlog(0, "%s: res %.*s, Migrateable\n", dlm->name, res->lockname.len,
+=======
+	mlog(0, "%s: res %.*s, Migratable\n", dlm->name, res->lockname.len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	     res->lockname.name);
 
 	return 1;
@@ -2428,8 +2822,11 @@ static int dlm_migrate_lockres(struct dlm_ctxt *dlm,
 	if (!dlm_grab(dlm))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	BUG_ON(target == O2NM_MAX_NODES);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	name = res->lockname.name;
 	namelen = res->lockname.len;
 
@@ -2459,6 +2856,16 @@ static int dlm_migrate_lockres(struct dlm_ctxt *dlm,
 	spin_lock(&dlm->master_lock);
 	ret = dlm_add_migration_mle(dlm, res, mle, &oldmle, name,
 				    namelen, target, dlm->node_num);
+<<<<<<< HEAD
+=======
+	/* get an extra reference on the mle.
+	 * otherwise the assert_master from the new
+	 * master will destroy this.
+	 */
+	if (ret != -EEXIST)
+		dlm_get_mle_inuse(mle);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&dlm->master_lock);
 	spin_unlock(&dlm->spinlock);
 
@@ -2484,7 +2891,11 @@ static int dlm_migrate_lockres(struct dlm_ctxt *dlm,
 	}
 
 fail:
+<<<<<<< HEAD
 	if (oldmle) {
+=======
+	if (ret != -EEXIST && oldmle) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* master is known, detach if not already detached */
 		dlm_mle_detach_hb_events(dlm, oldmle);
 		dlm_put_mle(oldmle);
@@ -2494,6 +2905,10 @@ fail:
 		if (mle_added) {
 			dlm_mle_detach_hb_events(dlm, mle);
 			dlm_put_mle(mle);
+<<<<<<< HEAD
+=======
+			dlm_put_mle_inuse(mle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (mle) {
 			kmem_cache_free(dlm_mle_cache, mle);
 			mle = NULL;
@@ -2511,6 +2926,7 @@ fail:
 	 * ensure that all assert_master work is flushed. */
 	flush_workqueue(dlm->dlm_worker);
 
+<<<<<<< HEAD
 	/* get an extra reference on the mle.
 	 * otherwise the assert_master from the new
 	 * master will destroy this.
@@ -2522,6 +2938,8 @@ fail:
 	spin_unlock(&dlm->master_lock);
 	spin_unlock(&dlm->spinlock);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* notify new node and send all lock state */
 	/* call send_one_lockres with migration flag.
 	 * this serves as notice to the target node that a
@@ -2628,8 +3046,11 @@ leave:
 	return ret;
 }
 
+<<<<<<< HEAD
 #define DLM_MIGRATION_RETRY_MS  100
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Should be called only after beginning the domain leave process.
  * There should not be any remaining locks on nonlocal lock resources,
@@ -2641,6 +3062,10 @@ leave:
  * Returns: 1 if dlm->spinlock was dropped/retaken, 0 if never dropped
  */
 int dlm_empty_lockres(struct dlm_ctxt *dlm, struct dlm_lock_resource *res)
+<<<<<<< HEAD
+=======
+	__must_hold(&dlm->spinlock)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	int lock_dropped = 0;
@@ -2649,7 +3074,11 @@ int dlm_empty_lockres(struct dlm_ctxt *dlm, struct dlm_lock_resource *res)
 	assert_spin_locked(&dlm->spinlock);
 
 	spin_lock(&res->spinlock);
+<<<<<<< HEAD
 	if (dlm_is_lockres_migrateable(dlm, res))
+=======
+	if (dlm_is_lockres_migratable(dlm, res))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		target = dlm_pick_migration_target(dlm, res);
 	spin_unlock(&res->spinlock);
 
@@ -2776,13 +3205,22 @@ again:
 	/*
 	 * if target is down, we need to clear DLM_LOCK_RES_BLOCK_DIRTY for
 	 * another try; otherwise, we are sure the MIGRATING state is there,
+<<<<<<< HEAD
 	 * drop the unneded state which blocked threads trying to DIRTY
+=======
+	 * drop the unneeded state which blocked threads trying to DIRTY
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	spin_lock(&res->spinlock);
 	BUG_ON(!(res->state & DLM_LOCK_RES_BLOCK_DIRTY));
 	res->state &= ~DLM_LOCK_RES_BLOCK_DIRTY;
 	if (!ret)
 		BUG_ON(!(res->state & DLM_LOCK_RES_MIGRATING));
+<<<<<<< HEAD
+=======
+	else
+		res->migration_pending = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&res->spinlock);
 
 	/*
@@ -2857,7 +3295,11 @@ static u8 dlm_pick_migration_target(struct dlm_ctxt *dlm,
 				    struct dlm_lock_resource *res)
 {
 	enum dlm_lockres_list idx;
+<<<<<<< HEAD
 	struct list_head *queue = &res->granted;
+=======
+	struct list_head *queue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dlm_lock *lock;
 	int noderef;
 	u8 nodenum = O2NM_MAX_NODES;
@@ -2988,7 +3430,11 @@ int dlm_migrate_request_handler(struct o2net_msg *msg, u32 len, void *data,
 	int ret = 0;
 
 	if (!dlm_grab(dlm))
+<<<<<<< HEAD
 		return -EINVAL;
+=======
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	name = migrate->name;
 	namelen = migrate->namelen;
@@ -3029,6 +3475,12 @@ int dlm_migrate_request_handler(struct o2net_msg *msg, u32 len, void *data,
 				    migrate->new_master,
 				    migrate->master);
 
+<<<<<<< HEAD
+=======
+	if (ret < 0)
+		kmem_cache_free(dlm_mle_cache, mle);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&dlm->master_lock);
 unlock:
 	spin_unlock(&dlm->spinlock);
@@ -3079,7 +3531,12 @@ static int dlm_add_migration_mle(struct dlm_ctxt *dlm,
 				mlog(0, "tried to migrate %.*s, but some "
 				     "process beat me to it\n",
 				     namelen, name);
+<<<<<<< HEAD
 				ret = -EEXIST;
+=======
+				spin_unlock(&tmp->spinlock);
+				return -EEXIST;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else {
 				/* bad.  2 NODES are trying to migrate! */
 				mlog(ML_ERROR, "migration error  mle: "
@@ -3099,11 +3556,23 @@ static int dlm_add_migration_mle(struct dlm_ctxt *dlm,
 			/* remove it so that only one mle will be found */
 			__dlm_unlink_mle(dlm, tmp);
 			__dlm_mle_detach_hb_events(dlm, tmp);
+<<<<<<< HEAD
 			ret = DLM_MIGRATE_RESPONSE_MASTERY_REF;
 			mlog(0, "%s:%.*s: master=%u, newmaster=%u, "
 			    "telling master to get ref for cleared out mle "
 			    "during migration\n", dlm->name, namelen, name,
 			    master, new_master);
+=======
+			if (tmp->type == DLM_MLE_MASTER) {
+				ret = DLM_MIGRATE_RESPONSE_MASTERY_REF;
+				mlog(0, "%s:%.*s: master=%u, newmaster=%u, "
+						"telling master to get ref "
+						"for cleared out mle during "
+						"migration\n", dlm->name,
+						namelen, name, master,
+						new_master);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		spin_unlock(&tmp->spinlock);
 	}
@@ -3175,7 +3644,11 @@ static void dlm_clean_block_mle(struct dlm_ctxt *dlm,
 	BUG_ON(mle->type != DLM_MLE_BLOCK);
 
 	spin_lock(&mle->spinlock);
+<<<<<<< HEAD
 	bit = find_next_bit(mle->maybe_map, O2NM_MAX_NODES, 0);
+=======
+	bit = find_first_bit(mle->maybe_map, O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bit != dead_node) {
 		mlog(0, "mle found, but dead node %u would not have been "
 		     "master\n", dead_node);
@@ -3201,7 +3674,11 @@ void dlm_clean_master_list(struct dlm_ctxt *dlm, u8 dead_node)
 	struct dlm_master_list_entry *mle;
 	struct dlm_lock_resource *res;
 	struct hlist_head *bucket;
+<<<<<<< HEAD
 	struct hlist_node *list;
+=======
+	struct hlist_node *tmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i;
 
 	mlog(0, "dlm=%s, dead node=%u\n", dlm->name, dead_node);
@@ -3212,10 +3689,14 @@ top:
 	spin_lock(&dlm->master_lock);
 	for (i = 0; i < DLM_HASH_BUCKETS; i++) {
 		bucket = dlm_master_hash(dlm, i);
+<<<<<<< HEAD
 		hlist_for_each(list, bucket) {
 			mle = hlist_entry(list, struct dlm_master_list_entry,
 					  master_hash_node);
 
+=======
+		hlist_for_each_entry_safe(mle, tmp, bucket, master_hash_node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			BUG_ON(mle->type != DLM_MLE_BLOCK &&
 			       mle->type != DLM_MLE_MASTER &&
 			       mle->type != DLM_MLE_MIGRATION);
@@ -3249,6 +3730,18 @@ top:
 			    mle->new_master != dead_node)
 				continue;
 
+<<<<<<< HEAD
+=======
+			if (mle->new_master == dead_node && mle->inuse) {
+				mlog(ML_NOTICE, "%s: target %u died during "
+						"migration from %u, the MLE is "
+						"still keep used, ignore it!\n",
+						dlm->name, dead_node,
+						mle->master);
+				continue;
+			}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* If we have reached this point, this mle needs to be
 			 * removed from the list and freed. */
 			dlm_clean_migration_mle(dlm, mle);
@@ -3313,7 +3806,11 @@ int dlm_finish_migration(struct dlm_ctxt *dlm, struct dlm_lock_resource *res,
 		ret = 0;
 	}
 
+<<<<<<< HEAD
 	memset(iter.node_map, 0, sizeof(iter.node_map));
+=======
+	bitmap_zero(iter.node_map, O2NM_MAX_NODES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(old_master, iter.node_map);
 	mlog(0, "doing assert master of %.*s back to %u\n",
 	     res->lockname.len, res->lockname.name, old_master);
@@ -3396,7 +3893,11 @@ void dlm_force_free_mles(struct dlm_ctxt *dlm)
 	int i;
 	struct hlist_head *bucket;
 	struct dlm_master_list_entry *mle;
+<<<<<<< HEAD
 	struct hlist_node *tmp, *list;
+=======
+	struct hlist_node *tmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We notified all other nodes that we are exiting the domain and
@@ -3408,6 +3909,7 @@ void dlm_force_free_mles(struct dlm_ctxt *dlm)
 	spin_lock(&dlm->master_lock);
 
 	BUG_ON(dlm->dlm_state != DLM_CTXT_LEAVING);
+<<<<<<< HEAD
 	BUG_ON((find_next_bit(dlm->domain_map, O2NM_MAX_NODES, 0) < O2NM_MAX_NODES));
 
 	for (i = 0; i < DLM_HASH_BUCKETS; i++) {
@@ -3415,6 +3917,13 @@ void dlm_force_free_mles(struct dlm_ctxt *dlm)
 		hlist_for_each_safe(list, tmp, bucket) {
 			mle = hlist_entry(list, struct dlm_master_list_entry,
 					  master_hash_node);
+=======
+	BUG_ON((find_first_bit(dlm->domain_map, O2NM_MAX_NODES) < O2NM_MAX_NODES));
+
+	for (i = 0; i < DLM_HASH_BUCKETS; i++) {
+		bucket = dlm_master_hash(dlm, i);
+		hlist_for_each_entry_safe(mle, tmp, bucket, master_hash_node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (mle->type != DLM_MLE_BLOCK) {
 				mlog(ML_ERROR, "bad mle: %p\n", mle);
 				dlm_print_one_mle(mle);

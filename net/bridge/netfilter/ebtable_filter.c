@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ebtable_filter
  *
@@ -9,6 +13,7 @@
  */
 
 #include <linux/netfilter_bridge/ebtables.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 
 #define FILTER_VALID_HOOKS ((1 << NF_BR_LOCAL_IN) | (1 << NF_BR_FORWARD) | \
@@ -16,6 +21,15 @@
 
 static struct ebt_entries initial_chains[] =
 {
+=======
+#include <uapi/linux/netfilter_bridge.h>
+#include <linux/module.h>
+
+#define FILTER_VALID_HOOKS ((1 << NF_BR_LOCAL_IN) | (1 << NF_BR_FORWARD) | \
+			    (1 << NF_BR_LOCAL_OUT))
+
+static struct ebt_entries initial_chains[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name	= "INPUT",
 		.policy	= EBT_ACCEPT,
@@ -30,8 +44,12 @@ static struct ebt_entries initial_chains[] =
 	},
 };
 
+<<<<<<< HEAD
 static struct ebt_replace_kernel initial_table =
 {
+=======
+static struct ebt_replace_kernel initial_table = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "filter",
 	.valid_hooks	= FILTER_VALID_HOOKS,
 	.entries_size	= 3 * sizeof(struct ebt_entries),
@@ -43,6 +61,7 @@ static struct ebt_replace_kernel initial_table =
 	.entries	= (char *)initial_chains,
 };
 
+<<<<<<< HEAD
 static int check(const struct ebt_table_info *info, unsigned int valid_hooks)
 {
 	if (valid_hooks & ~FILTER_VALID_HOOKS)
@@ -77,46 +96,87 @@ static struct nf_hook_ops ebt_ops_filter[] __read_mostly = {
 	{
 		.hook		= ebt_in_hook,
 		.owner		= THIS_MODULE,
+=======
+static const struct ebt_table frame_filter = {
+	.name		= "filter",
+	.table		= &initial_table,
+	.valid_hooks	= FILTER_VALID_HOOKS,
+	.me		= THIS_MODULE,
+};
+
+static const struct nf_hook_ops ebt_ops_filter[] = {
+	{
+		.hook		= ebt_do_table,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pf		= NFPROTO_BRIDGE,
 		.hooknum	= NF_BR_LOCAL_IN,
 		.priority	= NF_BR_PRI_FILTER_BRIDGED,
 	},
 	{
+<<<<<<< HEAD
 		.hook		= ebt_in_hook,
 		.owner		= THIS_MODULE,
+=======
+		.hook		= ebt_do_table,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pf		= NFPROTO_BRIDGE,
 		.hooknum	= NF_BR_FORWARD,
 		.priority	= NF_BR_PRI_FILTER_BRIDGED,
 	},
 	{
+<<<<<<< HEAD
 		.hook		= ebt_out_hook,
 		.owner		= THIS_MODULE,
+=======
+		.hook		= ebt_do_table,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pf		= NFPROTO_BRIDGE,
 		.hooknum	= NF_BR_LOCAL_OUT,
 		.priority	= NF_BR_PRI_FILTER_OTHER,
 	},
 };
 
+<<<<<<< HEAD
 static int __net_init frame_filter_net_init(struct net *net)
 {
 	net->xt.frame_filter = ebt_register_table(net, &frame_filter);
 	if (IS_ERR(net->xt.frame_filter))
 		return PTR_ERR(net->xt.frame_filter);
 	return 0;
+=======
+static int frame_filter_table_init(struct net *net)
+{
+	return ebt_register_table(net, &frame_filter, ebt_ops_filter);
+}
+
+static void __net_exit frame_filter_net_pre_exit(struct net *net)
+{
+	ebt_unregister_table_pre_exit(net, "filter");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __net_exit frame_filter_net_exit(struct net *net)
 {
+<<<<<<< HEAD
 	ebt_unregister_table(net, net->xt.frame_filter);
 }
 
 static struct pernet_operations frame_filter_net_ops = {
 	.init = frame_filter_net_init,
 	.exit = frame_filter_net_exit,
+=======
+	ebt_unregister_table(net, "filter");
+}
+
+static struct pernet_operations frame_filter_net_ops = {
+	.exit = frame_filter_net_exit,
+	.pre_exit = frame_filter_net_pre_exit,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ebtable_filter_init(void)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = register_pernet_subsys(&frame_filter_net_ops);
@@ -126,14 +186,37 @@ static int __init ebtable_filter_init(void)
 	if (ret < 0)
 		unregister_pernet_subsys(&frame_filter_net_ops);
 	return ret;
+=======
+	int ret = ebt_register_template(&frame_filter, frame_filter_table_init);
+
+	if (ret)
+		return ret;
+
+	ret = register_pernet_subsys(&frame_filter_net_ops);
+	if (ret) {
+		ebt_unregister_template(&frame_filter);
+		return ret;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit ebtable_filter_fini(void)
 {
+<<<<<<< HEAD
 	nf_unregister_hooks(ebt_ops_filter, ARRAY_SIZE(ebt_ops_filter));
 	unregister_pernet_subsys(&frame_filter_net_ops);
+=======
+	unregister_pernet_subsys(&frame_filter_net_ops);
+	ebt_unregister_template(&frame_filter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(ebtable_filter_init);
 module_exit(ebtable_filter_fini);
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("ebtables legacy filter table");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

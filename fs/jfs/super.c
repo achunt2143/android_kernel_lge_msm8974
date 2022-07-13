@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2004
  *   Portions Copyright (C) Christoph Hellwig, 2001-2002
@@ -15,6 +16,12 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *   Copyright (C) International Business Machines Corp., 2000-2004
+ *   Portions Copyright (C) Christoph Hellwig, 2001-2002
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -31,8 +38,14 @@
 #include <linux/exportfs.h>
 #include <linux/crc32.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include <linux/seq_file.h>
+=======
+#include <linux/uaccess.h>
+#include <linux/seq_file.h>
+#include <linux/blkdev.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "jfs_incore.h"
 #include "jfs_filsys.h"
@@ -43,19 +56,32 @@
 #include "jfs_imap.h"
 #include "jfs_acl.h"
 #include "jfs_debug.h"
+<<<<<<< HEAD
+=======
+#include "jfs_xattr.h"
+#include "jfs_dinode.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("The Journaled Filesystem (JFS)");
 MODULE_AUTHOR("Steve Best/Dave Kleikamp/Barry Arndt, IBM");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 static struct kmem_cache * jfs_inode_cachep;
+=======
+static struct kmem_cache *jfs_inode_cachep;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct super_operations jfs_super_operations;
 static const struct export_operations jfs_export_operations;
 static struct file_system_type jfs_fs_type;
 
 #define MAX_COMMIT_THREADS 64
+<<<<<<< HEAD
 static int commit_threads = 0;
+=======
+static int commit_threads;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(commit_threads, int, 0);
 MODULE_PARM_DESC(commit_threads, "Number of commit threads");
 
@@ -73,7 +99,11 @@ static void jfs_handle_error(struct super_block *sb)
 {
 	struct jfs_sb_info *sbi = JFS_SBI(sb);
 
+<<<<<<< HEAD
 	if (sb->s_flags & MS_RDONLY)
+=======
+	if (sb_rdonly(sb))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	updateSuper(sb, FM_DIRTY);
@@ -82,15 +112,22 @@ static void jfs_handle_error(struct super_block *sb)
 		panic("JFS (device %s): panic forced after error\n",
 			sb->s_id);
 	else if (sbi->flag & JFS_ERR_REMOUNT_RO) {
+<<<<<<< HEAD
 		jfs_err("ERROR: (device %s): remounting filesystem "
 			"as read-only\n",
 			sb->s_id);
 		sb->s_flags |= MS_RDONLY;
+=======
+		jfs_err("ERROR: (device %s): remounting filesystem as read-only",
+			sb->s_id);
+		sb->s_flags |= SB_RDONLY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* nothing is done for continue beyond marking the superblock dirty */
 }
 
+<<<<<<< HEAD
 void jfs_error(struct super_block *sb, const char * function, ...)
 {
 	static char error_buf[256];
@@ -101,6 +138,22 @@ void jfs_error(struct super_block *sb, const char * function, ...)
 	va_end(args);
 
 	printk(KERN_ERR "ERROR: (device %s): %s\n", sb->s_id, error_buf);
+=======
+void jfs_error(struct super_block *sb, const char *fmt, ...)
+{
+	struct va_format vaf;
+	va_list args;
+
+	va_start(args, fmt);
+
+	vaf.fmt = fmt;
+	vaf.va = &args;
+
+	pr_err("ERROR: (device %s): %ps: %pV\n",
+	       sb->s_id, __builtin_return_address(0), &vaf);
+
+	va_end(args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	jfs_handle_error(sb);
 }
@@ -109,6 +162,7 @@ static struct inode *jfs_alloc_inode(struct super_block *sb)
 {
 	struct jfs_inode_info *jfs_inode;
 
+<<<<<<< HEAD
 	jfs_inode = kmem_cache_alloc(jfs_inode_cachep, GFP_NOFS);
 	if (!jfs_inode)
 		return NULL;
@@ -136,6 +190,20 @@ static void jfs_destroy_inode(struct inode *inode)
 	}
 	spin_unlock_irq(&ji->ag_lock);
 	call_rcu(&inode->i_rcu, jfs_i_callback);
+=======
+	jfs_inode = alloc_inode_sb(sb, jfs_inode_cachep, GFP_NOFS);
+	if (!jfs_inode)
+		return NULL;
+#ifdef CONFIG_QUOTA
+	memset(&jfs_inode->i_dquot, 0, sizeof(jfs_inode->i_dquot));
+#endif
+	return &jfs_inode->vfs_inode;
+}
+
+static void jfs_free_inode(struct inode *inode)
+{
+	kmem_cache_free(jfs_inode_cachep, JFS_IP(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int jfs_statfs(struct dentry *dentry, struct kstatfs *buf)
@@ -153,7 +221,11 @@ static int jfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	/*
 	 * If we really return the number of allocated & free inodes, some
 	 * applications will fail because they won't see enough free inodes.
+<<<<<<< HEAD
 	 * We'll try to calculate some guess as to how may inodes we can
+=======
+	 * We'll try to calculate some guess as to how many inodes we can
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * really allocate
 	 *
 	 * buf->f_files = atomic_read(&imap->im_numinos);
@@ -165,14 +237,54 @@ static int jfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_files = maxinodes;
 	buf->f_ffree = maxinodes - (atomic_read(&imap->im_numinos) -
 				    atomic_read(&imap->im_numfree));
+<<<<<<< HEAD
 	buf->f_fsid.val[0] = (u32)crc32_le(0, sbi->uuid, sizeof(sbi->uuid)/2);
 	buf->f_fsid.val[1] = (u32)crc32_le(0, sbi->uuid + sizeof(sbi->uuid)/2,
 					sizeof(sbi->uuid)/2);
+=======
+	buf->f_fsid.val[0] = crc32_le(0, (char *)&sbi->uuid,
+				      sizeof(sbi->uuid)/2);
+	buf->f_fsid.val[1] = crc32_le(0,
+				      (char *)&sbi->uuid + sizeof(sbi->uuid)/2,
+				      sizeof(sbi->uuid)/2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	buf->f_namelen = JFS_NAME_MAX;
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_QUOTA
+static int jfs_quota_off(struct super_block *sb, int type);
+static int jfs_quota_on(struct super_block *sb, int type, int format_id,
+			const struct path *path);
+
+static void jfs_quota_off_umount(struct super_block *sb)
+{
+	int type;
+
+	for (type = 0; type < MAXQUOTAS; type++)
+		jfs_quota_off(sb, type);
+}
+
+static const struct quotactl_ops jfs_quotactl_ops = {
+	.quota_on	= jfs_quota_on,
+	.quota_off	= jfs_quota_off,
+	.quota_sync	= dquot_quota_sync,
+	.get_state	= dquot_get_state,
+	.set_info	= dquot_set_dqinfo,
+	.get_dqblk	= dquot_get_dqblk,
+	.set_dqblk	= dquot_set_dqblk,
+	.get_nextdqblk	= dquot_get_next_dqblk,
+};
+#else
+static inline void jfs_quota_off_umount(struct super_block *sb)
+{
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void jfs_put_super(struct super_block *sb)
 {
 	struct jfs_sb_info *sbi = JFS_SBI(sb);
@@ -180,7 +292,11 @@ static void jfs_put_super(struct super_block *sb)
 
 	jfs_info("In jfs_put_super");
 
+<<<<<<< HEAD
 	dquot_disable(sb, -1, DQUOT_USAGE_ENABLED | DQUOT_LIMITS_ENABLED);
+=======
+	jfs_quota_off_umount(sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = jfs_umount(sb);
 	if (rc)
@@ -197,7 +313,12 @@ static void jfs_put_super(struct super_block *sb)
 enum {
 	Opt_integrity, Opt_nointegrity, Opt_iocharset, Opt_resize,
 	Opt_resize_nosize, Opt_errors, Opt_ignore, Opt_err, Opt_quota,
+<<<<<<< HEAD
 	Opt_usrquota, Opt_grpquota, Opt_uid, Opt_gid, Opt_umask
+=======
+	Opt_usrquota, Opt_grpquota, Opt_uid, Opt_gid, Opt_umask,
+	Opt_discard, Opt_nodiscard, Opt_discard_minblk
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const match_table_t tokens = {
@@ -208,12 +329,22 @@ static const match_table_t tokens = {
 	{Opt_resize_nosize, "resize"},
 	{Opt_errors, "errors=%s"},
 	{Opt_ignore, "noquota"},
+<<<<<<< HEAD
 	{Opt_ignore, "quota"},
+=======
+	{Opt_quota, "quota"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{Opt_usrquota, "usrquota"},
 	{Opt_grpquota, "grpquota"},
 	{Opt_uid, "uid=%u"},
 	{Opt_gid, "gid=%u"},
 	{Opt_umask, "umask=%u"},
+<<<<<<< HEAD
+=======
+	{Opt_discard, "discard"},
+	{Opt_nodiscard, "nodiscard"},
+	{Opt_discard_minblk, "discard=%u"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{Opt_err, NULL}
 };
 
@@ -255,8 +386,12 @@ static int parse_options(char *options, struct super_block *sb, s64 *newLVSize,
 			else {
 				nls_map = load_nls(args[0].from);
 				if (!nls_map) {
+<<<<<<< HEAD
 					printk(KERN_ERR
 					       "JFS: charset not found\n");
+=======
+					pr_err("JFS: charset not found\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					goto cleanup;
 				}
 			}
@@ -264,16 +399,29 @@ static int parse_options(char *options, struct super_block *sb, s64 *newLVSize,
 		case Opt_resize:
 		{
 			char *resize = args[0].from;
+<<<<<<< HEAD
 			*newLVSize = simple_strtoull(resize, &resize, 0);
+=======
+			int rc = kstrtoll(resize, 0, newLVSize);
+
+			if (rc)
+				goto cleanup;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		case Opt_resize_nosize:
 		{
+<<<<<<< HEAD
 			*newLVSize = sb->s_bdev->bd_inode->i_size >>
 				sb->s_blocksize_bits;
 			if (*newLVSize == 0)
 				printk(KERN_ERR
 				       "JFS: Cannot determine volume size\n");
+=======
+			*newLVSize = sb_bdev_nr_blocks(sb);
+			if (*newLVSize == 0)
+				pr_err("JFS: Cannot determine volume size\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		case Opt_errors:
@@ -294,8 +442,12 @@ static int parse_options(char *options, struct super_block *sb, s64 *newLVSize,
 				*flag &= ~JFS_ERR_REMOUNT_RO;
 				*flag |= JFS_ERR_PANIC;
 			} else {
+<<<<<<< HEAD
 				printk(KERN_ERR
 				       "JFS: %s is an invalid error handler\n",
+=======
+				pr_err("JFS: %s is an invalid error handler\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       errors);
 				goto cleanup;
 			}
@@ -314,13 +466,18 @@ static int parse_options(char *options, struct super_block *sb, s64 *newLVSize,
 		case Opt_usrquota:
 		case Opt_grpquota:
 		case Opt_quota:
+<<<<<<< HEAD
 			printk(KERN_ERR
 			       "JFS: quota operations not supported\n");
+=======
+			pr_err("JFS: quota operations not supported\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 #endif
 		case Opt_uid:
 		{
 			char *uid = args[0].from;
+<<<<<<< HEAD
 			sbi->uid = simple_strtoul(uid, &uid, 0);
 			break;
 		}
@@ -337,13 +494,87 @@ static int parse_options(char *options, struct super_block *sb, s64 *newLVSize,
 			if (sbi->umask & ~0777) {
 				printk(KERN_ERR
 				       "JFS: Invalid value of umask\n");
+=======
+			uid_t val;
+			int rc = kstrtouint(uid, 0, &val);
+
+			if (rc)
+				goto cleanup;
+			sbi->uid = make_kuid(current_user_ns(), val);
+			if (!uid_valid(sbi->uid))
+				goto cleanup;
+			break;
+		}
+
+		case Opt_gid:
+		{
+			char *gid = args[0].from;
+			gid_t val;
+			int rc = kstrtouint(gid, 0, &val);
+
+			if (rc)
+				goto cleanup;
+			sbi->gid = make_kgid(current_user_ns(), val);
+			if (!gid_valid(sbi->gid))
+				goto cleanup;
+			break;
+		}
+
+		case Opt_umask:
+		{
+			char *umask = args[0].from;
+			int rc = kstrtouint(umask, 8, &sbi->umask);
+
+			if (rc)
+				goto cleanup;
+			if (sbi->umask & ~0777) {
+				pr_err("JFS: Invalid value of umask\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto cleanup;
 			}
 			break;
 		}
+<<<<<<< HEAD
 		default:
 			printk("jfs: Unrecognized mount option \"%s\" "
 					" or missing value\n", p);
+=======
+
+		case Opt_discard:
+			/* if set to 1, even copying files will cause
+			 * trimming :O
+			 * -> user has more control over the online trimming
+			 */
+			sbi->minblks_trim = 64;
+			if (bdev_max_discard_sectors(sb->s_bdev))
+				*flag |= JFS_DISCARD;
+			else
+				pr_err("JFS: discard option not supported on device\n");
+			break;
+
+		case Opt_nodiscard:
+			*flag &= ~JFS_DISCARD;
+			break;
+
+		case Opt_discard_minblk:
+		{
+			char *minblks_trim = args[0].from;
+			int rc;
+			if (bdev_max_discard_sectors(sb->s_bdev)) {
+				*flag |= JFS_DISCARD;
+				rc = kstrtouint(minblks_trim, 0,
+						&sbi->minblks_trim);
+				if (rc)
+					goto cleanup;
+			} else
+				pr_err("JFS: discard option not supported on device\n");
+			break;
+		}
+
+		default:
+			printk("jfs: Unrecognized mount option \"%s\" or missing value\n",
+			       p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto cleanup;
 		}
 	}
@@ -368,6 +599,7 @@ static int jfs_remount(struct super_block *sb, int *flags, char *data)
 	int flag = JFS_SBI(sb)->flag;
 	int ret;
 
+<<<<<<< HEAD
 	if (!parse_options(data, sb, &newLVSize, &flag)) {
 		return -EINVAL;
 	}
@@ -376,6 +608,15 @@ static int jfs_remount(struct super_block *sb, int *flags, char *data)
 		if (sb->s_flags & MS_RDONLY) {
 			printk(KERN_ERR
 		  "JFS: resize requires volume to be mounted read-write\n");
+=======
+	sync_filesystem(sb);
+	if (!parse_options(data, sb, &newLVSize, &flag))
+		return -EINVAL;
+
+	if (newLVSize) {
+		if (sb_rdonly(sb)) {
+			pr_err("JFS: resize requires volume to be mounted read-write\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EROFS;
 		}
 		rc = jfs_extendfs(sb, newLVSize, 0);
@@ -383,7 +624,11 @@ static int jfs_remount(struct super_block *sb, int *flags, char *data)
 			return rc;
 	}
 
+<<<<<<< HEAD
 	if ((sb->s_flags & MS_RDONLY) && !(*flags & MS_RDONLY)) {
+=======
+	if (sb_rdonly(sb) && !(*flags & SB_RDONLY)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Invalidate any previously read metadata.  fsck may have
 		 * changed the on-disk data since we mounted r/o
@@ -394,22 +639,37 @@ static int jfs_remount(struct super_block *sb, int *flags, char *data)
 		ret = jfs_mount_rw(sb, 1);
 
 		/* mark the fs r/w for quota activity */
+<<<<<<< HEAD
 		sb->s_flags &= ~MS_RDONLY;
+=======
+		sb->s_flags &= ~SB_RDONLY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dquot_resume(sb, -1);
 		return ret;
 	}
+<<<<<<< HEAD
 	if ((!(sb->s_flags & MS_RDONLY)) && (*flags & MS_RDONLY)) {
 		rc = dquot_suspend(sb, -1);
 		if (rc < 0) {
 			return rc;
 		}
+=======
+	if (!sb_rdonly(sb) && (*flags & SB_RDONLY)) {
+		rc = dquot_suspend(sb, -1);
+		if (rc < 0)
+			return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = jfs_umount_rw(sb);
 		JFS_SBI(sb)->flag = flag;
 		return rc;
 	}
 	if ((JFS_SBI(sb)->flag & JFS_NOINTEGRITY) != (flag & JFS_NOINTEGRITY))
+<<<<<<< HEAD
 		if (!(sb->s_flags & MS_RDONLY)) {
+=======
+		if (!sb_rdonly(sb)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rc = jfs_umount_rw(sb);
 			if (rc)
 				return rc;
@@ -433,17 +693,30 @@ static int jfs_fill_super(struct super_block *sb, void *data, int silent)
 
 	jfs_info("In jfs_read_super: s_flags=0x%lx", sb->s_flags);
 
+<<<<<<< HEAD
 	if (!new_valid_dev(sb->s_bdev->bd_dev))
 		return -EOVERFLOW;
 
 	sbi = kzalloc(sizeof (struct jfs_sb_info), GFP_KERNEL);
+=======
+	sbi = kzalloc(sizeof(struct jfs_sb_info), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sbi)
 		return -ENOMEM;
 
 	sb->s_fs_info = sbi;
 	sb->s_max_links = JFS_LINK_MAX;
+<<<<<<< HEAD
 	sbi->sb = sb;
 	sbi->uid = sbi->gid = sbi->umask = -1;
+=======
+	sb->s_time_min = 0;
+	sb->s_time_max = U32_MAX;
+	sbi->sb = sb;
+	sbi->uid = INVALID_UID;
+	sbi->gid = INVALID_GID;
+	sbi->umask = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* initialize the mount flag and determine the default error handler */
 	flag = JFS_ERR_REMOUNT_RO;
@@ -453,11 +726,19 @@ static int jfs_fill_super(struct super_block *sb, void *data, int silent)
 	sbi->flag = flag;
 
 #ifdef CONFIG_JFS_POSIX_ACL
+<<<<<<< HEAD
 	sb->s_flags |= MS_POSIXACL;
 #endif
 
 	if (newLVSize) {
 		printk(KERN_ERR "resize option for remount only\n");
+=======
+	sb->s_flags |= SB_POSIXACL;
+#endif
+
+	if (newLVSize) {
+		pr_err("resize option for remount only\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_kfree;
 	}
 
@@ -471,9 +752,17 @@ static int jfs_fill_super(struct super_block *sb, void *data, int silent)
 	 */
 	sb->s_op = &jfs_super_operations;
 	sb->s_export_op = &jfs_export_operations;
+<<<<<<< HEAD
 #ifdef CONFIG_QUOTA
 	sb->dq_op = &dquot_operations;
 	sb->s_qcop = &dquot_quotactl_ops;
+=======
+	sb->s_xattr = jfs_xattr_handlers;
+#ifdef CONFIG_QUOTA
+	sb->dq_op = &dquot_operations;
+	sb->s_qcop = &jfs_quotactl_ops;
+	sb->s_quota_types = QTYPE_MASK_USR | QTYPE_MASK_GRP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/*
@@ -484,22 +773,36 @@ static int jfs_fill_super(struct super_block *sb, void *data, int silent)
 		ret = -ENOMEM;
 		goto out_unload;
 	}
+<<<<<<< HEAD
 	inode->i_ino = 0;
 	inode->i_size = sb->s_bdev->bd_inode->i_size;
 	inode->i_mapping->a_ops = &jfs_metapage_aops;
 	insert_inode_hash(inode);
+=======
+	inode->i_size = bdev_nr_bytes(sb->s_bdev);
+	inode->i_mapping->a_ops = &jfs_metapage_aops;
+	inode_fake_hash(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mapping_set_gfp_mask(inode->i_mapping, GFP_NOFS);
 
 	sbi->direct_inode = inode;
 
 	rc = jfs_mount(sb);
 	if (rc) {
+<<<<<<< HEAD
 		if (!silent) {
 			jfs_err("jfs_mount failed w/return code = %d", rc);
 		}
 		goto out_mount_failed;
 	}
 	if (sb->s_flags & MS_RDONLY)
+=======
+		if (!silent)
+			jfs_err("jfs_mount failed w/return code = %d", rc);
+		goto out_mount_failed;
+	}
+	if (sb_rdonly(sb))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sbi->log = NULL;
 	else {
 		rc = jfs_mount_rw(sb, 0);
@@ -526,6 +829,7 @@ static int jfs_fill_super(struct super_block *sb, void *data, int silent)
 	if (!sb->s_root)
 		goto out_no_root;
 
+<<<<<<< HEAD
 	/* logical blocks are represented by 40 bits in pxd_t, etc. */
 	sb->s_maxbytes = ((u64) sb->s_blocksize) << 40;
 #if BITS_PER_LONG == 32
@@ -535,6 +839,12 @@ static int jfs_fill_super(struct super_block *sb, void *data, int silent)
 	 */
 	sb->s_maxbytes = min(((u64) PAGE_CACHE_SIZE << 32) - 1, (u64)sb->s_maxbytes);
 #endif
+=======
+	/* logical blocks are represented by 40 bits in pxd_t, etc.
+	 * and page cache is indexed by long
+	 */
+	sb->s_maxbytes = min(((loff_t)sb->s_blocksize) << 40, MAX_LFS_FILESIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb->s_time_gran = 1;
 	return 0;
 
@@ -543,9 +853,14 @@ out_no_root:
 
 out_no_rw:
 	rc = jfs_umount(sb);
+<<<<<<< HEAD
 	if (rc) {
 		jfs_err("jfs_umount failed with return code %d", rc);
 	}
+=======
+	if (rc)
+		jfs_err("jfs_umount failed with return code %d", rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_mount_failed:
 	filemap_write_and_wait(sbi->direct_inode->i_mapping);
 	truncate_inode_pages(sbi->direct_inode->i_mapping, 0);
@@ -553,8 +868,12 @@ out_mount_failed:
 	iput(sbi->direct_inode);
 	sbi->direct_inode = NULL;
 out_unload:
+<<<<<<< HEAD
 	if (sbi->nls_tab)
 		unload_nls(sbi->nls_tab);
+=======
+	unload_nls(sbi->nls_tab);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_kfree:
 	kfree(sbi);
 	return ret;
@@ -564,11 +883,36 @@ static int jfs_freeze(struct super_block *sb)
 {
 	struct jfs_sb_info *sbi = JFS_SBI(sb);
 	struct jfs_log *log = sbi->log;
+<<<<<<< HEAD
 
 	if (!(sb->s_flags & MS_RDONLY)) {
 		txQuiesce(sb);
 		lmLogShutdown(log);
 		updateSuper(sb, FM_CLEAN);
+=======
+	int rc = 0;
+
+	if (!sb_rdonly(sb)) {
+		txQuiesce(sb);
+		rc = lmLogShutdown(log);
+		if (rc) {
+			jfs_error(sb, "lmLogShutdown failed\n");
+
+			/* let operations fail rather than hang */
+			txResume(sb);
+
+			return rc;
+		}
+		rc = updateSuper(sb, FM_CLEAN);
+		if (rc) {
+			jfs_err("jfs_freeze: updateSuper failed");
+			/*
+			 * Don't fail here. Everything succeeded except
+			 * marking the superblock clean, so there's really
+			 * no harm in leaving it frozen for now.
+			 */
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -579,6 +923,7 @@ static int jfs_unfreeze(struct super_block *sb)
 	struct jfs_log *log = sbi->log;
 	int rc = 0;
 
+<<<<<<< HEAD
 	if (!(sb->s_flags & MS_RDONLY)) {
 		updateSuper(sb, FM_MOUNT);
 		if ((rc = lmLogInit(log)))
@@ -587,6 +932,21 @@ static int jfs_unfreeze(struct super_block *sb)
 			txResume(sb);
 	}
 	return 0;
+=======
+	if (!sb_rdonly(sb)) {
+		rc = updateSuper(sb, FM_MOUNT);
+		if (rc) {
+			jfs_error(sb, "updateSuper failed\n");
+			goto out;
+		}
+		rc = lmLogInit(log);
+		if (rc)
+			jfs_error(sb, "lmLogInit failed\n");
+out:
+		txResume(sb);
+	}
+	return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dentry *jfs_do_mount(struct file_system_type *fs_type,
@@ -601,6 +961,14 @@ static int jfs_sync_fs(struct super_block *sb, int wait)
 
 	/* log == NULL indicates read-only mount */
 	if (log) {
+<<<<<<< HEAD
+=======
+		/*
+		 * Write quota structures to quota file, sync_blockdev() will
+		 * write them to disk later
+		 */
+		dquot_writeback_dquots(sb, -1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		jfs_flush_journal(log, wait);
 		jfs_syncpt(log, 0);
 	}
@@ -612,14 +980,26 @@ static int jfs_show_options(struct seq_file *seq, struct dentry *root)
 {
 	struct jfs_sb_info *sbi = JFS_SBI(root->d_sb);
 
+<<<<<<< HEAD
 	if (sbi->uid != -1)
 		seq_printf(seq, ",uid=%d", sbi->uid);
 	if (sbi->gid != -1)
 		seq_printf(seq, ",gid=%d", sbi->gid);
+=======
+	if (uid_valid(sbi->uid))
+		seq_printf(seq, ",uid=%d", from_kuid(&init_user_ns, sbi->uid));
+	if (gid_valid(sbi->gid))
+		seq_printf(seq, ",gid=%d", from_kgid(&init_user_ns, sbi->gid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sbi->umask != -1)
 		seq_printf(seq, ",umask=%03o", sbi->umask);
 	if (sbi->flag & JFS_NOINTEGRITY)
 		seq_puts(seq, ",nointegrity");
+<<<<<<< HEAD
+=======
+	if (sbi->flag & JFS_DISCARD)
+		seq_printf(seq, ",discard=%u", sbi->minblks_trim);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sbi->nls_tab)
 		seq_printf(seq, ",iocharset=%s", sbi->nls_tab->charset);
 	if (sbi->flag & JFS_ERR_CONTINUE)
@@ -663,11 +1043,18 @@ static ssize_t jfs_quota_read(struct super_block *sb, int type, char *data,
 		len = i_size-off;
 	toread = len;
 	while (toread > 0) {
+<<<<<<< HEAD
 		tocopy = sb->s_blocksize - offset < toread ?
 				sb->s_blocksize - offset : toread;
 
 		tmp_bh.b_state = 0;
 		tmp_bh.b_size = 1 << inode->i_blkbits;
+=======
+		tocopy = min_t(size_t, sb->s_blocksize - offset, toread);
+
+		tmp_bh.b_state = 0;
+		tmp_bh.b_size = i_blocksize(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = jfs_get_block(inode, blk, &tmp_bh, 0);
 		if (err)
 			return err;
@@ -701,6 +1088,7 @@ static ssize_t jfs_quota_write(struct super_block *sb, int type,
 	struct buffer_head tmp_bh;
 	struct buffer_head *bh;
 
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
 	while (towrite > 0) {
 		tocopy = sb->s_blocksize - offset < towrite ?
@@ -708,6 +1096,14 @@ static ssize_t jfs_quota_write(struct super_block *sb, int type,
 
 		tmp_bh.b_state = 0;
 		tmp_bh.b_size = 1 << inode->i_blkbits;
+=======
+	inode_lock(inode);
+	while (towrite > 0) {
+		tocopy = min_t(size_t, sb->s_blocksize - offset, towrite);
+
+		tmp_bh.b_state = 0;
+		tmp_bh.b_size = i_blocksize(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = jfs_get_block(inode, blk, &tmp_bh, 1);
 		if (err)
 			goto out;
@@ -733,11 +1129,16 @@ static ssize_t jfs_quota_write(struct super_block *sb, int type,
 	}
 out:
 	if (len == towrite) {
+<<<<<<< HEAD
 		mutex_unlock(&inode->i_mutex);
+=======
+		inode_unlock(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	if (inode->i_size < off+len-towrite)
 		i_size_write(inode, off+len-towrite);
+<<<<<<< HEAD
 	inode->i_version++;
 	inode->i_mtime = inode->i_ctime = CURRENT_TIME;
 	mark_inode_dirty(inode);
@@ -745,11 +1146,72 @@ out:
 	return len - towrite;
 }
 
+=======
+	inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
+	mark_inode_dirty(inode);
+	inode_unlock(inode);
+	return len - towrite;
+}
+
+static struct dquot __rcu **jfs_get_dquots(struct inode *inode)
+{
+	return JFS_IP(inode)->i_dquot;
+}
+
+static int jfs_quota_on(struct super_block *sb, int type, int format_id,
+			const struct path *path)
+{
+	int err;
+	struct inode *inode;
+
+	err = dquot_quota_on(sb, type, format_id, path);
+	if (err)
+		return err;
+
+	inode = d_inode(path->dentry);
+	inode_lock(inode);
+	JFS_IP(inode)->mode2 |= JFS_NOATIME_FL | JFS_IMMUTABLE_FL;
+	inode_set_flags(inode, S_NOATIME | S_IMMUTABLE,
+			S_NOATIME | S_IMMUTABLE);
+	inode_unlock(inode);
+	mark_inode_dirty(inode);
+
+	return 0;
+}
+
+static int jfs_quota_off(struct super_block *sb, int type)
+{
+	struct inode *inode = sb_dqopt(sb)->files[type];
+	int err;
+
+	if (!inode || !igrab(inode))
+		goto out;
+
+	err = dquot_quota_off(sb, type);
+	if (err)
+		goto out_put;
+
+	inode_lock(inode);
+	JFS_IP(inode)->mode2 &= ~(JFS_NOATIME_FL | JFS_IMMUTABLE_FL);
+	inode_set_flags(inode, 0, S_NOATIME | S_IMMUTABLE);
+	inode_unlock(inode);
+	mark_inode_dirty(inode);
+out_put:
+	iput(inode);
+	return err;
+out:
+	return dquot_quota_off(sb, type);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static const struct super_operations jfs_super_operations = {
 	.alloc_inode	= jfs_alloc_inode,
+<<<<<<< HEAD
 	.destroy_inode	= jfs_destroy_inode,
+=======
+	.free_inode	= jfs_free_inode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dirty_inode	= jfs_dirty_inode,
 	.write_inode	= jfs_write_inode,
 	.evict_inode	= jfs_evict_inode,
@@ -763,10 +1225,18 @@ static const struct super_operations jfs_super_operations = {
 #ifdef CONFIG_QUOTA
 	.quota_read	= jfs_quota_read,
 	.quota_write	= jfs_quota_write,
+<<<<<<< HEAD
+=======
+	.get_dquots	= jfs_get_dquots,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
 static const struct export_operations jfs_export_operations = {
+<<<<<<< HEAD
+=======
+	.encode_fh	= generic_encode_ino32_fh,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fh_to_dentry	= jfs_fh_to_dentry,
 	.fh_to_parent	= jfs_fh_to_parent,
 	.get_parent	= jfs_get_parent,
@@ -801,9 +1271,17 @@ static int __init init_jfs_fs(void)
 	int rc;
 
 	jfs_inode_cachep =
+<<<<<<< HEAD
 	    kmem_cache_create("jfs_ip", sizeof(struct jfs_inode_info), 0,
 			    SLAB_RECLAIM_ACCOUNT|SLAB_MEM_SPREAD,
 			    init_once);
+=======
+	    kmem_cache_create_usercopy("jfs_ip", sizeof(struct jfs_inode_info),
+			0, SLAB_RECLAIM_ACCOUNT|SLAB_ACCOUNT,
+			offsetof(struct jfs_inode_info, i_inline_all),
+			sizeof_field(struct jfs_inode_info, i_inline_all),
+			init_once);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (jfs_inode_cachep == NULL)
 		return -ENOMEM;
 
@@ -841,7 +1319,12 @@ static int __init init_jfs_fs(void)
 		commit_threads = MAX_COMMIT_THREADS;
 
 	for (i = 0; i < commit_threads; i++) {
+<<<<<<< HEAD
 		jfsCommitThread[i] = kthread_run(jfs_lazycommit, NULL, "jfsCommit");
+=======
+		jfsCommitThread[i] = kthread_run(jfs_lazycommit, NULL,
+						 "jfsCommit");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(jfsCommitThread[i])) {
 			rc = PTR_ERR(jfsCommitThread[i]);
 			jfs_err("init_jfs_fs: fork failed w/rc = %d", rc);

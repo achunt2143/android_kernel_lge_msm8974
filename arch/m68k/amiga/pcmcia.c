@@ -26,11 +26,18 @@ static unsigned char cfg_byte = GAYLE_CFG_0V|GAYLE_CFG_150NS;
 void pcmcia_reset(void)
 {
 	unsigned long reset_start_time = jiffies;
+<<<<<<< HEAD
 	unsigned char b;
 
 	gayle_reset = 0x00;
 	while (time_before(jiffies, reset_start_time + 1*HZ/100));
 	b = gayle_reset;
+=======
+
+	gayle_reset = 0x00;
+	while (time_before(jiffies, reset_start_time + 1*HZ/100));
+	READ_ONCE(gayle_reset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(pcmcia_reset);
 

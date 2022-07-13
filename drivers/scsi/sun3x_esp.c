@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sun3x_esp.c: ESP front-end for Sun3x systems.
  *
  * Copyright (C) 2007,2008 Thomas Bogendoerfer (tsbogend@alpha.franken.de)
@@ -12,9 +16,15 @@
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 
 #include <asm/sun3x.h>
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+
+#include <asm/sun3x.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dma.h>
 #include <asm/dvma.h>
 
@@ -60,6 +70,7 @@ static u8 sun3x_esp_read8(struct esp *esp, unsigned long reg)
 	return readb(esp->regs + (reg * 4UL));
 }
 
+<<<<<<< HEAD
 static dma_addr_t sun3x_esp_map_single(struct esp *esp, void *buf,
 				      size_t sz, int dir)
 {
@@ -84,6 +95,8 @@ static void sun3x_esp_unmap_sg(struct esp *esp, struct scatterlist *sg,
 	dma_unmap_sg(esp->dev, sg, num_sg, dir);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sun3x_esp_irq_pending(struct esp *esp)
 {
 	if (dma_read32(DMA_CSR) & (DMA_HNDL_INTR | DMA_HNDL_ERROR))
@@ -182,10 +195,13 @@ static int sun3x_esp_dma_error(struct esp *esp)
 static const struct esp_driver_ops sun3x_esp_ops = {
 	.esp_write8	=	sun3x_esp_write8,
 	.esp_read8	=	sun3x_esp_read8,
+<<<<<<< HEAD
 	.map_single	=	sun3x_esp_map_single,
 	.map_sg		=	sun3x_esp_map_sg,
 	.unmap_single	=	sun3x_esp_unmap_single,
 	.unmap_sg	=	sun3x_esp_unmap_sg,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.irq_pending	=	sun3x_esp_irq_pending,
 	.reset_dma	=	sun3x_esp_reset_dma,
 	.dma_drain	=	sun3x_esp_dma_drain,
@@ -194,9 +210,15 @@ static const struct esp_driver_ops sun3x_esp_ops = {
 	.dma_error	=	sun3x_esp_dma_error,
 };
 
+<<<<<<< HEAD
 static int __devinit esp_sun3x_probe(struct platform_device *dev)
 {
 	struct scsi_host_template *tpnt = &scsi_esp_template;
+=======
+static int esp_sun3x_probe(struct platform_device *dev)
+{
+	const struct scsi_host_template *tpnt = &scsi_esp_template;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *host;
 	struct esp *esp;
 	struct resource *res;
@@ -210,14 +232,22 @@ static int __devinit esp_sun3x_probe(struct platform_device *dev)
 	esp = shost_priv(host);
 
 	esp->host = host;
+<<<<<<< HEAD
 	esp->dev = dev;
+=======
+	esp->dev = &dev->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	esp->ops = &sun3x_esp_ops;
 
 	res = platform_get_resource(dev, IORESOURCE_MEM, 0);
 	if (!res || !res->start)
 		goto fail_unlink;
 
+<<<<<<< HEAD
 	esp->regs = ioremap_nocache(res->start, 0x20);
+=======
+	esp->regs = ioremap(res->start, 0x20);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!esp->regs)
 		goto fail_unmap_regs;
 
@@ -225,7 +255,11 @@ static int __devinit esp_sun3x_probe(struct platform_device *dev)
 	if (!res || !res->start)
 		goto fail_unmap_regs;
 
+<<<<<<< HEAD
 	esp->dma_regs = ioremap_nocache(res->start, 0x10);
+=======
+	esp->dma_regs = ioremap(res->start, 0x10);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	esp->command_block = dma_alloc_coherent(esp->dev, 16,
 						&esp->command_block_dma,
@@ -233,7 +267,13 @@ static int __devinit esp_sun3x_probe(struct platform_device *dev)
 	if (!esp->command_block)
 		goto fail_unmap_regs_dma;
 
+<<<<<<< HEAD
 	host->irq = platform_get_irq(dev, 0);
+=======
+	host->irq = err = platform_get_irq(dev, 0);
+	if (err < 0)
+		goto fail_unmap_command_block;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = request_irq(host->irq, scsi_esp_intr, IRQF_SHARED,
 			  "SUN3X ESP", esp);
 	if (err < 0)
@@ -246,7 +286,11 @@ static int __devinit esp_sun3x_probe(struct platform_device *dev)
 
 	dev_set_drvdata(&dev->dev, esp);
 
+<<<<<<< HEAD
 	err = scsi_esp_register(esp, &dev->dev);
+=======
+	err = scsi_esp_register(esp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto fail_free_irq;
 
@@ -268,7 +312,11 @@ fail:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit esp_sun3x_remove(struct platform_device *dev)
+=======
+static void esp_sun3x_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct esp *esp = dev_get_drvdata(&dev->dev);
 	unsigned int irq = esp->host->irq;
@@ -286,12 +334,16 @@ static int __devexit esp_sun3x_remove(struct platform_device *dev)
 			  esp->command_block_dma);
 
 	scsi_host_put(esp->host);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver esp_sun3x_driver = {
 	.probe          = esp_sun3x_probe,
+<<<<<<< HEAD
 	.remove         = __devexit_p(esp_sun3x_remove),
 	.driver = {
 		.name   = "sun3x_esp",
@@ -316,4 +368,17 @@ MODULE_VERSION(DRV_VERSION);
 
 module_init(sun3x_esp_init);
 module_exit(sun3x_esp_exit);
+=======
+	.remove_new     = esp_sun3x_remove,
+	.driver = {
+		.name   = "sun3x_esp",
+	},
+};
+module_platform_driver(esp_sun3x_driver);
+
+MODULE_DESCRIPTION("Sun3x ESP SCSI driver");
+MODULE_AUTHOR("Thomas Bogendoerfer <tsbogend@alpha.franken.de>");
+MODULE_LICENSE("GPL");
+MODULE_VERSION(DRV_VERSION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("platform:sun3x_esp");

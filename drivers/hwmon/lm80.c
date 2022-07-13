@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * lm80.c - From lm_sensors, Linux kernel modules for hardware
  *	    monitoring
@@ -5,6 +9,7 @@
  *			     and Philip Edelbrock <phil@netroedge.com>
  *
  * Ported to Linux 2.6 by Tiago Sousa <mirage@kaotik.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -72,20 +79,30 @@ static const unsigned short normal_i2c[] = { 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d,
  * Fixing this is just not worth it.
  */
 
+<<<<<<< HEAD
 #define IN_TO_REG(val)		(SENSORS_LIMIT(((val) + 5) / 10, 0, 255))
+=======
+#define IN_TO_REG(val)		(clamp_val(((val) + 5) / 10, 0, 255))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IN_FROM_REG(val)	((val) * 10)
 
 static inline unsigned char FAN_TO_REG(unsigned rpm, unsigned div)
 {
 	if (rpm == 0)
 		return 255;
+<<<<<<< HEAD
 	rpm = SENSORS_LIMIT(rpm, 1, 1000000);
 	return SENSORS_LIMIT((1350000 + rpm * div / 2) / (rpm * div), 1, 254);
+=======
+	rpm = clamp_val(rpm, 1, 1000000);
+	return clamp_val((1350000 + rpm * div / 2) / (rpm * div), 1, 254);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define FAN_FROM_REG(val, div)	((val) == 0 ? -1 : \
 				(val) == 255 ? 0 : 1350000/((div) * (val)))
 
+<<<<<<< HEAD
 static inline long TEMP_FROM_REG(u16 temp)
 {
 	long res;
@@ -107,11 +124,50 @@ static inline long TEMP_FROM_REG(u16 temp)
 
 #define DIV_FROM_REG(val)		(1 << (val))
 
+=======
+#define TEMP_FROM_REG(reg)	((reg) * 125 / 32)
+#define TEMP_TO_REG(temp)	(DIV_ROUND_CLOSEST(clamp_val((temp), \
+					-128000, 127000), 1000) << 8)
+
+#define DIV_FROM_REG(val)		(1 << (val))
+
+enum temp_index {
+	t_input = 0,
+	t_hot_max,
+	t_hot_hyst,
+	t_os_max,
+	t_os_hyst,
+	t_num_temp
+};
+
+static const u8 temp_regs[t_num_temp] = {
+	[t_input] = LM80_REG_TEMP,
+	[t_hot_max] = LM80_REG_TEMP_HOT_MAX,
+	[t_hot_hyst] = LM80_REG_TEMP_HOT_HYST,
+	[t_os_max] = LM80_REG_TEMP_OS_MAX,
+	[t_os_hyst] = LM80_REG_TEMP_OS_HYST,
+};
+
+enum in_index {
+	i_input = 0,
+	i_max,
+	i_min,
+	i_num_in
+};
+
+enum fan_index {
+	f_input,
+	f_min,
+	f_num_fan
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Client data (each client gets its own)
  */
 
 struct lm80_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
 	struct mutex update_lock;
 	char error;		/* !=0 if error occurred during last update */
@@ -167,11 +223,151 @@ static struct i2c_driver lm80_driver = {
 	.detect		= lm80_detect,
 	.address_list	= normal_i2c,
 };
+=======
+	struct i2c_client *client;
+	struct mutex update_lock;
+	char error;		/* !=0 if error occurred during last update */
+	bool valid;		/* true if following fields are valid */
+	unsigned long last_updated;	/* In jiffies */
+
+	u8 in[i_num_in][7];	/* Register value, 1st index is enum in_index */
+	u8 fan[f_num_fan][2];	/* Register value, 1st index enum fan_index */
+	u8 fan_div[2];		/* Register encoding, shifted right */
+	s16 temp[t_num_temp];	/* Register values, normalized to 16 bit */
+	u16 alarms;		/* Register encoding, combined */
+};
+
+static int lm80_read_value(struct i2c_client *client, u8 reg)
+{
+	return i2c_smbus_read_byte_data(client, reg);
+}
+
+static int lm80_write_value(struct i2c_client *client, u8 reg, u8 value)
+{
+	return i2c_smbus_write_byte_data(client, reg, value);
+}
+
+/* Called when we have found a new LM80 and after read errors */
+static void lm80_init_client(struct i2c_client *client)
+{
+	/*
+	 * Reset all except Watchdog values and last conversion values
+	 * This sets fan-divs to 2, among others. This makes most other
+	 * initializations unnecessary
+	 */
+	lm80_write_value(client, LM80_REG_CONFIG, 0x80);
+	/* Set 11-bit temperature resolution */
+	lm80_write_value(client, LM80_REG_RES, 0x08);
+
+	/* Start monitoring */
+	lm80_write_value(client, LM80_REG_CONFIG, 0x01);
+}
+
+static struct lm80_data *lm80_update_device(struct device *dev)
+{
+	struct lm80_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	int i;
+	int rv;
+	int prev_rv;
+	struct lm80_data *ret = data;
+
+	mutex_lock(&data->update_lock);
+
+	if (data->error)
+		lm80_init_client(client);
+
+	if (time_after(jiffies, data->last_updated + 2 * HZ) || !data->valid) {
+		dev_dbg(dev, "Starting lm80 update\n");
+		for (i = 0; i <= 6; i++) {
+			rv = lm80_read_value(client, LM80_REG_IN(i));
+			if (rv < 0)
+				goto abort;
+			data->in[i_input][i] = rv;
+
+			rv = lm80_read_value(client, LM80_REG_IN_MIN(i));
+			if (rv < 0)
+				goto abort;
+			data->in[i_min][i] = rv;
+
+			rv = lm80_read_value(client, LM80_REG_IN_MAX(i));
+			if (rv < 0)
+				goto abort;
+			data->in[i_max][i] = rv;
+		}
+
+		rv = lm80_read_value(client, LM80_REG_FAN1);
+		if (rv < 0)
+			goto abort;
+		data->fan[f_input][0] = rv;
+
+		rv = lm80_read_value(client, LM80_REG_FAN_MIN(1));
+		if (rv < 0)
+			goto abort;
+		data->fan[f_min][0] = rv;
+
+		rv = lm80_read_value(client, LM80_REG_FAN2);
+		if (rv < 0)
+			goto abort;
+		data->fan[f_input][1] = rv;
+
+		rv = lm80_read_value(client, LM80_REG_FAN_MIN(2));
+		if (rv < 0)
+			goto abort;
+		data->fan[f_min][1] = rv;
+
+		prev_rv = rv = lm80_read_value(client, LM80_REG_TEMP);
+		if (rv < 0)
+			goto abort;
+		rv = lm80_read_value(client, LM80_REG_RES);
+		if (rv < 0)
+			goto abort;
+		data->temp[t_input] = (prev_rv << 8) | (rv & 0xf0);
+
+		for (i = t_input + 1; i < t_num_temp; i++) {
+			rv = lm80_read_value(client, temp_regs[i]);
+			if (rv < 0)
+				goto abort;
+			data->temp[i] = rv << 8;
+		}
+
+		rv = lm80_read_value(client, LM80_REG_FANDIV);
+		if (rv < 0)
+			goto abort;
+		data->fan_div[0] = (rv >> 2) & 0x03;
+		data->fan_div[1] = (rv >> 4) & 0x03;
+
+		prev_rv = rv = lm80_read_value(client, LM80_REG_ALARM1);
+		if (rv < 0)
+			goto abort;
+		rv = lm80_read_value(client, LM80_REG_ALARM2);
+		if (rv < 0)
+			goto abort;
+		data->alarms = prev_rv + (rv << 8);
+
+		data->last_updated = jiffies;
+		data->valid = true;
+		data->error = 0;
+	}
+	goto done;
+
+abort:
+	ret = ERR_PTR(rv);
+	data->valid = false;
+	data->error = 1;
+
+done:
+	mutex_unlock(&data->update_lock);
+
+	return ret;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Sysfs stuff
  */
 
+<<<<<<< HEAD
 #define show_in(suffix, value) \
 static ssize_t show_in_##suffix(struct device *dev, \
 	struct device_attribute *attr, char *buf) \
@@ -223,6 +419,56 @@ show_fan(input, fan)
 
 static ssize_t show_fan_div(struct device *dev, struct device_attribute *attr,
 	char *buf)
+=======
+static ssize_t in_show(struct device *dev, struct device_attribute *attr,
+		       char *buf)
+{
+	struct lm80_data *data = lm80_update_device(dev);
+	int index = to_sensor_dev_attr_2(attr)->index;
+	int nr = to_sensor_dev_attr_2(attr)->nr;
+
+	if (IS_ERR(data))
+		return PTR_ERR(data);
+	return sprintf(buf, "%d\n", IN_FROM_REG(data->in[nr][index]));
+}
+
+static ssize_t in_store(struct device *dev, struct device_attribute *attr,
+			const char *buf, size_t count)
+{
+	struct lm80_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	int index = to_sensor_dev_attr_2(attr)->index;
+	int nr = to_sensor_dev_attr_2(attr)->nr;
+	long val;
+	u8 reg;
+	int err = kstrtol(buf, 10, &val);
+	if (err < 0)
+		return err;
+
+	reg = nr == i_min ? LM80_REG_IN_MIN(index) : LM80_REG_IN_MAX(index);
+
+	mutex_lock(&data->update_lock);
+	data->in[nr][index] = IN_TO_REG(val);
+	lm80_write_value(client, reg, data->in[nr][index]);
+	mutex_unlock(&data->update_lock);
+	return count;
+}
+
+static ssize_t fan_show(struct device *dev, struct device_attribute *attr,
+			char *buf)
+{
+	int index = to_sensor_dev_attr_2(attr)->index;
+	int nr = to_sensor_dev_attr_2(attr)->nr;
+	struct lm80_data *data = lm80_update_device(dev);
+	if (IS_ERR(data))
+		return PTR_ERR(data);
+	return sprintf(buf, "%d\n", FAN_FROM_REG(data->fan[nr][index],
+		       DIV_FROM_REG(data->fan_div[index])));
+}
+
+static ssize_t fan_div_show(struct device *dev, struct device_attribute *attr,
+			    char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct lm80_data *data = lm80_update_device(dev);
@@ -231,20 +477,37 @@ static ssize_t show_fan_div(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%d\n", DIV_FROM_REG(data->fan_div[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t set_fan_min(struct device *dev, struct device_attribute *attr,
 	const char *buf, size_t count)
 {
 	int nr = to_sensor_dev_attr(attr)->index;
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lm80_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t fan_store(struct device *dev, struct device_attribute *attr,
+			 const char *buf, size_t count)
+{
+	int index = to_sensor_dev_attr_2(attr)->index;
+	int nr = to_sensor_dev_attr_2(attr)->nr;
+	struct lm80_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long val;
 	int err = kstrtoul(buf, 10, &val);
 	if (err < 0)
 		return err;
 
 	mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 	data->fan_min[nr] = FAN_TO_REG(val, DIV_FROM_REG(data->fan_div[nr]));
 	lm80_write_value(client, LM80_REG_FAN_MIN(nr + 1), data->fan_min[nr]);
+=======
+	data->fan[nr][index] = FAN_TO_REG(val,
+					  DIV_FROM_REG(data->fan_div[index]));
+	lm80_write_value(client, LM80_REG_FAN_MIN(index + 1),
+			 data->fan[nr][index]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&data->update_lock);
 	return count;
 }
@@ -255,6 +518,7 @@ static ssize_t set_fan_min(struct device *dev, struct device_attribute *attr,
  * least surprise; the user doesn't expect the fan minimum to change just
  * because the divisor changed.
  */
+<<<<<<< HEAD
 static ssize_t set_fan_div(struct device *dev, struct device_attribute *attr,
 	const char *buf, size_t count)
 {
@@ -270,6 +534,26 @@ static ssize_t set_fan_div(struct device *dev, struct device_attribute *attr,
 	/* Save fan_min */
 	mutex_lock(&data->update_lock);
 	min = FAN_FROM_REG(data->fan_min[nr],
+=======
+static ssize_t fan_div_store(struct device *dev,
+			     struct device_attribute *attr, const char *buf,
+			     size_t count)
+{
+	int nr = to_sensor_dev_attr(attr)->index;
+	struct lm80_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	unsigned long min, val;
+	u8 reg;
+	int rv;
+
+	rv = kstrtoul(buf, 10, &val);
+	if (rv < 0)
+		return rv;
+
+	/* Save fan_min */
+	mutex_lock(&data->update_lock);
+	min = FAN_FROM_REG(data->fan[f_min][nr],
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   DIV_FROM_REG(data->fan_div[nr]));
 
 	switch (val) {
@@ -286,24 +570,46 @@ static ssize_t set_fan_div(struct device *dev, struct device_attribute *attr,
 		data->fan_div[nr] = 3;
 		break;
 	default:
+<<<<<<< HEAD
 		dev_err(&client->dev, "fan_div value %ld not "
 			"supported. Choose one of 1, 2, 4 or 8!\n", val);
+=======
+		dev_err(dev,
+			"fan_div value %ld not supported. Choose one of 1, 2, 4 or 8!\n",
+			val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&data->update_lock);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	reg = (lm80_read_value(client, LM80_REG_FANDIV) & ~(3 << (2 * (nr + 1))))
+=======
+	rv = lm80_read_value(client, LM80_REG_FANDIV);
+	if (rv < 0) {
+		mutex_unlock(&data->update_lock);
+		return rv;
+	}
+	reg = (rv & ~(3 << (2 * (nr + 1))))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    | (data->fan_div[nr] << (2 * (nr + 1)));
 	lm80_write_value(client, LM80_REG_FANDIV, reg);
 
 	/* Restore fan_min */
+<<<<<<< HEAD
 	data->fan_min[nr] = FAN_TO_REG(min, DIV_FROM_REG(data->fan_div[nr]));
 	lm80_write_value(client, LM80_REG_FAN_MIN(nr + 1), data->fan_min[nr]);
+=======
+	data->fan[f_min][nr] = FAN_TO_REG(min, DIV_FROM_REG(data->fan_div[nr]));
+	lm80_write_value(client, LM80_REG_FAN_MIN(nr + 1),
+			 data->fan[f_min][nr]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&data->update_lock);
 
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_input1(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
@@ -350,6 +656,39 @@ set_temp(os_max, temp_os_max, LM80_REG_TEMP_OS_MAX);
 set_temp(os_hyst, temp_os_hyst, LM80_REG_TEMP_OS_HYST);
 
 static ssize_t show_alarms(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t temp_show(struct device *dev, struct device_attribute *devattr,
+			 char *buf)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	struct lm80_data *data = lm80_update_device(dev);
+	if (IS_ERR(data))
+		return PTR_ERR(data);
+	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp[attr->index]));
+}
+
+static ssize_t temp_store(struct device *dev,
+			  struct device_attribute *devattr, const char *buf,
+			  size_t count)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	struct lm80_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+	int nr = attr->index;
+	long val;
+	int err = kstrtol(buf, 10, &val);
+	if (err < 0)
+		return err;
+
+	mutex_lock(&data->update_lock);
+	data->temp[nr] = TEMP_TO_REG(val);
+	lm80_write_value(client, temp_regs[nr], data->temp[nr] >> 8);
+	mutex_unlock(&data->update_lock);
+	return count;
+}
+
+static ssize_t alarms_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   char *buf)
 {
 	struct lm80_data *data = lm80_update_device(dev);
@@ -358,7 +697,11 @@ static ssize_t show_alarms(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%u\n", data->alarms);
 }
 
+<<<<<<< HEAD
 static ssize_t show_alarm(struct device *dev, struct device_attribute *attr,
+=======
+static ssize_t alarm_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  char *buf)
 {
 	int bitnr = to_sensor_dev_attr(attr)->index;
@@ -368,6 +711,7 @@ static ssize_t show_alarm(struct device *dev, struct device_attribute *attr,
 	return sprintf(buf, "%u\n", (data->alarms >> bitnr) & 1);
 }
 
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(in0_min, S_IWUSR | S_IRUGO,
 		show_in_min, set_in_min, 0);
 static SENSOR_DEVICE_ATTR(in1_min, S_IWUSR | S_IRUGO,
@@ -434,12 +778,62 @@ static SENSOR_DEVICE_ATTR(fan1_alarm, S_IRUGO, show_alarm, NULL, 10);
 static SENSOR_DEVICE_ATTR(fan2_alarm, S_IRUGO, show_alarm, NULL, 11);
 static SENSOR_DEVICE_ATTR(temp1_max_alarm, S_IRUGO, show_alarm, NULL, 8);
 static SENSOR_DEVICE_ATTR(temp1_crit_alarm, S_IRUGO, show_alarm, NULL, 13);
+=======
+static SENSOR_DEVICE_ATTR_2_RW(in0_min, in, i_min, 0);
+static SENSOR_DEVICE_ATTR_2_RW(in1_min, in, i_min, 1);
+static SENSOR_DEVICE_ATTR_2_RW(in2_min, in, i_min, 2);
+static SENSOR_DEVICE_ATTR_2_RW(in3_min, in, i_min, 3);
+static SENSOR_DEVICE_ATTR_2_RW(in4_min, in, i_min, 4);
+static SENSOR_DEVICE_ATTR_2_RW(in5_min, in, i_min, 5);
+static SENSOR_DEVICE_ATTR_2_RW(in6_min, in, i_min, 6);
+static SENSOR_DEVICE_ATTR_2_RW(in0_max, in, i_max, 0);
+static SENSOR_DEVICE_ATTR_2_RW(in1_max, in, i_max, 1);
+static SENSOR_DEVICE_ATTR_2_RW(in2_max, in, i_max, 2);
+static SENSOR_DEVICE_ATTR_2_RW(in3_max, in, i_max, 3);
+static SENSOR_DEVICE_ATTR_2_RW(in4_max, in, i_max, 4);
+static SENSOR_DEVICE_ATTR_2_RW(in5_max, in, i_max, 5);
+static SENSOR_DEVICE_ATTR_2_RW(in6_max, in, i_max, 6);
+static SENSOR_DEVICE_ATTR_2_RO(in0_input, in, i_input, 0);
+static SENSOR_DEVICE_ATTR_2_RO(in1_input, in, i_input, 1);
+static SENSOR_DEVICE_ATTR_2_RO(in2_input, in, i_input, 2);
+static SENSOR_DEVICE_ATTR_2_RO(in3_input, in, i_input, 3);
+static SENSOR_DEVICE_ATTR_2_RO(in4_input, in, i_input, 4);
+static SENSOR_DEVICE_ATTR_2_RO(in5_input, in, i_input, 5);
+static SENSOR_DEVICE_ATTR_2_RO(in6_input, in, i_input, 6);
+static SENSOR_DEVICE_ATTR_2_RW(fan1_min, fan, f_min, 0);
+static SENSOR_DEVICE_ATTR_2_RW(fan2_min, fan, f_min, 1);
+static SENSOR_DEVICE_ATTR_2_RO(fan1_input, fan, f_input, 0);
+static SENSOR_DEVICE_ATTR_2_RO(fan2_input, fan, f_input, 1);
+static SENSOR_DEVICE_ATTR_RW(fan1_div, fan_div, 0);
+static SENSOR_DEVICE_ATTR_RW(fan2_div, fan_div, 1);
+static SENSOR_DEVICE_ATTR_RO(temp1_input, temp, t_input);
+static SENSOR_DEVICE_ATTR_RW(temp1_max, temp, t_hot_max);
+static SENSOR_DEVICE_ATTR_RW(temp1_max_hyst, temp, t_hot_hyst);
+static SENSOR_DEVICE_ATTR_RW(temp1_crit, temp, t_os_max);
+static SENSOR_DEVICE_ATTR_RW(temp1_crit_hyst, temp, t_os_hyst);
+static DEVICE_ATTR_RO(alarms);
+static SENSOR_DEVICE_ATTR_RO(in0_alarm, alarm, 0);
+static SENSOR_DEVICE_ATTR_RO(in1_alarm, alarm, 1);
+static SENSOR_DEVICE_ATTR_RO(in2_alarm, alarm, 2);
+static SENSOR_DEVICE_ATTR_RO(in3_alarm, alarm, 3);
+static SENSOR_DEVICE_ATTR_RO(in4_alarm, alarm, 4);
+static SENSOR_DEVICE_ATTR_RO(in5_alarm, alarm, 5);
+static SENSOR_DEVICE_ATTR_RO(in6_alarm, alarm, 6);
+static SENSOR_DEVICE_ATTR_RO(fan1_alarm, alarm, 10);
+static SENSOR_DEVICE_ATTR_RO(fan2_alarm, alarm, 11);
+static SENSOR_DEVICE_ATTR_RO(temp1_max_alarm, alarm, 8);
+static SENSOR_DEVICE_ATTR_RO(temp1_crit_alarm, alarm, 13);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Real code
  */
 
+<<<<<<< HEAD
 static struct attribute *lm80_attributes[] = {
+=======
+static struct attribute *lm80_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sensor_dev_attr_in0_min.dev_attr.attr,
 	&sensor_dev_attr_in1_min.dev_attr.attr,
 	&sensor_dev_attr_in2_min.dev_attr.attr,
@@ -467,11 +861,19 @@ static struct attribute *lm80_attributes[] = {
 	&sensor_dev_attr_fan2_input.dev_attr.attr,
 	&sensor_dev_attr_fan1_div.dev_attr.attr,
 	&sensor_dev_attr_fan2_div.dev_attr.attr,
+<<<<<<< HEAD
 	&dev_attr_temp1_input.attr,
 	&dev_attr_temp1_max.attr,
 	&dev_attr_temp1_max_hyst.attr,
 	&dev_attr_temp1_crit.attr,
 	&dev_attr_temp1_crit_hyst.attr,
+=======
+	&sensor_dev_attr_temp1_input.dev_attr.attr,
+	&sensor_dev_attr_temp1_max.dev_attr.attr,
+	&sensor_dev_attr_temp1_max_hyst.dev_attr.attr,
+	&sensor_dev_attr_temp1_crit.dev_attr.attr,
+	&sensor_dev_attr_temp1_crit_hyst.dev_attr.attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_alarms.attr,
 	&sensor_dev_attr_in0_alarm.dev_attr.attr,
 	&sensor_dev_attr_in1_alarm.dev_attr.attr,
@@ -486,10 +888,14 @@ static struct attribute *lm80_attributes[] = {
 	&sensor_dev_attr_temp1_crit_alarm.dev_attr.attr,
 	NULL
 };
+<<<<<<< HEAD
 
 static const struct attribute_group lm80_group = {
 	.attrs = lm80_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(lm80);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Return 0 if detection is successful, -ENODEV otherwise */
 static int lm80_detect(struct i2c_client *client, struct i2c_board_info *info)
@@ -532,11 +938,16 @@ static int lm80_detect(struct i2c_client *client, struct i2c_board_info *info)
 		name = "lm80";
 	}
 
+<<<<<<< HEAD
 	strlcpy(info->type, name, I2C_NAME_SIZE);
+=======
+	strscpy(info->type, name, I2C_NAME_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int lm80_probe(struct i2c_client *client,
 		      const struct i2c_device_id *id)
 {
@@ -550,12 +961,26 @@ static int lm80_probe(struct i2c_client *client,
 	}
 
 	i2c_set_clientdata(client, data);
+=======
+static int lm80_probe(struct i2c_client *client)
+{
+	struct device *dev = &client->dev;
+	struct device *hwmon_dev;
+	struct lm80_data *data;
+
+	data = devm_kzalloc(dev, sizeof(struct lm80_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&data->update_lock);
 
 	/* Initialize the LM80 chip */
 	lm80_init_client(client);
 
 	/* A few vars need to be filled upon startup */
+<<<<<<< HEAD
 	data->fan_min[0] = lm80_read_value(client, LM80_REG_FAN_MIN(1));
 	data->fan_min[1] = lm80_read_value(client, LM80_REG_FAN_MIN(2));
 
@@ -728,6 +1153,38 @@ done:
 
 	return ret;
 }
+=======
+	data->fan[f_min][0] = lm80_read_value(client, LM80_REG_FAN_MIN(1));
+	data->fan[f_min][1] = lm80_read_value(client, LM80_REG_FAN_MIN(2));
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data, lm80_groups);
+
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+}
+
+/*
+ * Driver data (common to all clients)
+ */
+
+static const struct i2c_device_id lm80_id[] = {
+	{ "lm80", 0 },
+	{ "lm96080", 1 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, lm80_id);
+
+static struct i2c_driver lm80_driver = {
+	.class		= I2C_CLASS_HWMON,
+	.driver = {
+		.name	= "lm80",
+	},
+	.probe		= lm80_probe,
+	.id_table	= lm80_id,
+	.detect		= lm80_detect,
+	.address_list	= normal_i2c,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_i2c_driver(lm80_driver);
 

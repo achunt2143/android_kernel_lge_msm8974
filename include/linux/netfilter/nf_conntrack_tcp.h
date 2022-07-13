@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _NF_CONNTRACK_TCP_H
 #define _NF_CONNTRACK_TCP_H
 /* TCP tracking. */
@@ -48,6 +49,14 @@ struct nf_ct_tcp_flags {
 };
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _NF_CONNTRACK_TCP_H
+#define _NF_CONNTRACK_TCP_H
+
+#include <uapi/linux/netfilter/nf_conntrack_tcp.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ip_ct_tcp_state {
 	u_int32_t	td_end;		/* max of seq + len */
@@ -74,6 +83,9 @@ struct ip_ct_tcp {
 	u_int8_t	last_flags;	/* Last flags set */
 };
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _NF_CONNTRACK_TCP_H */

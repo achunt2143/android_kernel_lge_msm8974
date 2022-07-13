@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson AB 2010
  * Author:	Sjur Brendeland/sjur.brandeland@stericsson.com
  * License terms: GNU General Public License (GPL) version 2
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) ST-Ericsson AB 2010
+ * Author:	Sjur Brendeland
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
@@ -61,11 +68,19 @@ struct cfcnfg {
 };
 
 static void cfcnfg_linkup_rsp(struct cflayer *layer, u8 channel_id,
+<<<<<<< HEAD
 			     enum cfctrl_srv serv, u8 phyid,
 			     struct cflayer *adapt_layer);
 static void cfcnfg_linkdestroy_rsp(struct cflayer *layer, u8 channel_id);
 static void cfcnfg_reject_rsp(struct cflayer *layer, u8 channel_id,
 			     struct cflayer *adapt_layer);
+=======
+			      enum cfctrl_srv serv, u8 phyid,
+			      struct cflayer *adapt_layer);
+static void cfcnfg_linkdestroy_rsp(struct cflayer *layer, u8 channel_id);
+static void cfcnfg_reject_rsp(struct cflayer *layer, u8 channel_id,
+			      struct cflayer *adapt_layer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void cfctrl_resp_func(void);
 static void cfctrl_enum_resp(void);
 
@@ -131,7 +146,11 @@ static void cfctrl_resp_func(void)
 }
 
 static struct cfcnfg_phyinfo *cfcnfg_get_phyinfo_rcu(struct cfcnfg *cnfg,
+<<<<<<< HEAD
 							u8 phyid)
+=======
+						     u8 phyid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cfcnfg_phyinfo *phy;
 
@@ -216,8 +235,13 @@ static const int protohead[CFCTRL_SRV_MASK] = {
 
 
 static int caif_connect_req_to_link_param(struct cfcnfg *cnfg,
+<<<<<<< HEAD
 				   struct caif_connect_request *s,
 				   struct cfctrl_link_param *l)
+=======
+					  struct caif_connect_request *s,
+					  struct cfctrl_link_param *l)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dev_info *dev_info;
 	enum cfcnfg_phy_preference pref;
@@ -268,17 +292,27 @@ static int caif_connect_req_to_link_param(struct cfcnfg *cnfg,
 	case CAIFPROTO_RFM:
 		l->linktype = CFCTRL_SRV_RFM;
 		l->u.datagram.connid = s->sockaddr.u.rfm.connection_id;
+<<<<<<< HEAD
 		strncpy(l->u.rfm.volume, s->sockaddr.u.rfm.volume,
 			sizeof(l->u.rfm.volume)-1);
 		l->u.rfm.volume[sizeof(l->u.rfm.volume)-1] = 0;
+=======
+		strscpy(l->u.rfm.volume, s->sockaddr.u.rfm.volume,
+			sizeof(l->u.rfm.volume));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CAIFPROTO_UTIL:
 		l->linktype = CFCTRL_SRV_UTIL;
 		l->endpoint = 0x00;
 		l->chtype = 0x00;
+<<<<<<< HEAD
 		strncpy(l->u.utility.name, s->sockaddr.u.util.service,
 			sizeof(l->u.utility.name)-1);
 		l->u.utility.name[sizeof(l->u.utility.name)-1] = 0;
+=======
+		strscpy(l->u.utility.name, s->sockaddr.u.util.service,
+			sizeof(l->u.utility.name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		caif_assert(sizeof(l->u.utility.name) > 10);
 		l->u.utility.paramlen = s->param.size;
 		if (l->u.utility.paramlen > sizeof(l->u.utility.params))
@@ -301,8 +335,12 @@ static int caif_connect_req_to_link_param(struct cfcnfg *cnfg,
 
 int caif_connect_client(struct net *net, struct caif_connect_request *conn_req,
 			struct cflayer *adap_layer, int *ifindex,
+<<<<<<< HEAD
 				int *proto_head,
 				int *proto_tail)
+=======
+			int *proto_head, int *proto_tail)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cflayer *frml;
 	struct cfcnfg_phyinfo *phy;
@@ -364,7 +402,11 @@ unlock:
 EXPORT_SYMBOL(caif_connect_client);
 
 static void cfcnfg_reject_rsp(struct cflayer *layer, u8 channel_id,
+<<<<<<< HEAD
 			     struct cflayer *adapt_layer)
+=======
+			      struct cflayer *adapt_layer)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (adapt_layer != NULL && adapt_layer->ctrlcmd != NULL)
 		adapt_layer->ctrlcmd(adapt_layer,
@@ -391,8 +433,12 @@ cfcnfg_linkup_rsp(struct cflayer *layer, u8 channel_id, enum cfctrl_srv serv,
 	rcu_read_lock();
 
 	if (adapt_layer == NULL) {
+<<<<<<< HEAD
 		pr_debug("link setup response but no client exist,"
 				"send linkdown back\n");
+=======
+		pr_debug("link setup response but no client exist, send linkdown back\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cfctrl_linkdown_req(cnfg->ctrl, channel_id, NULL);
 		goto unlock;
 	}
@@ -402,8 +448,12 @@ cfcnfg_linkup_rsp(struct cflayer *layer, u8 channel_id, enum cfctrl_srv serv,
 
 	phyinfo = cfcnfg_get_phyinfo_rcu(cnfg, phyid);
 	if (phyinfo == NULL) {
+<<<<<<< HEAD
 		pr_err("ERROR: Link Layer Device dissapeared"
 				"while connecting\n");
+=======
+		pr_err("ERROR: Link Layer Device disappeared while connecting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unlock;
 	}
 
@@ -437,8 +487,12 @@ cfcnfg_linkup_rsp(struct cflayer *layer, u8 channel_id, enum cfctrl_srv serv,
 		servicel = cfdbgl_create(channel_id, &phyinfo->dev_info);
 		break;
 	default:
+<<<<<<< HEAD
 		pr_err("Protocol error. Link setup response "
 				"- unknown channel type\n");
+=======
+		pr_err("Protocol error. Link setup response - unknown channel type\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unlock;
 	}
 	if (!servicel)
@@ -456,7 +510,11 @@ unlock:
 	rcu_read_unlock();
 }
 
+<<<<<<< HEAD
 void
+=======
+int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cfcnfg_add_phy_layer(struct cfcnfg *cnfg,
 		     struct net_device *dev, struct cflayer *phy_layer,
 		     enum cfcnfg_phy_preference pref,
@@ -465,7 +523,11 @@ cfcnfg_add_phy_layer(struct cfcnfg *cnfg,
 {
 	struct cflayer *frml;
 	struct cfcnfg_phyinfo *phyinfo = NULL;
+<<<<<<< HEAD
 	int i;
+=======
+	int i, res = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 phyid;
 
 	mutex_lock(&cnfg->lock);
@@ -479,12 +541,23 @@ cfcnfg_add_phy_layer(struct cfcnfg *cnfg,
 			goto got_phyid;
 	}
 	pr_warn("Too many CAIF Link Layers (max 6)\n");
+<<<<<<< HEAD
+=======
+	res = -EEXIST;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out;
 
 got_phyid:
 	phyinfo = kzalloc(sizeof(struct cfcnfg_phyinfo), GFP_ATOMIC);
+<<<<<<< HEAD
 	if (!phyinfo)
 		goto out_err;
+=======
+	if (!phyinfo) {
+		res = -ENOMEM;
+		goto out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	phy_layer->id = phyid;
 	phyinfo->pref = pref;
@@ -498,8 +571,15 @@ got_phyid:
 
 	frml = cffrml_create(phyid, fcs);
 
+<<<<<<< HEAD
 	if (!frml)
 		goto out_err;
+=======
+	if (!frml) {
+		res = -ENOMEM;
+		goto out_err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phyinfo->frm_layer = frml;
 	layer_set_up(frml, cnfg->mux);
 
@@ -517,16 +597,28 @@ got_phyid:
 	list_add_rcu(&phyinfo->node, &cnfg->phys);
 out:
 	mutex_unlock(&cnfg->lock);
+<<<<<<< HEAD
 	return;
+=======
+	return res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_err:
 	kfree(phyinfo);
 	mutex_unlock(&cnfg->lock);
+<<<<<<< HEAD
+=======
+	return res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(cfcnfg_add_phy_layer);
 
 int cfcnfg_set_phy_state(struct cfcnfg *cnfg, struct cflayer *phy_layer,
+<<<<<<< HEAD
 		bool up)
+=======
+			 bool up)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cfcnfg_phyinfo *phyinfo;
 

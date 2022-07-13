@@ -29,10 +29,18 @@
 #include <linux/kernel.h>
 #include <linux/hw_random.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <asm/io.h>
 #include <asm/msr.h>
 #include <asm/cpufeature.h>
 #include <asm/i387.h>
+=======
+#include <asm/cpu_device_id.h>
+#include <asm/io.h>
+#include <asm/msr.h>
+#include <asm/cpufeature.h>
+#include <asm/fpu/api.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
@@ -69,21 +77,32 @@ enum {
  * until we have 4 bytes, thus returning a u32 at a time,
  * instead of the current u8-at-a-time.
  *
+<<<<<<< HEAD
  * Padlock instructions can generate a spurious DNA fault, so
  * we have to call them in the context of irq_ts_save/restore()
+=======
+ * Padlock instructions can generate a spurious DNA fault, but the
+ * kernel doesn't use CR0.TS, so this doesn't matter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static inline u32 xstore(u32 *addr, u32 edx_in)
 {
 	u32 eax_out;
+<<<<<<< HEAD
 	int ts_state;
 
 	ts_state = irq_ts_save();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	asm(".byte 0x0F,0xA7,0xC0 /* xstore %%edi (addr=%0) */"
 		: "=m" (*addr), "=a" (eax_out), "+d" (edx_in), "+D" (addr));
 
+<<<<<<< HEAD
 	irq_ts_restore(ts_state);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return eax_out;
 }
 
@@ -138,9 +157,15 @@ static int via_rng_init(struct hwrng *rng)
 	 * is always enabled if CPUID rng_en is set.  There is no
 	 * RNG configuration like it used to be the case in this
 	 * register */
+<<<<<<< HEAD
 	if ((c->x86 == 6) && (c->x86_model >= 0x0f)) {
 		if (!cpu_has_xstore_enabled) {
 			printk(KERN_ERR PFX "can't enable hardware RNG "
+=======
+	if (((c->x86 == 6) && (c->x86_model >= 0x0f))  || (c->x86 > 6)){
+		if (!boot_cpu_has(X86_FEATURE_XSTORE_EN)) {
+			pr_err(PFX "can't enable hardware RNG "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"if XSTORE is not enabled\n");
 			return -ENODEV;
 		}
@@ -148,7 +173,11 @@ static int via_rng_init(struct hwrng *rng)
 	}
 
 	/* Control the RNG via MSR.  Tread lightly and pay very close
+<<<<<<< HEAD
 	 * close attention to values written, as the reserved fields
+=======
+	 * attention to values written, as the reserved fields
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * are documented to be "undefined and unpredictable"; but it
 	 * does not say to write them as zero, so I make a guess that
 	 * we restore the values we find in the register.
@@ -165,7 +194,11 @@ static int via_rng_init(struct hwrng *rng)
 	/* Enable secondary noise source on CPUs where it is present. */
 
 	/* Nehemiah stepping 8 and higher */
+<<<<<<< HEAD
 	if ((c->x86_model == 9) && (c->x86_mask > 7))
+=======
+	if ((c->x86_model == 9) && (c->x86_stepping > 7))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lo |= VIA_NOISESRC2;
 
 	/* Esther */
@@ -179,7 +212,11 @@ static int via_rng_init(struct hwrng *rng)
 	   unneeded */
 	rdmsr(MSR_VIA_RNG, lo, hi);
 	if ((lo & VIA_RNG_ENABLE) == 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "cannot enable VIA C3 RNG, aborting\n");
+=======
+		pr_err(PFX "cannot enable VIA C3 RNG, aborting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -195,6 +232,7 @@ static struct hwrng via_rng = {
 };
 
 
+<<<<<<< HEAD
 static int __init mod_init(void)
 {
 	int err;
@@ -205,12 +243,26 @@ static int __init mod_init(void)
 	err = hwrng_register(&via_rng);
 	if (err) {
 		printk(KERN_ERR PFX "RNG registering failed (%d)\n",
+=======
+static int __init via_rng_mod_init(void)
+{
+	int err;
+
+	if (!boot_cpu_has(X86_FEATURE_XSTORE))
+		return -ENODEV;
+
+	pr_info("VIA RNG detected\n");
+	err = hwrng_register(&via_rng);
+	if (err) {
+		pr_err(PFX "RNG registering failed (%d)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       err);
 		goto out;
 	}
 out:
 	return err;
 }
+<<<<<<< HEAD
 
 static void __exit mod_exit(void)
 {
@@ -219,6 +271,21 @@ static void __exit mod_exit(void)
 
 module_init(mod_init);
 module_exit(mod_exit);
+=======
+module_init(via_rng_mod_init);
+
+static void __exit via_rng_mod_exit(void)
+{
+	hwrng_unregister(&via_rng);
+}
+module_exit(via_rng_mod_exit);
+
+static struct x86_cpu_id __maybe_unused via_rng_cpu_id[] = {
+	X86_MATCH_FEATURE(X86_FEATURE_XSTORE, NULL),
+	{}
+};
+MODULE_DEVICE_TABLE(x86cpu, via_rng_cpu_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("H/W RNG driver for VIA CPU with PadLock");
 MODULE_LICENSE("GPL");

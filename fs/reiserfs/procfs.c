@@ -11,20 +11,38 @@
 #include <linux/module.h>
 #include <linux/time.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include "reiserfs.h"
 #include <linux/init.h>
 #include <linux/proc_fs.h>
+=======
+#include <linux/uaccess.h>
+#include "reiserfs.h"
+#include <linux/init.h>
+#include <linux/proc_fs.h>
+#include <linux/blkdev.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * LOCKING:
  *
+<<<<<<< HEAD
  * We rely on new Alexander Viro's super-block locking.
  *
  */
 
 static int show_version(struct seq_file *m, struct super_block *sb)
 {
+=======
+ * These guys are evicted from procfs as the very first step in ->kill_sb().
+ *
+ */
+
+static int show_version(struct seq_file *m, void *unused)
+{
+	struct super_block *sb = m->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *format;
 
 	if (REISERFS_SB(sb)->s_properties & (1 << REISERFS_3_6)) {
@@ -62,12 +80,21 @@ static int show_version(struct seq_file *m, struct super_block *sb)
 #define MAP( i ) D4C( objectid_map( sb, rs )[ i ] )
 
 #define DJF( x ) le32_to_cpu( rs -> x )
+<<<<<<< HEAD
 #define DJV( x ) le32_to_cpu( s_v1 -> x )
 #define DJP( x ) le32_to_cpu( jp -> x )
 #define JF( x ) ( r -> s_journal -> x )
 
 static int show_super(struct seq_file *m, struct super_block *sb)
 {
+=======
+#define DJP( x ) le32_to_cpu( jp -> x )
+#define JF( x ) ( r -> s_journal -> x )
+
+static int show_super(struct seq_file *m, void *unused)
+{
+	struct super_block *sb = m->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct reiserfs_sb_info *r = REISERFS_SB(sb);
 
 	seq_printf(m, "state: \t%s\n"
@@ -128,8 +155,14 @@ static int show_super(struct seq_file *m, struct super_block *sb)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int show_per_level(struct seq_file *m, struct super_block *sb)
 {
+=======
+static int show_per_level(struct seq_file *m, void *unused)
+{
+	struct super_block *sb = m->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct reiserfs_sb_info *r = REISERFS_SB(sb);
 	int level;
 
@@ -186,8 +219,14 @@ static int show_per_level(struct seq_file *m, struct super_block *sb)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int show_bitmap(struct seq_file *m, struct super_block *sb)
 {
+=======
+static int show_bitmap(struct seq_file *m, void *unused)
+{
+	struct super_block *sb = m->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct reiserfs_sb_info *r = REISERFS_SB(sb);
 
 	seq_printf(m, "free_block: %lu\n"
@@ -218,8 +257,14 @@ static int show_bitmap(struct seq_file *m, struct super_block *sb)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int show_on_disk_super(struct seq_file *m, struct super_block *sb)
 {
+=======
+static int show_on_disk_super(struct seq_file *m, void *unused)
+{
+	struct super_block *sb = m->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct reiserfs_sb_info *sb_info = REISERFS_SB(sb);
 	struct reiserfs_super_block *rs = sb_info->s_rs;
 	int hash_code = DFL(s_hash_function_code);
@@ -261,8 +306,14 @@ static int show_on_disk_super(struct seq_file *m, struct super_block *sb)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int show_oidmap(struct seq_file *m, struct super_block *sb)
 {
+=======
+static int show_oidmap(struct seq_file *m, void *unused)
+{
+	struct super_block *sb = m->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct reiserfs_sb_info *sb_info = REISERFS_SB(sb);
 	struct reiserfs_super_block *rs = sb_info->s_rs;
 	unsigned int mapsize = le16_to_cpu(rs->s_v1.s_oid_cursize);
@@ -281,7 +332,11 @@ static int show_oidmap(struct seq_file *m, struct super_block *sb)
 	}
 #if defined( REISERFS_USE_OIDMAPF )
 	if (sb_info->oidmap.use_file && (sb_info->oidmap.mapf != NULL)) {
+<<<<<<< HEAD
 		loff_t size = sb_info->oidmap.mapf->f_path.dentry->d_inode->i_size;
+=======
+		loff_t size = file_inode(sb_info->oidmap.mapf)->i_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		total_used += size / sizeof(reiserfs_oidinterval_d_t);
 	}
 #endif
@@ -291,6 +346,7 @@ static int show_oidmap(struct seq_file *m, struct super_block *sb)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int show_journal(struct seq_file *m, struct super_block *sb)
 {
 	struct reiserfs_sb_info *r = REISERFS_SB(sb);
@@ -301,6 +357,25 @@ static int show_journal(struct seq_file *m, struct super_block *sb)
 	seq_printf(m,		/* on-disk fields */
 		   "jp_journal_1st_block: \t%i\n"
 		   "jp_journal_dev: \t%s[%x]\n"
+=======
+static time64_t ktime_mono_to_real_seconds(time64_t mono)
+{
+	ktime_t kt = ktime_set(mono, NSEC_PER_SEC/2);
+
+	return ktime_divns(ktime_mono_to_real(kt), NSEC_PER_SEC);
+}
+
+static int show_journal(struct seq_file *m, void *unused)
+{
+	struct super_block *sb = m->private;
+	struct reiserfs_sb_info *r = REISERFS_SB(sb);
+	struct reiserfs_super_block *rs = r->s_rs;
+	struct journal_params *jp = &rs->s_v1.s_journal;
+
+	seq_printf(m,		/* on-disk fields */
+		   "jp_journal_1st_block: \t%i\n"
+		   "jp_journal_dev: \t%pg[%x]\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   "jp_journal_size: \t%i\n"
 		   "jp_journal_trans_max: \t%i\n"
 		   "jp_journal_magic: \t%i\n"
@@ -319,7 +394,11 @@ static int show_journal(struct seq_file *m, struct super_block *sb)
 		   "j_bcount: \t%lu\n"
 		   "j_first_unflushed_offset: \t%lu\n"
 		   "j_last_flush_trans_id: \t%u\n"
+<<<<<<< HEAD
 		   "j_trans_start_time: \t%li\n"
+=======
+		   "j_trans_start_time: \t%lli\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   "j_list_bitmap_index: \t%i\n"
 		   "j_must_wait: \t%i\n"
 		   "j_next_full_flush: \t%i\n"
@@ -341,7 +420,11 @@ static int show_journal(struct seq_file *m, struct super_block *sb)
 		   "prepare: \t%12lu\n"
 		   "prepare_retry: \t%12lu\n",
 		   DJP(jp_journal_1st_block),
+<<<<<<< HEAD
 		   bdevname(SB_JOURNAL(sb)->j_dev_bd, b),
+=======
+		   file_bdev(SB_JOURNAL(sb)->j_bdev_file),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   DJP(jp_journal_dev),
 		   DJP(jp_journal_size),
 		   DJP(jp_journal_trans_max),
@@ -360,7 +443,11 @@ static int show_journal(struct seq_file *m, struct super_block *sb)
 		   JF(j_bcount),
 		   JF(j_first_unflushed_offset),
 		   JF(j_last_flush_trans_id),
+<<<<<<< HEAD
 		   JF(j_trans_start_time),
+=======
+		   ktime_mono_to_real_seconds(JF(j_trans_start_time)),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   JF(j_list_bitmap_index),
 		   JF(j_must_wait),
 		   JF(j_next_full_flush),
@@ -383,6 +470,7 @@ static int show_journal(struct seq_file *m, struct super_block *sb)
 	return 0;
 }
 
+<<<<<<< HEAD
 /* iterator */
 static int test_sb(struct super_block *sb, void *data)
 {
@@ -457,14 +545,22 @@ static const struct file_operations r_file_operations = {
 	.owner = THIS_MODULE,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct proc_dir_entry *proc_info_root = NULL;
 static const char proc_info_root_name[] = "fs/reiserfs";
 
 static void add_file(struct super_block *sb, char *name,
+<<<<<<< HEAD
 		     int (*func) (struct seq_file *, struct super_block *))
 {
 	proc_create_data(name, 0, REISERFS_SB(sb)->procdir,
 			 &r_file_operations, func);
+=======
+		     int (*func) (struct seq_file *, void *))
+{
+	proc_create_single_data(name, 0, REISERFS_SB(sb)->procdir, func, sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int reiserfs_proc_info_init(struct super_block *sb)
@@ -473,15 +569,24 @@ int reiserfs_proc_info_init(struct super_block *sb)
 	char *s;
 
 	/* Some block devices use /'s */
+<<<<<<< HEAD
 	strlcpy(b, reiserfs_bdevname(sb), BDEVNAME_SIZE);
+=======
+	strscpy(b, sb->s_id, BDEVNAME_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s = strchr(b, '/');
 	if (s)
 		*s = '!';
 
 	spin_lock_init(&__PINFO(sb).lock);
+<<<<<<< HEAD
 	REISERFS_SB(sb)->procdir = proc_mkdir(b, proc_info_root);
 	if (REISERFS_SB(sb)->procdir) {
 		REISERFS_SB(sb)->procdir->data = sb;
+=======
+	REISERFS_SB(sb)->procdir = proc_mkdir_data(b, 0, proc_info_root, sb);
+	if (REISERFS_SB(sb)->procdir) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add_file(sb, "version", show_version);
 		add_file(sb, "super", show_super);
 		add_file(sb, "per-level", show_per_level);
@@ -499,6 +604,7 @@ int reiserfs_proc_info_init(struct super_block *sb)
 int reiserfs_proc_info_done(struct super_block *sb)
 {
 	struct proc_dir_entry *de = REISERFS_SB(sb)->procdir;
+<<<<<<< HEAD
 	char b[BDEVNAME_SIZE];
 	char *s;
 
@@ -522,6 +628,19 @@ int reiserfs_proc_info_done(struct super_block *sb)
 	spin_unlock(&__PINFO(sb).lock);
 	if (proc_info_root) {
 		remove_proc_entry(b, proc_info_root);
+=======
+	if (de) {
+		char b[BDEVNAME_SIZE];
+		char *s;
+
+		/* Some block devices use /'s */
+		strscpy(b, sb->s_id, BDEVNAME_SIZE);
+		s = strchr(b, '/');
+		if (s)
+			*s = '!';
+
+		remove_proc_subtree(b, proc_info_root);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		REISERFS_SB(sb)->procdir = NULL;
 	}
 	return 0;
@@ -563,6 +682,7 @@ int reiserfs_proc_info_global_done(void)
  * (available at http://www.namesys.com/legalese.html)
  *
  */
+<<<<<<< HEAD
 
 /*
  * Make Linus happy.
@@ -573,3 +693,5 @@ int reiserfs_proc_info_global_done(void)
  * tab-width: 8
  * End:
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

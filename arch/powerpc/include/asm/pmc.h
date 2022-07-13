@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * pmc.h
  * Copyright (C) 2004  David Gibson, IBM Corporation
@@ -15,6 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * pmc.h
+ * Copyright (C) 2004  David Gibson, IBM Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _POWERPC_PMC_H
 #define _POWERPC_PMC_H
@@ -31,12 +38,38 @@ void ppc_enable_pmcs(void);
 
 #ifdef CONFIG_PPC_BOOK3S_64
 #include <asm/lppaca.h>
+<<<<<<< HEAD
 
 static inline void ppc_set_pmu_inuse(int inuse)
 {
 	get_lppaca()->pmcregs_in_use = inuse;
 }
 
+=======
+#include <asm/firmware.h>
+
+static inline void ppc_set_pmu_inuse(int inuse)
+{
+#if defined(CONFIG_PPC_PSERIES) || defined(CONFIG_KVM_BOOK3S_HV_POSSIBLE)
+	if (firmware_has_feature(FW_FEATURE_LPAR)) {
+#ifdef CONFIG_PPC_PSERIES
+		get_lppaca()->pmcregs_in_use = inuse;
+#endif
+	}
+#ifdef CONFIG_KVM_BOOK3S_HV_POSSIBLE
+	get_paca()->pmcregs_in_use = inuse;
+#endif
+#endif
+}
+
+#ifdef CONFIG_KVM_BOOK3S_HV_POSSIBLE
+static inline int ppc_get_pmu_inuse(void)
+{
+	return get_paca()->pmcregs_in_use;
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void power4_enable_pmcs(void);
 
 #else /* CONFIG_PPC64 */

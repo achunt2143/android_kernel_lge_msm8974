@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_SOUNDFONT_H
 #define __SOUND_SOUNDFONT_H
 
@@ -6,6 +10,7 @@
  *
  *  Copyright (C) 1999 Steve Ratcliffe
  *  Copyright (c) 1999-2000 Takashi iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -24,6 +29,12 @@
 
 #include "sfnt_info.h"
 #include "util_mem.h"
+=======
+ */
+
+#include <sound/sfnt_info.h>
+#include <sound/util_mem.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SF_MAX_INSTRUMENTS	128	/* maximum instrument number */
 #define SF_MAX_PRESETS  256	/* drums are mapped from 128 to 256 */

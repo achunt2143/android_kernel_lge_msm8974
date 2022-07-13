@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_SWITCH_TO_32_H
 #define __ASM_SH_SWITCH_TO_32_H
 
@@ -78,6 +82,11 @@ do {								\
 								\
 	if (is_dsp_enabled(prev))				\
 		__save_dsp(prev);				\
+<<<<<<< HEAD
+=======
+	if (is_dsp_enabled(next))				\
+		__restore_dsp(next);				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 								\
 	__ts1 = (u32 *)&prev->thread.sp;			\
 	__ts2 = (u32 *)&prev->thread.pc;			\
@@ -125,10 +134,13 @@ do {								\
 	last = __last;						\
 } while (0)
 
+<<<<<<< HEAD
 #define finish_arch_switch(prev)				\
 do {								\
 	if (is_dsp_enabled(prev))				\
 		__restore_dsp(prev);				\
 } while (0)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_SWITCH_TO_32_H */

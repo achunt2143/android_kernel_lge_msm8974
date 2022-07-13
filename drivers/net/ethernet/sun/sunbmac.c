@@ -1,9 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sunbmac.c: Driver for Sparc BigMAC 100baseT ethernet adapters.
  *
  * Copyright (C) 1997, 1998, 1999, 2003, 2008 David S. Miller (davem@davemloft.net)
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/pgtable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -13,7 +21,10 @@
 #include <linux/in.h>
 #include <linux/string.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/crc32.h>
 #include <linux/errno.h>
 #include <linux/ethtool.h>
@@ -24,7 +35,11 @@
 #include <linux/bitops.h>
 #include <linux/dma-mapping.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/gfp.h>
 
 #include <asm/auxio.h>
@@ -34,7 +49,10 @@
 #include <asm/io.h>
 #include <asm/openprom.h>
 #include <asm/oplib.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "sunbmac.h"
 
@@ -170,7 +188,11 @@ static void bigmac_stop(struct bigmac *bp)
 
 static void bigmac_get_counters(struct bigmac *bp, void __iomem *bregs)
 {
+<<<<<<< HEAD
 	struct net_device_stats *stats = &bp->enet_stats;
+=======
+	struct net_device_stats *stats = &bp->dev->stats;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	stats->rx_crc_errors += sbus_readl(bregs + BMAC_RCRCECTR);
 	sbus_writel(0, bregs + BMAC_RCRCECTR);
@@ -209,6 +231,7 @@ static void bigmac_clean_rings(struct bigmac *bp)
 	}
 }
 
+<<<<<<< HEAD
 static void bigmac_init_rings(struct bigmac *bp, int from_irq)
 {
 	struct bmac_init_block *bb = bp->bmac_block;
@@ -217,6 +240,15 @@ static void bigmac_init_rings(struct bigmac *bp, int from_irq)
 	gfp_t gfp_flags = GFP_KERNEL;
 
 	if (from_irq || in_interrupt())
+=======
+static void bigmac_init_rings(struct bigmac *bp, bool non_blocking)
+{
+	struct bmac_init_block *bb = bp->bmac_block;
+	int i;
+	gfp_t gfp_flags = GFP_KERNEL;
+
+	if (non_blocking)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gfp_flags = GFP_ATOMIC;
 
 	bp->rx_new = bp->rx_old = bp->tx_new = bp->tx_old = 0;
@@ -233,7 +265,10 @@ static void bigmac_init_rings(struct bigmac *bp, int from_irq)
 			continue;
 
 		bp->rx_skbs[i] = skb;
+<<<<<<< HEAD
 		skb->dev = dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Because we reserve afterwards. */
 		skb_put(skb, ETH_FRAME_LEN);
@@ -491,7 +526,11 @@ static void bigmac_tcvr_init(struct bigmac *bp)
 	}
 }
 
+<<<<<<< HEAD
 static int bigmac_init_hw(struct bigmac *, int);
+=======
+static int bigmac_init_hw(struct bigmac *, bool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int try_next_permutation(struct bigmac *bp, void __iomem *tregs)
 {
@@ -526,9 +565,15 @@ static int try_next_permutation(struct bigmac *bp, void __iomem *tregs)
 	return -1;
 }
 
+<<<<<<< HEAD
 static void bigmac_timer(unsigned long data)
 {
 	struct bigmac *bp = (struct bigmac *) data;
+=======
+static void bigmac_timer(struct timer_list *t)
+{
+	struct bigmac *bp = from_timer(bp, t, bigmac_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *tregs = bp->tregs;
 	int restart_timer = 0;
 
@@ -551,7 +596,11 @@ static void bigmac_timer(unsigned long data)
 				if (ret == -1) {
 					printk(KERN_ERR "%s: Link down, cable problem?\n",
 					       bp->dev->name);
+<<<<<<< HEAD
 					ret = bigmac_init_hw(bp, 0);
+=======
+					ret = bigmac_init_hw(bp, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (ret) {
 						printk(KERN_ERR "%s: Error, cannot re-init the "
 						       "BigMAC.\n", bp->dev->name);
@@ -616,17 +665,29 @@ static void bigmac_begin_auto_negotiation(struct bigmac *bp)
 	bp->timer_state = ltrywait;
 	bp->timer_ticks = 0;
 	bp->bigmac_timer.expires = jiffies + (12 * HZ) / 10;
+<<<<<<< HEAD
 	bp->bigmac_timer.data = (unsigned long) bp;
 	bp->bigmac_timer.function = bigmac_timer;
 	add_timer(&bp->bigmac_timer);
 }
 
 static int bigmac_init_hw(struct bigmac *bp, int from_irq)
+=======
+	add_timer(&bp->bigmac_timer);
+}
+
+static int bigmac_init_hw(struct bigmac *bp, bool non_blocking)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *gregs        = bp->gregs;
 	void __iomem *cregs        = bp->creg;
 	void __iomem *bregs        = bp->bregs;
+<<<<<<< HEAD
 	unsigned char *e = &bp->dev->dev_addr[0];
+=======
+	__u32 bblk_dvma = (__u32)bp->bblock_dvma;
+	const unsigned char *e = &bp->dev->dev_addr[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Latch current counters into statistics. */
 	bigmac_get_counters(bp, bregs);
@@ -638,7 +699,11 @@ static int bigmac_init_hw(struct bigmac *bp, int from_irq)
 	qec_init(bp);
 
 	/* Alloc and reset the tx/rx descriptor chains. */
+<<<<<<< HEAD
 	bigmac_init_rings(bp, from_irq);
+=======
+	bigmac_init_rings(bp, non_blocking);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the PHY. */
 	bigmac_tcvr_init(bp);
@@ -674,9 +739,15 @@ static int bigmac_init_hw(struct bigmac *bp, int from_irq)
 		    bregs + BMAC_XIFCFG);
 
 	/* Tell the QEC where the ring descriptors are. */
+<<<<<<< HEAD
 	sbus_writel(bp->bblock_dvma + bib_offset(be_rxd, 0),
 		    cregs + CREG_RXDS);
 	sbus_writel(bp->bblock_dvma + bib_offset(be_txd, 0),
+=======
+	sbus_writel(bblk_dvma + bib_offset(be_rxd, 0),
+		    cregs + CREG_RXDS);
+	sbus_writel(bblk_dvma + bib_offset(be_txd, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    cregs + CREG_TXDS);
 
 	/* Setup the FIFO pointers into QEC local memory. */
@@ -752,7 +823,11 @@ static void bigmac_is_medium_rare(struct bigmac *bp, u32 qec_status, u32 bmac_st
 	}
 
 	printk(" RESET\n");
+<<<<<<< HEAD
 	bigmac_init_hw(bp, 1);
+=======
+	bigmac_init_hw(bp, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* BigMAC transmit complete service routines. */
@@ -776,15 +851,24 @@ static void bigmac_tx(struct bigmac *bp)
 		if (this->tx_flags & TXD_OWN)
 			break;
 		skb = bp->tx_skbs[elem];
+<<<<<<< HEAD
 		bp->enet_stats.tx_packets++;
 		bp->enet_stats.tx_bytes += skb->len;
+=======
+		dev->stats.tx_packets++;
+		dev->stats.tx_bytes += skb->len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dma_unmap_single(&bp->bigmac_op->dev,
 				 this->tx_addr, skb->len,
 				 DMA_TO_DEVICE);
 
 		DTX(("skb(%p) ", skb));
 		bp->tx_skbs[elem] = NULL;
+<<<<<<< HEAD
 		dev_kfree_skb_irq(skb);
+=======
+		dev_consume_skb_irq(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		elem = NEXT_TX(elem);
 	}
@@ -813,12 +897,21 @@ static void bigmac_rx(struct bigmac *bp)
 
 		/* Check for errors. */
 		if (len < ETH_ZLEN) {
+<<<<<<< HEAD
 			bp->enet_stats.rx_errors++;
 			bp->enet_stats.rx_length_errors++;
 
 	drop_it:
 			/* Return it to the BigMAC. */
 			bp->enet_stats.rx_dropped++;
+=======
+			bp->dev->stats.rx_errors++;
+			bp->dev->stats.rx_length_errors++;
+
+	drop_it:
+			/* Return it to the BigMAC. */
+			bp->dev->stats.rx_dropped++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			this->rx_flags =
 				(RXD_OWN | ((RX_BUF_ALLOC_SIZE - 34) & RXD_LENGTH));
 			goto next;
@@ -838,7 +931,10 @@ static void bigmac_rx(struct bigmac *bp)
 					 RX_BUF_ALLOC_SIZE - 34,
 					 DMA_FROM_DEVICE);
 			bp->rx_skbs[elem] = new_skb;
+<<<<<<< HEAD
 			new_skb->dev = bp->dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb_put(new_skb, ETH_FRAME_LEN);
 			skb_reserve(new_skb, 34);
 			this->rx_addr =
@@ -878,8 +974,13 @@ static void bigmac_rx(struct bigmac *bp)
 		/* No checksums done by the BigMAC ;-( */
 		skb->protocol = eth_type_trans(skb, bp->dev);
 		netif_rx(skb);
+<<<<<<< HEAD
 		bp->enet_stats.rx_packets++;
 		bp->enet_stats.rx_bytes += len;
+=======
+		bp->dev->stats.rx_packets++;
+		bp->dev->stats.rx_bytes += len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	next:
 		elem = NEXT_RX(elem);
 		this = &rxbase[elem];
@@ -924,8 +1025,13 @@ static int bigmac_open(struct net_device *dev)
 		printk(KERN_ERR "BIGMAC: Can't order irq %d to go.\n", dev->irq);
 		return ret;
 	}
+<<<<<<< HEAD
 	init_timer(&bp->bigmac_timer);
 	ret = bigmac_init_hw(bp, 0);
+=======
+	timer_setup(&bp->bigmac_timer, bigmac_timer, 0);
+	ret = bigmac_init_hw(bp, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		free_irq(dev->irq, bp);
 	return ret;
@@ -945,16 +1051,29 @@ static int bigmac_close(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void bigmac_tx_timeout(struct net_device *dev)
 {
 	struct bigmac *bp = netdev_priv(dev);
 
 	bigmac_init_hw(bp, 0);
+=======
+static void bigmac_tx_timeout(struct net_device *dev, unsigned int txqueue)
+{
+	struct bigmac *bp = netdev_priv(dev);
+
+	bigmac_init_hw(bp, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue(dev);
 }
 
 /* Put a packet on the wire. */
+<<<<<<< HEAD
 static int bigmac_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t
+bigmac_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bigmac *bp = netdev_priv(dev);
 	int len, entry;
@@ -990,7 +1109,11 @@ static struct net_device_stats *bigmac_get_stats(struct net_device *dev)
 	struct bigmac *bp = netdev_priv(dev);
 
 	bigmac_get_counters(bp, bp->bregs);
+<<<<<<< HEAD
 	return &bp->enet_stats;
+=======
+	return &dev->stats;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bigmac_set_multicast(struct net_device *dev)
@@ -998,7 +1121,10 @@ static void bigmac_set_multicast(struct net_device *dev)
 	struct bigmac *bp = netdev_priv(dev);
 	void __iomem *bregs = bp->bregs;
 	struct netdev_hw_addr *ha;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tmp, crc;
 
 	/* Disable the receiver.  The bit self-clears when
@@ -1020,10 +1146,14 @@ static void bigmac_set_multicast(struct net_device *dev)
 		tmp |= BIGMAC_RXCFG_PMISC;
 		sbus_writel(tmp, bregs + BMAC_RXCFG);
 	} else {
+<<<<<<< HEAD
 		u16 hash_table[4];
 
 		for (i = 0; i < 4; i++)
 			hash_table[i] = 0;
+=======
+		u16 hash_table[4] = { 0 };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		netdev_for_each_mc_addr(ha, dev) {
 			crc = ether_crc_le(6, ha->addr);
@@ -1045,8 +1175,13 @@ static void bigmac_set_multicast(struct net_device *dev)
 /* Ethtool support... */
 static void bigmac_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
+<<<<<<< HEAD
 	strcpy(info->driver, "sunbmac");
 	strcpy(info->version, "2.0");
+=======
+	strscpy(info->driver, "sunbmac", sizeof(info->driver));
+	strscpy(info->version, "2.0", sizeof(info->version));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 bigmac_get_link(struct net_device *dev)
@@ -1072,19 +1207,30 @@ static const struct net_device_ops bigmac_ops = {
 	.ndo_get_stats		= bigmac_get_stats,
 	.ndo_set_rx_mode	= bigmac_set_multicast,
 	.ndo_tx_timeout		= bigmac_tx_timeout,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
+<<<<<<< HEAD
 static int __devinit bigmac_ether_init(struct platform_device *op,
 				       struct platform_device *qec_op)
+=======
+static int bigmac_ether_init(struct platform_device *op,
+			     struct platform_device *qec_op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int version_printed;
 	struct net_device *dev;
 	u8 bsizes, bsizes_more;
 	struct bigmac *bp;
+<<<<<<< HEAD
 	int i;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get a new device struct for this interface. */
 	dev = alloc_etherdev(sizeof(struct bigmac));
@@ -1094,8 +1240,12 @@ static int __devinit bigmac_ether_init(struct platform_device *op,
 	if (version_printed++ == 0)
 		printk(KERN_INFO "%s", version);
 
+<<<<<<< HEAD
 	for (i = 0; i < 6; i++)
 		dev->dev_addr[i] = idprom->id_ethaddr[i];
+=======
+	eth_hw_addr_set(dev, idprom->id_ethaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Setup softc, with backpointers to QEC and BigMAC SBUS device structs. */
 	bp = netdev_priv(dev);
@@ -1172,17 +1322,26 @@ static int __devinit bigmac_ether_init(struct platform_device *op,
 	bp->bmac_block = dma_alloc_coherent(&bp->bigmac_op->dev,
 					    PAGE_SIZE,
 					    &bp->bblock_dvma, GFP_ATOMIC);
+<<<<<<< HEAD
 	if (bp->bmac_block == NULL || bp->bblock_dvma == 0) {
 		printk(KERN_ERR "BIGMAC: Cannot allocate consistent DMA.\n");
 		goto fail_and_cleanup;
 	}
+=======
+	if (bp->bmac_block == NULL || bp->bblock_dvma == 0)
+		goto fail_and_cleanup;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the board revision of this BigMAC. */
 	bp->board_rev = of_getintprop_default(bp->bigmac_op->dev.of_node,
 					      "board-version", 1);
 
 	/* Init auto-negotiation timer state. */
+<<<<<<< HEAD
 	init_timer(&bp->bigmac_timer);
+=======
+	timer_setup(&bp->bigmac_timer, bigmac_timer, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bp->timer_state = asleep;
 	bp->timer_ticks = 0;
 
@@ -1236,7 +1395,11 @@ fail_and_cleanup:
 /* QEC can be the parent of either QuadEthernet or a BigMAC.  We want
  * the latter.
  */
+<<<<<<< HEAD
 static int __devinit bigmac_sbus_probe(struct platform_device *op)
+=======
+static int bigmac_sbus_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *parent = op->dev.parent;
 	struct platform_device *qec_op;
@@ -1246,9 +1409,15 @@ static int __devinit bigmac_sbus_probe(struct platform_device *op)
 	return bigmac_ether_init(op, qec_op);
 }
 
+<<<<<<< HEAD
 static int __devexit bigmac_sbus_remove(struct platform_device *op)
 {
 	struct bigmac *bp = dev_get_drvdata(&op->dev);
+=======
+static void bigmac_sbus_remove(struct platform_device *op)
+{
+	struct bigmac *bp = platform_get_drvdata(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device *parent = op->dev.parent;
 	struct net_device *net_dev = bp->dev;
 	struct platform_device *qec_op;
@@ -1267,10 +1436,13 @@ static int __devexit bigmac_sbus_remove(struct platform_device *op)
 			  bp->bblock_dvma);
 
 	free_netdev(net_dev);
+<<<<<<< HEAD
 
 	dev_set_drvdata(&op->dev, NULL);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id bigmac_sbus_match[] = {
@@ -1285,11 +1457,18 @@ MODULE_DEVICE_TABLE(of, bigmac_sbus_match);
 static struct platform_driver bigmac_sbus_driver = {
 	.driver = {
 		.name = "sunbmac",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = bigmac_sbus_match,
 	},
 	.probe		= bigmac_sbus_probe,
 	.remove		= __devexit_p(bigmac_sbus_remove),
+=======
+		.of_match_table = bigmac_sbus_match,
+	},
+	.probe		= bigmac_sbus_probe,
+	.remove_new	= bigmac_sbus_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(bigmac_sbus_driver);

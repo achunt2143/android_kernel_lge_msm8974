@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Request key authorisation token key definition.
  *
  * Copyright (C) 2005 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
@@ -12,10 +17,16 @@
  */
 
 #include <linux/module.h>
+=======
+ * See Documentation/security/keys/request-key.rst
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/err.h>
 #include <linux/seq_file.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include "internal.h"
 
@@ -24,6 +35,20 @@ static void request_key_auth_describe(const struct key *, struct seq_file *);
 static void request_key_auth_revoke(struct key *);
 static void request_key_auth_destroy(struct key *);
 static long request_key_auth_read(const struct key *, char __user *, size_t);
+=======
+#include <linux/uaccess.h>
+#include "internal.h"
+#include <keys/request_key_auth-type.h>
+
+static int request_key_auth_preparse(struct key_preparsed_payload *);
+static void request_key_auth_free_preparse(struct key_preparsed_payload *);
+static int request_key_auth_instantiate(struct key *,
+					struct key_preparsed_payload *);
+static void request_key_auth_describe(const struct key *, struct seq_file *);
+static void request_key_auth_revoke(struct key *);
+static void request_key_auth_destroy(struct key *);
+static long request_key_auth_read(const struct key *, char *, size_t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The request-key authorisation key type definition.
@@ -31,6 +56,11 @@ static long request_key_auth_read(const struct key *, char __user *, size_t);
 struct key_type key_type_request_key_auth = {
 	.name		= ".request_key_auth",
 	.def_datalen	= sizeof(struct request_key_auth),
+<<<<<<< HEAD
+=======
+	.preparse	= request_key_auth_preparse,
+	.free_preparse	= request_key_auth_free_preparse,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.instantiate	= request_key_auth_instantiate,
 	.describe	= request_key_auth_describe,
 	.revoke		= request_key_auth_revoke,
@@ -38,14 +68,32 @@ struct key_type key_type_request_key_auth = {
 	.read		= request_key_auth_read,
 };
 
+<<<<<<< HEAD
+=======
+static int request_key_auth_preparse(struct key_preparsed_payload *prep)
+{
+	return 0;
+}
+
+static void request_key_auth_free_preparse(struct key_preparsed_payload *prep)
+{
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Instantiate a request-key authorisation key.
  */
 static int request_key_auth_instantiate(struct key *key,
+<<<<<<< HEAD
 					const void *data,
 					size_t datalen)
 {
 	key->payload.data = (struct request_key_auth *) data;
+=======
+					struct key_preparsed_payload *prep)
+{
+	rcu_assign_keypointer(key, (struct request_key_auth *)prep->data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -55,11 +103,22 @@ static int request_key_auth_instantiate(struct key *key,
 static void request_key_auth_describe(const struct key *key,
 				      struct seq_file *m)
 {
+<<<<<<< HEAD
 	struct request_key_auth *rka = key->payload.data;
 
 	seq_puts(m, "key:");
 	seq_puts(m, key->description);
 	if (key_is_instantiated(key))
+=======
+	struct request_key_auth *rka = dereference_key_rcu(key);
+
+	if (!rka)
+		return;
+
+	seq_puts(m, "key:");
+	seq_puts(m, key->description);
+	if (key_is_positive(key))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_printf(m, " pid:%d ci:%zu", rka->pid, rka->callout_len);
 }
 
@@ -68,12 +127,24 @@ static void request_key_auth_describe(const struct key *key,
  * - the key's semaphore is read-locked
  */
 static long request_key_auth_read(const struct key *key,
+<<<<<<< HEAD
 				  char __user *buffer, size_t buflen)
 {
 	struct request_key_auth *rka = key->payload.data;
 	size_t datalen;
 	long ret;
 
+=======
+				  char *buffer, size_t buflen)
+{
+	struct request_key_auth *rka = dereference_key_locked(key);
+	size_t datalen;
+	long ret;
+
+	if (!rka)
+		return -EKEYREVOKED;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	datalen = rka->callout_len;
 	ret = datalen;
 
@@ -82,13 +153,43 @@ static long request_key_auth_read(const struct key *key,
 		if (buflen > datalen)
 			buflen = datalen;
 
+<<<<<<< HEAD
 		if (copy_to_user(buffer, rka->callout_info, buflen) != 0)
 			ret = -EFAULT;
+=======
+		memcpy(buffer, rka->callout_info, buflen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static void free_request_key_auth(struct request_key_auth *rka)
+{
+	if (!rka)
+		return;
+	key_put(rka->target_key);
+	key_put(rka->dest_keyring);
+	if (rka->cred)
+		put_cred(rka->cred);
+	kfree(rka->callout_info);
+	kfree(rka);
+}
+
+/*
+ * Dispose of the request_key_auth record under RCU conditions
+ */
+static void request_key_auth_rcu_disposal(struct rcu_head *rcu)
+{
+	struct request_key_auth *rka =
+		container_of(rcu, struct request_key_auth, rcu);
+
+	free_request_key_auth(rka);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Handle revocation of an authorisation token key.
  *
@@ -96,6 +197,7 @@ static long request_key_auth_read(const struct key *key,
  */
 static void request_key_auth_revoke(struct key *key)
 {
+<<<<<<< HEAD
 	struct request_key_auth *rka = key->payload.data;
 
 	kenter("{%d}", key->serial);
@@ -104,6 +206,13 @@ static void request_key_auth_revoke(struct key *key)
 		put_cred(rka->cred);
 		rka->cred = NULL;
 	}
+=======
+	struct request_key_auth *rka = dereference_key_locked(key);
+
+	kenter("{%d}", key->serial);
+	rcu_assign_keypointer(key, NULL);
+	call_rcu(&rka->rcu, request_key_auth_rcu_disposal);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -111,6 +220,7 @@ static void request_key_auth_revoke(struct key *key)
  */
 static void request_key_auth_destroy(struct key *key)
 {
+<<<<<<< HEAD
 	struct request_key_auth *rka = key->payload.data;
 
 	kenter("{%d}", key->serial);
@@ -124,12 +234,22 @@ static void request_key_auth_destroy(struct key *key)
 	key_put(rka->dest_keyring);
 	kfree(rka->callout_info);
 	kfree(rka);
+=======
+	struct request_key_auth *rka = rcu_access_pointer(key->payload.rcu_data0);
+
+	kenter("{%d}", key->serial);
+	if (rka) {
+		rcu_assign_keypointer(key, NULL);
+		call_rcu(&rka->rcu, request_key_auth_rcu_disposal);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Create an authorisation token for /sbin/request-key or whoever to gain
  * access to the caller's security data.
  */
+<<<<<<< HEAD
 struct key *request_key_auth_new(struct key *target, const void *callout_info,
 				 size_t callout_len, struct key *dest_keyring)
 {
@@ -138,10 +258,22 @@ struct key *request_key_auth_new(struct key *target, const void *callout_info,
 	struct key *authkey = NULL;
 	char desc[20];
 	int ret;
+=======
+struct key *request_key_auth_new(struct key *target, const char *op,
+				 const void *callout_info, size_t callout_len,
+				 struct key *dest_keyring)
+{
+	struct request_key_auth *rka, *irka;
+	const struct cred *cred = current_cred();
+	struct key *authkey = NULL;
+	char desc[20];
+	int ret = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kenter("%d,", target->serial);
 
 	/* allocate a auth record */
+<<<<<<< HEAD
 	rka = kmalloc(sizeof(*rka), GFP_KERNEL);
 	if (!rka) {
 		kleave(" = -ENOMEM");
@@ -153,6 +285,16 @@ struct key *request_key_auth_new(struct key *target, const void *callout_info,
 		kfree(rka);
 		return ERR_PTR(-ENOMEM);
 	}
+=======
+	rka = kzalloc(sizeof(*rka), GFP_KERNEL);
+	if (!rka)
+		goto error;
+	rka->callout_info = kmemdup(callout_info, callout_len, GFP_KERNEL);
+	if (!rka->callout_info)
+		goto error_free_rka;
+	rka->callout_len = callout_len;
+	strscpy(rka->op, op, sizeof(rka->op));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* see if the calling process is already servicing the key request of
 	 * another process */
@@ -162,10 +304,21 @@ struct key *request_key_auth_new(struct key *target, const void *callout_info,
 
 		/* if the auth key has been revoked, then the key we're
 		 * servicing is already instantiated */
+<<<<<<< HEAD
 		if (test_bit(KEY_FLAG_REVOKED, &cred->request_key_auth->flags))
 			goto auth_key_revoked;
 
 		irka = cred->request_key_auth->payload.data;
+=======
+		if (test_bit(KEY_FLAG_REVOKED,
+			     &cred->request_key_auth->flags)) {
+			up_read(&cred->request_key_auth->sem);
+			ret = -EKEYREVOKED;
+			goto error_free_rka;
+		}
+
+		irka = cred->request_key_auth->payload.data[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rka->cred = get_cred(irka->cred);
 		rka->pid = irka->pid;
 
@@ -179,24 +332,36 @@ struct key *request_key_auth_new(struct key *target, const void *callout_info,
 
 	rka->target_key = key_get(target);
 	rka->dest_keyring = key_get(dest_keyring);
+<<<<<<< HEAD
 	memcpy(rka->callout_info, callout_info, callout_len);
 	rka->callout_len = callout_len;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allocate the auth key */
 	sprintf(desc, "%x", target->serial);
 
 	authkey = key_alloc(&key_type_request_key_auth, desc,
 			    cred->fsuid, cred->fsgid, cred,
+<<<<<<< HEAD
 			    KEY_POS_VIEW | KEY_POS_READ | KEY_POS_SEARCH |
 			    KEY_USR_VIEW, KEY_ALLOC_NOT_IN_QUOTA);
 	if (IS_ERR(authkey)) {
 		ret = PTR_ERR(authkey);
 		goto error_alloc;
+=======
+			    KEY_POS_VIEW | KEY_POS_READ | KEY_POS_SEARCH | KEY_POS_LINK |
+			    KEY_USR_VIEW, KEY_ALLOC_NOT_IN_QUOTA, NULL);
+	if (IS_ERR(authkey)) {
+		ret = PTR_ERR(authkey);
+		goto error_free_rka;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* construct the auth key */
 	ret = key_instantiate_and_link(authkey, rka, 0, NULL, NULL);
 	if (ret < 0)
+<<<<<<< HEAD
 		goto error_inst;
 
 	kleave(" = {%d,%d}", authkey->serial, atomic_read(&authkey->usage));
@@ -217,11 +382,24 @@ error_alloc:
 	key_put(rka->dest_keyring);
 	kfree(rka->callout_info);
 	kfree(rka);
+=======
+		goto error_put_authkey;
+
+	kleave(" = {%d,%d}", authkey->serial, refcount_read(&authkey->usage));
+	return authkey;
+
+error_put_authkey:
+	key_put(authkey);
+error_free_rka:
+	free_request_key_auth(rka);
+error:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kleave("= %d", ret);
 	return ERR_PTR(ret);
 }
 
 /*
+<<<<<<< HEAD
  * See if an authorisation key is associated with a particular key.
  */
 static int key_get_instantiation_authkey_match(const struct key *key,
@@ -234,11 +412,14 @@ static int key_get_instantiation_authkey_match(const struct key *key,
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Search the current process's keyrings for the authorisation key for
  * instantiation of a key.
  */
 struct key *key_get_instantiation_authkey(key_serial_t target_id)
 {
+<<<<<<< HEAD
 	const struct cred *cred = current_cred();
 	struct key *authkey;
 	key_ref_t authkey_ref;
@@ -248,6 +429,27 @@ struct key *key_get_instantiation_authkey(key_serial_t target_id)
 		(void *) (unsigned long) target_id,
 		key_get_instantiation_authkey_match,
 		cred);
+=======
+	char description[16];
+	struct keyring_search_context ctx = {
+		.index_key.type		= &key_type_request_key_auth,
+		.index_key.description	= description,
+		.cred			= current_cred(),
+		.match_data.cmp		= key_default_cmp,
+		.match_data.raw_data	= description,
+		.match_data.lookup_type	= KEYRING_SEARCH_LOOKUP_DIRECT,
+		.flags			= (KEYRING_SEARCH_DO_STATE_CHECK |
+					   KEYRING_SEARCH_RECURSE),
+	};
+	struct key *authkey;
+	key_ref_t authkey_ref;
+
+	ctx.index_key.desc_len = sprintf(description, "%x", target_id);
+
+	rcu_read_lock();
+	authkey_ref = search_process_keyrings_rcu(&ctx);
+	rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (IS_ERR(authkey_ref)) {
 		authkey = ERR_CAST(authkey_ref);

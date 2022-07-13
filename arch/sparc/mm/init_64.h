@@ -1,10 +1,20 @@
+<<<<<<< HEAD
 #ifndef _SPARC64_MM_INIT_H
 #define _SPARC64_MM_INIT_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _SPARC64_MM_INIT_H
+#define _SPARC64_MM_INIT_H
+
+#include <asm/page.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Most of the symbols in this file are defined in init.c and
  * marked non-static so that assembler code can get at them.
  */
 
+<<<<<<< HEAD
 #define MAX_PHYS_ADDRESS	(1UL << 41UL)
 #define KPTE_BITMAP_CHUNK_SZ		(256UL * 1024UL * 1024UL)
 #define KPTE_BITMAP_BYTES	\
@@ -15,11 +25,20 @@
 
 extern unsigned long kern_linear_pte_xor[2];
 extern unsigned long kpte_linear_bitmap[KPTE_BITMAP_BYTES / sizeof(unsigned long)];
+=======
+#define MAX_PHYS_ADDRESS	(1UL << MAX_PHYS_ADDRESS_BITS)
+
+extern unsigned long kern_linear_pte_xor[4];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned int sparc64_highest_unlocked_tlb_ent;
 extern unsigned long sparc64_kern_pri_context;
 extern unsigned long sparc64_kern_pri_nuc_bits;
 extern unsigned long sparc64_kern_sec_context;
+<<<<<<< HEAD
 extern void mmu_info(struct seq_file *m);
+=======
+void mmu_info(struct seq_file *m);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct linux_prom_translation {
 	unsigned long virt;
@@ -34,6 +53,7 @@ extern unsigned int prom_trans_ents;
 /* Exported for SMP bootup purposes. */
 extern unsigned long kern_locked_tte_data;
 
+<<<<<<< HEAD
 extern void prom_world(int enter);
 
 #ifdef CONFIG_SPARSEMEM_VMEMMAP
@@ -46,5 +66,8 @@ extern void prom_world(int enter);
 			  sizeof(struct page)) >> VMEMMAP_CHUNK_SHIFT)
 extern unsigned long vmemmap_table[VMEMMAP_SIZE];
 #endif
+=======
+void prom_world(int enter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _SPARC64_MM_INIT_H */

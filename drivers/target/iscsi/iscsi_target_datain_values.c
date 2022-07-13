@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
  * This file contains the iSCSI Target DataIN value generation functions.
  *
@@ -21,6 +22,21 @@
 #include <scsi/iscsi_proto.h>
 
 #include "iscsi_target_core.h"
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*******************************************************************************
+ * This file contains the iSCSI Target DataIN value generation functions.
+ *
+ * (c) Copyright 2007-2013 Datera, Inc.
+ *
+ * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
+ *
+ ******************************************************************************/
+
+#include <linux/slab.h>
+#include <scsi/iscsi_proto.h>
+#include <target/iscsi/iscsi_target_core.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iscsi_target_seq_pdu_list.h"
 #include "iscsi_target_erl1.h"
 #include "iscsi_target_util.h"
@@ -37,11 +53,16 @@ struct iscsi_datain_req *iscsit_allocate_datain_req(void)
 				" struct iscsi_datain_req\n");
 		return NULL;
 	}
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&dr->dr_list);
+=======
+	INIT_LIST_HEAD(&dr->cmd_datain_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return dr;
 }
 
+<<<<<<< HEAD
 void iscsit_attach_datain_req(struct iscsi_cmd *cmd, struct iscsi_datain_req *dr)
 {
 	spin_lock(&cmd->datain_lock);
@@ -53,47 +74,88 @@ void iscsit_free_datain_req(struct iscsi_cmd *cmd, struct iscsi_datain_req *dr)
 {
 	spin_lock(&cmd->datain_lock);
 	list_del(&dr->dr_list);
+=======
+void iscsit_attach_datain_req(struct iscsit_cmd *cmd, struct iscsi_datain_req *dr)
+{
+	spin_lock(&cmd->datain_lock);
+	list_add_tail(&dr->cmd_datain_node, &cmd->datain_list);
+	spin_unlock(&cmd->datain_lock);
+}
+
+void iscsit_free_datain_req(struct iscsit_cmd *cmd, struct iscsi_datain_req *dr)
+{
+	spin_lock(&cmd->datain_lock);
+	list_del(&dr->cmd_datain_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&cmd->datain_lock);
 
 	kmem_cache_free(lio_dr_cache, dr);
 }
 
+<<<<<<< HEAD
 void iscsit_free_all_datain_reqs(struct iscsi_cmd *cmd)
+=======
+void iscsit_free_all_datain_reqs(struct iscsit_cmd *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_datain_req *dr, *dr_tmp;
 
 	spin_lock(&cmd->datain_lock);
+<<<<<<< HEAD
 	list_for_each_entry_safe(dr, dr_tmp, &cmd->datain_list, dr_list) {
 		list_del(&dr->dr_list);
+=======
+	list_for_each_entry_safe(dr, dr_tmp, &cmd->datain_list, cmd_datain_node) {
+		list_del(&dr->cmd_datain_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kmem_cache_free(lio_dr_cache, dr);
 	}
 	spin_unlock(&cmd->datain_lock);
 }
 
+<<<<<<< HEAD
 struct iscsi_datain_req *iscsit_get_datain_req(struct iscsi_cmd *cmd)
 {
 	struct iscsi_datain_req *dr;
 
+=======
+struct iscsi_datain_req *iscsit_get_datain_req(struct iscsit_cmd *cmd)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (list_empty(&cmd->datain_list)) {
 		pr_err("cmd->datain_list is empty for ITT:"
 			" 0x%08x\n", cmd->init_task_tag);
 		return NULL;
 	}
+<<<<<<< HEAD
 	list_for_each_entry(dr, &cmd->datain_list, dr_list)
 		break;
 
 	return dr;
+=======
+
+	return list_first_entry(&cmd->datain_list, struct iscsi_datain_req,
+				cmd_datain_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  *	For Normal and Recovery DataSequenceInOrder=Yes and DataPDUInOrder=Yes.
  */
 static struct iscsi_datain_req *iscsit_set_datain_values_yes_and_yes(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	struct iscsi_datain *datain)
 {
 	u32 next_burst_len, read_data_done, read_data_left;
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd,
+	struct iscsi_datain *datain)
+{
+	u32 next_burst_len, read_data_done, read_data_left;
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_datain_req *dr;
 
 	dr = iscsit_get_datain_req(cmd);
@@ -113,7 +175,11 @@ static struct iscsi_datain_req *iscsit_set_datain_values_yes_and_yes(
 	read_data_done = (!dr->recovery) ?
 			cmd->read_data_done : dr->read_data_done;
 
+<<<<<<< HEAD
 	read_data_left = (cmd->data_length - read_data_done);
+=======
+	read_data_left = (cmd->se_cmd.data_length - read_data_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!read_data_left) {
 		pr_err("ITT: 0x%08x read_data_left is zero!\n",
 				cmd->init_task_tag);
@@ -187,11 +253,19 @@ static struct iscsi_datain_req *iscsit_set_datain_values_yes_and_yes(
  *	For Normal and Recovery DataSequenceInOrder=No and DataPDUInOrder=Yes.
  */
 static struct iscsi_datain_req *iscsit_set_datain_values_no_and_yes(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	struct iscsi_datain *datain)
 {
 	u32 offset, read_data_done, read_data_left, seq_send_order;
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd,
+	struct iscsi_datain *datain)
+{
+	u32 offset, read_data_done, read_data_left, seq_send_order;
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_datain_req *dr;
 	struct iscsi_seq *seq;
 
@@ -212,7 +286,11 @@ static struct iscsi_datain_req *iscsit_set_datain_values_no_and_yes(
 	seq_send_order = (!dr->recovery) ?
 			cmd->seq_send_order : dr->seq_send_order;
 
+<<<<<<< HEAD
 	read_data_left = (cmd->data_length - read_data_done);
+=======
+	read_data_left = (cmd->se_cmd.data_length - read_data_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!read_data_left) {
 		pr_err("ITT: 0x%08x read_data_left is zero!\n",
 				cmd->init_task_tag);
@@ -231,8 +309,13 @@ static struct iscsi_datain_req *iscsit_set_datain_values_no_and_yes(
 	offset = (seq->offset + seq->next_burst_len);
 
 	if ((offset + conn->conn_ops->MaxRecvDataSegmentLength) >=
+<<<<<<< HEAD
 	     cmd->data_length) {
 		datain->length = (cmd->data_length - offset);
+=======
+	     cmd->se_cmd.data_length) {
+		datain->length = (cmd->se_cmd.data_length - offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		datain->offset = offset;
 
 		datain->flags |= ISCSI_FLAG_CMD_FINAL;
@@ -264,7 +347,11 @@ static struct iscsi_datain_req *iscsit_set_datain_values_no_and_yes(
 		}
 	}
 
+<<<<<<< HEAD
 	if ((read_data_done + datain->length) == cmd->data_length)
+=======
+	if ((read_data_done + datain->length) == cmd->se_cmd.data_length)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		datain->flags |= ISCSI_FLAG_DATA_STATUS;
 
 	datain->data_sn = (!dr->recovery) ? cmd->data_sn++ : dr->data_sn++;
@@ -308,11 +395,19 @@ static struct iscsi_datain_req *iscsit_set_datain_values_no_and_yes(
  *	For Normal and Recovery DataSequenceInOrder=Yes and DataPDUInOrder=No.
  */
 static struct iscsi_datain_req *iscsit_set_datain_values_yes_and_no(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	struct iscsi_datain *datain)
 {
 	u32 next_burst_len, read_data_done, read_data_left;
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd,
+	struct iscsi_datain *datain)
+{
+	u32 next_burst_len, read_data_done, read_data_left;
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_datain_req *dr;
 	struct iscsi_pdu *pdu;
 
@@ -333,7 +428,11 @@ static struct iscsi_datain_req *iscsit_set_datain_values_yes_and_no(
 	read_data_done = (!dr->recovery) ?
 			cmd->read_data_done : dr->read_data_done;
 
+<<<<<<< HEAD
 	read_data_left = (cmd->data_length - read_data_done);
+=======
+	read_data_left = (cmd->se_cmd.data_length - read_data_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!read_data_left) {
 		pr_err("ITT: 0x%08x read_data_left is zero!\n",
 				cmd->init_task_tag);
@@ -344,7 +443,11 @@ static struct iscsi_datain_req *iscsit_set_datain_values_yes_and_no(
 	if (!pdu)
 		return dr;
 
+<<<<<<< HEAD
 	if ((read_data_done + pdu->length) == cmd->data_length) {
+=======
+	if ((read_data_done + pdu->length) == cmd->se_cmd.data_length) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdu->flags |= (ISCSI_FLAG_CMD_FINAL | ISCSI_FLAG_DATA_STATUS);
 		if (conn->sess->sess_ops->ErrorRecoveryLevel > 0)
 			pdu->flags |= ISCSI_FLAG_DATA_ACK;
@@ -407,11 +510,19 @@ static struct iscsi_datain_req *iscsit_set_datain_values_yes_and_no(
  *	For Normal and Recovery DataSequenceInOrder=No and DataPDUInOrder=No.
  */
 static struct iscsi_datain_req *iscsit_set_datain_values_no_and_no(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	struct iscsi_datain *datain)
 {
 	u32 read_data_done, read_data_left, seq_send_order;
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd,
+	struct iscsi_datain *datain)
+{
+	u32 read_data_done, read_data_left, seq_send_order;
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_datain_req *dr;
 	struct iscsi_pdu *pdu;
 	struct iscsi_seq *seq = NULL;
@@ -433,7 +544,11 @@ static struct iscsi_datain_req *iscsit_set_datain_values_no_and_no(
 	seq_send_order = (!dr->recovery) ?
 			cmd->seq_send_order : dr->seq_send_order;
 
+<<<<<<< HEAD
 	read_data_left = (cmd->data_length - read_data_done);
+=======
+	read_data_left = (cmd->se_cmd.data_length - read_data_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!read_data_left) {
 		pr_err("ITT: 0x%08x read_data_left is zero!\n",
 				cmd->init_task_tag);
@@ -463,7 +578,11 @@ static struct iscsi_datain_req *iscsit_set_datain_values_no_and_no(
 	} else
 		seq->next_burst_len += pdu->length;
 
+<<<<<<< HEAD
 	if ((read_data_done + pdu->length) == cmd->data_length)
+=======
+	if ((read_data_done + pdu->length) == cmd->se_cmd.data_length)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdu->flags |= ISCSI_FLAG_DATA_STATUS;
 
 	pdu->data_sn = (!dr->recovery) ? cmd->data_sn++ : dr->data_sn++;
@@ -509,10 +628,17 @@ static struct iscsi_datain_req *iscsit_set_datain_values_no_and_no(
 }
 
 struct iscsi_datain_req *iscsit_get_datain_values(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	struct iscsi_datain *datain)
 {
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd,
+	struct iscsi_datain *datain)
+{
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (conn->sess->sess_ops->DataSequenceInOrder &&
 	    conn->sess->sess_ops->DataPDUInOrder)
@@ -529,3 +655,7 @@ struct iscsi_datain_req *iscsit_get_datain_values(
 
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(iscsit_get_datain_values);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2011-2012, Meador Inge, Mentor Graphics Corporation.
  *
@@ -6,6 +7,11 @@
  * as published by the Free Software Foundation; version 2 of the
  * License.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright 2011-2012, Meador Inge, Mentor Graphics Corporation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_MPIC_MSGR_H
@@ -14,6 +20,10 @@
 #include <linux/types.h>
 #include <linux/spinlock.h>
 #include <asm/smp.h>
+<<<<<<< HEAD
+=======
+#include <asm/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mpic_msgr {
 	u32 __iomem *base;
@@ -121,9 +131,15 @@ static inline void mpic_msgr_set_destination(struct mpic_msgr *msgr,
  * @msgr:	the message register whose IRQ is to be returned
  *
  * Returns the IRQ number associated with the given message register.
+<<<<<<< HEAD
  * NO_IRQ is returned if this message register is not capable of
  * receiving interrupts.  What message register can and cannot receive
  * interrupts is specified in the device tree for the system.
+=======
+ * 0 is returned if this message register is not capable of receiving
+ * interrupts.  What message register can and cannot receive interrupts is
+ * specified in the device tree for the system.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline int mpic_msgr_get_irq(struct mpic_msgr *msgr)
 {

@@ -24,8 +24,13 @@ void llc_pdu_set_cmd_rsp(struct sk_buff *skb, u8 pdu_type)
 }
 
 /**
+<<<<<<< HEAD
  *	pdu_set_pf_bit - sets poll/final bit in LLC header
  *	@pdu_frame: input frame that p/f bit must be set into it.
+=======
+ *	llc_pdu_set_pf_bit - sets poll/final bit in LLC header
+ *	@skb: Frame to set bit in
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@bit_value: poll/final bit (0 or 1).
  *
  *	This function sets poll/final bit in LLC header (based on type of PDU).

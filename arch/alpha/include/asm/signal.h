@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASMAXP_SIGNAL_H
 #define _ASMAXP_SIGNAL_H
 
@@ -7,6 +8,14 @@
 struct siginfo;
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASMAXP_SIGNAL_H
+#define _ASMAXP_SIGNAL_H
+
+#include <uapi/asm/signal.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Digital Unix defines 64 signals.  Most things should be clean enough
    to redefine this at will, if care is taken to make libc match.  */
 
@@ -20,6 +29,7 @@ typedef struct {
 	unsigned long sig[_NSIG_WORDS];
 } sigset_t;
 
+<<<<<<< HEAD
 #else
 /* Here we must cater to libcs that poke about in kernel headers.  */
 
@@ -114,12 +124,15 @@ typedef unsigned long sigset_t;
 #include <asm-generic/signal-defs.h>
 
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct osf_sigaction {
 	__sighandler_t	sa_handler;
 	old_sigset_t	sa_mask;
 	int		sa_flags;
 };
 
+<<<<<<< HEAD
 struct sigaction {
 	__sighandler_t	sa_handler;
 	unsigned long	sa_flags;
@@ -169,4 +182,8 @@ struct sigstack {
 
 #endif
 
+=======
+#define __ARCH_HAS_KA_RESTORER
+#include <asm/sigcontext.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

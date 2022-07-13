@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 #ifndef _ASM_X86_PGTABLE_32_DEFS_H
 #define _ASM_X86_PGTABLE_32_DEFS_H
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_X86_PGTABLE_32_TYPES_H
+#define _ASM_X86_PGTABLE_32_TYPES_H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The Linux x86 paging architecture is 'compile-time dual-mode', it
@@ -14,6 +20,7 @@
 # include <asm/pgtable-2level_types.h>
 #endif
 
+<<<<<<< HEAD
 #define PGDIR_SIZE	(1UL << PGDIR_SHIFT)
 #define PGDIR_MASK	(~(PGDIR_SIZE - 1))
 
@@ -53,3 +60,11 @@ extern bool __vmalloc_start_set; /* set once high_memory is set */
 #define MAXMEM	(VMALLOC_END - PAGE_OFFSET - __VMALLOC_RESERVE)
 
 #endif /* _ASM_X86_PGTABLE_32_DEFS_H */
+=======
+#define pgtable_l5_enabled() 0
+
+#define PGDIR_SIZE	(1UL << PGDIR_SHIFT)
+#define PGDIR_MASK	(~(PGDIR_SIZE - 1))
+
+#endif /* _ASM_X86_PGTABLE_32_TYPES_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

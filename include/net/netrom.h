@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Declarations of NET/ROM type objects.
  *
@@ -11,6 +15,12 @@
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <net/sock.h>
+<<<<<<< HEAD
+=======
+#include <linux/refcount.h>
+#include <linux/seq_file.h>
+#include <net/ax25.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define	NR_NETWORK_LEN			15
 #define	NR_TRANSPORT_LEN		5
@@ -93,7 +103,11 @@ struct nr_neigh {
 	unsigned short		count;
 	unsigned int		number;
 	unsigned char		failed;
+<<<<<<< HEAD
 	atomic_t		refcount;
+=======
+	refcount_t		refcount;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct nr_route {
@@ -109,7 +123,11 @@ struct nr_node {
 	unsigned char		which;
 	unsigned char		count;
 	struct nr_route		routes[3];
+<<<<<<< HEAD
 	atomic_t		refcount;
+=======
+	refcount_t		refcount;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t		node_lock;
 };
 
@@ -118,21 +136,37 @@ struct nr_node {
  *********************************************************************/
 
 #define nr_node_hold(__nr_node) \
+<<<<<<< HEAD
 	atomic_inc(&((__nr_node)->refcount))
 
 static __inline__ void nr_node_put(struct nr_node *nr_node)
 {
 	if (atomic_dec_and_test(&nr_node->refcount)) {
+=======
+	refcount_inc(&((__nr_node)->refcount))
+
+static __inline__ void nr_node_put(struct nr_node *nr_node)
+{
+	if (refcount_dec_and_test(&nr_node->refcount)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(nr_node);
 	}
 }
 
 #define nr_neigh_hold(__nr_neigh) \
+<<<<<<< HEAD
 	atomic_inc(&((__nr_neigh)->refcount))
 
 static __inline__ void nr_neigh_put(struct nr_neigh *nr_neigh)
 {
 	if (atomic_dec_and_test(&nr_neigh->refcount)) {
+=======
+	refcount_inc(&((__nr_neigh)->refcount))
+
+static __inline__ void nr_neigh_put(struct nr_neigh *nr_neigh)
+{
+	if (refcount_dec_and_test(&nr_neigh->refcount)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (nr_neigh->ax25)
 			ax25_cb_put(nr_neigh->ax25);
 		kfree(nr_neigh->digipeat);
@@ -154,6 +188,7 @@ static __inline__ void nr_node_unlock(struct nr_node *nr_node)
 	nr_node_put(nr_node);
 }
 
+<<<<<<< HEAD
 #define nr_neigh_for_each(__nr_neigh, node, list) \
 	hlist_for_each_entry(__nr_neigh, node, list, neigh_node)
 
@@ -165,6 +200,19 @@ static __inline__ void nr_node_unlock(struct nr_node *nr_node)
 
 #define nr_node_for_each_safe(__nr_node, node, node2, list) \
 	hlist_for_each_entry_safe(__nr_node, node, node2, list, node_node)
+=======
+#define nr_neigh_for_each(__nr_neigh, list) \
+	hlist_for_each_entry(__nr_neigh, list, neigh_node)
+
+#define nr_neigh_for_each_safe(__nr_neigh, node2, list) \
+	hlist_for_each_entry_safe(__nr_neigh, node2, list, neigh_node)
+
+#define nr_node_for_each(__nr_node, list) \
+	hlist_for_each_entry(__nr_node, list, node_node)
+
+#define nr_node_for_each_safe(__nr_node, node2, list) \
+	hlist_for_each_entry_safe(__nr_node, node2, list, node_node)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*********************************************************************/
@@ -183,6 +231,7 @@ extern int  sysctl_netrom_routing_control;
 extern int  sysctl_netrom_link_fails_count;
 extern int  sysctl_netrom_reset_circuit;
 
+<<<<<<< HEAD
 extern int  nr_rx_frame(struct sk_buff *, struct net_device *);
 extern void nr_destroy_socket(struct sock *);
 
@@ -228,6 +277,52 @@ extern void nr_write_internal(struct sock *, int);
 
 extern void __nr_transmit_reply(struct sk_buff *skb, int mine,
 	unsigned char cmdflags);
+=======
+int nr_rx_frame(struct sk_buff *, struct net_device *);
+void nr_destroy_socket(struct sock *);
+
+/* nr_dev.c */
+int nr_rx_ip(struct sk_buff *, struct net_device *);
+void nr_setup(struct net_device *);
+
+/* nr_in.c */
+int nr_process_rx_frame(struct sock *, struct sk_buff *);
+
+/* nr_loopback.c */
+void nr_loopback_init(void);
+void nr_loopback_clear(void);
+int nr_loopback_queue(struct sk_buff *);
+
+/* nr_out.c */
+void nr_output(struct sock *, struct sk_buff *);
+void nr_send_nak_frame(struct sock *);
+void nr_kick(struct sock *);
+void nr_transmit_buffer(struct sock *, struct sk_buff *);
+void nr_establish_data_link(struct sock *);
+void nr_enquiry_response(struct sock *);
+void nr_check_iframes_acked(struct sock *, unsigned short);
+
+/* nr_route.c */
+void nr_rt_device_down(struct net_device *);
+struct net_device *nr_dev_first(void);
+struct net_device *nr_dev_get(ax25_address *);
+int nr_rt_ioctl(unsigned int, void __user *);
+void nr_link_failed(ax25_cb *, int);
+int nr_route_frame(struct sk_buff *, ax25_cb *);
+extern const struct seq_operations nr_node_seqops;
+extern const struct seq_operations nr_neigh_seqops;
+void nr_rt_free(void);
+
+/* nr_subr.c */
+void nr_clear_queues(struct sock *);
+void nr_frames_acked(struct sock *, unsigned short);
+void nr_requeue_frames(struct sock *);
+int nr_validate_nr(struct sock *, unsigned short);
+int nr_in_rx_window(struct sock *, unsigned short);
+void nr_write_internal(struct sock *, int);
+
+void __nr_transmit_reply(struct sk_buff *skb, int mine, unsigned char cmdflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This routine is called when a Connect Acknowledge with the Choke Flag
@@ -247,6 +342,7 @@ do {									\
 	__nr_transmit_reply((skb), (mine), NR_RESET);			\
 } while (0)
 
+<<<<<<< HEAD
 extern void nr_disconnect(struct sock *, int);
 
 /* nr_timer.c */
@@ -266,5 +362,26 @@ extern int  nr_t1timer_running(struct sock *);
 /* sysctl_net_netrom.c */
 extern void nr_register_sysctl(void);
 extern void nr_unregister_sysctl(void);
+=======
+void nr_disconnect(struct sock *, int);
+
+/* nr_timer.c */
+void nr_init_timers(struct sock *sk);
+void nr_start_heartbeat(struct sock *);
+void nr_start_t1timer(struct sock *);
+void nr_start_t2timer(struct sock *);
+void nr_start_t4timer(struct sock *);
+void nr_start_idletimer(struct sock *);
+void nr_stop_heartbeat(struct sock *);
+void nr_stop_t1timer(struct sock *);
+void nr_stop_t2timer(struct sock *);
+void nr_stop_t4timer(struct sock *);
+void nr_stop_idletimer(struct sock *);
+int nr_t1timer_running(struct sock *);
+
+/* sysctl_net_netrom.c */
+int nr_register_sysctl(void);
+void nr_unregister_sysctl(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

@@ -26,9 +26,15 @@ static int sprom2hex(const u16 *sprom, char *buf, size_t buf_len,
 	int i, pos = 0;
 
 	for (i = 0; i < sprom_size_words; i++)
+<<<<<<< HEAD
 		pos += snprintf(buf + pos, buf_len - pos - 1,
 				"%04X", swab16(sprom[i]) & 0xFFFF);
 	pos += snprintf(buf + pos, buf_len - pos - 1, "\n");
+=======
+		pos += scnprintf(buf + pos, buf_len - pos - 1,
+				"%04X", swab16(sprom[i]) & 0xFFFF);
+	pos += scnprintf(buf + pos, buf_len - pos - 1, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return pos + 1;
 }
@@ -54,7 +60,11 @@ static int hex2sprom(u16 *sprom, const char *dump, size_t len,
 	while (cnt < sprom_size_words) {
 		memcpy(tmp, dump, 4);
 		dump += 4;
+<<<<<<< HEAD
 		err = strict_strtoul(tmp, 16, &parsed);
+=======
+		err = kstrtoul(tmp, 16, &parsed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			return err;
 		sprom[cnt++] = swab16((u16)parsed);
@@ -78,7 +88,12 @@ ssize_t ssb_attr_sprom_show(struct ssb_bus *bus, char *buf,
 
 	/* Use interruptible locking, as the SPROM write might
 	 * be holding the lock for several seconds. So allow userspace
+<<<<<<< HEAD
 	 * to cancel operation. */
+=======
+	 * to cancel operation.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -ERESTARTSYS;
 	if (mutex_lock_interruptible(&bus->sprom_mutex))
 		goto out_kfree;
@@ -121,19 +136,32 @@ ssize_t ssb_attr_sprom_store(struct ssb_bus *bus,
 
 	/* Use interruptible locking, as the SPROM write might
 	 * be holding the lock for several seconds. So allow userspace
+<<<<<<< HEAD
 	 * to cancel operation. */
+=======
+	 * to cancel operation.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -ERESTARTSYS;
 	if (mutex_lock_interruptible(&bus->sprom_mutex))
 		goto out_kfree;
 	err = ssb_devices_freeze(bus, &freeze);
 	if (err) {
+<<<<<<< HEAD
 		ssb_printk(KERN_ERR PFX "SPROM write: Could not freeze all devices\n");
+=======
+		pr_err("SPROM write: Could not freeze all devices\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_unlock;
 	}
 	res = sprom_write(bus, sprom);
 	err = ssb_devices_thaw(&freeze);
 	if (err)
+<<<<<<< HEAD
 		ssb_printk(KERN_ERR PFX "SPROM write: Could not thaw all devices\n");
+=======
+		pr_err("SPROM write: Could not thaw all devices\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_unlock:
 	mutex_unlock(&bus->sprom_mutex);
 out_kfree:
@@ -184,6 +212,7 @@ int ssb_fill_sprom_with_fallback(struct ssb_bus *bus, struct ssb_sprom *out)
 	return get_fallback_sprom(bus, out);
 }
 
+<<<<<<< HEAD
 /* http://bcm-v4.sipsolutions.net/802.11/IsSpromAvailable */
 bool ssb_is_sprom_available(struct ssb_bus *bus)
 {
@@ -191,6 +220,17 @@ bool ssb_is_sprom_available(struct ssb_bus *bus)
 	   for >= 31 only */
 	/* this routine differs from specs as we do not access SPROM directly
 	   on PCMCIA */
+=======
+/* https://bcm-v4.sipsolutions.net/802.11/IsSpromAvailable */
+bool ssb_is_sprom_available(struct ssb_bus *bus)
+{
+	/* status register only exists on chipcomon rev >= 11 and we need check
+	 * for >= 31 only
+	 */
+	/* this routine differs from specs as we do not access SPROM directly
+	 * on PCMCIA
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bus->bustype == SSB_BUSTYPE_PCI &&
 	    bus->chipco.dev &&	/* can be unavailable! */
 	    bus->chipco.dev->id.revision >= 31)

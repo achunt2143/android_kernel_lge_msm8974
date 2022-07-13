@@ -23,10 +23,25 @@
  * Authors: Dave Airlie
  *          Alex Deucher
  */
+<<<<<<< HEAD
 #include "drmP.h"
 #include "drm_crtc_helper.h"
 #include "radeon_drm.h"
 #include "radeon.h"
+=======
+
+#include <linux/pci.h>
+
+#include <drm/drm_edid.h>
+#include <drm/drm_device.h>
+#include <drm/radeon_drm.h>
+
+#include <acpi/video.h>
+
+#include "radeon.h"
+#include "radeon_atombios.h"
+#include "radeon_legacy_encoders.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "atom.h"
 
 static uint32_t radeon_encoder_clones(struct drm_encoder *encoder)
@@ -51,6 +66,10 @@ static uint32_t radeon_encoder_clones(struct drm_encoder *encoder)
 	count = -1;
 	list_for_each_entry(clone_encoder, &dev->mode_config.encoder_list, head) {
 		struct radeon_encoder *radeon_clone = to_radeon_encoder(clone_encoder);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count++;
 
 		if (clone_encoder == encoder)
@@ -101,9 +120,16 @@ radeon_get_encoder_enum(struct drm_device *dev, uint32_t supported_device, uint8
 			if (ASIC_IS_AVIVO(rdev))
 				ret = ENCODER_INTERNAL_KLDSCP_DAC2_ENUM_ID1;
 			else {
+<<<<<<< HEAD
 				/*if (rdev->family == CHIP_R200)
 				  ret = ENCODER_INTERNAL_DVO1_ENUM_ID1;
 				  else*/
+=======
+				/* if (rdev->family == CHIP_R200)
+				 * ret = ENCODER_INTERNAL_DVO1_ENUM_ID1;
+				 * else
+				 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = ENCODER_INTERNAL_DAC2_ENUM_ID1;
 			}
 			break;
@@ -150,6 +176,55 @@ radeon_get_encoder_enum(struct drm_device *dev, uint32_t supported_device, uint8
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static void radeon_encoder_add_backlight(struct radeon_encoder *radeon_encoder,
+					 struct drm_connector *connector)
+{
+	struct drm_device *dev = radeon_encoder->base.dev;
+	struct radeon_device *rdev = dev->dev_private;
+	bool use_bl = false;
+
+	if (!(radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT)))
+		return;
+
+	if (radeon_backlight == 0) {
+		use_bl = false;
+	} else if (radeon_backlight == 1) {
+		use_bl = true;
+	} else if (radeon_backlight == -1) {
+		/* Quirks */
+		/* Amilo Xi 2550 only works with acpi bl */
+		if ((rdev->pdev->device == 0x9583) &&
+		    (rdev->pdev->subsystem_vendor == 0x1734) &&
+		    (rdev->pdev->subsystem_device == 0x1107))
+			use_bl = false;
+/* Older PPC macs use on-GPU backlight controller */
+#ifndef CONFIG_PPC_PMAC
+		/* disable native backlight control on older asics */
+		else if (rdev->family < CHIP_R600)
+			use_bl = false;
+#endif
+		else
+			use_bl = true;
+	}
+
+	if (use_bl) {
+		if (rdev->is_atom_bios)
+			radeon_atom_backlight_init(radeon_encoder, connector);
+		else
+			radeon_legacy_backlight_init(radeon_encoder, connector);
+	}
+
+	/*
+	 * If there is no native backlight device (which may happen even when
+	 * use_bl==true) try registering an ACPI video backlight device instead.
+	 */
+	if (!rdev->mode_info.bl_encoder)
+		acpi_video_register_backlight();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void
 radeon_link_encoder_connector(struct drm_device *dev)
 {
@@ -163,8 +238,16 @@ radeon_link_encoder_connector(struct drm_device *dev)
 		radeon_connector = to_radeon_connector(connector);
 		list_for_each_entry(encoder, &dev->mode_config.encoder_list, head) {
 			radeon_encoder = to_radeon_encoder(encoder);
+<<<<<<< HEAD
 			if (radeon_encoder->devices & radeon_connector->devices)
 				drm_mode_connector_attach_encoder(connector, encoder);
+=======
+			if (radeon_encoder->devices & radeon_connector->devices) {
+				drm_connector_attach_encoder(connector, encoder);
+				if (radeon_encoder->devices & (ATOM_DEVICE_LCD_SUPPORT))
+					radeon_encoder_add_backlight(radeon_encoder, connector);
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -178,6 +261,10 @@ void radeon_encoder_set_active_device(struct drm_encoder *encoder)
 	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
 		if (connector->encoder == encoder) {
 			struct radeon_connector *radeon_connector = to_radeon_connector(connector);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			radeon_encoder->active_device = radeon_encoder->devices & radeon_connector->devices;
 			DRM_DEBUG_KMS("setting active device to %08x from %08x %08x for encoder %d\n",
 				  radeon_encoder->active_device, radeon_encoder->devices,
@@ -264,12 +351,21 @@ void radeon_panel_mode_fixup(struct drm_encoder *encoder,
 	struct drm_device *dev = encoder->dev;
 	struct radeon_device *rdev = dev->dev_private;
 	struct drm_display_mode *native_mode = &radeon_encoder->native_mode;
+<<<<<<< HEAD
 	unsigned hblank = native_mode->htotal - native_mode->hdisplay;
 	unsigned vblank = native_mode->vtotal - native_mode->vdisplay;
 	unsigned hover = native_mode->hsync_start - native_mode->hdisplay;
 	unsigned vover = native_mode->vsync_start - native_mode->vdisplay;
 	unsigned hsync_width = native_mode->hsync_end - native_mode->hsync_start;
 	unsigned vsync_width = native_mode->vsync_end - native_mode->vsync_start;
+=======
+	unsigned int hblank = native_mode->htotal - native_mode->hdisplay;
+	unsigned int vblank = native_mode->vtotal - native_mode->vdisplay;
+	unsigned int hover = native_mode->hsync_start - native_mode->hdisplay;
+	unsigned int vover = native_mode->vsync_start - native_mode->vdisplay;
+	unsigned int hsync_width = native_mode->hsync_end - native_mode->hsync_start;
+	unsigned int vsync_width = native_mode->vsync_end - native_mode->vsync_start;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	adjusted_mode->clock = native_mode->clock;
 	adjusted_mode->flags = native_mode->flags;
@@ -326,7 +422,11 @@ bool radeon_dig_monitor_is_duallink(struct drm_encoder *encoder,
 	case DRM_MODE_CONNECTOR_HDMIB:
 		if (radeon_connector->use_digital) {
 			/* HDMI 1.3 supports up to 340 Mhz over single link */
+<<<<<<< HEAD
 			if (ASIC_IS_DCE6(rdev) && drm_detect_hdmi_monitor(radeon_connector->edid)) {
+=======
+			if (ASIC_IS_DCE6(rdev) && drm_detect_hdmi_monitor(radeon_connector_edid(connector))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (pixel_clock > 340000)
 					return true;
 				else
@@ -348,7 +448,11 @@ bool radeon_dig_monitor_is_duallink(struct drm_encoder *encoder,
 			return false;
 		else {
 			/* HDMI 1.3 supports up to 340 Mhz over single link */
+<<<<<<< HEAD
 			if (ASIC_IS_DCE6(rdev) && drm_detect_hdmi_monitor(radeon_connector->edid)) {
+=======
+			if (ASIC_IS_DCE6(rdev) && drm_detect_hdmi_monitor(radeon_connector_edid(connector))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (pixel_clock > 340000)
 					return true;
 				else
@@ -365,3 +469,28 @@ bool radeon_dig_monitor_is_duallink(struct drm_encoder *encoder,
 	}
 }
 
+<<<<<<< HEAD
+=======
+bool radeon_encoder_is_digital(struct drm_encoder *encoder)
+{
+	struct radeon_encoder *radeon_encoder = to_radeon_encoder(encoder);
+
+	switch (radeon_encoder->encoder_id) {
+	case ENCODER_OBJECT_ID_INTERNAL_LVDS:
+	case ENCODER_OBJECT_ID_INTERNAL_TMDS1:
+	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_TMDS1:
+	case ENCODER_OBJECT_ID_INTERNAL_LVTM1:
+	case ENCODER_OBJECT_ID_INTERNAL_DVO1:
+	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_DVO1:
+	case ENCODER_OBJECT_ID_INTERNAL_DDI:
+	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY:
+	case ENCODER_OBJECT_ID_INTERNAL_KLDSCP_LVTMA:
+	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY1:
+	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY2:
+	case ENCODER_OBJECT_ID_INTERNAL_UNIPHY3:
+		return true;
+	default:
+		return false;
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

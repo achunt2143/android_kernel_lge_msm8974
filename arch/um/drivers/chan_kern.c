@@ -1,13 +1,24 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{linux.intel,addtoit}.com)
  * Licensed under the GPL
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{linux.intel,addtoit}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 #include "chan.h"
+<<<<<<< HEAD
 #include "os.h"
+=======
+#include <os.h>
+#include <irq_kern.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_NOCONFIG_CHAN
 static void *not_configged_init(char *str, int device,
@@ -32,14 +43,22 @@ static void not_configged_close(int fd, void *data)
 	       "UML\n");
 }
 
+<<<<<<< HEAD
 static int not_configged_read(int fd, char *c_out, void *data)
+=======
+static int not_configged_read(int fd, u8 *c_out, void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	printk(KERN_ERR "Using a channel type which is configured out of "
 	       "UML\n");
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int not_configged_write(int fd, const char *buf, int len, void *data)
+=======
+static int not_configged_write(int fd, const u8 *buf, size_t len, void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	printk(KERN_ERR "Using a channel type which is configured out of "
 	       "UML\n");
@@ -80,6 +99,7 @@ static const struct chan_ops not_configged_ops = {
 };
 #endif /* CONFIG_NOCONFIG_CHAN */
 
+<<<<<<< HEAD
 static void tty_receive_char(struct tty_struct *tty, char ch)
 {
 	if (tty == NULL)
@@ -99,6 +119,8 @@ static void tty_receive_char(struct tty_struct *tty, char ch)
 	tty_insert_flip_char(tty, ch, TTY_NORMAL);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int open_one_chan(struct chan *chan)
 {
 	int fd, err;
@@ -140,10 +162,17 @@ static int open_chan(struct list_head *chans)
 	return err;
 }
 
+<<<<<<< HEAD
 void chan_enable_winch(struct chan *chan, struct tty_struct *tty)
 {
 	if (chan && chan->primary && chan->ops->winch)
 		register_winch(chan->fd, tty);
+=======
+void chan_enable_winch(struct chan *chan, struct tty_port *port)
+{
+	if (chan && chan->primary && chan->ops->winch)
+		register_winch(chan->fd, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void line_timer_cb(struct work_struct *work)
@@ -151,7 +180,11 @@ static void line_timer_cb(struct work_struct *work)
 	struct line *line = container_of(work, struct line, task.work);
 
 	if (!line->throttled)
+<<<<<<< HEAD
 		chan_interrupt(line, line->tty, line->driver->read_irq);
+=======
+		chan_interrupt(line, line->read_irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int enable_chan(struct line *line)
@@ -213,9 +246,15 @@ void free_irqs(void)
 		chan = list_entry(ele, struct chan, free_list);
 
 		if (chan->input && chan->enabled)
+<<<<<<< HEAD
 			free_irq(chan->line->driver->read_irq, chan);
 		if (chan->output && chan->enabled)
 			free_irq(chan->line->driver->write_irq, chan);
+=======
+			um_free_irq(chan->line->read_irq, chan);
+		if (chan->output && chan->enabled)
+			um_free_irq(chan->line->write_irq, chan);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chan->enabled = 0;
 	}
 }
@@ -231,12 +270,20 @@ static void close_one_chan(struct chan *chan, int delay_free_irq)
 		spin_lock_irqsave(&irqs_to_free_lock, flags);
 		list_add(&chan->free_list, &irqs_to_free);
 		spin_unlock_irqrestore(&irqs_to_free_lock, flags);
+<<<<<<< HEAD
 	}
 	else {
 		if (chan->input && chan->enabled)
 			free_irq(chan->line->driver->read_irq, chan);
 		if (chan->output && chan->enabled)
 			free_irq(chan->line->driver->write_irq, chan);
+=======
+	} else {
+		if (chan->input && chan->enabled)
+			um_free_irq(chan->line->read_irq, chan);
+		if (chan->output && chan->enabled)
+			um_free_irq(chan->line->write_irq, chan);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chan->enabled = 0;
 	}
 	if (chan->ops->close != NULL)
@@ -266,6 +313,7 @@ void deactivate_chan(struct chan *chan, int irq)
 		deactivate_fd(chan->fd, irq);
 }
 
+<<<<<<< HEAD
 void reactivate_chan(struct chan *chan, int irq)
 {
 	if (chan && chan->enabled)
@@ -274,6 +322,9 @@ void reactivate_chan(struct chan *chan, int irq)
 
 int write_chan(struct chan *chan, const char *buf, int len,
 	       int write_irq)
+=======
+int write_chan(struct chan *chan, const u8 *buf, size_t len, int write_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int n, ret = 0;
 
@@ -283,8 +334,11 @@ int write_chan(struct chan *chan, const char *buf, int len,
 	n = chan->ops->write(chan->fd, buf, len, chan->data);
 	if (chan->primary) {
 		ret = n;
+<<<<<<< HEAD
 		if ((ret == -EAGAIN) || ((ret >= 0) && (ret < len)))
 			reactivate_fd(chan->fd, write_irq);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
@@ -562,22 +616,36 @@ int parse_chan_pair(char *str, struct line *line, int device,
 	return 0;
 }
 
+<<<<<<< HEAD
 void chan_interrupt(struct line *line, struct tty_struct *tty, int irq)
 {
 	struct chan *chan = line->chan_in;
 	int err;
 	char c;
+=======
+void chan_interrupt(struct line *line, int irq)
+{
+	struct tty_port *port = &line->port;
+	struct chan *chan = line->chan_in;
+	int err;
+	u8 c;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!chan || !chan->ops->read)
 		goto out;
 
 	do {
+<<<<<<< HEAD
 		if (tty && !tty_buffer_request_room(tty, 1)) {
+=======
+		if (!tty_buffer_request_room(port, 1)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			schedule_delayed_work(&line->task, 1);
 			goto out;
 		}
 		err = chan->ops->read(chan->fd, &c, chan->data);
 		if (err > 0)
+<<<<<<< HEAD
 			tty_receive_char(tty, c);
 	} while (err > 0);
 
@@ -587,6 +655,14 @@ void chan_interrupt(struct line *line, struct tty_struct *tty, int irq)
 		if (chan->primary) {
 			if (tty != NULL)
 				tty_hangup(tty);
+=======
+			tty_insert_flip_char(port, c, TTY_NORMAL);
+	} while (err > 0);
+
+	if (err == -EIO) {
+		if (chan->primary) {
+			tty_port_tty_hangup(&line->port, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (line->chan_out != chan)
 				close_one_chan(line->chan_out, 1);
 		}
@@ -595,6 +671,10 @@ void chan_interrupt(struct line *line, struct tty_struct *tty, int irq)
 			return;
 	}
  out:
+<<<<<<< HEAD
 	if (tty)
 		tty_flip_buffer_push(tty);
+=======
+	tty_flip_buffer_push(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

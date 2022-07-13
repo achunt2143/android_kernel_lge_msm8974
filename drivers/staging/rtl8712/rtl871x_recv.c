@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * rtl871x_recv.c
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  * Linux device driver for RTL8192SU
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -17,6 +22,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -28,15 +35,26 @@
 
 #define _RTL871X_RECV_C_
 
+<<<<<<< HEAD
 #include <linux/slab.h>
 #include <linux/kmemleak.h>
+=======
+#include <linux/ip.h>
+#include <linux/if_ether.h>
+#include <linux/etherdevice.h>
+#include <linux/ieee80211.h>
+#include <net/cfg80211.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "osdep_service.h"
 #include "drv_types.h"
 #include "recv_osdep.h"
 #include "mlme_osdep.h"
+<<<<<<< HEAD
 #include "ip.h"
 #include "if_ether.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ethernet.h"
 #include "usb_ops.h"
 #include "wifi.h"
@@ -46,12 +64,15 @@ static const u8 SNAP_ETH_TYPE_IPX[2] = {0x81, 0x37};
 /* Datagram Delivery Protocol */
 static const u8 SNAP_ETH_TYPE_APPLETALK_AARP[2] = {0x80, 0xf3};
 
+<<<<<<< HEAD
 /* Bridge-Tunnel header (for EtherTypes ETH_P_AARP and ETH_P_IPX) */
 static const u8 bridge_tunnel_header[] = {0xaa, 0xaa, 0x03, 0x00, 0x00, 0xf8};
 
 /* Ethernet-II snap header (RFC1042 for most EtherTypes) */
 static const u8 rfc1042_header[] = {0xaa, 0xaa, 0x03, 0x00, 0x00, 0x00};
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void _r8712_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
 {
 	memset((u8 *)psta_recvpriv, 0, sizeof(struct sta_recv_priv));
@@ -59,6 +80,7 @@ void _r8712_init_sta_recv_priv(struct sta_recv_priv *psta_recvpriv)
 	_init_queue(&psta_recvpriv->defrag_q);
 }
 
+<<<<<<< HEAD
 sint _r8712_init_recv_priv(struct recv_priv *precvpriv,
 			   struct _adapter *padapter)
 {
@@ -66,11 +88,22 @@ sint _r8712_init_recv_priv(struct recv_priv *precvpriv,
 	union recv_frame *precvframe;
 
 	 memset((unsigned char *)precvpriv, 0, sizeof(struct  recv_priv));
+=======
+int _r8712_init_recv_priv(struct recv_priv *precvpriv,
+			  struct _adapter *padapter)
+{
+	int ret;
+	sint i;
+	union recv_frame *precvframe;
+
+	memset((unsigned char *)precvpriv, 0, sizeof(struct  recv_priv));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&precvpriv->lock);
 	_init_queue(&precvpriv->free_recv_queue);
 	_init_queue(&precvpriv->recv_pending_queue);
 	precvpriv->adapter = padapter;
 	precvpriv->free_recvframe_cnt = NR_RECVFRAME;
+<<<<<<< HEAD
 	precvpriv->pallocated_frame_buf = _malloc(NR_RECVFRAME *
 					   sizeof(union recv_frame) +
 					   RXFRAME_ALIGN_SZ);
@@ -88,12 +121,36 @@ sint _r8712_init_recv_priv(struct recv_priv *precvpriv,
 		_init_listhead(&(precvframe->u.list));
 		list_insert_tail(&(precvframe->u.list),
 				 &(precvpriv->free_recv_queue.queue));
+=======
+	precvpriv->pallocated_frame_buf = kzalloc(NR_RECVFRAME *
+				sizeof(union recv_frame) + RXFRAME_ALIGN_SZ,
+				GFP_ATOMIC);
+	if (!precvpriv->pallocated_frame_buf)
+		return -ENOMEM;
+	precvpriv->precv_frame_buf = precvpriv->pallocated_frame_buf +
+				    RXFRAME_ALIGN_SZ -
+				    ((addr_t)(precvpriv->pallocated_frame_buf) &
+				    (RXFRAME_ALIGN_SZ - 1));
+	precvframe = (union recv_frame *)precvpriv->precv_frame_buf;
+	for (i = 0; i < NR_RECVFRAME; i++) {
+		INIT_LIST_HEAD(&(precvframe->u.list));
+		list_add_tail(&(precvframe->u.list),
+			      &(precvpriv->free_recv_queue.queue));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r8712_os_recv_resource_alloc(padapter, precvframe);
 		precvframe->u.hdr.adapter = padapter;
 		precvframe++;
 	}
 	precvpriv->rx_pending_cnt = 1;
+<<<<<<< HEAD
 	return r8712_init_recv_priv(precvpriv, padapter);
+=======
+	ret = r8712_init_recv_priv(precvpriv, padapter);
+	if (ret)
+		kfree(precvpriv->pallocated_frame_buf);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void _r8712_free_recv_priv(struct recv_priv *precvpriv)
@@ -102,15 +159,23 @@ void _r8712_free_recv_priv(struct recv_priv *precvpriv)
 	r8712_free_recv_priv(precvpriv);
 }
 
+<<<<<<< HEAD
 union recv_frame *r8712_alloc_recvframe(struct  __queue *pfree_recv_queue)
 {
 	unsigned long irqL;
 	union recv_frame  *precvframe;
 	struct list_head *plist, *phead;
+=======
+union recv_frame *r8712_alloc_recvframe(struct __queue *pfree_recv_queue)
+{
+	unsigned long irqL;
+	union recv_frame  *precvframe;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct _adapter *padapter;
 	struct recv_priv *precvpriv;
 
 	spin_lock_irqsave(&pfree_recv_queue->lock, irqL);
+<<<<<<< HEAD
 	if (_queue_empty(pfree_recv_queue) == true)
 		precvframe = NULL;
 	else {
@@ -120,6 +185,14 @@ union recv_frame *r8712_alloc_recvframe(struct  __queue *pfree_recv_queue)
 		list_delete(&precvframe->u.hdr.list);
 		padapter = precvframe->u.hdr.adapter;
 		if (padapter != NULL) {
+=======
+	precvframe = list_first_entry_or_null(&pfree_recv_queue->queue,
+					      union recv_frame, u.hdr.list);
+	if (precvframe) {
+		list_del_init(&precvframe->u.hdr.list);
+		padapter = precvframe->u.hdr.adapter;
+		if (padapter) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			precvpriv = &padapter->recvpriv;
 			if (pfree_recv_queue == &precvpriv->free_recv_queue)
 				precvpriv->free_recvframe_cnt--;
@@ -130,6 +203,7 @@ union recv_frame *r8712_alloc_recvframe(struct  __queue *pfree_recv_queue)
 }
 
 /*
+<<<<<<< HEAD
 caller : defrag; recvframe_chk_defrag in recv_thread  (passive)
 pframequeue: defrag_queue : will be accessed in recv_thread  (passive)
 
@@ -137,6 +211,12 @@ using spin_lock to protect
 
 */
 
+=======
+ * caller : defrag; recvframe_chk_defrag in recv_thread  (passive)
+ * pframequeue: defrag_queue : will be accessed in recv_thread  (passive)
+ * using spin_lock to protect
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void r8712_free_recvframe_queue(struct  __queue *pframequeue,
 				struct  __queue *pfree_recv_queue)
 {
@@ -144,11 +224,19 @@ void r8712_free_recvframe_queue(struct  __queue *pframequeue,
 	struct list_head *plist, *phead;
 
 	spin_lock(&pframequeue->lock);
+<<<<<<< HEAD
 	phead = get_list_head(pframequeue);
 	plist = get_next(phead);
 	while (end_of_queue_search(phead, plist) == false) {
 		precvframe = LIST_CONTAINOR(plist, union recv_frame, u);
 		plist = get_next(plist);
+=======
+	phead = &pframequeue->queue;
+	plist = phead->next;
+	while (!end_of_queue_search(phead, plist)) {
+		precvframe = container_of(plist, union recv_frame, u.list);
+		plist = plist->next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r8712_free_recvframe(precvframe, pfree_recv_queue);
 	}
 	spin_unlock(&pframequeue->lock);
@@ -170,17 +258,30 @@ sint r8712_recvframe_chkmic(struct _adapter *adapter,
 	stainfo = r8712_get_stainfo(&adapter->stapriv, &prxattrib->ta[0]);
 	if (prxattrib->encrypt == _TKIP_) {
 		/* calculate mic code */
+<<<<<<< HEAD
 		if (stainfo != NULL) {
 			if (IS_MCAST(prxattrib->ra)) {
+=======
+		if (stainfo) {
+			if (is_multicast_ether_addr(prxattrib->ra)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				iv = precvframe->u.hdr.rx_data +
 				     prxattrib->hdrlen;
 				idx = iv[3];
 				mickey = &psecuritypriv->XGrprxmickey[(((idx >>
 					 6) & 0x3)) - 1].skey[0];
+<<<<<<< HEAD
 				if (psecuritypriv->binstallGrpkey == false)
 					return _FAIL;
 			} else
 				mickey = &stainfo->tkiprxmickey.skey[0];
+=======
+				if (!psecuritypriv->binstallGrpkey)
+					return _FAIL;
+			} else {
+				mickey = &stainfo->tkiprxmickey.skey[0];
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*icv_len included the mic code*/
 			datalen = precvframe->u.hdr.len - prxattrib->hdrlen -
 				  prxattrib->iv_len - prxattrib->icv_len - 8;
@@ -196,6 +297,7 @@ sint r8712_recvframe_chkmic(struct _adapter *adapter,
 				if (miccode[i] != *(pframemic + i))
 					bmic_err = true;
 			}
+<<<<<<< HEAD
 			if (bmic_err == true) {
 				if (prxattrib->bdecrypted == true)
 					r8712_handle_tkip_mic_err(adapter,
@@ -206,6 +308,17 @@ sint r8712_recvframe_chkmic(struct _adapter *adapter,
 				if ((psecuritypriv->bcheck_grpkey ==
 				     false) && (IS_MCAST(prxattrib->ra) ==
 				     true))
+=======
+			if (bmic_err) {
+				if (prxattrib->bdecrypted)
+					r8712_handle_tkip_mic_err(adapter,
+								  (u8)is_multicast_ether_addr(prxattrib->ra));
+				res = _FAIL;
+			} else {
+				/* mic checked ok */
+				if (!psecuritypriv->bcheck_grpkey &&
+				    is_multicast_ether_addr(prxattrib->ra))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					psecuritypriv->bcheck_grpkey = true;
 			}
 			recvframe_pull_tail(precvframe, 8);
@@ -216,14 +329,22 @@ sint r8712_recvframe_chkmic(struct _adapter *adapter,
 
 /* decrypt and set the ivlen,icvlen of the recv_frame */
 union recv_frame *r8712_decryptor(struct _adapter *padapter,
+<<<<<<< HEAD
 			    union recv_frame *precv_frame)
+=======
+				  union recv_frame *precv_frame)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rx_pkt_attrib *prxattrib = &precv_frame->u.hdr.attrib;
 	struct security_priv *psecuritypriv = &padapter->securitypriv;
 	union recv_frame *return_packet = precv_frame;
 
 	if ((prxattrib->encrypt > 0) && ((prxattrib->bdecrypted == 0) ||
+<<<<<<< HEAD
 	   (psecuritypriv->sw_decrypt == true))) {
+=======
+					 psecuritypriv->sw_decrypt)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psecuritypriv->hw_decrypted = false;
 		switch (prxattrib->encrypt) {
 		case _WEP40_:
@@ -239,10 +360,19 @@ union recv_frame *r8712_decryptor(struct _adapter *padapter,
 		default:
 				break;
 		}
+<<<<<<< HEAD
 	} else if (prxattrib->bdecrypted == 1)
 		psecuritypriv->hw_decrypted = true;
 	return return_packet;
 }
+=======
+	} else if (prxattrib->bdecrypted == 1) {
+		psecuritypriv->hw_decrypted = true;
+	}
+	return return_packet;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*###set the security information in the recv_frame */
 union recv_frame *r8712_portctrl(struct _adapter *adapter,
 				 union recv_frame *precv_frame)
@@ -256,7 +386,11 @@ union recv_frame *r8712_portctrl(struct _adapter *adapter,
 	u16 ether_type;
 
 	pstapriv = &adapter->stapriv;
+<<<<<<< HEAD
 	ptr = get_recvframe_data(precv_frame);
+=======
+	ptr = precv_frame->u.hdr.rx_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pfhdr = &precv_frame->u.hdr;
 	psta_addr = pfhdr->attrib.ta;
 	psta = r8712_get_stainfo(pstapriv, psta_addr);
@@ -264,6 +398,7 @@ union recv_frame *r8712_portctrl(struct _adapter *adapter,
 	if (auth_alg == 2) {
 		/* get ether_type */
 		ptr = ptr + pfhdr->attrib.hdrlen + LLC_HEADER_SIZE;
+<<<<<<< HEAD
 		memcpy(&ether_type, ptr, 2);
 		ether_type = ntohs((unsigned short)ether_type);
 
@@ -276,12 +411,31 @@ union recv_frame *r8712_portctrl(struct _adapter *adapter,
 				/*free this frame*/
 				r8712_free_recvframe(precv_frame,
 					 &adapter->recvpriv.free_recv_queue);
+=======
+		ether_type = get_unaligned_be16(ptr);
+
+		if (psta && psta->ieee8021x_blocked) {
+			/* blocked
+			 * only accept EAPOL frame
+			 */
+			if (ether_type == 0x888e) {
+				prtnframe = precv_frame;
+			} else {
+				/*free this frame*/
+				r8712_free_recvframe(precv_frame,
+						     &adapter->recvpriv.free_recv_queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				prtnframe = NULL;
 			}
 		} else {
 			/* allowed
 			 * check decryption status, and decrypt the
+<<<<<<< HEAD
 			 * frame if needed */
+=======
+			 * frame if needed
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			prtnframe = precv_frame;
 			/* check is the EAPOL frame or not (Rekey) */
 			if (ether_type == 0x888e) {
@@ -289,16 +443,29 @@ union recv_frame *r8712_portctrl(struct _adapter *adapter,
 				prtnframe = precv_frame;
 			}
 		}
+<<<<<<< HEAD
 	} else
 		prtnframe = precv_frame;
+=======
+	} else {
+		prtnframe = precv_frame;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return prtnframe;
 }
 
 static sint recv_decache(union recv_frame *precv_frame, u8 bretry,
+<<<<<<< HEAD
 		  struct stainfo_rxcache *prxcache)
 {
 	sint tid = precv_frame->u.hdr.attrib.priority;
 	u16 seq_ctrl = ((precv_frame->u.hdr.attrib.seq_num&0xffff) << 4) |
+=======
+			 struct stainfo_rxcache *prxcache)
+{
+	sint tid = precv_frame->u.hdr.attrib.priority;
+	u16 seq_ctrl = ((precv_frame->u.hdr.attrib.seq_num & 0xffff) << 4) |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(precv_frame->u.hdr.attrib.frag_num & 0xf);
 
 	if (tid > 15)
@@ -321,15 +488,23 @@ static sint sta2sta_data_frame(struct _adapter *adapter,
 	u8 *mybssid  = get_bssid(pmlmepriv);
 	u8 *myhwaddr = myid(&adapter->eeprompriv);
 	u8 *sta_addr = NULL;
+<<<<<<< HEAD
 	sint bmcast = IS_MCAST(pattrib->dst);
 
 	if ((check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true) ||
 	    (check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE) == true)) {
+=======
+	bool bmcast = is_multicast_ether_addr(pattrib->dst);
+
+	if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) ||
+	    check_fwstate(pmlmepriv, WIFI_ADHOC_MASTER_STATE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* filter packets that SA is myself or multicast or broadcast */
 		if (!memcmp(myhwaddr, pattrib->src, ETH_ALEN))
 			return _FAIL;
 		if ((memcmp(myhwaddr, pattrib->dst, ETH_ALEN)) && (!bmcast))
 			return _FAIL;
+<<<<<<< HEAD
 		if (!memcmp(pattrib->bssid, "\x0\x0\x0\x0\x0\x0", ETH_ALEN) ||
 		    !memcmp(mybssid, "\x0\x0\x0\x0\x0\x0", ETH_ALEN) ||
 		    (memcmp(pattrib->bssid, mybssid, ETH_ALEN)))
@@ -350,25 +525,65 @@ static sint sta2sta_data_frame(struct _adapter *adapter,
 		} else { /* not mc-frame */
 			/* For AP mode, if DA is non-MCAST, then it must be
 			 *  BSSID, and bssid == BSSID */
+=======
+		if (is_zero_ether_addr(pattrib->bssid) ||
+		    is_zero_ether_addr(mybssid) ||
+		    (memcmp(pattrib->bssid, mybssid, ETH_ALEN)))
+			return _FAIL;
+		sta_addr = pattrib->src;
+	} else if (check_fwstate(pmlmepriv, WIFI_STATION_STATE)) {
+		/* For Station mode, sa and bssid should always be BSSID,
+		 * and DA is my mac-address
+		 */
+		if (memcmp(pattrib->bssid, pattrib->src, ETH_ALEN))
+			return _FAIL;
+		sta_addr = pattrib->bssid;
+	} else if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
+		if (bmcast) {
+			/* For AP mode, if DA == MCAST, then BSSID should
+			 * be also MCAST
+			 */
+			if (!is_multicast_ether_addr(pattrib->bssid))
+				return _FAIL;
+		} else { /* not mc-frame */
+			/* For AP mode, if DA is non-MCAST, then it must be
+			 * BSSID, and bssid == BSSID
+			 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (memcmp(pattrib->bssid, pattrib->dst, ETH_ALEN))
 				return _FAIL;
 			sta_addr = pattrib->src;
 		}
+<<<<<<< HEAD
 	  } else if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) {
+=======
+	} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(pattrib->dst, GetAddr1Ptr(ptr), ETH_ALEN);
 		memcpy(pattrib->src, GetAddr2Ptr(ptr), ETH_ALEN);
 		memcpy(pattrib->bssid, GetAddr3Ptr(ptr), ETH_ALEN);
 		memcpy(pattrib->ra, pattrib->dst, ETH_ALEN);
 		memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
 		sta_addr = mybssid;
+<<<<<<< HEAD
 	  } else
 		ret  = _FAIL;
+=======
+	} else {
+		ret  = _FAIL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bmcast)
 		*psta = r8712_get_bcmc_stainfo(adapter);
 	else
 		*psta = r8712_get_stainfo(pstapriv, sta_addr); /* get ap_info */
+<<<<<<< HEAD
 	if (*psta == NULL) {
 		if (check_fwstate(pmlmepriv, WIFI_MP_STATE) == true)
+=======
+	if (!*psta) {
+		if (check_fwstate(pmlmepriv, WIFI_MP_STATE))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			adapter->mppriv.rx_pktloss++;
 		return _FAIL;
 	}
@@ -385,6 +600,7 @@ static sint ap2sta_data_frame(struct _adapter *adapter,
 	struct	mlme_priv *pmlmepriv = &adapter->mlmepriv;
 	u8 *mybssid  = get_bssid(pmlmepriv);
 	u8 *myhwaddr = myid(&adapter->eeprompriv);
+<<<<<<< HEAD
 	sint bmcast = IS_MCAST(pattrib->dst);
 
 	if ((check_fwstate(pmlmepriv, WIFI_STATION_STATE) == true)
@@ -394,6 +610,18 @@ static sint ap2sta_data_frame(struct _adapter *adapter,
 			return _FAIL;
 		/* drop QoS-SubType Data, including QoS NULL,
 		 * excluding QoS-Data */
+=======
+	bool bmcast = is_multicast_ether_addr(pattrib->dst);
+
+	if (check_fwstate(pmlmepriv, WIFI_STATION_STATE) &&
+	    check_fwstate(pmlmepriv, _FW_LINKED)) {
+		/* if NULL-frame, drop packet */
+		if ((GetFrameSubType(ptr)) == (IEEE80211_FTYPE_DATA | IEEE80211_STYPE_NULLFUNC))
+			return _FAIL;
+		/* drop QoS-SubType Data, including QoS NULL,
+		 * excluding QoS-Data
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((GetFrameSubType(ptr) & WIFI_QOS_DATA_TYPE) ==
 		     WIFI_QOS_DATA_TYPE) {
 			if (GetFrameSubType(ptr) & (BIT(4) | BIT(5) | BIT(6)))
@@ -401,25 +629,42 @@ static sint ap2sta_data_frame(struct _adapter *adapter,
 		}
 
 		/* filter packets that SA is myself or multicast or broadcast */
+<<<<<<< HEAD
 	       if (!memcmp(myhwaddr, pattrib->src, ETH_ALEN))
+=======
+		if (!memcmp(myhwaddr, pattrib->src, ETH_ALEN))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return _FAIL;
 
 		/* da should be for me */
 		if ((memcmp(myhwaddr, pattrib->dst, ETH_ALEN)) && (!bmcast))
 			return _FAIL;
 		/* check BSSID */
+<<<<<<< HEAD
 		if (!memcmp(pattrib->bssid, "\x0\x0\x0\x0\x0\x0", ETH_ALEN) ||
 		     !memcmp(mybssid, "\x0\x0\x0\x0\x0\x0", ETH_ALEN) ||
+=======
+		if (is_zero_ether_addr(pattrib->bssid) ||
+		    is_zero_ether_addr(mybssid) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     (memcmp(pattrib->bssid, mybssid, ETH_ALEN)))
 			return _FAIL;
 		if (bmcast)
 			*psta = r8712_get_bcmc_stainfo(adapter);
 		else
+<<<<<<< HEAD
 		       *psta = r8712_get_stainfo(pstapriv, pattrib->bssid);
 		if (*psta == NULL)
 			return _FAIL;
 	} else if ((check_fwstate(pmlmepriv, WIFI_MP_STATE) == true) &&
 		   (check_fwstate(pmlmepriv, _FW_LINKED) == true)) {
+=======
+			*psta = r8712_get_stainfo(pstapriv, pattrib->bssid);
+		if (!*psta)
+			return _FAIL;
+	} else if (check_fwstate(pmlmepriv, WIFI_MP_STATE) &&
+		   check_fwstate(pmlmepriv, _FW_LINKED)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(pattrib->dst, GetAddr1Ptr(ptr), ETH_ALEN);
 		memcpy(pattrib->src, GetAddr2Ptr(ptr), ETH_ALEN);
 		memcpy(pattrib->bssid, GetAddr3Ptr(ptr), ETH_ALEN);
@@ -427,10 +672,18 @@ static sint ap2sta_data_frame(struct _adapter *adapter,
 		memcpy(pattrib->ta, pattrib->src, ETH_ALEN);
 		memcpy(pattrib->bssid,  mybssid, ETH_ALEN);
 		*psta = r8712_get_stainfo(pstapriv, pattrib->bssid);
+<<<<<<< HEAD
 		if (*psta == NULL)
 			return _FAIL;
 	} else
 		return _FAIL;
+=======
+		if (!*psta)
+			return _FAIL;
+	} else {
+		return _FAIL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return _SUCCESS;
 }
 
@@ -443,6 +696,7 @@ static sint sta2ap_data_frame(struct _adapter *adapter,
 	struct	mlme_priv *pmlmepriv = &adapter->mlmepriv;
 	unsigned char *mybssid  = get_bssid(pmlmepriv);
 
+<<<<<<< HEAD
 	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) == true) {
 		/* For AP mode, if DA is non-MCAST, then it must be BSSID,
 		 * and bssid == BSSID
@@ -451,26 +705,50 @@ static sint sta2ap_data_frame(struct _adapter *adapter,
 			return _FAIL;
 		*psta = r8712_get_stainfo(pstapriv, pattrib->src);
 		if (*psta == NULL)
+=======
+	if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
+		/* For AP mode, if DA is non-MCAST, then it must be BSSID,
+		 * and bssid == BSSID
+		 * For AP mode, RA=BSSID, TX=STA(SRC_ADDR), A3=DST_ADDR
+		 */
+		if (memcmp(pattrib->bssid, mybssid, ETH_ALEN))
+			return _FAIL;
+		*psta = r8712_get_stainfo(pstapriv, pattrib->src);
+		if (!*psta)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return _FAIL;
 	}
 	return _SUCCESS;
 }
 
 static sint validate_recv_ctrl_frame(struct _adapter *adapter,
+<<<<<<< HEAD
 			      union recv_frame *precv_frame)
+=======
+				     union recv_frame *precv_frame)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return _FAIL;
 }
 
 static sint validate_recv_mgnt_frame(struct _adapter *adapter,
+<<<<<<< HEAD
 			      union recv_frame *precv_frame)
+=======
+				     union recv_frame *precv_frame)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return _FAIL;
 }
 
+<<<<<<< HEAD
 
 static sint validate_recv_data_frame(struct _adapter *adapter,
 			      union recv_frame *precv_frame)
+=======
+static sint validate_recv_data_frame(struct _adapter *adapter,
+				     union recv_frame *precv_frame)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int res;
 	u8 bretry;
@@ -481,10 +759,17 @@ static sint validate_recv_data_frame(struct _adapter *adapter,
 	struct security_priv *psecuritypriv = &adapter->securitypriv;
 
 	bretry = GetRetry(ptr);
+<<<<<<< HEAD
 	pda = get_da(ptr);
 	psa = get_sa(ptr);
 	pbssid = get_hdr_bssid(ptr);
 	if (pbssid == NULL)
+=======
+	pda = ieee80211_get_DA((struct ieee80211_hdr *)ptr);
+	psa = ieee80211_get_SA((struct ieee80211_hdr *)ptr);
+	pbssid = get_hdr_bssid(ptr);
+	if (!pbssid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return _FAIL;
 	memcpy(pattrib->dst, pda, ETH_ALEN);
 	memcpy(pattrib->src, psa, ETH_ALEN);
@@ -514,10 +799,16 @@ static sint validate_recv_data_frame(struct _adapter *adapter,
 	}
 	if (res == _FAIL)
 		return _FAIL;
+<<<<<<< HEAD
 	if (psta == NULL)
 		return _FAIL;
 	else
 		precv_frame->u.hdr.psta = psta;
+=======
+	if (!psta)
+		return _FAIL;
+	precv_frame->u.hdr.psta = psta;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pattrib->amsdu = 0;
 	/* parsing QC field */
 	if (pattrib->qos == 1) {
@@ -542,7 +833,11 @@ static sint validate_recv_data_frame(struct _adapter *adapter,
 
 	if (pattrib->privacy) {
 		GET_ENCRY_ALGO(psecuritypriv, psta, pattrib->encrypt,
+<<<<<<< HEAD
 			       IS_MCAST(pattrib->ra));
+=======
+			       is_multicast_ether_addr(pattrib->ra));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		SET_ICE_IV_LEN(pattrib->iv_len, pattrib->icv_len,
 			       pattrib->encrypt);
 	} else {
@@ -580,6 +875,7 @@ sint r8712_validate_recv_frame(struct _adapter *adapter,
 	pattrib->privacy =  GetPrivacy(ptr);
 	pattrib->order = GetOrder(ptr);
 	switch (type) {
+<<<<<<< HEAD
 	case WIFI_MGT_TYPE: /*mgnt*/
 		retval = validate_recv_mgnt_frame(adapter, precv_frame);
 		break;
@@ -587,6 +883,15 @@ sint r8712_validate_recv_frame(struct _adapter *adapter,
 		retval = validate_recv_ctrl_frame(adapter, precv_frame);
 		break;
 	case WIFI_DATA_TYPE: /*data*/
+=======
+	case IEEE80211_FTYPE_MGMT:
+		retval = validate_recv_mgnt_frame(adapter, precv_frame);
+		break;
+	case IEEE80211_FTYPE_CTL:
+		retval = validate_recv_ctrl_frame(adapter, precv_frame);
+		break;
+	case IEEE80211_FTYPE_DATA:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pattrib->qos = (subtype & BIT(7)) ? 1 : 0;
 		retval = validate_recv_data_frame(adapter, precv_frame);
 		break;
@@ -596,6 +901,7 @@ sint r8712_validate_recv_frame(struct _adapter *adapter,
 	return retval;
 }
 
+<<<<<<< HEAD
 sint r8712_wlanhdr_to_ethhdr(union recv_frame *precvframe)
 {
 	/*remove the wlanhdr and add the eth_hdr*/
@@ -610,6 +916,20 @@ sint r8712_wlanhdr_to_ethhdr(union recv_frame *precvframe)
 	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
 
 	u8 *ptr = get_recvframe_data(precvframe); /*point to frame_ctrl field*/
+=======
+int r8712_wlanhdr_to_ethhdr(union recv_frame *precvframe)
+{
+	/*remove the wlanhdr and add the eth_hdr*/
+	sint	rmv_len;
+	u16	len;
+	u8	bsnaphdr;
+	u8	*psnap_type;
+	struct ieee80211_snap_hdr *psnap;
+	struct _adapter	*adapter = precvframe->u.hdr.adapter;
+	struct mlme_priv *pmlmepriv = &adapter->mlmepriv;
+
+	u8 *ptr = precvframe->u.hdr.rx_data; /*point to frame_ctrl field*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rx_pkt_attrib *pattrib = &precvframe->u.hdr.attrib;
 
 	if (pattrib->encrypt)
@@ -619,11 +939,20 @@ sint r8712_wlanhdr_to_ethhdr(union recv_frame *precvframe)
 	psnap_type = ptr + pattrib->hdrlen + pattrib->iv_len + SNAP_SIZE;
 	/* convert hdr + possible LLC headers into Ethernet header */
 	if ((!memcmp(psnap, (void *)rfc1042_header, SNAP_SIZE) &&
+<<<<<<< HEAD
 	    (memcmp(psnap_type, (void *)SNAP_ETH_TYPE_IPX, 2)) &&
 	    (memcmp(psnap_type, (void *)SNAP_ETH_TYPE_APPLETALK_AARP, 2))) ||
 	     !memcmp(psnap, (void *)bridge_tunnel_header, SNAP_SIZE)) {
 		/* remove RFC1042 or Bridge-Tunnel encapsulation and
 		 * replace EtherType */
+=======
+	     (memcmp(psnap_type, (void *)SNAP_ETH_TYPE_IPX, 2)) &&
+	    (memcmp(psnap_type, (void *)SNAP_ETH_TYPE_APPLETALK_AARP, 2))) ||
+	     !memcmp(psnap, (void *)bridge_tunnel_header, SNAP_SIZE)) {
+		/* remove RFC1042 or Bridge-Tunnel encapsulation and
+		 * replace EtherType
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bsnaphdr = true;
 	} else {
 		/* Leave Ethernet header part of hdr and full payload */
@@ -632,6 +961,7 @@ sint r8712_wlanhdr_to_ethhdr(union recv_frame *precvframe)
 	rmv_len = pattrib->hdrlen + pattrib->iv_len +
 		  (bsnaphdr ? SNAP_SIZE : 0);
 	len = precvframe->u.hdr.len - rmv_len;
+<<<<<<< HEAD
 	if ((check_fwstate(pmlmepriv, WIFI_MP_STATE) == true)) {
 		ptr += rmv_len;
 		*ptr = 0x87;
@@ -680,6 +1010,45 @@ s32 r8712_recv_entry(union recv_frame *precvframe)
 	ptail = precvframe->u.hdr.rx_tail;
 	pend = precvframe->u.hdr.rx_end;
 	prxstat = (struct recv_stat *)phead;
+=======
+	if (check_fwstate(pmlmepriv, WIFI_MP_STATE)) {
+		ptr += rmv_len;
+		*ptr = 0x87;
+		*(ptr + 1) = 0x12;
+		/* append rx status for mp test packets */
+		ptr = recvframe_pull(precvframe, (rmv_len -
+		      sizeof(struct ethhdr) + 2) - 24);
+		if (!ptr)
+			return -ENOMEM;
+		memcpy(ptr, get_rxmem(precvframe), 24);
+		ptr += 24;
+	} else {
+		ptr = recvframe_pull(precvframe, (rmv_len -
+		      sizeof(struct ethhdr) + (bsnaphdr ? 2 : 0)));
+		if (!ptr)
+			return -ENOMEM;
+	}
+
+	memcpy(ptr, pattrib->dst, ETH_ALEN);
+	memcpy(ptr + ETH_ALEN, pattrib->src, ETH_ALEN);
+	if (!bsnaphdr) {
+		__be16 be_tmp = htons(len);
+
+		memcpy(ptr + 12, &be_tmp, 2);
+	}
+	return 0;
+}
+
+void r8712_recv_entry(union recv_frame *precvframe)
+{
+	struct _adapter *padapter;
+	struct recv_priv *precvpriv;
+
+	s32 ret = _SUCCESS;
+
+	padapter = precvframe->u.hdr.adapter;
+	precvpriv = &(padapter->recvpriv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	padapter->ledpriv.LedControlHandler(padapter, LED_CTL_RX);
 
@@ -689,9 +1058,16 @@ s32 r8712_recv_entry(union recv_frame *precvframe)
 	precvpriv->rx_pkts++;
 	precvpriv->rx_bytes += (uint)(precvframe->u.hdr.rx_tail -
 				precvframe->u.hdr.rx_data);
+<<<<<<< HEAD
 	return ret;
 _recv_entry_drop:
 	precvpriv->rx_drop++;
 	padapter->mppriv.rx_pktloss = precvpriv->rx_drop;
 	return ret;
+=======
+	return;
+_recv_entry_drop:
+	precvpriv->rx_drop++;
+	padapter->mppriv.rx_pktloss = precvpriv->rx_drop;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

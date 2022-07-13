@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
@@ -20,6 +21,13 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * dlmdebug.h
+ *
+ * Copyright (C) 2008 Oracle.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef DLMDEBUG_H
@@ -29,6 +37,7 @@ void dlm_print_one_mle(struct dlm_master_list_entry *mle);
 
 #ifdef CONFIG_DEBUG_FS
 
+<<<<<<< HEAD
 struct dlm_debug_ctxt {
 	struct kref debug_refcnt;
 	struct dentry *debug_state_dentry;
@@ -37,6 +46,8 @@ struct dlm_debug_ctxt {
 	struct dentry *debug_purgelist_dentry;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct debug_lockres {
 	int dl_len;
 	char *dl_buf;
@@ -44,6 +55,7 @@ struct debug_lockres {
 	struct dlm_lock_resource *dl_res;
 };
 
+<<<<<<< HEAD
 int dlm_debug_init(struct dlm_ctxt *dlm);
 void dlm_debug_shutdown(struct dlm_ctxt *dlm);
 
@@ -51,10 +63,19 @@ int dlm_create_debugfs_subroot(struct dlm_ctxt *dlm);
 void dlm_destroy_debugfs_subroot(struct dlm_ctxt *dlm);
 
 int dlm_create_debugfs_root(void);
+=======
+void dlm_debug_init(struct dlm_ctxt *dlm);
+
+void dlm_create_debugfs_subroot(struct dlm_ctxt *dlm);
+void dlm_destroy_debugfs_subroot(struct dlm_ctxt *dlm);
+
+void dlm_create_debugfs_root(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void dlm_destroy_debugfs_root(void);
 
 #else
 
+<<<<<<< HEAD
 static inline int dlm_debug_init(struct dlm_ctxt *dlm)
 {
 	return 0;
@@ -65,13 +86,25 @@ static inline void dlm_debug_shutdown(struct dlm_ctxt *dlm)
 static inline int dlm_create_debugfs_subroot(struct dlm_ctxt *dlm)
 {
 	return 0;
+=======
+static inline void dlm_debug_init(struct dlm_ctxt *dlm)
+{
+}
+static inline void dlm_create_debugfs_subroot(struct dlm_ctxt *dlm)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static inline void dlm_destroy_debugfs_subroot(struct dlm_ctxt *dlm)
 {
 }
+<<<<<<< HEAD
 static inline int dlm_create_debugfs_root(void)
 {
 	return 0;
+=======
+static inline void dlm_create_debugfs_root(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static inline void dlm_destroy_debugfs_root(void)
 {

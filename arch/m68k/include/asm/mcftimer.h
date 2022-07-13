@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************/
 
 /*
@@ -19,7 +23,11 @@
 #define	MCFTIMER_TRR		0x04		/* Timer Reference (r/w) */
 #define	MCFTIMER_TCR		0x08		/* Timer Capture reg (r/w) */
 #define	MCFTIMER_TCN		0x0C		/* Timer Counter reg (r/w) */
+<<<<<<< HEAD
 #if defined(CONFIG_M532x)
+=======
+#if defined(CONFIG_M53xx) || defined(CONFIG_M5441x)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	MCFTIMER_TER		0x03		/* Timer Event reg (r/w) */
 #else
 #define	MCFTIMER_TER		0x11		/* Timer Event reg (r/w) */
@@ -51,7 +59,11 @@
  *	Bit definitions for the Timer Event Registers (TER).
  */
 #define	MCFTIMER_TER_CAP	0x01		/* Capture event */
+<<<<<<< HEAD
 #define	MCFTIMER_TER_REF	0x02		/* Refernece event */
+=======
+#define	MCFTIMER_TER_REF	0x02		/* Reference event */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /****************************************************************************/
 #endif	/* mcftimer_h */

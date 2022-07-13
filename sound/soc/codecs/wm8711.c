@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8711.c  --  WM8711 ALSA SoC Audio driver
  *
@@ -6,21 +10,33 @@
  * Author: Mike Arthur <Mike.Arthur@wolfsonmicro.com>
  *
  * Based on wm8731.c by Richard Purdie
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
 
+=======
+ */
+
+#include <linux/mod_devicetable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/pm.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/spi/spi.h>
 #include <linux/slab.h>
 #include <linux/of_device.h>
+=======
+#include <linux/regmap.h>
+#include <linux/spi/spi.h>
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/pcm.h>
 #include <sound/pcm_params.h>
@@ -32,7 +48,11 @@
 
 /* codec private data */
 struct wm8711_priv {
+<<<<<<< HEAD
 	enum snd_soc_control_type bus_type;
+=======
+	struct regmap *regmap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int sysclk;
 };
 
@@ -42,12 +62,31 @@ struct wm8711_priv {
  * using 2 wire for device control, so we cache them instead.
  * There is no point in caching the reset register
  */
+<<<<<<< HEAD
 static const u16 wm8711_reg[WM8711_CACHEREGNUM] = {
 	0x0079, 0x0079, 0x000a, 0x0008,
 	0x009f, 0x000a, 0x0000, 0x0000
 };
 
 #define wm8711_reset(c)	snd_soc_write(c, WM8711_RESET, 0)
+=======
+static const struct reg_default wm8711_reg_defaults[] = {
+	{ 0, 0x0079 }, { 1, 0x0079 }, { 2, 0x000a }, { 3, 0x0008 },
+	{ 4, 0x009f }, { 5, 0x000a }, { 6, 0x0000 }, { 7, 0x0000 },
+};
+
+static bool wm8711_volatile(struct device *dev, unsigned int reg)
+{
+	switch (reg) {
+	case WM8711_RESET:
+		return true;
+	default:
+		return false;
+	}
+}
+
+#define wm8711_reset(c)	snd_soc_component_write(c, WM8711_RESET, 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const DECLARE_TLV_DB_SCALE(out_tlv, -12100, 100, 1);
 
@@ -148,13 +187,20 @@ static int wm8711_hw_params(struct snd_pcm_substream *substream,
 	struct snd_pcm_hw_params *params,
 	struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	struct wm8711_priv *wm8711 =  snd_soc_codec_get_drvdata(codec);
 	u16 iface = snd_soc_read(codec, WM8711_IFACE) & 0xfff3;
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8711_priv *wm8711 =  snd_soc_component_get_drvdata(component);
+	u16 iface = snd_soc_component_read(component, WM8711_IFACE) & 0xfff3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i = get_coeff(wm8711->sysclk, params_rate(params));
 	u16 srate = (coeff_div[i].sr << 2) |
 		(coeff_div[i].bosr << 1) | coeff_div[i].usb;
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8711_SRATE, srate);
 
 	/* bit size */
@@ -165,21 +211,44 @@ static int wm8711_hw_params(struct snd_pcm_substream *substream,
 		iface |= 0x0004;
 		break;
 	case SNDRV_PCM_FORMAT_S24_LE:
+=======
+	snd_soc_component_write(component, WM8711_SRATE, srate);
+
+	/* bit size */
+	switch (params_width(params)) {
+	case 16:
+		break;
+	case 20:
+		iface |= 0x0004;
+		break;
+	case 24:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iface |= 0x0008;
 		break;
 	}
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8711_IFACE, iface);
+=======
+	snd_soc_component_write(component, WM8711_IFACE, iface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int wm8711_pcm_prepare(struct snd_pcm_substream *substream,
 			      struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 
 	/* set active */
 	snd_soc_write(codec, WM8711_ACTIVE, 0x0001);
+=======
+	struct snd_soc_component *component = dai->component;
+
+	/* set active */
+	snd_soc_component_write(component, WM8711_ACTIVE, 0x0001);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -187,6 +256,7 @@ static int wm8711_pcm_prepare(struct snd_pcm_substream *substream,
 static void wm8711_shutdown(struct snd_pcm_substream *substream,
 			    struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 
 	/* deactivate */
@@ -205,6 +275,26 @@ static int wm8711_mute(struct snd_soc_dai *dai, int mute)
 		snd_soc_write(codec, WM8711_APDIGI, mute_reg | 0x8);
 	else
 		snd_soc_write(codec, WM8711_APDIGI, mute_reg);
+=======
+	struct snd_soc_component *component = dai->component;
+
+	/* deactivate */
+	if (!snd_soc_component_active(component)) {
+		udelay(50);
+		snd_soc_component_write(component, WM8711_ACTIVE, 0x0);
+	}
+}
+
+static int wm8711_mute(struct snd_soc_dai *dai, int mute, int direction)
+{
+	struct snd_soc_component *component = dai->component;
+	u16 mute_reg = snd_soc_component_read(component, WM8711_APDIGI) & 0xfff7;
+
+	if (mute)
+		snd_soc_component_write(component, WM8711_APDIGI, mute_reg | 0x8);
+	else
+		snd_soc_component_write(component, WM8711_APDIGI, mute_reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -212,8 +302,13 @@ static int wm8711_mute(struct snd_soc_dai *dai, int mute)
 static int wm8711_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		int clk_id, unsigned int freq, int dir)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct wm8711_priv *wm8711 =  snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	struct wm8711_priv *wm8711 =  snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (freq) {
 	case 11289600:
@@ -230,8 +325,13 @@ static int wm8711_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 static int wm8711_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	u16 iface = snd_soc_read(codec, WM8711_IFACE) & 0x000c;
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	u16 iface = snd_soc_component_read(component, WM8711_IFACE) & 0x000c;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set master/slave audio interface */
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
@@ -282,6 +382,7 @@ static int wm8711_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	}
 
 	/* set iface */
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8711_IFACE, iface);
 	return 0;
 }
@@ -294,10 +395,26 @@ static int wm8711_set_bias_level(struct snd_soc_codec *codec,
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 		snd_soc_write(codec, WM8711_PWR, reg);
+=======
+	snd_soc_component_write(component, WM8711_IFACE, iface);
+	return 0;
+}
+
+static int wm8711_set_bias_level(struct snd_soc_component *component,
+	enum snd_soc_bias_level level)
+{
+	struct wm8711_priv *wm8711 = snd_soc_component_get_drvdata(component);
+	u16 reg = snd_soc_component_read(component, WM8711_PWR) & 0xff7f;
+
+	switch (level) {
+	case SND_SOC_BIAS_ON:
+		snd_soc_component_write(component, WM8711_PWR, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SND_SOC_BIAS_PREPARE:
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level == SND_SOC_BIAS_OFF)
 			snd_soc_cache_sync(codec);
 
@@ -309,6 +426,18 @@ static int wm8711_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 	codec->dapm.bias_level = level;
+=======
+		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF)
+			regcache_sync(wm8711->regmap);
+
+		snd_soc_component_write(component, WM8711_PWR, reg | 0x0040);
+		break;
+	case SND_SOC_BIAS_OFF:
+		snd_soc_component_write(component, WM8711_ACTIVE, 0x0);
+		snd_soc_component_write(component, WM8711_PWR, 0xffff);
+		break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -321,9 +450,16 @@ static const struct snd_soc_dai_ops wm8711_ops = {
 	.prepare = wm8711_pcm_prepare,
 	.hw_params = wm8711_hw_params,
 	.shutdown = wm8711_shutdown,
+<<<<<<< HEAD
 	.digital_mute = wm8711_mute,
 	.set_sysclk = wm8711_set_dai_sysclk,
 	.set_fmt = wm8711_set_dai_fmt,
+=======
+	.mute_stream = wm8711_mute,
+	.set_sysclk = wm8711_set_dai_sysclk,
+	.set_fmt = wm8711_set_dai_fmt,
+	.no_capture_mute = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver wm8711_dai = {
@@ -338,6 +474,7 @@ static struct snd_soc_dai_driver wm8711_dai = {
 	.ops = &wm8711_ops,
 };
 
+<<<<<<< HEAD
 static int wm8711_suspend(struct snd_soc_codec *codec)
 {
 	snd_soc_write(codec, WM8711_ACTIVE, 0x0);
@@ -373,11 +510,27 @@ static int wm8711_probe(struct snd_soc_codec *codec)
 	/* Latch the update bits */
 	snd_soc_update_bits(codec, WM8711_LOUT1V, 0x0100, 0x0100);
 	snd_soc_update_bits(codec, WM8711_ROUT1V, 0x0100, 0x0100);
+=======
+static int wm8711_probe(struct snd_soc_component *component)
+{
+	int ret;
+
+	ret = wm8711_reset(component);
+	if (ret < 0) {
+		dev_err(component->dev, "Failed to issue reset\n");
+		return ret;
+	}
+
+	/* Latch the update bits */
+	snd_soc_component_update_bits(component, WM8711_LOUT1V, 0x0100, 0x0100);
+	snd_soc_component_update_bits(component, WM8711_ROUT1V, 0x0100, 0x0100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 
 }
 
+<<<<<<< HEAD
 /* power down chip */
 static int wm8711_remove(struct snd_soc_codec *codec)
 {
@@ -400,6 +553,21 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8711 = {
 	.num_dapm_widgets = ARRAY_SIZE(wm8711_dapm_widgets),
 	.dapm_routes = wm8711_intercon,
 	.num_dapm_routes = ARRAY_SIZE(wm8711_intercon),
+=======
+static const struct snd_soc_component_driver soc_component_dev_wm8711 = {
+	.probe			= wm8711_probe,
+	.set_bias_level		= wm8711_set_bias_level,
+	.controls		= wm8711_snd_controls,
+	.num_controls		= ARRAY_SIZE(wm8711_snd_controls),
+	.dapm_widgets		= wm8711_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(wm8711_dapm_widgets),
+	.dapm_routes		= wm8711_intercon,
+	.num_dapm_routes	= ARRAY_SIZE(wm8711_intercon),
+	.suspend_bias_off	= 1,
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct of_device_id wm8711_of_match[] = {
@@ -408,12 +576,30 @@ static const struct of_device_id wm8711_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, wm8711_of_match);
 
+<<<<<<< HEAD
 #if defined(CONFIG_SPI_MASTER)
 static int __devinit wm8711_spi_probe(struct spi_device *spi)
+=======
+static const struct regmap_config wm8711_regmap = {
+	.reg_bits = 7,
+	.val_bits = 9,
+	.max_register = WM8711_RESET,
+
+	.reg_defaults = wm8711_reg_defaults,
+	.num_reg_defaults = ARRAY_SIZE(wm8711_reg_defaults),
+	.cache_type = REGCACHE_MAPLE,
+
+	.volatile_reg = wm8711_volatile,
+};
+
+#if defined(CONFIG_SPI_MASTER)
+static int wm8711_spi_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8711_priv *wm8711;
 	int ret;
 
+<<<<<<< HEAD
 	wm8711 = kzalloc(sizeof(struct wm8711_priv), GFP_KERNEL);
 	if (wm8711 == NULL)
 		return -ENOMEM;
@@ -449,10 +635,41 @@ static struct spi_driver wm8711_spi_driver = {
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
 static __devinit int wm8711_i2c_probe(struct i2c_client *client,
 				      const struct i2c_device_id *id)
+=======
+	wm8711 = devm_kzalloc(&spi->dev, sizeof(struct wm8711_priv),
+			      GFP_KERNEL);
+	if (wm8711 == NULL)
+		return -ENOMEM;
+
+	wm8711->regmap = devm_regmap_init_spi(spi, &wm8711_regmap);
+	if (IS_ERR(wm8711->regmap))
+		return PTR_ERR(wm8711->regmap);
+
+	spi_set_drvdata(spi, wm8711);
+
+	ret = devm_snd_soc_register_component(&spi->dev,
+			&soc_component_dev_wm8711, &wm8711_dai, 1);
+
+	return ret;
+}
+
+static struct spi_driver wm8711_spi_driver = {
+	.driver = {
+		.name	= "wm8711",
+		.of_match_table = wm8711_of_match,
+	},
+	.probe		= wm8711_spi_probe,
+};
+#endif /* CONFIG_SPI_MASTER */
+
+#if IS_ENABLED(CONFIG_I2C)
+static int wm8711_i2c_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8711_priv *wm8711;
 	int ret;
 
+<<<<<<< HEAD
 	wm8711 = kzalloc(sizeof(struct wm8711_priv), GFP_KERNEL);
 	if (wm8711 == NULL)
 		return -ENOMEM;
@@ -474,6 +691,25 @@ static __devexit int wm8711_i2c_remove(struct i2c_client *client)
 	return 0;
 }
 
+=======
+	wm8711 = devm_kzalloc(&client->dev, sizeof(struct wm8711_priv),
+			      GFP_KERNEL);
+	if (wm8711 == NULL)
+		return -ENOMEM;
+
+	wm8711->regmap = devm_regmap_init_i2c(client, &wm8711_regmap);
+	if (IS_ERR(wm8711->regmap))
+		return PTR_ERR(wm8711->regmap);
+
+	i2c_set_clientdata(client, wm8711);
+
+	ret = devm_snd_soc_register_component(&client->dev,
+			&soc_component_dev_wm8711, &wm8711_dai, 1);
+
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id wm8711_i2c_id[] = {
 	{ "wm8711", 0 },
 	{ }
@@ -483,11 +719,17 @@ MODULE_DEVICE_TABLE(i2c, wm8711_i2c_id);
 static struct i2c_driver wm8711_i2c_driver = {
 	.driver = {
 		.name = "wm8711",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = wm8711_of_match,
 	},
 	.probe =    wm8711_i2c_probe,
 	.remove =   __devexit_p(wm8711_i2c_remove),
+=======
+		.of_match_table = wm8711_of_match,
+	},
+	.probe = wm8711_i2c_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = wm8711_i2c_id,
 };
 #endif
@@ -495,7 +737,11 @@ static struct i2c_driver wm8711_i2c_driver = {
 static int __init wm8711_modinit(void)
 {
 	int ret;
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = i2c_add_driver(&wm8711_i2c_driver);
 	if (ret != 0) {
 		printk(KERN_ERR "Failed to register WM8711 I2C driver: %d\n",
@@ -515,7 +761,11 @@ module_init(wm8711_modinit);
 
 static void __exit wm8711_exit(void)
 {
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_del_driver(&wm8711_i2c_driver);
 #endif
 #if defined(CONFIG_SPI_MASTER)

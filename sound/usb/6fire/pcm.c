@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux driver for TerraTec DMX 6Fire USB
  *
@@ -6,11 +10,14 @@
  * Author:	Torsten Schenk <torsten.schenk@zoho.com>
  * Created:	Jan 01, 2011
  * Copyright:	(C) Torsten Schenk
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "pcm.h"
@@ -79,32 +86,56 @@ static int usb6fire_pcm_set_rate(struct pcm_runtime *rt)
 	ctrl_rt->usb_streaming = false;
 	ret = ctrl_rt->update_streaming(ctrl_rt);
 	if (ret < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR PREFIX "error stopping streaming while "
 				"setting samplerate %d.\n", rates[rt->rate]);
+=======
+		dev_err(&rt->chip->dev->dev,
+			"error stopping streaming while setting samplerate %d.\n",
+			rates[rt->rate]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	ret = ctrl_rt->set_rate(ctrl_rt, rt->rate);
 	if (ret < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR PREFIX "error setting samplerate %d.\n",
 				rates[rt->rate]);
+=======
+		dev_err(&rt->chip->dev->dev,
+			"error setting samplerate %d.\n",
+			rates[rt->rate]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	ret = ctrl_rt->set_channels(ctrl_rt, OUT_N_CHANNELS, IN_N_CHANNELS,
 			false, false);
 	if (ret < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR PREFIX "error initializing channels "
 				"while setting samplerate %d.\n",
 				rates[rt->rate]);
+=======
+		dev_err(&rt->chip->dev->dev,
+			"error initializing channels while setting samplerate %d.\n",
+			rates[rt->rate]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	ctrl_rt->usb_streaming = true;
 	ret = ctrl_rt->update_streaming(ctrl_rt);
 	if (ret < 0) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR PREFIX "error starting streaming while "
 				"setting samplerate %d.\n", rates[rt->rate]);
+=======
+		dev_err(&rt->chip->dev->dev,
+			"error starting streaming while setting samplerate %d.\n",
+			rates[rt->rate]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -124,7 +155,11 @@ static struct pcm_substream *usb6fire_pcm_get_substream(
 		return &rt->playback;
 	else if (alsa_sub->stream == SNDRV_PCM_STREAM_CAPTURE)
 		return &rt->capture;
+<<<<<<< HEAD
 	snd_printk(KERN_ERR PREFIX "error getting pcm substream slot.\n");
+=======
+	dev_err(&rt->chip->dev->dev, "error getting pcm substream slot.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -135,6 +170,12 @@ static void usb6fire_pcm_stream_stop(struct pcm_runtime *rt)
 	struct control_runtime *ctrl_rt = rt->chip->control;
 
 	if (rt->stream_state != STREAM_DISABLED) {
+<<<<<<< HEAD
+=======
+
+		rt->stream_state = STREAM_STOPPING;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < PCM_N_URBS; i++) {
 			usb_kill_urb(&rt->in_urbs[i].instance);
 			usb_kill_urb(&rt->out_urbs[i].instance);
@@ -173,7 +214,11 @@ static int usb6fire_pcm_stream_start(struct pcm_runtime *rt)
 			}
 		}
 
+<<<<<<< HEAD
 		/* wait for first out urb to return (sent in in urb handler) */
+=======
+		/* wait for first out urb to return (sent in urb handler) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wait_event_timeout(rt->stream_wait_queue, rt->stream_wait_cond,
 				HZ);
 		if (rt->stream_wait_cond)
@@ -254,7 +299,11 @@ static void usb6fire_pcm_playback(struct pcm_substream *sub,
 	else if (alsa_rt->format == SNDRV_PCM_FORMAT_S24_LE)
 		dest = (u32 *) (urb->buffer);
 	else {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR PREFIX "Unknown sample format.");
+=======
+		dev_err(&rt->chip->dev->dev, "Unknown sample format.");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -304,8 +353,13 @@ static void usb6fire_pcm_in_urb_handler(struct urb *usb_urb)
 		}
 
 	if (rt->stream_state == STREAM_DISABLED) {
+<<<<<<< HEAD
 		snd_printk(KERN_ERR PREFIX "internal error: "
 				"stream disabled in in-urb handler.\n");
+=======
+		dev_err(&rt->chip->dev->dev,
+			"internal error: stream disabled in in-urb handler.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -407,7 +461,11 @@ static int usb6fire_pcm_open(struct snd_pcm_substream *alsa_sub)
 
 	if (!sub) {
 		mutex_unlock(&rt->stream_mutex);
+<<<<<<< HEAD
 		snd_printk(KERN_ERR PREFIX "invalid stream type.\n");
+=======
+		dev_err(&rt->chip->dev->dev, "invalid stream type.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -444,6 +502,7 @@ static int usb6fire_pcm_close(struct snd_pcm_substream *alsa_sub)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int usb6fire_pcm_hw_params(struct snd_pcm_substream *alsa_sub,
 		struct snd_pcm_hw_params *hw_params)
 {
@@ -456,6 +515,8 @@ static int usb6fire_pcm_hw_free(struct snd_pcm_substream *alsa_sub)
 	return snd_pcm_lib_free_pages(alsa_sub);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int usb6fire_pcm_prepare(struct snd_pcm_substream *alsa_sub)
 {
 	struct pcm_runtime *rt = snd_pcm_substream_chip(alsa_sub);
@@ -478,8 +539,14 @@ static int usb6fire_pcm_prepare(struct snd_pcm_substream *alsa_sub)
 				break;
 		if (rt->rate == ARRAY_SIZE(rates)) {
 			mutex_unlock(&rt->stream_mutex);
+<<<<<<< HEAD
 			snd_printk("invalid rate %d in prepare.\n",
 					alsa_rt->rate);
+=======
+			dev_err(&rt->chip->dev->dev,
+				"invalid rate %d in prepare.\n",
+				alsa_rt->rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 
@@ -491,8 +558,13 @@ static int usb6fire_pcm_prepare(struct snd_pcm_substream *alsa_sub)
 		ret = usb6fire_pcm_stream_start(rt);
 		if (ret) {
 			mutex_unlock(&rt->stream_mutex);
+<<<<<<< HEAD
 			snd_printk(KERN_ERR PREFIX
 					"could not start pcm stream.\n");
+=======
+			dev_err(&rt->chip->dev->dev,
+				"could not start pcm stream.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ret;
 		}
 	}
@@ -548,20 +620,32 @@ static snd_pcm_uframes_t usb6fire_pcm_pointer(
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops pcm_ops = {
 	.open = usb6fire_pcm_open,
 	.close = usb6fire_pcm_close,
 	.ioctl = snd_pcm_lib_ioctl,
 	.hw_params = usb6fire_pcm_hw_params,
 	.hw_free = usb6fire_pcm_hw_free,
+=======
+static const struct snd_pcm_ops pcm_ops = {
+	.open = usb6fire_pcm_open,
+	.close = usb6fire_pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare = usb6fire_pcm_prepare,
 	.trigger = usb6fire_pcm_trigger,
 	.pointer = usb6fire_pcm_pointer,
 };
 
+<<<<<<< HEAD
 static void __devinit usb6fire_pcm_init_urb(struct pcm_urb *urb,
 		struct sfire_chip *chip, bool in, int ep,
 		void (*handler)(struct urb *))
+=======
+static void usb6fire_pcm_init_urb(struct pcm_urb *urb,
+				  struct sfire_chip *chip, bool in, int ep,
+				  void (*handler)(struct urb *))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	urb->chip = chip;
 	usb_init_urb(&urb->instance);
@@ -572,7 +656,10 @@ static void __devinit usb6fire_pcm_init_urb(struct pcm_urb *urb,
 	urb->instance.pipe = in ? usb_rcvisocpipe(chip->dev, ep)
 			: usb_sndisocpipe(chip->dev, ep);
 	urb->instance.interval = 1;
+<<<<<<< HEAD
 	urb->instance.transfer_flags = URB_ISO_ASAP;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	urb->instance.complete = handler;
 	urb->instance.context = urb;
 	urb->instance.number_of_packets = PCM_N_PACKETS_PER_URB;
@@ -583,12 +670,23 @@ static int usb6fire_pcm_buffers_init(struct pcm_runtime *rt)
 	int i;
 
 	for (i = 0; i < PCM_N_URBS; i++) {
+<<<<<<< HEAD
 		rt->out_urbs[i].buffer = kzalloc(PCM_N_PACKETS_PER_URB
 				* PCM_MAX_PACKET_SIZE, GFP_KERNEL);
 		if (!rt->out_urbs[i].buffer)
 			return -ENOMEM;
 		rt->in_urbs[i].buffer = kzalloc(PCM_N_PACKETS_PER_URB
 				* PCM_MAX_PACKET_SIZE, GFP_KERNEL);
+=======
+		rt->out_urbs[i].buffer = kcalloc(PCM_MAX_PACKET_SIZE,
+						 PCM_N_PACKETS_PER_URB,
+						 GFP_KERNEL);
+		if (!rt->out_urbs[i].buffer)
+			return -ENOMEM;
+		rt->in_urbs[i].buffer = kcalloc(PCM_MAX_PACKET_SIZE,
+						PCM_N_PACKETS_PER_URB,
+						GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!rt->in_urbs[i].buffer)
 			return -ENOMEM;
 	}
@@ -605,7 +703,11 @@ static void usb6fire_pcm_buffers_destroy(struct pcm_runtime *rt)
 	}
 }
 
+<<<<<<< HEAD
 int __devinit usb6fire_pcm_init(struct sfire_chip *chip)
+=======
+int usb6fire_pcm_init(struct sfire_chip *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	int ret;
@@ -646,7 +748,11 @@ int __devinit usb6fire_pcm_init(struct sfire_chip *chip)
 	if (ret < 0) {
 		usb6fire_pcm_buffers_destroy(rt);
 		kfree(rt);
+<<<<<<< HEAD
 		snd_printk(KERN_ERR PREFIX "cannot create pcm instance.\n");
+=======
+		dev_err(&chip->dev->dev, "cannot create pcm instance.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
@@ -654,6 +760,7 @@ int __devinit usb6fire_pcm_init(struct sfire_chip *chip)
 	strcpy(pcm->name, "DMX 6Fire USB");
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &pcm_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &pcm_ops);
+<<<<<<< HEAD
 
 	ret = snd_pcm_lib_preallocate_pages_for_all(pcm,
 			SNDRV_DMA_TYPE_CONTINUOUS,
@@ -666,6 +773,10 @@ int __devinit usb6fire_pcm_init(struct sfire_chip *chip)
 				"error preallocating pcm buffers.\n");
 		return ret;
 	}
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_VMALLOC, NULL, 0, 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rt->instance = pcm;
 
 	chip->pcm = rt;
@@ -675,12 +786,16 @@ int __devinit usb6fire_pcm_init(struct sfire_chip *chip)
 void usb6fire_pcm_abort(struct sfire_chip *chip)
 {
 	struct pcm_runtime *rt = chip->pcm;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (rt) {
 		rt->panic = true;
 
+<<<<<<< HEAD
 		if (rt->playback.instance) {
 			snd_pcm_stream_lock_irqsave(rt->playback.instance, flags);
 			snd_pcm_stop(rt->playback.instance,
@@ -694,6 +809,13 @@ void usb6fire_pcm_abort(struct sfire_chip *chip)
 					SNDRV_PCM_STATE_XRUN);
 			snd_pcm_stream_unlock_irqrestore(rt->capture.instance, flags);
 		}
+=======
+		if (rt->playback.instance)
+			snd_pcm_stop_xrun(rt->playback.instance);
+
+		if (rt->capture.instance)
+			snd_pcm_stop_xrun(rt->capture.instance);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (i = 0; i < PCM_N_URBS; i++) {
 			usb_poison_urb(&rt->in_urbs[i].instance);

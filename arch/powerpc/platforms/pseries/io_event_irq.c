@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2010 2011 Mark Nelson and Tseng-Hui (Frank) Lin, IBM Corporation
  *
@@ -5,6 +6,11 @@
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version
  *  2 of the License, or (at your option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright 2010 2011 Mark Nelson and Tseng-Hui (Frank) Lin, IBM Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -82,9 +88,15 @@ static struct pseries_io_event * ioei_find_event(struct rtas_error_log *elog)
 	 * RTAS_TYPE_IO only exists in extended event log version 6 or later.
 	 * No need to check event log version.
 	 */
+<<<<<<< HEAD
 	if (unlikely(elog->type != RTAS_TYPE_IO)) {
 		printk_once(KERN_WARNING "io_event_irq: Unexpected event type %d",
 			    elog->type);
+=======
+	if (unlikely(rtas_error_type(elog) != RTAS_TYPE_IO)) {
+		printk_once(KERN_WARNING"io_event_irq: Unexpected event type %d",
+			    rtas_error_type(elog));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -113,9 +125,15 @@ static struct pseries_io_event * ioei_find_event(struct rtas_error_log *elog)
  * - The owner of an event is determined by combinations of scope,
  *   event type, and sub-type. There is no easy way to pre-sort clients
  *   by scope or event type alone. For example, Torrent ISR route change
+<<<<<<< HEAD
  *   event is reported with scope 0x00 (Not Applicatable) rather than
  *   0x3B (Torrent-hub). It is better to let the clients to identify
  *   who owns the the event.
+=======
+ *   event is reported with scope 0x00 (Not Applicable) rather than
+ *   0x3B (Torrent-hub). It is better to let the clients to identify
+ *   who owns the event.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 static irqreturn_t ioei_interrupt(int irq, void *dev_id)
@@ -147,7 +165,11 @@ static int __init ioei_init(void)
 {
 	struct device_node *np;
 
+<<<<<<< HEAD
 	ioei_check_exception_token = rtas_token("check-exception");
+=======
+	ioei_check_exception_token = rtas_function_token(RTAS_FN_CHECK_EXCEPTION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ioei_check_exception_token == RTAS_UNKNOWN_SERVICE)
 		return -ENODEV;
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000-2002 Vojtech Pavlik <vojtech@ucw.cz>
  *  Copyright (c) 2001-2002, 2007 Johann Deneux <johann.deneux@gmail.com>
@@ -5,6 +9,7 @@
  *  USB/RS232 I-Force joysticks and wheels.
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,14 +30,20 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/spinlock.h>
 #include <linux/usb.h>
 #include <linux/serio.h>
+=======
+#include <linux/spinlock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/circ_buf.h>
 #include <linux/mutex.h>
 
@@ -45,10 +56,13 @@
 
 #define IFORCE_MAX_LENGTH	16
 
+<<<<<<< HEAD
 /* iforce::bus */
 #define IFORCE_232	1
 #define IFORCE_USB	2
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IFORCE_EFFECTS_MAX	32
 
 /* Each force feedback effect is made of one core effect, which can be
@@ -98,6 +112,7 @@ struct iforce_device {
 	signed short *ff;
 };
 
+<<<<<<< HEAD
 struct iforce {
 	struct input_dev *dev;		/* Input device interface */
 	struct iforce_device *type;
@@ -118,6 +133,23 @@ struct iforce {
 	struct urb *irq, *out, *ctrl;
 	struct usb_ctrlrequest cr;
 #endif
+=======
+struct iforce;
+
+struct iforce_xport_ops {
+	void (*xmit)(struct iforce *iforce);
+	int (*get_id)(struct iforce *iforce, u8 id,
+		      u8 *response_data, size_t *response_len);
+	int (*start_io)(struct iforce *iforce);
+	void (*stop_io)(struct iforce *iforce);
+};
+
+struct iforce {
+	struct input_dev *dev;		/* Input device interface */
+	struct iforce_device *type;
+	const struct iforce_xport_ops *xport_ops;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t xmit_lock;
 	/* Buffer used for asynchronous sending of bytes to the device */
 	struct circ_buf xmit;
@@ -143,6 +175,7 @@ struct iforce {
 /* Encode a time value */
 #define TIME_SCALE(a)	(a)
 
+<<<<<<< HEAD
 
 /* Public functions */
 /* iforce-serio.c */
@@ -160,6 +193,32 @@ void iforce_process_packet(struct iforce *iforce, u16 cmd, unsigned char *data);
 int iforce_send_packet(struct iforce *iforce, u16 cmd, unsigned char* data);
 void iforce_dump_packet(char *msg, u16 cmd, unsigned char *data) ;
 int iforce_get_id_packet(struct iforce *iforce, char *packet);
+=======
+static inline int iforce_get_id_packet(struct iforce *iforce, u8 id,
+				       u8 *response_data, size_t *response_len)
+{
+	return iforce->xport_ops->get_id(iforce, id,
+					 response_data, response_len);
+}
+
+static inline void iforce_clear_xmit_and_wake(struct iforce *iforce)
+{
+	clear_bit(IFORCE_XMIT_RUNNING, iforce->xmit_flags);
+	wake_up_all(&iforce->wait);
+}
+
+/* Public functions */
+/* iforce-main.c */
+int iforce_init_device(struct device *parent, u16 bustype,
+		       struct iforce *iforce);
+
+/* iforce-packets.c */
+int iforce_control_playback(struct iforce*, u16 id, unsigned int);
+void iforce_process_packet(struct iforce *iforce,
+			   u8 packet_id, u8 *data, size_t len);
+int iforce_send_packet(struct iforce *iforce, u16 cmd, unsigned char* data);
+void iforce_dump_packet(struct iforce *iforce, char *msg, u16 cmd, unsigned char *data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* iforce-ff.c */
 int iforce_upload_periodic(struct iforce *, struct ff_effect *, struct ff_effect *);

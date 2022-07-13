@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MUSB OTG driver debug defines
  *
  * Copyright 2005 Mentor Graphics Corporation
  * Copyright (C) 2005-2006 by Texas Instruments
  * Copyright (C) 2006-2007 Nokia Corporation
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -30,6 +35,8 @@
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MUSB_LINUX_DEBUG_H__
@@ -42,6 +49,7 @@
 #define INFO(fmt, args...) yprintk(KERN_INFO, fmt, ## args)
 #define ERR(fmt, args...) yprintk(KERN_ERR, fmt, ## args)
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_FS
 int musb_init_debugfs(struct musb *musb);
 void musb_exit_debugfs(struct musb *musb);
@@ -49,6 +57,16 @@ void musb_exit_debugfs(struct musb *musb);
 static inline int musb_init_debugfs(struct musb *musb)
 {
 	return 0;
+=======
+void musb_dbg(struct musb *musb, const char *fmt, ...);
+
+#ifdef CONFIG_DEBUG_FS
+void musb_init_debugfs(struct musb *musb);
+void musb_exit_debugfs(struct musb *musb);
+#else
+static inline void musb_init_debugfs(struct musb *musb)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static inline void musb_exit_debugfs(struct musb *musb)
 {

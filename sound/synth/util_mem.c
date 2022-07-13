@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 2000 Takashi Iwai <tiwai@suse.de>
  *
  *  Generic memory management routines for soundcard memory allocation
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mutex.h>
@@ -193,6 +200,7 @@ EXPORT_SYMBOL(snd_util_mem_avail);
 EXPORT_SYMBOL(__snd_util_mem_alloc);
 EXPORT_SYMBOL(__snd_util_mem_free);
 EXPORT_SYMBOL(__snd_util_memblk_new);
+<<<<<<< HEAD
 
 /*
  *  INIT part
@@ -209,3 +217,5 @@ static void __exit alsa_util_mem_exit(void)
 
 module_init(alsa_util_mem_init)
 module_exit(alsa_util_mem_exit)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SPU local store allocation routines
  *
  * Copyright 2007 Benjamin Herrenschmidt, IBM Corp.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
@@ -31,12 +38,20 @@
 
 #include "spufs.h"
 
+<<<<<<< HEAD
 static int spu_alloc_lscsa_std(struct spu_state *csa)
+=======
+int spu_alloc_lscsa(struct spu_state *csa)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct spu_lscsa *lscsa;
 	unsigned char *p;
 
+<<<<<<< HEAD
 	lscsa = vzalloc(sizeof(struct spu_lscsa));
+=======
+	lscsa = vzalloc(sizeof(*lscsa));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lscsa)
 		return -ENOMEM;
 	csa->lscsa = lscsa;
@@ -48,7 +63,11 @@ static int spu_alloc_lscsa_std(struct spu_state *csa)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void spu_free_lscsa_std(struct spu_state *csa)
+=======
+void spu_free_lscsa(struct spu_state *csa)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Clear reserved bit before vfree. */
 	unsigned char *p;
@@ -61,6 +80,7 @@ static void spu_free_lscsa_std(struct spu_state *csa)
 
 	vfree(csa->lscsa);
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_SPU_FS_64K_LS
 
@@ -181,3 +201,5 @@ void spu_free_lscsa(struct spu_state *csa)
 }
 
 #endif /* !defined(CONFIG_SPU_FS_64K_LS) */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

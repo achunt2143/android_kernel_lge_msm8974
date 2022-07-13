@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * HSI clients registration interface
  *
  * Copyright (C) 2010 Nokia Corporation. All rights reserved.
  *
  * Contact: Carlos Chinea <carlos.chinea@nokia.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/hsi/hsi.h>
 #include <linux/list.h>
@@ -49,7 +56,11 @@ int __init hsi_register_board_info(struct hsi_board_info const *info,
 {
 	struct hsi_cl_info *cl_info;
 
+<<<<<<< HEAD
 	cl_info = kzalloc(sizeof(*cl_info) * len, GFP_KERNEL);
+=======
+	cl_info = kcalloc(len, sizeof(*cl_info), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cl_info)
 		return -ENOMEM;
 

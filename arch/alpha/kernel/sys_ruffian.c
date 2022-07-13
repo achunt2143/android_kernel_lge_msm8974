@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/sys_ruffian.c
  *
@@ -22,7 +26,10 @@
 #include <asm/irq.h>
 #include <asm/mmu_context.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/core_cia.h>
 #include <asm/tlbflush.h>
 
@@ -81,7 +88,12 @@ ruffian_init_rtc(void)
 	outb(0x31, 0x42);
 	outb(0x13, 0x42);
 
+<<<<<<< HEAD
 	setup_irq(0, &timer_irqaction);
+=======
+	if (request_irq(0, rtc_timer_interrupt, 0, "timer", NULL))
+		pr_err("Failed to request irq 0 (timer)\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -117,10 +129,17 @@ ruffian_kill_arch (int mode)
  *
  */
 
+<<<<<<< HEAD
 static int __init
 ruffian_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
         static char irq_tab[11][5] __initdata = {
+=======
+static int
+ruffian_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+{
+        static char irq_tab[11][5] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	      /*INT  INTA INTB INTC INTD */
 		{-1,  -1,  -1,  -1,  -1},  /* IdSel 13,  21052	     */
 		{-1,  -1,  -1,  -1,  -1},  /* IdSel 14,  SIO	     */
@@ -139,7 +158,11 @@ ruffian_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return COMMON_TABLE_LOOKUP;
 }
 
+<<<<<<< HEAD
 static u8 __init
+=======
+static u8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ruffian_swizzle(struct pci_dev *dev, u8 *pinp)
 {
 	int slot, pin = *pinp;

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* niu.c: Neptune ethernet driver.
  *
  * Copyright (C) 2007, 2008 David S. Miller (davem@davemloft.net)
@@ -30,18 +34,51 @@
 #include <linux/slab.h>
 
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 
 #include "niu.h"
 
+=======
+#include <linux/of.h>
+
+#include "niu.h"
+
+/* This driver wants to store a link to a "next page" within the
+ * page struct itself by overloading the content of the "mapping"
+ * member. This is not expected by the page API, but does currently
+ * work. However, the randstruct plugin gets very bothered by this
+ * case because "mapping" (struct address_space) is randomized, so
+ * casts to/from it trigger warnings. Hide this by way of a union,
+ * to create a typed alias of "mapping", since that's how it is
+ * actually being used here.
+ */
+union niu_page {
+	struct page page;
+	struct {
+		unsigned long __flags;	/* unused alias of "flags" */
+		struct list_head __lru;	/* unused alias of "lru" */
+		struct page *next;	/* alias of "mapping" */
+	};
+};
+#define niu_next_page(p)	container_of(p, union niu_page, page)->next
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRV_MODULE_NAME		"niu"
 #define DRV_MODULE_VERSION	"1.1"
 #define DRV_MODULE_RELDATE	"Apr 22, 2010"
 
+<<<<<<< HEAD
 static char version[] __devinitdata =
 	DRV_MODULE_NAME ".c:v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
 
 MODULE_AUTHOR("David S. Miller (davem@davemloft.net)");
+=======
+static char version[] =
+	DRV_MODULE_NAME ".c:v" DRV_MODULE_VERSION " (" DRV_MODULE_RELDATE ")\n";
+
+MODULE_AUTHOR("David S. Miller <davem@davemloft.net>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("NIU ethernet driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_MODULE_VERSION);
@@ -59,7 +96,11 @@ static void writeq(u64 val, void __iomem *reg)
 }
 #endif
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(niu_pci_tbl) = {
+=======
+static const struct pci_device_id niu_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_DEVICE(PCI_VENDOR_ID_SUN, 0xabcd)},
 	{}
 };
@@ -428,7 +469,11 @@ static int serdes_init_niu_1g_serdes(struct niu *np)
 	struct niu_link_config *lp = &np->link_config;
 	u16 pll_cfg, pll_sts;
 	int max_retry = 100;
+<<<<<<< HEAD
 	u64 uninitialized_var(sig), mask, val;
+=======
+	u64 sig, mask, val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tx_cfg, rx_cfg;
 	unsigned long i;
 	int err;
@@ -525,7 +570,11 @@ static int serdes_init_niu_10g_serdes(struct niu *np)
 	struct niu_link_config *lp = &np->link_config;
 	u32 tx_cfg, rx_cfg, pll_cfg, pll_sts;
 	int max_retry = 100;
+<<<<<<< HEAD
 	u64 uninitialized_var(sig), mask, val;
+=======
+	u64 sig, mask, val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long i;
 	int err;
 
@@ -713,7 +762,11 @@ static int esr_write_glue0(struct niu *np, unsigned long chan, u32 val)
 
 static int esr_reset(struct niu *np)
 {
+<<<<<<< HEAD
 	u32 uninitialized_var(reset);
+=======
+	u32 reset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = mdio_write(np, np->port, NIU_ESR_DEV_ADDR,
@@ -1216,14 +1269,18 @@ static int link_status_1g_rgmii(struct niu *np, int *link_up_p)
 
 	spin_lock_irqsave(&np->lock, flags);
 
+<<<<<<< HEAD
 	err = -EINVAL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = mii_read(np, np->phy_addr, MII_BMSR);
 	if (err < 0)
 		goto out;
 
 	bmsr = err;
 	if (bmsr & BMSR_LSTATUS) {
+<<<<<<< HEAD
 		u16 adv, lpa;
 
 		err = mii_read(np, np->phy_addr, MII_ADVERTISE);
@@ -1243,6 +1300,11 @@ static int link_status_1g_rgmii(struct niu *np, int *link_up_p)
 		current_speed = SPEED_1000;
 		current_duplex = DUPLEX_FULL;
 
+=======
+		link_up = 1;
+		current_speed = SPEED_1000;
+		current_duplex = DUPLEX_FULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	lp->active_speed = current_speed;
 	lp->active_duplex = current_duplex;
@@ -2221,9 +2283,15 @@ static int niu_link_status(struct niu *np, int *link_up_p)
 	return err;
 }
 
+<<<<<<< HEAD
 static void niu_timer(unsigned long __opaque)
 {
 	struct niu *np = (struct niu *) __opaque;
+=======
+static void niu_timer(struct timer_list *t)
+{
+	struct niu *np = from_timer(np, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long off;
 	int err, link_up;
 
@@ -2584,7 +2652,10 @@ static int niu_determine_phy_disposition(struct niu *np)
 				break;
 			default:
 				return -EINVAL;
+<<<<<<< HEAD
 				break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			phy_addr_off = niu_atca_port_num[np->port];
 			break;
@@ -2621,7 +2692,11 @@ static int niu_init_link(struct niu *np)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void niu_set_primary_mac(struct niu *np, unsigned char *addr)
+=======
+static void niu_set_primary_mac(struct niu *np, const unsigned char *addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 reg0 = addr[4] << 8 | addr[5];
 	u16 reg1 = addr[2] << 8 | addr[3];
@@ -3301,7 +3376,11 @@ static struct page *niu_find_rxpage(struct rx_ring_info *rp, u64 addr,
 
 	addr &= PAGE_MASK;
 	pp = &rp->rxhash[h];
+<<<<<<< HEAD
 	for (; (p = *pp) != NULL; pp = (struct page **) &p->mapping) {
+=======
+	for (; (p = *pp) != NULL; pp = &niu_next_page(p)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (p->index == addr) {
 			*link = pp;
 			goto found;
@@ -3318,7 +3397,11 @@ static void niu_hash_page(struct rx_ring_info *rp, struct page *page, u64 base)
 	unsigned int h = niu_hash_rxaddr(rp, base);
 
 	page->index = base;
+<<<<<<< HEAD
 	page->mapping = (struct address_space *) rp->rxhash[h];
+=======
+	niu_next_page(page) = rp->rxhash[h];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rp->rxhash[h] = page;
 }
 
@@ -3335,11 +3418,22 @@ static int niu_rbr_add_page(struct niu *np, struct rx_ring_info *rp,
 
 	addr = np->ops->map_page(np->device, page, 0,
 				 PAGE_SIZE, DMA_FROM_DEVICE);
+<<<<<<< HEAD
 
 	niu_hash_page(rp, page, addr);
 	if (rp->rbr_blocks_per_page > 1)
 		atomic_add(rp->rbr_blocks_per_page - 1,
 			   &compound_head(page)->_count);
+=======
+	if (!addr) {
+		__free_page(page);
+		return -ENOMEM;
+	}
+
+	niu_hash_page(rp, page, addr);
+	if (rp->rbr_blocks_per_page > 1)
+		page_ref_add(page, rp->rbr_blocks_per_page - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < rp->rbr_blocks_per_page; i++) {
 		__le32 *rbr = &rp->rbr[start_index + i];
@@ -3397,11 +3491,19 @@ static int niu_rx_pkt_ignore(struct niu *np, struct rx_ring_info *rp)
 		rcr_size = rp->rbr_sizes[(val & RCR_ENTRY_PKTBUFSZ) >>
 					 RCR_ENTRY_PKTBUFSZ_SHIFT];
 		if ((page->index + PAGE_SIZE) - rcr_size == addr) {
+<<<<<<< HEAD
 			*link = (struct page *) page->mapping;
 			np->ops->unmap_page(np->device, page->index,
 					    PAGE_SIZE, DMA_FROM_DEVICE);
 			page->index = 0;
 			page->mapping = NULL;
+=======
+			*link = niu_next_page(page);
+			np->ops->unmap_page(np->device, page->index,
+					    PAGE_SIZE, DMA_FROM_DEVICE);
+			page->index = 0;
+			niu_next_page(page) = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__free_page(page);
 			rp->rbr_refill_pending++;
 		}
@@ -3440,7 +3542,11 @@ static int niu_process_rx_pkt(struct napi_struct *napi, struct niu *np,
 
 		len = (val & RCR_ENTRY_L2_LEN) >>
 			RCR_ENTRY_L2_LEN_SHIFT;
+<<<<<<< HEAD
 		len -= ETH_FCS_LEN;
+=======
+		append_size = len + ETH_HLEN + ETH_FCS_LEN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		addr = (val & RCR_ENTRY_PKT_BUF_ADDR) <<
 			RCR_ENTRY_PKT_BUF_ADDR_SHIFT;
@@ -3450,7 +3556,10 @@ static int niu_process_rx_pkt(struct napi_struct *napi, struct niu *np,
 					 RCR_ENTRY_PKTBUFSZ_SHIFT];
 
 		off = addr & ~PAGE_MASK;
+<<<<<<< HEAD
 		append_size = rcr_size;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (num_rcr == 1) {
 			int ptype;
 
@@ -3463,6 +3572,7 @@ static int niu_process_rx_pkt(struct napi_struct *napi, struct niu *np,
 			else
 				skb_checksum_none_assert(skb);
 		} else if (!(val & RCR_ENTRY_MULTI))
+<<<<<<< HEAD
 			append_size = len - skb->len;
 
 		niu_rx_skb_append(skb, page, off, append_size, rcr_size);
@@ -3472,6 +3582,17 @@ static int niu_process_rx_pkt(struct napi_struct *napi, struct niu *np,
 					    PAGE_SIZE, DMA_FROM_DEVICE);
 			page->index = 0;
 			page->mapping = NULL;
+=======
+			append_size = append_size - skb->len;
+
+		niu_rx_skb_append(skb, page, off, append_size, rcr_size);
+		if ((page->index + rp->rbr_block_size) - rcr_size == addr) {
+			*link = niu_next_page(page);
+			np->ops->unmap_page(np->device, page->index,
+					    PAGE_SIZE, DMA_FROM_DEVICE);
+			page->index = 0;
+			niu_next_page(page) = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			rp->rbr_refill_pending++;
 		} else
 			get_page(page);
@@ -3489,10 +3610,19 @@ static int niu_process_rx_pkt(struct napi_struct *napi, struct niu *np,
 
 	rh = (struct rx_pkt_hdr1 *) skb->data;
 	if (np->dev->features & NETIF_F_RXHASH)
+<<<<<<< HEAD
 		skb->rxhash = ((u32)rh->hashval2_0 << 24 |
 			       (u32)rh->hashval2_1 << 16 |
 			       (u32)rh->hashval1_1 << 8 |
 			       (u32)rh->hashval1_2 << 0);
+=======
+		skb_set_hash(skb,
+			     ((u32)rh->hashval2_0 << 24 |
+			      (u32)rh->hashval2_1 << 16 |
+			      (u32)rh->hashval1_1 << 8 |
+			      (u32)rh->hashval1_2 << 0),
+			     PKT_HASH_TYPE_L3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb_pull(skb, sizeof(*rh));
 
 	rp->rx_packets++;
@@ -3513,7 +3643,11 @@ static int niu_rbr_fill(struct niu *np, struct rx_ring_info *rp, gfp_t mask)
 	err = 0;
 	while (index < (rp->rbr_table_size - blocks_per_page)) {
 		err = niu_rbr_add_page(np, rp, mask, index);
+<<<<<<< HEAD
 		if (err)
+=======
+		if (unlikely(err))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		index += blocks_per_page;
@@ -3532,13 +3666,21 @@ static void niu_rbr_free(struct niu *np, struct rx_ring_info *rp)
 
 		page = rp->rxhash[i];
 		while (page) {
+<<<<<<< HEAD
 			struct page *next = (struct page *) page->mapping;
+=======
+			struct page *next = niu_next_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u64 base = page->index;
 
 			np->ops->unmap_page(np->device, base, PAGE_SIZE,
 					    DMA_FROM_DEVICE);
 			page->index = 0;
+<<<<<<< HEAD
 			page->mapping = NULL;
+=======
+			niu_next_page(page) = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			__free_page(page);
 
@@ -3782,7 +3924,11 @@ static int niu_poll(struct napi_struct *napi, int budget)
 	work_done = niu_poll_core(np, lp, budget);
 
 	if (work_done < budget) {
+<<<<<<< HEAD
 		napi_complete(napi);
+=======
+		napi_complete_done(napi, work_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		niu_ldg_rearm(np, lp, 1);
 	}
 	return work_done;
@@ -3945,8 +4091,11 @@ static void niu_xmac_interrupt(struct niu *np)
 		mp->rx_mcasts += RXMAC_MC_FRM_CNT_COUNT;
 	if (val & XRXMAC_STATUS_RXBCAST_CNT_EXP)
 		mp->rx_bcasts += RXMAC_BC_FRM_CNT_COUNT;
+<<<<<<< HEAD
 	if (val & XRXMAC_STATUS_RXBCAST_CNT_EXP)
 		mp->rx_bcasts += RXMAC_BC_FRM_CNT_COUNT;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (val & XRXMAC_STATUS_RXHIST1_CNT_EXP)
 		mp->rx_hist_cnt1 += RXMAC_HIST_CNT1_COUNT;
 	if (val & XRXMAC_STATUS_RXHIST2_CNT_EXP)
@@ -4338,7 +4487,11 @@ static int niu_alloc_rx_ring_info(struct niu *np,
 {
 	BUILD_BUG_ON(sizeof(struct rxdma_mailbox) != 64);
 
+<<<<<<< HEAD
 	rp->rxhash = kzalloc(MAX_RBR_RING_SIZE * sizeof(struct page *),
+=======
+	rp->rxhash = kcalloc(MAX_RBR_RING_SIZE, sizeof(struct page *),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     GFP_KERNEL);
 	if (!rp->rxhash)
 		return -ENOMEM;
@@ -4519,7 +4672,11 @@ static int niu_alloc_channels(struct niu *np)
 
 		err = niu_rbr_fill(np, rp, GFP_KERNEL);
 		if (err)
+<<<<<<< HEAD
 			return err;
+=======
+			goto out_err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tx_rings = kcalloc(num_tx_rings, sizeof(struct tx_ring_info),
@@ -6119,10 +6276,15 @@ static int niu_open(struct net_device *dev)
 
 	err = niu_init_hw(np);
 	if (!err) {
+<<<<<<< HEAD
 		init_timer(&np->timer);
 		np->timer.expires = jiffies + HZ;
 		np->timer.data = (unsigned long) np;
 		np->timer.function = niu_timer;
+=======
+		timer_setup(&np->timer, niu_timer, 0);
+		np->timer.expires = jiffies + HZ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = niu_enable_interrupts(np, 1);
 		if (err)
@@ -6241,7 +6403,11 @@ static void niu_get_rx_stats(struct niu *np,
 
 	pkts = dropped = errors = bytes = 0;
 
+<<<<<<< HEAD
 	rx_rings = ACCESS_ONCE(np->rx_rings);
+=======
+	rx_rings = READ_ONCE(np->rx_rings);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rx_rings)
 		goto no_rings;
 
@@ -6272,7 +6438,11 @@ static void niu_get_tx_stats(struct niu *np,
 
 	pkts = errors = bytes = 0;
 
+<<<<<<< HEAD
 	tx_rings = ACCESS_ONCE(np->tx_rings);
+=======
+	tx_rings = READ_ONCE(np->tx_rings);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tx_rings)
 		goto no_rings;
 
@@ -6290,8 +6460,13 @@ no_rings:
 	stats->tx_errors = errors;
 }
 
+<<<<<<< HEAD
 static struct rtnl_link_stats64 *niu_get_stats(struct net_device *dev,
 					       struct rtnl_link_stats64 *stats)
+=======
+static void niu_get_stats(struct net_device *dev,
+			  struct rtnl_link_stats64 *stats)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct niu *np = netdev_priv(dev);
 
@@ -6299,8 +6474,11 @@ static struct rtnl_link_stats64 *niu_get_stats(struct net_device *dev,
 		niu_get_rx_stats(np, stats);
 		niu_get_tx_stats(np, stats);
 	}
+<<<<<<< HEAD
 
 	return stats;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void niu_load_hash_xmac(struct niu *np, u16 *hash)
@@ -6406,7 +6584,11 @@ static int niu_set_mac_addr(struct net_device *dev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, addr->sa_data, ETH_ALEN);
+=======
+	eth_hw_addr_set(dev, addr->sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!netif_running(dev))
 		return 0;
@@ -6427,7 +6609,11 @@ static int niu_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 
 static void niu_netif_stop(struct niu *np)
 {
+<<<<<<< HEAD
 	np->dev->trans_start = jiffies;	/* prevent tx timeout */
+=======
+	netif_trans_update(np->dev);	/* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	niu_disable_napi(np);
 
@@ -6460,8 +6646,12 @@ static void niu_reset_buffers(struct niu *np)
 
 				page = rp->rxhash[j];
 				while (page) {
+<<<<<<< HEAD
 					struct page *next =
 						(struct page *) page->mapping;
+=======
+					struct page *next = niu_next_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					u64 base = page->index;
 					base = base >> RBR_DESCR_ADDR_SHIFT;
 					rp->rbr[k++] = cpu_to_le32(base);
@@ -6535,7 +6725,11 @@ static void niu_reset_task(struct work_struct *work)
 	spin_unlock_irqrestore(&np->lock, flags);
 }
 
+<<<<<<< HEAD
 static void niu_tx_timeout(struct net_device *dev)
+=======
+static void niu_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct niu *np = netdev_priv(dev);
 
@@ -6614,7 +6808,11 @@ static u64 niu_compute_tx_flags(struct sk_buff *skb, struct ethhdr *ehdr,
 	       (len << TXHDR_LEN_SHIFT) |
 	       ((l3off / 2) << TXHDR_L3START_SHIFT) |
 	       (ihl << TXHDR_IHL_SHIFT) |
+<<<<<<< HEAD
 	       ((eth_proto_inner < 1536) ? TXHDR_LLC : 0) |
+=======
+	       ((eth_proto_inner < ETH_P_802_3_MIN) ? TXHDR_LLC : 0) |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       ((eth_proto == ETH_P_8021Q) ? TXHDR_VLAN : 0) |
 	       (ipv6 ? TXHDR_IP_VER : 0) |
 	       csum_bits);
@@ -6646,6 +6844,7 @@ static netdev_tx_t niu_start_xmit(struct sk_buff *skb,
 		return NETDEV_TX_BUSY;
 	}
 
+<<<<<<< HEAD
 	if (skb->len < ETH_ZLEN) {
 		unsigned int pad_bytes = ETH_ZLEN - skb->len;
 
@@ -6653,6 +6852,10 @@ static netdev_tx_t niu_start_xmit(struct sk_buff *skb,
 			goto out;
 		skb_put(skb, pad_bytes);
 	}
+=======
+	if (eth_skb_pad(skb))
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	len = sizeof(struct tx_pkt_hdr) + 15;
 	if (skb_headroom(skb) < len) {
@@ -6670,7 +6873,11 @@ static netdev_tx_t niu_start_xmit(struct sk_buff *skb,
 	headroom = align + sizeof(struct tx_pkt_hdr);
 
 	ehdr = (struct ethhdr *) skb->data;
+<<<<<<< HEAD
 	tp = (struct tx_pkt_hdr *) skb_push(skb, headroom);
+=======
+	tp = skb_push(skb, headroom);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	len = skb->len - sizeof(struct tx_pkt_hdr);
 	tp->flags = cpu_to_le64(niu_compute_tx_flags(skb, ehdr, align, len));
@@ -6718,7 +6925,11 @@ static netdev_tx_t niu_start_xmit(struct sk_buff *skb,
 
 		len = skb_frag_size(frag);
 		mapping = np->ops->map_page(np->device, skb_frag_page(frag),
+<<<<<<< HEAD
 					    frag->page_offset, len,
+=======
+					    skb_frag_off(frag), len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					    DMA_TO_DEVICE);
 
 		rp->tx_buffs[prod].skb = NULL;
@@ -6755,9 +6966,12 @@ static int niu_change_mtu(struct net_device *dev, int new_mtu)
 	struct niu *np = netdev_priv(dev);
 	int err, orig_jumbo, new_jumbo;
 
+<<<<<<< HEAD
 	if (new_mtu < 68 || new_mtu > NIU_MAX_MTU)
 		return -EINVAL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	orig_jumbo = (dev->mtu > ETH_DATA_LEN);
 	new_jumbo = (new_mtu > ETH_DATA_LEN);
 
@@ -6781,10 +6995,15 @@ static int niu_change_mtu(struct net_device *dev, int new_mtu)
 
 	err = niu_init_hw(np);
 	if (!err) {
+<<<<<<< HEAD
 		init_timer(&np->timer);
 		np->timer.expires = jiffies + HZ;
 		np->timer.data = (unsigned long) np;
 		np->timer.function = niu_timer;
+=======
+		timer_setup(&np->timer, niu_timer, 0);
+		np->timer.expires = jiffies + HZ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		err = niu_enable_interrupts(np, 1);
 		if (err)
@@ -6810,6 +7029,7 @@ static void niu_get_drvinfo(struct net_device *dev,
 	struct niu *np = netdev_priv(dev);
 	struct niu_vpd *vpd = &np->vpd;
 
+<<<<<<< HEAD
 	strlcpy(info->driver, DRV_MODULE_NAME, sizeof(info->driver));
 	strlcpy(info->version, DRV_MODULE_VERSION, sizeof(info->version));
 	snprintf(info->fw_version, sizeof(info->fw_version), "%d.%d",
@@ -6820,6 +7040,19 @@ static void niu_get_drvinfo(struct net_device *dev,
 }
 
 static int niu_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
+=======
+	strscpy(info->driver, DRV_MODULE_NAME, sizeof(info->driver));
+	strscpy(info->version, DRV_MODULE_VERSION, sizeof(info->version));
+	snprintf(info->fw_version, sizeof(info->fw_version), "%d.%d",
+		vpd->fcode_major, vpd->fcode_minor);
+	if (np->parent->plat_type != PLAT_TYPE_NIU)
+		strscpy(info->bus_info, pci_name(np->pdev),
+			sizeof(info->bus_info));
+}
+
+static int niu_get_link_ksettings(struct net_device *dev,
+				  struct ethtool_link_ksettings *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct niu *np = netdev_priv(dev);
 	struct niu_link_config *lp;
@@ -6827,6 +7060,7 @@ static int niu_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 	lp = &np->link_config;
 
 	memset(cmd, 0, sizeof(*cmd));
+<<<<<<< HEAD
 	cmd->phy_address = np->phy_addr;
 	cmd->supported = lp->supported;
 	cmd->advertising = lp->active_advertising;
@@ -6836,19 +7070,43 @@ static int niu_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 	cmd->port = (np->flags & NIU_FLAGS_FIBER) ? PORT_FIBRE : PORT_TP;
 	cmd->transceiver = (np->flags & NIU_FLAGS_XCVR_SERDES) ?
 		XCVR_EXTERNAL : XCVR_INTERNAL;
+=======
+	cmd->base.phy_address = np->phy_addr;
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
+						lp->supported);
+	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.advertising,
+						lp->active_advertising);
+	cmd->base.autoneg = lp->active_autoneg;
+	cmd->base.speed = lp->active_speed;
+	cmd->base.duplex = lp->active_duplex;
+	cmd->base.port = (np->flags & NIU_FLAGS_FIBER) ? PORT_FIBRE : PORT_TP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int niu_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
+=======
+static int niu_set_link_ksettings(struct net_device *dev,
+				  const struct ethtool_link_ksettings *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct niu *np = netdev_priv(dev);
 	struct niu_link_config *lp = &np->link_config;
 
+<<<<<<< HEAD
 	lp->advertising = cmd->advertising;
 	lp->speed = ethtool_cmd_speed(cmd);
 	lp->duplex = cmd->duplex;
 	lp->autoneg = cmd->autoneg;
+=======
+	ethtool_convert_link_mode_to_legacy_u32(&lp->advertising,
+						cmd->link_modes.advertising);
+	lp->speed = cmd->base.speed;
+	lp->duplex = cmd->base.duplex;
+	lp->autoneg = cmd->base.autoneg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return niu_init_link(np);
 }
 
@@ -6988,10 +7246,17 @@ static int niu_class_to_ethflow(u64 class, int *flow_type)
 		*flow_type = IP_USER_FLOW;
 		break;
 	default:
+<<<<<<< HEAD
 		return 0;
 	}
 
 	return 1;
+=======
+		return -EINVAL;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int niu_ethflow_to_class(int flow_type, u64 *class)
@@ -7197,11 +7462,17 @@ static int niu_get_ethtool_tcam_entry(struct niu *np,
 	class = (tp->key[0] & TCAM_V4KEY0_CLASS_CODE) >>
 		TCAM_V4KEY0_CLASS_CODE_SHIFT;
 	ret = niu_class_to_ethflow(class, &fsp->flow_type);
+<<<<<<< HEAD
 
 	if (ret < 0) {
 		netdev_info(np->dev, "niu%d: niu_class_to_ethflow failed\n",
 			    parent->index);
 		ret = -EINVAL;
+=======
+	if (ret < 0) {
+		netdev_info(np->dev, "niu%d: niu_class_to_ethflow failed\n",
+			    parent->index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -7489,6 +7760,10 @@ static int niu_add_ethtool_tcam_entry(struct niu *np,
 					class = CLASS_CODE_USER_PROG4;
 					break;
 				default:
+<<<<<<< HEAD
+=======
+					class = CLASS_CODE_UNRECOG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					break;
 				}
 				ret = tcam_user_ip_class_set(np, class, 0,
@@ -7910,14 +8185,22 @@ static const struct ethtool_ops niu_ethtool_ops = {
 	.nway_reset		= niu_nway_reset,
 	.get_eeprom_len		= niu_get_eeprom_len,
 	.get_eeprom		= niu_get_eeprom,
+<<<<<<< HEAD
 	.get_settings		= niu_get_settings,
 	.set_settings		= niu_set_settings,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_strings		= niu_get_strings,
 	.get_sset_count		= niu_get_sset_count,
 	.get_ethtool_stats	= niu_get_ethtool_stats,
 	.set_phys_id		= niu_set_phys_id,
 	.get_rxnfc		= niu_get_nfc,
 	.set_rxnfc		= niu_set_nfc,
+<<<<<<< HEAD
+=======
+	.get_link_ksettings	= niu_get_link_ksettings,
+	.set_link_ksettings	= niu_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int niu_ldg_assign_ldn(struct niu *np, struct niu_parent *parent,
@@ -7937,7 +8220,11 @@ static int niu_ldg_assign_ldn(struct niu *np, struct niu_parent *parent,
 		 * won't get any interrupts and that's painful to debug.
 		 */
 		if (nr64(LDG_NUM(ldn)) != ldg) {
+<<<<<<< HEAD
 			dev_err(np->device, "Port %u, mis-matched LDG assignment for ldn %d, should be %d is %llu\n",
+=======
+			dev_err(np->device, "Port %u, mismatched LDG assignment for ldn %d, should be %d is %llu\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				np->port, ldn, ldg,
 				(unsigned long long) nr64(LDG_NUM(ldn)));
 			return -EINVAL;
@@ -7971,7 +8258,11 @@ static int niu_set_ldg_sid(struct niu *np, int ldg, int func, int vector)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit niu_pci_eeprom_read(struct niu *np, u32 addr)
+=======
+static int niu_pci_eeprom_read(struct niu *np, u32 addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 frame, frame_base = (ESPC_PIO_STAT_READ_START |
 				 (addr << ESPC_PIO_STAT_ADDR_SHIFT));
@@ -8014,7 +8305,11 @@ static int __devinit niu_pci_eeprom_read(struct niu *np, u32 addr)
 	return (frame & ESPC_PIO_STAT_DATA) >> ESPC_PIO_STAT_DATA_SHIFT;
 }
 
+<<<<<<< HEAD
 static int __devinit niu_pci_eeprom_read16(struct niu *np, u32 off)
+=======
+static int niu_pci_eeprom_read16(struct niu *np, u32 off)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = niu_pci_eeprom_read(np, off);
 	u16 val;
@@ -8030,7 +8325,11 @@ static int __devinit niu_pci_eeprom_read16(struct niu *np, u32 off)
 	return val;
 }
 
+<<<<<<< HEAD
 static int __devinit niu_pci_eeprom_read16_swp(struct niu *np, u32 off)
+=======
+static int niu_pci_eeprom_read16_swp(struct niu *np, u32 off)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = niu_pci_eeprom_read(np, off);
 	u16 val;
@@ -8048,10 +8347,15 @@ static int __devinit niu_pci_eeprom_read16_swp(struct niu *np, u32 off)
 	return val;
 }
 
+<<<<<<< HEAD
 static int __devinit niu_pci_vpd_get_propname(struct niu *np,
 					      u32 off,
 					      char *namebuf,
 					      int namebuf_len)
+=======
+static int niu_pci_vpd_get_propname(struct niu *np, u32 off, char *namebuf,
+				    int namebuf_len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -8069,7 +8373,11 @@ static int __devinit niu_pci_vpd_get_propname(struct niu *np,
 	return i + 1;
 }
 
+<<<<<<< HEAD
 static void __devinit niu_vpd_parse_version(struct niu *np)
+=======
+static void niu_vpd_parse_version(struct niu *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct niu_vpd *vpd = &np->vpd;
 	int len = strlen(vpd->version) + 1;
@@ -8096,8 +8404,12 @@ static void __devinit niu_vpd_parse_version(struct niu *np)
 }
 
 /* ESPC_PIO_EN_ENABLE must be set */
+<<<<<<< HEAD
 static int __devinit niu_pci_vpd_scan_props(struct niu *np,
 					    u32 start, u32 end)
+=======
+static int niu_pci_vpd_scan_props(struct niu *np, u32 start, u32 end)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int found_mask = 0;
 #define FOUND_MASK_MODEL	0x00000001
@@ -8128,6 +8440,11 @@ static int __devinit niu_pci_vpd_scan_props(struct niu *np,
 		start += 3;
 
 		prop_len = niu_pci_eeprom_read(np, start + 4);
+<<<<<<< HEAD
+=======
+		if (prop_len < 0)
+			return prop_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = niu_pci_vpd_get_propname(np, start + 5, namebuf, 64);
 		if (err < 0)
 			return err;
@@ -8172,8 +8489,17 @@ static int __devinit niu_pci_vpd_scan_props(struct niu *np,
 			netif_printk(np, probe, KERN_DEBUG, np->dev,
 				     "VPD_SCAN: Reading in property [%s] len[%d]\n",
 				     namebuf, prop_len);
+<<<<<<< HEAD
 			for (i = 0; i < prop_len; i++)
 				*prop_buf++ = niu_pci_eeprom_read(np, off + i);
+=======
+			for (i = 0; i < prop_len; i++) {
+				err =  niu_pci_eeprom_read(np, off + i);
+				if (err < 0)
+					return err;
+				*prop_buf++ = err;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		start += len;
@@ -8183,14 +8509,22 @@ static int __devinit niu_pci_vpd_scan_props(struct niu *np,
 }
 
 /* ESPC_PIO_EN_ENABLE must be set */
+<<<<<<< HEAD
 static void __devinit niu_pci_vpd_fetch(struct niu *np, u32 start)
+=======
+static int niu_pci_vpd_fetch(struct niu *np, u32 start)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 offset;
 	int err;
 
 	err = niu_pci_eeprom_read16_swp(np, start + 1);
 	if (err < 0)
+<<<<<<< HEAD
 		return;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	offset = err + 3;
 
@@ -8199,12 +8533,23 @@ static void __devinit niu_pci_vpd_fetch(struct niu *np, u32 start)
 		u32 end;
 
 		err = niu_pci_eeprom_read(np, here);
+<<<<<<< HEAD
 		if (err != 0x90)
 			return;
 
 		err = niu_pci_eeprom_read16_swp(np, here + 1);
 		if (err < 0)
 			return;
+=======
+		if (err < 0)
+			return err;
+		if (err != 0x90)
+			return -EINVAL;
+
+		err = niu_pci_eeprom_read16_swp(np, here + 1);
+		if (err < 0)
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		here = start + offset + 3;
 		end = start + offset + err;
@@ -8212,6 +8557,7 @@ static void __devinit niu_pci_vpd_fetch(struct niu *np, u32 start)
 		offset += err;
 
 		err = niu_pci_vpd_scan_props(np, here, end);
+<<<<<<< HEAD
 		if (err < 0 || err == 1)
 			return;
 	}
@@ -8219,6 +8565,19 @@ static void __devinit niu_pci_vpd_fetch(struct niu *np, u32 start)
 
 /* ESPC_PIO_EN_ENABLE must be set */
 static u32 __devinit niu_pci_vpd_offset(struct niu *np)
+=======
+		if (err < 0)
+			return err;
+		/* ret == 1 is not an error */
+		if (err == 1)
+			return 0;
+	}
+	return 0;
+}
+
+/* ESPC_PIO_EN_ENABLE must be set */
+static u32 niu_pci_vpd_offset(struct niu *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 start = 0, end = ESPC_EEPROM_SIZE, ret;
 	int err;
@@ -8273,8 +8632,12 @@ static u32 __devinit niu_pci_vpd_offset(struct niu *np)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit niu_phy_type_prop_decode(struct niu *np,
 					      const char *phy_prop)
+=======
+static int niu_phy_type_prop_decode(struct niu *np, const char *phy_prop)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!strcmp(phy_prop, "mif")) {
 		/* 1G copper, MII */
@@ -8328,10 +8691,18 @@ static int niu_pci_vpd_get_nports(struct niu *np)
 	return ports;
 }
 
+<<<<<<< HEAD
 static void __devinit niu_pci_vpd_validate(struct niu *np)
 {
 	struct net_device *dev = np->dev;
 	struct niu_vpd *vpd = &np->vpd;
+=======
+static void niu_pci_vpd_validate(struct niu *np)
+{
+	struct net_device *dev = np->dev;
+	struct niu_vpd *vpd = &np->vpd;
+	u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 val8;
 
 	if (!is_valid_ether_addr(&vpd->local_mac[0])) {
@@ -8364,6 +8735,7 @@ static void __devinit niu_pci_vpd_validate(struct niu *np)
 		return;
 	}
 
+<<<<<<< HEAD
 	memcpy(dev->perm_addr, vpd->local_mac, ETH_ALEN);
 
 	val8 = dev->perm_addr[5];
@@ -8377,6 +8749,22 @@ static void __devinit niu_pci_vpd_validate(struct niu *np)
 static int __devinit niu_pci_probe_sprom(struct niu *np)
 {
 	struct net_device *dev = np->dev;
+=======
+	ether_addr_copy(addr, vpd->local_mac);
+
+	val8 = addr[5];
+	addr[5] += np->port;
+	if (addr[5] < val8)
+		addr[4]++;
+
+	eth_hw_addr_set(dev, addr);
+}
+
+static int niu_pci_probe_sprom(struct niu *np)
+{
+	struct net_device *dev = np->dev;
+	u8 addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int len, i;
 	u64 val, sum;
 	u8 val8;
@@ -8468,14 +8856,22 @@ static int __devinit niu_pci_probe_sprom(struct niu *np)
 	val = nr64(ESPC_MAC_ADDR0);
 	netif_printk(np, probe, KERN_DEBUG, np->dev,
 		     "SPROM: MAC_ADDR0[%08llx]\n", (unsigned long long)val);
+<<<<<<< HEAD
 	dev->perm_addr[0] = (val >>  0) & 0xff;
 	dev->perm_addr[1] = (val >>  8) & 0xff;
 	dev->perm_addr[2] = (val >> 16) & 0xff;
 	dev->perm_addr[3] = (val >> 24) & 0xff;
+=======
+	addr[0] = (val >>  0) & 0xff;
+	addr[1] = (val >>  8) & 0xff;
+	addr[2] = (val >> 16) & 0xff;
+	addr[3] = (val >> 24) & 0xff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = nr64(ESPC_MAC_ADDR1);
 	netif_printk(np, probe, KERN_DEBUG, np->dev,
 		     "SPROM: MAC_ADDR1[%08llx]\n", (unsigned long long)val);
+<<<<<<< HEAD
 	dev->perm_addr[4] = (val >>  0) & 0xff;
 	dev->perm_addr[5] = (val >>  8) & 0xff;
 
@@ -8491,6 +8887,23 @@ static int __devinit niu_pci_probe_sprom(struct niu *np)
 		dev->perm_addr[4]++;
 
 	memcpy(dev->dev_addr, dev->perm_addr, dev->addr_len);
+=======
+	addr[4] = (val >>  0) & 0xff;
+	addr[5] = (val >>  8) & 0xff;
+
+	if (!is_valid_ether_addr(addr)) {
+		dev_err(np->device, "SPROM MAC address invalid [ %pM ]\n",
+			addr);
+		return -EINVAL;
+	}
+
+	val8 = addr[5];
+	addr[5] += np->port;
+	if (addr[5] < val8)
+		addr[4]++;
+
+	eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = nr64(ESPC_MOD_STR_LEN);
 	netif_printk(np, probe, KERN_DEBUG, np->dev,
@@ -8532,7 +8945,11 @@ static int __devinit niu_pci_probe_sprom(struct niu *np)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit niu_get_and_validate_port(struct niu *np)
+=======
+static int niu_get_and_validate_port(struct niu *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct niu_parent *parent = np->parent;
 
@@ -8566,10 +8983,15 @@ static int __devinit niu_get_and_validate_port(struct niu *np)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit phy_record(struct niu_parent *parent,
 				struct phy_probe_info *p,
 				int dev_id_1, int dev_id_2, u8 phy_port,
 				int type)
+=======
+static int phy_record(struct niu_parent *parent, struct phy_probe_info *p,
+		      int dev_id_1, int dev_id_2, u8 phy_port, int type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 id = (dev_id_1 << 16) | dev_id_2;
 	u8 idx;
@@ -8605,7 +9027,11 @@ static int __devinit phy_record(struct niu_parent *parent,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit port_has_10g(struct phy_probe_info *p, int port)
+=======
+static int port_has_10g(struct phy_probe_info *p, int port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -8621,7 +9047,11 @@ static int __devinit port_has_10g(struct phy_probe_info *p, int port)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit count_10g_ports(struct phy_probe_info *p, int *lowest)
+=======
+static int count_10g_ports(struct phy_probe_info *p, int *lowest)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int port, cnt;
 
@@ -8638,7 +9068,11 @@ static int __devinit count_10g_ports(struct phy_probe_info *p, int *lowest)
 	return cnt;
 }
 
+<<<<<<< HEAD
 static int __devinit count_1g_ports(struct phy_probe_info *p, int *lowest)
+=======
+static int count_1g_ports(struct phy_probe_info *p, int *lowest)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	*lowest = 32;
 	if (p->cur[PHY_TYPE_MII])
@@ -8647,7 +9081,11 @@ static int __devinit count_1g_ports(struct phy_probe_info *p, int *lowest)
 	return p->cur[PHY_TYPE_MII];
 }
 
+<<<<<<< HEAD
 static void __devinit niu_n2_divide_channels(struct niu_parent *parent)
+=======
+static void niu_n2_divide_channels(struct niu_parent *parent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int num_ports = parent->num_ports;
 	int i;
@@ -8663,8 +9101,13 @@ static void __devinit niu_n2_divide_channels(struct niu_parent *parent)
 	}
 }
 
+<<<<<<< HEAD
 static void __devinit niu_divide_channels(struct niu_parent *parent,
 					  int num_10g, int num_1g)
+=======
+static void niu_divide_channels(struct niu_parent *parent,
+				int num_10g, int num_1g)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int num_ports = parent->num_ports;
 	int rx_chans_per_10g, rx_chans_per_1g;
@@ -8720,6 +9163,7 @@ static void __devinit niu_divide_channels(struct niu_parent *parent,
 			parent->txchan_per_port[i] = 1;
 	}
 	if (tot_rx < NIU_NUM_RXCHAN || tot_tx < NIU_NUM_TXCHAN) {
+<<<<<<< HEAD
 		pr_warning("niu%d: Driver bug, wasted channels, RX[%d] TX[%d]\n",
 			   parent->index, tot_rx, tot_tx);
 	}
@@ -8727,6 +9171,15 @@ static void __devinit niu_divide_channels(struct niu_parent *parent,
 
 static void __devinit niu_divide_rdc_groups(struct niu_parent *parent,
 					    int num_10g, int num_1g)
+=======
+		pr_warn("niu%d: Driver bug, wasted channels, RX[%d] TX[%d]\n",
+			parent->index, tot_rx, tot_tx);
+	}
+}
+
+static void niu_divide_rdc_groups(struct niu_parent *parent,
+				  int num_10g, int num_1g)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, num_ports = parent->num_ports;
 	int rdc_group, rdc_groups_per_port;
@@ -8770,9 +9223,14 @@ static void __devinit niu_divide_rdc_groups(struct niu_parent *parent,
 	}
 }
 
+<<<<<<< HEAD
 static int __devinit fill_phy_probe_info(struct niu *np,
 					 struct niu_parent *parent,
 					 struct phy_probe_info *info)
+=======
+static int fill_phy_probe_info(struct niu *np, struct niu_parent *parent,
+			       struct phy_probe_info *info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	int port, err;
@@ -8813,7 +9271,11 @@ static int __devinit fill_phy_probe_info(struct niu *np,
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devinit walk_phys(struct niu *np, struct niu_parent *parent)
+=======
+static int walk_phys(struct niu *np, struct niu_parent *parent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct phy_probe_info *info = &parent->phy_probe_info;
 	int lowest_10g, lowest_1g;
@@ -8866,7 +9328,11 @@ static int __devinit walk_phys(struct niu *np, struct niu_parent *parent)
 			else
 				goto unknown_vg_1g_port;
 
+<<<<<<< HEAD
 			/* fallthru */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x22:
 			val = (phy_encode(PORT_TYPE_10G, 0) |
 			       phy_encode(PORT_TYPE_10G, 1) |
@@ -8891,7 +9357,11 @@ static int __devinit walk_phys(struct niu *np, struct niu_parent *parent)
 			else
 				goto unknown_vg_1g_port;
 
+<<<<<<< HEAD
 			/* fallthru */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x13:
 			if ((lowest_10g & 0x7) == 0)
 				val = (phy_encode(PORT_TYPE_10G, 0) |
@@ -8942,7 +9412,11 @@ unknown_vg_1g_port:
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static int __devinit niu_probe_ports(struct niu *np)
+=======
+static int niu_probe_ports(struct niu *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct niu_parent *parent = np->parent;
 	int err, i;
@@ -8963,7 +9437,11 @@ static int __devinit niu_probe_ports(struct niu *np)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit niu_classifier_swstate_init(struct niu *np)
+=======
+static int niu_classifier_swstate_init(struct niu *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct niu_classifier *cp = &np->clas;
 
@@ -8975,7 +9453,11 @@ static int __devinit niu_classifier_swstate_init(struct niu *np)
 	return fflp_early_init(np);
 }
 
+<<<<<<< HEAD
 static void __devinit niu_link_config_init(struct niu *np)
+=======
+static void niu_link_config_init(struct niu *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct niu_link_config *lp = &np->link_config;
 
@@ -9000,7 +9482,11 @@ static void __devinit niu_link_config_init(struct niu *np)
 #endif
 }
 
+<<<<<<< HEAD
 static int __devinit niu_init_mac_ipp_pcs_base(struct niu *np)
+=======
+static int niu_init_mac_ipp_pcs_base(struct niu *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (np->port) {
 	case 0:
@@ -9039,12 +9525,20 @@ static int __devinit niu_init_mac_ipp_pcs_base(struct niu *np)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devinit niu_try_msix(struct niu *np, u8 *ldg_num_map)
+=======
+static void niu_try_msix(struct niu *np, u8 *ldg_num_map)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct msix_entry msi_vec[NIU_NUM_LDG];
 	struct niu_parent *parent = np->parent;
 	struct pci_dev *pdev = np->pdev;
+<<<<<<< HEAD
 	int i, num_irqs, err;
+=======
+	int i, num_irqs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 first_ldg;
 
 	first_ldg = (NIU_NUM_LDG / parent->num_ports) * np->port;
@@ -9056,12 +9550,16 @@ static void __devinit niu_try_msix(struct niu *np, u8 *ldg_num_map)
 		    (np->port == 0 ? 3 : 1));
 	BUG_ON(num_irqs > (NIU_NUM_LDG / parent->num_ports));
 
+<<<<<<< HEAD
 retry:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < num_irqs; i++) {
 		msi_vec[i].vector = 0;
 		msi_vec[i].entry = i;
 	}
 
+<<<<<<< HEAD
 	err = pci_enable_msix(pdev, msi_vec, num_irqs);
 	if (err < 0) {
 		np->flags &= ~NIU_FLAGS_MSIX;
@@ -9071,6 +9569,13 @@ retry:
 		num_irqs = err;
 		goto retry;
 	}
+=======
+	num_irqs = pci_enable_msix_range(pdev, msi_vec, 1, num_irqs);
+	if (num_irqs < 0) {
+		np->flags &= ~NIU_FLAGS_MSIX;
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	np->flags |= NIU_FLAGS_MSIX;
 	for (i = 0; i < num_irqs; i++)
@@ -9078,7 +9583,11 @@ retry:
 	np->num_ldg = num_irqs;
 }
 
+<<<<<<< HEAD
 static int __devinit niu_n2_irq_init(struct niu *np, u8 *ldg_num_map)
+=======
+static int niu_n2_irq_init(struct niu *np, u8 *ldg_num_map)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_SPARC64
 	struct platform_device *op = np->op;
@@ -9102,7 +9611,11 @@ static int __devinit niu_n2_irq_init(struct niu *np, u8 *ldg_num_map)
 #endif
 }
 
+<<<<<<< HEAD
 static int __devinit niu_ldg_init(struct niu *np)
+=======
+static int niu_ldg_init(struct niu *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct niu_parent *parent = np->parent;
 	u8 ldg_num_map[NIU_NUM_LDG];
@@ -9123,7 +9636,11 @@ static int __devinit niu_ldg_init(struct niu *np)
 	for (i = 0; i < np->num_ldg; i++) {
 		struct niu_ldg *lp = &np->ldg[i];
 
+<<<<<<< HEAD
 		netif_napi_add(np->dev, &lp->napi, niu_poll, 64);
+=======
+		netif_napi_add(np->dev, &lp->napi, niu_poll);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		lp->np = np;
 		lp->ldg_num = ldg_num_map[i];
@@ -9219,13 +9736,21 @@ static int __devinit niu_ldg_init(struct niu *np)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit niu_ldg_free(struct niu *np)
+=======
+static void niu_ldg_free(struct niu *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (np->flags & NIU_FLAGS_MSIX)
 		pci_disable_msix(np->pdev);
 }
 
+<<<<<<< HEAD
 static int __devinit niu_get_of_props(struct niu *np)
+=======
+static int niu_get_of_props(struct niu *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_SPARC64
 	struct net_device *dev = np->dev;
@@ -9240,10 +9765,16 @@ static int __devinit niu_get_of_props(struct niu *np)
 	else
 		dp = pci_device_to_OF_node(np->pdev);
 
+<<<<<<< HEAD
 	phy_type = of_get_property(dp, "phy-type", &prop_len);
 	if (!phy_type) {
 		netdev_err(dev, "%s: OF node lacks phy-type property\n",
 			   dp->full_name);
+=======
+	phy_type = of_get_property(dp, "phy-type", NULL);
+	if (!phy_type) {
+		netdev_err(dev, "%pOF: OF node lacks phy-type property\n", dp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -9253,13 +9784,19 @@ static int __devinit niu_get_of_props(struct niu *np)
 	strcpy(np->vpd.phy_type, phy_type);
 
 	if (niu_phy_type_prop_decode(np, np->vpd.phy_type)) {
+<<<<<<< HEAD
 		netdev_err(dev, "%s: Illegal phy string [%s]\n",
 			   dp->full_name, np->vpd.phy_type);
+=======
+		netdev_err(dev, "%pOF: Illegal phy string [%s]\n",
+			   dp, np->vpd.phy_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	mac_addr = of_get_property(dp, "local-mac-address", &prop_len);
 	if (!mac_addr) {
+<<<<<<< HEAD
 		netdev_err(dev, "%s: OF node lacks local-mac-address property\n",
 			   dp->full_name);
 		return -EINVAL;
@@ -9279,11 +9816,33 @@ static int __devinit niu_get_of_props(struct niu *np)
 	memcpy(dev->dev_addr, dev->perm_addr, dev->addr_len);
 
 	model = of_get_property(dp, "model", &prop_len);
+=======
+		netdev_err(dev, "%pOF: OF node lacks local-mac-address property\n",
+			   dp);
+		return -EINVAL;
+	}
+	if (prop_len != dev->addr_len) {
+		netdev_err(dev, "%pOF: OF MAC address prop len (%d) is wrong\n",
+			   dp, prop_len);
+	}
+	eth_hw_addr_set(dev, mac_addr);
+	if (!is_valid_ether_addr(&dev->dev_addr[0])) {
+		netdev_err(dev, "%pOF: OF MAC address is invalid\n", dp);
+		netdev_err(dev, "%pOF: [ %pM ]\n", dp, dev->dev_addr);
+		return -EINVAL;
+	}
+
+	model = of_get_property(dp, "model", NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (model)
 		strcpy(np->vpd.model, model);
 
+<<<<<<< HEAD
 	if (of_find_property(dp, "hot-swappable-phy", &prop_len)) {
+=======
+	if (of_property_read_bool(dp, "hot-swappable-phy")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		np->flags |= (NIU_FLAGS_10G | NIU_FLAGS_FIBER |
 			NIU_FLAGS_HOTPLUG_PHY);
 	}
@@ -9294,7 +9853,11 @@ static int __devinit niu_get_of_props(struct niu *np)
 #endif
 }
 
+<<<<<<< HEAD
 static int __devinit niu_get_invariants(struct niu *np)
+=======
+static int niu_get_invariants(struct niu *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err, have_props;
 	u32 offset;
@@ -9322,8 +9885,16 @@ static int __devinit niu_get_invariants(struct niu *np)
 		offset = niu_pci_vpd_offset(np);
 		netif_printk(np, probe, KERN_DEBUG, np->dev,
 			     "%s() VPD offset [%08x]\n", __func__, offset);
+<<<<<<< HEAD
 		if (offset)
 			niu_pci_vpd_fetch(np, offset);
+=======
+		if (offset) {
+			err = niu_pci_vpd_fetch(np, offset);
+			if (err < 0)
+				return err;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nw64(ESPC_PIO_EN, 0);
 
 		if (np->flags & NIU_FLAGS_VPD_VALID) {
@@ -9367,7 +9938,11 @@ static ssize_t show_port_phy(struct device *dev,
 			     struct device_attribute *attr, char *buf)
 {
 	struct platform_device *plat_dev = to_platform_device(dev);
+<<<<<<< HEAD
 	struct niu_parent *p = plat_dev->dev.platform_data;
+=======
+	struct niu_parent *p = dev_get_platdata(&plat_dev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 port_phy = p->port_phy;
 	char *orig_buf = buf;
 	int i;
@@ -9397,7 +9972,11 @@ static ssize_t show_plat_type(struct device *dev,
 			      struct device_attribute *attr, char *buf)
 {
 	struct platform_device *plat_dev = to_platform_device(dev);
+<<<<<<< HEAD
 	struct niu_parent *p = plat_dev->dev.platform_data;
+=======
+	struct niu_parent *p = dev_get_platdata(&plat_dev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *type_str;
 
 	switch (p->plat_type) {
@@ -9426,7 +10005,11 @@ static ssize_t __show_chan_per_port(struct device *dev,
 				    int rx)
 {
 	struct platform_device *plat_dev = to_platform_device(dev);
+<<<<<<< HEAD
 	struct niu_parent *p = plat_dev->dev.platform_data;
+=======
+	struct niu_parent *p = dev_get_platdata(&plat_dev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *orig_buf = buf;
 	u8 *arr;
 	int i;
@@ -9459,12 +10042,17 @@ static ssize_t show_num_ports(struct device *dev,
 			      struct device_attribute *attr, char *buf)
 {
 	struct platform_device *plat_dev = to_platform_device(dev);
+<<<<<<< HEAD
 	struct niu_parent *p = plat_dev->dev.platform_data;
+=======
+	struct niu_parent *p = dev_get_platdata(&plat_dev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sprintf(buf, "%d\n", p->num_ports);
 }
 
 static struct device_attribute niu_parent_attributes[] = {
+<<<<<<< HEAD
 	__ATTR(port_phy, S_IRUGO, show_port_phy, NULL),
 	__ATTR(plat_type, S_IRUGO, show_plat_type, NULL),
 	__ATTR(rxchan_per_port, S_IRUGO, show_rxchan_per_port, NULL),
@@ -9476,6 +10064,18 @@ static struct device_attribute niu_parent_attributes[] = {
 static struct niu_parent * __devinit niu_new_parent(struct niu *np,
 						    union niu_parent_id *id,
 						    u8 ptype)
+=======
+	__ATTR(port_phy, 0444, show_port_phy, NULL),
+	__ATTR(plat_type, 0444, show_plat_type, NULL),
+	__ATTR(rxchan_per_port, 0444, show_rxchan_per_port, NULL),
+	__ATTR(txchan_per_port, 0444, show_txchan_per_port, NULL),
+	__ATTR(num_ports, 0444, show_num_ports, NULL),
+	{}
+};
+
+static struct niu_parent *niu_new_parent(struct niu *np,
+					 union niu_parent_id *id, u8 ptype)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct platform_device *plat_dev;
 	struct niu_parent *p;
@@ -9486,7 +10086,11 @@ static struct niu_parent * __devinit niu_new_parent(struct niu *np,
 	if (IS_ERR(plat_dev))
 		return NULL;
 
+<<<<<<< HEAD
 	for (i = 0; attr_name(niu_parent_attributes[i]); i++) {
+=======
+	for (i = 0; niu_parent_attributes[i].attr.name; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int err = device_create_file(&plat_dev->dev,
 					     &niu_parent_attributes[i]);
 		if (err)
@@ -9538,9 +10142,14 @@ fail_unregister:
 	return NULL;
 }
 
+<<<<<<< HEAD
 static struct niu_parent * __devinit niu_get_parent(struct niu *np,
 						    union niu_parent_id *id,
 						    u8 ptype)
+=======
+static struct niu_parent *niu_get_parent(struct niu *np,
+					 union niu_parent_id *id, u8 ptype)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct niu_parent *p, *tmp;
 	int port = np->port;
@@ -9557,7 +10166,11 @@ static struct niu_parent * __devinit niu_get_parent(struct niu *np,
 		p = niu_new_parent(np, id, ptype);
 
 	if (p) {
+<<<<<<< HEAD
 		char port_name[6];
+=======
+		char port_name[8];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int err;
 
 		sprintf(port_name, "port%d", port);
@@ -9578,7 +10191,11 @@ static void niu_put_parent(struct niu *np)
 {
 	struct niu_parent *p = np->parent;
 	u8 port = np->port;
+<<<<<<< HEAD
 	char port_name[6];
+=======
+	char port_name[8];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!p || p->ports[port] != np);
 
@@ -9656,7 +10273,11 @@ static const struct niu_ops niu_pci_ops = {
 	.unmap_single	= niu_pci_unmap_single,
 };
 
+<<<<<<< HEAD
 static void __devinit niu_driver_version(void)
+=======
+static void niu_driver_version(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int niu_version_printed;
 
@@ -9664,10 +10285,17 @@ static void __devinit niu_driver_version(void)
 		pr_info("%s", version);
 }
 
+<<<<<<< HEAD
 static struct net_device * __devinit niu_alloc_and_init(
 	struct device *gen_dev, struct pci_dev *pdev,
 	struct platform_device *op, const struct niu_ops *ops,
 	u8 port)
+=======
+static struct net_device *niu_alloc_and_init(struct device *gen_dev,
+					     struct pci_dev *pdev,
+					     struct platform_device *op,
+					     const struct niu_ops *ops, u8 port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct niu *np;
@@ -9703,19 +10331,31 @@ static const struct net_device_ops niu_netdev_ops = {
 	.ndo_set_rx_mode	= niu_set_rx_mode,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= niu_set_mac_addr,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= niu_ioctl,
+=======
+	.ndo_eth_ioctl		= niu_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout		= niu_tx_timeout,
 	.ndo_change_mtu		= niu_change_mtu,
 };
 
+<<<<<<< HEAD
 static void __devinit niu_assign_netdev_ops(struct net_device *dev)
+=======
+static void niu_assign_netdev_ops(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dev->netdev_ops = &niu_netdev_ops;
 	dev->ethtool_ops = &niu_ethtool_ops;
 	dev->watchdog_timeo = NIU_TX_TIMEOUT;
 }
 
+<<<<<<< HEAD
 static void __devinit niu_device_announce(struct niu *np)
+=======
+static void niu_device_announce(struct niu *np)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = np->dev;
 
@@ -9744,21 +10384,34 @@ static void __devinit niu_device_announce(struct niu *np)
 	}
 }
 
+<<<<<<< HEAD
 static void __devinit niu_set_basic_features(struct net_device *dev)
+=======
+static void niu_set_basic_features(struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dev->hw_features = NETIF_F_SG | NETIF_F_HW_CSUM | NETIF_F_RXHASH;
 	dev->features |= dev->hw_features | NETIF_F_RXCSUM;
 }
 
+<<<<<<< HEAD
 static int __devinit niu_pci_init_one(struct pci_dev *pdev,
 				      const struct pci_device_id *ent)
+=======
+static int niu_pci_init_one(struct pci_dev *pdev,
+			    const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union niu_parent_id parent_id;
 	struct net_device *dev;
 	struct niu *np;
+<<<<<<< HEAD
 	int err, pos;
 	u64 dma_mask;
 	u16 val16;
+=======
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	niu_driver_version();
 
@@ -9781,9 +10434,15 @@ static int __devinit niu_pci_init_one(struct pci_dev *pdev,
 		goto err_out_disable_pdev;
 	}
 
+<<<<<<< HEAD
 	pos = pci_pcie_cap(pdev);
 	if (pos <= 0) {
 		dev_err(&pdev->dev, "Cannot find PCI Express capability, aborting\n");
+=======
+	if (!pci_is_pcie(pdev)) {
+		dev_err(&pdev->dev, "Cannot find PCI Express capability, aborting\n");
+		err = -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_out_free_res;
 	}
 
@@ -9807,6 +10466,7 @@ static int __devinit niu_pci_init_one(struct pci_dev *pdev,
 		goto err_out_free_dev;
 	}
 
+<<<<<<< HEAD
 	pci_read_config_word(pdev, pos + PCI_EXP_DEVCTL, &val16);
 	val16 &= ~PCI_EXP_DEVCTL_NOSNOOP_EN;
 	val16 |= (PCI_EXP_DEVCTL_CERE |
@@ -9828,6 +10488,19 @@ static int __devinit niu_pci_init_one(struct pci_dev *pdev,
 	}
 	if (err || dma_mask == DMA_BIT_MASK(32)) {
 		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
+=======
+	pcie_capability_clear_and_set_word(pdev, PCI_EXP_DEVCTL,
+		PCI_EXP_DEVCTL_NOSNOOP_EN,
+		PCI_EXP_DEVCTL_CERE | PCI_EXP_DEVCTL_NFERE |
+		PCI_EXP_DEVCTL_FERE | PCI_EXP_DEVCTL_URRE |
+		PCI_EXP_DEVCTL_RELAX_EN);
+
+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(44));
+	if (!err)
+		dev->features |= NETIF_F_HIGHDMA;
+	if (err) {
+		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			dev_err(&pdev->dev, "No usable DMA configuration, aborting\n");
 			goto err_out_release_parent;
@@ -9850,6 +10523,13 @@ static int __devinit niu_pci_init_one(struct pci_dev *pdev,
 
 	dev->irq = pdev->irq;
 
+<<<<<<< HEAD
+=======
+	/* MTU range: 68 - 9216 */
+	dev->min_mtu = ETH_MIN_MTU;
+	dev->max_mtu = NIU_MAX_MTU;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	niu_assign_netdev_ops(dev);
 
 	err = niu_get_invariants(np);
@@ -9888,12 +10568,19 @@ err_out_free_res:
 
 err_out_disable_pdev:
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
+<<<<<<< HEAD
 static void __devexit niu_pci_remove_one(struct pci_dev *pdev)
+=======
+static void niu_pci_remove_one(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
 
@@ -9913,6 +10600,7 @@ static void __devexit niu_pci_remove_one(struct pci_dev *pdev)
 		free_netdev(dev);
 		pci_release_regions(pdev);
 		pci_disable_device(pdev);
+<<<<<<< HEAD
 		pci_set_drvdata(pdev, NULL);
 	}
 }
@@ -9920,13 +10608,25 @@ static void __devexit niu_pci_remove_one(struct pci_dev *pdev)
 static int niu_suspend(struct pci_dev *pdev, pm_message_t state)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
+=======
+	}
+}
+
+static int __maybe_unused niu_suspend(struct device *dev_d)
+{
+	struct net_device *dev = dev_get_drvdata(dev_d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct niu *np = netdev_priv(dev);
 	unsigned long flags;
 
 	if (!netif_running(dev))
 		return 0;
 
+<<<<<<< HEAD
 	flush_work_sync(&np->reset_task);
+=======
+	flush_work(&np->reset_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	niu_netif_stop(np);
 
 	del_timer_sync(&np->timer);
@@ -9941,6 +10641,7 @@ static int niu_suspend(struct pci_dev *pdev, pm_message_t state)
 	niu_stop_hw(np);
 	spin_unlock_irqrestore(&np->lock, flags);
 
+<<<<<<< HEAD
 	pci_save_state(pdev);
 
 	return 0;
@@ -9949,6 +10650,14 @@ static int niu_suspend(struct pci_dev *pdev, pm_message_t state)
 static int niu_resume(struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata(pdev);
+=======
+	return 0;
+}
+
+static int __maybe_unused niu_resume(struct device *dev_d)
+{
+	struct net_device *dev = dev_get_drvdata(dev_d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct niu *np = netdev_priv(dev);
 	unsigned long flags;
 	int err;
@@ -9956,8 +10665,11 @@ static int niu_resume(struct pci_dev *pdev)
 	if (!netif_running(dev))
 		return 0;
 
+<<<<<<< HEAD
 	pci_restore_state(pdev);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_device_attach(dev);
 
 	spin_lock_irqsave(&np->lock, flags);
@@ -9974,13 +10686,23 @@ static int niu_resume(struct pci_dev *pdev)
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static SIMPLE_DEV_PM_OPS(niu_pm_ops, niu_suspend, niu_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver niu_pci_driver = {
 	.name		= DRV_MODULE_NAME,
 	.id_table	= niu_pci_tbl,
 	.probe		= niu_pci_init_one,
+<<<<<<< HEAD
 	.remove		= __devexit_p(niu_pci_remove_one),
 	.suspend	= niu_suspend,
 	.resume		= niu_resume,
+=======
+	.remove		= niu_pci_remove_one,
+	.driver.pm	= &niu_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #ifdef CONFIG_SPARC64
@@ -10042,7 +10764,11 @@ static const struct niu_ops niu_phys_ops = {
 	.unmap_single	= niu_phys_unmap_single,
 };
 
+<<<<<<< HEAD
 static int __devinit niu_of_probe(struct platform_device *op)
+=======
+static int niu_of_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union niu_parent_id parent_id;
 	struct net_device *dev;
@@ -10054,8 +10780,13 @@ static int __devinit niu_of_probe(struct platform_device *op)
 
 	reg = of_get_property(op->dev.of_node, "reg", NULL);
 	if (!reg) {
+<<<<<<< HEAD
 		dev_err(&op->dev, "%s: No 'reg' property, aborting\n",
 			op->dev.of_node->full_name);
+=======
+		dev_err(&op->dev, "%pOF: No 'reg' property, aborting\n",
+			op->dev.of_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -10121,7 +10852,11 @@ static int __devinit niu_of_probe(struct platform_device *op)
 		goto err_out_iounmap;
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, dev);
+=======
+	platform_set_drvdata(op, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	niu_device_announce(np);
 
@@ -10156,9 +10891,15 @@ err_out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit niu_of_remove(struct platform_device *op)
 {
 	struct net_device *dev = dev_get_drvdata(&op->dev);
+=======
+static void niu_of_remove(struct platform_device *op)
+{
+	struct net_device *dev = platform_get_drvdata(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev) {
 		struct niu *np = netdev_priv(dev);
@@ -10188,9 +10929,13 @@ static int __devexit niu_of_remove(struct platform_device *op)
 		niu_put_parent(np);
 
 		free_netdev(dev);
+<<<<<<< HEAD
 		dev_set_drvdata(&op->dev, NULL);
 	}
 	return 0;
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id niu_match[] = {
@@ -10205,11 +10950,18 @@ MODULE_DEVICE_TABLE(of, niu_match);
 static struct platform_driver niu_of_driver = {
 	.driver = {
 		.name = "niu",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = niu_match,
 	},
 	.probe		= niu_of_probe,
 	.remove		= __devexit_p(niu_of_remove),
+=======
+		.of_match_table = niu_match,
+	},
+	.probe		= niu_of_probe,
+	.remove_new	= niu_of_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif /* CONFIG_SPARC64 */
@@ -10220,6 +10972,12 @@ static int __init niu_init(void)
 
 	BUILD_BUG_ON(PAGE_SIZE < 4 * 1024);
 
+<<<<<<< HEAD
+=======
+	BUILD_BUG_ON(offsetof(struct page, mapping) !=
+		     offsetof(union niu_page, next));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	niu_debug = netif_msg_init(debug, NIU_MSG_DEFAULT);
 
 #ifdef CONFIG_SPARC64

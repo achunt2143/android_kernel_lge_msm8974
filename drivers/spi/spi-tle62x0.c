@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support Infineon TLE62x0 driver chips
  *
  * Copyright (c) 2007 Simtec Electronics
  *	Ben Dooks, <ben@simtec.co.uk>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -52,8 +59,12 @@ static inline int tle62x0_write(struct tle62x0_state *st)
 		buff[1] = gpio_state;
 	}
 
+<<<<<<< HEAD
 	dev_dbg(&st->us->dev, "buff %02x,%02x,%02x\n",
 		buff[0], buff[1], buff[2]);
+=======
+	dev_dbg(&st->us->dev, "buff %3ph\n", buff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return spi_write(st->us, buff, (st->nr_gpio == 16) ? 3 : 2);
 }
@@ -145,7 +156,11 @@ static ssize_t tle62x0_gpio_show(struct device *dev,
 	value = (st->gpio_state >> gpio_num) & 1;
 	mutex_unlock(&st->lock);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%d", value);
+=======
+	return sysfs_emit(buf, "%d", value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t tle62x0_gpio_store(struct device *dev,
@@ -240,24 +255,37 @@ static int to_gpio_num(struct device_attribute *attr)
 	return -1;
 }
 
+<<<<<<< HEAD
 static int __devinit tle62x0_probe(struct spi_device *spi)
+=======
+static int tle62x0_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tle62x0_state *st;
 	struct tle62x0_pdata *pdata;
 	int ptr;
 	int ret;
 
+<<<<<<< HEAD
 	pdata = spi->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&spi->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdata == NULL) {
 		dev_err(&spi->dev, "no device data specified\n");
 		return -EINVAL;
 	}
 
 	st = kzalloc(sizeof(struct tle62x0_state), GFP_KERNEL);
+<<<<<<< HEAD
 	if (st == NULL) {
 		dev_err(&spi->dev, "no memory for device state\n");
 		return -ENOMEM;
 	}
+=======
+	if (st == NULL)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	st->us = spi;
 	st->nr_gpio = pdata->gpio_count;
@@ -294,7 +322,11 @@ static int __devinit tle62x0_probe(struct spi_device *spi)
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit tle62x0_remove(struct spi_device *spi)
+=======
+static void tle62x0_remove(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tle62x0_state *st = spi_get_drvdata(spi);
 	int ptr;
@@ -304,12 +336,16 @@ static int __devexit tle62x0_remove(struct spi_device *spi)
 
 	device_remove_file(&spi->dev, &dev_attr_status_show);
 	kfree(st);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver tle62x0_driver = {
 	.driver = {
 		.name	= "tle62x0",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= tle62x0_probe,
@@ -328,6 +364,14 @@ static __exit void tle62x0_exit(void)
 
 module_init(tle62x0_init);
 module_exit(tle62x0_exit);
+=======
+	},
+	.probe		= tle62x0_probe,
+	.remove		= tle62x0_remove,
+};
+
+module_spi_driver(tle62x0_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Ben Dooks <ben@simtec.co.uk>");
 MODULE_DESCRIPTION("TLE62x0 SPI driver");

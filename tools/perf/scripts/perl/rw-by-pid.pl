@@ -1,6 +1,11 @@
 #!/usr/bin/perl -w
+<<<<<<< HEAD
 # (c) 2009, Tom Zanussi <tzanussi@gmail.com>
 # Licensed under the terms of the GNU GPL License version 2
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+# (c) 2009, Tom Zanussi <tzanussi@gmail.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Display r/w activity for all processes
 
@@ -24,7 +29,11 @@ my %writes;
 sub syscalls::sys_exit_read
 {
     my ($event_name, $context, $common_cpu, $common_secs, $common_nsecs,
+<<<<<<< HEAD
 	$common_pid, $common_comm,
+=======
+	$common_pid, $common_comm, $common_callchain,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$nr, $ret) = @_;
 
     if ($ret > 0) {
@@ -40,7 +49,11 @@ sub syscalls::sys_exit_read
 sub syscalls::sys_enter_read
 {
     my ($event_name, $context, $common_cpu, $common_secs, $common_nsecs,
+<<<<<<< HEAD
 	$common_pid, $common_comm,
+=======
+	$common_pid, $common_comm, $common_callchain,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$nr, $fd, $buf, $count) = @_;
 
     $reads{$common_pid}{bytes_requested} += $count;
@@ -51,7 +64,11 @@ sub syscalls::sys_enter_read
 sub syscalls::sys_exit_write
 {
     my ($event_name, $context, $common_cpu, $common_secs, $common_nsecs,
+<<<<<<< HEAD
 	$common_pid, $common_comm,
+=======
+	$common_pid, $common_comm, $common_callchain,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$nr, $ret) = @_;
 
     if ($ret <= 0) {
@@ -62,7 +79,11 @@ sub syscalls::sys_exit_write
 sub syscalls::sys_enter_write
 {
     my ($event_name, $context, $common_cpu, $common_secs, $common_nsecs,
+<<<<<<< HEAD
 	$common_pid, $common_comm,
+=======
+	$common_pid, $common_comm, $common_callchain,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	$nr, $fd, $buf, $count) = @_;
 
     $writes{$common_pid}{bytes_written} += $count;
@@ -178,7 +199,11 @@ sub print_unhandled
 sub trace_unhandled
 {
     my ($event_name, $context, $common_cpu, $common_secs, $common_nsecs,
+<<<<<<< HEAD
 	$common_pid, $common_comm) = @_;
+=======
+	$common_pid, $common_comm, $common_callchain) = @_;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     $unhandled{$event_name}++;
 }

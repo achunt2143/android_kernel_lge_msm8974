@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Battery and Power Management code for the Sharp SL-Cxx00
  *
  * Copyright (c) 2005 Richard Purdie
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -19,6 +26,7 @@
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/apm-emulation.h>
+<<<<<<< HEAD
 
 #include <asm/irq.h>
 #include <asm/mach-types.h>
@@ -27,6 +35,16 @@
 #include <mach/spitz.h>
 #include <mach/pxa27x.h>
 #include <mach/sharpsl_pm.h>
+=======
+#include <linux/spi/corgi_lcd.h>
+
+#include <asm/irq.h>
+#include <asm/mach-types.h>
+
+#include "spitz.h"
+#include "pxa27x.h"
+#include "sharpsl_pm.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "generic.h"
 
@@ -86,10 +104,14 @@ static void spitz_discharge1(int on)
 	gpio_set_value(SPITZ_GPIO_LED_GREEN, on);
 }
 
+<<<<<<< HEAD
 static unsigned long gpio18_config[] = {
 	GPIO18_RDY,
 	GPIO18_GPIO,
 };
+=======
+static unsigned long gpio18_config = GPIO18_GPIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void spitz_presuspend(void)
 {
@@ -112,7 +134,11 @@ static void spitz_presuspend(void)
 	PGSR3 &= ~SPITZ_GPIO_G3_STROBE_BIT;
 	PGSR2 |= GPIO_bit(SPITZ_GPIO_KEY_STROBE0);
 
+<<<<<<< HEAD
 	pxa2xx_mfp_config(&gpio18_config[0], 1);
+=======
+	pxa2xx_mfp_config(&gpio18_config, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gpio_request_one(18, GPIOF_OUT_INIT_HIGH, "Unknown");
 	gpio_free(18);
 
@@ -131,7 +157,10 @@ static void spitz_presuspend(void)
 
 static void spitz_postsuspend(void)
 {
+<<<<<<< HEAD
 	pxa2xx_mfp_config(&gpio18_config[1], 1);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int spitz_should_wakeup(unsigned int resume_on_alarm)
@@ -169,6 +198,7 @@ static int spitz_should_wakeup(unsigned int resume_on_alarm)
 	return is_resume;
 }
 
+<<<<<<< HEAD
 static unsigned long spitz_charger_wakeup(void)
 {
 	unsigned long ret;
@@ -179,6 +209,15 @@ static unsigned long spitz_charger_wakeup(void)
 }
 
 unsigned long spitzpm_read_devdata(int type)
+=======
+static bool spitz_charger_wakeup(void)
+{
+	return !gpio_get_value(SPITZ_GPIO_KEY_INT) ||
+		gpio_get_value(SPITZ_GPIO_SYNC);
+}
+
+static unsigned long spitzpm_read_devdata(int type)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (type) {
 	case SHARPSL_STATUS_ACIN:
@@ -236,7 +275,11 @@ struct sharpsl_charger_machinfo spitz_pm_machinfo = {
 
 static struct platform_device *spitzpm_device;
 
+<<<<<<< HEAD
 static int __devinit spitzpm_init(void)
+=======
+static int spitzpm_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 

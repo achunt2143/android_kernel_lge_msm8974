@@ -1,28 +1,55 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/sh/boards/magicpanel/setup.c
  *
  *  Copyright (C) 2007  Markus Brunner, Mark Jonas
  *
  *  Magic Panel Release 2 board setup
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/irq.h>
 #include <linux/platform_device.h>
 #include <linux/delay.h>
 #include <linux/gpio.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/fixed.h>
+#include <linux/regulator/machine.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smsc911x.h>
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/partitions.h>
 #include <linux/mtd/physmap.h>
 #include <linux/mtd/map.h>
+<<<<<<< HEAD
 #include <mach/magicpanelr2.h>
 #include <asm/heartbeat.h>
 #include <cpu/sh7720.h>
 
+=======
+#include <linux/sh_intc.h>
+#include <mach/magicpanelr2.h>
+#include <asm/heartbeat.h>
+#include <cpu/gpio.h>
+#include <cpu/sh7720.h>
+
+/* Dummy supplies, where voltage doesn't matter */
+static struct regulator_consumer_supply dummy_supplies[] = {
+	REGULATOR_SUPPLY("vddvario", "smsc911x"),
+	REGULATOR_SUPPLY("vdd33a", "smsc911x"),
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LAN9115_READY	(__raw_readl(0xA8000084UL) & 0x00000001UL)
 
 /* Wait until reset finished. Timeout is 100ms. */
@@ -245,8 +272,13 @@ static struct resource smsc911x_resources[] = {
 		.flags		= IORESOURCE_MEM,
 	},
 	[1] = {
+<<<<<<< HEAD
 		.start		= 35,
 		.end		= 35,
+=======
+		.start		= evt2irq(0x660),
+		.end		= evt2irq(0x660),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.flags		= IORESOURCE_IRQ,
 	},
 };
@@ -347,6 +379,11 @@ static struct platform_device *mpr2_devices[] __initdata = {
 
 static int __init mpr2_devices_setup(void)
 {
+<<<<<<< HEAD
+=======
+	regulator_register_fixed(0, dummy_supplies, ARRAY_SIZE(dummy_supplies));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return platform_add_devices(mpr2_devices, ARRAY_SIZE(mpr2_devices));
 }
 device_initcall(mpr2_devices_setup);
@@ -358,6 +395,7 @@ static void __init init_mpr2_IRQ(void)
 {
 	plat_irq_setup_pins(IRQ_MODE_IRQ); /* install handlers for IRQ0-5 */
 
+<<<<<<< HEAD
 	irq_set_irq_type(32, IRQ_TYPE_LEVEL_LOW);    /* IRQ0 CAN1 */
 	irq_set_irq_type(33, IRQ_TYPE_LEVEL_LOW);    /* IRQ1 CAN2 */
 	irq_set_irq_type(34, IRQ_TYPE_LEVEL_LOW);    /* IRQ2 CAN3 */
@@ -369,6 +407,19 @@ static void __init init_mpr2_IRQ(void)
 	intc_set_priority(33, 13);		/* IRQ0 CAN2 */
 	intc_set_priority(34, 13);		/* IRQ0 CAN3 */
 	intc_set_priority(35, 6);		/* IRQ3 SMSC9115 */
+=======
+	irq_set_irq_type(evt2irq(0x600), IRQ_TYPE_LEVEL_LOW);    /* IRQ0 CAN1 */
+	irq_set_irq_type(evt2irq(0x620), IRQ_TYPE_LEVEL_LOW);    /* IRQ1 CAN2 */
+	irq_set_irq_type(evt2irq(0x640), IRQ_TYPE_LEVEL_LOW);    /* IRQ2 CAN3 */
+	irq_set_irq_type(evt2irq(0x660), IRQ_TYPE_LEVEL_LOW);    /* IRQ3 SMSC9115 */
+	irq_set_irq_type(evt2irq(0x680), IRQ_TYPE_EDGE_RISING);  /* IRQ4 touchscreen */
+	irq_set_irq_type(evt2irq(0x6a0), IRQ_TYPE_EDGE_FALLING); /* IRQ5 touchscreen */
+
+	intc_set_priority(evt2irq(0x600), 13);		/* IRQ0 CAN1 */
+	intc_set_priority(evt2irq(0x620), 13);		/* IRQ0 CAN2 */
+	intc_set_priority(evt2irq(0x640), 13);		/* IRQ0 CAN3 */
+	intc_set_priority(evt2irq(0x660), 6);		/* IRQ3 SMSC9115 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*

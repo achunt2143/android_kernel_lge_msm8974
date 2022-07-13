@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Buffalo Terastation Pro II/Live Board Setup
  *
  * Maintainer: Sylver Bruneau <sylver.bruneau@googlemail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/gpio.h>
 #include <linux/kernel.h>
@@ -22,9 +29,15 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/pci.h>
+<<<<<<< HEAD
 #include <mach/orion5x.h>
 #include "common.h"
 #include "mpp.h"
+=======
+#include "common.h"
+#include "mpp.h"
+#include "orion5x.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*****************************************************************************
  * Terastation Pro 2/Live Info
@@ -77,7 +90,11 @@ static struct platform_device tsp2_nor_flash = {
 #define TSP2_PCI_SLOT0_OFFS		7
 #define TSP2_PCI_SLOT0_IRQ_PIN		11
 
+<<<<<<< HEAD
 void __init tsp2_pci_preinit(void)
+=======
+static void __init tsp2_pci_preinit(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int pin;
 
@@ -122,7 +139,10 @@ static int __init tsp2_pci_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 static struct hw_pci tsp2_pci __initdata = {
 	.nr_controllers = 2,
 	.preinit        = tsp2_pci_preinit,
+<<<<<<< HEAD
 	.swizzle        = pci_std_swizzle,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup          = orion5x_pci_sys_setup,
 	.scan           = orion5x_pci_sys_scan_bus,
 	.map_irq        = tsp2_pci_map_irq,
@@ -330,8 +350,15 @@ static void __init tsp2_init(void)
 	/*
 	 * Configure peripherals.
 	 */
+<<<<<<< HEAD
 	orion5x_setup_dev_boot_win(TSP2_NOR_BOOT_BASE,
 				   TSP2_NOR_BOOT_SIZE);
+=======
+	mvebu_mbus_add_window_by_id(ORION_MBUS_DEVBUS_BOOT_TARGET,
+				    ORION_MBUS_DEVBUS_BOOT_ATTR,
+				    TSP2_NOR_BOOT_BASE,
+				    TSP2_NOR_BOOT_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_device_register(&tsp2_nor_flash);
 
 	orion5x_ehci0_init();
@@ -348,7 +375,11 @@ static void __init tsp2_init(void)
 			gpio_free(TSP2_RTC_GPIO);
 	}
 	if (tsp2_i2c_rtc.irq == 0)
+<<<<<<< HEAD
 		pr_warning("tsp2_init: failed to get RTC IRQ\n");
+=======
+		pr_warn("tsp2_init: failed to get RTC IRQ\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_register_board_info(0, &tsp2_i2c_rtc, 1);
 
 	/* register Terastation Pro II specific power-off method */
@@ -358,11 +389,19 @@ static void __init tsp2_init(void)
 MACHINE_START(TERASTATION_PRO2, "Buffalo Terastation Pro II/Live")
 	/* Maintainer:  Sylver Bruneau <sylver.bruneau@googlemail.com> */
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= ORION5X_NR_IRQS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_machine	= tsp2_init,
 	.map_io		= orion5x_map_io,
 	.init_early	= orion5x_init_early,
 	.init_irq	= orion5x_init_irq,
+<<<<<<< HEAD
 	.timer		= &orion5x_timer,
+=======
+	.init_time	= orion5x_timer_init,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fixup		= tag_fixup_mem32,
 	.restart	= orion5x_restart,
 MACHINE_END

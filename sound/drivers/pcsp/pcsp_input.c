@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PC Speaker beeper driver for Linux
  *
  *  Copyright (c) 2002 Vojtech Pavlik
  *  Copyright (c) 1992 Orest Zborowski
+<<<<<<< HEAD
  *
  */
 
@@ -16,6 +21,16 @@
 #include <linux/input.h>
 #include <asm/io.h>
 #include "pcsp.h"
+=======
+ */
+
+
+#include <linux/init.h>
+#include <linux/input.h>
+#include <linux/io.h>
+#include "pcsp.h"
+#include "pcsp_input.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void pcspkr_do_sound(unsigned int count)
 {
@@ -58,6 +73,10 @@ static int pcspkr_input_event(struct input_dev *dev, unsigned int type,
 		case SND_BELL:
 			if (value)
 				value = 1000;
+<<<<<<< HEAD
+=======
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SND_TONE:
 			break;
 		default:
@@ -77,11 +96,19 @@ static int pcspkr_input_event(struct input_dev *dev, unsigned int type,
 	return 0;
 }
 
+<<<<<<< HEAD
 int __devinit pcspkr_input_init(struct input_dev **rdev, struct device *dev)
 {
 	int err;
 
 	struct input_dev *input_dev = input_allocate_device();
+=======
+int pcspkr_input_init(struct input_dev **rdev, struct device *dev)
+{
+	int err;
+
+	struct input_dev *input_dev = devm_input_allocate_device(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!input_dev)
 		return -ENOMEM;
 
@@ -98,14 +125,20 @@ int __devinit pcspkr_input_init(struct input_dev **rdev, struct device *dev)
 	input_dev->event = pcspkr_input_event;
 
 	err = input_register_device(input_dev);
+<<<<<<< HEAD
 	if (err) {
 		input_free_device(input_dev);
 		return err;
 	}
+=======
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*rdev = input_dev;
 	return 0;
 }
+<<<<<<< HEAD
 
 int pcspkr_input_remove(struct input_dev *dev)
 {
@@ -114,3 +147,5 @@ int pcspkr_input_remove(struct input_dev *dev)
 
 	return 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

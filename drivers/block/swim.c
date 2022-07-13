@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for SWIM (Sander Woz Integrated Machine) floppy controller
  *
@@ -7,11 +11,14 @@
  * based on SWIM3 driver (c) Paul Mackerras, 1996
  * based on netBSD IWM driver (c) 1997, 1998 Hauke Fath.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 2004-08-21 (lv) - Initial implementation
  * 2008-10-30 (lv) - Port to 2.6
  */
@@ -19,7 +26,12 @@
 #include <linux/module.h>
 #include <linux/fd.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/blkdev.h>
+=======
+#include <linux/blk-mq.h>
+#include <linux/major.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mutex.h>
 #include <linux/hdreg.h>
 #include <linux/kernel.h>
@@ -110,7 +122,11 @@ struct iwm {
 /* Select values for swim_select and swim_readbit */
 
 #define READ_DATA_0	0x074
+<<<<<<< HEAD
 #define TWOMEG_DRIVE	0x075
+=======
+#define ONEMEG_DRIVE	0x075
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SINGLE_SIDED	0x076
 #define DRIVE_PRESENT	0x077
 #define DISK_IN		0x170
@@ -118,9 +134,15 @@ struct iwm {
 #define TRACK_ZERO	0x172
 #define TACHO		0x173
 #define READ_DATA_1	0x174
+<<<<<<< HEAD
 #define MFM_MODE	0x175
 #define SEEK_COMPLETE	0x176
 #define ONEMEG_MEDIA	0x177
+=======
+#define GCR_MODE	0x175
+#define SEEK_COMPLETE	0x176
+#define TWOMEG_MEDIA	0x177
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Bits in handshake register */
 
@@ -188,8 +210,15 @@ struct floppy_state {
 
 	int		track;
 	int		ref_count;
+<<<<<<< HEAD
 
 	struct gendisk *disk;
+=======
+	bool registered;
+
+	struct gendisk *disk;
+	struct blk_mq_tag_set tag_set;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* parent controller */
 
@@ -211,7 +240,10 @@ enum head {
 struct swim_priv {
 	struct swim __iomem *base;
 	spinlock_t lock;
+<<<<<<< HEAD
 	struct request_queue *queue;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int floppy_count;
 	struct floppy_state unit[FD_MAX_UNIT];
 };
@@ -331,7 +363,11 @@ static inline void swim_motor(struct swim __iomem *base,
 			swim_select(base, RELAX);
 			if (swim_readbit(base, MOTOR_ON))
 				break;
+<<<<<<< HEAD
 			current->state = TASK_INTERRUPTIBLE;
+=======
+			set_current_state(TASK_INTERRUPTIBLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			schedule_timeout(1);
 		}
 	} else if (action == OFF) {
@@ -350,7 +386,11 @@ static inline void swim_eject(struct swim __iomem *base)
 		swim_select(base, RELAX);
 		if (!swim_readbit(base, DISK_IN))
 			break;
+<<<<<<< HEAD
 		current->state = TASK_INTERRUPTIBLE;
+=======
+		set_current_state(TASK_INTERRUPTIBLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		schedule_timeout(1);
 	}
 	swim_select(base, RELAX);
@@ -374,7 +414,11 @@ static inline int swim_step(struct swim __iomem *base)
 
 	for (wait = 0; wait < HZ; wait++) {
 
+<<<<<<< HEAD
 		current->state = TASK_INTERRUPTIBLE;
+=======
+		set_current_state(TASK_INTERRUPTIBLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		schedule_timeout(1);
 
 		swim_select(base, RELAX);
@@ -493,7 +537,11 @@ static inline int swim_read_sector(struct floppy_state *fs,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int floppy_read_sectors(struct floppy_state *fs,
+=======
+static blk_status_t floppy_read_sectors(struct floppy_state *fs,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       int req_sector, int sectors_nb,
 			       unsigned char *buffer)
 {
@@ -516,7 +564,11 @@ static int floppy_read_sectors(struct floppy_state *fs,
 			ret = swim_read_sector(fs, side, track, sector,
 						buffer);
 			if (try-- == 0)
+<<<<<<< HEAD
 				return -EIO;
+=======
+				return BLK_STS_IOERR;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} while (ret != 512);
 
 		buffer += ret;
@@ -525,6 +577,7 @@ static int floppy_read_sectors(struct floppy_state *fs,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void redo_fd_request(struct request_queue *q)
 {
 	struct request *req;
@@ -561,6 +614,38 @@ static void redo_fd_request(struct request_queue *q)
 static void do_fd_request(struct request_queue *q)
 {
 	redo_fd_request(q);
+=======
+static blk_status_t swim_queue_rq(struct blk_mq_hw_ctx *hctx,
+				  const struct blk_mq_queue_data *bd)
+{
+	struct floppy_state *fs = hctx->queue->queuedata;
+	struct swim_priv *swd = fs->swd;
+	struct request *req = bd->rq;
+	blk_status_t err;
+
+	if (!spin_trylock_irq(&swd->lock))
+		return BLK_STS_DEV_RESOURCE;
+
+	blk_mq_start_request(req);
+
+	if (!fs->disk_in || rq_data_dir(req) == WRITE) {
+		err = BLK_STS_IOERR;
+		goto out;
+	}
+
+	do {
+		err = floppy_read_sectors(fs, blk_rq_pos(req),
+					  blk_rq_cur_sectors(req),
+					  bio_data(req->bio));
+	} while (blk_update_request(req, err, blk_rq_cur_bytes(req)));
+	__blk_mq_end_request(req, err);
+
+	err = BLK_STS_OK;
+out:
+	spin_unlock_irq(&swd->lock);
+	return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct floppy_struct floppy_type[4] = {
@@ -596,7 +681,10 @@ static void setup_medium(struct floppy_state *fs)
 		struct floppy_struct *g;
 		fs->disk_in = 1;
 		fs->write_protected = swim_readbit(base, WRITE_PROT);
+<<<<<<< HEAD
 		fs->type = swim_readbit(base, ONEMEG_MEDIA);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (swim_track00(base))
 			printk(KERN_ERR
@@ -604,6 +692,12 @@ static void setup_medium(struct floppy_state *fs)
 
 		swim_track00(base);
 
+<<<<<<< HEAD
+=======
+		fs->type = swim_readbit(base, TWOMEG_MEDIA) ?
+			HD_MEDIA : DD_MEDIA;
+		fs->head_number = swim_readbit(base, SINGLE_SIDED) ? 1 : 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		get_floppy_geometry(fs, 0, &g);
 		fs->total_secs = g->size;
 		fs->secpercyl = g->head * g->sect;
@@ -614,6 +708,7 @@ static void setup_medium(struct floppy_state *fs)
 	}
 }
 
+<<<<<<< HEAD
 static int floppy_open(struct block_device *bdev, fmode_t mode)
 {
 	struct floppy_state *fs = bdev->bd_disk->private_data;
@@ -631,6 +726,23 @@ static int floppy_open(struct block_device *bdev, fmode_t mode)
 	swim_write(base, setup, S_IBM_DRIVE  | S_FCLK_DIV2);
 	udelay(10);
 	swim_drive(base, INTERNAL_DRIVE);
+=======
+static int floppy_open(struct gendisk *disk, blk_mode_t mode)
+{
+	struct floppy_state *fs = disk->private_data;
+	struct swim __iomem *base = fs->swd->base;
+	int err;
+
+	if (fs->ref_count == -1 || (fs->ref_count && mode & BLK_OPEN_EXCL))
+		return -EBUSY;
+	if (mode & BLK_OPEN_EXCL)
+		fs->ref_count = -1;
+	else
+		fs->ref_count++;
+	swim_write(base, setup, S_IBM_DRIVE  | S_FCLK_DIV2);
+	udelay(10);
+	swim_drive(base, fs->location);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	swim_motor(base, ON);
 	swim_action(base, SETMFM);
 	if (fs->ejected)
@@ -640,12 +752,24 @@ static int floppy_open(struct block_device *bdev, fmode_t mode)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (mode & FMODE_NDELAY)
 		return 0;
 
 	if (mode & (FMODE_READ|FMODE_WRITE)) {
 		check_disk_change(bdev);
 		if ((mode & FMODE_WRITE) && fs->write_protected) {
+=======
+	set_capacity(fs->disk, fs->total_secs);
+
+	if (mode & BLK_OPEN_NDELAY)
+		return 0;
+
+	if (mode & (BLK_OPEN_READ | BLK_OPEN_WRITE)) {
+		if (disk_check_media_change(disk) && fs->disk_in)
+			fs->ejected = 0;
+		if ((mode & BLK_OPEN_WRITE) && fs->write_protected) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EROFS;
 			goto out;
 		}
@@ -662,18 +786,30 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int floppy_unlocked_open(struct block_device *bdev, fmode_t mode)
+=======
+static int floppy_unlocked_open(struct gendisk *disk, blk_mode_t mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
 	mutex_lock(&swim_mutex);
+<<<<<<< HEAD
 	ret = floppy_open(bdev, mode);
+=======
+	ret = floppy_open(disk, mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&swim_mutex);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int floppy_release(struct gendisk *disk, fmode_t mode)
+=======
+static void floppy_release(struct gendisk *disk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct floppy_state *fs = disk->private_data;
 	struct swim __iomem *base = fs->swd->base;
@@ -687,11 +823,17 @@ static int floppy_release(struct gendisk *disk, fmode_t mode)
 	if (fs->ref_count == 0)
 		swim_motor(base, OFF);
 	mutex_unlock(&swim_mutex);
+<<<<<<< HEAD
 
 	return 0;
 }
 
 static int floppy_ioctl(struct block_device *bdev, fmode_t mode,
+=======
+}
+
+static int floppy_ioctl(struct block_device *bdev, blk_mode_t mode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int cmd, unsigned long param)
 {
 	struct floppy_state *fs = bdev->bd_disk->private_data;
@@ -713,6 +855,7 @@ static int floppy_ioctl(struct block_device *bdev, fmode_t mode,
 		if (copy_to_user((void __user *) param, (void *) &floppy_type,
 				 sizeof(struct floppy_struct)))
 			return -EFAULT;
+<<<<<<< HEAD
 		break;
 
 	default:
@@ -721,6 +864,11 @@ static int floppy_ioctl(struct block_device *bdev, fmode_t mode,
 		return -ENOSYS;
 	}
 	return 0;
+=======
+		return 0;
+	}
+	return -ENOTTY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int floppy_getgeo(struct block_device *bdev, struct hd_geometry *geo)
@@ -748,6 +896,7 @@ static unsigned int floppy_check_events(struct gendisk *disk,
 	return fs->ejected ? DISK_EVENT_MEDIA_CHANGE : 0;
 }
 
+<<<<<<< HEAD
 static int floppy_revalidate(struct gendisk *disk)
 {
 	struct floppy_state *fs = disk->private_data;
@@ -766,6 +915,8 @@ static int floppy_revalidate(struct gendisk *disk)
 	return !fs->disk_in;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct block_device_operations floppy_fops = {
 	.owner		 = THIS_MODULE,
 	.open		 = floppy_unlocked_open,
@@ -773,6 +924,7 @@ static const struct block_device_operations floppy_fops = {
 	.ioctl		 = floppy_ioctl,
 	.getgeo		 = floppy_getgeo,
 	.check_events	 = floppy_check_events,
+<<<<<<< HEAD
 	.revalidate_disk = floppy_revalidate,
 };
 
@@ -790,6 +942,11 @@ static struct kobject *floppy_find(dev_t dev, int *part, void *data)
 
 static int __devinit swim_add_floppy(struct swim_priv *swd,
 				     enum drive_location location)
+=======
+};
+
+static int swim_add_floppy(struct swim_priv *swd, enum drive_location location)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct floppy_state *fs = &swd->unit[swd->floppy_count];
 	struct swim __iomem *base = swd->base;
@@ -800,10 +957,16 @@ static int __devinit swim_add_floppy(struct swim_priv *swd,
 
 	swim_motor(base, OFF);
 
+<<<<<<< HEAD
 	if (swim_readbit(base, SINGLE_SIDED))
 		fs->head_number = 1;
 	else
 		fs->head_number = 2;
+=======
+	fs->type = HD_MEDIA;
+	fs->head_number = 2;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fs->ref_count = 0;
 	fs->ejected = 1;
 
@@ -812,7 +975,29 @@ static int __devinit swim_add_floppy(struct swim_priv *swd,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit swim_floppy_init(struct swim_priv *swd)
+=======
+static const struct blk_mq_ops swim_mq_ops = {
+	.queue_rq = swim_queue_rq,
+};
+
+static void swim_cleanup_floppy_disk(struct floppy_state *fs)
+{
+	struct gendisk *disk = fs->disk;
+
+	if (!disk)
+		return;
+
+	if (fs->registered)
+		del_gendisk(fs->disk);
+
+	put_disk(disk);
+	blk_mq_free_tag_set(&fs->tag_set);
+}
+
+static int swim_floppy_init(struct swim_priv *swd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	int drive;
@@ -821,10 +1006,19 @@ static int __devinit swim_floppy_init(struct swim_priv *swd)
 	/* scan floppy drives */
 
 	swim_drive(base, INTERNAL_DRIVE);
+<<<<<<< HEAD
 	if (swim_readbit(base, DRIVE_PRESENT))
 		swim_add_floppy(swd, INTERNAL_DRIVE);
 	swim_drive(base, EXTERNAL_DRIVE);
 	if (swim_readbit(base, DRIVE_PRESENT))
+=======
+	if (swim_readbit(base, DRIVE_PRESENT) &&
+	    !swim_readbit(base, ONEMEG_DRIVE))
+		swim_add_floppy(swd, INTERNAL_DRIVE);
+	swim_drive(base, EXTERNAL_DRIVE);
+	if (swim_readbit(base, DRIVE_PRESENT) &&
+	    !swim_readbit(base, ONEMEG_DRIVE))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		swim_add_floppy(swd, EXTERNAL_DRIVE);
 
 	/* register floppy drives */
@@ -836,6 +1030,7 @@ static int __devinit swim_floppy_init(struct swim_priv *swd)
 		return -EBUSY;
 	}
 
+<<<<<<< HEAD
 	for (drive = 0; drive < swd->floppy_count; drive++) {
 		swd->unit[drive].disk = alloc_disk(1);
 		if (swd->unit[drive].disk == NULL) {
@@ -849,12 +1044,33 @@ static int __devinit swim_floppy_init(struct swim_priv *swd)
 	if (!swd->queue) {
 		err = -ENOMEM;
 		goto exit_put_disks;
+=======
+	spin_lock_init(&swd->lock);
+
+	for (drive = 0; drive < swd->floppy_count; drive++) {
+		err = blk_mq_alloc_sq_tag_set(&swd->unit[drive].tag_set,
+				&swim_mq_ops, 2, BLK_MQ_F_SHOULD_MERGE);
+		if (err)
+			goto exit_put_disks;
+
+		swd->unit[drive].disk =
+			blk_mq_alloc_disk(&swd->unit[drive].tag_set, NULL,
+					  &swd->unit[drive]);
+		if (IS_ERR(swd->unit[drive].disk)) {
+			blk_mq_free_tag_set(&swd->unit[drive].tag_set);
+			err = PTR_ERR(swd->unit[drive].disk);
+			goto exit_put_disks;
+		}
+
+		swd->unit[drive].swd = swd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (drive = 0; drive < swd->floppy_count; drive++) {
 		swd->unit[drive].disk->flags = GENHD_FL_REMOVABLE;
 		swd->unit[drive].disk->major = FLOPPY_MAJOR;
 		swd->unit[drive].disk->first_minor = drive;
+<<<<<<< HEAD
 		sprintf(swd->unit[drive].disk->disk_name, "fd%d", drive);
 		swd->unit[drive].disk->fops = &floppy_fops;
 		swd->unit[drive].disk->private_data = &swd->unit[drive];
@@ -866,16 +1082,41 @@ static int __devinit swim_floppy_init(struct swim_priv *swd)
 	blk_register_region(MKDEV(FLOPPY_MAJOR, 0), 256, THIS_MODULE,
 			    floppy_find, NULL, swd);
 
+=======
+		swd->unit[drive].disk->minors = 1;
+		sprintf(swd->unit[drive].disk->disk_name, "fd%d", drive);
+		swd->unit[drive].disk->fops = &floppy_fops;
+		swd->unit[drive].disk->flags |= GENHD_FL_NO_PART;
+		swd->unit[drive].disk->events = DISK_EVENT_MEDIA_CHANGE;
+		swd->unit[drive].disk->private_data = &swd->unit[drive];
+		set_capacity(swd->unit[drive].disk, 2880);
+		err = add_disk(swd->unit[drive].disk);
+		if (err)
+			goto exit_put_disks;
+		swd->unit[drive].registered = true;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 exit_put_disks:
 	unregister_blkdev(FLOPPY_MAJOR, "fd");
+<<<<<<< HEAD
 	while (drive--)
 		put_disk(swd->unit[drive].disk);
 	return err;
 }
 
 static int __devinit swim_probe(struct platform_device *dev)
+=======
+	do {
+		swim_cleanup_floppy_disk(&swd->unit[drive]);
+	} while (drive--);
+	return err;
+}
+
+static int swim_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *res;
 	struct swim __iomem *swim_base;
@@ -893,9 +1134,15 @@ static int __devinit swim_probe(struct platform_device *dev)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	swim_base = ioremap(res->start, resource_size(res));
 	if (!swim_base) {
 		return -ENOMEM;
+=======
+	swim_base = (struct swim __iomem *)res->start;
+	if (!swim_base) {
+		ret = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_release_io;
 	}
 
@@ -905,7 +1152,11 @@ static int __devinit swim_probe(struct platform_device *dev)
 	if (!get_swim_mode(swim_base)) {
 		printk(KERN_INFO "SWIM device not found !\n");
 		ret = -ENODEV;
+<<<<<<< HEAD
 		goto out_iounmap;
+=======
+		goto out_release_io;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* set platform driver data */
@@ -913,7 +1164,11 @@ static int __devinit swim_probe(struct platform_device *dev)
 	swd = kzalloc(sizeof(struct swim_priv), GFP_KERNEL);
 	if (!swd) {
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto out_iounmap;
+=======
+		goto out_release_io;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	platform_set_drvdata(dev, swd);
 
@@ -926,22 +1181,31 @@ static int __devinit swim_probe(struct platform_device *dev)
 	return 0;
 
 out_kfree:
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
 	kfree(swd);
 out_iounmap:
 	iounmap(swim_base);
+=======
+	kfree(swd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_release_io:
 	release_mem_region(res->start, resource_size(res));
 out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit swim_remove(struct platform_device *dev)
+=======
+static void swim_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct swim_priv *swd = platform_get_drvdata(dev);
 	int drive;
 	struct resource *res;
 
+<<<<<<< HEAD
 	blk_unregister_region(MKDEV(FLOPPY_MAJOR, 0), 256);
 
 	for (drive = 0; drive < swd->floppy_count; drive++) {
@@ -953,29 +1217,49 @@ static int __devexit swim_remove(struct platform_device *dev)
 
 	blk_cleanup_queue(swd->queue);
 
+=======
+	for (drive = 0; drive < swd->floppy_count; drive++)
+		swim_cleanup_floppy_disk(&swd->unit[drive]);
+
+	unregister_blkdev(FLOPPY_MAJOR, "fd");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* eject floppies */
 
 	for (drive = 0; drive < swd->floppy_count; drive++)
 		floppy_eject(&swd->unit[drive]);
 
+<<<<<<< HEAD
 	iounmap(swd->base);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res = platform_get_resource(dev, IORESOURCE_MEM, 0);
 	if (res)
 		release_mem_region(res->start, resource_size(res));
 
+<<<<<<< HEAD
 	platform_set_drvdata(dev, NULL);
 	kfree(swd);
 
 	return 0;
+=======
+	kfree(swd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver swim_driver = {
 	.probe  = swim_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(swim_remove),
 	.driver   = {
 		.name	= CARDNAME,
 		.owner	= THIS_MODULE,
+=======
+	.remove_new = swim_remove,
+	.driver   = {
+		.name	= CARDNAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

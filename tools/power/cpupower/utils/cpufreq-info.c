@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 /*
  *  (C) 2004-2009  Dominik Brodowski <linux@dominikbrodowski.de>
  *
  *  Licensed under the terms of the GNU GPL License version 2.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  (C) 2004-2009  Dominik Brodowski <linux@dominikbrodowski.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -10,10 +16,18 @@
 #include <errno.h>
 #include <stdlib.h>
 #include <string.h>
+<<<<<<< HEAD
+=======
+#include <limits.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <getopt.h>
 
 #include "cpufreq.h"
+<<<<<<< HEAD
+=======
+#include "helpers/sysfs.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "helpers/helpers.h"
 #include "helpers/bitmask.h"
 
@@ -82,6 +96,7 @@ static void proc_cpufreq_output(void)
 	}
 }
 
+<<<<<<< HEAD
 static void print_speed(unsigned long speed)
 {
 	unsigned long tmp;
@@ -109,10 +124,14 @@ static void print_speed(unsigned long speed)
 	return;
 }
 
+=======
+static int no_rounding;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void print_duration(unsigned long duration)
 {
 	unsigned long tmp;
 
+<<<<<<< HEAD
 	if (duration > 1000000) {
 		tmp = duration % 10000;
 		if (tmp >= 5000)
@@ -139,15 +158,56 @@ static void print_duration(unsigned long duration)
 /* --boost / -b */
 
 static int get_boost_mode(unsigned int cpu)
+=======
+	if (no_rounding) {
+		if (duration > 1000000)
+			printf("%u.%06u ms", ((unsigned int) duration/1000000),
+				((unsigned int) duration%1000000));
+		else if (duration > 100000)
+			printf("%u us", ((unsigned int) duration/1000));
+		else if (duration > 1000)
+			printf("%u.%03u us", ((unsigned int) duration/1000),
+				((unsigned int) duration%1000));
+		else
+			printf("%lu ns", duration);
+	} else {
+		if (duration > 1000000) {
+			tmp = duration%10000;
+			if (tmp >= 5000)
+				duration += 10000;
+			printf("%u.%02u ms", ((unsigned int) duration/1000000),
+				((unsigned int) (duration%1000000)/10000));
+		} else if (duration > 100000) {
+			tmp = duration%1000;
+			if (tmp >= 500)
+				duration += 1000;
+			printf("%u us", ((unsigned int) duration / 1000));
+		} else if (duration > 1000) {
+			tmp = duration%100;
+			if (tmp >= 50)
+				duration += 100;
+			printf("%u.%01u us", ((unsigned int) duration/1000),
+				((unsigned int) (duration%1000)/100));
+		} else
+			printf("%lu ns", duration);
+	}
+	return;
+}
+
+static int get_boost_mode_x86(unsigned int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int support, active, b_states = 0, ret, pstate_no, i;
 	/* ToDo: Make this more global */
 	unsigned long pstates[MAX_HW_PSTATES] = {0,};
 
+<<<<<<< HEAD
 	if (cpupower_cpu_info.vendor != X86_VENDOR_AMD &&
 	    cpupower_cpu_info.vendor != X86_VENDOR_INTEL)
 		return 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = cpufreq_has_boost_support(cpu, &support, &active, &b_states);
 	if (ret) {
 		printf(_("Error while evaluating Boost Capabilities"
@@ -166,15 +226,29 @@ static int get_boost_mode(unsigned int cpu)
 	printf(_("    Active: %s\n"), active ? _("yes") : _("no"));
 
 	if (cpupower_cpu_info.vendor == X86_VENDOR_AMD &&
+<<<<<<< HEAD
 	    cpupower_cpu_info.family >= 0x10) {
 		ret = decode_pstates(cpu, cpupower_cpu_info.family, b_states,
 				     pstates, &pstate_no);
+=======
+	    cpupower_cpu_info.caps & CPUPOWER_CAP_AMD_PSTATE) {
+		return 0;
+	} else if ((cpupower_cpu_info.vendor == X86_VENDOR_AMD &&
+		    cpupower_cpu_info.family >= 0x10) ||
+		   cpupower_cpu_info.vendor == X86_VENDOR_HYGON) {
+		ret = decode_pstates(cpu, b_states, pstates, &pstate_no);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			return ret;
 
 		printf(_("    Boost States: %d\n"), b_states);
 		printf(_("    Total States: %d\n"), pstate_no);
 		for (i = 0; i < pstate_no; i++) {
+<<<<<<< HEAD
+=======
+			if (!pstates[i])
+				continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i < b_states)
 				printf(_("    Pstate-Pb%d: %luMHz (boost state)"
 					 "\n"), i, pstates[i]);
@@ -219,6 +293,7 @@ static int get_boost_mode(unsigned int cpu)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void debug_output_one(unsigned int cpu)
 {
 	char *driver;
@@ -291,10 +366,33 @@ static void debug_output_one(unsigned int cpu)
 			freqs = freqs->next;
 		}
 		print_speed(freqs->frequency);
+=======
+/* --boost / -b */
+
+static int get_boost_mode(unsigned int cpu)
+{
+	struct cpufreq_available_frequencies *freqs;
+
+	if (cpupower_cpu_info.vendor == X86_VENDOR_AMD ||
+	    cpupower_cpu_info.vendor == X86_VENDOR_HYGON ||
+	    cpupower_cpu_info.vendor == X86_VENDOR_INTEL)
+		return get_boost_mode_x86(cpu);
+
+	freqs = cpufreq_get_boost_frequencies(cpu);
+	if (freqs) {
+		printf(_("  boost frequency steps: "));
+		while (freqs->next) {
+			print_speed(freqs->frequency, no_rounding);
+			printf(", ");
+			freqs = freqs->next;
+		}
+		print_speed(freqs->frequency, no_rounding);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printf("\n");
 		cpufreq_put_available_frequencies(freqs);
 	}
 
+<<<<<<< HEAD
 	governors = cpufreq_get_available_governors(cpu);
 	if (governors) {
 		printf(_("  available cpufreq governors: "));
@@ -348,6 +446,9 @@ static void debug_output_one(unsigned int cpu)
 	}
 	get_boost_mode(cpu);
 
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* --freq / -f */
@@ -355,6 +456,7 @@ static void debug_output_one(unsigned int cpu)
 static int get_freq_kernel(unsigned int cpu, unsigned int human)
 {
 	unsigned long freq = cpufreq_get_freq_kernel(cpu);
+<<<<<<< HEAD
 	if (!freq)
 		return -EINVAL;
 	if (human) {
@@ -362,6 +464,18 @@ static int get_freq_kernel(unsigned int cpu, unsigned int human)
 		printf("\n");
 	} else
 		printf("%lu\n", freq);
+=======
+	printf(_("  current CPU frequency: "));
+	if (!freq) {
+		printf(_(" Unable to call to kernel\n"));
+		return -EINVAL;
+	}
+	if (human) {
+		print_speed(freq, no_rounding);
+	} else
+		printf("%lu", freq);
+	printf(_(" (asserted by call to kernel)\n"));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -371,6 +485,7 @@ static int get_freq_kernel(unsigned int cpu, unsigned int human)
 static int get_freq_hardware(unsigned int cpu, unsigned int human)
 {
 	unsigned long freq = cpufreq_get_freq_hardware(cpu);
+<<<<<<< HEAD
 	if (!freq)
 		return -EINVAL;
 	if (human) {
@@ -378,17 +493,50 @@ static int get_freq_hardware(unsigned int cpu, unsigned int human)
 		printf("\n");
 	} else
 		printf("%lu\n", freq);
+=======
+	printf(_("  current CPU frequency: "));
+	if (!freq) {
+		printf("Unable to call hardware\n");
+		return -EINVAL;
+	}
+	if (human) {
+		print_speed(freq, no_rounding);
+	} else
+		printf("%lu", freq);
+	printf(_(" (asserted by call to hardware)\n"));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /* --hwlimits / -l */
 
+<<<<<<< HEAD
 static int get_hardware_limits(unsigned int cpu)
 {
 	unsigned long min, max;
 	if (cpufreq_get_hardware_limits(cpu, &min, &max))
 		return -EINVAL;
 	printf("%lu %lu\n", min, max);
+=======
+static int get_hardware_limits(unsigned int cpu, unsigned int human)
+{
+	unsigned long min, max;
+
+	if (cpufreq_get_hardware_limits(cpu, &min, &max)) {
+		printf(_("Not Available\n"));
+		return -EINVAL;
+	}
+
+	if (human) {
+		printf(_("  hardware limits: "));
+		print_speed(min, no_rounding);
+		printf(" - ");
+		print_speed(max, no_rounding);
+		printf("\n");
+	} else {
+		printf("%lu %lu\n", min, max);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -397,9 +545,17 @@ static int get_hardware_limits(unsigned int cpu)
 static int get_driver(unsigned int cpu)
 {
 	char *driver = cpufreq_get_driver(cpu);
+<<<<<<< HEAD
 	if (!driver)
 		return -EINVAL;
 	printf("%s\n", driver);
+=======
+	if (!driver) {
+		printf(_("  no or unknown cpufreq driver is active on this CPU\n"));
+		return -EINVAL;
+	}
+	printf("  driver: %s\n", driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpufreq_put_driver(driver);
 	return 0;
 }
@@ -409,9 +565,25 @@ static int get_driver(unsigned int cpu)
 static int get_policy(unsigned int cpu)
 {
 	struct cpufreq_policy *policy = cpufreq_get_policy(cpu);
+<<<<<<< HEAD
 	if (!policy)
 		return -EINVAL;
 	printf("%lu %lu %s\n", policy->min, policy->max, policy->governor);
+=======
+	if (!policy) {
+		printf(_("  Unable to determine current policy\n"));
+		return -EINVAL;
+	}
+	printf(_("  current policy: frequency should be within "));
+	print_speed(policy->min, no_rounding);
+	printf(_(" and "));
+	print_speed(policy->max, no_rounding);
+
+	printf(".\n                  ");
+	printf(_("The governor \"%s\" may decide which speed to use\n"
+	       "                  within this range.\n"),
+	       policy->governor);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpufreq_put_policy(policy);
 	return 0;
 }
@@ -422,8 +594,17 @@ static int get_available_governors(unsigned int cpu)
 {
 	struct cpufreq_available_governors *governors =
 		cpufreq_get_available_governors(cpu);
+<<<<<<< HEAD
 	if (!governors)
 		return -EINVAL;
+=======
+
+	printf(_("  available cpufreq governors: "));
+	if (!governors) {
+		printf(_("Not Available\n"));
+		return -EINVAL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (governors->next) {
 		printf("%s ", governors->governor);
@@ -440,8 +621,17 @@ static int get_available_governors(unsigned int cpu)
 static int get_affected_cpus(unsigned int cpu)
 {
 	struct cpufreq_affected_cpus *cpus = cpufreq_get_affected_cpus(cpu);
+<<<<<<< HEAD
 	if (!cpus)
 		return -EINVAL;
+=======
+
+	printf(_("  CPUs which need to have their frequency coordinated by software: "));
+	if (!cpus) {
+		printf(_("Not Available\n"));
+		return -EINVAL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (cpus->next) {
 		printf("%d ", cpus->cpu);
@@ -457,8 +647,17 @@ static int get_affected_cpus(unsigned int cpu)
 static int get_related_cpus(unsigned int cpu)
 {
 	struct cpufreq_affected_cpus *cpus = cpufreq_get_related_cpus(cpu);
+<<<<<<< HEAD
 	if (!cpus)
 		return -EINVAL;
+=======
+
+	printf(_("  CPUs which run at the same hardware frequency: "));
+	if (!cpus) {
+		printf(_("Not Available\n"));
+		return -EINVAL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (cpus->next) {
 		printf("%d ", cpus->cpu);
@@ -478,7 +677,11 @@ static int get_freq_stats(unsigned int cpu, unsigned int human)
 	struct cpufreq_stats *stats = cpufreq_get_stats(cpu, &total_time);
 	while (stats) {
 		if (human) {
+<<<<<<< HEAD
 			print_speed(stats->frequency);
+=======
+			print_speed(stats->frequency, no_rounding);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printf(":%.2f%%",
 				(100.0 * stats->time_in_state) / total_time);
 		} else
@@ -499,8 +702,17 @@ static int get_freq_stats(unsigned int cpu, unsigned int human)
 static int get_latency(unsigned int cpu, unsigned int human)
 {
 	unsigned long latency = cpufreq_get_transition_latency(cpu);
+<<<<<<< HEAD
 	if (!latency)
 		return -EINVAL;
+=======
+
+	printf(_("  maximum transition latency: "));
+	if (!latency || latency == UINT_MAX) {
+		printf(_(" Cannot determine or is not supported.\n"));
+		return -EINVAL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (human) {
 		print_duration(latency);
@@ -510,6 +722,7 @@ static int get_latency(unsigned int cpu, unsigned int human)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct option info_opts[] = {
 	{ .name = "debug",	.has_arg = no_argument,		.flag = NULL,	.val = 'e'},
 	{ .name = "boost",	.has_arg = no_argument,		.flag = NULL,	.val = 'b'},
@@ -525,6 +738,67 @@ static struct option info_opts[] = {
 	{ .name = "latency",	.has_arg = no_argument,		.flag = NULL,	.val = 'y'},
 	{ .name = "proc",	.has_arg = no_argument,		.flag = NULL,	.val = 'o'},
 	{ .name = "human",	.has_arg = no_argument,		.flag = NULL,	.val = 'm'},
+=======
+/* --performance / -c */
+
+static int get_perf_cap(unsigned int cpu)
+{
+	if (cpupower_cpu_info.vendor == X86_VENDOR_AMD &&
+	    cpupower_cpu_info.caps & CPUPOWER_CAP_AMD_PSTATE)
+		amd_pstate_show_perf_and_freq(cpu, no_rounding);
+
+	return 0;
+}
+
+static void debug_output_one(unsigned int cpu)
+{
+	struct cpufreq_available_frequencies *freqs;
+
+	get_driver(cpu);
+	get_related_cpus(cpu);
+	get_affected_cpus(cpu);
+	get_latency(cpu, 1);
+	get_hardware_limits(cpu, 1);
+
+	freqs = cpufreq_get_available_frequencies(cpu);
+	if (freqs) {
+		printf(_("  available frequency steps:  "));
+		while (freqs->next) {
+			print_speed(freqs->frequency, no_rounding);
+			printf(", ");
+			freqs = freqs->next;
+		}
+		print_speed(freqs->frequency, no_rounding);
+		printf("\n");
+		cpufreq_put_available_frequencies(freqs);
+	}
+
+	get_available_governors(cpu);
+	get_policy(cpu);
+	if (get_freq_hardware(cpu, 1) < 0)
+		get_freq_kernel(cpu, 1);
+	get_boost_mode(cpu);
+	get_perf_cap(cpu);
+}
+
+static struct option info_opts[] = {
+	{"debug",	 no_argument,		 NULL,	 'e'},
+	{"boost",	 no_argument,		 NULL,	 'b'},
+	{"freq",	 no_argument,		 NULL,	 'f'},
+	{"hwfreq",	 no_argument,		 NULL,	 'w'},
+	{"hwlimits",	 no_argument,		 NULL,	 'l'},
+	{"driver",	 no_argument,		 NULL,	 'd'},
+	{"policy",	 no_argument,		 NULL,	 'p'},
+	{"governors",	 no_argument,		 NULL,	 'g'},
+	{"related-cpus",  no_argument,	 NULL,	 'r'},
+	{"affected-cpus", no_argument,	 NULL,	 'a'},
+	{"stats",	 no_argument,		 NULL,	 's'},
+	{"latency",	 no_argument,		 NULL,	 'y'},
+	{"proc",	 no_argument,		 NULL,	 'o'},
+	{"human",	 no_argument,		 NULL,	 'm'},
+	{"no-rounding", no_argument,	 NULL,	 'n'},
+	{"performance", no_argument,	 NULL,	 'c'},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ },
 };
 
@@ -538,7 +812,12 @@ int cmd_freq_info(int argc, char **argv)
 	int output_param = 0;
 
 	do {
+<<<<<<< HEAD
 		ret = getopt_long(argc, argv, "oefwldpgrasmyb", info_opts, NULL);
+=======
+		ret = getopt_long(argc, argv, "oefwldpgrasmybnc", info_opts,
+				  NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (ret) {
 		case '?':
 			output_param = '?';
@@ -560,6 +839,10 @@ int cmd_freq_info(int argc, char **argv)
 		case 'e':
 		case 's':
 		case 'y':
+<<<<<<< HEAD
+=======
+		case 'c':
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (output_param) {
 				output_param = -1;
 				cont = 0;
@@ -575,6 +858,12 @@ int cmd_freq_info(int argc, char **argv)
 			}
 			human = 1;
 			break;
+<<<<<<< HEAD
+=======
+		case 'n':
+			no_rounding = 1;
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			fprintf(stderr, "invalid or unknown argument\n");
 			return EXIT_FAILURE;
@@ -595,9 +884,15 @@ int cmd_freq_info(int argc, char **argv)
 
 	ret = 0;
 
+<<<<<<< HEAD
 	/* Default is: show output of CPU 0 only */
 	if (bitmask_isallclear(cpus_chosen))
 		bitmask_setbit(cpus_chosen, 0);
+=======
+	/* Default is: show output of base_cpu only */
+	if (bitmask_isallclear(cpus_chosen))
+		bitmask_setbit(cpus_chosen, base_cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (output_param) {
 	case -1:
@@ -617,11 +912,22 @@ int cmd_freq_info(int argc, char **argv)
 
 		if (!bitmask_isbitset(cpus_chosen, cpu))
 			continue;
+<<<<<<< HEAD
 		if (cpufreq_cpu_exists(cpu)) {
 			printf(_("couldn't analyze CPU %d as it doesn't seem to be present\n"), cpu);
 			continue;
 		}
 		printf(_("analyzing CPU %d:\n"), cpu);
+=======
+
+		printf(_("analyzing CPU %d:\n"), cpu);
+
+		if (sysfs_is_cpu_online(cpu) != 1) {
+			printf(_(" *is offline\n"));
+			printf("\n");
+			continue;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (output_param) {
 		case 'b':
@@ -646,7 +952,11 @@ int cmd_freq_info(int argc, char **argv)
 			ret = get_driver(cpu);
 			break;
 		case 'l':
+<<<<<<< HEAD
 			ret = get_hardware_limits(cpu);
+=======
+			ret = get_hardware_limits(cpu, human);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case 'w':
 			ret = get_freq_hardware(cpu, human);
@@ -660,6 +970,12 @@ int cmd_freq_info(int argc, char **argv)
 		case 'y':
 			ret = get_latency(cpu, human);
 			break;
+<<<<<<< HEAD
+=======
+		case 'c':
+			ret = get_perf_cap(cpu);
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (ret)
 			return ret;

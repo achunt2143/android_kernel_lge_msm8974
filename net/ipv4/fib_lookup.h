@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _FIB_LOOKUP_H
 #define _FIB_LOOKUP_H
 
 #include <linux/types.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <net/ip_fib.h>
 
 struct fib_alias {
@@ -11,12 +16,34 @@ struct fib_alias {
 	u8			fa_tos;
 	u8			fa_type;
 	u8			fa_state;
+=======
+#include <net/inet_dscp.h>
+#include <net/ip_fib.h>
+#include <net/nexthop.h>
+
+struct fib_alias {
+	struct hlist_node	fa_list;
+	struct fib_info		*fa_info;
+	dscp_t			fa_dscp;
+	u8			fa_type;
+	u8			fa_state;
+	u8			fa_slen;
+	u32			tb_id;
+	s16			fa_default;
+	u8			offload;
+	u8			trap;
+	u8			offload_failed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rcu_head		rcu;
 };
 
 #define FA_S_ACCESSED	0x01
 
+<<<<<<< HEAD
 /* Dont write on fa_state unless needed, to keep it shared on all cpus */
+=======
+/* Don't write on fa_state unless needed, to keep it shared on all cpus */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void fib_alias_accessed(struct fib_alias *fa)
 {
 	if (!(fa->fa_state & FA_S_ACCESSED))
@@ -24,6 +51,7 @@ static inline void fib_alias_accessed(struct fib_alias *fa)
 }
 
 /* Exported by fib_semantics.c */
+<<<<<<< HEAD
 extern void fib_release_info(struct fib_info *);
 extern struct fib_info *fib_create_info(struct fib_config *cfg);
 extern int fib_nh_match(struct fib_config *cfg, struct fib_info *fi);
@@ -39,12 +67,29 @@ extern struct fib_alias *fib_find_alias(struct list_head *fah,
 extern int fib_detect_death(struct fib_info *fi, int order,
 			    struct fib_info **last_resort,
 			    int *last_idx, int dflt);
+=======
+void fib_release_info(struct fib_info *);
+struct fib_info *fib_create_info(struct fib_config *cfg,
+				 struct netlink_ext_ack *extack);
+int fib_nh_match(struct net *net, struct fib_config *cfg, struct fib_info *fi,
+		 struct netlink_ext_ack *extack);
+bool fib_metrics_match(struct fib_config *cfg, struct fib_info *fi);
+int fib_dump_info(struct sk_buff *skb, u32 pid, u32 seq, int event,
+		  const struct fib_rt_info *fri, unsigned int flags);
+void rtmsg_fib(int event, __be32 key, struct fib_alias *fa, int dst_len,
+	       u32 tb_id, const struct nl_info *info, unsigned int nlm_flags);
+size_t fib_nlmsg_size(struct fib_info *fi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void fib_result_assign(struct fib_result *res,
 				     struct fib_info *fi)
 {
 	/* we used to play games with refcounts, but we now use RCU */
 	res->fi = fi;
+<<<<<<< HEAD
+=======
+	res->nhc = fib_info_nhc(fi, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct fib_prop {

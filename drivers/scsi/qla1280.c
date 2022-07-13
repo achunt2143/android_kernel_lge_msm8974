@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *                  QLOGIC LINUX SOFTWARE
 *
@@ -6,6 +10,7 @@
 * Copyright (C) 2001-2004 Jes Sorensen, Wild Open Source Inc.
 * Copyright (C) 2003-2004 Christoph Hellwig
 *
+<<<<<<< HEAD
 * This program is free software; you can redistribute it and/or modify it
 * under the terms of the GNU General Public License as published by the
 * Free Software Foundation; either version 2, or (at your option) any
@@ -16,6 +21,8 @@
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 * General Public License for more details.
 *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ******************************************************************************/
 #define QLA1280_VERSION      "3.27.1"
 /*****************************************************************************
@@ -366,10 +373,13 @@
 #include <scsi/scsi_host.h>
 #include <scsi/scsi_tcq.h>
 
+<<<<<<< HEAD
 #if defined(CONFIG_IA64_GENERIC) || defined(CONFIG_IA64_SGI_SN2)
 #include <asm/sn/io.h>
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Compile time Options:
@@ -379,6 +389,7 @@
 #define  DEBUG_PRINT_NVRAM	0
 #define  DEBUG_QLA1280		0
 
+<<<<<<< HEAD
 /*
  * The SGI VISWS is broken and doesn't support MMIO ;-(
  */
@@ -411,6 +422,18 @@
 #endif
 
 
+=======
+#define	MEMORY_MAPPED_IO	1
+
+#include "qla1280.h"
+
+#ifdef CONFIG_ARCH_DMA_ADDR_T_64BIT
+#define QLA_64BIT_PTR	1
+#endif
+
+#define NVRAM_DELAY()			udelay(500)	/* 2 microseconds */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IS_ISP1040(ha) (ha->pdev->device == PCI_DEVICE_ID_QLOGIC_ISP1020)
 #define IS_ISP1x40(ha) (ha->pdev->device == PCI_DEVICE_ID_QLOGIC_ISP1020 || \
 			ha->pdev->device == PCI_DEVICE_ID_QLOGIC_ISP1240)
@@ -512,6 +535,7 @@ __setup("qla1280=", qla1280_setup);
 #endif
 
 
+<<<<<<< HEAD
 /*
  * We use the scsi_pointer structure that's included with each scsi_command
  * to overlay our struct srb over it. qla1280_init() checks that a srb is not
@@ -519,13 +543,18 @@ __setup("qla1280=", qla1280_setup);
  */
 
 #define	CMD_SP(Cmnd)		&Cmnd->SCp
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	CMD_CDBLEN(Cmnd)	Cmnd->cmd_len
 #define	CMD_CDBP(Cmnd)		Cmnd->cmnd
 #define	CMD_SNSP(Cmnd)		Cmnd->sense_buffer
 #define	CMD_SNSLEN(Cmnd)	SCSI_SENSE_BUFFERSIZE
 #define	CMD_RESULT(Cmnd)	Cmnd->result
 #define	CMD_HANDLE(Cmnd)	Cmnd->host_scribble
+<<<<<<< HEAD
 #define CMD_REQUEST(Cmnd)	Cmnd->request->cmd
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CMD_HOST(Cmnd)		Cmnd->device->host
 #define SCSI_BUS_32(Cmnd)	Cmnd->device->channel
@@ -561,7 +590,11 @@ static struct pci_device_id qla1280_pci_tbl[] = {
 };
 MODULE_DEVICE_TABLE(pci, qla1280_pci_tbl);
 
+<<<<<<< HEAD
 DEFINE_MUTEX(qla1280_firmware_mutex);
+=======
+static DEFINE_MUTEX(qla1280_firmware_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct qla_fw {
 	char *fwname;
@@ -570,7 +603,11 @@ struct qla_fw {
 
 #define QL_NUM_FW_IMAGES 3
 
+<<<<<<< HEAD
 struct qla_fw qla1280_fw_tbl[QL_NUM_FW_IMAGES] = {
+=======
+static struct qla_fw qla1280_fw_tbl[QL_NUM_FW_IMAGES] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{"qlogic/1040.bin",  NULL},	/* image 0 */
 	{"qlogic/1280.bin",  NULL},	/* image 1 */
 	{"qlogic/12160.bin", NULL},	/* image 2 */
@@ -668,6 +705,7 @@ static int qla1280_read_nvram(struct scsi_qla_host *ha)
 	 * to be read a word (two bytes) at a time.
 	 *
 	 * The net result of this would be that the word (and
+<<<<<<< HEAD
 	 * doubleword) quantites in the firmware would be correct, but
 	 * the bytes would be pairwise reversed.  Since most of the
 	 * firmware quantites are, in fact, bytes, we do an extra
@@ -675,6 +713,15 @@ static int qla1280_read_nvram(struct scsi_qla_host *ha)
 	 *
 	 * The upshot of all this is that the bytes in the firmware
 	 * are in the correct places, but the 16 and 32 bit quantites
+=======
+	 * doubleword) quantities in the firmware would be correct, but
+	 * the bytes would be pairwise reversed.  Since most of the
+	 * firmware quantities are, in fact, bytes, we do an extra
+	 * le16_to_cpu() in the firmware read routine.
+	 *
+	 * The upshot of all this is that the bytes in the firmware
+	 * are in the correct places, but the 16 and 32 bit quantities
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * are still in little endian format.  We fix that up below by
 	 * doing extra reverses on them */
 	nv->isp_parameter = cpu_to_le16(nv->isp_parameter);
@@ -722,6 +769,7 @@ qla1280_info(struct Scsi_Host *host)
  * The mid-level driver tries to ensures that queuecommand never gets invoked
  * concurrently with itself or the interrupt handler (although the
  * interrupt handler may call this routine as part of request-completion
+<<<<<<< HEAD
  * handling).   Unfortunely, it sometimes calls the scheduler in interrupt
  * context which is a big NO! NO!.
  **************************************************************************/
@@ -734,6 +782,18 @@ qla1280_queuecommand_lck(struct scsi_cmnd *cmd, void (*fn)(struct scsi_cmnd *))
 	int status;
 
 	cmd->scsi_done = fn;
+=======
+ * handling).   Unfortunately, it sometimes calls the scheduler in interrupt
+ * context which is a big NO! NO!.
+ **************************************************************************/
+static int qla1280_queuecommand_lck(struct scsi_cmnd *cmd)
+{
+	struct Scsi_Host *host = cmd->device->host;
+	struct scsi_qla_host *ha = (struct scsi_qla_host *)host->hostdata;
+	struct srb *sp = scsi_cmd_priv(cmd);
+	int status;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sp->cmd = cmd;
 	sp->flags = 0;
 	sp->wait = NULL;
@@ -761,6 +821,7 @@ enum action {
 	ABORT_COMMAND,
 	DEVICE_RESET,
 	BUS_RESET,
+<<<<<<< HEAD
 	ADAPTER_RESET,
 };
 
@@ -768,6 +829,14 @@ enum action {
 static void qla1280_mailbox_timeout(unsigned long __data)
 {
 	struct scsi_qla_host *ha = (struct scsi_qla_host *)__data;
+=======
+};
+
+
+static void qla1280_mailbox_timeout(struct timer_list *t)
+{
+	struct scsi_qla_host *ha = from_timer(ha, t, mailbox_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_reg __iomem *reg;
 	reg = ha->iobase;
 
@@ -791,7 +860,11 @@ _qla1280_wait_for_single_command(struct scsi_qla_host *ha, struct srb *sp,
 	sp->wait = NULL;
 	if(CMD_HANDLE(cmd) == COMPLETED_HANDLE) {
 		status = SUCCESS;
+<<<<<<< HEAD
 		(*cmd->scsi_done)(cmd);
+=======
+		scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return status;
 }
@@ -866,7 +939,11 @@ qla1280_error_action(struct scsi_cmnd *cmd, enum action action)
 	ENTER("qla1280_error_action");
 
 	ha = (struct scsi_qla_host *)(CMD_HOST(cmd)->hostdata);
+<<<<<<< HEAD
 	sp = (struct srb *)CMD_SP(cmd);
+=======
+	sp = scsi_cmd_priv(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bus = SCSI_BUS_32(cmd);
 	target = SCSI_TCN_32(cmd);
 	lun = SCSI_LUN_32(cmd);
@@ -943,6 +1020,7 @@ qla1280_error_action(struct scsi_cmnd *cmd, enum action action)
 		}
 		break;
 
+<<<<<<< HEAD
 	case ADAPTER_RESET:
 	default:
 		if (qla1280_verbose) {
@@ -959,6 +1037,11 @@ qla1280_error_action(struct scsi_cmnd *cmd, enum action action)
 		}
 
 		ha->flags.reset_active = 0;
+=======
+	default:
+		dprintk(1, "RESET invalid action %d\n", action);
+		return FAILED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1056,11 +1139,35 @@ qla1280_eh_bus_reset(struct scsi_cmnd *cmd)
 static int
 qla1280_eh_adapter_reset(struct scsi_cmnd *cmd)
 {
+<<<<<<< HEAD
 	int rc;
 
 	spin_lock_irq(cmd->device->host->host_lock);
 	rc = qla1280_error_action(cmd, ADAPTER_RESET);
 	spin_unlock_irq(cmd->device->host->host_lock);
+=======
+	int rc = SUCCESS;
+	struct Scsi_Host *shost = cmd->device->host;
+	struct scsi_qla_host *ha = (struct scsi_qla_host *)shost->hostdata;
+
+	spin_lock_irq(shost->host_lock);
+	if (qla1280_verbose) {
+		printk(KERN_INFO
+		       "scsi(%ld): Issued ADAPTER RESET\n",
+		       ha->host_no);
+		printk(KERN_INFO "scsi(%ld): I/O processing will "
+		       "continue automatically\n", ha->host_no);
+	}
+	ha->flags.reset_active = 1;
+
+	if (qla1280_abort_isp(ha) != 0) {	/* it's dead */
+		rc = FAILED;
+	}
+
+	ha->flags.reset_active = 0;
+
+	spin_unlock_irq(shost->host_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -1231,10 +1338,16 @@ qla1280_slave_configure(struct scsi_device *device)
 
 	if (device->tagged_supported &&
 	    (ha->bus_settings[bus].qtag_enables & (BIT_0 << target))) {
+<<<<<<< HEAD
 		scsi_adjust_queue_depth(device, MSG_ORDERED_TAG,
 					ha->bus_settings[bus].hiwat);
 	} else {
 		scsi_adjust_queue_depth(device, 0, default_depth);
+=======
+		scsi_change_queue_depth(device, ha->bus_settings[bus].hiwat);
+	} else {
+		scsi_change_queue_depth(device, default_depth);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	nv->bus[bus].target[target].parameter.enable_sync = device->sdtr;
@@ -1277,7 +1390,11 @@ qla1280_done(struct scsi_qla_host *ha)
 {
 	struct srb *sp;
 	struct list_head *done_q;
+<<<<<<< HEAD
 	int bus, target, lun;
+=======
+	int bus, target;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scsi_cmnd *cmd;
 
 	ENTER("qla1280_done");
@@ -1292,7 +1409,10 @@ qla1280_done(struct scsi_qla_host *ha)
 		cmd = sp->cmd;
 		bus = SCSI_BUS_32(cmd);
 		target = SCSI_TCN_32(cmd);
+<<<<<<< HEAD
 		lun = SCSI_LUN_32(cmd);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch ((CMD_RESULT(cmd) >> 16)) {
 		case DID_RESET:
@@ -1315,7 +1435,11 @@ qla1280_done(struct scsi_qla_host *ha)
 		ha->actthreads--;
 
 		if (sp->wait == NULL)
+<<<<<<< HEAD
 			(*(cmd)->scsi_done)(cmd);
+=======
+			scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			complete(sp->wait);
 	}
@@ -1438,7 +1562,11 @@ qla1280_return_status(struct response * sts, struct scsi_cmnd *cp)
  * Returns:
  *      0 = success
  */
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla1280_initialize_adapter(struct scsi_qla_host *ha)
 {
 	struct device_reg __iomem *reg;
@@ -1454,6 +1582,7 @@ qla1280_initialize_adapter(struct scsi_qla_host *ha)
 	ha->flags.reset_active = 0;
 	ha->flags.abort_isp_active = 0;
 
+<<<<<<< HEAD
 #if defined(CONFIG_IA64_GENERIC) || defined(CONFIG_IA64_SGI_SN2)
 	if (ia64_platform_is("sn2")) {
 		printk(KERN_INFO "scsi(%li): Enabling SN2 PCI DMA "
@@ -1463,6 +1592,8 @@ qla1280_initialize_adapter(struct scsi_qla_host *ha)
 	}
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* TODO: implement support for the 1040 nvram format */
 	if (IS_ISP1040(ha))
 		driver_setup.no_nvram = 1;
@@ -1744,6 +1875,19 @@ qla1280_load_firmware_pio(struct scsi_qla_host *ha)
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef QLA_64BIT_PTR
+#define LOAD_CMD	MBC_LOAD_RAM_A64_ROM
+#define DUMP_CMD	MBC_DUMP_RAM_A64_ROM
+#define CMD_ARGS	(BIT_7 | BIT_6 | BIT_4 | BIT_3 | BIT_2 | BIT_1 | BIT_0)
+#else
+#define LOAD_CMD	MBC_LOAD_RAM
+#define DUMP_CMD	MBC_DUMP_RAM
+#define CMD_ARGS	(BIT_4 | BIT_3 | BIT_2 | BIT_1 | BIT_0)
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DUMP_IT_BACK 0		/* for debug of RISC loading */
 static int
 qla1280_load_firmware_dma(struct scsi_qla_host *ha)
@@ -1758,7 +1902,11 @@ qla1280_load_firmware_dma(struct scsi_qla_host *ha)
 	uint8_t *sp, *tbuf;
 	dma_addr_t p_tbuf;
 
+<<<<<<< HEAD
 	tbuf = pci_alloc_consistent(ha->pdev, 8000, &p_tbuf);
+=======
+	tbuf = dma_alloc_coherent(&ha->pdev->dev, 8000, &p_tbuf, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tbuf)
 		return -ENOMEM;
 #endif
@@ -1793,19 +1941,32 @@ qla1280_load_firmware_dma(struct scsi_qla_host *ha)
 		for(i = 0; i < cnt; i++)
 			((__le16 *)ha->request_ring)[i] = fw_data[i];
 
+<<<<<<< HEAD
 		mb[0] = MBC_LOAD_RAM;
+=======
+		mb[0] = LOAD_CMD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mb[1] = risc_address;
 		mb[4] = cnt;
 		mb[3] = ha->request_dma & 0xffff;
 		mb[2] = (ha->request_dma >> 16) & 0xffff;
+<<<<<<< HEAD
 		mb[7] = pci_dma_hi32(ha->request_dma) & 0xffff;
 		mb[6] = pci_dma_hi32(ha->request_dma) >> 16;
+=======
+		mb[7] = upper_32_bits(ha->request_dma) & 0xffff;
+		mb[6] = upper_32_bits(ha->request_dma) >> 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dprintk(2, "%s: op=%d  0x%p = 0x%4x,0x%4x,0x%4x,0x%4x\n",
 				__func__, mb[0],
 				(void *)(long)ha->request_dma,
 				mb[6], mb[7], mb[2], mb[3]);
+<<<<<<< HEAD
 		err = qla1280_mailbox_command(ha, BIT_4 | BIT_3 | BIT_2 |
 				BIT_1 | BIT_0, mb);
+=======
+		err = qla1280_mailbox_command(ha, CMD_ARGS, mb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			printk(KERN_ERR "scsi(%li): Failed to load partial "
 			       "segment of f\n", ha->host_no);
@@ -1813,16 +1974,27 @@ qla1280_load_firmware_dma(struct scsi_qla_host *ha)
 		}
 
 #if DUMP_IT_BACK
+<<<<<<< HEAD
 		mb[0] = MBC_DUMP_RAM;
+=======
+		mb[0] = DUMP_CMD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mb[1] = risc_address;
 		mb[4] = cnt;
 		mb[3] = p_tbuf & 0xffff;
 		mb[2] = (p_tbuf >> 16) & 0xffff;
+<<<<<<< HEAD
 		mb[7] = pci_dma_hi32(p_tbuf) & 0xffff;
 		mb[6] = pci_dma_hi32(p_tbuf) >> 16;
 
 		err = qla1280_mailbox_command(ha, BIT_4 | BIT_3 | BIT_2 |
 				BIT_1 | BIT_0, mb);
+=======
+		mb[7] = upper_32_bits(p_tbuf) & 0xffff;
+		mb[6] = upper_32_bits(p_tbuf) >> 16;
+
+		err = qla1280_mailbox_command(ha, CMD_ARGS, mb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err) {
 			printk(KERN_ERR
 			       "Failed to dump partial segment of f/w\n");
@@ -1849,7 +2021,11 @@ qla1280_load_firmware_dma(struct scsi_qla_host *ha)
 
  out:
 #if DUMP_IT_BACK
+<<<<<<< HEAD
 	pci_free_consistent(ha->pdev, 8000, tbuf, p_tbuf);
+=======
+	dma_free_coherent(&ha->pdev->dev, 8000, tbuf, p_tbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return err;
 }
@@ -1941,8 +2117,13 @@ qla1280_init_rings(struct scsi_qla_host *ha)
 	mb[3] = ha->request_dma & 0xffff;
 	mb[2] = (ha->request_dma >> 16) & 0xffff;
 	mb[4] = 0;
+<<<<<<< HEAD
 	mb[7] = pci_dma_hi32(ha->request_dma) & 0xffff;
 	mb[6] = pci_dma_hi32(ha->request_dma) >> 16;
+=======
+	mb[7] = upper_32_bits(ha->request_dma) & 0xffff;
+	mb[6] = upper_32_bits(ha->request_dma) >> 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(status = qla1280_mailbox_command(ha, BIT_7 | BIT_6 | BIT_4 |
 					       BIT_3 | BIT_2 | BIT_1 | BIT_0,
 					       &mb[0]))) {
@@ -1955,8 +2136,13 @@ qla1280_init_rings(struct scsi_qla_host *ha)
 		mb[3] = ha->response_dma & 0xffff;
 		mb[2] = (ha->response_dma >> 16) & 0xffff;
 		mb[5] = 0;
+<<<<<<< HEAD
 		mb[7] = pci_dma_hi32(ha->response_dma) & 0xffff;
 		mb[6] = pci_dma_hi32(ha->response_dma) >> 16;
+=======
+		mb[7] = upper_32_bits(ha->response_dma) & 0xffff;
+		mb[6] = upper_32_bits(ha->response_dma) >> 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = qla1280_mailbox_command(ha, BIT_7 | BIT_6 | BIT_5 |
 						 BIT_3 | BIT_2 | BIT_1 | BIT_0,
 						 &mb[0]);
@@ -2222,13 +2408,20 @@ qla1280_nvram_config(struct scsi_qla_host *ha)
 		nv->cntr_flags_1.disable_loading_risc_code;
 
 	if (IS_ISP1040(ha)) {
+<<<<<<< HEAD
 		uint16_t hwrev, cfg1, cdma_conf, ddma_conf;
+=======
+		uint16_t hwrev, cfg1, cdma_conf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hwrev = RD_REG_WORD(&reg->cfg_0) & ISP_CFG0_HWMSK;
 
 		cfg1 = RD_REG_WORD(&reg->cfg_1) & ~(BIT_4 | BIT_5 | BIT_6);
 		cdma_conf = RD_REG_WORD(&reg->cdma_cfg);
+<<<<<<< HEAD
 		ddma_conf = RD_REG_WORD(&reg->ddma_cfg);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Busted fifo, says mjacob. */
 		if (hwrev != ISP_CFG0_1040A)
@@ -2278,6 +2471,7 @@ qla1280_nvram_config(struct scsi_qla_host *ha)
 	mb[1] = nv->firmware_feature.f.enable_fast_posting;
 	mb[1] |= nv->firmware_feature.f.report_lvd_bus_transition << 1;
 	mb[1] |= nv->firmware_feature.f.disable_synchronous_backoff << 5;
+<<<<<<< HEAD
 #if defined(CONFIG_IA64_GENERIC) || defined (CONFIG_IA64_SGI_SN2)
 	if (ia64_platform_is("sn2")) {
 		printk(KERN_INFO "scsi(%li): Enabling SN2 PCI DMA "
@@ -2285,6 +2479,8 @@ qla1280_nvram_config(struct scsi_qla_host *ha)
 		mb[1] |= nv->firmware_feature.f.unused_9 << 9; /* XXX */
 	}
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status |= qla1280_mailbox_command(ha, BIT_1 | BIT_0, mb);
 
 	/* Retry count and delay. */
@@ -2471,9 +2667,13 @@ qla1280_mailbox_command(struct scsi_qla_host *ha, uint8_t mr, uint16_t *mb)
 	int cnt;
 	uint16_t *optr, *iptr;
 	uint16_t __iomem *mptr;
+<<<<<<< HEAD
 	uint16_t data;
 	DECLARE_COMPLETION_ONSTACK(wait);
 	struct timer_list timer;
+=======
+	DECLARE_COMPLETION_ONSTACK(wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ENTER("qla1280_mailbox_command");
 
@@ -2502,6 +2702,7 @@ qla1280_mailbox_command(struct scsi_qla_host *ha, uint8_t mr, uint16_t *mb)
 	/* Issue set host interrupt command. */
 
 	/* set up a timer just in case we're really jammed */
+<<<<<<< HEAD
 	init_timer(&timer);
 	timer.expires = jiffies + 20*HZ;
 	timer.data = (unsigned long)ha;
@@ -2514,6 +2715,17 @@ qla1280_mailbox_command(struct scsi_qla_host *ha, uint8_t mr, uint16_t *mb)
 
 	wait_for_completion(&wait);
 	del_timer_sync(&timer);
+=======
+	timer_setup(&ha->mailbox_timer, qla1280_mailbox_timeout, 0);
+	mod_timer(&ha->mailbox_timer, jiffies + 20 * HZ);
+
+	spin_unlock_irq(ha->host->host_lock);
+	WRT_REG_WORD(&reg->host_cmd, HC_SET_HOST_INT);
+	qla1280_debounce_register(&reg->istatus);
+
+	wait_for_completion(&wait);
+	del_timer_sync(&ha->mailbox_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(ha->host->host_lock);
 
@@ -2537,7 +2749,10 @@ qla1280_mailbox_command(struct scsi_qla_host *ha, uint8_t mr, uint16_t *mb)
 	/* Load return mailbox registers. */
 	optr = mb;
 	iptr = (uint16_t *) &ha->mailbox_out[0];
+<<<<<<< HEAD
 	mr = MAILBOX_REGISTER_COUNT;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(optr, iptr, MAILBOX_REGISTER_COUNT * sizeof(uint16_t));
 
 	if (ha->flags.reset_marker)
@@ -2878,7 +3093,11 @@ qla1280_64bit_start_scsi(struct scsi_qla_host *ha, struct srb * sp)
 	memset(((char *)pkt + 8), 0, (REQUEST_ENTRY_SIZE - 8));
 
 	/* Set ISP command timeout. */
+<<<<<<< HEAD
 	pkt->timeout = cpu_to_le16(cmd->request->timeout/HZ);
+=======
+	pkt->timeout = cpu_to_le16(scsi_cmd_to_rq(cmd)->timeout / HZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set device target ID and LUN */
 	pkt->lun = SCSI_LUN_32(cmd);
@@ -2919,6 +3138,7 @@ qla1280_64bit_start_scsi(struct scsi_qla_host *ha, struct srb * sp)
 				break;
 
 			dma_handle = sg_dma_address(s);
+<<<<<<< HEAD
 #if defined(CONFIG_IA64_GENERIC) || defined(CONFIG_IA64_SGI_SN2)
 			if (ha->flags.use_pci_vchannel)
 				sn_pci_set_vchan(ha->pdev,
@@ -2933,6 +3153,16 @@ qla1280_64bit_start_scsi(struct scsi_qla_host *ha, struct srb * sp)
 			dprintk(3, "S/G Segment phys_addr=%x %x, len=0x%x\n",
 				cpu_to_le32(pci_dma_hi32(dma_handle)),
 				cpu_to_le32(pci_dma_lo32(dma_handle)),
+=======
+			*dword_ptr++ =
+				cpu_to_le32(lower_32_bits(dma_handle));
+			*dword_ptr++ =
+				cpu_to_le32(upper_32_bits(dma_handle));
+			*dword_ptr++ = cpu_to_le32(sg_dma_len(s));
+			dprintk(3, "S/G Segment phys_addr=%x %x, len=0x%x\n",
+				cpu_to_le32(upper_32_bits(dma_handle)),
+				cpu_to_le32(lower_32_bits(dma_handle)),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cpu_to_le32(sg_dma_len(sg_next(s))));
 			remseg--;
 		}
@@ -2981,6 +3211,7 @@ qla1280_64bit_start_scsi(struct scsi_qla_host *ha, struct srb * sp)
 				if (cnt == 5)
 					break;
 				dma_handle = sg_dma_address(s);
+<<<<<<< HEAD
 #if defined(CONFIG_IA64_GENERIC) || defined(CONFIG_IA64_SGI_SN2)
 				if (ha->flags.use_pci_vchannel)
 					sn_pci_set_vchan(ha->pdev,
@@ -2996,6 +3227,17 @@ qla1280_64bit_start_scsi(struct scsi_qla_host *ha, struct srb * sp)
 				dprintk(3, "S/G Segment Cont. phys_addr=%x %x, len=0x%x\n",
 					cpu_to_le32(pci_dma_hi32(dma_handle)),
 					cpu_to_le32(pci_dma_lo32(dma_handle)),
+=======
+				*dword_ptr++ =
+					cpu_to_le32(lower_32_bits(dma_handle));
+				*dword_ptr++ =
+					cpu_to_le32(upper_32_bits(dma_handle));
+				*dword_ptr++ =
+					cpu_to_le32(sg_dma_len(s));
+				dprintk(3, "S/G Segment Cont. phys_addr=%x %x, len=0x%x\n",
+					cpu_to_le32(upper_32_bits(dma_handle)),
+					cpu_to_le32(lower_32_bits(dma_handle)),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					cpu_to_le32(sg_dma_len(s)));
 			}
 			remseg -= cnt;
@@ -3026,8 +3268,11 @@ qla1280_64bit_start_scsi(struct scsi_qla_host *ha, struct srb * sp)
 	sp->flags |= SRB_SENT;
 	ha->actthreads++;
 	WRT_REG_WORD(&reg->mailbox4, ha->req_ring_index);
+<<<<<<< HEAD
 	/* Enforce mmio write ordering; see comment in qla1280_isp_cmd(). */
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  out:
 	if (status)
@@ -3119,7 +3364,11 @@ qla1280_32bit_start_scsi(struct scsi_qla_host *ha, struct srb * sp)
 
 	/* Check for empty slot in outstanding command list. */
 	for (cnt = 0; cnt < MAX_OUTSTANDING_COMMANDS &&
+<<<<<<< HEAD
 		     (ha->outstanding_cmds[cnt] != 0); cnt++) ;
+=======
+	     ha->outstanding_cmds[cnt]; cnt++);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cnt >= MAX_OUTSTANDING_COMMANDS) {
 		status = SCSI_MLQUEUE_HOST_BUSY;
@@ -3147,7 +3396,11 @@ qla1280_32bit_start_scsi(struct scsi_qla_host *ha, struct srb * sp)
 	memset(((char *)pkt + 8), 0, (REQUEST_ENTRY_SIZE - 8));
 
 	/* Set ISP command timeout. */
+<<<<<<< HEAD
 	pkt->timeout = cpu_to_le16(cmd->request->timeout/HZ);
+=======
+	pkt->timeout = cpu_to_le16(scsi_cmd_to_rq(cmd)->timeout / HZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set device target ID and LUN */
 	pkt->lun = SCSI_LUN_32(cmd);
@@ -3190,10 +3443,17 @@ qla1280_32bit_start_scsi(struct scsi_qla_host *ha, struct srb * sp)
 			if (cnt == 4)
 				break;
 			*dword_ptr++ =
+<<<<<<< HEAD
 				cpu_to_le32(pci_dma_lo32(sg_dma_address(s)));
 			*dword_ptr++ = cpu_to_le32(sg_dma_len(s));
 			dprintk(3, "S/G Segment phys_addr=0x%lx, len=0x%x\n",
 				(pci_dma_lo32(sg_dma_address(s))),
+=======
+				cpu_to_le32(lower_32_bits(sg_dma_address(s)));
+			*dword_ptr++ = cpu_to_le32(sg_dma_len(s));
+			dprintk(3, "S/G Segment phys_addr=0x%lx, len=0x%x\n",
+				(lower_32_bits(sg_dma_address(s))),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(sg_dma_len(s)));
 			remseg--;
 		}
@@ -3236,13 +3496,21 @@ qla1280_32bit_start_scsi(struct scsi_qla_host *ha, struct srb * sp)
 				if (cnt == 7)
 					break;
 				*dword_ptr++ =
+<<<<<<< HEAD
 					cpu_to_le32(pci_dma_lo32(sg_dma_address(s)));
+=======
+					cpu_to_le32(lower_32_bits(sg_dma_address(s)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				*dword_ptr++ =
 					cpu_to_le32(sg_dma_len(s));
 				dprintk(1,
 					"S/G Segment Cont. phys_addr=0x%x, "
 					"len=0x%x\n",
+<<<<<<< HEAD
 					cpu_to_le32(pci_dma_lo32(sg_dma_address(s))),
+=======
+					cpu_to_le32(lower_32_bits(sg_dma_address(s))),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					cpu_to_le32(sg_dma_len(s)));
 			}
 			remseg -= cnt;
@@ -3276,8 +3544,11 @@ qla1280_32bit_start_scsi(struct scsi_qla_host *ha, struct srb * sp)
 	sp->flags |= SRB_SENT;
 	ha->actthreads++;
 	WRT_REG_WORD(&reg->mailbox4, ha->req_ring_index);
+<<<<<<< HEAD
 	/* Enforce mmio write ordering; see comment in qla1280_isp_cmd(). */
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	if (status)
@@ -3389,6 +3660,7 @@ qla1280_isp_cmd(struct scsi_qla_host *ha)
 
 	/*
 	 * Update request index to mailbox4 (Request Queue In).
+<<<<<<< HEAD
 	 * The mmiowb() ensures that this write is ordered with writes by other
 	 * CPUs.  Without the mmiowb(), it is possible for the following:
 	 *    CPUA posts write of index 5 to mailbox4
@@ -3402,6 +3674,10 @@ qla1280_isp_cmd(struct scsi_qla_host *ha)
 	 */
 	WRT_REG_WORD(&reg->mailbox4, ha->req_ring_index);
 	mmiowb();
+=======
+	 */
+	WRT_REG_WORD(&reg->mailbox4, ha->req_ring_index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	LEAVE("qla1280_isp_cmd");
 }
@@ -3679,7 +3955,10 @@ static void
 qla1280_status_entry(struct scsi_qla_host *ha, struct response *pkt,
 		     struct list_head *done_q)
 {
+<<<<<<< HEAD
 	unsigned int bus, target, lun;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int sense_sz;
 	struct srb *sp;
 	struct scsi_cmnd *cmd;
@@ -3705,11 +3984,14 @@ qla1280_status_entry(struct scsi_qla_host *ha, struct response *pkt,
 
 	cmd = sp->cmd;
 
+<<<<<<< HEAD
 	/* Generate LU queue on cntrl, target, LUN */
 	bus = SCSI_BUS_32(cmd);
 	target = SCSI_TCN_32(cmd);
 	lun = SCSI_LUN_32(cmd);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (comp_status || scsi_status) {
 		dprintk(3, "scsi: comp_status = 0x%x, scsi_status = "
 			"0x%x, handle = 0x%x\n", comp_status,
@@ -3748,7 +4030,12 @@ qla1280_status_entry(struct scsi_qla_host *ha, struct response *pkt,
 
 			dprintk(2, "qla1280_status_entry: Check "
 				"condition Sense data, b %i, t %i, "
+<<<<<<< HEAD
 				"l %i\n", bus, target, lun);
+=======
+				"l %i\n", SCSI_BUS_32(cmd), SCSI_TCN_32(cmd),
+				SCSI_LUN_32(cmd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (sense_sz)
 				qla1280_dump_buffer(2,
 						    (char *)cmd->sense_buffer,
@@ -3989,6 +4276,7 @@ qla1280_get_target_parameters(struct scsi_qla_host *ha,
 	printk(KERN_INFO "scsi(%li:%d:%d:%d):", ha->host_no, bus, target, lun);
 
 	if (mb[3] != 0) {
+<<<<<<< HEAD
 		printk(" Sync: period %d, offset %d",
 		       (mb[3] & 0xff), (mb[3] >> 8));
 		if (mb[2] & BIT_13)
@@ -4001,6 +4289,20 @@ qla1280_get_target_parameters(struct scsi_qla_host *ha,
 	if (device->simple_tags)
 		printk(", Tagged queuing: depth %d", device->queue_depth);
 	printk("\n");
+=======
+		printk(KERN_CONT " Sync: period %d, offset %d",
+		       (mb[3] & 0xff), (mb[3] >> 8));
+		if (mb[2] & BIT_13)
+			printk(KERN_CONT ", Wide");
+		if ((mb[2] & BIT_5) && ((mb[6] >> 8) & 0xff) >= 2)
+			printk(KERN_CONT ", DT");
+	} else
+		printk(KERN_CONT " Async");
+
+	if (device->simple_tags)
+		printk(KERN_CONT ", Tagged queuing: depth %d", device->queue_depth);
+	printk(KERN_CONT "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -4045,7 +4347,11 @@ __qla1280_print_scsi_cmd(struct scsi_cmnd *cmd)
 	int i;
 	ha = (struct scsi_qla_host *)host->hostdata;
 
+<<<<<<< HEAD
 	sp = (struct srb *)CMD_SP(cmd);
+=======
+	sp = scsi_cmd_priv(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk("SCSI Command @= 0x%p, Handle=0x%p\n", cmd, CMD_HANDLE(cmd));
 	printk("  chan=%d, target = 0x%02x, lun = 0x%02x, cmd_len = 0x%02x\n",
 	       SCSI_BUS_32(cmd), SCSI_TCN_32(cmd), SCSI_LUN_32(cmd),
@@ -4064,8 +4370,12 @@ __qla1280_print_scsi_cmd(struct scsi_cmnd *cmd)
 	   qla1280_dump_buffer(1, (char *)sg, (cmd->use_sg*sizeof(struct scatterlist)));
 	   } */
 	printk("  tag=%d, transfersize=0x%x \n",
+<<<<<<< HEAD
 	       cmd->tag, cmd->transfersize);
 	printk("  SP=0x%p\n", CMD_SP(cmd));
+=======
+	       scsi_cmd_to_rq(cmd)->tag, cmd->transfersize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(" underflow size = 0x%x, direction=0x%x\n",
 	       cmd->underflow, cmd->sc_data_direction);
 }
@@ -4131,7 +4441,10 @@ qla1280_setup(char *s)
 {
 	char *cp, *ptr;
 	unsigned long val;
+<<<<<<< HEAD
 	int toke;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cp = s;
 
@@ -4146,7 +4459,11 @@ qla1280_setup(char *s)
 		} else
 			val = simple_strtoul(ptr, &ptr, 0);
 
+<<<<<<< HEAD
 		switch ((toke = qla1280_get_token(cp))) {
+=======
+		switch (qla1280_get_token(cp)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case TOKEN_NVRAM:
 			if (!val)
 				driver_setup.no_nvram = 1;
@@ -4210,7 +4527,11 @@ qla1280_get_token(char *str)
 }
 
 
+<<<<<<< HEAD
 static struct scsi_host_template qla1280_driver_template = {
+=======
+static const struct scsi_host_template qla1280_driver_template = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module			= THIS_MODULE,
 	.proc_name		= "qla1280",
 	.name			= "Qlogic ISP 1280/12160",
@@ -4222,6 +4543,7 @@ static struct scsi_host_template qla1280_driver_template = {
 	.eh_bus_reset_handler	= qla1280_eh_bus_reset,
 	.eh_host_reset_handler	= qla1280_eh_adapter_reset,
 	.bios_param		= qla1280_biosparam,
+<<<<<<< HEAD
 	.can_queue		= 0xfffff,
 	.this_id		= -1,
 	.sg_tablesize		= SG_ALL,
@@ -4231,6 +4553,16 @@ static struct scsi_host_template qla1280_driver_template = {
 
 
 static int __devinit
+=======
+	.can_queue		= MAX_OUTSTANDING_COMMANDS,
+	.this_id		= -1,
+	.sg_tablesize		= SG_ALL,
+	.cmd_size		= sizeof(struct srb),
+};
+
+
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla1280_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 {
 	int devnum = id->driver_data;
@@ -4272,8 +4604,13 @@ qla1280_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	ha->devnum = devnum;	/* specifies microcode load address */
 
 #ifdef QLA_64BIT_PTR
+<<<<<<< HEAD
 	if (pci_set_dma_mask(ha->pdev, DMA_BIT_MASK(64))) {
 		if (pci_set_dma_mask(ha->pdev, DMA_BIT_MASK(32))) {
+=======
+	if (dma_set_mask_and_coherent(&ha->pdev->dev, DMA_BIT_MASK(64))) {
+		if (dma_set_mask(&ha->pdev->dev, DMA_BIT_MASK(32))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_WARNING "scsi(%li): Unable to set a "
 			       "suitable DMA mask - aborting\n", ha->host_no);
 			error = -ENODEV;
@@ -4283,7 +4620,11 @@ qla1280_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 		dprintk(2, "scsi(%li): 64 Bit PCI Addressing Enabled\n",
 			ha->host_no);
 #else
+<<<<<<< HEAD
 	if (pci_set_dma_mask(ha->pdev, DMA_BIT_MASK(32))) {
+=======
+	if (dma_set_mask(&ha->pdev->dev, DMA_BIT_MASK(32))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING "scsi(%li): Unable to set a "
 		       "suitable DMA mask - aborting\n", ha->host_no);
 		error = -ENODEV;
@@ -4291,17 +4632,29 @@ qla1280_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	}
 #endif
 
+<<<<<<< HEAD
 	ha->request_ring = pci_alloc_consistent(ha->pdev,
 			((REQUEST_ENTRY_CNT + 1) * sizeof(request_t)),
 			&ha->request_dma);
+=======
+	ha->request_ring = dma_alloc_coherent(&ha->pdev->dev,
+			((REQUEST_ENTRY_CNT + 1) * sizeof(request_t)),
+			&ha->request_dma, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ha->request_ring) {
 		printk(KERN_INFO "qla1280: Failed to get request memory\n");
 		goto error_put_host;
 	}
 
+<<<<<<< HEAD
 	ha->response_ring = pci_alloc_consistent(ha->pdev,
 			((RESPONSE_ENTRY_CNT + 1) * sizeof(struct response)),
 			&ha->response_dma);
+=======
+	ha->response_ring = dma_alloc_coherent(&ha->pdev->dev,
+			((RESPONSE_ENTRY_CNT + 1) * sizeof(struct response)),
+			&ha->response_dma, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ha->response_ring) {
 		printk(KERN_INFO "qla1280: Failed to get response memory\n");
 		goto error_free_request_ring;
@@ -4383,11 +4736,19 @@ qla1280_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	release_region(host->io_port, 0xff);
 #endif
  error_free_response_ring:
+<<<<<<< HEAD
 	pci_free_consistent(ha->pdev,
 			((RESPONSE_ENTRY_CNT + 1) * sizeof(struct response)),
 			ha->response_ring, ha->response_dma);
  error_free_request_ring:
 	pci_free_consistent(ha->pdev,
+=======
+	dma_free_coherent(&ha->pdev->dev,
+			((RESPONSE_ENTRY_CNT + 1) * sizeof(struct response)),
+			ha->response_ring, ha->response_dma);
+ error_free_request_ring:
+	dma_free_coherent(&ha->pdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			((REQUEST_ENTRY_CNT + 1) * sizeof(request_t)),
 			ha->request_ring, ha->request_dma);
  error_put_host:
@@ -4399,7 +4760,11 @@ qla1280_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 }
 
 
+<<<<<<< HEAD
 static void __devexit
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 qla1280_remove_one(struct pci_dev *pdev)
 {
 	struct Scsi_Host *host = pci_get_drvdata(pdev);
@@ -4417,10 +4782,17 @@ qla1280_remove_one(struct pci_dev *pdev)
 	release_region(host->io_port, 0xff);
 #endif
 
+<<<<<<< HEAD
 	pci_free_consistent(ha->pdev,
 			((REQUEST_ENTRY_CNT + 1) * (sizeof(request_t))),
 			ha->request_ring, ha->request_dma);
 	pci_free_consistent(ha->pdev,
+=======
+	dma_free_coherent(&ha->pdev->dev,
+			((REQUEST_ENTRY_CNT + 1) * (sizeof(request_t))),
+			ha->request_ring, ha->request_dma);
+	dma_free_coherent(&ha->pdev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			((RESPONSE_ENTRY_CNT + 1) * (sizeof(struct response))),
 			ha->response_ring, ha->response_dma);
 
@@ -4433,18 +4805,25 @@ static struct pci_driver qla1280_pci_driver = {
 	.name		= "qla1280",
 	.id_table	= qla1280_pci_tbl,
 	.probe		= qla1280_probe_one,
+<<<<<<< HEAD
 	.remove		= __devexit_p(qla1280_remove_one),
+=======
+	.remove		= qla1280_remove_one,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init
 qla1280_init(void)
 {
+<<<<<<< HEAD
 	if (sizeof(struct srb) > sizeof(struct scsi_pointer)) {
 		printk(KERN_WARNING
 		       "qla1280: struct srb too big, aborting\n");
 		return -EINVAL;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef MODULE
 	/*
 	 * If we are called as a module, the qla1280 pointer may not be null
@@ -4473,17 +4852,25 @@ qla1280_exit(void)
 	pci_unregister_driver(&qla1280_pci_driver);
 	/* release any allocated firmware images */
 	for (i = 0; i < QL_NUM_FW_IMAGES; i++) {
+<<<<<<< HEAD
 		if (qla1280_fw_tbl[i].fw) {
 			release_firmware(qla1280_fw_tbl[i].fw);
 			qla1280_fw_tbl[i].fw = NULL;
 		}
+=======
+		release_firmware(qla1280_fw_tbl[i].fw);
+		qla1280_fw_tbl[i].fw = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 module_init(qla1280_init);
 module_exit(qla1280_exit);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Qlogic & Jes Sorensen");
 MODULE_DESCRIPTION("Qlogic ISP SCSI (qla1x80/qla1x160) driver");
 MODULE_LICENSE("GPL");
@@ -4491,6 +4878,7 @@ MODULE_FIRMWARE("qlogic/1040.bin");
 MODULE_FIRMWARE("qlogic/1280.bin");
 MODULE_FIRMWARE("qlogic/12160.bin");
 MODULE_VERSION(QLA1280_VERSION);
+<<<<<<< HEAD
 
 /*
  * Overrides for Emacs so that we almost follow Linus's tabbing style.
@@ -4503,3 +4891,5 @@ MODULE_VERSION(QLA1280_VERSION);
  * tab-width: 8
  * End:
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

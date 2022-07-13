@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-pxa/mfp.c
  *
@@ -7,10 +11,13 @@
  *
  * 2007-08-21: eric miao <eric.miao@marvell.com>
  *             initial version
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -19,9 +26,14 @@
 #include <linux/io.h>
 #include <linux/syscore_ops.h>
 
+<<<<<<< HEAD
 #include <mach/hardware.h>
 #include <mach/mfp-pxa3xx.h>
 #include <mach/pxa3xx-regs.h>
+=======
+#include "mfp-pxa3xx.h"
+#include "pxa3xx-regs.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PM
 /*

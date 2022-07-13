@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * EFI call stub for IA32.
  *
@@ -6,6 +10,7 @@
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <asm/page_types.h>
 
 /*
@@ -35,12 +40,34 @@ ENTRY(efi_call_phys)
 	 * But to make it smoothly switch from virtual mode to flat mode.
 	 * The mapping of lower virtual memory has been created in prelog and
 	 * epilog.
+=======
+#include <linux/init.h>
+#include <asm/asm-offsets.h>
+#include <asm/page_types.h>
+
+	__INIT
+SYM_FUNC_START(efi_call_svam)
+	push	%ebp
+	movl	%esp, %ebp
+	push	%ebx
+
+	push	16(%esp)
+	push	16(%esp)
+	push	%ecx
+	push	%edx
+	movl	%eax, %ebx		// &systab_phys->runtime
+
+	/*
+	 * Switch to the flat mapped alias of this routine, by jumping to the
+	 * address of label '1' after subtracting PAGE_OFFSET from it.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	movl	$1f, %edx
 	subl	$__PAGE_OFFSET, %edx
 	jmp	*%edx
 1:
 
+<<<<<<< HEAD
 	/*
 	 * 2. Now on the top of stack is the return
 	 * address in the caller of efi_call_phys(), then parameter 1,
@@ -121,3 +148,31 @@ saved_return_addr:
 	.long 0
 efi_rt_function_ptr:
 	.long 0
+=======
+	/* disable paging */
+	movl	%cr0, %edx
+	andl	$0x7fffffff, %edx
+	movl	%edx, %cr0
+
+	/* convert the stack pointer to a flat mapped address */
+	subl	$__PAGE_OFFSET, %esp
+
+	/* call the EFI routine */
+	movl	(%eax), %eax
+	call	*EFI_svam(%eax)
+
+	/* grab the virtually remapped EFI runtime services table pointer */
+	movl	(%ebx), %ecx
+	movl	36(%esp), %edx		// &efi.runtime
+	movl	%ecx, (%edx)
+
+	/* re-enable paging */
+	movl	%cr0, %edx
+	orl	$0x80000000, %edx
+	movl	%edx, %cr0
+
+	movl	16(%esp), %ebx
+	leave
+	RET
+SYM_FUNC_END(efi_call_svam)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

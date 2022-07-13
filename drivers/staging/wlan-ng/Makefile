@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_PRISM2_USB) += prism2_usb.o
 
 prism2_usb-y := prism2usb.o \

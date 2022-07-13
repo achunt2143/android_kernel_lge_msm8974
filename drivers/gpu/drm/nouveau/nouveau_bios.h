@@ -21,11 +21,16 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+<<<<<<< HEAD
 #ifndef __NOUVEAU_BIOS_H__
 #define __NOUVEAU_BIOS_H__
 
 #include "nvreg.h"
 #include "nouveau_i2c.h"
+=======
+#ifndef __NOUVEAU_DISPBIOS_H__
+#define __NOUVEAU_DISPBIOS_H__
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DCB_MAX_NUM_ENTRIES 16
 #define DCB_MAX_NUM_I2C_ENTRIES 16
@@ -34,6 +39,7 @@
 
 #define DCB_LOC_ON_CHIP 0
 
+<<<<<<< HEAD
 #define ROM16(x) le16_to_cpu(*(u16 *)&(x))
 #define ROM32(x) le32_to_cpu(*(u32 *)&(x))
 #define ROM48(x) ({ u8 *p = &(x); (u64)ROM16(p[4]) << 32 | ROM32(p[0]); })
@@ -41,6 +47,13 @@
 #define ROMPTR(d,x) ({            \
 	struct drm_nouveau_private *dev_priv = (d)->dev_private; \
 	ROM16(x) ? &dev_priv->vbios.data[ROM16(x)] : NULL; \
+=======
+#define ROM16(x) get_unaligned_le16(&(x))
+#define ROM32(x) get_unaligned_le32(&(x))
+#define ROMPTR(d,x) ({            \
+	struct nouveau_drm *drm = nouveau_drm((d)); \
+	ROM16(x) ? &drm->vbios.data[ROM16(x)] : NULL; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 })
 
 struct bit_entry {
@@ -53,6 +66,7 @@ struct bit_entry {
 
 int bit_table(struct drm_device *, u8 id, struct bit_entry *);
 
+<<<<<<< HEAD
 enum dcb_gpio_tag {
 	DCB_GPIO_PANEL_POWER = 0x01,
 	DCB_GPIO_TVDAC0 = 0x0c,
@@ -131,10 +145,15 @@ struct dcb_entry {
 	};
 	bool i2c_upper_default;
 };
+=======
+#include <subdev/bios/dcb.h>
+#include <subdev/bios/conn.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct dcb_table {
 	uint8_t version;
 	int entries;
+<<<<<<< HEAD
 	struct dcb_entry entry[DCB_MAX_NUM_ENTRIES];
 };
 
@@ -142,6 +161,15 @@ enum nouveau_or {
 	OUTPUT_A = (1 << 0),
 	OUTPUT_B = (1 << 1),
 	OUTPUT_C = (1 << 2)
+=======
+	struct dcb_output entry[DCB_MAX_NUM_ENTRIES];
+};
+
+enum nouveau_or {
+	DCB_OUTPUT_A = (1 << 0),
+	DCB_OUTPUT_B = (1 << 1),
+	DCB_OUTPUT_C = (1 << 2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum LVDS_script {
@@ -154,6 +182,7 @@ enum LVDS_script {
 	LVDS_PANEL_OFF
 };
 
+<<<<<<< HEAD
 /* these match types in pll limits table version 0x40,
  * nouveau uses them on all chipsets internally where a
  * specific pll needs to be referenced, but the exact
@@ -206,6 +235,8 @@ struct pll_lims {
 	int refclk;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nvbios {
 	struct drm_device *dev;
 	enum {
@@ -236,6 +267,7 @@ struct nvbios {
 	bool old_style_init;
 	uint16_t init_script_tbls_ptr;
 	uint16_t extra_init_script_tbl_ptr;
+<<<<<<< HEAD
 	uint16_t macro_index_tbl_ptr;
 	uint16_t macro_tbl_ptr;
 	uint16_t condition_tbl_ptr;
@@ -250,6 +282,12 @@ struct nvbios {
 	uint16_t some_script_ptr; /* BIT I + 14 */
 	uint16_t init96_tbl_ptr; /* BIT I + 16 */
 
+=======
+
+	uint16_t ram_restrict_tbl_ptr;
+	uint8_t ram_restrict_group_count;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dcb_table dcb;
 
 	struct {
@@ -257,12 +295,15 @@ struct nvbios {
 	} state;
 
 	struct {
+<<<<<<< HEAD
 		struct dcb_entry *output;
 		int crtc;
 		uint16_t script_table_ptr;
 	} display;
 
 	struct {
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint16_t fptablepointer;	/* also used by tmds */
 		uint16_t fpxlatetableptr;
 		int xlatwidth;
@@ -302,11 +343,34 @@ struct nvbios {
 	} legacy;
 };
 
+<<<<<<< HEAD
 void *dcb_table(struct drm_device *);
 void *dcb_outp(struct drm_device *, u8 idx);
 int dcb_outp_foreach(struct drm_device *, void *data,
 		     int (*)(struct drm_device *, void *, int idx, u8 *outp));
 u8 *dcb_conntab(struct drm_device *);
 u8 *dcb_conn(struct drm_device *, u8 idx);
+=======
+void *olddcb_table(struct drm_device *);
+void *olddcb_outp(struct drm_device *, u8 idx);
+int olddcb_outp_foreach(struct drm_device *, void *data,
+		     int (*)(struct drm_device *, void *, int idx, u8 *outp));
+u8 *olddcb_conntab(struct drm_device *);
+u8 *olddcb_conn(struct drm_device *, u8 idx);
+
+int nouveau_bios_init(struct drm_device *);
+void nouveau_bios_takedown(struct drm_device *dev);
+int nouveau_run_vbios_init(struct drm_device *);
+struct dcb_connector_table_entry *
+nouveau_bios_connector_entry(struct drm_device *, int index);
+bool nouveau_bios_fp_mode(struct drm_device *, struct drm_display_mode *);
+uint8_t *nouveau_bios_embedded_edid(struct drm_device *);
+int nouveau_bios_parse_lvds_table(struct drm_device *, int pxclk,
+					 bool *dl, bool *if_is_24bit);
+int run_tmds_table(struct drm_device *, struct dcb_output *,
+			  int head, int pxclk);
+int call_lvds_script(struct drm_device *, struct dcb_output *, int head,
+			    enum LVDS_script, int pxclk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Common support
 obj-y := clock.o devices.o icoll.o iomux.o system.o timer.o mm.o
 
@@ -16,3 +17,8 @@ obj-$(CONFIG_MODULE_TX28) += module-tx28.o
 obj-$(CONFIG_MACH_TX28)    += mach-tx28.o
 
 obj-y += devices/
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+obj-$(CONFIG_PM) += pm.o
+obj-$(CONFIG_ARCH_MXS) += mach-mxs.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

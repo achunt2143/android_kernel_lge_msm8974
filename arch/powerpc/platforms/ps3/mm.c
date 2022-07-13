@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 address space management.
  *
  *  Copyright (C) 2006 Sony Computer Entertainment Inc.
  *  Copyright 2006 Sony Corp.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,12 +26,22 @@
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/memory_hotplug.h>
+=======
+ */
+
+#include <linux/dma-mapping.h>
+#include <linux/kernel.h>
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/memblock.h>
 #include <linux/slab.h>
 
 #include <asm/cell-regs.h>
 #include <asm/firmware.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/udbg.h>
 #include <asm/lv1call.h>
 #include <asm/setup.h>
@@ -53,7 +68,11 @@ enum {
 	PAGE_SHIFT_16M = 24U,
 };
 
+<<<<<<< HEAD
 static unsigned long make_page_sizes(unsigned long a, unsigned long b)
+=======
+static unsigned long __init make_page_sizes(unsigned long a, unsigned long b)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (a << 56) | (b << 48);
 }
@@ -79,12 +98,20 @@ enum {
  * @base: base address
  * @size: size in bytes
  * @offset: difference between base and rm.size
+<<<<<<< HEAD
+=======
+ * @destroy: flag if region should be destroyed upon shutdown
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 struct mem_region {
 	u64 base;
 	u64 size;
 	unsigned long offset;
+<<<<<<< HEAD
+=======
+	int destroy;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -96,7 +123,11 @@ struct mem_region {
  * The HV virtual address space (vas) allows for hotplug memory regions.
  * Memory regions can be created and destroyed in the vas at runtime.
  * @rm: real mode (bootmem) region
+<<<<<<< HEAD
  * @r1: hotplug memory region(s)
+=======
+ * @r1: highmem region(s)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * ps3 addresses
  * virt_addr: a cpu 'translated' effective address
@@ -205,6 +236,7 @@ fail:
 
 /**
  * ps3_mm_vas_destroy -
+<<<<<<< HEAD
  */
 
 void ps3_mm_vas_destroy(void)
@@ -218,13 +250,71 @@ void ps3_mm_vas_destroy(void)
 		BUG_ON(result);
 		result = lv1_destruct_virtual_address_space(map.vas_id);
 		BUG_ON(result);
+=======
+ *
+ * called during kexec sequence with MMU off.
+ */
+
+notrace void ps3_mm_vas_destroy(void)
+{
+	int result;
+
+	if (map.vas_id) {
+		result = lv1_select_virtual_address_space(0);
+		result += lv1_destruct_virtual_address_space(map.vas_id);
+
+		if (result) {
+			lv1_panic(0);
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		map.vas_id = 0;
 	}
 }
 
+<<<<<<< HEAD
 /*============================================================================*/
 /* memory hotplug routines                                                    */
 /*============================================================================*/
+=======
+static int __init ps3_mm_get_repository_highmem(struct mem_region *r)
+{
+	int result;
+
+	/* Assume a single highmem region. */
+
+	result = ps3_repository_read_highmem_info(0, &r->base, &r->size);
+
+	if (result)
+		goto zero_region;
+
+	if (!r->base || !r->size) {
+		result = -1;
+		goto zero_region;
+	}
+
+	r->offset = r->base - map.rm.size;
+
+	DBG("%s:%d: Found high region in repository: %llxh %llxh\n",
+	    __func__, __LINE__, r->base, r->size);
+
+	return 0;
+
+zero_region:
+	DBG("%s:%d: No high region in repository.\n", __func__, __LINE__);
+
+	r->size = r->base = r->offset = 0;
+	return result;
+}
+
+static int ps3_mm_set_repository_highmem(const struct mem_region *r)
+{
+	/* Assume a single highmem region. */
+
+	return r ? ps3_repository_write_highmem_info(0, r->base, r->size) :
+		ps3_repository_write_highmem_info(0, 0, 0);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * ps3_mm_region_create - create a memory region in the vas
@@ -240,7 +330,11 @@ static int ps3_mm_region_create(struct mem_region *r, unsigned long size)
 	int result;
 	u64 muid;
 
+<<<<<<< HEAD
 	r->size = _ALIGN_DOWN(size, 1 << PAGE_SHIFT_16M);
+=======
+	r->size = ALIGN_DOWN(size, 1 << PAGE_SHIFT_16M);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DBG("%s:%d requested  %lxh\n", __func__, __LINE__, size);
 	DBG("%s:%d actual     %llxh\n", __func__, __LINE__, r->size);
@@ -262,6 +356,10 @@ static int ps3_mm_region_create(struct mem_region *r, unsigned long size)
 		goto zero_region;
 	}
 
+<<<<<<< HEAD
+=======
+	r->destroy = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r->offset = r->base - map.rm.size;
 	return result;
 
@@ -279,6 +377,7 @@ static void ps3_mm_region_destroy(struct mem_region *r)
 {
 	int result;
 
+<<<<<<< HEAD
 	DBG("%s:%d: r->base = %llxh\n", __func__, __LINE__, r->base);
 	if (r->base) {
 		result = lv1_release_memory(r->base);
@@ -332,6 +431,26 @@ static int __init ps3_mm_add_memory(void)
 
 device_initcall(ps3_mm_add_memory);
 
+=======
+	if (!r->destroy) {
+		return;
+	}
+
+	if (r->base) {
+		result = lv1_release_memory(r->base);
+
+		if (result) {
+			lv1_panic(0);
+		}
+
+		r->size = r->base = r->offset = 0;
+		map.total = map.rm.size;
+	}
+
+	ps3_mm_set_repository_highmem(NULL);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*============================================================================*/
 /* dma routines                                                               */
 /*============================================================================*/
@@ -371,7 +490,11 @@ static void  __maybe_unused _dma_dump_region(const struct ps3_dma_region *r,
  * @bus_addr: Starting ioc bus address of the area to map.
  * @len: Length in bytes of the area to map.
  * @link: A struct list_head used with struct ps3_dma_region.chunk_list, the
+<<<<<<< HEAD
  * list of all chuncks owned by the region.
+=======
+ * list of all chunks owned by the region.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This implementation uses a very simple dma page manager
  * based on the dma_chunk structure.  This scheme assumes
@@ -406,8 +529,13 @@ static struct dma_chunk * dma_find_chunk(struct ps3_dma_region *r,
 	unsigned long bus_addr, unsigned long len)
 {
 	struct dma_chunk *c;
+<<<<<<< HEAD
 	unsigned long aligned_bus = _ALIGN_DOWN(bus_addr, 1 << r->page_size);
 	unsigned long aligned_len = _ALIGN_UP(len+bus_addr-aligned_bus,
+=======
+	unsigned long aligned_bus = ALIGN_DOWN(bus_addr, 1 << r->page_size);
+	unsigned long aligned_len = ALIGN(len+bus_addr-aligned_bus,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      1 << r->page_size);
 
 	list_for_each_entry(c, &r->chunk_list.head, link) {
@@ -435,8 +563,13 @@ static struct dma_chunk *dma_find_chunk_lpar(struct ps3_dma_region *r,
 	unsigned long lpar_addr, unsigned long len)
 {
 	struct dma_chunk *c;
+<<<<<<< HEAD
 	unsigned long aligned_lpar = _ALIGN_DOWN(lpar_addr, 1 << r->page_size);
 	unsigned long aligned_len = _ALIGN_UP(len + lpar_addr - aligned_lpar,
+=======
+	unsigned long aligned_lpar = ALIGN_DOWN(lpar_addr, 1 << r->page_size);
+	unsigned long aligned_len = ALIGN(len + lpar_addr - aligned_lpar,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      1 << r->page_size);
 
 	list_for_each_entry(c, &r->chunk_list.head, link) {
@@ -524,8 +657,12 @@ static int dma_sb_map_pages(struct ps3_dma_region *r, unsigned long phys_addr,
 	int result;
 	struct dma_chunk *c;
 
+<<<<<<< HEAD
 	c = kzalloc(sizeof(struct dma_chunk), GFP_ATOMIC);
 
+=======
+	c = kzalloc(sizeof(*c), GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!c) {
 		result = -ENOMEM;
 		goto fail_alloc;
@@ -570,8 +707,12 @@ static int dma_ioc0_map_pages(struct ps3_dma_region *r, unsigned long phys_addr,
 
 	DBG(KERN_ERR "%s: phy=%#lx, lpar%#lx, len=%#lx\n", __func__,
 	    phys_addr, ps3_mm_phys_to_lpar(phys_addr), len);
+<<<<<<< HEAD
 	c = kzalloc(sizeof(struct dma_chunk), GFP_ATOMIC);
 
+=======
+	c = kzalloc(sizeof(*c), GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!c) {
 		result = -ENOMEM;
 		goto fail_alloc;
@@ -607,8 +748,13 @@ static int dma_ioc0_map_pages(struct ps3_dma_region *r, unsigned long phys_addr,
 				       r->ioid,
 				       iopte_flag);
 		if (result) {
+<<<<<<< HEAD
 			pr_warning("%s:%d: lv1_put_iopte failed: %s\n",
 				   __func__, __LINE__, ps3_result(result));
+=======
+			pr_warn("%s:%d: lv1_put_iopte failed: %s\n",
+				__func__, __LINE__, ps3_result(result));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto fail_map;
 		}
 		DBG("%s: pg=%d bus=%#lx, lpar=%#lx, ioid=%#x\n", __func__,
@@ -789,8 +935,13 @@ static int dma_sb_map_area(struct ps3_dma_region *r, unsigned long virt_addr,
 	struct dma_chunk *c;
 	unsigned long phys_addr = is_kernel_addr(virt_addr) ? __pa(virt_addr)
 		: virt_addr;
+<<<<<<< HEAD
 	unsigned long aligned_phys = _ALIGN_DOWN(phys_addr, 1 << r->page_size);
 	unsigned long aligned_len = _ALIGN_UP(len + phys_addr - aligned_phys,
+=======
+	unsigned long aligned_phys = ALIGN_DOWN(phys_addr, 1 << r->page_size);
+	unsigned long aligned_len = ALIGN(len + phys_addr - aligned_phys,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      1 << r->page_size);
 	*bus_addr = dma_sb_lpar_to_bus(r, ps3_mm_phys_to_lpar(phys_addr));
 
@@ -844,8 +995,13 @@ static int dma_ioc0_map_area(struct ps3_dma_region *r, unsigned long virt_addr,
 	struct dma_chunk *c;
 	unsigned long phys_addr = is_kernel_addr(virt_addr) ? __pa(virt_addr)
 		: virt_addr;
+<<<<<<< HEAD
 	unsigned long aligned_phys = _ALIGN_DOWN(phys_addr, 1 << r->page_size);
 	unsigned long aligned_len = _ALIGN_UP(len + phys_addr - aligned_phys,
+=======
+	unsigned long aligned_phys = ALIGN_DOWN(phys_addr, 1 << r->page_size);
+	unsigned long aligned_len = ALIGN(len + phys_addr - aligned_phys,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      1 << r->page_size);
 
 	DBG(KERN_ERR "%s: vaddr=%#lx, len=%#lx\n", __func__,
@@ -903,9 +1059,15 @@ static int dma_sb_unmap_area(struct ps3_dma_region *r, dma_addr_t bus_addr,
 	c = dma_find_chunk(r, bus_addr, len);
 
 	if (!c) {
+<<<<<<< HEAD
 		unsigned long aligned_bus = _ALIGN_DOWN(bus_addr,
 			1 << r->page_size);
 		unsigned long aligned_len = _ALIGN_UP(len + bus_addr
+=======
+		unsigned long aligned_bus = ALIGN_DOWN(bus_addr,
+			1 << r->page_size);
+		unsigned long aligned_len = ALIGN(len + bus_addr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			- aligned_bus, 1 << r->page_size);
 		DBG("%s:%d: not found: bus_addr %llxh\n",
 			__func__, __LINE__, bus_addr);
@@ -940,9 +1102,15 @@ static int dma_ioc0_unmap_area(struct ps3_dma_region *r,
 	c = dma_find_chunk(r, bus_addr, len);
 
 	if (!c) {
+<<<<<<< HEAD
 		unsigned long aligned_bus = _ALIGN_DOWN(bus_addr,
 							1 << r->page_size);
 		unsigned long aligned_len = _ALIGN_UP(len + bus_addr
+=======
+		unsigned long aligned_bus = ALIGN_DOWN(bus_addr,
+							1 << r->page_size);
+		unsigned long aligned_len = ALIGN(len + bus_addr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      - aligned_bus,
 						      1 << r->page_size);
 		DBG("%s:%d: not found: bus_addr %llxh\n",
@@ -988,7 +1156,11 @@ static int dma_sb_region_create_linear(struct ps3_dma_region *r)
 			pr_info("%s:%d: forcing 16M pages for linear map\n",
 				__func__, __LINE__);
 			r->page_size = PS3_DMA_16M;
+<<<<<<< HEAD
 			r->len = _ALIGN_UP(r->len, 1 << r->page_size);
+=======
+			r->len = ALIGN(r->len, 1 << r->page_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1130,6 +1302,10 @@ int ps3_dma_region_init(struct ps3_system_bus_device *dev,
 	enum ps3_dma_region_type region_type, void *addr, unsigned long len)
 {
 	unsigned long lpar_addr;
+<<<<<<< HEAD
+=======
+	int result;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lpar_addr = addr ? ps3_mm_phys_to_lpar(__pa(addr)) : 0;
 
@@ -1139,7 +1315,21 @@ int ps3_dma_region_init(struct ps3_system_bus_device *dev,
 	r->offset = lpar_addr;
 	if (r->offset >= map.rm.size)
 		r->offset -= map.r1.offset;
+<<<<<<< HEAD
 	r->len = len ? len : _ALIGN_UP(map.total, 1 << r->page_size);
+=======
+	r->len = len ? len : ALIGN(map.total, 1 << r->page_size);
+
+	dev->core.dma_mask = &r->dma_mask;
+
+	result = dma_set_mask_and_coherent(&dev->core, DMA_BIT_MASK(32));
+
+	if (result < 0) {
+		dev_err(&dev->core, "%s:%d: dma_set_mask_and_coherent failed: %d\n",
+			__func__, __LINE__, result);
+		return result;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (dev->dev_type) {
 	case PS3_DEVICE_TYPE_SB:
@@ -1217,21 +1407,52 @@ void __init ps3_mm_init(void)
 	BUG_ON(map.rm.base);
 	BUG_ON(!map.rm.size);
 
+<<<<<<< HEAD
 
 	/* arrange to do this in ps3_mm_add_memory */
 	ps3_mm_region_create(&map.r1, map.total - map.rm.size);
+=======
+	/* Check if we got the highmem region from an earlier boot step */
+
+	if (ps3_mm_get_repository_highmem(&map.r1)) {
+		result = ps3_mm_region_create(&map.r1, map.total - map.rm.size);
+
+		if (!result)
+			ps3_mm_set_repository_highmem(&map.r1);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* correct map.total for the real total amount of memory we use */
 	map.total = map.rm.size + map.r1.size;
 
+<<<<<<< HEAD
+=======
+	if (!map.r1.size) {
+		DBG("%s:%d: No highmem region found\n", __func__, __LINE__);
+	} else {
+		DBG("%s:%d: Adding highmem region: %llxh %llxh\n",
+			__func__, __LINE__, map.rm.size,
+			map.total - map.rm.size);
+		memblock_add(map.rm.size, map.total - map.rm.size);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DBG(" <- %s:%d\n", __func__, __LINE__);
 }
 
 /**
  * ps3_mm_shutdown - final cleanup of address space
+<<<<<<< HEAD
  */
 
 void ps3_mm_shutdown(void)
+=======
+ *
+ * called during kexec sequence with MMU off.
+ */
+
+notrace void ps3_mm_shutdown(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ps3_mm_region_destroy(&map.r1);
 }

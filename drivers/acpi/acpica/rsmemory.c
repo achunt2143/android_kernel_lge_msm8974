@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: rsmem24 - Memory resource descriptors
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -41,6 +46,8 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acresrc.h"
@@ -156,8 +163,12 @@ struct acpi_rsconvert_info acpi_rs_get_vendor_small[3] = {
 
 	{ACPI_RSC_COUNT16, ACPI_RS_OFFSET(data.vendor.byte_length),
 	 0,
+<<<<<<< HEAD
 	 sizeof(u8)}
 	,
+=======
+	 sizeof(u8)},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Vendor data */
 
@@ -181,8 +192,12 @@ struct acpi_rsconvert_info acpi_rs_get_vendor_large[3] = {
 
 	{ACPI_RSC_COUNT16, ACPI_RS_OFFSET(data.vendor.byte_length),
 	 0,
+<<<<<<< HEAD
 	 sizeof(u8)}
 	,
+=======
+	 sizeof(u8)},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Vendor data */
 

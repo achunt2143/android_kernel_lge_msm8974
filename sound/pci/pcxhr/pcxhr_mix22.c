@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram pcxhr compatible soundcards
  *
  * mixer interface for stereo cards
  *
  * Copyright (c) 2004 by Digigram <alsa@digigram.com>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,10 +23,16 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/pci.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/control.h>
 #include <sound/tlv.h>
@@ -53,6 +64,10 @@
 #define PCXHR_DSP_RESET_DSP	0x01
 #define PCXHR_DSP_RESET_MUTE	0x02
 #define PCXHR_DSP_RESET_CODEC	0x08
+<<<<<<< HEAD
+=======
+#define PCXHR_DSP_RESET_SMPTE	0x10
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCXHR_DSP_RESET_GPO_OFFSET	5
 #define PCXHR_DSP_RESET_GPO_MASK	0x60
 
@@ -289,7 +304,12 @@ int hr222_sub_init(struct pcxhr_mgr *mgr)
 	reg = PCXHR_INPB(mgr, PCXHR_XLX_STATUS);
 	if (reg & PCXHR_STAT_MIC_CAPS)
 		mgr->board_has_mic = 1;	/* microphone available */
+<<<<<<< HEAD
 	snd_printdd("MIC input available = %d\n", mgr->board_has_mic);
+=======
+	dev_dbg(&mgr->pci->dev,
+		"MIC input available = %d\n", mgr->board_has_mic);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* reset codec */
 	PCXHR_OUTPB(mgr, PCXHR_DSP_RESET,
@@ -404,7 +424,11 @@ int hr222_sub_set_clock(struct pcxhr_mgr *mgr,
 
 	hr222_config_akm(mgr, AKM_UNMUTE_CMD);
 
+<<<<<<< HEAD
 	snd_printdd("set_clock to %dHz (realfreq=%d pllreg=%x)\n",
+=======
+	dev_dbg(&mgr->pci->dev, "set_clock to %dHz (realfreq=%d pllreg=%x)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    rate, realfreq, pllreg);
 	return 0;
 }
@@ -430,13 +454,23 @@ int hr222_get_external_clock(struct pcxhr_mgr *mgr,
 		reg = PCXHR_STAT_FREQ_UER1_MASK;
 
 	} else {
+<<<<<<< HEAD
 		snd_printdd("get_external_clock : type %d not supported\n",
+=======
+		dev_dbg(&mgr->pci->dev,
+			"get_external_clock : type %d not supported\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    clock_type);
 		return -EINVAL; /* other clocks not supported */
 	}
 
 	if ((PCXHR_INPB(mgr, PCXHR_XLX_CSUER) & mask) != mask) {
+<<<<<<< HEAD
 		snd_printdd("get_external_clock(%d) = 0 Hz\n", clock_type);
+=======
+		dev_dbg(&mgr->pci->dev,
+			"get_external_clock(%d) = 0 Hz\n", clock_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*sample_rate = 0;
 		return 0; /* no external clock locked */
 	}
@@ -494,7 +528,11 @@ int hr222_get_external_clock(struct pcxhr_mgr *mgr,
 	else
 		rate = 0;
 
+<<<<<<< HEAD
 	snd_printdd("External clock is at %d Hz (measured %d Hz)\n",
+=======
+	dev_dbg(&mgr->pci->dev, "External clock is at %d Hz (measured %d Hz)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    rate, calc_rate);
 	*sample_rate = rate;
 	return 0;
@@ -527,11 +565,29 @@ int hr222_write_gpo(struct pcxhr_mgr *mgr, int value)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int hr222_manage_timecode(struct pcxhr_mgr *mgr, int enable)
+{
+	if (enable)
+		mgr->dsp_reset |= PCXHR_DSP_RESET_SMPTE;
+	else
+		mgr->dsp_reset &= ~PCXHR_DSP_RESET_SMPTE;
+
+	PCXHR_OUTPB(mgr, PCXHR_DSP_RESET, mgr->dsp_reset);
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int hr222_update_analog_audio_level(struct snd_pcxhr *chip,
 				    int is_capture, int channel)
 {
+<<<<<<< HEAD
 	snd_printdd("hr222_update_analog_audio_level(%s chan=%d)\n",
+=======
+	dev_dbg(chip->card->dev,
+		"hr222_update_analog_audio_level(%s chan=%d)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    is_capture ? "capture" : "playback", channel);
 	if (is_capture) {
 		int level_l, level_r, level_mic;
@@ -631,7 +687,11 @@ int hr222_iec958_capture_byte(struct snd_pcxhr *chip,
 		if (PCXHR_INPB(chip->mgr, PCXHR_XLX_CSUER) & mask)
 			temp |= 1;
 	}
+<<<<<<< HEAD
 	snd_printdd("read iec958 AES %d byte %d = 0x%x\n",
+=======
+	dev_dbg(chip->card->dev, "read iec958 AES %d byte %d = 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    chip->chip_idx, aes_idx, temp);
 	*aes_bits = temp;
 	return 0;
@@ -673,7 +733,11 @@ static void hr222_micro_boost(struct pcxhr_mgr *mgr, int level)
 
 	PCXHR_OUTPB(mgr, PCXHR_XLX_SELMIC, mgr->xlx_selmic);
 
+<<<<<<< HEAD
 	snd_printdd("hr222_micro_boost : set %x\n", boost_mask);
+=======
+	dev_dbg(&mgr->pci->dev, "hr222_micro_boost : set %x\n", boost_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hr222_phantom_power(struct pcxhr_mgr *mgr, int power)
@@ -685,7 +749,11 @@ static void hr222_phantom_power(struct pcxhr_mgr *mgr, int power)
 
 	PCXHR_OUTPB(mgr, PCXHR_XLX_SELMIC, mgr->xlx_selmic);
 
+<<<<<<< HEAD
 	snd_printdd("hr222_phantom_power : set %d\n", power);
+=======
+	dev_dbg(&mgr->pci->dev, "hr222_phantom_power : set %d\n", power);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -728,7 +796,11 @@ static int hr222_mic_vol_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new hr222_control_mic_level = {
+=======
+static const struct snd_kcontrol_new hr222_control_mic_level = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.access =	(SNDRV_CTL_ELEM_ACCESS_READWRITE |
 			 SNDRV_CTL_ELEM_ACCESS_TLV_READ),
@@ -778,7 +850,11 @@ static int hr222_mic_boost_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new hr222_control_mic_boost = {
+=======
+static const struct snd_kcontrol_new hr222_control_mic_boost = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
 	.access =	(SNDRV_CTL_ELEM_ACCESS_READWRITE |
 			 SNDRV_CTL_ELEM_ACCESS_TLV_READ),
@@ -820,7 +896,11 @@ static int hr222_phantom_power_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new hr222_phantom_power_switch = {
+=======
+static const struct snd_kcontrol_new hr222_phantom_power_switch = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Phantom Power Switch",
 	.info = hr222_phantom_power_info,

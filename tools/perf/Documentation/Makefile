@@ -1,9 +1,19 @@
+<<<<<<< HEAD
 OUTPUT := ./
 ifeq ("$(origin O)", "command line")
   ifneq ($(O),)
 	OUTPUT := $(O)/
   endif
 endif
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+include ../../scripts/Makefile.include
+include ../../scripts/utilities.mak
+
+ARTICLES =
+# with their own formatting rules.
+SP_ARTICLES =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MAN1_TXT= \
 	$(filter-out $(addsuffix .txt, $(ARTICLES) $(SP_ARTICLES)), \
@@ -19,6 +29,7 @@ _MAN_HTML=$(patsubst %.txt,%.html,$(MAN_TXT))
 MAN_XML=$(addprefix $(OUTPUT),$(_MAN_XML))
 MAN_HTML=$(addprefix $(OUTPUT),$(_MAN_HTML))
 
+<<<<<<< HEAD
 ARTICLES =
 # with their own formatting rules.
 SP_ARTICLES =
@@ -26,6 +37,8 @@ API_DOCS = $(patsubst %.txt,%,$(filter-out technical/api-index-skel.txt technica
 SP_ARTICLES += $(API_DOCS)
 SP_ARTICLES += technical/api-index
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 _DOC_HTML = $(_MAN_HTML)
 _DOC_HTML+=$(patsubst %,%.html,$(ARTICLES) $(SP_ARTICLES))
 DOC_HTML=$(addprefix $(OUTPUT),$(_DOC_HTML))
@@ -51,7 +64,12 @@ man5dir=$(mandir)/man5
 man7dir=$(mandir)/man7
 
 ASCIIDOC=asciidoc
+<<<<<<< HEAD
 ASCIIDOC_EXTRA = --unsafe
+=======
+ASCIIDOC_EXTRA += --unsafe -f asciidoc.conf
+ASCIIDOC_HTML = xhtml11
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MANPAGE_XSL = manpage-normal.xsl
 XMLTO_EXTRA =
 INSTALL?=install
@@ -59,11 +77,26 @@ RM ?= rm -f
 DOC_REF = origin/man
 HTML_REF = origin/html
 
+<<<<<<< HEAD
+=======
+ifdef USE_ASCIIDOCTOR
+ASCIIDOC = asciidoctor
+ASCIIDOC_EXTRA += -a compat-mode
+ASCIIDOC_EXTRA += -I. -rasciidoctor-extensions
+ASCIIDOC_EXTRA += -a mansource="perf" -a manmanual="perf Manual"
+ASCIIDOC_HTML = xhtml5
+endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 infodir?=$(prefix)/share/info
 MAKEINFO=makeinfo
 INSTALL_INFO=install-info
 DOCBOOK2X_TEXI=docbook2x-texi
 DBLATEX=dblatex
+<<<<<<< HEAD
+=======
+XMLTO=xmlto
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ifndef PERL_PATH
 	PERL_PATH = /usr/bin/perl
 endif
@@ -71,6 +104,21 @@ endif
 -include ../config.mak.autogen
 -include ../config.mak
 
+<<<<<<< HEAD
+=======
+_tmp_tool_path := $(call get-executable,$(ASCIIDOC))
+ifeq ($(_tmp_tool_path),)
+	missing_tools = $(ASCIIDOC)
+endif
+
+ifndef USE_ASCIIDOCTOR
+_tmp_tool_path := $(call get-executable,$(XMLTO))
+ifeq ($(_tmp_tool_path),)
+	missing_tools += $(XMLTO)
+endif
+endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # For asciidoc ...
 #	-7.1.2,	no extra settings are needed.
@@ -137,6 +185,7 @@ NO_SUBDIR = :
 endif
 
 ifneq ($(findstring $(MAKEFLAGS),s),s)
+<<<<<<< HEAD
 ifndef V
 	QUIET_ASCIIDOC	= @echo '   ' ASCIIDOC $@;
 	QUIET_XMLTO	= @echo '   ' XMLTO $@;
@@ -148,12 +197,30 @@ ifndef V
 	QUIET_STDERR	= 2> /dev/null
 	QUIET_SUBDIR0	= +@subdir=
 	QUIET_SUBDIR1	= ;$(NO_SUBDIR) echo '   ' SUBDIR $$subdir; \
+=======
+ifneq ($(V),1)
+	QUIET_ASCIIDOC	= @echo '  ASCIIDOC '$@;
+	QUIET_XMLTO	= @echo '  XMLTO    '$@;
+	QUIET_DB2TEXI	= @echo '  DB2TEXI  '$@;
+	QUIET_MAKEINFO	= @echo '  MAKEINFO '$@;
+	QUIET_DBLATEX	= @echo '  DBLATEX  '$@;
+	QUIET_XSLTPROC	= @echo '  XSLTPROC '$@;
+	QUIET_GEN	= @echo '  GEN      '$@;
+	QUIET_STDERR	= 2> /dev/null
+	QUIET_SUBDIR0	= +@subdir=
+	QUIET_SUBDIR1	= ;$(NO_SUBDIR) \
+			   echo '  SUBDIR   ' $$subdir; \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  $(MAKE) $(PRINT_DIR) -C $$subdir
 	export V
 endif
 endif
 
+<<<<<<< HEAD
 all: html man
+=======
+all: html man info
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 html: $(DOC_HTML)
 
@@ -166,6 +233,7 @@ man7: $(DOC_MAN7)
 
 info: $(OUTPUT)perf.info $(OUTPUT)perfman.info
 
+<<<<<<< HEAD
 pdf: $(OUTPUT)user-manual.pdf
 
 install: install-man
@@ -184,10 +252,46 @@ install-info: info
 	if test -r $(DESTDIR)$(infodir)/dir; then \
 	  $(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) perf.info ;\
 	  $(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) perfman.info ;\
+=======
+install: install-man
+
+check-man-tools:
+ifdef missing_tools
+	$(error "You need to install $(missing_tools) for man pages")
+endif
+
+do-install-man: man
+	$(call QUIET_INSTALL, Documentation-man) \
+		$(INSTALL) -d -m 755 $(DESTDIR)$(man1dir); \
+#		$(INSTALL) -d -m 755 $(DESTDIR)$(man5dir); \
+#		$(INSTALL) -d -m 755 $(DESTDIR)$(man7dir); \
+		$(INSTALL) -m 644 $(DOC_MAN1) $(DESTDIR)$(man1dir); \
+#		$(INSTALL) -m 644 $(DOC_MAN5) $(DESTDIR)$(man5dir); \
+#		$(INSTALL) -m 644 $(DOC_MAN7) $(DESTDIR)$(man7dir)
+
+install-man: check-man-tools man do-install-man
+
+ifdef missing_tools
+  DO_INSTALL_MAN = $(warning Please install $(missing_tools) to have the man pages installed)
+else
+  DO_INSTALL_MAN = do-install-man
+endif
+
+try-install-man: $(DO_INSTALL_MAN)
+
+install-info: info
+	$(call QUIET_INSTALL, Documentation-info) \
+		$(INSTALL) -d -m 755 $(DESTDIR)$(infodir); \
+		$(INSTALL) -m 644 $(OUTPUT)perf.info $(OUTPUT)perfman.info $(DESTDIR)$(infodir); \
+	if test -r $(DESTDIR)$(infodir)/dir; then \
+		$(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) perf.info ;\
+		$(INSTALL_INFO) --info-dir=$(DESTDIR)$(infodir) perfman.info ;\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else \
 	  echo "No directory found in $(DESTDIR)$(infodir)" >&2 ; \
 	fi
 
+<<<<<<< HEAD
 install-pdf: pdf
 	$(INSTALL) -d -m 755 $(DESTDIR)$(pdfdir)
 	$(INSTALL) -m 644 $(OUTPUT)user-manual.pdf $(DESTDIR)$(pdfdir)
@@ -199,6 +303,11 @@ install-pdf: pdf
 	$(QUIET_SUBDIR0)../ $(QUIET_SUBDIR1) PERF-VERSION-FILE
 
 -include ../PERF-VERSION-FILE
+=======
+#install-html: html
+#	'$(SHELL_PATH_SQ)' ./install-webdoc.sh $(DESTDIR)$(htmldir)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Determine "include::" file references in asciidoc files.
@@ -208,6 +317,7 @@ $(OUTPUT)doc.dep : $(wildcard *.txt) build-docdep.perl
 	$(PERL_PATH) ./build-docdep.perl >$@+ $(QUIET_STDERR) && \
 	mv $@+ $@
 
+<<<<<<< HEAD
 -include $(OUPTUT)doc.dep
 
 _cmds_txt = cmds-ancillaryinterrogators.txt \
@@ -252,11 +362,58 @@ $(OUTPUT)%.xml : %.txt
 	$(QUIET_ASCIIDOC)$(RM) $@+ $@ && \
 	$(ASCIIDOC) -b docbook -d manpage -f asciidoc.conf \
 		$(ASCIIDOC_EXTRA) -aperf_version=$(PERF_VERSION) -o $@+ $< && \
+=======
+-include $(OUTPUT)doc.dep
+
+CLEAN_FILES =									\
+	$(MAN_XML) $(addsuffix +,$(MAN_XML))					\
+	$(MAN_HTML) $(addsuffix +,$(MAN_HTML))					\
+	$(DOC_HTML) $(DOC_MAN1) $(DOC_MAN5) $(DOC_MAN7)				\
+	$(OUTPUT)*.texi $(OUTPUT)*.texi+ $(OUTPUT)*.texi++			\
+	$(OUTPUT)perf.info $(OUTPUT)perfman.info $(OUTPUT)doc.dep		\
+	$(OUTPUT)technical/api-*.html $(OUTPUT)technical/api-index.txt
+clean:
+	$(call QUIET_CLEAN, Documentation) $(RM) $(CLEAN_FILES)
+
+$(MAN_HTML): $(OUTPUT)%.html : %.txt
+	$(QUIET_ASCIIDOC)$(RM) $@+ $@ && \
+	$(ASCIIDOC) -b $(ASCIIDOC_HTML) -d manpage \
+		$(ASCIIDOC_EXTRA) -aperf_version=$(PERF_VERSION) -o $@+ $< && \
+	mv $@+ $@
+
+# Generate date from either KBUILD_BUILD_TIMESTAMP or git log of
+# the doc input file
+PERF_DATE = $(strip \
+              $(if $(KBUILD_BUILD_TIMESTAMP), \
+                $(shell date -u -d '$(KBUILD_BUILD_TIMESTAMP)' +%Y-%m-%d), \
+                $(shell git log -1 --pretty="format:%cd" \
+                    --date=short --no-show-signature $<)))
+
+ifdef USE_ASCIIDOCTOR
+$(OUTPUT)%.1 $(OUTPUT)%.5 $(OUTPUT)%.7 : %.txt
+	$(QUIET_ASCIIDOC)$(RM) $@+ $@ && \
+	$(ASCIIDOC) -b manpage -d manpage \
+		$(ASCIIDOC_EXTRA) -aperf_version=$(PERF_VERSION) \
+		-adocdate=$(PERF_DATE) -o $@+ $< && \
+	mv $@+ $@
+endif
+
+$(OUTPUT)%.1 $(OUTPUT)%.5 $(OUTPUT)%.7 : $(OUTPUT)%.xml
+	$(QUIET_XMLTO)$(RM) $@ && \
+	$(XMLTO) -o $(OUTPUT). -m $(MANPAGE_XSL) $(XMLTO_EXTRA) man $<
+
+$(OUTPUT)%.xml : %.txt
+	$(QUIET_ASCIIDOC)$(RM) $@+ $@ && \
+	$(ASCIIDOC) -b docbook -d manpage \
+		$(ASCIIDOC_EXTRA) -aperf_version=$(PERF_VERSION) \
+		-aperf_date=$(PERF_DATE) -o $@+ $< && \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mv $@+ $@
 
 XSLT = docbook.xsl
 XSLTOPTS = --xinclude --stringparam html.stylesheet docbook-xsl.css
 
+<<<<<<< HEAD
 $(OUTPUT)user-manual.html: $(OUTPUT)user-manual.xml
 	$(QUIET_XSLTPROC)xsltproc $(XSLTOPTS) -o $@ $(XSLT) $<
 
@@ -275,6 +432,8 @@ $(OUTPUT)user-manual.pdf: $(OUTPUT)user-manual.xml
 	$(DBLATEX) -o $@+ -p /etc/asciidoc/dblatex/asciidoc-dblatex.xsl -s /etc/asciidoc/dblatex/asciidoc-dblatex.sty $< && \
 	mv $@+ $@
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 $(OUTPUT)perfman.texi: $(MAN_XML) cat-texi.perl
 	$(QUIET_DB2TEXI)$(RM) $@+ $@ && \
 	($(foreach xml,$(MAN_XML),$(DOCBOOK2X_TEXI) --encoding=UTF-8 \
@@ -284,13 +443,18 @@ $(OUTPUT)perfman.texi: $(MAN_XML) cat-texi.perl
 	mv $@+ $@
 
 $(OUTPUT)perfman.info: $(OUTPUT)perfman.texi
+<<<<<<< HEAD
 	$(QUIET_MAKEINFO)$(MAKEINFO) --no-split --no-validate $*.texi
+=======
+	$(QUIET_MAKEINFO)$(MAKEINFO) --no-split --no-validate -o $@ $*.texi
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 $(patsubst %.txt,%.texi,$(MAN_TXT)): %.texi : %.xml
 	$(QUIET_DB2TEXI)$(RM) $@+ $@ && \
 	$(DOCBOOK2X_TEXI) --to-stdout $*.xml >$@+ && \
 	mv $@+ $@
 
+<<<<<<< HEAD
 howto-index.txt: howto-index.sh $(wildcard howto/*.txt)
 	$(QUIET_GEN)$(RM) $@+ $@ && \
 	'$(SHELL_PATH_SQ)' ./howto-index.sh $(wildcard howto/*.txt) >$@+ && \
@@ -306,6 +470,13 @@ $(patsubst %.txt,%.html,$(wildcard howto/*.txt)): %.html : %.txt
 	sed -e '1,/^$$/d' $< | $(ASCIIDOC) -b xhtml11 - >$@+ && \
 	mv $@+ $@
 
+=======
+$(patsubst %,%.html,$(ARTICLES)) : %.html : %.txt
+	$(QUIET_ASCIIDOC)$(ASCIIDOC) -b $(ASCIIDOC_HTML) $*.txt
+
+WEBDOC_DEST = /pub/software/tools/perf/docs
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # UNIMPLEMENTED
 #install-webdoc : html
 #	'$(SHELL_PATH_SQ)' ./install-webdoc.sh $(WEBDOC_DEST)
@@ -317,5 +488,8 @@ $(patsubst %.txt,%.html,$(wildcard howto/*.txt)): %.html : %.txt
 
 #quick-install-html:
 #	'$(SHELL_PATH_SQ)' ./install-doc-quick.sh $(HTML_REF) $(DESTDIR)$(htmldir)
+<<<<<<< HEAD
 
 .PHONY: .FORCE-PERF-VERSION-FILE
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 #!/usr/bin/perl
+=======
+#!/usr/bin/env perl
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Copyright 2008, Intel Corporation
 #
 # This file is part of the Linux kernel
 #
+<<<<<<< HEAD
 # This program file is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
 # Free Software Foundation; version 2 of the License.
@@ -19,6 +25,8 @@
 # 51 Franklin Street, Fifth Floor,
 # Boston, MA 02110-1301 USA
 #
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # Authors:
 # 	Arjan van de Ven <arjan@linux.intel.com>
 
@@ -38,6 +46,34 @@
 #
 
 use strict;
+<<<<<<< HEAD
+=======
+use Getopt::Long;
+my $header = 0;
+
+sub help {
+	my $text = << "EOM";
+Usage:
+1) dmesg | perl scripts/bootgraph.pl [OPTION] > output.svg
+2) perl scripts/bootgraph.pl -h
+
+Options:
+	-header	Insert kernel version and date
+EOM
+	my $std=shift;
+	if ($std == 1) {
+		print STDERR $text;
+	} else {
+		print $text;
+	}
+	exit;
+}
+
+GetOptions(
+	'h|help'	=>\&help,
+	'header'	=>\$header
+);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 my %start;
 my %end;
@@ -49,6 +85,14 @@ my $count = 0;
 my %pids;
 my %pidctr;
 
+<<<<<<< HEAD
+=======
+my $headerstep = 20;
+my $xheader = 15;
+my $yheader = 25;
+my $cyheader = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 while (<>) {
 	my $line = $_;
 	if ($line =~ /([0-9\.]+)\] calling  ([a-zA-Z0-9\_\.]+)\+/) {
@@ -112,15 +156,32 @@ if ($count == 0) {
     print STDERR <<END;
 No data found in the dmesg. Make sure that 'printk.time=1' and
 'initcall_debug' are passed on the kernel command line.
+<<<<<<< HEAD
 Usage:
       dmesg | perl scripts/bootgraph.pl > output.svg
 END
+=======
+END
+	help(1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     exit 1;
 }
 
 print "<?xml version=\"1.0\" standalone=\"no\"?> \n";
 print "<svg width=\"2000\" height=\"100%\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\">\n";
 
+<<<<<<< HEAD
+=======
+
+if ($header) {
+	my $version = `uname -a`;
+	my $date = `date`;
+	print "<text transform=\"translate($xheader,$yheader)\">Kernel version: $version</text>\n";
+	$cyheader = $yheader+$headerstep;
+	print "<text transform=\"translate($xheader,$cyheader)\">Date: $date</text>\n";
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 my @styles;
 
 $styles[0] = "fill:rgb(0,0,255);fill-opacity:0.5;stroke-width:1;stroke:rgb(0,0,0)";

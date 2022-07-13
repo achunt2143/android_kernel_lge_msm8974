@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Mellanox driver configuration
 #
@@ -5,11 +9,18 @@
 config NET_VENDOR_MELLANOX
 	bool "Mellanox devices"
 	default y
+<<<<<<< HEAD
 	depends on PCI && INET
 	---help---
 	  If you have a network (Ethernet) card belonging to this class, say Y
 	  and read the Ethernet-HOWTO, available from
 	  <http://www.tldp.org/docs.html#howto>.
+=======
+	depends on PCI || I2C
+	help
+	  If you have a network (Ethernet or RDMA) device belonging to this
+	  class, say Y.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  Note that the answer to this question doesn't directly affect the
 	  kernel: saying N will just cause the configurator to skip all
@@ -19,5 +30,12 @@ config NET_VENDOR_MELLANOX
 if NET_VENDOR_MELLANOX
 
 source "drivers/net/ethernet/mellanox/mlx4/Kconfig"
+<<<<<<< HEAD
+=======
+source "drivers/net/ethernet/mellanox/mlx5/core/Kconfig"
+source "drivers/net/ethernet/mellanox/mlxsw/Kconfig"
+source "drivers/net/ethernet/mellanox/mlxfw/Kconfig"
+source "drivers/net/ethernet/mellanox/mlxbf_gige/Kconfig"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 endif # NET_VENDOR_MELLANOX

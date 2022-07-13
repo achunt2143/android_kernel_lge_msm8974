@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -18,6 +22,7 @@
  *		Jorge Cwik, <jorge@laser.satlink.net>
  */
 
+<<<<<<< HEAD
 #include <linux/mm.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -108,6 +113,52 @@ static __inline__ int tcp_in_window(u32 seq, u32 end_seq, u32 s_win, u32 e_win)
 	return seq == e_win && seq == end_seq;
 }
 
+=======
+#include <net/tcp.h>
+#include <net/xfrm.h>
+#include <net/busy_poll.h>
+
+static bool tcp_in_window(u32 seq, u32 end_seq, u32 s_win, u32 e_win)
+{
+	if (seq == s_win)
+		return true;
+	if (after(end_seq, s_win) && before(seq, e_win))
+		return true;
+	return seq == e_win && seq == end_seq;
+}
+
+static enum tcp_tw_status
+tcp_timewait_check_oow_rate_limit(struct inet_timewait_sock *tw,
+				  const struct sk_buff *skb, int mib_idx)
+{
+	struct tcp_timewait_sock *tcptw = tcp_twsk((struct sock *)tw);
+
+	if (!tcp_oow_rate_limited(twsk_net(tw), skb, mib_idx,
+				  &tcptw->tw_last_oow_ack_time)) {
+		/* Send ACK. Note, we do not put the bucket,
+		 * it will be released by caller.
+		 */
+		return TCP_TW_ACK;
+	}
+
+	/* We are rate-limiting, so just release the tw sock and drop skb. */
+	inet_twsk_put(tw);
+	return TCP_TW_SUCCESS;
+}
+
+static void twsk_rcv_nxt_update(struct tcp_timewait_sock *tcptw, u32 seq)
+{
+#ifdef CONFIG_TCP_AO
+	struct tcp_ao_info *ao;
+
+	ao = rcu_dereference(tcptw->ao_info);
+	if (unlikely(ao && seq < tcptw->tw_rcv_nxt))
+		WRITE_ONCE(ao->rcv_sne, ao->rcv_sne + 1);
+#endif
+	tcptw->tw_rcv_nxt = seq;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * * Main purpose of TIME-WAIT state is to close connection gracefully,
  *   when one of ends sits in LAST-ACK or CLOSING retransmitting FIN
@@ -135,12 +186,18 @@ static __inline__ int tcp_in_window(u32 seq, u32 end_seq, u32 s_win, u32 e_win)
  * spinlock it. I do not want! Well, probability of misbehaviour
  * is ridiculously low and, seems, we could use some mb() tricks
  * to avoid misread sequence numbers, states etc.  --ANK
+<<<<<<< HEAD
+=======
+ *
+ * We don't need to initialize tmp_out.sack_ok as we don't use the results
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum tcp_tw_status
 tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
 			   const struct tcphdr *th)
 {
 	struct tcp_options_received tmp_opt;
+<<<<<<< HEAD
 	const u8 *hash_location;
 	struct tcp_timewait_sock *tcptw = tcp_twsk((struct sock *)tw);
 	int paws_reject = 0;
@@ -150,6 +207,18 @@ tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
 		tcp_parse_options(skb, &tmp_opt, &hash_location, 0);
 
 		if (tmp_opt.saw_tstamp) {
+=======
+	struct tcp_timewait_sock *tcptw = tcp_twsk((struct sock *)tw);
+	bool paws_reject = false;
+
+	tmp_opt.saw_tstamp = 0;
+	if (th->doff > (sizeof(*th) >> 2) && tcptw->tw_ts_recent_stamp) {
+		tcp_parse_options(twsk_net(tw), skb, &tmp_opt, 0, NULL);
+
+		if (tmp_opt.saw_tstamp) {
+			if (tmp_opt.rcv_tsecr)
+				tmp_opt.rcv_tsecr -= tcptw->tw_ts_offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tmp_opt.ts_recent	= tcptw->tw_ts_recent;
 			tmp_opt.ts_recent_stamp	= tcptw->tw_ts_recent_stamp;
 			paws_reject = tcp_paws_reject(&tmp_opt, th->rst);
@@ -164,13 +233,22 @@ tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
 		    !tcp_in_window(TCP_SKB_CB(skb)->seq, TCP_SKB_CB(skb)->end_seq,
 				   tcptw->tw_rcv_nxt,
 				   tcptw->tw_rcv_nxt + tcptw->tw_rcv_wnd))
+<<<<<<< HEAD
 			return TCP_TW_ACK;
+=======
+			return tcp_timewait_check_oow_rate_limit(
+				tw, skb, LINUX_MIB_TCPACKSKIPPEDFINWAIT2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (th->rst)
 			goto kill;
 
 		if (th->syn && !before(TCP_SKB_CB(skb)->seq, tcptw->tw_rcv_nxt))
+<<<<<<< HEAD
 			goto kill_with_rst;
+=======
+			return TCP_TW_RST;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Dup ACK? */
 		if (!th->ack ||
@@ -184,6 +262,7 @@ tcp_timewait_state_process(struct inet_timewait_sock *tw, struct sk_buff *skb,
 		 * reset.
 		 */
 		if (!th->fin ||
+<<<<<<< HEAD
 		    TCP_SKB_CB(skb)->end_seq != tcptw->tw_rcv_nxt + 1) {
 kill_with_rst:
 			inet_twsk_deschedule(tw, &tcp_death_row);
@@ -207,6 +286,21 @@ kill_with_rst:
 		else
 			inet_twsk_schedule(tw, &tcp_death_row, TCP_TIMEWAIT_LEN,
 					   TCP_TIMEWAIT_LEN);
+=======
+		    TCP_SKB_CB(skb)->end_seq != tcptw->tw_rcv_nxt + 1)
+			return TCP_TW_RST;
+
+		/* FIN arrived, enter true time-wait state. */
+		tw->tw_substate	  = TCP_TIME_WAIT;
+		twsk_rcv_nxt_update(tcptw, TCP_SKB_CB(skb)->end_seq);
+
+		if (tmp_opt.saw_tstamp) {
+			tcptw->tw_ts_recent_stamp = ktime_get_seconds();
+			tcptw->tw_ts_recent	  = tmp_opt.rcv_tsval;
+		}
+
+		inet_twsk_reschedule(tw, TCP_TIMEWAIT_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return TCP_TW_ACK;
 	}
 
@@ -237,6 +331,7 @@ kill_with_rst:
 			 * Oh well... nobody has a sufficient solution to this
 			 * protocol bug yet.
 			 */
+<<<<<<< HEAD
 			if (sysctl_tcp_rfc1337 == 0) {
 kill:
 				inet_twsk_deschedule(tw, &tcp_death_row);
@@ -250,6 +345,20 @@ kill:
 		if (tmp_opt.saw_tstamp) {
 			tcptw->tw_ts_recent	  = tmp_opt.rcv_tsval;
 			tcptw->tw_ts_recent_stamp = get_seconds();
+=======
+			if (!READ_ONCE(twsk_net(tw)->ipv4.sysctl_tcp_rfc1337)) {
+kill:
+				inet_twsk_deschedule_put(tw);
+				return TCP_TW_SUCCESS;
+			}
+		} else {
+			inet_twsk_reschedule(tw, TCP_TIMEWAIT_LEN);
+		}
+
+		if (tmp_opt.saw_tstamp) {
+			tcptw->tw_ts_recent	  = tmp_opt.rcv_tsval;
+			tcptw->tw_ts_recent_stamp = ktime_get_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		inet_twsk_put(tw);
@@ -280,12 +389,20 @@ kill:
 		u32 isn = tcptw->tw_snd_nxt + 65535 + 2;
 		if (isn == 0)
 			isn++;
+<<<<<<< HEAD
 		TCP_SKB_CB(skb)->when = isn;
+=======
+		TCP_SKB_CB(skb)->tcp_tw_isn = isn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return TCP_TW_SYN;
 	}
 
 	if (paws_reject)
+<<<<<<< HEAD
 		NET_INC_STATS_BH(twsk_net(tw), LINUX_MIB_PAWSESTABREJECTED);
+=======
+		__NET_INC_STATS(twsk_net(tw), LINUX_MIB_PAWSESTABREJECTED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!th->rst) {
 		/* In this case we must reset the TIMEWAIT timer.
@@ -295,6 +412,7 @@ kill:
 		 * Do not reschedule in the last case.
 		 */
 		if (paws_reject || th->ack)
+<<<<<<< HEAD
 			inet_twsk_schedule(tw, &tcp_death_row, TCP_TIMEWAIT_LEN,
 					   TCP_TIMEWAIT_LEN);
 
@@ -302,17 +420,60 @@ kill:
 		 * it will be released by caller.
 		 */
 		return TCP_TW_ACK;
+=======
+			inet_twsk_reschedule(tw, TCP_TIMEWAIT_LEN);
+
+		return tcp_timewait_check_oow_rate_limit(
+			tw, skb, LINUX_MIB_TCPACKSKIPPEDTIMEWAIT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	inet_twsk_put(tw);
 	return TCP_TW_SUCCESS;
 }
 EXPORT_SYMBOL(tcp_timewait_state_process);
 
+<<<<<<< HEAD
+=======
+static void tcp_time_wait_init(struct sock *sk, struct tcp_timewait_sock *tcptw)
+{
+#ifdef CONFIG_TCP_MD5SIG
+	const struct tcp_sock *tp = tcp_sk(sk);
+	struct tcp_md5sig_key *key;
+
+	/*
+	 * The timewait bucket does not have the key DB from the
+	 * sock structure. We just make a quick copy of the
+	 * md5 key being used (if indeed we are using one)
+	 * so the timewait ack generating code has the key.
+	 */
+	tcptw->tw_md5_key = NULL;
+	if (!static_branch_unlikely(&tcp_md5_needed.key))
+		return;
+
+	key = tp->af_specific->md5_lookup(sk, sk);
+	if (key) {
+		tcptw->tw_md5_key = kmemdup(key, sizeof(*key), GFP_ATOMIC);
+		if (!tcptw->tw_md5_key)
+			return;
+		if (!static_key_fast_inc_not_disabled(&tcp_md5_needed.key.key))
+			goto out_free;
+		tcp_md5_add_sigpool();
+	}
+	return;
+out_free:
+	WARN_ON_ONCE(1);
+	kfree(tcptw->tw_md5_key);
+	tcptw->tw_md5_key = NULL;
+#endif
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Move a socket to time-wait or dead fin-wait-2 state.
  */
 void tcp_time_wait(struct sock *sk, int state, int timeo)
 {
+<<<<<<< HEAD
 	struct inet_timewait_sock *tw = NULL;
 	const struct inet_connection_sock *icsk = inet_csk(sk);
 	const struct tcp_sock *tp = tcp_sk(sk);
@@ -329,12 +490,29 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
 		const int rto = (icsk->icsk_rto << 2) - (icsk->icsk_rto >> 1);
 
 		tw->tw_transparent	= inet_sk(sk)->transparent;
+=======
+	const struct inet_connection_sock *icsk = inet_csk(sk);
+	struct tcp_sock *tp = tcp_sk(sk);
+	struct net *net = sock_net(sk);
+	struct inet_timewait_sock *tw;
+
+	tw = inet_twsk_alloc(sk, &net->ipv4.tcp_death_row, state);
+
+	if (tw) {
+		struct tcp_timewait_sock *tcptw = tcp_twsk((struct sock *)tw);
+		const int rto = (icsk->icsk_rto << 2) - (icsk->icsk_rto >> 1);
+
+		tw->tw_transparent	= inet_test_bit(TRANSPARENT, sk);
+		tw->tw_mark		= sk->sk_mark;
+		tw->tw_priority		= READ_ONCE(sk->sk_priority);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tw->tw_rcv_wscale	= tp->rx_opt.rcv_wscale;
 		tcptw->tw_rcv_nxt	= tp->rcv_nxt;
 		tcptw->tw_snd_nxt	= tp->snd_nxt;
 		tcptw->tw_rcv_wnd	= tcp_receive_window(tp);
 		tcptw->tw_ts_recent	= tp->rx_opt.ts_recent;
 		tcptw->tw_ts_recent_stamp = tp->rx_opt.ts_recent_stamp;
+<<<<<<< HEAD
 
 #if IS_ENABLED(CONFIG_IPV6)
 		if (tw->tw_family == PF_INET6) {
@@ -371,11 +549,33 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
 
 		/* Linkage updates. */
 		__inet_twsk_hashdance(tw, sk, &tcp_hashinfo);
+=======
+		tcptw->tw_ts_offset	= tp->tsoffset;
+		tw->tw_usec_ts		= tp->tcp_usec_ts;
+		tcptw->tw_last_oow_ack_time = 0;
+		tcptw->tw_tx_delay	= tp->tcp_tx_delay;
+		tw->tw_txhash		= sk->sk_txhash;
+#if IS_ENABLED(CONFIG_IPV6)
+		if (tw->tw_family == PF_INET6) {
+			struct ipv6_pinfo *np = inet6_sk(sk);
+
+			tw->tw_v6_daddr = sk->sk_v6_daddr;
+			tw->tw_v6_rcv_saddr = sk->sk_v6_rcv_saddr;
+			tw->tw_tclass = np->tclass;
+			tw->tw_flowlabel = be32_to_cpu(np->flow_label & IPV6_FLOWLABEL_MASK);
+			tw->tw_ipv6only = sk->sk_ipv6only;
+		}
+#endif
+
+		tcp_time_wait_init(sk, tcptw);
+		tcp_ao_time_wait(tcptw, tp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Get the TIME_WAIT timeout firing. */
 		if (timeo < rto)
 			timeo = rto;
 
+<<<<<<< HEAD
 		if (recycle_ok) {
 			tw->tw_timeout = rto;
 		} else {
@@ -387,21 +587,58 @@ void tcp_time_wait(struct sock *sk, int state, int timeo)
 		inet_twsk_schedule(tw, &tcp_death_row, timeo,
 				   TCP_TIMEWAIT_LEN);
 		inet_twsk_put(tw);
+=======
+		if (state == TCP_TIME_WAIT)
+			timeo = TCP_TIMEWAIT_LEN;
+
+		/* tw_timer is pinned, so we need to make sure BH are disabled
+		 * in following section, otherwise timer handler could run before
+		 * we complete the initialization.
+		 */
+		local_bh_disable();
+		inet_twsk_schedule(tw, timeo);
+		/* Linkage updates.
+		 * Note that access to tw after this point is illegal.
+		 */
+		inet_twsk_hashdance(tw, sk, net->ipv4.tcp_death_row.hashinfo);
+		local_bh_enable();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Sorry, if we're out of memory, just CLOSE this
 		 * socket up.  We've got bigger problems than
 		 * non-graceful socket closings.
 		 */
+<<<<<<< HEAD
 		NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_TCPTIMEWAITOVERFLOW);
+=======
+		NET_INC_STATS(net, LINUX_MIB_TCPTIMEWAITOVERFLOW);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tcp_update_metrics(sk);
 	tcp_done(sk);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(tcp_time_wait);
+
+#ifdef CONFIG_TCP_MD5SIG
+static void tcp_md5_twsk_free_rcu(struct rcu_head *head)
+{
+	struct tcp_md5sig_key *key;
+
+	key = container_of(head, struct tcp_md5sig_key, rcu);
+	kfree(key);
+	static_branch_slow_dec_deferred(&tcp_md5_needed);
+	tcp_md5_release_sigpool();
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void tcp_twsk_destructor(struct sock *sk)
 {
 #ifdef CONFIG_TCP_MD5SIG
+<<<<<<< HEAD
 	struct tcp_timewait_sock *twsk = tcp_twsk(sk);
 	if (twsk->tw_md5_key) {
 		tcp_free_md5sig_pool();
@@ -413,16 +650,139 @@ EXPORT_SYMBOL_GPL(tcp_twsk_destructor);
 
 static inline void TCP_ECN_openreq_child(struct tcp_sock *tp,
 					 struct request_sock *req)
+=======
+	if (static_branch_unlikely(&tcp_md5_needed.key)) {
+		struct tcp_timewait_sock *twsk = tcp_twsk(sk);
+
+		if (twsk->tw_md5_key)
+			call_rcu(&twsk->tw_md5_key->rcu, tcp_md5_twsk_free_rcu);
+	}
+#endif
+	tcp_ao_destroy_sock(sk, true);
+}
+EXPORT_SYMBOL_GPL(tcp_twsk_destructor);
+
+void tcp_twsk_purge(struct list_head *net_exit_list, int family)
+{
+	bool purged_once = false;
+	struct net *net;
+
+	list_for_each_entry(net, net_exit_list, exit_list) {
+		if (net->ipv4.tcp_death_row.hashinfo->pernet) {
+			/* Even if tw_refcount == 1, we must clean up kernel reqsk */
+			inet_twsk_purge(net->ipv4.tcp_death_row.hashinfo, family);
+		} else if (!purged_once) {
+			inet_twsk_purge(&tcp_hashinfo, family);
+			purged_once = true;
+		}
+	}
+}
+EXPORT_SYMBOL_GPL(tcp_twsk_purge);
+
+/* Warning : This function is called without sk_listener being locked.
+ * Be sure to read socket fields once, as their value could change under us.
+ */
+void tcp_openreq_init_rwin(struct request_sock *req,
+			   const struct sock *sk_listener,
+			   const struct dst_entry *dst)
+{
+	struct inet_request_sock *ireq = inet_rsk(req);
+	const struct tcp_sock *tp = tcp_sk(sk_listener);
+	int full_space = tcp_full_space(sk_listener);
+	u32 window_clamp;
+	__u8 rcv_wscale;
+	u32 rcv_wnd;
+	int mss;
+
+	mss = tcp_mss_clamp(tp, dst_metric_advmss(dst));
+	window_clamp = READ_ONCE(tp->window_clamp);
+	/* Set this up on the first call only */
+	req->rsk_window_clamp = window_clamp ? : dst_metric(dst, RTAX_WINDOW);
+
+	/* limit the window selection if the user enforce a smaller rx buffer */
+	if (sk_listener->sk_userlocks & SOCK_RCVBUF_LOCK &&
+	    (req->rsk_window_clamp > full_space || req->rsk_window_clamp == 0))
+		req->rsk_window_clamp = full_space;
+
+	rcv_wnd = tcp_rwnd_init_bpf((struct sock *)req);
+	if (rcv_wnd == 0)
+		rcv_wnd = dst_metric(dst, RTAX_INITRWND);
+	else if (full_space < rcv_wnd * mss)
+		full_space = rcv_wnd * mss;
+
+	/* tcp_full_space because it is guaranteed to be the first packet */
+	tcp_select_initial_window(sk_listener, full_space,
+		mss - (ireq->tstamp_ok ? TCPOLEN_TSTAMP_ALIGNED : 0),
+		&req->rsk_rcv_wnd,
+		&req->rsk_window_clamp,
+		ireq->wscale_ok,
+		&rcv_wscale,
+		rcv_wnd);
+	ireq->rcv_wscale = rcv_wscale;
+}
+EXPORT_SYMBOL(tcp_openreq_init_rwin);
+
+static void tcp_ecn_openreq_child(struct tcp_sock *tp,
+				  const struct request_sock *req)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	tp->ecn_flags = inet_rsk(req)->ecn_ok ? TCP_ECN_OK : 0;
 }
 
+<<<<<<< HEAD
+=======
+void tcp_ca_openreq_child(struct sock *sk, const struct dst_entry *dst)
+{
+	struct inet_connection_sock *icsk = inet_csk(sk);
+	u32 ca_key = dst_metric(dst, RTAX_CC_ALGO);
+	bool ca_got_dst = false;
+
+	if (ca_key != TCP_CA_UNSPEC) {
+		const struct tcp_congestion_ops *ca;
+
+		rcu_read_lock();
+		ca = tcp_ca_find_key(ca_key);
+		if (likely(ca && bpf_try_module_get(ca, ca->owner))) {
+			icsk->icsk_ca_dst_locked = tcp_ca_dst_locked(dst);
+			icsk->icsk_ca_ops = ca;
+			ca_got_dst = true;
+		}
+		rcu_read_unlock();
+	}
+
+	/* If no valid choice made yet, assign current system default ca. */
+	if (!ca_got_dst &&
+	    (!icsk->icsk_ca_setsockopt ||
+	     !bpf_try_module_get(icsk->icsk_ca_ops, icsk->icsk_ca_ops->owner)))
+		tcp_assign_congestion_control(sk);
+
+	tcp_set_ca_state(sk, TCP_CA_Open);
+}
+EXPORT_SYMBOL_GPL(tcp_ca_openreq_child);
+
+static void smc_check_reset_syn_req(const struct tcp_sock *oldtp,
+				    struct request_sock *req,
+				    struct tcp_sock *newtp)
+{
+#if IS_ENABLED(CONFIG_SMC)
+	struct inet_request_sock *ireq;
+
+	if (static_branch_unlikely(&tcp_have_smc)) {
+		ireq = inet_rsk(req);
+		if (oldtp->syn_smc && !ireq->smc_ok)
+			newtp->syn_smc = 0;
+	}
+#endif
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This is not only more efficient than what we used to do, it eliminates
  * a lot of code duplication between IPv4/IPv6 SYN recv processing. -DaveM
  *
  * Actually, we could lots of memory writes here. tp of listening
  * socket contains all necessary default parameters.
  */
+<<<<<<< HEAD
 struct sock *tcp_create_openreq_child(struct sock *sk, struct request_sock *req, struct sk_buff *skb)
 {
 	struct sock *newsk = inet_csk_clone_lock(sk, req, GFP_ATOMIC);
@@ -556,17 +916,155 @@ struct sock *tcp_create_openreq_child(struct sock *sk, struct request_sock *req,
 
 		TCP_INC_STATS_BH(sock_net(sk), TCP_MIB_PASSIVEOPENS);
 	}
+=======
+struct sock *tcp_create_openreq_child(const struct sock *sk,
+				      struct request_sock *req,
+				      struct sk_buff *skb)
+{
+	struct sock *newsk = inet_csk_clone_lock(sk, req, GFP_ATOMIC);
+	const struct inet_request_sock *ireq = inet_rsk(req);
+	struct tcp_request_sock *treq = tcp_rsk(req);
+	struct inet_connection_sock *newicsk;
+	const struct tcp_sock *oldtp;
+	struct tcp_sock *newtp;
+	u32 seq;
+#ifdef CONFIG_TCP_AO
+	struct tcp_ao_key *ao_key;
+#endif
+
+	if (!newsk)
+		return NULL;
+
+	newicsk = inet_csk(newsk);
+	newtp = tcp_sk(newsk);
+	oldtp = tcp_sk(sk);
+
+	smc_check_reset_syn_req(oldtp, req, newtp);
+
+	/* Now setup tcp_sock */
+	newtp->pred_flags = 0;
+
+	seq = treq->rcv_isn + 1;
+	newtp->rcv_wup = seq;
+	WRITE_ONCE(newtp->copied_seq, seq);
+	WRITE_ONCE(newtp->rcv_nxt, seq);
+	newtp->segs_in = 1;
+
+	seq = treq->snt_isn + 1;
+	newtp->snd_sml = newtp->snd_una = seq;
+	WRITE_ONCE(newtp->snd_nxt, seq);
+	newtp->snd_up = seq;
+
+	INIT_LIST_HEAD(&newtp->tsq_node);
+	INIT_LIST_HEAD(&newtp->tsorted_sent_queue);
+
+	tcp_init_wl(newtp, treq->rcv_isn);
+
+	minmax_reset(&newtp->rtt_min, tcp_jiffies32, ~0U);
+	newicsk->icsk_ack.lrcvtime = tcp_jiffies32;
+
+	newtp->lsndtime = tcp_jiffies32;
+	newsk->sk_txhash = READ_ONCE(treq->txhash);
+	newtp->total_retrans = req->num_retrans;
+
+	tcp_init_xmit_timers(newsk);
+	WRITE_ONCE(newtp->write_seq, newtp->pushed_seq = treq->snt_isn + 1);
+
+	if (sock_flag(newsk, SOCK_KEEPOPEN))
+		inet_csk_reset_keepalive_timer(newsk,
+					       keepalive_time_when(newtp));
+
+	newtp->rx_opt.tstamp_ok = ireq->tstamp_ok;
+	newtp->rx_opt.sack_ok = ireq->sack_ok;
+	newtp->window_clamp = req->rsk_window_clamp;
+	newtp->rcv_ssthresh = req->rsk_rcv_wnd;
+	newtp->rcv_wnd = req->rsk_rcv_wnd;
+	newtp->rx_opt.wscale_ok = ireq->wscale_ok;
+	if (newtp->rx_opt.wscale_ok) {
+		newtp->rx_opt.snd_wscale = ireq->snd_wscale;
+		newtp->rx_opt.rcv_wscale = ireq->rcv_wscale;
+	} else {
+		newtp->rx_opt.snd_wscale = newtp->rx_opt.rcv_wscale = 0;
+		newtp->window_clamp = min(newtp->window_clamp, 65535U);
+	}
+	newtp->snd_wnd = ntohs(tcp_hdr(skb)->window) << newtp->rx_opt.snd_wscale;
+	newtp->max_window = newtp->snd_wnd;
+
+	if (newtp->rx_opt.tstamp_ok) {
+		newtp->tcp_usec_ts = treq->req_usec_ts;
+		newtp->rx_opt.ts_recent = READ_ONCE(req->ts_recent);
+		newtp->rx_opt.ts_recent_stamp = ktime_get_seconds();
+		newtp->tcp_header_len = sizeof(struct tcphdr) + TCPOLEN_TSTAMP_ALIGNED;
+	} else {
+		newtp->tcp_usec_ts = 0;
+		newtp->rx_opt.ts_recent_stamp = 0;
+		newtp->tcp_header_len = sizeof(struct tcphdr);
+	}
+	if (req->num_timeout) {
+		newtp->total_rto = req->num_timeout;
+		newtp->undo_marker = treq->snt_isn;
+		if (newtp->tcp_usec_ts) {
+			newtp->retrans_stamp = treq->snt_synack;
+			newtp->total_rto_time = (u32)(tcp_clock_us() -
+						      newtp->retrans_stamp) / USEC_PER_MSEC;
+		} else {
+			newtp->retrans_stamp = div_u64(treq->snt_synack,
+						       USEC_PER_SEC / TCP_TS_HZ);
+			newtp->total_rto_time = tcp_clock_ms() -
+						newtp->retrans_stamp;
+		}
+		newtp->total_rto_recoveries = 1;
+	}
+	newtp->tsoffset = treq->ts_off;
+#ifdef CONFIG_TCP_MD5SIG
+	newtp->md5sig_info = NULL;	/*XXX*/
+#endif
+#ifdef CONFIG_TCP_AO
+	newtp->ao_info = NULL;
+	ao_key = treq->af_specific->ao_lookup(sk, req,
+				tcp_rsk(req)->ao_keyid, -1);
+	if (ao_key)
+		newtp->tcp_header_len += tcp_ao_len_aligned(ao_key);
+ #endif
+	if (skb->len >= TCP_MSS_DEFAULT + newtp->tcp_header_len)
+		newicsk->icsk_ack.last_seg_size = skb->len - newtp->tcp_header_len;
+	newtp->rx_opt.mss_clamp = req->mss;
+	tcp_ecn_openreq_child(newtp, req);
+	newtp->fastopen_req = NULL;
+	RCU_INIT_POINTER(newtp->fastopen_rsk, NULL);
+
+	newtp->bpf_chg_cc_inprogress = 0;
+	tcp_bpf_clone(sk, newsk);
+
+	__TCP_INC_STATS(sock_net(sk), TCP_MIB_PASSIVEOPENS);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return newsk;
 }
 EXPORT_SYMBOL(tcp_create_openreq_child);
 
 /*
+<<<<<<< HEAD
  *	Process an incoming packet for SYN_RECV sockets represented
  *	as a request_sock.
+=======
+ * Process an incoming packet for SYN_RECV sockets represented as a
+ * request_sock. Normally sk is the listener socket but for TFO it
+ * points to the child socket.
+ *
+ * XXX (TFO) - The current impl contains a special check for ack
+ * validation and inside tcp_v4_reqsk_send_ack(). Can we do better?
+ *
+ * We don't need to initialize tmp_opt.sack_ok as we don't use the results
+ *
+ * Note: If @fastopen is true, this can be called from process context.
+ *       Otherwise, this is from BH context.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
 			   struct request_sock *req,
+<<<<<<< HEAD
 			   struct request_sock **prev)
 {
 	struct tcp_options_received tmp_opt;
@@ -582,11 +1080,34 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
 
 		if (tmp_opt.saw_tstamp) {
 			tmp_opt.ts_recent = req->ts_recent;
+=======
+			   bool fastopen, bool *req_stolen)
+{
+	struct tcp_options_received tmp_opt;
+	struct sock *child;
+	const struct tcphdr *th = tcp_hdr(skb);
+	__be32 flg = tcp_flag_word(th) & (TCP_FLAG_RST|TCP_FLAG_SYN|TCP_FLAG_ACK);
+	bool paws_reject = false;
+	bool own_req;
+
+	tmp_opt.saw_tstamp = 0;
+	if (th->doff > (sizeof(struct tcphdr)>>2)) {
+		tcp_parse_options(sock_net(sk), skb, &tmp_opt, 0, NULL);
+
+		if (tmp_opt.saw_tstamp) {
+			tmp_opt.ts_recent = READ_ONCE(req->ts_recent);
+			if (tmp_opt.rcv_tsecr)
+				tmp_opt.rcv_tsecr -= tcp_rsk(req)->ts_off;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* We do not store true stamp, but it is not required,
 			 * it can be estimated (approximately)
 			 * from another data.
 			 */
+<<<<<<< HEAD
 			tmp_opt.ts_recent_stamp = get_seconds() - ((TCP_TIMEOUT_INIT/HZ)<<req->retrans);
+=======
+			tmp_opt.ts_recent_stamp = ktime_get_seconds() - reqsk_timeout(req, TCP_RTO_MAX) / HZ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			paws_reject = tcp_paws_reject(&tmp_opt, th->rst);
 		}
 	}
@@ -611,8 +1132,31 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
 		 *
 		 * Enforce "SYN-ACK" according to figure 8, figure 6
 		 * of RFC793, fixed by RFC1122.
+<<<<<<< HEAD
 		 */
 		req->rsk_ops->rtx_syn_ack(sk, req, NULL);
+=======
+		 *
+		 * Note that even if there is new data in the SYN packet
+		 * they will be thrown away too.
+		 *
+		 * Reset timer after retransmitting SYNACK, similar to
+		 * the idea of fast retransmit in recovery.
+		 */
+		if (!tcp_oow_rate_limited(sock_net(sk), skb,
+					  LINUX_MIB_TCPACKSKIPPEDSYNRECV,
+					  &tcp_rsk(req)->last_oow_ack_time) &&
+
+		    !inet_rtx_syn_ack(sk, req)) {
+			unsigned long expires = jiffies;
+
+			expires += reqsk_timeout(req, TCP_RTO_MAX);
+			if (!fastopen)
+				mod_timer_pending(&req->rsk_timer, expires);
+			else
+				req->rsk_timer.expires = expires;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -668,11 +1212,22 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
 	 *                  sent (the segment carries an unacceptable ACK) ...
 	 *                  a reset is sent."
 	 *
+<<<<<<< HEAD
 	 * Invalid ACK: reset will be sent by listening socket
 	 */
 	if ((flg & TCP_FLAG_ACK) &&
 	    (TCP_SKB_CB(skb)->ack_seq !=
 	     tcp_rsk(req)->snt_isn + 1 + tcp_s_data_size(tcp_sk(sk))))
+=======
+	 * Invalid ACK: reset will be sent by listening socket.
+	 * Note that the ACK validity check for a Fast Open socket is done
+	 * elsewhere and is checked directly against the child socket rather
+	 * than req because user data may have been sent out.
+	 */
+	if ((flg & TCP_FLAG_ACK) && !fastopen &&
+	    (TCP_SKB_CB(skb)->ack_seq !=
+	     tcp_rsk(req)->snt_isn + 1))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return sk;
 
 	/* Also, it would be not so bad idea to check rcv_tsecr, which
@@ -683,19 +1238,39 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
 	/* RFC793: "first check sequence number". */
 
 	if (paws_reject || !tcp_in_window(TCP_SKB_CB(skb)->seq, TCP_SKB_CB(skb)->end_seq,
+<<<<<<< HEAD
 					  tcp_rsk(req)->rcv_isn + 1, tcp_rsk(req)->rcv_isn + 1 + req->rcv_wnd)) {
 		/* Out of window: send ACK and drop. */
 		if (!(flg & TCP_FLAG_RST))
 			req->rsk_ops->send_ack(sk, skb, req);
 		if (paws_reject)
 			NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_PAWSESTABREJECTED);
+=======
+					  tcp_rsk(req)->rcv_nxt, tcp_rsk(req)->rcv_nxt + req->rsk_rcv_wnd)) {
+		/* Out of window: send ACK and drop. */
+		if (!(flg & TCP_FLAG_RST) &&
+		    !tcp_oow_rate_limited(sock_net(sk), skb,
+					  LINUX_MIB_TCPACKSKIPPEDSYNRECV,
+					  &tcp_rsk(req)->last_oow_ack_time))
+			req->rsk_ops->send_ack(sk, skb, req);
+		if (paws_reject)
+			NET_INC_STATS(sock_net(sk), LINUX_MIB_PAWSESTABREJECTED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
 	/* In sequence, PAWS is OK. */
 
+<<<<<<< HEAD
 	if (tmp_opt.saw_tstamp && !after(TCP_SKB_CB(skb)->seq, tcp_rsk(req)->rcv_isn + 1))
 		req->ts_recent = tmp_opt.rcv_tsval;
+=======
+	/* TODO: We probably should defer ts_recent change once
+	 * we take ownership of @req.
+	 */
+	if (tmp_opt.saw_tstamp && !after(TCP_SKB_CB(skb)->seq, tcp_rsk(req)->rcv_nxt))
+		WRITE_ONCE(req->ts_recent, tmp_opt.rcv_tsval);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (TCP_SKB_CB(skb)->seq == tcp_rsk(req)->rcv_isn) {
 		/* Truncate SYN, it is out of window starting
@@ -707,16 +1282,27 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
 	 *	   "fourth, check the SYN bit"
 	 */
 	if (flg & (TCP_FLAG_RST|TCP_FLAG_SYN)) {
+<<<<<<< HEAD
 		TCP_INC_STATS_BH(sock_net(sk), TCP_MIB_ATTEMPTFAILS);
+=======
+		TCP_INC_STATS(sock_net(sk), TCP_MIB_ATTEMPTFAILS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto embryonic_reset;
 	}
 
 	/* ACK sequence verified above, just make sure ACK is
 	 * set.  If ACK not set, just silently drop the packet.
+<<<<<<< HEAD
+=======
+	 *
+	 * XXX (TFO) - if we ever allow "data after SYN", the
+	 * following check needs to be removed.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (!(flg & TCP_FLAG_ACK))
 		return NULL;
 
+<<<<<<< HEAD
 	/* While TCP_DEFER_ACCEPT is active, drop bare ACK. */
 	if (req->retrans < inet_csk(sk)->icsk_accept_queue.rskq_defer_accept &&
 	    TCP_SKB_CB(skb)->end_seq == tcp_rsk(req)->rcv_isn + 1) {
@@ -728,6 +1314,21 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
 		tcp_rsk(req)->snt_synack = tmp_opt.rcv_tsecr;
 	else if (req->retrans) /* don't take RTT sample if retrans && ~TS */
 		tcp_rsk(req)->snt_synack = 0;
+=======
+	/* For Fast Open no more processing is needed (sk is the
+	 * child socket).
+	 */
+	if (fastopen)
+		return sk;
+
+	/* While TCP_DEFER_ACCEPT is active, drop bare ACK. */
+	if (req->num_timeout < READ_ONCE(inet_csk(sk)->icsk_accept_queue.rskq_defer_accept) &&
+	    TCP_SKB_CB(skb)->end_seq == tcp_rsk(req)->rcv_isn + 1) {
+		inet_rsk(req)->acked = 1;
+		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPDEFERACCEPTDROP);
+		return NULL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* OK, ACK is valid, create big socket and
 	 * feed this segment to it. It will repeat all
@@ -735,6 +1336,7 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
 	 * ESTABLISHED STATE. If it will be dropped after
 	 * socket is created, wait for troubles.
 	 */
+<<<<<<< HEAD
 	child = inet_csk(sk)->icsk_af_ops->syn_recv_sock(sk, skb, req, NULL);
 	if (child == NULL)
 		goto listen_overflow;
@@ -747,16 +1349,60 @@ struct sock *tcp_check_req(struct sock *sk, struct sk_buff *skb,
 
 listen_overflow:
 	if (!sysctl_tcp_abort_on_overflow) {
+=======
+	child = inet_csk(sk)->icsk_af_ops->syn_recv_sock(sk, skb, req, NULL,
+							 req, &own_req);
+	if (!child)
+		goto listen_overflow;
+
+	if (own_req && rsk_drop_req(req)) {
+		reqsk_queue_removed(&inet_csk(req->rsk_listener)->icsk_accept_queue, req);
+		inet_csk_reqsk_queue_drop_and_put(req->rsk_listener, req);
+		return child;
+	}
+
+	sock_rps_save_rxhash(child, skb);
+	tcp_synack_rtt_meas(child, req);
+	*req_stolen = !own_req;
+	return inet_csk_complete_hashdance(sk, child, req, own_req);
+
+listen_overflow:
+	if (sk != req->rsk_listener)
+		__NET_INC_STATS(sock_net(sk), LINUX_MIB_TCPMIGRATEREQFAILURE);
+
+	if (!READ_ONCE(sock_net(sk)->ipv4.sysctl_tcp_abort_on_overflow)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		inet_rsk(req)->acked = 1;
 		return NULL;
 	}
 
 embryonic_reset:
+<<<<<<< HEAD
 	NET_INC_STATS_BH(sock_net(sk), LINUX_MIB_EMBRYONICRSTS);
 	if (!(flg & TCP_FLAG_RST))
 		req->rsk_ops->send_reset(sk, skb);
 
 	inet_csk_reqsk_queue_drop(sk, req, prev);
+=======
+	if (!(flg & TCP_FLAG_RST)) {
+		/* Received a bad SYN pkt - for TFO We try not to reset
+		 * the local connection unless it's really necessary to
+		 * avoid becoming vulnerable to outside attack aiming at
+		 * resetting legit local connections.
+		 */
+		req->rsk_ops->send_reset(sk, skb);
+	} else if (fastopen) { /* received a valid RST pkt */
+		reqsk_fastopen_remove(sk, req, true);
+		tcp_reset(sk, skb);
+	}
+	if (!fastopen) {
+		bool unlinked = inet_csk_reqsk_queue_drop(sk, req);
+
+		if (unlinked)
+			__NET_INC_STATS(sock_net(sk), LINUX_MIB_EMBRYONICRSTS);
+		*req_stolen = !unlinked;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 EXPORT_SYMBOL(tcp_check_req);
@@ -765,6 +1411,7 @@ EXPORT_SYMBOL(tcp_check_req);
  * Queue segment on the new socket if the new socket is active,
  * otherwise we just shortcircuit this and continue with
  * the new socket.
+<<<<<<< HEAD
  */
 
 int tcp_child_process(struct sock *parent, struct sock *child,
@@ -779,6 +1426,32 @@ int tcp_child_process(struct sock *parent, struct sock *child,
 		/* Wakeup parent, send SIGIO */
 		if (state == TCP_SYN_RECV && child->sk_state != state)
 			parent->sk_data_ready(parent, 0);
+=======
+ *
+ * For the vast majority of cases child->sk_state will be TCP_SYN_RECV
+ * when entering. But other states are possible due to a race condition
+ * where after __inet_lookup_established() fails but before the listener
+ * locked is obtained, other packets cause the same connection to
+ * be created.
+ */
+
+enum skb_drop_reason tcp_child_process(struct sock *parent, struct sock *child,
+				       struct sk_buff *skb)
+	__releases(&((child)->sk_lock.slock))
+{
+	enum skb_drop_reason reason = SKB_NOT_DROPPED_YET;
+	int state = child->sk_state;
+
+	/* record sk_napi_id and sk_rx_queue_mapping of child. */
+	sk_mark_napi_id_set(child, skb);
+
+	tcp_segs_in(tcp_sk(child), skb);
+	if (!sock_owned_by_user(child)) {
+		reason = tcp_rcv_state_process(child, skb);
+		/* Wakeup parent, send SIGIO */
+		if (state == TCP_SYN_RECV && child->sk_state != state)
+			parent->sk_data_ready(parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Alas, it is possible again, because we do lookup
 		 * in main socket hash table and lock on listening
@@ -789,6 +1462,10 @@ int tcp_child_process(struct sock *parent, struct sock *child,
 
 	bh_unlock_sock(child);
 	sock_put(child);
+<<<<<<< HEAD
 	return ret;
+=======
+	return reason;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(tcp_child_process);

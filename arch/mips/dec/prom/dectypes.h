@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 #ifndef DECTYPES
 #define	DECTYPES
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef DECTYPES
+#define DECTYPES
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DS2100_3100	1	/* DS2100/3100	Pmax		*/
 #define DS5000_200	2	/* DS5000/200	3max		*/

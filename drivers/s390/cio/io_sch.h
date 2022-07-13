@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef S390_IO_SCH_H
 #define S390_IO_SCH_H
 
@@ -8,15 +12,29 @@
 #include "css.h"
 #include "orb.h"
 
+<<<<<<< HEAD
 struct io_subchannel_private {
 	union orb orb;		/* operation request block */
 	struct ccw1 sense_ccw;	/* static ccw for sense command */
+=======
+struct io_subchannel_dma_area {
+	struct ccw1 sense_ccw;	/* static ccw for sense command */
+};
+
+struct io_subchannel_private {
+	union orb orb;		/* operation request block */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ccw_device *cdev;/* pointer to the child ccw device */
 	struct {
 		unsigned int suspend:1;	/* allow suspend */
 		unsigned int prefetch:1;/* deny prefetch */
 		unsigned int inter:1;	/* suppress intermediate interrupts */
 	} __packed options;
+<<<<<<< HEAD
+=======
+	struct io_subchannel_dma_area *dma_area;
+	dma_addr_t dma_area_dma;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __aligned(8);
 
 #define to_io_private(n) ((struct io_subchannel_private *) \
@@ -114,20 +132,44 @@ enum cdev_todo {
 #define FAKE_CMD_IRB	1
 #define FAKE_TM_IRB	2
 
+<<<<<<< HEAD
+=======
+struct ccw_device_dma_area {
+	struct senseid senseid;	/* SenseID info */
+	struct ccw1 iccws[2];	/* ccws for SNID/SID/SPGID commands */
+	struct irb irb;		/* device status */
+	struct pgid pgid[8];	/* path group IDs per chpid*/
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ccw_device_private {
 	struct ccw_device *cdev;
 	struct subchannel *sch;
 	int state;		/* device state */
 	atomic_t onoff;
 	struct ccw_dev_id dev_id;	/* device id */
+<<<<<<< HEAD
 	struct subchannel_id schid;	/* subchannel number */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ccw_request req;		/* internal I/O request */
 	int iretry;
 	u8 pgid_valid_mask;	/* mask of valid PGIDs */
 	u8 pgid_todo_mask;	/* mask of PGIDs to be adjusted */
 	u8 pgid_reset_mask;	/* mask of PGIDs which were reset */
+<<<<<<< HEAD
 	u8 path_gone_mask;	/* mask of paths, that became unavailable */
 	u8 path_new_mask;	/* mask of paths, that became available */
+=======
+	u8 path_noirq_mask;	/* mask of paths for which no irq was
+				   received */
+	u8 path_notoper_mask;	/* mask of paths which were found
+				   not operable */
+	u8 path_gone_mask;	/* mask of paths, that became unavailable */
+	u8 path_new_mask;	/* mask of paths, that became available */
+	u8 path_broken_mask;	/* mask of paths, which were found to be
+				   unusable */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		unsigned int fast:1;	/* post with "channel end" */
 		unsigned int repall:1;	/* report every interrupt status */
@@ -142,17 +184,27 @@ struct ccw_device_private {
 		unsigned int donotify:1;    /* call notify function */
 		unsigned int recog_done:1;  /* dev. recog. complete */
 		unsigned int fake_irb:2;    /* deliver faked irb */
+<<<<<<< HEAD
 		unsigned int resuming:1;    /* recognition while resume */
 		unsigned int pgroup:1;	    /* pathgroup is set up */
 		unsigned int mpath:1;	    /* multipathing is set up */
+=======
+		unsigned int pgroup:1;	    /* pathgroup is set up */
+		unsigned int mpath:1;	    /* multipathing is set up */
+		unsigned int pgid_unknown:1;/* unknown pgid state */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int initialized:1; /* set if initial reference held */
 	} __attribute__((packed)) flags;
 	unsigned long intparm;	/* user interruption parameter */
 	struct qdio_irq *qdio_data;
+<<<<<<< HEAD
 	struct irb irb;		/* device status */
 	struct senseid senseid;	/* SenseID info */
 	struct pgid pgid[8];	/* path group IDs per chpid*/
 	struct ccw1 iccws[2];	/* ccws for SNID/SID/SPGID commands */
+=======
+	int async_kill_io_rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct work_struct todo_work;
 	enum cdev_todo todo;
 	wait_queue_head_t wait_q;
@@ -161,6 +213,7 @@ struct ccw_device_private {
 	struct list_head cmb_list;	/* list of measured devices */
 	u64 cmb_start_time;		/* clock value of cmb reset */
 	void *cmb_wait;			/* deferred cmb enable/disable */
+<<<<<<< HEAD
 	enum interruption_class int_class;
 };
 
@@ -209,4 +262,11 @@ static inline int xsch(struct subchannel_id schid)
 	return ccode;
 }
 
+=======
+	struct gen_pool *dma_pool;
+	struct ccw_device_dma_area *dma_area;
+	enum interruption_class int_class;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

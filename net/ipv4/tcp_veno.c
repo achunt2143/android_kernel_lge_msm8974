@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TCP Veno congestion control
  *
@@ -6,7 +10,11 @@
  *    "TCP Veno: TCP Enhancement for Transmission over Wireless Access Networks."
  *    IEEE Journal on Selected Areas in Communication,
  *    Feb. 2003.
+<<<<<<< HEAD
  * 	See http://www.ie.cuhk.edu.hk/fileadmin/staff_upload/soung/Journal/J3.pdf
+=======
+ * 	See https://www.ie.cuhk.edu.hk/fileadmin/staff_upload/soung/Journal/J3.pdf
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mm.h>
@@ -69,16 +77,29 @@ static void tcp_veno_init(struct sock *sk)
 }
 
 /* Do rtt sampling needed for Veno. */
+<<<<<<< HEAD
 static void tcp_veno_pkts_acked(struct sock *sk, u32 cnt, s32 rtt_us)
+=======
+static void tcp_veno_pkts_acked(struct sock *sk,
+				const struct ack_sample *sample)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct veno *veno = inet_csk_ca(sk);
 	u32 vrtt;
 
+<<<<<<< HEAD
 	if (rtt_us < 0)
 		return;
 
 	/* Never allow zero rtt or baseRTT */
 	vrtt = rtt_us + 1;
+=======
+	if (sample->rtt_us < 0)
+		return;
+
+	/* Never allow zero rtt or baseRTT */
+	vrtt = sample->rtt_us + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Filter to find propagation delay: */
 	if (vrtt < veno->basertt)
@@ -114,18 +135,30 @@ static void tcp_veno_cwnd_event(struct sock *sk, enum tcp_ca_event event)
 		tcp_veno_init(sk);
 }
 
+<<<<<<< HEAD
 static void tcp_veno_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
+=======
+static void tcp_veno_cong_avoid(struct sock *sk, u32 ack, u32 acked)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct veno *veno = inet_csk_ca(sk);
 
 	if (!veno->doing_veno_now) {
+<<<<<<< HEAD
 		tcp_reno_cong_avoid(sk, ack, in_flight);
+=======
+		tcp_reno_cong_avoid(sk, ack, acked);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	/* limited by applications */
+<<<<<<< HEAD
 	if (!tcp_is_cwnd_limited(sk, in_flight))
+=======
+	if (!tcp_is_cwnd_limited(sk))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/* We do the Veno calculations only if we got enough rtt samples */
@@ -133,7 +166,11 @@ static void tcp_veno_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
 		/* We don't have enough rtt samples to do the Veno
 		 * calculation, so we'll behave like Reno.
 		 */
+<<<<<<< HEAD
 		tcp_reno_cong_avoid(sk, ack, in_flight);
+=======
+		tcp_reno_cong_avoid(sk, ack, acked);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		u64 target_cwnd;
 		u32 rtt;
@@ -144,6 +181,7 @@ static void tcp_veno_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
 
 		rtt = veno->minrtt;
 
+<<<<<<< HEAD
 		target_cwnd = (u64)tp->snd_cwnd * veno->basertt;
 		target_cwnd <<= V_PARAM_SHIFT;
 		do_div(target_cwnd, rtt);
@@ -181,6 +219,47 @@ static void tcp_veno_cong_avoid(struct sock *sk, u32 ack, u32 in_flight)
 			tp->snd_cwnd = 2;
 		else if (tp->snd_cwnd > tp->snd_cwnd_clamp)
 			tp->snd_cwnd = tp->snd_cwnd_clamp;
+=======
+		target_cwnd = (u64)tcp_snd_cwnd(tp) * veno->basertt;
+		target_cwnd <<= V_PARAM_SHIFT;
+		do_div(target_cwnd, rtt);
+
+		veno->diff = (tcp_snd_cwnd(tp) << V_PARAM_SHIFT) - target_cwnd;
+
+		if (tcp_in_slow_start(tp)) {
+			/* Slow start. */
+			acked = tcp_slow_start(tp, acked);
+			if (!acked)
+				goto done;
+		}
+
+		/* Congestion avoidance. */
+		if (veno->diff < beta) {
+			/* In the "non-congestive state", increase cwnd
+			 * every rtt.
+			 */
+			tcp_cong_avoid_ai(tp, tcp_snd_cwnd(tp), acked);
+		} else {
+			/* In the "congestive state", increase cwnd
+			 * every other rtt.
+			 */
+			if (tp->snd_cwnd_cnt >= tcp_snd_cwnd(tp)) {
+				if (veno->inc &&
+				    tcp_snd_cwnd(tp) < tp->snd_cwnd_clamp) {
+					tcp_snd_cwnd_set(tp, tcp_snd_cwnd(tp) + 1);
+					veno->inc = 0;
+				} else
+					veno->inc = 1;
+				tp->snd_cwnd_cnt = 0;
+			} else
+				tp->snd_cwnd_cnt += acked;
+		}
+done:
+		if (tcp_snd_cwnd(tp) < 2)
+			tcp_snd_cwnd_set(tp, 2);
+		else if (tcp_snd_cwnd(tp) > tp->snd_cwnd_clamp)
+			tcp_snd_cwnd_set(tp, tp->snd_cwnd_clamp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Wipe the slate clean for the next rtt. */
 	/* veno->cntrtt = 0; */
@@ -195,6 +274,7 @@ static u32 tcp_veno_ssthresh(struct sock *sk)
 
 	if (veno->diff < beta)
 		/* in "non-congestive state", cut cwnd by 1/5 */
+<<<<<<< HEAD
 		return max(tp->snd_cwnd * 4 / 5, 2U);
 	else
 		/* in "congestive state", cut cwnd by 1/2 */
@@ -205,6 +285,18 @@ static struct tcp_congestion_ops tcp_veno __read_mostly = {
 	.flags		= TCP_CONG_RTT_STAMP,
 	.init		= tcp_veno_init,
 	.ssthresh	= tcp_veno_ssthresh,
+=======
+		return max(tcp_snd_cwnd(tp) * 4 / 5, 2U);
+	else
+		/* in "congestive state", cut cwnd by 1/2 */
+		return max(tcp_snd_cwnd(tp) >> 1U, 2U);
+}
+
+static struct tcp_congestion_ops tcp_veno __read_mostly = {
+	.init		= tcp_veno_init,
+	.ssthresh	= tcp_veno_ssthresh,
+	.undo_cwnd	= tcp_reno_undo_cwnd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.cong_avoid	= tcp_veno_cong_avoid,
 	.pkts_acked	= tcp_veno_pkts_acked,
 	.set_state	= tcp_veno_state,

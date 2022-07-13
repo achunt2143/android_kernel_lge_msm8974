@@ -1,5 +1,9 @@
 What:		/sys/class/
+<<<<<<< HEAD
 Date:		Febuary 2006
+=======
+Date:		February 2006
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 Contact:	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Description:
 		The /sys/class directory will consist of a group of

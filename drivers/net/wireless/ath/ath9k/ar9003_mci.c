@@ -19,6 +19,10 @@
 #include "hw-ops.h"
 #include "ar9003_phy.h"
 #include "ar9003_mci.h"
+<<<<<<< HEAD
+=======
+#include "ar9003_aic.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ar9003_mci_reset_req_wakeup(struct ath_hw *ah)
 {
@@ -35,6 +39,7 @@ static int ar9003_mci_wait_for_interrupt(struct ath_hw *ah, u32 address,
 	struct ath_common *common = ath9k_hw_common(ah);
 
 	while (time_out) {
+<<<<<<< HEAD
 		if (REG_READ(ah, address) & bit_position) {
 			REG_WRITE(ah, address, bit_position);
 
@@ -60,6 +65,32 @@ static int ar9003_mci_wait_for_interrupt(struct ath_hw *ah, u32 address,
 
 		if (time_out < 0)
 			break;
+=======
+		if (!(REG_READ(ah, address) & bit_position)) {
+			udelay(10);
+			time_out -= 10;
+
+			if (time_out < 0)
+				break;
+			else
+				continue;
+		}
+		REG_WRITE(ah, address, bit_position);
+
+		if (address != AR_MCI_INTERRUPT_RX_MSG_RAW)
+			break;
+
+		if (bit_position & AR_MCI_INTERRUPT_RX_MSG_REQ_WAKE)
+			ar9003_mci_reset_req_wakeup(ah);
+
+		if (bit_position & (AR_MCI_INTERRUPT_RX_MSG_SYS_SLEEPING |
+				    AR_MCI_INTERRUPT_RX_MSG_SYS_WAKING))
+			REG_WRITE(ah, AR_MCI_INTERRUPT_RAW,
+				  AR_MCI_INTERRUPT_REMOTE_SLEEP_UPDATE);
+
+		REG_WRITE(ah, AR_MCI_INTERRUPT_RAW, AR_MCI_INTERRUPT_RX_MSG);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (time_out <= 0) {
@@ -127,6 +158,7 @@ static void ar9003_mci_send_coex_version_query(struct ath_hw *ah,
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 	u32 payload[4] = {0, 0, 0, 0};
 
+<<<<<<< HEAD
 	if (!mci->bt_version_known &&
 	    (mci->bt_state != MCI_BT_SLEEP)) {
 		MCI_GPM_SET_TYPE_OPCODE(payload,
@@ -135,6 +167,15 @@ static void ar9003_mci_send_coex_version_query(struct ath_hw *ah,
 		ar9003_mci_send_message(ah, MCI_GPM, 0, payload, 16,
 					wait_done, true);
 	}
+=======
+	if (mci->bt_version_known ||
+	    (mci->bt_state == MCI_BT_SLEEP))
+		return;
+
+	MCI_GPM_SET_TYPE_OPCODE(payload, MCI_GPM_COEX_AGENT,
+				MCI_GPM_COEX_VERSION_QUERY);
+	ar9003_mci_send_message(ah, MCI_GPM, 0, payload, 16, wait_done, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ar9003_mci_send_coex_version_response(struct ath_hw *ah,
@@ -158,6 +199,7 @@ static void ar9003_mci_send_coex_wlan_channels(struct ath_hw *ah,
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 	u32 *payload = &mci->wlan_channels[0];
 
+<<<<<<< HEAD
 	if ((mci->wlan_channels_update == true) &&
 	    (mci->bt_state != MCI_BT_SLEEP)) {
 		MCI_GPM_SET_TYPE_OPCODE(payload,
@@ -167,6 +209,16 @@ static void ar9003_mci_send_coex_wlan_channels(struct ath_hw *ah,
 					wait_done, true);
 		MCI_GPM_SET_TYPE_OPCODE(payload, 0xff, 0xff);
 	}
+=======
+	if (!mci->wlan_channels_update ||
+	    (mci->bt_state == MCI_BT_SLEEP))
+		return;
+
+	MCI_GPM_SET_TYPE_OPCODE(payload, MCI_GPM_COEX_AGENT,
+				MCI_GPM_COEX_WLAN_CHANNELS);
+	ar9003_mci_send_message(ah, MCI_GPM, 0, payload, 16, wait_done, true);
+	MCI_GPM_SET_TYPE_OPCODE(payload, 0xff, 0xff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ar9003_mci_send_coex_bt_status_query(struct ath_hw *ah,
@@ -174,6 +226,7 @@ static void ar9003_mci_send_coex_bt_status_query(struct ath_hw *ah,
 {
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 	u32 payload[4] = {0, 0, 0, 0};
+<<<<<<< HEAD
 	bool query_btinfo = !!(query_type & (MCI_GPM_COEX_QUERY_BT_ALL_INFO |
 					     MCI_GPM_COEX_QUERY_BT_TOPOLOGY));
 
@@ -197,6 +250,32 @@ static void ar9003_mci_send_coex_bt_status_query(struct ath_hw *ah,
 		if (query_btinfo)
 			mci->query_bt = false;
 	}
+=======
+	bool query_btinfo;
+
+	if (mci->bt_state == MCI_BT_SLEEP)
+		return;
+
+	query_btinfo = !!(query_type & (MCI_GPM_COEX_QUERY_BT_ALL_INFO |
+					MCI_GPM_COEX_QUERY_BT_TOPOLOGY));
+	MCI_GPM_SET_TYPE_OPCODE(payload, MCI_GPM_COEX_AGENT,
+				MCI_GPM_COEX_STATUS_QUERY);
+
+	*(((u8 *)payload) + MCI_GPM_COEX_B_BT_BITMAP) = query_type;
+
+	/*
+	 * If bt_status_query message is  not sent successfully,
+	 * then need_flush_btinfo should be set again.
+	 */
+	if (!ar9003_mci_send_message(ah, MCI_GPM, 0, payload, 16,
+				wait_done, true)) {
+		if (query_btinfo)
+			mci->need_flush_btinfo = true;
+	}
+
+	if (query_btinfo)
+		mci->query_bt = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ar9003_mci_send_coex_halt_bt_gpm(struct ath_hw *ah, bool halt,
@@ -241,6 +320,7 @@ static void ar9003_mci_prep_interface(struct ath_hw *ah)
 	ar9003_mci_remote_reset(ah, true);
 	ar9003_mci_send_req_wake(ah, true);
 
+<<<<<<< HEAD
 	if (ar9003_mci_wait_for_interrupt(ah, AR_MCI_INTERRUPT_RX_MSG_RAW,
 				  AR_MCI_INTERRUPT_RX_MSG_SYS_WAKING, 500)) {
 
@@ -308,6 +388,75 @@ static void ar9003_mci_prep_interface(struct ath_hw *ah)
 	if ((mci->bt_state == MCI_BT_AWAKE) &&
 		(REG_READ_FIELD(ah, AR_MCI_INTERRUPT_RX_MSG_RAW,
 				AR_MCI_INTERRUPT_RX_MSG_SYS_WAKING)) &&
+=======
+	if (!ar9003_mci_wait_for_interrupt(ah, AR_MCI_INTERRUPT_RX_MSG_RAW,
+				  AR_MCI_INTERRUPT_RX_MSG_SYS_WAKING, 500))
+		goto clear_redunt;
+
+	mci->bt_state = MCI_BT_AWAKE;
+
+	/*
+	 * we don't need to send more remote_reset at this moment.
+	 * If BT receive first remote_reset, then BT HW will
+	 * be cleaned up and will be able to receive req_wake
+	 * and BT HW will respond sys_waking.
+	 * In this case, WLAN will receive BT's HW sys_waking.
+	 * Otherwise, if BT SW missed initial remote_reset,
+	 * that remote_reset will still clean up BT MCI RX,
+	 * and the req_wake will wake BT up,
+	 * and BT SW will respond this req_wake with a remote_reset and
+	 * sys_waking. In this case, WLAN will receive BT's SW
+	 * sys_waking. In either case, BT's RX is cleaned up. So we
+	 * don't need to reply BT's remote_reset now, if any.
+	 * Similarly, if in any case, WLAN can receive BT's sys_waking,
+	 * that means WLAN's RX is also fine.
+	 */
+	ar9003_mci_send_sys_waking(ah, true);
+	udelay(10);
+
+	/*
+	 * Set BT priority interrupt value to be 0xff to
+	 * avoid having too many BT PRIORITY interrupts.
+	 */
+	REG_WRITE(ah, AR_MCI_BT_PRI0, 0xFFFFFFFF);
+	REG_WRITE(ah, AR_MCI_BT_PRI1, 0xFFFFFFFF);
+	REG_WRITE(ah, AR_MCI_BT_PRI2, 0xFFFFFFFF);
+	REG_WRITE(ah, AR_MCI_BT_PRI3, 0xFFFFFFFF);
+	REG_WRITE(ah, AR_MCI_BT_PRI, 0X000000FF);
+
+	/*
+	 * A contention reset will be received after send out
+	 * sys_waking. Also BT priority interrupt bits will be set.
+	 * Clear those bits before the next step.
+	 */
+
+	REG_WRITE(ah, AR_MCI_INTERRUPT_RX_MSG_RAW,
+		  AR_MCI_INTERRUPT_RX_MSG_CONT_RST);
+	REG_WRITE(ah, AR_MCI_INTERRUPT_RAW, AR_MCI_INTERRUPT_BT_PRI);
+
+	if (mci->is_2g && MCI_ANT_ARCH_PA_LNA_SHARED(mci)) {
+		ar9003_mci_send_lna_transfer(ah, true);
+		udelay(5);
+	}
+
+	if (mci->is_2g && !mci->update_2g5g && MCI_ANT_ARCH_PA_LNA_SHARED(mci)) {
+		if (ar9003_mci_wait_for_interrupt(ah,
+					AR_MCI_INTERRUPT_RX_MSG_RAW,
+					AR_MCI_INTERRUPT_RX_MSG_LNA_INFO,
+					mci_timeout))
+			ath_dbg(common, MCI,
+				"MCI WLAN has control over the LNA & BT obeys it\n");
+		else
+			ath_dbg(common, MCI,
+				"MCI BT didn't respond to LNA_TRANS\n");
+	}
+
+clear_redunt:
+	/* Clear the extra redundant SYS_WAKING from BT */
+	if ((mci->bt_state == MCI_BT_AWAKE) &&
+	    (REG_READ_FIELD(ah, AR_MCI_INTERRUPT_RX_MSG_RAW,
+			    AR_MCI_INTERRUPT_RX_MSG_SYS_WAKING)) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (REG_READ_FIELD(ah, AR_MCI_INTERRUPT_RX_MSG_RAW,
 			    AR_MCI_INTERRUPT_RX_MSG_SYS_SLEEPING) == 0)) {
 		REG_WRITE(ah, AR_MCI_INTERRUPT_RX_MSG_RAW,
@@ -323,14 +472,21 @@ void ar9003_mci_set_full_sleep(struct ath_hw *ah)
 {
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 
+<<<<<<< HEAD
 	if (ar9003_mci_state(ah, MCI_STATE_ENABLE, NULL) &&
+=======
+	if (ar9003_mci_state(ah, MCI_STATE_ENABLE) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    (mci->bt_state != MCI_BT_SLEEP) &&
 	    !mci->halted_bt_gpm) {
 		ar9003_mci_send_coex_halt_bt_gpm(ah, true, true);
 	}
 
 	mci->ready = false;
+<<<<<<< HEAD
 	REG_WRITE(ah, AR_RTC_KEEP_AWAKE, 0x2);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ar9003_mci_disable_interrupt(struct ath_hw *ah)
@@ -429,6 +585,7 @@ static void ar9003_mci_observation_set_up(struct ath_hw *ah)
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 
 	if (mci->config & ATH_MCI_CONFIG_MCI_OBS_MCI) {
+<<<<<<< HEAD
 		ath9k_hw_cfg_output(ah, 3, AR_GPIO_OUTPUT_MUX_AS_MCI_WLAN_DATA);
 		ath9k_hw_cfg_output(ah, 2, AR_GPIO_OUTPUT_MUX_AS_MCI_WLAN_CLK);
 		ath9k_hw_cfg_output(ah, 1, AR_GPIO_OUTPUT_MUX_AS_MCI_BT_DATA);
@@ -448,6 +605,40 @@ static void ar9003_mci_observation_set_up(struct ath_hw *ah)
 		return;
 
 	REG_SET_BIT(ah, AR_GPIO_INPUT_EN_VAL, AR_GPIO_JTAG_DISABLE);
+=======
+		ath9k_hw_gpio_request_out(ah, 3, NULL,
+					  AR_GPIO_OUTPUT_MUX_AS_MCI_WLAN_DATA);
+		ath9k_hw_gpio_request_out(ah, 2, NULL,
+					  AR_GPIO_OUTPUT_MUX_AS_MCI_WLAN_CLK);
+		ath9k_hw_gpio_request_out(ah, 1, NULL,
+					  AR_GPIO_OUTPUT_MUX_AS_MCI_BT_DATA);
+		ath9k_hw_gpio_request_out(ah, 0, NULL,
+					  AR_GPIO_OUTPUT_MUX_AS_MCI_BT_CLK);
+	} else if (mci->config & ATH_MCI_CONFIG_MCI_OBS_TXRX) {
+		ath9k_hw_gpio_request_out(ah, 3, NULL,
+					  AR_GPIO_OUTPUT_MUX_AS_WL_IN_TX);
+		ath9k_hw_gpio_request_out(ah, 2, NULL,
+					  AR_GPIO_OUTPUT_MUX_AS_WL_IN_RX);
+		ath9k_hw_gpio_request_out(ah, 1, NULL,
+					  AR_GPIO_OUTPUT_MUX_AS_BT_IN_TX);
+		ath9k_hw_gpio_request_out(ah, 0, NULL,
+					  AR_GPIO_OUTPUT_MUX_AS_BT_IN_RX);
+		ath9k_hw_gpio_request_out(ah, 5, NULL,
+					  AR_GPIO_OUTPUT_MUX_AS_OUTPUT);
+	} else if (mci->config & ATH_MCI_CONFIG_MCI_OBS_BT) {
+		ath9k_hw_gpio_request_out(ah, 3, NULL,
+					  AR_GPIO_OUTPUT_MUX_AS_BT_IN_TX);
+		ath9k_hw_gpio_request_out(ah, 2, NULL,
+					  AR_GPIO_OUTPUT_MUX_AS_BT_IN_RX);
+		ath9k_hw_gpio_request_out(ah, 1, NULL,
+					  AR_GPIO_OUTPUT_MUX_AS_MCI_BT_DATA);
+		ath9k_hw_gpio_request_out(ah, 0, NULL,
+					  AR_GPIO_OUTPUT_MUX_AS_MCI_BT_CLK);
+	} else
+		return;
+
+	REG_SET_BIT(ah, AR_GPIO_INPUT_EN_VAL(ah), AR_GPIO_JTAG_DISABLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	REG_RMW_FIELD(ah, AR_PHY_GLB_CONTROL, AR_GLB_DS_JTAG_DISABLE, 1);
 	REG_RMW_FIELD(ah, AR_PHY_GLB_CONTROL, AR_GLB_WLAN_UART_INTF_EN, 0);
@@ -455,12 +646,20 @@ static void ar9003_mci_observation_set_up(struct ath_hw *ah)
 
 	REG_RMW_FIELD(ah, AR_BTCOEX_CTRL2, AR_BTCOEX_CTRL2_GPIO_OBS_SEL, 0);
 	REG_RMW_FIELD(ah, AR_BTCOEX_CTRL2, AR_BTCOEX_CTRL2_MAC_BB_OBS_SEL, 1);
+<<<<<<< HEAD
 	REG_WRITE(ah, AR_OBS, 0x4b);
+=======
+	REG_WRITE(ah, AR_OBS(ah), 0x4b);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	REG_RMW_FIELD(ah, AR_DIAG_SW, AR_DIAG_OBS_PT_SEL1, 0x03);
 	REG_RMW_FIELD(ah, AR_DIAG_SW, AR_DIAG_OBS_PT_SEL2, 0x01);
 	REG_RMW_FIELD(ah, AR_MACMISC, AR_MACMISC_MISC_OBS_BUS_LSB, 0x02);
 	REG_RMW_FIELD(ah, AR_MACMISC, AR_MACMISC_MISC_OBS_BUS_MSB, 0x03);
+<<<<<<< HEAD
 	REG_RMW_FIELD(ah, AR_PHY_TEST_CTL_STATUS,
+=======
+	REG_RMW_FIELD(ah, AR_PHY_TEST_CTL_STATUS(ah),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      AR_PHY_TEST_CTL_DEBUGPORT_SEL, 0x07);
 }
 
@@ -487,7 +686,11 @@ static void ar9003_mci_sync_bt_state(struct ath_hw *ah)
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 	u32 cur_bt_state;
 
+<<<<<<< HEAD
 	cur_bt_state = ar9003_mci_state(ah, MCI_STATE_REMOTE_SLEEP, NULL);
+=======
+	cur_bt_state = ar9003_mci_state(ah, MCI_STATE_REMOTE_SLEEP);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mci->bt_state != cur_bt_state)
 		mci->bt_state = cur_bt_state;
@@ -574,7 +777,11 @@ static u32 ar9003_mci_wait_for_gpm(struct ath_hw *ah, u8 gpm_type,
 {
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
+<<<<<<< HEAD
 	u32 *p_gpm = NULL, mismatch = 0, more_data;
+=======
+	u32 *p_gpm = NULL, more_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 offset;
 	u8 recv_type = 0, recv_opcode = 0;
 	bool b_is_bt_cal_done = (gpm_type == MCI_GPM_BT_CAL_DONE);
@@ -596,8 +803,12 @@ static u32 ar9003_mci_wait_for_gpm(struct ath_hw *ah, u8 gpm_type,
 		if (!time_out)
 			break;
 
+<<<<<<< HEAD
 		offset = ar9003_mci_state(ah, MCI_STATE_NEXT_GPM_OFFSET,
 					  &more_data);
+=======
+		offset = ar9003_mci_get_next_gpm_offset(ah, &more_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (offset == MCI_GPM_INVALID)
 			continue;
@@ -615,9 +826,15 @@ static u32 ar9003_mci_wait_for_gpm(struct ath_hw *ah, u8 gpm_type,
 				}
 				break;
 			}
+<<<<<<< HEAD
 		} else if ((recv_type == gpm_type) && (recv_opcode == gpm_opcode)) {
 			break;
 		}
+=======
+		} else if ((recv_type == gpm_type) &&
+			   (recv_opcode == gpm_opcode))
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * check if it's cal_grant
@@ -646,7 +863,10 @@ static u32 ar9003_mci_wait_for_gpm(struct ath_hw *ah, u8 gpm_type,
 		} else {
 			ath_dbg(common, MCI, "MCI GPM subtype not match 0x%x\n",
 				*(p_gpm + 1));
+<<<<<<< HEAD
 			mismatch++;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ar9003_mci_process_gpm_extra(ah, recv_type,
 						     recv_opcode, p_gpm);
 		}
@@ -661,8 +881,12 @@ static u32 ar9003_mci_wait_for_gpm(struct ath_hw *ah, u8 gpm_type,
 		time_out = 0;
 
 	while (more_data == MCI_GPM_MORE) {
+<<<<<<< HEAD
 		offset = ar9003_mci_state(ah, MCI_STATE_NEXT_GPM_OFFSET,
 					  &more_data);
+=======
+		offset = ar9003_mci_get_next_gpm_offset(ah, &more_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (offset == MCI_GPM_INVALID)
 			break;
 
@@ -731,6 +955,7 @@ int ar9003_mci_end_reset(struct ath_hw *ah, struct ath9k_channel *chan,
 	if (!IS_CHAN_2GHZ(chan) || (mci_hw->bt_state != MCI_BT_SLEEP))
 		goto exit;
 
+<<<<<<< HEAD
 	if (ar9003_mci_check_int(ah, AR_MCI_INTERRUPT_RX_MSG_REMOTE_RESET) ||
 	    ar9003_mci_check_int(ah, AR_MCI_INTERRUPT_RX_MSG_REQ_WAKE)) {
 
@@ -763,6 +988,46 @@ int ar9003_mci_end_reset(struct ath_hw *ah, struct ath9k_channel *chan,
 			return -EIO;
 
 	}
+=======
+	if (!ar9003_mci_check_int(ah, AR_MCI_INTERRUPT_RX_MSG_REMOTE_RESET) &&
+	    !ar9003_mci_check_int(ah, AR_MCI_INTERRUPT_RX_MSG_REQ_WAKE))
+		goto exit;
+
+	/*
+	 * BT is sleeping. Check if BT wakes up during
+	 * WLAN calibration. If BT wakes up during
+	 * WLAN calibration, need to go through all
+	 * message exchanges again and recal.
+	 */
+	REG_WRITE(ah, AR_MCI_INTERRUPT_RX_MSG_RAW,
+		  (AR_MCI_INTERRUPT_RX_MSG_REMOTE_RESET |
+		   AR_MCI_INTERRUPT_RX_MSG_REQ_WAKE));
+
+	ar9003_mci_remote_reset(ah, true);
+	ar9003_mci_send_sys_waking(ah, true);
+	udelay(1);
+
+	if (IS_CHAN_2GHZ(chan))
+		ar9003_mci_send_lna_transfer(ah, true);
+
+	mci_hw->bt_state = MCI_BT_AWAKE;
+
+	REG_CLR_BIT(ah, AR_PHY_TIMING4,
+		    1 << AR_PHY_TIMING_CONTROL4_DO_GAIN_DC_IQ_CAL_SHIFT);
+
+	if (caldata) {
+		clear_bit(TXIQCAL_DONE, &caldata->cal_flags);
+		clear_bit(TXCLCAL_DONE, &caldata->cal_flags);
+		clear_bit(RTT_DONE, &caldata->cal_flags);
+	}
+
+	if (!ath9k_hw_init_cal(ah, chan))
+		return -EIO;
+
+	REG_SET_BIT(ah, AR_PHY_TIMING4,
+		    1 << AR_PHY_TIMING_CONTROL4_DO_GAIN_DC_IQ_CAL_SHIFT);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit:
 	ar9003_mci_enable_interrupt(ah);
 	return 0;
@@ -770,6 +1035,11 @@ exit:
 
 static void ar9003_mci_mute_bt(struct ath_hw *ah)
 {
+<<<<<<< HEAD
+=======
+	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable all MCI messages */
 	REG_WRITE(ah, AR_MCI_MSG_ATTRIBUTES_TABLE, 0xffff0000);
 	REG_WRITE(ah, AR_BTCOEX_WL_WEIGHTS0, 0xffffffff);
@@ -786,9 +1056,16 @@ static void ar9003_mci_mute_bt(struct ath_hw *ah)
 	 * 1. reset not after resuming from full sleep
 	 * 2. before reset MCI RX, to quiet BT and avoid MCI RX misalignment
 	 */
+<<<<<<< HEAD
 	ar9003_mci_send_lna_take(ah, true);
 
 	udelay(5);
+=======
+	if (MCI_ANT_ARCH_PA_LNA_SHARED(mci)) {
+		ar9003_mci_send_lna_take(ah, true);
+		udelay(5);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ar9003_mci_send_sys_sleeping(ah, true);
 }
@@ -798,6 +1075,7 @@ static void ar9003_mci_osla_setup(struct ath_hw *ah, bool enable)
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 	u32 thresh;
 
+<<<<<<< HEAD
 	if (enable) {
 		REG_RMW_FIELD(ah, AR_MCI_SCHD_TABLE_2,
 			      AR_MCI_SCHD_TABLE_2_HW_BASED, 1);
@@ -829,10 +1107,119 @@ void ar9003_mci_reset(struct ath_hw *ah, bool en_int, bool is_2g,
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 	u32 regval;
+=======
+	if (!enable) {
+		REG_CLR_BIT(ah, AR_BTCOEX_CTRL,
+			    AR_BTCOEX_CTRL_ONE_STEP_LOOK_AHEAD_EN);
+		return;
+	}
+	REG_RMW_FIELD(ah, AR_MCI_SCHD_TABLE_2, AR_MCI_SCHD_TABLE_2_HW_BASED, 1);
+	REG_RMW_FIELD(ah, AR_MCI_SCHD_TABLE_2,
+		      AR_MCI_SCHD_TABLE_2_MEM_BASED, 1);
+
+	if (AR_SREV_9565(ah))
+		REG_RMW_FIELD(ah, AR_MCI_MISC, AR_MCI_MISC_HW_FIX_EN, 1);
+
+	if (!(mci->config & ATH_MCI_CONFIG_DISABLE_AGGR_THRESH)) {
+		thresh = MS(mci->config, ATH_MCI_CONFIG_AGGR_THRESH);
+		REG_RMW_FIELD(ah, AR_BTCOEX_CTRL,
+			      AR_BTCOEX_CTRL_AGGR_THRESH, thresh);
+		REG_RMW_FIELD(ah, AR_BTCOEX_CTRL,
+			      AR_BTCOEX_CTRL_TIME_TO_NEXT_BT_THRESH_EN, 1);
+	} else
+		REG_RMW_FIELD(ah, AR_BTCOEX_CTRL,
+			      AR_BTCOEX_CTRL_TIME_TO_NEXT_BT_THRESH_EN, 0);
+
+	REG_RMW_FIELD(ah, AR_BTCOEX_CTRL,
+		      AR_BTCOEX_CTRL_ONE_STEP_LOOK_AHEAD_EN, 1);
+}
+
+static void ar9003_mci_stat_setup(struct ath_hw *ah)
+{
+	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
+
+	if (!AR_SREV_9565(ah))
+		return;
+
+	if (mci->config & ATH_MCI_CONFIG_MCI_STAT_DBG) {
+		REG_RMW_FIELD(ah, AR_MCI_DBG_CNT_CTRL,
+			      AR_MCI_DBG_CNT_CTRL_ENABLE, 1);
+		REG_RMW_FIELD(ah, AR_MCI_DBG_CNT_CTRL,
+			      AR_MCI_DBG_CNT_CTRL_BT_LINKID,
+			      MCI_STAT_ALL_BT_LINKID);
+	} else {
+		REG_RMW_FIELD(ah, AR_MCI_DBG_CNT_CTRL,
+			      AR_MCI_DBG_CNT_CTRL_ENABLE, 0);
+	}
+}
+
+static void ar9003_mci_set_btcoex_ctrl_9565_1ANT(struct ath_hw *ah)
+{
+	u32 regval;
+
+	regval = SM(1, AR_BTCOEX_CTRL_AR9462_MODE) |
+		 SM(1, AR_BTCOEX_CTRL_WBTIMER_EN) |
+		 SM(1, AR_BTCOEX_CTRL_PA_SHARED) |
+		 SM(1, AR_BTCOEX_CTRL_LNA_SHARED) |
+		 SM(1, AR_BTCOEX_CTRL_NUM_ANTENNAS) |
+		 SM(1, AR_BTCOEX_CTRL_RX_CHAIN_MASK) |
+		 SM(0, AR_BTCOEX_CTRL_1_CHAIN_ACK) |
+		 SM(0, AR_BTCOEX_CTRL_1_CHAIN_BCN) |
+		 SM(0, AR_BTCOEX_CTRL_ONE_STEP_LOOK_AHEAD_EN);
+
+	REG_RMW_FIELD(ah, AR_BTCOEX_CTRL2,
+		      AR_BTCOEX_CTRL2_TX_CHAIN_MASK, 0x1);
+	REG_WRITE(ah, AR_BTCOEX_CTRL, regval);
+}
+
+static void ar9003_mci_set_btcoex_ctrl_9565_2ANT(struct ath_hw *ah)
+{
+	u32 regval;
+
+	regval = SM(1, AR_BTCOEX_CTRL_AR9462_MODE) |
+		 SM(1, AR_BTCOEX_CTRL_WBTIMER_EN) |
+		 SM(0, AR_BTCOEX_CTRL_PA_SHARED) |
+		 SM(0, AR_BTCOEX_CTRL_LNA_SHARED) |
+		 SM(2, AR_BTCOEX_CTRL_NUM_ANTENNAS) |
+		 SM(1, AR_BTCOEX_CTRL_RX_CHAIN_MASK) |
+		 SM(0, AR_BTCOEX_CTRL_1_CHAIN_ACK) |
+		 SM(0, AR_BTCOEX_CTRL_1_CHAIN_BCN) |
+		 SM(0, AR_BTCOEX_CTRL_ONE_STEP_LOOK_AHEAD_EN);
+
+	REG_RMW_FIELD(ah, AR_BTCOEX_CTRL2,
+		      AR_BTCOEX_CTRL2_TX_CHAIN_MASK, 0x0);
+	REG_WRITE(ah, AR_BTCOEX_CTRL, regval);
+}
+
+static void ar9003_mci_set_btcoex_ctrl_9462(struct ath_hw *ah)
+{
+	u32 regval;
+
+        regval = SM(1, AR_BTCOEX_CTRL_AR9462_MODE) |
+		 SM(1, AR_BTCOEX_CTRL_WBTIMER_EN) |
+		 SM(1, AR_BTCOEX_CTRL_PA_SHARED) |
+		 SM(1, AR_BTCOEX_CTRL_LNA_SHARED) |
+		 SM(2, AR_BTCOEX_CTRL_NUM_ANTENNAS) |
+		 SM(3, AR_BTCOEX_CTRL_RX_CHAIN_MASK) |
+		 SM(0, AR_BTCOEX_CTRL_1_CHAIN_ACK) |
+		 SM(0, AR_BTCOEX_CTRL_1_CHAIN_BCN) |
+		 SM(0, AR_BTCOEX_CTRL_ONE_STEP_LOOK_AHEAD_EN);
+
+	REG_WRITE(ah, AR_BTCOEX_CTRL, regval);
+}
+
+int ar9003_mci_reset(struct ath_hw *ah, bool en_int, bool is_2g,
+		     bool is_full_sleep)
+{
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
+	u32 regval, i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ath_dbg(common, MCI, "MCI Reset (full_sleep = %d, is_2g = %d)\n",
 		is_full_sleep, is_2g);
 
+<<<<<<< HEAD
 	if (!mci->gpm_addr && !mci->sched_addr) {
 		ath_dbg(common, MCI,
 			"MCI GPM and schedule buffers are not allocated\n");
@@ -842,6 +1229,11 @@ void ar9003_mci_reset(struct ath_hw *ah, bool en_int, bool is_2g,
 	if (REG_READ(ah, AR_BTCOEX_CTRL) == 0xdeadbeef) {
 		ath_dbg(common, MCI, "BTCOEX control register is dead\n");
 		return;
+=======
+	if (REG_READ(ah, AR_BTCOEX_CTRL) == 0xdeadbeef) {
+		ath_err(common, "BTCOEX control register is dead\n");
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Program MCI DMA related registers */
@@ -853,6 +1245,7 @@ void ar9003_mci_reset(struct ath_hw *ah, bool en_int, bool is_2g,
 	* To avoid MCI state machine be affected by incoming remote MCI msgs,
 	* MCI mode will be enabled later, right before reset the MCI TX and RX.
 	*/
+<<<<<<< HEAD
 
 	regval = SM(1, AR_BTCOEX_CTRL_AR9462_MODE) |
 		 SM(1, AR_BTCOEX_CTRL_WBTIMER_EN) |
@@ -865,6 +1258,18 @@ void ar9003_mci_reset(struct ath_hw *ah, bool en_int, bool is_2g,
 		 SM(0, AR_BTCOEX_CTRL_ONE_STEP_LOOK_AHEAD_EN);
 
 	REG_WRITE(ah, AR_BTCOEX_CTRL, regval);
+=======
+	if (AR_SREV_9565(ah)) {
+		u8 ant = MS(mci->config, ATH_MCI_CONFIG_ANT_ARCH);
+
+		if (ant == ATH_MCI_ANT_ARCH_1_ANT_PA_LNA_SHARED)
+			ar9003_mci_set_btcoex_ctrl_9565_1ANT(ah);
+		else
+			ar9003_mci_set_btcoex_ctrl_9565_2ANT(ah);
+	} else {
+		ar9003_mci_set_btcoex_ctrl_9462(ah);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (is_2g && !(mci->config & ATH_MCI_CONFIG_DISABLE_OSLA))
 		ar9003_mci_osla_setup(ah, true);
@@ -876,9 +1281,30 @@ void ar9003_mci_reset(struct ath_hw *ah, bool en_int, bool is_2g,
 	REG_RMW_FIELD(ah, AR_BTCOEX_CTRL3,
 		      AR_BTCOEX_CTRL3_CONT_INFO_TIMEOUT, 20);
 
+<<<<<<< HEAD
 	REG_RMW_FIELD(ah, AR_BTCOEX_CTRL2, AR_BTCOEX_CTRL2_RX_DEWEIGHT, 1);
 	REG_RMW_FIELD(ah, AR_PCU_MISC, AR_PCU_BT_ANT_PREVENT_RX, 0);
 
+=======
+	REG_RMW_FIELD(ah, AR_BTCOEX_CTRL2, AR_BTCOEX_CTRL2_RX_DEWEIGHT, 0);
+	REG_RMW_FIELD(ah, AR_PCU_MISC, AR_PCU_BT_ANT_PREVENT_RX, 0);
+
+	/* Set the time out to 3.125ms (5 BT slots) */
+	REG_RMW_FIELD(ah, AR_BTCOEX_WL_LNA, AR_BTCOEX_WL_LNA_TIMEOUT, 0x3D090);
+
+	/* concurrent tx priority */
+	if (mci->config & ATH_MCI_CONFIG_CONCUR_TX) {
+		REG_RMW_FIELD(ah, AR_BTCOEX_CTRL2,
+			      AR_BTCOEX_CTRL2_DESC_BASED_TXPWR_ENABLE, 0);
+		REG_RMW_FIELD(ah, AR_BTCOEX_CTRL2,
+			      AR_BTCOEX_CTRL2_TXPWR_THRESH, 0x7f);
+		REG_RMW_FIELD(ah, AR_BTCOEX_CTRL,
+			      AR_BTCOEX_CTRL_REDUCE_TXPWR, 0);
+		for (i = 0; i < 8; i++)
+			REG_WRITE(ah, AR_BTCOEX_MAX_TXPWR(i), 0x7f7f7f7f);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regval = MS(mci->config, ATH_MCI_CONFIG_CLK_DIV);
 	REG_RMW_FIELD(ah, AR_MCI_TX_CTRL, AR_MCI_TX_CTRL_CLK_DIV, regval);
 	REG_SET_BIT(ah, AR_BTCOEX_CTRL, AR_BTCOEX_CTRL_MCI_MODE_EN);
@@ -898,28 +1324,60 @@ void ar9003_mci_reset(struct ath_hw *ah, bool en_int, bool is_2g,
 		udelay(100);
 	}
 
+<<<<<<< HEAD
+=======
+	/* Check pending GPM msg before MCI Reset Rx */
+	ar9003_mci_check_gpm_offset(ah);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	regval |= SM(1, AR_MCI_COMMAND2_RESET_RX);
 	REG_WRITE(ah, AR_MCI_COMMAND2, regval);
 	udelay(1);
 	regval &= ~SM(1, AR_MCI_COMMAND2_RESET_RX);
 	REG_WRITE(ah, AR_MCI_COMMAND2, regval);
 
+<<<<<<< HEAD
 	ar9003_mci_state(ah, MCI_STATE_INIT_GPM_OFFSET, NULL);
+=======
+	/* Init GPM offset after MCI Reset Rx */
+	ar9003_mci_state(ah, MCI_STATE_INIT_GPM_OFFSET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	REG_WRITE(ah, AR_MCI_MSG_ATTRIBUTES_TABLE,
 		  (SM(0xe801, AR_MCI_MSG_ATTRIBUTES_TABLE_INVALID_HDR) |
 		   SM(0x0000, AR_MCI_MSG_ATTRIBUTES_TABLE_CHECKSUM)));
 
+<<<<<<< HEAD
 	REG_CLR_BIT(ah, AR_MCI_TX_CTRL,
 		    AR_MCI_TX_CTRL_DISABLE_LNA_UPDATE);
+=======
+	if (MCI_ANT_ARCH_PA_LNA_SHARED(mci))
+		REG_CLR_BIT(ah, AR_MCI_TX_CTRL,
+			    AR_MCI_TX_CTRL_DISABLE_LNA_UPDATE);
+	else
+		REG_SET_BIT(ah, AR_MCI_TX_CTRL,
+			    AR_MCI_TX_CTRL_DISABLE_LNA_UPDATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ar9003_mci_observation_set_up(ah);
 
 	mci->ready = true;
 	ar9003_mci_prep_interface(ah);
+<<<<<<< HEAD
 
 	if (en_int)
 		ar9003_mci_enable_interrupt(ah);
+=======
+	ar9003_mci_stat_setup(ah);
+
+	if (en_int)
+		ar9003_mci_enable_interrupt(ah);
+
+	if (ath9k_hw_is_aic_enabled(ah))
+		ar9003_aic_start_normal(ah);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void ar9003_mci_stop_bt(struct ath_hw *ah, bool save_fullsleep)
@@ -941,6 +1399,7 @@ void ar9003_mci_stop_bt(struct ath_hw *ah, bool save_fullsleep)
 static void ar9003_mci_send_2g5g_status(struct ath_hw *ah, bool wait_done)
 {
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
+<<<<<<< HEAD
 	u32 new_flags, to_set, to_clear;
 
 	if (mci->update_2g5g && (mci->bt_state != MCI_BT_SLEEP)) {
@@ -963,6 +1422,29 @@ static void ar9003_mci_send_2g5g_status(struct ath_hw *ah, bool wait_done)
 					      MCI_GPM_COEX_BT_FLAGS_SET,
 					      to_set);
 	}
+=======
+	u32 to_set, to_clear;
+
+	if (!mci->update_2g5g || (mci->bt_state == MCI_BT_SLEEP))
+		return;
+
+	if (mci->is_2g) {
+		to_clear = MCI_2G_FLAGS_CLEAR_MASK;
+		to_set = MCI_2G_FLAGS_SET_MASK;
+	} else {
+		to_clear = MCI_5G_FLAGS_CLEAR_MASK;
+		to_set = MCI_5G_FLAGS_SET_MASK;
+	}
+
+	if (to_clear)
+		ar9003_mci_send_coex_bt_flags(ah, wait_done,
+					      MCI_GPM_COEX_BT_FLAGS_CLEAR,
+					      to_clear);
+	if (to_set)
+		ar9003_mci_send_coex_bt_flags(ah, wait_done,
+					      MCI_GPM_COEX_BT_FLAGS_SET,
+					      to_set);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ar9003_mci_queue_unsent_gpm(struct ath_hw *ah, u8 header,
@@ -1014,6 +1496,7 @@ static void ar9003_mci_queue_unsent_gpm(struct ath_hw *ah, u8 header,
 	}
 }
 
+<<<<<<< HEAD
 void ar9003_mci_2g5g_switch(struct ath_hw *ah, bool wait_done)
 {
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
@@ -1046,6 +1529,41 @@ void ar9003_mci_2g5g_switch(struct ath_hw *ah, bool wait_done)
 
 			ar9003_mci_send_2g5g_status(ah, true);
 		}
+=======
+void ar9003_mci_2g5g_switch(struct ath_hw *ah, bool force)
+{
+	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
+
+	if (!mci->update_2g5g && !force)
+		return;
+
+	if (mci->is_2g) {
+		ar9003_mci_send_2g5g_status(ah, true);
+		ar9003_mci_send_lna_transfer(ah, true);
+		udelay(5);
+
+		REG_CLR_BIT(ah, AR_MCI_TX_CTRL,
+			    AR_MCI_TX_CTRL_DISABLE_LNA_UPDATE);
+		REG_CLR_BIT(ah, AR_PHY_GLB_CONTROL,
+			    AR_BTCOEX_CTRL_BT_OWN_SPDT_CTRL);
+
+		if (!(mci->config & ATH_MCI_CONFIG_DISABLE_OSLA))
+			ar9003_mci_osla_setup(ah, true);
+
+		if (AR_SREV_9462(ah))
+			REG_WRITE(ah, AR_SELFGEN_MASK, 0x02);
+	} else {
+		ar9003_mci_send_lna_take(ah, true);
+		udelay(5);
+
+		REG_SET_BIT(ah, AR_MCI_TX_CTRL,
+			    AR_MCI_TX_CTRL_DISABLE_LNA_UPDATE);
+		REG_SET_BIT(ah, AR_PHY_GLB_CONTROL,
+			    AR_BTCOEX_CTRL_BT_OWN_SPDT_CTRL);
+
+		ar9003_mci_osla_setup(ah, false);
+		ar9003_mci_send_2g5g_status(ah, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1132,7 +1650,11 @@ void ar9003_mci_init_cal_req(struct ath_hw *ah, bool *is_reusable)
 	if (ar9003_mci_wait_for_gpm(ah, MCI_GPM_BT_CAL_GRANT, 0, 50000)) {
 		ath_dbg(common, MCI, "MCI BT_CAL_GRANT received\n");
 	} else {
+<<<<<<< HEAD
 		is_reusable = false;
+=======
+		*is_reusable = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ath_dbg(common, MCI, "MCI BT_CAL_GRANT not received\n");
 	}
 }
@@ -1151,8 +1673,13 @@ void ar9003_mci_init_cal_done(struct ath_hw *ah)
 	ar9003_mci_send_message(ah, MCI_GPM, 0, pld, 16, true, false);
 }
 
+<<<<<<< HEAD
 void ar9003_mci_setup(struct ath_hw *ah, u32 gpm_addr, void *gpm_buf,
 		      u16 len, u32 sched_addr)
+=======
+int ar9003_mci_setup(struct ath_hw *ah, u32 gpm_addr, void *gpm_buf,
+		     u16 len, u32 sched_addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 
@@ -1161,7 +1688,11 @@ void ar9003_mci_setup(struct ath_hw *ah, u32 gpm_addr, void *gpm_buf,
 	mci->gpm_len = len;
 	mci->sched_addr = sched_addr;
 
+<<<<<<< HEAD
 	ar9003_mci_reset(ah, true, true, true);
+=======
+	return ar9003_mci_reset(ah, true, true, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ar9003_mci_setup);
 
@@ -1173,11 +1704,18 @@ void ar9003_mci_cleanup(struct ath_hw *ah)
 }
 EXPORT_SYMBOL(ar9003_mci_cleanup);
 
+<<<<<<< HEAD
 u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type, u32 *p_data)
 {
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 	u32 value = 0, more_gpm = 0, gpm_ptr;
+=======
+u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type)
+{
+	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
+	u32 value = 0, tsf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 query_type;
 
 	switch (state_type) {
@@ -1192,6 +1730,7 @@ u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type, u32 *p_data)
 		break;
 	case MCI_STATE_INIT_GPM_OFFSET:
 		value = MS(REG_READ(ah, AR_MCI_GPM_1), AR_MCI_GPM_WRITE_PTR);
+<<<<<<< HEAD
 		mci->gpm_idx = value;
 		break;
 	case MCI_STATE_NEXT_GPM_OFFSET:
@@ -1265,6 +1804,14 @@ u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type, u32 *p_data)
 				value <<= 4;
 
 			break;
+=======
+
+		if (value < mci->gpm_len)
+			mci->gpm_idx = value;
+		else
+			mci->gpm_idx = 0;
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MCI_STATE_LAST_SCHD_MSG_OFFSET:
 		value = MS(REG_READ(ah, AR_MCI_RX_STATUS),
 				    AR_MCI_RX_LAST_SCHD_MSG_INDEX);
@@ -1276,6 +1823,7 @@ u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type, u32 *p_data)
 			   AR_MCI_RX_REMOTE_SLEEP) ?
 			MCI_BT_SLEEP : MCI_BT_AWAKE;
 		break;
+<<<<<<< HEAD
 	case MCI_STATE_CONT_RSSI_POWER:
 		value = MS(mci->cont_status, AR_MCI_CONT_RSSI_POWER);
 		break;
@@ -1291,6 +1839,8 @@ u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type, u32 *p_data)
 	case MCI_STATE_SET_BT_SLEEP:
 		mci->bt_state = MCI_BT_SLEEP;
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MCI_STATE_SET_BT_AWAKE:
 		mci->bt_state = MCI_BT_AWAKE;
 		ar9003_mci_send_coex_version_query(ah, true);
@@ -1299,6 +1849,7 @@ u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type, u32 *p_data)
 		if (mci->unhalt_bt_gpm)
 			ar9003_mci_send_coex_halt_bt_gpm(ah, false, true);
 
+<<<<<<< HEAD
 		ar9003_mci_2g5g_switch(ah, true);
 		break;
 	case MCI_STATE_SET_BT_CAL_START:
@@ -1306,6 +1857,9 @@ u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type, u32 *p_data)
 		break;
 	case MCI_STATE_SET_BT_CAL:
 		mci->bt_state = MCI_BT_CAL;
+=======
+		ar9003_mci_2g5g_switch(ah, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MCI_STATE_RESET_REQ_WAKE:
 		ar9003_mci_reset_req_wakeup(ah);
@@ -1323,6 +1877,7 @@ u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type, u32 *p_data)
 	case MCI_STATE_SEND_WLAN_COEX_VERSION:
 		ar9003_mci_send_coex_version_response(ah, true);
 		break;
+<<<<<<< HEAD
 	case MCI_STATE_SET_BT_COEX_VERSION:
 		if (!p_data)
 			ath_dbg(common, MCI,
@@ -1351,6 +1906,8 @@ u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type, u32 *p_data)
 		mci->wlan_channels_update = true;
 		ar9003_mci_send_coex_wlan_channels(ah, true);
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MCI_STATE_SEND_VERSION_QUERY:
 		ar9003_mci_send_coex_version_query(ah, true);
 		break;
@@ -1358,6 +1915,7 @@ u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type, u32 *p_data)
 		query_type = MCI_GPM_COEX_QUERY_BT_TOPOLOGY;
 		ar9003_mci_send_coex_bt_status_query(ah, true, query_type);
 		break;
+<<<<<<< HEAD
 	case MCI_STATE_NEED_FLUSH_BT_INFO:
 			/*
 			 * btcoex_hw.mci.unhalt_bt_gpm means whether it's
@@ -1378,17 +1936,54 @@ u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type, u32 *p_data)
 					(*p_data != 0) ? true : false;
 			break;
 	case MCI_STATE_RECOVER_RX:
+=======
+	case MCI_STATE_RECOVER_RX:
+		tsf = ath9k_hw_gettsf32(ah);
+		if ((tsf - mci->last_recovery) <= MCI_RECOVERY_DUR_TSF) {
+			ath_dbg(ath9k_hw_common(ah), MCI,
+				"(MCI) ignore Rx recovery\n");
+			break;
+		}
+		ath_dbg(ath9k_hw_common(ah), MCI, "(MCI) RECOVER RX\n");
+		mci->last_recovery = tsf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ar9003_mci_prep_interface(ah);
 		mci->query_bt = true;
 		mci->need_flush_btinfo = true;
 		ar9003_mci_send_coex_wlan_channels(ah, true);
+<<<<<<< HEAD
 		ar9003_mci_2g5g_switch(ah, true);
+=======
+		ar9003_mci_2g5g_switch(ah, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case MCI_STATE_NEED_FTP_STOMP:
 		value = !(mci->config & ATH_MCI_CONFIG_DISABLE_FTP_STOMP);
 		break;
+<<<<<<< HEAD
 	case MCI_STATE_NEED_TUNING:
 		value = !(mci->config & ATH_MCI_CONFIG_DISABLE_TUNING);
+=======
+	case MCI_STATE_NEED_FLUSH_BT_INFO:
+		value = (!mci->unhalt_bt_gpm && mci->need_flush_btinfo) ? 1 : 0;
+		mci->need_flush_btinfo = false;
+		break;
+	case MCI_STATE_AIC_CAL:
+		if (ath9k_hw_is_aic_enabled(ah))
+			value = ar9003_aic_calibration(ah);
+		break;
+	case MCI_STATE_AIC_START:
+		if (ath9k_hw_is_aic_enabled(ah))
+			ar9003_aic_start_normal(ah);
+		break;
+	case MCI_STATE_AIC_CAL_RESET:
+		if (ath9k_hw_is_aic_enabled(ah))
+			value = ar9003_aic_cal_reset(ah);
+		break;
+	case MCI_STATE_AIC_CAL_SINGLE:
+		if (ath9k_hw_is_aic_enabled(ah))
+			value = ar9003_aic_calibration_single(ah);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
@@ -1397,3 +1992,188 @@ u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type, u32 *p_data)
 	return value;
 }
 EXPORT_SYMBOL(ar9003_mci_state);
+<<<<<<< HEAD
+=======
+
+void ar9003_mci_bt_gain_ctrl(struct ath_hw *ah)
+{
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
+
+	ath_dbg(common, MCI, "Give LNA and SPDT control to BT\n");
+
+	ar9003_mci_send_lna_take(ah, true);
+	udelay(50);
+
+	REG_SET_BIT(ah, AR_PHY_GLB_CONTROL, AR_BTCOEX_CTRL_BT_OWN_SPDT_CTRL);
+	mci->is_2g = false;
+	mci->update_2g5g = true;
+	ar9003_mci_send_2g5g_status(ah, true);
+
+	/* Force another 2g5g update at next scanning */
+	mci->update_2g5g = true;
+}
+
+void ar9003_mci_set_power_awake(struct ath_hw *ah)
+{
+	u32 btcoex_ctrl2, diag_sw;
+	int i;
+	u8 lna_ctrl, bt_sleep;
+
+	for (i = 0; i < AH_WAIT_TIMEOUT; i++) {
+		btcoex_ctrl2 = REG_READ(ah, AR_BTCOEX_CTRL2);
+		if (btcoex_ctrl2 != 0xdeadbeef)
+			break;
+		udelay(AH_TIME_QUANTUM);
+	}
+	REG_WRITE(ah, AR_BTCOEX_CTRL2, (btcoex_ctrl2 | BIT(23)));
+
+	for (i = 0; i < AH_WAIT_TIMEOUT; i++) {
+		diag_sw = REG_READ(ah, AR_DIAG_SW);
+		if (diag_sw != 0xdeadbeef)
+			break;
+		udelay(AH_TIME_QUANTUM);
+	}
+	REG_WRITE(ah, AR_DIAG_SW, (diag_sw | BIT(27) | BIT(19) | BIT(18)));
+	lna_ctrl = REG_READ(ah, AR_OBS_BUS_CTRL) & 0x3;
+	bt_sleep = MS(REG_READ(ah, AR_MCI_RX_STATUS), AR_MCI_RX_REMOTE_SLEEP);
+
+	REG_WRITE(ah, AR_BTCOEX_CTRL2, btcoex_ctrl2);
+	REG_WRITE(ah, AR_DIAG_SW, diag_sw);
+
+	if (bt_sleep && (lna_ctrl == 2)) {
+		REG_SET_BIT(ah, AR_BTCOEX_RC, 0x1);
+		REG_CLR_BIT(ah, AR_BTCOEX_RC, 0x1);
+		udelay(50);
+	}
+}
+
+void ar9003_mci_check_gpm_offset(struct ath_hw *ah)
+{
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
+	u32 offset;
+
+	/*
+	 * This should only be called before "MAC Warm Reset" or "MCI Reset Rx".
+	 */
+	offset = MS(REG_READ(ah, AR_MCI_GPM_1), AR_MCI_GPM_WRITE_PTR);
+	if (mci->gpm_idx == offset)
+		return;
+	ath_dbg(common, MCI, "GPM cached write pointer mismatch %d %d\n",
+		mci->gpm_idx, offset);
+	mci->query_bt = true;
+	mci->need_flush_btinfo = true;
+	mci->gpm_idx = 0;
+}
+
+u32 ar9003_mci_get_next_gpm_offset(struct ath_hw *ah, u32 *more)
+{
+	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
+	u32 offset, more_gpm = 0, gpm_ptr;
+
+	/*
+	 * This could be useful to avoid new GPM message interrupt which
+	 * may lead to spurious interrupt after power sleep, or multiple
+	 * entry of ath_mci_intr().
+	 * Adding empty GPM check by returning HAL_MCI_GPM_INVALID can
+	 * alleviate this effect, but clearing GPM RX interrupt bit is
+	 * safe, because whether this is called from hw or driver code
+	 * there must be an interrupt bit set/triggered initially
+	 */
+	REG_WRITE(ah, AR_MCI_INTERRUPT_RX_MSG_RAW,
+			AR_MCI_INTERRUPT_RX_MSG_GPM);
+
+	gpm_ptr = MS(REG_READ(ah, AR_MCI_GPM_1), AR_MCI_GPM_WRITE_PTR);
+	offset = gpm_ptr;
+
+	if (!offset)
+		offset = mci->gpm_len - 1;
+	else if (offset >= mci->gpm_len) {
+		if (offset != 0xFFFF)
+			offset = 0;
+	} else {
+		offset--;
+	}
+
+	if ((offset == 0xFFFF) || (gpm_ptr == mci->gpm_idx)) {
+		offset = MCI_GPM_INVALID;
+		more_gpm = MCI_GPM_NOMORE;
+		goto out;
+	}
+	for (;;) {
+		u32 temp_index;
+
+		/* skip reserved GPM if any */
+
+		if (offset != mci->gpm_idx)
+			more_gpm = MCI_GPM_MORE;
+		else
+			more_gpm = MCI_GPM_NOMORE;
+
+		temp_index = mci->gpm_idx;
+
+		if (temp_index >= mci->gpm_len)
+			temp_index = 0;
+
+		mci->gpm_idx++;
+
+		if (mci->gpm_idx >= mci->gpm_len)
+			mci->gpm_idx = 0;
+
+		if (ar9003_mci_is_gpm_valid(ah, temp_index)) {
+			offset = temp_index;
+			break;
+		}
+
+		if (more_gpm == MCI_GPM_NOMORE) {
+			offset = MCI_GPM_INVALID;
+			break;
+		}
+	}
+
+	if (offset != MCI_GPM_INVALID)
+		offset <<= 4;
+out:
+	if (more)
+		*more = more_gpm;
+
+	return offset;
+}
+EXPORT_SYMBOL(ar9003_mci_get_next_gpm_offset);
+
+void ar9003_mci_set_bt_version(struct ath_hw *ah, u8 major, u8 minor)
+{
+	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
+
+	mci->bt_ver_major = major;
+	mci->bt_ver_minor = minor;
+	mci->bt_version_known = true;
+	ath_dbg(ath9k_hw_common(ah), MCI, "MCI BT version set: %d.%d\n",
+		mci->bt_ver_major, mci->bt_ver_minor);
+}
+EXPORT_SYMBOL(ar9003_mci_set_bt_version);
+
+void ar9003_mci_send_wlan_channels(struct ath_hw *ah)
+{
+	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
+
+	mci->wlan_channels_update = true;
+	ar9003_mci_send_coex_wlan_channels(ah, true);
+}
+EXPORT_SYMBOL(ar9003_mci_send_wlan_channels);
+
+u16 ar9003_mci_get_max_txpower(struct ath_hw *ah, u8 ctlmode)
+{
+	if (!ah->btcoex_hw.mci.concur_tx)
+		goto out;
+
+	if (ctlmode == CTL_2GHT20)
+		return ATH_BTCOEX_HT20_MAX_TXPOWER;
+	else if (ctlmode == CTL_2GHT40)
+		return ATH_BTCOEX_HT40_MAX_TXPOWER;
+
+out:
+	return -1;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

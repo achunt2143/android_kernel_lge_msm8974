@@ -1,21 +1,38 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/char/keyboard.c
  *    ebcdic keycode functions for s390 console drivers
  *
  *  S390 version
  *    Copyright (C) 2003 IBM Deutschland Entwicklung GmbH, IBM Corporation
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ *    ebcdic keycode functions for s390 console drivers
+ *
+ *  S390 version
+ *    Copyright IBM Corp. 2003
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Martin Schwidefsky (schwidefsky@de.ibm.com),
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/sysrq.h>
 
 #include <linux/consolemap.h>
 #include <linux/kbd_kern.h>
 #include <linux/kbd_diacr.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "keyboard.h"
 
@@ -39,8 +56,39 @@ static const int kbd_max_vals[] = {
 };
 static const int KBD_NR_TYPES = ARRAY_SIZE(kbd_max_vals);
 
+<<<<<<< HEAD
 static unsigned char ret_diacr[NR_DEAD] = {
 	'`', '\'', '^', '~', '"', ','
+=======
+static const unsigned char ret_diacr[NR_DEAD] = {
+	'`',	/* dead_grave */
+	'\'',	/* dead_acute */
+	'^',	/* dead_circumflex */
+	'~',	/* dead_tilda */
+	'"',	/* dead_diaeresis */
+	',',	/* dead_cedilla */
+	'_',	/* dead_macron */
+	'U',	/* dead_breve */
+	'.',	/* dead_abovedot */
+	'*',	/* dead_abovering */
+	'=',	/* dead_doubleacute */
+	'c',	/* dead_caron */
+	'k',	/* dead_ogonek */
+	'i',	/* dead_iota */
+	'#',	/* dead_voiced_sound */
+	'o',	/* dead_semivoiced_sound */
+	'!',	/* dead_belowdot */
+	'?',	/* dead_hook */
+	'+',	/* dead_horn */
+	'-',	/* dead_stroke */
+	')',	/* dead_abovecomma */
+	'(',	/* dead_abovereversedcomma */
+	':',	/* dead_doublegrave */
+	'n',	/* dead_invertedbreve */
+	';',	/* dead_belowcomma */
+	'$',	/* dead_currency */
+	'@',	/* dead_greek */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -54,49 +102,86 @@ kbd_alloc(void) {
 	kbd = kzalloc(sizeof(struct kbd_data), GFP_KERNEL);
 	if (!kbd)
 		goto out;
+<<<<<<< HEAD
 	kbd->key_maps = kzalloc(sizeof(key_maps), GFP_KERNEL);
 	if (!kbd->key_maps)
 		goto out_kbd;
 	for (i = 0; i < ARRAY_SIZE(key_maps); i++) {
 		if (key_maps[i]) {
 			kbd->key_maps[i] = kmemdup(key_maps[i],
+=======
+	kbd->key_maps = kzalloc(sizeof(ebc_key_maps), GFP_KERNEL);
+	if (!kbd->key_maps)
+		goto out_kbd;
+	for (i = 0; i < ARRAY_SIZE(ebc_key_maps); i++) {
+		if (ebc_key_maps[i]) {
+			kbd->key_maps[i] = kmemdup(ebc_key_maps[i],
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						   sizeof(u_short) * NR_KEYS,
 						   GFP_KERNEL);
 			if (!kbd->key_maps[i])
 				goto out_maps;
 		}
 	}
+<<<<<<< HEAD
 	kbd->func_table = kzalloc(sizeof(func_table), GFP_KERNEL);
 	if (!kbd->func_table)
 		goto out_maps;
 	for (i = 0; i < ARRAY_SIZE(func_table); i++) {
 		if (func_table[i]) {
 			kbd->func_table[i] = kstrdup(func_table[i],
+=======
+	kbd->func_table = kzalloc(sizeof(ebc_func_table), GFP_KERNEL);
+	if (!kbd->func_table)
+		goto out_maps;
+	for (i = 0; i < ARRAY_SIZE(ebc_func_table); i++) {
+		if (ebc_func_table[i]) {
+			kbd->func_table[i] = kstrdup(ebc_func_table[i],
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						     GFP_KERNEL);
 			if (!kbd->func_table[i])
 				goto out_func;
 		}
 	}
 	kbd->fn_handler =
+<<<<<<< HEAD
 		kzalloc(sizeof(fn_handler_fn *) * NR_FN_HANDLER, GFP_KERNEL);
 	if (!kbd->fn_handler)
 		goto out_func;
 	kbd->accent_table = kmemdup(accent_table,
+=======
+		kcalloc(NR_FN_HANDLER, sizeof(fn_handler_fn *), GFP_KERNEL);
+	if (!kbd->fn_handler)
+		goto out_func;
+	kbd->accent_table = kmemdup(ebc_accent_table,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    sizeof(struct kbdiacruc) * MAX_DIACR,
 				    GFP_KERNEL);
 	if (!kbd->accent_table)
 		goto out_fn_handler;
+<<<<<<< HEAD
 	kbd->accent_table_size = accent_table_size;
+=======
+	kbd->accent_table_size = ebc_accent_table_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return kbd;
 
 out_fn_handler:
 	kfree(kbd->fn_handler);
 out_func:
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(func_table); i++)
 		kfree(kbd->func_table[i]);
 	kfree(kbd->func_table);
 out_maps:
 	for (i = 0; i < ARRAY_SIZE(key_maps); i++)
+=======
+	for (i = 0; i < ARRAY_SIZE(ebc_func_table); i++)
+		kfree(kbd->func_table[i]);
+	kfree(kbd->func_table);
+out_maps:
+	for (i = 0; i < ARRAY_SIZE(ebc_key_maps); i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(kbd->key_maps[i]);
 	kfree(kbd->key_maps);
 out_kbd:
@@ -112,10 +197,17 @@ kbd_free(struct kbd_data *kbd)
 
 	kfree(kbd->accent_table);
 	kfree(kbd->fn_handler);
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(func_table); i++)
 		kfree(kbd->func_table[i]);
 	kfree(kbd->func_table);
 	for (i = 0; i < ARRAY_SIZE(key_maps); i++)
+=======
+	for (i = 0; i < ARRAY_SIZE(ebc_func_table); i++)
+		kfree(kbd->func_table[i]);
+	kfree(kbd->func_table);
+	for (i = 0; i < ARRAY_SIZE(ebc_key_maps); i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(kbd->key_maps[i]);
 	kfree(kbd->key_maps);
 	kfree(kbd);
@@ -131,7 +223,11 @@ kbd_ascebc(struct kbd_data *kbd, unsigned char *ascebc)
 	int i, j, k;
 
 	memset(ascebc, 0x40, 256);
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(key_maps); i++) {
+=======
+	for (i = 0; i < ARRAY_SIZE(ebc_key_maps); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		keymap = kbd->key_maps[i];
 		if (!keymap)
 			continue;
@@ -158,7 +254,11 @@ kbd_ebcasc(struct kbd_data *kbd, unsigned char *ebcasc)
 	int i, j, k;
 
 	memset(ebcasc, ' ', 256);
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(key_maps); i++) {
+=======
+	for (i = 0; i < ARRAY_SIZE(ebc_key_maps); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		keymap = kbd->key_maps[i];
 		if (!keymap)
 			continue;
@@ -199,7 +299,11 @@ handle_diacr(struct kbd_data *kbd, unsigned int ch)
 	if (ch == ' ' || ch == d)
 		return d;
 
+<<<<<<< HEAD
 	kbd_put_queue(kbd->tty, d);
+=======
+	kbd_put_queue(kbd->port, d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ch;
 }
 
@@ -221,7 +325,11 @@ k_self(struct kbd_data *kbd, unsigned char value)
 {
 	if (kbd->diacr)
 		value = handle_diacr(kbd, value);
+<<<<<<< HEAD
 	kbd_put_queue(kbd->tty, value);
+=======
+	kbd_put_queue(kbd->port, value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -239,7 +347,11 @@ static void
 k_fn(struct kbd_data *kbd, unsigned char value)
 {
 	if (kbd->func_table[value])
+<<<<<<< HEAD
 		kbd_puts_queue(kbd->tty, kbd->func_table[value]);
+=======
+		kbd_puts_queue(kbd->port, kbd->func_table[value]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -257,6 +369,7 @@ k_spec(struct kbd_data *kbd, unsigned char value)
  * but we need only 16 bits here
  */
 static void
+<<<<<<< HEAD
 to_utf8(struct tty_struct *tty, ushort c) 
 {
 	if (c < 0x80)
@@ -271,6 +384,22 @@ to_utf8(struct tty_struct *tty, ushort c)
 		kbd_put_queue(tty, 0xe0 | (c >> 12));
 		kbd_put_queue(tty, 0x80 | ((c >> 6) & 0x3f));
 		kbd_put_queue(tty, 0x80 | (c & 0x3f));
+=======
+to_utf8(struct tty_port *port, ushort c)
+{
+	if (c < 0x80)
+		/*  0******* */
+		kbd_put_queue(port, c);
+	else if (c < 0x800) {
+		/* 110***** 10****** */
+		kbd_put_queue(port, 0xc0 | (c >> 6));
+		kbd_put_queue(port, 0x80 | (c & 0x3f));
+	} else {
+		/* 1110**** 10****** 10****** */
+		kbd_put_queue(port, 0xe0 | (c >> 12));
+		kbd_put_queue(port, 0x80 | ((c >> 6) & 0x3f));
+		kbd_put_queue(port, 0x80 | (c & 0x3f));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -283,7 +412,11 @@ kbd_keycode(struct kbd_data *kbd, unsigned int keycode)
 	unsigned short keysym;
 	unsigned char type, value;
 
+<<<<<<< HEAD
 	if (!kbd || !kbd->tty)
+=======
+	if (!kbd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (keycode >= 384)
@@ -323,7 +456,11 @@ kbd_keycode(struct kbd_data *kbd, unsigned int keycode)
 #endif
 		(*k_handler[type])(kbd, value);
 	} else
+<<<<<<< HEAD
 		to_utf8(kbd->tty, keysym);
+=======
+		to_utf8(kbd->port, keysym);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -334,10 +471,15 @@ do_kdsk_ioctl(struct kbd_data *kbd, struct kbentry __user *user_kbe,
 	      int cmd, int perm)
 {
 	struct kbentry tmp;
+<<<<<<< HEAD
+=======
+	unsigned long kb_index, kb_table;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ushort *key_map, val, ov;
 
 	if (copy_from_user(&tmp, user_kbe, sizeof(struct kbentry)))
 		return -EFAULT;
+<<<<<<< HEAD
 #if NR_KEYS < 256
 	if (tmp.kb_index >= NR_KEYS)
 		return -EINVAL;
@@ -345,10 +487,23 @@ do_kdsk_ioctl(struct kbd_data *kbd, struct kbentry __user *user_kbe,
 #if MAX_NR_KEYMAPS < 256
 	if (tmp.kb_table >= MAX_NR_KEYMAPS)
 		return -EINVAL;	
+=======
+	kb_index = (unsigned long) tmp.kb_index;
+#if NR_KEYS < 256
+	if (kb_index >= NR_KEYS)
+		return -EINVAL;
+#endif
+	kb_table = (unsigned long) tmp.kb_table;
+#if MAX_NR_KEYMAPS < 256
+	if (kb_table >= MAX_NR_KEYMAPS)
+		return -EINVAL;	
+	kb_table = array_index_nospec(kb_table , MAX_NR_KEYMAPS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	switch (cmd) {
 	case KDGKBENT:
+<<<<<<< HEAD
 		key_map = kbd->key_maps[tmp.kb_table];
 		if (key_map) {
 		    val = U(key_map[tmp.kb_index]);
@@ -356,15 +511,32 @@ do_kdsk_ioctl(struct kbd_data *kbd, struct kbentry __user *user_kbe,
 			val = K_HOLE;
 		} else
 		    val = (tmp.kb_index ? K_HOLE : K_NOSUCHMAP);
+=======
+		key_map = kbd->key_maps[kb_table];
+		if (key_map) {
+		    val = U(key_map[kb_index]);
+		    if (KTYP(val) >= KBD_NR_TYPES)
+			val = K_HOLE;
+		} else
+		    val = (kb_index ? K_HOLE : K_NOSUCHMAP);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return put_user(val, &user_kbe->kb_value);
 	case KDSKBENT:
 		if (!perm)
 			return -EPERM;
+<<<<<<< HEAD
 		if (!tmp.kb_index && tmp.kb_value == K_NOSUCHMAP) {
 			/* disallocate map */
 			key_map = kbd->key_maps[tmp.kb_table];
 			if (key_map) {
 			    kbd->key_maps[tmp.kb_table] = NULL;
+=======
+		if (!kb_index && tmp.kb_value == K_NOSUCHMAP) {
+			/* disallocate map */
+			key_map = kbd->key_maps[kb_table];
+			if (key_map) {
+			    kbd->key_maps[kb_table] = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    kfree(key_map);
 			}
 			break;
@@ -375,18 +547,30 @@ do_kdsk_ioctl(struct kbd_data *kbd, struct kbentry __user *user_kbe,
 		if (KVAL(tmp.kb_value) > kbd_max_vals[KTYP(tmp.kb_value)])
 			return -EINVAL;
 
+<<<<<<< HEAD
 		if (!(key_map = kbd->key_maps[tmp.kb_table])) {
+=======
+		if (!(key_map = kbd->key_maps[kb_table])) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int j;
 
 			key_map = kmalloc(sizeof(plain_map),
 						     GFP_KERNEL);
 			if (!key_map)
 				return -ENOMEM;
+<<<<<<< HEAD
 			kbd->key_maps[tmp.kb_table] = key_map;
 			for (j = 0; j < NR_KEYS; j++)
 				key_map[j] = U(K_HOLE);
 		}
 		ov = U(key_map[tmp.kb_index]);
+=======
+			kbd->key_maps[kb_table] = key_map;
+			for (j = 0; j < NR_KEYS; j++)
+				key_map[j] = U(K_HOLE);
+		}
+		ov = U(key_map[kb_index]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tmp.kb_value == ov)
 			break;	/* nothing to do */
 		/*
@@ -395,7 +579,11 @@ do_kdsk_ioctl(struct kbd_data *kbd, struct kbentry __user *user_kbe,
 		if (((ov == K_SAK) || (tmp.kb_value == K_SAK)) &&
 		    !capable(CAP_SYS_ADMIN))
 			return -EPERM;
+<<<<<<< HEAD
 		key_map[tmp.kb_index] = U(tmp.kb_value);
+=======
+		key_map[kb_index] = U(tmp.kb_value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	return 0;
@@ -434,6 +622,7 @@ do_kdgkb_ioctl(struct kbd_data *kbd, struct kbsentry __user *u_kbs,
 	case KDSKBSENT:
 		if (!perm)
 			return -EPERM;
+<<<<<<< HEAD
 		len = strnlen_user(u_kbs->kb_string,
 				   sizeof(u_kbs->kb_string) - 1);
 		if (!len)
@@ -448,6 +637,11 @@ do_kdgkb_ioctl(struct kbd_data *kbd, struct kbsentry __user *u_kbs,
 			return -EFAULT;
 		}
 		p[len] = 0;
+=======
+		p = strndup_user(u_kbs->kb_string, sizeof(u_kbs->kb_string));
+		if (IS_ERR(p))
+			return PTR_ERR(p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(kbd->func_table[kb_func]);
 		kbd->func_table[kb_func] = p;
 		break;
@@ -457,6 +651,10 @@ do_kdgkb_ioctl(struct kbd_data *kbd, struct kbsentry __user *u_kbs,
 
 int kbd_ioctl(struct kbd_data *kbd, unsigned int cmd, unsigned long arg)
 {
+<<<<<<< HEAD
+=======
+	struct tty_struct *tty;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __user *argp;
 	unsigned int ct;
 	int perm;
@@ -467,7 +665,14 @@ int kbd_ioctl(struct kbd_data *kbd, unsigned int cmd, unsigned long arg)
 	 * To have permissions to do most of the vt ioctls, we either have
 	 * to be the owner of the tty, or have CAP_SYS_TTY_CONFIG.
 	 */
+<<<<<<< HEAD
 	perm = current->signal->tty == kbd->tty || capable(CAP_SYS_TTY_CONFIG);
+=======
+	tty = tty_port_tty_get(kbd->port);
+	/* FIXME this test is pretty racy */
+	perm = current->signal->tty == tty || capable(CAP_SYS_TTY_CONFIG);
+	tty_kref_put(tty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case KDGKBTYPE:
 		return put_user(KB_101, (char __user *)argp);

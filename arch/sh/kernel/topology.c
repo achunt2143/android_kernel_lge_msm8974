@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/topology.c
  *
  *  Copyright (C) 2007  Paul Mundt
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/cpu.h>
 #include <linux/cpumask.h>
@@ -21,7 +28,11 @@ static DEFINE_PER_CPU(struct cpu, cpu_devices);
 cpumask_t cpu_core_map[NR_CPUS];
 EXPORT_SYMBOL(cpu_core_map);
 
+<<<<<<< HEAD
 static cpumask_t cpu_coregroup_map(unsigned int cpu)
+=======
+static cpumask_t cpu_coregroup_map(int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * Presently all SH-X3 SMP cores are multi-cores, so just keep it
@@ -30,7 +41,11 @@ static cpumask_t cpu_coregroup_map(unsigned int cpu)
 	return *cpu_possible_mask;
 }
 
+<<<<<<< HEAD
 const struct cpumask *cpu_coregroup_mask(unsigned int cpu)
+=======
+const struct cpumask *cpu_coregroup_mask(int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return &cpu_core_map[cpu];
 }
@@ -49,11 +64,14 @@ static int __init topology_init(void)
 {
 	int i, ret;
 
+<<<<<<< HEAD
 #ifdef CONFIG_NEED_MULTIPLE_NODES
 	for_each_online_node(i)
 		register_one_node(i);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for_each_present_cpu(i) {
 		struct cpu *c = &per_cpu(cpu_devices, i);
 

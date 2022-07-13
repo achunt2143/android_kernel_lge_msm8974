@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pata_triflex.c 	- Compaq PATA for new ATA layer
  *			  (C) 2005 Red Hat Inc
@@ -14,6 +18,7 @@
  * Copyright (C) 2002 Hewlett-Packard Development Group, L.P.
  * Author: Torben Mathiasen <torben.mathiasen@hp.com>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
@@ -27,6 +32,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Loosely based on the piix & svwks drivers.
  *
  * Documentation:
@@ -36,7 +43,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -142,7 +152,11 @@ static void triflex_set_piomode(struct ata_port *ap, struct ata_device *adev)
 }
 
 /**
+<<<<<<< HEAD
  *	triflex_dma_start	-	DMA start callback
+=======
+ *	triflex_bmdma_start	-	DMA start callback
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@qc: Command in progress
  *
  *	Usually drivers set the DMA timing at the point the set_dmamode call
@@ -159,9 +173,14 @@ static void triflex_bmdma_start(struct ata_queued_cmd *qc)
 }
 
 /**
+<<<<<<< HEAD
  *	triflex_dma_stop	-	DMA stop callback
  *	@ap: ATA interface
  *	@adev: ATA device
+=======
+ *	triflex_bmdma_stop	-	DMA stop callback
+ *	@qc: ATA command
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	We loaded new timings in dma_start, as a result we need to restore
  *	the PIO timings in dma_stop so that the next command issue gets the
@@ -174,7 +193,11 @@ static void triflex_bmdma_stop(struct ata_queued_cmd *qc)
 	triflex_load_timing(qc->ap, qc->dev, qc->dev->pio_mode);
 }
 
+<<<<<<< HEAD
 static struct scsi_host_template triflex_sht = {
+=======
+static const struct scsi_host_template triflex_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -208,6 +231,7 @@ static const struct pci_device_id triflex[] = {
 	{ },
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int triflex_ata_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
 {
@@ -217,6 +241,14 @@ static int triflex_ata_pci_device_suspend(struct pci_dev *pdev, pm_message_t mes
 	rc = ata_host_suspend(host, mesg);
 	if (rc)
 		return rc;
+=======
+#ifdef CONFIG_PM_SLEEP
+static int triflex_ata_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
+{
+	struct ata_host *host = pci_get_drvdata(pdev);
+
+	ata_host_suspend(host, mesg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We must not disable or powerdown the device.
@@ -234,12 +266,17 @@ static struct pci_driver triflex_pci_driver = {
 	.id_table	= triflex,
 	.probe 		= triflex_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= triflex_ata_pci_device_suspend,
 	.resume		= ata_pci_device_resume,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init triflex_init(void)
 {
 	return pci_register_driver(&triflex_pci_driver);
@@ -249,12 +286,18 @@ static void __exit triflex_exit(void)
 {
 	pci_unregister_driver(&triflex_pci_driver);
 }
+=======
+module_pci_driver(triflex_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for Compaq Triflex");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, triflex);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(triflex_init);
 module_exit(triflex_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

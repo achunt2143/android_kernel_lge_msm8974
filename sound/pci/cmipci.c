@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Driver for C-Media CMI8338 and 8738 PCI soundcards.
  * Copyright (c) 2000 by Takashi Iwai <tiwai@suse.de>
@@ -15,12 +16,22 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Driver for C-Media CMI8338 and 8738 PCI soundcards.
+ * Copyright (c) 2000 by Takashi Iwai <tiwai@suse.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
  
 /* Does not work. Warning may block system in capture mode */
 /* #define USE_VAR48KRATE */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/interrupt.h>
 #include <linux/init.h>
@@ -43,19 +54,28 @@
 MODULE_AUTHOR("Takashi Iwai <tiwai@suse.de>");
 MODULE_DESCRIPTION("C-Media CMI8x38 PCI");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{C-Media,CMI8738},"
 		"{C-Media,CMI8738B},"
 		"{C-Media,CMI8338A},"
 		"{C-Media,CMI8338B}}");
 
 #if defined(CONFIG_GAMEPORT) || (defined(MODULE) && defined(CONFIG_GAMEPORT_MODULE))
+=======
+
+#if IS_REACHABLE(CONFIG_GAMEPORT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SUPPORT_JOYSTICK 1
 #endif
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
 static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;	/* Enable switches */
+<<<<<<< HEAD
 static long mpu_port[SNDRV_CARDS];
+=======
+static long mpu_port[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS-1)] = 1};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long fm_port[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS-1)]=1};
 static bool soft_ac3[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS-1)]=1};
 #ifdef SUPPORT_JOYSTICK
@@ -68,14 +88,24 @@ module_param_array(id, charp, NULL, 0444);
 MODULE_PARM_DESC(id, "ID string for C-Media PCI soundcard.");
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable C-Media PCI soundcard.");
+<<<<<<< HEAD
 module_param_array(mpu_port, long, NULL, 0444);
 MODULE_PARM_DESC(mpu_port, "MPU-401 port.");
 module_param_array(fm_port, long, NULL, 0444);
+=======
+module_param_hw_array(mpu_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(mpu_port, "MPU-401 port.");
+module_param_hw_array(fm_port, long, ioport, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(fm_port, "FM port.");
 module_param_array(soft_ac3, bool, NULL, 0444);
 MODULE_PARM_DESC(soft_ac3, "Software-conversion of raw SPDIF packets (model 033 only).");
 #ifdef SUPPORT_JOYSTICK
+<<<<<<< HEAD
 module_param_array(joystick_port, int, NULL, 0444);
+=======
+module_param_hw_array(joystick_port, int, ioport, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(joystick_port, "Joystick port address.");
 #endif
 
@@ -315,7 +345,10 @@ MODULE_PARM_DESC(joystick_port, "Joystick port address.");
 #define CM_MICGAINZ		0x01	/* mic boost */
 #define CM_MICGAINZ_SHIFT	0
 
+<<<<<<< HEAD
 #define CM_REG_MIXER3		0x24
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CM_REG_AUX_VOL		0x26
 #define CM_VAUXL_MASK		0xf0
 #define CM_VAUXR_MASK		0x0f
@@ -504,10 +537,15 @@ struct cmipci {
 
 	spinlock_t reg_lock;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	unsigned int saved_regs[0x20];
 	unsigned char saved_mixers[0x20];
 #endif
+=======
+	unsigned int saved_regs[0x20];
+	unsigned char saved_mixers[0x20];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -599,7 +637,11 @@ static int snd_cmipci_clear_bit_b(struct cmipci *cm, unsigned int cmd, unsigned 
  * calculate frequency
  */
 
+<<<<<<< HEAD
 static unsigned int rates[] = { 5512, 11025, 22050, 44100, 8000, 16000, 32000, 48000 };
+=======
+static const unsigned int rates[] = { 5512, 11025, 22050, 44100, 8000, 16000, 32000, 48000 };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int snd_cmipci_rate_freq(unsigned int rate)
 {
@@ -679,12 +721,15 @@ static void snd_cmipci_set_pll(struct cmipci *cm, unsigned int rate, unsigned in
 }
 #endif /* USE_VAR48KRATE */
 
+<<<<<<< HEAD
 static int snd_cmipci_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *hw_params)
 {
 	return snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_cmipci_playback2_hw_params(struct snd_pcm_substream *substream,
 					  struct snd_pcm_hw_params *hw_params)
 {
@@ -699,7 +744,11 @@ static int snd_cmipci_playback2_hw_params(struct snd_pcm_substream *substream,
 		cm->opened[CM_CH_PLAY] = CM_OPEN_PLAYBACK_MULTI;
 		mutex_unlock(&cm->open_mutex);
 	}
+<<<<<<< HEAD
 	return snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void snd_cmipci_ch_reset(struct cmipci *cm, int ch)
@@ -710,27 +759,43 @@ static void snd_cmipci_ch_reset(struct cmipci *cm, int ch)
 	udelay(10);
 }
 
+<<<<<<< HEAD
 static int snd_cmipci_hw_free(struct snd_pcm_substream *substream)
 {
 	return snd_pcm_lib_free_pages(substream);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  */
 
+<<<<<<< HEAD
 static unsigned int hw_channels[] = {1, 2, 4, 6, 8};
 static struct snd_pcm_hw_constraint_list hw_constraints_channels_4 = {
+=======
+static const unsigned int hw_channels[] = {1, 2, 4, 6, 8};
+static const struct snd_pcm_hw_constraint_list hw_constraints_channels_4 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = 3,
 	.list = hw_channels,
 	.mask = 0,
 };
+<<<<<<< HEAD
 static struct snd_pcm_hw_constraint_list hw_constraints_channels_6 = {
+=======
+static const struct snd_pcm_hw_constraint_list hw_constraints_channels_6 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = 4,
 	.list = hw_channels,
 	.mask = 0,
 };
+<<<<<<< HEAD
 static struct snd_pcm_hw_constraint_list hw_constraints_channels_8 = {
+=======
+static const struct snd_pcm_hw_constraint_list hw_constraints_channels_8 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = 5,
 	.list = hw_channels,
 	.mask = 0,
@@ -796,7 +861,11 @@ static int snd_cmipci_pcm_prepare(struct cmipci *cm, struct cmipci_pcm *rec,
 	if (runtime->channels > 1)
 		rec->fmt |= 0x01;
 	if (rec->is_dac && set_dac_channels(cm, rec, runtime->channels) < 0) {
+<<<<<<< HEAD
 		snd_printd("cannot set dac channels\n");
+=======
+		dev_dbg(cm->card->dev, "cannot set dac channels\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -827,7 +896,11 @@ static int snd_cmipci_pcm_prepare(struct cmipci *cm, struct cmipci_pcm *rec,
 	else
 		cm->ctrl |= val;
 	snd_cmipci_write(cm, CM_REG_FUNCTRL0, cm->ctrl);
+<<<<<<< HEAD
 	//snd_printd("cmipci: functrl0 = %08x\n", cm->ctrl);
+=======
+	/* dev_dbg(cm->card->dev, "functrl0 = %08x\n", cm->ctrl); */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set sample rate */
 	freq = 0;
@@ -850,7 +923,11 @@ static int snd_cmipci_pcm_prepare(struct cmipci *cm, struct cmipci_pcm *rec,
 		val |= (freq << CM_ASFC_SHIFT) & CM_ASFC_MASK;
 	}
 	snd_cmipci_write(cm, CM_REG_FUNCTRL1, val);
+<<<<<<< HEAD
 	//snd_printd("cmipci: functrl1 = %08x\n", val);
+=======
+	dev_dbg(cm->card->dev, "functrl1 = %08x\n", val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set format */
 	val = snd_cmipci_read(cm, CM_REG_CHFORMAT);
@@ -866,7 +943,11 @@ static int snd_cmipci_pcm_prepare(struct cmipci *cm, struct cmipci_pcm *rec,
 		val |= freq_ext << (rec->ch * 2);
 	}
 	snd_cmipci_write(cm, CM_REG_CHFORMAT, val);
+<<<<<<< HEAD
 	//snd_printd("cmipci: chformat = %08x\n", val);
+=======
+	dev_dbg(cm->card->dev, "chformat = %08x\n", val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!rec->is_dac && cm->chip_version) {
 		if (runtime->rate > 44100)
@@ -904,7 +985,11 @@ static int snd_cmipci_pcm_trigger(struct cmipci *cm, struct cmipci_pcm *rec,
 		cm->ctrl |= chen;
 		/* enable channel */
 		snd_cmipci_write(cm, CM_REG_FUNCTRL0, cm->ctrl);
+<<<<<<< HEAD
 		//snd_printd("cmipci: functrl0 = %08x\n", cm->ctrl);
+=======
+		dev_dbg(cm->card->dev, "functrl0 = %08x\n", cm->ctrl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
 		rec->running = 0;
@@ -952,7 +1037,11 @@ static snd_pcm_uframes_t snd_cmipci_pcm_pointer(struct cmipci *cm, struct cmipci
 		if (rem < rec->dma_size)
 			goto ok;
 	} 
+<<<<<<< HEAD
 	printk(KERN_ERR "cmipci: invalid PCM pointer: %#x\n", rem);
+=======
+	dev_err(cm->card->dev, "invalid PCM pointer: %#x\n", rem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return SNDRV_PCM_POS_XRUN;
 ok:
 	ptr = (rec->dma_size - (rem + 1)) >> rec->shift;
@@ -1045,7 +1134,11 @@ static int snd_cmipci_spdif_default_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cmipci_spdif_default __devinitdata =
+=======
+static const struct snd_kcontrol_new snd_cmipci_spdif_default =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
 	.name =		SNDRV_CTL_NAME_IEC958("",PLAYBACK,DEFAULT),
@@ -1072,7 +1165,11 @@ static int snd_cmipci_spdif_mask_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cmipci_spdif_mask __devinitdata =
+=======
+static const struct snd_kcontrol_new snd_cmipci_spdif_mask =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READ,
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
@@ -1119,7 +1216,11 @@ static int snd_cmipci_spdif_stream_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cmipci_spdif_stream __devinitdata =
+=======
+static const struct snd_kcontrol_new snd_cmipci_spdif_stream =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READWRITE | SNDRV_CTL_ELEM_ACCESS_INACTIVE,
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
@@ -1139,7 +1240,11 @@ static int save_mixer_state(struct cmipci *cm)
 		struct snd_ctl_elem_value *val;
 		unsigned int i;
 
+<<<<<<< HEAD
 		val = kmalloc(sizeof(*val), GFP_ATOMIC);
+=======
+		val = kmalloc(sizeof(*val), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!val)
 			return -ENOMEM;
 		for (i = 0; i < CM_SAVED_MIXERS; i++) {
@@ -1253,9 +1358,17 @@ static int setup_spdif_playback(struct cmipci *cm, struct snd_pcm_substream *sub
 
 	rate = subs->runtime->rate;
 
+<<<<<<< HEAD
 	if (up && do_ac3)
 		if ((err = save_mixer_state(cm)) < 0)
 			return err;
+=======
+	if (up && do_ac3) {
+		err = save_mixer_state(cm);
+		if (err < 0)
+			return err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irq(&cm->reg_lock);
 	cm->spdif_playback_avail = up;
@@ -1304,7 +1417,12 @@ static int snd_cmipci_playback_prepare(struct snd_pcm_substream *substream)
 		    substream->runtime->channels == 2);
 	if (do_spdif && cm->can_ac3_hw) 
 		do_ac3 = cm->dig_pcm_status & IEC958_AES0_NONAUDIO;
+<<<<<<< HEAD
 	if ((err = setup_spdif_playback(cm, substream, do_spdif, do_ac3)) < 0)
+=======
+	err = setup_spdif_playback(cm, substream, do_spdif, do_ac3);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return snd_cmipci_pcm_prepare(cm, &cm->channel[CM_CH_PLAY], substream);
 }
@@ -1319,7 +1437,12 @@ static int snd_cmipci_playback_spdif_prepare(struct snd_pcm_substream *substream
 		do_ac3 = cm->dig_pcm_status & IEC958_AES0_NONAUDIO;
 	else
 		do_ac3 = 1; /* doesn't matter */
+<<<<<<< HEAD
 	if ((err = setup_spdif_playback(cm, substream, 1, do_ac3)) < 0)
+=======
+	err = setup_spdif_playback(cm, substream, 1, do_ac3);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	return snd_cmipci_pcm_prepare(cm, &cm->channel[CM_CH_PLAY], substream);
 }
@@ -1384,14 +1507,22 @@ static int snd_cmipci_playback_hw_free(struct snd_pcm_substream *substream)
 	setup_spdif_playback(cm, substream, 0, 0);
 	restore_mixer_state(cm);
 	snd_cmipci_silence_hack(cm, &cm->channel[0]);
+<<<<<<< HEAD
 	return snd_cmipci_hw_free(substream);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_cmipci_playback2_hw_free(struct snd_pcm_substream *substream)
 {
 	struct cmipci *cm = snd_pcm_substream_chip(substream);
 	snd_cmipci_silence_hack(cm, &cm->channel[1]);
+<<<<<<< HEAD
 	return snd_cmipci_hw_free(substream);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* capture */
@@ -1433,7 +1564,11 @@ static int snd_cmipci_capture_spdif_hw_free(struct snd_pcm_substream *subs)
 	snd_cmipci_clear_bit(cm, CM_REG_MISC_CTRL, CM_SPD32SEL);
 	spin_unlock_irq(&cm->reg_lock);
 
+<<<<<<< HEAD
 	return snd_cmipci_hw_free(subs);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1477,7 +1612,11 @@ static irqreturn_t snd_cmipci_interrupt(int irq, void *dev_id)
  */
 
 /* playback on channel A */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_cmipci_playback =
+=======
+static const struct snd_pcm_hardware snd_cmipci_playback =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER | SNDRV_PCM_INFO_PAUSE |
@@ -1497,7 +1636,11 @@ static struct snd_pcm_hardware snd_cmipci_playback =
 };
 
 /* capture on channel B */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_cmipci_capture =
+=======
+static const struct snd_pcm_hardware snd_cmipci_capture =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER | SNDRV_PCM_INFO_PAUSE |
@@ -1517,7 +1660,11 @@ static struct snd_pcm_hardware snd_cmipci_capture =
 };
 
 /* playback on channel B - stereo 16bit only? */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_cmipci_playback2 =
+=======
+static const struct snd_pcm_hardware snd_cmipci_playback2 =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER | SNDRV_PCM_INFO_PAUSE |
@@ -1537,7 +1684,11 @@ static struct snd_pcm_hardware snd_cmipci_playback2 =
 };
 
 /* spdif playback on channel A */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_cmipci_playback_spdif =
+=======
+static const struct snd_pcm_hardware snd_cmipci_playback_spdif =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER | SNDRV_PCM_INFO_PAUSE |
@@ -1557,7 +1708,11 @@ static struct snd_pcm_hardware snd_cmipci_playback_spdif =
 };
 
 /* spdif playback on channel A (32bit, IEC958 subframes) */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_cmipci_playback_iec958_subframe =
+=======
+static const struct snd_pcm_hardware snd_cmipci_playback_iec958_subframe =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER | SNDRV_PCM_INFO_PAUSE |
@@ -1577,7 +1732,11 @@ static struct snd_pcm_hardware snd_cmipci_playback_iec958_subframe =
 };
 
 /* spdif capture on channel B */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_cmipci_capture_spdif =
+=======
+static const struct snd_pcm_hardware snd_cmipci_capture_spdif =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER | SNDRV_PCM_INFO_PAUSE |
@@ -1597,9 +1756,15 @@ static struct snd_pcm_hardware snd_cmipci_capture_spdif =
 	.fifo_size =		0,
 };
 
+<<<<<<< HEAD
 static unsigned int rate_constraints[] = { 5512, 8000, 11025, 16000, 22050,
 			32000, 44100, 48000, 88200, 96000, 128000 };
 static struct snd_pcm_hw_constraint_list hw_constraints_rates = {
+=======
+static const unsigned int rate_constraints[] = { 5512, 8000, 11025, 16000, 22050,
+			32000, 44100, 48000, 88200, 96000, 128000 };
+static const struct snd_pcm_hw_constraint_list hw_constraints_rates = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.count = ARRAY_SIZE(rate_constraints),
 		.list = rate_constraints,
 		.mask = 0,
@@ -1667,7 +1832,12 @@ static int snd_cmipci_playback_open(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = open_device_check(cm, CM_OPEN_PLAYBACK, substream)) < 0)
+=======
+	err = open_device_check(cm, CM_OPEN_PLAYBACK, substream);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	runtime->hw = snd_cmipci_playback;
 	if (cm->chip_version == 68) {
@@ -1693,7 +1863,12 @@ static int snd_cmipci_capture_open(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = open_device_check(cm, CM_OPEN_CAPTURE, substream)) < 0)
+=======
+	err = open_device_check(cm, CM_OPEN_CAPTURE, substream);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	runtime->hw = snd_cmipci_capture;
 	if (cm->chip_version == 68) {	// 8768 only supports 44k/48k recording
@@ -1717,7 +1892,13 @@ static int snd_cmipci_playback2_open(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = open_device_check(cm, CM_OPEN_PLAYBACK2, substream)) < 0) /* use channel B */
+=======
+	/* use channel B */
+	err = open_device_check(cm, CM_OPEN_PLAYBACK2, substream);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	runtime->hw = snd_cmipci_playback2;
 	mutex_lock(&cm->open_mutex);
@@ -1755,7 +1936,13 @@ static int snd_cmipci_playback_spdif_open(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = open_device_check(cm, CM_OPEN_SPDIF_PLAYBACK, substream)) < 0) /* use channel A */
+=======
+	/* use channel A */
+	err = open_device_check(cm, CM_OPEN_SPDIF_PLAYBACK, substream);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	if (cm->can_ac3_hw) {
 		runtime->hw = snd_cmipci_playback_spdif;
@@ -1782,7 +1969,13 @@ static int snd_cmipci_capture_spdif_open(struct snd_pcm_substream *substream)
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = open_device_check(cm, CM_OPEN_SPDIF_CAPTURE, substream)) < 0) /* use channel B */
+=======
+	/* use channel B */
+	err = open_device_check(cm, CM_OPEN_SPDIF_CAPTURE, substream);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	runtime->hw = snd_cmipci_capture_spdif;
 	if (cm->can_96k && !(cm->chip_version == 68)) {
@@ -1838,32 +2031,50 @@ static int snd_cmipci_capture_spdif_close(struct snd_pcm_substream *substream)
 /*
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_playback_ops = {
 	.open =		snd_cmipci_playback_open,
 	.close =	snd_cmipci_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_cmipci_hw_params,
+=======
+static const struct snd_pcm_ops snd_cmipci_playback_ops = {
+	.open =		snd_cmipci_playback_open,
+	.close =	snd_cmipci_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_free =	snd_cmipci_playback_hw_free,
 	.prepare =	snd_cmipci_playback_prepare,
 	.trigger =	snd_cmipci_playback_trigger,
 	.pointer =	snd_cmipci_playback_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_capture_ops = {
 	.open =		snd_cmipci_capture_open,
 	.close =	snd_cmipci_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_cmipci_hw_params,
 	.hw_free =	snd_cmipci_hw_free,
+=======
+static const struct snd_pcm_ops snd_cmipci_capture_ops = {
+	.open =		snd_cmipci_capture_open,
+	.close =	snd_cmipci_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_cmipci_capture_prepare,
 	.trigger =	snd_cmipci_capture_trigger,
 	.pointer =	snd_cmipci_capture_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_playback2_ops = {
 	.open =		snd_cmipci_playback2_open,
 	.close =	snd_cmipci_playback2_close,
 	.ioctl =	snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_cmipci_playback2_ops = {
+	.open =		snd_cmipci_playback2_open,
+	.close =	snd_cmipci_playback2_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =	snd_cmipci_playback2_hw_params,
 	.hw_free =	snd_cmipci_playback2_hw_free,
 	.prepare =	snd_cmipci_capture_prepare,	/* channel B */
@@ -1871,22 +2082,34 @@ static struct snd_pcm_ops snd_cmipci_playback2_ops = {
 	.pointer =	snd_cmipci_capture_pointer,	/* channel B */
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_playback_spdif_ops = {
 	.open =		snd_cmipci_playback_spdif_open,
 	.close =	snd_cmipci_playback_spdif_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_cmipci_hw_params,
+=======
+static const struct snd_pcm_ops snd_cmipci_playback_spdif_ops = {
+	.open =		snd_cmipci_playback_spdif_open,
+	.close =	snd_cmipci_playback_spdif_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_free =	snd_cmipci_playback_hw_free,
 	.prepare =	snd_cmipci_playback_spdif_prepare,	/* set up rate */
 	.trigger =	snd_cmipci_playback_trigger,
 	.pointer =	snd_cmipci_playback_pointer,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_cmipci_capture_spdif_ops = {
 	.open =		snd_cmipci_capture_spdif_open,
 	.close =	snd_cmipci_capture_spdif_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_cmipci_hw_params,
+=======
+static const struct snd_pcm_ops snd_cmipci_capture_spdif_ops = {
+	.open =		snd_cmipci_capture_spdif_open,
+	.close =	snd_cmipci_capture_spdif_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_free =	snd_cmipci_capture_spdif_hw_free,
 	.prepare =	snd_cmipci_capture_spdif_prepare,
 	.trigger =	snd_cmipci_capture_trigger,
@@ -1897,7 +2120,11 @@ static struct snd_pcm_ops snd_cmipci_capture_spdif_ops = {
 /*
  */
 
+<<<<<<< HEAD
 static int __devinit snd_cmipci_pcm_new(struct cmipci *cm, int device)
+=======
+static int snd_cmipci_pcm_new(struct cmipci *cm, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -1914,13 +2141,22 @@ static int __devinit snd_cmipci_pcm_new(struct cmipci *cm, int device)
 	strcpy(pcm->name, "C-Media PCI DAC/ADC");
 	cm->pcm = pcm;
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(cm->pci), 64*1024, 128*1024);
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+				       &cm->pci->dev, 64*1024, 128*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_cmipci_pcm2_new(struct cmipci *cm, int device)
+=======
+static int snd_cmipci_pcm2_new(struct cmipci *cm, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -1936,13 +2172,22 @@ static int __devinit snd_cmipci_pcm2_new(struct cmipci *cm, int device)
 	strcpy(pcm->name, "C-Media PCI 2nd DAC");
 	cm->pcm2 = pcm;
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(cm->pci), 64*1024, 128*1024);
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+				       &cm->pci->dev, 64*1024, 128*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_cmipci_pcm_spdif_new(struct cmipci *cm, int device)
+=======
+static int snd_cmipci_pcm_spdif_new(struct cmipci *cm, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -1959,8 +2204,19 @@ static int __devinit snd_cmipci_pcm_spdif_new(struct cmipci *cm, int device)
 	strcpy(pcm->name, "C-Media PCI IEC958");
 	cm->pcm_spdif = pcm;
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
 					      snd_dma_pci_data(cm->pci), 64*1024, 128*1024);
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+				       &cm->pci->dev, 64*1024, 128*1024);
+
+	err = snd_pcm_add_chmap_ctls(pcm, SNDRV_PCM_STREAM_PLAYBACK,
+				     snd_pcm_alt_chmaps, cm->max_channels, 0,
+				     NULL);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2056,7 +2312,11 @@ static int snd_cmipci_get_volume(struct snd_kcontrol *kcontrol,
 		val = (snd_cmipci_mixer_read(cm, reg.right_reg) >> reg.right_shift) & reg.mask;
 		if (reg.invert)
 			val = reg.mask - val;
+<<<<<<< HEAD
 		 ucontrol->value.integer.value[1] = val;
+=======
+		ucontrol->value.integer.value[1] = val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irq(&cm->reg_lock);
 	return 0;
@@ -2284,7 +2544,11 @@ static int snd_cmipci_put_native_mixer_sensitive(struct snd_kcontrol *kcontrol,
 }
 
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cmipci_mixers[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_cmipci_mixers[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CMIPCI_SB_VOL_STEREO("Master Playback Volume", SB_DSP4_MASTER_DEV, 3, 31),
 	CMIPCI_MIXER_SW_MONO("3D Control - Switch", CM_REG_MIXER1, CM_X3DEN_SHIFT, 0),
 	CMIPCI_SB_VOL_STEREO("PCM Playback Volume", SB_DSP4_PCM_DEV, 3, 31),
@@ -2595,7 +2859,11 @@ static int snd_cmipci_mic_in_mode_put(struct snd_kcontrol *kcontrol,
 }
 
 /* both for CM8338/8738 */
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cmipci_mixer_switches[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_cmipci_mixer_switches[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEFINE_MIXER_SWITCH("Four Channel Mode", fourch),
 	{
 		.name = "Line-In Mode",
@@ -2607,11 +2875,19 @@ static struct snd_kcontrol_new snd_cmipci_mixer_switches[] __devinitdata = {
 };
 
 /* for non-multichannel chips */
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cmipci_nomulti_switch __devinitdata =
 DEFINE_MIXER_SWITCH("Exchange DAC", exchange_dac);
 
 /* only for CM8738 */
 static struct snd_kcontrol_new snd_cmipci_8738_mixer_switches[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_cmipci_nomulti_switch =
+DEFINE_MIXER_SWITCH("Exchange DAC", exchange_dac);
+
+/* only for CM8738 */
+static const struct snd_kcontrol_new snd_cmipci_8738_mixer_switches[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if 0 /* controlled in pcm device */
 	DEFINE_MIXER_SWITCH("IEC958 In Record", spdif_in),
 	DEFINE_MIXER_SWITCH("IEC958 Out", spdif_out),
@@ -2633,14 +2909,22 @@ static struct snd_kcontrol_new snd_cmipci_8738_mixer_switches[] __devinitdata = 
 };
 
 /* only for model 033/037 */
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cmipci_old_mixer_switches[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_cmipci_old_mixer_switches[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEFINE_MIXER_SWITCH("IEC958 Mix Analog", spdif_dac_out),
 	DEFINE_MIXER_SWITCH("IEC958 In Phase Inverse", spdi_phase),
 	DEFINE_MIXER_SWITCH("IEC958 In Select", spdif_in_sel1),
 };
 
 /* only for model 039 or later */
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cmipci_extra_mixer_switches[] __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_cmipci_extra_mixer_switches[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEFINE_MIXER_SWITCH("IEC958 In Select", spdif_in_sel2),
 	DEFINE_MIXER_SWITCH("IEC958 In Phase Inverse", spdi_phase2),
 	{
@@ -2653,6 +2937,7 @@ static struct snd_kcontrol_new snd_cmipci_extra_mixer_switches[] __devinitdata =
 };
 
 /* card control switches */
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_cmipci_modem_switch __devinitdata =
 DEFINE_CARD_SWITCH("Modem", modem);
 
@@ -2661,6 +2946,16 @@ static int __devinit snd_cmipci_mixer_new(struct cmipci *cm, int pcm_spdif_devic
 {
 	struct snd_card *card;
 	struct snd_kcontrol_new *sw;
+=======
+static const struct snd_kcontrol_new snd_cmipci_modem_switch =
+DEFINE_CARD_SWITCH("Modem", modem);
+
+
+static int snd_cmipci_mixer_new(struct cmipci *cm, int pcm_spdif_device)
+{
+	struct snd_card *card;
+	const struct snd_kcontrol_new *sw;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_kcontrol *kctl;
 	unsigned int idx;
 	int err;
@@ -2682,7 +2977,12 @@ static int __devinit snd_cmipci_mixer_new(struct cmipci *cm, int pcm_spdif_devic
 				"PCM Playback Volume"))
 				continue;
 		}
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(card, snd_ctl_new1(&snd_cmipci_mixers[idx], cm))) < 0)
+=======
+		err = snd_ctl_add(card, snd_ctl_new1(&snd_cmipci_mixers[idx], cm));
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 
@@ -2707,6 +3007,7 @@ static int __devinit snd_cmipci_mixer_new(struct cmipci *cm, int pcm_spdif_devic
 				return err;
 		}
 		if (cm->can_ac3_hw) {
+<<<<<<< HEAD
 			if ((err = snd_ctl_add(card, kctl = snd_ctl_new1(&snd_cmipci_spdif_default, cm))) < 0)
 				return err;
 			kctl->id.device = pcm_spdif_device;
@@ -2716,6 +3017,23 @@ static int __devinit snd_cmipci_mixer_new(struct cmipci *cm, int pcm_spdif_devic
 			if ((err = snd_ctl_add(card, kctl = snd_ctl_new1(&snd_cmipci_spdif_stream, cm))) < 0)
 				return err;
 			kctl->id.device = pcm_spdif_device;
+=======
+			kctl = snd_ctl_new1(&snd_cmipci_spdif_default, cm);
+			kctl->id.device = pcm_spdif_device;
+			err = snd_ctl_add(card, kctl);
+			if (err < 0)
+				return err;
+			kctl = snd_ctl_new1(&snd_cmipci_spdif_mask, cm);
+			kctl->id.device = pcm_spdif_device;
+			err = snd_ctl_add(card, kctl);
+			if (err < 0)
+				return err;
+			kctl = snd_ctl_new1(&snd_cmipci_spdif_stream, cm);
+			kctl->id.device = pcm_spdif_device;
+			err = snd_ctl_add(card, kctl);
+			if (err < 0)
+				return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (cm->chip_version <= 37) {
 			sw = snd_cmipci_old_mixer_switches;
@@ -2748,12 +3066,17 @@ static int __devinit snd_cmipci_mixer_new(struct cmipci *cm, int pcm_spdif_devic
 	}
 
 	for (idx = 0; idx < CM_SAVED_MIXERS; idx++) {
+<<<<<<< HEAD
 		struct snd_ctl_elem_id elem_id;
 		struct snd_kcontrol *ctl;
 		memset(&elem_id, 0, sizeof(elem_id));
 		elem_id.iface = SNDRV_CTL_ELEM_IFACE_MIXER;
 		strcpy(elem_id.name, cm_saved_mixer[idx].name);
 		ctl = snd_ctl_find_id(cm->card, &elem_id);
+=======
+		struct snd_kcontrol *ctl;
+		ctl = snd_ctl_find_id_mixer(cm->card, cm_saved_mixer[idx].name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ctl)
 			cm->mixer_res_ctl[idx] = ctl;
 	}
@@ -2766,7 +3089,10 @@ static int __devinit snd_cmipci_mixer_new(struct cmipci *cm, int pcm_spdif_devic
  * proc interface
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void snd_cmipci_proc_read(struct snd_info_entry *entry, 
 				 struct snd_info_buffer *buffer)
 {
@@ -2785,6 +3111,7 @@ static void snd_cmipci_proc_read(struct snd_info_entry *entry,
 	snd_iprintf(buffer, "\n");
 }
 
+<<<<<<< HEAD
 static void __devinit snd_cmipci_proc_init(struct cmipci *cm)
 {
 	struct snd_info_entry *entry;
@@ -2798,6 +3125,14 @@ static inline void snd_cmipci_proc_init(struct cmipci *cm) {}
 
 
 static DEFINE_PCI_DEVICE_TABLE(snd_cmipci_ids) = {
+=======
+static void snd_cmipci_proc_init(struct cmipci *cm)
+{
+	snd_card_ro_proc_new(cm->card, "cmipci", cm, snd_cmipci_proc_read);
+}
+
+static const struct pci_device_id snd_cmipci_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_VDEVICE(CMEDIA, PCI_DEVICE_ID_CMEDIA_CM8338A), 0},
 	{PCI_VDEVICE(CMEDIA, PCI_DEVICE_ID_CMEDIA_CM8338B), 0},
 	{PCI_VDEVICE(CMEDIA, PCI_DEVICE_ID_CMEDIA_CM8738), 0},
@@ -2811,7 +3146,11 @@ static DEFINE_PCI_DEVICE_TABLE(snd_cmipci_ids) = {
  * check chip version and capabilities
  * driver name is modified according to the chip model
  */
+<<<<<<< HEAD
 static void __devinit query_chip(struct cmipci *cm)
+=======
+static void query_chip(struct cmipci *cm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int detect;
 
@@ -2860,9 +3199,15 @@ static void __devinit query_chip(struct cmipci *cm)
 }
 
 #ifdef SUPPORT_JOYSTICK
+<<<<<<< HEAD
 static int __devinit snd_cmipci_create_gameport(struct cmipci *cm, int dev)
 {
 	static int ports[] = { 0x201, 0x200, 0 }; /* FIXME: majority is 0x201? */
+=======
+static int snd_cmipci_create_gameport(struct cmipci *cm, int dev)
+{
+	static const int ports[] = { 0x201, 0x200, 0 }; /* FIXME: majority is 0x201? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gameport *gp;
 	struct resource *r = NULL;
 	int i, io_port = 0;
@@ -2873,31 +3218,52 @@ static int __devinit snd_cmipci_create_gameport(struct cmipci *cm, int dev)
 	if (joystick_port[dev] == 1) { /* auto-detect */
 		for (i = 0; ports[i]; i++) {
 			io_port = ports[i];
+<<<<<<< HEAD
 			r = request_region(io_port, 1, "CMIPCI gameport");
+=======
+			r = devm_request_region(&cm->pci->dev, io_port, 1,
+						"CMIPCI gameport");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r)
 				break;
 		}
 	} else {
 		io_port = joystick_port[dev];
+<<<<<<< HEAD
 		r = request_region(io_port, 1, "CMIPCI gameport");
 	}
 
 	if (!r) {
 		printk(KERN_WARNING "cmipci: cannot reserve joystick ports\n");
+=======
+		r = devm_request_region(&cm->pci->dev, io_port, 1,
+					"CMIPCI gameport");
+	}
+
+	if (!r) {
+		dev_warn(cm->card->dev, "cannot reserve joystick ports\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
 	cm->gameport = gp = gameport_allocate_port();
 	if (!gp) {
+<<<<<<< HEAD
 		printk(KERN_ERR "cmipci: cannot allocate memory for gameport\n");
 		release_and_free_resource(r);
+=======
+		dev_err(cm->card->dev, "cannot allocate memory for gameport\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	gameport_set_name(gp, "C-Media Gameport");
 	gameport_set_phys(gp, "pci%s/gameport0", pci_name(cm->pci));
 	gameport_set_dev_parent(gp, &cm->pci->dev);
 	gp->io = io_port;
+<<<<<<< HEAD
 	gameport_set_port_data(gp, r);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_cmipci_set_bit(cm, CM_REG_FUNCTRL1, CM_JYSTK_EN);
 
@@ -2909,13 +3275,19 @@ static int __devinit snd_cmipci_create_gameport(struct cmipci *cm, int dev)
 static void snd_cmipci_free_gameport(struct cmipci *cm)
 {
 	if (cm->gameport) {
+<<<<<<< HEAD
 		struct resource *r = gameport_get_port_data(cm->gameport);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gameport_unregister_port(cm->gameport);
 		cm->gameport = NULL;
 
 		snd_cmipci_clear_bit(cm, CM_REG_FUNCTRL1, CM_JYSTK_EN);
+<<<<<<< HEAD
 		release_and_free_resource(r);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #else
@@ -2923,6 +3295,7 @@ static inline int snd_cmipci_create_gameport(struct cmipci *cm, int dev) { retur
 static inline void snd_cmipci_free_gameport(struct cmipci *cm) { }
 #endif
 
+<<<<<<< HEAD
 static int snd_cmipci_free(struct cmipci *cm)
 {
 	if (cm->irq >= 0) {
@@ -2954,6 +3327,27 @@ static int snd_cmipci_dev_free(struct snd_device *device)
 }
 
 static int __devinit snd_cmipci_create_fm(struct cmipci *cm, long fm_port)
+=======
+static void snd_cmipci_free(struct snd_card *card)
+{
+	struct cmipci *cm = card->private_data;
+
+	snd_cmipci_clear_bit(cm, CM_REG_MISC_CTRL, CM_FM_EN);
+	snd_cmipci_clear_bit(cm, CM_REG_LEGACY_CTRL, CM_ENSPDOUT);
+	snd_cmipci_write(cm, CM_REG_INT_HLDCLR, 0);  /* disable ints */
+	snd_cmipci_ch_reset(cm, CM_CH_PLAY);
+	snd_cmipci_ch_reset(cm, CM_CH_CAPT);
+	snd_cmipci_write(cm, CM_REG_FUNCTRL0, 0); /* disable channels */
+	snd_cmipci_write(cm, CM_REG_FUNCTRL1, 0);
+
+	/* reset mixer */
+	snd_cmipci_mixer_write(cm, 0, 0);
+
+	snd_cmipci_free_gameport(cm);
+}
+
+static int snd_cmipci_create_fm(struct cmipci *cm, long fm_port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long iosynth;
 	unsigned int val;
@@ -2989,6 +3383,7 @@ static int __devinit snd_cmipci_create_fm(struct cmipci *cm, long fm_port)
 
 		if (snd_opl3_create(cm->card, iosynth, iosynth + 2,
 				    OPL3_HW_OPL3, 0, &opl3) < 0) {
+<<<<<<< HEAD
 			printk(KERN_ERR "cmipci: no OPL device at %#lx, "
 			       "skipping...\n", iosynth);
 			goto disable_fm;
@@ -2996,6 +3391,17 @@ static int __devinit snd_cmipci_create_fm(struct cmipci *cm, long fm_port)
 	}
 	if ((err = snd_opl3_hwdep_new(opl3, 0, 1, NULL)) < 0) {
 		printk(KERN_ERR "cmipci: cannot create OPL3 hwdep\n");
+=======
+			dev_err(cm->card->dev,
+				"no OPL device at %#lx, skipping...\n",
+				iosynth);
+			goto disable_fm;
+		}
+	}
+	err = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
+	if (err < 0) {
+		dev_err(cm->card->dev, "cannot create OPL3 hwdep\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 	return 0;
@@ -3006,6 +3412,7 @@ static int __devinit snd_cmipci_create_fm(struct cmipci *cm, long fm_port)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
 				       int dev, struct cmipci **rcmipci)
 {
@@ -3014,16 +3421,28 @@ static int __devinit snd_cmipci_create(struct snd_card *card, struct pci_dev *pc
 	static struct snd_device_ops ops = {
 		.dev_free =	snd_cmipci_dev_free,
 	};
+=======
+static int snd_cmipci_create(struct snd_card *card, struct pci_dev *pci,
+			     int dev)
+{
+	struct cmipci *cm = card->private_data;
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int val;
 	long iomidi = 0;
 	int integrated_midi = 0;
 	char modelstr[16];
 	int pcm_index, pcm_spdif_index;
+<<<<<<< HEAD
 	static DEFINE_PCI_DEVICE_TABLE(intel_82437vx) = {
+=======
+	static const struct pci_device_id intel_82437vx[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82437VX) },
 		{ },
 	};
 
+<<<<<<< HEAD
 	*rcmipci = NULL;
 
 	if ((err = pci_enable_device(pci)) < 0)
@@ -3035,6 +3454,12 @@ static int __devinit snd_cmipci_create(struct snd_card *card, struct pci_dev *pc
 		return -ENOMEM;
 	}
 
+=======
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&cm->reg_lock);
 	mutex_init(&cm->open_mutex);
 	cm->device = pci->device;
@@ -3045,6 +3470,7 @@ static int __devinit snd_cmipci_create(struct snd_card *card, struct pci_dev *pc
 	cm->channel[1].ch = 1;
 	cm->channel[0].is_dac = cm->channel[1].is_dac = 1; /* dual DAC mode */
 
+<<<<<<< HEAD
 	if ((err = pci_request_regions(pci, card->driver)) < 0) {
 		kfree(cm);
 		pci_disable_device(pci);
@@ -3059,6 +3485,21 @@ static int __devinit snd_cmipci_create(struct snd_card *card, struct pci_dev *pc
 		return -EBUSY;
 	}
 	cm->irq = pci->irq;
+=======
+	err = pci_request_regions(pci, card->driver);
+	if (err < 0)
+		return err;
+	cm->iobase = pci_resource_start(pci, 0);
+
+	if (devm_request_irq(&pci->dev, pci->irq, snd_cmipci_interrupt,
+			     IRQF_SHARED, KBUILD_MODNAME, cm)) {
+		dev_err(card->dev, "unable to grab IRQ %d\n", pci->irq);
+		return -EBUSY;
+	}
+	cm->irq = pci->irq;
+	card->sync_irq = cm->irq;
+	card->private_free = snd_cmipci_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_master(cm->pci);
 
@@ -3152,6 +3593,7 @@ static int __devinit snd_cmipci_create(struct snd_card *card, struct pci_dev *pc
 	}
 	sprintf(card->shortname, "C-Media CMI%d", val);
 	if (cm->chip_version < 68)
+<<<<<<< HEAD
 		sprintf(modelstr, " (model %d)", cm->chip_version);
 	else
 		modelstr[0] = '\0';
@@ -3162,11 +3604,25 @@ static int __devinit snd_cmipci_create(struct snd_card *card, struct pci_dev *pc
 		snd_cmipci_free(cm);
 		return err;
 	}
+=======
+		scnprintf(modelstr, sizeof(modelstr),
+			  " (model %d)", cm->chip_version);
+	else
+		modelstr[0] = '\0';
+	scnprintf(card->longname, sizeof(card->longname),
+		  "%s%s at %#lx, irq %i",
+		  card->shortname, modelstr, cm->iobase, cm->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cm->chip_version >= 39) {
 		val = snd_cmipci_read_b(cm, CM_REG_MPU_PCI + 1);
 		if (val != 0x00 && val != 0xff) {
+<<<<<<< HEAD
 			iomidi = cm->iobase + CM_REG_MPU_PCI;
+=======
+			if (mpu_port[dev])
+				iomidi = cm->iobase + CM_REG_MPU_PCI;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			integrated_midi = 1;
 		}
 	}
@@ -3186,8 +3642,14 @@ static int __devinit snd_cmipci_create(struct snd_card *card, struct pci_dev *pc
 			/* enable UART */
 			snd_cmipci_set_bit(cm, CM_REG_FUNCTRL1, CM_UART_EN);
 			if (inb(iomidi + 1) == 0xff) {
+<<<<<<< HEAD
 				snd_printk(KERN_ERR "cannot enable MPU-401 port"
 					   " at %#lx\n", iomidi);
+=======
+				dev_err(cm->card->dev,
+					"cannot enable MPU-401 port at %#lx\n",
+					iomidi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				snd_cmipci_clear_bit(cm, CM_REG_FUNCTRL1,
 						     CM_UART_EN);
 				iomidi = 0;
@@ -3208,19 +3670,34 @@ static int __devinit snd_cmipci_create(struct snd_card *card, struct pci_dev *pc
 
 	/* create pcm devices */
 	pcm_index = pcm_spdif_index = 0;
+<<<<<<< HEAD
 	if ((err = snd_cmipci_pcm_new(cm, pcm_index)) < 0)
 		return err;
 	pcm_index++;
 	if ((err = snd_cmipci_pcm2_new(cm, pcm_index)) < 0)
+=======
+	err = snd_cmipci_pcm_new(cm, pcm_index);
+	if (err < 0)
+		return err;
+	pcm_index++;
+	err = snd_cmipci_pcm2_new(cm, pcm_index);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	pcm_index++;
 	if (cm->can_ac3_hw || cm->can_ac3_sw) {
 		pcm_spdif_index = pcm_index;
+<<<<<<< HEAD
 		if ((err = snd_cmipci_pcm_spdif_new(cm, pcm_index)) < 0)
+=======
+		err = snd_cmipci_pcm_spdif_new(cm, pcm_index);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 
 	/* create mixer interface & switches */
+<<<<<<< HEAD
 	if ((err = snd_cmipci_mixer_new(cm, pcm_spdif_index)) < 0)
 		return err;
 
@@ -3233,6 +3710,22 @@ static int __devinit snd_cmipci_create(struct snd_card *card, struct pci_dev *pc
 					       -1, &cm->rmidi)) < 0) {
 			printk(KERN_ERR "cmipci: no UART401 device at 0x%lx\n", iomidi);
 		}
+=======
+	err = snd_cmipci_mixer_new(cm, pcm_spdif_index);
+	if (err < 0)
+		return err;
+
+	if (iomidi > 0) {
+		err = snd_mpu401_uart_new(card, 0, MPU401_HW_CMIPCI,
+					  iomidi,
+					  (integrated_midi ?
+					   MPU401_INFO_INTEGRATED : 0) |
+					  MPU401_INFO_IRQ_HOOK,
+					  -1, &cm->rmidi);
+		if (err < 0)
+			dev_err(cm->card->dev,
+				"no UART401 device at 0x%lx\n", iomidi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 #ifdef USE_VAR48KRATE
@@ -3248,9 +3741,12 @@ static int __devinit snd_cmipci_create(struct snd_card *card, struct pci_dev *pc
 	if (snd_cmipci_create_gameport(cm, dev) < 0)
 		snd_cmipci_clear_bit(cm, CM_REG_FUNCTRL1, CM_JYSTK_EN);
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
 
 	*rcmipci = cm;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -3259,12 +3755,20 @@ static int __devinit snd_cmipci_create(struct snd_card *card, struct pci_dev *pc
 
 MODULE_DEVICE_TABLE(pci, snd_cmipci_ids);
 
+<<<<<<< HEAD
 static int __devinit snd_cmipci_probe(struct pci_dev *pci,
 				      const struct pci_device_id *pci_id)
 {
 	static int dev;
 	struct snd_card *card;
 	struct cmipci *cm;
+=======
+static int snd_cmipci_probe(struct pci_dev *pci,
+			    const struct pci_device_id *pci_id)
+{
+	static int dev;
+	struct snd_card *card;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (dev >= SNDRV_CARDS)
@@ -3274,7 +3778,12 @@ static int __devinit snd_cmipci_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
+=======
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(struct cmipci), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 	
@@ -3292,6 +3801,7 @@ static int __devinit snd_cmipci_probe(struct pci_dev *pci,
 		break;
 	}
 
+<<<<<<< HEAD
 	if ((err = snd_cmipci_create(card, pci, dev, &cm)) < 0) {
 		snd_card_free(card);
 		return err;
@@ -3302,10 +3812,21 @@ static int __devinit snd_cmipci_probe(struct pci_dev *pci,
 		snd_card_free(card);
 		return err;
 	}
+=======
+	err = snd_cmipci_create(card, pci, dev);
+	if (err < 0)
+		goto error;
+
+	err = snd_card_register(card);
+	if (err < 0)
+		goto error;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_drvdata(pci, card);
 	dev++;
 	return 0;
 
+<<<<<<< HEAD
 }
 
 static void __devexit snd_cmipci_remove(struct pci_dev *pci)
@@ -3322,12 +3843,29 @@ static void __devexit snd_cmipci_remove(struct pci_dev *pci)
 static unsigned char saved_regs[] = {
 	CM_REG_FUNCTRL1, CM_REG_CHFORMAT, CM_REG_LEGACY_CTRL, CM_REG_MISC_CTRL,
 	CM_REG_MIXER0, CM_REG_MIXER1, CM_REG_MIXER2, CM_REG_MIXER3, CM_REG_PLL,
+=======
+ error:
+	snd_card_free(card);
+	return err;
+}
+
+/*
+ * power management
+ */
+static const unsigned char saved_regs[] = {
+	CM_REG_FUNCTRL1, CM_REG_CHFORMAT, CM_REG_LEGACY_CTRL, CM_REG_MISC_CTRL,
+	CM_REG_MIXER0, CM_REG_MIXER1, CM_REG_MIXER2, CM_REG_AUX_VOL, CM_REG_PLL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CM_REG_CH0_FRAME1, CM_REG_CH0_FRAME2,
 	CM_REG_CH1_FRAME1, CM_REG_CH1_FRAME2, CM_REG_EXT_MISC,
 	CM_REG_INT_STATUS, CM_REG_INT_HLDCLR, CM_REG_FUNCTRL0,
 };
 
+<<<<<<< HEAD
 static unsigned char saved_mixers[] = {
+=======
+static const unsigned char saved_mixers[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SB_DSP4_MASTER_DEV, SB_DSP4_MASTER_DEV + 1,
 	SB_DSP4_PCM_DEV, SB_DSP4_PCM_DEV + 1,
 	SB_DSP4_SYNTH_DEV, SB_DSP4_SYNTH_DEV + 1,
@@ -3338,18 +3876,27 @@ static unsigned char saved_mixers[] = {
 	SB_DSP4_INPUT_LEFT, SB_DSP4_INPUT_RIGHT,
 };
 
+<<<<<<< HEAD
 static int snd_cmipci_suspend(struct pci_dev *pci, pm_message_t state)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+static int snd_cmipci_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cmipci *cm = card->private_data;
 	int i;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 	
+<<<<<<< HEAD
 	snd_pcm_suspend_all(cm->pcm);
 	snd_pcm_suspend_all(cm->pcm2);
 	snd_pcm_suspend_all(cm->pcm_spdif);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* save registers */
 	for (i = 0; i < ARRAY_SIZE(saved_regs); i++)
 		cm->saved_regs[i] = snd_cmipci_read(cm, saved_regs[i]);
@@ -3358,6 +3905,7 @@ static int snd_cmipci_suspend(struct pci_dev *pci, pm_message_t state)
 
 	/* disable ints */
 	snd_cmipci_write(cm, CM_REG_INT_HLDCLR, 0);
+<<<<<<< HEAD
 
 	pci_disable_device(pci);
 	pci_save_state(pci);
@@ -3381,6 +3929,17 @@ static int snd_cmipci_resume(struct pci_dev *pci)
 	}
 	pci_set_master(pci);
 
+=======
+	return 0;
+}
+
+static int snd_cmipci_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct cmipci *cm = card->private_data;
+	int i;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* reset / initialize to a sane state */
 	snd_cmipci_write(cm, CM_REG_INT_HLDCLR, 0);
 	snd_cmipci_ch_reset(cm, CM_CH_PLAY);
@@ -3396,6 +3955,7 @@ static int snd_cmipci_resume(struct pci_dev *pci)
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
 
 static struct pci_driver driver = {
@@ -3421,3 +3981,18 @@ static void __exit alsa_card_cmipci_exit(void)
 
 module_init(alsa_card_cmipci_init)
 module_exit(alsa_card_cmipci_exit)
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(snd_cmipci_pm, snd_cmipci_suspend, snd_cmipci_resume);
+
+static struct pci_driver cmipci_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_cmipci_ids,
+	.probe = snd_cmipci_probe,
+	.driver = {
+		.pm = &snd_cmipci_pm,
+	},
+};
+	
+module_pci_driver(cmipci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

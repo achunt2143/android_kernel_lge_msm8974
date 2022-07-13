@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # arch/arm/mach-s5pv210/Makefile
 #
 # Copyright (c) 2010 Samsung Electronics Co., Ltd.
@@ -40,3 +41,12 @@ obj-$(CONFIG_S5PV210_SETUP_KEYPAD)	+= setup-keypad.o
 obj-$(CONFIG_S5PV210_SETUP_SDHCI_GPIO)	+= setup-sdhci-gpio.o
 obj-$(CONFIG_S5PV210_SETUP_SPI)		+= setup-spi.o
 obj-$(CONFIG_S5PV210_SETUP_USB_PHY) += setup-usb-phy.o
+=======
+# SPDX-License-Identifier: GPL-2.0
+#
+# Copyright (c) 2010 Samsung Electronics Co., Ltd.
+# 		http://www.samsung.com/
+
+obj-$(CONFIG_PM_SLEEP)		+= pm.o sleep.o
+obj-y				+= s5pv210.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/regulator/aat2870-regulator.c
  *
  * Copyright (c) 2011, NVIDIA Corporation.
  * Author: Jin Park <jinyoungp@nvidia.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -24,7 +31,10 @@
 #include <linux/err.h>
 #include <linux/module.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
@@ -34,11 +44,14 @@ struct aat2870_regulator {
 	struct aat2870_data *aat2870;
 	struct regulator_desc desc;
 
+<<<<<<< HEAD
 	const int *voltages; /* uV */
 
 	int min_uV;
 	int max_uV;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 enable_addr;
 	u8 enable_shift;
 	u8 enable_mask;
@@ -48,6 +61,7 @@ struct aat2870_regulator {
 	u8 voltage_mask;
 };
 
+<<<<<<< HEAD
 static int aat2870_ldo_list_voltage(struct regulator_dev *rdev,
 				    unsigned selector)
 {
@@ -56,6 +70,8 @@ static int aat2870_ldo_list_voltage(struct regulator_dev *rdev,
 	return ri->voltages[selector];
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int aat2870_ldo_set_voltage_sel(struct regulator_dev *rdev,
 				       unsigned selector)
 {
@@ -111,8 +127,14 @@ static int aat2870_ldo_is_enabled(struct regulator_dev *rdev)
 	return val & ri->enable_mask ? 1 : 0;
 }
 
+<<<<<<< HEAD
 static struct regulator_ops aat2870_ldo_ops = {
 	.list_voltage = aat2870_ldo_list_voltage,
+=======
+static const struct regulator_ops aat2870_ldo_ops = {
+	.list_voltage = regulator_list_voltage_table,
+	.map_voltage = regulator_map_voltage_ascend,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_voltage_sel = aat2870_ldo_set_voltage_sel,
 	.get_voltage_sel = aat2870_ldo_get_voltage_sel,
 	.enable = aat2870_ldo_enable,
@@ -120,7 +142,11 @@ static struct regulator_ops aat2870_ldo_ops = {
 	.is_enabled = aat2870_ldo_is_enabled,
 };
 
+<<<<<<< HEAD
 static const int aat2870_ldo_voltages[] = {
+=======
+static const unsigned int aat2870_ldo_voltages[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	1200000, 1300000, 1500000, 1600000,
 	1800000, 2000000, 2200000, 2500000,
 	2600000, 2700000, 2800000, 2900000,
@@ -133,13 +159,20 @@ static const int aat2870_ldo_voltages[] = {
 			.name = #ids,			\
 			.id = AAT2870_ID_##ids,		\
 			.n_voltages = ARRAY_SIZE(aat2870_ldo_voltages),	\
+<<<<<<< HEAD
+=======
+			.volt_table = aat2870_ldo_voltages, \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.ops = &aat2870_ldo_ops,	\
 			.type = REGULATOR_VOLTAGE,	\
 			.owner = THIS_MODULE,		\
 		},					\
+<<<<<<< HEAD
 		.voltages = aat2870_ldo_voltages,	\
 		.min_uV = 1200000,			\
 		.max_uV = 3300000,			\
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 static struct aat2870_regulator aat2870_regulators[] = {
@@ -178,6 +211,10 @@ static struct aat2870_regulator *aat2870_get_regulator(int id)
 static int aat2870_regulator_probe(struct platform_device *pdev)
 {
 	struct aat2870_regulator *ri;
+<<<<<<< HEAD
+=======
+	struct regulator_config config = { };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct regulator_dev *rdev;
 
 	ri = aat2870_get_regulator(pdev->id);
@@ -187,8 +224,16 @@ static int aat2870_regulator_probe(struct platform_device *pdev)
 	}
 	ri->aat2870 = dev_get_drvdata(pdev->dev.parent);
 
+<<<<<<< HEAD
 	rdev = regulator_register(&ri->desc, &pdev->dev,
 				  pdev->dev.platform_data, ri, NULL);
+=======
+	config.dev = &pdev->dev;
+	config.driver_data = ri;
+	config.init_data = dev_get_platdata(&pdev->dev);
+
+	rdev = devm_regulator_register(&pdev->dev, &ri->desc, &config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(rdev)) {
 		dev_err(&pdev->dev, "Failed to register regulator %s\n",
 			ri->desc.name);
@@ -199,6 +244,7 @@ static int aat2870_regulator_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit aat2870_regulator_remove(struct platform_device *pdev)
 {
 	struct regulator_dev *rdev = platform_get_drvdata(pdev);
@@ -214,6 +260,14 @@ static struct platform_driver aat2870_regulator_driver = {
 	},
 	.probe	= aat2870_regulator_probe,
 	.remove	= __devexit_p(aat2870_regulator_remove),
+=======
+static struct platform_driver aat2870_regulator_driver = {
+	.driver = {
+		.name	= "aat2870-regulator",
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+	},
+	.probe	= aat2870_regulator_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init aat2870_regulator_init(void)
@@ -231,3 +285,7 @@ module_exit(aat2870_regulator_exit);
 MODULE_DESCRIPTION("AnalogicTech AAT2870 Regulator");
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jin Park <jinyoungp@nvidia.com>");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("platform:aat2870-regulator");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

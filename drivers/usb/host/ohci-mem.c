@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-1.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OHCI HCD (Host Controller Driver) for USB.
  *
@@ -28,12 +32,26 @@ static void ohci_hcd_init (struct ohci_hcd *ohci)
 	ohci->next_statechange = jiffies;
 	spin_lock_init (&ohci->lock);
 	INIT_LIST_HEAD (&ohci->pending);
+<<<<<<< HEAD
+=======
+	INIT_LIST_HEAD(&ohci->eds_in_use);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------*/
 
 static int ohci_mem_init (struct ohci_hcd *ohci)
 {
+<<<<<<< HEAD
+=======
+	/*
+	 * HCs with local memory allocate from localmem_pool so there's
+	 * no need to create the below dma pools.
+	 */
+	if (ohci_to_hcd(ohci)->localmem_pool)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ohci->td_cache = dma_pool_create ("ohci_td",
 		ohci_to_hcd(ohci)->self.controller,
 		sizeof (struct td),
@@ -55,6 +73,7 @@ static int ohci_mem_init (struct ohci_hcd *ohci)
 
 static void ohci_mem_cleanup (struct ohci_hcd *ohci)
 {
+<<<<<<< HEAD
 	if (ohci->td_cache) {
 		dma_pool_destroy (ohci->td_cache);
 		ohci->td_cache = NULL;
@@ -63,6 +82,12 @@ static void ohci_mem_cleanup (struct ohci_hcd *ohci)
 		dma_pool_destroy (ohci->ed_cache);
 		ohci->ed_cache = NULL;
 	}
+=======
+	dma_pool_destroy(ohci->td_cache);
+	ohci->td_cache = NULL;
+	dma_pool_destroy(ohci->ed_cache);
+	ohci->ed_cache = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------*/
@@ -86,11 +111,23 @@ td_alloc (struct ohci_hcd *hc, gfp_t mem_flags)
 {
 	dma_addr_t	dma;
 	struct td	*td;
+<<<<<<< HEAD
 
 	td = dma_pool_alloc (hc->td_cache, mem_flags, &dma);
 	if (td) {
 		/* in case hc fetches it, make it look dead */
 		memset (td, 0, sizeof *td);
+=======
+	struct usb_hcd	*hcd = ohci_to_hcd(hc);
+
+	if (hcd->localmem_pool)
+		td = gen_pool_dma_zalloc_align(hcd->localmem_pool,
+				sizeof(*td), &dma, 32);
+	else
+		td = dma_pool_zalloc(hc->td_cache, mem_flags, &dma);
+	if (td) {
+		/* in case hc fetches it, make it look dead */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		td->hwNextTD = cpu_to_hc32 (hc, dma);
 		td->td_dma = dma;
 		/* hashed in td_fill */
@@ -102,6 +139,10 @@ static void
 td_free (struct ohci_hcd *hc, struct td *td)
 {
 	struct td	**prev = &hc->td_hash [TD_HASH_FUNC (td->td_dma)];
+<<<<<<< HEAD
+=======
+	struct usb_hcd	*hcd = ohci_to_hcd(hc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (*prev && *prev != td)
 		prev = &(*prev)->td_hash;
@@ -109,7 +150,16 @@ td_free (struct ohci_hcd *hc, struct td *td)
 		*prev = td->td_hash;
 	else if ((td->hwINFO & cpu_to_hc32(hc, TD_DONE)) != 0)
 		ohci_dbg (hc, "no hash for td %p\n", td);
+<<<<<<< HEAD
 	dma_pool_free (hc->td_cache, td, td->td_dma);
+=======
+
+	if (hcd->localmem_pool)
+		gen_pool_free(hcd->localmem_pool, (unsigned long)td,
+			      sizeof(*td));
+	else
+		dma_pool_free(hc->td_cache, td, td->td_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*-------------------------------------------------------------------------*/
@@ -120,10 +170,21 @@ ed_alloc (struct ohci_hcd *hc, gfp_t mem_flags)
 {
 	dma_addr_t	dma;
 	struct ed	*ed;
+<<<<<<< HEAD
 
 	ed = dma_pool_alloc (hc->ed_cache, mem_flags, &dma);
 	if (ed) {
 		memset (ed, 0, sizeof (*ed));
+=======
+	struct usb_hcd	*hcd = ohci_to_hcd(hc);
+
+	if (hcd->localmem_pool)
+		ed = gen_pool_dma_zalloc_align(hcd->localmem_pool,
+				sizeof(*ed), &dma, 16);
+	else
+		ed = dma_pool_zalloc(hc->ed_cache, mem_flags, &dma);
+	if (ed) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		INIT_LIST_HEAD (&ed->td_list);
 		ed->dma = dma;
 	}
@@ -133,6 +194,16 @@ ed_alloc (struct ohci_hcd *hc, gfp_t mem_flags)
 static void
 ed_free (struct ohci_hcd *hc, struct ed *ed)
 {
+<<<<<<< HEAD
 	dma_pool_free (hc->ed_cache, ed, ed->dma);
+=======
+	struct usb_hcd	*hcd = ohci_to_hcd(hc);
+
+	if (hcd->localmem_pool)
+		gen_pool_free(hcd->localmem_pool, (unsigned long)ed,
+			      sizeof(*ed));
+	else
+		dma_pool_free(hc->ed_cache, ed, ed->dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

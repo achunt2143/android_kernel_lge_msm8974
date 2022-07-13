@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-dove/cm-a510.c
  *
@@ -5,10 +9,13 @@
  * Konstantin Sinyuk <kostyas@compulab.co.il>
  *
  * Based on Marvell DB-MV88AP510-BP Development Board Setup
+<<<<<<< HEAD
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2.  This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -22,8 +29,12 @@
 #include <asm/mach-types.h>
 #include <asm/mach/arch.h>
 
+<<<<<<< HEAD
 #include <mach/dove.h>
 
+=======
+#include "dove.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "common.h"
 
 static struct mv643xx_eth_platform_data cm_a510_ge00_data = {
@@ -88,10 +99,18 @@ static void __init cm_a510_init(void)
 
 MACHINE_START(CM_A510, "Compulab CM-A510 Board")
 	.atag_offset	= 0x100,
+<<<<<<< HEAD
+=======
+	.nr_irqs	= DOVE_NR_IRQS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_machine	= cm_a510_init,
 	.map_io		= dove_map_io,
 	.init_early	= dove_init_early,
 	.init_irq	= dove_init_irq,
+<<<<<<< HEAD
 	.timer		= &dove_timer,
+=======
+	.init_time	= dove_timer_init,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart	= dove_restart,
 MACHINE_END

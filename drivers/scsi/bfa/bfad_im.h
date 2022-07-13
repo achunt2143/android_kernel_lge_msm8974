@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
@@ -13,6 +14,16 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __BFAD_IM_H__
@@ -37,12 +48,19 @@ int  bfad_im_scsi_host_alloc(struct bfad_s *bfad,
 		struct bfad_im_port_s *im_port, struct device *dev);
 void bfad_im_scsi_host_free(struct bfad_s *bfad,
 				struct bfad_im_port_s *im_port);
+<<<<<<< HEAD
+=======
+u32 bfad_im_supported_speeds(struct bfa_s *bfa);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MAX_FCP_TARGET 1024
 #define MAX_FCP_LUN 16384
 #define BFAD_TARGET_RESET_TMO 60
 #define BFAD_LUN_RESET_TMO 60
+<<<<<<< HEAD
 #define ScsiResult(host_code, scsi_code) (((host_code) << 16) | scsi_code)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BFA_QUEUE_FULL_RAMP_UP_TIME 120
 
 /*
@@ -50,6 +68,25 @@ void bfad_im_scsi_host_free(struct bfad_s *bfad,
  */
 #define IO_DONE_BIT			0
 
+<<<<<<< HEAD
+=======
+/**
+ * struct bfad_cmd_priv - private data per SCSI command.
+ * @status: Lowest bit represents IO_DONE. The next seven bits hold a value of
+ * type enum bfi_tskim_status.
+ * @wq: Wait queue used to wait for completion of an operation.
+ */
+struct bfad_cmd_priv {
+	unsigned long status;
+	wait_queue_head_t *wq;
+};
+
+static inline struct bfad_cmd_priv *bfad_priv(struct scsi_cmnd *cmd)
+{
+	return scsi_cmd_priv(cmd);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bfad_itnim_data_s {
 	struct bfad_itnim_s *itnim;
 };
@@ -67,6 +104,19 @@ struct bfad_im_port_s {
 	struct fc_vport *fc_vport;
 };
 
+<<<<<<< HEAD
+=======
+struct bfad_im_port_pointer {
+	struct bfad_im_port_s *p;
+};
+
+static inline struct bfad_im_port_s *bfad_get_im_port(struct Scsi_Host *host)
+{
+	struct bfad_im_port_pointer *im_portp = shost_priv(host);
+	return im_portp->p;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum bfad_itnim_state {
 	ITNIM_STATE_NONE,
 	ITNIM_STATE_ONLINE,
@@ -129,6 +179,7 @@ struct bfad_im_s {
 } while (0)
 
 /* post fc_host vendor event */
+<<<<<<< HEAD
 #define bfad_im_post_vendor_event(_entry, _drv, _cnt, _cat, _evt) do {	      \
 	do_gettimeofday(&(_entry)->aen_tv);				      \
 	(_entry)->bfad_num = (_drv)->inst_no;				      \
@@ -139,6 +190,30 @@ struct bfad_im_s {
 		queue_work((_drv)->im->drv_workq,			      \
 			   &(_drv)->im->aen_im_notify_work);		      \
 } while (0)
+=======
+static inline void bfad_im_post_vendor_event(struct bfa_aen_entry_s *entry,
+					     struct bfad_s *drv, int cnt,
+					     enum bfa_aen_category cat,
+					     int evt)
+{
+	struct timespec64 ts;
+
+	ktime_get_real_ts64(&ts);
+	/*
+	 * 'unsigned long aen_tv_sec' overflows in y2106 on 32-bit
+	 * architectures, or in 2038 if user space interprets it
+	 * as 'signed'.
+	 */
+	entry->aen_tv_sec = ts.tv_sec;
+	entry->aen_tv_usec = ts.tv_nsec / NSEC_PER_USEC;
+	entry->bfad_num = drv->inst_no;
+	entry->seq_num = cnt;
+	entry->aen_category = cat;
+	entry->aen_type = evt;
+	if (drv->bfad_flags & BFAD_FC4_PROBE_DONE)
+		queue_work(drv->im->drv_workq, &drv->im->aen_im_notify_work);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct Scsi_Host *bfad_scsi_host_alloc(struct bfad_im_port_s *im_port,
 				struct bfad_s *);
@@ -159,6 +234,7 @@ extern struct fc_function_template bfad_im_vport_fc_function_template;
 extern struct scsi_transport_template *bfad_im_scsi_transport_template;
 extern struct scsi_transport_template *bfad_im_scsi_vport_transport_template;
 
+<<<<<<< HEAD
 extern struct device_attribute *bfad_im_host_attrs[];
 extern struct device_attribute *bfad_im_vport_attrs[];
 
@@ -192,5 +268,14 @@ int bfad_im_bsg_timeout(struct fc_bsg_job *job);
 		}							\
 	}								\
 } while (0)
+=======
+extern const struct attribute_group *bfad_im_host_groups[];
+extern const struct attribute_group *bfad_im_vport_groups[];
+
+irqreturn_t bfad_intx(int irq, void *dev_id);
+
+int bfad_im_bsg_request(struct bsg_job *job);
+int bfad_im_bsg_timeout(struct bsg_job *job);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

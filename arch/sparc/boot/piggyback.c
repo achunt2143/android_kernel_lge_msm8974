@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
    Simple utility to make a single-image install kernel with initial ramdisk
    for Sparc tftpbooting without need to set up nfs.
@@ -6,6 +10,7 @@
    Pete Zaitcev <zaitcev@yahoo.com> endian fixes for cross-compiles, 2000.
    Copyright (C) 2011 Sam Ravnborg <sam@ravnborg.org>
 
+<<<<<<< HEAD
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +24,9 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+=======
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <dirent.h>
 #include <stdlib.h>
@@ -81,18 +89,30 @@ static void usage(void)
 
 static int start_line(const char *line)
 {
+<<<<<<< HEAD
 	if (strcmp(line + 8, " T _start\n") == 0)
 		return 1;
 	else if (strcmp(line + 16, " T _start\n") == 0)
+=======
+	if (strcmp(line + 10, " _start\n") == 0)
+		return 1;
+	else if (strcmp(line + 18, " _start\n") == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	return 0;
 }
 
 static int end_line(const char *line)
 {
+<<<<<<< HEAD
 	if (strcmp(line + 8, " A _end\n") == 0)
 		return 1;
 	else if (strcmp (line + 16, " A _end\n") == 0)
+=======
+	if (strcmp(line + 10, " _end\n") == 0)
+		return 1;
+	else if (strcmp (line + 18, " _end\n") == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	return 0;
 }
@@ -100,8 +120,13 @@ static int end_line(const char *line)
 /*
  * Find address for start and end in System.map.
  * The file looks like this:
+<<<<<<< HEAD
  * f0004000 T _start
  * f0379f79 A _end
+=======
+ * f0004000 ... _start
+ * f0379f79 ... _end
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 1234567890123456
  * ^coloumn 1
  * There is support for 64 bit addresses too.
@@ -165,6 +190,13 @@ static off_t get_hdrs_offset(int kernelfd, const char *filename)
 		offset -= LOOKBACK;
 		/* skip a.out header */
 		offset += AOUT_TEXT_OFFSET;
+<<<<<<< HEAD
+=======
+		if (offset < 0) {
+			errno = -EINVAL;
+			die("Calculated a negative offset, probably elftoaout generated an invalid image. Did you use a recent elftoaout ?");
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lseek(kernelfd, offset, SEEK_SET) < 0)
 			die("lseek");
 		if (read(kernelfd, buffer, BUFSIZE) != BUFSIZE)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_FB_H_
 #define _ASM_FB_H_
 
@@ -15,5 +16,19 @@ static inline int fb_is_primary_device(struct fb_info *info)
 {
 	return 0;
 }
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_FB_H_
+#define _ASM_FB_H_
+
+struct fb_info;
+
+#if defined(CONFIG_STI_CORE)
+int fb_is_primary_device(struct fb_info *info);
+#define fb_is_primary_device fb_is_primary_device
+#endif
+
+#include <asm-generic/fb.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_FB_H_ */

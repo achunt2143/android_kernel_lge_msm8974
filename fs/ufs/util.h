@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/ufs/util.h
  *
@@ -10,12 +14,15 @@
 #include <linux/fs.h>
 #include "swab.h"
 
+<<<<<<< HEAD
 
 /*
  * some useful macros
  */
 #define in_range(b,first,len)	((b)>=(first)&&(b)<(first)+(len))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * functions used for retyping
  */
@@ -41,7 +48,11 @@ ufs_get_fs_state(struct super_block *sb, struct ufs_super_block_first *usb1,
 	case UFS_ST_SUNOS:
 		if (fs32_to_cpu(sb, usb3->fs_postblformat) == UFS_42POSTBLFMT)
 			return fs32_to_cpu(sb, usb1->fs_u0.fs_sun.fs_state);
+<<<<<<< HEAD
 		/* Fall Through to UFS_ST_SUN */
+=======
+		fallthrough;	/* to UFS_ST_SUN */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case UFS_ST_SUN:
 		return fs32_to_cpu(sb, usb3->fs_un2.fs_sun.fs_state);
 	case UFS_ST_SUNx86:
@@ -62,7 +73,11 @@ ufs_set_fs_state(struct super_block *sb, struct ufs_super_block_first *usb1,
 			usb1->fs_u0.fs_sun.fs_state = cpu_to_fs32(sb, value);
 			break;
 		}
+<<<<<<< HEAD
 		/* Fall Through to UFS_ST_SUN */
+=======
+		fallthrough;	/* to UFS_ST_SUN */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case UFS_ST_SUN:
 		usb3->fs_un2.fs_sun.fs_state = cpu_to_fs32(sb, value);
 		break;
@@ -196,7 +211,11 @@ ufs_get_inode_uid(struct super_block *sb, struct ufs_inode *inode)
 	case UFS_UID_EFT:
 		if (inode->ui_u1.oldids.ui_suid == 0xFFFF)
 			return fs32_to_cpu(sb, inode->ui_u3.ui_sun.ui_uid);
+<<<<<<< HEAD
 		/* Fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return fs16_to_cpu(sb, inode->ui_u1.oldids.ui_suid);
 	}
@@ -214,7 +233,11 @@ ufs_set_inode_uid(struct super_block *sb, struct ufs_inode *inode, u32 value)
 		inode->ui_u3.ui_sun.ui_uid = cpu_to_fs32(sb, value);
 		if (value > 0xFFFF)
 			value = 0xFFFF;
+<<<<<<< HEAD
 		/* Fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		inode->ui_u1.oldids.ui_suid = cpu_to_fs16(sb, value);
 		break;
@@ -228,9 +251,15 @@ ufs_get_inode_gid(struct super_block *sb, struct ufs_inode *inode)
 	case UFS_UID_44BSD:
 		return fs32_to_cpu(sb, inode->ui_u3.ui_44.ui_gid);
 	case UFS_UID_EFT:
+<<<<<<< HEAD
 		if (inode->ui_u1.oldids.ui_suid == 0xFFFF)
 			return fs32_to_cpu(sb, inode->ui_u3.ui_sun.ui_gid);
 		/* Fall through */
+=======
+		if (inode->ui_u1.oldids.ui_sgid == 0xFFFF)
+			return fs32_to_cpu(sb, inode->ui_u3.ui_sun.ui_gid);
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return fs16_to_cpu(sb, inode->ui_u1.oldids.ui_sgid);
 	}
@@ -248,7 +277,11 @@ ufs_set_inode_gid(struct super_block *sb, struct ufs_inode *inode, u32 value)
 		inode->ui_u3.ui_sun.ui_gid = cpu_to_fs32(sb, value);
 		if (value > 0xFFFF)
 			value = 0xFFFF;
+<<<<<<< HEAD
 		/* Fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		inode->ui_u1.oldids.ui_sgid =  cpu_to_fs16(sb, value);
 		break;
@@ -278,6 +311,7 @@ extern void _ubh_ubhcpymem_(struct ufs_sb_private_info *, unsigned char *, struc
 extern void _ubh_memcpyubh_(struct ufs_sb_private_info *, struct ufs_buffer_head *, unsigned char *, unsigned);
 
 /* This functions works with cache pages*/
+<<<<<<< HEAD
 extern struct page *ufs_get_locked_page(struct address_space *mapping,
 					pgoff_t index);
 static inline void ufs_put_locked_page(struct page *page)
@@ -287,6 +321,15 @@ static inline void ufs_put_locked_page(struct page *page)
 }
 
 
+=======
+struct folio *ufs_get_locked_folio(struct address_space *mapping, pgoff_t index);
+static inline void ufs_put_locked_folio(struct folio *folio)
+{
+       folio_unlock(folio);
+       folio_put(folio);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * macros and inline function to get important structures from ufs_sb_private_info
  */
@@ -350,6 +393,7 @@ static inline void *ubh_get_data_ptr(struct ufs_sb_private_info *uspi,
 #define ubh_blkmap(ubh,begin,bit) \
 	((*ubh_get_addr(ubh, (begin) + ((bit) >> 3)) >> ((bit) & 7)) & (0xff >> (UFS_MAXFRAG - uspi->s_fpb)))
 
+<<<<<<< HEAD
 /*
  * Determine the number of available frags given a
  * percentage to hold in reserve.
@@ -360,6 +404,13 @@ ufs_freespace(struct ufs_sb_private_info *uspi, int percentreserved)
 	return ufs_blkstofrags(uspi->cs_total.cs_nbfree) +
 		uspi->cs_total.cs_nffree -
 		(uspi->s_dsize * (percentreserved) / 100);
+=======
+static inline u64
+ufs_freefrags(struct ufs_sb_private_info *uspi)
+{
+	return ufs_blkstofrags(uspi->cs_total.cs_nbfree) +
+		uspi->cs_total.cs_nffree;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -473,15 +524,30 @@ static inline unsigned _ubh_find_last_zero_bit_(
 static inline int _ubh_isblockset_(struct ufs_sb_private_info * uspi,
 	struct ufs_buffer_head * ubh, unsigned begin, unsigned block)
 {
+<<<<<<< HEAD
+=======
+	u8 mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (uspi->s_fpb) {
 	case 8:
 	    	return (*ubh_get_addr (ubh, begin + block) == 0xff);
 	case 4:
+<<<<<<< HEAD
 		return (*ubh_get_addr (ubh, begin + (block >> 1)) == (0x0f << ((block & 0x01) << 2)));
 	case 2:
 		return (*ubh_get_addr (ubh, begin + (block >> 2)) == (0x03 << ((block & 0x03) << 1)));
 	case 1:
 		return (*ubh_get_addr (ubh, begin + (block >> 3)) == (0x01 << (block & 0x07)));
+=======
+		mask = 0x0f << ((block & 0x01) << 2);
+		return (*ubh_get_addr (ubh, begin + (block >> 1)) & mask) == mask;
+	case 2:
+		mask = 0x03 << ((block & 0x03) << 1);
+		return (*ubh_get_addr (ubh, begin + (block >> 2)) & mask) == mask;
+	case 1:
+		mask = 0x01 << (block & 0x07);
+		return (*ubh_get_addr (ubh, begin + (block >> 3)) & mask) == mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;	
 }
@@ -590,3 +656,20 @@ static inline int ufs_is_data_ptr_zero(struct ufs_sb_private_info *uspi,
 	else
 		return *(__fs32 *)p == 0;
 }
+<<<<<<< HEAD
+=======
+
+static inline __fs32 ufs_get_seconds(struct super_block *sbp)
+{
+	time64_t now = ktime_get_real_seconds();
+
+	/* Signed 32-bit interpretation wraps around in 2038, which
+	 * happens in ufs1 inode stamps but not ufs2 using 64-bits
+	 * stamps. For superblock and blockgroup, let's assume
+	 * unsigned 32-bit stamps, which are good until y2106.
+	 * Wrap around rather than clamp here to make the dirty
+	 * file system detection work in the superblock stamp.
+	 */
+	return cpu_to_fs32(sbp, lower_32_bits(now));
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

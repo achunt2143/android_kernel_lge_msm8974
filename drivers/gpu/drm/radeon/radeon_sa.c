@@ -27,12 +27,31 @@
  * Authors:
  *    Jerome Glisse <glisse@freedesktop.org>
  */
+<<<<<<< HEAD
 #include "drmP.h"
 #include "drm.h"
+=======
+/* Algorithm:
+ *
+ * We store the last allocated bo in "hole", we always try to allocate
+ * after the last allocated bo. Principle is that in a linear GPU ring
+ * progression was is after last is the oldest bo we allocated and thus
+ * the first one that should no longer be in use by the GPU.
+ *
+ * If it's not the case we skip over the bo after last to the closest
+ * done bo if such one exist. If none exist and we are not asked to
+ * block we report failure to allocate.
+ *
+ * If we are asked to block we wait on all the oldest fence of all
+ * rings. We just wait for any of those fence to complete.
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "radeon.h"
 
 int radeon_sa_bo_manager_init(struct radeon_device *rdev,
 			      struct radeon_sa_manager *sa_manager,
+<<<<<<< HEAD
 			      unsigned size, u32 domain)
 {
 	int r;
@@ -44,17 +63,34 @@ int radeon_sa_bo_manager_init(struct radeon_device *rdev,
 
 	r = radeon_bo_create(rdev, size, RADEON_GPU_PAGE_SIZE, true,
 			     RADEON_GEM_DOMAIN_CPU, &sa_manager->bo);
+=======
+			      unsigned int size, u32 sa_align, u32 domain,
+			      u32 flags)
+{
+	int r;
+
+	r = radeon_bo_create(rdev, size, RADEON_GPU_PAGE_SIZE, true,
+			     domain, flags, NULL, NULL, &sa_manager->bo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r) {
 		dev_err(rdev->dev, "(%d) failed to allocate bo for manager\n", r);
 		return r;
 	}
 
+<<<<<<< HEAD
+=======
+	sa_manager->domain = domain;
+
+	drm_suballoc_manager_init(&sa_manager->base, size, sa_align);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
 void radeon_sa_bo_manager_fini(struct radeon_device *rdev,
 			       struct radeon_sa_manager *sa_manager)
 {
+<<<<<<< HEAD
 	struct radeon_sa_bo *sa_bo, *tmp;
 
 	if (!list_empty(&sa_manager->sa_bo)) {
@@ -65,6 +101,10 @@ void radeon_sa_bo_manager_fini(struct radeon_device *rdev,
 	}
 	radeon_bo_unref(&sa_manager->bo);
 	sa_manager->size = 0;
+=======
+	drm_suballoc_manager_fini(&sa_manager->base);
+	radeon_bo_unref(&sa_manager->bo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int radeon_sa_bo_manager_start(struct radeon_device *rdev,
@@ -113,6 +153,7 @@ int radeon_sa_bo_manager_suspend(struct radeon_device *rdev,
 	return r;
 }
 
+<<<<<<< HEAD
 /*
  * Principe is simple, we keep a list of sub allocation in offset
  * order (first entry has offset == 0, last entry has the highest
@@ -187,3 +228,45 @@ void radeon_sa_bo_free(struct radeon_device *rdev, struct radeon_sa_bo *sa_bo)
 {
 	list_del_init(&sa_bo->list);
 }
+=======
+int radeon_sa_bo_new(struct radeon_sa_manager *sa_manager,
+		     struct drm_suballoc **sa_bo,
+		     unsigned int size, unsigned int align)
+{
+	struct drm_suballoc *sa = drm_suballoc_new(&sa_manager->base, size,
+						   GFP_KERNEL, false, align);
+
+	if (IS_ERR(sa)) {
+		*sa_bo = NULL;
+		return PTR_ERR(sa);
+	}
+
+	*sa_bo = sa;
+	return 0;
+}
+
+void radeon_sa_bo_free(struct drm_suballoc **sa_bo,
+		       struct radeon_fence *fence)
+{
+	if (sa_bo == NULL || *sa_bo == NULL) {
+		return;
+	}
+
+	if (fence)
+		drm_suballoc_free(*sa_bo, &fence->base);
+	else
+		drm_suballoc_free(*sa_bo, NULL);
+
+	*sa_bo = NULL;
+}
+
+#if defined(CONFIG_DEBUG_FS)
+void radeon_sa_bo_dump_debug_info(struct radeon_sa_manager *sa_manager,
+				  struct seq_file *m)
+{
+	struct drm_printer p = drm_seq_file_printer(m);
+
+	drm_suballoc_dump_debug_info(&sa_manager->base, &p, sa_manager->gpu_addr);
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

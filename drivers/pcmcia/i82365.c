@@ -108,12 +108,21 @@ static int async_clock = -1;
 static int cable_mode = -1;
 static int wakeup = 0;
 
+<<<<<<< HEAD
 module_param(i365_base, ulong, 0444);
 module_param(ignore, int, 0444);
 module_param(extra_sockets, int, 0444);
 module_param(irq_mask, int, 0444);
 module_param_array(irq_list, int, &irq_list_count, 0444);
 module_param(cs_irq, int, 0444);
+=======
+module_param_hw(i365_base, ulong, ioport, 0444);
+module_param(ignore, int, 0444);
+module_param(extra_sockets, int, 0444);
+module_param_hw(irq_mask, int, other, 0444);
+module_param_hw_array(irq_list, int, irq, &irq_list_count, 0444);
+module_param_hw(cs_irq, int, irq, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(async_clock, int, 0444);
 module_param(cable_mode, int, 0444);
 module_param(wakeup, int, 0444);
@@ -132,6 +141,7 @@ module_param(recov_time, int, 0444);
 
 /*====================================================================*/
 
+<<<<<<< HEAD
 typedef struct cirrus_state_t {
     u_char		misc1, misc2;
     u_char		timer[6];
@@ -140,6 +150,16 @@ typedef struct cirrus_state_t {
 typedef struct vg46x_state_t {
     u_char		ctl, ema;
 } vg46x_state_t;
+=======
+struct cirrus_state {
+    u_char		misc1, misc2;
+    u_char		timer[6];
+};
+
+struct vg46x_state {
+    u_char		ctl, ema;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct i82365_socket {
     u_short		type, flags;
@@ -149,8 +169,13 @@ struct i82365_socket {
     u_short		psock;
     u_char		cs_irq, intr;
     union {
+<<<<<<< HEAD
 	cirrus_state_t		cirrus;
 	vg46x_state_t		vg46x;
+=======
+	struct cirrus_state		cirrus;
+	struct vg46x_state		vg46x;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     } state;
 };
 
@@ -173,11 +198,19 @@ static struct timer_list poll_timer;
 /*====================================================================*/
 
 /* These definitions must match the pcic table! */
+<<<<<<< HEAD
 typedef enum pcic_id {
     IS_I82365A, IS_I82365B, IS_I82365DF,
     IS_IBM, IS_RF5Cx96, IS_VLSI, IS_VG468, IS_VG469,
     IS_PD6710, IS_PD672X, IS_VT83C469,
 } pcic_id;
+=======
+enum pcic_id {
+    IS_I82365A, IS_I82365B, IS_I82365DF,
+    IS_IBM, IS_RF5Cx96, IS_VLSI, IS_VG468, IS_VG469,
+    IS_PD6710, IS_PD672X, IS_VT83C469,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flags for classifying groups of controllers */
 #define IS_VADEM	0x0001
@@ -189,12 +222,21 @@ typedef enum pcic_id {
 #define IS_REGISTERED	0x2000
 #define IS_ALIVE	0x8000
 
+<<<<<<< HEAD
 typedef struct pcic_t {
     char		*name;
     u_short		flags;
 } pcic_t;
 
 static pcic_t pcic[] = {
+=======
+struct pcic {
+    char		*name;
+    u_short		flags;
+};
+
+static struct pcic pcic[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     { "Intel i82365sl A step", 0 },
     { "Intel i82365sl B step", 0 },
     { "Intel i82365sl DF", IS_DF_PWR },
@@ -208,7 +250,11 @@ static pcic_t pcic[] = {
     { "VIA VT83C469", IS_CIRRUS|IS_VIA },
 };
 
+<<<<<<< HEAD
 #define PCIC_COUNT	(sizeof(pcic)/sizeof(pcic_t))
+=======
+#define PCIC_COUNT	ARRAY_SIZE(pcic)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*====================================================================*/
 
@@ -294,7 +340,11 @@ static void i365_set_pair(u_short sock, u_short reg, u_short data)
 static void cirrus_get_state(u_short s)
 {
     int i;
+<<<<<<< HEAD
     cirrus_state_t *p = &socket[s].state.cirrus;
+=======
+    struct cirrus_state *p = &socket[s].state.cirrus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     p->misc1 = i365_get(s, PD67_MISC_CTL_1);
     p->misc1 &= (PD67_MC1_MEDIA_ENA | PD67_MC1_INPACK_ENA);
     p->misc2 = i365_get(s, PD67_MISC_CTL_2);
@@ -306,7 +356,11 @@ static void cirrus_set_state(u_short s)
 {
     int i;
     u_char misc;
+<<<<<<< HEAD
     cirrus_state_t *p = &socket[s].state.cirrus;
+=======
+    struct cirrus_state *p = &socket[s].state.cirrus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     misc = i365_get(s, PD67_MISC_CTL_2);
     i365_set(s, PD67_MISC_CTL_2, p->misc2);
@@ -321,7 +375,11 @@ static void cirrus_set_state(u_short s)
 static u_int __init cirrus_set_opts(u_short s, char *buf)
 {
     struct i82365_socket *t = &socket[s];
+<<<<<<< HEAD
     cirrus_state_t *p = &socket[s].state.cirrus;
+=======
+    struct cirrus_state *p = &socket[s].state.cirrus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     u_int mask = 0xffff;
 
     if (has_ring == -1) has_ring = 1;
@@ -377,7 +435,11 @@ static u_int __init cirrus_set_opts(u_short s, char *buf)
 
 static void vg46x_get_state(u_short s)
 {
+<<<<<<< HEAD
     vg46x_state_t *p = &socket[s].state.vg46x;
+=======
+    struct vg46x_state *p = &socket[s].state.vg46x;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     p->ctl = i365_get(s, VG468_CTL);
     if (socket[s].type == IS_VG469)
 	p->ema = i365_get(s, VG469_EXT_MODE);
@@ -385,7 +447,11 @@ static void vg46x_get_state(u_short s)
 
 static void vg46x_set_state(u_short s)
 {
+<<<<<<< HEAD
     vg46x_state_t *p = &socket[s].state.vg46x;
+=======
+    struct vg46x_state *p = &socket[s].state.vg46x;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     i365_set(s, VG468_CTL, p->ctl);
     if (socket[s].type == IS_VG469)
 	i365_set(s, VG469_EXT_MODE, p->ema);
@@ -393,7 +459,11 @@ static void vg46x_set_state(u_short s)
 
 static u_int __init vg46x_set_opts(u_short s, char *buf)
 {
+<<<<<<< HEAD
     vg46x_state_t *p = &socket[s].state.vg46x;
+=======
+    struct vg46x_state *p = &socket[s].state.vg46x;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     
     flip(p->ctl, VG468_CTL_ASYNC, async_clock);
     flip(p->ema, VG469_MODE_CABLE, cable_mode);
@@ -875,7 +945,11 @@ static irqreturn_t pcic_interrupt(int irq, void *dev)
     return IRQ_RETVAL(handled);
 } /* pcic_interrupt */
 
+<<<<<<< HEAD
 static void pcic_interrupt_wrapper(u_long data)
+=======
+static void pcic_interrupt_wrapper(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
     pcic_interrupt(0, NULL);
     poll_timer.expires = jiffies + poll_interval;
@@ -1233,7 +1307,10 @@ static struct pccard_operations pcic_operations = {
 static struct platform_driver i82365_driver = {
 	.driver = {
 		.name = "i82365",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -1286,6 +1363,7 @@ static int __init init_i82365(void)
 	    ret = pcmcia_register_socket(&socket[i].socket);
 	    if (!ret)
 		    socket[i].flags |= IS_REGISTERED;
+<<<<<<< HEAD
 
 #if 0 /* driver model ordering issue */
 	   class_device_create_file(&socket[i].socket.dev,
@@ -1293,13 +1371,19 @@ static int __init init_i82365(void)
 	   class_device_create_file(&socket[i].socket.dev,
 			   	    &class_device_attr_exca);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     }
 
     /* Finally, schedule a polling interrupt */
     if (poll_interval != 0) {
+<<<<<<< HEAD
 	poll_timer.function = pcic_interrupt_wrapper;
 	poll_timer.data = 0;
 	init_timer(&poll_timer);
+=======
+	timer_setup(&poll_timer, pcic_interrupt_wrapper, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     	poll_timer.expires = jiffies + poll_interval;
 	add_timer(&poll_timer);
     }

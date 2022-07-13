@@ -1,5 +1,10 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2006, 2007, 2008, 2009 QLogic Corporation. All rights reserved.
+=======
+ * Copyright (c) 2012 Intel Corporation. All rights reserved.
+ * Copyright (c) 2006 - 2012 QLogic Corporation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2006 PathScale, Inc. All rights reserved.
  *
  * This software is available to you under a choice of one of two
@@ -31,8 +36,13 @@
  * SOFTWARE.
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/fs.h>
+=======
+#include <linux/fs.h>
+#include <linux/fs_context.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mount.h>
 #include <linux/pagemap.h>
 #include <linux/init.h>
@@ -44,7 +54,11 @@
 
 static struct super_block *qib_super;
 
+<<<<<<< HEAD
 #define private2dd(file) ((file)->f_dentry->d_inode->i_private)
+=======
+#define private2dd(file) (file_inode(file)->i_private)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int qibfs_mknod(struct inode *dir, struct dentry *dentry,
 		       umode_t mode, const struct file_operations *fops,
@@ -60,12 +74,20 @@ static int qibfs_mknod(struct inode *dir, struct dentry *dentry,
 
 	inode->i_ino = get_next_ino();
 	inode->i_mode = mode;
+<<<<<<< HEAD
 	inode->i_uid = 0;
 	inode->i_gid = 0;
 	inode->i_blocks = 0;
 	inode->i_atime = CURRENT_TIME;
 	inode->i_mtime = inode->i_atime;
 	inode->i_ctime = inode->i_atime;
+=======
+	inode->i_uid = GLOBAL_ROOT_UID;
+	inode->i_gid = GLOBAL_ROOT_GID;
+	inode->i_blocks = 0;
+	simple_inode_init_ts(inode);
+	
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	inode->i_private = data;
 	if (S_ISDIR(mode)) {
 		inode->i_op = &simple_dir_inode_operations;
@@ -88,6 +110,7 @@ static int create_file(const char *name, umode_t mode,
 {
 	int error;
 
+<<<<<<< HEAD
 	*dentry = NULL;
 	mutex_lock(&parent->d_inode->i_mutex);
 	*dentry = lookup_one_len(name, parent, strlen(name));
@@ -97,6 +120,16 @@ static int create_file(const char *name, umode_t mode,
 	else
 		error = PTR_ERR(*dentry);
 	mutex_unlock(&parent->d_inode->i_mutex);
+=======
+	inode_lock(d_inode(parent));
+	*dentry = lookup_one_len(name, parent, strlen(name));
+	if (!IS_ERR(*dentry))
+		error = qibfs_mknod(d_inode(parent), *dentry,
+				    mode, fops, data);
+	else
+		error = PTR_ERR(*dentry);
+	inode_unlock(d_inode(parent));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return error;
 }
@@ -104,8 +137,14 @@ static int create_file(const char *name, umode_t mode,
 static ssize_t driver_stats_read(struct file *file, char __user *buf,
 				 size_t count, loff_t *ppos)
 {
+<<<<<<< HEAD
 	return simple_read_from_buffer(buf, count, ppos, &qib_stats,
 				       sizeof qib_stats);
+=======
+	qib_stats.sps_ints = qib_sps_ints();
+	return simple_read_from_buffer(buf, count, ppos, &qib_stats,
+				       sizeof(qib_stats));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -132,7 +171,11 @@ static ssize_t driver_names_read(struct file *file, char __user *buf,
 				 size_t count, loff_t *ppos)
 {
 	return simple_read_from_buffer(buf, count, ppos, qib_statnames,
+<<<<<<< HEAD
 		sizeof qib_statnames - 1); /* no null */
+=======
+		sizeof(qib_statnames) - 1); /* no null */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations driver_ops[] = {
@@ -170,7 +213,11 @@ static const struct file_operations cntr_ops[] = {
 };
 
 /*
+<<<<<<< HEAD
  * Could use file->f_dentry->d_inode->i_ino to figure out which file,
+=======
+ * Could use file_inode(file)->i_ino to figure out which file,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * instead of separate routine for each, but for now, this works...
  */
 
@@ -327,6 +374,7 @@ static ssize_t flash_write(struct file *file, const char __user *buf,
 
 	pos = *ppos;
 
+<<<<<<< HEAD
 	if (pos != 0) {
 		ret = -EINVAL;
 		goto bail;
@@ -347,6 +395,14 @@ static ssize_t flash_write(struct file *file, const char __user *buf,
 		ret = -EFAULT;
 		goto bail_tmp;
 	}
+=======
+	if (pos != 0 || count != sizeof(struct qib_flash))
+		return -EINVAL;
+
+	tmp = memdup_user(buf, count);
+	if (IS_ERR(tmp))
+		return PTR_ERR(tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dd = private2dd(file);
 	if (qib_eeprom_write(dd, pos, tmp, count)) {
@@ -360,8 +416,11 @@ static ssize_t flash_write(struct file *file, const char __user *buf,
 
 bail_tmp:
 	kfree(tmp);
+<<<<<<< HEAD
 
 bail:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -378,11 +437,19 @@ static int add_cntr_files(struct super_block *sb, struct qib_devdata *dd)
 	int ret, i;
 
 	/* create the per-unit directory */
+<<<<<<< HEAD
 	snprintf(unit, sizeof unit, "%u", dd->unit);
 	ret = create_file(unit, S_IFDIR|S_IRUGO|S_IXUGO, sb->s_root, &dir,
 			  &simple_dir_operations, dd);
 	if (ret) {
 		printk(KERN_ERR "create_file(%s) failed: %d\n", unit, ret);
+=======
+	snprintf(unit, sizeof(unit), "%u", dd->unit);
+	ret = create_file(unit, S_IFDIR|S_IRUGO|S_IXUGO, sb->s_root, &dir,
+			  &simple_dir_operations, dd);
+	if (ret) {
+		pr_err("create_file(%s) failed: %d\n", unit, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail;
 	}
 
@@ -390,21 +457,33 @@ static int add_cntr_files(struct super_block *sb, struct qib_devdata *dd)
 	ret = create_file("counters", S_IFREG|S_IRUGO, dir, &tmp,
 			  &cntr_ops[0], dd);
 	if (ret) {
+<<<<<<< HEAD
 		printk(KERN_ERR "create_file(%s/counters) failed: %d\n",
+=======
+		pr_err("create_file(%s/counters) failed: %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       unit, ret);
 		goto bail;
 	}
 	ret = create_file("counter_names", S_IFREG|S_IRUGO, dir, &tmp,
 			  &cntr_ops[1], dd);
 	if (ret) {
+<<<<<<< HEAD
 		printk(KERN_ERR "create_file(%s/counter_names) failed: %d\n",
+=======
+		pr_err("create_file(%s/counter_names) failed: %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       unit, ret);
 		goto bail;
 	}
 	ret = create_file("portcounter_names", S_IFREG|S_IRUGO, dir, &tmp,
 			  &portcntr_ops[0], dd);
 	if (ret) {
+<<<<<<< HEAD
 		printk(KERN_ERR "create_file(%s/%s) failed: %d\n",
+=======
+		pr_err("create_file(%s/%s) failed: %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       unit, "portcounter_names", ret);
 		goto bail;
 	}
@@ -416,7 +495,11 @@ static int add_cntr_files(struct super_block *sb, struct qib_devdata *dd)
 		ret = create_file(fname, S_IFREG|S_IRUGO, dir, &tmp,
 				  &portcntr_ops[i], dd);
 		if (ret) {
+<<<<<<< HEAD
 			printk(KERN_ERR "create_file(%s/%s) failed: %d\n",
+=======
+			pr_err("create_file(%s/%s) failed: %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				unit, fname, ret);
 			goto bail;
 		}
@@ -426,7 +509,11 @@ static int add_cntr_files(struct super_block *sb, struct qib_devdata *dd)
 		ret = create_file(fname, S_IFREG|S_IRUGO, dir, &tmp,
 				  &qsfp_ops[i - 1], dd);
 		if (ret) {
+<<<<<<< HEAD
 			printk(KERN_ERR "create_file(%s/%s) failed: %d\n",
+=======
+			pr_err("create_file(%s/%s) failed: %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				unit, fname, ret);
 			goto bail;
 		}
@@ -435,12 +522,17 @@ static int add_cntr_files(struct super_block *sb, struct qib_devdata *dd)
 	ret = create_file("flash", S_IFREG|S_IWUSR|S_IRUGO, dir, &tmp,
 			  &flash_ops, dd);
 	if (ret)
+<<<<<<< HEAD
 		printk(KERN_ERR "create_file(%s/flash) failed: %d\n",
+=======
+		pr_err("create_file(%s/flash) failed: %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unit, ret);
 bail:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int remove_file(struct dentry *parent, char *name)
 {
 	struct dentry *tmp;
@@ -511,6 +603,24 @@ bail:
 	mutex_unlock(&root->d_inode->i_mutex);
 	dput(root);
 	return ret;
+=======
+static int remove_device_files(struct super_block *sb,
+			       struct qib_devdata *dd)
+{
+	struct dentry *dir;
+	char unit[10];
+
+	snprintf(unit, sizeof(unit), "%u", dd->unit);
+	dir = lookup_one_len_unlocked(unit, sb->s_root, strlen(unit));
+
+	if (IS_ERR(dir)) {
+		pr_err("Lookup of %s failed\n", unit);
+		return PTR_ERR(dir);
+	}
+	simple_recursive_removal(dir, NULL);
+	dput(dir);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -518,6 +628,7 @@ bail:
  * after device init.  The direct add_cntr_files() call handles adding
  * them from the init code, when the fs is already mounted.
  */
+<<<<<<< HEAD
 static int qibfs_fill_super(struct super_block *sb, void *data, int silent)
 {
 	struct qib_devdata *dd, *tmp;
@@ -525,6 +636,15 @@ static int qibfs_fill_super(struct super_block *sb, void *data, int silent)
 	int ret;
 
 	static struct tree_descr files[] = {
+=======
+static int qibfs_fill_super(struct super_block *sb, struct fs_context *fc)
+{
+	struct qib_devdata *dd;
+	unsigned long index;
+	int ret;
+
+	static const struct tree_descr files[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		[2] = {"driver_stats", &driver_ops[0], S_IRUGO},
 		[3] = {"driver_stats_names", &driver_ops[1], S_IRUGO},
 		{""},
@@ -532,6 +652,7 @@ static int qibfs_fill_super(struct super_block *sb, void *data, int silent)
 
 	ret = simple_fill_super(sb, QIBFS_MAGIC, files);
 	if (ret) {
+<<<<<<< HEAD
 		printk(KERN_ERR "simple_fill_super failed: %d\n", ret);
 		goto bail;
 	}
@@ -548,10 +669,23 @@ static int qibfs_fill_super(struct super_block *sb, void *data, int silent)
 
 	spin_unlock_irqrestore(&qib_devs_lock, flags);
 
+=======
+		pr_err("simple_fill_super failed: %d\n", ret);
+		goto bail;
+	}
+
+	xa_for_each(&qib_dev_table, index, dd) {
+		ret = add_cntr_files(sb, dd);
+		if (ret)
+			goto bail;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bail:
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct dentry *qibfs_mount(struct file_system_type *fs_type, int flags,
 			const char *dev_name, void *data)
 {
@@ -562,6 +696,26 @@ static struct dentry *qibfs_mount(struct file_system_type *fs_type, int flags,
 	return ret;
 }
 
+=======
+static int qibfs_get_tree(struct fs_context *fc)
+{
+	int ret = get_tree_single(fc, qibfs_fill_super);
+	if (ret == 0)
+		qib_super = fc->root->d_sb;
+	return ret;
+}
+
+static const struct fs_context_operations qibfs_context_ops = {
+	.get_tree	= qibfs_get_tree,
+};
+
+static int qibfs_init_fs_context(struct fs_context *fc)
+{
+	fc->ops = &qibfs_context_ops;
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void qibfs_kill_super(struct super_block *s)
 {
 	kill_litter_super(s);
@@ -600,7 +754,11 @@ int qibfs_remove(struct qib_devdata *dd)
 static struct file_system_type qibfs_fs_type = {
 	.owner =        THIS_MODULE,
 	.name =         "ipathfs",
+<<<<<<< HEAD
 	.mount =        qibfs_mount,
+=======
+	.init_fs_context = qibfs_init_fs_context,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.kill_sb =      qibfs_kill_super,
 };
 MODULE_ALIAS_FS("ipathfs");

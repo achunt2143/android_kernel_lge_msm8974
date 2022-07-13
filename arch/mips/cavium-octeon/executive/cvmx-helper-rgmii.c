@@ -4,7 +4,11 @@
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
  *
+<<<<<<< HEAD
  * Copyright (c) 2003-2008 Cavium Networks
+=======
+ * Copyright (C) 2003-2018 Cavium, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
@@ -33,8 +37,11 @@
 
 #include <asm/octeon/cvmx-config.h>
 
+<<<<<<< HEAD
 
 #include <asm/octeon/cvmx-mdio.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/octeon/cvmx-pko.h>
 #include <asm/octeon/cvmx-helper.h>
 #include <asm/octeon/cvmx-helper-board.h>
@@ -44,10 +51,14 @@
 #include <asm/octeon/cvmx-asxx-defs.h>
 #include <asm/octeon/cvmx-dbg-defs.h>
 
+<<<<<<< HEAD
 void __cvmx_interrupt_gmxx_enable(int interface);
 void __cvmx_interrupt_asxx_enable(int block);
 
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Probe RGMII ports and determine the number present
  *
  * @interface: Interface to probe
@@ -93,7 +104,11 @@ int __cvmx_helper_rgmii_probe(int interface)
 	return num_ports;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Put an RGMII interface in loopback mode. Internal packets sent
  * out will be received back again on the same port. Externally
  * received packets will echo back out.
@@ -125,13 +140,21 @@ void cvmx_helper_rgmii_internal_loopback(int port)
 	cvmx_write_csr(CVMX_GMXX_PRTX_CFG(index, interface), gmx_cfg.u64);
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Workaround ASX setup errata with CN38XX pass1
  *
  * @interface: Interface to setup
  * @port:      Port to setup (0..3)
  * @cpu_clock_hz:
+<<<<<<< HEAD
  *                  Chip frequency in Hertz
+=======
+ *		    Chip frequency in Hertz
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns Zero on success, negative on failure
  */
@@ -153,8 +176,13 @@ static int __cvmx_helper_errata_asx_pass1(int interface, int port,
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  * Configure all of the ASX, GMX, and PKO regsiters required
+=======
+/*
+ * Configure all of the ASX, GMX, and PKO registers required
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * to get RGMII to function on the supplied interface.
  *
  * @interface: PKO Interface to configure (0 or 1)
@@ -243,8 +271,12 @@ int __cvmx_helper_rgmii_enable(int interface)
 	/* enable the ports now */
 	for (port = 0; port < num_ports; port++) {
 		union cvmx_gmxx_prtx_cfg gmx_cfg;
+<<<<<<< HEAD
 		cvmx_helper_link_autoconf(cvmx_helper_get_ipd_port
 					  (interface, port));
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gmx_cfg.u64 =
 		    cvmx_read_csr(CVMX_GMXX_PRTX_CFG(port, interface));
 		gmx_cfg.s.en = 1;
@@ -257,7 +289,11 @@ int __cvmx_helper_rgmii_enable(int interface)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Return the link state of an IPD/PKO port as returned by
  * auto negotiation. The result of this function may not match
  * Octeon's link config if auto negotiation has changed since
@@ -267,7 +303,11 @@ int __cvmx_helper_rgmii_enable(int interface)
  *
  * Returns Link state
  */
+<<<<<<< HEAD
 cvmx_helper_link_info_t __cvmx_helper_rgmii_link_get(int ipd_port)
+=======
+union cvmx_helper_link_info __cvmx_helper_rgmii_link_get(int ipd_port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int interface = cvmx_helper_get_interface_num(ipd_port);
 	int index = cvmx_helper_get_interface_index_num(ipd_port);
@@ -276,7 +316,11 @@ cvmx_helper_link_info_t __cvmx_helper_rgmii_link_get(int ipd_port)
 	asxx_prt_loop.u64 = cvmx_read_csr(CVMX_ASXX_PRT_LOOP(interface));
 	if (asxx_prt_loop.s.int_loop & (1 << index)) {
 		/* Force 1Gbps full duplex on internal loopback */
+<<<<<<< HEAD
 		cvmx_helper_link_info_t result;
+=======
+		union cvmx_helper_link_info result;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result.u64 = 0;
 		result.s.full_duplex = 1;
 		result.s.link_up = 1;
@@ -286,12 +330,20 @@ cvmx_helper_link_info_t __cvmx_helper_rgmii_link_get(int ipd_port)
 		return __cvmx_helper_board_link_get(ipd_port);
 }
 
+<<<<<<< HEAD
 /**
  * Configure an IPD/PKO port for the specified link state. This
  * function does not influence auto negotiation at the PHY level.
  * The passed link state must always match the link state returned
  * by cvmx_helper_link_get(). It is normally best to use
  * cvmx_helper_link_autoconf() instead.
+=======
+/*
+ * Configure an IPD/PKO port for the specified link state. This
+ * function does not influence auto negotiation at the PHY level.
+ * The passed link state must always match the link state returned
+ * by cvmx_helper_link_get().
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @ipd_port:  IPD/PKO port to configure
  * @link_info: The new link state
@@ -299,7 +351,11 @@ cvmx_helper_link_info_t __cvmx_helper_rgmii_link_get(int ipd_port)
  * Returns Zero on success, negative on failure
  */
 int __cvmx_helper_rgmii_link_set(int ipd_port,
+<<<<<<< HEAD
 				 cvmx_helper_link_info_t link_info)
+=======
+				 union cvmx_helper_link_info link_info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int result = 0;
 	int interface = cvmx_helper_get_interface_num(ipd_port);
@@ -409,6 +465,7 @@ int __cvmx_helper_rgmii_link_set(int ipd_port,
 			mode.u64 = cvmx_read_csr(CVMX_GMXX_INF_MODE(interface));
 
 	/*
+<<<<<<< HEAD
 	 * Port  .en  .type  .p0mii  Configuration
 	 * ----  ---  -----  ------  -----------------------------------------
 	 *  X      0     X      X    All links are disabled.
@@ -417,6 +474,16 @@ int __cvmx_helper_rgmii_link_set(int ipd_port,
 	 *  1      1     0      X    Ports 1 and 2 are configured as RGMII ports.
 	 *  1      1     1      X    Port 1: GMII/MII; Port 2: disabled. GMII or
 	 *                           MII port is selected by GMX_PRT1_CFG[SPEED].
+=======
+	 * Port	 .en  .type  .p0mii  Configuration
+	 * ----	 ---  -----  ------  -----------------------------------------
+	 *  X	   0	 X	X    All links are disabled.
+	 *  0	   1	 X	0    Port 0 is RGMII
+	 *  0	   1	 X	1    Port 0 is MII
+	 *  1	   1	 0	X    Ports 1 and 2 are configured as RGMII ports.
+	 *  1	   1	 1	X    Port 1: GMII/MII; Port 2: disabled. GMII or
+	 *			     MII port is selected by GMX_PRT1_CFG[SPEED].
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 			/* In MII mode, CLK_CNT = 1. */
@@ -456,6 +523,7 @@ int __cvmx_helper_rgmii_link_set(int ipd_port,
 
 	return result;
 }
+<<<<<<< HEAD
 
 /**
  * Configure a port for internal and/or external loopback. Internal loopback
@@ -524,3 +592,5 @@ int __cvmx_helper_rgmii_configure_loopback(int ipd_port, int enable_internal,
 	cvmx_write_csr(CVMX_GMXX_PRTX_CFG(index, interface), gmx_cfg.u64);
 	return 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

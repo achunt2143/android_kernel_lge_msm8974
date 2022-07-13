@@ -1,9 +1,17 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # SCSI Device Handler configuration
 #
 
 menuconfig SCSI_DH
+<<<<<<< HEAD
 	tristate "SCSI Device Handlers"
+=======
+	bool "SCSI Device Handlers"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on SCSI
 	default n
 	help
@@ -13,13 +21,21 @@ menuconfig SCSI_DH
 
 config SCSI_DH_RDAC
 	tristate "LSI RDAC Device Handler"
+<<<<<<< HEAD
 	depends on SCSI_DH
+=======
+	depends on SCSI_DH && SCSI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	If you have a LSI RDAC select y. Otherwise, say N.
 
 config SCSI_DH_HP_SW
 	tristate "HP/COMPAQ MSA Device Handler"
+<<<<<<< HEAD
 	depends on SCSI_DH
+=======
+	depends on SCSI_DH && SCSI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	If you have a HP/COMPAQ MSA device that requires START_STOP to
 	be sent to start it and cannot upgrade the firmware then select y.
@@ -27,13 +43,22 @@ config SCSI_DH_HP_SW
 
 config SCSI_DH_EMC
 	tristate "EMC CLARiiON Device Handler"
+<<<<<<< HEAD
 	depends on SCSI_DH
+=======
+	depends on SCSI_DH && SCSI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	If you have a EMC CLARiiON select y. Otherwise, say N.
 
 config SCSI_DH_ALUA
+<<<<<<< HEAD
 	tristate "SPC-3 ALUA Device Handler (EXPERIMENTAL)"
 	depends on SCSI_DH && EXPERIMENTAL
+=======
+	tristate "SPC-3 ALUA Device Handler"
+	depends on SCSI_DH && SCSI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  SCSI Device handler for generic SPC-3 Asymmetric Logical Unit
 	  Access (ALUA).

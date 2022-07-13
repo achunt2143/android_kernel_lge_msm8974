@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_SECCOMP_H
 
 #include <linux/unistd.h>
@@ -12,4 +13,16 @@
 #define __NR_seccomp_exit_32 __NR_exit
 #define __NR_seccomp_sigreturn_32 __NR_sigreturn
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_SECCOMP_H
+#define _ASM_SECCOMP_H
+
+#include <linux/unistd.h>
+
+#define __NR_seccomp_sigreturn_32 __NR_sigreturn
+
+#include <asm-generic/seccomp.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_SECCOMP_H */

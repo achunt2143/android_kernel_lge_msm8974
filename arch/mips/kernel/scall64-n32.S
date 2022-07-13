@@ -17,18 +17,25 @@
 #include <asm/thread_info.h>
 #include <asm/unistd.h>
 
+<<<<<<< HEAD
 /* This duplicates the definition from <linux/sched.h> */
 #define PT_TRACESYS	0x00000002	/* tracing system calls */
 
 /* This duplicates the definition from <asm/signal.h> */
 #define SIGILL		4		/* Illegal instruction (ANSI).  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef CONFIG_MIPS32_O32
 /* No O32, so define handle_sys here */
 #define handle_sysn32 handle_sys
 #endif
 
+<<<<<<< HEAD
 	.align  5
+=======
+	.align	5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 NESTED(handle_sysn32, PT_SIZE, sp)
 #ifndef CONFIG_MIPS32_O32
 	.set	noat
@@ -39,7 +46,11 @@ NESTED(handle_sysn32, PT_SIZE, sp)
 #endif
 
 	dsubu	t0, v0, __NR_N32_Linux	# check syscall number
+<<<<<<< HEAD
 	sltiu	t0, t0,	__NR_N32_Linux_syscalls + 1
+=======
+	sltiu	t0, t0, __NR_N32_Linux_syscalls
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef CONFIG_MIPS32_O32
 	ld	t1, PT_EPC(sp)		# skip syscall on return
@@ -48,16 +59,31 @@ NESTED(handle_sysn32, PT_SIZE, sp)
 #endif
 	beqz	t0, not_n32_scall
 
+<<<<<<< HEAD
 	dsll	t0, v0, 3		# offset into table
 	ld	t2, (sysn32_call_table - (__NR_N32_Linux * 8))(t0)
 
 	sd	a3, PT_R26(sp)		# save a3 for syscall restarting
 
 	li	t1, _TIF_SYSCALL_TRACE | _TIF_SYSCALL_AUDIT
+=======
+	sd	a3, PT_R26(sp)		# save a3 for syscall restarting
+
+	LONG_S	v0, TI_SYSCALL($28)     # Store syscall number
+
+	li	t1, _TIF_WORK_SYSCALL_ENTRY
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LONG_L	t0, TI_FLAGS($28)	# syscall tracing enabled?
 	and	t0, t1, t0
 	bnez	t0, n32_syscall_trace_entry
 
+<<<<<<< HEAD
+=======
+syscall_common:
+	dsll	t0, v0, 3		# offset into table
+	ld	t2, (sysn32_call_table - (__NR_N32_Linux * 8))(t0)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jalr	t2			# Do The Real Thing (TM)
 
 	li	t0, -EMAXERRNO - 1	# error?
@@ -70,6 +96,7 @@ NESTED(handle_sysn32, PT_SIZE, sp)
 	sd	t1, PT_R0(sp)		# save it for syscall restarting
 1:	sd	v0, PT_R2(sp)		# result
 
+<<<<<<< HEAD
 	local_irq_disable		# make sure need_resched and
 					# signals dont change between
 					# sampling and return
@@ -82,23 +109,37 @@ NESTED(handle_sysn32, PT_SIZE, sp)
 
 n32_syscall_exit_work:
 	j	syscall_exit_work_partial
+=======
+	j	syscall_exit_partial
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ------------------------------------------------------------------------ */
 
 n32_syscall_trace_entry:
 	SAVE_STATIC
+<<<<<<< HEAD
 	move	s0, t2
 	move	a0, sp
 	jal	syscall_trace_enter
 
 	move	t0, s0
 	RESTORE_STATIC
+=======
+	move	a0, sp
+	jal	syscall_trace_enter
+
+	bltz	v0, 1f			# seccomp failed? Skip syscall
+
+	RESTORE_STATIC
+	ld	v0, PT_R2(sp)		# Restore syscall (maybe modified)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ld	a0, PT_R4(sp)		# Restore argument registers
 	ld	a1, PT_R5(sp)
 	ld	a2, PT_R6(sp)
 	ld	a3, PT_R7(sp)
 	ld	a4, PT_R8(sp)
 	ld	a5, PT_R9(sp)
+<<<<<<< HEAD
 	jalr	t0
 
 	li	t0, -EMAXERRNO - 1	# error?
@@ -112,6 +153,16 @@ n32_syscall_trace_entry:
 1:	sd	v0, PT_R2(sp)		# result
 
 	j	syscall_exit
+=======
+
+	dsubu	t2, v0, __NR_N32_Linux	# check (new) syscall number
+	sltiu   t0, t2, __NR_N32_Linux_syscalls
+	beqz	t0, not_n32_scall
+
+	j	syscall_common
+
+1:	j	syscall_exit
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 not_n32_scall:
 	/* This is not an n32 compatibility syscall, pass it on to
@@ -120,6 +171,7 @@ not_n32_scall:
 
 	END(handle_sysn32)
 
+<<<<<<< HEAD
 EXPORT(sysn32_call_table)
 	PTR	sys_read			/* 6000 */
 	PTR	sys_write
@@ -433,3 +485,9 @@ EXPORT(sysn32_call_table)
 	PTR	compat_sys_process_vm_readv
 	PTR	compat_sys_process_vm_writev	/* 6310 */
 	.size	sysn32_call_table,.-sysn32_call_table
+=======
+#define __SYSCALL(nr, entry)	PTR_WD entry
+	.type	sysn32_call_table, @object
+EXPORT(sysn32_call_table)
+#include <asm/syscall_table_n32.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

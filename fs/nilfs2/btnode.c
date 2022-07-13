@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * btnode.c - NILFS B-tree node cache
  *
@@ -20,6 +21,16 @@
  * This file was originally written by Seiji Kihara <kihara@osrg.net>
  * and fully revised by Ryusuke Konishi <ryusuke@osrg.net> for
  * stabilization and simplification.
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * NILFS B-tree node cache
+ *
+ * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
+ *
+ * Originally written by Seiji Kihara.
+ * Fully revised by Ryusuke Konishi for stabilization and simplification.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -34,6 +45,26 @@
 #include "page.h"
 #include "btnode.h"
 
+<<<<<<< HEAD
+=======
+
+/**
+ * nilfs_init_btnc_inode - initialize B-tree node cache inode
+ * @btnc_inode: inode to be initialized
+ *
+ * nilfs_init_btnc_inode() sets up an inode for B-tree node cache.
+ */
+void nilfs_init_btnc_inode(struct inode *btnc_inode)
+{
+	struct nilfs_inode_info *ii = NILFS_I(btnc_inode);
+
+	btnc_inode->i_mode = S_IFREG;
+	ii->i_flags = 0;
+	memset(&ii->i_bmap_data, 0, sizeof(struct nilfs_bmap));
+	mapping_set_gfp_mask(btnc_inode->i_mapping, GFP_NOFS);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void nilfs_btnode_cache_clear(struct address_space *btnc)
 {
 	invalidate_mapping_pages(btnc, 0, -1);
@@ -43,10 +74,17 @@ void nilfs_btnode_cache_clear(struct address_space *btnc)
 struct buffer_head *
 nilfs_btnode_create_block(struct address_space *btnc, __u64 blocknr)
 {
+<<<<<<< HEAD
 	struct inode *inode = NILFS_BTNC_I(btnc);
 	struct buffer_head *bh;
 
 	bh = nilfs_grab_buffer(inode, btnc, blocknr, 1 << BH_NILFS_Node);
+=======
+	struct inode *inode = btnc->host;
+	struct buffer_head *bh;
+
+	bh = nilfs_grab_buffer(inode, btnc, blocknr, BIT(BH_NILFS_Node));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!bh))
 		return NULL;
 
@@ -55,18 +93,28 @@ nilfs_btnode_create_block(struct address_space *btnc, __u64 blocknr)
 		brelse(bh);
 		BUG();
 	}
+<<<<<<< HEAD
 	memset(bh->b_data, 0, 1 << inode->i_blkbits);
+=======
+	memset(bh->b_data, 0, i_blocksize(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bh->b_bdev = inode->i_sb->s_bdev;
 	bh->b_blocknr = blocknr;
 	set_buffer_mapped(bh);
 	set_buffer_uptodate(bh);
 
+<<<<<<< HEAD
 	unlock_page(bh->b_page);
 	page_cache_release(bh->b_page);
+=======
+	folio_unlock(bh->b_folio);
+	folio_put(bh->b_folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return bh;
 }
 
 int nilfs_btnode_submit_block(struct address_space *btnc, __u64 blocknr,
+<<<<<<< HEAD
 			      sector_t pblocknr, int mode,
 			      struct buffer_head **pbh, sector_t *submit_ptr)
 {
@@ -76,11 +124,26 @@ int nilfs_btnode_submit_block(struct address_space *btnc, __u64 blocknr,
 	int err;
 
 	bh = nilfs_grab_buffer(inode, btnc, blocknr, 1 << BH_NILFS_Node);
+=======
+			      sector_t pblocknr, blk_opf_t opf,
+			      struct buffer_head **pbh, sector_t *submit_ptr)
+{
+	struct buffer_head *bh;
+	struct inode *inode = btnc->host;
+	struct folio *folio;
+	int err;
+
+	bh = nilfs_grab_buffer(inode, btnc, blocknr, BIT(BH_NILFS_Node));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!bh))
 		return -ENOMEM;
 
 	err = -EEXIST; /* internal code */
+<<<<<<< HEAD
 	page = bh->b_page;
+=======
+	folio = bh->b_folio;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (buffer_uptodate(bh) || buffer_dirty(bh))
 		goto found;
@@ -100,13 +163,21 @@ int nilfs_btnode_submit_block(struct address_space *btnc, __u64 blocknr,
 		}
 	}
 
+<<<<<<< HEAD
 	if (mode == READA) {
+=======
+	if (opf & REQ_RAHEAD) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pblocknr != *submit_ptr + 1 || !trylock_buffer(bh)) {
 			err = -EBUSY; /* internal code */
 			brelse(bh);
 			goto out_locked;
 		}
+<<<<<<< HEAD
 	} else { /* mode == READ */
+=======
+	} else { /* opf == REQ_OP_READ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lock_buffer(bh);
 	}
 	if (buffer_uptodate(bh)) {
@@ -119,7 +190,11 @@ int nilfs_btnode_submit_block(struct address_space *btnc, __u64 blocknr,
 	bh->b_blocknr = pblocknr; /* set block address for read */
 	bh->b_end_io = end_buffer_read_sync;
 	get_bh(bh);
+<<<<<<< HEAD
 	submit_bh(mode, bh);
+=======
+	submit_bh(opf, bh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bh->b_blocknr = blocknr; /* set back to the given block address */
 	*submit_ptr = pblocknr;
 	err = 0;
@@ -127,8 +202,13 @@ found:
 	*pbh = bh;
 
 out_locked:
+<<<<<<< HEAD
 	unlock_page(page);
 	page_cache_release(page);
+=======
+	folio_unlock(folio);
+	folio_put(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -142,6 +222,7 @@ out_locked:
 void nilfs_btnode_delete(struct buffer_head *bh)
 {
 	struct address_space *mapping;
+<<<<<<< HEAD
 	struct page *page = bh->b_page;
 	pgoff_t index = page_index(page);
 	int still_dirty;
@@ -155,6 +236,21 @@ void nilfs_btnode_delete(struct buffer_head *bh)
 	mapping = page->mapping;
 	unlock_page(page);
 	page_cache_release(page);
+=======
+	struct folio *folio = bh->b_folio;
+	pgoff_t index = folio->index;
+	int still_dirty;
+
+	folio_get(folio);
+	folio_lock(folio);
+	folio_wait_writeback(folio);
+
+	nilfs_forget_buffer(bh);
+	still_dirty = folio_test_dirty(folio);
+	mapping = folio->mapping;
+	folio_unlock(folio);
+	folio_put(folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!still_dirty && mapping)
 		invalidate_inode_pages2_range(mapping, index, index);
@@ -171,7 +267,11 @@ int nilfs_btnode_prepare_change_key(struct address_space *btnc,
 				    struct nilfs_btnode_chkey_ctxt *ctxt)
 {
 	struct buffer_head *obh, *nbh;
+<<<<<<< HEAD
 	struct inode *inode = NILFS_BTNC_I(btnc);
+=======
+	struct inode *inode = btnc->host;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__u64 oldkey = ctxt->oldkey, newkey = ctxt->newkey;
 	int err;
 
@@ -181,6 +281,7 @@ int nilfs_btnode_prepare_change_key(struct address_space *btnc,
 	obh = ctxt->bh;
 	ctxt->newbh = NULL;
 
+<<<<<<< HEAD
 	if (inode->i_blkbits == PAGE_CACHE_SHIFT) {
 		lock_page(obh->b_page);
 		/*
@@ -194,10 +295,20 @@ retry:
 		/* BUG_ON(oldkey != obh->b_page->index); */
 		if (unlikely(oldkey != obh->b_page->index))
 			NILFS_PAGE_BUG(obh->b_page,
+=======
+	if (inode->i_blkbits == PAGE_SHIFT) {
+		struct folio *ofolio = obh->b_folio;
+		folio_lock(ofolio);
+retry:
+		/* BUG_ON(oldkey != obh->b_folio->index); */
+		if (unlikely(oldkey != ofolio->index))
+			NILFS_FOLIO_BUG(ofolio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       "invalid oldkey %lld (newkey=%lld)",
 				       (unsigned long long)oldkey,
 				       (unsigned long long)newkey);
 
+<<<<<<< HEAD
 		spin_lock_irq(&btnc->tree_lock);
 		err = radix_tree_insert(&btnc->page_tree, newkey, obh->b_page);
 		spin_unlock_irq(&btnc->tree_lock);
@@ -211,13 +322,31 @@ retry:
 		if (!err)
 			return 0;
 		else if (err != -EEXIST)
+=======
+		xa_lock_irq(&btnc->i_pages);
+		err = __xa_insert(&btnc->i_pages, newkey, ofolio, GFP_NOFS);
+		xa_unlock_irq(&btnc->i_pages);
+		/*
+		 * Note: folio->index will not change to newkey until
+		 * nilfs_btnode_commit_change_key() will be called.
+		 * To protect the folio in intermediate state, the folio lock
+		 * is held.
+		 */
+		if (!err)
+			return 0;
+		else if (err != -EBUSY)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto failed_unlock;
 
 		err = invalidate_inode_pages2_range(btnc, newkey, newkey);
 		if (!err)
 			goto retry;
 		/* fallback to copy mode */
+<<<<<<< HEAD
 		unlock_page(obh->b_page);
+=======
+		folio_unlock(ofolio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	nbh = nilfs_btnode_create_block(btnc, newkey);
@@ -229,7 +358,11 @@ retry:
 	return 0;
 
  failed_unlock:
+<<<<<<< HEAD
 	unlock_page(obh->b_page);
+=======
+	folio_unlock(obh->b_folio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -242,20 +375,31 @@ void nilfs_btnode_commit_change_key(struct address_space *btnc,
 {
 	struct buffer_head *obh = ctxt->bh, *nbh = ctxt->newbh;
 	__u64 oldkey = ctxt->oldkey, newkey = ctxt->newkey;
+<<<<<<< HEAD
 	struct page *opage;
+=======
+	struct folio *ofolio;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (oldkey == newkey)
 		return;
 
 	if (nbh == NULL) {	/* blocksize == pagesize */
+<<<<<<< HEAD
 		opage = obh->b_page;
 		if (unlikely(oldkey != opage->index))
 			NILFS_PAGE_BUG(opage,
+=======
+		ofolio = obh->b_folio;
+		if (unlikely(oldkey != ofolio->index))
+			NILFS_FOLIO_BUG(ofolio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       "invalid oldkey %lld (newkey=%lld)",
 				       (unsigned long long)oldkey,
 				       (unsigned long long)newkey);
 		mark_buffer_dirty(obh);
 
+<<<<<<< HEAD
 		spin_lock_irq(&btnc->tree_lock);
 		radix_tree_delete(&btnc->page_tree, oldkey);
 		radix_tree_tag_set(&btnc->page_tree, newkey,
@@ -264,6 +408,15 @@ void nilfs_btnode_commit_change_key(struct address_space *btnc,
 
 		opage->index = obh->b_blocknr = newkey;
 		unlock_page(opage);
+=======
+		xa_lock_irq(&btnc->i_pages);
+		__xa_erase(&btnc->i_pages, oldkey);
+		__xa_set_mark(&btnc->i_pages, newkey, PAGECACHE_TAG_DIRTY);
+		xa_unlock_irq(&btnc->i_pages);
+
+		ofolio->index = obh->b_blocknr = newkey;
+		folio_unlock(ofolio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		nilfs_copy_buffer(nbh, obh);
 		mark_buffer_dirty(nbh);
@@ -288,10 +441,25 @@ void nilfs_btnode_abort_change_key(struct address_space *btnc,
 		return;
 
 	if (nbh == NULL) {	/* blocksize == pagesize */
+<<<<<<< HEAD
 		spin_lock_irq(&btnc->tree_lock);
 		radix_tree_delete(&btnc->page_tree, newkey);
 		spin_unlock_irq(&btnc->tree_lock);
 		unlock_page(ctxt->bh->b_page);
 	} else
 		brelse(nbh);
+=======
+		xa_erase_irq(&btnc->i_pages, newkey);
+		folio_unlock(ctxt->bh->b_folio);
+	} else {
+		/*
+		 * When canceling a buffer that a prepare operation has
+		 * allocated to copy a node block to another location, use
+		 * nilfs_btnode_delete() to initialize and release the buffer
+		 * so that the buffer flags will not be in an inconsistent
+		 * state when it is reallocated.
+		 */
+		nilfs_btnode_delete(nbh);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/mach-footbridge/include/mach/memory.h
  *
  *  Copyright (C) 1996-1999 Russell King.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Changelog:
  *   20-Oct-1996 RMK	Created
  *   31-Dec-1997 RMK	Fixed definitions to reduce warnings.
@@ -19,6 +26,7 @@
 #ifndef __ASM_ARCH_MEMORY_H
 #define __ASM_ARCH_MEMORY_H
 
+<<<<<<< HEAD
 
 #if defined(CONFIG_FOOTBRIDGE_ADDIN)
 /*
@@ -54,16 +62,21 @@ extern unsigned long __bus_to_pfn(unsigned long);
 
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cache flushing area.
  */
 #define FLUSH_BASE		0xf9000000
 
+<<<<<<< HEAD
 /*
  * Physical DRAM offset.
  */
 #define PLAT_PHYS_OFFSET		UL(0x00000000)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FLUSH_BASE_PHYS		0x50000000
 
 #endif

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-omap2/board-n8x0.c
  *
@@ -5,26 +9,45 @@
  * Author: Juha Yrjola <juha.yrjola@nokia.com>
  *
  * Modified from mach-omap2/board-generic.c
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/clk.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <linux/init.h>
 #include <linux/io.h>
+=======
+#include <linux/gpio/machine.h>
+#include <linux/gpio/consumer.h>
+#include <linux/init.h>
+#include <linux/io.h>
+#include <linux/irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/stddef.h>
 #include <linux/i2c.h>
 #include <linux/spi/spi.h>
 #include <linux/usb/musb.h>
+<<<<<<< HEAD
 #include <sound/tlv320aic3x.h>
+=======
+#include <linux/mmc/host.h>
+#include <linux/platform_data/spi-omap2-mcspi.h>
+#include <linux/platform_data/mmc-omap.h>
+#include <linux/mfd/menelaus.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mach/arch.h>
 #include <asm/mach-types.h>
 
+<<<<<<< HEAD
 #include <plat/board.h>
 #include "common.h"
 #include <plat/menelaus.h>
@@ -75,6 +98,43 @@ static int tusb_set_power(int state)
 	return retval;
 }
 
+=======
+#include "common.h"
+#include "mmc.h"
+#include "usb-tusb6010.h"
+#include "soc.h"
+#include "common-board-devices.h"
+
+#define TUSB6010_ASYNC_CS	1
+#define TUSB6010_SYNC_CS	4
+#define TUSB6010_DMACHAN	0x3f
+
+#define NOKIA_N810_WIMAX	(1 << 2)
+#define NOKIA_N810		(1 << 1)
+#define NOKIA_N800		(1 << 0)
+
+static u32 board_caps;
+
+#define board_is_n800()		(board_caps & NOKIA_N800)
+#define board_is_n810()		(board_caps & NOKIA_N810)
+#define board_is_n810_wimax()	(board_caps & NOKIA_N810_WIMAX)
+
+static void board_check_revision(void)
+{
+	if (of_machine_is_compatible("nokia,n800"))
+		board_caps = NOKIA_N800;
+	else if (of_machine_is_compatible("nokia,n810"))
+		board_caps = NOKIA_N810;
+	else if (of_machine_is_compatible("nokia,n810-wimax"))
+		board_caps = NOKIA_N810_WIMAX;
+
+	if (!board_caps)
+		pr_err("Unknown board\n");
+}
+
+#if IS_ENABLED(CONFIG_USB_MUSB_TUSB6010)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct musb_hdrc_config musb_config = {
 	.multipoint	= 1,
 	.dyn_fifo	= 1,
@@ -83,6 +143,7 @@ static struct musb_hdrc_config musb_config = {
 };
 
 static struct musb_hdrc_platform_data tusb_data = {
+<<<<<<< HEAD
 #if defined(CONFIG_USB_MUSB_OTG)
 	.mode		= MUSB_OTG,
 #elif defined(CONFIG_USB_MUSB_PERIPHERAL)
@@ -91,11 +152,15 @@ static struct musb_hdrc_platform_data tusb_data = {
 	.mode		= MUSB_HOST,
 #endif
 	.set_power	= tusb_set_power,
+=======
+	.mode		= MUSB_OTG,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.min_power	= 25,	/* x2 = 50 mA drawn from VBUS as peripheral */
 	.power		= 100,	/* Max 100 mA VBUS for host mode */
 	.config		= &musb_config,
 };
 
+<<<<<<< HEAD
 static void __init n8x0_usb_init(void)
 {
 	int ret = 0;
@@ -123,6 +188,31 @@ static void __init n8x0_usb_init(void)
 
 err:
 	gpio_free(TUSB6010_GPIO_ENABLE);
+=======
+static struct gpiod_lookup_table tusb_gpio_table = {
+	.dev_id = "musb-tusb",
+	.table = {
+		GPIO_LOOKUP("gpio-0-31", 0, "enable", GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP("gpio-32-63", 26, "int", GPIO_ACTIVE_HIGH),
+		{ }
+	},
+};
+
+static void __init n8x0_usb_init(void)
+{
+	int ret = 0;
+
+	gpiod_add_lookup_table(&tusb_gpio_table);
+	ret = tusb6010_setup_interface(&tusb_data, TUSB6010_REFCLK_19, 2,
+				       TUSB6010_ASYNC_CS, TUSB6010_SYNC_CS,
+				       TUSB6010_DMACHAN);
+	if (ret != 0)
+		return;
+
+	pr_info("TUSB 6010\n");
+
+	return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 
@@ -145,6 +235,7 @@ static struct spi_board_info n800_spi_board_info[] __initdata = {
 	},
 };
 
+<<<<<<< HEAD
 #if defined(CONFIG_MTD_ONENAND_OMAP2) || \
 	defined(CONFIG_MTD_ONENAND_OMAP2_MODULE)
 
@@ -190,6 +281,9 @@ static struct omap_onenand_platform_data board_onenand_data[] = {
 
 #if defined(CONFIG_MENELAUS) &&						\
 	(defined(CONFIG_MMC_OMAP) || defined(CONFIG_MMC_OMAP_MODULE))
+=======
+#if defined(CONFIG_MENELAUS) && IS_ENABLED(CONFIG_MMC_OMAP)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * On both N800 and N810, only the first of the two MMC controllers is in use.
@@ -202,14 +296,18 @@ static struct omap_onenand_platform_data board_onenand_data[] = {
  * GPIO23 and GPIO9		slot 2 EMMC on N810
  *
  */
+<<<<<<< HEAD
 #define N8X0_SLOT_SWITCH_GPIO	96
 #define N810_EMMC_VSD_GPIO	23
 #define N810_EMMC_VIO_GPIO	9
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int slot1_cover_open;
 static int slot2_cover_open;
 static struct device *mmc_device;
 
+<<<<<<< HEAD
 static int n8x0_mmc_switch_slot(struct device *dev, int slot)
 {
 #ifdef CONFIG_MMC_DEBUG
@@ -218,6 +316,29 @@ static int n8x0_mmc_switch_slot(struct device *dev, int slot)
 	gpio_set_value(N8X0_SLOT_SWITCH_GPIO, slot);
 	return 0;
 }
+=======
+static struct gpiod_lookup_table nokia800_mmc_gpio_table = {
+	.dev_id = "mmci-omap.0",
+	.table = {
+		/* Slot switch, GPIO 96 */
+		GPIO_LOOKUP("gpio-96-127", 0, "switch", GPIO_ACTIVE_HIGH),
+		{ }
+	},
+};
+
+static struct gpiod_lookup_table nokia810_mmc_gpio_table = {
+	.dev_id = "mmci-omap.0",
+	.table = {
+		/* Slot switch, GPIO 96 */
+		GPIO_LOOKUP("gpio-96-127", 0, "switch", GPIO_ACTIVE_HIGH),
+		/* Slot index 1, VSD power, GPIO 23 */
+		GPIO_LOOKUP_IDX("gpio-0-31", 23, "vsd", 1, GPIO_ACTIVE_HIGH),
+		/* Slot index 1, VIO power, GPIO 9 */
+		GPIO_LOOKUP_IDX("gpio-0-31", 9, "vio", 1, GPIO_ACTIVE_HIGH),
+		{ }
+	},
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int n8x0_mmc_set_power_menelaus(struct device *dev, int slot,
 					int power_on, int vdd)
@@ -288,6 +409,7 @@ static int n8x0_mmc_set_power_menelaus(struct device *dev, int slot,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void n810_set_power_emmc(struct device *dev,
 					 int power_on)
 {
@@ -313,6 +435,15 @@ static int n8x0_mmc_set_power(struct device *dev, int slot, int power_on,
 		return n8x0_mmc_set_power_menelaus(dev, slot, power_on, vdd);
 
 	n810_set_power_emmc(dev, power_on);
+=======
+static int n8x0_mmc_set_power(struct device *dev, int slot, int power_on,
+			      int vdd)
+{
+	if (board_is_n800() || slot == 0)
+		return n8x0_mmc_set_power_menelaus(dev, slot, power_on, vdd);
+
+	/* The n810 power will be handled by GPIO code in the driver */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -353,9 +484,16 @@ static int n8x0_mmc_get_cover_state(struct device *dev, int slot)
 
 static void n8x0_mmc_callback(void *data, u8 card_mask)
 {
+<<<<<<< HEAD
 	int bit, *openp, index;
 
 	if (machine_is_nokia_n800()) {
+=======
+#ifdef CONFIG_MMC_OMAP
+	int bit, *openp, index;
+
+	if (board_is_n800()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bit = 1 << 1;
 		openp = &slot2_cover_open;
 		index = 1;
@@ -370,7 +508,10 @@ static void n8x0_mmc_callback(void *data, u8 card_mask)
 	else
 		*openp = 0;
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMC_OMAP
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	omap_mmc_notify_cover_event(mmc_device, index, *openp);
 #else
 	pr_warn("MMC: notify cover event not available\n");
@@ -388,7 +529,11 @@ static int n8x0_mmc_late_init(struct device *dev)
 	if (r < 0)
 		return r;
 
+<<<<<<< HEAD
 	if (machine_is_nokia_n800())
+=======
+	if (board_is_n800())
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vs2sel = 0;
 	else
 		vs2sel = 2;
@@ -411,7 +556,11 @@ static int n8x0_mmc_late_init(struct device *dev)
 	if (r < 0)
 		return r;
 
+<<<<<<< HEAD
 	if (machine_is_nokia_n800()) {
+=======
+	if (board_is_n800()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bit = 1 << 1;
 		openp = &slot2_cover_open;
 	} else {
@@ -438,7 +587,11 @@ static void n8x0_mmc_shutdown(struct device *dev)
 {
 	int vs2sel;
 
+<<<<<<< HEAD
 	if (machine_is_nokia_n800())
+=======
+	if (board_is_n800())
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vs2sel = 0;
 	else
 		vs2sel = 2;
@@ -450,6 +603,7 @@ static void n8x0_mmc_shutdown(struct device *dev)
 static void n8x0_mmc_cleanup(struct device *dev)
 {
 	menelaus_unregister_mmc_callback();
+<<<<<<< HEAD
 
 	gpio_free(N8X0_SLOT_SWITCH_GPIO);
 
@@ -457,6 +611,8 @@ static void n8x0_mmc_cleanup(struct device *dev)
 		gpio_free(N810_EMMC_VSD_GPIO);
 		gpio_free(N810_EMMC_VIO_GPIO);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -464,13 +620,20 @@ static void n8x0_mmc_cleanup(struct device *dev)
  * MMC controller2 is not in use.
  */
 static struct omap_mmc_platform_data mmc1_data = {
+<<<<<<< HEAD
 	.nr_slots			= 2,
 	.switch_slot			= n8x0_mmc_switch_slot,
+=======
+	.nr_slots			= 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init				= n8x0_mmc_late_init,
 	.cleanup			= n8x0_mmc_cleanup,
 	.shutdown			= n8x0_mmc_shutdown,
 	.max_freq			= 24000000,
+<<<<<<< HEAD
 	.dma_mask			= 0xffffffff,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.slots[0] = {
 		.wires			= 4,
 		.set_power		= n8x0_mmc_set_power,
@@ -496,6 +659,7 @@ static struct omap_mmc_platform_data mmc1_data = {
 
 static struct omap_mmc_platform_data *mmc_data[OMAP24XX_NR_MMC];
 
+<<<<<<< HEAD
 static struct gpio n810_emmc_gpios[] __initdata = {
 	{ N810_EMMC_VSD_GPIO, GPIOF_OUT_INIT_LOW,  "MMC slot 2 Vddf" },
 	{ N810_EMMC_VIO_GPIO, GPIOF_OUT_INIT_LOW,  "MMC slot 2 Vdd"  },
@@ -506,6 +670,11 @@ static void __init n8x0_mmc_init(void)
 	int err;
 
 	if (machine_is_nokia_n810()) {
+=======
+static void __init n8x0_mmc_init(void)
+{
+	if (board_is_n810()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mmc1_data.slots[0].name = "external";
 
 		/*
@@ -516,6 +685,7 @@ static void __init n8x0_mmc_init(void)
 		 */
 		mmc1_data.slots[1].name = "internal";
 		mmc1_data.slots[1].ban_openended = 1;
+<<<<<<< HEAD
 	}
 
 	err = gpio_request_one(N8X0_SLOT_SWITCH_GPIO, GPIOF_OUT_INIT_LOW,
@@ -538,6 +708,19 @@ static void __init n8x0_mmc_init(void)
 #else
 
 void __init n8x0_mmc_init(void)
+=======
+		gpiod_add_lookup_table(&nokia810_mmc_gpio_table);
+	} else {
+		gpiod_add_lookup_table(&nokia800_mmc_gpio_table);
+	}
+
+	mmc1_data.nr_slots = 2;
+	mmc_data[0] = &mmc1_data;
+}
+#else
+static struct omap_mmc_platform_data mmc1_data;
+static void __init n8x0_mmc_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 #endif	/* CONFIG_MMC_OMAP */
@@ -556,8 +739,13 @@ static int n8x0_auto_sleep_regulators(void)
 
 	ret = menelaus_set_regulator_sleep(1, val);
 	if (ret < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Could not set regulators to sleep on "
 			"menelaus: %u\n", ret);
+=======
+		pr_err("Could not set regulators to sleep on menelaus: %u\n",
+		       ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	return 0;
@@ -569,8 +757,12 @@ static int n8x0_auto_voltage_scale(void)
 
 	ret = menelaus_set_vcore_hw(1400, 1050);
 	if (ret < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "Could not set VCORE voltage on "
 			"menelaus: %u\n", ret);
+=======
+		pr_err("Could not set VCORE voltage on menelaus: %u\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	return 0;
@@ -596,6 +788,7 @@ static int n8x0_menelaus_late_init(struct device *dev)
 }
 #endif
 
+<<<<<<< HEAD
 static struct menelaus_platform_data n8x0_menelaus_platform_data __initdata = {
 	.late_init = n8x0_menelaus_late_init,
 };
@@ -721,3 +914,42 @@ MACHINE_START(NOKIA_N810_WIMAX, "Nokia N810 WiMAX")
 	.timer		= &omap2_timer,
 	.restart	= omap_prcm_restart,
 MACHINE_END
+=======
+struct menelaus_platform_data n8x0_menelaus_platform_data = {
+	.late_init = n8x0_menelaus_late_init,
+};
+
+static struct gpiod_lookup_table nokia810_asoc_gpio_table = {
+	.dev_id = "soc-audio",
+	.table = {
+		GPIO_LOOKUP("gpio-0-15", 10, "headset", GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP("gpio-80-111", 21, "speaker", GPIO_ACTIVE_HIGH),
+		{ }
+	},
+};
+
+static int __init n8x0_late_initcall(void)
+{
+	if (!board_caps)
+		return -ENODEV;
+
+	n8x0_mmc_init();
+	n8x0_usb_init();
+	gpiod_add_lookup_table(&nokia810_asoc_gpio_table);
+
+	return 0;
+}
+omap_late_initcall(n8x0_late_initcall);
+
+/*
+ * Legacy init pdata init for n8x0. Note that we want to follow the
+ * I2C bus numbering starting at 0 for device tree like other omaps.
+ */
+void * __init n8x0_legacy_init(void)
+{
+	board_check_revision();
+	spi_register_board_info(n800_spi_board_info,
+				ARRAY_SIZE(n800_spi_board_info));
+	return &mmc1_data;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

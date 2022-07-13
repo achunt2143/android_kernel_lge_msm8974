@@ -25,15 +25,29 @@
  *          Alex Deucher
  *          Jerome Glisse
  */
+<<<<<<< HEAD
 #include <linux/seq_file.h>
 #include <linux/slab.h>
 #include <drm/drmP.h>
+=======
+
+#include <linux/seq_file.h>
+#include <linux/slab.h>
+
+#include <drm/drm_device.h>
+#include <drm/drm_file.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "radeon.h"
 #include "radeon_asic.h"
 #include "rs400d.h"
 
 /* This files gather functions specifics to : rs400,rs480 */
+<<<<<<< HEAD
 static int rs400_debugfs_pcie_gart_info_init(struct radeon_device *rdev);
+=======
+static void rs400_debugfs_pcie_gart_info_init(struct radeon_device *rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void rs400_gart_adjust_size(struct radeon_device *rdev)
 {
@@ -67,7 +81,11 @@ void rs400_gart_tlb_flush(struct radeon_device *rdev)
 		tmp = RREG32_MC(RS480_GART_CACHE_CNTRL);
 		if ((tmp & RS480_GART_CACHE_INVALIDATE) == 0)
 			break;
+<<<<<<< HEAD
 		DRM_UDELAY(1);
+=======
+		udelay(1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		timeout--;
 	} while (timeout > 0);
 	WREG32_MC(RS480_GART_CACHE_CNTRL, 0);
@@ -82,7 +100,11 @@ int rs400_gart_init(struct radeon_device *rdev)
 		return 0;
 	}
 	/* Check gart size */
+<<<<<<< HEAD
 	switch(rdev->mc.gtt_size / (1024 * 1024)) {
+=======
+	switch (rdev->mc.gtt_size / (1024 * 1024)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 32:
 	case 64:
 	case 128:
@@ -98,8 +120,12 @@ int rs400_gart_init(struct radeon_device *rdev)
 	r = radeon_gart_init(rdev);
 	if (r)
 		return r;
+<<<<<<< HEAD
 	if (rs400_debugfs_pcie_gart_info_init(rdev))
 		DRM_ERROR("Failed to register debugfs file for RS400 GART !\n");
+=======
+	rs400_debugfs_pcie_gart_info_init(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->gart.table_size = rdev->gart.num_gpu_pages * 4;
 	return radeon_gart_table_ram_alloc(rdev);
 }
@@ -109,12 +135,19 @@ int rs400_gart_enable(struct radeon_device *rdev)
 	uint32_t size_reg;
 	uint32_t tmp;
 
+<<<<<<< HEAD
 	radeon_gart_restore(rdev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp = RREG32_MC(RS690_AIC_CTRL_SCRATCH);
 	tmp |= RS690_DIS_OUT_OF_PCI_GART_ACCESS;
 	WREG32_MC(RS690_AIC_CTRL_SCRATCH, tmp);
 	/* Check gart size */
+<<<<<<< HEAD
 	switch(rdev->mc.gtt_size / (1024 * 1024)) {
+=======
+	switch (rdev->mc.gtt_size / (1024 * 1024)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 32:
 		size_reg = RS480_VA_SIZE_32MB;
 		break;
@@ -209,6 +242,7 @@ void rs400_gart_fini(struct radeon_device *rdev)
 	radeon_gart_table_ram_free(rdev);
 }
 
+<<<<<<< HEAD
 #define RS400_PTE_WRITEABLE (1 << 2)
 #define RS400_PTE_READABLE  (1 << 3)
 
@@ -227,6 +261,32 @@ int rs400_gart_set_page(struct radeon_device *rdev, int i, uint64_t addr)
 	entry = cpu_to_le32(entry);
 	gtt[i] = entry;
 	return 0;
+=======
+#define RS400_PTE_UNSNOOPED (1 << 0)
+#define RS400_PTE_WRITEABLE (1 << 2)
+#define RS400_PTE_READABLE  (1 << 3)
+
+uint64_t rs400_gart_get_page_entry(uint64_t addr, uint32_t flags)
+{
+	uint32_t entry;
+
+	entry = (lower_32_bits(addr) & PAGE_MASK) |
+		((upper_32_bits(addr) & 0xff) << 4);
+	if (flags & RADEON_GART_PAGE_READ)
+		entry |= RS400_PTE_READABLE;
+	if (flags & RADEON_GART_PAGE_WRITE)
+		entry |= RS400_PTE_WRITEABLE;
+	if (!(flags & RADEON_GART_PAGE_SNOOP))
+		entry |= RS400_PTE_UNSNOOPED;
+	return entry;
+}
+
+void rs400_gart_set_page(struct radeon_device *rdev, unsigned i,
+			 uint64_t entry)
+{
+	u32 *gtt = rdev->gart.ptr;
+	gtt[i] = cpu_to_le32(lower_32_bits(entry));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int rs400_mc_wait_for_idle(struct radeon_device *rdev)
@@ -240,22 +300,39 @@ int rs400_mc_wait_for_idle(struct radeon_device *rdev)
 		if (tmp & RADEON_MC_IDLE) {
 			return 0;
 		}
+<<<<<<< HEAD
 		DRM_UDELAY(1);
+=======
+		udelay(1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return -1;
 }
 
+<<<<<<< HEAD
 void rs400_gpu_init(struct radeon_device *rdev)
+=======
+static void rs400_gpu_init(struct radeon_device *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* FIXME: is this correct ? */
 	r420_pipes_init(rdev);
 	if (rs400_mc_wait_for_idle(rdev)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "rs400: Failed to wait MC idle while "
 		       "programming pipes. Bad things might happen. %08x\n", RREG32(RADEON_MC_STATUS));
 	}
 }
 
 void rs400_mc_init(struct radeon_device *rdev)
+=======
+		pr_warn("rs400: Failed to wait MC idle while programming pipes. Bad things might happen. %08x\n",
+			RREG32(RADEON_MC_STATUS));
+	}
+}
+
+static void rs400_mc_init(struct radeon_device *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 base;
 
@@ -274,16 +351,28 @@ void rs400_mc_init(struct radeon_device *rdev)
 
 uint32_t rs400_mc_rreg(struct radeon_device *rdev, uint32_t reg)
 {
+<<<<<<< HEAD
 	uint32_t r;
 
 	WREG32(RS480_NB_MC_INDEX, reg & 0xff);
 	r = RREG32(RS480_NB_MC_DATA);
 	WREG32(RS480_NB_MC_INDEX, 0xff);
+=======
+	unsigned long flags;
+	uint32_t r;
+
+	spin_lock_irqsave(&rdev->mc_idx_lock, flags);
+	WREG32(RS480_NB_MC_INDEX, reg & 0xff);
+	r = RREG32(RS480_NB_MC_DATA);
+	WREG32(RS480_NB_MC_INDEX, 0xff);
+	spin_unlock_irqrestore(&rdev->mc_idx_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 }
 
 void rs400_mc_wreg(struct radeon_device *rdev, uint32_t reg, uint32_t v)
 {
+<<<<<<< HEAD
 	WREG32(RS480_NB_MC_INDEX, ((reg) & 0xff) | RS480_NB_MC_IND_WR_EN);
 	WREG32(RS480_NB_MC_DATA, (v));
 	WREG32(RS480_NB_MC_INDEX, 0xff);
@@ -295,6 +384,21 @@ static int rs400_debugfs_gart_info(struct seq_file *m, void *data)
 	struct drm_info_node *node = (struct drm_info_node *) m->private;
 	struct drm_device *dev = node->minor->dev;
 	struct radeon_device *rdev = dev->dev_private;
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&rdev->mc_idx_lock, flags);
+	WREG32(RS480_NB_MC_INDEX, ((reg) & 0xff) | RS480_NB_MC_IND_WR_EN);
+	WREG32(RS480_NB_MC_DATA, (v));
+	WREG32(RS480_NB_MC_INDEX, 0xff);
+	spin_unlock_irqrestore(&rdev->mc_idx_lock, flags);
+}
+
+#if defined(CONFIG_DEBUG_FS)
+static int rs400_debugfs_gart_info_show(struct seq_file *m, void *unused)
+{
+	struct radeon_device *rdev = m->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t tmp;
 
 	tmp = RREG32(RADEON_HOST_PATH_CNTL);
@@ -359,6 +463,7 @@ static int rs400_debugfs_gart_info(struct seq_file *m, void *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct drm_info_list rs400_gart_info_list[] = {
 	{"rs400_gart_info", rs400_debugfs_gart_info, 0, NULL},
 };
@@ -374,6 +479,22 @@ static int rs400_debugfs_pcie_gart_info_init(struct radeon_device *rdev)
 }
 
 void rs400_mc_program(struct radeon_device *rdev)
+=======
+DEFINE_SHOW_ATTRIBUTE(rs400_debugfs_gart_info);
+#endif
+
+static void rs400_debugfs_pcie_gart_info_init(struct radeon_device *rdev)
+{
+#if defined(CONFIG_DEBUG_FS)
+	struct dentry *root = rdev->ddev->primary->debugfs_root;
+
+	debugfs_create_file("rs400_gart_info", 0444, root, rdev,
+			    &rs400_debugfs_gart_info_fops);
+#endif
+}
+
+static void rs400_mc_program(struct radeon_device *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct r100_mc_save save;
 
@@ -435,6 +556,7 @@ static int rs400_startup(struct radeon_device *rdev)
 		return r;
 	}
 
+<<<<<<< HEAD
 	r = radeon_ib_pool_start(rdev);
 	if (r)
 		return r;
@@ -443,6 +565,11 @@ static int rs400_startup(struct radeon_device *rdev)
 	if (r) {
 		dev_err(rdev->dev, "failed testing IB (%d).\n", r);
 		rdev->accel_working = false;
+=======
+	r = radeon_ib_pool_init(rdev);
+	if (r) {
+		dev_err(rdev->dev, "IB initialization failed (%d).\n", r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return r;
 	}
 
@@ -482,7 +609,11 @@ int rs400_resume(struct radeon_device *rdev)
 
 int rs400_suspend(struct radeon_device *rdev)
 {
+<<<<<<< HEAD
 	radeon_ib_pool_suspend(rdev);
+=======
+	radeon_pm_suspend(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r100_cp_disable(rdev);
 	radeon_wb_disable(rdev);
 	r100_irq_disable(rdev);
@@ -492,9 +623,16 @@ int rs400_suspend(struct radeon_device *rdev)
 
 void rs400_fini(struct radeon_device *rdev)
 {
+<<<<<<< HEAD
 	r100_cp_fini(rdev);
 	radeon_wb_fini(rdev);
 	r100_ib_fini(rdev);
+=======
+	radeon_pm_fini(rdev);
+	r100_cp_fini(rdev);
+	radeon_wb_fini(rdev);
+	radeon_ib_pool_fini(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_gem_fini(rdev);
 	rs400_gart_fini(rdev);
 	radeon_irq_kms_fini(rdev);
@@ -547,9 +685,13 @@ int rs400_init(struct radeon_device *rdev)
 	/* initialize memory controller */
 	rs400_mc_init(rdev);
 	/* Fence driver */
+<<<<<<< HEAD
 	r = radeon_fence_driver_init(rdev);
 	if (r)
 		return r;
+=======
+	radeon_fence_driver_init(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Memory manager */
 	r = radeon_bo_init(rdev);
 	if (r)
@@ -559,6 +701,7 @@ int rs400_init(struct radeon_device *rdev)
 		return r;
 	r300_set_reg_safe(rdev);
 
+<<<<<<< HEAD
 	r = radeon_ib_pool_init(rdev);
 	rdev->accel_working = true;
 	if (r) {
@@ -566,13 +709,23 @@ int rs400_init(struct radeon_device *rdev)
 		rdev->accel_working = false;
 	}
 
+=======
+	/* Initialize power management */
+	radeon_pm_init(rdev);
+
+	rdev->accel_working = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = rs400_startup(rdev);
 	if (r) {
 		/* Somethings want wront with the accel init stop accel */
 		dev_err(rdev->dev, "Disabling GPU acceleration\n");
 		r100_cp_fini(rdev);
 		radeon_wb_fini(rdev);
+<<<<<<< HEAD
 		r100_ib_fini(rdev);
+=======
+		radeon_ib_pool_fini(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rs400_gart_fini(rdev);
 		radeon_irq_kms_fini(rdev);
 		rdev->accel_working = false;

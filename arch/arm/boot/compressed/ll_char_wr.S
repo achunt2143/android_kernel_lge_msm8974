@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/ll_char_wr.S
  *
  *  Copyright (C) 1995, 1996 Russell King.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Speedups & 1bpp code (C) 1996 Philip Blundell & Russell King.
  *
  *  10-04-96	RMK	Various cleanups & reduced register usage.
@@ -75,7 +82,11 @@ Lrow4bpplp:
 	tst	r1, #7				@ avoid using r7 directly after
 	str	r7, [r0, -r5]!
 	subne	r1, r1, #1
+<<<<<<< HEAD
 	ldrneb	r7, [r6, r1]
+=======
+	ldrbne	r7, [r6, r1]
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bne	Lrow4bpplp
 	ldmfd	sp!, {r4 - r7, pc}
 
@@ -103,7 +114,11 @@ Lrow8bpplp:
 	sub	r0, r0, r5			@ avoid ip
 	stmia	r0, {r4, ip}
 	subne	r1, r1, #1
+<<<<<<< HEAD
 	ldrneb	r7, [r6, r1]
+=======
+	ldrbne	r7, [r6, r1]
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bne	Lrow8bpplp
 	ldmfd	sp!, {r4 - r7, pc}
 

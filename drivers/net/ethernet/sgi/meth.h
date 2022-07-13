@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 /*
  * snull.h -- definitions for the network module
@@ -14,6 +15,8 @@
  * we cannot take responsibility for errors or fitness for use.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* version dependencies have been confined to a separate file */
 
 /* Tunable parameters */

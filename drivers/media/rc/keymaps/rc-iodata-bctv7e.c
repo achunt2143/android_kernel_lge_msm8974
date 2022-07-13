@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* iodata-bctv7e.h - Keytable for iodata_bctv7e Remote Controller
  *
  * keymap imported from ir-keymaps.c
@@ -9,6 +10,14 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+// iodata-bctv7e.h - Keytable for iodata_bctv7e Remote Controller
+//
+// keymap imported from ir-keymaps.c
+//
+// Copyright (c) 2010 by Mauro Carvalho Chehab
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -22,6 +31,7 @@ static struct rc_map_table iodata_bctv7e[] = {
 	{ 0x00, KEY_POWER },
 
 	/* Keys 0 to 9 */
+<<<<<<< HEAD
 	{ 0x44, KEY_0 },		/* 10 */
 	{ 0x50, KEY_1 },
 	{ 0x30, KEY_2 },
@@ -32,6 +42,18 @@ static struct rc_map_table iodata_bctv7e[] = {
 	{ 0x58, KEY_7 },
 	{ 0x38, KEY_8 },
 	{ 0x78, KEY_9 },
+=======
+	{ 0x44, KEY_NUMERIC_0 },		/* 10 */
+	{ 0x50, KEY_NUMERIC_1 },
+	{ 0x30, KEY_NUMERIC_2 },
+	{ 0x70, KEY_NUMERIC_3 },
+	{ 0x48, KEY_NUMERIC_4 },
+	{ 0x28, KEY_NUMERIC_5 },
+	{ 0x68, KEY_NUMERIC_6 },
+	{ 0x58, KEY_NUMERIC_7 },
+	{ 0x38, KEY_NUMERIC_8 },
+	{ 0x78, KEY_NUMERIC_9 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ 0x10, KEY_L },		/* Live */
 	{ 0x08, KEY_TIME },		/* Time Shift */
@@ -65,10 +87,17 @@ static struct rc_map_table iodata_bctv7e[] = {
 
 static struct rc_map_list iodata_bctv7e_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = iodata_bctv7e,
 		.size    = ARRAY_SIZE(iodata_bctv7e),
 		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
 		.name    = RC_MAP_IODATA_BCTV7E,
+=======
+		.scan     = iodata_bctv7e,
+		.size     = ARRAY_SIZE(iodata_bctv7e),
+		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.name     = RC_MAP_IODATA_BCTV7E,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -86,4 +115,9 @@ module_init(init_rc_map_iodata_bctv7e)
 module_exit(exit_rc_map_iodata_bctv7e)
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+MODULE_DESCRIPTION("IO-DATA BCTV7E remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

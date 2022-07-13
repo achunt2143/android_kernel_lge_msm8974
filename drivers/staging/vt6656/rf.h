@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +24,8 @@
  *
  * File: rf.h
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Purpose:
  *
  * Author: Jerry Chen
@@ -30,6 +37,7 @@
 #ifndef __RF_H__
 #define __RF_H__
 
+<<<<<<< HEAD
 #include "ttype.h"
 #include "device.h"
 
@@ -37,6 +45,11 @@
 //
 // Baseband RF pair definition in eeprom (Bits 6..0)
 //
+=======
+#include "device.h"
+
+/* Baseband RF pair definition in eeprom (Bits 6..0) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RF_RFMD2959         0x01
 #define RF_MAXIMAG          0x02
 #define RF_AL2230           0x03
@@ -48,13 +61,19 @@
 #define RF_VT3226           0x09
 #define RF_AIROHA7230       0x0a
 #define RF_UW2453           0x0b
+<<<<<<< HEAD
 #define RF_VT3226D0         0x0c //RobertYu:20051114
 #define RF_VT3342A0         0x0d //RobertYu:20060609
+=======
+#define RF_VT3226D0         0x0c /* RobertYu:20051114 */
+#define RF_VT3342A0         0x0d /* RobertYu:20060609 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RF_AL2230S          0x0e
 
 #define RF_EMU              0x80
 #define RF_MASK             0x7F
 
+<<<<<<< HEAD
 
 
 /*---------------------  Export Classes  ----------------------------*/
@@ -80,5 +99,14 @@ BOOL s_bVT3226D0_11bLoCurrentAdjust(
       BYTE        byChannel,
       BOOL        b11bMode
     );
+=======
+#define VNT_RF_MAX_POWER    0x3f
+#define	VNT_RF_REG_LEN      0x17 /* 24 bit length */
+
+int vnt_rf_write_embedded(struct vnt_private *priv, u32 data);
+int vnt_rf_setpower(struct vnt_private *priv, struct ieee80211_channel *ch);
+void vnt_rf_rssi_to_dbm(struct vnt_private *priv, u8 rssi, long *dbm);
+int vnt_rf_table_download(struct vnt_private *priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __RF_H__ */

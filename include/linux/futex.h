@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_FUTEX_H
 #define _LINUX_FUTEX_H
 
@@ -134,6 +135,20 @@ long do_futex(u32 __user *uaddr, int op, u32 val, union ktime *timeout,
 
 extern int
 handle_futex_death(u32 __user *uaddr, struct task_struct *curr, int pi);
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_FUTEX_H
+#define _LINUX_FUTEX_H
+
+#include <linux/sched.h>
+#include <linux/ktime.h>
+
+#include <uapi/linux/futex.h>
+
+struct inode;
+struct mm_struct;
+struct task_struct;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Futexes are matched on equal values of this key.
@@ -155,6 +170,7 @@ handle_futex_death(u32 __user *uaddr, struct task_struct *curr, int pi);
 
 union futex_key {
 	struct {
+<<<<<<< HEAD
 		unsigned long pgoff;
 		struct inode *inode;
 		int offset;
@@ -211,5 +227,65 @@ static inline void exit_pi_state_list(struct task_struct *curr)
 #define FUTEX_OP(op, oparg, cmp, cmparg) \
   (((op & 0xf) << 28) | ((cmp & 0xf) << 24)		\
    | ((oparg & 0xfff) << 12) | (cmparg & 0xfff))
+=======
+		u64 i_seq;
+		unsigned long pgoff;
+		unsigned int offset;
+	} shared;
+	struct {
+		union {
+			struct mm_struct *mm;
+			u64 __tmp;
+		};
+		unsigned long address;
+		unsigned int offset;
+	} private;
+	struct {
+		u64 ptr;
+		unsigned long word;
+		unsigned int offset;
+	} both;
+};
+
+#define FUTEX_KEY_INIT (union futex_key) { .both = { .ptr = 0ULL } }
+
+#ifdef CONFIG_FUTEX
+enum {
+	FUTEX_STATE_OK,
+	FUTEX_STATE_EXITING,
+	FUTEX_STATE_DEAD,
+};
+
+static inline void futex_init_task(struct task_struct *tsk)
+{
+	tsk->robust_list = NULL;
+#ifdef CONFIG_COMPAT
+	tsk->compat_robust_list = NULL;
+#endif
+	INIT_LIST_HEAD(&tsk->pi_state_list);
+	tsk->pi_state_cache = NULL;
+	tsk->futex_state = FUTEX_STATE_OK;
+	mutex_init(&tsk->futex_exit_mutex);
+}
+
+void futex_exit_recursive(struct task_struct *tsk);
+void futex_exit_release(struct task_struct *tsk);
+void futex_exec_release(struct task_struct *tsk);
+
+long do_futex(u32 __user *uaddr, int op, u32 val, ktime_t *timeout,
+	      u32 __user *uaddr2, u32 val2, u32 val3);
+#else
+static inline void futex_init_task(struct task_struct *tsk) { }
+static inline void futex_exit_recursive(struct task_struct *tsk) { }
+static inline void futex_exit_release(struct task_struct *tsk) { }
+static inline void futex_exec_release(struct task_struct *tsk) { }
+static inline long do_futex(u32 __user *uaddr, int op, u32 val,
+			    ktime_t *timeout, u32 __user *uaddr2,
+			    u32 val2, u32 val3)
+{
+	return -EINVAL;
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

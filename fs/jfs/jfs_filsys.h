@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) International Business Machines Corp., 2000-2003
  *
@@ -14,6 +15,11 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *   Copyright (C) International Business Machines Corp., 2000-2003
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _H_JFS_FILSYS
 #define _H_JFS_FILSYS
@@ -45,6 +51,12 @@
 /* mount time flag to disable journaling to disk */
 #define JFS_NOINTEGRITY 0x00000040
 
+<<<<<<< HEAD
+=======
+/* mount time flag to enable TRIM to ssd disks */
+#define JFS_DISCARD     0x00000080
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* commit option */
 #define	JFS_COMMIT	0x00000f00	/* commit option mask */
 #define	JFS_GROUPCOMMIT	0x00000100	/* group (of 1) commit */
@@ -132,7 +144,13 @@
 #define NUM_INODE_PER_IAG	INOSPERIAG
 
 #define MINBLOCKSIZE		512
+<<<<<<< HEAD
 #define MAXBLOCKSIZE		4096
+=======
+#define L2MINBLOCKSIZE		9
+#define MAXBLOCKSIZE		4096
+#define L2MAXBLOCKSIZE		12
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	MAXFILESIZE		((s64)1 << 52)
 
 #define JFS_LINK_MAX		0xffffffff
@@ -278,5 +296,9 @@
 				 * fsck() must be run to repair
 				 */
 #define	FM_EXTENDFS 0x00000008	/* file system extendfs() in progress */
+<<<<<<< HEAD
+=======
+#define	FM_STATE_MAX 0x0000000f	/* max value of s_state */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif				/* _H_JFS_FILSYS */

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sma cpu5 watchdog driver
  *
  * Copyright (C) 2003 Heiko Ronsdorf <hero@ihg.uni-duisburg.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -27,7 +34,10 @@
 #include <linux/errno.h>
 #include <linux/miscdevice.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ioport.h>
 #include <linux/timer.h>
 #include <linux/completion.h>
@@ -70,7 +80,11 @@ static struct {
 
 /* generic helper functions */
 
+<<<<<<< HEAD
 static void cpu5wdt_trigger(unsigned long unused)
+=======
+static void cpu5wdt_trigger(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (verbose > 2)
 		pr_debug("trigger at %i ticks\n", ticks);
@@ -141,7 +155,11 @@ static int cpu5wdt_open(struct inode *inode, struct file *file)
 {
 	if (test_and_set_bit(0, &cpu5wdt_device.inuse))
 		return -EBUSY;
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cpu5wdt_release(struct inode *inode, struct file *file)
@@ -202,6 +220,10 @@ static const struct file_operations cpu5wdt_fops = {
 	.owner		= THIS_MODULE,
 	.llseek		= no_llseek,
 	.unlocked_ioctl	= cpu5wdt_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= cpu5wdt_open,
 	.write		= cpu5wdt_write,
 	.release	= cpu5wdt_release,
@@ -215,7 +237,11 @@ static struct miscdevice cpu5wdt_misc = {
 
 /* init/exit function */
 
+<<<<<<< HEAD
 static int __devinit cpu5wdt_init(void)
+=======
+static int cpu5wdt_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int val;
 	int err;
@@ -225,7 +251,11 @@ static int __devinit cpu5wdt_init(void)
 
 	init_completion(&cpu5wdt_device.stop);
 	cpu5wdt_device.queue = 0;
+<<<<<<< HEAD
 	setup_timer(&cpu5wdt_device.timer, cpu5wdt_trigger, 0);
+=======
+	timer_setup(&cpu5wdt_device.timer, cpu5wdt_trigger, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpu5wdt_device.default_ticks = ticks;
 
 	if (!request_region(port, CPU5WDT_EXTENT, PFX)) {
@@ -256,16 +286,28 @@ no_port:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devinit cpu5wdt_init_module(void)
+=======
+static int cpu5wdt_init_module(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return cpu5wdt_init();
 }
 
+<<<<<<< HEAD
 static void __devexit cpu5wdt_exit(void)
+=======
+static void cpu5wdt_exit(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (cpu5wdt_device.queue) {
 		cpu5wdt_device.queue = 0;
 		wait_for_completion(&cpu5wdt_device.stop);
+<<<<<<< HEAD
+=======
+		del_timer(&cpu5wdt_device.timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	misc_deregister(&cpu5wdt_misc);
@@ -274,7 +316,11 @@ static void __devexit cpu5wdt_exit(void)
 
 }
 
+<<<<<<< HEAD
 static void __devexit cpu5wdt_exit_module(void)
+=======
+static void cpu5wdt_exit_module(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	cpu5wdt_exit();
 }
@@ -286,11 +332,17 @@ module_exit(cpu5wdt_exit_module);
 
 MODULE_AUTHOR("Heiko Ronsdorf <hero@ihg.uni-duisburg.de>");
 MODULE_DESCRIPTION("sma cpu5 watchdog driver");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("sma cpu5 watchdog");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
 
 module_param(port, int, 0);
+=======
+MODULE_LICENSE("GPL");
+
+module_param_hw(port, int, ioport, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(port, "base address of watchdog card, default is 0x91");
 
 module_param(verbose, int, 0);

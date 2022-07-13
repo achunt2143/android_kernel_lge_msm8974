@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP2 clock function prototypes and macros
  *
@@ -8,6 +12,7 @@
 #ifndef __ARCH_ARM_MACH_OMAP2_CLOCK2XXX_H
 #define __ARCH_ARM_MACH_OMAP2_CLOCK2XXX_H
 
+<<<<<<< HEAD
 unsigned long omap2_table_mpu_recalc(struct clk *clk);
 int omap2_select_table_rate(struct clk *clk, unsigned long rate);
 long omap2_round_to_table_rate(struct clk *clk, unsigned long rate);
@@ -40,5 +45,11 @@ extern const struct clkops clkops_omap2430_i2chs_wait;
 extern const struct clkops clkops_oscck;
 extern const struct clkops clkops_apll96;
 extern const struct clkops clkops_apll54;
+=======
+#include <linux/clk-provider.h>
+#include "clock.h"
+
+unsigned long omap2xxx_clk_get_core_rate(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

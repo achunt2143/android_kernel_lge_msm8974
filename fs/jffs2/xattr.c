@@ -11,6 +11,11 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+<<<<<<< HEAD
+=======
+#define JFFS2_XATTR_IS_CORRUPTED	1
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/fs.h>
@@ -20,6 +25,10 @@
 #include <linux/crc32.h>
 #include <linux/jffs2.h>
 #include <linux/xattr.h>
+<<<<<<< HEAD
+=======
+#include <linux/posix_acl_xattr.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mtd/mtd.h>
 #include "nodelist.h"
 /* -------- xdatum related functions ----------------
@@ -153,7 +162,11 @@ static int do_verify_xattr_datum(struct jffs2_sb_info *c, struct jffs2_xattr_dat
 		JFFS2_ERROR("node CRC failed at %#08x, read=%#08x, calc=%#08x\n",
 			    offset, je32_to_cpu(rx.hdr_crc), crc);
 		xd->flags |= JFFS2_XFLAGS_INVALID;
+<<<<<<< HEAD
 		return -EIO;
+=======
+		return JFFS2_XATTR_IS_CORRUPTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	totlen = PAD(sizeof(rx) + rx.name_len + 1 + je16_to_cpu(rx.value_len));
 	if (je16_to_cpu(rx.magic) != JFFS2_MAGIC_BITMASK
@@ -169,7 +182,11 @@ static int do_verify_xattr_datum(struct jffs2_sb_info *c, struct jffs2_xattr_dat
 			    je32_to_cpu(rx.xid), xd->xid,
 			    je32_to_cpu(rx.version), xd->version);
 		xd->flags |= JFFS2_XFLAGS_INVALID;
+<<<<<<< HEAD
 		return -EIO;
+=======
+		return JFFS2_XATTR_IS_CORRUPTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	xd->xprefix = rx.xprefix;
 	xd->name_len = rx.name_len;
@@ -192,7 +209,11 @@ static int do_verify_xattr_datum(struct jffs2_sb_info *c, struct jffs2_xattr_dat
 	/* unchecked xdatum is chained with c->xattr_unchecked */
 	list_del_init(&xd->xindex);
 
+<<<<<<< HEAD
 	dbg_xattr("success on verfying xdatum (xid=%u, version=%u)\n",
+=======
+	dbg_xattr("success on verifying xdatum (xid=%u, version=%u)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  xd->xid, xd->version);
 
 	return 0;
@@ -227,12 +248,20 @@ static int do_load_xattr_datum(struct jffs2_sb_info *c, struct jffs2_xattr_datum
 	data[xd->name_len] = '\0';
 	crc = crc32(0, data, length);
 	if (crc != xd->data_crc) {
+<<<<<<< HEAD
 		JFFS2_WARNING("node CRC failed (JFFS2_NODETYPE_XREF)"
+=======
+		JFFS2_WARNING("node CRC failed (JFFS2_NODETYPE_XATTR)"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      " at %#08x, read: 0x%08x calculated: 0x%08x\n",
 			      ref_offset(xd->node), xd->data_crc, crc);
 		kfree(data);
 		xd->flags |= JFFS2_XFLAGS_INVALID;
+<<<<<<< HEAD
 		return -EIO;
+=======
+		return JFFS2_XATTR_IS_CORRUPTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	xd->flags |= JFFS2_XFLAGS_HOT;
@@ -270,7 +299,11 @@ static int load_xattr_datum(struct jffs2_sb_info *c, struct jffs2_xattr_datum *x
 	if (xd->xname)
 		return 0;
 	if (xd->flags & JFFS2_XFLAGS_INVALID)
+<<<<<<< HEAD
 		return -EIO;
+=======
+		return JFFS2_XATTR_IS_CORRUPTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(is_xattr_datum_unchecked(c, xd)))
 		rc = do_verify_xattr_datum(c, xd);
 	if (!rc)
@@ -435,6 +468,11 @@ static void unrefer_xattr_datum(struct jffs2_sb_info *c, struct jffs2_xattr_datu
  *   is called to release xattr related objects when unmounting. 
  * check_xattr_ref_inode(c, ic)
  *   is used to confirm inode does not have duplicate xattr name/value pair.
+<<<<<<< HEAD
+=======
+ * jffs2_xattr_do_crccheck_inode(c, ic)
+ *   is used to force xattr data integrity check during the initial gc scan.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * -------------------------------------------------- */
 static int verify_xattr_ref(struct jffs2_sb_info *c, struct jffs2_xattr_ref *ref)
 {
@@ -462,7 +500,11 @@ static int verify_xattr_ref(struct jffs2_sb_info *c, struct jffs2_xattr_ref *ref
 	if (crc != je32_to_cpu(rr.node_crc)) {
 		JFFS2_ERROR("node CRC failed at %#08x, read=%#08x, calc=%#08x\n",
 			    offset, je32_to_cpu(rr.node_crc), crc);
+<<<<<<< HEAD
 		return -EIO;
+=======
+		return JFFS2_XATTR_IS_CORRUPTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (je16_to_cpu(rr.magic) != JFFS2_MAGIC_BITMASK
 	    || je16_to_cpu(rr.nodetype) != JFFS2_NODETYPE_XREF
@@ -472,7 +514,11 @@ static int verify_xattr_ref(struct jffs2_sb_info *c, struct jffs2_xattr_ref *ref
 			    offset, je16_to_cpu(rr.magic), JFFS2_MAGIC_BITMASK,
 			    je16_to_cpu(rr.nodetype), JFFS2_NODETYPE_XREF,
 			    je32_to_cpu(rr.totlen), PAD(sizeof(rr)));
+<<<<<<< HEAD
 		return -EIO;
+=======
+		return JFFS2_XATTR_IS_CORRUPTED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ref->ino = je32_to_cpu(rr.ino);
 	ref->xid = je32_to_cpu(rr.xid);
@@ -682,6 +728,14 @@ static int check_xattr_ref_inode(struct jffs2_sb_info *c, struct jffs2_inode_cac
 	return rc;
 }
 
+<<<<<<< HEAD
+=======
+void jffs2_xattr_do_crccheck_inode(struct jffs2_sb_info *c, struct jffs2_inode_cache *ic)
+{
+	check_xattr_ref_inode(c, ic);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -------- xattr subsystem functions ---------------
  * jffs2_init_xattr_subsystem(c)
  *   is used to initialize semaphore and list_head, and some variables.
@@ -746,8 +800,12 @@ void jffs2_clear_xattr_subsystem(struct jffs2_sb_info *c)
 	for (i=0; i < XATTRINDEX_HASHSIZE; i++) {
 		list_for_each_entry_safe(xd, _xd, &c->xattrindex[i], xindex) {
 			list_del(&xd->xindex);
+<<<<<<< HEAD
 			if (xd->xname)
 				kfree(xd->xname);
+=======
+			kfree(xd->xname);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			jffs2_free_xattr_datum(xd);
 		}
 	}
@@ -763,10 +821,17 @@ void jffs2_clear_xattr_subsystem(struct jffs2_sb_info *c)
 }
 
 #define XREF_TMPHASH_SIZE	(128)
+<<<<<<< HEAD
 void jffs2_build_xattr_subsystem(struct jffs2_sb_info *c)
 {
 	struct jffs2_xattr_ref *ref, *_ref;
 	struct jffs2_xattr_ref *xref_tmphash[XREF_TMPHASH_SIZE];
+=======
+int jffs2_build_xattr_subsystem(struct jffs2_sb_info *c)
+{
+	struct jffs2_xattr_ref *ref, *_ref;
+	struct jffs2_xattr_ref **xref_tmphash;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct jffs2_xattr_datum *xd, *_xd;
 	struct jffs2_inode_cache *ic;
 	struct jffs2_raw_node_ref *raw;
@@ -775,9 +840,18 @@ void jffs2_build_xattr_subsystem(struct jffs2_sb_info *c)
 
 	BUG_ON(!(c->flags & JFFS2_SB_FLAG_BUILDING));
 
+<<<<<<< HEAD
 	/* Phase.1 : Merge same xref */
 	for (i=0; i < XREF_TMPHASH_SIZE; i++)
 		xref_tmphash[i] = NULL;
+=======
+	xref_tmphash = kcalloc(XREF_TMPHASH_SIZE,
+			       sizeof(struct jffs2_xattr_ref *), GFP_KERNEL);
+	if (!xref_tmphash)
+		return -ENOMEM;
+
+	/* Phase.1 : Merge same xref */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (ref=c->xref_temp; ref; ref=_ref) {
 		struct jffs2_xattr_ref *tmp;
 
@@ -875,6 +949,11 @@ void jffs2_build_xattr_subsystem(struct jffs2_sb_info *c)
 		     "%u of xref (%u dead, %u orphan) found.\n",
 		     xdatum_count, xdatum_unchecked_count, xdatum_orphan_count,
 		     xref_count, xref_dead_count, xref_orphan_count);
+<<<<<<< HEAD
+=======
+	kfree(xref_tmphash);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct jffs2_xattr_datum *jffs2_setup_xattr_datum(struct jffs2_sb_info *c,
@@ -906,21 +985,34 @@ struct jffs2_xattr_datum *jffs2_setup_xattr_datum(struct jffs2_sb_info *c,
  * do_jffs2_setxattr(inode, xprefix, xname, buffer, size, flags)
  *   is an implementation of setxattr handler on jffs2.
  * -------------------------------------------------- */
+<<<<<<< HEAD
 const struct xattr_handler *jffs2_xattr_handlers[] = {
+=======
+const struct xattr_handler * const jffs2_xattr_handlers[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&jffs2_user_xattr_handler,
 #ifdef CONFIG_JFFS2_FS_SECURITY
 	&jffs2_security_xattr_handler,
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_JFFS2_FS_POSIX_ACL
 	&jffs2_acl_access_xattr_handler,
 	&jffs2_acl_default_xattr_handler,
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&jffs2_trusted_xattr_handler,
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct xattr_handler *xprefix_to_handler(int xprefix) {
 	const struct xattr_handler *ret;
+=======
+static const char *jffs2_xattr_prefix(int xprefix, struct dentry *dentry)
+{
+	const struct xattr_handler *ret = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (xprefix) {
 	case JFFS2_XPREFIX_USER:
@@ -933,32 +1025,58 @@ static const struct xattr_handler *xprefix_to_handler(int xprefix) {
 #endif
 #ifdef CONFIG_JFFS2_FS_POSIX_ACL
 	case JFFS2_XPREFIX_ACL_ACCESS:
+<<<<<<< HEAD
 		ret = &jffs2_acl_access_xattr_handler;
 		break;
 	case JFFS2_XPREFIX_ACL_DEFAULT:
 		ret = &jffs2_acl_default_xattr_handler;
+=======
+		ret = &nop_posix_acl_access;
+		break;
+	case JFFS2_XPREFIX_ACL_DEFAULT:
+		ret = &nop_posix_acl_default;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #endif
 	case JFFS2_XPREFIX_TRUSTED:
 		ret = &jffs2_trusted_xattr_handler;
 		break;
 	default:
+<<<<<<< HEAD
 		ret = NULL;
 		break;
 	}
 	return ret;
+=======
+		return NULL;
+	}
+
+	if (!xattr_handler_can_list(ret, dentry))
+		return NULL;
+
+	return xattr_prefix(ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 ssize_t jffs2_listxattr(struct dentry *dentry, char *buffer, size_t size)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct jffs2_inode_info *f = JFFS2_INODE_INFO(inode);
 	struct jffs2_sb_info *c = JFFS2_SB_INFO(inode->i_sb);
 	struct jffs2_inode_cache *ic = f->inocache;
 	struct jffs2_xattr_ref *ref, **pref;
 	struct jffs2_xattr_datum *xd;
+<<<<<<< HEAD
 	const struct xattr_handler *xhandle;
 	ssize_t len, rc;
+=======
+	const char *prefix;
+	ssize_t prefix_len, len, rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retry = 0;
 
 	rc = check_xattr_ref_inode(c, ic);
@@ -988,6 +1106,7 @@ ssize_t jffs2_listxattr(struct dentry *dentry, char *buffer, size_t size)
 					goto out;
 			}
 		}
+<<<<<<< HEAD
 		xhandle = xprefix_to_handler(xd->xprefix);
 		if (!xhandle)
 			continue;
@@ -1000,6 +1119,26 @@ ssize_t jffs2_listxattr(struct dentry *dentry, char *buffer, size_t size)
 		}
 		if (rc < 0)
 			goto out;
+=======
+
+		prefix = jffs2_xattr_prefix(xd->xprefix, dentry);
+		if (!prefix)
+			continue;
+		prefix_len = strlen(prefix);
+		rc = prefix_len + xd->name_len + 1;
+
+		if (buffer) {
+			if (rc > size - len) {
+				rc = -ERANGE;
+				goto out;
+			}
+			memcpy(buffer, prefix, prefix_len);
+			buffer += prefix_len;
+			memcpy(buffer, xd->xname, xd->name_len);
+			buffer += xd->name_len;
+			*buffer++ = 0;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len += rc;
 	}
 	rc = len;
@@ -1257,7 +1396,10 @@ int jffs2_garbage_collect_xattr_ref(struct jffs2_sb_info *c, struct jffs2_xattr_
 	if (rc) {
 		JFFS2_WARNING("%s: jffs2_reserve_space_gc() = %d, request = %u\n",
 			      __func__, rc, totlen);
+<<<<<<< HEAD
 		rc = rc ? rc : -EBADFD;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	rc = save_xattr_ref(c, ref);

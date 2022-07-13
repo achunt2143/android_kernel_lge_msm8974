@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for the serial port on the 21285 StrongArm-110 core logic chip.
  *
@@ -40,8 +44,48 @@
 
 static const char serial21285_name[] = "Footbridge UART";
 
+<<<<<<< HEAD
 #define tx_enabled(port)	((port)->unused[0])
 #define rx_enabled(port)	((port)->unused[1])
+=======
+/*
+ * We only need 2 bits of data, so instead of creating a whole structure for
+ * this, use bits of the private_data pointer of the uart port structure.
+ */
+#define tx_enabled_bit	0
+#define rx_enabled_bit	1
+
+static bool is_enabled(struct uart_port *port, int bit)
+{
+	unsigned long *private_data = (unsigned long *)&port->private_data;
+
+	if (test_bit(bit, private_data))
+		return true;
+	return false;
+}
+
+static void enable(struct uart_port *port, int bit)
+{
+	unsigned long *private_data = (unsigned long *)&port->private_data;
+
+	set_bit(bit, private_data);
+}
+
+static void disable(struct uart_port *port, int bit)
+{
+	unsigned long *private_data = (unsigned long *)&port->private_data;
+
+	clear_bit(bit, private_data);
+}
+
+#define is_tx_enabled(port)	is_enabled(port, tx_enabled_bit)
+#define tx_enable(port)		enable(port, tx_enabled_bit)
+#define tx_disable(port)	disable(port, tx_enabled_bit)
+
+#define is_rx_enabled(port)	is_enabled(port, rx_enabled_bit)
+#define rx_enable(port)		enable(port, rx_enabled_bit)
+#define rx_disable(port)	disable(port, rx_enabled_bit)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The documented expression for selecting the divisor is:
@@ -56,22 +100,35 @@ static const char serial21285_name[] = "Footbridge UART";
 
 static void serial21285_stop_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	if (tx_enabled(port)) {
 		disable_irq_nosync(IRQ_CONTX);
 		tx_enabled(port) = 0;
+=======
+	if (is_tx_enabled(port)) {
+		disable_irq_nosync(IRQ_CONTX);
+		tx_disable(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void serial21285_start_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	if (!tx_enabled(port)) {
 		enable_irq(IRQ_CONTX);
 		tx_enabled(port) = 1;
+=======
+	if (!is_tx_enabled(port)) {
+		enable_irq(IRQ_CONTX);
+		tx_enable(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static void serial21285_stop_rx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	if (rx_enabled(port)) {
 		disable_irq_nosync(IRQ_CONRX);
 		rx_enabled(port) = 0;
@@ -87,6 +144,19 @@ static irqreturn_t serial21285_rx_chars(int irq, void *dev_id)
 	struct uart_port *port = dev_id;
 	struct tty_struct *tty = port->state->port.tty;
 	unsigned int status, ch, flag, rxs, max_count = 256;
+=======
+	if (is_rx_enabled(port)) {
+		disable_irq_nosync(IRQ_CONRX);
+		rx_disable(port);
+	}
+}
+
+static irqreturn_t serial21285_rx_chars(int irq, void *dev_id)
+{
+	struct uart_port *port = dev_id;
+	unsigned int status, rxs, max_count = 256;
+	u8 ch, flag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = *CSR_UARTFLG;
 	while (!(status & 0x10) && max_count--) {
@@ -115,7 +185,11 @@ static irqreturn_t serial21285_rx_chars(int irq, void *dev_id)
 
 		status = *CSR_UARTFLG;
 	}
+<<<<<<< HEAD
 	tty_flip_buffer_push(tty);
+=======
+	tty_flip_buffer_push(&port->state->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -123,6 +197,7 @@ static irqreturn_t serial21285_rx_chars(int irq, void *dev_id)
 static irqreturn_t serial21285_tx_chars(int irq, void *dev_id)
 {
 	struct uart_port *port = dev_id;
+<<<<<<< HEAD
 	struct circ_buf *xmit = &port->state->xmit;
 	int count = 256;
 
@@ -152,6 +227,15 @@ static irqreturn_t serial21285_tx_chars(int irq, void *dev_id)
 		serial21285_stop_tx(port);
 
  out:
+=======
+	u8 ch;
+
+	uart_port_tx_limited(port, ch, 256,
+		!(*CSR_UARTFLG & 0x20),
+		*CSR_UARTDR = ch,
+		({}));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -175,22 +259,35 @@ static void serial21285_break_ctl(struct uart_port *port, int break_state)
 	unsigned long flags;
 	unsigned int h_lcr;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
+=======
+	uart_port_lock_irqsave(port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h_lcr = *CSR_H_UBRLCR;
 	if (break_state)
 		h_lcr |= H_UBRLCR_BREAK;
 	else
 		h_lcr &= ~H_UBRLCR_BREAK;
 	*CSR_H_UBRLCR = h_lcr;
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int serial21285_startup(struct uart_port *port)
 {
 	int ret;
 
+<<<<<<< HEAD
 	tx_enabled(port) = 1;
 	rx_enabled(port) = 1;
+=======
+	tx_enable(port);
+	rx_enable(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = request_irq(IRQ_CONRX, serial21285_rx_chars, 0,
 			  serial21285_name, port);
@@ -212,7 +309,11 @@ static void serial21285_shutdown(struct uart_port *port)
 
 static void
 serial21285_set_termios(struct uart_port *port, struct ktermios *termios,
+<<<<<<< HEAD
 			struct ktermios *old)
+=======
+			const struct ktermios *old)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	unsigned int baud, quot, h_lcr, b;
@@ -262,7 +363,11 @@ serial21285_set_termios(struct uart_port *port, struct ktermios *termios,
 	if (port->fifosize)
 		h_lcr |= H_UBRLCR_FIFO;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
+=======
+	uart_port_lock_irqsave(port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Update the per-port timeout.
@@ -299,7 +404,11 @@ serial21285_set_termios(struct uart_port *port, struct ktermios *termios,
 	*CSR_H_UBRLCR = h_lcr;
 	*CSR_UARTCON = 1;
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *serial21285_type(struct uart_port *port)
@@ -339,14 +448,21 @@ static int serial21285_verify_port(struct uart_port *port, struct serial_struct 
 	return ret;
 }
 
+<<<<<<< HEAD
 static struct uart_ops serial21285_ops = {
+=======
+static const struct uart_ops serial21285_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	= serial21285_tx_empty,
 	.get_mctrl	= serial21285_get_mctrl,
 	.set_mctrl	= serial21285_set_mctrl,
 	.stop_tx	= serial21285_stop_tx,
 	.start_tx	= serial21285_start_tx,
 	.stop_rx	= serial21285_stop_rx,
+<<<<<<< HEAD
 	.enable_ms	= serial21285_enable_ms,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.break_ctl	= serial21285_break_ctl,
 	.startup	= serial21285_startup,
 	.shutdown	= serial21285_shutdown,
@@ -373,7 +489,11 @@ static void serial21285_setup_ports(void)
 }
 
 #ifdef CONFIG_SERIAL_21285_CONSOLE
+<<<<<<< HEAD
 static void serial21285_console_putchar(struct uart_port *port, int ch)
+=======
+static void serial21285_console_putchar(struct uart_port *port, unsigned char ch)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (*CSR_UARTFLG & 0x20)
 		barrier();
@@ -431,9 +551,12 @@ static int __init serial21285_console_setup(struct console *co, char *options)
 	int parity = 'n';
 	int flow = 'n';
 
+<<<<<<< HEAD
 	if (machine_is_personal_server())
 		baud = 57600;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Check whether an invalid uart number has been specified, and
 	 * if so, search for the first available port that does have

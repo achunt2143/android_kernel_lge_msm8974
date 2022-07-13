@@ -1,17 +1,28 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/smp_twd.c
  *
  *  Copyright (C) 2002 ARM Ltd.
  *  All Rights Reserved
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/clk.h>
+<<<<<<< HEAD
 #include <linux/cpufreq.h>
+=======
+#include <linux/cpu.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -24,14 +35,18 @@
 #include <linux/of_address.h>
 
 #include <asm/smp_twd.h>
+<<<<<<< HEAD
 #include <asm/localtimer.h>
 #include <asm/hardware/gic.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* set up by the platform code */
 static void __iomem *twd_base;
 
 static struct clk *twd_clk;
 static unsigned long twd_timer_rate;
+<<<<<<< HEAD
 
 static struct clock_event_device __percpu **twd_evt;
 static int twd_ppi;
@@ -59,17 +74,59 @@ static void twd_set_mode(enum clock_event_mode mode,
 	}
 
 	__raw_writel(ctrl, twd_base + TWD_TIMER_CONTROL);
+=======
+static DEFINE_PER_CPU(bool, percpu_setup_called);
+
+static struct clock_event_device __percpu *twd_evt;
+static unsigned int twd_features =
+		CLOCK_EVT_FEAT_PERIODIC | CLOCK_EVT_FEAT_ONESHOT;
+static int twd_ppi;
+
+static int twd_shutdown(struct clock_event_device *clk)
+{
+	writel_relaxed(0, twd_base + TWD_TIMER_CONTROL);
+	return 0;
+}
+
+static int twd_set_oneshot(struct clock_event_device *clk)
+{
+	/* period set, and timer enabled in 'next_event' hook */
+	writel_relaxed(TWD_TIMER_CONTROL_IT_ENABLE | TWD_TIMER_CONTROL_ONESHOT,
+		       twd_base + TWD_TIMER_CONTROL);
+	return 0;
+}
+
+static int twd_set_periodic(struct clock_event_device *clk)
+{
+	unsigned long ctrl = TWD_TIMER_CONTROL_ENABLE |
+			     TWD_TIMER_CONTROL_IT_ENABLE |
+			     TWD_TIMER_CONTROL_PERIODIC;
+
+	writel_relaxed(DIV_ROUND_CLOSEST(twd_timer_rate, HZ),
+		       twd_base + TWD_TIMER_LOAD);
+	writel_relaxed(ctrl, twd_base + TWD_TIMER_CONTROL);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int twd_set_next_event(unsigned long evt,
 			struct clock_event_device *unused)
 {
+<<<<<<< HEAD
 	unsigned long ctrl = __raw_readl(twd_base + TWD_TIMER_CONTROL);
 
 	ctrl |= TWD_TIMER_CONTROL_ENABLE;
 
 	__raw_writel(evt, twd_base + TWD_TIMER_COUNTER);
 	__raw_writel(ctrl, twd_base + TWD_TIMER_CONTROL);
+=======
+	unsigned long ctrl = readl_relaxed(twd_base + TWD_TIMER_CONTROL);
+
+	ctrl |= TWD_TIMER_CONTROL_ENABLE;
+
+	writel_relaxed(evt, twd_base + TWD_TIMER_COUNTER);
+	writel_relaxed(ctrl, twd_base + TWD_TIMER_CONTROL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -82,14 +139,20 @@ static int twd_set_next_event(unsigned long evt,
  */
 static int twd_timer_ack(void)
 {
+<<<<<<< HEAD
 	if (__raw_readl(twd_base + TWD_TIMER_INTSTAT)) {
 		__raw_writel(1, twd_base + TWD_TIMER_INTSTAT);
+=======
+	if (readl_relaxed(twd_base + TWD_TIMER_INTSTAT)) {
+		writel_relaxed(1, twd_base + TWD_TIMER_INTSTAT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void twd_timer_stop(struct clock_event_device *clk)
 {
 	twd_set_mode(CLOCK_EVT_MODE_UNUSED, clk);
@@ -98,10 +161,21 @@ static void twd_timer_stop(struct clock_event_device *clk)
 
 #ifdef CONFIG_CPU_FREQ
 
+=======
+static void twd_timer_stop(void)
+{
+	struct clock_event_device *clk = raw_cpu_ptr(twd_evt);
+
+	twd_shutdown(clk);
+	disable_percpu_irq(clk->irq);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Updates clockevent frequency when the cpu frequency changes.
  * Called on the cpu that is changing frequency with interrupts disabled.
  */
+<<<<<<< HEAD
 static void twd_update_frequency(void *data)
 {
 	twd_timer_rate = clk_get_rate(twd_clk);
@@ -113,19 +187,39 @@ static int twd_cpufreq_transition(struct notifier_block *nb,
 	unsigned long state, void *data)
 {
 	struct cpufreq_freqs *freqs = data;
+=======
+static void twd_update_frequency(void *new_rate)
+{
+	twd_timer_rate = *((unsigned long *) new_rate);
+
+	clockevents_update_freq(raw_cpu_ptr(twd_evt), twd_timer_rate);
+}
+
+static int twd_rate_change(struct notifier_block *nb,
+	unsigned long flags, void *data)
+{
+	struct clk_notifier_data *cnd = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The twd clock events must be reprogrammed to account for the new
 	 * frequency.  The timer is local to a cpu, so cross-call to the
 	 * changing cpu.
 	 */
+<<<<<<< HEAD
 	if (state == CPUFREQ_POSTCHANGE || state == CPUFREQ_RESUMECHANGE)
 		smp_call_function_single(freqs->cpu, twd_update_frequency,
 			NULL, 1);
+=======
+	if (flags == POST_RATE_CHANGE)
+		on_each_cpu(twd_update_frequency,
+				  (void *)&cnd->new_rate, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return NOTIFY_OK;
 }
 
+<<<<<<< HEAD
 static struct notifier_block twd_cpufreq_nb = {
 	.notifier_call = twd_cpufreq_transition,
 };
@@ -143,6 +237,22 @@ core_initcall(twd_cpufreq_init);
 #endif
 
 static void __cpuinit twd_calibrate_rate(void)
+=======
+static struct notifier_block twd_clk_nb = {
+	.notifier_call = twd_rate_change,
+};
+
+static int twd_clk_init(void)
+{
+	if (twd_evt && raw_cpu_ptr(twd_evt) && !IS_ERR(twd_clk))
+		return clk_notifier_register(twd_clk, &twd_clk_nb);
+
+	return 0;
+}
+core_initcall(twd_clk_init);
+
+static void twd_calibrate_rate(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long count;
 	u64 waitjiffies;
@@ -152,7 +262,11 @@ static void __cpuinit twd_calibrate_rate(void)
 	 * the timer ticks
 	 */
 	if (twd_timer_rate == 0) {
+<<<<<<< HEAD
 		printk(KERN_INFO "Calibrating local timer... ");
+=======
+		pr_info("Calibrating local timer... ");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Wait for a tick to start */
 		waitjiffies = get_jiffies_64() + 1;
@@ -164,26 +278,45 @@ static void __cpuinit twd_calibrate_rate(void)
 		waitjiffies += 5;
 
 				 /* enable, no interrupt or reload */
+<<<<<<< HEAD
 		__raw_writel(0x1, twd_base + TWD_TIMER_CONTROL);
 
 				 /* maximum value */
 		__raw_writel(0xFFFFFFFFU, twd_base + TWD_TIMER_COUNTER);
+=======
+		writel_relaxed(0x1, twd_base + TWD_TIMER_CONTROL);
+
+				 /* maximum value */
+		writel_relaxed(0xFFFFFFFFU, twd_base + TWD_TIMER_COUNTER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		while (get_jiffies_64() < waitjiffies)
 			udelay(10);
 
+<<<<<<< HEAD
 		count = __raw_readl(twd_base + TWD_TIMER_COUNTER);
 
 		twd_timer_rate = (0xFFFFFFFFU - count) * (HZ / 5);
 
 		printk("%lu.%02luMHz.\n", twd_timer_rate / 1000000,
+=======
+		count = readl_relaxed(twd_base + TWD_TIMER_COUNTER);
+
+		twd_timer_rate = (0xFFFFFFFFU - count) * (HZ / 5);
+
+		pr_cont("%lu.%02luMHz.\n", twd_timer_rate / 1000000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(twd_timer_rate / 10000) % 100);
 	}
 }
 
 static irqreturn_t twd_handler(int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	struct clock_event_device *evt = *(struct clock_event_device **)dev_id;
+=======
+	struct clock_event_device *evt = dev_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (twd_timer_ack()) {
 		evt->event_handler(evt);
@@ -193,6 +326,7 @@ static irqreturn_t twd_handler(int irq, void *dev_id)
 	return IRQ_NONE;
 }
 
+<<<<<<< HEAD
 static struct clk *twd_get_clock(void)
 {
 	struct clk *clk;
@@ -220,11 +354,36 @@ static struct clk *twd_get_clock(void)
 	}
 
 	return clk;
+=======
+static void twd_get_clock(struct device_node *np)
+{
+	int err;
+
+	if (np)
+		twd_clk = of_clk_get(np, 0);
+	else
+		twd_clk = clk_get_sys("smp_twd", NULL);
+
+	if (IS_ERR(twd_clk)) {
+		pr_err("smp_twd: clock not found %d\n", (int) PTR_ERR(twd_clk));
+		return;
+	}
+
+	err = clk_prepare_enable(twd_clk);
+	if (err) {
+		pr_err("smp_twd: clock failed to prepare+enable: %d\n", err);
+		clk_put(twd_clk);
+		return;
+	}
+
+	twd_timer_rate = clk_get_rate(twd_clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Setup the local clock events for a CPU.
  */
+<<<<<<< HEAD
 static int __cpuinit twd_timer_setup(struct clock_event_device *clk)
 {
 	struct clock_event_device **this_cpu_clk;
@@ -249,10 +408,48 @@ static int __cpuinit twd_timer_setup(struct clock_event_device *clk)
 
 	this_cpu_clk = __this_cpu_ptr(twd_evt);
 	*this_cpu_clk = clk;
+=======
+static void twd_timer_setup(void)
+{
+	struct clock_event_device *clk = raw_cpu_ptr(twd_evt);
+	int cpu = smp_processor_id();
+
+	/*
+	 * If the basic setup for this CPU has been done before don't
+	 * bother with the below.
+	 */
+	if (per_cpu(percpu_setup_called, cpu)) {
+		writel_relaxed(0, twd_base + TWD_TIMER_CONTROL);
+		clockevents_register_device(clk);
+		enable_percpu_irq(clk->irq, 0);
+		return;
+	}
+	per_cpu(percpu_setup_called, cpu) = true;
+
+	twd_calibrate_rate();
+
+	/*
+	 * The following is done once per CPU the first time .setup() is
+	 * called.
+	 */
+	writel_relaxed(0, twd_base + TWD_TIMER_CONTROL);
+
+	clk->name = "local_timer";
+	clk->features = twd_features;
+	clk->rating = 350;
+	clk->set_state_shutdown = twd_shutdown;
+	clk->set_state_periodic = twd_set_periodic;
+	clk->set_state_oneshot = twd_set_oneshot;
+	clk->tick_resume = twd_shutdown;
+	clk->set_next_event = twd_set_next_event;
+	clk->irq = twd_ppi;
+	clk->cpumask = cpumask_of(cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clockevents_config_and_register(clk, twd_timer_rate,
 					0xf, 0xffffffff);
 	enable_percpu_irq(clk->irq, 0);
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -267,6 +464,27 @@ static int __init twd_local_timer_common_register(void)
 	int err;
 
 	twd_evt = alloc_percpu(struct clock_event_device *);
+=======
+}
+
+static int twd_timer_starting_cpu(unsigned int cpu)
+{
+	twd_timer_setup();
+	return 0;
+}
+
+static int twd_timer_dying_cpu(unsigned int cpu)
+{
+	twd_timer_stop();
+	return 0;
+}
+
+static int __init twd_local_timer_common_register(struct device_node *np)
+{
+	int err;
+
+	twd_evt = alloc_percpu(struct clock_event_device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!twd_evt) {
 		err = -ENOMEM;
 		goto out_free;
@@ -278,6 +496,7 @@ static int __init twd_local_timer_common_register(void)
 		goto out_free;
 	}
 
+<<<<<<< HEAD
 	err = local_timer_register(&twd_lt_ops);
 	if (err)
 		goto out_irq;
@@ -286,6 +505,28 @@ static int __init twd_local_timer_common_register(void)
 
 out_irq:
 	free_percpu_irq(twd_ppi, twd_evt);
+=======
+	cpuhp_setup_state_nocalls(CPUHP_AP_ARM_TWD_STARTING,
+				  "arm/timer/twd:starting",
+				  twd_timer_starting_cpu, twd_timer_dying_cpu);
+
+	twd_get_clock(np);
+	if (!of_property_read_bool(np, "always-on"))
+		twd_features |= CLOCK_EVT_FEAT_C3STOP;
+
+	/*
+	 * Immediately configure the timer on the boot CPU, unless we need
+	 * jiffies to be incrementing to calibrate the rate in which case
+	 * setup the timer in late_time_init.
+	 */
+	if (twd_timer_rate)
+		twd_timer_setup();
+	else
+		late_time_init = twd_timer_setup;
+
+	return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_free:
 	iounmap(twd_base);
 	twd_base = NULL;
@@ -294,6 +535,7 @@ out_free:
 	return err;
 }
 
+<<<<<<< HEAD
 int __init twd_local_timer_register(struct twd_local_timer *tlt)
 {
 	if (twd_base || twd_evt)
@@ -327,6 +569,12 @@ void __init twd_local_timer_of_register(void)
 		goto out;
 	}
 
+=======
+static int __init twd_local_timer_of_register(struct device_node *np)
+{
+	int err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	twd_ppi = irq_of_parse_and_map(np, 0);
 	if (!twd_ppi) {
 		err = -EINVAL;
@@ -339,9 +587,21 @@ void __init twd_local_timer_of_register(void)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	err = twd_local_timer_common_register();
 
 out:
 	WARN(err, "twd_local_timer_of_register failed (%d)\n", err);
 }
 #endif
+=======
+	err = twd_local_timer_common_register(np);
+
+out:
+	WARN(err, "twd_local_timer_of_register failed (%d)\n", err);
+	return err;
+}
+TIMER_OF_DECLARE(arm_twd_a9, "arm,cortex-a9-twd-timer", twd_local_timer_of_register);
+TIMER_OF_DECLARE(arm_twd_a5, "arm,cortex-a5-twd-timer", twd_local_timer_of_register);
+TIMER_OF_DECLARE(arm_twd_11mp, "arm,arm11mp-twd-timer", twd_local_timer_of_register);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

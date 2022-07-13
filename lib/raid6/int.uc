@@ -42,6 +42,7 @@ typedef u32 unative_t;
 
 
 /*
+<<<<<<< HEAD
  * IA-64 wants insane amounts of unrolling.  On other architectures that
  * is just a waste of space.
  */
@@ -49,6 +50,8 @@ typedef u32 unative_t;
 
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * These sub-operations are separate inlines since they can sometimes be
  * specially optimized using architecture-specific hacks.
  */
@@ -107,6 +110,7 @@ static void raid6_int$#_gen_syndrome(int disks, size_t bytes, void **ptrs)
 	}
 }
 
+<<<<<<< HEAD
 const struct raid6_calls raid6_intx$# = {
 	raid6_int$#_gen_syndrome,
 	NULL,		/* always valid */
@@ -115,3 +119,50 @@ const struct raid6_calls raid6_intx$# = {
 };
 
 #endif
+=======
+static void raid6_int$#_xor_syndrome(int disks, int start, int stop,
+				     size_t bytes, void **ptrs)
+{
+	u8 **dptr = (u8 **)ptrs;
+	u8 *p, *q;
+	int d, z, z0;
+
+	unative_t wd$$, wq$$, wp$$, w1$$, w2$$;
+
+	z0 = stop;		/* P/Q right side optimization */
+	p = dptr[disks-2];	/* XOR parity */
+	q = dptr[disks-1];	/* RS syndrome */
+
+	for ( d = 0 ; d < bytes ; d += NSIZE*$# ) {
+		/* P/Q data pages */
+		wq$$ = wp$$ = *(unative_t *)&dptr[z0][d+$$*NSIZE];
+		for ( z = z0-1 ; z >= start ; z-- ) {
+			wd$$ = *(unative_t *)&dptr[z][d+$$*NSIZE];
+			wp$$ ^= wd$$;
+			w2$$ = MASK(wq$$);
+			w1$$ = SHLBYTE(wq$$);
+			w2$$ &= NBYTES(0x1d);
+			w1$$ ^= w2$$;
+			wq$$ = w1$$ ^ wd$$;
+		}
+		/* P/Q left side optimization */
+		for ( z = start-1 ; z >= 0 ; z-- ) {
+			w2$$ = MASK(wq$$);
+			w1$$ = SHLBYTE(wq$$);
+			w2$$ &= NBYTES(0x1d);
+			wq$$ = w1$$ ^ w2$$;
+		}
+		*(unative_t *)&p[d+NSIZE*$$] ^= wp$$;
+		*(unative_t *)&q[d+NSIZE*$$] ^= wq$$;
+	}
+
+}
+
+const struct raid6_calls raid6_intx$# = {
+	raid6_int$#_gen_syndrome,
+	raid6_int$#_xor_syndrome,
+	NULL,			/* always valid */
+	"int" NSTRING "x$#",
+	0
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

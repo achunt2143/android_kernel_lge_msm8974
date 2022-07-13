@@ -3,6 +3,10 @@
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+<<<<<<< HEAD
+=======
+ * (C) Copyright 2020 Hewlett Packard Enterprise Development LP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 1999-2009 Silicon Graphics, Inc. All rights reserved.
  */
 
@@ -96,7 +100,11 @@ struct xpnet_pending_msg {
 	atomic_t use_count;
 };
 
+<<<<<<< HEAD
 struct net_device *xpnet_device;
+=======
+static struct net_device *xpnet_device;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * When we are notified of other partitions activating, we add them to
@@ -118,6 +126,11 @@ static DEFINE_SPINLOCK(xpnet_broadcast_lock);
  * now, the default is 64KB.
  */
 #define XPNET_MAX_MTU (0x800000UL - L1_CACHE_BYTES)
+<<<<<<< HEAD
+=======
+/* 68 comes from min TCP+IP+MAC header */
+#define XPNET_MIN_MTU 68
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 32KB has been determined to be the ideal */
 #define XPNET_DEF_MTU (0x8000UL)
 
@@ -129,16 +142,28 @@ static DEFINE_SPINLOCK(xpnet_broadcast_lock);
 
 /* Define the XPNET debug device structures to be used with dev_dbg() et al */
 
+<<<<<<< HEAD
 struct device_driver xpnet_dbg_name = {
 	.name = "xpnet"
 };
 
 struct device xpnet_dbg_subname = {
+=======
+static struct device_driver xpnet_dbg_name = {
+	.name = "xpnet"
+};
+
+static struct device xpnet_dbg_subname = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_name = "",	/* set to "" */
 	.driver = &xpnet_dbg_name
 };
 
+<<<<<<< HEAD
 struct device *xpnet = &xpnet_dbg_subname;
+=======
+static struct device *xpnet = &xpnet_dbg_subname;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Packet was recevied by XPC and forwarded to us.
@@ -205,7 +230,11 @@ xpnet_receive(short partid, int channel, struct xpnet_message *msg)
 	} else {
 		dst = (void *)((u64)skb->data & ~(L1_CACHE_BYTES - 1));
 		dev_dbg(xpnet, "transferring buffer to the skb->data area;\n\t"
+<<<<<<< HEAD
 			"xp_remote_memcpy(0x%p, 0x%p, %hu)\n", dst,
+=======
+			"xp_remote_memcpy(0x%p, 0x%p, %u)\n", dst,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  (void *)msg->buf_pa, msg->size);
 
 		ret = xp_remote_memcpy(xp_pa(dst), msg->buf_pa, msg->size);
@@ -215,7 +244,11 @@ xpnet_receive(short partid, int channel, struct xpnet_message *msg)
 			 * !!! appears in_use and we can't just call
 			 * !!! dev_kfree_skb.
 			 */
+<<<<<<< HEAD
 			dev_err(xpnet, "xp_remote_memcpy(0x%p, 0x%p, 0x%hx) "
+=======
+			dev_err(xpnet, "xp_remote_memcpy(0x%p, 0x%p, 0x%x) "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"returned error=0x%x\n", dst,
 				(void *)msg->buf_pa, msg->size, ret);
 
@@ -244,7 +277,11 @@ xpnet_receive(short partid, int channel, struct xpnet_message *msg)
 	xpnet_device->stats.rx_packets++;
 	xpnet_device->stats.rx_bytes += skb->len + ETH_HLEN;
 
+<<<<<<< HEAD
 	netif_rx_ni(skb);
+=======
+	netif_rx(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xpc_received(partid, channel, (void *)msg);
 }
 
@@ -282,7 +319,11 @@ xpnet_connection_activity(enum xp_retval reason, short partid, int channel,
 		__clear_bit(partid, xpnet_broadcast_partitions);
 		spin_unlock_bh(&xpnet_broadcast_lock);
 
+<<<<<<< HEAD
 		if (bitmap_empty((unsigned long *)xpnet_broadcast_partitions,
+=======
+		if (bitmap_empty(xpnet_broadcast_partitions,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 xp_max_npartitions)) {
 			netif_carrier_off(xpnet_device);
 		}
@@ -330,6 +371,7 @@ xpnet_dev_stop(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 xpnet_dev_change_mtu(struct net_device *dev, int new_mtu)
 {
@@ -346,6 +388,8 @@ xpnet_dev_change_mtu(struct net_device *dev, int new_mtu)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Notification that the other end has received the message and
  * DMA'd the skb information.  At this point, they are done with
@@ -421,7 +465,11 @@ xpnet_send(struct sk_buff *skb, struct xpnet_pending_msg *queued_msg,
  * destination partid.  If the destination partid octets are 0xffff,
  * this packet is to be broadcast to all connected partitions.
  */
+<<<<<<< HEAD
 static int
+=======
+static netdev_tx_t
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 xpnet_dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct xpnet_pending_msg *queued_msg;
@@ -510,7 +558,11 @@ xpnet_dev_hard_start_xmit(struct sk_buff *skb, struct net_device *dev)
  * Deal with transmit timeouts coming from the network layer.
  */
 static void
+<<<<<<< HEAD
 xpnet_dev_tx_timeout(struct net_device *dev)
+=======
+xpnet_dev_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dev->stats.tx_errors++;
 }
@@ -519,7 +571,10 @@ static const struct net_device_ops xpnet_netdev_ops = {
 	.ndo_open		= xpnet_dev_open,
 	.ndo_stop		= xpnet_dev_stop,
 	.ndo_start_xmit		= xpnet_dev_hard_start_xmit,
+<<<<<<< HEAD
 	.ndo_change_mtu		= xpnet_dev_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout		= xpnet_dev_tx_timeout,
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
@@ -528,15 +583,27 @@ static const struct net_device_ops xpnet_netdev_ops = {
 static int __init
 xpnet_init(void)
 {
+<<<<<<< HEAD
 	int result;
 
 	if (!is_shub() && !is_uv())
+=======
+	u8 addr[ETH_ALEN];
+	int result;
+
+	if (!is_uv_system())
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	dev_info(xpnet, "registering network device %s\n", XPNET_DEVICE_NAME);
 
+<<<<<<< HEAD
 	xpnet_broadcast_partitions = kzalloc(BITS_TO_LONGS(xp_max_npartitions) *
 					     sizeof(long), GFP_KERNEL);
+=======
+	xpnet_broadcast_partitions = bitmap_zalloc(xp_max_npartitions,
+						   GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (xpnet_broadcast_partitions == NULL)
 		return -ENOMEM;
 
@@ -544,9 +611,16 @@ xpnet_init(void)
 	 * use ether_setup() to init the majority of our device
 	 * structure and then override the necessary pieces.
 	 */
+<<<<<<< HEAD
 	xpnet_device = alloc_netdev(0, XPNET_DEVICE_NAME, ether_setup);
 	if (xpnet_device == NULL) {
 		kfree(xpnet_broadcast_partitions);
+=======
+	xpnet_device = alloc_netdev(0, XPNET_DEVICE_NAME, NET_NAME_UNKNOWN,
+				    ether_setup);
+	if (xpnet_device == NULL) {
+		bitmap_free(xpnet_broadcast_partitions);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -554,16 +628,31 @@ xpnet_init(void)
 
 	xpnet_device->netdev_ops = &xpnet_netdev_ops;
 	xpnet_device->mtu = XPNET_DEF_MTU;
+<<<<<<< HEAD
 
+=======
+	xpnet_device->min_mtu = XPNET_MIN_MTU;
+	xpnet_device->max_mtu = XPNET_MAX_MTU;
+
+	memset(addr, 0, sizeof(addr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Multicast assumes the LSB of the first octet is set for multicast
 	 * MAC addresses.  We chose the first octet of the MAC to be unlikely
 	 * to collide with any vendor's officially issued MAC.
 	 */
+<<<<<<< HEAD
 	xpnet_device->dev_addr[0] = 0x02;     /* locally administered, no OUI */
 
 	xpnet_device->dev_addr[XPNET_PARTID_OCTET + 1] = xp_partition_id;
 	xpnet_device->dev_addr[XPNET_PARTID_OCTET + 0] = (xp_partition_id >> 8);
+=======
+	addr[0] = 0x02;     /* locally administered, no OUI */
+
+	addr[XPNET_PARTID_OCTET + 1] = xp_partition_id;
+	addr[XPNET_PARTID_OCTET + 0] = (xp_partition_id >> 8);
+	eth_hw_addr_set(xpnet_device, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * ether_setup() sets this to a multicast device.  We are
@@ -581,7 +670,11 @@ xpnet_init(void)
 	result = register_netdev(xpnet_device);
 	if (result != 0) {
 		free_netdev(xpnet_device);
+<<<<<<< HEAD
 		kfree(xpnet_broadcast_partitions);
+=======
+		bitmap_free(xpnet_broadcast_partitions);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return result;
@@ -597,7 +690,11 @@ xpnet_exit(void)
 
 	unregister_netdev(xpnet_device);
 	free_netdev(xpnet_device);
+<<<<<<< HEAD
 	kfree(xpnet_broadcast_partitions);
+=======
+	bitmap_free(xpnet_broadcast_partitions);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_exit(xpnet_exit);

@@ -1,27 +1,72 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2000 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/ptrace.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <asm/siginfo.h>
 #include <asm/signal.h>
 #include <asm/unistd.h>
 #include "frame_kern.h"
 #include "kern_util.h"
+=======
+#include <linux/ftrace.h>
+#include <asm/siginfo.h>
+#include <asm/signal.h>
+#include <asm/unistd.h>
+#include <frame_kern.h>
+#include <kern_util.h>
+#include <os.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 EXPORT_SYMBOL(block_signals);
 EXPORT_SYMBOL(unblock_signals);
 
+<<<<<<< HEAD
 #define _S(nr) (1<<((nr)-1))
 
 #define _BLOCKABLE (~(_S(SIGKILL) | _S(SIGSTOP)))
+=======
+void block_signals_trace(void)
+{
+	block_signals();
+	if (current_thread_info())
+		trace_hardirqs_off();
+}
+
+void unblock_signals_trace(void)
+{
+	if (current_thread_info())
+		trace_hardirqs_on();
+	unblock_signals();
+}
+
+void um_trace_signals_on(void)
+{
+	if (current_thread_info())
+		trace_hardirqs_on();
+}
+
+void um_trace_signals_off(void)
+{
+	if (current_thread_info())
+		trace_hardirqs_off();
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * OK, we're invoking a handler
  */
+<<<<<<< HEAD
 static int handle_signal(struct pt_regs *regs, unsigned long signr,
 			 struct k_sigaction *ka, siginfo_t *info,
 			 sigset_t *oldset)
@@ -31,6 +76,17 @@ static int handle_signal(struct pt_regs *regs, unsigned long signr,
 
 	/* Always make any pending restarted system calls return -EINTR */
 	current_thread_info()->restart_block.fn = do_no_restart_syscall;
+=======
+static void handle_signal(struct ksignal *ksig, struct pt_regs *regs)
+{
+	sigset_t *oldset = sigmask_to_save();
+	int singlestep = 0;
+	unsigned long sp;
+	int err;
+
+	if (test_thread_flag(TIF_SINGLESTEP) && (current->ptrace & PT_PTRACED))
+		singlestep = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Did we come from a system call? */
 	if (PT_REGS_SYSCALL_NR(regs) >= 0) {
@@ -42,11 +98,19 @@ static int handle_signal(struct pt_regs *regs, unsigned long signr,
 			break;
 
 		case -ERESTARTSYS:
+<<<<<<< HEAD
 			if (!(ka->sa.sa_flags & SA_RESTART)) {
 				PT_REGS_SYSCALL_RET(regs) = -EINTR;
 				break;
 			}
 		/* fallthrough */
+=======
+			if (!(ksig->ka.sa.sa_flags & SA_RESTART)) {
+				PT_REGS_SYSCALL_RET(regs) = -EINTR;
+				break;
+			}
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case -ERESTARTNOINTR:
 			PT_REGS_RESTART_SYSCALL(regs);
 			PT_REGS_ORIG_SYSCALL(regs) = PT_REGS_SYSCALL_NR(regs);
@@ -55,6 +119,7 @@ static int handle_signal(struct pt_regs *regs, unsigned long signr,
 	}
 
 	sp = PT_REGS_SP(regs);
+<<<<<<< HEAD
 	if ((ka->sa.sa_flags & SA_ONSTACK) && (sas_ss_flags(sp) == 0))
 		sp = current->sas_ss_sp + current->sas_ss_size;
 
@@ -99,6 +164,30 @@ static int kern_do_signal(struct pt_regs *regs)
 				clear_thread_flag(TIF_RESTORE_SIGMASK);
 			break;
 		}
+=======
+	if ((ksig->ka.sa.sa_flags & SA_ONSTACK) && (sas_ss_flags(sp) == 0))
+		sp = current->sas_ss_sp + current->sas_ss_size;
+
+#ifdef CONFIG_ARCH_HAS_SC_SIGNALS
+	if (!(ksig->ka.sa.sa_flags & SA_SIGINFO))
+		err = setup_signal_stack_sc(sp, ksig, regs, oldset);
+	else
+#endif
+		err = setup_signal_stack_si(sp, ksig, regs, oldset);
+
+	signal_setup_done(err, ksig, singlestep);
+}
+
+void do_signal(struct pt_regs *regs)
+{
+	struct ksignal ksig;
+	int handled_sig = 0;
+
+	while (get_signal(&ksig)) {
+		handled_sig = 1;
+		/* Whee!  Actually deliver the signal.  */
+		handle_signal(&ksig, regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Did we come from a system call? */
@@ -119,6 +208,7 @@ static int kern_do_signal(struct pt_regs *regs)
 	}
 
 	/*
+<<<<<<< HEAD
 	 * This closes a way to execute a system call on the host.  If
 	 * you set a breakpoint on a system call instruction and singlestep
 	 * from it, the tracing thread used to PTRACE_SINGLESTEP the process
@@ -166,4 +256,11 @@ long sys_sigsuspend(int history0, int history1, old_sigset_t mask)
 long sys_sigaltstack(const stack_t __user *uss, stack_t __user *uoss)
 {
 	return do_sigaltstack(uss, uoss, PT_REGS_SP(&current->thread.regs));
+=======
+	 * if there's no signal to deliver, we just put the saved sigmask
+	 * back
+	 */
+	if (!handled_sig)
+		restore_saved_sigmask();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

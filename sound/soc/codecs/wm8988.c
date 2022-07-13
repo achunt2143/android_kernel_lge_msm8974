@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8988.c -- WM8988 ALSA SoC audio driver
  *
@@ -5,10 +9,13 @@
  * Copyright 2005 Openedhand Ltd.
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -116,16 +123,24 @@ static bool wm8988_writeable(struct device *dev, unsigned int reg)
 struct wm8988_priv {
 	struct regmap *regmap;
 	unsigned int sysclk;
+<<<<<<< HEAD
 	struct snd_pcm_hw_constraint_list *sysclk_constraints;
 };
 
 #define wm8988_reset(c)	snd_soc_write(c, WM8988_RESET, 0)
+=======
+	const struct snd_pcm_hw_constraint_list *sysclk_constraints;
+};
+
+#define wm8988_reset(c)	snd_soc_component_write(c, WM8988_RESET, 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * WM8988 Controls
  */
 
 static const char *bass_boost_txt[] = {"Linear Control", "Adaptive Boost"};
+<<<<<<< HEAD
 static const struct soc_enum bass_boost =
 	SOC_ENUM_SINGLE(WM8988_BASS, 7, 2, bass_boost_txt);
 
@@ -166,6 +181,48 @@ static const char *adcpol_txt[] = {"Normal", "L Invert", "R Invert",
 				   "L + R Invert"};
 static const struct soc_enum adcpol =
 	SOC_ENUM_SINGLE(WM8988_ADCDAC, 5, 4, adcpol_txt);
+=======
+static SOC_ENUM_SINGLE_DECL(bass_boost,
+			    WM8988_BASS, 7, bass_boost_txt);
+
+static const char *bass_filter_txt[] = { "130Hz @ 48kHz", "200Hz @ 48kHz" };
+static SOC_ENUM_SINGLE_DECL(bass_filter,
+			    WM8988_BASS, 6, bass_filter_txt);
+
+static const char *treble_txt[] = {"8kHz", "4kHz"};
+static SOC_ENUM_SINGLE_DECL(treble,
+			    WM8988_TREBLE, 6, treble_txt);
+
+static const char *stereo_3d_lc_txt[] = {"200Hz", "500Hz"};
+static SOC_ENUM_SINGLE_DECL(stereo_3d_lc,
+			    WM8988_3D, 5, stereo_3d_lc_txt);
+
+static const char *stereo_3d_uc_txt[] = {"2.2kHz", "1.5kHz"};
+static SOC_ENUM_SINGLE_DECL(stereo_3d_uc,
+			    WM8988_3D, 6, stereo_3d_uc_txt);
+
+static const char *stereo_3d_func_txt[] = {"Capture", "Playback"};
+static SOC_ENUM_SINGLE_DECL(stereo_3d_func,
+			    WM8988_3D, 7, stereo_3d_func_txt);
+
+static const char *alc_func_txt[] = {"Off", "Right", "Left", "Stereo"};
+static SOC_ENUM_SINGLE_DECL(alc_func,
+			    WM8988_ALC1, 7, alc_func_txt);
+
+static const char *ng_type_txt[] = {"Constant PGA Gain",
+				    "Mute ADC Output"};
+static SOC_ENUM_SINGLE_DECL(ng_type,
+			    WM8988_NGATE, 1, ng_type_txt);
+
+static const char *deemph_txt[] = {"None", "32Khz", "44.1Khz", "48Khz"};
+static SOC_ENUM_SINGLE_DECL(deemph,
+			    WM8988_ADCDAC, 1, deemph_txt);
+
+static const char *adcpol_txt[] = {"Normal", "L Invert", "R Invert",
+				   "L + R Invert"};
+static SOC_ENUM_SINGLE_DECL(adcpol,
+			    WM8988_ADCDAC, 5, adcpol_txt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const DECLARE_TLV_DB_SCALE(pga_tlv, -1725, 75, 0);
 static const DECLARE_TLV_DB_SCALE(adc_tlv, -9750, 50, 1);
@@ -244,16 +301,28 @@ SOC_DOUBLE_R_TLV("Output 2 Playback Volume", WM8988_LOUT2V, WM8988_ROUT2V,
 static int wm8988_lrc_control(struct snd_soc_dapm_widget *w,
 			      struct snd_kcontrol *kcontrol, int event)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = w->codec;
 	u16 adctl2 = snd_soc_read(codec, WM8988_ADCTL2);
 
 	/* Use the DAC to gate LRC if active, otherwise use ADC */
 	if (snd_soc_read(codec, WM8988_PWR2) & 0x180)
+=======
+	struct snd_soc_component *component = snd_soc_dapm_to_component(w->dapm);
+	u16 adctl2 = snd_soc_component_read(component, WM8988_ADCTL2);
+
+	/* Use the DAC to gate LRC if active, otherwise use ADC */
+	if (snd_soc_component_read(component, WM8988_PWR2) & 0x180)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		adctl2 &= ~0x4;
 	else
 		adctl2 |= 0x4;
 
+<<<<<<< HEAD
 	return snd_soc_write(codec, WM8988_ADCTL2, adctl2);
+=======
+	return snd_soc_component_write(component, WM8988_ADCTL2, adctl2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *wm8988_line_texts[] = {
@@ -268,7 +337,11 @@ static const struct soc_enum wm8988_lline_enum =
 			      wm8988_line_texts,
 			      wm8988_line_values);
 static const struct snd_kcontrol_new wm8988_left_line_controls =
+<<<<<<< HEAD
 	SOC_DAPM_VALUE_ENUM("Route", wm8988_lline_enum);
+=======
+	SOC_DAPM_ENUM("Route", wm8988_lline_enum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct soc_enum wm8988_rline_enum =
 	SOC_VALUE_ENUM_SINGLE(WM8988_ROUTM1, 0, 7,
@@ -276,7 +349,11 @@ static const struct soc_enum wm8988_rline_enum =
 			      wm8988_line_texts,
 			      wm8988_line_values);
 static const struct snd_kcontrol_new wm8988_right_line_controls =
+<<<<<<< HEAD
 	SOC_DAPM_VALUE_ENUM("Route", wm8988_lline_enum);
+=======
+	SOC_DAPM_ENUM("Route", wm8988_rline_enum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Left Mixer */
 static const struct snd_kcontrol_new wm8988_left_mixer_controls[] = {
@@ -304,7 +381,11 @@ static const struct soc_enum wm8988_lpga_enum =
 			      wm8988_pga_sel,
 			      wm8988_pga_val);
 static const struct snd_kcontrol_new wm8988_left_pga_controls =
+<<<<<<< HEAD
 	SOC_DAPM_VALUE_ENUM("Route", wm8988_lpga_enum);
+=======
+	SOC_DAPM_ENUM("Route", wm8988_lpga_enum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Right PGA Mux */
 static const struct soc_enum wm8988_rpga_enum =
@@ -313,20 +394,34 @@ static const struct soc_enum wm8988_rpga_enum =
 			      wm8988_pga_sel,
 			      wm8988_pga_val);
 static const struct snd_kcontrol_new wm8988_right_pga_controls =
+<<<<<<< HEAD
 	SOC_DAPM_VALUE_ENUM("Route", wm8988_rpga_enum);
 
 /* Differential Mux */
 static const char *wm8988_diff_sel[] = {"Line 1", "Line 2"};
 static const struct soc_enum diffmux =
 	SOC_ENUM_SINGLE(WM8988_ADCIN, 8, 2, wm8988_diff_sel);
+=======
+	SOC_DAPM_ENUM("Route", wm8988_rpga_enum);
+
+/* Differential Mux */
+static const char *wm8988_diff_sel[] = {"Line 1", "Line 2"};
+static SOC_ENUM_SINGLE_DECL(diffmux,
+			    WM8988_ADCIN, 8, wm8988_diff_sel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snd_kcontrol_new wm8988_diffmux_controls =
 	SOC_DAPM_ENUM("Route", diffmux);
 
 /* Mono ADC Mux */
 static const char *wm8988_mono_mux[] = {"Stereo", "Mono (Left)",
 	"Mono (Right)", "Digital Mono"};
+<<<<<<< HEAD
 static const struct soc_enum monomux =
 	SOC_ENUM_SINGLE(WM8988_ADCIN, 6, 4, wm8988_mono_mux);
+=======
+static SOC_ENUM_SINGLE_DECL(monomux,
+			    WM8988_ADCIN, 6, wm8988_mono_mux);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct snd_kcontrol_new wm8988_monomux_controls =
 	SOC_DAPM_ENUM("Route", monomux);
 
@@ -521,30 +616,55 @@ static inline int get_coeff(int mclk, int rate)
 
 /* The set of rates we can generate from the above for each SYSCLK */
 
+<<<<<<< HEAD
 static unsigned int rates_12288[] = {
 	8000, 12000, 16000, 24000, 24000, 32000, 48000, 96000,
 };
 
 static struct snd_pcm_hw_constraint_list constraints_12288 = {
+=======
+static const unsigned int rates_12288[] = {
+	8000, 12000, 16000, 24000, 32000, 48000, 96000,
+};
+
+static const struct snd_pcm_hw_constraint_list constraints_12288 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count	= ARRAY_SIZE(rates_12288),
 	.list	= rates_12288,
 };
 
+<<<<<<< HEAD
 static unsigned int rates_112896[] = {
 	8000, 11025, 22050, 44100,
 };
 
 static struct snd_pcm_hw_constraint_list constraints_112896 = {
+=======
+static const unsigned int rates_112896[] = {
+	8000, 11025, 22050, 44100,
+};
+
+static const struct snd_pcm_hw_constraint_list constraints_112896 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count	= ARRAY_SIZE(rates_112896),
 	.list	= rates_112896,
 };
 
+<<<<<<< HEAD
 static unsigned int rates_12[] = {
 	8000, 11025, 12000, 16000, 22050, 2400, 32000, 41100, 48000,
 	48000, 88235, 96000,
 };
 
 static struct snd_pcm_hw_constraint_list constraints_12 = {
+=======
+static const unsigned int rates_12[] = {
+	8000, 11025, 12000, 16000, 22050, 24000, 32000, 41100, 48000,
+	48000, 88235, 96000,
+};
+
+static const struct snd_pcm_hw_constraint_list constraints_12 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count	= ARRAY_SIZE(rates_12),
 	.list	= rates_12,
 };
@@ -555,8 +675,13 @@ static struct snd_pcm_hw_constraint_list constraints_12 = {
 static int wm8988_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		int clk_id, unsigned int freq, int dir)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct wm8988_priv *wm8988 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	struct wm8988_priv *wm8988 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (freq) {
 	case 11289600:
@@ -587,7 +712,11 @@ static int wm8988_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 static int wm8988_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
+=======
+	struct snd_soc_component *component = codec_dai->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 iface = 0;
 
 	/* set master/slave audio interface */
@@ -638,21 +767,34 @@ static int wm8988_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8988_IFACE, iface);
+=======
+	snd_soc_component_write(component, WM8988_IFACE, iface);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int wm8988_pcm_startup(struct snd_pcm_substream *substream,
 			      struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = dai->codec;
 	struct wm8988_priv *wm8988 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8988_priv *wm8988 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The set of sample rates that can be supported depends on the
 	 * MCLK supplied to the CODEC - enforce this.
 	 */
 	if (!wm8988->sysclk) {
+<<<<<<< HEAD
 		dev_err(codec->dev,
+=======
+		dev_err(component->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"No MCLK configured, call set_sysclk() on init\n");
 		return -EINVAL;
 	}
@@ -668,11 +810,18 @@ static int wm8988_pcm_hw_params(struct snd_pcm_substream *substream,
 				struct snd_pcm_hw_params *params,
 				struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
 	struct wm8988_priv *wm8988 = snd_soc_codec_get_drvdata(codec);
 	u16 iface = snd_soc_read(codec, WM8988_IFACE) & 0x1f3;
 	u16 srate = snd_soc_read(codec, WM8988_SRATE) & 0x180;
+=======
+	struct snd_soc_component *component = dai->component;
+	struct wm8988_priv *wm8988 = snd_soc_component_get_drvdata(component);
+	u16 iface = snd_soc_component_read(component, WM8988_IFACE) & 0x1f3;
+	u16 srate = snd_soc_component_read(component, WM8988_SRATE) & 0x180;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int coeff;
 
 	coeff = get_coeff(wm8988->sysclk, params_rate(params));
@@ -681,13 +830,18 @@ static int wm8988_pcm_hw_params(struct snd_pcm_substream *substream,
 		srate |= 0x40;
 	}
 	if (coeff < 0) {
+<<<<<<< HEAD
 		dev_err(codec->dev,
+=======
+		dev_err(component->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Unable to configure sample rate %dHz with %dHz MCLK\n",
 			params_rate(params), wm8988->sysclk);
 		return coeff;
 	}
 
 	/* bit size */
+<<<<<<< HEAD
 	switch (params_format(params)) {
 	case SNDRV_PCM_FORMAT_S16_LE:
 		break;
@@ -698,19 +852,38 @@ static int wm8988_pcm_hw_params(struct snd_pcm_substream *substream,
 		iface |= 0x0008;
 		break;
 	case SNDRV_PCM_FORMAT_S32_LE:
+=======
+	switch (params_width(params)) {
+	case 16:
+		break;
+	case 20:
+		iface |= 0x0004;
+		break;
+	case 24:
+		iface |= 0x0008;
+		break;
+	case 32:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iface |= 0x000c;
 		break;
 	}
 
 	/* set iface & srate */
+<<<<<<< HEAD
 	snd_soc_write(codec, WM8988_IFACE, iface);
 	if (coeff >= 0)
 		snd_soc_write(codec, WM8988_SRATE, srate |
+=======
+	snd_soc_component_write(component, WM8988_IFACE, iface);
+	if (coeff >= 0)
+		snd_soc_component_write(component, WM8988_SRATE, srate |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(coeff_div[coeff].sr << 1) | coeff_div[coeff].usb);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8988_mute(struct snd_soc_dai *dai, int mute)
 {
 	struct snd_soc_codec *codec = dai->codec;
@@ -728,6 +901,25 @@ static int wm8988_set_bias_level(struct snd_soc_codec *codec,
 {
 	struct wm8988_priv *wm8988 = snd_soc_codec_get_drvdata(codec);
 	u16 pwr_reg = snd_soc_read(codec, WM8988_PWR1) & ~0x1c1;
+=======
+static int wm8988_mute(struct snd_soc_dai *dai, int mute, int direction)
+{
+	struct snd_soc_component *component = dai->component;
+	u16 mute_reg = snd_soc_component_read(component, WM8988_ADCDAC) & 0xfff7;
+
+	if (mute)
+		snd_soc_component_write(component, WM8988_ADCDAC, mute_reg | 0x8);
+	else
+		snd_soc_component_write(component, WM8988_ADCDAC, mute_reg);
+	return 0;
+}
+
+static int wm8988_set_bias_level(struct snd_soc_component *component,
+				 enum snd_soc_bias_level level)
+{
+	struct wm8988_priv *wm8988 = snd_soc_component_get_drvdata(component);
+	u16 pwr_reg = snd_soc_component_read(component, WM8988_PWR1) & ~0x1c1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
@@ -735,6 +927,7 @@ static int wm8988_set_bias_level(struct snd_soc_codec *codec,
 
 	case SND_SOC_BIAS_PREPARE:
 		/* VREF, VMID=2x50k, digital enabled */
+<<<<<<< HEAD
 		snd_soc_write(codec, WM8988_PWR1, pwr_reg | 0x00c0);
 		break;
 
@@ -744,12 +937,24 @@ static int wm8988_set_bias_level(struct snd_soc_codec *codec,
 
 			/* VREF, VMID=2x5k */
 			snd_soc_write(codec, WM8988_PWR1, pwr_reg | 0x1c1);
+=======
+		snd_soc_component_write(component, WM8988_PWR1, pwr_reg | 0x00c0);
+		break;
+
+	case SND_SOC_BIAS_STANDBY:
+		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
+			regcache_sync(wm8988->regmap);
+
+			/* VREF, VMID=2x5k */
+			snd_soc_component_write(component, WM8988_PWR1, pwr_reg | 0x1c1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Charge caps */
 			msleep(100);
 		}
 
 		/* VREF, VMID=2*500k, digital stopped */
+<<<<<<< HEAD
 		snd_soc_write(codec, WM8988_PWR1, pwr_reg | 0x0141);
 		break;
 
@@ -758,6 +963,15 @@ static int wm8988_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 	codec->dapm.bias_level = level;
+=======
+		snd_soc_component_write(component, WM8988_PWR1, pwr_reg | 0x0141);
+		break;
+
+	case SND_SOC_BIAS_OFF:
+		snd_soc_component_write(component, WM8988_PWR1, 0x0000);
+		break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -771,7 +985,12 @@ static const struct snd_soc_dai_ops wm8988_ops = {
 	.hw_params = wm8988_pcm_hw_params,
 	.set_fmt = wm8988_set_dai_fmt,
 	.set_sysclk = wm8988_set_dai_sysclk,
+<<<<<<< HEAD
 	.digital_mute = wm8988_mute,
+=======
+	.mute_stream = wm8988_mute,
+	.no_capture_mute = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver wm8988_dai = {
@@ -791,6 +1010,7 @@ static struct snd_soc_dai_driver wm8988_dai = {
 		.formats = WM8988_FORMATS,
 	 },
 	.ops = &wm8988_ops,
+<<<<<<< HEAD
 	.symmetric_rates = 1,
 };
 
@@ -824,10 +1044,23 @@ static int wm8988_probe(struct snd_soc_codec *codec)
 	ret = wm8988_reset(codec);
 	if (ret < 0) {
 		dev_err(codec->dev, "Failed to issue reset\n");
+=======
+	.symmetric_rate = 1,
+};
+
+static int wm8988_probe(struct snd_soc_component *component)
+{
+	int ret = 0;
+
+	ret = wm8988_reset(component);
+	if (ret < 0) {
+		dev_err(component->dev, "Failed to issue reset\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 
 	/* set the update bits (we always update left then right) */
+<<<<<<< HEAD
 	snd_soc_update_bits(codec, WM8988_RADC, 0x0100, 0x0100);
 	snd_soc_update_bits(codec, WM8988_RDAC, 0x0100, 0x0100);
 	snd_soc_update_bits(codec, WM8988_ROUT1V, 0x0100, 0x0100);
@@ -835,10 +1068,18 @@ static int wm8988_probe(struct snd_soc_codec *codec)
 	snd_soc_update_bits(codec, WM8988_RINVOL, 0x0100, 0x0100);
 
 	wm8988_set_bias_level(codec, SND_SOC_BIAS_STANDBY);
+=======
+	snd_soc_component_update_bits(component, WM8988_RADC, 0x0100, 0x0100);
+	snd_soc_component_update_bits(component, WM8988_RDAC, 0x0100, 0x0100);
+	snd_soc_component_update_bits(component, WM8988_ROUT1V, 0x0100, 0x0100);
+	snd_soc_component_update_bits(component, WM8988_ROUT2V, 0x0100, 0x0100);
+	snd_soc_component_update_bits(component, WM8988_RINVOL, 0x0100, 0x0100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8988_remove(struct snd_soc_codec *codec)
 {
 	wm8988_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -861,19 +1102,45 @@ static struct snd_soc_codec_driver soc_codec_dev_wm8988 = {
 };
 
 static struct regmap_config wm8988_regmap = {
+=======
+static const struct snd_soc_component_driver soc_component_dev_wm8988 = {
+	.probe			= wm8988_probe,
+	.set_bias_level		= wm8988_set_bias_level,
+	.controls		= wm8988_snd_controls,
+	.num_controls		= ARRAY_SIZE(wm8988_snd_controls),
+	.dapm_widgets		= wm8988_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(wm8988_dapm_widgets),
+	.dapm_routes		= wm8988_dapm_routes,
+	.num_dapm_routes	= ARRAY_SIZE(wm8988_dapm_routes),
+	.suspend_bias_off	= 1,
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+};
+
+static const struct regmap_config wm8988_regmap = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reg_bits = 7,
 	.val_bits = 9,
 
 	.max_register = WM8988_LPPB,
 	.writeable_reg = wm8988_writeable,
 
+<<<<<<< HEAD
 	.cache_type = REGCACHE_RBTREE,
+=======
+	.cache_type = REGCACHE_MAPLE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reg_defaults = wm8988_reg_defaults,
 	.num_reg_defaults = ARRAY_SIZE(wm8988_reg_defaults),
 };
 
 #if defined(CONFIG_SPI_MASTER)
+<<<<<<< HEAD
 static int __devinit wm8988_spi_probe(struct spi_device *spi)
+=======
+static int wm8988_spi_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8988_priv *wm8988;
 	int ret;
@@ -883,7 +1150,11 @@ static int __devinit wm8988_spi_probe(struct spi_device *spi)
 	if (wm8988 == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	wm8988->regmap = regmap_init_spi(spi, &wm8988_regmap);
+=======
+	wm8988->regmap = devm_regmap_init_spi(spi, &wm8988_regmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(wm8988->regmap)) {
 		ret = PTR_ERR(wm8988->regmap);
 		dev_err(&spi->dev, "Failed to init regmap: %d\n", ret);
@@ -892,6 +1163,7 @@ static int __devinit wm8988_spi_probe(struct spi_device *spi)
 
 	spi_set_drvdata(spi, wm8988);
 
+<<<<<<< HEAD
 	ret = snd_soc_register_codec(&spi->dev,
 			&soc_codec_dev_wm8988, &wm8988_dai, 1);
 	if (ret != 0)
@@ -921,6 +1193,23 @@ static struct spi_driver wm8988_spi_driver = {
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
 static __devinit int wm8988_i2c_probe(struct i2c_client *i2c,
 				      const struct i2c_device_id *id)
+=======
+	ret = devm_snd_soc_register_component(&spi->dev,
+			&soc_component_dev_wm8988, &wm8988_dai, 1);
+	return ret;
+}
+
+static struct spi_driver wm8988_spi_driver = {
+	.driver = {
+		.name	= "wm8988",
+	},
+	.probe		= wm8988_spi_probe,
+};
+#endif /* CONFIG_SPI_MASTER */
+
+#if IS_ENABLED(CONFIG_I2C)
+static int wm8988_i2c_probe(struct i2c_client *i2c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct wm8988_priv *wm8988;
 	int ret;
@@ -932,13 +1221,18 @@ static __devinit int wm8988_i2c_probe(struct i2c_client *i2c,
 
 	i2c_set_clientdata(i2c, wm8988);
 
+<<<<<<< HEAD
 	wm8988->regmap = regmap_init_i2c(i2c, &wm8988_regmap);
+=======
+	wm8988->regmap = devm_regmap_init_i2c(i2c, &wm8988_regmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(wm8988->regmap)) {
 		ret = PTR_ERR(wm8988->regmap);
 		dev_err(&i2c->dev, "Failed to init regmap: %d\n", ret);
 		return ret;
 	}
 
+<<<<<<< HEAD
 	ret =  snd_soc_register_codec(&i2c->dev,
 			&soc_codec_dev_wm8988, &wm8988_dai, 1);
 	if (ret != 0)
@@ -955,6 +1249,13 @@ static __devexit int wm8988_i2c_remove(struct i2c_client *client)
 	return 0;
 }
 
+=======
+	ret = devm_snd_soc_register_component(&i2c->dev,
+			&soc_component_dev_wm8988, &wm8988_dai, 1);
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id wm8988_i2c_id[] = {
 	{ "wm8988", 0 },
 	{ }
@@ -964,10 +1265,15 @@ MODULE_DEVICE_TABLE(i2c, wm8988_i2c_id);
 static struct i2c_driver wm8988_i2c_driver = {
 	.driver = {
 		.name = "wm8988",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe =    wm8988_i2c_probe,
 	.remove =   __devexit_p(wm8988_i2c_remove),
+=======
+	},
+	.probe = wm8988_i2c_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = wm8988_i2c_id,
 };
 #endif
@@ -975,7 +1281,11 @@ static struct i2c_driver wm8988_i2c_driver = {
 static int __init wm8988_modinit(void)
 {
 	int ret = 0;
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = i2c_add_driver(&wm8988_i2c_driver);
 	if (ret != 0) {
 		printk(KERN_ERR "Failed to register WM8988 I2C driver: %d\n",
@@ -995,7 +1305,11 @@ module_init(wm8988_modinit);
 
 static void __exit wm8988_exit(void)
 {
+<<<<<<< HEAD
 #if defined(CONFIG_I2C) || defined(CONFIG_I2C_MODULE)
+=======
+#if IS_ENABLED(CONFIG_I2C)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_del_driver(&wm8988_i2c_driver);
 #endif
 #if defined(CONFIG_SPI_MASTER)

@@ -49,7 +49,10 @@
 MODULE_AUTHOR("Roland Dreier");
 MODULE_DESCRIPTION("Mellanox InfiniBand HCA low-level driver");
 MODULE_LICENSE("Dual BSD/GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_INFINIBAND_MTHCA_DEBUG
 
@@ -130,7 +133,11 @@ static int log_mtts_per_seg = ilog2(MTHCA_MTT_SEG_SIZE / 8);
 module_param_named(log_mtts_per_seg, log_mtts_per_seg, int, 0444);
 MODULE_PARM_DESC(log_mtts_per_seg, "Log2 number of MTT entries per segment (1-5)");
 
+<<<<<<< HEAD
 static char mthca_version[] __devinitdata =
+=======
+static char mthca_version[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DRV_NAME ": Mellanox InfiniBand HCA driver v"
 	DRV_VERSION " (" DRV_RELDATE ")\n";
 
@@ -383,7 +390,11 @@ static int mthca_init_icm(struct mthca_dev *mdev,
 			  struct mthca_init_hca_param *init_hca,
 			  u64 icm_size)
 {
+<<<<<<< HEAD
 	u64 aux_pages;
+=======
+	u64 aux_pages = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = mthca_SET_ICM_SIZE(mdev, icm_size, &aux_pages);
@@ -474,11 +485,19 @@ static int mthca_init_icm(struct mthca_dev *mdev,
 		goto err_unmap_eqp;
 	}
 
+<<<<<<< HEAD
        mdev->cq_table.table = mthca_alloc_icm_table(mdev, init_hca->cqc_base,
 						    dev_lim->cqc_entry_sz,
 						    mdev->limits.num_cqs,
 						    mdev->limits.reserved_cqs,
 						    0, 0);
+=======
+	mdev->cq_table.table = mthca_alloc_icm_table(mdev, init_hca->cqc_base,
+						     dev_lim->cqc_entry_sz,
+						     mdev->limits.num_cqs,
+						     mdev->limits.reserved_cqs,
+						     0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mdev->cq_table.table) {
 		mthca_err(mdev, "Failed to map CQ context memory, aborting.\n");
 		err = -ENOMEM;
@@ -851,6 +870,7 @@ err_uar_table_free:
 
 static int mthca_enable_msi_x(struct mthca_dev *mdev)
 {
+<<<<<<< HEAD
 	struct msix_entry entries[3];
 	int err;
 
@@ -869,6 +889,20 @@ static int mthca_enable_msi_x(struct mthca_dev *mdev)
 	mdev->eq_table.eq[MTHCA_EQ_COMP ].msi_x_vector = entries[0].vector;
 	mdev->eq_table.eq[MTHCA_EQ_ASYNC].msi_x_vector = entries[1].vector;
 	mdev->eq_table.eq[MTHCA_EQ_CMD  ].msi_x_vector = entries[2].vector;
+=======
+	int err;
+
+	err = pci_alloc_irq_vectors(mdev->pdev, 3, 3, PCI_IRQ_MSIX);
+	if (err < 0)
+		return err;
+
+	mdev->eq_table.eq[MTHCA_EQ_COMP ].msi_x_vector =
+			pci_irq_vector(mdev->pdev, 0);
+	mdev->eq_table.eq[MTHCA_EQ_ASYNC].msi_x_vector =
+			pci_irq_vector(mdev->pdev, 1);
+	mdev->eq_table.eq[MTHCA_EQ_CMD  ].msi_x_vector =
+			pci_irq_vector(mdev->pdev, 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -944,6 +978,7 @@ static int __mthca_init_one(struct pci_dev *pdev, int hca_type)
 
 	pci_set_master(pdev);
 
+<<<<<<< HEAD
 	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
 	if (err) {
 		dev_warn(&pdev->dev, "Warning: couldn't set 64-bit PCI DMA mask.\n");
@@ -963,12 +998,22 @@ static int __mthca_init_one(struct pci_dev *pdev, int hca_type)
 				"aborting.\n");
 			goto err_free_res;
 		}
+=======
+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+	if (err) {
+		dev_err(&pdev->dev, "Can't set PCI DMA mask, aborting.\n");
+		goto err_free_res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* We can handle large RDMA requests, so allow larger segments. */
 	dma_set_max_seg_size(&pdev->dev, 1024 * 1024 * 1024);
 
+<<<<<<< HEAD
 	mdev = (struct mthca_dev *) ib_alloc_device(sizeof *mdev);
+=======
+	mdev = ib_alloc_device(mthca_dev, ib_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mdev) {
 		dev_err(&pdev->dev, "Device struct alloc failed, "
 			"aborting.\n");
@@ -993,7 +1038,12 @@ static int __mthca_init_one(struct pci_dev *pdev, int hca_type)
 		goto err_free_dev;
 	}
 
+<<<<<<< HEAD
 	if (mthca_cmd_init(mdev)) {
+=======
+	err = mthca_cmd_init(mdev);
+	if (err) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mthca_err(mdev, "Failed to init command interface, aborting.\n");
 		goto err_free_dev;
 	}
@@ -1021,8 +1071,12 @@ static int __mthca_init_one(struct pci_dev *pdev, int hca_type)
 
 	err = mthca_setup_hca(mdev);
 	if (err == -EBUSY && (mdev->mthca_flags & MTHCA_FLAG_MSI_X)) {
+<<<<<<< HEAD
 		if (mdev->mthca_flags & MTHCA_FLAG_MSI_X)
 			pci_disable_msix(pdev);
+=======
+		pci_free_irq_vectors(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdev->mthca_flags &= ~MTHCA_FLAG_MSI_X;
 
 		err = mthca_setup_hca(mdev);
@@ -1066,7 +1120,11 @@ err_cleanup:
 
 err_close:
 	if (mdev->mthca_flags & MTHCA_FLAG_MSI_X)
+<<<<<<< HEAD
 		pci_disable_msix(pdev);
+=======
+		pci_free_irq_vectors(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mthca_close_hca(mdev);
 
@@ -1117,7 +1175,11 @@ static void __mthca_remove_one(struct pci_dev *pdev)
 		mthca_cmd_cleanup(mdev);
 
 		if (mdev->mthca_flags & MTHCA_FLAG_MSI_X)
+<<<<<<< HEAD
 			pci_disable_msix(pdev);
+=======
+			pci_free_irq_vectors(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ib_dealloc_device(&mdev->ib_dev);
 		pci_release_regions(pdev);
@@ -1139,8 +1201,12 @@ int __mthca_restart_one(struct pci_dev *pdev)
 	return __mthca_init_one(pdev, hca_type);
 }
 
+<<<<<<< HEAD
 static int __devinit mthca_init_one(struct pci_dev *pdev,
 				    const struct pci_device_id *id)
+=======
+static int mthca_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -1162,14 +1228,22 @@ static int __devinit mthca_init_one(struct pci_dev *pdev,
 	return ret;
 }
 
+<<<<<<< HEAD
 static void __devexit mthca_remove_one(struct pci_dev *pdev)
+=======
+static void mthca_remove_one(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&mthca_device_mutex);
 	__mthca_remove_one(pdev);
 	mutex_unlock(&mthca_device_mutex);
 }
 
+<<<<<<< HEAD
 static struct pci_device_id mthca_pci_table[] = {
+=======
+static const struct pci_device_id mthca_pci_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR),
 	  .driver_data = TAVOR },
 	{ PCI_DEVICE(PCI_VENDOR_ID_TOPSPIN, PCI_DEVICE_ID_MELLANOX_TAVOR),
@@ -1199,7 +1273,11 @@ static struct pci_driver mthca_driver = {
 	.name		= DRV_NAME,
 	.id_table	= mthca_pci_table,
 	.probe		= mthca_init_one,
+<<<<<<< HEAD
 	.remove		= __devexit_p(mthca_remove_one)
+=======
+	.remove		= mthca_remove_one,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void __init __mthca_check_profile_val(const char *name, int *pval,

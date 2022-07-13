@@ -12,6 +12,15 @@
  * See the GNU General Public License for more details.
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/types.h>
+#include <net/llc_s_ac.h>
+#include <net/llc_s_ev.h>
+
+struct llc_sap_state_trans;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define LLC_NR_SAP_STATES	2       /* size of state table */
 
 /* structures and types */
@@ -19,7 +28,11 @@
 struct llc_sap_state_trans {
 	llc_sap_ev_t	  ev;
 	u8		  next_state;
+<<<<<<< HEAD
 	llc_sap_action_t *ev_actions;
+=======
+	const llc_sap_action_t *ev_actions;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct llc_sap_state {

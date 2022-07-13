@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/mmc/host/wbsd.c - Winbond W83L51xD SD/MMC driver
  *
  *  Copyright (C) 2004-2007 Pierre Ossman, All Rights Reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Warning!
  *
  * Changes to the FIFO system should be done with extreme care since
@@ -33,6 +40,11 @@
 #include <linux/pnp.h>
 #include <linux/highmem.h>
 #include <linux/mmc/host.h>
+<<<<<<< HEAD
+=======
+#include <linux/mmc/mmc.h>
+#include <linux/mmc/sd.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
 
@@ -268,13 +280,20 @@ static inline int wbsd_next_sg(struct wbsd_host *host)
 	return host->num_sg;
 }
 
+<<<<<<< HEAD
 static inline char *wbsd_sg_to_buffer(struct wbsd_host *host)
 {
 	return sg_virt(host->cur_sg);
+=======
+static inline char *wbsd_map_sg(struct wbsd_host *host)
+{
+	return kmap_local_page(sg_page(host->cur_sg)) + host->cur_sg->offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void wbsd_sg_to_dma(struct wbsd_host *host, struct mmc_data *data)
 {
+<<<<<<< HEAD
 	unsigned int len, i;
 	struct scatterlist *sg;
 	char *dmabuf = host->dma_buffer;
@@ -288,10 +307,19 @@ static inline void wbsd_sg_to_dma(struct wbsd_host *host, struct mmc_data *data)
 		memcpy(dmabuf, sgbuf, sg[i].length);
 		dmabuf += sg[i].length;
 	}
+=======
+	size_t len = 0;
+	int i;
+
+	for (i = 0; i < data->sg_len; i++)
+		len += data->sg[i].length;
+	sg_copy_to_buffer(data->sg, data->sg_len, host->dma_buffer, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void wbsd_dma_to_sg(struct wbsd_host *host, struct mmc_data *data)
 {
+<<<<<<< HEAD
 	unsigned int len, i;
 	struct scatterlist *sg;
 	char *dmabuf = host->dma_buffer;
@@ -305,6 +333,14 @@ static inline void wbsd_dma_to_sg(struct wbsd_host *host, struct mmc_data *data)
 		memcpy(sgbuf, dmabuf, sg[i].length);
 		dmabuf += sg[i].length;
 	}
+=======
+	size_t len = 0;
+	int i;
+
+	for (i = 0; i < data->sg_len; i++)
+		len += data->sg[i].length;
+	sg_copy_from_buffer(data->sg, data->sg_len, host->dma_buffer, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -418,7 +454,11 @@ static void wbsd_empty_fifo(struct wbsd_host *host)
 {
 	struct mmc_data *data = host->mrq->cmd->data;
 	char *buffer;
+<<<<<<< HEAD
 	int i, fsr, fifo;
+=======
+	int i, idx, fsr, fifo;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Handle excessive data.
@@ -426,7 +466,12 @@ static void wbsd_empty_fifo(struct wbsd_host *host)
 	if (host->num_sg == 0)
 		return;
 
+<<<<<<< HEAD
 	buffer = wbsd_sg_to_buffer(host) + host->offset;
+=======
+	buffer = wbsd_map_sg(host) + host->offset;
+	idx = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Drain the fifo. This has a tendency to loop longer
@@ -445,8 +490,12 @@ static void wbsd_empty_fifo(struct wbsd_host *host)
 			fifo = 1;
 
 		for (i = 0; i < fifo; i++) {
+<<<<<<< HEAD
 			*buffer = inb(host->base + WBSD_DFR);
 			buffer++;
+=======
+			buffer[idx++] = inb(host->base + WBSD_DFR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			host->offset++;
 			host->remain--;
 
@@ -456,16 +505,29 @@ static void wbsd_empty_fifo(struct wbsd_host *host)
 			 * End of scatter list entry?
 			 */
 			if (host->remain == 0) {
+<<<<<<< HEAD
+=======
+				kunmap_local(buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * Get next entry. Check if last.
 				 */
 				if (!wbsd_next_sg(host))
 					return;
 
+<<<<<<< HEAD
 				buffer = wbsd_sg_to_buffer(host);
 			}
 		}
 	}
+=======
+				buffer = wbsd_map_sg(host);
+				idx = 0;
+			}
+		}
+	}
+	kunmap_local(buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This is a very dirty hack to solve a
@@ -480,7 +542,11 @@ static void wbsd_fill_fifo(struct wbsd_host *host)
 {
 	struct mmc_data *data = host->mrq->cmd->data;
 	char *buffer;
+<<<<<<< HEAD
 	int i, fsr, fifo;
+=======
+	int i, idx, fsr, fifo;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check that we aren't being called after the
@@ -489,7 +555,12 @@ static void wbsd_fill_fifo(struct wbsd_host *host)
 	if (host->num_sg == 0)
 		return;
 
+<<<<<<< HEAD
 	buffer = wbsd_sg_to_buffer(host) + host->offset;
+=======
+	buffer = wbsd_map_sg(host) + host->offset;
+	idx = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Fill the fifo. This has a tendency to loop longer
@@ -508,8 +579,12 @@ static void wbsd_fill_fifo(struct wbsd_host *host)
 			fifo = 15;
 
 		for (i = 16; i > fifo; i--) {
+<<<<<<< HEAD
 			outb(*buffer, host->base + WBSD_DFR);
 			buffer++;
+=======
+			outb(buffer[idx], host->base + WBSD_DFR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			host->offset++;
 			host->remain--;
 
@@ -519,16 +594,29 @@ static void wbsd_fill_fifo(struct wbsd_host *host)
 			 * End of scatter list entry?
 			 */
 			if (host->remain == 0) {
+<<<<<<< HEAD
+=======
+				kunmap_local(buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				/*
 				 * Get next entry. Check if last.
 				 */
 				if (!wbsd_next_sg(host))
 					return;
 
+<<<<<<< HEAD
 				buffer = wbsd_sg_to_buffer(host);
 			}
 		}
 	}
+=======
+				buffer = wbsd_map_sg(host);
+				idx = 0;
+			}
+		}
+	}
+	kunmap_local(buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The controller stops sending interrupts for
@@ -783,6 +871,7 @@ static void wbsd_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		 * interrupts.
 		 */
 		switch (cmd->opcode) {
+<<<<<<< HEAD
 		case 11:
 		case 17:
 		case 18:
@@ -794,10 +883,24 @@ static void wbsd_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		case 30:
 		case 42:
 		case 56:
+=======
+		case SD_SWITCH_VOLTAGE:
+		case MMC_READ_SINGLE_BLOCK:
+		case MMC_READ_MULTIPLE_BLOCK:
+		case MMC_WRITE_DAT_UNTIL_STOP:
+		case MMC_WRITE_BLOCK:
+		case MMC_WRITE_MULTIPLE_BLOCK:
+		case MMC_PROGRAM_CID:
+		case MMC_PROGRAM_CSD:
+		case MMC_SEND_WRITE_PROT:
+		case MMC_LOCK_UNLOCK:
+		case MMC_GEN_CMD:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		/* ACMDs. We don't keep track of state, so we just treat them
 		 * like any other command. */
+<<<<<<< HEAD
 		case 51:
 			break;
 
@@ -811,6 +914,18 @@ static void wbsd_request(struct mmc_host *mmc, struct mmc_request *mrq)
 
 			goto done;
 		};
+=======
+		case SD_APP_SEND_SCR:
+			break;
+
+		default:
+			pr_warn("%s: Data command %d is not supported by this controller\n",
+				mmc_hostname(host->mmc), cmd->opcode);
+			cmd->error = -EINVAL;
+
+			goto done;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -959,9 +1074,15 @@ static const struct mmc_host_ops wbsd_ops = {
  * Helper function to reset detection ignore
  */
 
+<<<<<<< HEAD
 static void wbsd_reset_ignore(unsigned long data)
 {
 	struct wbsd_host *host = (struct wbsd_host *)data;
+=======
+static void wbsd_reset_ignore(struct timer_list *t)
+{
+	struct wbsd_host *host = from_timer(host, t, ignore_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(host == NULL);
 
@@ -1001,9 +1122,15 @@ static inline struct mmc_data *wbsd_get_data(struct wbsd_host *host)
 	return host->mrq->cmd->data;
 }
 
+<<<<<<< HEAD
 static void wbsd_tasklet_card(unsigned long param)
 {
 	struct wbsd_host *host = (struct wbsd_host *)param;
+=======
+static void wbsd_tasklet_card(struct tasklet_struct *t)
+{
+	struct wbsd_host *host = from_tasklet(host, t, card_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 csr;
 	int delay = -1;
 
@@ -1050,9 +1177,15 @@ static void wbsd_tasklet_card(unsigned long param)
 		mmc_detect_change(host->mmc, msecs_to_jiffies(delay));
 }
 
+<<<<<<< HEAD
 static void wbsd_tasklet_fifo(unsigned long param)
 {
 	struct wbsd_host *host = (struct wbsd_host *)param;
+=======
+static void wbsd_tasklet_fifo(struct tasklet_struct *t)
+{
+	struct wbsd_host *host = from_tasklet(host, t, fifo_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mmc_data *data;
 
 	spin_lock(&host->lock);
@@ -1081,9 +1214,15 @@ end:
 	spin_unlock(&host->lock);
 }
 
+<<<<<<< HEAD
 static void wbsd_tasklet_crc(unsigned long param)
 {
 	struct wbsd_host *host = (struct wbsd_host *)param;
+=======
+static void wbsd_tasklet_crc(struct tasklet_struct *t)
+{
+	struct wbsd_host *host = from_tasklet(host, t, crc_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mmc_data *data;
 
 	spin_lock(&host->lock);
@@ -1105,9 +1244,15 @@ end:
 	spin_unlock(&host->lock);
 }
 
+<<<<<<< HEAD
 static void wbsd_tasklet_timeout(unsigned long param)
 {
 	struct wbsd_host *host = (struct wbsd_host *)param;
+=======
+static void wbsd_tasklet_timeout(struct tasklet_struct *t)
+{
+	struct wbsd_host *host = from_tasklet(host, t, timeout_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mmc_data *data;
 
 	spin_lock(&host->lock);
@@ -1129,9 +1274,15 @@ end:
 	spin_unlock(&host->lock);
 }
 
+<<<<<<< HEAD
 static void wbsd_tasklet_finish(unsigned long param)
 {
 	struct wbsd_host *host = (struct wbsd_host *)param;
+=======
+static void wbsd_tasklet_finish(struct tasklet_struct *t)
+{
+	struct wbsd_host *host = from_tasklet(host, t, finish_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mmc_data *data;
 
 	spin_lock(&host->lock);
@@ -1196,7 +1347,11 @@ static irqreturn_t wbsd_irq(int irq, void *dev_id)
  * Allocate/free MMC structure.
  */
 
+<<<<<<< HEAD
 static int __devinit wbsd_alloc_mmc(struct device *dev)
+=======
+static int wbsd_alloc_mmc(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mmc_host *mmc;
 	struct wbsd_host *host;
@@ -1227,9 +1382,13 @@ static int __devinit wbsd_alloc_mmc(struct device *dev)
 	/*
 	 * Set up timers
 	 */
+<<<<<<< HEAD
 	init_timer(&host->ignore_timer);
 	host->ignore_timer.data = (unsigned long)host;
 	host->ignore_timer.function = wbsd_reset_ignore;
+=======
+	timer_setup(&host->ignore_timer, wbsd_reset_ignore, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Maximum number of segments. Worst case is one sector per segment
@@ -1280,15 +1439,22 @@ static void wbsd_free_mmc(struct device *dev)
 	del_timer_sync(&host->ignore_timer);
 
 	mmc_free_host(mmc);
+<<<<<<< HEAD
 
 	dev_set_drvdata(dev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Scan for known chip id:s
  */
 
+<<<<<<< HEAD
 static int __devinit wbsd_scan(struct wbsd_host *host)
+=======
+static int wbsd_scan(struct wbsd_host *host)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, j, k;
 	int id;
@@ -1302,8 +1468,11 @@ static int __devinit wbsd_scan(struct wbsd_host *host)
 			continue;
 
 		for (j = 0; j < ARRAY_SIZE(unlock_codes); j++) {
+<<<<<<< HEAD
 			id = 0xFFFF;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			host->config = config_ports[i];
 			host->unlock_code = unlock_codes[j];
 
@@ -1344,7 +1513,11 @@ static int __devinit wbsd_scan(struct wbsd_host *host)
  * Allocate/free io port ranges
  */
 
+<<<<<<< HEAD
 static int __devinit wbsd_request_region(struct wbsd_host *host, int base)
+=======
+static int wbsd_request_region(struct wbsd_host *host, int base)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (base & 0x7)
 		return -EINVAL;
@@ -1374,7 +1547,11 @@ static void wbsd_release_regions(struct wbsd_host *host)
  * Allocate/free DMA port and buffer
  */
 
+<<<<<<< HEAD
 static void __devinit wbsd_request_dma(struct wbsd_host *host, int dma)
+=======
+static void wbsd_request_dma(struct wbsd_host *host, int dma)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (dma < 0)
 		return;
@@ -1387,7 +1564,11 @@ static void __devinit wbsd_request_dma(struct wbsd_host *host, int dma)
 	 * order for ISA to be able to DMA to it.
 	 */
 	host->dma_buffer = kmalloc(WBSD_DMA_SIZE,
+<<<<<<< HEAD
 		GFP_NOIO | GFP_DMA | __GFP_REPEAT | __GFP_NOWARN);
+=======
+		GFP_NOIO | GFP_DMA | __GFP_RETRY_MAYFAIL | __GFP_NOWARN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!host->dma_buffer)
 		goto free;
 
@@ -1396,23 +1577,40 @@ static void __devinit wbsd_request_dma(struct wbsd_host *host, int dma)
 	 */
 	host->dma_addr = dma_map_single(mmc_dev(host->mmc), host->dma_buffer,
 		WBSD_DMA_SIZE, DMA_BIDIRECTIONAL);
+<<<<<<< HEAD
+=======
+	if (dma_mapping_error(mmc_dev(host->mmc), host->dma_addr))
+		goto kfree;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * ISA DMA must be aligned on a 64k basis.
 	 */
 	if ((host->dma_addr & 0xffff) != 0)
+<<<<<<< HEAD
 		goto kfree;
+=======
+		goto unmap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * ISA cannot access memory above 16 MB.
 	 */
 	else if (host->dma_addr >= 0x1000000)
+<<<<<<< HEAD
 		goto kfree;
+=======
+		goto unmap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	host->dma = dma;
 
 	return;
 
+<<<<<<< HEAD
 kfree:
+=======
+unmap:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If we've gotten here then there is some kind of alignment bug
 	 */
@@ -1422,6 +1620,10 @@ kfree:
 		WBSD_DMA_SIZE, DMA_BIDIRECTIONAL);
 	host->dma_addr = 0;
 
+<<<<<<< HEAD
+=======
+kfree:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(host->dma_buffer);
 	host->dma_buffer = NULL;
 
@@ -1429,17 +1631,33 @@ free:
 	free_dma(dma);
 
 err:
+<<<<<<< HEAD
 	pr_warning(DRIVER_NAME ": Unable to allocate DMA %d. "
 		"Falling back on FIFO.\n", dma);
+=======
+	pr_warn(DRIVER_NAME ": Unable to allocate DMA %d - falling back on FIFO\n",
+		dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void wbsd_release_dma(struct wbsd_host *host)
 {
+<<<<<<< HEAD
 	if (host->dma_addr) {
 		dma_unmap_single(mmc_dev(host->mmc), host->dma_addr,
 			WBSD_DMA_SIZE, DMA_BIDIRECTIONAL);
 	}
 	kfree(host->dma_buffer);
+=======
+	/*
+	 * host->dma_addr is valid here iff host->dma_buffer is not NULL.
+	 */
+	if (host->dma_buffer) {
+		dma_unmap_single(mmc_dev(host->mmc), host->dma_addr,
+			WBSD_DMA_SIZE, DMA_BIDIRECTIONAL);
+		kfree(host->dma_buffer);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (host->dma >= 0)
 		free_dma(host->dma);
 
@@ -1452,13 +1670,18 @@ static void wbsd_release_dma(struct wbsd_host *host)
  * Allocate/free IRQ.
  */
 
+<<<<<<< HEAD
 static int __devinit wbsd_request_irq(struct wbsd_host *host, int irq)
+=======
+static int wbsd_request_irq(struct wbsd_host *host, int irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
 	/*
 	 * Set up tasklets. Must be done before requesting interrupt.
 	 */
+<<<<<<< HEAD
 	tasklet_init(&host->card_tasklet, wbsd_tasklet_card,
 			(unsigned long)host);
 	tasklet_init(&host->fifo_tasklet, wbsd_tasklet_fifo,
@@ -1469,6 +1692,13 @@ static int __devinit wbsd_request_irq(struct wbsd_host *host, int irq)
 			(unsigned long)host);
 	tasklet_init(&host->finish_tasklet, wbsd_tasklet_finish,
 			(unsigned long)host);
+=======
+	tasklet_setup(&host->card_tasklet, wbsd_tasklet_card);
+	tasklet_setup(&host->fifo_tasklet, wbsd_tasklet_fifo);
+	tasklet_setup(&host->crc_tasklet, wbsd_tasklet_crc);
+	tasklet_setup(&host->timeout_tasklet, wbsd_tasklet_timeout);
+	tasklet_setup(&host->finish_tasklet, wbsd_tasklet_finish);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Allocate interrupt.
@@ -1502,7 +1732,11 @@ static void  wbsd_release_irq(struct wbsd_host *host)
  * Allocate all resources for the host.
  */
 
+<<<<<<< HEAD
 static int __devinit wbsd_request_resources(struct wbsd_host *host,
+=======
+static int wbsd_request_resources(struct wbsd_host *host,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int base, int irq, int dma)
 {
 	int ret;
@@ -1644,7 +1878,11 @@ static void wbsd_chip_poweroff(struct wbsd_host *host)
  *                                                                           *
 \*****************************************************************************/
 
+<<<<<<< HEAD
 static int __devinit wbsd_init(struct device *dev, int base, int irq, int dma,
+=======
+static int wbsd_init(struct device *dev, int base, int irq, int dma,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pnp)
 {
 	struct wbsd_host *host = NULL;
@@ -1664,9 +1902,13 @@ static int __devinit wbsd_init(struct device *dev, int base, int irq, int dma,
 	ret = wbsd_scan(host);
 	if (ret) {
 		if (pnp && (ret == -ENODEV)) {
+<<<<<<< HEAD
 			pr_warning(DRIVER_NAME
 				": Unable to confirm device presence. You may "
 				"experience lock-ups.\n");
+=======
+			pr_warn(DRIVER_NAME ": Unable to confirm device presence - you may experience lock-ups\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			wbsd_free_mmc(dev);
 			return ret;
@@ -1688,10 +1930,14 @@ static int __devinit wbsd_init(struct device *dev, int base, int irq, int dma,
 	 */
 	if (pnp) {
 		if ((host->config != 0) && !wbsd_chip_validate(host)) {
+<<<<<<< HEAD
 			pr_warning(DRIVER_NAME
 				": PnP active but chip not configured! "
 				"You probably have a buggy BIOS. "
 				"Configuring chip manually.\n");
+=======
+			pr_warn(DRIVER_NAME ": PnP active but chip not configured! You probably have a buggy BIOS. Configuring chip manually.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wbsd_chip_config(host);
 		}
 	} else
@@ -1718,7 +1964,19 @@ static int __devinit wbsd_init(struct device *dev, int base, int irq, int dma,
 	 */
 	wbsd_init_device(host);
 
+<<<<<<< HEAD
 	mmc_add_host(mmc);
+=======
+	ret = mmc_add_host(mmc);
+	if (ret) {
+		if (!pnp)
+			wbsd_chip_poweroff(host);
+
+		wbsd_release_resources(host);
+		wbsd_free_mmc(dev);
+		return ret;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_info("%s: W83L51xD", mmc_hostname(mmc));
 	if (host->chip_id != 0)
@@ -1735,7 +1993,11 @@ static int __devinit wbsd_init(struct device *dev, int base, int irq, int dma,
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit wbsd_shutdown(struct device *dev, int pnp)
+=======
+static void wbsd_shutdown(struct device *dev, int pnp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mmc_host *mmc = dev_get_drvdata(dev);
 	struct wbsd_host *host;
@@ -1762,17 +2024,27 @@ static void __devexit wbsd_shutdown(struct device *dev, int pnp)
  * Non-PnP
  */
 
+<<<<<<< HEAD
 static int __devinit wbsd_probe(struct platform_device *dev)
+=======
+static int wbsd_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Use the module parameters for resources */
 	return wbsd_init(&dev->dev, param_io, param_irq, param_dma, 0);
 }
 
+<<<<<<< HEAD
 static int __devexit wbsd_remove(struct platform_device *dev)
 {
 	wbsd_shutdown(&dev->dev, 0);
 
 	return 0;
+=======
+static void wbsd_remove(struct platform_device *dev)
+{
+	wbsd_shutdown(&dev->dev, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1781,7 +2053,11 @@ static int __devexit wbsd_remove(struct platform_device *dev)
 
 #ifdef CONFIG_PNP
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 wbsd_pnp_probe(struct pnp_dev *pnpdev, const struct pnp_device_id *dev_id)
 {
 	int io, irq, dma;
@@ -1801,7 +2077,11 @@ wbsd_pnp_probe(struct pnp_dev *pnpdev, const struct pnp_device_id *dev_id)
 	return wbsd_init(&pnpdev->dev, io, irq, dma, 1);
 }
 
+<<<<<<< HEAD
 static void __devexit wbsd_pnp_remove(struct pnp_dev *dev)
+=======
+static void wbsd_pnp_remove(struct pnp_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	wbsd_shutdown(&dev->dev, 1);
 }
@@ -1814,6 +2094,7 @@ static void __devexit wbsd_pnp_remove(struct pnp_dev *dev)
 
 #ifdef CONFIG_PM
 
+<<<<<<< HEAD
 static int wbsd_suspend(struct wbsd_host *host, pm_message_t state)
 {
 	BUG_ON(host == NULL);
@@ -1830,12 +2111,17 @@ static int wbsd_resume(struct wbsd_host *host)
 	return mmc_resume_host(host->mmc);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int wbsd_platform_suspend(struct platform_device *dev,
 				 pm_message_t state)
 {
 	struct mmc_host *mmc = platform_get_drvdata(dev);
 	struct wbsd_host *host;
+<<<<<<< HEAD
 	int ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mmc == NULL)
 		return 0;
@@ -1844,12 +2130,16 @@ static int wbsd_platform_suspend(struct platform_device *dev,
 
 	host = mmc_priv(mmc);
 
+<<<<<<< HEAD
 	ret = wbsd_suspend(host, state);
 	if (ret)
 		return ret;
 
 	wbsd_chip_poweroff(host);
 
+=======
+	wbsd_chip_poweroff(host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1872,7 +2162,12 @@ static int wbsd_platform_resume(struct platform_device *dev)
 	 */
 	mdelay(5);
 
+<<<<<<< HEAD
 	return wbsd_resume(host);
+=======
+	wbsd_init_device(host);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PNP
@@ -1880,16 +2175,23 @@ static int wbsd_platform_resume(struct platform_device *dev)
 static int wbsd_pnp_suspend(struct pnp_dev *pnp_dev, pm_message_t state)
 {
 	struct mmc_host *mmc = dev_get_drvdata(&pnp_dev->dev);
+<<<<<<< HEAD
 	struct wbsd_host *host;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mmc == NULL)
 		return 0;
 
 	DBGF("Suspending...\n");
+<<<<<<< HEAD
 
 	host = mmc_priv(mmc);
 
 	return wbsd_suspend(host, state);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int wbsd_pnp_resume(struct pnp_dev *pnp_dev)
@@ -1909,10 +2211,14 @@ static int wbsd_pnp_resume(struct pnp_dev *pnp_dev)
 	 */
 	if (host->config != 0) {
 		if (!wbsd_chip_validate(host)) {
+<<<<<<< HEAD
 			pr_warning(DRIVER_NAME
 				": PnP active but chip not configured! "
 				"You probably have a buggy BIOS. "
 				"Configuring chip manually.\n");
+=======
+			pr_warn(DRIVER_NAME ": PnP active but chip not configured! You probably have a buggy BIOS. Configuring chip manually.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			wbsd_chip_config(host);
 		}
 	}
@@ -1922,7 +2228,12 @@ static int wbsd_pnp_resume(struct pnp_dev *pnp_dev)
 	 */
 	mdelay(5);
 
+<<<<<<< HEAD
 	return wbsd_resume(host);
+=======
+	wbsd_init_device(host);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* CONFIG_PNP */
@@ -1941,13 +2252,21 @@ static struct platform_device *wbsd_device;
 
 static struct platform_driver wbsd_driver = {
 	.probe		= wbsd_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(wbsd_remove),
 
+=======
+	.remove_new	= wbsd_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= wbsd_platform_suspend,
 	.resume		= wbsd_platform_resume,
 	.driver		= {
 		.name	= DRIVER_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -1957,7 +2276,11 @@ static struct pnp_driver wbsd_pnp_driver = {
 	.name		= DRIVER_NAME,
 	.id_table	= pnp_dev_table,
 	.probe		= wbsd_pnp_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(wbsd_pnp_remove),
+=======
+	.remove		= wbsd_pnp_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.suspend	= wbsd_pnp_suspend,
 	.resume		= wbsd_pnp_resume,
@@ -2029,11 +2352,19 @@ static void __exit wbsd_drv_exit(void)
 module_init(wbsd_drv_init);
 module_exit(wbsd_drv_exit);
 #ifdef CONFIG_PNP
+<<<<<<< HEAD
 module_param_named(nopnp, param_nopnp, uint, 0444);
 #endif
 module_param_named(io, param_io, uint, 0444);
 module_param_named(irq, param_irq, uint, 0444);
 module_param_named(dma, param_dma, int, 0444);
+=======
+module_param_hw_named(nopnp, param_nopnp, uint, other, 0444);
+#endif
+module_param_hw_named(io, param_io, uint, ioport, 0444);
+module_param_hw_named(irq, param_irq, uint, irq, 0444);
+module_param_hw_named(dma, param_dma, int, dma, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Pierre Ossman <pierre@ossman.eu>");

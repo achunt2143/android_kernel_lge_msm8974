@@ -1,16 +1,32 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) STMicroelectronics 2009
  * Copyright (C) ST-Ericsson SA 2010
  *
  * License Terms: GNU General Public License v2
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * DB8500 PRCM Unit driver
+ *
+ * Copyright (C) STMicroelectronics 2009
+ * Copyright (C) ST-Ericsson SA 2010
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Kumar Sanghvi <kumar.sanghvi@stericsson.com>
  * Author: Sundar Iyer <sundar.iyer@stericsson.com>
  * Author: Mattias Nilsson <mattias.i.nilsson@stericsson.com>
  *
  * U8500 PRCM Unit interface driver
+<<<<<<< HEAD
  *
  */
 #include <linux/module.h>
+=======
+ */
+#include <linux/init.h>
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/delay.h>
 #include <linux/errno.h>
@@ -24,10 +40,17 @@
 #include <linux/jiffies.h>
 #include <linux/bitops.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/uaccess.h>
 #include <linux/mfd/core.h>
 #include <linux/mfd/dbx500-prcmu.h>
+<<<<<<< HEAD
 #include <linux/regulator/db8500-prcmu.h>
 #include <linux/regulator/machine.h>
 #include <asm/hardware/gic.h>
@@ -39,6 +62,12 @@
 
 /* Offset for the firmware version within the TCPM */
 #define PRCMU_FW_VERSION_OFFSET 0xA4
+=======
+#include <linux/mfd/abx500/ab8500.h>
+#include <linux/regulator/db8500-prcmu.h>
+#include <linux/regulator/machine.h>
+#include "db8500-prcmu-regs.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Index of different voltages to be used when accessing AVSData */
 #define PRCM_AVS_BASE		0x2FC
@@ -214,10 +243,15 @@
 #define PRCM_REQ_MB5_I2C_HW_BITS	(PRCM_REQ_MB5 + 0x1)
 #define PRCM_REQ_MB5_I2C_REG		(PRCM_REQ_MB5 + 0x2)
 #define PRCM_REQ_MB5_I2C_VAL		(PRCM_REQ_MB5 + 0x3)
+<<<<<<< HEAD
 #define PRCMU_I2C_WRITE(slave) \
 	(((slave) << 1) | (cpu_is_u8500v2() ? BIT(6) : 0))
 #define PRCMU_I2C_READ(slave) \
 	(((slave) << 1) | BIT(0) | (cpu_is_u8500v2() ? BIT(6) : 0))
+=======
+#define PRCMU_I2C_WRITE(slave) (((slave) << 1) | BIT(6))
+#define PRCMU_I2C_READ(slave) (((slave) << 1) | BIT(0) | BIT(6))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PRCMU_I2C_STOP_EN		BIT(3)
 
 /* Mailbox 5 ACKs */
@@ -269,6 +303,11 @@ static struct {
 	struct prcmu_fw_version version;
 } fw_info;
 
+<<<<<<< HEAD
+=======
+static struct irq_domain *db8500_irq_domain;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This vector maps irq numbers to the bits in the bit field used in
  * communication with the PRCMU firmware.
@@ -277,8 +316,39 @@ static struct {
  * the bits in the bit field are not. (The bits also have a tendency to move
  * around, to further complicate matters.)
  */
+<<<<<<< HEAD
 #define IRQ_INDEX(_name) ((IRQ_PRCMU_##_name) - IRQ_PRCMU_BASE)
 #define IRQ_ENTRY(_name)[IRQ_INDEX(_name)] = (WAKEUP_BIT_##_name)
+=======
+#define IRQ_INDEX(_name) ((IRQ_PRCMU_##_name))
+#define IRQ_ENTRY(_name)[IRQ_INDEX(_name)] = (WAKEUP_BIT_##_name)
+
+#define IRQ_PRCMU_RTC 0
+#define IRQ_PRCMU_RTT0 1
+#define IRQ_PRCMU_RTT1 2
+#define IRQ_PRCMU_HSI0 3
+#define IRQ_PRCMU_HSI1 4
+#define IRQ_PRCMU_CA_WAKE 5
+#define IRQ_PRCMU_USB 6
+#define IRQ_PRCMU_ABB 7
+#define IRQ_PRCMU_ABB_FIFO 8
+#define IRQ_PRCMU_ARM 9
+#define IRQ_PRCMU_MODEM_SW_RESET_REQ 10
+#define IRQ_PRCMU_GPIO0 11
+#define IRQ_PRCMU_GPIO1 12
+#define IRQ_PRCMU_GPIO2 13
+#define IRQ_PRCMU_GPIO3 14
+#define IRQ_PRCMU_GPIO4 15
+#define IRQ_PRCMU_GPIO5 16
+#define IRQ_PRCMU_GPIO6 17
+#define IRQ_PRCMU_GPIO7 18
+#define IRQ_PRCMU_GPIO8 19
+#define IRQ_PRCMU_CA_SLEEP 20
+#define IRQ_PRCMU_HOTMON_LOW 21
+#define IRQ_PRCMU_HOTMON_HIGH 22
+#define NUM_PRCMU_WAKEUPS 23
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static u32 prcmu_irq_bit[NUM_PRCMU_WAKEUPS] = {
 	IRQ_ENTRY(RTC),
 	IRQ_ENTRY(RTT0),
@@ -423,9 +493,16 @@ static DEFINE_SPINLOCK(clkout_lock);
 
 /* Global var to runtime determine TCDM base for v2 or v1 */
 static __iomem void *tcdm_base;
+<<<<<<< HEAD
 
 struct clk_mgt {
 	void __iomem *reg;
+=======
+static __iomem void *prcmu_base;
+
+struct clk_mgt {
+	u32 offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 pllsw;
 	int branch;
 	bool clk38div;
@@ -441,7 +518,11 @@ static DEFINE_SPINLOCK(clk_mgt_lock);
 
 #define CLK_MGT_ENTRY(_name, _branch, _clk38div)[PRCMU_##_name] = \
 	{ (PRCM_##_name##_MGT), 0 , _branch, _clk38div}
+<<<<<<< HEAD
 struct clk_mgt clk_mgt[PRCMU_NUM_REG_CLOCKS] = {
+=======
+static struct clk_mgt clk_mgt[PRCMU_NUM_REG_CLOCKS] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CLK_MGT_ENTRY(SGACLK, PLL_DIV, false),
 	CLK_MGT_ENTRY(UARTCLK, PLL_FIX, true),
 	CLK_MGT_ENTRY(MSP02CLK, PLL_FIX, true),
@@ -516,6 +597,7 @@ static struct dsiescclk dsiescclk[3] = {
 	}
 };
 
+<<<<<<< HEAD
 /*
 * Used by MCDE to setup all necessary PRCMU registers
 */
@@ -614,6 +696,11 @@ int db8500_prcmu_set_display_clocks(void)
 u32 db8500_prcmu_read(unsigned int reg)
 {
 	return readl(_PRCMU_BASE + reg);
+=======
+u32 db8500_prcmu_read(unsigned int reg)
+{
+	return readl(prcmu_base + reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void db8500_prcmu_write(unsigned int reg, u32 value)
@@ -621,7 +708,11 @@ void db8500_prcmu_write(unsigned int reg, u32 value)
 	unsigned long flags;
 
 	spin_lock_irqsave(&prcmu_lock, flags);
+<<<<<<< HEAD
 	writel(value, (_PRCMU_BASE + reg));
+=======
+	writel(value, (prcmu_base + reg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&prcmu_lock, flags);
 }
 
@@ -631,9 +722,15 @@ void db8500_prcmu_write_masked(unsigned int reg, u32 mask, u32 value)
 	unsigned long flags;
 
 	spin_lock_irqsave(&prcmu_lock, flags);
+<<<<<<< HEAD
 	val = readl(_PRCMU_BASE + reg);
 	val = ((val & ~mask) | (value & mask));
 	writel(val, (_PRCMU_BASE + reg));
+=======
+	val = readl(prcmu_base + reg);
+	val = ((val & ~mask) | (value & mask));
+	writel(val, (prcmu_base + reg));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&prcmu_lock, flags);
 }
 
@@ -642,6 +739,17 @@ struct prcmu_fw_version *prcmu_get_fw_version(void)
 	return fw_info.valid ? &fw_info.version : NULL;
 }
 
+<<<<<<< HEAD
+=======
+static bool prcmu_is_ulppll_disabled(void)
+{
+	struct prcmu_fw_version *ver;
+
+	ver = prcmu_get_fw_version();
+	return ver && ver->project == PRCMU_FW_PROJECT_U8420_SYSCLK;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bool prcmu_has_arm_maxopp(void)
 {
 	return (readb(tcdm_base + PRCM_AVS_VARM_MAX_OPP) &
@@ -649,6 +757,7 @@ bool prcmu_has_arm_maxopp(void)
 }
 
 /**
+<<<<<<< HEAD
  * prcmu_get_boot_status - PRCMU boot status checking
  * Returns: the current PRCMU boot status
  */
@@ -658,6 +767,8 @@ int prcmu_get_boot_status(void)
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * prcmu_set_rc_a2p - This function is used to run few power state sequences
  * @val: Value to be set, i.e. transition requested
  * Returns: 0 on success, -EINVAL on invalid argument
@@ -686,7 +797,11 @@ enum romcode_read prcmu_get_rc_p2a(void)
 }
 
 /**
+<<<<<<< HEAD
  * prcmu_get_current_mode - Return the current XP70 power mode
+=======
+ * prcmu_get_xp70_current_state - Return the current XP70 power mode
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns: Returns the current AP(ARM) power mode: init,
  * apBoot, apExecute, apDeepSleep, apSleep, apIdle, apReset
  */
@@ -722,20 +837,31 @@ int prcmu_config_clkout(u8 clkout, u8 source, u8 div)
 	if (!div && !requests[clkout])
 		return -EINVAL;
 
+<<<<<<< HEAD
 	switch (clkout) {
 	case 0:
+=======
+	if (clkout == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		div_mask = PRCM_CLKOCR_CLKODIV0_MASK;
 		mask = (PRCM_CLKOCR_CLKODIV0_MASK | PRCM_CLKOCR_CLKOSEL0_MASK);
 		bits = ((source << PRCM_CLKOCR_CLKOSEL0_SHIFT) |
 			(div << PRCM_CLKOCR_CLKODIV0_SHIFT));
+<<<<<<< HEAD
 		break;
 	case 1:
+=======
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		div_mask = PRCM_CLKOCR_CLKODIV1_MASK;
 		mask = (PRCM_CLKOCR_CLKODIV1_MASK | PRCM_CLKOCR_CLKOSEL1_MASK |
 			PRCM_CLKOCR_CLK1TYPE);
 		bits = ((source << PRCM_CLKOCR_CLKOSEL1_SHIFT) |
 			(div << PRCM_CLKOCR_CLKODIV1_SHIFT));
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	bits &= mask;
 
@@ -793,6 +919,7 @@ u8 db8500_prcmu_get_power_state_result(void)
 	return readb(tcdm_base + PRCM_ACK_MB0_AP_PWRSTTR_STATUS);
 }
 
+<<<<<<< HEAD
 /* This function decouple the gic from the prcmu */
 int db8500_prcmu_gic_decouple(void)
 {
@@ -906,6 +1033,8 @@ int db8500_prcmu_copy_gic_settings(void)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This function should only be called while mb0_transfer.lock is held. */
 static void config_wakeups(void)
 {
@@ -985,7 +1114,11 @@ void db8500_prcmu_get_abb_event_buffer(void __iomem **buf)
  * @opp: The new ARM operating point to which transition is to be made
  * Returns: 0 on success, non-zero on failure
  *
+<<<<<<< HEAD
  * This function sets the the operating point of the ARM.
+=======
+ * This function sets the operating point of the ARM.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int db8500_prcmu_set_arm_opp(u8 opp)
 {
@@ -1037,6 +1170,7 @@ int db8500_prcmu_get_ddr_opp(void)
 	return readb(PRCM_DDR_SUBSYS_APE_MINBW);
 }
 
+<<<<<<< HEAD
 /**
  * db8500_set_ddr_opp - set the appropriate DDR OPP
  * @opp: The new DDR operating point to which transition is to be made
@@ -1059,6 +1193,12 @@ int db8500_prcmu_set_ddr_opp(u8 opp)
 static void request_even_slower_clocks(bool enable)
 {
 	void __iomem *clock_reg[] = {
+=======
+/* Divide the frequency of certain clocks by 2 for APE_50_PARTLY_25_OPP. */
+static void request_even_slower_clocks(bool enable)
+{
+	u32 clock_reg[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		PRCM_ACLK_MGT,
 		PRCM_DMACLK_MGT
 	};
@@ -1075,7 +1215,11 @@ static void request_even_slower_clocks(bool enable)
 		u32 val;
 		u32 div;
 
+<<<<<<< HEAD
 		val = readl(clock_reg[i]);
+=======
+		val = readl(prcmu_base + clock_reg[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		div = (val & PRCM_CLK_MGT_CLKPLLDIV_MASK);
 		if (enable) {
 			if ((div <= 1) || (div > 15)) {
@@ -1091,7 +1235,11 @@ static void request_even_slower_clocks(bool enable)
 		}
 		val = ((val & ~PRCM_CLK_MGT_CLKPLLDIV_MASK) |
 			(div & PRCM_CLK_MGT_CLKPLLDIV_MASK));
+<<<<<<< HEAD
 		writel(val, clock_reg[i]);
+=======
+		writel(val, prcmu_base + clock_reg[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 unlock_and_return:
@@ -1102,7 +1250,11 @@ unlock_and_return:
 }
 
 /**
+<<<<<<< HEAD
  * db8500_set_ape_opp - set the appropriate APE OPP
+=======
+ * db8500_prcmu_set_ape_opp - set the appropriate APE OPP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @opp: The new APE operating point to which transition is to be made
  * Returns: 0 on success, non-zero on failure
  *
@@ -1161,12 +1313,20 @@ int db8500_prcmu_get_ape_opp(void)
 }
 
 /**
+<<<<<<< HEAD
  * prcmu_request_ape_opp_100_voltage - Request APE OPP 100% voltage
+=======
+ * db8500_prcmu_request_ape_opp_100_voltage - Request APE OPP 100% voltage
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @enable: true to request the higher voltage, false to drop a request.
  *
  * Calls to this function to enable and disable requests must be balanced.
  */
+<<<<<<< HEAD
 int prcmu_request_ape_opp_100_voltage(bool enable)
+=======
+int db8500_prcmu_request_ape_opp_100_voltage(bool enable)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r = 0;
 	u8 header;
@@ -1425,10 +1585,30 @@ static int request_sysclk(bool enable)
 
 static int request_timclk(bool enable)
 {
+<<<<<<< HEAD
 	u32 val = (PRCM_TCR_DOZE_MODE | PRCM_TCR_TENSEL_MASK);
 
 	if (!enable)
 		val |= PRCM_TCR_STOP_TIMERS;
+=======
+	u32 val;
+
+	/*
+	 * On the U8420_CLKSEL firmware, the ULP (Ultra Low Power)
+	 * PLL is disabled so we cannot use doze mode, this will
+	 * stop the clock on this firmware.
+	 */
+	if (prcmu_is_ulppll_disabled())
+		val = 0;
+	else
+		val = (PRCM_TCR_DOZE_MODE | PRCM_TCR_TENSEL_MASK);
+
+	if (!enable)
+		val |= PRCM_TCR_STOP_TIMERS |
+			PRCM_TCR_DOZE_MODE |
+			PRCM_TCR_TENSEL_MASK;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel(val, PRCM_TCR);
 
 	return 0;
@@ -1445,14 +1625,22 @@ static int request_clock(u8 clock, bool enable)
 	while ((readl(PRCM_SEM) & PRCM_SEM_PRCM_SEM) != 0)
 		cpu_relax();
 
+<<<<<<< HEAD
 	val = readl(clk_mgt[clock].reg);
+=======
+	val = readl(prcmu_base + clk_mgt[clock].offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (enable) {
 		val |= (PRCM_CLK_MGT_CLKEN | clk_mgt[clock].pllsw);
 	} else {
 		clk_mgt[clock].pllsw = (val & PRCM_CLK_MGT_CLKPLLSW_MASK);
 		val &= ~(PRCM_CLK_MGT_CLKEN | PRCM_CLK_MGT_CLKPLLSW_MASK);
 	}
+<<<<<<< HEAD
 	writel(val, clk_mgt[clock].reg);
+=======
+	writel(val, prcmu_base + clk_mgt[clock].offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Release the HW semaphore. */
 	writel(0, PRCM_SEM);
@@ -1611,6 +1799,10 @@ static unsigned long pll_rate(void __iomem *reg, unsigned long src_rate,
 	if ((branch == PLL_FIX) || ((branch == PLL_DIV) &&
 		(val & PRCM_PLL_FREQ_DIV2EN) &&
 		((reg == PRCM_PLLSOC0_FREQ) ||
+<<<<<<< HEAD
+=======
+		 (reg == PRCM_PLLARM_FREQ) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 (reg == PRCM_PLLDDR_FREQ))))
 		div *= 2;
 
@@ -1627,7 +1819,11 @@ static unsigned long clock_rate(u8 clock)
 	u32 pllsw;
 	unsigned long rate = ROOT_CLOCK_RATE;
 
+<<<<<<< HEAD
 	val = readl(clk_mgt[clock].reg);
+=======
+	val = readl(prcmu_base + clk_mgt[clock].offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (val & PRCM_CLK_MGT_CLK38) {
 		if (clk_mgt[clock].clk38div && (val & PRCM_CLK_MGT_CLK38DIV))
@@ -1661,6 +1857,37 @@ static unsigned long clock_rate(u8 clock)
 		return 0;
 }
 
+<<<<<<< HEAD
+=======
+static unsigned long armss_rate(void)
+{
+	u32 r;
+	unsigned long rate;
+
+	r = readl(PRCM_ARM_CHGCLKREQ);
+
+	if (r & PRCM_ARM_CHGCLKREQ_PRCM_ARM_CHGCLKREQ) {
+		/* External ARMCLKFIX clock */
+
+		rate = pll_rate(PRCM_PLLDDR_FREQ, ROOT_CLOCK_RATE, PLL_FIX);
+
+		/* Check PRCM_ARM_CHGCLKREQ divider */
+		if (!(r & PRCM_ARM_CHGCLKREQ_PRCM_ARM_DIVSEL))
+			rate /= 2;
+
+		/* Check PRCM_ARMCLKFIX_MGT divider */
+		r = readl(PRCM_ARMCLKFIX_MGT);
+		r &= PRCM_CLK_MGT_CLKPLLDIV_MASK;
+		rate /= r;
+
+	} else {/* ARM PLL */
+		rate = pll_rate(PRCM_PLLARM_FREQ, ROOT_CLOCK_RATE, PLL_DIV);
+	}
+
+	return rate;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned long dsiclk_rate(u8 n)
 {
 	u32 divsel;
@@ -1671,12 +1898,24 @@ static unsigned long dsiclk_rate(u8 n)
 
 	if (divsel == PRCM_DSI_PLLOUT_SEL_OFF)
 		divsel = dsiclk[n].divsel;
+<<<<<<< HEAD
+=======
+	else
+		dsiclk[n].divsel = divsel;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (divsel) {
 	case PRCM_DSI_PLLOUT_SEL_PHI_4:
 		div *= 2;
+<<<<<<< HEAD
 	case PRCM_DSI_PLLOUT_SEL_PHI_2:
 		div *= 2;
+=======
+		fallthrough;
+	case PRCM_DSI_PLLOUT_SEL_PHI_2:
+		div *= 2;
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PRCM_DSI_PLLOUT_SEL_PHI:
 		return pll_rate(PRCM_PLLDSI_FREQ, clock_rate(PRCMU_HDMICLK),
 			PLL_RAW) / div;
@@ -1699,13 +1938,23 @@ unsigned long prcmu_clock_rate(u8 clock)
 	if (clock < PRCMU_NUM_REG_CLOCKS)
 		return clock_rate(clock);
 	else if (clock == PRCMU_TIMCLK)
+<<<<<<< HEAD
 		return ROOT_CLOCK_RATE / 16;
+=======
+		return prcmu_is_ulppll_disabled() ?
+			32768 : ROOT_CLOCK_RATE / 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (clock == PRCMU_SYSCLK)
 		return ROOT_CLOCK_RATE;
 	else if (clock == PRCMU_PLLSOC0)
 		return pll_rate(PRCM_PLLSOC0_FREQ, ROOT_CLOCK_RATE, PLL_RAW);
 	else if (clock == PRCMU_PLLSOC1)
 		return pll_rate(PRCM_PLLSOC1_FREQ, ROOT_CLOCK_RATE, PLL_RAW);
+<<<<<<< HEAD
+=======
+	else if (clock == PRCMU_ARMSS)
+		return armss_rate();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (clock == PRCMU_PLLDDR)
 		return pll_rate(PRCM_PLLDDR_FREQ, ROOT_CLOCK_RATE, PLL_RAW);
 	else if (clock == PRCMU_PLLDSI)
@@ -1753,7 +2002,11 @@ static long round_clock_rate(u8 clock, unsigned long rate)
 	unsigned long src_rate;
 	long rounded_rate;
 
+<<<<<<< HEAD
 	val = readl(clk_mgt[clock].reg);
+=======
+	val = readl(prcmu_base + clk_mgt[clock].offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	src_rate = clock_source_rate((val | clk_mgt[clock].pllsw),
 		clk_mgt[clock].branch);
 	div = clock_divider(src_rate, rate);
@@ -1776,6 +2029,50 @@ static long round_clock_rate(u8 clock, unsigned long rate)
 	return rounded_rate;
 }
 
+<<<<<<< HEAD
+=======
+static const unsigned long db8500_armss_freqs[] = {
+	199680000,
+	399360000,
+	798720000,
+	998400000
+};
+
+/* The DB8520 has slightly higher ARMSS max frequency */
+static const unsigned long db8520_armss_freqs[] = {
+	199680000,
+	399360000,
+	798720000,
+	1152000000
+};
+
+static long round_armss_rate(unsigned long rate)
+{
+	unsigned long freq = 0;
+	const unsigned long *freqs;
+	int nfreqs;
+	int i;
+
+	if (fw_info.version.project == PRCMU_FW_PROJECT_U8520) {
+		freqs = db8520_armss_freqs;
+		nfreqs = ARRAY_SIZE(db8520_armss_freqs);
+	} else {
+		freqs = db8500_armss_freqs;
+		nfreqs = ARRAY_SIZE(db8500_armss_freqs);
+	}
+
+	/* Find the corresponding arm opp from the cpufreq table. */
+	for (i = 0; i < nfreqs; i++) {
+		freq = freqs[i];
+		if (rate <= freq)
+			break;
+	}
+
+	/* Return the last valid value, even if a match was not found. */
+	return freq;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MIN_PLL_VCO_RATE 600000000ULL
 #define MAX_PLL_VCO_RATE 1680640000ULL
 
@@ -1847,6 +2144,11 @@ long prcmu_round_clock_rate(u8 clock, unsigned long rate)
 {
 	if (clock < PRCMU_NUM_REG_CLOCKS)
 		return round_clock_rate(clock, rate);
+<<<<<<< HEAD
+=======
+	else if (clock == PRCMU_ARMSS)
+		return round_armss_rate(rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (clock == PRCMU_PLLDSI)
 		return round_plldsi_rate(rate);
 	else if ((clock == PRCMU_DSI0CLK) || (clock == PRCMU_DSI1CLK))
@@ -1870,7 +2172,11 @@ static void set_clock_rate(u8 clock, unsigned long rate)
 	while ((readl(PRCM_SEM) & PRCM_SEM_PRCM_SEM) != 0)
 		cpu_relax();
 
+<<<<<<< HEAD
 	val = readl(clk_mgt[clock].reg);
+=======
+	val = readl(prcmu_base + clk_mgt[clock].offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	src_rate = clock_source_rate((val | clk_mgt[clock].pllsw),
 		clk_mgt[clock].branch);
 	div = clock_divider(src_rate, rate);
@@ -1898,7 +2204,11 @@ static void set_clock_rate(u8 clock, unsigned long rate)
 		val &= ~PRCM_CLK_MGT_CLKPLLDIV_MASK;
 		val |= min(div, (u32)31);
 	}
+<<<<<<< HEAD
 	writel(val, clk_mgt[clock].reg);
+=======
+	writel(val, prcmu_base + clk_mgt[clock].offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Release the HW semaphore. */
 	writel(0, PRCM_SEM);
@@ -1906,6 +2216,40 @@ static void set_clock_rate(u8 clock, unsigned long rate)
 	spin_unlock_irqrestore(&clk_mgt_lock, flags);
 }
 
+<<<<<<< HEAD
+=======
+static int set_armss_rate(unsigned long rate)
+{
+	unsigned long freq;
+	u8 opps[] = { ARM_EXTCLK, ARM_50_OPP, ARM_100_OPP, ARM_MAX_OPP };
+	const unsigned long *freqs;
+	int nfreqs;
+	int i;
+
+	if (fw_info.version.project == PRCMU_FW_PROJECT_U8520) {
+		freqs = db8520_armss_freqs;
+		nfreqs = ARRAY_SIZE(db8520_armss_freqs);
+	} else {
+		freqs = db8500_armss_freqs;
+		nfreqs = ARRAY_SIZE(db8500_armss_freqs);
+	}
+
+	/* Find the corresponding arm opp from the cpufreq table. */
+	for (i = 0; i < nfreqs; i++) {
+		freq = freqs[i];
+		if (rate == freq)
+			break;
+	}
+
+	if (rate != freq)
+		return -EINVAL;
+
+	/* Set the new arm opp. */
+	pr_debug("SET ARM OPP 0x%02x\n", opps[i]);
+	return db8500_prcmu_set_arm_opp(opps[i]);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int set_plldsi_rate(unsigned long rate)
 {
 	unsigned long src_rate;
@@ -1986,6 +2330,11 @@ int prcmu_set_clock_rate(u8 clock, unsigned long rate)
 {
 	if (clock < PRCMU_NUM_REG_CLOCKS)
 		set_clock_rate(clock, rate);
+<<<<<<< HEAD
+=======
+	else if (clock == PRCMU_ARMSS)
+		return set_armss_rate(rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else if (clock == PRCMU_PLLDSI)
 		return set_plldsi_rate(rate);
 	else if ((clock == PRCMU_DSI0CLK) || (clock == PRCMU_DSI1CLK))
@@ -2059,6 +2408,10 @@ int db8500_prcmu_config_hotmon(u8 low, u8 high)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(db8500_prcmu_config_hotmon);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int config_hot_period(u16 val)
 {
@@ -2085,11 +2438,19 @@ int db8500_prcmu_start_temp_sense(u16 cycles32k)
 
 	return config_hot_period(cycles32k);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(db8500_prcmu_start_temp_sense);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int db8500_prcmu_stop_temp_sense(void)
 {
 	return config_hot_period(0xFFFF);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(db8500_prcmu_stop_temp_sense);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int prcmu_a9wdog(u8 cmd, u8 d0, u8 d1, u8 d2, u8 d3)
 {
@@ -2122,21 +2483,37 @@ int db8500_prcmu_config_a9wdog(u8 num, bool sleep_auto_off)
 			    sleep_auto_off ? A9WDOG_AUTO_OFF_EN :
 			    A9WDOG_AUTO_OFF_DIS);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(db8500_prcmu_config_a9wdog);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int db8500_prcmu_enable_a9wdog(u8 id)
 {
 	return prcmu_a9wdog(MB4H_A9WDOG_EN, id, 0, 0, 0);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(db8500_prcmu_enable_a9wdog);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int db8500_prcmu_disable_a9wdog(u8 id)
 {
 	return prcmu_a9wdog(MB4H_A9WDOG_DIS, id, 0, 0, 0);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(db8500_prcmu_disable_a9wdog);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int db8500_prcmu_kick_a9wdog(u8 id)
 {
 	return prcmu_a9wdog(MB4H_A9WDOG_KICK, id, 0, 0, 0);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(db8500_prcmu_kick_a9wdog);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * timeout is 28 bit, in ms.
@@ -2154,6 +2531,10 @@ int db8500_prcmu_load_a9wdog(u8 id, u32 timeout)
 			    (u8)((timeout >> 12) & 0xff),
 			    (u8)((timeout >> 20) & 0xff));
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(db8500_prcmu_load_a9wdog);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * prcmu_abb_read() - Read register value(s) from the ABB.
@@ -2269,10 +2650,17 @@ int prcmu_abb_write(u8 slave, u8 reg, u8 *value, u8 size)
 /**
  * prcmu_ac_wake_req - should be called whenever ARM wants to wakeup Modem
  */
+<<<<<<< HEAD
 void prcmu_ac_wake_req(void)
 {
 	u32 val;
 	u32 status;
+=======
+int prcmu_ac_wake_req(void)
+{
+	u32 val;
+	int ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&mb0_transfer.ac_wake_lock);
 
@@ -2282,13 +2670,29 @@ void prcmu_ac_wake_req(void)
 
 	atomic_set(&ac_wake_req_state, 1);
 
+<<<<<<< HEAD
 retry:
 	writel((val | PRCM_HOSTACCESS_REQ_HOSTACCESS_REQ), PRCM_HOSTACCESS_REQ);
+=======
+	/*
+	 * Force Modem Wake-up before hostaccess_req ping-pong.
+	 * It prevents Modem to enter in Sleep while acking the hostaccess
+	 * request. The 31us delay has been calculated by HWI.
+	 */
+	val |= PRCM_HOSTACCESS_REQ_WAKE_REQ;
+	writel(val, PRCM_HOSTACCESS_REQ);
+
+	udelay(31);
+
+	val |= PRCM_HOSTACCESS_REQ_HOSTACCESS_REQ;
+	writel(val, PRCM_HOSTACCESS_REQ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!wait_for_completion_timeout(&mb0_transfer.ac_wake_work,
 			msecs_to_jiffies(5000))) {
 		pr_crit("prcmu: %s timed out (5 s) waiting for a reply.\n",
 			__func__);
+<<<<<<< HEAD
 		goto unlock_and_return;
 	}
 
@@ -2311,16 +2715,27 @@ retry:
 			goto retry;
 		pr_crit("prcmu: %s timed out (5 s) waiting for AC_SLEEP_ACK.\n",
 			__func__);
+=======
+		ret = -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 unlock_and_return:
 	mutex_unlock(&mb0_transfer.ac_wake_lock);
+<<<<<<< HEAD
+=======
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * prcmu_ac_sleep_req - called when ARM no longer needs to talk to modem
  */
+<<<<<<< HEAD
 void prcmu_ac_sleep_req()
+=======
+void prcmu_ac_sleep_req(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 val;
 
@@ -2355,6 +2770,11 @@ bool db8500_prcmu_is_ac_wake_requested(void)
  *
  * Saves the reset reason code and then sets the APE_SOFTRST register which
  * fires interrupt to fw
+<<<<<<< HEAD
+=======
+ *
+ * @reset_code: The reason for system reset
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void db8500_prcmu_system_reset(u16 reset_code)
 {
@@ -2374,7 +2794,11 @@ u16 db8500_prcmu_get_reset_code(void)
 }
 
 /**
+<<<<<<< HEAD
  * db8500_prcmu_reset_modem - ask the PRCMU to reset modem
+=======
+ * db8500_prcmu_modem_reset - ask the PRCMU to reset modem
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void db8500_prcmu_modem_reset(void)
 {
@@ -2412,7 +2836,11 @@ static void ack_dbb_wakeup(void)
 
 static inline void print_unknown_header_warning(u8 n, u8 header)
 {
+<<<<<<< HEAD
 	pr_warning("prcmu: Unknown message header (%d) in mailbox %d.\n",
+=======
+	pr_warn("prcmu: Unknown message header (%d) in mailbox %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		header, n);
 }
 
@@ -2441,7 +2869,11 @@ static bool read_mailbox_0(void)
 
 		for (n = 0; n < NUM_PRCMU_WAKEUPS; n++) {
 			if (ev & prcmu_irq_bit[n])
+<<<<<<< HEAD
 				generic_handle_irq(IRQ_PRCMU_BASE + n);
+=======
+				generic_handle_domain_irq(db8500_irq_domain, n);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		r = true;
 		break;
@@ -2589,7 +3021,11 @@ static void prcmu_irq_mask(struct irq_data *d)
 
 	spin_lock_irqsave(&mb0_transfer.dbb_irqs_lock, flags);
 
+<<<<<<< HEAD
 	mb0_transfer.req.dbb_irqs &= ~prcmu_irq_bit[d->irq - IRQ_PRCMU_BASE];
+=======
+	mb0_transfer.req.dbb_irqs &= ~prcmu_irq_bit[d->hwirq];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&mb0_transfer.dbb_irqs_lock, flags);
 
@@ -2603,7 +3039,11 @@ static void prcmu_irq_unmask(struct irq_data *d)
 
 	spin_lock_irqsave(&mb0_transfer.dbb_irqs_lock, flags);
 
+<<<<<<< HEAD
 	mb0_transfer.req.dbb_irqs |= prcmu_irq_bit[d->irq - IRQ_PRCMU_BASE];
+=======
+	mb0_transfer.req.dbb_irqs |= prcmu_irq_bit[d->hwirq];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&mb0_transfer.dbb_irqs_lock, flags);
 
@@ -2623,11 +3063,16 @@ static struct irq_chip prcmu_irq_chip = {
 	.irq_unmask	= prcmu_irq_unmask,
 };
 
+<<<<<<< HEAD
 static char *fw_project_name(u8 project)
+=======
+static char *fw_project_name(u32 project)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (project) {
 	case PRCMU_FW_PROJECT_U8500:
 		return "U8500";
+<<<<<<< HEAD
 	case PRCMU_FW_PROJECT_U8500_C2:
 		return "U8500 C2";
 	case PRCMU_FW_PROJECT_U9500:
@@ -2638,11 +3083,50 @@ static char *fw_project_name(u8 project)
 		return "U8520";
 	case PRCMU_FW_PROJECT_U8420:
 		return "U8420";
+=======
+	case PRCMU_FW_PROJECT_U8400:
+		return "U8400";
+	case PRCMU_FW_PROJECT_U9500:
+		return "U9500";
+	case PRCMU_FW_PROJECT_U8500_MBB:
+		return "U8500 MBB";
+	case PRCMU_FW_PROJECT_U8500_C1:
+		return "U8500 C1";
+	case PRCMU_FW_PROJECT_U8500_C2:
+		return "U8500 C2";
+	case PRCMU_FW_PROJECT_U8500_C3:
+		return "U8500 C3";
+	case PRCMU_FW_PROJECT_U8500_C4:
+		return "U8500 C4";
+	case PRCMU_FW_PROJECT_U9500_MBL:
+		return "U9500 MBL";
+	case PRCMU_FW_PROJECT_U8500_SSG1:
+		return "U8500 Samsung 1";
+	case PRCMU_FW_PROJECT_U8500_MBL2:
+		return "U8500 MBL2";
+	case PRCMU_FW_PROJECT_U8520:
+		return "U8520 MBL";
+	case PRCMU_FW_PROJECT_U8420:
+		return "U8420";
+	case PRCMU_FW_PROJECT_U8500_SSG2:
+		return "U8500 Samsung 2";
+	case PRCMU_FW_PROJECT_U8420_SYSCLK:
+		return "U8420-sysclk";
+	case PRCMU_FW_PROJECT_U9540:
+		return "U9540";
+	case PRCMU_FW_PROJECT_A9420:
+		return "A9420";
+	case PRCMU_FW_PROJECT_L8540:
+		return "L8540";
+	case PRCMU_FW_PROJECT_L8580:
+		return "L8580";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return "Unknown";
 	}
 }
 
+<<<<<<< HEAD
 void __init db8500_prcmu_early_init(void)
 {
 	unsigned int i;
@@ -2669,6 +3153,91 @@ void __init db8500_prcmu_early_init(void)
 		pr_err("prcmu: Unsupported chip version\n");
 		BUG();
 	}
+=======
+static int db8500_irq_map(struct irq_domain *d, unsigned int virq,
+				irq_hw_number_t hwirq)
+{
+	irq_set_chip_and_handler(virq, &prcmu_irq_chip,
+				handle_simple_irq);
+
+	return 0;
+}
+
+static const struct irq_domain_ops db8500_irq_ops = {
+	.map    = db8500_irq_map,
+	.xlate  = irq_domain_xlate_twocell,
+};
+
+static int db8500_irq_init(struct device_node *np)
+{
+	int i;
+
+	db8500_irq_domain = irq_domain_add_simple(
+		np, NUM_PRCMU_WAKEUPS, 0,
+		&db8500_irq_ops, NULL);
+
+	if (!db8500_irq_domain) {
+		pr_err("Failed to create irqdomain\n");
+		return -ENOSYS;
+	}
+
+	/* All wakeups will be used, so create mappings for all */
+	for (i = 0; i < NUM_PRCMU_WAKEUPS; i++)
+		irq_create_mapping(db8500_irq_domain, i);
+
+	return 0;
+}
+
+static void dbx500_fw_version_init(struct device_node *np)
+{
+	void __iomem *tcpm_base;
+	u32 version;
+
+	tcpm_base = of_iomap(np, 1);
+	if (!tcpm_base) {
+		pr_err("no prcmu tcpm mem region provided\n");
+		return;
+	}
+
+	version = readl(tcpm_base + DB8500_PRCMU_FW_VERSION_OFFSET);
+	fw_info.version.project = (version & 0xFF);
+	fw_info.version.api_version = (version >> 8) & 0xFF;
+	fw_info.version.func_version = (version >> 16) & 0xFF;
+	fw_info.version.errata = (version >> 24) & 0xFF;
+	strscpy(fw_info.version.project_name,
+		fw_project_name(fw_info.version.project),
+		sizeof(fw_info.version.project_name));
+	fw_info.valid = true;
+	pr_info("PRCMU firmware: %s(%d), version %d.%d.%d\n",
+		fw_info.version.project_name,
+		fw_info.version.project,
+		fw_info.version.api_version,
+		fw_info.version.func_version,
+		fw_info.version.errata);
+	iounmap(tcpm_base);
+}
+
+void __init db8500_prcmu_early_init(void)
+{
+	/*
+	 * This is a temporary remap to bring up the clocks. It is
+	 * subsequently replaces with a real remap. After the merge of
+	 * the mailbox subsystem all of this early code goes away, and the
+	 * clock driver can probe independently. An early initcall will
+	 * still be needed, but it can be diverted into drivers/clk/ux500.
+	 */
+	struct device_node *np;
+
+	np = of_find_compatible_node(NULL, NULL, "stericsson,db8500-prcmu");
+	prcmu_base = of_iomap(np, 0);
+	if (!prcmu_base) {
+		of_node_put(np);
+		pr_err("%s: ioremap() of prcmu registers failed!\n", __func__);
+		return;
+	}
+	dbx500_fw_version_init(np);
+	of_node_put(np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&mb0_transfer.lock);
 	spin_lock_init(&mb0_transfer.dbb_irqs_lock);
@@ -2689,6 +3258,7 @@ void __init db8500_prcmu_early_init(void)
 	init_completion(&mb5_transfer.work);
 
 	INIT_WORK(&mb0_transfer.mask_work, prcmu_mask_work);
+<<<<<<< HEAD
 
 	/* Initalize irqs. */
 	for (i = 0; i < NUM_PRCMU_WAKEUPS; i++) {
@@ -2702,6 +3272,11 @@ void __init db8500_prcmu_early_init(void)
 }
 
 static void __init init_prcm_registers(void)
+=======
+}
+
+static void init_prcm_registers(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 val;
 
@@ -2720,6 +3295,10 @@ static struct regulator_consumer_supply db8500_vape_consumers[] = {
 	REGULATOR_SUPPLY("v-i2c", "nmk-i2c.1"),
 	REGULATOR_SUPPLY("v-i2c", "nmk-i2c.2"),
 	REGULATOR_SUPPLY("v-i2c", "nmk-i2c.3"),
+<<<<<<< HEAD
+=======
+	REGULATOR_SUPPLY("v-i2c", "nmk-i2c.4"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* "v-mmc" changed to "vcore" in the mainline kernel */
 	REGULATOR_SUPPLY("vcore", "sdi0"),
 	REGULATOR_SUPPLY("vcore", "sdi1"),
@@ -2734,6 +3313,10 @@ static struct regulator_consumer_supply db8500_vape_consumers[] = {
 	REGULATOR_SUPPLY("vcore", "uart2"),
 	REGULATOR_SUPPLY("v-ape", "nmk-ske-keypad.0"),
 	REGULATOR_SUPPLY("v-hsi", "ste_hsi.0"),
+<<<<<<< HEAD
+=======
+	REGULATOR_SUPPLY("vddvario", "smsc911x.0"),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct regulator_consumer_supply db8500_vsmps2_consumers[] = {
@@ -2943,6 +3526,7 @@ static struct regulator_init_data db8500_regulators[DB8500_NUM_REGULATORS] = {
 	},
 };
 
+<<<<<<< HEAD
 static struct mfd_cell db8500_prcmu_devs[] = {
 	{
 		.name = "db8500-prcmu-regulators",
@@ -2966,10 +3550,99 @@ static int __init db8500_prcmu_probe(struct platform_device *pdev)
 		return -ENODEV;
 
 	init_prcm_registers();
+=======
+static const struct mfd_cell common_prcmu_devs[] = {
+	MFD_CELL_NAME("db8500_wdt"),
+	MFD_CELL_NAME("db8500-cpuidle"),
+};
+
+static const struct mfd_cell db8500_prcmu_devs[] = {
+	MFD_CELL_OF("db8500-prcmu-regulators", NULL,
+		    &db8500_regulators, sizeof(db8500_regulators), 0,
+		    "stericsson,db8500-prcmu-regulator"),
+	MFD_CELL_OF("db8500-thermal",
+		    NULL, NULL, 0, 0, "stericsson,db8500-thermal"),
+};
+
+static int db8500_prcmu_register_ab8500(struct device *parent)
+{
+	struct device_node *np;
+	struct resource ab850x_resource;
+	const struct mfd_cell ab8500_cell = {
+		.name = "ab8500-core",
+		.of_compatible = "stericsson,ab8500",
+		.id = AB8500_VERSION_AB8500,
+		.resources = &ab850x_resource,
+		.num_resources = 1,
+	};
+	const struct mfd_cell ab8505_cell = {
+		.name = "ab8505-core",
+		.of_compatible = "stericsson,ab8505",
+		.id = AB8500_VERSION_AB8505,
+		.resources = &ab850x_resource,
+		.num_resources = 1,
+	};
+	const struct mfd_cell *ab850x_cell;
+
+	if (!parent->of_node)
+		return -ENODEV;
+
+	/* Look up the device node, sneak the IRQ out of it */
+	for_each_child_of_node(parent->of_node, np) {
+		if (of_device_is_compatible(np, ab8500_cell.of_compatible)) {
+			ab850x_cell = &ab8500_cell;
+			break;
+		}
+		if (of_device_is_compatible(np, ab8505_cell.of_compatible)) {
+			ab850x_cell = &ab8505_cell;
+			break;
+		}
+	}
+	if (!np) {
+		dev_info(parent, "could not find AB850X node in the device tree\n");
+		return -ENODEV;
+	}
+	of_irq_to_resource_table(np, &ab850x_resource, 1);
+
+	return mfd_add_devices(parent, 0, ab850x_cell, 1, NULL, 0, NULL);
+}
+
+static int db8500_prcmu_probe(struct platform_device *pdev)
+{
+	struct device_node *np = pdev->dev.of_node;
+	int irq = 0, err = 0;
+	struct resource *res;
+
+	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "prcmu");
+	if (!res) {
+		dev_err(&pdev->dev, "no prcmu memory region provided\n");
+		return -EINVAL;
+	}
+	prcmu_base = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+	if (!prcmu_base) {
+		dev_err(&pdev->dev,
+			"failed to ioremap prcmu register memory\n");
+		return -ENOMEM;
+	}
+	init_prcm_registers();
+	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "prcmu-tcdm");
+	if (!res) {
+		dev_err(&pdev->dev, "no prcmu tcdm region provided\n");
+		return -EINVAL;
+	}
+	tcdm_base = devm_ioremap(&pdev->dev, res->start,
+			resource_size(res));
+	if (!tcdm_base) {
+		dev_err(&pdev->dev,
+			"failed to ioremap prcmu-tcdm register memory\n");
+		return -ENOMEM;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clean up the mailbox interrupts after pre-kernel code. */
 	writel(ALL_MBOX_BITS, PRCM_ARM_IT1_CLR);
 
+<<<<<<< HEAD
 	err = request_threaded_irq(IRQ_DB8500_PRCMU1, prcmu_irq_handler,
 		prcmu_irq_thread_fn, IRQF_NO_SUSPEND, "prcmu", NULL);
 	if (err < 0) {
@@ -2993,16 +3666,73 @@ static int __init db8500_prcmu_probe(struct platform_device *pdev)
 no_irq_return:
 	return err;
 }
+=======
+	irq = platform_get_irq(pdev, 0);
+	if (irq <= 0)
+		return irq;
+
+	err = request_threaded_irq(irq, prcmu_irq_handler,
+	        prcmu_irq_thread_fn, IRQF_NO_SUSPEND, "prcmu", NULL);
+	if (err < 0) {
+		pr_err("prcmu: Failed to allocate IRQ_DB8500_PRCMU1.\n");
+		return err;
+	}
+
+	db8500_irq_init(np);
+
+	prcmu_config_esram0_deep_sleep(ESRAM0_DEEP_SLEEP_STATE_RET);
+
+	err = mfd_add_devices(&pdev->dev, 0, common_prcmu_devs,
+			      ARRAY_SIZE(common_prcmu_devs), NULL, 0, db8500_irq_domain);
+	if (err) {
+		pr_err("prcmu: Failed to add subdevices\n");
+		return err;
+	}
+
+	/* TODO: Remove restriction when clk definitions are available. */
+	if (!of_machine_is_compatible("st-ericsson,u8540")) {
+		err = mfd_add_devices(&pdev->dev, 0, db8500_prcmu_devs,
+				      ARRAY_SIZE(db8500_prcmu_devs), NULL, 0,
+				      db8500_irq_domain);
+		if (err) {
+			mfd_remove_devices(&pdev->dev);
+			pr_err("prcmu: Failed to add subdevices\n");
+			return err;
+		}
+	}
+
+	err = db8500_prcmu_register_ab8500(&pdev->dev);
+	if (err) {
+		mfd_remove_devices(&pdev->dev);
+		pr_err("prcmu: Failed to add ab8500 subdevice\n");
+		return err;
+	}
+
+	pr_info("DB8500 PRCMU initialized\n");
+	return err;
+}
+static const struct of_device_id db8500_prcmu_match[] = {
+	{ .compatible = "stericsson,db8500-prcmu"},
+	{ },
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver db8500_prcmu_driver = {
 	.driver = {
 		.name = "db8500-prcmu",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
+=======
+		.of_match_table = db8500_prcmu_match,
+	},
+	.probe = db8500_prcmu_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init db8500_prcmu_init(void)
 {
+<<<<<<< HEAD
 	return platform_driver_probe(&db8500_prcmu_driver, db8500_prcmu_probe);
 }
 
@@ -3011,3 +3741,8 @@ arch_initcall(db8500_prcmu_init);
 MODULE_AUTHOR("Mattias Nilsson <mattias.i.nilsson@stericsson.com>");
 MODULE_DESCRIPTION("DB8500 PRCM Unit driver");
 MODULE_LICENSE("GPL v2");
+=======
+	return platform_driver_register(&db8500_prcmu_driver);
+}
+core_initcall(db8500_prcmu_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

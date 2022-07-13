@@ -1,13 +1,22 @@
+<<<<<<< HEAD
 /*
  * spcp8x5 USB to serial adaptor driver
  *
  * Copyright (C) 2010 Johan Hovold (jhovold@gmail.com)
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * spcp8x5 USB to serial adaptor driver
+ *
+ * Copyright (C) 2010-2013 Johan Hovold (jhovold@gmail.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2006 Linxb (xubin.lin@worldplus.com.cn)
  * Copyright (C) 2006 S1 Corp.
  *
  * Original driver for 2.6.10 pl2303 driver by
  *   Greg Kroah-Hartman (greg@kroah.com)
  * Changes for 2.6.20 by Harald Klein <hari@vt100.at>
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
@@ -19,6 +28,11 @@
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/init.h>
+=======
+ */
+#include <linux/kernel.h>
+#include <linux/errno.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -28,12 +42,19 @@
 #include <linux/usb.h>
 #include <linux/usb/serial.h>
 
+<<<<<<< HEAD
 
 /* Version Information */
 #define DRIVER_VERSION	"v0.10"
 #define DRIVER_DESC 	"SPCP8x5 USB to serial adaptor driver"
 
 static bool debug;
+=======
+#define DRIVER_DESC	"SPCP8x5 USB to serial adaptor driver"
+
+#define SPCP825_QUIRK_NO_UART_STATUS	0x01
+#define SPCP825_QUIRK_NO_WORK_MODE	0x02
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SPCP8x5_007_VID		0x04FC
 #define SPCP8x5_007_PID		0x0201
@@ -51,13 +72,23 @@ static const struct usb_device_id id_table[] = {
 	{ USB_DEVICE(SPCP8x5_INTERMATIC_VID, SPCP8x5_INTERMATIC_PID)},
 	{ USB_DEVICE(SPCP8x5_835_VID, SPCP8x5_835_PID)},
 	{ USB_DEVICE(SPCP8x5_008_VID, SPCP8x5_008_PID)},
+<<<<<<< HEAD
 	{ USB_DEVICE(SPCP8x5_007_VID, SPCP8x5_007_PID)},
+=======
+	{ USB_DEVICE(SPCP8x5_007_VID, SPCP8x5_007_PID),
+	  .driver_info = SPCP825_QUIRK_NO_UART_STATUS |
+				SPCP825_QUIRK_NO_WORK_MODE },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }					/* Terminating entry */
 };
 MODULE_DEVICE_TABLE(usb, id_table);
 
 struct spcp8x5_usb_ctrl_arg {
+<<<<<<< HEAD
 	u8 	type;
+=======
+	u8	type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	cmd;
 	u8	cmd_type;
 	u16	value;
@@ -143,6 +174,7 @@ struct spcp8x5_usb_ctrl_arg {
 #define UART_OVERRUN_ERROR		0x40
 #define UART_CTS			0x80
 
+<<<<<<< HEAD
 enum spcp8x5_type {
 	SPCP825_007_TYPE,
 	SPCP825_008_TYPE,
@@ -268,10 +300,102 @@ static int spcp8x5_get_msr(struct usb_device *dev, u8 *status,
 	dev_dbg(&dev->dev, "0xc0:0x22:0:6  %d - 0x%p ", ret, status_buffer);
 	status[0] = status_buffer[0];
 	kfree(status_buffer);
+=======
+struct spcp8x5_private {
+	unsigned		quirks;
+	spinlock_t		lock;
+	u8			line_control;
+};
+
+static int spcp8x5_probe(struct usb_serial *serial,
+						const struct usb_device_id *id)
+{
+	usb_set_serial_data(serial, (void *)id);
+
+	return 0;
+}
+
+static int spcp8x5_port_probe(struct usb_serial_port *port)
+{
+	const struct usb_device_id *id = usb_get_serial_data(port->serial);
+	struct spcp8x5_private *priv;
+
+	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+	spin_lock_init(&priv->lock);
+	priv->quirks = id->driver_info;
+
+	usb_set_serial_port_data(port, priv);
+
+	port->port.drain_delay = 256;
+
+	return 0;
+}
+
+static void spcp8x5_port_remove(struct usb_serial_port *port)
+{
+	struct spcp8x5_private *priv;
+
+	priv = usb_get_serial_port_data(port);
+	kfree(priv);
+}
+
+static int spcp8x5_set_ctrl_line(struct usb_serial_port *port, u8 mcr)
+{
+	struct spcp8x5_private *priv = usb_get_serial_port_data(port);
+	struct usb_device *dev = port->serial->dev;
+	int retval;
+
+	if (priv->quirks & SPCP825_QUIRK_NO_UART_STATUS)
+		return -EPERM;
+
+	retval = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
+				 SET_UART_STATUS_TYPE, SET_UART_STATUS,
+				 mcr, 0x04, NULL, 0, 100);
+	if (retval != 0) {
+		dev_err(&port->dev, "failed to set control lines: %d\n",
+								retval);
+	}
+	return retval;
+}
+
+static int spcp8x5_get_msr(struct usb_serial_port *port, u8 *status)
+{
+	struct spcp8x5_private *priv = usb_get_serial_port_data(port);
+	struct usb_device *dev = port->serial->dev;
+	u8 *buf;
+	int ret;
+
+	if (priv->quirks & SPCP825_QUIRK_NO_UART_STATUS)
+		return -EPERM;
+
+	buf = kzalloc(1, GFP_KERNEL);
+	if (!buf)
+		return -ENOMEM;
+
+	ret = usb_control_msg(dev, usb_rcvctrlpipe(dev, 0),
+			      GET_UART_STATUS, GET_UART_STATUS_TYPE,
+			      0, GET_UART_STATUS_MSR, buf, 1, 100);
+	if (ret < 1) {
+		dev_err(&port->dev, "failed to get modem status: %d\n", ret);
+		if (ret >= 0)
+			ret = -EIO;
+		goto out;
+	}
+
+	dev_dbg(&port->dev, "0xc0:0x22:0:6  %d - 0x02%x\n", ret, *buf);
+	*status = *buf;
+	ret = 0;
+out:
+	kfree(buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 /* select the work mode.
  * NOTE this function not supported by spcp825-007 */
 static void spcp8x5_set_workMode(struct usb_device *dev, u16 value,
@@ -282,22 +406,48 @@ static void spcp8x5_set_workMode(struct usb_device *dev, u16 value,
 	/* I return Permited not support here but seem inval device
 	 * is more fix */
 	if (type == SPCP825_007_TYPE)
+=======
+static void spcp8x5_set_work_mode(struct usb_serial_port *port, u16 value,
+								 u16 index)
+{
+	struct spcp8x5_private *priv = usb_get_serial_port_data(port);
+	struct usb_device *dev = port->serial->dev;
+	int ret;
+
+	if (priv->quirks & SPCP825_QUIRK_NO_WORK_MODE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	ret = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
 			      SET_WORKING_MODE_TYPE, SET_WORKING_MODE,
 			      value, index, NULL, 0, 100);
+<<<<<<< HEAD
 	dev_dbg(&dev->dev, "value = %#x , index = %#x\n", value, index);
 	if (ret < 0)
 		dev_dbg(&dev->dev,
 			"RTSCTS usb_control_msg(enable flowctrl) = %d\n", ret);
+=======
+	dev_dbg(&port->dev, "value = %#x , index = %#x\n", value, index);
+	if (ret < 0)
+		dev_err(&port->dev, "failed to set work mode: %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int spcp8x5_carrier_raised(struct usb_serial_port *port)
 {
+<<<<<<< HEAD
 	struct spcp8x5_private *priv = usb_get_serial_port_data(port);
 	if (priv->line_status & MSR_STATUS_LINE_DCD)
 		return 1;
+=======
+	u8 msr;
+	int ret;
+
+	ret = spcp8x5_get_msr(port, &msr);
+	if (ret || msr & MSR_STATUS_LINE_DCD)
+		return 1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -316,11 +466,16 @@ static void spcp8x5_dtr_rts(struct usb_serial_port *port, int on)
 						| MCR_CONTROL_LINE_RTS);
 	control = priv->line_control;
 	spin_unlock_irqrestore(&priv->lock, flags);
+<<<<<<< HEAD
 	spcp8x5_set_ctrlLine(port->serial->dev, control , priv->type);
+=======
+	spcp8x5_set_ctrl_line(port, control);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void spcp8x5_init_termios(struct tty_struct *tty)
 {
+<<<<<<< HEAD
 	/* for the 1st time call this function */
 	*(tty->termios) = tty_std_termios;
 	tty->termios->c_cflag = B115200 | CS8 | CREAD | HUPCL | CLOCAL;
@@ -332,20 +487,37 @@ static void spcp8x5_init_termios(struct tty_struct *tty)
  * transfer. if we set flow control we should do this too. */
 static void spcp8x5_set_termios(struct tty_struct *tty,
 		struct usb_serial_port *port, struct ktermios *old_termios)
+=======
+	tty_encode_baud_rate(tty, 115200, 115200);
+}
+
+static void spcp8x5_set_termios(struct tty_struct *tty,
+				struct usb_serial_port *port,
+				const struct ktermios *old_termios)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_serial *serial = port->serial;
 	struct spcp8x5_private *priv = usb_get_serial_port_data(port);
 	unsigned long flags;
+<<<<<<< HEAD
 	unsigned int cflag = tty->termios->c_cflag;
+=======
+	unsigned int cflag = tty->termios.c_cflag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short uartdata;
 	unsigned char buf[2] = {0, 0};
 	int baud;
 	int i;
 	u8 control;
 
+<<<<<<< HEAD
 
 	/* check that they really want us to change something */
 	if (old_termios && !tty_termios_hw_change(tty->termios, old_termios))
+=======
+	/* check that they really want us to change something */
+	if (old_termios && !tty_termios_hw_change(&tty->termios, old_termios))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/* set DTR/RTS active */
@@ -359,7 +531,11 @@ static void spcp8x5_set_termios(struct tty_struct *tty,
 	if (control != priv->line_control) {
 		control = priv->line_control;
 		spin_unlock_irqrestore(&priv->lock, flags);
+<<<<<<< HEAD
 		spcp8x5_set_ctrlLine(serial->dev, control , priv->type);
+=======
+		spcp8x5_set_ctrl_line(port, control);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		spin_unlock_irqrestore(&priv->lock, flags);
 	}
@@ -388,8 +564,12 @@ static void spcp8x5_set_termios(struct tty_struct *tty,
 	case 1000000:
 			buf[0] = 0x0b;	break;
 	default:
+<<<<<<< HEAD
 		dev_err(&port->dev, "spcp825 driver does not support the "
 			"baudrate requested, using default of 9600.\n");
+=======
+		dev_err(&port->dev, "unsupported baudrate, using 9600\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Set Data Length : 00:5bit, 01:6bit, 10:7bit, 11:8bit */
@@ -417,9 +597,15 @@ static void spcp8x5_set_termios(struct tty_struct *tty,
 	if (cflag & PARENB) {
 		buf[1] |= (cflag & PARODD) ?
 		SET_UART_FORMAT_PAR_ODD : SET_UART_FORMAT_PAR_EVEN ;
+<<<<<<< HEAD
 	} else
 		buf[1] |= SET_UART_FORMAT_PAR_NONE;
 
+=======
+	} else {
+		buf[1] |= SET_UART_FORMAT_PAR_NONE;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uartdata = buf[0] | buf[1]<<8;
 
 	i = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
@@ -428,6 +614,7 @@ static void spcp8x5_set_termios(struct tty_struct *tty,
 	if (i < 0)
 		dev_err(&port->dev, "Set UART format %#x failed (error = %d)\n",
 			uartdata, i);
+<<<<<<< HEAD
 	dbg("0x21:0x40:0:0  %d", i);
 
 	if (cflag & CRTSCTS) {
@@ -439,16 +626,29 @@ static void spcp8x5_set_termios(struct tty_struct *tty,
 
 /* open the serial port. do some usb system call. set termios and get the line
  * status of the device. */
+=======
+	dev_dbg(&port->dev, "0x21:0x40:0:0  %d\n", i);
+
+	if (cflag & CRTSCTS) {
+		/* enable hardware flow control */
+		spcp8x5_set_work_mode(port, 0x000a, SET_WORKING_MODE_U2C);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int spcp8x5_open(struct tty_struct *tty, struct usb_serial_port *port)
 {
 	struct usb_serial *serial = port->serial;
 	struct spcp8x5_private *priv = usb_get_serial_port_data(port);
 	int ret;
+<<<<<<< HEAD
 	unsigned long flags;
 	u8 status = 0x30;
 	/* status 0x30 means DSR and CTS = 1 other CDC RI and delta = 0 */
 
 	dbg("%s -  port %d", __func__, port->number);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_clear_halt(serial->dev, port->write_urb->pipe);
 	usb_clear_halt(serial->dev, port->read_urb->pipe);
@@ -459,6 +659,7 @@ static int spcp8x5_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	spcp8x5_set_ctrlLine(serial->dev, priv->line_control , priv->type);
 
 	/* Setup termios */
@@ -591,6 +792,16 @@ static int spcp8x5_ioctl(struct tty_struct *tty,
 	return -ENOIOCTLCMD;
 }
 
+=======
+	spcp8x5_set_ctrl_line(port, priv->line_control);
+
+	if (tty)
+		spcp8x5_set_termios(tty, port, NULL);
+
+	return usb_serial_generic_open(tty, port);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int spcp8x5_tiocmset(struct tty_struct *tty,
 			    unsigned int set, unsigned int clear)
 {
@@ -611,7 +822,11 @@ static int spcp8x5_tiocmset(struct tty_struct *tty,
 	control = priv->line_control;
 	spin_unlock_irqrestore(&priv->lock, flags);
 
+<<<<<<< HEAD
 	return spcp8x5_set_ctrlLine(port->serial->dev, control , priv->type);
+=======
+	return spcp8x5_set_ctrl_line(port, control);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int spcp8x5_tiocmget(struct tty_struct *tty)
@@ -620,12 +835,24 @@ static int spcp8x5_tiocmget(struct tty_struct *tty)
 	struct spcp8x5_private *priv = usb_get_serial_port_data(port);
 	unsigned long flags;
 	unsigned int mcr;
+<<<<<<< HEAD
 	unsigned int status;
 	unsigned int result;
 
 	spin_lock_irqsave(&priv->lock, flags);
 	mcr = priv->line_control;
 	status = priv->line_status;
+=======
+	u8 status;
+	unsigned int result;
+
+	result = spcp8x5_get_msr(port, &status);
+	if (result)
+		return result;
+
+	spin_lock_irqsave(&priv->lock, flags);
+	mcr = priv->line_control;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&priv->lock, flags);
 
 	result = ((mcr & MCR_DTR)			? TIOCM_DTR : 0)
@@ -638,7 +865,10 @@ static int spcp8x5_tiocmget(struct tty_struct *tty)
 	return result;
 }
 
+<<<<<<< HEAD
 /* All of the device info needed for the spcp8x5 SIO serial converter */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct usb_serial_driver spcp8x5_device = {
 	.driver = {
 		.owner =	THIS_MODULE,
@@ -646,6 +876,7 @@ static struct usb_serial_driver spcp8x5_device = {
 	},
 	.id_table		= id_table,
 	.num_ports		= 1,
+<<<<<<< HEAD
 	.open 			= spcp8x5_open,
 	.dtr_rts		= spcp8x5_dtr_rts,
 	.carrier_raised		= spcp8x5_carrier_raised,
@@ -657,12 +888,27 @@ static struct usb_serial_driver spcp8x5_device = {
 	.attach 		= spcp8x5_startup,
 	.release 		= spcp8x5_release,
 	.process_read_urb	= spcp8x5_process_read_urb,
+=======
+	.num_bulk_in		= 1,
+	.num_bulk_out		= 1,
+	.open			= spcp8x5_open,
+	.dtr_rts		= spcp8x5_dtr_rts,
+	.carrier_raised		= spcp8x5_carrier_raised,
+	.set_termios		= spcp8x5_set_termios,
+	.init_termios		= spcp8x5_init_termios,
+	.tiocmget		= spcp8x5_tiocmget,
+	.tiocmset		= spcp8x5_tiocmset,
+	.probe			= spcp8x5_probe,
+	.port_probe		= spcp8x5_port_probe,
+	.port_remove		= spcp8x5_port_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct usb_serial_driver * const serial_drivers[] = {
 	&spcp8x5_device, NULL
 };
 
+<<<<<<< HEAD
 module_usb_serial_driver(spcp8x5_driver, serial_drivers);
 
 MODULE_DESCRIPTION(DRIVER_DESC);
@@ -671,3 +917,9 @@ MODULE_LICENSE("GPL");
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug enabled or not");
+=======
+module_usb_serial_driver(serial_drivers, id_table);
+
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

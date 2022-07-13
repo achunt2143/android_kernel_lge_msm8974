@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/boards/dreamcast/irq.c
  *
@@ -6,12 +10,20 @@
  * Copyright (c) 2001, 2002 M. R. Brown <mrbrown@0xd6.org>
  *
  * This file is part of the LinuxDC project (www.linuxdc.org)
+<<<<<<< HEAD
  * Released under the terms of the GNU GPL v2.0
  */
 
 #include <linux/irq.h>
 #include <linux/io.h>
 #include <asm/irq.h>
+=======
+ */
+#include <linux/irq.h>
+#include <linux/io.h>
+#include <linux/export.h>
+#include <linux/err.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mach/sysasic.h>
 
 /*
@@ -108,6 +120,7 @@ int systemasic_irq_demux(int irq)
 	__u32 j, bit;
 
 	switch (irq) {
+<<<<<<< HEAD
 	case 13:
 		level = 0;
 		break;
@@ -115,6 +128,15 @@ int systemasic_irq_demux(int irq)
 		level = 1;
 		break;
 	case  9:
+=======
+	case 13 + 16:
+		level = 0;
+		break;
+	case 11 + 16:
+		level = 1;
+		break;
+	case 9 + 16:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		level = 2;
 		break;
 	default:
@@ -141,6 +163,7 @@ int systemasic_irq_demux(int irq)
 
 void systemasic_irq_init(void)
 {
+<<<<<<< HEAD
 	int i, nid = cpu_to_node(boot_cpu_data);
 
 	/* Assign all virtual IRQs to the System ASIC int. handler */
@@ -163,4 +186,17 @@ void systemasic_irq_init(void)
 
 		irq_set_chip_and_handler(i, &systemasic_int, handle_level_irq);
 	}
+=======
+	int irq_base, i;
+
+	irq_base = irq_alloc_descs(HW_EVENT_IRQ_BASE, HW_EVENT_IRQ_BASE,
+				   HW_EVENT_IRQ_MAX - HW_EVENT_IRQ_BASE, -1);
+	if (IS_ERR_VALUE(irq_base)) {
+		pr_err("%s: failed hooking irqs\n", __func__);
+		return;
+	}
+
+	for (i = HW_EVENT_IRQ_BASE; i < HW_EVENT_IRQ_MAX; i++)
+		irq_set_chip_and_handler(i, &systemasic_int, handle_level_irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

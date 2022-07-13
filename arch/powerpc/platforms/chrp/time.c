@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 1991, 1992, 1995  Linus Torvalds
  *
@@ -20,6 +24,7 @@
 #include <linux/init.h>
 #include <linux/bcd.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
 #include <asm/nvram.h>
@@ -28,6 +33,16 @@
 #include <asm/time.h>
 
 extern spinlock_t rtc_lock;
+=======
+#include <linux/of_address.h>
+
+#include <asm/io.h>
+#include <asm/nvram.h>
+#include <asm/sections.h>
+#include <asm/time.h>
+
+#include <platforms/chrp/chrp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NVRAM_AS0  0x74
 #define NVRAM_AS1  0x75
@@ -62,7 +77,11 @@ long __init chrp_time_init(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 int chrp_cmos_clock_read(int addr)
+=======
+static int chrp_cmos_clock_read(int addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (nvram_as1 != 0)
 		outb(addr>>8, nvram_as1);
@@ -70,7 +89,11 @@ int chrp_cmos_clock_read(int addr)
 	return (inb(nvram_data));
 }
 
+<<<<<<< HEAD
 void chrp_cmos_clock_write(unsigned long val, int addr)
+=======
+static void chrp_cmos_clock_write(unsigned long val, int addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (nvram_as1 != 0)
 		outb(addr>>8, nvram_as1);

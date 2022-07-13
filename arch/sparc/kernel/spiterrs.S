@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We need to carefully read the error status, ACK the errors,
 	 * prevent recursive traps, and pass the information on to C
 	 * code for logging.
@@ -85,7 +89,11 @@ __spitfire_cee_trap_continue:
 	ba,pt		%xcc, etraptl1
 	 rd		%pc, %g7
 
+<<<<<<< HEAD
 	ba,pt		%xcc, 2f
+=======
+	ba,a,pt		%xcc, 2f
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 nop
 
 1:	ba,pt		%xcc, etrap_irq
@@ -100,8 +108,12 @@ __spitfire_cee_trap_continue:
 	mov		%l5, %o2
 	call		spitfire_access_error
 	 add		%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
 	 nop
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size		__spitfire_access_error,.-__spitfire_access_error
 
 	/* This is the trap handler entry point for ECC correctable
@@ -179,8 +191,12 @@ __spitfire_data_access_exception_tl1:
 	mov		%l5, %o2
 	call		spitfire_data_access_exception_tl1
 	 add		%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
 	 nop
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size		__spitfire_data_access_exception_tl1,.-__spitfire_data_access_exception_tl1
 
 	.type		__spitfire_data_access_exception,#function
@@ -200,8 +216,12 @@ __spitfire_data_access_exception:
 	mov		%l5, %o2
 	call		spitfire_data_access_exception
 	 add		%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
 	 nop
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size		__spitfire_data_access_exception,.-__spitfire_data_access_exception
 
 	.type		__spitfire_insn_access_exception_tl1,#function
@@ -220,8 +240,12 @@ __spitfire_insn_access_exception_tl1:
 	mov		%l5, %o2
 	call		spitfire_insn_access_exception_tl1
 	 add		%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
 	 nop
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size		__spitfire_insn_access_exception_tl1,.-__spitfire_insn_access_exception_tl1
 
 	.type		__spitfire_insn_access_exception,#function
@@ -240,6 +264,10 @@ __spitfire_insn_access_exception:
 	mov		%l5, %o2
 	call		spitfire_insn_access_exception
 	 add		%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
 	 nop
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size		__spitfire_insn_access_exception,.-__spitfire_insn_access_exception

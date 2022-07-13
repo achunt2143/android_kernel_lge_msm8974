@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* NGbzero.S: Niagara optimized memset/clear_user.
  *
  * Copyright (C) 2006 David S. Miller (davem@davemloft.net)
@@ -8,7 +12,11 @@
 98:	x,y;			\
 	.section __ex_table,"a";\
 	.align 4;		\
+<<<<<<< HEAD
 	.word 98b, __retl_o1;	\
+=======
+	.word 98b, __retl_o1_asi;\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.text;			\
 	.align 4;
 

@@ -105,7 +105,10 @@ enum {
 	MTHCA_OPCODE_ATOMIC_CS      = 0x11,
 	MTHCA_OPCODE_ATOMIC_FA      = 0x12,
 	MTHCA_OPCODE_BIND_MW        = 0x18,
+<<<<<<< HEAD
 	MTHCA_OPCODE_INVALID        = 0xff
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -118,7 +121,11 @@ enum {
 };
 
 struct mthca_cmd {
+<<<<<<< HEAD
 	struct pci_pool          *pool;
+=======
+	struct dma_pool          *pool;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex              hcr_mutex;
 	struct semaphore 	  poll_sem;
 	struct semaphore 	  event_sem;
@@ -263,7 +270,11 @@ struct mthca_qp_table {
 };
 
 struct mthca_av_table {
+<<<<<<< HEAD
 	struct pci_pool   *pool;
+=======
+	struct dma_pool   *pool;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int                num_ddr_avs;
 	u64                ddr_av_base;
 	void __iomem      *av_map;
@@ -478,6 +489,7 @@ int mthca_mr_alloc_phys(struct mthca_dev *dev, u32 pd,
 			u32 access, struct mthca_mr *mr);
 void mthca_free_mr(struct mthca_dev *dev,  struct mthca_mr *mr);
 
+<<<<<<< HEAD
 int mthca_fmr_alloc(struct mthca_dev *dev, u32 pd,
 		    u32 access, struct mthca_fmr *fmr);
 int mthca_tavor_map_phys_fmr(struct ib_fmr *ibfmr, u64 *page_list,
@@ -488,6 +500,8 @@ int mthca_arbel_map_phys_fmr(struct ib_fmr *ibfmr, u64 *page_list,
 void mthca_arbel_fmr_unmap(struct mthca_dev *dev, struct mthca_fmr *fmr);
 int mthca_free_fmr(struct mthca_dev *dev,  struct mthca_fmr *fmr);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mthca_map_eq_icm(struct mthca_dev *dev, u64 icm_virt);
 void mthca_unmap_eq_icm(struct mthca_dev *dev);
 
@@ -510,7 +524,12 @@ int mthca_alloc_cq_buf(struct mthca_dev *dev, struct mthca_cq_buf *buf, int nent
 void mthca_free_cq_buf(struct mthca_dev *dev, struct mthca_cq_buf *buf, int cqe);
 
 int mthca_alloc_srq(struct mthca_dev *dev, struct mthca_pd *pd,
+<<<<<<< HEAD
 		    struct ib_srq_attr *attr, struct mthca_srq *srq);
+=======
+		    struct ib_srq_attr *attr, struct mthca_srq *srq,
+		    struct ib_udata *udata);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mthca_free_srq(struct mthca_dev *dev, struct mthca_srq *srq);
 int mthca_modify_srq(struct ib_srq *ibsrq, struct ib_srq_attr *attr,
 		     enum ib_srq_attr_mask attr_mask, struct ib_udata *udata);
@@ -519,10 +538,17 @@ int mthca_max_srq_sge(struct mthca_dev *dev);
 void mthca_srq_event(struct mthca_dev *dev, u32 srqn,
 		     enum ib_event_type event_type);
 void mthca_free_srq_wqe(struct mthca_srq *srq, u32 wqe_addr);
+<<<<<<< HEAD
 int mthca_tavor_post_srq_recv(struct ib_srq *srq, struct ib_recv_wr *wr,
 			      struct ib_recv_wr **bad_wr);
 int mthca_arbel_post_srq_recv(struct ib_srq *srq, struct ib_recv_wr *wr,
 			      struct ib_recv_wr **bad_wr);
+=======
+int mthca_tavor_post_srq_recv(struct ib_srq *srq, const struct ib_recv_wr *wr,
+			      const struct ib_recv_wr **bad_wr);
+int mthca_arbel_post_srq_recv(struct ib_srq *srq, const struct ib_recv_wr *wr,
+			      const struct ib_recv_wr **bad_wr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void mthca_qp_event(struct mthca_dev *dev, u32 qpn,
 		    enum ib_event_type event_type);
@@ -530,6 +556,7 @@ int mthca_query_qp(struct ib_qp *ibqp, struct ib_qp_attr *qp_attr, int qp_attr_m
 		   struct ib_qp_init_attr *qp_init_attr);
 int mthca_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr, int attr_mask,
 		    struct ib_udata *udata);
+<<<<<<< HEAD
 int mthca_tavor_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
 			  struct ib_send_wr **bad_wr);
 int mthca_tavor_post_receive(struct ib_qp *ibqp, struct ib_recv_wr *wr,
@@ -538,6 +565,16 @@ int mthca_arbel_post_send(struct ib_qp *ibqp, struct ib_send_wr *wr,
 			  struct ib_send_wr **bad_wr);
 int mthca_arbel_post_receive(struct ib_qp *ibqp, struct ib_recv_wr *wr,
 			     struct ib_recv_wr **bad_wr);
+=======
+int mthca_tavor_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
+			  const struct ib_send_wr **bad_wr);
+int mthca_tavor_post_receive(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
+			     const struct ib_recv_wr **bad_wr);
+int mthca_arbel_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
+			  const struct ib_send_wr **bad_wr);
+int mthca_arbel_post_receive(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
+			     const struct ib_recv_wr **bad_wr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void mthca_free_err_wqe(struct mthca_dev *dev, struct mthca_qp *qp, int is_send,
 			int index, int *dbd, __be32 *new_wqe);
 int mthca_alloc_qp(struct mthca_dev *dev,
@@ -547,7 +584,12 @@ int mthca_alloc_qp(struct mthca_dev *dev,
 		   enum ib_qp_type type,
 		   enum ib_sig_type send_policy,
 		   struct ib_qp_cap *cap,
+<<<<<<< HEAD
 		   struct mthca_qp *qp);
+=======
+		   struct mthca_qp *qp,
+		   struct ib_udata *udata);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mthca_alloc_sqp(struct mthca_dev *dev,
 		    struct mthca_pd *pd,
 		    struct mthca_cq *send_cq,
@@ -555,24 +597,42 @@ int mthca_alloc_sqp(struct mthca_dev *dev,
 		    enum ib_sig_type send_policy,
 		    struct ib_qp_cap *cap,
 		    int qpn,
+<<<<<<< HEAD
 		    int port,
 		    struct mthca_sqp *sqp);
 void mthca_free_qp(struct mthca_dev *dev, struct mthca_qp *qp);
 int mthca_create_ah(struct mthca_dev *dev,
 		    struct mthca_pd *pd,
 		    struct ib_ah_attr *ah_attr,
+=======
+		    u32 port,
+		    struct mthca_qp *qp,
+		    struct ib_udata *udata);
+void mthca_free_qp(struct mthca_dev *dev, struct mthca_qp *qp);
+int mthca_create_ah(struct mthca_dev *dev,
+		    struct mthca_pd *pd,
+		    struct rdma_ah_attr *ah_attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    struct mthca_ah *ah);
 int mthca_destroy_ah(struct mthca_dev *dev, struct mthca_ah *ah);
 int mthca_read_ah(struct mthca_dev *dev, struct mthca_ah *ah,
 		  struct ib_ud_header *header);
+<<<<<<< HEAD
 int mthca_ah_query(struct ib_ah *ibah, struct ib_ah_attr *attr);
 int mthca_ah_grh_present(struct mthca_ah *ah);
 u8 mthca_get_rate(struct mthca_dev *dev, int static_rate, u8 port);
 enum ib_rate mthca_rate_to_ib(struct mthca_dev *dev, u8 mthca_rate, u8 port);
+=======
+int mthca_ah_query(struct ib_ah *ibah, struct rdma_ah_attr *attr);
+int mthca_ah_grh_present(struct mthca_ah *ah);
+u8 mthca_get_rate(struct mthca_dev *dev, int static_rate, u32 port);
+enum ib_rate mthca_rate_to_ib(struct mthca_dev *dev, u8 mthca_rate, u32 port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int mthca_multicast_attach(struct ib_qp *ibqp, union ib_gid *gid, u16 lid);
 int mthca_multicast_detach(struct ib_qp *ibqp, union ib_gid *gid, u16 lid);
 
+<<<<<<< HEAD
 int mthca_process_mad(struct ib_device *ibdev,
 		      int mad_flags,
 		      u8 port_num,
@@ -580,6 +640,12 @@ int mthca_process_mad(struct ib_device *ibdev,
 		      struct ib_grh *in_grh,
 		      struct ib_mad *in_mad,
 		      struct ib_mad *out_mad);
+=======
+int mthca_process_mad(struct ib_device *ibdev, int mad_flags, u32 port_num,
+		      const struct ib_wc *in_wc, const struct ib_grh *in_grh,
+		      const struct ib_mad *in, struct ib_mad *out,
+		      size_t *out_mad_size, u16 *out_mad_pkey_index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int mthca_create_agents(struct mthca_dev *dev);
 void mthca_free_agents(struct mthca_dev *dev);
 

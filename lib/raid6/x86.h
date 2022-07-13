@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ----------------------------------------------------------------------- *
  *
  *   Copyright 2002-2004 H. Peter Anvin - All Rights Reserved
  *
+<<<<<<< HEAD
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation, Inc., 53 Temple Place Ste 330,
  *   Boston MA 02111-1307, USA; either version 2 of the License, or
  *   (at your option) any later version; incorporated herein by reference.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -23,7 +30,11 @@
 
 #ifdef __KERNEL__ /* Real code */
 
+<<<<<<< HEAD
 #include <asm/i387.h>
+=======
+#include <asm/fpu/api.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else /* Dummy code for user space testing */
 
@@ -35,16 +46,39 @@ static inline void kernel_fpu_end(void)
 {
 }
 
+<<<<<<< HEAD
+=======
+#define __aligned(x) __attribute__((aligned(x)))
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define X86_FEATURE_MMX		(0*32+23) /* Multimedia Extensions */
 #define X86_FEATURE_FXSR	(0*32+24) /* FXSAVE and FXRSTOR instructions
 					   * (fast save and restore) */
 #define X86_FEATURE_XMM		(0*32+25) /* Streaming SIMD Extensions */
 #define X86_FEATURE_XMM2	(0*32+26) /* Streaming SIMD Extensions-2 */
+<<<<<<< HEAD
+=======
+#define X86_FEATURE_XMM3	(4*32+ 0) /* "pni" SSE-3 */
+#define X86_FEATURE_SSSE3	(4*32+ 9) /* Supplemental SSE-3 */
+#define X86_FEATURE_AVX	(4*32+28) /* Advanced Vector Extensions */
+#define X86_FEATURE_AVX2        (9*32+ 5) /* AVX2 instructions */
+#define X86_FEATURE_AVX512F     (9*32+16) /* AVX-512 Foundation */
+#define X86_FEATURE_AVX512DQ    (9*32+17) /* AVX-512 DQ (Double/Quad granular)
+					   * Instructions
+					   */
+#define X86_FEATURE_AVX512BW    (9*32+30) /* AVX-512 BW (Byte/Word granular)
+					   * Instructions
+					   */
+#define X86_FEATURE_AVX512VL    (9*32+31) /* AVX-512 VL (128/256 Vector Length)
+					   * Extensions
+					   */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define X86_FEATURE_MMXEXT	(1*32+22) /* AMD MMX extensions */
 
 /* Should work well enough on modern CPUs for testing */
 static inline int boot_cpu_has(int flag)
 {
+<<<<<<< HEAD
 	u32 eax = (flag >> 5) ? 0x80000001 : 1;
 	u32 edx;
 
@@ -53,6 +87,19 @@ static inline int boot_cpu_has(int flag)
 		     : : "ecx", "ebx");
 
 	return (edx >> (flag & 31)) & 1;
+=======
+	u32 eax, ebx, ecx, edx;
+
+	eax = (flag & 0x100) ? 7 :
+		(flag & 0x20) ? 0x80000001 : 1;
+	ecx = 0;
+
+	asm volatile("cpuid"
+		     : "+a" (eax), "=b" (ebx), "=d" (edx), "+c" (ecx));
+
+	return ((flag & 0x100 ? ebx :
+		(flag & 0x80) ? ecx : edx) >> (flag & 31)) & 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* ndef __KERNEL__ */

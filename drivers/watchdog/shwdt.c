@@ -1,14 +1,22 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/watchdog/shwdt.c
  *
  * Watchdog driver for integrated watchdog in the SuperH processors.
  *
+<<<<<<< HEAD
  * Copyright (C) 2001 - 2010  Paul Mundt <lethal@linux-sh.org>
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2 of the License, or (at your
  * option) any later version.
+=======
+ * Copyright (C) 2001 - 2012  Paul Mundt <lethal@linux-sh.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * 14-Dec-2001 Matt Domsch <Matt_Domsch@dell.com>
  *     Added nowayout module option to override CONFIG_WATCHDOG_NOWAYOUT
@@ -25,16 +33,27 @@
 #include <linux/platform_device.h>
 #include <linux/init.h>
 #include <linux/types.h>
+<<<<<<< HEAD
 #include <linux/miscdevice.h>
 #include <linux/watchdog.h>
 #include <linux/reboot.h>
 #include <linux/notifier.h>
 #include <linux/ioport.h>
+=======
+#include <linux/spinlock.h>
+#include <linux/watchdog.h>
+#include <linux/pm_runtime.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
 #include <linux/io.h>
+<<<<<<< HEAD
 #include <linux/uaccess.h>
+=======
+#include <linux/clk.h>
+#include <linux/err.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/watchdog.h>
 
 #define DRV_NAME "sh-wdt"
@@ -69,10 +88,13 @@
 static int clock_division_ratio = WTCSR_CKS_4096;
 #define next_ping_period(cks)	(jiffies + msecs_to_jiffies(cks - 4))
 
+<<<<<<< HEAD
 static const struct watchdog_info sh_wdt_info;
 static struct platform_device *sh_wdt_dev;
 static DEFINE_SPINLOCK(shwdt_lock);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WATCHDOG_HEARTBEAT 30			/* 30 sec default heartbeat */
 static int heartbeat = WATCHDOG_HEARTBEAT;	/* in seconds */
 static bool nowayout = WATCHDOG_NOWAYOUT;
@@ -81,6 +103,7 @@ static unsigned long next_heartbeat;
 struct sh_wdt {
 	void __iomem		*base;
 	struct device		*dev;
+<<<<<<< HEAD
 
 	struct timer_list	timer;
 
@@ -94,6 +117,24 @@ static void sh_wdt_start(struct sh_wdt *wdt)
 	u8 csr;
 
 	spin_lock_irqsave(&shwdt_lock, flags);
+=======
+	struct clk		*clk;
+	spinlock_t		lock;
+
+	struct timer_list	timer;
+};
+
+static int sh_wdt_start(struct watchdog_device *wdt_dev)
+{
+	struct sh_wdt *wdt = watchdog_get_drvdata(wdt_dev);
+	unsigned long flags;
+	u8 csr;
+
+	pm_runtime_get_sync(wdt->dev);
+	clk_enable(wdt->clk);
+
+	spin_lock_irqsave(&wdt->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	next_heartbeat = jiffies + (heartbeat * HZ);
 	mod_timer(&wdt->timer, next_ping_period(clock_division_ratio));
@@ -122,6 +163,7 @@ static void sh_wdt_start(struct sh_wdt *wdt)
 	csr &= ~RSTCSR_RSTS;
 	sh_wdt_write_rstcsr(csr);
 #endif
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&shwdt_lock, flags);
 }
 
@@ -131,6 +173,20 @@ static void sh_wdt_stop(struct sh_wdt *wdt)
 	u8 csr;
 
 	spin_lock_irqsave(&shwdt_lock, flags);
+=======
+	spin_unlock_irqrestore(&wdt->lock, flags);
+
+	return 0;
+}
+
+static int sh_wdt_stop(struct watchdog_device *wdt_dev)
+{
+	struct sh_wdt *wdt = watchdog_get_drvdata(wdt_dev);
+	unsigned long flags;
+	u8 csr;
+
+	spin_lock_irqsave(&wdt->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	del_timer(&wdt->timer);
 
@@ -138,6 +194,7 @@ static void sh_wdt_stop(struct sh_wdt *wdt)
 	csr &= ~WTCSR_TME;
 	sh_wdt_write_csr(csr);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&shwdt_lock, flags);
 }
 
@@ -152,11 +209,37 @@ static inline void sh_wdt_keepalive(struct sh_wdt *wdt)
 
 static int sh_wdt_set_heartbeat(int t)
 {
+=======
+	spin_unlock_irqrestore(&wdt->lock, flags);
+
+	clk_disable(wdt->clk);
+	pm_runtime_put_sync(wdt->dev);
+
+	return 0;
+}
+
+static int sh_wdt_keepalive(struct watchdog_device *wdt_dev)
+{
+	struct sh_wdt *wdt = watchdog_get_drvdata(wdt_dev);
+	unsigned long flags;
+
+	spin_lock_irqsave(&wdt->lock, flags);
+	next_heartbeat = jiffies + (heartbeat * HZ);
+	spin_unlock_irqrestore(&wdt->lock, flags);
+
+	return 0;
+}
+
+static int sh_wdt_set_heartbeat(struct watchdog_device *wdt_dev, unsigned t)
+{
+	struct sh_wdt *wdt = watchdog_get_drvdata(wdt_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	if (unlikely(t < 1 || t > 3600)) /* arbitrary upper limit */
 		return -EINVAL;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&shwdt_lock, flags);
 	heartbeat = t;
 	spin_unlock_irqrestore(&shwdt_lock, flags);
@@ -169,6 +252,22 @@ static void sh_wdt_ping(unsigned long data)
 	unsigned long flags;
 
 	spin_lock_irqsave(&shwdt_lock, flags);
+=======
+	spin_lock_irqsave(&wdt->lock, flags);
+	heartbeat = t;
+	wdt_dev->timeout = t;
+	spin_unlock_irqrestore(&wdt->lock, flags);
+
+	return 0;
+}
+
+static void sh_wdt_ping(struct timer_list *t)
+{
+	struct sh_wdt *wdt = from_timer(wdt, t, timer);
+	unsigned long flags;
+
+	spin_lock_irqsave(&wdt->lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (time_before(jiffies, next_heartbeat)) {
 		u8 csr;
 
@@ -182,6 +281,7 @@ static void sh_wdt_ping(unsigned long data)
 	} else
 		dev_warn(wdt->dev, "Heartbeat lost! Will not ping "
 		         "the watchdog\n");
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&shwdt_lock, flags);
 }
 
@@ -313,6 +413,11 @@ static const struct file_operations sh_wdt_fops = {
 	.release	= sh_wdt_close,
 };
 
+=======
+	spin_unlock_irqrestore(&wdt->lock, flags);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct watchdog_info sh_wdt_info = {
 	.options		= WDIOF_KEEPALIVEPING | WDIOF_SETTIMEOUT |
 				  WDIOF_MAGICCLOSE,
@@ -320,6 +425,7 @@ static const struct watchdog_info sh_wdt_info = {
 	.identity		= "SH WDT",
 };
 
+<<<<<<< HEAD
 static struct notifier_block sh_wdt_notifier = {
 	.notifier_call		= sh_wdt_notify_sys,
 };
@@ -334,6 +440,24 @@ static int __devinit sh_wdt_probe(struct platform_device *pdev)
 {
 	struct sh_wdt *wdt;
 	struct resource *res;
+=======
+static const struct watchdog_ops sh_wdt_ops = {
+	.owner		= THIS_MODULE,
+	.start		= sh_wdt_start,
+	.stop		= sh_wdt_stop,
+	.ping		= sh_wdt_keepalive,
+	.set_timeout	= sh_wdt_set_heartbeat,
+};
+
+static struct watchdog_device sh_wdt_dev = {
+	.info	= &sh_wdt_info,
+	.ops	= &sh_wdt_ops,
+};
+
+static int sh_wdt_probe(struct platform_device *pdev)
+{
+	struct sh_wdt *wdt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	/*
@@ -343,6 +467,7 @@ static int __devinit sh_wdt_probe(struct platform_device *pdev)
 	if (pdev->id != -1)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (unlikely(!res))
 		return -EINVAL;
@@ -423,22 +548,99 @@ static int __devexit sh_wdt_remove(struct platform_device *pdev)
 	devm_kfree(&pdev->dev, wdt);
 
 	return 0;
+=======
+	wdt = devm_kzalloc(&pdev->dev, sizeof(struct sh_wdt), GFP_KERNEL);
+	if (unlikely(!wdt))
+		return -ENOMEM;
+
+	wdt->dev = &pdev->dev;
+
+	wdt->clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(wdt->clk)) {
+		/*
+		 * Clock framework support is optional, continue on
+		 * anyways if we don't find a matching clock.
+		 */
+		wdt->clk = NULL;
+	}
+
+	wdt->base = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(wdt->base))
+		return PTR_ERR(wdt->base);
+
+	watchdog_set_nowayout(&sh_wdt_dev, nowayout);
+	watchdog_set_drvdata(&sh_wdt_dev, wdt);
+	sh_wdt_dev.parent = &pdev->dev;
+
+	spin_lock_init(&wdt->lock);
+
+	rc = sh_wdt_set_heartbeat(&sh_wdt_dev, heartbeat);
+	if (unlikely(rc)) {
+		/* Default timeout if invalid */
+		sh_wdt_set_heartbeat(&sh_wdt_dev, WATCHDOG_HEARTBEAT);
+
+		dev_warn(&pdev->dev,
+			 "heartbeat value must be 1<=x<=3600, using %d\n",
+			 sh_wdt_dev.timeout);
+	}
+
+	dev_info(&pdev->dev, "configured with heartbeat=%d sec (nowayout=%d)\n",
+		 sh_wdt_dev.timeout, nowayout);
+
+	rc = watchdog_register_device(&sh_wdt_dev);
+	if (unlikely(rc)) {
+		dev_err(&pdev->dev, "Can't register watchdog (err=%d)\n", rc);
+		return rc;
+	}
+
+	timer_setup(&wdt->timer, sh_wdt_ping, 0);
+	wdt->timer.expires	= next_ping_period(clock_division_ratio);
+
+	dev_info(&pdev->dev, "initialized.\n");
+
+	pm_runtime_enable(&pdev->dev);
+
+	return 0;
+}
+
+static void sh_wdt_remove(struct platform_device *pdev)
+{
+	watchdog_unregister_device(&sh_wdt_dev);
+
+	pm_runtime_disable(&pdev->dev);
+}
+
+static void sh_wdt_shutdown(struct platform_device *pdev)
+{
+	sh_wdt_stop(&sh_wdt_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver sh_wdt_driver = {
 	.driver		= {
 		.name	= DRV_NAME,
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 
 	.probe	= sh_wdt_probe,
 	.remove	= __devexit_p(sh_wdt_remove),
+=======
+	},
+
+	.probe		= sh_wdt_probe,
+	.remove_new	= sh_wdt_remove,
+	.shutdown	= sh_wdt_shutdown,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init sh_wdt_init(void)
 {
+<<<<<<< HEAD
 	int rc;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(clock_division_ratio < 0x5 ||
 		     clock_division_ratio > 0x7)) {
 		clock_division_ratio = WTCSR_CKS_4096;
@@ -447,6 +649,7 @@ static int __init sh_wdt_init(void)
 			clock_division_ratio);
 	}
 
+<<<<<<< HEAD
 	rc = sh_wdt_set_heartbeat(heartbeat);
 	if (unlikely(rc)) {
 		heartbeat = WATCHDOG_HEARTBEAT;
@@ -458,6 +661,8 @@ static int __init sh_wdt_init(void)
 	pr_info("configured with heartbeat=%d sec (nowayout=%d)\n",
 		heartbeat, nowayout);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return platform_driver_register(&sh_wdt_driver);
 }
 
@@ -472,7 +677,10 @@ MODULE_AUTHOR("Paul Mundt <lethal@linux-sh.org>");
 MODULE_DESCRIPTION("SuperH watchdog driver");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("platform:" DRV_NAME);
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(clock_division_ratio, int, 0);
 MODULE_PARM_DESC(clock_division_ratio,

@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OF-platform PATA driver
  *
  * Copyright (c) 2007  MontaVista Software, Inc.
  *                     Anton Vorontsov <avorontsov@ru.mvista.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License (Version 2) as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -14,18 +21,39 @@
 #include <linux/of_address.h>
 #include <linux/platform_device.h>
 #include <linux/ata_platform.h>
+<<<<<<< HEAD
 
 static int __devinit pata_of_platform_probe(struct platform_device *ofdev)
+=======
+#include <linux/libata.h>
+
+#define DRV_NAME "pata_of_platform"
+
+static const struct scsi_host_template pata_platform_sht = {
+	ATA_PIO_SHT(DRV_NAME),
+};
+
+static int pata_of_platform_probe(struct platform_device *ofdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 	struct device_node *dn = ofdev->dev.of_node;
 	struct resource io_res;
 	struct resource ctl_res;
+<<<<<<< HEAD
 	struct resource *irq_res;
 	unsigned int reg_shift = 0;
 	int pio_mode = 0;
 	int pio_mask;
 	const u32 *prop;
+=======
+	struct resource irq_res;
+	unsigned int reg_shift = 0;
+	int pio_mode = 0;
+	int pio_mask;
+	bool use16bit;
+	int irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = of_address_to_resource(dn, 0, &io_res);
 	if (ret) {
@@ -34,6 +62,7 @@ static int __devinit pata_of_platform_probe(struct platform_device *ofdev)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (of_device_is_compatible(dn, "electra-ide")) {
 		/* Altstatus is really at offset 0x3f6 from the primary window
 		 * on electra-ide. Adjust ctl_res and io_res accordingly.
@@ -61,6 +90,28 @@ static int __devinit pata_of_platform_probe(struct platform_device *ofdev)
 	prop = of_get_property(dn, "pio-mode", NULL);
 	if (prop) {
 		pio_mode = be32_to_cpup(prop);
+=======
+	ret = of_address_to_resource(dn, 1, &ctl_res);
+	if (ret) {
+		dev_err(&ofdev->dev, "can't get CTL address from "
+			"device tree\n");
+		return -EINVAL;
+	}
+
+	memset(&irq_res, 0, sizeof(irq_res));
+
+	irq = platform_get_irq_optional(ofdev, 0);
+	if (irq < 0 && irq != -ENXIO)
+		return irq;
+	if (irq > 0) {
+		irq_res.start = irq;
+		irq_res.end = irq;
+	}
+
+	of_property_read_u32(dn, "reg-shift", &reg_shift);
+
+	if (!of_property_read_u32(dn, "pio-mode", &pio_mode)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pio_mode > 6) {
 			dev_err(&ofdev->dev, "invalid pio-mode\n");
 			return -EINVAL;
@@ -69,6 +120,7 @@ static int __devinit pata_of_platform_probe(struct platform_device *ofdev)
 		dev_info(&ofdev->dev, "pio-mode unspecified, assuming PIO0\n");
 	}
 
+<<<<<<< HEAD
 	pio_mask = 1 << pio_mode;
 	pio_mask |= (1 << pio_mode) - 1;
 
@@ -85,17 +137,40 @@ static struct of_device_id pata_of_platform_match[] = {
 	{ .compatible = "ata-generic", },
 	{ .compatible = "electra-ide", },
 	{},
+=======
+	use16bit = of_property_read_bool(dn, "ata-generic,use16bit");
+
+	pio_mask = 1 << pio_mode;
+	pio_mask |= (1 << pio_mode) - 1;
+
+	return __pata_platform_probe(&ofdev->dev, &io_res, &ctl_res, irq > 0 ? &irq_res : NULL,
+				     reg_shift, pio_mask, &pata_platform_sht,
+				     use16bit);
+}
+
+static const struct of_device_id pata_of_platform_match[] = {
+	{ .compatible = "ata-generic", },
+	{ /* sentinel */ }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 MODULE_DEVICE_TABLE(of, pata_of_platform_match);
 
 static struct platform_driver pata_of_platform_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.name = "pata_of_platform",
 		.owner = THIS_MODULE,
 		.of_match_table = pata_of_platform_match,
 	},
 	.probe		= pata_of_platform_probe,
 	.remove		= __devexit_p(pata_of_platform_remove),
+=======
+		.name = DRV_NAME,
+		.of_match_table = pata_of_platform_match,
+	},
+	.probe		= pata_of_platform_probe,
+	.remove_new	= ata_platform_remove_one,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(pata_of_platform_driver);

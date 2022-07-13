@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  NRPN / SYSEX callbacks for Emu8k/Emu10k1
  *
  *  Copyright (c) 1999-2000 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "emux_voice.h"
@@ -48,7 +55,12 @@ struct nrpn_conv_table {
  * convert NRPN/control values
  */
 
+<<<<<<< HEAD
 static int send_converted_effect(struct nrpn_conv_table *table, int num_tables,
+=======
+static int send_converted_effect(const struct nrpn_conv_table *table,
+				 int num_tables,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 struct snd_emux_port *port,
 				 struct snd_midi_channel *chan,
 				 int type, int val, int mode)
@@ -76,16 +88,27 @@ static int send_converted_effect(struct nrpn_conv_table *table, int num_tables,
 /* effect sensitivities for GS NRPN:
  *  adjusted for chaos 8MB soundfonts
  */
+<<<<<<< HEAD
 static int gs_sense[] = 
+=======
+static const int gs_sense[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	DEF_FX_CUTOFF, DEF_FX_RESONANCE, DEF_FX_ATTACK, DEF_FX_RELEASE,
 	DEF_FX_VIBRATE, DEF_FX_VIBDEPTH, DEF_FX_VIBDELAY
 };
 
+<<<<<<< HEAD
 /* effect sensitivies for XG controls:
  * adjusted for chaos 8MB soundfonts
  */
 static int xg_sense[] = 
+=======
+/* effect sensitivities for XG controls:
+ * adjusted for chaos 8MB soundfonts
+ */
+static const int xg_sense[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	DEF_FX_CUTOFF, DEF_FX_RESONANCE, DEF_FX_ATTACK, DEF_FX_RELEASE,
 	DEF_FX_VIBRATE, DEF_FX_VIBDEPTH, DEF_FX_VIBDELAY
@@ -179,7 +202,11 @@ static int fx_conv_Q(int val)
 }
 
 
+<<<<<<< HEAD
 static struct nrpn_conv_table awe_effects[] =
+=======
+static const struct nrpn_conv_table awe_effects[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{ 0, EMUX_FX_LFO1_DELAY,	fx_lfo1_delay},
 	{ 1, EMUX_FX_LFO1_FREQ,	fx_lfo1_freq},
@@ -266,7 +293,11 @@ static int gs_vib_delay(int val)
 	return -(val - 64) * gs_sense[FX_VIBDELAY] / 50;
 }
 
+<<<<<<< HEAD
 static struct nrpn_conv_table gs_effects[] =
+=======
+static const struct nrpn_conv_table gs_effects[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{32, EMUX_FX_CUTOFF,	gs_cutoff},
 	{33, EMUX_FX_FILTERQ,	gs_filterQ},
@@ -350,7 +381,11 @@ static int xg_release(int val)
 	return -(val - 64) * xg_sense[FX_RELEASE] / 64;
 }
 
+<<<<<<< HEAD
 static struct nrpn_conv_table xg_effects[] =
+=======
+static const struct nrpn_conv_table xg_effects[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{71, EMUX_FX_CUTOFF,	xg_cutoff},
 	{74, EMUX_FX_FILTERQ,	xg_filterQ},
@@ -362,6 +397,12 @@ int
 snd_emux_xg_control(struct snd_emux_port *port, struct snd_midi_channel *chan,
 		    int param)
 {
+<<<<<<< HEAD
+=======
+	if (param >= ARRAY_SIZE(chan->control))
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return send_converted_effect(xg_effects, ARRAY_SIZE(xg_effects),
 				     port, chan, param,
 				     chan->control[param],

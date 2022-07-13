@@ -1,14 +1,23 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  The NFC Controller Interface is the communication protocol between an
  *  NFC Controller (NFCC) and a Device Host (DH).
  *
  *  Copyright (C) 2011 Texas Instruments, Inc.
+<<<<<<< HEAD
+=======
+ *  Copyright (C) 2014 Marvell International Ltd.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Written by Ilan Elias <ilane@ti.com>
  *
  *  Acknowledgements:
  *  This file is based on hci_core.c, which was written
  *  by Maxim Krasnyansky.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2
@@ -23,10 +32,17 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
 
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+#include <linux/kernel.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/workqueue.h>
 #include <linux/completion.h>
@@ -34,16 +50,64 @@
 #include <linux/sched.h>
 #include <linux/bitops.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
+=======
+#include <linux/kcov.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "../nfc.h"
 #include <net/nfc/nci.h>
 #include <net/nfc/nci_core.h>
 #include <linux/nfc.h>
 
+<<<<<<< HEAD
+=======
+struct core_conn_create_data {
+	int length;
+	struct nci_core_conn_create_cmd *cmd;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void nci_cmd_work(struct work_struct *work);
 static void nci_rx_work(struct work_struct *work);
 static void nci_tx_work(struct work_struct *work);
 
+<<<<<<< HEAD
+=======
+struct nci_conn_info *nci_get_conn_info_by_conn_id(struct nci_dev *ndev,
+						   int conn_id)
+{
+	struct nci_conn_info *conn_info;
+
+	list_for_each_entry(conn_info, &ndev->conn_info_list, list) {
+		if (conn_info->conn_id == conn_id)
+			return conn_info;
+	}
+
+	return NULL;
+}
+
+int nci_get_conn_info_by_dest_type_params(struct nci_dev *ndev, u8 dest_type,
+					  const struct dest_spec_params *params)
+{
+	const struct nci_conn_info *conn_info;
+
+	list_for_each_entry(conn_info, &ndev->conn_info_list, list) {
+		if (conn_info->dest_type == dest_type) {
+			if (!params)
+				return conn_info->conn_id;
+
+			if (params->id == conn_info->dest_params->id &&
+			    params->protocol == conn_info->dest_params->protocol)
+				return conn_info->conn_id;
+		}
+	}
+
+	return -EINVAL;
+}
+EXPORT_SYMBOL(nci_get_conn_info_by_dest_type_params);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ---- NCI requests ---- */
 
 void nci_req_complete(struct nci_dev *ndev, int result)
@@ -54,6 +118,10 @@ void nci_req_complete(struct nci_dev *ndev, int result)
 		complete(&ndev->req_completion);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(nci_req_complete);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void nci_req_cancel(struct nci_dev *ndev, int err)
 {
@@ -66,15 +134,24 @@ static void nci_req_cancel(struct nci_dev *ndev, int err)
 
 /* Execute request and wait for completion. */
 static int __nci_request(struct nci_dev *ndev,
+<<<<<<< HEAD
 			 void (*req)(struct nci_dev *ndev, unsigned long opt),
 			 unsigned long opt, __u32 timeout)
+=======
+			 void (*req)(struct nci_dev *ndev, const void *opt),
+			 const void *opt, __u32 timeout)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rc = 0;
 	long completion_rc;
 
 	ndev->req_status = NCI_REQ_PEND;
 
+<<<<<<< HEAD
 	init_completion(&ndev->req_completion);
+=======
+	reinit_completion(&ndev->req_completion);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req(ndev, opt);
 	completion_rc =
 		wait_for_completion_interruptible_timeout(&ndev->req_completion,
@@ -108,6 +185,7 @@ static int __nci_request(struct nci_dev *ndev,
 	return rc;
 }
 
+<<<<<<< HEAD
 static inline int nci_request(struct nci_dev *ndev,
 			      void (*req)(struct nci_dev *ndev,
 					  unsigned long opt),
@@ -121,12 +199,34 @@ static inline int nci_request(struct nci_dev *ndev,
 	/* Serialize all requests */
 	mutex_lock(&ndev->req_lock);
 	rc = __nci_request(ndev, req, opt, timeout);
+=======
+inline int nci_request(struct nci_dev *ndev,
+		       void (*req)(struct nci_dev *ndev,
+				   const void *opt),
+		       const void *opt, __u32 timeout)
+{
+	int rc;
+
+	/* Serialize all requests */
+	mutex_lock(&ndev->req_lock);
+	/* check the state after obtaing the lock against any races
+	 * from nci_close_device when the device gets removed.
+	 */
+	if (test_bit(NCI_UP, &ndev->flags))
+		rc = __nci_request(ndev, req, opt, timeout);
+	else
+		rc = -ENETDOWN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&ndev->req_lock);
 
 	return rc;
 }
 
+<<<<<<< HEAD
 static void nci_reset_req(struct nci_dev *ndev, unsigned long opt)
+=======
+static void nci_reset_req(struct nci_dev *ndev, const void *opt)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nci_core_reset_cmd cmd;
 
@@ -134,12 +234,26 @@ static void nci_reset_req(struct nci_dev *ndev, unsigned long opt)
 	nci_send_cmd(ndev, NCI_OP_CORE_RESET_CMD, 1, &cmd);
 }
 
+<<<<<<< HEAD
 static void nci_init_req(struct nci_dev *ndev, unsigned long opt)
 {
 	nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, 0, NULL);
 }
 
 static void nci_init_complete_req(struct nci_dev *ndev, unsigned long opt)
+=======
+static void nci_init_req(struct nci_dev *ndev, const void *opt)
+{
+	u8 plen = 0;
+
+	if (opt)
+		plen = sizeof(struct nci_core_init_v2_cmd);
+
+	nci_send_cmd(ndev, NCI_OP_CORE_INIT_CMD, plen, opt);
+}
+
+static void nci_init_complete_req(struct nci_dev *ndev, const void *opt)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nci_rf_disc_map_cmd cmd;
 	struct disc_map_config *cfg = cmd.mapping_configs;
@@ -175,18 +289,58 @@ static void nci_init_complete_req(struct nci_dev *ndev, unsigned long opt)
 		     (1 + ((*num) * sizeof(struct disc_map_config))), &cmd);
 }
 
+<<<<<<< HEAD
 static void nci_rf_discover_req(struct nci_dev *ndev, unsigned long opt)
 {
 	struct nci_rf_disc_cmd cmd;
 	__u32 protocols = opt;
+=======
+struct nci_set_config_param {
+	__u8		id;
+	size_t		len;
+	const __u8	*val;
+};
+
+static void nci_set_config_req(struct nci_dev *ndev, const void *opt)
+{
+	const struct nci_set_config_param *param = opt;
+	struct nci_core_set_config_cmd cmd;
+
+	BUG_ON(param->len > NCI_MAX_PARAM_LEN);
+
+	cmd.num_params = 1;
+	cmd.param.id = param->id;
+	cmd.param.len = param->len;
+	memcpy(cmd.param.val, param->val, param->len);
+
+	nci_send_cmd(ndev, NCI_OP_CORE_SET_CONFIG_CMD, (3 + param->len), &cmd);
+}
+
+struct nci_rf_discover_param {
+	__u32	im_protocols;
+	__u32	tm_protocols;
+};
+
+static void nci_rf_discover_req(struct nci_dev *ndev, const void *opt)
+{
+	const struct nci_rf_discover_param *param = opt;
+	struct nci_rf_disc_cmd cmd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd.num_disc_configs = 0;
 
 	if ((cmd.num_disc_configs < NCI_MAX_NUM_RF_CONFIGS) &&
+<<<<<<< HEAD
 	    (protocols & NFC_PROTO_JEWEL_MASK
 	     || protocols & NFC_PROTO_MIFARE_MASK
 	     || protocols & NFC_PROTO_ISO14443_MASK
 	     || protocols & NFC_PROTO_NFC_DEP_MASK)) {
+=======
+	    (param->im_protocols & NFC_PROTO_JEWEL_MASK ||
+	     param->im_protocols & NFC_PROTO_MIFARE_MASK ||
+	     param->im_protocols & NFC_PROTO_ISO14443_MASK ||
+	     param->im_protocols & NFC_PROTO_NFC_DEP_MASK)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmd.disc_configs[cmd.num_disc_configs].rf_tech_and_mode =
 			NCI_NFC_A_PASSIVE_POLL_MODE;
 		cmd.disc_configs[cmd.num_disc_configs].frequency = 1;
@@ -194,7 +348,11 @@ static void nci_rf_discover_req(struct nci_dev *ndev, unsigned long opt)
 	}
 
 	if ((cmd.num_disc_configs < NCI_MAX_NUM_RF_CONFIGS) &&
+<<<<<<< HEAD
 	    (protocols & NFC_PROTO_ISO14443_MASK)) {
+=======
+	    (param->im_protocols & NFC_PROTO_ISO14443_B_MASK)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmd.disc_configs[cmd.num_disc_configs].rf_tech_and_mode =
 			NCI_NFC_B_PASSIVE_POLL_MODE;
 		cmd.disc_configs[cmd.num_disc_configs].frequency = 1;
@@ -202,14 +360,42 @@ static void nci_rf_discover_req(struct nci_dev *ndev, unsigned long opt)
 	}
 
 	if ((cmd.num_disc_configs < NCI_MAX_NUM_RF_CONFIGS) &&
+<<<<<<< HEAD
 	    (protocols & NFC_PROTO_FELICA_MASK
 	     || protocols & NFC_PROTO_NFC_DEP_MASK)) {
+=======
+	    (param->im_protocols & NFC_PROTO_FELICA_MASK ||
+	     param->im_protocols & NFC_PROTO_NFC_DEP_MASK)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmd.disc_configs[cmd.num_disc_configs].rf_tech_and_mode =
 			NCI_NFC_F_PASSIVE_POLL_MODE;
 		cmd.disc_configs[cmd.num_disc_configs].frequency = 1;
 		cmd.num_disc_configs++;
 	}
 
+<<<<<<< HEAD
+=======
+	if ((cmd.num_disc_configs < NCI_MAX_NUM_RF_CONFIGS) &&
+	    (param->im_protocols & NFC_PROTO_ISO15693_MASK)) {
+		cmd.disc_configs[cmd.num_disc_configs].rf_tech_and_mode =
+			NCI_NFC_V_PASSIVE_POLL_MODE;
+		cmd.disc_configs[cmd.num_disc_configs].frequency = 1;
+		cmd.num_disc_configs++;
+	}
+
+	if ((cmd.num_disc_configs < NCI_MAX_NUM_RF_CONFIGS - 1) &&
+	    (param->tm_protocols & NFC_PROTO_NFC_DEP_MASK)) {
+		cmd.disc_configs[cmd.num_disc_configs].rf_tech_and_mode =
+			NCI_NFC_A_PASSIVE_LISTEN_MODE;
+		cmd.disc_configs[cmd.num_disc_configs].frequency = 1;
+		cmd.num_disc_configs++;
+		cmd.disc_configs[cmd.num_disc_configs].rf_tech_and_mode =
+			NCI_NFC_F_PASSIVE_LISTEN_MODE;
+		cmd.disc_configs[cmd.num_disc_configs].frequency = 1;
+		cmd.num_disc_configs++;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nci_send_cmd(ndev, NCI_OP_RF_DISCOVER_CMD,
 		     (1 + (cmd.num_disc_configs * sizeof(struct disc_config))),
 		     &cmd);
@@ -220,10 +406,16 @@ struct nci_rf_discover_select_param {
 	__u8	rf_protocol;
 };
 
+<<<<<<< HEAD
 static void nci_rf_discover_select_req(struct nci_dev *ndev, unsigned long opt)
 {
 	struct nci_rf_discover_select_param *param =
 		(struct nci_rf_discover_select_param *)opt;
+=======
+static void nci_rf_discover_select_req(struct nci_dev *ndev, const void *opt)
+{
+	const struct nci_rf_discover_select_param *param = opt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nci_rf_discover_select_cmd cmd;
 
 	cmd.rf_discovery_id = param->rf_discovery_id;
@@ -247,22 +439,172 @@ static void nci_rf_discover_select_req(struct nci_dev *ndev, unsigned long opt)
 		     sizeof(struct nci_rf_discover_select_cmd), &cmd);
 }
 
+<<<<<<< HEAD
 static void nci_rf_deactivate_req(struct nci_dev *ndev, unsigned long opt)
 {
 	struct nci_rf_deactivate_cmd cmd;
 
 	cmd.type = NCI_DEACTIVATE_TYPE_IDLE_MODE;
+=======
+static void nci_rf_deactivate_req(struct nci_dev *ndev, const void *opt)
+{
+	struct nci_rf_deactivate_cmd cmd;
+
+	cmd.type = (unsigned long)opt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nci_send_cmd(ndev, NCI_OP_RF_DEACTIVATE_CMD,
 		     sizeof(struct nci_rf_deactivate_cmd), &cmd);
 }
 
+<<<<<<< HEAD
+=======
+struct nci_cmd_param {
+	__u16 opcode;
+	size_t len;
+	const __u8 *payload;
+};
+
+static void nci_generic_req(struct nci_dev *ndev, const void *opt)
+{
+	const struct nci_cmd_param *param = opt;
+
+	nci_send_cmd(ndev, param->opcode, param->len, param->payload);
+}
+
+int nci_prop_cmd(struct nci_dev *ndev, __u8 oid, size_t len, const __u8 *payload)
+{
+	struct nci_cmd_param param;
+
+	param.opcode = nci_opcode_pack(NCI_GID_PROPRIETARY, oid);
+	param.len = len;
+	param.payload = payload;
+
+	return __nci_request(ndev, nci_generic_req, &param,
+			     msecs_to_jiffies(NCI_CMD_TIMEOUT));
+}
+EXPORT_SYMBOL(nci_prop_cmd);
+
+int nci_core_cmd(struct nci_dev *ndev, __u16 opcode, size_t len,
+		 const __u8 *payload)
+{
+	struct nci_cmd_param param;
+
+	param.opcode = opcode;
+	param.len = len;
+	param.payload = payload;
+
+	return __nci_request(ndev, nci_generic_req, &param,
+			     msecs_to_jiffies(NCI_CMD_TIMEOUT));
+}
+EXPORT_SYMBOL(nci_core_cmd);
+
+int nci_core_reset(struct nci_dev *ndev)
+{
+	return __nci_request(ndev, nci_reset_req, (void *)0,
+			     msecs_to_jiffies(NCI_RESET_TIMEOUT));
+}
+EXPORT_SYMBOL(nci_core_reset);
+
+int nci_core_init(struct nci_dev *ndev)
+{
+	return __nci_request(ndev, nci_init_req, (void *)0,
+			     msecs_to_jiffies(NCI_INIT_TIMEOUT));
+}
+EXPORT_SYMBOL(nci_core_init);
+
+struct nci_loopback_data {
+	u8 conn_id;
+	struct sk_buff *data;
+};
+
+static void nci_send_data_req(struct nci_dev *ndev, const void *opt)
+{
+	const struct nci_loopback_data *data = opt;
+
+	nci_send_data(ndev, data->conn_id, data->data);
+}
+
+static void nci_nfcc_loopback_cb(void *context, struct sk_buff *skb, int err)
+{
+	struct nci_dev *ndev = (struct nci_dev *)context;
+	struct nci_conn_info *conn_info;
+
+	conn_info = nci_get_conn_info_by_conn_id(ndev, ndev->cur_conn_id);
+	if (!conn_info) {
+		nci_req_complete(ndev, NCI_STATUS_REJECTED);
+		return;
+	}
+
+	conn_info->rx_skb = skb;
+
+	nci_req_complete(ndev, NCI_STATUS_OK);
+}
+
+int nci_nfcc_loopback(struct nci_dev *ndev, const void *data, size_t data_len,
+		      struct sk_buff **resp)
+{
+	int r;
+	struct nci_loopback_data loopback_data;
+	struct nci_conn_info *conn_info;
+	struct sk_buff *skb;
+	int conn_id = nci_get_conn_info_by_dest_type_params(ndev,
+					NCI_DESTINATION_NFCC_LOOPBACK, NULL);
+
+	if (conn_id < 0) {
+		r = nci_core_conn_create(ndev, NCI_DESTINATION_NFCC_LOOPBACK,
+					 0, 0, NULL);
+		if (r != NCI_STATUS_OK)
+			return r;
+
+		conn_id = nci_get_conn_info_by_dest_type_params(ndev,
+					NCI_DESTINATION_NFCC_LOOPBACK,
+					NULL);
+	}
+
+	conn_info = nci_get_conn_info_by_conn_id(ndev, conn_id);
+	if (!conn_info)
+		return -EPROTO;
+
+	/* store cb and context to be used on receiving data */
+	conn_info->data_exchange_cb = nci_nfcc_loopback_cb;
+	conn_info->data_exchange_cb_context = ndev;
+
+	skb = nci_skb_alloc(ndev, NCI_DATA_HDR_SIZE + data_len, GFP_KERNEL);
+	if (!skb)
+		return -ENOMEM;
+
+	skb_reserve(skb, NCI_DATA_HDR_SIZE);
+	skb_put_data(skb, data, data_len);
+
+	loopback_data.conn_id = conn_id;
+	loopback_data.data = skb;
+
+	ndev->cur_conn_id = conn_id;
+	r = nci_request(ndev, nci_send_data_req, &loopback_data,
+			msecs_to_jiffies(NCI_DATA_TIMEOUT));
+	if (r == NCI_STATUS_OK && resp)
+		*resp = conn_info->rx_skb;
+
+	return r;
+}
+EXPORT_SYMBOL(nci_nfcc_loopback);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nci_open_device(struct nci_dev *ndev)
 {
 	int rc = 0;
 
 	mutex_lock(&ndev->req_lock);
 
+<<<<<<< HEAD
+=======
+	if (test_bit(NCI_UNREG, &ndev->flags)) {
+		rc = -ENODEV;
+		goto done;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_bit(NCI_UP, &ndev->flags)) {
 		rc = -EALREADY;
 		goto done;
@@ -277,6 +619,7 @@ static int nci_open_device(struct nci_dev *ndev)
 
 	set_bit(NCI_INIT, &ndev->flags);
 
+<<<<<<< HEAD
 	rc = __nci_request(ndev, nci_reset_req, 0,
 			   msecs_to_jiffies(NCI_RESET_TIMEOUT));
 
@@ -287,6 +630,39 @@ static int nci_open_device(struct nci_dev *ndev)
 
 	if (!rc) {
 		rc = __nci_request(ndev, nci_init_complete_req, 0,
+=======
+	if (ndev->ops->init)
+		rc = ndev->ops->init(ndev);
+
+	if (!rc) {
+		rc = __nci_request(ndev, nci_reset_req, (void *)0,
+				   msecs_to_jiffies(NCI_RESET_TIMEOUT));
+	}
+
+	if (!rc && ndev->ops->setup) {
+		rc = ndev->ops->setup(ndev);
+	}
+
+	if (!rc) {
+		struct nci_core_init_v2_cmd nci_init_v2_cmd = {
+			.feature1 = NCI_FEATURE_DISABLE,
+			.feature2 = NCI_FEATURE_DISABLE
+		};
+		const void *opt = NULL;
+
+		if (ndev->nci_ver & NCI_VER_2_MASK)
+			opt = &nci_init_v2_cmd;
+
+		rc = __nci_request(ndev, nci_init_req, opt,
+				   msecs_to_jiffies(NCI_INIT_TIMEOUT));
+	}
+
+	if (!rc && ndev->ops->post_setup)
+		rc = ndev->ops->post_setup(ndev);
+
+	if (!rc) {
+		rc = __nci_request(ndev, nci_init_complete_req, (void *)0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   msecs_to_jiffies(NCI_INIT_TIMEOUT));
 	}
 
@@ -303,7 +679,11 @@ static int nci_open_device(struct nci_dev *ndev)
 		skb_queue_purge(&ndev->tx_q);
 
 		ndev->ops->close(ndev);
+<<<<<<< HEAD
 		ndev->flags = 0;
+=======
+		ndev->flags &= BIT(NCI_UNREG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 done:
@@ -314,9 +694,23 @@ done:
 static int nci_close_device(struct nci_dev *ndev)
 {
 	nci_req_cancel(ndev, ENODEV);
+<<<<<<< HEAD
 	mutex_lock(&ndev->req_lock);
 
 	if (!test_and_clear_bit(NCI_UP, &ndev->flags)) {
+=======
+
+	/* This mutex needs to be held as a barrier for
+	 * caller nci_unregister_device
+	 */
+	mutex_lock(&ndev->req_lock);
+
+	if (!test_and_clear_bit(NCI_UP, &ndev->flags)) {
+		/* Need to flush the cmd wq in case
+		 * there is a queued/running cmd_work
+		 */
+		flush_workqueue(ndev->cmd_wq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		del_timer_sync(&ndev->cmd_timer);
 		del_timer_sync(&ndev->data_timer);
 		mutex_unlock(&ndev->req_lock);
@@ -336,19 +730,37 @@ static int nci_close_device(struct nci_dev *ndev)
 	atomic_set(&ndev->cmd_cnt, 1);
 
 	set_bit(NCI_INIT, &ndev->flags);
+<<<<<<< HEAD
 	__nci_request(ndev, nci_reset_req, 0,
 		      msecs_to_jiffies(NCI_RESET_TIMEOUT));
+=======
+	__nci_request(ndev, nci_reset_req, (void *)0,
+		      msecs_to_jiffies(NCI_RESET_TIMEOUT));
+
+	/* After this point our queues are empty
+	 * and no works are scheduled.
+	 */
+	ndev->ops->close(ndev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clear_bit(NCI_INIT, &ndev->flags);
 
 	/* Flush cmd wq */
 	flush_workqueue(ndev->cmd_wq);
 
+<<<<<<< HEAD
 	/* After this point our queues are empty
 	 * and no works are scheduled. */
 	ndev->ops->close(ndev);
 
 	/* Clear flags */
 	ndev->flags = 0;
+=======
+	del_timer_sync(&ndev->cmd_timer);
+
+	/* Clear flags except NCI_UNREG */
+	ndev->flags &= BIT(NCI_UNREG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&ndev->req_lock);
 
@@ -356,18 +768,30 @@ static int nci_close_device(struct nci_dev *ndev)
 }
 
 /* NCI command timer function */
+<<<<<<< HEAD
 static void nci_cmd_timer(unsigned long arg)
 {
 	struct nci_dev *ndev = (void *) arg;
+=======
+static void nci_cmd_timer(struct timer_list *t)
+{
+	struct nci_dev *ndev = from_timer(ndev, t, cmd_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_set(&ndev->cmd_cnt, 1);
 	queue_work(ndev->cmd_wq, &ndev->cmd_work);
 }
 
 /* NCI data exchange timer function */
+<<<<<<< HEAD
 static void nci_data_timer(unsigned long arg)
 {
 	struct nci_dev *ndev = (void *) arg;
+=======
+static void nci_data_timer(struct timer_list *t)
+{
+	struct nci_dev *ndev = from_timer(ndev, t, data_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	set_bit(NCI_DATA_EXCHANGE_TO, &ndev->flags);
 	queue_work(ndev->rx_wq, &ndev->rx_work);
@@ -387,9 +811,184 @@ static int nci_dev_down(struct nfc_dev *nfc_dev)
 	return nci_close_device(ndev);
 }
 
+<<<<<<< HEAD
 static int nci_start_poll(struct nfc_dev *nfc_dev, __u32 protocols)
 {
 	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+=======
+int nci_set_config(struct nci_dev *ndev, __u8 id, size_t len, const __u8 *val)
+{
+	struct nci_set_config_param param;
+
+	if (!val || !len)
+		return 0;
+
+	param.id = id;
+	param.len = len;
+	param.val = val;
+
+	return __nci_request(ndev, nci_set_config_req, &param,
+			     msecs_to_jiffies(NCI_SET_CONFIG_TIMEOUT));
+}
+EXPORT_SYMBOL(nci_set_config);
+
+static void nci_nfcee_discover_req(struct nci_dev *ndev, const void *opt)
+{
+	struct nci_nfcee_discover_cmd cmd;
+	__u8 action = (unsigned long)opt;
+
+	cmd.discovery_action = action;
+
+	nci_send_cmd(ndev, NCI_OP_NFCEE_DISCOVER_CMD, 1, &cmd);
+}
+
+int nci_nfcee_discover(struct nci_dev *ndev, u8 action)
+{
+	unsigned long opt = action;
+
+	return __nci_request(ndev, nci_nfcee_discover_req, (void *)opt,
+				msecs_to_jiffies(NCI_CMD_TIMEOUT));
+}
+EXPORT_SYMBOL(nci_nfcee_discover);
+
+static void nci_nfcee_mode_set_req(struct nci_dev *ndev, const void *opt)
+{
+	const struct nci_nfcee_mode_set_cmd *cmd = opt;
+
+	nci_send_cmd(ndev, NCI_OP_NFCEE_MODE_SET_CMD,
+		     sizeof(struct nci_nfcee_mode_set_cmd), cmd);
+}
+
+int nci_nfcee_mode_set(struct nci_dev *ndev, u8 nfcee_id, u8 nfcee_mode)
+{
+	struct nci_nfcee_mode_set_cmd cmd;
+
+	cmd.nfcee_id = nfcee_id;
+	cmd.nfcee_mode = nfcee_mode;
+
+	return __nci_request(ndev, nci_nfcee_mode_set_req, &cmd,
+			     msecs_to_jiffies(NCI_CMD_TIMEOUT));
+}
+EXPORT_SYMBOL(nci_nfcee_mode_set);
+
+static void nci_core_conn_create_req(struct nci_dev *ndev, const void *opt)
+{
+	const struct core_conn_create_data *data = opt;
+
+	nci_send_cmd(ndev, NCI_OP_CORE_CONN_CREATE_CMD, data->length, data->cmd);
+}
+
+int nci_core_conn_create(struct nci_dev *ndev, u8 destination_type,
+			 u8 number_destination_params,
+			 size_t params_len,
+			 const struct core_conn_create_dest_spec_params *params)
+{
+	int r;
+	struct nci_core_conn_create_cmd *cmd;
+	struct core_conn_create_data data;
+
+	data.length = params_len + sizeof(struct nci_core_conn_create_cmd);
+	cmd = kzalloc(data.length, GFP_KERNEL);
+	if (!cmd)
+		return -ENOMEM;
+
+	cmd->destination_type = destination_type;
+	cmd->number_destination_params = number_destination_params;
+
+	data.cmd = cmd;
+
+	if (params) {
+		memcpy(cmd->params, params, params_len);
+		if (params->length > 0)
+			memcpy(&ndev->cur_params,
+			       &params->value[DEST_SPEC_PARAMS_ID_INDEX],
+			       sizeof(struct dest_spec_params));
+		else
+			ndev->cur_params.id = 0;
+	} else {
+		ndev->cur_params.id = 0;
+	}
+	ndev->cur_dest_type = destination_type;
+
+	r = __nci_request(ndev, nci_core_conn_create_req, &data,
+			  msecs_to_jiffies(NCI_CMD_TIMEOUT));
+	kfree(cmd);
+	return r;
+}
+EXPORT_SYMBOL(nci_core_conn_create);
+
+static void nci_core_conn_close_req(struct nci_dev *ndev, const void *opt)
+{
+	__u8 conn_id = (unsigned long)opt;
+
+	nci_send_cmd(ndev, NCI_OP_CORE_CONN_CLOSE_CMD, 1, &conn_id);
+}
+
+int nci_core_conn_close(struct nci_dev *ndev, u8 conn_id)
+{
+	unsigned long opt = conn_id;
+
+	ndev->cur_conn_id = conn_id;
+	return __nci_request(ndev, nci_core_conn_close_req, (void *)opt,
+			     msecs_to_jiffies(NCI_CMD_TIMEOUT));
+}
+EXPORT_SYMBOL(nci_core_conn_close);
+
+static int nci_set_local_general_bytes(struct nfc_dev *nfc_dev)
+{
+	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+	struct nci_set_config_param param;
+	int rc;
+
+	param.val = nfc_get_local_general_bytes(nfc_dev, &param.len);
+	if ((param.val == NULL) || (param.len == 0))
+		return 0;
+
+	if (param.len > NFC_MAX_GT_LEN)
+		return -EINVAL;
+
+	param.id = NCI_PN_ATR_REQ_GEN_BYTES;
+
+	rc = nci_request(ndev, nci_set_config_req, &param,
+			 msecs_to_jiffies(NCI_SET_CONFIG_TIMEOUT));
+	if (rc)
+		return rc;
+
+	param.id = NCI_LN_ATR_RES_GEN_BYTES;
+
+	return nci_request(ndev, nci_set_config_req, &param,
+			   msecs_to_jiffies(NCI_SET_CONFIG_TIMEOUT));
+}
+
+static int nci_set_listen_parameters(struct nfc_dev *nfc_dev)
+{
+	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+	int rc;
+	__u8 val;
+
+	val = NCI_LA_SEL_INFO_NFC_DEP_MASK;
+
+	rc = nci_set_config(ndev, NCI_LA_SEL_INFO, 1, &val);
+	if (rc)
+		return rc;
+
+	val = NCI_LF_PROTOCOL_TYPE_NFC_DEP_MASK;
+
+	rc = nci_set_config(ndev, NCI_LF_PROTOCOL_TYPE, 1, &val);
+	if (rc)
+		return rc;
+
+	val = NCI_LF_CON_BITR_F_212 | NCI_LF_CON_BITR_F_424;
+
+	return nci_set_config(ndev, NCI_LF_CON_BITR_F, 1, &val);
+}
+
+static int nci_start_poll(struct nfc_dev *nfc_dev,
+			  __u32 im_protocols, __u32 tm_protocols)
+{
+	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+	struct nci_rf_discover_param param;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	if ((atomic_read(&ndev->state) == NCI_DISCOVERY) ||
@@ -407,17 +1006,46 @@ static int nci_start_poll(struct nfc_dev *nfc_dev, __u32 protocols)
 	    (atomic_read(&ndev->state) == NCI_POLL_ACTIVE)) {
 		pr_debug("target active or w4 select, implicitly deactivate\n");
 
+<<<<<<< HEAD
 		rc = nci_request(ndev, nci_rf_deactivate_req, 0,
+=======
+		rc = nci_request(ndev, nci_rf_deactivate_req,
+				 (void *)NCI_DEACTIVATE_TYPE_IDLE_MODE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 msecs_to_jiffies(NCI_RF_DEACTIVATE_TIMEOUT));
 		if (rc)
 			return -EBUSY;
 	}
 
+<<<<<<< HEAD
 	rc = nci_request(ndev, nci_rf_discover_req, protocols,
 			 msecs_to_jiffies(NCI_RF_DISC_TIMEOUT));
 
 	if (!rc)
 		ndev->poll_prots = protocols;
+=======
+	if ((im_protocols | tm_protocols) & NFC_PROTO_NFC_DEP_MASK) {
+		rc = nci_set_local_general_bytes(nfc_dev);
+		if (rc) {
+			pr_err("failed to set local general bytes\n");
+			return rc;
+		}
+	}
+
+	if (tm_protocols & NFC_PROTO_NFC_DEP_MASK) {
+		rc = nci_set_listen_parameters(nfc_dev);
+		if (rc)
+			pr_err("failed to set listen parameters\n");
+	}
+
+	param.im_protocols = im_protocols;
+	param.tm_protocols = tm_protocols;
+	rc = nci_request(ndev, nci_rf_discover_req, &param,
+			 msecs_to_jiffies(NCI_RF_DISC_TIMEOUT));
+
+	if (!rc)
+		ndev->poll_prots = im_protocols;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rc;
 }
@@ -432,6 +1060,7 @@ static void nci_stop_poll(struct nfc_dev *nfc_dev)
 		return;
 	}
 
+<<<<<<< HEAD
 	nci_request(ndev, nci_rf_deactivate_req, 0,
 		    msecs_to_jiffies(NCI_RF_DEACTIVATE_TIMEOUT));
 }
@@ -446,6 +1075,23 @@ static int nci_activate_target(struct nfc_dev *nfc_dev, __u32 target_idx,
 	int rc = 0;
 
 	pr_debug("target_idx %d, protocol 0x%x\n", target_idx, protocol);
+=======
+	nci_request(ndev, nci_rf_deactivate_req,
+		    (void *)NCI_DEACTIVATE_TYPE_IDLE_MODE,
+		    msecs_to_jiffies(NCI_RF_DEACTIVATE_TIMEOUT));
+}
+
+static int nci_activate_target(struct nfc_dev *nfc_dev,
+			       struct nfc_target *target, __u32 protocol)
+{
+	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+	struct nci_rf_discover_select_param param;
+	const struct nfc_target *nci_target = NULL;
+	int i;
+	int rc = 0;
+
+	pr_debug("target_idx %d, protocol 0x%x\n", target->idx, protocol);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((atomic_read(&ndev->state) != NCI_W4_HOST_SELECT) &&
 	    (atomic_read(&ndev->state) != NCI_POLL_ACTIVE)) {
@@ -459,25 +1105,47 @@ static int nci_activate_target(struct nfc_dev *nfc_dev, __u32 target_idx,
 	}
 
 	for (i = 0; i < ndev->n_targets; i++) {
+<<<<<<< HEAD
 		if (ndev->targets[i].idx == target_idx) {
 			target = &ndev->targets[i];
+=======
+		if (ndev->targets[i].idx == target->idx) {
+			nci_target = &ndev->targets[i];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
+<<<<<<< HEAD
 	if (!target) {
+=======
+	if (!nci_target) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("unable to find the selected target\n");
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (!(target->supported_protocols & (1 << protocol))) {
+=======
+	if (protocol >= NFC_PROTO_MAX) {
+		pr_err("the requested nfc protocol is invalid\n");
+		return -EINVAL;
+	}
+
+	if (!(nci_target->supported_protocols & (1 << protocol))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("target does not support the requested protocol 0x%x\n",
 		       protocol);
 		return -EINVAL;
 	}
 
 	if (atomic_read(&ndev->state) == NCI_W4_HOST_SELECT) {
+<<<<<<< HEAD
 		param.rf_discovery_id = target->idx;
+=======
+		param.rf_discovery_id = nci_target->logical_idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (protocol == NFC_PROTO_JEWEL)
 			param.rf_protocol = NCI_RF_PROTOCOL_T1T;
@@ -485,13 +1153,22 @@ static int nci_activate_target(struct nfc_dev *nfc_dev, __u32 target_idx,
 			param.rf_protocol = NCI_RF_PROTOCOL_T2T;
 		else if (protocol == NFC_PROTO_FELICA)
 			param.rf_protocol = NCI_RF_PROTOCOL_T3T;
+<<<<<<< HEAD
 		else if (protocol == NFC_PROTO_ISO14443)
+=======
+		else if (protocol == NFC_PROTO_ISO14443 ||
+			 protocol == NFC_PROTO_ISO14443_B)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			param.rf_protocol = NCI_RF_PROTOCOL_ISO_DEP;
 		else
 			param.rf_protocol = NCI_RF_PROTOCOL_NFC_DEP;
 
+<<<<<<< HEAD
 		rc = nci_request(ndev, nci_rf_discover_select_req,
 				 (unsigned long)&param,
+=======
+		rc = nci_request(ndev, nci_rf_discover_select_req, &param,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 msecs_to_jiffies(NCI_RF_DISC_SELECT_TIMEOUT));
 	}
 
@@ -501,11 +1178,20 @@ static int nci_activate_target(struct nfc_dev *nfc_dev, __u32 target_idx,
 	return rc;
 }
 
+<<<<<<< HEAD
 static void nci_deactivate_target(struct nfc_dev *nfc_dev, __u32 target_idx)
 {
 	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
 
 	pr_debug("target_idx %d\n", target_idx);
+=======
+static void nci_deactivate_target(struct nfc_dev *nfc_dev,
+				  struct nfc_target *target,
+				  __u8 mode)
+{
+	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+	unsigned long nci_mode = NCI_DEACTIVATE_TYPE_IDLE_MODE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ndev->target_active_prot) {
 		pr_err("unable to deactivate target, no active target\n");
@@ -514,20 +1200,90 @@ static void nci_deactivate_target(struct nfc_dev *nfc_dev, __u32 target_idx)
 
 	ndev->target_active_prot = 0;
 
+<<<<<<< HEAD
 	if (atomic_read(&ndev->state) == NCI_POLL_ACTIVE) {
 		nci_request(ndev, nci_rf_deactivate_req, 0,
+=======
+	switch (mode) {
+	case NFC_TARGET_MODE_SLEEP:
+		nci_mode = NCI_DEACTIVATE_TYPE_SLEEP_MODE;
+		break;
+	}
+
+	if (atomic_read(&ndev->state) == NCI_POLL_ACTIVE) {
+		nci_request(ndev, nci_rf_deactivate_req, (void *)nci_mode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    msecs_to_jiffies(NCI_RF_DEACTIVATE_TIMEOUT));
 	}
 }
 
+<<<<<<< HEAD
 static int nci_data_exchange(struct nfc_dev *nfc_dev, __u32 target_idx,
 			     struct sk_buff *skb,
 			     data_exchange_cb_t cb, void *cb_context)
+=======
+static int nci_dep_link_up(struct nfc_dev *nfc_dev, struct nfc_target *target,
+			   __u8 comm_mode, __u8 *gb, size_t gb_len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
 	int rc;
 
+<<<<<<< HEAD
 	pr_debug("target_idx %d, len %d\n", target_idx, skb->len);
+=======
+	pr_debug("target_idx %d, comm_mode %d\n", target->idx, comm_mode);
+
+	rc = nci_activate_target(nfc_dev, target, NFC_PROTO_NFC_DEP);
+	if (rc)
+		return rc;
+
+	rc = nfc_set_remote_general_bytes(nfc_dev, ndev->remote_gb,
+					  ndev->remote_gb_len);
+	if (!rc)
+		rc = nfc_dep_link_is_up(nfc_dev, target->idx, NFC_COMM_PASSIVE,
+					NFC_RF_INITIATOR);
+
+	return rc;
+}
+
+static int nci_dep_link_down(struct nfc_dev *nfc_dev)
+{
+	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+	int rc;
+
+	if (nfc_dev->rf_mode == NFC_RF_INITIATOR) {
+		nci_deactivate_target(nfc_dev, NULL, NCI_DEACTIVATE_TYPE_IDLE_MODE);
+	} else {
+		if (atomic_read(&ndev->state) == NCI_LISTEN_ACTIVE ||
+		    atomic_read(&ndev->state) == NCI_DISCOVERY) {
+			nci_request(ndev, nci_rf_deactivate_req, (void *)0,
+				    msecs_to_jiffies(NCI_RF_DEACTIVATE_TIMEOUT));
+		}
+
+		rc = nfc_tm_deactivated(nfc_dev);
+		if (rc)
+			pr_err("error when signaling tm deactivation\n");
+	}
+
+	return 0;
+}
+
+
+static int nci_transceive(struct nfc_dev *nfc_dev, struct nfc_target *target,
+			  struct sk_buff *skb,
+			  data_exchange_cb_t cb, void *cb_context)
+{
+	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+	int rc;
+	struct nci_conn_info *conn_info;
+
+	conn_info = ndev->rf_conn_info;
+	if (!conn_info)
+		return -EPROTO;
+
+	pr_debug("target_idx %d, len %d\n", target->idx, skb->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ndev->target_active_prot) {
 		pr_err("unable to exchange data, no active target\n");
@@ -538,8 +1294,13 @@ static int nci_data_exchange(struct nfc_dev *nfc_dev, __u32 target_idx,
 		return -EBUSY;
 
 	/* store cb and context to be used on receiving data */
+<<<<<<< HEAD
 	ndev->data_exchange_cb = cb;
 	ndev->data_exchange_cb_context = cb_context;
+=======
+	conn_info->data_exchange_cb = cb;
+	conn_info->data_exchange_cb_context = cb_context;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = nci_send_data(ndev, NCI_STATIC_RF_CONN_ID, skb);
 	if (rc)
@@ -548,11 +1309,87 @@ static int nci_data_exchange(struct nfc_dev *nfc_dev, __u32 target_idx,
 	return rc;
 }
 
+<<<<<<< HEAD
 static struct nfc_ops nci_nfc_ops = {
+=======
+static int nci_tm_send(struct nfc_dev *nfc_dev, struct sk_buff *skb)
+{
+	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+	int rc;
+
+	rc = nci_send_data(ndev, NCI_STATIC_RF_CONN_ID, skb);
+	if (rc)
+		pr_err("unable to send data\n");
+
+	return rc;
+}
+
+static int nci_enable_se(struct nfc_dev *nfc_dev, u32 se_idx)
+{
+	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+
+	if (ndev->ops->enable_se)
+		return ndev->ops->enable_se(ndev, se_idx);
+
+	return 0;
+}
+
+static int nci_disable_se(struct nfc_dev *nfc_dev, u32 se_idx)
+{
+	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+
+	if (ndev->ops->disable_se)
+		return ndev->ops->disable_se(ndev, se_idx);
+
+	return 0;
+}
+
+static int nci_discover_se(struct nfc_dev *nfc_dev)
+{
+	int r;
+	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+
+	if (ndev->ops->discover_se) {
+		r = nci_nfcee_discover(ndev, NCI_NFCEE_DISCOVERY_ACTION_ENABLE);
+		if (r != NCI_STATUS_OK)
+			return -EPROTO;
+
+		return ndev->ops->discover_se(ndev);
+	}
+
+	return 0;
+}
+
+static int nci_se_io(struct nfc_dev *nfc_dev, u32 se_idx,
+		     u8 *apdu, size_t apdu_length,
+		     se_io_cb_t cb, void *cb_context)
+{
+	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+
+	if (ndev->ops->se_io)
+		return ndev->ops->se_io(ndev, se_idx, apdu,
+				apdu_length, cb, cb_context);
+
+	return 0;
+}
+
+static int nci_fw_download(struct nfc_dev *nfc_dev, const char *firmware_name)
+{
+	struct nci_dev *ndev = nfc_get_drvdata(nfc_dev);
+
+	if (!ndev->ops->fw_download)
+		return -ENOTSUPP;
+
+	return ndev->ops->fw_download(ndev, firmware_name);
+}
+
+static const struct nfc_ops nci_nfc_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dev_up = nci_dev_up,
 	.dev_down = nci_dev_down,
 	.start_poll = nci_start_poll,
 	.stop_poll = nci_stop_poll,
+<<<<<<< HEAD
 	.activate_target = nci_activate_target,
 	.deactivate_target = nci_deactivate_target,
 	.data_exchange = nci_data_exchange,
@@ -560,13 +1397,36 @@ static struct nfc_ops nci_nfc_ops = {
 
 /* ---- Interface to NCI drivers ---- */
 
+=======
+	.dep_link_up = nci_dep_link_up,
+	.dep_link_down = nci_dep_link_down,
+	.activate_target = nci_activate_target,
+	.deactivate_target = nci_deactivate_target,
+	.im_transceive = nci_transceive,
+	.tm_send = nci_tm_send,
+	.enable_se = nci_enable_se,
+	.disable_se = nci_disable_se,
+	.discover_se = nci_discover_se,
+	.se_io = nci_se_io,
+	.fw_download = nci_fw_download,
+};
+
+/* ---- Interface to NCI drivers ---- */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * nci_allocate_device - allocate a new nci device
  *
  * @ops: device operations
  * @supported_protocols: NFC protocols supported by the device
+<<<<<<< HEAD
  */
 struct nci_dev *nci_allocate_device(struct nci_ops *ops,
+=======
+ * @tx_headroom: Reserved space at beginning of skb
+ * @tx_tailroom: Reserved space at end of skb
+ */
+struct nci_dev *nci_allocate_device(const struct nci_ops *ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    __u32 supported_protocols,
 				    int tx_headroom, int tx_tailroom)
 {
@@ -585,21 +1445,48 @@ struct nci_dev *nci_allocate_device(struct nci_ops *ops,
 		return NULL;
 
 	ndev->ops = ops;
+<<<<<<< HEAD
 	ndev->tx_headroom = tx_headroom;
 	ndev->tx_tailroom = tx_tailroom;
+=======
+
+	if (ops->n_prop_ops > NCI_MAX_PROPRIETARY_CMD) {
+		pr_err("Too many proprietary commands: %zd\n",
+		       ops->n_prop_ops);
+		goto free_nci;
+	}
+
+	ndev->tx_headroom = tx_headroom;
+	ndev->tx_tailroom = tx_tailroom;
+	init_completion(&ndev->req_completion);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ndev->nfc_dev = nfc_allocate_device(&nci_nfc_ops,
 					    supported_protocols,
 					    tx_headroom + NCI_DATA_HDR_SIZE,
 					    tx_tailroom);
 	if (!ndev->nfc_dev)
+<<<<<<< HEAD
 		goto free_exit;
+=======
+		goto free_nci;
+
+	ndev->hci_dev = nci_hci_allocate(ndev);
+	if (!ndev->hci_dev)
+		goto free_nfc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nfc_set_drvdata(ndev->nfc_dev, ndev);
 
 	return ndev;
 
+<<<<<<< HEAD
 free_exit:
+=======
+free_nfc:
+	nfc_free_device(ndev->nfc_dev);
+free_nci:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ndev);
 	return NULL;
 }
@@ -613,6 +1500,14 @@ EXPORT_SYMBOL(nci_allocate_device);
 void nci_free_device(struct nci_dev *ndev)
 {
 	nfc_free_device(ndev->nfc_dev);
+<<<<<<< HEAD
+=======
+	nci_hci_deallocate(ndev);
+
+	/* drop partial rx data packet if present */
+	if (ndev->rx_data_reassembly)
+		kfree_skb(ndev->rx_data_reassembly);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ndev);
 }
 EXPORT_SYMBOL(nci_free_device);
@@ -620,7 +1515,11 @@ EXPORT_SYMBOL(nci_free_device);
 /**
  * nci_register_device - register a nci device in the nfc subsystem
  *
+<<<<<<< HEAD
  * @dev: The nci device to register
+=======
+ * @ndev: The nci device to register
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int nci_register_device(struct nci_dev *ndev)
 {
@@ -628,10 +1527,13 @@ int nci_register_device(struct nci_dev *ndev)
 	struct device *dev = &ndev->nfc_dev->dev;
 	char name[32];
 
+<<<<<<< HEAD
 	rc = nfc_register_device(ndev->nfc_dev);
 	if (rc)
 		goto exit;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ndev->flags = 0;
 
 	INIT_WORK(&ndev->cmd_work, nci_cmd_work);
@@ -639,7 +1541,11 @@ int nci_register_device(struct nci_dev *ndev)
 	ndev->cmd_wq = create_singlethread_workqueue(name);
 	if (!ndev->cmd_wq) {
 		rc = -ENOMEM;
+<<<<<<< HEAD
 		goto unreg_exit;
+=======
+		goto exit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	INIT_WORK(&ndev->rx_work, nci_rx_work);
@@ -662,6 +1568,7 @@ int nci_register_device(struct nci_dev *ndev)
 	skb_queue_head_init(&ndev->rx_q);
 	skb_queue_head_init(&ndev->tx_q);
 
+<<<<<<< HEAD
 	setup_timer(&ndev->cmd_timer, nci_cmd_timer,
 		    (unsigned long) ndev);
 	setup_timer(&ndev->data_timer, nci_data_timer,
@@ -671,15 +1578,35 @@ int nci_register_device(struct nci_dev *ndev)
 
 	goto exit;
 
+=======
+	timer_setup(&ndev->cmd_timer, nci_cmd_timer, 0);
+	timer_setup(&ndev->data_timer, nci_data_timer, 0);
+
+	mutex_init(&ndev->req_lock);
+	INIT_LIST_HEAD(&ndev->conn_info_list);
+
+	rc = nfc_register_device(ndev->nfc_dev);
+	if (rc)
+		goto destroy_tx_wq_exit;
+
+	goto exit;
+
+destroy_tx_wq_exit:
+	destroy_workqueue(ndev->tx_wq);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 destroy_rx_wq_exit:
 	destroy_workqueue(ndev->rx_wq);
 
 destroy_cmd_wq_exit:
 	destroy_workqueue(ndev->cmd_wq);
 
+<<<<<<< HEAD
 unreg_exit:
 	nfc_unregister_device(ndev->nfc_dev);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit:
 	return rc;
 }
@@ -688,16 +1615,39 @@ EXPORT_SYMBOL(nci_register_device);
 /**
  * nci_unregister_device - unregister a nci device in the nfc subsystem
  *
+<<<<<<< HEAD
  * @dev: The nci device to unregister
  */
 void nci_unregister_device(struct nci_dev *ndev)
 {
+=======
+ * @ndev: The nci device to unregister
+ */
+void nci_unregister_device(struct nci_dev *ndev)
+{
+	struct nci_conn_info *conn_info, *n;
+
+	/* This set_bit is not protected with specialized barrier,
+	 * However, it is fine because the mutex_lock(&ndev->req_lock);
+	 * in nci_close_device() will help to emit one.
+	 */
+	set_bit(NCI_UNREG, &ndev->flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nci_close_device(ndev);
 
 	destroy_workqueue(ndev->cmd_wq);
 	destroy_workqueue(ndev->rx_wq);
 	destroy_workqueue(ndev->tx_wq);
 
+<<<<<<< HEAD
+=======
+	list_for_each_entry_safe(conn_info, n, &ndev->conn_info_list, list) {
+		list_del(&conn_info->list);
+		/* conn_info is allocated with devm_kzalloc */
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nfc_unregister_device(ndev->nfc_dev);
 }
 EXPORT_SYMBOL(nci_unregister_device);
@@ -705,6 +1655,7 @@ EXPORT_SYMBOL(nci_unregister_device);
 /**
  * nci_recv_frame - receive frame from NCI drivers
  *
+<<<<<<< HEAD
  * @skb: The sk_buff to receive
  */
 int nci_recv_frame(struct sk_buff *skb)
@@ -715,6 +1666,17 @@ int nci_recv_frame(struct sk_buff *skb)
 
 	if (!ndev || (!test_bit(NCI_UP, &ndev->flags)
 		      && !test_bit(NCI_INIT, &ndev->flags))) {
+=======
+ * @ndev: The nci device
+ * @skb: The sk_buff to receive
+ */
+int nci_recv_frame(struct nci_dev *ndev, struct sk_buff *skb)
+{
+	pr_debug("len %d\n", skb->len);
+
+	if (!ndev || (!test_bit(NCI_UP, &ndev->flags) &&
+	    !test_bit(NCI_INIT, &ndev->flags))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree_skb(skb);
 		return -ENXIO;
 	}
@@ -727,10 +1689,15 @@ int nci_recv_frame(struct sk_buff *skb)
 }
 EXPORT_SYMBOL(nci_recv_frame);
 
+<<<<<<< HEAD
 static int nci_send_frame(struct sk_buff *skb)
 {
 	struct nci_dev *ndev = (struct nci_dev *) skb->dev;
 
+=======
+int nci_send_frame(struct nci_dev *ndev, struct sk_buff *skb)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("len %d\n", skb->len);
 
 	if (!ndev) {
@@ -741,11 +1708,24 @@ static int nci_send_frame(struct sk_buff *skb)
 	/* Get rid of skb owner, prior to sending to the driver. */
 	skb_orphan(skb);
 
+<<<<<<< HEAD
 	return ndev->ops->send(skb);
 }
 
 /* Send NCI command */
 int nci_send_cmd(struct nci_dev *ndev, __u16 opcode, __u8 plen, void *payload)
+=======
+	/* Send copy to sniffer */
+	nfc_send_to_raw_sock(ndev->nfc_dev, skb,
+			     RAW_PAYLOAD_NCI, NFC_DIRECTION_TX);
+
+	return ndev->ops->send(ndev, skb);
+}
+EXPORT_SYMBOL(nci_send_frame);
+
+/* Send NCI command */
+int nci_send_cmd(struct nci_dev *ndev, __u16 opcode, __u8 plen, const void *payload)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nci_ctrl_hdr *hdr;
 	struct sk_buff *skb;
@@ -758,7 +1738,11 @@ int nci_send_cmd(struct nci_dev *ndev, __u16 opcode, __u8 plen, void *payload)
 		return -ENOMEM;
 	}
 
+<<<<<<< HEAD
 	hdr = (struct nci_ctrl_hdr *) skb_put(skb, NCI_CTRL_HDR_SIZE);
+=======
+	hdr = skb_put(skb, NCI_CTRL_HDR_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hdr->gid = nci_opcode_gid(opcode);
 	hdr->oid = nci_opcode_oid(opcode);
 	hdr->plen = plen;
@@ -767,21 +1751,104 @@ int nci_send_cmd(struct nci_dev *ndev, __u16 opcode, __u8 plen, void *payload)
 	nci_pbf_set((__u8 *)hdr, NCI_PBF_LAST);
 
 	if (plen)
+<<<<<<< HEAD
 		memcpy(skb_put(skb, plen), payload, plen);
 
 	skb->dev = (void *) ndev;
+=======
+		skb_put_data(skb, payload, plen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_queue_tail(&ndev->cmd_q, skb);
 	queue_work(ndev->cmd_wq, &ndev->cmd_work);
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(nci_send_cmd);
+
+/* Proprietary commands API */
+static const struct nci_driver_ops *ops_cmd_lookup(const struct nci_driver_ops *ops,
+						   size_t n_ops,
+						   __u16 opcode)
+{
+	size_t i;
+	const struct nci_driver_ops *op;
+
+	if (!ops || !n_ops)
+		return NULL;
+
+	for (i = 0; i < n_ops; i++) {
+		op = &ops[i];
+		if (op->opcode == opcode)
+			return op;
+	}
+
+	return NULL;
+}
+
+static int nci_op_rsp_packet(struct nci_dev *ndev, __u16 rsp_opcode,
+			     struct sk_buff *skb, const struct nci_driver_ops *ops,
+			     size_t n_ops)
+{
+	const struct nci_driver_ops *op;
+
+	op = ops_cmd_lookup(ops, n_ops, rsp_opcode);
+	if (!op || !op->rsp)
+		return -ENOTSUPP;
+
+	return op->rsp(ndev, skb);
+}
+
+static int nci_op_ntf_packet(struct nci_dev *ndev, __u16 ntf_opcode,
+			     struct sk_buff *skb, const struct nci_driver_ops *ops,
+			     size_t n_ops)
+{
+	const struct nci_driver_ops *op;
+
+	op = ops_cmd_lookup(ops, n_ops, ntf_opcode);
+	if (!op || !op->ntf)
+		return -ENOTSUPP;
+
+	return op->ntf(ndev, skb);
+}
+
+int nci_prop_rsp_packet(struct nci_dev *ndev, __u16 opcode,
+			struct sk_buff *skb)
+{
+	return nci_op_rsp_packet(ndev, opcode, skb, ndev->ops->prop_ops,
+				 ndev->ops->n_prop_ops);
+}
+
+int nci_prop_ntf_packet(struct nci_dev *ndev, __u16 opcode,
+			struct sk_buff *skb)
+{
+	return nci_op_ntf_packet(ndev, opcode, skb, ndev->ops->prop_ops,
+				 ndev->ops->n_prop_ops);
+}
+
+int nci_core_rsp_packet(struct nci_dev *ndev, __u16 opcode,
+			struct sk_buff *skb)
+{
+	return nci_op_rsp_packet(ndev, opcode, skb, ndev->ops->core_ops,
+				  ndev->ops->n_core_ops);
+}
+
+int nci_core_ntf_packet(struct nci_dev *ndev, __u16 opcode,
+			struct sk_buff *skb)
+{
+	return nci_op_ntf_packet(ndev, opcode, skb, ndev->ops->core_ops,
+				 ndev->ops->n_core_ops);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ---- NCI TX Data worker thread ---- */
 
 static void nci_tx_work(struct work_struct *work)
 {
 	struct nci_dev *ndev = container_of(work, struct nci_dev, tx_work);
+<<<<<<< HEAD
 	struct sk_buff *skb;
 
 	pr_debug("credits_cnt %d\n", atomic_read(&ndev->credits_cnt));
@@ -796,16 +1863,46 @@ static void nci_tx_work(struct work_struct *work)
 		if (atomic_read(&ndev->credits_cnt) !=
 		    NCI_DATA_FLOW_CONTROL_NOT_USED)
 			atomic_dec(&ndev->credits_cnt);
+=======
+	struct nci_conn_info *conn_info;
+	struct sk_buff *skb;
+
+	conn_info = nci_get_conn_info_by_conn_id(ndev, ndev->cur_conn_id);
+	if (!conn_info)
+		return;
+
+	pr_debug("credits_cnt %d\n", atomic_read(&conn_info->credits_cnt));
+
+	/* Send queued tx data */
+	while (atomic_read(&conn_info->credits_cnt)) {
+		skb = skb_dequeue(&ndev->tx_q);
+		if (!skb)
+			return;
+		kcov_remote_start_common(skb_get_kcov_handle(skb));
+
+		/* Check if data flow control is used */
+		if (atomic_read(&conn_info->credits_cnt) !=
+		    NCI_DATA_FLOW_CONTROL_NOT_USED)
+			atomic_dec(&conn_info->credits_cnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pr_debug("NCI TX: MT=data, PBF=%d, conn_id=%d, plen=%d\n",
 			 nci_pbf(skb->data),
 			 nci_conn_id(skb->data),
 			 nci_plen(skb->data));
 
+<<<<<<< HEAD
 		nci_send_frame(skb);
 
 		mod_timer(&ndev->data_timer,
 			  jiffies + msecs_to_jiffies(NCI_DATA_TIMEOUT));
+=======
+		nci_send_frame(ndev, skb);
+
+		mod_timer(&ndev->data_timer,
+			  jiffies + msecs_to_jiffies(NCI_DATA_TIMEOUT));
+		kcov_remote_stop();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -816,7 +1913,23 @@ static void nci_rx_work(struct work_struct *work)
 	struct nci_dev *ndev = container_of(work, struct nci_dev, rx_work);
 	struct sk_buff *skb;
 
+<<<<<<< HEAD
 	while ((skb = skb_dequeue(&ndev->rx_q))) {
+=======
+	for (; (skb = skb_dequeue(&ndev->rx_q)); kcov_remote_stop()) {
+		kcov_remote_start_common(skb_get_kcov_handle(skb));
+
+		/* Send copy to sniffer */
+		nfc_send_to_raw_sock(ndev->nfc_dev, skb,
+				     RAW_PAYLOAD_NCI, NFC_DIRECTION_RX);
+
+		if (!nci_plen(skb->data)) {
+			kfree_skb(skb);
+			kcov_remote_stop();
+			break;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Process frame */
 		switch (nci_mt(skb->data)) {
 		case NCI_MT_RSP_PKT:
@@ -838,11 +1951,21 @@ static void nci_rx_work(struct work_struct *work)
 		}
 	}
 
+<<<<<<< HEAD
 	/* check if a data exchange timout has occurred */
 	if (test_bit(NCI_DATA_EXCHANGE_TO, &ndev->flags)) {
 		/* complete the data exchange transaction, if exists */
 		if (test_bit(NCI_DATA_EXCHANGE, &ndev->flags))
 			nci_data_exchange_complete(ndev, NULL, -ETIMEDOUT);
+=======
+	/* check if a data exchange timeout has occurred */
+	if (test_bit(NCI_DATA_EXCHANGE_TO, &ndev->flags)) {
+		/* complete the data exchange transaction, if exists */
+		if (test_bit(NCI_DATA_EXCHANGE, &ndev->flags))
+			nci_data_exchange_complete(ndev, NULL,
+						   ndev->cur_conn_id,
+						   -ETIMEDOUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		clear_bit(NCI_DATA_EXCHANGE_TO, &ndev->flags);
 	}
@@ -863,6 +1986,10 @@ static void nci_cmd_work(struct work_struct *work)
 		if (!skb)
 			return;
 
+<<<<<<< HEAD
+=======
+		kcov_remote_start_common(skb_get_kcov_handle(skb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atomic_dec(&ndev->cmd_cnt);
 
 		pr_debug("NCI TX: MT=cmd, PBF=%d, GID=0x%x, OID=0x%x, plen=%d\n",
@@ -871,9 +1998,22 @@ static void nci_cmd_work(struct work_struct *work)
 			 nci_opcode_oid(nci_opcode(skb->data)),
 			 nci_plen(skb->data));
 
+<<<<<<< HEAD
 		nci_send_frame(skb);
 
 		mod_timer(&ndev->cmd_timer,
 			  jiffies + msecs_to_jiffies(NCI_CMD_TIMEOUT));
 	}
 }
+=======
+		nci_send_frame(ndev, skb);
+
+		mod_timer(&ndev->cmd_timer,
+			  jiffies + msecs_to_jiffies(NCI_CMD_TIMEOUT));
+		kcov_remote_stop();
+	}
+}
+
+MODULE_DESCRIPTION("NFC Controller Interface");
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

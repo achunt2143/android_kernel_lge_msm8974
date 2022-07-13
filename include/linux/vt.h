@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_VT_H
 #define _LINUX_VT_H
 
@@ -85,6 +86,14 @@ struct vt_setactivate {
 #define VT_SETACTIVATE	0x560F	/* Activate and set the mode of a console */
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_VT_H
+#define _LINUX_VT_H
+
+#include <uapi/linux/vt.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Virtual Terminal events. */
 #define VT_ALLOCATE		0x0001 /* Console got allocated */
@@ -106,8 +115,11 @@ static inline int vt_kmsg_redirect(int new)
 
 #endif
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
 #define vt_get_kmsg_redirect() vt_kmsg_redirect(-1)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_VT_H */

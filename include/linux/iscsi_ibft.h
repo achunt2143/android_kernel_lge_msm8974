@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright 2007 Red Hat, Inc.
  *  by Peter Jones <pjones@redhat.com>
@@ -7,6 +11,7 @@
  *  by Konrad Rzeszutek <ketuzsezr@darnok.org>
  *
  * This code exposes the iSCSI Boot Format Table to userland via sysfs.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License v2.0 as published by
@@ -16,11 +21,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef ISCSI_IBFT_H
 #define ISCSI_IBFT_H
 
+<<<<<<< HEAD
 #include <acpi/acpi.h>
 
 /*
@@ -41,6 +49,32 @@ static inline unsigned long find_ibft_region(unsigned long *sizep)
 	*sizep = 0;
 	return 0;
 }
+=======
+#include <linux/types.h>
+
+/*
+ * Physical location of iSCSI Boot Format Table.
+ * If the value is 0 there is no iBFT on the machine.
+ */
+extern phys_addr_t ibft_phys_addr;
+
+#ifdef CONFIG_ISCSI_IBFT_FIND
+
+/*
+ * Routine used to find and reserve the iSCSI Boot Format Table. The
+ * physical address is set in the ibft_phys_addr variable.
+ */
+void reserve_ibft_region(void);
+
+/*
+ * Physical bounds to search for the iSCSI Boot Format Table.
+ */
+#define IBFT_START 0x80000 /* 512kB */
+#define IBFT_END 0x100000 /* 1MB */
+
+#else
+static inline void reserve_ibft_region(void) {}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* ISCSI_IBFT_H */

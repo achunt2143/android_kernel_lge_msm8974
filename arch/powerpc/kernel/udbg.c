@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * polling mode stateless debugging stuff, originally for NS16550 Serial Ports
  *
  * c 2001 PPC 64 Team, IBM Corp
+<<<<<<< HEAD
  *
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
@@ -10,6 +15,11 @@
  */
 
 #include <stdarg.h>
+=======
+ */
+
+#include <linux/stdarg.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/sched.h>
 #include <linux/console.h>
@@ -46,11 +56,17 @@ void __init udbg_early_init(void)
 #elif defined(CONFIG_PPC_EARLY_DEBUG_MAPLE)
 	/* Maple real mode debug */
 	udbg_init_maple_realmode();
+<<<<<<< HEAD
 #elif defined(CONFIG_PPC_EARLY_DEBUG_BEAT)
 	udbg_init_debug_beat();
 #elif defined(CONFIG_PPC_EARLY_DEBUG_PAS_REALMODE)
 	udbg_init_pas_realmode();
 #elif defined(CONFIG_BOOTX_TEXT)
+=======
+#elif defined(CONFIG_PPC_EARLY_DEBUG_PAS_REALMODE)
+	udbg_init_pas_realmode();
+#elif defined(CONFIG_PPC_EARLY_DEBUG_BOOTX)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udbg_init_btext();
 #elif defined(CONFIG_PPC_EARLY_DEBUG_44x)
 	/* PPC44x debug */
@@ -62,8 +78,14 @@ void __init udbg_early_init(void)
 	udbg_init_cpm();
 #elif defined(CONFIG_PPC_EARLY_DEBUG_USBGECKO)
 	udbg_init_usbgecko();
+<<<<<<< HEAD
 #elif defined(CONFIG_PPC_EARLY_DEBUG_WSP)
 	udbg_init_wsp();
+=======
+#elif defined(CONFIG_PPC_EARLY_DEBUG_MEMCONS)
+	/* In memory console */
+	udbg_init_memcons();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #elif defined(CONFIG_PPC_EARLY_DEBUG_EHV_BC)
 	udbg_init_ehv_bc();
 #elif defined(CONFIG_PPC_EARLY_DEBUG_PS3GELIC)
@@ -72,10 +94,19 @@ void __init udbg_early_init(void)
 	udbg_init_debug_opal_raw();
 #elif defined(CONFIG_PPC_EARLY_DEBUG_OPAL_HVSI)
 	udbg_init_debug_opal_hvsi();
+<<<<<<< HEAD
 #endif
 
 #ifdef CONFIG_PPC_EARLY_DEBUG
 	console_loglevel = 10;
+=======
+#elif defined(CONFIG_PPC_EARLY_DEBUG_16550)
+	udbg_init_debug_16550();
+#endif
+
+#ifdef CONFIG_PPC_EARLY_DEBUG
+	console_loglevel = CONSOLE_LOGLEVEL_DEBUG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	register_early_udbg_console();
 #endif
@@ -122,6 +153,7 @@ int udbg_write(const char *s, int n)
 	return n - remain;
 }
 
+<<<<<<< HEAD
 int udbg_read(char *buf, int buflen)
 {
 	char *p = buf;
@@ -155,6 +187,20 @@ void udbg_printf(const char *fmt, ...)
 	vsnprintf(buf, UDBG_BUFSIZE, fmt, args);
 	udbg_puts(buf);
 	va_end(args);
+=======
+#define UDBG_BUFSIZE 256
+void udbg_printf(const char *fmt, ...)
+{
+	if (udbg_putc) {
+		char buf[UDBG_BUFSIZE];
+		va_list args;
+
+		va_start(args, fmt);
+		vsnprintf(buf, UDBG_BUFSIZE, fmt, args);
+		udbg_puts(buf);
+		va_end(args);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init udbg_progress(char *s, unsigned short hex)
@@ -179,15 +225,22 @@ static struct console udbg_console = {
 	.index	= 0,
 };
 
+<<<<<<< HEAD
 static int early_console_initialized;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Called by setup_system after ppc_md->probe and ppc_md->early_init.
  * Call it again after setting udbg_putc in ppc_md->setup_arch.
  */
 void __init register_early_udbg_console(void)
 {
+<<<<<<< HEAD
 	if (early_console_initialized)
+=======
+	if (early_console)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (!udbg_putc)
@@ -197,7 +250,11 @@ void __init register_early_udbg_console(void)
 		printk(KERN_INFO "early console immortal !\n");
 		udbg_console.flags &= ~CON_BOOT;
 	}
+<<<<<<< HEAD
 	early_console_initialized = 1;
+=======
+	early_console = &udbg_console;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	register_console(&udbg_console);
 }
 

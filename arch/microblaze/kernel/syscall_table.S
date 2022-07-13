@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ENTRY(sys_call_table)
 	.long sys_restart_syscall	/* 0 - old "setup()" system call,
 					 * used for restarting */
@@ -383,3 +384,10 @@ ENTRY(sys_call_table)
 	.long sys_sendmmsg
 	.long sys_process_vm_readv
 	.long sys_process_vm_writev
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+
+#define __SYSCALL(nr, entry) .long entry
+ENTRY(sys_call_table)
+#include <asm/syscall_table.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

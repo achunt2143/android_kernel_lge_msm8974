@@ -1,5 +1,10 @@
 /*
+<<<<<<< HEAD
  * Copyright (c) 2006, 2007, 2008, 2009 QLogic Corporation. All rights reserved.
+=======
+ * Copyright (c) 2012 Intel Corporation. All rights reserved.
+ * Copyright (c) 2006 - 2012 QLogic Corporation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (c) 2003, 2004, 2005, 2006 PathScale, Inc. All rights reserved.
  *
  * This software is available to you under a choice of one of two
@@ -104,6 +109,10 @@ static void scl_out(struct qib_devdata *dd, u8 bit)
 		udelay(2);
 	else {
 		int rise_usec;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (rise_usec = SCL_WAIT_USEC; rise_usec > 0; rise_usec -= 2) {
 			if (mask & dd->f_gpio_mod(dd, 0, 0, 0))
 				break;
@@ -166,6 +175,10 @@ static void stop_cmd(struct qib_devdata *dd);
 /**
  * rd_byte - read a byte, sending STOP on last, else ACK
  * @dd: the qlogic_ib device
+<<<<<<< HEAD
+=======
+ * @last: identifies the last read
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Returns byte shifted out of device
  */
@@ -325,6 +338,10 @@ int qib_twsi_reset(struct qib_devdata *dd)
 static int qib_twsi_wr(struct qib_devdata *dd, int data, int flags)
 {
 	int ret = 1;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (flags & QIB_TWSI_START)
 		start_seq(dd);
 
@@ -434,8 +451,12 @@ int qib_twsi_blk_wr(struct qib_devdata *dd, int dev, int addr,
 	int sub_len;
 	const u8 *bp = buffer;
 	int max_wait_time, i;
+<<<<<<< HEAD
 	int ret;
 	ret = 1;
+=======
+	int ret = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (len > 0) {
 		if (dev == QIB_TWSI_NO_DEV) {
@@ -449,8 +470,14 @@ int qib_twsi_blk_wr(struct qib_devdata *dd, int dev, int addr,
 				goto failed_write;
 			ret = qib_twsi_wr(dd, addr, 0);
 			if (ret) {
+<<<<<<< HEAD
 				qib_dev_err(dd, "Failed to write interface"
 					    " write addr %02X\n", addr);
+=======
+				qib_dev_err(dd,
+					"Failed to write interface write addr %02X\n",
+					addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto failed_write;
 			}
 		}

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/xtensa/lib/pci-auto.c
  *
@@ -8,6 +12,7 @@
  * Chris Zankel <zankel@tensilica.com, cez@zankel.net>
  *
  * Based on work from Matt Porter <mporter@mvista.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
@@ -15,6 +20,11 @@
  * option) any later version.
  */
 
+=======
+ */
+
+#include <linux/bitfield.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/pci.h>
@@ -49,6 +59,7 @@
  *
  */
 
+<<<<<<< HEAD
 
 /* define DEBUG to print some debugging messages. */
 
@@ -60,6 +71,8 @@
 # define DBG(x...)
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pciauto_upper_iospc;
 static int pciauto_upper_memspc;
 
@@ -97,7 +110,11 @@ pciauto_setup_bars(struct pci_dev *dev, int bar_limit)
 		{
 			bar_size &= PCI_BASE_ADDRESS_IO_MASK;
 			upper_limit = &pciauto_upper_iospc;
+<<<<<<< HEAD
 			DBG("PCI Autoconfig: BAR %d, I/O, ", bar_nr);
+=======
+			pr_debug("PCI Autoconfig: BAR %d, I/O, ", bar_nr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		else
 		{
@@ -107,7 +124,11 @@ pciauto_setup_bars(struct pci_dev *dev, int bar_limit)
 
 			bar_size &= PCI_BASE_ADDRESS_MEM_MASK;
 			upper_limit = &pciauto_upper_memspc;
+<<<<<<< HEAD
 			DBG("PCI Autoconfig: BAR %d, Mem, ", bar_nr);
+=======
+			pr_debug("PCI Autoconfig: BAR %d, Mem, ", bar_nr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* Allocate a base address (bar_size is negative!) */
@@ -125,7 +146,12 @@ pciauto_setup_bars(struct pci_dev *dev, int bar_limit)
 		if (found_mem64)
 			pci_write_config_dword(dev, (bar+=4), 0x00000000);
 
+<<<<<<< HEAD
 		DBG("size=0x%x, address=0x%x\n", ~bar_size + 1, *upper_limit);
+=======
+		pr_debug("size=0x%x, address=0x%x\n",
+			 ~bar_size + 1, *upper_limit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -150,7 +176,11 @@ pciauto_setup_irq(struct pci_controller* pci_ctrl,struct pci_dev *dev,int devfn)
 	if (irq == -1)
 		irq = 0;
 
+<<<<<<< HEAD
 	DBG("PCI Autoconfig: Interrupt %d, pin %d\n", irq, pin);
+=======
+	pr_debug("PCI Autoconfig: Interrupt %d, pin %d\n", irq, pin);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_write_config_byte(dev, PCI_INTERRUPT_LINE, irq);
 }
@@ -236,6 +266,7 @@ pciauto_postscan_setup_bridge(struct pci_dev *dev, int current_bus, int sub_bus,
 
 int __init pciauto_bus_scan(struct pci_controller *pci_ctrl, int current_bus)
 {
+<<<<<<< HEAD
 	int sub_bus, pci_devfn, pci_class, cmdstat, found_multi=0;
 	unsigned short vid;
 	unsigned char header_type;
@@ -243,6 +274,16 @@ int __init pciauto_bus_scan(struct pci_controller *pci_ctrl, int current_bus)
 
         pciauto_dev.bus = &pciauto_bus;
         pciauto_dev.sysdata = pci_ctrl;
+=======
+	int sub_bus, pci_devfn, pci_class, cmdstat;
+	unsigned short vid;
+	unsigned char header_type;
+	struct pci_dev *dev = &pciauto_dev;
+	bool found_multi = false;
+
+	pciauto_dev.bus = &pciauto_bus;
+	pciauto_dev.sysdata = pci_ctrl;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pciauto_bus.ops = pci_ctrl->ops;
 
 	/*
@@ -275,11 +316,19 @@ int __init pciauto_bus_scan(struct pci_controller *pci_ctrl, int current_bus)
 			continue;
 
 		if (!PCI_FUNC(pci_devfn))
+<<<<<<< HEAD
 			found_multi = header_type & 0x80;
 		pci_read_config_word(dev, PCI_VENDOR_ID, &vid);
 
 		if (vid == 0xffff || vid == 0x0000) {
 			found_multi = 0;
+=======
+			found_multi = FIELD_GET(PCI_HEADER_TYPE_MFD, header_type);
+		pci_read_config_word(dev, PCI_VENDOR_ID, &vid);
+
+		if (vid == 0xffff || vid == 0x0000) {
+			found_multi = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -289,8 +338,13 @@ int __init pciauto_bus_scan(struct pci_controller *pci_ctrl, int current_bus)
 
 			int iosave, memsave;
 
+<<<<<<< HEAD
 			DBG("PCI Autoconfig: Found P2P bridge, device %d\n",
 			    PCI_SLOT(pci_devfn));
+=======
+			pr_debug("PCI Autoconfig: Found P2P bridge, device %d\n",
+				 PCI_SLOT(pci_devfn));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Allocate PCI I/O and/or memory space */
 			pciauto_setup_bars(dev, PCI_BASE_ADDRESS_1);
@@ -306,6 +360,7 @@ int __init pciauto_bus_scan(struct pci_controller *pci_ctrl, int current_bus)
 
 		}
 
+<<<<<<< HEAD
 
 #if 0
 		/* Skip legacy mode IDE controller */
@@ -323,6 +378,8 @@ int __init pciauto_bus_scan(struct pci_controller *pci_ctrl, int current_bus)
 		}
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Found a peripheral, enable some standard
 		 * settings
@@ -337,16 +394,24 @@ int __init pciauto_bus_scan(struct pci_controller *pci_ctrl, int current_bus)
 		pci_write_config_byte(dev, PCI_LATENCY_TIMER, 0x80);
 
 		/* Allocate PCI I/O and/or memory space */
+<<<<<<< HEAD
 		DBG("PCI Autoconfig: Found Bus %d, Device %d, Function %d\n",
 		    current_bus, PCI_SLOT(pci_devfn), PCI_FUNC(pci_devfn) );
+=======
+		pr_debug("PCI Autoconfig: Found Bus %d, Device %d, Function %d\n",
+			 current_bus, PCI_SLOT(pci_devfn), PCI_FUNC(pci_devfn));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pciauto_setup_bars(dev, PCI_BASE_ADDRESS_5);
 		pciauto_setup_irq(pci_ctrl, dev, pci_devfn);
 	}
 	return sub_bus;
 }
+<<<<<<< HEAD
 
 
 
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

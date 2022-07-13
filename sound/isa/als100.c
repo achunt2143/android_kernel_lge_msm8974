@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
     card-als100.c - driver for Avance Logic ALS100 based soundcards.
@@ -7,6 +11,7 @@
     Thanks to Pierfrancesco 'qM2' Passerini.
 
     Generalised for soundcards based on DT-0196 and ALS-007 chips
+<<<<<<< HEAD
     by Jonathan Woithe <jwoithe@physics.adelaide.edu.au>: June 2002.
 
     This program is free software; you can redistribute it and/or modify
@@ -22,6 +27,10 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+    by Jonathan Woithe <jwoithe@just42.net>: June 2002.
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/init.h>
@@ -38,6 +47,7 @@
 #define PFX "als100: "
 
 MODULE_DESCRIPTION("Avance Logic ALS007/ALS1X0");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Diamond Technologies DT-019X},"
 		"{Avance Logic ALS-007}}"
 		"{{Avance Logic,ALS100 - PRO16PNP},"
@@ -49,6 +59,8 @@ MODULE_SUPPORTED_DEVICE("{{Diamond Technologies DT-019X},"
 	        "{Avance Logic,ALS120},"
 	        "{RTL,RTL3000}}");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Massimo Piccioni <dafastidio@libero.it>");
 MODULE_LICENSE("GPL");
 
@@ -79,7 +91,11 @@ struct snd_card_als100 {
 	struct snd_sb *chip;
 };
 
+<<<<<<< HEAD
 static struct pnp_card_device_id snd_als100_pnpids[] = {
+=======
+static const struct pnp_card_device_id snd_als100_pnpids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* DT197A30 */
 	{ .id = "RWB1688",
 	  .devs = { { "@@@0001" }, { "@X@0001" }, { "@H@0001" } },
@@ -117,9 +133,15 @@ static struct pnp_card_device_id snd_als100_pnpids[] = {
 
 MODULE_DEVICE_TABLE(pnp_card, snd_als100_pnpids);
 
+<<<<<<< HEAD
 static int __devinit snd_card_als100_pnp(int dev, struct snd_card_als100 *acard,
 					 struct pnp_card_link *card,
 					 const struct pnp_card_device_id *id)
+=======
+static int snd_card_als100_pnp(int dev, struct snd_card_als100 *acard,
+			       struct pnp_card_link *card,
+			       const struct pnp_card_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pnp_dev *pdev;
 	int err;
@@ -183,9 +205,15 @@ static int __devinit snd_card_als100_pnp(int dev, struct snd_card_als100 *acard,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_card_als100_probe(int dev,
 					struct pnp_card_link *pcard,
 					const struct pnp_card_device_id *pid)
+=======
+static int snd_card_als100_probe(int dev,
+				 struct pnp_card_link *pcard,
+				 const struct pnp_card_device_id *pid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 	struct snd_sb *chip;
@@ -193,17 +221,29 @@ static int __devinit snd_card_als100_probe(int dev,
 	struct snd_card_als100 *acard;
 	struct snd_opl3 *opl3;
 
+<<<<<<< HEAD
 	error = snd_card_create(index[dev], id[dev], THIS_MODULE,
 				sizeof(struct snd_card_als100), &card);
+=======
+	error = snd_devm_card_new(&pcard->card->dev,
+				  index[dev], id[dev], THIS_MODULE,
+				  sizeof(struct snd_card_als100), &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0)
 		return error;
 	acard = card->private_data;
 
+<<<<<<< HEAD
 	if ((error = snd_card_als100_pnp(dev, acard, pcard, pid))) {
 		snd_card_free(card);
 		return error;
 	}
 	snd_card_set_dev(card, &pcard->card->dev);
+=======
+	error = snd_card_als100_pnp(dev, acard, pcard, pid);
+	if (error)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pid->driver_data == SB_HW_DT019X)
 		dma16[dev] = -1;
@@ -213,15 +253,21 @@ static int __devinit snd_card_als100_probe(int dev,
 				  dma8[dev], dma16[dev],
 				  pid->driver_data,
 				  &chip);
+<<<<<<< HEAD
 	if (error < 0) {
 		snd_card_free(card);
 		return error;
 	}
+=======
+	if (error < 0)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acard->chip = chip;
 
 	if (pid->driver_data == SB_HW_DT019X) {
 		strcpy(card->driver, "DT-019X");
 		strcpy(card->shortname, "Diamond Tech. DT-019X");
+<<<<<<< HEAD
 		sprintf(card->longname, "%s, %s at 0x%lx, irq %d, dma %d",
 			card->shortname, chip->name, chip->port,
 			irq[dev], dma8[dev]);
@@ -242,6 +288,27 @@ static int __devinit snd_card_als100_probe(int dev,
 		snd_card_free(card);
 		return error;
 	}
+=======
+		snprintf(card->longname, sizeof(card->longname),
+			 "Diamond Tech. DT-019X, %s at 0x%lx, irq %d, dma %d",
+			 chip->name, chip->port, irq[dev], dma8[dev]);
+	} else {
+		strcpy(card->driver, "ALS100");
+		strcpy(card->shortname, "Avance Logic ALS100");
+		snprintf(card->longname, sizeof(card->longname),
+			 "Avance Logic ALS100, %s at 0x%lx, irq %d, dma %d&%d",
+			 chip->name, chip->port, irq[dev], dma8[dev],
+			 dma16[dev]);
+	}
+
+	error = snd_sb16dsp_pcm(chip, 0);
+	if (error < 0)
+		return error;
+
+	error = snd_sbmixer_new(chip);
+	if (error < 0)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mpu_port[dev] > 0 && mpu_port[dev] != SNDRV_AUTO_PORT) {
 		int mpu_type = MPU401_HW_ALS100;
@@ -267,6 +334,7 @@ static int __devinit snd_card_als100_probe(int dev,
 			snd_printk(KERN_ERR PFX "no OPL device at 0x%lx-0x%lx\n",
 				   fm_port[dev], fm_port[dev] + 2);
 		} else {
+<<<<<<< HEAD
 			if ((error = snd_opl3_timer_new(opl3, 0, 1)) < 0) {
 				snd_card_free(card);
 				return error;
@@ -282,14 +350,35 @@ static int __devinit snd_card_als100_probe(int dev,
 		snd_card_free(card);
 		return error;
 	}
+=======
+			error = snd_opl3_timer_new(opl3, 0, 1);
+			if (error < 0)
+				return error;
+			error = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
+			if (error < 0)
+				return error;
+		}
+	}
+
+	error = snd_card_register(card);
+	if (error < 0)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pnp_set_card_drvdata(pcard, card);
 	return 0;
 }
 
+<<<<<<< HEAD
 static unsigned int __devinitdata als100_devices;
 
 static int __devinit snd_als100_pnp_detect(struct pnp_card_link *card,
 					   const struct pnp_card_device_id *id)
+=======
+static unsigned int als100_devices;
+
+static int snd_als100_pnp_detect(struct pnp_card_link *card,
+				 const struct pnp_card_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	int res;
@@ -307,12 +396,15 @@ static int __devinit snd_als100_pnp_detect(struct pnp_card_link *card,
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static void __devexit snd_als100_pnp_remove(struct pnp_card_link * pcard)
 {
 	snd_card_free(pnp_get_card_drvdata(pcard));
 	pnp_set_card_drvdata(pcard, NULL);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 static int snd_als100_pnp_suspend(struct pnp_card_link *pcard, pm_message_t state)
 {
@@ -321,7 +413,10 @@ static int snd_als100_pnp_suspend(struct pnp_card_link *pcard, pm_message_t stat
 	struct snd_sb *chip = acard->chip;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
+<<<<<<< HEAD
 	snd_pcm_suspend_all(chip->pcm);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_sbmixer_suspend(chip);
 	return 0;
 }
@@ -344,7 +439,10 @@ static struct pnp_card_driver als100_pnpc_driver = {
 	.name		= "als100",
         .id_table       = snd_als100_pnpids,
         .probe          = snd_als100_pnp_detect,
+<<<<<<< HEAD
         .remove         = __devexit_p(snd_als100_pnp_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= snd_als100_pnp_suspend,
 	.resume		= snd_als100_pnp_resume,

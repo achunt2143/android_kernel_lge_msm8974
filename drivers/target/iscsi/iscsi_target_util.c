@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
  * This file contains the iSCSI Target specific utility functions.
  *
@@ -19,13 +20,34 @@
  ******************************************************************************/
 
 #include <linux/list.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*******************************************************************************
+ * This file contains the iSCSI Target specific utility functions.
+ *
+ * (c) Copyright 2007-2013 Datera, Inc.
+ *
+ * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
+ *
+ ******************************************************************************/
+
+#include <linux/list.h>
+#include <linux/sched/signal.h>
+#include <net/ipv6.h>         /* ipv6_addr_equal() */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi_tcq.h>
 #include <scsi/iscsi_proto.h>
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
+<<<<<<< HEAD
 #include <target/target_core_configfs.h>
 
 #include "iscsi_target_core.h"
+=======
+#include <target/iscsi/iscsi_transport.h>
+
+#include <target/iscsi/iscsi_target_core.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iscsi_target_parameters.h"
 #include "iscsi_target_seq_pdu_list.h"
 #include "iscsi_target_datain_values.h"
@@ -33,6 +55,7 @@
 #include "iscsi_target_erl1.h"
 #include "iscsi_target_erl2.h"
 #include "iscsi_target_tpg.h"
+<<<<<<< HEAD
 #include "iscsi_target_tq.h"
 #include "iscsi_target_util.h"
 #include "iscsi_target.h"
@@ -62,6 +85,16 @@ extern spinlock_t tiqn_lock;
  */
 int iscsit_add_r2t_to_list(
 	struct iscsi_cmd *cmd,
+=======
+#include "iscsi_target_util.h"
+#include "iscsi_target.h"
+
+extern struct list_head g_tiqn_list;
+extern spinlock_t tiqn_lock;
+
+int iscsit_add_r2t_to_list(
+	struct iscsit_cmd *cmd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 offset,
 	u32 xfer_len,
 	int recovery,
@@ -69,6 +102,13 @@ int iscsit_add_r2t_to_list(
 {
 	struct iscsi_r2t *r2t;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&cmd->r2t_lock);
+
+	WARN_ON_ONCE((s32)xfer_len < 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r2t = kmem_cache_zalloc(lio_r2t_cache, GFP_ATOMIC);
 	if (!r2t) {
 		pr_err("Unable to allocate memory for struct iscsi_r2t.\n");
@@ -90,7 +130,11 @@ int iscsit_add_r2t_to_list(
 }
 
 struct iscsi_r2t *iscsit_get_r2t_for_eos(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
+=======
+	struct iscsit_cmd *cmd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 offset,
 	u32 length)
 {
@@ -111,7 +155,11 @@ struct iscsi_r2t *iscsit_get_r2t_for_eos(
 	return NULL;
 }
 
+<<<<<<< HEAD
 struct iscsi_r2t *iscsit_get_r2t_from_list(struct iscsi_cmd *cmd)
+=======
+struct iscsi_r2t *iscsit_get_r2t_from_list(struct iscsit_cmd *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_r2t *r2t;
 
@@ -129,16 +177,27 @@ struct iscsi_r2t *iscsit_get_r2t_from_list(struct iscsi_cmd *cmd)
 	return NULL;
 }
 
+<<<<<<< HEAD
 /*
  *	Called with cmd->r2t_lock held.
  */
 void iscsit_free_r2t(struct iscsi_r2t *r2t, struct iscsi_cmd *cmd)
 {
+=======
+void iscsit_free_r2t(struct iscsi_r2t *r2t, struct iscsit_cmd *cmd)
+{
+	lockdep_assert_held(&cmd->r2t_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del(&r2t->r2t_list);
 	kmem_cache_free(lio_r2t_cache, r2t);
 }
 
+<<<<<<< HEAD
 void iscsit_free_r2ts_from_list(struct iscsi_cmd *cmd)
+=======
+void iscsit_free_r2ts_from_list(struct iscsit_cmd *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_r2t *r2t, *r2t_tmp;
 
@@ -148,10 +207,40 @@ void iscsit_free_r2ts_from_list(struct iscsi_cmd *cmd)
 	spin_unlock_bh(&cmd->r2t_lock);
 }
 
+<<<<<<< HEAD
+=======
+static int iscsit_wait_for_tag(struct se_session *se_sess, int state, int *cpup)
+{
+	int tag = -1;
+	DEFINE_SBQ_WAIT(wait);
+	struct sbq_wait_state *ws;
+	struct sbitmap_queue *sbq;
+
+	if (state == TASK_RUNNING)
+		return tag;
+
+	sbq = &se_sess->sess_tag_pool;
+	ws = &sbq->ws[0];
+	for (;;) {
+		sbitmap_prepare_to_wait(sbq, ws, &wait, state);
+		if (signal_pending_state(state, current))
+			break;
+		tag = sbitmap_queue_get(sbq, cpup);
+		if (tag >= 0)
+			break;
+		schedule();
+	}
+
+	sbitmap_finish_wait(sbq, ws, &wait);
+	return tag;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * May be called from software interrupt (timer) context for allocating
  * iSCSI NopINs.
  */
+<<<<<<< HEAD
 struct iscsi_cmd *iscsit_allocate_cmd(struct iscsi_conn *conn, gfp_t gfp_mask)
 {
 	struct iscsi_cmd *cmd;
@@ -167,11 +256,37 @@ struct iscsi_cmd *iscsit_allocate_cmd(struct iscsi_conn *conn, gfp_t gfp_mask)
 	INIT_LIST_HEAD(&cmd->datain_list);
 	INIT_LIST_HEAD(&cmd->cmd_r2t_list);
 	init_completion(&cmd->reject_comp);
+=======
+struct iscsit_cmd *iscsit_allocate_cmd(struct iscsit_conn *conn, int state)
+{
+	struct iscsit_cmd *cmd;
+	struct se_session *se_sess = conn->sess->se_sess;
+	int size, tag, cpu;
+
+	tag = sbitmap_queue_get(&se_sess->sess_tag_pool, &cpu);
+	if (tag < 0)
+		tag = iscsit_wait_for_tag(se_sess, state, &cpu);
+	if (tag < 0)
+		return NULL;
+
+	size = sizeof(struct iscsit_cmd) + conn->conn_transport->priv_size;
+	cmd = (struct iscsit_cmd *)(se_sess->sess_cmd_map + (tag * size));
+	memset(cmd, 0, size);
+
+	cmd->se_cmd.map_tag = tag;
+	cmd->se_cmd.map_cpu = cpu;
+	cmd->conn = conn;
+	cmd->data_direction = DMA_NONE;
+	INIT_LIST_HEAD(&cmd->i_conn_node);
+	INIT_LIST_HEAD(&cmd->datain_list);
+	INIT_LIST_HEAD(&cmd->cmd_r2t_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&cmd->datain_lock);
 	spin_lock_init(&cmd->dataout_timeout_lock);
 	spin_lock_init(&cmd->istate_lock);
 	spin_lock_init(&cmd->error_lock);
 	spin_lock_init(&cmd->r2t_lock);
+<<<<<<< HEAD
 
 	return cmd;
 }
@@ -346,6 +461,16 @@ int iscsit_decide_list_to_build(
 
 struct iscsi_seq *iscsit_get_seq_holder_for_datain(
 	struct iscsi_cmd *cmd,
+=======
+	timer_setup(&cmd->dataout_timer, iscsit_handle_dataout_timeout, 0);
+
+	return cmd;
+}
+EXPORT_SYMBOL(iscsit_allocate_cmd);
+
+struct iscsi_seq *iscsit_get_seq_holder_for_datain(
+	struct iscsit_cmd *cmd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 seq_send_order)
 {
 	u32 i;
@@ -357,12 +482,20 @@ struct iscsi_seq *iscsit_get_seq_holder_for_datain(
 	return NULL;
 }
 
+<<<<<<< HEAD
 struct iscsi_seq *iscsit_get_seq_holder_for_r2t(struct iscsi_cmd *cmd)
+=======
+struct iscsi_seq *iscsit_get_seq_holder_for_r2t(struct iscsit_cmd *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 i;
 
 	if (!cmd->seq_list) {
+<<<<<<< HEAD
 		pr_err("struct iscsi_cmd->seq_list is NULL!\n");
+=======
+		pr_err("struct iscsit_cmd->seq_list is NULL!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NULL;
 	}
 
@@ -379,7 +512,11 @@ struct iscsi_seq *iscsit_get_seq_holder_for_r2t(struct iscsi_cmd *cmd)
 }
 
 struct iscsi_r2t *iscsit_get_holder_for_r2tsn(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
+=======
+	struct iscsit_cmd *cmd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 r2t_sn)
 {
 	struct iscsi_r2t *r2t;
@@ -396,8 +533,14 @@ struct iscsi_r2t *iscsit_get_holder_for_r2tsn(
 	return NULL;
 }
 
+<<<<<<< HEAD
 static inline int iscsit_check_received_cmdsn(struct iscsi_session *sess, u32 cmdsn)
 {
+=======
+static inline int iscsit_check_received_cmdsn(struct iscsit_session *sess, u32 cmdsn)
+{
+	u32 max_cmdsn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	/*
@@ -406,11 +549,19 @@ static inline int iscsit_check_received_cmdsn(struct iscsi_session *sess, u32 cm
 	 * or order CmdSNs due to multiple connection sessions and/or
 	 * CRC failures.
 	 */
+<<<<<<< HEAD
 	if (iscsi_sna_gt(cmdsn, sess->max_cmd_sn)) {
 		pr_err("Received CmdSN: 0x%08x is greater than"
 		       " MaxCmdSN: 0x%08x, protocol error.\n", cmdsn,
 		       sess->max_cmd_sn);
 		ret = CMDSN_ERROR_CANNOT_RECOVER;
+=======
+	max_cmdsn = atomic_read(&sess->max_cmd_sn);
+	if (iscsi_sna_gt(cmdsn, max_cmdsn)) {
+		pr_err("Received CmdSN: 0x%08x is greater than"
+		       " MaxCmdSN: 0x%08x, ignoring.\n", cmdsn, max_cmdsn);
+		ret = CMDSN_MAXCMDSN_OVERRUN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	} else if (cmdsn == sess->exp_cmd_sn) {
 		sess->exp_cmd_sn++;
@@ -439,6 +590,7 @@ static inline int iscsit_check_received_cmdsn(struct iscsi_session *sess, u32 cm
  * Commands may be received out of order if MC/S is in use.
  * Ensure they are executed in CmdSN order.
  */
+<<<<<<< HEAD
 int iscsit_sequence_cmd(
 	struct iscsi_conn *conn,
 	struct iscsi_cmd *cmd,
@@ -450,11 +602,24 @@ int iscsit_sequence_cmd(
 	mutex_lock(&conn->sess->cmdsn_mutex);
 
 	cmdsn_ret = iscsit_check_received_cmdsn(conn->sess, cmdsn);
+=======
+int iscsit_sequence_cmd(struct iscsit_conn *conn, struct iscsit_cmd *cmd,
+			unsigned char *buf, __be32 cmdsn)
+{
+	int ret, cmdsn_ret;
+	bool reject = false;
+	u8 reason = ISCSI_REASON_BOOKMARK_NO_RESOURCES;
+
+	mutex_lock(&conn->sess->cmdsn_mutex);
+
+	cmdsn_ret = iscsit_check_received_cmdsn(conn->sess, be32_to_cpu(cmdsn));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmdsn_ret) {
 	case CMDSN_NORMAL_OPERATION:
 		ret = iscsit_execute_cmd(cmd, 0);
 		if ((ret >= 0) && !list_empty(&conn->sess->sess_ooo_cmdsn_list))
 			iscsit_execute_ooo_cmdsns(conn->sess);
+<<<<<<< HEAD
 		break;
 	case CMDSN_HIGHER_THAN_EXP:
 		ret = iscsit_handle_ooo_cmdsn(conn->sess, cmd, cmdsn);
@@ -466,16 +631,56 @@ int iscsit_sequence_cmd(
 		break;
 	default:
 		ret = cmdsn_ret;
+=======
+		else if (ret < 0) {
+			reject = true;
+			ret = CMDSN_ERROR_CANNOT_RECOVER;
+		}
+		break;
+	case CMDSN_HIGHER_THAN_EXP:
+		ret = iscsit_handle_ooo_cmdsn(conn->sess, cmd, be32_to_cpu(cmdsn));
+		if (ret < 0) {
+			reject = true;
+			ret = CMDSN_ERROR_CANNOT_RECOVER;
+			break;
+		}
+		ret = CMDSN_HIGHER_THAN_EXP;
+		break;
+	case CMDSN_LOWER_THAN_EXP:
+	case CMDSN_MAXCMDSN_OVERRUN:
+	default:
+		cmd->i_state = ISTATE_REMOVE;
+		iscsit_add_cmd_to_immediate_queue(cmd, conn, cmd->i_state);
+		/*
+		 * Existing callers for iscsit_sequence_cmd() will silently
+		 * ignore commands with CMDSN_LOWER_THAN_EXP, so force this
+		 * return for CMDSN_MAXCMDSN_OVERRUN as well..
+		 */
+		ret = CMDSN_LOWER_THAN_EXP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	mutex_unlock(&conn->sess->cmdsn_mutex);
 
+<<<<<<< HEAD
 	return ret;
 }
 
 int iscsit_check_unsolicited_dataout(struct iscsi_cmd *cmd, unsigned char *buf)
 {
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	if (reject)
+		iscsit_reject_cmd(cmd, reason, buf);
+
+	return ret;
+}
+EXPORT_SYMBOL(iscsit_sequence_cmd);
+
+int iscsit_check_unsolicited_dataout(struct iscsit_cmd *cmd, unsigned char *buf)
+{
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct se_cmd *se_cmd = &cmd->se_cmd;
 	struct iscsi_data *hdr = (struct iscsi_data *) buf;
 	u32 payload_length = ntoh24(hdr->dlength);
@@ -502,14 +707,22 @@ int iscsit_check_unsolicited_dataout(struct iscsi_cmd *cmd, unsigned char *buf)
 	if (!(hdr->flags & ISCSI_FLAG_CMD_FINAL))
 		return 0;
 
+<<<<<<< HEAD
 	if (((cmd->first_burst_len + payload_length) != cmd->data_length) &&
+=======
+	if (((cmd->first_burst_len + payload_length) != cmd->se_cmd.data_length) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    ((cmd->first_burst_len + payload_length) !=
 	      conn->sess->sess_ops->FirstBurstLength)) {
 		pr_err("Unsolicited non-immediate data received %u"
 			" does not equal FirstBurstLength: %u, and does"
 			" not equal ExpXferLen %u.\n",
 			(cmd->first_burst_len + payload_length),
+<<<<<<< HEAD
 			conn->sess->sess_ops->FirstBurstLength, cmd->data_length);
+=======
+			conn->sess->sess_ops->FirstBurstLength, cmd->se_cmd.data_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		transport_send_check_condition_and_sense(se_cmd,
 				TCM_INCORRECT_AMOUNT_OF_DATA, 0);
 		return -1;
@@ -517,6 +730,7 @@ int iscsit_check_unsolicited_dataout(struct iscsi_cmd *cmd, unsigned char *buf)
 	return 0;
 }
 
+<<<<<<< HEAD
 struct iscsi_cmd *iscsit_find_cmd_from_itt(
 	struct iscsi_conn *conn,
 	u32 init_task_tag)
@@ -525,6 +739,16 @@ struct iscsi_cmd *iscsit_find_cmd_from_itt(
 
 	spin_lock_bh(&conn->cmd_lock);
 	list_for_each_entry(cmd, &conn->conn_cmd_list, i_list) {
+=======
+struct iscsit_cmd *iscsit_find_cmd_from_itt(
+	struct iscsit_conn *conn,
+	itt_t init_task_tag)
+{
+	struct iscsit_cmd *cmd;
+
+	spin_lock_bh(&conn->cmd_lock);
+	list_for_each_entry(cmd, &conn->conn_cmd_list, i_conn_node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cmd->init_task_tag == init_task_tag) {
 			spin_unlock_bh(&conn->cmd_lock);
 			return cmd;
@@ -536,6 +760,7 @@ struct iscsi_cmd *iscsit_find_cmd_from_itt(
 			init_task_tag, conn->cid);
 	return NULL;
 }
+<<<<<<< HEAD
 
 struct iscsi_cmd *iscsit_find_cmd_from_itt_or_dump(
 	struct iscsi_conn *conn,
@@ -546,6 +771,21 @@ struct iscsi_cmd *iscsit_find_cmd_from_itt_or_dump(
 
 	spin_lock_bh(&conn->cmd_lock);
 	list_for_each_entry(cmd, &conn->conn_cmd_list, i_list) {
+=======
+EXPORT_SYMBOL(iscsit_find_cmd_from_itt);
+
+struct iscsit_cmd *iscsit_find_cmd_from_itt_or_dump(
+	struct iscsit_conn *conn,
+	itt_t init_task_tag,
+	u32 length)
+{
+	struct iscsit_cmd *cmd;
+
+	spin_lock_bh(&conn->cmd_lock);
+	list_for_each_entry(cmd, &conn->conn_cmd_list, i_conn_node) {
+		if (cmd->cmd_flags & ICF_GOT_LAST_DATAOUT)
+			continue;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cmd->init_task_tag == init_task_tag) {
 			spin_unlock_bh(&conn->cmd_lock);
 			return cmd;
@@ -560,6 +800,7 @@ struct iscsi_cmd *iscsit_find_cmd_from_itt_or_dump(
 
 	return NULL;
 }
+<<<<<<< HEAD
 
 struct iscsi_cmd *iscsit_find_cmd_from_ttt(
 	struct iscsi_conn *conn,
@@ -569,6 +810,18 @@ struct iscsi_cmd *iscsit_find_cmd_from_ttt(
 
 	spin_lock_bh(&conn->cmd_lock);
 	list_for_each_entry(cmd, &conn->conn_cmd_list, i_list) {
+=======
+EXPORT_SYMBOL(iscsit_find_cmd_from_itt_or_dump);
+
+struct iscsit_cmd *iscsit_find_cmd_from_ttt(
+	struct iscsit_conn *conn,
+	u32 targ_xfer_tag)
+{
+	struct iscsit_cmd *cmd = NULL;
+
+	spin_lock_bh(&conn->cmd_lock);
+	list_for_each_entry(cmd, &conn->conn_cmd_list, i_conn_node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cmd->targ_xfer_tag == targ_xfer_tag) {
 			spin_unlock_bh(&conn->cmd_lock);
 			return cmd;
@@ -582,12 +835,21 @@ struct iscsi_cmd *iscsit_find_cmd_from_ttt(
 }
 
 int iscsit_find_cmd_for_recovery(
+<<<<<<< HEAD
 	struct iscsi_session *sess,
 	struct iscsi_cmd **cmd_ptr,
 	struct iscsi_conn_recovery **cr_ptr,
 	u32 init_task_tag)
 {
 	struct iscsi_cmd *cmd = NULL;
+=======
+	struct iscsit_session *sess,
+	struct iscsit_cmd **cmd_ptr,
+	struct iscsi_conn_recovery **cr_ptr,
+	itt_t init_task_tag)
+{
+	struct iscsit_cmd *cmd = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_conn_recovery *cr;
 	/*
 	 * Scan through the inactive connection recovery list's command list.
@@ -596,7 +858,11 @@ int iscsit_find_cmd_for_recovery(
 	spin_lock(&sess->cr_i_lock);
 	list_for_each_entry(cr, &sess->cr_inactive_list, cr_list) {
 		spin_lock(&cr->conn_recovery_cmd_lock);
+<<<<<<< HEAD
 		list_for_each_entry(cmd, &cr->conn_recovery_cmd_list, i_list) {
+=======
+		list_for_each_entry(cmd, &cr->conn_recovery_cmd_list, i_conn_node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cmd->init_task_tag == init_task_tag) {
 				spin_unlock(&cr->conn_recovery_cmd_lock);
 				spin_unlock(&sess->cr_i_lock);
@@ -616,7 +882,11 @@ int iscsit_find_cmd_for_recovery(
 	spin_lock(&sess->cr_a_lock);
 	list_for_each_entry(cr, &sess->cr_active_list, cr_list) {
 		spin_lock(&cr->conn_recovery_cmd_lock);
+<<<<<<< HEAD
 		list_for_each_entry(cmd, &cr->conn_recovery_cmd_list, i_list) {
+=======
+		list_for_each_entry(cmd, &cr->conn_recovery_cmd_list, i_conn_node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cmd->init_task_tag == init_task_tag) {
 				spin_unlock(&cr->conn_recovery_cmd_lock);
 				spin_unlock(&sess->cr_a_lock);
@@ -634,8 +904,13 @@ int iscsit_find_cmd_for_recovery(
 }
 
 void iscsit_add_cmd_to_immediate_queue(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	struct iscsi_conn *conn,
+=======
+	struct iscsit_cmd *cmd,
+	struct iscsit_conn *conn,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 state)
 {
 	struct iscsi_queue_req *qr;
@@ -658,8 +933,14 @@ void iscsit_add_cmd_to_immediate_queue(
 
 	wake_up(&conn->queues_wq);
 }
+<<<<<<< HEAD
 
 struct iscsi_queue_req *iscsit_get_cmd_from_immediate_queue(struct iscsi_conn *conn)
+=======
+EXPORT_SYMBOL(iscsit_add_cmd_to_immediate_queue);
+
+struct iscsi_queue_req *iscsit_get_cmd_from_immediate_queue(struct iscsit_conn *conn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_queue_req *qr;
 
@@ -668,8 +949,13 @@ struct iscsi_queue_req *iscsit_get_cmd_from_immediate_queue(struct iscsi_conn *c
 		spin_unlock_bh(&conn->immed_queue_lock);
 		return NULL;
 	}
+<<<<<<< HEAD
 	list_for_each_entry(qr, &conn->immed_queue_list, qr_list)
 		break;
+=======
+	qr = list_first_entry(&conn->immed_queue_list,
+			      struct iscsi_queue_req, qr_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_del(&qr->qr_list);
 	if (qr->cmd)
@@ -680,8 +966,13 @@ struct iscsi_queue_req *iscsit_get_cmd_from_immediate_queue(struct iscsi_conn *c
 }
 
 static void iscsit_remove_cmd_from_immediate_queue(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	struct iscsi_conn *conn)
+=======
+	struct iscsit_cmd *cmd,
+	struct iscsit_conn *conn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_queue_req *qr, *qr_tmp;
 
@@ -708,9 +999,15 @@ static void iscsit_remove_cmd_from_immediate_queue(
 	}
 }
 
+<<<<<<< HEAD
 void iscsit_add_cmd_to_response_queue(
 	struct iscsi_cmd *cmd,
 	struct iscsi_conn *conn,
+=======
+int iscsit_add_cmd_to_response_queue(
+	struct iscsit_cmd *cmd,
+	struct iscsit_conn *conn,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 state)
 {
 	struct iscsi_queue_req *qr;
@@ -719,7 +1016,11 @@ void iscsit_add_cmd_to_response_queue(
 	if (!qr) {
 		pr_err("Unable to allocate memory for"
 			" struct iscsi_queue_req\n");
+<<<<<<< HEAD
 		return;
+=======
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	INIT_LIST_HEAD(&qr->qr_list);
 	qr->cmd = cmd;
@@ -731,9 +1032,16 @@ void iscsit_add_cmd_to_response_queue(
 	spin_unlock_bh(&conn->response_queue_lock);
 
 	wake_up(&conn->queues_wq);
+<<<<<<< HEAD
 }
 
 struct iscsi_queue_req *iscsit_get_cmd_from_response_queue(struct iscsi_conn *conn)
+=======
+	return 0;
+}
+
+struct iscsi_queue_req *iscsit_get_cmd_from_response_queue(struct iscsit_conn *conn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_queue_req *qr;
 
@@ -743,8 +1051,13 @@ struct iscsi_queue_req *iscsit_get_cmd_from_response_queue(struct iscsi_conn *co
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	list_for_each_entry(qr, &conn->response_queue_list, qr_list)
 		break;
+=======
+	qr = list_first_entry(&conn->response_queue_list,
+			      struct iscsi_queue_req, qr_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_del(&qr->qr_list);
 	if (qr->cmd)
@@ -755,8 +1068,13 @@ struct iscsi_queue_req *iscsit_get_cmd_from_response_queue(struct iscsi_conn *co
 }
 
 static void iscsit_remove_cmd_from_response_queue(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	struct iscsi_conn *conn)
+=======
+	struct iscsit_cmd *cmd,
+	struct iscsit_conn *conn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_queue_req *qr, *qr_tmp;
 
@@ -784,7 +1102,11 @@ static void iscsit_remove_cmd_from_response_queue(
 	}
 }
 
+<<<<<<< HEAD
 bool iscsit_conn_all_queues_empty(struct iscsi_conn *conn)
+=======
+bool iscsit_conn_all_queues_empty(struct iscsit_conn *conn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	bool empty;
 
@@ -802,7 +1124,11 @@ bool iscsit_conn_all_queues_empty(struct iscsi_conn *conn)
 	return empty;
 }
 
+<<<<<<< HEAD
 void iscsit_free_queue_reqs_for_conn(struct iscsi_conn *conn)
+=======
+void iscsit_free_queue_reqs_for_conn(struct iscsit_conn *conn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_queue_req *qr, *qr_tmp;
 
@@ -828,6 +1154,7 @@ void iscsit_free_queue_reqs_for_conn(struct iscsi_conn *conn)
 	spin_unlock_bh(&conn->response_queue_lock);
 }
 
+<<<<<<< HEAD
 void iscsit_release_cmd(struct iscsi_cmd *cmd)
 {
 	struct iscsi_conn *conn = cmd->conn;
@@ -835,11 +1162,27 @@ void iscsit_release_cmd(struct iscsi_cmd *cmd)
 
 	iscsit_free_r2ts_from_list(cmd);
 	iscsit_free_all_datain_reqs(cmd);
+=======
+void iscsit_release_cmd(struct iscsit_cmd *cmd)
+{
+	struct iscsit_session *sess;
+	struct se_cmd *se_cmd = &cmd->se_cmd;
+
+	WARN_ON(!list_empty(&cmd->i_conn_node));
+
+	if (cmd->conn)
+		sess = cmd->conn->sess;
+	else
+		sess = cmd->sess;
+
+	BUG_ON(!sess || !sess->se_sess);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(cmd->buf_ptr);
 	kfree(cmd->pdu_list);
 	kfree(cmd->seq_list);
 	kfree(cmd->tmr_req);
+<<<<<<< HEAD
 	kfree(cmd->iov_data);
 
 	for (i = 0; i < cmd->t_mem_sg_nents; i++)
@@ -848,10 +1191,35 @@ void iscsit_release_cmd(struct iscsi_cmd *cmd)
 	kfree(cmd->t_mem_sg);
 
 	if (conn) {
+=======
+	kfree(cmd->overflow_buf);
+	kfree(cmd->iov_data);
+	kfree(cmd->text_in_ptr);
+
+	target_free_tag(sess->se_sess, se_cmd);
+}
+EXPORT_SYMBOL(iscsit_release_cmd);
+
+void __iscsit_free_cmd(struct iscsit_cmd *cmd, bool check_queues)
+{
+	struct iscsit_conn *conn = cmd->conn;
+
+	WARN_ON(!list_empty(&cmd->i_conn_node));
+
+	if (cmd->data_direction == DMA_TO_DEVICE) {
+		iscsit_stop_dataout_timer(cmd);
+		iscsit_free_r2ts_from_list(cmd);
+	}
+	if (cmd->data_direction == DMA_FROM_DEVICE)
+		iscsit_free_all_datain_reqs(cmd);
+
+	if (conn && check_queues) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iscsit_remove_cmd_from_immediate_queue(cmd, conn);
 		iscsit_remove_cmd_from_response_queue(cmd, conn);
 	}
 
+<<<<<<< HEAD
 	kmem_cache_free(lio_cmd_cache, cmd);
 }
 
@@ -884,11 +1252,40 @@ void iscsit_free_cmd(struct iscsi_cmd *cmd)
 }
 
 int iscsit_check_session_usage_count(struct iscsi_session *sess)
+=======
+	if (conn && conn->conn_transport->iscsit_unmap_cmd)
+		conn->conn_transport->iscsit_unmap_cmd(conn, cmd);
+}
+
+void iscsit_free_cmd(struct iscsit_cmd *cmd, bool shutdown)
+{
+	struct se_cmd *se_cmd = cmd->se_cmd.se_tfo ? &cmd->se_cmd : NULL;
+	int rc;
+
+	WARN_ON(!list_empty(&cmd->i_conn_node));
+
+	__iscsit_free_cmd(cmd, shutdown);
+	if (se_cmd) {
+		rc = transport_generic_free_cmd(se_cmd, shutdown);
+		if (!rc && shutdown && se_cmd->se_sess) {
+			__iscsit_free_cmd(cmd, shutdown);
+			target_put_sess_cmd(se_cmd);
+		}
+	} else {
+		iscsit_release_cmd(cmd);
+	}
+}
+EXPORT_SYMBOL(iscsit_free_cmd);
+
+bool iscsit_check_session_usage_count(struct iscsit_session *sess,
+				      bool can_sleep)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_bh(&sess->session_usage_lock);
 	if (sess->session_usage_count != 0) {
 		sess->session_waiting_on_uc = 1;
 		spin_unlock_bh(&sess->session_usage_lock);
+<<<<<<< HEAD
 		if (in_interrupt())
 			return 2;
 
@@ -901,6 +1298,20 @@ int iscsit_check_session_usage_count(struct iscsi_session *sess)
 }
 
 void iscsit_dec_session_usage_count(struct iscsi_session *sess)
+=======
+		if (!can_sleep)
+			return true;
+
+		wait_for_completion(&sess->session_waiting_on_uc_comp);
+		return false;
+	}
+	spin_unlock_bh(&sess->session_usage_lock);
+
+	return false;
+}
+
+void iscsit_dec_session_usage_count(struct iscsit_session *sess)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_bh(&sess->session_usage_lock);
 	sess->session_usage_count--;
@@ -911,13 +1322,18 @@ void iscsit_dec_session_usage_count(struct iscsi_session *sess)
 	spin_unlock_bh(&sess->session_usage_lock);
 }
 
+<<<<<<< HEAD
 void iscsit_inc_session_usage_count(struct iscsi_session *sess)
+=======
+void iscsit_inc_session_usage_count(struct iscsit_session *sess)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_bh(&sess->session_usage_lock);
 	sess->session_usage_count++;
 	spin_unlock_bh(&sess->session_usage_lock);
 }
 
+<<<<<<< HEAD
 /*
  *	Setup conn->if_marker and conn->of_marker values based upon
  *	the initial marker-less interval. (see iSCSI v19 A.2)
@@ -969,6 +1385,11 @@ int iscsit_set_sync_and_steering_values(struct iscsi_conn *conn)
 struct iscsi_conn *iscsit_get_conn_from_cid(struct iscsi_session *sess, u16 cid)
 {
 	struct iscsi_conn *conn;
+=======
+struct iscsit_conn *iscsit_get_conn_from_cid(struct iscsit_session *sess, u16 cid)
+{
+	struct iscsit_conn *conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&sess->conn_lock);
 	list_for_each_entry(conn, &sess->sess_conn_list, conn_list) {
@@ -984,9 +1405,15 @@ struct iscsi_conn *iscsit_get_conn_from_cid(struct iscsi_session *sess, u16 cid)
 	return NULL;
 }
 
+<<<<<<< HEAD
 struct iscsi_conn *iscsit_get_conn_from_cid_rcfr(struct iscsi_session *sess, u16 cid)
 {
 	struct iscsi_conn *conn;
+=======
+struct iscsit_conn *iscsit_get_conn_from_cid_rcfr(struct iscsit_session *sess, u16 cid)
+{
+	struct iscsit_conn *conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&sess->conn_lock);
 	list_for_each_entry(conn, &sess->sess_conn_list, conn_list) {
@@ -1004,7 +1431,11 @@ struct iscsi_conn *iscsit_get_conn_from_cid_rcfr(struct iscsi_session *sess, u16
 	return NULL;
 }
 
+<<<<<<< HEAD
 void iscsit_check_conn_usage_count(struct iscsi_conn *conn)
+=======
+void iscsit_check_conn_usage_count(struct iscsit_conn *conn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_bh(&conn->conn_usage_lock);
 	if (conn->conn_usage_count != 0) {
@@ -1017,7 +1448,11 @@ void iscsit_check_conn_usage_count(struct iscsi_conn *conn)
 	spin_unlock_bh(&conn->conn_usage_lock);
 }
 
+<<<<<<< HEAD
 void iscsit_dec_conn_usage_count(struct iscsi_conn *conn)
+=======
+void iscsit_dec_conn_usage_count(struct iscsit_conn *conn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_bh(&conn->conn_usage_lock);
 	conn->conn_usage_count--;
@@ -1028,25 +1463,39 @@ void iscsit_dec_conn_usage_count(struct iscsi_conn *conn)
 	spin_unlock_bh(&conn->conn_usage_lock);
 }
 
+<<<<<<< HEAD
 void iscsit_inc_conn_usage_count(struct iscsi_conn *conn)
+=======
+void iscsit_inc_conn_usage_count(struct iscsit_conn *conn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_bh(&conn->conn_usage_lock);
 	conn->conn_usage_count++;
 	spin_unlock_bh(&conn->conn_usage_lock);
 }
 
+<<<<<<< HEAD
 static int iscsit_add_nopin(struct iscsi_conn *conn, int want_response)
 {
 	u8 state;
 	struct iscsi_cmd *cmd;
 
 	cmd = iscsit_allocate_cmd(conn, GFP_ATOMIC);
+=======
+static int iscsit_add_nopin(struct iscsit_conn *conn, int want_response)
+{
+	u8 state;
+	struct iscsit_cmd *cmd;
+
+	cmd = iscsit_allocate_cmd(conn, TASK_RUNNING);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cmd)
 		return -1;
 
 	cmd->iscsi_opcode = ISCSI_OP_NOOP_IN;
 	state = (want_response) ? ISTATE_SEND_NOPIN_WANT_RESPONSE :
 				ISTATE_SEND_NOPIN_NO_RESPONSE;
+<<<<<<< HEAD
 	cmd->init_task_tag = 0xFFFFFFFF;
 	spin_lock_bh(&conn->sess->ttt_lock);
 	cmd->targ_xfer_tag = (want_response) ? conn->sess->targ_xfer_tag++ :
@@ -1057,6 +1506,13 @@ static int iscsit_add_nopin(struct iscsi_conn *conn, int want_response)
 
 	spin_lock_bh(&conn->cmd_lock);
 	list_add_tail(&cmd->i_list, &conn->conn_cmd_list);
+=======
+	cmd->init_task_tag = RESERVED_ITT;
+	cmd->targ_xfer_tag = (want_response) ?
+			     session_get_next_ttt(conn->sess) : 0xFFFFFFFF;
+	spin_lock_bh(&conn->cmd_lock);
+	list_add_tail(&cmd->i_conn_node, &conn->conn_cmd_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_bh(&conn->cmd_lock);
 
 	if (want_response)
@@ -1066,9 +1522,16 @@ static int iscsit_add_nopin(struct iscsi_conn *conn, int want_response)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void iscsit_handle_nopin_response_timeout(unsigned long data)
 {
 	struct iscsi_conn *conn = (struct iscsi_conn *) data;
+=======
+void iscsit_handle_nopin_response_timeout(struct timer_list *t)
+{
+	struct iscsit_conn *conn = from_timer(conn, t, nopin_response_timer);
+	struct iscsit_session *sess = conn->sess;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iscsit_inc_conn_usage_count(conn);
 
@@ -1079,6 +1542,7 @@ static void iscsit_handle_nopin_response_timeout(unsigned long data)
 		return;
 	}
 
+<<<<<<< HEAD
 	pr_debug("Did not receive response to NOPIN on CID: %hu on"
 		" SID: %u, failing connection.\n", conn->cid,
 			conn->sess->sid);
@@ -1101,13 +1565,29 @@ static void iscsit_handle_nopin_response_timeout(unsigned long data)
 	}
 	}
 
+=======
+	pr_err("Did not receive response to NOPIN on CID: %hu, failing"
+		" connection for I_T Nexus %s,i,0x%6phN,%s,t,0x%02x\n",
+		conn->cid, sess->sess_ops->InitiatorName, sess->isid,
+		sess->tpg->tpg_tiqn->tiqn, (u32)sess->tpg->tpgt);
+	conn->nopin_response_timer_flags &= ~ISCSI_TF_RUNNING;
+	spin_unlock_bh(&conn->nopin_timer_lock);
+
+	iscsit_fill_cxn_timeout_err_stats(sess);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iscsit_cause_connection_reinstatement(conn, 0);
 	iscsit_dec_conn_usage_count(conn);
 }
 
+<<<<<<< HEAD
 void iscsit_mod_nopin_response_timer(struct iscsi_conn *conn)
 {
 	struct iscsi_session *sess = conn->sess;
+=======
+void iscsit_mod_nopin_response_timer(struct iscsit_conn *conn)
+{
+	struct iscsit_session *sess = conn->sess;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_node_attrib *na = iscsit_tpg_get_node_attrib(sess);
 
 	spin_lock_bh(&conn->nopin_timer_lock);
@@ -1121,12 +1601,18 @@ void iscsit_mod_nopin_response_timer(struct iscsi_conn *conn)
 	spin_unlock_bh(&conn->nopin_timer_lock);
 }
 
+<<<<<<< HEAD
 /*
  *	Called with conn->nopin_timer_lock held.
  */
 void iscsit_start_nopin_response_timer(struct iscsi_conn *conn)
 {
 	struct iscsi_session *sess = conn->sess;
+=======
+void iscsit_start_nopin_response_timer(struct iscsit_conn *conn)
+{
+	struct iscsit_session *sess = conn->sess;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_node_attrib *na = iscsit_tpg_get_node_attrib(sess);
 
 	spin_lock_bh(&conn->nopin_timer_lock);
@@ -1135,6 +1621,7 @@ void iscsit_start_nopin_response_timer(struct iscsi_conn *conn)
 		return;
 	}
 
+<<<<<<< HEAD
 	init_timer(&conn->nopin_response_timer);
 	conn->nopin_response_timer.expires =
 		(get_jiffies_64() + na->nopin_response_timeout * HZ);
@@ -1143,13 +1630,23 @@ void iscsit_start_nopin_response_timer(struct iscsi_conn *conn)
 	conn->nopin_response_timer_flags &= ~ISCSI_TF_STOP;
 	conn->nopin_response_timer_flags |= ISCSI_TF_RUNNING;
 	add_timer(&conn->nopin_response_timer);
+=======
+	conn->nopin_response_timer_flags &= ~ISCSI_TF_STOP;
+	conn->nopin_response_timer_flags |= ISCSI_TF_RUNNING;
+	mod_timer(&conn->nopin_response_timer,
+		  jiffies + na->nopin_response_timeout * HZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("Started NOPIN Response Timer on CID: %d to %u"
 		" seconds\n", conn->cid, na->nopin_response_timeout);
 	spin_unlock_bh(&conn->nopin_timer_lock);
 }
 
+<<<<<<< HEAD
 void iscsit_stop_nopin_response_timer(struct iscsi_conn *conn)
+=======
+void iscsit_stop_nopin_response_timer(struct iscsit_conn *conn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_bh(&conn->nopin_timer_lock);
 	if (!(conn->nopin_response_timer_flags & ISCSI_TF_RUNNING)) {
@@ -1166,9 +1663,15 @@ void iscsit_stop_nopin_response_timer(struct iscsi_conn *conn)
 	spin_unlock_bh(&conn->nopin_timer_lock);
 }
 
+<<<<<<< HEAD
 static void iscsit_handle_nopin_timeout(unsigned long data)
 {
 	struct iscsi_conn *conn = (struct iscsi_conn *) data;
+=======
+void iscsit_handle_nopin_timeout(struct timer_list *t)
+{
+	struct iscsit_conn *conn = from_timer(conn, t, nopin_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iscsit_inc_conn_usage_count(conn);
 
@@ -1185,6 +1688,7 @@ static void iscsit_handle_nopin_timeout(unsigned long data)
 	iscsit_dec_conn_usage_count(conn);
 }
 
+<<<<<<< HEAD
 /*
  * Called with conn->nopin_timer_lock held.
  */
@@ -1192,6 +1696,15 @@ void __iscsit_start_nopin_timer(struct iscsi_conn *conn)
 {
 	struct iscsi_session *sess = conn->sess;
 	struct iscsi_node_attrib *na = iscsit_tpg_get_node_attrib(sess);
+=======
+void __iscsit_start_nopin_timer(struct iscsit_conn *conn)
+{
+	struct iscsit_session *sess = conn->sess;
+	struct iscsi_node_attrib *na = iscsit_tpg_get_node_attrib(sess);
+
+	lockdep_assert_held(&conn->nopin_timer_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	* NOPIN timeout is disabled.
 	 */
@@ -1201,6 +1714,7 @@ void __iscsit_start_nopin_timer(struct iscsi_conn *conn)
 	if (conn->nopin_timer_flags & ISCSI_TF_RUNNING)
 		return;
 
+<<<<<<< HEAD
 	init_timer(&conn->nopin_timer);
 	conn->nopin_timer.expires = (get_jiffies_64() + na->nopin_timeout * HZ);
 	conn->nopin_timer.data = (unsigned long)conn;
@@ -1208,11 +1722,17 @@ void __iscsit_start_nopin_timer(struct iscsi_conn *conn)
 	conn->nopin_timer_flags &= ~ISCSI_TF_STOP;
 	conn->nopin_timer_flags |= ISCSI_TF_RUNNING;
 	add_timer(&conn->nopin_timer);
+=======
+	conn->nopin_timer_flags &= ~ISCSI_TF_STOP;
+	conn->nopin_timer_flags |= ISCSI_TF_RUNNING;
+	mod_timer(&conn->nopin_timer, jiffies + na->nopin_timeout * HZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("Started NOPIN Timer on CID: %d at %u second"
 		" interval\n", conn->cid, na->nopin_timeout);
 }
 
+<<<<<<< HEAD
 void iscsit_start_nopin_timer(struct iscsi_conn *conn)
 {
 	struct iscsi_session *sess = conn->sess;
@@ -1243,6 +1763,16 @@ void iscsit_start_nopin_timer(struct iscsi_conn *conn)
 }
 
 void iscsit_stop_nopin_timer(struct iscsi_conn *conn)
+=======
+void iscsit_start_nopin_timer(struct iscsit_conn *conn)
+{
+	spin_lock_bh(&conn->nopin_timer_lock);
+	__iscsit_start_nopin_timer(conn);
+	spin_unlock_bh(&conn->nopin_timer_lock);
+}
+
+void iscsit_stop_nopin_timer(struct iscsit_conn *conn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_bh(&conn->nopin_timer_lock);
 	if (!(conn->nopin_timer_flags & ISCSI_TF_RUNNING)) {
@@ -1259,9 +1789,66 @@ void iscsit_stop_nopin_timer(struct iscsi_conn *conn)
 	spin_unlock_bh(&conn->nopin_timer_lock);
 }
 
+<<<<<<< HEAD
 int iscsit_send_tx_data(
 	struct iscsi_cmd *cmd,
 	struct iscsi_conn *conn,
+=======
+void iscsit_login_timeout(struct timer_list *t)
+{
+	struct iscsit_conn *conn = from_timer(conn, t, login_timer);
+	struct iscsi_login *login = conn->login;
+
+	pr_debug("Entering iscsi_target_login_timeout >>>>>>>>>>>>>>>>>>>\n");
+
+	spin_lock_bh(&conn->login_timer_lock);
+	login->login_failed = 1;
+
+	if (conn->login_kworker) {
+		pr_debug("Sending SIGINT to conn->login_kworker %s/%d\n",
+			 conn->login_kworker->comm, conn->login_kworker->pid);
+		send_sig(SIGINT, conn->login_kworker, 1);
+	} else {
+		schedule_delayed_work(&conn->login_work, 0);
+	}
+	spin_unlock_bh(&conn->login_timer_lock);
+}
+
+void iscsit_start_login_timer(struct iscsit_conn *conn, struct task_struct *kthr)
+{
+	pr_debug("Login timer started\n");
+
+	conn->login_kworker = kthr;
+	mod_timer(&conn->login_timer, jiffies + TA_LOGIN_TIMEOUT * HZ);
+}
+
+int iscsit_set_login_timer_kworker(struct iscsit_conn *conn, struct task_struct *kthr)
+{
+	struct iscsi_login *login = conn->login;
+	int ret = 0;
+
+	spin_lock_bh(&conn->login_timer_lock);
+	if (login->login_failed) {
+		/* The timer has already expired */
+		ret = -1;
+	} else {
+		conn->login_kworker = kthr;
+	}
+	spin_unlock_bh(&conn->login_timer_lock);
+
+	return ret;
+}
+
+void iscsit_stop_login_timer(struct iscsit_conn *conn)
+{
+	pr_debug("Login timer stopped\n");
+	timer_delete_sync(&conn->login_timer);
+}
+
+int iscsit_send_tx_data(
+	struct iscsit_cmd *cmd,
+	struct iscsit_conn *conn,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int use_misc)
 {
 	int tx_sent, tx_size;
@@ -1293,10 +1880,19 @@ send_data:
 }
 
 int iscsit_fe_sendpage_sg(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	struct iscsi_conn *conn)
 {
 	struct scatterlist *sg = cmd->first_data_sg;
+=======
+	struct iscsit_cmd *cmd,
+	struct iscsit_conn *conn)
+{
+	struct scatterlist *sg = cmd->first_data_sg;
+	struct bio_vec bvec;
+	struct msghdr msghdr = { .msg_flags = MSG_SPLICE_PAGES,	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct kvec iov;
 	u32 tx_hdr_size, data_len;
 	u32 offset = cmd->first_data_sg_off;
@@ -1340,6 +1936,7 @@ send_hdr:
 		u32 space = (sg->length - offset);
 		u32 sub_len = min_t(u32, data_len, space);
 send_pg:
+<<<<<<< HEAD
 		tx_sent = conn->sock->ops->sendpage(conn->sock,
 					sg_page(sg), sg->offset + offset, sub_len, 0);
 		if (tx_sent != sub_len) {
@@ -1351,6 +1948,20 @@ send_pg:
 
 			pr_err("tcp_sendpage() failure: %d\n",
 					tx_sent);
+=======
+		bvec_set_page(&bvec, sg_page(sg), sub_len, sg->offset + offset);
+		iov_iter_bvec(&msghdr.msg_iter, ITER_SOURCE, &bvec, 1, sub_len);
+
+		tx_sent = conn->sock->ops->sendmsg(conn->sock, &msghdr,
+						   sub_len);
+		if (tx_sent != sub_len) {
+			if (tx_sent == -EAGAIN) {
+				pr_err("sendmsg/splice returned -EAGAIN\n");
+				goto send_pg;
+			}
+
+			pr_err("sendmsg/splice failure: %d\n", tx_sent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 		}
 
@@ -1398,6 +2009,7 @@ send_datacrc:
  *      Parameters:     iSCSI Connection, Status Class, Status Detail.
  *      Returns:        0 on success, -1 on error.
  */
+<<<<<<< HEAD
 int iscsit_tx_login_rsp(struct iscsi_conn *conn, u8 status_class, u8 status_detail)
 {
 	u8 iscsi_hdr[ISCSI_HDR_LEN];
@@ -1433,6 +2045,30 @@ int iscsit_tx_login_rsp(struct iscsi_conn *conn, u8 status_class, u8 status_deta
 void iscsit_print_session_params(struct iscsi_session *sess)
 {
 	struct iscsi_conn *conn;
+=======
+int iscsit_tx_login_rsp(struct iscsit_conn *conn, u8 status_class, u8 status_detail)
+{
+	struct iscsi_login_rsp *hdr;
+	struct iscsi_login *login = conn->conn_login;
+
+	login->login_failed = 1;
+	iscsit_collect_login_stats(conn, status_class, status_detail);
+
+	memset(&login->rsp[0], 0, ISCSI_HDR_LEN);
+
+	hdr	= (struct iscsi_login_rsp *)&login->rsp[0];
+	hdr->opcode		= ISCSI_OP_LOGIN_RSP;
+	hdr->status_class	= status_class;
+	hdr->status_detail	= status_detail;
+	hdr->itt		= conn->login_itt;
+
+	return conn->conn_transport->iscsit_put_login_tx(conn, login, 0);
+}
+
+void iscsit_print_session_params(struct iscsit_session *sess)
+{
+	struct iscsit_conn *conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("-----------------------------[Session Params for"
 		" SID: %u]-----------------------------\n", sess->sid);
@@ -1444,18 +2080,29 @@ void iscsit_print_session_params(struct iscsi_session *sess)
 	iscsi_dump_sess_ops(sess->sess_ops);
 }
 
+<<<<<<< HEAD
 static int iscsit_do_rx_data(
 	struct iscsi_conn *conn,
 	struct iscsi_data_count *count)
 {
 	int data = count->data_length, rx_loop = 0, total_rx = 0, iov_len;
 	struct kvec *iov_p;
+=======
+int rx_data(
+	struct iscsit_conn *conn,
+	struct kvec *iov,
+	int iov_count,
+	int data)
+{
+	int rx_loop = 0, total_rx = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct msghdr msg;
 
 	if (!conn || !conn->sock || !conn->conn_ops)
 		return -1;
 
 	memset(&msg, 0, sizeof(struct msghdr));
+<<<<<<< HEAD
 
 	iov_p = count->iov;
 	iov_len	= count->iov_count;
@@ -1463,6 +2110,12 @@ static int iscsit_do_rx_data(
 	while (total_rx < data) {
 		rx_loop = kernel_recvmsg(conn->sock, &msg, iov_p, iov_len,
 					(data - total_rx), MSG_WAITALL);
+=======
+	iov_iter_kvec(&msg.msg_iter, ITER_DEST, iov, iov_count, data);
+
+	while (msg_data_left(&msg)) {
+		rx_loop = sock_recvmsg(conn->sock, &msg, MSG_WAITALL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rx_loop <= 0) {
 			pr_debug("rx_loop: %d total_rx: %d\n",
 				rx_loop, total_rx);
@@ -1476,6 +2129,7 @@ static int iscsit_do_rx_data(
 	return total_rx;
 }
 
+<<<<<<< HEAD
 static int iscsit_do_tx_data(
 	struct iscsi_conn *conn,
 	struct iscsi_data_count *count)
@@ -1483,17 +2137,33 @@ static int iscsit_do_tx_data(
 	int ret, iov_len;
 	struct kvec *iov_p;
 	struct msghdr msg;
+=======
+int tx_data(
+	struct iscsit_conn *conn,
+	struct kvec *iov,
+	int iov_count,
+	int data)
+{
+	struct msghdr msg;
+	int total_tx = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!conn || !conn->sock || !conn->conn_ops)
 		return -1;
 
+<<<<<<< HEAD
 	if (count->data_length <= 0) {
 		pr_err("Data length is: %d\n", count->data_length);
+=======
+	if (data <= 0) {
+		pr_err("Data length is: %d\n", data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
 	memset(&msg, 0, sizeof(struct msghdr));
 
+<<<<<<< HEAD
 	iov_p = count->iov;
 	iov_len = count->iov_count;
 
@@ -1551,6 +2221,27 @@ int tx_data(
 
 void iscsit_collect_login_stats(
 	struct iscsi_conn *conn,
+=======
+	iov_iter_kvec(&msg.msg_iter, ITER_SOURCE, iov, iov_count, data);
+
+	while (msg_data_left(&msg)) {
+		int tx_loop = sock_sendmsg(conn->sock, &msg);
+		if (tx_loop <= 0) {
+			pr_debug("tx_loop: %d total_tx %d\n",
+				tx_loop, total_tx);
+			return tx_loop;
+		}
+		total_tx += tx_loop;
+		pr_debug("tx_loop: %d, total_tx: %d, data: %d\n",
+					tx_loop, total_tx, data);
+	}
+
+	return total_tx;
+}
+
+void iscsit_collect_login_stats(
+	struct iscsit_conn *conn,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 status_class,
 	u8 status_detail)
 {
@@ -1565,6 +2256,7 @@ void iscsit_collect_login_stats(
 	ls = &tiqn->login_stats;
 
 	spin_lock(&ls->lock);
+<<<<<<< HEAD
 	if (!strcmp(conn->login_ip, ls->last_intr_fail_ip_addr) &&
 	    ((get_jiffies_64() - ls->last_fail_time) < 10)) {
 		/* We already have the failure info for this login */
@@ -1572,6 +2264,8 @@ void iscsit_collect_login_stats(
 		return;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status_class == ISCSI_STATUS_CLS_SUCCESS)
 		ls->accepts++;
 	else if (status_class == ISCSI_STATUS_CLS_REDIRECT) {
@@ -1599,18 +2293,29 @@ void iscsit_collect_login_stats(
 		if (conn->param_list)
 			intrname = iscsi_find_param_from_key(INITIATORNAME,
 							     conn->param_list);
+<<<<<<< HEAD
 		strcpy(ls->last_intr_fail_name,
 		       (intrname ? intrname->value : "Unknown"));
 
 		ls->last_intr_fail_ip_family = conn->sock->sk->sk_family;
 		snprintf(ls->last_intr_fail_ip_addr, IPV6_ADDRESS_SPACE,
 				"%s", conn->login_ip);
+=======
+		strscpy(ls->last_intr_fail_name,
+		       (intrname ? intrname->value : "Unknown"),
+		       sizeof(ls->last_intr_fail_name));
+
+		ls->last_intr_fail_ip_family = conn->login_family;
+
+		ls->last_intr_fail_sockaddr = conn->login_sockaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ls->last_fail_time = get_jiffies_64();
 	}
 
 	spin_unlock(&ls->lock);
 }
 
+<<<<<<< HEAD
 struct iscsi_tiqn *iscsit_snmp_get_tiqn(struct iscsi_conn *conn)
 {
 	struct iscsi_portal_group *tpg;
@@ -1619,6 +2324,16 @@ struct iscsi_tiqn *iscsit_snmp_get_tiqn(struct iscsi_conn *conn)
 		return NULL;
 
 	tpg = conn->sess->tpg;
+=======
+struct iscsi_tiqn *iscsit_snmp_get_tiqn(struct iscsit_conn *conn)
+{
+	struct iscsi_portal_group *tpg;
+
+	if (!conn)
+		return NULL;
+
+	tpg = conn->tpg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tpg)
 		return NULL;
 
@@ -1627,3 +2342,25 @@ struct iscsi_tiqn *iscsit_snmp_get_tiqn(struct iscsi_conn *conn)
 
 	return tpg->tpg_tiqn;
 }
+<<<<<<< HEAD
+=======
+
+void iscsit_fill_cxn_timeout_err_stats(struct iscsit_session *sess)
+{
+	struct iscsi_portal_group *tpg = sess->tpg;
+	struct iscsi_tiqn *tiqn = tpg->tpg_tiqn;
+
+	if (!tiqn)
+		return;
+
+	spin_lock_bh(&tiqn->sess_err_stats.lock);
+	strscpy(tiqn->sess_err_stats.last_sess_fail_rem_name,
+			sess->sess_ops->InitiatorName,
+			sizeof(tiqn->sess_err_stats.last_sess_fail_rem_name));
+	tiqn->sess_err_stats.last_sess_failure_type =
+			ISCSI_SESS_ERR_CXN_TIMEOUT;
+	tiqn->sess_err_stats.cxn_timeout_errors++;
+	atomic_long_inc(&sess->conn_timeout_errors);
+	spin_unlock_bh(&tiqn->sess_err_stats.lock);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

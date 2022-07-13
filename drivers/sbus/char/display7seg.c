@@ -1,28 +1,48 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* display7seg.c - Driver implementation for the 7-segment display
  *                 present on Sun Microsystems CP1400 and CP1500
  *
  * Copyright (c) 2000 Eric Brower (ebrower@usa.net)
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/errno.h>
 #include <linux/major.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/miscdevice.h>
 #include <linux/ioport.h>		/* request_region */
 #include <linux/slab.h>
 #include <linux/mutex.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 #include <linux/atomic.h>
 #include <asm/uaccess.h>		/* put_/get_user			*/
+=======
+#include <linux/platform_device.h>
+#include <linux/atomic.h>
+#include <linux/uaccess.h>		/* put_/get_user			*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 #include <asm/display7seg.h>
 
+<<<<<<< HEAD
 #define D7S_MINOR	193
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_NAME	"d7s"
 #define PFX		DRIVER_NAME ": "
 
@@ -50,7 +70,10 @@ MODULE_PARM_DESC(sol_compat,
 MODULE_AUTHOR("Eric Brower <ebrower@usa.net>");
 MODULE_DESCRIPTION("7-Segment Display driver for Sun Microsystems CP1400/1500");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("d7s");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct d7s {
 	void __iomem	*regs;
@@ -107,7 +130,11 @@ static long d7s_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	int error = 0;
 	u8 ireg = 0;
 
+<<<<<<< HEAD
 	if (D7S_MINOR != iminor(file->f_path.dentry->d_inode))
+=======
+	if (D7S_MINOR != iminor(file_inode(file)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	mutex_lock(&d7s_mutex);
@@ -144,6 +171,7 @@ static long d7s_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 	case D7SIOCTM:
 		/* toggle device mode-- flip display orientation */
+<<<<<<< HEAD
 		if (regs & D7S_FLIP)
 			regs &= ~D7S_FLIP;
 		else
@@ -151,6 +179,12 @@ static long d7s_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		writeb(regs, p->regs);
 		break;
 	};
+=======
+		regs ^= D7S_FLIP;
+		writeb(regs, p->regs);
+		break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&d7s_mutex);
 
 	return error;
@@ -159,7 +193,11 @@ static long d7s_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 static const struct file_operations d7s_fops = {
 	.owner =		THIS_MODULE,
 	.unlocked_ioctl =	d7s_ioctl,
+<<<<<<< HEAD
 	.compat_ioctl =		d7s_ioctl,
+=======
+	.compat_ioctl =		compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open =			d7s_open,
 	.release =		d7s_release,
 	.llseek = noop_llseek,
@@ -171,7 +209,11 @@ static struct miscdevice d7s_miscdev = {
 	.fops		= &d7s_fops
 };
 
+<<<<<<< HEAD
 static int __devinit d7s_probe(struct platform_device *op)
+=======
+static int d7s_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *opts;
 	int err = -EINVAL;
@@ -181,7 +223,11 @@ static int __devinit d7s_probe(struct platform_device *op)
 	if (d7s_device)
 		goto out;
 
+<<<<<<< HEAD
 	p = kzalloc(sizeof(*p), GFP_KERNEL);
+=======
+	p = devm_kzalloc(&op->dev, sizeof(*p), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -ENOMEM;
 	if (!p)
 		goto out;
@@ -189,7 +235,11 @@ static int __devinit d7s_probe(struct platform_device *op)
 	p->regs = of_ioremap(&op->resource[0], 0, sizeof(u8), "d7s");
 	if (!p->regs) {
 		printk(KERN_ERR PFX "Cannot map chip registers\n");
+<<<<<<< HEAD
 		goto out_free;
+=======
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = misc_register(&d7s_miscdev);
@@ -204,9 +254,14 @@ static int __devinit d7s_probe(struct platform_device *op)
 	 */
 	regs = readb(p->regs);
 	opts = of_find_node_by_path("/options");
+<<<<<<< HEAD
 	if (opts &&
 	    of_get_property(opts, "d7s-flipped?", NULL))
 		p->flipped = true;
+=======
+	if (opts)
+	    p->flipped = of_property_read_bool(opts, "d7s-flipped?");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (p->flipped)
 		regs |= D7S_FLIP;
@@ -215,8 +270,13 @@ static int __devinit d7s_probe(struct platform_device *op)
 
 	writeb(regs,  p->regs);
 
+<<<<<<< HEAD
 	printk(KERN_INFO PFX "7-Segment Display%s at [%s:0x%llx] %s\n",
 	       op->dev.of_node->full_name,
+=======
+	printk(KERN_INFO PFX "7-Segment Display%pOF at [%s:0x%llx] %s\n",
+	       op->dev.of_node,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       (regs & D7S_FLIP) ? " (FLIPPED)" : "",
 	       op->resource[0].start,
 	       sol_compat ? "in sol_compat mode" : "");
@@ -224,12 +284,17 @@ static int __devinit d7s_probe(struct platform_device *op)
 	dev_set_drvdata(&op->dev, p);
 	d7s_device = p;
 	err = 0;
+<<<<<<< HEAD
+=======
+	of_node_put(opts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return err;
 
 out_iounmap:
 	of_iounmap(&op->resource[0], p->regs, sizeof(u8));
+<<<<<<< HEAD
 
 out_free:
 	kfree(p);
@@ -237,6 +302,12 @@ out_free:
 }
 
 static int __devexit d7s_remove(struct platform_device *op)
+=======
+	goto out;
+}
+
+static void d7s_remove(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct d7s *p = dev_get_drvdata(&op->dev);
 	u8 regs = readb(p->regs);
@@ -252,9 +323,12 @@ static int __devexit d7s_remove(struct platform_device *op)
 
 	misc_deregister(&d7s_miscdev);
 	of_iounmap(&op->resource[0], p->regs, sizeof(u8));
+<<<<<<< HEAD
 	kfree(p);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id d7s_match[] = {
@@ -268,11 +342,18 @@ MODULE_DEVICE_TABLE(of, d7s_match);
 static struct platform_driver d7s_driver = {
 	.driver = {
 		.name = DRIVER_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = d7s_match,
 	},
 	.probe		= d7s_probe,
 	.remove		= __devexit_p(d7s_remove),
+=======
+		.of_match_table = d7s_match,
+	},
+	.probe		= d7s_probe,
+	.remove_new	= d7s_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(d7s_driver);

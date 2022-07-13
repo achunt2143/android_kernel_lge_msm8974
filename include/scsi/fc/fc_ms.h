@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* * Copyright(c) 2011 Intel Corporation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify it
@@ -12,6 +13,11 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright(c) 2011 Intel Corporation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Maintained at www.Open-FCoE.org
  */
@@ -36,6 +42,15 @@
 #define	FC_FDMI_SUBTYPE	    0x10 /* fs_ct_hdr.ct_fs_subtype */
 
 /*
+<<<<<<< HEAD
+=======
+ * Management server FDMI specifications.
+ */
+#define	FDMI_V1	    1 /* FDMI version 1 specifications */
+#define	FDMI_V2	    2 /* FDMI version 2 specifications */
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Management server FDMI Requests.
  */
 enum fc_fdmi_req {
@@ -68,6 +83,16 @@ enum fc_fdmi_hba_attr_type {
 	FC_FDMI_HBA_ATTR_FIRMWAREVERSION = 0x0009,
 	FC_FDMI_HBA_ATTR_OSNAMEVERSION = 0x000A,
 	FC_FDMI_HBA_ATTR_MAXCTPAYLOAD = 0x000B,
+<<<<<<< HEAD
+=======
+	FC_FDMI_HBA_ATTR_NODESYMBLNAME = 0x000C,
+	FC_FDMI_HBA_ATTR_VENDORSPECIFICINFO = 0x000D,
+	FC_FDMI_HBA_ATTR_NUMBEROFPORTS = 0x000E,
+	FC_FDMI_HBA_ATTR_FABRICNAME = 0x000F,
+	FC_FDMI_HBA_ATTR_BIOSVERSION = 0x0010,
+	FC_FDMI_HBA_ATTR_BIOSSTATE = 0x0011,
+	FC_FDMI_HBA_ATTR_VENDORIDENTIFIER = 0x00E0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -76,6 +101,7 @@ enum fc_fdmi_hba_attr_type {
 #define FC_FDMI_HBA_ATTR_NODENAME_LEN		8
 #define FC_FDMI_HBA_ATTR_MANUFACTURER_LEN	64
 #define FC_FDMI_HBA_ATTR_SERIALNUMBER_LEN	64
+<<<<<<< HEAD
 #define FC_FDMI_HBA_ATTR_MODEL_LEN		256
 #define FC_FDMI_HBA_ATTR_MODELDESCR_LEN		256
 #define FC_FDMI_HBA_ATTR_HARDWAREVERSION_LEN	256
@@ -84,6 +110,23 @@ enum fc_fdmi_hba_attr_type {
 #define FC_FDMI_HBA_ATTR_FIRMWAREVERSION_LEN	256
 #define FC_FDMI_HBA_ATTR_OSNAMEVERSION_LEN	256
 #define FC_FDMI_HBA_ATTR_MAXCTPAYLOAD_LEN	4
+=======
+#define FC_FDMI_HBA_ATTR_MODEL_LEN		64
+#define FC_FDMI_HBA_ATTR_MODELDESCR_LEN		64
+#define FC_FDMI_HBA_ATTR_HARDWAREVERSION_LEN	64
+#define FC_FDMI_HBA_ATTR_DRIVERVERSION_LEN	64
+#define FC_FDMI_HBA_ATTR_OPTIONROMVERSION_LEN	64
+#define FC_FDMI_HBA_ATTR_FIRMWAREVERSION_LEN	64
+#define FC_FDMI_HBA_ATTR_OSNAMEVERSION_LEN	128
+#define FC_FDMI_HBA_ATTR_MAXCTPAYLOAD_LEN	4
+#define FC_FDMI_HBA_ATTR_NODESYMBLNAME_LEN	64
+#define FC_FDMI_HBA_ATTR_VENDORSPECIFICINFO_LEN	4
+#define FC_FDMI_HBA_ATTR_NUMBEROFPORTS_LEN	4
+#define FC_FDMI_HBA_ATTR_FABRICNAME_LEN	8
+#define FC_FDMI_HBA_ATTR_BIOSVERSION_LEN	64
+#define FC_FDMI_HBA_ATTR_BIOSSTATE_LEN    4
+#define FC_FDMI_HBA_ATTR_VENDORIDENTIFIER_LEN 8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Port Attribute Type
@@ -95,6 +138,19 @@ enum fc_fdmi_port_attr_type {
 	FC_FDMI_PORT_ATTR_MAXFRAMESIZE = 0x0004,
 	FC_FDMI_PORT_ATTR_OSDEVICENAME = 0x0005,
 	FC_FDMI_PORT_ATTR_HOSTNAME = 0x0006,
+<<<<<<< HEAD
+=======
+	FC_FDMI_PORT_ATTR_NODENAME = 0x0007,
+	FC_FDMI_PORT_ATTR_PORTNAME = 0x0008,
+	FC_FDMI_PORT_ATTR_SYMBOLICNAME = 0x0009,
+	FC_FDMI_PORT_ATTR_PORTTYPE = 0x000A,
+	FC_FDMI_PORT_ATTR_SUPPORTEDCLASSSRVC = 0x000B,
+	FC_FDMI_PORT_ATTR_FABRICNAME = 0x000C,
+	FC_FDMI_PORT_ATTR_CURRENTFC4TYPE = 0x000D,
+	FC_FDMI_PORT_ATTR_PORTSTATE = 0x101,
+	FC_FDMI_PORT_ATTR_DISCOVEREDPORTS = 0x102,
+	FC_FDMI_PORT_ATTR_PORTID = 0x103,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -106,6 +162,20 @@ enum fc_fdmi_port_attr_type {
 #define FC_FDMI_PORT_ATTR_MAXFRAMESIZE_LEN	4
 #define FC_FDMI_PORT_ATTR_OSDEVICENAME_LEN	256
 #define FC_FDMI_PORT_ATTR_HOSTNAME_LEN		256
+<<<<<<< HEAD
+=======
+#define FC_FDMI_PORT_ATTR_NODENAME_LEN		8
+#define FC_FDMI_PORT_ATTR_PORTNAME_LEN		8
+#define FC_FDMI_PORT_ATTR_SYMBOLICNAME_LEN	256
+#define FC_FDMI_PORT_ATTR_PORTTYPE_LEN		4
+#define FC_FDMI_PORT_ATTR_SUPPORTEDCLASSSRVC_LEN	4
+#define FC_FDMI_PORT_ATTR_FABRICNAME_LEN	8
+#define FC_FDMI_PORT_ATTR_CURRENTFC4TYPE_LEN	32
+#define FC_FDMI_PORT_ATTR_PORTSTATE_LEN		4
+#define FC_FDMI_PORT_ATTR_DISCOVEREDPORTS_LEN	4
+#define FC_FDMI_PORT_ATTR_PORTID_LEN		4
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * HBA Attribute ID
@@ -128,7 +198,11 @@ struct fc_fdmi_port_name {
 struct fc_fdmi_attr_entry {
 	__be16		type;
 	__be16		len;
+<<<<<<< HEAD
 	__u8		value[1];
+=======
+	__u8		value[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((__packed__));
 
 /*
@@ -136,7 +210,11 @@ struct fc_fdmi_attr_entry {
  */
 struct fs_fdmi_attrs {
 	__be32				numattrs;
+<<<<<<< HEAD
 	struct fc_fdmi_attr_entry	attr[1];
+=======
+	struct fc_fdmi_attr_entry	attr[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((__packed__));
 
 /*

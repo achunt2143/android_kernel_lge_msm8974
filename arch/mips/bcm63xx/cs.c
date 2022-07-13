@@ -7,7 +7,12 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/errno.h>
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 #include <linux/log2.h>
 #include <bcm63xx_cpu.h>

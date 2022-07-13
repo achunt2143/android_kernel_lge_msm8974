@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * machine_kexec.c - handle transition of Linux booting another kernel
  * Copyright (C) 2002-2003 Eric Biederman  <ebiederm@xmission.com>
  *
  * GameCube/ppc32 port Copyright (C) 2004 Albert Herranz
  * LANDISK/sh4 supported by kogiidena
+<<<<<<< HEAD
  *
  * This source code is licensed under the GNU General Public License,
  * Version 2.  See the file COPYING for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/mm.h>
 #include <linux/kexec.h>
@@ -16,8 +23,11 @@
 #include <linux/ftrace.h>
 #include <linux/suspend.h>
 #include <linux/memblock.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/pgalloc.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mmu_context.h>
 #include <asm/io.h>
 #include <asm/cacheflush.h>
@@ -141,6 +151,7 @@ void machine_kexec(struct kimage *image)
 	__ftrace_enabled_restore(save_ftrace_enabled);
 }
 
+<<<<<<< HEAD
 void arch_crash_save_vmcoreinfo(void)
 {
 #ifdef CONFIG_NUMA
@@ -152,13 +163,23 @@ void arch_crash_save_vmcoreinfo(void)
 #endif
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init reserve_crashkernel(void)
 {
 	unsigned long long crash_size, crash_base;
 	int ret;
 
+<<<<<<< HEAD
 	ret = parse_crashkernel(boot_command_line, memblock_phys_mem_size(),
 			&crash_size, &crash_base);
+=======
+	if (!IS_ENABLED(CONFIG_CRASH_RESERVE))
+		return;
+
+	ret = parse_crashkernel(boot_command_line, memblock_phys_mem_size(),
+			&crash_size, &crash_base, NULL, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret == 0 && crash_size > 0) {
 		crashk_res.start = crash_base;
 		crashk_res.end = crash_base + crash_size - 1;
@@ -170,7 +191,12 @@ void __init reserve_crashkernel(void)
 	crash_size = PAGE_ALIGN(resource_size(&crashk_res));
 	if (!crashk_res.start) {
 		unsigned long max = memblock_end_of_DRAM() - memory_limit;
+<<<<<<< HEAD
 		crashk_res.start = __memblock_alloc_base(crash_size, PAGE_SIZE, max);
+=======
+		crashk_res.start = memblock_phys_alloc_range(crash_size,
+							     PAGE_SIZE, 0, max);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!crashk_res.start) {
 			pr_err("crashkernel allocation failed\n");
 			goto disable;

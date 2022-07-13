@@ -1,21 +1,39 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (C) 2007
  *
  *  Author: Eric Biederman <ebiederm@xmision.com>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License as
  *  published by the Free Software Foundation, version 2 of the
  *  License.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/export.h>
 #include <linux/uts.h>
 #include <linux/utsname.h>
+<<<<<<< HEAD
 #include <linux/sysctl.h>
 #include <linux/wait.h>
 
 static void *get_uts(ctl_table *table, int write)
+=======
+#include <linux/random.h>
+#include <linux/sysctl.h>
+#include <linux/wait.h>
+#include <linux/rwsem.h>
+
+#ifdef CONFIG_PROC_SYSCTL
+
+static void *get_uts(struct ctl_table *table)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char *which = table->data;
 	struct uts_namespace *uts_ns;
@@ -23,6 +41,7 @@ static void *get_uts(ctl_table *table, int write)
 	uts_ns = current->nsproxy->uts_ns;
 	which = (which - (char *)&init_uts_ns) + (char *)uts_ns;
 
+<<<<<<< HEAD
 	if (!write)
 		down_read(&uts_sem);
 	else
@@ -39,10 +58,16 @@ static void put_uts(ctl_table *table, int write, void *which)
 }
 
 #ifdef CONFIG_PROC_SYSCTL
+=======
+	return which;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Special case of dostring for the UTS structure. This has locks
  *	to observe. Should this be in kernel/sys.c ????
  */
+<<<<<<< HEAD
 static int proc_do_uts_string(ctl_table *table, int write,
 		  void __user *buffer, size_t *lenp, loff_t *ppos)
 {
@@ -55,6 +80,42 @@ static int proc_do_uts_string(ctl_table *table, int write,
 
 	if (write)
 		proc_sys_poll_notify(table->poll);
+=======
+static int proc_do_uts_string(struct ctl_table *table, int write,
+		  void *buffer, size_t *lenp, loff_t *ppos)
+{
+	struct ctl_table uts_table;
+	int r;
+	char tmp_data[__NEW_UTS_LEN + 1];
+
+	memcpy(&uts_table, table, sizeof(uts_table));
+	uts_table.data = tmp_data;
+
+	/*
+	 * Buffer the value in tmp_data so that proc_dostring() can be called
+	 * without holding any locks.
+	 * We also need to read the original value in the write==1 case to
+	 * support partial writes.
+	 */
+	down_read(&uts_sem);
+	memcpy(tmp_data, get_uts(table), sizeof(tmp_data));
+	up_read(&uts_sem);
+	r = proc_dostring(&uts_table, write, buffer, lenp, ppos);
+
+	if (write) {
+		/*
+		 * Write back the new value.
+		 * Note that, since we dropped uts_sem, the result can
+		 * theoretically be incorrect if there are two parallel writes
+		 * at non-zero offsets to the same sysctl.
+		 */
+		add_device_randomness(tmp_data, sizeof(tmp_data));
+		down_write(&uts_sem);
+		memcpy(get_uts(table), tmp_data, sizeof(tmp_data));
+		up_write(&uts_sem);
+		proc_sys_poll_notify(table->poll);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
@@ -65,8 +126,21 @@ static int proc_do_uts_string(ctl_table *table, int write,
 static DEFINE_CTL_TABLE_POLL(hostname_poll);
 static DEFINE_CTL_TABLE_POLL(domainname_poll);
 
+<<<<<<< HEAD
 static struct ctl_table uts_kern_table[] = {
 	{
+=======
+// Note: update 'enum uts_proc' to match any changes to this table
+static struct ctl_table uts_kern_table[] = {
+	{
+		.procname	= "arch",
+		.data		= init_uts_ns.name.machine,
+		.maxlen		= sizeof(init_uts_ns.name.machine),
+		.mode		= 0444,
+		.proc_handler	= proc_do_uts_string,
+	},
+	{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.procname	= "ostype",
 		.data		= init_uts_ns.name.sysname,
 		.maxlen		= sizeof(init_uts_ns.name.sysname),
@@ -106,6 +180,7 @@ static struct ctl_table uts_kern_table[] = {
 	{}
 };
 
+<<<<<<< HEAD
 static struct ctl_table uts_root_table[] = {
 	{
 		.procname	= "kernel",
@@ -115,6 +190,8 @@ static struct ctl_table uts_root_table[] = {
 	{}
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PROC_SYSCTL
 /*
  * Notify userspace about a change in a certain entry of uts_kern_table,
@@ -130,8 +207,16 @@ void uts_proc_notify(enum uts_proc proc)
 
 static int __init utsname_sysctl_init(void)
 {
+<<<<<<< HEAD
 	register_sysctl_table(uts_root_table);
 	return 0;
 }
 
 __initcall(utsname_sysctl_init);
+=======
+	register_sysctl("kernel", uts_kern_table);
+	return 0;
+}
+
+device_initcall(utsname_sysctl_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

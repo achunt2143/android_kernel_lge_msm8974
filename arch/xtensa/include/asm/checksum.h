@@ -12,7 +12,12 @@
 #define _XTENSA_CHECKSUM_H
 
 #include <linux/in6.h>
+<<<<<<< HEAD
 #include <variant/core.h>
+=======
+#include <linux/uaccess.h>
+#include <asm/core.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * computes the checksum of a memory block at buff, length len,
@@ -36,6 +41,7 @@ asmlinkage __wsum csum_partial(const void *buff, int len, __wsum sum);
  * better 64-bit) boundary
  */
 
+<<<<<<< HEAD
 asmlinkage __wsum csum_partial_copy_generic(const void *src, void *dst, int len, __wsum sum,
 						   int *src_err_ptr, int *dst_err_ptr);
 
@@ -58,6 +64,29 @@ __wsum csum_partial_copy_from_user(const void __user *src, void *dst,
 {
 	return csum_partial_copy_generic((__force const void *)src, dst,
 					len, sum, err_ptr, NULL);
+=======
+asmlinkage __wsum csum_partial_copy_generic(const void *src, void *dst, int len);
+
+#define _HAVE_ARCH_CSUM_AND_COPY
+/*
+ *	Note: when you get a NULL pointer exception here this means someone
+ *	passed in an incorrect kernel address to one of these functions.
+ */
+static inline
+__wsum csum_partial_copy_nocheck(const void *src, void *dst, int len)
+{
+	return csum_partial_copy_generic(src, dst, len);
+}
+
+#define _HAVE_ARCH_COPY_AND_CSUM_FROM_USER
+static inline
+__wsum csum_and_copy_from_user(const void __user *src, void *dst,
+				   int len)
+{
+	if (!access_ok(src, len))
+		return 0;
+	return csum_partial_copy_generic((__force const void *)src, dst, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -112,7 +141,12 @@ static __inline__ __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
 	/* Since the input registers which are loaded with iph and ihl
 	   are modified, we must also specify them as outputs, or gcc
 	   will assume they contain their original values. */
+<<<<<<< HEAD
 		: "=r" (sum), "=r" (iph), "=r" (ihl), "=&r" (tmp), "=&r" (endaddr)
+=======
+		: "=r" (sum), "=r" (iph), "=r" (ihl), "=&r" (tmp),
+		  "=&r" (endaddr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "1" (iph), "2" (ihl)
 		: "memory");
 
@@ -120,9 +154,14 @@ static __inline__ __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
 }
 
 static __inline__ __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
+<<<<<<< HEAD
 						   unsigned short len,
 						   unsigned short proto,
 						   __wsum sum)
+=======
+					    __u32 len, __u8 proto,
+					    __wsum sum)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 #ifdef __XTENSA_EL__
@@ -154,9 +193,14 @@ static __inline__ __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
  * returns a 16-bit checksum, already complemented
  */
 static __inline__ __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
+<<<<<<< HEAD
 						       unsigned short len,
 						       unsigned short proto,
 						       __wsum sum)
+=======
+					    __u32 len, __u8 proto,
+					    __wsum sum)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return csum_fold(csum_tcpudp_nofold(saddr,daddr,len,proto,sum));
 }
@@ -168,13 +212,21 @@ static __inline__ __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
 
 static __inline__ __sum16 ip_compute_csum(const void *buff, int len)
 {
+<<<<<<< HEAD
     return csum_fold (csum_partial(buff, len, 0));
+=======
+	return csum_fold (csum_partial(buff, len, 0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define _HAVE_ARCH_IPV6_CSUM
 static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 					  const struct in6_addr *daddr,
+<<<<<<< HEAD
 					  __u32 len, unsigned short proto,
+=======
+					  __u32 len, __u8 proto,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  __wsum sum)
 {
 	unsigned int __dummy;
@@ -238,6 +290,7 @@ static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
  *	Copy and checksum to user
  */
 #define HAVE_CSUM_COPY_USER
+<<<<<<< HEAD
 static __inline__ __wsum csum_and_copy_to_user(const void *src, void __user *dst,
 				    int len, __wsum sum, int *err_ptr)
 {
@@ -248,5 +301,13 @@ static __inline__ __wsum csum_and_copy_to_user(const void *src, void __user *dst
 		*err_ptr = -EFAULT;
 
 	return (__force __wsum)-1; /* invalid checksum */
+=======
+static __inline__ __wsum csum_and_copy_to_user(const void *src,
+					       void __user *dst, int len)
+{
+	if (!access_ok(dst, len))
+		return 0;
+	return csum_partial_copy_generic(src, (__force void *)dst, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_WSS_H
 #define __SOUND_WSS_H
 
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  Definitions for CS4231 & InterWave chips & compatible chips
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -27,6 +32,15 @@
 #include "timer.h"
 
 #include "cs4231-regs.h"
+=======
+ */
+
+#include <sound/control.h>
+#include <sound/pcm.h>
+#include <sound/timer.h>
+
+#include <sound/cs4231-regs.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* defines for codec.mode */
 
@@ -154,8 +168,13 @@ int snd_wss_create(struct snd_card *card,
 		      unsigned short hardware,
 		      unsigned short hwshare,
 		      struct snd_wss **rchip);
+<<<<<<< HEAD
 int snd_wss_pcm(struct snd_wss *chip, int device, struct snd_pcm **rpcm);
 int snd_wss_timer(struct snd_wss *chip, int device, struct snd_timer **rtimer);
+=======
+int snd_wss_pcm(struct snd_wss *chip, int device);
+int snd_wss_timer(struct snd_wss *chip, int device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_wss_mixer(struct snd_wss *chip);
 
 const struct snd_pcm_ops *snd_wss_get_pcm_ops(int direction);
@@ -167,7 +186,11 @@ int snd_cs4236_create(struct snd_card *card,
 		      unsigned short hardware,
 		      unsigned short hwshare,
 		      struct snd_wss **rchip);
+<<<<<<< HEAD
 int snd_cs4236_pcm(struct snd_wss *chip, int device, struct snd_pcm **rpcm);
+=======
+int snd_cs4236_pcm(struct snd_wss *chip, int device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_cs4236_mixer(struct snd_wss *chip);
 
 /*

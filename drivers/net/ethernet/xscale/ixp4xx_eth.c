@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Intel IXP4xx Ethernet driver for Linux
  *
  * Copyright (C) 2007 Krzysztof Halasa <khc@pm.waw.pl>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License
  * as published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Ethernet port config (0x00 is not present on IXP42X):
  *
  * logical port		0x00		0x10		0x20
@@ -16,7 +23,10 @@
  * RX-free queue	26		27		28
  * TX-done queue is always 31, per-port RX and TX-ready queues are configurable
  *
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Queue entries:
  * bits 0 -> 1	- NPE ID (RX and TX-done)
  * bits 0 -> 2	- priority (TX, per 802.1D)
@@ -28,17 +38,40 @@
 #include <linux/dma-mapping.h>
 #include <linux/dmapool.h>
 #include <linux/etherdevice.h>
+<<<<<<< HEAD
 #include <linux/io.h>
 #include <linux/kernel.h>
 #include <linux/net_tstamp.h>
+=======
+#include <linux/if_vlan.h>
+#include <linux/io.h>
+#include <linux/kernel.h>
+#include <linux/net_tstamp.h>
+#include <linux/of.h>
+#include <linux/of_mdio.h>
+#include <linux/of_net.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/phy.h>
 #include <linux/platform_device.h>
 #include <linux/ptp_classify.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <mach/ixp46x_ts.h>
 #include <mach/npe.h>
 #include <mach/qmgr.h>
+=======
+#include <linux/soc/ixp4xx/npe.h>
+#include <linux/soc/ixp4xx/qmgr.h>
+#include <linux/soc/ixp4xx/cpu.h>
+#include <linux/types.h>
+
+#define IXP4XX_ETH_NPEA		0x00
+#define IXP4XX_ETH_NPEB		0x10
+#define IXP4XX_ETH_NPEC		0x20
+
+#include "ixp46x_ts.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DEBUG_DESC		0
 #define DEBUG_RX		0
@@ -57,7 +90,19 @@
 
 #define POOL_ALLOC_SIZE		(sizeof(struct desc) * (RX_DESCS + TX_DESCS))
 #define REGS_SIZE		0x1000
+<<<<<<< HEAD
 #define MAX_MRU			1536 /* 0x600 */
+=======
+
+/* MRU is said to be 14320 in a code dump, the SW manual says that
+ * MRU/MTU is 16320 and includes VLAN and ethernet headers.
+ * See "IXP400 Software Programmer's Guide" section 10.3.2, page 161.
+ *
+ * FIXME: we have chosen the safe default (14320) but if you can test
+ * jumboframes, experiment with 16320 and see what happens!
+ */
+#define MAX_MRU			(14320 - VLAN_ETH_HLEN)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RX_BUFF_SIZE		ALIGN((NET_IP_ALIGN) + MAX_MRU, 4)
 
 #define NAPI_WEIGHT		16
@@ -139,13 +184,29 @@
 #ifdef __ARMEB__
 typedef struct sk_buff buffer_t;
 #define free_buffer dev_kfree_skb
+<<<<<<< HEAD
 #define free_buffer_irq dev_kfree_skb_irq
+=======
+#define free_buffer_irq dev_consume_skb_irq
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 typedef void buffer_t;
 #define free_buffer kfree
 #define free_buffer_irq kfree
 #endif
 
+<<<<<<< HEAD
+=======
+/* Information about built-in Ethernet MAC interfaces */
+struct eth_plat_info {
+	u8 rxq;		/* configurable, currently 0 - 31 only */
+	u8 txreadyq;
+	u8 hwaddr[ETH_ALEN];
+	u8 npe;		/* NPE instance used by this interface */
+	bool has_mdio;	/* If this instance has an MDIO bus */
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct eth_regs {
 	u32 tx_control[2], __res1[2];		/* 000 */
 	u32 rx_control[2], __res2[2];		/* 010 */
@@ -166,6 +227,7 @@ struct eth_regs {
 };
 
 struct port {
+<<<<<<< HEAD
 	struct resource *mem_res;
 	struct eth_regs __iomem *regs;
 	struct npe *npe;
@@ -176,6 +238,18 @@ struct port {
 	buffer_t *rx_buff_tab[RX_DESCS], *tx_buff_tab[TX_DESCS];
 	struct desc *desc_tab;	/* coherent */
 	u32 desc_tab_phys;
+=======
+	struct eth_regs __iomem *regs;
+	struct ixp46x_ts_regs __iomem *timesync_regs;
+	int phc_index;
+	struct npe *npe;
+	struct net_device *netdev;
+	struct napi_struct napi;
+	struct eth_plat_info *plat;
+	buffer_t *rx_buff_tab[RX_DESCS], *tx_buff_tab[TX_DESCS];
+	struct desc *desc_tab;	/* coherent */
+	dma_addr_t desc_tab_phys;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int id;			/* logical port ID */
 	int speed, duplex;
 	u8 firmware[4];
@@ -249,17 +323,27 @@ static inline void memcpy_swab32(u32 *dest, u32 *src, int cnt)
 }
 #endif
 
+<<<<<<< HEAD
 static spinlock_t mdio_lock;
 static struct eth_regs __iomem *mdio_regs; /* mdio command and status only */
 static struct mii_bus *mdio_bus;
+=======
+static DEFINE_SPINLOCK(mdio_lock);
+static struct eth_regs __iomem *mdio_regs; /* mdio command and status only */
+static struct mii_bus *mdio_bus;
+static struct device_node *mdio_bus_np;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ports_open;
 static struct port *npe_port_tab[MAX_NPES];
 static struct dma_pool *dma_pool;
 
+<<<<<<< HEAD
 static struct sock_filter ptp_filter[] = {
 	PTP_FILTER
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ixp_ptp_match(struct sk_buff *skb, u16 uid_hi, u32 uid_lo, u16 seqid)
 {
 	u8 *data = skb->data;
@@ -267,7 +351,11 @@ static int ixp_ptp_match(struct sk_buff *skb, u16 uid_hi, u32 uid_lo, u16 seqid)
 	u16 *hi, *id;
 	u32 lo;
 
+<<<<<<< HEAD
 	if (sk_run_filter(skb, ptp_filter) != PTP_CLASS_V1_IPV4)
+=======
+	if (ptp_classify_raw(skb) != PTP_CLASS_V1_IPV4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	offset = ETH_HLEN + IPV4_HLEN(data) + UDP_HLEN;
@@ -298,7 +386,11 @@ static void ixp_rx_timestamp(struct port *port, struct sk_buff *skb)
 
 	ch = PORT2CHANNEL(port);
 
+<<<<<<< HEAD
 	regs = (struct ixp46x_ts_regs __iomem *) IXP4XX_TIMESYNC_BASE_VIRT;
+=======
+	regs = port->timesync_regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = __raw_readl(&regs->channel[ch].ch_event);
 
@@ -343,7 +435,11 @@ static void ixp_tx_timestamp(struct port *port, struct sk_buff *skb)
 
 	ch = PORT2CHANNEL(port);
 
+<<<<<<< HEAD
 	regs = (struct ixp46x_ts_regs __iomem *) IXP4XX_TIMESYNC_BASE_VIRT;
+=======
+	regs = port->timesync_regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This really stinks, but we have to poll for the Tx time stamp.
@@ -373,16 +469,25 @@ static void ixp_tx_timestamp(struct port *port, struct sk_buff *skb)
 	__raw_writel(TX_SNAPSHOT_LOCKED, &regs->channel[ch].ch_event);
 }
 
+<<<<<<< HEAD
 static int hwtstamp_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
+=======
+static int hwtstamp_set(struct net_device *netdev, struct ifreq *ifr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hwtstamp_config cfg;
 	struct ixp46x_ts_regs *regs;
 	struct port *port = netdev_priv(netdev);
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ch;
 
 	if (copy_from_user(&cfg, ifr->ifr_data, sizeof(cfg)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	if (cfg.flags) /* reserved for future extensions */
 		return -EINVAL;
 
@@ -399,6 +504,17 @@ static int hwtstamp_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 	default:
 		return -ERANGE;
 	}
+=======
+	ret = ixp46x_ptp_find(&port->timesync_regs, &port->phc_index);
+	if (ret)
+		return ret;
+
+	ch = PORT2CHANNEL(port);
+	regs = port->timesync_regs;
+
+	if (cfg.tx_type != HWTSTAMP_TX_OFF && cfg.tx_type != HWTSTAMP_TX_ON)
+		return -ERANGE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cfg.rx_filter) {
 	case HWTSTAMP_FILTER_NONE:
@@ -416,6 +532,11 @@ static int hwtstamp_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 		return -ERANGE;
 	}
 
+<<<<<<< HEAD
+=======
+	port->hwts_tx_en = cfg.tx_type == HWTSTAMP_TX_ON;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Clear out any old time stamps. */
 	__raw_writel(TX_SNAPSHOT_LOCKED | RX_SNAPSHOT_LOCKED,
 		     &regs->channel[ch].ch_event);
@@ -423,6 +544,35 @@ static int hwtstamp_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
 }
 
+<<<<<<< HEAD
+=======
+static int hwtstamp_get(struct net_device *netdev, struct ifreq *ifr)
+{
+	struct hwtstamp_config cfg;
+	struct port *port = netdev_priv(netdev);
+
+	cfg.flags = 0;
+	cfg.tx_type = port->hwts_tx_en ? HWTSTAMP_TX_ON : HWTSTAMP_TX_OFF;
+
+	switch (port->hwts_rx_en) {
+	case 0:
+		cfg.rx_filter = HWTSTAMP_FILTER_NONE;
+		break;
+	case PTP_SLAVE_MODE:
+		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V1_L4_SYNC;
+		break;
+	case PTP_MASTER_MODE:
+		cfg.rx_filter = HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ;
+		break;
+	default:
+		WARN_ON_ONCE(1);
+		return -ERANGE;
+	}
+
+	return copy_to_user(ifr->ifr_data, &cfg, sizeof(cfg)) ? -EFAULT : 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ixp4xx_mdio_cmd(struct mii_bus *bus, int phy_id, int location,
 			   int write, u16 cmd)
 {
@@ -505,13 +655,18 @@ static int ixp4xx_mdio_write(struct mii_bus *bus, int phy_id, int location,
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ixp4xx_mdio_register(void)
+=======
+static int ixp4xx_mdio_register(struct eth_regs __iomem *regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
 	if (!(mdio_bus = mdiobus_alloc()))
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	if (cpu_is_ixp43x()) {
 		/* IXP43x lacks NPE-B and uses NPE-C for MII PHY access */
 		if (!(ixp4xx_read_feature_bits() & IXP4XX_FEATURE_NPEC_ETH))
@@ -526,12 +681,21 @@ static int ixp4xx_mdio_register(void)
 
 	__raw_writel(DEFAULT_CORE_CNTRL, &mdio_regs->core_control);
 	spin_lock_init(&mdio_lock);
+=======
+	mdio_regs = regs;
+	__raw_writel(DEFAULT_CORE_CNTRL, &mdio_regs->core_control);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mdio_bus->name = "IXP4xx MII Bus";
 	mdio_bus->read = &ixp4xx_mdio_read;
 	mdio_bus->write = &ixp4xx_mdio_write;
 	snprintf(mdio_bus->id, MII_BUS_ID_SIZE, "ixp4xx-eth-0");
 
+<<<<<<< HEAD
 	if ((err = mdiobus_register(mdio_bus)))
+=======
+	err = of_mdiobus_register(mdio_bus, mdio_bus_np);
+	if (err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdiobus_free(mdio_bus);
 	return err;
 }
@@ -546,7 +710,11 @@ static void ixp4xx_mdio_remove(void)
 static void ixp4xx_adjust_link(struct net_device *dev)
 {
 	struct port *port = netdev_priv(dev);
+<<<<<<< HEAD
 	struct phy_device *phydev = port->phydev;
+=======
+	struct phy_device *phydev = dev->phydev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!phydev->link) {
 		if (port->speed) {
@@ -569,8 +737,13 @@ static void ixp4xx_adjust_link(struct net_device *dev)
 		__raw_writel(DEFAULT_TX_CNTRL0 | TX_CNTRL0_HALFDUPLEX,
 			     &port->regs->tx_control[0]);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "%s: link up, speed %u Mb/s, %s duplex\n",
 	       dev->name, port->speed, port->duplex ? "full" : "half");
+=======
+	netdev_info(dev, "%s: link up, speed %u Mb/s, %s duplex\n",
+		    dev->name, port->speed, port->duplex ? "full" : "half");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -580,7 +753,11 @@ static inline void debug_pkt(struct net_device *dev, const char *func,
 #if DEBUG_PKT_BYTES
 	int i;
 
+<<<<<<< HEAD
 	printk(KERN_DEBUG "%s: %s(%i) ", dev->name, func, len);
+=======
+	netdev_debug(dev, "%s(%i) ", func, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < len; i++) {
 		if (i >= DEBUG_PKT_BYTES)
 			break;
@@ -671,7 +848,11 @@ static int eth_poll(struct napi_struct *napi, int budget)
 	int received = 0;
 
 #if DEBUG_RX
+<<<<<<< HEAD
 	printk(KERN_DEBUG "%s: eth_poll\n", dev->name);
+=======
+	netdev_debug(dev, "eth_poll\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	while (received < budget) {
@@ -685,24 +866,38 @@ static int eth_poll(struct napi_struct *napi, int budget)
 
 		if ((n = queue_get_desc(rxq, port, 0)) < 0) {
 #if DEBUG_RX
+<<<<<<< HEAD
 			printk(KERN_DEBUG "%s: eth_poll napi_complete\n",
 			       dev->name);
+=======
+			netdev_debug(dev, "eth_poll napi_complete\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 			napi_complete(napi);
 			qmgr_enable_irq(rxq);
 			if (!qmgr_stat_below_low_watermark(rxq) &&
+<<<<<<< HEAD
 			    napi_reschedule(napi)) { /* not empty again */
 #if DEBUG_RX
 				printk(KERN_DEBUG "%s: eth_poll"
 				       " napi_reschedule successed\n",
 				       dev->name);
+=======
+			    napi_schedule(napi)) { /* not empty again */
+#if DEBUG_RX
+				netdev_debug(dev, "eth_poll napi_schedule succeeded\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 				qmgr_disable_irq(rxq);
 				continue;
 			}
 #if DEBUG_RX
+<<<<<<< HEAD
 			printk(KERN_DEBUG "%s: eth_poll all done\n",
 			       dev->name);
+=======
+			netdev_debug(dev, "eth_poll all done\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 			return received; /* all work done */
 		}
@@ -767,7 +962,11 @@ static int eth_poll(struct napi_struct *napi, int budget)
 	}
 
 #if DEBUG_RX
+<<<<<<< HEAD
 	printk(KERN_DEBUG "eth_poll(): end, not all work done\n");
+=======
+	netdev_debug(dev, "eth_poll(): end, not all work done\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return received;		/* not all work done */
 }
@@ -821,7 +1020,11 @@ static void eth_txdone_irq(void *unused)
 	}
 }
 
+<<<<<<< HEAD
 static int eth_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t eth_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct port *port = netdev_priv(dev);
 	unsigned int txreadyq = port->plat->txreadyq;
@@ -831,7 +1034,11 @@ static int eth_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct desc *desc;
 
 #if DEBUG_TX
+<<<<<<< HEAD
 	printk(KERN_DEBUG "%s: eth_xmit\n", dev->name);
+=======
+	netdev_debug(dev, "eth_xmit\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	if (unlikely(skb->len > MAX_MRU)) {
@@ -848,14 +1055,22 @@ static int eth_xmit(struct sk_buff *skb, struct net_device *dev)
 	bytes = len;
 	mem = skb->data;
 #else
+<<<<<<< HEAD
 	offset = (int)skb->data & 3; /* keep 32-bit alignment */
+=======
+	offset = (uintptr_t)skb->data & 3; /* keep 32-bit alignment */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bytes = ALIGN(offset + len, 4);
 	if (!(mem = kmalloc(bytes, GFP_ATOMIC))) {
 		dev_kfree_skb(skb);
 		dev->stats.tx_dropped++;
 		return NETDEV_TX_OK;
 	}
+<<<<<<< HEAD
 	memcpy_swab32(mem, (u32 *)((int)skb->data & ~3), bytes / 4);
+=======
+	memcpy_swab32(mem, (u32 *)((uintptr_t)skb->data & ~3), bytes / 4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	phys = dma_map_single(&dev->dev, mem, bytes, DMA_TO_DEVICE);
@@ -886,22 +1101,34 @@ static int eth_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	if (qmgr_stat_below_low_watermark(txreadyq)) { /* empty */
 #if DEBUG_TX
+<<<<<<< HEAD
 		printk(KERN_DEBUG "%s: eth_xmit queue full\n", dev->name);
+=======
+		netdev_debug(dev, "eth_xmit queue full\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		netif_stop_queue(dev);
 		/* we could miss TX ready interrupt */
 		/* really empty in fact */
 		if (!qmgr_stat_below_low_watermark(txreadyq)) {
 #if DEBUG_TX
+<<<<<<< HEAD
 			printk(KERN_DEBUG "%s: eth_xmit ready again\n",
 			       dev->name);
+=======
+			netdev_debug(dev, "eth_xmit ready again\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 			netif_wake_queue(dev);
 		}
 	}
 
 #if DEBUG_TX
+<<<<<<< HEAD
 	printk(KERN_DEBUG "%s: eth_xmit end\n", dev->name);
+=======
+	netdev_debug(dev, "eth_xmit end\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	ixp_tx_timestamp(port, skb);
@@ -922,7 +1149,11 @@ static void eth_set_mcast_list(struct net_device *dev)
 	int i;
 	static const u8 allmulti[] = { 0x01, 0x00, 0x00, 0x00, 0x00, 0x00 };
 
+<<<<<<< HEAD
 	if (dev->flags & IFF_ALLMULTI) {
+=======
+	if ((dev->flags & IFF_ALLMULTI) && !(dev->flags & IFF_PROMISC)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < ETH_ALEN; i++) {
 			__raw_writel(allmulti[i], &port->regs->mcast_addr[i]);
 			__raw_writel(allmulti[i], &port->regs->mcast_mask[i]);
@@ -938,7 +1169,11 @@ static void eth_set_mcast_list(struct net_device *dev)
 		return;
 	}
 
+<<<<<<< HEAD
 	memset(diffs, 0, ETH_ALEN);
+=======
+	eth_zero_addr(diffs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	addr = NULL;
 	netdev_for_each_mc_addr(ha, dev) {
@@ -960,6 +1195,7 @@ static void eth_set_mcast_list(struct net_device *dev)
 
 static int eth_ioctl(struct net_device *dev, struct ifreq *req, int cmd)
 {
+<<<<<<< HEAD
 	struct port *port = netdev_priv(dev);
 
 	if (!netif_running(dev))
@@ -969,6 +1205,19 @@ static int eth_ioctl(struct net_device *dev, struct ifreq *req, int cmd)
 		return hwtstamp_ioctl(dev, req, cmd);
 
 	return phy_mii_ioctl(port->phydev, req, cmd);
+=======
+	if (!netif_running(dev))
+		return -EINVAL;
+
+	if (cpu_is_ixp46x()) {
+		if (cmd == SIOCSHWTSTAMP)
+			return hwtstamp_set(dev, req);
+		if (cmd == SIOCGHWTSTAMP)
+			return hwtstamp_get(dev, req);
+	}
+
+	return phy_mii_ioctl(dev->phydev, req, cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ethtool support */
@@ -977,6 +1226,7 @@ static void ixp4xx_get_drvinfo(struct net_device *dev,
 			       struct ethtool_drvinfo *info)
 {
 	struct port *port = netdev_priv(dev);
+<<<<<<< HEAD
 	strcpy(info->driver, DRV_NAME);
 	snprintf(info->fw_version, sizeof(info->fw_version), "%u:%u:%u:%u",
 		 port->firmware[0], port->firmware[1],
@@ -1000,14 +1250,61 @@ static int ixp4xx_nway_reset(struct net_device *dev)
 {
 	struct port *port = netdev_priv(dev);
 	return phy_start_aneg(port->phydev);
+=======
+
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	snprintf(info->fw_version, sizeof(info->fw_version), "%u:%u:%u:%u",
+		 port->firmware[0], port->firmware[1],
+		 port->firmware[2], port->firmware[3]);
+	strscpy(info->bus_info, "internal", sizeof(info->bus_info));
+}
+
+static int ixp4xx_get_ts_info(struct net_device *dev,
+			      struct ethtool_ts_info *info)
+{
+	struct port *port = netdev_priv(dev);
+
+	if (port->phc_index < 0)
+		ixp46x_ptp_find(&port->timesync_regs, &port->phc_index);
+
+	info->phc_index = port->phc_index;
+
+	if (info->phc_index < 0) {
+		info->so_timestamping =
+			SOF_TIMESTAMPING_TX_SOFTWARE |
+			SOF_TIMESTAMPING_RX_SOFTWARE |
+			SOF_TIMESTAMPING_SOFTWARE;
+		return 0;
+	}
+	info->so_timestamping =
+		SOF_TIMESTAMPING_TX_HARDWARE |
+		SOF_TIMESTAMPING_RX_HARDWARE |
+		SOF_TIMESTAMPING_RAW_HARDWARE;
+	info->tx_types =
+		(1 << HWTSTAMP_TX_OFF) |
+		(1 << HWTSTAMP_TX_ON);
+	info->rx_filters =
+		(1 << HWTSTAMP_FILTER_NONE) |
+		(1 << HWTSTAMP_FILTER_PTP_V1_L4_SYNC) |
+		(1 << HWTSTAMP_FILTER_PTP_V1_L4_DELAY_REQ);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct ethtool_ops ixp4xx_ethtool_ops = {
 	.get_drvinfo = ixp4xx_get_drvinfo,
+<<<<<<< HEAD
 	.get_settings = ixp4xx_get_settings,
 	.set_settings = ixp4xx_set_settings,
 	.nway_reset = ixp4xx_nway_reset,
 	.get_link = ethtool_op_get_link,
+=======
+	.nway_reset = phy_ethtool_nway_reset,
+	.get_link = ethtool_op_get_link,
+	.get_ts_info = ixp4xx_get_ts_info,
+	.get_link_ksettings = phy_ethtool_get_link_ksettings,
+	.set_link_ksettings = phy_ethtool_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -1072,6 +1369,7 @@ static int init_queues(struct port *port)
 {
 	int i;
 
+<<<<<<< HEAD
 	if (!ports_open)
 		if (!(dma_pool = dma_pool_create(DRV_NAME, NULL,
 						 POOL_ALLOC_SIZE, 32, 0)))
@@ -1081,6 +1379,18 @@ static int init_queues(struct port *port)
 					      &port->desc_tab_phys)))
 		return -ENOMEM;
 	memset(port->desc_tab, 0, POOL_ALLOC_SIZE);
+=======
+	if (!ports_open) {
+		dma_pool = dma_pool_create(DRV_NAME, &port->netdev->dev,
+					   POOL_ALLOC_SIZE, 32, 0);
+		if (!dma_pool)
+			return -ENOMEM;
+	}
+
+	port->desc_tab = dma_pool_zalloc(dma_pool, GFP_KERNEL, &port->desc_tab_phys);
+	if (!port->desc_tab)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(port->rx_buff_tab, 0, sizeof(port->rx_buff_tab)); /* tables */
 	memset(port->tx_buff_tab, 0, sizeof(port->tx_buff_tab));
 
@@ -1145,6 +1455,57 @@ static void destroy_queues(struct port *port)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static int ixp4xx_do_change_mtu(struct net_device *dev, int new_mtu)
+{
+	struct port *port = netdev_priv(dev);
+	struct npe *npe = port->npe;
+	int framesize, chunks;
+	struct msg msg = {};
+
+	/* adjust for ethernet headers */
+	framesize = new_mtu + VLAN_ETH_HLEN;
+	/* max rx/tx 64 byte chunks */
+	chunks = DIV_ROUND_UP(framesize, 64);
+
+	msg.cmd = NPE_SETMAXFRAMELENGTHS;
+	msg.eth_id = port->id;
+
+	/* Firmware wants to know buffer size in 64 byte chunks */
+	msg.byte2 = chunks << 8;
+	msg.byte3 = chunks << 8;
+
+	msg.byte4 = msg.byte6 = framesize >> 8;
+	msg.byte5 = msg.byte7 = framesize & 0xff;
+
+	if (npe_send_recv_message(npe, &msg, "ETH_SET_MAX_FRAME_LENGTH"))
+		return -EIO;
+	netdev_dbg(dev, "set MTU on NPE %s to %d bytes\n",
+		   npe_name(npe), new_mtu);
+
+	return 0;
+}
+
+static int ixp4xx_eth_change_mtu(struct net_device *dev, int new_mtu)
+{
+	int ret;
+
+	/* MTU can only be changed when the interface is up. We also
+	 * set the MTU from dev->mtu when opening the device.
+	 */
+	if (dev->flags & IFF_UP) {
+		ret = ixp4xx_do_change_mtu(dev, new_mtu);
+		if (ret < 0)
+			return ret;
+	}
+
+	dev->mtu = new_mtu;
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int eth_open(struct net_device *dev)
 {
 	struct port *port = netdev_priv(dev);
@@ -1158,8 +1519,12 @@ static int eth_open(struct net_device *dev)
 			return err;
 
 		if (npe_recv_message(npe, &msg, "ETH_GET_STATUS")) {
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: %s not responding\n", dev->name,
 			       npe_name(npe));
+=======
+			netdev_err(dev, "%s not responding\n", npe_name(npe));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 		port->firmware[0] = msg.byte4;
@@ -1196,6 +1561,11 @@ static int eth_open(struct net_device *dev)
 	if (npe_send_recv_message(port->npe, &msg, "ETH_SET_FIREWALL_MODE"))
 		return -EIO;
 
+<<<<<<< HEAD
+=======
+	ixp4xx_do_change_mtu(dev, dev->mtu);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((err = request_queues(port)) != 0)
 		return err;
 
@@ -1206,7 +1576,11 @@ static int eth_open(struct net_device *dev)
 	}
 
 	port->speed = 0;	/* force "link up" message */
+<<<<<<< HEAD
 	phy_start(port->phydev);
+=======
+	phy_start(dev->phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ETH_ALEN; i++)
 		__raw_writel(dev->dev_addr[i], &port->regs->hw_addr[i]);
@@ -1271,7 +1645,11 @@ static int eth_close(struct net_device *dev)
 	msg.eth_id = port->id;
 	msg.byte3 = 1;
 	if (npe_send_recv_message(port->npe, &msg, "ETH_ENABLE_LOOPBACK"))
+<<<<<<< HEAD
 		printk(KERN_CRIT "%s: unable to enable loopback\n", dev->name);
+=======
+		netdev_crit(dev, "unable to enable loopback\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i = 0;
 	do {			/* drain RX buffers */
@@ -1295,11 +1673,19 @@ static int eth_close(struct net_device *dev)
 	} while (++i < MAX_CLOSE_WAIT);
 
 	if (buffs)
+<<<<<<< HEAD
 		printk(KERN_CRIT "%s: unable to drain RX queue, %i buffer(s)"
 		       " left in NPE\n", dev->name, buffs);
 #if DEBUG_CLOSE
 	if (!buffs)
 		printk(KERN_DEBUG "Draining RX queue took %i cycles\n", i);
+=======
+		netdev_crit(dev, "unable to drain RX queue, %i buffer(s)"
+			    " left in NPE\n", buffs);
+#if DEBUG_CLOSE
+	if (!buffs)
+		netdev_debug(dev, "draining RX queue took %i cycles\n", i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	buffs = TX_DESCS;
@@ -1315,19 +1701,33 @@ static int eth_close(struct net_device *dev)
 	} while (++i < MAX_CLOSE_WAIT);
 
 	if (buffs)
+<<<<<<< HEAD
 		printk(KERN_CRIT "%s: unable to drain TX queue, %i buffer(s) "
 		       "left in NPE\n", dev->name, buffs);
 #if DEBUG_CLOSE
 	if (!buffs)
 		printk(KERN_DEBUG "Draining TX queues took %i cycles\n", i);
+=======
+		netdev_crit(dev, "unable to drain TX queue, %i buffer(s) "
+			    "left in NPE\n", buffs);
+#if DEBUG_CLOSE
+	if (!buffs)
+		netdev_debug(dev, "draining TX queues took %i cycles\n", i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	msg.byte3 = 0;
 	if (npe_send_recv_message(port->npe, &msg, "ETH_DISABLE_LOOPBACK"))
+<<<<<<< HEAD
 		printk(KERN_CRIT "%s: unable to disable loopback\n",
 		       dev->name);
 
 	phy_stop(port->phydev);
+=======
+		netdev_crit(dev, "unable to disable loopback\n");
+
+	phy_stop(dev->phydev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ports_open)
 		qmgr_disable_irq(TXDONE_QUEUE);
@@ -1339,14 +1739,22 @@ static int eth_close(struct net_device *dev)
 static const struct net_device_ops ixp4xx_netdev_ops = {
 	.ndo_open = eth_open,
 	.ndo_stop = eth_close,
+<<<<<<< HEAD
 	.ndo_start_xmit = eth_xmit,
 	.ndo_set_rx_mode = eth_set_mcast_list,
 	.ndo_do_ioctl = eth_ioctl,
 	.ndo_change_mtu = eth_change_mtu,
+=======
+	.ndo_change_mtu = ixp4xx_eth_change_mtu,
+	.ndo_start_xmit = eth_xmit,
+	.ndo_set_rx_mode = eth_set_mcast_list,
+	.ndo_eth_ioctl = eth_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address = eth_mac_addr,
 	.ndo_validate_addr = eth_validate_addr,
 };
 
+<<<<<<< HEAD
 static int __devinit eth_init_one(struct platform_device *pdev)
 {
 	struct port *port;
@@ -1409,6 +1817,131 @@ static int __devinit eth_init_one(struct platform_device *pdev)
 	memcpy(dev->dev_addr, plat->hwaddr, ETH_ALEN);
 
 	platform_set_drvdata(pdev, dev);
+=======
+static struct eth_plat_info *ixp4xx_of_get_platdata(struct device *dev)
+{
+	struct device_node *np = dev->of_node;
+	struct of_phandle_args queue_spec;
+	struct of_phandle_args npe_spec;
+	struct device_node *mdio_np;
+	struct eth_plat_info *plat;
+	u8 mac[ETH_ALEN];
+	int ret;
+
+	plat = devm_kzalloc(dev, sizeof(*plat), GFP_KERNEL);
+	if (!plat)
+		return NULL;
+
+	ret = of_parse_phandle_with_fixed_args(np, "intel,npe-handle", 1, 0,
+					       &npe_spec);
+	if (ret) {
+		dev_err(dev, "no NPE engine specified\n");
+		return NULL;
+	}
+	/* NPE ID 0x00, 0x10, 0x20... */
+	plat->npe = (npe_spec.args[0] << 4);
+
+	/* Check if this device has an MDIO bus */
+	mdio_np = of_get_child_by_name(np, "mdio");
+	if (mdio_np) {
+		plat->has_mdio = true;
+		mdio_bus_np = mdio_np;
+		/* DO NOT put the mdio_np, it will be used */
+	}
+
+	/* Get the rx queue as a resource from queue manager */
+	ret = of_parse_phandle_with_fixed_args(np, "queue-rx", 1, 0,
+					       &queue_spec);
+	if (ret) {
+		dev_err(dev, "no rx queue phandle\n");
+		return NULL;
+	}
+	plat->rxq = queue_spec.args[0];
+
+	/* Get the txready queue as resource from queue manager */
+	ret = of_parse_phandle_with_fixed_args(np, "queue-txready", 1, 0,
+					       &queue_spec);
+	if (ret) {
+		dev_err(dev, "no txready queue phandle\n");
+		return NULL;
+	}
+	plat->txreadyq = queue_spec.args[0];
+
+	ret = of_get_mac_address(np, mac);
+	if (!ret) {
+		dev_info(dev, "Setting macaddr from DT %pM\n", mac);
+		memcpy(plat->hwaddr, mac, ETH_ALEN);
+	}
+
+	return plat;
+}
+
+static int ixp4xx_eth_probe(struct platform_device *pdev)
+{
+	struct phy_device *phydev = NULL;
+	struct device *dev = &pdev->dev;
+	struct device_node *np = dev->of_node;
+	struct eth_plat_info *plat;
+	struct net_device *ndev;
+	struct port *port;
+	int err;
+
+	plat = ixp4xx_of_get_platdata(dev);
+	if (!plat)
+		return -ENODEV;
+
+	if (!(ndev = devm_alloc_etherdev(dev, sizeof(struct port))))
+		return -ENOMEM;
+
+	SET_NETDEV_DEV(ndev, dev);
+	port = netdev_priv(ndev);
+	port->netdev = ndev;
+	port->id = plat->npe;
+	port->phc_index = -1;
+
+	/* Get the port resource and remap */
+	port->regs = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
+	if (IS_ERR(port->regs))
+		return PTR_ERR(port->regs);
+
+	/* Register the MDIO bus if we have it */
+	if (plat->has_mdio) {
+		err = ixp4xx_mdio_register(port->regs);
+		if (err) {
+			dev_err(dev, "failed to register MDIO bus\n");
+			return err;
+		}
+	}
+	/* If the instance with the MDIO bus has not yet appeared,
+	 * defer probing until it gets probed.
+	 */
+	if (!mdio_bus)
+		return -EPROBE_DEFER;
+
+	ndev->netdev_ops = &ixp4xx_netdev_ops;
+	ndev->ethtool_ops = &ixp4xx_ethtool_ops;
+	ndev->tx_queue_len = 100;
+	/* Inherit the DMA masks from the platform device */
+	ndev->dev.dma_mask = dev->dma_mask;
+	ndev->dev.coherent_dma_mask = dev->coherent_dma_mask;
+
+	ndev->min_mtu = ETH_MIN_MTU;
+	ndev->max_mtu = MAX_MRU;
+
+	netif_napi_add_weight(ndev, &port->napi, eth_poll, NAPI_WEIGHT);
+
+	if (!(port->npe = npe_request(NPE_ID(port->id))))
+		return -EIO;
+
+	port->plat = plat;
+	npe_port_tab[NPE_ID(port->id)] = port;
+	if (is_valid_ether_addr(plat->hwaddr))
+		eth_hw_addr_set(ndev, plat->hwaddr);
+	else
+		eth_hw_addr_random(ndev);
+
+	platform_set_drvdata(pdev, ndev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__raw_writel(DEFAULT_CORE_CNTRL | CORE_RESET,
 		     &port->regs->core_control);
@@ -1416,6 +1949,7 @@ static int __devinit eth_init_one(struct platform_device *pdev)
 	__raw_writel(DEFAULT_CORE_CNTRL, &port->regs->core_control);
 	udelay(50);
 
+<<<<<<< HEAD
 	snprintf(phy_id, MII_BUS_ID_SIZE + 3, PHY_ID_FMT,
 		mdio_bus->id, plat->phy);
 	port->phydev = phy_connect(dev, phy_id, &ixp4xx_adjust_link, 0,
@@ -1432,10 +1966,27 @@ static int __devinit eth_init_one(struct platform_device *pdev)
 
 	printk(KERN_INFO "%s: MII PHY %i on %s\n", dev->name, plat->phy,
 	       npe_name(port->npe));
+=======
+	phydev = of_phy_get_and_connect(ndev, np, ixp4xx_adjust_link);
+	if (!phydev) {
+		err = -ENODEV;
+		dev_err(dev, "no phydev\n");
+		goto err_free_mem;
+	}
+
+	phydev->irq = PHY_POLL;
+
+	if ((err = register_netdev(ndev)))
+		goto err_phy_dis;
+
+	netdev_info(ndev, "%s: MII PHY %s on %s\n", ndev->name, phydev_name(phydev),
+		    npe_name(port->npe));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
 err_phy_dis:
+<<<<<<< HEAD
 	phy_disconnect(port->phydev);
 err_free_mem:
 	npe_port_tab[NPE_ID(port->id)] = NULL;
@@ -1482,10 +2033,51 @@ static void __exit eth_cleanup_module(void)
 	platform_driver_unregister(&ixp4xx_eth_driver);
 	ixp4xx_mdio_remove();
 }
+=======
+	phy_disconnect(phydev);
+err_free_mem:
+	npe_port_tab[NPE_ID(port->id)] = NULL;
+	npe_release(port->npe);
+	return err;
+}
+
+static void ixp4xx_eth_remove(struct platform_device *pdev)
+{
+	struct net_device *ndev = platform_get_drvdata(pdev);
+	struct phy_device *phydev = ndev->phydev;
+	struct port *port = netdev_priv(ndev);
+
+	unregister_netdev(ndev);
+	phy_disconnect(phydev);
+	ixp4xx_mdio_remove();
+	npe_port_tab[NPE_ID(port->id)] = NULL;
+	npe_release(port->npe);
+}
+
+static const struct of_device_id ixp4xx_eth_of_match[] = {
+	{
+		.compatible = "intel,ixp4xx-ethernet",
+	},
+	{ },
+};
+
+static struct platform_driver ixp4xx_eth_driver = {
+	.driver = {
+		.name = DRV_NAME,
+		.of_match_table = of_match_ptr(ixp4xx_eth_of_match),
+	},
+	.probe		= ixp4xx_eth_probe,
+	.remove_new	= ixp4xx_eth_remove,
+};
+module_platform_driver(ixp4xx_eth_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Krzysztof Halasa");
 MODULE_DESCRIPTION("Intel IXP4xx Ethernet driver");
 MODULE_LICENSE("GPL v2");
 MODULE_ALIAS("platform:ixp4xx_eth");
+<<<<<<< HEAD
 module_init(eth_init_module);
 module_exit(eth_cleanup_module);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * cpc925_edac.c, EDAC driver for IBM CPC925 Bridge and Memory Controller.
  *
  * Copyright (c) 2008 Wind River Systems, Inc.
  *
  * Authors:	Cao Qingtao <qingtao.cao@windriver.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -17,6 +22,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -27,7 +34,10 @@
 #include <linux/platform_device.h>
 #include <linux/gfp.h>
 
+<<<<<<< HEAD
 #include "edac_core.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "edac_module.h"
 
 #define CPC925_EDAC_REVISION	" Ver: 1.0.0"
@@ -316,22 +326,38 @@ static void get_total_mem(struct cpc925_mc_pdata *pdata)
 		reg += aw;
 		size = of_read_number(reg, sw);
 		reg += sw;
+<<<<<<< HEAD
 		debugf1("%s: start 0x%lx, size 0x%lx\n", __func__,
 			start, size);
+=======
+		edac_dbg(1, "start 0x%lx, size 0x%lx\n", start, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pdata->total_mem += size;
 	} while (reg < reg_end);
 
 	of_node_put(np);
+<<<<<<< HEAD
 	debugf0("%s: total_mem 0x%lx\n", __func__, pdata->total_mem);
+=======
+	edac_dbg(0, "total_mem 0x%lx\n", pdata->total_mem);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void cpc925_init_csrows(struct mem_ctl_info *mci)
 {
 	struct cpc925_mc_pdata *pdata = mci->pvt_info;
 	struct csrow_info *csrow;
+<<<<<<< HEAD
 	int index;
 	u32 mbmr, mbbar, bba;
 	unsigned long row_size, last_nr_pages = 0;
+=======
+	struct dimm_info *dimm;
+	enum dev_type dtype;
+	int index, j;
+	u32 mbmr, mbbar, bba, grain;
+	unsigned long row_size, nr_pages, last_nr_pages = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	get_total_mem(pdata);
 
@@ -346,6 +372,7 @@ static void cpc925_init_csrows(struct mem_ctl_info *mci)
 		if (bba == 0)
 			continue; /* not populated */
 
+<<<<<<< HEAD
 		csrow = &mci->csrows[index];
 
 		row_size = bba * (1UL << 28);	/* 256M */
@@ -367,10 +394,30 @@ static void cpc925_init_csrows(struct mem_ctl_info *mci)
 			break;
 		}
 
+=======
+		csrow = mci->csrows[index];
+
+		row_size = bba * (1UL << 28);	/* 256M */
+		csrow->first_page = last_nr_pages;
+		nr_pages = row_size >> PAGE_SHIFT;
+		csrow->last_page = csrow->first_page + nr_pages - 1;
+		last_nr_pages = csrow->last_page + 1;
+
+		switch (csrow->nr_channels) {
+		case 1: /* Single channel */
+			grain = 32; /* four-beat burst of 32 bytes */
+			break;
+		case 2: /* Dual channel */
+		default:
+			grain = 64; /* four-beat burst of 64 bytes */
+			break;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch ((mbmr & MBMR_MODE_MASK) >> MBMR_MODE_SHIFT) {
 		case 6: /* 0110, no way to differentiate X8 VS X16 */
 		case 5:	/* 0101 */
 		case 8: /* 1000 */
+<<<<<<< HEAD
 			csrow->dtype = DEV_X16;
 			break;
 		case 7: /* 0111 */
@@ -380,6 +427,25 @@ static void cpc925_init_csrows(struct mem_ctl_info *mci)
 		default:
 			csrow->dtype = DEV_UNKNOWN;
 			break;
+=======
+			dtype = DEV_X16;
+			break;
+		case 7: /* 0111 */
+		case 9: /* 1001 */
+			dtype = DEV_X8;
+			break;
+		default:
+			dtype = DEV_UNKNOWN;
+		break;
+		}
+		for (j = 0; j < csrow->nr_channels; j++) {
+			dimm = csrow->channels[j]->dimm;
+			dimm->nr_pages = nr_pages / csrow->nr_channels;
+			dimm->mtype = MEM_RDDR;
+			dimm->edac_mode = EDAC_SECDED;
+			dimm->grain = grain;
+			dimm->dtype = dtype;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -457,7 +523,11 @@ static void cpc925_mc_get_pfn(struct mem_ctl_info *mci, u32 mear,
 	*csrow = rank;
 
 #ifdef CONFIG_EDAC_DEBUG
+<<<<<<< HEAD
 	if (mci->csrows[rank].first_page == 0) {
+=======
+	if (mci->csrows[rank]->first_page == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cpc925_mc_printk(mci, KERN_ERR, "ECC occurs in a "
 			"non-populated csrow, broken hardware?\n");
 		return;
@@ -465,7 +535,11 @@ static void cpc925_mc_get_pfn(struct mem_ctl_info *mci, u32 mear,
 #endif
 
 	/* Revert csrow number */
+<<<<<<< HEAD
 	pa = mci->csrows[rank].first_page << PAGE_SHIFT;
+=======
+	pa = mci->csrows[rank]->first_page << PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Revert column address */
 	col += bcnt;
@@ -506,7 +580,11 @@ static void cpc925_mc_get_pfn(struct mem_ctl_info *mci, u32 mear,
 	*offset = pa & (PAGE_SIZE - 1);
 	*pfn = pa >> PAGE_SHIFT;
 
+<<<<<<< HEAD
 	debugf0("%s: ECC physical address 0x%lx\n", __func__, pa);
+=======
+	edac_dbg(0, "ECC physical address 0x%lx\n", pa);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cpc925_mc_find_channel(struct mem_ctl_info *mci, u16 syndrome)
@@ -549,13 +627,27 @@ static void cpc925_mc_check(struct mem_ctl_info *mci)
 	if (apiexcp & CECC_EXCP_DETECTED) {
 		cpc925_mc_printk(mci, KERN_INFO, "DRAM CECC Fault\n");
 		channel = cpc925_mc_find_channel(mci, syndrome);
+<<<<<<< HEAD
 		edac_mc_handle_ce(mci, pfn, offset, syndrome,
 				  csrow, channel, mci->ctl_name);
+=======
+		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1,
+				     pfn, offset, syndrome,
+				     csrow, channel, -1,
+				     mci->ctl_name, "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (apiexcp & UECC_EXCP_DETECTED) {
 		cpc925_mc_printk(mci, KERN_INFO, "DRAM UECC Fault\n");
+<<<<<<< HEAD
 		edac_mc_handle_ue(mci, pfn, offset, csrow, mci->ctl_name);
+=======
+		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1,
+				     pfn, offset, 0,
+				     csrow, -1, -1,
+				     mci->ctl_name, "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	cpc925_mc_printk(mci, KERN_INFO, "Dump registers:\n");
@@ -584,8 +676,12 @@ static void cpc925_mc_check(struct mem_ctl_info *mci)
 /******************** CPU err device********************************/
 static u32 cpc925_cpu_mask_disabled(void)
 {
+<<<<<<< HEAD
 	struct device_node *cpus;
 	struct device_node *cpunode = NULL;
+=======
+	struct device_node *cpunode;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	static u32 mask = 0;
 
 	/* use cached value if available */
@@ -594,6 +690,7 @@ static u32 cpc925_cpu_mask_disabled(void)
 
 	mask = APIMASK_ADI0 | APIMASK_ADI1;
 
+<<<<<<< HEAD
 	cpus = of_find_node_by_path("/cpus");
 	if (cpus == NULL) {
 		cpc925_printk(KERN_DEBUG, "No /cpus node !\n");
@@ -610,6 +707,12 @@ static u32 cpc925_cpu_mask_disabled(void)
 
 		if (reg == NULL || *reg > 2) {
 			cpc925_printk(KERN_ERR, "Bad reg value at %s\n", cpunode->full_name);
+=======
+	for_each_of_cpu_node(cpunode) {
+		const u32 *reg = of_get_property(cpunode, "reg", NULL);
+		if (reg == NULL || *reg > 2) {
+			cpc925_printk(KERN_ERR, "Bad reg value at %pOF\n", cpunode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -624,9 +727,12 @@ static u32 cpc925_cpu_mask_disabled(void)
 				"Assuming PI id is equal to CPU MPIC id!\n");
 	}
 
+<<<<<<< HEAD
 	of_node_put(cpunode);
 	of_node_put(cpus);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return mask;
 }
 
@@ -779,7 +885,11 @@ static struct cpc925_dev_info cpc925_devs[] = {
 	.exit = cpc925_htlink_exit,
 	.check = cpc925_htlink_check,
 	},
+<<<<<<< HEAD
 	{0}, /* Terminated by NULL */
+=======
+	{ }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -841,8 +951,13 @@ static void cpc925_add_edac_devices(void __iomem *vbase)
 			goto err2;
 		}
 
+<<<<<<< HEAD
 		debugf0("%s: Successfully added edac device for %s\n",
 			__func__, dev_info->ctl_name);
+=======
+		edac_dbg(0, "Successfully added edac device for %s\n",
+			 dev_info->ctl_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		continue;
 
@@ -873,8 +988,13 @@ static void cpc925_del_edac_devices(void)
 		if (dev_info->exit)
 			dev_info->exit(dev_info);
 
+<<<<<<< HEAD
 		debugf0("%s: Successfully deleted edac device for %s\n",
 			__func__, dev_info->ctl_name);
+=======
+		edac_dbg(0, "Successfully deleted edac device for %s\n",
+			 dev_info->ctl_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -889,7 +1009,11 @@ static int cpc925_get_sdram_scrub_rate(struct mem_ctl_info *mci)
 	mscr = __raw_readl(pdata->vbase + REG_MSCR_OFFSET);
 	si = (mscr & MSCR_SI_MASK) >> MSCR_SI_SHIFT;
 
+<<<<<<< HEAD
 	debugf0("%s, Mem Scrub Ctrl Register 0x%x\n", __func__, mscr);
+=======
+	edac_dbg(0, "Mem Scrub Ctrl Register 0x%x\n", mscr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (((mscr & MSCR_SCRUB_MOD_MASK) != MSCR_BACKGR_SCRUB) ||
 	    (si == 0)) {
@@ -917,22 +1041,38 @@ static int cpc925_mc_get_channels(void __iomem *vbase)
 	    ((mbcr & MBCR_64BITBUS_MASK) == 0))
 		dual = 1;
 
+<<<<<<< HEAD
 	debugf0("%s: %s channel\n", __func__,
 		(dual > 0) ? "Dual" : "Single");
+=======
+	edac_dbg(0, "%s channel\n", (dual > 0) ? "Dual" : "Single");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return dual;
 }
 
+<<<<<<< HEAD
 static int __devinit cpc925_probe(struct platform_device *pdev)
 {
 	static int edac_mc_idx;
 	struct mem_ctl_info *mci;
+=======
+static int cpc925_probe(struct platform_device *pdev)
+{
+	static int edac_mc_idx;
+	struct mem_ctl_info *mci;
+	struct edac_mc_layer layers[2];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *vbase;
 	struct cpc925_mc_pdata *pdata;
 	struct resource *r;
 	int res = 0, nr_channels;
 
+<<<<<<< HEAD
 	debugf0("%s: %s platform device found!\n", __func__, pdev->name);
+=======
+	edac_dbg(0, "%s platform device found!\n", pdev->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!devres_open_group(&pdev->dev, cpc925_probe, GFP_KERNEL)) {
 		res = -ENOMEM;
@@ -962,9 +1102,22 @@ static int __devinit cpc925_probe(struct platform_device *pdev)
 		goto err2;
 	}
 
+<<<<<<< HEAD
 	nr_channels = cpc925_mc_get_channels(vbase);
 	mci = edac_mc_alloc(sizeof(struct cpc925_mc_pdata),
 			CPC925_NR_CSROWS, nr_channels + 1, edac_mc_idx);
+=======
+	nr_channels = cpc925_mc_get_channels(vbase) + 1;
+
+	layers[0].type = EDAC_MC_LAYER_CHIP_SELECT;
+	layers[0].size = CPC925_NR_CSROWS;
+	layers[0].is_virt_csrow = true;
+	layers[1].type = EDAC_MC_LAYER_CHANNEL;
+	layers[1].size = nr_channels;
+	layers[1].is_virt_csrow = false;
+	mci = edac_mc_alloc(edac_mc_idx, ARRAY_SIZE(layers), layers,
+			    sizeof(struct cpc925_mc_pdata));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mci) {
 		cpc925_printk(KERN_ERR, "No memory for mem_ctl_info\n");
 		res = -ENOMEM;
@@ -976,14 +1129,21 @@ static int __devinit cpc925_probe(struct platform_device *pdev)
 	pdata->edac_idx = edac_mc_idx++;
 	pdata->name = pdev->name;
 
+<<<<<<< HEAD
 	mci->dev = &pdev->dev;
+=======
+	mci->pdev = &pdev->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_set_drvdata(pdev, mci);
 	mci->dev_name = dev_name(&pdev->dev);
 	mci->mtype_cap = MEM_FLAG_RDDR | MEM_FLAG_DDR;
 	mci->edac_ctl_cap = EDAC_FLAG_NONE | EDAC_FLAG_SECDED;
 	mci->edac_cap = EDAC_FLAG_SECDED;
 	mci->mod_name = CPC925_EDAC_MOD_STR;
+<<<<<<< HEAD
 	mci->mod_ver = CPC925_EDAC_REVISION;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mci->ctl_name = pdev->name;
 
 	if (edac_op_state == EDAC_OPSTATE_POLL)
@@ -1007,7 +1167,11 @@ static int __devinit cpc925_probe(struct platform_device *pdev)
 	cpc925_add_edac_devices(vbase);
 
 	/* get this far and it's successful */
+<<<<<<< HEAD
 	debugf0("%s: success\n", __func__);
+=======
+	edac_dbg(0, "success\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	res = 0;
 	goto out;
@@ -1023,7 +1187,11 @@ out:
 	return res;
 }
 
+<<<<<<< HEAD
 static int cpc925_remove(struct platform_device *pdev)
+=======
+static void cpc925_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mem_ctl_info *mci = platform_get_drvdata(pdev);
 
@@ -1036,13 +1204,20 @@ static int cpc925_remove(struct platform_device *pdev)
 
 	edac_mc_del_mc(&pdev->dev);
 	edac_mc_free(mci);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver cpc925_edac_driver = {
 	.probe = cpc925_probe,
+<<<<<<< HEAD
 	.remove = cpc925_remove,
+=======
+	.remove_new = cpc925_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		   .name = "cpc925_edac",
 	}

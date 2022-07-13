@@ -1,8 +1,22 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+config SH_INTC
+	bool
+	select IRQ_DOMAIN
+
+if SH_INTC
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 comment "Interrupt controller options"
 
 config INTC_USERIMASK
 	bool "Userspace interrupt masking support"
+<<<<<<< HEAD
 	depends on ARCH_SHMOBILE || (SUPERH && CPU_SH4A)
+=======
+	depends on (SUPERH && CPU_SH4A) || COMPILE_TEST
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This enables support for hardware-assisted userspace hardirq
 	  masking.
@@ -33,3 +47,8 @@ config INTC_MAPPING_DEBUG
 	  between system IRQs and the per-controller id tables.
 
 	  If in doubt, say N.
+<<<<<<< HEAD
+=======
+
+endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

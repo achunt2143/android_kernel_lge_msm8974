@@ -1,6 +1,9 @@
+<<<<<<< HEAD
 #ifndef __RFKILL_H
 #define __RFKILL_H
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006 - 2007 Ivo van Doorn
  * Copyright (C) 2007 Dmitry Torokhov
@@ -18,6 +21,7 @@
  * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
+<<<<<<< HEAD
 
 #include <linux/types.h>
 
@@ -104,6 +108,13 @@ struct rfkill_event {
 
 /* and that's all userspace gets */
 #ifdef __KERNEL__
+=======
+#ifndef __RFKILL_H
+#define __RFKILL_H
+
+#include <uapi/linux/rfkill.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* don't allow anyone to use these in the kernel */
 enum rfkill_user_states {
 	RFKILL_USER_STATE_SOFT_BLOCKED	= RFKILL_STATE_SOFT_BLOCKED,
@@ -150,7 +161,11 @@ struct rfkill_ops {
 
 #if defined(CONFIG_RFKILL) || defined(CONFIG_RFKILL_MODULE)
 /**
+<<<<<<< HEAD
  * rfkill_alloc - allocate rfkill structure
+=======
+ * rfkill_alloc - Allocate rfkill structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @name: name of the struct -- the string is not copied internally
  * @parent: device that has rf switch on it
  * @type: type of the switch (RFKILL_TYPE_*)
@@ -188,13 +203,19 @@ int __must_check rfkill_register(struct rfkill *rfkill);
  *
  * Pause polling -- say transmitter is off for other reasons.
  * NOTE: not necessary for suspend/resume -- in that case the
+<<<<<<< HEAD
  * core stops polling anyway
+=======
+ * core stops polling anyway (but will also correctly handle
+ * the case of polling having been paused before suspend.)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void rfkill_pause_polling(struct rfkill *rfkill);
 
 /**
  * rfkill_resume_polling(struct rfkill *rfkill)
  *
+<<<<<<< HEAD
  * Pause polling -- say transmitter is off for other reasons.
  * NOTE: not necessary for suspend/resume -- in that case the
  * core stops polling anyway
@@ -204,6 +225,14 @@ void rfkill_resume_polling(struct rfkill *rfkill);
 #else
 static inline void rfkill_resume_polling(struct rfkill *rfkill) { }
 #endif
+=======
+ * Resume polling
+ * NOTE: not necessary for suspend/resume -- in that case the
+ * core stops polling anyway
+ */
+void rfkill_resume_polling(struct rfkill *rfkill);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rfkill_unregister - Unregister a rfkill structure.
@@ -216,7 +245,11 @@ static inline void rfkill_resume_polling(struct rfkill *rfkill) { }
 void rfkill_unregister(struct rfkill *rfkill);
 
 /**
+<<<<<<< HEAD
  * rfkill_destroy - free rfkill structure
+=======
+ * rfkill_destroy - Free rfkill structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @rfkill: rfkill structure to be destroyed
  *
  * Destroys the rfkill structure.
@@ -224,9 +257,26 @@ void rfkill_unregister(struct rfkill *rfkill);
 void rfkill_destroy(struct rfkill *rfkill);
 
 /**
+<<<<<<< HEAD
  * rfkill_set_hw_state - Set the internal rfkill hardware block state
  * @rfkill: pointer to the rfkill class to modify.
  * @state: the current hardware block state to set
+=======
+ * rfkill_set_hw_state_reason - Set the internal rfkill hardware block state
+ *	with a reason
+ * @rfkill: pointer to the rfkill class to modify.
+ * @blocked: the current hardware block state to set
+ * @reason: one of &enum rfkill_hard_block_reasons
+ *
+ * Prefer to use rfkill_set_hw_state if you don't need any special reason.
+ */
+bool rfkill_set_hw_state_reason(struct rfkill *rfkill,
+				bool blocked, unsigned long reason);
+/**
+ * rfkill_set_hw_state - Set the internal rfkill hardware block state
+ * @rfkill: pointer to the rfkill class to modify.
+ * @blocked: the current hardware block state to set
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * rfkill drivers that get events when the hard-blocked state changes
  * use this function to notify the rfkill core (and through that also
@@ -242,12 +292,24 @@ void rfkill_destroy(struct rfkill *rfkill);
  * should be blocked) so that drivers need not keep track of the soft
  * block state -- which they might not be able to.
  */
+<<<<<<< HEAD
 bool rfkill_set_hw_state(struct rfkill *rfkill, bool blocked);
+=======
+static inline bool rfkill_set_hw_state(struct rfkill *rfkill, bool blocked)
+{
+	return rfkill_set_hw_state_reason(rfkill, blocked,
+					  RFKILL_HARD_BLOCK_SIGNAL);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * rfkill_set_sw_state - Set the internal rfkill software block state
  * @rfkill: pointer to the rfkill class to modify.
+<<<<<<< HEAD
  * @state: the current software block state to set
+=======
+ * @blocked: the current software block state to set
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * rfkill drivers that get events when the soft-blocked state changes
  * (yes, some platforms directly act on input but allow changing again)
@@ -269,7 +331,11 @@ bool rfkill_set_sw_state(struct rfkill *rfkill, bool blocked);
 /**
  * rfkill_init_sw_state - Initialize persistent software block state
  * @rfkill: pointer to the rfkill class to modify.
+<<<<<<< HEAD
  * @state: the current software block state to set
+=======
+ * @blocked: the current software block state to set
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * rfkill drivers that preserve their software block state over power off
  * use this function to notify the rfkill core (and through that also
@@ -294,11 +360,34 @@ void rfkill_init_sw_state(struct rfkill *rfkill, bool blocked);
 void rfkill_set_states(struct rfkill *rfkill, bool sw, bool hw);
 
 /**
+<<<<<<< HEAD
  * rfkill_blocked - query rfkill block
+=======
+ * rfkill_blocked - Query rfkill block state
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * @rfkill: rfkill struct to query
  */
 bool rfkill_blocked(struct rfkill *rfkill);
+<<<<<<< HEAD
+=======
+
+/**
+ * rfkill_soft_blocked - Query soft rfkill block state
+ *
+ * @rfkill: rfkill struct to query
+ */
+bool rfkill_soft_blocked(struct rfkill *rfkill);
+
+/**
+ * rfkill_find_type - Helper for finding rfkill type by name
+ * @name: the name of the type
+ *
+ * Returns enum rfkill_type that corresponds to the name.
+ */
+enum rfkill_type rfkill_find_type(const char *name);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else /* !RFKILL */
 static inline struct rfkill * __must_check
 rfkill_alloc(const char *name,
@@ -333,6 +422,16 @@ static inline void rfkill_destroy(struct rfkill *rfkill)
 {
 }
 
+<<<<<<< HEAD
+=======
+static inline bool rfkill_set_hw_state_reason(struct rfkill *rfkill,
+					      bool blocked,
+					      unsigned long reason)
+{
+	return blocked;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool rfkill_set_hw_state(struct rfkill *rfkill, bool blocked)
 {
 	return blocked;
@@ -355,8 +454,54 @@ static inline bool rfkill_blocked(struct rfkill *rfkill)
 {
 	return false;
 }
+<<<<<<< HEAD
 #endif /* RFKILL || RFKILL_MODULE */
 
 #endif /* __KERNEL__ */
+=======
+
+static inline bool rfkill_soft_blocked(struct rfkill *rfkill)
+{
+	return false;
+}
+
+static inline enum rfkill_type rfkill_find_type(const char *name)
+{
+	return RFKILL_TYPE_ALL;
+}
+
+#endif /* RFKILL || RFKILL_MODULE */
+
+
+#ifdef CONFIG_RFKILL_LEDS
+/**
+ * rfkill_get_led_trigger_name - Get the LED trigger name for the button's LED.
+ * This function might return a NULL pointer if registering of the
+ * LED trigger failed. Use this as "default_trigger" for the LED.
+ */
+const char *rfkill_get_led_trigger_name(struct rfkill *rfkill);
+
+/**
+ * rfkill_set_led_trigger_name - Set the LED trigger name
+ * @rfkill: rfkill struct
+ * @name: LED trigger name
+ *
+ * This function sets the LED trigger name of the radio LED
+ * trigger that rfkill creates. It is optional, but if called
+ * must be called before rfkill_register() to be effective.
+ */
+void rfkill_set_led_trigger_name(struct rfkill *rfkill, const char *name);
+#else
+static inline const char *rfkill_get_led_trigger_name(struct rfkill *rfkill)
+{
+	return NULL;
+}
+
+static inline void
+rfkill_set_led_trigger_name(struct rfkill *rfkill, const char *name)
+{
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* RFKILL_H */

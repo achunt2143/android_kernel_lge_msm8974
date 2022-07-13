@@ -49,7 +49,10 @@ void txx9_spi_init(int busid, unsigned long base, int irq);
 void txx9_ethaddr_init(unsigned int id, unsigned char *ethaddr);
 void txx9_sio_init(unsigned long baseaddr, int irq,
 		   unsigned int line, unsigned int sclk, int nocts);
+<<<<<<< HEAD
 void prom_putchar(char c);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_EARLY_PRINTK
 extern void (*txx9_prom_putchar)(char c);
 void txx9_sio_putchar_init(unsigned long baseaddr);

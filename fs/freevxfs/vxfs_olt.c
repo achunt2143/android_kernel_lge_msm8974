@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2000-2001 Christoph Hellwig.
  * All rights reserved.
@@ -25,6 +26,11 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2000-2001 Christoph Hellwig.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* 
@@ -43,14 +49,22 @@ static inline void
 vxfs_get_fshead(struct vxfs_oltfshead *fshp, struct vxfs_sb_info *infp)
 {
 	BUG_ON(infp->vsi_fshino);
+<<<<<<< HEAD
 	infp->vsi_fshino = fshp->olt_fsino[0];
+=======
+	infp->vsi_fshino = fs32_to_cpu(infp, fshp->olt_fsino[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void
 vxfs_get_ilist(struct vxfs_oltilist *ilistp, struct vxfs_sb_info *infp)
 {
 	BUG_ON(infp->vsi_iext);
+<<<<<<< HEAD
 	infp->vsi_iext = ilistp->olt_iext[0]; 
+=======
+	infp->vsi_iext = fs32_to_cpu(infp, ilistp->olt_iext[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u_long
@@ -81,13 +95,20 @@ vxfs_read_olt(struct super_block *sbp, u_long bsize)
 	struct vxfs_olt		*op;
 	char			*oaddr, *eaddr;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bp = sb_bread(sbp, vxfs_oblock(sbp, infp->vsi_oltext, bsize));
 	if (!bp || !bp->b_data)
 		goto fail;
 
 	op = (struct vxfs_olt *)bp->b_data;
+<<<<<<< HEAD
 	if (op->olt_magic != VXFS_OLT_MAGIC) {
+=======
+	if (fs32_to_cpu(infp, op->olt_magic) != VXFS_OLT_MAGIC) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_NOTICE "vxfs: ivalid olt magic number\n");
 		goto fail;
 	}
@@ -102,14 +123,22 @@ vxfs_read_olt(struct super_block *sbp, u_long bsize)
 		goto fail;
 	}
 
+<<<<<<< HEAD
 	oaddr = bp->b_data + op->olt_size;
+=======
+	oaddr = bp->b_data + fs32_to_cpu(infp, op->olt_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	eaddr = bp->b_data + (infp->vsi_oltsize * sbp->s_blocksize);
 
 	while (oaddr < eaddr) {
 		struct vxfs_oltcommon	*ocp =
 			(struct vxfs_oltcommon *)oaddr;
 		
+<<<<<<< HEAD
 		switch (ocp->olt_type) {
+=======
+		switch (fs32_to_cpu(infp, ocp->olt_type)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case VXFS_OLT_FSHEAD:
 			vxfs_get_fshead((struct vxfs_oltfshead *)oaddr, infp);
 			break;
@@ -118,11 +147,19 @@ vxfs_read_olt(struct super_block *sbp, u_long bsize)
 			break;
 		}
 
+<<<<<<< HEAD
 		oaddr += ocp->olt_size;
 	}
 
 	brelse(bp);
 	return 0;
+=======
+		oaddr += fs32_to_cpu(infp, ocp->olt_size);
+	}
+
+	brelse(bp);
+	return (infp->vsi_fshino && infp->vsi_iext) ? 0 : -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 fail:
 	brelse(bp);

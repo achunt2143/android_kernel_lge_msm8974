@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
@@ -11,6 +12,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright IBM Corp. 2007
  * Copyright 2011 Freescale Semiconductor, Inc.
@@ -23,12 +28,17 @@
 #include <linux/types.h>
 #include <linux/string.h>
 #include <linux/kvm_host.h>
+<<<<<<< HEAD
+=======
+#include <linux/clockchips.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/reg.h>
 #include <asm/time.h>
 #include <asm/byteorder.h>
 #include <asm/kvm_ppc.h>
 #include <asm/disassemble.h>
+<<<<<<< HEAD
 #include "timing.h"
 #include "trace.h"
 
@@ -71,23 +81,36 @@
 #define OP_STH  44
 #define OP_STHU 45
 
+=======
+#include <asm/ppc-opcode.h>
+#include "timing.h"
+#include "trace.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void kvmppc_emulate_dec(struct kvm_vcpu *vcpu)
 {
 	unsigned long dec_nsec;
 	unsigned long long dec_time;
 
+<<<<<<< HEAD
 	pr_debug("mtDEC: %x\n", vcpu->arch.dec);
+=======
+	pr_debug("mtDEC: %lx\n", vcpu->arch.dec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hrtimer_try_to_cancel(&vcpu->arch.dec_timer);
 
 #ifdef CONFIG_PPC_BOOK3S
 	/* mtdec lowers the interrupt line when positive. */
 	kvmppc_core_dequeue_dec(vcpu);
+<<<<<<< HEAD
 
 	/* POWER4+ triggers a dec interrupt if the value is < 0 */
 	if (vcpu->arch.dec & 0x80000000) {
 		kvmppc_core_queue_dec(vcpu);
 		return;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_BOOKE
@@ -103,8 +126,16 @@ void kvmppc_emulate_dec(struct kvm_vcpu *vcpu)
 	 */
 
 	dec_time = vcpu->arch.dec;
+<<<<<<< HEAD
 	dec_time *= 1000;
 	do_div(dec_time, tb_ticks_per_usec);
+=======
+	/*
+	 * Guest timebase ticks at the same frequency as host timebase.
+	 * So use the host timebase calculations for decrementer emulation.
+	 */
+	dec_time = tb_to_ns(dec_time);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dec_nsec = do_div(dec_time, NSEC_PER_SEC);
 	hrtimer_start(&vcpu->arch.dec_timer,
 		ktime_set(dec_time, dec_nsec), HRTIMER_MODE_REL);
@@ -123,6 +154,7 @@ u32 kvmppc_get_dec(struct kvm_vcpu *vcpu, u64 tb)
 	return vcpu->arch.dec - jd;
 }
 
+<<<<<<< HEAD
 /* XXX to do:
  * lhax
  * lhaux
@@ -149,13 +181,154 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 	int rt;
 	int sprn;
 	enum emulation_result emulated = EMULATE_DONE;
+=======
+static int kvmppc_emulate_mtspr(struct kvm_vcpu *vcpu, int sprn, int rs)
+{
+	enum emulation_result emulated = EMULATE_DONE;
+	ulong spr_val = kvmppc_get_gpr(vcpu, rs);
+
+	switch (sprn) {
+	case SPRN_SRR0:
+		kvmppc_set_srr0(vcpu, spr_val);
+		break;
+	case SPRN_SRR1:
+		kvmppc_set_srr1(vcpu, spr_val);
+		break;
+
+	/* XXX We need to context-switch the timebase for
+	 * watchdog and FIT. */
+	case SPRN_TBWL: break;
+	case SPRN_TBWU: break;
+
+	case SPRN_DEC:
+		vcpu->arch.dec = (u32) spr_val;
+		kvmppc_emulate_dec(vcpu);
+		break;
+
+	case SPRN_SPRG0:
+		kvmppc_set_sprg0(vcpu, spr_val);
+		break;
+	case SPRN_SPRG1:
+		kvmppc_set_sprg1(vcpu, spr_val);
+		break;
+	case SPRN_SPRG2:
+		kvmppc_set_sprg2(vcpu, spr_val);
+		break;
+	case SPRN_SPRG3:
+		kvmppc_set_sprg3(vcpu, spr_val);
+		break;
+
+	/* PIR can legally be written, but we ignore it */
+	case SPRN_PIR: break;
+
+	default:
+		emulated = vcpu->kvm->arch.kvm_ops->emulate_mtspr(vcpu, sprn,
+								  spr_val);
+		if (emulated == EMULATE_FAIL)
+			printk(KERN_INFO "mtspr: unknown spr "
+				"0x%x\n", sprn);
+		break;
+	}
+
+	kvmppc_set_exit_type(vcpu, EMULATED_MTSPR_EXITS);
+
+	return emulated;
+}
+
+static int kvmppc_emulate_mfspr(struct kvm_vcpu *vcpu, int sprn, int rt)
+{
+	enum emulation_result emulated = EMULATE_DONE;
+	ulong spr_val = 0;
+
+	switch (sprn) {
+	case SPRN_SRR0:
+		spr_val = kvmppc_get_srr0(vcpu);
+		break;
+	case SPRN_SRR1:
+		spr_val = kvmppc_get_srr1(vcpu);
+		break;
+	case SPRN_PVR:
+		spr_val = vcpu->arch.pvr;
+		break;
+	case SPRN_PIR:
+		spr_val = vcpu->vcpu_id;
+		break;
+
+	/* Note: mftb and TBRL/TBWL are user-accessible, so
+	 * the guest can always access the real TB anyways.
+	 * In fact, we probably will never see these traps. */
+	case SPRN_TBWL:
+		spr_val = get_tb() >> 32;
+		break;
+	case SPRN_TBWU:
+		spr_val = get_tb();
+		break;
+
+	case SPRN_SPRG0:
+		spr_val = kvmppc_get_sprg0(vcpu);
+		break;
+	case SPRN_SPRG1:
+		spr_val = kvmppc_get_sprg1(vcpu);
+		break;
+	case SPRN_SPRG2:
+		spr_val = kvmppc_get_sprg2(vcpu);
+		break;
+	case SPRN_SPRG3:
+		spr_val = kvmppc_get_sprg3(vcpu);
+		break;
+	/* Note: SPRG4-7 are user-readable, so we don't get
+	 * a trap. */
+
+	case SPRN_DEC:
+		spr_val = kvmppc_get_dec(vcpu, get_tb());
+		break;
+	default:
+		emulated = vcpu->kvm->arch.kvm_ops->emulate_mfspr(vcpu, sprn,
+								  &spr_val);
+		if (unlikely(emulated == EMULATE_FAIL)) {
+			printk(KERN_INFO "mfspr: unknown spr "
+				"0x%x\n", sprn);
+		}
+		break;
+	}
+
+	if (emulated == EMULATE_DONE)
+		kvmppc_set_gpr(vcpu, rt, spr_val);
+	kvmppc_set_exit_type(vcpu, EMULATED_MFSPR_EXITS);
+
+	return emulated;
+}
+
+/* XXX Should probably auto-generate instruction decoding for a particular core
+ * from opcode tables in the future. */
+int kvmppc_emulate_instruction(struct kvm_vcpu *vcpu)
+{
+	u32 inst;
+	ppc_inst_t pinst;
+	int rs, rt, sprn;
+	enum emulation_result emulated;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int advance = 1;
 
 	/* this default type might be overwritten by subcategories */
 	kvmppc_set_exit_type(vcpu, EMULATED_INST_EXITS);
 
+<<<<<<< HEAD
 	pr_debug("Emulating opcode %d / %d\n", get_op(inst), get_xop(inst));
 
+=======
+	emulated = kvmppc_get_last_inst(vcpu, INST_GENERIC, &pinst);
+	inst = ppc_inst_val(pinst);
+	if (emulated != EMULATE_DONE)
+		return emulated;
+
+	pr_debug("Emulating opcode %d / %d\n", get_op(inst), get_xop(inst));
+
+	rs = get_rs(inst);
+	rt = get_rt(inst);
+	sprn = get_sprn(inst);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (get_op(inst)) {
 	case OP_TRAP:
 #ifdef CONFIG_PPC_BOOK3S
@@ -171,6 +344,7 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 	case 31:
 		switch (get_xop(inst)) {
 
+<<<<<<< HEAD
 		case OP_31_XOP_LWZX:
 			rt = get_rt(inst);
 			emulated = kvmppc_handle_load(run, vcpu, rt, 4, 1);
@@ -386,11 +560,41 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 		case OP_31_XOP_LWBRX:
 			rt = get_rt(inst);
 			emulated = kvmppc_handle_load(run, vcpu, rt, 4, 0);
+=======
+		case OP_31_XOP_TRAP:
+#ifdef CONFIG_64BIT
+		case OP_31_XOP_TRAP_64:
+#endif
+#ifdef CONFIG_PPC_BOOK3S
+			kvmppc_core_queue_program(vcpu, SRR1_PROGTRAP);
+#else
+			kvmppc_core_queue_program(vcpu,
+					vcpu->arch.shared->esr | ESR_PTR);
+#endif
+			advance = 0;
+			break;
+
+		case OP_31_XOP_MFSPR:
+			emulated = kvmppc_emulate_mfspr(vcpu, sprn, rt);
+			if (emulated == EMULATE_AGAIN) {
+				emulated = EMULATE_DONE;
+				advance = 0;
+			}
+			break;
+
+		case OP_31_XOP_MTSPR:
+			emulated = kvmppc_emulate_mtspr(vcpu, sprn, rs);
+			if (emulated == EMULATE_AGAIN) {
+				emulated = EMULATE_DONE;
+				advance = 0;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case OP_31_XOP_TLBSYNC:
 			break;
 
+<<<<<<< HEAD
 		case OP_31_XOP_STWBRX:
 			rs = get_rs(inst);
 			ra = get_ra(inst);
@@ -416,12 +620,15 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 			                               2, 0);
 			break;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			/* Attempt core-specific emulation below. */
 			emulated = EMULATE_FAIL;
 		}
 		break;
 
+<<<<<<< HEAD
 	case OP_LWZ:
 		rt = get_rt(inst);
 		emulated = kvmppc_handle_load(run, vcpu, rt, 4, 1);
@@ -516,6 +723,22 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 					       kvmppc_get_gpr(vcpu, rs),
 		                               2, 1);
 		kvmppc_set_gpr(vcpu, ra, vcpu->arch.paddr_accessed);
+=======
+	case 0:
+		/*
+		 * Instruction with primary opcode 0. Based on PowerISA
+		 * these are illegal instructions.
+		 */
+		if (inst == KVMPPC_INST_SW_BREAKPOINT) {
+			vcpu->run->exit_reason = KVM_EXIT_DEBUG;
+			vcpu->run->debug.arch.status = 0;
+			vcpu->run->debug.arch.address = kvmppc_get_pc(vcpu);
+			emulated = EMULATE_EXIT_USER;
+			advance = 0;
+		} else
+			emulated = EMULATE_FAIL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -523,22 +746,41 @@ int kvmppc_emulate_instruction(struct kvm_run *run, struct kvm_vcpu *vcpu)
 	}
 
 	if (emulated == EMULATE_FAIL) {
+<<<<<<< HEAD
 		emulated = kvmppc_core_emulate_op(run, vcpu, inst, &advance);
+=======
+		emulated = vcpu->kvm->arch.kvm_ops->emulate_op(vcpu, inst,
+							       &advance);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (emulated == EMULATE_AGAIN) {
 			advance = 0;
 		} else if (emulated == EMULATE_FAIL) {
 			advance = 0;
 			printk(KERN_ERR "Couldn't emulate instruction 0x%08x "
 			       "(op %d xop %d)\n", inst, get_op(inst), get_xop(inst));
+<<<<<<< HEAD
 			kvmppc_core_queue_program(vcpu, 0);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	trace_kvm_ppc_instr(inst, kvmppc_get_pc(vcpu), emulated);
 
 	/* Advance past emulated instruction. */
+<<<<<<< HEAD
+=======
+	/*
+	 * If this ever handles prefixed instructions, the 4
+	 * will need to become ppc_inst_len(pinst) instead.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (advance)
 		kvmppc_set_pc(vcpu, kvmppc_get_pc(vcpu) + 4);
 
 	return emulated;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(kvmppc_emulate_instruction);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

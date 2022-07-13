@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**********************************************************************
  * Author: Cavium Networks
  *
@@ -24,11 +25,22 @@
  * This file may also be available under a different license from Cavium.
  * Contact Cavium Networks for more information
 **********************************************************************/
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * This file is based on code from OCTEON SDK by Cavium Networks.
+ *
+ * Copyright (c) 2003-2007 Cavium Networks
+ */
+
+#include <linux/phy.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/netdevice.h>
 #include <linux/ratelimit.h>
 #include <net/dst.h>
 
+<<<<<<< HEAD
 #include <asm/octeon/octeon.h>
 
 #include "ethernet-defines.h"
@@ -107,21 +119,38 @@ static void cvm_oct_sgmii_poll(struct net_device *dev)
 			netif_carrier_off(dev);
 		printk_ratelimited("%s: Link down\n", dev->name);
 	}
+=======
+#include "octeon-ethernet.h"
+#include "ethernet-defines.h"
+#include "ethernet-util.h"
+#include "ethernet-mdio.h"
+
+int cvm_oct_sgmii_open(struct net_device *dev)
+{
+	return cvm_oct_common_open(dev, cvm_oct_link_poll);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int cvm_oct_sgmii_init(struct net_device *dev)
 {
+<<<<<<< HEAD
 	struct octeon_ethernet *priv = netdev_priv(dev);
 	cvm_oct_common_init(dev);
 	dev->netdev_ops->ndo_stop(dev);
 	if (!octeon_is_simulation() && priv->phydev == NULL)
 		priv->poll = cvm_oct_sgmii_poll;
+=======
+	cvm_oct_common_init(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* FIXME: Need autoneg logic */
 	return 0;
 }
+<<<<<<< HEAD
 
 void cvm_oct_sgmii_uninit(struct net_device *dev)
 {
 	cvm_oct_common_uninit(dev);
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

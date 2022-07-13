@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _NF_CONNTRACK_COMMON_H
 #define _NF_CONNTRACK_COMMON_H
 /* Connection state tracking for netfilter.  This is separated from,
@@ -124,6 +125,21 @@ struct ip_conntrack_stat {
 	unsigned int delete_list;
 	unsigned int insert;
 	unsigned int insert_failed;
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _NF_CONNTRACK_COMMON_H
+#define _NF_CONNTRACK_COMMON_H
+
+#include <linux/refcount.h>
+#include <uapi/linux/netfilter/nf_conntrack_common.h>
+
+struct ip_conntrack_stat {
+	unsigned int found;
+	unsigned int invalid;
+	unsigned int insert;
+	unsigned int insert_failed;
+	unsigned int clash_resolve;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int drop;
 	unsigned int early_drop;
 	unsigned int error;
@@ -131,11 +147,37 @@ struct ip_conntrack_stat {
 	unsigned int expect_create;
 	unsigned int expect_delete;
 	unsigned int search_restart;
+<<<<<<< HEAD
 };
 
 /* call to create an explicit dependency on nf_conntrack. */
 extern void need_conntrack(void);
 
 #endif /* __KERNEL__ */
+=======
+	unsigned int chaintoolong;
+};
+
+#define NFCT_INFOMASK	7UL
+#define NFCT_PTRMASK	~(NFCT_INFOMASK)
+
+struct nf_conntrack {
+	refcount_t use;
+};
+
+void nf_conntrack_destroy(struct nf_conntrack *nfct);
+
+/* like nf_ct_put, but without module dependency on nf_conntrack */
+static inline void nf_conntrack_put(struct nf_conntrack *nfct)
+{
+	if (nfct && refcount_dec_and_test(&nfct->use))
+		nf_conntrack_destroy(nfct);
+}
+static inline void nf_conntrack_get(struct nf_conntrack *nfct)
+{
+	if (nfct)
+		refcount_inc(&nfct->use);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _NF_CONNTRACK_COMMON_H */

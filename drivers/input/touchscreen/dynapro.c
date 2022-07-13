@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Dynapro serial touchscreen driver
  *
  * Copyright (c) 2009 Tias Guns
  * Based on the inexio driver (c) Vojtech Pavlik and Dan Streetman and
  * Richard Lemon
+<<<<<<< HEAD
  *
  */
 
@@ -12,6 +17,10 @@
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
  */
+=======
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 2009/09/19 Tias Guns <tias@ulyssis.org>
@@ -24,7 +33,10 @@
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/serio.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"Dynapro serial touchscreen driver"
 
@@ -165,7 +177,11 @@ static int dynapro_connect(struct serio *serio, struct serio_driver *drv)
  * The serio driver structure.
  */
 
+<<<<<<< HEAD
 static struct serio_device_id dynapro_serio_ids[] = {
+=======
+static const struct serio_device_id dynapro_serio_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_DYNAPRO,
@@ -188,6 +204,7 @@ static struct serio_driver dynapro_drv = {
 	.disconnect	= dynapro_disconnect,
 };
 
+<<<<<<< HEAD
 /*
  * The functions for inserting/removing us as a module.
  */
@@ -204,3 +221,6 @@ static void __exit dynapro_exit(void)
 
 module_init(dynapro_init);
 module_exit(dynapro_exit);
+=======
+module_serio_driver(dynapro_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

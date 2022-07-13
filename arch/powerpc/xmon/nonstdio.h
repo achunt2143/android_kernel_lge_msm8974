@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #define EOF	(-1)
 
 #define printf	xmon_printf
@@ -13,3 +14,18 @@ extern int xmon_expect(const char *str, unsigned long timeout);
 extern int xmon_write(const void *ptr, int nb);
 extern int xmon_readchar(void);
 extern int xmon_read_poll(void);
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#define EOF	(-1)
+
+extern void xmon_set_pagination_lpp(unsigned long lpp);
+extern void xmon_start_pagination(void);
+extern void xmon_end_pagination(void);
+extern int xmon_putchar(int c);
+extern void xmon_puts(const char *);
+extern char *xmon_gets(char *, int);
+extern __printf(1, 2) void xmon_printf(const char *fmt, ...);
+
+#define printf	xmon_printf
+#define putchar	xmon_putchar
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * IBM ASM Service Processor Device Driver
  *
@@ -15,11 +16,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * IBM ASM Service Processor Device Driver
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) IBM Corporation, 2004
  *
  * Authors: Max Asböck <amax@us.ibm.com>
  *          Vernon Mauery <vernux@us.ibm.com>
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Remote mouse and keyboard event handling functions */

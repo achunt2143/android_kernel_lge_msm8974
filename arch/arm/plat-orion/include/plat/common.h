@@ -10,6 +10,7 @@
 
 #ifndef __PLAT_COMMON_H
 #include <linux/mv643xx_eth.h>
+<<<<<<< HEAD
 
 struct dsa_platform_data;
 
@@ -32,6 +33,31 @@ void __init orion_uart3_init(unsigned int membase,
 			     resource_size_t mapbase,
 			     unsigned int irq,
 			     unsigned int uartclk);
+=======
+#include <linux/platform_data/usb-ehci-orion.h>
+
+struct mv_sata_platform_data;
+
+void __init orion_uart0_init(void __iomem *membase,
+			     resource_size_t mapbase,
+			     unsigned int irq,
+			     struct clk *clk);
+
+void __init orion_uart1_init(void __iomem *membase,
+			     resource_size_t mapbase,
+			     unsigned int irq,
+			     struct clk *clk);
+
+void __init orion_uart2_init(void __iomem *membase,
+			     resource_size_t mapbase,
+			     unsigned int irq,
+			     struct clk *clk);
+
+void __init orion_uart3_init(void __iomem *membase,
+			     resource_size_t mapbase,
+			     unsigned int irq,
+			     struct clk *clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init orion_rtc_init(unsigned long mapbase,
 			   unsigned long irq);
@@ -40,18 +66,25 @@ void __init orion_ge00_init(struct mv643xx_eth_platform_data *eth_data,
 			    unsigned long mapbase,
 			    unsigned long irq,
 			    unsigned long irq_err,
+<<<<<<< HEAD
 			    int tclk,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    unsigned int tx_csum_limit);
 
 void __init orion_ge01_init(struct mv643xx_eth_platform_data *eth_data,
 			    unsigned long mapbase,
 			    unsigned long irq,
+<<<<<<< HEAD
 			    unsigned long irq_err,
 			    int tclk,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    unsigned int tx_csum_limit);
 
 void __init orion_ge10_init(struct mv643xx_eth_platform_data *eth_data,
 			    unsigned long mapbase,
+<<<<<<< HEAD
 			    unsigned long irq,
 			    unsigned long irq_err,
 			    int tclk);
@@ -64,6 +97,14 @@ void __init orion_ge11_init(struct mv643xx_eth_platform_data *eth_data,
 
 void __init orion_ge00_switch_init(struct dsa_platform_data *d,
 				   int irq);
+=======
+			    unsigned long irq);
+
+void __init orion_ge11_init(struct mv643xx_eth_platform_data *eth_data,
+			    unsigned long mapbase,
+			    unsigned long irq);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init orion_i2c_init(unsigned long mapbase,
 			   unsigned long irq,
 			   unsigned long freq_m);
@@ -72,6 +113,7 @@ void __init orion_i2c_1_init(unsigned long mapbase,
 			     unsigned long irq,
 			     unsigned long freq_m);
 
+<<<<<<< HEAD
 void __init orion_spi_init(unsigned long mapbase,
 			   unsigned long tclk);
 
@@ -79,6 +121,11 @@ void __init orion_spi_1_init(unsigned long mapbase,
 			     unsigned long tclk);
 
 void __init orion_wdt_init(unsigned long tclk);
+=======
+void __init orion_spi_init(unsigned long mapbase);
+
+void __init orion_spi_1_init(unsigned long mapbase);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init orion_xor0_init(unsigned long mapbase_low,
 			    unsigned long mapbase_high,
@@ -108,4 +155,12 @@ void __init orion_crypto_init(unsigned long mapbase,
 			      unsigned long srambase,
 			      unsigned long sram_size,
 			      unsigned long irq);
+<<<<<<< HEAD
+=======
+
+void __init orion_clkdev_add(const char *con_id, const char *dev_id,
+			     struct clk *clk);
+
+void __init orion_clkdev_init(struct clk *tclk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

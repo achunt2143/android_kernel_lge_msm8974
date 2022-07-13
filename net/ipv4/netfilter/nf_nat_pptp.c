@@ -1,8 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * nf_nat_pptp.c
  *
  * NAT support for PPTP (Point to Point Tunneling Protocol).
+<<<<<<< HEAD
  * PPTP is a a protocol for creating virtual private networks.
+=======
+ * PPTP is a protocol for creating virtual private networks.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * It is a specification defined by Microsoft and some vendors
  * working with Microsoft.  PPTP is built on top of a modified
  * version of the Internet Generic Routing Encapsulation Protocol.
@@ -13,6 +21,11 @@
  *
  * Development of this code funded by Astaro AG (http://www.astaro.com/)
  *
+<<<<<<< HEAD
+=======
+ * (C) 2006-2012 Patrick McHardy <kaber@trash.net>
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TODO: - NAT to a unique tuple, not to TCP source port
  * 	   (needs netfilter tuple reservation)
  */
@@ -35,7 +48,11 @@
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Harald Welte <laforge@gnumonks.org>");
 MODULE_DESCRIPTION("Netfilter NAT helper module for PPTP");
+<<<<<<< HEAD
 MODULE_ALIAS("ip_nat_pptp");
+=======
+MODULE_ALIAS_NF_NAT_HELPER("pptp");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void pptp_nat_expected(struct nf_conn *ct,
 			      struct nf_conntrack_expect *exp)
@@ -43,6 +60,7 @@ static void pptp_nat_expected(struct nf_conn *ct,
 	struct net *net = nf_ct_net(ct);
 	const struct nf_conn *master = ct->master;
 	struct nf_conntrack_expect *other_exp;
+<<<<<<< HEAD
 	struct nf_conntrack_tuple t;
 	const struct nf_ct_pptp_master *ct_pptp_info;
 	const struct nf_nat_pptp *nat_pptp_info;
@@ -50,6 +68,20 @@ static void pptp_nat_expected(struct nf_conn *ct,
 
 	ct_pptp_info = nfct_help_data(master);
 	nat_pptp_info = &nfct_nat(master)->help.nat_pptp_info;
+=======
+	struct nf_conntrack_tuple t = {};
+	const struct nf_ct_pptp_master *ct_pptp_info;
+	const struct nf_nat_pptp *nat_pptp_info;
+	struct nf_nat_range2 range;
+	struct nf_conn_nat *nat;
+
+	nat = nf_ct_nat_ext_add(ct);
+	if (WARN_ON_ONCE(!nat))
+		return;
+
+	nat_pptp_info = &nat->help.nat_pptp_info;
+	ct_pptp_info = nfct_help_data(master);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* And here goes the grand finale of corrosion... */
 	if (exp->dir == IP_CT_DIR_ORIGINAL) {
@@ -118,13 +150,25 @@ pptp_outbound_pkt(struct sk_buff *skb,
 
 {
 	struct nf_ct_pptp_master *ct_pptp_info;
+<<<<<<< HEAD
+=======
+	struct nf_conn_nat *nat = nfct_nat(ct);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nf_nat_pptp *nat_pptp_info;
 	u_int16_t msg;
 	__be16 new_callid;
 	unsigned int cid_off;
 
+<<<<<<< HEAD
 	ct_pptp_info = nfct_help_data(ct);
 	nat_pptp_info = &nfct_nat(ct)->help.nat_pptp_info;
+=======
+	if (WARN_ON_ONCE(!nat))
+		return NF_DROP;
+
+	nat_pptp_info = &nat->help.nat_pptp_info;
+	ct_pptp_info = nfct_help_data(ct);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	new_callid = ct_pptp_info->pns_call_id;
 
@@ -154,9 +198,14 @@ pptp_outbound_pkt(struct sk_buff *skb,
 		break;
 	default:
 		pr_debug("unknown outbound packet 0x%04x:%s\n", msg,
+<<<<<<< HEAD
 			 msg <= PPTP_MSG_MAX ? pptp_msg_name[msg] :
 					       pptp_msg_name[0]);
 		/* fall through */
+=======
+			 pptp_msg_name(msg));
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PPTP_SET_LINK_INFO:
 		/* only need to NAT in case PAC is behind NAT box */
 	case PPTP_START_SESSION_REQUEST:
@@ -175,11 +224,19 @@ pptp_outbound_pkt(struct sk_buff *skb,
 		 ntohs(REQ_CID(pptpReq, cid_off)), ntohs(new_callid));
 
 	/* mangle packet */
+<<<<<<< HEAD
 	if (nf_nat_mangle_tcp_packet(skb, ct, ctinfo, protoff,
 				     cid_off + sizeof(struct pptp_pkt_hdr) +
 				     sizeof(struct PptpControlHeader),
 				     sizeof(new_callid), (char *)&new_callid,
 				     sizeof(new_callid)) == 0)
+=======
+	if (!nf_nat_mangle_tcp_packet(skb, ct, ctinfo, protoff,
+				      cid_off + sizeof(struct pptp_pkt_hdr) +
+				      sizeof(struct PptpControlHeader),
+				      sizeof(new_callid), (char *)&new_callid,
+				      sizeof(new_callid)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NF_DROP;
 	return NF_ACCEPT;
 }
@@ -189,11 +246,23 @@ pptp_exp_gre(struct nf_conntrack_expect *expect_orig,
 	     struct nf_conntrack_expect *expect_reply)
 {
 	const struct nf_conn *ct = expect_orig->master;
+<<<<<<< HEAD
 	struct nf_ct_pptp_master *ct_pptp_info;
 	struct nf_nat_pptp *nat_pptp_info;
 
 	ct_pptp_info = nfct_help_data(ct);
 	nat_pptp_info = &nfct_nat(ct)->help.nat_pptp_info;
+=======
+	struct nf_conn_nat *nat = nfct_nat(ct);
+	struct nf_ct_pptp_master *ct_pptp_info;
+	struct nf_nat_pptp *nat_pptp_info;
+
+	if (WARN_ON_ONCE(!nat))
+		return;
+
+	nat_pptp_info = &nat->help.nat_pptp_info;
+	ct_pptp_info = nfct_help_data(ct);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* save original PAC call ID in nat_info */
 	nat_pptp_info->pac_call_id = ct_pptp_info->pac_call_id;
@@ -221,11 +290,22 @@ pptp_inbound_pkt(struct sk_buff *skb,
 		 union pptp_ctrl_union *pptpReq)
 {
 	const struct nf_nat_pptp *nat_pptp_info;
+<<<<<<< HEAD
+=======
+	struct nf_conn_nat *nat = nfct_nat(ct);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u_int16_t msg;
 	__be16 new_pcid;
 	unsigned int pcid_off;
 
+<<<<<<< HEAD
 	nat_pptp_info = &nfct_nat(ct)->help.nat_pptp_info;
+=======
+	if (WARN_ON_ONCE(!nat))
+		return NF_DROP;
+
+	nat_pptp_info = &nat->help.nat_pptp_info;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new_pcid = nat_pptp_info->pns_call_id;
 
 	switch (msg = ntohs(ctlh->messageType)) {
@@ -248,10 +328,15 @@ pptp_inbound_pkt(struct sk_buff *skb,
 		pcid_off = offsetof(union pptp_ctrl_union, setlink.peersCallID);
 		break;
 	default:
+<<<<<<< HEAD
 		pr_debug("unknown inbound packet %s\n",
 			 msg <= PPTP_MSG_MAX ? pptp_msg_name[msg] :
 					       pptp_msg_name[0]);
 		/* fall through */
+=======
+		pr_debug("unknown inbound packet %s\n", pptp_msg_name(msg));
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PPTP_START_SESSION_REQUEST:
 	case PPTP_START_SESSION_REPLY:
 	case PPTP_STOP_SESSION_REQUEST:
@@ -269,15 +354,24 @@ pptp_inbound_pkt(struct sk_buff *skb,
 	pr_debug("altering peer call id from 0x%04x to 0x%04x\n",
 		 ntohs(REQ_CID(pptpReq, pcid_off)), ntohs(new_pcid));
 
+<<<<<<< HEAD
 	if (nf_nat_mangle_tcp_packet(skb, ct, ctinfo, protoff,
 				     pcid_off + sizeof(struct pptp_pkt_hdr) +
 				     sizeof(struct PptpControlHeader),
 				     sizeof(new_pcid), (char *)&new_pcid,
 				     sizeof(new_pcid)) == 0)
+=======
+	if (!nf_nat_mangle_tcp_packet(skb, ct, ctinfo, protoff,
+				      pcid_off + sizeof(struct pptp_pkt_hdr) +
+				      sizeof(struct PptpControlHeader),
+				      sizeof(new_pcid), (char *)&new_pcid,
+				      sizeof(new_pcid)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return NF_DROP;
 	return NF_ACCEPT;
 }
 
+<<<<<<< HEAD
 static int __init nf_nat_helper_pptp_init(void)
 {
 	nf_nat_need_gre();
@@ -293,15 +387,33 @@ static int __init nf_nat_helper_pptp_init(void)
 
 	BUG_ON(nf_nat_pptp_hook_expectfn != NULL);
 	RCU_INIT_POINTER(nf_nat_pptp_hook_expectfn, pptp_nat_expected);
+=======
+static const struct nf_nat_pptp_hook pptp_hooks = {
+	.outbound = pptp_outbound_pkt,
+	.inbound = pptp_inbound_pkt,
+	.exp_gre = pptp_exp_gre,
+	.expectfn = pptp_nat_expected,
+};
+
+static int __init nf_nat_helper_pptp_init(void)
+{
+	WARN_ON(nf_nat_pptp_hook != NULL);
+	RCU_INIT_POINTER(nf_nat_pptp_hook, &pptp_hooks);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void __exit nf_nat_helper_pptp_fini(void)
 {
+<<<<<<< HEAD
 	RCU_INIT_POINTER(nf_nat_pptp_hook_expectfn, NULL);
 	RCU_INIT_POINTER(nf_nat_pptp_hook_exp_gre, NULL);
 	RCU_INIT_POINTER(nf_nat_pptp_hook_inbound, NULL);
 	RCU_INIT_POINTER(nf_nat_pptp_hook_outbound, NULL);
+=======
+	RCU_INIT_POINTER(nf_nat_pptp_hook, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	synchronize_rcu();
 }
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ak4535.c  --  AK4535 ALSA Soc Audio driver
  *
@@ -6,10 +10,13 @@
  * Author: Richard Purdie <richard@openedhand.com>
  *
  * Based on wm8753.c by Liam Girdwood
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -251,8 +258,13 @@ static const struct snd_soc_dapm_route ak4535_audio_map[] = {
 static int ak4535_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	int clk_id, unsigned int freq, int dir)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
 	struct ak4535_priv *ak4535 = snd_soc_codec_get_drvdata(codec);
+=======
+	struct snd_soc_component *component = codec_dai->component;
+	struct ak4535_priv *ak4535 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ak4535->sysclk = freq;
 	return 0;
@@ -262,10 +274,16 @@ static int ak4535_hw_params(struct snd_pcm_substream *substream,
 			    struct snd_pcm_hw_params *params,
 			    struct snd_soc_dai *dai)
 {
+<<<<<<< HEAD
 	struct snd_soc_pcm_runtime *rtd = substream->private_data;
 	struct snd_soc_codec *codec = rtd->codec;
 	struct ak4535_priv *ak4535 = snd_soc_codec_get_drvdata(codec);
 	u8 mode2 = snd_soc_read(codec, AK4535_MODE2) & ~(0x3 << 5);
+=======
+	struct snd_soc_component *component = dai->component;
+	struct ak4535_priv *ak4535 = snd_soc_component_get_drvdata(component);
+	u8 mode2 = snd_soc_component_read(component, AK4535_MODE2) & ~(0x3 << 5);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rate = params_rate(params), fs = 256;
 
 	if (rate)
@@ -284,14 +302,22 @@ static int ak4535_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	/* set rate */
+<<<<<<< HEAD
 	snd_soc_write(codec, AK4535_MODE2, mode2);
+=======
+	snd_soc_component_write(component, AK4535_MODE2, mode2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int ak4535_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		unsigned int fmt)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = codec_dai->codec;
+=======
+	struct snd_soc_component *component = codec_dai->component;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 mode1 = 0;
 
 	/* interface format */
@@ -309,6 +335,7 @@ static int ak4535_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	/* use 32 fs for BCLK to save power */
 	mode1 |= 0x4;
 
+<<<<<<< HEAD
 	snd_soc_write(codec, AK4535_MODE1, mode1);
 	return 0;
 }
@@ -325,10 +352,30 @@ static int ak4535_mute(struct snd_soc_dai *dai, int mute)
 }
 
 static int ak4535_set_bias_level(struct snd_soc_codec *codec,
+=======
+	snd_soc_component_write(component, AK4535_MODE1, mode1);
+	return 0;
+}
+
+static int ak4535_mute(struct snd_soc_dai *dai, int mute, int direction)
+{
+	struct snd_soc_component *component = dai->component;
+	u16 mute_reg = snd_soc_component_read(component, AK4535_DAC);
+
+	if (!mute)
+		snd_soc_component_write(component, AK4535_DAC, mute_reg & ~0x20);
+	else
+		snd_soc_component_write(component, AK4535_DAC, mute_reg | 0x20);
+	return 0;
+}
+
+static int ak4535_set_bias_level(struct snd_soc_component *component,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum snd_soc_bias_level level)
 {
 	switch (level) {
 	case SND_SOC_BIAS_ON:
+<<<<<<< HEAD
 		snd_soc_update_bits(codec, AK4535_DAC, 0x20, 0);
 		break;
 	case SND_SOC_BIAS_PREPARE:
@@ -343,6 +390,21 @@ static int ak4535_set_bias_level(struct snd_soc_codec *codec,
 		break;
 	}
 	codec->dapm.bias_level = level;
+=======
+		snd_soc_component_update_bits(component, AK4535_DAC, 0x20, 0);
+		break;
+	case SND_SOC_BIAS_PREPARE:
+		snd_soc_component_update_bits(component, AK4535_DAC, 0x20, 0x20);
+		break;
+	case SND_SOC_BIAS_STANDBY:
+		snd_soc_component_update_bits(component, AK4535_PM1, 0x80, 0x80);
+		snd_soc_component_update_bits(component, AK4535_PM2, 0x80, 0);
+		break;
+	case SND_SOC_BIAS_OFF:
+		snd_soc_component_update_bits(component, AK4535_PM1, 0x80, 0);
+		break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -353,8 +415,14 @@ static int ak4535_set_bias_level(struct snd_soc_codec *codec,
 static const struct snd_soc_dai_ops ak4535_dai_ops = {
 	.hw_params	= ak4535_hw_params,
 	.set_fmt	= ak4535_set_dai_fmt,
+<<<<<<< HEAD
 	.digital_mute	= ak4535_mute,
 	.set_sysclk	= ak4535_set_dai_sysclk,
+=======
+	.mute_stream	= ak4535_mute,
+	.set_sysclk	= ak4535_set_dai_sysclk,
+	.no_capture_mute = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_dai_driver ak4535_dai = {
@@ -374,6 +442,7 @@ static struct snd_soc_dai_driver ak4535_dai = {
 	.ops = &ak4535_dai_ops,
 };
 
+<<<<<<< HEAD
 static int ak4535_suspend(struct snd_soc_codec *codec)
 {
 	ak4535_set_bias_level(codec, SND_SOC_BIAS_OFF);
@@ -410,6 +479,11 @@ static int ak4535_probe(struct snd_soc_codec *codec)
 static int ak4535_remove(struct snd_soc_codec *codec)
 {
 	ak4535_set_bias_level(codec, SND_SOC_BIAS_OFF);
+=======
+static int ak4535_resume(struct snd_soc_component *component)
+{
+	snd_soc_component_cache_sync(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -425,6 +499,7 @@ static const struct regmap_config ak4535_regmap = {
 	.num_reg_defaults = ARRAY_SIZE(ak4535_reg_defaults),
 };
 
+<<<<<<< HEAD
 static struct snd_soc_codec_driver soc_codec_dev_ak4535 = {
 	.probe =	ak4535_probe,
 	.remove =	ak4535_remove,
@@ -439,6 +514,24 @@ static struct snd_soc_codec_driver soc_codec_dev_ak4535 = {
 
 static __devinit int ak4535_i2c_probe(struct i2c_client *i2c,
 				      const struct i2c_device_id *id)
+=======
+static const struct snd_soc_component_driver soc_component_dev_ak4535 = {
+	.resume			= ak4535_resume,
+	.set_bias_level		= ak4535_set_bias_level,
+	.controls		= ak4535_snd_controls,
+	.num_controls		= ARRAY_SIZE(ak4535_snd_controls),
+	.dapm_widgets		= ak4535_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(ak4535_dapm_widgets),
+	.dapm_routes		= ak4535_audio_map,
+	.num_dapm_routes	= ARRAY_SIZE(ak4535_audio_map),
+	.suspend_bias_off	= 1,
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+};
+
+static int ak4535_i2c_probe(struct i2c_client *i2c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ak4535_priv *ak4535;
 	int ret;
@@ -448,7 +541,11 @@ static __devinit int ak4535_i2c_probe(struct i2c_client *i2c,
 	if (ak4535 == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	ak4535->regmap = regmap_init_i2c(i2c, &ak4535_regmap);
+=======
+	ak4535->regmap = devm_regmap_init_i2c(i2c, &ak4535_regmap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(ak4535->regmap)) {
 		ret = PTR_ERR(ak4535->regmap);
 		dev_err(&i2c->dev, "Failed to init regmap: %d\n", ret);
@@ -457,14 +554,20 @@ static __devinit int ak4535_i2c_probe(struct i2c_client *i2c,
 
 	i2c_set_clientdata(i2c, ak4535);
 
+<<<<<<< HEAD
 	ret = snd_soc_register_codec(&i2c->dev,
 			&soc_codec_dev_ak4535, &ak4535_dai, 1);
 	if (ret != 0)
 		regmap_exit(ak4535->regmap);
+=======
+	ret = devm_snd_soc_register_component(&i2c->dev,
+			&soc_component_dev_ak4535, &ak4535_dai, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static __devexit int ak4535_i2c_remove(struct i2c_client *client)
 {
 	struct ak4535_priv *ak4535 = i2c_get_clientdata(client);
@@ -474,6 +577,8 @@ static __devexit int ak4535_i2c_remove(struct i2c_client *client)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id ak4535_i2c_id[] = {
 	{ "ak4535", 0 },
 	{ }
@@ -483,10 +588,15 @@ MODULE_DEVICE_TABLE(i2c, ak4535_i2c_id);
 static struct i2c_driver ak4535_i2c_driver = {
 	.driver = {
 		.name = "ak4535",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe =    ak4535_i2c_probe,
 	.remove =   __devexit_p(ak4535_i2c_remove),
+=======
+	},
+	.probe = ak4535_i2c_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = ak4535_i2c_id,
 };
 

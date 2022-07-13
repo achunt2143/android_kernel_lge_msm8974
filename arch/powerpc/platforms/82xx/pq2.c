@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Common PowerQUICC II code.
  *
@@ -7,6 +11,7 @@
  * Based on code by Vitaly Bordug <vbordug@ru.mvista.com>
  * pq2_restart fix by Wade Farnsworth <wfarnsworth@mvista.com>
  * Copyright (c) 2006 MontaVista Software, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
@@ -14,6 +19,12 @@
  * option) any later version.
  */
 
+=======
+ */
+
+#include <linux/kprobes.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cpm2.h>
 #include <asm/io.h>
 #include <asm/pci-bridge.h>
@@ -22,7 +33,11 @@
 
 #define RMR_CSRE 0x00000001
 
+<<<<<<< HEAD
 void pq2_restart(char *cmd)
+=======
+void __noreturn pq2_restart(char *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	local_irq_disable();
 	setbits32(&cpm2_immr->im_clkrst.car_rmr, RMR_CSRE);
@@ -33,6 +48,7 @@ void pq2_restart(char *cmd)
 
 	panic("Restart failed\n");
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_PCI
 static int pq2_pci_exclude_device(struct pci_controller *hose,
@@ -79,3 +95,6 @@ void __init pq2_init_pci(void)
 		pq2_pci_add_bridge(np);
 }
 #endif
+=======
+NOKPROBE_SYMBOL(pq2_restart)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

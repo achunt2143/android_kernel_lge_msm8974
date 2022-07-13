@@ -1,10 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 
 #include <asm/traps.h>
 #include <asm/apollohw.h>
 
+<<<<<<< HEAD
 unsigned int apollo_irq_startup(struct irq_data *data)
+=======
+#include "apollo.h"
+
+static unsigned int apollo_irq_startup(struct irq_data *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int irq = data->irq;
 
@@ -15,7 +25,11 @@ unsigned int apollo_irq_startup(struct irq_data *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 void apollo_irq_shutdown(struct irq_data *data)
+=======
+static void apollo_irq_shutdown(struct irq_data *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int irq = data->irq;
 
@@ -25,7 +39,11 @@ void apollo_irq_shutdown(struct irq_data *data)
 		*(volatile unsigned char *)(picb+1) |= (1 << (irq - 8));
 }
 
+<<<<<<< HEAD
 void apollo_irq_eoi(struct irq_data *data)
+=======
+static void apollo_irq_eoi(struct irq_data *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	*(volatile unsigned char *)(pica) = 0x20;
 	*(volatile unsigned char *)(picb) = 0x20;

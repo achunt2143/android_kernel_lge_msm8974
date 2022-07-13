@@ -79,10 +79,17 @@ void cvmx_helper_qlm_jtag_init(void)
  * @qlm:    QLM to shift value into
  * @bits:   Number of bits to shift in (1-32).
  * @data:   Data to shift in. Bit 0 enters the chain first, followed by
+<<<<<<< HEAD
  *               bit 1, etc.
  *
  * Returns The low order bits of the JTAG chain that shifted out of the
  *         circle.
+=======
+ *		 bit 1, etc.
+ *
+ * Returns The low order bits of the JTAG chain that shifted out of the
+ *	   circle.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 uint32_t cvmx_helper_qlm_jtag_shift(int qlm, int bits, uint32_t data)
 {
@@ -103,7 +110,11 @@ uint32_t cvmx_helper_qlm_jtag_shift(int qlm, int bits, uint32_t data)
 /**
  * Shift long sequences of zeros into the QLM JTAG chain. It is
  * common to need to shift more than 32 bits of zeros into the
+<<<<<<< HEAD
  * chain. This function is a convience wrapper around
+=======
+ * chain. This function is a convenience wrapper around
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * cvmx_helper_qlm_jtag_shift() to shift more than 32 bits of
  * zeros at a time.
  *

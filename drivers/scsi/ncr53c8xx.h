@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 **  Device driver for the PCI-SCSI NCR538XX controller family.
 **
 **  Copyright (C) 1994  Wolfgang Stanglmeier
 **  Copyright (C) 1998-2001  Gerard Roudier <groudier@free.fr>
 **
+<<<<<<< HEAD
 **  This program is free software; you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
 **  the Free Software Foundation; either version 2 of the License, or
@@ -17,6 +22,8 @@
 **  You should have received a copy of the GNU General Public License
 **  along with this program; if not, write to the Free Software
 **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 **-----------------------------------------------------------------------------
 **
@@ -264,11 +271,15 @@
 #define SCSI_NCR_SG_TABLESIZE	(SCSI_NCR_MAX_SCATTER)
 #define SCSI_NCR_TIMER_INTERVAL	(HZ)
 
+<<<<<<< HEAD
 #if 1 /* defined CONFIG_SCSI_MULTI_LUN */
 #define SCSI_NCR_MAX_LUN	(16)
 #else
 #define SCSI_NCR_MAX_LUN	(1)
 #endif
+=======
+#define SCSI_NCR_MAX_LUN	(16)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  IO functions definition for big/little endian CPU support.
@@ -1255,6 +1266,7 @@ struct scr_tblsel {
 */
 
 /*
+<<<<<<< HEAD
 **	Status
 */
 
@@ -1271,6 +1283,8 @@ struct scr_tblsel {
 #define	S_SENSE		(0x80)
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * End of ncrreg from FreeBSD
  */
 
@@ -1320,6 +1334,15 @@ struct ncr_device {
 	u8 differential;
 };
 
+<<<<<<< HEAD
+=======
+/* To keep track of the dma mapping (sg/single) that has been set */
+struct ncr_cmd_priv {
+	int	data_mapped;
+	int	data_mapping;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct Scsi_Host *ncr_attach(struct scsi_host_template *tpnt, int unit, struct ncr_device *device);
 extern void ncr53c8xx_release(struct Scsi_Host *host);
 irqreturn_t ncr53c8xx_intr(int irq, void *dev_id);

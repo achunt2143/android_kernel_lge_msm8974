@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Marvell 88SE64xx/88SE94xx main function
  *
  * Copyright 2007 Red Hat, Inc.
  * Copyright 2008 Marvell. <kewei@marvell.com>
  * Copyright 2009-2011 Marvell. <yuxiangl@marvell.com>
+<<<<<<< HEAD
  *
  * This file is licensed under GPLv2.
  *
@@ -21,6 +26,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include "mv_sas.h"
@@ -36,6 +43,7 @@ static int mvs_find_tag(struct mvs_info *mvi, struct sas_task *task, u32 *tag)
 	return 0;
 }
 
+<<<<<<< HEAD
 void mvs_tag_clear(struct mvs_info *mvi, u32 tag)
 {
 	void *bitmap = mvi->tags;
@@ -61,12 +69,43 @@ inline int mvs_tag_alloc(struct mvs_info *mvi, u32 *tag_out)
 	index = find_first_zero_bit(bitmap, mvi->tags_num);
 	tag = index;
 	if (tag >= mvi->tags_num)
+=======
+static void mvs_tag_clear(struct mvs_info *mvi, u32 tag)
+{
+	void *bitmap = mvi->rsvd_tags;
+	clear_bit(tag, bitmap);
+}
+
+static void mvs_tag_free(struct mvs_info *mvi, u32 tag)
+{
+	if (tag >= MVS_RSVD_SLOTS)
+		return;
+
+	mvs_tag_clear(mvi, tag);
+}
+
+static void mvs_tag_set(struct mvs_info *mvi, unsigned int tag)
+{
+	void *bitmap = mvi->rsvd_tags;
+	set_bit(tag, bitmap);
+}
+
+static int mvs_tag_alloc(struct mvs_info *mvi, u32 *tag_out)
+{
+	unsigned int index, tag;
+	void *bitmap = mvi->rsvd_tags;
+
+	index = find_first_zero_bit(bitmap, MVS_RSVD_SLOTS);
+	tag = index;
+	if (tag >= MVS_RSVD_SLOTS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -SAS_QUEUE_FULL;
 	mvs_tag_set(mvi, tag);
 	*tag_out = tag;
 	return 0;
 }
 
+<<<<<<< HEAD
 void mvs_tag_init(struct mvs_info *mvi)
 {
 	int i;
@@ -75,6 +114,9 @@ void mvs_tag_init(struct mvs_info *mvi)
 }
 
 struct mvs_info *mvs_find_dev_mvi(struct domain_device *dev)
+=======
+static struct mvs_info *mvs_find_dev_mvi(struct domain_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long i = 0, j = 0, hi = 0;
 	struct sas_ha_struct *sha = dev->port->ha;
@@ -83,8 +125,15 @@ struct mvs_info *mvs_find_dev_mvi(struct domain_device *dev)
 
 	while (sha->sas_port[i]) {
 		if (sha->sas_port[i] == dev->port) {
+<<<<<<< HEAD
 			phy =  container_of(sha->sas_port[i]->phy_list.next,
 				struct asd_sas_phy, port_phy_el);
+=======
+			spin_lock(&sha->sas_port[i]->phy_list_lock);
+			phy =  container_of(sha->sas_port[i]->phy_list.next,
+				struct asd_sas_phy, port_phy_el);
+			spin_unlock(&sha->sas_port[i]->phy_list_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			j = 0;
 			while (sha->sas_phy[j]) {
 				if (sha->sas_phy[j] == phy)
@@ -102,7 +151,11 @@ struct mvs_info *mvs_find_dev_mvi(struct domain_device *dev)
 
 }
 
+<<<<<<< HEAD
 int mvs_find_dev_phyno(struct domain_device *dev, int *phyno)
+=======
+static int mvs_find_dev_phyno(struct domain_device *dev, int *phyno)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long i = 0, j = 0, n = 0, num = 0;
 	struct mvs_device *mvi_dev = (struct mvs_device *)dev->lldd_dev;
@@ -112,6 +165,11 @@ int mvs_find_dev_phyno(struct domain_device *dev, int *phyno)
 	while (sha->sas_port[i]) {
 		if (sha->sas_port[i] == dev->port) {
 			struct asd_sas_phy *phy;
+<<<<<<< HEAD
+=======
+
+			spin_lock(&sha->sas_port[i]->phy_list_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_for_each_entry(phy,
 				&sha->sas_port[i]->phy_list, port_phy_el) {
 				j = 0;
@@ -125,6 +183,10 @@ int mvs_find_dev_phyno(struct domain_device *dev, int *phyno)
 				num++;
 				n++;
 			}
+<<<<<<< HEAD
+=======
+			spin_unlock(&sha->sas_port[i]->phy_list_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		i++;
@@ -220,8 +282,13 @@ int mvs_phy_control(struct asd_sas_phy *sas_phy, enum phy_func func,
 	return rc;
 }
 
+<<<<<<< HEAD
 void __devinit mvs_set_sas_addr(struct mvs_info *mvi, int port_id,
 				u32 off_lo, u32 off_hi, u64 sas_addr)
+=======
+void mvs_set_sas_addr(struct mvs_info *mvi, int port_id, u32 off_lo,
+		      u32 off_hi, u64 sas_addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 lo = (u32)sas_addr;
 	u32 hi = (u32)(sas_addr>>32);
@@ -232,11 +299,19 @@ void __devinit mvs_set_sas_addr(struct mvs_info *mvi, int port_id,
 	MVS_CHIP_DISP->write_port_cfg_data(mvi, port_id, hi);
 }
 
+<<<<<<< HEAD
 static void mvs_bytes_dmaed(struct mvs_info *mvi, int i)
 {
 	struct mvs_phy *phy = &mvi->phy[i];
 	struct asd_sas_phy *sas_phy = &phy->sas_phy;
 	struct sas_ha_struct *sas_ha;
+=======
+static void mvs_bytes_dmaed(struct mvs_info *mvi, int i, gfp_t gfp_flags)
+{
+	struct mvs_phy *phy = &mvi->phy[i];
+	struct asd_sas_phy *sas_phy = &phy->sas_phy;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!phy->phy_attached)
 		return;
 
@@ -245,8 +320,12 @@ static void mvs_bytes_dmaed(struct mvs_info *mvi, int i)
 		return;
 	}
 
+<<<<<<< HEAD
 	sas_ha = mvi->sas;
 	sas_ha->notify_phy_event(sas_phy, PHYE_OOB_DONE);
+=======
+	sas_notify_phy_event(sas_phy, PHYE_OOB_DONE, gfp_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sas_phy->phy) {
 		struct sas_phy *sphy = sas_phy->phy;
@@ -278,8 +357,12 @@ static void mvs_bytes_dmaed(struct mvs_info *mvi, int i)
 
 	sas_phy->frame_rcvd_size = phy->frame_rcvd_size;
 
+<<<<<<< HEAD
 	mvi->sas->notify_port_event(sas_phy,
 				   PORTE_BYTES_DMAED);
+=======
+	sas_notify_port_event(sas_phy, PORTE_BYTES_DMAED, gfp_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void mvs_scan_start(struct Scsi_Host *shost)
@@ -295,7 +378,11 @@ void mvs_scan_start(struct Scsi_Host *shost)
 	for (j = 0; j < core_nr; j++) {
 		mvi = ((struct mvs_prv_info *)sha->lldd_ha)->mvi[j];
 		for (i = 0; i < mvi->chip->n_phy; ++i)
+<<<<<<< HEAD
 			mvs_bytes_dmaed(mvi, i);
+=======
+			mvs_bytes_dmaed(mvi, i, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mvs_prv->scan_finished = 1;
 }
@@ -316,10 +403,19 @@ static int mvs_task_prep_smp(struct mvs_info *mvi,
 			     struct mvs_task_exec_info *tei)
 {
 	int elem, rc, i;
+<<<<<<< HEAD
+=======
+	struct sas_ha_struct *sha = mvi->sas;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sas_task *task = tei->task;
 	struct mvs_cmd_hdr *hdr = tei->hdr;
 	struct domain_device *dev = task->dev;
 	struct asd_sas_port *sas_port = dev->port;
+<<<<<<< HEAD
+=======
+	struct sas_phy *sphy = dev->phy;
+	struct asd_sas_phy *sas_phy = sha->sas_phy[sphy->number];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scatterlist *sg_req, *sg_resp;
 	u32 req_len, resp_len, tag = tei->tag;
 	void *buf_tmp;
@@ -333,13 +429,21 @@ static int mvs_task_prep_smp(struct mvs_info *mvi,
 	 * DMA-map SMP request, response buffers
 	 */
 	sg_req = &task->smp_task.smp_req;
+<<<<<<< HEAD
 	elem = dma_map_sg(mvi->dev, sg_req, 1, PCI_DMA_TODEVICE);
+=======
+	elem = dma_map_sg(mvi->dev, sg_req, 1, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!elem)
 		return -ENOMEM;
 	req_len = sg_dma_len(sg_req);
 
 	sg_resp = &task->smp_task.smp_resp;
+<<<<<<< HEAD
 	elem = dma_map_sg(mvi->dev, sg_resp, 1, PCI_DMA_FROMDEVICE);
+=======
+	elem = dma_map_sg(mvi->dev, sg_resp, 1, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!elem) {
 		rc = -ENOMEM;
 		goto err_out;
@@ -392,7 +496,11 @@ static int mvs_task_prep_smp(struct mvs_info *mvi,
 	slot->tx = mvi->tx_prod;
 	mvi->tx[mvi->tx_prod] = cpu_to_le32((TXQ_CMD_SMP << TXQ_CMD_SHIFT) |
 					TXQ_MODE_I | tag |
+<<<<<<< HEAD
 					(sas_port->phy_mask << TXQ_PHY_SHIFT));
+=======
+					(MVS_PHY_ID << TXQ_PHY_SHIFT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hdr->flags |= flags;
 	hdr->lens = cpu_to_le32(((resp_len / 4) << 16) | ((req_len - 4) / 4));
@@ -413,10 +521,17 @@ static int mvs_task_prep_smp(struct mvs_info *mvi,
 
 err_out_2:
 	dma_unmap_sg(mvi->dev, &tei->task->smp_task.smp_resp, 1,
+<<<<<<< HEAD
 		     PCI_DMA_FROMDEVICE);
 err_out:
 	dma_unmap_sg(mvi->dev, &tei->task->smp_task.smp_req, 1,
 		     PCI_DMA_TODEVICE);
+=======
+		     DMA_FROM_DEVICE);
+err_out:
+	dma_unmap_sg(mvi->dev, &tei->task->smp_task.smp_req, 1,
+		     DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -426,7 +541,14 @@ static u32 mvs_get_ncq_tag(struct sas_task *task, u32 *tag)
 
 	if (qc) {
 		if (qc->tf.command == ATA_CMD_FPDMA_WRITE ||
+<<<<<<< HEAD
 			qc->tf.command == ATA_CMD_FPDMA_READ) {
+=======
+		    qc->tf.command == ATA_CMD_FPDMA_READ ||
+		    qc->tf.command == ATA_CMD_FPDMA_RECV ||
+		    qc->tf.command == ATA_CMD_FPDMA_SEND ||
+		    qc->tf.command == ATA_CMD_NCQ_NON_DATA) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*tag = qc->tag;
 			return 1;
 		}
@@ -462,7 +584,11 @@ static int mvs_task_prep_ata(struct mvs_info *mvi,
 	slot->tx = mvi->tx_prod;
 	del_q = TXQ_MODE_I | tag |
 		(TXQ_CMD_STP << TXQ_CMD_SHIFT) |
+<<<<<<< HEAD
 		(sas_port->phy_mask << TXQ_PHY_SHIFT) |
+=======
+		((sas_port->phy_mask & TXQ_PHY_MASK) << TXQ_PHY_SHIFT) |
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(mvi_dev->taskfileset << TXQ_SRS_SHIFT);
 	mvi->tx[mvi->tx_prod] = cpu_to_le32(del_q);
 
@@ -473,7 +599,11 @@ static int mvs_task_prep_ata(struct mvs_info *mvi,
 
 	if (task->ata_task.use_ncq)
 		flags |= MCH_FPDMA;
+<<<<<<< HEAD
 	if (dev->sata_dev.command_set == ATAPI_COMMAND_SET) {
+=======
+	if (dev->sata_dev.class == ATA_DEV_ATAPI) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (task->ata_task.fis.command != ATA_CMD_ID_ATAPI)
 			flags |= MCH_ATAPI;
 	}
@@ -540,7 +670,11 @@ static int mvs_task_prep_ata(struct mvs_info *mvi,
 		task->ata_task.fis.flags |= 0x80; /* C=1: update ATA cmd reg */
 	/* fill in command FIS and ATAPI CDB */
 	memcpy(buf_cmd, &task->ata_task.fis, sizeof(struct host_to_dev_fis));
+<<<<<<< HEAD
 	if (dev->sata_dev.command_set == ATAPI_COMMAND_SET)
+=======
+	if (dev->sata_dev.class == ATA_DEV_ATAPI)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(buf_cmd + STP_ATAPI_CMD,
 			task->ata_task.atapi_packet, 16);
 
@@ -563,7 +697,11 @@ static int mvs_task_prep_ata(struct mvs_info *mvi,
 
 static int mvs_task_prep_ssp(struct mvs_info *mvi,
 			     struct mvs_task_exec_info *tei, int is_tmf,
+<<<<<<< HEAD
 			     struct mvs_tmf_task *tmf)
+=======
+			     struct sas_tmf_task *tmf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sas_task *task = tei->task;
 	struct mvs_cmd_hdr *hdr = tei->hdr;
@@ -575,7 +713,11 @@ static int mvs_task_prep_ssp(struct mvs_info *mvi,
 	void *buf_prd;
 	struct ssp_frame_hdr *ssp_hdr;
 	void *buf_tmp;
+<<<<<<< HEAD
 	u8 *buf_cmd, *buf_oaf, fburst = 0;
+=======
+	u8 *buf_cmd, *buf_oaf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t buf_tmp_dma;
 	u32 flags;
 	u32 resp_len, req_len, i, tag = tei->tag;
@@ -593,10 +735,13 @@ static int mvs_task_prep_ssp(struct mvs_info *mvi,
 				(phy_mask << TXQ_PHY_SHIFT));
 
 	flags = MCH_RETRY;
+<<<<<<< HEAD
 	if (task->ssp_task.enable_first_burst) {
 		flags |= MCH_FBURST;
 		fburst = (1 << 7);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (is_tmf)
 		flags |= (MCH_SSP_FR_TASK << MCH_SSP_FR_TYPE_SHIFT);
 	else
@@ -678,9 +823,15 @@ static int mvs_task_prep_ssp(struct mvs_info *mvi,
 	memcpy(buf_cmd, &task->ssp_task.LUN, 8);
 
 	if (ssp_hdr->frame_type != SSP_TASK) {
+<<<<<<< HEAD
 		buf_cmd[9] = fburst | task->ssp_task.task_attr |
 				(task->ssp_task.task_prio << 3);
 		memcpy(buf_cmd + 12, &task->ssp_task.cdb, 16);
+=======
+		buf_cmd[9] = task->ssp_task.task_attr;
+		memcpy(buf_cmd + 12, task->ssp_task.cmd->cmnd,
+		       task->ssp_task.cmd->cmd_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else{
 		buf_cmd[10] = tmf->tmf;
 		switch (tmf->tmf) {
@@ -700,15 +851,25 @@ static int mvs_task_prep_ssp(struct mvs_info *mvi,
 	return 0;
 }
 
+<<<<<<< HEAD
 #define	DEV_IS_GONE(mvi_dev)	((!mvi_dev || (mvi_dev->dev_type == NO_DEVICE)))
 static int mvs_task_prep(struct sas_task *task, struct mvs_info *mvi, int is_tmf,
 				struct mvs_tmf_task *tmf, int *pass)
+=======
+#define	DEV_IS_GONE(mvi_dev)	((!mvi_dev || (mvi_dev->dev_type == SAS_PHY_UNUSED)))
+static int mvs_task_prep(struct sas_task *task, struct mvs_info *mvi, int is_tmf,
+				struct sas_tmf_task *tmf, int *pass)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct domain_device *dev = task->dev;
 	struct mvs_device *mvi_dev = dev->lldd_dev;
 	struct mvs_task_exec_info tei;
 	struct mvs_slot_info *slot;
 	u32 tag = 0xdeadbeef, n_elem = 0;
+<<<<<<< HEAD
+=======
+	struct request *rq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	if (!dev->port) {
@@ -720,7 +881,11 @@ static int mvs_task_prep(struct sas_task *task, struct mvs_info *mvi, int is_tmf
 		 * libsas will use dev->port, should
 		 * not call task_done for sata
 		 */
+<<<<<<< HEAD
 		if (dev->dev_type != SATA_DEV)
+=======
+		if (dev->dev_type != SAS_SATA_DEV)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			task->task_done(task);
 		return rc;
 	}
@@ -733,8 +898,13 @@ static int mvs_task_prep(struct sas_task *task, struct mvs_info *mvi, int is_tmf
 			mv_dprintk("device %016llx not ready.\n",
 				SAS_ADDR(dev->sas_addr));
 
+<<<<<<< HEAD
 			rc = SAS_PHY_DOWN;
 			return rc;
+=======
+		rc = SAS_PHY_DOWN;
+		return rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	tei.port = dev->port->lldd_port;
 	if (tei.port && !tei.port->port_attached && !tmf) {
@@ -773,9 +943,20 @@ static int mvs_task_prep(struct sas_task *task, struct mvs_info *mvi, int is_tmf
 		n_elem = task->num_scatter;
 	}
 
+<<<<<<< HEAD
 	rc = mvs_tag_alloc(mvi, &tag);
 	if (rc)
 		goto err_out;
+=======
+	rq = sas_task_find_rq(task);
+	if (rq) {
+		tag = rq->tag + MVS_RSVD_SLOTS;
+	} else {
+		rc = mvs_tag_alloc(mvi, &tag);
+		if (rc)
+			goto err_out;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	slot = &mvi->slot_info[tag];
 
@@ -783,10 +964,18 @@ static int mvs_task_prep(struct sas_task *task, struct mvs_info *mvi, int is_tmf
 	slot->n_elem = n_elem;
 	slot->slot_tag = tag;
 
+<<<<<<< HEAD
 	slot->buf = pci_pool_alloc(mvi->dma_pool, GFP_ATOMIC, &slot->buf_dma);
 	if (!slot->buf)
 		goto err_out_tag;
 	memset(slot->buf, 0, MVS_SLOT_BUF_SZ);
+=======
+	slot->buf = dma_pool_zalloc(mvi->dma_pool, GFP_ATOMIC, &slot->buf_dma);
+	if (!slot->buf) {
+		rc = -ENOMEM;
+		goto err_out_tag;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tei.task = task;
 	tei.hdr = &mvi->slot[tag];
@@ -820,9 +1009,12 @@ static int mvs_task_prep(struct sas_task *task, struct mvs_info *mvi, int is_tmf
 	slot->port = tei.port;
 	task->lldd_task = slot;
 	list_add_tail(&slot->entry, &tei.port->list);
+<<<<<<< HEAD
 	spin_lock(&task->task_state_lock);
 	task->task_state_flags |= SAS_TASK_AT_INITIATOR;
 	spin_unlock(&task->task_state_lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mvi_dev->running_req++;
 	++(*pass);
@@ -831,7 +1023,11 @@ static int mvs_task_prep(struct sas_task *task, struct mvs_info *mvi, int is_tmf
 	return rc;
 
 err_out_slot_buf:
+<<<<<<< HEAD
 	pci_pool_free(mvi->dma_pool, slot->buf, slot->buf_dma);
+=======
+	dma_pool_free(mvi->dma_pool, slot->buf, slot->buf_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_tag:
 	mvs_tag_free(mvi, tag);
 err_out:
@@ -845,6 +1041,7 @@ prep_out:
 	return rc;
 }
 
+<<<<<<< HEAD
 static struct mvs_task_list *mvs_task_alloc_list(int *num, gfp_t gfp_flags)
 {
 	struct mvs_task_list *first = NULL;
@@ -884,11 +1081,19 @@ static inline void mvs_task_free_list(struct mvs_task_list *mvs_list)
 static int mvs_task_exec(struct sas_task *task, const int num, gfp_t gfp_flags,
 				struct completion *completion, int is_tmf,
 				struct mvs_tmf_task *tmf)
+=======
+int mvs_queue_command(struct sas_task *task, gfp_t gfp_flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mvs_info *mvi = NULL;
 	u32 rc = 0;
 	u32 pass = 0;
 	unsigned long flags = 0;
+<<<<<<< HEAD
+=======
+	struct sas_tmf_task *tmf = task->tmf;
+	int is_tmf = !!task->tmf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mvi = ((struct mvs_device *)task->dev->lldd_dev)->mvi_info;
 
@@ -905,6 +1110,7 @@ static int mvs_task_exec(struct sas_task *task, const int num, gfp_t gfp_flags,
 	return rc;
 }
 
+<<<<<<< HEAD
 static int mvs_collector_task_exec(struct sas_task *task, const int num, gfp_t gfp_flags,
 				struct completion *completion, int is_tmf,
 				struct mvs_tmf_task *tmf)
@@ -979,6 +1185,12 @@ static void mvs_slot_free(struct mvs_info *mvi, u32 rx_desc)
 {
 	u32 slot_idx = rx_desc & RXQ_SLOT_MASK;
 	mvs_tag_clear(mvi, slot_idx);
+=======
+static void mvs_slot_free(struct mvs_info *mvi, u32 rx_desc)
+{
+	u32 slot_idx = rx_desc & RXQ_SLOT_MASK;
+	mvs_tag_free(mvi, slot_idx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mvs_slot_task_free(struct mvs_info *mvi, struct sas_task *task,
@@ -996,9 +1208,15 @@ static void mvs_slot_task_free(struct mvs_info *mvi, struct sas_task *task,
 	switch (task->task_proto) {
 	case SAS_PROTOCOL_SMP:
 		dma_unmap_sg(mvi->dev, &task->smp_task.smp_resp, 1,
+<<<<<<< HEAD
 			     PCI_DMA_FROMDEVICE);
 		dma_unmap_sg(mvi->dev, &task->smp_task.smp_req, 1,
 			     PCI_DMA_TODEVICE);
+=======
+			     DMA_FROM_DEVICE);
+		dma_unmap_sg(mvi->dev, &task->smp_task.smp_req, 1,
+			     DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SAS_PROTOCOL_SATA:
@@ -1010,7 +1228,11 @@ static void mvs_slot_task_free(struct mvs_info *mvi, struct sas_task *task,
 	}
 
 	if (slot->buf) {
+<<<<<<< HEAD
 		pci_pool_free(mvi->dma_pool, slot->buf, slot->buf_dma);
+=======
+		dma_pool_free(mvi->dma_pool, slot->buf, slot->buf_dma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		slot->buf = NULL;
 	}
 	list_del_init(&slot->entry);
@@ -1155,10 +1377,17 @@ void mvs_update_phyinfo(struct mvs_info *mvi, int i, int get_st)
 			phy->identify.device_type =
 				phy->att_dev_info & PORT_DEV_TYPE_MASK;
 
+<<<<<<< HEAD
 			if (phy->identify.device_type == SAS_END_DEV)
 				phy->identify.target_port_protocols =
 							SAS_PROTOCOL_SSP;
 			else if (phy->identify.device_type != NO_DEVICE)
+=======
+			if (phy->identify.device_type == SAS_END_DEVICE)
+				phy->identify.target_port_protocols =
+							SAS_PROTOCOL_SSP;
+			else if (phy->identify.device_type != SAS_PHY_UNUSED)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				phy->identify.target_port_protocols =
 							SAS_PROTOCOL_SMP;
 			if (oob_done)
@@ -1252,11 +1481,19 @@ void mvs_port_deformed(struct asd_sas_phy *sas_phy)
 	mvs_port_notify_deformed(sas_phy, 1);
 }
 
+<<<<<<< HEAD
 struct mvs_device *mvs_alloc_dev(struct mvs_info *mvi)
 {
 	u32 dev;
 	for (dev = 0; dev < MVS_MAX_DEVICES; dev++) {
 		if (mvi->devices[dev].dev_type == NO_DEVICE) {
+=======
+static struct mvs_device *mvs_alloc_dev(struct mvs_info *mvi)
+{
+	u32 dev;
+	for (dev = 0; dev < MVS_MAX_DEVICES; dev++) {
+		if (mvi->devices[dev].dev_type == SAS_PHY_UNUSED) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mvi->devices[dev].device_id = dev;
 			return &mvi->devices[dev];
 		}
@@ -1269,17 +1506,29 @@ struct mvs_device *mvs_alloc_dev(struct mvs_info *mvi)
 	return NULL;
 }
 
+<<<<<<< HEAD
 void mvs_free_dev(struct mvs_device *mvi_dev)
+=======
+static void mvs_free_dev(struct mvs_device *mvi_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 id = mvi_dev->device_id;
 	memset(mvi_dev, 0, sizeof(*mvi_dev));
 	mvi_dev->device_id = id;
+<<<<<<< HEAD
 	mvi_dev->dev_type = NO_DEVICE;
+=======
+	mvi_dev->dev_type = SAS_PHY_UNUSED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mvi_dev->dev_status = MVS_DEV_NORMAL;
 	mvi_dev->taskfileset = MVS_ID_NOT_MAPPED;
 }
 
+<<<<<<< HEAD
 int mvs_dev_found_notify(struct domain_device *dev, int lock)
+=======
+static int mvs_dev_found_notify(struct domain_device *dev, int lock)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags = 0;
 	int res = 0;
@@ -1302,6 +1551,7 @@ int mvs_dev_found_notify(struct domain_device *dev, int lock)
 	mvi_device->dev_type = dev->dev_type;
 	mvi_device->mvi_info = mvi;
 	mvi_device->sas_device = dev;
+<<<<<<< HEAD
 	if (parent_dev && DEV_IS_EXPANDER(parent_dev->dev_type)) {
 		int phy_id;
 		u8 phy_num = parent_dev->ex_dev.num_phys;
@@ -1316,11 +1566,24 @@ int mvs_dev_found_notify(struct domain_device *dev, int lock)
 		}
 
 		if (phy_id == phy_num) {
+=======
+	if (parent_dev && dev_is_expander(parent_dev->dev_type)) {
+		int phy_id;
+
+		phy_id = sas_find_attached_phy_id(&parent_dev->ex_dev, dev);
+		if (phy_id < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mv_printk("Error: no attached dev:%016llx"
 				"at ex:%016llx.\n",
 				SAS_ADDR(dev->sas_addr),
 				SAS_ADDR(parent_dev->sas_addr));
+<<<<<<< HEAD
 			res = -1;
+=======
+			res = phy_id;
+		} else {
+			mvi_device->attached_phy = phy_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1335,6 +1598,7 @@ int mvs_dev_found(struct domain_device *dev)
 	return mvs_dev_found_notify(dev, 1);
 }
 
+<<<<<<< HEAD
 void mvs_dev_gone_notify(struct domain_device *dev)
 {
 	unsigned long flags = 0;
@@ -1352,6 +1616,29 @@ void mvs_dev_gone_notify(struct domain_device *dev)
 	} else {
 		mv_dprintk("found dev has gone.\n");
 	}
+=======
+static void mvs_dev_gone_notify(struct domain_device *dev)
+{
+	unsigned long flags = 0;
+	struct mvs_device *mvi_dev = dev->lldd_dev;
+	struct mvs_info *mvi;
+
+	if (!mvi_dev) {
+		mv_dprintk("found dev has gone.\n");
+		return;
+	}
+
+	mvi = mvi_dev->mvi_info;
+
+	spin_lock_irqsave(&mvi->lock, flags);
+
+	mv_dprintk("found dev[%d:%x] is gone.\n",
+		mvi_dev->device_id, mvi_dev->dev_type);
+	mvs_release_task(mvi, dev);
+	mvs_free_reg_set(mvi, mvi_dev);
+	mvs_free_dev(mvi_dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->lldd_dev = NULL;
 	mvi_dev->sas_device = NULL;
 
@@ -1364,6 +1651,7 @@ void mvs_dev_gone(struct domain_device *dev)
 	mvs_dev_gone_notify(dev);
 }
 
+<<<<<<< HEAD
 static void mvs_task_done(struct sas_task *task)
 {
 	if (!del_timer(&task->timer))
@@ -1470,13 +1758,19 @@ static int mvs_debug_issue_ssp_tmf(struct domain_device *dev,
 }
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  Standard mandates link reset for ATA  (type 0)
     and hard reset for SSP (type 1) , only for RECOVERY */
 static int mvs_debug_I_T_nexus_reset(struct domain_device *dev)
 {
 	int rc;
 	struct sas_phy *phy = sas_get_local_phy(dev);
+<<<<<<< HEAD
 	int reset_type = (dev->dev_type == SATA_DEV ||
+=======
+	int reset_type = (dev->dev_type == SAS_SATA_DEV ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(dev->tproto & SAS_PROTOCOL_STP)) ? 0 : 1;
 	rc = sas_phy_reset(phy, reset_type);
 	sas_put_local_phy(phy);
@@ -1489,6 +1783,7 @@ int mvs_lu_reset(struct domain_device *dev, u8 *lun)
 {
 	unsigned long flags;
 	int rc = TMF_RESP_FUNC_FAILED;
+<<<<<<< HEAD
 	struct mvs_tmf_task tmf_task;
 	struct mvs_device * mvi_dev = dev->lldd_dev;
 	struct mvs_info *mvi = mvi_dev->mvi_info;
@@ -1496,6 +1791,13 @@ int mvs_lu_reset(struct domain_device *dev, u8 *lun)
 	tmf_task.tmf = TMF_LU_RESET;
 	mvi_dev->dev_status = MVS_DEV_EH;
 	rc = mvs_debug_issue_ssp_tmf(dev, lun, &tmf_task);
+=======
+	struct mvs_device * mvi_dev = dev->lldd_dev;
+	struct mvs_info *mvi = mvi_dev->mvi_info;
+
+	mvi_dev->dev_status = MVS_DEV_EH;
+	rc = sas_lu_reset(dev, lun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc == TMF_RESP_FUNC_COMPLETE) {
 		spin_lock_irqsave(&mvi->lock, flags);
 		mvs_release_task(mvi, dev);
@@ -1511,7 +1813,11 @@ int mvs_I_T_nexus_reset(struct domain_device *dev)
 {
 	unsigned long flags;
 	int rc = TMF_RESP_FUNC_FAILED;
+<<<<<<< HEAD
     struct mvs_device * mvi_dev = (struct mvs_device *)dev->lldd_dev;
+=======
+	struct mvs_device *mvi_dev = (struct mvs_device *)dev->lldd_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mvs_info *mvi = mvi_dev->mvi_info;
 
 	if (mvi_dev->dev_status != MVS_DEV_EH)
@@ -1532,27 +1838,40 @@ int mvs_I_T_nexus_reset(struct domain_device *dev)
 int mvs_query_task(struct sas_task *task)
 {
 	u32 tag;
+<<<<<<< HEAD
 	struct scsi_lun lun;
 	struct mvs_tmf_task tmf_task;
 	int rc = TMF_RESP_FUNC_FAILED;
 
 	if (task->lldd_task && task->task_proto & SAS_PROTOCOL_SSP) {
 		struct scsi_cmnd * cmnd = (struct scsi_cmnd *)task->uldd_task;
+=======
+	int rc = TMF_RESP_FUNC_FAILED;
+
+	if (task->lldd_task && task->task_proto & SAS_PROTOCOL_SSP) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct domain_device *dev = task->dev;
 		struct mvs_device *mvi_dev = (struct mvs_device *)dev->lldd_dev;
 		struct mvs_info *mvi = mvi_dev->mvi_info;
 
+<<<<<<< HEAD
 		int_to_scsilun(cmnd->device->lun, &lun);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = mvs_find_tag(mvi, task, &tag);
 		if (rc == 0) {
 			rc = TMF_RESP_FUNC_FAILED;
 			return rc;
 		}
 
+<<<<<<< HEAD
 		tmf_task.tmf = TMF_QUERY_TASK;
 		tmf_task.tag_of_task_to_be_managed = cpu_to_le16(tag);
 
 		rc = mvs_debug_issue_ssp_tmf(dev, lun.scsi_lun, &tmf_task);
+=======
+		rc = sas_query_task(task, tag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (rc) {
 		/* The task is still in Lun, release it then */
 		case TMF_RESP_FUNC_SUCC:
@@ -1569,8 +1888,11 @@ int mvs_query_task(struct sas_task *task)
 /*  mandatory SAM-3, still need free task/slot info */
 int mvs_abort_task(struct sas_task *task)
 {
+<<<<<<< HEAD
 	struct scsi_lun lun;
 	struct mvs_tmf_task tmf_task;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct domain_device *dev = task->dev;
 	struct mvs_device *mvi_dev = (struct mvs_device *)dev->lldd_dev;
 	struct mvs_info *mvi;
@@ -1594,9 +1916,12 @@ int mvs_abort_task(struct sas_task *task)
 	spin_unlock_irqrestore(&task->task_state_lock, flags);
 	mvi_dev->dev_status = MVS_DEV_EH;
 	if (task->lldd_task && task->task_proto & SAS_PROTOCOL_SSP) {
+<<<<<<< HEAD
 		struct scsi_cmnd * cmnd = (struct scsi_cmnd *)task->uldd_task;
 
 		int_to_scsilun(cmnd->device->lun, &lun);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = mvs_find_tag(mvi, task, &tag);
 		if (rc == 0) {
 			mv_printk("No such tag in %s\n", __func__);
@@ -1604,10 +1929,14 @@ int mvs_abort_task(struct sas_task *task)
 			return rc;
 		}
 
+<<<<<<< HEAD
 		tmf_task.tmf = TMF_ABORT_TASK;
 		tmf_task.tag_of_task_to_be_managed = cpu_to_le16(tag);
 
 		rc = mvs_debug_issue_ssp_tmf(dev, lun.scsi_lun, &tmf_task);
+=======
+		rc = sas_abort_task(task, tag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* if successful, clear the task and callback forwards.*/
 		if (rc == TMF_RESP_FUNC_COMPLETE) {
@@ -1625,7 +1954,11 @@ int mvs_abort_task(struct sas_task *task)
 
 	} else if (task->task_proto & SAS_PROTOCOL_SATA ||
 		task->task_proto & SAS_PROTOCOL_STP) {
+<<<<<<< HEAD
 		if (SATA_DEV == dev->dev_type) {
+=======
+		if (SAS_SATA_DEV == dev->dev_type) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct mvs_slot_info *slot = task->lldd_task;
 			u32 slot_idx = (u32)(slot - mvi->slot_info);
 			mv_dprintk("mvs_abort_task() mvi=%p task=%p "
@@ -1644,6 +1977,7 @@ out:
 	return rc;
 }
 
+<<<<<<< HEAD
 int mvs_abort_task_set(struct domain_device *dev, u8 *lun)
 {
 	int rc = TMF_RESP_FUNC_FAILED;
@@ -1677,6 +2011,8 @@ int mvs_clear_task_set(struct domain_device *dev, u8 *lun)
 	return rc;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int mvs_sata_done(struct mvs_info *mvi, struct sas_task *task,
 			u32 slot_idx, int err)
 {
@@ -1701,7 +2037,11 @@ static int mvs_sata_done(struct mvs_info *mvi, struct sas_task *task,
 	return stat;
 }
 
+<<<<<<< HEAD
 void mvs_set_sense(u8 *buffer, int len, int d_sense,
+=======
+static void mvs_set_sense(u8 *buffer, int len, int d_sense,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int key, int asc, int ascq)
 {
 	memset(buffer, 0, len);
@@ -1740,10 +2080,17 @@ void mvs_set_sense(u8 *buffer, int len, int d_sense,
 	return;
 }
 
+<<<<<<< HEAD
 void mvs_fill_ssp_resp_iu(struct ssp_response_iu *iu,
 				u8 key, u8 asc, u8 asc_q)
 {
 	iu->datapres = 2;
+=======
+static void mvs_fill_ssp_resp_iu(struct ssp_response_iu *iu,
+				u8 key, u8 asc, u8 asc_q)
+{
+	iu->datapres = SAS_DATAPRES_SENSE_DATA;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iu->response_data_len = 0;
 	iu->sense_data_len = 17;
 	iu->status = 02;
@@ -1823,8 +2170,12 @@ int mvs_slot_complete(struct mvs_info *mvi, u32 rx_desc, u32 flags)
 	mvi_dev = dev->lldd_dev;
 
 	spin_lock(&task->task_state_lock);
+<<<<<<< HEAD
 	task->task_state_flags &=
 		~(SAS_TASK_STATE_PENDING | SAS_TASK_AT_INITIATOR);
+=======
+	task->task_state_flags &= ~SAS_TASK_STATE_PENDING;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	task->task_state_flags |= SAS_TASK_STATE_DONE;
 	/* race condition*/
 	aborted = task->task_state_flags & SAS_TASK_STATE_ABORTED;
@@ -1852,11 +2203,24 @@ int mvs_slot_complete(struct mvs_info *mvi, u32 rx_desc, u32 flags)
 		goto out;
 	}
 
+<<<<<<< HEAD
 	/* error info record present */
 	if (unlikely((rx_desc & RXQ_ERR) && (*(u64 *) slot->response))) {
 		mv_dprintk("port %d slot %d rx_desc %X has error info"
 			"%016llX.\n", slot->port->sas_port.id, slot_idx,
 			 rx_desc, (u64)(*(u64 *)slot->response));
+=======
+	/*
+	 * error info record present; slot->response is 32 bit aligned but may
+	 * not be 64 bit aligned, so check for zero in two 32 bit reads
+	 */
+	if (unlikely((rx_desc & RXQ_ERR)
+		     && (*((u32 *)slot->response)
+			 || *(((u32 *)slot->response) + 1)))) {
+		mv_dprintk("port %d slot %d rx_desc %X has error info"
+			"%016llX.\n", slot->port->sas_port.id, slot_idx,
+			 rx_desc, get_unaligned_le64(slot->response));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tstat->stat = mvs_slot_err(mvi, task, slot_idx);
 		tstat->resp = SAS_TASK_COMPLETE;
 		goto out;
@@ -1866,7 +2230,11 @@ int mvs_slot_complete(struct mvs_info *mvi, u32 rx_desc, u32 flags)
 	case SAS_PROTOCOL_SSP:
 		/* hw says status == 0, datapres == 0 */
 		if (rx_desc & RXQ_GOOD) {
+<<<<<<< HEAD
 			tstat->stat = SAM_STAT_GOOD;
+=======
+			tstat->stat = SAS_SAM_STAT_GOOD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tstat->resp = SAS_TASK_COMPLETE;
 		}
 		/* response frame present */
@@ -1875,12 +2243,20 @@ int mvs_slot_complete(struct mvs_info *mvi, u32 rx_desc, u32 flags)
 						sizeof(struct mvs_err_info);
 			sas_ssp_task_response(mvi->dev, task, iu);
 		} else
+<<<<<<< HEAD
 			tstat->stat = SAM_STAT_CHECK_CONDITION;
+=======
+			tstat->stat = SAS_SAM_STAT_CHECK_CONDITION;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case SAS_PROTOCOL_SMP: {
 			struct scatterlist *sg_resp = &task->smp_task.smp_resp;
+<<<<<<< HEAD
 			tstat->stat = SAM_STAT_GOOD;
+=======
+			tstat->stat = SAS_SAM_STAT_GOOD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			to = kmap_atomic(sg_page(sg_resp));
 			memcpy(to + sg_resp->offset,
 				slot->response + sizeof(struct mvs_err_info),
@@ -1897,7 +2273,11 @@ int mvs_slot_complete(struct mvs_info *mvi, u32 rx_desc, u32 flags)
 		}
 
 	default:
+<<<<<<< HEAD
 		tstat->stat = SAM_STAT_CHECK_CONDITION;
+=======
+		tstat->stat = SAS_SAM_STAT_CHECK_CONDITION;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	if (!slot->port->port_attached) {
@@ -1980,7 +2360,10 @@ static void mvs_work_queue(struct work_struct *work)
 	struct mvs_info *mvi = mwq->mvi;
 	unsigned long flags;
 	u32 phy_no = (unsigned long) mwq->data;
+<<<<<<< HEAD
 	struct sas_ha_struct *sas_ha = mvi->sas;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mvs_phy *phy = &mvi->phy[phy_no];
 	struct asd_sas_phy *sas_phy = &phy->sas_phy;
 
@@ -1989,28 +2372,46 @@ static void mvs_work_queue(struct work_struct *work)
 
 		if (phy->phy_event & PHY_PLUG_OUT) {
 			u32 tmp;
+<<<<<<< HEAD
 			struct sas_identify_frame *id;
 			id = (struct sas_identify_frame *)phy->frame_rcvd;
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tmp = MVS_CHIP_DISP->read_phy_ctl(mvi, phy_no);
 			phy->phy_event &= ~PHY_PLUG_OUT;
 			if (!(tmp & PHY_READY_MASK)) {
 				sas_phy_disconnected(sas_phy);
 				mvs_phy_disconnected(phy);
+<<<<<<< HEAD
 				sas_ha->notify_phy_event(sas_phy,
 					PHYE_LOSS_OF_SIGNAL);
+=======
+				sas_notify_phy_event(sas_phy,
+					PHYE_LOSS_OF_SIGNAL, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mv_dprintk("phy%d Removed Device\n", phy_no);
 			} else {
 				MVS_CHIP_DISP->detect_porttype(mvi, phy_no);
 				mvs_update_phyinfo(mvi, phy_no, 1);
+<<<<<<< HEAD
 				mvs_bytes_dmaed(mvi, phy_no);
+=======
+				mvs_bytes_dmaed(mvi, phy_no, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mvs_port_notify_formed(sas_phy, 0);
 				mv_dprintk("phy%d Attached Device\n", phy_no);
 			}
 		}
 	} else if (mwq->handler & EXP_BRCT_CHG) {
 		phy->phy_event &= ~EXP_BRCT_CHG;
+<<<<<<< HEAD
 		sas_ha->notify_port_event(sas_phy,
 				PORTE_BROADCAST_RCVD);
+=======
+		sas_notify_port_event(sas_phy,
+				PORTE_BROADCAST_RCVD, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mv_dprintk("phy%d Got Broadcast Change\n", phy_no);
 	}
 	list_del(&mwq->entry);
@@ -2037,9 +2438,15 @@ static int mvs_handle_event(struct mvs_info *mvi, void *data, int handler)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void mvs_sig_time_out(unsigned long tphy)
 {
 	struct mvs_phy *phy = (struct mvs_phy *)tphy;
+=======
+static void mvs_sig_time_out(struct timer_list *t)
+{
+	struct mvs_phy *phy = from_timer(phy, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mvs_info *mvi = phy->mvi;
 	u8 phy_no;
 
@@ -2103,7 +2510,10 @@ void mvs_int_port(struct mvs_info *mvi, int phy_no, u32 events)
 		MVS_CHIP_DISP->write_port_irq_mask(mvi, phy_no,
 					tmp | PHYEV_SIG_FIS);
 		if (phy->timer.function == NULL) {
+<<<<<<< HEAD
 			phy->timer.data = (unsigned long)phy;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			phy->timer.function = mvs_sig_time_out;
 			phy->timer.expires = jiffies + 5*HZ;
 			add_timer(&phy->timer);
@@ -2128,7 +2538,11 @@ void mvs_int_port(struct mvs_info *mvi, int phy_no, u32 events)
 				mdelay(10);
 			}
 
+<<<<<<< HEAD
 			mvs_bytes_dmaed(mvi, phy_no);
+=======
+			mvs_bytes_dmaed(mvi, phy_no, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* whether driver is going to handle hot plug */
 			if (phy->phy_event & PHY_PLUG_OUT) {
 				mvs_port_notify_formed(&phy->sas_phy, 0);
@@ -2193,3 +2607,19 @@ int mvs_int_rx(struct mvs_info *mvi, bool self_clear)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+int mvs_gpio_write(struct sas_ha_struct *sha, u8 reg_type, u8 reg_index,
+			u8 reg_count, u8 *write_data)
+{
+	struct mvs_prv_info *mvs_prv = sha->lldd_ha;
+	struct mvs_info *mvi = mvs_prv->mvi[0];
+
+	if (MVS_CHIP_DISP->gpio_write) {
+		return MVS_CHIP_DISP->gpio_write(mvs_prv, reg_type,
+			reg_index, reg_count, write_data);
+	}
+
+	return -ENOSYS;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

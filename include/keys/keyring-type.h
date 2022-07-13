@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Keyring key type
  *
  * Copyright (C) 2008 Red Hat, Inc. All Rights Reserved.
@@ -7,12 +8,20 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/* Keyring key type
+ *
+ * Copyright (C) 2008, 2013 Red Hat, Inc. All Rights Reserved.
+ * Written by David Howells (dhowells@redhat.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _KEYS_KEYRING_TYPE_H
 #define _KEYS_KEYRING_TYPE_H
 
 #include <linux/key.h>
+<<<<<<< HEAD
 #include <linux/rcupdate.h>
 
 /*
@@ -27,5 +36,8 @@ struct keyring_list {
 	struct key __rcu *keys[0];
 };
 
+=======
+#include <linux/assoc_array.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _KEYS_KEYRING_TYPE_H */

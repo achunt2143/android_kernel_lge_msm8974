@@ -1,15 +1,22 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm831x-irq.c  --  Interrupt controller support for Wolfson WM831x PMICs
  *
  * Copyright 2009 Wolfson Microelectronics PLC.
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -18,6 +25,10 @@
 #include <linux/irq.h>
 #include <linux/mfd/core.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqdomain.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mfd/wm831x/core.h>
 #include <linux/mfd/wm831x/pdata.h>
@@ -328,7 +339,11 @@ static inline int irq_data_to_status_reg(struct wm831x_irq_data *irq_data)
 static inline struct wm831x_irq_data *irq_to_wm831x_irq(struct wm831x *wm831x,
 							int irq)
 {
+<<<<<<< HEAD
 	return &wm831x_irqs[irq - wm831x->irq_base];
+=======
+	return &wm831x_irqs[irq];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void wm831x_irq_lock(struct irq_data *data)
@@ -374,7 +389,11 @@ static void wm831x_irq_enable(struct irq_data *data)
 {
 	struct wm831x *wm831x = irq_data_get_irq_chip_data(data);
 	struct wm831x_irq_data *irq_data = irq_to_wm831x_irq(wm831x,
+<<<<<<< HEAD
 							     data->irq);
+=======
+							     data->hwirq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wm831x->irq_masks_cur[irq_data->reg - 1] &= ~irq_data->mask;
 }
@@ -383,7 +402,11 @@ static void wm831x_irq_disable(struct irq_data *data)
 {
 	struct wm831x *wm831x = irq_data_get_irq_chip_data(data);
 	struct wm831x_irq_data *irq_data = irq_to_wm831x_irq(wm831x,
+<<<<<<< HEAD
 							     data->irq);
+=======
+							     data->hwirq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wm831x->irq_masks_cur[irq_data->reg - 1] |= irq_data->mask;
 }
@@ -393,7 +416,11 @@ static int wm831x_irq_set_type(struct irq_data *data, unsigned int type)
 	struct wm831x *wm831x = irq_data_get_irq_chip_data(data);
 	int irq;
 
+<<<<<<< HEAD
 	irq = data->irq - wm831x->irq_base;
+=======
+	irq = data->hwirq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (irq < WM831X_IRQ_GPIO_1 || irq > WM831X_IRQ_GPIO_11) {
 		/* Ignore internal-only IRQs */
@@ -412,6 +439,7 @@ static int wm831x_irq_set_type(struct irq_data *data, unsigned int type)
 	 * do the update here as we can be called with the bus lock
 	 * held.
 	 */
+<<<<<<< HEAD
 	switch (type) {
 	case IRQ_TYPE_EDGE_BOTH:
 		wm831x->gpio_update[irq] = 0x10000 | WM831X_GPN_INT_MODE;
@@ -428,6 +456,27 @@ static int wm831x_irq_set_type(struct irq_data *data, unsigned int type)
 	case IRQ_TYPE_LEVEL_HIGH:
 		wm831x->gpio_update[irq] = 0x10000 | WM831X_GPN_POL;
 		wm831x->gpio_level[irq] = true;
+=======
+	wm831x->gpio_level_low[irq] = false;
+	wm831x->gpio_level_high[irq] = false;
+	switch (type) {
+	case IRQ_TYPE_EDGE_BOTH:
+		wm831x->gpio_update[irq] = 0x10000 | WM831X_GPN_INT_MODE;
+		break;
+	case IRQ_TYPE_EDGE_RISING:
+		wm831x->gpio_update[irq] = 0x10000 | WM831X_GPN_POL;
+		break;
+	case IRQ_TYPE_EDGE_FALLING:
+		wm831x->gpio_update[irq] = 0x10000;
+		break;
+	case IRQ_TYPE_LEVEL_HIGH:
+		wm831x->gpio_update[irq] = 0x10000 | WM831X_GPN_POL;
+		wm831x->gpio_level_high[irq] = true;
+		break;
+	case IRQ_TYPE_LEVEL_LOW:
+		wm831x->gpio_update[irq] = 0x10000;
+		wm831x->gpio_level_low[irq] = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		return -EINVAL;
@@ -469,9 +518,17 @@ static irqreturn_t wm831x_irq_thread(int irq, void *data)
 	 * descriptors.
 	 */
 	if (primary & WM831X_TCHPD_INT)
+<<<<<<< HEAD
 		handle_nested_irq(wm831x->irq_base + WM831X_IRQ_TCHPD);
 	if (primary & WM831X_TCHDATA_INT)
 		handle_nested_irq(wm831x->irq_base + WM831X_IRQ_TCHDATA);
+=======
+		handle_nested_irq(irq_find_mapping(wm831x->irq_domain,
+						   WM831X_IRQ_TCHPD));
+	if (primary & WM831X_TCHDATA_INT)
+		handle_nested_irq(irq_find_mapping(wm831x->irq_domain,
+						   WM831X_IRQ_TCHDATA));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	primary &= ~(WM831X_TCHDATA_EINT | WM831X_TCHPD_EINT);
 
 	for (i = 0; i < ARRAY_SIZE(wm831x_irqs); i++) {
@@ -507,16 +564,40 @@ static irqreturn_t wm831x_irq_thread(int irq, void *data)
 		}
 
 		if (*status & wm831x_irqs[i].mask)
+<<<<<<< HEAD
 			handle_nested_irq(wm831x->irq_base + i);
+=======
+			handle_nested_irq(irq_find_mapping(wm831x->irq_domain,
+							   i));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Simulate an edge triggered IRQ by polling the input
 		 * status.  This is sucky but improves interoperability.
 		 */
 		if (primary == WM831X_GP_INT &&
+<<<<<<< HEAD
 		    wm831x->gpio_level[i - WM831X_IRQ_GPIO_1]) {
 			ret = wm831x_reg_read(wm831x, WM831X_GPIO_LEVEL);
 			while (ret & 1 << (i - WM831X_IRQ_GPIO_1)) {
 				handle_nested_irq(wm831x->irq_base + i);
+=======
+		    wm831x->gpio_level_high[i - WM831X_IRQ_GPIO_1]) {
+			ret = wm831x_reg_read(wm831x, WM831X_GPIO_LEVEL);
+			while (ret & 1 << (i - WM831X_IRQ_GPIO_1)) {
+				handle_nested_irq(irq_find_mapping(wm831x->irq_domain,
+								   i));
+				ret = wm831x_reg_read(wm831x,
+						      WM831X_GPIO_LEVEL);
+			}
+		}
+
+		if (primary == WM831X_GP_INT &&
+		    wm831x->gpio_level_low[i - WM831X_IRQ_GPIO_1]) {
+			ret = wm831x_reg_read(wm831x, WM831X_GPIO_LEVEL);
+			while (!(ret & 1 << (i - WM831X_IRQ_GPIO_1))) {
+				handle_nested_irq(irq_find_mapping(wm831x->irq_domain,
+								   i));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ret = wm831x_reg_read(wm831x,
 						      WM831X_GPIO_LEVEL);
 			}
@@ -527,10 +608,34 @@ out:
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 int wm831x_irq_init(struct wm831x *wm831x, int irq)
 {
 	struct wm831x_pdata *pdata = wm831x->dev->platform_data;
 	int i, cur_irq, ret;
+=======
+static int wm831x_irq_map(struct irq_domain *h, unsigned int virq,
+			  irq_hw_number_t hw)
+{
+	irq_set_chip_data(virq, h->host_data);
+	irq_set_chip_and_handler(virq, &wm831x_irq_chip, handle_edge_irq);
+	irq_set_nested_thread(virq, 1);
+	irq_set_noprobe(virq);
+
+	return 0;
+}
+
+static const struct irq_domain_ops wm831x_irq_domain_ops = {
+	.map	= wm831x_irq_map,
+	.xlate	= irq_domain_xlate_twocell,
+};
+
+int wm831x_irq_init(struct wm831x *wm831x, int irq)
+{
+	struct wm831x_pdata *pdata = &wm831x->pdata;
+	struct irq_domain *domain;
+	int i, ret, irq_base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_init(&wm831x->irq_lock);
 
@@ -543,6 +648,7 @@ int wm831x_irq_init(struct wm831x *wm831x, int irq)
 	}
 
 	/* Try to dynamically allocate IRQs if no base is specified */
+<<<<<<< HEAD
 	if (!pdata || !pdata->irq_base)
 		wm831x->irq_base = -1;
 	else
@@ -558,6 +664,38 @@ int wm831x_irq_init(struct wm831x *wm831x, int irq)
 	}
 
 	if (pdata && pdata->irq_cmos)
+=======
+	if (pdata->irq_base) {
+		irq_base = irq_alloc_descs(pdata->irq_base, 0,
+					   WM831X_NUM_IRQS, 0);
+		if (irq_base < 0) {
+			dev_warn(wm831x->dev, "Failed to allocate IRQs: %d\n",
+				 irq_base);
+			irq_base = 0;
+		}
+	} else {
+		irq_base = 0;
+	}
+
+	if (irq_base)
+		domain = irq_domain_add_legacy(wm831x->dev->of_node,
+					       ARRAY_SIZE(wm831x_irqs),
+					       irq_base, 0,
+					       &wm831x_irq_domain_ops,
+					       wm831x);
+	else
+		domain = irq_domain_add_linear(wm831x->dev->of_node,
+					       ARRAY_SIZE(wm831x_irqs),
+					       &wm831x_irq_domain_ops,
+					       wm831x);
+
+	if (!domain) {
+		dev_warn(wm831x->dev, "Failed to allocate IRQ domain\n");
+		return -EINVAL;
+	}
+
+	if (pdata->irq_cmos)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i = 0;
 	else
 		i = WM831X_IRQ_OD;
@@ -565,6 +703,7 @@ int wm831x_irq_init(struct wm831x *wm831x, int irq)
 	wm831x_set_bits(wm831x, WM831X_IRQ_CONFIG,
 			WM831X_IRQ_OD, i);
 
+<<<<<<< HEAD
 	/* Try to flag /IRQ as a wake source; there are a number of
 	 * unconditional wake sources in the PMIC so this isn't
 	 * conditional but we don't actually care *too* much if it
@@ -597,6 +736,24 @@ int wm831x_irq_init(struct wm831x *wm831x, int irq)
 	}
 
 	if (irq) {
+=======
+	wm831x->irq = irq;
+	wm831x->irq_domain = domain;
+
+	if (irq) {
+		/* Try to flag /IRQ as a wake source; there are a number of
+		 * unconditional wake sources in the PMIC so this isn't
+		 * conditional but we don't actually care *too* much if it
+		 * fails.
+		 */
+		ret = enable_irq_wake(irq);
+		if (ret != 0) {
+			dev_warn(wm831x->dev,
+				 "Can't enable IRQ as wake source: %d\n",
+				 ret);
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = request_threaded_irq(irq, NULL, wm831x_irq_thread,
 					   IRQF_TRIGGER_LOW | IRQF_ONESHOT,
 					   "wm831x", wm831x);

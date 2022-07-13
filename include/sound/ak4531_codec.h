@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_AK4531_CODEC_H
 #define __SOUND_AK4531_CODEC_H
 
@@ -7,6 +11,7 @@
  *
  *  For more details look to AC '97 component specification revision 2.1
  *  by Intel Corporation (http://developer.intel.com).
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -27,6 +32,12 @@
 
 #include "info.h"
 #include "control.h"
+=======
+ */
+
+#include <sound/info.h>
+#include <sound/control.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  ASAHI KASEI - AK4531 codec
@@ -80,6 +91,12 @@ int snd_ak4531_mixer(struct snd_card *card, struct snd_ak4531 *_ak4531,
 #ifdef CONFIG_PM
 void snd_ak4531_suspend(struct snd_ak4531 *ak4531);
 void snd_ak4531_resume(struct snd_ak4531 *ak4531);
+<<<<<<< HEAD
+=======
+#else
+static inline void snd_ak4531_suspend(struct snd_ak4531 *ak4531) {}
+static inline void snd_ak4531_resume(struct snd_ak4531 *ak4531) {}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* __SOUND_AK4531_CODEC_H */

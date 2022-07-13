@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/sys_arm.c
  *
  *  Copyright (C) People who wrote linux/arch/i386/kernel/sys_i386.c
  *  Copyright (C) 1995, 1996 Russell King.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  This file contains various random system calls that
  *  have a non-standard calling sequence on the Linux/arm
  *  platform.
@@ -27,6 +34,7 @@
 #include <linux/ipc.h>
 #include <linux/uaccess.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 /* Fork a new task - this creates a new program thread.
  * This is called indirectly via a small wrapper
@@ -121,6 +129,9 @@ int kernel_execve(const char *filename,
 	return ret;
 }
 EXPORT_SYMBOL(kernel_execve);
+=======
+#include <asm/syscalls.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Since loff_t is a 64 bit type we avoid a lot of ABI hassle
@@ -129,5 +140,9 @@ EXPORT_SYMBOL(kernel_execve);
 asmlinkage long sys_arm_fadvise64_64(int fd, int advice,
 				     loff_t offset, loff_t len)
 {
+<<<<<<< HEAD
 	return sys_fadvise64_64(fd, offset, len, advice);
+=======
+	return ksys_fadvise64_64(fd, offset, len, advice);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel 10 Gigabit PCI Express Linux driver
@@ -24,6 +25,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Copyright(c) 1999 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _IXGBE_FCOE_H
 #define _IXGBE_FCOE_H
@@ -45,6 +50,10 @@
 #define IXGBE_FCBUFF_MAX	65536	/* 64KB max */
 #define IXGBE_FCBUFF_MIN	4096	/* 4KB min */
 #define IXGBE_FCOE_DDP_MAX	512	/* 9 bits xid */
+<<<<<<< HEAD
+=======
+#define IXGBE_FCOE_DDP_MAX_X550	2048	/* 11 bits xid */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Default traffic class to use for FCoE */
 #define IXGBE_FCOE_DEFTC	3
@@ -62,6 +71,7 @@ struct ixgbe_fcoe_ddp {
 	struct scatterlist *sgl;
 	dma_addr_t udp;
 	u64 *udl;
+<<<<<<< HEAD
 	struct pci_pool *pool;
 };
 
@@ -78,6 +88,27 @@ struct ixgbe_fcoe {
 #ifdef CONFIG_IXGBE_DCB
 	u8 up;
 #endif
+=======
+	struct dma_pool *pool;
+};
+
+/* per cpu variables */
+struct ixgbe_fcoe_ddp_pool {
+	struct dma_pool *pool;
+	u64 noddp;
+	u64 noddp_ext_buff;
+};
+
+struct ixgbe_fcoe {
+	struct ixgbe_fcoe_ddp_pool __percpu *ddp_pool;
+	atomic_t refcnt;
+	spinlock_t lock;
+	struct ixgbe_fcoe_ddp ddp[IXGBE_FCOE_DDP_MAX_X550];
+	void *extra_ddp_buffer;
+	dma_addr_t extra_ddp_buffer_dma;
+	unsigned long mode;
+	u8 up;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif /* _IXGBE_FCOE_H */

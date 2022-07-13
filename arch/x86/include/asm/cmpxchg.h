@@ -1,11 +1,23 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef ASM_X86_CMPXCHG_H
 #define ASM_X86_CMPXCHG_H
 
 #include <linux/compiler.h>
+<<<<<<< HEAD
 #include <asm/alternative.h> /* Provides LOCK_PREFIX */
 
 /*
  * Non-existant functions to indicate usage errors at link time
+=======
+#include <asm/cpufeatures.h>
+#include <asm/alternative.h> /* Provides LOCK_PREFIX */
+
+/*
+ * Non-existent functions to indicate usage errors at link time
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * (or compile-time if the compiler implements __compiletime_error().
  */
 extern void __xchg_wrong_size(void)
@@ -20,7 +32,11 @@ extern void __add_wrong_size(void)
 /*
  * Constants for operation sizes. On 32-bit, the 64-bit size it set to
  * -1 because sizeof will never return -1, thereby making those switch
+<<<<<<< HEAD
  * case statements guaranteeed dead code which the compiler will
+=======
+ * case statements guaranteed dead code which the compiler will
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * eliminate, and allowing the "missing symbol in the default case" to
  * indicate a usage error.
  */
@@ -35,7 +51,11 @@ extern void __add_wrong_size(void)
 
 /* 
  * An exchange-type operation, which takes a value and a pointer, and
+<<<<<<< HEAD
  * returns a the old value.
+=======
+ * returns the old value.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define __xchg_op(ptr, arg, op, lock)					\
 	({								\
@@ -73,7 +93,11 @@ extern void __add_wrong_size(void)
  * use "asm volatile" and "memory" clobbers to prevent gcc from moving
  * information around.
  */
+<<<<<<< HEAD
 #define xchg(ptr, v)	__xchg_op((ptr), (v), xchg, "")
+=======
+#define arch_xchg(ptr, v)	__xchg_op((ptr), (v), xchg, "")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Atomic compare and exchange.  Compare OLD with MEM, if identical,
@@ -138,6 +162,7 @@ extern void __add_wrong_size(void)
 	__raw_cmpxchg((ptr), (old), (new), (size), "")
 
 #ifdef CONFIG_X86_32
+<<<<<<< HEAD
 # include "cmpxchg_32.h"
 #else
 # include "cmpxchg_64.h"
@@ -153,12 +178,110 @@ extern void __add_wrong_size(void)
 #define cmpxchg_local(ptr, old, new)					\
 	__cmpxchg_local(ptr, old, new, sizeof(*(ptr)))
 #endif
+=======
+# include <asm/cmpxchg_32.h>
+#else
+# include <asm/cmpxchg_64.h>
+#endif
+
+#define arch_cmpxchg(ptr, old, new)					\
+	__cmpxchg(ptr, old, new, sizeof(*(ptr)))
+
+#define arch_sync_cmpxchg(ptr, old, new)				\
+	__sync_cmpxchg(ptr, old, new, sizeof(*(ptr)))
+
+#define arch_cmpxchg_local(ptr, old, new)				\
+	__cmpxchg_local(ptr, old, new, sizeof(*(ptr)))
+
+
+#define __raw_try_cmpxchg(_ptr, _pold, _new, size, lock)		\
+({									\
+	bool success;							\
+	__typeof__(_ptr) _old = (__typeof__(_ptr))(_pold);		\
+	__typeof__(*(_ptr)) __old = *_old;				\
+	__typeof__(*(_ptr)) __new = (_new);				\
+	switch (size) {							\
+	case __X86_CASE_B:						\
+	{								\
+		volatile u8 *__ptr = (volatile u8 *)(_ptr);		\
+		asm volatile(lock "cmpxchgb %[new], %[ptr]"		\
+			     CC_SET(z)					\
+			     : CC_OUT(z) (success),			\
+			       [ptr] "+m" (*__ptr),			\
+			       [old] "+a" (__old)			\
+			     : [new] "q" (__new)			\
+			     : "memory");				\
+		break;							\
+	}								\
+	case __X86_CASE_W:						\
+	{								\
+		volatile u16 *__ptr = (volatile u16 *)(_ptr);		\
+		asm volatile(lock "cmpxchgw %[new], %[ptr]"		\
+			     CC_SET(z)					\
+			     : CC_OUT(z) (success),			\
+			       [ptr] "+m" (*__ptr),			\
+			       [old] "+a" (__old)			\
+			     : [new] "r" (__new)			\
+			     : "memory");				\
+		break;							\
+	}								\
+	case __X86_CASE_L:						\
+	{								\
+		volatile u32 *__ptr = (volatile u32 *)(_ptr);		\
+		asm volatile(lock "cmpxchgl %[new], %[ptr]"		\
+			     CC_SET(z)					\
+			     : CC_OUT(z) (success),			\
+			       [ptr] "+m" (*__ptr),			\
+			       [old] "+a" (__old)			\
+			     : [new] "r" (__new)			\
+			     : "memory");				\
+		break;							\
+	}								\
+	case __X86_CASE_Q:						\
+	{								\
+		volatile u64 *__ptr = (volatile u64 *)(_ptr);		\
+		asm volatile(lock "cmpxchgq %[new], %[ptr]"		\
+			     CC_SET(z)					\
+			     : CC_OUT(z) (success),			\
+			       [ptr] "+m" (*__ptr),			\
+			       [old] "+a" (__old)			\
+			     : [new] "r" (__new)			\
+			     : "memory");				\
+		break;							\
+	}								\
+	default:							\
+		__cmpxchg_wrong_size();					\
+	}								\
+	if (unlikely(!success))						\
+		*_old = __old;						\
+	likely(success);						\
+})
+
+#define __try_cmpxchg(ptr, pold, new, size)				\
+	__raw_try_cmpxchg((ptr), (pold), (new), (size), LOCK_PREFIX)
+
+#define __sync_try_cmpxchg(ptr, pold, new, size)			\
+	__raw_try_cmpxchg((ptr), (pold), (new), (size), "lock; ")
+
+#define __try_cmpxchg_local(ptr, pold, new, size)			\
+	__raw_try_cmpxchg((ptr), (pold), (new), (size), "")
+
+#define arch_try_cmpxchg(ptr, pold, new) 				\
+	__try_cmpxchg((ptr), (pold), (new), sizeof(*(ptr)))
+
+#define arch_sync_try_cmpxchg(ptr, pold, new) 				\
+	__sync_try_cmpxchg((ptr), (pold), (new), sizeof(*(ptr)))
+
+#define arch_try_cmpxchg_local(ptr, pold, new)				\
+	__try_cmpxchg_local((ptr), (pold), (new), sizeof(*(ptr)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * xadd() adds "inc" to "*ptr" and atomically returns the previous
  * value of "*ptr".
  *
  * xadd() is locked when multiple CPUs are online
+<<<<<<< HEAD
  * xadd_sync() is always locked
  * xadd_local() is never locked
  */
@@ -229,5 +352,10 @@ extern void __add_wrong_size(void)
 
 #define cmpxchg_double_local(p1, p2, o1, o2, n1, n2) \
 	__cmpxchg_double(, p1, p2, o1, o2, n1, n2)
+=======
+ */
+#define __xadd(ptr, inc, lock)	__xchg_op((ptr), (inc), xadd, lock)
+#define xadd(ptr, inc)		__xadd((ptr), (inc), LOCK_PREFIX)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* ASM_X86_CMPXCHG_H */

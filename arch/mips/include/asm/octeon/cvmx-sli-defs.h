@@ -4,7 +4,11 @@
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
  *
+<<<<<<< HEAD
  * Copyright (c) 2003-2011 Cavium Networks
+=======
+ * Copyright (c) 2003-2017 Cavium, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
@@ -28,6 +32,7 @@
 #ifndef __CVMX_SLI_DEFS_H__
 #define __CVMX_SLI_DEFS_H__
 
+<<<<<<< HEAD
 #define CVMX_SLI_BIST_STATUS (0x0000000000000580ull)
 #define CVMX_SLI_CTL_PORTX(offset) (0x0000000000000050ull + ((offset) & 3) * 16)
 #define CVMX_SLI_CTL_STATUS (0x0000000000000570ull)
@@ -212,10 +217,37 @@ union cvmx_sli_bist_status {
 	struct cvmx_sli_bist_status_s cn68xx;
 	struct cvmx_sli_bist_status_s cn68xxp1;
 };
+=======
+#include <uapi/asm/bitfield.h>
+
+#define CVMX_SLI_PCIE_MSI_RCV CVMX_SLI_PCIE_MSI_RCV_FUNC()
+static inline uint64_t CVMX_SLI_PCIE_MSI_RCV_FUNC(void)
+{
+	switch (cvmx_get_octeon_family()) {
+	case OCTEON_CNF71XX & OCTEON_FAMILY_MASK:
+	case OCTEON_CN61XX & OCTEON_FAMILY_MASK:
+	case OCTEON_CN63XX & OCTEON_FAMILY_MASK:
+	case OCTEON_CN66XX & OCTEON_FAMILY_MASK:
+	case OCTEON_CN68XX & OCTEON_FAMILY_MASK:
+	case OCTEON_CN70XX & OCTEON_FAMILY_MASK:
+		return 0x0000000000003CB0ull;
+	case OCTEON_CNF75XX & OCTEON_FAMILY_MASK:
+	case OCTEON_CN73XX & OCTEON_FAMILY_MASK:
+	case OCTEON_CN78XX & OCTEON_FAMILY_MASK:
+		if (OCTEON_IS_MODEL(OCTEON_CN78XX_PASS1_X))
+			return 0x0000000000003CB0ull;
+		fallthrough;
+	default:
+		return 0x0000000000023CB0ull;
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 union cvmx_sli_ctl_portx {
 	uint64_t u64;
 	struct cvmx_sli_ctl_portx_s {
+<<<<<<< HEAD
 		uint64_t reserved_22_63:42;
 		uint64_t intd:1;
 		uint64_t intc:1;
@@ -1006,11 +1038,32 @@ union cvmx_sli_mac_number {
 	struct cvmx_sli_mac_number_s cn66xx;
 	struct cvmx_sli_mac_number_cn63xx cn68xx;
 	struct cvmx_sli_mac_number_cn63xx cn68xxp1;
+=======
+		__BITFIELD_FIELD(uint64_t reserved_22_63:42,
+		__BITFIELD_FIELD(uint64_t intd:1,
+		__BITFIELD_FIELD(uint64_t intc:1,
+		__BITFIELD_FIELD(uint64_t intb:1,
+		__BITFIELD_FIELD(uint64_t inta:1,
+		__BITFIELD_FIELD(uint64_t dis_port:1,
+		__BITFIELD_FIELD(uint64_t waitl_com:1,
+		__BITFIELD_FIELD(uint64_t intd_map:2,
+		__BITFIELD_FIELD(uint64_t intc_map:2,
+		__BITFIELD_FIELD(uint64_t intb_map:2,
+		__BITFIELD_FIELD(uint64_t inta_map:2,
+		__BITFIELD_FIELD(uint64_t ctlp_ro:1,
+		__BITFIELD_FIELD(uint64_t reserved_6_6:1,
+		__BITFIELD_FIELD(uint64_t ptlp_ro:1,
+		__BITFIELD_FIELD(uint64_t reserved_1_4:4,
+		__BITFIELD_FIELD(uint64_t wait_com:1,
+		;))))))))))))))))
+	} s;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_sli_mem_access_ctl {
 	uint64_t u64;
 	struct cvmx_sli_mem_access_ctl_s {
+<<<<<<< HEAD
 		uint64_t reserved_14_63:50;
 		uint64_t max_word:4;
 		uint64_t timer:10;
@@ -1974,11 +2027,19 @@ union cvmx_sli_portx_pkind {
 		uint64_t reserved_6_7:2;
 		uint64_t pkind:6;
 	} cn68xxp1;
+=======
+		__BITFIELD_FIELD(uint64_t reserved_14_63:50,
+		__BITFIELD_FIELD(uint64_t max_word:4,
+		__BITFIELD_FIELD(uint64_t timer:10,
+		;)))
+	} s;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 union cvmx_sli_s2m_portx_ctl {
 	uint64_t u64;
 	struct cvmx_sli_s2m_portx_ctl_s {
+<<<<<<< HEAD
 		uint64_t reserved_5_63:59;
 		uint64_t wind_d:1;
 		uint64_t bar0_d:1;
@@ -2167,6 +2228,43 @@ union cvmx_sli_window_ctl {
 	struct cvmx_sli_window_ctl_s cn66xx;
 	struct cvmx_sli_window_ctl_s cn68xx;
 	struct cvmx_sli_window_ctl_s cn68xxp1;
+=======
+		__BITFIELD_FIELD(uint64_t reserved_5_63:59,
+		__BITFIELD_FIELD(uint64_t wind_d:1,
+		__BITFIELD_FIELD(uint64_t bar0_d:1,
+		__BITFIELD_FIELD(uint64_t mrrs:3,
+		;))))
+	} s;
+};
+
+union cvmx_sli_mem_access_subidx {
+	uint64_t u64;
+	struct cvmx_sli_mem_access_subidx_s {
+		__BITFIELD_FIELD(uint64_t reserved_43_63:21,
+		__BITFIELD_FIELD(uint64_t zero:1,
+		__BITFIELD_FIELD(uint64_t port:3,
+		__BITFIELD_FIELD(uint64_t nmerge:1,
+		__BITFIELD_FIELD(uint64_t esr:2,
+		__BITFIELD_FIELD(uint64_t esw:2,
+		__BITFIELD_FIELD(uint64_t wtype:2,
+		__BITFIELD_FIELD(uint64_t rtype:2,
+		__BITFIELD_FIELD(uint64_t ba:30,
+		;)))))))))
+	} s;
+	struct cvmx_sli_mem_access_subidx_cn68xx {
+		__BITFIELD_FIELD(uint64_t reserved_43_63:21,
+		__BITFIELD_FIELD(uint64_t zero:1,
+		__BITFIELD_FIELD(uint64_t port:3,
+		__BITFIELD_FIELD(uint64_t nmerge:1,
+		__BITFIELD_FIELD(uint64_t esr:2,
+		__BITFIELD_FIELD(uint64_t esw:2,
+		__BITFIELD_FIELD(uint64_t wtype:2,
+		__BITFIELD_FIELD(uint64_t rtype:2,
+		__BITFIELD_FIELD(uint64_t ba:28,
+		__BITFIELD_FIELD(uint64_t reserved_0_1:2,
+		;))))))))))
+	} cn68xx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

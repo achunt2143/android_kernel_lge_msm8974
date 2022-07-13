@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SCSI low-level driver for the 53c94 SCSI bus adaptor found
  * on Power Macintosh computers, controlling the external SCSI chain.
@@ -18,11 +22,19 @@
 #include <linux/spinlock.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/dbdma.h>
 #include <asm/io.h>
 #include <asm/pgtable.h>
 #include <asm/prom.h>
 #include <asm/pci-bridge.h>
+=======
+#include <linux/pci.h>
+#include <linux/pgtable.h>
+#include <asm/dbdma.h>
+#include <asm/io.h>
+#include <asm/prom.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/macio.h>
 
 #include <scsi/scsi.h>
@@ -65,8 +77,12 @@ static irqreturn_t do_mac53c94_interrupt(int, void *);
 static void cmd_done(struct fsc_state *, int result);
 static void set_dma_cmds(struct fsc_state *, struct scsi_cmnd *);
 
+<<<<<<< HEAD
 
 static int mac53c94_queue_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd *))
+=======
+static int mac53c94_queue_lck(struct scsi_cmnd *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fsc_state *state;
 
@@ -82,7 +98,10 @@ static int mac53c94_queue_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cm
 	}
 #endif
 
+<<<<<<< HEAD
 	cmd->scsi_done = done;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd->host_scribble = NULL;
 
 	state = (struct fsc_state *) cmd->device->host->hostdata;
@@ -126,7 +145,10 @@ static void mac53c94_init(struct fsc_state *state)
 {
 	struct mac53c94_regs __iomem *regs = state->regs;
 	struct dbdma_regs __iomem *dma = state->dma;
+<<<<<<< HEAD
 	int x;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	writeb(state->host->this_id | CF1_PAR_ENABLE, &regs->config1);
 	writeb(TIMO_VAL(250), &regs->sel_timeout);	/* 250ms */
@@ -135,7 +157,11 @@ static void mac53c94_init(struct fsc_state *state)
 	writeb(0, &regs->config3);
 	writeb(0, &regs->sync_period);
 	writeb(0, &regs->sync_offset);
+<<<<<<< HEAD
 	x = readb(&regs->interrupt);
+=======
+	(void)readb(&regs->interrupt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	writel((RUN|PAUSE|FLUSH|WAKE) << 16, &dma->control);
 }
 
@@ -195,7 +221,12 @@ static void mac53c94_interrupt(int irq, void *dev_id)
 	struct fsc_state *state = (struct fsc_state *) dev_id;
 	struct mac53c94_regs __iomem *regs = state->regs;
 	struct dbdma_regs __iomem *dma = state->dma;
+<<<<<<< HEAD
 	struct scsi_cmnd *cmd = state->current_req;
+=======
+	struct scsi_cmnd *const cmd = state->current_req;
+	struct mac53c94_cmd_priv *const mcmd = mac53c94_priv(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int nb, stat, seq, intr;
 	static int mac53c94_errors;
 
@@ -235,7 +266,11 @@ static void mac53c94_interrupt(int irq, void *dev_id)
 		++mac53c94_errors;
 		writeb(CMD_NOP + CMD_DMA_MODE, &regs->command);
 	}
+<<<<<<< HEAD
 	if (cmd == 0) {
+=======
+	if (!cmd) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_DEBUG "53c94: interrupt with no command active?\n");
 		return;
 	}
@@ -265,10 +300,17 @@ static void mac53c94_interrupt(int irq, void *dev_id)
 		/* set DMA controller going if any data to transfer */
 		if ((stat & (STAT_MSG|STAT_CD)) == 0
 		    && (scsi_sg_count(cmd) > 0 || scsi_bufflen(cmd))) {
+<<<<<<< HEAD
 			nb = cmd->SCp.this_residual;
 			if (nb > 0xfff0)
 				nb = 0xfff0;
 			cmd->SCp.this_residual -= nb;
+=======
+			nb = mcmd->this_residual;
+			if (nb > 0xfff0)
+				nb = 0xfff0;
+			mcmd->this_residual -= nb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			writeb(nb, &regs->count_lo);
 			writeb(nb >> 8, &regs->count_mid);
 			writeb(CMD_DMA_MODE + CMD_NOP, &regs->command);
@@ -295,6 +337,7 @@ static void mac53c94_interrupt(int irq, void *dev_id)
 			cmd_done(state, DID_ERROR << 16);
 			return;
 		}
+<<<<<<< HEAD
 		if (cmd->SCp.this_residual != 0
 		    && (stat & (STAT_MSG|STAT_CD)) == 0) {
 			/* Set up the count regs to transfer more */
@@ -302,6 +345,15 @@ static void mac53c94_interrupt(int irq, void *dev_id)
 			if (nb > 0xfff0)
 				nb = 0xfff0;
 			cmd->SCp.this_residual -= nb;
+=======
+		if (mcmd->this_residual != 0
+		    && (stat & (STAT_MSG|STAT_CD)) == 0) {
+			/* Set up the count regs to transfer more */
+			nb = mcmd->this_residual;
+			if (nb > 0xfff0)
+				nb = 0xfff0;
+			mcmd->this_residual -= nb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			writeb(nb, &regs->count_lo);
 			writeb(nb >> 8, &regs->count_mid);
 			writeb(CMD_DMA_MODE + CMD_NOP, &regs->command);
@@ -323,9 +375,14 @@ static void mac53c94_interrupt(int irq, void *dev_id)
 			cmd_done(state, DID_ERROR << 16);
 			return;
 		}
+<<<<<<< HEAD
 		cmd->SCp.Status = readb(&regs->fifo);
 		cmd->SCp.Message = readb(&regs->fifo);
 		cmd->result = CMD_ACCEPT_MSG;
+=======
+		mcmd->status = readb(&regs->fifo);
+		mcmd->message = readb(&regs->fifo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writeb(CMD_ACCEPT_MSG, &regs->command);
 		state->phase = busfreeing;
 		break;
@@ -333,8 +390,12 @@ static void mac53c94_interrupt(int irq, void *dev_id)
 		if (intr != INTR_DISCONNECT) {
 			printk(KERN_DEBUG "got intr %x when expected disconnect\n", intr);
 		}
+<<<<<<< HEAD
 		cmd_done(state, (DID_OK << 16) + (cmd->SCp.Message << 8)
 			 + cmd->SCp.Status);
+=======
+		cmd_done(state, (DID_OK << 16) + (mcmd->message << 8) + mcmd->status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		printk(KERN_DEBUG "don't know about phase %d\n", state->phase);
@@ -346,9 +407,15 @@ static void cmd_done(struct fsc_state *state, int result)
 	struct scsi_cmnd *cmd;
 
 	cmd = state->current_req;
+<<<<<<< HEAD
 	if (cmd != 0) {
 		cmd->result = result;
 		(*cmd->scsi_done)(cmd);
+=======
+	if (cmd) {
+		cmd->result = result;
+		scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		state->current_req = NULL;
 	}
 	state->phase = idle;
@@ -382,20 +449,35 @@ static void set_dma_cmds(struct fsc_state *state, struct scsi_cmnd *cmd)
 		if (dma_len > 0xffff)
 			panic("mac53c94: scatterlist element >= 64k");
 		total += dma_len;
+<<<<<<< HEAD
 		st_le16(&dcmds->req_count, dma_len);
 		st_le16(&dcmds->command, dma_cmd);
 		st_le32(&dcmds->phy_addr, dma_addr);
+=======
+		dcmds->req_count = cpu_to_le16(dma_len);
+		dcmds->command = cpu_to_le16(dma_cmd);
+		dcmds->phy_addr = cpu_to_le32(dma_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dcmds->xfer_status = 0;
 		++dcmds;
 	}
 
 	dma_cmd += OUTPUT_LAST - OUTPUT_MORE;
+<<<<<<< HEAD
 	st_le16(&dcmds[-1].command, dma_cmd);
 	st_le16(&dcmds->command, DBDMA_STOP);
 	cmd->SCp.this_residual = total;
 }
 
 static struct scsi_host_template mac53c94_template = {
+=======
+	dcmds[-1].command = cpu_to_le16(dma_cmd);
+	dcmds->command = cpu_to_le16(DBDMA_STOP);
+	mac53c94_priv(cmd)->this_residual = total;
+}
+
+static const struct scsi_host_template mac53c94_template = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.proc_name	= "53c94",
 	.name		= "53C94",
 	.queuecommand	= mac53c94_queue,
@@ -403,8 +485,13 @@ static struct scsi_host_template mac53c94_template = {
 	.can_queue	= 1,
 	.this_id	= 7,
 	.sg_tablesize	= SG_ALL,
+<<<<<<< HEAD
 	.cmd_per_lun	= 1,
 	.use_clustering	= DISABLE_CLUSTERING,
+=======
+	.max_segment_size = 65535,
+	.cmd_size	= sizeof(struct mac53c94_cmd_priv),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int mac53c94_probe(struct macio_dev *mdev, const struct of_device_id *match)
@@ -449,15 +536,24 @@ static int mac53c94_probe(struct macio_dev *mdev, const struct of_device_id *mat
 		ioremap(macio_resource_start(mdev, 1), 0x1000);
 	state->dmaintr = macio_irq(mdev, 1);
 	if (state->regs == NULL || state->dma == NULL) {
+<<<<<<< HEAD
 		printk(KERN_ERR "mac53c94: ioremap failed for %s\n",
 		       node->full_name);
+=======
+		printk(KERN_ERR "mac53c94: ioremap failed for %pOF\n", node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free;
 	}
 
 	clkprop = of_get_property(node, "clock-frequency", &proplen);
        	if (clkprop == NULL || proplen != sizeof(int)) {
+<<<<<<< HEAD
        		printk(KERN_ERR "%s: can't get clock frequency, "
        		       "assuming 25MHz\n", node->full_name);
+=======
+       		printk(KERN_ERR "%pOF: can't get clock frequency, "
+       		       "assuming 25MHz\n", node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
        		state->clk_freq = 25000000;
        	} else
        		state->clk_freq = *(int *)clkprop;
@@ -466,6 +562,7 @@ static int mac53c94_probe(struct macio_dev *mdev, const struct of_device_id *mat
        	 * +1 to allow for aligning.
 	 * XXX FIXME: Use DMA consistent routines
 	 */
+<<<<<<< HEAD
        	dma_cmd_space = kmalloc((host->sg_tablesize + 2) *
        				sizeof(struct dbdma_cmd), GFP_KERNEL);
        	if (dma_cmd_space == 0) {
@@ -474,6 +571,18 @@ static int mac53c94_probe(struct macio_dev *mdev, const struct of_device_id *mat
 		rc = -ENOMEM;
        		goto out_free;
        	}
+=======
+       	dma_cmd_space = kmalloc_array(host->sg_tablesize + 2,
+					     sizeof(struct dbdma_cmd),
+					     GFP_KERNEL);
+	if (!dma_cmd_space) {
+		printk(KERN_ERR "mac53c94: couldn't allocate dma "
+		       "command space for %pOF\n", node);
+		rc = -ENOMEM;
+		goto out_free;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	state->dma_cmds = (struct dbdma_cmd *)DBDMA_ALIGN(dma_cmd_space);
 	memset(state->dma_cmds, 0, (host->sg_tablesize + 1)
 	       * sizeof(struct dbdma_cmd));
@@ -482,8 +591,13 @@ static int mac53c94_probe(struct macio_dev *mdev, const struct of_device_id *mat
 	mac53c94_init(state);
 
 	if (request_irq(state->intr, do_mac53c94_interrupt, 0, "53C94",state)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "mac53C94: can't get irq %d for %s\n",
 		       state->intr, node->full_name);
+=======
+		printk(KERN_ERR "mac53C94: can't get irq %d for %pOF\n",
+		       state->intr, node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free_dma;
 	}
 
@@ -510,7 +624,11 @@ static int mac53c94_probe(struct macio_dev *mdev, const struct of_device_id *mat
 	return rc;
 }
 
+<<<<<<< HEAD
 static int mac53c94_remove(struct macio_dev *mdev)
+=======
+static void mac53c94_remove(struct macio_dev *mdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fsc_state *fp = (struct fsc_state *)macio_get_drvdata(mdev);
 	struct Scsi_Host *host = fp->host;
@@ -528,11 +646,16 @@ static int mac53c94_remove(struct macio_dev *mdev)
 	scsi_host_put(host);
 
 	macio_release_resources(mdev);
+<<<<<<< HEAD
 
 	return 0;
 }
 
 
+=======
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct of_device_id mac53c94_match[] = 
 {
 	{

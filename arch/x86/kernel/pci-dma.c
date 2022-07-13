@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <linux/dma-mapping.h>
 #include <linux/dma-debug.h>
 #include <linux/dmar.h>
@@ -6,11 +7,24 @@
 #include <linux/gfp.h>
 #include <linux/pci.h>
 #include <linux/kmemleak.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/dma-map-ops.h>
+#include <linux/dma-direct.h>
+#include <linux/iommu.h>
+#include <linux/dmar.h>
+#include <linux/export.h>
+#include <linux/memblock.h>
+#include <linux/gfp.h>
+#include <linux/pci.h>
+#include <linux/amd-iommu.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/proto.h>
 #include <asm/dma.h>
 #include <asm/iommu.h>
 #include <asm/gart.h>
+<<<<<<< HEAD
 #include <asm/calgary.h>
 #include <asm/x86_init.h>
 #include <asm/iommu_table.h>
@@ -22,6 +36,18 @@ EXPORT_SYMBOL(dma_ops);
 
 static int iommu_sac_force __read_mostly;
 
+=======
+#include <asm/x86_init.h>
+
+#include <xen/xen.h>
+#include <xen/swiotlb-xen.h>
+
+static bool disable_dac_quirk __read_mostly;
+
+const struct dma_map_ops *dma_ops;
+EXPORT_SYMBOL(dma_ops);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_IOMMU_DEBUG
 int panic_on_overflow __read_mostly = 1;
 int force_iommu __read_mostly = 1;
@@ -36,6 +62,7 @@ int no_iommu __read_mostly;
 /* Set this to 1 if there is a HW IOMMU in the system */
 int iommu_detected __read_mostly = 0;
 
+<<<<<<< HEAD
 /*
  * This variable becomes 1 if iommu=pt is passed on the kernel command line.
  * If this variable is 1, IOMMU implementations do no DMA translation for
@@ -143,6 +170,81 @@ void dma_generic_free_coherent(struct device *dev, size_t size, void *vaddr,
 
 /*
  * See <Documentation/x86/x86_64/boot-options.txt> for the iommu kernel
+=======
+#ifdef CONFIG_SWIOTLB
+bool x86_swiotlb_enable;
+static unsigned int x86_swiotlb_flags;
+
+static void __init pci_swiotlb_detect(void)
+{
+	/* don't initialize swiotlb if iommu=off (no_iommu=1) */
+	if (!no_iommu && max_possible_pfn > MAX_DMA32_PFN)
+		x86_swiotlb_enable = true;
+
+	/*
+	 * Set swiotlb to 1 so that bounce buffers are allocated and used for
+	 * devices that can't support DMA to encrypted memory.
+	 */
+	if (cc_platform_has(CC_ATTR_HOST_MEM_ENCRYPT))
+		x86_swiotlb_enable = true;
+
+	/*
+	 * Guest with guest memory encryption currently perform all DMA through
+	 * bounce buffers as the hypervisor can't access arbitrary VM memory
+	 * that is not explicitly shared with it.
+	 */
+	if (cc_platform_has(CC_ATTR_GUEST_MEM_ENCRYPT)) {
+		x86_swiotlb_enable = true;
+		x86_swiotlb_flags |= SWIOTLB_FORCE;
+	}
+}
+#else
+static inline void __init pci_swiotlb_detect(void)
+{
+}
+#define x86_swiotlb_flags 0
+#endif /* CONFIG_SWIOTLB */
+
+#ifdef CONFIG_SWIOTLB_XEN
+static bool xen_swiotlb_enabled(void)
+{
+	return xen_initial_domain() || x86_swiotlb_enable ||
+		(IS_ENABLED(CONFIG_XEN_PCIDEV_FRONTEND) && xen_pv_pci_possible);
+}
+
+static void __init pci_xen_swiotlb_init(void)
+{
+	if (!xen_swiotlb_enabled())
+		return;
+	x86_swiotlb_enable = true;
+	x86_swiotlb_flags |= SWIOTLB_ANY;
+	swiotlb_init_remap(true, x86_swiotlb_flags, xen_swiotlb_fixup);
+	dma_ops = &xen_swiotlb_dma_ops;
+	if (IS_ENABLED(CONFIG_PCI))
+		pci_request_acs();
+}
+#else
+static inline void __init pci_xen_swiotlb_init(void)
+{
+}
+#endif /* CONFIG_SWIOTLB_XEN */
+
+void __init pci_iommu_alloc(void)
+{
+	if (xen_pv_domain()) {
+		pci_xen_swiotlb_init();
+		return;
+	}
+	pci_swiotlb_detect();
+	gart_iommu_hole_init();
+	amd_iommu_detect();
+	detect_intel_iommu();
+	swiotlb_init(x86_swiotlb_enable, x86_swiotlb_flags);
+}
+
+/*
+ * See <Documentation/arch/x86/x86_64/boot-options.rst> for the iommu kernel
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * parameter documentation.
  */
 static __init int iommu_setup(char *p)
@@ -178,6 +280,7 @@ static __init int iommu_setup(char *p)
 		if (!strncmp(p, "nomerge", 7))
 			iommu_merge = 0;
 		if (!strncmp(p, "forcesac", 8))
+<<<<<<< HEAD
 			iommu_sac_force = 1;
 		if (!strncmp(p, "allowdac", 8))
 			forbid_dac = 0;
@@ -185,10 +288,20 @@ static __init int iommu_setup(char *p)
 			forbid_dac = 1;
 		if (!strncmp(p, "usedac", 6)) {
 			forbid_dac = -1;
+=======
+			pr_warn("forcesac option ignored.\n");
+		if (!strncmp(p, "allowdac", 8))
+			pr_warn("allowdac option ignored.\n");
+		if (!strncmp(p, "nodac", 5))
+			pr_warn("nodac option ignored.\n");
+		if (!strncmp(p, "usedac", 6)) {
+			disable_dac_quirk = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 		}
 #ifdef CONFIG_SWIOTLB
 		if (!strncmp(p, "soft", 4))
+<<<<<<< HEAD
 			swiotlb = 1;
 #endif
 		if (!strncmp(p, "pt", 2))
@@ -203,6 +316,17 @@ static __init int iommu_setup(char *p)
 			use_calgary = 1;
 #endif /* CONFIG_CALGARY_IOMMU */
 
+=======
+			x86_swiotlb_enable = true;
+#endif
+		if (!strncmp(p, "pt", 2))
+			iommu_set_default_passthrough(true);
+		if (!strncmp(p, "nopt", 4))
+			iommu_set_default_translated(true);
+
+		gart_parse_options(p);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p += strcspn(p, ",");
 		if (*p == ',')
 			++p;
@@ -211,6 +335,7 @@ static __init int iommu_setup(char *p)
 }
 early_param("iommu", iommu_setup);
 
+<<<<<<< HEAD
 int dma_supported(struct device *dev, u64 mask)
 {
 	struct dma_map_ops *ops = get_dma_ops(dev);
@@ -266,6 +391,21 @@ static int __init pci_iommu_init(void)
 		if (p && (p->flags & IOMMU_DETECTED) && p->late_init)
 			p->late_init();
 	}
+=======
+static int __init pci_iommu_init(void)
+{
+	x86_init.iommu.iommu_init();
+
+#ifdef CONFIG_SWIOTLB
+	/* An IOMMU turned us off. */
+	if (x86_swiotlb_enable) {
+		pr_info("PCI-DMA: Using software bounce buffering for IO (SWIOTLB)\n");
+		swiotlb_print_info();
+	} else {
+		swiotlb_exit();
+	}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -275,11 +415,25 @@ rootfs_initcall(pci_iommu_init);
 #ifdef CONFIG_PCI
 /* Many VIA bridges seem to corrupt data for DAC. Disable it here */
 
+<<<<<<< HEAD
 static __devinit void via_no_dac(struct pci_dev *dev)
 {
 	if (forbid_dac == 0) {
 		dev_info(&dev->dev, "disabling DAC on VIA PCI bridge\n");
 		forbid_dac = 1;
+=======
+static int via_no_dac_cb(struct pci_dev *pdev, void *data)
+{
+	pdev->dev.bus_dma_limit = DMA_BIT_MASK(32);
+	return 0;
+}
+
+static void via_no_dac(struct pci_dev *dev)
+{
+	if (!disable_dac_quirk) {
+		dev_info(&dev->dev, "disabling DAC on VIA PCI bridge\n");
+		pci_walk_bus(dev->subordinate, via_no_dac_cb, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 DECLARE_PCI_FIXUP_CLASS_FINAL(PCI_VENDOR_ID_VIA, PCI_ANY_ID,

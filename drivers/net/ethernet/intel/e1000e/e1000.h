@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel PRO/1000 Linux driver
@@ -25,6 +26,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Copyright(c) 1999 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Linux PRO/1000 Ethernet Driver main header file */
 
@@ -38,10 +43,23 @@
 #include <linux/io.h>
 #include <linux/netdevice.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/pci-aspm.h>
 #include <linux/crc32.h>
 #include <linux/if_vlan.h>
 
+=======
+#include <linux/crc32.h>
+#include <linux/if_vlan.h>
+#include <linux/timecounter.h>
+#include <linux/net_tstamp.h>
+#include <linux/ptp_clock_kernel.h>
+#include <linux/ptp_classify.h>
+#include <linux/mii.h>
+#include <linux/mdio.h>
+#include <linux/mutex.h>
+#include <linux/pm_qos.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "hw.h"
 
 struct e1000_info;
@@ -57,7 +75,10 @@ struct e1000_info;
 #define e_notice(format, arg...) \
 	netdev_notice(adapter->netdev, format, ## arg)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Interrupt modes, as used by the IntMode parameter */
 #define E1000E_INT_MODE_LEGACY		0
 #define E1000E_INT_MODE_MSI		1
@@ -75,9 +96,12 @@ struct e1000_info;
 #define E1000_MIN_ITR_USECS		10 /* 100000 irq/sec */
 #define E1000_MAX_ITR_USECS		10000 /* 100    irq/sec */
 
+<<<<<<< HEAD
 /* Early Receive defines */
 #define E1000_ERT_2048			0x100
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define E1000_FC_PAUSE_TIME		0x0680 /* 858 usec */
 
 /* How many Tx Descriptors do we need to call netif_wake_queue ? */
@@ -89,6 +113,7 @@ struct e1000_info;
 
 #define E1000_MNG_VLAN_NONE		(-1)
 
+<<<<<<< HEAD
 /* Number of packet split data buffers (not including the header buffer) */
 #define PS_PAGE_BUFFERS			(MAX_PS_BUFFERS - 1)
 
@@ -163,10 +188,19 @@ struct e1000_info;
 
 /*
  * Count for polling __E1000_RESET condition every 10-20msec.
+=======
+#define DEFAULT_JUMBO			9234
+
+/* Time to wait before putting the device into D3 if there's no link (in ms). */
+#define LINK_TIMEOUT		100
+
+/* Count for polling __E1000_RESET condition every 10-20msec.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Experimentation has shown the reset can take approximately 210msec.
  */
 #define E1000_CHECK_RESET_COUNT		25
 
+<<<<<<< HEAD
 #define DEFAULT_RDTR			0
 #define DEFAULT_RADV			8
 #define BURST_RDTR			0x20
@@ -174,6 +208,12 @@ struct e1000_info;
 
 /*
  * in the case of WTHRESH, it appears at least the 82571/2 hardware
+=======
+#define PCICFG_DESC_RING_STATUS		0xe4
+#define FLUSH_DESC_REQUIRED		0x100
+
+/* in the case of WTHRESH, it appears at least the 82571/2 hardware
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * writes back 4 descriptors when WTHRESH=5, and 3 descriptors when
  * WTHRESH=4, so a setting of 5 gives the most efficient bus
  * utilization but to avoid possible Tx stalls, set it to 1
@@ -181,6 +221,7 @@ struct e1000_info;
 #define E1000_TXDCTL_DMA_BURST_ENABLE                          \
 	(E1000_TXDCTL_GRAN | /* set descriptor granularity */  \
 	 E1000_TXDCTL_COUNT_DESC |                             \
+<<<<<<< HEAD
 	 (1 << 16) | /* wthresh must be +1 more than desired */\
 	 (1 << 8)  | /* hthresh */                             \
 	 0x1f)       /* pthresh */
@@ -193,6 +234,20 @@ struct e1000_info;
 
 #define E1000_TIDV_FPD (1 << 31)
 #define E1000_RDTR_FPD (1 << 31)
+=======
+	 (1u << 16) | /* wthresh must be +1 more than desired */\
+	 (1u << 8)  | /* hthresh */                             \
+	 0x1f)        /* pthresh */
+
+#define E1000_RXDCTL_DMA_BURST_ENABLE                          \
+	(0x01000000 | /* set descriptor granularity */         \
+	 (4u << 16) | /* set writeback threshold    */         \
+	 (4u << 8)  | /* set prefetch threshold     */         \
+	 0x20)        /* set hthresh                */
+
+#define E1000_TIDV_FPD BIT(31)
+#define E1000_RDTR_FPD BIT(31)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum e1000_boards {
 	board_82571,
@@ -206,6 +261,15 @@ enum e1000_boards {
 	board_ich10lan,
 	board_pchlan,
 	board_pch2lan,
+<<<<<<< HEAD
+=======
+	board_pch_lpt,
+	board_pch_spt,
+	board_pch_cnp,
+	board_pch_tgp,
+	board_pch_adp,
+	board_pch_mtp
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct e1000_ps_page {
@@ -213,8 +277,12 @@ struct e1000_ps_page {
 	u64 dma; /* must be u64 - written to hw */
 };
 
+<<<<<<< HEAD
 /*
  * wrappers around a pointer to a socket buffer,
+=======
+/* wrappers around a pointer to a socket buffer,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * so a DMA handle can be stored along with the buffer
  */
 struct e1000_buffer {
@@ -304,15 +372,25 @@ struct e1000_adapter {
 	u16 tx_itr;
 	u16 rx_itr;
 
+<<<<<<< HEAD
 	/*
 	 * Tx
 	 */
 	struct e1000_ring *tx_ring /* One per active queue */
 						____cacheline_aligned_in_smp;
+=======
+	/* Tx - one ring per active queue */
+	struct e1000_ring *tx_ring ____cacheline_aligned_in_smp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tx_fifo_limit;
 
 	struct napi_struct napi;
 
+<<<<<<< HEAD
+=======
+	unsigned int uncorr_errors;	/* uncorrectable ECC errors */
+	unsigned int corr_errors;	/* correctable ECC errors */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int restart_queue;
 	u32 txd_cmd;
 
@@ -338,6 +416,7 @@ struct e1000_adapter {
 	u32 tx_head_addr;
 	u32 tx_fifo_size;
 	u32 tx_dma_failed;
+<<<<<<< HEAD
 
 	/*
 	 * Rx
@@ -346,6 +425,16 @@ struct e1000_adapter {
 			  int work_to_do) ____cacheline_aligned_in_smp;
 	void (*alloc_rx_buf) (struct e1000_ring *ring, int cleaned_count,
 			      gfp_t gfp);
+=======
+	u32 tx_hwtstamp_timeouts;
+	u32 tx_hwtstamp_skipped;
+
+	/* Rx */
+	bool (*clean_rx)(struct e1000_ring *ring, int *work_done,
+			 int work_to_do) ____cacheline_aligned_in_smp;
+	void (*alloc_rx_buf)(struct e1000_ring *ring, int cleaned_count,
+			     gfp_t gfp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct e1000_ring *rx_ring;
 
 	u32 rx_int_delay;
@@ -359,6 +448,10 @@ struct e1000_adapter {
 	u64 gorc_old;
 	u32 alloc_rx_buff_failed;
 	u32 rx_dma_failed;
+<<<<<<< HEAD
+=======
+	u32 rx_hwtstamp_cleared;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned int rx_ps_pages;
 	u16 rx_ps_bsize0;
@@ -372,7 +465,11 @@ struct e1000_adapter {
 	/* structs defined in e1000_hw.h */
 	struct e1000_hw hw;
 
+<<<<<<< HEAD
 	spinlock_t stats64_lock;
+=======
+	spinlock_t stats64_lock;	/* protects statistics counters */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct e1000_hw_stats stats;
 	struct e1000_phy_info phy_info;
 	struct e1000_phy_stats phy_stats;
@@ -403,11 +500,32 @@ struct e1000_adapter {
 	struct work_struct update_phy_task;
 	struct work_struct print_hang_task;
 
+<<<<<<< HEAD
 	bool idle_check;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int phy_hang_count;
 
 	u16 tx_ring_count;
 	u16 rx_ring_count;
+<<<<<<< HEAD
+=======
+
+	struct hwtstamp_config hwtstamp_config;
+	struct delayed_work systim_overflow_work;
+	struct sk_buff *tx_hwtstamp_skb;
+	unsigned long tx_hwtstamp_start;
+	struct work_struct tx_hwtstamp_work;
+	spinlock_t systim_lock;	/* protects SYSTIML/H regsters */
+	struct cyclecounter cc;
+	struct timecounter tc;
+	struct ptp_clock *ptp_clock;
+	struct ptp_clock_info ptp_clock_info;
+	struct pm_qos_request pm_qos_req;
+	long ptp_delta;
+
+	u16 eee_advert;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct e1000_info {
@@ -422,6 +540,7 @@ struct e1000_info {
 	const struct e1000_nvm_operations *nvm_ops;
 };
 
+<<<<<<< HEAD
 /* hardware capability, feature, and workaround flags */
 #define FLAG_HAS_AMT                      (1 << 0)
 #define FLAG_HAS_FLASH                    (1 << 1)
@@ -469,6 +588,122 @@ struct e1000_info {
 #define FLAG2_NO_DISABLE_RX               (1 << 10)
 #define FLAG2_PCIM2PCI_ARBITER_WA         (1 << 11)
 #define FLAG2_DFLT_CRC_STRIPPING          (1 << 12)
+=======
+s32 e1000e_get_base_timinca(struct e1000_adapter *adapter, u32 *timinca);
+
+/* The system time is maintained by a 64-bit counter comprised of the 32-bit
+ * SYSTIMH and SYSTIML registers.  How the counter increments (and therefore
+ * its resolution) is based on the contents of the TIMINCA register - it
+ * increments every incperiod (bits 31:24) clock ticks by incvalue (bits 23:0).
+ * For the best accuracy, the incperiod should be as small as possible.  The
+ * incvalue is scaled by a factor as large as possible (while still fitting
+ * in bits 23:0) so that relatively small clock corrections can be made.
+ *
+ * As a result, a shift of INCVALUE_SHIFT_n is used to fit a value of
+ * INCVALUE_n into the TIMINCA register allowing 32+8+(24-INCVALUE_SHIFT_n)
+ * bits to count nanoseconds leaving the rest for fractional nonseconds.
+ *
+ * Any given INCVALUE also has an associated maximum adjustment value. This
+ * maximum adjustment value is the largest increase (or decrease) which can be
+ * safely applied without overflowing the INCVALUE. Since INCVALUE has
+ * a maximum range of 24 bits, its largest value is 0xFFFFFF.
+ *
+ * To understand where the maximum value comes from, consider the following
+ * equation:
+ *
+ *   new_incval = base_incval + (base_incval * adjustment) / 1billion
+ *
+ * To avoid overflow that means:
+ *   max_incval = base_incval + (base_incval * max_adj) / billion
+ *
+ * Re-arranging:
+ *   max_adj = floor(((max_incval - base_incval) * 1billion) / 1billion)
+ */
+#define INCVALUE_96MHZ		125
+#define INCVALUE_SHIFT_96MHZ	17
+#define INCPERIOD_SHIFT_96MHZ	2
+#define INCPERIOD_96MHZ		(12 >> INCPERIOD_SHIFT_96MHZ)
+#define MAX_PPB_96MHZ		23999900 /* 23,999,900 ppb */
+
+#define INCVALUE_25MHZ		40
+#define INCVALUE_SHIFT_25MHZ	18
+#define INCPERIOD_25MHZ		1
+#define MAX_PPB_25MHZ		599999900 /* 599,999,900 ppb */
+
+#define INCVALUE_24MHZ		125
+#define INCVALUE_SHIFT_24MHZ	14
+#define INCPERIOD_24MHZ		3
+#define MAX_PPB_24MHZ		999999999 /* 999,999,999 ppb */
+
+#define INCVALUE_38400KHZ	26
+#define INCVALUE_SHIFT_38400KHZ	19
+#define INCPERIOD_38400KHZ	1
+#define MAX_PPB_38400KHZ	230769100 /* 230,769,100 ppb */
+
+/* Another drawback of scaling the incvalue by a large factor is the
+ * 64-bit SYSTIM register overflows more quickly.  This is dealt with
+ * by simply reading the clock before it overflows.
+ *
+ * Clock	ns bits	Overflows after
+ * ~~~~~~	~~~~~~~	~~~~~~~~~~~~~~~
+ * 96MHz	47-bit	2^(47-INCPERIOD_SHIFT_96MHz) / 10^9 / 3600 = 9.77 hrs
+ * 25MHz	46-bit	2^46 / 10^9 / 3600 = 19.55 hours
+ */
+#define E1000_SYSTIM_OVERFLOW_PERIOD	(HZ * 60 * 60 * 4)
+#define E1000_MAX_82574_SYSTIM_REREADS	50
+#define E1000_82574_SYSTIM_EPSILON	(1ULL << 35ULL)
+
+/* hardware capability, feature, and workaround flags */
+#define FLAG_HAS_AMT                      BIT(0)
+#define FLAG_HAS_FLASH                    BIT(1)
+#define FLAG_HAS_HW_VLAN_FILTER           BIT(2)
+#define FLAG_HAS_WOL                      BIT(3)
+/* reserved BIT(4) */
+#define FLAG_HAS_CTRLEXT_ON_LOAD          BIT(5)
+#define FLAG_HAS_SWSM_ON_LOAD             BIT(6)
+#define FLAG_HAS_JUMBO_FRAMES             BIT(7)
+#define FLAG_READ_ONLY_NVM                BIT(8)
+#define FLAG_IS_ICH                       BIT(9)
+#define FLAG_HAS_MSIX                     BIT(10)
+#define FLAG_HAS_SMART_POWER_DOWN         BIT(11)
+#define FLAG_IS_QUAD_PORT_A               BIT(12)
+#define FLAG_IS_QUAD_PORT                 BIT(13)
+#define FLAG_HAS_HW_TIMESTAMP             BIT(14)
+#define FLAG_APME_IN_WUC                  BIT(15)
+#define FLAG_APME_IN_CTRL3                BIT(16)
+#define FLAG_APME_CHECK_PORT_B            BIT(17)
+#define FLAG_DISABLE_FC_PAUSE_TIME        BIT(18)
+#define FLAG_NO_WAKE_UCAST                BIT(19)
+#define FLAG_MNG_PT_ENABLED               BIT(20)
+#define FLAG_RESET_OVERWRITES_LAA         BIT(21)
+#define FLAG_TARC_SPEED_MODE_BIT          BIT(22)
+#define FLAG_TARC_SET_BIT_ZERO            BIT(23)
+#define FLAG_RX_NEEDS_RESTART             BIT(24)
+#define FLAG_LSC_GIG_SPEED_DROP           BIT(25)
+#define FLAG_SMART_POWER_DOWN             BIT(26)
+#define FLAG_MSI_ENABLED                  BIT(27)
+/* reserved BIT(28) */
+#define FLAG_TSO_FORCE                    BIT(29)
+#define FLAG_RESTART_NOW                  BIT(30)
+#define FLAG_MSI_TEST_FAILED              BIT(31)
+
+#define FLAG2_CRC_STRIPPING               BIT(0)
+#define FLAG2_HAS_PHY_WAKEUP              BIT(1)
+#define FLAG2_IS_DISCARDING               BIT(2)
+#define FLAG2_DISABLE_ASPM_L1             BIT(3)
+#define FLAG2_HAS_PHY_STATS               BIT(4)
+#define FLAG2_HAS_EEE                     BIT(5)
+#define FLAG2_DMA_BURST                   BIT(6)
+#define FLAG2_DISABLE_ASPM_L0S            BIT(7)
+#define FLAG2_DISABLE_AIM                 BIT(8)
+#define FLAG2_CHECK_PHY_HANG              BIT(9)
+#define FLAG2_NO_DISABLE_RX               BIT(10)
+#define FLAG2_PCIM2PCI_ARBITER_WA         BIT(11)
+#define FLAG2_DFLT_CRC_STRIPPING          BIT(12)
+#define FLAG2_CHECK_RX_HWTSTAMP           BIT(13)
+#define FLAG2_CHECK_SYSTIM_OVERFLOW       BIT(14)
+#define FLAG2_ENABLE_S0IX_FLOWS           BIT(15)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define E1000_RX_DESC_PS(R, i)	    \
 	(&(((union e1000_rx_desc_packet_split *)((R).desc))[i]))
@@ -493,6 +728,7 @@ enum latency_range {
 };
 
 extern char e1000e_driver_name[];
+<<<<<<< HEAD
 extern const char e1000e_driver_version[];
 
 extern void e1000e_check_options(struct e1000_adapter *adapter);
@@ -519,6 +755,33 @@ extern unsigned int copybreak;
 
 extern char *e1000e_get_hw_dev_name(struct e1000_hw *hw);
 
+=======
+
+void e1000e_check_options(struct e1000_adapter *adapter);
+void e1000e_set_ethtool_ops(struct net_device *netdev);
+
+int e1000e_open(struct net_device *netdev);
+int e1000e_close(struct net_device *netdev);
+void e1000e_up(struct e1000_adapter *adapter);
+void e1000e_down(struct e1000_adapter *adapter, bool reset);
+void e1000e_reinit_locked(struct e1000_adapter *adapter);
+void e1000e_reset(struct e1000_adapter *adapter);
+void e1000e_power_up_phy(struct e1000_adapter *adapter);
+int e1000e_setup_rx_resources(struct e1000_ring *ring);
+int e1000e_setup_tx_resources(struct e1000_ring *ring);
+void e1000e_free_rx_resources(struct e1000_ring *ring);
+void e1000e_free_tx_resources(struct e1000_ring *ring);
+void e1000e_get_stats64(struct net_device *netdev,
+			struct rtnl_link_stats64 *stats);
+void e1000e_set_interrupt_capability(struct e1000_adapter *adapter);
+void e1000e_reset_interrupt_capability(struct e1000_adapter *adapter);
+void e1000e_get_hw_control(struct e1000_adapter *adapter);
+void e1000e_release_hw_control(struct e1000_adapter *adapter);
+void e1000e_write_itr(struct e1000_adapter *adapter, u32 itr);
+
+extern unsigned int copybreak;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct e1000_info e1000_82571_info;
 extern const struct e1000_info e1000_82572_info;
 extern const struct e1000_info e1000_82573_info;
@@ -529,6 +792,7 @@ extern const struct e1000_info e1000_ich9_info;
 extern const struct e1000_info e1000_ich10_info;
 extern const struct e1000_info e1000_pch_info;
 extern const struct e1000_info e1000_pch2_info;
+<<<<<<< HEAD
 extern const struct e1000_info e1000_es2_info;
 
 extern s32 e1000_read_pba_string_generic(struct e1000_hw *hw, u8 *pba_num,
@@ -663,6 +927,21 @@ extern s32 e1000_check_polarity_ife(struct e1000_hw *hw);
 extern s32 e1000_phy_force_speed_duplex_ife(struct e1000_hw *hw);
 extern s32 e1000_check_polarity_igp(struct e1000_hw *hw);
 extern bool e1000_check_phy_82574(struct e1000_hw *hw);
+=======
+extern const struct e1000_info e1000_pch_lpt_info;
+extern const struct e1000_info e1000_pch_spt_info;
+extern const struct e1000_info e1000_pch_cnp_info;
+extern const struct e1000_info e1000_pch_tgp_info;
+extern const struct e1000_info e1000_pch_adp_info;
+extern const struct e1000_info e1000_pch_mtp_info;
+extern const struct e1000_info e1000_es2_info;
+
+void e1000e_ptp_init(struct e1000_adapter *adapter);
+void e1000e_ptp_remove(struct e1000_adapter *adapter);
+
+u64 e1000e_read_systim(struct e1000_adapter *adapter,
+		       struct ptp_system_timestamp *sts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline s32 e1000_phy_hw_reset(struct e1000_hw *hw)
 {
@@ -674,11 +953,20 @@ static inline s32 e1e_rphy(struct e1000_hw *hw, u32 offset, u16 *data)
 	return hw->phy.ops.read_reg(hw, offset, data);
 }
 
+<<<<<<< HEAD
+=======
+static inline s32 e1e_rphy_locked(struct e1000_hw *hw, u32 offset, u16 *data)
+{
+	return hw->phy.ops.read_reg_locked(hw, offset, data);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline s32 e1e_wphy(struct e1000_hw *hw, u32 offset, u16 data)
 {
 	return hw->phy.ops.write_reg(hw, offset, data);
 }
 
+<<<<<<< HEAD
 static inline s32 e1000_get_cable_length(struct e1000_hw *hw)
 {
 	return hw->phy.ops.get_cable_length(hw);
@@ -693,6 +981,14 @@ extern s32 e1000e_validate_nvm_checksum_generic(struct e1000_hw *hw);
 extern void e1000e_release_nvm(struct e1000_hw *hw);
 extern void e1000e_reload_nvm_generic(struct e1000_hw *hw);
 extern s32 e1000_read_mac_addr_generic(struct e1000_hw *hw);
+=======
+static inline s32 e1e_wphy_locked(struct e1000_hw *hw, u32 offset, u16 data)
+{
+	return hw->phy.ops.write_reg_locked(hw, offset, data);
+}
+
+void e1000e_reload_nvm_generic(struct e1000_hw *hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline s32 e1000e_read_mac_addr(struct e1000_hw *hw)
 {
@@ -712,12 +1008,22 @@ static inline s32 e1000e_update_nvm_checksum(struct e1000_hw *hw)
 	return hw->nvm.ops.update(hw);
 }
 
+<<<<<<< HEAD
 static inline s32 e1000_read_nvm(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
+=======
+static inline s32 e1000_read_nvm(struct e1000_hw *hw, u16 offset, u16 words,
+				 u16 *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return hw->nvm.ops.read(hw, offset, words, data);
 }
 
+<<<<<<< HEAD
 static inline s32 e1000_write_nvm(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
+=======
+static inline s32 e1000_write_nvm(struct e1000_hw *hw, u16 offset, u16 words,
+				  u16 *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return hw->nvm.ops.write(hw, offset, words, data);
 }
@@ -727,18 +1033,37 @@ static inline s32 e1000_get_phy_info(struct e1000_hw *hw)
 	return hw->phy.ops.get_info(hw);
 }
 
+<<<<<<< HEAD
 extern bool e1000e_check_mng_mode_generic(struct e1000_hw *hw);
 extern bool e1000e_enable_tx_pkt_filtering(struct e1000_hw *hw);
 extern s32 e1000e_mng_write_dhcp_info(struct e1000_hw *hw, u8 *buffer, u16 length);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u32 __er32(struct e1000_hw *hw, unsigned long reg)
 {
 	return readl(hw->hw_addr + reg);
 }
 
+<<<<<<< HEAD
 static inline void __ew32(struct e1000_hw *hw, unsigned long reg, u32 val)
 {
 	writel(val, hw->hw_addr + reg);
 }
+=======
+#define er32(reg)	__er32(hw, E1000_##reg)
+
+void __ew32(struct e1000_hw *hw, unsigned long reg, u32 val);
+
+#define ew32(reg, val)	__ew32(hw, E1000_##reg, (val))
+
+#define e1e_flush()	er32(STATUS)
+
+#define E1000_WRITE_REG_ARRAY(a, reg, offset, value) \
+	(__ew32((a), (reg + ((offset) << 2)), (value)))
+
+#define E1000_READ_REG_ARRAY(a, reg, offset) \
+	(readl((a)->hw_addr + reg + ((offset) << 2)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _E1000_H_ */

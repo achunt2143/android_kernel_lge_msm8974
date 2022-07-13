@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 /*
  *  include/asm-s390/hardirq.h
  *
  *  S390 version
  *    Copyright (C) 1999,2000 IBM Deutschland Entwicklung GmbH, IBM Corporation
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ *  S390 version
+ *    Copyright IBM Corp. 1999, 2000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Martin Schwidefsky (schwidefsky@de.ibm.com),
  *               Denis Joseph Barrow (djbarrow@de.ibm.com,barrow_dj@yahoo.com)
  *
@@ -15,11 +22,24 @@
 #include <asm/lowcore.h>
 
 #define local_softirq_pending() (S390_lowcore.softirq_pending)
+<<<<<<< HEAD
 
 #define __ARCH_IRQ_STAT
 #define __ARCH_HAS_DO_SOFTIRQ
 #define __ARCH_IRQ_EXIT_IRQS_DISABLED
 
 #define HARDIRQ_BITS	8
+=======
+#define set_softirq_pending(x) (S390_lowcore.softirq_pending = (x))
+#define or_softirq_pending(x)  (S390_lowcore.softirq_pending |= (x))
+
+#define __ARCH_IRQ_STAT
+#define __ARCH_IRQ_EXIT_IRQS_DISABLED
+
+static inline void ack_bad_irq(unsigned int irq)
+{
+	printk(KERN_CRIT "unexpected IRQ trap at vector %02x\n", irq);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_HARDIRQ_H */

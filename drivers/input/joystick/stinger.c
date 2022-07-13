@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2000-2001 Vojtech Pavlik
  *  Copyright (c) 2000 Mark Fletcher
@@ -7,6 +11,7 @@
  * Gravis Stinger gamepad driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free warftware; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,12 +32,17 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/input.h>
 #include <linux/serio.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC	"Gravis Stinger gamepad driver"
 
@@ -185,7 +195,11 @@ static int stinger_connect(struct serio *serio, struct serio_driver *drv)
  * The serio driver structure.
  */
 
+<<<<<<< HEAD
 static struct serio_device_id stinger_serio_ids[] = {
+=======
+static const struct serio_device_id stinger_serio_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.type	= SERIO_RS232,
 		.proto	= SERIO_STINGER,
@@ -208,6 +222,7 @@ static struct serio_driver stinger_drv = {
 	.disconnect	= stinger_disconnect,
 };
 
+<<<<<<< HEAD
 /*
  * The functions for inserting/removing us as a module.
  */
@@ -224,3 +239,6 @@ static void __exit stinger_exit(void)
 
 module_init(stinger_init);
 module_exit(stinger_exit);
+=======
+module_serio_driver(stinger_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

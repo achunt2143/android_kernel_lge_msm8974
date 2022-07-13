@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * max7359_keypad.c - MAX7359 Key Switch Controller Driver
  *
@@ -6,10 +10,13 @@
  *
  * Based on pxa27x_keypad.c
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Datasheet: http://www.maxim-ic.com/quick_view2.cfm/qv_pk/5456
  */
 
@@ -84,6 +91,7 @@ static int max7359_read_reg(struct i2c_client *client, int reg)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void max7359_build_keycode(struct max7359_keypad *keypad,
 				const struct matrix_keymap_data *keymap_data)
 {
@@ -104,6 +112,8 @@ static void max7359_build_keycode(struct max7359_keypad *keypad,
 	__clear_bit(KEY_RESERVED, input_dev->keybit);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* runs in an IRQ thread -- can (and will!) sleep */
 static irqreturn_t max7359_interrupt(int irq, void *dev_id)
 {
@@ -166,7 +176,10 @@ static void max7359_close(struct input_dev *dev)
 static void max7359_initialize(struct i2c_client *client)
 {
 	max7359_write_reg(client, MAX7359_REG_CONFIG,
+<<<<<<< HEAD
 		MAX7359_CFG_INTERRUPT | /* Irq clears after host read */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		MAX7359_CFG_KEY_RELEASE | /* Key release enable */
 		MAX7359_CFG_WAKEUP); /* Key press wakeup enable */
 
@@ -179,10 +192,17 @@ static void max7359_initialize(struct i2c_client *client)
 	max7359_fall_deepsleep(client);
 }
 
+<<<<<<< HEAD
 static int __devinit max7359_probe(struct i2c_client *client,
 					const struct i2c_device_id *id)
 {
 	const struct matrix_keymap_data *keymap_data = client->dev.platform_data;
+=======
+static int max7359_probe(struct i2c_client *client)
+{
+	const struct matrix_keymap_data *keymap_data =
+			dev_get_platdata(&client->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct max7359_keypad *keypad;
 	struct input_dev *input_dev;
 	int ret;
@@ -202,12 +222,26 @@ static int __devinit max7359_probe(struct i2c_client *client,
 
 	dev_dbg(&client->dev, "keys FIFO is 0x%02x\n", ret);
 
+<<<<<<< HEAD
 	keypad = kzalloc(sizeof(struct max7359_keypad), GFP_KERNEL);
 	input_dev = input_allocate_device();
 	if (!keypad || !input_dev) {
 		dev_err(&client->dev, "failed to allocate memory\n");
 		error = -ENOMEM;
 		goto failed_free_mem;
+=======
+	keypad = devm_kzalloc(&client->dev, sizeof(struct max7359_keypad),
+			      GFP_KERNEL);
+	if (!keypad) {
+		dev_err(&client->dev, "failed to allocate memory\n");
+		return -ENOMEM;
+	}
+
+	input_dev = devm_input_allocate_device(&client->dev);
+	if (!input_dev) {
+		dev_err(&client->dev, "failed to allocate input device\n");
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	keypad->client = client;
@@ -227,6 +261,7 @@ static int __devinit max7359_probe(struct i2c_client *client,
 	input_set_capability(input_dev, EV_MSC, MSC_SCAN);
 	input_set_drvdata(input_dev, keypad);
 
+<<<<<<< HEAD
 	max7359_build_keycode(keypad, keymap_data);
 
 	error = request_threaded_irq(client->irq, NULL, max7359_interrupt,
@@ -235,18 +270,42 @@ static int __devinit max7359_probe(struct i2c_client *client,
 	if (error) {
 		dev_err(&client->dev, "failed to register interrupt\n");
 		goto failed_free_mem;
+=======
+	error = matrix_keypad_build_keymap(keymap_data, NULL,
+					   MAX7359_MAX_KEY_ROWS,
+					   MAX7359_MAX_KEY_COLS,
+					   keypad->keycodes,
+					   input_dev);
+	if (error) {
+		dev_err(&client->dev, "failed to build keymap\n");
+		return error;
+	}
+
+	error = devm_request_threaded_irq(&client->dev, client->irq, NULL,
+					  max7359_interrupt,
+					  IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+					  client->name, keypad);
+	if (error) {
+		dev_err(&client->dev, "failed to register interrupt\n");
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Register the input device */
 	error = input_register_device(input_dev);
 	if (error) {
 		dev_err(&client->dev, "failed to register input device\n");
+<<<<<<< HEAD
 		goto failed_free_irq;
+=======
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Initialize MAX7359 */
 	max7359_initialize(client);
 
+<<<<<<< HEAD
 	i2c_set_clientdata(client, keypad);
 	device_init_wakeup(&client->dev, 1);
 
@@ -272,6 +331,13 @@ static int __devexit max7359_remove(struct i2c_client *client)
 }
 
 #ifdef CONFIG_PM
+=======
+	device_init_wakeup(&client->dev, 1);
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int max7359_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -296,9 +362,14 @@ static int max7359_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static SIMPLE_DEV_PM_OPS(max7359_pm, max7359_suspend, max7359_resume);
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(max7359_pm, max7359_suspend, max7359_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct i2c_device_id max7359_ids[] = {
 	{ "max7359", 0 },
@@ -309,10 +380,16 @@ MODULE_DEVICE_TABLE(i2c, max7359_ids);
 static struct i2c_driver max7359_i2c_driver = {
 	.driver = {
 		.name = "max7359",
+<<<<<<< HEAD
 		.pm   = &max7359_pm,
 	},
 	.probe		= max7359_probe,
 	.remove		= __devexit_p(max7359_remove),
+=======
+		.pm   = pm_sleep_ptr(&max7359_pm),
+	},
+	.probe		= max7359_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= max7359_ids,
 };
 

@@ -1,12 +1,19 @@
+<<<<<<< HEAD
 /* 
  * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* 
+ * Copyright (C) 2002 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __UM_MMU_CONTEXT_H
 #define __UM_MMU_CONTEXT_H
 
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <asm/mmu.h>
 
 extern void uml_setup_stubs(struct mm_struct *mm);
@@ -16,6 +23,17 @@ extern void arch_exit_mmap(struct mm_struct *mm);
 
 extern void force_flush_all(void);
 
+=======
+#include <linux/mm_types.h>
+#include <linux/mmap_lock.h>
+
+#include <asm/mm_hooks.h>
+#include <asm/mmu.h>
+
+extern void force_flush_all(void);
+
+#define activate_mm activate_mm
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void activate_mm(struct mm_struct *old, struct mm_struct *new)
 {
 	/*
@@ -23,9 +41,12 @@ static inline void activate_mm(struct mm_struct *old, struct mm_struct *new)
 	 * when the new ->mm is used for the first time.
 	 */
 	__switch_mm(&new->context.id);
+<<<<<<< HEAD
 	down_write(&new->mmap_sem);
 	uml_setup_stubs(new);
 	up_write(&new->mmap_sem);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next, 
@@ -41,6 +62,7 @@ static inline void switch_mm(struct mm_struct *prev, struct mm_struct *next,
 	}
 }
 
+<<<<<<< HEAD
 static inline void arch_dup_mmap(struct mm_struct *oldmm, struct mm_struct *mm)
 {
 	uml_setup_stubs(mm);
@@ -55,4 +77,14 @@ extern int init_new_context(struct task_struct *task, struct mm_struct *mm);
 
 extern void destroy_context(struct mm_struct *mm);
 
+=======
+#define init_new_context init_new_context
+extern int init_new_context(struct task_struct *task, struct mm_struct *mm);
+
+#define destroy_context destroy_context
+extern void destroy_context(struct mm_struct *mm);
+
+#include <asm-generic/mmu_context.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

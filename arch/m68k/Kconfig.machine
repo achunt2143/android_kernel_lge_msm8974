@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 comment "Machine Types"
 
 if M68KCLASSIC
@@ -6,25 +10,46 @@ config AMIGA
 	bool "Amiga support"
 	depends on MMU
 	select MMU_MOTOROLA if MMU
+<<<<<<< HEAD
 	help
 	  This option enables support for the Amiga series of computers. If
 	  you plan to use this kernel on an Amiga, say Y here and browse the
 	  material available in <file:Documentation/m68k>; otherwise say N.
+=======
+	select LEGACY_TIMER_TICK
+	help
+	  This option enables support for the Amiga series of computers. If
+	  you plan to use this kernel on an Amiga, say Y here and browse the
+	  material available in <file:Documentation/arch/m68k>; otherwise say N.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ATARI
 	bool "Atari support"
 	depends on MMU
 	select MMU_MOTOROLA if MMU
+<<<<<<< HEAD
+=======
+	select HAVE_ARCH_NVRAM_OPS
+	select LEGACY_TIMER_TICK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option enables support for the 68000-based Atari series of
 	  computers (including the TT, Falcon and Medusa). If you plan to use
 	  this kernel on an Atari, say Y here and browse the material
+<<<<<<< HEAD
 	  available in <file:Documentation/m68k>; otherwise say N.
+=======
+	  available in <file:Documentation/arch/m68k>; otherwise say N.
+
+config ATARI_KBD_CORE
+	bool
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config MAC
 	bool "Macintosh support"
 	depends on MMU
 	select MMU_MOTOROLA if MMU
+<<<<<<< HEAD
 	help
 	  This option enables support for the Apple Macintosh series of
 	  computers (yes, there is experimental support now, at least for part
@@ -32,11 +57,25 @@ config MAC
 
 	  Say N unless you're willing to code the remaining necessary support.
 	  ;)
+=======
+	select HAVE_ARCH_NVRAM_OPS
+	select HAVE_PATA_PLATFORM
+	select LEGACY_TIMER_TICK
+	help
+	  This option enables support for the Apple Macintosh series of
+	  computers. If you plan to use this kernel on a Mac, say Y here and
+	  browse the documentation available at <http://www.mac.linux-m68k.org/>;
+	  otherwise say N.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config APOLLO
 	bool "Apollo support"
 	depends on MMU
 	select MMU_MOTOROLA if MMU
+<<<<<<< HEAD
+=======
+	select LEGACY_TIMER_TICK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y here if you want to run Linux on an MC680x0-based Apollo
 	  Domain workstation such as the DN3500.
@@ -55,6 +94,10 @@ config MVME147
 	bool "MVME147 support"
 	depends on MMU
 	depends on VME
+<<<<<<< HEAD
+=======
+	select LEGACY_TIMER_TICK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y to include support for early Motorola VME boards.  This will
 	  build a kernel which can run on MVME147 single-board computers.  If
@@ -65,6 +108,10 @@ config MVME16x
 	bool "MVME162, 166 and 167 support"
 	depends on MMU
 	depends on VME
+<<<<<<< HEAD
+=======
+	select LEGACY_TIMER_TICK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y to include support for Motorola VME boards.  This will build a
 	  kernel which can run on MVME162, MVME166, MVME167, MVME172, and
@@ -76,6 +123,10 @@ config BVME6000
 	bool "BVME4000 and BVME6000 support"
 	depends on MMU
 	depends on VME
+<<<<<<< HEAD
+=======
+	select LEGACY_TIMER_TICK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Say Y to include support for VME boards from BVM Ltd.  This will
 	  build a kernel which can run on BVME4000 and BVME6000 boards.  If
@@ -86,6 +137,10 @@ config HP300
 	bool "HP9000/300 and HP9000/400 support"
 	depends on MMU
 	select MMU_MOTOROLA if MMU
+<<<<<<< HEAD
+=======
+	select LEGACY_TIMER_TICK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  This option enables support for the HP9000/300 and HP9000/400 series
 	  of workstations. Support for these machines is still somewhat
@@ -96,6 +151,10 @@ config HP300
 config SUN3X
 	bool "Sun3x support"
 	depends on MMU
+<<<<<<< HEAD
+=======
+	select LEGACY_TIMER_TICK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select MMU_MOTOROLA if MMU
 	select M68030
 	help
@@ -111,6 +170,10 @@ config Q40
 	bool "Q40/Q60 support"
 	depends on MMU
 	select MMU_MOTOROLA if MMU
+<<<<<<< HEAD
+=======
+	select LEGACY_TIMER_TICK
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The Q40 is a Motorola 68040-based successor to the Sinclair QL
 	  manufactured in Germany.  There is an official Q40 home page at
@@ -123,6 +186,11 @@ config SUN3
 	depends on MMU
 	depends on !MMU_MOTOROLA
 	select MMU_SUN3 if MMU
+<<<<<<< HEAD
+=======
+	select LEGACY_TIMER_TICK
+	select NO_DMA
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select M68020
 	help
 	  This option enables support for the Sun 3 series of workstations
@@ -132,14 +200,39 @@ config SUN3
 
 	  If you don't want to compile a kernel exclusively for a Sun 3, say N.
 
+<<<<<<< HEAD
 endif # M68KCLASSIC
+=======
+config VIRT
+	bool "Virtual M68k Machine support"
+	depends on MMU
+	select GENERIC_CLOCKEVENTS
+	select GOLDFISH
+	select GOLDFISH_TIMER
+	select GOLDFISH_TTY
+	select M68040
+	select MMU_MOTOROLA if MMU
+	select RTC_CLASS
+	select RTC_DRV_GOLDFISH
+	select TTY
+	select VIRTIO_MENU
+	select VIRTIO_MMIO
+	help
+	  This options enable a pure virtual machine based on m68k,
+	  VIRTIO MMIO devices and GOLDFISH interfaces (TTY, RTC, PIC).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config PILOT
 	bool
 
 config PILOT3
 	bool "Pilot 1000/5000, PalmPilot Personal/Pro, or PalmIII support"
+<<<<<<< HEAD
 	depends on M68328
+=======
+	depends on !MMU
+	select M68328
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select PILOT
 	help
 	  Support for the Palm Pilot 1000/5000, Personal/Pro and PalmIII.
@@ -150,6 +243,7 @@ config XCOPILOT_BUGS
 	help
 	  Support the bugs of Xcopilot.
 
+<<<<<<< HEAD
 config UC5272
 	bool "Arcturus Networks uC5272 dimm board support"
 	depends on M5272
@@ -165,10 +259,17 @@ config UC5282
 config UCSIMM
 	bool "uCsimm module support"
 	depends on M68EZ328
+=======
+config UCSIMM
+	bool "uCsimm module support"
+	depends on !MMU
+	select M68EZ328
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Support for the Arcturus Networks uCsimm module.
 
 config UCDIMM
+<<<<<<< HEAD
 	bool "uDsimm module support"
 	depends on M68VZ328
 	help
@@ -179,6 +280,20 @@ config DRAGEN2
 	depends on M68VZ328
 	help
 	  Support for the DragenEngine II board.
+=======
+	bool "uCdimm module support"
+	depends on !MMU
+	select M68VZ328
+	help
+	  Support for the Arcturus Networks uCdimm module.
+
+config DRAGEN2
+	bool "DragonEngine II board support"
+	depends on !MMU
+	select M68VZ328
+	help
+	  Support for the DragonEngine II board.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config DIRECT_IO_ACCESS
 	bool "Allow user to access IO directly"
@@ -196,6 +311,7 @@ config INIT_LCD
 config MEMORY_RESERVE
 	int "Memory reservation (MiB)"
 	depends on (UCSIMM || UCDIMM)
+<<<<<<< HEAD
 	help
 	  Reserve certain memory regions on 68x328 based boards.
 
@@ -207,10 +323,18 @@ config UCQUICC
 
 config ARNEWSH
 	bool
+=======
+	default 0
+	help
+	  Reserve certain memory regions on 68x328 based boards.
+
+endif # M68KCLASSIC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config ARN5206
 	bool "Arnewsh 5206 board support"
 	depends on M5206
+<<<<<<< HEAD
 	select ARNEWSH
 	help
 	  Support for the Arnewsh 5206 board.
@@ -222,6 +346,14 @@ config M5206eC3
 	bool "Motorola M5206eC3 board support"
 	depends on M5206e
 	select FREESCALE
+=======
+	help
+	  Support for the Arnewsh 5206 board.
+
+config M5206eC3
+	bool "Motorola M5206eC3 board support"
+	depends on M5206e
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Support for the Motorola M5206eC3 board.
 
@@ -231,6 +363,7 @@ config ELITE
 	help
 	  Support for the Motorola M5206eLITE board.
 
+<<<<<<< HEAD
 config M5208EVB
 	bool "Freescale M5208EVB board support"
 	depends on M520x
@@ -242,12 +375,18 @@ config M5235EVB
 	bool "Freescale M5235EVB support"
 	depends on M523x
 	select FREESCALE
+=======
+config M5235EVB
+	bool "Freescale M5235EVB support"
+	depends on M523x
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Support for the Freescale M5235EVB board.
 
 config M5249C3
 	bool "Motorola M5249C3 board support"
 	depends on M5249
+<<<<<<< HEAD
 	select FREESCALE
 	help
 	  Support for the Motorola M5249C3 board.
@@ -314,6 +453,17 @@ config SOM5282EM
 	help
 	  Support for the EMAC.Inc SOM5282EM module.
 
+=======
+	help
+	  Support for the Motorola M5249C3 board.
+
+config M5272C3
+	bool "Motorola M5272C3 board support"
+	depends on M5272
+	help
+	  Support for the Motorola M5272C3 board.
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config WILDFIRE
 	bool "Intec Automation Inc. WildFire board support"
 	depends on M528x
@@ -329,14 +479,20 @@ config WILDFIREMOD
 config ARN5307
 	bool "Arnewsh 5307 board support"
 	depends on M5307
+<<<<<<< HEAD
 	select ARNEWSH
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Support for the Arnewsh 5307 board.
 
 config M5307C3
 	bool "Motorola M5307C3 board support"
 	depends on M5307
+<<<<<<< HEAD
 	select FREESCALE
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Support for the Motorola M5307C3 board.
 
@@ -346,6 +502,7 @@ config SECUREEDGEMP3
 	help
 	  Support for the SnapGear SecureEdge/MP3 platform.
 
+<<<<<<< HEAD
 config M5329EVB
 	bool "Freescale (Motorola) M5329EVB board support"
 	depends on M532x
@@ -366,6 +523,26 @@ config M5407C3
 	help
 	  Support for the Motorola M5407C3 board.
 
+=======
+config M5407C3
+	bool "Motorola M5407C3 board support"
+	depends on M5407
+	help
+	  Support for the Motorola M5407C3 board.
+
+config AMCORE
+	bool "Sysam AMCORE board support"
+	depends on M5307
+	help
+	  Support for the Sysam AMCORE open-hardware generic board.
+
+config STMARK2
+	bool "Sysam stmark2 board support"
+	depends on M5441x
+	help
+	  Support for the Sysam stmark2 open-hardware generic board.
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config FIREBEE
 	bool "FireBee board support"
 	depends on M547x
@@ -396,6 +573,7 @@ config NETtel
 	help
 	  Support for the SnapGear NETtel/SecureEdge/SnapGear boards.
 
+<<<<<<< HEAD
 config SNAPGEAR
 	bool "SnapGear router board support"
 	depends on NETtel
@@ -412,12 +590,15 @@ config CPU16B
 	help
 	  Support for the SNEHA CPU16B board.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config MOD5272
 	bool "Netburner MOD-5272 board support"
 	depends on M5272
 	help
 	  Support for the Netburner MOD-5272 board.
 
+<<<<<<< HEAD
 config SAVANT
 	bool
 
@@ -429,16 +610,25 @@ config SAVANTrosie1
 	  Support for the Savant Rosie1 board.
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 if !MMU || COLDFIRE
 
 comment "Machine Options"
 
 config UBOOT
 	bool "Support for U-Boot command line parameters"
+<<<<<<< HEAD
 	help
 	  If you say Y here kernel will try to collect command
 	  line parameters from the initial u-boot stack.
 	default n
+=======
+	depends on COLDFIRE
+	help
+	  If you say Y here kernel will try to collect command
+	  line parameters from the initial u-boot stack.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config 4KSTACKS
 	bool "Use 4Kb for kernel stacks instead of 8Kb"
@@ -516,12 +706,16 @@ comment "ROM configuration"
 
 config ROM
 	bool "Specify ROM linker regions"
+<<<<<<< HEAD
 	default n
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Define a ROM region for the linker script. This creates a kernel
 	  that can be stored in flash, with possibly the text, and data
 	  regions being copied out to RAM at startup.
 
+<<<<<<< HEAD
 config ROMBASE
 	hex "Address of the base of ROM device"
 	default "0"
@@ -534,12 +728,18 @@ config ROMBASE
 config ROMVEC
 	hex "Address of the base of the ROM vectors"
 	default "0"
+=======
+config ROMVEC
+	hex "Address of the base of the ROM vectors"
+	default "0x10c10000"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on ROM
 	help
 	  This is almost always the same as the base of the ROM. Since on all
 	  68000 type variants the vectors are at the base of the boot device
 	  on system startup.
 
+<<<<<<< HEAD
 config ROMVECSIZE
 	hex "Size of ROM vector region (in bytes)"
 	default "0x400"
@@ -552,11 +752,17 @@ config ROMVECSIZE
 config ROMSTART
 	hex "Address of the base of system image in ROM"
 	default "0x400"
+=======
+config ROMSTART
+	hex "Address of the base of system image in ROM"
+	default "0x10c10400"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	depends on ROM
 	help
 	  Define the start address of the system image in ROM. Commonly this
 	  is strait after the ROM vectors.
 
+<<<<<<< HEAD
 config ROMSIZE
 	hex "Size of the ROM device"
 	default "0x100000"
@@ -568,6 +774,11 @@ config ROMSIZE
 choice
 	prompt "Kernel executes from"
 	---help---
+=======
+choice
+	prompt "Kernel executes from"
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Choose the memory type that the kernel will be running in.
 
 config RAMKERNEL
@@ -577,6 +788,10 @@ config RAMKERNEL
 
 config ROMKERNEL
 	bool "ROM"
+<<<<<<< HEAD
+=======
+	depends on ROM
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  The kernel will be resident in FLASH/ROM when running. This is
 	  often referred to as Execute-in-Place (XIP), since the kernel
@@ -584,4 +799,8 @@ config ROMKERNEL
 
 endchoice
 
+<<<<<<< HEAD
 endif
+=======
+endif # !MMU || COLDFIRE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * finite state machine implementation
  *
@@ -6,6 +10,7 @@
  * Thanks to    Jan den Ouden
  *              Fritz Elfert
  * Copyright 2008  by Karsten Keil <kkeil@novell.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -16,6 +21,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -26,14 +33,27 @@
 
 #define FSM_TIMER_DEBUG 0
 
+<<<<<<< HEAD
 void
+=======
+int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 mISDN_FsmNew(struct Fsm *fsm,
 	     struct FsmNode *fnlist, int fncount)
 {
 	int i;
 
+<<<<<<< HEAD
 	fsm->jumpmatrix = kzalloc(sizeof(FSMFNPTR) * fsm->state_count *
 				  fsm->event_count, GFP_KERNEL);
+=======
+	fsm->jumpmatrix =
+		kzalloc(array3_size(sizeof(FSMFNPTR), fsm->state_count,
+				    fsm->event_count),
+			GFP_KERNEL);
+	if (fsm->jumpmatrix == NULL)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < fncount; i++)
 		if ((fnlist[i].state >= fsm->state_count) ||
@@ -45,6 +65,10 @@ mISDN_FsmNew(struct Fsm *fsm,
 		} else
 			fsm->jumpmatrix[fsm->state_count * fnlist[i].event +
 					fnlist[i].state] = (FSMFNPTR) fnlist[i].routine;
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(mISDN_FsmNew);
 
@@ -97,8 +121,14 @@ mISDN_FsmChangeState(struct FsmInst *fi, int newstate)
 EXPORT_SYMBOL(mISDN_FsmChangeState);
 
 static void
+<<<<<<< HEAD
 FsmExpireTimer(struct FsmTimer *ft)
 {
+=======
+FsmExpireTimer(struct timer_list *t)
+{
+	struct FsmTimer *ft = from_timer(ft, t, tl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if FSM_TIMER_DEBUG
 	if (ft->fi->debug)
 		ft->fi->printdebug(ft->fi, "FsmExpireTimer %lx", (long) ft);
@@ -110,13 +140,20 @@ void
 mISDN_FsmInitTimer(struct FsmInst *fi, struct FsmTimer *ft)
 {
 	ft->fi = fi;
+<<<<<<< HEAD
 	ft->tl.function = (void *) FsmExpireTimer;
 	ft->tl.data = (long) ft;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if FSM_TIMER_DEBUG
 	if (ft->fi->debug)
 		ft->fi->printdebug(ft->fi, "mISDN_FsmInitTimer %lx", (long) ft);
 #endif
+<<<<<<< HEAD
 	init_timer(&ft->tl);
+=======
+	timer_setup(&ft->tl, FsmExpireTimer, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(mISDN_FsmInitTimer);
 
@@ -152,7 +189,10 @@ mISDN_FsmAddTimer(struct FsmTimer *ft,
 		}
 		return -1;
 	}
+<<<<<<< HEAD
 	init_timer(&ft->tl);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ft->event = event;
 	ft->arg = arg;
 	ft->tl.expires = jiffies + (millisec * HZ) / 1000;
@@ -174,7 +214,10 @@ mISDN_FsmRestartTimer(struct FsmTimer *ft,
 
 	if (timer_pending(&ft->tl))
 		del_timer(&ft->tl);
+<<<<<<< HEAD
 	init_timer(&ft->tl);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ft->event = event;
 	ft->arg = arg;
 	ft->tl.expires = jiffies + (millisec * HZ) / 1000;

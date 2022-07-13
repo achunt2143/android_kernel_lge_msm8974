@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2001-2002 Sistina Software (UK) Limited.
  * Copyright (C) 2006-2008 Red Hat GmbH
@@ -142,21 +146,32 @@ EXPORT_SYMBOL(dm_exception_store_type_unregister);
 static int set_chunk_size(struct dm_exception_store *store,
 			  const char *chunk_size_arg, char **error)
 {
+<<<<<<< HEAD
 	unsigned long chunk_size_ulong;
 	char *value;
 
 	chunk_size_ulong = simple_strtoul(chunk_size_arg, &value, 10);
 	if (*chunk_size_arg == '\0' || *value != '\0' ||
 	    chunk_size_ulong > UINT_MAX) {
+=======
+	unsigned int chunk_size;
+
+	if (kstrtouint(chunk_size_arg, 10, &chunk_size)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*error = "Invalid chunk size";
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (!chunk_size_ulong) {
+=======
+	if (!chunk_size) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		store->chunk_size = store->chunk_mask = store->chunk_shift = 0;
 		return 0;
 	}
 
+<<<<<<< HEAD
 	return dm_exception_store_set_chunk_size(store,
 						 (unsigned) chunk_size_ulong,
 						 error);
@@ -164,6 +179,13 @@ static int set_chunk_size(struct dm_exception_store *store,
 
 int dm_exception_store_set_chunk_size(struct dm_exception_store *store,
 				      unsigned chunk_size,
+=======
+	return dm_exception_store_set_chunk_size(store, chunk_size, error);
+}
+
+int dm_exception_store_set_chunk_size(struct dm_exception_store *store,
+				      unsigned int chunk_size,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      char **error)
 {
 	/* Check chunk_size is a power of 2 */
@@ -188,14 +210,22 @@ int dm_exception_store_set_chunk_size(struct dm_exception_store *store,
 
 	store->chunk_size = chunk_size;
 	store->chunk_mask = chunk_size - 1;
+<<<<<<< HEAD
 	store->chunk_shift = ffs(chunk_size) - 1;
+=======
+	store->chunk_shift = __ffs(chunk_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 int dm_exception_store_create(struct dm_target *ti, int argc, char **argv,
 			      struct dm_snapshot *snap,
+<<<<<<< HEAD
 			      unsigned *args_used,
+=======
+			      unsigned int *args_used,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      struct dm_exception_store **store)
 {
 	int r = 0;
@@ -208,7 +238,11 @@ int dm_exception_store_create(struct dm_target *ti, int argc, char **argv,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	tmp_store = kmalloc(sizeof(*tmp_store), GFP_KERNEL);
+=======
+	tmp_store = kzalloc(sizeof(*tmp_store), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tmp_store) {
 		ti->error = "Exception store allocation failed";
 		return -ENOMEM;
@@ -220,7 +254,11 @@ int dm_exception_store_create(struct dm_target *ti, int argc, char **argv,
 	else if (persistent == 'N')
 		type = get_type("N");
 	else {
+<<<<<<< HEAD
 		ti->error = "Persistent flag is not P or N";
+=======
+		ti->error = "Exception store type is not P or N";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = -EINVAL;
 		goto bad_type;
 	}
@@ -238,7 +276,11 @@ int dm_exception_store_create(struct dm_target *ti, int argc, char **argv,
 	if (r)
 		goto bad;
 
+<<<<<<< HEAD
 	r = type->ctr(tmp_store, 0, NULL);
+=======
+	r = type->ctr(tmp_store, (strlen(argv[0]) > 1 ? &argv[0][1] : NULL));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (r) {
 		ti->error = "Exception store type constructor failed";
 		goto bad;

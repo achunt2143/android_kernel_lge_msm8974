@@ -1,17 +1,28 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * usb/gadget/config.c -- simplify building config descriptors
  *
  * Copyright (C) 2003 David Brownell
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
 #include <linux/slab.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/string.h>
 #include <linux/device.h>
@@ -19,6 +30,7 @@
 #include <linux/usb/ch9.h>
 #include <linux/usb/gadget.h>
 #include <linux/usb/composite.h>
+<<<<<<< HEAD
 
 /**
  * usb_find_descriptor_fillbuf - fill buffer with the requested descriptor
@@ -54,6 +66,9 @@ usb_find_descriptor_fillbuf(void *buf, unsigned buflen,
 
 	return -ENOENT;
 }
+=======
+#include <linux/usb/otg.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * usb_descriptor_fillbuf - fill buffer with descriptors
@@ -88,7 +103,11 @@ usb_descriptor_fillbuf(void *buf, unsigned buflen,
 	}
 	return dest - (u8 *)buf;
 }
+<<<<<<< HEAD
 
+=======
+EXPORT_SYMBOL_GPL(usb_descriptor_fillbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * usb_gadget_config_buf - builts a complete configuration descriptor
@@ -126,7 +145,11 @@ int usb_gadget_config_buf(
 	*cp = *config;
 
 	/* then interface/endpoint/class/vendor/... */
+<<<<<<< HEAD
 	len = usb_descriptor_fillbuf(USB_DT_CONFIG_SIZE + (u8*)buf,
+=======
+	len = usb_descriptor_fillbuf(USB_DT_CONFIG_SIZE + (u8 *)buf,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			length - USB_DT_CONFIG_SIZE, desc);
 	if (len < 0)
 		return len;
@@ -141,6 +164,10 @@ int usb_gadget_config_buf(
 	cp->bmAttributes |= USB_CONFIG_ATT_ONE;
 	return len;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(usb_gadget_config_buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * usb_copy_descriptors - copy a vector of USB descriptors
@@ -195,25 +222,54 @@ EXPORT_SYMBOL_GPL(usb_copy_descriptors);
 int usb_assign_descriptors(struct usb_function *f,
 		struct usb_descriptor_header **fs,
 		struct usb_descriptor_header **hs,
+<<<<<<< HEAD
 		struct usb_descriptor_header **ss)
 {
 	struct usb_gadget *g = f->config->cdev->gadget;
+=======
+		struct usb_descriptor_header **ss,
+		struct usb_descriptor_header **ssp)
+{
+	/* super-speed-plus descriptor falls back to super-speed one,
+	 * if such a descriptor was provided, thus avoiding a NULL
+	 * pointer dereference if a 5gbps capable gadget is used with
+	 * a 10gbps capable config (device port + cable + host port)
+	 */
+	if (!ssp)
+		ssp = ss;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fs) {
 		f->fs_descriptors = usb_copy_descriptors(fs);
 		if (!f->fs_descriptors)
 			goto err;
 	}
+<<<<<<< HEAD
 	if (hs && gadget_is_dualspeed(g)) {
+=======
+	if (hs) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		f->hs_descriptors = usb_copy_descriptors(hs);
 		if (!f->hs_descriptors)
 			goto err;
 	}
+<<<<<<< HEAD
 	if (ss && gadget_is_superspeed(g)) {
+=======
+	if (ss) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		f->ss_descriptors = usb_copy_descriptors(ss);
 		if (!f->ss_descriptors)
 			goto err;
 	}
+<<<<<<< HEAD
+=======
+	if (ssp) {
+		f->ssp_descriptors = usb_copy_descriptors(ssp);
+		if (!f->ssp_descriptors)
+			goto err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 err:
 	usb_free_all_descriptors(f);
@@ -224,7 +280,74 @@ EXPORT_SYMBOL_GPL(usb_assign_descriptors);
 void usb_free_all_descriptors(struct usb_function *f)
 {
 	usb_free_descriptors(f->fs_descriptors);
+<<<<<<< HEAD
 	usb_free_descriptors(f->hs_descriptors);
 	usb_free_descriptors(f->ss_descriptors);
 }
 EXPORT_SYMBOL_GPL(usb_free_all_descriptors);
+=======
+	f->fs_descriptors = NULL;
+	usb_free_descriptors(f->hs_descriptors);
+	f->hs_descriptors = NULL;
+	usb_free_descriptors(f->ss_descriptors);
+	f->ss_descriptors = NULL;
+	usb_free_descriptors(f->ssp_descriptors);
+	f->ssp_descriptors = NULL;
+}
+EXPORT_SYMBOL_GPL(usb_free_all_descriptors);
+
+struct usb_descriptor_header *usb_otg_descriptor_alloc(
+				struct usb_gadget *gadget)
+{
+	struct usb_descriptor_header *otg_desc;
+	unsigned length = 0;
+
+	if (gadget->otg_caps && (gadget->otg_caps->otg_rev >= 0x0200))
+		length = sizeof(struct usb_otg20_descriptor);
+	else
+		length = sizeof(struct usb_otg_descriptor);
+
+	otg_desc = kzalloc(length, GFP_KERNEL);
+	return otg_desc;
+}
+EXPORT_SYMBOL_GPL(usb_otg_descriptor_alloc);
+
+int usb_otg_descriptor_init(struct usb_gadget *gadget,
+		struct usb_descriptor_header *otg_desc)
+{
+	struct usb_otg_descriptor *otg1x_desc;
+	struct usb_otg20_descriptor *otg20_desc;
+	struct usb_otg_caps *otg_caps = gadget->otg_caps;
+	u8 otg_attributes = 0;
+
+	if (!otg_desc)
+		return -EINVAL;
+
+	if (otg_caps && otg_caps->otg_rev) {
+		if (otg_caps->hnp_support)
+			otg_attributes |= USB_OTG_HNP;
+		if (otg_caps->srp_support)
+			otg_attributes |= USB_OTG_SRP;
+		if (otg_caps->adp_support && (otg_caps->otg_rev >= 0x0200))
+			otg_attributes |= USB_OTG_ADP;
+	} else {
+		otg_attributes = USB_OTG_SRP | USB_OTG_HNP;
+	}
+
+	if (otg_caps && (otg_caps->otg_rev >= 0x0200)) {
+		otg20_desc = (struct usb_otg20_descriptor *)otg_desc;
+		otg20_desc->bLength = sizeof(struct usb_otg20_descriptor);
+		otg20_desc->bDescriptorType = USB_DT_OTG;
+		otg20_desc->bmAttributes = otg_attributes;
+		otg20_desc->bcdOTG = cpu_to_le16(otg_caps->otg_rev);
+	} else {
+		otg1x_desc = (struct usb_otg_descriptor *)otg_desc;
+		otg1x_desc->bLength = sizeof(struct usb_otg_descriptor);
+		otg1x_desc->bDescriptorType = USB_DT_OTG;
+		otg1x_desc->bmAttributes = otg_attributes;
+	}
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(usb_otg_descriptor_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

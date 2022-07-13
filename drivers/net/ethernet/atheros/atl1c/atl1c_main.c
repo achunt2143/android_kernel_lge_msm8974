@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright(c) 2008 - 2009 Atheros Corporation. All rights reserved.
  *
  * Derived from Intel e1000 driver
  * Copyright(c) 1999 - 2005 Intel Corporation. All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -17,10 +22,13 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "atl1c.h"
 
+<<<<<<< HEAD
 #define ATL1C_DRV_VERSION "1.0.1.0-NAPI"
 char atl1c_driver_name[] = "atl1c";
 char atl1c_driver_version[] = ATL1C_DRV_VERSION;
@@ -32,6 +40,9 @@ char atl1c_driver_version[] = ATL1C_DRV_VERSION;
 #define PCI_DEVICE_ID_ATHEROS_L1D_2_0	0x1083 /* AR8151 v2.0 Gigabit 1000 */
 #define L2CB_V10			0xc0
 #define L2CB_V11			0xc1
+=======
+char atl1c_driver_name[] = "atl1c";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * atl1c_pci_tbl - PCI Device ID Table
@@ -42,7 +53,11 @@ char atl1c_driver_version[] = ATL1C_DRV_VERSION;
  * { Vendor ID, Device ID, SubVendor ID, SubDevice ID,
  *   Class, Class Mask, private data (not used) }
  */
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(atl1c_pci_tbl) = {
+=======
+static const struct pci_device_id atl1c_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{PCI_DEVICE(PCI_VENDOR_ID_ATTANSIC, PCI_DEVICE_ID_ATTANSIC_L1C)},
 	{PCI_DEVICE(PCI_VENDOR_ID_ATTANSIC, PCI_DEVICE_ID_ATTANSIC_L2C)},
 	{PCI_DEVICE(PCI_VENDOR_ID_ATTANSIC, PCI_DEVICE_ID_ATHEROS_L2C_B)},
@@ -54,6 +69,7 @@ static DEFINE_PCI_DEVICE_TABLE(atl1c_pci_tbl) = {
 };
 MODULE_DEVICE_TABLE(pci, atl1c_pci_tbl);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Jie Yang <jie.yang@atheros.com>");
 MODULE_DESCRIPTION("Atheros 1000M Ethernet Network Driver");
 MODULE_LICENSE("GPL");
@@ -97,11 +113,65 @@ static const u16 atl1c_rrd_addr_lo_regs[AT_MAX_RECEIVE_QUEUE] =
 	REG_RRD2_HEAD_ADDR_LO,
 	REG_RRD3_HEAD_ADDR_LO
 };
+=======
+MODULE_AUTHOR("Jie Yang");
+MODULE_AUTHOR("Qualcomm Atheros Inc.");
+MODULE_DESCRIPTION("Qualcomm Atheros 100/1000M Ethernet Network Driver");
+MODULE_LICENSE("GPL");
+
+struct atl1c_qregs {
+	u16 tpd_addr_lo;
+	u16 tpd_prod;
+	u16 tpd_cons;
+	u16 rfd_addr_lo;
+	u16 rrd_addr_lo;
+	u16 rfd_prod;
+	u32 tx_isr;
+	u32 rx_isr;
+};
+
+static struct atl1c_qregs atl1c_qregs[AT_MAX_TRANSMIT_QUEUE] = {
+	{
+		REG_TPD_PRI0_ADDR_LO, REG_TPD_PRI0_PIDX, REG_TPD_PRI0_CIDX,
+		REG_RFD0_HEAD_ADDR_LO, REG_RRD0_HEAD_ADDR_LO,
+		REG_MB_RFD0_PROD_IDX, ISR_TX_PKT_0, ISR_RX_PKT_0
+	},
+	{
+		REG_TPD_PRI1_ADDR_LO, REG_TPD_PRI1_PIDX, REG_TPD_PRI1_CIDX,
+		REG_RFD1_HEAD_ADDR_LO, REG_RRD1_HEAD_ADDR_LO,
+		REG_MB_RFD1_PROD_IDX, ISR_TX_PKT_1, ISR_RX_PKT_1
+	},
+	{
+		REG_TPD_PRI2_ADDR_LO, REG_TPD_PRI2_PIDX, REG_TPD_PRI2_CIDX,
+		REG_RFD2_HEAD_ADDR_LO, REG_RRD2_HEAD_ADDR_LO,
+		REG_MB_RFD2_PROD_IDX, ISR_TX_PKT_2, ISR_RX_PKT_2
+	},
+	{
+		REG_TPD_PRI3_ADDR_LO, REG_TPD_PRI3_PIDX, REG_TPD_PRI3_CIDX,
+		REG_RFD3_HEAD_ADDR_LO, REG_RRD3_HEAD_ADDR_LO,
+		REG_MB_RFD3_PROD_IDX, ISR_TX_PKT_3, ISR_RX_PKT_3
+	},
+};
+
+static int atl1c_stop_mac(struct atl1c_hw *hw);
+static void atl1c_disable_l0s_l1(struct atl1c_hw *hw);
+static void atl1c_set_aspm(struct atl1c_hw *hw, u16 link_speed);
+static void atl1c_start_mac(struct atl1c_adapter *adapter);
+static int atl1c_up(struct atl1c_adapter *adapter);
+static void atl1c_down(struct atl1c_adapter *adapter);
+static int atl1c_reset_mac(struct atl1c_hw *hw);
+static void atl1c_reset_dma_ring(struct atl1c_adapter *adapter);
+static int atl1c_configure(struct atl1c_adapter *adapter);
+static int atl1c_alloc_rx_buffer(struct atl1c_adapter *adapter, u32 queue,
+				 bool napi_mode);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const u32 atl1c_default_msg = NETIF_MSG_DRV | NETIF_MSG_PROBE |
 	NETIF_MSG_LINK | NETIF_MSG_TIMER | NETIF_MSG_IFDOWN | NETIF_MSG_IFUP;
 static void atl1c_pcie_patch(struct atl1c_hw *hw)
 {
+<<<<<<< HEAD
 	u32 data;
 
 	AT_READ_REG(hw, REG_PCIE_PHYMISC, &data);
@@ -118,6 +188,46 @@ static void atl1c_pcie_patch(struct atl1c_hw *hw)
 			PCIE_PHYMISC2_SERDES_TH_SHIFT);
 		data |= 3 << PCIE_PHYMISC2_SERDES_TH_SHIFT;
 		AT_WRITE_REG(hw, REG_PCIE_PHYMISC2, data);
+=======
+	u32 mst_data, data;
+
+	/* pclk sel could switch to 25M */
+	AT_READ_REG(hw, REG_MASTER_CTRL, &mst_data);
+	mst_data &= ~MASTER_CTRL_CLK_SEL_DIS;
+	AT_WRITE_REG(hw, REG_MASTER_CTRL, mst_data);
+
+	/* WoL/PCIE related settings */
+	if (hw->nic_type == athr_l1c || hw->nic_type == athr_l2c) {
+		AT_READ_REG(hw, REG_PCIE_PHYMISC, &data);
+		data |= PCIE_PHYMISC_FORCE_RCV_DET;
+		AT_WRITE_REG(hw, REG_PCIE_PHYMISC, data);
+	} else { /* new dev set bit5 of MASTER */
+		if (!(mst_data & MASTER_CTRL_WAKEN_25M))
+			AT_WRITE_REG(hw, REG_MASTER_CTRL,
+				mst_data | MASTER_CTRL_WAKEN_25M);
+	}
+	/* aspm/PCIE setting only for l2cb 1.0 */
+	if (hw->nic_type == athr_l2c_b && hw->revision_id == L2CB_V10) {
+		AT_READ_REG(hw, REG_PCIE_PHYMISC2, &data);
+		data = FIELD_SETX(data, PCIE_PHYMISC2_CDR_BW,
+			L2CB1_PCIE_PHYMISC2_CDR_BW);
+		data = FIELD_SETX(data, PCIE_PHYMISC2_L0S_TH,
+			L2CB1_PCIE_PHYMISC2_L0S_TH);
+		AT_WRITE_REG(hw, REG_PCIE_PHYMISC2, data);
+		/* extend L1 sync timer */
+		AT_READ_REG(hw, REG_LINK_CTRL, &data);
+		data |= LINK_CTRL_EXT_SYNC;
+		AT_WRITE_REG(hw, REG_LINK_CTRL, data);
+	}
+	/* l2cb 1.x & l1d 1.x */
+	if (hw->nic_type == athr_l2c_b || hw->nic_type == athr_l1d) {
+		AT_READ_REG(hw, REG_PM_CTRL, &data);
+		data |= PM_CTRL_L0S_BUFSRX_EN;
+		AT_WRITE_REG(hw, REG_PM_CTRL, data);
+		/* clear vendor msg */
+		AT_READ_REG(hw, REG_DMA_DBG, &data);
+		AT_WRITE_REG(hw, REG_DMA_DBG, data & ~DMA_DBG_VENDOR_MSG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -130,6 +240,10 @@ static void atl1c_reset_pcie(struct atl1c_hw *hw, u32 flag)
 	u32 data;
 	u32 pci_cmd;
 	struct pci_dev *pdev = hw->adapter->pdev;
+<<<<<<< HEAD
+=======
+	int pos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	AT_READ_REG(hw, PCI_COMMAND, &pci_cmd);
 	pci_cmd &= ~PCI_COMMAND_INTX_DISABLE;
@@ -142,14 +256,35 @@ static void atl1c_reset_pcie(struct atl1c_hw *hw, u32 flag)
 	 */
 	pci_enable_wake(pdev, PCI_D3hot, 0);
 	pci_enable_wake(pdev, PCI_D3cold, 0);
+<<<<<<< HEAD
+=======
+	/* wol sts read-clear */
+	AT_READ_REG(hw, REG_WOL_CTRL, &data);
+	AT_WRITE_REG(hw, REG_WOL_CTRL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Mask some pcie error bits
 	 */
+<<<<<<< HEAD
 	AT_READ_REG(hw, REG_PCIE_UC_SEVERITY, &data);
 	data &= ~PCIE_UC_SERVRITY_DLP;
 	data &= ~PCIE_UC_SERVRITY_FCP;
 	AT_WRITE_REG(hw, REG_PCIE_UC_SEVERITY, data);
+=======
+	pos = pci_find_ext_capability(pdev, PCI_EXT_CAP_ID_ERR);
+	if (pos) {
+		pci_read_config_dword(pdev, pos + PCI_ERR_UNCOR_SEVER, &data);
+		data &= ~(PCI_ERR_UNC_DLP | PCI_ERR_UNC_FCP);
+		pci_write_config_dword(pdev, pos + PCI_ERR_UNCOR_SEVER, data);
+	}
+	/* clear error status */
+	pcie_capability_write_word(pdev, PCI_EXP_DEVSTA,
+			PCI_EXP_DEVSTA_NFED |
+			PCI_EXP_DEVSTA_FED |
+			PCI_EXP_DEVSTA_CED |
+			PCI_EXP_DEVSTA_URD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	AT_READ_REG(hw, REG_LTSSM_ID_CTRL, &data);
 	data &= ~LTSSM_ID_EN_WRO;
@@ -158,16 +293,23 @@ static void atl1c_reset_pcie(struct atl1c_hw *hw, u32 flag)
 	atl1c_pcie_patch(hw);
 	if (flag & ATL1C_PCIE_L0S_L1_DISABLE)
 		atl1c_disable_l0s_l1(hw);
+<<<<<<< HEAD
 	if (flag & ATL1C_PCIE_PHY_RESET)
 		AT_WRITE_REG(hw, REG_GPHY_CTRL, GPHY_CTRL_DEFAULT);
 	else
 		AT_WRITE_REG(hw, REG_GPHY_CTRL,
 			GPHY_CTRL_DEFAULT | GPHY_CTRL_EXT_RESET);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	msleep(5);
 }
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_irq_enable - Enable default interrupt generation settings
  * @adapter: board private structure
  */
@@ -180,7 +322,11 @@ static inline void atl1c_irq_enable(struct atl1c_adapter *adapter)
 	}
 }
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_irq_disable - Mask off interrupt generation on the NIC
  * @adapter: board private structure
  */
@@ -194,6 +340,7 @@ static inline void atl1c_irq_disable(struct atl1c_adapter *adapter)
 }
 
 /*
+<<<<<<< HEAD
  * atl1c_irq_reset - reset interrupt confiure on the NIC
  * @adapter: board private structure
  */
@@ -208,19 +355,30 @@ static inline void atl1c_irq_reset(struct atl1c_adapter *adapter)
  * of the idle status register until the device is actually idle
  */
 static u32 atl1c_wait_until_idle(struct atl1c_hw *hw)
+=======
+ * atl1c_wait_until_idle - wait up to AT_HW_MAX_IDLE_DELAY reads
+ * of the idle status register until the device is actually idle
+ */
+static u32 atl1c_wait_until_idle(struct atl1c_hw *hw, u32 modu_ctrl)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int timeout;
 	u32 data;
 
 	for (timeout = 0; timeout < AT_HW_MAX_IDLE_DELAY; timeout++) {
 		AT_READ_REG(hw, REG_IDLE_STATUS, &data);
+<<<<<<< HEAD
 		if ((data & IDLE_STATUS_MASK) == 0)
+=======
+		if ((data & modu_ctrl) == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		msleep(1);
 	}
 	return data;
 }
 
+<<<<<<< HEAD
 /*
  * atl1c_phy_config - Timer Call-back
  * @data: pointer to netdev cast into an unsigned long
@@ -228,6 +386,16 @@ static u32 atl1c_wait_until_idle(struct atl1c_hw *hw)
 static void atl1c_phy_config(unsigned long data)
 {
 	struct atl1c_adapter *adapter = (struct atl1c_adapter *) data;
+=======
+/**
+ * atl1c_phy_config - Timer Call-back
+ * @t: timer list containing pointer to netdev cast into an unsigned long
+ */
+static void atl1c_phy_config(struct timer_list *t)
+{
+	struct atl1c_adapter *adapter = from_timer(adapter, t,
+						   phy_config_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct atl1c_hw *hw = &adapter->hw;
 	unsigned long flags;
 
@@ -238,7 +406,10 @@ static void atl1c_phy_config(unsigned long data)
 
 void atl1c_reinit_locked(struct atl1c_adapter *adapter)
 {
+<<<<<<< HEAD
 	WARN_ON(in_interrupt());
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atl1c_down(adapter);
 	atl1c_up(adapter);
 	clear_bit(__AT_RESETTING, &adapter->flags);
@@ -251,6 +422,7 @@ static void atl1c_check_link_status(struct atl1c_adapter *adapter)
 	struct pci_dev    *pdev   = adapter->pdev;
 	int err;
 	unsigned long flags;
+<<<<<<< HEAD
 	u16 speed, duplex, phy_data;
 
 	spin_lock_irqsave(&adapter->mdio_lock, flags);
@@ -269,6 +441,26 @@ static void atl1c_check_link_status(struct atl1c_adapter *adapter)
 		netif_carrier_off(netdev);
 		atl1c_phy_reset(hw);
 		atl1c_phy_init(&adapter->hw);
+=======
+	u16 speed, duplex;
+	bool link;
+
+	spin_lock_irqsave(&adapter->mdio_lock, flags);
+	link = atl1c_get_link_status(hw);
+	spin_unlock_irqrestore(&adapter->mdio_lock, flags);
+
+	if (!link) {
+		/* link down */
+		netif_carrier_off(netdev);
+		hw->hibernate = true;
+		if (atl1c_reset_mac(hw) != 0)
+			if (netif_msg_hw(adapter))
+				dev_warn(&pdev->dev, "reset mac failed\n");
+		atl1c_set_aspm(hw, SPEED_0);
+		atl1c_post_phy_linkchg(hw, SPEED_0);
+		atl1c_reset_dma_ring(adapter);
+		atl1c_configure(adapter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Link Up */
 		hw->hibernate = false;
@@ -282,10 +474,16 @@ static void atl1c_check_link_status(struct atl1c_adapter *adapter)
 		    adapter->link_duplex != duplex) {
 			adapter->link_speed  = speed;
 			adapter->link_duplex = duplex;
+<<<<<<< HEAD
 			atl1c_set_aspm(hw, true);
 			atl1c_enable_tx_ctrl(hw);
 			atl1c_enable_rx_ctrl(hw);
 			atl1c_setup_mac_ctrl(adapter);
+=======
+			atl1c_set_aspm(hw, speed);
+			atl1c_post_phy_linkchg(hw, speed);
+			atl1c_start_mac(adapter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (netif_msg_link(adapter))
 				dev_info(&pdev->dev,
 					"%s: %s NIC Link is Up<%d Mbps %s>\n",
@@ -303,6 +501,7 @@ static void atl1c_link_chg_event(struct atl1c_adapter *adapter)
 {
 	struct net_device *netdev = adapter->netdev;
 	struct pci_dev    *pdev   = adapter->pdev;
+<<<<<<< HEAD
 	u16 phy_data;
 	u16 link_up;
 
@@ -313,6 +512,15 @@ static void atl1c_link_chg_event(struct atl1c_adapter *adapter)
 	link_up = phy_data & BMSR_LSTATUS;
 	/* notify upper layer link down ASAP */
 	if (!link_up) {
+=======
+	bool link;
+
+	spin_lock(&adapter->mdio_lock);
+	link = atl1c_get_link_status(&adapter->hw);
+	spin_unlock(&adapter->mdio_lock);
+	/* notify upper layer link down ASAP */
+	if (!link) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (netif_carrier_ok(netdev)) {
 			/* old link state: Up */
 			netif_carrier_off(netdev);
@@ -336,6 +544,12 @@ static void atl1c_common_task(struct work_struct *work)
 	adapter = container_of(work, struct atl1c_adapter, common_task);
 	netdev = adapter->netdev;
 
+<<<<<<< HEAD
+=======
+	if (test_bit(__AT_DOWN, &adapter->flags))
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_and_clear_bit(ATL1C_WORK_EVENT_RESET, &adapter->work_event)) {
 		netif_device_detach(netdev);
 		atl1c_down(adapter);
@@ -344,8 +558,16 @@ static void atl1c_common_task(struct work_struct *work)
 	}
 
 	if (test_and_clear_bit(ATL1C_WORK_EVENT_LINK_CHANGE,
+<<<<<<< HEAD
 		&adapter->work_event))
 		atl1c_check_link_status(adapter);
+=======
+		&adapter->work_event)) {
+		atl1c_irq_disable(adapter);
+		atl1c_check_link_status(adapter);
+		atl1c_irq_enable(adapter);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -355,11 +577,20 @@ static void atl1c_del_timer(struct atl1c_adapter *adapter)
 }
 
 
+<<<<<<< HEAD
 /*
  * atl1c_tx_timeout - Respond to a Tx Hang
  * @netdev: network interface device structure
  */
 static void atl1c_tx_timeout(struct net_device *netdev)
+=======
+/**
+ * atl1c_tx_timeout - Respond to a Tx Hang
+ * @netdev: network interface device structure
+ * @txqueue: index of hanging tx queue
+ */
+static void atl1c_tx_timeout(struct net_device *netdev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atl1c_adapter *adapter = netdev_priv(netdev);
 
@@ -368,7 +599,11 @@ static void atl1c_tx_timeout(struct net_device *netdev)
 	schedule_work(&adapter->common_task);
 }
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_set_multi - Multicast and Promiscuous mode set
  * @netdev: network interface device structure
  *
@@ -412,7 +647,11 @@ static void atl1c_set_multi(struct net_device *netdev)
 
 static void __atl1c_vlan_mode(netdev_features_t features, u32 *mac_ctrl_data)
 {
+<<<<<<< HEAD
 	if (features & NETIF_F_HW_VLAN_RX) {
+=======
+	if (features & NETIF_F_HW_VLAN_CTAG_RX) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* enable VLAN tag insert/strip */
 		*mac_ctrl_data |= MAC_CTRL_RMV_VLAN;
 	} else {
@@ -447,8 +686,13 @@ static void atl1c_restore_vlan(struct atl1c_adapter *adapter)
 	atl1c_vlan_mode(adapter->netdev, adapter->netdev->features);
 }
 
+<<<<<<< HEAD
 /*
  * atl1c_set_mac - Change the Ethernet Address of the NIC
+=======
+/**
+ * atl1c_set_mac_addr - Change the Ethernet Address of the NIC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @netdev: network interface device structure
  * @p: pointer to an address structure
  *
@@ -465,11 +709,18 @@ static int atl1c_set_mac_addr(struct net_device *netdev, void *p)
 	if (netif_running(netdev))
 		return -EBUSY;
 
+<<<<<<< HEAD
 	memcpy(netdev->dev_addr, addr->sa_data, netdev->addr_len);
 	memcpy(adapter->hw.mac_addr, addr->sa_data, netdev->addr_len);
 	netdev->addr_assign_type &= ~NET_ADDR_RANDOM;
 
 	atl1c_hw_set_mac_addr(&adapter->hw);
+=======
+	eth_hw_addr_set(netdev, addr->sa_data);
+	memcpy(adapter->hw.mac_addr, addr->sa_data, netdev->addr_len);
+
+	atl1c_hw_set_mac_addr(&adapter->hw, adapter->hw.mac_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -486,10 +737,17 @@ static void atl1c_set_rxbufsize(struct atl1c_adapter *adapter,
 static netdev_features_t atl1c_fix_features(struct net_device *netdev,
 	netdev_features_t features)
 {
+<<<<<<< HEAD
+=======
+	struct atl1c_adapter *adapter = netdev_priv(netdev);
+	struct atl1c_hw *hw = &adapter->hw;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Since there is no support for separate rx/tx vlan accel
 	 * enable/disable make sure tx flag is always in same state as rx.
 	 */
+<<<<<<< HEAD
 	if (features & NETIF_F_HW_VLAN_RX)
 		features |= NETIF_F_HW_VLAN_TX;
 	else
@@ -497,6 +755,17 @@ static netdev_features_t atl1c_fix_features(struct net_device *netdev,
 
 	if (netdev->mtu > MAX_TSO_FRAME_SIZE)
 		features &= ~(NETIF_F_TSO | NETIF_F_TSO6);
+=======
+	if (features & NETIF_F_HW_VLAN_CTAG_RX)
+		features |= NETIF_F_HW_VLAN_CTAG_TX;
+	else
+		features &= ~NETIF_F_HW_VLAN_CTAG_TX;
+
+	if (hw->nic_type != athr_mt) {
+		if (netdev->mtu > MAX_TSO_FRAME_SIZE)
+			features &= ~(NETIF_F_TSO | NETIF_F_TSO6);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return features;
 }
@@ -506,13 +775,44 @@ static int atl1c_set_features(struct net_device *netdev,
 {
 	netdev_features_t changed = netdev->features ^ features;
 
+<<<<<<< HEAD
 	if (changed & NETIF_F_HW_VLAN_RX)
+=======
+	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		atl1c_vlan_mode(netdev, features);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
+=======
+static void atl1c_set_max_mtu(struct net_device *netdev)
+{
+	struct atl1c_adapter *adapter = netdev_priv(netdev);
+	struct atl1c_hw *hw = &adapter->hw;
+
+	switch (hw->nic_type) {
+	/* These (GbE) devices support jumbo packets, max_mtu 6122 */
+	case athr_l1c:
+	case athr_l1d:
+	case athr_l1d_2:
+		netdev->max_mtu = MAX_JUMBO_FRAME_SIZE -
+			(ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN);
+		break;
+	case athr_mt:
+		netdev->max_mtu = 9500;
+		break;
+		/* The 10/100 devices don't support jumbo packets, max_mtu 1500 */
+	default:
+		netdev->max_mtu = ETH_DATA_LEN;
+		break;
+	}
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_change_mtu - Change the Maximum Transfer Unit
  * @netdev: network interface device structure
  * @new_mtu: new value for maximum frame size
@@ -522,6 +822,7 @@ static int atl1c_set_features(struct net_device *netdev,
 static int atl1c_change_mtu(struct net_device *netdev, int new_mtu)
 {
 	struct atl1c_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
 	int old_mtu   = netdev->mtu;
 	int max_frame = new_mtu + ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN;
 
@@ -533,6 +834,11 @@ static int atl1c_change_mtu(struct net_device *netdev, int new_mtu)
 	}
 	/* set MTU */
 	if (old_mtu != new_mtu && netif_running(netdev)) {
+=======
+
+	/* set MTU */
+	if (netif_running(netdev)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (test_and_set_bit(__AT_RESETTING, &adapter->flags))
 			msleep(1);
 		netdev->mtu = new_mtu;
@@ -542,6 +848,7 @@ static int atl1c_change_mtu(struct net_device *netdev, int new_mtu)
 		netdev_update_features(netdev);
 		atl1c_up(adapter);
 		clear_bit(__AT_RESETTING, &adapter->flags);
+<<<<<<< HEAD
 		if (adapter->hw.ctrl_flags & ATL1C_FPGA_VERSION) {
 			u32 phy_data;
 
@@ -550,6 +857,8 @@ static int atl1c_change_mtu(struct net_device *netdev, int new_mtu)
 			AT_WRITE_REG(&adapter->hw, 0x1414, phy_data);
 		}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -562,7 +871,11 @@ static int atl1c_mdio_read(struct net_device *netdev, int phy_id, int reg_num)
 	struct atl1c_adapter *adapter = netdev_priv(netdev);
 	u16 result;
 
+<<<<<<< HEAD
 	atl1c_read_phy_reg(&adapter->hw, reg_num & MDIO_REG_ADDR_MASK, &result);
+=======
+	atl1c_read_phy_reg(&adapter->hw, reg_num, &result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -571,6 +884,7 @@ static void atl1c_mdio_write(struct net_device *netdev, int phy_id,
 {
 	struct atl1c_adapter *adapter = netdev_priv(netdev);
 
+<<<<<<< HEAD
 	atl1c_write_phy_reg(&adapter->hw, reg_num & MDIO_REG_ADDR_MASK, val);
 }
 
@@ -580,6 +894,11 @@ static void atl1c_mdio_write(struct net_device *netdev, int phy_id,
  * @ifreq:
  * @cmd:
  */
+=======
+	atl1c_write_phy_reg(&adapter->hw, reg_num, val);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int atl1c_mii_ioctl(struct net_device *netdev,
 			   struct ifreq *ifr, int cmd)
 {
@@ -630,12 +949,15 @@ out:
 	return retval;
 }
 
+<<<<<<< HEAD
 /*
  * atl1c_ioctl -
  * @netdev:
  * @ifreq:
  * @cmd:
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int atl1c_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 {
 	switch (cmd) {
@@ -648,16 +970,25 @@ static int atl1c_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 	}
 }
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_alloc_queues - Allocate memory for all rings
  * @adapter: board private structure to initialize
  *
  */
+<<<<<<< HEAD
 static int __devinit atl1c_alloc_queues(struct atl1c_adapter *adapter)
+=======
+static int atl1c_alloc_queues(struct atl1c_adapter *adapter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 static void atl1c_set_mac_type(struct atl1c_hw *hw)
 {
 	switch (hw->device_id) {
@@ -681,26 +1012,58 @@ static void atl1c_set_mac_type(struct atl1c_hw *hw)
 		break;
 	default:
 		break;
+=======
+static enum atl1c_nic_type atl1c_get_mac_type(struct pci_dev *pdev,
+					      u8 __iomem *hw_addr)
+{
+	switch (pdev->device) {
+	case PCI_DEVICE_ID_ATTANSIC_L2C:
+		return athr_l2c;
+	case PCI_DEVICE_ID_ATTANSIC_L1C:
+		return athr_l1c;
+	case PCI_DEVICE_ID_ATHEROS_L2C_B:
+		return athr_l2c_b;
+	case PCI_DEVICE_ID_ATHEROS_L2C_B2:
+		return athr_l2c_b2;
+	case PCI_DEVICE_ID_ATHEROS_L1D:
+		return athr_l1d;
+	case PCI_DEVICE_ID_ATHEROS_L1D_2_0:
+		if (readl(hw_addr + REG_MT_MAGIC) == MT_MAGIC)
+			return athr_mt;
+		return athr_l1d_2;
+	default:
+		return athr_l1c;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static int atl1c_setup_mac_funcs(struct atl1c_hw *hw)
 {
+<<<<<<< HEAD
 	u32 phy_status_data;
 	u32 link_ctrl_data;
 
 	atl1c_set_mac_type(hw);
 	AT_READ_REG(hw, REG_PHY_STATUS, &phy_status_data);
+=======
+	u32 link_ctrl_data;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AT_READ_REG(hw, REG_LINK_CTRL, &link_ctrl_data);
 
 	hw->ctrl_flags = ATL1C_INTR_MODRT_ENABLE  |
 			 ATL1C_TXQ_MODE_ENHANCE;
+<<<<<<< HEAD
 	if (link_ctrl_data & LINK_CTRL_L0S_EN)
 		hw->ctrl_flags |= ATL1C_ASPM_L0S_SUPPORT;
 	if (link_ctrl_data & LINK_CTRL_L1_EN)
 		hw->ctrl_flags |= ATL1C_ASPM_L1_SUPPORT;
 	if (link_ctrl_data & LINK_CTRL_EXT_SYNC)
 		hw->ctrl_flags |= ATL1C_LINK_EXT_SYNC;
+=======
+	hw->ctrl_flags |= ATL1C_ASPM_L0S_SUPPORT |
+			  ATL1C_ASPM_L1_SUPPORT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw->ctrl_flags |= ATL1C_ASPM_CTRL_MON;
 
 	if (hw->nic_type == athr_l1c ||
@@ -709,7 +1072,74 @@ static int atl1c_setup_mac_funcs(struct atl1c_hw *hw)
 		hw->link_cap_flags |= ATL1C_LINK_CAP_1000M;
 	return 0;
 }
+<<<<<<< HEAD
 /*
+=======
+
+struct atl1c_platform_patch {
+	u16 pci_did;
+	u8  pci_revid;
+	u16 subsystem_vid;
+	u16 subsystem_did;
+	u32 patch_flag;
+#define ATL1C_LINK_PATCH	0x1
+};
+static const struct atl1c_platform_patch plats[] = {
+{0x2060, 0xC1, 0x1019, 0x8152, 0x1},
+{0x2060, 0xC1, 0x1019, 0x2060, 0x1},
+{0x2060, 0xC1, 0x1019, 0xE000, 0x1},
+{0x2062, 0xC0, 0x1019, 0x8152, 0x1},
+{0x2062, 0xC0, 0x1019, 0x2062, 0x1},
+{0x2062, 0xC0, 0x1458, 0xE000, 0x1},
+{0x2062, 0xC1, 0x1019, 0x8152, 0x1},
+{0x2062, 0xC1, 0x1019, 0x2062, 0x1},
+{0x2062, 0xC1, 0x1458, 0xE000, 0x1},
+{0x2062, 0xC1, 0x1565, 0x2802, 0x1},
+{0x2062, 0xC1, 0x1565, 0x2801, 0x1},
+{0x1073, 0xC0, 0x1019, 0x8151, 0x1},
+{0x1073, 0xC0, 0x1019, 0x1073, 0x1},
+{0x1073, 0xC0, 0x1458, 0xE000, 0x1},
+{0x1083, 0xC0, 0x1458, 0xE000, 0x1},
+{0x1083, 0xC0, 0x1019, 0x8151, 0x1},
+{0x1083, 0xC0, 0x1019, 0x1083, 0x1},
+{0x1083, 0xC0, 0x1462, 0x7680, 0x1},
+{0x1083, 0xC0, 0x1565, 0x2803, 0x1},
+{0},
+};
+
+static void atl1c_patch_assign(struct atl1c_hw *hw)
+{
+	struct pci_dev	*pdev = hw->adapter->pdev;
+	u32 misc_ctrl;
+	int i = 0;
+
+	hw->msi_lnkpatch = false;
+
+	while (plats[i].pci_did != 0) {
+		if (plats[i].pci_did == hw->device_id &&
+		    plats[i].pci_revid == hw->revision_id &&
+		    plats[i].subsystem_vid == hw->subsystem_vendor_id &&
+		    plats[i].subsystem_did == hw->subsystem_id) {
+			if (plats[i].patch_flag & ATL1C_LINK_PATCH)
+				hw->msi_lnkpatch = true;
+		}
+		i++;
+	}
+
+	if (hw->device_id == PCI_DEVICE_ID_ATHEROS_L2C_B2 &&
+	    hw->revision_id == L2CB_V21) {
+		/* config access mode */
+		pci_write_config_dword(pdev, REG_PCIE_IND_ACC_ADDR,
+				       REG_PCIE_DEV_MISC_CTRL);
+		pci_read_config_dword(pdev, REG_PCIE_IND_ACC_DATA, &misc_ctrl);
+		misc_ctrl &= ~0x100;
+		pci_write_config_dword(pdev, REG_PCIE_IND_ACC_ADDR,
+				       REG_PCIE_DEV_MISC_CTRL);
+		pci_write_config_dword(pdev, REG_PCIE_IND_ACC_DATA, misc_ctrl);
+	}
+}
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_sw_init - Initialize general software structures (struct atl1c_adapter)
  * @adapter: board private structure to initialize
  *
@@ -717,18 +1147,29 @@ static int atl1c_setup_mac_funcs(struct atl1c_hw *hw)
  * Fields are initialized based on PCI device information and
  * OS network device settings (MTU size).
  */
+<<<<<<< HEAD
 static int __devinit atl1c_sw_init(struct atl1c_adapter *adapter)
+=======
+static int atl1c_sw_init(struct atl1c_adapter *adapter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atl1c_hw *hw   = &adapter->hw;
 	struct pci_dev	*pdev = adapter->pdev;
 	u32 revision;
+<<<<<<< HEAD
 
+=======
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	adapter->wol = 0;
 	device_set_wakeup_enable(&pdev->dev, false);
 	adapter->link_speed = SPEED_0;
 	adapter->link_duplex = FULL_DUPLEX;
+<<<<<<< HEAD
 	adapter->num_rx_queues = AT_DEF_RECEIVE_QUEUE;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adapter->tpd_ring[0].count = 1024;
 	adapter->rfd_ring[0].count = 512;
 
@@ -736,7 +1177,11 @@ static int __devinit atl1c_sw_init(struct atl1c_adapter *adapter)
 	hw->device_id = pdev->device;
 	hw->subsystem_vendor_id = pdev->subsystem_vendor;
 	hw->subsystem_id = pdev->subsystem_device;
+<<<<<<< HEAD
 	AT_READ_REG(hw, PCI_CLASS_REVISION, &revision);
+=======
+	pci_read_config_dword(pdev, PCI_CLASS_REVISION, &revision);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw->revision_id = revision & 0xFF;
 	/* before link up, we assume hibernate is true */
 	hw->hibernate = true;
@@ -745,6 +1190,7 @@ static int __devinit atl1c_sw_init(struct atl1c_adapter *adapter)
 		dev_err(&pdev->dev, "set mac function pointers failed\n");
 		return -1;
 	}
+<<<<<<< HEAD
 	hw->intr_mask = IMR_NORMAL_MASK;
 	hw->phy_configured = false;
 	hw->preamble_len = 7;
@@ -757,14 +1203,29 @@ static int __devinit atl1c_sw_init(struct atl1c_adapter *adapter)
 		hw->rss_mode = atl1c_rss_mul_que_mul_int;
 		hw->rss_hash_bits = 16;
 	}
+=======
+	atl1c_patch_assign(hw);
+
+	hw->intr_mask = IMR_NORMAL_MASK;
+	for (i = 0; i < adapter->tx_queue_count; ++i)
+		hw->intr_mask |= atl1c_qregs[i].tx_isr;
+	for (i = 0; i < adapter->rx_queue_count; ++i)
+		hw->intr_mask |= atl1c_qregs[i].rx_isr;
+	hw->phy_configured = false;
+	hw->preamble_len = 7;
+	hw->max_frame_size = adapter->netdev->mtu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw->autoneg_advertised = ADVERTISED_Autoneg;
 	hw->indirect_tab = 0xE4E4E4E4;
 	hw->base_cpu = 0;
 
 	hw->ict = 50000;		/* 100ms */
 	hw->smb_timer = 200000;	  	/* 400ms */
+<<<<<<< HEAD
 	hw->cmb_tpd = 4;
 	hw->cmb_tx_timer = 1;		/* 2 us  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw->rx_imt = 200;
 	hw->tx_imt = 1000;
 
@@ -772,9 +1233,12 @@ static int __devinit atl1c_sw_init(struct atl1c_adapter *adapter)
 	hw->rfd_burst = 8;
 	hw->dma_order = atl1c_dma_ord_out;
 	hw->dmar_block = atl1c_dma_req_1024;
+<<<<<<< HEAD
 	hw->dmaw_block = atl1c_dma_req_1024;
 	hw->dmar_dly_cnt = 15;
 	hw->dmaw_dly_cnt = 4;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (atl1c_alloc_queues(adapter)) {
 		dev_err(&pdev->dev, "Unable to allocate memory for queues\n");
@@ -784,20 +1248,30 @@ static int __devinit atl1c_sw_init(struct atl1c_adapter *adapter)
 	atl1c_set_rxbufsize(adapter, adapter->netdev);
 	atomic_set(&adapter->irq_sem, 1);
 	spin_lock_init(&adapter->mdio_lock);
+<<<<<<< HEAD
 	spin_lock_init(&adapter->tx_lock);
+=======
+	spin_lock_init(&adapter->hw.intr_mask_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(__AT_DOWN, &adapter->flags);
 
 	return 0;
 }
 
 static inline void atl1c_clean_buffer(struct pci_dev *pdev,
+<<<<<<< HEAD
 				struct atl1c_buffer *buffer_info, int in_irq)
+=======
+				      struct atl1c_buffer *buffer_info,
+				      int budget)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 pci_driection;
 	if (buffer_info->flags & ATL1C_BUFFER_FREE)
 		return;
 	if (buffer_info->dma) {
 		if (buffer_info->flags & ATL1C_PCIMAP_FROMDEVICE)
+<<<<<<< HEAD
 			pci_driection = PCI_DMA_FROMDEVICE;
 		else
 			pci_driection = PCI_DMA_TODEVICE;
@@ -815,10 +1289,26 @@ static inline void atl1c_clean_buffer(struct pci_dev *pdev,
 		else
 			dev_kfree_skb(buffer_info->skb);
 	}
+=======
+			pci_driection = DMA_FROM_DEVICE;
+		else
+			pci_driection = DMA_TO_DEVICE;
+
+		if (buffer_info->flags & ATL1C_PCIMAP_SINGLE)
+			dma_unmap_single(&pdev->dev, buffer_info->dma,
+					 buffer_info->length, pci_driection);
+		else if (buffer_info->flags & ATL1C_PCIMAP_PAGE)
+			dma_unmap_page(&pdev->dev, buffer_info->dma,
+				       buffer_info->length, pci_driection);
+	}
+	if (buffer_info->skb)
+		napi_consume_skb(buffer_info->skb, budget);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buffer_info->dma = 0;
 	buffer_info->skb = NULL;
 	ATL1C_SET_BUFFER_STATE(buffer_info, ATL1C_BUFFER_FREE);
 }
+<<<<<<< HEAD
 /*
  * atl1c_clean_tx_ring - Free Tx-skb
  * @adapter: board private structure
@@ -827,6 +1317,17 @@ static void atl1c_clean_tx_ring(struct atl1c_adapter *adapter,
 				enum atl1c_trans_queue type)
 {
 	struct atl1c_tpd_ring *tpd_ring = &adapter->tpd_ring[type];
+=======
+/**
+ * atl1c_clean_tx_ring - Free Tx-skb
+ * @adapter: board private structure
+ * @queue: idx of transmit queue
+ */
+static void atl1c_clean_tx_ring(struct atl1c_adapter *adapter,
+				u32 queue)
+{
+	struct atl1c_tpd_ring *tpd_ring = &adapter->tpd_ring[queue];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct atl1c_buffer *buffer_info;
 	struct pci_dev *pdev = adapter->pdev;
 	u16 index, ring_count;
@@ -837,6 +1338,11 @@ static void atl1c_clean_tx_ring(struct atl1c_adapter *adapter,
 		atl1c_clean_buffer(pdev, buffer_info, 0);
 	}
 
+<<<<<<< HEAD
+=======
+	netdev_tx_reset_queue(netdev_get_tx_queue(adapter->netdev, queue));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Zero out Tx-buffers */
 	memset(tpd_ring->desc, 0, sizeof(struct atl1c_tpd_desc) *
 		ring_count);
@@ -844,6 +1350,7 @@ static void atl1c_clean_tx_ring(struct atl1c_adapter *adapter,
 	tpd_ring->next_to_use = 0;
 }
 
+<<<<<<< HEAD
 /*
  * atl1c_clean_rx_ring - Free rx-reservation skbs
  * @adapter: board private structure
@@ -868,6 +1375,31 @@ static void atl1c_clean_rx_ring(struct atl1c_adapter *adapter)
 		rrd_ring[i].next_to_use = 0;
 		rrd_ring[i].next_to_clean = 0;
 	}
+=======
+/**
+ * atl1c_clean_rx_ring - Free rx-reservation skbs
+ * @adapter: board private structure
+ * @queue: idx of transmit queue
+ */
+static void atl1c_clean_rx_ring(struct atl1c_adapter *adapter, u32 queue)
+{
+	struct atl1c_rfd_ring *rfd_ring = &adapter->rfd_ring[queue];
+	struct atl1c_rrd_ring *rrd_ring = &adapter->rrd_ring[queue];
+	struct atl1c_buffer *buffer_info;
+	struct pci_dev *pdev = adapter->pdev;
+	int j;
+
+	for (j = 0; j < rfd_ring->count; j++) {
+		buffer_info = &rfd_ring->buffer_info[j];
+		atl1c_clean_buffer(pdev, buffer_info, 0);
+	}
+	/* zero out the descriptor ring */
+	memset(rfd_ring->desc, 0, rfd_ring->size);
+	rfd_ring->next_to_clean = 0;
+	rfd_ring->next_to_use = 0;
+	rrd_ring->next_to_use = 0;
+	rrd_ring->next_to_clean = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -881,15 +1413,25 @@ static void atl1c_init_ring_ptrs(struct atl1c_adapter *adapter)
 	struct atl1c_buffer *buffer_info;
 	int i, j;
 
+<<<<<<< HEAD
 	for (i = 0; i < AT_MAX_TRANSMIT_QUEUE; i++) {
+=======
+	for (i = 0; i < adapter->tx_queue_count; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tpd_ring[i].next_to_use = 0;
 		atomic_set(&tpd_ring[i].next_to_clean, 0);
 		buffer_info = tpd_ring[i].buffer_info;
 		for (j = 0; j < tpd_ring->count; j++)
 			ATL1C_SET_BUFFER_STATE(&buffer_info[i],
+<<<<<<< HEAD
 					ATL1C_BUFFER_FREE);
 	}
 	for (i = 0; i < adapter->num_rx_queues; i++) {
+=======
+					       ATL1C_BUFFER_FREE);
+	}
+	for (i = 0; i < adapter->rx_queue_count; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rfd_ring[i].next_to_use = 0;
 		rfd_ring[i].next_to_clean = 0;
 		rrd_ring[i].next_to_use = 0;
@@ -901,7 +1443,11 @@ static void atl1c_init_ring_ptrs(struct atl1c_adapter *adapter)
 	}
 }
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_free_ring_resources - Free Tx / RX descriptor Resources
  * @adapter: board private structure
  *
@@ -911,6 +1457,7 @@ static void atl1c_free_ring_resources(struct atl1c_adapter *adapter)
 {
 	struct pci_dev *pdev = adapter->pdev;
 
+<<<<<<< HEAD
 	pci_free_consistent(pdev, adapter->ring_header.size,
 					adapter->ring_header.desc,
 					adapter->ring_header.dma);
@@ -918,14 +1465,28 @@ static void atl1c_free_ring_resources(struct atl1c_adapter *adapter)
 
 	/* Note: just free tdp_ring.buffer_info,
 	*  it contain rfd_ring.buffer_info, do not double free */
+=======
+	dma_free_coherent(&pdev->dev, adapter->ring_header.size,
+			  adapter->ring_header.desc, adapter->ring_header.dma);
+	adapter->ring_header.desc = NULL;
+
+	/* Note: just free tdp_ring.buffer_info,
+	 * it contain rfd_ring.buffer_info, do not double free
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (adapter->tpd_ring[0].buffer_info) {
 		kfree(adapter->tpd_ring[0].buffer_info);
 		adapter->tpd_ring[0].buffer_info = NULL;
 	}
 }
 
+<<<<<<< HEAD
 /*
  * atl1c_setup_mem_resources - allocate Tx / RX descriptor resources
+=======
+/**
+ * atl1c_setup_ring_resources - allocate Tx / RX descriptor resources
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @adapter: board private structure
  *
  * Return 0 on success, negative on failure
@@ -937,6 +1498,7 @@ static int atl1c_setup_ring_resources(struct atl1c_adapter *adapter)
 	struct atl1c_rfd_ring *rfd_ring = adapter->rfd_ring;
 	struct atl1c_rrd_ring *rrd_ring = adapter->rrd_ring;
 	struct atl1c_ring_header *ring_header = &adapter->ring_header;
+<<<<<<< HEAD
 	int num_rx_queues = adapter->num_rx_queues;
 	int size;
 	int i;
@@ -973,11 +1535,52 @@ static int atl1c_setup_ring_resources(struct atl1c_adapter *adapter)
 		count += rfd_ring[i].count;
 		rx_desc_count += rfd_ring[i].count;
 	}
+=======
+	int tqc = adapter->tx_queue_count;
+	int rqc = adapter->rx_queue_count;
+	int size;
+	int i;
+	int count = 0;
+	u32 offset = 0;
+
+	/* Even though only one tpd queue is actually used, the "high"
+	 * priority tpd queue also gets initialized
+	 */
+	if (tqc == 1)
+		tqc = 2;
+
+	for (i = 1; i < tqc; i++)
+		tpd_ring[i].count = tpd_ring[0].count;
+
+	size = sizeof(struct atl1c_buffer) * (tpd_ring->count * tqc +
+					      rfd_ring->count * rqc);
+	tpd_ring->buffer_info = kzalloc(size, GFP_KERNEL);
+	if (unlikely(!tpd_ring->buffer_info))
+		goto err_nomem;
+
+	for (i = 0; i < tqc; i++) {
+		tpd_ring[i].adapter = adapter;
+		tpd_ring[i].num = i;
+		tpd_ring[i].buffer_info = (tpd_ring->buffer_info + count);
+		count += tpd_ring[i].count;
+	}
+
+	for (i = 0; i < rqc; i++) {
+		rrd_ring[i].adapter = adapter;
+		rrd_ring[i].num = i;
+		rrd_ring[i].count = rfd_ring[0].count;
+		rfd_ring[i].count = rfd_ring[0].count;
+		rfd_ring[i].buffer_info = (tpd_ring->buffer_info + count);
+		count += rfd_ring->count;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * real ring DMA buffer
 	 * each ring/block may need up to 8 bytes for alignment, hence the
 	 * additional bytes tacked onto the end.
 	 */
+<<<<<<< HEAD
 	ring_header->size = size =
 		sizeof(struct atl1c_tpd_desc) * tpd_ring->count * 2 +
 		sizeof(struct atl1c_rx_free_desc) * rx_desc_count +
@@ -992,17 +1595,38 @@ static int atl1c_setup_ring_resources(struct atl1c_adapter *adapter)
 		goto err_nomem;
 	}
 	memset(ring_header->desc, 0, ring_header->size);
+=======
+	ring_header->size =
+		sizeof(struct atl1c_tpd_desc) * tpd_ring->count * tqc +
+		sizeof(struct atl1c_rx_free_desc) * rfd_ring->count * rqc +
+		sizeof(struct atl1c_recv_ret_status) * rfd_ring->count * rqc +
+		8 * 4;
+
+	ring_header->desc = dma_alloc_coherent(&pdev->dev, ring_header->size,
+					       &ring_header->dma, GFP_KERNEL);
+	if (unlikely(!ring_header->desc)) {
+		dev_err(&pdev->dev, "could not get memory for DMA buffer\n");
+		goto err_nomem;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* init TPD ring */
 
 	tpd_ring[0].dma = roundup(ring_header->dma, 8);
 	offset = tpd_ring[0].dma - ring_header->dma;
+<<<<<<< HEAD
 	for (i = 0; i < AT_MAX_TRANSMIT_QUEUE; i++) {
 		tpd_ring[i].dma = ring_header->dma + offset;
 		tpd_ring[i].desc = (u8 *) ring_header->desc + offset;
+=======
+	for (i = 0; i < tqc; i++) {
+		tpd_ring[i].dma = ring_header->dma + offset;
+		tpd_ring[i].desc = (u8 *)ring_header->desc + offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tpd_ring[i].size =
 			sizeof(struct atl1c_tpd_desc) * tpd_ring[i].count;
 		offset += roundup(tpd_ring[i].size, 8);
 	}
+<<<<<<< HEAD
 	/* init RFD ring */
 	for (i = 0; i < num_rx_queues; i++) {
 		rfd_ring[i].dma = ring_header->dma + offset;
@@ -1023,6 +1647,24 @@ static int atl1c_setup_ring_resources(struct atl1c_adapter *adapter)
 
 	adapter->smb.dma = ring_header->dma + offset;
 	adapter->smb.smb = (u8 *)ring_header->desc + offset;
+=======
+	for (i = 0; i < rqc; i++) {
+		/* init RFD ring */
+		rfd_ring[i].dma = ring_header->dma + offset;
+		rfd_ring[i].desc = (u8 *)ring_header->desc + offset;
+		rfd_ring[i].size = sizeof(struct atl1c_rx_free_desc) *
+			rfd_ring[i].count;
+		offset += roundup(rfd_ring[i].size, 8);
+
+		/* init RRD ring */
+		rrd_ring[i].dma = ring_header->dma + offset;
+		rrd_ring[i].desc = (u8 *)ring_header->desc + offset;
+		rrd_ring[i].size = sizeof(struct atl1c_recv_ret_status) *
+			rrd_ring[i].count;
+		offset += roundup(rrd_ring[i].size, 8);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_nomem:
@@ -1033,6 +1675,7 @@ err_nomem:
 static void atl1c_configure_des_ring(struct atl1c_adapter *adapter)
 {
 	struct atl1c_hw *hw = &adapter->hw;
+<<<<<<< HEAD
 	struct atl1c_rfd_ring *rfd_ring = (struct atl1c_rfd_ring *)
 				adapter->rfd_ring;
 	struct atl1c_rrd_ring *rrd_ring = (struct atl1c_rrd_ring *)
@@ -1055,12 +1698,32 @@ static void atl1c_configure_des_ring(struct atl1c_adapter *adapter)
 	AT_WRITE_REG(hw, REG_HTPD_HEAD_ADDR_LO,
 			(u32)(tpd_ring[atl1c_trans_high].dma &
 				AT_DMA_LO_ADDR_MASK));
+=======
+	struct atl1c_rfd_ring *rfd_ring = adapter->rfd_ring;
+	struct atl1c_rrd_ring *rrd_ring = adapter->rrd_ring;
+	struct atl1c_tpd_ring *tpd_ring = adapter->tpd_ring;
+	int i;
+	int tx_queue_count = adapter->tx_queue_count;
+
+	if (tx_queue_count == 1)
+		tx_queue_count = 2;
+
+	/* TPD */
+	AT_WRITE_REG(hw, REG_TX_BASE_ADDR_HI,
+		     (u32)((tpd_ring[0].dma & AT_DMA_HI_ADDR_MASK) >> 32));
+	/* just enable normal priority TX queue */
+	for (i = 0; i < tx_queue_count; i++) {
+		AT_WRITE_REG(hw, atl1c_qregs[i].tpd_addr_lo,
+			     (u32)(tpd_ring[i].dma & AT_DMA_LO_ADDR_MASK));
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AT_WRITE_REG(hw, REG_TPD_RING_SIZE,
 			(u32)(tpd_ring[0].count & TPD_RING_SIZE_MASK));
 
 
 	/* RFD */
 	AT_WRITE_REG(hw, REG_RX_BASE_ADDR_HI,
+<<<<<<< HEAD
 			(u32)((rfd_ring[0].dma & AT_DMA_HI_ADDR_MASK) >> 32));
 	for (i = 0; i < adapter->num_rx_queues; i++)
 		AT_WRITE_REG(hw, atl1c_rfd_addr_lo_regs[i],
@@ -1068,10 +1731,21 @@ static void atl1c_configure_des_ring(struct atl1c_adapter *adapter)
 
 	AT_WRITE_REG(hw, REG_RFD_RING_SIZE,
 			rfd_ring[0].count & RFD_RING_SIZE_MASK);
+=======
+		     (u32)((rfd_ring->dma & AT_DMA_HI_ADDR_MASK) >> 32));
+	for (i = 0; i < adapter->rx_queue_count; i++) {
+		AT_WRITE_REG(hw, atl1c_qregs[i].rfd_addr_lo,
+			     (u32)(rfd_ring[i].dma & AT_DMA_LO_ADDR_MASK));
+	}
+
+	AT_WRITE_REG(hw, REG_RFD_RING_SIZE,
+			rfd_ring->count & RFD_RING_SIZE_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AT_WRITE_REG(hw, REG_RX_BUF_SIZE,
 			adapter->rx_buffer_len & RX_BUF_SIZE_MASK);
 
 	/* RRD */
+<<<<<<< HEAD
 	for (i = 0; i < adapter->num_rx_queues; i++)
 		AT_WRITE_REG(hw, atl1c_rrd_addr_lo_regs[i],
 			(u32)(rrd_ring[i].dma & AT_DMA_LO_ADDR_MASK));
@@ -1086,6 +1760,15 @@ static void atl1c_configure_des_ring(struct atl1c_adapter *adapter)
 			(u32)((smb->dma & AT_DMA_HI_ADDR_MASK) >> 32));
 	AT_WRITE_REG(hw, REG_SMB_BASE_ADDR_LO,
 			(u32)(smb->dma & AT_DMA_LO_ADDR_MASK));
+=======
+	for (i = 0; i < adapter->rx_queue_count; i++) {
+		AT_WRITE_REG(hw, atl1c_qregs[i].rrd_addr_lo,
+			     (u32)(rrd_ring[i].dma & AT_DMA_LO_ADDR_MASK));
+	}
+	AT_WRITE_REG(hw, REG_RRD_RING_SIZE,
+			(rrd_ring->count & RRD_RING_SIZE_MASK));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->nic_type == athr_l2c_b) {
 		AT_WRITE_REG(hw, REG_SRAM_RXF_LEN, 0x02a0L);
 		AT_WRITE_REG(hw, REG_SRAM_TXF_LEN, 0x0100L);
@@ -1096,6 +1779,7 @@ static void atl1c_configure_des_ring(struct atl1c_adapter *adapter)
 		AT_WRITE_REG(hw, REG_TXF_WATER_MARK, 0);	/* TX watermark, to enter l1 state.*/
 		AT_WRITE_REG(hw, REG_RXD_DMA_CTRL, 0);		/* RXD threshold.*/
 	}
+<<<<<<< HEAD
 	if (hw->nic_type == athr_l2c_b || hw->nic_type == athr_l1d_2) {
 			/* Power Saving for L2c_B */
 		AT_READ_REG(hw, REG_SERDES_LOCK, &data);
@@ -1103,6 +1787,8 @@ static void atl1c_configure_des_ring(struct atl1c_adapter *adapter)
 		data |= SERDES_PYH_CLK_SLOWDOWN;
 		AT_WRITE_REG(hw, REG_SERDES_LOCK, data);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Load all of base address above */
 	AT_WRITE_REG(hw, REG_LOAD_PTR, 1);
 }
@@ -1110,6 +1796,7 @@ static void atl1c_configure_des_ring(struct atl1c_adapter *adapter)
 static void atl1c_configure_tx(struct atl1c_adapter *adapter)
 {
 	struct atl1c_hw *hw = &adapter->hw;
+<<<<<<< HEAD
 	u32 dev_ctrl_data;
 	u32 max_pay_load;
 	u16 tx_offload_thresh;
@@ -1136,6 +1823,28 @@ static void atl1c_configure_tx(struct atl1c_adapter *adapter)
 	if (hw->nic_type == athr_l2c_b || hw->nic_type == athr_l2c_b2)
 		max_pay_load_data >>= 1;
 	txq_ctrl_data |= max_pay_load_data;
+=======
+	int max_pay_load;
+	u16 tx_offload_thresh;
+	u32 txq_ctrl_data;
+
+	tx_offload_thresh = MAX_TSO_FRAME_SIZE;
+	AT_WRITE_REG(hw, REG_TX_TSO_OFFLOAD_THRESH,
+		(tx_offload_thresh >> 3) & TX_TSO_OFFLOAD_THRESH_MASK);
+	max_pay_load = pcie_get_readrq(adapter->pdev) >> 8;
+	hw->dmar_block = min_t(u32, max_pay_load, hw->dmar_block);
+	/*
+	 * if BIOS had changed the dam-read-max-length to an invalid value,
+	 * restore it to default value
+	 */
+	if (hw->dmar_block < DEVICE_CTRL_MAXRRS_MIN) {
+		pcie_set_readrq(adapter->pdev, 128 << DEVICE_CTRL_MAXRRS_MIN);
+		hw->dmar_block = DEVICE_CTRL_MAXRRS_MIN;
+	}
+	txq_ctrl_data =
+		hw->nic_type == athr_l2c_b || hw->nic_type == athr_l2c_b2 ?
+		L2CB_TXQ_CFGV : L1C_TXQ_CFGV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	AT_WRITE_REG(hw, REG_TXQ_CTRL, txq_ctrl_data);
 }
@@ -1150,6 +1859,7 @@ static void atl1c_configure_rx(struct atl1c_adapter *adapter)
 
 	if (hw->ctrl_flags & ATL1C_RX_IPV6_CHKSUM)
 		rxq_ctrl_data |= IPV6_CHKSUM_CTRL_EN;
+<<<<<<< HEAD
 	if (hw->rss_type == atl1c_rss_ipv4)
 		rxq_ctrl_data |= RSS_HASH_IPV4;
 	if (hw->rss_type == atl1c_rss_ipv4_tcp)
@@ -1168,10 +1878,18 @@ static void atl1c_configure_rx(struct atl1c_adapter *adapter)
 	if (hw->ctrl_flags & ATL1C_ASPM_CTRL_MON)
 		rxq_ctrl_data |= (ASPM_THRUPUT_LIMIT_1M &
 			ASPM_THRUPUT_LIMIT_MASK) << ASPM_THRUPUT_LIMIT_SHIFT;
+=======
+
+	/* aspm for gigabit */
+	if (hw->nic_type != athr_l1d_2 && (hw->device_id & 1) != 0)
+		rxq_ctrl_data = FIELD_SETX(rxq_ctrl_data, ASPM_THRUPUT_LIMIT,
+			ASPM_THRUPUT_LIMIT_100M);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	AT_WRITE_REG(hw, REG_RXQ_CTRL, rxq_ctrl_data);
 }
 
+<<<<<<< HEAD
 static void atl1c_configure_rss(struct atl1c_adapter *adapter)
 {
 	struct atl1c_hw *hw = &adapter->hw;
@@ -1180,11 +1898,14 @@ static void atl1c_configure_rss(struct atl1c_adapter *adapter)
 	AT_WRITE_REG(hw, REG_BASE_CPU_NUMBER, hw->base_cpu);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void atl1c_configure_dma(struct atl1c_adapter *adapter)
 {
 	struct atl1c_hw *hw = &adapter->hw;
 	u32 dma_ctrl_data;
 
+<<<<<<< HEAD
 	dma_ctrl_data = DMA_CTRL_DMAR_REQ_PRI;
 	if (hw->ctrl_flags & ATL1C_CMB_ENABLE)
 		dma_ctrl_data |= DMA_CTRL_CMB_EN;
@@ -1215,6 +1936,13 @@ static void atl1c_configure_dma(struct atl1c_adapter *adapter)
 		<< DMA_CTRL_DMAR_DLY_CNT_SHIFT;
 	dma_ctrl_data |= (((u32)hw->dmaw_dly_cnt) & DMA_CTRL_DMAW_DLY_CNT_MASK)
 		<< DMA_CTRL_DMAW_DLY_CNT_SHIFT;
+=======
+	dma_ctrl_data = FIELDX(DMA_CTRL_RORDER_MODE, DMA_CTRL_RORDER_MODE_OUT) |
+		DMA_CTRL_RREQ_PRI_DATA |
+		FIELDX(DMA_CTRL_RREQ_BLEN, hw->dmar_block) |
+		FIELDX(DMA_CTRL_WDLY_CNT, DMA_CTRL_WDLY_CNT_DEF) |
+		FIELDX(DMA_CTRL_RDLY_CNT, DMA_CTRL_RDLY_CNT_DEF);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	AT_WRITE_REG(hw, REG_DMA_CTRL, dma_ctrl_data);
 }
@@ -1229,20 +1957,31 @@ static int atl1c_stop_mac(struct atl1c_hw *hw)
 	u32 data;
 
 	AT_READ_REG(hw, REG_RXQ_CTRL, &data);
+<<<<<<< HEAD
 	data &= ~(RXQ1_CTRL_EN | RXQ2_CTRL_EN |
 		  RXQ3_CTRL_EN | RXQ_CTRL_EN);
+=======
+	data &= ~RXQ_CTRL_EN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	AT_WRITE_REG(hw, REG_RXQ_CTRL, data);
 
 	AT_READ_REG(hw, REG_TXQ_CTRL, &data);
 	data &= ~TXQ_CTRL_EN;
+<<<<<<< HEAD
 	AT_WRITE_REG(hw, REG_TWSI_CTRL, data);
 
 	atl1c_wait_until_idle(hw);
+=======
+	AT_WRITE_REG(hw, REG_TXQ_CTRL, data);
+
+	atl1c_wait_until_idle(hw, IDLE_STATUS_RXQ_BUSY | IDLE_STATUS_TXQ_BUSY);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	AT_READ_REG(hw, REG_MAC_CTRL, &data);
 	data &= ~(MAC_CTRL_TX_EN | MAC_CTRL_RX_EN);
 	AT_WRITE_REG(hw, REG_MAC_CTRL, data);
 
+<<<<<<< HEAD
 	return (int)atl1c_wait_until_idle(hw);
 }
 
@@ -1275,6 +2014,42 @@ static void atl1c_enable_tx_ctrl(struct atl1c_hw *hw)
 	AT_READ_REG(hw, REG_TXQ_CTRL, &data);
 	data |= TXQ_CTRL_EN;
 	AT_WRITE_REG(hw, REG_TXQ_CTRL, data);
+=======
+	return (int)atl1c_wait_until_idle(hw,
+		IDLE_STATUS_TXMAC_BUSY | IDLE_STATUS_RXMAC_BUSY);
+}
+
+static void atl1c_start_mac(struct atl1c_adapter *adapter)
+{
+	struct atl1c_hw *hw = &adapter->hw;
+	u32 mac, txq, rxq;
+
+	hw->mac_duplex = adapter->link_duplex == FULL_DUPLEX;
+	hw->mac_speed = adapter->link_speed == SPEED_1000 ?
+		atl1c_mac_speed_1000 : atl1c_mac_speed_10_100;
+
+	AT_READ_REG(hw, REG_TXQ_CTRL, &txq);
+	AT_READ_REG(hw, REG_RXQ_CTRL, &rxq);
+	AT_READ_REG(hw, REG_MAC_CTRL, &mac);
+
+	txq |= TXQ_CTRL_EN;
+	rxq |= RXQ_CTRL_EN;
+	mac |= MAC_CTRL_TX_EN | MAC_CTRL_TX_FLOW |
+	       MAC_CTRL_RX_EN | MAC_CTRL_RX_FLOW |
+	       MAC_CTRL_ADD_CRC | MAC_CTRL_PAD |
+	       MAC_CTRL_BC_EN | MAC_CTRL_SINGLE_PAUSE_EN |
+	       MAC_CTRL_HASH_ALG_CRC32;
+	if (hw->mac_duplex)
+		mac |= MAC_CTRL_DUPLX;
+	else
+		mac &= ~MAC_CTRL_DUPLX;
+	mac = FIELD_SETX(mac, MAC_CTRL_SPEED, hw->mac_speed);
+	mac = FIELD_SETX(mac, MAC_CTRL_PRMLEN, hw->preamble_len);
+
+	AT_WRITE_REG(hw, REG_TXQ_CTRL, txq);
+	AT_WRITE_REG(hw, REG_RXQ_CTRL, rxq);
+	AT_WRITE_REG(hw, REG_MAC_CTRL, mac);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1284,12 +2059,18 @@ static void atl1c_enable_tx_ctrl(struct atl1c_hw *hw)
  */
 static int atl1c_reset_mac(struct atl1c_hw *hw)
 {
+<<<<<<< HEAD
 	struct atl1c_adapter *adapter = (struct atl1c_adapter *)hw->adapter;
 	struct pci_dev *pdev = adapter->pdev;
 	u32 master_ctrl_data = 0;
 
 	AT_WRITE_REG(hw, REG_IMR, 0);
 	AT_WRITE_REG(hw, REG_ISR, ISR_DIS_INT);
+=======
+	struct atl1c_adapter *adapter = hw->adapter;
+	struct pci_dev *pdev = adapter->pdev;
+	u32 ctrl_data = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atl1c_stop_mac(hw);
 	/*
@@ -1298,26 +2079,63 @@ static int atl1c_reset_mac(struct atl1c_hw *hw)
 	 * the current PCI configuration.  The global reset bit is self-
 	 * clearing, and should clear within a microsecond.
 	 */
+<<<<<<< HEAD
 	AT_READ_REG(hw, REG_MASTER_CTRL, &master_ctrl_data);
 	master_ctrl_data |= MASTER_CTRL_OOB_DIS_OFF;
 	AT_WRITE_REGW(hw, REG_MASTER_CTRL, ((master_ctrl_data | MASTER_CTRL_SOFT_RST)
 			& 0xFFFF));
+=======
+	AT_READ_REG(hw, REG_MASTER_CTRL, &ctrl_data);
+	ctrl_data |= MASTER_CTRL_OOB_DIS;
+	AT_WRITE_REG(hw, REG_MASTER_CTRL, ctrl_data | MASTER_CTRL_SOFT_RST);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	AT_WRITE_FLUSH(hw);
 	msleep(10);
 	/* Wait at least 10ms for All module to be Idle */
 
+<<<<<<< HEAD
 	if (atl1c_wait_until_idle(hw)) {
+=======
+	if (atl1c_wait_until_idle(hw, IDLE_STATUS_MASK)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev,
 			"MAC state machine can't be idle since"
 			" disabled for 10ms second\n");
 		return -1;
 	}
+<<<<<<< HEAD
+=======
+	AT_WRITE_REG(hw, REG_MASTER_CTRL, ctrl_data);
+
+	/* driver control speed/duplex */
+	AT_READ_REG(hw, REG_MAC_CTRL, &ctrl_data);
+	AT_WRITE_REG(hw, REG_MAC_CTRL, ctrl_data | MAC_CTRL_SPEED_MODE_SW);
+
+	/* clk switch setting */
+	AT_READ_REG(hw, REG_SERDES, &ctrl_data);
+	switch (hw->nic_type) {
+	case athr_l2c_b:
+		ctrl_data &= ~(SERDES_PHY_CLK_SLOWDOWN |
+				SERDES_MAC_CLK_SLOWDOWN);
+		AT_WRITE_REG(hw, REG_SERDES, ctrl_data);
+		break;
+	case athr_l2c_b2:
+	case athr_l1d_2:
+		ctrl_data |= SERDES_PHY_CLK_SLOWDOWN | SERDES_MAC_CLK_SLOWDOWN;
+		AT_WRITE_REG(hw, REG_SERDES, ctrl_data);
+		break;
+	default:
+		break;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void atl1c_disable_l0s_l1(struct atl1c_hw *hw)
 {
+<<<<<<< HEAD
 	u32 pm_ctrl_data;
 
 	AT_READ_REG(hw, REG_PM_CTRL, &pm_ctrl_data);
@@ -1333,12 +2151,20 @@ static void atl1c_disable_l0s_l1(struct atl1c_hw *hw)
 	pm_ctrl_data |= PM_CTRL_SERDES_PLL_L1_EN;
 	pm_ctrl_data |=	PM_CTRL_SERDES_L1_EN;
 	AT_WRITE_REG(hw, REG_PM_CTRL, pm_ctrl_data);
+=======
+	u16 ctrl_flags = hw->ctrl_flags;
+
+	hw->ctrl_flags &= ~(ATL1C_ASPM_L0S_SUPPORT | ATL1C_ASPM_L1_SUPPORT);
+	atl1c_set_aspm(hw, SPEED_0);
+	hw->ctrl_flags = ctrl_flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Set ASPM state.
  * Enable/disable L0s/L1 depend on link state.
  */
+<<<<<<< HEAD
 static void atl1c_set_aspm(struct atl1c_hw *hw, bool linkup)
 {
 	u32 pm_ctrl_data;
@@ -1424,12 +2250,81 @@ static void atl1c_set_aspm(struct atl1c_hw *hw, bool linkup)
 			pm_ctrl_data |= PM_CTRL_ASPM_L1_EN;
 		else
 			pm_ctrl_data &= ~PM_CTRL_ASPM_L1_EN;
+=======
+static void atl1c_set_aspm(struct atl1c_hw *hw, u16 link_speed)
+{
+	u32 pm_ctrl_data;
+	u32 link_l1_timer;
+
+	AT_READ_REG(hw, REG_PM_CTRL, &pm_ctrl_data);
+	pm_ctrl_data &= ~(PM_CTRL_ASPM_L1_EN |
+			  PM_CTRL_ASPM_L0S_EN |
+			  PM_CTRL_MAC_ASPM_CHK);
+	/* L1 timer */
+	if (hw->nic_type == athr_l2c_b2 || hw->nic_type == athr_l1d_2) {
+		pm_ctrl_data &= ~PMCTRL_TXL1_AFTER_L0S;
+		link_l1_timer =
+			link_speed == SPEED_1000 || link_speed == SPEED_100 ?
+			L1D_PMCTRL_L1_ENTRY_TM_16US : 1;
+		pm_ctrl_data = FIELD_SETX(pm_ctrl_data,
+			L1D_PMCTRL_L1_ENTRY_TM, link_l1_timer);
+	} else {
+		link_l1_timer = hw->nic_type == athr_l2c_b ?
+			L2CB1_PM_CTRL_L1_ENTRY_TM : L1C_PM_CTRL_L1_ENTRY_TM;
+		if (link_speed != SPEED_1000 && link_speed != SPEED_100)
+			link_l1_timer = 1;
+		pm_ctrl_data = FIELD_SETX(pm_ctrl_data,
+			PM_CTRL_L1_ENTRY_TIMER, link_l1_timer);
+	}
+
+	/* L0S/L1 enable */
+	if ((hw->ctrl_flags & ATL1C_ASPM_L0S_SUPPORT) && link_speed != SPEED_0)
+		pm_ctrl_data |= PM_CTRL_ASPM_L0S_EN | PM_CTRL_MAC_ASPM_CHK;
+	if (hw->ctrl_flags & ATL1C_ASPM_L1_SUPPORT)
+		pm_ctrl_data |= PM_CTRL_ASPM_L1_EN | PM_CTRL_MAC_ASPM_CHK;
+
+	/* l2cb & l1d & l2cb2 & l1d2 */
+	if (hw->nic_type == athr_l2c_b || hw->nic_type == athr_l1d ||
+	    hw->nic_type == athr_l2c_b2 || hw->nic_type == athr_l1d_2) {
+		pm_ctrl_data = FIELD_SETX(pm_ctrl_data,
+			PM_CTRL_PM_REQ_TIMER, PM_CTRL_PM_REQ_TO_DEF);
+		pm_ctrl_data |= PM_CTRL_RCVR_WT_TIMER |
+				PM_CTRL_SERDES_PD_EX_L1 |
+				PM_CTRL_CLK_SWH_L1;
+		pm_ctrl_data &= ~(PM_CTRL_SERDES_L1_EN |
+				  PM_CTRL_SERDES_PLL_L1_EN |
+				  PM_CTRL_SERDES_BUFS_RX_L1_EN |
+				  PM_CTRL_SA_DLY_EN |
+				  PM_CTRL_HOTRST);
+		/* disable l0s if link down or l2cb */
+		if (link_speed == SPEED_0 || hw->nic_type == athr_l2c_b)
+			pm_ctrl_data &= ~PM_CTRL_ASPM_L0S_EN;
+	} else { /* l1c */
+		pm_ctrl_data =
+			FIELD_SETX(pm_ctrl_data, PM_CTRL_L1_ENTRY_TIMER, 0);
+		if (link_speed != SPEED_0) {
+			pm_ctrl_data |= PM_CTRL_SERDES_L1_EN |
+					PM_CTRL_SERDES_PLL_L1_EN |
+					PM_CTRL_SERDES_BUFS_RX_L1_EN;
+			pm_ctrl_data &= ~(PM_CTRL_SERDES_PD_EX_L1 |
+					  PM_CTRL_CLK_SWH_L1 |
+					  PM_CTRL_ASPM_L0S_EN |
+					  PM_CTRL_ASPM_L1_EN);
+		} else { /* link down */
+			pm_ctrl_data |= PM_CTRL_CLK_SWH_L1;
+			pm_ctrl_data &= ~(PM_CTRL_SERDES_L1_EN |
+					  PM_CTRL_SERDES_PLL_L1_EN |
+					  PM_CTRL_SERDES_BUFS_RX_L1_EN |
+					  PM_CTRL_ASPM_L0S_EN);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	AT_WRITE_REG(hw, REG_PM_CTRL, pm_ctrl_data);
 
 	return;
 }
 
+<<<<<<< HEAD
 static void atl1c_setup_mac_ctrl(struct atl1c_adapter *adapter)
 {
 	struct atl1c_hw *hw = &adapter->hw;
@@ -1475,17 +2370,32 @@ static void atl1c_setup_mac_ctrl(struct atl1c_adapter *adapter)
 
 /*
  * atl1c_configure - Configure Transmit&Receive Unit after Reset
+=======
+/**
+ * atl1c_configure_mac - Configure Transmit&Receive Unit after Reset
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @adapter: board private structure
  *
  * Configure the Tx /Rx unit of the MAC after a reset.
  */
+<<<<<<< HEAD
 static int atl1c_configure(struct atl1c_adapter *adapter)
+=======
+static int atl1c_configure_mac(struct atl1c_adapter *adapter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atl1c_hw *hw = &adapter->hw;
 	u32 master_ctrl_data = 0;
 	u32 intr_modrt_data;
 	u32 data;
 
+<<<<<<< HEAD
+=======
+	AT_READ_REG(hw, REG_MASTER_CTRL, &master_ctrl_data);
+	master_ctrl_data &= ~(MASTER_CTRL_TX_ITIMER_EN |
+			      MASTER_CTRL_RX_ITIMER_EN |
+			      MASTER_CTRL_INT_RDCLR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* clear interrupt status */
 	AT_WRITE_REG(hw, REG_ISR, 0xFFFFFFFF);
 	/*  Clear any WOL status */
@@ -1524,6 +2434,7 @@ static int atl1c_configure(struct atl1c_adapter *adapter)
 	master_ctrl_data |= MASTER_CTRL_SA_TIMER_EN;
 	AT_WRITE_REG(hw, REG_MASTER_CTRL, master_ctrl_data);
 
+<<<<<<< HEAD
 	if (hw->ctrl_flags & ATL1C_CMB_ENABLE) {
 		AT_WRITE_REG(hw, REG_CMB_TPD_THRESH,
 			hw->cmb_tpd & CMB_TPD_THRESH_MASK);
@@ -1543,11 +2454,58 @@ static int atl1c_configure(struct atl1c_adapter *adapter)
 	atl1c_configure_tx(adapter);
 	atl1c_configure_rx(adapter);
 	atl1c_configure_rss(adapter);
+=======
+	AT_WRITE_REG(hw, REG_SMB_STAT_TIMER,
+		hw->smb_timer & SMB_STAT_TIMER_MASK);
+
+	/* set MTU */
+	AT_WRITE_REG(hw, REG_MTU, hw->max_frame_size + ETH_HLEN +
+			VLAN_HLEN + ETH_FCS_LEN);
+
+	atl1c_configure_tx(adapter);
+	atl1c_configure_rx(adapter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atl1c_configure_dma(adapter);
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int atl1c_configure(struct atl1c_adapter *adapter)
+{
+	struct net_device *netdev = adapter->netdev;
+	int num;
+	int i;
+
+	if (adapter->hw.nic_type == athr_mt) {
+		u32 mode;
+
+		AT_READ_REG(&adapter->hw, REG_MT_MODE, &mode);
+		if (adapter->rx_queue_count == 4)
+			mode |= MT_MODE_4Q;
+		else
+			mode &= ~MT_MODE_4Q;
+		AT_WRITE_REG(&adapter->hw, REG_MT_MODE, mode);
+	}
+
+	atl1c_init_ring_ptrs(adapter);
+	atl1c_set_multi(netdev);
+	atl1c_restore_vlan(adapter);
+
+	for (i = 0; i < adapter->rx_queue_count; ++i) {
+		num = atl1c_alloc_rx_buffer(adapter, i, false);
+		if (unlikely(num == 0))
+			return -ENOMEM;
+	}
+
+	if (atl1c_configure_mac(adapter))
+		return -EIO;
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void atl1c_update_hw_stats(struct atl1c_adapter *adapter)
 {
 	u16 hw_reg_addr = 0;
@@ -1574,7 +2532,11 @@ static void atl1c_update_hw_stats(struct atl1c_adapter *adapter)
 	}
 }
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_get_stats - Get System Network Statistics
  * @netdev: network interface device structure
  *
@@ -1588,31 +2550,65 @@ static struct net_device_stats *atl1c_get_stats(struct net_device *netdev)
 	struct net_device_stats *net_stats = &netdev->stats;
 
 	atl1c_update_hw_stats(adapter);
+<<<<<<< HEAD
 	net_stats->rx_packets = hw_stats->rx_ok;
 	net_stats->tx_packets = hw_stats->tx_ok;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	net_stats->rx_bytes   = hw_stats->rx_byte_cnt;
 	net_stats->tx_bytes   = hw_stats->tx_byte_cnt;
 	net_stats->multicast  = hw_stats->rx_mcast;
 	net_stats->collisions = hw_stats->tx_1_col +
+<<<<<<< HEAD
 				hw_stats->tx_2_col * 2 +
 				hw_stats->tx_late_col + hw_stats->tx_abort_col;
 	net_stats->rx_errors  = hw_stats->rx_frag + hw_stats->rx_fcs_err +
 				hw_stats->rx_len_err + hw_stats->rx_sz_ov +
 				hw_stats->rx_rrd_ov + hw_stats->rx_align_err;
+=======
+				hw_stats->tx_2_col +
+				hw_stats->tx_late_col +
+				hw_stats->tx_abort_col;
+
+	net_stats->rx_errors  = hw_stats->rx_frag +
+				hw_stats->rx_fcs_err +
+				hw_stats->rx_len_err +
+				hw_stats->rx_sz_ov +
+				hw_stats->rx_rrd_ov +
+				hw_stats->rx_align_err +
+				hw_stats->rx_rxf_ov;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	net_stats->rx_fifo_errors   = hw_stats->rx_rxf_ov;
 	net_stats->rx_length_errors = hw_stats->rx_len_err;
 	net_stats->rx_crc_errors    = hw_stats->rx_fcs_err;
 	net_stats->rx_frame_errors  = hw_stats->rx_align_err;
+<<<<<<< HEAD
 	net_stats->rx_over_errors   = hw_stats->rx_rrd_ov + hw_stats->rx_rxf_ov;
 
 	net_stats->rx_missed_errors = hw_stats->rx_rrd_ov + hw_stats->rx_rxf_ov;
 
 	net_stats->tx_errors = hw_stats->tx_late_col + hw_stats->tx_abort_col +
 				hw_stats->tx_underrun + hw_stats->tx_trunc;
+=======
+	net_stats->rx_dropped       = hw_stats->rx_rrd_ov;
+
+	net_stats->tx_errors = hw_stats->tx_late_col +
+			       hw_stats->tx_abort_col +
+			       hw_stats->tx_underrun +
+			       hw_stats->tx_trunc;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	net_stats->tx_fifo_errors    = hw_stats->tx_underrun;
 	net_stats->tx_aborted_errors = hw_stats->tx_abort_col;
 	net_stats->tx_window_errors  = hw_stats->tx_late_col;
 
+<<<<<<< HEAD
+=======
+	net_stats->rx_packets = hw_stats->rx_ok + net_stats->rx_errors;
+	net_stats->tx_packets = hw_stats->tx_ok + net_stats->tx_errors;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return net_stats;
 }
 
@@ -1625,15 +2621,26 @@ static inline void atl1c_clear_phy_int(struct atl1c_adapter *adapter)
 	spin_unlock(&adapter->mdio_lock);
 }
 
+<<<<<<< HEAD
 static bool atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
 				enum atl1c_trans_queue type)
 {
 	struct atl1c_tpd_ring *tpd_ring = (struct atl1c_tpd_ring *)
 				&adapter->tpd_ring[type];
+=======
+static int atl1c_clean_tx(struct napi_struct *napi, int budget)
+{
+	struct atl1c_tpd_ring *tpd_ring =
+		container_of(napi, struct atl1c_tpd_ring, napi);
+	struct atl1c_adapter *adapter = tpd_ring->adapter;
+	struct netdev_queue *txq =
+		netdev_get_tx_queue(napi->dev, tpd_ring->num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct atl1c_buffer *buffer_info;
 	struct pci_dev *pdev = adapter->pdev;
 	u16 next_to_clean = atomic_read(&tpd_ring->next_to_clean);
 	u16 hw_next_to_clean;
+<<<<<<< HEAD
 	u16 shift;
 	u32 data;
 
@@ -1648,11 +2655,27 @@ static bool atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
 	while (next_to_clean != hw_next_to_clean) {
 		buffer_info = &tpd_ring->buffer_info[next_to_clean];
 		atl1c_clean_buffer(pdev, buffer_info, 1);
+=======
+	unsigned int total_bytes = 0, total_packets = 0;
+	unsigned long flags;
+
+	AT_READ_REGW(&adapter->hw, atl1c_qregs[tpd_ring->num].tpd_cons,
+		     &hw_next_to_clean);
+
+	while (next_to_clean != hw_next_to_clean) {
+		buffer_info = &tpd_ring->buffer_info[next_to_clean];
+		if (buffer_info->skb) {
+			total_bytes += buffer_info->skb->len;
+			total_packets++;
+		}
+		atl1c_clean_buffer(pdev, buffer_info, budget);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (++next_to_clean == tpd_ring->count)
 			next_to_clean = 0;
 		atomic_set(&tpd_ring->next_to_clean, next_to_clean);
 	}
 
+<<<<<<< HEAD
 	if (netif_queue_stopped(adapter->netdev) &&
 			netif_carrier_ok(adapter->netdev)) {
 		netif_wake_queue(adapter->netdev);
@@ -1666,6 +2689,60 @@ static bool atl1c_clean_tx_irq(struct atl1c_adapter *adapter,
  * @irq: interrupt number
  * @data: pointer to a network interface device structure
  * @pt_regs: CPU registers structure
+=======
+	netdev_tx_completed_queue(txq, total_packets, total_bytes);
+
+	if (netif_tx_queue_stopped(txq) && netif_carrier_ok(adapter->netdev))
+		netif_tx_wake_queue(txq);
+
+	if (total_packets < budget) {
+		napi_complete_done(napi, total_packets);
+		spin_lock_irqsave(&adapter->hw.intr_mask_lock, flags);
+		adapter->hw.intr_mask |= atl1c_qregs[tpd_ring->num].tx_isr;
+		AT_WRITE_REG(&adapter->hw, REG_IMR, adapter->hw.intr_mask);
+		spin_unlock_irqrestore(&adapter->hw.intr_mask_lock, flags);
+		return total_packets;
+	}
+	return budget;
+}
+
+static void atl1c_intr_rx_tx(struct atl1c_adapter *adapter, u32 status)
+{
+	struct atl1c_hw *hw = &adapter->hw;
+	u32 intr_mask;
+	int i;
+
+	spin_lock(&hw->intr_mask_lock);
+	intr_mask = hw->intr_mask;
+	for (i = 0; i < adapter->rx_queue_count; ++i) {
+		if (!(status & atl1c_qregs[i].rx_isr))
+			continue;
+		if (napi_schedule_prep(&adapter->rrd_ring[i].napi)) {
+			intr_mask &= ~atl1c_qregs[i].rx_isr;
+			__napi_schedule(&adapter->rrd_ring[i].napi);
+		}
+	}
+	for (i = 0; i < adapter->tx_queue_count; ++i) {
+		if (!(status & atl1c_qregs[i].tx_isr))
+			continue;
+		if (napi_schedule_prep(&adapter->tpd_ring[i].napi)) {
+			intr_mask &= ~atl1c_qregs[i].tx_isr;
+			__napi_schedule(&adapter->tpd_ring[i].napi);
+		}
+	}
+
+	if (hw->intr_mask != intr_mask) {
+		hw->intr_mask = intr_mask;
+		AT_WRITE_REG(hw, REG_IMR, hw->intr_mask);
+	}
+	spin_unlock(&hw->intr_mask_lock);
+}
+
+/**
+ * atl1c_intr - Interrupt Handler
+ * @irq: interrupt number
+ * @data: pointer to a network interface device structure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static irqreturn_t atl1c_intr(int irq, void *data)
 {
@@ -1692,6 +2769,7 @@ static irqreturn_t atl1c_intr(int irq, void *data)
 			atl1c_clear_phy_int(adapter);
 		/* Ack ISR */
 		AT_WRITE_REG(hw, REG_ISR, status | ISR_DIS_INT);
+<<<<<<< HEAD
 		if (status & ISR_RX_PKT) {
 			if (likely(napi_schedule_prep(&adapter->napi))) {
 				hw->intr_mask &= ~ISR_RX_PKT;
@@ -1701,6 +2779,10 @@ static irqreturn_t atl1c_intr(int irq, void *data)
 		}
 		if (status & ISR_TX_PKT)
 			atl1c_clean_tx_irq(adapter, atl1c_trans_normal);
+=======
+		if (status & (ISR_RX_PKT | ISR_TX_PKT))
+			atl1c_intr_rx_tx(adapter, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		handled = IRQ_HANDLED;
 		/* check if PCIE PHY Link down */
@@ -1737,6 +2819,14 @@ static irqreturn_t atl1c_intr(int irq, void *data)
 static inline void atl1c_rx_checksum(struct atl1c_adapter *adapter,
 		  struct sk_buff *skb, struct atl1c_recv_ret_status *prrs)
 {
+<<<<<<< HEAD
+=======
+	if (adapter->hw.nic_type == athr_mt) {
+		if (prrs->word3 & RRS_MT_PROT_ID_TCPUDP)
+			skb->ip_summed = CHECKSUM_UNNECESSARY;
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The pid field in RRS in not correct sometimes, so we
 	 * cannot figure out if the packet is fragmented or not,
@@ -1745,9 +2835,17 @@ static inline void atl1c_rx_checksum(struct atl1c_adapter *adapter,
 	skb_checksum_none_assert(skb);
 }
 
+<<<<<<< HEAD
 static int atl1c_alloc_rx_buffer(struct atl1c_adapter *adapter, const int ringid)
 {
 	struct atl1c_rfd_ring *rfd_ring = &adapter->rfd_ring[ringid];
+=======
+static int atl1c_alloc_rx_buffer(struct atl1c_adapter *adapter, u32 queue,
+				 bool napi_mode)
+{
+	struct atl1c_rfd_ring *rfd_ring = &adapter->rfd_ring[queue];
+	struct atl1c_rrd_ring *rrd_ring = &adapter->rrd_ring[queue];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_dev *pdev = adapter->pdev;
 	struct atl1c_buffer *buffer_info, *next_info;
 	struct sk_buff *skb;
@@ -1755,6 +2853,10 @@ static int atl1c_alloc_rx_buffer(struct atl1c_adapter *adapter, const int ringid
 	u16 num_alloc = 0;
 	u16 rfd_next_to_use, next_next;
 	struct atl1c_rx_free_desc *rfd_desc;
+<<<<<<< HEAD
+=======
+	dma_addr_t mapping;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	next_next = rfd_next_to_use = rfd_ring->next_to_use;
 	if (++next_next == rfd_ring->count)
@@ -1765,13 +2867,34 @@ static int atl1c_alloc_rx_buffer(struct atl1c_adapter *adapter, const int ringid
 	while (next_info->flags & ATL1C_BUFFER_FREE) {
 		rfd_desc = ATL1C_RFD_DESC(rfd_ring, rfd_next_to_use);
 
+<<<<<<< HEAD
 		skb = netdev_alloc_skb(adapter->netdev, adapter->rx_buffer_len);
+=======
+		/* When DMA RX address is set to something like
+		 * 0x....fc0, it will be very likely to cause DMA
+		 * RFD overflow issue.
+		 *
+		 * To work around it, we apply rx skb with 64 bytes
+		 * longer space, and offset the address whenever
+		 * 0x....fc0 is detected.
+		 */
+		if (likely(napi_mode))
+			skb = napi_alloc_skb(&rrd_ring->napi, adapter->rx_buffer_len + 64);
+		else
+			skb = netdev_alloc_skb(adapter->netdev, adapter->rx_buffer_len + 64);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (unlikely(!skb)) {
 			if (netif_msg_rx_err(adapter))
 				dev_warn(&pdev->dev, "alloc rx buffer failed\n");
 			break;
 		}
 
+<<<<<<< HEAD
+=======
+		if (((unsigned long)skb->data & 0xfff) == 0xfc0)
+			skb_reserve(skb, 64);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Make buffer alignment 2 beyond a 16 byte boundary
 		 * this will result in a 16 byte aligned IP header after
@@ -1781,9 +2904,23 @@ static int atl1c_alloc_rx_buffer(struct atl1c_adapter *adapter, const int ringid
 		ATL1C_SET_BUFFER_STATE(buffer_info, ATL1C_BUFFER_BUSY);
 		buffer_info->skb = skb;
 		buffer_info->length = adapter->rx_buffer_len;
+<<<<<<< HEAD
 		buffer_info->dma = pci_map_single(pdev, vir_addr,
 						buffer_info->length,
 						PCI_DMA_FROMDEVICE);
+=======
+		mapping = dma_map_single(&pdev->dev, vir_addr,
+					 buffer_info->length, DMA_FROM_DEVICE);
+		if (unlikely(dma_mapping_error(&pdev->dev, mapping))) {
+			dev_kfree_skb(skb);
+			buffer_info->skb = NULL;
+			buffer_info->length = 0;
+			ATL1C_SET_BUFFER_STATE(buffer_info, ATL1C_BUFFER_FREE);
+			netif_warn(adapter, rx_err, adapter->netdev, "RX dma_map_single failed");
+			break;
+		}
+		buffer_info->dma = mapping;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ATL1C_SET_PCIMAP_TYPE(buffer_info, ATL1C_PCIMAP_SINGLE,
 			ATL1C_PCIMAP_FROMDEVICE);
 		rfd_desc->buffer_addr = cpu_to_le64(buffer_info->dma);
@@ -1799,8 +2936,13 @@ static int atl1c_alloc_rx_buffer(struct atl1c_adapter *adapter, const int ringid
 		/* TODO: update mailbox here */
 		wmb();
 		rfd_ring->next_to_use = rfd_next_to_use;
+<<<<<<< HEAD
 		AT_WRITE_REG(&adapter->hw, atl1c_rfd_prod_idx_regs[ringid],
 			rfd_ring->next_to_use & MB_RFDX_PROD_IDX_MASK);
+=======
+		AT_WRITE_REG(&adapter->hw, atl1c_qregs[queue].rfd_prod,
+			     rfd_ring->next_to_use & MB_RFDX_PROD_IDX_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return num_alloc;
@@ -1838,6 +2980,7 @@ static void atl1c_clean_rfd(struct atl1c_rfd_ring *rfd_ring,
 	rfd_ring->next_to_clean = rfd_index;
 }
 
+<<<<<<< HEAD
 static void atl1c_clean_rx_irq(struct atl1c_adapter *adapter, u8 que,
 		   int *work_done, int work_to_do)
 {
@@ -1854,6 +2997,35 @@ static void atl1c_clean_rx_irq(struct atl1c_adapter *adapter, u8 que,
 
 	while (1) {
 		if (*work_done >= work_to_do)
+=======
+/**
+ * atl1c_clean_rx - NAPI Rx polling callback
+ * @napi: napi info
+ * @budget: limit of packets to clean
+ */
+static int atl1c_clean_rx(struct napi_struct *napi, int budget)
+{
+	struct atl1c_rrd_ring *rrd_ring =
+		container_of(napi, struct atl1c_rrd_ring, napi);
+	struct atl1c_adapter *adapter = rrd_ring->adapter;
+	u16 rfd_num, rfd_index;
+	u16 length;
+	struct pci_dev *pdev = adapter->pdev;
+	struct net_device *netdev  = adapter->netdev;
+	struct atl1c_rfd_ring *rfd_ring = &adapter->rfd_ring[rrd_ring->num];
+	struct sk_buff *skb;
+	struct atl1c_recv_ret_status *rrs;
+	struct atl1c_buffer *buffer_info;
+	int work_done = 0;
+	unsigned long flags;
+
+	/* Keep link state information with original netdev */
+	if (!netif_carrier_ok(adapter->netdev))
+		goto quit_polling;
+
+	while (1) {
+		if (work_done >= budget)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		rrs = ATL1C_RRD_DESC(rrd_ring, rrd_ring->next_to_clean);
 		if (likely(RRS_RXD_IS_VALID(rrs->word3))) {
@@ -1872,10 +3044,17 @@ rrs_checked:
 		atl1c_clean_rrd(rrd_ring, rrs, rfd_num);
 		if (rrs->word3 & (RRS_RX_ERR_SUM | RRS_802_3_LEN_ERR)) {
 			atl1c_clean_rfd(rfd_ring, rrs, rfd_num);
+<<<<<<< HEAD
 				if (netif_msg_rx_err(adapter))
 					dev_warn(&pdev->dev,
 						"wrong packet! rrs word3 is %x\n",
 						rrs->word3);
+=======
+			if (netif_msg_rx_err(adapter))
+				dev_warn(&pdev->dev,
+					 "wrong packet! rrs word3 is %x\n",
+					 rrs->word3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -1886,8 +3065,13 @@ rrs_checked:
 			rfd_index = (rrs->word0 >> RRS_RX_RFD_INDEX_SHIFT) &
 					RRS_RX_RFD_INDEX_MASK;
 			buffer_info = &rfd_ring->buffer_info[rfd_index];
+<<<<<<< HEAD
 			pci_unmap_single(pdev, buffer_info->dma,
 				buffer_info->length, PCI_DMA_FROMDEVICE);
+=======
+			dma_unmap_single(&pdev->dev, buffer_info->dma,
+					 buffer_info->length, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			skb = buffer_info->skb;
 		} else {
 			/* TODO */
@@ -1905,6 +3089,7 @@ rrs_checked:
 
 			AT_TAG_TO_VLAN(rrs->vlan_tag, vlan);
 			vlan = le16_to_cpu(vlan);
+<<<<<<< HEAD
 			__vlan_hwaccel_put_tag(skb, vlan);
 		}
 		netif_receive_skb(skb);
@@ -1937,6 +3122,24 @@ quit_polling:
 		napi_complete(napi);
 		adapter->hw.intr_mask |= ISR_RX_PKT;
 		AT_WRITE_REG(&adapter->hw, REG_IMR, adapter->hw.intr_mask);
+=======
+			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vlan);
+		}
+		napi_gro_receive(napi, skb);
+
+		work_done++;
+	}
+	if (work_done)
+		atl1c_alloc_rx_buffer(adapter, rrd_ring->num, true);
+
+	if (work_done < budget) {
+quit_polling:
+		napi_complete_done(napi, work_done);
+		spin_lock_irqsave(&adapter->hw.intr_mask_lock, flags);
+		adapter->hw.intr_mask |= atl1c_qregs[rrd_ring->num].rx_isr;
+		AT_WRITE_REG(&adapter->hw, REG_IMR, adapter->hw.intr_mask);
+		spin_unlock_irqrestore(&adapter->hw.intr_mask_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return work_done;
 }
@@ -1958,9 +3161,15 @@ static void atl1c_netpoll(struct net_device *netdev)
 }
 #endif
 
+<<<<<<< HEAD
 static inline u16 atl1c_tpd_avail(struct atl1c_adapter *adapter, enum atl1c_trans_queue type)
 {
 	struct atl1c_tpd_ring *tpd_ring = &adapter->tpd_ring[type];
+=======
+static inline u16 atl1c_tpd_avail(struct atl1c_adapter *adapter, u32 queue)
+{
+	struct atl1c_tpd_ring *tpd_ring = &adapter->tpd_ring[queue];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 next_to_use = 0;
 	u16 next_to_clean = 0;
 
@@ -1978,9 +3187,15 @@ static inline u16 atl1c_tpd_avail(struct atl1c_adapter *adapter, enum atl1c_tran
  * there is enough tpd to use
  */
 static struct atl1c_tpd_desc *atl1c_get_tpd(struct atl1c_adapter *adapter,
+<<<<<<< HEAD
 	enum atl1c_trans_queue type)
 {
 	struct atl1c_tpd_ring *tpd_ring = &adapter->tpd_ring[type];
+=======
+					    u32 queue)
+{
+	struct atl1c_tpd_ring *tpd_ring = &adapter->tpd_ring[queue];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct atl1c_tpd_desc *tpd_desc;
 	u16 next_to_use = 0;
 
@@ -2010,7 +3225,11 @@ static u16 atl1c_cal_tpd_req(const struct sk_buff *skb)
 	tpd_req = skb_shinfo(skb)->nr_frags + 1;
 
 	if (skb_is_gso(skb)) {
+<<<<<<< HEAD
 		proto_hdr_len = skb_transport_offset(skb) + tcp_hdrlen(skb);
+=======
+		proto_hdr_len = skb_tcp_all_headers(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (proto_hdr_len < skb_headlen(skb))
 			tpd_req++;
 		if (skb_shinfo(skb)->gso_type & SKB_GSO_TCPV6)
@@ -2022,6 +3241,7 @@ static u16 atl1c_cal_tpd_req(const struct sk_buff *skb)
 static int atl1c_tso_csum(struct atl1c_adapter *adapter,
 			  struct sk_buff *skb,
 			  struct atl1c_tpd_desc **tpd,
+<<<<<<< HEAD
 			  enum atl1c_trans_queue type)
 {
 	struct pci_dev *pdev = adapter->pdev;
@@ -2036,16 +3256,42 @@ static int atl1c_tso_csum(struct atl1c_adapter *adapter,
 			if (unlikely(err))
 				return -1;
 		}
+=======
+			  u32 queue)
+{
+	struct pci_dev *pdev = adapter->pdev;
+	unsigned short offload_type;
+	u8 hdr_len;
+	u32 real_len;
+
+	if (skb_is_gso(skb)) {
+		int err;
+
+		err = skb_cow_head(skb, 0);
+		if (err < 0)
+			return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		offload_type = skb_shinfo(skb)->gso_type;
 
 		if (offload_type & SKB_GSO_TCPV4) {
 			real_len = (((unsigned char *)ip_hdr(skb) - skb->data)
 					+ ntohs(ip_hdr(skb)->tot_len));
 
+<<<<<<< HEAD
 			if (real_len < skb->len)
 				pskb_trim(skb, real_len);
 
 			hdr_len = (skb_transport_offset(skb) + tcp_hdrlen(skb));
+=======
+			if (real_len < skb->len) {
+				err = pskb_trim(skb, real_len);
+				if (err)
+					return err;
+			}
+
+			hdr_len = skb_tcp_all_headers(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (unlikely(skb->len == hdr_len)) {
 				/* only xsum need */
 				if (netif_msg_tx_queued(adapter))
@@ -2067,10 +3313,17 @@ static int atl1c_tso_csum(struct atl1c_adapter *adapter,
 				*(struct atl1c_tpd_ext_desc **)(tpd);
 
 			memset(etpd, 0, sizeof(struct atl1c_tpd_ext_desc));
+<<<<<<< HEAD
 			*tpd = atl1c_get_tpd(adapter, type);
 			ipv6_hdr(skb)->payload_len = 0;
 			/* check payload == 0 byte ? */
 			hdr_len = (skb_transport_offset(skb) + tcp_hdrlen(skb));
+=======
+			*tpd = atl1c_get_tpd(adapter, queue);
+			ipv6_hdr(skb)->payload_len = 0;
+			/* check payload == 0 byte ? */
+			hdr_len = skb_tcp_all_headers(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (unlikely(skb->len == hdr_len)) {
 				/* only xsum need */
 				if (netif_msg_tx_queued(adapter))
@@ -2078,10 +3331,15 @@ static int atl1c_tso_csum(struct atl1c_adapter *adapter,
 						"IPV6 tso with zero data??\n");
 				goto check_sum;
 			} else
+<<<<<<< HEAD
 				tcp_hdr(skb)->check = ~csum_ipv6_magic(
 						&ipv6_hdr(skb)->saddr,
 						&ipv6_hdr(skb)->daddr,
 						0, IPPROTO_TCP, 0);
+=======
+				tcp_v6_gso_csum_prep(skb);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			etpd->word1 |= 1 << TPD_LSO_EN_SHIFT;
 			etpd->word1 |= 1 << TPD_LSO_VER_SHIFT;
 			etpd->pkt_len = cpu_to_le32(skb->len);
@@ -2119,9 +3377,37 @@ check_sum:
 	return 0;
 }
 
+<<<<<<< HEAD
 static void atl1c_tx_map(struct atl1c_adapter *adapter,
 		      struct sk_buff *skb, struct atl1c_tpd_desc *tpd,
 			enum atl1c_trans_queue type)
+=======
+static void atl1c_tx_rollback(struct atl1c_adapter *adpt,
+			      struct atl1c_tpd_desc *first_tpd,
+			      u32 queue)
+{
+	struct atl1c_tpd_ring *tpd_ring = &adpt->tpd_ring[queue];
+	struct atl1c_buffer *buffer_info;
+	struct atl1c_tpd_desc *tpd;
+	u16 first_index, index;
+
+	first_index = first_tpd - (struct atl1c_tpd_desc *)tpd_ring->desc;
+	index = first_index;
+	while (index != tpd_ring->next_to_use) {
+		tpd = ATL1C_TPD_DESC(tpd_ring, index);
+		buffer_info = &tpd_ring->buffer_info[index];
+		atl1c_clean_buffer(adpt->pdev, buffer_info, 0);
+		memset(tpd, 0, sizeof(struct atl1c_tpd_desc));
+		if (++index == tpd_ring->count)
+			index = 0;
+	}
+	tpd_ring->next_to_use = first_index;
+}
+
+static int atl1c_tx_map(struct atl1c_adapter *adapter,
+			struct sk_buff *skb, struct atl1c_tpd_desc *tpd,
+			u32 queue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct atl1c_tpd_desc *use_tpd = NULL;
 	struct atl1c_buffer *buffer_info = NULL;
@@ -2137,13 +3423,26 @@ static void atl1c_tx_map(struct atl1c_adapter *adapter,
 	tso = (tpd->word1 >> TPD_LSO_EN_SHIFT) & TPD_LSO_EN_MASK;
 	if (tso) {
 		/* TSO */
+<<<<<<< HEAD
 		map_len = hdr_len = skb_transport_offset(skb) + tcp_hdrlen(skb);
+=======
+		hdr_len = skb_tcp_all_headers(skb);
+		map_len = hdr_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		use_tpd = tpd;
 
 		buffer_info = atl1c_get_tx_buffer(adapter, use_tpd);
 		buffer_info->length = map_len;
+<<<<<<< HEAD
 		buffer_info->dma = pci_map_single(adapter->pdev,
 					skb->data, hdr_len, PCI_DMA_TODEVICE);
+=======
+		buffer_info->dma = dma_map_single(&adapter->pdev->dev,
+						  skb->data, hdr_len,
+						  DMA_TO_DEVICE);
+		if (unlikely(dma_mapping_error(&adapter->pdev->dev, buffer_info->dma)))
+			goto err_dma;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ATL1C_SET_BUFFER_STATE(buffer_info, ATL1C_BUFFER_BUSY);
 		ATL1C_SET_PCIMAP_TYPE(buffer_info, ATL1C_PCIMAP_SINGLE,
 			ATL1C_PCIMAP_TODEVICE);
@@ -2158,14 +3457,27 @@ static void atl1c_tx_map(struct atl1c_adapter *adapter,
 		if (mapped_len == 0)
 			use_tpd = tpd;
 		else {
+<<<<<<< HEAD
 			use_tpd = atl1c_get_tpd(adapter, type);
+=======
+			use_tpd = atl1c_get_tpd(adapter, queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			memcpy(use_tpd, tpd, sizeof(struct atl1c_tpd_desc));
 		}
 		buffer_info = atl1c_get_tx_buffer(adapter, use_tpd);
 		buffer_info->length = buf_len - mapped_len;
 		buffer_info->dma =
+<<<<<<< HEAD
 			pci_map_single(adapter->pdev, skb->data + mapped_len,
 					buffer_info->length, PCI_DMA_TODEVICE);
+=======
+			dma_map_single(&adapter->pdev->dev,
+				       skb->data + mapped_len,
+				       buffer_info->length, DMA_TO_DEVICE);
+		if (unlikely(dma_mapping_error(&adapter->pdev->dev, buffer_info->dma)))
+			goto err_dma;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ATL1C_SET_BUFFER_STATE(buffer_info, ATL1C_BUFFER_BUSY);
 		ATL1C_SET_PCIMAP_TYPE(buffer_info, ATL1C_PCIMAP_SINGLE,
 			ATL1C_PCIMAP_TODEVICE);
@@ -2174,11 +3486,17 @@ static void atl1c_tx_map(struct atl1c_adapter *adapter,
 	}
 
 	for (f = 0; f < nr_frags; f++) {
+<<<<<<< HEAD
 		struct skb_frag_struct *frag;
 
 		frag = &skb_shinfo(skb)->frags[f];
 
 		use_tpd = atl1c_get_tpd(adapter, type);
+=======
+		skb_frag_t *frag = &skb_shinfo(skb)->frags[f];
+
+		use_tpd = atl1c_get_tpd(adapter, queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(use_tpd, tpd, sizeof(struct atl1c_tpd_desc));
 
 		buffer_info = atl1c_get_tx_buffer(adapter, use_tpd);
@@ -2187,6 +3505,12 @@ static void atl1c_tx_map(struct atl1c_adapter *adapter,
 						    frag, 0,
 						    buffer_info->length,
 						    DMA_TO_DEVICE);
+<<<<<<< HEAD
+=======
+		if (dma_mapping_error(&adapter->pdev->dev, buffer_info->dma))
+			goto err_dma;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ATL1C_SET_BUFFER_STATE(buffer_info, ATL1C_BUFFER_BUSY);
 		ATL1C_SET_PCIMAP_TYPE(buffer_info, ATL1C_PCIMAP_PAGE,
 			ATL1C_PCIMAP_TODEVICE);
@@ -2199,6 +3523,7 @@ static void atl1c_tx_map(struct atl1c_adapter *adapter,
 	/* The last buffer info contain the skb address,
 	   so it will be free after unmap */
 	buffer_info->skb = skb;
+<<<<<<< HEAD
 }
 
 static void atl1c_tx_queue(struct atl1c_adapter *adapter, struct sk_buff *skb,
@@ -2222,16 +3547,40 @@ static void atl1c_tx_queue(struct atl1c_adapter *adapter, struct sk_buff *skb,
 	}
 	wmb();
 	AT_WRITE_REG(&adapter->hw, REG_MB_PRIO_PROD_IDX, prod_data);
+=======
+
+	return 0;
+
+err_dma:
+	buffer_info->dma = 0;
+	buffer_info->length = 0;
+	return -1;
+}
+
+static void atl1c_tx_queue(struct atl1c_adapter *adapter, u32 queue)
+{
+	struct atl1c_tpd_ring *tpd_ring = &adapter->tpd_ring[queue];
+
+	AT_WRITE_REGW(&adapter->hw, atl1c_qregs[queue].tpd_prod,
+		      tpd_ring->next_to_use);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
 					  struct net_device *netdev)
 {
 	struct atl1c_adapter *adapter = netdev_priv(netdev);
+<<<<<<< HEAD
 	unsigned long flags;
 	u16 tpd_req = 1;
 	struct atl1c_tpd_desc *tpd;
 	enum atl1c_trans_queue type = atl1c_trans_normal;
+=======
+	u32 queue = skb_get_queue_mapping(skb);
+	struct netdev_queue *txq = netdev_get_tx_queue(netdev, queue);
+	struct atl1c_tpd_desc *tpd;
+	u16 tpd_req;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_bit(__AT_DOWN, &adapter->flags)) {
 		dev_kfree_skb_any(skb);
@@ -2239,6 +3588,7 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
 	}
 
 	tpd_req = atl1c_cal_tpd_req(skb);
+<<<<<<< HEAD
 	if (!spin_trylock_irqsave(&adapter->tx_lock, flags)) {
 		if (netif_msg_pktdata(adapter))
 			dev_info(&adapter->pdev->dev, "tx locked\n");
@@ -2257,12 +3607,32 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
 	/* do TSO and check sum */
 	if (atl1c_tso_csum(adapter, skb, &tpd, type) != 0) {
 		spin_unlock_irqrestore(&adapter->tx_lock, flags);
+=======
+
+	if (atl1c_tpd_avail(adapter, queue) < tpd_req) {
+		/* no enough descriptor, just stop queue */
+		atl1c_tx_queue(adapter, queue);
+		netif_tx_stop_queue(txq);
+		return NETDEV_TX_BUSY;
+	}
+
+	tpd = atl1c_get_tpd(adapter, queue);
+
+	/* do TSO and check sum */
+	if (atl1c_tso_csum(adapter, skb, &tpd, queue) != 0) {
+		atl1c_tx_queue(adapter, queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_any(skb);
 		return NETDEV_TX_OK;
 	}
 
+<<<<<<< HEAD
 	if (unlikely(vlan_tx_tag_present(skb))) {
 		u16 vlan = vlan_tx_tag_get(skb);
+=======
+	if (unlikely(skb_vlan_tag_present(skb))) {
+		u16 vlan = skb_vlan_tag_get(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__le16 tag;
 
 		vlan = cpu_to_le16(vlan);
@@ -2274,10 +3644,26 @@ static netdev_tx_t atl1c_xmit_frame(struct sk_buff *skb,
 	if (skb_network_offset(skb) != ETH_HLEN)
 		tpd->word1 |= 1 << TPD_ETH_TYPE_SHIFT; /* Ethernet frame */
 
+<<<<<<< HEAD
 	atl1c_tx_map(adapter, skb, tpd, type);
 	atl1c_tx_queue(adapter, skb, tpd, type);
 
 	spin_unlock_irqrestore(&adapter->tx_lock, flags);
+=======
+	if (atl1c_tx_map(adapter, skb, tpd, queue) < 0) {
+		netif_info(adapter, tx_done, adapter->netdev,
+			   "tx-skb dropped due to dma error\n");
+		/* roll back tpd/buffer */
+		atl1c_tx_rollback(adapter, tpd, queue);
+		dev_kfree_skb_any(skb);
+	} else {
+		bool more = netdev_xmit_more();
+
+		if (__netdev_tx_sent_queue(txq, skb->len, more))
+			atl1c_tx_queue(adapter, queue);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NETDEV_TX_OK;
 }
 
@@ -2306,8 +3692,12 @@ static int atl1c_request_irq(struct atl1c_adapter *adapter)
 				"Unable to allocate MSI interrupt Error: %d\n",
 				err);
 		adapter->have_msi = false;
+<<<<<<< HEAD
 	} else
 		netdev->irq = pdev->irq;
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!adapter->have_msi)
 		flags |= IRQF_SHARED;
@@ -2327,14 +3717,32 @@ static int atl1c_request_irq(struct atl1c_adapter *adapter)
 	return err;
 }
 
+<<<<<<< HEAD
 static int atl1c_up(struct atl1c_adapter *adapter)
 {
 	struct net_device *netdev = adapter->netdev;
 	int num;
+=======
+
+static void atl1c_reset_dma_ring(struct atl1c_adapter *adapter)
+{
+	int i;
+	/* release tx-pending skbs and reset tx/rx ring index */
+	for (i = 0; i < adapter->tx_queue_count; ++i)
+		atl1c_clean_tx_ring(adapter, i);
+	for (i = 0; i < adapter->rx_queue_count; ++i)
+		atl1c_clean_rx_ring(adapter, i);
+}
+
+static int atl1c_up(struct atl1c_adapter *adapter)
+{
+	struct net_device *netdev = adapter->netdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	int i;
 
 	netif_carrier_off(netdev);
+<<<<<<< HEAD
 	atl1c_init_ring_ptrs(adapter);
 	atl1c_set_multi(netdev);
 	atl1c_restore_vlan(adapter);
@@ -2351,27 +3759,52 @@ static int atl1c_up(struct atl1c_adapter *adapter)
 		err = -EIO;
 		goto err_up;
 	}
+=======
+
+	err = atl1c_configure(adapter);
+	if (unlikely(err))
+		goto err_up;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = atl1c_request_irq(adapter);
 	if (unlikely(err))
 		goto err_up;
 
+<<<<<<< HEAD
 	clear_bit(__AT_DOWN, &adapter->flags);
 	napi_enable(&adapter->napi);
 	atl1c_irq_enable(adapter);
 	atl1c_check_link_status(adapter);
+=======
+	atl1c_check_link_status(adapter);
+	clear_bit(__AT_DOWN, &adapter->flags);
+	for (i = 0; i < adapter->tx_queue_count; ++i)
+		napi_enable(&adapter->tpd_ring[i].napi);
+	for (i = 0; i < adapter->rx_queue_count; ++i)
+		napi_enable(&adapter->rrd_ring[i].napi);
+	atl1c_irq_enable(adapter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_start_queue(netdev);
 	return err;
 
 err_up:
+<<<<<<< HEAD
 err_alloc_rx:
 	atl1c_clean_rx_ring(adapter);
+=======
+	for (i = 0; i < adapter->rx_queue_count; ++i)
+		atl1c_clean_rx_ring(adapter, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static void atl1c_down(struct atl1c_adapter *adapter)
 {
 	struct net_device *netdev = adapter->netdev;
+<<<<<<< HEAD
+=======
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atl1c_del_timer(adapter);
 	adapter->work_event = 0; /* clear all event */
@@ -2379,21 +3812,39 @@ static void atl1c_down(struct atl1c_adapter *adapter)
 	 * reschedule our watchdog timer */
 	set_bit(__AT_DOWN, &adapter->flags);
 	netif_carrier_off(netdev);
+<<<<<<< HEAD
 	napi_disable(&adapter->napi);
 	atl1c_irq_disable(adapter);
 	atl1c_free_irq(adapter);
+=======
+	for (i = 0; i < adapter->tx_queue_count; ++i)
+		napi_disable(&adapter->tpd_ring[i].napi);
+	for (i = 0; i < adapter->rx_queue_count; ++i)
+		napi_disable(&adapter->rrd_ring[i].napi);
+	atl1c_irq_disable(adapter);
+	atl1c_free_irq(adapter);
+	/* disable ASPM if device inactive */
+	atl1c_disable_l0s_l1(&adapter->hw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* reset MAC to disable all RX/TX */
 	atl1c_reset_mac(&adapter->hw);
 	msleep(1);
 
 	adapter->link_speed = SPEED_0;
 	adapter->link_duplex = -1;
+<<<<<<< HEAD
 	atl1c_clean_tx_ring(adapter, atl1c_trans_normal);
 	atl1c_clean_tx_ring(adapter, atl1c_trans_high);
 	atl1c_clean_rx_ring(adapter);
 }
 
 /*
+=======
+	atl1c_reset_dma_ring(adapter);
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_open - Called when a network interface is made active
  * @netdev: network interface device structure
  *
@@ -2423,6 +3874,7 @@ static int atl1c_open(struct net_device *netdev)
 	if (unlikely(err))
 		goto err_up;
 
+<<<<<<< HEAD
 	if (adapter->hw.ctrl_flags & ATL1C_FPGA_VERSION) {
 		u32 phy_data;
 
@@ -2430,6 +3882,8 @@ static int atl1c_open(struct net_device *netdev)
 		phy_data |= MDIO_AP_EN;
 		AT_WRITE_REG(&adapter->hw, REG_MDIO_CTRL, phy_data);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_up:
@@ -2439,7 +3893,11 @@ err_up:
 	return err;
 }
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_close - Disables a network interface
  * @netdev: network interface device structure
  *
@@ -2455,6 +3913,11 @@ static int atl1c_close(struct net_device *netdev)
 	struct atl1c_adapter *adapter = netdev_priv(netdev);
 
 	WARN_ON(test_bit(__AT_RESETTING, &adapter->flags));
+<<<<<<< HEAD
+=======
+	set_bit(__AT_DOWN, &adapter->flags);
+	cancel_work_sync(&adapter->common_task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atl1c_down(adapter);
 	atl1c_free_ring_resources(adapter);
 	return 0;
@@ -2462,6 +3925,7 @@ static int atl1c_close(struct net_device *netdev)
 
 static int atl1c_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pdev = to_pci_dev(dev);
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct atl1c_adapter *adapter = netdev_priv(netdev);
@@ -2470,6 +3934,11 @@ static int atl1c_suspend(struct device *dev)
 	u32 master_ctrl_data = 0;
 	u32 wol_ctrl_data = 0;
 	u16 mii_intr_status_data = 0;
+=======
+	struct net_device *netdev = dev_get_drvdata(dev);
+	struct atl1c_adapter *adapter = netdev_priv(netdev);
+	struct atl1c_hw *hw = &adapter->hw;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 wufc = adapter->wol;
 
 	atl1c_disable_l0s_l1(hw);
@@ -2480,6 +3949,7 @@ static int atl1c_suspend(struct device *dev)
 	netif_device_detach(netdev);
 
 	if (wufc)
+<<<<<<< HEAD
 		if (atl1c_phy_power_saving(hw) != 0)
 			dev_dbg(&pdev->dev, "phy power saving failed");
 
@@ -2549,6 +4019,12 @@ static int atl1c_suspend(struct device *dev)
 		AT_WRITE_REG(hw, REG_WOL_CTRL, 0);
 		hw->phy_configured = false; /* re-init PHY when resume */
 	}
+=======
+		if (atl1c_phy_to_ps_link(hw) != 0)
+			dev_dbg(dev, "phy power saving failed");
+
+	atl1c_power_saving(hw, wufc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2556,6 +4032,7 @@ static int atl1c_suspend(struct device *dev)
 #ifdef CONFIG_PM_SLEEP
 static int atl1c_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct pci_dev *pdev = to_pci_dev(dev);
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct atl1c_adapter *adapter = netdev_priv(netdev);
@@ -2563,17 +4040,27 @@ static int atl1c_resume(struct device *dev)
 	AT_WRITE_REG(&adapter->hw, REG_WOL_CTRL, 0);
 	atl1c_reset_pcie(&adapter->hw, ATL1C_PCIE_L0S_L1_DISABLE |
 			ATL1C_PCIE_PHY_RESET);
+=======
+	struct net_device *netdev = dev_get_drvdata(dev);
+	struct atl1c_adapter *adapter = netdev_priv(netdev);
+
+	AT_WRITE_REG(&adapter->hw, REG_WOL_CTRL, 0);
+	atl1c_reset_pcie(&adapter->hw, ATL1C_PCIE_L0S_L1_DISABLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atl1c_phy_reset(&adapter->hw);
 	atl1c_reset_mac(&adapter->hw);
 	atl1c_phy_init(&adapter->hw);
 
+<<<<<<< HEAD
 #if 0
 	AT_READ_REG(&adapter->hw, REG_PM_CTRLSTAT, &pm_data);
 	pm_data &= ~PM_CTRLSTAT_PME_EN;
 	AT_WRITE_REG(&adapter->hw, REG_PM_CTRLSTAT, pm_data);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_device_attach(netdev);
 	if (netif_running(netdev))
 		atl1c_up(adapter);
@@ -2602,7 +4089,11 @@ static const struct net_device_ops atl1c_netdev_ops = {
 	.ndo_change_mtu		= atl1c_change_mtu,
 	.ndo_fix_features	= atl1c_fix_features,
 	.ndo_set_features	= atl1c_set_features,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= atl1c_ioctl,
+=======
+	.ndo_eth_ioctl		= atl1c_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout		= atl1c_tx_timeout,
 	.ndo_get_stats		= atl1c_get_stats,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -2615,6 +4106,7 @@ static int atl1c_init_netdev(struct net_device *netdev, struct pci_dev *pdev)
 	SET_NETDEV_DEV(netdev, &pdev->dev);
 	pci_set_drvdata(pdev, netdev);
 
+<<<<<<< HEAD
 	netdev->irq  = pdev->irq;
 	netdev->netdev_ops = &atl1c_netdev_ops;
 	netdev->watchdog_timeo = AT_TX_WATCHDOG;
@@ -2632,6 +4124,25 @@ static int atl1c_init_netdev(struct net_device *netdev, struct pci_dev *pdev)
 }
 
 /*
+=======
+	netdev->netdev_ops = &atl1c_netdev_ops;
+	netdev->watchdog_timeo = AT_TX_WATCHDOG;
+	netdev->min_mtu = ETH_ZLEN - (ETH_HLEN + VLAN_HLEN);
+	atl1c_set_ethtool_ops(netdev);
+
+	/* TODO: add when ready */
+	netdev->hw_features =	NETIF_F_SG		|
+				NETIF_F_HW_CSUM		|
+				NETIF_F_HW_VLAN_CTAG_RX	|
+				NETIF_F_TSO		|
+				NETIF_F_TSO6;
+	netdev->features =	netdev->hw_features	|
+				NETIF_F_HW_VLAN_CTAG_TX;
+	return 0;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_probe - Device Initialization Routine
  * @pdev: PCI device information struct
  * @ent: entry in atl1c_pci_tbl
@@ -2642,12 +4153,17 @@ static int atl1c_init_netdev(struct net_device *netdev, struct pci_dev *pdev)
  * The OS initialization, configuring of the adapter private structure,
  * and a hardware reset occur.
  */
+<<<<<<< HEAD
 static int __devinit atl1c_probe(struct pci_dev *pdev,
 				 const struct pci_device_id *ent)
+=======
+static int atl1c_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev;
 	struct atl1c_adapter *adapter;
 	static int cards_found;
+<<<<<<< HEAD
 
 	int err = 0;
 
@@ -2657,6 +4173,18 @@ static int __devinit atl1c_probe(struct pci_dev *pdev,
 		dev_err(&pdev->dev, "cannot enable PCI device\n");
 		return err;
 	}
+=======
+	u8 __iomem *hw_addr;
+	enum atl1c_nic_type nic_type;
+	u32 queue_count = 1;
+	int err = 0;
+	int i;
+
+	/* enable device (incl. PCI PM wakeup and hotplug setup) */
+	err = pci_enable_device_mem(pdev);
+	if (err)
+		return dev_err_probe(&pdev->dev, err, "cannot enable PCI device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The atl1c chip can DMA to 64-bit addresses, but it uses a single
@@ -2668,8 +4196,13 @@ static int __devinit atl1c_probe(struct pci_dev *pdev,
 	 * various kernel subsystems to support the mechanics required by a
 	 * fixed-high-32-bit system.
 	 */
+<<<<<<< HEAD
 	if ((pci_set_dma_mask(pdev, DMA_BIT_MASK(32)) != 0) ||
 	    (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32)) != 0)) {
+=======
+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+	if (err) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "No usable DMA configuration,aborting\n");
 		goto err_dma;
 	}
@@ -2682,7 +4215,22 @@ static int __devinit atl1c_probe(struct pci_dev *pdev,
 
 	pci_set_master(pdev);
 
+<<<<<<< HEAD
 	netdev = alloc_etherdev(sizeof(struct atl1c_adapter));
+=======
+	hw_addr = pci_ioremap_bar(pdev, 0);
+	if (!hw_addr) {
+		err = -EIO;
+		dev_err(&pdev->dev, "cannot map device registers\n");
+		goto err_ioremap;
+	}
+
+	nic_type = atl1c_get_mac_type(pdev, hw_addr);
+	if (nic_type == athr_mt)
+		queue_count = 4;
+
+	netdev = alloc_etherdev_mq(sizeof(struct atl1c_adapter), queue_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (netdev == NULL) {
 		err = -ENOMEM;
 		goto err_alloc_etherdev;
@@ -2698,6 +4246,7 @@ static int __devinit atl1c_probe(struct pci_dev *pdev,
 	adapter->netdev = netdev;
 	adapter->pdev = pdev;
 	adapter->hw.adapter = adapter;
+<<<<<<< HEAD
 	adapter->msg_enable = netif_msg_init(-1, atl1c_default_msg);
 	adapter->hw.hw_addr = ioremap(pci_resource_start(pdev, 0), pci_resource_len(pdev, 0));
 	if (!adapter->hw.hw_addr) {
@@ -2706,24 +4255,50 @@ static int __devinit atl1c_probe(struct pci_dev *pdev,
 		goto err_ioremap;
 	}
 	netdev->base_addr = (unsigned long)adapter->hw.hw_addr;
+=======
+	adapter->hw.nic_type = nic_type;
+	adapter->msg_enable = netif_msg_init(-1, atl1c_default_msg);
+	adapter->hw.hw_addr = hw_addr;
+	adapter->tx_queue_count = queue_count;
+	adapter->rx_queue_count = queue_count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* init mii data */
 	adapter->mii.dev = netdev;
 	adapter->mii.mdio_read  = atl1c_mdio_read;
 	adapter->mii.mdio_write = atl1c_mdio_write;
 	adapter->mii.phy_id_mask = 0x1f;
+<<<<<<< HEAD
 	adapter->mii.reg_num_mask = MDIO_REG_ADDR_MASK;
 	netif_napi_add(netdev, &adapter->napi, atl1c_clean, 64);
 	setup_timer(&adapter->phy_config_timer, atl1c_phy_config,
 			(unsigned long)adapter);
+=======
+	adapter->mii.reg_num_mask = MDIO_CTRL_REG_MASK;
+	dev_set_threaded(netdev, true);
+	for (i = 0; i < adapter->rx_queue_count; ++i)
+		netif_napi_add(netdev, &adapter->rrd_ring[i].napi,
+			       atl1c_clean_rx);
+	for (i = 0; i < adapter->tx_queue_count; ++i)
+		netif_napi_add_tx(netdev, &adapter->tpd_ring[i].napi,
+				  atl1c_clean_tx);
+	timer_setup(&adapter->phy_config_timer, atl1c_phy_config, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* setup the private structure */
 	err = atl1c_sw_init(adapter);
 	if (err) {
 		dev_err(&pdev->dev, "net device private data init failed\n");
 		goto err_sw_init;
 	}
+<<<<<<< HEAD
 	atl1c_reset_pcie(&adapter->hw, ATL1C_PCIE_L0S_L1_DISABLE |
 			ATL1C_PCIE_PHY_RESET);
+=======
+	/* set max MTU */
+	atl1c_set_max_mtu(netdev);
+
+	atl1c_reset_pcie(&adapter->hw, ATL1C_PCIE_L0S_L1_DISABLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Init GPHY as early as possible due to power saving issue  */
 	atl1c_phy_reset(&adapter->hw);
@@ -2743,15 +4318,25 @@ static int __devinit atl1c_probe(struct pci_dev *pdev,
 	}
 	if (atl1c_read_mac_addr(&adapter->hw)) {
 		/* got a random MAC address, set NET_ADDR_RANDOM to netdev */
+<<<<<<< HEAD
 		netdev->addr_assign_type |= NET_ADDR_RANDOM;
 	}
 	memcpy(netdev->dev_addr, adapter->hw.mac_addr, netdev->addr_len);
 	memcpy(netdev->perm_addr, adapter->hw.mac_addr, netdev->addr_len);
+=======
+		netdev->addr_assign_type = NET_ADDR_RANDOM;
+	}
+	eth_hw_addr_set(netdev, adapter->hw.mac_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (netif_msg_probe(adapter))
 		dev_dbg(&pdev->dev, "mac address : %pM\n",
 			adapter->hw.mac_addr);
 
+<<<<<<< HEAD
 	atl1c_hw_set_mac_addr(&adapter->hw);
+=======
+	atl1c_hw_set_mac_addr(&adapter->hw, adapter->hw.mac_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INIT_WORK(&adapter->common_task, atl1c_common_task);
 	adapter->work_event = 0;
 	err = register_netdev(netdev);
@@ -2760,19 +4345,30 @@ static int __devinit atl1c_probe(struct pci_dev *pdev,
 		goto err_register;
 	}
 
+<<<<<<< HEAD
 	if (netif_msg_probe(adapter))
 		dev_info(&pdev->dev, "version %s\n", ATL1C_DRV_VERSION);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cards_found++;
 	return 0;
 
 err_reset:
 err_register:
 err_sw_init:
+<<<<<<< HEAD
 	iounmap(adapter->hw.hw_addr);
 err_init_netdev:
 err_ioremap:
 	free_netdev(netdev);
 err_alloc_etherdev:
+=======
+err_init_netdev:
+	free_netdev(netdev);
+err_alloc_etherdev:
+	iounmap(hw_addr);
+err_ioremap:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_release_regions(pdev);
 err_pci_reg:
 err_dma:
@@ -2780,7 +4376,11 @@ err_dma:
 	return err;
 }
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_remove - Device Removal Routine
  * @pdev: PCI device information struct
  *
@@ -2789,12 +4389,21 @@ err_dma:
  * Hot-Plug event, or because the driver is going to be removed from
  * memory.
  */
+<<<<<<< HEAD
 static void __devexit atl1c_remove(struct pci_dev *pdev)
+=======
+static void atl1c_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct atl1c_adapter *adapter = netdev_priv(netdev);
 
 	unregister_netdev(netdev);
+<<<<<<< HEAD
+=======
+	/* restore permanent address */
+	atl1c_hw_set_mac_addr(&adapter->hw, adapter->hw.perm_mac_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atl1c_phy_disable(&adapter->hw);
 
 	iounmap(adapter->hw.hw_addr);
@@ -2804,7 +4413,11 @@ static void __devexit atl1c_remove(struct pci_dev *pdev)
 	free_netdev(netdev);
 }
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_io_error_detected - called when PCI error is detected
  * @pdev: Pointer to PCI device
  * @state: The current pci connection state
@@ -2828,11 +4441,19 @@ static pci_ers_result_t atl1c_io_error_detected(struct pci_dev *pdev,
 
 	pci_disable_device(pdev);
 
+<<<<<<< HEAD
 	/* Request a slot slot reset. */
 	return PCI_ERS_RESULT_NEED_RESET;
 }
 
 /*
+=======
+	/* Request a slot reset. */
+	return PCI_ERS_RESULT_NEED_RESET;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_io_slot_reset - called after the pci bus has been reset.
  * @pdev: Pointer to PCI device
  *
@@ -2860,7 +4481,11 @@ static pci_ers_result_t atl1c_io_slot_reset(struct pci_dev *pdev)
 	return PCI_ERS_RESULT_RECOVERED;
 }
 
+<<<<<<< HEAD
 /*
+=======
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * atl1c_io_resume - called when traffic can start flowing again.
  * @pdev: Pointer to PCI device
  *
@@ -2885,7 +4510,11 @@ static void atl1c_io_resume(struct pci_dev *pdev)
 	netif_device_attach(netdev);
 }
 
+<<<<<<< HEAD
 static struct pci_error_handlers atl1c_err_handler = {
+=======
+static const struct pci_error_handlers atl1c_err_handler = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.error_detected = atl1c_io_error_detected,
 	.slot_reset = atl1c_io_slot_reset,
 	.resume = atl1c_io_resume,
@@ -2897,12 +4526,17 @@ static struct pci_driver atl1c_driver = {
 	.name     = atl1c_driver_name,
 	.id_table = atl1c_pci_tbl,
 	.probe    = atl1c_probe,
+<<<<<<< HEAD
 	.remove   = __devexit_p(atl1c_remove),
+=======
+	.remove   = atl1c_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown = atl1c_shutdown,
 	.err_handler = &atl1c_err_handler,
 	.driver.pm = &atl1c_pm_ops,
 };
 
+<<<<<<< HEAD
 /*
  * atl1c_init_module - Driver Registration Routine
  *
@@ -2927,3 +4561,6 @@ static void __exit atl1c_exit_module(void)
 
 module_init(atl1c_init_module);
 module_exit(atl1c_exit_module);
+=======
+module_pci_driver(atl1c_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

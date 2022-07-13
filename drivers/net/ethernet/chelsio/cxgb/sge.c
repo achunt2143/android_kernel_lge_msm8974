@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************
  *                                                                           *
  * File: sge.c                                                               *
@@ -7,6 +11,7 @@
  *  DMA engine.                                                              *
  *  part of the Chelsio 10Gb Ethernet Driver.                                *
  *                                                                           *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify      *
  * it under the terms of the GNU General Public License, version 2, as       *
  * published by the Free Software Foundation.                                *
@@ -18,6 +23,8 @@
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED    *
  * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF      *
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.                     *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                           *
  * http://www.chelsio.com                                                    *
  *                                                                           *
@@ -47,7 +54,10 @@
 #include <linux/etherdevice.h>
 #include <linux/if_vlan.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/tcp.h>
 #include <linux/ip.h>
@@ -241,8 +251,15 @@ struct sched {
 	unsigned int	num;		/* num skbs in per port queues */
 	struct sched_port p[MAX_NPORTS];
 	struct tasklet_struct sched_tsk;/* tasklet used to run scheduler */
+<<<<<<< HEAD
 };
 static void restart_sched(unsigned long);
+=======
+	struct sge *sge;
+};
+
+static void restart_sched(struct tasklet_struct *t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -303,7 +320,11 @@ unsigned int t1_sched_update_parms(struct sge *sge, unsigned int port,
 	struct sched_port *p = &s->p[port];
 	unsigned int max_avail_segs;
 
+<<<<<<< HEAD
 	pr_debug("t1_sched_update_params mtu=%d speed=%d\n", mtu, speed);
+=======
+	pr_debug("%s mtu=%d speed=%d\n", __func__, mtu, speed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (speed)
 		p->speed = speed;
 	if (mtu)
@@ -367,6 +388,7 @@ void t1_sched_set_drain_bits_per_us(struct sge *sge, unsigned int port,
 
 #endif  /*  0  */
 
+<<<<<<< HEAD
 
 /*
  * get_clock() implements a ns clock (see ktime_get)
@@ -379,6 +401,8 @@ static inline ktime_t get_clock(void)
 	return timespec_to_ktime(ts);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * tx_sched_init() allocates resources and does basic initialization.
  */
@@ -392,7 +416,12 @@ static int tx_sched_init(struct sge *sge)
 		return -ENOMEM;
 
 	pr_debug("tx_sched_init\n");
+<<<<<<< HEAD
 	tasklet_init(&s->sched_tsk, restart_sched, (unsigned long) sge);
+=======
+	tasklet_setup(&s->sched_tsk, restart_sched);
+	s->sge = sge;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sge->tx_sched = s;
 
 	for (i = 0; i < MAX_NPORTS; i++) {
@@ -411,7 +440,11 @@ static int tx_sched_init(struct sge *sge)
 static inline int sched_update_avail(struct sge *sge)
 {
 	struct sched *s = sge->tx_sched;
+<<<<<<< HEAD
 	ktime_t now = get_clock();
+=======
+	ktime_t now = ktime_get();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i;
 	long long delta_time_ns;
 
@@ -523,9 +556,14 @@ static void free_freelQ_buffers(struct pci_dev *pdev, struct freelQ *q)
 	while (q->credits--) {
 		struct freelQ_ce *ce = &q->centries[cidx];
 
+<<<<<<< HEAD
 		pci_unmap_single(pdev, dma_unmap_addr(ce, dma_addr),
 				 dma_unmap_len(ce, dma_len),
 				 PCI_DMA_FROMDEVICE);
+=======
+		dma_unmap_single(&pdev->dev, dma_unmap_addr(ce, dma_addr),
+				 dma_unmap_len(ce, dma_len), DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb(ce->skb);
 		ce->skb = NULL;
 		if (++cidx == q->size)
@@ -543,8 +581,13 @@ static void free_rx_resources(struct sge *sge)
 
 	if (sge->respQ.entries) {
 		size = sizeof(struct respQ_e) * sge->respQ.size;
+<<<<<<< HEAD
 		pci_free_consistent(pdev, size, sge->respQ.entries,
 				    sge->respQ.dma_addr);
+=======
+		dma_free_coherent(&pdev->dev, size, sge->respQ.entries,
+				  sge->respQ.dma_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < SGE_FREELQ_N; i++) {
@@ -556,8 +599,13 @@ static void free_rx_resources(struct sge *sge)
 		}
 		if (q->entries) {
 			size = sizeof(struct freelQ_e) * q->size;
+<<<<<<< HEAD
 			pci_free_consistent(pdev, size, q->entries,
 					    q->dma_addr);
+=======
+			dma_free_coherent(&pdev->dev, size, q->entries,
+					  q->dma_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -578,7 +626,12 @@ static int alloc_rx_resources(struct sge *sge, struct sge_params *p)
 		q->size = p->freelQ_size[i];
 		q->dma_offset = sge->rx_pkt_pad ? 0 : NET_IP_ALIGN;
 		size = sizeof(struct freelQ_e) * q->size;
+<<<<<<< HEAD
 		q->entries = pci_alloc_consistent(pdev, size, &q->dma_addr);
+=======
+		q->entries = dma_alloc_coherent(&pdev->dev, size,
+						&q->dma_addr, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!q->entries)
 			goto err_no_mem;
 
@@ -599,8 +652,12 @@ static int alloc_rx_resources(struct sge *sge, struct sge_params *p)
 		sizeof(struct cpl_rx_data) +
 		sge->freelQ[!sge->jumbo_fl].dma_offset;
 
+<<<<<<< HEAD
 		size = (16 * 1024) -
 		    SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+=======
+	size = (16 * 1024) - SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sge->freelQ[sge->jumbo_fl].rx_buffer_size = size;
 
@@ -616,7 +673,12 @@ static int alloc_rx_resources(struct sge *sge, struct sge_params *p)
 	sge->respQ.credits = 0;
 	size = sizeof(struct respQ_e) * sge->respQ.size;
 	sge->respQ.entries =
+<<<<<<< HEAD
 		pci_alloc_consistent(pdev, size, &sge->respQ.dma_addr);
+=======
+		dma_alloc_coherent(&pdev->dev, size, &sge->respQ.dma_addr,
+				   GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sge->respQ.entries)
 		goto err_no_mem;
 	return 0;
@@ -639,9 +701,16 @@ static void free_cmdQ_buffers(struct sge *sge, struct cmdQ *q, unsigned int n)
 	ce = &q->centries[cidx];
 	while (n--) {
 		if (likely(dma_unmap_len(ce, dma_len))) {
+<<<<<<< HEAD
 			pci_unmap_single(pdev, dma_unmap_addr(ce, dma_addr),
 					 dma_unmap_len(ce, dma_len),
 					 PCI_DMA_TODEVICE);
+=======
+			dma_unmap_single(&pdev->dev,
+					 dma_unmap_addr(ce, dma_addr),
+					 dma_unmap_len(ce, dma_len),
+					 DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (q->sop)
 				q->sop = 0;
 		}
@@ -678,8 +747,13 @@ static void free_tx_resources(struct sge *sge)
 		}
 		if (q->entries) {
 			size = sizeof(struct cmdQ_e) * q->size;
+<<<<<<< HEAD
 			pci_free_consistent(pdev, size, q->entries,
 					    q->dma_addr);
+=======
+			dma_free_coherent(&pdev->dev, size, q->entries,
+					  q->dma_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -704,7 +778,12 @@ static int alloc_tx_resources(struct sge *sge, struct sge_params *p)
 		q->stop_thres = 0;
 		spin_lock_init(&q->lock);
 		size = sizeof(struct cmdQ_e) * q->size;
+<<<<<<< HEAD
 		q->entries = pci_alloc_consistent(pdev, size, &q->dma_addr);
+=======
+		q->entries = dma_alloc_coherent(&pdev->dev, size,
+						&q->dma_addr, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!q->entries)
 			goto err_no_mem;
 
@@ -746,7 +825,11 @@ void t1_vlan_mode(struct adapter *adapter, netdev_features_t features)
 {
 	struct sge *sge = adapter->sge;
 
+<<<<<<< HEAD
 	if (features & NETIF_F_HW_VLAN_RX)
+=======
+	if (features & NETIF_F_HW_VLAN_CTAG_RX)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sge->sge_control |= F_VLAN_XTRACT;
 	else
 		sge->sge_control &= ~F_VLAN_XTRACT;
@@ -847,13 +930,22 @@ static void refill_free_list(struct sge *sge, struct freelQ *q)
 		struct sk_buff *skb;
 		dma_addr_t mapping;
 
+<<<<<<< HEAD
 		skb = alloc_skb(q->rx_buffer_size, GFP_ATOMIC);
+=======
+		skb = dev_alloc_skb(q->rx_buffer_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!skb)
 			break;
 
 		skb_reserve(skb, q->dma_offset);
+<<<<<<< HEAD
 		mapping = pci_map_single(pdev, skb->data, dma_len,
 					 PCI_DMA_FROMDEVICE);
+=======
+		mapping = dma_map_single(&pdev->dev, skb->data, dma_len,
+					 DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb_reserve(skb, sge->rx_pkt_pad);
 
 		ce->skb = skb;
@@ -949,10 +1041,18 @@ void t1_sge_intr_clear(struct sge *sge)
 /*
  * SGE 'Error' interrupt handler
  */
+<<<<<<< HEAD
 int t1_sge_intr_error_handler(struct sge *sge)
 {
 	struct adapter *adapter = sge->adapter;
 	u32 cause = readl(adapter->regs + A_SG_INT_CAUSE);
+=======
+bool t1_sge_intr_error_handler(struct sge *sge)
+{
+	struct adapter *adapter = sge->adapter;
+	u32 cause = readl(adapter->regs + A_SG_INT_CAUSE);
+	bool wake = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adapter->port[0].dev->hw_features & NETIF_F_TSO)
 		cause &= ~F_PACKET_TOO_BIG;
@@ -976,11 +1076,22 @@ int t1_sge_intr_error_handler(struct sge *sge)
 		sge->stats.pkt_mismatch++;
 		pr_alert("%s: SGE packet mismatch\n", adapter->name);
 	}
+<<<<<<< HEAD
 	if (cause & SGE_INT_FATAL)
 		t1_fatal_err(adapter);
 
 	writel(cause, adapter->regs + A_SG_INT_CAUSE);
 	return 0;
+=======
+	if (cause & SGE_INT_FATAL) {
+		t1_interrupts_disable(adapter);
+		adapter->pending_thread_intr |= F_PL_INTR_SGE_ERR;
+		wake = true;
+	}
+
+	writel(cause, adapter->regs + A_SG_INT_CAUSE);
+	return wake;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct sge_intr_counts *t1_sge_get_intr_counts(const struct sge *sge)
@@ -1039,7 +1150,11 @@ MODULE_PARM_DESC(copybreak, "Receive copy threshold");
 
 /**
  *	get_packet - return the next ingress packet buffer
+<<<<<<< HEAD
  *	@pdev: the PCI device that received the packet
+=======
+ *	@adapter: the adapter that received the packet
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@fl: the SGE free list holding the packet
  *	@len: the actual packet length, excluding any SGE padding
  *
@@ -1051,6 +1166,7 @@ MODULE_PARM_DESC(copybreak, "Receive copy threshold");
  *	threshold and the packet is too big to copy, or (b) the packet should
  *	be copied but there is no memory for the copy.
  */
+<<<<<<< HEAD
 static inline struct sk_buff *get_packet(struct pci_dev *pdev,
 					 struct freelQ *fl, unsigned int len)
 {
@@ -1073,6 +1189,30 @@ static inline struct sk_buff *get_packet(struct pci_dev *pdev,
 					       dma_unmap_addr(ce, dma_addr),
 					       dma_unmap_len(ce, dma_len),
 					       PCI_DMA_FROMDEVICE);
+=======
+static inline struct sk_buff *get_packet(struct adapter *adapter,
+					 struct freelQ *fl, unsigned int len)
+{
+	const struct freelQ_ce *ce = &fl->centries[fl->cidx];
+	struct pci_dev *pdev = adapter->pdev;
+	struct sk_buff *skb;
+
+	if (len < copybreak) {
+		skb = napi_alloc_skb(&adapter->napi, len);
+		if (!skb)
+			goto use_orig_buf;
+
+		skb_put(skb, len);
+		dma_sync_single_for_cpu(&pdev->dev,
+					dma_unmap_addr(ce, dma_addr),
+					dma_unmap_len(ce, dma_len),
+					DMA_FROM_DEVICE);
+		skb_copy_from_linear_data(ce->skb, skb->data, len);
+		dma_sync_single_for_device(&pdev->dev,
+					   dma_unmap_addr(ce, dma_addr),
+					   dma_unmap_len(ce, dma_len),
+					   DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		recycle_fl_buf(fl, fl->cidx);
 		return skb;
 	}
@@ -1083,8 +1223,13 @@ use_orig_buf:
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	pci_unmap_single(pdev, dma_unmap_addr(ce, dma_addr),
 			 dma_unmap_len(ce, dma_len), PCI_DMA_FROMDEVICE);
+=======
+	dma_unmap_single(&pdev->dev, dma_unmap_addr(ce, dma_addr),
+			 dma_unmap_len(ce, dma_len), DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skb = ce->skb;
 	prefetch(skb->data);
 
@@ -1106,8 +1251,14 @@ static void unexpected_offload(struct adapter *adapter, struct freelQ *fl)
 	struct freelQ_ce *ce = &fl->centries[fl->cidx];
 	struct sk_buff *skb = ce->skb;
 
+<<<<<<< HEAD
 	pci_dma_sync_single_for_cpu(adapter->pdev, dma_unmap_addr(ce, dma_addr),
 			    dma_unmap_len(ce, dma_len), PCI_DMA_FROMDEVICE);
+=======
+	dma_sync_single_for_cpu(&adapter->pdev->dev,
+				dma_unmap_addr(ce, dma_addr),
+				dma_unmap_len(ce, dma_len), DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_err("%s: unexpected offload packet, cmd %u\n",
 	       adapter->name, *skb->data);
 	recycle_fl_buf(fl, fl->cidx);
@@ -1224,8 +1375,13 @@ static inline void write_tx_descs(struct adapter *adapter, struct sk_buff *skb,
 	e = e1 = &q->entries[pidx];
 	ce = &q->centries[pidx];
 
+<<<<<<< HEAD
 	mapping = pci_map_single(adapter->pdev, skb->data,
 				 skb_headlen(skb), PCI_DMA_TODEVICE);
+=======
+	mapping = dma_map_single(&adapter->pdev->dev, skb->data,
+				 skb_headlen(skb), DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	desc_mapping = mapping;
 	desc_len = skb_headlen(skb);
@@ -1316,9 +1472,16 @@ static inline void reclaim_completed_tx(struct sge *sge, struct cmdQ *q)
  * Called from tasklet. Checks the scheduler for any
  * pending skbs that can be sent.
  */
+<<<<<<< HEAD
 static void restart_sched(unsigned long arg)
 {
 	struct sge *sge = (struct sge *) arg;
+=======
+static void restart_sched(struct tasklet_struct *t)
+{
+	struct sched *s = from_tasklet(s, t, sched_tsk);
+	struct sge *sge = s->sge;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct adapter *adapter = sge->adapter;
 	struct cmdQ *q = &sge->cmdQ[0];
 	struct sk_buff *skb;
@@ -1362,7 +1525,11 @@ static void restart_sched(unsigned long arg)
  *	@fl: the free list that contains the packet buffer
  *	@len: the packet length
  *
+<<<<<<< HEAD
  *	Process an ingress ethernet pakcet and deliver it to the stack.
+=======
+ *	Process an ingress ethernet packet and deliver it to the stack.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void sge_rx(struct sge *sge, struct freelQ *fl, unsigned int len)
 {
@@ -1372,7 +1539,11 @@ static void sge_rx(struct sge *sge, struct freelQ *fl, unsigned int len)
 	struct sge_port_stats *st;
 	struct net_device *dev;
 
+<<<<<<< HEAD
 	skb = get_packet(adapter->pdev, fl, len - sge->rx_pkt_pad);
+=======
+	skb = get_packet(adapter, fl, len - sge->rx_pkt_pad);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!skb)) {
 		sge->stats.rx_drops++;
 		return;
@@ -1399,7 +1570,11 @@ static void sge_rx(struct sge *sge, struct freelQ *fl, unsigned int len)
 
 	if (p->vlan_valid) {
 		st->vlan_xtract++;
+<<<<<<< HEAD
 		__vlan_hwaccel_put_tag(skb, ntohs(p->vlan));
+=======
+		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), ntohs(p->vlan));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	netif_receive_skb(skb);
 }
@@ -1619,18 +1794,64 @@ int t1_poll(struct napi_struct *napi, int budget)
 	int work_done = process_responses(adapter, budget);
 
 	if (likely(work_done < budget)) {
+<<<<<<< HEAD
 		napi_complete(napi);
+=======
+		napi_complete_done(napi, work_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(adapter->sge->respQ.cidx,
 		       adapter->regs + A_SG_SLEEPING);
 	}
 	return work_done;
 }
 
+<<<<<<< HEAD
+=======
+irqreturn_t t1_interrupt_thread(int irq, void *data)
+{
+	struct adapter *adapter = data;
+	u32 pending_thread_intr;
+
+	spin_lock_irq(&adapter->async_lock);
+	pending_thread_intr = adapter->pending_thread_intr;
+	adapter->pending_thread_intr = 0;
+	spin_unlock_irq(&adapter->async_lock);
+
+	if (!pending_thread_intr)
+		return IRQ_NONE;
+
+	if (pending_thread_intr & F_PL_INTR_EXT)
+		t1_elmer0_ext_intr_handler(adapter);
+
+	/* This error is fatal, interrupts remain off */
+	if (pending_thread_intr & F_PL_INTR_SGE_ERR) {
+		pr_alert("%s: encountered fatal error, operation suspended\n",
+			 adapter->name);
+		t1_sge_stop(adapter->sge);
+		return IRQ_HANDLED;
+	}
+
+	spin_lock_irq(&adapter->async_lock);
+	adapter->slow_intr_mask |= F_PL_INTR_EXT;
+
+	writel(F_PL_INTR_EXT, adapter->regs + A_PL_CAUSE);
+	writel(adapter->slow_intr_mask | F_PL_INTR_SGE_DATA,
+	       adapter->regs + A_PL_ENABLE);
+	spin_unlock_irq(&adapter->async_lock);
+
+	return IRQ_HANDLED;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 irqreturn_t t1_interrupt(int irq, void *data)
 {
 	struct adapter *adapter = data;
 	struct sge *sge = adapter->sge;
+<<<<<<< HEAD
 	int handled;
+=======
+	irqreturn_t handled;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (likely(responses_pending(adapter))) {
 		writel(F_PL_INTR_SGE_DATA, adapter->regs + A_PL_CAUSE);
@@ -1652,10 +1873,17 @@ irqreturn_t t1_interrupt(int irq, void *data)
 	handled = t1_slow_intr_handler(adapter);
 	spin_unlock(&adapter->async_lock);
 
+<<<<<<< HEAD
 	if (!handled)
 		sge->stats.unhandled_irqs++;
 
 	return IRQ_RETVAL(handled != 0);
+=======
+	if (handled == IRQ_NONE)
+		sge->stats.unhandled_irqs++;
+
+	return handled;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1678,8 +1906,12 @@ static int t1_sge_tx(struct sk_buff *skb, struct adapter *adapter,
 	struct cmdQ *q = &sge->cmdQ[qid];
 	unsigned int credits, pidx, genbit, count, use_sched_skb = 0;
 
+<<<<<<< HEAD
 	if (!spin_trylock(&q->lock))
 		return NETDEV_TX_LOCKED;
+=======
+	spin_lock(&q->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	reclaim_completed_tx(sge, q);
 
@@ -1816,7 +2048,11 @@ netdev_tx_t t1_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		eth_type = skb_network_offset(skb) == ETH_HLEN ?
 			CPL_ETH_II : CPL_ETH_II_VLAN;
 
+<<<<<<< HEAD
 		hdr = (struct cpl_tx_pkt_lso *)skb_push(skb, sizeof(*hdr));
+=======
+		hdr = skb_push(skb, sizeof(*hdr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hdr->opcode = CPL_TX_PKT_LSO;
 		hdr->ip_csum_dis = hdr->l4_csum_dis = 0;
 		hdr->ip_hdr_words = ip_hdr(skb)->ihl;
@@ -1834,8 +2070,13 @@ netdev_tx_t t1_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		 */
 		if (unlikely(skb->len < ETH_HLEN ||
 			     skb->len > dev->mtu + eth_hdr_len(skb->data))) {
+<<<<<<< HEAD
 			pr_debug("%s: packet size %d hdr %d mtu%d\n", dev->name,
 				 skb->len, eth_hdr_len(skb->data), dev->mtu);
+=======
+			netdev_dbg(dev, "packet size %d hdr %d mtu%d\n",
+				   skb->len, eth_hdr_len(skb->data), dev->mtu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb_any(skb);
 			return NETDEV_TX_OK;
 		}
@@ -1843,7 +2084,11 @@ netdev_tx_t t1_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		if (skb->ip_summed == CHECKSUM_PARTIAL &&
 		    ip_hdr(skb)->protocol == IPPROTO_UDP) {
 			if (unlikely(skb_checksum_help(skb))) {
+<<<<<<< HEAD
 				pr_debug("%s: unable to do udp checksum\n", dev->name);
+=======
+				netdev_dbg(dev, "unable to do udp checksum\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_kfree_skb_any(skb);
 				return NETDEV_TX_OK;
 			}
@@ -1864,7 +2109,11 @@ netdev_tx_t t1_start_xmit(struct sk_buff *skb, struct net_device *dev)
 			}
 		}
 
+<<<<<<< HEAD
 		cpl = (struct cpl_tx_pkt *)__skb_push(skb, sizeof(*cpl));
+=======
+		cpl = __skb_push(skb, sizeof(*cpl));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cpl->opcode = CPL_TX_PKT;
 		cpl->ip_csum_dis = 1;    /* SW calculates IP csum */
 		cpl->l4_csum_dis = skb->ip_summed == CHECKSUM_PARTIAL ? 0 : 1;
@@ -1874,9 +2123,15 @@ netdev_tx_t t1_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 	cpl->iff = dev->if_port;
 
+<<<<<<< HEAD
 	if (vlan_tx_tag_present(skb)) {
 		cpl->vlan_valid = 1;
 		cpl->vlan = htons(vlan_tx_tag_get(skb));
+=======
+	if (skb_vlan_tag_present(skb)) {
+		cpl->vlan_valid = 1;
+		cpl->vlan = htons(skb_vlan_tag_get(skb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		st->vlan_insert++;
 	} else
 		cpl->vlan_valid = 0;
@@ -1897,10 +2152,17 @@ send:
 /*
  * Callback for the Tx buffer reclaim timer.  Runs with softirqs disabled.
  */
+<<<<<<< HEAD
 static void sge_tx_reclaim_cb(unsigned long data)
 {
 	int i;
 	struct sge *sge = (struct sge *)data;
+=======
+static void sge_tx_reclaim_cb(struct timer_list *t)
+{
+	int i;
+	struct sge *sge = from_timer(sge, t, tx_reclaim_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < SGE_CMDQ_N; ++i) {
 		struct cmdQ *q = &sge->cmdQ[i];
@@ -1993,10 +2255,17 @@ void t1_sge_start(struct sge *sge)
 /*
  * Callback for the T2 ESPI 'stuck packet feature' workaorund
  */
+<<<<<<< HEAD
 static void espibug_workaround_t204(unsigned long data)
 {
 	struct adapter *adapter = (struct adapter *)data;
 	struct sge *sge = adapter->sge;
+=======
+static void espibug_workaround_t204(struct timer_list *t)
+{
+	struct sge *sge = from_timer(sge, t, espibug_timer);
+	struct adapter *adapter = sge->adapter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int nports = adapter->params.nports;
 	u32 seop[MAX_NPORTS];
 
@@ -2036,10 +2305,17 @@ static void espibug_workaround_t204(unsigned long data)
 	mod_timer(&sge->espibug_timer, jiffies + sge->espibug_timeout);
 }
 
+<<<<<<< HEAD
 static void espibug_workaround(unsigned long data)
 {
 	struct adapter *adapter = (struct adapter *)data;
 	struct sge *sge = adapter->sge;
+=======
+static void espibug_workaround(struct timer_list *t)
+{
+	struct sge *sge = from_timer(sge, t, espibug_timer);
+	struct adapter *adapter = sge->adapter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_running(adapter->port[0].dev)) {
 	        struct sk_buff *skb = sge->espibug_skb[0];
@@ -2071,8 +2347,12 @@ static void espibug_workaround(unsigned long data)
 /*
  * Creates a t1_sge structure and returns suggested resource parameters.
  */
+<<<<<<< HEAD
 struct sge * __devinit t1_sge_create(struct adapter *adapter,
 				     struct sge_params *p)
+=======
+struct sge *t1_sge_create(struct adapter *adapter, struct sge_params *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sge *sge = kzalloc(sizeof(*sge), GFP_KERNEL);
 	int i;
@@ -2091,6 +2371,7 @@ struct sge * __devinit t1_sge_create(struct adapter *adapter,
 			goto nomem_port;
 	}
 
+<<<<<<< HEAD
 	init_timer(&sge->tx_reclaim_timer);
 	sge->tx_reclaim_timer.data = (unsigned long)sge;
 	sge->tx_reclaim_timer.function = sge_tx_reclaim_cb;
@@ -2104,6 +2385,17 @@ struct sge * __devinit t1_sge_create(struct adapter *adapter,
 		} else
 			sge->espibug_timer.function = espibug_workaround;
 		sge->espibug_timer.data = (unsigned long)sge->adapter;
+=======
+	timer_setup(&sge->tx_reclaim_timer, sge_tx_reclaim_cb, 0);
+
+	if (is_T2(sge->adapter)) {
+		timer_setup(&sge->espibug_timer,
+			    adapter->params.nports > 1 ? espibug_workaround_t204 : espibug_workaround,
+			    0);
+
+		if (adapter->params.nports > 1)
+			tx_sched_init(sge);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		sge->espibug_timeout = 1;
 		/* for T204, every 10ms */

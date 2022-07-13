@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* copy_user.S: Sparc optimized copy_from_user and copy_to_user code.
  *
  *  Copyright(C) 1995 Linus Torvalds
@@ -11,6 +15,10 @@
  * Returns 0 if successful, otherwise count of bytes not copied yet
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ptrace.h>
 #include <asm/asmmacro.h>
 #include <asm/page.h>
@@ -19,10 +27,21 @@
 /* Work around cpp -rob */
 #define ALLOC #alloc
 #define EXECINSTR #execinstr
+<<<<<<< HEAD
+=======
+
+#define EX_ENTRY(l1, l2)			\
+	.section __ex_table,ALLOC;		\
+	.align	4;				\
+	.word	l1, l2;				\
+	.text;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EX(x,y,a,b) 				\
 98: 	x,y;					\
 	.section .fixup,ALLOC,EXECINSTR;	\
 	.align	4;				\
+<<<<<<< HEAD
 99:	ba fixupretl;				\
 	 a, b, %g3;				\
 	.section __ex_table,ALLOC;		\
@@ -30,12 +49,18 @@
 	.word	98b, 99b;			\
 	.text;					\
 	.align	4
+=======
+99:	retl;					\
+	 a, b, %o0;				\
+	EX_ENTRY(98b, 99b)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EX2(x,y,c,d,e,a,b) 			\
 98: 	x,y;					\
 	.section .fixup,ALLOC,EXECINSTR;	\
 	.align	4;				\
 99:	c, d, e;				\
+<<<<<<< HEAD
 	ba fixupretl;				\
 	 a, b, %g3;				\
 	.section __ex_table,ALLOC;		\
@@ -111,6 +136,116 @@
 	ldub	[%src - (offset) - 0x01], %t1; \
 	stb	%t0, [%dst - (offset) - 0x02]; \
 	stb	%t1, [%dst - (offset) - 0x01];
+=======
+	retl;					\
+	 a, b, %o0;				\
+	EX_ENTRY(98b, 99b)
+
+#define EXO2(x,y) 				\
+98: 	x, y;					\
+	EX_ENTRY(98b, 97f)
+
+#define LD(insn, src, offset, reg, label)	\
+98:	insn [%src + (offset)], %reg;		\
+	.section .fixup,ALLOC,EXECINSTR;	\
+99:	ba	label;				\
+	 mov	offset, %g5;			\
+	EX_ENTRY(98b, 99b)
+
+#define ST(insn, dst, offset, reg, label)	\
+98:	insn %reg, [%dst + (offset)];		\
+	.section .fixup,ALLOC,EXECINSTR;	\
+99:	ba	label;				\
+	 mov	offset, %g5;			\
+	EX_ENTRY(98b, 99b)
+
+/* Both these macros have to start with exactly the same insn */
+/* left: g7 + (g1 % 128) - offset */
+#define MOVE_BIGCHUNK(src, dst, offset, t0, t1, t2, t3, t4, t5, t6, t7) \
+	LD(ldd, src, offset + 0x00, t0, bigchunk_fault)	\
+	LD(ldd, src, offset + 0x08, t2, bigchunk_fault)	\
+	LD(ldd, src, offset + 0x10, t4, bigchunk_fault)	\
+	LD(ldd, src, offset + 0x18, t6, bigchunk_fault)	\
+	ST(st, dst, offset + 0x00, t0, bigchunk_fault)	\
+	ST(st, dst, offset + 0x04, t1, bigchunk_fault)	\
+	ST(st, dst, offset + 0x08, t2, bigchunk_fault)	\
+	ST(st, dst, offset + 0x0c, t3, bigchunk_fault)	\
+	ST(st, dst, offset + 0x10, t4, bigchunk_fault)	\
+	ST(st, dst, offset + 0x14, t5, bigchunk_fault)	\
+	ST(st, dst, offset + 0x18, t6, bigchunk_fault)	\
+	ST(st, dst, offset + 0x1c, t7, bigchunk_fault)
+
+/* left: g7 + (g1 % 128) - offset */
+#define MOVE_BIGALIGNCHUNK(src, dst, offset, t0, t1, t2, t3, t4, t5, t6, t7) \
+	LD(ldd, src, offset + 0x00, t0, bigchunk_fault)	\
+	LD(ldd, src, offset + 0x08, t2, bigchunk_fault)	\
+	LD(ldd, src, offset + 0x10, t4, bigchunk_fault)	\
+	LD(ldd, src, offset + 0x18, t6, bigchunk_fault)	\
+	ST(std, dst, offset + 0x00, t0, bigchunk_fault)	\
+	ST(std, dst, offset + 0x08, t2, bigchunk_fault)	\
+	ST(std, dst, offset + 0x10, t4, bigchunk_fault)	\
+	ST(std, dst, offset + 0x18, t6, bigchunk_fault)
+
+	.section .fixup,#alloc,#execinstr
+bigchunk_fault:
+	sub	%g7, %g5, %o0
+	and	%g1, 127, %g1
+	retl
+	 add	%o0, %g1, %o0
+
+/* left: offset + 16 + (g1 % 16) */
+#define MOVE_LASTCHUNK(src, dst, offset, t0, t1, t2, t3) \
+	LD(ldd, src, -(offset + 0x10), t0, lastchunk_fault)	\
+	LD(ldd, src, -(offset + 0x08), t2, lastchunk_fault)	\
+	ST(st, dst, -(offset + 0x10), t0, lastchunk_fault)	\
+	ST(st, dst, -(offset + 0x0c), t1, lastchunk_fault)	\
+	ST(st, dst, -(offset + 0x08), t2, lastchunk_fault)	\
+	ST(st, dst, -(offset + 0x04), t3, lastchunk_fault)
+
+	.section .fixup,#alloc,#execinstr
+lastchunk_fault:
+	and	%g1, 15, %g1
+	retl
+	 sub	%g1, %g5, %o0
+
+/* left: o3 + (o2 % 16) - offset */
+#define MOVE_HALFCHUNK(src, dst, offset, t0, t1, t2, t3) \
+	LD(lduh, src, offset + 0x00, t0, halfchunk_fault)	\
+	LD(lduh, src, offset + 0x02, t1, halfchunk_fault)	\
+	LD(lduh, src, offset + 0x04, t2, halfchunk_fault)	\
+	LD(lduh, src, offset + 0x06, t3, halfchunk_fault)	\
+	ST(sth, dst, offset + 0x00, t0, halfchunk_fault)	\
+	ST(sth, dst, offset + 0x02, t1, halfchunk_fault)	\
+	ST(sth, dst, offset + 0x04, t2, halfchunk_fault)	\
+	ST(sth, dst, offset + 0x06, t3, halfchunk_fault)
+
+/* left: o3 + (o2 % 16) + offset + 2 */
+#define MOVE_SHORTCHUNK(src, dst, offset, t0, t1) \
+	LD(ldub, src, -(offset + 0x02), t0, halfchunk_fault)	\
+	LD(ldub, src, -(offset + 0x01), t1, halfchunk_fault)	\
+	ST(stb, dst, -(offset + 0x02), t0, halfchunk_fault)	\
+	ST(stb, dst, -(offset + 0x01), t1, halfchunk_fault)
+
+	.section .fixup,#alloc,#execinstr
+halfchunk_fault:
+	and	%o2, 15, %o2
+	sub	%o3, %g5, %o3
+	retl
+	 add	%o2, %o3, %o0
+
+/* left: offset + 2 + (o2 % 2) */
+#define MOVE_LAST_SHORTCHUNK(src, dst, offset, t0, t1) \
+	LD(ldub, src, -(offset + 0x02), t0, last_shortchunk_fault)	\
+	LD(ldub, src, -(offset + 0x01), t1, last_shortchunk_fault)	\
+	ST(stb, dst, -(offset + 0x02), t0, last_shortchunk_fault)	\
+	ST(stb, dst, -(offset + 0x01), t1, last_shortchunk_fault)
+
+	.section .fixup,#alloc,#execinstr
+last_shortchunk_fault:
+	and	%o2, 1, %o2
+	retl
+	 sub	%o2, %g5, %o0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.text
 	.align	4
@@ -119,6 +254,10 @@
 __copy_user_begin:
 
 	.globl	__copy_user
+<<<<<<< HEAD
+=======
+	EXPORT_SYMBOL(__copy_user)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 dword_align:
 	andcc	%o1, 1, %g0
 	be	4f
@@ -179,8 +318,11 @@ __copy_user:	/* %o0=dst %o1=src %o2=len */
 	MOVE_BIGCHUNK(o1, o0, 0x20, o2, o3, o4, o5, g2, g3, g4, g5)
 	MOVE_BIGCHUNK(o1, o0, 0x40, o2, o3, o4, o5, g2, g3, g4, g5)
 	MOVE_BIGCHUNK(o1, o0, 0x60, o2, o3, o4, o5, g2, g3, g4, g5)
+<<<<<<< HEAD
 80:
 	EXT(5b, 80b, 50f)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	subcc	%g7, 128, %g7
 	add	%o1, 128, %o1
 	bne	5b
@@ -198,7 +340,10 @@ __copy_user:	/* %o0=dst %o1=src %o2=len */
 	jmpl	%o5 + %lo(copy_user_table_end), %g0
 	 add	%o0, %g7, %o0
 
+<<<<<<< HEAD
 copy_user_table:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MOVE_LASTCHUNK(o1, o0, 0x60, g2, g3, g4, g5)
 	MOVE_LASTCHUNK(o1, o0, 0x50, g2, g3, g4, g5)
 	MOVE_LASTCHUNK(o1, o0, 0x40, g2, g3, g4, g5)
@@ -207,7 +352,10 @@ copy_user_table:
 	MOVE_LASTCHUNK(o1, o0, 0x10, g2, g3, g4, g5)
 	MOVE_LASTCHUNK(o1, o0, 0x00, g2, g3, g4, g5)
 copy_user_table_end:
+<<<<<<< HEAD
 	EXT(copy_user_table, copy_user_table_end, 51f)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	be	copy_user_last7
 	 andcc	%g1, 4, %g0
 
@@ -247,8 +395,11 @@ ldd_std:
 	MOVE_BIGALIGNCHUNK(o1, o0, 0x20, o2, o3, o4, o5, g2, g3, g4, g5)
 	MOVE_BIGALIGNCHUNK(o1, o0, 0x40, o2, o3, o4, o5, g2, g3, g4, g5)
 	MOVE_BIGALIGNCHUNK(o1, o0, 0x60, o2, o3, o4, o5, g2, g3, g4, g5)
+<<<<<<< HEAD
 81:
 	EXT(ldd_std, 81b, 52f)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	subcc	%g7, 128, %g7
 	add	%o1, 128, %o1
 	bne	ldd_std
@@ -287,8 +438,11 @@ cannot_optimize:
 10:
 	MOVE_HALFCHUNK(o1, o0, 0x00, g2, g3, g4, g5)
 	MOVE_HALFCHUNK(o1, o0, 0x08, g2, g3, g4, g5)
+<<<<<<< HEAD
 82:
 	EXT(10b, 82b, 53f)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	subcc	%o3, 0x10, %o3
 	add	%o1, 0x10, %o1
 	bne	10b
@@ -305,8 +459,11 @@ byte_chunk:
 	MOVE_SHORTCHUNK(o1, o0, -0x0c, g2, g3)
 	MOVE_SHORTCHUNK(o1, o0, -0x0e, g2, g3)
 	MOVE_SHORTCHUNK(o1, o0, -0x10, g2, g3)
+<<<<<<< HEAD
 83:
 	EXT(byte_chunk, 83b, 54f)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	subcc	%o3, 0x10, %o3
 	add	%o1, 0x10, %o1
 	bne	byte_chunk
@@ -322,6 +479,7 @@ short_end:
 	add	%o1, %o3, %o1
 	jmpl	%o5 + %lo(short_table_end), %g0
 	 andcc	%o2, 1, %g0
+<<<<<<< HEAD
 84:
 	MOVE_SHORTCHUNK(o1, o0, 0x0c, g2, g3)
 	MOVE_SHORTCHUNK(o1, o0, 0x0a, g2, g3)
@@ -332,6 +490,16 @@ short_end:
 	MOVE_SHORTCHUNK(o1, o0, 0x00, g2, g3)
 short_table_end:
 	EXT(84b, short_table_end, 55f)
+=======
+	MOVE_LAST_SHORTCHUNK(o1, o0, 0x0c, g2, g3)
+	MOVE_LAST_SHORTCHUNK(o1, o0, 0x0a, g2, g3)
+	MOVE_LAST_SHORTCHUNK(o1, o0, 0x08, g2, g3)
+	MOVE_LAST_SHORTCHUNK(o1, o0, 0x06, g2, g3)
+	MOVE_LAST_SHORTCHUNK(o1, o0, 0x04, g2, g3)
+	MOVE_LAST_SHORTCHUNK(o1, o0, 0x02, g2, g3)
+	MOVE_LAST_SHORTCHUNK(o1, o0, 0x00, g2, g3)
+short_table_end:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	be	1f
 	 nop
 	EX(ldub	[%o1], %g2, add %g0, 1)
@@ -360,6 +528,7 @@ short_aligned_end:
 	.section .fixup,#alloc,#execinstr
 	.align	4
 97:
+<<<<<<< HEAD
 	mov	%o2, %g3
 fixupretl:
 	sethi   %hi(PAGE_OFFSET), %g1
@@ -491,6 +660,10 @@ fixupretl:
 	sub	%o0, %g3, %o0
 	ba	fixupretl
 	 add	%g3, %o2, %g3
+=======
+	retl
+	 mov	%o2, %o0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.globl  __copy_user_end
 __copy_user_end:

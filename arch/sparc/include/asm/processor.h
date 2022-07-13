@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef ___ASM_SPARC_PROCESSOR_H
 #define ___ASM_SPARC_PROCESSOR_H
 #if defined(__sparc__) && defined(__arch64__)
@@ -5,7 +9,10 @@
 #else
 #include <asm/processor_32.h>
 #endif
+<<<<<<< HEAD
 
 #define nop() 		__asm__ __volatile__ ("nop")
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

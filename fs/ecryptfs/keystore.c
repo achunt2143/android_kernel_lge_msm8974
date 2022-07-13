@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /**
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * eCryptfs: Linux filesystem encryption layer
  * In-kernel key management code.  Includes functions to parse and
  * write authentication token-related packets with the underlying
@@ -8,6 +13,7 @@
  *   Author(s): Michael A. Halcrow <mhalcrow@us.ibm.com>
  *              Michael C. Thompson <mcthomps@us.ibm.com>
  *              Trevor S. Highland <trevor.highland@gmail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -31,11 +37,25 @@
 #include <linux/key.h>
 #include <linux/random.h>
 #include <linux/crypto.h>
+=======
+ */
+
+#include <crypto/hash.h>
+#include <crypto/skcipher.h>
+#include <linux/string.h>
+#include <linux/pagemap.h>
+#include <linux/key.h>
+#include <linux/random.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
 #include "ecryptfs_kernel.h"
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * request_key returned an error instead of a valid key address;
  * determine the type of error, make appropriate log entries, and
  * return an error code.
@@ -101,12 +121,21 @@ int ecryptfs_parse_packet_length(unsigned char *data, size_t *size,
 	(*size) = 0;
 	if (data[0] < 192) {
 		/* One-byte length */
+<<<<<<< HEAD
 		(*size) = (unsigned char)data[0];
 		(*length_size) = 1;
 	} else if (data[0] < 224) {
 		/* Two-byte length */
 		(*size) = (((unsigned char)(data[0]) - 192) * 256);
 		(*size) += ((unsigned char)(data[1]) + 192);
+=======
+		(*size) = data[0];
+		(*length_size) = 1;
+	} else if (data[0] < 224) {
+		/* Two-byte length */
+		(*size) = (data[0] - 192) * 256;
+		(*size) += data[1] + 192;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(*length_size) = 2;
 	} else if (data[0] == 255) {
 		/* If support is added, adjust ECRYPTFS_MAX_PKT_LEN_SIZE */
@@ -459,7 +488,12 @@ out:
  * @auth_tok_key: key containing the authentication token
  * @auth_tok: authentication token
  *
+<<<<<<< HEAD
  * Returns zero on valid auth tok; -EINVAL otherwise
+=======
+ * Returns zero on valid auth tok; -EINVAL if the payload is invalid; or
+ * -EKEYREVOKED if the key was revoked before we acquired its semaphore.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 ecryptfs_verify_auth_tok_from_key(struct key *auth_tok_key,
@@ -468,6 +502,15 @@ ecryptfs_verify_auth_tok_from_key(struct key *auth_tok_key,
 	int rc = 0;
 
 	(*auth_tok) = ecryptfs_get_key_payload_data(auth_tok_key);
+<<<<<<< HEAD
+=======
+	if (IS_ERR(*auth_tok)) {
+		rc = PTR_ERR(*auth_tok);
+		*auth_tok = NULL;
+		goto out;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ecryptfs_verify_version((*auth_tok)->version)) {
 		printk(KERN_ERR "Data structure version mismatch. Userspace "
 		       "tools must match eCryptfs kernel module with major "
@@ -543,8 +586,14 @@ out:
 
 /**
  * ecryptfs_find_auth_tok_for_sig
+<<<<<<< HEAD
  * @auth_tok: Set to the matching auth_tok; NULL if not found
  * @crypt_stat: inode crypt_stat crypto context
+=======
+ * @auth_tok_key: key containing the authentication token
+ * @auth_tok: Set to the matching auth_tok; NULL if not found
+ * @mount_crypt_stat: inode crypt_stat crypto context
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @sig: Sig of auth_tok to find
  *
  * For now, this function simply looks at the registered auth_tok's
@@ -583,7 +632,11 @@ ecryptfs_find_auth_tok_for_sig(
 	return rc;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * write_tag_70_packet can gobble a lot of stack space. We stuff most
  * of the function's parameters in a kmalloc'd struct to help reduce
  * eCryptfs' overall stack usage.
@@ -602,6 +655,7 @@ struct ecryptfs_write_tag_70_packet_silly_stack {
 	struct ecryptfs_auth_tok *auth_tok;
 	struct scatterlist src_sg[2];
 	struct scatterlist dst_sg[2];
+<<<<<<< HEAD
 	struct blkcipher_desc desc;
 	char iv[ECRYPTFS_MAX_IV_BYTES];
 	char hash[ECRYPTFS_TAG_70_DIGEST_SIZE];
@@ -611,6 +665,18 @@ struct ecryptfs_write_tag_70_packet_silly_stack {
 };
 
 /**
+=======
+	struct crypto_skcipher *skcipher_tfm;
+	struct skcipher_request *skcipher_req;
+	char iv[ECRYPTFS_MAX_IV_BYTES];
+	char hash[ECRYPTFS_TAG_70_DIGEST_SIZE];
+	char tmp_hash[ECRYPTFS_TAG_70_DIGEST_SIZE];
+	struct crypto_shash *hash_tfm;
+	struct shash_desc *hash_desc;
+};
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * write_tag_70_packet - Write encrypted filename (EFN) packet against FNEK
  * @filename: NULL-terminated filename string
  *
@@ -630,6 +696,7 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 	struct key *auth_tok_key = NULL;
 	int rc = 0;
 
+<<<<<<< HEAD
 	s = kmalloc(sizeof(*s), GFP_KERNEL);
 	if (!s) {
 		printk(KERN_ERR "%s: Out of memory whilst trying to kmalloc "
@@ -638,6 +705,12 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 		goto out;
 	}
 	s->desc.flags = CRYPTO_TFM_REQ_MAY_SLEEP;
+=======
+	s = kzalloc(sizeof(*s), GFP_KERNEL);
+	if (!s)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(*packet_size) = 0;
 	rc = ecryptfs_find_auth_tok_for_sig(
 		&auth_tok_key,
@@ -650,7 +723,11 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 		goto out;
 	}
 	rc = ecryptfs_get_tfm_and_mutex_for_cipher_name(
+<<<<<<< HEAD
 		&s->desc.tfm,
+=======
+		&s->skcipher_tfm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		&s->tfm_mutex, mount_crypt_stat->global_default_fn_cipher_name);
 	if (unlikely(rc)) {
 		printk(KERN_ERR "Internal error whilst attempting to get "
@@ -659,7 +736,11 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 		goto out;
 	}
 	mutex_lock(s->tfm_mutex);
+<<<<<<< HEAD
 	s->block_size = crypto_blkcipher_blocksize(s->desc.tfm);
+=======
+	s->block_size = crypto_skcipher_blocksize(s->skcipher_tfm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Plus one for the \0 separator between the random prefix
 	 * and the plaintext filename */
 	s->num_rand_bytes = (ECRYPTFS_FILENAME_MIN_RANDOM_PREPEND_BYTES + 1);
@@ -681,7 +762,11 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 	 *    separator, and then the filename */
 	s->max_packet_size = (ECRYPTFS_TAG_70_MAX_METADATA_SIZE
 			      + s->block_aligned_filename_size);
+<<<<<<< HEAD
 	if (dest == NULL) {
+=======
+	if (!dest) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(*packet_size) = s->max_packet_size;
 		goto out_unlock;
 	}
@@ -692,6 +777,7 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 		rc = -EINVAL;
 		goto out_unlock;
 	}
+<<<<<<< HEAD
 	s->block_aligned_filename = kzalloc(s->block_aligned_filename_size,
 					    GFP_KERNEL);
 	if (!s->block_aligned_filename) {
@@ -702,6 +788,27 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 		goto out_unlock;
 	}
 	s->i = 0;
+=======
+
+	s->skcipher_req = skcipher_request_alloc(s->skcipher_tfm, GFP_KERNEL);
+	if (!s->skcipher_req) {
+		printk(KERN_ERR "%s: Out of kernel memory whilst attempting to "
+		       "skcipher_request_alloc for %s\n", __func__,
+		       crypto_skcipher_driver_name(s->skcipher_tfm));
+		rc = -ENOMEM;
+		goto out_unlock;
+	}
+
+	skcipher_request_set_callback(s->skcipher_req,
+				      CRYPTO_TFM_REQ_MAY_SLEEP, NULL, NULL);
+
+	s->block_aligned_filename = kzalloc(s->block_aligned_filename_size,
+					    GFP_KERNEL);
+	if (!s->block_aligned_filename) {
+		rc = -ENOMEM;
+		goto out_unlock;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dest[s->i++] = ECRYPTFS_TAG_70_PACKET_TYPE;
 	rc = ecryptfs_write_packet_length(&dest[s->i],
 					  (ECRYPTFS_SIG_SIZE
@@ -739,6 +846,7 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 		       "password tokens\n", __func__);
 		goto out_free_unlock;
 	}
+<<<<<<< HEAD
 	sg_init_one(
 		&s->hash_sg,
 		(u8 *)s->auth_tok->token.password.session_key_encryption_key,
@@ -748,11 +856,17 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 					     CRYPTO_ALG_ASYNC);
 	if (IS_ERR(s->hash_desc.tfm)) {
 			rc = PTR_ERR(s->hash_desc.tfm);
+=======
+	s->hash_tfm = crypto_alloc_shash(ECRYPTFS_TAG_70_DIGEST, 0, 0);
+	if (IS_ERR(s->hash_tfm)) {
+			rc = PTR_ERR(s->hash_tfm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_ERR "%s: Error attempting to "
 			       "allocate hash crypto context; rc = [%d]\n",
 			       __func__, rc);
 			goto out_free_unlock;
 	}
+<<<<<<< HEAD
 	rc = crypto_hash_init(&s->hash_desc);
 	if (rc) {
 		printk(KERN_ERR
@@ -773,6 +887,25 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 	if (rc) {
 		printk(KERN_ERR
 		       "%s: Error finalizing crypto hash; rc = [%d]\n",
+=======
+
+	s->hash_desc = kmalloc(sizeof(*s->hash_desc) +
+			       crypto_shash_descsize(s->hash_tfm), GFP_KERNEL);
+	if (!s->hash_desc) {
+		rc = -ENOMEM;
+		goto out_release_free_unlock;
+	}
+
+	s->hash_desc->tfm = s->hash_tfm;
+
+	rc = crypto_shash_digest(s->hash_desc,
+				 (u8 *)s->auth_tok->token.password.session_key_encryption_key,
+				 s->auth_tok->token.password.session_key_encryption_key_bytes,
+				 s->hash);
+	if (rc) {
+		printk(KERN_ERR
+		       "%s: Error computing crypto hash; rc = [%d]\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       __func__, rc);
 		goto out_release_free_unlock;
 	}
@@ -781,6 +914,7 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 			s->hash[(s->j % ECRYPTFS_TAG_70_DIGEST_SIZE)];
 		if ((s->j % ECRYPTFS_TAG_70_DIGEST_SIZE)
 		    == (ECRYPTFS_TAG_70_DIGEST_SIZE - 1)) {
+<<<<<<< HEAD
 			sg_init_one(&s->hash_sg, (u8 *)s->hash,
 				    ECRYPTFS_TAG_70_DIGEST_SIZE);
 			rc = crypto_hash_init(&s->hash_desc);
@@ -802,6 +936,14 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 			if (rc) {
 				printk(KERN_ERR
 				       "%s: Error finalizing crypto hash; "
+=======
+			rc = crypto_shash_digest(s->hash_desc, (u8 *)s->hash,
+						ECRYPTFS_TAG_70_DIGEST_SIZE,
+						s->tmp_hash);
+			if (rc) {
+				printk(KERN_ERR
+				       "%s: Error computing crypto hash; "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       "rc = [%d]\n", __func__, rc);
 				goto out_release_free_unlock;
 			}
@@ -835,10 +977,15 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 	 * of the IV here, so we just use 0's for the IV. Note the
 	 * constraint that ECRYPTFS_FILENAME_MIN_RANDOM_PREPEND_BYTES
 	 * >= ECRYPTFS_MAX_IV_BYTES. */
+<<<<<<< HEAD
 	memset(s->iv, 0, ECRYPTFS_MAX_IV_BYTES);
 	s->desc.info = s->iv;
 	rc = crypto_blkcipher_setkey(
 		s->desc.tfm,
+=======
+	rc = crypto_skcipher_setkey(
+		s->skcipher_tfm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		s->auth_tok->token.password.session_key_encryption_key,
 		mount_crypt_stat->global_default_fn_cipher_key_bytes);
 	if (rc < 0) {
@@ -851,8 +998,14 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 		       mount_crypt_stat->global_default_fn_cipher_key_bytes);
 		goto out_release_free_unlock;
 	}
+<<<<<<< HEAD
 	rc = crypto_blkcipher_encrypt_iv(&s->desc, s->dst_sg, s->src_sg,
 					 s->block_aligned_filename_size);
+=======
+	skcipher_request_set_crypt(s->skcipher_req, s->src_sg, s->dst_sg,
+				   s->block_aligned_filename_size, s->iv);
+	rc = crypto_skcipher_encrypt(s->skcipher_req);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		printk(KERN_ERR "%s: Error attempting to encrypt filename; "
 		       "rc = [%d]\n", __func__, rc);
@@ -862,9 +1015,15 @@ ecryptfs_write_tag_70_packet(char *dest, size_t *remaining_bytes,
 	(*packet_size) = s->i;
 	(*remaining_bytes) -= (*packet_size);
 out_release_free_unlock:
+<<<<<<< HEAD
 	crypto_free_hash(s->hash_desc.tfm);
 out_free_unlock:
 	kzfree(s->block_aligned_filename);
+=======
+	crypto_free_shash(s->hash_tfm);
+out_free_unlock:
+	kfree_sensitive(s->block_aligned_filename);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_unlock:
 	mutex_unlock(s->tfm_mutex);
 out:
@@ -872,6 +1031,11 @@ out:
 		up_write(&(auth_tok_key->sem));
 		key_put(auth_tok_key);
 	}
+<<<<<<< HEAD
+=======
+	skcipher_request_free(s->skcipher_req);
+	kfree_sensitive(s->hash_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(s);
 	return rc;
 }
@@ -889,6 +1053,7 @@ struct ecryptfs_parse_tag_70_packet_silly_stack {
 	struct ecryptfs_auth_tok *auth_tok;
 	struct scatterlist src_sg[2];
 	struct scatterlist dst_sg[2];
+<<<<<<< HEAD
 	struct blkcipher_desc desc;
 	char fnek_sig_hex[ECRYPTFS_SIG_SIZE_HEX + 1];
 	char iv[ECRYPTFS_MAX_IV_BYTES];
@@ -897,6 +1062,17 @@ struct ecryptfs_parse_tag_70_packet_silly_stack {
 
 /**
  * parse_tag_70_packet - Parse and process FNEK-encrypted passphrase packet
+=======
+	struct crypto_skcipher *skcipher_tfm;
+	struct skcipher_request *skcipher_req;
+	char fnek_sig_hex[ECRYPTFS_SIG_SIZE_HEX + 1];
+	char iv[ECRYPTFS_MAX_IV_BYTES];
+	char cipher_string[ECRYPTFS_MAX_CIPHER_NAME_SIZE + 1];
+};
+
+/**
+ * ecryptfs_parse_tag_70_packet - Parse and process FNEK-encrypted passphrase packet
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @filename: This function kmalloc's the memory for the filename
  * @filename_size: This function sets this to the amount of memory
  *                 kmalloc'd for the filename
@@ -923,6 +1099,7 @@ ecryptfs_parse_tag_70_packet(char **filename, size_t *filename_size,
 	(*packet_size) = 0;
 	(*filename_size) = 0;
 	(*filename) = NULL;
+<<<<<<< HEAD
 	s = kmalloc(sizeof(*s), GFP_KERNEL);
 	if (!s) {
 		printk(KERN_ERR "%s: Out of memory whilst trying to kmalloc "
@@ -931,6 +1108,12 @@ ecryptfs_parse_tag_70_packet(char **filename, size_t *filename_size,
 		goto out;
 	}
 	s->desc.flags = CRYPTO_TFM_REQ_MAY_SLEEP;
+=======
+	s = kzalloc(sizeof(*s), GFP_KERNEL);
+	if (!s)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (max_packet_size < ECRYPTFS_TAG_70_MIN_METADATA_SIZE) {
 		printk(KERN_WARNING "%s: max_packet_size is [%zd]; it must be "
 		       "at least [%d]\n", __func__, max_packet_size,
@@ -993,7 +1176,11 @@ ecryptfs_parse_tag_70_packet(char **filename, size_t *filename_size,
 		       rc);
 		goto out;
 	}
+<<<<<<< HEAD
 	rc = ecryptfs_get_tfm_and_mutex_for_cipher_name(&s->desc.tfm,
+=======
+	rc = ecryptfs_get_tfm_and_mutex_for_cipher_name(&s->skcipher_tfm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							&s->tfm_mutex,
 							s->cipher_string);
 	if (unlikely(rc)) {
@@ -1016,9 +1203,12 @@ ecryptfs_parse_tag_70_packet(char **filename, size_t *filename_size,
 	s->decrypted_filename = kmalloc(s->block_aligned_filename_size,
 					GFP_KERNEL);
 	if (!s->decrypted_filename) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Out of memory whilst attempting to "
 		       "kmalloc [%zd] bytes\n", __func__,
 		       s->block_aligned_filename_size);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto out_unlock;
 	}
@@ -1031,12 +1221,31 @@ ecryptfs_parse_tag_70_packet(char **filename, size_t *filename_size,
 		       __func__, rc, s->block_aligned_filename_size);
 		goto out_free_unlock;
 	}
+<<<<<<< HEAD
+=======
+
+	s->skcipher_req = skcipher_request_alloc(s->skcipher_tfm, GFP_KERNEL);
+	if (!s->skcipher_req) {
+		printk(KERN_ERR "%s: Out of kernel memory whilst attempting to "
+		       "skcipher_request_alloc for %s\n", __func__,
+		       crypto_skcipher_driver_name(s->skcipher_tfm));
+		rc = -ENOMEM;
+		goto out_free_unlock;
+	}
+
+	skcipher_request_set_callback(s->skcipher_req,
+				      CRYPTO_TFM_REQ_MAY_SLEEP, NULL, NULL);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* The characters in the first block effectively do the job of
 	 * the IV here, so we just use 0's for the IV. Note the
 	 * constraint that ECRYPTFS_FILENAME_MIN_RANDOM_PREPEND_BYTES
 	 * >= ECRYPTFS_MAX_IV_BYTES. */
+<<<<<<< HEAD
 	memset(s->iv, 0, ECRYPTFS_MAX_IV_BYTES);
 	s->desc.info = s->iv;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* TODO: Support other key modules than passphrase for
 	 * filename encryption */
 	if (s->auth_tok->token_type != ECRYPTFS_PASSWORD) {
@@ -1045,8 +1254,13 @@ ecryptfs_parse_tag_70_packet(char **filename, size_t *filename_size,
 		       "password tokens\n", __func__);
 		goto out_free_unlock;
 	}
+<<<<<<< HEAD
 	rc = crypto_blkcipher_setkey(
 		s->desc.tfm,
+=======
+	rc = crypto_skcipher_setkey(
+		s->skcipher_tfm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		s->auth_tok->token.password.session_key_encryption_key,
 		mount_crypt_stat->global_default_fn_cipher_key_bytes);
 	if (rc < 0) {
@@ -1059,16 +1273,28 @@ ecryptfs_parse_tag_70_packet(char **filename, size_t *filename_size,
 		       mount_crypt_stat->global_default_fn_cipher_key_bytes);
 		goto out_free_unlock;
 	}
+<<<<<<< HEAD
 	rc = crypto_blkcipher_decrypt_iv(&s->desc, s->dst_sg, s->src_sg,
 					 s->block_aligned_filename_size);
+=======
+	skcipher_request_set_crypt(s->skcipher_req, s->src_sg, s->dst_sg,
+				   s->block_aligned_filename_size, s->iv);
+	rc = crypto_skcipher_decrypt(s->skcipher_req);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		printk(KERN_ERR "%s: Error attempting to decrypt filename; "
 		       "rc = [%d]\n", __func__, rc);
 		goto out_free_unlock;
 	}
+<<<<<<< HEAD
 	s->i = 0;
 	while (s->decrypted_filename[s->i] != '\0'
 	       && s->i < s->block_aligned_filename_size)
+=======
+
+	while (s->i < s->block_aligned_filename_size &&
+	       s->decrypted_filename[s->i] != '\0')
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		s->i++;
 	if (s->i == s->block_aligned_filename_size) {
 		printk(KERN_WARNING "%s: Invalid tag 70 packet; could not "
@@ -1087,9 +1313,12 @@ ecryptfs_parse_tag_70_packet(char **filename, size_t *filename_size,
 	}
 	(*filename) = kmalloc(((*filename_size) + 1), GFP_KERNEL);
 	if (!(*filename)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Out of memory whilst attempting to "
 		       "kmalloc [%zd] bytes\n", __func__,
 		       ((*filename_size) + 1));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto out_free_unlock;
 	}
@@ -1109,6 +1338,10 @@ out:
 		up_write(&(auth_tok_key->sem));
 		key_put(auth_tok_key);
 	}
+<<<<<<< HEAD
+=======
+	skcipher_request_free(s->skcipher_req);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(s);
 	return rc;
 }
@@ -1150,7 +1383,11 @@ decrypt_pki_encrypted_session_key(struct ecryptfs_auth_tok *auth_tok,
 	struct ecryptfs_message *msg = NULL;
 	char *auth_tok_sig;
 	char *payload = NULL;
+<<<<<<< HEAD
 	size_t payload_len;
+=======
+	size_t payload_len = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = ecryptfs_get_auth_tok_sig(&auth_tok_sig, auth_tok);
@@ -1168,7 +1405,11 @@ decrypt_pki_encrypted_session_key(struct ecryptfs_auth_tok *auth_tok,
 	rc = ecryptfs_send_message(payload, payload_len, &msg_ctx);
 	if (rc) {
 		ecryptfs_printk(KERN_ERR, "Error sending message to "
+<<<<<<< HEAD
 				"ecryptfsd\n");
+=======
+				"ecryptfsd: %d\n", rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	rc = ecryptfs_wait_for_response(msg_ctx, &msg);
@@ -1192,7 +1433,11 @@ decrypt_pki_encrypted_session_key(struct ecryptfs_auth_tok *auth_tok,
 	rc = ecryptfs_cipher_code_to_string(crypt_stat->cipher, cipher_code);
 	if (rc) {
 		ecryptfs_printk(KERN_ERR, "Cipher code [%d] is invalid\n",
+<<<<<<< HEAD
 				cipher_code)
+=======
+				cipher_code);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	crypt_stat->flags |= ECRYPTFS_KEY_VALID;
@@ -1202,8 +1447,12 @@ decrypt_pki_encrypted_session_key(struct ecryptfs_auth_tok *auth_tok,
 				  crypt_stat->key_size);
 	}
 out:
+<<<<<<< HEAD
 	if (msg)
 		kfree(msg);
+=======
+	kfree(msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(payload);
 	return rc;
 }
@@ -1323,9 +1572,15 @@ parse_tag_1_packet(struct ecryptfs_crypt_stat *crypt_stat,
 	if ((*new_auth_tok)->session_key.encrypted_key_size
 	    > ECRYPTFS_MAX_ENCRYPTED_KEY_BYTES) {
 		printk(KERN_WARNING "Tag 1 packet contains key larger "
+<<<<<<< HEAD
 		       "than ECRYPTFS_MAX_ENCRYPTED_KEY_BYTES");
 		rc = -EINVAL;
 		goto out;
+=======
+		       "than ECRYPTFS_MAX_ENCRYPTED_KEY_BYTES\n");
+		rc = -EINVAL;
+		goto out_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	memcpy((*new_auth_tok)->session_key.encrypted_key,
 	       &data[(*packet_size)], (body_size - (ECRYPTFS_SIG_SIZE + 2)));
@@ -1633,9 +1888,15 @@ int ecryptfs_keyring_auth_tok_for_sig(struct key **auth_tok_key,
 	int rc = 0;
 
 	(*auth_tok_key) = request_key(&key_type_user, sig, NULL);
+<<<<<<< HEAD
 	if (!(*auth_tok_key) || IS_ERR(*auth_tok_key)) {
 		(*auth_tok_key) = ecryptfs_get_encrypted_key(sig);
 		if (!(*auth_tok_key) || IS_ERR(*auth_tok_key)) {
+=======
+	if (IS_ERR(*auth_tok_key)) {
+		(*auth_tok_key) = ecryptfs_get_encrypted_key(sig);
+		if (IS_ERR(*auth_tok_key)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_ERR "Could not find key with description: [%s]\n",
 			      sig);
 			rc = process_request_key_err(PTR_ERR(*auth_tok_key));
@@ -1669,11 +1930,17 @@ decrypt_passphrase_encrypted_session_key(struct ecryptfs_auth_tok *auth_tok,
 	struct scatterlist dst_sg[2];
 	struct scatterlist src_sg[2];
 	struct mutex *tfm_mutex;
+<<<<<<< HEAD
 	struct blkcipher_desc desc = {
 		.flags = CRYPTO_TFM_REQ_MAY_SLEEP
 	};
 	int rc = 0;
 	char iv[ECRYPTFS_DEFAULT_IV_BYTES];
+=======
+	struct crypto_skcipher *tfm;
+	struct skcipher_request *req = NULL;
+	int rc = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(ecryptfs_verbosity > 0)) {
 		ecryptfs_printk(
@@ -1683,7 +1950,11 @@ decrypt_passphrase_encrypted_session_key(struct ecryptfs_auth_tok *auth_tok,
 			auth_tok->token.password.session_key_encryption_key,
 			auth_tok->token.password.session_key_encryption_key_bytes);
 	}
+<<<<<<< HEAD
 	rc = ecryptfs_get_tfm_and_mutex_for_cipher_name(&desc.tfm, &tfm_mutex,
+=======
+	rc = ecryptfs_get_tfm_and_mutex_for_cipher_name(&tfm, &tfm_mutex,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							crypt_stat->cipher);
 	if (unlikely(rc)) {
 		printk(KERN_ERR "Internal error whilst attempting to get "
@@ -1714,8 +1985,25 @@ decrypt_passphrase_encrypted_session_key(struct ecryptfs_auth_tok *auth_tok,
 		goto out;
 	}
 	mutex_lock(tfm_mutex);
+<<<<<<< HEAD
 	rc = crypto_blkcipher_setkey(
 		desc.tfm, auth_tok->token.password.session_key_encryption_key,
+=======
+	req = skcipher_request_alloc(tfm, GFP_KERNEL);
+	if (!req) {
+		mutex_unlock(tfm_mutex);
+		printk(KERN_ERR "%s: Out of kernel memory whilst attempting to "
+		       "skcipher_request_alloc for %s\n", __func__,
+		       crypto_skcipher_driver_name(tfm));
+		rc = -ENOMEM;
+		goto out;
+	}
+
+	skcipher_request_set_callback(req, CRYPTO_TFM_REQ_MAY_SLEEP,
+				      NULL, NULL);
+	rc = crypto_skcipher_setkey(
+		tfm, auth_tok->token.password.session_key_encryption_key,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		crypt_stat->key_size);
 	if (unlikely(rc < 0)) {
 		mutex_unlock(tfm_mutex);
@@ -1723,10 +2011,17 @@ decrypt_passphrase_encrypted_session_key(struct ecryptfs_auth_tok *auth_tok,
 		rc = -EINVAL;
 		goto out;
 	}
+<<<<<<< HEAD
 	crypto_blkcipher_get_iv(desc.tfm, iv, ECRYPTFS_DEFAULT_IV_BYTES);
 	rc = crypto_blkcipher_decrypt(&desc, dst_sg, src_sg,
 				      auth_tok->session_key.encrypted_key_size);
 	crypto_blkcipher_set_iv(desc.tfm, iv, ECRYPTFS_DEFAULT_IV_BYTES);
+=======
+	skcipher_request_set_crypt(req, src_sg, dst_sg,
+				   auth_tok->session_key.encrypted_key_size,
+				   NULL);
+	rc = crypto_skcipher_decrypt(req);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(tfm_mutex);
 	if (unlikely(rc)) {
 		printk(KERN_ERR "Error decrypting; rc = [%d]\n", rc);
@@ -1743,6 +2038,10 @@ decrypt_passphrase_encrypted_session_key(struct ecryptfs_auth_tok *auth_tok,
 				  crypt_stat->key_size);
 	}
 out:
+<<<<<<< HEAD
+=======
+	skcipher_request_free(req);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -1778,18 +2077,25 @@ int ecryptfs_parse_packet_set(struct ecryptfs_crypt_stat *crypt_stat,
 	size_t tag_11_packet_size;
 	struct key *auth_tok_key = NULL;
 	int rc = 0;
+<<<<<<< HEAD
 #if 1 /* FEATURE_SDCARD_ENCRYPTION DEBUG */
 struct ecryptfs_mount_crypt_stat *mount_crypt_stat =
                 &ecryptfs_superblock_to_private(
                         ecryptfs_dentry->d_sb)->mount_crypt_stat;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&auth_tok_list);
 	/* Parse the header to find as many packets as we can; these will be
 	 * added the our &auth_tok_list */
 	next_packet_is_auth_tok_packet = 1;
 	while (next_packet_is_auth_tok_packet) {
+<<<<<<< HEAD
 		size_t max_packet_size = ((PAGE_CACHE_SIZE - 8) - i);
+=======
+		size_t max_packet_size = ((PAGE_SIZE - 8) - i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (src[i]) {
 		case ECRYPTFS_TAG_3_PACKET_TYPE:
@@ -1835,12 +2141,15 @@ struct ecryptfs_mount_crypt_stat *mount_crypt_stat =
 			new_auth_tok->token.password.signature[
 				ECRYPTFS_PASSWORD_SIG_SIZE] = '\0';
 			crypt_stat->flags |= ECRYPTFS_ENCRYPTED;
+<<<<<<< HEAD
 #if 1 /* FEATURE_SDCARD_ENCRYPTION DEBUG */
 if (mount_crypt_stat && (mount_crypt_stat->flags
                         & ECRYPTFS_DECRYPTION_ONLY)) {
 ecryptfs_printk(KERN_ERR, "%s:%d:: Error decryption_only set : ENCRYPTION DISABLED\n", __FUNCTION__, __LINE__);
 }
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case ECRYPTFS_TAG_1_PACKET_TYPE:
 			rc = parse_tag_1_packet(crypt_stat,
@@ -1855,19 +2164,25 @@ ecryptfs_printk(KERN_ERR, "%s:%d:: Error decryption_only set : ENCRYPTION DISABL
 			}
 			i += packet_size;
 			crypt_stat->flags |= ECRYPTFS_ENCRYPTED;
+<<<<<<< HEAD
 #if 1 /* FEATURE_SDCARD_ENCRYPTION DEBUG */
 if (mount_crypt_stat && (mount_crypt_stat->flags
                         & ECRYPTFS_DECRYPTION_ONLY)) {
 ecryptfs_printk(KERN_ERR, "%s:%d:: Error decryption_only set : ENCRYPTION DISABLED\n", __FUNCTION__, __LINE__);
 }
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case ECRYPTFS_TAG_11_PACKET_TYPE:
 			ecryptfs_printk(KERN_WARNING, "Invalid packet set "
 					"(Tag 11 not allowed by itself)\n");
 			rc = -EIO;
 			goto out_wipe_list;
+<<<<<<< HEAD
 			break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			ecryptfs_printk(KERN_DEBUG, "No packet at offset [%zd] "
 					"of the file header; hex value of "
@@ -1894,7 +2209,11 @@ find_next_matching_auth_tok:
 		candidate_auth_tok = &auth_tok_list_item->auth_tok;
 		if (unlikely(ecryptfs_verbosity > 0)) {
 			ecryptfs_printk(KERN_DEBUG,
+<<<<<<< HEAD
 					"Considering cadidate auth tok:\n");
+=======
+					"Considering candidate auth tok:\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ecryptfs_dump_auth_tok(candidate_auth_tok);
 		}
 		rc = ecryptfs_get_auth_tok_sig(&candidate_auth_tok_sig,
@@ -2010,7 +2329,11 @@ pki_encrypt_session_key(struct key *auth_tok_key,
 	rc = ecryptfs_send_message(payload, payload_len, &msg_ctx);
 	if (rc) {
 		ecryptfs_printk(KERN_ERR, "Error sending message to "
+<<<<<<< HEAD
 				"ecryptfsd\n");
+=======
+				"ecryptfsd: %d\n", rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 	rc = ecryptfs_wait_for_response(msg_ctx, &msg);
@@ -2214,17 +2537,27 @@ write_tag_3_packet(char *dest, size_t *remaining_bytes,
 	size_t max_packet_size;
 	struct ecryptfs_mount_crypt_stat *mount_crypt_stat =
 		crypt_stat->mount_crypt_stat;
+<<<<<<< HEAD
 	struct blkcipher_desc desc = {
 		.tfm = NULL,
 		.flags = CRYPTO_TFM_REQ_MAY_SLEEP
 	};
 	int rc = 0;
 	char iv[ECRYPTFS_DEFAULT_IV_BYTES];
+=======
+	struct crypto_skcipher *tfm;
+	struct skcipher_request *req;
+	int rc = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	(*packet_size) = 0;
 	ecryptfs_from_hex(key_rec->sig, auth_tok->token.password.signature,
 			  ECRYPTFS_SIG_SIZE);
+<<<<<<< HEAD
 	rc = ecryptfs_get_tfm_and_mutex_for_cipher_name(&desc.tfm, &tfm_mutex,
+=======
+	rc = ecryptfs_get_tfm_and_mutex_for_cipher_name(&tfm, &tfm_mutex,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							crypt_stat->cipher);
 	if (unlikely(rc)) {
 		printk(KERN_ERR "Internal error whilst attempting to get "
@@ -2233,12 +2566,20 @@ write_tag_3_packet(char *dest, size_t *remaining_bytes,
 		goto out;
 	}
 	if (mount_crypt_stat->global_default_cipher_key_size == 0) {
+<<<<<<< HEAD
 		struct blkcipher_alg *alg = crypto_blkcipher_alg(desc.tfm);
 
 		printk(KERN_WARNING "No key size specified at mount; "
 		       "defaulting to [%d]\n", alg->max_keysize);
 		mount_crypt_stat->global_default_cipher_key_size =
 			alg->max_keysize;
+=======
+		printk(KERN_WARNING "No key size specified at mount; "
+		       "defaulting to [%d]\n",
+		       crypto_skcipher_max_keysize(tfm));
+		mount_crypt_stat->global_default_cipher_key_size =
+			crypto_skcipher_max_keysize(tfm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (crypt_stat->key_size == 0)
 		crypt_stat->key_size =
@@ -2308,14 +2649,20 @@ write_tag_3_packet(char *dest, size_t *remaining_bytes,
 		goto out;
 	}
 	mutex_lock(tfm_mutex);
+<<<<<<< HEAD
 	rc = crypto_blkcipher_setkey(desc.tfm, session_key_encryption_key,
 				     crypt_stat->key_size);
+=======
+	rc = crypto_skcipher_setkey(tfm, session_key_encryption_key,
+				    crypt_stat->key_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc < 0) {
 		mutex_unlock(tfm_mutex);
 		ecryptfs_printk(KERN_ERR, "Error setting key for crypto "
 				"context; rc = [%d]\n", rc);
 		goto out;
 	}
+<<<<<<< HEAD
 	rc = 0;
 	ecryptfs_printk(KERN_DEBUG, "Encrypting [%zd] bytes of the key\n",
 			crypt_stat->key_size);
@@ -2324,6 +2671,30 @@ write_tag_3_packet(char *dest, size_t *remaining_bytes,
 				      (*key_rec).enc_key_size);
 	crypto_blkcipher_set_iv(desc.tfm, iv, ECRYPTFS_DEFAULT_IV_BYTES);
 	mutex_unlock(tfm_mutex);
+=======
+
+	req = skcipher_request_alloc(tfm, GFP_KERNEL);
+	if (!req) {
+		mutex_unlock(tfm_mutex);
+		ecryptfs_printk(KERN_ERR, "Out of kernel memory whilst "
+				"attempting to skcipher_request_alloc for "
+				"%s\n", crypto_skcipher_driver_name(tfm));
+		rc = -ENOMEM;
+		goto out;
+	}
+
+	skcipher_request_set_callback(req, CRYPTO_TFM_REQ_MAY_SLEEP,
+				      NULL, NULL);
+
+	rc = 0;
+	ecryptfs_printk(KERN_DEBUG, "Encrypting [%zd] bytes of the key\n",
+			crypt_stat->key_size);
+	skcipher_request_set_crypt(req, src_sg, dst_sg,
+				   (*key_rec).enc_key_size, NULL);
+	rc = crypto_skcipher_encrypt(req);
+	mutex_unlock(tfm_mutex);
+	skcipher_request_free(req);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc) {
 		printk(KERN_ERR "Error encrypting; rc = [%d]\n", rc);
 		goto out;
@@ -2512,11 +2883,17 @@ int ecryptfs_add_keysig(struct ecryptfs_crypt_stat *crypt_stat, char *sig)
 	struct ecryptfs_key_sig *new_key_sig;
 
 	new_key_sig = kmem_cache_alloc(ecryptfs_key_sig_cache, GFP_KERNEL);
+<<<<<<< HEAD
 	if (!new_key_sig) {
 		printk(KERN_ERR
 		       "Error allocating from ecryptfs_key_sig_cache\n");
 		return -ENOMEM;
 	}
+=======
+	if (!new_key_sig)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(new_key_sig->keysig, sig, ECRYPTFS_SIG_SIZE_HEX);
 	new_key_sig->keysig[ECRYPTFS_SIG_SIZE_HEX] = '\0';
 	/* Caller must hold keysig_list_mutex */
@@ -2532,6 +2909,7 @@ ecryptfs_add_global_auth_tok(struct ecryptfs_mount_crypt_stat *mount_crypt_stat,
 			     char *sig, u32 global_auth_tok_flags)
 {
 	struct ecryptfs_global_auth_tok *new_auth_tok;
+<<<<<<< HEAD
 	int rc = 0;
 
 	new_auth_tok = kmem_cache_zalloc(ecryptfs_global_auth_tok_cache,
@@ -2542,6 +2920,14 @@ ecryptfs_add_global_auth_tok(struct ecryptfs_mount_crypt_stat *mount_crypt_stat,
 		       "ecryptfs_global_auth_tok_cache\n");
 		goto out;
 	}
+=======
+
+	new_auth_tok = kmem_cache_zalloc(ecryptfs_global_auth_tok_cache,
+					GFP_KERNEL);
+	if (!new_auth_tok)
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(new_auth_tok->sig, sig, ECRYPTFS_SIG_SIZE_HEX);
 	new_auth_tok->flags = global_auth_tok_flags;
 	new_auth_tok->sig[ECRYPTFS_SIG_SIZE_HEX] = '\0';
@@ -2549,7 +2935,11 @@ ecryptfs_add_global_auth_tok(struct ecryptfs_mount_crypt_stat *mount_crypt_stat,
 	list_add(&new_auth_tok->mount_crypt_stat_list,
 		 &mount_crypt_stat->global_auth_tok_list);
 	mutex_unlock(&mount_crypt_stat->global_auth_tok_list_mutex);
+<<<<<<< HEAD
 out:
 	return rc;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

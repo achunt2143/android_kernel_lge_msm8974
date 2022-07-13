@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* asm/dma.h: Defines for using and allocating dma channels.
  * Written by Hennus Bergman, 1992.
  * High DMA channel support & info by Hannu Savolainen
@@ -13,6 +17,11 @@
 #define dma_outb	outb
 #define dma_inb		inb
 
+<<<<<<< HEAD
+=======
+extern unsigned long pcxl_dma_start;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 ** DMA_CHUNK_SIZE is used by the SCSI mid-layer to break up
 ** (or rather not merge) DMAs into manageable chunks.
@@ -175,10 +184,13 @@ static __inline__ void set_dma_count(unsigned int dmanr, unsigned int count)
 
 #define free_dma(dmanr)
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 extern int isa_dma_bridge_buggy;
 #else
 #define isa_dma_bridge_buggy 	(0)
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_DMA_H */

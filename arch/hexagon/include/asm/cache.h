@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Cache definitions for the Hexagon architecture
  *
@@ -16,6 +17,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Cache definitions for the Hexagon architecture
+ *
+ * Copyright (c) 2010-2011,2014 The Linux Foundation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_CACHE_H
@@ -25,10 +33,19 @@
 #define L1_CACHE_SHIFT		(5)
 #define L1_CACHE_BYTES		(1 << L1_CACHE_SHIFT)
 
+<<<<<<< HEAD
 #define __cacheline_aligned	__aligned(L1_CACHE_BYTES)
 #define ____cacheline_aligned	__aligned(L1_CACHE_BYTES)
 
 /* See http://kerneltrap.org/node/15100  */
+=======
+#define ARCH_DMA_MINALIGN	L1_CACHE_BYTES
+
+#define __cacheline_aligned	__aligned(L1_CACHE_BYTES)
+#define ____cacheline_aligned	__aligned(L1_CACHE_BYTES)
+
+/* See http://lwn.net/Articles/262554/ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __read_mostly
 
 #endif

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/linux/sunrpc/gss_api.h
  *
@@ -12,22 +16,49 @@
 #ifndef _LINUX_SUNRPC_GSS_API_H
 #define _LINUX_SUNRPC_GSS_API_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 #include <linux/sunrpc/xdr.h>
+=======
+#include <linux/sunrpc/xdr.h>
+#include <linux/sunrpc/msg_prot.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/uio.h>
 
 /* The mechanism-independent gss-api context: */
 struct gss_ctx {
 	struct gss_api_mech	*mech_type;
 	void			*internal_ctx_id;
+<<<<<<< HEAD
+=======
+	unsigned int		slack, align;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define GSS_C_NO_BUFFER		((struct xdr_netobj) 0)
 #define GSS_C_NO_CONTEXT	((struct gss_ctx *) 0)
+<<<<<<< HEAD
 #define GSS_C_NULL_OID		((struct xdr_netobj) 0)
 
 /*XXX  arbitrary length - is this set somewhere? */
 #define GSS_OID_MAX_LEN 32
+=======
+#define GSS_C_QOP_DEFAULT	(0)
+
+/*XXX  arbitrary length - is this set somewhere? */
+#define GSS_OID_MAX_LEN 32
+struct rpcsec_gss_oid {
+	unsigned int	len;
+	u8		data[GSS_OID_MAX_LEN];
+};
+
+/* From RFC 3530 */
+struct rpcsec_gss_info {
+	struct rpcsec_gss_oid	oid;
+	u32			qop;
+	u32			service;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* gss-api prototypes; note that these are somewhat simplified versions of
  * the prototypes specified in RFC 2744. */
@@ -36,6 +67,10 @@ int gss_import_sec_context(
 		size_t			bufsize,
 		struct gss_api_mech	*mech,
 		struct gss_ctx		**ctx_id,
+<<<<<<< HEAD
+=======
+		time64_t		*endtime,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gfp_t			gfp_mask);
 u32 gss_get_mic(
 		struct gss_ctx		*ctx_id,
@@ -53,19 +88,39 @@ u32 gss_wrap(
 u32 gss_unwrap(
 		struct gss_ctx		*ctx_id,
 		int			offset,
+<<<<<<< HEAD
+=======
+		int			len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct xdr_buf		*inbuf);
 u32 gss_delete_sec_context(
 		struct gss_ctx		**ctx_id);
 
+<<<<<<< HEAD
 u32 gss_svc_to_pseudoflavor(struct gss_api_mech *, u32 service);
 u32 gss_pseudoflavor_to_service(struct gss_api_mech *, u32 pseudoflavor);
+=======
+rpc_authflavor_t gss_svc_to_pseudoflavor(struct gss_api_mech *, u32 qop,
+					u32 service);
+u32 gss_pseudoflavor_to_service(struct gss_api_mech *, u32 pseudoflavor);
+bool gss_pseudoflavor_to_datatouch(struct gss_api_mech *, u32 pseudoflavor);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 char *gss_service_to_auth_domain_name(struct gss_api_mech *, u32 service);
 
 struct pf_desc {
 	u32	pseudoflavor;
+<<<<<<< HEAD
 	u32	service;
 	char	*name;
 	char	*auth_domain_name;
+=======
+	u32	qop;
+	u32	service;
+	char	*name;
+	char	*auth_domain_name;
+	struct auth_domain *domain;
+	bool	datatouch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Different mechanisms (e.g., krb5 or spkm3) may implement gss-api, and
@@ -75,7 +130,11 @@ struct pf_desc {
 struct gss_api_mech {
 	struct list_head	gm_list;
 	struct module		*gm_owner;
+<<<<<<< HEAD
 	struct xdr_netobj	gm_oid;
+=======
+	struct rpcsec_gss_oid	gm_oid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char			*gm_name;
 	const struct gss_api_ops *gm_ops;
 	/* pseudoflavors supported by this mechanism: */
@@ -91,6 +150,10 @@ struct gss_api_ops {
 			const void		*input_token,
 			size_t			bufsize,
 			struct gss_ctx		*ctx_id,
+<<<<<<< HEAD
+=======
+			time64_t		*endtime,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			gfp_t			gfp_mask);
 	u32 (*gss_get_mic)(
 			struct gss_ctx		*ctx_id,
@@ -108,6 +171,10 @@ struct gss_api_ops {
 	u32 (*gss_unwrap)(
 			struct gss_ctx		*ctx_id,
 			int			offset,
+<<<<<<< HEAD
+=======
+			int			len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct xdr_buf		*buf);
 	void (*gss_delete_sec_context)(
 			void			*internal_ctx_id);
@@ -118,7 +185,17 @@ void gss_mech_unregister(struct gss_api_mech *);
 
 /* returns a mechanism descriptor given an OID, and increments the mechanism's
  * reference count. */
+<<<<<<< HEAD
 struct gss_api_mech * gss_mech_get_by_OID(struct xdr_netobj *);
+=======
+struct gss_api_mech * gss_mech_get_by_OID(struct rpcsec_gss_oid *);
+
+/* Given a GSS security tuple, look up a pseudoflavor */
+rpc_authflavor_t gss_mech_info2flavor(struct rpcsec_gss_info *);
+
+/* Given a pseudoflavor, look up a GSS security tuple */
+int gss_mech_flavor2info(rpc_authflavor_t, struct rpcsec_gss_info *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Returns a reference to a mechanism, given a name like "krb5" etc. */
 struct gss_api_mech *gss_mech_get_by_name(const char *);
@@ -126,16 +203,22 @@ struct gss_api_mech *gss_mech_get_by_name(const char *);
 /* Similar, but get by pseudoflavor. */
 struct gss_api_mech *gss_mech_get_by_pseudoflavor(u32);
 
+<<<<<<< HEAD
 /* Fill in an array with a list of supported pseudoflavors */
 int gss_mech_list_pseudoflavors(u32 *);
 
 /* Just increments the mechanism's reference count and returns its input: */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct gss_api_mech * gss_mech_get(struct gss_api_mech *);
 
 /* For every successful gss_mech_get or gss_mech_get_by_* call there must be a
  * corresponding call to gss_mech_put. */
 void gss_mech_put(struct gss_api_mech *);
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_SUNRPC_GSS_API_H */
 

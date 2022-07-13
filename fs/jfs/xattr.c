@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *   Copyright (C) International Business Machines  Corp., 2000-2004
  *   Copyright (C) Christoph Hellwig, 2002
@@ -15,6 +16,12 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program;  if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *   Copyright (C) International Business Machines  Corp., 2000-2004
+ *   Copyright (C) Christoph Hellwig, 2002
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/capability.h>
@@ -86,6 +93,17 @@ struct ea_buffer {
 #define EA_MALLOC	0x0008
 
 
+<<<<<<< HEAD
+=======
+/*
+ * Mapping of on-disk attribute names: for on-disk attribute names with an
+ * unknown prefix (not "system.", "user.", "security.", or "trusted."), the
+ * prefix "os2." is prepended.  On the way back to disk, "os2." prefixes are
+ * stripped and we make sure that the remaining name does not start with one
+ * of the know prefixes.
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int is_known_namespace(const char *name)
 {
 	if (strncmp(name, XATTR_SYSTEM_PREFIX, XATTR_SYSTEM_PREFIX_LEN) &&
@@ -97,6 +115,7 @@ static int is_known_namespace(const char *name)
 	return true;
 }
 
+<<<<<<< HEAD
 /*
  * These three routines are used to recognize on-disk extended attributes
  * that are in a recognized namespace.  If the attribute is not recognized,
@@ -113,13 +132,25 @@ static inline int name_size(struct jfs_ea *ea)
 		return ea->namelen + XATTR_OS2_PREFIX_LEN;
 	else
 		return ea->namelen;
+=======
+static inline int name_size(struct jfs_ea *ea)
+{
+	if (is_known_namespace(ea->name))
+		return ea->namelen;
+	else
+		return ea->namelen + XATTR_OS2_PREFIX_LEN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int copy_name(char *buffer, struct jfs_ea *ea)
 {
 	int len = ea->namelen;
 
+<<<<<<< HEAD
 	if (is_os2_xattr(ea)) {
+=======
+	if (!is_known_namespace(ea->name)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(buffer, XATTR_OS2_PREFIX, XATTR_OS2_PREFIX_LEN);
 		buffer += XATTR_OS2_PREFIX_LEN;
 		len += XATTR_OS2_PREFIX_LEN;
@@ -382,7 +413,11 @@ static int ea_read(struct inode *ip, struct jfs_ea_list *ealist)
 
 	nbytes = sizeDXD(&ji->ea);
 	if (!nbytes) {
+<<<<<<< HEAD
 		jfs_error(sb, "ea_read: nbytes is 0");
+=======
+		jfs_error(sb, "nbytes is 0\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -482,7 +517,11 @@ static int ea_get(struct inode *inode, struct ea_buffer *ea_buf, int min_size)
 		current_blocks = 0;
 	} else {
 		if (!(ji->ea.flag & DXD_EXTENT)) {
+<<<<<<< HEAD
 			jfs_error(sb, "ea_get: invalid ea.flag)");
+=======
+			jfs_error(sb, "invalid ea.flag\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 		current_blocks = (ea_size + sb->s_blocksize - 1) >>
@@ -493,15 +532,28 @@ static int ea_get(struct inode *inode, struct ea_buffer *ea_buf, int min_size)
 	if (size > PSIZE) {
 		/*
 		 * To keep the rest of the code simple.  Allocate a
+<<<<<<< HEAD
 		 * contiguous buffer to work with
 		 */
 		ea_buf->xattr = kmalloc(size, GFP_KERNEL);
+=======
+		 * contiguous buffer to work with. Make the buffer large
+		 * enough to make use of the whole extent.
+		 */
+		ea_buf->max_size = (size + sb->s_blocksize - 1) &
+		    ~(sb->s_blocksize - 1);
+
+		ea_buf->xattr = kmalloc(ea_buf->max_size, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ea_buf->xattr == NULL)
 			return -ENOMEM;
 
 		ea_buf->flag = EA_MALLOC;
+<<<<<<< HEAD
 		ea_buf->max_size = (size + sb->s_blocksize - 1) &
 		    ~(sb->s_blocksize - 1);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ea_size == 0)
 			return 0;
@@ -660,6 +712,7 @@ static int ea_put(tid_t tid, struct inode *inode, struct ea_buffer *ea_buf,
 	if (old_blocks)
 		dquot_free_block(inode, old_blocks);
 
+<<<<<<< HEAD
 	inode->i_ctime = CURRENT_TIME;
 
 	return 0;
@@ -759,6 +812,9 @@ static int can_set_xattr(struct inode *inode, const char *name,
 	    strncmp(name, XATTR_SECURITY_PREFIX, XATTR_SECURITY_PREFIX_LEN) &&
 	    strncmp(name, XATTR_USER_PREFIX, XATTR_USER_PREFIX_LEN))
 		return -EOPNOTSUPP;
+=======
+	inode_set_ctime_current(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -773,11 +829,15 @@ int __jfs_setxattr(tid_t tid, struct inode *inode, const char *name,
 	int xattr_size;
 	int new_size;
 	int namelen = strlen(name);
+<<<<<<< HEAD
 	char *os2name = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int found = 0;
 	int rc;
 	int length;
 
+<<<<<<< HEAD
 	if (strncmp(name, XATTR_OS2_PREFIX, XATTR_OS2_PREFIX_LEN) == 0) {
 		os2name = kmalloc(namelen - XATTR_OS2_PREFIX_LEN + 1,
 				  GFP_KERNEL);
@@ -788,6 +848,8 @@ int __jfs_setxattr(tid_t tid, struct inode *inode, const char *name,
 		namelen -= XATTR_OS2_PREFIX_LEN;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	down_write(&JFS_IP(inode)->xattr_sem);
 
 	xattr_size = ea_get(inode, &ea_buf, 0);
@@ -860,6 +922,22 @@ int __jfs_setxattr(tid_t tid, struct inode *inode, const char *name,
 			/* Completely new ea list */
 			xattr_size = sizeof (struct jfs_ea_list);
 
+<<<<<<< HEAD
+=======
+		/*
+		 * The size of EA value is limitted by on-disk format up to
+		 *  __le16, there would be an overflow if the size is equal
+		 * to XATTR_SIZE_MAX (65536).  In order to avoid this issue,
+		 * we can pre-checkup the value size against USHRT_MAX, and
+		 * return -E2BIG in this case, which is consistent with the
+		 * VFS setxattr interface.
+		 */
+		if (value_len >= USHRT_MAX) {
+			rc = -E2BIG;
+			goto release;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ea = (struct jfs_ea *) ((char *) ealist + xattr_size);
 		ea->flag = 0;
 		ea->namelen = namelen;
@@ -874,7 +952,11 @@ int __jfs_setxattr(tid_t tid, struct inode *inode, const char *name,
 	/* DEBUG - If we did this right, these number match */
 	if (xattr_size != new_size) {
 		printk(KERN_ERR
+<<<<<<< HEAD
 		       "jfs_xsetattr: xattr_size = %d, new_size = %d\n",
+=======
+		       "__jfs_setxattr: xattr_size = %d, new_size = %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       xattr_size, new_size);
 
 		rc = -EINVAL;
@@ -897,6 +979,7 @@ int __jfs_setxattr(tid_t tid, struct inode *inode, const char *name,
       out:
 	up_write(&JFS_IP(inode)->xattr_sem);
 
+<<<<<<< HEAD
 	kfree(os2name);
 
 	return rc;
@@ -927,6 +1010,8 @@ int jfs_setxattr(struct dentry *dentry, const char *name, const void *value,
 	txEnd(tid);
 	mutex_unlock(&ji->commit_mutex);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -981,6 +1066,7 @@ ssize_t __jfs_getxattr(struct inode *inode, const char *name, void *data,
 	return size;
 }
 
+<<<<<<< HEAD
 ssize_t jfs_getxattr(struct dentry *dentry, const char *name, void *data,
 		     size_t buf_size)
 {
@@ -1004,6 +1090,8 @@ ssize_t jfs_getxattr(struct dentry *dentry, const char *name, void *data,
 	return err;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * No special permissions are needed to list attributes except for trusted.*
  */
@@ -1016,7 +1104,11 @@ static inline int can_list(struct jfs_ea *ea)
 
 ssize_t jfs_listxattr(struct dentry * dentry, char *data, size_t buf_size)
 {
+<<<<<<< HEAD
 	struct inode *inode = dentry->d_inode;
+=======
+	struct inode *inode = d_inode(dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *buffer;
 	ssize_t size = 0;
 	int xattr_size;
@@ -1067,6 +1159,7 @@ ssize_t jfs_listxattr(struct dentry * dentry, char *data, size_t buf_size)
 	return size;
 }
 
+<<<<<<< HEAD
 int jfs_removexattr(struct dentry *dentry, const char *name)
 {
 	struct inode *inode = dentry->d_inode;
@@ -1080,6 +1173,18 @@ int jfs_removexattr(struct dentry *dentry, const char *name)
 	tid = txBegin(inode->i_sb, 0);
 	mutex_lock(&ji->commit_mutex);
 	rc = __jfs_setxattr(tid, dentry->d_inode, name, NULL, 0, XATTR_REPLACE);
+=======
+static int __jfs_xattr_set(struct inode *inode, const char *name,
+			   const void *value, size_t size, int flags)
+{
+	struct jfs_inode_info *ji = JFS_IP(inode);
+	tid_t tid;
+	int rc;
+
+	tid = txBegin(inode->i_sb, 0);
+	mutex_lock(&ji->commit_mutex);
+	rc = __jfs_setxattr(tid, inode, name, value, size, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rc)
 		rc = txCommit(tid, 1, &inode, 0);
 	txEnd(tid);
@@ -1088,9 +1193,86 @@ int jfs_removexattr(struct dentry *dentry, const char *name)
 	return rc;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_JFS_SECURITY
 int jfs_initxattrs(struct inode *inode, const struct xattr *xattr_array,
 		   void *fs_info)
+=======
+static int jfs_xattr_get(const struct xattr_handler *handler,
+			 struct dentry *unused, struct inode *inode,
+			 const char *name, void *value, size_t size)
+{
+	name = xattr_full_name(handler, name);
+	return __jfs_getxattr(inode, name, value, size);
+}
+
+static int jfs_xattr_set(const struct xattr_handler *handler,
+			 struct mnt_idmap *idmap,
+			 struct dentry *unused, struct inode *inode,
+			 const char *name, const void *value,
+			 size_t size, int flags)
+{
+	name = xattr_full_name(handler, name);
+	return __jfs_xattr_set(inode, name, value, size, flags);
+}
+
+static int jfs_xattr_get_os2(const struct xattr_handler *handler,
+			     struct dentry *unused, struct inode *inode,
+			     const char *name, void *value, size_t size)
+{
+	if (is_known_namespace(name))
+		return -EOPNOTSUPP;
+	return __jfs_getxattr(inode, name, value, size);
+}
+
+static int jfs_xattr_set_os2(const struct xattr_handler *handler,
+			     struct mnt_idmap *idmap,
+			     struct dentry *unused, struct inode *inode,
+			     const char *name, const void *value,
+			     size_t size, int flags)
+{
+	if (is_known_namespace(name))
+		return -EOPNOTSUPP;
+	return __jfs_xattr_set(inode, name, value, size, flags);
+}
+
+static const struct xattr_handler jfs_user_xattr_handler = {
+	.prefix = XATTR_USER_PREFIX,
+	.get = jfs_xattr_get,
+	.set = jfs_xattr_set,
+};
+
+static const struct xattr_handler jfs_os2_xattr_handler = {
+	.prefix = XATTR_OS2_PREFIX,
+	.get = jfs_xattr_get_os2,
+	.set = jfs_xattr_set_os2,
+};
+
+static const struct xattr_handler jfs_security_xattr_handler = {
+	.prefix = XATTR_SECURITY_PREFIX,
+	.get = jfs_xattr_get,
+	.set = jfs_xattr_set,
+};
+
+static const struct xattr_handler jfs_trusted_xattr_handler = {
+	.prefix = XATTR_TRUSTED_PREFIX,
+	.get = jfs_xattr_get,
+	.set = jfs_xattr_set,
+};
+
+const struct xattr_handler * const jfs_xattr_handlers[] = {
+	&jfs_os2_xattr_handler,
+	&jfs_user_xattr_handler,
+	&jfs_security_xattr_handler,
+	&jfs_trusted_xattr_handler,
+	NULL,
+};
+
+
+#ifdef CONFIG_JFS_SECURITY
+static int jfs_initxattrs(struct inode *inode, const struct xattr *xattr_array,
+			  void *fs_info)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct xattr *xattr;
 	tid_t *tid = fs_info;

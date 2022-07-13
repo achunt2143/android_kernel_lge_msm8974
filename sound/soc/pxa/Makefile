@@ -1,13 +1,22 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # PXA Platform Support
 snd-soc-pxa2xx-objs := pxa2xx-pcm.o
 snd-soc-pxa2xx-ac97-objs := pxa2xx-ac97.o
 snd-soc-pxa2xx-i2s-objs := pxa2xx-i2s.o
 snd-soc-pxa-ssp-objs := pxa-ssp.o
+<<<<<<< HEAD
+=======
+snd-soc-mmp-sspa-objs := mmp-sspa.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 obj-$(CONFIG_SND_PXA2XX_SOC) += snd-soc-pxa2xx.o
 obj-$(CONFIG_SND_PXA2XX_SOC_AC97) += snd-soc-pxa2xx-ac97.o
 obj-$(CONFIG_SND_PXA2XX_SOC_I2S) += snd-soc-pxa2xx-i2s.o
 obj-$(CONFIG_SND_PXA_SOC_SSP) += snd-soc-pxa-ssp.o
+<<<<<<< HEAD
 
 # PXA Machine Support
 snd-soc-corgi-objs := corgi.o
@@ -47,3 +56,10 @@ obj-$(CONFIG_SND_SOC_TAVOREVB3) += snd-soc-tavorevb3.o
 obj-$(CONFIG_SND_SOC_ZYLONITE) += snd-soc-zylonite.o
 obj-$(CONFIG_SND_PXA2XX_SOC_IMOTE2) += snd-soc-imote2.o
 obj-$(CONFIG_SND_SOC_RAUMFELD) += snd-soc-raumfeld.o
+=======
+obj-$(CONFIG_SND_MMP_SOC_SSPA) += snd-soc-mmp-sspa.o
+
+# PXA Machine Support
+snd-soc-spitz-objs := spitz.o
+obj-$(CONFIG_SND_PXA2XX_SOC_SPITZ) += snd-soc-spitz.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -4,7 +4,11 @@
  * Arasan Compact Flash host controller platform data header file
  *
  * Copyright (C) 2011 ST Microelectronics
+<<<<<<< HEAD
  * Viresh Kumar <viresh.kumar@st.com>
+=======
+ * Viresh Kumar <vireshk@kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is licensed under the terms of the GNU General Public
  * License version 2. This program is licensed "as is" without any
@@ -37,8 +41,11 @@ struct arasan_cf_pdata {
 	#define CF_BROKEN_PIO			(1)
 	#define CF_BROKEN_MWDMA			(1 << 1)
 	#define CF_BROKEN_UDMA			(1 << 2)
+<<<<<<< HEAD
 	/* This is platform specific data for the DMA controller */
 	void *dma_priv;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline void

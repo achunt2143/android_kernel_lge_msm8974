@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Industrial Computer Source PCI-WDT500/501 driver
  *
  *	(c) Copyright 1996-1997 Alan Cox <alan@lxorguk.ukuu.org.uk>,
  *						All Rights Reserved.
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Neither Alan Cox nor CymruNet Ltd. admit liability nor provide
  *	warranty for any of this software. This material is provided
  *	"AS-IS" and at no charge.
@@ -49,7 +56,10 @@
 #include <linux/delay.h>
 #include <linux/notifier.h>
 #include <linux/reboot.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/pci.h>
 #include <linux/io.h>
@@ -333,7 +343,11 @@ static irqreturn_t wdtpci_interrupt(int irq, void *dev_id)
 		pr_crit("Would Reboot\n");
 #else
 		pr_crit("Initiating system reboot\n");
+<<<<<<< HEAD
 		emergency_restart(NULL);
+=======
+		emergency_restart();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #else
 		pr_crit("Reset in 5ms\n");
@@ -431,7 +445,11 @@ static long wdtpci_ioctl(struct file *file, unsigned int cmd,
 		if (wdtpci_set_heartbeat(new_heartbeat))
 			return -EINVAL;
 		wdtpci_ping();
+<<<<<<< HEAD
 		/* Fall */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		return put_user(heartbeat, p);
 	default:
@@ -462,7 +480,11 @@ static int wdtpci_open(struct inode *inode, struct file *file)
 	 *	Activate
 	 */
 	wdtpci_start();
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -525,7 +547,11 @@ static ssize_t wdtpci_temp_read(struct file *file, char __user *buf,
 
 static int wdtpci_temp_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -542,7 +568,11 @@ static int wdtpci_temp_release(struct inode *inode, struct file *file)
 }
 
 /**
+<<<<<<< HEAD
  *	notify_sys:
+=======
+ *	wdtpci_notify_sys:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@this: our notifier block
  *	@code: the event being reported
  *	@unused: unused
@@ -571,6 +601,10 @@ static const struct file_operations wdtpci_fops = {
 	.llseek		= no_llseek,
 	.write		= wdtpci_write,
 	.unlocked_ioctl	= wdtpci_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= wdtpci_open,
 	.release	= wdtpci_release,
 };
@@ -605,7 +639,11 @@ static struct notifier_block wdtpci_notifier = {
 };
 
 
+<<<<<<< HEAD
 static int __devinit wdtpci_init_one(struct pci_dev *dev,
+=======
+static int wdtpci_init_one(struct pci_dev *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					const struct pci_device_id *ent)
 {
 	int ret = -EIO;
@@ -705,7 +743,11 @@ out_pci:
 }
 
 
+<<<<<<< HEAD
 static void __devexit wdtpci_remove_one(struct pci_dev *pdev)
+=======
+static void wdtpci_remove_one(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* here we assume only one device will ever have
 	 * been picked up and registered by probe function */
@@ -720,7 +762,11 @@ static void __devexit wdtpci_remove_one(struct pci_dev *pdev)
 }
 
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(wdtpci_pci_tbl) = {
+=======
+static const struct pci_device_id wdtpci_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.vendor	   = PCI_VENDOR_ID_ACCESSIO,
 		.device	   = PCI_DEVICE_ID_ACCESSIO_WDG_CSM,
@@ -736,6 +782,7 @@ static struct pci_driver wdtpci_driver = {
 	.name		= "wdt_pci",
 	.id_table	= wdtpci_pci_tbl,
 	.probe		= wdtpci_init_one,
+<<<<<<< HEAD
 	.remove		= __devexit_p(wdtpci_remove_one),
 };
 
@@ -772,9 +819,18 @@ static int __init wdtpci_init(void)
 
 module_init(wdtpci_init);
 module_exit(wdtpci_cleanup);
+=======
+	.remove		= wdtpci_remove_one,
+};
+
+module_pci_driver(wdtpci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("JP Nollmann, Alan Cox");
 MODULE_DESCRIPTION("Driver for the ICS PCI-WDT500/501 watchdog cards");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
 MODULE_ALIAS_MISCDEV(TEMP_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

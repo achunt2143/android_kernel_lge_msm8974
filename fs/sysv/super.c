@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/sysv/inode.c
  *
@@ -216,7 +220,11 @@ static int detect_sysv(struct sysv_sb_info *sbi, struct buffer_head *bh)
  	if (fs16_to_cpu(sbi, sbd->s_nfree) == 0xffff) {
  		sbi->s_type = FSTYPE_AFS;
 		sbi->s_forced_ro = 1;
+<<<<<<< HEAD
  		if (!(sb->s_flags & MS_RDONLY)) {
+=======
+ 		if (!sb_rdonly(sb)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  			printk("SysV FS: SCO EAFS on %s detected, " 
  				"forcing read-only mode.\n", 
  				sb->s_id);
@@ -311,8 +319,14 @@ static int complete_read_super(struct super_block *sb, int silent, int size)
 	sbi->s_firstinodezone = 2;
 
 	flavour_setup[sbi->s_type](sbi, &sb->s_max_links);
+<<<<<<< HEAD
 	
 	sbi->s_truncate = 1;
+=======
+	if (sbi->s_firstdatazone < sbi->s_firstinodezone)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sbi->s_ndatazones = sbi->s_nzones - sbi->s_firstdatazone;
 	sbi->s_inodes_per_block = bsize >> 6;
 	sbi->s_inodes_per_block_1 = (bsize >> 6)-1;
@@ -333,9 +347,13 @@ static int complete_read_super(struct super_block *sb, int silent, int size)
 	/* set up enough so that it can read an inode */
 	sb->s_op = &sysv_sops;
 	if (sbi->s_forced_ro)
+<<<<<<< HEAD
 		sb->s_flags |= MS_RDONLY;
 	if (sbi->s_truncate)
 		sb->s_d_op = &sysv_dentry_operations;
+=======
+		sb->s_flags |= SB_RDONLY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	root_inode = sysv_iget(sb, SYSV_ROOT_INO);
 	if (IS_ERR(root_inode)) {
 		printk("SysV FS: get root inode failed\n");
@@ -368,8 +386,15 @@ static int sysv_fill_super(struct super_block *sb, void *data, int silent)
 
 	sbi->s_sb = sb;
 	sbi->s_block_base = 0;
+<<<<<<< HEAD
 	sb->s_fs_info = sbi;
 
+=======
+	mutex_init(&sbi->s_lock);
+	sb->s_fs_info = sbi;
+	sb->s_time_min = 0;
+	sb->s_time_max = U32_MAX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb_set_blocksize(sb, BLOCK_SIZE);
 
 	for (i = 0; i < ARRAY_SIZE(flavours) && !size; i++) {
@@ -474,10 +499,15 @@ static int v7_fill_super(struct super_block *sb, void *data, int silent)
 	struct sysv_sb_info *sbi;
 	struct buffer_head *bh;
 
+<<<<<<< HEAD
 	if (440 != sizeof (struct v7_super_block))
 		panic("V7 FS: bad super-block size");
 	if (64 != sizeof (struct sysv_inode))
 		panic("sysv fs: bad i-node size");
+=======
+	BUILD_BUG_ON(sizeof(struct v7_super_block) != 440);
+	BUILD_BUG_ON(sizeof(struct sysv_inode) != 64);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sbi = kzalloc(sizeof(struct sysv_sb_info), GFP_KERNEL);
 	if (!sbi)
@@ -486,7 +516,14 @@ static int v7_fill_super(struct super_block *sb, void *data, int silent)
 	sbi->s_sb = sb;
 	sbi->s_block_base = 0;
 	sbi->s_type = FSTYPE_V7;
+<<<<<<< HEAD
 	sb->s_fs_info = sbi;
+=======
+	mutex_init(&sbi->s_lock);
+	sb->s_fs_info = sbi;
+	sb->s_time_min = 0;
+	sb->s_time_max = U32_MAX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	sb_set_blocksize(sb, 512);
 
@@ -554,6 +591,10 @@ static struct file_system_type v7_fs_type = {
 	.fs_flags	= FS_REQUIRES_DEV,
 };
 MODULE_ALIAS_FS("v7");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("v7");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init init_sysv_fs(void)
 {

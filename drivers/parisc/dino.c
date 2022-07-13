@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 **	DINO manager
 **
@@ -5,12 +9,17 @@
 **	(c) Copyright 1999 SuSE GmbH
 **	(c) Copyright 1999,2000 Hewlett-Packard Company
 **	(c) Copyright 2000 Grant Grundler
+<<<<<<< HEAD
 **	(c) Copyright 2006 Helge Deller
 **
 **	This program is free software; you can redistribute it and/or modify
 **	it under the terms of the GNU General Public License as published by
 **      the Free Software Foundation; either version 2 of the License, or
 **      (at your option) any later version.
+=======
+**	(c) Copyright 2006-2019 Helge Deller
+**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 **	This module provides access to Dino PCI bus (config/IOport spaces)
 **	and helps manage Dino IRQ lines.
@@ -59,6 +68,10 @@
 #include <asm/hardware.h>
 
 #include "gsc.h"
+<<<<<<< HEAD
+=======
+#include "iommu.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef DINO_DEBUG
 
@@ -144,18 +157,30 @@ struct dino_device
 {
 	struct pci_hba_data	hba;	/* 'C' inheritance - must be first */
 	spinlock_t		dinosaur_pen;
+<<<<<<< HEAD
 	unsigned long		txn_addr; /* EIR addr to generate interrupt */ 
 	u32			txn_data; /* EIR data assign to each dino */ 
 	u32 			imr;	  /* IRQ's which are enabled */ 
+=======
+	u32 			imr;	  /* IRQ's which are enabled */ 
+	struct gsc_irq		gsc_irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			global_irq[DINO_LOCAL_IRQS]; /* map IMR bit to global irq */
 #ifdef DINO_DEBUG
 	unsigned int		dino_irr0; /* save most recent IRQ line stat */
 #endif
 };
 
+<<<<<<< HEAD
 /* Looks nice and keeps the compiler happy */
 #define DINO_DEV(d) ((struct dino_device *) d)
 
+=======
+static inline struct dino_device *DINO_DEV(struct pci_hba_data *hba)
+{
+	return container_of(hba, struct dino_device, hba);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Dino Configuration Space Accessor Functions
@@ -174,7 +199,11 @@ static int dino_cfg_read(struct pci_bus *bus, unsigned int devfn, int where,
 		int size, u32 *val)
 {
 	struct dino_device *d = DINO_DEV(parisc_walk_tree(bus->bridge));
+<<<<<<< HEAD
 	u32 local_bus = (bus->parent == NULL) ? 0 : bus->secondary;
+=======
+	u32 local_bus = (bus->parent == NULL) ? 0 : bus->busn_res.start;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 v = DINO_CFG_TOK(local_bus, devfn, where & ~3);
 	void __iomem *base_addr = d->hba.base_addr;
 	unsigned long flags;
@@ -209,7 +238,11 @@ static int dino_cfg_write(struct pci_bus *bus, unsigned int devfn, int where,
 	int size, u32 val)
 {
 	struct dino_device *d = DINO_DEV(parisc_walk_tree(bus->bridge));
+<<<<<<< HEAD
 	u32 local_bus = (bus->parent == NULL) ? 0 : bus->secondary;
+=======
+	u32 local_bus = (bus->parent == NULL) ? 0 : bus->busn_res.start;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 v = DINO_CFG_TOK(local_bus, devfn, where & ~3);
 	void __iomem *base_addr = d->hba.base_addr;
 	unsigned long flags;
@@ -300,7 +333,11 @@ static void dino_mask_irq(struct irq_data *d)
 	struct dino_device *dino_dev = irq_data_get_irq_chip_data(d);
 	int local_irq = gsc_find_local_irq(d->irq, dino_dev->global_irq, DINO_LOCAL_IRQS);
 
+<<<<<<< HEAD
 	DBG(KERN_WARNING "%s(0x%p, %d)\n", __func__, dino_dev, d->irq);
+=======
+	DBG(KERN_WARNING "%s(0x%px, %d)\n", __func__, dino_dev, d->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the matching bit in the IMR register */
 	dino_dev->imr &= ~(DINO_MASK_IRQ(local_irq));
@@ -313,7 +350,11 @@ static void dino_unmask_irq(struct irq_data *d)
 	int local_irq = gsc_find_local_irq(d->irq, dino_dev->global_irq, DINO_LOCAL_IRQS);
 	u32 tmp;
 
+<<<<<<< HEAD
 	DBG(KERN_WARNING "%s(0x%p, %d)\n", __func__, dino_dev, d->irq);
+=======
+	DBG(KERN_WARNING "%s(0x%px, %d)\n", __func__, dino_dev, d->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	** clear pending IRQ bits
@@ -340,14 +381,53 @@ static void dino_unmask_irq(struct irq_data *d)
 	if (tmp & DINO_MASK_IRQ(local_irq)) {
 		DBG(KERN_WARNING "%s(): IRQ asserted! (ILR 0x%x)\n",
 				__func__, tmp);
+<<<<<<< HEAD
 		gsc_writel(dino_dev->txn_data, dino_dev->txn_addr);
 	}
 }
 
+=======
+		gsc_writel(dino_dev->gsc_irq.txn_data, dino_dev->gsc_irq.txn_addr);
+	}
+}
+
+#ifdef CONFIG_SMP
+static int dino_set_affinity_irq(struct irq_data *d, const struct cpumask *dest,
+				bool force)
+{
+	struct dino_device *dino_dev = irq_data_get_irq_chip_data(d);
+	struct cpumask tmask;
+	int cpu_irq;
+	u32 eim;
+
+	if (!cpumask_and(&tmask, dest, cpu_online_mask))
+		return -EINVAL;
+
+	cpu_irq = cpu_check_affinity(d, &tmask);
+	if (cpu_irq < 0)
+		return cpu_irq;
+
+	dino_dev->gsc_irq.txn_addr = txn_affinity_addr(d->irq, cpu_irq);
+	eim = ((u32) dino_dev->gsc_irq.txn_addr) | dino_dev->gsc_irq.txn_data;
+	__raw_writel(eim, dino_dev->hba.base_addr+DINO_IAR0);
+
+	irq_data_update_effective_affinity(d, &tmask);
+
+	return IRQ_SET_MASK_OK;
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct irq_chip dino_interrupt_type = {
 	.name		= "GSC-PCI",
 	.irq_unmask	= dino_unmask_irq,
 	.irq_mask	= dino_mask_irq,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SMP
+	.irq_set_affinity = dino_set_affinity_irq,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -379,7 +459,11 @@ ilr_again:
 		DBG(KERN_DEBUG "%s(%d, %p) mask 0x%x\n",
 			__func__, irq, intr_dev, mask);
 		generic_handle_irq(irq);
+<<<<<<< HEAD
 		mask &= ~(1 << local_irq);
+=======
+		mask &= ~DINO_MASK_IRQ(local_irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} while (mask);
 
 	/* Support for level triggered IRQ lines.
@@ -393,9 +477,14 @@ ilr_again:
 	if (mask) {
 		if (--ilr_loop > 0)
 			goto ilr_again;
+<<<<<<< HEAD
 		printk(KERN_ERR "Dino 0x%p: stuck interrupt %d\n", 
 		       dino_dev->hba.base_addr, mask);
 		return IRQ_NONE;
+=======
+		pr_warn_ratelimited("Dino 0x%px: stuck interrupt %d\n",
+		       dino_dev->hba.base_addr, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return IRQ_HANDLED;
 }
@@ -430,7 +519,11 @@ static void dino_choose_irq(struct parisc_device *dev, void *ctrl)
  * Cirrus 6832 Cardbus reports wrong irq on RDI Tadpole PARISC Laptop (deller@gmx.de)
  * (the irqs are off-by-one, not sure yet if this is a cirrus, dino-hardware or dino-driver problem...)
  */
+<<<<<<< HEAD
 static void __devinit quirk_cirrus_cardbus(struct pci_dev *dev)
+=======
+static void quirk_cirrus_cardbus(struct pci_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 new_irq = dev->irq - 1;
 	printk(KERN_INFO "PCI: Cirrus Cardbus IRQ fixup for %s, from %d to %d\n",
@@ -439,6 +532,33 @@ static void __devinit quirk_cirrus_cardbus(struct pci_dev *dev)
 }
 DECLARE_PCI_FIXUP_ENABLE(PCI_VENDOR_ID_CIRRUS, PCI_DEVICE_ID_CIRRUS_6832, quirk_cirrus_cardbus );
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_TULIP
+/* Check if PCI device is behind a Card-mode Dino. */
+static int pci_dev_is_behind_card_dino(struct pci_dev *dev)
+{
+	struct dino_device *dino_dev;
+
+	dino_dev = DINO_DEV(parisc_walk_tree(dev->bus->bridge));
+	return is_card_dino(&dino_dev->hba.dev->id);
+}
+
+static void pci_fixup_tulip(struct pci_dev *dev)
+{
+	if (!pci_dev_is_behind_card_dino(dev))
+		return;
+	if (!(pci_resource_flags(dev, 1) & IORESOURCE_MEM))
+		return;
+	pr_warn("%s: HP HSC-PCI Cards with card-mode Dino not yet supported.\n",
+		pci_name(dev));
+	/* Disable this card by zeroing the PCI resources */
+	memset(&dev->resource[0], 0, sizeof(dev->resource[0]));
+	memset(&dev->resource[1], 0, sizeof(dev->resource[1]));
+}
+DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_DEC, PCI_ANY_ID, pci_fixup_tulip);
+#endif /* CONFIG_TULIP */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void __init
 dino_bios_init(void)
@@ -477,14 +597,22 @@ dino_card_setup(struct pci_bus *bus, void __iomem *base_addr)
 	if (ccio_allocate_resource(dino_dev->hba.dev, res, _8MB,
 				F_EXTEND(0xf0000000UL) | _8MB,
 				F_EXTEND(0xffffffffUL) &~ _8MB, _8MB) < 0) {
+<<<<<<< HEAD
 		struct list_head *ln, *tmp_ln;
+=======
+		struct pci_dev *dev, *tmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		printk(KERN_ERR "Dino: cannot attach bus %s\n",
 		       dev_name(bus->bridge));
 		/* kill the bus, we can't do anything with it */
+<<<<<<< HEAD
 		list_for_each_safe(ln, tmp_ln, &bus->devices) {
 			struct pci_dev *dev = pci_dev_b(ln);
 
+=======
+		list_for_each_entry_safe(dev, tmp, &bus->devices, bus_list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_del(&dev->bus_list);
 		}
 			
@@ -549,12 +677,20 @@ dino_card_fixup(struct pci_dev *dev)
 static void __init
 dino_fixup_bus(struct pci_bus *bus)
 {
+<<<<<<< HEAD
 	struct list_head *ln;
         struct pci_dev *dev;
         struct dino_device *dino_dev = DINO_DEV(parisc_walk_tree(bus->bridge));
 
 	DBG(KERN_WARNING "%s(0x%p) bus %d platform_data 0x%p\n",
 	    __func__, bus, bus->secondary,
+=======
+        struct pci_dev *dev;
+        struct dino_device *dino_dev = DINO_DEV(parisc_walk_tree(bus->bridge));
+
+	DBG(KERN_WARNING "%s(0x%px) bus %d platform_data 0x%px\n",
+	    __func__, bus, bus->busn_res.start,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    bus->bridge->platform_data);
 
 	/* Firmware doesn't set up card-mode dino, so we have to */
@@ -583,6 +719,7 @@ dino_fixup_bus(struct pci_bus *bus)
 				
 			}
 					
+<<<<<<< HEAD
 			DBG("DEBUG %s assigning %d [0x%lx,0x%lx]\n",
 			    dev_name(&bus->self->dev), i,
 			    bus->self->resource[i].start,
@@ -592,12 +729,25 @@ dino_fixup_bus(struct pci_bus *bus)
 			    dev_name(&bus->self->dev), i,
 			    bus->self->resource[i].start,
 			    bus->self->resource[i].end);
+=======
+			DBG("DEBUG %s assigning %d [%pR]\n",
+			    dev_name(&bus->self->dev), i,
+			    &bus->self->resource[i]);
+			WARN_ON(pci_assign_resource(bus->self, i));
+			DBG("DEBUG %s after assign %d [%pR]\n",
+			    dev_name(&bus->self->dev), i,
+			    &bus->self->resource[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 
+<<<<<<< HEAD
 	list_for_each(ln, &bus->devices) {
 		dev = pci_dev_b(ln);
+=======
+	list_for_each_entry(dev, &bus->devices, bus_list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (is_card_dino(&dino_dev->hba.dev->id))
 			dino_card_fixup(dev);
 
@@ -605,8 +755,15 @@ dino_fixup_bus(struct pci_bus *bus)
 		** P2PB's only have 2 BARs, no IRQs.
 		** I'd like to just ignore them for now.
 		*/
+<<<<<<< HEAD
 		if ((dev->class >> 8) == PCI_CLASS_BRIDGE_PCI)
 			continue;
+=======
+		if ((dev->class >> 8) == PCI_CLASS_BRIDGE_PCI)  {
+			pcibios_init_bridge(dev);
+			continue;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* null out the ROM resource if there is one (we don't
 		 * care about an expansion rom on parisc, since it
@@ -776,8 +933,12 @@ dino_bridge_init(struct dino_device *dino_dev, const char *name)
 		result = ccio_request_resource(dino_dev->hba.dev, &res[i]);
 		if (result < 0) {
 			printk(KERN_ERR "%s: failed to claim PCI Bus address "
+<<<<<<< HEAD
 			       "space %d (0x%lx-0x%lx)!\n", name, i,
 			       (unsigned long)res[i].start, (unsigned long)res[i].end);
+=======
+			       "space %d (%pR)!\n", name, i, &res[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return result;
 		}
 	}
@@ -789,7 +950,10 @@ static int __init dino_common_init(struct parisc_device *dev,
 {
 	int status;
 	u32 eim;
+<<<<<<< HEAD
 	struct gsc_irq gsc_irq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct resource *res;
 
 	pcibios_register_hba(&dino_dev->hba);
@@ -804,10 +968,15 @@ static int __init dino_common_init(struct parisc_device *dev,
 	**   still only has 11 IRQ input lines - just map some of them
 	**   to a different processor.
 	*/
+<<<<<<< HEAD
 	dev->irq = gsc_alloc_irq(&gsc_irq);
 	dino_dev->txn_addr = gsc_irq.txn_addr;
 	dino_dev->txn_data = gsc_irq.txn_data;
 	eim = ((u32) gsc_irq.txn_addr) | gsc_irq.txn_data;
+=======
+	dev->irq = gsc_alloc_irq(&dino_dev->gsc_irq);
+	eim = ((u32) dino_dev->gsc_irq.txn_addr) | dino_dev->gsc_irq.txn_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 
 	** Dino needs a PA "IRQ" to get a processor's attention.
@@ -856,7 +1025,11 @@ static int __init dino_common_init(struct parisc_device *dev,
 	res->flags = IORESOURCE_IO; /* do not mark it busy ! */
 	if (request_resource(&ioport_resource, res) < 0) {
 		printk(KERN_ERR "%s: request I/O Port region failed "
+<<<<<<< HEAD
 		       "0x%lx/%lx (hpa 0x%p)\n",
+=======
+		       "0x%lx/%lx (hpa 0x%px)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       name, (unsigned long)res->start, (unsigned long)res->end,
 		       dino_dev->hba.base_addr);
 		return 1;
@@ -870,20 +1043,31 @@ static int __init dino_common_init(struct parisc_device *dev,
 #define CUJO_RAVEN_BADPAGE	0x01003000UL
 #define CUJO_FIREHAWK_BADPAGE	0x01607000UL
 
+<<<<<<< HEAD
 static const char *dino_vers[] = {
+=======
+static const char dino_vers[][4] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"2.0",
 	"2.1",
 	"3.0",
 	"3.1"
 };
 
+<<<<<<< HEAD
 static const char *cujo_vers[] = {
+=======
+static const char cujo_vers[][4] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"1.0",
 	"2.0"
 };
 
+<<<<<<< HEAD
 void ccio_cujo20_fixup(struct parisc_device *dev, u32 iovp);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 ** Determine if dino should claim this chip (return 0) or not (return 1).
 ** If so, initialize the chip appropriately (card-mode vs bridge mode).
@@ -898,6 +1082,10 @@ static int __init dino_probe(struct parisc_device *dev)
 	LIST_HEAD(resources);
 	struct pci_bus *bus;
 	unsigned long hpa = dev->hpa.start;
+<<<<<<< HEAD
+=======
+	int max;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	name = "Dino";
 	if (is_card_dino(&dev->id)) {
@@ -919,7 +1107,11 @@ static int __init dino_probe(struct parisc_device *dev)
 	printk("%s version %s found at 0x%lx\n", name, version, hpa);
 
 	if (!request_mem_region(hpa, PAGE_SIZE, name)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "DINO: Hey! Someone took my MMIO space (0x%ld)!\n",
+=======
+		printk(KERN_ERR "DINO: Hey! Someone took my MMIO space (0x%lx)!\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hpa);
 		return 1;
 	}
@@ -956,8 +1148,13 @@ static int __init dino_probe(struct parisc_device *dev)
 	}
 
 	dino_dev->hba.dev = dev;
+<<<<<<< HEAD
 	dino_dev->hba.base_addr = ioremap_nocache(hpa, 4096);
 	dino_dev->hba.lmmio_space_offset = 0;	/* CPU addrs == bus addrs */
+=======
+	dino_dev->hba.base_addr = ioremap(hpa, 4096);
+	dino_dev->hba.lmmio_space_offset = PCI_F_EXTEND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&dino_dev->dinosaur_pen);
 	dino_dev->hba.iommu = ccio_get_iommu(dev);
 
@@ -983,6 +1180,13 @@ static int __init dino_probe(struct parisc_device *dev)
 	if (dino_dev->hba.gmmio_space.flags)
 		pci_add_resource(&resources, &dino_dev->hba.gmmio_space);
 
+<<<<<<< HEAD
+=======
+	dino_dev->hba.bus_num.start = dino_current_bus;
+	dino_dev->hba.bus_num.end = 255;
+	dino_dev->hba.bus_num.flags = IORESOURCE_BUS;
+	pci_add_resource(&resources, &dino_dev->hba.bus_num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	** It's not used to avoid chicken/egg problems
 	** with configuration accessor functions.
@@ -998,12 +1202,21 @@ static int __init dino_probe(struct parisc_device *dev)
 		return 0;
 	}
 
+<<<<<<< HEAD
 	bus->subordinate = pci_scan_child_bus(bus);
+=======
+	max = pci_scan_child_bus(bus);
+	pci_bus_update_busn_res_end(bus, max);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This code *depends* on scanning being single threaded
 	 * if it isn't, this global bus number count will fail
 	 */
+<<<<<<< HEAD
 	dino_current_bus = bus->subordinate + 1;
+=======
+	dino_current_bus = max + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_bus_assign_resources(bus);
 	pci_bus_add_devices(bus);
 	return 0;
@@ -1018,7 +1231,11 @@ static int __init dino_probe(struct parisc_device *dev)
  * and 725 firmware misreport it as 0x08080 for no adequately explained
  * reason.
  */
+<<<<<<< HEAD
 static struct parisc_device_id dino_tbl[] = {
+=======
+static const struct parisc_device_id dino_tbl[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HPHW_A_DMA, HVERSION_REV_ANY_ID, 0x004, 0x0009D },/* Card-mode Dino */
 	{ HPHW_A_DMA, HVERSION_REV_ANY_ID, HVERSION_ANY_ID, 0x08080 }, /* XXX */
 	{ HPHW_BRIDGE, HVERSION_REV_ANY_ID, 0x680, 0xa }, /* Bridge-mode Dino */
@@ -1027,7 +1244,11 @@ static struct parisc_device_id dino_tbl[] = {
 	{ 0, }
 };
 
+<<<<<<< HEAD
 static struct parisc_driver dino_driver = {
+=======
+static struct parisc_driver dino_driver __refdata = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name =		"dino",
 	.id_table =	dino_tbl,
 	.probe =	dino_probe,
@@ -1038,9 +1259,17 @@ static struct parisc_driver dino_driver = {
  * This is the only routine which is NOT static.
  * Must be called exactly once before pci_init().
  */
+<<<<<<< HEAD
 int __init dino_init(void)
 {
 	register_parisc_driver(&dino_driver);
 	return 0;
 }
 
+=======
+static int __init dino_init(void)
+{
+	return register_parisc_driver(&dino_driver);
+}
+arch_initcall(dino_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

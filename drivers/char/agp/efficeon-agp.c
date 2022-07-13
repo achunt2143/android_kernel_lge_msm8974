@@ -128,7 +128,10 @@ static void efficeon_cleanup(void)
 
 static int efficeon_configure(void)
 {
+<<<<<<< HEAD
 	u32 temp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 temp2;
 	struct aper_size_info_lvl2 *current_size;
 
@@ -141,8 +144,13 @@ static int efficeon_configure(void)
 			      current_size->size_value);
 
 	/* address to map to */
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* agpctrl */
 	pci_write_config_dword(agp_bridge->dev, INTEL_AGPCTRL, 0x2280);
@@ -164,7 +172,10 @@ static int efficeon_free_gatt_table(struct agp_bridge_data *bridge)
 		unsigned long page = efficeon_private.l1_table[index];
 		if (page) {
 			efficeon_private.l1_table[index] = 0;
+<<<<<<< HEAD
 			ClearPageReserved(virt_to_page((char *)page));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			free_page(page);
 			freed++;
 		}
@@ -220,7 +231,10 @@ static int efficeon_create_gatt_table(struct agp_bridge_data *bridge)
 			efficeon_free_gatt_table(agp_bridge);
 			return -ENOMEM;
 		}
+<<<<<<< HEAD
 		SetPageReserved(virt_to_page((char *)page));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		for (offset = 0; offset < PAGE_SIZE; offset += clflush_chunk)
 			clflush((char *)page+offset);
@@ -343,8 +357,13 @@ static const struct agp_bridge_driver efficeon_driver = {
 	.agp_type_to_mask_type  = agp_generic_type_to_mask_type,
 };
 
+<<<<<<< HEAD
 static int __devinit agp_efficeon_probe(struct pci_dev *pdev,
 				     const struct pci_device_id *ent)
+=======
+static int agp_efficeon_probe(struct pci_dev *pdev,
+			      const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct agp_bridge_data *bridge;
 	u8 cap_ptr;
@@ -407,7 +426,11 @@ static int __devinit agp_efficeon_probe(struct pci_dev *pdev,
 	return agp_add_bridge(bridge);
 }
 
+<<<<<<< HEAD
 static void __devexit agp_efficeon_remove(struct pci_dev *pdev)
+=======
+static void agp_efficeon_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct agp_bridge_data *bridge = pci_get_drvdata(pdev);
 
@@ -415,6 +438,7 @@ static void __devexit agp_efficeon_remove(struct pci_dev *pdev)
 	agp_put_bridge(bridge);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int agp_efficeon_suspend(struct pci_dev *dev, pm_message_t state)
 {
@@ -422,13 +446,21 @@ static int agp_efficeon_suspend(struct pci_dev *dev, pm_message_t state)
 }
 
 static int agp_efficeon_resume(struct pci_dev *pdev)
+=======
+static int agp_efficeon_resume(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	printk(KERN_DEBUG PFX "agp_efficeon_resume()\n");
 	return efficeon_configure();
 }
+<<<<<<< HEAD
 #endif
 
 static struct pci_device_id agp_efficeon_pci_table[] = {
+=======
+
+static const struct pci_device_id agp_efficeon_pci_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	.class		= (PCI_CLASS_BRIDGE_HOST << 8),
 	.class_mask	= ~0,
@@ -440,6 +472,11 @@ static struct pci_device_id agp_efficeon_pci_table[] = {
 	{ }
 };
 
+<<<<<<< HEAD
+=======
+static DEFINE_SIMPLE_DEV_PM_OPS(agp_efficeon_pm_ops, NULL, agp_efficeon_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DEVICE_TABLE(pci, agp_efficeon_pci_table);
 
 static struct pci_driver agp_efficeon_pci_driver = {
@@ -447,10 +484,14 @@ static struct pci_driver agp_efficeon_pci_driver = {
 	.id_table	= agp_efficeon_pci_table,
 	.probe		= agp_efficeon_probe,
 	.remove		= agp_efficeon_remove,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	.suspend	= agp_efficeon_suspend,
 	.resume		= agp_efficeon_resume,
 #endif
+=======
+	.driver.pm	= &agp_efficeon_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init agp_efficeon_init(void)

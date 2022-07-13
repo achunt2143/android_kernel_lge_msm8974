@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  Driver for the PPA3 parallel port SCSI HBA embedded in 
  * the Iomega ZIP drive
  * 
@@ -106,11 +110,15 @@ static char *PPA_MODE_STRING[] =
     "PS/2",
     "EPP 8 bit",
     "EPP 16 bit",
+<<<<<<< HEAD
 #ifdef CONFIG_SCSI_IZIP_EPP16
     "EPP 16 bit",
 #else
     "EPP 32 bit",
 #endif
+=======
+    "EPP 32 bit",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     "Unknown"};
 
 /* other options */

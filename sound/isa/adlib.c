@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AdLib FM card driver.
  */
@@ -27,10 +31,17 @@ module_param_array(id, charp, NULL, 0444);
 MODULE_PARM_DESC(id, "ID string for " CRD_NAME " soundcard.");
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable " CRD_NAME " soundcard.");
+<<<<<<< HEAD
 module_param_array(port, long, NULL, 0444);
 MODULE_PARM_DESC(port, "Port # for " CRD_NAME " driver.");
 
 static int __devinit snd_adlib_match(struct device *dev, unsigned int n)
+=======
+module_param_hw_array(port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(port, "Port # for " CRD_NAME " driver.");
+
+static int snd_adlib_match(struct device *dev, unsigned int n)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!enable[n])
 		return 0;
@@ -42,23 +53,32 @@ static int __devinit snd_adlib_match(struct device *dev, unsigned int n)
 	return 1;
 }
 
+<<<<<<< HEAD
 static void snd_adlib_free(struct snd_card *card)
 {
 	release_and_free_resource(card->private_data);
 }
 
 static int __devinit snd_adlib_probe(struct device *dev, unsigned int n)
+=======
+static int snd_adlib_probe(struct device *dev, unsigned int n)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct snd_opl3 *opl3;
 	int error;
 
+<<<<<<< HEAD
 	error = snd_card_create(index[n], id[n], THIS_MODULE, 0, &card);
+=======
+	error = snd_devm_card_new(dev, index[n], id[n], THIS_MODULE, 0, &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0) {
 		dev_err(dev, "could not create card\n");
 		return error;
 	}
 
+<<<<<<< HEAD
 	card->private_data = request_region(port[n], 4, CRD_NAME);
 	if (!card->private_data) {
 		dev_err(dev, "could not grab ports\n");
@@ -66,6 +86,13 @@ static int __devinit snd_adlib_probe(struct device *dev, unsigned int n)
 		goto out;
 	}
 	card->private_free = snd_adlib_free;
+=======
+	card->private_data = devm_request_region(dev, port[n], 4, CRD_NAME);
+	if (!card->private_data) {
+		dev_err(dev, "could not grab ports\n");
+		return -EBUSY;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->driver, DEV_NAME);
 	strcpy(card->shortname, CRD_NAME);
@@ -74,12 +101,17 @@ static int __devinit snd_adlib_probe(struct device *dev, unsigned int n)
 	error = snd_opl3_create(card, port[n], port[n] + 2, OPL3_HW_AUTO, 1, &opl3);
 	if (error < 0) {
 		dev_err(dev, "could not create OPL\n");
+<<<<<<< HEAD
 		goto out;
+=======
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = snd_opl3_hwdep_new(opl3, 0, 0, NULL);
 	if (error < 0) {
 		dev_err(dev, "could not create FM\n");
+<<<<<<< HEAD
 		goto out;
 	}
 
@@ -89,10 +121,20 @@ static int __devinit snd_adlib_probe(struct device *dev, unsigned int n)
 	if (error < 0) {
 		dev_err(dev, "could not register card\n");
 		goto out;
+=======
+		return error;
+	}
+
+	error = snd_card_register(card);
+	if (error < 0) {
+		dev_err(dev, "could not register card\n");
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev_set_drvdata(dev, card);
 	return 0;
+<<<<<<< HEAD
 
 out:	snd_card_free(card);
 	return error;
@@ -103,18 +145,24 @@ static int __devexit snd_adlib_remove(struct device *dev, unsigned int n)
 	snd_card_free(dev_get_drvdata(dev));
 	dev_set_drvdata(dev, NULL);
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct isa_driver snd_adlib_driver = {
 	.match		= snd_adlib_match,
 	.probe		= snd_adlib_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_adlib_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.driver		= {
 		.name	= DEV_NAME
 	}
 };
 
+<<<<<<< HEAD
 static int __init alsa_card_adlib_init(void)
 {
 	return isa_register_driver(&snd_adlib_driver, SNDRV_CARDS);
@@ -127,3 +175,6 @@ static void __exit alsa_card_adlib_exit(void)
 
 module_init(alsa_card_adlib_init);
 module_exit(alsa_card_adlib_exit);
+=======
+module_isa_driver(snd_adlib_driver, SNDRV_CARDS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

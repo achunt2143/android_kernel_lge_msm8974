@@ -1,5 +1,10 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/char/tape_34xx.c
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    tape device discipline for 3480/3490 tapes.
  *
  *    Copyright IBM Corp. 2001, 2009
@@ -323,6 +328,7 @@ tape_34xx_unit_check(struct tape_device *device, struct tape_request *request,
 	inhibit_cu_recovery = (*device->modeset_byte & 0x80) ? 1 : 0;
 	sense = irb->ecw;
 
+<<<<<<< HEAD
 #ifdef CONFIG_S390_TAPE_BLOCK
 	if (request->op == TO_BLOCK) {
 		/*
@@ -337,6 +343,8 @@ tape_34xx_unit_check(struct tape_device *device, struct tape_request *request,
 	}
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (
 		sense[0] & SENSE_COMMAND_REJECT &&
 		sense[1] & SENSE_WRITE_PROTECT
@@ -368,10 +376,17 @@ tape_34xx_unit_check(struct tape_device *device, struct tape_request *request,
 	if ((
 		sense[0] == SENSE_DATA_CHECK      ||
 		sense[0] == SENSE_EQUIPMENT_CHECK ||
+<<<<<<< HEAD
 		sense[0] == SENSE_EQUIPMENT_CHECK + SENSE_DEFERRED_UNIT_CHECK
 	) && (
 		sense[1] == SENSE_DRIVE_ONLINE ||
 		sense[1] == SENSE_BEGINNING_OF_TAPE + SENSE_WRITE_MODE
+=======
+		sense[0] == (SENSE_EQUIPMENT_CHECK | SENSE_DEFERRED_UNIT_CHECK)
+	) && (
+		sense[1] == SENSE_DRIVE_ONLINE ||
+		sense[1] == (SENSE_BEGINNING_OF_TAPE | SENSE_WRITE_MODE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	)) {
 		switch (request->op) {
 		/*
@@ -562,7 +577,11 @@ tape_34xx_unit_check(struct tape_device *device, struct tape_request *request,
 	case 0x2e:
 		/*
 		 * Not capable. This indicates either that the drive fails
+<<<<<<< HEAD
 		 * reading the format id mark or that that format specified
+=======
+		 * reading the format id mark or that format specified
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * is not supported by the drive.
 		 */
 		dev_warn (&device->cdev->dev, "The tape unit cannot process "
@@ -788,6 +807,7 @@ tape_34xx_unit_check(struct tape_device *device, struct tape_request *request,
 			"occurred\n");
 		return tape_34xx_erp_failed(request, -EIO);
 	case 0x57:
+<<<<<<< HEAD
 		if (device->cdev->id.driver_info == tape_3480) {
 			/* Attention intercept. */
 			return tape_34xx_erp_retry(request);
@@ -795,6 +815,13 @@ tape_34xx_unit_check(struct tape_device *device, struct tape_request *request,
 			/* Global status intercept. */
 			return tape_34xx_erp_retry(request);
 		}
+=======
+		/*
+		 * 3480: Attention intercept.
+		 * 3490: Global status intercept.
+		 */
+		return tape_34xx_erp_retry(request);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0x5a:
 		/*
 		 * Tape length incompatible. The tape inserted is too long,
@@ -1129,6 +1156,7 @@ tape_34xx_mtseek(struct tape_device *device, int mt_count)
 	return tape_do_io_free(device, request);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_S390_TAPE_BLOCK
 /*
  * Tape block read for 34xx.
@@ -1246,6 +1274,8 @@ tape_34xx_check_locate(struct tape_device *device, struct tape_request *request)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * List of 3480/3490 magnetic tape commands.
  */
@@ -1295,11 +1325,14 @@ static struct tape_discipline tape_discipline_34xx = {
 	.irq = tape_34xx_irq,
 	.read_block = tape_std_read_block,
 	.write_block = tape_std_write_block,
+<<<<<<< HEAD
 #ifdef CONFIG_S390_TAPE_BLOCK
 	.bread = tape_34xx_bread,
 	.free_bread = tape_34xx_free_bread,
 	.check_locate = tape_34xx_check_locate,
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ioctl_fn = tape_34xx_ioctl,
 	.mtop_array = tape_34xx_mtop
 };
@@ -1329,8 +1362,12 @@ static struct ccw_driver tape_34xx_driver = {
 	.remove = tape_generic_remove,
 	.set_online = tape_34xx_online,
 	.set_offline = tape_generic_offline,
+<<<<<<< HEAD
 	.freeze = tape_generic_pm_suspend,
 	.int_class = IOINT_TAP,
+=======
+	.int_class = IRQIO_TAP,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int

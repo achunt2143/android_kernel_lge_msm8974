@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SPINLOCK_H
 #define __ASM_SPINLOCK_H
 
@@ -5,14 +9,22 @@
 #error SMP not supported on pre-ARMv6 CPUs
 #endif
 
+<<<<<<< HEAD
 #include <asm/processor.h>
 
 extern int msm_krait_need_wfe_fixup;
 
+=======
+#include <linux/prefetch.h>
+#include <asm/barrier.h>
+#include <asm/processor.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sev and wfe are ARMv6K extensions.  Uniprocessor ARMv6 may not have the K
  * extensions, so when running on UP, we have to patch these instructions away.
  */
+<<<<<<< HEAD
 #define ALT_SMP(smp, up)					\
 	"9998:	" smp "\n"					\
 	"	.pushsection \".alt.smp.init\", \"a\"\n"	\
@@ -115,11 +127,75 @@ static inline void arch_spin_lock(arch_spinlock_t *lock)
 	: [lock] "r" (&lock->lock), [bit0] "r" (1)
 	: "cc");
 
+=======
+#ifdef CONFIG_THUMB2_KERNEL
+/*
+ * For Thumb-2, special care is needed to ensure that the conditional WFE
+ * instruction really does assemble to exactly 4 bytes (as required by
+ * the SMP_ON_UP fixup code).   By itself "wfene" might cause the
+ * assembler to insert a extra (16-bit) IT instruction, depending on the
+ * presence or absence of neighbouring conditional instructions.
+ *
+ * To avoid this unpredictability, an appropriate IT is inserted explicitly:
+ * the assembler won't change IT instructions which are explicitly present
+ * in the input.
+ */
+#define WFE(cond)	__ALT_SMP_ASM(		\
+	"it " cond "\n\t"			\
+	"wfe" cond ".n",			\
+						\
+	"nop.w"					\
+)
+#else
+#define WFE(cond)	__ALT_SMP_ASM("wfe" cond, "nop")
+#endif
+
+#define SEV		__ALT_SMP_ASM(WASM(sev), WASM(nop))
+
+static inline void dsb_sev(void)
+{
+
+	dsb(ishst);
+	__asm__(SEV);
+}
+
+/*
+ * ARMv6 ticket-based spin-locking.
+ *
+ * A memory barrier is required after we get a lock, and before we
+ * release it, because V6 CPUs are assumed to have weakly ordered
+ * memory.
+ */
+
+static inline void arch_spin_lock(arch_spinlock_t *lock)
+{
+	unsigned long tmp;
+	u32 newval;
+	arch_spinlock_t lockval;
+
+	prefetchw(&lock->slock);
+	__asm__ __volatile__(
+"1:	ldrex	%0, [%3]\n"
+"	add	%1, %0, %4\n"
+"	strex	%2, %1, [%3]\n"
+"	teq	%2, #0\n"
+"	bne	1b"
+	: "=&r" (lockval), "=&r" (newval), "=&r" (tmp)
+	: "r" (&lock->slock), "I" (1 << TICKET_SHIFT)
+	: "cc");
+
+	while (lockval.tickets.next != lockval.tickets.owner) {
+		wfe();
+		lockval.tickets.owner = READ_ONCE(lock->tickets.owner);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	smp_mb();
 }
 
 static inline int arch_spin_trylock(arch_spinlock_t *lock)
 {
+<<<<<<< HEAD
 	unsigned long tmp;
 
 	__asm__ __volatile__(
@@ -131,6 +207,25 @@ static inline int arch_spin_trylock(arch_spinlock_t *lock)
 	: "cc");
 
 	if (tmp == 0) {
+=======
+	unsigned long contended, res;
+	u32 slock;
+
+	prefetchw(&lock->slock);
+	do {
+		__asm__ __volatile__(
+		"	ldrex	%0, [%3]\n"
+		"	mov	%2, #0\n"
+		"	subs	%1, %0, %0, ror #16\n"
+		"	addeq	%0, %0, %4\n"
+		"	strexeq	%2, %0, [%3]"
+		: "=&r" (slock), "=&r" (contended), "=&r" (res)
+		: "r" (&lock->slock), "I" (1 << TICKET_SHIFT)
+		: "cc");
+	} while (res);
+
+	if (!contended) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smp_mb();
 		return 1;
 	} else {
@@ -141,6 +236,7 @@ static inline int arch_spin_trylock(arch_spinlock_t *lock)
 static inline void arch_spin_unlock(arch_spinlock_t *lock)
 {
 	smp_mb();
+<<<<<<< HEAD
 
 	__asm__ __volatile__(
 "	str	%1, [%0]\n"
@@ -269,20 +365,40 @@ static inline void arch_spin_unlock_wait(arch_spinlock_t *lock)
 	  [fixup]"+r" (fixup)
 	: [lockaddr]"r" (&lock->lock)
 	: "cc");
+=======
+	lock->tickets.owner++;
+	dsb_sev();
+}
+
+static inline int arch_spin_value_unlocked(arch_spinlock_t lock)
+{
+	return lock.tickets.owner == lock.tickets.next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int arch_spin_is_locked(arch_spinlock_t *lock)
 {
+<<<<<<< HEAD
 	unsigned long tmp = ACCESS_ONCE(lock->lock);
 	return (((tmp >> TICKET_SHIFT) ^ tmp) & TICKET_MASK) != 0;
+=======
+	return !arch_spin_value_unlocked(READ_ONCE(*lock));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int arch_spin_is_contended(arch_spinlock_t *lock)
 {
+<<<<<<< HEAD
 	unsigned long tmp = ACCESS_ONCE(lock->lock);
 	return ((tmp - (tmp >> TICKET_SHIFT)) & TICKET_MASK) > 1;
 }
 #endif
+=======
+	struct __raw_tickets tickets = READ_ONCE(lock->tickets);
+	return (tickets.next - tickets.owner) > 1;
+}
+#define arch_spin_is_contended	arch_spin_is_contended
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * RWLOCKS
@@ -294,6 +410,7 @@ static inline int arch_spin_is_contended(arch_spinlock_t *lock)
 
 static inline void arch_write_lock(arch_rwlock_t *rw)
 {
+<<<<<<< HEAD
 	unsigned long tmp, fixup = msm_krait_need_wfe_fixup;
 
 	__asm__ __volatile__(
@@ -307,6 +424,20 @@ static inline void arch_write_lock(arch_rwlock_t *rw)
 "	bne	1b"
 	: [tmp] "=&r" (tmp), [fixup] "+r" (fixup)
 	: [lock] "r" (&rw->lock), [bit31] "r" (0x80000000)
+=======
+	unsigned long tmp;
+
+	prefetchw(&rw->lock);
+	__asm__ __volatile__(
+"1:	ldrex	%0, [%1]\n"
+"	teq	%0, #0\n"
+	WFE("ne")
+"	strexeq	%0, %2, [%1]\n"
+"	teq	%0, #0\n"
+"	bne	1b"
+	: "=&r" (tmp)
+	: "r" (&rw->lock), "r" (0x80000000)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	: "cc");
 
 	smp_mb();
@@ -314,6 +445,7 @@ static inline void arch_write_lock(arch_rwlock_t *rw)
 
 static inline int arch_write_trylock(arch_rwlock_t *rw)
 {
+<<<<<<< HEAD
 	unsigned long tmp;
 
 	__asm__ __volatile__(
@@ -325,6 +457,23 @@ static inline int arch_write_trylock(arch_rwlock_t *rw)
 	: "cc");
 
 	if (tmp == 0) {
+=======
+	unsigned long contended, res;
+
+	prefetchw(&rw->lock);
+	do {
+		__asm__ __volatile__(
+		"	ldrex	%0, [%2]\n"
+		"	mov	%1, #0\n"
+		"	teq	%0, #0\n"
+		"	strexeq	%1, %3, [%2]"
+		: "=&r" (contended), "=&r" (res)
+		: "r" (&rw->lock), "r" (0x80000000)
+		: "cc");
+	} while (res);
+
+	if (!contended) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		smp_mb();
 		return 1;
 	} else {
@@ -345,9 +494,12 @@ static inline void arch_write_unlock(arch_rwlock_t *rw)
 	dsb_sev();
 }
 
+<<<<<<< HEAD
 /* write_can_lock - would write_trylock() succeed? */
 #define arch_write_can_lock(x)		((x)->lock == 0)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Read locks are a bit more hairy:
  *  - Exclusively load the lock value.
@@ -362,6 +514,7 @@ static inline void arch_write_unlock(arch_rwlock_t *rw)
  */
 static inline void arch_read_lock(arch_rwlock_t *rw)
 {
+<<<<<<< HEAD
 	unsigned long tmp, tmp2, fixup = msm_krait_need_wfe_fixup;
 
 	__asm__ __volatile__(
@@ -375,6 +528,21 @@ static inline void arch_read_lock(arch_rwlock_t *rw)
 "	bmi	1b"
 	: [tmp] "=&r" (tmp), [tmp2] "=&r" (tmp2), [fixup] "+r" (fixup)
 	: [lock] "r" (&rw->lock)
+=======
+	unsigned long tmp, tmp2;
+
+	prefetchw(&rw->lock);
+	__asm__ __volatile__(
+"	.syntax unified\n"
+"1:	ldrex	%0, [%2]\n"
+"	adds	%0, %0, #1\n"
+"	strexpl	%1, %0, [%2]\n"
+	WFE("mi")
+"	rsbspl	%0, %1, #0\n"
+"	bmi	1b"
+	: "=&r" (tmp), "=&r" (tmp2)
+	: "r" (&rw->lock)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	: "cc");
 
 	smp_mb();
@@ -386,6 +554,10 @@ static inline void arch_read_unlock(arch_rwlock_t *rw)
 
 	smp_mb();
 
+<<<<<<< HEAD
+=======
+	prefetchw(&rw->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__asm__ __volatile__(
 "1:	ldrex	%0, [%2]\n"
 "	sub	%0, %0, #1\n"
@@ -402,6 +574,7 @@ static inline void arch_read_unlock(arch_rwlock_t *rw)
 
 static inline int arch_read_trylock(arch_rwlock_t *rw)
 {
+<<<<<<< HEAD
 	unsigned long tmp, tmp2 = 1;
 
 	__asm__ __volatile__(
@@ -426,4 +599,29 @@ static inline int arch_read_trylock(arch_rwlock_t *rw)
 #define arch_read_relax(lock)	cpu_relax()
 #define arch_write_relax(lock)	cpu_relax()
 
+=======
+	unsigned long contended, res;
+
+	prefetchw(&rw->lock);
+	do {
+		__asm__ __volatile__(
+		"	ldrex	%0, [%2]\n"
+		"	mov	%1, #0\n"
+		"	adds	%0, %0, #1\n"
+		"	strexpl	%1, %0, [%2]"
+		: "=&r" (contended), "=&r" (res)
+		: "r" (&rw->lock)
+		: "cc");
+	} while (res);
+
+	/* If the lock is negative, then it is already held for write. */
+	if (contended < 0x80000000) {
+		smp_mb();
+		return 1;
+	} else {
+		return 0;
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SPINLOCK_H */

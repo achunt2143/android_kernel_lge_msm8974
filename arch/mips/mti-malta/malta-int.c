@@ -1,4 +1,5 @@
 /*
+<<<<<<< HEAD
  * Carsten Langgaard, carstenl@mips.com
  * Copyright (C) 2000, 2001, 2004 MIPS Technologies, Inc.
  * Copyright (C) 2001 Ralf Baechle
@@ -23,10 +24,32 @@
  */
 #include <linux/init.h>
 #include <linux/irq.h>
+=======
+ * This file is subject to the terms and conditions of the GNU General Public
+ * License.  See the file "COPYING" in the main directory of this archive
+ * for more details.
+ *
+ * Carsten Langgaard, carstenl@mips.com
+ * Copyright (C) 2000, 2001, 2004 MIPS Technologies, Inc.
+ * Copyright (C) 2001 Ralf Baechle
+ * Copyright (C) 2013 Imagination Technologies Ltd.
+ *
+ * Routines for generic manipulation of the interrupts found on the MIPS
+ * Malta board. The interrupt controller is located in the South Bridge
+ * a PIIX4 device with two internal 82C95 interrupt controllers.
+ */
+#include <linux/init.h>
+#include <linux/irq.h>
+#include <linux/irqchip.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/smp.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel_stat.h>
 #include <linux/kernel.h>
 #include <linux/random.h>
@@ -37,11 +60,16 @@
 #include <asm/irq_regs.h>
 #include <asm/mips-boards/malta.h>
 #include <asm/mips-boards/maltaint.h>
+<<<<<<< HEAD
 #include <asm/mips-boards/piix4.h>
+=======
+#include <asm/mips-cps.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/gt64120.h>
 #include <asm/mips-boards/generic.h>
 #include <asm/mips-boards/msc01_pci.h>
 #include <asm/msc01_ic.h>
+<<<<<<< HEAD
 #include <asm/gic.h>
 #include <asm/gcmpregs.h>
 #include <asm/setup.h>
@@ -53,6 +81,10 @@ static unsigned long _gcmp_base;
 static unsigned int ipi_map[NR_CPUS];
 
 static DEFINE_RAW_SPINLOCK(mips_irq_lock);
+=======
+#include <asm/setup.h>
+#include <asm/rtlx.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int mips_pcibios_iack(void)
 {
@@ -84,20 +116,32 @@ static inline int mips_pcibios_iack(void)
 
 		/* Flush Bonito register block */
 		(void) BONITO_PCIMAP_CFG;
+<<<<<<< HEAD
 		iob();    /* sync */
 
 		irq = __raw_readl((u32 *)_pcictrl_bonito_pcicfg);
 		iob();    /* sync */
+=======
+		iob();	  /* sync */
+
+		irq = __raw_readl((u32 *)_pcictrl_bonito_pcicfg);
+		iob();	  /* sync */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		irq &= 0xff;
 		BONITO_PCIMAP_CFG = 0;
 		break;
 	default:
+<<<<<<< HEAD
 		printk(KERN_WARNING "Unknown system controller.\n");
+=======
+		pr_emerg("Unknown system controller.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 	return irq;
 }
 
+<<<<<<< HEAD
 static inline int get_int(void)
 {
 	unsigned long flags;
@@ -141,6 +185,8 @@ static void malta_ipi_irqdispatch(void)
 	do_IRQ(MIPS_GIC_IRQ_BASE + irq);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void corehi_irqdispatch(void)
 {
 	unsigned int intedge, intsteer, pcicmd, pcibadaddr;
@@ -148,11 +194,19 @@ static void corehi_irqdispatch(void)
 	unsigned int intrcause, datalo, datahi;
 	struct pt_regs *regs = get_irq_regs();
 
+<<<<<<< HEAD
 	printk(KERN_EMERG "CoreHI interrupt, shouldn't happen, we die here!\n");
 	printk(KERN_EMERG "epc   : %08lx\nStatus: %08lx\n"
 			"Cause : %08lx\nbadVaddr : %08lx\n",
 			regs->cp0_epc, regs->cp0_status,
 			regs->cp0_cause, regs->cp0_badvaddr);
+=======
+	pr_emerg("CoreHI interrupt, shouldn't happen, we die here!\n");
+	pr_emerg("epc	 : %08lx\nStatus: %08lx\n"
+		 "Cause : %08lx\nbadVaddr : %08lx\n",
+		 regs->cp0_epc, regs->cp0_status,
+		 regs->cp0_cause, regs->cp0_badvaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read all the registers and then print them as there is a
 	   problem with interspersed printk's upsetting the Bonito controller.
@@ -170,8 +224,13 @@ static void corehi_irqdispatch(void)
 		intrcause = GT_READ(GT_INTRCAUSE_OFS);
 		datalo = GT_READ(GT_CPUERR_ADDRLO_OFS);
 		datahi = GT_READ(GT_CPUERR_ADDRHI_OFS);
+<<<<<<< HEAD
 		printk(KERN_EMERG "GT_INTRCAUSE = %08x\n", intrcause);
 		printk(KERN_EMERG "GT_CPUERR_ADDR = %02x%08x\n",
+=======
+		pr_emerg("GT_INTRCAUSE = %08x\n", intrcause);
+		pr_emerg("GT_CPUERR_ADDR = %02x%08x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				datahi, datalo);
 		break;
 	case MIPS_REVISION_SCON_BONITO:
@@ -183,6 +242,7 @@ static void corehi_irqdispatch(void)
 		intedge = BONITO_INTEDGE;
 		intsteer = BONITO_INTSTEER;
 		pcicmd = BONITO_PCICMD;
+<<<<<<< HEAD
 		printk(KERN_EMERG "BONITO_INTISR = %08x\n", intisr);
 		printk(KERN_EMERG "BONITO_INTEN = %08x\n", inten);
 		printk(KERN_EMERG "BONITO_INTPOL = %08x\n", intpol);
@@ -191,12 +251,23 @@ static void corehi_irqdispatch(void)
 		printk(KERN_EMERG "BONITO_PCICMD = %08x\n", pcicmd);
 		printk(KERN_EMERG "BONITO_PCIBADADDR = %08x\n", pcibadaddr);
 		printk(KERN_EMERG "BONITO_PCIMSTAT = %08x\n", pcimstat);
+=======
+		pr_emerg("BONITO_INTISR = %08x\n", intisr);
+		pr_emerg("BONITO_INTEN = %08x\n", inten);
+		pr_emerg("BONITO_INTPOL = %08x\n", intpol);
+		pr_emerg("BONITO_INTEDGE = %08x\n", intedge);
+		pr_emerg("BONITO_INTSTEER = %08x\n", intsteer);
+		pr_emerg("BONITO_PCICMD = %08x\n", pcicmd);
+		pr_emerg("BONITO_PCIBADADDR = %08x\n", pcibadaddr);
+		pr_emerg("BONITO_PCIMSTAT = %08x\n", pcimstat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	die("CoreHi interrupt", regs);
 }
 
+<<<<<<< HEAD
 static inline int clz(unsigned long x)
 {
 	__asm__(
@@ -368,6 +439,21 @@ static msc_irqmap_t __initdata msc_irqmap[] = {
 static int __initdata msc_nr_irqs = ARRAY_SIZE(msc_irqmap);
 
 static msc_irqmap_t __initdata msc_eicirqmap[] = {
+=======
+static irqreturn_t corehi_handler(int irq, void *dev_id)
+{
+	corehi_irqdispatch();
+	return IRQ_HANDLED;
+}
+
+static msc_irqmap_t msc_irqmap[] __initdata = {
+	{MSC01C_INT_TMR,		MSC01_IRQ_EDGE, 0},
+	{MSC01C_INT_PCI,		MSC01_IRQ_LEVEL, 0},
+};
+static int msc_nr_irqs __initdata = ARRAY_SIZE(msc_irqmap);
+
+static msc_irqmap_t msc_eicirqmap[] __initdata = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{MSC01E_INT_SW0,		MSC01_IRQ_LEVEL, 0},
 	{MSC01E_INT_SW1,		MSC01_IRQ_LEVEL, 0},
 	{MSC01E_INT_I8259A,		MSC01_IRQ_LEVEL, 0},
@@ -380,6 +466,7 @@ static msc_irqmap_t __initdata msc_eicirqmap[] = {
 	{MSC01E_INT_CPUCTR,		MSC01_IRQ_LEVEL, 0}
 };
 
+<<<<<<< HEAD
 static int __initdata msc_nr_eicirqs = ARRAY_SIZE(msc_eicirqmap);
 
 /*
@@ -501,6 +588,27 @@ void __init arch_init_irq(void)
 	}
 	if (gic_present)
 		pr_debug("GIC present\n");
+=======
+static int msc_nr_eicirqs __initdata = ARRAY_SIZE(msc_eicirqmap);
+
+void __init arch_init_irq(void)
+{
+	int corehi_irq;
+
+	/*
+	 * Preallocate the i8259's expected virq's here. Since irqchip_init()
+	 * will probe the irqchips in hierarchial order, i8259 is probed last.
+	 * If anything allocates a virq before the i8259 is probed, it will
+	 * be given one of the i8259's expected range and consequently setup
+	 * of the i8259 will fail.
+	 */
+	WARN(irq_alloc_descs(I8259A_IRQ_BASE, I8259A_IRQ_BASE,
+			    16, numa_node_id()) < 0,
+		"Cannot reserve i8259 virqs at IRQ%d\n", I8259A_IRQ_BASE);
+
+	i8259_set_poll(mips_pcibios_iack);
+	irqchip_init();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (mips_revision_sconid) {
 	case MIPS_REVISION_SCON_SOCIT:
@@ -527,6 +635,7 @@ void __init arch_init_irq(void)
 					msc_nr_irqs);
 	}
 
+<<<<<<< HEAD
 	if (cpu_has_veic) {
 		set_vi_handler(MSC01E_INT_I8259A, malta_hw0_irqdispatch);
 		set_vi_handler(MSC01E_INT_COREHI, corehi_irqdispatch);
@@ -746,4 +855,18 @@ int malta_be_handler(struct pt_regs *regs, int is_fixup)
 	}
 
 	return retval;
+=======
+	if (mips_gic_present()) {
+		corehi_irq = MIPS_CPU_IRQ_BASE + MIPSCPU_INT_COREHI;
+	} else if (cpu_has_veic) {
+		set_vi_handler(MSC01E_INT_COREHI, corehi_irqdispatch);
+		corehi_irq = MSC01E_INT_BASE + MSC01E_INT_COREHI;
+	} else {
+		corehi_irq = MIPS_CPU_IRQ_BASE + MIPSCPU_INT_COREHI;
+	}
+
+	if (request_irq(corehi_irq, corehi_handler, IRQF_NO_THREAD, "CoreHi",
+			NULL))
+		pr_err("Failed to request irq %d (CoreHi)\n", corehi_irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,8 +1,17 @@
+<<<<<<< HEAD
 
 config USB_SISUSBVGA
 	tristate "USB 2.0 SVGA dongle support (Net2280/SiS315)"
 	depends on USB && (USB_MUSB_HDRC || USB_EHCI_HCD)
         ---help---
+=======
+# SPDX-License-Identifier: GPL-2.0
+
+config USB_SISUSBVGA
+	tristate "USB 2.0 SVGA dongle support (Net2280/SiS315)"
+	depends on (USB_MUSB_HDRC || USB_EHCI_HCD)
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  Say Y here if you intend to attach a USB2VGA dongle based on a
 	  Net2280 and a SiS315 chip.
 
@@ -11,6 +20,7 @@ config USB_SISUSBVGA
 
 	  To compile this driver as a module, choose M here; the module will be
 	  called sisusbvga. If unsure, say N.
+<<<<<<< HEAD
 
 config USB_SISUSBVGA_CON
 	bool "Text console and mode switching support" if USB_SISUSBVGA
@@ -44,3 +54,5 @@ config USB_SISUSBVGA_CON
 
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

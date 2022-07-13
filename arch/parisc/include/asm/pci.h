@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 #ifndef __ASM_PARISC_PCI_H
 #define __ASM_PARISC_PCI_H
 
 #include <asm/scatterlist.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ASM_PARISC_PCI_H
+#define __ASM_PARISC_PCI_H
+
+#include <linux/scatterlist.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
@@ -55,7 +63,11 @@ struct pci_hba_data {
 	#define DINO_MAX_LMMIO_RESOURCES	3
 
 	unsigned long   lmmio_space_offset;  /* CPU view - PCI view */
+<<<<<<< HEAD
 	void *          iommu;          /* IOMMU this device is under */
+=======
+	struct ioc	*iommu;		/* IOMMU this device is under */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* REVISIT - spinlock to protect resources? */
 
 	#define HBA_NAME_SIZE 16
@@ -65,8 +77,11 @@ struct pci_hba_data {
 	char gmmio_name[HBA_NAME_SIZE];
 };
 
+<<<<<<< HEAD
 #define HBA_DATA(d)		((struct pci_hba_data *) (d))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 
 ** We support 2^16 I/O ports per HBA.  These are set up in the form
 ** 0xbbxxxx, where bb is the bus number and xxxx is the I/O port
@@ -87,6 +102,7 @@ struct pci_hba_data {
 #endif /* !CONFIG_64BIT */
 
 /*
+<<<<<<< HEAD
 ** KLUGE: linux/pci.h include asm/pci.h BEFORE declaring struct pci_bus
 ** (This eliminates some of the warnings).
 */
@@ -117,6 +133,8 @@ extern int parisc_bus_is_phys; 	/* in arch/parisc/kernel/setup.c */
 
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ** Most PCI devices (eg Tulip, NCR720) also export the same registers
 ** to both MMIO and I/O port space.  Due to poor performance of I/O Port
 ** access under HP PCI bus adapters, strongly recommend the use of MMIO
@@ -161,12 +179,19 @@ extern struct pci_bios_ops *pci_bios;
 
 #ifdef CONFIG_PCI
 extern void pcibios_register_hba(struct pci_hba_data *);
+<<<<<<< HEAD
 extern void pcibios_set_master(struct pci_dev *);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline void pcibios_register_hba(struct pci_hba_data *x)
 {
 }
 #endif
+<<<<<<< HEAD
+=======
+extern void pcibios_init_bridge(struct pci_dev *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * pcibios_assign_all_busses() is used in drivers/pci/pci.c:pci_do_scan_bus()
@@ -193,6 +218,7 @@ static inline void pcibios_register_hba(struct pci_hba_data *x)
 #define PCIBIOS_MIN_IO          0x10
 #define PCIBIOS_MIN_MEM         0x1000 /* NBPG - but pci/setup-res.c dies */
 
+<<<<<<< HEAD
 /* export the pci_ DMA API in terms of the dma_ one */
 #include <asm-generic/pci-dma-compat.h>
 
@@ -224,5 +250,9 @@ static inline int pci_get_legacy_ide_irq(struct pci_dev *dev, int channel)
 {
 	return channel ? 15 : 14;
 }
+=======
+#define HAVE_PCI_MMAP
+#define ARCH_GENERIC_PCI_MMAP_RESOURCE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_PARISC_PCI_H */

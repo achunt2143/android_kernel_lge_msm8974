@@ -1,15 +1,23 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for 93xx46 EEPROMs
  *
  * (C) 2011 DENX Software Engineering, Anatolij Gustschin <agust@denx.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -17,6 +25,18 @@
 #include <linux/slab.h>
 #include <linux/spi/spi.h>
 #include <linux/sysfs.h>
+=======
+#include <linux/gpio/consumer.h>
+#include <linux/kernel.h>
+#include <linux/log2.h>
+#include <linux/module.h>
+#include <linux/mutex.h>
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/slab.h>
+#include <linux/spi/spi.h>
+#include <linux/nvmem-provider.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/eeprom_93xx46.h>
 
 #define OP_START	0x4
@@ -26,6 +46,7 @@
 #define ADDR_ERAL	0x20
 #define ADDR_EWEN	0x30
 
+<<<<<<< HEAD
 struct eeprom_93xx46_dev {
 	struct spi_device *spi;
 	struct eeprom_93xx46_platform_data *pdata;
@@ -82,24 +103,154 @@ eeprom_93xx46_bin_read(struct file *filp, struct kobject *kobj,
 	t[1].bits_per_word = 8;
 	spi_message_add_tail(&t[1], &m);
 
+=======
+struct eeprom_93xx46_devtype_data {
+	unsigned int quirks;
+	unsigned char flags;
+};
+
+static const struct eeprom_93xx46_devtype_data at93c46_data = {
+	.flags = EE_SIZE1K,
+};
+
+static const struct eeprom_93xx46_devtype_data at93c56_data = {
+	.flags = EE_SIZE2K,
+};
+
+static const struct eeprom_93xx46_devtype_data at93c66_data = {
+	.flags = EE_SIZE4K,
+};
+
+static const struct eeprom_93xx46_devtype_data atmel_at93c46d_data = {
+	.flags = EE_SIZE1K,
+	.quirks = EEPROM_93XX46_QUIRK_SINGLE_WORD_READ |
+		  EEPROM_93XX46_QUIRK_INSTRUCTION_LENGTH,
+};
+
+static const struct eeprom_93xx46_devtype_data microchip_93lc46b_data = {
+	.flags = EE_SIZE1K,
+	.quirks = EEPROM_93XX46_QUIRK_EXTRA_READ_CYCLE,
+};
+
+struct eeprom_93xx46_dev {
+	struct spi_device *spi;
+	struct eeprom_93xx46_platform_data *pdata;
+	struct mutex lock;
+	struct nvmem_config nvmem_config;
+	struct nvmem_device *nvmem;
+	int addrlen;
+	int size;
+};
+
+static inline bool has_quirk_single_word_read(struct eeprom_93xx46_dev *edev)
+{
+	return edev->pdata->quirks & EEPROM_93XX46_QUIRK_SINGLE_WORD_READ;
+}
+
+static inline bool has_quirk_instruction_length(struct eeprom_93xx46_dev *edev)
+{
+	return edev->pdata->quirks & EEPROM_93XX46_QUIRK_INSTRUCTION_LENGTH;
+}
+
+static inline bool has_quirk_extra_read_cycle(struct eeprom_93xx46_dev *edev)
+{
+	return edev->pdata->quirks & EEPROM_93XX46_QUIRK_EXTRA_READ_CYCLE;
+}
+
+static int eeprom_93xx46_read(void *priv, unsigned int off,
+			      void *val, size_t count)
+{
+	struct eeprom_93xx46_dev *edev = priv;
+	char *buf = val;
+	int err = 0;
+	int bits;
+
+	if (unlikely(off >= edev->size))
+		return 0;
+	if ((off + count) > edev->size)
+		count = edev->size - off;
+	if (unlikely(!count))
+		return count;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&edev->lock);
 
 	if (edev->pdata->prepare)
 		edev->pdata->prepare(edev);
 
+<<<<<<< HEAD
 	ret = spi_sync(edev->spi, &m);
 	/* have to wait at least Tcsl ns */
 	ndelay(250);
 	if (ret) {
 		dev_err(&edev->spi->dev, "read %zu bytes at %d: err. %d\n",
 			count, (int)off, ret);
+=======
+	/* The opcode in front of the address is three bits. */
+	bits = edev->addrlen + 3;
+
+	while (count) {
+		struct spi_message m;
+		struct spi_transfer t[2] = { { 0 } };
+		u16 cmd_addr = OP_READ << edev->addrlen;
+		size_t nbytes = count;
+
+		if (edev->pdata->flags & EE_ADDR8) {
+			cmd_addr |= off;
+			if (has_quirk_single_word_read(edev))
+				nbytes = 1;
+		} else {
+			cmd_addr |= (off >> 1);
+			if (has_quirk_single_word_read(edev))
+				nbytes = 2;
+		}
+
+		dev_dbg(&edev->spi->dev, "read cmd 0x%x, %d Hz\n",
+			cmd_addr, edev->spi->max_speed_hz);
+
+		if (has_quirk_extra_read_cycle(edev)) {
+			cmd_addr <<= 1;
+			bits += 1;
+		}
+
+		spi_message_init(&m);
+
+		t[0].tx_buf = (char *)&cmd_addr;
+		t[0].len = 2;
+		t[0].bits_per_word = bits;
+		spi_message_add_tail(&t[0], &m);
+
+		t[1].rx_buf = buf;
+		t[1].len = count;
+		t[1].bits_per_word = 8;
+		spi_message_add_tail(&t[1], &m);
+
+		err = spi_sync(edev->spi, &m);
+		/* have to wait at least Tcsl ns */
+		ndelay(250);
+
+		if (err) {
+			dev_err(&edev->spi->dev, "read %zu bytes at %d: err. %d\n",
+				nbytes, (int)off, err);
+			break;
+		}
+
+		buf += nbytes;
+		off += nbytes;
+		count -= nbytes;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (edev->pdata->finish)
 		edev->pdata->finish(edev);
 
 	mutex_unlock(&edev->lock);
+<<<<<<< HEAD
 	return ret ? : count;
+=======
+
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int eeprom_93xx46_ew(struct eeprom_93xx46_dev *edev, int is_on)
@@ -109,6 +260,7 @@ static int eeprom_93xx46_ew(struct eeprom_93xx46_dev *edev, int is_on)
 	int bits, ret;
 	u16 cmd_addr;
 
+<<<<<<< HEAD
 	cmd_addr = OP_START << edev->addrlen;
 	if (edev->addrlen == 7) {
 		cmd_addr |= (is_on ? ADDR_EWEN : ADDR_EWDS) << 1;
@@ -119,6 +271,24 @@ static int eeprom_93xx46_ew(struct eeprom_93xx46_dev *edev, int is_on)
 	}
 
 	dev_dbg(&edev->spi->dev, "ew cmd 0x%04x\n", cmd_addr);
+=======
+	/* The opcode in front of the address is three bits. */
+	bits = edev->addrlen + 3;
+
+	cmd_addr = OP_START << edev->addrlen;
+	if (edev->pdata->flags & EE_ADDR8)
+		cmd_addr |= (is_on ? ADDR_EWEN : ADDR_EWDS) << 1;
+	else
+		cmd_addr |= (is_on ? ADDR_EWEN : ADDR_EWDS);
+
+	if (has_quirk_instruction_length(edev)) {
+		cmd_addr <<= 2;
+		bits += 2;
+	}
+
+	dev_dbg(&edev->spi->dev, "ew%s cmd 0x%04x, %d bits\n",
+			is_on ? "en" : "ds", cmd_addr, bits);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spi_message_init(&m);
 	memset(&t, 0, sizeof(t));
@@ -156,6 +326,7 @@ eeprom_93xx46_write_word(struct eeprom_93xx46_dev *edev,
 	int bits, data_len, ret;
 	u16 cmd_addr;
 
+<<<<<<< HEAD
 	cmd_addr = OP_WRITE << edev->addrlen;
 
 	if (edev->addrlen == 7) {
@@ -165,6 +336,21 @@ eeprom_93xx46_write_word(struct eeprom_93xx46_dev *edev,
 	} else {
 		cmd_addr |= off & 0x3f;
 		bits = 9;
+=======
+	if (unlikely(off >= edev->size))
+		return -EINVAL;
+
+	/* The opcode in front of the address is three bits. */
+	bits = edev->addrlen + 3;
+
+	cmd_addr = OP_WRITE << edev->addrlen;
+
+	if (edev->pdata->flags & EE_ADDR8) {
+		cmd_addr |= off;
+		data_len = 1;
+	} else {
+		cmd_addr |= (off >> 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		data_len = 2;
 	}
 
@@ -189,6 +375,7 @@ eeprom_93xx46_write_word(struct eeprom_93xx46_dev *edev,
 	return ret;
 }
 
+<<<<<<< HEAD
 static ssize_t
 eeprom_93xx46_bin_write(struct file *filp, struct kobject *kobj,
 			struct bin_attribute *bin_attr,
@@ -205,11 +392,28 @@ eeprom_93xx46_bin_write(struct file *filp, struct kobject *kobj,
 		return 0;
 	if ((off + count) > edev->bin.size)
 		count = edev->bin.size - off;
+=======
+static int eeprom_93xx46_write(void *priv, unsigned int off,
+				   void *val, size_t count)
+{
+	struct eeprom_93xx46_dev *edev = priv;
+	char *buf = val;
+	int i, ret, step = 1;
+
+	if (unlikely(off >= edev->size))
+		return -EFBIG;
+	if ((off + count) > edev->size)
+		count = edev->size - off;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(!count))
 		return count;
 
 	/* only write even number of bytes on 16-bit devices */
+<<<<<<< HEAD
 	if (edev->addrlen == 6) {
+=======
+	if (edev->pdata->flags & EE_ADDR16) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		step = 2;
 		count &= ~1;
 	}
@@ -240,7 +444,11 @@ eeprom_93xx46_bin_write(struct file *filp, struct kobject *kobj,
 
 	/* erase/write disable */
 	eeprom_93xx46_ew(edev, 0);
+<<<<<<< HEAD
 	return ret ? : count;
+=======
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int eeprom_93xx46_eral(struct eeprom_93xx46_dev *edev)
@@ -251,6 +459,7 @@ static int eeprom_93xx46_eral(struct eeprom_93xx46_dev *edev)
 	int bits, ret;
 	u16 cmd_addr;
 
+<<<<<<< HEAD
 	cmd_addr = OP_START << edev->addrlen;
 	if (edev->addrlen == 7) {
 		cmd_addr |= ADDR_ERAL << 1;
@@ -260,6 +469,24 @@ static int eeprom_93xx46_eral(struct eeprom_93xx46_dev *edev)
 		bits = 9;
 	}
 
+=======
+	/* The opcode in front of the address is three bits. */
+	bits = edev->addrlen + 3;
+
+	cmd_addr = OP_START << edev->addrlen;
+	if (edev->pdata->flags & EE_ADDR8)
+		cmd_addr |= ADDR_ERAL << 1;
+	else
+		cmd_addr |= ADDR_ERAL;
+
+	if (has_quirk_instruction_length(edev)) {
+		cmd_addr <<= 2;
+		bits += 2;
+	}
+
+	dev_dbg(&edev->spi->dev, "eral cmd 0x%04x, %d bits\n", cmd_addr, bits);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spi_message_init(&m);
 	memset(&t, 0, sizeof(t));
 
@@ -309,18 +536,126 @@ static ssize_t eeprom_93xx46_store_erase(struct device *dev,
 }
 static DEVICE_ATTR(erase, S_IWUSR, NULL, eeprom_93xx46_store_erase);
 
+<<<<<<< HEAD
 static int __devinit eeprom_93xx46_probe(struct spi_device *spi)
+=======
+static void select_assert(void *context)
+{
+	struct eeprom_93xx46_dev *edev = context;
+
+	gpiod_set_value_cansleep(edev->pdata->select, 1);
+}
+
+static void select_deassert(void *context)
+{
+	struct eeprom_93xx46_dev *edev = context;
+
+	gpiod_set_value_cansleep(edev->pdata->select, 0);
+}
+
+static const struct of_device_id eeprom_93xx46_of_table[] = {
+	{ .compatible = "eeprom-93xx46", .data = &at93c46_data, },
+	{ .compatible = "atmel,at93c46", .data = &at93c46_data, },
+	{ .compatible = "atmel,at93c46d", .data = &atmel_at93c46d_data, },
+	{ .compatible = "atmel,at93c56", .data = &at93c56_data, },
+	{ .compatible = "atmel,at93c66", .data = &at93c66_data, },
+	{ .compatible = "microchip,93lc46b", .data = &microchip_93lc46b_data, },
+	{}
+};
+MODULE_DEVICE_TABLE(of, eeprom_93xx46_of_table);
+
+static const struct spi_device_id eeprom_93xx46_spi_ids[] = {
+	{ .name = "eeprom-93xx46",
+	  .driver_data = (kernel_ulong_t)&at93c46_data, },
+	{ .name = "at93c46",
+	  .driver_data = (kernel_ulong_t)&at93c46_data, },
+	{ .name = "at93c46d",
+	  .driver_data = (kernel_ulong_t)&atmel_at93c46d_data, },
+	{ .name = "at93c56",
+	  .driver_data = (kernel_ulong_t)&at93c56_data, },
+	{ .name = "at93c66",
+	  .driver_data = (kernel_ulong_t)&at93c66_data, },
+	{ .name = "93lc46b",
+	  .driver_data = (kernel_ulong_t)&microchip_93lc46b_data, },
+	{}
+};
+MODULE_DEVICE_TABLE(spi, eeprom_93xx46_spi_ids);
+
+static int eeprom_93xx46_probe_dt(struct spi_device *spi)
+{
+	const struct of_device_id *of_id =
+		of_match_device(eeprom_93xx46_of_table, &spi->dev);
+	struct device_node *np = spi->dev.of_node;
+	struct eeprom_93xx46_platform_data *pd;
+	u32 tmp;
+	int ret;
+
+	pd = devm_kzalloc(&spi->dev, sizeof(*pd), GFP_KERNEL);
+	if (!pd)
+		return -ENOMEM;
+
+	ret = of_property_read_u32(np, "data-size", &tmp);
+	if (ret < 0) {
+		dev_err(&spi->dev, "data-size property not found\n");
+		return ret;
+	}
+
+	if (tmp == 8) {
+		pd->flags |= EE_ADDR8;
+	} else if (tmp == 16) {
+		pd->flags |= EE_ADDR16;
+	} else {
+		dev_err(&spi->dev, "invalid data-size (%d)\n", tmp);
+		return -EINVAL;
+	}
+
+	if (of_property_read_bool(np, "read-only"))
+		pd->flags |= EE_READONLY;
+
+	pd->select = devm_gpiod_get_optional(&spi->dev, "select",
+					     GPIOD_OUT_LOW);
+	if (IS_ERR(pd->select))
+		return PTR_ERR(pd->select);
+
+	pd->prepare = select_assert;
+	pd->finish = select_deassert;
+	gpiod_direction_output(pd->select, 0);
+
+	if (of_id->data) {
+		const struct eeprom_93xx46_devtype_data *data = of_id->data;
+
+		pd->quirks = data->quirks;
+		pd->flags |= data->flags;
+	}
+
+	spi->dev.platform_data = pd;
+
+	return 0;
+}
+
+static int eeprom_93xx46_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct eeprom_93xx46_platform_data *pd;
 	struct eeprom_93xx46_dev *edev;
 	int err;
 
+<<<<<<< HEAD
+=======
+	if (spi->dev.of_node) {
+		err = eeprom_93xx46_probe_dt(spi);
+		if (err < 0)
+			return err;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pd = spi->dev.platform_data;
 	if (!pd) {
 		dev_err(&spi->dev, "missing platform data\n");
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	edev = kzalloc(sizeof(*edev), GFP_KERNEL);
 	if (!edev)
 		return -ENOMEM;
@@ -333,10 +668,35 @@ static int __devinit eeprom_93xx46_probe(struct spi_device *spi)
 		dev_err(&spi->dev, "unspecified address type\n");
 		err = -EINVAL;
 		goto fail;
+=======
+	edev = devm_kzalloc(&spi->dev, sizeof(*edev), GFP_KERNEL);
+	if (!edev)
+		return -ENOMEM;
+
+	if (pd->flags & EE_SIZE1K)
+		edev->size = 128;
+	else if (pd->flags & EE_SIZE2K)
+		edev->size = 256;
+	else if (pd->flags & EE_SIZE4K)
+		edev->size = 512;
+	else {
+		dev_err(&spi->dev, "unspecified size\n");
+		return -EINVAL;
+	}
+
+	if (pd->flags & EE_ADDR8)
+		edev->addrlen = ilog2(edev->size);
+	else if (pd->flags & EE_ADDR16)
+		edev->addrlen = ilog2(edev->size) - 1;
+	else {
+		dev_err(&spi->dev, "unspecified address type\n");
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_init(&edev->lock);
 
+<<<<<<< HEAD
 	edev->spi = spi_dev_get(spi);
 	edev->pdata = pd;
 
@@ -356,6 +716,33 @@ static int __devinit eeprom_93xx46_probe(struct spi_device *spi)
 
 	dev_info(&spi->dev, "%d-bit eeprom %s\n",
 		(pd->flags & EE_ADDR8) ? 8 : 16,
+=======
+	edev->spi = spi;
+	edev->pdata = pd;
+
+	edev->nvmem_config.type = NVMEM_TYPE_EEPROM;
+	edev->nvmem_config.name = dev_name(&spi->dev);
+	edev->nvmem_config.dev = &spi->dev;
+	edev->nvmem_config.read_only = pd->flags & EE_READONLY;
+	edev->nvmem_config.root_only = true;
+	edev->nvmem_config.owner = THIS_MODULE;
+	edev->nvmem_config.compat = true;
+	edev->nvmem_config.base_dev = &spi->dev;
+	edev->nvmem_config.reg_read = eeprom_93xx46_read;
+	edev->nvmem_config.reg_write = eeprom_93xx46_write;
+	edev->nvmem_config.priv = edev;
+	edev->nvmem_config.stride = 4;
+	edev->nvmem_config.word_size = 1;
+	edev->nvmem_config.size = edev->size;
+
+	edev->nvmem = devm_nvmem_register(&spi->dev, &edev->nvmem_config);
+	if (IS_ERR(edev->nvmem))
+		return PTR_ERR(edev->nvmem);
+
+	dev_info(&spi->dev, "%d-bit eeprom containing %d bytes %s\n",
+		(pd->flags & EE_ADDR8) ? 8 : 16,
+		edev->size,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(pd->flags & EE_READONLY) ? "(readonly)" : "");
 
 	if (!(pd->flags & EE_READONLY)) {
@@ -363,6 +750,7 @@ static int __devinit eeprom_93xx46_probe(struct spi_device *spi)
 			dev_err(&spi->dev, "can't create erase interface\n");
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&spi->dev, edev);
 	return 0;
 fail:
@@ -381,15 +769,35 @@ static int __devexit eeprom_93xx46_remove(struct spi_device *spi)
 	dev_set_drvdata(&spi->dev, NULL);
 	kfree(edev);
 	return 0;
+=======
+	spi_set_drvdata(spi, edev);
+	return 0;
+}
+
+static void eeprom_93xx46_remove(struct spi_device *spi)
+{
+	struct eeprom_93xx46_dev *edev = spi_get_drvdata(spi);
+
+	if (!(edev->pdata->flags & EE_READONLY))
+		device_remove_file(&spi->dev, &dev_attr_erase);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver eeprom_93xx46_driver = {
 	.driver = {
 		.name	= "93xx46",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= eeprom_93xx46_probe,
 	.remove		= __devexit_p(eeprom_93xx46_remove),
+=======
+		.of_match_table = of_match_ptr(eeprom_93xx46_of_table),
+	},
+	.probe		= eeprom_93xx46_probe,
+	.remove		= eeprom_93xx46_remove,
+	.id_table	= eeprom_93xx46_spi_ids,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(eeprom_93xx46_driver);
@@ -398,3 +806,8 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Driver for 93xx46 EEPROMs");
 MODULE_AUTHOR("Anatolij Gustschin <agust@denx.de>");
 MODULE_ALIAS("spi:93xx46");
+<<<<<<< HEAD
+=======
+MODULE_ALIAS("spi:eeprom-93xx46");
+MODULE_ALIAS("spi:93lc46b");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

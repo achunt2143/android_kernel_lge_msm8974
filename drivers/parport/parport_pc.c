@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Low-level parallel-port routines for 8255-based PC-style hardware.
  *
  * Authors: Phil Blundell <philb@gnu.org>
@@ -44,7 +48,11 @@
 
 #include <linux/module.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/errno.h>
 #include <linux/interrupt.h>
@@ -86,6 +94,7 @@
 
 #undef DEBUG
 
+<<<<<<< HEAD
 #ifdef DEBUG
 #define DPRINTK  printk
 #else
@@ -93,6 +102,8 @@
 #endif
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NR_SUPERIOS 3
 static struct superio_struct {	/* For Super-IO chips autodetection */
 	int io;
@@ -112,15 +123,33 @@ static int pnp_registered_parport;
 static void frob_econtrol(struct parport *pb, unsigned char m,
 			   unsigned char v)
 {
+<<<<<<< HEAD
 	unsigned char ectr = 0;
+=======
+	const struct parport_pc_private *priv = pb->physport->private_data;
+	unsigned char ecr_writable = priv->ecr_writable;
+	unsigned char ectr = 0;
+	unsigned char new;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (m != 0xff)
 		ectr = inb(ECONTROL(pb));
 
+<<<<<<< HEAD
 	DPRINTK(KERN_DEBUG "frob_econtrol(%02x,%02x): %02x -> %02x\n",
 		m, v, ectr, (ectr & ~m) ^ v);
 
 	outb((ectr & ~m) ^ v, ECONTROL(pb));
+=======
+	new = (ectr & ~m) ^ v;
+	if (ecr_writable)
+		/* All known users of the ECR mask require bit 0 to be set. */
+		new = (new & ecr_writable) | 1;
+
+	pr_debug("frob_econtrol(%02x,%02x): %02x -> %02x\n", m, v, ectr, new);
+
+	outb(new, ECONTROL(pb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void frob_set_mode(struct parport *p, int mode)
@@ -141,7 +170,11 @@ static int change_mode(struct parport *p, int m)
 	unsigned char oecr;
 	int mode;
 
+<<<<<<< HEAD
 	DPRINTK(KERN_INFO "parport change_mode ECP-ISA to mode 0x%02x\n", m);
+=======
+	pr_debug("parport change_mode ECP-ISA to mode 0x%02x\n", m);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!priv->ecr) {
 		printk(KERN_DEBUG "change_mode: but there's no ECR!\n");
@@ -197,6 +230,7 @@ static int change_mode(struct parport *p, int m)
 	ECR_WRITE(p, oecr);
 	return 0;
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_PARPORT_1284
 /* Find FIFO lossage; FIFO is reset */
@@ -245,6 +279,8 @@ static int get_fifo_residue(struct parport *p)
 }
 #endif  /*  0 */
 #endif /* IEEE 1284 support */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* FIFO support */
 
 /*
@@ -345,16 +381,33 @@ static size_t parport_pc_epp_read_data(struct parport *port, void *buf,
 			status = inb(STATUS(port));
 			if (status & 0x01) {
 				/* EPP timeout should never occur... */
+<<<<<<< HEAD
 				printk(KERN_DEBUG
 "%s: EPP timeout occurred while talking to w91284pic (should not have done)\n", port->name);
+=======
+				printk(KERN_DEBUG "%s: EPP timeout occurred while talking to w91284pic (should not have done)\n",
+				       port->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				clear_epp_timeout(port);
 			}
 		}
 		return got;
 	}
+<<<<<<< HEAD
 	if ((flags & PARPORT_EPP_FAST) && (length > 1)) {
 		if (!(((long)buf | length) & 0x03))
 			insl(EPPDATA(port), buf, (length >> 2));
+=======
+	if ((length > 1) && ((flags & PARPORT_EPP_FAST_32)
+			   || flags & PARPORT_EPP_FAST_16
+			   || flags & PARPORT_EPP_FAST_8)) {
+		if ((flags & PARPORT_EPP_FAST_32)
+		    && !(((long)buf | length) & 0x03))
+			insl(EPPDATA(port), buf, (length >> 2));
+		else if ((flags & PARPORT_EPP_FAST_16)
+			 && !(((long)buf | length) & 0x01))
+			insw(EPPDATA(port), buf, length >> 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			insb(EPPDATA(port), buf, length);
 		if (inb(STATUS(port)) & 0x01) {
@@ -381,9 +434,21 @@ static size_t parport_pc_epp_write_data(struct parport *port, const void *buf,
 {
 	size_t written = 0;
 
+<<<<<<< HEAD
 	if ((flags & PARPORT_EPP_FAST) && (length > 1)) {
 		if (!(((long)buf | length) & 0x03))
 			outsl(EPPDATA(port), buf, (length >> 2));
+=======
+	if ((length > 1) && ((flags & PARPORT_EPP_FAST_32)
+			   || flags & PARPORT_EPP_FAST_16
+			   || flags & PARPORT_EPP_FAST_8)) {
+		if ((flags & PARPORT_EPP_FAST_32)
+		    && !(((long)buf | length) & 0x03))
+			outsl(EPPDATA(port), buf, (length >> 2));
+		else if ((flags & PARPORT_EPP_FAST_16)
+			 && !(((long)buf | length) & 0x01))
+			outsw(EPPDATA(port), buf, length >> 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			outsb(EPPDATA(port), buf, length);
 		if (inb(STATUS(port)) & 0x01) {
@@ -522,7 +587,11 @@ static size_t parport_pc_fifo_write_block_pio(struct parport *port,
 	const unsigned char *bufp = buf;
 	size_t left = length;
 	unsigned long expire = jiffies + port->physport->cad->timeout;
+<<<<<<< HEAD
 	const int fifo = FIFO(port);
+=======
+	const unsigned long fifo = FIFO(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int poll_for = 8; /* 80 usecs */
 	const struct parport_pc_private *priv = port->physport->private_data;
 	const int fifo_depth = priv->fifo_depth;
@@ -774,7 +843,11 @@ static size_t parport_pc_compat_write_block_pio(struct parport *port,
 	r = change_mode(port, ECR_PPF); /* Parallel port FIFO */
 	if (r)
 		printk(KERN_DEBUG "%s: Warning change_mode ECR_PPF failed\n",
+<<<<<<< HEAD
 								port->name);
+=======
+		       port->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	port->physport->ieee1284.phase = IEEE1284_PH_FWD_DATA;
 
@@ -817,9 +890,14 @@ static size_t parport_pc_compat_write_block_pio(struct parport *port,
 				     PARPORT_STATUS_BUSY,
 				     PARPORT_STATUS_BUSY);
 	if (r)
+<<<<<<< HEAD
 		printk(KERN_DEBUG
 			"%s: BUSY timeout (%d) in compat_write_block_pio\n",
 			port->name, r);
+=======
+		printk(KERN_DEBUG "%s: BUSY timeout (%d) in compat_write_block_pio\n",
+		       port->name, r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	port->physport->ieee1284.phase = IEEE1284_PH_FWD_IDLE;
 
@@ -857,8 +935,13 @@ static size_t parport_pc_ecp_write_block_pio(struct parport *port,
 					     PARPORT_STATUS_PAPEROUT,
 					     PARPORT_STATUS_PAPEROUT);
 		if (r) {
+<<<<<<< HEAD
 			printk(KERN_DEBUG "%s: PError timeout (%d) "
 				"in ecp_write_block_pio\n", port->name, r);
+=======
+			printk(KERN_DEBUG "%s: PError timeout (%d) in ecp_write_block_pio\n",
+			       port->name, r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -871,7 +954,11 @@ static size_t parport_pc_ecp_write_block_pio(struct parport *port,
 	r = change_mode(port, ECR_ECP); /* ECP FIFO */
 	if (r)
 		printk(KERN_DEBUG "%s: Warning change_mode ECR_ECP failed\n",
+<<<<<<< HEAD
 								port->name);
+=======
+		       port->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	port->physport->ieee1284.phase = IEEE1284_PH_FWD_DATA;
 
 	/* Write the data to the FIFO. */
@@ -914,8 +1001,13 @@ static size_t parport_pc_ecp_write_block_pio(struct parport *port,
 		parport_frob_control(port, PARPORT_CONTROL_INIT, 0);
 		r = parport_wait_peripheral(port, PARPORT_STATUS_PAPEROUT, 0);
 		if (r)
+<<<<<<< HEAD
 			printk(KERN_DEBUG "%s: PE,1 timeout (%d) "
 				"in ecp_write_block_pio\n", port->name, r);
+=======
+			printk(KERN_DEBUG "%s: PE,1 timeout (%d) in ecp_write_block_pio\n",
+			       port->name, r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		parport_frob_control(port,
 				      PARPORT_CONTROL_INIT,
@@ -924,22 +1016,33 @@ static size_t parport_pc_ecp_write_block_pio(struct parport *port,
 					     PARPORT_STATUS_PAPEROUT,
 					     PARPORT_STATUS_PAPEROUT);
 		if (r)
+<<<<<<< HEAD
 			printk(KERN_DEBUG "%s: PE,2 timeout (%d) "
 				"in ecp_write_block_pio\n", port->name, r);
+=======
+			printk(KERN_DEBUG "%s: PE,2 timeout (%d) in ecp_write_block_pio\n",
+			       port->name, r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	r = parport_wait_peripheral(port,
 				     PARPORT_STATUS_BUSY,
 				     PARPORT_STATUS_BUSY);
 	if (r)
+<<<<<<< HEAD
 		printk(KERN_DEBUG
 			"%s: BUSY timeout (%d) in ecp_write_block_pio\n",
 			port->name, r);
+=======
+		printk(KERN_DEBUG "%s: BUSY timeout (%d) in ecp_write_block_pio\n",
+		       port->name, r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	port->physport->ieee1284.phase = IEEE1284_PH_FWD_IDLE;
 
 	return written;
 }
+<<<<<<< HEAD
 
 #if 0
 static size_t parport_pc_ecp_read_block_pio(struct parport *port,
@@ -1168,6 +1271,8 @@ out_no_data:
 	return length - left;
 }
 #endif  /*  0  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* IEEE 1284 support */
 #endif /* Allowed to use FIFO/DMA */
 
@@ -1178,7 +1283,11 @@ out_no_data:
  *	******************************************
  */
 
+<<<<<<< HEAD
 /* GCC is not inlining extern inline function later overwriten to non-inline,
+=======
+/* GCC is not inlining extern inline function later overwritten to non-inline,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
    so we use outlined_ variants here.  */
 static const struct parport_operations parport_pc_ops = {
 	.write_data	= parport_pc_write_data,
@@ -1229,7 +1338,11 @@ static struct superio_struct *find_free_superio(void)
 
 
 /* Super-IO chipset detection, Winbond, SMSC */
+<<<<<<< HEAD
 static void __devinit show_parconfig_smsc37c669(int io, int key)
+=======
+static void show_parconfig_smsc37c669(int io, int key)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cr1, cr4, cra, cr23, cr26, cr27;
 	struct superio_struct *s;
@@ -1257,14 +1370,19 @@ static void __devinit show_parconfig_smsc37c669(int io, int key)
 	outb(0xaa, io);
 
 	if (verbose_probing) {
+<<<<<<< HEAD
 		printk(KERN_INFO
 			"SMSC 37c669 LPT Config: cr_1=0x%02x, 4=0x%02x, "
 			"A=0x%2x, 23=0x%02x, 26=0x%02x, 27=0x%02x\n",
+=======
+		pr_info("SMSC 37c669 LPT Config: cr_1=0x%02x, 4=0x%02x, A=0x%2x, 23=0x%02x, 26=0x%02x, 27=0x%02x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cr1, cr4, cra, cr23, cr26, cr27);
 
 		/* The documentation calls DMA and IRQ-Lines by letters, so
 		   the board maker can/will wire them
 		   appropriately/randomly...  G=reserved H=IDE-irq, */
+<<<<<<< HEAD
 		printk(KERN_INFO
 	"SMSC LPT Config: io=0x%04x, irq=%c, dma=%c, fifo threshold=%d\n",
 				cr23 * 4,
@@ -1279,6 +1397,20 @@ static void __devinit show_parconfig_smsc37c669(int io, int key)
 				(cr1 & 0x08) ? "Standard mode only (SPP)"
 					      : modes[cr4 & 0x03],
 				(cr4 & 0x40) ? "1.7" : "1.9");
+=======
+		pr_info("SMSC LPT Config: io=0x%04x, irq=%c, dma=%c, fifo threshold=%d\n",
+			cr23 * 4,
+			(cr27 & 0x0f) ? 'A' - 1 + (cr27 & 0x0f) : '-',
+			(cr26 & 0x0f) ? 'A' - 1 + (cr26 & 0x0f) : '-',
+			cra & 0x0f);
+		pr_info("SMSC LPT Config: enabled=%s power=%s\n",
+			(cr23 * 4 >= 0x100) ? "yes" : "no",
+			(cr1 & 4) ? "yes" : "no");
+		pr_info("SMSC LPT Config: Port mode=%s, EPP version =%s\n",
+			(cr1 & 0x08) ? "Standard mode only (SPP)"
+			: modes[cr4 & 0x03],
+			(cr4 & 0x40) ? "1.7" : "1.9");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Heuristics !  BIOS setup for this mainboard device limits
@@ -1288,7 +1420,11 @@ static void __devinit show_parconfig_smsc37c669(int io, int key)
 	if (cr23 * 4 >= 0x100) { /* if active */
 		s = find_free_superio();
 		if (s == NULL)
+<<<<<<< HEAD
 			printk(KERN_INFO "Super-IO: too many chips!\n");
+=======
+			pr_info("Super-IO: too many chips!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {
 			int d;
 			switch (cr23 * 4) {
@@ -1314,7 +1450,11 @@ static void __devinit show_parconfig_smsc37c669(int io, int key)
 }
 
 
+<<<<<<< HEAD
 static void __devinit show_parconfig_winbond(int io, int key)
+=======
+static void show_parconfig_winbond(int io, int key)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cr30, cr60, cr61, cr70, cr74, crf0;
 	struct superio_struct *s;
@@ -1353,6 +1493,7 @@ static void __devinit show_parconfig_winbond(int io, int key)
 	outb(0xaa, io);
 
 	if (verbose_probing) {
+<<<<<<< HEAD
 		printk(KERN_INFO
     "Winbond LPT Config: cr_30=%02x 60,61=%02x%02x 70=%02x 74=%02x, f0=%02x\n",
 					cr30, cr60, cr61, cr70, cr74, crf0);
@@ -1367,12 +1508,30 @@ static void __devinit show_parconfig_winbond(int io, int key)
 					irqtypes[crf0>>7], (crf0>>3)&0x0f);
 		printk(KERN_INFO "Winbond LPT Config: Port mode=%s\n",
 					modes[crf0 & 0x07]);
+=======
+		pr_info("Winbond LPT Config: cr_30=%02x 60,61=%02x%02x 70=%02x 74=%02x, f0=%02x\n",
+			cr30, cr60, cr61, cr70, cr74, crf0);
+		pr_info("Winbond LPT Config: active=%s, io=0x%02x%02x irq=%d, ",
+			(cr30 & 0x01) ? "yes" : "no", cr60, cr61, cr70 & 0x0f);
+		if ((cr74 & 0x07) > 3)
+			pr_cont("dma=none\n");
+		else
+			pr_cont("dma=%d\n", cr74 & 0x07);
+		pr_info("Winbond LPT Config: irqtype=%s, ECP fifo threshold=%d\n",
+			irqtypes[crf0 >> 7], (crf0 >> 3) & 0x0f);
+		pr_info("Winbond LPT Config: Port mode=%s\n",
+			modes[crf0 & 0x07]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (cr30 & 0x01) { /* the settings can be interrogated later ... */
 		s = find_free_superio();
 		if (s == NULL)
+<<<<<<< HEAD
 			printk(KERN_INFO "Super-IO: too many chips!\n");
+=======
+			pr_info("Super-IO: too many chips!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {
 			s->io = (cr60 << 8) | cr61;
 			s->irq = cr70 & 0x0f;
@@ -1382,8 +1541,12 @@ static void __devinit show_parconfig_winbond(int io, int key)
 	}
 }
 
+<<<<<<< HEAD
 static void __devinit decode_winbond(int efer, int key, int devid,
 							int devrev, int oldid)
+=======
+static void decode_winbond(int efer, int key, int devid, int devrev, int oldid)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *type = "unknown";
 	int id, progif = 2;
@@ -1427,15 +1590,24 @@ static void __devinit decode_winbond(int efer, int key, int devid,
 		progif = 0;
 
 	if (verbose_probing)
+<<<<<<< HEAD
 		printk(KERN_INFO "Winbond chip at EFER=0x%x key=0x%02x "
 		       "devid=%02x devrev=%02x oldid=%02x type=%s\n",
 		       efer, key, devid, devrev, oldid, type);
+=======
+		pr_info("Winbond chip at EFER=0x%x key=0x%02x devid=%02x devrev=%02x oldid=%02x type=%s\n",
+			efer, key, devid, devrev, oldid, type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (progif == 2)
 		show_parconfig_winbond(efer, key);
 }
 
+<<<<<<< HEAD
 static void __devinit decode_smsc(int efer, int key, int devid, int devrev)
+=======
+static void decode_smsc(int efer, int key, int devid, int devrev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *type = "unknown";
 	void (*func)(int io, int key);
@@ -1460,16 +1632,25 @@ static void __devinit decode_smsc(int efer, int key, int devid, int devrev)
 		type = "37c666GT";
 
 	if (verbose_probing)
+<<<<<<< HEAD
 		printk(KERN_INFO "SMSC chip at EFER=0x%x "
 		       "key=0x%02x devid=%02x devrev=%02x type=%s\n",
 		       efer, key, devid, devrev, type);
+=======
+		pr_info("SMSC chip at EFER=0x%x key=0x%02x devid=%02x devrev=%02x type=%s\n",
+			efer, key, devid, devrev, type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (func)
 		func(efer, key);
 }
 
 
+<<<<<<< HEAD
 static void __devinit winbond_check(int io, int key)
+=======
+static void winbond_check(int io, int key)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int origval, devid, devrev, oldid, x_devid, x_devrev, x_oldid;
 
@@ -1507,7 +1688,11 @@ out:
 	release_region(io, 3);
 }
 
+<<<<<<< HEAD
 static void __devinit winbond_check2(int io, int key)
+=======
+static void winbond_check2(int io, int key)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int origval[3], devid, devrev, oldid, x_devid, x_devrev, x_oldid;
 
@@ -1548,7 +1733,11 @@ out:
 	release_region(io, 3);
 }
 
+<<<<<<< HEAD
 static void __devinit smsc_check(int io, int key)
+=======
+static void smsc_check(int io, int key)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int origval, id, rev, oldid, oldrev, x_id, x_rev, x_oldid, x_oldrev;
 
@@ -1592,7 +1781,11 @@ out:
 }
 
 
+<<<<<<< HEAD
 static void __devinit detect_and_report_winbond(void)
+=======
+static void detect_and_report_winbond(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (verbose_probing)
 		printk(KERN_DEBUG "Winbond Super-IO detection, now testing ports 3F0,370,250,4E,2E ...\n");
@@ -1605,7 +1798,11 @@ static void __devinit detect_and_report_winbond(void)
 	winbond_check2(0x250, 0x89);
 }
 
+<<<<<<< HEAD
 static void __devinit detect_and_report_smsc(void)
+=======
+static void detect_and_report_smsc(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (verbose_probing)
 		printk(KERN_DEBUG "SMSC Super-IO detection, now testing Ports 2F0, 370 ...\n");
@@ -1615,7 +1812,11 @@ static void __devinit detect_and_report_smsc(void)
 	smsc_check(0x370, 0x44);
 }
 
+<<<<<<< HEAD
 static void __devinit detect_and_report_it87(void)
+=======
+static void detect_and_report_it87(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 dev;
 	u8 origval, r;
@@ -1634,7 +1835,11 @@ static void __devinit detect_and_report_it87(void)
 	dev |= inb(0x2f);
 	if (dev == 0x8712 || dev == 0x8705 || dev == 0x8715 ||
 	    dev == 0x8716 || dev == 0x8718 || dev == 0x8726) {
+<<<<<<< HEAD
 		printk(KERN_INFO "IT%04X SuperIO detected.\n", dev);
+=======
+		pr_info("IT%04X SuperIO detected\n", dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		outb(0x07, 0x2E);	/* Parallel Port */
 		outb(0x03, 0x2F);
 		outb(0xF0, 0x2E);	/* BOOT 0x80 off */
@@ -1654,7 +1859,11 @@ static struct superio_struct *find_superio(struct parport *p)
 {
 	int i;
 	for (i = 0; i < NR_SUPERIOS; i++)
+<<<<<<< HEAD
 		if (superios[i].io != p->base)
+=======
+		if (superios[i].io == p->base)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return &superios[i];
 	return NULL;
 }
@@ -1721,8 +1930,13 @@ static int parport_SPP_supported(struct parport *pb)
 	if (user_specified)
 		/* That didn't work, but the user thinks there's a
 		 * port here. */
+<<<<<<< HEAD
 		printk(KERN_INFO "parport 0x%lx (WARNING): CTR: "
 			"wrote 0x%02x, read 0x%02x\n", pb->base, w, r);
+=======
+		pr_info("parport 0x%lx (WARNING): CTR: wrote 0x%02x, read 0x%02x\n",
+			pb->base, w, r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Try the data register.  The data lines aren't tri-stated at
 	 * this stage, so we expect back what we wrote. */
@@ -1740,10 +1954,16 @@ static int parport_SPP_supported(struct parport *pb)
 	if (user_specified) {
 		/* Didn't work, but the user is convinced this is the
 		 * place. */
+<<<<<<< HEAD
 		printk(KERN_INFO "parport 0x%lx (WARNING): DATA: "
 			"wrote 0x%02x, read 0x%02x\n", pb->base, w, r);
 		printk(KERN_INFO "parport 0x%lx: You gave this address, "
 			"but there is probably no parallel port there!\n",
+=======
+		pr_info("parport 0x%lx (WARNING): DATA: wrote 0x%02x, read 0x%02x\n",
+			pb->base, w, r);
+		pr_info("parport 0x%lx: You gave this address, but there is probably no parallel port there!\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pb->base);
 	}
 
@@ -1773,6 +1993,7 @@ static int parport_ECR_present(struct parport *pb)
 	struct parport_pc_private *priv = pb->private_data;
 	unsigned char r = 0xc;
 
+<<<<<<< HEAD
 	outb(r, CONTROL(pb));
 	if ((inb(ECONTROL(pb)) & 0x3) == (r & 0x3)) {
 		outb(r ^ 0x2, CONTROL(pb)); /* Toggle bit 1 */
@@ -1789,6 +2010,27 @@ static int parport_ECR_present(struct parport *pb)
 	if (inb(ECONTROL(pb)) != 0x35)
 		goto no_reg;
 
+=======
+	if (!priv->ecr_writable) {
+		outb(r, CONTROL(pb));
+		if ((inb(ECONTROL(pb)) & 0x3) == (r & 0x3)) {
+			outb(r ^ 0x2, CONTROL(pb)); /* Toggle bit 1 */
+
+			r = inb(CONTROL(pb));
+			if ((inb(ECONTROL(pb)) & 0x2) == (r & 0x2))
+				/* Sure that no ECR register exists */
+				goto no_reg;
+		}
+
+		if ((inb(ECONTROL(pb)) & 0x3) != 0x1)
+			goto no_reg;
+
+		ECR_WRITE(pb, 0x34);
+		if (inb(ECONTROL(pb)) != 0x35)
+			goto no_reg;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->ecr = 1;
 	outb(0xc, CONTROL(pb));
 
@@ -1896,7 +2138,11 @@ static int parport_ECP_supported(struct parport *pb)
 	if (i <= priv->fifo_depth) {
 		if (verbose_probing)
 			printk(KERN_DEBUG "0x%lx: writeIntrThreshold is %d\n",
+<<<<<<< HEAD
 				pb->base, i);
+=======
+			       pb->base, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		/* Number of bytes we know we can write if we get an
 		   interrupt. */
@@ -1918,7 +2164,11 @@ static int parport_ECP_supported(struct parport *pb)
 
 	if (i <= priv->fifo_depth) {
 		if (verbose_probing)
+<<<<<<< HEAD
 			printk(KERN_INFO "0x%lx: readIntrThreshold is %d\n",
+=======
+			pr_info("0x%lx: readIntrThreshold is %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pb->base, i);
 	} else
 		/* Number of bytes we can read if we get an interrupt. */
@@ -1933,6 +2183,7 @@ static int parport_ECP_supported(struct parport *pb)
 	switch (pword) {
 	case 0:
 		pword = 2;
+<<<<<<< HEAD
 		printk(KERN_WARNING "0x%lx: Unsupported pword size!\n",
 			pb->base);
 		break;
@@ -1945,6 +2196,17 @@ static int parport_ECP_supported(struct parport *pb)
 		printk(KERN_WARNING "0x%lx: Unknown implementation ID\n",
 			pb->base);
 		/* Assume 1 */
+=======
+		pr_warn("0x%lx: Unsupported pword size!\n", pb->base);
+		break;
+	case 2:
+		pword = 4;
+		pr_warn("0x%lx: Unsupported pword size!\n", pb->base);
+		break;
+	default:
+		pr_warn("0x%lx: Unknown implementation ID\n", pb->base);
+		fallthrough;	/* Assume 1 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:
 		pword = 1;
 	}
@@ -1952,6 +2214,7 @@ static int parport_ECP_supported(struct parport *pb)
 
 	if (verbose_probing) {
 		printk(KERN_DEBUG "0x%lx: PWord is %d bits\n",
+<<<<<<< HEAD
 			pb->base, 8 * pword);
 
 		printk(KERN_DEBUG "0x%lx: Interrupts are ISA-%s\n", pb->base,
@@ -1970,6 +2233,26 @@ static int parport_ECP_supported(struct parport *pb)
 			printk("<none or set by other means>\n");
 		else
 			printk("%d\n", configb & 0x07);
+=======
+		       pb->base, 8 * pword);
+
+		printk(KERN_DEBUG "0x%lx: Interrupts are ISA-%s\n",
+		       pb->base, config & 0x80 ? "Level" : "Pulses");
+
+		configb = inb(CONFIGB(pb));
+		printk(KERN_DEBUG "0x%lx: ECP port cfgA=0x%02x cfgB=0x%02x\n",
+		       pb->base, config, configb);
+		printk(KERN_DEBUG "0x%lx: ECP settings irq=", pb->base);
+		if ((configb >> 3) & 0x07)
+			pr_cont("%d", intrline[(configb >> 3) & 0x07]);
+		else
+			pr_cont("<none or set by other means>");
+		pr_cont(" dma=");
+		if ((configb & 0x03) == 0x00)
+			pr_cont("<none or set by other means>\n");
+		else
+			pr_cont("%d\n", configb & 0x07);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Go back to mode 000 */
@@ -1979,6 +2262,49 @@ static int parport_ECP_supported(struct parport *pb)
 }
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_X86_32
+static int intel_bug_present_check_epp(struct parport *pb)
+{
+	const struct parport_pc_private *priv = pb->private_data;
+	int bug_present = 0;
+
+	if (priv->ecr) {
+		/* store value of ECR */
+		unsigned char ecr = inb(ECONTROL(pb));
+		unsigned char i;
+		for (i = 0x00; i < 0x80; i += 0x20) {
+			ECR_WRITE(pb, i);
+			if (clear_epp_timeout(pb)) {
+				/* Phony EPP in ECP. */
+				bug_present = 1;
+				break;
+			}
+		}
+		/* return ECR into the inital state */
+		ECR_WRITE(pb, ecr);
+	}
+
+	return bug_present;
+}
+static int intel_bug_present(struct parport *pb)
+{
+/* Check whether the device is legacy, not PCI or PCMCIA. Only legacy is known to be affected. */
+	if (pb->dev != NULL) {
+		return 0;
+	}
+
+	return intel_bug_present_check_epp(pb);
+}
+#else
+static int intel_bug_present(struct parport *pb)
+{
+	return 0;
+}
+#endif /* CONFIG_X86_32 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int parport_ECPPS2_supported(struct parport *pb)
 {
 	const struct parport_pc_private *priv = pb->private_data;
@@ -1999,8 +2325,11 @@ static int parport_ECPPS2_supported(struct parport *pb)
 
 static int parport_EPP_supported(struct parport *pb)
 {
+<<<<<<< HEAD
 	const struct parport_pc_private *priv = pb->private_data;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Theory:
 	 *	Bit 0 of STR is the EPP timeout bit, this bit is 0
@@ -2019,6 +2348,7 @@ static int parport_EPP_supported(struct parport *pb)
 		return 0;  /* No way to clear timeout */
 
 	/* Check for Intel bug. */
+<<<<<<< HEAD
 	if (priv->ecr) {
 		unsigned char i;
 		for (i = 0x00; i < 0x80; i += 0x20) {
@@ -2029,6 +2359,10 @@ static int parport_EPP_supported(struct parport *pb)
 			}
 		}
 	}
+=======
+	if (intel_bug_present(pb))
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pb->modes |= PARPORT_MODE_EPP;
 
@@ -2072,24 +2406,40 @@ static int parport_ECPEPP_supported(struct parport *pb)
 #else /* No IEEE 1284 support */
 
 /* Don't bother probing for modes we know we won't use. */
+<<<<<<< HEAD
 static int __devinit parport_PS2_supported(struct parport *pb) { return 0; }
+=======
+static int parport_PS2_supported(struct parport *pb) { return 0; }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PARPORT_PC_FIFO
 static int parport_ECP_supported(struct parport *pb)
 {
 	return 0;
 }
 #endif
+<<<<<<< HEAD
 static int __devinit parport_EPP_supported(struct parport *pb)
+=======
+static int parport_EPP_supported(struct parport *pb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit parport_ECPEPP_supported(struct parport *pb)
+=======
+static int parport_ECPEPP_supported(struct parport *pb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit parport_ECPPS2_supported(struct parport *pb)
+=======
+static int parport_ECPPS2_supported(struct parport *pb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
@@ -2267,11 +2617,21 @@ static int parport_dma_probe(struct parport *p)
 static LIST_HEAD(ports_list);
 static DEFINE_SPINLOCK(ports_lock);
 
+<<<<<<< HEAD
 struct parport *parport_pc_probe_port(unsigned long int base,
 				      unsigned long int base_hi,
 				      int irq, int dma,
 				      struct device *dev,
 				      int irqflags)
+=======
+static struct parport *__parport_pc_probe_port(unsigned long int base,
+					       unsigned long int base_hi,
+					       int irq, int dma,
+					       struct device *dev,
+					       int irqflags,
+					       unsigned int mode_mask,
+					       unsigned char ecr_writable)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct parport_pc_private *priv;
 	struct parport_operations *ops;
@@ -2281,6 +2641,10 @@ struct parport *parport_pc_probe_port(unsigned long int base,
 	struct resource	*ECR_res = NULL;
 	struct resource	*EPP_res = NULL;
 	struct platform_device *pdev = NULL;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev) {
 		/* We need a physical device to attach to, but none was
@@ -2291,8 +2655,16 @@ struct parport *parport_pc_probe_port(unsigned long int base,
 			return NULL;
 		dev = &pdev->dev;
 
+<<<<<<< HEAD
 		dev->coherent_dma_mask = DMA_BIT_MASK(24);
 		dev->dma_mask = &dev->coherent_dma_mask;
+=======
+		ret = dma_coerce_mask_and_coherent(dev, DMA_BIT_MASK(24));
+		if (ret) {
+			dev_err(dev, "Unable to set coherent dma mask: disabling DMA\n");
+			dma = PARPORT_DMA_NONE;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ops = kmalloc(sizeof(struct parport_operations), GFP_KERNEL);
@@ -2316,6 +2688,10 @@ struct parport *parport_pc_probe_port(unsigned long int base,
 	priv->ctr = 0xc;
 	priv->ctr_writable = ~0x10;
 	priv->ecr = 0;
+<<<<<<< HEAD
+=======
+	priv->ecr_writable = ecr_writable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->fifo_depth = 0;
 	priv->dma_buf = NULL;
 	priv->dma_handle = 0;
@@ -2349,9 +2725,15 @@ struct parport *parport_pc_probe_port(unsigned long int base,
 
 	p->size = (p->modes & PARPORT_MODE_EPP) ? 8 : 3;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "%s: PC-style at 0x%lx", p->name, p->base);
 	if (p->base_hi && priv->ecr)
 		printk(" (0x%lx)", p->base_hi);
+=======
+	pr_info("%s: PC-style at 0x%lx", p->name, p->base);
+	if (p->base_hi && priv->ecr)
+		pr_cont(" (0x%lx)", p->base_hi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (p->irq == PARPORT_IRQ_AUTO) {
 		p->irq = PARPORT_IRQ_NONE;
 		parport_irq_probe(p);
@@ -2362,7 +2744,11 @@ struct parport *parport_pc_probe_port(unsigned long int base,
 		p->irq = PARPORT_IRQ_NONE;
 	}
 	if (p->irq != PARPORT_IRQ_NONE) {
+<<<<<<< HEAD
 		printk(", irq %d", p->irq);
+=======
+		pr_cont(", irq %d", p->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv->ctr_writable |= 0x10;
 
 		if (p->dma == PARPORT_DMA_AUTO) {
@@ -2379,6 +2765,7 @@ struct parport *parport_pc_probe_port(unsigned long int base,
 	    p->dma != PARPORT_DMA_NOFIFO &&
 	    priv->fifo_depth > 0 && p->irq != PARPORT_IRQ_NONE) {
 		p->modes |= PARPORT_MODE_ECP | PARPORT_MODE_COMPAT;
+<<<<<<< HEAD
 		p->ops->compat_write_data = parport_pc_compat_write_block_pio;
 #ifdef CONFIG_PARPORT_1284
 		p->ops->ecp_write_data = parport_pc_ecp_write_block_pio;
@@ -2390,11 +2777,16 @@ struct parport *parport_pc_probe_port(unsigned long int base,
 			p->modes |= PARPORT_MODE_DMA;
 		} else
 			printk(", using FIFO");
+=======
+		if (p->dma != PARPORT_DMA_NONE)
+			p->modes |= PARPORT_MODE_DMA;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		/* We can't use the DMA channel after all. */
 		p->dma = PARPORT_DMA_NONE;
 #endif /* Allowed to use FIFO/DMA */
 
+<<<<<<< HEAD
 	printk(" [");
 
 #define printmode(x) \
@@ -2404,23 +2796,61 @@ struct parport *parport_pc_probe_port(unsigned long int base,
 			f++;\
 		} \
 	}
+=======
+	p->modes &= ~mode_mask;
+
+#ifdef CONFIG_PARPORT_PC_FIFO
+	if ((p->modes & PARPORT_MODE_COMPAT) != 0)
+		p->ops->compat_write_data = parport_pc_compat_write_block_pio;
+#ifdef CONFIG_PARPORT_1284
+	if ((p->modes & PARPORT_MODE_ECP) != 0)
+		p->ops->ecp_write_data = parport_pc_ecp_write_block_pio;
+#endif
+	if ((p->modes & (PARPORT_MODE_ECP | PARPORT_MODE_COMPAT)) != 0) {
+		if ((p->modes & PARPORT_MODE_DMA) != 0)
+			pr_cont(", dma %d", p->dma);
+		else
+			pr_cont(", using FIFO");
+	}
+#endif /* Allowed to use FIFO/DMA */
+
+	pr_cont(" [");
+
+#define printmode(x)							\
+do {									\
+	if (p->modes & PARPORT_MODE_##x)				\
+		pr_cont("%s%s", f++ ? "," : "", #x);			\
+} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{
 		int f = 0;
 		printmode(PCSPP);
 		printmode(TRISTATE);
+<<<<<<< HEAD
 		printmode(COMPAT)
+=======
+		printmode(COMPAT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printmode(EPP);
 		printmode(ECP);
 		printmode(DMA);
 	}
 #undef printmode
 #ifndef CONFIG_PARPORT_1284
+<<<<<<< HEAD
 	printk("(,...)");
 #endif /* CONFIG_PARPORT_1284 */
 	printk("]\n");
 	if (probedirq != PARPORT_IRQ_NONE)
 		printk(KERN_INFO "%s: irq %d detected\n", p->name, probedirq);
+=======
+	pr_cont("(,...)");
+#endif /* CONFIG_PARPORT_1284 */
+	pr_cont("]\n");
+	if (probedirq != PARPORT_IRQ_NONE)
+		pr_info("%s: irq %d detected\n", p->name, probedirq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If No ECP release the ports grabbed above. */
 	if (ECR_res && (p->modes & PARPORT_MODE_ECP) == 0) {
@@ -2435,8 +2865,12 @@ struct parport *parport_pc_probe_port(unsigned long int base,
 	if (p->irq != PARPORT_IRQ_NONE) {
 		if (request_irq(p->irq, parport_irq_handler,
 				 irqflags, p->name, p)) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "%s: irq %d in use, "
 				"resorting to polled operation\n",
+=======
+			pr_warn("%s: irq %d in use, resorting to polled operation\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				p->name, p->irq);
 			p->irq = PARPORT_IRQ_NONE;
 			p->dma = PARPORT_DMA_NONE;
@@ -2446,8 +2880,12 @@ struct parport *parport_pc_probe_port(unsigned long int base,
 #ifdef HAS_DMA
 		if (p->dma != PARPORT_DMA_NONE) {
 			if (request_dma(p->dma, p->name)) {
+<<<<<<< HEAD
 				printk(KERN_WARNING "%s: dma %d in use, "
 					"resorting to PIO operation\n",
+=======
+				pr_warn("%s: dma %d in use, resorting to PIO operation\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					p->name, p->dma);
 				p->dma = PARPORT_DMA_NONE;
 			} else {
@@ -2457,9 +2895,13 @@ struct parport *parport_pc_probe_port(unsigned long int base,
 						       &priv->dma_handle,
 						       GFP_KERNEL);
 				if (!priv->dma_buf) {
+<<<<<<< HEAD
 					printk(KERN_WARNING "%s: "
 						"cannot get buffer for DMA, "
 						"resorting to PIO operation\n",
+=======
+					pr_warn("%s: cannot get buffer for DMA, resorting to PIO operation\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						p->name);
 					free_dma(p->dma);
 					p->dma = PARPORT_DMA_NONE;
@@ -2498,7 +2940,11 @@ out5:
 		release_region(base+0x3, 5);
 	release_region(base, 3);
 out4:
+<<<<<<< HEAD
 	parport_put_port(p);
+=======
+	parport_del_port(p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out3:
 	kfree(priv);
 out2:
@@ -2508,6 +2954,19 @@ out1:
 		platform_device_unregister(pdev);
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+
+struct parport *parport_pc_probe_port(unsigned long int base,
+				      unsigned long int base_hi,
+				      int irq, int dma,
+				      struct device *dev,
+				      int irqflags)
+{
+	return __parport_pc_probe_port(base, base_hi, irq, dma,
+				       dev, irqflags, 0, 0);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(parport_pc_probe_port);
 
 void parport_pc_unregister_port(struct parport *p)
@@ -2537,7 +2996,11 @@ void parport_pc_unregister_port(struct parport *p)
 				    priv->dma_handle);
 #endif
 	kfree(p->private_data);
+<<<<<<< HEAD
 	parport_put_port(p);
+=======
+	parport_del_port(p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ops); /* hope no-one cached it */
 }
 EXPORT_SYMBOL(parport_pc_unregister_port);
@@ -2545,9 +3008,14 @@ EXPORT_SYMBOL(parport_pc_unregister_port);
 #ifdef CONFIG_PCI
 
 /* ITE support maintained by Rich Liu <richliu@poorman.org> */
+<<<<<<< HEAD
 static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
 					 int autodma,
 					 const struct parport_pc_via_data *via)
+=======
+static int sio_ite_8872_probe(struct pci_dev *pdev, int autoirq, int autodma,
+			      const struct parport_pc_via_data *via)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	short inta_addr[6] = { 0x2A0, 0x2C0, 0x220, 0x240, 0x1E0 };
 	u32 ite8872set;
@@ -2556,7 +3024,11 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
 	int irq;
 	int i;
 
+<<<<<<< HEAD
 	DPRINTK(KERN_DEBUG "sio_ite_8872_probe()\n");
+=======
+	pr_debug("sio_ite_8872_probe()\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* make sure which one chip */
 	for (i = 0; i < 5; i++) {
@@ -2573,7 +3045,11 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
 		}
 	}
 	if (i >= 5) {
+<<<<<<< HEAD
 		printk(KERN_INFO "parport_pc: cannot find ITE8872 INTA\n");
+=======
+		pr_info("parport_pc: cannot find ITE8872 INTA\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -2582,6 +3058,7 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
 
 	switch (type) {
 	case 0x2:
+<<<<<<< HEAD
 		printk(KERN_INFO "parport_pc: ITE8871 found (1P)\n");
 		ite8872set = 0x64200000;
 		break;
@@ -2605,6 +3082,30 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
 		printk(KERN_INFO "parport_pc: unknown ITE887x\n");
 		printk(KERN_INFO "parport_pc: please mail 'lspci -nvv' "
 			"output to Rich.Liu@ite.com.tw\n");
+=======
+		pr_info("parport_pc: ITE8871 found (1P)\n");
+		ite8872set = 0x64200000;
+		break;
+	case 0xa:
+		pr_info("parport_pc: ITE8875 found (1P)\n");
+		ite8872set = 0x64200000;
+		break;
+	case 0xe:
+		pr_info("parport_pc: ITE8872 found (2S1P)\n");
+		ite8872set = 0x64e00000;
+		break;
+	case 0x6:
+		pr_info("parport_pc: ITE8873 found (1S)\n");
+		release_region(inta_addr[i], 32);
+		return 0;
+	case 0x8:
+		pr_info("parport_pc: ITE8874 found (2S)\n");
+		release_region(inta_addr[i], 32);
+		return 0;
+	default:
+		pr_info("parport_pc: unknown ITE887x\n");
+		pr_info("parport_pc: please mail 'lspci -nvv' output to Rich.Liu@ite.com.tw\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		release_region(inta_addr[i], 32);
 		return 0;
 	}
@@ -2622,11 +3123,17 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
 	pci_write_config_dword(pdev, 0x9c,
 				ite8872set | (ite8872_irq * 0x11111));
 
+<<<<<<< HEAD
 	DPRINTK(KERN_DEBUG "ITE887x: The IRQ is %d.\n", ite8872_irq);
 	DPRINTK(KERN_DEBUG "ITE887x: The PARALLEL I/O port is 0x%x.\n",
 		 ite8872_lpt);
 	DPRINTK(KERN_DEBUG "ITE887x: The PARALLEL I/O porthi is 0x%x.\n",
 		 ite8872_lpthi);
+=======
+	pr_debug("ITE887x: The IRQ is %d\n", ite8872_irq);
+	pr_debug("ITE887x: The PARALLEL I/O port is 0x%x\n", ite8872_lpt);
+	pr_debug("ITE887x: The PARALLEL I/O porthi is 0x%x\n", ite8872_lpthi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Let the user (or defaults) steer us away from interrupts */
 	irq = ite8872_irq;
@@ -2639,12 +3146,20 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
 	release_region(inta_addr[i], 32);
 	if (parport_pc_probe_port(ite8872_lpt, ite8872_lpthi,
 				   irq, PARPORT_DMA_NONE, &pdev->dev, 0)) {
+<<<<<<< HEAD
 		printk(KERN_INFO
 			"parport_pc: ITE 8872 parallel port: io=0x%X",
 								ite8872_lpt);
 		if (irq != PARPORT_IRQ_NONE)
 			printk(", irq=%d", irq);
 		printk("\n");
+=======
+		pr_info("parport_pc: ITE 8872 parallel port: io=0x%X",
+			ite8872_lpt);
+		if (irq != PARPORT_IRQ_NONE)
+			pr_cont(", irq=%d", irq);
+		pr_cont("\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
@@ -2653,10 +3168,17 @@ static int __devinit sio_ite_8872_probe(struct pci_dev *pdev, int autoirq,
 
 /* VIA 8231 support by Pavel Fedin <sonic_amiga@rambler.ru>
    based on VIA 686a support code by Jeff Garzik <jgarzik@pobox.com> */
+<<<<<<< HEAD
 static int __devinitdata parport_init_mode;
 
 /* Data for two known VIA chips */
 static struct parport_pc_via_data via_686a_data __devinitdata = {
+=======
+static int parport_init_mode;
+
+/* Data for two known VIA chips */
+static struct parport_pc_via_data via_686a_data = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x51,
 	0x50,
 	0x85,
@@ -2665,7 +3187,11 @@ static struct parport_pc_via_data via_686a_data __devinitdata = {
 	0xF0,
 	0xE6
 };
+<<<<<<< HEAD
 static struct parport_pc_via_data via_8231_data __devinitdata = {
+=======
+static struct parport_pc_via_data via_8231_data = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x45,
 	0x44,
 	0x50,
@@ -2675,9 +3201,14 @@ static struct parport_pc_via_data via_8231_data __devinitdata = {
 	0xF6
 };
 
+<<<<<<< HEAD
 static int __devinit sio_via_probe(struct pci_dev *pdev, int autoirq,
 				    int autodma,
 				    const struct parport_pc_via_data *via)
+=======
+static int sio_via_probe(struct pci_dev *pdev, int autoirq, int autodma,
+			 const struct parport_pc_via_data *via)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u8 tmp, tmp2, siofunc;
 	u8 ppcontrol = 0;
@@ -2715,8 +3246,12 @@ static int __devinit sio_via_probe(struct pci_dev *pdev, int autoirq,
 		have_epp = 1;
 		break;
 	default:
+<<<<<<< HEAD
 		printk(KERN_DEBUG
 			"parport_pc: probing current configuration\n");
+=======
+		printk(KERN_DEBUG "parport_pc: probing current configuration\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		siofunc = VIA_FUNCTION_PROBE;
 		break;
 	}
@@ -2752,12 +3287,20 @@ static int __devinit sio_via_probe(struct pci_dev *pdev, int autoirq,
 	port1 = inb(VIA_CONFIG_DATA) << 2;
 
 	printk(KERN_DEBUG "parport_pc: Current parallel port base: 0x%X\n",
+<<<<<<< HEAD
 									port1);
 	if (port1 == 0x3BC && have_epp) {
 		outb(via->viacfg_parport_base, VIA_CONFIG_INDEX);
 		outb((0x378 >> 2), VIA_CONFIG_DATA);
 		printk(KERN_DEBUG
 			"parport_pc: Parallel port base changed to 0x378\n");
+=======
+	       port1);
+	if (port1 == 0x3BC && have_epp) {
+		outb(via->viacfg_parport_base, VIA_CONFIG_INDEX);
+		outb((0x378 >> 2), VIA_CONFIG_DATA);
+		printk(KERN_DEBUG "parport_pc: Parallel port base changed to 0x378\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		port1 = 0x378;
 	}
 
@@ -2769,7 +3312,11 @@ static int __devinit sio_via_probe(struct pci_dev *pdev, int autoirq,
 	pci_write_config_byte(pdev, via->via_pci_superio_config_reg, tmp);
 
 	if (siofunc == VIA_FUNCTION_PARPORT_DISABLE) {
+<<<<<<< HEAD
 		printk(KERN_INFO "parport_pc: VIA parallel port disabled in BIOS\n");
+=======
+		pr_info("parport_pc: VIA parallel port disabled in BIOS\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -2802,9 +3349,14 @@ static int __devinit sio_via_probe(struct pci_dev *pdev, int autoirq,
 	case 0x278:
 		port2 = 0x678; break;
 	default:
+<<<<<<< HEAD
 		printk(KERN_INFO
 			"parport_pc: Weird VIA parport base 0x%X, ignoring\n",
 									port1);
+=======
+		pr_info("parport_pc: Weird VIA parport base 0x%X, ignoring\n",
+			port1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -2823,6 +3375,7 @@ static int __devinit sio_via_probe(struct pci_dev *pdev, int autoirq,
 
 	/* finally, do the probe with values obtained */
 	if (parport_pc_probe_port(port1, port2, irq, dma, &pdev->dev, 0)) {
+<<<<<<< HEAD
 		printk(KERN_INFO
 			"parport_pc: VIA parallel port: io=0x%X", port1);
 		if (irq != PARPORT_IRQ_NONE)
@@ -2834,6 +3387,18 @@ static int __devinit sio_via_probe(struct pci_dev *pdev, int autoirq,
 	}
 
 	printk(KERN_WARNING "parport_pc: Strange, can't probe VIA parallel port: io=0x%X, irq=%d, dma=%d\n",
+=======
+		pr_info("parport_pc: VIA parallel port: io=0x%X", port1);
+		if (irq != PARPORT_IRQ_NONE)
+			pr_cont(", irq=%d", irq);
+		if (dma != PARPORT_DMA_NONE)
+			pr_cont(", dma=%d", dma);
+		pr_cont("\n");
+		return 1;
+	}
+
+	pr_warn("parport_pc: Strange, can't probe VIA parallel port: io=0x%X, irq=%d, dma=%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		port1, irq, dma);
 	return 0;
 }
@@ -2851,7 +3416,11 @@ static struct parport_pc_superio {
 	int (*probe) (struct pci_dev *pdev, int autoirq, int autodma,
 		      const struct parport_pc_via_data *via);
 	const struct parport_pc_via_data *via;
+<<<<<<< HEAD
 } parport_pc_superio_info[] __devinitdata = {
+=======
+} parport_pc_superio_info[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ sio_via_probe, &via_686a_data, },
 	{ sio_via_probe, &via_8231_data, },
 	{ sio_ite_8872_probe, NULL, },
@@ -2883,6 +3452,10 @@ enum parport_pc_pci_cards {
 	oxsemi_pcie_pport,
 	aks_0100,
 	mobility_pp,
+<<<<<<< HEAD
+=======
+	netmos_9900,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netmos_9705,
 	netmos_9715,
 	netmos_9755,
@@ -2890,7 +3463,15 @@ enum parport_pc_pci_cards {
 	netmos_9815,
 	netmos_9901,
 	netmos_9865,
+<<<<<<< HEAD
 	quatech_sppxp100,
+=======
+	asix_ax99100,
+	quatech_sppxp100,
+	wch_ch382l,
+	brainboxes_uc146,
+	brainboxes_px203,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -2903,7 +3484,18 @@ static struct parport_pc_pci {
 		int lo;
 		int hi;
 		/* -1 if not there, >6 for offset-method (max BAR is 6) */
+<<<<<<< HEAD
 	} addr[4];
+=======
+	} addr[2];
+
+	/* Bit field of parport modes to exclude. */
+	unsigned int mode_mask;
+
+	/* If non-zero, sets the bitmask of writable ECR bits.  In that
+	 * case additionally bit 0 will be forcibly set on writes. */
+	unsigned char ecr_writable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If set, this is called immediately after pci_enable_device.
 	 * If it returns non-zero, no probing will take place and the
@@ -2935,6 +3527,7 @@ static struct parport_pc_pci {
 	/* titan_010l */		{ 1, { { 3, -1 }, } },
 	/* avlab_1p		*/	{ 1, { { 0, 1}, } },
 	/* avlab_2p		*/	{ 2, { { 0, 1}, { 2, 3 },} },
+<<<<<<< HEAD
 	/* The Oxford Semi cards are unusual: 954 doesn't support ECP,
 	 * and 840 locks up if you write 1 to bit 2! */
 	/* oxsemi_952 */		{ 1, { { 0, 1 }, } },
@@ -2943,6 +3536,24 @@ static struct parport_pc_pci {
 	/* oxsemi_pcie_pport */		{ 1, { { 0, 1 }, } },
 	/* aks_0100 */                  { 1, { { 0, -1 }, } },
 	/* mobility_pp */		{ 1, { { 0, 1 }, } },
+=======
+	/* The Oxford Semi cards are unusual: older variants of 954 don't
+	 * support ECP, and 840 locks up if you write 1 to bit 2!  None
+	 * implement nFault or service interrupts and all require 00001
+	 * bit pattern to be used for bits 4:0 with ECR writes. */
+	/* oxsemi_952 */		{ 1, { { 0, 1 }, },
+					  PARPORT_MODE_COMPAT, ECR_MODE_MASK },
+	/* oxsemi_954 */		{ 1, { { 0, 1 }, },
+					  PARPORT_MODE_ECP |
+					  PARPORT_MODE_COMPAT, ECR_MODE_MASK },
+	/* oxsemi_840 */		{ 1, { { 0, 1 }, },
+					  PARPORT_MODE_COMPAT, ECR_MODE_MASK },
+	/* oxsemi_pcie_pport */		{ 1, { { 0, 1 }, },
+					  PARPORT_MODE_COMPAT, ECR_MODE_MASK },
+	/* aks_0100 */                  { 1, { { 0, -1 }, } },
+	/* mobility_pp */		{ 1, { { 0, 1 }, } },
+	/* netmos_9900 */		{ 1, { { 0, -1 }, } },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The netmos entries below are untested */
 	/* netmos_9705 */               { 1, { { 0, -1 }, } },
@@ -2952,7 +3563,15 @@ static struct parport_pc_pci {
 	/* netmos_9815 */		{ 2, { { 0, 1 }, { 2, 3 }, } },
 	/* netmos_9901 */               { 1, { { 0, -1 }, } },
 	/* netmos_9865 */               { 1, { { 0, -1 }, } },
+<<<<<<< HEAD
 	/* quatech_sppxp100 */		{ 1, { { 0, 1 }, } },
+=======
+	/* asix_ax99100 */		{ 1, { { 0, 1 }, } },
+	/* quatech_sppxp100 */		{ 1, { { 0, 1 }, } },
+	/* wch_ch382l */		{ 1, { { 2, -1 }, } },
+	/* brainboxes_uc146 */	{ 1, { { 3, -1 }, } },
+	/* brainboxes_px203 */	{ 1, { { 0, -1 }, } },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct pci_device_id parport_pc_pci_tbl[] = {
@@ -3023,6 +3642,11 @@ static const struct pci_device_id parport_pc_pci_tbl[] = {
 	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, aks_0100 },
 	{ 0x14f2, 0x0121, PCI_ANY_ID, PCI_ANY_ID, 0, 0, mobility_pp },
 	/* NetMos communication controllers */
+<<<<<<< HEAD
+=======
+	{ PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9900,
+	  0xA000, 0x2000, 0, 0, netmos_9900 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9705,
 	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, netmos_9705 },
 	{ PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9715,
@@ -3039,9 +3663,37 @@ static const struct pci_device_id parport_pc_pci_tbl[] = {
 	  0xA000, 0x1000, 0, 0, netmos_9865 },
 	{ PCI_VENDOR_ID_NETMOS, PCI_DEVICE_ID_NETMOS_9865,
 	  0xA000, 0x2000, 0, 0, netmos_9865 },
+<<<<<<< HEAD
 	/* Quatech SPPXP-100 Parallel port PCI ExpressCard */
 	{ PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_SPPXP_100,
 	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, quatech_sppxp100 },
+=======
+	/* ASIX AX99100 PCIe to Multi I/O Controller */
+	{ PCI_VENDOR_ID_ASIX, PCI_DEVICE_ID_ASIX_AX99100,
+	  0xA000, 0x2000, 0, 0, asix_ax99100 },
+	/* Quatech SPPXP-100 Parallel port PCI ExpressCard */
+	{ PCI_VENDOR_ID_QUATECH, PCI_DEVICE_ID_QUATECH_SPPXP_100,
+	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, quatech_sppxp100 },
+	/* WCH CH382L PCI-E single parallel port card */
+	{ 0x1c00, 0x3050, 0x1c00, 0x3050, 0, 0, wch_ch382l },
+	/* Brainboxes IX-500/550 */
+	{ PCI_VENDOR_ID_INTASHIELD, 0x402a,
+	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, oxsemi_pcie_pport },
+	/* Brainboxes UC-146/UC-157 */
+	{ PCI_VENDOR_ID_INTASHIELD, 0x0be1,
+	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, brainboxes_uc146 },
+	{ PCI_VENDOR_ID_INTASHIELD, 0x0be2,
+	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, brainboxes_uc146 },
+	/* Brainboxes PX-146/PX-257 */
+	{ PCI_VENDOR_ID_INTASHIELD, 0x401c,
+	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, oxsemi_pcie_pport },
+	/* Brainboxes PX-203 */
+	{ PCI_VENDOR_ID_INTASHIELD, 0x4007,
+	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, brainboxes_px203 },
+	/* Brainboxes PX-475 */
+	{ PCI_VENDOR_ID_INTASHIELD, 0x401f,
+	  PCI_ANY_ID, PCI_ANY_ID, 0, 0, oxsemi_pcie_pport },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, } /* terminate list */
 };
 MODULE_DEVICE_TABLE(pci, parport_pc_pci_tbl);
@@ -3094,6 +3746,7 @@ static int parport_pc_pci_probe(struct pci_dev *dev,
 		/* TODO: test if sharing interrupts works */
 		irq = dev->irq;
 		if (irq == IRQ_NONE) {
+<<<<<<< HEAD
 			printk(KERN_DEBUG
 	"PCI parallel port detected: %04x:%04x, I/O at %#lx(%#lx)\n",
 				parport_pc_pci_tbl[i + last_sio].vendor,
@@ -3111,6 +3764,21 @@ static int parport_pc_pci_probe(struct pci_dev *dev,
 			parport_pc_probe_port(io_lo, io_hi, irq,
 					       PARPORT_DMA_NONE, &dev->dev,
 					       IRQF_SHARED);
+=======
+			printk(KERN_DEBUG "PCI parallel port detected: %04x:%04x, I/O at %#lx(%#lx)\n",
+			       id->vendor, id->device, io_lo, io_hi);
+			irq = PARPORT_IRQ_NONE;
+		} else {
+			printk(KERN_DEBUG "PCI parallel port detected: %04x:%04x, I/O at %#lx(%#lx), IRQ %d\n",
+			       id->vendor, id->device, io_lo, io_hi, irq);
+		}
+		data->ports[count] =
+			__parport_pc_probe_port(io_lo, io_hi, irq,
+						PARPORT_DMA_NONE, &dev->dev,
+						IRQF_SHARED,
+						cards[i].mode_mask,
+						cards[i].ecr_writable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (data->ports[count])
 			count++;
 	}
@@ -3130,13 +3798,20 @@ static int parport_pc_pci_probe(struct pci_dev *dev,
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static void __devexit parport_pc_pci_remove(struct pci_dev *dev)
+=======
+static void parport_pc_pci_remove(struct pci_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_parport_data *data = pci_get_drvdata(dev);
 	int i;
 
+<<<<<<< HEAD
 	pci_set_drvdata(dev, NULL);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data) {
 		for (i = data->num - 1; i >= 0; i--)
 			parport_pc_unregister_port(data->ports[i]);
@@ -3149,7 +3824,11 @@ static struct pci_driver parport_pc_pci_driver = {
 	.name		= "parport_pc",
 	.id_table	= parport_pc_pci_tbl,
 	.probe		= parport_pc_pci_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(parport_pc_pci_remove),
+=======
+	.remove		= parport_pc_pci_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init parport_pc_init_superio(int autoirq, int autodma)
@@ -3253,7 +3932,11 @@ static struct pnp_driver parport_pc_pnp_driver = {
 static struct pnp_driver parport_pc_pnp_driver;
 #endif /* CONFIG_PNP */
 
+<<<<<<< HEAD
 static int __devinit parport_pc_platform_probe(struct platform_device *pdev)
+=======
+static int parport_pc_platform_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Always succeed, the actual probing is done in
 	 * parport_pc_probe_port(). */
@@ -3262,14 +3945,21 @@ static int __devinit parport_pc_platform_probe(struct platform_device *pdev)
 
 static struct platform_driver parport_pc_platform_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name	= "parport_pc",
 	},
 	.probe		= parport_pc_platform_probe,
 };
 
 /* This is called by parport_pc_find_nonpci_ports (in asm/parport.h) */
+<<<<<<< HEAD
 static int __devinit __attribute__((unused))
+=======
+static int __attribute__((unused))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 parport_pc_find_isa_ports(int autoirq, int autodma)
 {
 	int count = 0;
@@ -3358,7 +4048,11 @@ static int __init parport_parse_param(const char *s, int *val,
 		if (ep != s)
 			*val = r;
 		else {
+<<<<<<< HEAD
 			printk(KERN_ERR "parport: bad specifier `%s'\n", s);
+=======
+			pr_err("parport: bad specifier `%s'\n", s);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -1;
 		}
 	}
@@ -3380,8 +4074,13 @@ static int __init parport_parse_dma(const char *dmastr, int *val)
 #ifdef CONFIG_PCI
 static int __init parport_init_mode_setup(char *str)
 {
+<<<<<<< HEAD
 	printk(KERN_DEBUG
 	     "parport_pc.c: Specified parameter parport_init_mode=%s\n", str);
+=======
+	printk(KERN_DEBUG "parport_pc.c: Specified parameter parport_init_mode=%s\n",
+	       str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!strcmp(str, "spp"))
 		parport_init_mode = 1;
@@ -3402,6 +4101,7 @@ static char *irq[PARPORT_PC_MAX_PORTS];
 static char *dma[PARPORT_PC_MAX_PORTS];
 
 MODULE_PARM_DESC(io, "Base I/O address (SPP regs)");
+<<<<<<< HEAD
 module_param_array(io, int, NULL, 0);
 MODULE_PARM_DESC(io_hi, "Base I/O address (ECR)");
 module_param_array(io_hi, int, NULL, 0);
@@ -3409,6 +4109,15 @@ MODULE_PARM_DESC(irq, "IRQ line");
 module_param_array(irq, charp, NULL, 0);
 MODULE_PARM_DESC(dma, "DMA channel");
 module_param_array(dma, charp, NULL, 0);
+=======
+module_param_hw_array(io, int, ioport, NULL, 0);
+MODULE_PARM_DESC(io_hi, "Base I/O address (ECR)");
+module_param_hw_array(io_hi, int, ioport, NULL, 0);
+MODULE_PARM_DESC(irq, "IRQ line");
+module_param_hw_array(irq, charp, irq, NULL, 0);
+MODULE_PARM_DESC(dma, "DMA channel");
+module_param_hw_array(dma, charp, dma, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_PARPORT_PC_SUPERIO) || \
        (defined(CONFIG_PARPORT_1284) && defined(CONFIG_PARPORT_PC_FIFO))
 MODULE_PARM_DESC(verbose_probing, "Log chit-chat during initialisation");
@@ -3448,10 +4157,14 @@ static int __init parse_parport_params(void)
 				irqval[0] = val;
 				break;
 			default:
+<<<<<<< HEAD
 				printk(KERN_WARNING
 					"parport_pc: irq specified "
 					"without base address.  Use 'io=' "
 					"to specify one\n");
+=======
+				pr_warn("parport_pc: irq specified without base address.  Use 'io=' to specify one\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 		if (dma[0] && !parport_parse_dma(dma[0], &val))
@@ -3461,10 +4174,14 @@ static int __init parse_parport_params(void)
 				dmaval[0] = val;
 				break;
 			default:
+<<<<<<< HEAD
 				printk(KERN_WARNING
 					"parport_pc: dma specified "
 					"without base address.  Use 'io=' "
 					"to specify one\n");
+=======
+				pr_warn("parport_pc: dma specified without base address.  Use 'io=' to specify one\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 	}
 	return 0;
@@ -3503,12 +4220,20 @@ static int __init parport_setup(char *str)
 
 	val = simple_strtoul(str, &endptr, 0);
 	if (endptr == str) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "parport=%s not understood\n", str);
+=======
+		pr_warn("parport=%s not understood\n", str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
 	if (parport_setup_ptr == PARPORT_PC_MAX_PORTS) {
+<<<<<<< HEAD
 		printk(KERN_ERR "parport=%s ignored, too many ports\n", str);
+=======
+		pr_err("parport=%s ignored, too many ports\n", str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 
@@ -3591,6 +4316,7 @@ static void __exit parport_pc_exit(void)
 	while (!list_empty(&ports_list)) {
 		struct parport_pc_private *priv;
 		struct parport *port;
+<<<<<<< HEAD
 		priv = list_entry(ports_list.next,
 				  struct parport_pc_private, list);
 		port = priv->port;
@@ -3598,6 +4324,16 @@ static void __exit parport_pc_exit(void)
 			platform_device_unregister(
 				to_platform_device(port->dev));
 		parport_pc_unregister_port(port);
+=======
+		struct device *dev;
+		priv = list_entry(ports_list.next,
+				  struct parport_pc_private, list);
+		port = priv->port;
+		dev = port->dev;
+		parport_pc_unregister_port(port);
+		if (dev && dev->bus == &platform_bus_type)
+			platform_device_unregister(to_platform_device(dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 

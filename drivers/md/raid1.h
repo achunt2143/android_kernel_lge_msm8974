@@ -1,9 +1,61 @@
+<<<<<<< HEAD
 #ifndef _RAID1_H
 #define _RAID1_H
 
 struct mirror_info {
 	struct md_rdev	*rdev;
 	sector_t	head_position;
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _RAID1_H
+#define _RAID1_H
+
+/*
+ * each barrier unit size is 64MB fow now
+ * note: it must be larger than RESYNC_DEPTH
+ */
+#define BARRIER_UNIT_SECTOR_BITS	17
+#define BARRIER_UNIT_SECTOR_SIZE	(1<<17)
+/*
+ * In struct r1conf, the following members are related to I/O barrier
+ * buckets,
+ *	atomic_t	*nr_pending;
+ *	atomic_t	*nr_waiting;
+ *	atomic_t	*nr_queued;
+ *	atomic_t	*barrier;
+ * Each of them points to array of atomic_t variables, each array is
+ * designed to have BARRIER_BUCKETS_NR elements and occupy a single
+ * memory page. The data width of atomic_t variables is 4 bytes, equal
+ * to 1<<(ilog2(sizeof(atomic_t))), BARRIER_BUCKETS_NR_BITS is defined
+ * as (PAGE_SHIFT - ilog2(sizeof(int))) to make sure an array of
+ * atomic_t variables with BARRIER_BUCKETS_NR elements just exactly
+ * occupies a single memory page.
+ */
+#define BARRIER_BUCKETS_NR_BITS		(PAGE_SHIFT - ilog2(sizeof(atomic_t)))
+#define BARRIER_BUCKETS_NR		(1<<BARRIER_BUCKETS_NR_BITS)
+
+/* Note: raid1_info.rdev can be set to NULL asynchronously by raid1_remove_disk.
+ * There are three safe ways to access raid1_info.rdev.
+ * 1/ when holding mddev->reconfig_mutex
+ * 2/ when resync/recovery is known to be happening - i.e. in code that is
+ *    called as part of performing resync/recovery.
+ * 3/ while holding rcu_read_lock(), use rcu_dereference to get the pointer
+ *    and if it is non-NULL, increment rdev->nr_pending before dropping the
+ *    RCU lock.
+ * When .rdev is set to NULL, the nr_pending count checked again and if it has
+ * been incremented, the pointer is put back in .rdev.
+ */
+
+struct raid1_info {
+	struct md_rdev	*rdev;
+	sector_t	head_position;
+
+	/* When choose the best device for a read (read_balance())
+	 * we try to keep sequential reads one the same device
+	 */
+	sector_t	next_seq_sect;
+	sector_t	seq_start;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -24,6 +76,7 @@ struct pool_info {
 
 struct r1conf {
 	struct mddev		*mddev;
+<<<<<<< HEAD
 	struct mirror_info	*mirrors;	/* twice 'raid_disks' to
 						 * allow for replacements.
 						 */
@@ -40,6 +93,13 @@ struct r1conf {
 	 * where that is.
 	 */
 	sector_t		next_resync;
+=======
+	struct raid1_info	*mirrors;	/* twice 'raid_disks' to
+						 * allow for replacements.
+						 */
+	int			raid_disks;
+	int			nonrot_disks;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t		device_lock;
 
@@ -56,7 +116,10 @@ struct r1conf {
 
 	/* queue pending writes to be submitted on unplug */
 	struct bio_list		pending_bio_list;
+<<<<<<< HEAD
 	int			pending_count;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* for use when syncing mirrors:
 	 * We don't allow both normal IO and resync/recovery IO at
@@ -66,10 +129,19 @@ struct r1conf {
 	 */
 	wait_queue_head_t	wait_barrier;
 	spinlock_t		resync_lock;
+<<<<<<< HEAD
 	int			nr_pending;
 	int			nr_waiting;
 	int			nr_queued;
 	int			barrier;
+=======
+	atomic_t		nr_sync_pending;
+	atomic_t		*nr_pending;
+	atomic_t		*nr_waiting;
+	atomic_t		*nr_queued;
+	atomic_t		*barrier;
+	int			array_frozen;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set to 1 if a full sync is needed, (fresh device added).
 	 * Cleared when a sync completes.
@@ -81,24 +153,48 @@ struct r1conf {
 	 */
 	int			recovery_disabled;
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* poolinfo contains information about the content of the
 	 * mempools - it changes when the array grows or shrinks
 	 */
 	struct pool_info	*poolinfo;
+<<<<<<< HEAD
 	mempool_t		*r1bio_pool;
 	mempool_t		*r1buf_pool;
+=======
+	mempool_t		r1bio_pool;
+	mempool_t		r1buf_pool;
+
+	struct bio_set		bio_split;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* temporary buffer to synchronous IO when attempting to repair
 	 * a read error.
 	 */
 	struct page		*tmppage;
 
+<<<<<<< HEAD
 
 	/* When taking over an array from a different personality, we store
 	 * the new thread here until we fully activate the array.
 	 */
 	struct md_thread	*thread;
+=======
+	/* When taking over an array from a different personality, we store
+	 * the new thread here until we fully activate the array.
+	 */
+	struct md_thread __rcu	*thread;
+
+	/* Keep track of cluster resync window to send to other
+	 * nodes.
+	 */
+	sector_t		cluster_sync_low;
+	sector_t		cluster_sync_high;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -129,13 +225,24 @@ struct r1bio {
 	int			read_disk;
 
 	struct list_head	retry_list;
+<<<<<<< HEAD
 	/* Next two are only valid when R1BIO_BehindIO is set */
 	struct bio_vec		*behind_bvecs;
 	int			behind_page_count;
+=======
+
+	/*
+	 * When R1BIO_BehindIO is set, we store pages for write behind
+	 * in behind_master_bio.
+	 */
+	struct bio		*behind_master_bio;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * if the IO is in WRITE direction, then multiple bios are used.
 	 * We choose the number when they are allocated.
 	 */
+<<<<<<< HEAD
 	struct bio		*bios[0];
 	/* DO NOT PUT ANY NEW FIELDS HERE - bios array is contiguously alloced*/
 };
@@ -163,6 +270,22 @@ struct r1bio {
  * raid1d knows what to do with them.
  */
 #define R1BIO_ReadError 4
+=======
+	struct bio		*bios[];
+	/* DO NOT PUT ANY NEW FIELDS HERE - bios array is contiguously alloced*/
+};
+
+/* bits for r1bio.state */
+enum r1bio_state {
+	R1BIO_Uptodate,
+	R1BIO_IsSync,
+	R1BIO_Degraded,
+	R1BIO_BehindIO,
+/* Set ReadError on bios that experience a readerror so that
+ * raid1d knows what to do with them.
+ */
+	R1BIO_ReadError,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* For write-behind requests, we call bi_end_io when
  * the last non-write-behind device completes, providing
  * any write was successful.  Otherwise we call when
@@ -170,6 +293,7 @@ struct r1bio {
  * with failure when last write completes (and all failed).
  * Record that bi_end_io was called with this flag...
  */
+<<<<<<< HEAD
 #define	R1BIO_Returned 6
 /* If a write for this request means we can clear some
  * known-bad-block records, we set this flag
@@ -179,4 +303,20 @@ struct r1bio {
 
 extern int md_raid1_congested(struct mddev *mddev, int bits);
 
+=======
+	R1BIO_Returned,
+/* If a write for this request means we can clear some
+ * known-bad-block records, we set this flag
+ */
+	R1BIO_MadeGood,
+	R1BIO_WriteError,
+	R1BIO_FailFast,
+};
+
+static inline int sector_to_idx(sector_t sector)
+{
+	return hash_long(sector >> BARRIER_UNIT_SECTOR_BITS,
+			 BARRIER_BUCKETS_NR_BITS);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

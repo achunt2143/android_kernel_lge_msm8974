@@ -13,6 +13,10 @@
  */
 
 #include <linux/errno.h>
+<<<<<<< HEAD
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/smp.h>
 #include <linux/syscalls.h>
@@ -24,13 +28,17 @@
 #include <linux/sys.h>
 #include <linux/ipc.h>
 #include <linux/file.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/fs.h>
 #include <linux/semaphore.h>
 #include <linux/uaccess.h>
 #include <linux/unistd.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 #include <asm/syscalls.h>
 
@@ -69,10 +77,18 @@ out:
 asmlinkage long sys_mmap(unsigned long addr, unsigned long len,
 			unsigned long prot, unsigned long flags,
 			unsigned long fd, off_t pgoff)
+=======
+#include <asm/syscalls.h>
+
+SYSCALL_DEFINE6(mmap, unsigned long, addr, unsigned long, len,
+		unsigned long, prot, unsigned long, flags, unsigned long, fd,
+		off_t, pgoff)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (pgoff & ~PAGE_MASK)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	return sys_mmap_pgoff(addr, len, prot, flags, fd, pgoff >> PAGE_SHIFT);
 }
 
@@ -95,4 +111,18 @@ int kernel_execve(const char *filename,
 			: "r4", "r8", "r9",
 			"r10", "r11", "r14", "cc", "memory");
 	return __ret;
+=======
+	return ksys_mmap_pgoff(addr, len, prot, flags, fd, pgoff >> PAGE_SHIFT);
+}
+
+SYSCALL_DEFINE6(mmap2, unsigned long, addr, unsigned long, len,
+		unsigned long, prot, unsigned long, flags, unsigned long, fd,
+		unsigned long, pgoff)
+{
+	if (pgoff & (~PAGE_MASK >> 12))
+		return -EINVAL;
+
+	return ksys_mmap_pgoff(addr, len, prot, flags, fd,
+			       pgoff >> (PAGE_SHIFT - 12));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * AMD Geode definitions
  * Copyright (C) 2006, Advanced Micro Devices, Inc.
@@ -5,6 +6,12 @@
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public License
  * as published by the Free Software Foundation.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * AMD Geode definitions
+ * Copyright (C) 2006, Advanced Micro Devices, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_X86_GEODE_H

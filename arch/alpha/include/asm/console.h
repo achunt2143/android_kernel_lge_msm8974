@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __AXP_CONSOLE_H
 #define __AXP_CONSOLE_H
 
@@ -47,6 +48,14 @@
 #define ENV_TTY_DEV		0x0F
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __AXP_CONSOLE_H
+#define __AXP_CONSOLE_H
+
+#include <uapi/asm/console.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASSEMBLY__
 extern long callback_puts(long unit, const char *s, long length);
 extern long callback_getc(long unit);
@@ -70,6 +79,9 @@ struct hwrpb_struct;
 extern int callback_init_done;
 extern void * callback_init(void *);
 #endif /* __ASSEMBLY__ */
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __AXP_CONSOLE_H */

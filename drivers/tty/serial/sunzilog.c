@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sunzilog.c: Zilog serial driver for Sparc systems.
  *
  * Driver for Zilog serial chips found on Sun workstations and
@@ -32,6 +36,7 @@
 #include <linux/serio.h>
 #endif
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 
 #include <asm/io.h>
@@ -43,6 +48,15 @@
 #define SUPPORT_SYSRQ
 #endif
 
+=======
+#include <linux/of.h>
+#include <linux/platform_device.h>
+
+#include <linux/io.h>
+#include <asm/irq.h>
+#include <asm/setup.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial_core.h>
 #include <linux/sunserialcore.h>
 
@@ -103,7 +117,11 @@ struct uart_sunzilog_port {
 #endif
 };
 
+<<<<<<< HEAD
 static void sunzilog_putchar(struct uart_port *port, int ch);
+=======
+static void sunzilog_putchar(struct uart_port *port, unsigned char ch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ZILOG_CHANNEL_FROM_PORT(PORT)	((struct zilog_channel __iomem *)((PORT)->membase))
 #define UART_ZILOG(PORT)		((struct uart_sunzilog_port *)(PORT))
@@ -309,7 +327,11 @@ static void sunzilog_kbdms_receive_chars(struct uart_sunzilog_port *up,
 		switch (ret) {
 		case 2:
 			sunzilog_change_mouse_baud(up);
+<<<<<<< HEAD
 			/* fallthru */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 1:
 			break;
 
@@ -319,6 +341,7 @@ static void sunzilog_kbdms_receive_chars(struct uart_sunzilog_port *up,
 				serio_interrupt(&up->serio, ch, 0);
 #endif
 			break;
+<<<<<<< HEAD
 		};
 	}
 }
@@ -334,6 +357,21 @@ sunzilog_receive_chars(struct uart_sunzilog_port *up,
 	if (up->port.state != NULL &&		/* Unopened serial console */
 	    up->port.state->port.tty != NULL)	/* Keyboard || mouse */
 		tty = up->port.state->port.tty;
+=======
+		}
+	}
+}
+
+static struct tty_port *
+sunzilog_receive_chars(struct uart_sunzilog_port *up,
+		       struct zilog_channel __iomem *channel)
+{
+	struct tty_port *port = NULL;
+	unsigned char ch, r1, flag;
+
+	if (up->port.state != NULL)		/* Unopened serial console */
+		port = &up->port.state->port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (;;) {
 
@@ -366,11 +404,14 @@ sunzilog_receive_chars(struct uart_sunzilog_port *up,
 			continue;
 		}
 
+<<<<<<< HEAD
 		if (tty == NULL) {
 			uart_handle_sysrq_char(&up->port, ch);
 			continue;
 		}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* A real serial line, record the character and status.  */
 		flag = TTY_NORMAL;
 		up->port.icount.rx++;
@@ -395,11 +436,16 @@ sunzilog_receive_chars(struct uart_sunzilog_port *up,
 			else if (r1 & CRC_ERR)
 				flag = TTY_FRAME;
 		}
+<<<<<<< HEAD
 		if (uart_handle_sysrq_char(&up->port, ch))
+=======
+		if (uart_handle_sysrq_char(&up->port, ch) || !port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		if (up->port.ignore_status_mask == 0xff ||
 		    (r1 & up->port.ignore_status_mask) == 0) {
+<<<<<<< HEAD
 		    	tty_insert_flip_char(tty, ch, flag);
 		}
 		if (r1 & Rx_OVR)
@@ -407,6 +453,15 @@ sunzilog_receive_chars(struct uart_sunzilog_port *up,
 	}
 
 	return tty;
+=======
+		    	tty_insert_flip_char(port, ch, flag);
+		}
+		if (r1 & Rx_OVR)
+			tty_insert_flip_char(port, 0, TTY_OVERRUN);
+	}
+
+	return port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void sunzilog_status_handle(struct uart_sunzilog_port *up,
@@ -518,8 +573,12 @@ static void sunzilog_transmit_chars(struct uart_sunzilog_port *up,
 	ZSDELAY();
 	ZS_WSYNC(channel);
 
+<<<<<<< HEAD
 	xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
 	up->port.icount.tx++;
+=======
+	uart_xmit_advance(&up->port, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 		uart_write_wakeup(&up->port);
@@ -539,6 +598,7 @@ static irqreturn_t sunzilog_interrupt(int irq, void *dev_id)
 	while (up) {
 		struct zilog_channel __iomem *channel
 			= ZILOG_CHANNEL_FROM_PORT(&up->port);
+<<<<<<< HEAD
 		struct tty_struct *tty;
 		unsigned char r3;
 
@@ -547,45 +607,82 @@ static irqreturn_t sunzilog_interrupt(int irq, void *dev_id)
 
 		/* Channel A */
 		tty = NULL;
+=======
+		struct tty_port *port;
+		unsigned char r3;
+
+		uart_port_lock(&up->port);
+		r3 = read_zsreg(channel, R3);
+
+		/* Channel A */
+		port = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r3 & (CHAEXT | CHATxIP | CHARxIP)) {
 			writeb(RES_H_IUS, &channel->control);
 			ZSDELAY();
 			ZS_WSYNC(channel);
 
 			if (r3 & CHARxIP)
+<<<<<<< HEAD
 				tty = sunzilog_receive_chars(up, channel);
+=======
+				port = sunzilog_receive_chars(up, channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r3 & CHAEXT)
 				sunzilog_status_handle(up, channel);
 			if (r3 & CHATxIP)
 				sunzilog_transmit_chars(up, channel);
 		}
+<<<<<<< HEAD
 		spin_unlock(&up->port.lock);
 
 		if (tty)
 			tty_flip_buffer_push(tty);
+=======
+		uart_port_unlock(&up->port);
+
+		if (port)
+			tty_flip_buffer_push(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Channel B */
 		up = up->next;
 		channel = ZILOG_CHANNEL_FROM_PORT(&up->port);
 
+<<<<<<< HEAD
 		spin_lock(&up->port.lock);
 		tty = NULL;
+=======
+		uart_port_lock(&up->port);
+		port = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (r3 & (CHBEXT | CHBTxIP | CHBRxIP)) {
 			writeb(RES_H_IUS, &channel->control);
 			ZSDELAY();
 			ZS_WSYNC(channel);
 
 			if (r3 & CHBRxIP)
+<<<<<<< HEAD
 				tty = sunzilog_receive_chars(up, channel);
+=======
+				port = sunzilog_receive_chars(up, channel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r3 & CHBEXT)
 				sunzilog_status_handle(up, channel);
 			if (r3 & CHBTxIP)
 				sunzilog_transmit_chars(up, channel);
 		}
+<<<<<<< HEAD
 		spin_unlock(&up->port.lock);
 
 		if (tty)
 			tty_flip_buffer_push(tty);
+=======
+		uart_port_unlock(&up->port);
+
+		if (port)
+			tty_flip_buffer_push(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		up = up->next;
 	}
@@ -615,11 +712,19 @@ static unsigned int sunzilog_tx_empty(struct uart_port *port)
 	unsigned char status;
 	unsigned int ret;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
 
 	status = sunzilog_read_channel_status(port);
 
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	uart_port_lock_irqsave(port, &flags);
+
+	status = sunzilog_read_channel_status(port);
+
+	uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (status & Tx_BUF_EMP)
 		ret = TIOCSER_TEMT;
@@ -651,7 +756,12 @@ static unsigned int sunzilog_get_mctrl(struct uart_port *port)
 /* The port lock is held and interrupts are disabled.  */
 static void sunzilog_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
+<<<<<<< HEAD
 	struct uart_sunzilog_port *up = (struct uart_sunzilog_port *) port;
+=======
+	struct uart_sunzilog_port *up =
+		container_of(port, struct uart_sunzilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zilog_channel __iomem *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	unsigned char set_bits, clear_bits;
 
@@ -675,7 +785,12 @@ static void sunzilog_set_mctrl(struct uart_port *port, unsigned int mctrl)
 /* The port lock is held and interrupts are disabled.  */
 static void sunzilog_stop_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunzilog_port *up = (struct uart_sunzilog_port *) port;
+=======
+	struct uart_sunzilog_port *up =
+		container_of(port, struct uart_sunzilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	up->flags |= SUNZILOG_FLAG_TX_STOPPED;
 }
@@ -683,7 +798,12 @@ static void sunzilog_stop_tx(struct uart_port *port)
 /* The port lock is held and interrupts are disabled.  */
 static void sunzilog_start_tx(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunzilog_port *up = (struct uart_sunzilog_port *) port;
+=======
+	struct uart_sunzilog_port *up =
+		container_of(port, struct uart_sunzilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zilog_channel __iomem *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	unsigned char status;
 
@@ -710,12 +830,21 @@ static void sunzilog_start_tx(struct uart_port *port)
 	} else {
 		struct circ_buf *xmit = &port->state->xmit;
 
+<<<<<<< HEAD
+=======
+		if (uart_circ_empty(xmit))
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writeb(xmit->buf[xmit->tail], &channel->data);
 		ZSDELAY();
 		ZS_WSYNC(channel);
 
+<<<<<<< HEAD
 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
 		port->icount.tx++;
+=======
+		uart_xmit_advance(port, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (uart_circ_chars_pending(xmit) < WAKEUP_CHARS)
 			uart_write_wakeup(&up->port);
@@ -741,7 +870,12 @@ static void sunzilog_stop_rx(struct uart_port *port)
 /* The port lock is held.  */
 static void sunzilog_enable_ms(struct uart_port *port)
 {
+<<<<<<< HEAD
 	struct uart_sunzilog_port *up = (struct uart_sunzilog_port *) port;
+=======
+	struct uart_sunzilog_port *up =
+		container_of(port, struct uart_sunzilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zilog_channel __iomem *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	unsigned char new_reg;
 
@@ -757,7 +891,12 @@ static void sunzilog_enable_ms(struct uart_port *port)
 /* The port lock is not held.  */
 static void sunzilog_break_ctl(struct uart_port *port, int break_state)
 {
+<<<<<<< HEAD
 	struct uart_sunzilog_port *up = (struct uart_sunzilog_port *) port;
+=======
+	struct uart_sunzilog_port *up =
+		container_of(port, struct uart_sunzilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zilog_channel __iomem *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	unsigned char set_bits, clear_bits, new_reg;
 	unsigned long flags;
@@ -769,7 +908,11 @@ static void sunzilog_break_ctl(struct uart_port *port, int break_state)
 	else
 		clear_bits |= SND_BRK;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
+=======
+	uart_port_lock_irqsave(port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	new_reg = (up->curregs[R5] | set_bits) & ~clear_bits;
 	if (new_reg != up->curregs[R5]) {
@@ -779,7 +922,11 @@ static void sunzilog_break_ctl(struct uart_port *port, int break_state)
 		write_zsreg(channel, R5, up->curregs[R5]);
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __sunzilog_startup(struct uart_sunzilog_port *up)
@@ -805,9 +952,15 @@ static int sunzilog_startup(struct uart_port *port)
 	if (ZS_IS_CONS(up))
 		return 0;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
 	__sunzilog_startup(up);
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	uart_port_lock_irqsave(port, &flags);
+	__sunzilog_startup(up);
+	uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -845,7 +998,11 @@ static void sunzilog_shutdown(struct uart_port *port)
 	if (ZS_IS_CONS(up))
 		return;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
+=======
+	uart_port_lock_irqsave(port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	channel = ZILOG_CHANNEL_FROM_PORT(port);
 
@@ -858,7 +1015,11 @@ static void sunzilog_shutdown(struct uart_port *port)
 	up->curregs[R5] &= ~SND_BRK;
 	sunzilog_maybe_update_regs(up, channel);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Shared by TTY driver and serial console setup.  The port lock is held
@@ -904,7 +1065,11 @@ sunzilog_convert_to_zs(struct uart_sunzilog_port *up, unsigned int cflag,
 		up->curregs[R5] |= Tx8;
 		up->parity_mask = 0xff;
 		break;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	up->curregs[R4] &= ~0x0c;
 	if (cflag & CSTOPB)
 		up->curregs[R4] |= SB2;
@@ -922,7 +1087,11 @@ sunzilog_convert_to_zs(struct uart_sunzilog_port *up, unsigned int cflag,
 	up->port.read_status_mask = Rx_OVR;
 	if (iflag & INPCK)
 		up->port.read_status_mask |= CRC_ERR | PAR_ERR;
+<<<<<<< HEAD
 	if (iflag & (BRKINT | PARMRK))
+=======
+	if (iflag & (IGNBRK | BRKINT | PARMRK))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		up->port.read_status_mask |= BRK_ABRT;
 
 	up->port.ignore_status_mask = 0;
@@ -941,15 +1110,26 @@ sunzilog_convert_to_zs(struct uart_sunzilog_port *up, unsigned int cflag,
 /* The port lock is not held.  */
 static void
 sunzilog_set_termios(struct uart_port *port, struct ktermios *termios,
+<<<<<<< HEAD
 		     struct ktermios *old)
 {
 	struct uart_sunzilog_port *up = (struct uart_sunzilog_port *) port;
+=======
+		     const struct ktermios *old)
+{
+	struct uart_sunzilog_port *up =
+		container_of(port, struct uart_sunzilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int baud, brg;
 
 	baud = uart_get_baud_rate(port, termios, old, 1200, 76800);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&up->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&up->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	brg = BPS_TO_BRG(baud, ZS_CLOCK / ZS_CLOCK_DIVISOR);
 
@@ -966,7 +1146,11 @@ sunzilog_set_termios(struct uart_port *port, struct ktermios *termios,
 
 	uart_update_timeout(port, termios->c_cflag, baud);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&up->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&up->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *sunzilog_type(struct uart_port *port)
@@ -1003,7 +1187,12 @@ static int sunzilog_verify_port(struct uart_port *port, struct serial_struct *se
 static int sunzilog_get_poll_char(struct uart_port *port)
 {
 	unsigned char ch, r1;
+<<<<<<< HEAD
 	struct uart_sunzilog_port *up = (struct uart_sunzilog_port *) port;
+=======
+	struct uart_sunzilog_port *up =
+		container_of(port, struct uart_sunzilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zilog_channel __iomem *channel
 		= ZILOG_CHANNEL_FROM_PORT(&up->port);
 
@@ -1037,13 +1226,22 @@ static int sunzilog_get_poll_char(struct uart_port *port)
 static void sunzilog_put_poll_char(struct uart_port *port,
 			unsigned char ch)
 {
+<<<<<<< HEAD
 	struct uart_sunzilog_port *up = (struct uart_sunzilog_port *)port;
+=======
+	struct uart_sunzilog_port *up =
+		container_of(port, struct uart_sunzilog_port, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sunzilog_putchar(&up->port, ch);
 }
 #endif /* CONFIG_CONSOLE_POLL */
 
+<<<<<<< HEAD
 static struct uart_ops sunzilog_pops = {
+=======
+static const struct uart_ops sunzilog_pops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	=	sunzilog_tx_empty,
 	.set_mctrl	=	sunzilog_set_mctrl,
 	.get_mctrl	=	sunzilog_get_mctrl,
@@ -1125,7 +1323,11 @@ static void sunzilog_free_tables(void)
 
 #define ZS_PUT_CHAR_MAX_DELAY	2000	/* 10 ms */
 
+<<<<<<< HEAD
 static void sunzilog_putchar(struct uart_port *port, int ch)
+=======
+static void __maybe_unused sunzilog_putchar(struct uart_port *port, unsigned char ch)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct zilog_channel __iomem *channel = ZILOG_CHANNEL_FROM_PORT(port);
 	int loops = ZS_PUT_CHAR_MAX_DELAY;
@@ -1202,6 +1404,7 @@ sunzilog_console_write(struct console *con, const char *s, unsigned int count)
 	unsigned long flags;
 	int locked = 1;
 
+<<<<<<< HEAD
 	local_irq_save(flags);
 	if (up->port.sysrq) {
 		locked = 0;
@@ -1209,13 +1412,23 @@ sunzilog_console_write(struct console *con, const char *s, unsigned int count)
 		locked = spin_trylock(&up->port.lock);
 	} else
 		spin_lock(&up->port.lock);
+=======
+	if (up->port.sysrq || oops_in_progress)
+		locked = uart_port_trylock_irqsave(&up->port, &flags);
+	else
+		uart_port_lock_irqsave(&up->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uart_console_write(&up->port, s, count, sunzilog_putchar);
 	udelay(2);
 
 	if (locked)
+<<<<<<< HEAD
 		spin_unlock(&up->port.lock);
 	local_irq_restore(flags);
+=======
+		uart_port_unlock_irqrestore(&up->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init sunzilog_console_setup(struct console *con, char *options)
@@ -1225,7 +1438,11 @@ static int __init sunzilog_console_setup(struct console *con, char *options)
 	int baud, brg;
 
 	if (up->port.type != PORT_SUNZILOG)
+<<<<<<< HEAD
 		return -1;
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "Console: ttyS%d (SunZilog zs%d)\n",
 	       (sunzilog_reg.minor - 64) + con->index, con->index);
@@ -1246,11 +1463,19 @@ static int __init sunzilog_console_setup(struct console *con, char *options)
 	default: case B9600: baud = 9600; break;
 	case B19200: baud = 19200; break;
 	case B38400: baud = 38400; break;
+<<<<<<< HEAD
 	};
 
 	brg = BPS_TO_BRG(baud, ZS_CLOCK / ZS_CLOCK_DIVISOR);
 
 	spin_lock_irqsave(&up->port.lock, flags);
+=======
+	}
+
+	brg = BPS_TO_BRG(baud, ZS_CLOCK / ZS_CLOCK_DIVISOR);
+
+	uart_port_lock_irqsave(&up->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	up->curregs[R15] |= BRKIE;
 	sunzilog_convert_to_zs(up, con->cflag, 0, brg);
@@ -1258,7 +1483,11 @@ static int __init sunzilog_console_setup(struct console *con, char *options)
 	sunzilog_set_mctrl(&up->port, TIOCM_DTR | TIOCM_RTS);
 	__sunzilog_startup(up);
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&up->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&up->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1282,7 +1511,11 @@ static inline struct console *SUNZILOG_CONSOLE(void)
 #define SUNZILOG_CONSOLE()	(NULL)
 #endif
 
+<<<<<<< HEAD
 static void __devinit sunzilog_init_kbdms(struct uart_sunzilog_port *up)
+=======
+static void sunzilog_init_kbdms(struct uart_sunzilog_port *up)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int baud, brg;
 
@@ -1302,7 +1535,11 @@ static void __devinit sunzilog_init_kbdms(struct uart_sunzilog_port *up)
 }
 
 #ifdef CONFIG_SERIO
+<<<<<<< HEAD
 static void __devinit sunzilog_register_serio(struct uart_sunzilog_port *up)
+=======
+static void sunzilog_register_serio(struct uart_sunzilog_port *up)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct serio *serio = &up->serio;
 
@@ -1311,6 +1548,7 @@ static void __devinit sunzilog_register_serio(struct uart_sunzilog_port *up)
 	serio->id.type = SERIO_RS232;
 	if (up->flags & SUNZILOG_FLAG_CONS_KEYB) {
 		serio->id.proto = SERIO_SUNKBD;
+<<<<<<< HEAD
 		strlcpy(serio->name, "zskbd", sizeof(serio->name));
 	} else {
 		serio->id.proto = SERIO_SUN;
@@ -1318,6 +1556,15 @@ static void __devinit sunzilog_register_serio(struct uart_sunzilog_port *up)
 		strlcpy(serio->name, "zsms", sizeof(serio->name));
 	}
 	strlcpy(serio->phys,
+=======
+		strscpy(serio->name, "zskbd", sizeof(serio->name));
+	} else {
+		serio->id.proto = SERIO_SUN;
+		serio->id.extra = 1;
+		strscpy(serio->name, "zsms", sizeof(serio->name));
+	}
+	strscpy(serio->phys,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		((up->flags & SUNZILOG_FLAG_CONS_KEYB) ?
 		 "zs/serio0" : "zs/serio1"),
 		sizeof(serio->phys));
@@ -1331,7 +1578,11 @@ static void __devinit sunzilog_register_serio(struct uart_sunzilog_port *up)
 }
 #endif
 
+<<<<<<< HEAD
 static void __devinit sunzilog_init_hw(struct uart_sunzilog_port *up)
+=======
+static void sunzilog_init_hw(struct uart_sunzilog_port *up)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct zilog_channel __iomem *channel;
 	unsigned long flags;
@@ -1339,7 +1590,11 @@ static void __devinit sunzilog_init_hw(struct uart_sunzilog_port *up)
 
 	channel = ZILOG_CHANNEL_FROM_PORT(&up->port);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&up->port.lock, flags);
+=======
+	uart_port_lock_irqsave(&up->port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ZS_IS_CHANNEL_A(up)) {
 		write_zsreg(channel, R9, FHWRES);
 		ZSDELAY_LONG();
@@ -1389,7 +1644,11 @@ static void __devinit sunzilog_init_hw(struct uart_sunzilog_port *up)
 		write_zsreg(channel, R9, up->curregs[R9]);
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&up->port.lock, flags);
+=======
+	uart_port_unlock_irqrestore(&up->port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SERIO
 	if (up->flags & (SUNZILOG_FLAG_CONS_KEYB |
@@ -1400,7 +1659,11 @@ static void __devinit sunzilog_init_hw(struct uart_sunzilog_port *up)
 
 static int zilog_irq;
 
+<<<<<<< HEAD
 static int __devinit zs_probe(struct platform_device *op)
+=======
+static int zs_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int kbm_inst, uart_inst;
 	int inst;
@@ -1409,7 +1672,11 @@ static int __devinit zs_probe(struct platform_device *op)
 	int keyboard_mouse = 0;
 	int err;
 
+<<<<<<< HEAD
 	if (of_find_property(op->dev.of_node, "keyboard", NULL))
+=======
+	if (of_property_present(op->dev.of_node, "keyboard"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		keyboard_mouse = 1;
 
 	/* uarts must come before keyboards/mice */
@@ -1444,6 +1711,10 @@ static int __devinit zs_probe(struct platform_device *op)
 	up[0].port.line = (inst * 2) + 0;
 	up[0].port.dev = &op->dev;
 	up[0].flags |= SUNZILOG_FLAG_IS_CHANNEL_A;
+<<<<<<< HEAD
+=======
+	up[0].port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_SUNZILOG_CONSOLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (keyboard_mouse)
 		up[0].flags |= SUNZILOG_FLAG_CONS_KEYB;
 	sunzilog_init_hw(&up[0]);
@@ -1461,6 +1732,10 @@ static int __devinit zs_probe(struct platform_device *op)
 	up[1].port.line = (inst * 2) + 1;
 	up[1].port.dev = &op->dev;
 	up[1].flags |= 0;
+<<<<<<< HEAD
+=======
+	up[1].port.has_sysrq = IS_ENABLED(CONFIG_SERIAL_SUNZILOG_CONSOLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (keyboard_mouse)
 		up[1].flags |= SUNZILOG_FLAG_CONS_MOUSE;
 	sunzilog_init_hw(&up[1]);
@@ -1502,12 +1777,20 @@ static int __devinit zs_probe(struct platform_device *op)
 		kbm_inst++;
 	}
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, &up[0]);
+=======
+	platform_set_drvdata(op, &up[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit zs_remove_one(struct uart_sunzilog_port *up)
+=======
+static void zs_remove_one(struct uart_sunzilog_port *up)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ZS_IS_KEYB(up) || ZS_IS_MOUSE(up)) {
 #ifdef CONFIG_SERIO
@@ -1517,9 +1800,15 @@ static void __devexit zs_remove_one(struct uart_sunzilog_port *up)
 		uart_remove_one_port(&sunzilog_reg, &up->port);
 }
 
+<<<<<<< HEAD
 static int __devexit zs_remove(struct platform_device *op)
 {
 	struct uart_sunzilog_port *up = dev_get_drvdata(&op->dev);
+=======
+static void zs_remove(struct platform_device *op)
+{
+	struct uart_sunzilog_port *up = platform_get_drvdata(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct zilog_layout __iomem *regs;
 
 	zs_remove_one(&up[0]);
@@ -1527,10 +1816,13 @@ static int __devexit zs_remove(struct platform_device *op)
 
 	regs = sunzilog_chip_regs[up[0].port.line / 2];
 	of_iounmap(&op->resource[0], regs, sizeof(struct zilog_layout));
+<<<<<<< HEAD
 
 	dev_set_drvdata(&op->dev, NULL);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id zs_match[] = {
@@ -1544,11 +1836,18 @@ MODULE_DEVICE_TABLE(of, zs_match);
 static struct platform_driver zs_driver = {
 	.driver = {
 		.name = "zs",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = zs_match,
 	},
 	.probe		= zs_probe,
 	.remove		= __devexit_p(zs_remove),
+=======
+		.of_match_table = zs_match,
+	},
+	.probe		= zs_probe,
+	.remove_new	= zs_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init sunzilog_init(void)
@@ -1560,7 +1859,11 @@ static int __init sunzilog_init(void)
 
 	for_each_node_by_name(dp, "zs") {
 		num_sunzilog++;
+<<<<<<< HEAD
 		if (of_find_property(dp, "keyboard", NULL))
+=======
+		if (of_property_present(dp, "keyboard"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			num_keybms++;
 	}
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * i2c-nforce2-s4985.c - i2c-nforce2 extras for the Tyan S4985 motherboard
  *
@@ -16,6 +17,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * i2c-nforce2-s4985.c - i2c-nforce2 extras for the Tyan S4985 motherboard
+ *
+ * Copyright (C) 2008 Jean Delvare <jdelvare@suse.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -164,6 +172,7 @@ static int __init nforce2_s4985_init(void)
 	}
 
 	/* Unregister physical bus */
+<<<<<<< HEAD
 	error = i2c_del_adapter(nforce2_smbus);
 	if (error) {
 		dev_err(&nforce2_smbus->dev, "Physical bus removal failed\n");
@@ -173,11 +182,22 @@ static int __init nforce2_s4985_init(void)
 	printk(KERN_INFO "Enabling SMBus multiplexing for Tyan S4985\n");
 	/* Define the 5 virtual adapters and algorithms structures */
 	s4985_adapter = kzalloc(5 * sizeof(struct i2c_adapter), GFP_KERNEL);
+=======
+	i2c_del_adapter(nforce2_smbus);
+
+	printk(KERN_INFO "Enabling SMBus multiplexing for Tyan S4985\n");
+	/* Define the 5 virtual adapters and algorithms structures */
+	s4985_adapter = kcalloc(5, sizeof(struct i2c_adapter), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!s4985_adapter) {
 		error = -ENOMEM;
 		goto ERROR1;
 	}
+<<<<<<< HEAD
 	s4985_algo = kzalloc(5 * sizeof(struct i2c_algorithm), GFP_KERNEL);
+=======
+	s4985_algo = kcalloc(5, sizeof(struct i2c_algorithm), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!s4985_algo) {
 		error = -ENOMEM;
 		goto ERROR2;
@@ -249,7 +269,11 @@ static void __exit nforce2_s4985_exit(void)
 		       "Physical bus restoration failed\n");
 }
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Jean Delvare <khali@linux-fr.org>");
+=======
+MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("S4985 SMBus multiplexing");
 MODULE_LICENSE("GPL");
 

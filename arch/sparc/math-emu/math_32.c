@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sparc/math-emu/math.c
  *
@@ -68,7 +72,11 @@
 #include <linux/sched.h>
 #include <linux/mm.h>
 #include <linux/perf_event.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "sfp-util_32.h"
 #include <math-emu/soft-fp.h>
@@ -358,7 +366,11 @@ static int do_one_mathemu(u32 insn, unsigned long *pfsr, unsigned long *fregs)
 			*pfsr |= (6 << 14);
 			return 0;			/* simulate invalid_fp_register exception */
 		}
+<<<<<<< HEAD
 	/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 2:
 		if (freg & 1) {				/* doublewords must have bit 5 zeroed */
 			*pfsr |= (6 << 14);
@@ -379,7 +391,11 @@ static int do_one_mathemu(u32 insn, unsigned long *pfsr, unsigned long *fregs)
 			*pfsr |= (6 << 14);
 			return 0;			/* simulate invalid_fp_register exception */
 		}
+<<<<<<< HEAD
 	/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 2:
 		if (freg & 1) {				/* doublewords must have bit 5 zeroed */
 			*pfsr |= (6 << 14);
@@ -407,13 +423,21 @@ static int do_one_mathemu(u32 insn, unsigned long *pfsr, unsigned long *fregs)
 			*pfsr |= (6 << 14);
 			return 0;			/* simulate invalid_fp_register exception */
 		}
+<<<<<<< HEAD
 	/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 2:
 		if (freg & 1) {				/* doublewords must have bit 5 zeroed */
 			*pfsr |= (6 << 14);
 			return 0;
 		}
+<<<<<<< HEAD
 	/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:
 		rd = (void *)&fregs[freg];
 		break;

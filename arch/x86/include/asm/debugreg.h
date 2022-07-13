@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_X86_DEBUGREG_H
 #define _ASM_X86_DEBUGREG_H
 
@@ -83,6 +84,22 @@
 DECLARE_PER_CPU(unsigned long, cpu_dr7);
 
 #ifndef CONFIG_PARAVIRT
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_X86_DEBUGREG_H
+#define _ASM_X86_DEBUGREG_H
+
+#include <linux/bug.h>
+#include <linux/percpu.h>
+#include <uapi/asm/debugreg.h>
+
+#include <asm/cpufeature.h>
+#include <asm/msr.h>
+
+DECLARE_PER_CPU(unsigned long, cpu_dr7);
+
+#ifndef CONFIG_PARAVIRT_XXL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * These special macros can be used to get or set a debugging register
  */
@@ -92,7 +109,11 @@ DECLARE_PER_CPU(unsigned long, cpu_dr7);
 	native_set_debugreg(register, value)
 #endif
 
+<<<<<<< HEAD
 static inline unsigned long native_get_debugreg(int regno)
+=======
+static __always_inline unsigned long native_get_debugreg(int regno)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long val = 0;	/* Damn you, gcc! */
 
@@ -113,7 +134,24 @@ static inline unsigned long native_get_debugreg(int regno)
 		asm("mov %%db6, %0" :"=r" (val));
 		break;
 	case 7:
+<<<<<<< HEAD
 		asm("mov %%db7, %0" :"=r" (val));
+=======
+		/*
+		 * Apply __FORCE_ORDER to DR7 reads to forbid re-ordering them
+		 * with other code.
+		 *
+		 * This is needed because a DR7 access can cause a #VC exception
+		 * when running under SEV-ES. Taking a #VC exception is not a
+		 * safe thing to do just anywhere in the entry code and
+		 * re-ordering might place the access into an unsafe location.
+		 *
+		 * This happened in the NMI handler, where the DR7 read was
+		 * re-ordered to happen before the call to sev_es_ist_enter(),
+		 * causing stack recursion.
+		 */
+		asm volatile("mov %%db7, %0" : "=r" (val) : __FORCE_ORDER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		BUG();
@@ -121,7 +159,11 @@ static inline unsigned long native_get_debugreg(int regno)
 	return val;
 }
 
+<<<<<<< HEAD
 static inline void native_set_debugreg(int regno, unsigned long value)
+=======
+static __always_inline void native_set_debugreg(int regno, unsigned long value)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (regno) {
 	case 0:
@@ -140,7 +182,20 @@ static inline void native_set_debugreg(int regno, unsigned long value)
 		asm("mov %0, %%db6"	::"r" (value));
 		break;
 	case 7:
+<<<<<<< HEAD
 		asm("mov %0, %%db7"	::"r" (value));
+=======
+		/*
+		 * Apply __FORCE_ORDER to DR7 writes to forbid re-ordering them
+		 * with other code.
+		 *
+		 * While is didn't happen with a DR7 write (see the DR7 read
+		 * comment above which explains where it happened), add the
+		 * __FORCE_ORDER here too to avoid similar problems in the
+		 * future.
+		 */
+		asm volatile("mov %0, %%db7"	::"r" (value), __FORCE_ORDER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		BUG();
@@ -159,11 +214,16 @@ static inline void hw_breakpoint_disable(void)
 	set_debugreg(0UL, 3);
 }
 
+<<<<<<< HEAD
 static inline int hw_breakpoint_active(void)
+=======
+static __always_inline bool hw_breakpoint_active(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __this_cpu_read(cpu_dr7) & DR_GLOBAL_ENABLE_MASK;
 }
 
+<<<<<<< HEAD
 extern void aout_dump_debugregs(struct user *dump);
 
 extern void hw_breakpoint_restore(void);
@@ -191,5 +251,74 @@ static inline void debug_stack_usage_dec(void) { }
 
 
 #endif	/* __KERNEL__ */
+=======
+extern void hw_breakpoint_restore(void);
+
+static __always_inline unsigned long local_db_save(void)
+{
+	unsigned long dr7;
+
+	if (static_cpu_has(X86_FEATURE_HYPERVISOR) && !hw_breakpoint_active())
+		return 0;
+
+	get_debugreg(dr7, 7);
+	dr7 &= ~0x400; /* architecturally set bit */
+	if (dr7)
+		set_debugreg(0, 7);
+	/*
+	 * Ensure the compiler doesn't lower the above statements into
+	 * the critical section; disabling breakpoints late would not
+	 * be good.
+	 */
+	barrier();
+
+	return dr7;
+}
+
+static __always_inline void local_db_restore(unsigned long dr7)
+{
+	/*
+	 * Ensure the compiler doesn't raise this statement into
+	 * the critical section; enabling breakpoints early would
+	 * not be good.
+	 */
+	barrier();
+	if (dr7)
+		set_debugreg(dr7, 7);
+}
+
+#ifdef CONFIG_CPU_SUP_AMD
+extern void amd_set_dr_addr_mask(unsigned long mask, unsigned int dr);
+extern unsigned long amd_get_dr_addr_mask(unsigned int dr);
+#else
+static inline void amd_set_dr_addr_mask(unsigned long mask, unsigned int dr) { }
+static inline unsigned long amd_get_dr_addr_mask(unsigned int dr)
+{
+	return 0;
+}
+#endif
+
+static inline unsigned long get_debugctlmsr(void)
+{
+	unsigned long debugctlmsr = 0;
+
+#ifndef CONFIG_X86_DEBUGCTLMSR
+	if (boot_cpu_data.x86 < 6)
+		return 0;
+#endif
+	rdmsrl(MSR_IA32_DEBUGCTLMSR, debugctlmsr);
+
+	return debugctlmsr;
+}
+
+static inline void update_debugctlmsr(unsigned long debugctlmsr)
+{
+#ifndef CONFIG_X86_DEBUGCTLMSR
+	if (boot_cpu_data.x86 < 6)
+		return;
+#endif
+	wrmsrl(MSR_IA32_DEBUGCTLMSR, debugctlmsr);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_DEBUGREG_H */

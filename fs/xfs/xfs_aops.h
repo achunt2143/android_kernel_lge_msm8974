@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2005-2006 Silicon Graphics, Inc.
  * All Rights Reserved.
@@ -14,10 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write the Free Software Foundation,
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2005-2006 Silicon Graphics, Inc.
+ * All Rights Reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __XFS_AOPS_H__
 #define __XFS_AOPS_H__
 
+<<<<<<< HEAD
 extern mempool_t *xfs_ioend_pool;
 
 /*
@@ -62,5 +70,11 @@ extern const struct address_space_operations xfs_address_space_operations;
 extern int xfs_get_blocks(struct inode *, sector_t, struct buffer_head *, int);
 
 extern void xfs_count_page_state(struct page *, int *, int *);
+=======
+extern const struct address_space_operations xfs_address_space_operations;
+extern const struct address_space_operations xfs_dax_aops;
+
+int	xfs_setfilesize(struct xfs_inode *ip, xfs_off_t offset, size_t size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __XFS_AOPS_H__ */

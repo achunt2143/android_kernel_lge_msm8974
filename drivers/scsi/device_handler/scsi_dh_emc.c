@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Target driver for EMC CLARiiON AX/CX-series hardware.
  * Based on code from Lars Marowsky-Bree <lmb@suse.de>
@@ -5,6 +9,7 @@
  *
  * Copyright (C) 2006 Red Hat, Inc.  All rights reserved.
  * Copyright (C) 2006 Mike Christie
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; see the file COPYING.  If not, write to
  * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -88,12 +95,15 @@ struct clariion_dh_data {
 	 */
 	unsigned char buffer[CLARIION_BUFFER_SIZE];
 	/*
+<<<<<<< HEAD
 	 * SCSI sense buffer for commands -- assumes serial issuance
 	 * and completion sequence of all commands for same multipath.
 	 */
 	unsigned char sense[SCSI_SENSE_BUFFERSIZE];
 	unsigned int senselen;
 	/*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * LUN state
 	 */
 	int lun_state;
@@ -113,6 +123,7 @@ struct clariion_dh_data {
 	int current_sp;
 };
 
+<<<<<<< HEAD
 static inline struct clariion_dh_data
 			*get_clariion_data(struct scsi_device *sdev)
 {
@@ -162,6 +173,43 @@ static int trespass_endio(struct scsi_device *sdev, char *sense)
 			    "%s: failed to send MODE SELECT, no sense available\n",
 			    CLARIION_NAME);
 	}
+=======
+/*
+ * Parse MODE_SELECT cmd reply.
+ */
+static int trespass_endio(struct scsi_device *sdev,
+			  struct scsi_sense_hdr *sshdr)
+{
+	int err = SCSI_DH_IO;
+
+	sdev_printk(KERN_ERR, sdev, "%s: Found valid sense data 0x%2x, "
+		    "0x%2x, 0x%2x while sending CLARiiON trespass "
+		    "command.\n", CLARIION_NAME, sshdr->sense_key,
+		    sshdr->asc, sshdr->ascq);
+
+	if (sshdr->sense_key == 0x05 && sshdr->asc == 0x04 &&
+	    sshdr->ascq == 0x00) {
+		/*
+		 * Array based copy in progress -- do not send
+		 * mode_select or copy will be aborted mid-stream.
+		 */
+		sdev_printk(KERN_INFO, sdev, "%s: Array Based Copy in "
+			    "progress while sending CLARiiON trespass "
+			    "command.\n", CLARIION_NAME);
+		err = SCSI_DH_DEV_TEMP_BUSY;
+	} else if (sshdr->sense_key == 0x02 && sshdr->asc == 0x04 &&
+		   sshdr->ascq == 0x03) {
+		/*
+		 * LUN Not Ready - Manual Intervention Required
+		 * indicates in-progress ucode upgrade (NDU).
+		 */
+		sdev_printk(KERN_INFO, sdev, "%s: Detected in-progress "
+			    "ucode upgrade NDU operation while sending "
+			    "CLARiiON trespass command.\n", CLARIION_NAME);
+		err = SCSI_DH_DEV_TEMP_BUSY;
+	} else
+		err = SCSI_DH_DEV_FAILED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -207,7 +255,16 @@ static int parse_sp_info_reply(struct scsi_device *sdev,
 	csdev->lun_state = csdev->buffer[4];
 	csdev->current_sp = csdev->buffer[8];
 	csdev->port = csdev->buffer[7];
+<<<<<<< HEAD
 
+=======
+	if (csdev->lun_state == CLARIION_LUN_OWNED)
+		sdev->access_state = SCSI_ACCESS_STATE_OPTIMAL;
+	else
+		sdev->access_state = SCSI_ACCESS_STATE_STANDBY;
+	if (csdev->default_sp == csdev->current_sp)
+		sdev->access_state |= SCSI_ACCESS_STATE_PREFERRED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return err;
 }
@@ -260,6 +317,7 @@ out:
 	return sp_model;
 }
 
+<<<<<<< HEAD
 /*
  * Get block request for REQ_BLOCK_PC command issued to path.  Currently
  * limited to MODE_SELECT (trespass) and INQUIRY (VPD page 0xC0) commands.
@@ -357,6 +415,20 @@ static int send_trespass_cmd(struct scsi_device *sdev,
 	struct request *rq;
 	unsigned char *page22;
 	int err, len, cmd;
+=======
+static int send_trespass_cmd(struct scsi_device *sdev,
+			    struct clariion_dh_data *csdev)
+{
+	unsigned char *page22;
+	unsigned char cdb[MAX_COMMAND_SIZE];
+	int err, res = SCSI_DH_OK, len;
+	struct scsi_sense_hdr sshdr;
+	blk_opf_t opf = REQ_OP_DRV_OUT | REQ_FAILFAST_DEV |
+				REQ_FAILFAST_TRANSPORT | REQ_FAILFAST_DRIVER;
+	const struct scsi_exec_args exec_args = {
+		.sshdr = &sshdr,
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (csdev->flags & CLARIION_SHORT_TRESPASS) {
 		page22 = short_trespass;
@@ -364,18 +436,30 @@ static int send_trespass_cmd(struct scsi_device *sdev,
 			/* Set Honor Reservations bit */
 			page22[6] |= 0x80;
 		len = sizeof(short_trespass);
+<<<<<<< HEAD
 		cmd = MODE_SELECT;
+=======
+		cdb[0] = MODE_SELECT;
+		cdb[1] = 0x10;
+		cdb[4] = len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		page22 = long_trespass;
 		if (!(csdev->flags & CLARIION_HONOR_RESERVATIONS))
 			/* Set Honor Reservations bit */
 			page22[10] |= 0x80;
 		len = sizeof(long_trespass);
+<<<<<<< HEAD
 		cmd = MODE_SELECT_10;
+=======
+		cdb[0] = MODE_SELECT_10;
+		cdb[8] = len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	BUG_ON((len > CLARIION_BUFFER_SIZE));
 	memcpy(csdev->buffer, page22, len);
 
+<<<<<<< HEAD
 	rq = get_req(sdev, cmd, csdev->buffer);
 	if (!rq)
 		return SCSI_DH_RES_TEMP_UNAVAIL;
@@ -402,6 +486,27 @@ static int send_trespass_cmd(struct scsi_device *sdev,
 
 static int clariion_check_sense(struct scsi_device *sdev,
 				struct scsi_sense_hdr *sense_hdr)
+=======
+	err = scsi_execute_cmd(sdev, cdb, opf, csdev->buffer, len,
+			       CLARIION_TIMEOUT * HZ, CLARIION_RETRIES,
+			       &exec_args);
+	if (err) {
+		if (scsi_sense_valid(&sshdr))
+			res = trespass_endio(sdev, &sshdr);
+		else {
+			sdev_printk(KERN_INFO, sdev,
+				    "%s: failed to send MODE SELECT: %x\n",
+				    CLARIION_NAME, err);
+			res = SCSI_DH_IO;
+		}
+	}
+
+	return res;
+}
+
+static enum scsi_disposition clariion_check_sense(struct scsi_device *sdev,
+					struct scsi_sense_hdr *sense_hdr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (sense_hdr->sense_key) {
 	case NOT_READY:
@@ -448,6 +553,7 @@ static int clariion_check_sense(struct scsi_device *sdev,
 	return SCSI_RETURN_NOT_HANDLED;
 }
 
+<<<<<<< HEAD
 static int clariion_prep_fn(struct scsi_device *sdev, struct request *req)
 {
 	struct clariion_dh_data *h = get_clariion_data(sdev);
@@ -459,11 +565,25 @@ static int clariion_prep_fn(struct scsi_device *sdev, struct request *req)
 	}
 	return ret;
 
+=======
+static blk_status_t clariion_prep_fn(struct scsi_device *sdev,
+		struct request *req)
+{
+	struct clariion_dh_data *h = sdev->handler_data;
+
+	if (h->lun_state != CLARIION_LUN_OWNED) {
+		req->rq_flags |= RQF_QUIET;
+		return BLK_STS_IOERR;
+	}
+
+	return BLK_STS_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int clariion_std_inquiry(struct scsi_device *sdev,
 				struct clariion_dh_data *csdev)
 {
+<<<<<<< HEAD
 	int err;
 	char *sp_model;
 
@@ -482,6 +602,12 @@ static int clariion_std_inquiry(struct scsi_device *sdev,
 	}
 
 	sp_model = parse_sp_model(sdev, csdev->buffer);
+=======
+	int err = SCSI_DH_OK;
+	char *sp_model;
+
+	sp_model = parse_sp_model(sdev, sdev->inquiry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sp_model) {
 		err = SCSI_DH_DEV_UNSUPP;
 		goto out;
@@ -503,6 +629,7 @@ out:
 static int clariion_send_inquiry(struct scsi_device *sdev,
 				 struct clariion_dh_data *csdev)
 {
+<<<<<<< HEAD
 	int err, retry = CLARIION_RETRIES;
 
 retry:
@@ -527,13 +654,25 @@ retry:
 	} else {
 		err = parse_sp_info_reply(sdev, csdev);
 	}
+=======
+	int err = SCSI_DH_IO;
+
+	if (!scsi_get_vpd_page(sdev, 0xC0, csdev->buffer,
+			       CLARIION_BUFFER_SIZE))
+		err = parse_sp_info_reply(sdev, csdev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static int clariion_activate(struct scsi_device *sdev,
 				activate_complete fn, void *data)
 {
+<<<<<<< HEAD
 	struct clariion_dh_data *csdev = get_clariion_data(sdev);
+=======
+	struct clariion_dh_data *csdev = sdev->handler_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result;
 
 	result = clariion_send_inquiry(sdev, csdev);
@@ -574,7 +713,11 @@ done:
  */
 static int clariion_set_params(struct scsi_device *sdev, const char *params)
 {
+<<<<<<< HEAD
 	struct clariion_dh_data *csdev = get_clariion_data(sdev);
+=======
+	struct clariion_dh_data *csdev = sdev->handler_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int hr = 0, st = 0, argc;
 	const char *p = params;
 	int result = SCSI_DH_OK;
@@ -622,6 +765,7 @@ done:
 	return result;
 }
 
+<<<<<<< HEAD
 static const struct scsi_dh_devlist clariion_dev_list[] = {
 	{"DGC", "RAID"},
 	{"DGC", "DISK"},
@@ -680,6 +824,16 @@ static int clariion_bus_attach(struct scsi_device *sdev)
 
 	scsi_dh_data->scsi_dh = &clariion_dh;
 	h = (struct clariion_dh_data *) scsi_dh_data->buf;
+=======
+static int clariion_bus_attach(struct scsi_device *sdev)
+{
+	struct clariion_dh_data *h;
+	int err;
+
+	h = kzalloc(sizeof(*h) , GFP_KERNEL);
+	if (!h)
+		return SCSI_DH_NOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h->lun_state = CLARIION_LUN_UNINITIALIZED;
 	h->default_sp = CLARIION_UNBOUND_LU;
 	h->current_sp = CLARIION_UNBOUND_LU;
@@ -692,6 +846,7 @@ static int clariion_bus_attach(struct scsi_device *sdev)
 	if (err != SCSI_DH_OK)
 		goto failed;
 
+<<<<<<< HEAD
 	if (!try_module_get(THIS_MODULE))
 		goto failed;
 
@@ -699,12 +854,15 @@ static int clariion_bus_attach(struct scsi_device *sdev)
 	sdev->scsi_dh_data = scsi_dh_data;
 	spin_unlock_irqrestore(sdev->request_queue->queue_lock, flags);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sdev_printk(KERN_INFO, sdev,
 		    "%s: connected to SP %c Port %d (%s, default SP %c)\n",
 		    CLARIION_NAME, h->current_sp + 'A',
 		    h->port, lun_state[h->lun_state],
 		    h->default_sp + 'A');
 
+<<<<<<< HEAD
 	return 0;
 
 failed:
@@ -712,10 +870,19 @@ failed:
 	sdev_printk(KERN_ERR, sdev, "%s: not attached\n",
 		    CLARIION_NAME);
 	return -EINVAL;
+=======
+	sdev->handler_data = h;
+	return SCSI_DH_OK;
+
+failed:
+	kfree(h);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void clariion_bus_detach(struct scsi_device *sdev)
 {
+<<<<<<< HEAD
 	struct scsi_dh_data *scsi_dh_data;
 	unsigned long flags;
 
@@ -731,6 +898,23 @@ static void clariion_bus_detach(struct scsi_device *sdev)
 	module_put(THIS_MODULE);
 }
 
+=======
+	kfree(sdev->handler_data);
+	sdev->handler_data = NULL;
+}
+
+static struct scsi_device_handler clariion_dh = {
+	.name		= CLARIION_NAME,
+	.module		= THIS_MODULE,
+	.attach		= clariion_bus_attach,
+	.detach		= clariion_bus_detach,
+	.check_sense	= clariion_check_sense,
+	.activate	= clariion_activate,
+	.prep_fn	= clariion_prep_fn,
+	.set_params	= clariion_set_params,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init clariion_init(void)
 {
 	int r;

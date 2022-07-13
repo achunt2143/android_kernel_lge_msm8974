@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Keyboard class input driver for the NVIDIA Tegra SoC internal matrix
  * keyboard controller
  *
  * Copyright (c) 2009-2011, NVIDIA Corporation.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -27,10 +34,26 @@
 #include <linux/io.h>
 #include <linux/interrupt.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/clk.h>
 #include <linux/slab.h>
 #include <mach/clk.h>
 #include <mach/kbc.h>
+=======
+#include <linux/property.h>
+#include <linux/clk.h>
+#include <linux/slab.h>
+#include <linux/input/matrix_keypad.h>
+#include <linux/reset.h>
+#include <linux/err.h>
+
+#define KBC_MAX_KPENT	8
+
+/* Maximum row/column supported by Tegra KBC yet  is 16x8 */
+#define KBC_MAX_GPIO	24
+/* Maximum keys supported by Tegra KBC yet is 16 x 8*/
+#define KBC_MAX_KEY	(16 * 8)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define KBC_MAX_DEBOUNCE_CNT	0x3ffu
 
@@ -67,10 +90,40 @@
 
 #define KBC_ROW_SHIFT	3
 
+<<<<<<< HEAD
 struct tegra_kbc {
 	void __iomem *mmio;
 	struct input_dev *idev;
 	unsigned int irq;
+=======
+enum tegra_pin_type {
+	PIN_CFG_IGNORE,
+	PIN_CFG_COL,
+	PIN_CFG_ROW,
+};
+
+/* Tegra KBC hw support */
+struct tegra_kbc_hw_support {
+	int max_rows;
+	int max_columns;
+};
+
+struct tegra_kbc_pin_cfg {
+	enum tegra_pin_type type;
+	unsigned char num;
+};
+
+struct tegra_kbc {
+	struct device *dev;
+	unsigned int debounce_cnt;
+	unsigned int repeat_cnt;
+	struct tegra_kbc_pin_cfg pin_cfg[KBC_MAX_GPIO];
+	const struct matrix_keymap_data *keymap_data;
+	bool wakeup;
+	void __iomem *mmio;
+	struct input_dev *idev;
+	int irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spinlock_t lock;
 	unsigned int repoll_dly;
 	unsigned long cp_dly_jiffies;
@@ -78,13 +131,17 @@ struct tegra_kbc {
 	bool use_fn_map;
 	bool use_ghost_filter;
 	bool keypress_caused_wake;
+<<<<<<< HEAD
 	const struct tegra_kbc_platform_data *pdata;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned short keycode[KBC_MAX_KEY * 2];
 	unsigned short current_keys[KBC_MAX_KPENT];
 	unsigned int num_pressed_keys;
 	u32 wakeup_key;
 	struct timer_list timer;
 	struct clk *clk;
+<<<<<<< HEAD
 };
 
 static const u32 tegra_kbc_default_keymap[] __devinitdata = {
@@ -226,6 +283,12 @@ static const
 struct matrix_keymap_data tegra_kbc_default_keymap_data __devinitdata = {
 	.keymap		= tegra_kbc_default_keymap,
 	.keymap_size	= ARRAY_SIZE(tegra_kbc_default_keymap),
+=======
+	struct reset_control *rst;
+	const struct tegra_kbc_hw_support *hw_support;
+	int max_keys;
+	int num_rows_and_columns;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void tegra_kbc_report_released_keys(struct input_dev *input,
@@ -322,11 +385,19 @@ static void tegra_kbc_report_keys(struct tegra_kbc *kbc)
 
 	/*
 	 * If the platform uses Fn keymaps, translate keys on a Fn keypress.
+<<<<<<< HEAD
 	 * Function keycodes are KBC_MAX_KEY apart from the plain keycodes.
 	 */
 	if (fn_keypress) {
 		for (i = 0; i < num_down; i++) {
 			scancodes[i] += KBC_MAX_KEY;
+=======
+	 * Function keycodes are max_keys apart from the plain keycodes.
+	 */
+	if (fn_keypress) {
+		for (i = 0; i < num_down; i++) {
+			scancodes[i] += kbc->max_keys;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			keycodes[i] = kbc->keycode[scancodes[i]];
 		}
 	}
@@ -357,6 +428,7 @@ static void tegra_kbc_set_fifo_interrupt(struct tegra_kbc *kbc, bool enable)
 	writel(val, kbc->mmio + KBC_CONTROL_0);
 }
 
+<<<<<<< HEAD
 static void tegra_kbc_set_keypress_interrupt(struct tegra_kbc *kbc, bool enable)
 {
 	u32 val;
@@ -372,6 +444,11 @@ static void tegra_kbc_set_keypress_interrupt(struct tegra_kbc *kbc, bool enable)
 static void tegra_kbc_keypress_timer(unsigned long data)
 {
 	struct tegra_kbc *kbc = (struct tegra_kbc *)data;
+=======
+static void tegra_kbc_keypress_timer(struct timer_list *t)
+{
+	struct tegra_kbc *kbc = from_timer(kbc, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	u32 val;
 	unsigned int i;
@@ -439,20 +516,32 @@ static irqreturn_t tegra_kbc_isr(int irq, void *args)
 
 static void tegra_kbc_setup_wakekeys(struct tegra_kbc *kbc, bool filter)
 {
+<<<<<<< HEAD
 	const struct tegra_kbc_platform_data *pdata = kbc->pdata;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	unsigned int rst_val;
 
 	/* Either mask all keys or none. */
+<<<<<<< HEAD
 	rst_val = (filter && !pdata->wakeup) ? ~0 : 0;
 
 	for (i = 0; i < KBC_MAX_ROW; i++)
+=======
+	rst_val = (filter && !kbc->wakeup) ? ~0 : 0;
+
+	for (i = 0; i < kbc->hw_support->max_rows; i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		writel(rst_val, kbc->mmio + KBC_ROW0_MASK_0 + i * 4);
 }
 
 static void tegra_kbc_config_pins(struct tegra_kbc *kbc)
 {
+<<<<<<< HEAD
 	const struct tegra_kbc_platform_data *pdata = kbc->pdata;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < KBC_MAX_GPIO; i++) {
@@ -468,6 +557,7 @@ static void tegra_kbc_config_pins(struct tegra_kbc *kbc)
 		row_cfg &= ~r_mask;
 		col_cfg &= ~c_mask;
 
+<<<<<<< HEAD
 		switch (pdata->pin_cfg[i].type) {
 		case PIN_CFG_ROW:
 			row_cfg |= ((pdata->pin_cfg[i].num << 1) | 1) << r_shft;
@@ -475,6 +565,15 @@ static void tegra_kbc_config_pins(struct tegra_kbc *kbc)
 
 		case PIN_CFG_COL:
 			col_cfg |= ((pdata->pin_cfg[i].num << 1) | 1) << c_shft;
+=======
+		switch (kbc->pin_cfg[i].type) {
+		case PIN_CFG_ROW:
+			row_cfg |= ((kbc->pin_cfg[i].num << 1) | 1) << r_shft;
+			break;
+
+		case PIN_CFG_COL:
+			col_cfg |= ((kbc->pin_cfg[i].num << 1) | 1) << c_shft;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case PIN_CFG_IGNORE:
@@ -488,6 +587,7 @@ static void tegra_kbc_config_pins(struct tegra_kbc *kbc)
 
 static int tegra_kbc_start(struct tegra_kbc *kbc)
 {
+<<<<<<< HEAD
 	const struct tegra_kbc_platform_data *pdata = kbc->pdata;
 	unsigned int debounce_cnt;
 	u32 val = 0;
@@ -498,15 +598,36 @@ static int tegra_kbc_start(struct tegra_kbc *kbc)
 	tegra_periph_reset_assert(kbc->clk);
 	udelay(100);
 	tegra_periph_reset_deassert(kbc->clk);
+=======
+	unsigned int debounce_cnt;
+	u32 val = 0;
+	int ret;
+
+	ret = clk_prepare_enable(kbc->clk);
+	if (ret)
+		return ret;
+
+	/* Reset the KBC controller to clear all previous status.*/
+	reset_control_assert(kbc->rst);
+	udelay(100);
+	reset_control_deassert(kbc->rst);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udelay(100);
 
 	tegra_kbc_config_pins(kbc);
 	tegra_kbc_setup_wakekeys(kbc, false);
 
+<<<<<<< HEAD
 	writel(pdata->repeat_cnt, kbc->mmio + KBC_RPT_DLY_0);
 
 	/* Keyboard debounce count is maximum of 12 bits. */
 	debounce_cnt = min(pdata->debounce_cnt, KBC_MAX_DEBOUNCE_CNT);
+=======
+	writel(kbc->repeat_cnt, kbc->mmio + KBC_RPT_DLY_0);
+
+	/* Keyboard debounce count is maximum of 12 bits. */
+	debounce_cnt = min(kbc->debounce_cnt, KBC_MAX_DEBOUNCE_CNT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = KBC_DEBOUNCE_CNT_SHIFT(debounce_cnt);
 	val |= KBC_FIFO_TH_CNT_SHIFT(1); /* set fifo interrupt threshold to 1 */
 	val |= KBC_CONTROL_FIFO_CNT_INT_EN;  /* interrupt on FIFO threshold */
@@ -556,7 +677,11 @@ static void tegra_kbc_stop(struct tegra_kbc *kbc)
 	disable_irq(kbc->irq);
 	del_timer_sync(&kbc->timer);
 
+<<<<<<< HEAD
 	clk_disable(kbc->clk);
+=======
+	clk_disable_unprepare(kbc->clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int tegra_kbc_open(struct input_dev *dev)
@@ -573,21 +698,35 @@ static void tegra_kbc_close(struct input_dev *dev)
 	return tegra_kbc_stop(kbc);
 }
 
+<<<<<<< HEAD
 static bool __devinit
 tegra_kbc_check_pin_cfg(const struct tegra_kbc_platform_data *pdata,
 			struct device *dev, unsigned int *num_rows)
+=======
+static bool tegra_kbc_check_pin_cfg(const struct tegra_kbc *kbc,
+					unsigned int *num_rows)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
 	*num_rows = 0;
 
 	for (i = 0; i < KBC_MAX_GPIO; i++) {
+<<<<<<< HEAD
 		const struct tegra_kbc_pin_cfg *pin_cfg = &pdata->pin_cfg[i];
 
 		switch (pin_cfg->type) {
 		case PIN_CFG_ROW:
 			if (pin_cfg->num >= KBC_MAX_ROW) {
 				dev_err(dev,
+=======
+		const struct tegra_kbc_pin_cfg *pin_cfg = &kbc->pin_cfg[i];
+
+		switch (pin_cfg->type) {
+		case PIN_CFG_ROW:
+			if (pin_cfg->num >= kbc->hw_support->max_rows) {
+				dev_err(kbc->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"pin_cfg[%d]: invalid row number %d\n",
 					i, pin_cfg->num);
 				return false;
@@ -596,8 +735,13 @@ tegra_kbc_check_pin_cfg(const struct tegra_kbc_platform_data *pdata,
 			break;
 
 		case PIN_CFG_COL:
+<<<<<<< HEAD
 			if (pin_cfg->num >= KBC_MAX_COL) {
 				dev_err(dev,
+=======
+			if (pin_cfg->num >= kbc->hw_support->max_columns) {
+				dev_err(kbc->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"pin_cfg[%d]: invalid column number %d\n",
 					i, pin_cfg->num);
 				return false;
@@ -608,7 +752,11 @@ tegra_kbc_check_pin_cfg(const struct tegra_kbc_platform_data *pdata,
 			break;
 
 		default:
+<<<<<<< HEAD
 			dev_err(dev,
+=======
+			dev_err(kbc->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				"pin_cfg[%d]: invalid entry type %d\n",
 				pin_cfg->type, pin_cfg->num);
 			return false;
@@ -618,6 +766,7 @@ tegra_kbc_check_pin_cfg(const struct tegra_kbc_platform_data *pdata,
 	return true;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 static struct tegra_kbc_platform_data * __devinit
 tegra_kbc_dt_parse_pdata(struct platform_device *pdev)
@@ -682,10 +831,124 @@ static int __devinit tegra_kbc_probe(struct platform_device *pdev)
 	struct input_dev *input_dev;
 	struct resource *res;
 	int irq;
+=======
+static int tegra_kbc_parse_dt(struct tegra_kbc *kbc)
+{
+	struct device_node *np = kbc->dev->of_node;
+	u32 prop;
+	int i;
+	u32 num_rows = 0;
+	u32 num_cols = 0;
+	u32 cols_cfg[KBC_MAX_GPIO];
+	u32 rows_cfg[KBC_MAX_GPIO];
+	int proplen;
+	int ret;
+
+	if (!of_property_read_u32(np, "nvidia,debounce-delay-ms", &prop))
+		kbc->debounce_cnt = prop;
+
+	if (!of_property_read_u32(np, "nvidia,repeat-delay-ms", &prop))
+		kbc->repeat_cnt = prop;
+
+	kbc->use_ghost_filter = of_property_present(np, "nvidia,needs-ghost-filter");
+
+	if (of_property_read_bool(np, "wakeup-source") ||
+	    of_property_read_bool(np, "nvidia,wakeup-source")) /* legacy */
+		kbc->wakeup = true;
+
+	if (!of_get_property(np, "nvidia,kbc-row-pins", &proplen)) {
+		dev_err(kbc->dev, "property nvidia,kbc-row-pins not found\n");
+		return -ENOENT;
+	}
+	num_rows = proplen / sizeof(u32);
+
+	if (!of_get_property(np, "nvidia,kbc-col-pins", &proplen)) {
+		dev_err(kbc->dev, "property nvidia,kbc-col-pins not found\n");
+		return -ENOENT;
+	}
+	num_cols = proplen / sizeof(u32);
+
+	if (num_rows > kbc->hw_support->max_rows) {
+		dev_err(kbc->dev,
+			"Number of rows is more than supported by hardware\n");
+		return -EINVAL;
+	}
+
+	if (num_cols > kbc->hw_support->max_columns) {
+		dev_err(kbc->dev,
+			"Number of cols is more than supported by hardware\n");
+		return -EINVAL;
+	}
+
+	if (!of_get_property(np, "linux,keymap", &proplen)) {
+		dev_err(kbc->dev, "property linux,keymap not found\n");
+		return -ENOENT;
+	}
+
+	if (!num_rows || !num_cols || ((num_rows + num_cols) > KBC_MAX_GPIO)) {
+		dev_err(kbc->dev,
+			"keypad rows/columns not properly specified\n");
+		return -EINVAL;
+	}
+
+	/* Set all pins as non-configured */
+	for (i = 0; i < kbc->num_rows_and_columns; i++)
+		kbc->pin_cfg[i].type = PIN_CFG_IGNORE;
+
+	ret = of_property_read_u32_array(np, "nvidia,kbc-row-pins",
+				rows_cfg, num_rows);
+	if (ret < 0) {
+		dev_err(kbc->dev, "Rows configurations are not proper\n");
+		return -EINVAL;
+	}
+
+	ret = of_property_read_u32_array(np, "nvidia,kbc-col-pins",
+				cols_cfg, num_cols);
+	if (ret < 0) {
+		dev_err(kbc->dev, "Cols configurations are not proper\n");
+		return -EINVAL;
+	}
+
+	for (i = 0; i < num_rows; i++) {
+		kbc->pin_cfg[rows_cfg[i]].type = PIN_CFG_ROW;
+		kbc->pin_cfg[rows_cfg[i]].num = i;
+	}
+
+	for (i = 0; i < num_cols; i++) {
+		kbc->pin_cfg[cols_cfg[i]].type = PIN_CFG_COL;
+		kbc->pin_cfg[cols_cfg[i]].num = i;
+	}
+
+	return 0;
+}
+
+static const struct tegra_kbc_hw_support tegra20_kbc_hw_support = {
+	.max_rows	= 16,
+	.max_columns	= 8,
+};
+
+static const struct tegra_kbc_hw_support tegra11_kbc_hw_support = {
+	.max_rows	= 11,
+	.max_columns	= 8,
+};
+
+static const struct of_device_id tegra_kbc_of_match[] = {
+	{ .compatible = "nvidia,tegra114-kbc", .data = &tegra11_kbc_hw_support},
+	{ .compatible = "nvidia,tegra30-kbc", .data = &tegra20_kbc_hw_support},
+	{ .compatible = "nvidia,tegra20-kbc", .data = &tegra20_kbc_hw_support},
+	{ },
+};
+MODULE_DEVICE_TABLE(of, tegra_kbc_of_match);
+
+static int tegra_kbc_probe(struct platform_device *pdev)
+{
+	struct tegra_kbc *kbc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	int num_rows = 0;
 	unsigned int debounce_cnt;
 	unsigned int scan_time_rows;
+<<<<<<< HEAD
 
 	if (!pdata)
 		pdata = tegra_kbc_dt_parse_pdata(pdev);
@@ -744,6 +1007,58 @@ static int __devinit tegra_kbc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to get keyboard clock\n");
 		err = PTR_ERR(kbc->clk);
 		goto err_iounmap;
+=======
+	unsigned int keymap_rows;
+
+	kbc = devm_kzalloc(&pdev->dev, sizeof(*kbc), GFP_KERNEL);
+	if (!kbc) {
+		dev_err(&pdev->dev, "failed to alloc memory for kbc\n");
+		return -ENOMEM;
+	}
+
+	kbc->dev = &pdev->dev;
+	kbc->hw_support = device_get_match_data(&pdev->dev);
+	kbc->max_keys = kbc->hw_support->max_rows *
+				kbc->hw_support->max_columns;
+	kbc->num_rows_and_columns = kbc->hw_support->max_rows +
+					kbc->hw_support->max_columns;
+	keymap_rows = kbc->max_keys;
+	spin_lock_init(&kbc->lock);
+
+	err = tegra_kbc_parse_dt(kbc);
+	if (err)
+		return err;
+
+	if (!tegra_kbc_check_pin_cfg(kbc, &num_rows))
+		return -EINVAL;
+
+	kbc->irq = platform_get_irq(pdev, 0);
+	if (kbc->irq < 0)
+		return -ENXIO;
+
+	kbc->idev = devm_input_allocate_device(&pdev->dev);
+	if (!kbc->idev) {
+		dev_err(&pdev->dev, "failed to allocate input device\n");
+		return -ENOMEM;
+	}
+
+	timer_setup(&kbc->timer, tegra_kbc_keypress_timer, 0);
+
+	kbc->mmio = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(kbc->mmio))
+		return PTR_ERR(kbc->mmio);
+
+	kbc->clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(kbc->clk)) {
+		dev_err(&pdev->dev, "failed to get keyboard clock\n");
+		return PTR_ERR(kbc->clk);
+	}
+
+	kbc->rst = devm_reset_control_get(&pdev->dev, "kbc");
+	if (IS_ERR(kbc->rst)) {
+		dev_err(&pdev->dev, "failed to get keyboard reset\n");
+		return PTR_ERR(kbc->rst);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -752,6 +1067,7 @@ static int __devinit tegra_kbc_probe(struct platform_device *pdev)
 	 * the rows. There is an additional delay before the row scanning
 	 * starts. The repoll delay is computed in milliseconds.
 	 */
+<<<<<<< HEAD
 	debounce_cnt = min(pdata->debounce_cnt, KBC_MAX_DEBOUNCE_CNT);
 	scan_time_rows = (KBC_ROW_SCAN_TIME + debounce_cnt) * num_rows;
 	kbc->repoll_dly = KBC_ROW_SCAN_DLY + scan_time_rows + pdata->repeat_cnt;
@@ -789,10 +1105,48 @@ static int __devinit tegra_kbc_probe(struct platform_device *pdev)
 	}
 
 	disable_irq(kbc->irq);
+=======
+	debounce_cnt = min(kbc->debounce_cnt, KBC_MAX_DEBOUNCE_CNT);
+	scan_time_rows = (KBC_ROW_SCAN_TIME + debounce_cnt) * num_rows;
+	kbc->repoll_dly = KBC_ROW_SCAN_DLY + scan_time_rows + kbc->repeat_cnt;
+	kbc->repoll_dly = DIV_ROUND_UP(kbc->repoll_dly, KBC_CYCLE_MS);
+
+	kbc->idev->name = pdev->name;
+	kbc->idev->id.bustype = BUS_HOST;
+	kbc->idev->dev.parent = &pdev->dev;
+	kbc->idev->open = tegra_kbc_open;
+	kbc->idev->close = tegra_kbc_close;
+
+	if (kbc->keymap_data && kbc->use_fn_map)
+		keymap_rows *= 2;
+
+	err = matrix_keypad_build_keymap(kbc->keymap_data, NULL,
+					 keymap_rows,
+					 kbc->hw_support->max_columns,
+					 kbc->keycode, kbc->idev);
+	if (err) {
+		dev_err(&pdev->dev, "failed to setup keymap\n");
+		return err;
+	}
+
+	__set_bit(EV_REP, kbc->idev->evbit);
+	input_set_capability(kbc->idev, EV_MSC, MSC_SCAN);
+
+	input_set_drvdata(kbc->idev, kbc);
+
+	err = devm_request_irq(&pdev->dev, kbc->irq, tegra_kbc_isr,
+			       IRQF_TRIGGER_HIGH | IRQF_NO_AUTOEN,
+			       pdev->name, kbc);
+	if (err) {
+		dev_err(&pdev->dev, "failed to request keyboard IRQ\n");
+		return err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = input_register_device(kbc->idev);
 	if (err) {
 		dev_err(&pdev->dev, "failed to register input device\n");
+<<<<<<< HEAD
 		goto err_free_irq;
 	}
 
@@ -852,6 +1206,29 @@ static int __devexit tegra_kbc_remove(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_PM_SLEEP
+=======
+		return err;
+	}
+
+	platform_set_drvdata(pdev, kbc);
+	device_init_wakeup(&pdev->dev, kbc->wakeup);
+
+	return 0;
+}
+
+static void tegra_kbc_set_keypress_interrupt(struct tegra_kbc *kbc, bool enable)
+{
+	u32 val;
+
+	val = readl(kbc->mmio + KBC_CONTROL_0);
+	if (enable)
+		val |= KBC_CONTROL_KEYPRESS_INT_EN;
+	else
+		val &= ~KBC_CONTROL_KEYPRESS_INT_EN;
+	writel(val, kbc->mmio + KBC_CONTROL_0);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tegra_kbc_suspend(struct device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev);
@@ -881,7 +1258,11 @@ static int tegra_kbc_suspend(struct device *dev)
 		enable_irq(kbc->irq);
 		enable_irq_wake(kbc->irq);
 	} else {
+<<<<<<< HEAD
 		if (kbc->idev->users)
+=======
+		if (input_device_enabled(kbc->idev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tegra_kbc_stop(kbc);
 	}
 	mutex_unlock(&kbc->idev->mutex);
@@ -921,13 +1302,18 @@ static int tegra_kbc_resume(struct device *dev)
 			input_sync(kbc->idev);
 		}
 	} else {
+<<<<<<< HEAD
 		if (kbc->idev->users)
+=======
+		if (input_device_enabled(kbc->idev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = tegra_kbc_start(kbc);
 	}
 	mutex_unlock(&kbc->idev->mutex);
 
 	return err;
 }
+<<<<<<< HEAD
 #endif
 
 static SIMPLE_DEV_PM_OPS(tegra_kbc_pm_ops, tegra_kbc_suspend, tegra_kbc_resume);
@@ -945,6 +1331,17 @@ static struct platform_driver tegra_kbc_driver = {
 		.name	= "tegra-kbc",
 		.owner  = THIS_MODULE,
 		.pm	= &tegra_kbc_pm_ops,
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(tegra_kbc_pm_ops,
+				tegra_kbc_suspend, tegra_kbc_resume);
+
+static struct platform_driver tegra_kbc_driver = {
+	.probe		= tegra_kbc_probe,
+	.driver	= {
+		.name	= "tegra-kbc",
+		.pm	= pm_sleep_ptr(&tegra_kbc_pm_ops),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = tegra_kbc_of_match,
 	},
 };

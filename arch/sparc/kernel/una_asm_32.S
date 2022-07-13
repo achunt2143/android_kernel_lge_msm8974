@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* una_asm.S: Kernel unaligned trap assembler helpers.
  *
  * Copyright (C) 1996,2005,2008 David S. Miller (davem@davemloft.net)

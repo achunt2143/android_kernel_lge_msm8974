@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef FS_CEPH_IOCTL_H
 #define FS_CEPH_IOCTL_H
 
@@ -34,6 +38,11 @@
 struct ceph_ioctl_layout {
 	__u64 stripe_unit, stripe_count, object_size;
 	__u64 data_pool;
+<<<<<<< HEAD
+=======
+
+	/* obsolete.  new values ignored, always return -1 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__s64 preferred_osd;
 };
 

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/boot/compressed/head.S
  *
  *  Copyright (C) 1996-2002 Russell King
  *  Copyright (C) 2004 Hyok S. Choi (MPU support)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -11,6 +16,24 @@
 #include <linux/linkage.h>
 
 	.arch	armv7-a
+=======
+ */
+#include <linux/linkage.h>
+#include <asm/assembler.h>
+#include <asm/v7m.h>
+
+#include "efi-header.S"
+
+#ifdef __ARMEB__
+#define OF_DT_MAGIC 0xd00dfeed
+#else
+#define OF_DT_MAGIC 0xedfe0dd0
+#endif
+
+ AR_CLASS(	.arch	armv7-a	)
+ M_CLASS(	.arch	armv7-m	)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Debugging stuff
  *
@@ -23,6 +46,7 @@
 #if defined(CONFIG_DEBUG_ICEDCC)
 
 #if defined(CONFIG_CPU_V6) || defined(CONFIG_CPU_V6K) || defined(CONFIG_CPU_V7)
+<<<<<<< HEAD
 		.macro	loadsp, rb, tmp
 		.endm
 		.macro	writeb, ch, rb
@@ -38,12 +62,30 @@
 		.macro	loadsp, rb, tmp
 		.endm
 		.macro	writeb, ch, rb
+=======
+		.macro	loadsp, rb, tmp1, tmp2
+		.endm
+		.macro	writeb, ch, rb, tmp
+		mcr	p14, 0, \ch, c0, c5, 0
+		.endm
+#elif defined(CONFIG_CPU_XSCALE)
+		.macro	loadsp, rb, tmp1, tmp2
+		.endm
+		.macro	writeb, ch, rb, tmp
+		mcr	p14, 0, \ch, c8, c0, 0
+		.endm
+#else
+		.macro	loadsp, rb, tmp1, tmp2
+		.endm
+		.macro	writeb, ch, rb, tmp
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcr	p14, 0, \ch, c1, c0, 0
 		.endm
 #endif
 
 #else
 
+<<<<<<< HEAD
 #include <mach/debug-macro.S>
 
 		.macro	writeb,	ch, rb
@@ -67,6 +109,27 @@
 #else
 		.macro	loadsp,	rb, tmp
 		addruart \rb, \tmp
+=======
+#include CONFIG_DEBUG_LL_INCLUDE
+
+		.macro	writeb,	ch, rb, tmp
+#ifdef CONFIG_DEBUG_UART_FLOW_CONTROL
+		waituartcts \tmp, \rb
+#endif
+		waituarttxrdy \tmp, \rb
+		senduart \ch, \rb
+		busyuart \tmp, \rb
+		.endm
+
+#if defined(CONFIG_ARCH_SA1100)
+		.macro	loadsp, rb, tmp1, tmp2
+		mov	\rb, #0x80000000	@ physical base address
+		add	\rb, \rb, #0x00010000	@ Ser1
+		.endm
+#else
+		.macro	loadsp,	rb, tmp1, tmp2
+		addruart \rb, \tmp1, \tmp2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.endm
 #endif
 #endif
@@ -83,6 +146,7 @@
 		bl	phex
 		.endm
 
+<<<<<<< HEAD
 		.macro	debug_reloc_start
 #ifdef DEBUG
 		kputc	#'\n'
@@ -100,10 +164,36 @@
 		kphex	r9, 8		/* decompressed kernel end  */
 		kputc	#'>'
 		kphex	r4, 8		/* kernel execution address */
+=======
+		/*
+		 * Debug kernel copy by printing the memory addresses involved
+		 */
+		.macro dbgkc, begin, end, cbegin, cend
+#ifdef DEBUG
+		kputc   #'C'
+		kputc   #':'
+		kputc   #'0'
+		kputc   #'x'
+		kphex   \begin, 8	/* Start of compressed kernel */
+		kputc	#'-'
+		kputc	#'0'
+		kputc	#'x'
+		kphex	\end, 8		/* End of compressed kernel */
+		kputc	#'-'
+		kputc	#'>'
+		kputc   #'0'
+		kputc   #'x'
+		kphex   \cbegin, 8	/* Start of kernel copy */
+		kputc	#'-'
+		kputc	#'0'
+		kputc	#'x'
+		kphex	\cend, 8	/* End of kernel copy */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kputc	#'\n'
 #endif
 		.endm
 
+<<<<<<< HEAD
 		.macro	debug_reloc_end
 #ifdef DEBUG
 		kphex	r5, 8		/* end of kernel */
@@ -114,10 +204,73 @@
 		.endm
 
 		.section ".start", #alloc, #execinstr
+=======
+		/*
+		 * Debug print of the final appended DTB location
+		 */
+		.macro dbgadtb, begin, size
+#ifdef DEBUG
+		kputc   #'D'
+		kputc   #'T'
+		kputc   #'B'
+		kputc   #':'
+		kputc   #'0'
+		kputc   #'x'
+		kphex   \begin, 8	/* Start of appended DTB */
+		kputc	#' '
+		kputc	#'('
+		kputc	#'0'
+		kputc	#'x'
+		kphex	\size, 8	/* Size of appended DTB */
+		kputc	#')'
+		kputc	#'\n'
+#endif
+		.endm
+
+		.macro	enable_cp15_barriers, reg
+		mrc	p15, 0, \reg, c1, c0, 0	@ read SCTLR
+		tst	\reg, #(1 << 5)		@ CP15BEN bit set?
+		bne	.L_\@
+		orr	\reg, \reg, #(1 << 5)	@ CP15 barrier instructions
+		mcr	p15, 0, \reg, c1, c0, 0	@ write SCTLR
+ ARM(		.inst   0xf57ff06f		@ v7+ isb	)
+ THUMB(		isb						)
+.L_\@:
+		.endm
+
+		/*
+		 * The kernel build system appends the size of the
+		 * decompressed kernel at the end of the compressed data
+		 * in little-endian form.
+		 */
+		.macro	get_inflated_image_size, res:req, tmp1:req, tmp2:req
+		adr	\res, .Linflated_image_size_offset
+		ldr	\tmp1, [\res]
+		add	\tmp1, \tmp1, \res	@ address of inflated image size
+
+		ldrb	\res, [\tmp1]		@ get_unaligned_le32
+		ldrb	\tmp2, [\tmp1, #1]
+		orr	\res, \res, \tmp2, lsl #8
+		ldrb	\tmp2, [\tmp1, #2]
+		ldrb	\tmp1, [\tmp1, #3]
+		orr	\res, \res, \tmp2, lsl #16
+		orr	\res, \res, \tmp1, lsl #24
+		.endm
+
+		.macro	be32tocpu, val, tmp
+#ifndef __ARMEB__
+		/* convert to little endian */
+		rev_l	\val, \tmp
+#endif
+		.endm
+
+		.section ".start", "ax"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sort out different calling conventions
  */
 		.align
+<<<<<<< HEAD
 		.arm				@ Always enter in ARM state
 start:
 		.type	start,#function
@@ -137,6 +290,59 @@ start:
 		mov	r8, r2			@ save atags pointer
 
 #ifndef __ARM_ARCH_2__
+=======
+		/*
+		 * Always enter in ARM state for CPUs that support the ARM ISA.
+		 * As of today (2014) that's exactly the members of the A and R
+		 * classes.
+		 */
+ AR_CLASS(	.arm	)
+start:
+		.type	start,#function
+		/*
+		 * These 7 nops along with the 1 nop immediately below for
+		 * !THUMB2 form 8 nops that make the compressed kernel bootable
+		 * on legacy ARM systems that were assuming the kernel in a.out
+		 * binary format. The boot loaders on these systems would
+		 * jump 32 bytes into the image to skip the a.out header.
+		 * with these 8 nops filling exactly 32 bytes, things still
+		 * work as expected on these legacy systems. Thumb2 mode keeps
+		 * 7 of the nops as it turns out that some boot loaders
+		 * were patching the initial instructions of the kernel, i.e
+		 * had started to exploit this "patch area".
+		 */
+		__initial_nops
+		.rept	5
+		__nop
+		.endr
+#ifndef CONFIG_THUMB2_KERNEL
+		__nop
+#else
+ AR_CLASS(	sub	pc, pc, #3	)	@ A/R: switch to Thumb2 mode
+  M_CLASS(	nop.w			)	@ M: already in Thumb2 mode
+		.thumb
+#endif
+		W(b)	1f
+
+		.word	_magic_sig	@ Magic numbers to help the loader
+		.word	_magic_start	@ absolute load/run zImage address
+		.word	_magic_end	@ zImage end address
+		.word	0x04030201	@ endianness flag
+		.word	0x45454545	@ another magic number to indicate
+		.word	_magic_table	@ additional data table
+
+		__EFI_HEADER
+1:
+ ARM_BE8(	setend	be		)	@ go BE8 if compiled for BE8
+ AR_CLASS(	mrs	r9, cpsr	)
+#ifdef CONFIG_ARM_VIRT_EXT
+		bl	__hyp_stub_install	@ get into SVC mode, reversibly
+#endif
+		mov	r7, r1			@ save architecture ID
+		mov	r8, r2			@ save atags pointer
+
+#ifndef CONFIG_CPU_V7M
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Booting from Angel - need to enter SVC mode and disable
 		 * FIQs/IRQs (numeric definitions from angel arm.h source).
@@ -149,6 +355,7 @@ start:
  ARM(		swi	0x123456	)	@ angel_SWI_ARM
  THUMB(		svc	0xab		)	@ angel_SWI_THUMB
 not_angel:
+<<<<<<< HEAD
 		mrs	r2, cpsr		@ turn off interrupts to
 		orr	r2, r2, #0xc0		@ prevent angel from running
 		msr	cpsr_c, r2
@@ -156,6 +363,12 @@ not_angel:
 		teqp	pc, #0x0c000003		@ turn off interrupts
 #endif
 
+=======
+		safe_svcmode_maskall r0
+		msr	spsr_cxsf, r9		@ Save the CPU boot mode in
+						@ SPSR
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Note that some cache flushing and other stuff may
 		 * be needed here - is there an Angel SWI call for this?
@@ -169,14 +382,69 @@ not_angel:
 		.text
 
 #ifdef CONFIG_AUTO_ZRELADDR
+<<<<<<< HEAD
 		@ determine final kernel image address
 		mov	r4, pc
 		and	r4, r4, #0xf8000000
 		add	r4, r4, #TEXT_OFFSET
+=======
+		/*
+		 * Find the start of physical memory.  As we are executing
+		 * without the MMU on, we are in the physical address space.
+		 * We just need to get rid of any offset by aligning the
+		 * address.
+		 *
+		 * This alignment is a balance between the requirements of
+		 * different platforms - we have chosen 128MB to allow
+		 * platforms which align the start of their physical memory
+		 * to 128MB to use this feature, while allowing the zImage
+		 * to be placed within the first 128MB of memory on other
+		 * platforms.  Increasing the alignment means we place
+		 * stricter alignment requirements on the start of physical
+		 * memory, but relaxing it means that we break people who
+		 * are already placing their zImage in (eg) the top 64MB
+		 * of this range.
+		 */
+		mov	r0, pc
+		and	r0, r0, #0xf8000000
+#ifdef CONFIG_USE_OF
+		adr	r1, LC1
+#ifdef CONFIG_ARM_APPENDED_DTB
+		/*
+		 * Look for an appended DTB.  If found, we cannot use it to
+		 * validate the calculated start of physical memory, as its
+		 * memory nodes may need to be augmented by ATAGS stored at
+		 * an offset from the same start of physical memory.
+		 */
+		ldr	r2, [r1, #4]	@ get &_edata
+		add	r2, r2, r1	@ relocate it
+		ldr	r2, [r2]	@ get DTB signature
+		ldr	r3, =OF_DT_MAGIC
+		cmp	r2, r3		@ do we have a DTB there?
+		beq	1f		@ if yes, skip validation
+#endif /* CONFIG_ARM_APPENDED_DTB */
+
+		/*
+		 * Make sure we have some stack before calling C code.
+		 * No GOT fixup has occurred yet, but none of the code we're
+		 * about to call uses any global variables.
+		 */
+		ldr	sp, [r1]	@ get stack location
+		add	sp, sp, r1	@ apply relocation
+
+		/* Validate calculated start against passed DTB */
+		mov	r1, r8
+		bl	fdt_check_mem_start
+1:
+#endif /* CONFIG_USE_OF */
+		/* Determine final kernel image address. */
+		add	r4, r0, #TEXT_OFFSET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 		ldr	r4, =zreladdr
 #endif
 
+<<<<<<< HEAD
 		bl	cache_on
 
 restart:	adr	r0, LC0
@@ -208,6 +476,33 @@ restart:	adr	r0, LC0
 		/* malloc space is above the relocated stack (64k max) */
 		add	sp, sp, r0
 		add	r10, sp, #0x10000
+=======
+		/*
+		 * Set up a page table only if it won't overwrite ourself.
+		 * That means r4 < pc || r4 - 16k page directory > &_end.
+		 * Given that r4 > &_end is most unfrequent, we add a rough
+		 * additional 1MB of room for a possible appended DTB.
+		 */
+		mov	r0, pc
+		cmp	r0, r4
+		ldrcc	r0, .Lheadroom
+		addcc	r0, r0, pc
+		cmpcc	r4, r0
+		orrcc	r4, r4, #1		@ remember we skipped cache_on
+		blcs	cache_on
+
+restart:	adr	r0, LC1
+		ldr	sp, [r0]
+		ldr	r6, [r0, #4]
+		add	sp, sp, r0
+		add	r6, r6, r0
+
+		get_inflated_image_size	r9, r10, lr
+
+#ifndef CONFIG_ZBOOT_ROM
+		/* malloc space is above the relocated stack (64k max) */
+		add	r10, sp, #MALLOC_SIZE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 		/*
 		 * With ZBOOT_ROM the bss/stack is non relocatable,
@@ -220,18 +515,25 @@ restart:	adr	r0, LC0
 		mov	r5, #0			@ init dtb size to 0
 #ifdef CONFIG_ARM_APPENDED_DTB
 /*
+<<<<<<< HEAD
  *   r0  = delta
  *   r2  = BSS start
  *   r3  = BSS end
  *   r4  = final kernel address
+=======
+ *   r4  = final kernel address (possibly with LSB set)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   r5  = appended dtb size (still unknown)
  *   r6  = _edata
  *   r7  = architecture ID
  *   r8  = atags/device tree pointer
  *   r9  = size of decompressed image
  *   r10 = end of this image, including  bss/stack/malloc space if non XIP
+<<<<<<< HEAD
  *   r11 = GOT start
  *   r12 = GOT end
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   sp  = stack pointer
  *
  * if there are device trees (dtb) appended to zImage, advance r10 so that the
@@ -239,11 +541,15 @@ restart:	adr	r0, LC0
  */
 
 		ldr	lr, [r6, #0]
+<<<<<<< HEAD
 #ifndef __ARMEB__
 		ldr	r1, =0xedfe0dd0		@ sig is 0xd00dfeed big endian
 #else
 		ldr	r1, =0xd00dfeed
 #endif
+=======
+		ldr	r1, =OF_DT_MAGIC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmp	lr, r1
 		bne	dtb_check_done		@ not found
 
@@ -252,6 +558,7 @@ restart:	adr	r0, LC0
 		 * OK... Let's do some funky business here.
 		 * If we do have a DTB appended to zImage, and we do have
 		 * an ATAG list around, we want the later to be translated
+<<<<<<< HEAD
 		 * and folded into the former here.  To be on the safe side,
 		 * let's temporarily move  the stack away into the malloc
 		 * area.  No GOT fixup has occurred yet, but none of the
@@ -262,6 +569,33 @@ restart:	adr	r0, LC0
 		mov	r0, r8
 		mov	r1, r6
 		sub	r2, sp, r6
+=======
+		 * and folded into the former here. No GOT fixup has occurred
+		 * yet, but none of the code we're about to call uses any
+		 * global variable.
+		*/
+
+		/* Get the initial DTB size */
+		ldr	r5, [r6, #4]
+		be32tocpu r5, r1
+		dbgadtb	r6, r5
+		/* 50% DTB growth should be good enough */
+		add	r5, r5, r5, lsr #1
+		/* preserve 64-bit alignment */
+		add	r5, r5, #7
+		bic	r5, r5, #7
+		/* clamp to 32KB min and 1MB max */
+		cmp	r5, #(1 << 15)
+		movlo	r5, #(1 << 15)
+		cmp	r5, #(1 << 20)
+		movhi	r5, #(1 << 20)
+		/* temporarily relocate the stack past the DTB work space */
+		add	sp, sp, r5
+
+		mov	r0, r8
+		mov	r1, r6
+		mov	r2, r5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bl	atags_to_fdt
 
 		/*
@@ -271,6 +605,7 @@ restart:	adr	r0, LC0
 		 */
 		cmp	r0, #1
 		sub	r0, r4, #TEXT_OFFSET
+<<<<<<< HEAD
 		add	r0, r0, #0x100
 		mov	r1, r6
 		sub	r2, sp, r6
@@ -278,6 +613,15 @@ restart:	adr	r0, LC0
 
 		ldmfd	sp!, {r0-r3, ip, lr}
 		sub	sp, sp, #0x10000
+=======
+		bic	r0, r0, #1
+		add	r0, r0, #0x100
+		mov	r1, r6
+		mov	r2, r5
+		bleq	atags_to_fdt
+
+		sub	sp, sp, r5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 		mov	r8, r6			@ use the appended device tree
@@ -294,6 +638,7 @@ restart:	adr	r0, LC0
 		subs	r1, r5, r1
 		addhi	r9, r9, r1
 
+<<<<<<< HEAD
 		/* Get the dtb's size */
 		ldr	r5, [r6, #4]
 #ifndef __ARMEB__
@@ -303,6 +648,11 @@ restart:	adr	r0, LC0
 		mov	r5, r5, ror #8
 		eor	r5, r5, r1, lsr #8
 #endif
+=======
+		/* Get the current DTB size */
+		ldr	r5, [r6, #4]
+		be32tocpu r5, r1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* preserve 64-bit alignment */
 		add	r5, r5, #7
@@ -317,12 +667,20 @@ dtb_check_done:
 
 /*
  * Check to see if we will overwrite ourselves.
+<<<<<<< HEAD
  *   r4  = final kernel address
+=======
+ *   r4  = final kernel address (possibly with LSB set)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   r9  = size of decompressed image
  *   r10 = end of this image, including  bss/stack/malloc space if non XIP
  * We basically want:
  *   r4 - 16k page directory >= r10 -> OK
  *   r4 + image length <= address of wont_overwrite -> OK
+<<<<<<< HEAD
+=======
+ * Note: the possible LSB in r4 is harmless here.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 		add	r10, r10, #16384
 		cmp	r4, r10
@@ -351,12 +709,51 @@ dtb_check_done:
 		adr	r5, restart
 		bic	r5, r5, #31
 
+<<<<<<< HEAD
+=======
+/* Relocate the hyp vector base if necessary */
+#ifdef CONFIG_ARM_VIRT_EXT
+		mrs	r0, spsr
+		and	r0, r0, #MODE_MASK
+		cmp	r0, #HYP_MODE
+		bne	1f
+
+		/*
+		 * Compute the address of the hyp vectors after relocation.
+		 * Call __hyp_set_vectors with the new address so that we
+		 * can HVC again after the copy.
+		 */
+		adr_l	r0, __hyp_stub_vectors
+		sub	r0, r0, r5
+		add	r0, r0, r10
+		bl	__hyp_set_vectors
+1:
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sub	r9, r6, r5		@ size to copy
 		add	r9, r9, #31		@ rounded up to a multiple
 		bic	r9, r9, #31		@ ... of 32 bytes
 		add	r6, r9, r5
 		add	r9, r9, r10
 
+<<<<<<< HEAD
+=======
+#ifdef DEBUG
+		sub     r10, r6, r5
+		sub     r10, r9, r10
+		/*
+		 * We are about to copy the kernel to a new memory area.
+		 * The boundaries of the new memory area can be found in
+		 * r10 and r9, whilst r5 and r6 contain the boundaries
+		 * of the memory we are going to copy.
+		 * Calling dbgkc will help with the printing of this
+		 * information.
+		 */
+		dbgkc	r5, r6, r10, r9
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:		ldmdb	r6!, {r0 - r3, r10 - r12, lr}
 		cmp	r6, r5
 		stmdb	r9!, {r0 - r3, r10 - r12, lr}
@@ -365,6 +762,7 @@ dtb_check_done:
 		/* Preserve offset to relocated code. */
 		sub	r6, r9, r6
 
+<<<<<<< HEAD
 #ifndef CONFIG_ZBOOT_ROM
 		/* cache_clean_flush may use the stack, so relocate it */
 		add	sp, sp, r6
@@ -373,16 +771,34 @@ dtb_check_done:
 		bl	cache_clean_flush
 
 		adr	r0, BSYM(restart)
+=======
+		mov	r0, r9			@ start of relocated zImage
+		add	r1, sp, r6		@ end of relocated zImage
+		bl	cache_clean_flush
+
+		badr	r0, restart
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add	r0, r0, r6
 		mov	pc, r0
 
 wont_overwrite:
+<<<<<<< HEAD
+=======
+		adr	r0, LC0
+		ldmia	r0, {r1, r2, r3, r11, r12}
+		sub	r0, r0, r1		@ calculate the delta offset
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * If delta is zero, we are running at the address we were linked at.
  *   r0  = delta
  *   r2  = BSS start
  *   r3  = BSS end
+<<<<<<< HEAD
  *   r4  = kernel execution address
+=======
+ *   r4  = kernel execution address (possibly with LSB set)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   r5  = appended dtb size (0 if not present)
  *   r7  = architecture ID
  *   r8  = atags pointer
@@ -445,6 +861,18 @@ not_relocated:	mov	r0, #0
 		cmp	r2, r3
 		blo	1b
 
+<<<<<<< HEAD
+=======
+		/*
+		 * Did we skip the cache setup earlier?
+		 * That is indicated by the LSB in r4.
+		 * Do it now if so.
+		 */
+		tst	r4, #1
+		bic	r4, r4, #1
+		blne	cache_on
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The C runtime environment should now be setup sufficiently.
  * Set up some pointers, and start decompressing.
@@ -454,6 +882,7 @@ not_relocated:	mov	r0, #0
  */
 		mov	r0, r4
 		mov	r1, sp			@ malloc space above stack
+<<<<<<< HEAD
 		add	r2, sp, #0x10000	@ 64k max
 		mov	r3, r7
 		bl	decompress_kernel
@@ -464,12 +893,40 @@ not_relocated:	mov	r0, #0
 		mov	r2, r8			@ restore atags pointer
  ARM(		mov	pc, r4	)		@ call kernel
  THUMB(		bx	r4	)		@ entry point is always ARM
+=======
+		add	r2, sp, #MALLOC_SIZE	@ 64k max
+		mov	r3, r7
+		bl	decompress_kernel
+
+		get_inflated_image_size	r1, r2, r3
+
+		mov	r0, r4			@ start of inflated image
+		add	r1, r1, r0		@ end of inflated image
+		bl	cache_clean_flush
+		bl	cache_off
+
+#ifdef CONFIG_ARM_VIRT_EXT
+		mrs	r0, spsr		@ Get saved CPU boot mode
+		and	r0, r0, #MODE_MASK
+		cmp	r0, #HYP_MODE		@ if not booted in HYP mode...
+		bne	__enter_kernel		@ boot kernel directly
+
+		adr_l	r0, __hyp_reentry_vectors
+		bl	__hyp_set_vectors
+		__HVC(0)			@ otherwise bounce to hyp mode
+
+		b	.			@ should never be reached
+#else
+		b	__enter_kernel
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		.align	2
 		.type	LC0, #object
 LC0:		.word	LC0			@ r1
 		.word	__bss_start		@ r2
 		.word	_end			@ r3
+<<<<<<< HEAD
 		.word	_edata			@ r6
 		.word	input_data_end - 4	@ r10 (inflated size location)
 		.word	_got_start		@ r11
@@ -477,6 +934,23 @@ LC0:		.word	LC0			@ r1
 		.word	.L_user_stack_end	@ sp
 		.size	LC0, . - LC0
 
+=======
+		.word	_got_start		@ r11
+		.word	_got_end		@ ip
+		.size	LC0, . - LC0
+
+		.type	LC1, #object
+LC1:		.word	.L_user_stack_end - LC1	@ sp
+		.word	_edata - LC1		@ r6
+		.size	LC1, . - LC1
+
+.Lheadroom:
+		.word	_end - restart + 16384 + 1024*1024
+
+.Linflated_image_size_offset:
+		.long	(input_data_end - 4) - .
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ARCH_RPC
 		.globl	params
 params:		ldr	r0, =0x10000100		@ params_phys for RPC
@@ -486,6 +960,27 @@ params:		ldr	r0, =0x10000100		@ params_phys for RPC
 #endif
 
 /*
+<<<<<<< HEAD
+=======
+ * dcache_line_size - get the minimum D-cache line size from the CTR register
+ * on ARMv7.
+ */
+		.macro	dcache_line_size, reg, tmp
+#ifdef CONFIG_CPU_V7M
+		movw	\tmp, #:lower16:BASEADDR_V7M_SCB + V7M_SCB_CTR
+		movt	\tmp, #:upper16:BASEADDR_V7M_SCB + V7M_SCB_CTR
+		ldr	\tmp, [\tmp]
+#else
+		mrc	p15, 0, \tmp, c0, c0, 1		@ read ctr
+#endif
+		lsr	\tmp, \tmp, #16
+		and	\tmp, \tmp, #0xf		@ cache line size encoding
+		mov	\reg, #4			@ bytes per word
+		mov	\reg, \reg, lsl \tmp		@ actual cache line size
+		.endm
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Turn on the cache.  We need to setup some page tables so that we
  * can have both the I and D caches on.
  *
@@ -618,11 +1113,19 @@ ENDPROC(__setup_mmu)
 @ Enable unaligned access on v6, to allow better code generation
 @ for the decompressor C code:
 __armv6_mmu_cache_on:
+<<<<<<< HEAD
 	mrc    p15, 0, r0, c1, c0, 0	@ read SCTLR
 	bic    r0, r0, #2				@ A (no unaligned access fault)
 	orr    r0, r0, #1 << 22         @ U (v6 unaligned access model)
 	mcr	   p15, 0, r0, c1, c0, 0    @ write SCTLR	623
 	b      __armv4_mmu_cache_on
+=======
+		mrc	p15, 0, r0, c1, c0, 0	@ read SCTLR
+		bic	r0, r0, #2		@ A (no unaligned access fault)
+		orr	r0, r0, #1 << 22	@ U (v6 unaligned access model)
+		mcr	p15, 0, r0, c1, c0, 0	@ write SCTLR
+		b	__armv4_mmu_cache_on
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 __arm926ejs_mmu_cache_on:
 #ifdef CONFIG_CPU_DCACHE_WRITETHROUGH
@@ -641,9 +1144,13 @@ __armv4_mmu_cache_on:
 		mrc	p15, 0, r0, c1, c0, 0	@ read control reg
 		orr	r0, r0, #0x5000		@ I-cache enable, RR cache replacement
 		orr	r0, r0, #0x0030
+<<<<<<< HEAD
 #ifdef CONFIG_CPU_ENDIAN_BE8
 		orr	r0, r0, #1 << 25	@ big-endian page tables
 #endif
+=======
+ ARM_BE8(	orr	r0, r0, #1 << 25 )	@ big-endian page tables
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bl	__common_mmu_cache_on
 		mov	r0, #0
 		mcr	p15, 0, r0, c8, c7, 0	@ flush I,D TLBs
@@ -651,6 +1158,10 @@ __armv4_mmu_cache_on:
 		mov	pc, r12
 
 __armv7_mmu_cache_on:
+<<<<<<< HEAD
+=======
+		enable_cp15_barriers	r11
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mov	r12, lr
 #ifdef CONFIG_MMU
 		mrc	p15, 0, r11, c0, c1, 4	@ read ID_MMFR0
@@ -666,6 +1177,7 @@ __armv7_mmu_cache_on:
 		bic	r0, r0, #1 << 28	@ clear SCTLR.TRE
 		orr	r0, r0, #0x5000		@ I-cache enable, RR cache replacement
 		orr	r0, r0, #0x003c		@ write buffer
+<<<<<<< HEAD
 		bic r0, r0, #2          @ A (no unaligned access fault)
 		orr    r0, r0, #1 << 22 @ U (v6 unaligned access model)
 								@ (needed for ARM1176)
@@ -677,6 +1189,21 @@ __armv7_mmu_cache_on:
 		movne	r1, #0xfffffffd		@ domain 0 = client
 		mcrne	p15, 0, r3, c2, c0, 0	@ load page table pointer
 		mcrne	p15, 0, r1, c3, c0, 0	@ load domain access control
+=======
+		bic	r0, r0, #2		@ A (no unaligned access fault)
+		orr	r0, r0, #1 << 22	@ U (v6 unaligned access model)
+						@ (needed for ARM1176)
+#ifdef CONFIG_MMU
+ ARM_BE8(	orr	r0, r0, #1 << 25 )	@ big-endian page tables
+		mrcne   p15, 0, r6, c2, c0, 2   @ read ttb control reg
+		orrne	r0, r0, #1		@ MMU enabled
+		movne	r1, #0xfffffffd		@ domain 0 = client
+		bic     r6, r6, #1 << 31        @ 32-bit translation system
+		bic     r6, r6, #(7 << 0) | (1 << 4)	@ use only ttbr0
+		mcrne	p15, 0, r3, c2, c0, 0	@ load page table pointer
+		mcrne	p15, 0, r1, c3, c0, 0	@ load domain access control
+		mcrne   p15, 0, r6, c2, c0, 2   @ load ttb control
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		mcr	p15, 0, r0, c7, c5, 4	@ ISB
 		mcr	p15, 0, r0, c1, c0, 0	@ load control register
@@ -700,6 +1227,7 @@ __fa526_cache_on:
 		mcr	p15, 0, r0, c8, c7, 0	@ flush UTLB
 		mov	pc, r12
 
+<<<<<<< HEAD
 __arm6_mmu_cache_on:
 		mov	r12, lr
 		mov	r6, #CB_BITS | 0x12	@ U
@@ -713,6 +1241,8 @@ __arm6_mmu_cache_on:
 		mcr	p15, 0, r0, c5, c0, 0	@ invalidate whole TLB v3
 		mov	pc, r12
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __common_mmu_cache_on:
 #ifndef CONFIG_THUMB2_KERNEL
 #ifndef DEBUG
@@ -747,6 +1277,19 @@ __common_mmu_cache_on:
 call_cache_fn:	adr	r12, proc_types
 #ifdef CONFIG_CPU_CP15
 		mrc	p15, 0, r9, c0, c0	@ get processor ID
+<<<<<<< HEAD
+=======
+#elif defined(CONFIG_CPU_V7M)
+		/*
+		 * On v7-M the processor id is located in the V7M_SCB_CPUID
+		 * register, but as cache handling is IMPLEMENTATION DEFINED on
+		 * v7-M (if existant at all) we just return early here.
+		 * If V7M_SCB_CPUID were used the cpu ID functions (i.e.
+		 * __armv7_mmu_cache_{on,off,flush}) would be selected which
+		 * use cp15 registers that are not implemented on v7-M.
+		 */
+		bx	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 		ldr	r9, =CONFIG_PROCESSOR_ID
 #endif
@@ -777,6 +1320,7 @@ call_cache_fn:	adr	r12, proc_types
 		.align	2
 		.type	proc_types,#object
 proc_types:
+<<<<<<< HEAD
 		.word	0x41560600		@ ARM6/610
 		.word	0xffffffe0
 		W(b)	__arm6_mmu_cache_off	@ works, but slow
@@ -791,18 +1335,32 @@ proc_types:
 		/* This collides with some V7 IDs, preventing correct detection */
 		.word	0x00000000		@ old ARM ID
 		.word	0x0000f000
+=======
+		.word	0x41000000		@ old ARM ID
+		.word	0xff00f000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mov	pc, lr
  THUMB(		nop				)
 		mov	pc, lr
  THUMB(		nop				)
 		mov	pc, lr
  THUMB(		nop				)
+<<<<<<< HEAD
 #endif
 
 		.word	0x41007000		@ ARM7/710
 		.word	0xfff8fe00
 		W(b)	__arm7_mmu_cache_off
 		W(b)	__arm7_mmu_cache_off
+=======
+
+		.word	0x41007000		@ ARM7/710
+		.word	0xfff8fe00
+		mov	pc, lr
+ THUMB(		nop				)
+		mov	pc, lr
+ THUMB(		nop				)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mov	pc, lr
  THUMB(		nop				)
 
@@ -985,6 +1543,7 @@ __armv4_mmu_cache_off:
 __armv7_mmu_cache_off:
 		mrc	p15, 0, r0, c1, c0
 #ifdef CONFIG_MMU
+<<<<<<< HEAD
 		bic	r0, r0, #0x000d
 #else
 		bic	r0, r0, #0x000c
@@ -992,6 +1551,13 @@ __armv7_mmu_cache_off:
 		mcr	p15, 0, r0, c1, c0	@ turn MMU and cache off
 		mov	r12, lr
 		bl	__armv7_mmu_cache_flush
+=======
+		bic	r0, r0, #0x0005
+#else
+		bic	r0, r0, #0x0004
+#endif
+		mcr	p15, 0, r0, c1, c0	@ turn MMU and cache off
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mov	r0, #0
 #ifdef CONFIG_MMU
 		mcr	p15, 0, r0, c8, c7, 0	@ invalidate whole TLB
@@ -999,6 +1565,7 @@ __armv7_mmu_cache_off:
 		mcr	p15, 0, r0, c7, c5, 6	@ invalidate BTC
 		mcr	p15, 0, r0, c7, c10, 4	@ DSB
 		mcr	p15, 0, r0, c7, c5, 4	@ ISB
+<<<<<<< HEAD
 		mov	pc, r12
 
 __arm6_mmu_cache_off:
@@ -1014,11 +1581,19 @@ __armv3_mmu_cache_off:
 		mov	r0, #0
 		mcr	p15, 0, r0, c7, c0, 0	@ invalidate whole cache v3
 		mcr	p15, 0, r0, c5, c0, 0	@ invalidate whole TLB v3
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mov	pc, lr
 
 /*
  * Clean and flush the cache to maintain consistency.
  *
+<<<<<<< HEAD
+=======
+ * On entry,
+ *  r0 = start address
+ *  r1 = end address (exclusive)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * On exit,
  *  r1, r2, r3, r9, r10, r11, r12 corrupted
  * This routine must preserve:
@@ -1027,9 +1602,18 @@ __armv3_mmu_cache_off:
 		.align	5
 cache_clean_flush:
 		mov	r3, #16
+<<<<<<< HEAD
 		b	call_cache_fn
 
 __armv4_mpu_cache_flush:
+=======
+		mov	r11, r1
+		b	call_cache_fn
+
+__armv4_mpu_cache_flush:
+		tst	r4, #1
+		movne	pc, lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mov	r2, #1
 		mov	r3, #0
 		mcr	p15, 0, ip, c7, c6, 0	@ invalidate D cache
@@ -1047,6 +1631,11 @@ __armv4_mpu_cache_flush:
 		mov	pc, lr
 		
 __fa526_cache_flush:
+<<<<<<< HEAD
+=======
+		tst	r4, #1
+		movne	pc, lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mov	r1, #0
 		mcr	p15, 0, r1, c7, c14, 0	@ clean and invalidate D cache
 		mcr	p15, 0, r1, c7, c5, 0	@ flush I cache
@@ -1055,13 +1644,26 @@ __fa526_cache_flush:
 
 __armv6_mmu_cache_flush:
 		mov	r1, #0
+<<<<<<< HEAD
 		mcr	p15, 0, r1, c7, c14, 0	@ clean+invalidate D
 		mcr	p15, 0, r1, c7, c5, 0	@ invalidate I+BTB
 		mcr	p15, 0, r1, c7, c15, 0	@ clean+invalidate unified
+=======
+		tst	r4, #1
+		mcreq	p15, 0, r1, c7, c14, 0	@ clean+invalidate D
+		mcr	p15, 0, r1, c7, c5, 0	@ invalidate I+BTB
+		mcreq	p15, 0, r1, c7, c15, 0	@ clean+invalidate unified
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcr	p15, 0, r1, c7, c10, 4	@ drain WB
 		mov	pc, lr
 
 __armv7_mmu_cache_flush:
+<<<<<<< HEAD
+=======
+		enable_cp15_barriers	r10
+		tst	r4, #1
+		bne	iflush
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mrc	p15, 0, r10, c0, c1, 5	@ read ID_MMFR1
 		tst	r10, #0xf << 16		@ hierarchical cache (ARMv7)
 		mov	r10, #0
@@ -1069,6 +1671,7 @@ __armv7_mmu_cache_flush:
 		mcr	p15, 0, r10, c7, c14, 0	@ clean+invalidate D
 		b	iflush
 hierarchical:
+<<<<<<< HEAD
 		mcr	p15, 0, r10, c7, c10, 5	@ DMB
 		stmfd	sp!, {r0-r7, r9-r11}
 		mrc	p15, 1, r0, c0, c0, 1	@ read clidr
@@ -1114,6 +1717,18 @@ finished:
 		ldmfd	sp!, {r0-r7, r9-r11}
 		mov	r10, #0			@ swith back to cache level 0
 		mcr	p15, 2, r10, c0, c0, 0	@ select current cache level in cssr
+=======
+		dcache_line_size r1, r2		@ r1 := dcache min line size
+		sub	r2, r1, #1		@ r2 := line size mask
+		bic	r0, r0, r2		@ round down start to line size
+		sub	r11, r11, #1		@ end address is exclusive
+		bic	r11, r11, r2		@ round down end to line size
+0:		cmp	r0, r11			@ finished?
+		bgt	iflush
+		mcr	p15, 0, r0, c7, c14, 1	@ Dcache clean/invalidate by VA
+		add	r0, r0, r1
+		b	0b
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 iflush:
 		mcr	p15, 0, r10, c7, c10, 4	@ DSB
 		mcr	p15, 0, r10, c7, c5, 0	@ invalidate I+BTB
@@ -1122,13 +1737,24 @@ iflush:
 		mov	pc, lr
 
 __armv5tej_mmu_cache_flush:
+<<<<<<< HEAD
 1:		mrc	p15, 0, r15, c7, c14, 3	@ test,clean,invalidate D cache
+=======
+		tst	r4, #1
+		movne	pc, lr
+1:		mrc	p15, 0, APSR_nzcv, c7, c14, 3	@ test,clean,invalidate D cache
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bne	1b
 		mcr	p15, 0, r0, c7, c5, 0	@ flush I cache
 		mcr	p15, 0, r0, c7, c10, 4	@ drain WB
 		mov	pc, lr
 
 __armv4_mmu_cache_flush:
+<<<<<<< HEAD
+=======
+		tst	r4, #1
+		movne	pc, lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mov	r2, #64*1024		@ default: 32K dcache size (*2)
 		mov	r11, #32		@ default: 32 byte line size
 		mrc	p15, 0, r3, c0, c0, 1	@ read cache type
@@ -1162,6 +1788,11 @@ no_cache_id:
 
 __armv3_mmu_cache_flush:
 __armv3_mpu_cache_flush:
+<<<<<<< HEAD
+=======
+		tst	r4, #1
+		movne	pc, lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mov	r1, #0
 		mcr	p15, 0, r1, c7, c0, 0	@ invalidate whole cache v3
 		mov	pc, lr
@@ -1192,11 +1823,19 @@ phex:		adr	r3, phexbuf
 		b	1b
 
 @ puts corrupts {r0, r1, r2, r3}
+<<<<<<< HEAD
 puts:		loadsp	r3, r1
 1:		ldrb	r2, [r0], #1
 		teq	r2, #0
 		moveq	pc, lr
 2:		writeb	r2, r3
+=======
+puts:		loadsp	r3, r2, r1
+1:		ldrb	r2, [r0], #1
+		teq	r2, #0
+		moveq	pc, lr
+2:		writeb	r2, r3, r1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mov	r1, #0x00020000
 3:		subs	r1, r1, #1
 		bne	3b
@@ -1209,8 +1848,13 @@ puts:		loadsp	r3, r1
 @ putc corrupts {r0, r1, r2, r3}
 putc:
 		mov	r2, r0
+<<<<<<< HEAD
 		mov	r0, #0
 		loadsp	r3, r1
+=======
+		loadsp	r3, r1, r0
+		mov	r0, #0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		b	2b
 
 @ memdump corrupts {r0, r1, r2, r3, r10, r11, r12, lr}
@@ -1244,8 +1888,123 @@ memdump:	mov	r12, r0
 #endif
 
 		.ltorg
+<<<<<<< HEAD
 reloc_code_end:
 
+=======
+
+#ifdef CONFIG_ARM_VIRT_EXT
+.align 5
+__hyp_reentry_vectors:
+		W(b)	.			@ reset
+		W(b)	.			@ undef
+#ifdef CONFIG_EFI_STUB
+		W(b)	__enter_kernel_from_hyp	@ hvc from HYP
+#else
+		W(b)	.			@ svc
+#endif
+		W(b)	.			@ pabort
+		W(b)	.			@ dabort
+		W(b)	__enter_kernel		@ hyp
+		W(b)	.			@ irq
+		W(b)	.			@ fiq
+#endif /* CONFIG_ARM_VIRT_EXT */
+
+__enter_kernel:
+		mov	r0, #0			@ must be 0
+		mov	r1, r7			@ restore architecture number
+		mov	r2, r8			@ restore atags pointer
+ ARM(		mov	pc, r4		)	@ call kernel
+ M_CLASS(	add	r4, r4, #1	)	@ enter in Thumb mode for M class
+ THUMB(		bx	r4		)	@ entry point is always ARM for A/R classes
+
+reloc_code_end:
+
+#ifdef CONFIG_EFI_STUB
+__enter_kernel_from_hyp:
+		mrc	p15, 4, r0, c1, c0, 0	@ read HSCTLR
+		bic	r0, r0, #0x5		@ disable MMU and caches
+		mcr	p15, 4, r0, c1, c0, 0	@ write HSCTLR
+		isb
+		b	__enter_kernel
+
+ENTRY(efi_enter_kernel)
+		mov	r4, r0			@ preserve image base
+		mov	r8, r1			@ preserve DT pointer
+
+		adr_l	r0, call_cache_fn
+		adr	r1, 0f			@ clean the region of code we
+		bl	cache_clean_flush	@ may run with the MMU off
+
+#ifdef CONFIG_ARM_VIRT_EXT
+		@
+		@ The EFI spec does not support booting on ARM in HYP mode,
+		@ since it mandates that the MMU and caches are on, with all
+		@ 32-bit addressable DRAM mapped 1:1 using short descriptors.
+		@
+		@ While the EDK2 reference implementation adheres to this,
+		@ U-Boot might decide to enter the EFI stub in HYP mode
+		@ anyway, with the MMU and caches either on or off.
+		@
+		mrs	r0, cpsr		@ get the current mode
+		msr	spsr_cxsf, r0		@ record boot mode
+		and	r0, r0, #MODE_MASK	@ are we running in HYP mode?
+		cmp	r0, #HYP_MODE
+		bne	.Lefi_svc
+
+		mrc	p15, 4, r1, c1, c0, 0	@ read HSCTLR
+		tst	r1, #0x1		@ MMU enabled at HYP?
+		beq	1f
+
+		@
+		@ When running in HYP mode with the caches on, we're better
+		@ off just carrying on using the cached 1:1 mapping that the
+		@ firmware provided. Set up the HYP vectors so HVC instructions
+		@ issued from HYP mode take us to the correct handler code. We
+		@ will disable the MMU before jumping to the kernel proper.
+		@
+ ARM(		bic	r1, r1, #(1 << 30)	) @ clear HSCTLR.TE
+ THUMB(		orr	r1, r1, #(1 << 30)	) @ set HSCTLR.TE
+		mcr	p15, 4, r1, c1, c0, 0
+		adr	r0, __hyp_reentry_vectors
+		mcr	p15, 4, r0, c12, c0, 0	@ set HYP vector base (HVBAR)
+		isb
+		b	.Lefi_hyp
+
+		@
+		@ When running in HYP mode with the caches off, we need to drop
+		@ into SVC mode now, and let the decompressor set up its cached
+		@ 1:1 mapping as usual.
+		@
+1:		mov	r9, r4			@ preserve image base
+		bl	__hyp_stub_install	@ install HYP stub vectors
+		safe_svcmode_maskall	r1	@ drop to SVC mode
+		msr	spsr_cxsf, r0		@ record boot mode
+		orr	r4, r9, #1		@ restore image base and set LSB
+		b	.Lefi_hyp
+.Lefi_svc:
+#endif
+		mrc	p15, 0, r0, c1, c0, 0	@ read SCTLR
+		tst	r0, #0x1		@ MMU enabled?
+		orreq	r4, r4, #1		@ set LSB if not
+
+.Lefi_hyp:
+		mov	r0, r8			@ DT start
+		add	r1, r8, r2		@ DT end
+		bl	cache_clean_flush
+
+		adr	r0, 0f			@ switch to our stack
+		ldr	sp, [r0]
+		add	sp, sp, r0
+
+		mov	r5, #0			@ appended DTB size
+		mov	r7, #0xFFFFFFFF		@ machine ID
+		b	wont_overwrite
+ENDPROC(efi_enter_kernel)
+0:		.long	.L_user_stack_end - .
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.align
 		.section ".stack", "aw", %nobits
 .L_user_stack:	.space	4096

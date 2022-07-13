@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_FB_H
 #define _LINUX_FB_H
 
@@ -418,6 +419,36 @@ struct vm_area_struct;
 struct fb_info;
 struct device;
 struct file;
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_FB_H
+#define _LINUX_FB_H
+
+#include <uapi/linux/fb.h>
+
+#define FBIO_CURSOR            _IOWR('F', 0x08, struct fb_cursor_user)
+
+#include <linux/mutex.h>
+#include <linux/printk.h>
+#include <linux/refcount.h>
+#include <linux/types.h>
+#include <linux/workqueue.h>
+
+#include <asm/fb.h>
+
+struct backlight_device;
+struct device;
+struct device_node;
+struct fb_info;
+struct file;
+struct i2c_adapter;
+struct inode;
+struct module;
+struct notifier_block;
+struct page;
+struct videomode;
+struct vm_area_struct;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Definitions below are used in the parsed monitor specs */
 #define FB_DPMS_ACTIVE_OFF	1
@@ -444,6 +475,10 @@ struct file;
 
 #define FB_MISC_PRIM_COLOR	1
 #define FB_MISC_1ST_DETAIL	2	/* First Detailed Timing is preferred */
+<<<<<<< HEAD
+=======
+#define FB_MISC_HDMI		4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fb_chroma {
 	__u32 redx;	/* in fraction of 1024 */
 	__u32 greenx;
@@ -519,6 +554,7 @@ struct fb_cursor_user {
  * Register/unregister for framebuffer events
  */
 
+<<<<<<< HEAD
 /*	The resolution of the passed in fb_info about to change */ 
 #define FB_EVENT_MODE_CHANGE		0x01
 /*	The display on this fb_info is beeing suspended, no access to the
@@ -554,22 +590,69 @@ struct fb_cursor_user {
 #define FB_EVENT_FB_UNBIND              0x0E
 /*      CONSOLE-SPECIFIC: remap all consoles to new fb - for vga switcheroo */
 #define FB_EVENT_REMAP_ALL_CONSOLE      0x0F
+=======
+/*	The resolution of the passed in fb_info about to change */
+#define FB_EVENT_MODE_CHANGE		0x01
+
+#ifdef CONFIG_GUMSTIX_AM200EPD
+/* only used by mach-pxa/am200epd.c */
+#define FB_EVENT_FB_REGISTERED          0x05
+#define FB_EVENT_FB_UNREGISTERED        0x06
+#endif
+
+/*      A display blank is requested       */
+#define FB_EVENT_BLANK                  0x09
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fb_event {
 	struct fb_info *info;
 	void *data;
 };
 
+<<<<<<< HEAD
 struct fb_blit_caps {
 	u32 x;
 	u32 y;
+=======
+/*	Enough for the VT console needs, see its max_font_width/height */
+#define FB_MAX_BLIT_WIDTH	64
+#define FB_MAX_BLIT_HEIGHT	128
+
+struct fb_blit_caps {
+	DECLARE_BITMAP(x, FB_MAX_BLIT_WIDTH);
+	DECLARE_BITMAP(y, FB_MAX_BLIT_HEIGHT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 len;
 	u32 flags;
 };
 
+<<<<<<< HEAD
 extern int fb_register_client(struct notifier_block *nb);
 extern int fb_unregister_client(struct notifier_block *nb);
 extern int fb_notifier_call_chain(unsigned long val, void *v);
+=======
+#ifdef CONFIG_FB_NOTIFY
+extern int fb_register_client(struct notifier_block *nb);
+extern int fb_unregister_client(struct notifier_block *nb);
+extern int fb_notifier_call_chain(unsigned long val, void *v);
+#else
+static inline int fb_register_client(struct notifier_block *nb)
+{
+	return 0;
+};
+
+static inline int fb_unregister_client(struct notifier_block *nb)
+{
+	return 0;
+};
+
+static inline int fb_notifier_call_chain(unsigned long val, void *v)
+{
+	return 0;
+};
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Pixmap structure definition
  *
@@ -591,21 +674,47 @@ struct fb_pixmap {
 	u32 scan_align;		/* alignment per scanline		*/
 	u32 access_align;	/* alignment per read/write (bits)	*/
 	u32 flags;		/* see FB_PIXMAP_*			*/
+<<<<<<< HEAD
 	u32 blit_x;             /* supported bit block dimensions (1-32)*/
 	u32 blit_y;             /* Format: blit_x = 1 << (width - 1)    */
 	                        /*         blit_y = 1 << (height - 1)   */
 	                        /* if 0, will be set to 0xffffffff (all)*/
+=======
+				/* supported bit block dimensions	*/
+				/* Format: test_bit(width - 1, blit_x)	*/
+				/*	   test_bit(height - 1, blit_y)	*/
+				/* if zero, will be set to full (all)	*/
+	DECLARE_BITMAP(blit_x, FB_MAX_BLIT_WIDTH);
+	DECLARE_BITMAP(blit_y, FB_MAX_BLIT_HEIGHT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* access methods */
 	void (*writeio)(struct fb_info *info, void __iomem *dst, void *src, unsigned int size);
 	void (*readio) (struct fb_info *info, void *dst, void __iomem *src, unsigned int size);
 };
 
 #ifdef CONFIG_FB_DEFERRED_IO
+<<<<<<< HEAD
 struct fb_deferred_io {
 	/* delay between mkwrite and deferred handler */
 	unsigned long delay;
 	struct mutex lock; /* mutex that protects the page list */
 	struct list_head pagelist; /* list of touched pages */
+=======
+struct fb_deferred_io_pageref {
+	struct page *page;
+	unsigned long offset;
+	/* private */
+	struct list_head list;
+};
+
+struct fb_deferred_io {
+	/* delay between mkwrite and deferred handler */
+	unsigned long delay;
+	bool sort_pagereflist; /* sort pagelist by offset */
+	int open_count; /* number of opened files; protected by fb_info lock */
+	struct mutex lock; /* mutex that protects the pageref list */
+	struct list_head pagereflist; /* list of pagerefs for touched pages */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* callback */
 	void (*deferred_io)(struct fb_info *info, struct list_head *pagelist);
 };
@@ -669,9 +778,12 @@ struct fb_ops {
 	/* Draws cursor */
 	int (*fb_cursor) (struct fb_info *info, struct fb_cursor *cursor);
 
+<<<<<<< HEAD
 	/* Rotates the display */
 	void (*fb_rotate)(struct fb_info *info, int angle);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* wait for blit idle, optional */
 	int (*fb_sync)(struct fb_info *info);
 
@@ -776,7 +888,10 @@ struct fb_tile_ops {
 #endif /* CONFIG_FB_TILEBLITTING */
 
 /* FBINFO_* = fb_info.flags bit flags */
+<<<<<<< HEAD
 #define FBINFO_MODULE		0x0001	/* Low-level driver is a module */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FBINFO_HWACCEL_DISABLED	0x0002
 	/* When FBINFO_HWACCEL_DISABLED is set:
 	 *  Hardware acceleration is turned off.  Software implementations
@@ -803,8 +918,11 @@ struct fb_tile_ops {
 #define FBINFO_HWACCEL_YPAN		0x2000 /* optional */
 #define FBINFO_HWACCEL_YWRAP		0x4000 /* optional */
 
+<<<<<<< HEAD
 #define FBINFO_MISC_USEREVENT          0x10000 /* event request
 						  from userspace */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FBINFO_MISC_TILEBLITTING       0x20000 /* use tile blitting */
 
 /* A driver may set this flag to indicate that it does want a set_par to be
@@ -819,8 +937,11 @@ struct fb_tile_ops {
  */
 #define FBINFO_MISC_ALWAYS_SETPAR   0x40000
 
+<<<<<<< HEAD
 /* where the fb is a firmware driver, and can be replaced with a proper one */
 #define FBINFO_MISC_FIRMWARE        0x80000
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Host and GPU endianness differ.
  */
@@ -831,6 +952,7 @@ struct fb_tile_ops {
  * and host endianness. Drivers should not use this flag.
  */
 #define FBINFO_BE_MATH  0x100000
+<<<<<<< HEAD
 
 /* report to the VT layer that this fb driver can accept forced console
    output like oopses */
@@ -840,49 +962,104 @@ struct fb_info {
 	atomic_t count;
 	int node;
 	int flags;
+=======
+/*
+ * Hide smem_start in the FBIOGET_FSCREENINFO IOCTL. This is used by modern DRM
+ * drivers to stop userspace from trying to share buffers behind the kernel's
+ * back. Instead dma-buf based buffer sharing should be used.
+ */
+#define FBINFO_HIDE_SMEM_START  0x200000
+
+
+struct fb_info {
+	refcount_t count;
+	int node;
+	int flags;
+	/*
+	 * -1 by default, set to a FB_ROTATE_* value by the driver, if it knows
+	 * a lcd is not mounted upright and fbcon should rotate to compensate.
+	 */
+	int fbcon_rotate_hint;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex lock;		/* Lock for open/release/ioctl funcs */
 	struct mutex mm_lock;		/* Lock for fb_mmap and smem_* fields */
 	struct fb_var_screeninfo var;	/* Current var */
 	struct fb_fix_screeninfo fix;	/* Current fix */
 	struct fb_monspecs monspecs;	/* Current Monitor specs */
+<<<<<<< HEAD
 	struct work_struct queue;	/* Framebuffer event queue */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fb_pixmap pixmap;	/* Image hardware mapper */
 	struct fb_pixmap sprite;	/* Cursor hardware mapper */
 	struct fb_cmap cmap;		/* Current cmap */
 	struct list_head modelist;      /* mode list */
 	struct fb_videomode *mode;	/* current mode */
 
+<<<<<<< HEAD
 #ifdef CONFIG_FB_BACKLIGHT
 	/* assigned backlight device */
 	/* set before framebuffer registration, 
+=======
+#if IS_ENABLED(CONFIG_FB_BACKLIGHT)
+	/* assigned backlight device */
+	/* set before framebuffer registration,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   remove after unregister */
 	struct backlight_device *bl_dev;
 
 	/* Backlight level curve */
+<<<<<<< HEAD
 	struct mutex bl_curve_mutex;	
+=======
+	struct mutex bl_curve_mutex;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 bl_curve[FB_BACKLIGHT_LEVELS];
 #endif
 #ifdef CONFIG_FB_DEFERRED_IO
 	struct delayed_work deferred_work;
+<<<<<<< HEAD
 	struct fb_deferred_io *fbdefio;
 #endif
 
 	struct fb_ops *fbops;
 	struct device *device;		/* This is the parent */
 	struct device *dev;		/* This is this fb device */
+=======
+	unsigned long npagerefs;
+	struct fb_deferred_io_pageref *pagerefs;
+	struct fb_deferred_io *fbdefio;
+#endif
+
+	const struct fb_ops *fbops;
+	struct device *device;		/* This is the parent */
+#if defined(CONFIG_FB_DEVICE)
+	struct device *dev;		/* This is this fb device */
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int class_flag;                    /* private sysfs flags */
 #ifdef CONFIG_FB_TILEBLITTING
 	struct fb_tile_ops *tileops;    /* Tile Blitting */
 #endif
+<<<<<<< HEAD
 	char __iomem *screen_base;	/* Virtual address */
 	unsigned long screen_size;	/* Amount of ioremapped VRAM or 0 */ 
 	void *pseudo_palette;		/* Fake palette of 16 colors */ 
+=======
+	union {
+		char __iomem *screen_base;	/* Virtual address */
+		char *screen_buffer;
+	};
+	unsigned long screen_size;	/* Amount of ioremapped VRAM or 0 */
+	void *pseudo_palette;		/* Fake palette of 16 colors */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FBINFO_STATE_RUNNING	0
 #define FBINFO_STATE_SUSPENDED	1
 	u32 state;			/* Hardware state i.e suspend */
 	void *fbcon_par;                /* fbcon use-only private area */
 	/* From here on everything is device dependent */
 	void *par;
+<<<<<<< HEAD
 	/* we need the PCI or similar aperture base/size not
 	   smem_start/size as smem_start may just be an object
 	   allocated inside the aperture so may not actually overlap */
@@ -914,6 +1091,12 @@ static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
 #define FBINFO_FLAG_MODULE	FBINFO_MODULE
 #define FBINFO_FLAG_DEFAULT	FBINFO_DEFAULT
 
+=======
+
+	bool skip_vt_switch; /* no VT switch on suspend/resume required */
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This will go away
  * fbset currently hacks in FB_ACCELF_TEXT into var.accel_flags
  * when it wants to turn the acceleration engine on.  This is
@@ -922,6 +1105,7 @@ static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
  */
 #define STUPID_ACCELF_TEXT_SHIT
 
+<<<<<<< HEAD
 // This will go away
 #if defined(__sparc__)
 
@@ -972,6 +1156,8 @@ static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
 
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FB_LEFT_POS(p, bpp)          (fb_be_math(p) ? (32 - (bpp)) : 0)
 #define FB_SHIFT_HIGH(p, val, bits)  (fb_be_math(p) ? (val) >> (bits) : \
 						      (val) << (bits))
@@ -982,6 +1168,7 @@ static inline struct apertures_struct *alloc_apertures(unsigned int max_num) {
      *  `Generic' versions of the frame buffer device operations
      */
 
+<<<<<<< HEAD
 extern int fb_set_var(struct fb_info *info, struct fb_var_screeninfo *var); 
 extern int fb_pan_display(struct fb_info *info, struct fb_var_screeninfo *var); 
 extern int fb_blank(struct fb_info *info, int blank);
@@ -991,6 +1178,46 @@ extern void cfb_imageblit(struct fb_info *info, const struct fb_image *image);
 /*
  * Drawing operations where framebuffer is in system RAM
  */
+=======
+extern int fb_set_var(struct fb_info *info, struct fb_var_screeninfo *var);
+extern int fb_pan_display(struct fb_info *info, struct fb_var_screeninfo *var);
+extern int fb_blank(struct fb_info *info, int blank);
+
+/*
+ * Helpers for framebuffers in I/O memory
+ */
+
+extern void cfb_fillrect(struct fb_info *info, const struct fb_fillrect *rect);
+extern void cfb_copyarea(struct fb_info *info, const struct fb_copyarea *area);
+extern void cfb_imageblit(struct fb_info *info, const struct fb_image *image);
+extern ssize_t fb_io_read(struct fb_info *info, char __user *buf,
+			  size_t count, loff_t *ppos);
+extern ssize_t fb_io_write(struct fb_info *info, const char __user *buf,
+			   size_t count, loff_t *ppos);
+int fb_io_mmap(struct fb_info *info, struct vm_area_struct *vma);
+
+#define __FB_DEFAULT_IOMEM_OPS_RDWR \
+	.fb_read	= fb_io_read, \
+	.fb_write	= fb_io_write
+
+#define __FB_DEFAULT_IOMEM_OPS_DRAW \
+	.fb_fillrect	= cfb_fillrect, \
+	.fb_copyarea	= cfb_copyarea, \
+	.fb_imageblit	= cfb_imageblit
+
+#define __FB_DEFAULT_IOMEM_OPS_MMAP \
+	.fb_mmap	= fb_io_mmap
+
+#define FB_DEFAULT_IOMEM_OPS \
+	__FB_DEFAULT_IOMEM_OPS_RDWR, \
+	__FB_DEFAULT_IOMEM_OPS_DRAW, \
+	__FB_DEFAULT_IOMEM_OPS_MMAP
+
+/*
+ * Helpers for framebuffers in system memory
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void sys_fillrect(struct fb_info *info, const struct fb_fillrect *rect);
 extern void sys_copyarea(struct fb_info *info, const struct fb_copyarea *area);
 extern void sys_imageblit(struct fb_info *info, const struct fb_image *image);
@@ -999,6 +1226,7 @@ extern ssize_t fb_sys_read(struct fb_info *info, char __user *buf,
 extern ssize_t fb_sys_write(struct fb_info *info, const char __user *buf,
 			    size_t count, loff_t *ppos);
 
+<<<<<<< HEAD
 /* drivers/video/fbmem.c */
 extern int register_framebuffer(struct fb_info *fb_info);
 extern int unregister_framebuffer(struct fb_info *fb_info);
@@ -1007,6 +1235,33 @@ extern void remove_conflicting_framebuffers(struct apertures_struct *a,
 				const char *name, bool primary);
 extern int fb_prepare_logo(struct fb_info *fb_info, int rotate);
 extern int fb_show_logo(struct fb_info *fb_info, int rotate);
+=======
+#define __FB_DEFAULT_SYSMEM_OPS_RDWR \
+	.fb_read	= fb_sys_read, \
+	.fb_write	= fb_sys_write
+
+#define __FB_DEFAULT_SYSMEM_OPS_DRAW \
+	.fb_fillrect	= sys_fillrect, \
+	.fb_copyarea	= sys_copyarea, \
+	.fb_imageblit	= sys_imageblit
+
+/*
+ * Helpers for framebuffers in DMA-able memory
+ */
+
+#define __FB_DEFAULT_DMAMEM_OPS_RDWR \
+	.fb_read	= fb_sys_read, \
+	.fb_write	= fb_sys_write
+
+#define __FB_DEFAULT_DMAMEM_OPS_DRAW \
+	.fb_fillrect	= sys_fillrect, \
+	.fb_copyarea	= sys_copyarea, \
+	.fb_imageblit	= sys_imageblit
+
+/* fbmem.c */
+extern int register_framebuffer(struct fb_info *fb_info);
+extern void unregister_framebuffer(struct fb_info *fb_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern char* fb_get_buffer_offset(struct fb_info *info, struct fb_pixmap *buf, u32 size);
 extern void fb_pad_unaligned_buffer(u8 *dst, u32 d_pitch, u8 *src, u32 idx,
 				u32 height, u32 shift_high, u32 shift_low, u32 mod);
@@ -1014,6 +1269,7 @@ extern void fb_pad_aligned_buffer(u8 *dst, u32 d_pitch, u8 *src, u32 s_pitch, u3
 extern void fb_set_suspend(struct fb_info *info, int state);
 extern int fb_get_color_depth(struct fb_var_screeninfo *var,
 			      struct fb_fix_screeninfo *fix);
+<<<<<<< HEAD
 extern int fb_get_options(char *name, char **option);
 extern int fb_new_modelist(struct fb_info *info);
 
@@ -1022,6 +1278,15 @@ extern int num_registered_fb;
 extern struct class *fb_class;
 
 extern int lock_fb_info(struct fb_info *info);
+=======
+extern int fb_get_options(const char *name, char **option);
+extern int fb_new_modelist(struct fb_info *info);
+
+static inline void lock_fb_info(struct fb_info *info)
+{
+	mutex_lock(&info->lock);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void unlock_fb_info(struct fb_info *info)
 {
@@ -1031,7 +1296,11 @@ static inline void unlock_fb_info(struct fb_info *info)
 static inline void __fb_pad_aligned_buffer(u8 *dst, u32 d_pitch,
 					   u8 *src, u32 s_pitch, u32 height)
 {
+<<<<<<< HEAD
 	int i, j;
+=======
+	u32 i, j;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	d_pitch -= s_pitch;
 
@@ -1043,15 +1312,97 @@ static inline void __fb_pad_aligned_buffer(u8 *dst, u32 d_pitch,
 	}
 }
 
+<<<<<<< HEAD
 /* drivers/video/fb_defio.c */
 extern void fb_deferred_io_init(struct fb_info *info);
 extern void fb_deferred_io_open(struct fb_info *info,
 				struct inode *inode,
 				struct file *file);
+=======
+/* fb_defio.c */
+int fb_deferred_io_mmap(struct fb_info *info, struct vm_area_struct *vma);
+extern int  fb_deferred_io_init(struct fb_info *info);
+extern void fb_deferred_io_open(struct fb_info *info,
+				struct inode *inode,
+				struct file *file);
+extern void fb_deferred_io_release(struct fb_info *info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void fb_deferred_io_cleanup(struct fb_info *info);
 extern int fb_deferred_io_fsync(struct file *file, loff_t start,
 				loff_t end, int datasync);
 
+<<<<<<< HEAD
+=======
+/*
+ * Generate callbacks for deferred I/O
+ */
+
+#define __FB_GEN_DEFAULT_DEFERRED_OPS_RDWR(__prefix, __damage_range, __mode) \
+	static ssize_t __prefix ## _defio_read(struct fb_info *info, char __user *buf, \
+					       size_t count, loff_t *ppos) \
+	{ \
+		return fb_ ## __mode ## _read(info, buf, count, ppos); \
+	} \
+	static ssize_t __prefix ## _defio_write(struct fb_info *info, const char __user *buf, \
+						size_t count, loff_t *ppos) \
+	{ \
+		unsigned long offset = *ppos; \
+		ssize_t ret = fb_ ## __mode ## _write(info, buf, count, ppos); \
+		if (ret > 0) \
+			__damage_range(info, offset, ret); \
+		return ret; \
+	}
+
+#define __FB_GEN_DEFAULT_DEFERRED_OPS_DRAW(__prefix, __damage_area, __mode) \
+	static void __prefix ## _defio_fillrect(struct fb_info *info, \
+						const struct fb_fillrect *rect) \
+	{ \
+		__mode ## _fillrect(info, rect); \
+		__damage_area(info, rect->dx, rect->dy, rect->width, rect->height); \
+	} \
+	static void __prefix ## _defio_copyarea(struct fb_info *info, \
+						const struct fb_copyarea *area) \
+	{ \
+		__mode ## _copyarea(info, area); \
+		__damage_area(info, area->dx, area->dy, area->width, area->height); \
+	} \
+	static void __prefix ## _defio_imageblit(struct fb_info *info, \
+						 const struct fb_image *image) \
+	{ \
+		__mode ## _imageblit(info, image); \
+		__damage_area(info, image->dx, image->dy, image->width, image->height); \
+	}
+
+#define FB_GEN_DEFAULT_DEFERRED_IOMEM_OPS(__prefix, __damage_range, __damage_area) \
+	__FB_GEN_DEFAULT_DEFERRED_OPS_RDWR(__prefix, __damage_range, io) \
+	__FB_GEN_DEFAULT_DEFERRED_OPS_DRAW(__prefix, __damage_area, cfb)
+
+#define FB_GEN_DEFAULT_DEFERRED_SYSMEM_OPS(__prefix, __damage_range, __damage_area) \
+	__FB_GEN_DEFAULT_DEFERRED_OPS_RDWR(__prefix, __damage_range, sys) \
+	__FB_GEN_DEFAULT_DEFERRED_OPS_DRAW(__prefix, __damage_area, sys)
+
+/*
+ * Initializes struct fb_ops for deferred I/O.
+ */
+
+#define __FB_DEFAULT_DEFERRED_OPS_RDWR(__prefix) \
+	.fb_read	= __prefix ## _defio_read, \
+	.fb_write	= __prefix ## _defio_write
+
+#define __FB_DEFAULT_DEFERRED_OPS_DRAW(__prefix) \
+	.fb_fillrect	= __prefix ## _defio_fillrect, \
+	.fb_copyarea	= __prefix ## _defio_copyarea, \
+	.fb_imageblit	= __prefix ## _defio_imageblit
+
+#define __FB_DEFAULT_DEFERRED_OPS_MMAP(__prefix) \
+	.fb_mmap	= fb_deferred_io_mmap
+
+#define FB_DEFAULT_DEFERRED_OPS(__prefix) \
+	__FB_DEFAULT_DEFERRED_OPS_RDWR(__prefix), \
+	__FB_DEFAULT_DEFERRED_OPS_DRAW(__prefix), \
+	__FB_DEFAULT_DEFERRED_OPS_MMAP(__prefix)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline bool fb_be_math(struct fb_info *info)
 {
 #ifdef CONFIG_FB_FOREIGN_ENDIAN
@@ -1071,6 +1422,7 @@ static inline bool fb_be_math(struct fb_info *info)
 #endif /* CONFIG_FB_FOREIGN_ENDIAN */
 }
 
+<<<<<<< HEAD
 /* drivers/video/fbsysfs.c */
 extern struct fb_info *framebuffer_alloc(size_t size, struct device *dev);
 extern void framebuffer_release(struct fb_info *info);
@@ -1079,6 +1431,13 @@ extern void fb_cleanup_device(struct fb_info *head);
 extern void fb_bl_default_curve(struct fb_info *fb_info, u8 off, u8 min, u8 max);
 
 /* drivers/video/fbmon.c */
+=======
+extern struct fb_info *framebuffer_alloc(size_t size, struct device *dev);
+extern void framebuffer_release(struct fb_info *info);
+extern void fb_bl_default_curve(struct fb_info *fb_info, u8 off, u8 min, u8 max);
+
+/* fbmon.c */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FB_MAXTIMINGS		0
 #define FB_VSYNCTIMINGS		1
 #define FB_HSYNCTIMINGS		2
@@ -1102,14 +1461,30 @@ extern int fb_parse_edid(unsigned char *edid, struct fb_var_screeninfo *var);
 extern const unsigned char *fb_firmware_edid(struct device *device);
 extern void fb_edid_to_monspecs(unsigned char *edid,
 				struct fb_monspecs *specs);
+<<<<<<< HEAD
 extern void fb_edid_add_monspecs(unsigned char *edid,
 				 struct fb_monspecs *specs);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void fb_destroy_modedb(struct fb_videomode *modedb);
 extern int fb_find_mode_cvt(struct fb_videomode *mode, int margins, int rb);
 extern unsigned char *fb_ddc_read(struct i2c_adapter *adapter);
 
+<<<<<<< HEAD
 /* drivers/video/modedb.c */
 #define VESA_MODEDB_SIZE 34
+=======
+extern int of_get_fb_videomode(struct device_node *np,
+			       struct fb_videomode *fb,
+			       int index);
+extern int fb_videomode_from_videomode(const struct videomode *vm,
+				       struct fb_videomode *fbmode);
+
+/* modedb.c */
+#define VESA_MODEDB_SIZE 43
+#define DMT_SIZE 0x50
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void fb_var_to_videomode(struct fb_videomode *mode,
 				const struct fb_var_screeninfo *var);
 extern void fb_videomode_to_var(struct fb_var_screeninfo *var,
@@ -1132,7 +1507,11 @@ extern void fb_videomode_to_modelist(const struct fb_videomode *modedb, int num,
 extern const struct fb_videomode *fb_find_best_display(const struct fb_monspecs *specs,
 						       struct list_head *head);
 
+<<<<<<< HEAD
 /* drivers/video/fbcmap.c */
+=======
+/* fbcmap.c */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int fb_alloc_cmap(struct fb_cmap *cmap, int len, int transp);
 extern int fb_alloc_cmap_gfp(struct fb_cmap *cmap, int len, int transp, gfp_t flags);
 extern void fb_dealloc_cmap(struct fb_cmap *cmap);
@@ -1160,9 +1539,21 @@ struct fb_videomode {
 	u32 flag;
 };
 
+<<<<<<< HEAD
 extern const char *fb_mode_option;
 extern const struct fb_videomode vesa_modes[];
 extern const struct fb_videomode cea_modes[64];
+=======
+struct dmt_videomode {
+	u32 dmt_id;
+	u32 std_2byte_code;
+	u32 cvt_3byte_code;
+	const struct fb_videomode *mode;
+};
+
+extern const struct fb_videomode vesa_modes[];
+extern const struct dmt_videomode dmt_modes[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct fb_modelist {
 	struct list_head list;
@@ -1176,6 +1567,33 @@ extern int fb_find_mode(struct fb_var_screeninfo *var,
 			const struct fb_videomode *default_mode,
 			unsigned int default_bpp);
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+bool fb_modesetting_disabled(const char *drvname);
+
+/*
+ * Convenience logging macros
+ */
+
+#define fb_err(fb_info, fmt, ...)					\
+	pr_err("fb%d: " fmt, (fb_info)->node, ##__VA_ARGS__)
+#define fb_notice(info, fmt, ...)					\
+	pr_notice("fb%d: " fmt, (fb_info)->node, ##__VA_ARGS__)
+#define fb_warn(fb_info, fmt, ...)					\
+	pr_warn("fb%d: " fmt, (fb_info)->node, ##__VA_ARGS__)
+#define fb_info(fb_info, fmt, ...)					\
+	pr_info("fb%d: " fmt, (fb_info)->node, ##__VA_ARGS__)
+#define fb_dbg(fb_info, fmt, ...)					\
+	pr_debug("fb%d: " fmt, (fb_info)->node, ##__VA_ARGS__)
+
+#define fb_warn_once(fb_info, fmt, ...)					\
+	pr_warn_once("fb%d: " fmt, (fb_info)->node, ##__VA_ARGS__)
+
+#define fb_WARN_ONCE(fb_info, condition, fmt, ...) \
+	WARN_ONCE(condition, "fb%d: " fmt, (fb_info)->node, ##__VA_ARGS__)
+#define fb_WARN_ON_ONCE(fb_info, x) \
+	fb_WARN_ONCE(fb_info, (x), "%s", "fb_WARN_ON_ONCE(" __stringify(x) ")")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _LINUX_FB_H */

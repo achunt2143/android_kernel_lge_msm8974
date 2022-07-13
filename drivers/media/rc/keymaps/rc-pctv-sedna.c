@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* pctv-sedna.h - Keytable for pctv_sedna Remote Controller
  *
  * keymap imported from ir-keymaps.c
@@ -9,6 +10,14 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+// pctv-sedna.h - Keytable for pctv_sedna Remote Controller
+//
+// keymap imported from ir-keymaps.c
+//
+// Copyright (c) 2010 by Mauro Carvalho Chehab
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -19,6 +28,7 @@
    Also for the remote bundled with Kozumi KTV-01C card */
 
 static struct rc_map_table pctv_sedna[] = {
+<<<<<<< HEAD
 	{ 0x00, KEY_0 },
 	{ 0x01, KEY_1 },
 	{ 0x02, KEY_2 },
@@ -29,6 +39,18 @@ static struct rc_map_table pctv_sedna[] = {
 	{ 0x07, KEY_7 },
 	{ 0x08, KEY_8 },
 	{ 0x09, KEY_9 },
+=======
+	{ 0x00, KEY_NUMERIC_0 },
+	{ 0x01, KEY_NUMERIC_1 },
+	{ 0x02, KEY_NUMERIC_2 },
+	{ 0x03, KEY_NUMERIC_3 },
+	{ 0x04, KEY_NUMERIC_4 },
+	{ 0x05, KEY_NUMERIC_5 },
+	{ 0x06, KEY_NUMERIC_6 },
+	{ 0x07, KEY_NUMERIC_7 },
+	{ 0x08, KEY_NUMERIC_8 },
+	{ 0x09, KEY_NUMERIC_9 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ 0x0a, KEY_AGAIN },	/* Recall */
 	{ 0x0b, KEY_CHANNELUP },
@@ -57,10 +79,17 @@ static struct rc_map_table pctv_sedna[] = {
 
 static struct rc_map_list pctv_sedna_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = pctv_sedna,
 		.size    = ARRAY_SIZE(pctv_sedna),
 		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
 		.name    = RC_MAP_PCTV_SEDNA,
+=======
+		.scan     = pctv_sedna,
+		.size     = ARRAY_SIZE(pctv_sedna),
+		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.name     = RC_MAP_PCTV_SEDNA,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -78,4 +107,9 @@ module_init(init_rc_map_pctv_sedna)
 module_exit(exit_rc_map_pctv_sedna)
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+MODULE_DESCRIPTION("pctv-sedna remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef LINUX_KERNEL_PAGE_FLAGS_H
 #define LINUX_KERNEL_PAGE_FLAGS_H
 
@@ -33,6 +34,14 @@
 #define KPF_THP			22
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef LINUX_KERNEL_PAGE_FLAGS_H
+#define LINUX_KERNEL_PAGE_FLAGS_H
+
+#include <uapi/linux/kernel-page-flags.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* kernel hacking assistances
  * WARNING: subject to change, never rely on them!
@@ -45,7 +54,13 @@
 #define KPF_OWNER_PRIVATE	37
 #define KPF_ARCH		38
 #define KPF_UNCACHED		39
+<<<<<<< HEAD
 
 #endif /* __KERNEL__ */
+=======
+#define KPF_SOFTDIRTY		40
+#define KPF_ARCH_2		41
+#define KPF_ARCH_3		42
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* LINUX_KERNEL_PAGE_FLAGS_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ACPI PCI Hot Plug IBM Extension
  *
@@ -6,6 +10,7 @@
  *
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
@@ -21,20 +26,35 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <vernux@us.ibm.com>
  *
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "acpiphp_ibm: " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <acpi/acpi_bus.h>
 #include <linux/sysfs.h>
 #include <linux/kobject.h>
 #include <asm/uaccess.h>
 #include <linux/moduleparam.h>
 #include <linux/pci.h>
+=======
+#include <linux/sysfs.h>
+#include <linux/kobject.h>
+#include <linux/moduleparam.h>
+#include <linux/pci.h>
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "acpiphp.h"
 #include "../pci.h"
@@ -43,12 +63,16 @@
 #define DRIVER_AUTHOR	"Irene Zubarev <zubarev@us.ibm.com>, Vernon Mauery <vernux@us.ibm.com>"
 #define DRIVER_DESC	"ACPI Hot Plug PCI Controller Driver IBM extension"
 
+<<<<<<< HEAD
 static bool debug;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRIVER_VERSION);
+<<<<<<< HEAD
 module_param(debug, bool, 0644);
 MODULE_PARM_DESC(debug, " Debugging mode enabled or not");
 #define MY_NAME "acpiphp_ibm"
@@ -60,13 +84,19 @@ do {							\
 		printk(KERN_DEBUG "%s: " format,	\
 				MY_NAME , ## arg);	\
 } while (0)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define FOUND_APCI 0x61504349
 /* these are the names for the IBM ACPI pseudo-device */
 #define IBM_HARDWARE_ID1 "IBM37D0"
 #define IBM_HARDWARE_ID2 "IBM37D4"
 
+<<<<<<< HEAD
 #define hpslot_to_sun(A) (((struct slot *)((A)->private))->acpi_slot->sun)
+=======
+#define hpslot_to_sun(A) (to_slot(A)->sun)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* union apci_descriptor - allows access to the
  * various device descriptors that are embedded in the
@@ -118,7 +148,11 @@ static void __exit ibm_acpiphp_exit(void);
 
 static acpi_handle ibm_acpi_handle;
 static struct notification ibm_note;
+<<<<<<< HEAD
 static struct bin_attribute ibm_apci_table_attr = {
+=======
+static struct bin_attribute ibm_apci_table_attr __ro_after_init = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    .attr = {
 		    .name = "apci_table",
 		    .mode = S_IRUGO,
@@ -126,7 +160,11 @@ static struct bin_attribute ibm_apci_table_attr = {
 	    .read = ibm_read_apci_table,
 	    .write = NULL,
 };
+<<<<<<< HEAD
 static struct acpiphp_attention_info ibm_attention_info = 
+=======
+static struct acpiphp_attention_info ibm_attention_info =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.set_attn = ibm_set_attention_status,
 	.get_attn = ibm_get_attention_status,
@@ -149,6 +187,11 @@ static union apci_descriptor *ibm_slot_from_id(int id)
 	char *table;
 
 	size = ibm_get_table_from_acpi(&table);
+<<<<<<< HEAD
+=======
+	if (size < 0)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	des = (union apci_descriptor *)table;
 	if (memcmp(des->header.sig, "aPCI", 4) != 0)
 		goto ibm_slot_done;
@@ -165,7 +208,12 @@ static union apci_descriptor *ibm_slot_from_id(int id)
 ibm_slot_done:
 	if (ret) {
 		ret = kmalloc(sizeof(union apci_descriptor), GFP_KERNEL);
+<<<<<<< HEAD
 		memcpy(ret, des, sizeof(union apci_descriptor));
+=======
+		if (ret)
+			memcpy(ret, des, sizeof(union apci_descriptor));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	kfree(table);
 	return ret;
@@ -181,6 +229,7 @@ ibm_slot_done:
  */
 static int ibm_set_attention_status(struct hotplug_slot *slot, u8 status)
 {
+<<<<<<< HEAD
 	union acpi_object args[2]; 
 	struct acpi_object_list params = { .pointer = args, .count = 2 };
 	acpi_status stat; 
@@ -190,6 +239,22 @@ static int ibm_set_attention_status(struct hotplug_slot *slot, u8 status)
 	ibm_slot = ibm_slot_from_id(hpslot_to_sun(slot));
 
 	dbg("%s: set slot %d (%d) attention status to %d\n", __func__,
+=======
+	union acpi_object args[2];
+	struct acpi_object_list params = { .pointer = args, .count = 2 };
+	acpi_status stat;
+	unsigned long long rc;
+	union apci_descriptor *ibm_slot;
+	int id = hpslot_to_sun(slot);
+
+	ibm_slot = ibm_slot_from_id(id);
+	if (!ibm_slot) {
+		pr_err("APLS null ACPI descriptor for slot %d\n", id);
+		return -ENODEV;
+	}
+
+	pr_debug("%s: set slot %d (%d) attention status to %d\n", __func__,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ibm_slot->slot.slot_num, ibm_slot->slot.slot_id,
 			(status ? 1 : 0));
 
@@ -202,10 +267,17 @@ static int ibm_set_attention_status(struct hotplug_slot *slot, u8 status)
 
 	stat = acpi_evaluate_integer(ibm_acpi_handle, "APLS", &params, &rc);
 	if (ACPI_FAILURE(stat)) {
+<<<<<<< HEAD
 		err("APLS evaluation failed:  0x%08x\n", stat);
 		return -ENODEV;
 	} else if (!rc) {
 		err("APLS method failed:  0x%08llx\n", rc);
+=======
+		pr_err("APLS evaluation failed:  0x%08x\n", stat);
+		return -ENODEV;
+	} else if (!rc) {
+		pr_err("APLS method failed:  0x%08llx\n", rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ERANGE;
 	}
 	return 0;
@@ -218,7 +290,11 @@ static int ibm_set_attention_status(struct hotplug_slot *slot, u8 status)
  *
  * Description: This method is registered with the acpiphp module as a
  * callback to do the device specific task of getting the LED status.
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Because there is no direct method of getting the LED status directly
  * from an ACPI call, we read the aPCI table and parse out our
  * slot descriptor to read the status from that.
@@ -226,15 +302,29 @@ static int ibm_set_attention_status(struct hotplug_slot *slot, u8 status)
 static int ibm_get_attention_status(struct hotplug_slot *slot, u8 *status)
 {
 	union apci_descriptor *ibm_slot;
+<<<<<<< HEAD
 
 	ibm_slot = ibm_slot_from_id(hpslot_to_sun(slot));
+=======
+	int id = hpslot_to_sun(slot);
+
+	ibm_slot = ibm_slot_from_id(id);
+	if (!ibm_slot) {
+		pr_err("APLS null ACPI descriptor for slot %d\n", id);
+		return -ENODEV;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ibm_slot->slot.attn & 0xa0 || ibm_slot->slot.status[1] & 0x08)
 		*status = 1;
 	else
 		*status = 0;
 
+<<<<<<< HEAD
 	dbg("%s: get slot %d (%d) attention status is %d\n", __func__,
+=======
+	pr_debug("%s: get slot %d (%d) attention status is %d\n", __func__,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ibm_slot->slot.slot_num, ibm_slot->slot.slot_id,
 			*status);
 
@@ -266,11 +356,18 @@ static void ibm_handle_events(acpi_handle handle, u32 event, void *context)
 	u8 subevent = event & 0xf0;
 	struct notification *note = context;
 
+<<<<<<< HEAD
 	dbg("%s: Received notification %02x\n", __func__, event);
 
 	if (subevent == 0x80) {
 		dbg("%s: generationg bus event\n", __func__);
 		acpi_bus_generate_proc_event(note->device, note->event, detail);
+=======
+	pr_debug("%s: Received notification %02x\n", __func__, event);
+
+	if (subevent == 0x80) {
+		pr_debug("%s: generating bus event\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		acpi_bus_generate_netlink_event(note->device->pnp.device_class,
 						  dev_name(&note->device->dev),
 						  note->event, detail);
@@ -302,7 +399,11 @@ static int ibm_get_table_from_acpi(char **bufp)
 
 	status = acpi_evaluate_object(ibm_acpi_handle, "APCI", NULL, &buffer);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		err("%s:  APCI evaluation failed\n", __func__);
+=======
+		pr_err("%s:  APCI evaluation failed\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -310,6 +411,7 @@ static int ibm_get_table_from_acpi(char **bufp)
 	if (!(package) ||
 			(package->type != ACPI_TYPE_PACKAGE) ||
 			!(package->package.elements)) {
+<<<<<<< HEAD
 		err("%s:  Invalid APCI object\n", __func__);
 		goto read_table_done;
 	}
@@ -317,6 +419,15 @@ static int ibm_get_table_from_acpi(char **bufp)
 	for(size = 0, i = 0; i < package->package.count; i++) {
 		if (package->package.elements[i].type != ACPI_TYPE_BUFFER) {
 			err("%s:  Invalid APCI element %d\n", __func__, i);
+=======
+		pr_err("%s:  Invalid APCI object\n", __func__);
+		goto read_table_done;
+	}
+
+	for (size = 0, i = 0; i < package->package.count; i++) {
+		if (package->package.elements[i].type != ACPI_TYPE_BUFFER) {
+			pr_err("%s:  Invalid APCI element %d\n", __func__, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto read_table_done;
 		}
 		size += package->package.elements[i].buffer.length;
@@ -326,7 +437,11 @@ static int ibm_get_table_from_acpi(char **bufp)
 		goto read_table_done;
 
 	lbuf = kzalloc(size, GFP_KERNEL);
+<<<<<<< HEAD
 	dbg("%s: element count: %i, ASL table size: %i, &table = 0x%p\n",
+=======
+	pr_debug("%s: element count: %i, ASL table size: %i, &table = 0x%p\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, package->package.count, size, lbuf);
 
 	if (lbuf) {
@@ -337,7 +452,11 @@ static int ibm_get_table_from_acpi(char **bufp)
 	}
 
 	size = 0;
+<<<<<<< HEAD
 	for (i=0; i<package->package.count; i++) {
+=======
+	for (i = 0; i < package->package.count; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memcpy(&lbuf[size],
 				package->package.elements[i].buffer.pointer,
 				package->package.elements[i].buffer.length);
@@ -371,8 +490,13 @@ static ssize_t ibm_read_apci_table(struct file *filp, struct kobject *kobj,
 {
 	int bytes_read = -EINVAL;
 	char *table = NULL;
+<<<<<<< HEAD
 	
 	dbg("%s: pos = %d, size = %zd\n", __func__, (int)pos, size);
+=======
+
+	pr_debug("%s: pos = %d, size = %zd\n", __func__, (int)pos, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pos == 0) {
 		bytes_read = ibm_get_table_from_acpi(&table);
@@ -398,17 +522,27 @@ static acpi_status __init ibm_find_acpi_device(acpi_handle handle,
 		u32 lvl, void *context, void **rv)
 {
 	acpi_handle *phandle = (acpi_handle *)context;
+<<<<<<< HEAD
 	acpi_status status; 
+=======
+	unsigned long long current_status = 0;
+	acpi_status status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct acpi_device_info *info;
 	int retval = 0;
 
 	status = acpi_get_object_info(handle, &info);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		err("%s:  Failed to get device information status=0x%x\n",
+=======
+		pr_err("%s:  Failed to get device information status=0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, status);
 		return retval;
 	}
 
+<<<<<<< HEAD
 	if (info->current_status && (info->valid & ACPI_VALID_HID) &&
 			(!strcmp(info->hardware_id.string, IBM_HARDWARE_ID1) ||
 			 !strcmp(info->hardware_id.string, IBM_HARDWARE_ID2))) {
@@ -417,6 +551,18 @@ static acpi_status __init ibm_find_acpi_device(acpi_handle handle,
 		*phandle = handle;
 		/* returning non-zero causes the search to stop
 		 * and returns this value to the caller of 
+=======
+	acpi_bus_get_status_handle(handle, &current_status);
+
+	if (current_status && (info->valid & ACPI_VALID_HID) &&
+			(!strcmp(info->hardware_id.string, IBM_HARDWARE_ID1) ||
+			 !strcmp(info->hardware_id.string, IBM_HARDWARE_ID2))) {
+		pr_debug("found hardware: %s, handle: %p\n",
+			info->hardware_id.string, handle);
+		*phandle = handle;
+		/* returning non-zero causes the search to stop
+		 * and returns this value to the caller of
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * acpi_walk_namespace, but it also causes some warnings
 		 * in the acpi debug code to print...
 		 */
@@ -433,11 +579,16 @@ static int __init ibm_acpiphp_init(void)
 	struct acpi_device *device;
 	struct kobject *sysdir = &pci_slots_kset->kobj;
 
+<<<<<<< HEAD
 	dbg("%s\n", __func__);
+=======
+	pr_debug("%s\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (acpi_walk_namespace(ACPI_TYPE_DEVICE, ACPI_ROOT_OBJECT,
 			ACPI_UINT32_MAX, ibm_find_acpi_device, NULL,
 			&ibm_acpi_handle, NULL) != FOUND_APCI) {
+<<<<<<< HEAD
 		err("%s: acpi_walk_namespace failed\n", __func__);
 		retval = -ENODEV;
 		goto init_return;
@@ -445,6 +596,16 @@ static int __init ibm_acpiphp_init(void)
 	dbg("%s: found IBM aPCI device\n", __func__);
 	if (acpi_bus_get_device(ibm_acpi_handle, &device)) {
 		err("%s: acpi_bus_get_device failed\n", __func__);
+=======
+		pr_err("%s: acpi_walk_namespace failed\n", __func__);
+		retval = -ENODEV;
+		goto init_return;
+	}
+	pr_debug("%s: found IBM aPCI device\n", __func__);
+	device = acpi_fetch_acpi_dev(ibm_acpi_handle);
+	if (!device) {
+		pr_err("%s: acpi_fetch_acpi_dev failed\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = -ENODEV;
 		goto init_return;
 	}
@@ -458,7 +619,11 @@ static int __init ibm_acpiphp_init(void)
 			ACPI_DEVICE_NOTIFY, ibm_handle_events,
 			&ibm_note);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		err("%s: Failed to register notification handler\n",
+=======
+		pr_err("%s: Failed to register notification handler\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__func__);
 		retval = -EBUSY;
 		goto init_cleanup;
@@ -480,17 +645,28 @@ static void __exit ibm_acpiphp_exit(void)
 	acpi_status status;
 	struct kobject *sysdir = &pci_slots_kset->kobj;
 
+<<<<<<< HEAD
 	dbg("%s\n", __func__);
 
 	if (acpiphp_unregister_attention(&ibm_attention_info))
 		err("%s: attention info deregistration failed", __func__);
+=======
+	pr_debug("%s\n", __func__);
+
+	if (acpiphp_unregister_attention(&ibm_attention_info))
+		pr_err("%s: attention info deregistration failed", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	status = acpi_remove_notify_handler(
 			   ibm_acpi_handle,
 			   ACPI_DEVICE_NOTIFY,
 			   ibm_handle_events);
 	if (ACPI_FAILURE(status))
+<<<<<<< HEAD
 		err("%s: Notification handler removal failed\n", __func__);
+=======
+		pr_err("%s: Notification handler removal failed\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* remove the /sys entries */
 	sysfs_remove_bin_file(sysdir, &ibm_apci_table_attr);
 }

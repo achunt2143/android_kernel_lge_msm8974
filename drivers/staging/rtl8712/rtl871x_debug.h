@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -29,7 +36,10 @@
 #include "osdep_service.h"
 #include "drv_types.h"
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _drv_emerg_			1
 #define _drv_alert_			2
 #define _drv_crit_			3
@@ -40,7 +50,10 @@
 #define _drv_dump_			8
 #define	_drv_debug_			9
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _module_rtl871x_xmit_c_		BIT(0)
 #define _module_xmit_osdep_c_		BIT(1)
 #define _module_rtl871x_recv_c_		BIT(2)
@@ -141,6 +154,7 @@
 	#undef	_MODULE_DEFINE_
 #endif
 
+<<<<<<< HEAD
 #define _dbgdump	printk
 
 #define MSG_8712(x, ...) {}
@@ -165,3 +179,6 @@
 
 #endif	/*__RTL871X_DEBUG_H__*/
 
+=======
+#endif	/*__RTL871X_DEBUG_H__*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

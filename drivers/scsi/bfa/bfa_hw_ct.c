@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
@@ -13,6 +14,16 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "bfad_drv.h"
@@ -80,7 +91,10 @@ bfa_hwct_rspq_ack(struct bfa_s *bfa, int rspq, u32 ci)
 
 	bfa_rspq_ci(bfa, rspq) = ci;
 	writel(ci, bfa->iocfc.bfa_regs.rme_q_ci[rspq]);
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -93,7 +107,10 @@ bfa_hwct2_rspq_ack(struct bfa_s *bfa, int rspq, u32 ci)
 {
 	bfa_rspq_ci(bfa, rspq) = ci;
 	writel(ci, bfa->iocfc.bfa_regs.rme_q_ci[rspq]);
+<<<<<<< HEAD
 	mmiowb();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void

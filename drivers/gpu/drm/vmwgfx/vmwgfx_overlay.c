@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /**************************************************************************
  *
  * Copyright © 2009 VMware, Inc., Palo Alto, CA., USA
  * All Rights Reserved.
+=======
+// SPDX-License-Identifier: GPL-2.0 OR MIT
+/**************************************************************************
+ *
+ * Copyright 2009-2023 VMware, Inc., Palo Alto, CA., USA
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -24,6 +31,7 @@
  * USE OR OTHER DEALINGS IN THE SOFTWARE.
  *
  **************************************************************************/
+<<<<<<< HEAD
 
 
 #include "drmP.h"
@@ -38,12 +46,31 @@
 
 struct vmw_stream {
 	struct vmw_dma_buffer *buf;
+=======
+#include "vmwgfx_bo.h"
+#include "vmwgfx_drv.h"
+
+#include "device_include/svga_overlay.h"
+#include "device_include/svga_escape.h"
+
+#include <drm/ttm/ttm_placement.h>
+
+#define VMW_MAX_NUM_STREAMS 1
+#define VMW_OVERLAY_CAP_MASK (SVGA_FIFO_CAP_VIDEO | SVGA_FIFO_CAP_ESCAPE)
+
+struct vmw_stream {
+	struct vmw_bo *buf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bool claimed;
 	bool paused;
 	struct drm_vmw_control_stream_arg saved;
 };
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Overlay control
  */
 struct vmw_overlay {
@@ -54,12 +81,15 @@ struct vmw_overlay {
 	struct vmw_stream stream[VMW_MAX_NUM_STREAMS];
 };
 
+<<<<<<< HEAD
 static inline struct vmw_overlay *vmw_overlay(struct drm_device *dev)
 {
 	struct vmw_private *dev_priv = vmw_priv(dev);
 	return dev_priv ? dev_priv->overlay_priv : NULL;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct vmw_escape_header {
 	uint32_t cmd;
 	SVGAFifoCmdEscape body;
@@ -86,20 +116,32 @@ static inline void fill_flush(struct vmw_escape_video_flush *cmd,
 	cmd->flush.streamId = stream_id;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send put command to hw.
  *
  * Returns
  * -ERESTARTSYS if interrupted by a signal.
  */
 static int vmw_overlay_send_put(struct vmw_private *dev_priv,
+<<<<<<< HEAD
 				struct vmw_dma_buffer *buf,
+=======
+				struct vmw_bo *buf,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				struct drm_vmw_control_stream_arg *arg,
 				bool interruptible)
 {
 	struct vmw_escape_video_flush *flush;
 	size_t fifo_size;
+<<<<<<< HEAD
 	bool have_so = dev_priv->sou_priv ? true : false;
+=======
+	bool have_so = (dev_priv->active_display_unit == vmw_du_screen_object);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, num_items;
 	SVGAGuestPtr ptr;
 
@@ -123,7 +165,11 @@ static int vmw_overlay_send_put(struct vmw_private *dev_priv,
 
 	fifo_size = sizeof(*cmds) + sizeof(*flush) + sizeof(*items) * num_items;
 
+<<<<<<< HEAD
 	cmds = vmw_fifo_reserve(dev_priv, fifo_size);
+=======
+	cmds = VMW_CMD_RESERVE(dev_priv, fifo_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* hardware has hung, can't do anything here */
 	if (!cmds)
 		return -ENOMEM;
@@ -141,7 +187,11 @@ static int vmw_overlay_send_put(struct vmw_private *dev_priv,
 	for (i = 0; i < num_items; i++)
 		items[i].registerId = i;
 
+<<<<<<< HEAD
 	vmw_bo_get_guest_ptr(&buf->base, &ptr);
+=======
+	vmw_bo_get_guest_ptr(&buf->tbo, &ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ptr.offset += arg->offset;
 
 	items[SVGA_VIDEO_ENABLED].value     = true;
@@ -170,12 +220,20 @@ static int vmw_overlay_send_put(struct vmw_private *dev_priv,
 
 	fill_flush(flush, arg->stream_id);
 
+<<<<<<< HEAD
 	vmw_fifo_commit(dev_priv, fifo_size);
+=======
+	vmw_cmd_commit(dev_priv, fifo_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send stop command to hw.
  *
  * Returns
@@ -193,7 +251,11 @@ static int vmw_overlay_send_stop(struct vmw_private *dev_priv,
 	int ret;
 
 	for (;;) {
+<<<<<<< HEAD
 		cmds = vmw_fifo_reserve(dev_priv, sizeof(*cmds));
+=======
+		cmds = VMW_CMD_RESERVE(dev_priv, sizeof(*cmds));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cmds)
 			break;
 
@@ -212,18 +274,27 @@ static int vmw_overlay_send_stop(struct vmw_private *dev_priv,
 	cmds->body.items[0].value = false;
 	fill_flush(&cmds->flush, stream_id);
 
+<<<<<<< HEAD
 	vmw_fifo_commit(dev_priv, sizeof(*cmds));
+=======
+	vmw_cmd_commit(dev_priv, sizeof(*cmds));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Move a buffer to vram or gmr if @pin is set, else unpin the buffer.
  *
  * With the introduction of screen objects buffers could now be
  * used with GMRs instead of being locked to vram.
  */
 static int vmw_overlay_move_buffer(struct vmw_private *dev_priv,
+<<<<<<< HEAD
 				   struct vmw_dma_buffer *buf,
 				   bool pin, bool inter)
 {
@@ -237,6 +308,21 @@ static int vmw_overlay_move_buffer(struct vmw_private *dev_priv,
 }
 
 /**
+=======
+				   struct vmw_bo *buf,
+				   bool pin, bool inter)
+{
+	if (!pin)
+		return vmw_bo_unpin(dev_priv, buf, inter);
+
+	if (dev_priv->active_display_unit == vmw_du_legacy)
+		return vmw_bo_pin_in_vram(dev_priv, buf, inter);
+
+	return vmw_bo_pin_in_vram_or_gmr(dev_priv, buf, inter);
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Stop or pause a stream.
  *
  * If the stream is paused the no evict flag is removed from the buffer
@@ -277,7 +363,11 @@ static int vmw_overlay_stop(struct vmw_private *dev_priv,
 	}
 
 	if (!pause) {
+<<<<<<< HEAD
 		vmw_dmabuf_unreference(&stream->buf);
+=======
+		vmw_bo_unreference(&stream->buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stream->paused = false;
 	} else {
 		stream->paused = true;
@@ -286,7 +376,11 @@ static int vmw_overlay_stop(struct vmw_private *dev_priv,
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Update a stream and send any put or stop fifo commands needed.
  *
  * The caller must hold the overlay lock.
@@ -296,7 +390,11 @@ static int vmw_overlay_stop(struct vmw_private *dev_priv,
  * -ERESTARTSYS if interrupted.
  */
 static int vmw_overlay_update_stream(struct vmw_private *dev_priv,
+<<<<<<< HEAD
 				     struct vmw_dma_buffer *buf,
+=======
+				     struct vmw_bo *buf,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				     struct drm_vmw_control_stream_arg *arg,
 				     bool interruptible)
 {
@@ -346,7 +444,11 @@ static int vmw_overlay_update_stream(struct vmw_private *dev_priv,
 	}
 
 	if (stream->buf != buf)
+<<<<<<< HEAD
 		stream->buf = vmw_dmabuf_reference(buf);
+=======
+		stream->buf = vmw_bo_reference(buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stream->saved = *arg;
 	/* stream is no longer stopped/paused */
 	stream->paused = false;
@@ -354,6 +456,7 @@ static int vmw_overlay_update_stream(struct vmw_private *dev_priv,
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  * Stop all streams.
  *
@@ -386,6 +489,9 @@ int vmw_overlay_stop_all(struct vmw_private *dev_priv)
 }
 
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Try to resume all paused streams.
  *
  * Used by the kms code after moving a new scanout buffer to vram.
@@ -419,7 +525,11 @@ int vmw_overlay_resume_all(struct vmw_private *dev_priv)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Pauses all active streams.
  *
  * Used by the kms code when moving a new scanout buffer to vram.
@@ -449,6 +559,17 @@ int vmw_overlay_pause_all(struct vmw_private *dev_priv)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+
+static bool vmw_overlay_available(const struct vmw_private *dev_priv)
+{
+	return (dev_priv->overlay_priv != NULL &&
+		((vmw_fifo_caps(dev_priv) & VMW_OVERLAY_CAP_MASK) ==
+		 VMW_OVERLAY_CAP_MASK));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int vmw_overlay_ioctl(struct drm_device *dev, void *data,
 		      struct drm_file *file_priv)
 {
@@ -457,11 +578,19 @@ int vmw_overlay_ioctl(struct drm_device *dev, void *data,
 	struct vmw_overlay *overlay = dev_priv->overlay_priv;
 	struct drm_vmw_control_stream_arg *arg =
 	    (struct drm_vmw_control_stream_arg *)data;
+<<<<<<< HEAD
 	struct vmw_dma_buffer *buf;
 	struct vmw_resource *res;
 	int ret;
 
 	if (!overlay)
+=======
+	struct vmw_bo *buf;
+	struct vmw_resource *res;
+	int ret;
+
+	if (!vmw_overlay_available(dev_priv))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOSYS;
 
 	ret = vmw_user_stream_lookup(dev_priv, tfile, &arg->stream_id, &res);
@@ -475,13 +604,21 @@ int vmw_overlay_ioctl(struct drm_device *dev, void *data,
 		goto out_unlock;
 	}
 
+<<<<<<< HEAD
 	ret = vmw_user_dmabuf_lookup(tfile, arg->handle, &buf);
+=======
+	ret = vmw_user_bo_lookup(file_priv, arg->handle, &buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		goto out_unlock;
 
 	ret = vmw_overlay_update_stream(dev_priv, buf, arg, true);
 
+<<<<<<< HEAD
 	vmw_dmabuf_unreference(&buf);
+=======
+	vmw_user_bo_unref(&buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_unlock:
 	mutex_unlock(&overlay->mutex);
@@ -492,7 +629,11 @@ out_unlock:
 
 int vmw_overlay_num_overlays(struct vmw_private *dev_priv)
 {
+<<<<<<< HEAD
 	if (!dev_priv->overlay_priv)
+=======
+	if (!vmw_overlay_available(dev_priv))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return VMW_MAX_NUM_STREAMS;
@@ -503,7 +644,11 @@ int vmw_overlay_num_free_overlays(struct vmw_private *dev_priv)
 	struct vmw_overlay *overlay = dev_priv->overlay_priv;
 	int i, k;
 
+<<<<<<< HEAD
 	if (!overlay)
+=======
+	if (!vmw_overlay_available(dev_priv))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	mutex_lock(&overlay->mutex);
@@ -569,12 +714,15 @@ int vmw_overlay_init(struct vmw_private *dev_priv)
 	if (dev_priv->overlay_priv)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (!(dev_priv->fifo.capabilities & SVGA_FIFO_CAP_VIDEO) &&
 	     (dev_priv->fifo.capabilities & SVGA_FIFO_CAP_ESCAPE)) {
 		DRM_INFO("hardware doesn't support overlays\n");
 		return -ENOSYS;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	overlay = kzalloc(sizeof(*overlay), GFP_KERNEL);
 	if (!overlay)
 		return -ENOMEM;

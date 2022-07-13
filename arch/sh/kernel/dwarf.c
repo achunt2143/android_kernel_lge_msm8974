@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2009 Matt Fleming <matt@console-pimps.org>
  *
@@ -5,6 +6,12 @@
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2009 Matt Fleming <matt@console-pimps.org>
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This is an implementation of a DWARF unwinder. Its main purpose is
  * for generating stacktrace information. Based on the DWARF 3
  * specification from http://www.dwarfstd.org.
@@ -599,7 +606,11 @@ struct dwarf_frame *dwarf_unwind_stack(unsigned long pc,
 	 * time this function makes its first function call.
 	 */
 	if (!pc || !prev)
+<<<<<<< HEAD
 		pc = (unsigned long)current_text_addr();
+=======
+		pc = _THIS_IP_;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
 	/*
@@ -608,17 +619,29 @@ struct dwarf_frame *dwarf_unwind_stack(unsigned long pc,
 	 * expected to find the real return address.
 	 */
 	if (pc == (unsigned long)&return_to_handler) {
+<<<<<<< HEAD
 		int index = current->curr_ret_stack;
 
+=======
+		struct ftrace_ret_stack *ret_stack;
+
+		ret_stack = ftrace_graph_get_ret_stack(current, 0);
+		if (ret_stack)
+			pc = ret_stack->ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * We currently have no way of tracking how many
 		 * return_to_handler()'s we've seen. If there is more
 		 * than one patched return address on our stack,
 		 * complain loudly.
 		 */
+<<<<<<< HEAD
 		WARN_ON(index > 0);
 
 		pc = current->ret_stack[index].ret;
+=======
+		WARN_ON(ftrace_graph_get_ret_stack(current, 1));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 
@@ -993,16 +1016,24 @@ static struct unwinder dwarf_unwinder = {
 	.rating = 150,
 };
 
+<<<<<<< HEAD
 static void dwarf_unwinder_cleanup(void)
 {
 	struct rb_node **fde_rb_node = &fde_root.rb_node;
 	struct rb_node **cie_rb_node = &cie_root.rb_node;
+=======
+static void __init dwarf_unwinder_cleanup(void)
+{
+	struct dwarf_fde *fde, *next_fde;
+	struct dwarf_cie *cie, *next_cie;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Deallocate all the memory allocated for the DWARF unwinder.
 	 * Traverse all the FDE/CIE lists and remove and free all the
 	 * memory associated with those data structures.
 	 */
+<<<<<<< HEAD
 	while (*fde_rb_node) {
 		struct dwarf_fde *fde;
 
@@ -1019,6 +1050,16 @@ static void dwarf_unwinder_cleanup(void)
 		kfree(cie);
 	}
 
+=======
+	rbtree_postorder_for_each_entry_safe(fde, next_fde, &fde_root, node)
+		kfree(fde);
+
+	rbtree_postorder_for_each_entry_safe(cie, next_cie, &cie_root, node)
+		kfree(cie);
+
+	mempool_destroy(dwarf_reg_pool);
+	mempool_destroy(dwarf_frame_pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_destroy(dwarf_reg_cachep);
 	kmem_cache_destroy(dwarf_frame_cachep);
 }
@@ -1180,6 +1221,7 @@ static int __init dwarf_unwinder_init(void)
 
 	dwarf_frame_cachep = kmem_cache_create("dwarf_frames",
 			sizeof(struct dwarf_frame), 0,
+<<<<<<< HEAD
 			SLAB_PANIC | SLAB_HWCACHE_ALIGN | SLAB_NOTRACK, NULL);
 
 	dwarf_reg_cachep = kmem_cache_create("dwarf_regs",
@@ -1197,6 +1239,21 @@ static int __init dwarf_unwinder_init(void)
 					 mempool_alloc_slab,
 					 mempool_free_slab,
 					 dwarf_reg_cachep);
+=======
+			SLAB_PANIC | SLAB_HWCACHE_ALIGN, NULL);
+
+	dwarf_reg_cachep = kmem_cache_create("dwarf_regs",
+			sizeof(struct dwarf_reg), 0,
+			SLAB_PANIC | SLAB_HWCACHE_ALIGN, NULL);
+
+	dwarf_frame_pool = mempool_create_slab_pool(DWARF_FRAME_MIN_REQ,
+						    dwarf_frame_cachep);
+	if (!dwarf_frame_pool)
+		goto out;
+
+	dwarf_reg_pool = mempool_create_slab_pool(DWARF_REG_MIN_REQ,
+						  dwarf_reg_cachep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dwarf_reg_pool)
 		goto out;
 

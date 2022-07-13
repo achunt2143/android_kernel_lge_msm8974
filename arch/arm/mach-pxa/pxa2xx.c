@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-pxa/pxa2xx.c
  *
  * code specific to pxa2xx
  *
  * Copyright (C) 2008 Dmitry Baryshkov
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -15,11 +22,20 @@
 #include <linux/device.h>
 #include <linux/io.h>
 
+<<<<<<< HEAD
 #include <mach/hardware.h>
 #include <mach/pxa2xx-regs.h>
 #include <mach/mfp-pxa25x.h>
 #include <mach/reset.h>
 #include <mach/irda.h>
+=======
+#include "pxa2xx-regs.h"
+#include "mfp-pxa25x.h"
+#include "generic.h"
+#include "reset.h"
+#include "smemc.h"
+#include <linux/soc/pxa/smemc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void pxa2xx_clear_reset_status(unsigned int mask)
 {
@@ -27,6 +43,7 @@ void pxa2xx_clear_reset_status(unsigned int mask)
 	RCSR = mask;
 }
 
+<<<<<<< HEAD
 static unsigned long pxa2xx_mfp_fir[] = {
 	GPIO46_FICP_RXD,
 	GPIO47_FICP_TXD,
@@ -54,3 +71,28 @@ void pxa2xx_transceiver_mode(struct device *dev, int mode)
 		BUG();
 }
 EXPORT_SYMBOL_GPL(pxa2xx_transceiver_mode);
+=======
+#define MDCNFG_DRAC2(mdcnfg)	(((mdcnfg) >> 21) & 0x3)
+#define MDCNFG_DRAC0(mdcnfg)	(((mdcnfg) >> 5) & 0x3)
+
+int pxa2xx_smemc_get_sdram_rows(void)
+{
+	static int sdram_rows;
+	unsigned int drac2 = 0, drac0 = 0;
+	u32 mdcnfg;
+
+	if (sdram_rows)
+		return sdram_rows;
+
+	mdcnfg = readl_relaxed(MDCNFG);
+
+	if (mdcnfg & (MDCNFG_DE2 | MDCNFG_DE3))
+		drac2 = MDCNFG_DRAC2(mdcnfg);
+
+	if (mdcnfg & (MDCNFG_DE0 | MDCNFG_DE1))
+		drac0 = MDCNFG_DRAC0(mdcnfg);
+
+	sdram_rows = 1 << (11 + max(drac0, drac2));
+	return sdram_rows;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

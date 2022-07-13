@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * i2sbus driver -- interface register definitions
  *
  * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
+<<<<<<< HEAD
  *
  * GPL v2, can be found in COPYING.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __I2SBUS_INTERFACE_H
 #define __I2SBUS_INTERFACE_H
@@ -35,7 +42,11 @@ struct i2s_interface_regs {
 	__le32 peak_level_in1;	/* 0x90 */
 	PAD(12);
 	/* total size: 0x100 bytes */
+<<<<<<< HEAD
 }  __attribute__((__packed__));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* interrupt register is just a bitfield with
  * interrupt enable and pending bits */

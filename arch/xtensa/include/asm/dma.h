@@ -52,6 +52,7 @@
 extern int request_dma(unsigned int dmanr, const char * device_id);
 extern void free_dma(unsigned int dmanr);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 extern int isa_dma_bridge_buggy;
 #else
@@ -59,4 +60,6 @@ extern int isa_dma_bridge_buggy;
 #endif
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

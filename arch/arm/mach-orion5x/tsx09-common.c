@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * QNAP TS-x09 Boards common functions
  *
  * Maintainers: Lennert Buytenhek <buytenh@marvell.com>
  *		Byron Bradley <byron.bbradley@gmail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -15,7 +22,11 @@
 #include <linux/mv643xx_eth.h>
 #include <linux/timex.h>
 #include <linux/serial_reg.h>
+<<<<<<< HEAD
 #include <mach/orion5x.h>
+=======
+#include "orion5x.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "tsx09-common.h"
 #include "common.h"
 
@@ -101,9 +112,13 @@ static int __init qnap_tsx09_check_mac_addr(const char *addr_str)
 		addr[i] = byte;
 	}
 
+<<<<<<< HEAD
 	printk(KERN_INFO "tsx09: found ethernet mac address ");
 	for (i = 0; i < 6; i++)
 		printk("%.2x%s", addr[i], (i < 5) ? ":" : ".\n");
+=======
+	printk(KERN_INFO "tsx09: found ethernet mac address %pM\n", addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(qnap_tsx09_eth_data.mac_addr, addr, 6);
 

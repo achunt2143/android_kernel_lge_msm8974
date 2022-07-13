@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	include/asm-mips/dec/ioasic.h
  *
  *	DEC I/O ASIC access operations.
  *
  *	Copyright (C) 2000, 2002, 2003  Maciej W. Rozycki
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_DEC_IOASIC_H
@@ -33,6 +40,10 @@ static inline u32 ioasic_read(unsigned int reg)
 
 extern void init_ioasic_irqs(int base);
 
+<<<<<<< HEAD
 extern void dec_ioasic_clocksource_init(void);
+=======
+extern int dec_ioasic_clocksource_init(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_DEC_IOASIC_H */

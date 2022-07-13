@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 menuconfig POWER_SUPPLY
 	tristate "Power supply class support"
 	help
@@ -801,3 +802,8 @@ config LGE_PM_CHARGING_TEMP_SCENARIO_V1_7
 	  LGE CHARGING TEMP SCENARIO V1.7 Configuration
 
 endif # POWER_SUPPLY
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+source "drivers/power/reset/Kconfig"
+source "drivers/power/supply/Kconfig"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

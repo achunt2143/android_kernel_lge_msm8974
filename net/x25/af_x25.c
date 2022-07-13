@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	X.25 Packet Layer release 002
  *
@@ -7,12 +11,15 @@
  *
  *	This code REQUIRES 2.1.15 or higher
  *
+<<<<<<< HEAD
  *	This module:
  *		This module is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	History
  *	X.25 001	Jonathan Naylor	Started coding.
  *	X.25 002	Jonathan Naylor	Centralised disconnect handling.
@@ -35,11 +42,20 @@
  *					response
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "X25: " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/capability.h>
 #include <linux/errno.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/timer.h>
 #include <linux/string.h>
 #include <linux/net.h>
@@ -49,7 +65,11 @@
 #include <linux/slab.h>
 #include <net/sock.h>
 #include <net/tcp_states.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fcntl.h>
 #include <linux/termios.h>	/* For TIOCINQ/OUTQ */
 #include <linux/notifier.h>
@@ -59,9 +79,13 @@
 
 #include <net/x25.h>
 #include <net/compat.h>
+<<<<<<< HEAD
 #ifdef KW_TAINT_ANALYSIS
    extern void * get_tainted_stuff();
 #endif
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sysctl_x25_restart_request_timeout = X25_DEFAULT_T20;
 int sysctl_x25_call_request_timeout    = X25_DEFAULT_T21;
 int sysctl_x25_reset_request_timeout   = X25_DEFAULT_T22;
@@ -74,7 +98,11 @@ DEFINE_RWLOCK(x25_list_lock);
 
 static const struct proto_ops x25_proto_ops;
 
+<<<<<<< HEAD
 static struct x25_address null_x25_address = {"               "};
+=======
+static const struct x25_address null_x25_address = {"               "};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_COMPAT
 struct compat_x25_subscrip_struct {
@@ -100,7 +128,11 @@ int x25_parse_address_block(struct sk_buff *skb,
 	}
 
 	len = *skb->data;
+<<<<<<< HEAD
 	needed = 1 + (len >> 4) + (len & 0x0f);
+=======
+	needed = 1 + ((len >> 4) + (len & 0x0f) + 1) / 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!pskb_may_pull(skb, needed)) {
 		/* packet is too short to hold the addresses it claims
@@ -205,6 +237,7 @@ static void x25_remove_socket(struct sock *sk)
 }
 
 /*
+<<<<<<< HEAD
  *	Kill all bound sockets on a dropped device.
  */
 static void x25_kill_by_device(struct net_device *dev)
@@ -222,17 +255,24 @@ static void x25_kill_by_device(struct net_device *dev)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Handle device status changes.
  */
 static int x25_device_event(struct notifier_block *this, unsigned long event,
 			    void *ptr)
 {
+<<<<<<< HEAD
 	struct net_device *dev = ptr;
+=======
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct x25_neigh *nb;
 
 	if (!net_eq(dev_net(dev), &init_net))
 		return NOTIFY_DONE;
 
+<<<<<<< HEAD
 	if (dev->type == ARPHRD_X25
 #if IS_ENABLED(CONFIG_LLC)
 	 || dev->type == ARPHRD_ETHER
@@ -254,6 +294,35 @@ static int x25_device_event(struct notifier_block *this, unsigned long event,
 			x25_route_device_down(dev);
 			x25_link_device_down(dev);
 			break;
+=======
+	if (dev->type == ARPHRD_X25) {
+		switch (event) {
+		case NETDEV_REGISTER:
+		case NETDEV_POST_TYPE_CHANGE:
+			x25_link_device_up(dev);
+			break;
+		case NETDEV_DOWN:
+			nb = x25_get_neigh(dev);
+			if (nb) {
+				x25_link_terminated(nb);
+				x25_neigh_put(nb);
+			}
+			x25_route_device_down(dev);
+			break;
+		case NETDEV_PRE_TYPE_CHANGE:
+		case NETDEV_UNREGISTER:
+			x25_link_device_down(dev);
+			break;
+		case NETDEV_CHANGE:
+			if (!netif_carrier_ok(dev)) {
+				nb = x25_get_neigh(dev);
+				if (nb) {
+					x25_link_terminated(nb);
+					x25_neigh_put(nb);
+				}
+			}
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -282,15 +351,25 @@ static struct sock *x25_find_listener(struct x25_address *addr,
 {
 	struct sock *s;
 	struct sock *next_best;
+<<<<<<< HEAD
 	struct hlist_node *node;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	read_lock_bh(&x25_list_lock);
 	next_best = NULL;
 
+<<<<<<< HEAD
 	sk_for_each(s, node, &x25_list)
 		if ((!strcmp(addr->x25_addr,
 			x25_sk(s)->source_addr.x25_addr) ||
 				!strcmp(addr->x25_addr,
+=======
+	sk_for_each(s, &x25_list)
+		if ((!strcmp(addr->x25_addr,
+			x25_sk(s)->source_addr.x25_addr) ||
+				!strcmp(x25_sk(s)->source_addr.x25_addr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					null_x25_address.x25_addr)) &&
 					s->sk_state == TCP_LISTEN) {
 			/*
@@ -325,9 +404,14 @@ found:
 static struct sock *__x25_find_socket(unsigned int lci, struct x25_neigh *nb)
 {
 	struct sock *s;
+<<<<<<< HEAD
 	struct hlist_node *node;
 
 	sk_for_each(s, node, &x25_list)
+=======
+
+	sk_for_each(s, &x25_list)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (x25_sk(s)->lci == lci && x25_sk(s)->neighbour == nb) {
 			sock_hold(s);
 			goto found;
@@ -355,17 +439,27 @@ static unsigned int x25_new_lci(struct x25_neigh *nb)
 	unsigned int lci = 1;
 	struct sock *sk;
 
+<<<<<<< HEAD
 	read_lock_bh(&x25_list_lock);
 
 	while ((sk = __x25_find_socket(lci, nb)) != NULL) {
+=======
+	while ((sk = x25_find_socket(lci, nb)) != NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sock_put(sk);
 		if (++lci == 4096) {
 			lci = 0;
 			break;
 		}
+<<<<<<< HEAD
 	}
 
 	read_unlock_bh(&x25_list_lock);
+=======
+		cond_resched();
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return lci;
 }
 
@@ -377,14 +471,26 @@ static void __x25_destroy_socket(struct sock *);
 /*
  *	handler for deferred kills.
  */
+<<<<<<< HEAD
 static void x25_destroy_timer(unsigned long data)
 {
 	x25_destroy_socket_from_timer((struct sock *)data);
+=======
+static void x25_destroy_timer(struct timer_list *t)
+{
+	struct sock *sk = from_timer(sk, t, sk_timer);
+
+	x25_destroy_socket_from_timer(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  *	This is called from user mode and the timers. Thus it protects itself
+<<<<<<< HEAD
  *	against interrupt users but doesn't worry about being called during
+=======
+ *	against interrupting users but doesn't worry about being called during
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	work. Once it is removed from the queue no interrupt or bottom half
  *	will touch it and we are (fairly 8-) ) safe.
  *	Not static as it's used by the timer
@@ -417,7 +523,10 @@ static void __x25_destroy_socket(struct sock *sk)
 		/* Defer: outstanding buffers */
 		sk->sk_timer.expires  = jiffies + 10 * HZ;
 		sk->sk_timer.function = x25_destroy_timer;
+<<<<<<< HEAD
 		sk->sk_timer.data = (unsigned long)sk;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		add_timer(&sk->sk_timer);
 	} else {
 		/* drop last reference so sock_put will free */
@@ -440,7 +549,11 @@ void x25_destroy_socket_from_timer(struct sock *sk)
  */
 
 static int x25_setsockopt(struct socket *sock, int level, int optname,
+<<<<<<< HEAD
 			  char __user *optval, unsigned int optlen)
+=======
+			  sockptr_t optval, unsigned int optlen)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int opt;
 	struct sock *sk = sock->sk;
@@ -454,7 +567,11 @@ static int x25_setsockopt(struct socket *sock, int level, int optname,
 		goto out;
 
 	rc = -EFAULT;
+<<<<<<< HEAD
 	if (get_user(opt, (int __user *)optval))
+=======
+	if (copy_from_sockptr(&opt, optval, sizeof(int)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	if (opt)
@@ -479,12 +596,20 @@ static int x25_getsockopt(struct socket *sock, int level, int optname,
 	if (get_user(len, optlen))
 		goto out;
 
+<<<<<<< HEAD
 	len = min_t(unsigned int, len, sizeof(int));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = -EINVAL;
 	if (len < 0)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	len = min_t(unsigned int, len, sizeof(int));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = -EFAULT;
 	if (put_user(len, optlen))
 		goto out;
@@ -501,6 +626,15 @@ static int x25_listen(struct socket *sock, int backlog)
 	int rc = -EOPNOTSUPP;
 
 	lock_sock(sk);
+<<<<<<< HEAD
+=======
+	if (sock->state != SS_UNCONNECTED) {
+		rc = -EINVAL;
+		release_sock(sk);
+		return rc;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sk->sk_state != TCP_LISTEN) {
 		memset(&x25_sk(sk)->dest_addr, 0, X25_ADDR_LEN);
 		sk->sk_max_ack_backlog = backlog;
@@ -518,10 +652,17 @@ static struct proto x25_proto = {
 	.obj_size = sizeof(struct x25_sock),
 };
 
+<<<<<<< HEAD
 static struct sock *x25_alloc_socket(struct net *net)
 {
 	struct x25_sock *x25;
 	struct sock *sk = sk_alloc(net, AF_X25, GFP_ATOMIC, &x25_proto);
+=======
+static struct sock *x25_alloc_socket(struct net *net, int kern)
+{
+	struct x25_sock *x25;
+	struct sock *sk = sk_alloc(net, AF_X25, GFP_ATOMIC, &x25_proto, kern);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!sk)
 		goto out;
@@ -555,8 +696,13 @@ static int x25_create(struct net *net, struct socket *sock, int protocol,
 	if (protocol)
 		goto out;
 
+<<<<<<< HEAD
 	rc = -ENOBUFS;
 	if ((sk = x25_alloc_socket(net)) == NULL)
+=======
+	rc = -ENOMEM;
+	if ((sk = x25_alloc_socket(net, kern)) == NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	x25 = x25_sk(sk);
@@ -605,13 +751,21 @@ static struct sock *x25_make_new(struct sock *osk)
 	if (osk->sk_type != SOCK_SEQPACKET)
 		goto out;
 
+<<<<<<< HEAD
 	if ((sk = x25_alloc_socket(sock_net(osk))) == NULL)
+=======
+	if ((sk = x25_alloc_socket(sock_net(osk), 0)) == NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	x25 = x25_sk(sk);
 
 	sk->sk_type        = osk->sk_type;
+<<<<<<< HEAD
 	sk->sk_priority    = osk->sk_priority;
+=======
+	sk->sk_priority    = READ_ONCE(osk->sk_priority);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sk->sk_protocol    = osk->sk_protocol;
 	sk->sk_rcvbuf      = osk->sk_rcvbuf;
 	sk->sk_sndbuf      = osk->sk_sndbuf;
@@ -668,6 +822,15 @@ static int x25_release(struct socket *sock)
 			sock_set_flag(sk, SOCK_DEAD);
 			sock_set_flag(sk, SOCK_DESTROY);
 			break;
+<<<<<<< HEAD
+=======
+
+		case X25_STATE_5:
+			x25_write_internal(sk, X25_CLEAR_REQUEST);
+			x25_disconnect(sk, 0, 0, 0);
+			__x25_destroy_socket(sk);
+			goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	sock_orphan(sk);
@@ -683,27 +846,57 @@ static int x25_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 	struct sockaddr_x25 *addr = (struct sockaddr_x25 *)uaddr;
 	int len, i, rc = 0;
 
+<<<<<<< HEAD
 	if (!sock_flag(sk, SOCK_ZAPPED) ||
 	    addr_len != sizeof(struct sockaddr_x25) ||
 	    addr->sx25_family != AF_X25) {
+=======
+	if (addr_len != sizeof(struct sockaddr_x25) ||
+	    addr->sx25_family != AF_X25 ||
+	    strnlen(addr->sx25_addr.x25_addr, X25_ADDR_LEN) == X25_ADDR_LEN) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -EINVAL;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	len = strlen(addr->sx25_addr.x25_addr);
 	for (i = 0; i < len; i++) {
 		if (!isdigit(addr->sx25_addr.x25_addr[i])) {
 			rc = -EINVAL;
 			goto out;
+=======
+	/* check for the null_x25_address */
+	if (strcmp(addr->sx25_addr.x25_addr, null_x25_address.x25_addr)) {
+
+		len = strlen(addr->sx25_addr.x25_addr);
+		for (i = 0; i < len; i++) {
+			if (!isdigit(addr->sx25_addr.x25_addr[i])) {
+				rc = -EINVAL;
+				goto out;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	lock_sock(sk);
+<<<<<<< HEAD
 	x25_sk(sk)->source_addr = addr->sx25_addr;
 	x25_insert_socket(sk);
 	sock_reset_flag(sk, SOCK_ZAPPED);
 	release_sock(sk);
 	SOCK_DEBUG(sk, "x25_bind: socket is bound\n");
+=======
+	if (sock_flag(sk, SOCK_ZAPPED)) {
+		x25_sk(sk)->source_addr = addr->sx25_addr;
+		x25_insert_socket(sk);
+		sock_reset_flag(sk, SOCK_ZAPPED);
+	} else {
+		rc = -EINVAL;
+	}
+	release_sock(sk);
+	net_dbg_ratelimited("x25_bind: socket is bound\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return rc;
 }
@@ -724,6 +917,14 @@ static int x25_wait_for_connection_establishment(struct sock *sk)
 			sk->sk_socket->state = SS_UNCONNECTED;
 			break;
 		}
+<<<<<<< HEAD
+=======
+		rc = -ENOTCONN;
+		if (sk->sk_state == TCP_CLOSE) {
+			sk->sk_socket->state = SS_UNCONNECTED;
+			break;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = 0;
 		if (sk->sk_state != TCP_ESTABLISHED) {
 			release_sock(sk);
@@ -762,12 +963,24 @@ static int x25_connect(struct socket *sock, struct sockaddr *uaddr,
 	if (sk->sk_state == TCP_ESTABLISHED)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	rc = -EALREADY;	/* Do nothing if call is already in progress */
+	if (sk->sk_state == TCP_SYN_SENT)
+		goto out;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sk->sk_state   = TCP_CLOSE;
 	sock->state = SS_UNCONNECTED;
 
 	rc = -EINVAL;
 	if (addr_len != sizeof(struct sockaddr_x25) ||
+<<<<<<< HEAD
 	    addr->sx25_family != AF_X25)
+=======
+	    addr->sx25_family != AF_X25 ||
+	    strnlen(addr->sx25_addr.x25_addr, X25_ADDR_LEN) == X25_ADDR_LEN)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 
 	rc = -ENETUNREACH;
@@ -808,7 +1021,11 @@ static int x25_connect(struct socket *sock, struct sockaddr *uaddr,
 	/* Now the loop */
 	rc = -EINPROGRESS;
 	if (sk->sk_state != TCP_ESTABLISHED && (flags & O_NONBLOCK))
+<<<<<<< HEAD
 		goto out_put_neigh;
+=======
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = x25_wait_for_connection_establishment(sk);
 	if (rc)
@@ -817,8 +1034,18 @@ static int x25_connect(struct socket *sock, struct sockaddr *uaddr,
 	sock->state = SS_CONNECTED;
 	rc = 0;
 out_put_neigh:
+<<<<<<< HEAD
 	if (rc)
 		x25_neigh_put(x25->neighbour);
+=======
+	if (rc && x25->neighbour) {
+		read_lock_bh(&x25_list_lock);
+		x25_neigh_put(x25->neighbour);
+		x25->neighbour = NULL;
+		read_unlock_bh(&x25_list_lock);
+		x25->state = X25_STATE_0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_put_route:
 	x25_route_put(rt);
 out:
@@ -855,7 +1082,12 @@ static int x25_wait_for_data(struct sock *sk, long timeout)
 	return rc;
 }
 
+<<<<<<< HEAD
 static int x25_accept(struct socket *sock, struct socket *newsock, int flags)
+=======
+static int x25_accept(struct socket *sock, struct socket *newsock, int flags,
+		      bool kern)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct sock *newsk;
@@ -887,7 +1119,11 @@ static int x25_accept(struct socket *sock, struct socket *newsock, int flags)
 	/* Now attach up the new socket */
 	skb->sk = NULL;
 	kfree_skb(skb);
+<<<<<<< HEAD
 	sk->sk_ack_backlog--;
+=======
+	sk_acceptq_removed(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	newsock->state = SS_CONNECTED;
 	rc = 0;
 out2:
@@ -897,7 +1133,11 @@ out:
 }
 
 static int x25_getname(struct socket *sock, struct sockaddr *uaddr,
+<<<<<<< HEAD
 		       int *uaddr_len, int peer)
+=======
+		       int peer)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sockaddr_x25 *sx25 = (struct sockaddr_x25 *)uaddr;
 	struct sock *sk = sock->sk;
@@ -914,7 +1154,11 @@ static int x25_getname(struct socket *sock, struct sockaddr *uaddr,
 		sx25->sx25_addr = x25->source_addr;
 
 	sx25->sx25_family = AF_X25;
+<<<<<<< HEAD
 	*uaddr_len = sizeof(*sx25);
+=======
+	rc = sizeof(*sx25);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return rc;
@@ -1012,7 +1256,11 @@ int x25_rx_call_request(struct sk_buff *skb, struct x25_neigh *nb,
 
 	/*
 	 * current neighbour/link might impose additional limits
+<<<<<<< HEAD
 	 * on certain facilties
+=======
+	 * on certain facilities
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 
 	x25_limit_facilities(&facilities, nb);
@@ -1036,6 +1284,10 @@ int x25_rx_call_request(struct sk_buff *skb, struct x25_neigh *nb,
 	makex25->lci           = lci;
 	makex25->dest_addr     = dest_addr;
 	makex25->source_addr   = source_addr;
+<<<<<<< HEAD
+=======
+	x25_neigh_hold(nb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	makex25->neighbour     = nb;
 	makex25->facilities    = facilities;
 	makex25->dte_facilities= dte_facilities;
@@ -1050,6 +1302,11 @@ int x25_rx_call_request(struct sk_buff *skb, struct x25_neigh *nb,
 	if (test_bit(X25_ACCPT_APPRV_FLAG, &makex25->flags)) {
 		x25_write_internal(make, X25_CALL_ACCEPTED);
 		makex25->state = X25_STATE_3;
+<<<<<<< HEAD
+=======
+	} else {
+		makex25->state = X25_STATE_5;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -1058,7 +1315,11 @@ int x25_rx_call_request(struct sk_buff *skb, struct x25_neigh *nb,
 	skb_copy_from_linear_data(skb, makex25->calluserdata.cuddata, skb->len);
 	makex25->calluserdata.cudlength = skb->len;
 
+<<<<<<< HEAD
 	sk->sk_ack_backlog++;
+=======
+	sk_acceptq_added(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	x25_insert_socket(make);
 
@@ -1067,7 +1328,11 @@ int x25_rx_call_request(struct sk_buff *skb, struct x25_neigh *nb,
 	x25_start_heartbeat(make);
 
 	if (!sock_flag(sk, SOCK_DEAD))
+<<<<<<< HEAD
 		sk->sk_data_ready(sk, skb->len);
+=======
+		sk->sk_data_ready(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = 1;
 	sock_put(sk);
 out:
@@ -1080,12 +1345,20 @@ out_clear_request:
 	goto out;
 }
 
+<<<<<<< HEAD
 static int x25_sendmsg(struct kiocb *iocb, struct socket *sock,
 		       struct msghdr *msg, size_t len)
 {
 	struct sock *sk = sock->sk;
 	struct x25_sock *x25 = x25_sk(sk);
 	struct sockaddr_x25 *usx25 = (struct sockaddr_x25 *)msg->msg_name;
+=======
+static int x25_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
+{
+	struct sock *sk = sock->sk;
+	struct x25_sock *x25 = x25_sk(sk);
+	DECLARE_SOCKADDR(struct sockaddr_x25 *, usx25, msg->msg_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sockaddr_x25 sx25;
 	struct sk_buff *skb;
 	unsigned char *asmptr;
@@ -1146,10 +1419,17 @@ static int x25_sendmsg(struct kiocb *iocb, struct socket *sock,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	SOCK_DEBUG(sk, "x25_sendmsg: sendto: Addresses built.\n");
 
 	/* Build a packet */
 	SOCK_DEBUG(sk, "x25_sendmsg: sendto: building packet.\n");
+=======
+	net_dbg_ratelimited("x25_sendmsg: sendto: Addresses built.\n");
+
+	/* Build a packet */
+	net_dbg_ratelimited("x25_sendmsg: sendto: building packet.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((msg->msg_flags & MSG_OOB) && len > 32)
 		len = 32;
@@ -1168,12 +1448,20 @@ static int x25_sendmsg(struct kiocb *iocb, struct socket *sock,
 	/*
 	 *	Put the data on the end
 	 */
+<<<<<<< HEAD
 	SOCK_DEBUG(sk, "x25_sendmsg: Copying user data\n");
+=======
+	net_dbg_ratelimited("x25_sendmsg: Copying user data\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_reset_transport_header(skb);
 	skb_put(skb, len);
 
+<<<<<<< HEAD
 	rc = memcpy_fromiovec(skb_transport_header(skb), msg->msg_iov, len);
+=======
+	rc = memcpy_from_msg(skb_transport_header(skb), msg, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto out_kfree_skb;
 
@@ -1192,7 +1480,11 @@ static int x25_sendmsg(struct kiocb *iocb, struct socket *sock,
 	/*
 	 *	Push down the X.25 header
 	 */
+<<<<<<< HEAD
 	SOCK_DEBUG(sk, "x25_sendmsg: Building X.25 Header.\n");
+=======
+	net_dbg_ratelimited("x25_sendmsg: Building X.25 Header.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (msg->msg_flags & MSG_OOB) {
 		if (x25->neighbour->extended) {
@@ -1226,8 +1518,13 @@ static int x25_sendmsg(struct kiocb *iocb, struct socket *sock,
 			skb->data[0] |= X25_Q_BIT;
 	}
 
+<<<<<<< HEAD
 	SOCK_DEBUG(sk, "x25_sendmsg: Built header.\n");
 	SOCK_DEBUG(sk, "x25_sendmsg: Transmitting buffer\n");
+=======
+	net_dbg_ratelimited("x25_sendmsg: Built header.\n");
+	net_dbg_ratelimited("x25_sendmsg: Transmitting buffer\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = -ENOTCONN;
 	if (sk->sk_state != TCP_ESTABLISHED)
@@ -1255,13 +1552,21 @@ out_kfree_skb:
 }
 
 
+<<<<<<< HEAD
 static int x25_recvmsg(struct kiocb *iocb, struct socket *sock,
 		       struct msghdr *msg, size_t size,
+=======
+static int x25_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       int flags)
 {
 	struct sock *sk = sock->sk;
 	struct x25_sock *x25 = x25_sk(sk);
+<<<<<<< HEAD
 	struct sockaddr_x25 *sx25 = (struct sockaddr_x25 *)msg->msg_name;
+=======
+	DECLARE_SOCKADDR(struct sockaddr_x25 *, sx25, msg->msg_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t copied;
 	int qbit, header_len;
 	struct sk_buff *skb;
@@ -1308,8 +1613,12 @@ static int x25_recvmsg(struct kiocb *iocb, struct socket *sock,
 	} else {
 		/* Now we can treat all alike */
 		release_sock(sk);
+<<<<<<< HEAD
 		skb = skb_recv_datagram(sk, flags & ~MSG_DONTWAIT,
 					flags & MSG_DONTWAIT, &rc);
+=======
+		skb = skb_recv_datagram(sk, flags, &rc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lock_sock(sk);
 		if (!skb)
 			goto out;
@@ -1338,7 +1647,11 @@ static int x25_recvmsg(struct kiocb *iocb, struct socket *sock,
 	/* Currently, each datagram always contains a complete record */
 	msg->msg_flags |= MSG_EOR;
 
+<<<<<<< HEAD
 	rc = skb_copy_datagram_iovec(skb, 0, msg->msg_iov, copied);
+=======
+	rc = skb_copy_datagram_msg(skb, 0, msg, copied);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto out_free_dgram;
 
@@ -1391,6 +1704,7 @@ static int x25_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		break;
 	}
 
+<<<<<<< HEAD
 	case SIOCGSTAMP:
 		rc = -EINVAL;
 		if (sk)
@@ -1403,6 +1717,8 @@ static int x25_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 			rc = sock_get_timestampns(sk,
 					(struct timespec __user *)argp);
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SIOCGIFADDR:
 	case SIOCSIFADDR:
 	case SIOCGIFDSTADDR:
@@ -1505,12 +1821,17 @@ out_fac_release:
 			goto out_dtefac_release;
 		if (dtefacs.calling_len > X25_MAX_AE_LEN)
 			goto out_dtefac_release;
+<<<<<<< HEAD
 		if (dtefacs.calling_ae == NULL)
 			goto out_dtefac_release;
 		if (dtefacs.called_len > X25_MAX_AE_LEN)
 			goto out_dtefac_release;
 		if (dtefacs.called_ae == NULL)
 			goto out_dtefac_release;
+=======
+		if (dtefacs.called_len > X25_MAX_AE_LEN)
+			goto out_dtefac_release;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		x25->dte_facilities = dtefacs;
 		rc = 0;
 out_dtefac_release:
@@ -1627,7 +1948,11 @@ static const struct net_proto_family x25_family_ops = {
 
 #ifdef CONFIG_COMPAT
 static int compat_x25_subscr_ioctl(unsigned int cmd,
+<<<<<<< HEAD
 		struct compat_x25_subscrip_struct __user *x25_subscr32_actual)
+=======
+		struct compat_x25_subscrip_struct __user *x25_subscr32)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct compat_x25_subscrip_struct x25_subscr;
 	struct x25_neigh *nb;
@@ -1635,11 +1960,14 @@ static int compat_x25_subscr_ioctl(unsigned int cmd,
 	int rc = -EINVAL;
 
 	rc = -EFAULT;
+<<<<<<< HEAD
 	#ifdef KW_TAINT_ANALYSIS
 	struct compat_x25_subscrip_struct __user *x25_subscr32 = (struct compat_x25_subscrip_struct __user *)get_tainted_stuff();
 	#else
 	struct compat_x25_subscrip_struct __user *x25_subscr32 = x25_subscr32_actual;
 	#endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy_from_user(&x25_subscr, x25_subscr32, sizeof(*x25_subscr32)))
 		goto out;
 
@@ -1682,6 +2010,7 @@ out_dev_put:
 static int compat_x25_ioctl(struct socket *sock, unsigned int cmd,
 				unsigned long arg)
 {
+<<<<<<< HEAD
 	#ifdef KW_TAINT_ANALYSIS
 	void __user *argp = (void __user *)get_tainted_stuff();
 	#else
@@ -1689,6 +2018,9 @@ static int compat_x25_ioctl(struct socket *sock, unsigned int cmd,
 	#endif	
 	struct sock *sk = sock->sk;
 
+=======
+	void __user *argp = compat_ptr(arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = -ENOIOCTLCMD;
 
 	switch(cmd) {
@@ -1696,6 +2028,7 @@ static int compat_x25_ioctl(struct socket *sock, unsigned int cmd,
 	case TIOCINQ:
 		rc = x25_ioctl(sock, cmd, (unsigned long)argp);
 		break;
+<<<<<<< HEAD
 	case SIOCGSTAMP:
 		rc = -EINVAL;
 		if (sk)
@@ -1708,6 +2041,8 @@ static int compat_x25_ioctl(struct socket *sock, unsigned int cmd,
 			rc = compat_sock_get_timestampns(sk,
 					(struct timespec __user*)argp);
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SIOCGIFADDR:
 	case SIOCSIFADDR:
 	case SIOCGIFDSTADDR:
@@ -1771,6 +2106,10 @@ static const struct proto_ops x25_proto_ops = {
 #ifdef CONFIG_COMPAT
 	.compat_ioctl = compat_x25_ioctl,
 #endif
+<<<<<<< HEAD
+=======
+	.gettstamp =	sock_gettstamp,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.listen =	x25_listen,
 	.shutdown =	sock_no_shutdown,
 	.setsockopt =	x25_setsockopt,
@@ -1778,7 +2117,10 @@ static const struct proto_ops x25_proto_ops = {
 	.sendmsg =	x25_sendmsg,
 	.recvmsg =	x25_recvmsg,
 	.mmap =		sock_no_mmap,
+<<<<<<< HEAD
 	.sendpage =	sock_no_sendpage,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct packet_type x25_packet_type __read_mostly = {
@@ -1793,6 +2135,7 @@ static struct notifier_block x25_dev_notifier = {
 void x25_kill_by_neigh(struct x25_neigh *nb)
 {
 	struct sock *s;
+<<<<<<< HEAD
 	struct hlist_node *node;
 
 	write_lock_bh(&x25_list_lock);
@@ -1801,6 +2144,20 @@ void x25_kill_by_neigh(struct x25_neigh *nb)
 		if (x25_sk(s)->neighbour == nb)
 			x25_disconnect(s, ENETUNREACH, 0, 0);
 
+=======
+
+	write_lock_bh(&x25_list_lock);
+
+	sk_for_each(s, &x25_list) {
+		if (x25_sk(s)->neighbour == nb) {
+			write_unlock_bh(&x25_list_lock);
+			lock_sock(s);
+			x25_disconnect(s, ENETUNREACH, 0, 0);
+			release_sock(s);
+			write_lock_bh(&x25_list_lock);
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	write_unlock_bh(&x25_list_lock);
 
 	/* Remove any related forwards */
@@ -1809,6 +2166,7 @@ void x25_kill_by_neigh(struct x25_neigh *nb)
 
 static int __init x25_init(void)
 {
+<<<<<<< HEAD
 	int rc = proto_register(&x25_proto, 0);
 
 	if (rc != 0)
@@ -1816,11 +2174,22 @@ static int __init x25_init(void)
 
 	rc = sock_register(&x25_family_ops);
 	if (rc != 0)
+=======
+	int rc;
+
+	rc = proto_register(&x25_proto, 0);
+	if (rc)
+		goto out;
+
+	rc = sock_register(&x25_family_ops);
+	if (rc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_proto;
 
 	dev_add_pack(&x25_packet_type);
 
 	rc = register_netdevice_notifier(&x25_dev_notifier);
+<<<<<<< HEAD
 	if (rc != 0)
 		goto out_sock;
 
@@ -1835,6 +2204,29 @@ out:
 out_dev:
 	unregister_netdevice_notifier(&x25_dev_notifier);
 out_sock:
+=======
+	if (rc)
+		goto out_sock;
+
+	rc = x25_register_sysctl();
+	if (rc)
+		goto out_dev;
+
+	rc = x25_proc_init();
+	if (rc)
+		goto out_sysctl;
+
+	pr_info("Linux Version 0.2\n");
+
+out:
+	return rc;
+out_sysctl:
+	x25_unregister_sysctl();
+out_dev:
+	unregister_netdevice_notifier(&x25_dev_notifier);
+out_sock:
+	dev_remove_pack(&x25_packet_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sock_unregister(AF_X25);
 out_proto:
 	proto_unregister(&x25_proto);

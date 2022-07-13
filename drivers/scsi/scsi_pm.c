@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	scsi_pm.c	Copyright (C) 2010 Alan Stern
  *
@@ -7,7 +11,11 @@
 
 #include <linux/pm_runtime.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <linux/async.h>
+=======
+#include <linux/blk-pm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_device.h>
@@ -16,22 +24,68 @@
 
 #include "scsi_priv.h"
 
+<<<<<<< HEAD
 static int scsi_dev_type_suspend(struct device *dev, int (*cb)(struct device *))
 {
+=======
+#ifdef CONFIG_PM_SLEEP
+
+static int do_scsi_suspend(struct device *dev, const struct dev_pm_ops *pm)
+{
+	return pm && pm->suspend ? pm->suspend(dev) : 0;
+}
+
+static int do_scsi_freeze(struct device *dev, const struct dev_pm_ops *pm)
+{
+	return pm && pm->freeze ? pm->freeze(dev) : 0;
+}
+
+static int do_scsi_poweroff(struct device *dev, const struct dev_pm_ops *pm)
+{
+	return pm && pm->poweroff ? pm->poweroff(dev) : 0;
+}
+
+static int do_scsi_resume(struct device *dev, const struct dev_pm_ops *pm)
+{
+	return pm && pm->resume ? pm->resume(dev) : 0;
+}
+
+static int do_scsi_thaw(struct device *dev, const struct dev_pm_ops *pm)
+{
+	return pm && pm->thaw ? pm->thaw(dev) : 0;
+}
+
+static int do_scsi_restore(struct device *dev, const struct dev_pm_ops *pm)
+{
+	return pm && pm->restore ? pm->restore(dev) : 0;
+}
+
+static int scsi_dev_type_suspend(struct device *dev,
+		int (*cb)(struct device *, const struct dev_pm_ops *))
+{
+	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = scsi_device_quiesce(to_scsi_device(dev));
 	if (err == 0) {
+<<<<<<< HEAD
 		if (cb) {
 			err = cb(dev);
 			if (err)
 				scsi_device_resume(to_scsi_device(dev));
 		}
+=======
+		err = cb(dev, pm);
+		if (err)
+			scsi_device_resume(to_scsi_device(dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	dev_dbg(dev, "scsi suspend: %d\n", err);
 	return err;
 }
 
+<<<<<<< HEAD
 static int scsi_dev_type_resume(struct device *dev, int (*cb)(struct device *))
 {
 	int err = 0;
@@ -87,16 +141,45 @@ scsi_bus_resume_common(struct device *dev, int (*cb)(struct device *))
 		pm_runtime_set_active(dev);
 		pm_runtime_enable(dev);
 	}
+=======
+static int
+scsi_bus_suspend_common(struct device *dev,
+		int (*cb)(struct device *, const struct dev_pm_ops *))
+{
+	if (!scsi_is_sdev_device(dev))
+		return 0;
+
+	return scsi_dev_type_suspend(dev, cb);
+}
+
+static int scsi_bus_resume_common(struct device *dev,
+		int (*cb)(struct device *, const struct dev_pm_ops *))
+{
+	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
+	int err;
+
+	if (!scsi_is_sdev_device(dev))
+		return 0;
+
+	err = cb(dev, pm);
+	scsi_device_resume(to_scsi_device(dev));
+	dev_dbg(dev, "scsi resume: %d\n", err);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static int scsi_bus_prepare(struct device *dev)
 {
+<<<<<<< HEAD
 	if (scsi_is_sdev_device(dev)) {
 		/* sd probing uses async_schedule.  Wait until it finishes. */
 		async_synchronize_full();
 
 	} else if (scsi_is_host_device(dev)) {
+=======
+	if (scsi_is_host_device(dev)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Wait until async scanning is finished */
 		scsi_complete_async_scans();
 	}
@@ -105,38 +188,62 @@ static int scsi_bus_prepare(struct device *dev)
 
 static int scsi_bus_suspend(struct device *dev)
 {
+<<<<<<< HEAD
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
 	return scsi_bus_suspend_common(dev, pm ? pm->suspend : NULL);
+=======
+	return scsi_bus_suspend_common(dev, do_scsi_suspend);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int scsi_bus_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
 	return scsi_bus_resume_common(dev, pm ? pm->resume : NULL);
+=======
+	return scsi_bus_resume_common(dev, do_scsi_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int scsi_bus_freeze(struct device *dev)
 {
+<<<<<<< HEAD
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
 	return scsi_bus_suspend_common(dev, pm ? pm->freeze : NULL);
+=======
+	return scsi_bus_suspend_common(dev, do_scsi_freeze);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int scsi_bus_thaw(struct device *dev)
 {
+<<<<<<< HEAD
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
 	return scsi_bus_resume_common(dev, pm ? pm->thaw : NULL);
+=======
+	return scsi_bus_resume_common(dev, do_scsi_thaw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int scsi_bus_poweroff(struct device *dev)
 {
+<<<<<<< HEAD
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
 	return scsi_bus_suspend_common(dev, pm ? pm->poweroff : NULL);
+=======
+	return scsi_bus_suspend_common(dev, do_scsi_poweroff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int scsi_bus_restore(struct device *dev)
 {
+<<<<<<< HEAD
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
 	return scsi_bus_resume_common(dev, pm ? pm->restore : NULL);
+=======
+	return scsi_bus_resume_common(dev, do_scsi_restore);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else /* CONFIG_PM_SLEEP */
@@ -151,23 +258,37 @@ static int scsi_bus_restore(struct device *dev)
 
 #endif /* CONFIG_PM_SLEEP */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 
 static int sdev_blk_runtime_suspend(struct scsi_device *sdev,
 					int (*cb)(struct device *))
 {
 	int err;
+=======
+static int sdev_runtime_suspend(struct device *dev)
+{
+	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
+	struct scsi_device *sdev = to_scsi_device(dev);
+	int err = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = blk_pre_runtime_suspend(sdev->request_queue);
 	if (err)
 		return err;
+<<<<<<< HEAD
 	if (cb)
 		err = cb(&sdev->sdev_gendev);
+=======
+	if (pm && pm->runtime_suspend)
+		err = pm->runtime_suspend(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blk_post_runtime_suspend(sdev->request_queue, err);
 
 	return err;
 }
 
+<<<<<<< HEAD
 static int sdev_runtime_suspend(struct device *dev)
 {
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
@@ -185,6 +306,8 @@ static int sdev_runtime_suspend(struct device *dev)
 	return err;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int scsi_runtime_suspend(struct device *dev)
 {
 	int err = 0;
@@ -198,6 +321,7 @@ static int scsi_runtime_suspend(struct device *dev)
 	return err;
 }
 
+<<<<<<< HEAD
 static int sdev_blk_runtime_resume(struct scsi_device *sdev,
 					int (*cb)(struct device *))
 {
@@ -211,16 +335,29 @@ static int sdev_blk_runtime_resume(struct scsi_device *sdev,
 	return err;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int sdev_runtime_resume(struct device *dev)
 {
 	struct scsi_device *sdev = to_scsi_device(dev);
 	const struct dev_pm_ops *pm = dev->driver ? dev->driver->pm : NULL;
+<<<<<<< HEAD
 	int (*cb)(struct device *) = pm ? pm->runtime_resume : NULL;
 
 	if (sdev->request_queue->dev)
 		return sdev_blk_runtime_resume(sdev, cb);
 	else
 		return scsi_dev_type_resume(dev, cb);
+=======
+	int err = 0;
+
+	blk_pre_runtime_resume(sdev->request_queue);
+	if (pm && pm->runtime_resume)
+		err = pm->runtime_resume(dev);
+	blk_post_runtime_resume(sdev->request_queue);
+
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int scsi_runtime_resume(struct device *dev)
@@ -238,13 +375,17 @@ static int scsi_runtime_resume(struct device *dev)
 
 static int scsi_runtime_idle(struct device *dev)
 {
+<<<<<<< HEAD
 	int err;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(dev, "scsi_runtime_idle\n");
 
 	/* Insert hooks here for targets, hosts, and transport classes */
 
 	if (scsi_is_sdev_device(dev)) {
+<<<<<<< HEAD
 		struct scsi_device *sdev = to_scsi_device(dev);
 
 		if (sdev->request_queue->dev) {
@@ -257,6 +398,14 @@ static int scsi_runtime_idle(struct device *dev)
 		err = pm_runtime_suspend(dev);
 	}
 	return err;
+=======
+		pm_runtime_mark_last_busy(dev);
+		pm_runtime_autosuspend(dev);
+		return -EBUSY;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int scsi_autopm_get_device(struct scsi_device *sdev)
@@ -305,6 +454,7 @@ void scsi_autopm_put_host(struct Scsi_Host *shost)
 	pm_runtime_put_sync(&shost->shost_gendev);
 }
 
+<<<<<<< HEAD
 #else
 
 #define scsi_runtime_suspend	NULL
@@ -313,6 +463,8 @@ void scsi_autopm_put_host(struct Scsi_Host *shost)
 
 #endif /* CONFIG_PM_RUNTIME */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const struct dev_pm_ops scsi_bus_pm_ops = {
 	.prepare =		scsi_bus_prepare,
 	.suspend =		scsi_bus_suspend,

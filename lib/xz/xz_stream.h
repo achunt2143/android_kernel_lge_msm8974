@@ -19,7 +19,11 @@
 
 /*
  * See the .xz file format specification at
+<<<<<<< HEAD
  * http://tukaani.org/xz/xz-file-format.txt
+=======
+ * https://tukaani.org/xz/xz-file-format.txt
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * to understand the container format.
  */
 

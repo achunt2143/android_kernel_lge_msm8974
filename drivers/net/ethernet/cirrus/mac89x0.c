@@ -56,6 +56,7 @@
   local_irq_{dis,en}able()
 */
 
+<<<<<<< HEAD
 static char *version =
 "cs89x0.c:v1.02 11/26/96 Russell Nelson <nelson@crynwr.com>\n";
 
@@ -71,6 +72,13 @@ static char *version =
 
 /* Always include 'config.h' first in case the user wants to turn on
    or override something. */
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+static const char version[] =
+"cs89x0.c:v1.02 11/26/96 Russell Nelson <nelson@crynwr.com>\n";
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 
 /*
@@ -93,6 +101,10 @@ static char *version =
 #include <linux/errno.h>
 #include <linux/init.h>
 #include <linux/netdevice.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
 #include <linux/delay.h>
@@ -105,16 +117,27 @@ static char *version =
 
 #include "cs89x0.h"
 
+<<<<<<< HEAD
 static unsigned int net_debug = NET_DEBUG;
 
 /* Information that need to be kept for each board. */
 struct net_local {
+=======
+static int debug = -1;
+module_param(debug, int, 0);
+MODULE_PARM_DESC(debug, "debug message level");
+
+/* Information that need to be kept for each board. */
+struct net_local {
+	int msg_enable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int chip_type;		/* one of: CS8900, CS8920, CS8920M */
 	char chip_revision;	/* revision letter of the chip ('A'...) */
 	int send_cmd;		/* the propercommand used to send a packet. */
 	int rx_mode;
 	int curr_rx_cfg;
         int send_underrun;      /* keep track of how many underruns in a row we get */
+<<<<<<< HEAD
 	struct sk_buff *skb;
 };
 
@@ -125,6 +148,13 @@ extern void reset_chip(struct net_device *dev);
 #endif
 static int net_open(struct net_device *dev);
 static int net_send_packet(struct sk_buff *skb, struct net_device *dev);
+=======
+};
+
+/* Index to functions, as function prototypes. */
+static int net_open(struct net_device *dev);
+static netdev_tx_t net_send_packet(struct sk_buff *skb, struct net_device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t net_interrupt(int irq, void *dev_id);
 static void set_multicast_list(struct net_device *dev);
 static void net_rx(struct net_device *dev);
@@ -132,10 +162,13 @@ static int net_close(struct net_device *dev);
 static struct net_device_stats *net_get_stats(struct net_device *dev);
 static int set_mac_address(struct net_device *dev, void *addr);
 
+<<<<<<< HEAD
 
 /* Example routines you must write ;->. */
 #define tx_done(dev) 1
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* For reading/writing registers ISA-style */
 static inline int
 readreg_io(struct net_device *dev, int portno)
@@ -172,22 +205,33 @@ static const struct net_device_ops mac89x0_netdev_ops = {
 	.ndo_set_rx_mode	= set_multicast_list,
 	.ndo_set_mac_address	= set_mac_address,
 	.ndo_validate_addr	= eth_validate_addr,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Probe for the CS8900 card in slot E.  We won't bother looking
    anywhere else until we have a really good reason to do so. */
+<<<<<<< HEAD
 struct net_device * __init mac89x0_probe(int unit)
 {
 	struct net_device *dev;
 	static int once_is_enough;
 	struct net_local *lp;
 	static unsigned version_printed;
+=======
+static int mac89x0_device_probe(struct platform_device *pdev)
+{
+	struct net_device *dev;
+	struct net_local *lp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, slot;
 	unsigned rev_type = 0;
 	unsigned long ioaddr;
 	unsigned short sig;
 	int err = -ENODEV;
+<<<<<<< HEAD
 
 	if (!MACH_IS_MAC)
 		return ERR_PTR(-ENODEV);
@@ -204,18 +248,32 @@ struct net_device * __init mac89x0_probe(int unit)
 	if (once_is_enough)
 		goto out;
 	once_is_enough = 1;
+=======
+	struct nubus_rsrc *fres;
+
+	dev = alloc_etherdev(sizeof(struct net_local));
+	if (!dev)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We might have to parameterize this later */
 	slot = 0xE;
 	/* Get out now if there's a real NuBus card in slot E */
+<<<<<<< HEAD
 	if (nubus_find_slot(slot, NULL) != NULL)
 		goto out;
+=======
+	for_each_func_rsrc(fres)
+		if (fres->board->slot == slot)
+			goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The pseudo-ISA bits always live at offset 0x300 (gee,
            wonder why...) */
 	ioaddr = (unsigned long)
 		nubus_slot_addr(slot) | (((slot&0xf) << 20) + DEFAULTIOBASE);
 	{
+<<<<<<< HEAD
 		unsigned long flags;
 		int card_present;
 
@@ -224,6 +282,12 @@ struct net_device * __init mac89x0_probe(int unit)
 				hwreg_present((void*) ioaddr + DATA_PORT));
 		local_irq_restore(flags);
 
+=======
+		int card_present;
+
+		card_present = (hwreg_present((void *)ioaddr + 4) &&
+				hwreg_present((void *)ioaddr + DATA_PORT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!card_present)
 			goto out;
 	}
@@ -233,9 +297,19 @@ struct net_device * __init mac89x0_probe(int unit)
 	if (sig != swab16(CHIP_EISA_ID_SIG))
 		goto out;
 
+<<<<<<< HEAD
 	/* Initialize the net_device structure. */
 	lp = netdev_priv(dev);
 
+=======
+	SET_NETDEV_DEV(dev, &pdev->dev);
+
+	/* Initialize the net_device structure. */
+	lp = netdev_priv(dev);
+
+	lp->msg_enable = netif_msg_init(debug, 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Fill in the 'dev' fields. */
 	dev->base_addr = ioaddr;
 	dev->mem_start = (unsigned long)
@@ -258,6 +332,7 @@ struct net_device * __init mac89x0_probe(int unit)
 	if (lp->chip_type != CS8900 && lp->chip_revision >= 'C')
 		lp->send_cmd = TX_NOW;
 
+<<<<<<< HEAD
 	if (net_debug && version_printed++ == 0)
 		printk(version);
 
@@ -279,24 +354,58 @@ struct net_device * __init mac89x0_probe(int unit)
                         dev->dev_addr[i] = s >> 8;
                         dev->dev_addr[i+1] = s & 0xff;
                 }
+=======
+	netif_dbg(lp, drv, dev, "%s", version);
+
+	pr_info("cs89%c0%s rev %c found at %#8lx\n",
+		lp->chip_type == CS8900 ? '0' : '2',
+		lp->chip_type == CS8920M ? "M" : "",
+		lp->chip_revision, dev->base_addr);
+
+	/* Try to read the MAC address */
+	if ((readreg(dev, PP_SelfST) & (EEPROM_PRESENT | EEPROM_OK)) == 0) {
+		pr_info("No EEPROM, giving up now.\n");
+		goto out1;
+        } else {
+		u8 addr[ETH_ALEN];
+
+                for (i = 0; i < ETH_ALEN; i += 2) {
+			/* Big-endian (why??!) */
+			unsigned short s = readreg(dev, PP_IA + i);
+			addr[i] = s >> 8;
+			addr[i+1] = s & 0xff;
+                }
+		eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         }
 
 	dev->irq = SLOT2IRQ(slot);
 
 	/* print the IRQ and ethernet address. */
 
+<<<<<<< HEAD
 	printk(" IRQ %d ADDR %pM\n", dev->irq, dev->dev_addr);
+=======
+	pr_info("MAC %pM, IRQ %d\n", dev->dev_addr, dev->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->netdev_ops		= &mac89x0_netdev_ops;
 
 	err = register_netdev(dev);
 	if (err)
 		goto out1;
+<<<<<<< HEAD
 	return NULL;
+=======
+
+	platform_set_drvdata(pdev, dev);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out1:
 	nubus_writew(0, dev->base_addr + ADD_PORT);
 out:
 	free_netdev(dev);
+<<<<<<< HEAD
 	return ERR_PTR(err);
 }
 
@@ -318,6 +427,11 @@ void __init reset_chip(struct net_device *dev)
 }
 #endif
 
+=======
+	return err;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Open/initialize the board.  This is called (in the current kernel)
    sometime after booting when the 'ifconfig' program is run.
 
@@ -371,17 +485,27 @@ net_open(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
+=======
+static netdev_tx_t
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 net_send_packet(struct sk_buff *skb, struct net_device *dev)
 {
 	struct net_local *lp = netdev_priv(dev);
 	unsigned long flags;
 
+<<<<<<< HEAD
 	if (net_debug > 3)
 		printk("%s: sent %d byte packet of type %x\n",
 		       dev->name, skb->len,
 		       (skb->data[ETH_ALEN+ETH_ALEN] << 8)
 		       | skb->data[ETH_ALEN+ETH_ALEN+1]);
+=======
+	netif_dbg(lp, tx_queued, dev, "sent %d byte packet of type %x\n",
+		  skb->len, skb->data[ETH_ALEN + ETH_ALEN] << 8 |
+		  skb->data[ETH_ALEN + ETH_ALEN + 1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* keep the upload from being interrupted, since we
 	   ask the chip to start transmitting before the
@@ -419,11 +543,14 @@ static irqreturn_t net_interrupt(int irq, void *dev_id)
 	struct net_local *lp;
 	int ioaddr, status;
 
+<<<<<<< HEAD
 	if (dev == NULL) {
 		printk ("net_interrupt(): irq %d for unknown device.\n", irq);
 		return IRQ_NONE;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ioaddr = dev->base_addr;
 	lp = netdev_priv(dev);
 
@@ -435,7 +562,11 @@ static irqreturn_t net_interrupt(int irq, void *dev_id)
            faster than you can read them off, you're screwed.  Hasta la
            vista, baby!  */
 	while ((status = swab16(nubus_readw(dev->base_addr + ISQ_PORT)))) {
+<<<<<<< HEAD
 		if (net_debug > 4)printk("%s: event=%04x\n", dev->name, status);
+=======
+		netif_dbg(lp, intr, dev, "status=%04x\n", status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch(status & ISQ_EVENT_MASK) {
 		case ISQ_RECEIVER_EVENT:
 			/* Got a packet(s). */
@@ -465,7 +596,11 @@ static irqreturn_t net_interrupt(int irq, void *dev_id)
 				netif_wake_queue(dev);
 			}
 			if (status & TX_UNDERRUN) {
+<<<<<<< HEAD
 				if (net_debug > 0) printk("%s: transmit underrun\n", dev->name);
+=======
+				netif_dbg(lp, tx_err, dev, "transmit underrun\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                                 lp->send_underrun++;
                                 if (lp->send_underrun == 3) lp->send_cmd = TX_AFTER_381;
                                 else if (lp->send_underrun == 6) lp->send_cmd = TX_AFTER_ALL;
@@ -486,6 +621,10 @@ static irqreturn_t net_interrupt(int irq, void *dev_id)
 static void
 net_rx(struct net_device *dev)
 {
+<<<<<<< HEAD
+=======
+	struct net_local *lp = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb;
 	int status, length;
 
@@ -509,7 +648,10 @@ net_rx(struct net_device *dev)
 	/* Malloc up new buffer. */
 	skb = alloc_skb(length, GFP_ATOMIC);
 	if (skb == NULL) {
+<<<<<<< HEAD
 		printk("%s: Memory squeeze, dropping packet.\n", dev->name);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->stats.rx_dropped++;
 		return;
 	}
@@ -518,10 +660,16 @@ net_rx(struct net_device *dev)
 	skb_copy_to_linear_data(skb, (void *)(dev->mem_start + PP_RxFrame),
 				length);
 
+<<<<<<< HEAD
 	if (net_debug > 3)printk("%s: received %d byte packet of type %x\n",
                                  dev->name, length,
                                  (skb->data[ETH_ALEN+ETH_ALEN] << 8)
 				 | skb->data[ETH_ALEN+ETH_ALEN+1]);
+=======
+	netif_dbg(lp, rx_status, dev, "received %d byte packet of type %x\n",
+		  length, skb->data[ETH_ALEN + ETH_ALEN] << 8 |
+		  skb->data[ETH_ALEN + ETH_ALEN + 1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         skb->protocol=eth_type_trans(skb,dev);
 	netif_rx(skb);
@@ -596,8 +744,13 @@ static int set_mac_address(struct net_device *dev, void *addr)
 	if (!is_valid_ether_addr(saddr->sa_data))
 		return -EADDRNOTAVAIL;
 
+<<<<<<< HEAD
 	memcpy(dev->dev_addr, saddr->sa_data, ETH_ALEN);
 	printk("%s: Setting MAC address to %pM\n", dev->name, dev->dev_addr);
+=======
+	eth_hw_addr_set(dev, saddr->sa_data);
+	netdev_info(dev, "Setting MAC address to %pM\n", dev->dev_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set the Ethernet address */
 	for (i=0; i < ETH_ALEN/2; i++)
@@ -606,6 +759,7 @@ static int set_mac_address(struct net_device *dev, void *addr)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef MODULE
 
 static struct net_device *dev_cs89x0;
@@ -635,3 +789,25 @@ cleanup_module(void)
 	free_netdev(dev_cs89x0);
 }
 #endif /* MODULE */
+=======
+MODULE_LICENSE("GPL");
+
+static void mac89x0_device_remove(struct platform_device *pdev)
+{
+	struct net_device *dev = platform_get_drvdata(pdev);
+
+	unregister_netdev(dev);
+	nubus_writew(0, dev->base_addr + ADD_PORT);
+	free_netdev(dev);
+}
+
+static struct platform_driver mac89x0_platform_driver = {
+	.probe = mac89x0_device_probe,
+	.remove_new = mac89x0_device_remove,
+	.driver = {
+		.name = "mac89x0",
+	},
+};
+
+module_platform_driver(mac89x0_platform_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

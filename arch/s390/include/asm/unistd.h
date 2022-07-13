@@ -1,10 +1,16 @@
+<<<<<<< HEAD
 /*
  *  include/asm-s390/unistd.h
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  S390 version
  *
  *  Derived from "include/asm-i386/unistd.h"
  */
+<<<<<<< HEAD
 
 #ifndef _ASM_S390_UNISTD_H_
 #define _ASM_S390_UNISTD_H_
@@ -391,6 +397,15 @@
 #define __IGNORE_sendmmsg
 
 #define __ARCH_WANT_IPC_PARSE_VERSION
+=======
+#ifndef _ASM_S390_UNISTD_H_
+#define _ASM_S390_UNISTD_H_
+
+#include <uapi/asm/unistd.h>
+#include <asm/unistd_nr.h>
+
+#define __ARCH_WANT_NEW_STAT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __ARCH_WANT_OLD_READDIR
 #define __ARCH_WANT_SYS_ALARM
 #define __ARCH_WANT_SYS_GETHOSTNAME
@@ -401,13 +416,17 @@
 #define __ARCH_WANT_SYS_IPC
 #define __ARCH_WANT_SYS_FADVISE64
 #define __ARCH_WANT_SYS_GETPGRP
+<<<<<<< HEAD
 #define __ARCH_WANT_SYS_LLSEEK
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __ARCH_WANT_SYS_NICE
 #define __ARCH_WANT_SYS_OLD_GETRLIMIT
 #define __ARCH_WANT_SYS_OLD_MMAP
 #define __ARCH_WANT_SYS_OLDUMOUNT
 #define __ARCH_WANT_SYS_SIGPENDING
 #define __ARCH_WANT_SYS_SIGPROCMASK
+<<<<<<< HEAD
 #define __ARCH_WANT_SYS_RT_SIGACTION
 #define __ARCH_WANT_SYS_RT_SIGSUSPEND
 # ifndef CONFIG_64BIT
@@ -428,4 +447,16 @@
 #define cond_syscall(x) asm(".weak\t" #x "\n\t.set\t" #x ",sys_ni_syscall")
 
 #endif /* __KERNEL__ */
+=======
+# ifdef CONFIG_COMPAT
+#   define __ARCH_WANT_COMPAT_STAT
+#   define __ARCH_WANT_SYS_TIME32
+#   define __ARCH_WANT_SYS_UTIME32
+# endif
+#define __ARCH_WANT_SYS_FORK
+#define __ARCH_WANT_SYS_VFORK
+#define __ARCH_WANT_SYS_CLONE
+#define __ARCH_WANT_SYS_CLONE3
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_S390_UNISTD_H_ */

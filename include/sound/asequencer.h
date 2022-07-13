@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Main header file for the ALSA sequencer
  *  Copyright (c) 1998-1999 by Frank van de Pol <fvdpol@coil.demon.nl>
  *            (c) 1998-1999 by Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -18,10 +23,13 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __SOUND_ASEQUENCER_H
 #define __SOUND_ASEQUENCER_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 #include <linux/ioctl.h>
 #include <sound/asound.h>
@@ -310,6 +318,11 @@ struct snd_seq_event_bounce {
 };
 
 #ifdef __KERNEL__
+=======
+#include <linux/ioctl.h>
+#include <sound/asound.h>
+#include <uapi/sound/asequencer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* helper macro */
 #define snd_seq_event_bounce_ext_data(ev) ((void*)((char *)(ev)->data.ext.ptr + sizeof(struct snd_seq_event_bounce)))
@@ -365,6 +378,7 @@ struct snd_seq_event_bounce {
 #define snd_seq_ev_is_abstime(ev)	(snd_seq_ev_timemode_type(ev) == SNDRV_SEQ_TIME_MODE_ABS)
 #define snd_seq_ev_is_reltime(ev)	(snd_seq_ev_timemode_type(ev) == SNDRV_SEQ_TIME_MODE_REL)
 
+<<<<<<< HEAD
 /* queue sync port */
 #define snd_seq_queue_sync_port(q)	((q) + 16)
 
@@ -675,4 +689,13 @@ struct snd_seq_query_subs {
 #define SNDRV_SEQ_IOCTL_QUERY_NEXT_CLIENT	_IOWR('S', 0x51, struct snd_seq_client_info)
 #define SNDRV_SEQ_IOCTL_QUERY_NEXT_PORT	_IOWR('S', 0x52, struct snd_seq_port_info)
 
+=======
+/* check whether the given event is a UMP event */
+#define snd_seq_ev_is_ump(ev) \
+	(IS_ENABLED(CONFIG_SND_SEQ_UMP) && ((ev)->flags & SNDRV_SEQ_EVENT_UMP))
+
+/* queue sync port */
+#define snd_seq_queue_sync_port(q)	((q) + 16)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __SOUND_ASEQUENCER_H */

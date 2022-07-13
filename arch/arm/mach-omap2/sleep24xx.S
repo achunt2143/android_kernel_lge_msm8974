@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/arm/mach-omap2/sleep.S
  *
@@ -8,6 +12,7 @@
  * (C) Copyright 2006 Nokia Corporation
  * Fixed idle loop sleep
  * Igor Stoppa <igor.stoppa@nokia.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -23,13 +28,19 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/linkage.h>
 #include <asm/assembler.h>
 
+<<<<<<< HEAD
 #include <plat/omap24xx.h>
 
+=======
+#include "omap24xx.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "sdrc.h"
 
 /* First address of reserved address space?  apparently valid for OMAP2 & 3 */
@@ -38,6 +49,7 @@
 	.text
 
 /*
+<<<<<<< HEAD
  * Forces OMAP into idle state
  *
  * omap24xx_idle_loop_suspend() - This bit of code just executes the WFI
@@ -57,6 +69,8 @@ ENTRY(omap24xx_idle_loop_suspend_sz)
 	.word	. - omap24xx_idle_loop_suspend
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * omap24xx_cpu_suspend() - Forces OMAP into deep sleep state by completing
  * SDRC shutdown then ARM shutdown.  Upon wake MPU is back on so just restore
  * SDRC.

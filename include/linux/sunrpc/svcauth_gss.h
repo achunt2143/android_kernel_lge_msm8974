@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/include/linux/sunrpc/svcauth_gss.h
  *
@@ -8,7 +12,10 @@
 #ifndef _LINUX_SUNRPC_SVCAUTH_GSS_H
 #define _LINUX_SUNRPC_SVCAUTH_GSS_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/sunrpc/types.h>
 #include <linux/sunrpc/xdr.h>
@@ -20,9 +27,16 @@ int gss_svc_init(void);
 void gss_svc_shutdown(void);
 int gss_svc_init_net(struct net *net);
 void gss_svc_shutdown_net(struct net *net);
+<<<<<<< HEAD
 int svcauth_gss_register_pseudoflavor(u32 pseudoflavor, char * name);
 u32 svcauth_gss_flavor(struct auth_domain *dom);
 char *svc_gss_principal(struct svc_rqst *);
 
 #endif /* __KERNEL__ */
+=======
+struct auth_domain *svcauth_gss_register_pseudoflavor(u32 pseudoflavor,
+						      char *name);
+u32 svcauth_gss_flavor(struct auth_domain *dom);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_SUNRPC_SVCAUTH_GSS_H */

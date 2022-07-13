@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 /* Copyright (C) 2003-2011 Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/* Copyright (C) 2003-2011 Jozsef Kadlecsik <kadlec@netfilter.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -30,7 +35,11 @@ get_port(const struct sk_buff *skb, int protocol, unsigned int protooff,
 		const struct tcphdr *th;
 
 		th = skb_header_pointer(skb, protooff, sizeof(_tcph), &_tcph);
+<<<<<<< HEAD
 		if (th == NULL)
+=======
+		if (!th)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* No choice either */
 			return false;
 
@@ -38,11 +47,19 @@ get_port(const struct sk_buff *skb, int protocol, unsigned int protooff,
 		break;
 	}
 	case IPPROTO_SCTP: {
+<<<<<<< HEAD
 		sctp_sctphdr_t _sh;
 		const sctp_sctphdr_t *sh;
 
 		sh = skb_header_pointer(skb, protooff, sizeof(_sh), &_sh);
 		if (sh == NULL)
+=======
+		struct sctphdr _sh;
+		const struct sctphdr *sh;
+
+		sh = skb_header_pointer(skb, protooff, sizeof(_sh), &_sh);
+		if (!sh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* No choice either */
 			return false;
 
@@ -55,7 +72,11 @@ get_port(const struct sk_buff *skb, int protocol, unsigned int protooff,
 		const struct udphdr *uh;
 
 		uh = skb_header_pointer(skb, protooff, sizeof(_udph), &_udph);
+<<<<<<< HEAD
 		if (uh == NULL)
+=======
+		if (!uh)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* No choice either */
 			return false;
 
@@ -67,7 +88,11 @@ get_port(const struct sk_buff *skb, int protocol, unsigned int protooff,
 		const struct icmphdr *ic;
 
 		ic = skb_header_pointer(skb, protooff, sizeof(_ich), &_ich);
+<<<<<<< HEAD
 		if (ic == NULL)
+=======
+		if (!ic)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return false;
 
 		*port = (__force __be16)htons((ic->type << 8) | ic->code);
@@ -78,7 +103,11 @@ get_port(const struct sk_buff *skb, int protocol, unsigned int protooff,
 		const struct icmp6hdr *ic;
 
 		ic = skb_header_pointer(skb, protooff, sizeof(_ich), &_ich);
+<<<<<<< HEAD
 		if (ic == NULL)
+=======
+		if (!ic)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return false;
 
 		*port = (__force __be16)
@@ -98,6 +127,7 @@ ip_set_get_ip4_port(const struct sk_buff *skb, bool src,
 		    __be16 *port, u8 *proto)
 {
 	const struct iphdr *iph = ip_hdr(skb);
+<<<<<<< HEAD
 	unsigned int protooff = ip_hdrlen(skb);
 	int protocol = iph->protocol;
 
@@ -105,6 +135,32 @@ ip_set_get_ip4_port(const struct sk_buff *skb, bool src,
 	if (protocol <= 0 || (ntohs(iph->frag_off) & IP_OFFSET))
 		return false;
 
+=======
+	unsigned int protooff = skb_network_offset(skb) + ip_hdrlen(skb);
+	int protocol = iph->protocol;
+
+	/* See comments at tcp_match in ip_tables.c */
+	if (protocol <= 0)
+		return false;
+
+	if (ntohs(iph->frag_off) & IP_OFFSET)
+		switch (protocol) {
+		case IPPROTO_TCP:
+		case IPPROTO_SCTP:
+		case IPPROTO_UDP:
+		case IPPROTO_UDPLITE:
+		case IPPROTO_ICMP:
+			/* Port info not available for fragment offset > 0 */
+			return false;
+		default:
+			/* Other protocols doesn't have ports,
+			 * so we can match fragments.
+			 */
+			*proto = protocol;
+			return true;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return get_port(skb, protocol, protooff, src, port, proto);
 }
 EXPORT_SYMBOL_GPL(ip_set_get_ip4_port);
@@ -116,18 +172,30 @@ ip_set_get_ip6_port(const struct sk_buff *skb, bool src,
 {
 	int protoff;
 	u8 nexthdr;
+<<<<<<< HEAD
 	__be16 frag_off;
 
 	nexthdr = ipv6_hdr(skb)->nexthdr;
 	protoff = ipv6_skip_exthdr(skb, sizeof(struct ipv6hdr), &nexthdr,
 				   &frag_off);
 	if (protoff < 0)
+=======
+	__be16 frag_off = 0;
+
+	nexthdr = ipv6_hdr(skb)->nexthdr;
+	protoff = ipv6_skip_exthdr(skb,
+				   skb_network_offset(skb) +
+					sizeof(struct ipv6hdr), &nexthdr,
+				   &frag_off);
+	if (protoff < 0 || (frag_off & htons(~0x7)) != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	return get_port(skb, nexthdr, protoff, src, port, proto);
 }
 EXPORT_SYMBOL_GPL(ip_set_get_ip6_port);
 #endif
+<<<<<<< HEAD
 
 bool
 ip_set_get_ip_port(const struct sk_buff *skb, u8 pf, bool src, __be16 *port)
@@ -156,3 +224,5 @@ ip_set_get_ip_port(const struct sk_buff *skb, u8 pf, bool src, __be16 *port)
 	}
 }
 EXPORT_SYMBOL_GPL(ip_set_get_ip_port);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

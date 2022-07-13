@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Force feedback support for various HID compliant devices by ThrustMaster:
  *    ThrustMaster FireStorm Dual Power 2
@@ -12,6 +16,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -25,16 +30,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/hid.h>
 #include <linux/input.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <linux/usb.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 
 #include "hid-ids.h"
 
+<<<<<<< HEAD
+=======
+#define THRUSTMASTER_DEVICE_ID_2_IN_1_DT	0xb320
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const signed short ff_rumble[] = {
 	FF_RUMBLE,
 	-1
@@ -46,7 +61,10 @@ static const signed short ff_joystick[] = {
 };
 
 #ifdef CONFIG_THRUSTMASTER_FF
+<<<<<<< HEAD
 #include "usbhid/usbhid.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Usages for thrustmaster devices I know about */
 #define THRUSTMASTER_USAGE_FF	(HID_UP_GENDESK | 0xbb)
@@ -103,7 +121,11 @@ static int tmff_play(struct input_dev *dev, void *data,
 		dbg_hid("(x, y)=(%04x, %04x)\n", x, y);
 		ff_field->value[0] = x;
 		ff_field->value[1] = y;
+<<<<<<< HEAD
 		usbhid_submit_report(hid, tmff->report, USB_DIR_OUT);
+=======
+		hid_hw_request(hid, tmff->report, HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case FF_RUMBLE:
@@ -114,10 +136,21 @@ static int tmff_play(struct input_dev *dev, void *data,
 					ff_field->logical_minimum,
 					ff_field->logical_maximum);
 
+<<<<<<< HEAD
 		dbg_hid("(left,right)=(%08x, %08x)\n", left, right);
 		ff_field->value[0] = left;
 		ff_field->value[1] = right;
 		usbhid_submit_report(hid, tmff->report, USB_DIR_OUT);
+=======
+		/* 2-in-1 strong motor is left */
+		if (hid->product == THRUSTMASTER_DEVICE_ID_2_IN_1_DT)
+			swap(left, right);
+
+		dbg_hid("(left,right)=(%08x, %08x)\n", left, right);
+		ff_field->value[0] = left;
+		ff_field->value[1] = right;
+		hid_hw_request(hid, tmff->report, HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	return 0;
@@ -128,12 +161,27 @@ static int tmff_init(struct hid_device *hid, const signed short *ff_bits)
 	struct tmff_device *tmff;
 	struct hid_report *report;
 	struct list_head *report_list;
+<<<<<<< HEAD
 	struct hid_input *hidinput = list_entry(hid->inputs.next,
 							struct hid_input, list);
 	struct input_dev *input_dev = hidinput->input;
 	int error;
 	int i;
 
+=======
+	struct hid_input *hidinput;
+	struct input_dev *input_dev;
+	int error;
+	int i;
+
+	if (list_empty(&hid->inputs)) {
+		hid_err(hid, "no inputs found\n");
+		return -ENODEV;
+	}
+	hidinput = list_entry(hid->inputs.next, struct hid_input, list);
+	input_dev = hidinput->input;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmff = kzalloc(sizeof(struct tmff_device), GFP_KERNEL);
 	if (!tmff)
 		return -ENOMEM;
@@ -240,10 +288,20 @@ static const struct hid_device_id tm_devices[] = {
 		.driver_data = (unsigned long)ff_rumble },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb304),   /* FireStorm Dual Power 2 (and 3) */
 		.driver_data = (unsigned long)ff_rumble },
+<<<<<<< HEAD
+=======
+	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, THRUSTMASTER_DEVICE_ID_2_IN_1_DT),   /* Dual Trigger 2-in-1 */
+		.driver_data = (unsigned long)ff_rumble },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb323),   /* Dual Trigger 3-in-1 (PC Mode) */
 		.driver_data = (unsigned long)ff_rumble },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb324),   /* Dual Trigger 3-in-1 (PS3 Mode) */
 		.driver_data = (unsigned long)ff_rumble },
+<<<<<<< HEAD
+=======
+	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb605),   /* NASCAR PRO FF2 Wheel */
+		.driver_data = (unsigned long)ff_joystick },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb651),	/* FGT Rumble Force Wheel */
 		.driver_data = (unsigned long)ff_rumble },
 	{ HID_USB_DEVICE(USB_VENDOR_ID_THRUSTMASTER, 0xb653),	/* RGT Force Feedback CLUTCH Raging Wheel */
@@ -261,6 +319,7 @@ static struct hid_driver tm_driver = {
 	.id_table = tm_devices,
 	.probe = tm_probe,
 };
+<<<<<<< HEAD
 
 static int __init tm_init(void)
 {
@@ -274,4 +333,8 @@ static void __exit tm_exit(void)
 
 module_init(tm_init);
 module_exit(tm_exit);
+=======
+module_hid_driver(tm_driver);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This contain platform specific code for APM PPC460EX based Canyonlands
  * board.
  *
  * Copyright (c) 2010, Applied Micro Circuits Corporation
  * Author: Rupjyoti Sarmah <rsarmah@apm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -20,6 +25,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston,
  * MA 02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -27,13 +34,21 @@
 #include <asm/ppc4xx.h>
 #include <asm/udbg.h>
 #include <asm/uic.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_platform.h>
 #include <linux/delay.h>
 #include "44x.h"
 
 #define BCSR_USB_EN	0x11
 
+<<<<<<< HEAD
 static __initdata struct of_device_id ppc460ex_of_bus[] = {
+=======
+static const struct of_device_id ppc460ex_of_bus[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "ibm,plb4", },
 	{ .compatible = "ibm,opb", },
 	{ .compatible = "ibm,ebc", },
@@ -53,12 +68,18 @@ machine_device_initcall(canyonlands, ppc460ex_device_probe);
 
 static int __init ppc460ex_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 	if (of_flat_dt_is_compatible(root, "amcc,canyonlands")) {
 		pci_set_flags(PCI_REASSIGN_ALL_RSRC);
 		return 1;
 		}
 	return 0;
+=======
+	pci_set_flags(PCI_REASSIGN_ALL_RSRC);
+
+	return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* USB PHY fixup code on Canyonlands kit. */
@@ -125,10 +146,17 @@ err_bcsr:
 machine_device_initcall(canyonlands, ppc460ex_canyonlands_fixup);
 define_machine(canyonlands) {
 	.name = "Canyonlands",
+<<<<<<< HEAD
+=======
+	.compatible = "amcc,canyonlands",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe = ppc460ex_probe,
 	.progress = udbg_progress,
 	.init_IRQ = uic_init_tree,
 	.get_irq = uic_get_irq,
 	.restart = ppc4xx_reset_system,
+<<<<<<< HEAD
 	.calibrate_decr = generic_calibrate_decr,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

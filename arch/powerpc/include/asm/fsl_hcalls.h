@@ -96,7 +96,11 @@ static inline unsigned int fh_send_nmi(unsigned int vcpu_mask)
 	r11 = FH_HCALL_TOKEN(FH_SEND_NMI);
 	r3 = vcpu_mask;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3)
 		: : EV_HCALL_CLOBBERS1
 	);
@@ -109,7 +113,11 @@ static inline unsigned int fh_send_nmi(unsigned int vcpu_mask)
 #define FH_DTPROP_MAX_PROPLEN 32768
 
 /**
+<<<<<<< HEAD
  * fh_partiton_get_dtprop - get a property from a guest device tree.
+=======
+ * fh_partition_get_dtprop - get a property from a guest device tree.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @handle: handle of partition whose device tree is to be accessed
  * @dtpath_addr: physical address of device tree path to access
  * @propname_addr: physical address of name of property
@@ -151,7 +159,11 @@ static inline unsigned int fh_partition_get_dtprop(int handle,
 	r9 = (uint32_t)propvalue_addr;
 	r10 = *propvalue_len;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11),
 		  "+r" (r3), "+r" (r4), "+r" (r5), "+r" (r6), "+r" (r7),
 		  "+r" (r8), "+r" (r9), "+r" (r10)
@@ -205,7 +217,11 @@ static inline unsigned int fh_partition_set_dtprop(int handle,
 	r9 = (uint32_t)propvalue_addr;
 	r10 = propvalue_len;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11),
 		  "+r" (r3), "+r" (r4), "+r" (r5), "+r" (r6), "+r" (r7),
 		  "+r" (r8), "+r" (r9), "+r" (r10)
@@ -229,7 +245,11 @@ static inline unsigned int fh_partition_restart(unsigned int partition)
 	r11 = FH_HCALL_TOKEN(FH_PARTITION_RESTART);
 	r3 = partition;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3)
 		: : EV_HCALL_CLOBBERS1
 	);
@@ -262,7 +282,11 @@ static inline unsigned int fh_partition_get_status(unsigned int partition,
 	r11 = FH_HCALL_TOKEN(FH_PARTITION_GET_STATUS);
 	r3 = partition;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3), "=r" (r4)
 		: : EV_HCALL_CLOBBERS2
 	);
@@ -295,7 +319,11 @@ static inline unsigned int fh_partition_start(unsigned int partition,
 	r4 = entry_point;
 	r5 = load;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3), "+r" (r4), "+r" (r5)
 		: : EV_HCALL_CLOBBERS3
 	);
@@ -317,7 +345,11 @@ static inline unsigned int fh_partition_stop(unsigned int partition)
 	r11 = FH_HCALL_TOKEN(FH_PARTITION_STOP);
 	r3 = partition;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3)
 		: : EV_HCALL_CLOBBERS1
 	);
@@ -376,7 +408,11 @@ static inline unsigned int fh_partition_memcpy(unsigned int source,
 #endif
 	r7 = count;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11),
 		  "+r" (r3), "+r" (r4), "+r" (r5), "+r" (r6), "+r" (r7)
 		: : EV_HCALL_CLOBBERS5
@@ -399,7 +435,11 @@ static inline unsigned int fh_dma_enable(unsigned int liodn)
 	r11 = FH_HCALL_TOKEN(FH_DMA_ENABLE);
 	r3 = liodn;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3)
 		: : EV_HCALL_CLOBBERS1
 	);
@@ -421,7 +461,11 @@ static inline unsigned int fh_dma_disable(unsigned int liodn)
 	r11 = FH_HCALL_TOKEN(FH_DMA_DISABLE);
 	r3 = liodn;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3)
 		: : EV_HCALL_CLOBBERS1
 	);
@@ -447,7 +491,11 @@ static inline unsigned int fh_vmpic_get_msir(unsigned int interrupt,
 	r11 = FH_HCALL_TOKEN(FH_VMPIC_GET_MSIR);
 	r3 = interrupt;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3), "=r" (r4)
 		: : EV_HCALL_CLOBBERS2
 	);
@@ -469,7 +517,11 @@ static inline unsigned int fh_system_reset(void)
 
 	r11 = FH_HCALL_TOKEN(FH_SYSTEM_RESET);
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "=r" (r3)
 		: : EV_HCALL_CLOBBERS1
 	);
@@ -506,7 +558,11 @@ static inline unsigned int fh_err_get_info(int queue, uint32_t *bufsize,
 	r6 = addr_lo;
 	r7 = peek;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3), "+r" (r4), "+r" (r5), "+r" (r6),
 		  "+r" (r7)
 		: : EV_HCALL_CLOBBERS5
@@ -542,7 +598,11 @@ static inline unsigned int fh_get_core_state(unsigned int handle,
 	r3 = handle;
 	r4 = vcpu;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3), "+r" (r4)
 		: : EV_HCALL_CLOBBERS2
 	);
@@ -572,7 +632,11 @@ static inline unsigned int fh_enter_nap(unsigned int handle, unsigned int vcpu)
 	r3 = handle;
 	r4 = vcpu;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3), "+r" (r4)
 		: : EV_HCALL_CLOBBERS2
 	);
@@ -597,7 +661,11 @@ static inline unsigned int fh_exit_nap(unsigned int handle, unsigned int vcpu)
 	r3 = handle;
 	r4 = vcpu;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3), "+r" (r4)
 		: : EV_HCALL_CLOBBERS2
 	);
@@ -618,7 +686,11 @@ static inline unsigned int fh_claim_device(unsigned int handle)
 	r11 = FH_HCALL_TOKEN(FH_CLAIM_DEVICE);
 	r3 = handle;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3)
 		: : EV_HCALL_CLOBBERS1
 	);
@@ -645,7 +717,11 @@ static inline unsigned int fh_partition_stop_dma(unsigned int handle)
 	r11 = FH_HCALL_TOKEN(FH_PARTITION_STOP_DMA);
 	r3 = handle;
 
+<<<<<<< HEAD
 	__asm__ __volatile__ ("sc 1"
+=======
+	asm volatile("bl	epapr_hypercall_start"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "+r" (r11), "+r" (r3)
 		: : EV_HCALL_CLOBBERS1
 	);

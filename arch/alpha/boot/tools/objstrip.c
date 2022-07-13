@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/boot/tools/objstrip.c
  *
@@ -27,6 +31,12 @@
 #include <linux/param.h>
 #ifdef __ELF__
 # include <linux/elf.h>
+<<<<<<< HEAD
+=======
+# define elfhdr elf64_hdr
+# define elf_phdr elf64_phdr
+# define elf_check_arch(x) ((x)->e_machine == EM_ALPHA)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* bootfile size must be multiple of BLOCK_SIZE: */
@@ -144,7 +154,11 @@ main (int argc, char *argv[])
 #ifdef __ELF__
     elf = (struct elfhdr *) buf;
 
+<<<<<<< HEAD
     if (elf->e_ident[0] == 0x7f && strncmp((char *)elf->e_ident + 1, "ELF", 3) == 0) {
+=======
+    if (memcmp(&elf->e_ident[EI_MAG0], ELFMAG, SELFMAG) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (elf->e_type != ET_EXEC) {
 	    fprintf(stderr, "%s: %s is not an ELF executable\n",
 		    prog_name, inname);

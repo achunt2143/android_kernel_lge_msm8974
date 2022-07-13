@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * NetLabel System
  *
@@ -5,11 +9,15 @@
  * protocols such as CIPSO and RIPSO.
  *
  * Author: Paul Moore <paul@paul-moore.com>
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
  * (c) Copyright Hewlett-Packard Development Company, L.P., 2006, 2008
+<<<<<<< HEAD
  *
  * This program is free software;  you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,6 +33,8 @@
  * along with this program;  if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _NETLABEL_H
@@ -38,9 +48,16 @@
 #include <linux/in6.h>
 #include <net/netlink.h>
 #include <net/request_sock.h>
+<<<<<<< HEAD
 #include <linux/atomic.h>
 
 struct cipso_v4_doi;
+=======
+#include <linux/refcount.h>
+
+struct cipso_v4_doi;
+struct calipso_doi;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * NetLabel - A management interface for maintaining network packet label
@@ -95,6 +112,11 @@ struct cipso_v4_doi;
 #define NETLBL_NLTYPE_UNLABELED_NAME    "NLBL_UNLBL"
 #define NETLBL_NLTYPE_ADDRSELECT        6
 #define NETLBL_NLTYPE_ADDRSELECT_NAME   "NLBL_ADRSEL"
+<<<<<<< HEAD
+=======
+#define NETLBL_NLTYPE_CALIPSO           7
+#define NETLBL_NLTYPE_CALIPSO_NAME      "NLBL_CALIPSO"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * NetLabel - Kernel API for accessing the network packet label mappings.
@@ -110,8 +132,13 @@ struct cipso_v4_doi;
 /* NetLabel audit information */
 struct netlbl_audit {
 	u32 secid;
+<<<<<<< HEAD
 	uid_t loginuid;
 	u32 sessionid;
+=======
+	kuid_t loginuid;
+	unsigned int sessionid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -134,13 +161,21 @@ struct netlbl_audit {
  *
  */
 struct netlbl_lsm_cache {
+<<<<<<< HEAD
 	atomic_t refcount;
+=======
+	refcount_t refcount;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*free) (const void *data);
 	void *data;
 };
 
 /**
+<<<<<<< HEAD
  * struct netlbl_lsm_secattr_catmap - NetLabel LSM secattr category bitmap
+=======
+ * struct netlbl_lsm_catmap - NetLabel LSM secattr category bitmap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @startbit: the value of the lowest order bit in the bitmap
  * @bitmap: the category bitmap
  * @next: pointer to the next bitmap "node" or NULL
@@ -157,6 +192,7 @@ struct netlbl_lsm_cache {
  * processing.
  *
  */
+<<<<<<< HEAD
 #define NETLBL_CATMAP_MAPTYPE           u64
 #define NETLBL_CATMAP_MAPCNT            4
 #define NETLBL_CATMAP_MAPSIZE           (sizeof(NETLBL_CATMAP_MAPTYPE) * 8)
@@ -167,6 +203,17 @@ struct netlbl_lsm_secattr_catmap {
 	u32 startbit;
 	NETLBL_CATMAP_MAPTYPE bitmap[NETLBL_CATMAP_MAPCNT];
 	struct netlbl_lsm_secattr_catmap *next;
+=======
+#define NETLBL_CATMAP_MAPCNT            4
+#define NETLBL_CATMAP_MAPSIZE           (sizeof(u64) * 8)
+#define NETLBL_CATMAP_SIZE              (NETLBL_CATMAP_MAPSIZE * \
+					 NETLBL_CATMAP_MAPCNT)
+#define NETLBL_CATMAP_BIT               ((u64)0x01)
+struct netlbl_lsm_catmap {
+	u32 startbit;
+	u64 bitmap[NETLBL_CATMAP_MAPCNT];
+	struct netlbl_lsm_catmap *next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -210,13 +257,77 @@ struct netlbl_lsm_secattr {
 	struct netlbl_lsm_cache *cache;
 	struct {
 		struct {
+<<<<<<< HEAD
 			struct netlbl_lsm_secattr_catmap *cat;
+=======
+			struct netlbl_lsm_catmap *cat;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			u32 lvl;
 		} mls;
 		u32 secid;
 	} attr;
 };
 
+<<<<<<< HEAD
+=======
+/**
+ * struct netlbl_calipso_ops - NetLabel CALIPSO operations
+ * @doi_add: add a CALIPSO DOI
+ * @doi_free: free a CALIPSO DOI
+ * @doi_getdef: returns a reference to a DOI
+ * @doi_putdef: releases a reference of a DOI
+ * @doi_walk: enumerate the DOI list
+ * @sock_getattr: retrieve the socket's attr
+ * @sock_setattr: set the socket's attr
+ * @sock_delattr: remove the socket's attr
+ * @req_setattr: set the req socket's attr
+ * @req_delattr: remove the req socket's attr
+ * @opt_getattr: retrieve attr from memory block
+ * @skbuff_optptr: find option in packet
+ * @skbuff_setattr: set the skbuff's attr
+ * @skbuff_delattr: remove the skbuff's attr
+ * @cache_invalidate: invalidate cache
+ * @cache_add: add cache entry
+ *
+ * Description:
+ * This structure is filled out by the CALIPSO engine and passed
+ * to the NetLabel core via a call to netlbl_calipso_ops_register().
+ * It enables the CALIPSO engine (and hence IPv6) to be compiled
+ * as a module.
+ */
+struct netlbl_calipso_ops {
+	int (*doi_add)(struct calipso_doi *doi_def,
+		       struct netlbl_audit *audit_info);
+	void (*doi_free)(struct calipso_doi *doi_def);
+	int (*doi_remove)(u32 doi, struct netlbl_audit *audit_info);
+	struct calipso_doi *(*doi_getdef)(u32 doi);
+	void (*doi_putdef)(struct calipso_doi *doi_def);
+	int (*doi_walk)(u32 *skip_cnt,
+			int (*callback)(struct calipso_doi *doi_def, void *arg),
+			void *cb_arg);
+	int (*sock_getattr)(struct sock *sk,
+			    struct netlbl_lsm_secattr *secattr);
+	int (*sock_setattr)(struct sock *sk,
+			    const struct calipso_doi *doi_def,
+			    const struct netlbl_lsm_secattr *secattr);
+	void (*sock_delattr)(struct sock *sk);
+	int (*req_setattr)(struct request_sock *req,
+			   const struct calipso_doi *doi_def,
+			   const struct netlbl_lsm_secattr *secattr);
+	void (*req_delattr)(struct request_sock *req);
+	int (*opt_getattr)(const unsigned char *calipso,
+			   struct netlbl_lsm_secattr *secattr);
+	unsigned char *(*skbuff_optptr)(const struct sk_buff *skb);
+	int (*skbuff_setattr)(struct sk_buff *skb,
+			      const struct calipso_doi *doi_def,
+			      const struct netlbl_lsm_secattr *secattr);
+	int (*skbuff_delattr)(struct sk_buff *skb);
+	void (*cache_invalidate)(void);
+	int (*cache_add)(const unsigned char *calipso_ptr,
+			 const struct netlbl_lsm_secattr *secattr);
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LSM security attribute operations (inline)
  */
@@ -236,7 +347,11 @@ static inline struct netlbl_lsm_cache *netlbl_secattr_cache_alloc(gfp_t flags)
 
 	cache = kzalloc(sizeof(*cache), flags);
 	if (cache)
+<<<<<<< HEAD
 		atomic_set(&cache->refcount, 1);
+=======
+		refcount_set(&cache->refcount, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return cache;
 }
 
@@ -250,7 +365,11 @@ static inline struct netlbl_lsm_cache *netlbl_secattr_cache_alloc(gfp_t flags)
  */
 static inline void netlbl_secattr_cache_free(struct netlbl_lsm_cache *cache)
 {
+<<<<<<< HEAD
 	if (!atomic_dec_and_test(&cache->refcount))
+=======
+	if (!refcount_dec_and_test(&cache->refcount))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	if (cache->free)
@@ -259,7 +378,11 @@ static inline void netlbl_secattr_cache_free(struct netlbl_lsm_cache *cache)
 }
 
 /**
+<<<<<<< HEAD
  * netlbl_secattr_catmap_alloc - Allocate a LSM secattr catmap
+=======
+ * netlbl_catmap_alloc - Allocate a LSM secattr catmap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @flags: memory allocation flags
  *
  * Description:
@@ -267,6 +390,7 @@ static inline void netlbl_secattr_cache_free(struct netlbl_lsm_cache *cache)
  * on failure.
  *
  */
+<<<<<<< HEAD
 static inline struct netlbl_lsm_secattr_catmap *netlbl_secattr_catmap_alloc(
 	                                                           gfp_t flags)
 {
@@ -275,12 +399,22 @@ static inline struct netlbl_lsm_secattr_catmap *netlbl_secattr_catmap_alloc(
 
 /**
  * netlbl_secattr_catmap_free - Free a LSM secattr catmap
+=======
+static inline struct netlbl_lsm_catmap *netlbl_catmap_alloc(gfp_t flags)
+{
+	return kzalloc(sizeof(struct netlbl_lsm_catmap), flags);
+}
+
+/**
+ * netlbl_catmap_free - Free a LSM secattr catmap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @catmap: the category bitmap
  *
  * Description:
  * Free a LSM secattr catmap.
  *
  */
+<<<<<<< HEAD
 static inline void netlbl_secattr_catmap_free(
 	                              struct netlbl_lsm_secattr_catmap *catmap)
 {
@@ -291,6 +425,17 @@ static inline void netlbl_secattr_catmap_free(
 		catmap = catmap->next;
 		kfree(iter);
 	} while (catmap);
+=======
+static inline void netlbl_catmap_free(struct netlbl_lsm_catmap *catmap)
+{
+	struct netlbl_lsm_catmap *iter;
+
+	while (catmap) {
+		iter = catmap;
+		catmap = catmap->next;
+		kfree(iter);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -322,7 +467,11 @@ static inline void netlbl_secattr_destroy(struct netlbl_lsm_secattr *secattr)
 	if (secattr->flags & NETLBL_SECATTR_CACHE)
 		netlbl_secattr_cache_free(secattr->cache);
 	if (secattr->flags & NETLBL_SECATTR_MLS_CAT)
+<<<<<<< HEAD
 		netlbl_secattr_catmap_free(secattr->attr.mls.cat);
+=======
+		netlbl_catmap_free(secattr->attr.mls.cat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -388,6 +537,7 @@ int netlbl_cfg_cipsov4_map_add(u32 doi,
 			       const struct in_addr *addr,
 			       const struct in_addr *mask,
 			       struct netlbl_audit *audit_info);
+<<<<<<< HEAD
 /*
  * LSM security attribute operations
  */
@@ -402,6 +552,41 @@ int netlbl_secattr_catmap_setrng(struct netlbl_lsm_secattr_catmap *catmap,
 				 u32 start,
 				 u32 end,
 				 gfp_t flags);
+=======
+int netlbl_cfg_calipso_add(struct calipso_doi *doi_def,
+			   struct netlbl_audit *audit_info);
+void netlbl_cfg_calipso_del(u32 doi, struct netlbl_audit *audit_info);
+int netlbl_cfg_calipso_map_add(u32 doi,
+			       const char *domain,
+			       const struct in6_addr *addr,
+			       const struct in6_addr *mask,
+			       struct netlbl_audit *audit_info);
+/*
+ * LSM security attribute operations
+ */
+int netlbl_catmap_walk(struct netlbl_lsm_catmap *catmap, u32 offset);
+int netlbl_catmap_walkrng(struct netlbl_lsm_catmap *catmap, u32 offset);
+int netlbl_catmap_getlong(struct netlbl_lsm_catmap *catmap,
+			  u32 *offset,
+			  unsigned long *bitmap);
+int netlbl_catmap_setbit(struct netlbl_lsm_catmap **catmap,
+			 u32 bit,
+			 gfp_t flags);
+int netlbl_catmap_setrng(struct netlbl_lsm_catmap **catmap,
+			 u32 start,
+			 u32 end,
+			 gfp_t flags);
+int netlbl_catmap_setlong(struct netlbl_lsm_catmap **catmap,
+			  u32 offset,
+			  unsigned long bitmap,
+			  gfp_t flags);
+
+/* Bitmap functions
+ */
+int netlbl_bitmap_walk(const unsigned char *bitmap, u32 bitmap_len,
+		       u32 offset, u8 state);
+void netlbl_bitmap_setbit(unsigned char *bitmap, u32 bit, u8 state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * LSM protocol operations (NetLabel LSM/kernel API)
@@ -425,13 +610,21 @@ int netlbl_skbuff_setattr(struct sk_buff *skb,
 int netlbl_skbuff_getattr(const struct sk_buff *skb,
 			  u16 family,
 			  struct netlbl_lsm_secattr *secattr);
+<<<<<<< HEAD
 void netlbl_skbuff_err(struct sk_buff *skb, int error, int gateway);
+=======
+void netlbl_skbuff_err(struct sk_buff *skb, u16 family, int error, int gateway);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * LSM label mapping cache operations
  */
 void netlbl_cache_invalidate(void);
+<<<<<<< HEAD
 int netlbl_cache_add(const struct sk_buff *skb,
+=======
+int netlbl_cache_add(const struct sk_buff *skb, u16 family,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     const struct netlbl_lsm_secattr *secattr);
 
 /*
@@ -493,6 +686,7 @@ static inline int netlbl_cfg_cipsov4_map_add(u32 doi,
 {
 	return -ENOSYS;
 }
+<<<<<<< HEAD
 static inline int netlbl_secattr_catmap_walk(
 	                              struct netlbl_lsm_secattr_catmap *catmap,
 				      u32 offset)
@@ -517,6 +711,59 @@ static inline int netlbl_secattr_catmap_setrng(
 				      u32 start,
 				      u32 end,
 				      gfp_t flags)
+=======
+static inline int netlbl_cfg_calipso_add(struct calipso_doi *doi_def,
+					 struct netlbl_audit *audit_info)
+{
+	return -ENOSYS;
+}
+static inline void netlbl_cfg_calipso_del(u32 doi,
+					  struct netlbl_audit *audit_info)
+{
+	return;
+}
+static inline int netlbl_cfg_calipso_map_add(u32 doi,
+					     const char *domain,
+					     const struct in6_addr *addr,
+					     const struct in6_addr *mask,
+					     struct netlbl_audit *audit_info)
+{
+	return -ENOSYS;
+}
+static inline int netlbl_catmap_walk(struct netlbl_lsm_catmap *catmap,
+				     u32 offset)
+{
+	return -ENOENT;
+}
+static inline int netlbl_catmap_walkrng(struct netlbl_lsm_catmap *catmap,
+					u32 offset)
+{
+	return -ENOENT;
+}
+static inline int netlbl_catmap_getlong(struct netlbl_lsm_catmap *catmap,
+					u32 *offset,
+					unsigned long *bitmap)
+{
+	return 0;
+}
+static inline int netlbl_catmap_setbit(struct netlbl_lsm_catmap **catmap,
+				       u32 bit,
+				       gfp_t flags)
+{
+	return 0;
+}
+static inline int netlbl_catmap_setrng(struct netlbl_lsm_catmap **catmap,
+				       u32 start,
+				       u32 end,
+				       gfp_t flags)
+{
+	return 0;
+}
+static inline int netlbl_catmap_setlong(struct netlbl_lsm_catmap **catmap,
+					u32 offset,
+					unsigned long bitmap,
+					gfp_t flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
@@ -575,7 +822,11 @@ static inline void netlbl_cache_invalidate(void)
 {
 	return;
 }
+<<<<<<< HEAD
 static inline int netlbl_cache_add(const struct sk_buff *skb,
+=======
+static inline int netlbl_cache_add(const struct sk_buff *skb, u16 family,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   const struct netlbl_lsm_secattr *secattr)
 {
 	return 0;
@@ -587,4 +838,10 @@ static inline struct audit_buffer *netlbl_audit_start(int type,
 }
 #endif /* CONFIG_NETLABEL */
 
+<<<<<<< HEAD
+=======
+const struct netlbl_calipso_ops *
+netlbl_calipso_ops_register(const struct netlbl_calipso_ops *ops);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _NETLABEL_H */

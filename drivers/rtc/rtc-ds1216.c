@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Dallas DS1216 RTC driver
  *
@@ -11,8 +15,11 @@
 #include <linux/bcd.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #define DRV_VERSION "0.2"
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ds1216_regs {
 	u8 tsec;
 	u8 sec;
@@ -30,8 +37,11 @@ struct ds1216_regs {
 struct ds1216_priv {
 	struct rtc_device *rtc;
 	void __iomem *ioaddr;
+<<<<<<< HEAD
 	size_t size;
 	unsigned long baseaddr;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const u8 magic[] = {
@@ -80,8 +90,12 @@ static void ds1216_switch_ds_to_clock(u8 __iomem *ioaddr)
 
 static int ds1216_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct ds1216_priv *priv = platform_get_drvdata(pdev);
+=======
+	struct ds1216_priv *priv = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ds1216_regs regs;
 
 	ds1216_switch_ds_to_clock(priv->ioaddr);
@@ -103,13 +117,21 @@ static int ds1216_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	if (tm->tm_year < 70)
 		tm->tm_year += 100;
 
+<<<<<<< HEAD
 	return rtc_valid_tm(tm);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ds1216_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
+<<<<<<< HEAD
 	struct platform_device *pdev = to_platform_device(dev);
 	struct ds1216_priv *priv = platform_get_drvdata(pdev);
+=======
+	struct ds1216_priv *priv = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ds1216_regs regs;
 
 	ds1216_switch_ds_to_clock(priv->ioaddr);
@@ -142,6 +164,7 @@ static const struct rtc_class_ops ds1216_rtc_ops = {
 
 static int __init ds1216_rtc_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	struct resource *res;
 	struct ds1216_priv *priv;
 	int ret = 0;
@@ -151,11 +174,18 @@ static int __init ds1216_rtc_probe(struct platform_device *pdev)
 	if (!res)
 		return -ENODEV;
 	priv = kzalloc(sizeof *priv, GFP_KERNEL);
+=======
+	struct ds1216_priv *priv;
+	u8 dummy[8];
+
+	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!priv)
 		return -ENOMEM;
 
 	platform_set_drvdata(pdev, priv);
 
+<<<<<<< HEAD
 	priv->size = resource_size(res);
 	if (!request_mem_region(res->start, priv->size, pdev->name)) {
 		ret = -EBUSY;
@@ -173,10 +203,21 @@ static int __init ds1216_rtc_probe(struct platform_device *pdev)
 		ret = PTR_ERR(priv->rtc);
 		goto out;
 	}
+=======
+	priv->ioaddr = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(priv->ioaddr))
+		return PTR_ERR(priv->ioaddr);
+
+	priv->rtc = devm_rtc_device_register(&pdev->dev, "ds1216",
+					&ds1216_rtc_ops, THIS_MODULE);
+	if (IS_ERR(priv->rtc))
+		return PTR_ERR(priv->rtc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* dummy read to get clock into a known state */
 	ds1216_read(priv->ioaddr, dummy);
 	return 0;
+<<<<<<< HEAD
 
 out:
 	if (priv->ioaddr)
@@ -196,11 +237,14 @@ static int __exit ds1216_rtc_remove(struct platform_device *pdev)
 	release_mem_region(priv->baseaddr, priv->size);
 	kfree(priv);
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver ds1216_rtc_platform_driver = {
 	.driver		= {
 		.name	= "rtc-ds1216",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.remove		= __exit_p(ds1216_rtc_remove),
@@ -215,12 +259,22 @@ static void __exit ds1216_rtc_exit(void)
 {
 	platform_driver_unregister(&ds1216_rtc_platform_driver);
 }
+=======
+	},
+};
+
+module_platform_driver_probe(ds1216_rtc_platform_driver, ds1216_rtc_probe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Thomas Bogendoerfer <tsbogend@alpha.franken.de>");
 MODULE_DESCRIPTION("DS1216 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
 MODULE_ALIAS("platform:rtc-ds1216");
 
 module_init(ds1216_rtc_init);
 module_exit(ds1216_rtc_exit);
+=======
+MODULE_ALIAS("platform:rtc-ds1216");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

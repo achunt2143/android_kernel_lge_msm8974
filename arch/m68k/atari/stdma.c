@@ -30,7 +30,10 @@
 
 #include <linux/types.h>
 #include <linux/kdev_t.h>
+<<<<<<< HEAD
 #include <linux/genhd.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -59,6 +62,35 @@ static irqreturn_t stdma_int (int irq, void *dummy);
 /************************* End of Prototypes **************************/
 
 
+<<<<<<< HEAD
+=======
+/**
+ * stdma_try_lock - attempt to acquire ST DMA interrupt "lock"
+ * @handler: interrupt handler to use after acquisition
+ * @data: cookie passed to the interrupt handler function
+ *
+ * Returns !0 if lock was acquired; otherwise 0.
+ */
+
+int stdma_try_lock(irq_handler_t handler, void *data)
+{
+	unsigned long flags;
+
+	local_irq_save(flags);
+	if (stdma_locked) {
+		local_irq_restore(flags);
+		return 0;
+	}
+
+	stdma_locked   = 1;
+	stdma_isr      = handler;
+	stdma_isr_data = data;
+	local_irq_restore(flags);
+	return 1;
+}
+EXPORT_SYMBOL(stdma_try_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Function: void stdma_lock( isrfunc isr, void *data )
@@ -78,6 +110,7 @@ static irqreturn_t stdma_int (int irq, void *dummy);
 
 void stdma_lock(irq_handler_t handler, void *data)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	local_irq_save(flags);		/* protect lock */
@@ -91,6 +124,12 @@ void stdma_lock(irq_handler_t handler, void *data)
 	stdma_isr      = handler;
 	stdma_isr_data = data;
 	local_irq_restore(flags);
+=======
+	/* Since the DMA is used for file system purposes, we
+	 have to sleep uninterruptible (there may be locked
+	 buffers) */
+	wait_event(stdma_wait, stdma_try_lock(handler, data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(stdma_lock);
 
@@ -122,6 +161,7 @@ void stdma_release(void)
 EXPORT_SYMBOL(stdma_release);
 
 
+<<<<<<< HEAD
 /*
  * Function: int stdma_others_waiting( void )
  *
@@ -138,6 +178,27 @@ int stdma_others_waiting(void)
 	return waitqueue_active(&stdma_wait);
 }
 EXPORT_SYMBOL(stdma_others_waiting);
+=======
+/**
+ * stdma_is_locked_by - allow lock holder to check whether it needs to release.
+ * @handler: interrupt handler previously used to acquire lock.
+ *
+ * Returns !0 if locked for the given handler; 0 otherwise.
+ */
+
+int stdma_is_locked_by(irq_handler_t handler)
+{
+	unsigned long flags;
+	int result;
+
+	local_irq_save(flags);
+	result = stdma_locked && (stdma_isr == handler);
+	local_irq_restore(flags);
+
+	return result;
+}
+EXPORT_SYMBOL(stdma_is_locked_by);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -179,7 +240,11 @@ EXPORT_SYMBOL(stdma_islocked);
 void __init stdma_init(void)
 {
 	stdma_isr = NULL;
+<<<<<<< HEAD
 	if (request_irq(IRQ_MFP_FDC, stdma_int, IRQ_TYPE_SLOW | IRQF_SHARED,
+=======
+	if (request_irq(IRQ_MFP_FDC, stdma_int, IRQF_SHARED,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"ST-DMA floppy,ACSI,IDE,Falcon-SCSI", stdma_int))
 		pr_err("Couldn't register ST-DMA interrupt\n");
 }

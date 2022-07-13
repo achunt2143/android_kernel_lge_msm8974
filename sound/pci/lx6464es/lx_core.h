@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -*- linux-c -*- *
  *
  * ALSA driver for the digigram lx6464es interface
  * low-level interface
  *
  * Copyright (c) 2009 Tim Blechmann <tim@klingt.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  * the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 02111-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef LX_CORE_H
@@ -109,7 +116,11 @@ struct lx_rmh {
 
 
 /* low-level dsp access */
+<<<<<<< HEAD
 int __devinit lx_dsp_get_version(struct lx6464es *chip, u32 *rdsp_version);
+=======
+int lx_dsp_get_version(struct lx6464es *chip, u32 *rdsp_version);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int lx_dsp_get_clock_frequency(struct lx6464es *chip, u32 *rfreq);
 int lx_dsp_set_granularity(struct lx6464es *chip, u32 gran);
 int lx_dsp_read_async_events(struct lx6464es *chip, u32 *data);
@@ -181,12 +192,19 @@ int lx_level_peaks(struct lx6464es *chip, int is_capture, int channels,
 
 /* interrupt handling */
 irqreturn_t lx_interrupt(int irq, void *dev_id);
+<<<<<<< HEAD
 void lx_irq_enable(struct lx6464es *chip);
 void lx_irq_disable(struct lx6464es *chip);
 
 void lx_tasklet_capture(unsigned long data);
 void lx_tasklet_playback(unsigned long data);
 
+=======
+irqreturn_t lx_threaded_irq(int irq, void *dev_id);
+void lx_irq_enable(struct lx6464es *chip);
+void lx_irq_disable(struct lx6464es *chip);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Stream Format Header Defines (for LIN and IEEE754) */
 #define HEADER_FMT_BASE		HEADER_FMT_BASE_LIN

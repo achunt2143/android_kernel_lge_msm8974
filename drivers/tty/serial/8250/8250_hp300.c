@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for the 98626/98644/internal serial interface on hp300/hp400
  * (based on the National Semiconductor INS8250/NS16550AF/WD16C552 UARTs)
@@ -10,7 +14,10 @@
 #include <linux/string.h>
 #include <linux/kernel.h>
 #include <linux/serial.h>
+<<<<<<< HEAD
 #include <linux/serial_core.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial_8250.h>
 #include <linux/delay.h>
 #include <linux/dio.h>
@@ -20,6 +27,7 @@
 
 #include "8250.h"
 
+<<<<<<< HEAD
 #if !defined(CONFIG_HPDCA) && !defined(CONFIG_HPAPCI)
 #warning CONFIG_8250 defined but neither CONFIG_HPDCA nor CONFIG_HPAPCI defined, are you sure?
 #endif
@@ -27,6 +35,14 @@
 #ifdef CONFIG_HPAPCI
 struct hp300_port
 {
+=======
+#if !defined(CONFIG_HPDCA) && !defined(CONFIG_HPAPCI) && !defined(CONFIG_COMPILE_TEST)
+#warning CONFIG_SERIAL_8250 defined but neither CONFIG_HPDCA nor CONFIG_HPAPCI defined, are you sure?
+#endif
+
+#ifdef CONFIG_HPAPCI
+struct hp300_port {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hp300_port *next;	/* next port */
 	int line;			/* line (tty) number */
 };
@@ -36,9 +52,15 @@ static struct hp300_port *hp300_ports;
 
 #ifdef CONFIG_HPDCA
 
+<<<<<<< HEAD
 static int __devinit hpdca_init_one(struct dio_dev *d,
 					const struct dio_device_id *ent);
 static void __devexit hpdca_remove_one(struct dio_dev *d);
+=======
+static int hpdca_init_one(struct dio_dev *d,
+					const struct dio_device_id *ent);
+static void hpdca_remove_one(struct dio_dev *d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct dio_device_id hpdca_dio_tbl[] = {
 	{ DIO_ID_DCA0 },
@@ -52,7 +74,11 @@ static struct dio_driver hpdca_driver = {
 	.name      = "hpdca",
 	.id_table  = hpdca_dio_tbl,
 	.probe     = hpdca_init_one,
+<<<<<<< HEAD
 	.remove    = __devexit_p(hpdca_remove_one),
+=======
+	.remove    = hpdca_remove_one,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif
@@ -88,10 +114,13 @@ extern int hp300_uart_scode;
 /*
  * Parse the bootinfo to find descriptions for headless console and
  * debug serial ports and register them with the 8250 driver.
+<<<<<<< HEAD
  * This function should be called before serial_console_init() is called
  * to make sure the serial console will be available for use. IA-64 kernel
  * calls this function from setup_arch() after the EFI and ACPI tables have
  * been parsed.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int __init hp300_setup_serial_console(void)
 {
@@ -116,7 +145,11 @@ int __init hp300_setup_serial_console(void)
 	/* Check for APCI console */
 	if (scode == 256) {
 #ifdef CONFIG_HPAPCI
+<<<<<<< HEAD
 		printk(KERN_INFO "Serial console is HP APCI 1\n");
+=======
+		pr_info("Serial console is HP APCI 1\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		port.uartclk = HPAPCI_BAUD_BASE * 16;
 		port.mapbase = (FRODO_BASE + FRODO_APCI_OFFSET(1));
@@ -124,7 +157,11 @@ int __init hp300_setup_serial_console(void)
 		port.regshift = 2;
 		add_preferred_console("ttyS", port.line, "9600n8");
 #else
+<<<<<<< HEAD
 		printk(KERN_WARNING "Serial console is APCI but support is disabled (CONFIG_HPAPCI)!\n");
+=======
+		pr_warn("Serial console is APCI but support is disabled (CONFIG_HPAPCI)!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 #endif
 	} else {
@@ -133,7 +170,11 @@ int __init hp300_setup_serial_console(void)
 		if (!pa)
 			return 0;
 
+<<<<<<< HEAD
 		printk(KERN_INFO "Serial console is HP DCA at select code %d\n", scode);
+=======
+		pr_info("Serial console is HP DCA at select code %d\n", scode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		port.uartclk = HPDCA_BAUD_BASE * 16;
 		port.mapbase = (pa + UART_OFFSET);
@@ -147,22 +188,37 @@ int __init hp300_setup_serial_console(void)
 		if (DIO_ID(pa + DIO_VIRADDRBASE) & 0x80)
 			add_preferred_console("ttyS", port.line, "9600n8");
 #else
+<<<<<<< HEAD
 		printk(KERN_WARNING "Serial console is DCA but support is disabled (CONFIG_HPDCA)!\n");
+=======
+		pr_warn("Serial console is DCA but support is disabled (CONFIG_HPDCA)!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 #endif
 	}
 
 	if (early_serial_setup(&port) < 0)
+<<<<<<< HEAD
 		printk(KERN_WARNING "hp300_setup_serial_console(): early_serial_setup() failed.\n");
+=======
+		pr_warn("%s: early_serial_setup() failed.\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 #endif /* CONFIG_SERIAL_8250_CONSOLE */
 
 #ifdef CONFIG_HPDCA
+<<<<<<< HEAD
 static int __devinit hpdca_init_one(struct dio_dev *d,
 				const struct dio_device_id *ent)
 {
 	struct uart_port port;
+=======
+static int hpdca_init_one(struct dio_dev *d,
+				const struct dio_device_id *ent)
+{
+	struct uart_8250_port uart;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int line;
 
 #ifdef CONFIG_SERIAL_8250_CONSOLE
@@ -171,6 +227,7 @@ static int __devinit hpdca_init_one(struct dio_dev *d,
 		return 0;
 	}
 #endif
+<<<<<<< HEAD
 	memset(&port, 0, sizeof(struct uart_port));
 
 	/* Memory mapped I/O */
@@ -187,6 +244,25 @@ static int __devinit hpdca_init_one(struct dio_dev *d,
 	if (line < 0) {
 		printk(KERN_NOTICE "8250_hp300: register_serial() DCA scode %d"
 		       " irq %d failed\n", d->scode, port.irq);
+=======
+	memset(&uart, 0, sizeof(uart));
+
+	/* Memory mapped I/O */
+	uart.port.iotype = UPIO_MEM;
+	uart.port.flags = UPF_SKIP_TEST | UPF_SHARE_IRQ | UPF_BOOT_AUTOCONF;
+	uart.port.irq = d->ipl;
+	uart.port.uartclk = HPDCA_BAUD_BASE * 16;
+	uart.port.mapbase = (d->resource.start + UART_OFFSET);
+	uart.port.membase = (char *)(uart.port.mapbase + DIO_VIRADDRBASE);
+	uart.port.regshift = 1;
+	uart.port.dev = &d->dev;
+	line = serial8250_register_8250_port(&uart);
+
+	if (line < 0) {
+		dev_notice(&d->dev,
+			  "8250_hp300: register_serial() DCA scode %d irq %d failed\n",
+			  d->scode, uart.port.irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -210,7 +286,11 @@ static int __init hp300_8250_init(void)
 #ifdef CONFIG_HPAPCI
 	int line;
 	unsigned long base;
+<<<<<<< HEAD
 	struct uart_port uport;
+=======
+	struct uart_8250_port uart;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hp300_port *port;
 	int i;
 #endif
@@ -248,11 +328,16 @@ static int __init hp300_8250_init(void)
 		if (!port)
 			return -ENOMEM;
 
+<<<<<<< HEAD
 		memset(&uport, 0, sizeof(struct uart_port));
+=======
+		memset(&uart, 0, sizeof(uart));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		base = (FRODO_BASE + FRODO_APCI_OFFSET(i));
 
 		/* Memory mapped I/O */
+<<<<<<< HEAD
 		uport.iotype = UPIO_MEM;
 		uport.flags = UPF_SKIP_TEST | UPF_SHARE_IRQ \
 			      | UPF_BOOT_AUTOCONF;
@@ -268,6 +353,24 @@ static int __init hp300_8250_init(void)
 		if (line < 0) {
 			printk(KERN_NOTICE "8250_hp300: register_serial() APCI"
 			       " %d irq %d failed\n", i, uport.irq);
+=======
+		uart.port.iotype = UPIO_MEM;
+		uart.port.flags = UPF_SKIP_TEST | UPF_SHARE_IRQ
+				| UPF_BOOT_AUTOCONF;
+		/* XXX - no interrupt support yet */
+		uart.port.irq = 0;
+		uart.port.uartclk = HPAPCI_BAUD_BASE * 16;
+		uart.port.mapbase = base;
+		uart.port.membase = (char *)(base + DIO_VIRADDRBASE);
+		uart.port.regshift = 2;
+
+		line = serial8250_register_8250_port(&uart);
+
+		if (line < 0) {
+			dev_notice(uart.port.dev,
+				   "8250_hp300: register_serial() APCI %d irq %d failed\n",
+				   i, uart.port.irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(port);
 			continue;
 		}
@@ -288,7 +391,11 @@ static int __init hp300_8250_init(void)
 }
 
 #ifdef CONFIG_HPDCA
+<<<<<<< HEAD
 static void __devexit hpdca_remove_one(struct dio_dev *d)
+=======
+static void hpdca_remove_one(struct dio_dev *d)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int line;
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/net/sunrpc/svcsock.c
  *
@@ -35,14 +39,31 @@
 #include <linux/skbuff.h>
 #include <linux/file.h>
 #include <linux/freezer.h>
+<<<<<<< HEAD
+=======
+#include <linux/bvec.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/sock.h>
 #include <net/checksum.h>
 #include <net/ip.h>
 #include <net/ipv6.h>
+<<<<<<< HEAD
 #include <net/tcp.h>
 #include <net/tcp_states.h>
 #include <asm/uaccess.h>
 #include <asm/ioctls.h>
+=======
+#include <net/udp.h>
+#include <net/tcp.h>
+#include <net/tcp_states.h>
+#include <net/tls_prot.h>
+#include <net/handshake.h>
+#include <linux/uaccess.h>
+#include <linux/highmem.h>
+#include <asm/ioctls.h>
+#include <linux/key.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/sunrpc/types.h>
 #include <linux/sunrpc/clnt.h>
@@ -52,14 +73,33 @@
 #include <linux/sunrpc/stats.h>
 #include <linux/sunrpc/xprt.h>
 
+<<<<<<< HEAD
+=======
+#include <trace/events/sock.h>
+#include <trace/events/sunrpc.h>
+
+#include "socklib.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "sunrpc.h"
 
 #define RPCDBG_FACILITY	RPCDBG_SVCXPRT
 
+<<<<<<< HEAD
 
 static struct svc_sock *svc_setup_socket(struct svc_serv *, struct socket *,
 					 int *errp, int flags);
 static void		svc_udp_data_ready(struct sock *, int);
+=======
+/* To-do: to avoid tying up an nfsd thread while waiting for a
+ * handshake request, the request could instead be deferred.
+ */
+enum {
+	SVC_HANDSHAKE_TO	= 5U * HZ
+};
+
+static struct svc_sock *svc_setup_socket(struct svc_serv *, struct socket *,
+					 int flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int		svc_udp_recvfrom(struct svc_rqst *);
 static int		svc_udp_sendto(struct svc_rqst *);
 static void		svc_sock_detach(struct svc_xprt *);
@@ -69,6 +109,7 @@ static void		svc_sock_free(struct svc_xprt *);
 static struct svc_xprt *svc_create_socket(struct svc_serv *, int,
 					  struct net *, struct sockaddr *,
 					  int, int);
+<<<<<<< HEAD
 #if defined(CONFIG_SUNRPC_BACKCHANNEL)
 static struct svc_xprt *svc_bc_create_socket(struct svc_serv *, int,
 					     struct net *, struct sockaddr *,
@@ -76,6 +117,8 @@ static struct svc_xprt *svc_bc_create_socket(struct svc_serv *, int,
 static void svc_bc_sock_free(struct svc_xprt *xprt);
 #endif /* CONFIG_SUNRPC_BACKCHANNEL */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_DEBUG_LOCK_ALLOC
 static struct lock_class_key svc_key[2];
 static struct lock_class_key svc_slock_key[2];
@@ -83,7 +126,14 @@ static struct lock_class_key svc_slock_key[2];
 static void svc_reclassify_socket(struct socket *sock)
 {
 	struct sock *sk = sock->sk;
+<<<<<<< HEAD
 	BUG_ON(sock_owned_by_user(sk));
+=======
+
+	if (WARN_ON_ONCE(!sock_allow_reclassification(sk)))
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (sk->sk_family) {
 	case AF_INET:
 		sock_lock_init_class_and_name(sk, "slock-AF_INET-NFSD",
@@ -109,6 +159,7 @@ static void svc_reclassify_socket(struct socket *sock)
 }
 #endif
 
+<<<<<<< HEAD
 /*
  * Release an skbuff after use
  */
@@ -124,6 +175,30 @@ static void svc_release_skb(struct svc_rqst *rqstp)
 		dprintk("svc: service %p, releasing skb %p\n", rqstp, skb);
 		skb_free_datagram_locked(svsk->sk_sk, skb);
 	}
+=======
+/**
+ * svc_tcp_release_ctxt - Release transport-related resources
+ * @xprt: the transport which owned the context
+ * @ctxt: the context from rqstp->rq_xprt_ctxt or dr->xprt_ctxt
+ *
+ */
+static void svc_tcp_release_ctxt(struct svc_xprt *xprt, void *ctxt)
+{
+}
+
+/**
+ * svc_udp_release_ctxt - Release transport-related resources
+ * @xprt: the transport which owned the context
+ * @ctxt: the context from rqstp->rq_xprt_ctxt or dr->xprt_ctxt
+ *
+ */
+static void svc_udp_release_ctxt(struct svc_xprt *xprt, void *ctxt)
+{
+	struct sk_buff *skb = ctxt;
+
+	if (skb)
+		consume_skb(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 union svc_pktinfo_u {
@@ -164,6 +239,7 @@ static void svc_set_cmsg_data(struct svc_rqst *rqstp, struct cmsghdr *cmh)
 	}
 }
 
+<<<<<<< HEAD
 /*
  * send routine intended to be shared by the fore- and back-channel
  */
@@ -267,6 +343,12 @@ out:
 		xdr->len, len, svc_print_addr(rqstp, buf, sizeof(buf)));
 
 	return len;
+=======
+static int svc_sock_result_payload(struct svc_rqst *rqstp, unsigned int offset,
+				   unsigned int length)
+{
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -286,12 +368,23 @@ static int svc_one_sock_name(struct svc_sock *svsk, char *buf, int remaining)
 				&inet_sk(sk)->inet_rcv_saddr,
 				inet_sk(sk)->inet_num);
 		break;
+<<<<<<< HEAD
 	case PF_INET6:
 		len = snprintf(buf, remaining, "ipv6 %s %pI6 %d\n",
 				proto_name,
 				&inet6_sk(sk)->rcv_saddr,
 				inet_sk(sk)->inet_num);
 		break;
+=======
+#if IS_ENABLED(CONFIG_IPV6)
+	case PF_INET6:
+		len = snprintf(buf, remaining, "ipv6 %s %pI6 %d\n",
+				proto_name,
+				&sk->sk_v6_rcv_saddr,
+				inet_sk(sk)->inet_num);
+		break;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		len = snprintf(buf, remaining, "*unknown-%d*\n",
 				sk->sk_family);
@@ -304,6 +397,7 @@ static int svc_one_sock_name(struct svc_sock *svsk, char *buf, int remaining)
 	return len;
 }
 
+<<<<<<< HEAD
 /**
  * svc_sock_names - construct a list of listener names in a string
  * @serv: pointer to RPC service
@@ -416,11 +510,119 @@ static int svc_partial_recvfrom(struct svc_rqst *rqstp,
 	iov[i].iov_len = save_iovlen;
 	iov[i].iov_base = save_iovbase;
 	return ret;
+=======
+static int
+svc_tcp_sock_process_cmsg(struct socket *sock, struct msghdr *msg,
+			  struct cmsghdr *cmsg, int ret)
+{
+	u8 content_type = tls_get_record_type(sock->sk, cmsg);
+	u8 level, description;
+
+	switch (content_type) {
+	case 0:
+		break;
+	case TLS_RECORD_TYPE_DATA:
+		/* TLS sets EOR at the end of each application data
+		 * record, even though there might be more frames
+		 * waiting to be decrypted.
+		 */
+		msg->msg_flags &= ~MSG_EOR;
+		break;
+	case TLS_RECORD_TYPE_ALERT:
+		tls_alert_recv(sock->sk, msg, &level, &description);
+		ret = (level == TLS_ALERT_LEVEL_FATAL) ?
+			-ENOTCONN : -EAGAIN;
+		break;
+	default:
+		/* discard this record type */
+		ret = -EAGAIN;
+	}
+	return ret;
+}
+
+static int
+svc_tcp_sock_recv_cmsg(struct svc_sock *svsk, struct msghdr *msg)
+{
+	union {
+		struct cmsghdr	cmsg;
+		u8		buf[CMSG_SPACE(sizeof(u8))];
+	} u;
+	struct socket *sock = svsk->sk_sock;
+	int ret;
+
+	msg->msg_control = &u;
+	msg->msg_controllen = sizeof(u);
+	ret = sock_recvmsg(sock, msg, MSG_DONTWAIT);
+	if (unlikely(msg->msg_controllen != sizeof(u)))
+		ret = svc_tcp_sock_process_cmsg(sock, msg, &u.cmsg, ret);
+	return ret;
+}
+
+#if ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE
+static void svc_flush_bvec(const struct bio_vec *bvec, size_t size, size_t seek)
+{
+	struct bvec_iter bi = {
+		.bi_size	= size + seek,
+	};
+	struct bio_vec bv;
+
+	bvec_iter_advance(bvec, &bi, seek & PAGE_MASK);
+	for_each_bvec(bv, bvec, bi, bi)
+		flush_dcache_page(bv.bv_page);
+}
+#else
+static inline void svc_flush_bvec(const struct bio_vec *bvec, size_t size,
+				  size_t seek)
+{
+}
+#endif
+
+/*
+ * Read from @rqstp's transport socket. The incoming message fills whole
+ * pages in @rqstp's rq_pages array until the last page of the message
+ * has been received into a partial page.
+ */
+static ssize_t svc_tcp_read_msg(struct svc_rqst *rqstp, size_t buflen,
+				size_t seek)
+{
+	struct svc_sock *svsk =
+		container_of(rqstp->rq_xprt, struct svc_sock, sk_xprt);
+	struct bio_vec *bvec = rqstp->rq_bvec;
+	struct msghdr msg = { NULL };
+	unsigned int i;
+	ssize_t len;
+	size_t t;
+
+	clear_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags);
+
+	for (i = 0, t = 0; t < buflen; i++, t += PAGE_SIZE)
+		bvec_set_page(&bvec[i], rqstp->rq_pages[i], PAGE_SIZE, 0);
+	rqstp->rq_respages = &rqstp->rq_pages[i];
+	rqstp->rq_next_page = rqstp->rq_respages + 1;
+
+	iov_iter_bvec(&msg.msg_iter, ITER_DEST, bvec, i, buflen);
+	if (seek) {
+		iov_iter_advance(&msg.msg_iter, seek);
+		buflen -= seek;
+	}
+	len = svc_tcp_sock_recv_cmsg(svsk, &msg);
+	if (len > 0)
+		svc_flush_bvec(bvec, len, seek);
+
+	/* If we read a full record, then assume there may be more
+	 * data to read (stream based sockets only!)
+	 */
+	if (len == buflen)
+		set_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags);
+
+	return len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Set socket snd and rcv buffer lengths
  */
+<<<<<<< HEAD
 static void svc_sock_setbufsize(struct socket *sock, unsigned int snd,
 				unsigned int rcv)
 {
@@ -461,6 +663,49 @@ static void svc_udp_data_ready(struct sock *sk, int count)
 	}
 	if (wq && waitqueue_active(wq))
 		wake_up_interruptible(wq);
+=======
+static void svc_sock_setbufsize(struct svc_sock *svsk, unsigned int nreqs)
+{
+	unsigned int max_mesg = svsk->sk_xprt.xpt_server->sv_max_mesg;
+	struct socket *sock = svsk->sk_sock;
+
+	nreqs = min(nreqs, INT_MAX / 2 / max_mesg);
+
+	lock_sock(sock->sk);
+	sock->sk->sk_sndbuf = nreqs * max_mesg * 2;
+	sock->sk->sk_rcvbuf = nreqs * max_mesg * 2;
+	sock->sk->sk_write_space(sock->sk);
+	release_sock(sock->sk);
+}
+
+static void svc_sock_secure_port(struct svc_rqst *rqstp)
+{
+	if (svc_port_is_privileged(svc_addr(rqstp)))
+		set_bit(RQ_SECURE, &rqstp->rq_flags);
+	else
+		clear_bit(RQ_SECURE, &rqstp->rq_flags);
+}
+
+/*
+ * INET callback when data has been received on the socket.
+ */
+static void svc_data_ready(struct sock *sk)
+{
+	struct svc_sock	*svsk = (struct svc_sock *)sk->sk_user_data;
+
+	trace_sk_data_ready(sk);
+
+	if (svsk) {
+		/* Refer to svc_setup_socket() for details. */
+		rmb();
+		svsk->sk_odata(sk);
+		trace_svcsock_data_ready(&svsk->sk_xprt, 0);
+		if (test_bit(XPT_HANDSHAKE, &svsk->sk_xprt.xpt_flags))
+			return;
+		if (!test_and_set_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags))
+			svc_xprt_enqueue(&svsk->sk_xprt);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -469,6 +714,7 @@ static void svc_udp_data_ready(struct sock *sk, int count)
 static void svc_write_space(struct sock *sk)
 {
 	struct svc_sock	*svsk = (struct svc_sock *)(sk->sk_user_data);
+<<<<<<< HEAD
 	wait_queue_head_t *wq = sk_sleep(sk);
 
 	if (svsk) {
@@ -491,6 +737,114 @@ static void svc_tcp_write_space(struct sock *sk)
 	if (sk_stream_wspace(sk) >= sk_stream_min_wspace(sk) && sock)
 		clear_bit(SOCK_NOSPACE, &sock->flags);
 	svc_write_space(sk);
+=======
+
+	if (svsk) {
+		/* Refer to svc_setup_socket() for details. */
+		rmb();
+		trace_svcsock_write_space(&svsk->sk_xprt, 0);
+		svsk->sk_owspace(sk);
+		svc_xprt_enqueue(&svsk->sk_xprt);
+	}
+}
+
+static int svc_tcp_has_wspace(struct svc_xprt *xprt)
+{
+	struct svc_sock *svsk = container_of(xprt, struct svc_sock, sk_xprt);
+
+	if (test_bit(XPT_LISTENER, &xprt->xpt_flags))
+		return 1;
+	return !test_bit(SOCK_NOSPACE, &svsk->sk_sock->flags);
+}
+
+static void svc_tcp_kill_temp_xprt(struct svc_xprt *xprt)
+{
+	struct svc_sock *svsk = container_of(xprt, struct svc_sock, sk_xprt);
+
+	sock_no_linger(svsk->sk_sock->sk);
+}
+
+/**
+ * svc_tcp_handshake_done - Handshake completion handler
+ * @data: address of xprt to wake
+ * @status: status of handshake
+ * @peerid: serial number of key containing the remote peer's identity
+ *
+ * If a security policy is specified as an export option, we don't
+ * have a specific export here to check. So we set a "TLS session
+ * is present" flag on the xprt and let an upper layer enforce local
+ * security policy.
+ */
+static void svc_tcp_handshake_done(void *data, int status, key_serial_t peerid)
+{
+	struct svc_xprt *xprt = data;
+	struct svc_sock *svsk = container_of(xprt, struct svc_sock, sk_xprt);
+
+	if (!status) {
+		if (peerid != TLS_NO_PEERID)
+			set_bit(XPT_PEER_AUTH, &xprt->xpt_flags);
+		set_bit(XPT_TLS_SESSION, &xprt->xpt_flags);
+	}
+	clear_bit(XPT_HANDSHAKE, &xprt->xpt_flags);
+	complete_all(&svsk->sk_handshake_done);
+}
+
+/**
+ * svc_tcp_handshake - Perform a transport-layer security handshake
+ * @xprt: connected transport endpoint
+ *
+ */
+static void svc_tcp_handshake(struct svc_xprt *xprt)
+{
+	struct svc_sock *svsk = container_of(xprt, struct svc_sock, sk_xprt);
+	struct sock *sk = svsk->sk_sock->sk;
+	struct tls_handshake_args args = {
+		.ta_sock	= svsk->sk_sock,
+		.ta_done	= svc_tcp_handshake_done,
+		.ta_data	= xprt,
+	};
+	int ret;
+
+	trace_svc_tls_upcall(xprt);
+
+	clear_bit(XPT_TLS_SESSION, &xprt->xpt_flags);
+	init_completion(&svsk->sk_handshake_done);
+
+	ret = tls_server_hello_x509(&args, GFP_KERNEL);
+	if (ret) {
+		trace_svc_tls_not_started(xprt);
+		goto out_failed;
+	}
+
+	ret = wait_for_completion_interruptible_timeout(&svsk->sk_handshake_done,
+							SVC_HANDSHAKE_TO);
+	if (ret <= 0) {
+		if (tls_handshake_cancel(sk)) {
+			trace_svc_tls_timed_out(xprt);
+			goto out_close;
+		}
+	}
+
+	if (!test_bit(XPT_TLS_SESSION, &xprt->xpt_flags)) {
+		trace_svc_tls_unavailable(xprt);
+		goto out_close;
+	}
+
+	/* Mark the transport ready in case the remote sent RPC
+	 * traffic before the kernel received the handshake
+	 * completion downcall.
+	 */
+	set_bit(XPT_DATA, &xprt->xpt_flags);
+	svc_xprt_enqueue(xprt);
+	return;
+
+out_close:
+	set_bit(XPT_CLOSE, &xprt->xpt_flags);
+out_failed:
+	clear_bit(XPT_HANDSHAKE, &xprt->xpt_flags);
+	set_bit(XPT_DATA, &xprt->xpt_flags);
+	svc_xprt_enqueue(xprt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -511,7 +865,11 @@ static int svc_udp_get_dest_address4(struct svc_rqst *rqstp,
 }
 
 /*
+<<<<<<< HEAD
  * See net/ipv6/datagram.c : datagram_recv_ctl
+=======
+ * See net/ipv6/datagram.c : ip6_datagram_recv_ctl
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int svc_udp_get_dest_address6(struct svc_rqst *rqstp,
 				     struct cmsghdr *cmh)
@@ -548,8 +906,20 @@ static int svc_udp_get_dest_address(struct svc_rqst *rqstp,
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Receive a datagram from a UDP socket.
+=======
+/**
+ * svc_udp_recvfrom - Receive a datagram from a UDP socket.
+ * @rqstp: request structure into which to receive an RPC Call
+ *
+ * Called in a loop when XPT_DATA has been set.
+ *
+ * Returns:
+ *   On success, the number of bytes in a received RPC Call, or
+ *   %0 if a complete RPC Call message was not ready to return
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int svc_udp_recvfrom(struct svc_rqst *rqstp)
 {
@@ -580,6 +950,7 @@ static int svc_udp_recvfrom(struct svc_rqst *rqstp)
 	     * provides an upper bound on the number of threads
 	     * which will access the socket.
 	     */
+<<<<<<< HEAD
 	    svc_sock_setbufsize(svsk->sk_sock,
 				(serv->sv_nrthreads+3) * serv->sv_max_mesg,
 				(serv->sv_nrthreads+3) * serv->sv_max_mesg);
@@ -604,10 +975,27 @@ static int svc_udp_recvfrom(struct svc_rqst *rqstp)
 		return -EAFNOSUPPORT;
 	rqstp->rq_addrlen = len;
 	if (skb->tstamp.tv64 == 0) {
+=======
+	    svc_sock_setbufsize(svsk, serv->sv_nrthreads + 3);
+
+	clear_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags);
+	err = kernel_recvmsg(svsk->sk_sock, &msg, NULL,
+			     0, 0, MSG_PEEK | MSG_DONTWAIT);
+	if (err < 0)
+		goto out_recv_err;
+	skb = skb_recv_udp(svsk->sk_sk, MSG_DONTWAIT, &err);
+	if (!skb)
+		goto out_recv_err;
+
+	len = svc_addr_len(svc_addr(rqstp));
+	rqstp->rq_addrlen = len;
+	if (skb->tstamp == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		skb->tstamp = ktime_get_real();
 		/* Don't enable netstamp, sunrpc doesn't
 		   need that much accuracy */
 	}
+<<<<<<< HEAD
 	svsk->sk_sk->sk_stamp = skb->tstamp;
 	set_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags); /* there may be more data... */
 
@@ -625,11 +1013,25 @@ static int svc_udp_recvfrom(struct svc_rqst *rqstp)
 		skb_free_datagram_locked(svsk->sk_sk, skb);
 		return 0;
 	}
+=======
+	sock_write_timestamp(svsk->sk_sk, skb->tstamp);
+	set_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags); /* there may be more data... */
+
+	len = skb->len;
+	rqstp->rq_arg.len = len;
+	trace_svcsock_udp_recv(&svsk->sk_xprt, len);
+
+	rqstp->rq_prot = IPPROTO_UDP;
+
+	if (!svc_udp_get_dest_address(rqstp, cmh))
+		goto out_cmsg_err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rqstp->rq_daddrlen = svc_addr_len(svc_daddr(rqstp));
 
 	if (skb_is_nonlinear(skb)) {
 		/* we have to copy */
 		local_bh_disable();
+<<<<<<< HEAD
 		if (csum_partial_copy_to_xdr(&rqstp->rq_arg, skb)) {
 			local_bh_enable();
 			/* checksum error */
@@ -647,6 +1049,18 @@ static int svc_udp_recvfrom(struct svc_rqst *rqstp)
 			skb_free_datagram_locked(svsk->sk_sk, skb);
 			return 0;
 		}
+=======
+		if (csum_partial_copy_to_xdr(&rqstp->rq_arg, skb))
+			goto out_bh_enable;
+		local_bh_enable();
+		consume_skb(skb);
+	} else {
+		/* we can use it in-place */
+		rqstp->rq_arg.head[0].iov_base = skb->data;
+		rqstp->rq_arg.head[0].iov_len = len;
+		if (skb_checksum_complete(skb))
+			goto out_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rqstp->rq_xprt_ctxt = skb;
 	}
 
@@ -660,10 +1074,15 @@ static int svc_udp_recvfrom(struct svc_rqst *rqstp)
 		rqstp->rq_respages = rqstp->rq_pages + 1 +
 			DIV_ROUND_UP(rqstp->rq_arg.page_len, PAGE_SIZE);
 	}
+<<<<<<< HEAD
+=======
+	rqstp->rq_next_page = rqstp->rq_respages+1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (serv->sv_stats)
 		serv->sv_stats->netudpcnt++;
 
+<<<<<<< HEAD
 	return len;
 }
 
@@ -682,6 +1101,92 @@ svc_udp_sendto(struct svc_rqst *rqstp)
 
 static void svc_udp_prep_reply_hdr(struct svc_rqst *rqstp)
 {
+=======
+	svc_sock_secure_port(rqstp);
+	svc_xprt_received(rqstp->rq_xprt);
+	return len;
+
+out_recv_err:
+	if (err != -EAGAIN) {
+		/* possibly an icmp error */
+		set_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags);
+	}
+	trace_svcsock_udp_recv_err(&svsk->sk_xprt, err);
+	goto out_clear_busy;
+out_cmsg_err:
+	net_warn_ratelimited("svc: received unknown control message %d/%d; dropping RPC reply datagram\n",
+			     cmh->cmsg_level, cmh->cmsg_type);
+	goto out_free;
+out_bh_enable:
+	local_bh_enable();
+out_free:
+	kfree_skb(skb);
+out_clear_busy:
+	svc_xprt_received(rqstp->rq_xprt);
+	return 0;
+}
+
+/**
+ * svc_udp_sendto - Send out a reply on a UDP socket
+ * @rqstp: completed svc_rqst
+ *
+ * xpt_mutex ensures @rqstp's whole message is written to the socket
+ * without interruption.
+ *
+ * Returns the number of bytes sent, or a negative errno.
+ */
+static int svc_udp_sendto(struct svc_rqst *rqstp)
+{
+	struct svc_xprt *xprt = rqstp->rq_xprt;
+	struct svc_sock	*svsk = container_of(xprt, struct svc_sock, sk_xprt);
+	struct xdr_buf *xdr = &rqstp->rq_res;
+	union {
+		struct cmsghdr	hdr;
+		long		all[SVC_PKTINFO_SPACE / sizeof(long)];
+	} buffer;
+	struct cmsghdr *cmh = &buffer.hdr;
+	struct msghdr msg = {
+		.msg_name	= &rqstp->rq_addr,
+		.msg_namelen	= rqstp->rq_addrlen,
+		.msg_control	= cmh,
+		.msg_flags	= MSG_SPLICE_PAGES,
+		.msg_controllen	= sizeof(buffer),
+	};
+	unsigned int count;
+	int err;
+
+	svc_udp_release_ctxt(xprt, rqstp->rq_xprt_ctxt);
+	rqstp->rq_xprt_ctxt = NULL;
+
+	svc_set_cmsg_data(rqstp, cmh);
+
+	mutex_lock(&xprt->xpt_mutex);
+
+	if (svc_xprt_is_dead(xprt))
+		goto out_notconn;
+
+	count = xdr_buf_to_bvec(rqstp->rq_bvec,
+				ARRAY_SIZE(rqstp->rq_bvec), xdr);
+
+	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, rqstp->rq_bvec,
+		      count, rqstp->rq_res.len);
+	err = sock_sendmsg(svsk->sk_sock, &msg);
+	if (err == -ECONNREFUSED) {
+		/* ICMP error on earlier request. */
+		iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, rqstp->rq_bvec,
+			      count, rqstp->rq_res.len);
+		err = sock_sendmsg(svsk->sk_sock, &msg);
+	}
+
+	trace_svcsock_udp_send(xprt, err);
+
+	mutex_unlock(&xprt->xpt_mutex);
+	return err;
+
+out_notconn:
+	mutex_unlock(&xprt->xpt_mutex);
+	return -ENOTCONN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int svc_udp_has_wspace(struct svc_xprt *xprt)
@@ -708,6 +1213,13 @@ static struct svc_xprt *svc_udp_accept(struct svc_xprt *xprt)
 	return NULL;
 }
 
+<<<<<<< HEAD
+=======
+static void svc_udp_kill_temp_xprt(struct svc_xprt *xprt)
+{
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct svc_xprt *svc_udp_create(struct svc_serv *serv,
 				       struct net *net,
 				       struct sockaddr *sa, int salen,
@@ -716,6 +1228,7 @@ static struct svc_xprt *svc_udp_create(struct svc_serv *serv,
 	return svc_create_socket(serv, IPPROTO_UDP, net, sa, salen, flags);
 }
 
+<<<<<<< HEAD
 static struct svc_xprt_ops svc_udp_ops = {
 	.xpo_create = svc_udp_create,
 	.xpo_recvfrom = svc_udp_recvfrom,
@@ -726,6 +1239,19 @@ static struct svc_xprt_ops svc_udp_ops = {
 	.xpo_prep_reply_hdr = svc_udp_prep_reply_hdr,
 	.xpo_has_wspace = svc_udp_has_wspace,
 	.xpo_accept = svc_udp_accept,
+=======
+static const struct svc_xprt_ops svc_udp_ops = {
+	.xpo_create = svc_udp_create,
+	.xpo_recvfrom = svc_udp_recvfrom,
+	.xpo_sendto = svc_udp_sendto,
+	.xpo_result_payload = svc_sock_result_payload,
+	.xpo_release_ctxt = svc_udp_release_ctxt,
+	.xpo_detach = svc_sock_detach,
+	.xpo_free = svc_sock_free,
+	.xpo_has_wspace = svc_udp_has_wspace,
+	.xpo_accept = svc_udp_accept,
+	.xpo_kill_temp_xprt = svc_udp_kill_temp_xprt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct svc_xprt_class svc_udp_class = {
@@ -733,25 +1259,40 @@ static struct svc_xprt_class svc_udp_class = {
 	.xcl_owner = THIS_MODULE,
 	.xcl_ops = &svc_udp_ops,
 	.xcl_max_payload = RPCSVC_MAXPAYLOAD_UDP,
+<<<<<<< HEAD
+=======
+	.xcl_ident = XPRT_TRANSPORT_UDP,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void svc_udp_init(struct svc_sock *svsk, struct svc_serv *serv)
 {
+<<<<<<< HEAD
 	int err, level, optname, one = 1;
 
 	svc_xprt_init(sock_net(svsk->sk_sock->sk), &svc_udp_class,
 		      &svsk->sk_xprt, serv);
 	clear_bit(XPT_CACHE_AUTH, &svsk->sk_xprt.xpt_flags);
 	svsk->sk_sk->sk_data_ready = svc_udp_data_ready;
+=======
+	svc_xprt_init(sock_net(svsk->sk_sock->sk), &svc_udp_class,
+		      &svsk->sk_xprt, serv);
+	clear_bit(XPT_CACHE_AUTH, &svsk->sk_xprt.xpt_flags);
+	svsk->sk_sk->sk_data_ready = svc_data_ready;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	svsk->sk_sk->sk_write_space = svc_write_space;
 
 	/* initialise setting must have enough space to
 	 * receive and respond to one request.
 	 * svc_udp_recvfrom will re-adjust if necessary
 	 */
+<<<<<<< HEAD
 	svc_sock_setbufsize(svsk->sk_sock,
 			    3 * svsk->sk_xprt.xpt_server->sv_max_mesg,
 			    3 * svsk->sk_xprt.xpt_server->sv_max_mesg);
+=======
+	svc_sock_setbufsize(svsk, 3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* data might have come in before data_ready set up */
 	set_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags);
@@ -760,25 +1301,36 @@ static void svc_udp_init(struct svc_sock *svsk, struct svc_serv *serv)
 	/* make sure we get destination address info */
 	switch (svsk->sk_sk->sk_family) {
 	case AF_INET:
+<<<<<<< HEAD
 		level = SOL_IP;
 		optname = IP_PKTINFO;
 		break;
 	case AF_INET6:
 		level = SOL_IPV6;
 		optname = IPV6_RECVPKTINFO;
+=======
+		ip_sock_set_pktinfo(svsk->sk_sock->sk);
+		break;
+	case AF_INET6:
+		ip6_sock_set_recvpktinfo(svsk->sk_sock->sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		BUG();
 	}
+<<<<<<< HEAD
 	err = kernel_setsockopt(svsk->sk_sock, level, optname,
 					(char *)&one, sizeof(one));
 	dprintk("svc: kernel_setsockopt returned %d\n", err);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * A data_ready event on a listening socket means there's a connection
  * pending. Do not use state_change as a substitute for it.
  */
+<<<<<<< HEAD
 static void svc_tcp_listen_data_ready(struct sock *sk, int count_unused)
 {
 	struct svc_sock	*svsk = (struct svc_sock *)sk->sk_user_data;
@@ -786,6 +1338,13 @@ static void svc_tcp_listen_data_ready(struct sock *sk, int count_unused)
 
 	dprintk("svc: socket %p TCP (listen) state change %d\n",
 		sk, sk->sk_state);
+=======
+static void svc_tcp_listen_data_ready(struct sock *sk)
+{
+	struct svc_sock	*svsk = (struct svc_sock *)sk->sk_user_data;
+
+	trace_sk_data_ready(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * This callback may called twice when a new connection
@@ -795,6 +1354,7 @@ static void svc_tcp_listen_data_ready(struct sock *sk, int count_unused)
 	 *    when one of child sockets become ESTABLISHED.
 	 * 2) data_ready method of the child socket may be called
 	 *    when it receives data before the socket is accepted.
+<<<<<<< HEAD
 	 * In case of 2, we should ignore it silently.
 	 */
 	if (sk->sk_state == TCP_LISTEN) {
@@ -808,6 +1368,21 @@ static void svc_tcp_listen_data_ready(struct sock *sk, int count_unused)
 	wq = sk_sleep(sk);
 	if (wq && waitqueue_active(wq))
 		wake_up_interruptible_all(wq);
+=======
+	 * In case of 2, we should ignore it silently and DO NOT
+	 * dereference svsk.
+	 */
+	if (sk->sk_state != TCP_LISTEN)
+		return;
+
+	if (svsk) {
+		/* Refer to svc_setup_socket() for details. */
+		rmb();
+		svsk->sk_odata(sk);
+		set_bit(XPT_CONN, &svsk->sk_xprt.xpt_flags);
+		svc_xprt_enqueue(&svsk->sk_xprt);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -816,6 +1391,7 @@ static void svc_tcp_listen_data_ready(struct sock *sk, int count_unused)
 static void svc_tcp_state_change(struct sock *sk)
 {
 	struct svc_sock	*svsk = (struct svc_sock *)sk->sk_user_data;
+<<<<<<< HEAD
 	wait_queue_head_t *wq = sk_sleep(sk);
 
 	dprintk("svc: socket %p TCP (connected) state change %d (svsk %p)\n",
@@ -844,6 +1420,17 @@ static void svc_tcp_data_ready(struct sock *sk, int count)
 	}
 	if (wq && waitqueue_active(wq))
 		wake_up_interruptible(wq);
+=======
+
+	if (svsk) {
+		/* Refer to svc_setup_socket() for details. */
+		rmb();
+		svsk->sk_ostate(sk);
+		trace_svcsock_tcp_state(&svsk->sk_xprt, svsk->sk_sock);
+		if (sk->sk_state != TCP_ESTABLISHED)
+			svc_xprt_deferred_close(&svsk->sk_xprt);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -859,15 +1446,20 @@ static struct svc_xprt *svc_tcp_accept(struct svc_xprt *xprt)
 	struct socket	*newsock;
 	struct svc_sock	*newsvsk;
 	int		err, slen;
+<<<<<<< HEAD
 	RPC_IFDEBUG(char buf[RPC_MAX_ADDRBUFLEN]);
 
 	dprintk("svc: tcp_accept %p sock %p\n", svsk, sock);
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sock)
 		return NULL;
 
 	clear_bit(XPT_CONN, &svsk->sk_xprt.xpt_flags);
 	err = kernel_accept(sock, &newsock, O_NONBLOCK);
 	if (err < 0) {
+<<<<<<< HEAD
 		if (err == -ENOMEM)
 			printk(KERN_WARNING "%s: no more sockets!\n",
 			       serv->sv_name);
@@ -898,12 +1490,35 @@ static struct svc_xprt *svc_tcp_accept(struct svc_xprt *xprt)
 	}
 	dprintk("%s: connect from %s\n", serv->sv_name,
 		__svc_print_addr(sin, buf, sizeof(buf)));
+=======
+		if (err != -EAGAIN)
+			trace_svcsock_accept_err(xprt, serv->sv_name, err);
+		return NULL;
+	}
+	if (IS_ERR(sock_alloc_file(newsock, O_NONBLOCK, NULL)))
+		return NULL;
+
+	set_bit(XPT_CONN, &svsk->sk_xprt.xpt_flags);
+
+	err = kernel_getpeername(newsock, sin);
+	if (err < 0) {
+		trace_svcsock_getpeername_err(xprt, serv->sv_name, err);
+		goto failed;		/* aborted connection or whatever */
+	}
+	slen = err;
+
+	/* Reset the inherited callbacks before calling svc_setup_socket */
+	newsock->sk->sk_state_change = svsk->sk_ostate;
+	newsock->sk->sk_data_ready = svsk->sk_odata;
+	newsock->sk->sk_write_space = svsk->sk_owspace;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* make sure that a write doesn't block forever when
 	 * low on memory
 	 */
 	newsock->sk->sk_sndtimeo = HZ*30;
 
+<<<<<<< HEAD
 	if (!(newsvsk = svc_setup_socket(serv, newsock, &err,
 				 (SVC_SOCK_ANONYMOUS | SVC_SOCK_TEMPORARY))))
 		goto failed;
@@ -915,12 +1530,30 @@ static struct svc_xprt *svc_tcp_accept(struct svc_xprt *xprt)
 	}
 	svc_xprt_set_local(&newsvsk->sk_xprt, sin, slen);
 
+=======
+	newsvsk = svc_setup_socket(serv, newsock,
+				 (SVC_SOCK_ANONYMOUS | SVC_SOCK_TEMPORARY));
+	if (IS_ERR(newsvsk))
+		goto failed;
+	svc_xprt_set_remote(&newsvsk->sk_xprt, sin, slen);
+	err = kernel_getsockname(newsock, sin);
+	slen = err;
+	if (unlikely(err < 0))
+		slen = offsetof(struct sockaddr, sa_data);
+	svc_xprt_set_local(&newsvsk->sk_xprt, sin, slen);
+
+	if (sock_is_loopback(newsock->sk))
+		set_bit(XPT_LOCAL, &newsvsk->sk_xprt.xpt_flags);
+	else
+		clear_bit(XPT_LOCAL, &newsvsk->sk_xprt.xpt_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (serv->sv_stats)
 		serv->sv_stats->nettcpconn++;
 
 	return &newsvsk->sk_xprt;
 
 failed:
+<<<<<<< HEAD
 	sock_release(newsock);
 	return NULL;
 }
@@ -932,6 +1565,20 @@ static unsigned int svc_tcp_restore_pages(struct svc_sock *svsk, struct svc_rqst
 	if (svsk->sk_tcplen <= sizeof(rpc_fraghdr))
 		return 0;
 	len = svsk->sk_tcplen - sizeof(rpc_fraghdr);
+=======
+	sockfd_put(newsock);
+	return NULL;
+}
+
+static size_t svc_tcp_restore_pages(struct svc_sock *svsk,
+				    struct svc_rqst *rqstp)
+{
+	size_t len = svsk->sk_datalen;
+	unsigned int i, npages;
+
+	if (!len)
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	npages = (len + PAGE_SIZE - 1) >> PAGE_SHIFT;
 	for (i = 0; i < npages; i++) {
 		if (rqstp->rq_pages[i] != NULL)
@@ -948,9 +1595,15 @@ static void svc_tcp_save_pages(struct svc_sock *svsk, struct svc_rqst *rqstp)
 {
 	unsigned int i, len, npages;
 
+<<<<<<< HEAD
 	if (svsk->sk_tcplen <= sizeof(rpc_fraghdr))
 		return;
 	len = svsk->sk_tcplen - sizeof(rpc_fraghdr);
+=======
+	if (svsk->sk_datalen == 0)
+		return;
+	len = svsk->sk_datalen;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	npages = (len + PAGE_SIZE - 1) >> PAGE_SHIFT;
 	for (i = 0; i < npages; i++) {
 		svsk->sk_pages[i] = rqstp->rq_pages[i];
@@ -962,17 +1615,30 @@ static void svc_tcp_clear_pages(struct svc_sock *svsk)
 {
 	unsigned int i, len, npages;
 
+<<<<<<< HEAD
 	if (svsk->sk_tcplen <= sizeof(rpc_fraghdr))
 		goto out;
 	len = svsk->sk_tcplen - sizeof(rpc_fraghdr);
 	npages = (len + PAGE_SIZE - 1) >> PAGE_SHIFT;
 	for (i = 0; i < npages; i++) {
 		BUG_ON(svsk->sk_pages[i] == NULL);
+=======
+	if (svsk->sk_datalen == 0)
+		goto out;
+	len = svsk->sk_datalen;
+	npages = (len + PAGE_SIZE - 1) >> PAGE_SHIFT;
+	for (i = 0; i < npages; i++) {
+		if (svsk->sk_pages[i] == NULL) {
+			WARN_ON_ONCE(1);
+			continue;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		put_page(svsk->sk_pages[i]);
 		svsk->sk_pages[i] = NULL;
 	}
 out:
 	svsk->sk_tcplen = 0;
+<<<<<<< HEAD
 }
 
 /*
@@ -1040,6 +1706,51 @@ error:
 	return len;
 err_delete:
 	set_bit(XPT_CLOSE, &svsk->sk_xprt.xpt_flags);
+=======
+	svsk->sk_datalen = 0;
+}
+
+/*
+ * Receive fragment record header into sk_marker.
+ */
+static ssize_t svc_tcp_read_marker(struct svc_sock *svsk,
+				   struct svc_rqst *rqstp)
+{
+	ssize_t want, len;
+
+	/* If we haven't gotten the record length yet,
+	 * get the next four bytes.
+	 */
+	if (svsk->sk_tcplen < sizeof(rpc_fraghdr)) {
+		struct msghdr	msg = { NULL };
+		struct kvec	iov;
+
+		want = sizeof(rpc_fraghdr) - svsk->sk_tcplen;
+		iov.iov_base = ((char *)&svsk->sk_marker) + svsk->sk_tcplen;
+		iov.iov_len  = want;
+		iov_iter_kvec(&msg.msg_iter, ITER_DEST, &iov, 1, want);
+		len = svc_tcp_sock_recv_cmsg(svsk, &msg);
+		if (len < 0)
+			return len;
+		svsk->sk_tcplen += len;
+		if (len < want) {
+			/* call again to read the remaining bytes */
+			goto err_short;
+		}
+		trace_svcsock_marker(&svsk->sk_xprt, svsk->sk_marker);
+		if (svc_sock_reclen(svsk) + svsk->sk_datalen >
+		    svsk->sk_xprt.xpt_server->sv_max_mesg)
+			goto err_too_large;
+	}
+	return svc_sock_reclen(svsk);
+
+err_too_large:
+	net_notice_ratelimited("svc: %s %s RPC fragment too large: %d\n",
+			       __func__, svsk->sk_xprt.xpt_server->sv_name,
+			       svc_sock_reclen(svsk));
+	svc_xprt_deferred_close(&svsk->sk_xprt);
+err_short:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -EAGAIN;
 }
 
@@ -1049,6 +1760,7 @@ static int receive_cb_reply(struct svc_sock *svsk, struct svc_rqst *rqstp)
 	struct rpc_rqst *req = NULL;
 	struct kvec *src, *dst;
 	__be32 *p = (__be32 *)rqstp->rq_arg.head[0].iov_base;
+<<<<<<< HEAD
 	__be32 xid;
 	__be32 calldir;
 
@@ -1061,6 +1773,16 @@ static int receive_cb_reply(struct svc_sock *svsk, struct svc_rqst *rqstp)
 	req = xprt_lookup_rqst(bc_xprt, xid);
 	if (!req)
 		goto unlock_notfound;
+=======
+	__be32 xid = *p;
+
+	if (!bc_xprt)
+		return -EAGAIN;
+	spin_lock(&bc_xprt->queue_lock);
+	req = xprt_lookup_rqst(bc_xprt, xid);
+	if (!req)
+		goto unlock_eagain;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(&req->rq_private_buf, &req->rq_rcv_buf, sizeof(struct xdr_buf));
 	/*
@@ -1073,6 +1795,7 @@ static int receive_cb_reply(struct svc_sock *svsk, struct svc_rqst *rqstp)
 	if (dst->iov_len < src->iov_len)
 		goto unlock_eagain; /* whatever; just giving up. */
 	memcpy(dst->iov_base, src->iov_base, src->iov_len);
+<<<<<<< HEAD
 	xprt_complete_rqst(req->rq_task, svsk->sk_reclen);
 	rqstp->rq_arg.len = 0;
 	spin_unlock_bh(&bc_xprt->transport_lock);
@@ -1105,12 +1828,51 @@ static int copy_pages_to_kvecs(struct kvec *vec, struct page **pages, int len)
 
 /*
  * Receive data from a TCP socket.
+=======
+	xprt_complete_rqst(req->rq_task, rqstp->rq_arg.len);
+	rqstp->rq_arg.len = 0;
+	spin_unlock(&bc_xprt->queue_lock);
+	return 0;
+unlock_eagain:
+	spin_unlock(&bc_xprt->queue_lock);
+	return -EAGAIN;
+}
+
+static void svc_tcp_fragment_received(struct svc_sock *svsk)
+{
+	/* If we have more data, signal svc_xprt_enqueue() to try again */
+	svsk->sk_tcplen = 0;
+	svsk->sk_marker = xdr_zero;
+
+	smp_wmb();
+	tcp_set_rcvlowat(svsk->sk_sk, 1);
+}
+
+/**
+ * svc_tcp_recvfrom - Receive data from a TCP socket
+ * @rqstp: request structure into which to receive an RPC Call
+ *
+ * Called in a loop when XPT_DATA has been set.
+ *
+ * Read the 4-byte stream record marker, then use the record length
+ * in that marker to set up exactly the resources needed to receive
+ * the next RPC message into @rqstp.
+ *
+ * Returns:
+ *   On success, the number of bytes in a received RPC Call, or
+ *   %0 if a complete RPC Call message was not ready to return
+ *
+ * The zero return case handles partial receives and callback Replies.
+ * The state of a partial receive is preserved in the svc_sock for
+ * the next call to svc_tcp_recvfrom.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int svc_tcp_recvfrom(struct svc_rqst *rqstp)
 {
 	struct svc_sock	*svsk =
 		container_of(rqstp->rq_xprt, struct svc_sock, sk_xprt);
 	struct svc_serv	*serv = svsk->sk_xprt.xpt_server;
+<<<<<<< HEAD
 	int		len;
 	struct kvec *vec;
 	unsigned int want, base;
@@ -1124,10 +1886,20 @@ static int svc_tcp_recvfrom(struct svc_rqst *rqstp)
 		test_bit(XPT_CLOSE, &svsk->sk_xprt.xpt_flags));
 
 	len = svc_tcp_recv_record(svsk, rqstp);
+=======
+	size_t want, base;
+	ssize_t len;
+	__be32 *p;
+	__be32 calldir;
+
+	clear_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags);
+	len = svc_tcp_read_marker(svsk, rqstp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (len < 0)
 		goto error;
 
 	base = svc_tcp_restore_pages(svsk, rqstp);
+<<<<<<< HEAD
 	want = svsk->sk_reclen - base;
 
 	vec = rqstp->rq_vec;
@@ -1151,6 +1923,21 @@ static int svc_tcp_recvfrom(struct svc_rqst *rqstp)
 	}
 
 	rqstp->rq_arg.len = svsk->sk_reclen;
+=======
+	want = len - (svsk->sk_tcplen - sizeof(rpc_fraghdr));
+	len = svc_tcp_read_msg(rqstp, base + want, base);
+	if (len >= 0) {
+		trace_svcsock_tcp_recv(&svsk->sk_xprt, len);
+		svsk->sk_tcplen += len;
+		svsk->sk_datalen += len;
+	}
+	if (len != want || !svc_sock_final_rec(svsk))
+		goto err_incomplete;
+	if (svsk->sk_datalen < 8)
+		goto err_nuts;
+
+	rqstp->rq_arg.len = svsk->sk_datalen;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rqstp->rq_arg.page_base = 0;
 	if (rqstp->rq_arg.len <= rqstp->rq_arg.head[0].iov_len) {
 		rqstp->rq_arg.head[0].iov_len = rqstp->rq_arg.len;
@@ -1160,6 +1947,13 @@ static int svc_tcp_recvfrom(struct svc_rqst *rqstp)
 
 	rqstp->rq_xprt_ctxt   = NULL;
 	rqstp->rq_prot	      = IPPROTO_TCP;
+<<<<<<< HEAD
+=======
+	if (test_bit(XPT_LOCAL, &svsk->sk_xprt.xpt_flags))
+		set_bit(RQ_LOCAL, &rqstp->rq_flags);
+	else
+		clear_bit(RQ_LOCAL, &rqstp->rq_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = (__be32 *)rqstp->rq_arg.head[0].iov_base;
 	calldir = p[1];
@@ -1167,11 +1961,16 @@ static int svc_tcp_recvfrom(struct svc_rqst *rqstp)
 		len = receive_cb_reply(svsk, rqstp);
 
 	/* Reset TCP read info */
+<<<<<<< HEAD
 	svsk->sk_reclen = 0;
 	svsk->sk_tcplen = 0;
 	/* If we have more data, signal svc_xprt_enqueue() to try again */
 	if (svc_recv_available(svsk) > sizeof(rpc_fraghdr))
 		set_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags);
+=======
+	svsk->sk_datalen = 0;
+	svc_tcp_fragment_received(svsk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (len < 0)
 		goto error;
@@ -1180,6 +1979,7 @@ static int svc_tcp_recvfrom(struct svc_rqst *rqstp)
 	if (serv->sv_stats)
 		serv->sv_stats->nettcpcnt++;
 
+<<<<<<< HEAD
 	dprintk("svc: TCP complete record (%d bytes)\n", rqstp->rq_arg.len);
 	return rqstp->rq_arg.len;
 
@@ -1251,6 +2051,128 @@ static int svc_tcp_has_wspace(struct svc_xprt *xprt)
 		return 1;
 	set_bit(SOCK_NOSPACE, &svsk->sk_sock->flags);
 	return 0;
+=======
+	svc_sock_secure_port(rqstp);
+	svc_xprt_received(rqstp->rq_xprt);
+	return rqstp->rq_arg.len;
+
+err_incomplete:
+	svc_tcp_save_pages(svsk, rqstp);
+	if (len < 0 && len != -EAGAIN)
+		goto err_delete;
+	if (len == want)
+		svc_tcp_fragment_received(svsk);
+	else {
+		/* Avoid more ->sk_data_ready() calls until the rest
+		 * of the message has arrived. This reduces service
+		 * thread wake-ups on large incoming messages. */
+		tcp_set_rcvlowat(svsk->sk_sk,
+				 svc_sock_reclen(svsk) - svsk->sk_tcplen);
+
+		trace_svcsock_tcp_recv_short(&svsk->sk_xprt,
+				svc_sock_reclen(svsk),
+				svsk->sk_tcplen - sizeof(rpc_fraghdr));
+	}
+	goto err_noclose;
+error:
+	if (len != -EAGAIN)
+		goto err_delete;
+	trace_svcsock_tcp_recv_eagain(&svsk->sk_xprt, 0);
+	goto err_noclose;
+err_nuts:
+	svsk->sk_datalen = 0;
+err_delete:
+	trace_svcsock_tcp_recv_err(&svsk->sk_xprt, len);
+	svc_xprt_deferred_close(&svsk->sk_xprt);
+err_noclose:
+	svc_xprt_received(rqstp->rq_xprt);
+	return 0;	/* record not complete */
+}
+
+/*
+ * MSG_SPLICE_PAGES is used exclusively to reduce the number of
+ * copy operations in this path. Therefore the caller must ensure
+ * that the pages backing @xdr are unchanging.
+ */
+static int svc_tcp_sendmsg(struct svc_sock *svsk, struct svc_rqst *rqstp,
+			   rpc_fraghdr marker, unsigned int *sentp)
+{
+	struct msghdr msg = {
+		.msg_flags	= MSG_SPLICE_PAGES,
+	};
+	unsigned int count;
+	void *buf;
+	int ret;
+
+	*sentp = 0;
+
+	/* The stream record marker is copied into a temporary page
+	 * fragment buffer so that it can be included in rq_bvec.
+	 */
+	buf = page_frag_alloc(&svsk->sk_frag_cache, sizeof(marker),
+			      GFP_KERNEL);
+	if (!buf)
+		return -ENOMEM;
+	memcpy(buf, &marker, sizeof(marker));
+	bvec_set_virt(rqstp->rq_bvec, buf, sizeof(marker));
+
+	count = xdr_buf_to_bvec(rqstp->rq_bvec + 1,
+				ARRAY_SIZE(rqstp->rq_bvec) - 1, &rqstp->rq_res);
+
+	iov_iter_bvec(&msg.msg_iter, ITER_SOURCE, rqstp->rq_bvec,
+		      1 + count, sizeof(marker) + rqstp->rq_res.len);
+	ret = sock_sendmsg(svsk->sk_sock, &msg);
+	page_frag_free(buf);
+	if (ret < 0)
+		return ret;
+	*sentp += ret;
+	return 0;
+}
+
+/**
+ * svc_tcp_sendto - Send out a reply on a TCP socket
+ * @rqstp: completed svc_rqst
+ *
+ * xpt_mutex ensures @rqstp's whole message is written to the socket
+ * without interruption.
+ *
+ * Returns the number of bytes sent, or a negative errno.
+ */
+static int svc_tcp_sendto(struct svc_rqst *rqstp)
+{
+	struct svc_xprt *xprt = rqstp->rq_xprt;
+	struct svc_sock	*svsk = container_of(xprt, struct svc_sock, sk_xprt);
+	struct xdr_buf *xdr = &rqstp->rq_res;
+	rpc_fraghdr marker = cpu_to_be32(RPC_LAST_STREAM_FRAGMENT |
+					 (u32)xdr->len);
+	unsigned int sent;
+	int err;
+
+	svc_tcp_release_ctxt(xprt, rqstp->rq_xprt_ctxt);
+	rqstp->rq_xprt_ctxt = NULL;
+
+	mutex_lock(&xprt->xpt_mutex);
+	if (svc_xprt_is_dead(xprt))
+		goto out_notconn;
+	err = svc_tcp_sendmsg(svsk, rqstp, marker, &sent);
+	trace_svcsock_tcp_send(xprt, err < 0 ? (long)err : sent);
+	if (err < 0 || sent != (xdr->len + sizeof(marker)))
+		goto out_close;
+	mutex_unlock(&xprt->xpt_mutex);
+	return sent;
+
+out_notconn:
+	mutex_unlock(&xprt->xpt_mutex);
+	return -ENOTCONN;
+out_close:
+	pr_notice("rpc-srv/tcp: %s: %s %d when sending %d bytes - shutting down socket\n",
+		  xprt->xpt_server->sv_name,
+		  (err < 0) ? "got error" : "sent",
+		  (err < 0) ? err : sent, xdr->len);
+	svc_xprt_deferred_close(xprt);
+	mutex_unlock(&xprt->xpt_mutex);
+	return -EAGAIN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct svc_xprt *svc_tcp_create(struct svc_serv *serv,
@@ -1261,6 +2183,7 @@ static struct svc_xprt *svc_tcp_create(struct svc_serv *serv,
 	return svc_create_socket(serv, IPPROTO_TCP, net, sa, salen, flags);
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_SUNRPC_BACKCHANNEL)
 static struct svc_xprt *svc_bc_create_socket(struct svc_serv *, int,
 					     struct net *, struct sockaddr *,
@@ -1322,6 +2245,20 @@ static struct svc_xprt_ops svc_tcp_ops = {
 	.xpo_prep_reply_hdr = svc_tcp_prep_reply_hdr,
 	.xpo_has_wspace = svc_tcp_has_wspace,
 	.xpo_accept = svc_tcp_accept,
+=======
+static const struct svc_xprt_ops svc_tcp_ops = {
+	.xpo_create = svc_tcp_create,
+	.xpo_recvfrom = svc_tcp_recvfrom,
+	.xpo_sendto = svc_tcp_sendto,
+	.xpo_result_payload = svc_sock_result_payload,
+	.xpo_release_ctxt = svc_tcp_release_ctxt,
+	.xpo_detach = svc_tcp_sock_detach,
+	.xpo_free = svc_sock_free,
+	.xpo_has_wspace = svc_tcp_has_wspace,
+	.xpo_accept = svc_tcp_accept,
+	.xpo_kill_temp_xprt = svc_tcp_kill_temp_xprt,
+	.xpo_handshake = svc_tcp_handshake,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct svc_xprt_class svc_tcp_class = {
@@ -1329,20 +2266,30 @@ static struct svc_xprt_class svc_tcp_class = {
 	.xcl_owner = THIS_MODULE,
 	.xcl_ops = &svc_tcp_ops,
 	.xcl_max_payload = RPCSVC_MAXPAYLOAD_TCP,
+<<<<<<< HEAD
+=======
+	.xcl_ident = XPRT_TRANSPORT_TCP,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void svc_init_xprt_sock(void)
 {
 	svc_reg_xprt_class(&svc_tcp_class);
 	svc_reg_xprt_class(&svc_udp_class);
+<<<<<<< HEAD
 	svc_init_bc_xprt_sock();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void svc_cleanup_xprt_sock(void)
 {
 	svc_unreg_xprt_class(&svc_tcp_class);
 	svc_unreg_xprt_class(&svc_udp_class);
+<<<<<<< HEAD
 	svc_cleanup_bc_xprt_sock();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void svc_tcp_init(struct svc_sock *svsk, struct svc_serv *serv)
@@ -1352,12 +2299,19 @@ static void svc_tcp_init(struct svc_sock *svsk, struct svc_serv *serv)
 	svc_xprt_init(sock_net(svsk->sk_sock->sk), &svc_tcp_class,
 		      &svsk->sk_xprt, serv);
 	set_bit(XPT_CACHE_AUTH, &svsk->sk_xprt.xpt_flags);
+<<<<<<< HEAD
 	if (sk->sk_state == TCP_LISTEN) {
 		dprintk("setting up TCP socket for listening\n");
+=======
+	set_bit(XPT_CONG_CTRL, &svsk->sk_xprt.xpt_flags);
+	if (sk->sk_state == TCP_LISTEN) {
+		strcpy(svsk->sk_xprt.xpt_remotebuf, "listener");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(XPT_LISTENER, &svsk->sk_xprt.xpt_flags);
 		sk->sk_data_ready = svc_tcp_listen_data_ready;
 		set_bit(XPT_CONN, &svsk->sk_xprt.xpt_flags);
 	} else {
+<<<<<<< HEAD
 		dprintk("setting up TCP socket for reading\n");
 		sk->sk_state_change = svc_tcp_state_change;
 		sk->sk_data_ready = svc_tcp_data_ready;
@@ -1372,6 +2326,27 @@ static void svc_tcp_init(struct svc_sock *svsk, struct svc_serv *serv)
 		set_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags);
 		if (sk->sk_state != TCP_ESTABLISHED)
 			set_bit(XPT_CLOSE, &svsk->sk_xprt.xpt_flags);
+=======
+		sk->sk_state_change = svc_tcp_state_change;
+		sk->sk_data_ready = svc_data_ready;
+		sk->sk_write_space = svc_write_space;
+
+		svsk->sk_marker = xdr_zero;
+		svsk->sk_tcplen = 0;
+		svsk->sk_datalen = 0;
+		memset(&svsk->sk_pages[0], 0, sizeof(svsk->sk_pages));
+
+		tcp_sock_set_nodelay(sk);
+
+		set_bit(XPT_DATA, &svsk->sk_xprt.xpt_flags);
+		switch (sk->sk_state) {
+		case TCP_SYN_RECV:
+		case TCP_ESTABLISHED:
+			break;
+		default:
+			svc_xprt_deferred_close(&svsk->sk_xprt);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1392,16 +2367,24 @@ EXPORT_SYMBOL_GPL(svc_sock_update_bufs);
 
 /*
  * Initialize socket for RPC use and create svc_sock struct
+<<<<<<< HEAD
  * XXX: May want to setsockopt SO_SNDBUF and SO_RCVBUF.
  */
 static struct svc_sock *svc_setup_socket(struct svc_serv *serv,
 						struct socket *sock,
 						int *errp, int flags)
+=======
+ */
+static struct svc_sock *svc_setup_socket(struct svc_serv *serv,
+						struct socket *sock,
+						int flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct svc_sock	*svsk;
 	struct sock	*inet;
 	int		pmap_register = !(flags & SVC_SOCK_ANONYMOUS);
 
+<<<<<<< HEAD
 	dprintk("svc: svc_setup_socket %p\n", sock);
 	if (!(svsk = kzalloc(sizeof(*svsk), GFP_KERNEL))) {
 		*errp = -ENOMEM;
@@ -1422,15 +2405,46 @@ static struct svc_sock *svc_setup_socket(struct svc_serv *serv,
 	}
 
 	inet->sk_user_data = svsk;
+=======
+	svsk = kzalloc(sizeof(*svsk), GFP_KERNEL);
+	if (!svsk)
+		return ERR_PTR(-ENOMEM);
+
+	inet = sock->sk;
+
+	if (pmap_register) {
+		int err;
+
+		err = svc_register(serv, sock_net(sock->sk), inet->sk_family,
+				     inet->sk_protocol,
+				     ntohs(inet_sk(inet)->inet_sport));
+		if (err < 0) {
+			kfree(svsk);
+			return ERR_PTR(err);
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	svsk->sk_sock = sock;
 	svsk->sk_sk = inet;
 	svsk->sk_ostate = inet->sk_state_change;
 	svsk->sk_odata = inet->sk_data_ready;
 	svsk->sk_owspace = inet->sk_write_space;
+<<<<<<< HEAD
+=======
+	/*
+	 * This barrier is necessary in order to prevent race condition
+	 * with svc_data_ready(), svc_tcp_listen_data_ready(), and others
+	 * when calling callbacks above.
+	 */
+	wmb();
+	inet->sk_user_data = svsk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the socket */
 	if (sock->type == SOCK_DGRAM)
 		svc_udp_init(svsk, serv);
+<<<<<<< HEAD
 	else {
 		/* initialise setting must have enough space to
 		 * receive and respond to one request.
@@ -1468,17 +2482,40 @@ EXPORT_SYMBOL_GPL(svc_alien_sock);
  * @fd: file descriptor of the new listener
  * @name_return: pointer to buffer to fill in with name of listener
  * @len: size of the buffer
+=======
+	else
+		svc_tcp_init(svsk, serv);
+
+	trace_svcsock_new(svsk, sock);
+	return svsk;
+}
+
+/**
+ * svc_addsock - add a listener socket to an RPC service
+ * @serv: pointer to RPC service to which to add a new listener
+ * @net: caller's network namespace
+ * @fd: file descriptor of the new listener
+ * @name_return: pointer to buffer to fill in with name of listener
+ * @len: size of the buffer
+ * @cred: credential
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Fills in socket name and returns positive length of name if successful.
  * Name is terminated with '\n'.  On error, returns a negative errno
  * value.
  */
+<<<<<<< HEAD
 int svc_addsock(struct svc_serv *serv, const int fd, char *name_return,
 		const size_t len)
+=======
+int svc_addsock(struct svc_serv *serv, struct net *net, const int fd,
+		char *name_return, const size_t len, const struct cred *cred)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 	struct socket *so = sockfd_lookup(fd, &err);
 	struct svc_sock *svsk = NULL;
+<<<<<<< HEAD
 
 	if (!so)
 		return err;
@@ -1515,6 +2552,45 @@ int svc_addsock(struct svc_serv *serv, const int fd, char *name_return,
 		return err;
 	}
 	return svc_one_sock_name(svsk, name_return, len);
+=======
+	struct sockaddr_storage addr;
+	struct sockaddr *sin = (struct sockaddr *)&addr;
+	int salen;
+
+	if (!so)
+		return err;
+	err = -EINVAL;
+	if (sock_net(so->sk) != net)
+		goto out;
+	err = -EAFNOSUPPORT;
+	if ((so->sk->sk_family != PF_INET) && (so->sk->sk_family != PF_INET6))
+		goto out;
+	err =  -EPROTONOSUPPORT;
+	if (so->sk->sk_protocol != IPPROTO_TCP &&
+	    so->sk->sk_protocol != IPPROTO_UDP)
+		goto out;
+	err = -EISCONN;
+	if (so->state > SS_UNCONNECTED)
+		goto out;
+	err = -ENOENT;
+	if (!try_module_get(THIS_MODULE))
+		goto out;
+	svsk = svc_setup_socket(serv, so, SVC_SOCK_DEFAULTS);
+	if (IS_ERR(svsk)) {
+		module_put(THIS_MODULE);
+		err = PTR_ERR(svsk);
+		goto out;
+	}
+	salen = kernel_getsockname(svsk->sk_sock, sin);
+	if (salen >= 0)
+		svc_xprt_set_local(&svsk->sk_xprt, sin, salen);
+	svsk->sk_xprt.xpt_cred = get_cred(cred);
+	svc_add_new_perm_xprt(serv, &svsk->sk_xprt);
+	return svc_one_sock_name(svsk, name_return, len);
+out:
+	sockfd_put(so);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(svc_addsock);
 
@@ -1535,12 +2611,15 @@ static struct svc_xprt *svc_create_socket(struct svc_serv *serv,
 	struct sockaddr *newsin = (struct sockaddr *)&addr;
 	int		newlen;
 	int		family;
+<<<<<<< HEAD
 	int		val;
 	RPC_IFDEBUG(char buf[RPC_MAX_ADDRBUFLEN]);
 
 	dprintk("svc: svc_create_socket(%s, %d, %s)\n",
 			serv->sv_program->pg_name, protocol,
 			__svc_print_addr(sin, buf, sizeof(buf)));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (protocol != IPPROTO_UDP && protocol != IPPROTO_TCP) {
 		printk(KERN_WARNING "svc: only UDP and TCP "
@@ -1571,6 +2650,7 @@ static struct svc_xprt *svc_create_socket(struct svc_serv *serv,
 	 * getting requests from IPv4 remotes.  Those should
 	 * be shunted to a PF_INET listener via rpcbind.
 	 */
+<<<<<<< HEAD
 	val = 1;
 	if (family == PF_INET6)
 		kernel_setsockopt(sock, SOL_IPV6, IPV6_V6ONLY,
@@ -1578,20 +2658,34 @@ static struct svc_xprt *svc_create_socket(struct svc_serv *serv,
 
 	if (type == SOCK_STREAM)
 		sock->sk->sk_reuse = 1;		/* allow address reuse */
+=======
+	if (family == PF_INET6)
+		ip6_sock_set_v6only(sock->sk);
+	if (type == SOCK_STREAM)
+		sock->sk->sk_reuse = SK_CAN_REUSE; /* allow address reuse */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = kernel_bind(sock, sin, len);
 	if (error < 0)
 		goto bummer;
 
+<<<<<<< HEAD
 	newlen = len;
 	error = kernel_getsockname(sock, newsin, &newlen);
 	if (error < 0)
 		goto bummer;
+=======
+	error = kernel_getsockname(sock, newsin);
+	if (error < 0)
+		goto bummer;
+	newlen = error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (protocol == IPPROTO_TCP) {
 		if ((error = kernel_listen(sock, 64)) < 0)
 			goto bummer;
 	}
 
+<<<<<<< HEAD
 	if ((svsk = svc_setup_socket(serv, sock, &error, flags)) != NULL) {
 		svc_xprt_set_local(&svsk->sk_xprt, newsin, newlen);
 		return (struct svc_xprt *)svsk;
@@ -1599,6 +2693,16 @@ static struct svc_xprt *svc_create_socket(struct svc_serv *serv,
 
 bummer:
 	dprintk("svc: svc_create_socket error = %d\n", -error);
+=======
+	svsk = svc_setup_socket(serv, sock, flags);
+	if (IS_ERR(svsk)) {
+		error = PTR_ERR(svsk);
+		goto bummer;
+	}
+	svc_xprt_set_local(&svsk->sk_xprt, newsin, newlen);
+	return (struct svc_xprt *)svsk;
+bummer:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sock_release(sock);
 	return ERR_PTR(error);
 }
@@ -1611,6 +2715,7 @@ static void svc_sock_detach(struct svc_xprt *xprt)
 {
 	struct svc_sock *svsk = container_of(xprt, struct svc_sock, sk_xprt);
 	struct sock *sk = svsk->sk_sk;
+<<<<<<< HEAD
 	wait_queue_head_t *wq;
 
 	dprintk("svc: svc_sock_detach(%p)\n", svsk);
@@ -1623,6 +2728,16 @@ static void svc_sock_detach(struct svc_xprt *xprt)
 	wq = sk_sleep(sk);
 	if (wq && waitqueue_active(wq))
 		wake_up_interruptible(wq);
+=======
+
+	/* put back the old socket callbacks */
+	lock_sock(sk);
+	sk->sk_state_change = svsk->sk_ostate;
+	sk->sk_data_ready = svsk->sk_odata;
+	sk->sk_write_space = svsk->sk_owspace;
+	sk->sk_user_data = NULL;
+	release_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1632,7 +2747,11 @@ static void svc_tcp_sock_detach(struct svc_xprt *xprt)
 {
 	struct svc_sock *svsk = container_of(xprt, struct svc_sock, sk_xprt);
 
+<<<<<<< HEAD
 	dprintk("svc: svc_tcp_sock_detach(%p)\n", svsk);
+=======
+	tls_handshake_close(svsk->sk_sock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	svc_sock_detach(xprt);
 
@@ -1648,6 +2767,7 @@ static void svc_tcp_sock_detach(struct svc_xprt *xprt)
 static void svc_sock_free(struct svc_xprt *xprt)
 {
 	struct svc_sock *svsk = container_of(xprt, struct svc_sock, sk_xprt);
+<<<<<<< HEAD
 	dprintk("svc: svc_sock_free(%p)\n", svsk);
 
 	if (svsk->sk_sock->file)
@@ -1697,3 +2817,20 @@ static void svc_bc_sock_free(struct svc_xprt *xprt)
 		kfree(container_of(xprt, struct svc_sock, sk_xprt));
 }
 #endif /* CONFIG_SUNRPC_BACKCHANNEL */
+=======
+	struct page_frag_cache *pfc = &svsk->sk_frag_cache;
+	struct socket *sock = svsk->sk_sock;
+
+	trace_svcsock_free(svsk, sock);
+
+	tls_handshake_cancel(sock->sk);
+	if (sock->file)
+		sockfd_put(sock);
+	else
+		sock_release(sock);
+	if (pfc->va)
+		__page_frag_cache_drain(virt_to_head_page(pfc->va),
+					pfc->pagecnt_bias);
+	kfree(svsk);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

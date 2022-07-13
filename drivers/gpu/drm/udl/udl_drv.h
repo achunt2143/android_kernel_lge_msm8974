@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2012 Red Hat
  *
@@ -5,17 +9,36 @@
  * Copyright (C) 2009 Roberto De Ioris <roberto@unbit.it>
  * Copyright (C) 2009 Jaya Kumar <jayakumar.lkml@gmail.com>
  * Copyright (C) 2009 Bernie Thompson <bernie@plugable.com>
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License v2. See the file COPYING in the main directory of this archive for
  * more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef UDL_DRV_H
 #define UDL_DRV_H
 
+<<<<<<< HEAD
 #include <linux/usb.h>
 
+=======
+#include <linux/mm_types.h>
+#include <linux/usb.h>
+
+#include <drm/drm_connector.h>
+#include <drm/drm_crtc.h>
+#include <drm/drm_device.h>
+#include <drm/drm_encoder.h>
+#include <drm/drm_framebuffer.h>
+#include <drm/drm_gem.h>
+#include <drm/drm_plane.h>
+
+struct drm_mode_create_dumb;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_NAME		"udl"
 #define DRIVER_DESC		"DisplayLink"
 #define DRIVER_DATE		"20120220"
@@ -29,28 +52,60 @@ struct udl_device;
 struct urb_node {
 	struct list_head entry;
 	struct udl_device *dev;
+<<<<<<< HEAD
 	struct delayed_work release_urb_work;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct urb *urb;
 };
 
 struct urb_list {
 	struct list_head list;
 	spinlock_t lock;
+<<<<<<< HEAD
 	struct semaphore limit_sem;
+=======
+	wait_queue_head_t sleep;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int available;
 	int count;
 	size_t size;
 };
 
+<<<<<<< HEAD
 struct udl_fbdev;
 
 struct udl_device {
 	struct device *dev;
 	struct drm_device *ddev;
+=======
+struct udl_connector {
+	struct drm_connector connector;
+	/* last udl_detect edid */
+	struct edid *edid;
+};
+
+static inline struct udl_connector *to_udl_connector(struct drm_connector *connector)
+{
+	return container_of(connector, struct udl_connector, connector);
+}
+
+struct udl_device {
+	struct drm_device drm;
+	struct device *dev;
+	struct device *dmadev;
+
+	struct drm_plane primary_plane;
+	struct drm_crtc crtc;
+	struct drm_encoder encoder;
+
+	struct mutex gem_lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int sku_pixel_limit;
 
 	struct urb_list urbs;
+<<<<<<< HEAD
 	atomic_t lost_pixels; /* 1 = a render op failed. Need screen refresh */
 
 	struct udl_fbdev *fbdev;
@@ -86,10 +141,25 @@ void udl_modeset_cleanup(struct drm_device *dev);
 int udl_connector_init(struct drm_device *dev, struct drm_encoder *encoder);
 
 struct drm_encoder *udl_encoder_init(struct drm_device *dev);
+=======
+};
+
+#define to_udl(x) container_of(x, struct udl_device, drm)
+
+static inline struct usb_device *udl_to_usb_device(struct udl_device *udl)
+{
+	return interface_to_usbdev(to_usb_interface(udl->drm.dev));
+}
+
+/* modeset */
+int udl_modeset_init(struct drm_device *dev);
+struct drm_connector *udl_connector_init(struct drm_device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct urb *udl_get_urb(struct drm_device *dev);
 
 int udl_submit_urb(struct drm_device *dev, struct urb *urb, size_t len);
+<<<<<<< HEAD
 void udl_urb_completion(struct urb *urb);
 
 int udl_driver_load(struct drm_device *dev, unsigned long flags);
@@ -140,5 +210,18 @@ int udl_drop_usb(struct drm_device *dev);
 #define CMD_WRITE_RL16   "\xAF\x69" /**< 16 bit run length command. */
 #define CMD_WRITE_COPY16 "\xAF\x6A" /**< 16 bit copy command. */
 #define CMD_WRITE_RLX16  "\xAF\x6B" /**< 16 bit extended run length command. */
+=======
+void udl_sync_pending_urbs(struct drm_device *dev);
+void udl_urb_completion(struct urb *urb);
+
+int udl_init(struct udl_device *udl);
+
+int udl_render_hline(struct drm_device *dev, int log_bpp, struct urb **urb_ptr,
+		     const char *front, char **urb_buf_ptr,
+		     u32 byte_offset, u32 device_byte_offset, u32 byte_width);
+
+int udl_drop_usb(struct drm_device *dev);
+int udl_select_std_channel(struct udl_device *udl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

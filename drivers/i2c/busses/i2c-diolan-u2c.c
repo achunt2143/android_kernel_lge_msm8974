@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for the Diolan u2c-12 USB-I2C adapter
  *
@@ -6,10 +10,13 @@
  * Derived from:
  *  i2c-tiny-usb.c
  *  Copyright (C) 2006-2007 Till Harbaum (Till@Harbaum.org)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation, version 2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -25,8 +32,11 @@
 #define USB_VENDOR_ID_DIOLAN		0x0abf
 #define USB_DEVICE_ID_DIOLAN_U2C	0x3370
 
+<<<<<<< HEAD
 #define DIOLAN_OUT_EP		0x02
 #define DIOLAN_IN_EP		0x84
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* commands via USB, must match command ids in the firmware */
 #define CMD_I2C_READ		0x01
@@ -69,8 +79,11 @@
 #define U2C_I2C_SPEED_2KHZ	242	/* 2 kHz, minimum speed */
 #define U2C_I2C_SPEED(f)	((DIV_ROUND_UP(1000000, (f)) - 10) / 2 + 1)
 
+<<<<<<< HEAD
 #define U2C_I2C_FREQ_FAST	400000
 #define U2C_I2C_FREQ_STD	100000
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define U2C_I2C_FREQ(s)		(1000000 / (2 * (s - 1) + 10))
 
 #define DIOLAN_USB_TIMEOUT	100	/* in ms */
@@ -84,6 +97,10 @@
 struct i2c_diolan_u2c {
 	u8 obuffer[DIOLAN_OUTBUF_LEN];	/* output buffer */
 	u8 ibuffer[DIOLAN_INBUF_LEN];	/* input buffer */
+<<<<<<< HEAD
+=======
+	int ep_in, ep_out;              /* Endpoints    */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_device *usb_dev;	/* the usb device for this device */
 	struct usb_interface *interface;/* the interface for this device */
 	struct i2c_adapter adapter;	/* i2c related things */
@@ -91,7 +108,11 @@ struct i2c_diolan_u2c {
 	int ocount;			/* Number of enqueued messages */
 };
 
+<<<<<<< HEAD
 static uint frequency = U2C_I2C_FREQ_STD;	/* I2C clock frequency in Hz */
+=======
+static uint frequency = I2C_MAX_STANDARD_MODE_FREQ;	/* I2C clock frequency in Hz */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 module_param(frequency, uint, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(frequency, "I2C clock frequency in hertz");
@@ -109,7 +130,11 @@ static int diolan_usb_transfer(struct i2c_diolan_u2c *dev)
 		return -EINVAL;
 
 	ret = usb_bulk_msg(dev->usb_dev,
+<<<<<<< HEAD
 			   usb_sndbulkpipe(dev->usb_dev, DIOLAN_OUT_EP),
+=======
+			   usb_sndbulkpipe(dev->usb_dev, dev->ep_out),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   dev->obuffer, dev->olen, &actual,
 			   DIOLAN_USB_TIMEOUT);
 	if (!ret) {
@@ -118,7 +143,11 @@ static int diolan_usb_transfer(struct i2c_diolan_u2c *dev)
 
 			tmpret = usb_bulk_msg(dev->usb_dev,
 					      usb_rcvbulkpipe(dev->usb_dev,
+<<<<<<< HEAD
 							      DIOLAN_IN_EP),
+=======
+							      dev->ep_in),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      dev->ibuffer,
 					      sizeof(dev->ibuffer), &actual,
 					      DIOLAN_USB_TIMEOUT);
@@ -210,7 +239,11 @@ static void diolan_flush_input(struct i2c_diolan_u2c *dev)
 		int ret;
 
 		ret = usb_bulk_msg(dev->usb_dev,
+<<<<<<< HEAD
 				   usb_rcvbulkpipe(dev->usb_dev, DIOLAN_IN_EP),
+=======
+				   usb_rcvbulkpipe(dev->usb_dev, dev->ep_in),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   dev->ibuffer, sizeof(dev->ibuffer), &actual,
 				   DIOLAN_USB_TIMEOUT);
 		if (ret < 0 || actual == 0)
@@ -303,12 +336,21 @@ static int diolan_init(struct i2c_diolan_u2c *dev)
 {
 	int speed, ret;
 
+<<<<<<< HEAD
 	if (frequency >= 200000) {
 		speed = U2C_I2C_SPEED_FAST;
 		frequency = U2C_I2C_FREQ_FAST;
 	} else if (frequency >= 100000 || frequency == 0) {
 		speed = U2C_I2C_SPEED_STD;
 		frequency = U2C_I2C_FREQ_STD;
+=======
+	if (frequency >= 2 * I2C_MAX_STANDARD_MODE_FREQ) {
+		speed = U2C_I2C_SPEED_FAST;
+		frequency = I2C_MAX_FAST_MODE_FREQ;
+	} else if (frequency >= I2C_MAX_STANDARD_MODE_FREQ || frequency == 0) {
+		speed = U2C_I2C_SPEED_STD;
+		frequency = I2C_MAX_STANDARD_MODE_FREQ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		speed = U2C_I2C_SPEED(frequency);
 		if (speed > U2C_I2C_SPEED_2KHZ)
@@ -361,11 +403,19 @@ static int diolan_usb_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs,
 			if (ret < 0)
 				goto abort;
 		}
+<<<<<<< HEAD
 		if (pmsg->flags & I2C_M_RD) {
 			ret =
 			    diolan_i2c_put_byte_ack(dev, (pmsg->addr << 1) | 1);
 			if (ret < 0)
 				goto abort;
+=======
+		ret = diolan_i2c_put_byte_ack(dev,
+					      i2c_8bit_addr_from_msg(pmsg));
+		if (ret < 0)
+			goto abort;
+		if (pmsg->flags & I2C_M_RD) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (j = 0; j < pmsg->len; j++) {
 				u8 byte;
 				bool ack = j < pmsg->len - 1;
@@ -394,9 +444,12 @@ static int diolan_usb_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs,
 				pmsg->buf[j] = byte;
 			}
 		} else {
+<<<<<<< HEAD
 			ret = diolan_i2c_put_byte_ack(dev, pmsg->addr << 1);
 			if (ret < 0)
 				goto abort;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			for (j = 0; j < pmsg->len; j++) {
 				ret = diolan_i2c_put_byte_ack(dev,
 							      pmsg->buf[j]);
@@ -405,6 +458,10 @@ static int diolan_usb_xfer(struct i2c_adapter *adapter, struct i2c_msg *msgs,
 			}
 		}
 	}
+<<<<<<< HEAD
+=======
+	ret = num;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 abort:
 	sret = diolan_i2c_stop(dev);
 	if (sret < 0 && ret >= 0)
@@ -444,6 +501,7 @@ static void diolan_u2c_free(struct i2c_diolan_u2c *dev)
 static int diolan_u2c_probe(struct usb_interface *interface,
 			    const struct usb_device_id *id)
 {
+<<<<<<< HEAD
 	struct i2c_diolan_u2c *dev;
 	int ret;
 
@@ -454,6 +512,24 @@ static int diolan_u2c_probe(struct usb_interface *interface,
 		ret = -ENOMEM;
 		goto error;
 	}
+=======
+	struct usb_host_interface *hostif = interface->cur_altsetting;
+	struct i2c_diolan_u2c *dev;
+	int ret;
+
+	if (hostif->desc.bInterfaceNumber != 0
+	    || hostif->desc.bNumEndpoints < 2)
+		return -ENODEV;
+
+	/* allocate memory for our device state and initialize it */
+	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+	if (dev == NULL) {
+		ret = -ENOMEM;
+		goto error;
+	}
+	dev->ep_out = hostif->endpoint[0].desc.bEndpointAddress;
+	dev->ep_in = hostif->endpoint[1].desc.bEndpointAddress;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->usb_dev = usb_get_dev(interface_to_usbdev(interface));
 	dev->interface = interface;
@@ -481,10 +557,15 @@ static int diolan_u2c_probe(struct usb_interface *interface,
 
 	/* and finally attach to i2c layer */
 	ret = i2c_add_adapter(&dev->adapter);
+<<<<<<< HEAD
 	if (ret < 0) {
 		dev_err(&interface->dev, "failed to add I2C adapter\n");
 		goto error_free;
 	}
+=======
+	if (ret < 0)
+		goto error_free;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&interface->dev, "connected " DRIVER_NAME "\n");
 
@@ -517,6 +598,10 @@ static struct usb_driver diolan_u2c_driver = {
 
 module_usb_driver(diolan_u2c_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Guenter Roeck <guenter.roeck@ericsson.com>");
+=======
+MODULE_AUTHOR("Guenter Roeck <linux@roeck-us.net>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION(DRIVER_NAME " driver");
 MODULE_LICENSE("GPL");

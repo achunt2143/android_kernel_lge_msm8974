@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Tehuti Networks(R) Network Driver
  * Copyright (C) 2007 Tehuti Networks Ltd. All rights reserved
@@ -6,6 +7,12 @@
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Tehuti Networks(R) Network Driver
+ * Copyright (C) 2007 Tehuti Networks Ltd. All rights reserved
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _TEHUTI_H
@@ -74,6 +81,12 @@
  * ifcontig eth1 txqueuelen 3000 - to change it at runtime */
 #define BDX_NDEV_TXQ_LEN 3000
 
+<<<<<<< HEAD
+=======
+/* Max MTU for Jumbo Frame mode, per tehutinetworks.net Features FAQ is 16k */
+#define BDX_MAX_MTU	(16 * 1024)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FIFO_SIZE  4096
 #define FIFO_EXTRA_SPACE            1024
 
@@ -331,7 +344,11 @@ struct txd_desc {
 	u16 length;
 	u32 va_lo;
 	u32 va_hi;
+<<<<<<< HEAD
 	struct pbl pbl[0];	/* Fragments */
+=======
+	struct pbl pbl[];	/* Fragments */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* Register region size */

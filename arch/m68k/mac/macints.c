@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Macintosh interrupts
  *
@@ -110,6 +114,10 @@
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/debug.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/irq.h>
 #include <linux/delay.h>
@@ -124,6 +132,7 @@
 #include <asm/mac_baboon.h>
 #include <asm/hwtest.h>
 #include <asm/irq_regs.h>
+<<<<<<< HEAD
 
 #define SHUTUP_SONIC
 
@@ -135,6 +144,9 @@ irqreturn_t mac_nmi_handler(int, void *);
 irqreturn_t mac_debug_handler(int, void *);
 
 /* #define DEBUG_MACINTS */
+=======
+#include <asm/processor.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int mac_irq_startup(struct irq_data *);
 static void mac_irq_shutdown(struct irq_data *);
@@ -147,6 +159,7 @@ static struct irq_chip mac_irq_chip = {
 	.irq_shutdown	= mac_irq_shutdown,
 };
 
+<<<<<<< HEAD
 void __init mac_init_IRQ(void)
 {
 #ifdef DEBUG_MACINTS
@@ -164,6 +177,27 @@ void __init mac_init_IRQ(void)
 	}
 	printk("Done.\n");
 #endif /* SHUTUP_SONIC */
+=======
+static irqreturn_t mac_nmi_handler(int irq, void *dev_id)
+{
+	static volatile int in_nmi;
+
+	if (in_nmi)
+		return IRQ_HANDLED;
+	in_nmi = 1;
+
+	pr_info("Non-Maskable Interrupt\n");
+	show_registers(get_irq_regs());
+
+	in_nmi = 0;
+	return IRQ_HANDLED;
+}
+
+void __init mac_init_IRQ(void)
+{
+	m68k_setup_irq_controller(&mac_irq_chip, handle_simple_irq, IRQ_USER,
+				  NUM_MAC_SOURCES - IRQ_USER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Now register the handlers for the master IRQ handlers
@@ -174,7 +208,11 @@ void __init mac_init_IRQ(void)
 		oss_register_interrupts();
 	else
 		via_register_interrupts();
+<<<<<<< HEAD
 	if (psc_present)
+=======
+	if (psc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psc_register_interrupts();
 	if (baboon_present)
 		baboon_register_interrupts();
@@ -182,9 +220,12 @@ void __init mac_init_IRQ(void)
 	if (request_irq(IRQ_AUTO_7, mac_nmi_handler, 0, "NMI",
 			mac_nmi_handler))
 		pr_err("Couldn't register NMI\n");
+<<<<<<< HEAD
 #ifdef DEBUG_MACINTS
 	printk("mac_init_IRQ(): Done!\n");
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -212,7 +253,11 @@ void mac_irq_enable(struct irq_data *data)
 	case 4:
 	case 5:
 	case 6:
+<<<<<<< HEAD
 		if (psc_present)
+=======
+		if (psc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			psc_irq_enable(irq);
 		else if (oss_present)
 			oss_irq_enable(irq);
@@ -242,7 +287,11 @@ void mac_irq_disable(struct irq_data *data)
 	case 4:
 	case 5:
 	case 6:
+<<<<<<< HEAD
 		if (psc_present)
+=======
+		if (psc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			psc_irq_disable(irq);
 		else if (oss_present)
 			oss_irq_disable(irq);
@@ -275,6 +324,7 @@ static void mac_irq_shutdown(struct irq_data *data)
 	else
 		mac_irq_disable(data);
 }
+<<<<<<< HEAD
 
 static int num_debug[8];
 
@@ -338,3 +388,5 @@ irqreturn_t mac_nmi_handler(int irq, void *dev_id)
 	in_nmi--;
 	return IRQ_HANDLED;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

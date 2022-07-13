@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *                   Creative Labs, Inc.
@@ -24,6 +25,17 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+ *                   Lee Revell <rlrevell@joe-job.com>
+ *                   James Courtier-Dutton <James@superbug.co.uk>
+ *                   Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
+ *                   Creative Labs, Inc.
+ *
+ *  Routines for control of EMU10K1 chips / PCM routines
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/pci.h>
@@ -39,12 +51,22 @@ static void snd_emu10k1_pcm_interrupt(struct snd_emu10k1 *emu,
 {
 	struct snd_emu10k1_pcm *epcm;
 
+<<<<<<< HEAD
 	if ((epcm = voice->epcm) == NULL)
+=======
+	epcm = voice->epcm;
+	if (!epcm)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	if (epcm->substream == NULL)
 		return;
 #if 0
+<<<<<<< HEAD
 	printk(KERN_DEBUG "IRQ: position = 0x%x, period = 0x%x, size = 0x%x\n",
+=======
+	dev_dbg(emu->card->dev,
+		"IRQ: position = 0x%x, period = 0x%x, size = 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			epcm->substream->runtime->hw->pointer(emu, epcm->substream),
 			snd_pcm_lib_period_bytes(epcm->substream),
 			snd_pcm_lib_buffer_bytes(epcm->substream));
@@ -88,6 +110,7 @@ static void snd_emu10k1_pcm_efx_interrupt(struct snd_emu10k1 *emu,
 	snd_pcm_period_elapsed(emu->pcm_capture_efx_substream);
 }	 
 
+<<<<<<< HEAD
 static snd_pcm_uframes_t snd_emu10k1_efx_playback_pointer(struct snd_pcm_substream *substream)
 {
 	struct snd_emu10k1 *emu = snd_pcm_substream_chip(substream);
@@ -121,11 +144,17 @@ static int snd_emu10k1_pcm_channel_alloc(struct snd_emu10k1_pcm * epcm, int voic
 		return 0; /* already allocated */
 
 	for (i = 0; i < ARRAY_SIZE(epcm->voices); i++) {
+=======
+static void snd_emu10k1_pcm_free_voices(struct snd_emu10k1_pcm *epcm)
+{
+	for (unsigned i = 0; i < ARRAY_SIZE(epcm->voices); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (epcm->voices[i]) {
 			snd_emu10k1_voice_free(epcm->emu, epcm->voices[i]);
 			epcm->voices[i] = NULL;
 		}
 	}
+<<<<<<< HEAD
 	err = snd_emu10k1_voice_alloc(epcm->emu,
 				      epcm->type == PLAYBACK_EMUVOICE ? EMU10K1_PCM : EMU10K1_EFX,
 				      voices,
@@ -164,6 +193,58 @@ static int snd_emu10k1_pcm_channel_alloc(struct snd_emu10k1_pcm * epcm, int voic
 }
 
 static unsigned int capture_period_sizes[31] = {
+=======
+}
+
+static int snd_emu10k1_pcm_channel_alloc(struct snd_emu10k1_pcm *epcm,
+					 int type, int count, int channels)
+{
+	int err;
+
+	snd_emu10k1_pcm_free_voices(epcm);
+
+	err = snd_emu10k1_voice_alloc(epcm->emu,
+				      type, count, channels,
+				      epcm, &epcm->voices[0]);
+	if (err < 0)
+		return err;
+
+	if (epcm->extra == NULL) {
+		// The hardware supports only (half-)loop interrupts, so to support an
+		// arbitrary number of periods per buffer, we use an extra voice with a
+		// period-sized loop as the interrupt source. Additionally, the interrupt
+		// timing of the hardware is "suboptimal" and needs some compensation.
+		err = snd_emu10k1_voice_alloc(epcm->emu,
+					      type + 1, 1, 1,
+					      epcm, &epcm->extra);
+		if (err < 0) {
+			/*
+			dev_dbg(emu->card->dev, "pcm_channel_alloc: "
+			       "failed extra: voices=%d, frame=%d\n",
+			       voices, frame);
+			*/
+			snd_emu10k1_pcm_free_voices(epcm);
+			return err;
+		}
+		epcm->extra->interrupt = snd_emu10k1_pcm_interrupt;
+	}
+
+	return 0;
+}
+
+// Primes 2-7 and 2^n multiples thereof, up to 16.
+static const unsigned int efx_capture_channels[] = {
+	1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16
+};
+
+static const struct snd_pcm_hw_constraint_list hw_constraints_efx_capture_channels = {
+	.count = ARRAY_SIZE(efx_capture_channels),
+	.list = efx_capture_channels,
+	.mask = 0
+};
+
+static const unsigned int capture_buffer_sizes[31] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	384,	448,	512,	640,
 	384*2,	448*2,	512*2,	640*2,
 	384*4,	448*4,	512*4,	640*4,
@@ -174,6 +255,7 @@ static unsigned int capture_period_sizes[31] = {
 	384*128,448*128,512*128
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hw_constraint_list hw_constraints_capture_period_sizes = {
 	.count = 31,
 	.list = capture_period_sizes,
@@ -185,6 +267,19 @@ static unsigned int capture_rates[8] = {
 };
 
 static struct snd_pcm_hw_constraint_list hw_constraints_capture_rates = {
+=======
+static const struct snd_pcm_hw_constraint_list hw_constraints_capture_buffer_sizes = {
+	.count = 31,
+	.list = capture_buffer_sizes,
+	.mask = 0
+};
+
+static const unsigned int capture_rates[8] = {
+	8000, 11025, 16000, 22050, 24000, 32000, 44100, 48000
+};
+
+static const struct snd_pcm_hw_constraint_list hw_constraints_capture_rates = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.count = 8,
 	.list = capture_rates,
 	.mask = 0
@@ -207,12 +302,29 @@ static unsigned int snd_emu10k1_capture_rate_reg(unsigned int rate)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static const unsigned int audigy_capture_rates[9] = {
+	8000, 11025, 12000, 16000, 22050, 24000, 32000, 44100, 48000
+};
+
+static const struct snd_pcm_hw_constraint_list hw_constraints_audigy_capture_rates = {
+	.count = 9,
+	.list = audigy_capture_rates,
+	.mask = 0
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int snd_emu10k1_audigy_capture_rate_reg(unsigned int rate)
 {
 	switch (rate) {
 	case 8000:	return A_ADCCR_SAMPLERATE_8;
 	case 11025:	return A_ADCCR_SAMPLERATE_11;
+<<<<<<< HEAD
 	case 12000:	return A_ADCCR_SAMPLERATE_12; /* really supported? */
+=======
+	case 12000:	return A_ADCCR_SAMPLERATE_12;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 16000:	return ADCCR_SAMPLERATE_16;
 	case 22050:	return ADCCR_SAMPLERATE_22;
 	case 24000:	return ADCCR_SAMPLERATE_24;
@@ -225,6 +337,37 @@ static unsigned int snd_emu10k1_audigy_capture_rate_reg(unsigned int rate)
 	}
 }
 
+<<<<<<< HEAD
+=======
+static void snd_emu10k1_constrain_capture_rates(struct snd_emu10k1 *emu,
+						struct snd_pcm_runtime *runtime)
+{
+	if (emu->card_capabilities->emu_model &&
+	    emu->emu1010.word_clock == 44100) {
+		// This also sets the rate constraint by deleting SNDRV_PCM_RATE_KNOT
+		runtime->hw.rates = SNDRV_PCM_RATE_11025 | \
+				    SNDRV_PCM_RATE_22050 | \
+				    SNDRV_PCM_RATE_44100;
+		runtime->hw.rate_min = 11025;
+		runtime->hw.rate_max = 44100;
+		return;
+	}
+	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_RATE,
+				   emu->audigy ? &hw_constraints_audigy_capture_rates :
+						 &hw_constraints_capture_rates);
+}
+
+static void snd_emu1010_constrain_efx_rate(struct snd_emu10k1 *emu,
+					   struct snd_pcm_runtime *runtime)
+{
+	int rate;
+
+	rate = emu->emu1010.word_clock;
+	runtime->hw.rate_min = runtime->hw.rate_max = rate;
+	runtime->hw.rates = snd_pcm_rate_to_rate_bit(rate);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int emu10k1_calc_pitch_target(unsigned int rate)
 {
 	unsigned int pitch_target;
@@ -261,6 +404,7 @@ static unsigned int emu10k1_select_interprom(unsigned int pitch_target)
 		return CCCA_INTERPROM_2;
 }
 
+<<<<<<< HEAD
 /*
  * calculate cache invalidate size 
  *
@@ -402,6 +546,107 @@ static void snd_emu10k1_pcm_init_voice(struct snd_emu10k1 *emu,
 	snd_emu10k1_ptr_write(emu, PEFE_PITCHAMOUNT, voice, 0);
 
 	spin_unlock_irqrestore(&emu->reg_lock, flags);
+=======
+static u16 emu10k1_send_target_from_amount(u8 amount)
+{
+	static const u8 shifts[8] = { 4, 4, 5, 6, 7, 8, 9, 10 };
+	static const u16 offsets[8] = { 0, 0x200, 0x400, 0x800, 0x1000, 0x2000, 0x4000, 0x8000 };
+	u8 exp;
+
+	if (amount == 0xff)
+		return 0xffff;
+	exp = amount >> 5;
+	return ((amount & 0x1f) << shifts[exp]) + offsets[exp];
+}
+
+static void snd_emu10k1_pcm_init_voice(struct snd_emu10k1 *emu,
+				       struct snd_emu10k1_voice *evoice,
+				       bool w_16, bool stereo,
+				       unsigned int start_addr,
+				       unsigned int end_addr,
+				       const unsigned char *send_routing,
+				       const unsigned char *send_amount)
+{
+	unsigned int silent_page;
+	int voice;
+
+	voice = evoice->number;
+
+	silent_page = ((unsigned int)emu->silent_page.addr << emu->address_mode) |
+		      (emu->address_mode ? MAP_PTI_MASK1 : MAP_PTI_MASK0);
+	snd_emu10k1_ptr_write_multiple(emu, voice,
+		// Not really necessary for the slave, but it doesn't hurt
+		CPF, stereo ? CPF_STEREO_MASK : 0,
+		// Assumption that PT is already 0 so no harm overwriting
+		PTRX, (send_amount[0] << 8) | send_amount[1],
+		// Stereo slaves don't need to have the addresses set, but it doesn't hurt
+		DSL, end_addr | (send_amount[3] << 24),
+		PSST, start_addr | (send_amount[2] << 24),
+		CCCA, emu10k1_select_interprom(evoice->epcm->pitch_target) |
+		      (w_16 ? 0 : CCCA_8BITSELECT),
+		// Clear filter delay memory
+		Z1, 0,
+		Z2, 0,
+		// Invalidate maps
+		MAPA, silent_page,
+		MAPB, silent_page,
+		// Disable filter (in conjunction with CCCA_RESONANCE == 0)
+		VTFT, VTFT_FILTERTARGET_MASK,
+		CVCF, CVCF_CURRENTFILTER_MASK,
+		REGLIST_END);
+	// Setup routing
+	if (emu->audigy) {
+		snd_emu10k1_ptr_write_multiple(emu, voice,
+			A_FXRT1, snd_emu10k1_compose_audigy_fxrt1(send_routing),
+			A_FXRT2, snd_emu10k1_compose_audigy_fxrt2(send_routing),
+			A_SENDAMOUNTS, snd_emu10k1_compose_audigy_sendamounts(send_amount),
+			REGLIST_END);
+		for (int i = 0; i < 4; i++) {
+			u32 aml = emu10k1_send_target_from_amount(send_amount[2 * i]);
+			u32 amh = emu10k1_send_target_from_amount(send_amount[2 * i + 1]);
+			snd_emu10k1_ptr_write(emu, A_CSBA + i, voice, (amh << 16) | aml);
+		}
+	} else {
+		snd_emu10k1_ptr_write(emu, FXRT, voice,
+				      snd_emu10k1_compose_send_routing(send_routing));
+	}
+
+	emu->voices[voice].dirty = 1;
+}
+
+static void snd_emu10k1_pcm_init_voices(struct snd_emu10k1 *emu,
+					struct snd_emu10k1_voice *evoice,
+					bool w_16, bool stereo,
+					unsigned int start_addr,
+					unsigned int end_addr,
+					struct snd_emu10k1_pcm_mixer *mix)
+{
+	spin_lock_irq(&emu->reg_lock);
+	snd_emu10k1_pcm_init_voice(emu, evoice, w_16, stereo,
+				   start_addr, end_addr,
+				   &mix->send_routing[stereo][0],
+				   &mix->send_volume[stereo][0]);
+	if (stereo)
+		snd_emu10k1_pcm_init_voice(emu, evoice + 1, w_16, true,
+					   start_addr, end_addr,
+					   &mix->send_routing[2][0],
+					   &mix->send_volume[2][0]);
+	spin_unlock_irq(&emu->reg_lock);
+}
+
+static void snd_emu10k1_pcm_init_extra_voice(struct snd_emu10k1 *emu,
+					     struct snd_emu10k1_voice *evoice,
+					     bool w_16,
+					     unsigned int start_addr,
+					     unsigned int end_addr)
+{
+	static const unsigned char send_routing[8] = { 0, 1, 2, 3, 4, 5, 6, 7 };
+	static const unsigned char send_amount[8] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+
+	snd_emu10k1_pcm_init_voice(emu, evoice, w_16, false,
+				   start_addr, end_addr,
+				   send_routing, send_amount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_emu10k1_playback_hw_params(struct snd_pcm_substream *substream,
@@ -410,12 +655,40 @@ static int snd_emu10k1_playback_hw_params(struct snd_pcm_substream *substream,
 	struct snd_emu10k1 *emu = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_emu10k1_pcm *epcm = runtime->private_data;
+<<<<<<< HEAD
 	int err;
 
 	if ((err = snd_emu10k1_pcm_channel_alloc(epcm, params_channels(hw_params))) < 0)
 		return err;
 	if ((err = snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params))) < 0)
 		return err;
+=======
+	size_t alloc_size;
+	int type, channels, count;
+	int err;
+
+	if (epcm->type == PLAYBACK_EMUVOICE) {
+		type = EMU10K1_PCM;
+		channels = 1;
+		count = params_channels(hw_params);
+	} else {
+		type = EMU10K1_EFX;
+		channels = params_channels(hw_params);
+		count = 1;
+	}
+	err = snd_emu10k1_pcm_channel_alloc(epcm, type, count, channels);
+	if (err < 0)
+		return err;
+
+	alloc_size = params_buffer_bytes(hw_params);
+	if (emu->iommu_workaround)
+		alloc_size += EMUPAGESIZE;
+	err = snd_pcm_lib_malloc_pages(substream, alloc_size);
+	if (err < 0)
+		return err;
+	if (emu->iommu_workaround && runtime->dma_bytes >= EMUPAGESIZE)
+		runtime->dma_bytes -= EMUPAGESIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err > 0) {	/* change */
 		int mapped;
 		if (epcm->memblk != NULL)
@@ -445,6 +718,7 @@ static int snd_emu10k1_playback_hw_free(struct snd_pcm_substream *substream)
 		snd_emu10k1_voice_free(epcm->emu, epcm->extra);
 		epcm->extra = NULL;
 	}
+<<<<<<< HEAD
 	if (epcm->voices[1]) {
 		snd_emu10k1_voice_free(epcm->emu, epcm->voices[1]);
 		epcm->voices[1] = NULL;
@@ -482,6 +756,9 @@ static int snd_emu10k1_efx_playback_hw_free(struct snd_pcm_substream *substream)
 			epcm->voices[i] = NULL;
 		}
 	}
+=======
+	snd_emu10k1_pcm_free_voices(epcm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (epcm->memblk) {
 		snd_emu10k1_free_pages(emu, epcm->memblk);
 		epcm->memblk = NULL;
@@ -496,6 +773,7 @@ static int snd_emu10k1_playback_prepare(struct snd_pcm_substream *substream)
 	struct snd_emu10k1 *emu = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_emu10k1_pcm *epcm = runtime->private_data;
+<<<<<<< HEAD
 	unsigned int start_addr, end_addr;
 
 	start_addr = epcm->start_addr;
@@ -516,6 +794,30 @@ static int snd_emu10k1_playback_prepare(struct snd_pcm_substream *substream)
 		snd_emu10k1_pcm_init_voice(emu, 0, 0, epcm->voices[1],
 					   start_addr, end_addr,
 					   &emu->pcm_mixer[substream->number]);
+=======
+	bool w_16 = snd_pcm_format_width(runtime->format) == 16;
+	bool stereo = runtime->channels == 2;
+	unsigned int start_addr, end_addr;
+	unsigned int rate;
+
+	rate = runtime->rate;
+	if (emu->card_capabilities->emu_model &&
+	    emu->emu1010.word_clock == 44100)
+		rate = rate * 480 / 441;
+	epcm->pitch_target = emu10k1_calc_pitch_target(rate);
+
+	start_addr = epcm->start_addr >> w_16;
+	end_addr = start_addr + runtime->period_size;
+	snd_emu10k1_pcm_init_extra_voice(emu, epcm->extra, w_16,
+					 start_addr, end_addr);
+	start_addr >>= stereo;
+	epcm->ccca_start_addr = start_addr;
+	end_addr = start_addr + runtime->buffer_size;
+	snd_emu10k1_pcm_init_voices(emu, epcm->voices[0], w_16, stereo,
+				    start_addr, end_addr,
+				    &emu->pcm_mixer[substream->number]);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -524,6 +826,7 @@ static int snd_emu10k1_efx_playback_prepare(struct snd_pcm_substream *substream)
 	struct snd_emu10k1 *emu = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_emu10k1_pcm *epcm = runtime->private_data;
+<<<<<<< HEAD
 	unsigned int start_addr, end_addr;
 	unsigned int channel_size;
 	int i;
@@ -549,13 +852,38 @@ static int snd_emu10k1_efx_playback_prepare(struct snd_pcm_substream *substream)
 		snd_emu10k1_pcm_init_voice(emu, 0, 0, epcm->voices[i],
 					   start_addr, start_addr + channel_size,
 					   &emu->efx_pcm_mixer[i]);
+=======
+	unsigned int start_addr;
+	unsigned int extra_size, channel_size;
+	unsigned int i;
+
+	epcm->pitch_target = PITCH_48000;
+
+	start_addr = epcm->start_addr >> 1;  // 16-bit voices
+
+	extra_size = runtime->period_size;
+	channel_size = runtime->buffer_size;
+
+	snd_emu10k1_pcm_init_extra_voice(emu, epcm->extra, true,
+					 start_addr, start_addr + extra_size);
+
+	epcm->ccca_start_addr = start_addr;
+	for (i = 0; i < runtime->channels; i++) {
+		snd_emu10k1_pcm_init_voices(emu, epcm->voices[i], true, false,
+					    start_addr, start_addr + channel_size,
+					    &emu->efx_pcm_mixer[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		start_addr += channel_size;
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_emu10k1_efx_playback =
+=======
+static const struct snd_pcm_hardware snd_emu10k1_efx_playback =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_NONINTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -565,6 +893,7 @@ static struct snd_pcm_hardware snd_emu10k1_efx_playback =
 	.rates =		SNDRV_PCM_RATE_48000,
 	.rate_min =		48000,
 	.rate_max =		48000,
+<<<<<<< HEAD
 	.channels_min =		NUM_EFX_PLAYBACK,
 	.channels_max =		NUM_EFX_PLAYBACK,
 	.buffer_bytes_max =	(64*1024),
@@ -586,6 +915,17 @@ static int snd_emu10k1_capture_hw_free(struct snd_pcm_substream *substream)
 	return snd_pcm_lib_free_pages(substream);
 }
 
+=======
+	.channels_min =		1,
+	.channels_max =		NUM_EFX_PLAYBACK,
+	.buffer_bytes_max =	(128*1024),
+	.period_bytes_max =	(128*1024),
+	.periods_min =		2,
+	.periods_max =		1024,
+	.fifo_size =		0,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_emu10k1_capture_prepare(struct snd_pcm_substream *substream)
 {
 	struct snd_emu10k1 *emu = snd_pcm_substream_chip(substream);
@@ -600,9 +940,23 @@ static int snd_emu10k1_capture_prepare(struct snd_pcm_substream *substream)
 		snd_emu10k1_ptr_write(emu, ADCCR, 0, 0);
 		break;
 	case CAPTURE_EFX:
+<<<<<<< HEAD
 		if (emu->audigy) {
 			snd_emu10k1_ptr_write(emu, A_FXWC1, 0, 0);
 			snd_emu10k1_ptr_write(emu, A_FXWC2, 0, 0);
+=======
+		if (emu->card_capabilities->emu_model) {
+			// The upper 32 16-bit capture voices, two for each of the 16 32-bit channels.
+			// The lower voices are occupied by A_EXTOUT_*_CAP*.
+			epcm->capture_cr_val = 0;
+			epcm->capture_cr_val2 = 0xffffffff >> (32 - runtime->channels * 2);
+		}
+		if (emu->audigy) {
+			snd_emu10k1_ptr_write_multiple(emu, 0,
+				A_FXWC1, 0,
+				A_FXWC2, 0,
+				REGLIST_END);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else
 			snd_emu10k1_ptr_write(emu, FXWC, 0, 0);
 		break;
@@ -613,7 +967,11 @@ static int snd_emu10k1_capture_prepare(struct snd_pcm_substream *substream)
 	epcm->capture_bufsize = snd_pcm_lib_buffer_bytes(substream);
 	epcm->capture_bs_val = 0;
 	for (idx = 0; idx < 31; idx++) {
+<<<<<<< HEAD
 		if (capture_period_sizes[idx] == epcm->capture_bufsize) {
+=======
+		if (capture_buffer_sizes[idx] == epcm->capture_bufsize) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			epcm->capture_bs_val = idx + 1;
 			break;
 		}
@@ -623,16 +981,29 @@ static int snd_emu10k1_capture_prepare(struct snd_pcm_substream *substream)
 		epcm->capture_bs_val++;
 	}
 	if (epcm->type == CAPTURE_AC97ADC) {
+<<<<<<< HEAD
+=======
+		unsigned rate = runtime->rate;
+		if (!(runtime->hw.rates & SNDRV_PCM_RATE_48000))
+			rate = rate * 480 / 441;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		epcm->capture_cr_val = emu->audigy ? A_ADCCR_LCHANENABLE : ADCCR_LCHANENABLE;
 		if (runtime->channels > 1)
 			epcm->capture_cr_val |= emu->audigy ? A_ADCCR_RCHANENABLE : ADCCR_RCHANENABLE;
 		epcm->capture_cr_val |= emu->audigy ?
+<<<<<<< HEAD
 			snd_emu10k1_audigy_capture_rate_reg(runtime->rate) :
 			snd_emu10k1_capture_rate_reg(runtime->rate);
+=======
+			snd_emu10k1_audigy_capture_rate_reg(rate) :
+			snd_emu10k1_capture_rate_reg(rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 static void snd_emu10k1_playback_invalidate_cache(struct snd_emu10k1 *emu, int extra, struct snd_emu10k1_voice *evoice)
 {
 	struct snd_pcm_runtime *runtime;
@@ -749,6 +1120,169 @@ static inline void snd_emu10k1_playback_mangle_extra(struct snd_emu10k1 *emu,
 	ptr &= ~0x00ffffff;
 	ptr |= epcm->ccca_start_addr + period_pos;
 	snd_emu10k1_ptr_write(emu, CCCA, epcm->extra->number, ptr);
+=======
+static void snd_emu10k1_playback_fill_cache(struct snd_emu10k1 *emu,
+					    unsigned voice,
+					    u32 sample, bool stereo)
+{
+	u32 ccr;
+
+	// We assume that the cache is resting at this point (i.e.,
+	// CCR_CACHEINVALIDSIZE is very small).
+
+	// Clear leading frames. For simplicitly, this does too much,
+	// except for 16-bit stereo. And the interpolator will actually
+	// access them at all only when we're pitch-shifting.
+	for (int i = 0; i < 3; i++)
+		snd_emu10k1_ptr_write(emu, CD0 + i, voice, sample);
+
+	// Fill cache
+	ccr = (64 - 3) << REG_SHIFT(CCR_CACHEINVALIDSIZE);
+	if (stereo) {
+		// The engine goes haywire if CCR_READADDRESS is out of sync
+		snd_emu10k1_ptr_write(emu, CCR, voice + 1, ccr);
+	}
+	snd_emu10k1_ptr_write(emu, CCR, voice, ccr);
+}
+
+static void snd_emu10k1_playback_prepare_voices(struct snd_emu10k1 *emu,
+						struct snd_emu10k1_pcm *epcm,
+						bool w_16, bool stereo,
+						int channels)
+{
+	struct snd_pcm_substream *substream = epcm->substream;
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	unsigned eloop_start = epcm->start_addr >> w_16;
+	unsigned loop_start = eloop_start >> stereo;
+	unsigned eloop_size = runtime->period_size;
+	unsigned loop_size = runtime->buffer_size;
+	u32 sample = w_16 ? 0 : 0x80808080;
+
+	// To make the playback actually start at the 1st frame,
+	// we need to compensate for two circumstances:
+	// - The actual position is delayed by the cache size (64 frames)
+	// - The interpolator is centered around the 4th frame
+	loop_start += (epcm->resume_pos + 64 - 3) % loop_size;
+	for (int i = 0; i < channels; i++) {
+		unsigned voice = epcm->voices[i]->number;
+		snd_emu10k1_ptr_write(emu, CCCA_CURRADDR, voice, loop_start);
+		loop_start += loop_size;
+		snd_emu10k1_playback_fill_cache(emu, voice, sample, stereo);
+	}
+
+	// The interrupt is triggered when CCCA_CURRADDR (CA) wraps around,
+	// which is ahead of the actual playback position, so the interrupt
+	// source needs to be delayed.
+	//
+	// In principle, this wouldn't need to be the cache's entire size - in
+	// practice, CCR_CACHEINVALIDSIZE (CIS) > `fetch threshold` has never
+	// been observed, and assuming 40 _bytes_ should be safe.
+	//
+	// The cache fills are somewhat random, which makes it impossible to
+	// align them with the interrupts. This makes a non-delayed interrupt
+	// source not practical, as the interrupt handler would have to wait
+	// for (CA - CIS) >= period_boundary for every channel in the stream.
+	//
+	// This is why all other (open) drivers for these chips use timer-based
+	// interrupts.
+	//
+	eloop_start += (epcm->resume_pos + eloop_size - 3) % eloop_size;
+	snd_emu10k1_ptr_write(emu, CCCA_CURRADDR, epcm->extra->number, eloop_start);
+
+	// It takes a moment until the cache fills complete,
+	// but the unmuting takes long enough for that.
+}
+
+static void snd_emu10k1_playback_commit_volume(struct snd_emu10k1 *emu,
+					       struct snd_emu10k1_voice *evoice,
+					       unsigned int vattn)
+{
+	snd_emu10k1_ptr_write_multiple(emu, evoice->number,
+		VTFT, vattn | VTFT_FILTERTARGET_MASK,
+		CVCF, vattn | CVCF_CURRENTFILTER_MASK,
+		REGLIST_END);
+}
+
+static void snd_emu10k1_playback_unmute_voice(struct snd_emu10k1 *emu,
+					      struct snd_emu10k1_voice *evoice,
+					      bool stereo, bool master,
+					      struct snd_emu10k1_pcm_mixer *mix)
+{
+	unsigned int vattn;
+	unsigned int tmp;
+
+	tmp = stereo ? (master ? 1 : 2) : 0;
+	vattn = mix->attn[tmp] << 16;
+	snd_emu10k1_playback_commit_volume(emu, evoice, vattn);
+}	
+
+static void snd_emu10k1_playback_unmute_voices(struct snd_emu10k1 *emu,
+					       struct snd_emu10k1_voice *evoice,
+					       bool stereo,
+					       struct snd_emu10k1_pcm_mixer *mix)
+{
+	snd_emu10k1_playback_unmute_voice(emu, evoice, stereo, true, mix);
+	if (stereo)
+		snd_emu10k1_playback_unmute_voice(emu, evoice + 1, true, false, mix);
+}
+
+static void snd_emu10k1_playback_mute_voice(struct snd_emu10k1 *emu,
+					    struct snd_emu10k1_voice *evoice)
+{
+	snd_emu10k1_playback_commit_volume(emu, evoice, 0);
+}
+
+static void snd_emu10k1_playback_mute_voices(struct snd_emu10k1 *emu,
+					     struct snd_emu10k1_voice *evoice,
+					     bool stereo)
+{
+	snd_emu10k1_playback_mute_voice(emu, evoice);
+	if (stereo)
+		snd_emu10k1_playback_mute_voice(emu, evoice + 1);
+}
+
+static void snd_emu10k1_playback_commit_pitch(struct snd_emu10k1 *emu,
+					      u32 voice, u32 pitch_target)
+{
+	u32 ptrx = snd_emu10k1_ptr_read(emu, PTRX, voice);
+	u32 cpf = snd_emu10k1_ptr_read(emu, CPF, voice);
+	snd_emu10k1_ptr_write_multiple(emu, voice,
+		PTRX, (ptrx & ~PTRX_PITCHTARGET_MASK) | pitch_target,
+		CPF, (cpf & ~(CPF_CURRENTPITCH_MASK | CPF_FRACADDRESS_MASK)) | pitch_target,
+		REGLIST_END);
+}
+
+static void snd_emu10k1_playback_trigger_voice(struct snd_emu10k1 *emu,
+					       struct snd_emu10k1_voice *evoice)
+{
+	unsigned int voice;
+
+	voice = evoice->number;
+	snd_emu10k1_playback_commit_pitch(emu, voice, evoice->epcm->pitch_target << 16);
+}
+
+static void snd_emu10k1_playback_stop_voice(struct snd_emu10k1 *emu,
+					    struct snd_emu10k1_voice *evoice)
+{
+	unsigned int voice;
+
+	voice = evoice->number;
+	snd_emu10k1_playback_commit_pitch(emu, voice, 0);
+}
+
+static void snd_emu10k1_playback_set_running(struct snd_emu10k1 *emu,
+					     struct snd_emu10k1_pcm *epcm)
+{
+	epcm->running = 1;
+	snd_emu10k1_voice_intr_enable(emu, epcm->extra->number);
+}
+
+static void snd_emu10k1_playback_set_stopped(struct snd_emu10k1 *emu,
+					      struct snd_emu10k1_pcm *epcm)
+{
+	snd_emu10k1_voice_intr_disable(emu, epcm->extra->number);
+	epcm->running = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_emu10k1_playback_trigger(struct snd_pcm_substream *substream,
@@ -758,15 +1292,26 @@ static int snd_emu10k1_playback_trigger(struct snd_pcm_substream *substream,
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_emu10k1_pcm *epcm = runtime->private_data;
 	struct snd_emu10k1_pcm_mixer *mix;
+<<<<<<< HEAD
 	int result = 0;
 
 	/*
 	printk(KERN_DEBUG "trigger - emu10k1 = 0x%x, cmd = %i, pointer = %i\n",
+=======
+	bool w_16 = snd_pcm_format_width(runtime->format) == 16;
+	bool stereo = runtime->channels == 2;
+	int result = 0;
+
+	/*
+	dev_dbg(emu->card->dev,
+		"trigger - emu10k1 = 0x%x, cmd = %i, pointer = %i\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       (int)emu, cmd, substream->ops->pointer(substream))
 	*/
 	spin_lock(&emu->reg_lock);
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
+<<<<<<< HEAD
 		snd_emu10k1_playback_invalidate_cache(emu, 1, epcm->extra);	/* do we need this? */
 		snd_emu10k1_playback_invalidate_cache(emu, 0, epcm->voices[0]);
 		/* follow thru */
@@ -782,14 +1327,32 @@ static int snd_emu10k1_playback_trigger(struct snd_pcm_substream *substream,
 		snd_emu10k1_playback_trigger_voice(emu, epcm->voices[1], 0, 0);
 		snd_emu10k1_playback_trigger_voice(emu, epcm->extra, 1, 1);
 		epcm->running = 1;
+=======
+		snd_emu10k1_playback_prepare_voices(emu, epcm, w_16, stereo, 1);
+		fallthrough;
+	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+	case SNDRV_PCM_TRIGGER_RESUME:
+		mix = &emu->pcm_mixer[substream->number];
+		snd_emu10k1_playback_unmute_voices(emu, epcm->voices[0], stereo, mix);
+		snd_emu10k1_playback_set_running(emu, epcm);
+		snd_emu10k1_playback_trigger_voice(emu, epcm->voices[0]);
+		snd_emu10k1_playback_trigger_voice(emu, epcm->extra);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
 	case SNDRV_PCM_TRIGGER_SUSPEND:
+<<<<<<< HEAD
 		epcm->running = 0;
 		snd_emu10k1_playback_stop_voice(emu, epcm->voices[0]);
 		snd_emu10k1_playback_stop_voice(emu, epcm->voices[1]);
 		snd_emu10k1_playback_stop_voice(emu, epcm->extra);
+=======
+		snd_emu10k1_playback_stop_voice(emu, epcm->voices[0]);
+		snd_emu10k1_playback_stop_voice(emu, epcm->extra);
+		snd_emu10k1_playback_set_stopped(emu, epcm);
+		snd_emu10k1_playback_mute_voices(emu, epcm->voices[0], stereo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		result = -EINVAL;
@@ -815,7 +1378,11 @@ static int snd_emu10k1_capture_trigger(struct snd_pcm_substream *substream,
 		outl(epcm->capture_ipr, emu->port + IPR);
 		snd_emu10k1_intr_enable(emu, epcm->capture_inte);
 		/*
+<<<<<<< HEAD
 		printk(KERN_DEBUG "adccr = 0x%x, adcbs = 0x%x\n",
+=======
+		dev_dbg(emu->card->dev, "adccr = 0x%x, adcbs = 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       epcm->adccr, epcm->adcbs);
 		*/
 		switch (epcm->type) {
@@ -824,9 +1391,20 @@ static int snd_emu10k1_capture_trigger(struct snd_pcm_substream *substream,
 			break;
 		case CAPTURE_EFX:
 			if (emu->audigy) {
+<<<<<<< HEAD
 				snd_emu10k1_ptr_write(emu, A_FXWC1, 0, epcm->capture_cr_val);
 				snd_emu10k1_ptr_write(emu, A_FXWC2, 0, epcm->capture_cr_val2);
 				snd_printdd("cr_val=0x%x, cr_val2=0x%x\n", epcm->capture_cr_val, epcm->capture_cr_val2);
+=======
+				snd_emu10k1_ptr_write_multiple(emu, 0,
+					A_FXWC1, epcm->capture_cr_val,
+					A_FXWC2, epcm->capture_cr_val2,
+					REGLIST_END);
+				dev_dbg(emu->card->dev,
+					"cr_val=0x%x, cr_val2=0x%x\n",
+					epcm->capture_cr_val,
+					epcm->capture_cr_val2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else
 				snd_emu10k1_ptr_write(emu, FXWC, 0, epcm->capture_cr_val);
 			break;
@@ -849,8 +1427,15 @@ static int snd_emu10k1_capture_trigger(struct snd_pcm_substream *substream,
 			break;
 		case CAPTURE_EFX:
 			if (emu->audigy) {
+<<<<<<< HEAD
 				snd_emu10k1_ptr_write(emu, A_FXWC1, 0, 0);
 				snd_emu10k1_ptr_write(emu, A_FXWC2, 0, 0);
+=======
+				snd_emu10k1_ptr_write_multiple(emu, 0,
+					A_FXWC1, 0,
+					A_FXWC2, 0,
+					REGLIST_END);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else
 				snd_emu10k1_ptr_write(emu, FXWC, 0, 0);
 			break;
@@ -870,6 +1455,7 @@ static snd_pcm_uframes_t snd_emu10k1_playback_pointer(struct snd_pcm_substream *
 	struct snd_emu10k1 *emu = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_emu10k1_pcm *epcm = runtime->private_data;
+<<<<<<< HEAD
 	unsigned int ptr;
 
 	if (!epcm->running)
@@ -890,6 +1476,31 @@ static snd_pcm_uframes_t snd_emu10k1_playback_pointer(struct snd_pcm_substream *
 #endif
 	/*
 	printk(KERN_DEBUG
+=======
+	int ptr;
+
+	if (!epcm->running)
+		return 0;
+
+	ptr = snd_emu10k1_ptr_read(emu, CCCA, epcm->voices[0]->number) & 0x00ffffff;
+	ptr -= epcm->ccca_start_addr;
+
+	// This is the size of the whole cache minus the interpolator read-ahead,
+	// which leads us to the actual playback position.
+	//
+	// The cache is constantly kept mostly filled, so in principle we could
+	// return a more advanced position representing how far the hardware has
+	// already read the buffer, and set runtime->delay accordingly. However,
+	// this would be slightly different for every channel (and remarkably slow
+	// to obtain), so only a fixed worst-case value would be practical.
+	//
+	ptr -= 64 - 3;
+	if (ptr < 0)
+		ptr += runtime->buffer_size;
+
+	/*
+	dev_dbg(emu->card->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       "ptr = 0x%lx, buffer_size = 0x%lx, period_size = 0x%lx\n",
 	       (long)ptr, (long)runtime->buffer_size,
 	       (long)runtime->period_size);
@@ -897,6 +1508,52 @@ static snd_pcm_uframes_t snd_emu10k1_playback_pointer(struct snd_pcm_substream *
 	return ptr;
 }
 
+<<<<<<< HEAD
+=======
+static u64 snd_emu10k1_efx_playback_voice_mask(struct snd_emu10k1_pcm *epcm,
+					       int channels)
+{
+	u64 mask = 0;
+
+	for (int i = 0; i < channels; i++) {
+		int voice = epcm->voices[i]->number;
+		mask |= 1ULL << voice;
+	}
+	return mask;
+}
+
+static void snd_emu10k1_efx_playback_freeze_voices(struct snd_emu10k1 *emu,
+						   struct snd_emu10k1_pcm *epcm,
+						   int channels)
+{
+	for (int i = 0; i < channels; i++) {
+		int voice = epcm->voices[i]->number;
+		snd_emu10k1_ptr_write(emu, CPF_STOP, voice, 1);
+		snd_emu10k1_playback_commit_pitch(emu, voice, PITCH_48000 << 16);
+	}
+}
+
+static void snd_emu10k1_efx_playback_unmute_voices(struct snd_emu10k1 *emu,
+						   struct snd_emu10k1_pcm *epcm,
+						   int channels)
+{
+	for (int i = 0; i < channels; i++)
+		snd_emu10k1_playback_unmute_voice(emu, epcm->voices[i], false, true,
+						  &emu->efx_pcm_mixer[i]);
+}
+
+static void snd_emu10k1_efx_playback_stop_voices(struct snd_emu10k1 *emu,
+						 struct snd_emu10k1_pcm *epcm,
+						 int channels)
+{
+	for (int i = 0; i < channels; i++)
+		snd_emu10k1_playback_stop_voice(emu, epcm->voices[i]);
+	snd_emu10k1_playback_set_stopped(emu, epcm);
+
+	for (int i = 0; i < channels; i++)
+		snd_emu10k1_playback_mute_voice(emu, epcm->voices[i]);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int snd_emu10k1_efx_playback_trigger(struct snd_pcm_substream *substream,
 				        int cmd)
@@ -904,12 +1561,17 @@ static int snd_emu10k1_efx_playback_trigger(struct snd_pcm_substream *substream,
 	struct snd_emu10k1 *emu = snd_pcm_substream_chip(substream);
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_emu10k1_pcm *epcm = runtime->private_data;
+<<<<<<< HEAD
 	int i;
+=======
+	u64 mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int result = 0;
 
 	spin_lock(&emu->reg_lock);
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
+<<<<<<< HEAD
 		/* prepare voices */
 		for (i = 0; i < NUM_EFX_PLAYBACK; i++) {	
 			snd_emu10k1_playback_invalidate_cache(emu, 0, epcm->voices[i]);
@@ -930,20 +1592,69 @@ static int snd_emu10k1_efx_playback_trigger(struct snd_pcm_substream *substream,
 		for (i = 1; i < NUM_EFX_PLAYBACK; i++)
 			snd_emu10k1_playback_trigger_voice(emu, epcm->voices[i], 0, 0);
 		epcm->running = 1;
+=======
+	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+	case SNDRV_PCM_TRIGGER_RESUME:
+		mask = snd_emu10k1_efx_playback_voice_mask(
+				epcm, runtime->channels);
+		for (int i = 0; i < 10; i++) {
+			// Note that the freeze is not interruptible, so we make no
+			// effort to reset the bits outside the error handling here.
+			snd_emu10k1_voice_set_loop_stop_multiple(emu, mask);
+			snd_emu10k1_efx_playback_freeze_voices(
+					emu, epcm, runtime->channels);
+			snd_emu10k1_playback_prepare_voices(
+					emu, epcm, true, false, runtime->channels);
+
+			// It might seem to make more sense to unmute the voices only after
+			// they have been started, to potentially avoid torturing the speakers
+			// if something goes wrong. However, we cannot unmute atomically,
+			// which means that we'd get some mild artifacts in the regular case.
+			snd_emu10k1_efx_playback_unmute_voices(emu, epcm, runtime->channels);
+
+			snd_emu10k1_playback_set_running(emu, epcm);
+			result = snd_emu10k1_voice_clear_loop_stop_multiple_atomic(emu, mask);
+			if (result == 0) {
+				// The extra voice is allowed to lag a bit
+				snd_emu10k1_playback_trigger_voice(emu, epcm->extra);
+				goto leave;
+			}
+
+			snd_emu10k1_efx_playback_stop_voices(
+					emu, epcm, runtime->channels);
+
+			if (result != -EAGAIN)
+				break;
+			// The sync start can legitimately fail due to NMIs, etc.
+		}
+		snd_emu10k1_voice_clear_loop_stop_multiple(emu, mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 	case SNDRV_PCM_TRIGGER_STOP:
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+<<<<<<< HEAD
 		epcm->running = 0;
 		for (i = 0; i < NUM_EFX_PLAYBACK; i++) {	
 			snd_emu10k1_playback_stop_voice(emu, epcm->voices[i]);
 		}
 		snd_emu10k1_playback_stop_voice(emu, epcm->extra);
+=======
+		snd_emu10k1_playback_stop_voice(emu, epcm->extra);
+		snd_emu10k1_efx_playback_stop_voices(
+				emu, epcm, runtime->channels);
+
+		epcm->resume_pos = snd_emu10k1_playback_pointer(substream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		result = -EINVAL;
 		break;
 	}
+<<<<<<< HEAD
+=======
+leave:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock(&emu->reg_lock);
 	return result;
 }
@@ -970,7 +1681,11 @@ static snd_pcm_uframes_t snd_emu10k1_capture_pointer(struct snd_pcm_substream *s
  *  Playback support device description
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_emu10k1_playback =
+=======
+static const struct snd_pcm_hardware snd_emu10k1_playback =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
@@ -983,9 +1698,14 @@ static struct snd_pcm_hardware snd_emu10k1_playback =
 	.channels_min =		1,
 	.channels_max =		2,
 	.buffer_bytes_max =	(128*1024),
+<<<<<<< HEAD
 	.period_bytes_min =	64,
 	.period_bytes_max =	(128*1024),
 	.periods_min =		1,
+=======
+	.period_bytes_max =	(128*1024),
+	.periods_min =		2,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.periods_max =		1024,
 	.fifo_size =		0,
 };
@@ -994,14 +1714,22 @@ static struct snd_pcm_hardware snd_emu10k1_playback =
  *  Capture support device description
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_emu10k1_capture =
+=======
+static const struct snd_pcm_hardware snd_emu10k1_capture =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
 				 SNDRV_PCM_INFO_RESUME |
 				 SNDRV_PCM_INFO_MMAP_VALID),
 	.formats =		SNDRV_PCM_FMTBIT_S16_LE,
+<<<<<<< HEAD
 	.rates =		SNDRV_PCM_RATE_8000_48000,
+=======
+	.rates =		SNDRV_PCM_RATE_8000_48000 | SNDRV_PCM_RATE_KNOT,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.rate_min =		8000,
 	.rate_max =		48000,
 	.channels_min =		1,
@@ -1014,13 +1742,18 @@ static struct snd_pcm_hardware snd_emu10k1_capture =
 	.fifo_size =		0,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_emu10k1_capture_efx =
+=======
+static const struct snd_pcm_hardware snd_emu10k1_capture_efx =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_BLOCK_TRANSFER |
 				 SNDRV_PCM_INFO_RESUME |
 				 SNDRV_PCM_INFO_MMAP_VALID),
 	.formats =		SNDRV_PCM_FMTBIT_S16_LE,
+<<<<<<< HEAD
 	.rates =		SNDRV_PCM_RATE_44100 | SNDRV_PCM_RATE_48000 | 
 				 SNDRV_PCM_RATE_88200 | SNDRV_PCM_RATE_96000 | 
 				 SNDRV_PCM_RATE_176400 | SNDRV_PCM_RATE_192000,
@@ -1028,6 +1761,13 @@ static struct snd_pcm_hardware snd_emu10k1_capture_efx =
 	.rate_max =		192000,
 	.channels_min =		8,
 	.channels_max =		8,
+=======
+	.rates =		SNDRV_PCM_RATE_48000,
+	.rate_min =		48000,
+	.rate_max =		48000,
+	.channels_min =		1,
+	.channels_max =		16,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.buffer_bytes_max =	(64*1024),
 	.period_bytes_min =	384,
 	.period_bytes_max =	(64*1024),
@@ -1088,13 +1828,36 @@ static int snd_emu10k1_efx_playback_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int snd_emu10k1_playback_set_constraints(struct snd_pcm_runtime *runtime)
+{
+	int err;
+
+	// The buffer size must be a multiple of the period size, to avoid a
+	// mismatch between the extra voice and the regular voices.
+	err = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS);
+	if (err < 0)
+		return err;
+	// The hardware is typically the cache's size of 64 frames ahead.
+	// Leave enough time for actually filling up the buffer.
+	err = snd_pcm_hw_constraint_minmax(
+			runtime, SNDRV_PCM_HW_PARAM_PERIOD_SIZE, 128, UINT_MAX);
+	return err;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_emu10k1_efx_playback_open(struct snd_pcm_substream *substream)
 {
 	struct snd_emu10k1 *emu = snd_pcm_substream_chip(substream);
 	struct snd_emu10k1_pcm *epcm;
 	struct snd_emu10k1_pcm_mixer *mix;
 	struct snd_pcm_runtime *runtime = substream->runtime;
+<<<<<<< HEAD
 	int i;
+=======
+	int i, j, err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	epcm = kzalloc(sizeof(*epcm), GFP_KERNEL);
 	if (epcm == NULL)
@@ -1103,6 +1866,7 @@ static int snd_emu10k1_efx_playback_open(struct snd_pcm_substream *substream)
 	epcm->type = PLAYBACK_EFX;
 	epcm->substream = substream;
 	
+<<<<<<< HEAD
 	emu->pcm_playback_efx_substream = substream;
 
 	runtime->private_data = epcm;
@@ -1115,6 +1879,26 @@ static int snd_emu10k1_efx_playback_open(struct snd_pcm_substream *substream)
 		memset(&mix->send_volume, 0, sizeof(mix->send_volume));
 		mix->send_volume[0][0] = 255;
 		mix->attn[0] = 0xffff;
+=======
+	runtime->private_data = epcm;
+	runtime->private_free = snd_emu10k1_pcm_free_substream;
+	runtime->hw = snd_emu10k1_efx_playback;
+	if (emu->card_capabilities->emu_model)
+		snd_emu1010_constrain_efx_rate(emu, runtime);
+	err = snd_emu10k1_playback_set_constraints(runtime);
+	if (err < 0) {
+		kfree(epcm);
+		return err;
+	}
+
+	for (i = 0; i < NUM_EFX_PLAYBACK; i++) {
+		mix = &emu->efx_pcm_mixer[i];
+		for (j = 0; j < 8; j++)
+			mix->send_routing[0][j] = i + j;
+		memset(&mix->send_volume, 0, sizeof(mix->send_volume));
+		mix->send_volume[0][0] = 255;
+		mix->attn[0] = 0x8000;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mix->epcm = epcm;
 		snd_emu10k1_pcm_efx_mixer_notify(emu, i, 1);
 	}
@@ -1127,7 +1911,11 @@ static int snd_emu10k1_playback_open(struct snd_pcm_substream *substream)
 	struct snd_emu10k1_pcm *epcm;
 	struct snd_emu10k1_pcm_mixer *mix;
 	struct snd_pcm_runtime *runtime = substream->runtime;
+<<<<<<< HEAD
 	int i, err;
+=======
+	int i, err, sample_rate;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	epcm = kzalloc(sizeof(*epcm), GFP_KERNEL);
 	if (epcm == NULL)
@@ -1138,6 +1926,7 @@ static int snd_emu10k1_playback_open(struct snd_pcm_substream *substream)
 	runtime->private_data = epcm;
 	runtime->private_free = snd_emu10k1_pcm_free_substream;
 	runtime->hw = snd_emu10k1_playback;
+<<<<<<< HEAD
 	if ((err = snd_pcm_hw_constraint_integer(runtime, SNDRV_PCM_HW_PARAM_PERIODS)) < 0) {
 		kfree(epcm);
 		return err;
@@ -1147,17 +1936,37 @@ static int snd_emu10k1_playback_open(struct snd_pcm_substream *substream)
 		return err;
 	}
 	err = snd_pcm_hw_rule_noresample(runtime, 48000);
+=======
+	err = snd_emu10k1_playback_set_constraints(runtime);
+	if (err < 0) {
+		kfree(epcm);
+		return err;
+	}
+	if (emu->card_capabilities->emu_model)
+		sample_rate = emu->emu1010.word_clock;
+	else
+		sample_rate = 48000;
+	err = snd_pcm_hw_rule_noresample(runtime, sample_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0) {
 		kfree(epcm);
 		return err;
 	}
 	mix = &emu->pcm_mixer[substream->number];
+<<<<<<< HEAD
 	for (i = 0; i < 4; i++)
+=======
+	for (i = 0; i < 8; i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mix->send_routing[0][i] = mix->send_routing[1][i] = mix->send_routing[2][i] = i;
 	memset(&mix->send_volume, 0, sizeof(mix->send_volume));
 	mix->send_volume[0][0] = mix->send_volume[0][1] =
 	mix->send_volume[1][0] = mix->send_volume[2][1] = 255;
+<<<<<<< HEAD
 	mix->attn[0] = mix->attn[1] = mix->attn[2] = 0xffff;
+=======
+	mix->attn[0] = mix->attn[1] = mix->attn[2] = 0x8000;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mix->epcm = epcm;
 	snd_emu10k1_pcm_mixer_notify(emu, substream->number, 1);
 	return 0;
@@ -1193,10 +2002,18 @@ static int snd_emu10k1_capture_open(struct snd_pcm_substream *substream)
 	runtime->private_data = epcm;
 	runtime->private_free = snd_emu10k1_pcm_free_substream;
 	runtime->hw = snd_emu10k1_capture;
+<<<<<<< HEAD
 	emu->capture_interrupt = snd_emu10k1_pcm_ac97adc_interrupt;
 	emu->pcm_capture_substream = substream;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_PERIOD_BYTES, &hw_constraints_capture_period_sizes);
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_RATE, &hw_constraints_capture_rates);
+=======
+	snd_emu10k1_constrain_capture_rates(emu, runtime);
+	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
+				   &hw_constraints_capture_buffer_sizes);
+	emu->capture_interrupt = snd_emu10k1_pcm_ac97adc_interrupt;
+	emu->pcm_capture_substream = substream;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1231,10 +2048,17 @@ static int snd_emu10k1_capture_mic_open(struct snd_pcm_substream *substream)
 	runtime->hw = snd_emu10k1_capture;
 	runtime->hw.rates = SNDRV_PCM_RATE_8000;
 	runtime->hw.rate_min = runtime->hw.rate_max = 8000;
+<<<<<<< HEAD
 	runtime->hw.channels_min = 1;
 	emu->capture_mic_interrupt = snd_emu10k1_pcm_ac97mic_interrupt;
 	emu->pcm_capture_mic_substream = substream;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_PERIOD_BYTES, &hw_constraints_capture_period_sizes);
+=======
+	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
+				   &hw_constraints_capture_buffer_sizes);
+	emu->capture_mic_interrupt = snd_emu10k1_pcm_ac97mic_interrupt;
+	emu->pcm_capture_mic_substream = substream;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1242,7 +2066,11 @@ static int snd_emu10k1_capture_mic_close(struct snd_pcm_substream *substream)
 {
 	struct snd_emu10k1 *emu = snd_pcm_substream_chip(substream);
 
+<<<<<<< HEAD
 	emu->capture_interrupt = NULL;
+=======
+	emu->capture_mic_interrupt = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	emu->pcm_capture_mic_substream = NULL;
 	return 0;
 }
@@ -1253,7 +2081,11 @@ static int snd_emu10k1_capture_efx_open(struct snd_pcm_substream *substream)
 	struct snd_emu10k1_pcm *epcm;
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	int nefx = emu->audigy ? 64 : 32;
+<<<<<<< HEAD
 	int idx;
+=======
+	int idx, err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	epcm = kzalloc(sizeof(*epcm), GFP_KERNEL);
 	if (epcm == NULL)
@@ -1269,6 +2101,7 @@ static int snd_emu10k1_capture_efx_open(struct snd_pcm_substream *substream)
 	substream->runtime->private_data = epcm;
 	substream->runtime->private_free = snd_emu10k1_pcm_free_substream;
 	runtime->hw = snd_emu10k1_capture_efx;
+<<<<<<< HEAD
 	runtime->hw.rates = SNDRV_PCM_RATE_48000;
 	runtime->hw.rate_min = runtime->hw.rate_max = 48000;
 	spin_lock_irq(&emu->reg_lock);
@@ -1316,10 +2149,28 @@ static int snd_emu10k1_capture_efx_open(struct snd_pcm_substream *substream)
 		/* For 96kHz */
 		runtime->hw.rates = SNDRV_PCM_RATE_96000;
 		runtime->hw.rate_min = runtime->hw.rate_max = 96000;
+=======
+	if (emu->card_capabilities->emu_model) {
+		snd_emu1010_constrain_efx_rate(emu, runtime);
+		/*
+		 * There are 32 mono channels of 16bits each.
+		 * 24bit Audio uses 2x channels over 16bit,
+		 * 96kHz uses 2x channels over 48kHz,
+		 * 192kHz uses 4x channels over 48kHz.
+		 * So, for 48kHz 24bit, one has 16 channels,
+		 * for 96kHz 24bit, one has 8 channels,
+		 * for 192kHz 24bit, one has 4 channels.
+		 * 1010rev2 and 1616(m) cards have double that,
+		 * but we don't exceed 16 channels anyway.
+		 */
+#if 0
+		/* For 96kHz */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		runtime->hw.channels_min = runtime->hw.channels_max = 4;
 #endif
 #if 0
 		/* For 192kHz */
+<<<<<<< HEAD
 		runtime->hw.rates = SNDRV_PCM_RATE_192000;
 		runtime->hw.rate_min = runtime->hw.rate_max = 192000;
 		runtime->hw.channels_min = runtime->hw.channels_max = 2;
@@ -1329,6 +2180,13 @@ static int snd_emu10k1_capture_efx_open(struct snd_pcm_substream *substream)
  		 * efx_voices_mask[1] is expected to have 32bits set
 		 */
 	} else {
+=======
+		runtime->hw.channels_min = runtime->hw.channels_max = 2;
+#endif
+		runtime->hw.formats = SNDRV_PCM_FMTBIT_S32_LE;
+	} else {
+		spin_lock_irq(&emu->reg_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		runtime->hw.channels_min = runtime->hw.channels_max = 0;
 		for (idx = 0; idx < nefx; idx++) {
 			if (emu->efx_voices_mask[idx/32] & (1 << (idx%32))) {
@@ -1336,6 +2194,7 @@ static int snd_emu10k1_capture_efx_open(struct snd_pcm_substream *substream)
 				runtime->hw.channels_max++;
 			}
 		}
+<<<<<<< HEAD
 	}
 	epcm->capture_cr_val = emu->efx_voices_mask[0];
 	epcm->capture_cr_val2 = emu->efx_voices_mask[1];
@@ -1343,6 +2202,22 @@ static int snd_emu10k1_capture_efx_open(struct snd_pcm_substream *substream)
 	emu->capture_efx_interrupt = snd_emu10k1_pcm_efx_interrupt;
 	emu->pcm_capture_efx_substream = substream;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_PERIOD_BYTES, &hw_constraints_capture_period_sizes);
+=======
+		epcm->capture_cr_val = emu->efx_voices_mask[0];
+		epcm->capture_cr_val2 = emu->efx_voices_mask[1];
+		spin_unlock_irq(&emu->reg_lock);
+	}
+	err = snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
+					 &hw_constraints_efx_capture_channels);
+	if (err < 0) {
+		kfree(epcm);
+		return err;
+	}
+	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
+				   &hw_constraints_capture_buffer_sizes);
+	emu->capture_efx_interrupt = snd_emu10k1_pcm_efx_interrupt;
+	emu->pcm_capture_efx_substream = substream;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1350,20 +2225,31 @@ static int snd_emu10k1_capture_efx_close(struct snd_pcm_substream *substream)
 {
 	struct snd_emu10k1 *emu = snd_pcm_substream_chip(substream);
 
+<<<<<<< HEAD
 	emu->capture_interrupt = NULL;
+=======
+	emu->capture_efx_interrupt = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	emu->pcm_capture_efx_substream = NULL;
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1_playback_ops = {
 	.open =			snd_emu10k1_playback_open,
 	.close =		snd_emu10k1_playback_close,
 	.ioctl =		snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops snd_emu10k1_playback_ops = {
+	.open =			snd_emu10k1_playback_open,
+	.close =		snd_emu10k1_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params =		snd_emu10k1_playback_hw_params,
 	.hw_free =		snd_emu10k1_playback_hw_free,
 	.prepare =		snd_emu10k1_playback_prepare,
 	.trigger =		snd_emu10k1_playback_trigger,
 	.pointer =		snd_emu10k1_playback_pointer,
+<<<<<<< HEAD
 	.page =			snd_pcm_sgbuf_ops_page,
 };
 
@@ -1373,12 +2259,20 @@ static struct snd_pcm_ops snd_emu10k1_capture_ops = {
 	.ioctl =		snd_pcm_lib_ioctl,
 	.hw_params =		snd_emu10k1_capture_hw_params,
 	.hw_free =		snd_emu10k1_capture_hw_free,
+=======
+};
+
+static const struct snd_pcm_ops snd_emu10k1_capture_ops = {
+	.open =			snd_emu10k1_capture_open,
+	.close =		snd_emu10k1_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =		snd_emu10k1_capture_prepare,
 	.trigger =		snd_emu10k1_capture_trigger,
 	.pointer =		snd_emu10k1_capture_pointer,
 };
 
 /* EFX playback */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1_efx_playback_ops = {
 	.open =			snd_emu10k1_efx_playback_open,
 	.close =		snd_emu10k1_efx_playback_close,
@@ -1392,15 +2286,33 @@ static struct snd_pcm_ops snd_emu10k1_efx_playback_ops = {
 };
 
 int __devinit snd_emu10k1_pcm(struct snd_emu10k1 * emu, int device, struct snd_pcm ** rpcm)
+=======
+static const struct snd_pcm_ops snd_emu10k1_efx_playback_ops = {
+	.open =			snd_emu10k1_efx_playback_open,
+	.close =		snd_emu10k1_efx_playback_close,
+	.hw_params =		snd_emu10k1_playback_hw_params,
+	.hw_free =		snd_emu10k1_playback_hw_free,
+	.prepare =		snd_emu10k1_efx_playback_prepare,
+	.trigger =		snd_emu10k1_efx_playback_trigger,
+	.pointer =		snd_emu10k1_playback_pointer,
+};
+
+int snd_emu10k1_pcm(struct snd_emu10k1 *emu, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	struct snd_pcm_substream *substream;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
 	if ((err = snd_pcm_new(emu->card, "emu10k1", device, 32, 1, &pcm)) < 0)
+=======
+	err = snd_pcm_new(emu->card, "emu10k1", device, 32, 1, &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	pcm->private_data = emu;
@@ -1413,6 +2325,7 @@ int __devinit snd_emu10k1_pcm(struct snd_emu10k1 * emu, int device, struct snd_p
 	strcpy(pcm->name, "ADC Capture/Standard PCM Playback");
 	emu->pcm = pcm;
 
+<<<<<<< HEAD
 	for (substream = pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].substream; substream; substream = substream->next)
 		if ((err = snd_pcm_lib_preallocate_pages(substream, SNDRV_DMA_TYPE_DEV_SG, snd_dma_pci_data(emu->pci), 64*1024, 64*1024)) < 0)
 			return err;
@@ -1422,20 +2335,40 @@ int __devinit snd_emu10k1_pcm(struct snd_emu10k1 * emu, int device, struct snd_p
 
 	if (rpcm)
 		*rpcm = pcm;
+=======
+	/* playback substream can't use managed buffers due to alignment */
+	for (substream = pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].substream; substream; substream = substream->next)
+		snd_pcm_lib_preallocate_pages(substream, SNDRV_DMA_TYPE_DEV_SG,
+					      &emu->pci->dev,
+					      64*1024, 64*1024);
+
+	for (substream = pcm->streams[SNDRV_PCM_STREAM_CAPTURE].substream; substream; substream = substream->next)
+		snd_pcm_set_managed_buffer(substream, SNDRV_DMA_TYPE_DEV,
+					   &emu->pci->dev, 64*1024, 64*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 int __devinit snd_emu10k1_pcm_multi(struct snd_emu10k1 * emu, int device, struct snd_pcm ** rpcm)
+=======
+int snd_emu10k1_pcm_multi(struct snd_emu10k1 *emu, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	struct snd_pcm_substream *substream;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
 	if ((err = snd_pcm_new(emu->card, "emu10k1", device, 1, 0, &pcm)) < 0)
+=======
+	err = snd_pcm_new(emu->card, "emu10k1", device, 1, 0, &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	pcm->private_data = emu;
@@ -1448,36 +2381,57 @@ int __devinit snd_emu10k1_pcm_multi(struct snd_emu10k1 * emu, int device, struct
 	emu->pcm_multi = pcm;
 
 	for (substream = pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].substream; substream; substream = substream->next)
+<<<<<<< HEAD
 		if ((err = snd_pcm_lib_preallocate_pages(substream, SNDRV_DMA_TYPE_DEV_SG, snd_dma_pci_data(emu->pci), 64*1024, 64*1024)) < 0)
 			return err;
 
 	if (rpcm)
 		*rpcm = pcm;
+=======
+		snd_pcm_lib_preallocate_pages(substream, SNDRV_DMA_TYPE_DEV_SG,
+					      &emu->pci->dev,
+					      64*1024, 64*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1_capture_mic_ops = {
 	.open =			snd_emu10k1_capture_mic_open,
 	.close =		snd_emu10k1_capture_mic_close,
 	.ioctl =		snd_pcm_lib_ioctl,
 	.hw_params =		snd_emu10k1_capture_hw_params,
 	.hw_free =		snd_emu10k1_capture_hw_free,
+=======
+static const struct snd_pcm_ops snd_emu10k1_capture_mic_ops = {
+	.open =			snd_emu10k1_capture_mic_open,
+	.close =		snd_emu10k1_capture_mic_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =		snd_emu10k1_capture_prepare,
 	.trigger =		snd_emu10k1_capture_trigger,
 	.pointer =		snd_emu10k1_capture_pointer,
 };
 
+<<<<<<< HEAD
 int __devinit snd_emu10k1_pcm_mic(struct snd_emu10k1 * emu, int device, struct snd_pcm ** rpcm)
+=======
+int snd_emu10k1_pcm_mic(struct snd_emu10k1 *emu, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
 	if ((err = snd_pcm_new(emu->card, "emu10k1 mic", device, 0, 1, &pcm)) < 0)
+=======
+	err = snd_pcm_new(emu->card, "emu10k1 mic", device, 0, 1, &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	pcm->private_data = emu;
@@ -1488,10 +2442,16 @@ int __devinit snd_emu10k1_pcm_mic(struct snd_emu10k1 * emu, int device, struct s
 	strcpy(pcm->name, "Mic Capture");
 	emu->pcm_mic = pcm;
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(emu->pci), 64*1024, 64*1024);
 
 	if (rpcm)
 		*rpcm = pcm;
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV, &emu->pci->dev,
+				       64*1024, 64*1024);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1512,10 +2472,15 @@ static int snd_emu10k1_pcm_efx_voices_mask_get(struct snd_kcontrol *kcontrol, st
 	int nefx = emu->audigy ? 64 : 32;
 	int idx;
 	
+<<<<<<< HEAD
 	spin_lock_irq(&emu->reg_lock);
 	for (idx = 0; idx < nefx; idx++)
 		ucontrol->value.integer.value[idx] = (emu->efx_voices_mask[idx / 32] & (1 << (idx % 32))) ? 1 : 0;
 	spin_unlock_irq(&emu->reg_lock);
+=======
+	for (idx = 0; idx < nefx; idx++)
+		ucontrol->value.integer.value[idx] = (emu->efx_voices_mask[idx / 32] & (1 << (idx % 32))) ? 1 : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1524,7 +2489,10 @@ static int snd_emu10k1_pcm_efx_voices_mask_put(struct snd_kcontrol *kcontrol, st
 	struct snd_emu10k1 *emu = snd_kcontrol_chip(kcontrol);
 	unsigned int nval[2], bits;
 	int nefx = emu->audigy ? 64 : 32;
+<<<<<<< HEAD
 	int nefxb = emu->audigy ? 7 : 6;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int change, idx;
 	
 	nval[0] = nval[1] = 0;
@@ -1533,12 +2501,17 @@ static int snd_emu10k1_pcm_efx_voices_mask_put(struct snd_kcontrol *kcontrol, st
 			nval[idx / 32] |= 1 << (idx % 32);
 			bits++;
 		}
+<<<<<<< HEAD
 		
 	for (idx = 0; idx < nefxb; idx++)
 		if (1 << idx == bits)
 			break;
 	
 	if (idx >= nefxb)
+=======
+
+	if (bits == 9 || bits == 11 || bits == 13 || bits == 15 || bits > 16)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	spin_lock_irq(&emu->reg_lock);
@@ -1550,7 +2523,11 @@ static int snd_emu10k1_pcm_efx_voices_mask_put(struct snd_kcontrol *kcontrol, st
 	return change;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_emu10k1_pcm_efx_voices_mask = {
+=======
+static const struct snd_kcontrol_new snd_emu10k1_pcm_efx_voices_mask = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 	.name = "Captured FX8010 Outputs",
 	.info = snd_emu10k1_pcm_efx_voices_mask_info,
@@ -1558,12 +2535,18 @@ static struct snd_kcontrol_new snd_emu10k1_pcm_efx_voices_mask = {
 	.put = snd_emu10k1_pcm_efx_voices_mask_put
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1_capture_efx_ops = {
 	.open =			snd_emu10k1_capture_efx_open,
 	.close =		snd_emu10k1_capture_efx_close,
 	.ioctl =		snd_pcm_lib_ioctl,
 	.hw_params =		snd_emu10k1_capture_hw_params,
 	.hw_free =		snd_emu10k1_capture_hw_free,
+=======
+static const struct snd_pcm_ops snd_emu10k1_capture_efx_ops = {
+	.open =			snd_emu10k1_capture_efx_open,
+	.close =		snd_emu10k1_capture_efx_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =		snd_emu10k1_capture_prepare,
 	.trigger =		snd_emu10k1_capture_trigger,
 	.pointer =		snd_emu10k1_capture_pointer,
@@ -1588,7 +2571,12 @@ static void snd_emu10k1_fx8010_playback_tram_poke1(unsigned short *dst_left,
 						   unsigned int tram_shift)
 {
 	/*
+<<<<<<< HEAD
 	printk(KERN_DEBUG "tram_poke1: dst_left = 0x%p, dst_right = 0x%p, "
+=======
+	dev_dbg(emu->card->dev,
+		"tram_poke1: dst_left = 0x%p, dst_right = 0x%p, "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       "src = 0x%p, count = 0x%x\n",
 	       dst_left, dst_right, src, count);
 	*/
@@ -1639,6 +2627,7 @@ static int snd_emu10k1_fx8010_playback_transfer(struct snd_pcm_substream *substr
 	struct snd_emu10k1 *emu = snd_pcm_substream_chip(substream);
 	struct snd_emu10k1_fx8010_pcm *pcm = &emu->fx8010.pcm[substream->number];
 
+<<<<<<< HEAD
 	snd_pcm_indirect_playback_transfer(substream, &pcm->pcm_rec, fx8010_pb_trans_copy);
 	return 0;
 }
@@ -1647,6 +2636,10 @@ static int snd_emu10k1_fx8010_playback_hw_params(struct snd_pcm_substream *subst
 						 struct snd_pcm_hw_params *hw_params)
 {
 	return snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(hw_params));
+=======
+	return snd_pcm_indirect_playback_transfer(substream, &pcm->pcm_rec,
+						  fx8010_pb_trans_copy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_emu10k1_fx8010_playback_hw_free(struct snd_pcm_substream *substream)
@@ -1657,7 +2650,10 @@ static int snd_emu10k1_fx8010_playback_hw_free(struct snd_pcm_substream *substre
 
 	for (i = 0; i < pcm->channels; i++)
 		snd_emu10k1_ptr_write(emu, TANKMEMADDRREGBASE + 0x80 + pcm->etram[i], 0, 0);
+<<<<<<< HEAD
 	snd_pcm_lib_free_pages(substream);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1669,7 +2665,11 @@ static int snd_emu10k1_fx8010_playback_prepare(struct snd_pcm_substream *substre
 	unsigned int i;
 	
 	/*
+<<<<<<< HEAD
 	printk(KERN_DEBUG "prepare: etram_pages = 0x%p, dma_area = 0x%x, "
+=======
+	dev_dbg(emu->card->dev, "prepare: etram_pages = 0x%p, dma_area = 0x%x, "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       "buffer_size = 0x%x (0x%x)\n",
 	       emu->fx8010.etram_pages, runtime->dma_area,
 	       runtime->buffer_size, runtime->buffer_size << 2);
@@ -1679,12 +2679,23 @@ static int snd_emu10k1_fx8010_playback_prepare(struct snd_pcm_substream *substre
 	pcm->pcm_rec.sw_buffer_size = snd_pcm_lib_buffer_bytes(substream);
 	pcm->tram_pos = INITIAL_TRAM_POS(pcm->buffer_size);
 	pcm->tram_shift = 0;
+<<<<<<< HEAD
 	snd_emu10k1_ptr_write(emu, emu->gpr_base + pcm->gpr_running, 0, 0);	/* reset */
 	snd_emu10k1_ptr_write(emu, emu->gpr_base + pcm->gpr_trigger, 0, 0);	/* reset */
 	snd_emu10k1_ptr_write(emu, emu->gpr_base + pcm->gpr_size, 0, runtime->buffer_size);
 	snd_emu10k1_ptr_write(emu, emu->gpr_base + pcm->gpr_ptr, 0, 0);		/* reset ptr number */
 	snd_emu10k1_ptr_write(emu, emu->gpr_base + pcm->gpr_count, 0, runtime->period_size);
 	snd_emu10k1_ptr_write(emu, emu->gpr_base + pcm->gpr_tmpcount, 0, runtime->period_size);
+=======
+	snd_emu10k1_ptr_write_multiple(emu, 0,
+		emu->gpr_base + pcm->gpr_running, 0,	/* reset */
+		emu->gpr_base + pcm->gpr_trigger, 0,	/* reset */
+		emu->gpr_base + pcm->gpr_size, runtime->buffer_size,
+		emu->gpr_base + pcm->gpr_ptr, 0,	/* reset ptr number */
+		emu->gpr_base + pcm->gpr_count, runtime->period_size,
+		emu->gpr_base + pcm->gpr_tmpcount, runtime->period_size,
+		REGLIST_END);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < pcm->channels; i++)
 		snd_emu10k1_ptr_write(emu, TANKMEMADDRREGBASE + 0x80 + pcm->etram[i], 0, (TANKMEMADDRREG_READ|TANKMEMADDRREG_ALIGN) + i * (runtime->buffer_size / pcm->channels));
 	return 0;
@@ -1723,7 +2734,11 @@ static int snd_emu10k1_fx8010_playback_trigger(struct snd_pcm_substream *substre
 	case SNDRV_PCM_TRIGGER_STOP:
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
 	case SNDRV_PCM_TRIGGER_SUSPEND:
+<<<<<<< HEAD
 		snd_emu10k1_fx8010_unregister_irq_handler(emu, pcm->irq); pcm->irq = NULL;
+=======
+		snd_emu10k1_fx8010_unregister_irq_handler(emu, &pcm->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_emu10k1_ptr_write(emu, emu->gpr_base + pcm->gpr_trigger, 0, 0);
 		pcm->tram_pos = INITIAL_TRAM_POS(pcm->buffer_size);
 		pcm->tram_shift = 0;
@@ -1749,11 +2764,20 @@ static snd_pcm_uframes_t snd_emu10k1_fx8010_playback_pointer(struct snd_pcm_subs
 	return snd_pcm_indirect_playback_pointer(substream, &pcm->pcm_rec, ptr);
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_emu10k1_fx8010_playback =
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_RESUME |
 				 /* SNDRV_PCM_INFO_MMAP_VALID | */ SNDRV_PCM_INFO_PAUSE),
+=======
+static const struct snd_pcm_hardware snd_emu10k1_fx8010_playback =
+{
+	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
+				 SNDRV_PCM_INFO_RESUME |
+				 /* SNDRV_PCM_INFO_MMAP_VALID | */ SNDRV_PCM_INFO_PAUSE |
+				 SNDRV_PCM_INFO_SYNC_APPLPTR),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.formats =		SNDRV_PCM_FMTBIT_U8 | SNDRV_PCM_FMTBIT_S16_LE,
 	.rates =		SNDRV_PCM_RATE_48000,
 	.rate_min =		48000,
@@ -1798,11 +2822,17 @@ static int snd_emu10k1_fx8010_playback_close(struct snd_pcm_substream *substream
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_emu10k1_fx8010_playback_ops = {
 	.open =			snd_emu10k1_fx8010_playback_open,
 	.close =		snd_emu10k1_fx8010_playback_close,
 	.ioctl =		snd_pcm_lib_ioctl,
 	.hw_params =		snd_emu10k1_fx8010_playback_hw_params,
+=======
+static const struct snd_pcm_ops snd_emu10k1_fx8010_playback_ops = {
+	.open =			snd_emu10k1_fx8010_playback_open,
+	.close =		snd_emu10k1_fx8010_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_free =		snd_emu10k1_fx8010_playback_hw_free,
 	.prepare =		snd_emu10k1_fx8010_playback_prepare,
 	.trigger =		snd_emu10k1_fx8010_playback_trigger,
@@ -1810,20 +2840,30 @@ static struct snd_pcm_ops snd_emu10k1_fx8010_playback_ops = {
 	.ack =			snd_emu10k1_fx8010_playback_transfer,
 };
 
+<<<<<<< HEAD
 int __devinit snd_emu10k1_pcm_efx(struct snd_emu10k1 * emu, int device, struct snd_pcm ** rpcm)
+=======
+int snd_emu10k1_pcm_efx(struct snd_emu10k1 *emu, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	struct snd_kcontrol *kctl;
 	int err;
 
+<<<<<<< HEAD
 	if (rpcm)
 		*rpcm = NULL;
 
 	if ((err = snd_pcm_new(emu->card, "emu10k1 efx", device, 8, 1, &pcm)) < 0)
+=======
+	err = snd_pcm_new(emu->card, "emu10k1 efx", device, emu->audigy ? 0 : 8, 1, &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	pcm->private_data = emu;
 
+<<<<<<< HEAD
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_emu10k1_fx8010_playback_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &snd_emu10k1_capture_efx_ops);
 
@@ -1865,6 +2905,45 @@ int __devinit snd_emu10k1_pcm_efx(struct snd_emu10k1 * emu, int device, struct s
 	snd_ctl_add(emu->card, kctl);
 
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(emu->pci), 64*1024, 64*1024);
+=======
+	if (!emu->audigy)
+		snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_emu10k1_fx8010_playback_ops);
+	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &snd_emu10k1_capture_efx_ops);
+
+	pcm->info_flags = 0;
+	if (emu->audigy)
+		strcpy(pcm->name, "Multichannel Capture");
+	else
+		strcpy(pcm->name, "Multichannel Capture/PT Playback");
+	emu->pcm_efx = pcm;
+
+	if (!emu->card_capabilities->emu_model) {
+		// On Sound Blasters, the DSP code copies the EXTINs to FXBUS2.
+		// The mask determines which of these and the EXTOUTs the multi-
+		// channel capture actually records (the channel order is fixed).
+		if (emu->audigy) {
+			emu->efx_voices_mask[0] = 0;
+			emu->efx_voices_mask[1] = 0xffff;
+		} else {
+			emu->efx_voices_mask[0] = 0xffff0000;
+			emu->efx_voices_mask[1] = 0;
+		}
+		kctl = snd_ctl_new1(&snd_emu10k1_pcm_efx_voices_mask, emu);
+		if (!kctl)
+			return -ENOMEM;
+		kctl->id.device = device;
+		err = snd_ctl_add(emu->card, kctl);
+		if (err < 0)
+			return err;
+	} else {
+		// On E-MU cards, the DSP code copies the P16VINs/EMU32INs to
+		// FXBUS2. These are already selected & routed by the FPGA,
+		// so there is no need to apply additional masking.
+	}
+
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV, &emu->pci->dev,
+				       64*1024, 64*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }

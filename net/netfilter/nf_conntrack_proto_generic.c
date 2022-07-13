@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 /* (C) 1999-2001 Paul `Rusty' Russell
  * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/* (C) 1999-2001 Paul `Rusty' Russell
+ * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -11,6 +17,7 @@
 #include <linux/timer.h>
 #include <linux/netfilter.h>
 #include <net/netfilter/nf_conntrack_l4proto.h>
+<<<<<<< HEAD
 
 static unsigned int nf_ct_generic_timeout __read_mostly = 600*HZ;
 
@@ -90,20 +97,43 @@ static bool generic_new(struct nf_conn *ct, const struct sk_buff *skb,
 }
 
 #if IS_ENABLED(CONFIG_NF_CT_NETLINK_TIMEOUT)
+=======
+#include <net/netfilter/nf_conntrack_timeout.h>
+
+static const unsigned int nf_ct_generic_timeout = 600*HZ;
+
+#ifdef CONFIG_NF_CONNTRACK_TIMEOUT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/netfilter/nfnetlink.h>
 #include <linux/netfilter/nfnetlink_cttimeout.h>
 
+<<<<<<< HEAD
 static int generic_timeout_nlattr_to_obj(struct nlattr *tb[], void *data)
 {
 	unsigned int *timeout = data;
 
+=======
+static int generic_timeout_nlattr_to_obj(struct nlattr *tb[],
+					 struct net *net, void *data)
+{
+	struct nf_generic_net *gn = nf_generic_pernet(net);
+	unsigned int *timeout = data;
+
+	if (!timeout)
+		timeout = &gn->timeout;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tb[CTA_TIMEOUT_GENERIC_TIMEOUT])
 		*timeout =
 		    ntohl(nla_get_be32(tb[CTA_TIMEOUT_GENERIC_TIMEOUT])) * HZ;
 	else {
 		/* Set default generic timeout. */
+<<<<<<< HEAD
 		*timeout = nf_ct_generic_timeout;
+=======
+		*timeout = gn->timeout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -114,7 +144,12 @@ generic_timeout_obj_to_nlattr(struct sk_buff *skb, const void *data)
 {
 	const unsigned int *timeout = data;
 
+<<<<<<< HEAD
 	NLA_PUT_BE32(skb, CTA_TIMEOUT_GENERIC_TIMEOUT, htonl(*timeout / HZ));
+=======
+	if (nla_put_be32(skb, CTA_TIMEOUT_GENERIC_TIMEOUT, htonl(*timeout / HZ)))
+		goto nla_put_failure;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -126,6 +161,7 @@ static const struct nla_policy
 generic_timeout_nla_policy[CTA_TIMEOUT_GENERIC_MAX+1] = {
 	[CTA_TIMEOUT_GENERIC_TIMEOUT]	= { .type = NLA_U32 },
 };
+<<<<<<< HEAD
 #endif /* CONFIG_NF_CT_NETLINK_TIMEOUT */
 
 #ifdef CONFIG_SYSCTL
@@ -166,6 +202,21 @@ struct nf_conntrack_l4proto nf_conntrack_l4proto_generic __read_mostly =
 	.get_timeouts		= generic_get_timeouts,
 	.new			= generic_new,
 #if IS_ENABLED(CONFIG_NF_CT_NETLINK_TIMEOUT)
+=======
+#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+
+void nf_conntrack_generic_init_net(struct net *net)
+{
+	struct nf_generic_net *gn = nf_generic_pernet(net);
+
+	gn->timeout = nf_ct_generic_timeout;
+}
+
+const struct nf_conntrack_l4proto nf_conntrack_l4proto_generic =
+{
+	.l4proto		= 255,
+#ifdef CONFIG_NF_CONNTRACK_TIMEOUT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ctnl_timeout		= {
 		.nlattr_to_obj	= generic_timeout_nlattr_to_obj,
 		.obj_to_nlattr	= generic_timeout_obj_to_nlattr,
@@ -173,6 +224,7 @@ struct nf_conntrack_l4proto nf_conntrack_l4proto_generic __read_mostly =
 		.obj_size	= sizeof(unsigned int),
 		.nla_policy	= generic_timeout_nla_policy,
 	},
+<<<<<<< HEAD
 #endif /* CONFIG_NF_CT_NETLINK_TIMEOUT */
 #ifdef CONFIG_SYSCTL
 	.ctl_table_header	= &generic_sysctl_header,
@@ -181,4 +233,7 @@ struct nf_conntrack_l4proto nf_conntrack_l4proto_generic __read_mostly =
 	.ctl_compat_table	= generic_compat_sysctl_table,
 #endif
 #endif
+=======
+#endif /* CONFIG_NF_CONNTRACK_TIMEOUT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

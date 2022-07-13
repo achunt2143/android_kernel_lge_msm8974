@@ -55,6 +55,7 @@ Mellon the rights to redistribute these changes without encumbrance.
  * Linux modifications by 
  * Peter Braam, Aug 1996
  */
+<<<<<<< HEAD
 
 #ifndef _CODA_HEADER_
 #define _CODA_HEADER_
@@ -742,3 +743,12 @@ struct coda_mount_data {
 
 #endif 
 
+=======
+#ifndef _CODA_HEADER_
+#define _CODA_HEADER_
+
+typedef unsigned long long u_quad_t;
+
+#include <uapi/linux/coda.h>
+#endif 
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

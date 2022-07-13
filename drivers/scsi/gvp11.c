@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -8,11 +12,22 @@
 #include <linux/module.h>
 
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/amigaints.h>
 #include <asm/amigahw.h>
 
 #include "scsi.h"
+=======
+#include <asm/amigaints.h>
+#include <asm/amigahw.h>
+
+#include <scsi/scsi.h>
+#include <scsi/scsi_cmnd.h>
+#include <scsi/scsi_device.h>
+#include <scsi/scsi_eh.h>
+#include <scsi/scsi_tcq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "wd33c93.h"
 #include "gvp11.h"
 
@@ -22,8 +37,17 @@
 struct gvp11_hostdata {
 	struct WD33C93_hostdata wh;
 	struct gvp11_scsiregs *regs;
+<<<<<<< HEAD
 };
 
+=======
+	struct device *dev;
+};
+
+#define DMA_DIR(d)   ((d == DATA_OUT_DIR) ? DMA_TO_DEVICE : DMA_FROM_DEVICE)
+#define TO_DMA_MASK(m)	(~((unsigned long long)m & 0xffffffff))
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static irqreturn_t gvp11_intr(int irq, void *data)
 {
 	struct Scsi_Host *instance = data;
@@ -42,6 +66,7 @@ static irqreturn_t gvp11_intr(int irq, void *data)
 
 static int gvp11_xfer_mask = 0;
 
+<<<<<<< HEAD
 void gvp11_setup(char *str, int *ints)
 {
 	gvp11_xfer_mask = ints[1];
@@ -49,11 +74,18 @@ void gvp11_setup(char *str, int *ints)
 
 static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 {
+=======
+static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
+{
+	struct scsi_pointer *scsi_pointer = WD33C93_scsi_pointer(cmd);
+	unsigned long len = scsi_pointer->this_residual;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *instance = cmd->device->host;
 	struct gvp11_hostdata *hdata = shost_priv(instance);
 	struct WD33C93_hostdata *wh = &hdata->wh;
 	struct gvp11_scsiregs *regs = hdata->regs;
 	unsigned short cntr = GVP11_DMAC_INT_ENABLE;
+<<<<<<< HEAD
 	unsigned long addr = virt_to_bus(cmd->SCp.ptr);
 	int bank_mask;
 	static int scsi_alloc_out_of_range = 0;
@@ -61,6 +93,30 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 	/* use bounce buffer if the physical address is bad */
 	if (addr & wh->dma_xfer_mask) {
 		wh->dma_bounce_len = (cmd->SCp.this_residual + 511) & ~0x1ff;
+=======
+	dma_addr_t addr;
+	int bank_mask;
+	static int scsi_alloc_out_of_range = 0;
+
+	addr = dma_map_single(hdata->dev, scsi_pointer->ptr,
+			      len, DMA_DIR(dir_in));
+	if (dma_mapping_error(hdata->dev, addr)) {
+		dev_warn(hdata->dev, "cannot map SCSI data block %p\n",
+			 scsi_pointer->ptr);
+		return 1;
+	}
+	scsi_pointer->dma_handle = addr;
+
+	/* use bounce buffer if the physical address is bad */
+	if (addr & wh->dma_xfer_mask) {
+		/* drop useless mapping */
+		dma_unmap_single(hdata->dev, scsi_pointer->dma_handle,
+				 scsi_pointer->this_residual,
+				 DMA_DIR(dir_in));
+		scsi_pointer->dma_handle = (dma_addr_t) NULL;
+
+		wh->dma_bounce_len = (scsi_pointer->this_residual + 511) & ~0x1ff;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (!scsi_alloc_out_of_range) {
 			wh->dma_bounce_buffer =
@@ -82,10 +138,39 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 			wh->dma_buffer_pool = BUF_CHIP_ALLOCED;
 		}
 
+<<<<<<< HEAD
 		/* check if the address of the bounce buffer is OK */
 		addr = virt_to_bus(wh->dma_bounce_buffer);
 
 		if (addr & wh->dma_xfer_mask) {
+=======
+		if (!dir_in) {
+			/* copy to bounce buffer for a write */
+			memcpy(wh->dma_bounce_buffer, scsi_pointer->ptr,
+			       scsi_pointer->this_residual);
+		}
+
+		if (wh->dma_buffer_pool == BUF_SCSI_ALLOCED) {
+		/* will flush/invalidate cache for us */
+			addr = dma_map_single(hdata->dev,
+					      wh->dma_bounce_buffer,
+					      wh->dma_bounce_len,
+					      DMA_DIR(dir_in));
+			/* can't map buffer; use PIO */
+			if (dma_mapping_error(hdata->dev, addr)) {
+				dev_warn(hdata->dev,
+					 "cannot map bounce buffer %p\n",
+					 wh->dma_bounce_buffer);
+				return 1;
+			}
+		}
+
+		if (addr & wh->dma_xfer_mask) {
+			/* drop useless mapping */
+			dma_unmap_single(hdata->dev, scsi_pointer->dma_handle,
+					 scsi_pointer->this_residual,
+					 DMA_DIR(dir_in));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* fall back to Chip RAM if address out of range */
 			if (wh->dma_buffer_pool == BUF_SCSI_ALLOCED) {
 				kfree(wh->dma_bounce_buffer);
@@ -103,6 +188,7 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 				return 1;
 			}
 
+<<<<<<< HEAD
 			addr = virt_to_bus(wh->dma_bounce_buffer);
 			wh->dma_buffer_pool = BUF_CHIP_ALLOCED;
 		}
@@ -112,6 +198,21 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 			memcpy(wh->dma_bounce_buffer, cmd->SCp.ptr,
 			       cmd->SCp.this_residual);
 		}
+=======
+			if (!dir_in) {
+				/* copy to bounce buffer for a write */
+				memcpy(wh->dma_bounce_buffer, scsi_pointer->ptr,
+				       scsi_pointer->this_residual);
+			}
+			/* chip RAM can be mapped to phys. address directly */
+			addr = virt_to_phys(wh->dma_bounce_buffer);
+			/* no need to flush/invalidate cache */
+			wh->dma_buffer_pool = BUF_CHIP_ALLOCED;
+		}
+		/* finally, have OK mapping (punted for PIO else) */
+		scsi_pointer->dma_handle = addr;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* setup dma direction */
@@ -124,6 +225,7 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 	/* setup DMA *physical* address */
 	regs->ACR = addr;
 
+<<<<<<< HEAD
 	if (dir_in) {
 		/* invalidate any cache */
 		cache_clear(addr, cmd->SCp.this_residual);
@@ -131,6 +233,9 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 		/* push any dirty cache */
 		cache_push(addr, cmd->SCp.this_residual);
 	}
+=======
+	/* no more cache flush here - dma_map_single() takes care */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bank_mask = (~wh->dma_xfer_mask >> 18) & 0x01c0;
 	if (bank_mask)
@@ -146,6 +251,10 @@ static int dma_setup(struct scsi_cmnd *cmd, int dir_in)
 static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
 		     int status)
 {
+<<<<<<< HEAD
+=======
+	struct scsi_pointer *scsi_pointer = WD33C93_scsi_pointer(SCpnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct gvp11_hostdata *hdata = shost_priv(instance);
 	struct WD33C93_hostdata *wh = &hdata->wh;
 	struct gvp11_scsiregs *regs = hdata->regs;
@@ -155,11 +264,24 @@ static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
 	/* remove write bit from CONTROL bits */
 	regs->CNTR = GVP11_DMAC_INT_ENABLE;
 
+<<<<<<< HEAD
 	/* copy from a bounce buffer, if necessary */
 	if (status && wh->dma_bounce_buffer) {
 		if (wh->dma_dir && SCpnt)
 			memcpy(SCpnt->SCp.ptr, wh->dma_bounce_buffer,
 			       SCpnt->SCp.this_residual);
+=======
+	if (wh->dma_buffer_pool == BUF_SCSI_ALLOCED)
+		dma_unmap_single(hdata->dev, scsi_pointer->dma_handle,
+				 scsi_pointer->this_residual,
+				 DMA_DIR(wh->dma_dir));
+
+	/* copy from a bounce buffer, if necessary */
+	if (status && wh->dma_bounce_buffer) {
+		if (wh->dma_dir && SCpnt)
+			memcpy(scsi_pointer->ptr, wh->dma_bounce_buffer,
+			       scsi_pointer->this_residual);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (wh->dma_buffer_pool == BUF_SCSI_ALLOCED)
 			kfree(wh->dma_bounce_buffer);
@@ -171,6 +293,7 @@ static void dma_stop(struct Scsi_Host *instance, struct scsi_cmnd *SCpnt,
 	}
 }
 
+<<<<<<< HEAD
 static int gvp11_bus_reset(struct scsi_cmnd *cmd)
 {
 	struct Scsi_Host *instance = cmd->device->host;
@@ -196,15 +319,33 @@ static struct scsi_host_template gvp11_scsi_template = {
 	.queuecommand		= wd33c93_queuecommand,
 	.eh_abort_handler	= wd33c93_abort,
 	.eh_bus_reset_handler	= gvp11_bus_reset,
+=======
+static const struct scsi_host_template gvp11_scsi_template = {
+	.module			= THIS_MODULE,
+	.name			= "GVP Series II SCSI",
+	.show_info		= wd33c93_show_info,
+	.write_info		= wd33c93_write_info,
+	.proc_name		= "GVP11",
+	.queuecommand		= wd33c93_queuecommand,
+	.eh_abort_handler	= wd33c93_abort,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.eh_host_reset_handler	= wd33c93_host_reset,
 	.can_queue		= CAN_QUEUE,
 	.this_id		= 7,
 	.sg_tablesize		= SG_ALL,
 	.cmd_per_lun		= CMD_PER_LUN,
+<<<<<<< HEAD
 	.use_clustering		= DISABLE_CLUSTERING
 };
 
 static int __devinit check_wd33c93(struct gvp11_scsiregs *regs)
+=======
+	.dma_boundary		= PAGE_SIZE - 1,
+	.cmd_size		= sizeof(struct scsi_pointer),
+};
+
+static int check_wd33c93(struct gvp11_scsiregs *regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CHECK_WD33C93
 	volatile unsigned char *sasr_3393, *scmd_3393;
@@ -284,8 +425,12 @@ static int __devinit check_wd33c93(struct gvp11_scsiregs *regs)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit gvp11_probe(struct zorro_dev *z,
 				 const struct zorro_device_id *ent)
+=======
+static int gvp11_probe(struct zorro_dev *z, const struct zorro_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *instance;
 	unsigned long address;
@@ -298,6 +443,16 @@ static int __devinit gvp11_probe(struct zorro_dev *z,
 
 	default_dma_xfer_mask = ent->driver_data;
 
+<<<<<<< HEAD
+=======
+	if (dma_set_mask_and_coherent(&z->dev,
+		TO_DMA_MASK(default_dma_xfer_mask))) {
+		dev_warn(&z->dev, "cannot use DMA mask %llx\n",
+			 TO_DMA_MASK(default_dma_xfer_mask));
+		return -ENODEV;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Rumors state that some GVP ram boards use the same product
 	 * code as the SCSI controllers. Therefore if the board-size
@@ -310,7 +465,11 @@ static int __devinit gvp11_probe(struct zorro_dev *z,
 	if (!request_mem_region(address, 256, "wd33c93"))
 		return -EBUSY;
 
+<<<<<<< HEAD
 	regs = (struct gvp11_scsiregs *)(ZTWO_VADDR(address));
+=======
+	regs = ZTWO_VADDR(address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = check_wd33c93(regs);
 	if (error)
@@ -338,9 +497,22 @@ static int __devinit gvp11_probe(struct zorro_dev *z,
 	wdregs.SCMD = &regs->SCMD;
 
 	hdata = shost_priv(instance);
+<<<<<<< HEAD
 	if (gvp11_xfer_mask)
 		hdata->wh.dma_xfer_mask = gvp11_xfer_mask;
 	else
+=======
+	if (gvp11_xfer_mask) {
+		hdata->wh.dma_xfer_mask = gvp11_xfer_mask;
+		if (dma_set_mask_and_coherent(&z->dev,
+			TO_DMA_MASK(gvp11_xfer_mask))) {
+			dev_warn(&z->dev, "cannot use DMA mask %llx\n",
+				 TO_DMA_MASK(gvp11_xfer_mask));
+			error = -ENODEV;
+			goto fail_check_or_alloc;
+		}
+	} else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hdata->wh.dma_xfer_mask = default_dma_xfer_mask;
 
 	hdata->wh.no_sync = 0xff;
@@ -380,7 +552,11 @@ fail_check_or_alloc:
 	return error;
 }
 
+<<<<<<< HEAD
 static void __devexit gvp11_remove(struct zorro_dev *z)
+=======
+static void gvp11_remove(struct zorro_dev *z)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct Scsi_Host *instance = zorro_get_drvdata(z);
 	struct gvp11_hostdata *hdata = shost_priv(instance);
@@ -398,7 +574,11 @@ static void __devexit gvp11_remove(struct zorro_dev *z)
 	 * SERIES I though).
 	 */
 
+<<<<<<< HEAD
 static struct zorro_device_id gvp11_zorro_tbl[] __devinitdata = {
+=======
+static struct zorro_device_id gvp11_zorro_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ ZORRO_PROD_GVP_COMBO_030_R3_SCSI,	~0x00ffffff },
 	{ ZORRO_PROD_GVP_SERIES_II,		~0x00ffffff },
 	{ ZORRO_PROD_GVP_GFORCE_030_SCSI,	~0x01ffffff },
@@ -414,7 +594,11 @@ static struct zorro_driver gvp11_driver = {
 	.name		= "gvp11",
 	.id_table	= gvp11_zorro_tbl,
 	.probe		= gvp11_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(gvp11_remove),
+=======
+	.remove		= gvp11_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init gvp11_init(void)

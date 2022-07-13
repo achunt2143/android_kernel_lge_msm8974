@@ -1,10 +1,15 @@
 /*
+<<<<<<< HEAD
  * arch/sh/mm/consistent.c
  *
  * Copyright (C) 2004 - 2007  Paul Mundt
  *
  * Declared coherent memory functions based on arch/x86/kernel/pci-dma_32.c
  *
+=======
+ * Copyright (C) 2004 - 2007  Paul Mundt
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
@@ -13,6 +18,7 @@
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <linux/dma-debug.h>
 #include <linux/io.h>
 #include <linux/module.h>
@@ -101,6 +107,9 @@ void dma_cache_sync(struct device *dev, void *vaddr, size_t size,
 	}
 }
 EXPORT_SYMBOL(dma_cache_sync);
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init memchunk_setup(char *str)
 {
@@ -134,8 +143,12 @@ int __init platform_resource_setup_memory(struct platform_device *pdev,
 
 	r = pdev->resource + pdev->num_resources - 1;
 	if (r->flags) {
+<<<<<<< HEAD
 		pr_warning("%s: unable to find empty space for resource\n",
 			name);
+=======
+		pr_warn("%s: unable to find empty space for resource\n", name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -143,6 +156,7 @@ int __init platform_resource_setup_memory(struct platform_device *pdev,
 	if (!memsize)
 		return 0;
 
+<<<<<<< HEAD
 	buf = dma_alloc_coherent(NULL, memsize, &dma_handle, GFP_KERNEL);
 	if (!buf) {
 		pr_warning("%s: unable to allocate memory\n", name);
@@ -151,6 +165,14 @@ int __init platform_resource_setup_memory(struct platform_device *pdev,
 
 	memset(buf, 0, memsize);
 
+=======
+	buf = dma_alloc_coherent(&pdev->dev, memsize, &dma_handle, GFP_KERNEL);
+	if (!buf) {
+		pr_warn("%s: unable to allocate memory\n", name);
+		return -ENOMEM;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r->flags = IORESOURCE_MEM;
 	r->start = dma_handle;
 	r->end = r->start + memsize - 1;

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
@@ -14,6 +15,12 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
+ * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _VNIC_DEV_H_
 #define _VNIC_DEV_H_
@@ -36,6 +43,10 @@
 #define vnic_dev_fw_info fnic_dev_fw_info
 #define vnic_dev_spec fnic_dev_spec
 #define vnic_dev_stats_clear fnic_dev_stats_clear
+<<<<<<< HEAD
+=======
+#define vnic_dev_cmd_init fnic_dev_cmd_init
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define vnic_dev_stats_dump fnic_dev_stats_dump
 #define vnic_dev_hang_notify fnic_dev_hang_notify
 #define vnic_dev_packet_filter fnic_dev_packet_filter
@@ -128,6 +139,10 @@ int vnic_dev_fw_info(struct vnic_dev *vdev,
 int vnic_dev_spec(struct vnic_dev *vdev, unsigned int offset,
 		  unsigned int size, void *value);
 int vnic_dev_stats_clear(struct vnic_dev *vdev);
+<<<<<<< HEAD
+=======
+int vnic_dev_cmd_init(struct vnic_dev *vdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int vnic_dev_stats_dump(struct vnic_dev *vdev, struct vnic_stats **stats);
 int vnic_dev_hang_notify(struct vnic_dev *vdev);
 void vnic_dev_packet_filter(struct vnic_dev *vdev, int directed, int multicast,
@@ -148,6 +163,11 @@ int vnic_dev_disable(struct vnic_dev *vdev);
 int vnic_dev_open(struct vnic_dev *vdev, int arg);
 int vnic_dev_open_done(struct vnic_dev *vdev, int *done);
 int vnic_dev_init(struct vnic_dev *vdev, int arg);
+<<<<<<< HEAD
+=======
+u16 vnic_dev_set_default_vlan(struct vnic_dev *vdev,
+				u16 new_default_vlan);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int vnic_dev_soft_reset(struct vnic_dev *vdev, int arg);
 int vnic_dev_soft_reset_done(struct vnic_dev *vdev, int *done);
 void vnic_dev_set_intr_mode(struct vnic_dev *vdev,

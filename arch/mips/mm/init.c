@@ -10,7 +10,11 @@
  */
 #include <linux/bug.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/signal.h>
 #include <linux/sched.h>
 #include <linux/smp.h>
@@ -22,27 +26,45 @@
 #include <linux/ptrace.h>
 #include <linux/mman.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/highmem.h>
 #include <linux/swap.h>
 #include <linux/proc_fs.h>
 #include <linux/pfn.h>
 #include <linux/hardirq.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
 
 #include <asm/asm-offsets.h>
+=======
+#include <linux/kcore.h>
+#include <linux/initrd.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/bootinfo.h>
 #include <asm/cachectl.h>
 #include <asm/cpu.h>
 #include <asm/dma.h>
+<<<<<<< HEAD
 #include <asm/kmap_types.h>
 #include <asm/mmu_context.h>
 #include <asm/sections.h>
 #include <asm/pgtable.h>
+=======
+#include <asm/maar.h>
+#include <asm/mmu_context.h>
+#include <asm/mmzone.h>
+#include <asm/sections.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pgalloc.h>
 #include <asm/tlb.h>
 #include <asm/fixmap.h>
 
+<<<<<<< HEAD
 /* Atomicity and interruptability */
 #ifdef CONFIG_MIPS_MT_SMTC
 
@@ -67,20 +89,35 @@
 /*
  * We have up to 8 empty zeroed pages so we can map one of the right colour
  * when needed.  This is necessary only on R4000 / R4400 SC and MC versions
+=======
+/*
+ * We have up to 8 empty zeroed pages so we can map one of the right colour
+ * when needed.	 This is necessary only on R4000 / R4400 SC and MC versions
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * where we have to avoid VCED / VECI exceptions for good performance at
  * any price.  Since page is never written to after the initialization we
  * don't have to care about aliases on other CPUs.
  */
 unsigned long empty_zero_page, zero_page_mask;
 EXPORT_SYMBOL_GPL(empty_zero_page);
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(zero_page_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Not static inline because used by IP27 special magic initialization code
  */
+<<<<<<< HEAD
 unsigned long setup_zero_pages(void)
 {
 	unsigned int order;
 	unsigned long size;
+=======
+void setup_zero_pages(void)
+{
+	unsigned int order, i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page *page;
 
 	if (cpu_has_vce)
@@ -94,6 +131,7 @@ unsigned long setup_zero_pages(void)
 
 	page = virt_to_page((void *)empty_zero_page);
 	split_page(page, order);
+<<<<<<< HEAD
 	while (page < virt_to_page((void *)(empty_zero_page + (PAGE_SIZE << order)))) {
 		SetPageReserved(page);
 		page++;
@@ -122,11 +160,24 @@ static inline void kmap_coherent_init(void) {}
 void *kmap_coherent(struct page *page, unsigned long addr)
 {
 	enum fixed_addresses idx;
+=======
+	for (i = 0; i < (1 << order); i++, page++)
+		mark_page_reserved(page);
+
+	zero_page_mask = ((PAGE_SIZE << order) - 1) & PAGE_MASK;
+}
+
+static void *__kmap_pgprot(struct page *page, unsigned long addr, pgprot_t prot)
+{
+	enum fixed_addresses idx;
+	unsigned int old_mmid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long vaddr, flags, entrylo;
 	unsigned long old_ctx;
 	pte_t pte;
 	int tlbidx;
 
+<<<<<<< HEAD
 	BUG_ON(Page_dcache_dirty(page));
 
 	inc_preempt_count();
@@ -140,16 +191,34 @@ void *kmap_coherent(struct page *page, unsigned long addr)
 	vaddr = __fix_to_virt(FIX_CMAP_END - idx);
 	pte = mk_pte(page, PAGE_KERNEL);
 #if defined(CONFIG_64BIT_PHYS_ADDR) && defined(CONFIG_CPU_MIPS32)
+=======
+	BUG_ON(folio_test_dcache_dirty(page_folio(page)));
+
+	preempt_disable();
+	pagefault_disable();
+	idx = (addr >> PAGE_SHIFT) & (FIX_N_COLOURS - 1);
+	idx += in_interrupt() ? FIX_N_COLOURS : 0;
+	vaddr = __fix_to_virt(FIX_CMAP_END - idx);
+	pte = mk_pte(page, prot);
+#if defined(CONFIG_XPA)
+	entrylo = pte_to_entrylo(pte.pte_high);
+#elif defined(CONFIG_PHYS_ADDR_T_64BIT) && defined(CONFIG_CPU_MIPS32)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	entrylo = pte.pte_high;
 #else
 	entrylo = pte_to_entrylo(pte_val(pte));
 #endif
 
+<<<<<<< HEAD
 	ENTER_CRITICAL(flags);
+=======
+	local_irq_save(flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	old_ctx = read_c0_entryhi();
 	write_c0_entryhi(vaddr & (PAGE_MASK << 1));
 	write_c0_entrylo0(entrylo);
 	write_c0_entrylo1(entrylo);
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 	set_pte(kmap_coherent_pte - (FIX_CMAP_END - idx), pte);
 	/* preload TLB instead of local_flush_tlb_one() */
@@ -164,18 +233,41 @@ void *kmap_coherent(struct page *page, unsigned long addr)
 		tlb_write_indexed();
 #else
 	tlbidx = read_c0_wired();
+=======
+	if (cpu_has_mmid) {
+		old_mmid = read_c0_memorymapid();
+		write_c0_memorymapid(MMID_KERNEL_WIRED);
+	}
+#ifdef CONFIG_XPA
+	if (cpu_has_xpa) {
+		entrylo = (pte.pte_low & _PFNX_MASK);
+		writex_c0_entrylo0(entrylo);
+		writex_c0_entrylo1(entrylo);
+	}
+#endif
+	tlbidx = num_wired_entries();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	write_c0_wired(tlbidx + 1);
 	write_c0_index(tlbidx);
 	mtc0_tlbw_hazard();
 	tlb_write_indexed();
+<<<<<<< HEAD
 #endif
 	tlbw_use_hazard();
 	write_c0_entryhi(old_ctx);
 	EXIT_CRITICAL(flags);
+=======
+	tlbw_use_hazard();
+	write_c0_entryhi(old_ctx);
+	if (cpu_has_mmid)
+		write_c0_memorymapid(old_mmid);
+	local_irq_restore(flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (void*) vaddr;
 }
 
+<<<<<<< HEAD
 #define UNIQUE_ENTRYHI(idx) (CKSEG0 + ((idx) << (PAGE_SHIFT + 1)))
 
 void kunmap_coherent(void)
@@ -187,6 +279,26 @@ void kunmap_coherent(void)
 	ENTER_CRITICAL(flags);
 	old_ctx = read_c0_entryhi();
 	wired = read_c0_wired() - 1;
+=======
+void *kmap_coherent(struct page *page, unsigned long addr)
+{
+	return __kmap_pgprot(page, addr, PAGE_KERNEL);
+}
+
+void *kmap_noncoherent(struct page *page, unsigned long addr)
+{
+	return __kmap_pgprot(page, addr, PAGE_KERNEL_NC);
+}
+
+void kunmap_coherent(void)
+{
+	unsigned int wired;
+	unsigned long flags, old_ctx;
+
+	local_irq_save(flags);
+	old_ctx = read_c0_entryhi();
+	wired = num_wired_entries() - 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	write_c0_wired(wired);
 	write_c0_index(wired);
 	write_c0_entryhi(UNIQUE_ENTRYHI(wired));
@@ -196,20 +308,34 @@ void kunmap_coherent(void)
 	tlb_write_indexed();
 	tlbw_use_hazard();
 	write_c0_entryhi(old_ctx);
+<<<<<<< HEAD
 	EXIT_CRITICAL(flags);
 #endif
 	dec_preempt_count();
 	preempt_check_resched();
+=======
+	local_irq_restore(flags);
+	pagefault_enable();
+	preempt_enable();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void copy_user_highpage(struct page *to, struct page *from,
 	unsigned long vaddr, struct vm_area_struct *vma)
 {
+<<<<<<< HEAD
+=======
+	struct folio *src = page_folio(from);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *vfrom, *vto;
 
 	vto = kmap_atomic(to);
 	if (cpu_has_dc_aliases &&
+<<<<<<< HEAD
 	    page_mapped(from) && !Page_dcache_dirty(from)) {
+=======
+	    folio_mapped(src) && !folio_test_dcache_dirty(src)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vfrom = kmap_coherent(from, vaddr);
 		copy_page(vto, vfrom);
 		kunmap_coherent();
@@ -230,17 +356,30 @@ void copy_to_user_page(struct vm_area_struct *vma,
 	struct page *page, unsigned long vaddr, void *dst, const void *src,
 	unsigned long len)
 {
+<<<<<<< HEAD
 	if (cpu_has_dc_aliases &&
 	    page_mapped(page) && !Page_dcache_dirty(page)) {
+=======
+	struct folio *folio = page_folio(page);
+
+	if (cpu_has_dc_aliases &&
+	    folio_mapped(folio) && !folio_test_dcache_dirty(folio)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void *vto = kmap_coherent(page, vaddr) + (vaddr & ~PAGE_MASK);
 		memcpy(vto, src, len);
 		kunmap_coherent();
 	} else {
 		memcpy(dst, src, len);
 		if (cpu_has_dc_aliases)
+<<<<<<< HEAD
 			SetPageDcacheDirty(page);
 	}
 	if ((vma->vm_flags & VM_EXEC) && !cpu_has_ic_fills_f_dc)
+=======
+			folio_set_dcache_dirty(folio);
+	}
+	if (vma->vm_flags & VM_EXEC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flush_cache_page(vma, vaddr, page_to_pfn(page));
 }
 
@@ -248,22 +387,40 @@ void copy_from_user_page(struct vm_area_struct *vma,
 	struct page *page, unsigned long vaddr, void *dst, const void *src,
 	unsigned long len)
 {
+<<<<<<< HEAD
 	if (cpu_has_dc_aliases &&
 	    page_mapped(page) && !Page_dcache_dirty(page)) {
+=======
+	struct folio *folio = page_folio(page);
+
+	if (cpu_has_dc_aliases &&
+	    folio_mapped(folio) && !folio_test_dcache_dirty(folio)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		void *vfrom = kmap_coherent(page, vaddr) + (vaddr & ~PAGE_MASK);
 		memcpy(dst, vfrom, len);
 		kunmap_coherent();
 	} else {
 		memcpy(dst, src, len);
 		if (cpu_has_dc_aliases)
+<<<<<<< HEAD
 			SetPageDcacheDirty(page);
 	}
 }
+=======
+			folio_set_dcache_dirty(folio);
+	}
+}
+EXPORT_SYMBOL_GPL(copy_from_user_page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init fixrange_init(unsigned long start, unsigned long end,
 	pgd_t *pgd_base)
 {
+<<<<<<< HEAD
 #if defined(CONFIG_HIGHMEM) || defined(CONFIG_MIPS_MT_SMTC)
+=======
+#ifdef CONFIG_HIGHMEM
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pgd_t *pgd;
 	pud_t *pud;
 	pmd_t *pmd;
@@ -272,9 +429,15 @@ void __init fixrange_init(unsigned long start, unsigned long end,
 	unsigned long vaddr;
 
 	vaddr = start;
+<<<<<<< HEAD
 	i = __pgd_offset(vaddr);
 	j = __pud_offset(vaddr);
 	k = __pmd_offset(vaddr);
+=======
+	i = pgd_index(vaddr);
+	j = pud_index(vaddr);
+	k = pmd_index(vaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pgd = pgd_base + i;
 
 	for ( ; (i < PTRS_PER_PGD) && (vaddr < end); pgd++, i++) {
@@ -283,7 +446,17 @@ void __init fixrange_init(unsigned long start, unsigned long end,
 			pmd = (pmd_t *)pud;
 			for (; (k < PTRS_PER_PMD) && (vaddr < end); pmd++, k++) {
 				if (pmd_none(*pmd)) {
+<<<<<<< HEAD
 					pte = (pte_t *) alloc_bootmem_low_pages(PAGE_SIZE);
+=======
+					pte = (pte_t *) memblock_alloc_low(PAGE_SIZE,
+									   PAGE_SIZE);
+					if (!pte)
+						panic("%s: Failed to allocate %lu bytes align=%lx\n",
+						      __func__, PAGE_SIZE,
+						      PAGE_SIZE);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					set_pmd(pmd, __pmd((unsigned long)pte));
 					BUG_ON(pte != pte_offset_kernel(pmd, 0));
 				}
@@ -296,6 +469,7 @@ void __init fixrange_init(unsigned long start, unsigned long end,
 #endif
 }
 
+<<<<<<< HEAD
 #ifndef CONFIG_NEED_MULTIPLE_NODES
 int page_is_ram(unsigned long pagenr)
 {
@@ -320,10 +494,36 @@ int page_is_ram(unsigned long pagenr)
 		if (pagenr >= addr && pagenr < end)
 			return 1;
 	}
+=======
+struct maar_walk_info {
+	struct maar_config cfg[16];
+	unsigned int num_cfg;
+};
+
+static int maar_res_walk(unsigned long start_pfn, unsigned long nr_pages,
+			 void *data)
+{
+	struct maar_walk_info *wi = data;
+	struct maar_config *cfg = &wi->cfg[wi->num_cfg];
+	unsigned int maar_align;
+
+	/* MAAR registers hold physical addresses right shifted by 4 bits */
+	maar_align = BIT(MIPS_MAAR_ADDR_SHIFT + 4);
+
+	/* Fill in the MAAR config entry */
+	cfg->lower = ALIGN(PFN_PHYS(start_pfn), maar_align);
+	cfg->upper = ALIGN_DOWN(PFN_PHYS(start_pfn + nr_pages), maar_align) - 1;
+	cfg->attrs = MIPS_MAAR_S;
+
+	/* Ensure we don't overflow the cfg array */
+	if (!WARN_ON(wi->num_cfg >= ARRAY_SIZE(wi->cfg)))
+		wi->num_cfg++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 void __init paging_init(void)
 {
 	unsigned long max_zone_pfns[MAX_NR_ZONES];
@@ -336,6 +536,115 @@ void __init paging_init(void)
 #endif
 	kmap_coherent_init();
 
+=======
+
+unsigned __weak platform_maar_init(unsigned num_pairs)
+{
+	unsigned int num_configured;
+	struct maar_walk_info wi;
+
+	wi.num_cfg = 0;
+	walk_system_ram_range(0, max_pfn, &wi, maar_res_walk);
+
+	num_configured = maar_config(wi.cfg, wi.num_cfg, num_pairs);
+	if (num_configured < wi.num_cfg)
+		pr_warn("Not enough MAAR pairs (%u) for all memory regions (%u)\n",
+			num_pairs, wi.num_cfg);
+
+	return num_configured;
+}
+
+void maar_init(void)
+{
+	unsigned num_maars, used, i;
+	phys_addr_t lower, upper, attr;
+	static struct {
+		struct maar_config cfgs[3];
+		unsigned used;
+	} recorded = { { { 0 } }, 0 };
+
+	if (!cpu_has_maar)
+		return;
+
+	/* Detect the number of MAARs */
+	write_c0_maari(~0);
+	back_to_back_c0_hazard();
+	num_maars = read_c0_maari() + 1;
+
+	/* MAARs should be in pairs */
+	WARN_ON(num_maars % 2);
+
+	/* Set MAARs using values we recorded already */
+	if (recorded.used) {
+		used = maar_config(recorded.cfgs, recorded.used, num_maars / 2);
+		BUG_ON(used != recorded.used);
+	} else {
+		/* Configure the required MAARs */
+		used = platform_maar_init(num_maars / 2);
+	}
+
+	/* Disable any further MAARs */
+	for (i = (used * 2); i < num_maars; i++) {
+		write_c0_maari(i);
+		back_to_back_c0_hazard();
+		write_c0_maar(0);
+		back_to_back_c0_hazard();
+	}
+
+	if (recorded.used)
+		return;
+
+	pr_info("MAAR configuration:\n");
+	for (i = 0; i < num_maars; i += 2) {
+		write_c0_maari(i);
+		back_to_back_c0_hazard();
+		upper = read_c0_maar();
+#ifdef CONFIG_XPA
+		upper |= (phys_addr_t)readx_c0_maar() << MIPS_MAARX_ADDR_SHIFT;
+#endif
+
+		write_c0_maari(i + 1);
+		back_to_back_c0_hazard();
+		lower = read_c0_maar();
+#ifdef CONFIG_XPA
+		lower |= (phys_addr_t)readx_c0_maar() << MIPS_MAARX_ADDR_SHIFT;
+#endif
+
+		attr = lower & upper;
+		lower = (lower & MIPS_MAAR_ADDR) << 4;
+		upper = ((upper & MIPS_MAAR_ADDR) << 4) | 0xffff;
+
+		pr_info("  [%d]: ", i / 2);
+		if ((attr & MIPS_MAAR_V) != MIPS_MAAR_V) {
+			pr_cont("disabled\n");
+			continue;
+		}
+
+		pr_cont("%pa-%pa", &lower, &upper);
+
+		if (attr & MIPS_MAAR_S)
+			pr_cont(" speculate");
+
+		pr_cont("\n");
+
+		/* Record the setup for use on secondary CPUs */
+		if (used <= ARRAY_SIZE(recorded.cfgs)) {
+			recorded.cfgs[recorded.used].lower = lower;
+			recorded.cfgs[recorded.used].upper = upper;
+			recorded.cfgs[recorded.used].attrs = attr;
+			recorded.used++;
+		}
+	}
+}
+
+#ifndef CONFIG_NUMA
+void __init paging_init(void)
+{
+	unsigned long max_zone_pfns[MAX_NR_ZONES];
+
+	pagetable_init();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ZONE_DMA
 	max_zone_pfns[ZONE_DMA] = MAX_DMA_PFN;
 #endif
@@ -343,27 +652,49 @@ void __init paging_init(void)
 	max_zone_pfns[ZONE_DMA32] = MAX_DMA32_PFN;
 #endif
 	max_zone_pfns[ZONE_NORMAL] = max_low_pfn;
+<<<<<<< HEAD
 	lastpfn = max_low_pfn;
 #ifdef CONFIG_HIGHMEM
 	max_zone_pfns[ZONE_HIGHMEM] = highend_pfn;
 	lastpfn = highend_pfn;
+=======
+#ifdef CONFIG_HIGHMEM
+	max_zone_pfns[ZONE_HIGHMEM] = highend_pfn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cpu_has_dc_aliases && max_low_pfn != highend_pfn) {
 		printk(KERN_WARNING "This processor doesn't support highmem."
 		       " %ldk highmem ignored\n",
 		       (highend_pfn - max_low_pfn) << (PAGE_SHIFT - 10));
 		max_zone_pfns[ZONE_HIGHMEM] = max_low_pfn;
+<<<<<<< HEAD
 		lastpfn = max_low_pfn;
 	}
 #endif
 
 	free_area_init_nodes(max_zone_pfns);
+=======
+
+		max_mapnr = max_low_pfn;
+	} else if (highend_pfn) {
+		max_mapnr = highend_pfn;
+	} else {
+		max_mapnr = max_low_pfn;
+	}
+#else
+	max_mapnr = max_low_pfn;
+#endif
+	high_memory = (void *) __va(max_low_pfn << PAGE_SHIFT);
+
+	free_area_init(max_zone_pfns);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_64BIT
 static struct kcore_list kcore_kseg0;
 #endif
 
+<<<<<<< HEAD
 void __init mem_init(void)
 {
 	unsigned long codesize, reservedpages, datasize, initsize;
@@ -411,6 +742,39 @@ void __init mem_init(void)
 	codesize =  (unsigned long) &_etext - (unsigned long) &_text;
 	datasize =  (unsigned long) &_edata - (unsigned long) &_etext;
 	initsize =  (unsigned long) &__init_end - (unsigned long) &__init_begin;
+=======
+static inline void __init mem_init_free_highmem(void)
+{
+#ifdef CONFIG_HIGHMEM
+	unsigned long tmp;
+
+	if (cpu_has_dc_aliases)
+		return;
+
+	for (tmp = highstart_pfn; tmp < highend_pfn; tmp++) {
+		struct page *page = pfn_to_page(tmp);
+
+		if (!memblock_is_memory(PFN_PHYS(tmp)))
+			SetPageReserved(page);
+		else
+			free_highmem_page(page);
+	}
+#endif
+}
+
+void __init mem_init(void)
+{
+	/*
+	 * When PFN_PTE_SHIFT is greater than PAGE_SHIFT we won't have enough PTE
+	 * bits to hold a full 32b physical address on MIPS32 systems.
+	 */
+	BUILD_BUG_ON(IS_ENABLED(CONFIG_32BIT) && (PFN_PTE_SHIFT > PAGE_SHIFT));
+
+	maar_init();
+	memblock_free_all();
+	setup_zero_pages();	/* Setup zeroed pages.  */
+	mem_init_free_highmem();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_64BIT
 	if ((unsigned long) &_text > (unsigned long) CKSEG0)
@@ -419,6 +783,7 @@ void __init mem_init(void)
 		kclist_add(&kcore_kseg0, (void *) CKSEG0,
 				0x80000000 - 4, KCORE_TEXT);
 #endif
+<<<<<<< HEAD
 
 	printk(KERN_INFO "Memory: %luk/%luk available (%ldk kernel code, "
 	       "%ldk reserved, %ldk data, %ldk init, %ldk highmem)\n",
@@ -431,6 +796,10 @@ void __init mem_init(void)
 	       totalhigh_pages << (PAGE_SHIFT-10));
 }
 #endif /* !CONFIG_NEED_MULTIPLE_NODES */
+=======
+}
+#endif /* !CONFIG_NUMA */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void free_init_pages(const char *what, unsigned long begin, unsigned long end)
 {
@@ -440,15 +809,21 @@ void free_init_pages(const char *what, unsigned long begin, unsigned long end)
 		struct page *page = pfn_to_page(pfn);
 		void *addr = phys_to_virt(PFN_PHYS(pfn));
 
+<<<<<<< HEAD
 		ClearPageReserved(page);
 		init_page_count(page);
 		memset(addr, POISON_FREE_INITMEM, PAGE_SIZE);
 		__free_page(page);
 		totalram_pages++;
+=======
+		memset(addr, POISON_FREE_INITMEM, PAGE_SIZE);
+		free_reserved_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	printk(KERN_INFO "Freeing %s: %ldk freed\n", what, (end - begin) >> 10);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_BLK_DEV_INITRD
 void free_initrd_mem(unsigned long start, unsigned long end)
 {
@@ -485,3 +860,84 @@ pgd_t swapper_pg_dir[_PTRS_PER_PGD] __page_aligned(_PGD_ORDER);
 pmd_t invalid_pmd_table[PTRS_PER_PMD] __page_aligned(PMD_ORDER);
 #endif
 pte_t invalid_pte_table[PTRS_PER_PTE] __page_aligned(PTE_ORDER);
+=======
+void (*free_init_pages_eva)(void *begin, void *end) = NULL;
+
+void __weak __init prom_free_prom_memory(void)
+{
+	/* nothing to do */
+}
+
+void __ref free_initmem(void)
+{
+	prom_free_prom_memory();
+	/*
+	 * Let the platform define a specific function to free the
+	 * init section since EVA may have used any possible mapping
+	 * between virtual and physical addresses.
+	 */
+	if (free_init_pages_eva)
+		free_init_pages_eva((void *)&__init_begin, (void *)&__init_end);
+	else
+		free_initmem_default(POISON_FREE_INITMEM);
+}
+
+#ifdef CONFIG_HAVE_SETUP_PER_CPU_AREA
+unsigned long __per_cpu_offset[NR_CPUS] __read_mostly;
+EXPORT_SYMBOL(__per_cpu_offset);
+
+static int __init pcpu_cpu_distance(unsigned int from, unsigned int to)
+{
+	return node_distance(cpu_to_node(from), cpu_to_node(to));
+}
+
+static int __init pcpu_cpu_to_node(int cpu)
+{
+	return cpu_to_node(cpu);
+}
+
+void __init setup_per_cpu_areas(void)
+{
+	unsigned long delta;
+	unsigned int cpu;
+	int rc;
+
+	/*
+	 * Always reserve area for module percpu variables.  That's
+	 * what the legacy allocator did.
+	 */
+	rc = pcpu_embed_first_chunk(PERCPU_MODULE_RESERVE,
+				    PERCPU_DYNAMIC_RESERVE, PAGE_SIZE,
+				    pcpu_cpu_distance,
+				    pcpu_cpu_to_node);
+	if (rc < 0)
+		panic("Failed to initialize percpu areas.");
+
+	delta = (unsigned long)pcpu_base_addr - (unsigned long)__per_cpu_start;
+	for_each_possible_cpu(cpu)
+		__per_cpu_offset[cpu] = delta + pcpu_unit_offsets[cpu];
+}
+#endif
+
+#ifndef CONFIG_MIPS_PGD_C0_CONTEXT
+unsigned long pgd_current[NR_CPUS];
+#endif
+
+/*
+ * Align swapper_pg_dir in to 64K, allows its address to be loaded
+ * with a single LUI instruction in the TLB handlers.  If we used
+ * __aligned(64K), its size would get rounded up to the alignment
+ * size, and waste space.  So we place it in its own section and align
+ * it in the linker script.
+ */
+pgd_t swapper_pg_dir[PTRS_PER_PGD] __section(".bss..swapper_pg_dir");
+#ifndef __PAGETABLE_PUD_FOLDED
+pud_t invalid_pud_table[PTRS_PER_PUD] __page_aligned_bss;
+#endif
+#ifndef __PAGETABLE_PMD_FOLDED
+pmd_t invalid_pmd_table[PTRS_PER_PMD] __page_aligned_bss;
+EXPORT_SYMBOL_GPL(invalid_pmd_table);
+#endif
+pte_t invalid_pte_table[PTRS_PER_PTE] __page_aligned_bss;
+EXPORT_SYMBOL(invalid_pte_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

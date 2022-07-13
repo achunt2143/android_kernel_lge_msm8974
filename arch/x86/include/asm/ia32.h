@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 #ifndef _ASM_X86_IA32_H
 #define _ASM_X86_IA32_H
 
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_X86_IA32_H
+#define _ASM_X86_IA32_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_IA32_EMULATION
 
 #include <linux/compat.h>
@@ -10,6 +17,7 @@
  * 32 bit structures for IA32 support.
  */
 
+<<<<<<< HEAD
 #include <asm/sigcontext32.h>
 
 /* signal.h */
@@ -34,10 +42,16 @@ typedef struct sigaltstack_ia32 {
 	int		ss_flags;
 	unsigned int	ss_size;
 } stack_ia32_t;
+=======
+#include <uapi/asm/sigcontext.h>
+
+/* signal.h */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ucontext_ia32 {
 	unsigned int	  uc_flags;
 	unsigned int 	  uc_link;
+<<<<<<< HEAD
 	stack_ia32_t	  uc_stack;
 	struct sigcontext_ia32 uc_mcontext;
 	compat_sigset_t	  uc_sigmask;	/* mask last for extensibility */
@@ -49,6 +63,10 @@ struct ucontext_x32 {
 	stack_ia32_t	  uc_stack;
 	unsigned int	  uc__pad0;     /* needed for alignment */
 	struct sigcontext uc_mcontext;  /* the 64-bit sigcontext type */
+=======
+	compat_stack_t	  uc_stack;
+	struct sigcontext_32 uc_mcontext;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	compat_sigset_t	  uc_sigmask;	/* mask last for extensibility */
 };
 
@@ -86,6 +104,7 @@ struct stat64 {
 	unsigned long long	st_ino;
 } __attribute__((packed));
 
+<<<<<<< HEAD
 typedef struct compat_siginfo {
 	int si_signo;
 	int si_errno;
@@ -153,6 +172,8 @@ typedef struct compat_siginfo {
 	} _sifields;
 } compat_siginfo_t;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IA32_STACK_TOP IA32_PAGE_OFFSET
 
 #ifdef __KERNEL__
@@ -164,6 +185,41 @@ extern void ia32_pick_mmap_layout(struct mm_struct *mm);
 
 #endif
 
+<<<<<<< HEAD
 #endif /* !CONFIG_IA32_SUPPORT */
+=======
+extern bool __ia32_enabled;
+
+static __always_inline bool ia32_enabled(void)
+{
+	return __ia32_enabled;
+}
+
+static inline void ia32_disable(void)
+{
+	__ia32_enabled = false;
+}
+
+#else /* !CONFIG_IA32_EMULATION */
+
+static __always_inline bool ia32_enabled(void)
+{
+	return IS_ENABLED(CONFIG_X86_32);
+}
+
+static inline void ia32_disable(void) {}
+
+#endif
+
+static inline bool ia32_enabled_verbose(void)
+{
+	bool enabled = ia32_enabled();
+
+	if (IS_ENABLED(CONFIG_IA32_EMULATION) && !enabled)
+		pr_notice_once("32-bit emulation disabled. You can reenable with ia32_emulation=on\n");
+
+	return enabled;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_IA32_H */

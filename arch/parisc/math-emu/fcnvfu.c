@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux/PA-RISC Project (http://www.parisc-linux.org/)
  *
  * Floating-point emulation code
  *  Copyright (C) 2001 Hewlett-Packard (Paul Bame) <bame@debian.org>
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * BEGIN_DESC
@@ -28,10 +35,17 @@
  *	Floating-point to Unsigned Fixed-point Converts
  *
  *  External Interfaces:
+<<<<<<< HEAD
  *	dbl_to_dbl_fcnvfu(srcptr,nullptr,dstptr,status)
  *	dbl_to_sgl_fcnvfu(srcptr,nullptr,dstptr,status)
  *	sgl_to_dbl_fcnvfu(srcptr,nullptr,dstptr,status)
  *	sgl_to_sgl_fcnvfu(srcptr,nullptr,dstptr,status)
+=======
+ *	dbl_to_dbl_fcnvfu(srcptr,_nullptr,dstptr,status)
+ *	dbl_to_sgl_fcnvfu(srcptr,_nullptr,dstptr,status)
+ *	sgl_to_dbl_fcnvfu(srcptr,_nullptr,dstptr,status)
+ *	sgl_to_sgl_fcnvfu(srcptr,_nullptr,dstptr,status)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Internal Interfaces:
  *
@@ -58,7 +72,11 @@
 int
 sgl_to_sgl_fcnvfu(
 			sgl_floating_point *srcptr,
+<<<<<<< HEAD
 			unsigned int *nullptr,
+=======
+			unsigned int *_nullptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			unsigned int *dstptr,
 			unsigned int *status)
 {
@@ -179,7 +197,11 @@ sgl_to_sgl_fcnvfu(
 int
 sgl_to_dbl_fcnvfu(
 		    sgl_floating_point *srcptr,
+<<<<<<< HEAD
 		    unsigned int *nullptr,
+=======
+		    unsigned int *_nullptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    dbl_unsigned *dstptr,
 		    unsigned int *status)
 {
@@ -298,7 +320,11 @@ sgl_to_dbl_fcnvfu(
  */
 /*ARGSUSED*/
 int
+<<<<<<< HEAD
 dbl_to_sgl_fcnvfu (dbl_floating_point * srcptr, unsigned int *nullptr,
+=======
+dbl_to_sgl_fcnvfu (dbl_floating_point * srcptr, unsigned int *_nullptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   unsigned int *dstptr, unsigned int *status)
 {
 	register unsigned int srcp1, srcp2, result;
@@ -421,7 +447,11 @@ dbl_to_sgl_fcnvfu (dbl_floating_point * srcptr, unsigned int *nullptr,
  */
 /*ARGSUSED*/
 int
+<<<<<<< HEAD
 dbl_to_dbl_fcnvfu (dbl_floating_point * srcptr, unsigned int *nullptr,
+=======
+dbl_to_dbl_fcnvfu (dbl_floating_point * srcptr, unsigned int *_nullptr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   dbl_unsigned * dstptr, unsigned int *status)
 {
 	register int src_exponent;

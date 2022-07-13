@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_POWERPC_TYPES_H
 #define _ASM_POWERPC_TYPES_H
 
@@ -17,12 +18,16 @@
 
 #ifndef __ASSEMBLY__
 
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is never included by application software unless
  * explicitly requested (e.g., via linux/types.h) in which case the
  * application is Linux specific so (user-) name space pollution is
  * not a major issue.  However, for interoperability, libraries still
  * need to be careful to avoid a name clashes.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -37,10 +42,19 @@ typedef struct {
 #endif /* __ASSEMBLY__ */
 
 #ifdef __KERNEL__
+=======
+ */
+#ifndef _ASM_POWERPC_TYPES_H
+#define _ASM_POWERPC_TYPES_H
+
+#include <uapi/asm/types.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASSEMBLY__
 
 typedef __vector128 vector128;
 
+<<<<<<< HEAD
 typedef struct {
 	unsigned long entry;
 	unsigned long toc;
@@ -51,4 +65,8 @@ typedef struct {
 
 #endif /* __KERNEL__ */
 
+=======
+#endif /* __ASSEMBLY__ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_POWERPC_TYPES_H */

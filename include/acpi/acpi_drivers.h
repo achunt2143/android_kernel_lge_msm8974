@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  acpi_drivers.h  ($Revision: 31 $)
  *
  *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
  *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
+<<<<<<< HEAD
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -21,11 +26,14 @@
  *  59 Temple Place, Suite 330, Boston, MA 02111-1307 USA.
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ACPI_DRIVERS_H__
 #define __ACPI_DRIVERS_H__
 
+<<<<<<< HEAD
 #include <linux/acpi.h>
 #include <acpi/acpi_bus.h>
 
@@ -51,6 +59,11 @@
 #define ACPI_PROCESSOR_COMPONENT	0x20000000
 
 /*
+=======
+#define ACPI_MAX_STRING			80
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * _HID definitions
  * HIDs must conform to ACPI spec(6.1.4)
  * Linux specific HIDs do not apply to this and begin with LNX:
@@ -65,6 +78,12 @@
 #define ACPI_VIDEO_HID			"LNXVIDEO"
 #define ACPI_BAY_HID			"LNXIOBAY"
 #define ACPI_DOCK_HID			"LNXDOCK"
+<<<<<<< HEAD
+=======
+#define ACPI_ECDT_HID			"LNXEC"
+/* SMBUS HID definition as supported by Microsoft Windows */
+#define ACPI_SMBUS_MS_HID		"SMB0001"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Quirk for broken IBM BIOSes */
 #define ACPI_SMBUS_IBM_HID		"SMBUSIBM"
 
@@ -83,13 +102,18 @@
    -------------------------------------------------------------------------- */
 
 
+<<<<<<< HEAD
 /* ACPI PCI Interrupt Link (pci_link.c) */
+=======
+/* ACPI PCI Interrupt Link */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int acpi_irq_penalty_init(void);
 int acpi_pci_link_allocate_irq(acpi_handle handle, int index, int *triggering,
 			       int *polarity, char **name);
 int acpi_pci_link_free_irq(acpi_handle handle);
 
+<<<<<<< HEAD
 /* ACPI PCI Interrupt Routing (pci_irq.c) */
 
 int acpi_pci_irq_add_prt(acpi_handle handle, struct pci_bus *bus);
@@ -101,10 +125,25 @@ struct pci_bus;
 
 struct pci_dev *acpi_get_pci_dev(acpi_handle);
 int acpi_pci_bind_root(struct acpi_device *device);
+=======
+/* ACPI PCI Device Binding */
+
+struct pci_bus;
+
+#ifdef CONFIG_PCI
+struct pci_dev *acpi_get_pci_dev(acpi_handle);
+#else
+static inline struct pci_dev *acpi_get_pci_dev(acpi_handle handle)
+{
+	return NULL;
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Arch-defined function to add a bus to the system */
 
 struct pci_bus *pci_acpi_scan_root(struct acpi_pci_root *root);
+<<<<<<< HEAD
 void pci_acpi_crs_quirks(void);
 
 /* --------------------------------------------------------------------------
@@ -114,10 +153,19 @@ void pci_acpi_crs_quirks(void);
 #define ACPI_PROCESSOR_LIMIT_NONE	0x00
 #define ACPI_PROCESSOR_LIMIT_INCREMENT	0x01
 #define ACPI_PROCESSOR_LIMIT_DECREMENT	0x02
+=======
+
+#ifdef CONFIG_X86
+void pci_acpi_crs_quirks(void);
+#else
+static inline void pci_acpi_crs_quirks(void) { }
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*--------------------------------------------------------------------------
                                   Dock Station
   -------------------------------------------------------------------------- */
+<<<<<<< HEAD
 struct acpi_dock_ops {
 	acpi_notify_handler handler;
 	acpi_notify_handler uevent;
@@ -153,5 +201,16 @@ static inline void unregister_hotplug_dock_device(acpi_handle handle)
 {
 }
 #endif
+=======
+
+#ifdef CONFIG_ACPI_DOCK
+extern int is_dock_device(struct acpi_device *adev);
+#else
+static inline int is_dock_device(struct acpi_device *adev)
+{
+	return 0;
+}
+#endif /* CONFIG_ACPI_DOCK */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /*__ACPI_DRIVERS_H__*/

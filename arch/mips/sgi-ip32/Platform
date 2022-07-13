@@ -6,6 +6,9 @@
 # a multiple of the kernel stack size or the handling of the current variable
 # will break.
 #
+<<<<<<< HEAD
 platform-$(CONFIG_SGI_IP32)	+= sgi-ip32/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cflags-$(CONFIG_SGI_IP32)	+= -I$(srctree)/arch/mips/include/asm/mach-ip32
 load-$(CONFIG_SGI_IP32)		+= 0xffffffff80004000

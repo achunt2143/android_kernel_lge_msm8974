@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DA8XX/OMAP L1XX platform device data
  *
  * Copyright (c) 2007-2009, MontaVista Software, Inc. <source@mvista.com>
  * Derived from code that was:
  *	Copyright (C) 2006 Komal Shah <komal_shah802003@yahoo.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +29,27 @@
 #include <mach/cpuidle.h>
 
 #include "clock.h"
+=======
+ */
+#include <linux/ahci_platform.h>
+#include <linux/clk-provider.h>
+#include <linux/clk.h>
+#include <linux/clkdev.h>
+#include <linux/dma-map-ops.h>
+#include <linux/dmaengine.h>
+#include <linux/init.h>
+#include <linux/io.h>
+#include <linux/platform_device.h>
+#include <linux/reboot.h>
+#include <linux/serial_8250.h>
+
+#include "common.h"
+#include "cputype.h"
+#include "da8xx.h"
+#include "cpuidle.h"
+#include "irqs.h"
+#include "sram.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DA8XX_TPCC_BASE			0x01c00000
 #define DA8XX_TPTC0_BASE		0x01c08000
@@ -31,6 +57,10 @@
 #define DA8XX_WDOG_BASE			0x01c21000 /* DA8XX_TIMER64P1_BASE */
 #define DA8XX_I2C0_BASE			0x01c22000
 #define DA8XX_RTC_BASE			0x01c23000
+<<<<<<< HEAD
+=======
+#define DA8XX_PRUSS_MEM_BASE		0x01c30000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DA8XX_MMCSD0_BASE		0x01c40000
 #define DA8XX_SPI0_BASE			0x01c41000
 #define DA830_SPI1_BASE			0x01e12000
@@ -52,6 +82,7 @@
 #define DA8XX_EMAC_RAM_OFFSET		0x0000
 #define DA8XX_EMAC_CTRL_RAM_SIZE	SZ_8K
 
+<<<<<<< HEAD
 #define DA8XX_DMA_SPI0_RX	EDMA_CTLR_CHAN(0, 14)
 #define DA8XX_DMA_SPI0_TX	EDMA_CTLR_CHAN(0, 15)
 #define DA8XX_DMA_MMCSD0_RX	EDMA_CTLR_CHAN(0, 16)
@@ -708,6 +739,11 @@ int da8xx_register_rtc(void)
 	return ret;
 }
 
+=======
+void __iomem *da8xx_syscfg0_base;
+void __iomem *da8xx_syscfg1_base;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __iomem *da8xx_ddr2_ctlr_base;
 void __iomem * __init da8xx_get_mem_ctlr(void)
 {
@@ -716,6 +752,7 @@ void __iomem * __init da8xx_get_mem_ctlr(void)
 
 	da8xx_ddr2_ctlr_base = ioremap(DA8XX_DDR2_CTL_BASE, SZ_32K);
 	if (!da8xx_ddr2_ctlr_base)
+<<<<<<< HEAD
 		pr_warning("%s: Unable to map DDR2 controller",	__func__);
 
 	return da8xx_ddr2_ctlr_base;
@@ -976,3 +1013,9 @@ int __init da850_register_sata(unsigned long refclkpn)
 	return platform_device_register(&da850_sata_device);
 }
 #endif
+=======
+		pr_warn("%s: Unable to map DDR2 controller", __func__);
+
+	return da8xx_ddr2_ctlr_base;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

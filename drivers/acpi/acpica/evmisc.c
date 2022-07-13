@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: evmisc - Miscellaneous event manager support functions
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acevents.h"
@@ -56,7 +67,11 @@ static void ACPI_SYSTEM_XFACE acpi_ev_notify_dispatch(void *context);
  *
  * FUNCTION:    acpi_ev_is_notify_object
  *
+<<<<<<< HEAD
  * PARAMETERS:  Node            - Node to check
+=======
+ * PARAMETERS:  node            - Node to check
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      TRUE if notifies allowed on this object
  *
@@ -68,6 +83,10 @@ static void ACPI_SYSTEM_XFACE acpi_ev_notify_dispatch(void *context);
 
 u8 acpi_ev_is_notify_object(struct acpi_namespace_node *node)
 {
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (node->type) {
 	case ACPI_TYPE_DEVICE:
 	case ACPI_TYPE_PROCESSOR:
@@ -78,6 +97,10 @@ u8 acpi_ev_is_notify_object(struct acpi_namespace_node *node)
 		return (TRUE);
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (FALSE);
 	}
 }
@@ -86,7 +109,11 @@ u8 acpi_ev_is_notify_object(struct acpi_namespace_node *node)
  *
  * FUNCTION:    acpi_ev_queue_notify_request
  *
+<<<<<<< HEAD
  * PARAMETERS:  Node            - NS node for the notified object
+=======
+ * PARAMETERS:  node            - NS node for the notified object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              notify_value    - Value from the Notify() request
  *
  * RETURN:      Status
@@ -97,16 +124,26 @@ u8 acpi_ev_is_notify_object(struct acpi_namespace_node *node)
  ******************************************************************************/
 
 acpi_status
+<<<<<<< HEAD
 acpi_ev_queue_notify_request(struct acpi_namespace_node * node,
 			     u32 notify_value)
 {
 	union acpi_operand_object *obj_desc;
 	union acpi_operand_object *handler_obj = NULL;
 	union acpi_generic_state *notify_info;
+=======
+acpi_ev_queue_notify_request(struct acpi_namespace_node *node, u32 notify_value)
+{
+	union acpi_operand_object *obj_desc;
+	union acpi_operand_object *handler_list_head = NULL;
+	union acpi_generic_state *info;
+	u8 handler_list_id = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_status status = AE_OK;
 
 	ACPI_FUNCTION_NAME(ev_queue_notify_request);
 
+<<<<<<< HEAD
 	/*
 	 * For value 0x03 (Ejection Request), may need to run a device method.
 	 * For value 0x02 (Device Wake), if _PRW exists, may need to run
@@ -123,10 +160,28 @@ acpi_ev_queue_notify_request(struct acpi_namespace_node * node,
 			  acpi_ut_get_notify_name(notify_value), node));
 
 	/* Get the notify object attached to the NS Node */
+=======
+	/* Are Notifies allowed on this object? */
+
+	if (!acpi_ev_is_notify_object(node)) {
+		return (AE_TYPE);
+	}
+
+	/* Get the correct notify list type (System or Device) */
+
+	if (notify_value <= ACPI_MAX_SYS_NOTIFY) {
+		handler_list_id = ACPI_SYSTEM_HANDLER_LIST;
+	} else {
+		handler_list_id = ACPI_DEVICE_HANDLER_LIST;
+	}
+
+	/* Get the notify object attached to the namespace Node */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	obj_desc = acpi_ns_get_attached_object(node);
 	if (obj_desc) {
 
+<<<<<<< HEAD
 		/* We have the notify object, Get the correct handler */
 
 		switch (node->type) {
@@ -197,6 +252,54 @@ acpi_ev_queue_notify_request(struct acpi_namespace_node * node,
 				  "No notify handler for Notify (%4.4s, %X) node %p\n",
 				  acpi_ut_get_node_name(node), notify_value,
 				  node));
+=======
+		/* We have an attached object, Get the correct handler list */
+
+		handler_list_head =
+		    obj_desc->common_notify.notify_list[handler_list_id];
+	}
+
+	/*
+	 * If there is no notify handler (Global or Local)
+	 * for this object, just ignore the notify
+	 */
+	if (!acpi_gbl_global_notify[handler_list_id].handler
+	    && !handler_list_head) {
+		ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+				  "No notify handler for Notify, ignoring (%4.4s, %X) node %p\n",
+				  acpi_ut_get_node_name(node), notify_value,
+				  node));
+
+		return (AE_OK);
+	}
+
+	/* Setup notify info and schedule the notify dispatcher */
+
+	info = acpi_ut_create_generic_state();
+	if (!info) {
+		return (AE_NO_MEMORY);
+	}
+
+	info->common.descriptor_type = ACPI_DESC_TYPE_STATE_NOTIFY;
+
+	info->notify.node = node;
+	info->notify.value = (u16)notify_value;
+	info->notify.handler_list_id = handler_list_id;
+	info->notify.handler_list_head = handler_list_head;
+	info->notify.global = &acpi_gbl_global_notify[handler_list_id];
+
+	ACPI_DEBUG_PRINT((ACPI_DB_INFO,
+			  "Dispatching Notify on [%4.4s] (%s) Value 0x%2.2X (%s) Node %p\n",
+			  acpi_ut_get_node_name(node),
+			  acpi_ut_get_type_name(node->type), notify_value,
+			  acpi_ut_get_notify_name(notify_value, ACPI_TYPE_ANY),
+			  node));
+
+	status = acpi_os_execute(OSL_NOTIFY_HANDLER,
+				 acpi_ev_notify_dispatch, info);
+	if (ACPI_FAILURE(status)) {
+		acpi_ut_delete_generic_state(info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return (status);
@@ -206,7 +309,11 @@ acpi_ev_queue_notify_request(struct acpi_namespace_node * node,
  *
  * FUNCTION:    acpi_ev_notify_dispatch
  *
+<<<<<<< HEAD
  * PARAMETERS:  Context         - To be passed to the notify handler
+=======
+ * PARAMETERS:  context         - To be passed to the notify handler
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None.
  *
@@ -217,14 +324,19 @@ acpi_ev_queue_notify_request(struct acpi_namespace_node * node,
 
 static void ACPI_SYSTEM_XFACE acpi_ev_notify_dispatch(void *context)
 {
+<<<<<<< HEAD
 	union acpi_generic_state *notify_info =
 	    (union acpi_generic_state *)context;
 	acpi_notify_handler global_handler = NULL;
 	void *global_context = NULL;
+=======
+	union acpi_generic_state *info = (union acpi_generic_state *)context;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union acpi_operand_object *handler_obj;
 
 	ACPI_FUNCTION_ENTRY();
 
+<<<<<<< HEAD
 	/*
 	 * We will invoke a global notify handler if installed. This is done
 	 * _before_ we invoke the per-device handler attached to the device.
@@ -266,11 +378,35 @@ static void ACPI_SYSTEM_XFACE acpi_ev_notify_dispatch(void *context)
 					  notifier->context);
 			notifier = notifier->next;
 		}
+=======
+	/* Invoke a global notify handler if installed */
+
+	if (info->notify.global->handler) {
+		info->notify.global->handler(info->notify.node,
+					     info->notify.value,
+					     info->notify.global->context);
+	}
+
+	/* Now invoke the local notify handler(s) if any are installed */
+
+	handler_obj = info->notify.handler_list_head;
+	while (handler_obj) {
+		handler_obj->notify.handler(info->notify.node,
+					    info->notify.value,
+					    handler_obj->notify.context);
+
+		handler_obj =
+		    handler_obj->notify.next[info->notify.handler_list_id];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* All done with the info object */
 
+<<<<<<< HEAD
 	acpi_ut_delete_generic_state(notify_info);
+=======
+	acpi_ut_delete_generic_state(info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #if (!ACPI_REDUCED_HARDWARE)
@@ -313,24 +449,52 @@ void acpi_ev_terminate(void)
 		/* Disable all GPEs in all GPE blocks */
 
 		status = acpi_ev_walk_gpe_list(acpi_hw_disable_gpe_block, NULL);
+<<<<<<< HEAD
 
 		/* Remove SCI handler */
 
 		status = acpi_ev_remove_sci_handler();
 		if (ACPI_FAILURE(status)) {
 			ACPI_ERROR((AE_INFO, "Could not remove SCI handler"));
+=======
+		if (ACPI_FAILURE(status)) {
+			ACPI_EXCEPTION((AE_INFO, status,
+					"Could not disable GPEs in GPE block"));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		status = acpi_ev_remove_global_lock_handler();
 		if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 			ACPI_ERROR((AE_INFO,
 				    "Could not remove Global Lock handler"));
 		}
+=======
+			ACPI_EXCEPTION((AE_INFO, status,
+					"Could not remove Global Lock handler"));
+		}
+
+		acpi_gbl_events_initialized = FALSE;
+	}
+
+	/* Remove SCI handlers */
+
+	status = acpi_ev_remove_all_sci_handlers();
+	if (ACPI_FAILURE(status)) {
+		ACPI_ERROR((AE_INFO, "Could not remove SCI handler"));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Deallocate all handler objects installed within GPE info structs */
 
 	status = acpi_ev_walk_gpe_list(acpi_ev_delete_gpe_handlers, NULL);
+<<<<<<< HEAD
+=======
+	if (ACPI_FAILURE(status)) {
+		ACPI_EXCEPTION((AE_INFO, status,
+				"Could not delete GPE handlers"));
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Return to original mode if necessary */
 

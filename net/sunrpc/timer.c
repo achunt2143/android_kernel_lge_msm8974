@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/net/sunrpc/timer.c
  *
@@ -34,7 +38,11 @@
 void rpc_init_rtt(struct rpc_rtt *rt, unsigned long timeo)
 {
 	unsigned long init = 0;
+<<<<<<< HEAD
 	unsigned i;
+=======
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rt->timeo = timeo;
 
@@ -57,7 +65,11 @@ EXPORT_SYMBOL_GPL(rpc_init_rtt);
  * NB: When computing the smoothed RTT and standard deviation,
  *     be careful not to produce negative intermediate results.
  */
+<<<<<<< HEAD
 void rpc_update_rtt(struct rpc_rtt *rt, unsigned timer, long m)
+=======
+void rpc_update_rtt(struct rpc_rtt *rt, unsigned int timer, long m)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	long *srtt, *sdrtt;
 
@@ -106,7 +118,11 @@ EXPORT_SYMBOL_GPL(rpc_update_rtt);
  * read, write, commit     - A+4D
  * other                   - timeo
  */
+<<<<<<< HEAD
 unsigned long rpc_calc_rto(struct rpc_rtt *rt, unsigned timer)
+=======
+unsigned long rpc_calc_rto(struct rpc_rtt *rt, unsigned int timer)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long res;
 

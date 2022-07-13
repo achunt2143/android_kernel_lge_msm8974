@@ -1,10 +1,20 @@
+<<<<<<< HEAD
 /// This removes an open coded simple_open() function
 /// and replaces file operations references to the function
+=======
+// SPDX-License-Identifier: GPL-2.0
+/// Remove an open coded simple_open() function
+/// and replace file operations references to the function
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /// with simple_open() instead.
 ///
 // Confidence: High
 // Comments:
+<<<<<<< HEAD
 // Options: -no_includes -include_headers
+=======
+// Options: --no-includes --include-headers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 virtual patch
 virtual report

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MV-643XX ethernet platform device data definition file.
  */
@@ -6,6 +10,11 @@
 #define __LINUX_MV643XX_ETH_H
 
 #include <linux/mbus.h>
+<<<<<<< HEAD
+=======
+#include <linux/if_ether.h>
+#include <linux/phy.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MV643XX_ETH_SHARED_NAME		"mv643xx_eth"
 #define MV643XX_ETH_NAME		"mv643xx_eth_port"
@@ -19,8 +28,11 @@
 
 struct mv643xx_eth_shared_platform_data {
 	struct mbus_dram_target_info	*dram;
+<<<<<<< HEAD
 	struct platform_device	*shared_smi;
 	unsigned int		t_clk;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Max packet size for Tx IP/Layer 4 checksum, when set to 0, default
 	 * limit of 9KiB will be used.
@@ -32,6 +44,10 @@ struct mv643xx_eth_shared_platform_data {
 #define MV643XX_ETH_PHY_ADDR(x)		(0x80 | (x))
 #define MV643XX_ETH_PHY_NONE		0xff
 
+<<<<<<< HEAD
+=======
+struct device_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct mv643xx_eth_platform_data {
 	/*
 	 * Pointer back to our parent instance, and our port number.
@@ -43,12 +59,20 @@ struct mv643xx_eth_platform_data {
 	 * Whether a PHY is present, and if yes, at which address.
 	 */
 	int			phy_addr;
+<<<<<<< HEAD
+=======
+	struct device_node	*phy_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Use this MAC address if it is valid, overriding the
 	 * address that is already in the hardware.
 	 */
+<<<<<<< HEAD
 	u8			mac_addr[6];
+=======
+	u8			mac_addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If speed is 0, autonegotiation is enabled.
@@ -57,6 +81,10 @@ struct mv643xx_eth_platform_data {
 	 */
 	int			speed;
 	int			duplex;
+<<<<<<< HEAD
+=======
+	phy_interface_t		interface;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * How many RX/TX queues to use.

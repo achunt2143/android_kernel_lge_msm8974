@@ -7,6 +7,10 @@ Description:
 	to implement sensible device security policies, and its low level
 	of abstraction that required userspace clients to duplicate much
 	of the kernel's ieee1394 core functionality.
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	Replaced by /dev/fw*, i.e. the <linux/firewire-cdev.h> ABI of
 	firewire-core.
 

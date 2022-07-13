@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #include <asm/ucontext.h>
 
 #include <linux/lguest.h>
@@ -8,11 +9,23 @@ static char syscalls[] = {
 #include <asm/syscalls_32.h>
 };
 
+=======
+// SPDX-License-Identifier: GPL-2.0
+#ifndef __LINUX_KBUILD_H
+# error "Please do not build this file directly, build asm-offsets.c instead"
+#endif
+
+#include <linux/efi.h>
+
+#include <asm/ucontext.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* workaround for a warning with -Wmissing-prototypes */
 void foo(void);
 
 void foo(void)
 {
+<<<<<<< HEAD
 	OFFSET(IA32_SIGCONTEXT_ax, sigcontext, ax);
 	OFFSET(IA32_SIGCONTEXT_bx, sigcontext, bx);
 	OFFSET(IA32_SIGCONTEXT_cx, sigcontext, cx);
@@ -29,15 +42,24 @@ void foo(void)
 	OFFSET(CPUINFO_x86_model, cpuinfo_x86, x86_model);
 	OFFSET(CPUINFO_x86_mask, cpuinfo_x86, x86_mask);
 	OFFSET(CPUINFO_hard_math, cpuinfo_x86, hard_math);
+=======
+	OFFSET(CPUINFO_x86, cpuinfo_x86, x86);
+	OFFSET(CPUINFO_x86_vendor, cpuinfo_x86, x86_vendor);
+	OFFSET(CPUINFO_x86_model, cpuinfo_x86, x86_model);
+	OFFSET(CPUINFO_x86_stepping, cpuinfo_x86, x86_stepping);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OFFSET(CPUINFO_cpuid_level, cpuinfo_x86, cpuid_level);
 	OFFSET(CPUINFO_x86_capability, cpuinfo_x86, x86_capability);
 	OFFSET(CPUINFO_x86_vendor_id, cpuinfo_x86, x86_vendor_id);
 	BLANK();
 
+<<<<<<< HEAD
 	OFFSET(TI_sysenter_return, thread_info, sysenter_return);
 	OFFSET(TI_cpu, thread_info, cpu);
 	BLANK();
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	OFFSET(PT_EBX, pt_regs, bx);
 	OFFSET(PT_ECX, pt_regs, cx);
 	OFFSET(PT_EDX, pt_regs, dx);
@@ -57,6 +79,7 @@ void foo(void)
 	OFFSET(PT_OLDSS,  pt_regs, ss);
 	BLANK();
 
+<<<<<<< HEAD
 	OFFSET(IA32_RT_SIGFRAME_sigcontext, rt_sigframe, uc.uc_mcontext);
 	BLANK();
 
@@ -84,4 +107,21 @@ void foo(void)
 	BLANK();
 	DEFINE(__NR_syscall_max, sizeof(syscalls) - 1);
 	DEFINE(NR_syscalls, sizeof(syscalls));
+=======
+	OFFSET(saved_context_gdt_desc, saved_context, gdt_desc);
+	BLANK();
+
+	/*
+	 * Offset from the entry stack to task stack stored in TSS. Kernel entry
+	 * happens on the per-cpu entry-stack, and the asm code switches to the
+	 * task-stack pointer stored in x86_tss.sp1, which is a copy of
+	 * task->thread.sp0 where entry code can find it.
+	 */
+	DEFINE(TSS_entry2task_stack,
+	       offsetof(struct cpu_entry_area, tss.x86_tss.sp1) -
+	       offsetofend(struct cpu_entry_area, entry_stack_page.stack));
+
+	BLANK();
+	DEFINE(EFI_svam, offsetof(efi_runtime_services_t, set_virtual_address_map));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

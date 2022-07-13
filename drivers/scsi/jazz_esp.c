@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* jazz_esp.c: ESP front-end for MIPS JAZZ systems.
  *
  * Copyright (C) 2007 Thomas Bogendörfer (tsbogend@alpha.frankende)
@@ -38,6 +42,7 @@ static u8 jazz_esp_read8(struct esp *esp, unsigned long reg)
 	return *(volatile u8 *)(esp->regs + reg);
 }
 
+<<<<<<< HEAD
 static dma_addr_t jazz_esp_map_single(struct esp *esp, void *buf,
 				      size_t sz, int dir)
 {
@@ -62,6 +67,8 @@ static void jazz_esp_unmap_sg(struct esp *esp, struct scatterlist *sg,
 	dma_unmap_sg(esp->dev, sg, num_sg, dir);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int jazz_esp_irq_pending(struct esp *esp)
 {
 	if (jazz_esp_read8(esp, ESP_STATUS) & ESP_STAT_INTR)
@@ -117,10 +124,13 @@ static int jazz_esp_dma_error(struct esp *esp)
 static const struct esp_driver_ops jazz_esp_ops = {
 	.esp_write8	=	jazz_esp_write8,
 	.esp_read8	=	jazz_esp_read8,
+<<<<<<< HEAD
 	.map_single	=	jazz_esp_map_single,
 	.map_sg		=	jazz_esp_map_sg,
 	.unmap_single	=	jazz_esp_unmap_single,
 	.unmap_sg	=	jazz_esp_unmap_sg,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.irq_pending	=	jazz_esp_irq_pending,
 	.reset_dma	=	jazz_esp_reset_dma,
 	.dma_drain	=	jazz_esp_dma_drain,
@@ -129,9 +139,15 @@ static const struct esp_driver_ops jazz_esp_ops = {
 	.dma_error	=	jazz_esp_dma_error,
 };
 
+<<<<<<< HEAD
 static int __devinit esp_jazz_probe(struct platform_device *dev)
 {
 	struct scsi_host_template *tpnt = &scsi_esp_template;
+=======
+static int esp_jazz_probe(struct platform_device *dev)
+{
+	const struct scsi_host_template *tpnt = &scsi_esp_template;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct Scsi_Host *host;
 	struct esp *esp;
 	struct resource *res;
@@ -147,7 +163,11 @@ static int __devinit esp_jazz_probe(struct platform_device *dev)
 	esp = shost_priv(host);
 
 	esp->host = host;
+<<<<<<< HEAD
 	esp->dev = dev;
+=======
+	esp->dev = &dev->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	esp->ops = &jazz_esp_ops;
 
 	res = platform_get_resource(dev, IORESOURCE_MEM, 0);
@@ -170,7 +190,13 @@ static int __devinit esp_jazz_probe(struct platform_device *dev)
 	if (!esp->command_block)
 		goto fail_unmap_regs;
 
+<<<<<<< HEAD
 	host->irq = platform_get_irq(dev, 0);
+=======
+	host->irq = err = platform_get_irq(dev, 0);
+	if (err < 0)
+		goto fail_unmap_command_block;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = request_irq(host->irq, scsi_esp_intr, IRQF_SHARED, "ESP", esp);
 	if (err < 0)
 		goto fail_unmap_command_block;
@@ -182,7 +208,11 @@ static int __devinit esp_jazz_probe(struct platform_device *dev)
 
 	dev_set_drvdata(&dev->dev, esp);
 
+<<<<<<< HEAD
 	err = scsi_esp_register(esp, &dev->dev);
+=======
+	err = scsi_esp_register(esp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto fail_free_irq;
 
@@ -201,7 +231,11 @@ fail:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit esp_jazz_remove(struct platform_device *dev)
+=======
+static void esp_jazz_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct esp *esp = dev_get_drvdata(&dev->dev);
 	unsigned int irq = esp->host->irq;
@@ -214,8 +248,11 @@ static int __devexit esp_jazz_remove(struct platform_device *dev)
 			  esp->command_block_dma);
 
 	scsi_host_put(esp->host);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* work with hotplug and coldplug */
@@ -223,6 +260,7 @@ MODULE_ALIAS("platform:jazz_esp");
 
 static struct platform_driver esp_jazz_driver = {
 	.probe		= esp_jazz_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(esp_jazz_remove),
 	.driver	= {
 		.name	= "jazz_esp",
@@ -247,3 +285,16 @@ MODULE_VERSION(DRV_VERSION);
 
 module_init(jazz_esp_init);
 module_exit(jazz_esp_exit);
+=======
+	.remove_new	= esp_jazz_remove,
+	.driver	= {
+		.name	= "jazz_esp",
+	},
+};
+module_platform_driver(esp_jazz_driver);
+
+MODULE_DESCRIPTION("JAZZ ESP SCSI driver");
+MODULE_AUTHOR("Thomas Bogendoerfer <tsbogend@alpha.franken.de>");
+MODULE_LICENSE("GPL");
+MODULE_VERSION(DRV_VERSION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

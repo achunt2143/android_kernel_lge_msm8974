@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/irq.c
  *
@@ -19,7 +23,10 @@
 #include <linux/ptrace.h>
 #include <linux/interrupt.h>
 #include <linux/random.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/irq.h>
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
@@ -27,7 +34,11 @@
 #include <linux/bitops.h>
 
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 volatile unsigned long irq_err_count;
 DEFINE_PER_CPU(unsigned long, irq_pmi_count);
@@ -60,7 +71,11 @@ int irq_select_affinity(unsigned int irq)
 		cpu = (cpu < (NR_CPUS-1) ? cpu + 1 : 0);
 	last_cpu = cpu;
 
+<<<<<<< HEAD
 	cpumask_copy(data->affinity, cpumask_of(cpu));
+=======
+	irq_data_update_affinity(data, cpumask_of(cpu));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->irq_set_affinity(data, cpumask_of(cpu), false);
 	return 0;
 }
@@ -117,6 +132,7 @@ handle_irq(int irq)
 		return;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * From here we must proceed with IPL_MAX. Note that we do not
 	 * explicitly enable interrupts afterwards - some MILO PALcode
@@ -126,5 +142,9 @@ handle_irq(int irq)
 	local_irq_disable();
 	irq_enter();
 	generic_handle_irq_desc(irq, desc);
+=======
+	irq_enter();
+	generic_handle_irq_desc(desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq_exit();
 }

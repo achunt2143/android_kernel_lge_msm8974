@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * libfdt - Flat Device Tree manipulation
  * Copyright (C) 2006 David Gibson, IBM Corporation.
@@ -46,6 +47,12 @@
  *     HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
  *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  *     OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+=======
+// SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
+/*
+ * libfdt - Flat Device Tree manipulation
+ * Copyright (C) 2006 David Gibson, IBM Corporation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 #include "libfdt_env.h"
@@ -69,6 +76,10 @@ static struct fdt_errtabent fdt_errtable[] = {
 
 	FDT_ERRTABENT(FDT_ERR_BADOFFSET),
 	FDT_ERRTABENT(FDT_ERR_BADPATH),
+<<<<<<< HEAD
+=======
+	FDT_ERRTABENT(FDT_ERR_BADPHANDLE),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FDT_ERRTABENT(FDT_ERR_BADSTATE),
 
 	FDT_ERRTABENT(FDT_ERR_TRUNCATED),
@@ -76,8 +87,20 @@ static struct fdt_errtabent fdt_errtable[] = {
 	FDT_ERRTABENT(FDT_ERR_BADVERSION),
 	FDT_ERRTABENT(FDT_ERR_BADSTRUCTURE),
 	FDT_ERRTABENT(FDT_ERR_BADLAYOUT),
+<<<<<<< HEAD
 };
 #define FDT_ERRTABSIZE	(sizeof(fdt_errtable) / sizeof(fdt_errtable[0]))
+=======
+	FDT_ERRTABENT(FDT_ERR_INTERNAL),
+	FDT_ERRTABENT(FDT_ERR_BADNCELLS),
+	FDT_ERRTABENT(FDT_ERR_BADVALUE),
+	FDT_ERRTABENT(FDT_ERR_BADOVERLAY),
+	FDT_ERRTABENT(FDT_ERR_NOPHANDLES),
+	FDT_ERRTABENT(FDT_ERR_BADFLAGS),
+	FDT_ERRTABENT(FDT_ERR_ALIGNMENT),
+};
+#define FDT_ERRTABSIZE	((int)(sizeof(fdt_errtable) / sizeof(fdt_errtable[0])))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const char *fdt_strerror(int errval)
 {
@@ -85,7 +108,11 @@ const char *fdt_strerror(int errval)
 		return "<valid offset/length>";
 	else if (errval == 0)
 		return "<no error>";
+<<<<<<< HEAD
 	else if (errval > -FDT_ERRTABSIZE) {
+=======
+	else if (-errval < FDT_ERRTABSIZE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const char *s = fdt_errtable[-errval].str;
 
 		if (s)

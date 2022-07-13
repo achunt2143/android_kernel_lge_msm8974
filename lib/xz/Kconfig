@@ -1,20 +1,34 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config XZ_DEC
 	tristate "XZ decompression support"
 	select CRC32
 	help
 	  LZMA2 compression algorithm and BCJ filters are supported using
 	  the .xz file format as the container. For integrity checking,
+<<<<<<< HEAD
 	  CRC32 is supported. See Documentation/xz.txt for more information.
+=======
+	  CRC32 is supported. See Documentation/staging/xz.rst for more information.
+
+if XZ_DEC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config XZ_DEC_X86
 	bool "x86 BCJ filter decoder" if EXPERT
 	default y
+<<<<<<< HEAD
 	depends on XZ_DEC
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select XZ_DEC_BCJ
 
 config XZ_DEC_POWERPC
 	bool "PowerPC BCJ filter decoder" if EXPERT
 	default y
+<<<<<<< HEAD
 	depends on XZ_DEC
 	select XZ_DEC_BCJ
 
@@ -22,26 +36,54 @@ config XZ_DEC_IA64
 	bool "IA-64 BCJ filter decoder" if EXPERT
 	default y
 	depends on XZ_DEC
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select XZ_DEC_BCJ
 
 config XZ_DEC_ARM
 	bool "ARM BCJ filter decoder" if EXPERT
 	default y
+<<<<<<< HEAD
 	depends on XZ_DEC
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select XZ_DEC_BCJ
 
 config XZ_DEC_ARMTHUMB
 	bool "ARM-Thumb BCJ filter decoder" if EXPERT
 	default y
+<<<<<<< HEAD
 	depends on XZ_DEC
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select XZ_DEC_BCJ
 
 config XZ_DEC_SPARC
 	bool "SPARC BCJ filter decoder" if EXPERT
 	default y
+<<<<<<< HEAD
 	depends on XZ_DEC
 	select XZ_DEC_BCJ
 
+=======
+	select XZ_DEC_BCJ
+
+config XZ_DEC_MICROLZMA
+	bool "MicroLZMA decoder"
+	default n
+	help
+	  MicroLZMA is a header format variant where the first byte
+	  of a raw LZMA stream (without the end of stream marker) has
+	  been replaced with a bitwise-negation of the lc/lp/pb
+	  properties byte. MicroLZMA was created to be used in EROFS
+	  but can be used by other things too where wasting minimal
+	  amount of space for headers is important.
+
+	  Unless you know that you need this, say N.
+
+endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config XZ_DEC_BCJ
 	bool
 	default n

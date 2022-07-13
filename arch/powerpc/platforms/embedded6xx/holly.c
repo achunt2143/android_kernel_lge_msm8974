@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Board setup routines for the IBM 750GX/CL platform w/ TSI10x bridge
  *
@@ -7,10 +11,13 @@
  * Josh Boyer <jwboyer@linux.vnet.ibm.com>
  *
  * Based on code from mpc7448_hpc2.c
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * version 2 as published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
@@ -25,12 +32,22 @@
 #include <linux/serial.h>
 #include <linux/tty.h>
 #include <linux/serial_core.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 #include <linux/module.h>
 
 #include <asm/time.h>
 #include <asm/machdep.h>
 #include <asm/prom.h>
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+#include <linux/extable.h>
+
+#include <asm/time.h>
+#include <asm/machdep.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/udbg.h>
 #include <asm/tsi108.h>
 #include <asm/pci-bridge.h>
@@ -44,7 +61,12 @@
 
 #define HOLLY_PCI_CFG_PHYS 0x7c000000
 
+<<<<<<< HEAD
 int holly_exclude_device(struct pci_controller *hose, u_char bus, u_char devfn)
+=======
+static int holly_exclude_device(struct pci_controller *hose, u_char bus,
+				u_char devfn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (bus == 0 && PCI_SLOT(devfn) == 0)
 		return PCIBIOS_DEVICE_NOT_FOUND;
@@ -52,7 +74,11 @@ int holly_exclude_device(struct pci_controller *hose, u_char bus, u_char devfn)
 		return PCIBIOS_SUCCESSFUL;
 }
 
+<<<<<<< HEAD
 static void holly_remap_bridge(void)
+=======
+static void __init holly_remap_bridge(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 lut_val, lut_addr;
 	int i;
@@ -110,15 +136,22 @@ static void holly_remap_bridge(void)
 	tsi108_write_reg(TSI108_PCI_P2O_BAR2, 0x0);
 }
 
+<<<<<<< HEAD
 static void __init holly_setup_arch(void)
+=======
+static void __init holly_init_pci(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *np;
 
 	if (ppc_md.progress)
 		ppc_md.progress("holly_setup_arch():set_bridge", 0);
 
+<<<<<<< HEAD
 	tsi108_csr_vir_base = get_vir_csrbase();
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* setup PCI host bridge */
 	holly_remap_bridge();
 
@@ -126,9 +159,22 @@ static void __init holly_setup_arch(void)
 	if (np)
 		tsi108_setup_pci(np, HOLLY_PCI_CFG_PHYS, 1);
 
+<<<<<<< HEAD
 	ppc_md.pci_exclude_device = holly_exclude_device;
 	if (ppc_md.progress)
 		ppc_md.progress("tsi108: resources set", 0x100);
+=======
+	of_node_put(np);
+
+	ppc_md.pci_exclude_device = holly_exclude_device;
+	if (ppc_md.progress)
+		ppc_md.progress("tsi108: resources set", 0x100);
+}
+
+static void __init holly_setup_arch(void)
+{
+	tsi108_csr_vir_base = get_vir_csrbase();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "PPC750GX/CL Platform\n");
 }
@@ -182,32 +228,56 @@ static void __init holly_init_IRQ(void)
 	tsi108_pci_int_init(cascade_node);
 	irq_set_handler_data(cascade_pci_irq, mpic);
 	irq_set_chained_handler(cascade_pci_irq, tsi108_irq_cascade);
+<<<<<<< HEAD
+=======
+
+	of_node_put(tsi_pci);
+	of_node_put(cascade_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	/* Configure MPIC outputs to CPU0 */
 	tsi108_write_reg(TSI108_MPIC_OFFSET + 0x30c, 0);
 }
 
+<<<<<<< HEAD
 void holly_show_cpuinfo(struct seq_file *m)
+=======
+static void holly_show_cpuinfo(struct seq_file *m)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	seq_printf(m, "vendor\t\t: IBM\n");
 	seq_printf(m, "machine\t\t: PPC750 GX/CL\n");
 }
 
+<<<<<<< HEAD
 void holly_restart(char *cmd)
+=======
+static void __noreturn holly_restart(char *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__be32 __iomem *ocn_bar1 = NULL;
 	unsigned long bar;
 	struct device_node *bridge = NULL;
+<<<<<<< HEAD
 	const void *prop;
 	int size;
+=======
+	struct resource res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	phys_addr_t addr = 0xc0000000;
 
 	local_irq_disable();
 
 	bridge = of_find_node_by_type(NULL, "tsi-bridge");
 	if (bridge) {
+<<<<<<< HEAD
 		prop = of_get_property(bridge, "reg", &size);
 		addr = of_translate_address(bridge, prop);
+=======
+		of_address_to_resource(bridge, 0, &res);
+		addr = res.start;
+		of_node_put(bridge);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	addr += (TSI108_PB_OFFSET + 0x414);
 
@@ -233,6 +303,7 @@ void holly_restart(char *cmd)
 	for (;;) ;
 }
 
+<<<<<<< HEAD
 void holly_power_off(void)
 {
 	local_irq_disable();
@@ -257,6 +328,8 @@ static int __init holly_probe(void)
 	return 1;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ppc750_machine_check_exception(struct pt_regs *regs)
 {
 	const struct exception_table_entry *entry;
@@ -264,8 +337,13 @@ static int ppc750_machine_check_exception(struct pt_regs *regs)
 	/* Are we prepared to handle this fault */
 	if ((entry = search_exception_tables(regs->nip)) != NULL) {
 		tsi108_clear_pci_cfg_error();
+<<<<<<< HEAD
 		regs->msr |= MSR_RI;
 		regs->nip = entry->fixup;
+=======
+		regs_set_recoverable(regs);
+		regs_set_return_ip(regs, extable_fixup(entry));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 	return 0;
@@ -273,13 +351,22 @@ static int ppc750_machine_check_exception(struct pt_regs *regs)
 
 define_machine(holly){
 	.name                   	= "PPC750 GX/CL TSI",
+<<<<<<< HEAD
 	.probe                  	= holly_probe,
 	.setup_arch             	= holly_setup_arch,
+=======
+	.compatible			= "ibm,holly",
+	.setup_arch             	= holly_setup_arch,
+	.discover_phbs			= holly_init_pci,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init_IRQ               	= holly_init_IRQ,
 	.show_cpuinfo           	= holly_show_cpuinfo,
 	.get_irq                	= mpic_get_irq,
 	.restart                	= holly_restart,
+<<<<<<< HEAD
 	.calibrate_decr         	= generic_calibrate_decr,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.machine_check_exception	= ppc750_machine_check_exception,
 	.progress               	= udbg_progress,
 };

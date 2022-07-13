@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel(R) 82576 Virtual Function Linux driver
@@ -25,19 +26,36 @@
 
 *******************************************************************************/
 
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* Copyright(c) 2009 - 2018 Intel Corporation. */
+
+#include <linux/etherdevice.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "vf.h"
 
 static s32 e1000_check_for_link_vf(struct e1000_hw *hw);
 static s32 e1000_get_link_up_info_vf(struct e1000_hw *hw, u16 *speed,
+<<<<<<< HEAD
                                      u16 *duplex);
+=======
+				     u16 *duplex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static s32 e1000_init_hw_vf(struct e1000_hw *hw);
 static s32 e1000_reset_hw_vf(struct e1000_hw *hw);
 
 static void e1000_update_mc_addr_list_vf(struct e1000_hw *hw, u8 *,
+<<<<<<< HEAD
                                          u32, u32, u32);
 static void e1000_rar_set_vf(struct e1000_hw *, u8 *, u32);
 static s32 e1000_read_mac_addr_vf(struct e1000_hw *);
+=======
+					 u32, u32, u32);
+static void e1000_rar_set_vf(struct e1000_hw *, u8 *, u32);
+static s32 e1000_read_mac_addr_vf(struct e1000_hw *);
+static s32 e1000_set_uc_addr_vf(struct e1000_hw *hw, u32 subcmd, u8 *addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static s32 e1000_set_vfta_vf(struct e1000_hw *, u16, bool);
 
 /**
@@ -68,6 +86,11 @@ static s32 e1000_init_mac_params_vf(struct e1000_hw *hw)
 	mac->ops.rar_set = e1000_rar_set_vf;
 	/* read mac address */
 	mac->ops.read_mac_addr = e1000_read_mac_addr_vf;
+<<<<<<< HEAD
+=======
+	/* set mac filter */
+	mac->ops.set_uc_addr = e1000_set_uc_addr_vf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set vlan filter table array */
 	mac->ops.set_vfta = e1000_set_vfta_vf;
 
@@ -94,7 +117,11 @@ void e1000_init_function_pointers_vf(struct e1000_hw *hw)
  *  the status register's data which is often stale and inaccurate.
  **/
 static s32 e1000_get_link_up_info_vf(struct e1000_hw *hw, u16 *speed,
+<<<<<<< HEAD
                                      u16 *duplex)
+=======
+				     u16 *duplex)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	s32 status;
 
@@ -130,7 +157,11 @@ static s32 e1000_reset_hw_vf(struct e1000_hw *hw)
 	u8 *addr = (u8 *)(&msgbuf[1]);
 	u32 ctrl;
 
+<<<<<<< HEAD
 	/* assert vf queue/interrupt reset */
+=======
+	/* assert VF queue/interrupt reset */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctrl = er32(CTRL);
 	ew32(CTRL, ctrl | E1000_CTRL_RST);
 
@@ -144,19 +175,40 @@ static s32 e1000_reset_hw_vf(struct e1000_hw *hw)
 		/* mailbox timeout can now become active */
 		mbx->timeout = E1000_VF_MBX_INIT_TIMEOUT;
 
+<<<<<<< HEAD
 		/* notify pf of vf reset completion */
 		msgbuf[0] = E1000_VF_RESET;
 		mbx->ops.write_posted(hw, msgbuf, 1);
 
 		msleep(10);
+=======
+		/* notify PF of VF reset completion */
+		msgbuf[0] = E1000_VF_RESET;
+		mbx->ops.write_posted(hw, msgbuf, 1);
+
+		mdelay(10);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* set our "perm_addr" based on info provided by PF */
 		ret_val = mbx->ops.read_posted(hw, msgbuf, 3);
 		if (!ret_val) {
+<<<<<<< HEAD
 			if (msgbuf[0] == (E1000_VF_RESET | E1000_VT_MSGTYPE_ACK))
 				memcpy(hw->mac.perm_addr, addr, 6);
 			else
 				ret_val = -E1000_ERR_MAC_INIT;
+=======
+			switch (msgbuf[0]) {
+			case E1000_VF_RESET | E1000_VT_MSGTYPE_ACK:
+				memcpy(hw->mac.perm_addr, addr, ETH_ALEN);
+				break;
+			case E1000_VF_RESET | E1000_VT_MSGTYPE_NACK:
+				eth_zero_addr(hw->mac.perm_addr);
+				break;
+			default:
+				ret_val = -E1000_ERR_MAC_INIT;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -194,15 +246,23 @@ static u32 e1000_hash_mc_addr_vf(struct e1000_hw *hw, u8 *mc_addr)
 	/* Register count multiplied by bits per register */
 	hash_mask = (hw->mac.mta_reg_count * 32) - 1;
 
+<<<<<<< HEAD
 	/*
 	 * The bit_shift is the number of left-shifts
+=======
+	/* The bit_shift is the number of left-shifts
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * where 0xFF would still fall within the hash mask.
 	 */
 	while (hash_mask >> bit_shift != 0xFF)
 		bit_shift++;
 
 	hash_value = hash_mask & (((mc_addr[4] >> (8 - bit_shift)) |
+<<<<<<< HEAD
 	                          (((u16) mc_addr[5]) << bit_shift)));
+=======
+				  (((u16)mc_addr[5]) << bit_shift)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return hash_value;
 }
@@ -221,14 +281,23 @@ static u32 e1000_hash_mc_addr_vf(struct e1000_hw *hw, u8 *mc_addr)
  *  unless there are workarounds that change this.
  **/
 static void e1000_update_mc_addr_list_vf(struct e1000_hw *hw,
+<<<<<<< HEAD
                                   u8 *mc_addr_list, u32 mc_addr_count,
                                   u32 rar_used_count, u32 rar_count)
+=======
+					 u8 *mc_addr_list, u32 mc_addr_count,
+					 u32 rar_used_count, u32 rar_count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct e1000_mbx_info *mbx = &hw->mbx;
 	u32 msgbuf[E1000_VFMAILBOX_SIZE];
 	u16 *hash_list = (u16 *)&msgbuf[1];
 	u32 hash_value;
 	u32 cnt, i;
+<<<<<<< HEAD
+=======
+	s32 ret_val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Each entry in the list uses 1 16 bit word.  We have 30
 	 * 16 bit words available in our HW msg buffer (minus 1 for the
@@ -249,7 +318,13 @@ static void e1000_update_mc_addr_list_vf(struct e1000_hw *hw,
 		mc_addr_list += ETH_ALEN;
 	}
 
+<<<<<<< HEAD
 	mbx->ops.write_posted(hw, msgbuf, E1000_VFMAILBOX_SIZE);
+=======
+	ret_val = mbx->ops.write_posted(hw, msgbuf, E1000_VFMAILBOX_SIZE);
+	if (!ret_val)
+		mbx->ops.read_posted(hw, msgbuf, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -268,7 +343,11 @@ static s32 e1000_set_vfta_vf(struct e1000_hw *hw, u16 vid, bool set)
 	msgbuf[1] = vid;
 	/* Setting the 8 bit field MSG INFO to true indicates "add" */
 	if (set)
+<<<<<<< HEAD
 		msgbuf[0] |= 1 << E1000_VT_MSGINFO_SHIFT;
+=======
+		msgbuf[0] |= BIT(E1000_VT_MSGINFO_SHIFT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mbx->ops.write_posted(hw, msgbuf, 2);
 
@@ -283,7 +362,12 @@ static s32 e1000_set_vfta_vf(struct e1000_hw *hw, u16 vid, bool set)
 	return err;
 }
 
+<<<<<<< HEAD
 /** e1000_rlpml_set_vf - Set the maximum receive packet length
+=======
+/**
+ *  e1000_rlpml_set_vf - Set the maximum receive packet length
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  @hw: pointer to the HW structure
  *  @max_size: value to assign to max frame size
  **/
@@ -291,20 +375,36 @@ void e1000_rlpml_set_vf(struct e1000_hw *hw, u16 max_size)
 {
 	struct e1000_mbx_info *mbx = &hw->mbx;
 	u32 msgbuf[2];
+<<<<<<< HEAD
+=======
+	s32 ret_val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	msgbuf[0] = E1000_VF_SET_LPE;
 	msgbuf[1] = max_size;
 
+<<<<<<< HEAD
 	mbx->ops.write_posted(hw, msgbuf, 2);
+=======
+	ret_val = mbx->ops.write_posted(hw, msgbuf, 2);
+	if (!ret_val)
+		mbx->ops.read_posted(hw, msgbuf, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  *  e1000_rar_set_vf - set device MAC address
  *  @hw: pointer to the HW structure
  *  @addr: pointer to the receive address
+<<<<<<< HEAD
  *  @index receive address array register
  **/
 static void e1000_rar_set_vf(struct e1000_hw *hw, u8 * addr, u32 index)
+=======
+ *  @index: receive address array register
+ **/
+static void e1000_rar_set_vf(struct e1000_hw *hw, u8 *addr, u32 index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct e1000_mbx_info *mbx = &hw->mbx;
 	u32 msgbuf[3];
@@ -313,7 +413,11 @@ static void e1000_rar_set_vf(struct e1000_hw *hw, u8 * addr, u32 index)
 
 	memset(msgbuf, 0, 12);
 	msgbuf[0] = E1000_VF_SET_MAC_ADDR;
+<<<<<<< HEAD
 	memcpy(msg_addr, addr, 6);
+=======
+	memcpy(msg_addr, addr, ETH_ALEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret_val = mbx->ops.write_posted(hw, msgbuf, 3);
 
 	if (!ret_val)
@@ -339,6 +443,47 @@ static s32 e1000_read_mac_addr_vf(struct e1000_hw *hw)
 }
 
 /**
+<<<<<<< HEAD
+=======
+ *  e1000_set_uc_addr_vf - Set or clear unicast filters
+ *  @hw: pointer to the HW structure
+ *  @sub_cmd: add or clear filters
+ *  @addr: pointer to the filter MAC address
+ **/
+static s32 e1000_set_uc_addr_vf(struct e1000_hw *hw, u32 sub_cmd, u8 *addr)
+{
+	struct e1000_mbx_info *mbx = &hw->mbx;
+	u32 msgbuf[3], msgbuf_chk;
+	u8 *msg_addr = (u8 *)(&msgbuf[1]);
+	s32 ret_val;
+
+	memset(msgbuf, 0, sizeof(msgbuf));
+	msgbuf[0] |= sub_cmd;
+	msgbuf[0] |= E1000_VF_SET_MAC_ADDR;
+	msgbuf_chk = msgbuf[0];
+
+	if (addr)
+		memcpy(msg_addr, addr, ETH_ALEN);
+
+	ret_val = mbx->ops.write_posted(hw, msgbuf, 3);
+
+	if (!ret_val)
+		ret_val = mbx->ops.read_posted(hw, msgbuf, 3);
+
+	msgbuf[0] &= ~E1000_VT_MSGTYPE_CTS;
+
+	if (!ret_val) {
+		msgbuf[0] &= ~E1000_VT_MSGTYPE_CTS;
+
+		if (msgbuf[0] == (msgbuf_chk | E1000_VT_MSGTYPE_NACK))
+			return -ENOSPC;
+	}
+
+	return ret_val;
+}
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  e1000_check_for_link_vf - Check for link for a virtual interface
  *  @hw: pointer to the HW structure
  *
@@ -353,8 +498,12 @@ static s32 e1000_check_for_link_vf(struct e1000_hw *hw)
 	s32 ret_val = E1000_SUCCESS;
 	u32 in_msg = 0;
 
+<<<<<<< HEAD
 	/*
 	 * We only want to run this if there has been a rst asserted.
+=======
+	/* We only want to run this if there has been a rst asserted.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * in this case that could mean a link change, device reset,
 	 * or a virtual function reset
 	 */
@@ -366,31 +515,53 @@ static s32 e1000_check_for_link_vf(struct e1000_hw *hw)
 	if (!mac->get_link_status)
 		goto out;
 
+<<<<<<< HEAD
 	/* if link status is down no point in checking to see if pf is up */
+=======
+	/* if link status is down no point in checking to see if PF is up */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(er32(STATUS) & E1000_STATUS_LU))
 		goto out;
 
 	/* if the read failed it could just be a mailbox collision, best wait
+<<<<<<< HEAD
 	 * until we are called again and don't report an error */
+=======
+	 * until we are called again and don't report an error
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mbx->ops.read(hw, &in_msg, 1))
 		goto out;
 
 	/* if incoming message isn't clear to send we are waiting on response */
 	if (!(in_msg & E1000_VT_MSGTYPE_CTS)) {
+<<<<<<< HEAD
 		/* message is not CTS and is NACK we must have lost CTS status */
+=======
+		/* msg is not CTS and is NACK we must have lost CTS status */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (in_msg & E1000_VT_MSGTYPE_NACK)
 			ret_val = -E1000_ERR_MAC_INIT;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	/* the pf is talking, if we timed out in the past we reinit */
+=======
+	/* the PF is talking, if we timed out in the past we reinit */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!mbx->timeout) {
 		ret_val = -E1000_ERR_MAC_INIT;
 		goto out;
 	}
 
 	/* if we passed all the tests above then the link is up and we no
+<<<<<<< HEAD
 	 * longer need to check for link */
+=======
+	 * longer need to check for link
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mac->get_link_status = false;
 
 out:

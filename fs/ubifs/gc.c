@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -16,6 +21,8 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Adrian Hunter
  *          Artem Bityutskiy (Битюцкий Артём)
  */
@@ -49,7 +56,11 @@
  * maximum size. So dark watermark is the amount of free + dirty space in LEB
  * which are guaranteed to be reclaimable. If LEB has less space, the GC might
  * be unable to reclaim it. So, LEBs with free + dirty greater than dark
+<<<<<<< HEAD
  * watermark are "good" LEBs from GC's point of few. The other LEBs are not so
+=======
+ * watermark are "good" LEBs from GC's point of view. The other LEBs are not so
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * good, and GC takes extra care when moving them.
  */
 
@@ -69,10 +80,13 @@
 /**
  * switch_gc_head - switch the garbage collection journal head.
  * @c: UBIFS file-system description object
+<<<<<<< HEAD
  * @buf: buffer to write
  * @len: length of the buffer to write
  * @lnum: LEB number written is returned here
  * @offs: offset written is returned here
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function switch the GC head to the next LEB which is reserved in
  * @c->gc_lnum. Returns %0 in case of success, %-EAGAIN if commit is required,
@@ -83,7 +97,11 @@ static int switch_gc_head(struct ubifs_info *c)
 	int err, gc_lnum = c->gc_lnum;
 	struct ubifs_wbuf *wbuf = &c->jheads[GCHD].wbuf;
 
+<<<<<<< HEAD
 	ubifs_assert(gc_lnum != -1);
+=======
+	ubifs_assert(c, gc_lnum != -1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dbg_gc("switch GC head from LEB %d:%d to LEB %d (waste %d bytes)",
 	       wbuf->lnum, wbuf->offs + wbuf->used, gc_lnum,
 	       c->leb_size - wbuf->offs - wbuf->used);
@@ -100,16 +118,23 @@ static int switch_gc_head(struct ubifs_info *c)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	err = ubifs_wbuf_sync_nolock(wbuf);
 	if (err)
 		return err;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = ubifs_add_bud_to_log(c, GCHD, gc_lnum, 0);
 	if (err)
 		return err;
 
 	c->gc_lnum = -1;
+<<<<<<< HEAD
 	err = ubifs_wbuf_seek_nolock(wbuf, gc_lnum, 0, UBI_LONGTERM);
+=======
+	err = ubifs_wbuf_seek_nolock(wbuf, gc_lnum, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -117,12 +142,21 @@ static int switch_gc_head(struct ubifs_info *c)
  * data_nodes_cmp - compare 2 data nodes.
  * @priv: UBIFS file-system description object
  * @a: first data node
+<<<<<<< HEAD
  * @a: second data node
+=======
+ * @b: second data node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This function compares data nodes @a and @b. Returns %1 if @a has greater
  * inode or block number, and %-1 otherwise.
  */
+<<<<<<< HEAD
 static int data_nodes_cmp(void *priv, struct list_head *a, struct list_head *b)
+=======
+static int data_nodes_cmp(void *priv, const struct list_head *a,
+			  const struct list_head *b)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ino_t inuma, inumb;
 	struct ubifs_info *c = priv;
@@ -135,10 +169,17 @@ static int data_nodes_cmp(void *priv, struct list_head *a, struct list_head *b)
 	sa = list_entry(a, struct ubifs_scan_node, list);
 	sb = list_entry(b, struct ubifs_scan_node, list);
 
+<<<<<<< HEAD
 	ubifs_assert(key_type(c, &sa->key) == UBIFS_DATA_KEY);
 	ubifs_assert(key_type(c, &sb->key) == UBIFS_DATA_KEY);
 	ubifs_assert(sa->type == UBIFS_DATA_NODE);
 	ubifs_assert(sb->type == UBIFS_DATA_NODE);
+=======
+	ubifs_assert(c, key_type(c, &sa->key) == UBIFS_DATA_KEY);
+	ubifs_assert(c, key_type(c, &sb->key) == UBIFS_DATA_KEY);
+	ubifs_assert(c, sa->type == UBIFS_DATA_NODE);
+	ubifs_assert(c, sb->type == UBIFS_DATA_NODE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	inuma = key_inum(c, &sa->key);
 	inumb = key_inum(c, &sb->key);
@@ -165,8 +206,13 @@ static int data_nodes_cmp(void *priv, struct list_head *a, struct list_head *b)
  * first and sorted by length in descending order. Directory entry nodes go
  * after inode nodes and are sorted in ascending hash valuer order.
  */
+<<<<<<< HEAD
 static int nondata_nodes_cmp(void *priv, struct list_head *a,
 			     struct list_head *b)
+=======
+static int nondata_nodes_cmp(void *priv, const struct list_head *a,
+			     const struct list_head *b)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ino_t inuma, inumb;
 	struct ubifs_info *c = priv;
@@ -179,9 +225,15 @@ static int nondata_nodes_cmp(void *priv, struct list_head *a,
 	sa = list_entry(a, struct ubifs_scan_node, list);
 	sb = list_entry(b, struct ubifs_scan_node, list);
 
+<<<<<<< HEAD
 	ubifs_assert(key_type(c, &sa->key) != UBIFS_DATA_KEY &&
 		     key_type(c, &sb->key) != UBIFS_DATA_KEY);
 	ubifs_assert(sa->type != UBIFS_DATA_NODE &&
+=======
+	ubifs_assert(c, key_type(c, &sa->key) != UBIFS_DATA_KEY &&
+		     key_type(c, &sb->key) != UBIFS_DATA_KEY);
+	ubifs_assert(c, sa->type != UBIFS_DATA_NODE &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     sb->type != UBIFS_DATA_NODE);
 
 	/* Inodes go before directory entries */
@@ -193,6 +245,7 @@ static int nondata_nodes_cmp(void *priv, struct list_head *a,
 	if (sb->type == UBIFS_INO_NODE)
 		return 1;
 
+<<<<<<< HEAD
 	ubifs_assert(key_type(c, &sa->key) == UBIFS_DENT_KEY ||
 		     key_type(c, &sa->key) == UBIFS_XENT_KEY);
 	ubifs_assert(key_type(c, &sb->key) == UBIFS_DENT_KEY ||
@@ -200,6 +253,15 @@ static int nondata_nodes_cmp(void *priv, struct list_head *a,
 	ubifs_assert(sa->type == UBIFS_DENT_NODE ||
 		     sa->type == UBIFS_XENT_NODE);
 	ubifs_assert(sb->type == UBIFS_DENT_NODE ||
+=======
+	ubifs_assert(c, key_type(c, &sa->key) == UBIFS_DENT_KEY ||
+		     key_type(c, &sa->key) == UBIFS_XENT_KEY);
+	ubifs_assert(c, key_type(c, &sb->key) == UBIFS_DENT_KEY ||
+		     key_type(c, &sb->key) == UBIFS_XENT_KEY);
+	ubifs_assert(c, sa->type == UBIFS_DENT_NODE ||
+		     sa->type == UBIFS_XENT_NODE);
+	ubifs_assert(c, sb->type == UBIFS_DENT_NODE ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		     sb->type == UBIFS_XENT_NODE);
 
 	inuma = key_inum(c, &sa->key);
@@ -254,11 +316,20 @@ static int sort_nodes(struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 
 	/* Separate data nodes and non-data nodes */
 	list_for_each_entry_safe(snod, tmp, &sleb->nodes, list) {
+<<<<<<< HEAD
 		ubifs_assert(snod->type == UBIFS_INO_NODE  ||
 			     snod->type == UBIFS_DATA_NODE ||
 			     snod->type == UBIFS_DENT_NODE ||
 			     snod->type == UBIFS_XENT_NODE ||
 			     snod->type == UBIFS_TRUN_NODE);
+=======
+		ubifs_assert(c, snod->type == UBIFS_INO_NODE  ||
+			     snod->type == UBIFS_DATA_NODE ||
+			     snod->type == UBIFS_DENT_NODE ||
+			     snod->type == UBIFS_XENT_NODE ||
+			     snod->type == UBIFS_TRUN_NODE ||
+			     snod->type == UBIFS_AUTH_NODE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (snod->type != UBIFS_INO_NODE  &&
 		    snod->type != UBIFS_DATA_NODE &&
@@ -270,7 +341,11 @@ static int sort_nodes(struct ubifs_info *c, struct ubifs_scan_leb *sleb,
 			continue;
 		}
 
+<<<<<<< HEAD
 		ubifs_assert(key_type(c, &snod->key) == UBIFS_DATA_KEY ||
+=======
+		ubifs_assert(c, key_type(c, &snod->key) == UBIFS_DATA_KEY ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     key_type(c, &snod->key) == UBIFS_INO_KEY  ||
 			     key_type(c, &snod->key) == UBIFS_DENT_KEY ||
 			     key_type(c, &snod->key) == UBIFS_XENT_KEY);
@@ -368,12 +443,21 @@ static int move_nodes(struct ubifs_info *c, struct ubifs_scan_leb *sleb)
 
 	/* Write nodes to their new location. Use the first-fit strategy */
 	while (1) {
+<<<<<<< HEAD
 		int avail;
+=======
+		int avail, moved = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct ubifs_scan_node *snod, *tmp;
 
 		/* Move data nodes */
 		list_for_each_entry_safe(snod, tmp, &sleb->nodes, list) {
+<<<<<<< HEAD
 			avail = c->leb_size - wbuf->offs - wbuf->used;
+=======
+			avail = c->leb_size - wbuf->offs - wbuf->used -
+					ubifs_auth_node_sz(c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if  (snod->len > avail)
 				/*
 				 * Do not skip data nodes in order to optimize
@@ -381,14 +465,31 @@ static int move_nodes(struct ubifs_info *c, struct ubifs_scan_leb *sleb)
 				 */
 				break;
 
+<<<<<<< HEAD
 			err = move_node(c, sleb, snod, wbuf);
 			if (err)
 				goto out;
+=======
+			err = ubifs_shash_update(c, c->jheads[GCHD].log_hash,
+						 snod->node, snod->len);
+			if (err)
+				goto out;
+
+			err = move_node(c, sleb, snod, wbuf);
+			if (err)
+				goto out;
+			moved = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* Move non-data nodes */
 		list_for_each_entry_safe(snod, tmp, &nondata, list) {
+<<<<<<< HEAD
 			avail = c->leb_size - wbuf->offs - wbuf->used;
+=======
+			avail = c->leb_size - wbuf->offs - wbuf->used -
+					ubifs_auth_node_sz(c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (avail < min)
 				break;
 
@@ -406,9 +507,47 @@ static int move_nodes(struct ubifs_info *c, struct ubifs_scan_leb *sleb)
 				continue;
 			}
 
+<<<<<<< HEAD
 			err = move_node(c, sleb, snod, wbuf);
 			if (err)
 				goto out;
+=======
+			err = ubifs_shash_update(c, c->jheads[GCHD].log_hash,
+						 snod->node, snod->len);
+			if (err)
+				goto out;
+
+			err = move_node(c, sleb, snod, wbuf);
+			if (err)
+				goto out;
+			moved = 1;
+		}
+
+		if (ubifs_authenticated(c) && moved) {
+			struct ubifs_auth_node *auth;
+
+			auth = kmalloc(ubifs_auth_node_sz(c), GFP_NOFS);
+			if (!auth) {
+				err = -ENOMEM;
+				goto out;
+			}
+
+			err = ubifs_prepare_auth_node(c, auth,
+						c->jheads[GCHD].log_hash);
+			if (err) {
+				kfree(auth);
+				goto out;
+			}
+
+			err = ubifs_wbuf_write_nolock(wbuf, auth,
+						      ubifs_auth_node_sz(c));
+			if (err) {
+				kfree(auth);
+				goto out;
+			}
+
+			ubifs_add_dirt(c, wbuf->lnum, ubifs_auth_node_sz(c));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (list_empty(&sleb->nodes) && list_empty(&nondata))
@@ -473,21 +612,36 @@ int ubifs_garbage_collect_leb(struct ubifs_info *c, struct ubifs_lprops *lp)
 	struct ubifs_wbuf *wbuf = &c->jheads[GCHD].wbuf;
 	int err = 0, lnum = lp->lnum;
 
+<<<<<<< HEAD
 	ubifs_assert(c->gc_lnum != -1 || wbuf->offs + wbuf->used == 0 ||
 		     c->need_recovery);
 	ubifs_assert(c->gc_lnum != lnum);
 	ubifs_assert(wbuf->lnum != lnum);
+=======
+	ubifs_assert(c, c->gc_lnum != -1 || wbuf->offs + wbuf->used == 0 ||
+		     c->need_recovery);
+	ubifs_assert(c, c->gc_lnum != lnum);
+	ubifs_assert(c, wbuf->lnum != lnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lp->free + lp->dirty == c->leb_size) {
 		/* Special case - a free LEB  */
 		dbg_gc("LEB %d is free, return it", lp->lnum);
+<<<<<<< HEAD
 		ubifs_assert(!(lp->flags & LPROPS_INDEX));
+=======
+		ubifs_assert(c, !(lp->flags & LPROPS_INDEX));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (lp->free != c->leb_size) {
 			/*
 			 * Write buffers must be sync'd before unmapping
 			 * freeable LEBs, because one of them may contain data
+<<<<<<< HEAD
 			 * which obsoletes something in 'lp->pnum'.
+=======
+			 * which obsoletes something in 'lp->lnum'.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 */
 			err = gc_sync_wbufs(c);
 			if (err)
@@ -517,7 +671,11 @@ int ubifs_garbage_collect_leb(struct ubifs_info *c, struct ubifs_lprops *lp)
 	if (IS_ERR(sleb))
 		return PTR_ERR(sleb);
 
+<<<<<<< HEAD
 	ubifs_assert(!list_empty(&sleb->nodes));
+=======
+	ubifs_assert(c, !list_empty(&sleb->nodes));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snod = list_entry(sleb->nodes.next, struct ubifs_scan_node, list);
 
 	if (snod->type == UBIFS_IDX_NODE) {
@@ -529,7 +687,11 @@ int ubifs_garbage_collect_leb(struct ubifs_info *c, struct ubifs_lprops *lp)
 			struct ubifs_idx_node *idx = snod->node;
 			int level = le16_to_cpu(idx->level);
 
+<<<<<<< HEAD
 			ubifs_assert(snod->type == UBIFS_IDX_NODE);
+=======
+			ubifs_assert(c, snod->type == UBIFS_IDX_NODE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			key_read(c, ubifs_idx_key(c, idx), &snod->key);
 			err = ubifs_dirty_idx_node(c, &snod->key, level, lnum,
 						   snod->offs);
@@ -652,7 +814,11 @@ int ubifs_garbage_collect(struct ubifs_info *c, int anyway)
 	struct ubifs_wbuf *wbuf = &c->jheads[GCHD].wbuf;
 
 	ubifs_assert_cmt_locked(c);
+<<<<<<< HEAD
 	ubifs_assert(!c->ro_media && !c->ro_mount);
+=======
+	ubifs_assert(c, !c->ro_media && !c->ro_mount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ubifs_gc_should_commit(c))
 		return -EAGAIN;
@@ -665,11 +831,21 @@ int ubifs_garbage_collect(struct ubifs_info *c, int anyway)
 	}
 
 	/* We expect the write-buffer to be empty on entry */
+<<<<<<< HEAD
 	ubifs_assert(!wbuf->used);
 
 	for (i = 0; ; i++) {
 		int space_before = c->leb_size - wbuf->offs - wbuf->used;
 		int space_after;
+=======
+	ubifs_assert(c, !wbuf->used);
+
+	for (i = 0; ; i++) {
+		int space_before, space_after;
+
+		/* Maybe continue after find and break before find */
+		lp.lnum = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cond_resched();
 
@@ -714,9 +890,15 @@ int ubifs_garbage_collect(struct ubifs_info *c, int anyway)
 			break;
 		}
 
+<<<<<<< HEAD
 		dbg_gc("found LEB %d: free %d, dirty %d, sum %d "
 		       "(min. space %d)", lp.lnum, lp.free, lp.dirty,
 		       lp.free + lp.dirty, min_space);
+=======
+		dbg_gc("found LEB %d: free %d, dirty %d, sum %d (min. space %d)",
+		       lp.lnum, lp.free, lp.dirty, lp.free + lp.dirty,
+		       min_space);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		space_before = c->leb_size - wbuf->offs - wbuf->used;
 		if (wbuf->lnum == -1)
@@ -732,8 +914,24 @@ int ubifs_garbage_collect(struct ubifs_info *c, int anyway)
 				 * caller instead of the original '-EAGAIN'.
 				 */
 				err = ubifs_return_leb(c, lp.lnum);
+<<<<<<< HEAD
 				if (err)
 					ret = err;
+=======
+				if (err) {
+					ret = err;
+					/*
+					 * An LEB may always be "taken",
+					 * so setting ubifs to read-only,
+					 * and then executing sync wbuf will
+					 * return -EROFS and enter the "out"
+					 * error branch.
+					 */
+					ubifs_ro_mode(c, ret);
+				}
+				/*  Maybe double return LEB if goto out */
+				lp.lnum = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 			goto out;
@@ -757,7 +955,11 @@ int ubifs_garbage_collect(struct ubifs_info *c, int anyway)
 			continue;
 		}
 
+<<<<<<< HEAD
 		ubifs_assert(ret == LEB_RETAINED);
+=======
+		ubifs_assert(c, ret == LEB_RETAINED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		space_after = c->leb_size - wbuf->offs - wbuf->used;
 		dbg_gc("LEB %d retained, freed %d bytes", lp.lnum,
 		       space_after - space_before);
@@ -817,12 +1019,22 @@ out_unlock:
 	return ret;
 
 out:
+<<<<<<< HEAD
 	ubifs_assert(ret < 0);
 	ubifs_assert(ret != -ENOSPC && ret != -EAGAIN);
 	ubifs_wbuf_sync_nolock(wbuf);
 	ubifs_ro_mode(c, ret);
 	mutex_unlock(&wbuf->io_mutex);
 	ubifs_return_leb(c, lp.lnum);
+=======
+	ubifs_assert(c, ret < 0);
+	ubifs_assert(c, ret != -ENOSPC && ret != -EAGAIN);
+	ubifs_wbuf_sync_nolock(wbuf);
+	ubifs_ro_mode(c, ret);
+	mutex_unlock(&wbuf->io_mutex);
+	if (lp.lnum != -1)
+		ubifs_return_leb(c, lp.lnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -851,6 +1063,7 @@ int ubifs_gc_start_commit(struct ubifs_info *c)
 	 */
 	while (1) {
 		lp = ubifs_fast_find_freeable(c);
+<<<<<<< HEAD
 		if (IS_ERR(lp)) {
 			err = PTR_ERR(lp);
 			goto out;
@@ -859,6 +1072,12 @@ int ubifs_gc_start_commit(struct ubifs_info *c)
 			break;
 		ubifs_assert(!(lp->flags & LPROPS_TAKEN));
 		ubifs_assert(!(lp->flags & LPROPS_INDEX));
+=======
+		if (!lp)
+			break;
+		ubifs_assert(c, !(lp->flags & LPROPS_TAKEN));
+		ubifs_assert(c, !(lp->flags & LPROPS_INDEX));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = ubifs_leb_unmap(c, lp->lnum);
 		if (err)
 			goto out;
@@ -867,8 +1086,13 @@ int ubifs_gc_start_commit(struct ubifs_info *c)
 			err = PTR_ERR(lp);
 			goto out;
 		}
+<<<<<<< HEAD
 		ubifs_assert(!(lp->flags & LPROPS_TAKEN));
 		ubifs_assert(!(lp->flags & LPROPS_INDEX));
+=======
+		ubifs_assert(c, !(lp->flags & LPROPS_TAKEN));
+		ubifs_assert(c, !(lp->flags & LPROPS_INDEX));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Mark GC'd index LEBs OK to unmap after this commit finishes */
@@ -889,8 +1113,13 @@ int ubifs_gc_start_commit(struct ubifs_info *c)
 			err = -ENOMEM;
 			goto out;
 		}
+<<<<<<< HEAD
 		ubifs_assert(!(lp->flags & LPROPS_TAKEN));
 		ubifs_assert(lp->flags & LPROPS_INDEX);
+=======
+		ubifs_assert(c, !(lp->flags & LPROPS_TAKEN));
+		ubifs_assert(c, lp->flags & LPROPS_INDEX);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Don't release the LEB until after the next commit */
 		flags = (lp->flags | LPROPS_TAKEN) ^ LPROPS_INDEX;
 		lp = ubifs_change_lp(c, lp, c->leb_size, 0, flags, 1);
@@ -899,8 +1128,13 @@ int ubifs_gc_start_commit(struct ubifs_info *c)
 			kfree(idx_gc);
 			goto out;
 		}
+<<<<<<< HEAD
 		ubifs_assert(lp->flags & LPROPS_TAKEN);
 		ubifs_assert(!(lp->flags & LPROPS_INDEX));
+=======
+		ubifs_assert(c, lp->flags & LPROPS_TAKEN);
+		ubifs_assert(c, !(lp->flags & LPROPS_INDEX));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		idx_gc->lnum = lp->lnum;
 		idx_gc->unmap = 1;
 		list_add(&idx_gc->list, &c->idx_gc);

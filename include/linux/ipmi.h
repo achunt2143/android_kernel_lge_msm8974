@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ipmi.h
  *
@@ -9,6 +13,7 @@
  *
  * Copyright 2002 MontaVista Software Inc.
  *
+<<<<<<< HEAD
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License as published by the
  *  Free Software Foundation; either version 2 of the License, or (at your
@@ -221,13 +226,32 @@ struct kernel_ipmi_msg {
  */
 #include <linux/list.h>
 #include <linux/proc_fs.h>
+=======
+ */
+#ifndef __LINUX_IPMI_H
+#define __LINUX_IPMI_H
+
+#include <uapi/linux/ipmi.h>
+
+#include <linux/list.h>
+#include <linux/proc_fs.h>
+#include <linux/acpi.h> /* For acpi_handle */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct module;
 struct device;
 
+<<<<<<< HEAD
 /* Opaque type for a IPMI message user.  One of these is needed to
    send and receive messages. */
 typedef struct ipmi_user *ipmi_user_t;
+=======
+/*
+ * Opaque type for a IPMI message user.  One of these is needed to
+ * send and receive messages.
+ */
+struct ipmi_user;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Stuff coming from the receive interface comes as one of these.
@@ -239,15 +263,26 @@ typedef struct ipmi_user *ipmi_user_t;
 struct ipmi_recv_msg {
 	struct list_head link;
 
+<<<<<<< HEAD
 	/* The type of message as defined in the "Receive Types"
 	   defines above. */
 	int              recv_type;
 
 	ipmi_user_t      user;
+=======
+	/*
+	 * The type of message as defined in the "Receive Types"
+	 * defines above.
+	 */
+	int              recv_type;
+
+	struct ipmi_user *user;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ipmi_addr addr;
 	long             msgid;
 	struct kernel_ipmi_msg  msg;
 
+<<<<<<< HEAD
 	/* The user_msg_data is the data supplied when a message was
 	   sent, if this is a response to a sent message.  If this is
 	   not a response to a sent message, then user_msg_data will
@@ -264,10 +299,40 @@ struct ipmi_recv_msg {
 	unsigned char   msg_data[IPMI_MAX_MSG_LENGTH];
 };
 
+=======
+	/*
+	 * The user_msg_data is the data supplied when a message was
+	 * sent, if this is a response to a sent message.  If this is
+	 * not a response to a sent message, then user_msg_data will
+	 * be NULL.  If the user above is NULL, then this will be the
+	 * intf.
+	 */
+	void             *user_msg_data;
+
+	/*
+	 * Call this when done with the message.  It will presumably free
+	 * the message and do any other necessary cleanup.
+	 */
+	void (*done)(struct ipmi_recv_msg *msg);
+
+	/*
+	 * Place-holder for the data, don't make any assumptions about
+	 * the size or existence of this, since it may change.
+	 */
+	unsigned char   msg_data[IPMI_MAX_MSG_LENGTH];
+};
+
+#define INIT_IPMI_RECV_MSG(done_handler) \
+{					\
+	.done = done_handler		\
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Allocate and free the receive message. */
 void ipmi_free_recv_msg(struct ipmi_recv_msg *msg);
 
 struct ipmi_user_hndl {
+<<<<<<< HEAD
 	/* Routine type to call when a message needs to be routed to
 	   the upper layer.  This will be called with some locks held,
 	   the only IPMI routines that can be called are ipmi_request
@@ -279,10 +344,42 @@ struct ipmi_user_hndl {
 	/* Called when the interface detects a watchdog pre-timeout.  If
 	   this is NULL, it will be ignored for the user. */
 	void (*ipmi_watchdog_pretimeout)(void *handler_data);
+=======
+	/*
+	 * Routine type to call when a message needs to be routed to
+	 * the upper layer.  This will be called with some locks held,
+	 * the only IPMI routines that can be called are ipmi_request
+	 * and the alloc/free operations.  The handler_data is the
+	 * variable supplied when the receive handler was registered.
+	 */
+	void (*ipmi_recv_hndl)(struct ipmi_recv_msg *msg,
+			       void                 *user_msg_data);
+
+	/*
+	 * Called when the interface detects a watchdog pre-timeout.  If
+	 * this is NULL, it will be ignored for the user.
+	 */
+	void (*ipmi_watchdog_pretimeout)(void *handler_data);
+
+	/*
+	 * If not NULL, called at panic time after the interface has
+	 * been set up to handle run to completion.
+	 */
+	void (*ipmi_panic_handler)(void *handler_data);
+
+	/*
+	 * Called when the interface has been removed.  After this returns
+	 * the user handle will be invalid.  The interface may or may
+	 * not be usable when this is called, but it will return errors
+	 * if it is not usable.
+	 */
+	void (*shutdown)(void *handler_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Create a new user of the IPMI layer on the given interface number. */
 int ipmi_create_user(unsigned int          if_num,
+<<<<<<< HEAD
 		     struct ipmi_user_hndl *handler,
 		     void                  *handler_data,
 		     ipmi_user_t           *user);
@@ -316,6 +413,46 @@ int ipmi_set_my_LUN(ipmi_user_t   user,
 		    unsigned int  channel,
 		    unsigned char LUN);
 int ipmi_get_my_LUN(ipmi_user_t   user,
+=======
+		     const struct ipmi_user_hndl *handler,
+		     void                  *handler_data,
+		     struct ipmi_user      **user);
+
+/*
+ * Destroy the given user of the IPMI layer.  Note that after this
+ * function returns, the system is guaranteed to not call any
+ * callbacks for the user.  Thus as long as you destroy all the users
+ * before you unload a module, you will be safe.  And if you destroy
+ * the users before you destroy the callback structures, it should be
+ * safe, too.
+ */
+int ipmi_destroy_user(struct ipmi_user *user);
+
+/* Get the IPMI version of the BMC we are talking to. */
+int ipmi_get_version(struct ipmi_user *user,
+		     unsigned char *major,
+		     unsigned char *minor);
+
+/*
+ * Set and get the slave address and LUN that we will use for our
+ * source messages.  Note that this affects the interface, not just
+ * this user, so it will affect all users of this interface.  This is
+ * so some initialization code can come in and do the OEM-specific
+ * things it takes to determine your address (if not the BMC) and set
+ * it for everyone else.  Note that each channel can have its own
+ * address.
+ */
+int ipmi_set_my_address(struct ipmi_user *user,
+			unsigned int  channel,
+			unsigned char address);
+int ipmi_get_my_address(struct ipmi_user *user,
+			unsigned int  channel,
+			unsigned char *address);
+int ipmi_set_my_LUN(struct ipmi_user *user,
+		    unsigned int  channel,
+		    unsigned char LUN);
+int ipmi_get_my_LUN(struct ipmi_user *user,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    unsigned int  channel,
 		    unsigned char *LUN);
 
@@ -332,7 +469,11 @@ int ipmi_get_my_LUN(ipmi_user_t   user,
  * it makes no sense to do it here.  However, this can be used if you
  * have unusual requirements.
  */
+<<<<<<< HEAD
 int ipmi_request_settime(ipmi_user_t      user,
+=======
+int ipmi_request_settime(struct ipmi_user *user,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 struct ipmi_addr *addr,
 			 long             msgid,
 			 struct kernel_ipmi_msg  *msg,
@@ -350,7 +491,11 @@ int ipmi_request_settime(ipmi_user_t      user,
  * change as the system changes, so don't use it unless you REALLY
  * have to.
  */
+<<<<<<< HEAD
 int ipmi_request_supply_msgs(ipmi_user_t          user,
+=======
+int ipmi_request_supply_msgs(struct ipmi_user     *user,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct ipmi_addr     *addr,
 			     long                 msgid,
 			     struct kernel_ipmi_msg *msg,
@@ -366,7 +511,11 @@ int ipmi_request_supply_msgs(ipmi_user_t          user,
  * way.  This is useful if you need to spin waiting for something to
  * happen in the IPMI driver.
  */
+<<<<<<< HEAD
 void ipmi_poll_interface(ipmi_user_t user);
+=======
+void ipmi_poll_interface(struct ipmi_user *user);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * When commands come in to the SMS, the user can register to receive
@@ -377,11 +526,19 @@ void ipmi_poll_interface(ipmi_user_t user);
  * error.  Channels are specified as a bitfield, use IPMI_CHAN_ALL to
  * mean all channels.
  */
+<<<<<<< HEAD
 int ipmi_register_for_cmd(ipmi_user_t   user,
 			  unsigned char netfn,
 			  unsigned char cmd,
 			  unsigned int  chans);
 int ipmi_unregister_for_cmd(ipmi_user_t   user,
+=======
+int ipmi_register_for_cmd(struct ipmi_user *user,
+			  unsigned char netfn,
+			  unsigned char cmd,
+			  unsigned int  chans);
+int ipmi_unregister_for_cmd(struct ipmi_user *user,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    unsigned char netfn,
 			    unsigned char cmd,
 			    unsigned int  chans);
@@ -412,8 +569,13 @@ int ipmi_unregister_for_cmd(ipmi_user_t   user,
  *
  * See the IPMI_MAINTENANCE_MODE_xxx defines for what the mode means.
  */
+<<<<<<< HEAD
 int ipmi_get_maintenance_mode(ipmi_user_t user);
 int ipmi_set_maintenance_mode(ipmi_user_t user, int mode);
+=======
+int ipmi_get_maintenance_mode(struct ipmi_user *user);
+int ipmi_set_maintenance_mode(struct ipmi_user *user, int mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * When the user is created, it will not receive IPMI events by
@@ -421,7 +583,11 @@ int ipmi_set_maintenance_mode(ipmi_user_t user, int mode);
  * The first user that sets this to TRUE will receive all events that
  * have been queued while no one was waiting for events.
  */
+<<<<<<< HEAD
 int ipmi_set_gets_events(ipmi_user_t user, int val);
+=======
+int ipmi_set_gets_events(struct ipmi_user *user, bool val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Called when a new SMI is registered.  This will also be called on
@@ -431,6 +597,7 @@ int ipmi_set_gets_events(ipmi_user_t user, int val);
 struct ipmi_smi_watcher {
 	struct list_head link;
 
+<<<<<<< HEAD
 	/* You must set the owner to the current module, if you are in
 	   a module (generally just set it to "THIS_MODULE"). */
 	struct module *owner;
@@ -439,6 +606,20 @@ struct ipmi_smi_watcher {
 	   the watcher list.  So you can add and remove users from the
 	   IPMI interface, send messages, etc., but you cannot add
 	   or remove SMI watchers or SMI interfaces. */
+=======
+	/*
+	 * You must set the owner to the current module, if you are in
+	 * a module (generally just set it to "THIS_MODULE").
+	 */
+	struct module *owner;
+
+	/*
+	 * These two are called with read locks held for the interface
+	 * the watcher list.  So you can add and remove users from the
+	 * IPMI interface, send messages, etc., but you cannot add
+	 * or remove SMI watchers or SMI interfaces.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void (*new_smi)(int if_num, struct device *dev);
 	void (*smi_gone)(int if_num);
 };
@@ -446,8 +627,15 @@ struct ipmi_smi_watcher {
 int ipmi_smi_watcher_register(struct ipmi_smi_watcher *watcher);
 int ipmi_smi_watcher_unregister(struct ipmi_smi_watcher *watcher);
 
+<<<<<<< HEAD
 /* The following are various helper functions for dealing with IPMI
    addresses. */
+=======
+/*
+ * The following are various helper functions for dealing with IPMI
+ * addresses.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Return the maximum length of an IPMI address given it's type. */
 unsigned int ipmi_addr_length(int addr_type);
@@ -460,17 +648,32 @@ int ipmi_validate_addr(struct ipmi_addr *addr, int len);
  */
 enum ipmi_addr_src {
 	SI_INVALID = 0, SI_HOTMOD, SI_HARDCODED, SI_SPMI, SI_ACPI, SI_SMBIOS,
+<<<<<<< HEAD
 	SI_PCI,	SI_DEVICETREE, SI_DEFAULT
 };
 
 union ipmi_smi_info_union {
+=======
+	SI_PCI,	SI_DEVICETREE, SI_PLATFORM, SI_LAST
+};
+const char *ipmi_addr_src_to_str(enum ipmi_addr_src src);
+
+union ipmi_smi_info_union {
+#ifdef CONFIG_ACPI
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * the acpi_info element is defined for the SI_ACPI
 	 * address type
 	 */
 	struct {
+<<<<<<< HEAD
 		void *acpi_handle;
 	} acpi_info;
+=======
+		acpi_handle acpi_handle;
+	} acpi_info;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ipmi_smi_info {
@@ -490,6 +693,7 @@ struct ipmi_smi_info {
 	union ipmi_smi_info_union addr_info;
 };
 
+<<<<<<< HEAD
 /* This is to get the private info of ipmi_smi_t */
 extern int ipmi_get_smi_info(int if_num, struct ipmi_smi_info *data);
 
@@ -732,5 +936,14 @@ struct ipmi_timing_parms {
  */
 #define IPMICTL_GET_MAINTENANCE_MODE_CMD	_IOR(IPMI_IOC_MAGIC, 30, int)
 #define IPMICTL_SET_MAINTENANCE_MODE_CMD	_IOW(IPMI_IOC_MAGIC, 31, int)
+=======
+/* This is to get the private info of struct ipmi_smi */
+extern int ipmi_get_smi_info(int if_num, struct ipmi_smi_info *data);
+
+#define GET_DEVICE_ID_MAX_RETRY		5
+
+/* Helper function for computing the IPMB checksum of some data. */
+unsigned char ipmb_checksum(unsigned char *data, int size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __LINUX_IPMI_H */

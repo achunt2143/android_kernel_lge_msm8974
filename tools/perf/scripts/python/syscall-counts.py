@@ -5,6 +5,11 @@
 # Displays system-wide system call totals, broken down by syscall.
 # If a [comm] arg is specified, only syscalls called by [comm] are displayed.
 
+<<<<<<< HEAD
+=======
+from __future__ import print_function
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 import os
 import sys
 
@@ -28,14 +33,23 @@ if len(sys.argv) > 1:
 syscalls = autodict()
 
 def trace_begin():
+<<<<<<< HEAD
 	print "Press control+C to stop and show the summary"
+=======
+	print("Press control+C to stop and show the summary")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 def trace_end():
 	print_syscall_totals()
 
 def raw_syscalls__sys_enter(event_name, context, common_cpu,
+<<<<<<< HEAD
 	common_secs, common_nsecs, common_pid, common_comm,
 	id, args):
+=======
+		common_secs, common_nsecs, common_pid, common_comm,
+		common_callchain, id, args):
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if for_comm is not None:
 		if common_comm != for_comm:
 			return
@@ -44,6 +58,7 @@ def raw_syscalls__sys_enter(event_name, context, common_cpu,
 	except TypeError:
 		syscalls[id] = 1
 
+<<<<<<< HEAD
 def print_syscall_totals():
     if for_comm is not None:
 	    print "\nsyscall events for %s:\n\n" % (for_comm),
@@ -57,3 +72,22 @@ def print_syscall_totals():
     for id, val in sorted(syscalls.iteritems(), key = lambda(k, v): (v, k), \
 				  reverse = True):
 	    print "%-40s  %10d\n" % (syscall_name(id), val),
+=======
+def syscalls__sys_enter(event_name, context, common_cpu,
+		common_secs, common_nsecs, common_pid, common_comm, id, args):
+	raw_syscalls__sys_enter(**locals())
+
+def print_syscall_totals():
+	if for_comm is not None:
+		print("\nsyscall events for %s:\n" % (for_comm))
+	else:
+		print("\nsyscall events:\n")
+
+	print("%-40s  %10s" % ("event", "count"))
+	print("%-40s  %10s" % ("----------------------------------------",
+				"-----------"))
+
+	for id, val in sorted(syscalls.items(),
+			key = lambda kv: (kv[1], kv[0]), reverse = True):
+		print("%-40s  %10d" % (syscall_name(id), val))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

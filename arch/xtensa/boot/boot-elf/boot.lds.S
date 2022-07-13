@@ -1,9 +1,25 @@
+<<<<<<< HEAD
 #include <variant/core.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ *  linux/arch/xtensa/boot/boot-elf/boot.lds.S
+ *
+ *  Copyright (C) 2008 - 2013 by Tensilica Inc.
+ *
+ *  Chris Zankel <chris@zankel.net>
+ *  Marc Gauthier <marc@tensilica.com
+ *  Pete Delaney <piet@tensilica.com>
+ */
+
+#include <asm/vectors.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 OUTPUT_ARCH(xtensa)
 ENTRY(_ResetVector)
 
 SECTIONS
 {
+<<<<<<< HEAD
 	.start 0xD0000000 : { *(.start) }
 
 	.text 0xD0000000:
@@ -43,6 +59,14 @@ SECTIONS
 	. = ALIGN(0x10);
 	__image_load = . ;
 	.image 0xd0001000:
+=======
+	.ResetVector.text XCHAL_RESET_VECTOR_VADDR :
+	{
+		*(.ResetVector.text)
+	}
+
+	.image KERNELOFFSET: AT (CONFIG_KERNEL_LOAD_ADDRESS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		_image_start = .;
 		*(image)
@@ -50,7 +74,10 @@ SECTIONS
 		_image_end = .	;
 	}
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bss ((LOADADDR(.image) + SIZEOF(.image) + 3) & ~ 3):
 	{
 		__bss_start = .;
@@ -60,6 +87,7 @@ SECTIONS
 		*(.bss)
 		__bss_end = .;
 	}
+<<<<<<< HEAD
 	_end = .;
 	_param_start = .;
 
@@ -70,4 +98,6 @@ SECTIONS
 
 
 	PROVIDE (end = .);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

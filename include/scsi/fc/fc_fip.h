@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
  *
@@ -13,6 +14,11 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _FC_FIP_H_
 #define _FC_FIP_H_
@@ -22,7 +28,11 @@
 /*
  * This version is based on:
  * http://www.t11.org/ftp/t11/pub/fc/bb-5/08-543v1.pdf
+<<<<<<< HEAD
  * and T11 FC-BB-6 10-019v4.pdf (June 2010 VN2VN proposal)
+=======
+ * and T11 FC-BB-6 13-091v5.pdf (December 2013 VN2VN proposal)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define FIP_DEF_PRI	128	/* default selection priority */
@@ -109,8 +119,14 @@ enum fip_reset_subcode {
  * Subcodes for FIP_OP_VLAN.
  */
 enum fip_vlan_subcode {
+<<<<<<< HEAD
 	FIP_SC_VL_REQ =	1,		/* request */
 	FIP_SC_VL_REP =	2,		/* reply */
+=======
+	FIP_SC_VL_REQ =	1,		/* vlan request */
+	FIP_SC_VL_NOTE = 2,		/* vlan notification */
+	FIP_SC_VL_VN2VN_NOTE = 3,	/* VN2VN vlan notification */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -130,6 +146,11 @@ enum fip_vn2vn_subcode {
 enum fip_flag {
 	FIP_FL_FPMA =	0x8000,		/* supports FPMA fabric-provided MACs */
 	FIP_FL_SPMA =	0x4000,		/* supports SPMA server-provided MACs */
+<<<<<<< HEAD
+=======
+	FIP_FL_FCF =	0x0020,		/* originated from a controlling FCF */
+	FIP_FL_FDF =	0x0010,		/* originated from an FDF */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FIP_FL_REC_OR_P2P = 0x0008,	/* configured addr or point-to-point */
 	FIP_FL_AVAIL =	0x0004,		/* available for FLOGI/ELP */
 	FIP_FL_SOL =	0x0002,		/* this is a solicited message */
@@ -161,7 +182,13 @@ enum fip_desc_type {
 	FIP_DT_VLAN =	14,		/* vlan number */
 	FIP_DT_FC4F =	15,		/* FC-4 features */
 	FIP_DT_LIMIT,			/* max defined desc_type + 1 */
+<<<<<<< HEAD
 	FIP_DT_VENDOR_BASE = 128,	/* first vendor-specific desc_type */
+=======
+	FIP_DT_NON_CRITICAL = 128,	/* First non-critical descriptor */
+	FIP_DT_CLR_VLINKS = 128,	/* Clear virtual links reason code */
+	FIP_DT_VENDOR_BASE = 241,	/* first vendor-specific desc_type */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -259,6 +286,17 @@ enum fip_fka_flags {
 /* FIP_DT_FKA flags */
 
 /*
+<<<<<<< HEAD
+=======
+ * FIP_DT_VLAN descriptor
+ */
+struct fip_vlan_desc {
+	struct fip_desc fd_desc;
+	__be16		fd_vlan; /* Note: highest 4 bytes are unused */
+} __attribute__((packed));
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * FIP_DT_FC4F - FC-4 features.
  */
 struct fip_fc4_feat {

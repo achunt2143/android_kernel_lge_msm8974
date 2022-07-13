@@ -1,13 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-lpc32xx/pm.c
  *
  * Original authors: Vitaly Wool, Dmitry Chigirev <source@mvista.com>
  * Modified by Kevin Wells <kevin.wells@nxp.com>
  *
+<<<<<<< HEAD
  * 2005 (c) MontaVista Software, Inc. This file is licensed under
  * the terms of the GNU General Public License version 2. This program
  * is licensed "as is" without any warranty of any kind, whether express
  * or implied.
+=======
+ * 2005 (c) MontaVista Software, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -70,10 +78,15 @@
 
 #include <asm/cacheflush.h>
 
+<<<<<<< HEAD
 #include <mach/hardware.h>
 #include <mach/platform.h>
 #include "common.h"
 #include "clock.h"
+=======
+#include "lpc32xx.h"
+#include "common.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TEMP_IRAM_AREA  IO_ADDRESS(LPC32XX_IRAM_BASE)
 
@@ -87,6 +100,7 @@ static int lpc32xx_pm_enter(suspend_state_t state)
 	void *iram_swap_area;
 
 	/* Allocate some space for temporary IRAM storage */
+<<<<<<< HEAD
 	iram_swap_area = kmalloc(lpc32xx_sys_suspend_sz, GFP_KERNEL);
 	if (!iram_swap_area) {
 		printk(KERN_ERR
@@ -98,6 +112,12 @@ static int lpc32xx_pm_enter(suspend_state_t state)
 	/* Backup a small area of IRAM used for the suspend code */
 	memcpy(iram_swap_area, (void *) TEMP_IRAM_AREA,
 		lpc32xx_sys_suspend_sz);
+=======
+	iram_swap_area = kmemdup((void *)TEMP_IRAM_AREA,
+				 lpc32xx_sys_suspend_sz, GFP_KERNEL);
+	if (!iram_swap_area)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Copy code to suspend system into IRAM. The suspend code

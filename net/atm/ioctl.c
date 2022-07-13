@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ATM ioctl handling */
 
 /* Written 1995-2000 by Werner Almesberger, EPFL LRC/ICA */
@@ -55,6 +59,11 @@ static int do_vcc_ioctl(struct socket *sock, unsigned int cmd,
 	int error;
 	struct list_head *pos;
 	void __user *argp = (void __user *)arg;
+<<<<<<< HEAD
+=======
+	void __user *buf;
+	int __user *len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vcc = ATM_SD(sock);
 	switch (cmd) {
@@ -70,11 +79,16 @@ static int do_vcc_ioctl(struct socket *sock, unsigned int cmd,
 	case SIOCINQ:
 	{
 		struct sk_buff *skb;
+<<<<<<< HEAD
+=======
+		int amount;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (sock->state != SS_CONNECTED) {
 			error = -EINVAL;
 			goto done;
 		}
+<<<<<<< HEAD
 		skb = skb_peek(&sk->sk_receive_queue);
 		error = put_user(skb ? skb->len : 0,
 				 (int __user *)argp) ? -EFAULT : 0;
@@ -100,6 +114,18 @@ static int do_vcc_ioctl(struct socket *sock, unsigned int cmd,
 		if (net_ratelimit())
 			pr_warning("ATM_SETSC is obsolete; used by %s:%d\n",
 				   current->comm, task_pid_nr(current));
+=======
+		spin_lock_irq(&sk->sk_receive_queue.lock);
+		skb = skb_peek(&sk->sk_receive_queue);
+		amount = skb ? skb->len : 0;
+		spin_unlock_irq(&sk->sk_receive_queue.lock);
+		error = put_user(amount, (int __user *)argp) ? -EFAULT : 0;
+		goto done;
+	}
+	case ATM_SETSC:
+		net_warn_ratelimited("ATM_SETSC is obsolete; used by %s:%d\n",
+				     current->comm, task_pid_nr(current));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = 0;
 		goto done;
 	case ATMSIGD_CTRL:
@@ -123,8 +149,12 @@ static int do_vcc_ioctl(struct socket *sock, unsigned int cmd,
 		   work for 32-bit userspace. TBH I don't really want
 		   to think about it at all. dwmw2. */
 		if (compat) {
+<<<<<<< HEAD
 			if (net_ratelimit())
 				pr_warning("32-bit task cannot be atmsigd\n");
+=======
+			net_warn_ratelimited("32-bit task cannot be atmsigd\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			error = -EINVAL;
 			goto done;
 		}
@@ -179,7 +209,53 @@ static int do_vcc_ioctl(struct socket *sock, unsigned int cmd,
 	if (error != -ENOIOCTLCMD)
 		goto done;
 
+<<<<<<< HEAD
 	error = atm_dev_ioctl(cmd, argp, compat);
+=======
+	if (cmd == ATM_GETNAMES) {
+		if (IS_ENABLED(CONFIG_COMPAT) && compat) {
+#ifdef CONFIG_COMPAT
+			struct compat_atm_iobuf __user *ciobuf = argp;
+			compat_uptr_t cbuf;
+			len = &ciobuf->length;
+			if (get_user(cbuf, &ciobuf->buffer))
+				return -EFAULT;
+			buf = compat_ptr(cbuf);
+#endif
+		} else {
+			struct atm_iobuf __user *iobuf = argp;
+			len = &iobuf->length;
+			if (get_user(buf, &iobuf->buffer))
+				return -EFAULT;
+		}
+		error = atm_getnames(buf, len);
+	} else {
+		int number;
+
+		if (IS_ENABLED(CONFIG_COMPAT) && compat) {
+#ifdef CONFIG_COMPAT
+			struct compat_atmif_sioc __user *csioc = argp;
+			compat_uptr_t carg;
+
+			len = &csioc->length;
+			if (get_user(carg, &csioc->arg))
+				return -EFAULT;
+			buf = compat_ptr(carg);
+			if (get_user(number, &csioc->number))
+				return -EFAULT;
+#endif
+		} else {
+			struct atmif_sioc __user *sioc = argp;
+
+			len = &sioc->length;
+			if (get_user(buf, &sioc->arg))
+				return -EFAULT;
+			if (get_user(number, &sioc->number))
+				return -EFAULT;
+		}
+		error = atm_dev_ioctl(cmd, buf, len, number, compat);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 done:
 	return error;
@@ -247,6 +323,7 @@ static struct {
 static int do_atm_iobuf(struct socket *sock, unsigned int cmd,
 			unsigned long arg)
 {
+<<<<<<< HEAD
 	struct atm_iobuf __user *iobuf;
 	struct compat_atm_iobuf __user *iobuf32;
 	u32 data;
@@ -273,11 +350,21 @@ static int do_atm_iobuf(struct socket *sock, unsigned int cmd,
 	}
 
 	return err;
+=======
+	struct compat_atm_iobuf __user *iobuf32 = compat_ptr(arg);
+	u32 data;
+
+	if (get_user(data, &iobuf32->buffer))
+		return -EFAULT;
+
+	return atm_getnames(&iobuf32->length, compat_ptr(data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int do_atmif_sioc(struct socket *sock, unsigned int cmd,
 			 unsigned long arg)
 {
+<<<<<<< HEAD
 	struct atmif_sioc __user *sioc;
 	struct compat_atmif_sioc __user *sioc32;
 	u32 data;
@@ -302,6 +389,15 @@ static int do_atmif_sioc(struct socket *sock, unsigned int cmd,
 			err = -EFAULT;
 	}
 	return err;
+=======
+	struct compat_atmif_sioc __user *sioc32 = compat_ptr(arg);
+	int number;
+	u32 data;
+
+	if (get_user(data, &sioc32->arg) || get_user(number, &sioc32->number))
+		return -EFAULT;
+	return atm_dev_ioctl(cmd, compat_ptr(data), &sioc32->length, number, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int do_atm_ioctl(struct socket *sock, unsigned int cmd32,

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef ASM_SCHID_H
 #define ASM_SCHID_H
 
@@ -14,6 +15,14 @@ struct subchannel_id {
 
 #ifdef __KERNEL__
 #include <linux/string.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef ASM_SCHID_H
+#define ASM_SCHID_H
+
+#include <linux/string.h>
+#include <uapi/asm/schid.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Helper function for sane state of pre-allocated subchannel_id. */
 static inline void
@@ -29,6 +38,9 @@ schid_equal(struct subchannel_id *schid1, struct subchannel_id *schid2)
 	return !memcmp(schid1, schid2, sizeof(struct subchannel_id));
 }
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* ASM_SCHID_H */

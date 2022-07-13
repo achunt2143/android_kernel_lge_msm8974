@@ -15,8 +15,13 @@
 #include <linux/interrupt.h>
 #include <linux/device.h>
 #include <linux/delay.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
+=======
+#include <linux/of.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dma-mapping.h>
 
 #include <sound/core.h>
@@ -26,27 +31,53 @@
 #include <sound/soc.h>
 
 #include "mpc5200_dma.h"
+<<<<<<< HEAD
 #include "mpc5200_psc_ac97.h"
 #include "../codecs/stac9766.h"
 
 #define DRV_NAME "efika-audio-fabric"
 
+=======
+
+#define DRV_NAME "efika-audio-fabric"
+
+SND_SOC_DAILINK_DEFS(analog,
+	DAILINK_COMP_ARRAY(COMP_CPU("mpc5200-psc-ac97.0")),
+	DAILINK_COMP_ARRAY(COMP_CODEC("stac9766-codec",
+				      "stac9766-hifi-analog")),
+	DAILINK_COMP_ARRAY(COMP_PLATFORM("mpc5200-pcm-audio")));
+
+SND_SOC_DAILINK_DEFS(iec958,
+	DAILINK_COMP_ARRAY(COMP_CPU("mpc5200-psc-ac97.1")),
+	DAILINK_COMP_ARRAY(COMP_CODEC("stac9766-codec",
+				      "stac9766-hifi-IEC958")),
+	DAILINK_COMP_ARRAY(COMP_PLATFORM("mpc5200-pcm-audio")));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct snd_soc_dai_link efika_fabric_dai[] = {
 {
 	.name = "AC97",
 	.stream_name = "AC97 Analog",
+<<<<<<< HEAD
 	.codec_dai_name = "stac9766-hifi-analog",
 	.cpu_dai_name = "mpc5200-psc-ac97.0",
 	.platform_name = "mpc5200-pcm-audio",
 	.codec_name = "stac9766-codec",
+=======
+	SND_SOC_DAILINK_REG(analog),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 },
 {
 	.name = "AC97",
 	.stream_name = "AC97 IEC958",
+<<<<<<< HEAD
 	.codec_dai_name = "stac9766-hifi-IEC958",
 	.cpu_dai_name = "mpc5200-psc-ac97.1",
 	.platform_name = "mpc5200-pcm-audio",
 	.codec_name = "stac9766-codec",
+=======
+	SND_SOC_DAILINK_REG(iec958),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 },
 };
 

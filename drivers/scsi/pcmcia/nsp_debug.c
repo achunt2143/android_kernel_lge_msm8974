@@ -145,7 +145,11 @@ static void show_command(struct scsi_cmnd *SCpnt)
 
 static void show_phase(struct scsi_cmnd *SCpnt)
 {
+<<<<<<< HEAD
 	int i = SCpnt->SCp.phase;
+=======
+	int i = nsp_scsi_pointer(SCpnt)->phase;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	char *ph[] = {
 		"PH_UNDETERMINED",

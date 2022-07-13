@@ -1,4 +1,5 @@
 ToDo list (incomplete, unordered)
+<<<<<<< HEAD
 	- add compile as module support
 	- fix clk usage
 	  should not be using clk_get_sys(), but clk_get(&pdev->dev, conn)
@@ -10,3 +11,9 @@ ToDo list (incomplete, unordered)
 	- modifiy the sync_write method to return the received
 	  message in a variable (and return the error code).
 	- add support for more device implementations
+=======
+	- move the driver to the new i2c slave framework
+	- finish suspend/resume support
+	- fix udelay in the isr
+	- add atomic ops in order to fix shutoff/reboot problems
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

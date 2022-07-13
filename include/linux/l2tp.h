@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * L2TP-over-IP socket for L2TPv3.
  *
  * Author: James Chapman <jchapman@katalix.com>
  */
+<<<<<<< HEAD
 
 #ifndef _LINUX_L2TP_H_
 #define _LINUX_L2TP_H_
@@ -160,5 +165,13 @@ enum l2tp_seqmode {
  */
 #define L2TP_GENL_NAME		"l2tp"
 #define L2TP_GENL_VERSION	0x1
+=======
+#ifndef _LINUX_L2TP_H_
+#define _LINUX_L2TP_H_
+
+#include <linux/in.h>
+#include <linux/in6.h>
+#include <uapi/linux/l2tp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

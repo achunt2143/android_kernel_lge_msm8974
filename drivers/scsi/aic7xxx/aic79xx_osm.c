@@ -194,7 +194,11 @@ struct ahd_linux_iocell_opts
 #define AIC79XX_PRECOMP_INDEX	0
 #define AIC79XX_SLEWRATE_INDEX	1
 #define AIC79XX_AMPLITUDE_INDEX	2
+<<<<<<< HEAD
 static const struct ahd_linux_iocell_opts aic79xx_iocell_info[] =
+=======
+static struct ahd_linux_iocell_opts aic79xx_iocell_info[] __ro_after_init =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	AIC79XX_DEFAULT_IOOPTS,
 	AIC79XX_DEFAULT_IOOPTS,
@@ -536,6 +540,7 @@ ahd_linux_unmap_scb(struct ahd_softc *ahd, struct scb *scb)
 	struct scsi_cmnd *cmd;
 
 	cmd = scb->io_ctx;
+<<<<<<< HEAD
 	ahd_sync_sglist(ahd, scb, BUS_DMASYNC_POSTWRITE);
 	scsi_dma_unmap(cmd);
 }
@@ -543,6 +548,20 @@ ahd_linux_unmap_scb(struct ahd_softc *ahd, struct scb *scb)
 /******************************** Macros **************************************/
 #define BUILD_SCSIID(ahd, cmd)						\
 	(((scmd_id(cmd) << TID_SHIFT) & TID) | (ahd)->our_id)
+=======
+	if (cmd) {
+		ahd_sync_sglist(ahd, scb, BUS_DMASYNC_POSTWRITE);
+		scsi_dma_unmap(cmd);
+	}
+}
+
+/******************************** Macros **************************************/
+static inline unsigned int ahd_build_scsiid(struct ahd_softc *ahd,
+					    struct scsi_device *sdev)
+{
+	return ((sdev_id(sdev) << TID_SHIFT) & TID) | (ahd)->our_id;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Return a string describing the driver.
@@ -572,8 +591,12 @@ ahd_linux_info(struct Scsi_Host *host)
 /*
  * Queue an SCB to the controller.
  */
+<<<<<<< HEAD
 static int
 ahd_linux_queue_lck(struct scsi_cmnd * cmd, void (*scsi_done) (struct scsi_cmnd *))
+=======
+static int ahd_linux_queue_lck(struct scsi_cmnd *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct	 ahd_softc *ahd;
 	struct	 ahd_linux_device *dev = scsi_transport_device_data(cmd->device);
@@ -581,7 +604,10 @@ ahd_linux_queue_lck(struct scsi_cmnd * cmd, void (*scsi_done) (struct scsi_cmnd 
 
 	ahd = *(struct ahd_softc **)cmd->device->host->hostdata;
 
+<<<<<<< HEAD
 	cmd->scsi_done = scsi_done;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cmd->result = CAM_REQ_INPROG << 16;
 	rtn = ahd_linux_run_command(ahd, dev, cmd);
 
@@ -700,9 +726,12 @@ ahd_linux_slave_alloc(struct scsi_device *sdev)
 static int
 ahd_linux_slave_configure(struct scsi_device *sdev)
 {
+<<<<<<< HEAD
 	struct	ahd_softc *ahd;
 
 	ahd = *((struct ahd_softc **)sdev->host->hostdata);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bootverbose)
 		sdev_printk(KERN_INFO, sdev, "Slave Configure\n");
 
@@ -723,16 +752,23 @@ static int
 ahd_linux_biosparam(struct scsi_device *sdev, struct block_device *bdev,
 		    sector_t capacity, int geom[])
 {
+<<<<<<< HEAD
 	uint8_t *bh;
 	int	 heads;
 	int	 sectors;
 	int	 cylinders;
 	int	 ret;
+=======
+	int	 heads;
+	int	 sectors;
+	int	 cylinders;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	 extended;
 	struct	 ahd_softc *ahd;
 
 	ahd = *((struct ahd_softc **)sdev->host->hostdata);
 
+<<<<<<< HEAD
 	bh = scsi_bios_ptable(bdev);
 	if (bh) {
 		ret = scsi_partsize(bh, capacity,
@@ -741,6 +777,11 @@ ahd_linux_biosparam(struct scsi_device *sdev, struct block_device *bdev,
 		if (ret != -1)
 			return (ret);
 	}
+=======
+	if (scsi_partsize(bdev, capacity, geom))
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	heads = 64;
 	sectors = 32;
 	cylinders = aic_sector_div(capacity, heads, sectors);
@@ -767,11 +808,15 @@ ahd_linux_biosparam(struct scsi_device *sdev, struct block_device *bdev,
 static int
 ahd_linux_abort(struct scsi_cmnd *cmd)
 {
+<<<<<<< HEAD
 	int error;
 	
 	error = ahd_linux_queue_abort_cmd(cmd);
 
 	return error;
+=======
+	return ahd_linux_queue_abort_cmd(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -785,16 +830,23 @@ ahd_linux_dev_reset(struct scsi_cmnd *cmd)
 	struct scb *reset_scb;
 	u_int  cdb_byte;
 	int    retval = SUCCESS;
+<<<<<<< HEAD
 	int    paused;
 	int    wait;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct	ahd_initiator_tinfo *tinfo;
 	struct	ahd_tmode_tstate *tstate;
 	unsigned long flags;
 	DECLARE_COMPLETION_ONSTACK(done);
 
 	reset_scb = NULL;
+<<<<<<< HEAD
 	paused = FALSE;
 	wait = FALSE;
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd = *(struct ahd_softc **)cmd->device->host->hostdata;
 
 	scmd_printk(KERN_INFO, cmd,
@@ -830,14 +882,22 @@ ahd_linux_dev_reset(struct scsi_cmnd *cmd)
 
 	tinfo = ahd_fetch_transinfo(ahd, 'A', ahd->our_id,
 				    cmd->device->id, &tstate);
+<<<<<<< HEAD
 	reset_scb->io_ctx = cmd;
+=======
+	reset_scb->io_ctx = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reset_scb->platform_data->dev = dev;
 	reset_scb->sg_count = 0;
 	ahd_set_residual(reset_scb, 0);
 	ahd_set_sense_residual(reset_scb, 0);
 	reset_scb->platform_data->xfer_len = 0;
 	reset_scb->hscb->control = 0;
+<<<<<<< HEAD
 	reset_scb->hscb->scsiid = BUILD_SCSIID(ahd,cmd);
+=======
+	reset_scb->hscb->scsiid = ahd_build_scsiid(ahd, cmd->device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reset_scb->hscb->lun = cmd->device->lun;
 	reset_scb->hscb->cdb_len = 0;
 	reset_scb->hscb->task_management = SIU_TASKMGMT_LUN_RESET;
@@ -906,7 +966,12 @@ struct scsi_host_template aic79xx_driver_template = {
 	.module			= THIS_MODULE,
 	.name			= "aic79xx",
 	.proc_name		= "aic79xx",
+<<<<<<< HEAD
 	.proc_info		= ahd_linux_proc_info,
+=======
+	.show_info		= ahd_linux_show_info,
+	.write_info	 	= ahd_proc_write_seeprom,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info			= ahd_linux_info,
 	.queuecommand		= ahd_linux_queue,
 	.eh_abort_handler	= ahd_linux_abort,
@@ -919,7 +984,10 @@ struct scsi_host_template aic79xx_driver_template = {
 	.this_id		= -1,
 	.max_sectors		= 8192,
 	.cmd_per_lun		= 2,
+<<<<<<< HEAD
 	.use_clustering		= ENABLE_CLUSTERING,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.slave_alloc		= ahd_linux_slave_alloc,
 	.slave_configure	= ahd_linux_slave_configure,
 	.target_alloc		= ahd_linux_target_alloc,
@@ -965,8 +1033,13 @@ int
 ahd_dmamem_alloc(struct ahd_softc *ahd, bus_dma_tag_t dmat, void** vaddr,
 		 int flags, bus_dmamap_t *mapp)
 {
+<<<<<<< HEAD
 	*vaddr = pci_alloc_consistent(ahd->dev_softc,
 				      dmat->maxsize, mapp);
+=======
+	*vaddr = dma_alloc_coherent(&ahd->dev_softc->dev, dmat->maxsize, mapp,
+				    GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*vaddr == NULL)
 		return (ENOMEM);
 	return(0);
@@ -976,8 +1049,12 @@ void
 ahd_dmamem_free(struct ahd_softc *ahd, bus_dma_tag_t dmat,
 		void* vaddr, bus_dmamap_t map)
 {
+<<<<<<< HEAD
 	pci_free_consistent(ahd->dev_softc, dmat->maxsize,
 			    vaddr, map);
+=======
+	dma_free_coherent(&ahd->dev_softc->dev, dmat->maxsize, vaddr, map);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int
@@ -1324,10 +1401,16 @@ int
 ahd_platform_alloc(struct ahd_softc *ahd, void *platform_arg)
 {
 	ahd->platform_data =
+<<<<<<< HEAD
 	    kmalloc(sizeof(struct ahd_platform_data), GFP_ATOMIC);
 	if (ahd->platform_data == NULL)
 		return (ENOMEM);
 	memset(ahd->platform_data, 0, sizeof(struct ahd_platform_data));
+=======
+	    kzalloc(sizeof(struct ahd_platform_data), GFP_ATOMIC);
+	if (ahd->platform_data == NULL)
+		return (ENOMEM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ahd->platform_data->irq = AHD_LINUX_NOIRQ;
 	ahd_lockinit(ahd);
 	ahd->seltime = (aic79xx_seltime & 0x3) << 4;
@@ -1467,12 +1550,18 @@ ahd_platform_set_tags(struct ahd_softc *ahd, struct scsi_device *sdev,
 
 	switch ((dev->flags & (AHD_DEV_Q_BASIC|AHD_DEV_Q_TAGGED))) {
 	case AHD_DEV_Q_BASIC:
+<<<<<<< HEAD
 		scsi_set_tag_type(sdev, MSG_SIMPLE_TASK);
 		scsi_activate_tcq(sdev, dev->openings + dev->active);
 		break;
 	case AHD_DEV_Q_TAGGED:
 		scsi_set_tag_type(sdev, MSG_ORDERED_TASK);
 		scsi_activate_tcq(sdev, dev->openings + dev->active);
+=======
+	case AHD_DEV_Q_TAGGED:
+		scsi_change_queue_depth(sdev,
+				dev->openings + dev->active);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		/*
@@ -1481,7 +1570,11 @@ ahd_platform_set_tags(struct ahd_softc *ahd, struct scsi_device *sdev,
 		 * serially on the controller/device.  This should
 		 * remove some latency.
 		 */
+<<<<<<< HEAD
 		scsi_deactivate_tcq(sdev, 1);
+=======
+		scsi_change_queue_depth(sdev, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
@@ -1601,7 +1694,11 @@ ahd_linux_run_command(struct ahd_softc *ahd, struct ahd_linux_device *dev,
 	 * Fill out basics of the HSCB.
 	 */
 	hscb->control = 0;
+<<<<<<< HEAD
 	hscb->scsiid = BUILD_SCSIID(ahd, cmd);
+=======
+	hscb->scsiid = ahd_build_scsiid(ahd, cmd->device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hscb->lun = cmd->device->lun;
 	scb->hscb->task_management = 0;
 	mask = SCB_GET_TARGET_MASK(ahd, scb);
@@ -1618,6 +1715,7 @@ ahd_linux_run_command(struct ahd_softc *ahd, struct ahd_linux_device *dev,
 	}
 
 	if ((dev->flags & (AHD_DEV_Q_TAGGED|AHD_DEV_Q_BASIC)) != 0) {
+<<<<<<< HEAD
 		int	msg_bytes;
 		uint8_t tag_msgs[2];
 
@@ -1633,6 +1731,14 @@ ahd_linux_run_command(struct ahd_softc *ahd, struct ahd_linux_device *dev,
 			dev->commands_since_idle_or_otag = 0;
 		} else {
 			hscb->control |= MSG_SIMPLE_TASK;
+=======
+		if (dev->commands_since_idle_or_otag == AHD_OTAG_THRESH
+		 && (dev->flags & AHD_DEV_Q_TAGGED) != 0) {
+			hscb->control |= ORDERED_QUEUE_TAG;
+			dev->commands_since_idle_or_otag = 0;
+		} else {
+			hscb->control |= SIMPLE_QUEUE_TAG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1702,19 +1808,26 @@ ahd_send_async(struct ahd_softc *ahd, char channel,
 	switch (code) {
 	case AC_TRANSFER_NEG:
 	{
+<<<<<<< HEAD
 		char	buf[80];
 		struct  scsi_target *starget;
 		struct	info_str info;
+=======
+		struct  scsi_target *starget;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct	ahd_initiator_tinfo *tinfo;
 		struct	ahd_tmode_tstate *tstate;
 		unsigned int target_ppr_options;
 
 		BUG_ON(target == CAM_TARGET_WILDCARD);
 
+<<<<<<< HEAD
 		info.buffer = buf;
 		info.length = sizeof(buf);
 		info.offset = 0;
 		info.pos = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tinfo = ahd_fetch_transinfo(ahd, channel, ahd->our_id,
 					    target, &tstate);
 
@@ -1805,9 +1918,22 @@ ahd_done(struct ahd_softc *ahd, struct scb *scb)
 	dev = scb->platform_data->dev;
 	dev->active--;
 	dev->openings++;
+<<<<<<< HEAD
 	if ((cmd->result & (CAM_DEV_QFRZN << 16)) != 0) {
 		cmd->result &= ~(CAM_DEV_QFRZN << 16);
 		dev->qfrozen--;
+=======
+	if (cmd) {
+		if ((cmd->result & (CAM_DEV_QFRZN << 16)) != 0) {
+			cmd->result &= ~(CAM_DEV_QFRZN << 16);
+			dev->qfrozen--;
+		}
+	} else if (scb->flags & SCB_DEVICE_RESET) {
+		if (ahd->platform_data->eh_done)
+			complete(ahd->platform_data->eh_done);
+		ahd_free_scb(ahd, scb);
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ahd_linux_unmap_scb(ahd, scb);
 
@@ -1819,10 +1945,18 @@ ahd_done(struct ahd_softc *ahd, struct scb *scb)
 	 */
 	cmd->sense_buffer[0] = 0;
 	if (ahd_get_transaction_status(scb) == CAM_REQ_INPROG) {
+<<<<<<< HEAD
+=======
+#ifdef AHD_REPORT_UNDERFLOWS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint32_t amount_xferred;
 
 		amount_xferred =
 		    ahd_get_transfer_length(scb) - ahd_get_residual(scb);
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((scb->flags & SCB_TRANSMISSION_ERROR) != 0) {
 #ifdef AHD_DEBUG
 			if ((ahd_debug & AHD_SHOW_MISC) != 0) {
@@ -1859,13 +1993,22 @@ ahd_done(struct ahd_softc *ahd, struct scb *scb)
 		} else {
 			ahd_set_transaction_status(scb, CAM_REQ_CMP);
 		}
+<<<<<<< HEAD
 	} else if (ahd_get_transaction_status(scb) == CAM_SCSI_STATUS_ERROR) {
+=======
+	} else if (cmd &&
+		   ahd_get_transaction_status(scb) == CAM_SCSI_STATUS_ERROR) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ahd_linux_handle_scsi_status(ahd, cmd->device, scb);
 	}
 
 	if (dev->openings == 1
 	 && ahd_get_transaction_status(scb) == CAM_REQ_CMP
+<<<<<<< HEAD
 	 && ahd_get_scsi_status(scb) != SCSI_STATUS_QUEUE_FULL)
+=======
+	 && ahd_get_scsi_status(scb) != SAM_STAT_TASK_SET_FULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->tag_success_count++;
 	/*
 	 * Some devices deal with temporary internal resource
@@ -1893,7 +2036,12 @@ ahd_done(struct ahd_softc *ahd, struct scb *scb)
 	}
 
 	ahd_free_scb(ahd, scb);
+<<<<<<< HEAD
 	ahd_linux_queue_cmd_complete(ahd, cmd);
+=======
+	if (cmd)
+		ahd_linux_queue_cmd_complete(ahd, cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1922,8 +2070,13 @@ ahd_linux_handle_scsi_status(struct ahd_softc *ahd,
 	switch (ahd_get_scsi_status(scb)) {
 	default:
 		break;
+<<<<<<< HEAD
 	case SCSI_STATUS_CHECK_COND:
 	case SCSI_STATUS_CMD_TERMINATED:
+=======
+	case SAM_STAT_CHECK_CONDITION:
+	case SAM_STAT_COMMAND_TERMINATED:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		struct scsi_cmnd *cmd;
 
@@ -1959,7 +2112,11 @@ ahd_linux_handle_scsi_status(struct ahd_softc *ahd,
 			memcpy(cmd->sense_buffer,
 			       ahd_get_sense_buf(ahd, scb)
 			       + sense_offset, sense_size);
+<<<<<<< HEAD
 			cmd->result |= (DRIVER_SENSE << 24);
+=======
+			set_status_byte(cmd, SAM_STAT_CHECK_CONDITION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef AHD_DEBUG
 			if (ahd_debug & AHD_SHOW_SENSE) {
@@ -1978,7 +2135,11 @@ ahd_linux_handle_scsi_status(struct ahd_softc *ahd,
 		}
 		break;
 	}
+<<<<<<< HEAD
 	case SCSI_STATUS_QUEUE_FULL:
+=======
+	case SAM_STAT_TASK_SET_FULL:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * By the time the core driver has returned this
 		 * command, all other commands that were queued
@@ -2024,7 +2185,11 @@ ahd_linux_handle_scsi_status(struct ahd_softc *ahd,
 				dev->last_queuefull_same_count = 0;
 			}
 			ahd_set_transaction_status(scb, CAM_REQUEUE_REQ);
+<<<<<<< HEAD
 			ahd_set_scsi_status(scb, SCSI_STATUS_OK);
+=======
+			ahd_set_scsi_status(scb, SAM_STAT_GOOD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ahd_platform_set_tags(ahd, sdev, &devinfo,
 				     (dev->flags & AHD_DEV_Q_BASIC)
 				   ? AHD_QUEUE_BASIC : AHD_QUEUE_TAGGED);
@@ -2038,7 +2203,11 @@ ahd_linux_handle_scsi_status(struct ahd_softc *ahd,
 		ahd_platform_set_tags(ahd, sdev, &devinfo,
 			     (dev->flags & AHD_DEV_Q_BASIC)
 			   ? AHD_QUEUE_BASIC : AHD_QUEUE_TAGGED);
+<<<<<<< HEAD
 		ahd_set_scsi_status(scb, SCSI_STATUS_BUSY);
+=======
+		ahd_set_scsi_status(scb, SAM_STAT_BUSY);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2049,6 +2218,10 @@ ahd_linux_queue_cmd_complete(struct ahd_softc *ahd, struct scsi_cmnd *cmd)
 	int new_status = DID_OK;
 	int do_fallback = 0;
 	int scsi_status;
+<<<<<<< HEAD
+=======
+	struct scsi_sense_data *sense;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Map CAM error codes into Linux Error codes.  We
@@ -2065,11 +2238,16 @@ ahd_linux_queue_cmd_complete(struct ahd_softc *ahd, struct scsi_cmnd *cmd)
 		break;
 	case CAM_AUTOSENSE_FAIL:
 		new_status = DID_ERROR;
+<<<<<<< HEAD
 		/* Fallthrough */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CAM_SCSI_STATUS_ERROR:
 		scsi_status = ahd_cmd_get_scsi_status(cmd);
 
 		switch(scsi_status) {
+<<<<<<< HEAD
 		case SCSI_STATUS_CMD_TERMINATED:
 		case SCSI_STATUS_CHECK_COND:
 			if ((cmd->result >> 24) != DRIVER_SENSE) {
@@ -2084,6 +2262,16 @@ ahd_linux_queue_cmd_complete(struct ahd_softc *ahd, struct scsi_cmnd *cmd)
 				     || sense->add_sense_code == 0x48))
 					do_fallback = 1;
 			}
+=======
+		case SAM_STAT_COMMAND_TERMINATED:
+		case SAM_STAT_CHECK_CONDITION:
+			sense = (struct scsi_sense_data *)
+				cmd->sense_buffer;
+			if (sense->extra_len >= 5 &&
+			    (sense->add_sense_code == 0x47
+			     || sense->add_sense_code == 0x48))
+				do_fallback = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			break;
@@ -2142,12 +2330,20 @@ ahd_linux_queue_cmd_complete(struct ahd_softc *ahd, struct scsi_cmnd *cmd)
 	if (do_fallback) {
 		printk("%s: device overrun (status %x) on %d:%d:%d\n",
 		       ahd_name(ahd), status, cmd->device->channel,
+<<<<<<< HEAD
 		       cmd->device->id, cmd->device->lun);
+=======
+		       cmd->device->id, (u8)cmd->device->lun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ahd_cmd_set_transaction_status(cmd, new_status);
 
+<<<<<<< HEAD
 	cmd->scsi_done(cmd);
+=======
+	scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -2171,9 +2367,14 @@ ahd_linux_queue_abort_cmd(struct scsi_cmnd *cmd)
 	u_int  saved_scbptr;
 	u_int  active_scbptr;
 	u_int  last_phase;
+<<<<<<< HEAD
 	u_int  saved_scsiid;
 	u_int  cdb_byte;
 	int    retval;
+=======
+	u_int  cdb_byte;
+	int    retval = SUCCESS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int    was_paused;
 	int    paused;
 	int    wait;
@@ -2211,8 +2412,12 @@ ahd_linux_queue_abort_cmd(struct scsi_cmnd *cmd)
 		 * so we must not still own the command.
 		 */
 		scmd_printk(KERN_INFO, cmd, "Is not an active device\n");
+<<<<<<< HEAD
 		retval = SUCCESS;
 		goto no_cmd;
+=======
+		goto done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2225,7 +2430,11 @@ ahd_linux_queue_abort_cmd(struct scsi_cmnd *cmd)
 
 	if (pending_scb == NULL) {
 		scmd_printk(KERN_INFO, cmd, "Command not found\n");
+<<<<<<< HEAD
 		goto no_cmd;
+=======
+		goto done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if ((pending_scb->flags & SCB_RECOVERY_SCB) != 0) {
@@ -2233,7 +2442,11 @@ ahd_linux_queue_abort_cmd(struct scsi_cmnd *cmd)
 		 * We can't queue two recovery actions using the same SCB
 		 */
 		retval = FAILED;
+<<<<<<< HEAD
 		goto  done;
+=======
+		goto done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2248,7 +2461,11 @@ ahd_linux_queue_abort_cmd(struct scsi_cmnd *cmd)
 
 	if ((pending_scb->flags & SCB_ACTIVE) == 0) {
 		scmd_printk(KERN_INFO, cmd, "Command already completed\n");
+<<<<<<< HEAD
 		goto no_cmd;
+=======
+		goto done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	printk("%s: At time of recovery, card was %spaused\n",
@@ -2258,14 +2475,22 @@ ahd_linux_queue_abort_cmd(struct scsi_cmnd *cmd)
 	disconnected = TRUE;
 	if (ahd_search_qinfifo(ahd, cmd->device->id, 
 			       cmd->device->channel + 'A',
+<<<<<<< HEAD
 			       cmd->device->lun, 
+=======
+			       cmd->device->lun,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       pending_scb->hscb->tag,
 			       ROLE_INITIATOR, CAM_REQ_ABORTED,
 			       SEARCH_COMPLETE) > 0) {
 		printk("%s:%d:%d:%d: Cmd aborted from QINFIFO\n",
 		       ahd_name(ahd), cmd->device->channel, 
+<<<<<<< HEAD
 		       cmd->device->id, cmd->device->lun);
 		retval = SUCCESS;
+=======
+		       cmd->device->id, (u8)cmd->device->lun);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto done;
 	}
 
@@ -2287,7 +2512,11 @@ ahd_linux_queue_abort_cmd(struct scsi_cmnd *cmd)
 	 * passed in command.  That command is currently active on the
 	 * bus or is in the disconnected state.
 	 */
+<<<<<<< HEAD
 	saved_scsiid = ahd_inb(ahd, SAVED_SCSIID);
+=======
+	ahd_inb(ahd, SAVED_SCSIID);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (last_phase != P_BUSFREE
 	    && SCB_GET_TAG(pending_scb) == active_scbptr) {
 
@@ -2362,6 +2591,7 @@ ahd_linux_queue_abort_cmd(struct scsi_cmnd *cmd)
 	} else {
 		scmd_printk(KERN_INFO, cmd, "Unable to deliver message\n");
 		retval = FAILED;
+<<<<<<< HEAD
 		goto done;
 	}
 
@@ -2373,6 +2603,12 @@ no_cmd:
 	 * well defined, so this may change in time.
 	 */
 	retval = SUCCESS;
+=======
+	}
+
+
+	ahd_restore_modes(ahd, saved_modes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done:
 	if (paused)
 		ahd_unpause(ahd);

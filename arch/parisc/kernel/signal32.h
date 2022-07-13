@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* 
  *    Copyright (C) 2001 Matthew Wilcox <willy at parisc-linux.org>
  *    Copyright (C) 2003 Carlos O'Donell <carlos at parisc-linux.org>
@@ -15,12 +16,19 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/* 
+ *    Copyright (C) 2001 Matthew Wilcox <willy at parisc-linux.org>
+ *    Copyright (C) 2003 Carlos O'Donell <carlos at parisc-linux.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _PARISC64_KERNEL_SIGNAL32_H
 #define _PARISC64_KERNEL_SIGNAL32_H
 
 #include <linux/compat.h>
 
+<<<<<<< HEAD
 typedef compat_uptr_t compat_sighandler_t;
 
 typedef struct compat_sigaltstack {
@@ -38,6 +46,8 @@ struct compat_sigaction {
         compat_sigset_t sa_mask;               /* mask last for extensibility */
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 32-bit ucontext as seen from an 64-bit kernel */
 struct compat_ucontext {
         compat_uint_t uc_flags;
@@ -51,6 +61,7 @@ struct compat_ucontext {
 
 /* ELF32 signal handling */
 
+<<<<<<< HEAD
 struct k_sigaction32 {
 	struct compat_sigaction sa;
 };
@@ -110,6 +121,8 @@ typedef struct compat_siginfo {
 int copy_siginfo_to_user32 (compat_siginfo_t __user *to, siginfo_t *from);
 int copy_siginfo_from_user32 (siginfo_t *to, compat_siginfo_t __user *from);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* In a deft move of uber-hackery, we decide to carry the top half of all
  * 64-bit registers in a non-portable, non-ABI, hidden structure.
  * Userspace can read the hidden structure if it *wants* but is never
@@ -125,6 +138,7 @@ struct compat_regfile {
         compat_int_t rf_sar;
 };
 
+<<<<<<< HEAD
 #define COMPAT_SIGRETURN_TRAMP 4
 #define COMPAT_SIGRESTARTBLOCK_TRAMP 5
 #define COMPAT_TRAMP_SIZE (COMPAT_SIGRETURN_TRAMP + \
@@ -140,6 +154,14 @@ struct compat_rt_sigframe {
         struct compat_ucontext uc;
         /* Hidden location of truncated registers, *must* be last. */
         struct compat_regfile regs;
+=======
+struct compat_rt_sigframe {
+	unsigned int tramp[2]; /* holds original return address */
+	compat_siginfo_t info;
+	struct compat_ucontext uc;
+	/* Hidden location of truncated registers, *must* be last. */
+	struct compat_regfile regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -152,10 +174,13 @@ struct compat_rt_sigframe {
 #define FUNCTIONCALLFRAME32     48
 #define PARISC_RT_SIGFRAME_SIZE32 (((sizeof(struct compat_rt_sigframe) + FUNCTIONCALLFRAME32) + SIGFRAME32) & -SIGFRAME32)
 
+<<<<<<< HEAD
 void sigset_32to64(sigset_t *s64, compat_sigset_t *s32);
 void sigset_64to32(compat_sigset_t *s32, sigset_t *s64);
 int do_sigaltstack32 (const compat_stack_t __user *uss32, 
 		compat_stack_t __user *uoss32, unsigned long sp);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 long restore_sigcontext32(struct compat_sigcontext __user *sc, 
 		struct compat_regfile __user *rf,
 		struct pt_regs *regs);

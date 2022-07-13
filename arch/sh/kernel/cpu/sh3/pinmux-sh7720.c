@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SH7720 Pinmux
  *
  *  Copyright (C) 2008  Magnus Damm
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
@@ -1232,11 +1237,33 @@ static struct pinmux_info sh7720_pinmux_info = {
 
 	.gpio_data = pinmux_data,
 	.gpio_data_size = ARRAY_SIZE(pinmux_data),
+=======
+ */
+
+#include <linux/bug.h>
+#include <linux/init.h>
+#include <linux/kernel.h>
+#include <linux/ioport.h>
+#include <cpu/pfc.h>
+
+static struct resource sh7720_pfc_resources[] = {
+	[0] = {
+		.start	= 0xa4050100,
+		.end	= 0xa405016f,
+		.flags	= IORESOURCE_MEM,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init plat_pinmux_setup(void)
 {
+<<<<<<< HEAD
 	return register_pinmux(&sh7720_pinmux_info);
 }
 
+=======
+	return sh_pfc_register("pfc-sh7720", sh7720_pfc_resources,
+			       ARRAY_SIZE(sh7720_pfc_resources));
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 arch_initcall(plat_pinmux_setup);

@@ -29,7 +29,11 @@
  * chapter of the Hub specification.
  *
  * NOTE: This header file is included both by C and by assembler source
+<<<<<<< HEAD
  *	 files.  Please bracket any language-dependent definitions
+=======
+ *	 files.	 Please bracket any language-dependent definitions
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	 appropriately.
  */
 
@@ -102,6 +106,7 @@
 
 #define BWIN_INDEX_BITS		3
 #define BWIN_SIZE		(UINT64_CAST 1 << BWIN_SIZE_BITS)
+<<<<<<< HEAD
 #define	BWIN_SIZEMASK		(BWIN_SIZE - 1)
 #define	BWIN_WIDGET_MASK	0x7
 #define NODE_BWIN_BASE0(nasid)	(NODE_IO_BASE(nasid) + BWIN_SIZE)
@@ -110,6 +115,16 @@
 
 #define	BWIN_WIDGETADDR(addr)	((addr) & BWIN_SIZEMASK)
 #define	BWIN_WINDOWNUM(addr)	(((addr) >> BWIN_SIZE_BITS) & BWIN_WIDGET_MASK)
+=======
+#define BWIN_SIZEMASK		(BWIN_SIZE - 1)
+#define BWIN_WIDGET_MASK	0x7
+#define NODE_BWIN_BASE0(nasid)	(NODE_IO_BASE(nasid) + BWIN_SIZE)
+#define NODE_BWIN_BASE(nasid, bigwin)	(NODE_BWIN_BASE0(nasid) +	\
+			(UINT64_CAST(bigwin) << BWIN_SIZE_BITS))
+
+#define BWIN_WIDGETADDR(addr)	((addr) & BWIN_SIZEMASK)
+#define BWIN_WINDOWNUM(addr)	(((addr) >> BWIN_SIZE_BITS) & BWIN_WIDGET_MASK)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Verify if addr belongs to large window address of node with "nasid"
  *
@@ -120,7 +135,11 @@
  *
  */
 
+<<<<<<< HEAD
 #define	NODE_BWIN_ADDR(nasid, addr)	\
+=======
+#define NODE_BWIN_ADDR(nasid, addr)	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		(((addr) >= NODE_BWIN_BASE0(nasid)) && \
 		 ((addr) < (NODE_BWIN_BASE(nasid, HUB_NUM_BIG_WINDOW) + \
 				BWIN_SIZE)))
@@ -129,16 +148,23 @@
  * The following define the major position-independent aliases used
  * in SN0.
  *	CALIAS -- Varies in size, points to the first n bytes of memory
+<<<<<<< HEAD
  *		  	on the reader's node.
+=======
+ *			on the reader's node.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define CALIAS_BASE		CAC_BASE
 
+<<<<<<< HEAD
 
 
 #define BRIDGE_REG_PTR(_base, _off)	((volatile bridgereg_t *) \
 	((__psunsigned_t)(_base) + (__psunsigned_t)(_off)))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SN0_WIDGET_BASE(_nasid, _wid)	(NODE_SWIN_BASE((_nasid), (_wid)))
 
 /* Turn on sable logging for the processors whose bits are set. */
@@ -146,7 +172,11 @@
 
 #ifndef __ASSEMBLY__
 #define KERN_NMI_ADDR(nasid, slice)					\
+<<<<<<< HEAD
                     TO_NODE_UNCAC((nasid), IP27_NMI_KREGS_OFFSET + 	\
+=======
+		    TO_NODE_UNCAC((nasid), IP27_NMI_KREGS_OFFSET +	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  (IP27_NMI_KREGS_CPU_SIZE * (slice)))
 #endif /* !__ASSEMBLY__ */
 
@@ -203,7 +233,11 @@
 
 #define IO6PROM_BASE		PHYS_TO_K0(0x01c00000)
 #define IO6PROM_SIZE		0x400000
+<<<<<<< HEAD
 #define	IO6PROM_BASE_MAPPED	(UNCAC_BASE | 0x11c00000)
+=======
+#define IO6PROM_BASE_MAPPED	(UNCAC_BASE | 0x11c00000)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IO6DPROM_BASE		PHYS_TO_K0(0x01c00000)
 #define IO6DPROM_SIZE		0x200000
 

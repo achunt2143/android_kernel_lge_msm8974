@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * proc.c - procfs support for Protocol family CAN core module
  *
@@ -44,6 +48,10 @@
 #include <linux/list.h>
 #include <linux/rcupdate.h>
 #include <linux/if_arp.h>
+<<<<<<< HEAD
+=======
+#include <linux/can/can-ml.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/can/core.h>
 
 #include "af_can.h"
@@ -52,7 +60,10 @@
  * proc filenames for the PF_CAN core
  */
 
+<<<<<<< HEAD
 #define CAN_PROC_VERSION     "version"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CAN_PROC_STATS       "stats"
 #define CAN_PROC_RESET_STATS "reset_stats"
 #define CAN_PROC_RCVLIST_ALL "rcvlist_all"
@@ -62,6 +73,7 @@
 #define CAN_PROC_RCVLIST_EFF "rcvlist_eff"
 #define CAN_PROC_RCVLIST_ERR "rcvlist_err"
 
+<<<<<<< HEAD
 static struct proc_dir_entry *can_dir;
 static struct proc_dir_entry *pde_version;
 static struct proc_dir_entry *pde_stats;
@@ -73,6 +85,8 @@ static struct proc_dir_entry *pde_rcvlist_sff;
 static struct proc_dir_entry *pde_rcvlist_eff;
 static struct proc_dir_entry *pde_rcvlist_err;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int user_reset;
 
 static const char rx_list_name[][8] = {
@@ -80,23 +94,36 @@ static const char rx_list_name[][8] = {
 	[RX_ALL] = "rx_all",
 	[RX_FIL] = "rx_fil",
 	[RX_INV] = "rx_inv",
+<<<<<<< HEAD
 	[RX_EFF] = "rx_eff",
 };
 
 /* receive filters subscribed for 'all' CAN devices */
 extern struct dev_rcv_lists can_rx_alldev_list;
 
+=======
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * af_can statistics stuff
  */
 
+<<<<<<< HEAD
 static void can_init_stats(void)
 {
+=======
+static void can_init_stats(struct net *net)
+{
+	struct can_pkg_stats *pkg_stats = net->can.pkg_stats;
+	struct can_rcv_lists_stats *rcv_lists_stats = net->can.rcv_lists_stats;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * This memset function is called from a timer context (when
 	 * can_stattimer is active which is the default) OR in a process
 	 * context (reading the proc_fs when can_stattimer is disabled).
 	 */
+<<<<<<< HEAD
 	memset(&can_stats, 0, sizeof(can_stats));
 	can_stats.jiffies_init = jiffies;
 
@@ -105,14 +132,27 @@ static void can_init_stats(void)
 	if (user_reset) {
 		user_reset = 0;
 		can_pstats.user_reset++;
+=======
+	memset(pkg_stats, 0, sizeof(struct can_pkg_stats));
+	pkg_stats->jiffies_init = jiffies;
+
+	rcv_lists_stats->stats_reset++;
+
+	if (user_reset) {
+		user_reset = 0;
+		rcv_lists_stats->user_reset++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 static unsigned long calc_rate(unsigned long oldjif, unsigned long newjif,
 			       unsigned long count)
 {
+<<<<<<< HEAD
 	unsigned long rate;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (oldjif == newjif)
 		return 0;
 
@@ -123,6 +163,7 @@ static unsigned long calc_rate(unsigned long oldjif, unsigned long newjif,
 		return 99999999;
 	}
 
+<<<<<<< HEAD
 	rate = (count * HZ) / (newjif - oldjif);
 
 	return rate;
@@ -130,10 +171,20 @@ static unsigned long calc_rate(unsigned long oldjif, unsigned long newjif,
 
 void can_stat_update(unsigned long data)
 {
+=======
+	return (count * HZ) / (newjif - oldjif);
+}
+
+void can_stat_update(struct timer_list *t)
+{
+	struct net *net = from_timer(net, t, can.stattimer);
+	struct can_pkg_stats *pkg_stats = net->can.pkg_stats;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long j = jiffies; /* snapshot */
 
 	/* restart counting in timer context on user request */
 	if (user_reset)
+<<<<<<< HEAD
 		can_init_stats();
 
 	/* restart counting on jiffies overflow */
@@ -188,6 +239,62 @@ void can_stat_update(unsigned long data)
 
 	/* restart timer (one second) */
 	mod_timer(&can_stattimer, round_jiffies(jiffies + HZ));
+=======
+		can_init_stats(net);
+
+	/* restart counting on jiffies overflow */
+	if (j < pkg_stats->jiffies_init)
+		can_init_stats(net);
+
+	/* prevent overflow in calc_rate() */
+	if (pkg_stats->rx_frames > (ULONG_MAX / HZ))
+		can_init_stats(net);
+
+	/* prevent overflow in calc_rate() */
+	if (pkg_stats->tx_frames > (ULONG_MAX / HZ))
+		can_init_stats(net);
+
+	/* matches overflow - very improbable */
+	if (pkg_stats->matches > (ULONG_MAX / 100))
+		can_init_stats(net);
+
+	/* calc total values */
+	if (pkg_stats->rx_frames)
+		pkg_stats->total_rx_match_ratio = (pkg_stats->matches * 100) /
+			pkg_stats->rx_frames;
+
+	pkg_stats->total_tx_rate = calc_rate(pkg_stats->jiffies_init, j,
+					    pkg_stats->tx_frames);
+	pkg_stats->total_rx_rate = calc_rate(pkg_stats->jiffies_init, j,
+					    pkg_stats->rx_frames);
+
+	/* calc current values */
+	if (pkg_stats->rx_frames_delta)
+		pkg_stats->current_rx_match_ratio =
+			(pkg_stats->matches_delta * 100) /
+			pkg_stats->rx_frames_delta;
+
+	pkg_stats->current_tx_rate = calc_rate(0, HZ, pkg_stats->tx_frames_delta);
+	pkg_stats->current_rx_rate = calc_rate(0, HZ, pkg_stats->rx_frames_delta);
+
+	/* check / update maximum values */
+	if (pkg_stats->max_tx_rate < pkg_stats->current_tx_rate)
+		pkg_stats->max_tx_rate = pkg_stats->current_tx_rate;
+
+	if (pkg_stats->max_rx_rate < pkg_stats->current_rx_rate)
+		pkg_stats->max_rx_rate = pkg_stats->current_rx_rate;
+
+	if (pkg_stats->max_rx_match_ratio < pkg_stats->current_rx_match_ratio)
+		pkg_stats->max_rx_match_ratio = pkg_stats->current_rx_match_ratio;
+
+	/* clear values for 'current rate' calculation */
+	pkg_stats->tx_frames_delta = 0;
+	pkg_stats->rx_frames_delta = 0;
+	pkg_stats->matches_delta   = 0;
+
+	/* restart timer (one second) */
+	mod_timer(&net->can.stattimer, round_jiffies(jiffies + HZ));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -198,9 +305,14 @@ static void can_print_rcvlist(struct seq_file *m, struct hlist_head *rx_list,
 			      struct net_device *dev)
 {
 	struct receiver *r;
+<<<<<<< HEAD
 	struct hlist_node *n;
 
 	hlist_for_each_entry_rcu(r, n, rx_list, list) {
+=======
+
+	hlist_for_each_entry_rcu(r, rx_list, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		char *fmt = (r->can_id & CAN_EFF_FLAG)?
 			"   %-5s  %08x  %08x  %pK  %pK  %8ld  %s\n" :
 			"   %-5s     %03x    %08x  %pK  %pK  %8ld  %s\n";
@@ -216,12 +328,20 @@ static void can_print_recv_banner(struct seq_file *m)
 	 *                  can1.  00000000  00000000  00000000
 	 *                 .......          0  tp20
 	 */
+<<<<<<< HEAD
 	seq_puts(m, "  device   can_id   can_mask  function"
 			"  userdata   matches  ident\n");
+=======
+	if (IS_ENABLED(CONFIG_64BIT))
+		seq_puts(m, "  device   can_id   can_mask      function          userdata       matches  ident\n");
+	else
+		seq_puts(m, "  device   can_id   can_mask  function  userdata   matches  ident\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int can_stats_proc_show(struct seq_file *m, void *v)
 {
+<<<<<<< HEAD
 	seq_putc(m, '\n');
 	seq_printf(m, " %8ld transmitted frames (TXF)\n", can_stats.tx_frames);
 	seq_printf(m, " %8ld received frames (RXF)\n", can_stats.rx_frames);
@@ -237,31 +357,71 @@ static int can_stats_proc_show(struct seq_file *m, void *v)
 				can_stats.total_tx_rate);
 		seq_printf(m, " %8ld frames/s total rx rate (RXR)\n",
 				can_stats.total_rx_rate);
+=======
+	struct net *net = m->private;
+	struct can_pkg_stats *pkg_stats = net->can.pkg_stats;
+	struct can_rcv_lists_stats *rcv_lists_stats = net->can.rcv_lists_stats;
+
+	seq_putc(m, '\n');
+	seq_printf(m, " %8ld transmitted frames (TXF)\n", pkg_stats->tx_frames);
+	seq_printf(m, " %8ld received frames (RXF)\n", pkg_stats->rx_frames);
+	seq_printf(m, " %8ld matched frames (RXMF)\n", pkg_stats->matches);
+
+	seq_putc(m, '\n');
+
+	if (net->can.stattimer.function == can_stat_update) {
+		seq_printf(m, " %8ld %% total match ratio (RXMR)\n",
+				pkg_stats->total_rx_match_ratio);
+
+		seq_printf(m, " %8ld frames/s total tx rate (TXR)\n",
+				pkg_stats->total_tx_rate);
+		seq_printf(m, " %8ld frames/s total rx rate (RXR)\n",
+				pkg_stats->total_rx_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		seq_putc(m, '\n');
 
 		seq_printf(m, " %8ld %% current match ratio (CRXMR)\n",
+<<<<<<< HEAD
 				can_stats.current_rx_match_ratio);
 
 		seq_printf(m, " %8ld frames/s current tx rate (CTXR)\n",
 				can_stats.current_tx_rate);
 		seq_printf(m, " %8ld frames/s current rx rate (CRXR)\n",
 				can_stats.current_rx_rate);
+=======
+				pkg_stats->current_rx_match_ratio);
+
+		seq_printf(m, " %8ld frames/s current tx rate (CTXR)\n",
+				pkg_stats->current_tx_rate);
+		seq_printf(m, " %8ld frames/s current rx rate (CRXR)\n",
+				pkg_stats->current_rx_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		seq_putc(m, '\n');
 
 		seq_printf(m, " %8ld %% max match ratio (MRXMR)\n",
+<<<<<<< HEAD
 				can_stats.max_rx_match_ratio);
 
 		seq_printf(m, " %8ld frames/s max tx rate (MTXR)\n",
 				can_stats.max_tx_rate);
 		seq_printf(m, " %8ld frames/s max rx rate (MRXR)\n",
 				can_stats.max_rx_rate);
+=======
+				pkg_stats->max_rx_match_ratio);
+
+		seq_printf(m, " %8ld frames/s max tx rate (MTXR)\n",
+				pkg_stats->max_tx_rate);
+		seq_printf(m, " %8ld frames/s max rx rate (MRXR)\n",
+				pkg_stats->max_rx_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		seq_putc(m, '\n');
 	}
 
 	seq_printf(m, " %8ld current receive list entries (CRCV)\n",
+<<<<<<< HEAD
 			can_pstats.rcv_entries);
 	seq_printf(m, " %8ld maximum receive list entries (MRCV)\n",
 			can_pstats.rcv_entries_max);
@@ -273,11 +433,25 @@ static int can_stats_proc_show(struct seq_file *m, void *v)
 	if (can_pstats.user_reset)
 		seq_printf(m, " %8ld user statistic resets (USTR)\n",
 				can_pstats.user_reset);
+=======
+			rcv_lists_stats->rcv_entries);
+	seq_printf(m, " %8ld maximum receive list entries (MRCV)\n",
+			rcv_lists_stats->rcv_entries_max);
+
+	if (rcv_lists_stats->stats_reset)
+		seq_printf(m, "\n %8ld statistic resets (STR)\n",
+				rcv_lists_stats->stats_reset);
+
+	if (rcv_lists_stats->user_reset)
+		seq_printf(m, " %8ld user statistic resets (USTR)\n",
+				rcv_lists_stats->user_reset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	seq_putc(m, '\n');
 	return 0;
 }
 
+<<<<<<< HEAD
 static int can_stats_proc_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, can_stats_proc_show, NULL);
@@ -305,10 +479,30 @@ static int can_reset_stats_proc_show(struct seq_file *m, void *v)
 
 		seq_printf(m, "Performed statistic reset #%ld.\n",
 				can_pstats.stats_reset);
+=======
+static int can_reset_stats_proc_show(struct seq_file *m, void *v)
+{
+	struct net *net = m->private;
+	struct can_rcv_lists_stats *rcv_lists_stats = net->can.rcv_lists_stats;
+	struct can_pkg_stats *pkg_stats = net->can.pkg_stats;
+
+	user_reset = 1;
+
+	if (net->can.stattimer.function == can_stat_update) {
+		seq_printf(m, "Scheduled statistic reset #%ld.\n",
+				rcv_lists_stats->stats_reset + 1);
+	} else {
+		if (pkg_stats->jiffies_init != jiffies)
+			can_init_stats(net);
+
+		seq_printf(m, "Performed statistic reset #%ld.\n",
+				rcv_lists_stats->stats_reset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 static int can_reset_stats_proc_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, can_reset_stats_proc_show, NULL);
@@ -348,6 +542,15 @@ static inline void can_rcvlist_proc_show_one(struct seq_file *m, int idx,
 	if (!hlist_empty(&d->rx[idx])) {
 		can_print_recv_banner(m);
 		can_print_rcvlist(m, &d->rx[idx], dev);
+=======
+static inline void can_rcvlist_proc_show_one(struct seq_file *m, int idx,
+					     struct net_device *dev,
+					     struct can_dev_rcv_lists *dev_rcv_lists)
+{
+	if (!hlist_empty(&dev_rcv_lists->rx[idx])) {
+		can_print_recv_banner(m);
+		can_print_rcvlist(m, &dev_rcv_lists->rx[idx], dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		seq_printf(m, "  (%s: no entry)\n", DNAME(dev));
 
@@ -356,15 +559,23 @@ static inline void can_rcvlist_proc_show_one(struct seq_file *m, int idx,
 static int can_rcvlist_proc_show(struct seq_file *m, void *v)
 {
 	/* double cast to prevent GCC warning */
+<<<<<<< HEAD
 	int idx = (int)(long)m->private;
 	struct net_device *dev;
 	struct dev_rcv_lists *d;
+=======
+	int idx = (int)(long)pde_data(m->file->f_inode);
+	struct net_device *dev;
+	struct can_dev_rcv_lists *dev_rcv_lists;
+	struct net *net = m->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	seq_printf(m, "\nreceive list '%s':\n", rx_list_name[idx]);
 
 	rcu_read_lock();
 
 	/* receive list for 'all' CAN devices (dev == NULL) */
+<<<<<<< HEAD
 	d = &can_rx_alldev_list;
 	can_rcvlist_proc_show_one(m, idx, NULL, d);
 
@@ -372,6 +583,18 @@ static int can_rcvlist_proc_show(struct seq_file *m, void *v)
 	for_each_netdev_rcu(&init_net, dev) {
 		if (dev->type == ARPHRD_CAN && dev->ml_priv)
 			can_rcvlist_proc_show_one(m, idx, dev, dev->ml_priv);
+=======
+	dev_rcv_lists = net->can.rx_alldev_list;
+	can_rcvlist_proc_show_one(m, idx, NULL, dev_rcv_lists);
+
+	/* receive list for registered CAN devices */
+	for_each_netdev_rcu(net, dev) {
+		struct can_ml_priv *can_ml = can_get_ml_priv(dev);
+
+		if (can_ml)
+			can_rcvlist_proc_show_one(m, idx, dev,
+						  &can_ml->dev_rcv_lists);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rcu_read_unlock();
@@ -380,6 +603,7 @@ static int can_rcvlist_proc_show(struct seq_file *m, void *v)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int can_rcvlist_proc_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, can_rcvlist_proc_show, PDE(inode)->data);
@@ -403,15 +627,34 @@ static inline void can_rcvlist_sff_proc_show_one(struct seq_file *m,
 	/* check wether at least one list is non-empty */
 	for (i = 0; i < 0x800; i++)
 		if (!hlist_empty(&d->rx_sff[i])) {
+=======
+static inline void can_rcvlist_proc_show_array(struct seq_file *m,
+					       struct net_device *dev,
+					       struct hlist_head *rcv_array,
+					       unsigned int rcv_array_sz)
+{
+	unsigned int i;
+	int all_empty = 1;
+
+	/* check whether at least one list is non-empty */
+	for (i = 0; i < rcv_array_sz; i++)
+		if (!hlist_empty(&rcv_array[i])) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			all_empty = 0;
 			break;
 		}
 
 	if (!all_empty) {
 		can_print_recv_banner(m);
+<<<<<<< HEAD
 		for (i = 0; i < 0x800; i++) {
 			if (!hlist_empty(&d->rx_sff[i]))
 				can_print_rcvlist(m, &d->rx_sff[i], dev);
+=======
+		for (i = 0; i < rcv_array_sz; i++) {
+			if (!hlist_empty(&rcv_array[i]))
+				can_print_rcvlist(m, &rcv_array[i], dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else
 		seq_printf(m, "  (%s: no entry)\n", DNAME(dev));
@@ -420,7 +663,12 @@ static inline void can_rcvlist_sff_proc_show_one(struct seq_file *m,
 static int can_rcvlist_sff_proc_show(struct seq_file *m, void *v)
 {
 	struct net_device *dev;
+<<<<<<< HEAD
 	struct dev_rcv_lists *d;
+=======
+	struct can_dev_rcv_lists *dev_rcv_lists;
+	struct net *net = m->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* RX_SFF */
 	seq_puts(m, "\nreceive list 'rx_sff':\n");
@@ -428,6 +676,7 @@ static int can_rcvlist_sff_proc_show(struct seq_file *m, void *v)
 	rcu_read_lock();
 
 	/* sff receive list for 'all' CAN devices (dev == NULL) */
+<<<<<<< HEAD
 	d = &can_rx_alldev_list;
 	can_rcvlist_sff_proc_show_one(m, NULL, d);
 
@@ -435,6 +684,21 @@ static int can_rcvlist_sff_proc_show(struct seq_file *m, void *v)
 	for_each_netdev_rcu(&init_net, dev) {
 		if (dev->type == ARPHRD_CAN && dev->ml_priv)
 			can_rcvlist_sff_proc_show_one(m, dev, dev->ml_priv);
+=======
+	dev_rcv_lists = net->can.rx_alldev_list;
+	can_rcvlist_proc_show_array(m, NULL, dev_rcv_lists->rx_sff,
+				    ARRAY_SIZE(dev_rcv_lists->rx_sff));
+
+	/* sff receive list for registered CAN devices */
+	for_each_netdev_rcu(net, dev) {
+		struct can_ml_priv *can_ml = can_get_ml_priv(dev);
+
+		if (can_ml) {
+			dev_rcv_lists = &can_ml->dev_rcv_lists;
+			can_rcvlist_proc_show_array(m, dev, dev_rcv_lists->rx_sff,
+						    ARRAY_SIZE(dev_rcv_lists->rx_sff));
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rcu_read_unlock();
@@ -443,6 +707,7 @@ static int can_rcvlist_sff_proc_show(struct seq_file *m, void *v)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int can_rcvlist_sff_proc_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, can_rcvlist_sff_proc_show, NULL);
@@ -464,11 +729,45 @@ static void can_remove_proc_readentry(const char *name)
 {
 	if (can_dir)
 		remove_proc_entry(name, can_dir);
+=======
+static int can_rcvlist_eff_proc_show(struct seq_file *m, void *v)
+{
+	struct net_device *dev;
+	struct can_dev_rcv_lists *dev_rcv_lists;
+	struct net *net = m->private;
+
+	/* RX_EFF */
+	seq_puts(m, "\nreceive list 'rx_eff':\n");
+
+	rcu_read_lock();
+
+	/* eff receive list for 'all' CAN devices (dev == NULL) */
+	dev_rcv_lists = net->can.rx_alldev_list;
+	can_rcvlist_proc_show_array(m, NULL, dev_rcv_lists->rx_eff,
+				    ARRAY_SIZE(dev_rcv_lists->rx_eff));
+
+	/* eff receive list for registered CAN devices */
+	for_each_netdev_rcu(net, dev) {
+		struct can_ml_priv *can_ml = can_get_ml_priv(dev);
+
+		if (can_ml) {
+			dev_rcv_lists = &can_ml->dev_rcv_lists;
+			can_rcvlist_proc_show_array(m, dev, dev_rcv_lists->rx_eff,
+						    ARRAY_SIZE(dev_rcv_lists->rx_eff));
+		}
+	}
+
+	rcu_read_unlock();
+
+	seq_putc(m, '\n');
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * can_init_proc - create main CAN proc directory and procfs entries
  */
+<<<<<<< HEAD
 void can_init_proc(void)
 {
 	/* create /proc/net/can directory */
@@ -477,10 +776,21 @@ void can_init_proc(void)
 	if (!can_dir) {
 		printk(KERN_INFO "can: failed to create /proc/net/can . "
 		       "CONFIG_PROC_FS missing?\n");
+=======
+void can_init_proc(struct net *net)
+{
+	/* create /proc/net/can directory */
+	net->can.proc_dir = proc_net_mkdir(net, "can", net->proc_net);
+
+	if (!net->can.proc_dir) {
+		printk(KERN_INFO "can: failed to create /proc/net/can . "
+			   "CONFIG_PROC_FS missing?\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	/* own procfs entries from the AF_CAN core */
+<<<<<<< HEAD
 	pde_version     = proc_create(CAN_PROC_VERSION, 0644, can_dir,
 				      &can_version_proc_fops);
 	pde_stats       = proc_create(CAN_PROC_STATS, 0644, can_dir,
@@ -499,11 +809,35 @@ void can_init_proc(void)
 					   &can_rcvlist_proc_fops, (void *)RX_EFF);
 	pde_rcvlist_sff = proc_create(CAN_PROC_RCVLIST_SFF, 0644, can_dir,
 				      &can_rcvlist_sff_proc_fops);
+=======
+	net->can.pde_stats = proc_create_net_single(CAN_PROC_STATS, 0644,
+			net->can.proc_dir, can_stats_proc_show, NULL);
+	net->can.pde_reset_stats = proc_create_net_single(CAN_PROC_RESET_STATS,
+			0644, net->can.proc_dir, can_reset_stats_proc_show,
+			NULL);
+	net->can.pde_rcvlist_err = proc_create_net_single(CAN_PROC_RCVLIST_ERR,
+			0644, net->can.proc_dir, can_rcvlist_proc_show,
+			(void *)RX_ERR);
+	net->can.pde_rcvlist_all = proc_create_net_single(CAN_PROC_RCVLIST_ALL,
+			0644, net->can.proc_dir, can_rcvlist_proc_show,
+			(void *)RX_ALL);
+	net->can.pde_rcvlist_fil = proc_create_net_single(CAN_PROC_RCVLIST_FIL,
+			0644, net->can.proc_dir, can_rcvlist_proc_show,
+			(void *)RX_FIL);
+	net->can.pde_rcvlist_inv = proc_create_net_single(CAN_PROC_RCVLIST_INV,
+			0644, net->can.proc_dir, can_rcvlist_proc_show,
+			(void *)RX_INV);
+	net->can.pde_rcvlist_eff = proc_create_net_single(CAN_PROC_RCVLIST_EFF,
+			0644, net->can.proc_dir, can_rcvlist_eff_proc_show, NULL);
+	net->can.pde_rcvlist_sff = proc_create_net_single(CAN_PROC_RCVLIST_SFF,
+			0644, net->can.proc_dir, can_rcvlist_sff_proc_show, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * can_remove_proc - remove procfs entries and main CAN proc directory
  */
+<<<<<<< HEAD
 void can_remove_proc(void)
 {
 	if (pde_version)
@@ -535,4 +869,36 @@ void can_remove_proc(void)
 
 	if (can_dir)
 		proc_net_remove(&init_net, "can");
+=======
+void can_remove_proc(struct net *net)
+{
+	if (!net->can.proc_dir)
+		return;
+
+	if (net->can.pde_stats)
+		remove_proc_entry(CAN_PROC_STATS, net->can.proc_dir);
+
+	if (net->can.pde_reset_stats)
+		remove_proc_entry(CAN_PROC_RESET_STATS, net->can.proc_dir);
+
+	if (net->can.pde_rcvlist_err)
+		remove_proc_entry(CAN_PROC_RCVLIST_ERR, net->can.proc_dir);
+
+	if (net->can.pde_rcvlist_all)
+		remove_proc_entry(CAN_PROC_RCVLIST_ALL, net->can.proc_dir);
+
+	if (net->can.pde_rcvlist_fil)
+		remove_proc_entry(CAN_PROC_RCVLIST_FIL, net->can.proc_dir);
+
+	if (net->can.pde_rcvlist_inv)
+		remove_proc_entry(CAN_PROC_RCVLIST_INV, net->can.proc_dir);
+
+	if (net->can.pde_rcvlist_eff)
+		remove_proc_entry(CAN_PROC_RCVLIST_EFF, net->can.proc_dir);
+
+	if (net->can.pde_rcvlist_sff)
+		remove_proc_entry(CAN_PROC_RCVLIST_SFF, net->can.proc_dir);
+
+	remove_proc_entry("can", net->proc_net);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

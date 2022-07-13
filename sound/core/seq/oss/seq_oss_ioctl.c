@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OSS compatible sequencer driver
  *
  * OSS compatible i/o control
  *
  * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "seq_oss_device.h"
@@ -62,7 +69,11 @@ static int snd_seq_oss_oob_user(struct seq_oss_devinfo *dp, void __user *arg)
 	if (copy_from_user(ev, arg, 8))
 		return -EFAULT;
 	memset(&tmpev, 0, sizeof(tmpev));
+<<<<<<< HEAD
 	snd_seq_oss_fill_addr(dp, &tmpev, dp->addr.port, dp->addr.client);
+=======
+	snd_seq_oss_fill_addr(dp, &tmpev, dp->addr.client, dp->addr.port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmpev.time.tick = 0;
 	if (! snd_seq_oss_process_event(dp, (union evrec *)ev, &tmpev)) {
 		snd_seq_oss_dispatch(dp, &tmpev, 0, 0);
@@ -90,12 +101,18 @@ snd_seq_oss_ioctl(struct seq_oss_devinfo *dp, unsigned int cmd, unsigned long ca
 		return snd_seq_oss_timer_ioctl(dp->timer, cmd, arg);
 
 	case SNDCTL_SEQ_PANIC:
+<<<<<<< HEAD
 		debug_printk(("panic\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_seq_oss_reset(dp);
 		return -EINVAL;
 
 	case SNDCTL_SEQ_SYNC:
+<<<<<<< HEAD
 		debug_printk(("sync\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (! is_write_mode(dp->file_mode) || dp->writeq == NULL)
 			return 0;
 		while (snd_seq_oss_writeq_sync(dp->writeq))
@@ -105,39 +122,58 @@ snd_seq_oss_ioctl(struct seq_oss_devinfo *dp, unsigned int cmd, unsigned long ca
 		return 0;
 
 	case SNDCTL_SEQ_RESET:
+<<<<<<< HEAD
 		debug_printk(("reset\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_seq_oss_reset(dp);
 		return 0;
 
 	case SNDCTL_SEQ_TESTMIDI:
+<<<<<<< HEAD
 		debug_printk(("test midi\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (get_user(dev, p))
 			return -EFAULT;
 		return snd_seq_oss_midi_open(dp, dev, dp->file_mode);
 
 	case SNDCTL_SEQ_GETINCOUNT:
+<<<<<<< HEAD
 		debug_printk(("get in count\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dp->readq == NULL || ! is_read_mode(dp->file_mode))
 			return 0;
 		return put_user(dp->readq->qlen, p) ? -EFAULT : 0;
 
 	case SNDCTL_SEQ_GETOUTCOUNT:
+<<<<<<< HEAD
 		debug_printk(("get out count\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (! is_write_mode(dp->file_mode) || dp->writeq == NULL)
 			return 0;
 		return put_user(snd_seq_oss_writeq_get_free_size(dp->writeq), p) ? -EFAULT : 0;
 
 	case SNDCTL_SEQ_GETTIME:
+<<<<<<< HEAD
 		debug_printk(("get time\n"));
 		return put_user(snd_seq_oss_timer_cur_tick(dp->timer), p) ? -EFAULT : 0;
 
 	case SNDCTL_SEQ_RESETSAMPLES:
 		debug_printk(("reset samples\n"));
+=======
+		return put_user(snd_seq_oss_timer_cur_tick(dp->timer), p) ? -EFAULT : 0;
+
+	case SNDCTL_SEQ_RESETSAMPLES:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (get_user(dev, p))
 			return -EFAULT;
 		return snd_seq_oss_synth_ioctl(dp, dev, cmd, carg);
 
 	case SNDCTL_SEQ_NRSYNTHS:
+<<<<<<< HEAD
 		debug_printk(("nr synths\n"));
 		return put_user(dp->max_synthdev, p) ? -EFAULT : 0;
 
@@ -147,13 +183,24 @@ snd_seq_oss_ioctl(struct seq_oss_devinfo *dp, unsigned int cmd, unsigned long ca
 
 	case SNDCTL_SYNTH_MEMAVL:
 		debug_printk(("mem avail\n"));
+=======
+		return put_user(dp->max_synthdev, p) ? -EFAULT : 0;
+
+	case SNDCTL_SEQ_NRMIDIS:
+		return put_user(dp->max_mididev, p) ? -EFAULT : 0;
+
+	case SNDCTL_SYNTH_MEMAVL:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (get_user(dev, p))
 			return -EFAULT;
 		val = snd_seq_oss_synth_ioctl(dp, dev, cmd, carg);
 		return put_user(val, p) ? -EFAULT : 0;
 
 	case SNDCTL_FM_4OP_ENABLE:
+<<<<<<< HEAD
 		debug_printk(("4op\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (get_user(dev, p))
 			return -EFAULT;
 		snd_seq_oss_synth_ioctl(dp, dev, cmd, carg);
@@ -161,6 +208,7 @@ snd_seq_oss_ioctl(struct seq_oss_devinfo *dp, unsigned int cmd, unsigned long ca
 
 	case SNDCTL_SYNTH_INFO:
 	case SNDCTL_SYNTH_ID:
+<<<<<<< HEAD
 		debug_printk(("synth info\n"));
 		return snd_seq_oss_synth_info_user(dp, arg);
 
@@ -174,6 +222,17 @@ snd_seq_oss_ioctl(struct seq_oss_devinfo *dp, unsigned int cmd, unsigned long ca
 
 	case SNDCTL_SEQ_THRESHOLD:
 		debug_printk(("threshold\n"));
+=======
+		return snd_seq_oss_synth_info_user(dp, arg);
+
+	case SNDCTL_SEQ_OUTOFBAND:
+		return snd_seq_oss_oob_user(dp, arg);
+
+	case SNDCTL_MIDI_INFO:
+		return snd_seq_oss_midi_info_user(dp, arg);
+
+	case SNDCTL_SEQ_THRESHOLD:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (! is_write_mode(dp->file_mode))
 			return 0;
 		if (get_user(val, p))
@@ -186,7 +245,10 @@ snd_seq_oss_ioctl(struct seq_oss_devinfo *dp, unsigned int cmd, unsigned long ca
 		return 0;
 
 	case SNDCTL_MIDI_PRETIME:
+<<<<<<< HEAD
 		debug_printk(("pretime\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (dp->readq == NULL || !is_read_mode(dp->file_mode))
 			return 0;
 		if (get_user(val, p))
@@ -199,7 +261,10 @@ snd_seq_oss_ioctl(struct seq_oss_devinfo *dp, unsigned int cmd, unsigned long ca
 		return put_user(val, p) ? -EFAULT : 0;
 
 	default:
+<<<<<<< HEAD
 		debug_printk(("others\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (! is_write_mode(dp->file_mode))
 			return -EIO;
 		return snd_seq_oss_synth_ioctl(dp, 0, cmd, carg);

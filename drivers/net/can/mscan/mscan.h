@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definitions of consts/structs to drive the Freescale MSCAN.
  *
  * Copyright (C) 2005-2006 Andrey Volkov <avolkov@varma-el.com>,
  *                         Varma Electronics Oy
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the version 2 of the GNU General Public License
@@ -16,11 +21,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MSCAN_H__
 #define __MSCAN_H__
 
+<<<<<<< HEAD
+=======
+#include <linux/clk.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 
 /* MSCAN control register 0 (CANCTL0) bits */
@@ -281,9 +292,16 @@ struct tx_queue_entry {
 struct mscan_priv {
 	struct can_priv can;	/* must be the first member */
 	unsigned int type; 	/* MSCAN type variants */
+<<<<<<< HEAD
 	long open_time;
 	unsigned long flags;
 	void __iomem *reg_base;	/* ioremap'ed address to registers */
+=======
+	unsigned long flags;
+	void __iomem *reg_base;	/* ioremap'ed address to registers */
+	struct clk *clk_ipg;	/* clock for registers */
+	struct clk *clk_can;	/* clock for bitrates */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 shadow_statflg;
 	u8 shadow_canrier;
 	u8 cur_pri;
@@ -295,8 +313,14 @@ struct mscan_priv {
 	struct napi_struct napi;
 };
 
+<<<<<<< HEAD
 extern struct net_device *alloc_mscandev(void);
 extern int register_mscandev(struct net_device *dev, int mscan_clksrc);
 extern void unregister_mscandev(struct net_device *dev);
+=======
+struct net_device *alloc_mscandev(void);
+int register_mscandev(struct net_device *dev, int mscan_clksrc);
+void unregister_mscandev(struct net_device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __MSCAN_H__ */

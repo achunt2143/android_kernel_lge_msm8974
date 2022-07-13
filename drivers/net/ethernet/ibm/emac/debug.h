@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/net/ethernet/ibm/emac/debug.h
  *
@@ -10,12 +14,15 @@
  *
  * Copyright (c) 2004, 2005 Zultys Technologies
  * Eugene Surovegin <eugene.surovegin@zultys.com> or <ebs@ebshome.net>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __IBM_NEWEMAC_DEBUG_H
 #define __IBM_NEWEMAC_DEBUG_H
@@ -25,6 +32,7 @@
 #include "core.h"
 
 #if defined(CONFIG_IBM_EMAC_DEBUG)
+<<<<<<< HEAD
 
 struct emac_instance;
 struct mal_instance;
@@ -55,6 +63,15 @@ extern void emac_dbg_dump_all(void);
 
 #define EMAC_DBG(d, name, fmt, arg...) \
 	printk(KERN_DEBUG #name "%s: " fmt, d->ofdev->dev.of_node->full_name, ## arg)
+=======
+# define DBG_LEVEL		1
+#else
+# define DBG_LEVEL		0
+#endif
+
+#define EMAC_DBG(d, name, fmt, arg...) \
+	printk(KERN_DEBUG #name "%pOF: " fmt, d->ofdev->dev.of_node, ## arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if DBG_LEVEL > 0
 #  define DBG(d,f,x...)		EMAC_DBG(d, emac, f, ##x)

@@ -1,13 +1,24 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2007 Luca Bigliardi (shammash@artha.org).
  * Licensed under the GPL.
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2007 Luca Bigliardi (shammash@artha.org).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stddef.h>
 #include <errno.h>
 #include <libvdeplug.h>
+<<<<<<< HEAD
 #include "net_user.h"
 #include "um_malloc.h"
+=======
+#include <net_user.h>
+#include <um_malloc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "vde.h"
 
 static int vde_user_init(void *data, void *dev)

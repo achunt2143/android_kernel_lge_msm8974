@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 /* 
  * Copyright (C) 2000, 2001, 2002 Jeff Dike (jdike@karaya.com)
  * Copyright (C) 2001 Ridgerun,Inc (glonnon@ridgerun.com)
  * Licensed under the GPL
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2016 Anton Ivanov (aivanov@brocade.com)
+ * Copyright (C) 2000, 2001, 2002 Jeff Dike (jdike@karaya.com)
+ * Copyright (C) 2001 Ridgerun,Inc (glonnon@ridgerun.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stddef.h>
@@ -19,12 +27,19 @@
 #include <byteswap.h>
 
 #include "ubd.h"
+<<<<<<< HEAD
 #include "os.h"
 
 void ignore_sigwinch_sig(void)
 {
 	signal(SIGWINCH, SIG_IGN);
 }
+=======
+#include <os.h>
+#include <poll.h>
+
+struct pollfd kernel_pollfd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int start_io_thread(unsigned long sp, int *fd_out)
 {
@@ -37,9 +52,18 @@ int start_io_thread(unsigned long sp, int *fd_out)
 	}
 
 	kernel_fd = fds[0];
+<<<<<<< HEAD
 	*fd_out = fds[1];
 
 	err = os_set_fd_block(*fd_out, 0);
+=======
+	kernel_pollfd.fd = kernel_fd;
+	kernel_pollfd.events = POLLIN;
+	*fd_out = fds[1];
+
+	err = os_set_fd_block(*fd_out, 0);
+	err = os_set_fd_block(kernel_fd, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		printk("start_io_thread - failed to set nonblocking I/O.\n");
 		goto out_close;
@@ -62,3 +86,18 @@ int start_io_thread(unsigned long sp, int *fd_out)
  out:
 	return err;
 }
+<<<<<<< HEAD
+=======
+
+int ubd_read_poll(int timeout)
+{
+	kernel_pollfd.events = POLLIN;
+	return poll(&kernel_pollfd, 1, timeout);
+}
+int ubd_write_poll(int timeout)
+{
+	kernel_pollfd.events = POLLOUT;
+	return poll(&kernel_pollfd, 1, timeout);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

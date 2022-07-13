@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8991.h  --  audio driver for WM8991
  *
  * Copyright 2007 Wolfson Microelectronics PLC.
  * Author: Graeme Gregory
  *         graeme.gregory@wolfsonmicro.com or linux@wolfsonmicro.com
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _WM8991_H
@@ -76,7 +83,10 @@
 #define WM8991_PLL1                             0x3C
 #define WM8991_PLL2                             0x3D
 #define WM8991_PLL3                             0x3E
+<<<<<<< HEAD
 #define WM8991_INTDRIVBITS			0x3F
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WM8991_REGISTER_COUNT                   60
 #define WM8991_MAX_REGISTER                     0x3F
@@ -807,6 +817,7 @@
  */
 #define WM8991_PLLK2_MASK                       0x00FF  /* PLLK2 - [7:0] */
 
+<<<<<<< HEAD
 /*
  * R63 (0x3F) - Internal Driver Bits
  */
@@ -815,6 +826,8 @@
 #define WM8991_INMIXR_PWR_BIT			2
 #define WM8991_AINRMUX_PWR_BIT			3
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WM8991_MCLK_DIV 0
 #define WM8991_DACCLK_DIV 1
 #define WM8991_ADCCLK_DIV 2
@@ -822,6 +835,7 @@
 
 #define SOC_WM899X_OUTPGA_SINGLE_R_TLV(xname, reg, shift, max, invert,\
 					 tlv_array) \
+<<<<<<< HEAD
 {	.iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = (xname), \
 	.access = SNDRV_CTL_ELEM_ACCESS_TLV_READ |\
 		 SNDRV_CTL_ELEM_ACCESS_READWRITE,\
@@ -829,5 +843,9 @@
 	.info = snd_soc_info_volsw, \
 	.get = snd_soc_get_volsw, .put = wm899x_outpga_put_volsw_vu, \
 	.private_value = SOC_SINGLE_VALUE(reg, shift, max, invert) }
+=======
+	SOC_SINGLE_EXT_TLV(xname, reg, shift, max, invert, \
+		snd_soc_get_volsw, wm899x_outpga_put_volsw_vu, tlv_array)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _WM8991_H */

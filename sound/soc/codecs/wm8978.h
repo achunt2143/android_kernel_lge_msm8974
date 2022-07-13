@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm8978.h		--  codec driver for WM8978
  *
  * Copyright 2009 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __WM8978_H__
@@ -78,8 +85,13 @@ enum wm8978_clk_id {
 };
 
 enum wm8978_sysclk_src {
+<<<<<<< HEAD
 	WM8978_PLL,
 	WM8978_MCLK
+=======
+	WM8978_MCLK = 0,
+	WM8978_PLL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif	/* __WM8978_H__ */

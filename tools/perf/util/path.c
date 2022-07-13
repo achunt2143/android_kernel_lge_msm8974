@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * I'm tired of doing "vsnprintf()" etc just to open a
  * file, so here's a "return static buffer with printf"
@@ -43,6 +44,19 @@ static char *get_pathname(void)
 
 	return pathname_array[3 & ++idx];
 }
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include "path.h"
+#include "cache.h"
+#include <linux/kernel.h>
+#include <limits.h>
+#include <stdio.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <dirent.h>
+#include <unistd.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static char *cleanup_path(char *path)
 {
@@ -55,6 +69,7 @@ static char *cleanup_path(char *path)
 	return path;
 }
 
+<<<<<<< HEAD
 static char *perf_vsnpath(char *buf, size_t n, const char *fmt, va_list args)
 {
 	const char *perf_dir = get_perf_dir();
@@ -154,4 +169,63 @@ char *strip_path_suffix(const char *path, const char *suffix)
 	if (path_len && !is_dir_sep(path[path_len - 1]))
 		return NULL;
 	return strndup(path, chomp_trailing_dir_sep(path, path_len));
+=======
+char *mkpath(char *path_buf, size_t sz, const char *fmt, ...)
+{
+	va_list args;
+	unsigned len;
+
+	va_start(args, fmt);
+	len = vsnprintf(path_buf, sz, fmt, args);
+	va_end(args);
+	if (len >= sz)
+		strncpy(path_buf, "/bad-path/", sz);
+	return cleanup_path(path_buf);
+}
+
+int path__join(char *bf, size_t size, const char *path1, const char *path2)
+{
+	return scnprintf(bf, size, "%s%s%s", path1, path1[0] ? "/" : "", path2);
+}
+
+int path__join3(char *bf, size_t size, const char *path1, const char *path2, const char *path3)
+{
+	return scnprintf(bf, size, "%s%s%s%s%s", path1, path1[0] ? "/" : "",
+			 path2, path2[0] ? "/" : "", path3);
+}
+
+bool is_regular_file(const char *file)
+{
+	struct stat st;
+
+	if (stat(file, &st))
+		return false;
+
+	return S_ISREG(st.st_mode);
+}
+
+/* Helper function for filesystems that return a dent->d_type DT_UNKNOWN */
+bool is_directory(const char *base_path, const struct dirent *dent)
+{
+	char path[PATH_MAX];
+	struct stat st;
+
+	snprintf(path, sizeof(path), "%s/%s", base_path, dent->d_name);
+	if (stat(path, &st))
+		return false;
+
+	return S_ISDIR(st.st_mode);
+}
+
+bool is_executable_file(const char *base_path, const struct dirent *dent)
+{
+	char path[PATH_MAX];
+	struct stat st;
+
+	snprintf(path, sizeof(path), "%s/%s", base_path, dent->d_name);
+	if (stat(path, &st))
+		return false;
+
+	return !S_ISDIR(st.st_mode) && (st.st_mode & S_IXUSR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

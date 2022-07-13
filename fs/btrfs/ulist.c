@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2011 STRATO AG
  * written by Arne Jansen <sensille@gmx.net>
@@ -6,6 +7,16 @@
 
 #include <linux/slab.h>
 #include <linux/module.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2011 STRATO AG
+ * written by Arne Jansen <sensille@gmx.net>
+ */
+
+#include <linux/slab.h>
+#include "messages.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ulist.h"
 
 /*
@@ -14,25 +25,38 @@
  * enumerating it.
  * It is possible to store an auxiliary value along with the key.
  *
+<<<<<<< HEAD
  * The implementation is preliminary and can probably be sped up
  * significantly. A first step would be to store the values in an rbtree
  * as soon as ULIST_SIZE is exceeded.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * A sample usage for ulists is the enumeration of directed graphs without
  * visiting a node twice. The pseudo-code could look like this:
  *
  * ulist = ulist_alloc();
  * ulist_add(ulist, root);
+<<<<<<< HEAD
  * elem = NULL;
  *
  * while ((elem = ulist_next(ulist, elem)) {
+=======
+ * ULIST_ITER_INIT(&uiter);
+ *
+ * while ((elem = ulist_next(ulist, &uiter)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 	for (all child nodes n in elem)
  *		ulist_add(ulist, n);
  *	do something useful with the node;
  * }
  * ulist_free(ulist);
  *
+<<<<<<< HEAD
  * This assumes the graph nodes are adressable by u64. This stems from the
+=======
+ * This assumes the graph nodes are addressable by u64. This stems from the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * usage for tree enumeration in btrfs, where the logical addresses are
  * 64 bit.
  *
@@ -41,8 +65,14 @@
  * loop would be similar to the above.
  */
 
+<<<<<<< HEAD
 /**
  * ulist_init - freshly initialize a ulist
+=======
+/*
+ * Freshly initialize a ulist.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ulist:	the ulist to initialize
  *
  * Note: don't use this function to init an already used ulist, use
@@ -50,6 +80,7 @@
  */
 void ulist_init(struct ulist *ulist)
 {
+<<<<<<< HEAD
 	ulist->nnodes = 0;
 	ulist->nodes = ulist->int_nodes;
 	ulist->nodes_alloced = ULIST_SIZE;
@@ -58,11 +89,22 @@ EXPORT_SYMBOL(ulist_init);
 
 /**
  * ulist_fini - free up additionally allocated memory for the ulist
+=======
+	INIT_LIST_HEAD(&ulist->nodes);
+	ulist->root = RB_ROOT;
+	ulist->nnodes = 0;
+}
+
+/*
+ * Free up additionally allocated memory for the ulist.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ulist:	the ulist from which to free the additional memory
  *
  * This is useful in cases where the base 'struct ulist' has been statically
  * allocated.
  */
+<<<<<<< HEAD
 void ulist_fini(struct ulist *ulist)
 {
 	/*
@@ -77,6 +119,23 @@ EXPORT_SYMBOL(ulist_fini);
 
 /**
  * ulist_reinit - prepare a ulist for reuse
+=======
+void ulist_release(struct ulist *ulist)
+{
+	struct ulist_node *node;
+	struct ulist_node *next;
+
+	list_for_each_entry_safe(node, next, &ulist->nodes, list) {
+		kfree(node);
+	}
+	ulist->root = RB_ROOT;
+	INIT_LIST_HEAD(&ulist->nodes);
+}
+
+/*
+ * Prepare a ulist for reuse.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ulist:	ulist to be reused
  *
  * Free up all additional memory allocated for the list elements and reinit
@@ -84,6 +143,7 @@ EXPORT_SYMBOL(ulist_fini);
  */
 void ulist_reinit(struct ulist *ulist)
 {
+<<<<<<< HEAD
 	ulist_fini(ulist);
 	ulist_init(ulist);
 }
@@ -91,11 +151,24 @@ EXPORT_SYMBOL(ulist_reinit);
 
 /**
  * ulist_alloc - dynamically allocate a ulist
+=======
+	ulist_release(ulist);
+	ulist_init(ulist);
+}
+
+/*
+ * Dynamically allocate a ulist.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @gfp_mask:	allocation flags to for base allocation
  *
  * The allocated ulist will be returned in an initialized state.
  */
+<<<<<<< HEAD
 struct ulist *ulist_alloc(unsigned long gfp_mask)
+=======
+struct ulist *ulist_alloc(gfp_t gfp_mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ulist *ulist = kmalloc(sizeof(*ulist), gfp_mask);
 
@@ -106,6 +179,7 @@ struct ulist *ulist_alloc(unsigned long gfp_mask)
 
 	return ulist;
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(ulist_alloc);
 
 /**
@@ -113,11 +187,21 @@ EXPORT_SYMBOL(ulist_alloc);
  * @ulist:	ulist to free
  *
  * It is not necessary to call ulist_fini before.
+=======
+
+/*
+ * Free dynamically allocated ulist.
+ *
+ * @ulist:	ulist to free
+ *
+ * It is not necessary to call ulist_release before.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void ulist_free(struct ulist *ulist)
 {
 	if (!ulist)
 		return;
+<<<<<<< HEAD
 	ulist_fini(ulist);
 	kfree(ulist);
 }
@@ -125,6 +209,63 @@ EXPORT_SYMBOL(ulist_free);
 
 /**
  * ulist_add - add an element to the ulist
+=======
+	ulist_release(ulist);
+	kfree(ulist);
+}
+
+static struct ulist_node *ulist_rbtree_search(struct ulist *ulist, u64 val)
+{
+	struct rb_node *n = ulist->root.rb_node;
+	struct ulist_node *u = NULL;
+
+	while (n) {
+		u = rb_entry(n, struct ulist_node, rb_node);
+		if (u->val < val)
+			n = n->rb_right;
+		else if (u->val > val)
+			n = n->rb_left;
+		else
+			return u;
+	}
+	return NULL;
+}
+
+static void ulist_rbtree_erase(struct ulist *ulist, struct ulist_node *node)
+{
+	rb_erase(&node->rb_node, &ulist->root);
+	list_del(&node->list);
+	kfree(node);
+	BUG_ON(ulist->nnodes == 0);
+	ulist->nnodes--;
+}
+
+static int ulist_rbtree_insert(struct ulist *ulist, struct ulist_node *ins)
+{
+	struct rb_node **p = &ulist->root.rb_node;
+	struct rb_node *parent = NULL;
+	struct ulist_node *cur = NULL;
+
+	while (*p) {
+		parent = *p;
+		cur = rb_entry(parent, struct ulist_node, rb_node);
+
+		if (cur->val < ins->val)
+			p = &(*p)->rb_right;
+		else if (cur->val > ins->val)
+			p = &(*p)->rb_left;
+		else
+			return -EEXIST;
+	}
+	rb_link_node(&ins->rb_node, parent, p);
+	rb_insert_color(&ins->rb_node, &ulist->root);
+	return 0;
+}
+
+/*
+ * Add an element to the ulist.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ulist:	ulist to add the element to
  * @val:	value to add to ulist
  * @aux:	auxiliary value to store along with val
@@ -143,6 +284,7 @@ EXPORT_SYMBOL(ulist_free);
  * In case of allocation failure -ENOMEM is returned and the ulist stays
  * unaltered.
  */
+<<<<<<< HEAD
 int ulist_add(struct ulist *ulist, u64 val, unsigned long aux,
 	      unsigned long gfp_mask)
 {
@@ -189,18 +331,91 @@ EXPORT_SYMBOL(ulist_add);
  * ulist_next - iterate ulist
  * @ulist:	ulist to iterate
  * @prev:	previously returned element or %NULL to start iteration
+=======
+int ulist_add(struct ulist *ulist, u64 val, u64 aux, gfp_t gfp_mask)
+{
+	return ulist_add_merge(ulist, val, aux, NULL, gfp_mask);
+}
+
+int ulist_add_merge(struct ulist *ulist, u64 val, u64 aux,
+		    u64 *old_aux, gfp_t gfp_mask)
+{
+	int ret;
+	struct ulist_node *node;
+
+	node = ulist_rbtree_search(ulist, val);
+	if (node) {
+		if (old_aux)
+			*old_aux = node->aux;
+		return 0;
+	}
+	node = kmalloc(sizeof(*node), gfp_mask);
+	if (!node)
+		return -ENOMEM;
+
+	node->val = val;
+	node->aux = aux;
+
+	ret = ulist_rbtree_insert(ulist, node);
+	ASSERT(!ret);
+	list_add_tail(&node->list, &ulist->nodes);
+	ulist->nnodes++;
+
+	return 1;
+}
+
+/*
+ * Delete one node from ulist.
+ *
+ * @ulist:	ulist to remove node from
+ * @val:	value to delete
+ * @aux:	aux to delete
+ *
+ * The deletion will only be done when *BOTH* val and aux matches.
+ * Return 0 for successful delete.
+ * Return > 0 for not found.
+ */
+int ulist_del(struct ulist *ulist, u64 val, u64 aux)
+{
+	struct ulist_node *node;
+
+	node = ulist_rbtree_search(ulist, val);
+	/* Not found */
+	if (!node)
+		return 1;
+
+	if (node->aux != aux)
+		return 1;
+
+	/* Found and delete */
+	ulist_rbtree_erase(ulist, node);
+	return 0;
+}
+
+/*
+ * Iterate ulist.
+ *
+ * @ulist:	ulist to iterate
+ * @uiter:	iterator variable, initialized with ULIST_ITER_INIT(&iterator)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note: locking must be provided by the caller. In case of rwlocks only read
  *       locking is needed
  *
+<<<<<<< HEAD
  * This function is used to iterate an ulist. The iteration is started with
  * @prev = %NULL. It returns the next element from the ulist or %NULL when the
+=======
+ * This function is used to iterate an ulist.
+ * It returns the next element from the ulist or %NULL when the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * end is reached. No guarantee is made with respect to the order in which
  * the elements are returned. They might neither be returned in order of
  * addition nor in ascending order.
  * It is allowed to call ulist_add during an enumeration. Newly added items
  * are guaranteed to show up in the running enumeration.
  */
+<<<<<<< HEAD
 struct ulist_node *ulist_next(struct ulist *ulist, struct ulist_node *prev)
 {
 	int next;
@@ -218,3 +433,21 @@ struct ulist_node *ulist_next(struct ulist *ulist, struct ulist_node *prev)
 	return &ulist->nodes[next];
 }
 EXPORT_SYMBOL(ulist_next);
+=======
+struct ulist_node *ulist_next(const struct ulist *ulist, struct ulist_iterator *uiter)
+{
+	struct ulist_node *node;
+
+	if (list_empty(&ulist->nodes))
+		return NULL;
+	if (uiter->cur_list && uiter->cur_list->next == &ulist->nodes)
+		return NULL;
+	if (uiter->cur_list) {
+		uiter->cur_list = uiter->cur_list->next;
+	} else {
+		uiter->cur_list = ulist->nodes.next;
+	}
+	node = list_entry(uiter->cur_list, struct ulist_node, list);
+	return node;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

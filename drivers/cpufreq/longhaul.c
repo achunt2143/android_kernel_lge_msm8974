@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 /*
  *  (C) 2001-2004  Dave Jones. <davej@redhat.com>
  *  (C) 2002  Padraig Brady. <padraig@antefacto.com>
  *
  *  Licensed under the terms of the GNU GPL License version 2.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  (C) 2001-2004  Dave Jones.
+ *  (C) 2002  Padraig Brady. <padraig@antefacto.com>
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Based upon datasheets & sample CPUs kindly provided by VIA.
  *
  *  VIA have currently 3 different versions of Longhaul.
@@ -21,6 +29,11 @@
  *  BIG FAT DISCLAIMER: Work in progress code. Possibly *dangerous*
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -40,8 +53,11 @@
 
 #include "longhaul.h"
 
+<<<<<<< HEAD
 #define PFX "longhaul: "
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TYPE_LONGHAUL_V1	1
 #define TYPE_LONGHAUL_V2	2
 #define TYPE_POWERSAVER		3
@@ -242,7 +258,12 @@ static void do_powersaver(int cx_address, unsigned int mults_index,
  * Sets a new clock ratio.
  */
 
+<<<<<<< HEAD
 static void longhaul_setstate(unsigned int table_index)
+=======
+static int longhaul_setstate(struct cpufreq_policy *policy,
+		unsigned int table_index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int mults_index;
 	int speed, mult;
@@ -253,6 +274,7 @@ static void longhaul_setstate(unsigned int table_index)
 	u32 bm_timeout = 1000;
 	unsigned int dir = 0;
 
+<<<<<<< HEAD
 	mults_index = longhaul_table[table_index].index;
 	/* Safety precautions */
 	mult = mults[mults_index & 0x1f];
@@ -261,15 +283,30 @@ static void longhaul_setstate(unsigned int table_index)
 	speed = calc_speed(mult);
 	if ((speed > highest_speed) || (speed < lowest_speed))
 		return;
+=======
+	mults_index = longhaul_table[table_index].driver_data;
+	/* Safety precautions */
+	mult = mults[mults_index & 0x1f];
+	if (mult == -1)
+		return -EINVAL;
+
+	speed = calc_speed(mult);
+	if ((speed > highest_speed) || (speed < lowest_speed))
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Voltage transition before frequency transition? */
 	if (can_scale_voltage && longhaul_index < table_index)
 		dir = 1;
 
 	freqs.old = calc_speed(longhaul_get_cpu_mult());
 	freqs.new = speed;
+<<<<<<< HEAD
 	freqs.cpu = 0; /* longhaul.c is UP only driver */
 
 	cpufreq_notify_transition(&freqs, CPUFREQ_PRECHANGE);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("Setting to FSB:%dMHz Mult:%d.%dx (%s)\n",
 			fsb, mult/10, mult%10, print_speed(speed/1000));
@@ -347,14 +384,22 @@ retry_loop:
 	freqs.new = calc_speed(longhaul_get_cpu_mult());
 	/* Check if requested frequency is set. */
 	if (unlikely(freqs.new != speed)) {
+<<<<<<< HEAD
 		printk(KERN_INFO PFX "Failed to set requested frequency!\n");
+=======
+		pr_info("Failed to set requested frequency!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Revision ID = 1 but processor is expecting revision key
 		 * equal to 0. Jumpers at the bottom of processor will change
 		 * multiplier and FSB, but will not change bits in Longhaul
 		 * MSR nor enable voltage scaling. */
 		if (!revid_errata) {
+<<<<<<< HEAD
 			printk(KERN_INFO PFX "Enabling \"Ignore Revision ID\" "
 						"option.\n");
+=======
+			pr_info("Enabling \"Ignore Revision ID\" option\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			revid_errata = 1;
 			msleep(200);
 			goto retry_loop;
@@ -364,11 +409,18 @@ retry_loop:
 		 * but it doesn't change frequency. I tried poking various
 		 * bits in northbridge registers, but without success. */
 		if (longhaul_flags & USE_ACPI_C3) {
+<<<<<<< HEAD
 			printk(KERN_INFO PFX "Disabling ACPI C3 support.\n");
 			longhaul_flags &= ~USE_ACPI_C3;
 			if (revid_errata) {
 				printk(KERN_INFO PFX "Disabling \"Ignore "
 						"Revision ID\" option.\n");
+=======
+			pr_info("Disabling ACPI C3 support\n");
+			longhaul_flags &= ~USE_ACPI_C3;
+			if (revid_errata) {
+				pr_info("Disabling \"Ignore Revision ID\" option\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				revid_errata = 0;
 			}
 			msleep(200);
@@ -379,18 +431,32 @@ retry_loop:
 		 * RevID = 1. RevID errata will make things right. Just
 		 * to be 100% sure. */
 		if (longhaul_version == TYPE_LONGHAUL_V2) {
+<<<<<<< HEAD
 			printk(KERN_INFO PFX "Switching to Longhaul ver. 1\n");
+=======
+			pr_info("Switching to Longhaul ver. 1\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			longhaul_version = TYPE_LONGHAUL_V1;
 			msleep(200);
 			goto retry_loop;
 		}
 	}
+<<<<<<< HEAD
 	/* Report true CPU frequency */
 	cpufreq_notify_transition(&freqs, CPUFREQ_POSTCHANGE);
 
 	if (!bm_timeout)
 		printk(KERN_INFO PFX "Warning: Timeout while waiting for "
 				"idle PCI bus.\n");
+=======
+
+	if (!bm_timeout) {
+		pr_info("Warning: Timeout while waiting for idle PCI bus\n");
+		return -EBUSY;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -408,10 +474,17 @@ static int guess_fsb(int mult)
 {
 	int speed = cpu_khz / 1000;
 	int i;
+<<<<<<< HEAD
 	int speeds[] = { 666, 1000, 1333, 2000 };
 	int f_max, f_min;
 
 	for (i = 0; i < 4; i++) {
+=======
+	static const int speeds[] = { 666, 1000, 1333, 2000 };
+	int f_max, f_min;
+
+	for (i = 0; i < ARRAY_SIZE(speeds); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		f_max = ((speeds[i] * mult) + 50) / 100;
 		f_max += (ROUNDING / 2);
 		f_min = f_max - ROUNDING;
@@ -422,7 +495,11 @@ static int guess_fsb(int mult)
 }
 
 
+<<<<<<< HEAD
 static int __cpuinit longhaul_get_ranges(void)
+=======
+static int longhaul_get_ranges(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i, j, k = 0;
 	unsigned int ratio;
@@ -431,12 +508,20 @@ static int __cpuinit longhaul_get_ranges(void)
 	/* Get current frequency */
 	mult = longhaul_get_cpu_mult();
 	if (mult == -1) {
+<<<<<<< HEAD
 		printk(KERN_INFO PFX "Invalid (reserved) multiplier!\n");
+=======
+		pr_info("Invalid (reserved) multiplier!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	fsb = guess_fsb(mult);
 	if (fsb == 0) {
+<<<<<<< HEAD
 		printk(KERN_INFO PFX "Invalid (reserved) FSB!\n");
+=======
+		pr_info("Invalid (reserved) FSB!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	/* Get max multiplier - as we always did.
@@ -466,17 +551,30 @@ static int __cpuinit longhaul_get_ranges(void)
 		 print_speed(highest_speed/1000));
 
 	if (lowest_speed == highest_speed) {
+<<<<<<< HEAD
 		printk(KERN_INFO PFX "highestspeed == lowest, aborting.\n");
 		return -EINVAL;
 	}
 	if (lowest_speed > highest_speed) {
 		printk(KERN_INFO PFX "nonsense! lowest (%d > %d) !\n",
+=======
+		pr_info("highestspeed == lowest, aborting\n");
+		return -EINVAL;
+	}
+	if (lowest_speed > highest_speed) {
+		pr_info("nonsense! lowest (%d > %d) !\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lowest_speed, highest_speed);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	longhaul_table = kmalloc((numscales + 1) * sizeof(*longhaul_table),
 			GFP_KERNEL);
+=======
+	longhaul_table = kcalloc(numscales + 1, sizeof(*longhaul_table),
+				 GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!longhaul_table)
 		return -ENOMEM;
 
@@ -487,7 +585,11 @@ static int __cpuinit longhaul_get_ranges(void)
 		if (ratio > maxmult || ratio < minmult)
 			continue;
 		longhaul_table[k].frequency = calc_speed(ratio);
+<<<<<<< HEAD
 		longhaul_table[k].index	= j;
+=======
+		longhaul_table[k].driver_data	= j;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		k++;
 	}
 	if (k <= 1) {
@@ -508,8 +610,13 @@ static int __cpuinit longhaul_get_ranges(void)
 		if (min_i != j) {
 			swap(longhaul_table[j].frequency,
 			     longhaul_table[min_i].frequency);
+<<<<<<< HEAD
 			swap(longhaul_table[j].index,
 			     longhaul_table[min_i].index);
+=======
+			swap(longhaul_table[j].driver_data,
+			     longhaul_table[min_i].driver_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -517,7 +624,11 @@ static int __cpuinit longhaul_get_ranges(void)
 
 	/* Find index we are running on */
 	for (j = 0; j < k; j++) {
+<<<<<<< HEAD
 		if (mults[longhaul_table[j].index & 0x1f] == mult) {
+=======
+		if (mults[longhaul_table[j].driver_data & 0x1f] == mult) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			longhaul_index = j;
 			break;
 		}
@@ -526,8 +637,14 @@ static int __cpuinit longhaul_get_ranges(void)
 }
 
 
+<<<<<<< HEAD
 static void __cpuinit longhaul_setup_voltagescaling(void)
 {
+=======
+static void longhaul_setup_voltagescaling(void)
+{
+	struct cpufreq_frequency_table *freq_pos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union msr_longhaul longhaul;
 	struct mV_pos minvid, maxvid, vid;
 	unsigned int j, speed, pos, kHz_step, numvscales;
@@ -535,16 +652,28 @@ static void __cpuinit longhaul_setup_voltagescaling(void)
 
 	rdmsrl(MSR_VIA_LONGHAUL, longhaul.val);
 	if (!(longhaul.bits.RevisionID & 1)) {
+<<<<<<< HEAD
 		printk(KERN_INFO PFX "Voltage scaling not supported by CPU.\n");
+=======
+		pr_info("Voltage scaling not supported by CPU\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if (!longhaul.bits.VRMRev) {
+<<<<<<< HEAD
 		printk(KERN_INFO PFX "VRM 8.5\n");
 		vrm_mV_table = &vrm85_mV[0];
 		mV_vrm_table = &mV_vrm85[0];
 	} else {
 		printk(KERN_INFO PFX "Mobile VRM\n");
+=======
+		pr_info("VRM 8.5\n");
+		vrm_mV_table = &vrm85_mV[0];
+		mV_vrm_table = &mV_vrm85[0];
+	} else {
+		pr_info("Mobile VRM\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cpu_model < CPU_NEHEMIAH)
 			return;
 		vrm_mV_table = &mobilevrm_mV[0];
@@ -555,27 +684,42 @@ static void __cpuinit longhaul_setup_voltagescaling(void)
 	maxvid = vrm_mV_table[longhaul.bits.MaximumVID];
 
 	if (minvid.mV == 0 || maxvid.mV == 0 || minvid.mV > maxvid.mV) {
+<<<<<<< HEAD
 		printk(KERN_INFO PFX "Bogus values Min:%d.%03d Max:%d.%03d. "
 					"Voltage scaling disabled.\n",
 					minvid.mV/1000, minvid.mV%1000,
 					maxvid.mV/1000, maxvid.mV%1000);
+=======
+		pr_info("Bogus values Min:%d.%03d Max:%d.%03d - Voltage scaling disabled\n",
+			minvid.mV/1000, minvid.mV%1000,
+			maxvid.mV/1000, maxvid.mV%1000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	if (minvid.mV == maxvid.mV) {
+<<<<<<< HEAD
 		printk(KERN_INFO PFX "Claims to support voltage scaling but "
 				"min & max are both %d.%03d. "
 				"Voltage scaling disabled\n",
 				maxvid.mV/1000, maxvid.mV%1000);
+=======
+		pr_info("Claims to support voltage scaling but min & max are both %d.%03d - Voltage scaling disabled\n",
+			maxvid.mV/1000, maxvid.mV%1000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	/* How many voltage steps*/
 	numvscales = maxvid.pos - minvid.pos + 1;
+<<<<<<< HEAD
 	printk(KERN_INFO PFX
 		"Max VID=%d.%03d  "
 		"Min VID=%d.%03d, "
 		"%d possible voltage scales\n",
+=======
+	pr_info("Max VID=%d.%03d  Min VID=%d.%03d, %d possible voltage scales\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		maxvid.mV/1000, maxvid.mV%1000,
 		minvid.mV/1000, minvid.mV%1000,
 		numvscales);
@@ -599,20 +743,29 @@ static void __cpuinit longhaul_setup_voltagescaling(void)
 		break;
 	default:
 		return;
+<<<<<<< HEAD
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (min_vid_speed >= highest_speed)
 		return;
 	/* Calculate kHz for one voltage step */
 	kHz_step = (highest_speed - min_vid_speed) / numvscales;
 
+<<<<<<< HEAD
 	j = 0;
 	while (longhaul_table[j].frequency != CPUFREQ_TABLE_END) {
 		speed = longhaul_table[j].frequency;
+=======
+	cpufreq_for_each_entry_idx(freq_pos, longhaul_table, j) {
+		speed = freq_pos->frequency;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (speed > min_vid_speed)
 			pos = (speed - min_vid_speed) / kHz_step + minvid.pos;
 		else
 			pos = minvid.pos;
+<<<<<<< HEAD
 		longhaul_table[j].index |= mV_vrm_table[pos] << 8;
 		vid = vrm_mV_table[mV_vrm_table[pos]];
 		printk(KERN_INFO PFX "f: %d kHz, index: %d, vid: %d mV\n",
@@ -628,10 +781,21 @@ static void __cpuinit longhaul_setup_voltagescaling(void)
 static int longhaul_verify(struct cpufreq_policy *policy)
 {
 	return cpufreq_frequency_table_verify(policy, longhaul_table);
+=======
+		freq_pos->driver_data |= mV_vrm_table[pos] << 8;
+		vid = vrm_mV_table[mV_vrm_table[pos]];
+		pr_info("f: %d kHz, index: %d, vid: %d mV\n",
+			speed, j, vid.mV);
+	}
+
+	can_scale_voltage = 1;
+	pr_info("Voltage scaling enabled\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static int longhaul_target(struct cpufreq_policy *policy,
+<<<<<<< HEAD
 			    unsigned int target_freq, unsigned int relation)
 {
 	unsigned int table_index = 0;
@@ -649,6 +813,17 @@ static int longhaul_target(struct cpufreq_policy *policy,
 
 	if (!can_scale_voltage)
 		longhaul_setstate(table_index);
+=======
+			    unsigned int table_index)
+{
+	unsigned int i;
+	unsigned int dir = 0;
+	u8 vid, current_vid;
+	int retval = 0;
+
+	if (!can_scale_voltage)
+		retval = longhaul_setstate(policy, table_index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {
 		/* On test system voltage transitions exceeding single
 		 * step up or down were turning motherboard off. Both
@@ -656,14 +831,24 @@ static int longhaul_target(struct cpufreq_policy *policy,
 		 * this in hardware, C3 is old and we need to do this
 		 * in software. */
 		i = longhaul_index;
+<<<<<<< HEAD
 		current_vid = (longhaul_table[longhaul_index].index >> 8);
+=======
+		current_vid = (longhaul_table[longhaul_index].driver_data >> 8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		current_vid &= 0x1f;
 		if (table_index > longhaul_index)
 			dir = 1;
 		while (i != table_index) {
+<<<<<<< HEAD
 			vid = (longhaul_table[i].index >> 8) & 0x1f;
 			if (vid != current_vid) {
 				longhaul_setstate(i);
+=======
+			vid = (longhaul_table[i].driver_data >> 8) & 0x1f;
+			if (vid != current_vid) {
+				retval = longhaul_setstate(policy, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				current_vid = vid;
 				msleep(200);
 			}
@@ -672,10 +857,18 @@ static int longhaul_target(struct cpufreq_policy *policy,
 			else
 				i--;
 		}
+<<<<<<< HEAD
 		longhaul_setstate(table_index);
 	}
 	longhaul_index = table_index;
 	return 0;
+=======
+		retval = longhaul_setstate(policy, table_index);
+	}
+
+	longhaul_index = table_index;
+	return retval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -690,9 +883,15 @@ static acpi_status longhaul_walk_callback(acpi_handle obj_handle,
 					  u32 nesting_level,
 					  void *context, void **return_value)
 {
+<<<<<<< HEAD
 	struct acpi_device *d;
 
 	if (acpi_bus_get_device(obj_handle, &d))
+=======
+	struct acpi_device *d = acpi_fetch_acpi_dev(obj_handle);
+
+	if (!d)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	*return_value = acpi_driver_data(d);
@@ -732,8 +931,12 @@ static int enable_arbiter_disable(void)
 			pci_write_config_byte(dev, reg, pci_cmd);
 			pci_read_config_byte(dev, reg, &pci_cmd);
 			if (!(pci_cmd & 1<<7)) {
+<<<<<<< HEAD
 				printk(KERN_ERR PFX
 					"Can't enable access to port 0x22.\n");
+=======
+				pr_err("Can't enable access to port 0x22\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				status = 0;
 			}
 		}
@@ -770,8 +973,12 @@ static int longhaul_setup_southbridge(void)
 		if (pci_cmd & 1 << 7) {
 			pci_read_config_dword(dev, 0x88, &acpi_regs_addr);
 			acpi_regs_addr &= 0xff00;
+<<<<<<< HEAD
 			printk(KERN_INFO PFX "ACPI I/O at 0x%x\n",
 					acpi_regs_addr);
+=======
+			pr_info("ACPI I/O at 0x%x\n", acpi_regs_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		pci_dev_put(dev);
@@ -780,7 +987,11 @@ static int longhaul_setup_southbridge(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __cpuinit longhaul_cpu_init(struct cpufreq_policy *policy)
+=======
+static int longhaul_cpu_init(struct cpufreq_policy *policy)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cpuinfo_x86 *c = &cpu_data(0);
 	char *cpuname = NULL;
@@ -798,7 +1009,11 @@ static int __cpuinit longhaul_cpu_init(struct cpufreq_policy *policy)
 		break;
 
 	case 7:
+<<<<<<< HEAD
 		switch (c->x86_mask) {
+=======
+		switch (c->x86_stepping) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0:
 			longhaul_version = TYPE_LONGHAUL_V1;
 			cpu_model = CPU_SAMUEL2;
@@ -810,7 +1025,11 @@ static int __cpuinit longhaul_cpu_init(struct cpufreq_policy *policy)
 			break;
 		case 1 ... 15:
 			longhaul_version = TYPE_LONGHAUL_V2;
+<<<<<<< HEAD
 			if (c->x86_mask < 8) {
+=======
+			if (c->x86_stepping < 8) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cpu_model = CPU_SAMUEL2;
 				cpuname = "C3 'Samuel 2' [C5B]";
 			} else {
@@ -837,7 +1056,11 @@ static int __cpuinit longhaul_cpu_init(struct cpufreq_policy *policy)
 		numscales = 32;
 		memcpy(mults, nehemiah_mults, sizeof(nehemiah_mults));
 		memcpy(eblcr, nehemiah_eblcr, sizeof(nehemiah_eblcr));
+<<<<<<< HEAD
 		switch (c->x86_mask) {
+=======
+		switch (c->x86_stepping) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0 ... 1:
 			cpu_model = CPU_NEHEMIAH;
 			cpuname = "C3 'Nehemiah A' [C5XLOE]";
@@ -865,6 +1088,7 @@ static int __cpuinit longhaul_cpu_init(struct cpufreq_policy *policy)
 			longhaul_version = TYPE_LONGHAUL_V1;
 	}
 
+<<<<<<< HEAD
 	printk(KERN_INFO PFX "VIA %s CPU detected.  ", cpuname);
 	switch (longhaul_version) {
 	case TYPE_LONGHAUL_V1:
@@ -875,6 +1099,18 @@ static int __cpuinit longhaul_cpu_init(struct cpufreq_policy *policy)
 		printk(KERN_CONT "Powersaver supported.\n");
 		break;
 	};
+=======
+	pr_info("VIA %s CPU detected.  ", cpuname);
+	switch (longhaul_version) {
+	case TYPE_LONGHAUL_V1:
+	case TYPE_LONGHAUL_V2:
+		pr_cont("Longhaul v%d supported\n", longhaul_version);
+		break;
+	case TYPE_POWERSAVER:
+		pr_cont("Powersaver supported\n");
+		break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Doesn't hurt */
 	longhaul_setup_southbridge();
@@ -901,15 +1137,25 @@ static int __cpuinit longhaul_cpu_init(struct cpufreq_policy *policy)
 	if (!(longhaul_flags & USE_ACPI_C3
 	     || longhaul_flags & USE_NORTHBRIDGE)
 	    && ((pr == NULL) || !(pr->flags.bm_control))) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX
 			"No ACPI support. Unsupported northbridge.\n");
+=======
+		pr_err("No ACPI support: Unsupported northbridge\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
 	if (longhaul_flags & USE_NORTHBRIDGE)
+<<<<<<< HEAD
 		printk(KERN_INFO PFX "Using northbridge support.\n");
 	if (longhaul_flags & USE_ACPI_C3)
 		printk(KERN_INFO PFX "Using ACPI support.\n");
+=======
+		pr_info("Using northbridge support\n");
+	if (longhaul_flags & USE_ACPI_C3)
+		pr_info("Using ACPI support\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = longhaul_get_ranges();
 	if (ret != 0)
@@ -918,6 +1164,7 @@ static int __cpuinit longhaul_cpu_init(struct cpufreq_policy *policy)
 	if ((longhaul_version != TYPE_LONGHAUL_V1) && (scale_voltage != 0))
 		longhaul_setup_voltagescaling();
 
+<<<<<<< HEAD
 	policy->cpuinfo.transition_latency = 200000;	/* nsec */
 	policy->cur = calc_speed(longhaul_get_cpu_mult());
 
@@ -926,10 +1173,15 @@ static int __cpuinit longhaul_cpu_init(struct cpufreq_policy *policy)
 		return ret;
 
 	cpufreq_frequency_table_get_attr(longhaul_table, policy->cpu);
+=======
+	policy->transition_delay_us = 200000;	/* usec */
+	policy->freq_table = longhaul_table;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit longhaul_cpu_exit(struct cpufreq_policy *policy)
 {
 	cpufreq_frequency_table_put_attr(policy->cpu);
@@ -954,6 +1206,19 @@ static struct cpufreq_driver longhaul_driver = {
 
 static const struct x86_cpu_id longhaul_id[] = {
 	{ X86_VENDOR_CENTAUR, 6 },
+=======
+static struct cpufreq_driver longhaul_driver = {
+	.verify	= cpufreq_generic_frequency_table_verify,
+	.target_index = longhaul_target,
+	.get	= longhaul_get,
+	.init	= longhaul_cpu_init,
+	.name	= "longhaul",
+	.attr	= cpufreq_generic_attr,
+};
+
+static const struct x86_cpu_id longhaul_id[] = {
+	X86_MATCH_VENDOR_FAM(CENTAUR, 6, NULL),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{}
 };
 MODULE_DEVICE_TABLE(x86cpu, longhaul_id);
@@ -966,20 +1231,33 @@ static int __init longhaul_init(void)
 		return -ENODEV;
 
 	if (!enable) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "Option \"enable\" not set. Aborting.\n");
+=======
+		pr_err("Option \"enable\" not set - Aborting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 #ifdef CONFIG_SMP
 	if (num_online_cpus() > 1) {
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "More than 1 CPU detected, "
 				"longhaul disabled.\n");
+=======
+		pr_err("More than 1 CPU detected, longhaul disabled\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 #endif
 #ifdef CONFIG_X86_IO_APIC
+<<<<<<< HEAD
 	if (cpu_has_apic) {
 		printk(KERN_ERR PFX "APIC detected. Longhaul is currently "
 				"broken in this configuration.\n");
+=======
+	if (boot_cpu_has(X86_FEATURE_APIC)) {
+		pr_err("APIC detected. Longhaul is currently broken in this configuration.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 #endif
@@ -987,9 +1265,13 @@ static int __init longhaul_init(void)
 	case 6 ... 9:
 		return cpufreq_register_driver(&longhaul_driver);
 	case 10:
+<<<<<<< HEAD
 		printk(KERN_ERR PFX "Use acpi-cpufreq driver for VIA C7\n");
 	default:
 		;
+=======
+		pr_err("Use acpi-cpufreq driver for VIA C7\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return -ENODEV;
@@ -998,15 +1280,35 @@ static int __init longhaul_init(void)
 
 static void __exit longhaul_exit(void)
 {
+<<<<<<< HEAD
+=======
+	struct cpufreq_policy *policy = cpufreq_cpu_get(0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < numscales; i++) {
 		if (mults[i] == maxmult) {
+<<<<<<< HEAD
 			longhaul_setstate(i);
+=======
+			struct cpufreq_freqs freqs;
+
+			freqs.old = policy->cur;
+			freqs.new = longhaul_table[i].frequency;
+			freqs.flags = 0;
+
+			cpufreq_freq_transition_begin(policy, &freqs);
+			longhaul_setstate(policy, i);
+			cpufreq_freq_transition_end(policy, &freqs, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 
+<<<<<<< HEAD
+=======
+	cpufreq_cpu_put(policy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cpufreq_unregister_driver(&longhaul_driver);
 	kfree(longhaul_table);
 }
@@ -1030,7 +1332,11 @@ MODULE_PARM_DESC(revid_errata, "Ignore CPU Revision ID");
 module_param(enable, int, 0644);
 MODULE_PARM_DESC(enable, "Enable driver");
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>");
+=======
+MODULE_AUTHOR("Dave Jones");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Longhaul driver for VIA Cyrix processors.");
 MODULE_LICENSE("GPL");
 

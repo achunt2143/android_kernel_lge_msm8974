@@ -31,7 +31,11 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/spinlock.h>
@@ -141,6 +145,7 @@ void dump_au1000_dma_channel(unsigned int dmanr)
 
 	printk(KERN_INFO "Au1000 DMA%d Register Dump:\n", dmanr);
 	printk(KERN_INFO "  mode = 0x%08x\n",
+<<<<<<< HEAD
 	       au_readl(chan->io + DMA_MODE_SET));
 	printk(KERN_INFO "  addr = 0x%08x\n",
 	       au_readl(chan->io + DMA_PERIPHERAL_ADDR));
@@ -152,6 +157,19 @@ void dump_au1000_dma_channel(unsigned int dmanr)
 	       au_readl(chan->io + DMA_BUFFER0_COUNT));
 	printk(KERN_INFO "  count1 = 0x%08x\n",
 	       au_readl(chan->io + DMA_BUFFER1_COUNT));
+=======
+	       __raw_readl(chan->io + DMA_MODE_SET));
+	printk(KERN_INFO "  addr = 0x%08x\n",
+	       __raw_readl(chan->io + DMA_PERIPHERAL_ADDR));
+	printk(KERN_INFO "  start0 = 0x%08x\n",
+	       __raw_readl(chan->io + DMA_BUFFER0_START));
+	printk(KERN_INFO "  start1 = 0x%08x\n",
+	       __raw_readl(chan->io + DMA_BUFFER1_START));
+	printk(KERN_INFO "  count0 = 0x%08x\n",
+	       __raw_readl(chan->io + DMA_BUFFER0_COUNT));
+	printk(KERN_INFO "  count1 = 0x%08x\n",
+	       __raw_readl(chan->io + DMA_BUFFER1_COUNT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -204,7 +222,12 @@ int request_au1000_dma(int dev_id, const char *dev_str,
 	}
 
 	/* fill it in */
+<<<<<<< HEAD
 	chan->io = KSEG1ADDR(AU1000_DMA_PHYS_ADDR) + i * DMA_CHANNEL_LEN;
+=======
+	chan->io = (void __iomem *)(KSEG1ADDR(AU1000_DMA_PHYS_ADDR) +
+			i * DMA_CHANNEL_LEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chan->dev_id = dev_id;
 	chan->dev_str = dev_str;
 	chan->fifo_addr = dev->fifo_addr;

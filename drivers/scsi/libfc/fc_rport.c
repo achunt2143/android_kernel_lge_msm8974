@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright(c) 2007 - 2008 Intel Corporation. All rights reserved.
  *
@@ -14,6 +15,12 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright(c) 2007 - 2008 Intel Corporation. All rights reserved.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Maintained at www.Open-FCoE.org
  */
 
@@ -44,6 +51,22 @@
  * path this potential over-use of the mutex is acceptable.
  */
 
+<<<<<<< HEAD
+=======
+/*
+ * RPORT REFERENCE COUNTING
+ *
+ * A rport reference should be taken when:
+ * - an rport is allocated
+ * - a workqueue item is scheduled
+ * - an ELS request is send
+ * The reference should be dropped when:
+ * - the workqueue function has finished
+ * - the ELS response is handled
+ * - an rport is removed
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
 #include <linux/interrupt.h>
@@ -52,11 +75,21 @@
 #include <linux/timer.h>
 #include <linux/workqueue.h>
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <asm/unaligned.h>
 
 #include <scsi/libfc.h>
 #include <scsi/fc_encode.h>
 
+=======
+#include <linux/rculist.h>
+
+#include <asm/unaligned.h>
+
+#include <scsi/libfc.h>
+
+#include "fc_encode.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "fc_libfc.h"
 
 static struct workqueue_struct *rport_event_queue;
@@ -74,8 +107,13 @@ static void fc_rport_recv_prli_req(struct fc_rport_priv *, struct fc_frame *);
 static void fc_rport_recv_prlo_req(struct fc_rport_priv *, struct fc_frame *);
 static void fc_rport_recv_logo_req(struct fc_lport *, struct fc_frame *);
 static void fc_rport_timeout(struct work_struct *);
+<<<<<<< HEAD
 static void fc_rport_error(struct fc_rport_priv *, struct fc_frame *);
 static void fc_rport_error_retry(struct fc_rport_priv *, struct fc_frame *);
+=======
+static void fc_rport_error(struct fc_rport_priv *, int);
+static void fc_rport_error_retry(struct fc_rport_priv *, int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void fc_rport_work(struct work_struct *);
 
 static const char *fc_rport_state_names[] = {
@@ -95,6 +133,7 @@ static const char *fc_rport_state_names[] = {
  * @lport:   The local port to lookup the remote port on
  * @port_id: The remote port ID to look up
  *
+<<<<<<< HEAD
  * The caller must hold either disc_mutex or rcu_read_lock().
  */
 static struct fc_rport_priv *fc_rport_lookup(const struct fc_lport *lport,
@@ -107,10 +146,32 @@ static struct fc_rport_priv *fc_rport_lookup(const struct fc_lport *lport,
 			return rdata;
 	return NULL;
 }
+=======
+ * The reference count of the fc_rport_priv structure is
+ * increased by one.
+ */
+struct fc_rport_priv *fc_rport_lookup(const struct fc_lport *lport,
+				      u32 port_id)
+{
+	struct fc_rport_priv *rdata = NULL, *tmp_rdata;
+
+	rcu_read_lock();
+	list_for_each_entry_rcu(tmp_rdata, &lport->disc.rports, peers)
+		if (tmp_rdata->ids.port_id == port_id &&
+		    kref_get_unless_zero(&tmp_rdata->kref)) {
+			rdata = tmp_rdata;
+			break;
+		}
+	rcu_read_unlock();
+	return rdata;
+}
+EXPORT_SYMBOL(fc_rport_lookup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_rport_create() - Create a new remote port
  * @lport: The local port this remote port will be associated with
+<<<<<<< HEAD
  * @ids:   The identifiers for the new remote port
  *
  * The remote port will start in the INIT state.
@@ -127,6 +188,28 @@ static struct fc_rport_priv *fc_rport_create(struct fc_lport *lport,
 		return rdata;
 
 	rdata = kzalloc(sizeof(*rdata) + lport->rport_priv_size, GFP_KERNEL);
+=======
+ * @port_id:   The identifiers for the new remote port
+ *
+ * The remote port will start in the INIT state.
+ */
+struct fc_rport_priv *fc_rport_create(struct fc_lport *lport, u32 port_id)
+{
+	struct fc_rport_priv *rdata;
+	size_t rport_priv_size = sizeof(*rdata);
+
+	lockdep_assert_held(&lport->disc.disc_mutex);
+
+	rdata = fc_rport_lookup(lport, port_id);
+	if (rdata) {
+		kref_put(&rdata->kref, fc_rport_destroy);
+		return rdata;
+	}
+
+	if (lport->rport_priv_size > 0)
+		rport_priv_size = lport->rport_priv_size;
+	rdata = kzalloc(rport_priv_size, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rdata)
 		return NULL;
 
@@ -152,18 +235,30 @@ static struct fc_rport_priv *fc_rport_create(struct fc_lport *lport,
 	}
 	return rdata;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(fc_rport_create);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_rport_destroy() - Free a remote port after last reference is released
  * @kref: The remote port's kref
  */
+<<<<<<< HEAD
 static void fc_rport_destroy(struct kref *kref)
+=======
+void fc_rport_destroy(struct kref *kref)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct fc_rport_priv *rdata;
 
 	rdata = container_of(kref, struct fc_rport_priv, kref);
 	kfree_rcu(rdata, rcu);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_rport_state() - Return a string identifying the remote port's state
@@ -222,12 +317,20 @@ static unsigned int fc_plogi_get_maxframe(struct fc_els_flogi *flp,
  * fc_rport_state_enter() - Change the state of a remote port
  * @rdata: The remote port whose state should change
  * @new:   The new state
+<<<<<<< HEAD
  *
  * Locking Note: Called with the rport lock held
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_state_enter(struct fc_rport_priv *rdata,
 				 enum fc_rport_state new)
 {
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdata->rp_state != new)
 		rdata->retries = 0;
 	rdata->rp_state = new;
@@ -236,6 +339,11 @@ static void fc_rport_state_enter(struct fc_rport_priv *rdata,
 /**
  * fc_rport_work() - Handler for remote port events in the rport_event_queue
  * @work: Handle to the remote port being dequeued
+<<<<<<< HEAD
+=======
+ *
+ * Reference counting: drops kref on return
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_work(struct work_struct *work)
 {
@@ -266,12 +374,23 @@ static void fc_rport_work(struct work_struct *work)
 		kref_get(&rdata->kref);
 		mutex_unlock(&rdata->rp_mutex);
 
+<<<<<<< HEAD
 		if (!rport)
 			rport = fc_remote_port_add(lport->host, 0, &ids);
 		if (!rport) {
 			FC_RPORT_DBG(rdata, "Failed to add the rport\n");
 			lport->tt.rport_logoff(rdata);
 			kref_put(&rdata->kref, lport->tt.rport_destroy);
+=======
+		if (!rport) {
+			FC_RPORT_DBG(rdata, "No rport!\n");
+			rport = fc_remote_port_add(lport->host, 0, &ids);
+		}
+		if (!rport) {
+			FC_RPORT_DBG(rdata, "Failed to add the rport\n");
+			fc_rport_logoff(rdata);
+			kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		mutex_lock(&rdata->rp_mutex);
@@ -297,7 +416,11 @@ static void fc_rport_work(struct work_struct *work)
 			FC_RPORT_DBG(rdata, "lld callback ev %d\n", event);
 			rdata->lld_event_callback(lport, rdata, event);
 		}
+<<<<<<< HEAD
 		kref_put(&rdata->kref, lport->tt.rport_destroy);
+=======
+		kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case RPORT_EV_FAILED:
@@ -323,7 +446,12 @@ static void fc_rport_work(struct work_struct *work)
 			FC_RPORT_DBG(rdata, "lld callback ev %d\n", event);
 			rdata->lld_event_callback(lport, rdata, event);
 		}
+<<<<<<< HEAD
 		cancel_delayed_work_sync(&rdata->retry_work);
+=======
+		if (cancel_delayed_work_sync(&rdata->retry_work))
+			kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Reset any outstanding exchanges before freeing rport.
@@ -340,13 +468,20 @@ static void fc_rport_work(struct work_struct *work)
 			fc_remote_port_delete(rport);
 		}
 
+<<<<<<< HEAD
 		mutex_lock(&lport->disc.disc_mutex);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_lock(&rdata->rp_mutex);
 		if (rdata->rp_state == RPORT_ST_DELETE) {
 			if (port_id == FC_FID_DIR_SERV) {
 				rdata->event = RPORT_EV_NONE;
 				mutex_unlock(&rdata->rp_mutex);
+<<<<<<< HEAD
 				kref_put(&rdata->kref, lport->tt.rport_destroy);
+=======
+				kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else if ((rdata->flags & FC_RP_STARTED) &&
 				   rdata->major_retries <
 				   lport->max_rport_retry_count) {
@@ -356,33 +491,66 @@ static void fc_rport_work(struct work_struct *work)
 				fc_rport_enter_flogi(rdata);
 				mutex_unlock(&rdata->rp_mutex);
 			} else {
+<<<<<<< HEAD
 				FC_RPORT_DBG(rdata, "work delete\n");
 				list_del_rcu(&rdata->peers);
 				mutex_unlock(&rdata->rp_mutex);
 				kref_put(&rdata->kref, lport->tt.rport_destroy);
+=======
+				mutex_unlock(&rdata->rp_mutex);
+				FC_RPORT_DBG(rdata, "work delete\n");
+				mutex_lock(&lport->disc.disc_mutex);
+				list_del_rcu(&rdata->peers);
+				mutex_unlock(&lport->disc.disc_mutex);
+				kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		} else {
 			/*
 			 * Re-open for events.  Reissue READY event if ready.
 			 */
 			rdata->event = RPORT_EV_NONE;
+<<<<<<< HEAD
 			if (rdata->rp_state == RPORT_ST_READY)
 				fc_rport_enter_ready(rdata);
 			mutex_unlock(&rdata->rp_mutex);
 		}
 		mutex_unlock(&lport->disc.disc_mutex);
+=======
+			if (rdata->rp_state == RPORT_ST_READY) {
+				FC_RPORT_DBG(rdata, "work reopen\n");
+				fc_rport_enter_ready(rdata);
+			}
+			mutex_unlock(&rdata->rp_mutex);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
 		mutex_unlock(&rdata->rp_mutex);
 		break;
 	}
+<<<<<<< HEAD
+=======
+	kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fc_rport_login() - Start the remote port login state machine
  * @rdata: The remote port to be logged in to
  *
+<<<<<<< HEAD
+=======
+ * Initiates the RP state machine. It is called from the LP module.
+ * This function will issue the following commands to the N_Port
+ * identified by the FC ID provided.
+ *
+ * - PLOGI
+ * - PRLI
+ * - RTV
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Locking Note: Called without the rport lock held. This
  * function will hold the rport lock, call an _enter_*
  * function and then unlock the rport.
@@ -391,10 +559,23 @@ static void fc_rport_work(struct work_struct *work)
  * If it appears we are already logged in, ADISC is used to verify
  * the setup.
  */
+<<<<<<< HEAD
 static int fc_rport_login(struct fc_rport_priv *rdata)
 {
 	mutex_lock(&rdata->rp_mutex);
 
+=======
+int fc_rport_login(struct fc_rport_priv *rdata)
+{
+	mutex_lock(&rdata->rp_mutex);
+
+	if (rdata->flags & FC_RP_STARTED) {
+		FC_RPORT_DBG(rdata, "port already started\n");
+		mutex_unlock(&rdata->rp_mutex);
+		return 0;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdata->flags |= FC_RP_STARTED;
 	switch (rdata->rp_state) {
 	case RPORT_ST_READY:
@@ -404,33 +585,61 @@ static int fc_rport_login(struct fc_rport_priv *rdata)
 	case RPORT_ST_DELETE:
 		FC_RPORT_DBG(rdata, "Restart deleted port\n");
 		break;
+<<<<<<< HEAD
 	default:
 		FC_RPORT_DBG(rdata, "Login to port\n");
 		fc_rport_enter_flogi(rdata);
 		break;
+=======
+	case RPORT_ST_INIT:
+		FC_RPORT_DBG(rdata, "Login to port\n");
+		fc_rport_enter_flogi(rdata);
+		break;
+	default:
+		FC_RPORT_DBG(rdata, "Login in progress, state %s\n",
+			     fc_rport_state(rdata));
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&rdata->rp_mutex);
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(fc_rport_login);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_rport_enter_delete() - Schedule a remote port to be deleted
  * @rdata: The remote port to be deleted
  * @event: The event to report as the reason for deletion
  *
+<<<<<<< HEAD
  * Locking Note: Called with the rport lock held.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Allow state change into DELETE only once.
  *
  * Call queue_work only if there's no event already pending.
  * Set the new event so that the old pending event will not occur.
  * Since we have the mutex, even if fc_rport_work() is already started,
  * it'll see the new event.
+<<<<<<< HEAD
+=======
+ *
+ * Reference counting: does not modify kref
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_enter_delete(struct fc_rport_priv *rdata,
 				  enum fc_rport_event event)
 {
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdata->rp_state == RPORT_ST_DELETE)
 		return;
 
@@ -438,8 +647,17 @@ static void fc_rport_enter_delete(struct fc_rport_priv *rdata,
 
 	fc_rport_state_enter(rdata, RPORT_ST_DELETE);
 
+<<<<<<< HEAD
 	if (rdata->event == RPORT_EV_NONE)
 		queue_work(rport_event_queue, &rdata->event_work);
+=======
+	if (rdata->event == RPORT_EV_NONE) {
+		kref_get(&rdata->kref);
+		if (!queue_work(rport_event_queue, &rdata->event_work))
+			kref_put(&rdata->kref, fc_rport_destroy);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdata->event = event;
 }
 
@@ -451,8 +669,16 @@ static void fc_rport_enter_delete(struct fc_rport_priv *rdata,
  * function will hold the rport lock, call an _enter_*
  * function and then unlock the rport.
  */
+<<<<<<< HEAD
 static int fc_rport_logoff(struct fc_rport_priv *rdata)
 {
+=======
+int fc_rport_logoff(struct fc_rport_priv *rdata)
+{
+	struct fc_lport *lport = rdata->local_port;
+	u32 port_id = rdata->ids.port_id;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&rdata->rp_mutex);
 
 	FC_RPORT_DBG(rdata, "Remove port\n");
@@ -462,6 +688,18 @@ static int fc_rport_logoff(struct fc_rport_priv *rdata)
 		FC_RPORT_DBG(rdata, "Port in Delete state, not removing\n");
 		goto out;
 	}
+<<<<<<< HEAD
+=======
+	/*
+	 * FC-LS states:
+	 * To explicitly Logout, the initiating Nx_Port shall terminate
+	 * other open Sequences that it initiated with the destination
+	 * Nx_Port prior to performing Logout.
+	 */
+	lport->tt.exch_mgr_reset(lport, 0, port_id);
+	lport->tt.exch_mgr_reset(lport, port_id, 0);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_rport_enter_logo(rdata);
 
 	/*
@@ -473,22 +711,43 @@ out:
 	mutex_unlock(&rdata->rp_mutex);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(fc_rport_logoff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_rport_enter_ready() - Transition to the RPORT_ST_READY state
  * @rdata: The remote port that is ready
  *
+<<<<<<< HEAD
  * Locking Note: The rport lock is expected to be held before calling
  * this routine.
  */
 static void fc_rport_enter_ready(struct fc_rport_priv *rdata)
 {
+=======
+ * Reference counting: schedules workqueue, does not modify kref
+ */
+static void fc_rport_enter_ready(struct fc_rport_priv *rdata)
+{
+	lockdep_assert_held(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_rport_state_enter(rdata, RPORT_ST_READY);
 
 	FC_RPORT_DBG(rdata, "Port is Ready\n");
 
+<<<<<<< HEAD
 	if (rdata->event == RPORT_EV_NONE)
 		queue_work(rport_event_queue, &rdata->event_work);
+=======
+	kref_get(&rdata->kref);
+	if (rdata->event == RPORT_EV_NONE &&
+	    !queue_work(rport_event_queue, &rdata->event_work))
+		kref_put(&rdata->kref, fc_rport_destroy);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdata->event = RPORT_EV_READY;
 }
 
@@ -499,6 +758,11 @@ static void fc_rport_enter_ready(struct fc_rport_priv *rdata)
  * Locking Note: Called without the rport lock held. This
  * function will hold the rport lock, call an _enter_*
  * function and then unlock the rport.
+<<<<<<< HEAD
+=======
+ *
+ * Reference counting: Drops kref on return.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_timeout(struct work_struct *work)
 {
@@ -506,6 +770,10 @@ static void fc_rport_timeout(struct work_struct *work)
 		container_of(work, struct fc_rport_priv, retry_work.work);
 
 	mutex_lock(&rdata->rp_mutex);
+<<<<<<< HEAD
+=======
+	FC_RPORT_DBG(rdata, "Port timeout, state %s\n", fc_rport_state(rdata));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (rdata->rp_state) {
 	case RPORT_ST_FLOGI:
@@ -531,11 +799,16 @@ static void fc_rport_timeout(struct work_struct *work)
 	}
 
 	mutex_unlock(&rdata->rp_mutex);
+<<<<<<< HEAD
+=======
+	kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fc_rport_error() - Error handler, called once retries have been exhausted
  * @rdata: The remote port the error is happened on
+<<<<<<< HEAD
  * @fp:	   The error code encapsulated in a frame pointer
  *
  * Locking Note: The rport lock is expected to be held before
@@ -553,10 +826,42 @@ static void fc_rport_error(struct fc_rport_priv *rdata, struct fc_frame *fp)
 		rdata->flags &= ~FC_RP_STARTED;
 		fc_rport_enter_delete(rdata, RPORT_EV_FAILED);
 		break;
+=======
+ * @err:   The error code
+ *
+ * Reference counting: does not modify kref
+ */
+static void fc_rport_error(struct fc_rport_priv *rdata, int err)
+{
+	struct fc_lport *lport = rdata->local_port;
+
+	lockdep_assert_held(&rdata->rp_mutex);
+
+	FC_RPORT_DBG(rdata, "Error %d in state %s, retries %d\n",
+		     -err, fc_rport_state(rdata), rdata->retries);
+
+	switch (rdata->rp_state) {
+	case RPORT_ST_FLOGI:
+		rdata->flags &= ~FC_RP_STARTED;
+		fc_rport_enter_delete(rdata, RPORT_EV_FAILED);
+		break;
+	case RPORT_ST_PLOGI:
+		if (lport->point_to_multipoint) {
+			rdata->flags &= ~FC_RP_STARTED;
+			fc_rport_enter_delete(rdata, RPORT_EV_FAILED);
+		} else
+			fc_rport_enter_logo(rdata);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case RPORT_ST_RTV:
 		fc_rport_enter_ready(rdata);
 		break;
 	case RPORT_ST_PRLI:
+<<<<<<< HEAD
+=======
+		fc_rport_enter_plogi(rdata);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case RPORT_ST_ADISC:
 		fc_rport_enter_logo(rdata);
 		break;
@@ -571,11 +876,16 @@ static void fc_rport_error(struct fc_rport_priv *rdata, struct fc_frame *fp)
 /**
  * fc_rport_error_retry() - Handler for remote port state retries
  * @rdata: The remote port whose state is to be retried
+<<<<<<< HEAD
  * @fp:	   The error code encapsulated in a frame pointer
+=======
+ * @err:   The error code
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * If the error was an exchange timeout retry immediately,
  * otherwise wait for E_D_TOV.
  *
+<<<<<<< HEAD
  * Locking Note: The rport lock is expected to be held before
  * calling this routine
  */
@@ -596,11 +906,39 @@ static void fc_rport_error_retry(struct fc_rport_priv *rdata,
 		if (PTR_ERR(fp) == -FC_EX_TIMEOUT)
 			delay = 0;
 		schedule_delayed_work(&rdata->retry_work, delay);
+=======
+ * Reference counting: increments kref when scheduling retry_work
+ */
+static void fc_rport_error_retry(struct fc_rport_priv *rdata, int err)
+{
+	unsigned long delay = msecs_to_jiffies(rdata->e_d_tov);
+
+	lockdep_assert_held(&rdata->rp_mutex);
+
+	/* make sure this isn't an FC_EX_CLOSED error, never retry those */
+	if (err == -FC_EX_CLOSED)
+		goto out;
+
+	if (rdata->retries < rdata->local_port->max_rport_retry_count) {
+		FC_RPORT_DBG(rdata, "Error %d in state %s, retrying\n",
+			     err, fc_rport_state(rdata));
+		rdata->retries++;
+		/* no additional delay on exchange timeouts */
+		if (err == -FC_EX_TIMEOUT)
+			delay = 0;
+		kref_get(&rdata->kref);
+		if (!schedule_delayed_work(&rdata->retry_work, delay))
+			kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 out:
+<<<<<<< HEAD
 	fc_rport_error(rdata, fp);
+=======
+	fc_rport_error(rdata, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -660,8 +998,16 @@ static void fc_rport_flogi_resp(struct fc_seq *sp, struct fc_frame *fp,
 	struct fc_lport *lport = rdata->local_port;
 	struct fc_els_flogi *flogi;
 	unsigned int r_a_tov;
+<<<<<<< HEAD
 
 	FC_RPORT_DBG(rdata, "Received a FLOGI %s\n", fc_els_resp_type(fp));
+=======
+	u8 opcode;
+	int err = 0;
+
+	FC_RPORT_DBG(rdata, "Received a FLOGI %s\n",
+		     IS_ERR(fp) ? "error" : fc_els_resp_type(fp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fp == ERR_PTR(-FC_EX_CLOSED))
 		goto put;
@@ -677,6 +1023,7 @@ static void fc_rport_flogi_resp(struct fc_seq *sp, struct fc_frame *fp,
 	}
 
 	if (IS_ERR(fp)) {
+<<<<<<< HEAD
 		fc_rport_error(rdata, fp);
 		goto err;
 	}
@@ -689,6 +1036,36 @@ static void fc_rport_flogi_resp(struct fc_seq *sp, struct fc_frame *fp,
 	flogi = fc_frame_payload_get(fp, sizeof(*flogi));
 	if (!flogi)
 		goto bad;
+=======
+		fc_rport_error(rdata, PTR_ERR(fp));
+		goto err;
+	}
+	opcode = fc_frame_payload_op(fp);
+	if (opcode == ELS_LS_RJT) {
+		struct fc_els_ls_rjt *rjt;
+
+		rjt = fc_frame_payload_get(fp, sizeof(*rjt));
+		FC_RPORT_DBG(rdata, "FLOGI ELS rejected, reason %x expl %x\n",
+			     rjt->er_reason, rjt->er_explan);
+		err = -FC_EX_ELS_RJT;
+		goto bad;
+	} else if (opcode != ELS_LS_ACC) {
+		FC_RPORT_DBG(rdata, "FLOGI ELS invalid opcode %x\n", opcode);
+		err = -FC_EX_ELS_RJT;
+		goto bad;
+	}
+	if (fc_rport_login_complete(rdata, fp)) {
+		FC_RPORT_DBG(rdata, "FLOGI failed, no login\n");
+		err = -FC_EX_INV_LOGIN;
+		goto bad;
+	}
+
+	flogi = fc_frame_payload_get(fp, sizeof(*flogi));
+	if (!flogi) {
+		err = -FC_EX_ALLOC_ERR;
+		goto bad;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r_a_tov = ntohl(flogi->fl_csp.sp_r_a_tov);
 	if (r_a_tov > rdata->r_a_tov)
 		rdata->r_a_tov = r_a_tov;
@@ -702,11 +1079,19 @@ out:
 err:
 	mutex_unlock(&rdata->rp_mutex);
 put:
+<<<<<<< HEAD
 	kref_put(&rdata->kref, rdata->local_port->tt.rport_destroy);
 	return;
 bad:
 	FC_RPORT_DBG(rdata, "Bad FLOGI response\n");
 	fc_rport_error_retry(rdata, fp);
+=======
+	kref_put(&rdata->kref, fc_rport_destroy);
+	return;
+bad:
+	FC_RPORT_DBG(rdata, "Bad FLOGI response\n");
+	fc_rport_error_retry(rdata, err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out;
 }
 
@@ -714,14 +1099,23 @@ bad:
  * fc_rport_enter_flogi() - Send a FLOGI request to the remote port for p-mp
  * @rdata: The remote port to send a FLOGI to
  *
+<<<<<<< HEAD
  * Locking Note: The rport lock is expected to be held before calling
  * this routine.
+=======
+ * Reference counting: increments kref when sending ELS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_enter_flogi(struct fc_rport_priv *rdata)
 {
 	struct fc_lport *lport = rdata->local_port;
 	struct fc_frame *fp;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lport->point_to_multipoint)
 		return fc_rport_enter_plogi(rdata);
 
@@ -732,6 +1126,7 @@ static void fc_rport_enter_flogi(struct fc_rport_priv *rdata)
 
 	fp = fc_frame_alloc(lport, sizeof(struct fc_els_flogi));
 	if (!fp)
+<<<<<<< HEAD
 		return fc_rport_error_retry(rdata, fp);
 
 	if (!lport->tt.elsct_send(lport, rdata->ids.port_id, fp, ELS_FLOGI,
@@ -740,17 +1135,36 @@ static void fc_rport_enter_flogi(struct fc_rport_priv *rdata)
 		fc_rport_error_retry(rdata, NULL);
 	else
 		kref_get(&rdata->kref);
+=======
+		return fc_rport_error_retry(rdata, -FC_EX_ALLOC_ERR);
+
+	kref_get(&rdata->kref);
+	if (!lport->tt.elsct_send(lport, rdata->ids.port_id, fp, ELS_FLOGI,
+				  fc_rport_flogi_resp, rdata,
+				  2 * lport->r_a_tov)) {
+		fc_rport_error_retry(rdata, -FC_EX_XMIT_ERR);
+		kref_put(&rdata->kref, fc_rport_destroy);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fc_rport_recv_flogi_req() - Handle Fabric Login (FLOGI) request in p-mp mode
  * @lport: The local port that received the PLOGI request
  * @rx_fp: The PLOGI request frame
+<<<<<<< HEAD
+=======
+ *
+ * Reference counting: drops kref on return
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_recv_flogi_req(struct fc_lport *lport,
 				    struct fc_frame *rx_fp)
 {
+<<<<<<< HEAD
 	struct fc_disc *disc;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc_els_flogi *flp;
 	struct fc_rport_priv *rdata;
 	struct fc_frame *fp = rx_fp;
@@ -761,9 +1175,12 @@ static void fc_rport_recv_flogi_req(struct fc_lport *lport,
 
 	FC_RPORT_ID_DBG(lport, sid, "Received FLOGI request\n");
 
+<<<<<<< HEAD
 	disc = &lport->disc;
 	mutex_lock(&disc->disc_mutex);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lport->point_to_multipoint) {
 		rjt_data.reason = ELS_RJT_UNSUP;
 		rjt_data.explan = ELS_EXPL_NONE;
@@ -777,7 +1194,11 @@ static void fc_rport_recv_flogi_req(struct fc_lport *lport,
 		goto reject;
 	}
 
+<<<<<<< HEAD
 	rdata = lport->tt.rport_lookup(lport, sid);
+=======
+	rdata = fc_rport_lookup(lport, sid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rdata) {
 		rjt_data.reason = ELS_RJT_FIP;
 		rjt_data.explan = ELS_EXPL_NOT_NEIGHBOR;
@@ -802,13 +1223,21 @@ static void fc_rport_recv_flogi_req(struct fc_lport *lport,
 		 * RPORT wouldn;t have created and 'rport_lookup' would have
 		 * failed anyway in that case.
 		 */
+<<<<<<< HEAD
 		if (lport->point_to_multipoint)
 			break;
+=======
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case RPORT_ST_DELETE:
 		mutex_unlock(&rdata->rp_mutex);
 		rjt_data.reason = ELS_RJT_FIP;
 		rjt_data.explan = ELS_EXPL_NOT_NEIGHBOR;
+<<<<<<< HEAD
 		goto reject;
+=======
+		goto reject_put;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case RPORT_ST_FLOGI:
 	case RPORT_ST_PLOGI_WAIT:
 	case RPORT_ST_PLOGI:
@@ -825,13 +1254,21 @@ static void fc_rport_recv_flogi_req(struct fc_lport *lport,
 		mutex_unlock(&rdata->rp_mutex);
 		rjt_data.reason = ELS_RJT_BUSY;
 		rjt_data.explan = ELS_EXPL_NONE;
+<<<<<<< HEAD
 		goto reject;
+=======
+		goto reject_put;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (fc_rport_login_complete(rdata, fp)) {
 		mutex_unlock(&rdata->rp_mutex);
 		rjt_data.reason = ELS_RJT_LOGIC;
 		rjt_data.explan = ELS_EXPL_NONE;
+<<<<<<< HEAD
 		goto reject;
+=======
+		goto reject_put;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	fp = fc_frame_alloc(lport, sizeof(*flp));
@@ -845,6 +1282,7 @@ static void fc_rport_recv_flogi_req(struct fc_lport *lport,
 	fc_fill_reply_hdr(fp, rx_fp, FC_RCTL_ELS_REP, 0);
 	lport->tt.frame_send(lport, fp);
 
+<<<<<<< HEAD
 	if (rdata->ids.port_name < lport->wwpn)
 		fc_rport_enter_plogi(rdata);
 	else
@@ -858,6 +1296,29 @@ out:
 reject:
 	mutex_unlock(&disc->disc_mutex);
 	lport->tt.seq_els_rsp_send(rx_fp, ELS_LS_RJT, &rjt_data);
+=======
+	/*
+	 * Do not proceed with the state machine if our
+	 * FLOGI has crossed with an FLOGI from the
+	 * remote port; wait for the FLOGI response instead.
+	 */
+	if (rdata->rp_state != RPORT_ST_FLOGI) {
+		if (rdata->ids.port_name < lport->wwpn)
+			fc_rport_enter_plogi(rdata);
+		else
+			fc_rport_state_enter(rdata, RPORT_ST_PLOGI_WAIT);
+	}
+out:
+	mutex_unlock(&rdata->rp_mutex);
+	kref_put(&rdata->kref, fc_rport_destroy);
+	fc_frame_free(rx_fp);
+	return;
+
+reject_put:
+	kref_put(&rdata->kref, fc_rport_destroy);
+reject:
+	fc_seq_els_rsp_send(rx_fp, ELS_LS_RJT, &rjt_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_frame_free(rx_fp);
 }
 
@@ -881,10 +1342,20 @@ static void fc_rport_plogi_resp(struct fc_seq *sp, struct fc_frame *fp,
 	u16 cssp_seq;
 	u8 op;
 
+<<<<<<< HEAD
 	mutex_lock(&rdata->rp_mutex);
 
 	FC_RPORT_DBG(rdata, "Received a PLOGI %s\n", fc_els_resp_type(fp));
 
+=======
+	FC_RPORT_DBG(rdata, "Received a PLOGI %s\n", fc_els_resp_type(fp));
+
+	if (fp == ERR_PTR(-FC_EX_CLOSED))
+		goto put;
+
+	mutex_lock(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdata->rp_state != RPORT_ST_PLOGI) {
 		FC_RPORT_DBG(rdata, "Received a PLOGI response, but in state "
 			     "%s\n", fc_rport_state(rdata));
@@ -894,7 +1365,11 @@ static void fc_rport_plogi_resp(struct fc_seq *sp, struct fc_frame *fp,
 	}
 
 	if (IS_ERR(fp)) {
+<<<<<<< HEAD
 		fc_rport_error_retry(rdata, fp);
+=======
+		fc_rport_error_retry(rdata, PTR_ERR(fp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
@@ -916,28 +1391,76 @@ static void fc_rport_plogi_resp(struct fc_seq *sp, struct fc_frame *fp,
 		rdata->max_seq = csp_seq;
 		rdata->maxframe_size = fc_plogi_get_maxframe(plp, lport->mfs);
 		fc_rport_enter_prli(rdata);
+<<<<<<< HEAD
 	} else
 		fc_rport_error_retry(rdata, fp);
 
+=======
+	} else {
+		struct fc_els_ls_rjt *rjt;
+
+		rjt = fc_frame_payload_get(fp, sizeof(*rjt));
+		if (!rjt)
+			FC_RPORT_DBG(rdata, "PLOGI bad response\n");
+		else
+			FC_RPORT_DBG(rdata, "PLOGI ELS rejected, reason %x expl %x\n",
+				     rjt->er_reason, rjt->er_explan);
+		fc_rport_error_retry(rdata, -FC_EX_ELS_RJT);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	fc_frame_free(fp);
 err:
 	mutex_unlock(&rdata->rp_mutex);
+<<<<<<< HEAD
 	kref_put(&rdata->kref, rdata->local_port->tt.rport_destroy);
+=======
+put:
+	kref_put(&rdata->kref, fc_rport_destroy);
+}
+
+static bool
+fc_rport_compatible_roles(struct fc_lport *lport, struct fc_rport_priv *rdata)
+{
+	if (rdata->ids.roles == FC_PORT_ROLE_UNKNOWN)
+		return true;
+	if ((rdata->ids.roles & FC_PORT_ROLE_FCP_TARGET) &&
+	    (lport->service_params & FCP_SPPF_INIT_FCN))
+		return true;
+	if ((rdata->ids.roles & FC_PORT_ROLE_FCP_INITIATOR) &&
+	    (lport->service_params & FCP_SPPF_TARG_FCN))
+		return true;
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fc_rport_enter_plogi() - Send Port Login (PLOGI) request
  * @rdata: The remote port to send a PLOGI to
  *
+<<<<<<< HEAD
  * Locking Note: The rport lock is expected to be held before calling
  * this routine.
+=======
+ * Reference counting: increments kref when sending ELS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_enter_plogi(struct fc_rport_priv *rdata)
 {
 	struct fc_lport *lport = rdata->local_port;
 	struct fc_frame *fp;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&rdata->rp_mutex);
+
+	if (!fc_rport_compatible_roles(lport, rdata)) {
+		FC_RPORT_DBG(rdata, "PLOGI suppressed for incompatible role\n");
+		fc_rport_state_enter(rdata, RPORT_ST_PLOGI_WAIT);
+		return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_RPORT_DBG(rdata, "Port entered PLOGI state from %s state\n",
 		     fc_rport_state(rdata));
 
@@ -947,17 +1470,31 @@ static void fc_rport_enter_plogi(struct fc_rport_priv *rdata)
 	fp = fc_frame_alloc(lport, sizeof(struct fc_els_flogi));
 	if (!fp) {
 		FC_RPORT_DBG(rdata, "%s frame alloc failed\n", __func__);
+<<<<<<< HEAD
 		fc_rport_error_retry(rdata, fp);
+=======
+		fc_rport_error_retry(rdata, -FC_EX_ALLOC_ERR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	rdata->e_d_tov = lport->e_d_tov;
 
+<<<<<<< HEAD
 	if (!lport->tt.elsct_send(lport, rdata->ids.port_id, fp, ELS_PLOGI,
 				  fc_rport_plogi_resp, rdata,
 				  2 * lport->r_a_tov))
 		fc_rport_error_retry(rdata, NULL);
 	else
 		kref_get(&rdata->kref);
+=======
+	kref_get(&rdata->kref);
+	if (!lport->tt.elsct_send(lport, rdata->ids.port_id, fp, ELS_PLOGI,
+				  fc_rport_plogi_resp, rdata,
+				  2 * lport->r_a_tov)) {
+		fc_rport_error_retry(rdata, -FC_EX_XMIT_ERR);
+		kref_put(&rdata->kref, fc_rport_destroy);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -979,16 +1516,32 @@ static void fc_rport_prli_resp(struct fc_seq *sp, struct fc_frame *fp,
 		struct fc_els_spp spp;
 	} *pp;
 	struct fc_els_spp temp_spp;
+<<<<<<< HEAD
+=======
+	struct fc_els_ls_rjt *rjt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fc4_prov *prov;
 	u32 roles = FC_RPORT_ROLE_UNKNOWN;
 	u32 fcp_parm = 0;
 	u8 op;
+<<<<<<< HEAD
 	u8 resp_code = 0;
 
 	mutex_lock(&rdata->rp_mutex);
 
 	FC_RPORT_DBG(rdata, "Received a PRLI %s\n", fc_els_resp_type(fp));
 
+=======
+	enum fc_els_spp_resp resp_code;
+
+	FC_RPORT_DBG(rdata, "Received a PRLI %s\n", fc_els_resp_type(fp));
+
+	if (fp == ERR_PTR(-FC_EX_CLOSED))
+		goto put;
+
+	mutex_lock(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdata->rp_state != RPORT_ST_PRLI) {
 		FC_RPORT_DBG(rdata, "Received a PRLI response, but in state "
 			     "%s\n", fc_rport_state(rdata));
@@ -998,7 +1551,11 @@ static void fc_rport_prli_resp(struct fc_seq *sp, struct fc_frame *fp,
 	}
 
 	if (IS_ERR(fp)) {
+<<<<<<< HEAD
 		fc_rport_error_retry(rdata, fp);
+=======
+		fc_rport_error_retry(rdata, PTR_ERR(fp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
@@ -1008,6 +1565,7 @@ static void fc_rport_prli_resp(struct fc_seq *sp, struct fc_frame *fp,
 	op = fc_frame_payload_op(fp);
 	if (op == ELS_LS_ACC) {
 		pp = fc_frame_payload_get(fp, sizeof(*pp));
+<<<<<<< HEAD
 		if (!pp)
 			goto out;
 
@@ -1024,6 +1582,29 @@ static void fc_rport_prli_resp(struct fc_seq *sp, struct fc_frame *fp,
 		}
 		if (pp->prli.prli_spp_len < sizeof(pp->spp))
 			goto out;
+=======
+		if (!pp) {
+			fc_rport_error_retry(rdata, -FC_EX_SEQ_ERR);
+			goto out;
+		}
+
+		resp_code = (pp->spp.spp_flags & FC_SPP_RESP_MASK);
+		FC_RPORT_DBG(rdata, "PRLI spp_flags = 0x%x spp_type 0x%x\n",
+			     pp->spp.spp_flags, pp->spp.spp_type);
+
+		rdata->spp_type = pp->spp.spp_type;
+		if (resp_code != FC_SPP_RESP_ACK) {
+			if (resp_code == FC_SPP_RESP_CONF)
+				fc_rport_error(rdata, -FC_EX_SEQ_ERR);
+			else
+				fc_rport_error_retry(rdata, -FC_EX_SEQ_ERR);
+			goto out;
+		}
+		if (pp->prli.prli_spp_len < sizeof(pp->spp)) {
+			fc_rport_error_retry(rdata, -FC_EX_SEQ_ERR);
+			goto out;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		fcp_parm = ntohl(pp->spp.spp_params);
 		if (fcp_parm & FCP_SPPF_RETRY)
@@ -1031,6 +1612,7 @@ static void fc_rport_prli_resp(struct fc_seq *sp, struct fc_frame *fp,
 		if (fcp_parm & FCP_SPPF_CONF_COMPL)
 			rdata->flags |= FC_RP_FLAGS_CONF_REQ;
 
+<<<<<<< HEAD
 		prov = fc_passive_prov[FC_TYPE_FCP];
 		if (prov) {
 			memset(&temp_spp, 0, sizeof(temp_spp));
@@ -1038,6 +1620,29 @@ static void fc_rport_prli_resp(struct fc_seq *sp, struct fc_frame *fp,
 				   &pp->spp, &temp_spp);
 		}
 
+=======
+		/*
+		 * Call prli provider if we should act as a target
+		 */
+		if (rdata->spp_type < FC_FC4_PROV_SIZE) {
+			prov = fc_passive_prov[rdata->spp_type];
+			if (prov) {
+				memset(&temp_spp, 0, sizeof(temp_spp));
+				prov->prli(rdata, pp->prli.prli_spp_len,
+					   &pp->spp, &temp_spp);
+			}
+		}
+		/*
+		 * Check if the image pair could be established
+		 */
+		if (rdata->spp_type != FC_TYPE_FCP ||
+		    !(pp->spp.spp_flags & FC_SPP_EST_IMG_PAIR)) {
+			/*
+			 * Nope; we can't use this port as a target.
+			 */
+			fcp_parm &= ~FCP_SPPF_TARG_FCN;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rdata->supported_classes = FC_COS_CLASS3;
 		if (fcp_parm & FCP_SPPF_INIT_FCN)
 			roles |= FC_RPORT_ROLE_FCP_INITIATOR;
@@ -1048,23 +1653,48 @@ static void fc_rport_prli_resp(struct fc_seq *sp, struct fc_frame *fp,
 		fc_rport_enter_rtv(rdata);
 
 	} else {
+<<<<<<< HEAD
 		FC_RPORT_DBG(rdata, "Bad ELS response for PRLI command\n");
 		fc_rport_error_retry(rdata, fp);
+=======
+		rjt = fc_frame_payload_get(fp, sizeof(*rjt));
+		if (!rjt)
+			FC_RPORT_DBG(rdata, "PRLI bad response\n");
+		else {
+			FC_RPORT_DBG(rdata, "PRLI ELS rejected, reason %x expl %x\n",
+				     rjt->er_reason, rjt->er_explan);
+			if (rjt->er_reason == ELS_RJT_UNAB &&
+			    rjt->er_explan == ELS_EXPL_PLOGI_REQD) {
+				fc_rport_enter_plogi(rdata);
+				goto out;
+			}
+		}
+		fc_rport_error_retry(rdata, FC_EX_ELS_RJT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 out:
 	fc_frame_free(fp);
 err:
 	mutex_unlock(&rdata->rp_mutex);
+<<<<<<< HEAD
 	kref_put(&rdata->kref, rdata->local_port->tt.rport_destroy);
+=======
+put:
+	kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fc_rport_enter_prli() - Send Process Login (PRLI) request
  * @rdata: The remote port to send the PRLI request to
  *
+<<<<<<< HEAD
  * Locking Note: The rport lock is expected to be held before calling
  * this routine.
+=======
+ * Reference counting: increments kref when sending ELS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_enter_prli(struct fc_rport_priv *rdata)
 {
@@ -1076,6 +1706,11 @@ static void fc_rport_enter_prli(struct fc_rport_priv *rdata)
 	struct fc_frame *fp;
 	struct fc4_prov *prov;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If the rport is one of the well known addresses
 	 * we skip PRLI and RTV and go straight to READY.
@@ -1085,6 +1720,18 @@ static void fc_rport_enter_prli(struct fc_rport_priv *rdata)
 		return;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * And if the local port does not support the initiator function
+	 * there's no need to send a PRLI, either.
+	 */
+	if (!(lport->service_params & FCP_SPPF_INIT_FCN)) {
+		    fc_rport_enter_ready(rdata);
+		    return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_RPORT_DBG(rdata, "Port entered PRLI state from %s state\n",
 		     fc_rport_state(rdata));
 
@@ -1092,7 +1739,11 @@ static void fc_rport_enter_prli(struct fc_rport_priv *rdata)
 
 	fp = fc_frame_alloc(lport, sizeof(*pp));
 	if (!fp) {
+<<<<<<< HEAD
 		fc_rport_error_retry(rdata, fp);
+=======
+		fc_rport_error_retry(rdata, -FC_EX_ALLOC_ERR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1108,6 +1759,7 @@ static void fc_rport_enter_prli(struct fc_rport_priv *rdata)
 		       fc_host_port_id(lport->host), FC_TYPE_ELS,
 		       FC_FC_FIRST_SEQ | FC_FC_END_SEQ | FC_FC_SEQ_INIT, 0);
 
+<<<<<<< HEAD
 	if (!lport->tt.exch_seq_send(lport, fp, fc_rport_prli_resp,
 				    NULL, rdata, 2 * lport->r_a_tov))
 		fc_rport_error_retry(rdata, NULL);
@@ -1117,6 +1769,18 @@ static void fc_rport_enter_prli(struct fc_rport_priv *rdata)
 
 /**
  * fc_rport_els_rtv_resp() - Handler for Request Timeout Value (RTV) responses
+=======
+	kref_get(&rdata->kref);
+	if (!fc_exch_seq_send(lport, fp, fc_rport_prli_resp,
+			      NULL, rdata, 2 * lport->r_a_tov)) {
+		fc_rport_error_retry(rdata, -FC_EX_XMIT_ERR);
+		kref_put(&rdata->kref, fc_rport_destroy);
+	}
+}
+
+/**
+ * fc_rport_rtv_resp() - Handler for Request Timeout Value (RTV) responses
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @sp:	       The sequence the RTV was on
  * @fp:	       The RTV response frame
  * @rdata_arg: The remote port that sent the RTV response
@@ -1133,10 +1797,20 @@ static void fc_rport_rtv_resp(struct fc_seq *sp, struct fc_frame *fp,
 	struct fc_rport_priv *rdata = rdata_arg;
 	u8 op;
 
+<<<<<<< HEAD
 	mutex_lock(&rdata->rp_mutex);
 
 	FC_RPORT_DBG(rdata, "Received a RTV %s\n", fc_els_resp_type(fp));
 
+=======
+	FC_RPORT_DBG(rdata, "Received a RTV %s\n", fc_els_resp_type(fp));
+
+	if (fp == ERR_PTR(-FC_EX_CLOSED))
+		goto put;
+
+	mutex_lock(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdata->rp_state != RPORT_ST_RTV) {
 		FC_RPORT_DBG(rdata, "Received a RTV response, but in state "
 			     "%s\n", fc_rport_state(rdata));
@@ -1146,7 +1820,11 @@ static void fc_rport_rtv_resp(struct fc_seq *sp, struct fc_frame *fp,
 	}
 
 	if (IS_ERR(fp)) {
+<<<<<<< HEAD
 		fc_rport_error(rdata, fp);
+=======
+		fc_rport_error(rdata, PTR_ERR(fp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
@@ -1162,13 +1840,23 @@ static void fc_rport_rtv_resp(struct fc_seq *sp, struct fc_frame *fp,
 			tov = ntohl(rtv->rtv_r_a_tov);
 			if (tov == 0)
 				tov = 1;
+<<<<<<< HEAD
 			rdata->r_a_tov = tov;
+=======
+			if (tov > rdata->r_a_tov)
+				rdata->r_a_tov = tov;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tov = ntohl(rtv->rtv_e_d_tov);
 			if (toq & FC_ELS_RTV_EDRES)
 				tov /= 1000000;
 			if (tov == 0)
 				tov = 1;
+<<<<<<< HEAD
 			rdata->e_d_tov = tov;
+=======
+			if (tov > rdata->e_d_tov)
+				rdata->e_d_tov = tov;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1178,21 +1866,35 @@ out:
 	fc_frame_free(fp);
 err:
 	mutex_unlock(&rdata->rp_mutex);
+<<<<<<< HEAD
 	kref_put(&rdata->kref, rdata->local_port->tt.rport_destroy);
+=======
+put:
+	kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fc_rport_enter_rtv() - Send Request Timeout Value (RTV) request
  * @rdata: The remote port to send the RTV request to
  *
+<<<<<<< HEAD
  * Locking Note: The rport lock is expected to be held before calling
  * this routine.
+=======
+ * Reference counting: increments kref when sending ELS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_enter_rtv(struct fc_rport_priv *rdata)
 {
 	struct fc_frame *fp;
 	struct fc_lport *lport = rdata->local_port;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_RPORT_DBG(rdata, "Port entered RTV state from %s state\n",
 		     fc_rport_state(rdata));
 
@@ -1200,6 +1902,7 @@ static void fc_rport_enter_rtv(struct fc_rport_priv *rdata)
 
 	fp = fc_frame_alloc(lport, sizeof(struct fc_els_rtv));
 	if (!fp) {
+<<<<<<< HEAD
 		fc_rport_error_retry(rdata, fp);
 		return;
 	}
@@ -1210,12 +1913,62 @@ static void fc_rport_enter_rtv(struct fc_rport_priv *rdata)
 		fc_rport_error_retry(rdata, NULL);
 	else
 		kref_get(&rdata->kref);
+=======
+		fc_rport_error_retry(rdata, -FC_EX_ALLOC_ERR);
+		return;
+	}
+
+	kref_get(&rdata->kref);
+	if (!lport->tt.elsct_send(lport, rdata->ids.port_id, fp, ELS_RTV,
+				  fc_rport_rtv_resp, rdata,
+				  2 * lport->r_a_tov)) {
+		fc_rport_error_retry(rdata, -FC_EX_XMIT_ERR);
+		kref_put(&rdata->kref, fc_rport_destroy);
+	}
+}
+
+/**
+ * fc_rport_recv_rtv_req() - Handler for Read Timeout Value (RTV) requests
+ * @rdata: The remote port that sent the RTV request
+ * @in_fp: The RTV request frame
+ */
+static void fc_rport_recv_rtv_req(struct fc_rport_priv *rdata,
+				  struct fc_frame *in_fp)
+{
+	struct fc_lport *lport = rdata->local_port;
+	struct fc_frame *fp;
+	struct fc_els_rtv_acc *rtv;
+	struct fc_seq_els_data rjt_data;
+
+	lockdep_assert_held(&rdata->rp_mutex);
+	lockdep_assert_held(&lport->lp_mutex);
+
+	FC_RPORT_DBG(rdata, "Received RTV request\n");
+
+	fp = fc_frame_alloc(lport, sizeof(*rtv));
+	if (!fp) {
+		rjt_data.reason = ELS_RJT_UNAB;
+		rjt_data.explan = ELS_EXPL_INSUF_RES;
+		fc_seq_els_rsp_send(in_fp, ELS_LS_RJT, &rjt_data);
+		goto drop;
+	}
+	rtv = fc_frame_payload_get(fp, sizeof(*rtv));
+	rtv->rtv_cmd = ELS_LS_ACC;
+	rtv->rtv_r_a_tov = htonl(lport->r_a_tov);
+	rtv->rtv_e_d_tov = htonl(lport->e_d_tov);
+	rtv->rtv_toq = 0;
+	fc_fill_reply_hdr(fp, in_fp, FC_RCTL_ELS_REP, 0);
+	lport->tt.frame_send(lport, fp);
+drop:
+	fc_frame_free(in_fp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fc_rport_logo_resp() - Handler for logout (LOGO) responses
  * @sp:	       The sequence the LOGO was on
  * @fp:	       The LOGO response frame
+<<<<<<< HEAD
  * @lport_arg: The local port
  */
 static void fc_rport_logo_resp(struct fc_seq *sp, struct fc_frame *fp,
@@ -1228,32 +1981,67 @@ static void fc_rport_logo_resp(struct fc_seq *sp, struct fc_frame *fp,
 	if (IS_ERR(fp))
 		return;
 	fc_frame_free(fp);
+=======
+ * @rdata_arg: The remote port
+ */
+static void fc_rport_logo_resp(struct fc_seq *sp, struct fc_frame *fp,
+			       void *rdata_arg)
+{
+	struct fc_rport_priv *rdata = rdata_arg;
+	struct fc_lport *lport = rdata->local_port;
+
+	FC_RPORT_ID_DBG(lport, fc_seq_exch(sp)->did,
+			"Received a LOGO %s\n", fc_els_resp_type(fp));
+	if (!IS_ERR(fp))
+		fc_frame_free(fp);
+	kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fc_rport_enter_logo() - Send a logout (LOGO) request
  * @rdata: The remote port to send the LOGO request to
  *
+<<<<<<< HEAD
  * Locking Note: The rport lock is expected to be held before calling
  * this routine.
+=======
+ * Reference counting: increments kref when sending ELS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_enter_logo(struct fc_rport_priv *rdata)
 {
 	struct fc_lport *lport = rdata->local_port;
 	struct fc_frame *fp;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_RPORT_DBG(rdata, "Port sending LOGO from %s state\n",
 		     fc_rport_state(rdata));
 
 	fp = fc_frame_alloc(lport, sizeof(struct fc_els_logo));
 	if (!fp)
 		return;
+<<<<<<< HEAD
 	(void)lport->tt.elsct_send(lport, rdata->ids.port_id, fp, ELS_LOGO,
 				   fc_rport_logo_resp, lport, 0);
 }
 
 /**
  * fc_rport_els_adisc_resp() - Handler for Address Discovery (ADISC) responses
+=======
+	kref_get(&rdata->kref);
+	if (!lport->tt.elsct_send(lport, rdata->ids.port_id, fp, ELS_LOGO,
+				  fc_rport_logo_resp, rdata, 0))
+		kref_put(&rdata->kref, fc_rport_destroy);
+}
+
+/**
+ * fc_rport_adisc_resp() - Handler for Address Discovery (ADISC) responses
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @sp:	       The sequence the ADISC response was on
  * @fp:	       The ADISC response frame
  * @rdata_arg: The remote port that sent the ADISC response
@@ -1269,10 +2057,20 @@ static void fc_rport_adisc_resp(struct fc_seq *sp, struct fc_frame *fp,
 	struct fc_els_adisc *adisc;
 	u8 op;
 
+<<<<<<< HEAD
 	mutex_lock(&rdata->rp_mutex);
 
 	FC_RPORT_DBG(rdata, "Received a ADISC response\n");
 
+=======
+	FC_RPORT_DBG(rdata, "Received a ADISC response\n");
+
+	if (fp == ERR_PTR(-FC_EX_CLOSED))
+		goto put;
+
+	mutex_lock(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdata->rp_state != RPORT_ST_ADISC) {
 		FC_RPORT_DBG(rdata, "Received a ADISC resp but in state %s\n",
 			     fc_rport_state(rdata));
@@ -1282,7 +2080,11 @@ static void fc_rport_adisc_resp(struct fc_seq *sp, struct fc_frame *fp,
 	}
 
 	if (IS_ERR(fp)) {
+<<<<<<< HEAD
 		fc_rport_error(rdata, fp);
+=======
+		fc_rport_error(rdata, PTR_ERR(fp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 	}
 
@@ -1307,21 +2109,35 @@ out:
 	fc_frame_free(fp);
 err:
 	mutex_unlock(&rdata->rp_mutex);
+<<<<<<< HEAD
 	kref_put(&rdata->kref, rdata->local_port->tt.rport_destroy);
+=======
+put:
+	kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fc_rport_enter_adisc() - Send Address Discover (ADISC) request
  * @rdata: The remote port to send the ADISC request to
  *
+<<<<<<< HEAD
  * Locking Note: The rport lock is expected to be held before calling
  * this routine.
+=======
+ * Reference counting: increments kref when sending ELS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_enter_adisc(struct fc_rport_priv *rdata)
 {
 	struct fc_lport *lport = rdata->local_port;
 	struct fc_frame *fp;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_RPORT_DBG(rdata, "sending ADISC from %s state\n",
 		     fc_rport_state(rdata));
 
@@ -1329,6 +2145,7 @@ static void fc_rport_enter_adisc(struct fc_rport_priv *rdata)
 
 	fp = fc_frame_alloc(lport, sizeof(struct fc_els_adisc));
 	if (!fp) {
+<<<<<<< HEAD
 		fc_rport_error_retry(rdata, fp);
 		return;
 	}
@@ -1338,14 +2155,29 @@ static void fc_rport_enter_adisc(struct fc_rport_priv *rdata)
 		fc_rport_error_retry(rdata, NULL);
 	else
 		kref_get(&rdata->kref);
+=======
+		fc_rport_error_retry(rdata, -FC_EX_ALLOC_ERR);
+		return;
+	}
+	kref_get(&rdata->kref);
+	if (!lport->tt.elsct_send(lport, rdata->ids.port_id, fp, ELS_ADISC,
+				  fc_rport_adisc_resp, rdata,
+				  2 * lport->r_a_tov)) {
+		fc_rport_error_retry(rdata, -FC_EX_XMIT_ERR);
+		kref_put(&rdata->kref, fc_rport_destroy);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * fc_rport_recv_adisc_req() - Handler for Address Discovery (ADISC) requests
  * @rdata: The remote port that sent the ADISC request
  * @in_fp: The ADISC request frame
+<<<<<<< HEAD
  *
  * Locking Note:  Called with the lport and rport locks held.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_recv_adisc_req(struct fc_rport_priv *rdata,
 				    struct fc_frame *in_fp)
@@ -1355,13 +2187,23 @@ static void fc_rport_recv_adisc_req(struct fc_rport_priv *rdata,
 	struct fc_els_adisc *adisc;
 	struct fc_seq_els_data rjt_data;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&rdata->rp_mutex);
+	lockdep_assert_held(&lport->lp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_RPORT_DBG(rdata, "Received ADISC request\n");
 
 	adisc = fc_frame_payload_get(in_fp, sizeof(*adisc));
 	if (!adisc) {
 		rjt_data.reason = ELS_RJT_PROT;
 		rjt_data.explan = ELS_EXPL_INV_LEN;
+<<<<<<< HEAD
 		lport->tt.seq_els_rsp_send(in_fp, ELS_LS_RJT, &rjt_data);
+=======
+		fc_seq_els_rsp_send(in_fp, ELS_LS_RJT, &rjt_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto drop;
 	}
 
@@ -1381,9 +2223,12 @@ drop:
  * fc_rport_recv_rls_req() - Handle received Read Link Status request
  * @rdata: The remote port that sent the RLS request
  * @rx_fp: The PRLI request frame
+<<<<<<< HEAD
  *
  * Locking Note: The rport lock is expected to be held before calling
  * this function.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_recv_rls_req(struct fc_rport_priv *rdata,
 				  struct fc_frame *rx_fp)
@@ -1397,6 +2242,11 @@ static void fc_rport_recv_rls_req(struct fc_rport_priv *rdata,
 	struct fc_seq_els_data rjt_data;
 	struct fc_host_statistics *hst;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_RPORT_DBG(rdata, "Received RLS request while in state %s\n",
 		     fc_rport_state(rdata));
 
@@ -1437,7 +2287,11 @@ static void fc_rport_recv_rls_req(struct fc_rport_priv *rdata,
 	goto out;
 
 out_rjt:
+<<<<<<< HEAD
 	lport->tt.seq_els_rsp_send(rx_fp, ELS_LS_RJT, &rjt_data);
+=======
+	fc_seq_els_rsp_send(rx_fp, ELS_LS_RJT, &rjt_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	fc_frame_free(rx_fp);
 }
@@ -1450,13 +2304,18 @@ out:
  * Handle incoming ELS requests that require port login.
  * The ELS opcode has already been validated by the caller.
  *
+<<<<<<< HEAD
  * Locking Note: Called with the lport lock held.
+=======
+ * Reference counting: does not modify kref
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_recv_els_req(struct fc_lport *lport, struct fc_frame *fp)
 {
 	struct fc_rport_priv *rdata;
 	struct fc_seq_els_data els_data;
 
+<<<<<<< HEAD
 	mutex_lock(&lport->disc.disc_mutex);
 	rdata = lport->tt.rport_lookup(lport, fc_frame_sid(fp));
 	if (!rdata) {
@@ -1465,6 +2324,19 @@ static void fc_rport_recv_els_req(struct fc_lport *lport, struct fc_frame *fp)
 	}
 	mutex_lock(&rdata->rp_mutex);
 	mutex_unlock(&lport->disc.disc_mutex);
+=======
+	lockdep_assert_held(&lport->lp_mutex);
+
+	rdata = fc_rport_lookup(lport, fc_frame_sid(fp));
+	if (!rdata) {
+		FC_RPORT_ID_DBG(lport, fc_frame_sid(fp),
+				"Received ELS 0x%02x from non-logged-in port\n",
+				fc_frame_payload_op(fp));
+		goto reject;
+	}
+
+	mutex_lock(&rdata->rp_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (rdata->rp_state) {
 	case RPORT_ST_PRLI:
@@ -1472,8 +2344,27 @@ static void fc_rport_recv_els_req(struct fc_lport *lport, struct fc_frame *fp)
 	case RPORT_ST_READY:
 	case RPORT_ST_ADISC:
 		break;
+<<<<<<< HEAD
 	default:
 		mutex_unlock(&rdata->rp_mutex);
+=======
+	case RPORT_ST_PLOGI:
+		if (fc_frame_payload_op(fp) == ELS_PRLI) {
+			FC_RPORT_DBG(rdata, "Reject ELS PRLI "
+				     "while in state %s\n",
+				     fc_rport_state(rdata));
+			mutex_unlock(&rdata->rp_mutex);
+			kref_put(&rdata->kref, fc_rport_destroy);
+			goto busy;
+		}
+		fallthrough;
+	default:
+		FC_RPORT_DBG(rdata,
+			     "Reject ELS 0x%02x while in state %s\n",
+			     fc_frame_payload_op(fp), fc_rport_state(rdata));
+		mutex_unlock(&rdata->rp_mutex);
+		kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto reject;
 	}
 
@@ -1488,29 +2379,60 @@ static void fc_rport_recv_els_req(struct fc_lport *lport, struct fc_frame *fp)
 		fc_rport_recv_adisc_req(rdata, fp);
 		break;
 	case ELS_RRQ:
+<<<<<<< HEAD
 		lport->tt.seq_els_rsp_send(fp, ELS_RRQ, NULL);
 		fc_frame_free(fp);
 		break;
 	case ELS_REC:
 		lport->tt.seq_els_rsp_send(fp, ELS_REC, NULL);
+=======
+		fc_seq_els_rsp_send(fp, ELS_RRQ, NULL);
+		fc_frame_free(fp);
+		break;
+	case ELS_REC:
+		fc_seq_els_rsp_send(fp, ELS_REC, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_frame_free(fp);
 		break;
 	case ELS_RLS:
 		fc_rport_recv_rls_req(rdata, fp);
 		break;
+<<<<<<< HEAD
+=======
+	case ELS_RTV:
+		fc_rport_recv_rtv_req(rdata, fp);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		fc_frame_free(fp);	/* can't happen */
 		break;
 	}
 
 	mutex_unlock(&rdata->rp_mutex);
+<<<<<<< HEAD
+=======
+	kref_put(&rdata->kref, fc_rport_destroy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 reject:
 	els_data.reason = ELS_RJT_UNAB;
 	els_data.explan = ELS_EXPL_PLOGI_REQD;
+<<<<<<< HEAD
 	lport->tt.seq_els_rsp_send(fp, ELS_LS_RJT, &els_data);
 	fc_frame_free(fp);
+=======
+	fc_seq_els_rsp_send(fp, ELS_LS_RJT, &els_data);
+	fc_frame_free(fp);
+	return;
+
+busy:
+	els_data.reason = ELS_RJT_BUSY;
+	els_data.explan = ELS_EXPL_NONE;
+	fc_seq_els_rsp_send(fp, ELS_LS_RJT, &els_data);
+	fc_frame_free(fp);
+	return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1518,12 +2440,23 @@ reject:
  * @lport: The local port that received the request
  * @fp:	   The request frame
  *
+<<<<<<< HEAD
  * Locking Note: Called with the lport lock held.
  */
 static void fc_rport_recv_req(struct fc_lport *lport, struct fc_frame *fp)
 {
 	struct fc_seq_els_data els_data;
 
+=======
+ * Reference counting: does not modify kref
+ */
+void fc_rport_recv_req(struct fc_lport *lport, struct fc_frame *fp)
+{
+	struct fc_seq_els_data els_data;
+
+	lockdep_assert_held(&lport->lp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Handle FLOGI, PLOGI and LOGO requests separately, since they
 	 * don't require prior login.
@@ -1546,23 +2479,39 @@ static void fc_rport_recv_req(struct fc_lport *lport, struct fc_frame *fp)
 	case ELS_RRQ:
 	case ELS_REC:
 	case ELS_RLS:
+<<<<<<< HEAD
+=======
+	case ELS_RTV:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_rport_recv_els_req(lport, fp);
 		break;
 	default:
 		els_data.reason = ELS_RJT_UNSUP;
 		els_data.explan = ELS_EXPL_NONE;
+<<<<<<< HEAD
 		lport->tt.seq_els_rsp_send(fp, ELS_LS_RJT, &els_data);
+=======
+		fc_seq_els_rsp_send(fp, ELS_LS_RJT, &els_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_frame_free(fp);
 		break;
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(fc_rport_recv_req);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_rport_recv_plogi_req() - Handler for Port Login (PLOGI) requests
  * @lport: The local port that received the PLOGI request
  * @rx_fp: The PLOGI request frame
  *
+<<<<<<< HEAD
  * Locking Note: The rport lock is held before calling this function.
+=======
+ * Reference counting: increments kref on return
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_recv_plogi_req(struct fc_lport *lport,
 				    struct fc_frame *rx_fp)
@@ -1574,6 +2523,11 @@ static void fc_rport_recv_plogi_req(struct fc_lport *lport,
 	struct fc_seq_els_data rjt_data;
 	u32 sid;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&lport->lp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sid = fc_frame_sid(fp);
 
 	FC_RPORT_ID_DBG(lport, sid, "Received PLOGI request\n");
@@ -1588,7 +2542,11 @@ static void fc_rport_recv_plogi_req(struct fc_lport *lport,
 
 	disc = &lport->disc;
 	mutex_lock(&disc->disc_mutex);
+<<<<<<< HEAD
 	rdata = lport->tt.rport_create(lport, sid);
+=======
+	rdata = fc_rport_create(lport, sid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rdata) {
 		mutex_unlock(&disc->disc_mutex);
 		rjt_data.reason = ELS_RJT_UNAB;
@@ -1646,6 +2604,16 @@ static void fc_rport_recv_plogi_req(struct fc_lport *lport,
 		rjt_data.explan = ELS_EXPL_NONE;
 		goto reject;
 	}
+<<<<<<< HEAD
+=======
+	if (!fc_rport_compatible_roles(lport, rdata)) {
+		FC_RPORT_DBG(rdata, "Received PLOGI for incompatible role\n");
+		mutex_unlock(&rdata->rp_mutex);
+		rjt_data.reason = ELS_RJT_LOGIC;
+		rjt_data.explan = ELS_EXPL_NONE;
+		goto reject;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Get session payload size from incoming PLOGI.
@@ -1669,7 +2637,11 @@ out:
 	return;
 
 reject:
+<<<<<<< HEAD
 	lport->tt.seq_els_rsp_send(fp, ELS_LS_RJT, &rjt_data);
+=======
+	fc_seq_els_rsp_send(fp, ELS_LS_RJT, &rjt_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_frame_free(fp);
 }
 
@@ -1677,9 +2649,12 @@ reject:
  * fc_rport_recv_prli_req() - Handler for process login (PRLI) requests
  * @rdata: The remote port that sent the PRLI request
  * @rx_fp: The PRLI request frame
+<<<<<<< HEAD
  *
  * Locking Note: The rport lock is exected to be held before calling
  * this function.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_recv_prli_req(struct fc_rport_priv *rdata,
 				   struct fc_frame *rx_fp)
@@ -1695,10 +2670,18 @@ static void fc_rport_recv_prli_req(struct fc_rport_priv *rdata,
 	unsigned int len;
 	unsigned int plen;
 	enum fc_els_spp_resp resp;
+<<<<<<< HEAD
 	enum fc_els_spp_resp passive;
 	struct fc_seq_els_data rjt_data;
 	struct fc4_prov *prov;
 
+=======
+	struct fc_seq_els_data rjt_data;
+	struct fc4_prov *prov;
+
+	lockdep_assert_held(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_RPORT_DBG(rdata, "Received PRLI request while in state %s\n",
 		     fc_rport_state(rdata));
 
@@ -1745,6 +2728,7 @@ static void fc_rport_recv_prli_req(struct fc_rport_priv *rdata,
 		resp = 0;
 
 		if (rspp->spp_type < FC_FC4_PROV_SIZE) {
+<<<<<<< HEAD
 			prov = fc_active_prov[rspp->spp_type];
 			if (prov)
 				resp = prov->prli(rdata, plen, rspp, spp);
@@ -1754,6 +2738,23 @@ static void fc_rport_recv_prli_req(struct fc_rport_priv *rdata,
 				if (!resp || passive == FC_SPP_RESP_ACK)
 					resp = passive;
 			}
+=======
+			enum fc_els_spp_resp active = 0, passive = 0;
+
+			prov = fc_active_prov[rspp->spp_type];
+			if (prov)
+				active = prov->prli(rdata, plen, rspp, spp);
+			prov = fc_passive_prov[rspp->spp_type];
+			if (prov)
+				passive = prov->prli(rdata, plen, rspp, spp);
+			if (!active || passive == FC_SPP_RESP_ACK)
+				resp = passive;
+			else
+				resp = active;
+			FC_RPORT_DBG(rdata, "PRLI rspp type %x "
+				     "active %x passive %x\n",
+				     rspp->spp_type, active, passive);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		if (!resp) {
 			if (spp->spp_flags & FC_SPP_EST_IMG_PAIR)
@@ -1774,6 +2775,7 @@ static void fc_rport_recv_prli_req(struct fc_rport_priv *rdata,
 	fc_fill_reply_hdr(fp, rx_fp, FC_RCTL_ELS_REP, 0);
 	lport->tt.frame_send(lport, fp);
 
+<<<<<<< HEAD
 	switch (rdata->rp_state) {
 	case RPORT_ST_PRLI:
 		fc_rport_enter_ready(rdata);
@@ -1781,13 +2783,19 @@ static void fc_rport_recv_prli_req(struct fc_rport_priv *rdata,
 	default:
 		break;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto drop;
 
 reject_len:
 	rjt_data.reason = ELS_RJT_PROT;
 	rjt_data.explan = ELS_EXPL_INV_LEN;
 reject:
+<<<<<<< HEAD
 	lport->tt.seq_els_rsp_send(rx_fp, ELS_LS_RJT, &rjt_data);
+=======
+	fc_seq_els_rsp_send(rx_fp, ELS_LS_RJT, &rjt_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 drop:
 	fc_frame_free(rx_fp);
 }
@@ -1796,9 +2804,12 @@ drop:
  * fc_rport_recv_prlo_req() - Handler for process logout (PRLO) requests
  * @rdata: The remote port that sent the PRLO request
  * @rx_fp: The PRLO request frame
+<<<<<<< HEAD
  *
  * Locking Note: The rport lock is exected to be held before calling
  * this function.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_recv_prlo_req(struct fc_rport_priv *rdata,
 				   struct fc_frame *rx_fp)
@@ -1815,6 +2826,11 @@ static void fc_rport_recv_prlo_req(struct fc_rport_priv *rdata,
 	unsigned int plen;
 	struct fc_seq_els_data rjt_data;
 
+<<<<<<< HEAD
+=======
+	lockdep_assert_held(&rdata->rp_mutex);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	FC_RPORT_DBG(rdata, "Received PRLO request while in state %s\n",
 		     fc_rport_state(rdata));
 
@@ -1848,7 +2864,11 @@ static void fc_rport_recv_prlo_req(struct fc_rport_priv *rdata,
 	spp->spp_type_ext = rspp->spp_type_ext;
 	spp->spp_flags = FC_SPP_RESP_ACK;
 
+<<<<<<< HEAD
 	fc_rport_enter_delete(rdata, RPORT_EV_LOGO);
+=======
+	fc_rport_enter_prli(rdata);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	fc_fill_reply_hdr(fp, rx_fp, FC_RCTL_ELS_REP, 0);
 	lport->tt.frame_send(lport, fp);
@@ -1858,7 +2878,11 @@ reject_len:
 	rjt_data.reason = ELS_RJT_PROT;
 	rjt_data.explan = ELS_EXPL_INV_LEN;
 reject:
+<<<<<<< HEAD
 	lport->tt.seq_els_rsp_send(rx_fp, ELS_LS_RJT, &rjt_data);
+=======
+	fc_seq_els_rsp_send(rx_fp, ELS_LS_RJT, &rjt_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 drop:
 	fc_frame_free(rx_fp);
 }
@@ -1868,37 +2892,61 @@ drop:
  * @lport: The local port that received the LOGO request
  * @fp:	   The LOGO request frame
  *
+<<<<<<< HEAD
  * Locking Note: The rport lock is exected to be held before calling
  * this function.
+=======
+ * Reference counting: drops kref on return
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void fc_rport_recv_logo_req(struct fc_lport *lport, struct fc_frame *fp)
 {
 	struct fc_rport_priv *rdata;
 	u32 sid;
 
+<<<<<<< HEAD
 	lport->tt.seq_els_rsp_send(fp, ELS_LS_ACC, NULL);
 
 	sid = fc_frame_sid(fp);
 
 	mutex_lock(&lport->disc.disc_mutex);
 	rdata = lport->tt.rport_lookup(lport, sid);
+=======
+	lockdep_assert_held(&lport->lp_mutex);
+
+	fc_seq_els_rsp_send(fp, ELS_LS_ACC, NULL);
+
+	sid = fc_frame_sid(fp);
+
+	rdata = fc_rport_lookup(lport, sid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdata) {
 		mutex_lock(&rdata->rp_mutex);
 		FC_RPORT_DBG(rdata, "Received LOGO request while in state %s\n",
 			     fc_rport_state(rdata));
 
+<<<<<<< HEAD
 		fc_rport_enter_delete(rdata, RPORT_EV_LOGO);
 		mutex_unlock(&rdata->rp_mutex);
 	} else
 		FC_RPORT_ID_DBG(lport, sid,
 				"Received LOGO from non-logged-in port\n");
 	mutex_unlock(&lport->disc.disc_mutex);
+=======
+		fc_rport_enter_delete(rdata, RPORT_EV_STOP);
+		mutex_unlock(&rdata->rp_mutex);
+		kref_put(&rdata->kref, fc_rport_destroy);
+	} else
+		FC_RPORT_ID_DBG(lport, sid,
+				"Received LOGO from non-logged-in port\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fc_frame_free(fp);
 }
 
 /**
  * fc_rport_flush_queue() - Flush the rport_event_queue
  */
+<<<<<<< HEAD
 static void fc_rport_flush_queue(void)
 {
 	flush_workqueue(rport_event_queue);
@@ -1934,6 +2982,13 @@ int fc_rport_init(struct fc_lport *lport)
 	return 0;
 }
 EXPORT_SYMBOL(fc_rport_init);
+=======
+void fc_rport_flush_queue(void)
+{
+	flush_workqueue(rport_event_queue);
+}
+EXPORT_SYMBOL(fc_rport_flush_queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * fc_rport_fcp_prli() - Handle incoming PRLI for the FCP initiator.
@@ -1962,7 +3017,11 @@ static int fc_rport_fcp_prli(struct fc_rport_priv *rdata, u32 spp_len,
 		rdata->flags |= FC_RP_FLAGS_RETRY;
 	rdata->supported_classes = FC_COS_CLASS3;
 
+<<<<<<< HEAD
 	if (!(lport->service_params & FC_RPORT_ROLE_FCP_INITIATOR))
+=======
+	if (!(lport->service_params & FCP_SPPF_INIT_FCN))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	spp->spp_flags |= rspp->spp_flags & FC_SPP_EST_IMG_PAIR;

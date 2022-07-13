@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xfrm4_state.c
  *
@@ -7,6 +11,7 @@
  *
  */
 
+<<<<<<< HEAD
 #include <net/ip.h>
 #include <net/xfrm.h>
 #include <linux/pfkeyv2.h>
@@ -69,10 +74,14 @@ int xfrm4_extract_header(struct sk_buff *skb)
 
 	return 0;
 }
+=======
+#include <net/xfrm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct xfrm_state_afinfo xfrm4_state_afinfo = {
 	.family			= AF_INET,
 	.proto			= IPPROTO_IPIP,
+<<<<<<< HEAD
 	.eth_proto		= htons(ETH_P_IP),
 	.owner			= THIS_MODULE,
 	.init_flags		= xfrm4_init_flags,
@@ -83,12 +92,18 @@ static struct xfrm_state_afinfo xfrm4_state_afinfo = {
 	.extract_input		= xfrm4_extract_input,
 	.extract_output		= xfrm4_extract_output,
 	.transport_finish	= xfrm4_transport_finish,
+=======
+	.output			= xfrm4_output,
+	.transport_finish	= xfrm4_transport_finish,
+	.local_error		= xfrm4_local_error,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void __init xfrm4_state_init(void)
 {
 	xfrm_state_register_afinfo(&xfrm4_state_afinfo);
 }
+<<<<<<< HEAD
 
 #if 0
 void __exit xfrm4_state_fini(void)
@@ -97,3 +112,5 @@ void __exit xfrm4_state_fini(void)
 }
 #endif  /*  0  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

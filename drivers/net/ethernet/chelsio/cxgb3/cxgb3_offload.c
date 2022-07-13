@@ -30,6 +30,11 @@
  * SOFTWARE.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/slab.h>
 #include <net/neighbour.h>
@@ -62,7 +67,12 @@ static const unsigned int MAX_ATIDS = 64 * 1024;
 static const unsigned int ATID_BASE = 0x10000;
 
 static void cxgb_neigh_update(struct neighbour *neigh);
+<<<<<<< HEAD
 static void cxgb_redirect(struct dst_entry *old, struct dst_entry *new);
+=======
+static void cxgb_redirect(struct dst_entry *old, struct dst_entry *new,
+			  struct neighbour *neigh, const void *daddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int offload_activated(struct t3cdev *tdev)
 {
@@ -179,6 +189,7 @@ static struct net_device *get_iff_from_mac(struct adapter *adapter,
 	for_each_port(adapter, i) {
 		struct net_device *dev = adapter->port[i];
 
+<<<<<<< HEAD
 		if (!memcmp(dev->dev_addr, mac, ETH_ALEN)) {
 			if (vlan && vlan != VLAN_VID_MASK) {
 				rcu_read_lock();
@@ -188,6 +199,20 @@ static struct net_device *get_iff_from_mac(struct adapter *adapter,
 				while (dev->master)
 					dev = dev->master;
 			}
+=======
+		if (ether_addr_equal(dev->dev_addr, mac)) {
+			rcu_read_lock();
+			if (vlan && vlan != VLAN_VID_MASK) {
+				dev = __vlan_find_dev_deep_rcu(dev, htons(ETH_P_8021Q), vlan);
+			} else if (netif_is_bond_slave(dev)) {
+				struct net_device *upper_dev;
+
+				while ((upper_dev =
+					netdev_master_upper_dev_get_rcu(dev)))
+					dev = upper_dev;
+			}
+			rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return dev;
 		}
 	}
@@ -230,15 +255,23 @@ static int cxgb_ulp_iscsi_ctl(struct adapter *adapter, unsigned int req,
 		if ((val >> S_MAXRXDATA) != 0x3f60) {
 			val &= (M_RXCOALESCESIZE << S_RXCOALESCESIZE);
 			val |= V_MAXRXDATA(0x3f60);
+<<<<<<< HEAD
 			printk(KERN_INFO
 				"%s, iscsi set MaxRxData to 16224 (0x%x).\n",
+=======
+			pr_info("%s, iscsi set MaxRxData to 16224 (0x%x)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				adapter->name, val);
 			t3_write_reg(adapter, A_TP_PARA_REG2, val);
 		}
 
 		/*
 		 * on rx, the iscsi pdu has to be < rx page size and the
+<<<<<<< HEAD
 		 * the max rx data length programmed in TP
+=======
+		 * max rx data length programmed in TP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		val = min(adapter->params.tp.rx_pg_size,
 			  ((t3_read_reg(adapter, A_TP_PARA_REG2)) >>
@@ -251,8 +284,12 @@ static int cxgb_ulp_iscsi_ctl(struct adapter *adapter, unsigned int req,
 		for (i = 0; i < 4; i++)
 			val |= (uiip->pgsz_factor[i] & 0xF) << (8 * i);
 		if (val && (val != t3_read_reg(adapter, A_ULPRX_ISCSI_PSZ))) {
+<<<<<<< HEAD
 			printk(KERN_INFO
 				"%s, setting iscsi pgsz 0x%x, %u,%u,%u,%u.\n",
+=======
+			pr_info("%s, setting iscsi pgsz 0x%x, %u,%u,%u,%u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				adapter->name, val, uiip->pgsz_factor[0],
 				uiip->pgsz_factor[1], uiip->pgsz_factor[2],
 				uiip->pgsz_factor[3]);
@@ -548,7 +585,11 @@ static inline void mk_tid_release(struct sk_buff *skb, unsigned int tid)
 	struct cpl_tid_release *req;
 
 	skb->priority = CPL_PRIORITY_SETUP;
+<<<<<<< HEAD
 	req = (struct cpl_tid_release *)__skb_put(skb, sizeof(*req));
+=======
+	req = __skb_put(skb, sizeof(*req));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->wr.wr_hi = htonl(V_WR_OP(FW_WROPCODE_FORWARD));
 	OPCODE_TID(req) = htonl(MK_OPCODE_TID(CPL_TID_RELEASE, tid));
 }
@@ -575,7 +616,11 @@ static void t3_process_tid_release_list(struct work_struct *work)
 		if (!skb) {
 			spin_lock_bh(&td->tid_release_lock);
 			p->ctx = (void *)td->tid_release_list;
+<<<<<<< HEAD
 			td->tid_release_list = (struct t3c_tid_entry *)p;
+=======
+			td->tid_release_list = p;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		mk_tid_release(skb, p - td->tid_maps.tid_tab);
@@ -704,8 +749,12 @@ static int do_smt_write_rpl(struct t3cdev *dev, struct sk_buff *skb)
 	struct cpl_smt_write_rpl *rpl = cplhdr(skb);
 
 	if (rpl->status != CPL_ERR_NONE)
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "Unexpected SMT_WRITE_RPL status %u for entry %u\n",
+=======
+		pr_err("Unexpected SMT_WRITE_RPL status %u for entry %u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       rpl->status, GET_TID(rpl));
 
 	return CPL_RET_BUF_DONE;
@@ -716,8 +765,12 @@ static int do_l2t_write_rpl(struct t3cdev *dev, struct sk_buff *skb)
 	struct cpl_l2t_write_rpl *rpl = cplhdr(skb);
 
 	if (rpl->status != CPL_ERR_NONE)
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "Unexpected L2T_WRITE_RPL status %u for entry %u\n",
+=======
+		pr_err("Unexpected L2T_WRITE_RPL status %u for entry %u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       rpl->status, GET_TID(rpl));
 
 	return CPL_RET_BUF_DONE;
@@ -728,8 +781,12 @@ static int do_rte_write_rpl(struct t3cdev *dev, struct sk_buff *skb)
 	struct cpl_rte_write_rpl *rpl = cplhdr(skb);
 
 	if (rpl->status != CPL_ERR_NONE)
+<<<<<<< HEAD
 		printk(KERN_ERR
 		       "Unexpected RTE_WRITE_RPL status %u for entry %u\n",
+=======
+		pr_err("Unexpected RTE_WRITE_RPL status %u for entry %u\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       rpl->status, GET_TID(rpl));
 
 	return CPL_RET_BUF_DONE;
@@ -749,7 +806,11 @@ static int do_act_open_rpl(struct t3cdev *dev, struct sk_buff *skb)
 								    t3c_tid->
 								    ctx);
 	} else {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: received clientless CPL command 0x%x\n",
+=======
+		pr_err("%s: received clientless CPL command 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       dev->name, CPL_ACT_OPEN_RPL);
 		return CPL_RET_BUF_DONE | CPL_RET_BAD_MSG;
 	}
@@ -767,7 +828,11 @@ static int do_stid_rpl(struct t3cdev *dev, struct sk_buff *skb)
 		return t3c_tid->client->handlers[p->opcode] (dev, skb,
 							     t3c_tid->ctx);
 	} else {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: received clientless CPL command 0x%x\n",
+=======
+		pr_err("%s: received clientless CPL command 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       dev->name, p->opcode);
 		return CPL_RET_BUF_DONE | CPL_RET_BAD_MSG;
 	}
@@ -785,7 +850,11 @@ static int do_hwtid_rpl(struct t3cdev *dev, struct sk_buff *skb)
 		return t3c_tid->client->handlers[p->opcode]
 		    (dev, skb, t3c_tid->ctx);
 	} else {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: received clientless CPL command 0x%x\n",
+=======
+		pr_err("%s: received clientless CPL command 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       dev->name, p->opcode);
 		return CPL_RET_BUF_DONE | CPL_RET_BAD_MSG;
 	}
@@ -812,7 +881,11 @@ static int do_cr(struct t3cdev *dev, struct sk_buff *skb)
 		return t3c_tid->client->handlers[CPL_PASS_ACCEPT_REQ]
 		    (dev, skb, t3c_tid->ctx);
 	} else {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: received clientless CPL command 0x%x\n",
+=======
+		pr_err("%s: received clientless CPL command 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       dev->name, CPL_PASS_ACCEPT_REQ);
 		return CPL_RET_BUF_DONE | CPL_RET_BAD_MSG;
 	}
@@ -906,7 +979,11 @@ static int do_act_establish(struct t3cdev *dev, struct sk_buff *skb)
 		return t3c_tid->client->handlers[CPL_ACT_ESTABLISH]
 		    (dev, skb, t3c_tid->ctx);
 	} else {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: received clientless CPL command 0x%x\n",
+=======
+		pr_err("%s: received clientless CPL command 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       dev->name, CPL_ACT_ESTABLISH);
 		return CPL_RET_BUF_DONE | CPL_RET_BAD_MSG;
 	}
@@ -952,7 +1029,11 @@ static int do_term(struct t3cdev *dev, struct sk_buff *skb)
 		return t3c_tid->client->handlers[opcode] (dev, skb,
 							  t3c_tid->ctx);
 	} else {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: received clientless CPL command 0x%x\n",
+=======
+		pr_err("%s: received clientless CPL command 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       dev->name, opcode);
 		return CPL_RET_BUF_DONE | CPL_RET_BAD_MSG;
 	}
@@ -968,8 +1049,14 @@ static int nb_callback(struct notifier_block *self, unsigned long event,
 	}
 	case (NETEVENT_REDIRECT):{
 		struct netevent_redirect *nr = ctx;
+<<<<<<< HEAD
 		cxgb_redirect(nr->old, nr->new);
 		cxgb_neigh_update(dst_get_neighbour_noref(nr->new));
+=======
+		cxgb_redirect(nr->old, nr->new, nr->neigh,
+			      nr->daddr);
+		cxgb_neigh_update(nr->neigh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	default:
@@ -987,8 +1074,12 @@ static struct notifier_block nb = {
  */
 static int do_bad_cpl(struct t3cdev *dev, struct sk_buff *skb)
 {
+<<<<<<< HEAD
 	printk(KERN_ERR "%s: received bad CPL command 0x%x\n", dev->name,
 	       *skb->data);
+=======
+	pr_err("%s: received bad CPL command 0x%x\n", dev->name, *skb->data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return CPL_RET_BUF_DONE | CPL_RET_BAD_MSG;
 }
 
@@ -1006,8 +1097,13 @@ void t3_register_cpl_handler(unsigned int opcode, cpl_handler_func h)
 	if (opcode < NUM_CPL_CMDS)
 		cpl_handlers[opcode] = h ? h : do_bad_cpl;
 	else
+<<<<<<< HEAD
 		printk(KERN_ERR "T3C: handler registration for "
 		       "opcode %x failed\n", opcode);
+=======
+		pr_err("T3C: handler registration for opcode %x failed\n",
+		       opcode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 EXPORT_SYMBOL(t3_register_cpl_handler);
@@ -1026,9 +1122,14 @@ static int process_rx(struct t3cdev *dev, struct sk_buff **skbs, int n)
 		if (ret & CPL_RET_UNKNOWN_TID) {
 			union opcode_tid *p = cplhdr(skb);
 
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: CPL message (opcode %u) had "
 			       "unknown TID %u\n", dev->name, opcode,
 			       G_TID(ntohl(p->opcode_tid)));
+=======
+			pr_err("%s: CPL message (opcode %u) had unknown TID %u\n",
+			       dev->name, opcode, G_TID(ntohl(p->opcode_tid)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 #endif
 		if (ret & CPL_RET_BUF_DONE)
@@ -1092,11 +1193,19 @@ static void set_l2t_ix(struct t3cdev *tdev, u32 tid, struct l2t_entry *e)
 
 	skb = alloc_skb(sizeof(*req), GFP_ATOMIC);
 	if (!skb) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: cannot allocate skb!\n", __func__);
 		return;
 	}
 	skb->priority = CPL_PRIORITY_CONTROL;
 	req = (struct cpl_set_tcb_field *)skb_put(skb, sizeof(*req));
+=======
+		pr_err("%s: cannot allocate skb!\n", __func__);
+		return;
+	}
+	skb->priority = CPL_PRIORITY_CONTROL;
+	req = skb_put(skb, sizeof(*req));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	req->wr.wr_hi = htonl(V_WR_OP(FW_WROPCODE_FORWARD));
 	OPCODE_TID(req) = htonl(MK_OPCODE_TID(CPL_SET_TCB_FIELD, tid));
 	req->reply = 0;
@@ -1107,10 +1216,18 @@ static void set_l2t_ix(struct t3cdev *tdev, u32 tid, struct l2t_entry *e)
 	tdev->send(tdev, skb);
 }
 
+<<<<<<< HEAD
 static void cxgb_redirect(struct dst_entry *old, struct dst_entry *new)
 {
 	struct net_device *olddev, *newdev;
 	struct neighbour *n;
+=======
+static void cxgb_redirect(struct dst_entry *old, struct dst_entry *new,
+			  struct neighbour *neigh,
+			  const void *daddr)
+{
+	struct net_device *dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tid_info *ti;
 	struct t3cdev *tdev;
 	u32 tid;
@@ -1118,6 +1235,7 @@ static void cxgb_redirect(struct dst_entry *old, struct dst_entry *new)
 	struct l2t_entry *e;
 	struct t3c_tid_entry *te;
 
+<<<<<<< HEAD
 	n = dst_get_neighbour_noref(old);
 	if (!n)
 		return;
@@ -1148,6 +1266,19 @@ static void cxgb_redirect(struct dst_entry *old, struct dst_entry *new)
 	if (!e) {
 		printk(KERN_ERR "%s: couldn't allocate new l2t entry!\n",
 		       __func__);
+=======
+	dev = neigh->dev;
+
+	if (!is_offloading(dev))
+		return;
+	tdev = dev2t3cdev(dev);
+	BUG_ON(!tdev);
+
+	/* Add new L2T entry */
+	e = t3_l2t_get(tdev, new, dev, daddr);
+	if (!e) {
+		pr_err("%s: couldn't allocate new l2t entry!\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1170,6 +1301,7 @@ static void cxgb_redirect(struct dst_entry *old, struct dst_entry *new)
 }
 
 /*
+<<<<<<< HEAD
  * Allocate a chunk of memory using kmalloc or, if that fails, vmalloc.
  * The allocated memory is cleared.
  */
@@ -1194,6 +1326,8 @@ void cxgb_free_mem(void *addr)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Allocate and initialize the TID tables.  Returns 0 on success.
  */
 static int init_tid_tabs(struct tid_info *t, unsigned int ntids,
@@ -1203,7 +1337,11 @@ static int init_tid_tabs(struct tid_info *t, unsigned int ntids,
 	unsigned long size = ntids * sizeof(*t->tid_tab) +
 	    natids * sizeof(*t->atid_tab) + nstids * sizeof(*t->stid_tab);
 
+<<<<<<< HEAD
 	t->tid_tab = cxgb_alloc_mem(size);
+=======
+	t->tid_tab = kvzalloc(size, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!t->tid_tab)
 		return -ENOMEM;
 
@@ -1239,7 +1377,11 @@ static int init_tid_tabs(struct tid_info *t, unsigned int ntids,
 
 static void free_tid_maps(struct tid_info *t)
 {
+<<<<<<< HEAD
 	cxgb_free_mem(t->tid_tab);
+=======
+	kvfree(t->tid_tab);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void add_adapter(struct adapter *adap)
@@ -1264,6 +1406,10 @@ int cxgb3_offload_activate(struct adapter *adapter)
 	struct tid_range stid_range, tid_range;
 	struct mtutab mtutab;
 	unsigned int l2t_capacity;
+<<<<<<< HEAD
+=======
+	struct l2t_data *l2td;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	t = kzalloc(sizeof(*t), GFP_KERNEL);
 	if (!t)
@@ -1279,8 +1425,13 @@ int cxgb3_offload_activate(struct adapter *adapter)
 		goto out_free;
 
 	err = -ENOMEM;
+<<<<<<< HEAD
 	RCU_INIT_POINTER(dev->l2opt, t3_init_l2t(l2t_capacity));
 	if (!L2DATA(dev))
+=======
+	l2td = t3_init_l2t(l2t_capacity);
+	if (!l2td)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free;
 
 	natids = min(tid_range.num / 2, MAX_ATIDS);
@@ -1297,6 +1448,10 @@ int cxgb3_offload_activate(struct adapter *adapter)
 	INIT_LIST_HEAD(&t->list_node);
 	t->dev = dev;
 
+<<<<<<< HEAD
+=======
+	RCU_INIT_POINTER(dev->l2opt, l2td);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	T3C_DATA(dev) = t;
 	dev->recv = process_rx;
 	dev->neigh_update = t3_l2t_update;
@@ -1312,8 +1467,12 @@ int cxgb3_offload_activate(struct adapter *adapter)
 	return 0;
 
 out_free_l2t:
+<<<<<<< HEAD
 	t3_free_l2t(L2DATA(dev));
 	RCU_INIT_POINTER(dev->l2opt, NULL);
+=======
+	kvfree(l2td);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_free:
 	kfree(t);
 	return err;
@@ -1322,7 +1481,11 @@ out_free:
 static void clean_l2_data(struct rcu_head *head)
 {
 	struct l2t_data *d = container_of(head, struct l2t_data, rcu_head);
+<<<<<<< HEAD
 	t3_free_l2t(d);
+=======
+	kvfree(d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1343,8 +1506,12 @@ void cxgb3_offload_deactivate(struct adapter *adapter)
 	rcu_read_unlock();
 	RCU_INIT_POINTER(tdev->l2opt, NULL);
 	call_rcu(&d->rcu_head, clean_l2_data);
+<<<<<<< HEAD
 	if (t->nofail_skb)
 		kfree_skb(t->nofail_skb);
+=======
+	kfree_skb(t->nofail_skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(t);
 }
 
@@ -1384,7 +1551,11 @@ static inline int adap2type(struct adapter *adapter)
 	return type;
 }
 
+<<<<<<< HEAD
 void __devinit cxgb3_adapter_ofld(struct adapter *adapter)
+=======
+void cxgb3_adapter_ofld(struct adapter *adapter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct t3cdev *tdev = &adapter->tdev;
 
@@ -1398,7 +1569,11 @@ void __devinit cxgb3_adapter_ofld(struct adapter *adapter)
 	register_tdev(tdev);
 }
 
+<<<<<<< HEAD
 void __devexit cxgb3_adapter_unofld(struct adapter *adapter)
+=======
+void cxgb3_adapter_unofld(struct adapter *adapter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct t3cdev *tdev = &adapter->tdev;
 

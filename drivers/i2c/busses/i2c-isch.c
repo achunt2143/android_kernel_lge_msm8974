@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     i2c-isch.c - Linux kernel driver for Intel SCH chipset SMBus
     - Based on i2c-piix4.c
@@ -6,6 +10,7 @@
     - Intel SCH support
     Copyright (c) 2007 - 2008 Jacob Jun Pan <jacob.jun.pan@intel.com>
 
+<<<<<<< HEAD
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License version 2 as
     published by the Free Software Foundation.
@@ -18,6 +23,8 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 /*
@@ -33,13 +40,21 @@
 #include <linux/stddef.h>
 #include <linux/ioport.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/acpi.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SCH SMBus address offsets */
 #define SMBHSTCNT	(0 + sch_smba)
 #define SMBHSTSTS	(1 + sch_smba)
+<<<<<<< HEAD
+=======
+#define SMBHSTCLK	(2 + sch_smba)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SMBHSTADD	(4 + sch_smba) /* TSA */
 #define SMBHSTCMD	(5 + sch_smba)
 #define SMBHSTDAT0	(6 + sch_smba)
@@ -58,6 +73,12 @@
 
 static unsigned short sch_smba;
 static struct i2c_adapter sch_adapter;
+<<<<<<< HEAD
+=======
+static int backbone_speed = 33000; /* backbone speed in kHz */
+module_param(backbone_speed, int, S_IRUSR | S_IWUSR);
+MODULE_PARM_DESC(backbone_speed, "Backbone speed in kHz, (default = 33000)");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Start the i2c transaction -- the i2c_access will prepare the transaction
@@ -156,6 +177,22 @@ static s32 sch_access(struct i2c_adapter *adap, u16 addr,
 		dev_dbg(&sch_adapter.dev, "SMBus busy (%02x)\n", temp);
 		return -EAGAIN;
 	}
+<<<<<<< HEAD
+=======
+	temp = inw(SMBHSTCLK);
+	if (!temp) {
+		/*
+		 * We can't determine if we have 33 or 25 MHz clock for
+		 * SMBus, so expect 33 MHz and calculate a bus clock of
+		 * 100 kHz. If we actually run at 25 MHz the bus will be
+		 * run ~75 kHz instead which should do no harm.
+		 */
+		dev_notice(&sch_adapter.dev,
+			"Clock divider uninitialized. Setting defaults\n");
+		outw(backbone_speed / (4 * 100), SMBHSTCLK);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(&sch_adapter.dev, "access size: %d %s\n", size,
 		(read_write)?"READ":"WRITE");
 	switch (size) {
@@ -245,11 +282,19 @@ static const struct i2c_algorithm smbus_algorithm = {
 
 static struct i2c_adapter sch_adapter = {
 	.owner		= THIS_MODULE,
+<<<<<<< HEAD
 	.class		= I2C_CLASS_HWMON | I2C_CLASS_SPD,
 	.algo		= &smbus_algorithm,
 };
 
 static int __devinit smbus_sch_probe(struct platform_device *dev)
+=======
+	.class		= I2C_CLASS_HWMON,
+	.algo		= &smbus_algorithm,
+};
+
+static int smbus_sch_probe(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *res;
 	int retval;
@@ -258,7 +303,12 @@ static int __devinit smbus_sch_probe(struct platform_device *dev)
 	if (!res)
 		return -EBUSY;
 
+<<<<<<< HEAD
 	if (!request_region(res->start, resource_size(res), dev->name)) {
+=======
+	if (!devm_request_region(&dev->dev, res->start, resource_size(res),
+				 dev->name)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&dev->dev, "SMBus region 0x%x already in use!\n",
 			sch_smba);
 		return -EBUSY;
@@ -275,15 +325,21 @@ static int __devinit smbus_sch_probe(struct platform_device *dev)
 		"SMBus SCH adapter at %04x", sch_smba);
 
 	retval = i2c_add_adapter(&sch_adapter);
+<<<<<<< HEAD
 	if (retval) {
 		dev_err(&dev->dev, "Couldn't register adapter!\n");
 		release_region(res->start, resource_size(res));
 		sch_smba = 0;
 	}
+=======
+	if (retval)
+		sch_smba = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
 
+<<<<<<< HEAD
 static int __devexit smbus_sch_remove(struct platform_device *pdev)
 {
 	struct resource *res;
@@ -295,15 +351,29 @@ static int __devexit smbus_sch_remove(struct platform_device *pdev)
 	}
 
 	return 0;
+=======
+static void smbus_sch_remove(struct platform_device *pdev)
+{
+	if (sch_smba) {
+		i2c_del_adapter(&sch_adapter);
+		sch_smba = 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver smbus_sch_driver = {
 	.driver = {
 		.name = "isch_smbus",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 	.probe		= smbus_sch_probe,
 	.remove		= __devexit_p(smbus_sch_remove),
+=======
+	},
+	.probe		= smbus_sch_probe,
+	.remove_new	= smbus_sch_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(smbus_sch_driver);

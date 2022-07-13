@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Serial Sound Interface (I2S) support for SH7760/SH7780
  *
@@ -9,6 +10,16 @@
  * dont forget to set IPSEL/OMSEL register bits (in your board code) to
  * enable SSI output pins!
  */
+=======
+// SPDX-License-Identifier: GPL-2.0
+//
+// Serial Sound Interface (I2S) support for SH7760/SH7780
+//
+// Copyright (c) 2007 Manuel Lauss <mano@roarinelk.homelinux.net>
+//
+// dont forget to set IPSEL/OMSEL register bits (in your board code) to
+// enable SSI output pins!
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * LIMITATIONS:
@@ -294,6 +305,7 @@ static int ssi_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBM_CFM:
 		break;
@@ -308,6 +320,22 @@ static int ssi_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		break;
 	default:
 		pr_debug("ssi: invalid master/slave configuration\n");
+=======
+	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
+	case SND_SOC_DAIFMT_BC_FC:
+		break;
+	case SND_SOC_DAIFMT_BP_FC:
+		ssicr |= CR_SCK_MASTER;
+		break;
+	case SND_SOC_DAIFMT_BC_FP:
+		ssicr |= CR_SWS_MASTER;
+		break;
+	case SND_SOC_DAIFMT_BP_FP:
+		ssicr |= CR_SWS_MASTER | CR_SCK_MASTER;
+		break;
+	default:
+		pr_debug("ssi: invalid master/secondary configuration\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -379,6 +407,7 @@ static struct snd_soc_dai_driver sh4_ssi_dai[] = {
 #endif
 };
 
+<<<<<<< HEAD
 static int __devinit sh4_soc_dai_probe(struct platform_device *pdev)
 {
 	return snd_soc_register_dais(&pdev->dev, sh4_ssi_dai,
@@ -389,20 +418,42 @@ static int __devexit sh4_soc_dai_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_dais(&pdev->dev, ARRAY_SIZE(sh4_ssi_dai));
 	return 0;
+=======
+static const struct snd_soc_component_driver sh4_ssi_component = {
+	.name			= "sh4-ssi",
+	.legacy_dai_naming	= 1,
+};
+
+static int sh4_soc_dai_probe(struct platform_device *pdev)
+{
+	return devm_snd_soc_register_component(&pdev->dev, &sh4_ssi_component,
+					       sh4_ssi_dai,
+					       ARRAY_SIZE(sh4_ssi_dai));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver sh4_ssi_driver = {
 	.driver = {
 			.name = "sh4-ssi-dai",
+<<<<<<< HEAD
 			.owner = THIS_MODULE,
 	},
 
 	.probe = sh4_soc_dai_probe,
 	.remove = __devexit_p(sh4_soc_dai_remove),
+=======
+	},
+
+	.probe = sh4_soc_dai_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(sh4_ssi_driver);
 
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("SuperH onchip SSI (I2S) audio driver");
 MODULE_AUTHOR("Manuel Lauss <mano@roarinelk.homelinux.net>");

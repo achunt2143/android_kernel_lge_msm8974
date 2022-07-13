@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* header file for DIO boards for the HP300 architecture.
  * Maybe this should handle DIO-II later?
  * The general structure of this is vaguely based on how
@@ -67,7 +71,11 @@ struct dio_bus {
 };
 
 extern struct dio_bus dio_bus;      /* Single DIO bus */
+<<<<<<< HEAD
 extern struct bus_type dio_bus_type;
+=======
+extern const struct bus_type dio_bus_type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
     /*
      *  DIO device IDs
@@ -246,11 +254,14 @@ extern int dio_create_sysfs_dev_files(struct dio_dev *);
 /* New-style probing */
 extern int dio_register_driver(struct dio_driver *);
 extern void dio_unregister_driver(struct dio_driver *);
+<<<<<<< HEAD
 extern const struct dio_device_id *dio_match_device(const struct dio_device_id *ids, const struct dio_dev *z);
 static inline struct dio_driver *dio_dev_driver(const struct dio_dev *d)
 {
     return d->driver;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define dio_resource_start(d) ((d)->resource.start)
 #define dio_resource_end(d)   ((d)->resource.end)

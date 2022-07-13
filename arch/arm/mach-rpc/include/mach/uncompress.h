@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/mach-rpc/include/mach/uncompress.h
  *
  *  Copyright (C) 1996 Russell King
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define VIDMEM ((char *)SCREEN_START)
  
@@ -76,7 +83,11 @@ int white;
 /*
  * This does not append a newline
  */
+<<<<<<< HEAD
 static void putc(int c)
+=======
+static inline void putc(int c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	extern void ll_write_char(char *, char c, char white);
 	int x,y;
@@ -118,6 +129,7 @@ static void arch_decomp_setup(void)
 	struct tag *t = (struct tag *)params;
 	unsigned int nr_pages = 0, page_size = PAGE_SIZE;
 
+<<<<<<< HEAD
 	if (t->hdr.tag == ATAG_CORE)
 	{
 		for (; t->hdr.size; t = tag_next(t))
@@ -134,13 +146,30 @@ static void arch_decomp_setup(void)
 
 			if (t->hdr.tag == ATAG_MEM)
 			{
+=======
+	if (t->hdr.tag == ATAG_CORE) {
+		for (; t->hdr.size; t = tag_next(t)) {
+			if (t->hdr.tag == ATAG_VIDEOTEXT) {
+				video_num_rows = t->u.videotext.video_lines;
+				video_num_cols = t->u.videotext.video_cols;
+				video_x = t->u.videotext.x;
+				video_y = t->u.videotext.y;
+			} else if (t->hdr.tag == ATAG_VIDEOLFB) {
+				bytes_per_char_h = t->u.videolfb.lfb_depth;
+				bytes_per_char_v = 8;
+			} else if (t->hdr.tag == ATAG_MEM) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				page_size = PAGE_SIZE;
 				nr_pages += (t->u.mem.size / PAGE_SIZE);
 			}
 		}
+<<<<<<< HEAD
 	}
 	else
 	{
+=======
+	} else {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nr_pages = params->nr_pages;
 		page_size = params->page_size;
 		video_num_rows = params->video_num_rows;
@@ -189,8 +218,11 @@ static void arch_decomp_setup(void)
 	if (nr_pages * page_size < 4096*1024) error("<4M of mem\n");
 }
 #endif
+<<<<<<< HEAD
 
 /*
  * nothing to do
  */
 #define arch_decomp_wdog()
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

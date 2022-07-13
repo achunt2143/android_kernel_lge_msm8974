@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/lib/putuser.S
  *
  *  Copyright (C) 2001 Russell King
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Idea from x86 version, (C) Copyright 1998 Linus Torvalds
  *
  * These functions have a non-standard call interface to make
@@ -36,11 +43,16 @@ ENTRY(__put_user_1)
 	check_uaccess r0, 1, r1, ip, __put_user_bad
 1: TUSER(strb)	r2, [r0]
 	mov	r0, #0
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(__put_user_1)
 
 ENTRY(__put_user_2)
 	check_uaccess r0, 2, r1, ip, __put_user_bad
+<<<<<<< HEAD
 	mov	ip, r2, lsr #8
 #ifdef CONFIG_THUMB2_KERNEL
 #ifndef __ARMEB__
@@ -51,6 +63,15 @@ ENTRY(__put_user_2)
 3: TUSER(strb)	r2, [r0, #1]
 #endif
 #else	/* !CONFIG_THUMB2_KERNEL */
+=======
+#if __LINUX_ARM_ARCH__ >= 6
+
+2: TUSER(strh)	r2, [r0]
+
+#else
+
+	mov	ip, r2, lsr #8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ARMEB__
 2: TUSER(strb)	r2, [r0], #1
 3: TUSER(strb)	ip, [r0]
@@ -58,16 +79,27 @@ ENTRY(__put_user_2)
 2: TUSER(strb)	ip, [r0], #1
 3: TUSER(strb)	r2, [r0]
 #endif
+<<<<<<< HEAD
 #endif	/* CONFIG_THUMB2_KERNEL */
 	mov	r0, #0
 	mov	pc, lr
+=======
+
+#endif /* __LINUX_ARM_ARCH__ >= 6 */
+	mov	r0, #0
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(__put_user_2)
 
 ENTRY(__put_user_4)
 	check_uaccess r0, 4, r1, ip, __put_user_bad
 4: TUSER(str)	r2, [r0]
 	mov	r0, #0
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(__put_user_4)
 
 ENTRY(__put_user_8)
@@ -80,18 +112,32 @@ ENTRY(__put_user_8)
 6: TUSER(str)	r3, [r0]
 #endif
 	mov	r0, #0
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(__put_user_8)
 
 __put_user_bad:
 	mov	r0, #-EFAULT
+<<<<<<< HEAD
 	mov	pc, lr
+=======
+	ret	lr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENDPROC(__put_user_bad)
 
 .pushsection __ex_table, "a"
 	.long	1b, __put_user_bad
 	.long	2b, __put_user_bad
+<<<<<<< HEAD
 	.long	3b, __put_user_bad
+=======
+#if __LINUX_ARM_ARCH__ < 6
+	.long	3b, __put_user_bad
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.long	4b, __put_user_bad
 	.long	5b, __put_user_bad
 	.long	6b, __put_user_bad

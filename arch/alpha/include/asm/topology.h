@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_ALPHA_TOPOLOGY_H
 #define _ASM_ALPHA_TOPOLOGY_H
 
 #include <linux/smp.h>
 #include <linux/threads.h>
+<<<<<<< HEAD
 #include <asm/machvec.h>
 
 #ifdef CONFIG_NUMA
@@ -44,6 +49,11 @@ static const struct cpumask *cpumask_of_node(int node)
 #define cpumask_of_pcibus(bus)	(cpu_online_mask)
 
 #endif /* !CONFIG_NUMA */
+=======
+#include <linux/numa.h>
+#include <asm/machvec.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # include <asm-generic/topology.h>
 
 #endif /* _ASM_ALPHA_TOPOLOGY_H */

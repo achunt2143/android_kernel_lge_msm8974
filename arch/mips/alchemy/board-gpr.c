@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * GPR board platform device registration (Au1550)
  *
  * Copyright (C) 2010 Wolfgang Grandegger <wg@denx.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -29,10 +36,21 @@
 #include <linux/leds.h>
 #include <linux/gpio.h>
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/i2c-gpio.h>
 #include <asm/bootinfo.h>
 #include <asm/reboot.h>
 #include <asm/mach-au1x00/au1000.h>
+=======
+#include <linux/platform_data/i2c-gpio.h>
+#include <linux/gpio/machine.h>
+#include <asm/bootinfo.h>
+#include <asm/idle.h>
+#include <asm/reboot.h>
+#include <asm/setup.h>
+#include <asm/mach-au1x00/au1000.h>
+#include <asm/mach-au1x00/gpio-au1000.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <prom.h>
 
 const char *get_system_type(void)
@@ -40,6 +58,7 @@ const char *get_system_type(void)
 	return "GPR";
 }
 
+<<<<<<< HEAD
 void __init prom_init(void)
 {
 	unsigned char *memsize_str;
@@ -60,6 +79,9 @@ void __init prom_init(void)
 }
 
 void prom_putchar(unsigned char c)
+=======
+void prom_putchar(char c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	alchemy_uart_putchar(AU1000_UART0_PHYS_ADDR, c);
 }
@@ -135,33 +157,57 @@ static struct mtd_partition gpr_mtd_partitions[] = {
 	{
 		.name	= "kernel",
 		.size	= 0x00200000,
+<<<<<<< HEAD
 		.offset	= 0,
+=======
+		.offset = 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name	= "rootfs",
 		.size	= 0x00800000,
+<<<<<<< HEAD
 		.offset	= MTDPART_OFS_APPEND,
+=======
+		.offset = MTDPART_OFS_APPEND,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mask_flags = MTD_WRITEABLE,
 	},
 	{
 		.name	= "config",
 		.size	= 0x00200000,
+<<<<<<< HEAD
 		.offset	= 0x01d00000,
+=======
+		.offset = 0x01d00000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name	= "yamon",
 		.size	= 0x00100000,
+<<<<<<< HEAD
 		.offset	= 0x01c00000,
+=======
+		.offset = 0x01c00000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name	= "yamon env vars",
 		.size	= 0x00040000,
+<<<<<<< HEAD
 		.offset	= MTDPART_OFS_APPEND,
+=======
+		.offset = MTDPART_OFS_APPEND,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		.name	= "kernel+rootfs",
 		.size	= 0x00a00000,
+<<<<<<< HEAD
 		.offset	= 0,
+=======
+		.offset = 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -189,7 +235,11 @@ static struct platform_device gpr_mtd_device = {
 /*
  * LEDs
  */
+<<<<<<< HEAD
 static struct gpio_led gpr_gpio_leds[] = {
+=======
+static const struct gpio_led gpr_gpio_leds[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{	/* green */
 		.name			= "gpr:green",
 		.gpio			= 4,
@@ -218,10 +268,34 @@ static struct platform_device gpr_led_devices = {
 /*
  * I2C
  */
+<<<<<<< HEAD
 static struct i2c_gpio_platform_data gpr_i2c_data = {
 	.sda_pin		= 209,
 	.sda_is_open_drain	= 1,
 	.scl_pin		= 210,
+=======
+static struct gpiod_lookup_table gpr_i2c_gpiod_table = {
+	.dev_id = "i2c-gpio",
+	.table = {
+		/*
+		 * This should be on "GPIO2" which has base at 200 so
+		 * the global numbers 209 and 210 should correspond to
+		 * local offsets 9 and 10.
+		 */
+		GPIO_LOOKUP_IDX("alchemy-gpio2", 9, NULL, 0,
+				GPIO_ACTIVE_HIGH),
+		GPIO_LOOKUP_IDX("alchemy-gpio2", 10, NULL, 1,
+				GPIO_ACTIVE_HIGH),
+	},
+};
+
+static struct i2c_gpio_platform_data gpr_i2c_data = {
+	/*
+	 * The open drain mode is hardwired somewhere or an electrical
+	 * property of the alchemy GPIO controller.
+	 */
+	.sda_is_open_drain	= 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.scl_is_open_drain	= 1,
 	.udelay			= 2,		/* ~100 kHz */
 	.timeout		= HZ,
@@ -236,7 +310,10 @@ static struct platform_device gpr_i2c_device = {
 static struct i2c_board_info gpr_i2c_info[] __initdata = {
 	{
 		I2C_BOARD_INFO("lm83", 0x18),
+<<<<<<< HEAD
 		.type = "lm83"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -296,6 +373,10 @@ arch_initcall(gpr_pci_init);
 
 static int __init gpr_dev_init(void)
 {
+<<<<<<< HEAD
+=======
+	gpiod_add_lookup_table(&gpr_i2c_gpiod_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_register_board_info(0, gpr_i2c_info, ARRAY_SIZE(gpr_i2c_info));
 
 	return platform_add_devices(gpr_devices, ARRAY_SIZE(gpr_devices));

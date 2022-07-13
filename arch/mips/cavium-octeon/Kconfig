@@ -1,7 +1,15 @@
+<<<<<<< HEAD
 if CPU_CAVIUM_OCTEON
 
 config CAVIUM_CN63XXP1
 	bool "Enable CN63XXP1 errata worarounds"
+=======
+# SPDX-License-Identifier: GPL-2.0
+if CPU_CAVIUM_OCTEON
+
+config CAVIUM_CN63XXP1
+	bool "Enable CN63XXP1 errata workarounds"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default "n"
 	help
 	  The CN63XXP1 chip requires build time workarounds to
@@ -10,6 +18,7 @@ config CAVIUM_CN63XXP1
 	  non-CN63XXP1 hardware, so it is recommended to select "n"
 	  unless it is known the workarounds are needed.
 
+<<<<<<< HEAD
 config CAVIUM_OCTEON_2ND_KERNEL
 	bool "Build the kernel to be used as a 2nd kernel on the same chip"
 	default "n"
@@ -34,6 +43,13 @@ config CAVIUM_OCTEON_CVMSEG_SIZE
 	int "Number of L1 cache lines reserved for CVMSEG memory"
 	range 0 54
 	default 1
+=======
+config CAVIUM_OCTEON_CVMSEG_SIZE
+	int "Number of L1 cache lines reserved for CVMSEG memory"
+	range 0 54
+	default 0 if !CAVIUM_OCTEON_SOC
+	default 1 if CAVIUM_OCTEON_SOC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  CVMSEG LM is a segment that accesses portions of the dcache as a
 	  local memory; the larger CVMSEG is, the smaller the cache is.
@@ -41,6 +57,13 @@ config CAVIUM_OCTEON_CVMSEG_SIZE
 	  legally range is from zero to 54 cache blocks (i.e. CVMSEG LM is
 	  between zero and 6192 bytes).
 
+<<<<<<< HEAD
+=======
+endif # CPU_CAVIUM_OCTEON
+
+if CAVIUM_OCTEON_SOC
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config CAVIUM_OCTEON_LOCK_L2
 	bool "Lock often used kernel code in the L2"
 	default "y"
@@ -82,6 +105,7 @@ config CAVIUM_OCTEON_LOCK_L2_MEMCPY
 	help
 	  Lock the kernel's implementation of memcpy() into L2.
 
+<<<<<<< HEAD
 config ARCH_SPARSEMEM_ENABLE
 	def_bool y
 	select SPARSEMEM_STATIC
@@ -99,3 +123,27 @@ config SWIOTLB
 
 
 endif # CPU_CAVIUM_OCTEON
+=======
+config CAVIUM_RESERVE32
+	int "Memory to reserve for user processes shared region (MB)"
+	range 0 1536
+	default "0"
+	help
+	  Reserve a shared memory region for user processes to use for hardware
+	  memory buffers. This is required for 32bit applications to be able to
+	  send and receive packets directly. Applications access this memory by
+	  memory mapping /dev/mem for the addresses in /proc/octeon_info. For
+	  optimal performance with HugeTLBs, keep this size an even number of
+	  megabytes.
+
+config OCTEON_ILM
+	tristate "Module to measure interrupt latency using Octeon CIU Timer"
+	help
+	  This driver is a module to measure interrupt latency using the
+	  the CIU Timers on Octeon.
+
+	  To compile this driver as a module, choose M here.  The module
+	  will be called octeon-ilm
+
+endif # CAVIUM_OCTEON_SOC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

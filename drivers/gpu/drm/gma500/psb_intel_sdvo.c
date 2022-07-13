@@ -25,6 +25,7 @@
  * Authors:
  *	Eric Anholt <eric@anholt.net>
  */
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <linux/slab.h>
@@ -38,6 +39,24 @@
 #include "psb_drv.h"
 #include "psb_intel_sdvo_regs.h"
 #include "psb_intel_reg.h"
+=======
+
+#include <linux/delay.h>
+#include <linux/i2c.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/slab.h>
+
+#include <drm/drm_crtc.h>
+#include <drm/drm_crtc_helper.h>
+#include <drm/drm_edid.h>
+#include <drm/drm_modeset_helper_vtables.h>
+
+#include "psb_drv.h"
+#include "psb_intel_drv.h"
+#include "psb_intel_reg.h"
+#include "psb_intel_sdvo_regs.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SDVO_TMDS_MASK (SDVO_OUTPUT_TMDS0 | SDVO_OUTPUT_TMDS1)
 #define SDVO_RGB_MASK  (SDVO_OUTPUT_RGB0 | SDVO_OUTPUT_RGB1)
@@ -63,10 +82,15 @@ static const char *tv_format_names[] = {
 	"SECAM_60"
 };
 
+<<<<<<< HEAD
 #define TV_FORMAT_NUM  (sizeof(tv_format_names) / sizeof(*tv_format_names))
 
 struct psb_intel_sdvo {
 	struct psb_intel_encoder base;
+=======
+struct psb_intel_sdvo {
+	struct gma_encoder base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct i2c_adapter *i2c;
 	u8 slave_addr;
@@ -126,19 +150,37 @@ struct psb_intel_sdvo {
 	bool is_lvds;
 
 	/**
+<<<<<<< HEAD
 	 * This is sdvo fixed pannel mode pointer
+=======
+	 * This is sdvo fixed panel mode pointer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	struct drm_display_mode *sdvo_lvds_fixed_mode;
 
 	/* DDC bus used by this SDVO encoder */
 	uint8_t ddc_bus;
 
+<<<<<<< HEAD
 	/* Input timings for adjusted_mode */
 	struct psb_intel_sdvo_dtd input_dtd;
 };
 
 struct psb_intel_sdvo_connector {
 	struct psb_intel_connector base;
+=======
+	u8 pixel_multiplier;
+
+	/* Input timings for adjusted_mode */
+	struct psb_intel_sdvo_dtd input_dtd;
+
+	/* Saved SDVO output states */
+	uint32_t saveSDVO; /* Can be SDVOB or SDVOC depending on sdvo_reg */
+};
+
+struct psb_intel_sdvo_connector {
+	struct gma_connector base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Mark the type of connector */
 	uint16_t output_flag;
@@ -146,7 +188,11 @@ struct psb_intel_sdvo_connector {
 	int force_audio;
 
 	/* This contains all current supported TV format */
+<<<<<<< HEAD
 	u8 tv_format_supported[TV_FORMAT_NUM];
+=======
+	u8 tv_format_supported[ARRAY_SIZE(tv_format_names)];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int   format_supported_num;
 	struct drm_property *tv_format;
 
@@ -198,13 +244,21 @@ static struct psb_intel_sdvo *to_psb_intel_sdvo(struct drm_encoder *encoder)
 
 static struct psb_intel_sdvo *intel_attached_sdvo(struct drm_connector *connector)
 {
+<<<<<<< HEAD
 	return container_of(psb_intel_attached_encoder(connector),
+=======
+	return container_of(gma_attached_encoder(connector),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    struct psb_intel_sdvo, base);
 }
 
 static struct psb_intel_sdvo_connector *to_psb_intel_sdvo_connector(struct drm_connector *connector)
 {
+<<<<<<< HEAD
 	return container_of(to_psb_intel_connector(connector), struct psb_intel_sdvo_connector, base);
+=======
+	return container_of(to_gma_connector(connector), struct psb_intel_sdvo_connector, base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool
@@ -217,7 +271,11 @@ static bool
 psb_intel_sdvo_create_enhance_property(struct psb_intel_sdvo *psb_intel_sdvo,
 				   struct psb_intel_sdvo_connector *psb_intel_sdvo_connector);
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Writes the SDVOB or SDVOC with the given value, but always writes both
  * SDVOB and SDVOC to work around apparent hardware issues (according to
  * comments in the BIOS).
@@ -226,6 +284,7 @@ static void psb_intel_sdvo_write_sdvox(struct psb_intel_sdvo *psb_intel_sdvo, u3
 {
 	struct drm_device *dev = psb_intel_sdvo->base.base.dev;
 	u32 bval = val, cval = val;
+<<<<<<< HEAD
 	int i;
 
 	if (psb_intel_sdvo->sdvo_reg == SDVOB) {
@@ -244,6 +303,28 @@ static void psb_intel_sdvo_write_sdvox(struct psb_intel_sdvo *psb_intel_sdvo, u3
 		REG_READ(SDVOB);
 		REG_WRITE(SDVOC, cval);
 		REG_READ(SDVOC);
+=======
+	int i, j;
+	int need_aux = IS_MRST(dev) ? 1 : 0;
+
+	for (j = 0; j <= need_aux; j++) {
+		if (psb_intel_sdvo->sdvo_reg == SDVOB)
+			cval = REG_READ_WITH_AUX(SDVOC, j);
+		else
+			bval = REG_READ_WITH_AUX(SDVOB, j);
+
+		/*
+		* Write the registers twice for luck. Sometimes,
+		* writing them only once doesn't appear to 'stick'.
+		* The BIOS does this too. Yay, magic
+		*/
+		for (i = 0; i < 2; i++) {
+			REG_WRITE_WITH_AUX(SDVOB, bval, j);
+			REG_READ_WITH_AUX(SDVOB, j);
+			REG_WRITE_WITH_AUX(SDVOC, cval, j);
+			REG_READ_WITH_AUX(SDVOC, j);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -394,6 +475,7 @@ static const struct _sdvo_cmd_name {
 #define IS_SDVOB(reg)	(reg == SDVOB)
 #define SDVO_NAME(svdo) (IS_SDVOB((svdo)->sdvo_reg) ? "SDVOB" : "SDVOC")
 
+<<<<<<< HEAD
 static void psb_intel_sdvo_debug_write(struct psb_intel_sdvo *psb_intel_sdvo, u8 cmd,
 				   const void *args, int args_len)
 {
@@ -414,6 +496,40 @@ static void psb_intel_sdvo_debug_write(struct psb_intel_sdvo *psb_intel_sdvo, u8
 	if (i == ARRAY_SIZE(sdvo_cmd_names))
 		DRM_LOG_KMS("(%02X)", cmd);
 	DRM_LOG_KMS("\n");
+=======
+static void psb_intel_sdvo_debug_write(struct psb_intel_sdvo *psb_intel_sdvo,
+				       u8 cmd, const void *args, int args_len)
+{
+	struct drm_device *dev = psb_intel_sdvo->base.base.dev;
+	int i, pos = 0;
+	char buffer[73];
+
+#define BUF_PRINT(args...) \
+	pos += snprintf(buffer + pos, max_t(int, sizeof(buffer) - pos, 0), args)
+
+	for (i = 0; i < args_len; i++) {
+		BUF_PRINT("%02X ", ((u8 *)args)[i]);
+	}
+
+	for (; i < 8; i++) {
+		BUF_PRINT("   ");
+	}
+
+	for (i = 0; i < ARRAY_SIZE(sdvo_cmd_names); i++) {
+		if (cmd == sdvo_cmd_names[i].cmd) {
+			BUF_PRINT("(%s)", sdvo_cmd_names[i].name);
+			break;
+		}
+	}
+
+	if (i == ARRAY_SIZE(sdvo_cmd_names))
+		BUF_PRINT("(%02X)", cmd);
+
+	drm_WARN_ON(dev, pos >= sizeof(buffer) - 1);
+#undef BUF_PRINT
+
+	DRM_DEBUG_KMS("%s: W: %02X %s\n", SDVO_NAME(psb_intel_sdvo), cmd, buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *cmd_status_names[] = {
@@ -426,6 +542,7 @@ static const char *cmd_status_names[] = {
 	"Scaling not supported"
 };
 
+<<<<<<< HEAD
 static bool psb_intel_sdvo_write_cmd(struct psb_intel_sdvo *psb_intel_sdvo, u8 cmd,
 				 const void *args, int args_len)
 {
@@ -433,6 +550,22 @@ static bool psb_intel_sdvo_write_cmd(struct psb_intel_sdvo *psb_intel_sdvo, u8 c
 	struct i2c_msg msgs[args_len + 3];
 	int i, ret;
 
+=======
+#define MAX_ARG_LEN 32
+
+static bool psb_intel_sdvo_write_cmd(struct psb_intel_sdvo *psb_intel_sdvo, u8 cmd,
+				 const void *args, int args_len)
+{
+	u8 buf[MAX_ARG_LEN*2 + 2], status;
+	struct i2c_msg msgs[MAX_ARG_LEN + 3];
+	int i, ret;
+
+	if (args_len > MAX_ARG_LEN) {
+		DRM_ERROR("Need to increase arg length\n");
+		return false;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	psb_intel_sdvo_debug_write(psb_intel_sdvo, cmd, args, args_len);
 
 	for (i = 0; i < args_len; i++) {
@@ -477,6 +610,7 @@ static bool psb_intel_sdvo_write_cmd(struct psb_intel_sdvo *psb_intel_sdvo, u8 c
 }
 
 static bool psb_intel_sdvo_read_response(struct psb_intel_sdvo *psb_intel_sdvo,
+<<<<<<< HEAD
 				     void *response, int response_len)
 {
 	u8 retry = 5;
@@ -484,6 +618,15 @@ static bool psb_intel_sdvo_read_response(struct psb_intel_sdvo *psb_intel_sdvo,
 	int i;
 
 	DRM_DEBUG_KMS("%s: R: ", SDVO_NAME(psb_intel_sdvo));
+=======
+					 void *response, int response_len)
+{
+	struct drm_device *dev = psb_intel_sdvo->base.base.dev;
+	char buffer[73];
+	int i, pos = 0;
+	u8 retry = 5;
+	u8 status;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * The documentation states that all commands will be
@@ -498,7 +641,12 @@ static bool psb_intel_sdvo_read_response(struct psb_intel_sdvo *psb_intel_sdvo,
 				  &status))
 		goto log_fail;
 
+<<<<<<< HEAD
 	while (status == SDVO_CMD_STATUS_PENDING && retry--) {
+=======
+	while ((status == SDVO_CMD_STATUS_PENDING ||
+		status == SDVO_CMD_STATUS_TARGET_NOT_SPECIFIED) && retry--) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		udelay(15);
 		if (!psb_intel_sdvo_read_byte(psb_intel_sdvo,
 					  SDVO_I2C_CMD_STATUS,
@@ -506,10 +654,20 @@ static bool psb_intel_sdvo_read_response(struct psb_intel_sdvo *psb_intel_sdvo,
 			goto log_fail;
 	}
 
+<<<<<<< HEAD
 	if (status <= SDVO_CMD_STATUS_SCALING_NOT_SUPP)
 		DRM_LOG_KMS("(%s)", cmd_status_names[status]);
 	else
 		DRM_LOG_KMS("(??? %d)", status);
+=======
+#define BUF_PRINT(args...) \
+	pos += snprintf(buffer + pos, max_t(int, sizeof(buffer) - pos, 0), args)
+
+	if (status <= SDVO_CMD_STATUS_SCALING_NOT_SUPP)
+		BUF_PRINT("(%s)", cmd_status_names[status]);
+	else
+		BUF_PRINT("(??? %d)", status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (status != SDVO_CMD_STATUS_SUCCESS)
 		goto log_fail;
@@ -520,6 +678,7 @@ static bool psb_intel_sdvo_read_response(struct psb_intel_sdvo *psb_intel_sdvo,
 					  SDVO_I2C_RETURN_0 + i,
 					  &((u8 *)response)[i]))
 			goto log_fail;
+<<<<<<< HEAD
 		DRM_LOG_KMS(" %02X", ((u8 *)response)[i]);
 	}
 	DRM_LOG_KMS("\n");
@@ -527,6 +686,20 @@ static bool psb_intel_sdvo_read_response(struct psb_intel_sdvo *psb_intel_sdvo,
 
 log_fail:
 	DRM_LOG_KMS("... failed\n");
+=======
+		BUF_PRINT(" %02X", ((u8 *)response)[i]);
+	}
+
+	drm_WARN_ON(dev, pos >= sizeof(buffer) - 1);
+#undef BUF_PRINT
+
+	DRM_DEBUG_KMS("%s: R: %s\n", SDVO_NAME(psb_intel_sdvo), buffer);
+	return true;
+
+log_fail:
+	DRM_DEBUG_KMS("%s: R: ... failed %s\n",
+		      SDVO_NAME(psb_intel_sdvo), buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return false;
 }
 
@@ -574,7 +747,11 @@ static bool psb_intel_sdvo_set_target_input(struct psb_intel_sdvo *psb_intel_sdv
 				    &targets, sizeof(targets));
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Return whether each input is trained.
  *
  * This function is making an assumption about the layout of the response,
@@ -852,6 +1029,7 @@ static bool psb_intel_sdvo_set_avi_infoframe(struct psb_intel_sdvo *psb_intel_sd
 	DRM_INFO("HDMI is not supported yet");
 
 	return false;
+<<<<<<< HEAD
 #if 0
 	struct dip_infoframe avi_if = {
 		.type = DIP_TYPE_AVI,
@@ -882,6 +1060,8 @@ static bool psb_intel_sdvo_set_avi_infoframe(struct psb_intel_sdvo *psb_intel_sd
 				    SDVO_CMD_SET_HBUF_TXRATE,
 				    &tx_rate, 1);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool psb_intel_sdvo_set_tv_format(struct psb_intel_sdvo *psb_intel_sdvo)
@@ -901,7 +1081,11 @@ static bool psb_intel_sdvo_set_tv_format(struct psb_intel_sdvo *psb_intel_sdvo)
 
 static bool
 psb_intel_sdvo_set_output_timings_from_mode(struct psb_intel_sdvo *psb_intel_sdvo,
+<<<<<<< HEAD
 					struct drm_display_mode *mode)
+=======
+					const struct drm_display_mode *mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct psb_intel_sdvo_dtd output_dtd;
 
@@ -918,7 +1102,11 @@ psb_intel_sdvo_set_output_timings_from_mode(struct psb_intel_sdvo *psb_intel_sdv
 
 static bool
 psb_intel_sdvo_set_input_timings_for_mode(struct psb_intel_sdvo *psb_intel_sdvo,
+<<<<<<< HEAD
 					struct drm_display_mode *mode,
+=======
+					const struct drm_display_mode *mode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					struct drm_display_mode *adjusted_mode)
 {
 	/* Reset the input timing to the screen. Assume always input 0. */
@@ -942,11 +1130,18 @@ psb_intel_sdvo_set_input_timings_for_mode(struct psb_intel_sdvo *psb_intel_sdvo,
 }
 
 static bool psb_intel_sdvo_mode_fixup(struct drm_encoder *encoder,
+<<<<<<< HEAD
 				  struct drm_display_mode *mode,
 				  struct drm_display_mode *adjusted_mode)
 {
 	struct psb_intel_sdvo *psb_intel_sdvo = to_psb_intel_sdvo(encoder);
 	int multiplier;
+=======
+				  const struct drm_display_mode *mode,
+				  struct drm_display_mode *adjusted_mode)
+{
+	struct psb_intel_sdvo *psb_intel_sdvo = to_psb_intel_sdvo(encoder);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We need to construct preferred input timings based on our
 	 * output timings.  To do that, we have to set the output
@@ -973,8 +1168,14 @@ static bool psb_intel_sdvo_mode_fixup(struct drm_encoder *encoder,
 	/* Make the CRTC code factor in the SDVO pixel multiplier.  The
 	 * SDVO device will factor out the multiplier during mode_set.
 	 */
+<<<<<<< HEAD
 	multiplier = psb_intel_sdvo_get_pixel_multiplier(adjusted_mode);
 	psb_intel_mode_set_pixel_multiplier(adjusted_mode, multiplier);
+=======
+	psb_intel_sdvo->pixel_multiplier =
+		psb_intel_sdvo_get_pixel_multiplier(adjusted_mode);
+	adjusted_mode->clock *= psb_intel_sdvo->pixel_multiplier;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return true;
 }
@@ -985,13 +1186,22 @@ static void psb_intel_sdvo_mode_set(struct drm_encoder *encoder,
 {
 	struct drm_device *dev = encoder->dev;
 	struct drm_crtc *crtc = encoder->crtc;
+<<<<<<< HEAD
 	struct psb_intel_crtc *psb_intel_crtc = to_psb_intel_crtc(crtc);
+=======
+	struct gma_crtc *gma_crtc = to_gma_crtc(crtc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psb_intel_sdvo *psb_intel_sdvo = to_psb_intel_sdvo(encoder);
 	u32 sdvox;
 	struct psb_intel_sdvo_in_out_map in_out;
 	struct psb_intel_sdvo_dtd input_dtd;
+<<<<<<< HEAD
 	int pixel_multiplier = psb_intel_mode_get_pixel_multiplier(adjusted_mode);
 	int rate;
+=======
+	int rate;
+	int need_aux = IS_MRST(dev) ? 1 : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!mode)
 		return;
@@ -1047,7 +1257,11 @@ static void psb_intel_sdvo_mode_set(struct drm_encoder *encoder,
 
 	(void) psb_intel_sdvo_set_input_timing(psb_intel_sdvo, &input_dtd);
 
+<<<<<<< HEAD
 	switch (pixel_multiplier) {
+=======
+	switch (psb_intel_sdvo->pixel_multiplier) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 	case 1: rate = SDVO_CLOCK_RATE_MULT_1X; break;
 	case 2: rate = SDVO_CLOCK_RATE_MULT_2X; break;
@@ -1057,7 +1271,15 @@ static void psb_intel_sdvo_mode_set(struct drm_encoder *encoder,
 		return;
 
 	/* Set the SDVO control regs. */
+<<<<<<< HEAD
 	sdvox = REG_READ(psb_intel_sdvo->sdvo_reg);
+=======
+	if (need_aux)
+		sdvox = REG_READ_AUX(psb_intel_sdvo->sdvo_reg);
+	else
+		sdvox = REG_READ(psb_intel_sdvo->sdvo_reg);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (psb_intel_sdvo->sdvo_reg) {
 	case SDVOB:
 		sdvox &= SDVOB_PRESERVE_MASK;
@@ -1068,7 +1290,11 @@ static void psb_intel_sdvo_mode_set(struct drm_encoder *encoder,
 	}
 	sdvox |= (9 << 19) | SDVO_BORDER_ENABLE;
 
+<<<<<<< HEAD
 	if (psb_intel_crtc->pipe == 1)
+=======
+	if (gma_crtc->pipe == 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sdvox |= SDVO_PIPE_B_SELECT;
 	if (psb_intel_sdvo->has_hdmi_audio)
 		sdvox |= SDVO_AUDIO_ENABLE;
@@ -1087,6 +1313,11 @@ static void psb_intel_sdvo_dpms(struct drm_encoder *encoder, int mode)
 	struct drm_device *dev = encoder->dev;
 	struct psb_intel_sdvo *psb_intel_sdvo = to_psb_intel_sdvo(encoder);
 	u32 temp;
+<<<<<<< HEAD
+=======
+	int i;
+	int need_aux = IS_MRST(dev) ? 1 : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (mode) {
 	case DRM_MODE_DPMS_ON:
@@ -1105,13 +1336,22 @@ static void psb_intel_sdvo_dpms(struct drm_encoder *encoder, int mode)
 			psb_intel_sdvo_set_encoder_power_state(psb_intel_sdvo, mode);
 
 		if (mode == DRM_MODE_DPMS_OFF) {
+<<<<<<< HEAD
 			temp = REG_READ(psb_intel_sdvo->sdvo_reg);
+=======
+			if (need_aux)
+				temp = REG_READ_AUX(psb_intel_sdvo->sdvo_reg);
+			else
+				temp = REG_READ(psb_intel_sdvo->sdvo_reg);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((temp & SDVO_ENABLE) != 0) {
 				psb_intel_sdvo_write_sdvox(psb_intel_sdvo, temp & ~SDVO_ENABLE);
 			}
 		}
 	} else {
 		bool input1, input2;
+<<<<<<< HEAD
 		int i;
 		u8 status;
 
@@ -1120,6 +1360,20 @@ static void psb_intel_sdvo_dpms(struct drm_encoder *encoder, int mode)
 			psb_intel_sdvo_write_sdvox(psb_intel_sdvo, temp | SDVO_ENABLE);
 		for (i = 0; i < 2; i++)
 			psb_intel_wait_for_vblank(dev);
+=======
+		u8 status;
+
+		if (need_aux)
+			temp = REG_READ_AUX(psb_intel_sdvo->sdvo_reg);
+		else
+			temp = REG_READ(psb_intel_sdvo->sdvo_reg);
+
+		if ((temp & SDVO_ENABLE) == 0)
+			psb_intel_sdvo_write_sdvox(psb_intel_sdvo, temp | SDVO_ENABLE);
+
+		for (i = 0; i < 2; i++)
+			gma_wait_for_vblank(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		status = psb_intel_sdvo_get_trained_inputs(psb_intel_sdvo, &input1, &input2);
 		/* Warn if the device reported failure to sync.
@@ -1138,10 +1392,16 @@ static void psb_intel_sdvo_dpms(struct drm_encoder *encoder, int mode)
 	return;
 }
 
+<<<<<<< HEAD
 static int psb_intel_sdvo_mode_valid(struct drm_connector *connector,
 				 struct drm_display_mode *mode)
 {
 	struct drm_psb_private *dev_priv = connector->dev->dev_private;
+=======
+static enum drm_mode_status psb_intel_sdvo_mode_valid(struct drm_connector *connector,
+				 struct drm_display_mode *mode)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psb_intel_sdvo *psb_intel_sdvo = intel_attached_sdvo(connector);
 
 	if (mode->flags & DRM_MODE_FLAG_DBLSCAN)
@@ -1161,11 +1421,14 @@ static int psb_intel_sdvo_mode_valid(struct drm_connector *connector,
 			return MODE_PANEL;
 	}
 
+<<<<<<< HEAD
 	/* We assume worst case scenario of 32 bpp here, since we don't know */
 	if ((ALIGN(mode->hdisplay * 4, 64) * mode->vdisplay) >
 	    dev_priv->vram_stolen_size)
 		return MODE_MEM;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return MODE_OK;
 }
 
@@ -1206,6 +1469,7 @@ static bool psb_intel_sdvo_get_capabilities(struct psb_intel_sdvo *psb_intel_sdv
 	return true;
 }
 
+<<<<<<< HEAD
 /* No use! */
 #if 0
 struct drm_connector* psb_intel_sdvo_find(struct drm_device *dev, int sdvoB)
@@ -1275,6 +1539,8 @@ void psb_intel_sdvo_set_hotplug(struct drm_connector *connector, int on)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool
 psb_intel_sdvo_multifunc_encoder(struct psb_intel_sdvo *psb_intel_sdvo)
 {
@@ -1294,11 +1560,18 @@ psb_intel_sdvo_get_edid(struct drm_connector *connector)
 static struct edid *
 psb_intel_sdvo_get_analog_edid(struct drm_connector *connector)
 {
+<<<<<<< HEAD
 	struct drm_psb_private *dev_priv = connector->dev->dev_private;
 
 	return drm_get_edid(connector,
 			    &dev_priv->gmbus[dev_priv->crt_ddc_pin].adapter);
 	return NULL;
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(connector->dev);
+
+	return drm_get_edid(connector,
+			    &dev_priv->gmbus[dev_priv->crt_ddc_pin].adapter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static enum drm_connector_status
@@ -1349,7 +1622,10 @@ psb_intel_sdvo_hdmi_sink_detect(struct drm_connector *connector)
 			}
 		} else
 			status = connector_status_disconnected;
+<<<<<<< HEAD
 		connector->display_info.raw_edid = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(edid);
 	}
 
@@ -1410,7 +1686,10 @@ psb_intel_sdvo_detect(struct drm_connector *connector, bool force)
 				ret = connector_status_disconnected;
 			else
 				ret = connector_status_connected;
+<<<<<<< HEAD
 			connector->display_info.raw_edid = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(edid);
 		} else
 			ret = connector_status_connected;
@@ -1455,11 +1734,18 @@ static void psb_intel_sdvo_get_ddc_modes(struct drm_connector *connector)
 		bool connector_is_digital = !!IS_TMDS(psb_intel_sdvo_connector);
 
 		if (connector_is_digital == monitor_is_digital) {
+<<<<<<< HEAD
 			drm_mode_connector_update_edid_property(connector, edid);
 			drm_add_edid_modes(connector, edid);
 		}
 
 		connector->display_info.raw_edid = NULL;
+=======
+			drm_connector_update_edid_property(connector, edid);
+			drm_add_edid_modes(connector, edid);
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(edid);
 	}
 }
@@ -1567,7 +1853,11 @@ static void psb_intel_sdvo_get_tv_modes(struct drm_connector *connector)
 static void psb_intel_sdvo_get_lvds_modes(struct drm_connector *connector)
 {
 	struct psb_intel_sdvo *psb_intel_sdvo = intel_attached_sdvo(connector);
+<<<<<<< HEAD
 	struct drm_psb_private *dev_priv = connector->dev->dev_private;
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(connector->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct drm_display_mode *newmode;
 
 	/*
@@ -1621,6 +1911,7 @@ static int psb_intel_sdvo_get_modes(struct drm_connector *connector)
 	return !list_empty(&connector->probed_modes);
 }
 
+<<<<<<< HEAD
 static void
 psb_intel_sdvo_destroy_enhance_property(struct drm_connector *connector)
 {
@@ -1675,6 +1966,14 @@ static void psb_intel_sdvo_destroy(struct drm_connector *connector)
 	drm_sysfs_connector_remove(connector);
 	drm_connector_cleanup(connector);
 	kfree(connector);
+=======
+static void psb_intel_sdvo_destroy(struct drm_connector *connector)
+{
+	struct gma_connector *gma_connector = to_gma_connector(connector);
+
+	drm_connector_cleanup(connector);
+	kfree(gma_connector);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool psb_intel_sdvo_detect_hdmi_audio(struct drm_connector *connector)
@@ -1700,12 +1999,20 @@ psb_intel_sdvo_set_property(struct drm_connector *connector,
 {
 	struct psb_intel_sdvo *psb_intel_sdvo = intel_attached_sdvo(connector);
 	struct psb_intel_sdvo_connector *psb_intel_sdvo_connector = to_psb_intel_sdvo_connector(connector);
+<<<<<<< HEAD
 	struct drm_psb_private *dev_priv = connector->dev->dev_private;
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(connector->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t temp_value;
 	uint8_t cmd;
 	int ret;
 
+<<<<<<< HEAD
 	ret = drm_connector_property_set_value(connector, property, val);
+=======
+	ret = drm_object_property_set_value(&connector->base, property, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret)
 		return ret;
 
@@ -1748,7 +2055,11 @@ psb_intel_sdvo_set_property(struct drm_connector *connector,
 	}
 
 	if (property == psb_intel_sdvo_connector->tv_format) {
+<<<<<<< HEAD
 		if (val >= TV_FORMAT_NUM)
+=======
+		if (val >= ARRAY_SIZE(tv_format_names))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 
 		if (psb_intel_sdvo->tv_format_index ==
@@ -1760,7 +2071,11 @@ psb_intel_sdvo_set_property(struct drm_connector *connector,
 	} else if (IS_TV_OR_LVDS(psb_intel_sdvo_connector)) {
 		temp_value = val;
 		if (psb_intel_sdvo_connector->left == property) {
+<<<<<<< HEAD
 			drm_connector_property_set_value(connector,
+=======
+			drm_object_property_set_value(&connector->base,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							 psb_intel_sdvo_connector->right, val);
 			if (psb_intel_sdvo_connector->left_margin == temp_value)
 				return 0;
@@ -1772,7 +2087,11 @@ psb_intel_sdvo_set_property(struct drm_connector *connector,
 			cmd = SDVO_CMD_SET_OVERSCAN_H;
 			goto set_value;
 		} else if (psb_intel_sdvo_connector->right == property) {
+<<<<<<< HEAD
 			drm_connector_property_set_value(connector,
+=======
+			drm_object_property_set_value(&connector->base,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							 psb_intel_sdvo_connector->left, val);
 			if (psb_intel_sdvo_connector->right_margin == temp_value)
 				return 0;
@@ -1784,7 +2103,11 @@ psb_intel_sdvo_set_property(struct drm_connector *connector,
 			cmd = SDVO_CMD_SET_OVERSCAN_H;
 			goto set_value;
 		} else if (psb_intel_sdvo_connector->top == property) {
+<<<<<<< HEAD
 			drm_connector_property_set_value(connector,
+=======
+			drm_object_property_set_value(&connector->base,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							 psb_intel_sdvo_connector->bottom, val);
 			if (psb_intel_sdvo_connector->top_margin == temp_value)
 				return 0;
@@ -1796,7 +2119,11 @@ psb_intel_sdvo_set_property(struct drm_connector *connector,
 			cmd = SDVO_CMD_SET_OVERSCAN_V;
 			goto set_value;
 		} else if (psb_intel_sdvo_connector->bottom == property) {
+<<<<<<< HEAD
 			drm_connector_property_set_value(connector,
+=======
+			drm_object_property_set_value(&connector->base,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							 psb_intel_sdvo_connector->top, val);
 			if (psb_intel_sdvo_connector->bottom_margin == temp_value)
 				return 0;
@@ -1834,19 +2161,57 @@ done:
 	if (psb_intel_sdvo->base.base.crtc) {
 		struct drm_crtc *crtc = psb_intel_sdvo->base.base.crtc;
 		drm_crtc_helper_set_mode(crtc, &crtc->mode, crtc->x,
+<<<<<<< HEAD
 					 crtc->y, crtc->fb);
+=======
+					 crtc->y, crtc->primary->fb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 #undef CHECK_PROPERTY
 }
 
+<<<<<<< HEAD
 static const struct drm_encoder_helper_funcs psb_intel_sdvo_helper_funcs = {
 	.dpms = psb_intel_sdvo_dpms,
 	.mode_fixup = psb_intel_sdvo_mode_fixup,
 	.prepare = psb_intel_encoder_prepare,
 	.mode_set = psb_intel_sdvo_mode_set,
 	.commit = psb_intel_encoder_commit,
+=======
+static void psb_intel_sdvo_save(struct drm_connector *connector)
+{
+	struct drm_device *dev = connector->dev;
+	struct gma_encoder *gma_encoder = gma_attached_encoder(connector);
+	struct psb_intel_sdvo *sdvo = to_psb_intel_sdvo(&gma_encoder->base);
+
+	sdvo->saveSDVO = REG_READ(sdvo->sdvo_reg);
+}
+
+static void psb_intel_sdvo_restore(struct drm_connector *connector)
+{
+	struct drm_device *dev = connector->dev;
+	struct drm_encoder *encoder = &gma_attached_encoder(connector)->base;
+	struct psb_intel_sdvo *sdvo = to_psb_intel_sdvo(encoder);
+	struct drm_crtc *crtc = encoder->crtc;
+
+	REG_WRITE(sdvo->sdvo_reg, sdvo->saveSDVO);
+
+	/* Force a full mode set on the crtc. We're supposed to have the
+	   mode_config lock already. */
+	if (connector->status == connector_status_connected)
+		drm_crtc_helper_set_mode(crtc, &crtc->mode, crtc->x, crtc->y,
+					 NULL);
+}
+
+static const struct drm_encoder_helper_funcs psb_intel_sdvo_helper_funcs = {
+	.dpms = psb_intel_sdvo_dpms,
+	.mode_fixup = psb_intel_sdvo_mode_fixup,
+	.prepare = gma_encoder_prepare,
+	.mode_set = psb_intel_sdvo_mode_set,
+	.commit = gma_encoder_commit,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct drm_connector_funcs psb_intel_sdvo_connector_funcs = {
@@ -1860,7 +2225,11 @@ static const struct drm_connector_funcs psb_intel_sdvo_connector_funcs = {
 static const struct drm_connector_helper_funcs psb_intel_sdvo_connector_helper_funcs = {
 	.get_modes = psb_intel_sdvo_get_modes,
 	.mode_valid = psb_intel_sdvo_mode_valid,
+<<<<<<< HEAD
 	.best_encoder = psb_intel_best_encoder,
+=======
+	.best_encoder = gma_best_encoder,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void psb_intel_sdvo_enc_destroy(struct drm_encoder *encoder)
@@ -1872,7 +2241,11 @@ static void psb_intel_sdvo_enc_destroy(struct drm_encoder *encoder)
 				 psb_intel_sdvo->sdvo_lvds_fixed_mode);
 
 	i2c_del_adapter(&psb_intel_sdvo->ddc);
+<<<<<<< HEAD
 	psb_intel_encoder_destroy(encoder);
+=======
+	gma_encoder_destroy(encoder);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct drm_encoder_funcs psb_intel_sdvo_enc_funcs = {
@@ -1923,7 +2296,11 @@ psb_intel_sdvo_guess_ddc_bus(struct psb_intel_sdvo *sdvo)
 #endif
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Choose the appropriate DDC bus for control bus switch command for this
  * SDVO output based on the controlled output.
  *
@@ -1983,7 +2360,11 @@ psb_intel_sdvo_is_hdmi_connector(struct psb_intel_sdvo *psb_intel_sdvo, int devi
 static u8
 psb_intel_sdvo_get_slave_addr(struct drm_device *dev, int sdvo_reg)
 {
+<<<<<<< HEAD
 	struct drm_psb_private *dev_priv = dev->dev_private;
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sdvo_device_mapping *my_mapping, *other_mapping;
 
 	if (IS_SDVOB(sdvo_reg)) {
@@ -2033,8 +2414,15 @@ psb_intel_sdvo_connector_init(struct psb_intel_sdvo_connector *connector,
 	connector->base.base.doublescan_allowed = 0;
 	connector->base.base.display_info.subpixel_order = SubPixelHorizontalRGB;
 
+<<<<<<< HEAD
 	psb_intel_connector_attach_encoder(&connector->base, &encoder->base);
 	drm_sysfs_connector_add(&connector->base.base);
+=======
+	connector->base.save = psb_intel_sdvo_save;
+	connector->base.restore = psb_intel_sdvo_restore;
+
+	gma_connector_attach_encoder(&connector->base, &encoder->base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -2044,8 +2432,12 @@ psb_intel_sdvo_add_hdmi_properties(struct psb_intel_sdvo_connector *connector)
 	struct drm_device *dev = connector->base.base.dev;
 
 	intel_attach_force_audio_property(&connector->base.base);
+<<<<<<< HEAD
 	if (INTEL_INFO(dev)->gen >= 4 && IS_MOBILE(dev))
 		intel_attach_broadcast_rgb_property(&connector->base.base);
+=======
+	intel_attach_broadcast_rgb_property(&connector->base.base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*/
 }
 
@@ -2054,7 +2446,11 @@ psb_intel_sdvo_dvi_init(struct psb_intel_sdvo *psb_intel_sdvo, int device)
 {
 	struct drm_encoder *encoder = &psb_intel_sdvo->base.base;
 	struct drm_connector *connector;
+<<<<<<< HEAD
 	struct psb_intel_connector *intel_connector;
+=======
+	struct gma_connector *intel_connector;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psb_intel_sdvo_connector *psb_intel_sdvo_connector;
 
 	psb_intel_sdvo_connector = kzalloc(sizeof(struct psb_intel_sdvo_connector), GFP_KERNEL);
@@ -2094,7 +2490,11 @@ psb_intel_sdvo_tv_init(struct psb_intel_sdvo *psb_intel_sdvo, int type)
 {
 	struct drm_encoder *encoder = &psb_intel_sdvo->base.base;
 	struct drm_connector *connector;
+<<<<<<< HEAD
 	struct psb_intel_connector *intel_connector;
+=======
+	struct gma_connector *intel_connector;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psb_intel_sdvo_connector *psb_intel_sdvo_connector;
 
 	psb_intel_sdvo_connector = kzalloc(sizeof(struct psb_intel_sdvo_connector), GFP_KERNEL);
@@ -2133,7 +2533,11 @@ psb_intel_sdvo_analog_init(struct psb_intel_sdvo *psb_intel_sdvo, int device)
 {
 	struct drm_encoder *encoder = &psb_intel_sdvo->base.base;
 	struct drm_connector *connector;
+<<<<<<< HEAD
 	struct psb_intel_connector *intel_connector;
+=======
+	struct gma_connector *intel_connector;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psb_intel_sdvo_connector *psb_intel_sdvo_connector;
 
 	psb_intel_sdvo_connector = kzalloc(sizeof(struct psb_intel_sdvo_connector), GFP_KERNEL);
@@ -2167,7 +2571,11 @@ psb_intel_sdvo_lvds_init(struct psb_intel_sdvo *psb_intel_sdvo, int device)
 {
 	struct drm_encoder *encoder = &psb_intel_sdvo->base.base;
 	struct drm_connector *connector;
+<<<<<<< HEAD
 	struct psb_intel_connector *intel_connector;
+=======
+	struct gma_connector *intel_connector;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psb_intel_sdvo_connector *psb_intel_sdvo_connector;
 
 	psb_intel_sdvo_connector = kzalloc(sizeof(struct psb_intel_sdvo_connector), GFP_KERNEL);
@@ -2281,7 +2689,11 @@ static bool psb_intel_sdvo_tv_create_property(struct psb_intel_sdvo *psb_intel_s
 		return false;
 
 	psb_intel_sdvo_connector->format_supported_num = 0;
+<<<<<<< HEAD
 	for (i = 0 ; i < TV_FORMAT_NUM; i++)
+=======
+	for (i = 0 ; i < ARRAY_SIZE(tv_format_names); i++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (format_map & (1 << i))
 			psb_intel_sdvo_connector->tv_format_supported[psb_intel_sdvo_connector->format_supported_num++] = i;
 
@@ -2294,11 +2706,19 @@ static bool psb_intel_sdvo_tv_create_property(struct psb_intel_sdvo *psb_intel_s
 
 	for (i = 0; i < psb_intel_sdvo_connector->format_supported_num; i++)
 		drm_property_add_enum(
+<<<<<<< HEAD
 				psb_intel_sdvo_connector->tv_format, i,
 				i, tv_format_names[psb_intel_sdvo_connector->tv_format_supported[i]]);
 
 	psb_intel_sdvo->tv_format_index = psb_intel_sdvo_connector->tv_format_supported[0];
 	drm_connector_attach_property(&psb_intel_sdvo_connector->base.base,
+=======
+				psb_intel_sdvo_connector->tv_format,
+				i, tv_format_names[psb_intel_sdvo_connector->tv_format_supported[i]]);
+
+	psb_intel_sdvo->tv_format_index = psb_intel_sdvo_connector->tv_format_supported[0];
+	drm_object_attach_property(&psb_intel_sdvo_connector->base.base.base,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      psb_intel_sdvo_connector->tv_format, 0);
 	return true;
 
@@ -2314,7 +2734,11 @@ static bool psb_intel_sdvo_tv_create_property(struct psb_intel_sdvo *psb_intel_s
 		psb_intel_sdvo_connector->name = \
 			drm_property_create_range(dev, 0, #name, 0, data_value[0]); \
 		if (!psb_intel_sdvo_connector->name) return false; \
+<<<<<<< HEAD
 		drm_connector_attach_property(connector, \
+=======
+		drm_object_attach_property(&connector->base, \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      psb_intel_sdvo_connector->name, \
 					      psb_intel_sdvo_connector->cur_##name); \
 		DRM_DEBUG_KMS(#name ": max %d, default %d, current %d\n", \
@@ -2351,7 +2775,11 @@ psb_intel_sdvo_create_enhance_property_tv(struct psb_intel_sdvo *psb_intel_sdvo,
 		if (!psb_intel_sdvo_connector->left)
 			return false;
 
+<<<<<<< HEAD
 		drm_connector_attach_property(connector,
+=======
+		drm_object_attach_property(&connector->base,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      psb_intel_sdvo_connector->left,
 					      psb_intel_sdvo_connector->left_margin);
 
@@ -2360,7 +2788,11 @@ psb_intel_sdvo_create_enhance_property_tv(struct psb_intel_sdvo *psb_intel_sdvo,
 		if (!psb_intel_sdvo_connector->right)
 			return false;
 
+<<<<<<< HEAD
 		drm_connector_attach_property(connector,
+=======
+		drm_object_attach_property(&connector->base,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      psb_intel_sdvo_connector->right,
 					      psb_intel_sdvo_connector->right_margin);
 		DRM_DEBUG_KMS("h_overscan: max %d, "
@@ -2387,7 +2819,11 @@ psb_intel_sdvo_create_enhance_property_tv(struct psb_intel_sdvo *psb_intel_sdvo,
 		if (!psb_intel_sdvo_connector->top)
 			return false;
 
+<<<<<<< HEAD
 		drm_connector_attach_property(connector,
+=======
+		drm_object_attach_property(&connector->base,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      psb_intel_sdvo_connector->top,
 					      psb_intel_sdvo_connector->top_margin);
 
@@ -2396,7 +2832,11 @@ psb_intel_sdvo_create_enhance_property_tv(struct psb_intel_sdvo *psb_intel_sdvo,
 		if (!psb_intel_sdvo_connector->bottom)
 			return false;
 
+<<<<<<< HEAD
 		drm_connector_attach_property(connector,
+=======
+		drm_object_attach_property(&connector->base,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      psb_intel_sdvo_connector->bottom,
 					      psb_intel_sdvo_connector->bottom_margin);
 		DRM_DEBUG_KMS("v_overscan: max %d, "
@@ -2428,7 +2868,11 @@ psb_intel_sdvo_create_enhance_property_tv(struct psb_intel_sdvo *psb_intel_sdvo,
 		if (!psb_intel_sdvo_connector->dot_crawl)
 			return false;
 
+<<<<<<< HEAD
 		drm_connector_attach_property(connector,
+=======
+		drm_object_attach_property(&connector->base,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      psb_intel_sdvo_connector->dot_crawl,
 					      psb_intel_sdvo_connector->cur_dot_crawl);
 		DRM_DEBUG_KMS("dot crawl: current %d\n", response);
@@ -2507,9 +2951,14 @@ psb_intel_sdvo_init_ddc_proxy(struct psb_intel_sdvo *sdvo,
 			  struct drm_device *dev)
 {
 	sdvo->ddc.owner = THIS_MODULE;
+<<<<<<< HEAD
 	sdvo->ddc.class = I2C_CLASS_DDC;
 	snprintf(sdvo->ddc.name, I2C_NAME_SIZE, "SDVO DDC proxy");
 	sdvo->ddc.dev.parent = &dev->pdev->dev;
+=======
+	snprintf(sdvo->ddc.name, I2C_NAME_SIZE, "SDVO DDC proxy");
+	sdvo->ddc.dev.parent = dev->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sdvo->ddc.algo_data = sdvo;
 	sdvo->ddc.algo = &psb_intel_sdvo_ddc_proxy;
 
@@ -2518,8 +2967,13 @@ psb_intel_sdvo_init_ddc_proxy(struct psb_intel_sdvo *sdvo,
 
 bool psb_intel_sdvo_init(struct drm_device *dev, int sdvo_reg)
 {
+<<<<<<< HEAD
 	struct drm_psb_private *dev_priv = dev->dev_private;
 	struct psb_intel_encoder *psb_intel_encoder;
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	struct gma_encoder *gma_encoder;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct psb_intel_sdvo *psb_intel_sdvo;
 	int i;
 
@@ -2536,9 +2990,16 @@ bool psb_intel_sdvo_init(struct drm_device *dev, int sdvo_reg)
 	}
 
 	/* encoder type will be decided later */
+<<<<<<< HEAD
 	psb_intel_encoder = &psb_intel_sdvo->base;
 	psb_intel_encoder->type = INTEL_OUTPUT_SDVO;
 	drm_encoder_init(dev, &psb_intel_encoder->base, &psb_intel_sdvo_enc_funcs, 0);
+=======
+	gma_encoder = &psb_intel_sdvo->base;
+	gma_encoder->type = INTEL_OUTPUT_SDVO;
+	drm_encoder_init(dev, &gma_encoder->base, &psb_intel_sdvo_enc_funcs,
+			 0, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read the regs to test if we can talk to the device */
 	for (i = 0; i < 0x40; i++) {
@@ -2556,7 +3017,11 @@ bool psb_intel_sdvo_init(struct drm_device *dev, int sdvo_reg)
 	else
 		dev_priv->hotplug_supported_mask |= SDVOC_HOTPLUG_INT_STATUS;
 
+<<<<<<< HEAD
 	drm_encoder_helper_add(&psb_intel_encoder->base, &psb_intel_sdvo_helper_funcs);
+=======
+	drm_encoder_helper_add(&gma_encoder->base, &psb_intel_sdvo_helper_funcs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* In default case sdvo lvds is false */
 	if (!psb_intel_sdvo_get_capabilities(psb_intel_sdvo, &psb_intel_sdvo->caps))
@@ -2599,7 +3064,11 @@ bool psb_intel_sdvo_init(struct drm_device *dev, int sdvo_reg)
 	return true;
 
 err:
+<<<<<<< HEAD
 	drm_encoder_cleanup(&psb_intel_encoder->base);
+=======
+	drm_encoder_cleanup(&gma_encoder->base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i2c_del_adapter(&psb_intel_sdvo->ddc);
 	kfree(psb_intel_sdvo);
 

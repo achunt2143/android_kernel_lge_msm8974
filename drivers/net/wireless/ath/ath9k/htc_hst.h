@@ -77,6 +77,21 @@ struct htc_config_pipe_msg {
 	u8 credits;
 } __packed;
 
+<<<<<<< HEAD
+=======
+struct htc_panic_bad_vaddr {
+	__be32 pattern;
+	__be32 exccause;
+	__be32 pc;
+	__be32 badvaddr;
+} __packed;
+
+struct htc_panic_bad_epid {
+	__be32 pattern;
+	__be32 epid;
+} __packed;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct htc_ep_callbacks {
 	void *priv;
 	void (*tx) (void *, struct sk_buff *, enum htc_endpoint_id, bool txok);

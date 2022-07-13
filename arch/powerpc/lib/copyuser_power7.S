@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,6 +13,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) IBM Corporation, 2011
  *
@@ -19,6 +24,7 @@
  */
 #include <asm/ppc_asm.h>
 
+<<<<<<< HEAD
 #define STACKFRAMESIZE	256
 #define STK_REG(i)	(112 + ((i)-14)*8)
 
@@ -28,46 +34,85 @@
 	.align 3
 	.llong 100b,.Ldo_err1
 	.previous
+=======
+#ifndef SELFTEST_CASE
+/* 0 == don't use VMX, 1 == use VMX */
+#define SELFTEST_CASE	0
+#endif
+
+#ifdef __BIG_ENDIAN__
+#define LVS(VRT,RA,RB)		lvsl	VRT,RA,RB
+#define VPERM(VRT,VRA,VRB,VRC)	vperm	VRT,VRA,VRB,VRC
+#else
+#define LVS(VRT,RA,RB)		lvsr	VRT,RA,RB
+#define VPERM(VRT,VRA,VRB,VRC)	vperm	VRT,VRB,VRA,VRC
+#endif
+
+	.macro err1
+100:
+	EX_TABLE(100b,.Ldo_err1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 	.macro err2
 200:
+<<<<<<< HEAD
 	.section __ex_table,"a"
 	.align 3
 	.llong 200b,.Ldo_err2
 	.previous
+=======
+	EX_TABLE(200b,.Ldo_err2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 #ifdef CONFIG_ALTIVEC
 	.macro err3
 300:
+<<<<<<< HEAD
 	.section __ex_table,"a"
 	.align 3
 	.llong 300b,.Ldo_err3
 	.previous
+=======
+	EX_TABLE(300b,.Ldo_err3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 	.macro err4
 400:
+<<<<<<< HEAD
 	.section __ex_table,"a"
 	.align 3
 	.llong 400b,.Ldo_err4
 	.previous
+=======
+	EX_TABLE(400b,.Ldo_err4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.endm
 
 
 .Ldo_err4:
+<<<<<<< HEAD
 	ld	r16,STK_REG(r16)(r1)
 	ld	r15,STK_REG(r15)(r1)
 	ld	r14,STK_REG(r14)(r1)
 .Ldo_err3:
 	bl	.exit_vmx_copy
+=======
+	ld	r16,STK_REG(R16)(r1)
+	ld	r15,STK_REG(R15)(r1)
+	ld	r14,STK_REG(R14)(r1)
+.Ldo_err3:
+	bl	CFUNC(exit_vmx_usercopy)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ld	r0,STACKFRAMESIZE+16(r1)
 	mtlr	r0
 	b	.Lexit
 #endif /* CONFIG_ALTIVEC */
 
 .Ldo_err2:
+<<<<<<< HEAD
 	ld	r22,STK_REG(r22)(r1)
 	ld	r21,STK_REG(r21)(r1)
 	ld	r20,STK_REG(r20)(r1)
@@ -83,10 +128,28 @@
 	ld	r3,48(r1)
 	ld	r4,56(r1)
 	ld	r5,64(r1)
+=======
+	ld	r22,STK_REG(R22)(r1)
+	ld	r21,STK_REG(R21)(r1)
+	ld	r20,STK_REG(R20)(r1)
+	ld	r19,STK_REG(R19)(r1)
+	ld	r18,STK_REG(R18)(r1)
+	ld	r17,STK_REG(R17)(r1)
+	ld	r16,STK_REG(R16)(r1)
+	ld	r15,STK_REG(R15)(r1)
+	ld	r14,STK_REG(R14)(r1)
+.Lexit:
+	addi	r1,r1,STACKFRAMESIZE
+.Ldo_err1:
+	ld	r3,-STACKFRAMESIZE+STK_REG(R31)(r1)
+	ld	r4,-STACKFRAMESIZE+STK_REG(R30)(r1)
+	ld	r5,-STACKFRAMESIZE+STK_REG(R29)(r1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	b	__copy_tofrom_user_base
 
 
 _GLOBAL(__copy_tofrom_user_power7)
+<<<<<<< HEAD
 #ifdef CONFIG_ALTIVEC
 	cmpldi	r5,16
 	cmpldi	cr1,r5,4096
@@ -105,6 +168,22 @@ _GLOBAL(__copy_tofrom_user_power7)
 	std	r5,64(r1)
 
 	blt	.Lshort_copy
+=======
+	cmpldi	r5,16
+	cmpldi	cr1,r5,3328
+
+	std	r3,-STACKFRAMESIZE+STK_REG(R31)(r1)
+	std	r4,-STACKFRAMESIZE+STK_REG(R30)(r1)
+	std	r5,-STACKFRAMESIZE+STK_REG(R29)(r1)
+
+	blt	.Lshort_copy
+
+#ifdef CONFIG_ALTIVEC
+test_feature = SELFTEST_CASE
+BEGIN_FTR_SECTION
+	bgt	cr1,.Lvmx_copy
+END_FTR_SECTION_IFSET(CPU_FTR_ALTIVEC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 .Lnonvmx_copy:
@@ -137,6 +216,7 @@ err1;	stw	r0,0(r3)
 
 	mflr	r0
 	stdu	r1,-STACKFRAMESIZE(r1)
+<<<<<<< HEAD
 	std	r14,STK_REG(r14)(r1)
 	std	r15,STK_REG(r15)(r1)
 	std	r16,STK_REG(r16)(r1)
@@ -146,6 +226,17 @@ err1;	stw	r0,0(r3)
 	std	r20,STK_REG(r20)(r1)
 	std	r21,STK_REG(r21)(r1)
 	std	r22,STK_REG(r22)(r1)
+=======
+	std	r14,STK_REG(R14)(r1)
+	std	r15,STK_REG(R15)(r1)
+	std	r16,STK_REG(R16)(r1)
+	std	r17,STK_REG(R17)(r1)
+	std	r18,STK_REG(R18)(r1)
+	std	r19,STK_REG(R19)(r1)
+	std	r20,STK_REG(R20)(r1)
+	std	r21,STK_REG(R21)(r1)
+	std	r22,STK_REG(R22)(r1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	std	r0,STACKFRAMESIZE+16(r1)
 
 	srdi	r6,r5,7
@@ -192,6 +283,7 @@ err2;	std	r21,120(r3)
 
 	clrldi	r5,r5,(64-7)
 
+<<<<<<< HEAD
 	ld	r14,STK_REG(r14)(r1)
 	ld	r15,STK_REG(r15)(r1)
 	ld	r16,STK_REG(r16)(r1)
@@ -201,6 +293,17 @@ err2;	std	r21,120(r3)
 	ld	r20,STK_REG(r20)(r1)
 	ld	r21,STK_REG(r21)(r1)
 	ld	r22,STK_REG(r22)(r1)
+=======
+	ld	r14,STK_REG(R14)(r1)
+	ld	r15,STK_REG(R15)(r1)
+	ld	r16,STK_REG(R16)(r1)
+	ld	r17,STK_REG(R17)(r1)
+	ld	r18,STK_REG(R18)(r1)
+	ld	r19,STK_REG(R19)(r1)
+	ld	r20,STK_REG(R20)(r1)
+	ld	r21,STK_REG(R21)(r1)
+	ld	r22,STK_REG(R22)(r1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	r1,r1,STACKFRAMESIZE
 
 	/* Up to 127B to go */
@@ -285,6 +388,7 @@ err1;	stb	r0,0(r3)
 	addi	r1,r1,STACKFRAMESIZE
 	b	.Lnonvmx_copy
 
+<<<<<<< HEAD
 #ifdef CONFIG_ALTIVEC
 .Lvmx_copy:
 	mflr	r0
@@ -299,6 +403,42 @@ err1;	stb	r0,0(r3)
 	mtlr	r0
 
 	beq	.Lunwind_stack_nonvmx_copy
+=======
+.Lvmx_copy:
+#ifdef CONFIG_ALTIVEC
+	mflr	r0
+	std	r0,16(r1)
+	stdu	r1,-STACKFRAMESIZE(r1)
+	bl	CFUNC(enter_vmx_usercopy)
+	cmpwi	cr1,r3,0
+	ld	r0,STACKFRAMESIZE+16(r1)
+	ld	r3,STK_REG(R31)(r1)
+	ld	r4,STK_REG(R30)(r1)
+	ld	r5,STK_REG(R29)(r1)
+	mtlr	r0
+
+	/*
+	 * We prefetch both the source and destination using enhanced touch
+	 * instructions. We use a stream ID of 0 for the load side and
+	 * 1 for the store side.
+	 */
+	clrrdi	r6,r4,7
+	clrrdi	r9,r3,7
+	ori	r9,r9,1		/* stream=1 */
+
+	srdi	r7,r5,7		/* length in cachelines, capped at 0x3FF */
+	cmpldi	r7,0x3FF
+	ble	1f
+	li	r7,0x3FF
+1:	lis	r0,0x0E00	/* depth=7 */
+	sldi	r7,r7,7
+	or	r7,r7,r0
+	ori	r10,r7,1	/* stream=1 */
+
+	DCBT_SETUP_STREAMS(r6, r7, r9, r10, r8)
+
+	beq	cr1,.Lunwind_stack_nonvmx_copy
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If source and destination are not relatively aligned we use a
@@ -350,6 +490,7 @@ err3;	std	r0,0(r3)
 	li	r11,48
 
 	bf	cr7*4+3,5f
+<<<<<<< HEAD
 err3;	lvx	vr1,r0,r4
 	addi	r4,r4,16
 err3;	stvx	vr1,r0,r3
@@ -373,14 +514,45 @@ err3;	stvx	vr3,r0,r3
 err3;	stvx	vr2,r3,r9
 err3;	stvx	vr1,r3,r10
 err3;	stvx	vr0,r3,r11
+=======
+err3;	lvx	v1,0,r4
+	addi	r4,r4,16
+err3;	stvx	v1,0,r3
+	addi	r3,r3,16
+
+5:	bf	cr7*4+2,6f
+err3;	lvx	v1,0,r4
+err3;	lvx	v0,r4,r9
+	addi	r4,r4,32
+err3;	stvx	v1,0,r3
+err3;	stvx	v0,r3,r9
+	addi	r3,r3,32
+
+6:	bf	cr7*4+1,7f
+err3;	lvx	v3,0,r4
+err3;	lvx	v2,r4,r9
+err3;	lvx	v1,r4,r10
+err3;	lvx	v0,r4,r11
+	addi	r4,r4,64
+err3;	stvx	v3,0,r3
+err3;	stvx	v2,r3,r9
+err3;	stvx	v1,r3,r10
+err3;	stvx	v0,r3,r11
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	r3,r3,64
 
 7:	sub	r5,r5,r6
 	srdi	r6,r5,7
 
+<<<<<<< HEAD
 	std	r14,STK_REG(r14)(r1)
 	std	r15,STK_REG(r15)(r1)
 	std	r16,STK_REG(r16)(r1)
+=======
+	std	r14,STK_REG(R14)(r1)
+	std	r15,STK_REG(R15)(r1)
+	std	r16,STK_REG(R16)(r1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	li	r12,64
 	li	r14,80
@@ -395,6 +567,7 @@ err3;	stvx	vr0,r3,r11
 	 */
 	.align	5
 8:
+<<<<<<< HEAD
 err4;	lvx	vr7,r0,r4
 err4;	lvx	vr6,r4,r9
 err4;	lvx	vr5,r4,r10
@@ -418,6 +591,31 @@ err4;	stvx	vr0,r3,r16
 	ld	r14,STK_REG(r14)(r1)
 	ld	r15,STK_REG(r15)(r1)
 	ld	r16,STK_REG(r16)(r1)
+=======
+err4;	lvx	v7,0,r4
+err4;	lvx	v6,r4,r9
+err4;	lvx	v5,r4,r10
+err4;	lvx	v4,r4,r11
+err4;	lvx	v3,r4,r12
+err4;	lvx	v2,r4,r14
+err4;	lvx	v1,r4,r15
+err4;	lvx	v0,r4,r16
+	addi	r4,r4,128
+err4;	stvx	v7,0,r3
+err4;	stvx	v6,r3,r9
+err4;	stvx	v5,r3,r10
+err4;	stvx	v4,r3,r11
+err4;	stvx	v3,r3,r12
+err4;	stvx	v2,r3,r14
+err4;	stvx	v1,r3,r15
+err4;	stvx	v0,r3,r16
+	addi	r3,r3,128
+	bdnz	8b
+
+	ld	r14,STK_REG(R14)(r1)
+	ld	r15,STK_REG(R15)(r1)
+	ld	r16,STK_REG(R16)(r1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Up to 127B to go */
 	clrldi	r5,r5,(64-7)
@@ -425,6 +623,7 @@ err4;	stvx	vr0,r3,r16
 	mtocrf	0x01,r6
 
 	bf	cr7*4+1,9f
+<<<<<<< HEAD
 err3;	lvx	vr3,r0,r4
 err3;	lvx	vr2,r4,r9
 err3;	lvx	vr1,r4,r10
@@ -448,6 +647,31 @@ err3;	stvx	vr0,r3,r9
 err3;	lvx	vr1,r0,r4
 	addi	r4,r4,16
 err3;	stvx	vr1,r0,r3
+=======
+err3;	lvx	v3,0,r4
+err3;	lvx	v2,r4,r9
+err3;	lvx	v1,r4,r10
+err3;	lvx	v0,r4,r11
+	addi	r4,r4,64
+err3;	stvx	v3,0,r3
+err3;	stvx	v2,r3,r9
+err3;	stvx	v1,r3,r10
+err3;	stvx	v0,r3,r11
+	addi	r3,r3,64
+
+9:	bf	cr7*4+2,10f
+err3;	lvx	v1,0,r4
+err3;	lvx	v0,r4,r9
+	addi	r4,r4,32
+err3;	stvx	v1,0,r3
+err3;	stvx	v0,r3,r9
+	addi	r3,r3,32
+
+10:	bf	cr7*4+3,11f
+err3;	lvx	v1,0,r4
+	addi	r4,r4,16
+err3;	stvx	v1,0,r3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	r3,r3,16
 
 	/* Up to 15B to go */
@@ -476,7 +700,11 @@ err3;	lbz	r0,0(r4)
 err3;	stb	r0,0(r3)
 
 15:	addi	r1,r1,STACKFRAMESIZE
+<<<<<<< HEAD
 	b	.exit_vmx_copy		/* tail call optimise */
+=======
+	b	CFUNC(exit_vmx_usercopy)	/* tail call optimise */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .Lvmx_unaligned_copy:
 	/* Get the destination 16B aligned */
@@ -522,6 +750,7 @@ err3;	stw	r7,4(r3)
 	li	r10,32
 	li	r11,48
 
+<<<<<<< HEAD
 	lvsl	vr16,0,r4	/* Setup permute control vector */
 err3;	lvx	vr0,0,r4
 	addi	r4,r4,16
@@ -558,14 +787,58 @@ err3;	stvx	vr8,r0,r3
 err3;	stvx	vr9,r3,r9
 err3;	stvx	vr10,r3,r10
 err3;	stvx	vr11,r3,r11
+=======
+	LVS(v16,0,r4)		/* Setup permute control vector */
+err3;	lvx	v0,0,r4
+	addi	r4,r4,16
+
+	bf	cr7*4+3,5f
+err3;	lvx	v1,0,r4
+	VPERM(v8,v0,v1,v16)
+	addi	r4,r4,16
+err3;	stvx	v8,0,r3
+	addi	r3,r3,16
+	vor	v0,v1,v1
+
+5:	bf	cr7*4+2,6f
+err3;	lvx	v1,0,r4
+	VPERM(v8,v0,v1,v16)
+err3;	lvx	v0,r4,r9
+	VPERM(v9,v1,v0,v16)
+	addi	r4,r4,32
+err3;	stvx	v8,0,r3
+err3;	stvx	v9,r3,r9
+	addi	r3,r3,32
+
+6:	bf	cr7*4+1,7f
+err3;	lvx	v3,0,r4
+	VPERM(v8,v0,v3,v16)
+err3;	lvx	v2,r4,r9
+	VPERM(v9,v3,v2,v16)
+err3;	lvx	v1,r4,r10
+	VPERM(v10,v2,v1,v16)
+err3;	lvx	v0,r4,r11
+	VPERM(v11,v1,v0,v16)
+	addi	r4,r4,64
+err3;	stvx	v8,0,r3
+err3;	stvx	v9,r3,r9
+err3;	stvx	v10,r3,r10
+err3;	stvx	v11,r3,r11
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	r3,r3,64
 
 7:	sub	r5,r5,r6
 	srdi	r6,r5,7
 
+<<<<<<< HEAD
 	std	r14,STK_REG(r14)(r1)
 	std	r15,STK_REG(r15)(r1)
 	std	r16,STK_REG(r16)(r1)
+=======
+	std	r14,STK_REG(R14)(r1)
+	std	r15,STK_REG(R15)(r1)
+	std	r16,STK_REG(R16)(r1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	li	r12,64
 	li	r14,80
@@ -580,6 +853,7 @@ err3;	stvx	vr11,r3,r11
 	 */
 	.align	5
 8:
+<<<<<<< HEAD
 err4;	lvx	vr7,r0,r4
 	vperm	vr8,vr0,vr7,vr16
 err4;	lvx	vr6,r4,r9
@@ -611,6 +885,39 @@ err4;	stvx	vr15,r3,r16
 	ld	r14,STK_REG(r14)(r1)
 	ld	r15,STK_REG(r15)(r1)
 	ld	r16,STK_REG(r16)(r1)
+=======
+err4;	lvx	v7,0,r4
+	VPERM(v8,v0,v7,v16)
+err4;	lvx	v6,r4,r9
+	VPERM(v9,v7,v6,v16)
+err4;	lvx	v5,r4,r10
+	VPERM(v10,v6,v5,v16)
+err4;	lvx	v4,r4,r11
+	VPERM(v11,v5,v4,v16)
+err4;	lvx	v3,r4,r12
+	VPERM(v12,v4,v3,v16)
+err4;	lvx	v2,r4,r14
+	VPERM(v13,v3,v2,v16)
+err4;	lvx	v1,r4,r15
+	VPERM(v14,v2,v1,v16)
+err4;	lvx	v0,r4,r16
+	VPERM(v15,v1,v0,v16)
+	addi	r4,r4,128
+err4;	stvx	v8,0,r3
+err4;	stvx	v9,r3,r9
+err4;	stvx	v10,r3,r10
+err4;	stvx	v11,r3,r11
+err4;	stvx	v12,r3,r12
+err4;	stvx	v13,r3,r14
+err4;	stvx	v14,r3,r15
+err4;	stvx	v15,r3,r16
+	addi	r3,r3,128
+	bdnz	8b
+
+	ld	r14,STK_REG(R14)(r1)
+	ld	r15,STK_REG(R15)(r1)
+	ld	r16,STK_REG(R16)(r1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Up to 127B to go */
 	clrldi	r5,r5,(64-7)
@@ -618,6 +925,7 @@ err4;	stvx	vr15,r3,r16
 	mtocrf	0x01,r6
 
 	bf	cr7*4+1,9f
+<<<<<<< HEAD
 err3;	lvx	vr3,r0,r4
 	vperm	vr8,vr0,vr3,vr16
 err3;	lvx	vr2,r4,r9
@@ -648,6 +956,38 @@ err3;	lvx	vr1,r0,r4
 	vperm	vr8,vr0,vr1,vr16
 	addi	r4,r4,16
 err3;	stvx	vr8,r0,r3
+=======
+err3;	lvx	v3,0,r4
+	VPERM(v8,v0,v3,v16)
+err3;	lvx	v2,r4,r9
+	VPERM(v9,v3,v2,v16)
+err3;	lvx	v1,r4,r10
+	VPERM(v10,v2,v1,v16)
+err3;	lvx	v0,r4,r11
+	VPERM(v11,v1,v0,v16)
+	addi	r4,r4,64
+err3;	stvx	v8,0,r3
+err3;	stvx	v9,r3,r9
+err3;	stvx	v10,r3,r10
+err3;	stvx	v11,r3,r11
+	addi	r3,r3,64
+
+9:	bf	cr7*4+2,10f
+err3;	lvx	v1,0,r4
+	VPERM(v8,v0,v1,v16)
+err3;	lvx	v0,r4,r9
+	VPERM(v9,v1,v0,v16)
+	addi	r4,r4,32
+err3;	stvx	v8,0,r3
+err3;	stvx	v9,r3,r9
+	addi	r3,r3,32
+
+10:	bf	cr7*4+3,11f
+err3;	lvx	v1,0,r4
+	VPERM(v8,v0,v1,v16)
+	addi	r4,r4,16
+err3;	stvx	v8,0,r3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	r3,r3,16
 
 	/* Up to 15B to go */
@@ -679,5 +1019,10 @@ err3;	lbz	r0,0(r4)
 err3;	stb	r0,0(r3)
 
 15:	addi	r1,r1,STACKFRAMESIZE
+<<<<<<< HEAD
 	b	.exit_vmx_copy		/* tail call optimise */
 #endif /* CONFiG_ALTIVEC */
+=======
+	b	CFUNC(exit_vmx_usercopy)	/* tail call optimise */
+#endif /* CONFIG_ALTIVEC */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

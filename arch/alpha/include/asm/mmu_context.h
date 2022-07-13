@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ALPHA_MMU_CONTEXT_H
 #define __ALPHA_MMU_CONTEXT_H
 
@@ -7,6 +11,12 @@
  * Copyright (C) 1996, Linus Torvalds
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/mm_types.h>
+#include <linux/sched.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machvec.h>
 #include <asm/compiler.h>
 #include <asm-generic/mm_hooks.h>
@@ -179,6 +189,11 @@ ev4_switch_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm,
 }
 
 extern void __load_new_mm_context(struct mm_struct *);
+<<<<<<< HEAD
+=======
+asmlinkage void do_page_fault(unsigned long address, unsigned long mmcsr,
+			      long cause, struct pt_regs *regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 #define check_mmu_context()					\
@@ -210,8 +225,11 @@ ev4_activate_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm)
 	tbiap();
 }
 
+<<<<<<< HEAD
 #define deactivate_mm(tsk,mm)	do { } while (0)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_ALPHA_GENERIC
 # define switch_mm(a,b,c)	alpha_mv.mv_switch_mm((a),(b),(c))
 # define activate_mm(x,y)	alpha_mv.mv_activate_mm((x),(y))
@@ -225,6 +243,10 @@ ev4_activate_mm(struct mm_struct *prev_mm, struct mm_struct *next_mm)
 # endif
 #endif
 
+<<<<<<< HEAD
+=======
+#define init_new_context init_new_context
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int
 init_new_context(struct task_struct *tsk, struct mm_struct *mm)
 {
@@ -238,12 +260,16 @@ init_new_context(struct task_struct *tsk, struct mm_struct *mm)
 	return 0;
 }
 
+<<<<<<< HEAD
 extern inline void
 destroy_context(struct mm_struct *mm)
 {
 	/* Nothing to do.  */
 }
 
+=======
+#define enter_lazy_tlb enter_lazy_tlb
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void
 enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
 {
@@ -251,6 +277,11 @@ enter_lazy_tlb(struct mm_struct *mm, struct task_struct *tsk)
 	  = ((unsigned long)mm->pgd - IDENT_ADDR) >> PAGE_SHIFT;
 }
 
+<<<<<<< HEAD
+=======
+#include <asm-generic/mmu_context.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __MMU_EXTERN_INLINE
 #undef __EXTERN_INLINE
 #undef __MMU_EXTERN_INLINE

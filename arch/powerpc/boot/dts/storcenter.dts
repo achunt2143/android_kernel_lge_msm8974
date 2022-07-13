@@ -137,6 +137,10 @@
 	};
 
 	chosen {
+<<<<<<< HEAD
 		linux,stdout-path = &serial0;
+=======
+		stdout-path = &serial0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };

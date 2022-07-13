@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __MAC80211_DEBUGFS_KEY_H
 #define __MAC80211_DEBUGFS_KEY_H
 
@@ -9,6 +13,13 @@ void ieee80211_debugfs_key_add_mgmt_default(
 	struct ieee80211_sub_if_data *sdata);
 void ieee80211_debugfs_key_remove_mgmt_default(
 	struct ieee80211_sub_if_data *sdata);
+<<<<<<< HEAD
+=======
+void ieee80211_debugfs_key_add_beacon_default(
+	struct ieee80211_sub_if_data *sdata);
+void ieee80211_debugfs_key_remove_beacon_default(
+	struct ieee80211_sub_if_data *sdata);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ieee80211_debugfs_key_sta_del(struct ieee80211_key *key,
 				   struct sta_info *sta);
 #else
@@ -25,6 +36,15 @@ static inline void ieee80211_debugfs_key_add_mgmt_default(
 static inline void ieee80211_debugfs_key_remove_mgmt_default(
 	struct ieee80211_sub_if_data *sdata)
 {}
+<<<<<<< HEAD
+=======
+static inline void ieee80211_debugfs_key_add_beacon_default(
+	struct ieee80211_sub_if_data *sdata)
+{}
+static inline void ieee80211_debugfs_key_remove_beacon_default(
+	struct ieee80211_sub_if_data *sdata)
+{}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void ieee80211_debugfs_key_sta_del(struct ieee80211_key *key,
 						 struct sta_info *sta)
 {}

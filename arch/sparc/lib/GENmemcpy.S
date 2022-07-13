@@ -1,15 +1,24 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* GENmemcpy.S: Generic sparc64 memcpy.
  *
  * Copyright (C) 2007 David S. Miller (davem@davemloft.net)
  */
 
 #ifdef __KERNEL__
+<<<<<<< HEAD
+=======
+#include <linux/linkage.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GLOBAL_SPARE	%g7
 #else
 #define GLOBAL_SPARE	%g5
 #endif
 
 #ifndef EX_LD
+<<<<<<< HEAD
 #define EX_LD(x)	x
 #endif
 
@@ -19,6 +28,13 @@
 
 #ifndef EX_RETVAL
 #define EX_RETVAL(x)	x
+=======
+#define EX_LD(x,y)	x
+#endif
+
+#ifndef EX_ST
+#define EX_ST(x,y)	x
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifndef LOAD
@@ -45,6 +61,32 @@
 	.register	%g3,#scratch
 
 	.text
+<<<<<<< HEAD
+=======
+
+#ifndef EX_RETVAL
+#define EX_RETVAL(x)	x
+ENTRY(GEN_retl_o4_1)
+	add	%o4, %o2, %o4
+	retl
+	 add	%o4, 1, %o0
+ENDPROC(GEN_retl_o4_1)
+ENTRY(GEN_retl_g1_8)
+	add	%g1, %o2, %g1
+	retl
+	 add	%g1, 8, %o0
+ENDPROC(GEN_retl_g1_8)
+ENTRY(GEN_retl_o2_4)
+	retl
+	 add	%o2, 4, %o0
+ENDPROC(GEN_retl_o2_4)
+ENTRY(GEN_retl_o2_1)
+	retl
+	 add	%o2, 1, %o0
+ENDPROC(GEN_retl_o2_1)
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.align		64
 
 	.globl	FUNC_NAME
@@ -73,8 +115,13 @@ FUNC_NAME:	/* %o0=dst, %o1=src, %o2=len */
 	sub		%g0, %o4, %o4
 	sub		%o2, %o4, %o2
 1:	subcc		%o4, 1, %o4
+<<<<<<< HEAD
 	EX_LD(LOAD(ldub, %o1, %g1))
 	EX_ST(STORE(stb, %g1, %o0))
+=======
+	EX_LD(LOAD(ldub, %o1, %g1),GEN_retl_o4_1)
+	EX_ST(STORE(stb, %g1, %o0),GEN_retl_o4_1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add		%o1, 1, %o1
 	bne,pt		%XCC, 1b
 	add		%o0, 1, %o0
@@ -82,8 +129,13 @@ FUNC_NAME:	/* %o0=dst, %o1=src, %o2=len */
 	andn		%o2, 0x7, %g1
 	sub		%o2, %g1, %o2
 1:	subcc		%g1, 0x8, %g1
+<<<<<<< HEAD
 	EX_LD(LOAD(ldx, %o1, %g2))
 	EX_ST(STORE(stx, %g2, %o0))
+=======
+	EX_LD(LOAD(ldx, %o1, %g2),GEN_retl_g1_8)
+	EX_ST(STORE(stx, %g2, %o0),GEN_retl_g1_8)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add		%o1, 0x8, %o1
 	bne,pt		%XCC, 1b
 	 add		%o0, 0x8, %o0
@@ -100,8 +152,13 @@ FUNC_NAME:	/* %o0=dst, %o1=src, %o2=len */
 
 1:
 	subcc		%o2, 4, %o2
+<<<<<<< HEAD
 	EX_LD(LOAD(lduw, %o1, %g1))
 	EX_ST(STORE(stw, %g1, %o1 + %o3))
+=======
+	EX_LD(LOAD(lduw, %o1, %g1),GEN_retl_o2_4)
+	EX_ST(STORE(stw, %g1, %o1 + %o3),GEN_retl_o2_4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bgu,pt		%XCC, 1b
 	 add		%o1, 4, %o1
 
@@ -111,8 +168,13 @@ FUNC_NAME:	/* %o0=dst, %o1=src, %o2=len */
 	.align		32
 90:
 	subcc		%o2, 1, %o2
+<<<<<<< HEAD
 	EX_LD(LOAD(ldub, %o1, %g1))
 	EX_ST(STORE(stb, %g1, %o1 + %o3))
+=======
+	EX_LD(LOAD(ldub, %o1, %g1),GEN_retl_o2_1)
+	EX_ST(STORE(stb, %g1, %o1 + %o3),GEN_retl_o2_1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bgu,pt		%XCC, 90b
 	 add		%o1, 1, %o1
 	retl

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**************************************************************************
  * Copyright (c) 2007-2011, Intel Corporation.
  * All Rights Reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
  * version 2, as published by the Free Software Foundation.
@@ -228,6 +233,20 @@ static struct fb_ops psbfb_unaccel_ops = {
 	.fb_imageblit = cfb_imageblit,
 	.fb_mmap = psbfb_mmap,
 	.fb_ioctl = psbfb_ioctl,
+=======
+ **************************************************************************/
+
+#include <drm/drm_framebuffer.h>
+#include <drm/drm_gem_framebuffer_helper.h>
+#include <drm/drm_modeset_helper.h>
+
+#include "framebuffer.h"
+#include "psb_drv.h"
+
+static const struct drm_framebuffer_funcs psb_fb_funcs = {
+	.destroy = drm_gem_fb_destroy,
+	.create_handle = drm_gem_fb_create_handle,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -235,12 +254,17 @@ static struct fb_ops psbfb_unaccel_ops = {
  *	@dev: our DRM device
  *	@fb: framebuffer to set up
  *	@mode_cmd: mode description
+<<<<<<< HEAD
  *	@gt: backing object
+=======
+ *	@obj: backing object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Configure and fill in the boilerplate for our frame buffer. Return
  *	0 on success or an error code if we fail.
  */
 static int psb_framebuffer_init(struct drm_device *dev,
+<<<<<<< HEAD
 					struct psb_framebuffer *fb,
 					struct drm_mode_fb_cmd2 *mode_cmd,
 					struct gtt_range *gt)
@@ -262,12 +286,38 @@ static int psb_framebuffer_init(struct drm_device *dev,
 		return -EINVAL;
 	}
 	ret = drm_framebuffer_init(dev, &fb->base, &psb_fb_funcs);
+=======
+					struct drm_framebuffer *fb,
+					const struct drm_mode_fb_cmd2 *mode_cmd,
+					struct drm_gem_object *obj)
+{
+	const struct drm_format_info *info;
+	int ret;
+
+	/*
+	 * Reject unknown formats, YUV formats, and formats with more than
+	 * 4 bytes per pixel.
+	 */
+	info = drm_get_format_info(dev, mode_cmd);
+	if (!info || !info->depth || info->cpp[0] > 4)
+		return -EINVAL;
+
+	if (mode_cmd->pitches[0] & 63)
+		return -EINVAL;
+
+	drm_helper_mode_fill_fb_struct(dev, fb, mode_cmd);
+	fb->obj[0] = obj;
+	ret = drm_framebuffer_init(dev, fb, &psb_fb_funcs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		dev_err(dev->dev, "framebuffer init failed: %d\n", ret);
 		return ret;
 	}
+<<<<<<< HEAD
 	drm_helper_mode_fill_fb_struct(&fb->base, mode_cmd);
 	fb->gtt = gt;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -275,13 +325,18 @@ static int psb_framebuffer_init(struct drm_device *dev,
  *	psb_framebuffer_create	-	create a framebuffer backed by gt
  *	@dev: our DRM device
  *	@mode_cmd: the description of the requested mode
+<<<<<<< HEAD
  *	@gt: the backing object
+=======
+ *	@obj: the backing object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Create a framebuffer object backed by the gt, and fill in the
  *	boilerplate required
  *
  *	TODO: review object references
  */
+<<<<<<< HEAD
 
 static struct drm_framebuffer *psb_framebuffer_create
 			(struct drm_device *dev,
@@ -289,17 +344,29 @@ static struct drm_framebuffer *psb_framebuffer_create
 			 struct gtt_range *gt)
 {
 	struct psb_framebuffer *fb;
+=======
+struct drm_framebuffer *psb_framebuffer_create(struct drm_device *dev,
+					       const struct drm_mode_fb_cmd2 *mode_cmd,
+					       struct drm_gem_object *obj)
+{
+	struct drm_framebuffer *fb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	fb = kzalloc(sizeof(*fb), GFP_KERNEL);
 	if (!fb)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
 	ret = psb_framebuffer_init(dev, fb, mode_cmd, gt);
+=======
+	ret = psb_framebuffer_init(dev, fb, mode_cmd, obj);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret) {
 		kfree(fb);
 		return ERR_PTR(ret);
 	}
+<<<<<<< HEAD
 	return &fb->base;
 }
 
@@ -489,6 +556,9 @@ out_err1:
 	mutex_unlock(&dev->struct_mutex);
 	psb_gtt_free_range(dev, backing);
 	return ret;
+=======
+	return fb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -501,20 +571,32 @@ out_err1:
  */
 static struct drm_framebuffer *psb_user_framebuffer_create
 			(struct drm_device *dev, struct drm_file *filp,
+<<<<<<< HEAD
 			 struct drm_mode_fb_cmd2 *cmd)
 {
 	struct gtt_range *r;
 	struct drm_gem_object *obj;
+=======
+			 const struct drm_mode_fb_cmd2 *cmd)
+{
+	struct drm_gem_object *obj;
+	struct drm_framebuffer *fb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 *	Find the GEM object and thus the gtt range object that is
 	 *	to back this space
 	 */
+<<<<<<< HEAD
 	obj = drm_gem_object_lookup(dev, filp, cmd->handles[0]);
+=======
+	obj = drm_gem_object_lookup(filp, cmd->handles[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (obj == NULL)
 		return ERR_PTR(-ENOENT);
 
 	/* Let the core code do all the work */
+<<<<<<< HEAD
 	r = container_of(obj, struct gtt_range, gem);
 	return psb_framebuffer_create(dev, cmd, r);
 }
@@ -682,10 +764,18 @@ static void psb_user_framebuffer_destroy(struct drm_framebuffer *fb)
 	/*  We are no longer using the resource in GEM */
 	drm_gem_object_unreference_unlocked(&r->gem);
 	kfree(fb);
+=======
+	fb = psb_framebuffer_create(dev, cmd, obj);
+	if (IS_ERR(fb))
+		drm_gem_object_put(obj);
+
+	return fb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct drm_mode_config_funcs psb_mode_funcs = {
 	.fb_create = psb_user_framebuffer_create,
+<<<<<<< HEAD
 	.output_poll_changed = psbfb_output_poll_changed,
 };
 
@@ -723,11 +813,38 @@ static void psb_setup_outputs(struct drm_device *dev)
 
 		/* valid crtcs */
 		switch (psb_intel_encoder->type) {
+=======
+};
+
+static void psb_setup_outputs(struct drm_device *dev)
+{
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	struct drm_connector_list_iter conn_iter;
+	struct drm_connector *connector;
+
+	drm_mode_create_scaling_mode_property(dev);
+
+	/* It is ok for this to fail - we just don't get backlight control */
+	if (!dev_priv->backlight_property)
+		dev_priv->backlight_property = drm_property_create_range(dev, 0,
+							"backlight", 0, 100);
+	dev_priv->ops->output_init(dev);
+
+	drm_connector_list_iter_begin(dev, &conn_iter);
+	drm_for_each_connector_iter(connector, &conn_iter) {
+		struct gma_encoder *gma_encoder = gma_attached_encoder(connector);
+		struct drm_encoder *encoder = &gma_encoder->base;
+		int crtc_mask = 0, clone_mask = 0;
+
+		/* valid crtcs */
+		switch (gma_encoder->type) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case INTEL_OUTPUT_ANALOG:
 			crtc_mask = (1 << 0);
 			clone_mask = (1 << INTEL_OUTPUT_ANALOG);
 			break;
 		case INTEL_OUTPUT_SDVO:
+<<<<<<< HEAD
 			crtc_mask = ((1 << 0) | (1 << 1));
 			clone_mask = (1 << INTEL_OUTPUT_SDVO);
 			break;
@@ -758,25 +875,72 @@ static void psb_setup_outputs(struct drm_device *dev)
 		encoder->possible_clones =
 		    psb_intel_connector_clones(dev, clone_mask);
 	}
+=======
+			crtc_mask = dev_priv->ops->sdvo_mask;
+			clone_mask = 0;
+			break;
+		case INTEL_OUTPUT_LVDS:
+			crtc_mask = dev_priv->ops->lvds_mask;
+			clone_mask = 0;
+			break;
+		case INTEL_OUTPUT_MIPI:
+			crtc_mask = (1 << 0);
+			clone_mask = 0;
+			break;
+		case INTEL_OUTPUT_MIPI2:
+			crtc_mask = (1 << 2);
+			clone_mask = 0;
+			break;
+		case INTEL_OUTPUT_HDMI:
+			crtc_mask = dev_priv->ops->hdmi_mask;
+			clone_mask = (1 << INTEL_OUTPUT_HDMI);
+			break;
+		case INTEL_OUTPUT_DISPLAYPORT:
+			crtc_mask = (1 << 0) | (1 << 1);
+			clone_mask = 0;
+			break;
+		case INTEL_OUTPUT_EDP:
+			crtc_mask = (1 << 1);
+			clone_mask = 0;
+		}
+		encoder->possible_crtcs = crtc_mask;
+		encoder->possible_clones =
+		    gma_connector_clones(dev, clone_mask);
+	}
+	drm_connector_list_iter_end(&conn_iter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void psb_modeset_init(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	struct drm_psb_private *dev_priv = dev->dev_private;
 	struct psb_intel_mode_device *mode_dev = &dev_priv->mode_dev;
 	int i;
 
 	drm_mode_config_init(dev);
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	struct psb_intel_mode_device *mode_dev = &dev_priv->mode_dev;
+	int i;
+
+	if (drmm_mode_config_init(dev))
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->mode_config.min_width = 0;
 	dev->mode_config.min_height = 0;
 
+<<<<<<< HEAD
 	dev->mode_config.funcs = (void *) &psb_mode_funcs;
 
 	/* set memory base */
 	/* Oaktrail and Poulsbo should use BAR 2*/
 	pci_read_config_dword(dev->pdev, PSB_BSM, (u32 *)
 					&(dev->mode_config.fb_base));
+=======
+	dev->mode_config.funcs = &psb_mode_funcs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* num pipes is 2 for PSB but 1 for Mrst */
 	for (i = 0; i < dev_priv->num_pipe; i++)
@@ -786,10 +950,19 @@ void psb_modeset_init(struct drm_device *dev)
 	dev->mode_config.max_height = 4096;
 
 	psb_setup_outputs(dev);
+<<<<<<< HEAD
+=======
+
+	if (dev_priv->ops->errata)
+	        dev_priv->ops->errata(dev);
+
+        dev_priv->modeset = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void psb_modeset_cleanup(struct drm_device *dev)
 {
+<<<<<<< HEAD
 	mutex_lock(&dev->struct_mutex);
 
 	drm_kms_helper_poll_fini(dev);
@@ -797,4 +970,10 @@ void psb_modeset_cleanup(struct drm_device *dev)
 	drm_mode_config_cleanup(dev);
 
 	mutex_unlock(&dev->struct_mutex);
+=======
+	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
+	if (dev_priv->modeset) {
+		drm_kms_helper_poll_fini(dev);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

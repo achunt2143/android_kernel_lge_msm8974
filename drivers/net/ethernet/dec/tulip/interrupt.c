@@ -74,8 +74,19 @@ int tulip_refill_rx(struct net_device *dev)
 			if (skb == NULL)
 				break;
 
+<<<<<<< HEAD
 			mapping = pci_map_single(tp->pdev, skb->data, PKT_BUF_SZ,
 						 PCI_DMA_FROMDEVICE);
+=======
+			mapping = dma_map_single(&tp->pdev->dev, skb->data,
+						 PKT_BUF_SZ, DMA_FROM_DEVICE);
+			if (dma_mapping_error(&tp->pdev->dev, mapping)) {
+				dev_kfree_skb(skb);
+				tp->rx_buffers[entry].skb = NULL;
+				break;
+			}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tp->rx_buffers[entry].mapping = mapping;
 
 			tp->rx_ring[entry].buffer1 = cpu_to_le32(mapping);
@@ -96,10 +107,17 @@ int tulip_refill_rx(struct net_device *dev)
 
 #ifdef CONFIG_TULIP_NAPI
 
+<<<<<<< HEAD
 void oom_timer(unsigned long data)
 {
         struct net_device *dev = (struct net_device *)data;
 	struct tulip_private *tp = netdev_priv(dev);
+=======
+void oom_timer(struct timer_list *t)
+{
+	struct tulip_private *tp = from_timer(tp, t, oom_timer);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	napi_schedule(&tp->napi);
 }
 
@@ -204,14 +222,22 @@ int tulip_poll(struct napi_struct *napi, int budget)
                                if (pkt_len < tulip_rx_copybreak &&
                                    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
                                        skb_reserve(skb, 2);    /* 16 byte align the IP header */
+<<<<<<< HEAD
                                        pci_dma_sync_single_for_cpu(tp->pdev,
 								   tp->rx_buffers[entry].mapping,
 								   pkt_len, PCI_DMA_FROMDEVICE);
+=======
+					dma_sync_single_for_cpu(&tp->pdev->dev,
+								tp->rx_buffers[entry].mapping,
+								pkt_len,
+								DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if ! defined(__alpha__)
                                        skb_copy_to_linear_data(skb, tp->rx_buffers[entry].skb->data,
                                                         pkt_len);
                                        skb_put(skb, pkt_len);
 #else
+<<<<<<< HEAD
                                        memcpy(skb_put(skb, pkt_len),
                                               tp->rx_buffers[entry].skb->data,
                                               pkt_len);
@@ -219,6 +245,16 @@ int tulip_poll(struct napi_struct *napi, int budget)
                                        pci_dma_sync_single_for_device(tp->pdev,
 								      tp->rx_buffers[entry].mapping,
 								      pkt_len, PCI_DMA_FROMDEVICE);
+=======
+                                       skb_put_data(skb,
+                                                    tp->rx_buffers[entry].skb->data,
+                                                    pkt_len);
+#endif
+					dma_sync_single_for_device(&tp->pdev->dev,
+								   tp->rx_buffers[entry].mapping,
+								   pkt_len,
+								   DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                                } else {        /* Pass up the skb already on the Rx ring. */
                                        char *temp = skb_put(skb = tp->rx_buffers[entry].skb,
                                                             pkt_len);
@@ -234,8 +270,15 @@ int tulip_poll(struct napi_struct *napi, int budget)
                                        }
 #endif
 
+<<<<<<< HEAD
                                        pci_unmap_single(tp->pdev, tp->rx_buffers[entry].mapping,
                                                         PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
+=======
+					dma_unmap_single(&tp->pdev->dev,
+							 tp->rx_buffers[entry].mapping,
+							 PKT_BUF_SZ,
+							 DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
                                        tp->rx_buffers[entry].skb = NULL;
                                        tp->rx_buffers[entry].mapping = 0;
@@ -313,8 +356,13 @@ int tulip_poll(struct napi_struct *napi, int budget)
 
          /* Remove us from polling list and enable RX intr. */
 
+<<<<<<< HEAD
          napi_complete(napi);
          iowrite32(tulip_tbl[tp->chip_id].valid_intrs, tp->base_addr+CSR7);
+=======
+	napi_complete_done(napi, work_done);
+	iowrite32(tulip_tbl[tp->chip_id].valid_intrs, tp->base_addr+CSR7);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
          /* The last op happens after poll completion. Which means the following:
           * 1. it can race with disabling irqs in irq handler
@@ -349,7 +397,11 @@ int tulip_poll(struct napi_struct *napi, int budget)
           * before we did napi_complete(). See? We would lose it. */
 
          /* remove ourselves from the polling list */
+<<<<<<< HEAD
          napi_complete(napi);
+=======
+         napi_complete_done(napi, work_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
          return work_done;
 }
@@ -430,14 +482,22 @@ static int tulip_rx(struct net_device *dev)
 			if (pkt_len < tulip_rx_copybreak &&
 			    (skb = netdev_alloc_skb(dev, pkt_len + 2)) != NULL) {
 				skb_reserve(skb, 2);	/* 16 byte align the IP header */
+<<<<<<< HEAD
 				pci_dma_sync_single_for_cpu(tp->pdev,
 							    tp->rx_buffers[entry].mapping,
 							    pkt_len, PCI_DMA_FROMDEVICE);
+=======
+				dma_sync_single_for_cpu(&tp->pdev->dev,
+							tp->rx_buffers[entry].mapping,
+							pkt_len,
+							DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if ! defined(__alpha__)
 				skb_copy_to_linear_data(skb, tp->rx_buffers[entry].skb->data,
 						 pkt_len);
 				skb_put(skb, pkt_len);
 #else
+<<<<<<< HEAD
 				memcpy(skb_put(skb, pkt_len),
 				       tp->rx_buffers[entry].skb->data,
 				       pkt_len);
@@ -445,6 +505,16 @@ static int tulip_rx(struct net_device *dev)
 				pci_dma_sync_single_for_device(tp->pdev,
 							       tp->rx_buffers[entry].mapping,
 							       pkt_len, PCI_DMA_FROMDEVICE);
+=======
+				skb_put_data(skb,
+					     tp->rx_buffers[entry].skb->data,
+					     pkt_len);
+#endif
+				dma_sync_single_for_device(&tp->pdev->dev,
+							   tp->rx_buffers[entry].mapping,
+							   pkt_len,
+							   DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else { 	/* Pass up the skb already on the Rx ring. */
 				char *temp = skb_put(skb = tp->rx_buffers[entry].skb,
 						     pkt_len);
@@ -460,8 +530,14 @@ static int tulip_rx(struct net_device *dev)
 				}
 #endif
 
+<<<<<<< HEAD
 				pci_unmap_single(tp->pdev, tp->rx_buffers[entry].mapping,
 						 PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
+=======
+				dma_unmap_single(&tp->pdev->dev,
+						 tp->rx_buffers[entry].mapping,
+						 PKT_BUF_SZ, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				tp->rx_buffers[entry].skb = NULL;
 				tp->rx_buffers[entry].mapping = 0;
@@ -591,10 +667,17 @@ irqreturn_t tulip_interrupt(int irq, void *dev_instance)
 				if (tp->tx_buffers[entry].skb == NULL) {
 					/* test because dummy frames not mapped */
 					if (tp->tx_buffers[entry].mapping)
+<<<<<<< HEAD
 						pci_unmap_single(tp->pdev,
 							 tp->tx_buffers[entry].mapping,
 							 sizeof(tp->setup_frame),
 							 PCI_DMA_TODEVICE);
+=======
+						dma_unmap_single(&tp->pdev->dev,
+								 tp->tx_buffers[entry].mapping,
+								 sizeof(tp->setup_frame),
+								 DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					continue;
 				}
 
@@ -623,9 +706,16 @@ irqreturn_t tulip_interrupt(int irq, void *dev_instance)
 					dev->stats.tx_packets++;
 				}
 
+<<<<<<< HEAD
 				pci_unmap_single(tp->pdev, tp->tx_buffers[entry].mapping,
 						 tp->tx_buffers[entry].skb->len,
 						 PCI_DMA_TODEVICE);
+=======
+				dma_unmap_single(&tp->pdev->dev,
+						 tp->tx_buffers[entry].mapping,
+						 tp->tx_buffers[entry].skb->len,
+						 DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* Free the original skb. */
 				dev_kfree_skb_irq(tp->tx_buffers[entry].skb);

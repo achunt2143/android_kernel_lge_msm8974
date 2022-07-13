@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/mfd/tps65217.h
  *
  * Functions to access TPS65217 power management chip.
  *
+<<<<<<< HEAD
  * Copyright (C) 2011 Texas Instruments Incorporated - http://www.ti.com/
  *
  * This program is free software; you can redistribute it and/or
@@ -13,6 +18,9 @@
  * kind, whether express or implied; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+ * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MFD_TPS65217_H
@@ -22,6 +30,12 @@
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
 
+<<<<<<< HEAD
+=======
+/* TPS chip id list */
+#define TPS65217			0xF0
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* I2C ID for TPS65217 part */
 #define TPS65217_I2C_ID			0x24
 
@@ -57,6 +71,11 @@
 #define TPS65217_REG_SEQ5		0X1D
 #define TPS65217_REG_SEQ6		0X1E
 
+<<<<<<< HEAD
+=======
+#define TPS65217_REG_MAX		TPS65217_REG_SEQ6
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Register field definitions */
 #define TPS65217_CHIPID_CHIP_MASK	0xF0
 #define TPS65217_CHIPID_REV_MASK	0x0F
@@ -74,6 +93,12 @@
 #define TPS65217_INT_PBI		BIT(2)
 #define TPS65217_INT_ACI		BIT(1)
 #define TPS65217_INT_USBI		BIT(0)
+<<<<<<< HEAD
+=======
+#define TPS65217_INT_SHIFT		4
+#define TPS65217_INT_MASK		(TPS65217_INT_PBM | TPS65217_INT_ACM | \
+					TPS65217_INT_USBM)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TPS65217_CHGCONFIG0_TREG	BIT(7)
 #define TPS65217_CHGCONFIG0_DPPM	BIT(6)
@@ -210,6 +235,33 @@ enum tps65217_regulator_id {
 /* Number of total regulators available */
 #define TPS65217_NUM_REGULATOR		(TPS65217_NUM_DCDC + TPS65217_NUM_LDO)
 
+<<<<<<< HEAD
+=======
+enum tps65217_bl_isel {
+	TPS65217_BL_ISET1 = 1,
+	TPS65217_BL_ISET2,
+};
+
+enum tps65217_bl_fdim {
+	TPS65217_BL_FDIM_100HZ,
+	TPS65217_BL_FDIM_200HZ,
+	TPS65217_BL_FDIM_500HZ,
+	TPS65217_BL_FDIM_1000HZ,
+};
+
+struct tps65217_bl_pdata {
+	enum tps65217_bl_isel isel;
+	enum tps65217_bl_fdim fdim;
+	int dft_brightness;
+};
+
+/* Interrupt numbers */
+#define TPS65217_IRQ_USB		0
+#define TPS65217_IRQ_AC			1
+#define TPS65217_IRQ_PB			2
+#define TPS65217_NUM_IRQ		3
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct tps65217_board - packages regulator init data
  * @tps65217_regulator_data: regulator initialization values
@@ -217,6 +269,7 @@ enum tps65217_regulator_id {
  * Board data may be used to initialize regulator.
  */
 struct tps65217_board {
+<<<<<<< HEAD
 	struct regulator_init_data *tps65217_init_data;
 };
 
@@ -246,6 +299,11 @@ struct tps_info {
 	unsigned int enable_mask;
 	unsigned int set_vout_reg;
 	unsigned int set_vout_mask;
+=======
+	struct regulator_init_data *tps65217_init_data[TPS65217_NUM_REGULATOR];
+	struct device_node *of_node[TPS65217_NUM_REGULATOR];
+	struct tps65217_bl_pdata *bl_pdata;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -258,12 +316,21 @@ struct tps65217 {
 	struct device *dev;
 	struct tps65217_board *pdata;
 	struct regulator_desc desc[TPS65217_NUM_REGULATOR];
+<<<<<<< HEAD
 	struct regulator_dev *rdev[TPS65217_NUM_REGULATOR];
 	struct tps_info *info[TPS65217_NUM_REGULATOR];
 	struct regmap *regmap;
 
 	/* Client devices */
 	struct platform_device *regulator_pdev[TPS65217_NUM_REGULATOR];
+=======
+	struct regmap *regmap;
+	u8 *strobes;
+	struct irq_domain *irq_domain;
+	struct mutex irq_lock;
+	u8 irq_mask;
+	int irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline struct tps65217 *dev_to_tps65217(struct device *dev)

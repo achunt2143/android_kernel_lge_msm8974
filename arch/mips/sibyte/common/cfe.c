@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000, 2001, 2002, 2003 Broadcom Corporation
  *
@@ -14,19 +15,32 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (C) 2000, 2001, 2002, 2003 Broadcom Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/linkage.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/blkdev.h>
 #include <linux/bootmem.h>
+=======
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pm.h>
 #include <linux/smp.h>
 
 #include <asm/bootinfo.h>
 #include <asm/reboot.h>
+<<<<<<< HEAD
+=======
+#include <asm/setup.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/sibyte/board.h>
 #include <asm/smp-ops.h>
 
@@ -38,7 +52,11 @@
 #define MAX_RAM_SIZE (~0ULL)
 #else
 #ifdef CONFIG_HIGHMEM
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT_PHYS_ADDR
+=======
+#ifdef CONFIG_PHYS_ADDR_T_64BIT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MAX_RAM_SIZE (~0ULL)
 #else
 #define MAX_RAM_SIZE (0xffffffffULL)
@@ -48,11 +66,14 @@
 #endif
 #endif
 
+<<<<<<< HEAD
 #define SIBYTE_MAX_MEM_REGIONS 8
 phys_t board_mem_region_addrs[SIBYTE_MAX_MEM_REGIONS];
 phys_t board_mem_region_sizes[SIBYTE_MAX_MEM_REGIONS];
 unsigned int board_mem_region_count;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int cfe_cons_handle;
 
 #ifdef CONFIG_BLK_DEV_INITRD
@@ -96,7 +117,11 @@ static void __noreturn cfe_linux_halt(void)
 
 static __init void prom_meminit(void)
 {
+<<<<<<< HEAD
 	u64 addr, size, type; /* regardless of 64BIT_PHYS_ADDR */
+=======
+	u64 addr, size, type; /* regardless of PHYS_ADDR_T_64BIT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int mem_flags = 0;
 	unsigned int idx;
 	int rd_flag;
@@ -126,16 +151,26 @@ static __init void prom_meminit(void)
 			if (initrd_start) {
 				if ((initrd_pstart > addr) &&
 				    (initrd_pstart < (addr + size))) {
+<<<<<<< HEAD
 					add_memory_region(addr,
 					                  initrd_pstart - addr,
 					                  BOOT_MEM_RAM);
+=======
+					memblock_add(addr,
+						     initrd_pstart - addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					rd_flag = 1;
 				}
 				if ((initrd_pend > addr) &&
 				    (initrd_pend < (addr + size))) {
+<<<<<<< HEAD
 					add_memory_region(initrd_pend,
 						(addr + size) - initrd_pend,
 						 BOOT_MEM_RAM);
+=======
+					memblock_add(initrd_pend,
+						(addr + size) - initrd_pend);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					rd_flag = 1;
 				}
 			}
@@ -154,6 +189,7 @@ static __init void prom_meminit(void)
 				 */
 				if (size > 512)
 					size -= 512;
+<<<<<<< HEAD
 				add_memory_region(addr, size, BOOT_MEM_RAM);
 			}
 			board_mem_region_addrs[board_mem_region_count] = addr;
@@ -165,13 +201,21 @@ static __init void prom_meminit(void)
 				 * Too many regions.  Need to configure more
 				 */
 				while(1);
+=======
+				memblock_add(addr, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 #ifdef CONFIG_BLK_DEV_INITRD
 	if (initrd_start) {
+<<<<<<< HEAD
 		add_memory_region(initrd_pstart, initrd_pend - initrd_pstart,
 				  BOOT_MEM_RESERVED);
+=======
+		memblock_add(initrd_pstart, initrd_pend - initrd_pstart);
+		memblock_reserve(initrd_pstart, initrd_pend - initrd_pstart);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 }
@@ -195,7 +239,11 @@ static int __init initrd_setup(char *str)
 
 	/*
 	 *Initrd location comes in the form "<hex size of ramdisk in bytes>@<location in memory>"
+<<<<<<< HEAD
 	 *  e.g. initrd=3abfd@80010000.  This is set up by the loader.
+=======
+	 *  e.g. initrd=3abfd@80010000.	 This is set up by the loader.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	for (tmp = str; *tmp != '@'; tmp++) {
 		if (!*tmp) {
@@ -229,8 +277,13 @@ static int __init initrd_setup(char *str)
 
 #endif
 
+<<<<<<< HEAD
 extern struct plat_smp_ops sb_smp_ops;
 extern struct plat_smp_ops bcm1480_smp_ops;
+=======
+extern const struct plat_smp_ops sb_smp_ops;
+extern const struct plat_smp_ops bcm1480_smp_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * prom_init is called just after the cpu type is determined, from setup_arch()
@@ -244,7 +297,11 @@ void __init prom_init(void)
 	int *prom_vec = (int *) fw_arg3;
 
 	_machine_restart   = cfe_linux_restart;
+<<<<<<< HEAD
 	_machine_halt      = cfe_linux_halt;
+=======
+	_machine_halt	   = cfe_linux_halt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pm_power_off = cfe_linux_halt;
 
 	/*
@@ -299,7 +356,11 @@ void __init prom_init(void)
 #ifdef CONFIG_BLK_DEV_INITRD
 	{
 		char *ptr;
+<<<<<<< HEAD
 		/* Need to find out early whether we've got an initrd.  So scan
+=======
+		/* Need to find out early whether we've got an initrd.	So scan
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   the list looking now */
 		for (ptr = arcs_cmdline; *ptr; ptr++) {
 			while (*ptr == ' ') {
@@ -325,16 +386,23 @@ void __init prom_init(void)
 #if defined(CONFIG_SIBYTE_BCM112X) || defined(CONFIG_SIBYTE_SB1250)
 	register_smp_ops(&sb_smp_ops);
 #endif
+<<<<<<< HEAD
 #if defined(CONFIG_SIBYTE_BCM1x55) || defined(CONFIG_SIBYTE_BCM1x80)
+=======
+#ifdef CONFIG_SIBYTE_BCM1x80
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	register_smp_ops(&bcm1480_smp_ops);
 #endif
 }
 
+<<<<<<< HEAD
 void __init prom_free_prom_memory(void)
 {
 	/* Not sure what I'm supposed to do here.  Nothing, I think */
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void prom_putchar(char c)
 {
 	int ret;

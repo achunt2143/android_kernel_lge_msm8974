@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * init.c:  Initialize internal variables used by the PROM
  *          library functions.
@@ -27,6 +31,7 @@ EXPORT_SYMBOL(prom_root_node);
 struct linux_nodeops *prom_nodeops;
 
 /* You must call prom_init() before you attempt to use any of the
+<<<<<<< HEAD
  * routines in the prom library.  It returns 0 on success, 1 on
  * failure.  It gets passed the pointer to the PROM vector.
  */
@@ -34,6 +39,12 @@ struct linux_nodeops *prom_nodeops;
 extern void prom_meminit(void);
 extern void prom_ranges_init(void);
 
+=======
+ * routines in the prom library.
+ * It gets passed the pointer to the PROM vector.
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void __init prom_init(struct linux_romvec *rp)
 {
 	romvec = rp;

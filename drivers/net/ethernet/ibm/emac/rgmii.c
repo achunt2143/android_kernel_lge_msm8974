@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/net/ethernet/ibm/emac/rgmii.c
  *
@@ -14,16 +18,25 @@
  * Based on original work by
  * 	Matt Porter <mporter@kernel.crashing.org>
  * 	Copyright 2004 MontaVista Software, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <linux/ethtool.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 #include "emac.h"
@@ -44,12 +57,17 @@
 
 /* RGMIIx_SSR */
 #define RGMII_SSR_MASK(idx)	(0x7 << ((idx) * 8))
+<<<<<<< HEAD
+=======
+#define RGMII_SSR_10(idx)	(0x1 << ((idx) * 8))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RGMII_SSR_100(idx)	(0x2 << ((idx) * 8))
 #define RGMII_SSR_1000(idx)	(0x4 << ((idx) * 8))
 
 /* RGMII bridge supports only GMII/TBI and RGMII/RTBI PHYs */
 static inline int rgmii_valid_mode(int phy_mode)
 {
+<<<<<<< HEAD
 	return  phy_mode == PHY_MODE_GMII ||
 		phy_mode == PHY_MODE_MII ||
 		phy_mode == PHY_MODE_RGMII ||
@@ -73,11 +91,19 @@ static inline const char *rgmii_mode_name(int mode)
 	default:
 		BUG();
 	}
+=======
+	return  phy_interface_mode_is_rgmii(phy_mode) ||
+		phy_mode == PHY_INTERFACE_MODE_GMII ||
+		phy_mode == PHY_INTERFACE_MODE_MII ||
+		phy_mode == PHY_INTERFACE_MODE_TBI ||
+		phy_mode == PHY_INTERFACE_MODE_RTBI;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 rgmii_mode_mask(int mode, int input)
 {
 	switch (mode) {
+<<<<<<< HEAD
 	case PHY_MODE_RGMII:
 		return RGMII_FER_RGMII(input);
 	case PHY_MODE_TBI:
@@ -87,23 +113,48 @@ static inline u32 rgmii_mode_mask(int mode, int input)
 	case PHY_MODE_MII:
 		return RGMII_FER_MII(input);
 	case PHY_MODE_RTBI:
+=======
+	case PHY_INTERFACE_MODE_RGMII:
+	case PHY_INTERFACE_MODE_RGMII_ID:
+	case PHY_INTERFACE_MODE_RGMII_RXID:
+	case PHY_INTERFACE_MODE_RGMII_TXID:
+		return RGMII_FER_RGMII(input);
+	case PHY_INTERFACE_MODE_TBI:
+		return RGMII_FER_TBI(input);
+	case PHY_INTERFACE_MODE_GMII:
+		return RGMII_FER_GMII(input);
+	case PHY_INTERFACE_MODE_MII:
+		return RGMII_FER_MII(input);
+	case PHY_INTERFACE_MODE_RTBI:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return RGMII_FER_RTBI(input);
 	default:
 		BUG();
 	}
 }
 
+<<<<<<< HEAD
 int __devinit rgmii_attach(struct platform_device *ofdev, int input, int mode)
 {
 	struct rgmii_instance *dev = dev_get_drvdata(&ofdev->dev);
+=======
+int rgmii_attach(struct platform_device *ofdev, int input, int mode)
+{
+	struct rgmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rgmii_regs __iomem *p = dev->base;
 
 	RGMII_DBG(dev, "attach(%d)" NL, input);
 
 	/* Check if we need to attach to a RGMII */
 	if (input < 0 || !rgmii_valid_mode(mode)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: unsupported settings !\n",
 		       ofdev->dev.of_node->full_name);
+=======
+		printk(KERN_ERR "%pOF: unsupported settings !\n",
+		       ofdev->dev.of_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -112,8 +163,13 @@ int __devinit rgmii_attach(struct platform_device *ofdev, int input, int mode)
 	/* Enable this input */
 	out_be32(&p->fer, in_be32(&p->fer) | rgmii_mode_mask(mode, input));
 
+<<<<<<< HEAD
 	printk(KERN_NOTICE "%s: input %d in %s mode\n",
 	       ofdev->dev.of_node->full_name, input, rgmii_mode_name(mode));
+=======
+	printk(KERN_NOTICE "%pOF: input %d in %s mode\n",
+	       ofdev->dev.of_node, input, phy_modes(mode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	++dev->users;
 
@@ -124,7 +180,11 @@ int __devinit rgmii_attach(struct platform_device *ofdev, int input, int mode)
 
 void rgmii_set_speed(struct platform_device *ofdev, int input, int speed)
 {
+<<<<<<< HEAD
 	struct rgmii_instance *dev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct rgmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rgmii_regs __iomem *p = dev->base;
 	u32 ssr;
 
@@ -138,6 +198,11 @@ void rgmii_set_speed(struct platform_device *ofdev, int input, int speed)
 		ssr |= RGMII_SSR_1000(input);
 	else if (speed == SPEED_100)
 		ssr |= RGMII_SSR_100(input);
+<<<<<<< HEAD
+=======
+	else if (speed == SPEED_10)
+		ssr |= RGMII_SSR_10(input);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	out_be32(&p->ssr, ssr);
 
@@ -146,7 +211,11 @@ void rgmii_set_speed(struct platform_device *ofdev, int input, int speed)
 
 void rgmii_get_mdio(struct platform_device *ofdev, int input)
 {
+<<<<<<< HEAD
 	struct rgmii_instance *dev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct rgmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rgmii_regs __iomem *p = dev->base;
 	u32 fer;
 
@@ -167,7 +236,11 @@ void rgmii_get_mdio(struct platform_device *ofdev, int input)
 
 void rgmii_put_mdio(struct platform_device *ofdev, int input)
 {
+<<<<<<< HEAD
 	struct rgmii_instance *dev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct rgmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rgmii_regs __iomem *p = dev->base;
 	u32 fer;
 
@@ -188,7 +261,11 @@ void rgmii_put_mdio(struct platform_device *ofdev, int input)
 
 void rgmii_detach(struct platform_device *ofdev, int input)
 {
+<<<<<<< HEAD
 	struct rgmii_instance *dev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct rgmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rgmii_regs __iomem *p;
 
 	BUG_ON(!dev || dev->users == 0);
@@ -214,7 +291,11 @@ int rgmii_get_regs_len(struct platform_device *ofdev)
 
 void *rgmii_dump_regs(struct platform_device *ofdev, void *buf)
 {
+<<<<<<< HEAD
 	struct rgmii_instance *dev = dev_get_drvdata(&ofdev->dev);
+=======
+	struct rgmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct emac_ethtool_regs_subhdr *hdr = buf;
 	struct rgmii_regs *regs = (struct rgmii_regs *)(hdr + 1);
 
@@ -228,7 +309,11 @@ void *rgmii_dump_regs(struct platform_device *ofdev, void *buf)
 }
 
 
+<<<<<<< HEAD
 static int __devinit rgmii_probe(struct platform_device *ofdev)
+=======
+static int rgmii_probe(struct platform_device *ofdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *np = ofdev->dev.of_node;
 	struct rgmii_instance *dev;
@@ -245,8 +330,12 @@ static int __devinit rgmii_probe(struct platform_device *ofdev)
 
 	rc = -ENXIO;
 	if (of_address_to_resource(np, 0, &regs)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Can't get registers address\n",
 		       np->full_name);
+=======
+		printk(KERN_ERR "%pOF: Can't get registers address\n", np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free;
 	}
 
@@ -254,13 +343,21 @@ static int __devinit rgmii_probe(struct platform_device *ofdev)
 	dev->base = (struct rgmii_regs __iomem *)ioremap(regs.start,
 						 sizeof(struct rgmii_regs));
 	if (dev->base == NULL) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Can't map device registers!\n",
 		       np->full_name);
+=======
+		printk(KERN_ERR "%pOF: Can't map device registers!\n", np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_free;
 	}
 
 	/* Check for RGMII flags */
+<<<<<<< HEAD
 	if (of_get_property(ofdev->dev.of_node, "has-mdio", NULL))
+=======
+	if (of_property_read_bool(ofdev->dev.of_node, "has-mdio"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->flags |= EMAC_RGMII_FLAG_HAS_MDIO;
 
 	/* CAB lacks the right properties, fix this up */
@@ -274,12 +371,21 @@ static int __devinit rgmii_probe(struct platform_device *ofdev)
 	out_be32(&dev->base->fer, 0);
 
 	printk(KERN_INFO
+<<<<<<< HEAD
 	       "RGMII %s initialized with%s MDIO support\n",
 	       ofdev->dev.of_node->full_name,
 	       (dev->flags & EMAC_RGMII_FLAG_HAS_MDIO) ? "" : "out");
 
 	wmb();
 	dev_set_drvdata(&ofdev->dev, dev);
+=======
+	       "RGMII %pOF initialized with%s MDIO support\n",
+	       ofdev->dev.of_node,
+	       (dev->flags & EMAC_RGMII_FLAG_HAS_MDIO) ? "" : "out");
+
+	wmb();
+	platform_set_drvdata(ofdev, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -289,21 +395,33 @@ static int __devinit rgmii_probe(struct platform_device *ofdev)
 	return rc;
 }
 
+<<<<<<< HEAD
 static int __devexit rgmii_remove(struct platform_device *ofdev)
 {
 	struct rgmii_instance *dev = dev_get_drvdata(&ofdev->dev);
 
 	dev_set_drvdata(&ofdev->dev, NULL);
+=======
+static void rgmii_remove(struct platform_device *ofdev)
+{
+	struct rgmii_instance *dev = platform_get_drvdata(ofdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WARN_ON(dev->users != 0);
 
 	iounmap(dev->base);
 	kfree(dev);
+<<<<<<< HEAD
 
 	return 0;
 }
 
 static struct of_device_id rgmii_match[] =
+=======
+}
+
+static const struct of_device_id rgmii_match[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{
 		.compatible	= "ibm,rgmii",
@@ -317,11 +435,18 @@ static struct of_device_id rgmii_match[] =
 static struct platform_driver rgmii_driver = {
 	.driver = {
 		.name = "emac-rgmii",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = rgmii_match,
 	},
 	.probe = rgmii_probe,
 	.remove = rgmii_remove,
+=======
+		.of_match_table = rgmii_match,
+	},
+	.probe = rgmii_probe,
+	.remove_new = rgmii_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int __init rgmii_init(void)

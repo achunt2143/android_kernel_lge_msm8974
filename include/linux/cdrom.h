@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * -- <linux/cdrom.h>
  * General header file for linux CD-ROM drivers 
@@ -7,6 +11,7 @@
  *               1997, 1998   Erik Andersen, andersee@debian.org
  *               1998-2002    Jens Axboe, axboe@suse.de
  */
+<<<<<<< HEAD
  
 #ifndef	_LINUX_CDROM_H
 #define	_LINUX_CDROM_H
@@ -911,6 +916,16 @@ struct mode_page_header {
 #ifdef __KERNEL__
 #include <linux/fs.h>		/* not really needed, later.. */
 #include <linux/list.h>
+=======
+#ifndef	_LINUX_CDROM_H
+#define	_LINUX_CDROM_H
+
+#include <linux/fs.h>		/* not really needed, later.. */
+#include <linux/list.h>
+#include <linux/blkdev.h>
+#include <scsi/scsi_common.h>
+#include <uapi/linux/cdrom.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct packet_command
 {
@@ -918,7 +933,11 @@ struct packet_command
 	unsigned char 		*buffer;
 	unsigned int 		buflen;
 	int			stat;
+<<<<<<< HEAD
 	struct request_sense	*sense;
+=======
+	struct scsi_sense_hdr	*sshdr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char		data_direction;
 	int			quiet;
 	int			timeout;
@@ -934,7 +953,11 @@ struct packet_command
 
 /* Uniform cdrom data structures for cdrom.c */
 struct cdrom_device_info {
+<<<<<<< HEAD
 	struct cdrom_device_ops  *ops;  /* link to device_ops */
+=======
+	const struct cdrom_device_ops *ops; /* link to device_ops */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head list;		/* linked list of all device_info */
 	struct gendisk *disk;		/* matching block layer disk */
 	void *handle;		        /* driver-dependent data */
@@ -957,9 +980,16 @@ struct cdrom_device_info {
 	__u8 last_sense;
 	__u8 media_written;		/* dirty flag, DVD+RW bookkeeping */
 	unsigned short mmc3_profile;	/* current MMC3 profile */
+<<<<<<< HEAD
 	int for_data;
 	int (*exit)(struct cdrom_device_info *);
 	int mrw_mode_page;
+=======
+	int (*exit)(struct cdrom_device_info *);
+	int mrw_mode_page;
+	bool opened_for_data;
+	__s64 last_media_change_ms;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct cdrom_device_ops {
@@ -969,11 +999,17 @@ struct cdrom_device_ops {
 	int (*drive_status) (struct cdrom_device_info *, int);
 	unsigned int (*check_events) (struct cdrom_device_info *cdi,
 				      unsigned int clearing, int slot);
+<<<<<<< HEAD
 	int (*media_changed) (struct cdrom_device_info *, int);
 	int (*tray_move) (struct cdrom_device_info *, int);
 	int (*lock_door) (struct cdrom_device_info *, int);
 	int (*select_speed) (struct cdrom_device_info *, int);
 	int (*select_disc) (struct cdrom_device_info *, int);
+=======
+	int (*tray_move) (struct cdrom_device_info *, int);
+	int (*lock_door) (struct cdrom_device_info *, int);
+	int (*select_speed) (struct cdrom_device_info *, int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int (*get_last_session) (struct cdrom_device_info *,
 				 struct cdrom_multisession *);
 	int (*get_mcn) (struct cdrom_device_info *,
@@ -983,6 +1019,7 @@ struct cdrom_device_ops {
 	/* play stuff */
 	int (*audio_ioctl) (struct cdrom_device_info *,unsigned int, void *);
 
+<<<<<<< HEAD
 /* driver specifications */
 	const int capability;   /* capability flags */
 	int n_minors;           /* number of active minor devices */
@@ -1002,6 +1039,31 @@ extern unsigned int cdrom_check_events(struct cdrom_device_info *cdi,
 extern int cdrom_media_changed(struct cdrom_device_info *);
 
 extern int register_cdrom(struct cdrom_device_info *cdi);
+=======
+	/* handle uniform packets for scsi type devices (scsi,atapi) */
+	int (*generic_packet) (struct cdrom_device_info *,
+			       struct packet_command *);
+	int (*read_cdda_bpc)(struct cdrom_device_info *cdi, void __user *ubuf,
+			       u32 lba, u32 nframes, u8 *last_sense);
+/* driver specifications */
+	const int capability;   /* capability flags */
+};
+
+int cdrom_multisession(struct cdrom_device_info *cdi,
+		struct cdrom_multisession *info);
+int cdrom_read_tocentry(struct cdrom_device_info *cdi,
+		struct cdrom_tocentry *entry);
+
+/* the general block_device operations structure: */
+int cdrom_open(struct cdrom_device_info *cdi, blk_mode_t mode);
+void cdrom_release(struct cdrom_device_info *cdi);
+int cdrom_ioctl(struct cdrom_device_info *cdi, struct block_device *bdev,
+		unsigned int cmd, unsigned long arg);
+extern unsigned int cdrom_check_events(struct cdrom_device_info *cdi,
+				       unsigned int clearing);
+
+extern int register_cdrom(struct gendisk *disk, struct cdrom_device_info *cdi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void unregister_cdrom(struct cdrom_device_info *cdi);
 
 typedef struct {
@@ -1021,6 +1083,11 @@ extern int cdrom_mode_sense(struct cdrom_device_info *cdi,
 			    int page_code, int page_control);
 extern void init_cdrom_command(struct packet_command *cgc,
 			       void *buffer, int len, int type);
+<<<<<<< HEAD
+=======
+extern int cdrom_dummy_generic_packet(struct cdrom_device_info *cdi,
+				      struct packet_command *cgc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The SCSI spec says there could be 256 slots. */
 #define CDROM_MAX_SLOTS	256
@@ -1209,6 +1276,9 @@ static inline int msf_to_lba(u8 m, u8 s, u8 f)
 {
 	return (((m * CD_SECS) + s) * CD_FRAMES + f) - CD_MSF_OFFSET;
 }
+<<<<<<< HEAD
 #endif  /* End of kernel only stuff */ 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif  /* _LINUX_CDROM_H */

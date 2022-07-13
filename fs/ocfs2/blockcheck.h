@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * blockcheck.h
  *
  * Checksum and ECC codes for the OCFS2 userspace library.
  *
  * Copyright (C) 2004, 2008 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -15,6 +21,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef OCFS2_BLOCKCHECK_H
@@ -33,9 +41,12 @@ struct ocfs2_blockcheck_stats {
 	 * ocfs2_blockcheck_stats_debugfs_install()
 	 */
 	struct dentry *b_debug_dir;	/* Parent of the debugfs  files */
+<<<<<<< HEAD
 	struct dentry *b_debug_check;	/* Exposes b_check_count */
 	struct dentry *b_debug_failure;	/* Exposes b_failure_count */
 	struct dentry *b_debug_recover;	/* Exposes b_recover_count */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -64,8 +75,13 @@ int ocfs2_block_check_validate_bhs(struct buffer_head **bhs, int nr,
 				   struct ocfs2_blockcheck_stats *stats);
 
 /* Debug Initialization */
+<<<<<<< HEAD
 int ocfs2_blockcheck_stats_debugfs_install(struct ocfs2_blockcheck_stats *stats,
 					   struct dentry *parent);
+=======
+void ocfs2_blockcheck_stats_debugfs_install(struct ocfs2_blockcheck_stats *stats,
+					    struct dentry *parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ocfs2_blockcheck_stats_debugfs_remove(struct ocfs2_blockcheck_stats *stats);
 
 /*

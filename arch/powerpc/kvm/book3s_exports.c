@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
@@ -11,6 +12,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright SUSE Linux Products GmbH 2009
  *
@@ -18,6 +23,7 @@
  */
 
 #include <linux/export.h>
+<<<<<<< HEAD
 #include <asm/kvm_book3s.h>
 
 #ifdef CONFIG_KVM_BOOK3S_64_HV
@@ -31,5 +37,15 @@ EXPORT_SYMBOL_GPL(kvmppc_load_up_altivec);
 #ifdef CONFIG_VSX
 EXPORT_SYMBOL_GPL(kvmppc_load_up_vsx);
 #endif
+=======
+#include <asm/kvm_ppc.h>
+#include <asm/kvm_book3s.h>
+
+#ifdef CONFIG_KVM_BOOK3S_HV_POSSIBLE
+EXPORT_SYMBOL_GPL(kvmppc_hv_entry_trampoline);
+#endif
+#ifdef CONFIG_KVM_BOOK3S_PR_POSSIBLE
+EXPORT_SYMBOL_GPL(kvmppc_entry_trampoline);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 

@@ -78,6 +78,7 @@ static void isci_task_refuse(struct isci_host *ihost, struct sas_task *task,
 			     enum exec_status status)
 
 {
+<<<<<<< HEAD
 	enum isci_completion_selection disposition;
 
 	disposition = isci_perform_normal_io_completion;
@@ -126,6 +127,26 @@ static void isci_task_refuse(struct isci_host *ihost, struct sas_task *task,
 		sas_task_abort(task);
 		break;
 	}
+=======
+	unsigned long flags;
+
+	/* Normal notification (task_done) */
+	dev_dbg(&ihost->pdev->dev, "%s: task = %p, response=%d, status=%d\n",
+		__func__, task, response, status);
+
+	spin_lock_irqsave(&task->task_state_lock, flags);
+
+	task->task_status.resp = response;
+	task->task_status.stat = status;
+
+	/* Normal notification (task_done) */
+	task->task_state_flags |= SAS_TASK_STATE_DONE;
+	task->task_state_flags &= ~SAS_TASK_STATE_PENDING;
+	task->lldd_task = NULL;
+	spin_unlock_irqrestore(&task->task_state_lock, flags);
+
+	task->task_done(task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define for_each_sas_task(num, task) \
@@ -146,16 +167,24 @@ static inline int isci_device_io_ready(struct isci_remote_device *idev,
  *    functions. This function is called by libsas to send a task down to
  *    hardware.
  * @task: This parameter specifies the SAS task to send.
+<<<<<<< HEAD
  * @num: This parameter specifies the number of tasks to queue.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @gfp_flags: This parameter specifies the context of this call.
  *
  * status, zero indicates success.
  */
+<<<<<<< HEAD
 int isci_task_execute_task(struct sas_task *task, int num, gfp_t gfp_flags)
+=======
+int isci_task_execute_task(struct sas_task *task, gfp_t gfp_flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct isci_host *ihost = dev_to_ihost(task->dev);
 	struct isci_remote_device *idev;
 	unsigned long flags;
+<<<<<<< HEAD
 	bool io_ready;
 	u16 tag;
 
@@ -244,6 +273,89 @@ int isci_task_execute_task(struct sas_task *task, int num, gfp_t gfp_flags)
 		}
 		isci_put_device(idev);
 	}
+=======
+	enum sci_status status = SCI_FAILURE;
+	bool io_ready;
+	u16 tag;
+
+	spin_lock_irqsave(&ihost->scic_lock, flags);
+	idev = isci_lookup_device(task->dev);
+	io_ready = isci_device_io_ready(idev, task);
+	tag = isci_alloc_tag(ihost);
+	spin_unlock_irqrestore(&ihost->scic_lock, flags);
+
+	dev_dbg(&ihost->pdev->dev,
+		"task: %p, dev: %p idev: %p:%#lx cmd = %p\n",
+		task, task->dev, idev, idev ? idev->flags : 0,
+		task->uldd_task);
+
+	if (!idev) {
+		isci_task_refuse(ihost, task, SAS_TASK_UNDELIVERED,
+				 SAS_DEVICE_UNKNOWN);
+	} else if (!io_ready || tag == SCI_CONTROLLER_INVALID_IO_TAG) {
+		/* Indicate QUEUE_FULL so that the scsi midlayer
+		 * retries.
+		  */
+		isci_task_refuse(ihost, task, SAS_TASK_COMPLETE,
+				 SAS_QUEUE_FULL);
+	} else {
+		/* There is a device and it's ready for I/O. */
+		spin_lock_irqsave(&task->task_state_lock, flags);
+
+		if (task->task_state_flags & SAS_TASK_STATE_ABORTED) {
+			/* The I/O was aborted. */
+			spin_unlock_irqrestore(&task->task_state_lock, flags);
+
+			isci_task_refuse(ihost, task,
+					 SAS_TASK_UNDELIVERED,
+					 SAS_SAM_STAT_TASK_ABORTED);
+		} else {
+			struct isci_request *ireq;
+
+			/* do common allocation and init of request object. */
+			ireq = isci_io_request_from_tag(ihost, task, tag);
+			spin_unlock_irqrestore(&task->task_state_lock, flags);
+
+			/* build and send the request. */
+			/* do common allocation and init of request object. */
+			status = isci_request_execute(ihost, idev, task, ireq);
+
+			if (status != SCI_SUCCESS) {
+				if (test_bit(IDEV_GONE, &idev->flags)) {
+					/* Indicate that the device
+					 * is gone.
+					 */
+					isci_task_refuse(ihost, task,
+						SAS_TASK_UNDELIVERED,
+						SAS_DEVICE_UNKNOWN);
+				} else {
+					/* Indicate QUEUE_FULL so that
+					 * the scsi midlayer retries.
+					 * If the request failed for
+					 * remote device reasons, it
+					 * gets returned as
+					 * SAS_TASK_UNDELIVERED next
+					 * time through.
+					 */
+					isci_task_refuse(ihost, task,
+						SAS_TASK_COMPLETE,
+						SAS_QUEUE_FULL);
+				}
+			}
+		}
+	}
+
+	if (status != SCI_SUCCESS && tag != SCI_CONTROLLER_INVALID_IO_TAG) {
+		spin_lock_irqsave(&ihost->scic_lock, flags);
+		/* command never hit the device, so just free
+		 * the tci and skip the sequence increment
+		 */
+		isci_tci_free(ihost, ISCI_TAG_TCI(tag));
+		spin_unlock_irqrestore(&ihost->scic_lock, flags);
+	}
+
+	isci_put_device(idev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -279,16 +391,23 @@ static struct isci_request *isci_task_request_build(struct isci_host *ihost,
 	}
 
 	/* XXX convert to get this from task->tproto like other drivers */
+<<<<<<< HEAD
 	if (dev->dev_type == SAS_END_DEV) {
 		isci_tmf->proto = SAS_PROTOCOL_SSP;
 		status = sci_task_request_construct_ssp(ireq);
 		if (status != SCI_SUCCESS)
 			return NULL;
+=======
+	if (dev->dev_type == SAS_END_DEVICE) {
+		isci_tmf->proto = SAS_PROTOCOL_SSP;
+		sci_task_request_construct_ssp(ireq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ireq;
 }
 
+<<<<<<< HEAD
 /**
 * isci_request_mark_zombie() - This function must be called with scic_lock held.
 */
@@ -343,12 +462,18 @@ static void isci_request_mark_zombie(struct isci_host *ihost, struct isci_reques
 		complete(tmf_completion);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int isci_task_execute_tmf(struct isci_host *ihost,
 				 struct isci_remote_device *idev,
 				 struct isci_tmf *tmf, unsigned long timeout_ms)
 {
 	DECLARE_COMPLETION_ONSTACK(completion);
+<<<<<<< HEAD
 	enum sci_task_status status = SCI_TASK_FAILURE;
+=======
+	enum sci_status status = SCI_FAILURE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct isci_request *ireq;
 	int ret = TMF_RESP_FUNC_FAILED;
 	unsigned long flags;
@@ -391,7 +516,11 @@ static int isci_task_execute_tmf(struct isci_host *ihost,
 	/* start the TMF io. */
 	status = sci_controller_start_task(ihost, idev, ireq);
 
+<<<<<<< HEAD
 	if (status != SCI_TASK_SUCCESS) {
+=======
+	if (status != SCI_SUCCESS) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_dbg(&ihost->pdev->dev,
 			 "%s: start_io failed - status = 0x%x, request = %p\n",
 			 __func__,
@@ -400,6 +529,7 @@ static int isci_task_execute_tmf(struct isci_host *ihost,
 		spin_unlock_irqrestore(&ihost->scic_lock, flags);
 		goto err_tci;
 	}
+<<<<<<< HEAD
 
 	if (tmf->cb_state_func != NULL)
 		tmf->cb_state_func(isci_tmf_started, tmf, tmf->cb_data);
@@ -411,6 +541,13 @@ static int isci_task_execute_tmf(struct isci_host *ihost,
 
 	spin_unlock_irqrestore(&ihost->scic_lock, flags);
 
+=======
+	spin_unlock_irqrestore(&ihost->scic_lock, flags);
+
+	/* The RNC must be unsuspended before the TMF can get a response. */
+	isci_remote_device_resume_from_abort(ihost, idev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Wait for the TMF to complete, or a timeout. */
 	timeleft = wait_for_completion_timeout(&completion,
 					       msecs_to_jiffies(timeout_ms));
@@ -419,6 +556,7 @@ static int isci_task_execute_tmf(struct isci_host *ihost,
 		/* The TMF did not complete - this could be because
 		 * of an unplug.  Terminate the TMF request now.
 		 */
+<<<<<<< HEAD
 		spin_lock_irqsave(&ihost->scic_lock, flags);
 
 		if (tmf->cb_state_func != NULL)
@@ -445,6 +583,9 @@ static int isci_task_execute_tmf(struct isci_host *ihost,
 
 			spin_unlock_irqrestore(&ihost->scic_lock, flags);
 		}
+=======
+		isci_remote_device_suspend_terminate(ihost, idev, ireq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	isci_print_tmf(ihost, tmf);
@@ -476,6 +617,7 @@ static int isci_task_execute_tmf(struct isci_host *ihost,
 }
 
 static void isci_task_build_tmf(struct isci_tmf *tmf,
+<<<<<<< HEAD
 				enum isci_tmf_function_codes code,
 				void (*tmf_sent_cb)(enum isci_tmf_cb_state,
 						    struct isci_tmf *,
@@ -487,10 +629,17 @@ static void isci_task_build_tmf(struct isci_tmf *tmf,
 	tmf->tmf_code      = code;
 	tmf->cb_state_func = tmf_sent_cb;
 	tmf->cb_data       = cb_data;
+=======
+				enum isci_tmf_function_codes code)
+{
+	memset(tmf, 0, sizeof(*tmf));
+	tmf->tmf_code = code;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void isci_task_build_abort_task_tmf(struct isci_tmf *tmf,
 					   enum isci_tmf_function_codes code,
+<<<<<<< HEAD
 					   void (*tmf_sent_cb)(enum isci_tmf_cb_state,
 							       struct isci_tmf *,
 							       void *),
@@ -785,6 +934,15 @@ void isci_terminate_pending_requests(struct isci_host *ihost,
 }
 
 /**
+=======
+					   struct isci_request *old_request)
+{
+	isci_task_build_tmf(tmf, code);
+	tmf->io_tag = old_request->io_tag;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * isci_task_send_lu_reset_sas() - This function is called by of the SAS Domain
  *    Template functions.
  * @lun: This parameter specifies the lun to be reset.
@@ -807,7 +965,11 @@ static int isci_task_send_lu_reset_sas(
 	 * value is "TMF_RESP_FUNC_COMPLETE", or the request timed-out (or
 	 * was otherwise unable to be executed ("TMF_RESP_FUNC_FAILED").
 	 */
+<<<<<<< HEAD
 	isci_task_build_tmf(&tmf, isci_tmf_ssp_lun_reset, NULL, NULL);
+=======
+	isci_task_build_tmf(&tmf, isci_tmf_ssp_lun_reset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	#define ISCI_LU_RESET_TIMEOUT_MS 2000 /* 2 second timeout. */
 	ret = isci_task_execute_tmf(isci_host, isci_device, &tmf, ISCI_LU_RESET_TIMEOUT_MS);
@@ -826,6 +988,7 @@ static int isci_task_send_lu_reset_sas(
 
 int isci_task_lu_reset(struct domain_device *dev, u8 *lun)
 {
+<<<<<<< HEAD
 	struct isci_host *isci_host = dev_to_ihost(dev);
 	struct isci_remote_device *isci_device;
 	unsigned long flags;
@@ -862,6 +1025,46 @@ int isci_task_lu_reset(struct domain_device *dev, u8 *lun)
 
  out:
 	isci_put_device(isci_device);
+=======
+	struct isci_host *ihost = dev_to_ihost(dev);
+	struct isci_remote_device *idev;
+	unsigned long flags;
+	int ret = TMF_RESP_FUNC_COMPLETE;
+
+	spin_lock_irqsave(&ihost->scic_lock, flags);
+	idev = isci_get_device(dev->lldd_dev);
+	spin_unlock_irqrestore(&ihost->scic_lock, flags);
+
+	dev_dbg(&ihost->pdev->dev,
+		"%s: domain_device=%p, isci_host=%p; isci_device=%p\n",
+		__func__, dev, ihost, idev);
+
+	if (!idev) {
+		/* If the device is gone, escalate to I_T_Nexus_Reset. */
+		dev_dbg(&ihost->pdev->dev, "%s: No dev\n", __func__);
+
+		ret = TMF_RESP_FUNC_FAILED;
+		goto out;
+	}
+
+	/* Suspend the RNC, kill all TCs */
+	if (isci_remote_device_suspend_terminate(ihost, idev, NULL)
+	    != SCI_SUCCESS) {
+		/* The suspend/terminate only fails if isci_get_device fails */
+		ret = TMF_RESP_FUNC_FAILED;
+		goto out;
+	}
+	/* All pending I/Os have been terminated and cleaned up. */
+	if (!test_bit(IDEV_GONE, &idev->flags)) {
+		if (dev_is_sata(dev))
+			sas_ata_schedule_reset(dev);
+		else
+			/* Send the task management part of the reset. */
+			ret = isci_task_send_lu_reset_sas(ihost, idev, lun);
+	}
+ out:
+	isci_put_device(idev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -882,6 +1085,7 @@ int isci_task_clear_nexus_ha(struct sas_ha_struct *ha)
 /* Task Management Functions. Must be called from process context.	 */
 
 /**
+<<<<<<< HEAD
  * isci_abort_task_process_cb() - This is a helper function for the abort task
  *    TMF command.  It manages the request state with respect to the successful
  *    transmission / completion of the abort task request.
@@ -939,6 +1143,8 @@ static void isci_abort_task_process_cb(
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * isci_task_abort_task() - This function is one of the SAS Domain Template
  *    functions. This function is called by libsas to abort a specified task.
  * @task: This parameter specifies the SAS task to abort.
@@ -947,6 +1153,7 @@ static void isci_abort_task_process_cb(
  */
 int isci_task_abort_task(struct sas_task *task)
 {
+<<<<<<< HEAD
 	struct isci_host *isci_host = dev_to_ihost(task->dev);
 	DECLARE_COMPLETION_ONSTACK(aborted_io_completion);
 	struct isci_request       *old_request = NULL;
@@ -956,6 +1163,15 @@ int isci_task_abort_task(struct sas_task *task)
 	int                       ret = TMF_RESP_FUNC_FAILED;
 	unsigned long             flags;
 	int                       perform_termination = 0;
+=======
+	struct isci_host *ihost = dev_to_ihost(task->dev);
+	DECLARE_COMPLETION_ONSTACK(aborted_io_completion);
+	struct isci_request       *old_request = NULL;
+	struct isci_remote_device *idev = NULL;
+	struct isci_tmf           tmf;
+	int                       ret = TMF_RESP_FUNC_FAILED;
+	unsigned long             flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int                       target_done_already = 0;
 
 	/* Get the isci_request reference from the task.  Note that
@@ -963,30 +1179,57 @@ int isci_task_abort_task(struct sas_task *task)
 	 * in the device, because tasks driving resets may land here
 	 * after completion in the core.
 	 */
+<<<<<<< HEAD
 	spin_lock_irqsave(&isci_host->scic_lock, flags);
+=======
+	spin_lock_irqsave(&ihost->scic_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&task->task_state_lock);
 
 	old_request = task->lldd_task;
 
 	/* If task is already done, the request isn't valid */
 	if (!(task->task_state_flags & SAS_TASK_STATE_DONE) &&
+<<<<<<< HEAD
 	    (task->task_state_flags & SAS_TASK_AT_INITIATOR) &&
 	    old_request) {
 		isci_device = isci_lookup_device(task->dev);
+=======
+	    old_request) {
+		idev = isci_get_device(task->dev->lldd_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		target_done_already = test_bit(IREQ_COMPLETE_IN_TARGET,
 					       &old_request->flags);
 	}
 	spin_unlock(&task->task_state_lock);
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&isci_host->scic_lock, flags);
 
 	dev_dbg(&isci_host->pdev->dev,
 		"%s: dev = %p, task = %p, old_request == %p\n",
 		__func__, isci_device, task, old_request);
+=======
+	spin_unlock_irqrestore(&ihost->scic_lock, flags);
+
+	dev_warn(&ihost->pdev->dev,
+		 "%s: dev = %p (%s%s), task = %p, old_request == %p\n",
+		 __func__, idev,
+		 (dev_is_sata(task->dev) ? "STP/SATA"
+					 : ((dev_is_expander(task->dev->dev_type))
+						? "SMP"
+						: "SSP")),
+		 ((idev) ? ((test_bit(IDEV_GONE, &idev->flags))
+			   ? " IDEV_GONE"
+			   : "")
+			 : " <NULL>"),
+		 task, old_request);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Device reset conditions signalled in task_state_flags are the
 	 * responsbility of libsas to observe at the start of the error
 	 * handler thread.
 	 */
+<<<<<<< HEAD
 	if (!isci_device || !old_request) {
 		/* The request has already completed and there
 		* is nothing to do here other than to set the task
@@ -997,10 +1240,22 @@ int isci_task_abort_task(struct sas_task *task)
 		task->task_state_flags |= SAS_TASK_STATE_DONE;
 		task->task_state_flags &= ~(SAS_TASK_AT_INITIATOR |
 					    SAS_TASK_STATE_PENDING);
+=======
+	if (!idev || !old_request) {
+		/* The request has already completed and there
+		* is nothing to do here other than to set the task
+		* done bit, and indicate that the task abort function
+		* was successful.
+		*/
+		spin_lock_irqsave(&task->task_state_lock, flags);
+		task->task_state_flags |= SAS_TASK_STATE_DONE;
+		task->task_state_flags &= ~SAS_TASK_STATE_PENDING;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&task->task_state_lock, flags);
 
 		ret = TMF_RESP_FUNC_COMPLETE;
 
+<<<<<<< HEAD
 		dev_dbg(&isci_host->pdev->dev,
 			"%s: abort task not needed for %p\n",
 			__func__, task);
@@ -1103,6 +1358,73 @@ int isci_task_abort_task(struct sas_task *task)
 	old_request->io_request_completion = NULL;
  out:
 	isci_put_device(isci_device);
+=======
+		dev_warn(&ihost->pdev->dev,
+			 "%s: abort task not needed for %p\n",
+			 __func__, task);
+		goto out;
+	}
+	/* Suspend the RNC, kill the TC */
+	if (isci_remote_device_suspend_terminate(ihost, idev, old_request)
+	    != SCI_SUCCESS) {
+		dev_warn(&ihost->pdev->dev,
+			 "%s: isci_remote_device_reset_terminate(dev=%p, "
+				 "req=%p, task=%p) failed\n",
+			 __func__, idev, old_request, task);
+		ret = TMF_RESP_FUNC_FAILED;
+		goto out;
+	}
+	spin_lock_irqsave(&ihost->scic_lock, flags);
+
+	if (task->task_proto == SAS_PROTOCOL_SMP ||
+	    sas_protocol_ata(task->task_proto) ||
+	    target_done_already ||
+	    test_bit(IDEV_GONE, &idev->flags)) {
+
+		spin_unlock_irqrestore(&ihost->scic_lock, flags);
+
+		/* No task to send, so explicitly resume the device here */
+		isci_remote_device_resume_from_abort(ihost, idev);
+
+		dev_warn(&ihost->pdev->dev,
+			 "%s: %s request"
+				 " or complete_in_target (%d), "
+				 "or IDEV_GONE (%d), thus no TMF\n",
+			 __func__,
+			 ((task->task_proto == SAS_PROTOCOL_SMP)
+			  ? "SMP"
+			  : (sas_protocol_ata(task->task_proto)
+				? "SATA/STP"
+				: "<other>")
+			  ),
+			 test_bit(IREQ_COMPLETE_IN_TARGET,
+				  &old_request->flags),
+			 test_bit(IDEV_GONE, &idev->flags));
+
+		spin_lock_irqsave(&task->task_state_lock, flags);
+		task->task_state_flags &= ~SAS_TASK_STATE_PENDING;
+		task->task_state_flags |= SAS_TASK_STATE_DONE;
+		spin_unlock_irqrestore(&task->task_state_lock, flags);
+
+		ret = TMF_RESP_FUNC_COMPLETE;
+	} else {
+		/* Fill in the tmf structure */
+		isci_task_build_abort_task_tmf(&tmf, isci_tmf_ssp_task_abort,
+					       old_request);
+
+		spin_unlock_irqrestore(&ihost->scic_lock, flags);
+
+		/* Send the task management request. */
+		#define ISCI_ABORT_TASK_TIMEOUT_MS 500 /* 1/2 second timeout */
+		ret = isci_task_execute_tmf(ihost, idev, &tmf,
+					    ISCI_ABORT_TASK_TIMEOUT_MS);
+	}
+out:
+	dev_warn(&ihost->pdev->dev,
+		 "%s: Done; dev = %p, task = %p , old_request == %p\n",
+		 __func__, idev, task, old_request);
+	isci_put_device(idev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1125,6 +1447,7 @@ int isci_task_abort_task_set(
 
 
 /**
+<<<<<<< HEAD
  * isci_task_clear_aca() - This function is one of the SAS Domain Template
  *    functions. This is one of the Task Management functoins called by libsas.
  * @d_device: This parameter specifies the domain device associated with this
@@ -1143,6 +1466,8 @@ int isci_task_clear_aca(
 
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * isci_task_clear_task_set() - This function is one of the SAS Domain Template
  *    functions. This is one of the Task Management functoins called by libsas.
  * @d_device: This parameter specifies the domain device associated with this
@@ -1167,7 +1492,10 @@ int isci_task_clear_task_set(
  *    returned, libsas turns this into a LUN reset; when FUNC_FAILED is
  *    returned, libsas will turn this into a target reset
  * @task: This parameter specifies the sas task being queried.
+<<<<<<< HEAD
  * @lun: This parameter specifies the lun associated with this request.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * status, zero indicates success.
  */
@@ -1198,22 +1526,33 @@ isci_task_request_complete(struct isci_host *ihost,
 {
 	struct isci_tmf *tmf = isci_request_access_tmf(ireq);
 	struct completion *tmf_complete = NULL;
+<<<<<<< HEAD
 	struct completion *request_complete = ireq->io_request_completion;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&ihost->pdev->dev,
 		"%s: request = %p, status=%d\n",
 		__func__, ireq, completion_status);
 
+<<<<<<< HEAD
 	isci_request_change_state(ireq, completed);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_bit(IREQ_COMPLETE_IN_TARGET, &ireq->flags);
 
 	if (tmf) {
 		tmf->status = completion_status;
 
 		if (tmf->proto == SAS_PROTOCOL_SSP) {
+<<<<<<< HEAD
 			memcpy(&tmf->resp.resp_iu,
 			       &ireq->ssp.rsp,
+=======
+			memcpy(tmf->resp.rsp_buf,
+			       ireq->ssp.rsp_buf,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       SSP_RESP_IU_MAX_SIZE);
 		} else if (tmf->proto == SAS_PROTOCOL_SATA) {
 			memcpy(&tmf->resp.d2h_fis,
@@ -1229,6 +1568,7 @@ isci_task_request_complete(struct isci_host *ihost,
 	 */
 	set_bit(IREQ_TERMINATED, &ireq->flags);
 
+<<<<<<< HEAD
 	/* As soon as something is in the terminate path, deallocation is
 	 * managed there.  Note that the final non-managed state of a task
 	 * request is "completed".
@@ -1243,6 +1583,13 @@ isci_task_request_complete(struct isci_host *ihost,
 	/* "request_complete" is set if the task was being terminated. */
 	if (request_complete)
 		complete(request_complete);
+=======
+	if (test_and_clear_bit(IREQ_ABORT_PATH_ACTIVE, &ireq->flags))
+		wake_up_all(&ihost->eventq);
+
+	if (!test_bit(IREQ_NO_AUTO_FREE_TAG, &ireq->flags))
+		isci_free_tag(ihost, ireq->io_tag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The task management part completes last. */
 	if (tmf_complete)
@@ -1253,14 +1600,19 @@ static int isci_reset_device(struct isci_host *ihost,
 			     struct domain_device *dev,
 			     struct isci_remote_device *idev)
 {
+<<<<<<< HEAD
 	int rc;
 	unsigned long flags;
 	enum sci_status status;
+=======
+	int rc = TMF_RESP_FUNC_COMPLETE, reset_stat = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sas_phy *phy = sas_get_local_phy(dev);
 	struct isci_port *iport = dev->port->lldd_port;
 
 	dev_dbg(&ihost->pdev->dev, "%s: idev %p\n", __func__, idev);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&ihost->scic_lock, flags);
 	status = sci_remote_device_reset(idev);
 	spin_unlock_irqrestore(&ihost->scic_lock, flags);
@@ -1295,6 +1647,34 @@ static int isci_reset_device(struct isci_host *ihost,
 	}
 
 	dev_dbg(&ihost->pdev->dev, "%s: idev %p complete.\n", __func__, idev);
+=======
+	/* Suspend the RNC, terminate all outstanding TCs. */
+	if (isci_remote_device_suspend_terminate(ihost, idev, NULL)
+	    != SCI_SUCCESS) {
+		rc = TMF_RESP_FUNC_FAILED;
+		goto out;
+	}
+	/* Note that since the termination for outstanding requests succeeded,
+	 * this function will return success.  This is because the resets will
+	 * only fail if the device has been removed (ie. hotplug), and the
+	 * primary duty of this function is to cleanup tasks, so that is the
+	 * relevant status.
+	 */
+	if (!test_bit(IDEV_GONE, &idev->flags)) {
+		if (scsi_is_sas_phy_local(phy)) {
+			struct isci_phy *iphy = &ihost->phys[phy->number];
+
+			reset_stat = isci_port_perform_hard_reset(ihost, iport,
+								  iphy);
+		} else
+			reset_stat = sas_phy_reset(phy, !dev_is_sata(dev));
+	}
+	/* Explicitly resume the RNC here, since there was no task sent. */
+	isci_remote_device_resume_from_abort(ihost, idev);
+
+	dev_dbg(&ihost->pdev->dev, "%s: idev %p complete, reset_stat=%d.\n",
+		__func__, idev, reset_stat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out:
 	sas_put_local_phy(phy);
 	return rc;
@@ -1308,7 +1688,11 @@ int isci_task_I_T_nexus_reset(struct domain_device *dev)
 	int ret;
 
 	spin_lock_irqsave(&ihost->scic_lock, flags);
+<<<<<<< HEAD
 	idev = isci_lookup_device(dev);
+=======
+	idev = isci_get_device(dev->lldd_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&ihost->scic_lock, flags);
 
 	if (!idev) {

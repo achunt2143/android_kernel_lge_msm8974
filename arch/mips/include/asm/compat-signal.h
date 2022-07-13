@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_COMPAT_SIGNAL_H
 #define __ASM_COMPAT_SIGNAL_H
 
@@ -8,6 +12,7 @@
 #include <asm/signal.h>
 #include <asm/siginfo.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 #define SI_PAD_SIZE32   ((SI_MAX_SIZE/sizeof(int)) - 3)
@@ -71,10 +76,14 @@ typedef struct compat_siginfo {
 
 	} _sifields;
 } compat_siginfo_t;
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int __copy_conv_sigset_to_user(compat_sigset_t __user *d,
 	const sigset_t *s)
 {
+<<<<<<< HEAD
 	int err;
 
 	BUG_ON(sizeof(*d) != sizeof(*s));
@@ -86,11 +95,18 @@ static inline int __copy_conv_sigset_to_user(compat_sigset_t __user *d,
 	err |= __put_user(s->sig[1] >> 32, &d->sig[3]);
 
 	return err;
+=======
+	BUILD_BUG_ON(sizeof(*d) != sizeof(*s));
+	BUILD_BUG_ON(_NSIG_WORDS != 2);
+
+	return put_compat_sigset(d, s, sizeof(*d));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int __copy_conv_sigset_from_user(sigset_t *d,
 	const compat_sigset_t __user *s)
 {
+<<<<<<< HEAD
 	int err;
 	union sigset_u {
 		sigset_t	s;
@@ -114,6 +130,9 @@ static inline int __copy_conv_sigset_from_user(sigset_t *d,
 #endif
 
 	return err;
+=======
+	return get_compat_sigset(d, s);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /* __ASM_COMPAT_SIGNAL_H */

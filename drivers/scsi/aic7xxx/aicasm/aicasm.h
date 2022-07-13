@@ -42,11 +42,15 @@
  * $FreeBSD$
  */
 
+<<<<<<< HEAD
 #ifdef __linux__
 #include "../queue.h"
 #else
 #include <sys/queue.h>
 #endif
+=======
+#include "../queue.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef TRUE
 #define TRUE 1

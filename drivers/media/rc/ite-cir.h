@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for ITE Tech Inc. IT8712F/IT8512F CIR
  *
  * Copyright (C) 2010 Juan Jesús García de Soria <skandalfo@gmail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -17,11 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* platform driver name to register */
 #define ITE_DRIVER_NAME "ite-cir"
 
+<<<<<<< HEAD
 /* logging macros */
 #define ite_pr(level, text, ...) \
 	printk(level KBUILD_MODNAME ": " text, ## __VA_ARGS__)
@@ -37,6 +45,8 @@
 			KBUILD_MODNAME ": " text "\n" , ## __VA_ARGS__); \
 } while (0)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* FIFO sizes */
 #define ITE_TX_FIFO_LEN 32
 #define ITE_RX_FIFO_LEN 32
@@ -60,6 +70,7 @@ struct ite_dev_params {
 	/* IR pnp I/O resource number */
 	int io_rsrc_no;
 
+<<<<<<< HEAD
 	/* true if the hardware supports transmission */
 	bool hw_tx_capable;
 
@@ -78,6 +89,8 @@ struct ite_dev_params {
 	/* duty cycle, 0-100 */
 	int tx_duty_cycle;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* hw-specific operation function pointers; most of these must be
 	 * called while holding the spin lock, except for the TX FIFO length
 	 * one */
@@ -125,6 +138,7 @@ struct ite_dev_params {
 struct ite_dev {
 	struct pnp_dev *pdev;
 	struct rc_dev *rdev;
+<<<<<<< HEAD
 	struct ir_raw_event rawir;
 
 	/* sync data */
@@ -135,12 +149,38 @@ struct ite_dev {
 	int tx_fifo_allowance;
 	wait_queue_head_t tx_queue, tx_ended;
 
+=======
+
+	/* sync data */
+	spinlock_t lock;
+	bool transmitting;
+
+	/* transmit support */
+	wait_queue_head_t tx_queue, tx_ended;
+
+	/* rx low carrier frequency, in Hz, 0 means no demodulation */
+	unsigned int rx_low_carrier_freq;
+
+	/* tx high carrier frequency, in Hz, 0 means no demodulation */
+	unsigned int rx_high_carrier_freq;
+
+	/* tx carrier frequency, in Hz */
+	unsigned int tx_carrier_freq;
+
+	/* duty cycle, 0-100 */
+	int tx_duty_cycle;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* hardware I/O settings */
 	unsigned long cir_addr;
 	int cir_irq;
 
 	/* overridable copy of model parameters */
+<<<<<<< HEAD
 	struct ite_dev_params params;
+=======
+	const struct ite_dev_params *params;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* common values for all kinds of hardware */
@@ -159,6 +199,7 @@ struct ite_dev {
 /* default carrier freq for when demodulator is off (Hz) */
 #define ITE_DEFAULT_CARRIER_FREQ	38000
 
+<<<<<<< HEAD
 /* default idling timeout in ns (0.2 seconds) */
 #define ITE_IDLE_TIMEOUT		200000000UL
 
@@ -169,6 +210,11 @@ struct ite_dev {
 /* convert bits to us */
 #define ITE_BITS_TO_NS(bits, sample_period) \
 ((u32) ((bits) * ITE_BAUDRATE_DIVISOR * sample_period))
+=======
+/* convert bits to us */
+#define ITE_BITS_TO_US(bits, sample_period) \
+((u32)((bits) * ITE_BAUDRATE_DIVISOR * (sample_period) / 1000))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * n in RDCR produces a tolerance of +/- n * 6.25% around the center
@@ -211,7 +257,11 @@ struct ite_dev {
  * hardware data obtained from:
  *
  * IT8712F
+<<<<<<< HEAD
  * Environment Control – Low Pin Count Input / Output
+=======
+ * Environment Control - Low Pin Count Input / Output
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * (EC - LPC I/O)
  * Preliminary Specification V0. 81
  */

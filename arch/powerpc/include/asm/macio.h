@@ -1,10 +1,21 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __MACIO_ASIC_H__
 #define __MACIO_ASIC_H__
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
 #include <linux/of_device.h>
 
 extern struct bus_type macio_bus_type;
+=======
+#include <linux/of.h>
+#include <linux/platform_device.h>
+
+extern const struct bus_type macio_bus_type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* MacIO device driver is defined later */
 struct macio_driver;
@@ -124,7 +135,11 @@ static inline struct pci_dev *macio_get_pci_dev(struct macio_dev *mdev)
 struct macio_driver
 {
 	int	(*probe)(struct macio_dev* dev, const struct of_device_id *match);
+<<<<<<< HEAD
 	int	(*remove)(struct macio_dev* dev);
+=======
+	void	(*remove)(struct macio_dev *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int	(*suspend)(struct macio_dev* dev, pm_message_t state);
 	int	(*resume)(struct macio_dev* dev);

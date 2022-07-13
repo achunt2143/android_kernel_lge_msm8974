@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 
  * l1oip_codec.c  generic codec using lookup table
@@ -9,6 +13,7 @@
  *
  * Author	Andreas Eversberg (jolly@eversberg.eu)
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2, or (at your option)
@@ -22,6 +27,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  */
 
@@ -312,10 +319,15 @@ l1oip_ulaw_to_alaw(u8 *data, int len, u8 *result)
 void
 l1oip_4bit_free(void)
 {
+<<<<<<< HEAD
 	if (table_dec)
 		vfree(table_dec);
 	if (table_com)
 		vfree(table_com);
+=======
+	vfree(table_dec);
+	vfree(table_com);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	table_com = NULL;
 	table_dec = NULL;
 }

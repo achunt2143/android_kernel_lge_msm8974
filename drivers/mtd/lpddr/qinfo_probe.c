@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Probing flash chips with QINFO records.
  * (C) 2008 Korolev Alexey <akorolev@infradead.org>
  * (C) 2008 Vasiliy Leonenko <vasiliy.leonenko@gmail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -17,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/module.h>
 #include <linux/types.h>
@@ -57,7 +64,11 @@ static struct qinfo_query_info qinfo_array[] = {
 
 static long lpddr_get_qinforec_pos(struct map_info *map, char *id_str)
 {
+<<<<<<< HEAD
 	int qinfo_lines = sizeof(qinfo_array)/sizeof(struct qinfo_query_info);
+=======
+	int qinfo_lines = ARRAY_SIZE(qinfo_array);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	int bankwidth = map_bankwidth(map) * 8;
 	int major, minor;
@@ -135,11 +146,16 @@ static int lpddr_chip_setup(struct map_info *map, struct lpddr_private *lpddr)
 {
 
 	lpddr->qinfo = kzalloc(sizeof(struct qinfo_chip), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!lpddr->qinfo) {
 		printk(KERN_WARNING "%s: no memory for LPDDR qinfo structure\n",
 				map->name);
 		return 0;
 	}
+=======
+	if (!lpddr->qinfo)
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get the ManuID */
 	lpddr->ManufactId = CMDVAL(map_read(map, map->pfow_base + PFOW_MANUFACTURER_ID));
@@ -184,8 +200,13 @@ static struct lpddr_private *lpddr_probe_chip(struct map_info *map)
 	lpddr.numchips = 1;
 
 	numvirtchips = lpddr.numchips * lpddr.qinfo->HWPartsNum;
+<<<<<<< HEAD
 	retlpddr = kzalloc(sizeof(struct lpddr_private) +
 			numvirtchips * sizeof(struct flchip), GFP_KERNEL);
+=======
+	retlpddr = kzalloc(struct_size(retlpddr, chips, numvirtchips),
+			   GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!retlpddr)
 		return NULL;
 

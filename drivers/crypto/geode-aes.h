@@ -1,19 +1,27 @@
+<<<<<<< HEAD
 /* Copyright (C) 2003-2006, Advanced Micro Devices, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/* Copyright (C) 2003-2006, Advanced Micro Devices, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _GEODE_AES_H_
 #define _GEODE_AES_H_
 
 /* driver logic flags */
+<<<<<<< HEAD
 #define AES_IV_LENGTH  16
 #define AES_KEY_LENGTH 16
 #define AES_MIN_BLOCK_SIZE 16
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AES_MODE_ECB 0
 #define AES_MODE_CBC 1
 
@@ -54,6 +62,7 @@
 
 #define AES_OP_TIMEOUT    0x50000
 
+<<<<<<< HEAD
 struct geode_aes_op {
 
 	void *src;
@@ -69,6 +78,12 @@ struct geode_aes_op {
 
 	union {
 		struct crypto_blkcipher *blk;
+=======
+struct geode_aes_tfm_ctx {
+	u8 key[AES_KEYSIZE_128];
+	union {
+		struct crypto_skcipher *skcipher;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct crypto_cipher *cip;
 	} fallback;
 	u32 keylen;

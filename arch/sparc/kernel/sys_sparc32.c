@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sys_sparc32.c: Conversion between 32bit and 64bit native syscalls.
  *
  * Copyright (C) 1997,1998 Jakub Jelinek (jj@sunsite.mff.cuni.cz)
@@ -21,7 +25,10 @@
 #include <linux/msg.h>
 #include <linux/shm.h>
 #include <linux/uio.h>
+<<<<<<< HEAD
 #include <linux/nfs_fs.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/quota.h>
 #include <linux/poll.h>
 #include <linux/personality.h>
@@ -44,11 +51,16 @@
 #include <linux/slab.h>
 
 #include <asm/types.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/fpumacro.h>
 #include <asm/mmu_context.h>
 #include <asm/compat_signal.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_SYSVIPC                                                        
 asmlinkage long compat_sys_ipc(u32 call, u32 first, u32 second, u32 third, compat_uptr_t ptr, u32 fifth)
 {
@@ -128,6 +140,18 @@ asmlinkage long sys32_ftruncate64(unsigned int fd, unsigned long high, unsigned 
 		return -EINVAL;
 	else
 		return sys_ftruncate(fd, (high << 32) | low);
+=======
+#include "systbls.h"
+
+COMPAT_SYSCALL_DEFINE3(truncate64, const char __user *, path, u32, high, u32, low)
+{
+	return ksys_truncate(path, ((u64)high << 32) | low);
+}
+
+COMPAT_SYSCALL_DEFINE3(ftruncate64, unsigned int, fd, u32, high, u32, low)
+{
+	return ksys_ftruncate(fd, ((u64)high << 32) | low);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cp_compat_stat64(struct kstat *stat,
@@ -139,8 +163,13 @@ static int cp_compat_stat64(struct kstat *stat,
 	err |= put_user(stat->ino, &statbuf->st_ino);
 	err |= put_user(stat->mode, &statbuf->st_mode);
 	err |= put_user(stat->nlink, &statbuf->st_nlink);
+<<<<<<< HEAD
 	err |= put_user(stat->uid, &statbuf->st_uid);
 	err |= put_user(stat->gid, &statbuf->st_gid);
+=======
+	err |= put_user(from_kuid_munged(current_user_ns(), stat->uid), &statbuf->st_uid);
+	err |= put_user(from_kgid_munged(current_user_ns(), stat->gid), &statbuf->st_gid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err |= put_user(huge_encode_dev(stat->rdev), &statbuf->st_rdev);
 	err |= put_user(0, (unsigned long __user *) &statbuf->__pad3[0]);
 	err |= put_user(stat->size, &statbuf->st_size);
@@ -160,8 +189,13 @@ static int cp_compat_stat64(struct kstat *stat,
 	return err;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_stat64(const char __user * filename,
 		struct compat_stat64 __user *statbuf)
+=======
+COMPAT_SYSCALL_DEFINE2(stat64, const char __user *, filename,
+		struct compat_stat64 __user *, statbuf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kstat stat;
 	int error = vfs_stat(filename, &stat);
@@ -171,8 +205,13 @@ asmlinkage long compat_sys_stat64(const char __user * filename,
 	return error;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_lstat64(const char __user * filename,
 		struct compat_stat64 __user *statbuf)
+=======
+COMPAT_SYSCALL_DEFINE2(lstat64, const char __user *, filename,
+		struct compat_stat64 __user *, statbuf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kstat stat;
 	int error = vfs_lstat(filename, &stat);
@@ -182,8 +221,13 @@ asmlinkage long compat_sys_lstat64(const char __user * filename,
 	return error;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_fstat64(unsigned int fd,
 		struct compat_stat64 __user * statbuf)
+=======
+COMPAT_SYSCALL_DEFINE2(fstat64, unsigned int, fd,
+		struct compat_stat64 __user *, statbuf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kstat stat;
 	int error = vfs_fstat(fd, &stat);
@@ -193,9 +237,15 @@ asmlinkage long compat_sys_fstat64(unsigned int fd,
 	return error;
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_fstatat64(unsigned int dfd,
 		const char __user *filename,
 		struct compat_stat64 __user * statbuf, int flag)
+=======
+COMPAT_SYSCALL_DEFINE4(fstatat64, unsigned int, dfd,
+		const char __user *, filename,
+		struct compat_stat64 __user *, statbuf, int, flag)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kstat stat;
 	int error;
@@ -206,6 +256,7 @@ asmlinkage long compat_sys_fstatat64(unsigned int dfd,
 	return cp_compat_stat64(&stat, statbuf);
 }
 
+<<<<<<< HEAD
 asmlinkage long compat_sys_sysfs(int option, u32 arg1, u32 arg2)
 {
 	return sys_sysfs(option, arg1, arg2);
@@ -351,6 +402,24 @@ asmlinkage long compat_sys_rt_sigaction(int sig,
         struct k_sigaction new_ka, old_ka;
         int ret;
 	compat_sigset_t set32;
+=======
+COMPAT_SYSCALL_DEFINE3(sparc_sigaction, int, sig,
+			struct compat_old_sigaction __user *,act,
+			struct compat_old_sigaction __user *,oact)
+{
+	WARN_ON_ONCE(sig >= 0);
+	return compat_sys_sigaction(-sig, act, oact);
+}
+
+COMPAT_SYSCALL_DEFINE5(rt_sigaction, int, sig,
+			struct compat_sigaction __user *,act,
+			struct compat_sigaction __user *,oact,
+			void __user *,restorer,
+			compat_size_t,sigsetsize)
+{
+        struct k_sigaction new_ka, old_ka;
+        int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         /* XXX: Don't preclude handling different sized sigset_t's.  */
         if (sigsetsize != sizeof(compat_sigset_t))
@@ -362,6 +431,7 @@ asmlinkage long compat_sys_rt_sigaction(int sig,
 		new_ka.ka_restorer = restorer;
 		ret = get_user(u_handler, &act->sa_handler);
 		new_ka.sa.sa_handler =  compat_ptr(u_handler);
+<<<<<<< HEAD
 		ret |= __copy_from_user(&set32, &act->sa_mask, sizeof(compat_sigset_t));
 		switch (_NSIG_WORDS) {
 		case 4: new_ka.sa.sa_mask.sig[3] = set32.sig[6] | (((long)set32.sig[7]) << 32);
@@ -371,6 +441,11 @@ asmlinkage long compat_sys_rt_sigaction(int sig,
 		}
 		ret |= __get_user(new_ka.sa.sa_flags, &act->sa_flags);
 		ret |= __get_user(u_restorer, &act->sa_restorer);
+=======
+		ret |= get_compat_sigset(&new_ka.sa.sa_mask, &act->sa_mask);
+		ret |= get_user(new_ka.sa.sa_flags, &act->sa_flags);
+		ret |= get_user(u_restorer, &act->sa_restorer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		new_ka.sa.sa_restorer = compat_ptr(u_restorer);
                 if (ret)
                 	return -EFAULT;
@@ -379,6 +454,7 @@ asmlinkage long compat_sys_rt_sigaction(int sig,
 	ret = do_sigaction(sig, act ? &new_ka : NULL, oact ? &old_ka : NULL);
 
 	if (!ret && oact) {
+<<<<<<< HEAD
 		switch (_NSIG_WORDS) {
 		case 4: set32.sig[7] = (old_ka.sa.sa_mask.sig[3] >> 32); set32.sig[6] = old_ka.sa.sa_mask.sig[3];
 		case 3: set32.sig[5] = (old_ka.sa.sa_mask.sig[2] >> 32); set32.sig[4] = old_ka.sa.sa_mask.sig[2];
@@ -389,6 +465,13 @@ asmlinkage long compat_sys_rt_sigaction(int sig,
 		ret |= __copy_to_user(&oact->sa_mask, &set32, sizeof(compat_sigset_t));
 		ret |= __put_user(old_ka.sa.sa_flags, &oact->sa_flags);
 		ret |= __put_user(ptr_to_compat(old_ka.sa.sa_restorer), &oact->sa_restorer);
+=======
+		ret = put_user(ptr_to_compat(old_ka.sa.sa_handler), &oact->sa_handler);
+		ret |= put_compat_sigset(&oact->sa_mask, &old_ka.sa.sa_mask,
+					 sizeof(oact->sa_mask));
+		ret |= put_user(old_ka.sa.sa_flags, &oact->sa_flags);
+		ret |= put_user(ptr_to_compat(old_ka.sa.sa_restorer), &oact->sa_restorer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret)
 			ret = -EFAULT;
         }
@@ -396,6 +479,7 @@ asmlinkage long compat_sys_rt_sigaction(int sig,
         return ret;
 }
 
+<<<<<<< HEAD
 /*
  * sparc32_execve() executes a new program after the asm stub has set
  * things up for us.  This should basically do what I want it to.
@@ -583,4 +667,53 @@ asmlinkage long compat_sys_fallocate(int fd, int mode, u32 offhi, u32 offlo,
 {
 	return sys_fallocate(fd, mode, ((loff_t)offhi << 32) | offlo,
 			     ((loff_t)lenhi << 32) | lenlo);
+=======
+COMPAT_SYSCALL_DEFINE5(pread64, unsigned int, fd, char __user *, ubuf,
+			compat_size_t, count, u32, poshi, u32, poslo)
+{
+	return ksys_pread64(fd, ubuf, count, ((u64)poshi << 32) | poslo);
+}
+
+COMPAT_SYSCALL_DEFINE5(pwrite64, unsigned int, fd, char __user *, ubuf,
+			compat_size_t, count, u32, poshi, u32, poslo)
+{
+	return ksys_pwrite64(fd, ubuf, count, ((u64)poshi << 32) | poslo);
+}
+
+COMPAT_SYSCALL_DEFINE4(readahead, int, fd, u32, offhi, u32, offlo,
+		     compat_size_t, count)
+{
+	return ksys_readahead(fd, ((u64)offhi << 32) | offlo, count);
+}
+
+COMPAT_SYSCALL_DEFINE5(fadvise64, int, fd, u32, offhi, u32, offlo,
+			  compat_size_t, len, int, advice)
+{
+	return ksys_fadvise64_64(fd, ((u64)offhi << 32) | offlo, len, advice);
+}
+
+COMPAT_SYSCALL_DEFINE6(fadvise64_64, int, fd, u32, offhi, u32, offlo,
+			     u32, lenhi, u32, lenlo, int, advice)
+{
+	return ksys_fadvise64_64(fd,
+				 ((u64)offhi << 32) | offlo,
+				 ((u64)lenhi << 32) | lenlo,
+				 advice);
+}
+
+COMPAT_SYSCALL_DEFINE6(sync_file_range, unsigned int, fd, u32, off_high, u32, off_low,
+			u32, nb_high, u32, nb_low, unsigned int, flags)
+{
+	return ksys_sync_file_range(fd,
+				    ((u64)off_high << 32) | off_low,
+				    ((u64)nb_high << 32) | nb_low,
+				    flags);
+}
+
+COMPAT_SYSCALL_DEFINE6(fallocate, int, fd, int, mode, u32, offhi, u32, offlo,
+				     u32, lenhi, u32, lenlo)
+{
+	return ksys_fallocate(fd, mode, ((loff_t)offhi << 32) | offlo,
+			      ((loff_t)lenhi << 32) | lenlo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * misc setup functions for MPC83xx
  *
  * Maintainer: Kumar Gala <galak@kernel.crashing.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
@@ -14,6 +21,7 @@
 #include <linux/of_platform.h>
 #include <linux/pci.h>
 
+<<<<<<< HEAD
 #include <asm/io.h>
 #include <asm/hw_irq.h>
 #include <asm/ipic.h>
@@ -21,6 +29,19 @@
 #include <sysdev/fsl_soc.h>
 #include <sysdev/fsl_pci.h>
 
+=======
+#include <asm/debug.h>
+#include <asm/io.h>
+#include <asm/hw_irq.h>
+#include <asm/ipic.h>
+#include <asm/fixmap.h>
+
+#include <sysdev/fsl_soc.h>
+#include <sysdev/fsl_pci.h>
+
+#include <mm/mmu_decl.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "mpc83xx.h"
 
 static __be32 __iomem *restart_reg_base;
@@ -35,7 +56,11 @@ static int __init mpc83xx_restart_init(void)
 
 arch_initcall(mpc83xx_restart_init);
 
+<<<<<<< HEAD
 void mpc83xx_restart(char *cmd)
+=======
+void __noreturn mpc83xx_restart(char *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #define RST_OFFSET	0x00000900
 #define RST_PROT_REG	0x00000018
@@ -92,6 +117,7 @@ void __init mpc83xx_ipic_init_IRQ(void)
 	ipic_set_default_priority();
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_QUICC_ENGINE
 void __init mpc83xx_qe_init_IRQ(void)
 {
@@ -115,6 +141,9 @@ void __init mpc83xx_ipic_and_qe_init_IRQ(void)
 #endif /* CONFIG_QUICC_ENGINE */
 
 static struct of_device_id __initdata of_bus_ids[] = {
+=======
+static const struct of_device_id of_bus_ids[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .type = "soc", },
 	{ .compatible = "soc", },
 	{ .compatible = "simple-bus" },
@@ -142,3 +171,35 @@ void __init mpc83xx_setup_pci(void)
 		mpc83xx_add_bridge(np);
 }
 #endif
+<<<<<<< HEAD
+=======
+
+void __init mpc83xx_setup_arch(void)
+{
+	phys_addr_t immrbase = get_immrbase();
+	int immrsize = IS_ALIGNED(immrbase, SZ_2M) ? SZ_2M : SZ_1M;
+	unsigned long va = fix_to_virt(FIX_IMMR_BASE);
+
+	if (ppc_md.progress)
+		ppc_md.progress("mpc83xx_setup_arch()", 0);
+
+	setbat(-1, va, immrbase, immrsize, PAGE_KERNEL_NCG);
+	update_bats();
+}
+
+int machine_check_83xx(struct pt_regs *regs)
+{
+	u32 mask = 1 << (31 - IPIC_MCP_WDT);
+
+	if (!(regs->msr & SRR1_MCE_MCP) || !(ipic_get_mcp_status() & mask))
+		return machine_check_generic(regs);
+	ipic_clear_mcp_status(mask);
+
+	if (debugger_fault_handler(regs))
+		return 1;
+
+	die("Watchdog NMI Reset", regs, 0);
+
+	return 1;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

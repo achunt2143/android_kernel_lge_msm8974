@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * EHCI HCD (Host Controller Driver) for USB.
  *
@@ -8,6 +12,7 @@
  * Based on "ehci-ppc-of.c" by Valentine Barshak <vbarshak@ru.mvista.com>
  * and "ehci-ppc-soc.c" by Stefan Roese <sr@denx.de>
  * and "ohci-ppc-of.c" by Sylvain Munaut <tnt@246tNt.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -25,11 +30,17 @@
  *
  */
 
+=======
+ */
+
+#include <linux/err.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/signal.h>
 
 #include <linux/of.h>
 #include <linux/of_platform.h>
 #include <linux/of_address.h>
+<<<<<<< HEAD
 
 /**
  * ehci_xilinx_of_setup - Initialize the device for ehci_reset()
@@ -54,6 +65,9 @@ static int ehci_xilinx_of_setup(struct usb_hcd *hcd)
 
 	return ehci_reset(ehci);
 }
+=======
+#include <linux/of_irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * ehci_xilinx_port_handed_over - hand the port out if failed to enable it
@@ -68,6 +82,11 @@ static int ehci_xilinx_of_setup(struct usb_hcd *hcd)
  * There are cases when the host controller fails to enable the port due to,
  * for example, insufficient power that can be supplied to the device from
  * the USB bus. In those cases, the messages printed here are not helpful.
+<<<<<<< HEAD
+=======
+ *
+ * Return: Always return 0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int ehci_xilinx_port_handed_over(struct usb_hcd *hcd, int portnum)
 {
@@ -82,11 +101,17 @@ static int ehci_xilinx_port_handed_over(struct usb_hcd *hcd, int portnum)
 		dev_warn(hcd->self.controller,
 			"Maybe your device is not a high speed device?\n");
 		dev_warn(hcd->self.controller,
+<<<<<<< HEAD
 			"The USB host controller does not support full speed "
 			"nor low speed devices\n");
 		dev_warn(hcd->self.controller,
 			"You can reconfigure the host controller to have "
 			"full speed support\n");
+=======
+			"The USB host controller does not support full speed nor low speed devices\n");
+		dev_warn(hcd->self.controller,
+			"You can reconfigure the host controller to have full speed support\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -102,12 +127,20 @@ static const struct hc_driver ehci_xilinx_of_hc_driver = {
 	 * generic hardware linkage
 	 */
 	.irq			= ehci_irq,
+<<<<<<< HEAD
 	.flags			= HCD_MEMORY | HCD_USB2,
+=======
+	.flags			= HCD_MEMORY | HCD_DMA | HCD_USB2 | HCD_BH,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * basic lifecycle operations
 	 */
+<<<<<<< HEAD
 	.reset			= ehci_xilinx_of_setup,
+=======
+	.reset			= ehci_setup,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start			= ehci_run,
 	.stop			= ehci_stop,
 	.shutdown		= ehci_shutdown,
@@ -148,8 +181,15 @@ static const struct hc_driver ehci_xilinx_of_hc_driver = {
  * host controller. Because the Xilinx USB host controller can be configured
  * as HS only or HS/FS only, it checks the configuration in the device tree
  * entry, and sets an appropriate value for hcd->has_tt.
+<<<<<<< HEAD
  */
 static int __devinit ehci_hcd_xilinx_of_probe(struct platform_device *op)
+=======
+ *
+ * Return: zero on success, negative error code otherwise
+ */
+static int ehci_hcd_xilinx_of_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *dn = op->dev.of_node;
 	struct usb_hcd *hcd;
@@ -176,6 +216,7 @@ static int __devinit ehci_hcd_xilinx_of_probe(struct platform_device *op)
 	hcd->rsrc_start = res.start;
 	hcd->rsrc_len = resource_size(&res);
 
+<<<<<<< HEAD
 	if (!request_mem_region(hcd->rsrc_start, hcd->rsrc_len, hcd_name)) {
 		printk(KERN_ERR "%s: request_mem_region failed\n", __FILE__);
 		rv = -EBUSY;
@@ -185,15 +226,28 @@ static int __devinit ehci_hcd_xilinx_of_probe(struct platform_device *op)
 	irq = irq_of_parse_and_map(dn, 0);
 	if (!irq) {
 		printk(KERN_ERR "%s: irq_of_parse_and_map failed\n", __FILE__);
+=======
+	irq = irq_of_parse_and_map(dn, 0);
+	if (!irq) {
+		dev_err(&op->dev, "%s: irq_of_parse_and_map failed\n",
+			__FILE__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rv = -EBUSY;
 		goto err_irq;
 	}
 
+<<<<<<< HEAD
 	hcd->regs = ioremap(hcd->rsrc_start, hcd->rsrc_len);
 	if (!hcd->regs) {
 		printk(KERN_ERR "%s: ioremap failed\n", __FILE__);
 		rv = -ENOMEM;
 		goto err_ioremap;
+=======
+	hcd->regs = devm_ioremap_resource(&op->dev, &res);
+	if (IS_ERR(hcd->regs)) {
+		rv = PTR_ERR(hcd->regs);
+		goto err_irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ehci = hcd_to_ehci(hcd);
@@ -219,6 +273,7 @@ static int __devinit ehci_hcd_xilinx_of_probe(struct platform_device *op)
 	/* Debug registers are at the first 0x100 region
 	 */
 	ehci->caps = hcd->regs + 0x100;
+<<<<<<< HEAD
 	ehci->regs = hcd->regs + 0x100 +
 		HC_LENGTH(ehci, ehci_readl(ehci, &ehci->caps->hc_capbase));
 
@@ -235,6 +290,16 @@ err_ioremap:
 err_irq:
 	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
 err_rmr:
+=======
+
+	rv = usb_add_hcd(hcd, irq, 0);
+	if (rv == 0) {
+		device_wakeup_enable(hcd->self.controller);
+		return 0;
+	}
+
+err_irq:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_put_hcd(hcd);
 
 	return rv;
@@ -246,16 +311,26 @@ err_rmr:
  *
  * Remove the hcd structure, and release resources that has been requested
  * during probe.
+<<<<<<< HEAD
  */
 static int ehci_hcd_xilinx_of_remove(struct platform_device *op)
 {
 	struct usb_hcd *hcd = dev_get_drvdata(&op->dev);
 	dev_set_drvdata(&op->dev, NULL);
+=======
+ *
+ * Return: Always return 0
+ */
+static void ehci_hcd_xilinx_of_remove(struct platform_device *op)
+{
+	struct usb_hcd *hcd = platform_get_drvdata(op);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&op->dev, "stopping XILINX-OF USB Controller\n");
 
 	usb_remove_hcd(hcd);
 
+<<<<<<< HEAD
 	iounmap(hcd->regs);
 	release_mem_region(hcd->rsrc_start, hcd->rsrc_len);
 
@@ -281,6 +356,11 @@ static int ehci_hcd_xilinx_of_shutdown(struct platform_device *op)
 }
 
 
+=======
+	usb_put_hcd(hcd);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct of_device_id ehci_hcd_xilinx_of_match[] = {
 		{.compatible = "xlnx,xps-usb-host-1.00.a",},
 	{},
@@ -289,11 +369,18 @@ MODULE_DEVICE_TABLE(of, ehci_hcd_xilinx_of_match);
 
 static struct platform_driver ehci_hcd_xilinx_of_driver = {
 	.probe		= ehci_hcd_xilinx_of_probe,
+<<<<<<< HEAD
 	.remove		= ehci_hcd_xilinx_of_remove,
 	.shutdown	= ehci_hcd_xilinx_of_shutdown,
 	.driver = {
 		.name = "xilinx-of-ehci",
 		.owner = THIS_MODULE,
+=======
+	.remove_new	= ehci_hcd_xilinx_of_remove,
+	.shutdown	= usb_hcd_platform_shutdown,
+	.driver = {
+		.name = "xilinx-of-ehci",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = ehci_hcd_xilinx_of_match,
 	},
 };

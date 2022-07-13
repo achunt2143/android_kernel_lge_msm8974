@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram miXart soundcards
  *
  * low level interface with interrupt handling and mail box implementation
  *
  * Copyright (c) 2003 by Digigram <alsa@digigram.com>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __SOUND_MIXART_CORE_H
@@ -62,6 +69,10 @@ enum mixart_message_id {
 	MSG_CLOCK_SET_PROPERTIES             = 0x200002,
 };
 
+<<<<<<< HEAD
+=======
+#define MSG_DEFAULT_SIZE            512
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_msg
 {
@@ -80,7 +91,11 @@ struct mixart_enum_connector_resp
 	u32  uid_count;
 	u32  current_uid_index;
 	struct mixart_uid uid[MIXART_MAX_PHYS_CONNECTORS];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* used for following struct */
@@ -93,7 +108,11 @@ struct mixart_audio_info_req
 	u32 line_max_level;    /* float */
 	u32 micro_max_level;   /* float */
 	u32 cd_max_level;      /* float */
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_analog_hw_info
 {
@@ -105,7 +124,11 @@ struct mixart_analog_hw_info
 	u32 step_var_level;    /* float */
 	u32 fix_gain;          /* float */
 	u32 zero_var;          /* float */
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_digital_hw_info
 {
@@ -113,7 +136,11 @@ struct mixart_digital_hw_info
 	u32   presence;
 	u32   clock;
 	u32   reserved;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_analog_info
 {
@@ -122,27 +149,43 @@ struct mixart_analog_info
 	struct mixart_analog_hw_info line_info;
 	struct mixart_analog_hw_info cd_info;
 	u32                     analog_level_present;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_digital_info
 {
 	u32 type_mask;
 	struct mixart_digital_hw_info aes_info;
 	struct mixart_digital_hw_info adat_info;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_audio_info
 {
 	u32                   clock_type_mask;
 	struct mixart_analog_info  analog_info;
 	struct mixart_digital_info digital_info;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_audio_info_resp
 {
 	u32                 txx_status;
 	struct mixart_audio_info info;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* used for nb_bytes_max_per_sample */
@@ -154,7 +197,11 @@ struct mixart_stream_info
 	u32 size_max_byte_frame;
 	u32 size_max_sample_frame;
 	u32 nb_bytes_max_per_sample;  /* float */
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*  MSG_STREAM_ADD_INPUT_GROUP */
 /*  MSG_STREAM_ADD_OUTPUT_GROUP */
@@ -169,13 +216,21 @@ struct mixart_streaming_group_req
 	struct mixart_stream_info stream_info[32];
 	struct mixart_uid connector;
 	u32 flow_entry[32];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_stream_desc
 {
 	struct mixart_uid stream_uid;
 	u32          stream_desc;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_streaming_group
 {
@@ -184,7 +239,11 @@ struct mixart_streaming_group
 	u32                  pipe_desc;
 	u32                  stream_count;
 	struct mixart_stream_desc stream[32];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* MSG_STREAM_DELETE_GROUP */
 
@@ -194,7 +253,11 @@ struct mixart_delete_group_resp
 {
 	u32  status;
 	u32  unused[2];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* 	MSG_STREAM_START_INPUT_STAGE_PACKET  = 0x130000 + 7,
@@ -207,7 +270,11 @@ struct mixart_fx_couple_uid
 {
 	struct mixart_uid uid_fx_code;
 	struct mixart_uid uid_fx_data;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_txx_stream_desc
 {
@@ -215,14 +282,22 @@ struct mixart_txx_stream_desc
 	u32                     stream_idx;
 	u32                     fx_number;
 	struct mixart_fx_couple_uid  uid_fx[4];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_flow_info
 {
 	struct mixart_txx_stream_desc  stream_desc;
 	u32                       flow_entry;
 	u32                       flow_phy_addr;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_stream_state_req
 {
@@ -231,7 +306,11 @@ struct mixart_stream_state_req
 	u32                 reserved4np[3];
 	u32                 stream_count;  /* set to 1 for instance */
 	struct mixart_flow_info  stream_info;   /* could be an array[stream_count] */
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 	MSG_STREAM_START_STREAM_GRP_PACKET   = 0x130000 + 6
 	MSG_STREAM_STOP_STREAM_GRP_PACKET    = 0x130000 + 9
@@ -243,14 +322,23 @@ struct mixart_group_state_req
 	u64           scheduler;
 	u32           reserved4np[2];
 	u32           pipe_count;    /* set to 1 for instance */
+<<<<<<< HEAD
 	struct mixart_uid  pipe_uid[1];   /* could be an array[pipe_count] */
 } __attribute__((packed));
+=======
+	struct mixart_uid  pipe_uid; /* could be an array[pipe_count], in theory */
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_group_state_resp
 {
 	u32           txx_status;
 	u64           scheduler;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
@@ -262,6 +350,7 @@ struct mixart_sample_pos
 	u32   validity;
 	u32   sample_pos_high_part;
 	u32   sample_pos_low_part;
+<<<<<<< HEAD
 } __attribute__((packed));
 
 struct mixart_timer_notify
@@ -269,6 +358,22 @@ struct mixart_timer_notify
 	u32                  stream_count;
 	struct mixart_sample_pos  streams[MIXART_MAX_STREAM_PER_CARD * MIXART_MAX_CARDS];
 } __attribute__((packed));
+=======
+} __packed;
+
+/*
+ * This structure is limited by the size of MSG_DEFAULT_SIZE. Instead of
+ * having MIXART_MAX_STREAM_PER_CARD * MIXART_MAX_CARDS many streams,
+ * this is capped to have a total size below MSG_DEFAULT_SIZE.
+ */
+#define MIXART_MAX_TIMER_NOTIFY_STREAMS				\
+	((MSG_DEFAULT_SIZE - sizeof(u32)) / sizeof(struct mixart_sample_pos))
+struct mixart_timer_notify
+{
+	u32                  stream_count;
+	struct mixart_sample_pos  streams[MIXART_MAX_TIMER_NOTIFY_STREAMS];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*	MSG_CONSOLE_GET_CLOCK_UID            = 0x070003,
@@ -280,7 +385,11 @@ struct mixart_return_uid
 {
 	u32 error_code;
 	struct mixart_uid uid;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*	MSG_CLOCK_CHECK_PROPERTIES           = 0x200001,
 	MSG_CLOCK_SET_PROPERTIES             = 0x200002,
@@ -319,14 +428,23 @@ struct mixart_clock_properties
 	u32 format;
 	u32 board_mask;
 	u32 nb_callers; /* set to 1 (see below) */
+<<<<<<< HEAD
 	struct mixart_uid uid_caller[1];
 } __attribute__((packed));
+=======
+	struct mixart_uid uid_caller;
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_clock_properties_resp
 {
 	u32 status;
 	u32 clock_mode;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*	MSG_STREAM_SET_INPUT_STAGE_PARAM     = 0x13000F */
@@ -406,9 +524,14 @@ struct mixart_stream_param_desc
 	u32 reserved4np[3];
 	u32 pipe_count;                           /* set to 1 (array size !) */
 	u32 stream_count;                         /* set to 1 (array size !) */
+<<<<<<< HEAD
 	struct mixart_txx_stream_desc stream_desc[1];  /* only one stream per command, but this could be an array */
 
 } __attribute__((packed));
+=======
+	struct mixart_txx_stream_desc stream_desc; /* only one stream per command, but this could be an array, in theory */
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*	MSG_CONNECTOR_GET_OUT_AUDIO_LEVEL    = 0x050009,
@@ -424,7 +547,11 @@ struct mixart_get_out_audio_level
 	u32 mute;
 	u32 monitor_mute1;
 	u32 monitor_mute2;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*	MSG_CONNECTOR_SET_OUT_AUDIO_LEVEL    = 0x05000A,
@@ -451,7 +578,11 @@ struct mixart_set_out_audio_level
 	u32 monitor_mute1;
 	u32 monitor_mute2;
 	u32 reserved4np;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*	MSG_SYSTEM_ENUM_PHYSICAL_IO          = 0x16000E,
@@ -466,7 +597,11 @@ struct mixart_uid_enumeration
 	u32 nb_uid;
 	u32 current_uid_index;
 	struct mixart_uid uid[MIXART_MAX_PHYS_IO];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*	MSG_PHYSICALIO_SET_LEVEL             = 0x0F0008,
@@ -477,13 +612,21 @@ struct mixart_io_channel_level
 {
 	u32 analog_level;   /* float */
 	u32 unused[2];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_io_level
 {
 	s32 channel; /* 0=left, 1=right, -1=both, -2=both same */
 	struct mixart_io_channel_level level[2];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*	MSG_STREAM_SET_IN_AUDIO_LEVEL        = 0x130015,
@@ -496,7 +639,11 @@ struct mixart_in_audio_level_info
 	u32 valid_mask2;
 	u32 digital_level;
 	u32 analog_level;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_set_in_audio_level_req
 {
@@ -505,7 +652,11 @@ struct mixart_set_in_audio_level_req
 	u32 audio_count;  /* set to <= 2 */
 	u32 reserved4np;
 	struct mixart_in_audio_level_info level[2];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* response is a 32 bit status */
 
@@ -535,13 +686,21 @@ struct mixart_out_stream_level_info
 	u32 digital_level2;
 	u32 mute1;
 	u32 mute2;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_set_out_stream_level
 {
 	struct mixart_txx_stream_desc desc;
 	struct mixart_out_stream_level_info out_level;
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct mixart_set_out_stream_level_req
 {
@@ -550,7 +709,11 @@ struct mixart_set_out_stream_level_req
 	u32 reserved4np[2];
 	u32 nb_of_stream;  /* set to 1 */
 	struct mixart_set_out_stream_level stream_level; /* could be an array */
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* response to this request is a u32 status value */
 
@@ -564,7 +727,11 @@ int  snd_mixart_send_msg_wait_notif(struct mixart_mgr *mgr, struct mixart_msg *r
 int  snd_mixart_send_msg_nonblock(struct mixart_mgr *mgr, struct mixart_msg *request);
 
 irqreturn_t snd_mixart_interrupt(int irq, void *dev_id);
+<<<<<<< HEAD
 void snd_mixart_msg_tasklet(unsigned long arg);
+=======
+irqreturn_t snd_mixart_threaded_irq(int irq, void *dev_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void snd_mixart_reset_board(struct mixart_mgr *mgr);
 

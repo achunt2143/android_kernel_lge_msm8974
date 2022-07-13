@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 config R8712U
 	tristate "RealTek RTL8712U (RTL8192SU) Wireless LAN NIC driver"
 	depends on WLAN && USB
@@ -8,12 +9,32 @@ config R8712U
 	---help---
 	This option adds the Realtek RTL8712 USB device such as the D-Link DWA-130.
 	If built as a module, it will be called r8712u.
+=======
+# SPDX-License-Identifier: GPL-2.0
+config R8712U
+	tristate "RealTek RTL8712U (RTL8192SU) Wireless LAN NIC driver"
+	depends on WLAN && USB && CFG80211
+	select WIRELESS_EXT
+	select WEXT_PRIV
+	select FW_LOADER
+	help
+	    This option adds the Realtek RTL8712 USB device such as the
+	    D-Link DWA-130.
+
+	    If built as a module, it will be called r8712u.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config R8712_TX_AGGR
 	bool "Realtek RTL8712U Transmit Aggregation code"
 	depends on R8712U && BROKEN
+<<<<<<< HEAD
 	default N
 	---help---
 	This option provides transmit aggregation for the Realtek RTL8712 USB device.
+=======
+	help
+	    This option provides transmit aggregation for the Realtek
+	    RTL8712 USB device.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 

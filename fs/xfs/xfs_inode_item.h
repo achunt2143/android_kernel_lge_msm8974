@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2000,2005 Silicon Graphics, Inc.
  * All Rights Reserved.
@@ -14,10 +15,17 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write the Free Software Foundation,
  * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2000,2005 Silicon Graphics, Inc.
+ * All Rights Reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef	__XFS_INODE_ITEM_H__
 #define	__XFS_INODE_ITEM_H__
 
+<<<<<<< HEAD
 /*
  * This is the structure used to lay out an inode log item in the
  * log.  The size of the inline data/extents/b-tree root to be logged
@@ -128,12 +136,16 @@ static inline int xfs_ilog_fdata(int w)
 }
 
 #ifdef __KERNEL__
+=======
+/* kernel only definitions */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct xfs_buf;
 struct xfs_bmbt_rec;
 struct xfs_inode;
 struct xfs_mount;
 
+<<<<<<< HEAD
 
 typedef struct xfs_inode_log_item {
 	xfs_log_item_t		ili_item;	   /* common portion */
@@ -157,12 +169,40 @@ typedef struct xfs_inode_log_item {
 
 
 static inline int xfs_inode_clean(xfs_inode_t *ip)
+=======
+struct xfs_inode_log_item {
+	struct xfs_log_item	ili_item;	   /* common portion */
+	struct xfs_inode	*ili_inode;	   /* inode ptr */
+	unsigned short		ili_lock_flags;	   /* inode lock flags */
+	unsigned int		ili_dirty_flags;   /* dirty in current tx */
+	/*
+	 * The ili_lock protects the interactions between the dirty state and
+	 * the flush state of the inode log item. This allows us to do atomic
+	 * modifications of multiple state fields without having to hold a
+	 * specific inode lock to serialise them.
+	 *
+	 * We need atomic changes between inode dirtying, inode flushing and
+	 * inode completion, but these all hold different combinations of
+	 * ILOCK and IFLUSHING and hence we need some other method of
+	 * serialising updates to the flush state.
+	 */
+	spinlock_t		ili_lock;	   /* flush state lock */
+	unsigned int		ili_last_fields;   /* fields when flushed */
+	unsigned int		ili_fields;	   /* fields to be logged */
+	unsigned int		ili_fsync_fields;  /* logged since last fsync */
+	xfs_lsn_t		ili_flush_lsn;	   /* lsn at last flush */
+	xfs_csn_t		ili_commit_seq;	   /* last transaction commit */
+};
+
+static inline int xfs_inode_clean(struct xfs_inode *ip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return !ip->i_itemp || !(ip->i_itemp->ili_fields & XFS_ILOG_ALL);
 }
 
 extern void xfs_inode_item_init(struct xfs_inode *, struct xfs_mount *);
 extern void xfs_inode_item_destroy(struct xfs_inode *);
+<<<<<<< HEAD
 extern void xfs_iflush_done(struct xfs_buf *, struct xfs_log_item *);
 extern void xfs_istale_done(struct xfs_buf *, struct xfs_log_item *);
 extern void xfs_iflush_abort(struct xfs_inode *);
@@ -170,5 +210,13 @@ extern int xfs_inode_item_format_convert(xfs_log_iovec_t *,
 					 xfs_inode_log_format_t *);
 
 #endif	/* __KERNEL__ */
+=======
+extern void xfs_iflush_abort(struct xfs_inode *);
+extern void xfs_iflush_shutdown_abort(struct xfs_inode *);
+extern int xfs_inode_item_format_convert(xfs_log_iovec_t *,
+					 struct xfs_inode_log_format *);
+
+extern struct kmem_cache	*xfs_ili_cache;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __XFS_INODE_ITEM_H__ */

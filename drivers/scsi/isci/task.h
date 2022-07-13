@@ -63,6 +63,7 @@
 struct isci_request;
 
 /**
+<<<<<<< HEAD
  * enum isci_tmf_cb_state - This enum defines the possible states in which the
  *    TMF callback function is invoked during the TMF execution process.
  *
@@ -76,6 +77,8 @@ enum isci_tmf_cb_state {
 };
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * enum isci_tmf_function_codes - This enum defines the possible preparations
  *    of task management requests.
  *
@@ -87,6 +90,10 @@ enum isci_tmf_function_codes {
 	isci_tmf_ssp_task_abort = TMF_ABORT_TASK,
 	isci_tmf_ssp_lun_reset  = TMF_LU_RESET,
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct isci_tmf - This class represents the task management object which
  *    acts as an interface to libsas for processing task management requests
@@ -106,6 +113,7 @@ struct isci_tmf {
 	u16 io_tag;
 	enum isci_tmf_function_codes tmf_code;
 	int status;
+<<<<<<< HEAD
 
 	/* The optional callback function allows the user process to
 	 * track the TMF transmit / timeout conditions.
@@ -115,6 +123,8 @@ struct isci_tmf {
 		struct isci_tmf *, void *);
 	void *cb_data;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline void isci_print_tmf(struct isci_host *ihost, struct isci_tmf *tmf)
@@ -152,7 +162,10 @@ static inline void isci_print_tmf(struct isci_host *ihost, struct isci_tmf *tmf)
 
 int isci_task_execute_task(
 	struct sas_task *task,
+<<<<<<< HEAD
 	int num,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfp_t gfp_flags);
 
 int isci_task_abort_task(
@@ -162,10 +175,13 @@ int isci_task_abort_task_set(
 	struct domain_device *d_device,
 	u8 *lun);
 
+<<<<<<< HEAD
 int isci_task_clear_aca(
 	struct domain_device *d_device,
 	u8 *lun);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int isci_task_clear_task_set(
 	struct domain_device *d_device,
 	u8 *lun);
@@ -204,6 +220,7 @@ void *isci_task_ssp_request_get_response_data_address(
 u32 isci_task_ssp_request_get_response_data_length(
 	struct isci_request *request);
 
+<<<<<<< HEAD
 int isci_queuecommand(
 	struct scsi_cmnd *scsi_cmd,
 	void (*donefunc)(struct scsi_cmnd *));
@@ -317,4 +334,6 @@ isci_task_set_completion_status(
 	return task_notification_selection;
 
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !defined(_SCI_TASK_H_) */

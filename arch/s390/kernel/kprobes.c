@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Kernel Probes (KProbes)
  *
@@ -16,27 +17,54 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
  * Copyright (C) IBM Corporation, 2002, 2006
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ *  Kernel Probes (KProbes)
+ *
+ * Copyright IBM Corp. 2002, 2006
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * s390 port, used ppc64 as template. Mike Grundy <grundym@us.ibm.com>
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) "kprobes: " fmt
+
+#include <linux/moduleloader.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kprobes.h>
 #include <linux/ptrace.h>
 #include <linux/preempt.h>
 #include <linux/stop_machine.h>
 #include <linux/kdebug.h>
 #include <linux/uaccess.h>
+<<<<<<< HEAD
 #include <asm/cacheflush.h>
 #include <asm/sections.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/hardirq.h>
+=======
+#include <linux/extable.h>
+#include <linux/module.h>
+#include <linux/slab.h>
+#include <linux/hardirq.h>
+#include <linux/ftrace.h>
+#include <asm/set_memory.h>
+#include <asm/sections.h>
+#include <asm/dis.h>
+#include "kprobes.h"
+#include "entry.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DEFINE_PER_CPU(struct kprobe *, current_kprobe);
 DEFINE_PER_CPU(struct kprobe_ctlblk, kprobe_ctlblk);
 
 struct kretprobe_blackpoint kretprobe_blacklist[] = { };
 
+<<<<<<< HEAD
 static int __kprobes is_prohibited_opcode(kprobe_opcode_t *insn)
 {
 	switch (insn[0] >> 8) {
@@ -184,10 +212,221 @@ static void __kprobes enable_singlestep(struct kprobe_ctlblk *kcb,
 
 	/* Save control regs and psw mask */
 	__ctl_store(kcb->kprobe_saved_ctl, 9, 11);
+=======
+static int insn_page_in_use;
+
+void *alloc_insn_page(void)
+{
+	void *page;
+
+	page = module_alloc(PAGE_SIZE);
+	if (!page)
+		return NULL;
+	set_memory_rox((unsigned long)page, 1);
+	return page;
+}
+
+static void *alloc_s390_insn_page(void)
+{
+	if (xchg(&insn_page_in_use, 1) == 1)
+		return NULL;
+	return &kprobes_insn_page;
+}
+
+static void free_s390_insn_page(void *page)
+{
+	xchg(&insn_page_in_use, 0);
+}
+
+struct kprobe_insn_cache kprobe_s390_insn_slots = {
+	.mutex = __MUTEX_INITIALIZER(kprobe_s390_insn_slots.mutex),
+	.alloc = alloc_s390_insn_page,
+	.free = free_s390_insn_page,
+	.pages = LIST_HEAD_INIT(kprobe_s390_insn_slots.pages),
+	.insn_size = MAX_INSN_SIZE,
+};
+
+static void copy_instruction(struct kprobe *p)
+{
+	kprobe_opcode_t insn[MAX_INSN_SIZE];
+	s64 disp, new_disp;
+	u64 addr, new_addr;
+	unsigned int len;
+
+	len = insn_length(*p->addr >> 8);
+	memcpy(&insn, p->addr, len);
+	p->opcode = insn[0];
+	if (probe_is_insn_relative_long(&insn[0])) {
+		/*
+		 * For pc-relative instructions in RIL-b or RIL-c format patch
+		 * the RI2 displacement field. We have already made sure that
+		 * the insn slot for the patched instruction is within the same
+		 * 2GB area as the original instruction (either kernel image or
+		 * module area). Therefore the new displacement will always fit.
+		 */
+		disp = *(s32 *)&insn[1];
+		addr = (u64)(unsigned long)p->addr;
+		new_addr = (u64)(unsigned long)p->ainsn.insn;
+		new_disp = ((addr + (disp * 2)) - new_addr) / 2;
+		*(s32 *)&insn[1] = new_disp;
+	}
+	s390_kernel_write(p->ainsn.insn, &insn, len);
+}
+NOKPROBE_SYMBOL(copy_instruction);
+
+static int s390_get_insn_slot(struct kprobe *p)
+{
+	/*
+	 * Get an insn slot that is within the same 2GB area like the original
+	 * instruction. That way instructions with a 32bit signed displacement
+	 * field can be patched and executed within the insn slot.
+	 */
+	p->ainsn.insn = NULL;
+	if (is_kernel((unsigned long)p->addr))
+		p->ainsn.insn = get_s390_insn_slot();
+	else if (is_module_addr(p->addr))
+		p->ainsn.insn = get_insn_slot();
+	return p->ainsn.insn ? 0 : -ENOMEM;
+}
+NOKPROBE_SYMBOL(s390_get_insn_slot);
+
+static void s390_free_insn_slot(struct kprobe *p)
+{
+	if (!p->ainsn.insn)
+		return;
+	if (is_kernel((unsigned long)p->addr))
+		free_s390_insn_slot(p->ainsn.insn, 0);
+	else
+		free_insn_slot(p->ainsn.insn, 0);
+	p->ainsn.insn = NULL;
+}
+NOKPROBE_SYMBOL(s390_free_insn_slot);
+
+/* Check if paddr is at an instruction boundary */
+static bool can_probe(unsigned long paddr)
+{
+	unsigned long addr, offset = 0;
+	kprobe_opcode_t insn;
+	struct kprobe *kp;
+
+	if (paddr & 0x01)
+		return false;
+
+	if (!kallsyms_lookup_size_offset(paddr, NULL, &offset))
+		return false;
+
+	/* Decode instructions */
+	addr = paddr - offset;
+	while (addr < paddr) {
+		if (copy_from_kernel_nofault(&insn, (void *)addr, sizeof(insn)))
+			return false;
+
+		if (insn >> 8 == 0) {
+			if (insn != BREAKPOINT_INSTRUCTION) {
+				/*
+				 * Note that QEMU inserts opcode 0x0000 to implement
+				 * software breakpoints for guests. Since the size of
+				 * the original instruction is unknown, stop following
+				 * instructions and prevent setting a kprobe.
+				 */
+				return false;
+			}
+			/*
+			 * Check if the instruction has been modified by another
+			 * kprobe, in which case the original instruction is
+			 * decoded.
+			 */
+			kp = get_kprobe((void *)addr);
+			if (!kp) {
+				/* not a kprobe */
+				return false;
+			}
+			insn = kp->opcode;
+		}
+		addr += insn_length(insn >> 8);
+	}
+	return addr == paddr;
+}
+
+int arch_prepare_kprobe(struct kprobe *p)
+{
+	if (!can_probe((unsigned long)p->addr))
+		return -EINVAL;
+	/* Make sure the probe isn't going on a difficult instruction */
+	if (probe_is_prohibited_opcode(p->addr))
+		return -EINVAL;
+	if (s390_get_insn_slot(p))
+		return -ENOMEM;
+	copy_instruction(p);
+	return 0;
+}
+NOKPROBE_SYMBOL(arch_prepare_kprobe);
+
+struct swap_insn_args {
+	struct kprobe *p;
+	unsigned int arm_kprobe : 1;
+};
+
+static int swap_instruction(void *data)
+{
+	struct swap_insn_args *args = data;
+	struct kprobe *p = args->p;
+	u16 opc;
+
+	opc = args->arm_kprobe ? BREAKPOINT_INSTRUCTION : p->opcode;
+	s390_kernel_write(p->addr, &opc, sizeof(opc));
+	return 0;
+}
+NOKPROBE_SYMBOL(swap_instruction);
+
+void arch_arm_kprobe(struct kprobe *p)
+{
+	struct swap_insn_args args = {.p = p, .arm_kprobe = 1};
+
+	stop_machine_cpuslocked(swap_instruction, &args, NULL);
+}
+NOKPROBE_SYMBOL(arch_arm_kprobe);
+
+void arch_disarm_kprobe(struct kprobe *p)
+{
+	struct swap_insn_args args = {.p = p, .arm_kprobe = 0};
+
+	stop_machine_cpuslocked(swap_instruction, &args, NULL);
+}
+NOKPROBE_SYMBOL(arch_disarm_kprobe);
+
+void arch_remove_kprobe(struct kprobe *p)
+{
+	s390_free_insn_slot(p);
+}
+NOKPROBE_SYMBOL(arch_remove_kprobe);
+
+static void enable_singlestep(struct kprobe_ctlblk *kcb,
+			      struct pt_regs *regs,
+			      unsigned long ip)
+{
+	union {
+		struct ctlreg regs[3];
+		struct {
+			struct ctlreg control;
+			struct ctlreg start;
+			struct ctlreg end;
+		};
+	} per_kprobe;
+
+	/* Set up the PER control registers %cr9-%cr11 */
+	per_kprobe.control.val = PER_EVENT_IFETCH;
+	per_kprobe.start.val = ip;
+	per_kprobe.end.val = ip;
+
+	/* Save control regs and psw mask */
+	__local_ctl_store(9, 11, kcb->kprobe_saved_ctl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kcb->kprobe_saved_imask = regs->psw.mask &
 		(PSW_MASK_PER | PSW_MASK_IO | PSW_MASK_EXT);
 
 	/* Set PER control regs, turns on single step for the given address */
+<<<<<<< HEAD
 	__ctl_load(per_kprobe, 9, 11);
 	regs->psw.mask |= PSW_MASK_PER;
 	regs->psw.mask &= ~(PSW_MASK_IO | PSW_MASK_EXT);
@@ -204,24 +443,55 @@ static void __kprobes disable_singlestep(struct kprobe_ctlblk *kcb,
 	regs->psw.mask |= kcb->kprobe_saved_imask;
 	regs->psw.addr = ip | PSW_ADDR_AMODE;
 }
+=======
+	__local_ctl_load(9, 11, per_kprobe.regs);
+	regs->psw.mask |= PSW_MASK_PER;
+	regs->psw.mask &= ~(PSW_MASK_IO | PSW_MASK_EXT);
+	regs->psw.addr = ip;
+}
+NOKPROBE_SYMBOL(enable_singlestep);
+
+static void disable_singlestep(struct kprobe_ctlblk *kcb,
+			       struct pt_regs *regs,
+			       unsigned long ip)
+{
+	/* Restore control regs and psw mask, set new psw address */
+	__local_ctl_load(9, 11, kcb->kprobe_saved_ctl);
+	regs->psw.mask &= ~PSW_MASK_PER;
+	regs->psw.mask |= kcb->kprobe_saved_imask;
+	regs->psw.addr = ip;
+}
+NOKPROBE_SYMBOL(disable_singlestep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Activate a kprobe by storing its pointer to current_kprobe. The
  * previous kprobe is stored in kcb->prev_kprobe. A stack of up to
  * two kprobes can be active, see KPROBE_REENTER.
  */
+<<<<<<< HEAD
 static void __kprobes push_kprobe(struct kprobe_ctlblk *kcb, struct kprobe *p)
 {
 	kcb->prev_kprobe.kp = __get_cpu_var(current_kprobe);
 	kcb->prev_kprobe.status = kcb->kprobe_status;
 	__get_cpu_var(current_kprobe) = p;
 }
+=======
+static void push_kprobe(struct kprobe_ctlblk *kcb, struct kprobe *p)
+{
+	kcb->prev_kprobe.kp = __this_cpu_read(current_kprobe);
+	kcb->prev_kprobe.status = kcb->kprobe_status;
+	__this_cpu_write(current_kprobe, p);
+}
+NOKPROBE_SYMBOL(push_kprobe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Deactivate a kprobe by backing up to the previous state. If the
  * current state is KPROBE_REENTER prev_kprobe.kp will be non-NULL,
  * for any other state prev_kprobe.kp will be NULL.
  */
+<<<<<<< HEAD
 static void __kprobes pop_kprobe(struct kprobe_ctlblk *kcb)
 {
 	__get_cpu_var(current_kprobe) = kcb->prev_kprobe.kp;
@@ -239,6 +509,17 @@ void __kprobes arch_prepare_kretprobe(struct kretprobe_instance *ri,
 
 static void __kprobes kprobe_reenter_check(struct kprobe_ctlblk *kcb,
 					   struct kprobe *p)
+=======
+static void pop_kprobe(struct kprobe_ctlblk *kcb)
+{
+	__this_cpu_write(current_kprobe, kcb->prev_kprobe.kp);
+	kcb->kprobe_status = kcb->prev_kprobe.status;
+	kcb->prev_kprobe.kp = NULL;
+}
+NOKPROBE_SYMBOL(pop_kprobe);
+
+static void kprobe_reenter_check(struct kprobe_ctlblk *kcb, struct kprobe *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (kcb->kprobe_status) {
 	case KPROBE_HIT_SSDONE:
@@ -253,13 +534,23 @@ static void __kprobes kprobe_reenter_check(struct kprobe_ctlblk *kcb,
 		 * is a BUG. The code path resides in the .kprobes.text
 		 * section and is executed with interrupts disabled.
 		 */
+<<<<<<< HEAD
 		printk(KERN_EMERG "Invalid kprobe detected at %p.\n", p->addr);
+=======
+		pr_err("Failed to recover from reentered kprobes.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dump_kprobe(p);
 		BUG();
 	}
 }
+<<<<<<< HEAD
 
 static int __kprobes kprobe_handler(struct pt_regs *regs)
+=======
+NOKPROBE_SYMBOL(kprobe_reenter_check);
+
+static int kprobe_handler(struct pt_regs *regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kprobe_ctlblk *kcb;
 	struct kprobe *p;
@@ -271,7 +562,11 @@ static int __kprobes kprobe_handler(struct pt_regs *regs)
 	 */
 	preempt_disable();
 	kcb = get_kprobe_ctlblk();
+<<<<<<< HEAD
 	p = get_kprobe((void *)((regs->psw.addr & PSW_ADDR_INSN) - 2));
+=======
+	p = get_kprobe((void *)(regs->psw.addr - 2));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (p) {
 		if (kprobe_running()) {
@@ -292,6 +587,7 @@ static int __kprobes kprobe_handler(struct pt_regs *regs)
 			 * If we have no pre-handler or it returned 0, we
 			 * continue with single stepping. If we have a
 			 * pre-handler and it returned non-zero, it prepped
+<<<<<<< HEAD
 			 * for calling the break_handler below on re-entry
 			 * for jprobe processing, so get out doing nothing
 			 * more here.
@@ -300,10 +596,23 @@ static int __kprobes kprobe_handler(struct pt_regs *regs)
 			kcb->kprobe_status = KPROBE_HIT_ACTIVE;
 			if (p->pre_handler && p->pre_handler(p, regs))
 				return 1;
+=======
+			 * for changing execution path, so get out doing
+			 * nothing more here.
+			 */
+			push_kprobe(kcb, p);
+			kcb->kprobe_status = KPROBE_HIT_ACTIVE;
+			if (p->pre_handler && p->pre_handler(p, regs)) {
+				pop_kprobe(kcb);
+				preempt_enable_no_resched();
+				return 1;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kcb->kprobe_status = KPROBE_HIT_SS;
 		}
 		enable_singlestep(kcb, regs, (unsigned long) p->ainsn.insn);
 		return 1;
+<<<<<<< HEAD
 	} else if (kprobe_running()) {
 		p = __get_cpu_var(current_kprobe);
 		if (p->break_handler && p->break_handler(p, regs)) {
@@ -324,6 +633,8 @@ static int __kprobes kprobe_handler(struct pt_regs *regs)
 		   * exploded, let the standard trap handler pick up the
 		   * pieces.
 		   */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} /* else:
 	   * No kprobe at this address and no active kprobe. The trap has
 	   * not been caused by a kprobe breakpoint. The race of breakpoint
@@ -333,6 +644,7 @@ static int __kprobes kprobe_handler(struct pt_regs *regs)
 	preempt_enable_no_resched();
 	return 0;
 }
+<<<<<<< HEAD
 
 /*
  * Function return probe trampoline:
@@ -438,6 +750,9 @@ static int __kprobes trampoline_probe_handler(struct kprobe *p,
 	 */
 	return 1;
 }
+=======
+NOKPROBE_SYMBOL(kprobe_handler);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Called after single-stepping.  p->addr is the address of the
@@ -447,17 +762,29 @@ static int __kprobes trampoline_probe_handler(struct kprobe *p,
  * single-stepped a copy of the instruction.  The address of this
  * copy is p->ainsn.insn.
  */
+<<<<<<< HEAD
 static void __kprobes resume_execution(struct kprobe *p, struct pt_regs *regs)
 {
 	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
 	unsigned long ip = regs->psw.addr & PSW_ADDR_INSN;
 	int fixup = get_fixup_type(p->ainsn.insn);
+=======
+static void resume_execution(struct kprobe *p, struct pt_regs *regs)
+{
+	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
+	unsigned long ip = regs->psw.addr;
+	int fixup = probe_get_fixup_type(p->ainsn.insn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fixup & FIXUP_PSW_NORMAL)
 		ip += (unsigned long) p->addr - (unsigned long) p->ainsn.insn;
 
 	if (fixup & FIXUP_BRANCH_NOT_TAKEN) {
+<<<<<<< HEAD
 		int ilen = ((p->ainsn.insn[0] >> 14) + 3) & -2;
+=======
+		int ilen = insn_length(p->ainsn.insn[0] >> 8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ip - (unsigned long) p->ainsn.insn == ilen)
 			ip = (unsigned long) p->addr + ilen;
 	}
@@ -470,8 +797,14 @@ static void __kprobes resume_execution(struct kprobe *p, struct pt_regs *regs)
 
 	disable_singlestep(kcb, regs, ip);
 }
+<<<<<<< HEAD
 
 static int __kprobes post_kprobe_handler(struct pt_regs *regs)
+=======
+NOKPROBE_SYMBOL(resume_execution);
+
+static int post_kprobe_handler(struct pt_regs *regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
 	struct kprobe *p = kprobe_running();
@@ -479,12 +812,19 @@ static int __kprobes post_kprobe_handler(struct pt_regs *regs)
 	if (!p)
 		return 0;
 
+<<<<<<< HEAD
+=======
+	resume_execution(p, regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (kcb->kprobe_status != KPROBE_REENTER && p->post_handler) {
 		kcb->kprobe_status = KPROBE_HIT_SSDONE;
 		p->post_handler(p, regs, 0);
 	}
+<<<<<<< HEAD
 
 	resume_execution(p, regs);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pop_kprobe(kcb);
 	preempt_enable_no_resched();
 
@@ -498,6 +838,7 @@ static int __kprobes post_kprobe_handler(struct pt_regs *regs)
 
 	return 1;
 }
+<<<<<<< HEAD
 
 static int __kprobes kprobe_trap_handler(struct pt_regs *regs, int trapnr)
 {
@@ -509,6 +850,16 @@ static int __kprobes kprobe_trap_handler(struct pt_regs *regs, int trapnr)
 	case KPROBE_SWAP_INST:
 		/* We are here because the instruction replacement failed */
 		return 0;
+=======
+NOKPROBE_SYMBOL(post_kprobe_handler);
+
+static int kprobe_trap_handler(struct pt_regs *regs, int trapnr)
+{
+	struct kprobe_ctlblk *kcb = get_kprobe_ctlblk();
+	struct kprobe *p = kprobe_running();
+
+	switch(kcb->kprobe_status) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case KPROBE_HIT_SS:
 	case KPROBE_REENTER:
 		/*
@@ -525,6 +876,7 @@ static int __kprobes kprobe_trap_handler(struct pt_regs *regs, int trapnr)
 	case KPROBE_HIT_ACTIVE:
 	case KPROBE_HIT_SSDONE:
 		/*
+<<<<<<< HEAD
 		 * We increment the nmissed count for accounting,
 		 * we can also use npre/npostfault count for accouting
 		 * these specific fault cases.
@@ -551,6 +903,13 @@ static int __kprobes kprobe_trap_handler(struct pt_regs *regs, int trapnr)
 			return 1;
 		}
 
+=======
+		 * In case the user-specified fault handler returned
+		 * zero, try to fix up.
+		 */
+		if (fixup_exception(regs))
+			return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * fixup_exception() could not handle it,
 		 * Let do_page_fault() fix it.
@@ -561,8 +920,14 @@ static int __kprobes kprobe_trap_handler(struct pt_regs *regs, int trapnr)
 	}
 	return 0;
 }
+<<<<<<< HEAD
 
 int __kprobes kprobe_fault_handler(struct pt_regs *regs, int trapnr)
+=======
+NOKPROBE_SYMBOL(kprobe_trap_handler);
+
+int kprobe_fault_handler(struct pt_regs *regs, int trapnr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -573,12 +938,21 @@ int __kprobes kprobe_fault_handler(struct pt_regs *regs, int trapnr)
 		local_irq_restore(regs->psw.mask & ~PSW_MASK_PER);
 	return ret;
 }
+<<<<<<< HEAD
+=======
+NOKPROBE_SYMBOL(kprobe_fault_handler);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Wrapper routine to for handling exceptions.
  */
+<<<<<<< HEAD
 int __kprobes kprobe_exceptions_notify(struct notifier_block *self,
 				       unsigned long val, void *data)
+=======
+int kprobe_exceptions_notify(struct notifier_block *self,
+			     unsigned long val, void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct die_args *args = (struct die_args *) data;
 	struct pt_regs *regs = args->regs;
@@ -610,6 +984,7 @@ int __kprobes kprobe_exceptions_notify(struct notifier_block *self,
 
 	return ret;
 }
+<<<<<<< HEAD
 
 int __kprobes setjmp_pre_handler(struct kprobe *p, struct pt_regs *regs)
 {
@@ -669,3 +1044,17 @@ int __kprobes arch_trampoline_kprobe(struct kprobe *p)
 {
 	return p->addr == (kprobe_opcode_t *) &kretprobe_trampoline;
 }
+=======
+NOKPROBE_SYMBOL(kprobe_exceptions_notify);
+
+int __init arch_init_kprobes(void)
+{
+	return 0;
+}
+
+int arch_trampoline_kprobe(struct kprobe *p)
+{
+	return 0;
+}
+NOKPROBE_SYMBOL(arch_trampoline_kprobe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

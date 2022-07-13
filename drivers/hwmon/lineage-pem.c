@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Lineage Compact Power Line series of power entry modules.
  *
@@ -5,6 +9,7 @@
  *
  * Documentation:
  *  http://www.lineagepower.com/oem/pdf/CPLI2C.pdf
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -29,6 +36,10 @@
 #include <linux/i2c.h>
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
+<<<<<<< HEAD
+=======
+#include <linux/jiffies.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This driver supports various Lineage Compact Power Line DC/DC and AC/DC
@@ -124,7 +135,12 @@
 #define FAN_SPEED_LEN		5
 
 struct pem_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+	const struct attribute_group *groups[4];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex update_lock;
 	bool valid;
@@ -159,8 +175,13 @@ abort:
 
 static struct pem_data *pem_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct pem_data *data = i2c_get_clientdata(client);
+=======
+	struct pem_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pem_data *ret = data;
 
 	mutex_lock(&data->update_lock);
@@ -202,7 +223,11 @@ static struct pem_data *pem_update_device(struct device *dev)
 		i2c_smbus_write_byte(client, PEM_CLEAR_INFO_FLAGS);
 
 		data->last_updated = jiffies;
+<<<<<<< HEAD
 		data->valid = 1;
+=======
+		data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 abort:
 	mutex_unlock(&data->update_lock);
@@ -280,8 +305,13 @@ static long pem_get_fan(u8 *data, int len, int index)
  * Show boolean, either a fault or an alarm.
  * .nr points to the register, .index is the bit mask to check
  */
+<<<<<<< HEAD
 static ssize_t pem_show_bool(struct device *dev,
 			     struct device_attribute *da, char *buf)
+=======
+static ssize_t pem_bool_show(struct device *dev, struct device_attribute *da,
+			     char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute_2 *attr = to_sensor_dev_attr_2(da);
 	struct pem_data *data = pem_update_device(dev);
@@ -291,10 +321,17 @@ static ssize_t pem_show_bool(struct device *dev,
 		return PTR_ERR(data);
 
 	status = data->data_string[attr->nr] & attr->index;
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%d\n", !!status);
 }
 
 static ssize_t pem_show_data(struct device *dev, struct device_attribute *da,
+=======
+	return sysfs_emit(buf, "%d\n", !!status);
+}
+
+static ssize_t pem_data_show(struct device *dev, struct device_attribute *da,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
@@ -307,10 +344,17 @@ static ssize_t pem_show_data(struct device *dev, struct device_attribute *da,
 	value = pem_get_data(data->data_string, sizeof(data->data_string),
 			     attr->index);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%ld\n", value);
 }
 
 static ssize_t pem_show_input(struct device *dev, struct device_attribute *da,
+=======
+	return sysfs_emit(buf, "%ld\n", value);
+}
+
+static ssize_t pem_input_show(struct device *dev, struct device_attribute *da,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
@@ -323,10 +367,17 @@ static ssize_t pem_show_input(struct device *dev, struct device_attribute *da,
 	value = pem_get_input(data->input_string, sizeof(data->input_string),
 			      attr->index);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%ld\n", value);
 }
 
 static ssize_t pem_show_fan(struct device *dev, struct device_attribute *da,
+=======
+	return sysfs_emit(buf, "%ld\n", value);
+}
+
+static ssize_t pem_fan_show(struct device *dev, struct device_attribute *da,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
@@ -339,6 +390,7 @@ static ssize_t pem_show_fan(struct device *dev, struct device_attribute *da,
 	value = pem_get_fan(data->fan_speed, sizeof(data->fan_speed),
 			    attr->index);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%ld\n", value);
 }
 
@@ -390,6 +442,48 @@ static SENSOR_DEVICE_ATTR_2(temp1_crit_alarm, S_IRUGO, pem_show_bool, NULL,
 			    PEM_DATA_ALARM_1, ALRM1_TEMP_SHUTDOWN);
 static SENSOR_DEVICE_ATTR_2(temp1_fault, S_IRUGO, pem_show_bool, NULL,
 			    PEM_DATA_ALARM_2, ALRM2_TEMP_FAULT);
+=======
+	return sysfs_emit(buf, "%ld\n", value);
+}
+
+/* Voltages */
+static SENSOR_DEVICE_ATTR_RO(in1_input, pem_data, PEM_DATA_VOUT_LSB);
+static SENSOR_DEVICE_ATTR_2_RO(in1_alarm, pem_bool, PEM_DATA_ALARM_1,
+			       ALRM1_VOUT_OUT_LIMIT);
+static SENSOR_DEVICE_ATTR_2_RO(in1_crit_alarm, pem_bool, PEM_DATA_ALARM_1,
+			       ALRM1_OV_VOLT_SHUTDOWN);
+static SENSOR_DEVICE_ATTR_RO(in2_input, pem_input, PEM_INPUT_VOLTAGE);
+static SENSOR_DEVICE_ATTR_2_RO(in2_alarm, pem_bool, PEM_DATA_ALARM_1,
+			       ALRM1_VIN_OUT_LIMIT | ALRM1_PRIMARY_FAULT);
+
+/* Currents */
+static SENSOR_DEVICE_ATTR_RO(curr1_input, pem_data, PEM_DATA_CURRENT);
+static SENSOR_DEVICE_ATTR_2_RO(curr1_alarm, pem_bool, PEM_DATA_ALARM_1,
+			       ALRM1_VIN_OVERCURRENT);
+
+/* Power */
+static SENSOR_DEVICE_ATTR_RO(power1_input, pem_input, PEM_INPUT_POWER_LSB);
+static SENSOR_DEVICE_ATTR_2_RO(power1_alarm, pem_bool, PEM_DATA_ALARM_1,
+			       ALRM1_POWER_LIMIT);
+
+/* Fans */
+static SENSOR_DEVICE_ATTR_RO(fan1_input, pem_fan, PEM_FAN_FAN1);
+static SENSOR_DEVICE_ATTR_RO(fan2_input, pem_fan, PEM_FAN_FAN2);
+static SENSOR_DEVICE_ATTR_RO(fan3_input, pem_fan, PEM_FAN_FAN3);
+static SENSOR_DEVICE_ATTR_2_RO(fan1_alarm, pem_bool, PEM_DATA_ALARM_2,
+			       ALRM2_FAN_FAULT);
+
+/* Temperatures */
+static SENSOR_DEVICE_ATTR_RO(temp1_input, pem_data, PEM_DATA_TEMP);
+static SENSOR_DEVICE_ATTR_RO(temp1_max, pem_data, PEM_DATA_TEMP_MAX);
+static SENSOR_DEVICE_ATTR_RO(temp1_crit, pem_data, PEM_DATA_TEMP_CRIT);
+static SENSOR_DEVICE_ATTR_2_RO(temp1_alarm, pem_bool, PEM_DATA_ALARM_1,
+			       ALRM1_TEMP_WARNING);
+static SENSOR_DEVICE_ATTR_2_RO(temp1_crit_alarm, pem_bool, PEM_DATA_ALARM_1,
+			       ALRM1_TEMP_SHUTDOWN);
+static SENSOR_DEVICE_ATTR_2_RO(temp1_fault, pem_bool, PEM_DATA_ALARM_2,
+			       ALRM2_TEMP_FAULT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *pem_attributes[] = {
 	&sensor_dev_attr_in1_input.dev_attr.attr,
@@ -439,22 +533,40 @@ static const struct attribute_group pem_fan_group = {
 	.attrs = pem_fan_attributes,
 };
 
+<<<<<<< HEAD
 static int pem_probe(struct i2c_client *client,
 		     const struct i2c_device_id *id)
 {
 	struct i2c_adapter *adapter = client->adapter;
 	struct pem_data *data;
 	int ret;
+=======
+static int pem_probe(struct i2c_client *client)
+{
+	struct i2c_adapter *adapter = client->adapter;
+	struct device *dev = &client->dev;
+	struct device *hwmon_dev;
+	struct pem_data *data;
+	int ret, idx = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BLOCK_DATA
 				     | I2C_FUNC_SMBUS_WRITE_BYTE))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	data = devm_kzalloc(&client->dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
 
 	i2c_set_clientdata(client, data);
+=======
+	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&data->update_lock);
 
 	/*
@@ -470,6 +582,7 @@ static int pem_probe(struct i2c_client *client,
 	if (ret < 0)
 		return ret;
 
+<<<<<<< HEAD
 	dev_info(&client->dev, "Firmware revision %d.%d.%d\n",
 		 data->firmware_rev[0], data->firmware_rev[1],
 		 data->firmware_rev[2]);
@@ -478,6 +591,14 @@ static int pem_probe(struct i2c_client *client,
 	ret = sysfs_create_group(&client->dev.kobj, &pem_group);
 	if (ret)
 		return ret;
+=======
+	dev_info(dev, "Firmware revision %d.%d.%d\n",
+		 data->firmware_rev[0], data->firmware_rev[1],
+		 data->firmware_rev[2]);
+
+	/* sysfs hooks */
+	data->groups[idx++] = &pem_group;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check if input readings are supported.
@@ -500,12 +621,18 @@ static int pem_probe(struct i2c_client *client,
 			    data->input_string[2] || data->input_string[3]))
 			data->input_length = sizeof(data->input_string);
 	}
+<<<<<<< HEAD
 	ret = 0;
 	if (data->input_length) {
 		ret = sysfs_create_group(&client->dev.kobj, &pem_input_group);
 		if (ret)
 			goto out_remove_groups;
 	}
+=======
+
+	if (data->input_length)
+		data->groups[idx++] = &pem_input_group;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check if fan speed readings are supported.
@@ -519,6 +646,7 @@ static int pem_probe(struct i2c_client *client,
 	if (!ret && (data->fan_speed[0] || data->fan_speed[1] ||
 		     data->fan_speed[2] || data->fan_speed[3])) {
 		data->fans_supported = true;
+<<<<<<< HEAD
 		ret = sysfs_create_group(&client->dev.kobj, &pem_fan_group);
 		if (ret)
 			goto out_remove_groups;
@@ -550,6 +678,14 @@ static int pem_remove(struct i2c_client *client)
 	sysfs_remove_group(&client->dev.kobj, &pem_group);
 
 	return 0;
+=======
+		data->groups[idx++] = &pem_fan_group;
+	}
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data, data->groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id pem_id[] = {
@@ -563,12 +699,19 @@ static struct i2c_driver pem_driver = {
 		   .name = "lineage_pem",
 		   },
 	.probe = pem_probe,
+<<<<<<< HEAD
 	.remove = pem_remove,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = pem_id,
 };
 
 module_i2c_driver(pem_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Guenter Roeck <guenter.roeck@ericsson.com>");
+=======
+MODULE_AUTHOR("Guenter Roeck <linux@roeck-us.net>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("Lineage CPL PEM hardware monitoring driver");
 MODULE_LICENSE("GPL");

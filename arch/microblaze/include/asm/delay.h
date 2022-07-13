@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * include/asm-microblaze/delay.h
  *
@@ -5,6 +6,10 @@
  * License. See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 2008 Michal Simek
  * Copyright (C) 2007 John Williams
  * Copyright (C) 2006 Atmark Techno, Inc.
@@ -13,7 +18,13 @@
 #ifndef _ASM_MICROBLAZE_DELAY_H
 #define _ASM_MICROBLAZE_DELAY_H
 
+<<<<<<< HEAD
 extern inline void __delay(unsigned long loops)
+=======
+#include <linux/param.h>
+
+static inline void __delay(unsigned long loops)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	asm volatile ("# __delay		\n\t"		\
 			"1: addi	%0, %0, -1\t\n"		\
@@ -41,7 +52,11 @@ extern inline void __delay(unsigned long loops)
 
 extern unsigned long loops_per_jiffy;
 
+<<<<<<< HEAD
 extern inline void __udelay(unsigned int x)
+=======
+static inline void __udelay(unsigned int x)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 
 	unsigned long long tmp =
@@ -59,6 +74,7 @@ extern inline void __udelay(unsigned int x)
 extern void __bad_udelay(void);		/* deliberately undefined */
 extern void __bad_ndelay(void);		/* deliberately undefined */
 
+<<<<<<< HEAD
 #define udelay(n) (__builtin_constant_p(n) ? \
 	((n) > __MAX_UDELAY ? __bad_udelay() : __udelay((n) * (19 * HZ))) : \
 	__udelay((n) * (19 * HZ)))
@@ -66,6 +82,31 @@ extern void __bad_ndelay(void);		/* deliberately undefined */
 #define ndelay(n) (__builtin_constant_p(n) ? \
 	((n) > __MAX_NDELAY ? __bad_ndelay() : __udelay((n) * HZ)) : \
 	__udelay((n) * HZ))
+=======
+#define udelay(n)						\
+	({							\
+		if (__builtin_constant_p(n)) {			\
+			if ((n) / __MAX_UDELAY >= 1)		\
+				__bad_udelay();			\
+			else					\
+				__udelay((n) * (19 * HZ));	\
+		} else {					\
+			__udelay((n) * (19 * HZ));		\
+		}						\
+	})
+
+#define ndelay(n)						\
+	({							\
+		if (__builtin_constant_p(n)) {			\
+			if ((n) / __MAX_NDELAY >= 1)		\
+				__bad_ndelay();			\
+			else					\
+				__udelay((n) * HZ);		\
+		} else {					\
+			__udelay((n) * HZ);			\
+		}						\
+	})
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define muldiv(a, b, c)		(((a)*(b))/(c))
 

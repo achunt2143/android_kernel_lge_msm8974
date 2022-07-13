@@ -32,6 +32,17 @@ struct jffs2_inodirty;
 struct jffs2_mount_opts {
 	bool override_compr;
 	unsigned int compr;
+<<<<<<< HEAD
+=======
+
+	/* The size of the reserved pool. The reserved pool is the JFFS2 flash
+	 * space which may only be used by root cannot be used by the other
+	 * users. This is implemented simply by means of not allowing the
+	 * latter users to write to the file system if the amount if the
+	 * available space is less then 'rp_size'. */
+	bool set_rp_size;
+	unsigned int rp_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* A struct for the overall file system control.  Pointers to
@@ -42,7 +53,11 @@ struct jffs2_sb_info {
 	struct mtd_info *mtd;
 
 	uint32_t highest_ino;
+<<<<<<< HEAD
 	uint32_t checked_ino;
+=======
+	uint32_t check_ino;		/* *NEXT* inode to be checked */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned int flags;
 
@@ -126,6 +141,11 @@ struct jffs2_sb_info {
 	struct jffs2_inodirty *wbuf_inodes;
 	struct rw_semaphore wbuf_sem;	/* Protects the write buffer */
 
+<<<<<<< HEAD
+=======
+	struct delayed_work wbuf_dwork; /* write-buffer write-out work */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *oobbuf;
 	int oobavail; /* How many bytes are available for JFFS2 in OOB */
 #endif

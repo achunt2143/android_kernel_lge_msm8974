@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * pps-ktimer.c -- kernel timer test client
  *
@@ -17,6 +18,13 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * pps-ktimer.c -- kernel timer test client
+ *
+ * Copyright (C) 2005-2006   Rodolfo Giometti <giometti@linux.it>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -39,7 +47,11 @@ static struct timer_list ktimer;
  * The kernel timer
  */
 
+<<<<<<< HEAD
 static void pps_ktimer_event(unsigned long ptr)
+=======
+static void pps_ktimer_event(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pps_event_time ts;
 
@@ -80,12 +92,21 @@ static int __init pps_ktimer_init(void)
 {
 	pps = pps_register_source(&pps_ktimer_info,
 				PPS_CAPTUREASSERT | PPS_OFFSETASSERT);
+<<<<<<< HEAD
 	if (pps == NULL) {
 		pr_err("cannot register PPS source\n");
 		return -ENOMEM;
 	}
 
 	setup_timer(&ktimer, pps_ktimer_event, 0);
+=======
+	if (IS_ERR(pps)) {
+		pr_err("cannot register PPS source\n");
+		return PTR_ERR(pps);
+	}
+
+	timer_setup(&ktimer, pps_ktimer_event, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mod_timer(&ktimer, jiffies + HZ);
 
 	dev_info(pps->dev, "ktimer PPS source registered\n");

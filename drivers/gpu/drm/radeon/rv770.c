@@ -25,6 +25,7 @@
  *          Alex Deucher
  *          Jerome Glisse
  */
+<<<<<<< HEAD
 #include <linux/firmware.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
@@ -35,6 +36,25 @@
 #include "rv770d.h"
 #include "atom.h"
 #include "avivod.h"
+=======
+
+#include <linux/firmware.h>
+#include <linux/pci.h>
+#include <linux/slab.h>
+
+#include <drm/drm_device.h>
+#include <drm/radeon_drm.h>
+#include <drm/drm_fourcc.h>
+#include <drm/drm_framebuffer.h>
+
+#include "atom.h"
+#include "avivod.h"
+#include "radeon.h"
+#include "radeon_asic.h"
+#include "radeon_audio.h"
+#include "rv770d.h"
+#include "rv770.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define R700_PFP_UCODE_SIZE 848
 #define R700_PM4_UCODE_SIZE 1360
@@ -42,10 +62,765 @@
 static void rv770_gpu_init(struct radeon_device *rdev);
 void rv770_fini(struct radeon_device *rdev);
 static void rv770_pcie_gen2_enable(struct radeon_device *rdev);
+<<<<<<< HEAD
 
 u32 rv770_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base)
 {
 	struct radeon_crtc *radeon_crtc = rdev->mode_info.crtcs[crtc_id];
+=======
+int evergreen_set_uvd_clocks(struct radeon_device *rdev, u32 vclk, u32 dclk);
+
+int rv770_set_uvd_clocks(struct radeon_device *rdev, u32 vclk, u32 dclk)
+{
+	unsigned fb_div = 0, vclk_div = 0, dclk_div = 0;
+	int r;
+
+	/* RV740 uses evergreen uvd clk programming */
+	if (rdev->family == CHIP_RV740)
+		return evergreen_set_uvd_clocks(rdev, vclk, dclk);
+
+	/* bypass vclk and dclk with bclk */
+	WREG32_P(CG_UPLL_FUNC_CNTL_2,
+		 VCLK_SRC_SEL(1) | DCLK_SRC_SEL(1),
+		 ~(VCLK_SRC_SEL_MASK | DCLK_SRC_SEL_MASK));
+
+	if (!vclk || !dclk) {
+		/* keep the Bypass mode, put PLL to sleep */
+		WREG32_P(CG_UPLL_FUNC_CNTL, UPLL_SLEEP_MASK, ~UPLL_SLEEP_MASK);
+		return 0;
+	}
+
+	r = radeon_uvd_calc_upll_dividers(rdev, vclk, dclk, 50000, 160000,
+					  43663, 0x03FFFFFE, 1, 30, ~0,
+					  &fb_div, &vclk_div, &dclk_div);
+	if (r)
+		return r;
+
+	fb_div |= 1;
+	vclk_div -= 1;
+	dclk_div -= 1;
+
+	/* set UPLL_FB_DIV to 0x50000 */
+	WREG32_P(CG_UPLL_FUNC_CNTL_3, UPLL_FB_DIV(0x50000), ~UPLL_FB_DIV_MASK);
+
+	/* deassert UPLL_RESET and UPLL_SLEEP */
+	WREG32_P(CG_UPLL_FUNC_CNTL, 0, ~(UPLL_RESET_MASK | UPLL_SLEEP_MASK));
+
+	/* assert BYPASS EN and FB_DIV[0] <- ??? why? */
+	WREG32_P(CG_UPLL_FUNC_CNTL, UPLL_BYPASS_EN_MASK, ~UPLL_BYPASS_EN_MASK);
+	WREG32_P(CG_UPLL_FUNC_CNTL_3, UPLL_FB_DIV(1), ~UPLL_FB_DIV(1));
+
+	r = radeon_uvd_send_upll_ctlreq(rdev, CG_UPLL_FUNC_CNTL);
+	if (r)
+		return r;
+
+	/* assert PLL_RESET */
+	WREG32_P(CG_UPLL_FUNC_CNTL, UPLL_RESET_MASK, ~UPLL_RESET_MASK);
+
+	/* set the required FB_DIV, REF_DIV, Post divder values */
+	WREG32_P(CG_UPLL_FUNC_CNTL, UPLL_REF_DIV(1), ~UPLL_REF_DIV_MASK);
+	WREG32_P(CG_UPLL_FUNC_CNTL_2,
+		 UPLL_SW_HILEN(vclk_div >> 1) |
+		 UPLL_SW_LOLEN((vclk_div >> 1) + (vclk_div & 1)) |
+		 UPLL_SW_HILEN2(dclk_div >> 1) |
+		 UPLL_SW_LOLEN2((dclk_div >> 1) + (dclk_div & 1)),
+		 ~UPLL_SW_MASK);
+
+	WREG32_P(CG_UPLL_FUNC_CNTL_3, UPLL_FB_DIV(fb_div),
+		 ~UPLL_FB_DIV_MASK);
+
+	/* give the PLL some time to settle */
+	mdelay(15);
+
+	/* deassert PLL_RESET */
+	WREG32_P(CG_UPLL_FUNC_CNTL, 0, ~UPLL_RESET_MASK);
+
+	mdelay(15);
+
+	/* deassert BYPASS EN and FB_DIV[0] <- ??? why? */
+	WREG32_P(CG_UPLL_FUNC_CNTL, 0, ~UPLL_BYPASS_EN_MASK);
+	WREG32_P(CG_UPLL_FUNC_CNTL_3, 0, ~UPLL_FB_DIV(1));
+
+	r = radeon_uvd_send_upll_ctlreq(rdev, CG_UPLL_FUNC_CNTL);
+	if (r)
+		return r;
+
+	/* switch VCLK and DCLK selection */
+	WREG32_P(CG_UPLL_FUNC_CNTL_2,
+		 VCLK_SRC_SEL(2) | DCLK_SRC_SEL(2),
+		 ~(VCLK_SRC_SEL_MASK | DCLK_SRC_SEL_MASK));
+
+	mdelay(100);
+
+	return 0;
+}
+
+static const u32 r7xx_golden_registers[] = {
+	0x8d00, 0xffffffff, 0x0e0e0074,
+	0x8d04, 0xffffffff, 0x013a2b34,
+	0x9508, 0xffffffff, 0x00000002,
+	0x8b20, 0xffffffff, 0,
+	0x88c4, 0xffffffff, 0x000000c2,
+	0x28350, 0xffffffff, 0,
+	0x9058, 0xffffffff, 0x0fffc40f,
+	0x240c, 0xffffffff, 0x00000380,
+	0x733c, 0xffffffff, 0x00000002,
+	0x2650, 0x00040000, 0,
+	0x20bc, 0x00040000, 0,
+	0x7300, 0xffffffff, 0x001000f0
+};
+
+static const u32 r7xx_golden_dyn_gpr_registers[] = {
+	0x8db0, 0xffffffff, 0x98989898,
+	0x8db4, 0xffffffff, 0x98989898,
+	0x8db8, 0xffffffff, 0x98989898,
+	0x8dbc, 0xffffffff, 0x98989898,
+	0x8dc0, 0xffffffff, 0x98989898,
+	0x8dc4, 0xffffffff, 0x98989898,
+	0x8dc8, 0xffffffff, 0x98989898,
+	0x8dcc, 0xffffffff, 0x98989898,
+	0x88c4, 0xffffffff, 0x00000082
+};
+
+static const u32 rv770_golden_registers[] = {
+	0x562c, 0xffffffff, 0,
+	0x3f90, 0xffffffff, 0,
+	0x9148, 0xffffffff, 0,
+	0x3f94, 0xffffffff, 0,
+	0x914c, 0xffffffff, 0,
+	0x9698, 0x18000000, 0x18000000
+};
+
+static const u32 rv770ce_golden_registers[] = {
+	0x562c, 0xffffffff, 0,
+	0x3f90, 0xffffffff, 0x00cc0000,
+	0x9148, 0xffffffff, 0x00cc0000,
+	0x3f94, 0xffffffff, 0x00cc0000,
+	0x914c, 0xffffffff, 0x00cc0000,
+	0x9b7c, 0xffffffff, 0x00fa0000,
+	0x3f8c, 0xffffffff, 0x00fa0000,
+	0x9698, 0x18000000, 0x18000000
+};
+
+static const u32 rv770_mgcg_init[] = {
+	0x8bcc, 0xffffffff, 0x130300f9,
+	0x5448, 0xffffffff, 0x100,
+	0x55e4, 0xffffffff, 0x100,
+	0x160c, 0xffffffff, 0x100,
+	0x5644, 0xffffffff, 0x100,
+	0xc164, 0xffffffff, 0x100,
+	0x8a18, 0xffffffff, 0x100,
+	0x897c, 0xffffffff, 0x8000100,
+	0x8b28, 0xffffffff, 0x3c000100,
+	0x9144, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x10000,
+	0x9a50, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x10001,
+	0x9a50, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x10002,
+	0x9a50, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x10003,
+	0x9a50, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x0,
+	0x9870, 0xffffffff, 0x100,
+	0x8d58, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x0,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x1,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x2,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x3,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x4,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x5,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x6,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x7,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x8,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x9,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x8000,
+	0x9490, 0xffffffff, 0x0,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x1,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x2,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x3,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x4,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x5,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x6,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x7,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x8,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x9,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x8000,
+	0x9604, 0xffffffff, 0x0,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x1,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x2,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x3,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x4,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x5,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x6,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x7,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x8,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x9,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x80000000,
+	0x9030, 0xffffffff, 0x100,
+	0x9034, 0xffffffff, 0x100,
+	0x9038, 0xffffffff, 0x100,
+	0x903c, 0xffffffff, 0x100,
+	0x9040, 0xffffffff, 0x100,
+	0xa200, 0xffffffff, 0x100,
+	0xa204, 0xffffffff, 0x100,
+	0xa208, 0xffffffff, 0x100,
+	0xa20c, 0xffffffff, 0x100,
+	0x971c, 0xffffffff, 0x100,
+	0x915c, 0xffffffff, 0x00020001,
+	0x9160, 0xffffffff, 0x00040003,
+	0x916c, 0xffffffff, 0x00060005,
+	0x9170, 0xffffffff, 0x00080007,
+	0x9174, 0xffffffff, 0x000a0009,
+	0x9178, 0xffffffff, 0x000c000b,
+	0x917c, 0xffffffff, 0x000e000d,
+	0x9180, 0xffffffff, 0x0010000f,
+	0x918c, 0xffffffff, 0x00120011,
+	0x9190, 0xffffffff, 0x00140013,
+	0x9194, 0xffffffff, 0x00020001,
+	0x9198, 0xffffffff, 0x00040003,
+	0x919c, 0xffffffff, 0x00060005,
+	0x91a8, 0xffffffff, 0x00080007,
+	0x91ac, 0xffffffff, 0x000a0009,
+	0x91b0, 0xffffffff, 0x000c000b,
+	0x91b4, 0xffffffff, 0x000e000d,
+	0x91b8, 0xffffffff, 0x0010000f,
+	0x91c4, 0xffffffff, 0x00120011,
+	0x91c8, 0xffffffff, 0x00140013,
+	0x91cc, 0xffffffff, 0x00020001,
+	0x91d0, 0xffffffff, 0x00040003,
+	0x91d4, 0xffffffff, 0x00060005,
+	0x91e0, 0xffffffff, 0x00080007,
+	0x91e4, 0xffffffff, 0x000a0009,
+	0x91e8, 0xffffffff, 0x000c000b,
+	0x91ec, 0xffffffff, 0x00020001,
+	0x91f0, 0xffffffff, 0x00040003,
+	0x91f4, 0xffffffff, 0x00060005,
+	0x9200, 0xffffffff, 0x00080007,
+	0x9204, 0xffffffff, 0x000a0009,
+	0x9208, 0xffffffff, 0x000c000b,
+	0x920c, 0xffffffff, 0x000e000d,
+	0x9210, 0xffffffff, 0x0010000f,
+	0x921c, 0xffffffff, 0x00120011,
+	0x9220, 0xffffffff, 0x00140013,
+	0x9224, 0xffffffff, 0x00020001,
+	0x9228, 0xffffffff, 0x00040003,
+	0x922c, 0xffffffff, 0x00060005,
+	0x9238, 0xffffffff, 0x00080007,
+	0x923c, 0xffffffff, 0x000a0009,
+	0x9240, 0xffffffff, 0x000c000b,
+	0x9244, 0xffffffff, 0x000e000d,
+	0x9248, 0xffffffff, 0x0010000f,
+	0x9254, 0xffffffff, 0x00120011,
+	0x9258, 0xffffffff, 0x00140013,
+	0x925c, 0xffffffff, 0x00020001,
+	0x9260, 0xffffffff, 0x00040003,
+	0x9264, 0xffffffff, 0x00060005,
+	0x9270, 0xffffffff, 0x00080007,
+	0x9274, 0xffffffff, 0x000a0009,
+	0x9278, 0xffffffff, 0x000c000b,
+	0x927c, 0xffffffff, 0x000e000d,
+	0x9280, 0xffffffff, 0x0010000f,
+	0x928c, 0xffffffff, 0x00120011,
+	0x9290, 0xffffffff, 0x00140013,
+	0x9294, 0xffffffff, 0x00020001,
+	0x929c, 0xffffffff, 0x00040003,
+	0x92a0, 0xffffffff, 0x00060005,
+	0x92a4, 0xffffffff, 0x00080007
+};
+
+static const u32 rv710_golden_registers[] = {
+	0x3f90, 0x00ff0000, 0x00fc0000,
+	0x9148, 0x00ff0000, 0x00fc0000,
+	0x3f94, 0x00ff0000, 0x00fc0000,
+	0x914c, 0x00ff0000, 0x00fc0000,
+	0xb4c, 0x00000020, 0x00000020,
+	0xa180, 0xffffffff, 0x00003f3f
+};
+
+static const u32 rv710_mgcg_init[] = {
+	0x8bcc, 0xffffffff, 0x13030040,
+	0x5448, 0xffffffff, 0x100,
+	0x55e4, 0xffffffff, 0x100,
+	0x160c, 0xffffffff, 0x100,
+	0x5644, 0xffffffff, 0x100,
+	0xc164, 0xffffffff, 0x100,
+	0x8a18, 0xffffffff, 0x100,
+	0x897c, 0xffffffff, 0x8000100,
+	0x8b28, 0xffffffff, 0x3c000100,
+	0x9144, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x10000,
+	0x9a50, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x0,
+	0x9870, 0xffffffff, 0x100,
+	0x8d58, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x0,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x1,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x8000,
+	0x9490, 0xffffffff, 0x0,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x1,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x8000,
+	0x9604, 0xffffffff, 0x0,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x1,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x80000000,
+	0x9030, 0xffffffff, 0x100,
+	0x9034, 0xffffffff, 0x100,
+	0x9038, 0xffffffff, 0x100,
+	0x903c, 0xffffffff, 0x100,
+	0x9040, 0xffffffff, 0x100,
+	0xa200, 0xffffffff, 0x100,
+	0xa204, 0xffffffff, 0x100,
+	0xa208, 0xffffffff, 0x100,
+	0xa20c, 0xffffffff, 0x100,
+	0x971c, 0xffffffff, 0x100,
+	0x915c, 0xffffffff, 0x00020001,
+	0x9174, 0xffffffff, 0x00000003,
+	0x9178, 0xffffffff, 0x00050001,
+	0x917c, 0xffffffff, 0x00030002,
+	0x918c, 0xffffffff, 0x00000004,
+	0x9190, 0xffffffff, 0x00070006,
+	0x9194, 0xffffffff, 0x00050001,
+	0x9198, 0xffffffff, 0x00030002,
+	0x91a8, 0xffffffff, 0x00000004,
+	0x91ac, 0xffffffff, 0x00070006,
+	0x91e8, 0xffffffff, 0x00000001,
+	0x9294, 0xffffffff, 0x00000001,
+	0x929c, 0xffffffff, 0x00000002,
+	0x92a0, 0xffffffff, 0x00040003,
+	0x9150, 0xffffffff, 0x4d940000
+};
+
+static const u32 rv730_golden_registers[] = {
+	0x3f90, 0x00ff0000, 0x00f00000,
+	0x9148, 0x00ff0000, 0x00f00000,
+	0x3f94, 0x00ff0000, 0x00f00000,
+	0x914c, 0x00ff0000, 0x00f00000,
+	0x900c, 0xffffffff, 0x003b033f,
+	0xb4c, 0x00000020, 0x00000020,
+	0xa180, 0xffffffff, 0x00003f3f
+};
+
+static const u32 rv730_mgcg_init[] = {
+	0x8bcc, 0xffffffff, 0x130300f9,
+	0x5448, 0xffffffff, 0x100,
+	0x55e4, 0xffffffff, 0x100,
+	0x160c, 0xffffffff, 0x100,
+	0x5644, 0xffffffff, 0x100,
+	0xc164, 0xffffffff, 0x100,
+	0x8a18, 0xffffffff, 0x100,
+	0x897c, 0xffffffff, 0x8000100,
+	0x8b28, 0xffffffff, 0x3c000100,
+	0x9144, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x10000,
+	0x9a50, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x10001,
+	0x9a50, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x0,
+	0x9870, 0xffffffff, 0x100,
+	0x8d58, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x0,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x1,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x2,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x3,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x4,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x5,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x6,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x7,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x8000,
+	0x9490, 0xffffffff, 0x0,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x1,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x2,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x3,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x4,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x5,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x6,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x7,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x8000,
+	0x9604, 0xffffffff, 0x0,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x1,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x2,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x3,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x4,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x5,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x6,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x7,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x80000000,
+	0x9030, 0xffffffff, 0x100,
+	0x9034, 0xffffffff, 0x100,
+	0x9038, 0xffffffff, 0x100,
+	0x903c, 0xffffffff, 0x100,
+	0x9040, 0xffffffff, 0x100,
+	0xa200, 0xffffffff, 0x100,
+	0xa204, 0xffffffff, 0x100,
+	0xa208, 0xffffffff, 0x100,
+	0xa20c, 0xffffffff, 0x100,
+	0x971c, 0xffffffff, 0x100,
+	0x915c, 0xffffffff, 0x00020001,
+	0x916c, 0xffffffff, 0x00040003,
+	0x9170, 0xffffffff, 0x00000005,
+	0x9178, 0xffffffff, 0x00050001,
+	0x917c, 0xffffffff, 0x00030002,
+	0x918c, 0xffffffff, 0x00000004,
+	0x9190, 0xffffffff, 0x00070006,
+	0x9194, 0xffffffff, 0x00050001,
+	0x9198, 0xffffffff, 0x00030002,
+	0x91a8, 0xffffffff, 0x00000004,
+	0x91ac, 0xffffffff, 0x00070006,
+	0x91b0, 0xffffffff, 0x00050001,
+	0x91b4, 0xffffffff, 0x00030002,
+	0x91c4, 0xffffffff, 0x00000004,
+	0x91c8, 0xffffffff, 0x00070006,
+	0x91cc, 0xffffffff, 0x00050001,
+	0x91d0, 0xffffffff, 0x00030002,
+	0x91e0, 0xffffffff, 0x00000004,
+	0x91e4, 0xffffffff, 0x00070006,
+	0x91e8, 0xffffffff, 0x00000001,
+	0x91ec, 0xffffffff, 0x00050001,
+	0x91f0, 0xffffffff, 0x00030002,
+	0x9200, 0xffffffff, 0x00000004,
+	0x9204, 0xffffffff, 0x00070006,
+	0x9208, 0xffffffff, 0x00050001,
+	0x920c, 0xffffffff, 0x00030002,
+	0x921c, 0xffffffff, 0x00000004,
+	0x9220, 0xffffffff, 0x00070006,
+	0x9224, 0xffffffff, 0x00050001,
+	0x9228, 0xffffffff, 0x00030002,
+	0x9238, 0xffffffff, 0x00000004,
+	0x923c, 0xffffffff, 0x00070006,
+	0x9240, 0xffffffff, 0x00050001,
+	0x9244, 0xffffffff, 0x00030002,
+	0x9254, 0xffffffff, 0x00000004,
+	0x9258, 0xffffffff, 0x00070006,
+	0x9294, 0xffffffff, 0x00000001,
+	0x929c, 0xffffffff, 0x00000002,
+	0x92a0, 0xffffffff, 0x00040003,
+	0x92a4, 0xffffffff, 0x00000005
+};
+
+static const u32 rv740_golden_registers[] = {
+	0x88c4, 0xffffffff, 0x00000082,
+	0x28a50, 0xfffffffc, 0x00000004,
+	0x2650, 0x00040000, 0,
+	0x20bc, 0x00040000, 0,
+	0x733c, 0xffffffff, 0x00000002,
+	0x7300, 0xffffffff, 0x001000f0,
+	0x3f90, 0x00ff0000, 0,
+	0x9148, 0x00ff0000, 0,
+	0x3f94, 0x00ff0000, 0,
+	0x914c, 0x00ff0000, 0,
+	0x240c, 0xffffffff, 0x00000380,
+	0x8a14, 0x00000007, 0x00000007,
+	0x8b24, 0xffffffff, 0x00ff0fff,
+	0x28a4c, 0xffffffff, 0x00004000,
+	0xa180, 0xffffffff, 0x00003f3f,
+	0x8d00, 0xffffffff, 0x0e0e003a,
+	0x8d04, 0xffffffff, 0x013a0e2a,
+	0x8c00, 0xffffffff, 0xe400000f,
+	0x8db0, 0xffffffff, 0x98989898,
+	0x8db4, 0xffffffff, 0x98989898,
+	0x8db8, 0xffffffff, 0x98989898,
+	0x8dbc, 0xffffffff, 0x98989898,
+	0x8dc0, 0xffffffff, 0x98989898,
+	0x8dc4, 0xffffffff, 0x98989898,
+	0x8dc8, 0xffffffff, 0x98989898,
+	0x8dcc, 0xffffffff, 0x98989898,
+	0x9058, 0xffffffff, 0x0fffc40f,
+	0x900c, 0xffffffff, 0x003b033f,
+	0x28350, 0xffffffff, 0,
+	0x8cf0, 0x1fffffff, 0x08e00420,
+	0x9508, 0xffffffff, 0x00000002,
+	0x88c4, 0xffffffff, 0x000000c2,
+	0x9698, 0x18000000, 0x18000000
+};
+
+static const u32 rv740_mgcg_init[] = {
+	0x8bcc, 0xffffffff, 0x13030100,
+	0x5448, 0xffffffff, 0x100,
+	0x55e4, 0xffffffff, 0x100,
+	0x160c, 0xffffffff, 0x100,
+	0x5644, 0xffffffff, 0x100,
+	0xc164, 0xffffffff, 0x100,
+	0x8a18, 0xffffffff, 0x100,
+	0x897c, 0xffffffff, 0x100,
+	0x8b28, 0xffffffff, 0x100,
+	0x9144, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x10000,
+	0x9a50, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x10001,
+	0x9a50, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x10002,
+	0x9a50, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x10003,
+	0x9a50, 0xffffffff, 0x100,
+	0x9a1c, 0xffffffff, 0x0,
+	0x9870, 0xffffffff, 0x100,
+	0x8d58, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x0,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x1,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x2,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x3,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x4,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x5,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x6,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x7,
+	0x9510, 0xffffffff, 0x100,
+	0x9500, 0xffffffff, 0x8000,
+	0x9490, 0xffffffff, 0x0,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x1,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x2,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x3,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x4,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x5,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x6,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x7,
+	0x949c, 0xffffffff, 0x100,
+	0x9490, 0xffffffff, 0x8000,
+	0x9604, 0xffffffff, 0x0,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x1,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x2,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x3,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x4,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x5,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x6,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x7,
+	0x9654, 0xffffffff, 0x100,
+	0x9604, 0xffffffff, 0x80000000,
+	0x9030, 0xffffffff, 0x100,
+	0x9034, 0xffffffff, 0x100,
+	0x9038, 0xffffffff, 0x100,
+	0x903c, 0xffffffff, 0x100,
+	0x9040, 0xffffffff, 0x100,
+	0xa200, 0xffffffff, 0x100,
+	0xa204, 0xffffffff, 0x100,
+	0xa208, 0xffffffff, 0x100,
+	0xa20c, 0xffffffff, 0x100,
+	0x971c, 0xffffffff, 0x100,
+	0x915c, 0xffffffff, 0x00020001,
+	0x9160, 0xffffffff, 0x00040003,
+	0x916c, 0xffffffff, 0x00060005,
+	0x9170, 0xffffffff, 0x00080007,
+	0x9174, 0xffffffff, 0x000a0009,
+	0x9178, 0xffffffff, 0x000c000b,
+	0x917c, 0xffffffff, 0x000e000d,
+	0x9180, 0xffffffff, 0x0010000f,
+	0x918c, 0xffffffff, 0x00120011,
+	0x9190, 0xffffffff, 0x00140013,
+	0x9194, 0xffffffff, 0x00020001,
+	0x9198, 0xffffffff, 0x00040003,
+	0x919c, 0xffffffff, 0x00060005,
+	0x91a8, 0xffffffff, 0x00080007,
+	0x91ac, 0xffffffff, 0x000a0009,
+	0x91b0, 0xffffffff, 0x000c000b,
+	0x91b4, 0xffffffff, 0x000e000d,
+	0x91b8, 0xffffffff, 0x0010000f,
+	0x91c4, 0xffffffff, 0x00120011,
+	0x91c8, 0xffffffff, 0x00140013,
+	0x91cc, 0xffffffff, 0x00020001,
+	0x91d0, 0xffffffff, 0x00040003,
+	0x91d4, 0xffffffff, 0x00060005,
+	0x91e0, 0xffffffff, 0x00080007,
+	0x91e4, 0xffffffff, 0x000a0009,
+	0x91e8, 0xffffffff, 0x000c000b,
+	0x91ec, 0xffffffff, 0x00020001,
+	0x91f0, 0xffffffff, 0x00040003,
+	0x91f4, 0xffffffff, 0x00060005,
+	0x9200, 0xffffffff, 0x00080007,
+	0x9204, 0xffffffff, 0x000a0009,
+	0x9208, 0xffffffff, 0x000c000b,
+	0x920c, 0xffffffff, 0x000e000d,
+	0x9210, 0xffffffff, 0x0010000f,
+	0x921c, 0xffffffff, 0x00120011,
+	0x9220, 0xffffffff, 0x00140013,
+	0x9224, 0xffffffff, 0x00020001,
+	0x9228, 0xffffffff, 0x00040003,
+	0x922c, 0xffffffff, 0x00060005,
+	0x9238, 0xffffffff, 0x00080007,
+	0x923c, 0xffffffff, 0x000a0009,
+	0x9240, 0xffffffff, 0x000c000b,
+	0x9244, 0xffffffff, 0x000e000d,
+	0x9248, 0xffffffff, 0x0010000f,
+	0x9254, 0xffffffff, 0x00120011,
+	0x9258, 0xffffffff, 0x00140013,
+	0x9294, 0xffffffff, 0x00020001,
+	0x929c, 0xffffffff, 0x00040003,
+	0x92a0, 0xffffffff, 0x00060005,
+	0x92a4, 0xffffffff, 0x00080007
+};
+
+static void rv770_init_golden_registers(struct radeon_device *rdev)
+{
+	switch (rdev->family) {
+	case CHIP_RV770:
+		radeon_program_register_sequence(rdev,
+						 r7xx_golden_registers,
+						 (const u32)ARRAY_SIZE(r7xx_golden_registers));
+		radeon_program_register_sequence(rdev,
+						 r7xx_golden_dyn_gpr_registers,
+						 (const u32)ARRAY_SIZE(r7xx_golden_dyn_gpr_registers));
+		if (rdev->pdev->device == 0x994e)
+			radeon_program_register_sequence(rdev,
+							 rv770ce_golden_registers,
+							 (const u32)ARRAY_SIZE(rv770ce_golden_registers));
+		else
+			radeon_program_register_sequence(rdev,
+							 rv770_golden_registers,
+							 (const u32)ARRAY_SIZE(rv770_golden_registers));
+		radeon_program_register_sequence(rdev,
+						 rv770_mgcg_init,
+						 (const u32)ARRAY_SIZE(rv770_mgcg_init));
+		break;
+	case CHIP_RV730:
+		radeon_program_register_sequence(rdev,
+						 r7xx_golden_registers,
+						 (const u32)ARRAY_SIZE(r7xx_golden_registers));
+		radeon_program_register_sequence(rdev,
+						 r7xx_golden_dyn_gpr_registers,
+						 (const u32)ARRAY_SIZE(r7xx_golden_dyn_gpr_registers));
+		radeon_program_register_sequence(rdev,
+						 rv730_golden_registers,
+						 (const u32)ARRAY_SIZE(rv730_golden_registers));
+		radeon_program_register_sequence(rdev,
+						 rv730_mgcg_init,
+						 (const u32)ARRAY_SIZE(rv730_mgcg_init));
+		break;
+	case CHIP_RV710:
+		radeon_program_register_sequence(rdev,
+						 r7xx_golden_registers,
+						 (const u32)ARRAY_SIZE(r7xx_golden_registers));
+		radeon_program_register_sequence(rdev,
+						 r7xx_golden_dyn_gpr_registers,
+						 (const u32)ARRAY_SIZE(r7xx_golden_dyn_gpr_registers));
+		radeon_program_register_sequence(rdev,
+						 rv710_golden_registers,
+						 (const u32)ARRAY_SIZE(rv710_golden_registers));
+		radeon_program_register_sequence(rdev,
+						 rv710_mgcg_init,
+						 (const u32)ARRAY_SIZE(rv710_mgcg_init));
+		break;
+	case CHIP_RV740:
+		radeon_program_register_sequence(rdev,
+						 rv740_golden_registers,
+						 (const u32)ARRAY_SIZE(rv740_golden_registers));
+		radeon_program_register_sequence(rdev,
+						 rv740_mgcg_init,
+						 (const u32)ARRAY_SIZE(rv740_mgcg_init));
+		break;
+	default:
+		break;
+	}
+}
+
+#define PCIE_BUS_CLK                10000
+#define TCLK                        (PCIE_BUS_CLK / 10)
+
+/**
+ * rv770_get_xclk - get the xclk
+ *
+ * @rdev: radeon_device pointer
+ *
+ * Returns the reference clock used by the gfx engine
+ * (r7xx-cayman).
+ */
+u32 rv770_get_xclk(struct radeon_device *rdev)
+{
+	u32 reference_clock = rdev->clock.spll.reference_freq;
+	u32 tmp = RREG32(CG_CLKPIN_CNTL);
+
+	if (tmp & MUX_TCLK_TO_XCLK)
+		return TCLK;
+
+	if (tmp & XTALIN_DIVIDE)
+		return reference_clock / 4;
+
+	return reference_clock;
+}
+
+void rv770_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base, bool async)
+{
+	struct radeon_crtc *radeon_crtc = rdev->mode_info.crtcs[crtc_id];
+	struct drm_framebuffer *fb = radeon_crtc->base.primary->fb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 tmp = RREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset);
 	int i;
 
@@ -53,6 +828,15 @@ u32 rv770_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base)
 	tmp |= AVIVO_D1GRPH_UPDATE_LOCK;
 	WREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset, tmp);
 
+<<<<<<< HEAD
+=======
+	/* flip at hsync for async, default is vsync */
+	WREG32(AVIVO_D1GRPH_FLIP_CONTROL + radeon_crtc->crtc_offset,
+	       async ? AVIVO_D1GRPH_SURFACE_UPDATE_H_RETRACE_EN : 0);
+	/* update pitch */
+	WREG32(AVIVO_D1GRPH_PITCH + radeon_crtc->crtc_offset,
+	       fb->pitches[0] / fb->format->cpp[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* update the scanout addresses */
 	if (radeon_crtc->crtc_id) {
 		WREG32(D2GRPH_SECONDARY_SURFACE_ADDRESS_HIGH, upper_32_bits(crtc_base));
@@ -77,9 +861,21 @@ u32 rv770_page_flip(struct radeon_device *rdev, int crtc_id, u64 crtc_base)
 	/* Unlock the lock, so double-buffering can take place inside vblank */
 	tmp &= ~AVIVO_D1GRPH_UPDATE_LOCK;
 	WREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset, tmp);
+<<<<<<< HEAD
 
 	/* Return current update_pending status: */
 	return RREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset) & AVIVO_D1GRPH_SURFACE_UPDATE_PENDING;
+=======
+}
+
+bool rv770_page_flip_pending(struct radeon_device *rdev, int crtc_id)
+{
+	struct radeon_crtc *radeon_crtc = rdev->mode_info.crtcs[crtc_id];
+
+	/* Return current update_pending status: */
+	return !!(RREG32(AVIVO_D1GRPH_UPDATE + radeon_crtc->crtc_offset) &
+		AVIVO_D1GRPH_SURFACE_UPDATE_PENDING);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* get temperature in millidegrees */
@@ -124,7 +920,11 @@ void rv770_pm_misc(struct radeon_device *rdev)
 /*
  * GART
  */
+<<<<<<< HEAD
 int rv770_pcie_gart_enable(struct radeon_device *rdev)
+=======
+static int rv770_pcie_gart_enable(struct radeon_device *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tmp;
 	int r, i;
@@ -136,7 +936,10 @@ int rv770_pcie_gart_enable(struct radeon_device *rdev)
 	r = radeon_gart_table_vram_pin(rdev);
 	if (r)
 		return r;
+<<<<<<< HEAD
 	radeon_gart_restore(rdev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Setup L2 cache */
 	WREG32(VM_L2_CNTL, ENABLE_L2_CACHE | ENABLE_L2_FRAGMENT_PROCESSING |
 				ENABLE_L2_PTE_CACHE_LRU_UPDATE_BY_WRITE |
@@ -175,7 +978,11 @@ int rv770_pcie_gart_enable(struct radeon_device *rdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 void rv770_pcie_gart_disable(struct radeon_device *rdev)
+=======
+static void rv770_pcie_gart_disable(struct radeon_device *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tmp;
 	int i;
@@ -201,7 +1008,11 @@ void rv770_pcie_gart_disable(struct radeon_device *rdev)
 	radeon_gart_table_vram_unpin(rdev);
 }
 
+<<<<<<< HEAD
 void rv770_pcie_gart_fini(struct radeon_device *rdev)
+=======
+static void rv770_pcie_gart_fini(struct radeon_device *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	radeon_gart_fini(rdev);
 	rv770_pcie_gart_disable(rdev);
@@ -209,7 +1020,11 @@ void rv770_pcie_gart_fini(struct radeon_device *rdev)
 }
 
 
+<<<<<<< HEAD
 void rv770_agp_enable(struct radeon_device *rdev)
+=======
+static void rv770_agp_enable(struct radeon_device *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tmp;
 	int i;
@@ -313,9 +1128,17 @@ static void rv770_mc_program(struct radeon_device *rdev)
  */
 void r700_cp_stop(struct radeon_device *rdev)
 {
+<<<<<<< HEAD
 	radeon_ttm_set_active_vram_size(rdev, rdev->mc.visible_vram_size);
 	WREG32(CP_ME_CNTL, (CP_ME_HALT | CP_PFP_HALT));
 	WREG32(SCRATCH_UMSK, 0);
+=======
+	if (rdev->asic->copy.copy_ring_index == RADEON_RING_TYPE_GFX_INDEX)
+		radeon_ttm_set_active_vram_size(rdev, rdev->mc.visible_vram_size);
+	WREG32(CP_ME_CNTL, (CP_ME_HALT | CP_PFP_HALT));
+	WREG32(SCRATCH_UMSK, 0);
+	rdev->ring[RADEON_RING_TYPE_GFX_INDEX].ready = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rv770_cp_load_microcode(struct radeon_device *rdev)
@@ -358,13 +1181,50 @@ static int rv770_cp_load_microcode(struct radeon_device *rdev)
 
 void r700_cp_fini(struct radeon_device *rdev)
 {
+<<<<<<< HEAD
 	r700_cp_stop(rdev);
 	radeon_ring_fini(rdev, &rdev->ring[RADEON_RING_TYPE_GFX_INDEX]);
+=======
+	struct radeon_ring *ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
+	r700_cp_stop(rdev);
+	radeon_ring_fini(rdev, ring);
+	radeon_scratch_free(rdev, ring->rptr_save_reg);
+}
+
+void rv770_set_clk_bypass_mode(struct radeon_device *rdev)
+{
+	u32 tmp, i;
+
+	if (rdev->flags & RADEON_IS_IGP)
+		return;
+
+	tmp = RREG32(CG_SPLL_FUNC_CNTL_2);
+	tmp &= SCLK_MUX_SEL_MASK;
+	tmp |= SCLK_MUX_SEL(1) | SCLK_MUX_UPDATE;
+	WREG32(CG_SPLL_FUNC_CNTL_2, tmp);
+
+	for (i = 0; i < rdev->usec_timeout; i++) {
+		if (RREG32(CG_SPLL_STATUS) & SPLL_CHG_STATUS)
+			break;
+		udelay(1);
+	}
+
+	tmp &= ~SCLK_MUX_UPDATE;
+	WREG32(CG_SPLL_FUNC_CNTL_2, tmp);
+
+	tmp = RREG32(MPLL_CNTL_MODE);
+	if ((rdev->family == CHIP_RV710) || (rdev->family == CHIP_RV730))
+		tmp &= ~RV730_MPLL_MCLK_SEL;
+	else
+		tmp &= ~MPLL_MCLK_SEL;
+	WREG32(MPLL_CNTL_MODE, tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Core functions
  */
+<<<<<<< HEAD
 static u32 r700_get_tile_pipe_to_backend_map(struct radeon_device *rdev,
 					     u32 num_tile_pipes,
 					     u32 num_backends,
@@ -539,6 +1399,8 @@ static u32 r700_get_tile_pipe_to_backend_map(struct radeon_device *rdev,
 	return backend_map;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rv770_gpu_init(struct radeon_device *rdev)
 {
 	int i, j, num_qd_pipes;
@@ -554,6 +1416,7 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 	u32 sq_thread_resource_mgmt;
 	u32 hdp_host_path_cntl;
 	u32 sq_dyn_gpr_size_simd_ab_0;
+<<<<<<< HEAD
 	u32 backend_map;
 	u32 gb_tiling_config = 0;
 	u32 cc_rb_backend_disable = 0;
@@ -562,6 +1425,18 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 	u32 db_debug4;
 
 	/* setup chip specs */
+=======
+	u32 gb_tiling_config = 0;
+	u32 cc_gc_shader_pipe_config = 0;
+	u32 mc_arb_ramcfg;
+	u32 db_debug4, tmp;
+	u32 inactive_pipes, shader_pipe_config;
+	u32 disabled_rb_mask;
+	unsigned active_number;
+
+	/* setup chip specs */
+	rdev->config.rv770.tiling_group_size = 256;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (rdev->family) {
 	case CHIP_RV770:
 		rdev->config.rv770.max_pipes = 4;
@@ -672,6 +1547,7 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 	/* setup tiling, simd, pipe config */
 	mc_arb_ramcfg = RREG32(MC_ARB_RAMCFG);
 
+<<<<<<< HEAD
 	switch (rdev->config.rv770.max_tile_pipes) {
 	case 1:
 	default:
@@ -685,10 +1561,62 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 		break;
 	case 8:
 		gb_tiling_config |= PIPE_TILING(3);
+=======
+	shader_pipe_config = RREG32(CC_GC_SHADER_PIPE_CONFIG);
+	inactive_pipes = (shader_pipe_config & INACTIVE_QD_PIPES_MASK) >> INACTIVE_QD_PIPES_SHIFT;
+	for (i = 0, tmp = 1, active_number = 0; i < R7XX_MAX_PIPES; i++) {
+		if (!(inactive_pipes & tmp)) {
+			active_number++;
+		}
+		tmp <<= 1;
+	}
+	if (active_number == 1) {
+		WREG32(SPI_CONFIG_CNTL, DISABLE_INTERP_1);
+	} else {
+		WREG32(SPI_CONFIG_CNTL, 0);
+	}
+
+	cc_gc_shader_pipe_config = RREG32(CC_GC_SHADER_PIPE_CONFIG) & 0xffffff00;
+	tmp = rdev->config.rv770.max_simds -
+		r600_count_pipe_bits((cc_gc_shader_pipe_config >> 16) & R7XX_MAX_SIMDS_MASK);
+	rdev->config.rv770.active_simds = tmp;
+
+	switch (rdev->config.rv770.max_tile_pipes) {
+	case 1:
+	default:
+		gb_tiling_config = PIPE_TILING(0);
+		break;
+	case 2:
+		gb_tiling_config = PIPE_TILING(1);
+		break;
+	case 4:
+		gb_tiling_config = PIPE_TILING(2);
+		break;
+	case 8:
+		gb_tiling_config = PIPE_TILING(3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	rdev->config.rv770.tiling_npipes = rdev->config.rv770.max_tile_pipes;
 
+<<<<<<< HEAD
+=======
+	disabled_rb_mask = (RREG32(CC_RB_BACKEND_DISABLE) >> 16) & R7XX_MAX_BACKENDS_MASK;
+	tmp = 0;
+	for (i = 0; i < rdev->config.rv770.max_backends; i++)
+		tmp |= (1 << i);
+	/* if all the backends are disabled, fix it up here */
+	if ((disabled_rb_mask & tmp) == tmp) {
+		for (i = 0; i < rdev->config.rv770.max_backends; i++)
+			disabled_rb_mask &= ~(1 << i);
+	}
+	tmp = (gb_tiling_config & PIPE_TILING__MASK) >> PIPE_TILING__SHIFT;
+	tmp = r6xx_remap_render_backend(rdev, tmp, rdev->config.rv770.max_backends,
+					R7XX_MAX_BACKENDS, disabled_rb_mask);
+	gb_tiling_config |= tmp << 16;
+	rdev->config.rv770.backend_map = tmp;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdev->family == CHIP_RV770)
 		gb_tiling_config |= BANK_TILING(1);
 	else {
@@ -699,10 +1627,13 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 	}
 	rdev->config.rv770.tiling_nbanks = 4 << ((gb_tiling_config >> 4) & 0x3);
 	gb_tiling_config |= GROUP_SIZE((mc_arb_ramcfg & BURSTLENGTH_MASK) >> BURSTLENGTH_SHIFT);
+<<<<<<< HEAD
 	if ((mc_arb_ramcfg & BURSTLENGTH_MASK) >> BURSTLENGTH_SHIFT)
 		rdev->config.rv770.tiling_group_size = 512;
 	else
 		rdev->config.rv770.tiling_group_size = 256;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (((mc_arb_ramcfg & NOOFROWS_MASK) >> NOOFROWS_SHIFT) > 3) {
 		gb_tiling_config |= ROW_TILING(3);
 		gb_tiling_config |= SAMPLE_SPLIT(3);
@@ -714,6 +1645,7 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 	}
 
 	gb_tiling_config |= BANK_SWAPS(1);
+<<<<<<< HEAD
 
 	cc_rb_backend_disable = RREG32(CC_RB_BACKEND_DISABLE) & 0x00ff0000;
 	cc_rb_backend_disable |=
@@ -738,23 +1670,41 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 	rdev->config.rv770.tile_config = gb_tiling_config;
 	rdev->config.rv770.backend_map = backend_map;
 	gb_tiling_config |= BACKEND_MAP(backend_map);
+=======
+	rdev->config.rv770.tile_config = gb_tiling_config;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WREG32(GB_TILING_CONFIG, gb_tiling_config);
 	WREG32(DCP_TILING_CONFIG, (gb_tiling_config & 0xffff));
 	WREG32(HDP_TILING_CONFIG, (gb_tiling_config & 0xffff));
+<<<<<<< HEAD
 
 	WREG32(CC_RB_BACKEND_DISABLE,      cc_rb_backend_disable);
 	WREG32(CC_GC_SHADER_PIPE_CONFIG,   cc_gc_shader_pipe_config);
 	WREG32(GC_USER_SHADER_PIPE_CONFIG, cc_gc_shader_pipe_config);
 	WREG32(CC_SYS_RB_BACKEND_DISABLE,  cc_rb_backend_disable);
+=======
+	WREG32(DMA_TILING_CONFIG, (gb_tiling_config & 0xffff));
+	WREG32(DMA_TILING_CONFIG2, (gb_tiling_config & 0xffff));
+	if (rdev->family == CHIP_RV730) {
+		WREG32(UVD_UDEC_DB_TILING_CONFIG, (gb_tiling_config & 0xffff));
+		WREG32(UVD_UDEC_DBW_TILING_CONFIG, (gb_tiling_config & 0xffff));
+		WREG32(UVD_UDEC_TILING_CONFIG, (gb_tiling_config & 0xffff));
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WREG32(CGTS_SYS_TCC_DISABLE, 0);
 	WREG32(CGTS_TCC_DISABLE, 0);
 	WREG32(CGTS_USER_SYS_TCC_DISABLE, 0);
 	WREG32(CGTS_USER_TCC_DISABLE, 0);
 
+<<<<<<< HEAD
 	num_qd_pipes =
 		R7XX_MAX_PIPES - r600_count_pipe_bits((cc_gc_shader_pipe_config & INACTIVE_QD_PIPES_MASK) >> 8);
+=======
+
+	num_qd_pipes = R7XX_MAX_PIPES - r600_count_pipe_bits((cc_gc_shader_pipe_config & INACTIVE_QD_PIPES_MASK) >> 8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WREG32(VGT_OUT_DEALLOC_CNTL, (num_qd_pipes * 4) & DEALLOC_DIST_MASK);
 	WREG32(VGT_VERTEX_REUSE_BLOCK_CNTL, ((num_qd_pipes * 4) - 2) & VTX_REUSE_DEPTH_MASK);
 
@@ -818,8 +1768,11 @@ static void rv770_gpu_init(struct radeon_device *rdev)
 
 	WREG32(VGT_NUM_INSTANCES, 1);
 
+<<<<<<< HEAD
 	WREG32(SPI_CONFIG_CNTL, GPR_WRITE_PRIORITY(0));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WREG32(SPI_CONFIG_CNTL_1, VTX_DONE_DELAY(4));
 
 	WREG32(CP_PERFMON_CNTL, 0);
@@ -978,7 +1931,11 @@ void r700_vram_gtt_location(struct radeon_device *rdev, struct radeon_mc *mc)
 	}
 	if (rdev->flags & RADEON_IS_AGP) {
 		size_bf = mc->gtt_start;
+<<<<<<< HEAD
 		size_af = 0xFFFFFFFF - mc->gtt_end;
+=======
+		size_af = mc->mc_mask - mc->gtt_end;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (size_bf > size_af) {
 			if (mc->mc_vram_size > size_bf) {
 				dev_warn(rdev->dev, "limiting VRAM\n");
@@ -1005,7 +1962,11 @@ void r700_vram_gtt_location(struct radeon_device *rdev, struct radeon_mc *mc)
 	}
 }
 
+<<<<<<< HEAD
 int rv770_mc_init(struct radeon_device *rdev)
+=======
+static int rv770_mc_init(struct radeon_device *rdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tmp;
 	int chansize, numchan;
@@ -1050,14 +2011,88 @@ int rv770_mc_init(struct radeon_device *rdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int rv770_startup(struct radeon_device *rdev)
 {
 	struct radeon_ring *ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
+=======
+static void rv770_uvd_init(struct radeon_device *rdev)
+{
+	int r;
+
+	if (!rdev->has_uvd)
+		return;
+
+	r = radeon_uvd_init(rdev);
+	if (r) {
+		dev_err(rdev->dev, "failed UVD (%d) init.\n", r);
+		/*
+		 * At this point rdev->uvd.vcpu_bo is NULL which trickles down
+		 * to early fails uvd_v2_2_resume() and thus nothing happens
+		 * there. So it is pointless to try to go through that code
+		 * hence why we disable uvd here.
+		 */
+		rdev->has_uvd = false;
+		return;
+	}
+	rdev->ring[R600_RING_TYPE_UVD_INDEX].ring_obj = NULL;
+	r600_ring_init(rdev, &rdev->ring[R600_RING_TYPE_UVD_INDEX], 4096);
+}
+
+static void rv770_uvd_start(struct radeon_device *rdev)
+{
+	int r;
+
+	if (!rdev->has_uvd)
+		return;
+
+	r = uvd_v2_2_resume(rdev);
+	if (r) {
+		dev_err(rdev->dev, "failed UVD resume (%d).\n", r);
+		goto error;
+	}
+	r = radeon_fence_driver_start_ring(rdev, R600_RING_TYPE_UVD_INDEX);
+	if (r) {
+		dev_err(rdev->dev, "failed initializing UVD fences (%d).\n", r);
+		goto error;
+	}
+	return;
+
+error:
+	rdev->ring[R600_RING_TYPE_UVD_INDEX].ring_size = 0;
+}
+
+static void rv770_uvd_resume(struct radeon_device *rdev)
+{
+	struct radeon_ring *ring;
+	int r;
+
+	if (!rdev->has_uvd || !rdev->ring[R600_RING_TYPE_UVD_INDEX].ring_size)
+		return;
+
+	ring = &rdev->ring[R600_RING_TYPE_UVD_INDEX];
+	r = radeon_ring_init(rdev, ring, ring->ring_size, 0, PACKET0(UVD_NO_OP, 0));
+	if (r) {
+		dev_err(rdev->dev, "failed initializing UVD ring (%d).\n", r);
+		return;
+	}
+	r = uvd_v1_0_init(rdev);
+	if (r) {
+		dev_err(rdev->dev, "failed initializing UVD (%d).\n", r);
+		return;
+	}
+}
+
+static int rv770_startup(struct radeon_device *rdev)
+{
+	struct radeon_ring *ring;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int r;
 
 	/* enable pcie gen2 link */
 	rv770_pcie_gen2_enable(rdev);
 
+<<<<<<< HEAD
 	rv770_mc_program(rdev);
 
 	if (!rdev->me_fw || !rdev->pfp_fw || !rdev->rlc_fw) {
@@ -1068,10 +2103,18 @@ static int rv770_startup(struct radeon_device *rdev)
 		}
 	}
 
+=======
+	/* scratch needs to be initialized before MC */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = r600_vram_scratch_init(rdev);
 	if (r)
 		return r;
 
+<<<<<<< HEAD
+=======
+	rv770_mc_program(rdev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rdev->flags & RADEON_IS_AGP) {
 		rv770_agp_enable(rdev);
 	} else {
@@ -1081,12 +2124,15 @@ static int rv770_startup(struct radeon_device *rdev)
 	}
 
 	rv770_gpu_init(rdev);
+<<<<<<< HEAD
 	r = r600_blit_init(rdev);
 	if (r) {
 		r600_blit_fini(rdev);
 		rdev->asic->copy.copy = NULL;
 		dev_warn(rdev->dev, "failed blitter (%d) falling back to memcpy\n", r);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allocate wb buffer */
 	r = radeon_wb_init(rdev);
@@ -1099,6 +2145,17 @@ static int rv770_startup(struct radeon_device *rdev)
 		return r;
 	}
 
+<<<<<<< HEAD
+=======
+	r = radeon_fence_driver_start_ring(rdev, R600_RING_TYPE_DMA_INDEX);
+	if (r) {
+		dev_err(rdev->dev, "failed initializing DMA fences (%d).\n", r);
+		return r;
+	}
+
+	rv770_uvd_start(rdev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Enable IRQ */
 	if (!rdev->irq.installed) {
 		r = radeon_irq_kms_init(rdev);
@@ -1114,11 +2171,26 @@ static int rv770_startup(struct radeon_device *rdev)
 	}
 	r600_irq_set(rdev);
 
+<<<<<<< HEAD
 	r = radeon_ring_init(rdev, ring, ring->ring_size, RADEON_WB_CP_RPTR_OFFSET,
 			     R600_CP_RB_RPTR, R600_CP_RB_WPTR,
 			     0, 0xfffff, RADEON_CP_PACKET2);
 	if (r)
 		return r;
+=======
+	ring = &rdev->ring[RADEON_RING_TYPE_GFX_INDEX];
+	r = radeon_ring_init(rdev, ring, ring->ring_size, RADEON_WB_CP_RPTR_OFFSET,
+			     RADEON_CP_PACKET2);
+	if (r)
+		return r;
+
+	ring = &rdev->ring[R600_RING_TYPE_DMA_INDEX];
+	r = radeon_ring_init(rdev, ring, ring->ring_size, R600_WB_DMA_RPTR_OFFSET,
+			     DMA_PACKET(DMA_PACKET_NOP, 0, 0, 0));
+	if (r)
+		return r;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = rv770_cp_load_microcode(rdev);
 	if (r)
 		return r;
@@ -1126,6 +2198,7 @@ static int rv770_startup(struct radeon_device *rdev)
 	if (r)
 		return r;
 
+<<<<<<< HEAD
 	r = radeon_ib_pool_start(rdev);
 	if (r)
 		return r;
@@ -1134,6 +2207,23 @@ static int rv770_startup(struct radeon_device *rdev)
 	if (r) {
 		dev_err(rdev->dev, "IB test failed (%d).\n", r);
 		rdev->accel_working = false;
+=======
+	r = r600_dma_resume(rdev);
+	if (r)
+		return r;
+
+	rv770_uvd_resume(rdev);
+
+	r = radeon_ib_pool_init(rdev);
+	if (r) {
+		dev_err(rdev->dev, "IB initialization failed (%d).\n", r);
+		return r;
+	}
+
+	r = radeon_audio_init(rdev);
+	if (r) {
+		DRM_ERROR("radeon: audio init failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return r;
 	}
 
@@ -1151,6 +2241,15 @@ int rv770_resume(struct radeon_device *rdev)
 	/* post card */
 	atom_asic_init(rdev->mode_info.atom_context);
 
+<<<<<<< HEAD
+=======
+	/* init golden registers */
+	rv770_init_golden_registers(rdev);
+
+	if (rdev->pm.pm_method == PM_METHOD_DPM)
+		radeon_pm_resume(rdev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->accel_working = true;
 	r = rv770_startup(rdev);
 	if (r) {
@@ -1159,24 +2258,38 @@ int rv770_resume(struct radeon_device *rdev)
 		return r;
 	}
 
+<<<<<<< HEAD
 	r = r600_audio_init(rdev);
 	if (r) {
 		dev_err(rdev->dev, "radeon: audio init failed\n");
 		return r;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return r;
 
 }
 
 int rv770_suspend(struct radeon_device *rdev)
 {
+<<<<<<< HEAD
 	r600_audio_fini(rdev);
 	radeon_ib_pool_suspend(rdev);
 	r600_blit_suspend(rdev);
 	/* FIXME: we should wait for ring to be empty */
 	r700_cp_stop(rdev);
 	rdev->ring[RADEON_RING_TYPE_GFX_INDEX].ready = false;
+=======
+	radeon_pm_suspend(rdev);
+	radeon_audio_fini(rdev);
+	if (rdev->has_uvd) {
+		radeon_uvd_suspend(rdev);
+		uvd_v1_0_fini(rdev);
+	}
+	r700_cp_stop(rdev);
+	r600_dma_stop(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r600_irq_suspend(rdev);
 	radeon_wb_disable(rdev);
 	rv770_pcie_gart_disable(rdev);
@@ -1194,10 +2307,13 @@ int rv770_init(struct radeon_device *rdev)
 {
 	int r;
 
+<<<<<<< HEAD
 	/* This don't do much */
 	r = radeon_gem_init(rdev);
 	if (r)
 		return r;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Read BIOS */
 	if (!radeon_get_bios(rdev)) {
 		if (ASIC_IS_AVIVO(rdev))
@@ -1220,6 +2336,11 @@ int rv770_init(struct radeon_device *rdev)
 		DRM_INFO("GPU not posted. posting now...\n");
 		atom_asic_init(rdev->mode_info.atom_context);
 	}
+<<<<<<< HEAD
+=======
+	/* init golden registers */
+	rv770_init_golden_registers(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Initialize scratch registers */
 	r600_scratch_init(rdev);
 	/* Initialize surface registers */
@@ -1227,9 +2348,13 @@ int rv770_init(struct radeon_device *rdev)
 	/* Initialize clocks */
 	radeon_get_clock_info(rdev->ddev);
 	/* Fence driver */
+<<<<<<< HEAD
 	r = radeon_fence_driver_init(rdev);
 	if (r)
 		return r;
+=======
+	radeon_fence_driver_init(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* initialize AGP */
 	if (rdev->flags & RADEON_IS_AGP) {
 		r = radeon_agp_init(rdev);
@@ -1244,9 +2369,31 @@ int rv770_init(struct radeon_device *rdev)
 	if (r)
 		return r;
 
+<<<<<<< HEAD
 	rdev->ring[RADEON_RING_TYPE_GFX_INDEX].ring_obj = NULL;
 	r600_ring_init(rdev, &rdev->ring[RADEON_RING_TYPE_GFX_INDEX], 1024 * 1024);
 
+=======
+	if (!rdev->me_fw || !rdev->pfp_fw || !rdev->rlc_fw) {
+		r = r600_init_microcode(rdev);
+		if (r) {
+			DRM_ERROR("Failed to load firmware!\n");
+			return r;
+		}
+	}
+
+	/* Initialize power management */
+	radeon_pm_init(rdev);
+
+	rdev->ring[RADEON_RING_TYPE_GFX_INDEX].ring_obj = NULL;
+	r600_ring_init(rdev, &rdev->ring[RADEON_RING_TYPE_GFX_INDEX], 1024 * 1024);
+
+	rdev->ring[R600_RING_TYPE_DMA_INDEX].ring_obj = NULL;
+	r600_ring_init(rdev, &rdev->ring[R600_RING_TYPE_DMA_INDEX], 64 * 1024);
+
+	rv770_uvd_init(rdev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rdev->ih.ring_obj = NULL;
 	r600_ih_ring_init(rdev, 64 * 1024);
 
@@ -1254,6 +2401,7 @@ int rv770_init(struct radeon_device *rdev)
 	if (r)
 		return r;
 
+<<<<<<< HEAD
 	r = radeon_ib_pool_init(rdev);
 	rdev->accel_working = true;
 	if (r) {
@@ -1261,29 +2409,43 @@ int rv770_init(struct radeon_device *rdev)
 		rdev->accel_working = false;
 	}
 
+=======
+	rdev->accel_working = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	r = rv770_startup(rdev);
 	if (r) {
 		dev_err(rdev->dev, "disabling GPU acceleration\n");
 		r700_cp_fini(rdev);
+<<<<<<< HEAD
 		r600_irq_fini(rdev);
 		radeon_wb_fini(rdev);
 		r100_ib_fini(rdev);
+=======
+		r600_dma_fini(rdev);
+		r600_irq_fini(rdev);
+		radeon_wb_fini(rdev);
+		radeon_ib_pool_fini(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		radeon_irq_kms_fini(rdev);
 		rv770_pcie_gart_fini(rdev);
 		rdev->accel_working = false;
 	}
 
+<<<<<<< HEAD
 	r = r600_audio_init(rdev);
 	if (r) {
 		dev_err(rdev->dev, "radeon: audio init failed\n");
 		return r;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 void rv770_fini(struct radeon_device *rdev)
 {
+<<<<<<< HEAD
 	r600_blit_fini(rdev);
 	r700_cp_fini(rdev);
 	r600_irq_fini(rdev);
@@ -1294,6 +2456,20 @@ void rv770_fini(struct radeon_device *rdev)
 	r600_vram_scratch_fini(rdev);
 	radeon_gem_fini(rdev);
 	radeon_semaphore_driver_fini(rdev);
+=======
+	radeon_pm_fini(rdev);
+	r700_cp_fini(rdev);
+	r600_dma_fini(rdev);
+	r600_irq_fini(rdev);
+	radeon_wb_fini(rdev);
+	radeon_ib_pool_fini(rdev);
+	radeon_irq_kms_fini(rdev);
+	uvd_v1_0_fini(rdev);
+	radeon_uvd_fini(rdev);
+	rv770_pcie_gart_fini(rdev);
+	r600_vram_scratch_fini(rdev);
+	radeon_gem_fini(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	radeon_fence_driver_fini(rdev);
 	radeon_agp_fini(rdev);
 	radeon_bo_fini(rdev);
@@ -1320,17 +2496,32 @@ static void rv770_pcie_gen2_enable(struct radeon_device *rdev)
 	if (ASIC_IS_X2(rdev))
 		return;
 
+<<<<<<< HEAD
 	/* advertise upconfig capability */
 	link_width_cntl = RREG32_PCIE_P(PCIE_LC_LINK_WIDTH_CNTL);
 	link_width_cntl &= ~LC_UPCONFIGURE_DIS;
 	WREG32_PCIE_P(PCIE_LC_LINK_WIDTH_CNTL, link_width_cntl);
 	link_width_cntl = RREG32_PCIE_P(PCIE_LC_LINK_WIDTH_CNTL);
+=======
+	if ((rdev->pdev->bus->max_bus_speed != PCIE_SPEED_5_0GT) &&
+		(rdev->pdev->bus->max_bus_speed != PCIE_SPEED_8_0GT))
+		return;
+
+	DRM_INFO("enabling PCIE gen 2 link speeds, disable with radeon.pcie_gen2=0\n");
+
+	/* advertise upconfig capability */
+	link_width_cntl = RREG32_PCIE_PORT(PCIE_LC_LINK_WIDTH_CNTL);
+	link_width_cntl &= ~LC_UPCONFIGURE_DIS;
+	WREG32_PCIE_PORT(PCIE_LC_LINK_WIDTH_CNTL, link_width_cntl);
+	link_width_cntl = RREG32_PCIE_PORT(PCIE_LC_LINK_WIDTH_CNTL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (link_width_cntl & LC_RENEGOTIATION_SUPPORT) {
 		lanes = (link_width_cntl & LC_LINK_WIDTH_RD_MASK) >> LC_LINK_WIDTH_RD_SHIFT;
 		link_width_cntl &= ~(LC_LINK_WIDTH_MASK |
 				     LC_RECONFIG_ARC_MISSING_ESCAPE);
 		link_width_cntl |= lanes | LC_RECONFIG_NOW |
 			LC_RENEGOTIATE_EN | LC_UPCONFIGURE_SUPPORT;
+<<<<<<< HEAD
 		WREG32_PCIE_P(PCIE_LC_LINK_WIDTH_CNTL, link_width_cntl);
 	} else {
 		link_width_cntl |= LC_UPCONFIGURE_DIS;
@@ -1338,6 +2529,15 @@ static void rv770_pcie_gen2_enable(struct radeon_device *rdev)
 	}
 
 	speed_cntl = RREG32_PCIE_P(PCIE_LC_SPEED_CNTL);
+=======
+		WREG32_PCIE_PORT(PCIE_LC_LINK_WIDTH_CNTL, link_width_cntl);
+	} else {
+		link_width_cntl |= LC_UPCONFIGURE_DIS;
+		WREG32_PCIE_PORT(PCIE_LC_LINK_WIDTH_CNTL, link_width_cntl);
+	}
+
+	speed_cntl = RREG32_PCIE_PORT(PCIE_LC_SPEED_CNTL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((speed_cntl & LC_OTHER_SIDE_EVER_SENT_GEN2) &&
 	    (speed_cntl & LC_OTHER_SIDE_SUPPORTS_GEN2)) {
 
@@ -1350,6 +2550,7 @@ static void rv770_pcie_gen2_enable(struct radeon_device *rdev)
 		WREG16(0x4088, link_cntl2);
 		WREG32(MM_CFGREGS_CNTL, 0);
 
+<<<<<<< HEAD
 		speed_cntl = RREG32_PCIE_P(PCIE_LC_SPEED_CNTL);
 		speed_cntl &= ~LC_TARGET_LINK_SPEED_OVERRIDE_EN;
 		WREG32_PCIE_P(PCIE_LC_SPEED_CNTL, speed_cntl);
@@ -1368,11 +2569,35 @@ static void rv770_pcie_gen2_enable(struct radeon_device *rdev)
 
 	} else {
 		link_width_cntl = RREG32_PCIE_P(PCIE_LC_LINK_WIDTH_CNTL);
+=======
+		speed_cntl = RREG32_PCIE_PORT(PCIE_LC_SPEED_CNTL);
+		speed_cntl &= ~LC_TARGET_LINK_SPEED_OVERRIDE_EN;
+		WREG32_PCIE_PORT(PCIE_LC_SPEED_CNTL, speed_cntl);
+
+		speed_cntl = RREG32_PCIE_PORT(PCIE_LC_SPEED_CNTL);
+		speed_cntl |= LC_CLR_FAILED_SPD_CHANGE_CNT;
+		WREG32_PCIE_PORT(PCIE_LC_SPEED_CNTL, speed_cntl);
+
+		speed_cntl = RREG32_PCIE_PORT(PCIE_LC_SPEED_CNTL);
+		speed_cntl &= ~LC_CLR_FAILED_SPD_CHANGE_CNT;
+		WREG32_PCIE_PORT(PCIE_LC_SPEED_CNTL, speed_cntl);
+
+		speed_cntl = RREG32_PCIE_PORT(PCIE_LC_SPEED_CNTL);
+		speed_cntl |= LC_GEN2_EN_STRAP;
+		WREG32_PCIE_PORT(PCIE_LC_SPEED_CNTL, speed_cntl);
+
+	} else {
+		link_width_cntl = RREG32_PCIE_PORT(PCIE_LC_LINK_WIDTH_CNTL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* XXX: only disable it if gen1 bridge vendor == 0x111d or 0x1106 */
 		if (1)
 			link_width_cntl |= LC_UPCONFIGURE_DIS;
 		else
 			link_width_cntl &= ~LC_UPCONFIGURE_DIS;
+<<<<<<< HEAD
 		WREG32_PCIE_P(PCIE_LC_LINK_WIDTH_CNTL, link_width_cntl);
+=======
+		WREG32_PCIE_PORT(PCIE_LC_LINK_WIDTH_CNTL, link_width_cntl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }

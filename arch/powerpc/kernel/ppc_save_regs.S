@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 1996 Paul Mackerras.
  *
@@ -6,12 +7,22 @@
  *      as published by the Free Software Foundation; either version
  *      2 of the License, or (at your option) any later version.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (C) 1996 Paul Mackerras.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NOTE: assert(sizeof(buf) > 23 * sizeof(long))
  */
 #include <asm/processor.h>
 #include <asm/ppc_asm.h>
 #include <asm/asm-offsets.h>
 #include <asm/ptrace.h>
+<<<<<<< HEAD
+=======
+#include <asm/asm-compat.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Grab the register values as they are now.
@@ -24,6 +35,7 @@
  * different ABIs, though).
  */
 _GLOBAL(ppc_save_regs)
+<<<<<<< HEAD
 	PPC_STL	r0,0*SZL(r3)
 	PPC_STL	r2,2*SZL(r3)
 	PPC_STL	r3,3*SZL(r3)
@@ -72,4 +84,35 @@ _GLOBAL(ppc_save_regs)
 	PPC_STL	r0,_CCR-STACK_FRAME_OVERHEAD(r3)
 	li	r0,0
 	PPC_STL	r0,_TRAP-STACK_FRAME_OVERHEAD(r3)
+=======
+	/* This allows stack frame accessor macros and offsets to be used */
+	subi	r3,r3,STACK_INT_FRAME_REGS
+	PPC_STL	r0,GPR0(r3)
+#ifdef CONFIG_PPC32
+	stmw	r2,GPR2(r3)
+#else
+	SAVE_GPRS(2, 31, r3)
+	lbz	r0,PACAIRQSOFTMASK(r13)
+	PPC_STL	r0,SOFTE(r3)
+#endif
+	/* store current SP */
+	PPC_STL	r1,GPR1(r3)
+	/* get caller's LR */
+	PPC_LL	r4,0(r1)
+	PPC_LL	r0,LRSAVE(r4)
+	PPC_STL	r0,_LINK(r3)
+	mflr	r0
+	PPC_STL	r0,_NIP(r3)
+	mfmsr	r0
+	PPC_STL	r0,_MSR(r3)
+	mfctr	r0
+	PPC_STL	r0,_CTR(r3)
+	mfxer	r0
+	PPC_STL	r0,_XER(r3)
+	mfcr	r0
+	PPC_STL	r0,_CCR(r3)
+	li	r0,0
+	PPC_STL	r0,_TRAP(r3)
+	PPC_STL	r0,ORIG_GPR3(r3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blr

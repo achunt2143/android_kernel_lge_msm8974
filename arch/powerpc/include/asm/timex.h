@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_TIMEX_H
 #define _ASM_POWERPC_TIMEX_H
 
@@ -8,7 +12,11 @@
  */
 
 #include <asm/cputable.h>
+<<<<<<< HEAD
 #include <asm/reg.h>
+=======
+#include <asm/vdso/timebase.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CLOCK_TICK_RATE	1024000 /* Underlying HZ */
 
@@ -16,6 +24,7 @@ typedef unsigned long cycles_t;
 
 static inline cycles_t get_cycles(void)
 {
+<<<<<<< HEAD
 #ifdef __powerpc64__
 	return mftb();
 #else
@@ -45,6 +54,11 @@ static inline cycles_t get_cycles(void)
 	return ret;
 #endif
 }
+=======
+	return mftb();
+}
+#define get_cycles get_cycles
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __KERNEL__ */
 #endif	/* _ASM_POWERPC_TIMEX_H */

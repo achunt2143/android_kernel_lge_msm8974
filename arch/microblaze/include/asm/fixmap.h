@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * fixmap.h: compile-time virtual memory allocation
  *
@@ -5,6 +6,12 @@
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * fixmap.h: compile-time virtual memory allocation
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Copyright (C) 1998 Ingo Molnar
  *
  * Copyright 2008 Freescale Semiconductor Inc.
@@ -23,7 +30,11 @@
 #include <asm/page.h>
 #ifdef CONFIG_HIGHMEM
 #include <linux/threads.h>
+<<<<<<< HEAD
 #include <asm/kmap_types.h>
+=======
+#include <asm/kmap_size.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define FIXADDR_TOP	((unsigned long)(-PAGE_SIZE))
@@ -50,7 +61,11 @@ enum fixed_addresses {
 	FIX_HOLE,
 #ifdef CONFIG_HIGHMEM
 	FIX_KMAP_BEGIN,	/* reserved pte's for temporary kernel mappings */
+<<<<<<< HEAD
 	FIX_KMAP_END = FIX_KMAP_BEGIN + (KM_TYPE_NR * num_possible_cpus()) - 1,
+=======
+	FIX_KMAP_END = FIX_KMAP_BEGIN + (KM_MAX_IDX * num_possible_cpus()) - 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	__end_of_fixed_addresses
 };
@@ -58,6 +73,7 @@ enum fixed_addresses {
 extern void __set_fixmap(enum fixed_addresses idx,
 					phys_addr_t phys, pgprot_t flags);
 
+<<<<<<< HEAD
 #define set_fixmap(idx, phys) \
 		__set_fixmap(idx, phys, PAGE_KERNEL)
 /*
@@ -104,6 +120,14 @@ static inline unsigned long virt_to_fix(const unsigned long vaddr)
 	BUG_ON(vaddr >= FIXADDR_TOP || vaddr < FIXADDR_START);
 	return __virt_to_fix(vaddr);
 }
+=======
+#define __FIXADDR_SIZE	(__end_of_fixed_addresses << PAGE_SHIFT)
+#define FIXADDR_START		(FIXADDR_TOP - __FIXADDR_SIZE)
+
+#define FIXMAP_PAGE_NOCACHE PAGE_KERNEL_CI
+
+#include <asm-generic/fixmap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* !__ASSEMBLY__ */
 #endif

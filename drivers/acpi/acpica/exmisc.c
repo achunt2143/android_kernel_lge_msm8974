@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: exmisc - ACPI AML (p-code) execution - specific opcodes
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -42,11 +47,20 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
 #include "amlcode.h"
+<<<<<<< HEAD
 #include "amlresrc.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_EXECUTER
 ACPI_MODULE_NAME("exmisc")
@@ -99,14 +113,23 @@ acpi_ex_get_object_reference(union acpi_operand_object *obj_desc,
 
 		default:
 
+<<<<<<< HEAD
 			ACPI_ERROR((AE_INFO, "Unknown Reference Class 0x%2.2X",
 				    obj_desc->reference.class));
 			return_ACPI_STATUS(AE_AML_INTERNAL);
+=======
+			ACPI_ERROR((AE_INFO, "Invalid Reference Class 0x%2.2X",
+				    obj_desc->reference.class));
+			return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
 	case ACPI_DESC_TYPE_NAMED:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * A named reference that has already been resolved to a Node
 		 */
@@ -142,6 +165,7 @@ acpi_ex_get_object_reference(union acpi_operand_object *obj_desc,
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ex_concat_template
  *
  * PARAMETERS:  Operand0            - First source object
@@ -400,6 +424,13 @@ acpi_ex_do_concatenate(union acpi_operand_object *operand0,
  * PARAMETERS:  Opcode              - AML opcode
  *              Integer0            - Integer operand #0
  *              Integer1            - Integer operand #1
+=======
+ * FUNCTION:    acpi_ex_do_math_op
+ *
+ * PARAMETERS:  opcode              - AML opcode
+ *              integer0            - Integer operand #0
+ *              integer1            - Integer operand #1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Integer result of the operation
  *
@@ -479,9 +510,15 @@ u64 acpi_ex_do_math_op(u16 opcode, u64 integer0, u64 integer1)
  *
  * FUNCTION:    acpi_ex_do_logical_numeric_op
  *
+<<<<<<< HEAD
  * PARAMETERS:  Opcode              - AML opcode
  *              Integer0            - Integer operand #0
  *              Integer1            - Integer operand #1
+=======
+ * PARAMETERS:  opcode              - AML opcode
+ *              integer0            - Integer operand #0
+ *              integer1            - Integer operand #1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              logical_result      - TRUE/FALSE result of the operation
  *
  * RETURN:      Status
@@ -505,14 +542,22 @@ acpi_ex_do_logical_numeric_op(u16 opcode,
 	ACPI_FUNCTION_TRACE(ex_do_logical_numeric_op);
 
 	switch (opcode) {
+<<<<<<< HEAD
 	case AML_LAND_OP:	/* LAnd (Integer0, Integer1) */
+=======
+	case AML_LOGICAL_AND_OP:	/* LAnd (Integer0, Integer1) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (integer0 && integer1) {
 			local_result = TRUE;
 		}
 		break;
 
+<<<<<<< HEAD
 	case AML_LOR_OP:	/* LOr (Integer0, Integer1) */
+=======
+	case AML_LOGICAL_OR_OP:	/* LOr (Integer0, Integer1) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (integer0 || integer1) {
 			local_result = TRUE;
@@ -520,6 +565,12 @@ acpi_ex_do_logical_numeric_op(u16 opcode,
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+		ACPI_ERROR((AE_INFO,
+			    "Invalid numeric logical opcode: %X", opcode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = AE_AML_INTERNAL;
 		break;
 	}
@@ -534,9 +585,15 @@ acpi_ex_do_logical_numeric_op(u16 opcode,
  *
  * FUNCTION:    acpi_ex_do_logical_op
  *
+<<<<<<< HEAD
  * PARAMETERS:  Opcode              - AML opcode
  *              Operand0            - operand #0
  *              Operand1            - operand #1
+=======
+ * PARAMETERS:  opcode              - AML opcode
+ *              operand0            - operand #0
+ *              operand1            - operand #1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              logical_result      - TRUE/FALSE result of the operation
  *
  * RETURN:      Status
@@ -573,7 +630,11 @@ acpi_ex_do_logical_op(u16 opcode,
 	ACPI_FUNCTION_TRACE(ex_do_logical_op);
 
 	/*
+<<<<<<< HEAD
 	 * Convert the second operand if necessary.  The first operand
+=======
+	 * Convert the second operand if necessary. The first operand
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * determines the type of the second operand, (See the Data Types
 	 * section of the ACPI 3.0+ specification.)  Both object types are
 	 * guaranteed to be either Integer/String/Buffer by the operand
@@ -581,6 +642,7 @@ acpi_ex_do_logical_op(u16 opcode,
 	 */
 	switch (operand0->common.type) {
 	case ACPI_TYPE_INTEGER:
+<<<<<<< HEAD
 		status =
 		    acpi_ex_convert_to_integer(operand1, &local_operand1, 16);
 		break;
@@ -591,10 +653,33 @@ acpi_ex_do_logical_op(u16 opcode,
 		break;
 
 	case ACPI_TYPE_BUFFER:
+=======
+
+		status = acpi_ex_convert_to_integer(operand1, &local_operand1,
+						    ACPI_IMPLICIT_CONVERSION);
+		break;
+
+	case ACPI_TYPE_STRING:
+
+		status =
+		    acpi_ex_convert_to_string(operand1, &local_operand1,
+					      ACPI_IMPLICIT_CONVERT_HEX);
+		break;
+
+	case ACPI_TYPE_BUFFER:
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = acpi_ex_convert_to_buffer(operand1, &local_operand1);
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+		ACPI_ERROR((AE_INFO,
+			    "Invalid object type for logical operator: %X",
+			    operand0->common.type));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = AE_AML_INTERNAL;
 		break;
 	}
@@ -615,21 +700,33 @@ acpi_ex_do_logical_op(u16 opcode,
 		integer1 = local_operand1->integer.value;
 
 		switch (opcode) {
+<<<<<<< HEAD
 		case AML_LEQUAL_OP:	/* LEqual (Operand0, Operand1) */
+=======
+		case AML_LOGICAL_EQUAL_OP:	/* LEqual (Operand0, Operand1) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (integer0 == integer1) {
 				local_result = TRUE;
 			}
 			break;
 
+<<<<<<< HEAD
 		case AML_LGREATER_OP:	/* LGreater (Operand0, Operand1) */
+=======
+		case AML_LOGICAL_GREATER_OP:	/* LGreater (Operand0, Operand1) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (integer0 > integer1) {
 				local_result = TRUE;
 			}
 			break;
 
+<<<<<<< HEAD
 		case AML_LLESS_OP:	/* LLess (Operand0, Operand1) */
+=======
+		case AML_LOGICAL_LESS_OP:	/* LLess (Operand0, Operand1) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (integer0 < integer1) {
 				local_result = TRUE;
@@ -637,6 +734,12 @@ acpi_ex_do_logical_op(u16 opcode,
 			break;
 
 		default:
+<<<<<<< HEAD
+=======
+
+			ACPI_ERROR((AE_INFO,
+				    "Invalid comparison opcode: %X", opcode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = AE_AML_INTERNAL;
 			break;
 		}
@@ -652,12 +755,21 @@ acpi_ex_do_logical_op(u16 opcode,
 
 		/* Lexicographic compare: compare the data bytes */
 
+<<<<<<< HEAD
 		compare = ACPI_MEMCMP(operand0->buffer.pointer,
 				      local_operand1->buffer.pointer,
 				      (length0 > length1) ? length1 : length0);
 
 		switch (opcode) {
 		case AML_LEQUAL_OP:	/* LEqual (Operand0, Operand1) */
+=======
+		compare = memcmp(operand0->buffer.pointer,
+				 local_operand1->buffer.pointer,
+				 (length0 > length1) ? length1 : length0);
+
+		switch (opcode) {
+		case AML_LOGICAL_EQUAL_OP:	/* LEqual (Operand0, Operand1) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Length and all bytes must be equal */
 
@@ -669,7 +781,11 @@ acpi_ex_do_logical_op(u16 opcode,
 			}
 			break;
 
+<<<<<<< HEAD
 		case AML_LGREATER_OP:	/* LGreater (Operand0, Operand1) */
+=======
+		case AML_LOGICAL_GREATER_OP:	/* LGreater (Operand0, Operand1) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (compare > 0) {
 				local_result = TRUE;
@@ -686,7 +802,11 @@ acpi_ex_do_logical_op(u16 opcode,
 			}
 			break;
 
+<<<<<<< HEAD
 		case AML_LLESS_OP:	/* LLess (Operand0, Operand1) */
+=======
+		case AML_LOGICAL_LESS_OP:	/* LLess (Operand0, Operand1) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (compare > 0) {
 				goto cleanup;	/* FALSE */
@@ -704,12 +824,22 @@ acpi_ex_do_logical_op(u16 opcode,
 			break;
 
 		default:
+<<<<<<< HEAD
+=======
+
+			ACPI_ERROR((AE_INFO,
+				    "Invalid comparison opcode: %X", opcode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = AE_AML_INTERNAL;
 			break;
 		}
 	}
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* New object was created if implicit conversion performed - delete */
 

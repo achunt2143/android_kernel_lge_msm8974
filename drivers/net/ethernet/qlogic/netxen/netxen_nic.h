@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2003 - 2009 NetXen, Inc.
  * Copyright (C) 2009 - QLogic Corporation.
  * All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -21,6 +26,8 @@
  * The full GNU General Public License is included in this distribution
  * in the file called "COPYING".
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _NETXEN_NIC_H_
@@ -53,8 +60,13 @@
 
 #define _NETXEN_NIC_LINUX_MAJOR 4
 #define _NETXEN_NIC_LINUX_MINOR 0
+<<<<<<< HEAD
 #define _NETXEN_NIC_LINUX_SUBVERSION 78
 #define NETXEN_NIC_LINUX_VERSIONID  "4.0.78"
+=======
+#define _NETXEN_NIC_LINUX_SUBVERSION 82
+#define NETXEN_NIC_LINUX_VERSIONID  "4.0.82"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define NETXEN_VERSION_CODE(a, b, c)	(((a) << 24) + ((b) << 16) + (c))
 #define _major(v)	(((v) >> 24) & 0xff)
@@ -356,7 +368,11 @@ struct cmd_desc_type0 {
 
 } __attribute__ ((aligned(64)));
 
+<<<<<<< HEAD
 /* Note: sizeof(rcv_desc) should always be a mutliple of 2 */
+=======
+/* Note: sizeof(rcv_desc) should always be a multiple of 2 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct rcv_desc {
 	__le16 reference_handle;
 	__le16 reserved;
@@ -419,6 +435,11 @@ struct rcv_desc {
 	(((sts_data) >> 52) & 0x1)
 #define netxen_get_lro_sts_seq_number(sts_data)		\
 	((sts_data) & 0x0FFFFFFFF)
+<<<<<<< HEAD
+=======
+#define netxen_get_lro_sts_mss(sts_data1)		\
+	((sts_data1 >> 32) & 0x0FFFF)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 struct status_desc {
@@ -499,7 +520,11 @@ struct uni_data_desc{
 #define NETXEN_IMAGE_START	0x43000	/* compressed image */
 #define NETXEN_SECONDARY_START	0x200000	/* backup images */
 #define NETXEN_PXE_START	0x3E0000	/* PXE boot rom */
+<<<<<<< HEAD
 #define NETXEN_USER_START	0x3E8000	/* Firmare info */
+=======
+#define NETXEN_USER_START	0x3E8000	/* Firmware info */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NETXEN_FIXED_START	0x3F0000	/* backup of crbinit */
 #define NETXEN_USER_START_OLD	NETXEN_PXE_START /* very old flash */
 
@@ -794,6 +819,10 @@ struct netxen_cmd_args {
 #define NX_CAP0_JUMBO_CONTIGUOUS	NX_CAP_BIT(0, 7)
 #define NX_CAP0_LRO_CONTIGUOUS		NX_CAP_BIT(0, 8)
 #define NX_CAP0_HW_LRO			NX_CAP_BIT(0, 10)
+<<<<<<< HEAD
+=======
+#define NX_CAP0_HW_LRO_MSS		NX_CAP_BIT(0, 21)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Context state
@@ -869,7 +898,11 @@ typedef struct {
 	   The following is packed:
 	   - N cardrsp_rds_rings
 	   - N cardrs_sds_rings */
+<<<<<<< HEAD
 	char data[0];
+=======
+	char data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } nx_cardrsp_rx_ctx_t;
 
 #define SIZEOF_HOSTRQ_RX(HOSTRQ_RX, rds_rings, sds_rings)	\
@@ -952,9 +985,16 @@ typedef struct nx_mac_list_s {
 	uint8_t mac_addr[ETH_ALEN+2];
 } nx_mac_list_t;
 
+<<<<<<< HEAD
 struct nx_vlan_ip_list {
 	struct list_head list;
 	__be32 ip_addr;
+=======
+struct nx_ip_list {
+	struct list_head list;
+	__be32 ip_addr;
+	bool master;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1073,6 +1113,11 @@ typedef struct {
 #define NX_FW_CAPABILITY_FVLANTX		(1 << 9)
 #define NX_FW_CAPABILITY_HW_LRO			(1 << 10)
 #define NX_FW_CAPABILITY_GBE_LINK_CFG		(1 << 11)
+<<<<<<< HEAD
+=======
+#define NX_FW_CAPABILITY_MORE_CAPS		(1 << 31)
+#define NX_FW_CAPABILITY_2_LRO_MAX_TCP_SEG	(1 << 2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* module types */
 #define LINKEVENT_MODULE_NOT_PRESENT			1
@@ -1155,6 +1200,10 @@ typedef struct {
 #define NETXEN_NIC_BRIDGE_ENABLED       0X10
 #define NETXEN_NIC_DIAG_ENABLED		0x20
 #define NETXEN_FW_RESET_OWNER           0x40
+<<<<<<< HEAD
+=======
+#define NETXEN_FW_MSS_CAP	        0x80
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NETXEN_IS_MSI_FAMILY(adapter) \
 	((adapter)->flags & (NETXEN_NIC_MSI_ENABLED | NETXEN_NIC_MSIX_ENABLED))
 
@@ -1164,7 +1213,10 @@ typedef struct {
 
 #define NETXEN_DB_MAPSIZE_BYTES    	0x1000
 
+<<<<<<< HEAD
 #define NETXEN_NETDEV_WEIGHT 128
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define NETXEN_ADAPTER_UP_MAGIC 777
 #define NETXEN_NIC_PEG_TUNE 0
 
@@ -1325,7 +1377,11 @@ struct netxen_minidump_template_hdr {
 	u32 driver_info_word4;
 	u32 saved_state_array[NX_DUMP_STATE_ARRAY_LEN];
 	u32 capture_size_array[NX_DUMP_CAP_SIZE_ARRAY_LEN];
+<<<<<<< HEAD
 	u32 rsvd[0];
+=======
+	u32 rsvd[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Common Entry Header:  Common to All Entry Types */
@@ -1596,7 +1652,11 @@ struct netxen_adapter {
 	struct net_device *netdev;
 	struct pci_dev *pdev;
 	struct list_head mac_list;
+<<<<<<< HEAD
 	struct list_head vlan_ip_list;
+=======
+	struct list_head ip_list;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spinlock_t tx_clean_lock;
 
@@ -1814,6 +1874,16 @@ struct netxen_brdinfo {
 	char short_name[NETXEN_MAX_SHORT_NAME];
 };
 
+<<<<<<< HEAD
+=======
+struct netxen_dimm_cfg {
+	u8 presence;
+	u8 mem_type;
+	u8 dimm_type;
+	u32 size;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct netxen_brdinfo netxen_boards[] = {
 	{NETXEN_BRDTYPE_P2_SB31_10G_CX4, 1, "XGb CX4"},
 	{NETXEN_BRDTYPE_P2_SB31_10G_HMEZ, 1, "XGb HMEZ"},
@@ -1838,7 +1908,11 @@ static const struct netxen_brdinfo netxen_boards[] = {
 
 #define NUM_SUPPORTED_BOARDS ARRAY_SIZE(netxen_boards)
 
+<<<<<<< HEAD
 static inline void get_brd_name_by_type(u32 type, char *name)
+=======
+static inline int netxen_nic_get_brd_name_by_type(u32 type, char *name)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, found = 0;
 	for (i = 0; i < NUM_SUPPORTED_BOARDS; ++i) {
@@ -1847,10 +1921,21 @@ static inline void get_brd_name_by_type(u32 type, char *name)
 			found = 1;
 			break;
 		}
+<<<<<<< HEAD
 
 	}
 	if (!found)
 		name = "Unknown";
+=======
+	}
+
+	if (!found) {
+		strcpy(name, "Unknown");
+		return -EINVAL;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 netxen_tx_avail(struct nx_host_tx_ring *tx_ring)
@@ -1863,9 +1948,13 @@ static inline u32 netxen_tx_avail(struct nx_host_tx_ring *tx_ring)
 
 int netxen_get_flash_mac_addr(struct netxen_adapter *adapter, u64 *mac);
 int netxen_p3_get_mac_addr(struct netxen_adapter *adapter, u64 *mac);
+<<<<<<< HEAD
 extern void netxen_change_ringparam(struct netxen_adapter *adapter);
 extern int netxen_rom_fast_read(struct netxen_adapter *adapter, int addr,
 				int *valp);
+=======
+void netxen_change_ringparam(struct netxen_adapter *adapter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern const struct ethtool_ops netxen_nic_ethtool_ops;
 

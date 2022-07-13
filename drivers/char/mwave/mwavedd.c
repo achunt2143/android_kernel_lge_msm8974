@@ -59,6 +59,10 @@
 #include <linux/mutex.h>
 #include <linux/delay.h>
 #include <linux/serial_8250.h>
+<<<<<<< HEAD
+=======
+#include <linux/nospec.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "smapi.h"
 #include "mwavedd.h"
 #include "3780i.h"
@@ -80,10 +84,17 @@ int mwave_3780i_io = 0;
 int mwave_uart_irq = 0;
 int mwave_uart_io = 0;
 module_param(mwave_debug, int, 0);
+<<<<<<< HEAD
 module_param(mwave_3780i_irq, int, 0);
 module_param(mwave_3780i_io, int, 0);
 module_param(mwave_uart_irq, int, 0);
 module_param(mwave_uart_io, int, 0);
+=======
+module_param_hw(mwave_3780i_irq, int, irq, 0);
+module_param_hw(mwave_3780i_io, int, ioport, 0);
+module_param_hw(mwave_uart_irq, int, irq, 0);
+module_param_hw(mwave_uart_io, int, ioport, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int mwave_open(struct inode *inode, struct file *file);
 static int mwave_close(struct inode *inode, struct file *file);
@@ -289,6 +300,11 @@ static long mwave_ioctl(struct file *file, unsigned int iocmd,
 						ipcnum);
 				return -EINVAL;
 			}
+<<<<<<< HEAD
+=======
+			ipcnum = array_index_nospec(ipcnum,
+						    ARRAY_SIZE(pDrvData->IPCs));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			PRINTK_3(TRACE_MWAVE,
 				"mwavedd::mwave_ioctl IOCTL_MW_REGISTER_IPC"
 				" ipcnum %x entry usIntCount %x\n",
@@ -296,8 +312,13 @@ static long mwave_ioctl(struct file *file, unsigned int iocmd,
 				pDrvData->IPCs[ipcnum].usIntCount);
 
 			mutex_lock(&mwave_mutex);
+<<<<<<< HEAD
 			pDrvData->IPCs[ipcnum].bIsHere = FALSE;
 			pDrvData->IPCs[ipcnum].bIsEnabled = TRUE;
+=======
+			pDrvData->IPCs[ipcnum].bIsHere = false;
+			pDrvData->IPCs[ipcnum].bIsEnabled = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mutex_unlock(&mwave_mutex);
 	
 			PRINTK_2(TRACE_MWAVE,
@@ -317,6 +338,11 @@ static long mwave_ioctl(struct file *file, unsigned int iocmd,
 						" Invalid ipcnum %x\n", ipcnum);
 				return -EINVAL;
 			}
+<<<<<<< HEAD
+=======
+			ipcnum = array_index_nospec(ipcnum,
+						    ARRAY_SIZE(pDrvData->IPCs));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			PRINTK_3(TRACE_MWAVE,
 				"mwavedd::mwave_ioctl IOCTL_MW_GET_IPC"
 				" ipcnum %x, usIntCount %x\n",
@@ -324,7 +350,11 @@ static long mwave_ioctl(struct file *file, unsigned int iocmd,
 				pDrvData->IPCs[ipcnum].usIntCount);
 	
 			mutex_lock(&mwave_mutex);
+<<<<<<< HEAD
 			if (pDrvData->IPCs[ipcnum].bIsEnabled == TRUE) {
+=======
+			if (pDrvData->IPCs[ipcnum].bIsEnabled == true) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DECLARE_WAITQUEUE(wait, current);
 
 				PRINTK_2(TRACE_MWAVE,
@@ -332,7 +362,11 @@ static long mwave_ioctl(struct file *file, unsigned int iocmd,
 					" ipc %x going to sleep\n",
 					ipcnum);
 				add_wait_queue(&pDrvData->IPCs[ipcnum].ipc_wait_queue, &wait);
+<<<<<<< HEAD
 				pDrvData->IPCs[ipcnum].bIsHere = TRUE;
+=======
+				pDrvData->IPCs[ipcnum].bIsHere = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				set_current_state(TASK_INTERRUPTIBLE);
 				/* check whether an event was signalled by */
 				/* the interrupt handler while we were gone */
@@ -355,7 +389,11 @@ static long mwave_ioctl(struct file *file, unsigned int iocmd,
 						" application\n",
 						ipcnum);
 				}
+<<<<<<< HEAD
 				pDrvData->IPCs[ipcnum].bIsHere = FALSE;
+=======
+				pDrvData->IPCs[ipcnum].bIsHere = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				remove_wait_queue(&pDrvData->IPCs[ipcnum].ipc_wait_queue, &wait);
 				set_current_state(TASK_RUNNING);
 				PRINTK_2(TRACE_MWAVE,
@@ -383,10 +421,19 @@ static long mwave_ioctl(struct file *file, unsigned int iocmd,
 						ipcnum);
 				return -EINVAL;
 			}
+<<<<<<< HEAD
 			mutex_lock(&mwave_mutex);
 			if (pDrvData->IPCs[ipcnum].bIsEnabled == TRUE) {
 				pDrvData->IPCs[ipcnum].bIsEnabled = FALSE;
 				if (pDrvData->IPCs[ipcnum].bIsHere == TRUE) {
+=======
+			ipcnum = array_index_nospec(ipcnum,
+						    ARRAY_SIZE(pDrvData->IPCs));
+			mutex_lock(&mwave_mutex);
+			if (pDrvData->IPCs[ipcnum].bIsEnabled == true) {
+				pDrvData->IPCs[ipcnum].bIsEnabled = false;
+				if (pDrvData->IPCs[ipcnum].bIsHere == true) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					wake_up_interruptible(&pDrvData->IPCs[ipcnum].ipc_wait_queue);
 				}
 			}
@@ -396,7 +443,10 @@ static long mwave_ioctl(struct file *file, unsigned int iocmd,
 	
 		default:
 			return -ENOTTY;
+<<<<<<< HEAD
 			break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} /* switch */
 
 	PRINTK_2(TRACE_MWAVE, "mwavedd::mwave_ioctl, exit retval %x\n", retval);
@@ -430,7 +480,11 @@ static ssize_t mwave_write(struct file *file, const char __user *buf,
 
 static int register_serial_portandirq(unsigned int port, int irq)
 {
+<<<<<<< HEAD
 	struct uart_port uart;
+=======
+	struct uart_8250_port uart;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	switch ( port ) {
 		case 0x3f8:
@@ -462,6 +516,7 @@ static int register_serial_portandirq(unsigned int port, int irq)
 	} /* switch */
 	/* irq is okay */
 
+<<<<<<< HEAD
 	memset(&uart, 0, sizeof(struct uart_port));
 	
 	uart.uartclk =  1843200;
@@ -470,6 +525,16 @@ static int register_serial_portandirq(unsigned int port, int irq)
 	uart.iotype = UPIO_PORT;
 	uart.flags =  UPF_SHARE_IRQ;
 	return serial8250_register_port(&uart);
+=======
+	memset(&uart, 0, sizeof(uart));
+	
+	uart.port.uartclk =  1843200;
+	uart.port.iobase = port;
+	uart.port.irq = irq;
+	uart.port.iotype = UPIO_PORT;
+	uart.port.flags =  UPF_SHARE_IRQ;
+	return serial8250_register_8250_port(&uart);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -541,7 +606,11 @@ static void mwave_exit(void)
 
 	if (pDrvData->device_registered) {
 		device_unregister(&mwave_device);
+<<<<<<< HEAD
 		pDrvData->device_registered = FALSE;
+=======
+		pDrvData->device_registered = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 
@@ -576,6 +645,7 @@ static int __init mwave_init(void)
 
 	memset(&mwave_s_mdd, 0, sizeof(MWAVE_DEVICE_DATA));
 
+<<<<<<< HEAD
 	pDrvData->bBDInitialized = FALSE;
 	pDrvData->bResourcesClaimed = FALSE;
 	pDrvData->bDSPEnabled = FALSE;
@@ -586,6 +656,18 @@ static int __init mwave_init(void)
 	for (i = 0; i < ARRAY_SIZE(pDrvData->IPCs); i++) {
 		pDrvData->IPCs[i].bIsEnabled = FALSE;
 		pDrvData->IPCs[i].bIsHere = FALSE;
+=======
+	pDrvData->bBDInitialized = false;
+	pDrvData->bResourcesClaimed = false;
+	pDrvData->bDSPEnabled = false;
+	pDrvData->bDSPReset = false;
+	pDrvData->bMwaveDevRegistered = false;
+	pDrvData->sLine = -1;
+
+	for (i = 0; i < ARRAY_SIZE(pDrvData->IPCs); i++) {
+		pDrvData->IPCs[i].bIsEnabled = false;
+		pDrvData->IPCs[i].bIsHere = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pDrvData->IPCs[i].usIntCount = 0;	/* no ints received yet */
 		init_waitqueue_head(&pDrvData->IPCs[i].ipc_wait_queue);
 	}
@@ -601,7 +683,11 @@ static int __init mwave_init(void)
 				" Failed to initialize board data\n");
 		goto cleanup_error;
 	}
+<<<<<<< HEAD
 	pDrvData->bBDInitialized = TRUE;
+=======
+	pDrvData->bBDInitialized = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = tp3780I_CalcResources(&pDrvData->rBDData);
 	PRINTK_2(TRACE_MWAVE,
@@ -626,7 +712,11 @@ static int __init mwave_init(void)
 				" Failed to claim resources\n");
 		goto cleanup_error;
 	}
+<<<<<<< HEAD
 	pDrvData->bResourcesClaimed = TRUE;
+=======
+	pDrvData->bResourcesClaimed = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = tp3780I_EnableDSP(&pDrvData->rBDData);
 	PRINTK_2(TRACE_MWAVE,
@@ -639,7 +729,11 @@ static int __init mwave_init(void)
 				" Failed to enable DSP\n");
 		goto cleanup_error;
 	}
+<<<<<<< HEAD
 	pDrvData->bDSPEnabled = TRUE;
+=======
+	pDrvData->bDSPEnabled = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (misc_register(&mwave_misc_dev) < 0) {
 		PRINTK_ERROR(KERN_ERR_MWAVE
@@ -647,7 +741,11 @@ static int __init mwave_init(void)
 				" Failed to register misc device\n");
 		goto cleanup_error;
 	}
+<<<<<<< HEAD
 	pDrvData->bMwaveDevRegistered = TRUE;
+=======
+	pDrvData->bMwaveDevRegistered = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pDrvData->sLine = register_serial_portandirq(
 		pDrvData->rBDData.rDspSettings.usUartBaseIO,
@@ -668,7 +766,11 @@ static int __init mwave_init(void)
 
 	if (device_register(&mwave_device))
 		goto cleanup_error;
+<<<<<<< HEAD
 	pDrvData->device_registered = TRUE;
+=======
+	pDrvData->device_registered = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < ARRAY_SIZE(mwave_dev_attrs); i++) {
 		if(device_create_file(&mwave_device, mwave_dev_attrs[i])) {
 			PRINTK_ERROR(KERN_ERR_MWAVE

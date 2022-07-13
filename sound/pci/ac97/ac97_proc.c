@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  Universal interface for Audio Codec '97
  *
  *  For more details look to AC '97 component specification revision 2.2
  *  by Intel Corporation (http://developer.intel.com).
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -20,6 +25,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mutex.h>
@@ -436,6 +443,7 @@ void snd_ac97_proc_init(struct snd_ac97 * ac97)
 		return;
 	prefix = ac97_is_audio(ac97) ? "ac97" : "mc97";
 	sprintf(name, "%s#%d-%d", prefix, ac97->addr, ac97->num);
+<<<<<<< HEAD
 	if ((entry = snd_info_create_card_entry(ac97->bus->card, name, ac97->bus->proc)) != NULL) {
 		snd_info_set_text_ops(entry, ac97, snd_ac97_proc_read);
 		if (snd_info_register(entry) < 0) {
@@ -455,6 +463,22 @@ void snd_ac97_proc_init(struct snd_ac97 * ac97)
 			snd_info_free_entry(entry);
 			entry = NULL;
 		}
+=======
+	entry = snd_info_create_card_entry(ac97->bus->card, name,
+					   ac97->bus->proc);
+	if (entry)
+		snd_info_set_text_ops(entry, ac97, snd_ac97_proc_read);
+	ac97->proc = entry;
+	sprintf(name, "%s#%d-%d+regs", prefix, ac97->addr, ac97->num);
+	entry = snd_info_create_card_entry(ac97->bus->card, name,
+					   ac97->bus->proc);
+	if (entry) {
+		snd_info_set_text_ops(entry, ac97, snd_ac97_proc_regs_read);
+#ifdef CONFIG_SND_DEBUG
+		entry->mode |= 0200;
+		entry->c.text.write = snd_ac97_proc_regs_write;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ac97->proc_regs = entry;
 }
@@ -473,6 +497,7 @@ void snd_ac97_bus_proc_init(struct snd_ac97_bus * bus)
 	char name[32];
 
 	sprintf(name, "codec97#%d", bus->num);
+<<<<<<< HEAD
 	if ((entry = snd_info_create_card_entry(bus->card, name, bus->card->proc_root)) != NULL) {
 		entry->mode = S_IFDIR | S_IRUGO | S_IXUGO;
 		if (snd_info_register(entry) < 0) {
@@ -480,6 +505,12 @@ void snd_ac97_bus_proc_init(struct snd_ac97_bus * bus)
 			entry = NULL;
 		}
 	}
+=======
+	entry = snd_info_create_card_entry(bus->card, name,
+					   bus->card->proc_root);
+	if (entry)
+		entry->mode = S_IFDIR | 0555;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bus->proc = entry;
 }
 

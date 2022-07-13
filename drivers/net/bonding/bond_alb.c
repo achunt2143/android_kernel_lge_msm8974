@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright(c) 1999 - 2004 Intel Corporation. All rights reserved.
  *
@@ -22,6 +23,13 @@
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright(c) 1999 - 2004 Intel Corporation. All rights reserved.
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/skbuff.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
@@ -36,6 +44,7 @@
 #include <linux/if_bonding.h>
 #include <linux/if_vlan.h>
 #include <linux/in.h>
+<<<<<<< HEAD
 #include <net/ipx.h>
 #include <net/arp.h>
 #include <net/ipv6.h>
@@ -52,6 +61,16 @@ static const u8 mac_bcast[ETH_ALEN] __long_aligned = {
 	0xff, 0xff, 0xff, 0xff, 0xff, 0xff
 };
 static const u8 mac_v6_allmcast[ETH_ALEN] __long_aligned = {
+=======
+#include <net/arp.h>
+#include <net/ipv6.h>
+#include <net/ndisc.h>
+#include <asm/byteorder.h>
+#include <net/bonding.h>
+#include <net/bond_alb.h>
+
+static const u8 mac_v6_allmcast[ETH_ALEN + 2] __long_aligned = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0x33, 0x33, 0x00, 0x00, 0x00, 0x01
 };
 static const int alb_delta_in_ticks = HZ / ALB_TIMER_TICKS_PER_SEC;
@@ -77,6 +96,7 @@ struct arp_pkt {
 };
 #pragma pack()
 
+<<<<<<< HEAD
 static inline struct arp_pkt *arp_pkt(const struct sk_buff *skb)
 {
 	return (struct arp_pkt *)skb_network_header(skb);
@@ -84,21 +104,36 @@ static inline struct arp_pkt *arp_pkt(const struct sk_buff *skb)
 
 /* Forward declaration */
 static void alb_send_learning_packets(struct slave *slave, u8 mac_addr[]);
+=======
+/* Forward declaration */
+static void alb_send_learning_packets(struct slave *slave, const u8 mac_addr[],
+				      bool strict_match);
+static void rlb_purge_src_ip(struct bonding *bond, struct arp_pkt *arp);
+static void rlb_src_unlink(struct bonding *bond, u32 index);
+static void rlb_src_link(struct bonding *bond, u32 ip_src_hash,
+			 u32 ip_dst_hash);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline u8 _simple_hash(const u8 *hash_start, int hash_size)
 {
 	int i;
 	u8 hash = 0;
 
+<<<<<<< HEAD
 	for (i = 0; i < hash_size; i++) {
 		hash ^= hash_start[i];
 	}
+=======
+	for (i = 0; i < hash_size; i++)
+		hash ^= hash_start[i];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return hash;
 }
 
 /*********************** tlb specific functions ***************************/
 
+<<<<<<< HEAD
 static inline void _lock_tx_hashtbl_bh(struct bonding *bond)
 {
 	spin_lock_bh(&(BOND_ALB_INFO(bond).tx_hashtbl_lock));
@@ -120,6 +155,8 @@ static inline void _unlock_tx_hashtbl(struct bonding *bond)
 }
 
 /* Caller must hold tx_hashtbl lock */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void tlb_init_table_entry(struct tlb_client_info *entry, int save_load)
 {
 	if (save_load) {
@@ -139,7 +176,10 @@ static inline void tlb_init_slave(struct slave *slave)
 	SLAVE_TLB_INFO(slave).head = TLB_NULL_INDEX;
 }
 
+<<<<<<< HEAD
 /* Caller must hold bond lock for read, BH disabled */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __tlb_clear_slave(struct bonding *bond, struct slave *slave,
 			 int save_load)
 {
@@ -154,6 +194,10 @@ static void __tlb_clear_slave(struct bonding *bond, struct slave *slave,
 		index = SLAVE_TLB_INFO(slave).head;
 		while (index != TLB_NULL_INDEX) {
 			u32 next_index = tx_hash_table[index].next;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			tlb_init_table_entry(&tx_hash_table[index], save_load);
 			index = next_index;
 		}
@@ -162,6 +206,7 @@ static void __tlb_clear_slave(struct bonding *bond, struct slave *slave,
 	tlb_init_slave(slave);
 }
 
+<<<<<<< HEAD
 /* Caller must hold bond lock for read */
 static void tlb_clear_slave(struct bonding *bond, struct slave *slave,
 			 int save_load)
@@ -169,6 +214,14 @@ static void tlb_clear_slave(struct bonding *bond, struct slave *slave,
 	_lock_tx_hashtbl_bh(bond);
 	__tlb_clear_slave(bond, slave, save_load);
 	_unlock_tx_hashtbl_bh(bond);
+=======
+static void tlb_clear_slave(struct bonding *bond, struct slave *slave,
+			 int save_load)
+{
+	spin_lock_bh(&bond->mode_lock);
+	__tlb_clear_slave(bond, slave, save_load);
+	spin_unlock_bh(&bond->mode_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Must be called before starting the monitor timer */
@@ -181,6 +234,7 @@ static int tlb_initialize(struct bonding *bond)
 
 	new_hashtbl = kzalloc(size, GFP_KERNEL);
 	if (!new_hashtbl)
+<<<<<<< HEAD
 		return -1;
 
 	_lock_tx_hashtbl_bh(bond);
@@ -192,6 +246,18 @@ static int tlb_initialize(struct bonding *bond)
 	}
 
 	_unlock_tx_hashtbl_bh(bond);
+=======
+		return -ENOMEM;
+
+	spin_lock_bh(&bond->mode_lock);
+
+	bond_info->tx_hashtbl = new_hashtbl;
+
+	for (i = 0; i < TLB_HASH_TABLE_SIZE; i++)
+		tlb_init_table_entry(&bond_info->tx_hashtbl[i], 0);
+
+	spin_unlock_bh(&bond->mode_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -201,12 +267,20 @@ static void tlb_deinitialize(struct bonding *bond)
 {
 	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
 
+<<<<<<< HEAD
 	_lock_tx_hashtbl_bh(bond);
+=======
+	spin_lock_bh(&bond->mode_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	kfree(bond_info->tx_hashtbl);
 	bond_info->tx_hashtbl = NULL;
 
+<<<<<<< HEAD
 	_unlock_tx_hashtbl_bh(bond);
+=======
+	spin_unlock_bh(&bond->mode_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static long long compute_gap(struct slave *slave)
@@ -215,19 +289,32 @@ static long long compute_gap(struct slave *slave)
 	       (s64) (SLAVE_TLB_INFO(slave).load << 3); /* Bytes to bits */
 }
 
+<<<<<<< HEAD
 /* Caller must hold bond lock for read */
 static struct slave *tlb_get_least_loaded_slave(struct bonding *bond)
 {
 	struct slave *slave, *least_loaded;
 	long long max_gap;
 	int i;
+=======
+static struct slave *tlb_get_least_loaded_slave(struct bonding *bond)
+{
+	struct slave *slave, *least_loaded;
+	struct list_head *iter;
+	long long max_gap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	least_loaded = NULL;
 	max_gap = LLONG_MIN;
 
 	/* Find the slave with the largest gap */
+<<<<<<< HEAD
 	bond_for_each_slave(bond, slave, i) {
 		if (SLAVE_IS_OK(slave)) {
+=======
+	bond_for_each_slave_rcu(bond, slave, iter) {
+		if (bond_slave_can_tx(slave)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			long long gap = compute_gap(slave);
 
 			if (max_gap < gap) {
@@ -261,9 +348,14 @@ static struct slave *__tlb_choose_channel(struct bonding *bond, u32 hash_index,
 			hash_table[hash_index].next = next_index;
 			hash_table[hash_index].prev = TLB_NULL_INDEX;
 
+<<<<<<< HEAD
 			if (next_index != TLB_NULL_INDEX) {
 				hash_table[next_index].prev = hash_index;
 			}
+=======
+			if (next_index != TLB_NULL_INDEX)
+				hash_table[next_index].prev = hash_index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			slave_info->head = hash_index;
 			slave_info->load +=
@@ -271,18 +363,27 @@ static struct slave *__tlb_choose_channel(struct bonding *bond, u32 hash_index,
 		}
 	}
 
+<<<<<<< HEAD
 	if (assigned_slave) {
 		hash_table[hash_index].tx_bytes += skb_len;
 	}
+=======
+	if (assigned_slave)
+		hash_table[hash_index].tx_bytes += skb_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return assigned_slave;
 }
 
+<<<<<<< HEAD
 /* Caller must hold bond lock for read */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct slave *tlb_choose_channel(struct bonding *bond, u32 hash_index,
 					u32 skb_len)
 {
 	struct slave *tx_slave;
+<<<<<<< HEAD
 	/*
 	 * We don't need to disable softirq here, becase
 	 * tlb_choose_channel() is only called by bond_alb_xmit()
@@ -291,10 +392,22 @@ static struct slave *tlb_choose_channel(struct bonding *bond, u32 hash_index,
 	_lock_tx_hashtbl(bond);
 	tx_slave = __tlb_choose_channel(bond, hash_index, skb_len);
 	_unlock_tx_hashtbl(bond);
+=======
+
+	/* We don't need to disable softirq here, because
+	 * tlb_choose_channel() is only called by bond_alb_xmit()
+	 * which already has softirq disabled.
+	 */
+	spin_lock(&bond->mode_lock);
+	tx_slave = __tlb_choose_channel(bond, hash_index, skb_len);
+	spin_unlock(&bond->mode_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return tx_slave;
 }
 
 /*********************** rlb specific functions ***************************/
+<<<<<<< HEAD
 static inline void _lock_rx_hashtbl_bh(struct bonding *bond)
 {
 	spin_lock_bh(&(BOND_ALB_INFO(bond).rx_hashtbl_lock));
@@ -314,6 +427,8 @@ static inline void _unlock_rx_hashtbl(struct bonding *bond)
 {
 	spin_unlock(&(BOND_ALB_INFO(bond).rx_hashtbl_lock));
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* when an ARP REPLY is received from a client update its info
  * in the rx_hashtbl
@@ -324,21 +439,34 @@ static void rlb_update_entry_from_arp(struct bonding *bond, struct arp_pkt *arp)
 	struct rlb_client_info *client_info;
 	u32 hash_index;
 
+<<<<<<< HEAD
 	_lock_rx_hashtbl_bh(bond);
 
 	hash_index = _simple_hash((u8*)&(arp->ip_src), sizeof(arp->ip_src));
+=======
+	spin_lock_bh(&bond->mode_lock);
+
+	hash_index = _simple_hash((u8 *)&(arp->ip_src), sizeof(arp->ip_src));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	client_info = &(bond_info->rx_hashtbl[hash_index]);
 
 	if ((client_info->assigned) &&
 	    (client_info->ip_src == arp->ip_dst) &&
 	    (client_info->ip_dst == arp->ip_src) &&
+<<<<<<< HEAD
 	    (compare_ether_addr_64bits(client_info->mac_dst, arp->mac_src))) {
 		/* update the clients MAC address */
 		memcpy(client_info->mac_dst, arp->mac_src, ETH_ALEN);
+=======
+	    (!ether_addr_equal_64bits(client_info->mac_dst, arp->mac_src))) {
+		/* update the clients MAC address */
+		ether_addr_copy(client_info->mac_dst, arp->mac_src);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		client_info->ntt = 1;
 		bond_info->rx_ntt = 1;
 	}
 
+<<<<<<< HEAD
 	_unlock_rx_hashtbl_bh(bond);
 }
 
@@ -346,10 +474,20 @@ static int rlb_arp_recv(struct sk_buff *skb, struct bonding *bond,
 			 struct slave *slave)
 {
 	struct arp_pkt *arp;
+=======
+	spin_unlock_bh(&bond->mode_lock);
+}
+
+static int rlb_arp_recv(const struct sk_buff *skb, struct bonding *bond,
+			struct slave *slave)
+{
+	struct arp_pkt *arp, _arp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (skb->protocol != cpu_to_be16(ETH_P_ARP))
 		goto out;
 
+<<<<<<< HEAD
 	arp = (struct arp_pkt *) skb->data;
 	if (!arp) {
 		pr_debug("Packet has no ARP data\n");
@@ -363,16 +501,38 @@ static int rlb_arp_recv(struct sk_buff *skb, struct bonding *bond,
 		pr_debug("Packet is too small to be an ARP\n");
 		goto out;
 	}
+=======
+	arp = skb_header_pointer(skb, 0, sizeof(_arp), &_arp);
+	if (!arp)
+		goto out;
+
+	/* We received an ARP from arp->ip_src.
+	 * We might have used this IP address previously (on the bonding host
+	 * itself or on a system that is bridged together with the bond).
+	 * However, if arp->mac_src is different than what is stored in
+	 * rx_hashtbl, some other host is now using the IP and we must prevent
+	 * sending out client updates with this IP address and the old MAC
+	 * address.
+	 * Clean up all hash table entries that have this address as ip_src but
+	 * have a different mac_src.
+	 */
+	rlb_purge_src_ip(bond, arp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (arp->op_code == htons(ARPOP_REPLY)) {
 		/* update rx hash table for this ARP */
 		rlb_update_entry_from_arp(bond, arp);
+<<<<<<< HEAD
 		pr_debug("Server received an ARP Reply from client\n");
+=======
+		slave_dbg(bond->dev, slave->dev, "Server received an ARP Reply from client\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	return RX_HANDLER_ANOTHER;
 }
 
+<<<<<<< HEAD
 /* Caller must hold bond lock for read */
 static struct slave *rlb_next_rx_slave(struct bonding *bond)
 {
@@ -401,6 +561,51 @@ static struct slave *rlb_next_rx_slave(struct bonding *bond)
 	if (rx_slave) {
 		bond_info->next_rx_slave = rx_slave->next;
 	}
+=======
+/* Caller must hold rcu_read_lock() */
+static struct slave *__rlb_next_rx_slave(struct bonding *bond)
+{
+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
+	struct slave *before = NULL, *rx_slave = NULL, *slave;
+	struct list_head *iter;
+	bool found = false;
+
+	bond_for_each_slave_rcu(bond, slave, iter) {
+		if (!bond_slave_can_tx(slave))
+			continue;
+		if (!found) {
+			if (!before || before->speed < slave->speed)
+				before = slave;
+		} else {
+			if (!rx_slave || rx_slave->speed < slave->speed)
+				rx_slave = slave;
+		}
+		if (slave == bond_info->rx_slave)
+			found = true;
+	}
+	/* we didn't find anything after the current or we have something
+	 * better before and up to the current slave
+	 */
+	if (!rx_slave || (before && rx_slave->speed < before->speed))
+		rx_slave = before;
+
+	if (rx_slave)
+		bond_info->rx_slave = rx_slave;
+
+	return rx_slave;
+}
+
+/* Caller must hold RTNL, rcu_read_lock is obtained only to silence checkers */
+static struct slave *rlb_next_rx_slave(struct bonding *bond)
+{
+	struct slave *rx_slave;
+
+	ASSERT_RTNL();
+
+	rcu_read_lock();
+	rx_slave = __rlb_next_rx_slave(bond);
+	rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rx_slave;
 }
@@ -408,6 +613,7 @@ static struct slave *rlb_next_rx_slave(struct bonding *bond)
 /* teach the switch the mac of a disabled slave
  * on the primary for fault tolerance
  *
+<<<<<<< HEAD
  * Caller must hold bond->curr_slave_lock for write or bond lock for write
  */
 static void rlb_teach_disabled_mac_on_primary(struct bonding *bond, u8 addr[])
@@ -418,6 +624,20 @@ static void rlb_teach_disabled_mac_on_primary(struct bonding *bond, u8 addr[])
 
 	if (!bond->alb_info.primary_is_promisc) {
 		if (!dev_set_promiscuity(bond->curr_active_slave->dev, 1))
+=======
+ * Caller must hold RTNL
+ */
+static void rlb_teach_disabled_mac_on_primary(struct bonding *bond,
+					      const u8 addr[])
+{
+	struct slave *curr_active = rtnl_dereference(bond->curr_active_slave);
+
+	if (!curr_active)
+		return;
+
+	if (!bond->alb_info.primary_is_promisc) {
+		if (!dev_set_promiscuity(curr_active->dev, 1))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bond->alb_info.primary_is_promisc = 1;
 		else
 			bond->alb_info.primary_is_promisc = 0;
@@ -425,12 +645,20 @@ static void rlb_teach_disabled_mac_on_primary(struct bonding *bond, u8 addr[])
 
 	bond->alb_info.rlb_promisc_timeout_counter = 0;
 
+<<<<<<< HEAD
 	alb_send_learning_packets(bond->curr_active_slave, addr);
+=======
+	alb_send_learning_packets(curr_active, addr, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* slave being removed should not be active at this point
  *
+<<<<<<< HEAD
  * Caller must hold bond lock for read
+=======
+ * Caller must hold rtnl.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void rlb_clear_slave(struct bonding *bond, struct slave *slave)
 {
@@ -439,19 +667,32 @@ static void rlb_clear_slave(struct bonding *bond, struct slave *slave)
 	u32 index, next_index;
 
 	/* clear slave from rx_hashtbl */
+<<<<<<< HEAD
 	_lock_rx_hashtbl_bh(bond);
 
 	rx_hash_table = bond_info->rx_hashtbl;
 	index = bond_info->rx_hashtbl_head;
 	for (; index != RLB_NULL_INDEX; index = next_index) {
 		next_index = rx_hash_table[index].next;
+=======
+	spin_lock_bh(&bond->mode_lock);
+
+	rx_hash_table = bond_info->rx_hashtbl;
+	index = bond_info->rx_hashtbl_used_head;
+	for (; index != RLB_NULL_INDEX; index = next_index) {
+		next_index = rx_hash_table[index].used_next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rx_hash_table[index].slave == slave) {
 			struct slave *assigned_slave = rlb_next_rx_slave(bond);
 
 			if (assigned_slave) {
 				rx_hash_table[index].slave = assigned_slave;
+<<<<<<< HEAD
 				if (compare_ether_addr_64bits(rx_hash_table[index].mac_dst,
 							      mac_bcast)) {
+=======
+				if (is_valid_ether_addr(rx_hash_table[index].mac_dst)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					bond_info->rx_hashtbl[index].ntt = 1;
 					bond_info->rx_ntt = 1;
 					/* A slave has been removed from the
@@ -470,6 +711,7 @@ static void rlb_clear_slave(struct bonding *bond, struct slave *slave)
 		}
 	}
 
+<<<<<<< HEAD
 	_unlock_rx_hashtbl_bh(bond);
 
 	write_lock_bh(&bond->curr_slave_lock);
@@ -479,15 +721,26 @@ static void rlb_clear_slave(struct bonding *bond, struct slave *slave)
 	}
 
 	write_unlock_bh(&bond->curr_slave_lock);
+=======
+	spin_unlock_bh(&bond->mode_lock);
+
+	if (slave != rtnl_dereference(bond->curr_active_slave))
+		rlb_teach_disabled_mac_on_primary(bond, slave->dev->dev_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rlb_update_client(struct rlb_client_info *client_info)
 {
 	int i;
 
+<<<<<<< HEAD
 	if (!client_info->slave) {
 		return;
 	}
+=======
+	if (!client_info->slave || !is_valid_ether_addr(client_info->mac_dst))
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < RLB_ARP_BURST_SIZE; i++) {
 		struct sk_buff *skb;
@@ -500,13 +753,20 @@ static void rlb_update_client(struct rlb_client_info *client_info)
 				 client_info->slave->dev->dev_addr,
 				 client_info->mac_dst);
 		if (!skb) {
+<<<<<<< HEAD
 			pr_err("%s: Error: failed to create an ARP packet\n",
 			       client_info->slave->dev->master->name);
+=======
+			slave_err(client_info->slave->bond->dev,
+				  client_info->slave->dev,
+				  "failed to create an ARP packet\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
 		skb->dev = client_info->slave->dev;
 
+<<<<<<< HEAD
 		if (client_info->tag) {
 			skb = vlan_put_tag(skb, client_info->vlan_id);
 			if (!skb) {
@@ -514,6 +774,11 @@ static void rlb_update_client(struct rlb_client_info *client_info)
 				       client_info->slave->dev->master->name);
 				continue;
 			}
+=======
+		if (client_info->vlan_id) {
+			__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q),
+					       client_info->vlan_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		arp_xmit(skb);
@@ -527,6 +792,7 @@ static void rlb_update_rx_clients(struct bonding *bond)
 	struct rlb_client_info *client_info;
 	u32 hash_index;
 
+<<<<<<< HEAD
 	_lock_rx_hashtbl_bh(bond);
 
 	hash_index = bond_info->rx_hashtbl_head;
@@ -537,6 +803,18 @@ static void rlb_update_rx_clients(struct bonding *bond)
 			if (bond_info->rlb_update_retry_counter == 0) {
 				client_info->ntt = 0;
 			}
+=======
+	spin_lock_bh(&bond->mode_lock);
+
+	hash_index = bond_info->rx_hashtbl_used_head;
+	for (; hash_index != RLB_NULL_INDEX;
+	     hash_index = client_info->used_next) {
+		client_info = &(bond_info->rx_hashtbl[hash_index]);
+		if (client_info->ntt) {
+			rlb_update_client(client_info);
+			if (bond_info->rlb_update_retry_counter == 0)
+				client_info->ntt = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -545,7 +823,11 @@ static void rlb_update_rx_clients(struct bonding *bond)
 	 */
 	bond_info->rlb_update_delay_counter = RLB_UPDATE_DELAY;
 
+<<<<<<< HEAD
 	_unlock_rx_hashtbl_bh(bond);
+=======
+	spin_unlock_bh(&bond->mode_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* The slave was assigned a new mac address - update the clients */
@@ -556,6 +838,7 @@ static void rlb_req_update_slave_clients(struct bonding *bond, struct slave *sla
 	int ntt = 0;
 	u32 hash_index;
 
+<<<<<<< HEAD
 	_lock_rx_hashtbl_bh(bond);
 
 	hash_index = bond_info->rx_hashtbl_head;
@@ -564,11 +847,23 @@ static void rlb_req_update_slave_clients(struct bonding *bond, struct slave *sla
 
 		if ((client_info->slave == slave) &&
 		    compare_ether_addr_64bits(client_info->mac_dst, mac_bcast)) {
+=======
+	spin_lock_bh(&bond->mode_lock);
+
+	hash_index = bond_info->rx_hashtbl_used_head;
+	for (; hash_index != RLB_NULL_INDEX;
+	     hash_index = client_info->used_next) {
+		client_info = &(bond_info->rx_hashtbl[hash_index]);
+
+		if ((client_info->slave == slave) &&
+		    is_valid_ether_addr(client_info->mac_dst)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			client_info->ntt = 1;
 			ntt = 1;
 		}
 	}
 
+<<<<<<< HEAD
 	// update the team's flag only after the whole iteration
 	if (ntt) {
 		bond_info->rx_ntt = 1;
@@ -577,6 +872,16 @@ static void rlb_req_update_slave_clients(struct bonding *bond, struct slave *sla
 	}
 
 	_unlock_rx_hashtbl_bh(bond);
+=======
+	/* update the team's flag only after the whole iteration */
+	if (ntt) {
+		bond_info->rx_ntt = 1;
+		/* fasten the change */
+		bond_info->rlb_update_retry_counter = RLB_UPDATE_RETRY;
+	}
+
+	spin_unlock_bh(&bond->mode_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* mark all clients using src_ip to be updated */
@@ -586,6 +891,7 @@ static void rlb_req_update_subnet_clients(struct bonding *bond, __be32 src_ip)
 	struct rlb_client_info *client_info;
 	u32 hash_index;
 
+<<<<<<< HEAD
 	_lock_rx_hashtbl(bond);
 
 	hash_index = bond_info->rx_hashtbl_head;
@@ -598,18 +904,39 @@ static void rlb_req_update_subnet_clients(struct bonding *bond, __be32 src_ip)
 			continue;
 		}
 		/*update all clients using this src_ip, that are not assigned
+=======
+	spin_lock(&bond->mode_lock);
+
+	hash_index = bond_info->rx_hashtbl_used_head;
+	for (; hash_index != RLB_NULL_INDEX;
+	     hash_index = client_info->used_next) {
+		client_info = &(bond_info->rx_hashtbl[hash_index]);
+
+		if (!client_info->slave) {
+			netdev_err(bond->dev, "found a client with no channel in the client's hash table\n");
+			continue;
+		}
+		/* update all clients using this src_ip, that are not assigned
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * to the team's address (curr_active_slave) and have a known
 		 * unicast mac address.
 		 */
 		if ((client_info->ip_src == src_ip) &&
+<<<<<<< HEAD
 		    compare_ether_addr_64bits(client_info->slave->dev->dev_addr,
 			   bond->dev->dev_addr) &&
 		    compare_ether_addr_64bits(client_info->mac_dst, mac_bcast)) {
+=======
+		    !ether_addr_equal_64bits(client_info->slave->dev->dev_addr,
+					     bond->dev->dev_addr) &&
+		    is_valid_ether_addr(client_info->mac_dst)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			client_info->ntt = 1;
 			bond_info->rx_ntt = 1;
 		}
 	}
 
+<<<<<<< HEAD
 	_unlock_rx_hashtbl(bond);
 }
 
@@ -623,6 +950,23 @@ static struct slave *rlb_choose_channel(struct sk_buff *skb, struct bonding *bon
 	u32 hash_index = 0;
 
 	_lock_rx_hashtbl(bond);
+=======
+	spin_unlock(&bond->mode_lock);
+}
+
+static struct slave *rlb_choose_channel(struct sk_buff *skb,
+					struct bonding *bond,
+					const struct arp_pkt *arp)
+{
+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
+	struct slave *assigned_slave, *curr_active_slave;
+	struct rlb_client_info *client_info;
+	u32 hash_index = 0;
+
+	spin_lock(&bond->mode_lock);
+
+	curr_active_slave = rcu_dereference(bond->curr_active_slave);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hash_index = _simple_hash((u8 *)&arp->ip_dst, sizeof(arp->ip_dst));
 	client_info = &(bond_info->rx_hashtbl[hash_index]);
@@ -631,6 +975,7 @@ static struct slave *rlb_choose_channel(struct sk_buff *skb, struct bonding *bon
 		if ((client_info->ip_src == arp->ip_src) &&
 		    (client_info->ip_dst == arp->ip_dst)) {
 			/* the entry is already assigned to this client */
+<<<<<<< HEAD
 			if (compare_ether_addr_64bits(arp->mac_dst, mac_bcast)) {
 				/* update mac address from arp */
 				memcpy(client_info->mac_dst, arp->mac_dst, ETH_ALEN);
@@ -639,6 +984,17 @@ static struct slave *rlb_choose_channel(struct sk_buff *skb, struct bonding *bon
 			assigned_slave = client_info->slave;
 			if (assigned_slave) {
 				_unlock_rx_hashtbl(bond);
+=======
+			if (!is_broadcast_ether_addr(arp->mac_dst)) {
+				/* update mac address from arp */
+				ether_addr_copy(client_info->mac_dst, arp->mac_dst);
+			}
+			ether_addr_copy(client_info->mac_src, arp->mac_src);
+
+			assigned_slave = client_info->slave;
+			if (assigned_slave) {
+				spin_unlock(&bond->mode_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return assigned_slave;
 			}
 		} else {
@@ -646,14 +1002,21 @@ static struct slave *rlb_choose_channel(struct sk_buff *skb, struct bonding *bon
 			 * move the old client to primary (curr_active_slave) so
 			 * that the new client can be assigned to this entry.
 			 */
+<<<<<<< HEAD
 			if (bond->curr_active_slave &&
 			    client_info->slave != bond->curr_active_slave) {
 				client_info->slave = bond->curr_active_slave;
+=======
+			if (curr_active_slave &&
+			    client_info->slave != curr_active_slave) {
+				client_info->slave = curr_active_slave;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rlb_update_client(client_info);
 			}
 		}
 	}
 	/* assign a new slave */
+<<<<<<< HEAD
 	assigned_slave = rlb_next_rx_slave(bond);
 
 	if (assigned_slave) {
@@ -667,12 +1030,40 @@ static struct slave *rlb_choose_channel(struct sk_buff *skb, struct bonding *bon
 		client_info->slave = assigned_slave;
 
 		if (compare_ether_addr_64bits(client_info->mac_dst, mac_bcast)) {
+=======
+	assigned_slave = __rlb_next_rx_slave(bond);
+
+	if (assigned_slave) {
+		if (!(client_info->assigned &&
+		      client_info->ip_src == arp->ip_src)) {
+			/* ip_src is going to be updated,
+			 * fix the src hash list
+			 */
+			u32 hash_src = _simple_hash((u8 *)&arp->ip_src,
+						    sizeof(arp->ip_src));
+			rlb_src_unlink(bond, hash_index);
+			rlb_src_link(bond, hash_src, hash_index);
+		}
+
+		client_info->ip_src = arp->ip_src;
+		client_info->ip_dst = arp->ip_dst;
+		/* arp->mac_dst is broadcast for arp requests.
+		 * will be updated with clients actual unicast mac address
+		 * upon receiving an arp reply.
+		 */
+		ether_addr_copy(client_info->mac_dst, arp->mac_dst);
+		ether_addr_copy(client_info->mac_src, arp->mac_src);
+		client_info->slave = assigned_slave;
+
+		if (is_valid_ether_addr(client_info->mac_dst)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			client_info->ntt = 1;
 			bond->alb_info.rx_ntt = 1;
 		} else {
 			client_info->ntt = 0;
 		}
 
+<<<<<<< HEAD
 		if (bond_vlan_used(bond)) {
 			if (!vlan_get_tag(skb, &client_info->vlan_id))
 				client_info->tag = 1;
@@ -684,13 +1075,29 @@ static struct slave *rlb_choose_channel(struct sk_buff *skb, struct bonding *bon
 			client_info->next = prev_tbl_head;
 			if (prev_tbl_head != RLB_NULL_INDEX) {
 				bond_info->rx_hashtbl[prev_tbl_head].prev =
+=======
+		if (vlan_get_tag(skb, &client_info->vlan_id))
+			client_info->vlan_id = 0;
+
+		if (!client_info->assigned) {
+			u32 prev_tbl_head = bond_info->rx_hashtbl_used_head;
+
+			bond_info->rx_hashtbl_used_head = hash_index;
+			client_info->used_next = prev_tbl_head;
+			if (prev_tbl_head != RLB_NULL_INDEX) {
+				bond_info->rx_hashtbl[prev_tbl_head].used_prev =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					hash_index;
 			}
 			client_info->assigned = 1;
 		}
 	}
 
+<<<<<<< HEAD
 	_unlock_rx_hashtbl(bond);
+=======
+	spin_unlock(&bond->mode_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return assigned_slave;
 }
@@ -701,6 +1108,7 @@ static struct slave *rlb_choose_channel(struct sk_buff *skb, struct bonding *bon
  */
 static struct slave *rlb_arp_xmit(struct sk_buff *skb, struct bonding *bond)
 {
+<<<<<<< HEAD
 	struct arp_pkt *arp = arp_pkt(skb);
 	struct slave *tx_slave = NULL;
 
@@ -719,13 +1127,50 @@ static struct slave *rlb_arp_xmit(struct sk_buff *skb, struct bonding *bond)
 			memcpy(arp->mac_src,tx_slave->dev->dev_addr, ETH_ALEN);
 		}
 		pr_debug("Server sent ARP Reply packet\n");
+=======
+	struct slave *tx_slave = NULL;
+	struct net_device *dev;
+	struct arp_pkt *arp;
+
+	if (!pskb_network_may_pull(skb, sizeof(*arp)))
+		return NULL;
+	arp = (struct arp_pkt *)skb_network_header(skb);
+
+	/* Don't modify or load balance ARPs that do not originate
+	 * from the bond itself or a VLAN directly above the bond.
+	 */
+	if (!bond_slave_has_mac_rcu(bond, arp->mac_src))
+		return NULL;
+
+	dev = ip_dev_find(dev_net(bond->dev), arp->ip_src);
+	if (dev) {
+		if (netif_is_any_bridge_master(dev)) {
+			dev_put(dev);
+			return NULL;
+		}
+		dev_put(dev);
+	}
+
+	if (arp->op_code == htons(ARPOP_REPLY)) {
+		/* the arp must be sent on the selected rx channel */
+		tx_slave = rlb_choose_channel(skb, bond, arp);
+		if (tx_slave)
+			bond_hw_addr_copy(arp->mac_src, tx_slave->dev->dev_addr,
+					  tx_slave->dev->addr_len);
+		netdev_dbg(bond->dev, "(slave %s): Server sent ARP Reply packet\n",
+			   tx_slave ? tx_slave->dev->name : "NULL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (arp->op_code == htons(ARPOP_REQUEST)) {
 		/* Create an entry in the rx_hashtbl for this client as a
 		 * place holder.
 		 * When the arp reply is received the entry will be updated
 		 * with the correct unicast address of the client.
 		 */
+<<<<<<< HEAD
 		rlb_choose_channel(skb, bond);
+=======
+		tx_slave = rlb_choose_channel(skb, bond, arp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* The ARP reply packets must be delayed so that
 		 * they can cancel out the influence of the ARP request.
@@ -738,13 +1183,21 @@ static struct slave *rlb_arp_xmit(struct sk_buff *skb, struct bonding *bond)
 		 * updated with their assigned mac.
 		 */
 		rlb_req_update_subnet_clients(bond, arp->ip_src);
+<<<<<<< HEAD
 		pr_debug("Server sent ARP Request packet\n");
+=======
+		netdev_dbg(bond->dev, "(slave %s): Server sent ARP Request packet\n",
+			   tx_slave ? tx_slave->dev->name : "NULL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return tx_slave;
 }
 
+<<<<<<< HEAD
 /* Caller must hold bond lock for read */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void rlb_rebalance(struct bonding *bond)
 {
 	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
@@ -753,6 +1206,7 @@ static void rlb_rebalance(struct bonding *bond)
 	int ntt;
 	u32 hash_index;
 
+<<<<<<< HEAD
 	_lock_rx_hashtbl_bh(bond);
 
 	ntt = 0;
@@ -764,10 +1218,27 @@ static void rlb_rebalance(struct bonding *bond)
 			client_info->slave = assigned_slave;
 			client_info->ntt = 1;
 			ntt = 1;
+=======
+	spin_lock_bh(&bond->mode_lock);
+
+	ntt = 0;
+	hash_index = bond_info->rx_hashtbl_used_head;
+	for (; hash_index != RLB_NULL_INDEX;
+	     hash_index = client_info->used_next) {
+		client_info = &(bond_info->rx_hashtbl[hash_index]);
+		assigned_slave = __rlb_next_rx_slave(bond);
+		if (assigned_slave && (client_info->slave != assigned_slave)) {
+			client_info->slave = assigned_slave;
+			if (!is_zero_ether_addr(client_info->mac_dst)) {
+				client_info->ntt = 1;
+				ntt = 1;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	/* update the team's flag only after the whole iteration */
+<<<<<<< HEAD
 	if (ntt) {
 		bond_info->rx_ntt = 1;
 	}
@@ -780,6 +1251,123 @@ static void rlb_init_table_entry(struct rlb_client_info *entry)
 	memset(entry, 0, sizeof(struct rlb_client_info));
 	entry->next = RLB_NULL_INDEX;
 	entry->prev = RLB_NULL_INDEX;
+=======
+	if (ntt)
+		bond_info->rx_ntt = 1;
+	spin_unlock_bh(&bond->mode_lock);
+}
+
+/* Caller must hold mode_lock */
+static void rlb_init_table_entry_dst(struct rlb_client_info *entry)
+{
+	entry->used_next = RLB_NULL_INDEX;
+	entry->used_prev = RLB_NULL_INDEX;
+	entry->assigned = 0;
+	entry->slave = NULL;
+	entry->vlan_id = 0;
+}
+static void rlb_init_table_entry_src(struct rlb_client_info *entry)
+{
+	entry->src_first = RLB_NULL_INDEX;
+	entry->src_prev = RLB_NULL_INDEX;
+	entry->src_next = RLB_NULL_INDEX;
+}
+
+static void rlb_init_table_entry(struct rlb_client_info *entry)
+{
+	memset(entry, 0, sizeof(struct rlb_client_info));
+	rlb_init_table_entry_dst(entry);
+	rlb_init_table_entry_src(entry);
+}
+
+static void rlb_delete_table_entry_dst(struct bonding *bond, u32 index)
+{
+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
+	u32 next_index = bond_info->rx_hashtbl[index].used_next;
+	u32 prev_index = bond_info->rx_hashtbl[index].used_prev;
+
+	if (index == bond_info->rx_hashtbl_used_head)
+		bond_info->rx_hashtbl_used_head = next_index;
+	if (prev_index != RLB_NULL_INDEX)
+		bond_info->rx_hashtbl[prev_index].used_next = next_index;
+	if (next_index != RLB_NULL_INDEX)
+		bond_info->rx_hashtbl[next_index].used_prev = prev_index;
+}
+
+/* unlink a rlb hash table entry from the src list */
+static void rlb_src_unlink(struct bonding *bond, u32 index)
+{
+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
+	u32 next_index = bond_info->rx_hashtbl[index].src_next;
+	u32 prev_index = bond_info->rx_hashtbl[index].src_prev;
+
+	bond_info->rx_hashtbl[index].src_next = RLB_NULL_INDEX;
+	bond_info->rx_hashtbl[index].src_prev = RLB_NULL_INDEX;
+
+	if (next_index != RLB_NULL_INDEX)
+		bond_info->rx_hashtbl[next_index].src_prev = prev_index;
+
+	if (prev_index == RLB_NULL_INDEX)
+		return;
+
+	/* is prev_index pointing to the head of this list? */
+	if (bond_info->rx_hashtbl[prev_index].src_first == index)
+		bond_info->rx_hashtbl[prev_index].src_first = next_index;
+	else
+		bond_info->rx_hashtbl[prev_index].src_next = next_index;
+
+}
+
+static void rlb_delete_table_entry(struct bonding *bond, u32 index)
+{
+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
+	struct rlb_client_info *entry = &(bond_info->rx_hashtbl[index]);
+
+	rlb_delete_table_entry_dst(bond, index);
+	rlb_init_table_entry_dst(entry);
+
+	rlb_src_unlink(bond, index);
+}
+
+/* add the rx_hashtbl[ip_dst_hash] entry to the list
+ * of entries with identical ip_src_hash
+ */
+static void rlb_src_link(struct bonding *bond, u32 ip_src_hash, u32 ip_dst_hash)
+{
+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
+	u32 next;
+
+	bond_info->rx_hashtbl[ip_dst_hash].src_prev = ip_src_hash;
+	next = bond_info->rx_hashtbl[ip_src_hash].src_first;
+	bond_info->rx_hashtbl[ip_dst_hash].src_next = next;
+	if (next != RLB_NULL_INDEX)
+		bond_info->rx_hashtbl[next].src_prev = ip_dst_hash;
+	bond_info->rx_hashtbl[ip_src_hash].src_first = ip_dst_hash;
+}
+
+/* deletes all rx_hashtbl entries with arp->ip_src if their mac_src does
+ * not match arp->mac_src
+ */
+static void rlb_purge_src_ip(struct bonding *bond, struct arp_pkt *arp)
+{
+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
+	u32 ip_src_hash = _simple_hash((u8 *)&(arp->ip_src), sizeof(arp->ip_src));
+	u32 index;
+
+	spin_lock_bh(&bond->mode_lock);
+
+	index = bond_info->rx_hashtbl[ip_src_hash].src_first;
+	while (index != RLB_NULL_INDEX) {
+		struct rlb_client_info *entry = &(bond_info->rx_hashtbl[index]);
+		u32 next_index = entry->src_next;
+
+		if (entry->ip_src == arp->ip_src &&
+		    !ether_addr_equal_64bits(arp->mac_src, entry->mac_src))
+			rlb_delete_table_entry(bond, index);
+		index = next_index;
+	}
+	spin_unlock_bh(&bond->mode_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rlb_initialize(struct bonding *bond)
@@ -793,6 +1381,7 @@ static int rlb_initialize(struct bonding *bond)
 	if (!new_hashtbl)
 		return -1;
 
+<<<<<<< HEAD
 	_lock_rx_hashtbl_bh(bond);
 
 	bond_info->rx_hashtbl = new_hashtbl;
@@ -804,6 +1393,18 @@ static int rlb_initialize(struct bonding *bond)
 	}
 
 	_unlock_rx_hashtbl_bh(bond);
+=======
+	spin_lock_bh(&bond->mode_lock);
+
+	bond_info->rx_hashtbl = new_hashtbl;
+
+	bond_info->rx_hashtbl_used_head = RLB_NULL_INDEX;
+
+	for (i = 0; i < RLB_HASH_TABLE_SIZE; i++)
+		rlb_init_table_entry(bond_info->rx_hashtbl + i);
+
+	spin_unlock_bh(&bond->mode_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* register to receive ARPs */
 	bond->recv_probe = rlb_arp_recv;
@@ -815,6 +1416,7 @@ static void rlb_deinitialize(struct bonding *bond)
 {
 	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
 
+<<<<<<< HEAD
 	_lock_rx_hashtbl_bh(bond);
 
 	kfree(bond_info->rx_hashtbl);
@@ -822,6 +1424,15 @@ static void rlb_deinitialize(struct bonding *bond)
 	bond_info->rx_hashtbl_head = RLB_NULL_INDEX;
 
 	_unlock_rx_hashtbl_bh(bond);
+=======
+	spin_lock_bh(&bond->mode_lock);
+
+	kfree(bond_info->rx_hashtbl);
+	bond_info->rx_hashtbl = NULL;
+	bond_info->rx_hashtbl_used_head = RLB_NULL_INDEX;
+
+	spin_unlock_bh(&bond->mode_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rlb_clear_vlan(struct bonding *bond, unsigned short vlan_id)
@@ -829,6 +1440,7 @@ static void rlb_clear_vlan(struct bonding *bond, unsigned short vlan_id)
 	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
 	u32 curr_index;
 
+<<<<<<< HEAD
 	_lock_rx_hashtbl_bh(bond);
 
 	curr_index = bond_info->rx_hashtbl_head;
@@ -850,15 +1462,31 @@ static void rlb_clear_vlan(struct bonding *bond, unsigned short vlan_id)
 
 			rlb_init_table_entry(curr);
 		}
+=======
+	spin_lock_bh(&bond->mode_lock);
+
+	curr_index = bond_info->rx_hashtbl_used_head;
+	while (curr_index != RLB_NULL_INDEX) {
+		struct rlb_client_info *curr = &(bond_info->rx_hashtbl[curr_index]);
+		u32 next_index = bond_info->rx_hashtbl[curr_index].used_next;
+
+		if (curr->vlan_id == vlan_id)
+			rlb_delete_table_entry(bond, curr_index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		curr_index = next_index;
 	}
 
+<<<<<<< HEAD
 	_unlock_rx_hashtbl_bh(bond);
+=======
+	spin_unlock_bh(&bond->mode_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*********************** tlb/rlb shared functions *********************/
 
+<<<<<<< HEAD
 static void alb_send_learning_packets(struct slave *slave, u8 mac_addr[])
 {
 	struct bonding *bond = bond_get_bond_by_slave(slave);
@@ -931,11 +1559,135 @@ static int alb_set_slave_mac_addr(struct slave *slave, u8 addr[])
 		pr_err("%s: Error: dev_set_mac_address of dev %s failed!\n"
 		       "ALB mode requires that the base driver support setting the hw address also when the network device's interface is open\n",
 		       dev->master->name, dev->name);
+=======
+static void alb_send_lp_vid(struct slave *slave, const u8 mac_addr[],
+			    __be16 vlan_proto, u16 vid)
+{
+	struct learning_pkt pkt;
+	struct sk_buff *skb;
+	int size = sizeof(struct learning_pkt);
+
+	memset(&pkt, 0, size);
+	ether_addr_copy(pkt.mac_dst, mac_addr);
+	ether_addr_copy(pkt.mac_src, mac_addr);
+	pkt.type = cpu_to_be16(ETH_P_LOOPBACK);
+
+	skb = dev_alloc_skb(size);
+	if (!skb)
+		return;
+
+	skb_put_data(skb, &pkt, size);
+
+	skb_reset_mac_header(skb);
+	skb->network_header = skb->mac_header + ETH_HLEN;
+	skb->protocol = pkt.type;
+	skb->priority = TC_PRIO_CONTROL;
+	skb->dev = slave->dev;
+
+	slave_dbg(slave->bond->dev, slave->dev,
+		  "Send learning packet: mac %pM vlan %d\n", mac_addr, vid);
+
+	if (vid)
+		__vlan_hwaccel_put_tag(skb, vlan_proto, vid);
+
+	dev_queue_xmit(skb);
+}
+
+struct alb_walk_data {
+	struct bonding *bond;
+	struct slave *slave;
+	const u8 *mac_addr;
+	bool strict_match;
+};
+
+static int alb_upper_dev_walk(struct net_device *upper,
+			      struct netdev_nested_priv *priv)
+{
+	struct alb_walk_data *data = (struct alb_walk_data *)priv->data;
+	bool strict_match = data->strict_match;
+	const u8 *mac_addr = data->mac_addr;
+	struct bonding *bond = data->bond;
+	struct slave *slave = data->slave;
+	struct bond_vlan_tag *tags;
+
+	if (is_vlan_dev(upper) &&
+	    bond->dev->lower_level == upper->lower_level - 1) {
+		if (upper->addr_assign_type == NET_ADDR_STOLEN) {
+			alb_send_lp_vid(slave, mac_addr,
+					vlan_dev_vlan_proto(upper),
+					vlan_dev_vlan_id(upper));
+		} else {
+			alb_send_lp_vid(slave, upper->dev_addr,
+					vlan_dev_vlan_proto(upper),
+					vlan_dev_vlan_id(upper));
+		}
+	}
+
+	/* If this is a macvlan device, then only send updates
+	 * when strict_match is turned off.
+	 */
+	if (netif_is_macvlan(upper) && !strict_match) {
+		tags = bond_verify_device_path(bond->dev, upper, 0);
+		if (IS_ERR_OR_NULL(tags))
+			return -ENOMEM;
+
+		alb_send_lp_vid(slave, upper->dev_addr,
+				tags[0].vlan_proto, tags[0].vlan_id);
+		kfree(tags);
+	}
+
+	return 0;
+}
+
+static void alb_send_learning_packets(struct slave *slave, const u8 mac_addr[],
+				      bool strict_match)
+{
+	struct bonding *bond = bond_get_bond_by_slave(slave);
+	struct netdev_nested_priv priv;
+	struct alb_walk_data data = {
+		.strict_match = strict_match,
+		.mac_addr = mac_addr,
+		.slave = slave,
+		.bond = bond,
+	};
+
+	priv.data = (void *)&data;
+	/* send untagged */
+	alb_send_lp_vid(slave, mac_addr, 0, 0);
+
+	/* loop through all devices and see if we need to send a packet
+	 * for that device.
+	 */
+	rcu_read_lock();
+	netdev_walk_all_upper_dev_rcu(bond->dev, alb_upper_dev_walk, &priv);
+	rcu_read_unlock();
+}
+
+static int alb_set_slave_mac_addr(struct slave *slave, const u8 addr[],
+				  unsigned int len)
+{
+	struct net_device *dev = slave->dev;
+	struct sockaddr_storage ss;
+
+	if (BOND_MODE(slave->bond) == BOND_MODE_TLB) {
+		__dev_addr_set(dev, addr, len);
+		return 0;
+	}
+
+	/* for rlb each slave must have a unique hw mac addresses so that
+	 * each slave will receive packets destined to a different mac
+	 */
+	memcpy(ss.__data, addr, len);
+	ss.ss_family = dev->type;
+	if (dev_set_mac_address(dev, (struct sockaddr *)&ss, NULL)) {
+		slave_err(slave->bond->dev, dev, "dev_set_mac_address on slave failed! ALB mode requires that the base driver support setting the hw address also when the network device's interface is open\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EOPNOTSUPP;
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Swap MAC addresses between two slaves.
  *
@@ -955,20 +1707,49 @@ static void alb_swap_mac_addr(struct bonding *bond, struct slave *slave1, struct
 
 /*
  * Send learning packets after MAC address swap.
+=======
+/* Swap MAC addresses between two slaves.
+ *
+ * Called with RTNL held, and no other locks.
+ */
+static void alb_swap_mac_addr(struct slave *slave1, struct slave *slave2)
+{
+	u8 tmp_mac_addr[MAX_ADDR_LEN];
+
+	bond_hw_addr_copy(tmp_mac_addr, slave1->dev->dev_addr,
+			  slave1->dev->addr_len);
+	alb_set_slave_mac_addr(slave1, slave2->dev->dev_addr,
+			       slave2->dev->addr_len);
+	alb_set_slave_mac_addr(slave2, tmp_mac_addr,
+			       slave1->dev->addr_len);
+
+}
+
+/* Send learning packets after MAC address swap.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Called with RTNL and no other locks
  */
 static void alb_fasten_mac_swap(struct bonding *bond, struct slave *slave1,
 				struct slave *slave2)
 {
+<<<<<<< HEAD
 	int slaves_state_differ = (SLAVE_IS_OK(slave1) != SLAVE_IS_OK(slave2));
+=======
+	int slaves_state_differ = (bond_slave_can_tx(slave1) != bond_slave_can_tx(slave2));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct slave *disabled_slave = NULL;
 
 	ASSERT_RTNL();
 
 	/* fasten the change in the switch */
+<<<<<<< HEAD
 	if (SLAVE_IS_OK(slave1)) {
 		alb_send_learning_packets(slave1, slave1->dev->dev_addr);
+=======
+	if (bond_slave_can_tx(slave1)) {
+		alb_send_learning_packets(slave1, slave1->dev->dev_addr, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bond->alb_info.rlb_enabled) {
 			/* inform the clients that the mac address
 			 * has changed
@@ -979,8 +1760,13 @@ static void alb_fasten_mac_swap(struct bonding *bond, struct slave *slave1,
 		disabled_slave = slave1;
 	}
 
+<<<<<<< HEAD
 	if (SLAVE_IS_OK(slave2)) {
 		alb_send_learning_packets(slave2, slave2->dev->dev_addr);
+=======
+	if (bond_slave_can_tx(slave2)) {
+		alb_send_learning_packets(slave2, slave2->dev->dev_addr, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bond->alb_info.rlb_enabled) {
 			/* inform the clients that the mac address
 			 * has changed
@@ -1008,7 +1794,11 @@ static void alb_fasten_mac_swap(struct bonding *bond, struct slave *slave1,
  * If @slave's permanent hw address is different both from its current
  * address and from @bond's address, then somewhere in the bond there's
  * a slave that has @slave's permanet address as its current address.
+<<<<<<< HEAD
  * We'll make sure that that slave no longer uses @slave's permanent address.
+=======
+ * We'll make sure that slave no longer uses @slave's permanent address.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Caller must hold RTNL and no other locks
  */
@@ -1016,6 +1806,7 @@ static void alb_change_hw_addr_on_detach(struct bonding *bond, struct slave *sla
 {
 	int perm_curr_diff;
 	int perm_bond_diff;
+<<<<<<< HEAD
 
 	perm_curr_diff = compare_ether_addr_64bits(slave->perm_hwaddr,
 						   slave->dev->dev_addr);
@@ -1038,6 +1829,21 @@ static void alb_change_hw_addr_on_detach(struct bonding *bond, struct slave *sla
 			/* locking: needs RTNL and nothing else */
 			alb_swap_mac_addr(bond, slave, tmp_slave);
 			alb_fasten_mac_swap(bond, slave, tmp_slave);
+=======
+	struct slave *found_slave;
+
+	perm_curr_diff = !ether_addr_equal_64bits(slave->perm_hwaddr,
+						  slave->dev->dev_addr);
+	perm_bond_diff = !ether_addr_equal_64bits(slave->perm_hwaddr,
+						  bond->dev->dev_addr);
+
+	if (perm_curr_diff && perm_bond_diff) {
+		found_slave = bond_slave_has_mac(bond, slave->perm_hwaddr);
+
+		if (found_slave) {
+			alb_swap_mac_addr(slave, found_slave);
+			alb_fasten_mac_swap(bond, slave, found_slave);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -1062,6 +1868,7 @@ static void alb_change_hw_addr_on_detach(struct bonding *bond, struct slave *sla
  * @slave.
  *
  * assumption: this function is called before @slave is attached to the
+<<<<<<< HEAD
  * 	       bond slave list.
  *
  * caller must hold the bond lock for write since the mac addresses are compared
@@ -1074,6 +1881,17 @@ static int alb_handle_addr_collision_on_attach(struct bonding *bond, struct slav
 	int i, j, found = 0;
 
 	if (bond->slave_cnt == 0) {
+=======
+ *	       bond slave list.
+ */
+static int alb_handle_addr_collision_on_attach(struct bonding *bond, struct slave *slave)
+{
+	struct slave *has_bond_addr = rcu_access_pointer(bond->curr_active_slave);
+	struct slave *tmp_slave1, *free_mac_slave = NULL;
+	struct list_head *iter;
+
+	if (!bond_has_slaves(bond)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* this is the first slave */
 		return 0;
 	}
@@ -1082,6 +1900,7 @@ static int alb_handle_addr_collision_on_attach(struct bonding *bond, struct slav
 	 * check uniqueness of slave's mac address against the other
 	 * slaves in the bond.
 	 */
+<<<<<<< HEAD
 	if (compare_ether_addr_64bits(slave->perm_hwaddr, bond->dev->dev_addr)) {
 		bond_for_each_slave(bond, tmp_slave1, i) {
 			if (!compare_ether_addr_64bits(tmp_slave1->dev->dev_addr,
@@ -1097,11 +1916,23 @@ static int alb_handle_addr_collision_on_attach(struct bonding *bond, struct slav
 		/* Try setting slave mac to bond address and fall-through
 		   to code handling that situation below... */
 		alb_set_slave_mac_addr(slave, bond->dev->dev_addr);
+=======
+	if (!ether_addr_equal_64bits(slave->perm_hwaddr, bond->dev->dev_addr)) {
+		if (!bond_slave_has_mac(bond, slave->dev->dev_addr))
+			return 0;
+
+		/* Try setting slave mac to bond address and fall-through
+		 * to code handling that situation below...
+		 */
+		alb_set_slave_mac_addr(slave, bond->dev->dev_addr,
+				       bond->dev->addr_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* The slave's address is equal to the address of the bond.
 	 * Search for a spare address in the bond for this slave.
 	 */
+<<<<<<< HEAD
 	free_mac_slave = NULL;
 
 	bond_for_each_slave(bond, tmp_slave1, i) {
@@ -1115,6 +1946,10 @@ static int alb_handle_addr_collision_on_attach(struct bonding *bond, struct slav
 		}
 
 		if (!found) {
+=======
+	bond_for_each_slave(bond, tmp_slave1, iter) {
+		if (!bond_slave_has_mac(bond, tmp_slave1->perm_hwaddr)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* no slave has tmp_slave1's perm addr
 			 * as its curr addr
 			 */
@@ -1123,8 +1958,13 @@ static int alb_handle_addr_collision_on_attach(struct bonding *bond, struct slav
 		}
 
 		if (!has_bond_addr) {
+<<<<<<< HEAD
 			if (!compare_ether_addr_64bits(tmp_slave1->dev->dev_addr,
 						       bond->dev->dev_addr)) {
+=======
+			if (ether_addr_equal_64bits(tmp_slave1->dev->dev_addr,
+						    bond->dev->dev_addr)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				has_bond_addr = tmp_slave1;
 			}
@@ -1132,6 +1972,7 @@ static int alb_handle_addr_collision_on_attach(struct bonding *bond, struct slav
 	}
 
 	if (free_mac_slave) {
+<<<<<<< HEAD
 		alb_set_slave_mac_addr(slave, free_mac_slave->perm_hwaddr);
 
 		pr_warning("%s: Warning: the hw address of slave %s is in use by the bond; giving it the hw address of %s\n",
@@ -1141,6 +1982,16 @@ static int alb_handle_addr_collision_on_attach(struct bonding *bond, struct slav
 	} else if (has_bond_addr) {
 		pr_err("%s: Error: the hw address of slave %s is in use by the bond; couldn't find a slave with a free hw address to give it (this should not have happened)\n",
 		       bond->dev->name, slave->dev->name);
+=======
+		alb_set_slave_mac_addr(slave, free_mac_slave->perm_hwaddr,
+				       free_mac_slave->dev->addr_len);
+
+		slave_warn(bond->dev, slave->dev, "the slave hw address is in use by the bond; giving it the hw address of %s\n",
+			   free_mac_slave->dev->name);
+
+	} else if (has_bond_addr) {
+		slave_err(bond->dev, slave->dev, "the slave hw address is in use by the bond; couldn't find a slave with a free hw address to give it (this should not have happened)\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	}
 
@@ -1149,8 +2000,13 @@ static int alb_handle_addr_collision_on_attach(struct bonding *bond, struct slav
 
 /**
  * alb_set_mac_address
+<<<<<<< HEAD
  * @bond:
  * @addr:
+=======
+ * @bond: bonding we're working on
+ * @addr: MAC address to set
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * In TLB mode all slaves are configured to the bond's hw address, but set
  * their dev_addr field to different addresses (based on their permanent hw
@@ -1163,6 +2019,7 @@ static int alb_handle_addr_collision_on_attach(struct bonding *bond, struct slav
  */
 static int alb_set_mac_address(struct bonding *bond, void *addr)
 {
+<<<<<<< HEAD
 	struct sockaddr sa;
 	struct slave *slave, *stop_at;
 	char tmp_addr[ETH_ALEN];
@@ -1181,6 +2038,26 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
 
 		/* restore net_device's hw address */
 		memcpy(slave->dev->dev_addr, tmp_addr, ETH_ALEN);
+=======
+	struct slave *slave, *rollback_slave;
+	struct list_head *iter;
+	struct sockaddr_storage ss;
+	char tmp_addr[MAX_ADDR_LEN];
+	int res;
+
+	if (bond->alb_info.rlb_enabled)
+		return 0;
+
+	bond_for_each_slave(bond, slave, iter) {
+		/* save net_device's current hw address */
+		bond_hw_addr_copy(tmp_addr, slave->dev->dev_addr,
+				  slave->dev->addr_len);
+
+		res = dev_set_mac_address(slave->dev, addr, NULL);
+
+		/* restore net_device's hw address */
+		dev_addr_set(slave->dev, tmp_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (res)
 			goto unwind;
@@ -1189,6 +2066,7 @@ static int alb_set_mac_address(struct bonding *bond, void *addr)
 	return 0;
 
 unwind:
+<<<<<<< HEAD
 	memcpy(sa.sa_data, bond->dev->dev_addr, bond->dev->addr_len);
 	sa.sa_family = bond->dev->type;
 
@@ -1198,18 +2076,58 @@ unwind:
 		memcpy(tmp_addr, slave->dev->dev_addr, ETH_ALEN);
 		dev_set_mac_address(slave->dev, &sa);
 		memcpy(slave->dev->dev_addr, tmp_addr, ETH_ALEN);
+=======
+	memcpy(ss.__data, bond->dev->dev_addr, bond->dev->addr_len);
+	ss.ss_family = bond->dev->type;
+
+	/* unwind from head to the slave that failed */
+	bond_for_each_slave(bond, rollback_slave, iter) {
+		if (rollback_slave == slave)
+			break;
+		bond_hw_addr_copy(tmp_addr, rollback_slave->dev->dev_addr,
+				  rollback_slave->dev->addr_len);
+		dev_set_mac_address(rollback_slave->dev,
+				    (struct sockaddr *)&ss, NULL);
+		dev_addr_set(rollback_slave->dev, tmp_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return res;
 }
 
+<<<<<<< HEAD
 /************************ exported alb funcions ************************/
+=======
+/* determine if the packet is NA or NS */
+static bool alb_determine_nd(struct sk_buff *skb, struct bonding *bond)
+{
+	struct ipv6hdr *ip6hdr;
+	struct icmp6hdr *hdr;
+
+	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr)))
+		return true;
+
+	ip6hdr = ipv6_hdr(skb);
+	if (ip6hdr->nexthdr != IPPROTO_ICMPV6)
+		return false;
+
+	if (!pskb_network_may_pull(skb, sizeof(*ip6hdr) + sizeof(*hdr)))
+		return true;
+
+	hdr = icmp6_hdr(skb);
+	return hdr->icmp6_type == NDISC_NEIGHBOUR_ADVERTISEMENT ||
+		hdr->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION;
+}
+
+/************************ exported alb functions ************************/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
 {
 	int res;
 
 	res = tlb_initialize(bond);
+<<<<<<< HEAD
 	if (res) {
 		return res;
 	}
@@ -1217,11 +2135,21 @@ int bond_alb_initialize(struct bonding *bond, int rlb_enabled)
 	if (rlb_enabled) {
 		bond->alb_info.rlb_enabled = 1;
 		/* initialize rlb */
+=======
+	if (res)
+		return res;
+
+	if (rlb_enabled) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res = rlb_initialize(bond);
 		if (res) {
 			tlb_deinitialize(bond);
 			return res;
 		}
+<<<<<<< HEAD
+=======
+		bond->alb_info.rlb_enabled = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		bond->alb_info.rlb_enabled = 0;
 	}
@@ -1235,6 +2163,7 @@ void bond_alb_deinitialize(struct bonding *bond)
 
 	tlb_deinitialize(bond);
 
+<<<<<<< HEAD
 	if (bond_info->rlb_enabled) {
 		rlb_deinitialize(bond);
 	}
@@ -1253,10 +2182,55 @@ int bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev)
 	const u8 *hash_start = NULL;
 	int res = 1;
 	struct ipv6hdr *ip6hdr;
+=======
+	if (bond_info->rlb_enabled)
+		rlb_deinitialize(bond);
+}
+
+static netdev_tx_t bond_do_alb_xmit(struct sk_buff *skb, struct bonding *bond,
+				    struct slave *tx_slave)
+{
+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
+	struct ethhdr *eth_data = eth_hdr(skb);
+
+	if (!tx_slave) {
+		/* unbalanced or unassigned, send through primary */
+		tx_slave = rcu_dereference(bond->curr_active_slave);
+		if (bond->params.tlb_dynamic_lb)
+			bond_info->unbalanced_load += skb->len;
+	}
+
+	if (tx_slave && bond_slave_can_tx(tx_slave)) {
+		if (tx_slave != rcu_access_pointer(bond->curr_active_slave)) {
+			ether_addr_copy(eth_data->h_source,
+					tx_slave->dev->dev_addr);
+		}
+
+		return bond_dev_queue_xmit(bond, skb, tx_slave->dev);
+	}
+
+	if (tx_slave && bond->params.tlb_dynamic_lb) {
+		spin_lock(&bond->mode_lock);
+		__tlb_clear_slave(bond, tx_slave, 0);
+		spin_unlock(&bond->mode_lock);
+	}
+
+	/* no suitable interface, frame not sent */
+	return bond_tx_drop(bond->dev, skb);
+}
+
+struct slave *bond_xmit_tlb_slave_get(struct bonding *bond,
+				      struct sk_buff *skb)
+{
+	struct slave *tx_slave = NULL;
+	struct ethhdr *eth_data;
+	u32 hash_index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	skb_reset_mac_header(skb);
 	eth_data = eth_hdr(skb);
 
+<<<<<<< HEAD
 	/* make sure that the curr_active_slave do not change during tx
 	 */
 	read_lock(&bond->curr_slave_lock);
@@ -1269,10 +2243,78 @@ int bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev)
 		    (iph->daddr == ip_bcast) ||
 		    (iph->protocol == IPPROTO_IGMP)) {
 			do_tx_balance = 0;
+=======
+	/* Do not TX balance any multicast or broadcast */
+	if (!is_multicast_ether_addr(eth_data->h_dest)) {
+		switch (skb->protocol) {
+		case htons(ETH_P_IPV6):
+			if (alb_determine_nd(skb, bond))
+				break;
+			fallthrough;
+		case htons(ETH_P_IP):
+			hash_index = bond_xmit_hash(bond, skb);
+			if (bond->params.tlb_dynamic_lb) {
+				tx_slave = tlb_choose_channel(bond,
+							      hash_index & 0xFF,
+							      skb->len);
+			} else {
+				struct bond_up_slave *slaves;
+				unsigned int count;
+
+				slaves = rcu_dereference(bond->usable_slaves);
+				count = slaves ? READ_ONCE(slaves->count) : 0;
+				if (likely(count))
+					tx_slave = slaves->arr[hash_index %
+							       count];
+			}
+			break;
+		}
+	}
+	return tx_slave;
+}
+
+netdev_tx_t bond_tlb_xmit(struct sk_buff *skb, struct net_device *bond_dev)
+{
+	struct bonding *bond = netdev_priv(bond_dev);
+	struct slave *tx_slave;
+
+	tx_slave = bond_xmit_tlb_slave_get(bond, skb);
+	return bond_do_alb_xmit(skb, bond, tx_slave);
+}
+
+struct slave *bond_xmit_alb_slave_get(struct bonding *bond,
+				      struct sk_buff *skb)
+{
+	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
+	static const __be32 ip_bcast = htonl(0xffffffff);
+	struct slave *tx_slave = NULL;
+	const u8 *hash_start = NULL;
+	bool do_tx_balance = true;
+	struct ethhdr *eth_data;
+	u32 hash_index = 0;
+	int hash_size = 0;
+
+	skb_reset_mac_header(skb);
+	eth_data = eth_hdr(skb);
+
+	switch (ntohs(skb->protocol)) {
+	case ETH_P_IP: {
+		const struct iphdr *iph;
+
+		if (is_broadcast_ether_addr(eth_data->h_dest) ||
+		    !pskb_network_may_pull(skb, sizeof(*iph))) {
+			do_tx_balance = false;
+			break;
+		}
+		iph = ip_hdr(skb);
+		if (iph->daddr == ip_bcast || iph->protocol == IPPROTO_IGMP) {
+			do_tx_balance = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		hash_start = (char *)&(iph->daddr);
 		hash_size = sizeof(iph->daddr);
+<<<<<<< HEAD
 	}
 		break;
 	case ETH_P_IPV6:
@@ -1281,23 +2323,51 @@ int bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev)
 		 */
 		if (!compare_ether_addr_64bits(eth_data->h_dest, mac_bcast)) {
 			do_tx_balance = 0;
+=======
+		break;
+	}
+	case ETH_P_IPV6: {
+		const struct ipv6hdr *ip6hdr;
+
+		/* IPv6 doesn't really use broadcast mac address, but leave
+		 * that here just in case.
+		 */
+		if (is_broadcast_ether_addr(eth_data->h_dest)) {
+			do_tx_balance = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
 		/* IPv6 uses all-nodes multicast as an equivalent to
 		 * broadcasts in IPv4.
 		 */
+<<<<<<< HEAD
 		if (!compare_ether_addr_64bits(eth_data->h_dest, mac_v6_allmcast)) {
 			do_tx_balance = 0;
 			break;
 		}
 
 		/* Additianally, DAD probes should not be tx-balanced as that
+=======
+		if (ether_addr_equal_64bits(eth_data->h_dest, mac_v6_allmcast)) {
+			do_tx_balance = false;
+			break;
+		}
+
+		if (alb_determine_nd(skb, bond)) {
+			do_tx_balance = false;
+			break;
+		}
+
+		/* The IPv6 header is pulled by alb_determine_nd */
+		/* Additionally, DAD probes should not be tx-balanced as that
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * will lead to false positives for duplicate addresses and
 		 * prevent address configuration from working.
 		 */
 		ip6hdr = ipv6_hdr(skb);
 		if (ipv6_addr_any(&ip6hdr->saddr)) {
+<<<<<<< HEAD
 			do_tx_balance = 0;
 			break;
 		}
@@ -1332,10 +2402,28 @@ int bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev)
 		break;
 	default:
 		do_tx_balance = 0;
+=======
+			do_tx_balance = false;
+			break;
+		}
+
+		hash_start = (char *)&ip6hdr->daddr;
+		hash_size = sizeof(ip6hdr->daddr);
+		break;
+	}
+	case ETH_P_ARP:
+		do_tx_balance = false;
+		if (bond_info->rlb_enabled)
+			tx_slave = rlb_arp_xmit(skb, bond);
+		break;
+	default:
+		do_tx_balance = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
 	if (do_tx_balance) {
+<<<<<<< HEAD
 		hash_index = _simple_hash(hash_start, hash_size);
 		tx_slave = tlb_choose_channel(bond, hash_index, skb->len);
 	}
@@ -1369,6 +2457,37 @@ int bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev)
 	read_unlock(&bond->curr_slave_lock);
 
 	return NETDEV_TX_OK;
+=======
+		if (bond->params.tlb_dynamic_lb) {
+			hash_index = _simple_hash(hash_start, hash_size);
+			tx_slave = tlb_choose_channel(bond, hash_index, skb->len);
+		} else {
+			/*
+			 * do_tx_balance means we are free to select the tx_slave
+			 * So we do exactly what tlb would do for hash selection
+			 */
+
+			struct bond_up_slave *slaves;
+			unsigned int count;
+
+			slaves = rcu_dereference(bond->usable_slaves);
+			count = slaves ? READ_ONCE(slaves->count) : 0;
+			if (likely(count))
+				tx_slave = slaves->arr[bond_xmit_hash(bond, skb) %
+						       count];
+		}
+	}
+	return tx_slave;
+}
+
+netdev_tx_t bond_alb_xmit(struct sk_buff *skb, struct net_device *bond_dev)
+{
+	struct bonding *bond = netdev_priv(bond_dev);
+	struct slave *tx_slave = NULL;
+
+	tx_slave = bond_xmit_alb_slave_get(bond, skb);
+	return bond_do_alb_xmit(skb, bond, tx_slave);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void bond_alb_monitor(struct work_struct *work)
@@ -1376,6 +2495,7 @@ void bond_alb_monitor(struct work_struct *work)
 	struct bonding *bond = container_of(work, struct bonding,
 					    alb_work.work);
 	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
+<<<<<<< HEAD
 	struct slave *slave;
 	int i;
 
@@ -1383,10 +2503,18 @@ void bond_alb_monitor(struct work_struct *work)
 
 	if (bond->slave_cnt == 0) {
 		bond_info->tx_rebalance_counter = 0;
+=======
+	struct list_head *iter;
+	struct slave *slave;
+
+	if (!bond_has_slaves(bond)) {
+		atomic_set(&bond_info->tx_rebalance_counter, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bond_info->lp_counter = 0;
 		goto re_arm;
 	}
 
+<<<<<<< HEAD
 	bond_info->tx_rebalance_counter++;
 	bond_info->lp_counter++;
 
@@ -1405,10 +2533,33 @@ void bond_alb_monitor(struct work_struct *work)
 
 		read_unlock(&bond->curr_slave_lock);
 
+=======
+	rcu_read_lock();
+
+	atomic_inc(&bond_info->tx_rebalance_counter);
+	bond_info->lp_counter++;
+
+	/* send learning packets */
+	if (bond_info->lp_counter >= BOND_ALB_LP_TICKS(bond)) {
+		bool strict_match;
+
+		bond_for_each_slave_rcu(bond, slave, iter) {
+			/* If updating current_active, use all currently
+			 * user mac addresses (!strict_match).  Otherwise, only
+			 * use mac of the slave device.
+			 * In RLB mode, we always use strict matches.
+			 */
+			strict_match = (slave != rcu_access_pointer(bond->curr_active_slave) ||
+					bond_info->rlb_enabled);
+			alb_send_learning_packets(slave, slave->dev->dev_addr,
+						  strict_match);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bond_info->lp_counter = 0;
 	}
 
 	/* rebalance tx traffic */
+<<<<<<< HEAD
 	if (bond_info->tx_rebalance_counter >= BOND_TLB_REBALANCE_TICKS) {
 
 		read_lock(&bond->curr_slave_lock);
@@ -1416,12 +2567,19 @@ void bond_alb_monitor(struct work_struct *work)
 		bond_for_each_slave(bond, slave, i) {
 			tlb_clear_slave(bond, slave, 1);
 			if (slave == bond->curr_active_slave) {
+=======
+	if (atomic_read(&bond_info->tx_rebalance_counter) >= BOND_TLB_REBALANCE_TICKS) {
+		bond_for_each_slave_rcu(bond, slave, iter) {
+			tlb_clear_slave(bond, slave, 1);
+			if (slave == rcu_access_pointer(bond->curr_active_slave)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				SLAVE_TLB_INFO(slave).load =
 					bond_info->unbalanced_load /
 						BOND_TLB_REBALANCE_INTERVAL;
 				bond_info->unbalanced_load = 0;
 			}
 		}
+<<<<<<< HEAD
 
 		read_unlock(&bond->curr_slave_lock);
 
@@ -1429,10 +2587,16 @@ void bond_alb_monitor(struct work_struct *work)
 	}
 
 	/* handle rlb stuff */
+=======
+		atomic_set(&bond_info->tx_rebalance_counter, 0);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (bond_info->rlb_enabled) {
 		if (bond_info->primary_is_promisc &&
 		    (++bond_info->rlb_promisc_timeout_counter >= RLB_PROMISC_TIMEOUT)) {
 
+<<<<<<< HEAD
 			/*
 			 * dev_set_promiscuity requires rtnl and
 			 * nothing else.  Avoid race with bond_close.
@@ -1442,6 +2606,14 @@ void bond_alb_monitor(struct work_struct *work)
 				read_lock(&bond->lock);
 				goto re_arm;
 			}
+=======
+			/* dev_set_promiscuity requires rtnl and
+			 * nothing else.  Avoid race with bond_close.
+			 */
+			rcu_read_unlock();
+			if (!rtnl_trylock())
+				goto re_arm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			bond_info->rlb_promisc_timeout_counter = 0;
 
@@ -1449,11 +2621,20 @@ void bond_alb_monitor(struct work_struct *work)
 			 * because a slave was disabled then
 			 * it can now leave promiscuous mode.
 			 */
+<<<<<<< HEAD
 			dev_set_promiscuity(bond->curr_active_slave->dev, -1);
 			bond_info->primary_is_promisc = 0;
 
 			rtnl_unlock();
 			read_lock(&bond->lock);
+=======
+			dev_set_promiscuity(rtnl_dereference(bond->curr_active_slave)->dev,
+					    -1);
+			bond_info->primary_is_promisc = 0;
+
+			rtnl_unlock();
+			rcu_read_lock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (bond_info->rlb_rebalance) {
@@ -1467,6 +2648,7 @@ void bond_alb_monitor(struct work_struct *work)
 				--bond_info->rlb_update_delay_counter;
 			} else {
 				rlb_update_rx_clients(bond);
+<<<<<<< HEAD
 				if (bond_info->rlb_update_retry_counter) {
 					--bond_info->rlb_update_retry_counter;
 				} else {
@@ -1480,6 +2662,18 @@ re_arm:
 	queue_delayed_work(bond->wq, &bond->alb_work, alb_delta_in_ticks);
 
 	read_unlock(&bond->lock);
+=======
+				if (bond_info->rlb_update_retry_counter)
+					--bond_info->rlb_update_retry_counter;
+				else
+					bond_info->rx_ntt = 0;
+			}
+		}
+	}
+	rcu_read_unlock();
+re_arm:
+	queue_delayed_work(bond->wq, &bond->alb_work, alb_delta_in_ticks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* assumption: called before the slave is attached to the bond
@@ -1489,6 +2683,7 @@ int bond_alb_init_slave(struct bonding *bond, struct slave *slave)
 {
 	int res;
 
+<<<<<<< HEAD
 	res = alb_set_slave_mac_addr(slave, slave->perm_hwaddr);
 	if (res) {
 		return res;
@@ -1506,52 +2701,97 @@ int bond_alb_init_slave(struct bonding *bond, struct slave *slave)
 	if (res) {
 		return res;
 	}
+=======
+	res = alb_set_slave_mac_addr(slave, slave->perm_hwaddr,
+				     slave->dev->addr_len);
+	if (res)
+		return res;
+
+	res = alb_handle_addr_collision_on_attach(bond, slave);
+	if (res)
+		return res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tlb_init_slave(slave);
 
 	/* order a rebalance ASAP */
+<<<<<<< HEAD
 	bond->alb_info.tx_rebalance_counter = BOND_TLB_REBALANCE_TICKS;
 
 	if (bond->alb_info.rlb_enabled) {
 		bond->alb_info.rlb_rebalance = 1;
 	}
+=======
+	atomic_set(&bond->alb_info.tx_rebalance_counter,
+		   BOND_TLB_REBALANCE_TICKS);
+
+	if (bond->alb_info.rlb_enabled)
+		bond->alb_info.rlb_rebalance = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Remove slave from tlb and rlb hash tables, and fix up MAC addresses
+=======
+/* Remove slave from tlb and rlb hash tables, and fix up MAC addresses
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * if necessary.
  *
  * Caller must hold RTNL and no other locks
  */
 void bond_alb_deinit_slave(struct bonding *bond, struct slave *slave)
 {
+<<<<<<< HEAD
 	if (bond->slave_cnt > 1) {
 		alb_change_hw_addr_on_detach(bond, slave);
 	}
+=======
+	if (bond_has_slaves(bond))
+		alb_change_hw_addr_on_detach(bond, slave);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tlb_clear_slave(bond, slave, 0);
 
 	if (bond->alb_info.rlb_enabled) {
+<<<<<<< HEAD
 		bond->alb_info.next_rx_slave = NULL;
 		rlb_clear_slave(bond, slave);
 	}
 }
 
 /* Caller must hold bond lock for read */
+=======
+		bond->alb_info.rx_slave = NULL;
+		rlb_clear_slave(bond, slave);
+	}
+
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bond_alb_handle_link_change(struct bonding *bond, struct slave *slave, char link)
 {
 	struct alb_bond_info *bond_info = &(BOND_ALB_INFO(bond));
 
 	if (link == BOND_LINK_DOWN) {
 		tlb_clear_slave(bond, slave, 0);
+<<<<<<< HEAD
 		if (bond->alb_info.rlb_enabled) {
 			rlb_clear_slave(bond, slave);
 		}
 	} else if (link == BOND_LINK_UP) {
 		/* order a rebalance ASAP */
 		bond_info->tx_rebalance_counter = BOND_TLB_REBALANCE_TICKS;
+=======
+		if (bond->alb_info.rlb_enabled)
+			rlb_clear_slave(bond, slave);
+	} else if (link == BOND_LINK_UP) {
+		/* order a rebalance ASAP */
+		atomic_set(&bond_info->tx_rebalance_counter,
+			   BOND_TLB_REBALANCE_TICKS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bond->alb_info.rlb_enabled) {
 			bond->alb_info.rlb_rebalance = 1;
 			/* If the updelay module parameter is smaller than the
@@ -1561,6 +2801,14 @@ void bond_alb_handle_link_change(struct bonding *bond, struct slave *slave, char
 			 */
 		}
 	}
+<<<<<<< HEAD
+=======
+
+	if (bond_is_nondyn_tlb(bond)) {
+		if (bond_update_slave_arr(bond, NULL))
+			pr_err("Failed to build slave-array for TLB mode.\n");
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1571,6 +2819,7 @@ void bond_alb_handle_link_change(struct bonding *bond, struct slave *slave, char
  * Set the bond->curr_active_slave to @new_slave and handle
  * mac address swapping and promiscuity changes as needed.
  *
+<<<<<<< HEAD
  * If new_slave is NULL, caller must hold curr_slave_lock or
  * bond->lock for write.
  *
@@ -1593,20 +2842,44 @@ void bond_alb_handle_active_change(struct bonding *bond, struct slave *new_slave
 
 	if (bond->curr_active_slave && bond->alb_info.primary_is_promisc) {
 		dev_set_promiscuity(bond->curr_active_slave->dev, -1);
+=======
+ * Caller must hold RTNL
+ */
+void bond_alb_handle_active_change(struct bonding *bond, struct slave *new_slave)
+{
+	struct slave *swap_slave;
+	struct slave *curr_active;
+
+	curr_active = rtnl_dereference(bond->curr_active_slave);
+	if (curr_active == new_slave)
+		return;
+
+	if (curr_active && bond->alb_info.primary_is_promisc) {
+		dev_set_promiscuity(curr_active->dev, -1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bond->alb_info.primary_is_promisc = 0;
 		bond->alb_info.rlb_promisc_timeout_counter = 0;
 	}
 
+<<<<<<< HEAD
 	swap_slave = bond->curr_active_slave;
 	bond->curr_active_slave = new_slave;
 
 	if (!new_slave || (bond->slave_cnt == 0)) {
 		return;
 	}
+=======
+	swap_slave = curr_active;
+	rcu_assign_pointer(bond->curr_active_slave, new_slave);
+
+	if (!new_slave || !bond_has_slaves(bond))
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set the new curr_active_slave to the bonds mac address
 	 * i.e. swap mac addresses of old curr_active_slave and new curr_active_slave
 	 */
+<<<<<<< HEAD
 	if (!swap_slave) {
 		struct slave *tmp_slave;
 		/* find slave that is holding the bond's mac address */
@@ -1633,10 +2906,43 @@ void bond_alb_handle_active_change(struct bonding *bond, struct slave *new_slave
 	read_unlock(&bond->lock);
 
 	ASSERT_RTNL();
+=======
+	if (!swap_slave)
+		swap_slave = bond_slave_has_mac(bond, bond->dev->dev_addr);
+
+	/* Arrange for swap_slave and new_slave to temporarily be
+	 * ignored so we can mess with their MAC addresses without
+	 * fear of interference from transmit activity.
+	 */
+	if (swap_slave)
+		tlb_clear_slave(bond, swap_slave, 1);
+	tlb_clear_slave(bond, new_slave, 1);
+
+	/* in TLB mode, the slave might flip down/up with the old dev_addr,
+	 * and thus filter bond->dev_addr's packets, so force bond's mac
+	 */
+	if (BOND_MODE(bond) == BOND_MODE_TLB) {
+		struct sockaddr_storage ss;
+		u8 tmp_addr[MAX_ADDR_LEN];
+
+		bond_hw_addr_copy(tmp_addr, new_slave->dev->dev_addr,
+				  new_slave->dev->addr_len);
+
+		bond_hw_addr_copy(ss.__data, bond->dev->dev_addr,
+				  bond->dev->addr_len);
+		ss.ss_family = bond->dev->type;
+		/* we don't care if it can't change its mac, best effort */
+		dev_set_mac_address(new_slave->dev, (struct sockaddr *)&ss,
+				    NULL);
+
+		dev_addr_set(new_slave->dev, tmp_addr);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* curr_active_slave must be set before calling alb_swap_mac_addr */
 	if (swap_slave) {
 		/* swap mac address */
+<<<<<<< HEAD
 		alb_swap_mac_addr(bond, swap_slave, new_slave);
 	} else {
 		/* set the new_slave to the bond mac address */
@@ -1677,11 +2983,42 @@ int bond_alb_set_mac_address(struct net_device *bond_dev, void *addr)
 	}
 
 	memcpy(bond_dev->dev_addr, sa->sa_data, bond_dev->addr_len);
+=======
+		alb_swap_mac_addr(swap_slave, new_slave);
+		alb_fasten_mac_swap(bond, swap_slave, new_slave);
+	} else {
+		/* set the new_slave to the bond mac address */
+		alb_set_slave_mac_addr(new_slave, bond->dev->dev_addr,
+				       bond->dev->addr_len);
+		alb_send_learning_packets(new_slave, bond->dev->dev_addr,
+					  false);
+	}
+}
+
+/* Called with RTNL */
+int bond_alb_set_mac_address(struct net_device *bond_dev, void *addr)
+{
+	struct bonding *bond = netdev_priv(bond_dev);
+	struct sockaddr_storage *ss = addr;
+	struct slave *curr_active;
+	struct slave *swap_slave;
+	int res;
+
+	if (!is_valid_ether_addr(ss->__data))
+		return -EADDRNOTAVAIL;
+
+	res = alb_set_mac_address(bond, addr);
+	if (res)
+		return res;
+
+	dev_addr_set(bond_dev, ss->__data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If there is no curr_active_slave there is nothing else to do.
 	 * Otherwise we'll need to pass the new address to it and handle
 	 * duplications.
 	 */
+<<<<<<< HEAD
 	if (!bond->curr_active_slave) {
 		return 0;
 	}
@@ -1709,6 +3046,27 @@ int bond_alb_set_mac_address(struct net_device *bond_dev, void *addr)
 			rlb_req_update_slave_clients(bond, bond->curr_active_slave);
 		}
 		read_unlock(&bond->lock);
+=======
+	curr_active = rtnl_dereference(bond->curr_active_slave);
+	if (!curr_active)
+		return 0;
+
+	swap_slave = bond_slave_has_mac(bond, bond_dev->dev_addr);
+
+	if (swap_slave) {
+		alb_swap_mac_addr(swap_slave, curr_active);
+		alb_fasten_mac_swap(bond, swap_slave, curr_active);
+	} else {
+		alb_set_slave_mac_addr(curr_active, bond_dev->dev_addr,
+				       bond_dev->addr_len);
+
+		alb_send_learning_packets(curr_active,
+					  bond_dev->dev_addr, false);
+		if (bond->alb_info.rlb_enabled) {
+			/* inform clients mac address has changed */
+			rlb_req_update_slave_clients(bond, curr_active);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1716,6 +3074,7 @@ int bond_alb_set_mac_address(struct net_device *bond_dev, void *addr)
 
 void bond_alb_clear_vlan(struct bonding *bond, unsigned short vlan_id)
 {
+<<<<<<< HEAD
 	if (bond->alb_info.current_alb_vlan &&
 	    (bond->alb_info.current_alb_vlan->vlan_id == vlan_id)) {
 		bond->alb_info.current_alb_vlan = NULL;
@@ -1724,5 +3083,9 @@ void bond_alb_clear_vlan(struct bonding *bond, unsigned short vlan_id)
 	if (bond->alb_info.rlb_enabled) {
 		rlb_clear_vlan(bond, vlan_id);
 	}
+=======
+	if (bond->alb_info.rlb_enabled)
+		rlb_clear_vlan(bond, vlan_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * IBM ASM Service Processor Device Driver
  *
@@ -19,12 +20,25 @@
  *
  * Author: Max Asböck <amax@us.ibm.com>
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * IBM ASM Service Processor Device Driver
+ *
+ * Copyright (C) IBM Corporation, 2004
+ *
+ * Author: Max Asböck <amax@us.ibm.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "ibmasm.h"
 #include "dot_command.h"
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Dispatch an incoming message to the specific handler for the message.
  * Called from interrupt context.
  */
@@ -62,7 +76,11 @@ void ibmasm_receive_message(struct service_processor *sp, void *message, int mes
 #define INIT_BUFFER_SIZE 32
 
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * send the 4.3.5.10 dot command (driver VPD) to the service processor
  */
 int ibmasm_send_driver_vpd(struct service_processor *sp)
@@ -113,7 +131,11 @@ struct os_state_command {
 	unsigned char			data;
 };
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * send the 4.3.6 dot command (os state) to the service processor
  * During driver init this function is called with os state "up".
  * This causes the service processor to start sending heartbeats the

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /***********************************************************************/
 /**
 
@@ -22,6 +23,18 @@ Functions for reading DSP code using
 hotplug firmware loader from individual dsp code files
 */
 /***********************************************************************/
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/***********************************************************************
+
+    AudioScience HPI driver
+    Functions for reading DSP code using hotplug firmware loader
+
+    Copyright (C) 1997-2014  AudioScience Inc. <support@audioscience.com>
+
+
+***********************************************************************/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SOURCEFILE_NAME "hpidspcd.c"
 #include "hpidspcd.h"
 #include "hpidebug.h"
@@ -49,6 +62,7 @@ short hpi_dsp_code_open(u32 adapter, void *os_data, struct dsp_code *dsp_code,
 	err = request_firmware(&firmware, fw_name, &dev->dev);
 
 	if (err || !firmware) {
+<<<<<<< HEAD
 		dev_printk(KERN_ERR, &dev->dev,
 			"%d, request_firmware failed for  %s\n", err,
 			fw_name);
@@ -57,6 +71,14 @@ short hpi_dsp_code_open(u32 adapter, void *os_data, struct dsp_code *dsp_code,
 	if (firmware->size < sizeof(header)) {
 		dev_printk(KERN_ERR, &dev->dev, "Header size too small %s\n",
 			fw_name);
+=======
+		dev_err(&dev->dev, "%d, request_firmware failed for %s\n",
+			err, fw_name);
+		goto error1;
+	}
+	if (firmware->size < sizeof(header)) {
+		dev_err(&dev->dev, "Header size too small %s\n", fw_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error2;
 	}
 	memcpy(&header, firmware->data, sizeof(header));
@@ -64,24 +86,41 @@ short hpi_dsp_code_open(u32 adapter, void *os_data, struct dsp_code *dsp_code,
 	if ((header.type != 0x45444F43) ||	/* "CODE" */
 		(header.adapter != adapter)
 		|| (header.size != firmware->size)) {
+<<<<<<< HEAD
 		dev_printk(KERN_ERR, &dev->dev,
+=======
+		dev_err(&dev->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"Invalid firmware header size %d != file %zd\n",
 			header.size, firmware->size);
 		goto error2;
 	}
 
+<<<<<<< HEAD
 	if ((header.version >> 9) != (HPI_VER >> 9)) {
 		/* Consider even and subsequent odd minor versions to be compatible */
 		dev_printk(KERN_ERR, &dev->dev,
 			"Incompatible firmware version "
 			"DSP image %X != Driver %X\n", header.version,
 			HPI_VER);
+=======
+	if (HPI_VER_MAJOR(header.version) != HPI_VER_MAJOR(HPI_VER)) {
+		/* Major version change probably means Host-DSP protocol change */
+		dev_err(&dev->dev,
+			"Incompatible firmware version DSP image %X != Driver %X\n",
+			header.version, HPI_VER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error2;
 	}
 
 	if (header.version != HPI_VER) {
+<<<<<<< HEAD
 		dev_printk(KERN_INFO, &dev->dev,
 			"Firmware: release version mismatch  DSP image %X != Driver %X\n",
+=======
+		dev_warn(&dev->dev,
+			"Firmware version mismatch: DSP image %X != Driver %X\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			header.version, HPI_VER);
 	}
 

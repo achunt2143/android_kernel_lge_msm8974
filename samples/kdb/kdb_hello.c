@@ -28,11 +28,21 @@ static int kdb_hello_cmd(int argc, const char **argv)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static kdbtab_t hello_cmd = {
+	.name = "hello",
+	.func = kdb_hello_cmd,
+	.usage = "[string]",
+	.help = "Say Hello World or Hello [string]",
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init kdb_hello_cmd_init(void)
 {
 	/*
 	 * Registration of a dynamically added kdb command is done with
+<<<<<<< HEAD
 	 * kdb_register() with the arguments being:
 	 *   1: The name of the shell command
 	 *   2: The function that processes the command
@@ -44,12 +54,21 @@ static int __init kdb_hello_cmd_init(void)
 	 */
 	kdb_register("hello", kdb_hello_cmd, "[string]",
 		     "Say Hello World or Hello [string]", 0);
+=======
+	 * kdb_register().
+	 */
+	kdb_register(&hello_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static void __exit kdb_hello_cmd_exit(void)
 {
+<<<<<<< HEAD
 	kdb_unregister("hello");
+=======
+	kdb_unregister(&hello_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(kdb_hello_cmd_init);

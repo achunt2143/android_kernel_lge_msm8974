@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  The driver for the Cirrus Logic's Sound Fusion CS46XX based soundcards
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ *  The driver for the Cirrus Logic's Sound Fusion CS46XX based soundcards
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __CS46XX_LIB_H__
@@ -90,12 +97,20 @@ static inline unsigned int snd_cs46xx_peekBA0(struct snd_cs46xx *chip, unsigned 
 struct dsp_spos_instance *cs46xx_dsp_spos_create (struct snd_cs46xx * chip);
 void cs46xx_dsp_spos_destroy (struct snd_cs46xx * chip);
 int cs46xx_dsp_load_module (struct snd_cs46xx * chip, struct dsp_module_desc * module);
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int cs46xx_dsp_resume(struct snd_cs46xx * chip);
 #endif
 struct dsp_symbol_entry *cs46xx_dsp_lookup_symbol (struct snd_cs46xx * chip, char * symbol_name,
 						   int symbol_type);
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int cs46xx_dsp_proc_init (struct snd_card *card, struct snd_cs46xx *chip);
 int cs46xx_dsp_proc_done (struct snd_cs46xx *chip);
 #else
@@ -118,7 +133,11 @@ int cs46xx_dsp_disable_adc_capture (struct snd_cs46xx *chip);
 int cs46xx_poke_via_dsp (struct snd_cs46xx *chip, u32 address, u32 data);
 struct dsp_scb_descriptor * cs46xx_dsp_create_scb (struct snd_cs46xx *chip, char * name,
 						   u32 * scb_data, u32 dest);
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
+=======
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void cs46xx_dsp_proc_free_scb_desc (struct dsp_scb_descriptor * scb);
 void cs46xx_dsp_proc_register_scb_desc (struct snd_cs46xx *chip,
 					struct dsp_scb_descriptor * scb);

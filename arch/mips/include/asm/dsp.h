@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2005 Mips Technologies
  * Author: Chris Dearman, chris@mips.com derived from fpu.h
@@ -6,6 +7,12 @@
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (C) 2005 Mips Technologies
+ * Author: Chris Dearman, chris@mips.com derived from fpu.h
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ASM_DSP_H
 #define _ASM_DSP_H
@@ -16,7 +23,11 @@
 #include <asm/mipsregs.h>
 
 #define DSP_DEFAULT	0x00000000
+<<<<<<< HEAD
 #define DSP_MASK	0x3ff
+=======
+#define DSP_MASK	0x3f
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define __enable_dsp_hazard()						\
 do {									\

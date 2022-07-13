@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Register bits and API for Wolfson WM97xx series of codecs
@@ -253,9 +257,12 @@ struct wm97xx_mach_ops {
 	int (*acc_startup) (struct wm97xx *);
 	void (*acc_shutdown) (struct wm97xx *);
 
+<<<<<<< HEAD
 	/* interrupt mask control - required for accelerated operation */
 	void (*irq_enable) (struct wm97xx *, int enable);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* GPIO pin used for accelerated operation */
 	int irq_gpio;
 
@@ -280,7 +287,10 @@ struct wm97xx {
 	unsigned long ts_reader_min_interval; /* Minimum interval */
 	unsigned int pen_irq;		/* Pen IRQ number in use */
 	struct workqueue_struct *ts_workq;
+<<<<<<< HEAD
 	struct work_struct pen_event_work;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 acc_slot;			/* AC97 slot used for acc touch data */
 	u16 acc_rate;			/* acc touch data rate */
 	unsigned pen_is_down:1;		/* Pen is down */
@@ -293,7 +303,10 @@ struct wm97xx {
 struct wm97xx_batt_pdata {
 	int	batt_aux;
 	int	temp_aux;
+<<<<<<< HEAD
 	int	charge_gpio;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	min_voltage;
 	int	max_voltage;
 	int	batt_div;

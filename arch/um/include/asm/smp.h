@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __UM_SMP_H
 #define __UM_SMP_H
 
@@ -30,3 +31,12 @@ extern struct task_struct *idle_threads[NR_CPUS];
 #endif
 
 #endif
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __UM_SMP_H
+#define __UM_SMP_H
+
+#define hard_smp_processor_id()		0
+
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

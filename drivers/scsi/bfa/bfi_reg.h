@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
@@ -17,6 +18,20 @@
 
 /*
  * bfi_reg.h ASIC register defines for all Brocade adapter ASICs
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+ */
+
+/*
+ * bfi_reg.h ASIC register defines for all QLogic BR-series adapter ASICs
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __BFI_REG_H__
@@ -338,6 +353,10 @@ enum {
 #define __A2T_AHB_LOAD			0x00000800
 #define __WGN_READY			0x00000400
 #define __GLBL_PF_VF_CFG_RDY		0x00000200
+<<<<<<< HEAD
+=======
+#define CT2_NFC_STS_REG			0x00027410
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CT2_NFC_CSR_CLR_REG		0x00027420
 #define CT2_NFC_CSR_SET_REG		0x00027424
 #define __HALT_NFC_CONTROLLER		0x00000002
@@ -355,6 +374,11 @@ enum {
 	(CT2_CSI_MAC0_CONTROL_REG +	\
 	(__n) * (CT2_CSI_MAC1_CONTROL_REG - CT2_CSI_MAC0_CONTROL_REG))
 
+<<<<<<< HEAD
+=======
+#define CT2_NFC_FLASH_STS_REG		0x00014834
+#define __FLASH_PLL_INIT_AND_RESET_IN_PROGRESS	0x00000020
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Name semaphore registers based on usage
  */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SPARC64_FUTEX_H
 #define _SPARC64_FUTEX_H
 
@@ -29,6 +33,7 @@
 	: "r" (uaddr), "r" (oparg), "i" (-EFAULT)	\
 	: "memory")
 
+<<<<<<< HEAD
 static inline int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 {
 	int op = (encoded_op >> 28) & 7;
@@ -47,6 +52,16 @@ static inline int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 
 	pagefault_disable();
 
+=======
+static inline int arch_futex_atomic_op_inuser(int op, int oparg, int *oval,
+		u32 __user *uaddr)
+{
+	int oldval = 0, ret, tem;
+
+	if (unlikely((((unsigned long) uaddr) & 0x3UL)))
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (op) {
 	case FUTEX_OP_SET:
 		__futex_cas_op("mov\t%4, %1", ret, oldval, uaddr, oparg);
@@ -67,6 +82,7 @@ static inline int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 		ret = -ENOSYS;
 	}
 
+<<<<<<< HEAD
 	pagefault_enable();
 
 	if (!ret) {
@@ -80,6 +96,11 @@ static inline int futex_atomic_op_inuser(int encoded_op, u32 __user *uaddr)
 		default: ret = -ENOSYS;
 		}
 	}
+=======
+	if (!ret)
+		*oval = oldval;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 

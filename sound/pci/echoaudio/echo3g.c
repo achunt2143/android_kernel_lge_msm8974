@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  ALSA driver for Echoaudio soundcards.
  *  Copyright (C) 2003-2004 Giuliano Pochini <pochini@shiny.it>
@@ -14,6 +15,12 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  ALSA driver for Echoaudio soundcards.
+ *  Copyright (C) 2003-2004 Giuliano Pochini <pochini@shiny.it>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define ECHO3G_FAMILY
@@ -54,6 +61,10 @@
 #include <linux/module.h>
 #include <linux/firmware.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/info.h>
 #include <sound/control.h>
@@ -63,7 +74,10 @@
 #include <sound/asoundef.h>
 #include <sound/initval.h>
 #include <sound/rawmidi.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/atomic.h>
 #include "echoaudio.h"
 
@@ -81,12 +95,20 @@ static const struct firmware card_fw[] = {
 	{0, "3g_asic.fw"}
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_echo_ids) = {
+=======
+static const struct pci_device_id snd_echo_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{0x1057, 0x3410, 0xECC0, 0x0100, 0, 0, 0},	/* Echo 3G */
 	{0,}
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware pcm_hardware_skel = {
+=======
+static const struct snd_pcm_hardware pcm_hardware_skel = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = SNDRV_PCM_INFO_MMAP |
 		SNDRV_PCM_INFO_INTERLEAVED |
 		SNDRV_PCM_INFO_BLOCK_TRANSFER |

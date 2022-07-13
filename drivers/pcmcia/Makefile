@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the kernel pcmcia subsystem (c/o David Hinds)
 #
@@ -23,11 +27,15 @@ obj-$(CONFIG_PD6729)				+= pd6729.o
 obj-$(CONFIG_I82365)				+= i82365.o
 obj-$(CONFIG_I82092)				+= i82092.o
 obj-$(CONFIG_TCIC)				+= tcic.o
+<<<<<<< HEAD
 obj-$(CONFIG_PCMCIA_M8XX)			+= m8xx_pcmcia.o
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_PCMCIA_SOC_COMMON)			+= soc_common.o
 obj-$(CONFIG_PCMCIA_SA11XX_BASE)		+= sa11xx_base.o
 obj-$(CONFIG_PCMCIA_SA1100)			+= sa1100_cs.o
 obj-$(CONFIG_PCMCIA_SA1111)			+= sa1111_cs.o
+<<<<<<< HEAD
 obj-$(CONFIG_M32R_PCC)				+= m32r_pcc.o
 obj-$(CONFIG_M32R_CFC)				+= m32r_cfc.o
 obj-$(CONFIG_PCMCIA_BCM63XX)			+= bcm63xx_pcmcia.o
@@ -72,4 +80,22 @@ pxa2xx-obj-$(CONFIG_MACH_COLIBRI320)		+= pxa2xx_colibri.o
 
 obj-$(CONFIG_PCMCIA_PXA2XX)			+= pxa2xx_base.o $(pxa2xx-obj-y)
 
+=======
+obj-$(CONFIG_PCMCIA_BCM63XX)			+= bcm63xx_pcmcia.o
+obj-$(CONFIG_OMAP_CF)				+= omap_cf.o
+obj-$(CONFIG_ELECTRA_CF)			+= electra_cf.o
+obj-$(CONFIG_PCMCIA_ALCHEMY_DEVBOARD)		+= db1xxx_ss.o
+obj-$(CONFIG_PCMCIA_MAX1600)			+= max1600.o
+
+sa1111_cs-y					+= sa1111_generic.o
+sa1111_cs-$(CONFIG_ASSABET_NEPONSET)		+= sa1111_neponset.o
+sa1111_cs-$(CONFIG_SA1100_JORNADA720)		+= sa1111_jornada720.o
+
+sa1100_cs-y					+= sa1100_generic.o
+sa1100_cs-$(CONFIG_SA1100_COLLIE)		+= pxa2xx_sharpsl.o
+sa1100_cs-$(CONFIG_SA1100_H3600)		+= sa1100_h3600.o
+
+pxa2xx-obj-$(CONFIG_PXA_SHARPSL)		+= pxa2xx_sharpsl.o
+obj-$(CONFIG_PCMCIA_PXA2XX)			+= pxa2xx_base.o $(pxa2xx-obj-y)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_PCMCIA_XXS1500)			+= xxs1500_ss.o

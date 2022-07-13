@@ -1,19 +1,28 @@
 /*
+<<<<<<< HEAD
  * arch/xtensa/kernel/entry.S
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Low-level exception handling
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+<<<<<<< HEAD
  * Copyright (C) 2004-2007 by Tensilica Inc.
+=======
+ * Copyright (C) 2004 - 2008 by Tensilica Inc.
+ * Copyright (C) 2015 Cadence Design Systems Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Chris Zankel <chris@zankel.net>
  *
  */
 
 #include <linux/linkage.h>
+<<<<<<< HEAD
 #include <asm/asm-offsets.h>
 #include <asm/processor.h>
 #include <asm/coprocessor.h>
@@ -23,11 +32,24 @@
 #include <asm/ptrace.h>
 #include <asm/current.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/pgtable.h>
+#include <asm/asm-offsets.h>
+#include <asm/asmmacro.h>
+#include <asm/processor.h>
+#include <asm/coprocessor.h>
+#include <asm/thread_info.h>
+#include <asm/asm-uaccess.h>
+#include <asm/unistd.h>
+#include <asm/ptrace.h>
+#include <asm/current.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm/signal.h>
 #include <asm/tlbflush.h>
 #include <variant/tie-asm.h>
 
+<<<<<<< HEAD
 /* Unimplemented features. */
 
 #undef KERNEL_STACK_OVERFLOW_CHECK
@@ -39,6 +61,8 @@
  * - fast_coprocessor
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Macro to find first bit set in WINDOWBASE from the left + 1
  *
@@ -77,6 +101,30 @@
 #endif
 	.endm
 
+<<<<<<< HEAD
+=======
+
+	.macro	irq_save flags tmp
+#if XTENSA_FAKE_NMI
+#if defined(CONFIG_DEBUG_KERNEL) && (LOCKLEVEL | TOPLEVEL) >= XCHAL_DEBUGLEVEL
+	rsr	\flags, ps
+	extui	\tmp, \flags, PS_INTLEVEL_SHIFT, PS_INTLEVEL_WIDTH
+	bgei	\tmp, LOCKLEVEL, 99f
+	rsil	\tmp, LOCKLEVEL
+99:
+#else
+	movi	\tmp, LOCKLEVEL
+	rsr	\flags, ps
+	or	\flags, \flags, \tmp
+	xsr	\flags, ps
+	rsync
+#endif
+#else
+	rsil	\flags, LOCKLEVEL
+#endif
+	.endm
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ----------------- DEFAULT FIRST LEVEL EXCEPTION HANDLERS ----------------- */
 
 /*
@@ -92,9 +140,15 @@
  *   a0:	trashed, original value saved on stack (PT_AREG0)
  *   a1:	a1
  *   a2:	new stack pointer, original value in depc
+<<<<<<< HEAD
  *   a3:	dispatch table
  *   depc:	a2, original value saved on stack (PT_DEPC)
  *   excsave1:	a3
+=======
+ *   a3:	a3
+ *   depc:	a2, original value saved on stack (PT_DEPC)
+ *   excsave1:	dispatch table
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   PT_DEPC >= VALID_DOUBLE_EXCEPTION_ADDRESS: double exception, DEPC
  *	     <  VALID_DOUBLE_EXCEPTION_ADDRESS: regular exception
@@ -107,6 +161,7 @@
  *
  * Note: _user_exception might be at an odd address. Don't use call0..call12
  */
+<<<<<<< HEAD
 
 ENTRY(user_exception)
 
@@ -114,6 +169,15 @@ ENTRY(user_exception)
 
 	xsr	a3, EXCSAVE_1
 	rsr	a0, DEPC
+=======
+	.literal_position
+
+ENTRY(user_exception)
+
+	/* Save a1, a2, a3, and set SP. */
+
+	rsr	a0, depc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32i	a1, a2, PT_AREG1
 	s32i	a0, a2, PT_AREG2
 	s32i	a3, a2, PT_AREG3
@@ -125,6 +189,7 @@ _user_exception:
 	/* Save SAR and turn off single stepping */
 
 	movi	a2, 0
+<<<<<<< HEAD
 	rsr	a3, SAR
 	xsr	a2, ICOUNTLEVEL
 	s32i	a3, a1, PT_SAR
@@ -135,6 +200,25 @@ _user_exception:
 
 	rsr	a2, WINDOWBASE
 	rsr	a3, WINDOWSTART
+=======
+	wsr	a2, depc		# terminate user stack trace with 0
+	rsr	a3, sar
+	xsr	a2, icountlevel
+	s32i	a3, a1, PT_SAR
+	s32i	a2, a1, PT_ICOUNTLEVEL
+
+#if XCHAL_HAVE_THREADPTR
+	rur	a2, threadptr
+	s32i	a2, a1, PT_THREADPTR
+#endif
+
+	/* Rotate ws so that the current windowbase is at bit0. */
+	/* Assume ws = xxwww1yyyy. Rotate ws right, so that a2 = yyyyxxwww1 */
+
+#if defined(USER_SUPPORT_WINDOWED)
+	rsr	a2, windowbase
+	rsr	a3, windowstart
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssr	a2
 	s32i	a2, a1, PT_WINDOWBASE
 	s32i	a3, a1, PT_WINDOWSTART
@@ -142,29 +226,59 @@ _user_exception:
 	src	a2, a3, a2
 	srli	a2, a2, 32-WSBITS
 	s32i	a2, a1, PT_WMASK	# needed for restoring registers
+<<<<<<< HEAD
 
 	/* Save only live registers. */
 
 	_bbsi.l	a2, 1, 1f
+=======
+#else
+	movi	a2, 0
+	movi	a3, 1
+	s32i	a2, a1, PT_WINDOWBASE
+	s32i	a3, a1, PT_WINDOWSTART
+	s32i	a3, a1, PT_WMASK
+#endif
+
+	/* Save only live registers. */
+
+UABI_W	_bbsi.l	a2, 1, .Lsave_window_registers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32i	a4, a1, PT_AREG4
 	s32i	a5, a1, PT_AREG5
 	s32i	a6, a1, PT_AREG6
 	s32i	a7, a1, PT_AREG7
+<<<<<<< HEAD
 	_bbsi.l	a2, 2, 1f
+=======
+UABI_W	_bbsi.l	a2, 2, .Lsave_window_registers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32i	a8, a1, PT_AREG8
 	s32i	a9, a1, PT_AREG9
 	s32i	a10, a1, PT_AREG10
 	s32i	a11, a1, PT_AREG11
+<<<<<<< HEAD
 	_bbsi.l	a2, 3, 1f
+=======
+UABI_W	_bbsi.l	a2, 3, .Lsave_window_registers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32i	a12, a1, PT_AREG12
 	s32i	a13, a1, PT_AREG13
 	s32i	a14, a1, PT_AREG14
 	s32i	a15, a1, PT_AREG15
+<<<<<<< HEAD
 	_bnei	a2, 1, 1f		# only one valid frame?
 
 	/* Only one valid frame, skip saving regs. */
 
 	j	2f
+=======
+
+#if defined(USER_SUPPORT_WINDOWED)
+	/* If only one valid frame skip saving regs. */
+
+	beqi	a2, 1, common_exception
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Save the remaining registers.
 	 * We have to save all registers up to the first '1' from
@@ -173,8 +287,13 @@ _user_exception:
 	 * All register frames starting from the top field to the marked '1'
 	 * must be saved.
 	 */
+<<<<<<< HEAD
 
 1:	addi	a3, a2, -1		# eliminate '1' in bit 0: yyyyxxww0
+=======
+.Lsave_window_registers:
+	addi	a3, a2, -1		# eliminate '1' in bit 0: yyyyxxww0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	neg	a3, a3			# yyyyxxww0 -> YYYYXXWW1+1
 	and	a3, a3, a2		# max. only one bit is set
 
@@ -205,6 +324,7 @@ _user_exception:
 
 	/* WINDOWBASE still in SAR! */
 
+<<<<<<< HEAD
 	rsr	a2, SAR			# original WINDOWBASE
 	movi	a3, 1
 	ssl	a2
@@ -219,6 +339,23 @@ _user_exception:
 
 	j	common_exception
 
+=======
+	rsr	a2, sar			# original WINDOWBASE
+	movi	a3, 1
+	ssl	a2
+	sll	a3, a3
+	wsr	a3, windowstart		# set corresponding WINDOWSTART bit
+	wsr	a2, windowbase		# and WINDOWSTART
+	rsync
+
+	/* We are back to the original stack pointer (a1) */
+#endif
+	/* Now, jump to the common exception handler. */
+
+	j	common_exception
+
+ENDPROC(user_exception)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * First-level exit handler for kernel exceptions
@@ -232,9 +369,15 @@ _user_exception:
  *   a0:	trashed, original value saved on stack (PT_AREG0)
  *   a1:	a1
  *   a2:	new stack pointer, original in DEPC
+<<<<<<< HEAD
  *   a3:	dispatch table
  *   depc:	a2, original value saved on stack (PT_DEPC)
  *   excsave_1:	a3
+=======
+ *   a3:	a3
+ *   depc:	a2, original value saved on stack (PT_DEPC)
+ *   excsave_1:	dispatch table
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   PT_DEPC >= VALID_DOUBLE_EXCEPTION_ADDRESS: double exception, DEPC
  *	     <  VALID_DOUBLE_EXCEPTION_ADDRESS: regular exception
@@ -250,10 +393,16 @@ _user_exception:
 
 ENTRY(kernel_exception)
 
+<<<<<<< HEAD
 	/* Save a0, a2, a3, DEPC and set SP. */
 
 	xsr	a3, EXCSAVE_1		# restore a3, excsave_1
 	rsr	a0, DEPC		# get a2
+=======
+	/* Save a1, a2, a3, and set SP. */
+
+	rsr	a0, depc		# get a2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32i	a1, a2, PT_AREG1
 	s32i	a0, a2, PT_AREG2
 	s32i	a3, a2, PT_AREG3
@@ -265,6 +414,7 @@ _kernel_exception:
 	/* Save SAR and turn off single stepping */
 
 	movi	a2, 0
+<<<<<<< HEAD
 	rsr	a3, SAR
 	xsr	a2, ICOUNTLEVEL
 	s32i	a3, a1, PT_SAR
@@ -275,30 +425,60 @@ _kernel_exception:
 
 	rsr	a2, WINDOWBASE		# don't need to save these, we only
 	rsr	a3, WINDOWSTART		# need shifted windowstart: windowmask
+=======
+	rsr	a3, sar
+	xsr	a2, icountlevel
+	s32i	a3, a1, PT_SAR
+	s32i	a2, a1, PT_ICOUNTLEVEL
+
+#if defined(__XTENSA_WINDOWED_ABI__)
+	/* Rotate ws so that the current windowbase is at bit0. */
+	/* Assume ws = xxwww1yyyy. Rotate ws right, so that a2 = yyyyxxwww1 */
+
+	rsr	a2, windowbase		# don't need to save these, we only
+	rsr	a3, windowstart		# need shifted windowstart: windowmask
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssr	a2
 	slli	a2, a3, 32-WSBITS
 	src	a2, a3, a2
 	srli	a2, a2, 32-WSBITS
 	s32i	a2, a1, PT_WMASK	# needed for kernel_exception_exit
+<<<<<<< HEAD
 
 	/* Save only the live window-frame */
 
 	_bbsi.l	a2, 1, 1f
+=======
+#endif
+
+	/* Save only the live window-frame */
+
+KABI_W	_bbsi.l	a2, 1, 1f
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32i	a4, a1, PT_AREG4
 	s32i	a5, a1, PT_AREG5
 	s32i	a6, a1, PT_AREG6
 	s32i	a7, a1, PT_AREG7
+<<<<<<< HEAD
 	_bbsi.l	a2, 2, 1f
+=======
+KABI_W	_bbsi.l	a2, 2, 1f
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32i	a8, a1, PT_AREG8
 	s32i	a9, a1, PT_AREG9
 	s32i	a10, a1, PT_AREG10
 	s32i	a11, a1, PT_AREG11
+<<<<<<< HEAD
 	_bbsi.l	a2, 3, 1f
+=======
+KABI_W	_bbsi.l	a2, 3, 1f
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32i	a12, a1, PT_AREG12
 	s32i	a13, a1, PT_AREG13
 	s32i	a14, a1, PT_AREG14
 	s32i	a15, a1, PT_AREG15
 
+<<<<<<< HEAD
 1:
 
 #ifdef KERNEL_STACK_OVERFLOW_CHECK
@@ -309,6 +489,21 @@ _kernel_exception:
 	_bge	a2, a3, out_of_stack_panic
 
 #endif
+=======
+#ifdef __XTENSA_WINDOWED_ABI__
+	_bnei	a2, 1, 1f
+	/* Copy spill slots of a0 and a1 to imitate movsp
+	 * in order to keep exception stack continuous
+	 */
+	l32i	a3, a1, PT_KERNEL_SIZE
+	l32i	a0, a1, PT_KERNEL_SIZE + 4
+	s32e	a3, a1, -16
+	s32e	a0, a1, -12
+#endif
+1:
+	l32i	a0, a1, PT_AREG0	# restore saved a0
+	wsr	a0, depc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is the common exception handler.
@@ -323,6 +518,7 @@ common_exception:
 
 	/* Save some registers, disable loops and clear the syscall flag. */
 
+<<<<<<< HEAD
 	rsr	a2, DEBUGCAUSE
 	rsr	a3, EPC_1
 	s32i	a2, a1, PT_DEBUGCAUSE
@@ -375,10 +571,123 @@ common_exception:
 
 	save_xtregs_opt a1 a2 a4 a5 a6 a7 PT_XTREGS_OPT
 	
+=======
+	rsr	a2, debugcause
+	rsr	a3, epc1
+	s32i	a2, a1, PT_DEBUGCAUSE
+	s32i	a3, a1, PT_PC
+
+	movi	a2, NO_SYSCALL
+	rsr	a3, excvaddr
+	s32i	a2, a1, PT_SYSCALL
+	movi	a2, 0
+	s32i	a3, a1, PT_EXCVADDR
+#if XCHAL_HAVE_LOOPS
+	xsr	a2, lcount
+	s32i	a2, a1, PT_LCOUNT
+#endif
+
+#if XCHAL_HAVE_EXCLUSIVE
+	/* Clear exclusive access monitor set by interrupted code */
+	clrex
+#endif
+
+	/* It is now save to restore the EXC_TABLE_FIXUP variable. */
+
+	rsr	a2, exccause
+	movi	a3, 0
+	rsr	a0, excsave1
+	s32i	a2, a1, PT_EXCCAUSE
+	s32i	a3, a0, EXC_TABLE_FIXUP
+
+	/* All unrecoverable states are saved on stack, now, and a1 is valid.
+	 * Now we can allow exceptions again. In case we've got an interrupt
+	 * PS.INTLEVEL is set to LOCKLEVEL disabling furhter interrupts,
+	 * otherwise it's left unchanged.
+	 *
+	 * Set PS(EXCM = 0, UM = 0, RING = 0, OWB = 0, WOE = 1, INTLEVEL = X)
+	 */
+
+	rsr	a3, ps
+	s32i	a3, a1, PT_PS		# save ps
+
+#if XTENSA_FAKE_NMI
+	/* Correct PS needs to be saved in the PT_PS:
+	 * - in case of exception or level-1 interrupt it's in the PS,
+	 *   and is already saved.
+	 * - in case of medium level interrupt it's in the excsave2.
+	 */
+	movi	a0, EXCCAUSE_MAPPED_NMI
+	extui	a3, a3, PS_INTLEVEL_SHIFT, PS_INTLEVEL_WIDTH
+	beq	a2, a0, .Lmedium_level_irq
+	bnei	a2, EXCCAUSE_LEVEL1_INTERRUPT, .Lexception
+	beqz	a3, .Llevel1_irq	# level-1 IRQ sets ps.intlevel to 0
+
+.Lmedium_level_irq:
+	rsr	a0, excsave2
+	s32i	a0, a1, PT_PS		# save medium-level interrupt ps
+	bgei	a3, LOCKLEVEL, .Lexception
+
+.Llevel1_irq:
+	movi	a3, LOCKLEVEL
+
+.Lexception:
+KABI_W	movi	a0, PS_WOE_MASK
+KABI_W	or	a3, a3, a0
+#else
+	addi	a2, a2, -EXCCAUSE_LEVEL1_INTERRUPT
+	movi	a0, LOCKLEVEL
+	extui	a3, a3, PS_INTLEVEL_SHIFT, PS_INTLEVEL_WIDTH
+					# a3 = PS.INTLEVEL
+	moveqz	a3, a0, a2		# a3 = LOCKLEVEL iff interrupt
+KABI_W	movi	a2, PS_WOE_MASK
+KABI_W	or	a3, a3, a2
+#endif
+
+	/* restore return address (or 0 if return to userspace) */
+	rsr	a0, depc
+	wsr	a3, ps
+	rsync				# PS.WOE => rsync => overflow
+
+	/* Save lbeg, lend */
+#if XCHAL_HAVE_LOOPS
+	rsr	a4, lbeg
+	rsr	a3, lend
+	s32i	a4, a1, PT_LBEG
+	s32i	a3, a1, PT_LEND
+#endif
+
+	/* Save SCOMPARE1 */
+
+#if XCHAL_HAVE_S32C1I
+	rsr     a3, scompare1
+	s32i    a3, a1, PT_SCOMPARE1
+#endif
+
+	/* Save optional registers. */
+
+	save_xtregs_opt a1 a3 a4 a5 a6 a7 PT_XTREGS_OPT
+	
+#ifdef CONFIG_TRACE_IRQFLAGS
+	rsr		abi_tmp0, ps
+	extui		abi_tmp0, abi_tmp0, PS_INTLEVEL_SHIFT, PS_INTLEVEL_WIDTH
+	beqz		abi_tmp0, 1f
+	abi_call	trace_hardirqs_off
+1:
+#endif
+#ifdef CONFIG_CONTEXT_TRACKING_USER
+	l32i		abi_tmp0, a1, PT_PS
+	bbci.l		abi_tmp0, PS_UM_BIT, 1f
+	abi_call	user_exit_callable
+1:
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Go to second-level dispatcher. Set up parameters to pass to the
 	 * exception handler and call the exception handler.
 	 */
 
+<<<<<<< HEAD
 	movi	a4, exc_table
 	mov	a6, a1			# pass stack frame
 	mov	a7, a0			# pass EXCCAUSE
@@ -397,6 +706,40 @@ common_exception_return:
 
 1:	l32i	a3, a1, PT_PS
 	_bbci.l	a3, PS_UM_BIT, 4f
+=======
+	l32i		abi_arg1, a1, PT_EXCCAUSE	# pass EXCCAUSE
+	rsr		abi_tmp0, excsave1
+	addx4		abi_tmp0, abi_arg1, abi_tmp0
+	l32i		abi_tmp0, abi_tmp0, EXC_TABLE_DEFAULT	# load handler
+	mov		abi_arg0, a1			# pass stack frame
+
+	/* Call the second-level handler */
+
+	abi_callx	abi_tmp0
+
+	/* Jump here for exception exit */
+	.global common_exception_return
+common_exception_return:
+
+#if XTENSA_FAKE_NMI
+	l32i		abi_tmp0, a1, PT_EXCCAUSE
+	movi		abi_tmp1, EXCCAUSE_MAPPED_NMI
+	l32i		abi_saved1, a1, PT_PS
+	beq		abi_tmp0, abi_tmp1, .Lrestore_state
+#endif
+.Ltif_loop:
+	irq_save	abi_tmp0, abi_tmp1
+#ifdef CONFIG_TRACE_IRQFLAGS
+	abi_call	trace_hardirqs_off
+#endif
+
+	/* Jump if we are returning from kernel exceptions. */
+
+	l32i		abi_saved1, a1, PT_PS
+	GET_THREAD_INFO(abi_tmp0, a1)
+	l32i		abi_saved0, abi_tmp0, TI_FLAGS
+	_bbci.l		abi_saved1, PS_UM_BIT, .Lexit_tif_loop_kernel
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Specific to a user exception exit:
 	 * We need to check some flags for signal handling and rescheduling,
@@ -405,6 +748,7 @@ common_exception_return:
 	 * Note that we don't disable interrupts here. 
 	 */
 
+<<<<<<< HEAD
 	GET_THREAD_INFO(a2,a1)
 	l32i	a4, a2, TI_FLAGS
 
@@ -435,15 +779,96 @@ common_exception_return:
 	wsr	a3, PS		/* disable interrupts */
 
 	_bbci.l	a3, PS_UM_BIT, kernel_exception_exit
+=======
+	_bbsi.l		abi_saved0, TIF_NEED_RESCHED, .Lresched
+	movi		abi_tmp0, _TIF_SIGPENDING | _TIF_NOTIFY_RESUME | _TIF_NOTIFY_SIGNAL
+	bnone		abi_saved0, abi_tmp0, .Lexit_tif_loop_user
+
+	l32i		abi_tmp0, a1, PT_DEPC
+	bgeui		abi_tmp0, VALID_DOUBLE_EXCEPTION_ADDRESS, .Lrestore_state
+
+	/* Call do_signal() */
+
+#ifdef CONFIG_TRACE_IRQFLAGS
+	abi_call	trace_hardirqs_on
+#endif
+	rsil		abi_tmp0, 0
+	mov		abi_arg0, a1
+	abi_call	do_notify_resume	# int do_notify_resume(struct pt_regs*)
+	j		.Ltif_loop
+
+.Lresched:
+#ifdef CONFIG_TRACE_IRQFLAGS
+	abi_call	trace_hardirqs_on
+#endif
+	rsil		abi_tmp0, 0
+	abi_call	schedule	# void schedule (void)
+	j		.Ltif_loop
+
+.Lexit_tif_loop_kernel:
+#ifdef CONFIG_PREEMPTION
+	_bbci.l		abi_saved0, TIF_NEED_RESCHED, .Lrestore_state
+
+	/* Check current_thread_info->preempt_count */
+
+	l32i		abi_tmp1, abi_tmp0, TI_PRE_COUNT
+	bnez		abi_tmp1, .Lrestore_state
+	abi_call	preempt_schedule_irq
+#endif
+	j		.Lrestore_state
+
+.Lexit_tif_loop_user:
+#ifdef CONFIG_CONTEXT_TRACKING_USER
+	abi_call	user_enter_callable
+#endif
+#ifdef CONFIG_HAVE_HW_BREAKPOINT
+	_bbci.l		abi_saved0, TIF_DB_DISABLED, 1f
+	abi_call	restore_dbreak
+1:
+#endif
+#ifdef CONFIG_DEBUG_TLB_SANITY
+	l32i		abi_tmp0, a1, PT_DEPC
+	bgeui		abi_tmp0, VALID_DOUBLE_EXCEPTION_ADDRESS, .Lrestore_state
+	abi_call	check_tlb_sanity
+#endif
+
+.Lrestore_state:
+#ifdef CONFIG_TRACE_IRQFLAGS
+	extui		abi_tmp0, abi_saved1, PS_INTLEVEL_SHIFT, PS_INTLEVEL_WIDTH
+	bgei		abi_tmp0, LOCKLEVEL, 1f
+	abi_call	trace_hardirqs_on
+1:
+#endif
+	/*
+	 * Restore optional registers.
+	 * abi_arg* are used as temporary registers here.
+	 */
+
+	load_xtregs_opt a1 abi_tmp0 abi_arg0 abi_arg1 abi_arg2 abi_arg3 PT_XTREGS_OPT
+
+	/* Restore SCOMPARE1 */
+
+#if XCHAL_HAVE_S32C1I
+	l32i		abi_tmp0, a1, PT_SCOMPARE1
+	wsr		abi_tmp0, scompare1
+#endif
+	wsr		abi_saved1, ps		/* disable interrupts */
+	_bbci.l		abi_saved1, PS_UM_BIT, kernel_exception_exit
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 user_exception_exit:
 
 	/* Restore the state of the task and return from the exception. */
 
+<<<<<<< HEAD
+=======
+#if defined(USER_SUPPORT_WINDOWED)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Switch to the user thread WINDOWBASE. Save SP temporarily in DEPC */
 
 	l32i	a2, a1, PT_WINDOWBASE
 	l32i	a3, a1, PT_WINDOWSTART
+<<<<<<< HEAD
 	wsr	a1, DEPC		# use DEPC as temp storage
 	wsr	a3, WINDOWSTART		# restore WINDOWSTART
 	ssr	a2			# preserve user's WB in the SAR
@@ -453,6 +878,17 @@ user_exception_exit:
 	l32i	a2, a1, PT_WMASK	# register frames saved (in bits 4...9)
 	rotw	-1			# we restore a4..a7
 	_bltui	a6, 16, 1f		# only have to restore current window?
+=======
+	wsr	a1, depc		# use DEPC as temp storage
+	wsr	a3, windowstart		# restore WINDOWSTART
+	ssr	a2			# preserve user's WB in the SAR
+	wsr	a2, windowbase		# switch to user's saved WB
+	rsync
+	rsr	a1, depc		# restore stack pointer
+	l32i	a2, a1, PT_WMASK	# register frames saved (in bits 4...9)
+	rotw	-1			# we restore a4..a7
+	_bltui	a6, 16, .Lclear_regs	# only have to restore current window?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The working registers are a0 and a3.  We are restoring to
 	 * a4..a7.  Be careful not to destroy what we have just restored.
@@ -464,19 +900,33 @@ user_exception_exit:
 	mov	a2, a6
 	mov	a3, a5
 
+<<<<<<< HEAD
 2:	rotw	-1			# a0..a3 become a4..a7
+=======
+1:	rotw	-1			# a0..a3 become a4..a7
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	a3, a7, -4*4		# next iteration
 	addi	a2, a6, -16		# decrementing Y in WMASK
 	l32i	a4, a3, PT_AREG_END + 0
 	l32i	a5, a3, PT_AREG_END + 4
 	l32i	a6, a3, PT_AREG_END + 8
 	l32i	a7, a3, PT_AREG_END + 12
+<<<<<<< HEAD
 	_bgeui	a2, 16, 2b
 
 	/* Clear unrestored registers (don't leak anything to user-land */
 
 1:	rsr	a0, WINDOWBASE
 	rsr	a3, SAR
+=======
+	_bgeui	a2, 16, 1b
+
+	/* Clear unrestored registers (don't leak anything to user-land */
+
+.Lclear_regs:
+	rsr	a0, windowbase
+	rsr	a3, sar
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sub	a3, a0, a3
 	beqz	a3, 2f
 	extui	a3, a3, 0, WBBITS
@@ -494,8 +944,21 @@ user_exception_exit:
 	 *	 frame where we had loaded a2), or at least the lower 4 bits
 	 *	 (if we have restored WSBITS-1 frames).
 	 */
+<<<<<<< HEAD
 
 2:	j	common_exception_exit
+=======
+2:
+#else
+	movi	a2, 1
+#endif
+#if XCHAL_HAVE_THREADPTR
+	l32i	a3, a1, PT_THREADPTR
+	wur	a3, threadptr
+#endif
+
+	j	common_exception_exit
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This is the kernel exception exit.
 	 * We avoided to do a MOVSP when we entered the exception, but we
@@ -504,6 +967,7 @@ user_exception_exit:
 
 kernel_exception_exit:
 
+<<<<<<< HEAD
 #ifdef PREEMPTIBLE_KERNEL
 
 #ifdef CONFIG_PREEMPT
@@ -527,6 +991,9 @@ kernel_exception_exit:
 
 #endif
 
+=======
+#if defined(__XTENSA_WINDOWED_ABI__)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Check if we have to do a movsp.
 	 *
 	 * We only have to do a movsp if the previous window-frame has
@@ -556,7 +1023,11 @@ kernel_exception_exit:
 
 	/* Test WINDOWSTART now. If spilled, do the movsp */
 
+<<<<<<< HEAD
 	rsr     a3, WINDOWSTART
+=======
+	rsr     a3, windowstart
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	a0, a3, -1
 	and     a3, a3, a0
 	_bnez	a3, common_exception_exit
@@ -566,12 +1037,21 @@ kernel_exception_exit:
 	addi    a0, a1, -16
 	l32i    a3, a0, 0
 	l32i    a4, a0, 4
+<<<<<<< HEAD
 	s32i    a3, a1, PT_SIZE+0
 	s32i    a4, a1, PT_SIZE+4
 	l32i    a3, a0, 8
 	l32i    a4, a0, 12
 	s32i    a3, a1, PT_SIZE+8
 	s32i    a4, a1, PT_SIZE+12
+=======
+	s32i    a3, a1, PT_KERNEL_SIZE + 0
+	s32i    a4, a1, PT_KERNEL_SIZE + 4
+	l32i    a3, a0, 8
+	l32i    a4, a0, 12
+	s32i    a3, a1, PT_KERNEL_SIZE + 8
+	s32i    a4, a1, PT_KERNEL_SIZE + 12
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Common exception exit.
 	 * We restore the special register and the current window frame, and
@@ -579,6 +1059,12 @@ kernel_exception_exit:
 	 *
 	 * Note: We expect a2 to hold PT_WMASK
 	 */
+<<<<<<< HEAD
+=======
+#else
+	movi	a2, 1
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 common_exception_exit:
 
@@ -604,6 +1090,7 @@ common_exception_exit:
 
 1:	l32i	a2, a1, PT_PC
 	l32i	a3, a1, PT_SAR
+<<<<<<< HEAD
 	wsr	a2, EPC_1
 	wsr	a3, SAR
 
@@ -615,13 +1102,32 @@ common_exception_exit:
 	l32i	a2, a1, PT_LCOUNT
 	wsr	a3, LEND
 	wsr	a2, LCOUNT
+=======
+	wsr	a2, epc1
+	wsr	a3, sar
+
+	/* Restore LBEG, LEND, LCOUNT */
+#if XCHAL_HAVE_LOOPS
+	l32i	a2, a1, PT_LBEG
+	l32i	a3, a1, PT_LEND
+	wsr	a2, lbeg
+	l32i	a2, a1, PT_LCOUNT
+	wsr	a3, lend
+	wsr	a2, lcount
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We control single stepping through the ICOUNTLEVEL register. */
 
 	l32i	a2, a1, PT_ICOUNTLEVEL
 	movi	a3, -2
+<<<<<<< HEAD
 	wsr	a2, ICOUNTLEVEL
 	wsr	a3, ICOUNT
+=======
+	wsr	a2, icountlevel
+	wsr	a3, icount
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check if it was double exception. */
 
@@ -636,11 +1142,20 @@ common_exception_exit:
 	l32i	a1, a1, PT_AREG1
 	rfe
 
+<<<<<<< HEAD
 1:	wsr	a0, DEPC
+=======
+1: 	wsr	a0, depc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l32i	a0, a1, PT_AREG0
 	l32i	a1, a1, PT_AREG1
 	rfde
 
+<<<<<<< HEAD
+=======
+ENDPROC(kernel_exception)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Debug exception handler.
  *
@@ -649,6 +1164,7 @@ common_exception_exit:
  * When we get here,  a0 is trashed and saved to excsave[debuglevel]
  */
 
+<<<<<<< HEAD
 ENTRY(debug_exception)
 
 	rsr	a0, EPS + XCHAL_DEBUGLEVEL
@@ -662,11 +1178,29 @@ ENTRY(debug_exception)
 
 	movi	a2, EXCCAUSE_MAPPED_DEBUG
 	wsr	a2, EXCCAUSE
+=======
+	.literal_position
+
+ENTRY(debug_exception)
+
+	rsr	a0, SREG_EPS + XCHAL_DEBUGLEVEL
+	bbsi.l	a0, PS_EXCM_BIT, .Ldebug_exception_in_exception	# exception mode
+
+	/* Set EPC1 and EXCCAUSE */
+
+	wsr	a2, depc		# save a2 temporarily
+	rsr	a2, SREG_EPC + XCHAL_DEBUGLEVEL
+	wsr	a2, epc1
+
+	movi	a2, EXCCAUSE_MAPPED_DEBUG
+	wsr	a2, exccause
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Restore PS to the value before the debug exc but with PS.EXCM set.*/
 
 	movi	a2, 1 << PS_EXCM_BIT
 	or	a2, a0, a2
+<<<<<<< HEAD
 	movi	a0, debug_exception	# restore a3, debug jump vector
 	wsr	a2, PS
 	xsr	a0, EXCSAVE + XCHAL_DEBUGLEVEL
@@ -701,6 +1235,105 @@ ENTRY(debug_exception)
 	/* Debug exception while in exception mode. */
 1:	j	1b	// FIXME!!
 
+=======
+	wsr	a2, ps
+
+	/* Switch to kernel/user stack, restore jump vector, and save a0 */
+
+	bbsi.l	a2, PS_UM_BIT, .Ldebug_exception_user	# jump if user mode
+	addi	a2, a1, -16 - PT_KERNEL_SIZE	# assume kernel stack
+
+.Ldebug_exception_continue:
+	l32i	a0, a3, DT_DEBUG_SAVE
+	s32i	a1, a2, PT_AREG1
+	s32i	a0, a2, PT_AREG0
+	movi	a0, 0
+	s32i	a0, a2, PT_DEPC		# mark it as a regular exception
+	xsr	a3, SREG_EXCSAVE + XCHAL_DEBUGLEVEL
+	xsr	a0, depc
+	s32i	a3, a2, PT_AREG3
+	s32i	a0, a2, PT_AREG2
+	mov	a1, a2
+
+	/* Debug exception is handled as an exception, so interrupts will
+	 * likely be enabled in the common exception handler. Disable
+	 * preemption if we have HW breakpoints to preserve DEBUGCAUSE.DBNUM
+	 * meaning.
+	 */
+#if defined(CONFIG_PREEMPT_COUNT) && defined(CONFIG_HAVE_HW_BREAKPOINT)
+	GET_THREAD_INFO(a2, a1)
+	l32i	a3, a2, TI_PRE_COUNT
+	addi	a3, a3, 1
+	s32i	a3, a2, TI_PRE_COUNT
+#endif
+
+	rsr	a2, ps
+	bbsi.l	a2, PS_UM_BIT, _user_exception
+	j	_kernel_exception
+
+.Ldebug_exception_user:
+	rsr	a2, excsave1
+	l32i	a2, a2, EXC_TABLE_KSTK	# load kernel stack pointer
+	j	.Ldebug_exception_continue
+
+.Ldebug_exception_in_exception:
+#ifdef CONFIG_HAVE_HW_BREAKPOINT
+	/* Debug exception while in exception mode. This may happen when
+	 * window overflow/underflow handler or fast exception handler hits
+	 * data breakpoint, in which case save and disable all data
+	 * breakpoints, single-step faulting instruction and restore data
+	 * breakpoints.
+	 */
+
+	bbci.l	a0, PS_UM_BIT, .Ldebug_exception_in_exception	# jump if kernel mode
+
+	rsr	a0, debugcause
+	bbsi.l	a0, DEBUGCAUSE_DBREAK_BIT, .Ldebug_save_dbreak
+
+	.set	_index, 0
+	.rept	XCHAL_NUM_DBREAK
+	l32i	a0, a3, DT_DBREAKC_SAVE + _index * 4
+	wsr	a0, SREG_DBREAKC + _index
+	.set	_index, _index + 1
+	.endr
+
+	l32i	a0, a3, DT_ICOUNT_LEVEL_SAVE
+	wsr	a0, icountlevel
+
+	l32i	a0, a3, DT_ICOUNT_SAVE
+	xsr	a0, icount
+
+	l32i	a0, a3, DT_DEBUG_SAVE
+	xsr	a3, SREG_EXCSAVE + XCHAL_DEBUGLEVEL
+	rfi	XCHAL_DEBUGLEVEL
+
+.Ldebug_save_dbreak:
+	.set	_index, 0
+	.rept	XCHAL_NUM_DBREAK
+	movi	a0, 0
+	xsr	a0, SREG_DBREAKC + _index
+	s32i	a0, a3, DT_DBREAKC_SAVE + _index * 4
+	.set	_index, _index + 1
+	.endr
+
+	movi	a0, XCHAL_EXCM_LEVEL + 1
+	xsr	a0, icountlevel
+	s32i	a0, a3, DT_ICOUNT_LEVEL_SAVE
+
+	movi	a0, 0xfffffffe
+	xsr	a0, icount
+	s32i	a0, a3, DT_ICOUNT_SAVE
+
+	l32i	a0, a3, DT_DEBUG_SAVE
+	xsr	a3, SREG_EXCSAVE + XCHAL_DEBUGLEVEL
+	rfi	XCHAL_DEBUGLEVEL
+#else
+	/* Debug exception while in exception mode. Should not happen. */
+	j	.Ldebug_exception_in_exception	// FIXME!!
+#endif
+
+ENDPROC(debug_exception)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We get here in case of an unrecoverable exception.
@@ -727,6 +1360,7 @@ ENTRY(debug_exception)
 unrecoverable_text:
 	.ascii "Unrecoverable error in exception handler\0"
 
+<<<<<<< HEAD
 ENTRY(unrecoverable_exception)
 
 	movi	a0, 1
@@ -738,12 +1372,30 @@ ENTRY(unrecoverable_exception)
 
 	movi	a1, (1 << PS_WOE_BIT) | 1
 	wsr	a1, PS
+=======
+	.literal_position
+
+ENTRY(unrecoverable_exception)
+
+#if XCHAL_HAVE_WINDOWED
+	movi	a0, 1
+	movi	a1, 0
+
+	wsr	a0, windowstart
+	wsr	a1, windowbase
+	rsync
+#endif
+
+	movi	a1, KERNEL_PS_WOE_MASK | LOCKLEVEL
+	wsr	a1, ps
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rsync
 
 	movi	a1, init_task
 	movi	a0, 0
 	addi	a1, a1, PT_REGS_OFFSET
 
+<<<<<<< HEAD
 	movi	a4, panic
 	movi	a6, unrecoverable_text
 
@@ -754,30 +1406,76 @@ ENTRY(unrecoverable_exception)
 
 /* -------------------------- FAST EXCEPTION HANDLERS ----------------------- */
 
+=======
+	movi	abi_arg0, unrecoverable_text
+	abi_call	panic
+
+1:	j	1b
+
+ENDPROC(unrecoverable_exception)
+
+/* -------------------------- FAST EXCEPTION HANDLERS ----------------------- */
+
+	__XTENSA_HANDLER
+	.literal_position
+
+#ifdef SUPPORT_WINDOWED
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Fast-handler for alloca exceptions
  *
  *  The ALLOCA handler is entered when user code executes the MOVSP
  *  instruction and the caller's frame is not in the register file.
+<<<<<<< HEAD
  *  In this case, the caller frame's a0..a3 are on the stack just
  *  below sp (a1), and this handler moves them.
  *
  *  For "MOVSP <ar>,<as>" without destination register a1, this routine
  *  simply moves the value from <as> to <ar> without moving the save area.
+=======
+ *
+ * This algorithm was taken from the Ross Morley's RTOS Porting Layer:
+ *
+ *    /home/ross/rtos/porting/XtensaRTOS-PortingLayer-20090507/xtensa_vectors.S
+ *
+ * It leverages the existing window spill/fill routines and their support for
+ * double exceptions. The 'movsp' instruction will only cause an exception if
+ * the next window needs to be loaded. In fact this ALLOCA exception may be
+ * replaced at some point by changing the hardware to do a underflow exception
+ * of the proper size instead.
+ *
+ * This algorithm simply backs out the register changes started by the user
+ * exception handler, makes it appear that we have started a window underflow
+ * by rotating the window back and then setting the old window base (OWB) in
+ * the 'ps' register with the rolled back window base. The 'movsp' instruction
+ * will be re-executed and this time since the next window frames is in the
+ * active AR registers it won't cause an exception.
+ *
+ * If the WindowUnderflow code gets a TLB miss the page will get mapped
+ * the partial WindowUnderflow will be handled in the double exception
+ * handler.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Entry condition:
  *
  *   a0:	trashed, original value saved on stack (PT_AREG0)
  *   a1:	a1
  *   a2:	new stack pointer, original in DEPC
+<<<<<<< HEAD
  *   a3:	dispatch table
  *   depc:	a2, original value saved on stack (PT_DEPC)
  *   excsave_1:	a3
+=======
+ *   a3:	a3
+ *   depc:	a2, original value saved on stack (PT_DEPC)
+ *   excsave_1:	dispatch table
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   PT_DEPC >= VALID_DOUBLE_EXCEPTION_ADDRESS: double exception, DEPC
  *	     <  VALID_DOUBLE_EXCEPTION_ADDRESS: regular exception
  */
 
+<<<<<<< HEAD
 #if XCHAL_HAVE_BE
 #define _EXTUI_MOVSP_SRC(ar)	extui ar, ar, 4, 4
 #define _EXTUI_MOVSP_DST(ar)	extui ar, ar, 0, 4
@@ -931,6 +1629,75 @@ ENTRY(fast_alloca)
 
 
 /*
+=======
+ENTRY(fast_alloca)
+	rsr	a0, windowbase
+	rotw	-1
+	rsr	a2, ps
+	extui	a3, a2, PS_OWB_SHIFT, PS_OWB_WIDTH
+	xor	a3, a3, a4
+	l32i	a4, a6, PT_AREG0
+	l32i	a1, a6, PT_DEPC
+	rsr	a6, depc
+	wsr	a1, depc
+	slli	a3, a3, PS_OWB_SHIFT
+	xor	a2, a2, a3
+	wsr	a2, ps
+	rsync
+
+	_bbci.l	a4, 31, 4f
+	rotw	-1
+	_bbci.l	a8, 30, 8f
+	rotw	-1
+	j	_WindowUnderflow12
+8:	j	_WindowUnderflow8
+4:	j	_WindowUnderflow4
+ENDPROC(fast_alloca)
+#endif
+
+#ifdef CONFIG_USER_ABI_CALL0_PROBE
+/*
+ * fast illegal instruction handler.
+ *
+ * This is used to fix up user PS.WOE on the exception caused
+ * by the first opcode related to register window. If PS.WOE is
+ * already set it goes directly to the common user exception handler.
+ *
+ * Entry condition:
+ *
+ *   a0:	trashed, original value saved on stack (PT_AREG0)
+ *   a1:	a1
+ *   a2:	new stack pointer, original in DEPC
+ *   a3:	a3
+ *   depc:	a2, original value saved on stack (PT_DEPC)
+ *   excsave_1:	dispatch table
+ */
+
+ENTRY(fast_illegal_instruction_user)
+
+	rsr	a0, ps
+	bbsi.l	a0, PS_WOE_BIT, 1f
+	s32i	a3, a2, PT_AREG3
+	movi	a3, PS_WOE_MASK
+	or	a0, a0, a3
+	wsr	a0, ps
+#ifdef CONFIG_USER_ABI_CALL0_PROBE
+	GET_THREAD_INFO(a3, a2)
+	rsr	a0, epc1
+	s32i	a0, a3, TI_PS_WOE_FIX_ADDR
+#endif
+	l32i	a3, a2, PT_AREG3
+	l32i	a0, a2, PT_AREG0
+	rsr	a2, depc
+	rfe
+1:
+	call0	user_exception
+
+ENDPROC(fast_illegal_instruction_user)
+#endif
+
+	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * fast system calls.
  *
  * WARNING:  The kernel doesn't save the entire user context before
@@ -944,6 +1711,7 @@ ENTRY(fast_alloca)
  *   a0:	trashed, original value saved on stack (PT_AREG0)
  *   a1:	a1
  *   a2:	new stack pointer, original in DEPC
+<<<<<<< HEAD
  *   a3:	dispatch table
  *   depc:	a2, original value saved on stack (PT_DEPC)
  *   excsave_1:	a3
@@ -966,17 +1734,31 @@ ENTRY(fast_syscall_kernel)
 
 	j	kernel_exception
 
+=======
+ *   a3:	a3
+ *   depc:	a2, original value saved on stack (PT_DEPC)
+ *   excsave_1:	dispatch table
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENTRY(fast_syscall_user)
 
 	/* Skip syscall. */
 
+<<<<<<< HEAD
 	rsr	a0, EPC_1
 	addi	a0, a0, 3
 	wsr	a0, EPC_1
+=======
+	rsr	a0, epc1
+	addi	a0, a0, 3
+	wsr	a0, epc1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	l32i	a0, a2, PT_DEPC
 	bgeui	a0, VALID_DOUBLE_EXCEPTION_ADDRESS, fast_syscall_unrecoverable
 
+<<<<<<< HEAD
 	rsr	a0, DEPC			# get syscall-nr
 	_beqz	a0, fast_syscall_spill_registers
 	_beqi	a0, __NR_xtensa, fast_syscall_xtensa
@@ -996,6 +1778,27 @@ ENTRY(fast_syscall_unrecoverable)
         callx0  a0
 
 
+=======
+	rsr	a0, depc			# get syscall-nr
+	_beqz	a0, fast_syscall_spill_registers
+	_beqi	a0, __NR_xtensa, fast_syscall_xtensa
+
+	call0	user_exception
+
+ENDPROC(fast_syscall_user)
+
+ENTRY(fast_syscall_unrecoverable)
+
+	/* Restore all states. */
+
+	l32i    a0, a2, PT_AREG0        # restore a0
+	xsr     a2, depc                # restore a2, depc
+
+	wsr     a0, excsave1
+	call0	unrecoverable_exception
+
+ENDPROC(fast_syscall_unrecoverable)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * sysxtensa syscall handler
@@ -1011,15 +1814,23 @@ ENTRY(fast_syscall_unrecoverable)
  *   a0:	a2 (syscall-nr), original value saved on stack (PT_AREG0)
  *   a1:	a1
  *   a2:	new stack pointer, original in a0 and DEPC
+<<<<<<< HEAD
  *   a3:	dispatch table, original in excsave_1
  *   a4..a15:	unchanged
  *   depc:	a2, original value saved on stack (PT_DEPC)
  *   excsave_1:	a3
+=======
+ *   a3:	a3
+ *   a4..a15:	unchanged
+ *   depc:	a2, original value saved on stack (PT_DEPC)
+ *   excsave_1:	dispatch table
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   PT_DEPC >= VALID_DOUBLE_EXCEPTION_ADDRESS: double exception, DEPC
  *	     <  VALID_DOUBLE_EXCEPTION_ADDRESS: regular exception
  *
  * Note: we don't have to save a2; a2 holds the return value
+<<<<<<< HEAD
  *
  * We use the two macros TRY and CATCH:
  *
@@ -1049,6 +1860,16 @@ ENTRY(fast_syscall_xtensa)
 
 	xsr	a3, EXCSAVE_1		# restore a3, excsave1
 
+=======
+ */
+
+	.literal_position
+
+#ifdef CONFIG_FAST_SYSCALL_XTENSA
+
+ENTRY(fast_syscall_xtensa)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32i	a7, a2, PT_AREG7	# we need an additional register
 	movi	a7, 4			# sizeof(unsigned int)
 	access_ok a3, a7, a0, a2, .Leac	# a0: scratch reg, a2: sp
@@ -1060,9 +1881,15 @@ ENTRY(fast_syscall_xtensa)
 
 .Lswp:	/* Atomic compare and swap */
 
+<<<<<<< HEAD
 TRY	l32i	a0, a3, 0		# read old value
 	bne	a0, a4, 1f		# same as old value? jump
 TRY	s32i	a5, a3, 0		# different, modify value
+=======
+EX(.Leac) l32i	a0, a3, 0		# read old value
+	bne	a0, a4, 1f		# same as old value? jump
+EX(.Leac) s32i	a5, a3, 0		# different, modify value
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l32i	a7, a2, PT_AREG7	# restore a7
 	l32i	a0, a2, PT_AREG0	# restore a0
 	movi	a2, 1			# and return 1
@@ -1075,12 +1902,20 @@ TRY	s32i	a5, a3, 0		# different, modify value
 
 .Lnswp:	/* Atomic set, add, and exg_add. */
 
+<<<<<<< HEAD
 TRY	l32i	a7, a3, 0		# orig
+=======
+EX(.Leac) l32i	a7, a3, 0		# orig
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	a6, a6, -SYS_XTENSA_ATOMIC_SET
 	add	a0, a4, a7		# + arg
 	moveqz	a0, a4, a6		# set
 	addi	a6, a6, SYS_XTENSA_ATOMIC_SET
+<<<<<<< HEAD
 TRY	s32i	a0, a3, 0		# write new value
+=======
+EX(.Leac) s32i	a0, a3, 0		# write new value
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mov	a0, a2
 	mov	a2, a7
@@ -1088,7 +1923,10 @@ TRY	s32i	a0, a3, 0		# write new value
 	l32i	a0, a0, PT_AREG0	# restore a0
 	rfe
 
+<<<<<<< HEAD
 CATCH
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .Leac:	l32i	a7, a2, PT_AREG7	# restore a7
 	l32i	a0, a2, PT_AREG0	# restore a0
 	movi	a2, -EFAULT
@@ -1099,7 +1937,23 @@ CATCH
 	movi	a2, -EINVAL
 	rfe
 
+<<<<<<< HEAD
 
+=======
+ENDPROC(fast_syscall_xtensa)
+
+#else /* CONFIG_FAST_SYSCALL_XTENSA */
+
+ENTRY(fast_syscall_xtensa)
+
+	l32i    a0, a2, PT_AREG0        # restore a0
+	movi	a2, -ENOSYS
+	rfe
+
+ENDPROC(fast_syscall_xtensa)
+
+#endif /* CONFIG_FAST_SYSCALL_XTENSA */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* fast_syscall_spill_registers.
@@ -1109,17 +1963,30 @@ CATCH
  *   a0:	trashed, original value saved on stack (PT_AREG0)
  *   a1:	a1
  *   a2:	new stack pointer, original in DEPC
+<<<<<<< HEAD
  *   a3:	dispatch table
  *   depc:	a2, original value saved on stack (PT_DEPC)
  *   excsave_1:	a3
+=======
+ *   a3:	a3
+ *   depc:	a2, original value saved on stack (PT_DEPC)
+ *   excsave_1:	dispatch table
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note: We assume the stack pointer is EXC_TABLE_KSTK in the fixup handler.
  */
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_FAST_SYSCALL_SPILL_REGISTERS) && \
+		defined(USER_SUPPORT_WINDOWED)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ENTRY(fast_syscall_spill_registers)
 
 	/* Register a FIXUP handler (pass current wb as a parameter) */
 
+<<<<<<< HEAD
 	movi	a0, fast_syscall_spill_registers_fixup
 	s32i	a0, a3, EXC_TABLE_FIXUP
 	rsr	a0, WINDOWBASE
@@ -1275,27 +2142,64 @@ fast_syscall_spill_registers_fixup_return:
 
 ENTRY(_spill_registers)
 
+=======
+	xsr	a3, excsave1
+	movi	a0, fast_syscall_spill_registers_fixup
+	s32i	a0, a3, EXC_TABLE_FIXUP
+	rsr	a0, windowbase
+	s32i	a0, a3, EXC_TABLE_PARAM
+	xsr	a3, excsave1		# restore a3 and excsave_1
+
+	/* Save a3, a4 and SAR on stack. */
+
+	rsr	a0, sar
+	s32i	a3, a2, PT_AREG3
+	s32i	a0, a2, PT_SAR
+
+	/* The spill routine might clobber a4, a7, a8, a11, a12, and a15. */
+
+	s32i	a4, a2, PT_AREG4
+	s32i	a7, a2, PT_AREG7
+	s32i	a8, a2, PT_AREG8
+	s32i	a11, a2, PT_AREG11
+	s32i	a12, a2, PT_AREG12
+	s32i	a15, a2, PT_AREG15
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Rotate ws so that the current windowbase is at bit 0.
 	 * Assume ws = xxxwww1yy (www1 current window frame).
 	 * Rotate ws right so that a4 = yyxxxwww1.
 	 */
 
+<<<<<<< HEAD
 	rsr	a4, WINDOWBASE
 	rsr	a3, WINDOWSTART		# a3 = xxxwww1yy
 	ssr	a4			# holds WB
 	slli	a4, a3, WSBITS
 	or	a3, a3, a4		# a3 = xxxwww1yyxxxwww1yy
+=======
+	rsr	a0, windowbase
+	rsr	a3, windowstart		# a3 = xxxwww1yy
+	ssr	a0			# holds WB
+	slli	a0, a3, WSBITS
+	or	a3, a3, a0		# a3 = xxxwww1yyxxxwww1yy
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	srl	a3, a3			# a3 = 00xxxwww1yyxxxwww1
 
 	/* We are done if there are no more than the current register frame. */
 
 	extui	a3, a3, 1, WSBITS-1	# a3 = 0yyxxxwww
+<<<<<<< HEAD
 	movi	a4, (1 << (WSBITS-1))
+=======
+	movi	a0, (1 << (WSBITS-1))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_beqz	a3, .Lnospill		# only one active frame? jump
 
 	/* We want 1 at the top, so that we return to the current windowbase */
 
+<<<<<<< HEAD
 	or	a3, a3, a4		# 1yyxxxwww
 
 	/* Skip empty frames - get 'oldest' WINDOWSTART-bit. */
@@ -1315,6 +2219,27 @@ ENTRY(_spill_registers)
 	rsync
 
 	rsr	a3, WINDOWSTART
+=======
+	or	a3, a3, a0		# 1yyxxxwww
+
+	/* Skip empty frames - get 'oldest' WINDOWSTART-bit. */
+
+	wsr	a3, windowstart		# save shifted windowstart
+	neg	a0, a3
+	and	a3, a0, a3		# first bit set from right: 000010000
+
+	ffs_ws	a0, a3			# a0: shifts to skip empty frames
+	movi	a3, WSBITS
+	sub	a0, a3, a0		# WSBITS-a0:number of 0-bits from right
+	ssr	a0			# save in SAR for later.
+
+	rsr	a3, windowbase
+	add	a3, a3, a0
+	wsr	a3, windowbase
+	rsync
+
+	rsr	a3, windowstart
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	srl	a3, a3			# shift windowstart
 
 	/* WB is now just one frame below the oldest frame in the register
@@ -1325,6 +2250,7 @@ ENTRY(_spill_registers)
 	 * we have to save 4,8. or 12 registers.
 	 */
 
+<<<<<<< HEAD
 	_bbsi.l	a3, 1, .Lc4
 	_bbsi.l	a3, 2, .Lc8
 
@@ -1341,6 +2267,8 @@ ENTRY(_spill_registers)
 
 .Lnospill:
 	ret
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .Lloop: _bbsi.l	a3, 1, .Lc4
 	_bbci.l	a3, 2, .Lc12
@@ -1354,6 +2282,7 @@ ENTRY(_spill_registers)
 	s32e	a9, a4, -28
 	s32e	a10, a4, -24
 	s32e	a11, a4, -20
+<<<<<<< HEAD
 
 	srli	a11, a3, 2		# shift windowbase by 2
 	rotw	2
@@ -1368,6 +2297,12 @@ ENTRY(_spill_registers)
 	sll	a3, a3
 	wsr	a3, WINDOWSTART
 	ret
+=======
+	srli	a11, a3, 2		# shift windowbase by 2
+	rotw	2
+	_bnei	a3, 1, .Lloop
+	j	.Lexit
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .Lc4:	s32e	a4, a9, -16
 	s32e	a5, a9, -12
@@ -1383,11 +2318,19 @@ ENTRY(_spill_registers)
 
 	/* 12-register frame (call12) */
 
+<<<<<<< HEAD
 	l32e	a2, a5, -12
 	s32e	a8, a2, -48
 	mov	a8, a2
 
 .Lc12c: s32e	a9, a8, -44
+=======
+	l32e	a0, a5, -12
+	s32e	a8, a0, -48
+	mov	a8, a0
+
+	s32e	a9, a8, -44
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32e	a10, a8, -40
 	s32e	a11, a8, -36
 	s32e	a12, a8, -32
@@ -1407,6 +2350,7 @@ ENTRY(_spill_registers)
 	 */
 
 	rotw	1
+<<<<<<< HEAD
 	mov	a5, a13
 	rotw	-1
 
@@ -1414,12 +2358,22 @@ ENTRY(_spill_registers)
 	s32e	a5, a9, -12
 	s32e	a6, a9, -8
 	s32e	a7, a9, -4
+=======
+	mov	a4, a13
+	rotw	-1
+
+	s32e	a4, a8, -16
+	s32e	a5, a8, -12
+	s32e	a6, a8, -8
+	s32e	a7, a8, -4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rotw	3
 
 	_beqi	a3, 1, .Lexit
 	j	.Lloop
 
+<<<<<<< HEAD
 .Linvalid_mask:
 
 	/* We get here because of an unrecoverable error in the window
@@ -1431,18 +2385,61 @@ ENTRY(_spill_registers)
 	_bbci.l	a0, PS_UM_BIT, 1f
 
  	/* User space: Setup a dummy frame and kill application.
+=======
+.Lexit:
+
+	/* Done. Do the final rotation and set WS */
+
+	rotw	1
+	rsr	a3, windowbase
+	ssl	a3
+	movi	a3, 1
+	sll	a3, a3
+	wsr	a3, windowstart
+.Lnospill:
+
+	/* Advance PC, restore registers and SAR, and return from exception. */
+
+	l32i	a3, a2, PT_SAR
+	l32i	a0, a2, PT_AREG0
+	wsr	a3, sar
+	l32i	a3, a2, PT_AREG3
+
+	/* Restore clobbered registers. */
+
+	l32i	a4, a2, PT_AREG4
+	l32i	a7, a2, PT_AREG7
+	l32i	a8, a2, PT_AREG8
+	l32i	a11, a2, PT_AREG11
+	l32i	a12, a2, PT_AREG12
+	l32i	a15, a2, PT_AREG15
+
+	movi	a2, 0
+	rfe
+
+.Linvalid_mask:
+
+	/* We get here because of an unrecoverable error in the window
+	 * registers, so set up a dummy frame and kill the user application.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Note: We assume EXC_TABLE_KSTK contains a valid stack pointer.
 	 */
 
 	movi	a0, 1
 	movi	a1, 0
 
+<<<<<<< HEAD
 	wsr	a0, WINDOWSTART
 	wsr	a1, WINDOWBASE
+=======
+	wsr	a0, windowstart
+	wsr	a1, windowbase
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rsync
 
 	movi	a0, 0
 
+<<<<<<< HEAD
 	movi	a3, exc_table
 	l32i	a1, a3, EXC_TABLE_KSTK
 	wsr	a3, EXCSAVE_1
@@ -1462,6 +2459,160 @@ ENTRY(_spill_registers)
 	callx0	a0		# should not return
 1:	j	1b
 
+=======
+	rsr	a3, excsave1
+	l32i	a1, a3, EXC_TABLE_KSTK
+
+	movi	a4, KERNEL_PS_WOE_MASK | LOCKLEVEL
+	wsr	a4, ps
+	rsync
+
+	movi	abi_arg0, SIGSEGV
+	abi_call	make_task_dead
+
+	/* shouldn't return, so panic */
+
+	wsr	a0, excsave1
+	call0	unrecoverable_exception		# should not return
+1:	j	1b
+
+
+ENDPROC(fast_syscall_spill_registers)
+
+/* Fixup handler.
+ *
+ * We get here if the spill routine causes an exception, e.g. tlb miss.
+ * We basically restore WINDOWBASE and WINDOWSTART to the condition when
+ * we entered the spill routine and jump to the user exception handler.
+ *
+ * Note that we only need to restore the bits in windowstart that have not
+ * been spilled yet by the _spill_register routine. Luckily, a3 contains a
+ * rotated windowstart with only those bits set for frames that haven't been
+ * spilled yet. Because a3 is rotated such that bit 0 represents the register
+ * frame for the current windowbase - 1, we need to rotate a3 left by the
+ * value of the current windowbase + 1 and move it to windowstart.
+ *
+ * a0: value of depc, original value in depc
+ * a2: trashed, original value in EXC_TABLE_DOUBLE_SAVE
+ * a3: exctable, original value in excsave1
+ */
+
+ENTRY(fast_syscall_spill_registers_fixup)
+
+	rsr	a2, windowbase	# get current windowbase (a2 is saved)
+	xsr	a0, depc	# restore depc and a0
+	ssl	a2		# set shift (32 - WB)
+
+	/* We need to make sure the current registers (a0-a3) are preserved.
+	 * To do this, we simply set the bit for the current window frame
+	 * in WS, so that the exception handlers save them to the task stack.
+	 *
+	 * Note: we use a3 to set the windowbase, so we take a special care
+	 * of it, saving it in the original _spill_registers frame across
+	 * the exception handler call.
+	 */
+
+	xsr	a3, excsave1	# get spill-mask
+	slli	a3, a3, 1	# shift left by one
+	addi	a3, a3, 1	# set the bit for the current window frame
+
+	slli	a2, a3, 32-WSBITS
+	src	a2, a3, a2	# a2 = xxwww1yyxxxwww1yy......
+	wsr	a2, windowstart	# set corrected windowstart
+
+	srli	a3, a3, 1
+	rsr	a2, excsave1
+	l32i	a2, a2, EXC_TABLE_DOUBLE_SAVE	# restore a2
+	xsr	a2, excsave1
+	s32i	a3, a2, EXC_TABLE_DOUBLE_SAVE	# save a3
+	l32i	a3, a2, EXC_TABLE_PARAM	# original WB (in user task)
+	xsr	a2, excsave1
+
+	/* Return to the original (user task) WINDOWBASE.
+	 * We leave the following frame behind:
+	 * a0, a1, a2	same
+	 * a3:		trashed (saved in EXC_TABLE_DOUBLE_SAVE)
+	 * depc:	depc (we have to return to that address)
+	 * excsave_1:	exctable
+	 */
+
+	wsr	a3, windowbase
+	rsync
+
+	/* We are now in the original frame when we entered _spill_registers:
+	 *  a0: return address
+	 *  a1: used, stack pointer
+	 *  a2: kernel stack pointer
+	 *  a3: available
+	 *  depc: exception address
+	 *  excsave: exctable
+	 * Note: This frame might be the same as above.
+	 */
+
+	/* Setup stack pointer. */
+
+	addi	a2, a2, -PT_USER_SIZE
+	s32i	a0, a2, PT_AREG0
+
+	/* Make sure we return to this fixup handler. */
+
+	movi	a3, fast_syscall_spill_registers_fixup_return
+	s32i	a3, a2, PT_DEPC		# setup depc
+
+	/* Jump to the exception handler. */
+
+	rsr	a3, excsave1
+	rsr	a0, exccause
+	addx4	a0, a0, a3              	# find entry in table
+	l32i	a0, a0, EXC_TABLE_FAST_USER     # load handler
+	l32i	a3, a3, EXC_TABLE_DOUBLE_SAVE
+	jx	a0
+
+ENDPROC(fast_syscall_spill_registers_fixup)
+
+ENTRY(fast_syscall_spill_registers_fixup_return)
+
+	/* When we return here, all registers have been restored (a2: DEPC) */
+
+	wsr	a2, depc		# exception address
+
+	/* Restore fixup handler. */
+
+	rsr	a2, excsave1
+	s32i	a3, a2, EXC_TABLE_DOUBLE_SAVE
+	movi	a3, fast_syscall_spill_registers_fixup
+	s32i	a3, a2, EXC_TABLE_FIXUP
+	rsr	a3, windowbase
+	s32i	a3, a2, EXC_TABLE_PARAM
+	l32i	a2, a2, EXC_TABLE_KSTK
+
+	/* Load WB at the time the exception occurred. */
+
+	rsr	a3, sar			# WB is still in SAR
+	neg	a3, a3
+	wsr	a3, windowbase
+	rsync
+
+	rsr	a3, excsave1
+	l32i	a3, a3, EXC_TABLE_DOUBLE_SAVE
+
+	rfde
+
+ENDPROC(fast_syscall_spill_registers_fixup_return)
+
+#else /* CONFIG_FAST_SYSCALL_SPILL_REGISTERS */
+
+ENTRY(fast_syscall_spill_registers)
+
+	l32i    a0, a2, PT_AREG0        # restore a0
+	movi	a2, -ENOSYS
+	rfe
+
+ENDPROC(fast_syscall_spill_registers)
+
+#endif /* CONFIG_FAST_SYSCALL_SPILL_REGISTERS */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_MMU
 /*
  * We should never get here. Bail out!
@@ -1469,10 +2620,19 @@ ENTRY(_spill_registers)
 
 ENTRY(fast_second_level_miss_double_kernel)
 
+<<<<<<< HEAD
 1:	movi	a0, unrecoverable_exception
 	callx0	a0		# should not return
 1:	j	1b
 
+=======
+1:
+	call0	unrecoverable_exception		# should not return
+1:	j	1b
+
+ENDPROC(fast_second_level_miss_double_kernel)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* First-level entry handler for user, kernel, and double 2nd-level
  * TLB miss exceptions.  Note that for now, user and kernel miss
  * exceptions share the same entry point and are handled identically.
@@ -1485,9 +2645,15 @@ ENTRY(fast_second_level_miss_double_kernel)
  *   a0:	trashed, original value saved on stack (PT_AREG0)
  *   a1:	a1
  *   a2:	new stack pointer, original in DEPC
+<<<<<<< HEAD
  *   a3:	dispatch table
  *   depc:	a2, original value saved on stack (PT_DEPC)
  *   excsave_1:	a3
+=======
+ *   a3:	a3
+ *   depc:	a2, original value saved on stack (PT_DEPC)
+ *   excsave_1:	dispatch table
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   PT_DEPC >= VALID_DOUBLE_EXCEPTION_ADDRESS: double exception, DEPC
  *	     <  VALID_DOUBLE_EXCEPTION_ADDRESS: regular exception
@@ -1495,9 +2661,16 @@ ENTRY(fast_second_level_miss_double_kernel)
 
 ENTRY(fast_second_level_miss)
 
+<<<<<<< HEAD
 	/* Save a1. Note: we don't expect a double exception. */
 
 	s32i	a1, a2, PT_AREG1
+=======
+	/* Save a1 and a3. Note: we don't expect a double exception. */
+
+	s32i	a1, a2, PT_AREG1
+	s32i	a3, a2, PT_AREG3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We need to map the page of PTEs for the user task.  Find
 	 * the pointer to that page.  Also, it's possible for tsk->mm
@@ -1517,6 +2690,7 @@ ENTRY(fast_second_level_miss)
 
 	GET_CURRENT(a1,a2)
 	l32i	a0, a1, TASK_MM		# tsk->mm
+<<<<<<< HEAD
 	beqz	a0, 9f
 
 
@@ -1526,6 +2700,15 @@ ENTRY(fast_second_level_miss)
 	_PGD_OFFSET(a0, a3, a1)
 	l32i	a0, a0, 0		# read pmdval
 	beqz	a0, 2f
+=======
+	beqz	a0, .Lfast_second_level_miss_no_mm
+
+.Lfast_second_level_miss_continue:
+	rsr	a3, excvaddr		# fault address
+	_PGD_OFFSET(a0, a3, a1)
+	l32i	a0, a0, 0		# read pmdval
+	beqz	a0, .Lfast_second_level_miss_no_pmd
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read ptevaddr and convert to top of page-table page.
 	 *
@@ -1537,10 +2720,18 @@ ENTRY(fast_second_level_miss)
 	 * The messy computation for 'pteval' above really simplifies
 	 * into the following:
 	 *
+<<<<<<< HEAD
 	 * pteval = ((pmdval - PAGE_OFFSET) & PAGE_MASK) | PAGE_DIRECTORY
 	 */
 
 	movi	a1, -PAGE_OFFSET
+=======
+	 * pteval = ((pmdval - PAGE_OFFSET + PHYS_OFFSET) & PAGE_MASK)
+	 *                 | PAGE_DIRECTORY
+	 */
+
+	movi	a1, (PHYS_OFFSET - PAGE_OFFSET) & 0xffffffff
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add	a0, a0, a1		# pmdval - PAGE_OFFSET
 	extui	a1, a0, 0, PAGE_SHIFT	# ... & PAGE_MASK
 	xor	a0, a0, a1
@@ -1559,7 +2750,11 @@ ENTRY(fast_second_level_miss)
 	 */
 
 	extui	a3, a3, 28, 2		# addr. bit 28 and 29	0,1,2,3
+<<<<<<< HEAD
 	rsr	a1, PTEVADDR
+=======
+	rsr	a1, ptevaddr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addx2	a3, a3, a3		# ->			0,3,6,9
 	srli	a1, a1, PAGE_SHIFT
 	extui	a3, a3, 2, 2		# ->			0,0,1,2
@@ -1567,12 +2762,22 @@ ENTRY(fast_second_level_miss)
 	addi	a3, a3, DTLB_WAY_PGD
 	add	a1, a1, a3		# ... + way_number
 
+<<<<<<< HEAD
 3:	wdtlb	a0, a1
 	dsync
 
 	/* Exit critical section. */
 
 4:	movi	a3, exc_table		# restore a3
+=======
+.Lfast_second_level_miss_wdtlb:
+	wdtlb	a0, a1
+	dsync
+
+	/* Exit critical section. */
+.Lfast_second_level_miss_skip_wdtlb:
+	rsr	a3, excsave1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movi	a0, 0
 	s32i	a0, a3, EXC_TABLE_FIXUP
 
@@ -1580,18 +2785,28 @@ ENTRY(fast_second_level_miss)
 
 	l32i	a0, a2, PT_AREG0
 	l32i	a1, a2, PT_AREG1
+<<<<<<< HEAD
 	l32i	a2, a2, PT_DEPC
 	xsr	a3, EXCSAVE_1
+=======
+	l32i	a3, a2, PT_AREG3
+	l32i	a2, a2, PT_DEPC
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bgeui	a2, VALID_DOUBLE_EXCEPTION_ADDRESS, 1f
 
 	/* Restore excsave1 and return. */
 
+<<<<<<< HEAD
 	rsr	a2, DEPC
+=======
+	rsr	a2, depc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfe
 
 	/* Return from double exception. */
 
+<<<<<<< HEAD
 1:	xsr	a2, DEPC
 	esync
 	rfde
@@ -1602,6 +2817,27 @@ ENTRY(fast_second_level_miss)
 #if (DCACHE_WAY_SIZE > PAGE_SIZE)
 
 2:	/* Special case for cache aliasing.
+=======
+1:	xsr	a2, depc
+	esync
+	rfde
+
+.Lfast_second_level_miss_no_mm:
+	l32i	a0, a1, TASK_ACTIVE_MM	# unlikely case mm == 0
+	bnez	a0, .Lfast_second_level_miss_continue
+
+	/* Even more unlikely case active_mm == 0.
+	 * We can get here with NMI in the middle of context_switch that
+	 * touches vmalloc area.
+	 */
+	movi	a0, init_mm
+	j	.Lfast_second_level_miss_continue
+
+.Lfast_second_level_miss_no_pmd:
+#if (DCACHE_WAY_SIZE > PAGE_SIZE)
+
+	/* Special case for cache aliasing.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * We (should) only get here if a clear_user_page, copy_user_page
 	 * or the aliased cache flush functions got preemptively interrupted 
 	 * by another task. Re-establish temporary mapping to the 
@@ -1611,29 +2847,52 @@ ENTRY(fast_second_level_miss)
 	/* We shouldn't be in a double exception */
 
 	l32i	a0, a2, PT_DEPC
+<<<<<<< HEAD
 	bgeui	a0, VALID_DOUBLE_EXCEPTION_ADDRESS, 2f
+=======
+	bgeui	a0, VALID_DOUBLE_EXCEPTION_ADDRESS, .Lfast_second_level_miss_slow
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Make sure the exception originated in the special functions */
 
 	movi	a0, __tlbtemp_mapping_start
+<<<<<<< HEAD
 	rsr	a3, EPC_1
 	bltu	a3, a0, 2f
 	movi	a0, __tlbtemp_mapping_end
 	bgeu	a3, a0, 2f
+=======
+	rsr	a3, epc1
+	bltu	a3, a0, .Lfast_second_level_miss_slow
+	movi	a0, __tlbtemp_mapping_end
+	bgeu	a3, a0, .Lfast_second_level_miss_slow
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check if excvaddr was in one of the TLBTEMP_BASE areas. */
 
 	movi	a3, TLBTEMP_BASE_1
+<<<<<<< HEAD
 	rsr	a0, EXCVADDR
 	bltu	a0, a3, 2f
 
 	addi	a1, a0, -TLBTEMP_SIZE
 	bgeu	a1, a3, 2f
+=======
+	rsr	a0, excvaddr
+	bltu	a0, a3, .Lfast_second_level_miss_slow
+
+	addi	a1, a0, -TLBTEMP_SIZE
+	bgeu	a1, a3, .Lfast_second_level_miss_slow
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check if we have to restore an ITLB mapping. */
 
 	movi	a1, __tlbtemp_mapping_itlb
+<<<<<<< HEAD
 	rsr	a3, EPC_1
+=======
+	rsr	a3, epc1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sub	a3, a3, a1
 
 	/* Calculate VPN */
@@ -1654,17 +2913,26 @@ ENTRY(fast_second_level_miss)
 
 	mov	a0, a6
 	movnez	a0, a7, a3
+<<<<<<< HEAD
 	j	3b
+=======
+	j	.Lfast_second_level_miss_wdtlb
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ITLB entry. We only use dst in a6. */
 
 1:	witlb	a6, a1
 	isync
+<<<<<<< HEAD
 	j	4b
+=======
+	j	.Lfast_second_level_miss_skip_wdtlb
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #endif	// DCACHE_WAY_SIZE > PAGE_SIZE
 
+<<<<<<< HEAD
 
 2:	/* Invalid PGD, default exception handling */
 
@@ -1680,6 +2948,21 @@ ENTRY(fast_second_level_miss)
 	j	_kernel_exception
 1:	j	_user_exception
 
+=======
+	/* Invalid PGD, default exception handling */
+.Lfast_second_level_miss_slow:
+
+	rsr	a1, depc
+	s32i	a1, a2, PT_AREG2
+	mov	a1, a2
+
+	rsr	a2, ps
+	bbsi.l	a2, PS_UM_BIT, 1f
+	call0	_kernel_exception
+1:	call0	_user_exception
+
+ENDPROC(fast_second_level_miss)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * StoreProhibitedException
@@ -1691,9 +2974,15 @@ ENTRY(fast_second_level_miss)
  *   a0:	trashed, original value saved on stack (PT_AREG0)
  *   a1:	a1
  *   a2:	new stack pointer, original in DEPC
+<<<<<<< HEAD
  *   a3:	dispatch table
  *   depc:	a2, original value saved on stack (PT_DEPC)
  *   excsave_1:	a3
+=======
+ *   a3:	a3
+ *   depc:	a2, original value saved on stack (PT_DEPC)
+ *   excsave_1:	dispatch table
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *   PT_DEPC >= VALID_DOUBLE_EXCEPTION_ADDRESS: double exception, DEPC
  *	     <  VALID_DOUBLE_EXCEPTION_ADDRESS: regular exception
@@ -1701,6 +2990,7 @@ ENTRY(fast_second_level_miss)
 
 ENTRY(fast_store_prohibited)
 
+<<<<<<< HEAD
 	/* Save a1 and a4. */
 
 	s32i	a1, a2, PT_AREG1
@@ -1725,36 +3015,86 @@ ENTRY(fast_store_prohibited)
 	or	a4, a4, a1
 	rsr	a1, EXCVADDR
 	s32i	a4, a0, 0
+=======
+	/* Save a1 and a3. */
+
+	s32i	a1, a2, PT_AREG1
+	s32i	a3, a2, PT_AREG3
+
+	GET_CURRENT(a1,a2)
+	l32i	a0, a1, TASK_MM		# tsk->mm
+	beqz	a0, .Lfast_store_no_mm
+
+.Lfast_store_continue:
+	rsr	a1, excvaddr		# fault address
+	_PGD_OFFSET(a0, a1, a3)
+	l32i	a0, a0, 0
+	beqz	a0, .Lfast_store_slow
+
+	/*
+	 * Note that we test _PAGE_WRITABLE_BIT only if PTE is present
+	 * and is not PAGE_NONE. See pgtable.h for possible PTE layouts.
+	 */
+
+	_PTE_OFFSET(a0, a1, a3)
+	l32i	a3, a0, 0		# read pteval
+	movi	a1, _PAGE_CA_INVALID
+	ball	a3, a1, .Lfast_store_slow
+	bbci.l	a3, _PAGE_WRITABLE_BIT, .Lfast_store_slow
+
+	movi	a1, _PAGE_ACCESSED | _PAGE_DIRTY | _PAGE_HW_WRITE
+	or	a3, a3, a1
+	rsr	a1, excvaddr
+	s32i	a3, a0, 0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We need to flush the cache if we have page coloring. */
 #if (DCACHE_WAY_SIZE > PAGE_SIZE) && XCHAL_DCACHE_IS_WRITEBACK
 	dhwb	a0, 0
 #endif
 	pdtlb	a0, a1
+<<<<<<< HEAD
 	wdtlb	a4, a0
+=======
+	wdtlb	a3, a0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Exit critical section. */
 
 	movi	a0, 0
+<<<<<<< HEAD
+=======
+	rsr	a3, excsave1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32i	a0, a3, EXC_TABLE_FIXUP
 
 	/* Restore the working registers, and return. */
 
+<<<<<<< HEAD
 	l32i	a4, a2, PT_AREG4
+=======
+	l32i	a3, a2, PT_AREG3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l32i	a1, a2, PT_AREG1
 	l32i	a0, a2, PT_AREG0
 	l32i	a2, a2, PT_DEPC
 
+<<<<<<< HEAD
 	/* Restore excsave1 and a3. */
 
 	xsr	a3, EXCSAVE_1
 	bgeui	a2, VALID_DOUBLE_EXCEPTION_ADDRESS, 1f
 
 	rsr	a2, DEPC
+=======
+	bgeui	a2, VALID_DOUBLE_EXCEPTION_ADDRESS, 1f
+	rsr	a2, depc
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfe
 
 	/* Double exception. Restore FIXUP handler and return. */
 
+<<<<<<< HEAD
 1:	xsr	a2, DEPC
 	esync
 	rfde
@@ -1777,12 +3117,44 @@ ENTRY(fast_store_prohibited)
 1:	j	_user_exception
 #endif /* CONFIG_MMU */
 
+=======
+1:	xsr	a2, depc
+	esync
+	rfde
+
+.Lfast_store_no_mm:
+	l32i	a0, a1, TASK_ACTIVE_MM	# unlikely case mm == 0
+	j	.Lfast_store_continue
+
+	/* If there was a problem, handle fault in C */
+.Lfast_store_slow:
+	rsr	a1, excvaddr
+	pdtlb	a0, a1
+	bbci.l	a0, DTLB_HIT_BIT, 1f
+	idtlb	a0
+1:
+	rsr	a3, depc	# still holds a2
+	s32i	a3, a2, PT_AREG2
+	mov	a1, a2
+
+	rsr	a2, ps
+	bbsi.l	a2, PS_UM_BIT, 1f
+	call0	_kernel_exception
+1:	call0	_user_exception
+
+ENDPROC(fast_store_prohibited)
+
+#endif /* CONFIG_MMU */
+
+	.text
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * System Calls.
  *
  * void system_call (struct pt_regs* regs, int exccause)
  *                            a2                 a3
  */
+<<<<<<< HEAD
 
 ENTRY(system_call)
 	entry	a1, 32
@@ -1873,6 +3245,123 @@ ENTRY(kernel_execve)
 	syscall
 
 	retw
+=======
+	.literal_position
+
+ENTRY(system_call)
+
+#if defined(__XTENSA_WINDOWED_ABI__)
+	abi_entry_default
+#elif defined(__XTENSA_CALL0_ABI__)
+	abi_entry(12)
+
+	s32i	a0, sp, 0
+	s32i	abi_saved0, sp, 4
+	s32i	abi_saved1, sp, 8
+	mov	abi_saved0, a2
+#else
+#error Unsupported Xtensa ABI
+#endif
+
+	/* regs->syscall = regs->areg[2] */
+
+	l32i	a7, abi_saved0, PT_AREG2
+	s32i	a7, abi_saved0, PT_SYSCALL
+
+	GET_THREAD_INFO(a4, a1)
+	l32i	abi_saved1, a4, TI_FLAGS
+	movi	a4, _TIF_WORK_MASK
+	and	abi_saved1, abi_saved1, a4
+	beqz	abi_saved1, 1f
+
+	mov	abi_arg0, abi_saved0
+	abi_call	do_syscall_trace_enter
+	beqz	abi_rv, .Lsyscall_exit
+	l32i	a7, abi_saved0, PT_SYSCALL
+
+1:
+	/* syscall = sys_call_table[syscall_nr] */
+
+	movi	a4, sys_call_table
+	movi	a5, __NR_syscalls
+	movi	abi_rv, -ENOSYS
+	bgeu	a7, a5, 1f
+
+	addx4	a4, a7, a4
+	l32i	abi_tmp0, a4, 0
+
+	/* Load args: arg0 - arg5 are passed via regs. */
+
+	l32i	abi_arg0, abi_saved0, PT_AREG6
+	l32i	abi_arg1, abi_saved0, PT_AREG3
+	l32i	abi_arg2, abi_saved0, PT_AREG4
+	l32i	abi_arg3, abi_saved0, PT_AREG5
+	l32i	abi_arg4, abi_saved0, PT_AREG8
+	l32i	abi_arg5, abi_saved0, PT_AREG9
+
+	abi_callx	abi_tmp0
+
+1:	/* regs->areg[2] = return_value */
+
+	s32i	abi_rv, abi_saved0, PT_AREG2
+	bnez	abi_saved1, 1f
+.Lsyscall_exit:
+#if defined(__XTENSA_WINDOWED_ABI__)
+	abi_ret_default
+#elif defined(__XTENSA_CALL0_ABI__)
+	l32i	a0, sp, 0
+	l32i	abi_saved0, sp, 4
+	l32i	abi_saved1, sp, 8
+	abi_ret(12)
+#else
+#error Unsupported Xtensa ABI
+#endif
+
+1:
+	mov	abi_arg0, abi_saved0
+	abi_call	do_syscall_trace_leave
+	j	.Lsyscall_exit
+
+ENDPROC(system_call)
+
+/*
+ * Spill live registers on the kernel stack macro.
+ *
+ * Entry condition: ps.woe is set, ps.excm is cleared
+ * Exit condition: windowstart has single bit set
+ * May clobber: a12, a13
+ */
+	.macro	spill_registers_kernel
+
+#if XCHAL_NUM_AREGS > 16
+	call12	1f
+	_j	2f
+	retw
+	.align	4
+1:
+	_entry	a1, 48
+	addi	a12, a0, 3
+#if XCHAL_NUM_AREGS > 32
+	.rept	(XCHAL_NUM_AREGS - 32) / 12
+	_entry	a1, 48
+	mov	a12, a0
+	.endr
+#endif
+	_entry	a1, 16
+#if XCHAL_NUM_AREGS % 12 == 0
+	mov	a8, a8
+#elif XCHAL_NUM_AREGS % 12 == 4
+	mov	a12, a12
+#elif XCHAL_NUM_AREGS % 12 == 8
+	mov	a4, a4
+#endif
+	retw
+2:
+#else
+	mov	a12, a12
+#endif
+	.endm
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Task switch.
@@ -1883,14 +3372,31 @@ ENTRY(kernel_execve)
 
 ENTRY(_switch_to)
 
+<<<<<<< HEAD
 	entry	a1, 16
 
 	mov	a12, a2			# preserve 'prev' (a2)
 	mov	a13, a3			# and 'next' (a3)
+=======
+#if defined(__XTENSA_WINDOWED_ABI__)
+	abi_entry(XTENSA_SPILL_STACK_RESERVE)
+#elif defined(__XTENSA_CALL0_ABI__)
+	abi_entry(16)
+
+	s32i	a12, sp, 0
+	s32i	a13, sp, 4
+	s32i	a14, sp, 8
+	s32i	a15, sp, 12
+#else
+#error Unsupported Xtensa ABI
+#endif
+	mov	a11, a3			# and 'next' (a3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	l32i	a4, a2, TASK_THREAD_INFO
 	l32i	a5, a3, TASK_THREAD_INFO
 
+<<<<<<< HEAD
 	save_xtregs_user a4 a6 a8 a9 a10 a11 THREAD_XTREGS_USER
 
 	s32i	a0, a12, THREAD_RA	# save return address
@@ -1903,18 +3409,66 @@ ENTRY(_switch_to)
 	rsr	a3, EXCSAVE_1
 	rsync
 	s32i	a3, a3, EXC_TABLE_FIXUP	/* enter critical section */
+=======
+	save_xtregs_user a4 a6 a8 a9 a12 a13 THREAD_XTREGS_USER
+
+#if THREAD_RA > 1020 || THREAD_SP > 1020
+	addi	a10, a2, TASK_THREAD
+	s32i	a0, a10, THREAD_RA - TASK_THREAD	# save return address
+	s32i	a1, a10, THREAD_SP - TASK_THREAD	# save stack pointer
+#else
+	s32i	a0, a2, THREAD_RA	# save return address
+	s32i	a1, a2, THREAD_SP	# save stack pointer
+#endif
+
+#if defined(CONFIG_STACKPROTECTOR) && !defined(CONFIG_SMP)
+	movi	a6, __stack_chk_guard
+	l32i	a8, a3, TASK_STACK_CANARY
+	s32i	a8, a6, 0
+#endif
+
+	/* Disable ints while we manipulate the stack pointer. */
+
+	irq_save a14, a3
+	rsync
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Switch CPENABLE */
 
 #if (XTENSA_HAVE_COPROCESSORS || XTENSA_HAVE_IO_PORTS)
 	l32i	a3, a5, THREAD_CPENABLE
+<<<<<<< HEAD
 	xsr	a3, CPENABLE
 	s32i	a3, a4, THREAD_CPENABLE
+=======
+#ifdef CONFIG_SMP
+	beqz	a3, 1f
+	memw			# pairs with memw (2) in fast_coprocessor
+	l32i	a6, a5, THREAD_CP_OWNER_CPU
+	l32i	a7, a5, THREAD_CPU
+	beq	a6, a7, 1f	# load 0 into CPENABLE if current CPU is not the owner
+	movi	a3, 0
+1:
+#endif
+	wsr	a3, cpenable
+#endif
+
+#if XCHAL_HAVE_EXCLUSIVE
+	l32i	a3, a5, THREAD_ATOMCTL8
+	getex	a3
+	s32i	a3, a4, THREAD_ATOMCTL8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* Flush register file. */
 
+<<<<<<< HEAD
 	call0	_spill_registers	# destroys a3, a4, and SAR
+=======
+#if defined(__XTENSA_WINDOWED_ABI__)
+	spill_registers_kernel
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set kernel stack (and leave critical section)
 	 * Note: It's save to set it here. The stack will not be overwritten
@@ -1922,6 +3476,7 @@ ENTRY(_switch_to)
 	 *       we return from kernel space.
 	 */
 
+<<<<<<< HEAD
 	rsr	a3, EXCSAVE_1		# exc_table
 	movi	a6, 0
 	addi	a7, a5, PT_REGS_OFFSET
@@ -1941,10 +3496,40 @@ ENTRY(_switch_to)
 
 	retw
 
+=======
+	rsr	a3, excsave1		# exc_table
+	addi	a7, a5, PT_REGS_OFFSET
+	s32i	a7, a3, EXC_TABLE_KSTK
+
+	/* restore context of the task 'next' */
+
+	l32i	a0, a11, THREAD_RA	# restore return address
+	l32i	a1, a11, THREAD_SP	# restore stack pointer
+
+	load_xtregs_user a5 a6 a8 a9 a12 a13 THREAD_XTREGS_USER
+
+	wsr	a14, ps
+	rsync
+
+#if defined(__XTENSA_WINDOWED_ABI__)
+	abi_ret(XTENSA_SPILL_STACK_RESERVE)
+#elif defined(__XTENSA_CALL0_ABI__)
+	l32i	a12, sp, 0
+	l32i	a13, sp, 4
+	l32i	a14, sp, 8
+	l32i	a15, sp, 12
+	abi_ret(16)
+#else
+#error Unsupported Xtensa ABI
+#endif
+
+ENDPROC(_switch_to)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ENTRY(ret_from_fork)
 
 	/* void schedule_tail (struct task_struct *prev)
+<<<<<<< HEAD
 	 * Note: prev is still in a6 (return value from fake call4 frame)
 	 */
 	movi	a4, schedule_tail
@@ -1956,3 +3541,120 @@ ENTRY(ret_from_fork)
 
 	j	common_exception_return
 
+=======
+	 * Note: prev is still in abi_arg0 (return value from fake call frame)
+	 */
+	abi_call	schedule_tail
+
+	mov		abi_arg0, a1
+	abi_call	do_syscall_trace_leave
+	j		common_exception_return
+
+ENDPROC(ret_from_fork)
+
+/*
+ * Kernel thread creation helper
+ * On entry, set up by copy_thread: abi_saved0 = thread_fn,
+ * abi_saved1 = thread_fn arg. Left from _switch_to: abi_arg0 = prev
+ */
+ENTRY(ret_from_kernel_thread)
+
+	abi_call	schedule_tail
+	mov		abi_arg0, abi_saved1
+	abi_callx	abi_saved0
+	j		common_exception_return
+
+ENDPROC(ret_from_kernel_thread)
+
+#ifdef CONFIG_HIBERNATION
+
+	.section	.bss, "aw"
+	.align	4
+.Lsaved_regs:
+#if defined(__XTENSA_WINDOWED_ABI__)
+	.fill	2, 4
+#elif defined(__XTENSA_CALL0_ABI__)
+	.fill	6, 4
+#else
+#error Unsupported Xtensa ABI
+#endif
+	.align	XCHAL_NCP_SA_ALIGN
+.Lsaved_user_regs:
+	.fill	XTREGS_USER_SIZE, 1
+
+	.previous
+
+ENTRY(swsusp_arch_suspend)
+
+	abi_entry_default
+
+	movi		a2, .Lsaved_regs
+	movi		a3, .Lsaved_user_regs
+	s32i		a0, a2, 0
+	s32i		a1, a2, 4
+	save_xtregs_user a3 a4 a5 a6 a7 a8 0
+#if defined(__XTENSA_WINDOWED_ABI__)
+	spill_registers_kernel
+#elif defined(__XTENSA_CALL0_ABI__)
+	s32i		a12, a2, 8
+	s32i		a13, a2, 12
+	s32i		a14, a2, 16
+	s32i		a15, a2, 20
+#else
+#error Unsupported Xtensa ABI
+#endif
+	abi_call	swsusp_save
+	mov		a2, abi_rv
+	abi_ret_default
+
+ENDPROC(swsusp_arch_suspend)
+
+ENTRY(swsusp_arch_resume)
+
+	abi_entry_default
+
+#if defined(__XTENSA_WINDOWED_ABI__)
+	spill_registers_kernel
+#endif
+
+	movi		a2, restore_pblist
+	l32i		a2, a2, 0
+
+.Lcopy_pbe:
+	l32i		a3, a2, PBE_ADDRESS
+	l32i		a4, a2, PBE_ORIG_ADDRESS
+
+	__loopi		a3, a9, PAGE_SIZE, 16
+	l32i		a5, a3, 0
+	l32i		a6, a3, 4
+	l32i		a7, a3, 8
+	l32i		a8, a3, 12
+	addi		a3, a3, 16
+	s32i		a5, a4, 0
+	s32i		a6, a4, 4
+	s32i		a7, a4, 8
+	s32i		a8, a4, 12
+	addi		a4, a4, 16
+	__endl		a3, a9
+
+	l32i		a2, a2, PBE_NEXT
+	bnez		a2, .Lcopy_pbe
+
+	movi		a2, .Lsaved_regs
+	movi		a3, .Lsaved_user_regs
+	l32i		a0, a2, 0
+	l32i		a1, a2, 4
+	load_xtregs_user a3 a4 a5 a6 a7 a8 0
+#if defined(__XTENSA_CALL0_ABI__)
+	l32i		a12, a2, 8
+	l32i		a13, a2, 12
+	l32i		a14, a2, 16
+	l32i		a15, a2, 20
+#endif
+	movi		a2, 0
+	abi_ret_default
+
+ENDPROC(swsusp_arch_resume)
+
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

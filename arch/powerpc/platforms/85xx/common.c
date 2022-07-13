@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Routines common to most mpc85xx-based boards.
  *
@@ -7,11 +8,30 @@
  */
 #include <linux/of_platform.h>
 
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Routines common to most mpc85xx-based boards.
+ */
+
+#include <linux/of.h>
+#include <linux/of_irq.h>
+#include <linux/of_platform.h>
+
+#include <asm/fsl_pm.h>
+#include <soc/fsl/qe/qe.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sysdev/cpm2_pic.h>
 
 #include "mpc85xx.h"
 
+<<<<<<< HEAD
 static struct of_device_id __initdata mpc85xx_common_ids[] = {
+=======
+const struct fsl_pm_ops *qoriq_pm_ops;
+
+static const struct of_device_id mpc85xx_common_ids[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .type = "soc", },
 	{ .compatible = "soc", },
 	{ .compatible = "simple-bus", },
@@ -27,6 +47,20 @@ static struct of_device_id __initdata mpc85xx_common_ids[] = {
 	{ .compatible = "fsl,mpc8548-guts", },
 	/* Probably unnecessary? */
 	{ .compatible = "gpio-leds", },
+<<<<<<< HEAD
+=======
+	/* For all PCI controllers */
+	{ .compatible = "fsl,mpc8540-pci", },
+	{ .compatible = "fsl,mpc8548-pcie", },
+	{ .compatible = "fsl,p1022-pcie", },
+	{ .compatible = "fsl,p1010-pcie", },
+	{ .compatible = "fsl,p1023-pcie", },
+	{ .compatible = "fsl,p4080-pcie", },
+	{ .compatible = "fsl,qoriq-pcie-v2.4", },
+	{ .compatible = "fsl,qoriq-pcie-v2.3", },
+	{ .compatible = "fsl,qoriq-pcie-v2.2", },
+	{ .compatible = "fsl,fman", },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{},
 };
 
@@ -35,7 +69,11 @@ int __init mpc85xx_common_publish_devices(void)
 	return of_platform_bus_probe(NULL, mpc85xx_common_ids, NULL);
 }
 #ifdef CONFIG_CPM2
+<<<<<<< HEAD
 static void cpm2_cascade(unsigned int irq, struct irq_desc *desc)
+=======
+static void cpm2_cascade(struct irq_desc *desc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct irq_chip *chip = irq_desc_get_chip(desc);
 	int cascade_irq;
@@ -59,7 +97,11 @@ void __init mpc85xx_cpm2_pic_init(void)
 		return;
 	}
 	irq = irq_of_parse_and_map(np, 0);
+<<<<<<< HEAD
 	if (irq == NO_IRQ) {
+=======
+	if (!irq) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_node_put(np);
 		printk(KERN_ERR "PIC init: got no IRQ for cpm cascade\n");
 		return;
@@ -70,3 +112,25 @@ void __init mpc85xx_cpm2_pic_init(void)
 	irq_set_chained_handler(irq, cpm2_cascade);
 }
 #endif
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_QUICC_ENGINE
+void __init mpc85xx_qe_par_io_init(void)
+{
+	struct device_node *np;
+
+	np = of_find_node_by_name(NULL, "par_io");
+	if (np) {
+		struct device_node *ucc;
+
+		par_io_init(np);
+		of_node_put(np);
+
+		for_each_node_by_name(ucc, "ucc")
+			par_io_of_config(ucc);
+
+	}
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *		Swansea University Computer Society NET3
  *
@@ -33,16 +37,24 @@
  *		$Id: udp.h,v       0.8.4.1  1992/11/10 00:17:18 bir7 Exp $
  *		$Id: we.c,v        0.8.4.10 1993/01/23 18:00:11 bir7 Exp $
  *		$Id: wereg.h,v     0.8.4.1  1992/11/10 00:17:18 bir7 Exp $
+<<<<<<< HEAD
  *
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_INET_H
 #define _LINUX_INET_H
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <net/net_namespace.h>
+#include <linux/socket.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These mimic similar macros defined in user-space for inet_ntop(3).
@@ -54,4 +66,12 @@
 extern __be32 in_aton(const char *str);
 extern int in4_pton(const char *src, int srclen, u8 *dst, int delim, const char **end);
 extern int in6_pton(const char *src, int srclen, u8 *dst, int delim, const char **end);
+<<<<<<< HEAD
+=======
+
+extern int inet_pton_with_scope(struct net *net, unsigned short af,
+		const char *src, const char *port, struct sockaddr_storage *addr);
+extern bool inet_addr_is_any(struct sockaddr *addr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _LINUX_INET_H */

@@ -24,6 +24,7 @@
 /*
  * RFCOMM sockets.
  */
+<<<<<<< HEAD
 
 #include <linux/module.h>
 
@@ -46,6 +47,12 @@
 
 #include <asm/system.h>
 #include <linux/uaccess.h>
+=======
+#include <linux/compat.h>
+#include <linux/export.h>
+#include <linux/debugfs.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
@@ -73,7 +80,11 @@ static void rfcomm_sk_data_ready(struct rfcomm_dlc *d, struct sk_buff *skb)
 
 	atomic_add(skb->len, &sk->sk_rmem_alloc);
 	skb_queue_tail(&sk->sk_receive_queue, skb);
+<<<<<<< HEAD
 	sk->sk_data_ready(sk, skb->len);
+=======
+	sk->sk_data_ready(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (atomic_read(&sk->sk_rmem_alloc) >= sk->sk_rcvbuf)
 		rfcomm_dlc_throttle(d);
@@ -82,15 +93,22 @@ static void rfcomm_sk_data_ready(struct rfcomm_dlc *d, struct sk_buff *skb)
 static void rfcomm_sk_state_change(struct rfcomm_dlc *d, int err)
 {
 	struct sock *sk = d->owner, *parent;
+<<<<<<< HEAD
 	unsigned long flags;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!sk)
 		return;
 
 	BT_DBG("dlc %p state %ld err %d", d, d->state, err);
 
+<<<<<<< HEAD
 	local_irq_save(flags);
 	bh_lock_sock(sk);
+=======
+	lock_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (err)
 		sk->sk_err = err;
@@ -103,6 +121,7 @@ static void rfcomm_sk_state_change(struct rfcomm_dlc *d, int err)
 			sock_set_flag(sk, SOCK_ZAPPED);
 			bt_accept_unlink(sk);
 		}
+<<<<<<< HEAD
 		parent->sk_data_ready(parent, 0);
 	} else {
 		if (d->state == BT_CONNECTED)
@@ -112,6 +131,17 @@ static void rfcomm_sk_state_change(struct rfcomm_dlc *d, int err)
 
 	bh_unlock_sock(sk);
 	local_irq_restore(flags);
+=======
+		parent->sk_data_ready(parent);
+	} else {
+		if (d->state == BT_CONNECTED)
+			rfcomm_session_getaddr(d->session,
+					       &rfcomm_pi(sk)->src, NULL);
+		sk->sk_state_change(sk);
+	}
+
+	release_sock(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (parent && sock_flag(sk, SOCK_ZAPPED)) {
 		/* We have to drop DLC lock here, otherwise
@@ -123,6 +153,7 @@ static void rfcomm_sk_state_change(struct rfcomm_dlc *d, int err)
 }
 
 /* ---- Socket functions ---- */
+<<<<<<< HEAD
 static struct sock *__rfcomm_get_sock_by_addr(u8 channel, bdaddr_t *src)
 {
 	struct sock *sk = NULL;
@@ -135,6 +166,24 @@ static struct sock *__rfcomm_get_sock_by_addr(u8 channel, bdaddr_t *src)
 	}
 
 	return node ? sk : NULL;
+=======
+static struct sock *__rfcomm_get_listen_sock_by_addr(u8 channel, bdaddr_t *src)
+{
+	struct sock *sk = NULL;
+
+	sk_for_each(sk, &rfcomm_sk_list.head) {
+		if (rfcomm_pi(sk)->channel != channel)
+			continue;
+
+		if (bacmp(&rfcomm_pi(sk)->src, src))
+			continue;
+
+		if (sk->sk_state == BT_BOUND || sk->sk_state == BT_LISTEN)
+			break;
+	}
+
+	return sk ? sk : NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Find socket with channel and source bdaddr.
@@ -143,28 +192,47 @@ static struct sock *__rfcomm_get_sock_by_addr(u8 channel, bdaddr_t *src)
 static struct sock *rfcomm_get_sock_by_channel(int state, u8 channel, bdaddr_t *src)
 {
 	struct sock *sk = NULL, *sk1 = NULL;
+<<<<<<< HEAD
 	struct hlist_node *node;
 
 	read_lock(&rfcomm_sk_list.lock);
 
 	sk_for_each(sk, node, &rfcomm_sk_list.head) {
+=======
+
+	read_lock(&rfcomm_sk_list.lock);
+
+	sk_for_each(sk, &rfcomm_sk_list.head) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (state && sk->sk_state != state)
 			continue;
 
 		if (rfcomm_pi(sk)->channel == channel) {
 			/* Exact match. */
+<<<<<<< HEAD
 			if (!bacmp(&bt_sk(sk)->src, src))
 				break;
 
 			/* Closest match */
 			if (!bacmp(&bt_sk(sk)->src, BDADDR_ANY))
+=======
+			if (!bacmp(&rfcomm_pi(sk)->src, src))
+				break;
+
+			/* Closest match */
+			if (!bacmp(&rfcomm_pi(sk)->src, BDADDR_ANY))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				sk1 = sk;
 		}
 	}
 
 	read_unlock(&rfcomm_sk_list.lock);
 
+<<<<<<< HEAD
 	return node ? sk : sk1;
+=======
+	return sk ? sk : sk1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void rfcomm_sock_destruct(struct sock *sk)
@@ -211,7 +279,11 @@ static void rfcomm_sock_kill(struct sock *sk)
 	if (!sock_flag(sk, SOCK_ZAPPED) || sk->sk_socket)
 		return;
 
+<<<<<<< HEAD
 	BT_DBG("sk %p state %d refcnt %d", sk, sk->sk_state, atomic_read(&sk->sk_refcnt));
+=======
+	BT_DBG("sk %p state %d refcnt %d", sk, sk->sk_state, refcount_read(&sk->sk_refcnt));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Kill poor orphan */
 	bt_sock_unlink(&rfcomm_sk_list, sk);
@@ -235,6 +307,10 @@ static void __rfcomm_sock_close(struct sock *sk)
 	case BT_CONFIG:
 	case BT_CONNECTED:
 		rfcomm_dlc_close(d, 0);
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	default:
 		sock_set_flag(sk, SOCK_ZAPPED);
@@ -260,10 +336,20 @@ static void rfcomm_sock_init(struct sock *sk, struct sock *parent)
 
 	if (parent) {
 		sk->sk_type = parent->sk_type;
+<<<<<<< HEAD
 		pi->dlc->defer_setup = bt_sk(parent)->defer_setup;
 
 		pi->sec_level = rfcomm_pi(parent)->sec_level;
 		pi->role_switch = rfcomm_pi(parent)->role_switch;
+=======
+		pi->dlc->defer_setup = test_bit(BT_SK_DEFER_SETUP,
+						&bt_sk(parent)->flags);
+
+		pi->sec_level = rfcomm_pi(parent)->sec_level;
+		pi->role_switch = rfcomm_pi(parent)->role_switch;
+
+		security_sk_clone(parent, sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		pi->dlc->defer_setup = 0;
 
@@ -281,11 +367,17 @@ static struct proto rfcomm_proto = {
 	.obj_size	= sizeof(struct rfcomm_pinfo)
 };
 
+<<<<<<< HEAD
 static struct sock *rfcomm_sock_alloc(struct net *net, struct socket *sock, int proto, gfp_t prio)
+=======
+static struct sock *rfcomm_sock_alloc(struct net *net, struct socket *sock,
+				      int proto, gfp_t prio, int kern)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rfcomm_dlc *d;
 	struct sock *sk;
 
+<<<<<<< HEAD
 	sk = sk_alloc(net, PF_BLUETOOTH, prio, &rfcomm_proto);
 	if (!sk)
 		return NULL;
@@ -293,6 +385,12 @@ static struct sock *rfcomm_sock_alloc(struct net *net, struct socket *sock, int 
 	sock_init_data(sock, sk);
 	INIT_LIST_HEAD(&bt_sk(sk)->accept_q);
 
+=======
+	sk = bt_sock_alloc(net, sock, &rfcomm_proto, proto, prio, kern);
+	if (!sk)
+		return NULL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	d = rfcomm_dlc_alloc(prio);
 	if (!d) {
 		sk_free(sk);
@@ -311,11 +409,14 @@ static struct sock *rfcomm_sock_alloc(struct net *net, struct socket *sock, int 
 	sk->sk_sndbuf = RFCOMM_MAX_CREDITS * RFCOMM_DEFAULT_MTU * 10;
 	sk->sk_rcvbuf = RFCOMM_MAX_CREDITS * RFCOMM_DEFAULT_MTU * 10;
 
+<<<<<<< HEAD
 	sock_reset_flag(sk, SOCK_ZAPPED);
 
 	sk->sk_protocol = proto;
 	sk->sk_state    = BT_OPEN;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bt_sock_link(&rfcomm_sk_list, sk);
 
 	BT_DBG("sk %p", sk);
@@ -336,7 +437,11 @@ static int rfcomm_sock_create(struct net *net, struct socket *sock,
 
 	sock->ops = &rfcomm_sock_ops;
 
+<<<<<<< HEAD
 	sk = rfcomm_sock_alloc(net, sock, protocol, GFP_ATOMIC);
+=======
+	sk = rfcomm_sock_alloc(net, sock, protocol, GFP_ATOMIC, kern);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!sk)
 		return -ENOMEM;
 
@@ -350,14 +455,23 @@ static int rfcomm_sock_bind(struct socket *sock, struct sockaddr *addr, int addr
 	struct sock *sk = sock->sk;
 	int len, err = 0;
 
+<<<<<<< HEAD
 	if (!addr || addr->sa_family != AF_BLUETOOTH)
+=======
+	if (!addr || addr_len < offsetofend(struct sockaddr, sa_family) ||
+	    addr->sa_family != AF_BLUETOOTH)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	memset(&sa, 0, sizeof(sa));
 	len = min_t(unsigned int, sizeof(sa), addr_len);
 	memcpy(&sa, addr, len);
 
+<<<<<<< HEAD
 	BT_DBG("sk %p %s", sk, batostr(&sa.rc_bdaddr));
+=======
+	BT_DBG("sk %p %pMR", sk, &sa.rc_bdaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lock_sock(sk);
 
@@ -371,6 +485,7 @@ static int rfcomm_sock_bind(struct socket *sock, struct sockaddr *addr, int addr
 		goto done;
 	}
 
+<<<<<<< HEAD
 	write_lock_bh(&rfcomm_sk_list.lock);
 
 	if (sa.rc_channel && __rfcomm_get_sock_by_addr(sa.rc_channel, &sa.rc_bdaddr)) {
@@ -378,11 +493,25 @@ static int rfcomm_sock_bind(struct socket *sock, struct sockaddr *addr, int addr
 	} else {
 		/* Save source address */
 		bacpy(&bt_sk(sk)->src, &sa.rc_bdaddr);
+=======
+	write_lock(&rfcomm_sk_list.lock);
+
+	if (sa.rc_channel &&
+	    __rfcomm_get_listen_sock_by_addr(sa.rc_channel, &sa.rc_bdaddr)) {
+		err = -EADDRINUSE;
+	} else {
+		/* Save source address */
+		bacpy(&rfcomm_pi(sk)->src, &sa.rc_bdaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rfcomm_pi(sk)->channel = sa.rc_channel;
 		sk->sk_state = BT_BOUND;
 	}
 
+<<<<<<< HEAD
 	write_unlock_bh(&rfcomm_sk_list.lock);
+=======
+	write_unlock(&rfcomm_sk_list.lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 done:
 	release_sock(sk);
@@ -402,6 +531,10 @@ static int rfcomm_sock_connect(struct socket *sock, struct sockaddr *addr, int a
 	    addr->sa_family != AF_BLUETOOTH)
 		return -EINVAL;
 
+<<<<<<< HEAD
+=======
+	sock_hold(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lock_sock(sk);
 
 	if (sk->sk_state != BT_OPEN && sk->sk_state != BT_BOUND) {
@@ -415,19 +548,36 @@ static int rfcomm_sock_connect(struct socket *sock, struct sockaddr *addr, int a
 	}
 
 	sk->sk_state = BT_CONNECT;
+<<<<<<< HEAD
 	bacpy(&bt_sk(sk)->dst, &sa->rc_bdaddr);
+=======
+	bacpy(&rfcomm_pi(sk)->dst, &sa->rc_bdaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfcomm_pi(sk)->channel = sa->rc_channel;
 
 	d->sec_level = rfcomm_pi(sk)->sec_level;
 	d->role_switch = rfcomm_pi(sk)->role_switch;
 
+<<<<<<< HEAD
 	err = rfcomm_dlc_open(d, &bt_sk(sk)->src, &sa->rc_bdaddr, sa->rc_channel);
 	if (!err)
+=======
+	/* Drop sock lock to avoid potential deadlock with the RFCOMM lock */
+	release_sock(sk);
+	err = rfcomm_dlc_open(d, &rfcomm_pi(sk)->src, &sa->rc_bdaddr,
+			      sa->rc_channel);
+	lock_sock(sk);
+	if (!err && !sock_flag(sk, SOCK_ZAPPED))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = bt_sock_wait_state(sk, BT_CONNECTED,
 				sock_sndtimeo(sk, flags & O_NONBLOCK));
 
 done:
 	release_sock(sk);
+<<<<<<< HEAD
+=======
+	sock_put(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -451,21 +601,36 @@ static int rfcomm_sock_listen(struct socket *sock, int backlog)
 	}
 
 	if (!rfcomm_pi(sk)->channel) {
+<<<<<<< HEAD
 		bdaddr_t *src = &bt_sk(sk)->src;
+=======
+		bdaddr_t *src = &rfcomm_pi(sk)->src;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u8 channel;
 
 		err = -EINVAL;
 
+<<<<<<< HEAD
 		write_lock_bh(&rfcomm_sk_list.lock);
 
 		for (channel = 1; channel < 31; channel++)
 			if (!__rfcomm_get_sock_by_addr(channel, src)) {
+=======
+		write_lock(&rfcomm_sk_list.lock);
+
+		for (channel = 1; channel < 31; channel++)
+			if (!__rfcomm_get_listen_sock_by_addr(channel, src)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rfcomm_pi(sk)->channel = channel;
 				err = 0;
 				break;
 			}
 
+<<<<<<< HEAD
 		write_unlock_bh(&rfcomm_sk_list.lock);
+=======
+		write_unlock(&rfcomm_sk_list.lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (err < 0)
 			goto done;
@@ -480,19 +645,30 @@ done:
 	return err;
 }
 
+<<<<<<< HEAD
 static int rfcomm_sock_accept(struct socket *sock, struct socket *newsock, int flags)
 {
 	DECLARE_WAITQUEUE(wait, current);
+=======
+static int rfcomm_sock_accept(struct socket *sock, struct socket *newsock, int flags,
+			      bool kern)
+{
+	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sock *sk = sock->sk, *nsk;
 	long timeo;
 	int err = 0;
 
+<<<<<<< HEAD
 	lock_sock(sk);
 
 	if (sk->sk_state != BT_LISTEN) {
 		err = -EBADFD;
 		goto done;
 	}
+=======
+	lock_sock_nested(sk, SINGLE_DEPTH_NESTING);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sk->sk_type != SOCK_STREAM) {
 		err = -EINVAL;
@@ -505,6 +681,7 @@ static int rfcomm_sock_accept(struct socket *sock, struct socket *newsock, int f
 
 	/* Wait for an incoming connection. (wake-one). */
 	add_wait_queue_exclusive(sk_sleep(sk), &wait);
+<<<<<<< HEAD
 	while (!(nsk = bt_accept_dequeue(sk, newsock))) {
 		set_current_state(TASK_INTERRUPTIBLE);
 		if (!timeo) {
@@ -518,6 +695,20 @@ static int rfcomm_sock_accept(struct socket *sock, struct socket *newsock, int f
 
 		if (sk->sk_state != BT_LISTEN) {
 			err = -EBADFD;
+=======
+	while (1) {
+		if (sk->sk_state != BT_LISTEN) {
+			err = -EBADFD;
+			break;
+		}
+
+		nsk = bt_accept_dequeue(sk, newsock);
+		if (nsk)
+			break;
+
+		if (!timeo) {
+			err = -EAGAIN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 
@@ -525,8 +716,18 @@ static int rfcomm_sock_accept(struct socket *sock, struct socket *newsock, int f
 			err = sock_intr_errno(timeo);
 			break;
 		}
+<<<<<<< HEAD
 	}
 	set_current_state(TASK_RUNNING);
+=======
+
+		release_sock(sk);
+
+		timeo = wait_woken(&wait, TASK_INTERRUPTIBLE, timeo);
+
+		lock_sock_nested(sk, SINGLE_DEPTH_NESTING);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	remove_wait_queue(sk_sleep(sk), &wait);
 
 	if (err)
@@ -541,13 +742,18 @@ done:
 	return err;
 }
 
+<<<<<<< HEAD
 static int rfcomm_sock_getname(struct socket *sock, struct sockaddr *addr, int *len, int peer)
+=======
+static int rfcomm_sock_getname(struct socket *sock, struct sockaddr *addr, int peer)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sockaddr_rc *sa = (struct sockaddr_rc *) addr;
 	struct sock *sk = sock->sk;
 
 	BT_DBG("sock %p, sk %p", sock, sk);
 
+<<<<<<< HEAD
 	sa->rc_family  = AF_BLUETOOTH;
 	sa->rc_channel = rfcomm_pi(sk)->channel;
 	if (peer)
@@ -561,11 +767,34 @@ static int rfcomm_sock_getname(struct socket *sock, struct sockaddr *addr, int *
 
 static int rfcomm_sock_sendmsg(struct kiocb *iocb, struct socket *sock,
 			       struct msghdr *msg, size_t len)
+=======
+	if (peer && sk->sk_state != BT_CONNECTED &&
+	    sk->sk_state != BT_CONNECT && sk->sk_state != BT_CONNECT2)
+		return -ENOTCONN;
+
+	memset(sa, 0, sizeof(*sa));
+	sa->rc_family  = AF_BLUETOOTH;
+	sa->rc_channel = rfcomm_pi(sk)->channel;
+	if (peer)
+		bacpy(&sa->rc_bdaddr, &rfcomm_pi(sk)->dst);
+	else
+		bacpy(&sa->rc_bdaddr, &rfcomm_pi(sk)->src);
+
+	return sizeof(struct sockaddr_rc);
+}
+
+static int rfcomm_sock_sendmsg(struct socket *sock, struct msghdr *msg,
+			       size_t len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct rfcomm_dlc *d = rfcomm_pi(sk)->dlc;
 	struct sk_buff *skb;
+<<<<<<< HEAD
 	int sent = 0;
+=======
+	int sent;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (test_bit(RFCOMM_DEFER_SETUP, &d->flags))
 		return -ENOTCONN;
@@ -580,6 +809,7 @@ static int rfcomm_sock_sendmsg(struct kiocb *iocb, struct socket *sock,
 
 	lock_sock(sk);
 
+<<<<<<< HEAD
 	while (len) {
 		size_t size = min_t(size_t, len, d->mtu);
 		int err;
@@ -620,6 +850,29 @@ static int rfcomm_sock_sendmsg(struct kiocb *iocb, struct socket *sock,
 
 static int rfcomm_sock_recvmsg(struct kiocb *iocb, struct socket *sock,
 			       struct msghdr *msg, size_t size, int flags)
+=======
+	sent = bt_sock_wait_ready(sk, msg->msg_flags);
+
+	release_sock(sk);
+
+	if (sent)
+		return sent;
+
+	skb = bt_skb_sendmmsg(sk, msg, len, d->mtu, RFCOMM_SKB_HEAD_RESERVE,
+			      RFCOMM_SKB_TAIL_RESERVE);
+	if (IS_ERR(skb))
+		return PTR_ERR(skb);
+
+	sent = rfcomm_dlc_send(d, skb);
+	if (sent < 0)
+		kfree_skb(skb);
+
+	return sent;
+}
+
+static int rfcomm_sock_recvmsg(struct socket *sock, struct msghdr *msg,
+			       size_t size, int flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct rfcomm_dlc *d = rfcomm_pi(sk)->dlc;
@@ -630,7 +883,11 @@ static int rfcomm_sock_recvmsg(struct kiocb *iocb, struct socket *sock,
 		return 0;
 	}
 
+<<<<<<< HEAD
 	len = bt_sock_stream_recvmsg(iocb, sock, msg, size, flags);
+=======
+	len = bt_sock_stream_recvmsg(sock, msg, size, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lock_sock(sk);
 	if (!(flags & MSG_PEEK) && len > 0)
@@ -643,7 +900,12 @@ static int rfcomm_sock_recvmsg(struct kiocb *iocb, struct socket *sock,
 	return len;
 }
 
+<<<<<<< HEAD
 static int rfcomm_sock_setsockopt_old(struct socket *sock, int optname, char __user *optval, unsigned int optlen)
+=======
+static int rfcomm_sock_setsockopt_old(struct socket *sock, int optname,
+		sockptr_t optval, unsigned int optlen)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	int err = 0;
@@ -655,11 +917,23 @@ static int rfcomm_sock_setsockopt_old(struct socket *sock, int optname, char __u
 
 	switch (optname) {
 	case RFCOMM_LM:
+<<<<<<< HEAD
 		if (get_user(opt, (u32 __user *) optval)) {
+=======
+		if (bt_copy_from_sockptr(&opt, sizeof(opt), optval, optlen)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EFAULT;
 			break;
 		}
 
+<<<<<<< HEAD
+=======
+		if (opt & RFCOMM_LM_FIPS) {
+			err = -EINVAL;
+			break;
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (opt & RFCOMM_LM_AUTH)
 			rfcomm_pi(sk)->sec_level = BT_SECURITY_LOW;
 		if (opt & RFCOMM_LM_ENCRYPT)
@@ -679,11 +953,20 @@ static int rfcomm_sock_setsockopt_old(struct socket *sock, int optname, char __u
 	return err;
 }
 
+<<<<<<< HEAD
 static int rfcomm_sock_setsockopt(struct socket *sock, int level, int optname, char __user *optval, unsigned int optlen)
 {
 	struct sock *sk = sock->sk;
 	struct bt_security sec;
 	int len, err = 0;
+=======
+static int rfcomm_sock_setsockopt(struct socket *sock, int level, int optname,
+		sockptr_t optval, unsigned int optlen)
+{
+	struct sock *sk = sock->sk;
+	struct bt_security sec;
+	int err = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 opt;
 
 	BT_DBG("sk %p", sk);
@@ -705,6 +988,7 @@ static int rfcomm_sock_setsockopt(struct socket *sock, int level, int optname, c
 
 		sec.level = BT_SECURITY_LOW;
 
+<<<<<<< HEAD
 		len = min_t(unsigned int, sizeof(sec), optlen);
 		if (copy_from_user((char *) &sec, optval, len)) {
 			err = -EFAULT;
@@ -712,12 +996,22 @@ static int rfcomm_sock_setsockopt(struct socket *sock, int level, int optname, c
 		}
 
 		if (sec.level > BT_SECURITY_VERY_HIGH) {
+=======
+		err = bt_copy_from_sockptr(&sec, sizeof(sec), optval, optlen);
+		if (err)
+			break;
+
+		if (sec.level > BT_SECURITY_HIGH) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EINVAL;
 			break;
 		}
 
 		rfcomm_pi(sk)->sec_level = sec.level;
+<<<<<<< HEAD
 		BT_DBG("set to %d", sec.level);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case BT_DEFER_SETUP:
@@ -726,12 +1020,24 @@ static int rfcomm_sock_setsockopt(struct socket *sock, int level, int optname, c
 			break;
 		}
 
+<<<<<<< HEAD
 		if (get_user(opt, (u32 __user *) optval)) {
 			err = -EFAULT;
 			break;
 		}
 
 		bt_sk(sk)->defer_setup = opt;
+=======
+		err = bt_copy_from_sockptr(&opt, sizeof(opt), optval, optlen);
+		if (err)
+			break;
+
+		if (opt)
+			set_bit(BT_SK_DEFER_SETUP, &bt_sk(sk)->flags);
+		else
+			clear_bit(BT_SK_DEFER_SETUP, &bt_sk(sk)->flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -747,6 +1053,10 @@ static int rfcomm_sock_getsockopt_old(struct socket *sock, int optname, char __u
 {
 	struct sock *sk = sock->sk;
 	struct sock *l2cap_sk;
+<<<<<<< HEAD
+=======
+	struct l2cap_conn *conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rfcomm_conninfo cinfo;
 	int len, err = 0;
 	u32 opt;
@@ -768,9 +1078,18 @@ static int rfcomm_sock_getsockopt_old(struct socket *sock, int optname, char __u
 			opt = RFCOMM_LM_AUTH | RFCOMM_LM_ENCRYPT;
 			break;
 		case BT_SECURITY_HIGH:
+<<<<<<< HEAD
 		case BT_SECURITY_VERY_HIGH:
 			opt = RFCOMM_LM_AUTH | RFCOMM_LM_ENCRYPT |
 							RFCOMM_LM_SECURE;
+=======
+			opt = RFCOMM_LM_AUTH | RFCOMM_LM_ENCRYPT |
+			      RFCOMM_LM_SECURE;
+			break;
+		case BT_SECURITY_FIPS:
+			opt = RFCOMM_LM_AUTH | RFCOMM_LM_ENCRYPT |
+			      RFCOMM_LM_SECURE | RFCOMM_LM_FIPS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		default:
 			opt = 0;
@@ -782,6 +1101,10 @@ static int rfcomm_sock_getsockopt_old(struct socket *sock, int optname, char __u
 
 		if (put_user(opt, (u32 __user *) optval))
 			err = -EFAULT;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case RFCOMM_CONNINFO:
@@ -792,9 +1115,17 @@ static int rfcomm_sock_getsockopt_old(struct socket *sock, int optname, char __u
 		}
 
 		l2cap_sk = rfcomm_pi(sk)->dlc->session->sock->sk;
+<<<<<<< HEAD
 
 		cinfo.hci_handle = l2cap_pi(l2cap_sk)->conn->hcon->handle;
 		memcpy(cinfo.dev_class, l2cap_pi(l2cap_sk)->conn->hcon->dev_class, 3);
+=======
+		conn = l2cap_pi(l2cap_sk)->chan->conn;
+
+		memset(&cinfo, 0, sizeof(cinfo));
+		cinfo.hci_handle = conn->hcon->handle;
+		memcpy(cinfo.dev_class, conn->hcon->dev_class, 3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		len = min_t(unsigned int, len, sizeof(cinfo));
 		if (copy_to_user(optval, (char *) &cinfo, len))
@@ -838,6 +1169,10 @@ static int rfcomm_sock_getsockopt(struct socket *sock, int level, int optname, c
 		}
 
 		sec.level = rfcomm_pi(sk)->sec_level;
+<<<<<<< HEAD
+=======
+		sec.key_size = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		len = min_t(unsigned int, len, sizeof(sec));
 		if (copy_to_user(optval, (char *) &sec, len))
@@ -851,7 +1186,12 @@ static int rfcomm_sock_getsockopt(struct socket *sock, int level, int optname, c
 			break;
 		}
 
+<<<<<<< HEAD
 		if (put_user(bt_sk(sk)->defer_setup, (u32 __user *) optval))
+=======
+		if (put_user(test_bit(BT_SK_DEFER_SETUP, &bt_sk(sk)->flags),
+			     (u32 __user *) optval))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -EFAULT;
 
 		break;
@@ -887,6 +1227,16 @@ static int rfcomm_sock_ioctl(struct socket *sock, unsigned int cmd, unsigned lon
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_COMPAT
+static int rfcomm_sock_compat_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
+{
+	return rfcomm_sock_ioctl(sock, cmd, (unsigned long)compat_ptr(arg));
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int rfcomm_sock_shutdown(struct socket *sock, int how)
 {
 	struct sock *sk = sock->sk;
@@ -900,9 +1250,19 @@ static int rfcomm_sock_shutdown(struct socket *sock, int how)
 	lock_sock(sk);
 	if (!sk->sk_shutdown) {
 		sk->sk_shutdown = SHUTDOWN_MASK;
+<<<<<<< HEAD
 		__rfcomm_sock_close(sk);
 
 		if (sock_flag(sk, SOCK_LINGER) && sk->sk_lingertime)
+=======
+
+		release_sock(sk);
+		__rfcomm_sock_close(sk);
+		lock_sock(sk);
+
+		if (sock_flag(sk, SOCK_LINGER) && sk->sk_lingertime &&
+		    !(current->flags & PF_EXITING))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = bt_sock_wait_state(sk, BT_CLOSED, sk->sk_lingertime);
 	}
 	release_sock(sk);
@@ -945,7 +1305,11 @@ int rfcomm_connect_ind(struct rfcomm_session *s, u8 channel, struct rfcomm_dlc *
 	if (!parent)
 		return 0;
 
+<<<<<<< HEAD
 	bh_lock_sock(parent);
+=======
+	lock_sock(parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Check for backlog size */
 	if (sk_acceptq_is_full(parent)) {
@@ -953,6 +1317,7 @@ int rfcomm_connect_ind(struct rfcomm_session *s, u8 channel, struct rfcomm_dlc *
 		goto done;
 	}
 
+<<<<<<< HEAD
 	sk = rfcomm_sock_alloc(sock_net(parent), NULL, BTPROTO_RFCOMM, GFP_ATOMIC);
 	if (!sk)
 		goto done;
@@ -964,15 +1329,36 @@ int rfcomm_connect_ind(struct rfcomm_session *s, u8 channel, struct rfcomm_dlc *
 
 	sk->sk_state = BT_CONFIG;
 	bt_accept_enqueue(parent, sk);
+=======
+	sk = rfcomm_sock_alloc(sock_net(parent), NULL, BTPROTO_RFCOMM, GFP_ATOMIC, 0);
+	if (!sk)
+		goto done;
+
+	bt_sock_reclassify_lock(sk, BTPROTO_RFCOMM);
+
+	rfcomm_sock_init(sk, parent);
+	bacpy(&rfcomm_pi(sk)->src, &src);
+	bacpy(&rfcomm_pi(sk)->dst, &dst);
+	rfcomm_pi(sk)->channel = channel;
+
+	sk->sk_state = BT_CONFIG;
+	bt_accept_enqueue(parent, sk, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Accept connection and return socket DLC */
 	*d = rfcomm_pi(sk)->dlc;
 	result = 1;
 
 done:
+<<<<<<< HEAD
 	bh_unlock_sock(parent);
 
 	if (bt_sk(parent)->defer_setup)
+=======
+	release_sock(parent);
+
+	if (test_bit(BT_SK_DEFER_SETUP, &bt_sk(parent)->flags))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		parent->sk_state_change(parent);
 
 	return result;
@@ -981,6 +1367,7 @@ done:
 static int rfcomm_sock_debugfs_show(struct seq_file *f, void *p)
 {
 	struct sock *sk;
+<<<<<<< HEAD
 	struct hlist_node *node;
 
 	read_lock_bh(&rfcomm_sk_list.lock);
@@ -993,10 +1380,23 @@ static int rfcomm_sock_debugfs_show(struct seq_file *f, void *p)
 	}
 
 	read_unlock_bh(&rfcomm_sk_list.lock);
+=======
+
+	read_lock(&rfcomm_sk_list.lock);
+
+	sk_for_each(sk, &rfcomm_sk_list.head) {
+		seq_printf(f, "%pMR %pMR %d %d\n",
+			   &rfcomm_pi(sk)->src, &rfcomm_pi(sk)->dst,
+			   sk->sk_state, rfcomm_pi(sk)->channel);
+	}
+
+	read_unlock(&rfcomm_sk_list.lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int rfcomm_sock_debugfs_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, rfcomm_sock_debugfs_show, inode->i_private);
@@ -1008,6 +1408,9 @@ static const struct file_operations rfcomm_sock_debugfs_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+=======
+DEFINE_SHOW_ATTRIBUTE(rfcomm_sock_debugfs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct dentry *rfcomm_sock_debugfs;
 
@@ -1026,9 +1429,19 @@ static const struct proto_ops rfcomm_sock_ops = {
 	.setsockopt	= rfcomm_sock_setsockopt,
 	.getsockopt	= rfcomm_sock_getsockopt,
 	.ioctl		= rfcomm_sock_ioctl,
+<<<<<<< HEAD
 	.poll		= bt_sock_poll,
 	.socketpair	= sock_no_socketpair,
 	.mmap		= sock_no_mmap
+=======
+	.gettstamp	= sock_gettstamp,
+	.poll		= bt_sock_poll,
+	.socketpair	= sock_no_socketpair,
+	.mmap		= sock_no_mmap,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl	= rfcomm_sock_compat_ioctl,
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct net_proto_family rfcomm_sock_family_ops = {
@@ -1041,11 +1454,17 @@ int __init rfcomm_init_sockets(void)
 {
 	int err;
 
+<<<<<<< HEAD
+=======
+	BUILD_BUG_ON(sizeof(struct sockaddr_rc) > sizeof(struct sockaddr));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = proto_register(&rfcomm_proto, 0);
 	if (err < 0)
 		return err;
 
 	err = bt_sock_register(BTPROTO_RFCOMM, &rfcomm_sock_family_ops);
+<<<<<<< HEAD
 	if (err < 0)
 		goto error;
 
@@ -1054,24 +1473,57 @@ int __init rfcomm_init_sockets(void)
 				bt_debugfs, NULL, &rfcomm_sock_debugfs_fops);
 		if (!rfcomm_sock_debugfs)
 			BT_ERR("Failed to create RFCOMM debug file");
+=======
+	if (err < 0) {
+		BT_ERR("RFCOMM socket layer registration failed");
+		goto error;
+	}
+
+	err = bt_procfs_init(&init_net, "rfcomm", &rfcomm_sk_list, NULL);
+	if (err < 0) {
+		BT_ERR("Failed to create RFCOMM proc file");
+		bt_sock_unregister(BTPROTO_RFCOMM);
+		goto error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	BT_INFO("RFCOMM socket layer initialized");
 
+<<<<<<< HEAD
 	return 0;
 
 error:
 	BT_ERR("RFCOMM socket layer registration failed");
+=======
+	if (IS_ERR_OR_NULL(bt_debugfs))
+		return 0;
+
+	rfcomm_sock_debugfs = debugfs_create_file("rfcomm", 0444,
+						  bt_debugfs, NULL,
+						  &rfcomm_sock_debugfs_fops);
+
+	return 0;
+
+error:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	proto_unregister(&rfcomm_proto);
 	return err;
 }
 
 void __exit rfcomm_cleanup_sockets(void)
 {
+<<<<<<< HEAD
 	debugfs_remove(rfcomm_sock_debugfs);
 
 	if (bt_sock_unregister(BTPROTO_RFCOMM) < 0)
 		BT_ERR("RFCOMM socket layer unregistration failed");
+=======
+	bt_procfs_cleanup(&init_net, "rfcomm");
+
+	debugfs_remove(rfcomm_sock_debugfs);
+
+	bt_sock_unregister(BTPROTO_RFCOMM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	proto_unregister(&rfcomm_proto);
 }

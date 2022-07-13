@@ -776,7 +776,11 @@ muls64_zero:
 # ALGORITHM ***********************************************************	#
 #	In the interest of simplicity, all operands are converted to	#
 # longword size whether the operation is byte, word, or long. The	#
+<<<<<<< HEAD
 # bounds are sign extended accordingly. If Rn is a data regsiter, Rn is #
+=======
+# bounds are sign extended accordingly. If Rn is a data register, Rn is #
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # also sign extended. If Rn is an address register, it need not be sign #
 # extended since the full register is always used.			#
 #	The condition codes are set correctly before the final "rts".	#

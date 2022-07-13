@@ -24,12 +24,21 @@
  * warranty of any kind, whether express or implied.
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/pci.h>
 #include <linux/hw_random.h>
 #include <linux/delay.h>
 #include <asm/io.h>
+=======
+#include <linux/delay.h>
+#include <linux/hw_random.h>
+#include <linux/io.h>
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/pci.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define PFX	KBUILD_MODNAME ": "
@@ -51,10 +60,22 @@ static const struct pci_device_id pci_tbl[] = {
 };
 MODULE_DEVICE_TABLE(pci, pci_tbl);
 
+<<<<<<< HEAD
 
 static int geode_rng_data_read(struct hwrng *rng, u32 *data)
 {
 	void __iomem *mem = (void __iomem *)rng->priv;
+=======
+struct amd_geode_priv {
+	struct pci_dev *pcidev;
+	void __iomem *membase;
+};
+
+static int geode_rng_data_read(struct hwrng *rng, u32 *data)
+{
+	struct amd_geode_priv *priv = (struct amd_geode_priv *)rng->priv;
+	void __iomem *mem = priv->membase;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*data = readl(mem + GEODE_RNG_DATA_REG);
 
@@ -63,7 +84,12 @@ static int geode_rng_data_read(struct hwrng *rng, u32 *data)
 
 static int geode_rng_data_present(struct hwrng *rng, int wait)
 {
+<<<<<<< HEAD
 	void __iomem *mem = (void __iomem *)rng->priv;
+=======
+	struct amd_geode_priv *priv = (struct amd_geode_priv *)rng->priv;
+	void __iomem *mem = priv->membase;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int data, i;
 
 	for (i = 0; i < 20; i++) {
@@ -83,13 +109,21 @@ static struct hwrng geode_rng = {
 };
 
 
+<<<<<<< HEAD
 static int __init mod_init(void)
+=======
+static int __init geode_rng_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = -ENODEV;
 	struct pci_dev *pdev = NULL;
 	const struct pci_device_id *ent;
 	void __iomem *mem;
 	unsigned long rng_base;
+<<<<<<< HEAD
+=======
+	struct amd_geode_priv *priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for_each_pci_dev(pdev) {
 		ent = pci_match_id(pci_tbl, pdev);
@@ -97,6 +131,7 @@ static int __init mod_init(void)
 			goto found;
 	}
 	/* Device not found. */
+<<<<<<< HEAD
 	goto out;
 
 found:
@@ -117,10 +152,41 @@ found:
 		goto err_unmap;
 	}
 out:
+=======
+	return err;
+
+found:
+	priv = kzalloc(sizeof(*priv), GFP_KERNEL);
+	if (!priv) {
+		err = -ENOMEM;
+		goto put_dev;
+	}
+
+	rng_base = pci_resource_start(pdev, 0);
+	if (rng_base == 0)
+		goto free_priv;
+	err = -ENOMEM;
+	mem = ioremap(rng_base, 0x58);
+	if (!mem)
+		goto free_priv;
+
+	geode_rng.priv = (unsigned long)priv;
+	priv->membase = mem;
+	priv->pcidev = pdev;
+
+	pr_info("AMD Geode RNG detected\n");
+	err = hwrng_register(&geode_rng);
+	if (err) {
+		pr_err(PFX "RNG registering failed (%d)\n",
+		       err);
+		goto err_unmap;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 
 err_unmap:
 	iounmap(mem);
+<<<<<<< HEAD
 	goto out;
 }
 
@@ -134,6 +200,28 @@ static void __exit mod_exit(void)
 
 module_init(mod_init);
 module_exit(mod_exit);
+=======
+free_priv:
+	kfree(priv);
+put_dev:
+	pci_dev_put(pdev);
+	return err;
+}
+
+static void __exit geode_rng_exit(void)
+{
+	struct amd_geode_priv *priv;
+
+	priv = (struct amd_geode_priv *)geode_rng.priv;
+	hwrng_unregister(&geode_rng);
+	iounmap(priv->membase);
+	pci_dev_put(priv->pcidev);
+	kfree(priv);
+}
+
+module_init(geode_rng_init);
+module_exit(geode_rng_exit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("H/W RNG driver for AMD Geode LX CPUs");
 MODULE_LICENSE("GPL");

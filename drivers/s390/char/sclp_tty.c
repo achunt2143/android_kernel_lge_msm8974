@@ -1,14 +1,26 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/char/sclp_tty.c
  *    SCLP line mode terminal driver.
  *
  *  S390 version
  *    Copyright (C) 1999 IBM Deutschland Entwicklung GmbH, IBM Corporation
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ *    SCLP line mode terminal driver.
+ *
+ *  S390 version
+ *    Copyright IBM Corp. 1999
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Martin Peschke <mpeschke@de.ibm.com>
  *		 Martin Schwidefsky <schwidefsky@de.ibm.com>
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kmod.h>
 #include <linux/tty.h>
 #include <linux/tty_driver.h>
@@ -17,7 +29,11 @@
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ctrlchar.h"
 #include "sclp.h"
@@ -36,11 +52,19 @@
  */
 
 /* Lock to guard over changes to global variables. */
+<<<<<<< HEAD
 static spinlock_t sclp_tty_lock;
 /* List of free pages that can be used for console output buffering. */
 static struct list_head sclp_tty_pages;
 /* List of full struct sclp_buffer structures ready for output. */
 static struct list_head sclp_tty_outqueue;
+=======
+static DEFINE_SPINLOCK(sclp_tty_lock);
+/* List of free pages that can be used for console output buffering. */
+static LIST_HEAD(sclp_tty_pages);
+/* List of full struct sclp_buffer structures ready for output. */
+static LIST_HEAD(sclp_tty_outqueue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Counter how many buffers are emitted. */
 static int sclp_tty_buffer_count;
 /* Pointer to current console buffer. */
@@ -48,15 +72,25 @@ static struct sclp_buffer *sclp_ttybuf;
 /* Timer for delayed output of console messages. */
 static struct timer_list sclp_tty_timer;
 
+<<<<<<< HEAD
 static struct tty_struct *sclp_tty;
 static unsigned char sclp_tty_chars[SCLP_TTY_BUF_SIZE];
+=======
+static struct tty_port sclp_port;
+static u8 sclp_tty_chars[SCLP_TTY_BUF_SIZE];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned short int sclp_tty_chars_count;
 
 struct tty_driver *sclp_tty_driver;
 
 static int sclp_tty_tolower;
+<<<<<<< HEAD
 static int sclp_tty_columns = 80;
 
+=======
+
+#define SCLP_TTY_COLUMNS 320
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SPACES_PER_TAB 8
 #define CASE_DELIMITER 0x6c /* to separate upper and lower case (% in EBCDIC) */
 
@@ -64,9 +98,14 @@ static int sclp_tty_columns = 80;
 static int
 sclp_tty_open(struct tty_struct *tty, struct file *filp)
 {
+<<<<<<< HEAD
 	sclp_tty = tty;
 	tty->driver_data = NULL;
 	tty->low_latency = 0;
+=======
+	tty_port_tty_set(&sclp_port, tty);
+	tty->driver_data = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -76,7 +115,11 @@ sclp_tty_close(struct tty_struct *tty, struct file *filp)
 {
 	if (tty->count > 1)
 		return;
+<<<<<<< HEAD
 	sclp_tty = NULL;
+=======
+	tty_port_tty_set(&sclp_port, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -85,22 +128,39 @@ sclp_tty_close(struct tty_struct *tty, struct file *filp)
  * to change as output buffers get emptied, or if the output flow
  * control is acted. This is not an exact number because not every
  * character needs the same space in the sccb. The worst case is
+<<<<<<< HEAD
  * a string of newlines. Every newlines creates a new mto which
  * needs 8 bytes.
  */
 static int
+=======
+ * a string of newlines. Every newline creates a new message which
+ * needs 82 bytes.
+ */
+static unsigned int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sclp_tty_write_room (struct tty_struct *tty)
 {
 	unsigned long flags;
 	struct list_head *l;
+<<<<<<< HEAD
 	int count;
+=======
+	unsigned int count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&sclp_tty_lock, flags);
 	count = 0;
 	if (sclp_ttybuf != NULL)
+<<<<<<< HEAD
 		count = sclp_buffer_space(sclp_ttybuf) / sizeof(struct mto);
 	list_for_each(l, &sclp_tty_pages)
 		count += NR_EMPTY_MTO_PER_SCCB;
+=======
+		count = sclp_buffer_space(sclp_ttybuf) / sizeof(struct msg_buf);
+	list_for_each(l, &sclp_tty_pages)
+		count += NR_EMPTY_MSG_PER_SCCB;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&sclp_tty_lock, flags);
 	return count;
 }
@@ -125,10 +185,15 @@ sclp_ttybuf_callback(struct sclp_buffer *buffer, int rc)
 					    struct sclp_buffer, list);
 		spin_unlock_irqrestore(&sclp_tty_lock, flags);
 	} while (buffer && sclp_emit_buffer(buffer, sclp_ttybuf_callback));
+<<<<<<< HEAD
 	/* check if the tty needs a wake up call */
 	if (sclp_tty != NULL) {
 		tty_wakeup(sclp_tty);
 	}
+=======
+
+	tty_port_tty_wakeup(&sclp_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void
@@ -154,7 +219,11 @@ __sclp_ttybuf_emit(struct sclp_buffer *buffer)
  * temporary write buffer.
  */
 static void
+<<<<<<< HEAD
 sclp_tty_timeout(unsigned long data)
+=======
+sclp_tty_timeout(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	struct sclp_buffer *buf;
@@ -172,7 +241,11 @@ sclp_tty_timeout(unsigned long data)
 /*
  * Write a string to the sclp tty.
  */
+<<<<<<< HEAD
 static int sclp_tty_write_string(const unsigned char *str, int count, int may_fail)
+=======
+static int sclp_tty_write_string(const u8 *str, int count, int may_fail)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	void *page;
@@ -197,7 +270,11 @@ static int sclp_tty_write_string(const unsigned char *str, int count, int may_fa
 			}
 			page = sclp_tty_pages.next;
 			list_del((struct list_head *) page);
+<<<<<<< HEAD
 			sclp_ttybuf = sclp_make_buffer(page, sclp_tty_columns,
+=======
+			sclp_ttybuf = sclp_make_buffer(page, SCLP_TTY_COLUMNS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						       SPACES_PER_TAB);
 		}
 		/* try to write the string to the current output buffer */
@@ -221,11 +298,15 @@ static int sclp_tty_write_string(const unsigned char *str, int count, int may_fa
 	/* Setup timer to output current console buffer after 1/10 second */
 	if (sclp_ttybuf && sclp_chars_in_buffer(sclp_ttybuf) &&
 	    !timer_pending(&sclp_tty_timer)) {
+<<<<<<< HEAD
 		init_timer(&sclp_tty_timer);
 		sclp_tty_timer.function = sclp_tty_timeout;
 		sclp_tty_timer.data = 0UL;
 		sclp_tty_timer.expires = jiffies + HZ/10;
 		add_timer(&sclp_tty_timer);
+=======
+		mod_timer(&sclp_tty_timer, jiffies + HZ / 10);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock_irqrestore(&sclp_tty_lock, flags);
 out:
@@ -237,8 +318,13 @@ out:
  * tty device. The characters may come from user space or kernel space. This
  * routine will return the number of characters actually accepted for writing.
  */
+<<<<<<< HEAD
 static int
 sclp_tty_write(struct tty_struct *tty, const unsigned char *buf, int count)
+=======
+static ssize_t
+sclp_tty_write(struct tty_struct *tty, const u8 *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (sclp_tty_chars_count > 0) {
 		sclp_tty_write_string(sclp_tty_chars, sclp_tty_chars_count, 0);
@@ -258,7 +344,11 @@ sclp_tty_write(struct tty_struct *tty, const unsigned char *buf, int count)
  * sclp_write() without final '\n' - will be written.
  */
 static int
+<<<<<<< HEAD
 sclp_tty_put_char(struct tty_struct *tty, unsigned char ch)
+=======
+sclp_tty_put_char(struct tty_struct *tty, u8 ch)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sclp_tty_chars[sclp_tty_chars_count++] = ch;
 	if (ch == '\n' || sclp_tty_chars_count >= SCLP_TTY_BUF_SIZE) {
@@ -288,6 +378,7 @@ sclp_tty_flush_chars(struct tty_struct *tty)
  * characters in the write buffer (will not be written as long as there is a
  * final line feed missing).
  */
+<<<<<<< HEAD
 static int
 sclp_tty_chars_in_buffer(struct tty_struct *tty)
 {
@@ -302,6 +393,19 @@ sclp_tty_chars_in_buffer(struct tty_struct *tty)
 		count = sclp_chars_in_buffer(sclp_ttybuf);
 	list_for_each(l, &sclp_tty_outqueue) {
 		t = list_entry(l, struct sclp_buffer, list);
+=======
+static unsigned int
+sclp_tty_chars_in_buffer(struct tty_struct *tty)
+{
+	unsigned long flags;
+	struct sclp_buffer *t;
+	unsigned int count = 0;
+
+	spin_lock_irqsave(&sclp_tty_lock, flags);
+	if (sclp_ttybuf != NULL)
+		count = sclp_chars_in_buffer(sclp_ttybuf);
+	list_for_each_entry(t, &sclp_tty_outqueue, list) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		count += sclp_chars_in_buffer(t);
 	}
 	spin_unlock_irqrestore(&sclp_tty_lock, flags);
@@ -326,21 +430,36 @@ sclp_tty_flush_buffer(struct tty_struct *tty)
 static void
 sclp_tty_input(unsigned char* buf, unsigned int count)
 {
+<<<<<<< HEAD
+=======
+	struct tty_struct *tty = tty_port_tty_get(&sclp_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int cchar;
 
 	/*
 	 * If this tty driver is currently closed
 	 * then throw the received input away.
 	 */
+<<<<<<< HEAD
 	if (sclp_tty == NULL)
 		return;
 	cchar = ctrlchar_handle(buf, count, sclp_tty);
+=======
+	if (tty == NULL)
+		return;
+	cchar = ctrlchar_handle(buf, count, tty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cchar & CTRLCHAR_MASK) {
 	case CTRLCHAR_SYSRQ:
 		break;
 	case CTRLCHAR_CTRL:
+<<<<<<< HEAD
 		tty_insert_flip_char(sclp_tty, cchar, TTY_NORMAL);
 		tty_flip_buffer_push(sclp_tty);
+=======
+		tty_insert_flip_char(&sclp_port, cchar, TTY_NORMAL);
+		tty_flip_buffer_push(&sclp_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case CTRLCHAR_NONE:
 		/* send (normal) input to line discipline */
@@ -348,6 +467,7 @@ sclp_tty_input(unsigned char* buf, unsigned int count)
 		    (strncmp((const char *) buf + count - 2, "^n", 2) &&
 		     strncmp((const char *) buf + count - 2, "\252n", 2))) {
 			/* add the auto \n */
+<<<<<<< HEAD
 			tty_insert_flip_string(sclp_tty, buf, count);
 			tty_insert_flip_char(sclp_tty, '\n', TTY_NORMAL);
 		} else
@@ -355,6 +475,16 @@ sclp_tty_input(unsigned char* buf, unsigned int count)
 		tty_flip_buffer_push(sclp_tty);
 		break;
 	}
+=======
+			tty_insert_flip_string(&sclp_port, buf, count);
+			tty_insert_flip_char(&sclp_port, '\n', TTY_NORMAL);
+		} else
+			tty_insert_flip_string(&sclp_port, buf, count - 2);
+		tty_flip_buffer_push(&sclp_port);
+		break;
+	}
+	tty_kref_put(tty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -507,6 +637,7 @@ sclp_tty_init(void)
 	int i;
 	int rc;
 
+<<<<<<< HEAD
 	if (!CONSOLE_IS_SCLP)
 		return 0;
 	driver = alloc_tty_driver(1);
@@ -524,10 +655,32 @@ sclp_tty_init(void)
 		page = (void *) get_zeroed_page(GFP_KERNEL | GFP_DMA);
 		if (page == NULL) {
 			put_tty_driver(driver);
+=======
+	/* z/VM multiplexes the line mode output on the 32xx screen */
+	if (MACHINE_IS_VM && !CONSOLE_IS_SCLP)
+		return 0;
+	if (!sclp.has_linemode)
+		return 0;
+	driver = tty_alloc_driver(1, TTY_DRIVER_REAL_RAW);
+	if (IS_ERR(driver))
+		return PTR_ERR(driver);
+
+	rc = sclp_rw_init();
+	if (rc) {
+		tty_driver_kref_put(driver);
+		return rc;
+	}
+	/* Allocate pages for output buffering */
+	for (i = 0; i < MAX_KMEM_PAGES; i++) {
+		page = (void *) get_zeroed_page(GFP_KERNEL | GFP_DMA);
+		if (page == NULL) {
+			tty_driver_kref_put(driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 		}
 		list_add_tail((struct list_head *) page, &sclp_tty_pages);
 	}
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&sclp_tty_outqueue);
 	spin_lock_init(&sclp_tty_lock);
 	init_timer(&sclp_tty_timer);
@@ -539,10 +692,17 @@ sclp_tty_init(void)
 		 * written at start of each line by VM/CP
 		 */
 		sclp_tty_columns = 76;
+=======
+	timer_setup(&sclp_tty_timer, sclp_tty_timeout, 0);
+	sclp_ttybuf = NULL;
+	sclp_tty_buffer_count = 0;
+	if (MACHINE_IS_VM) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* case input lines to lowercase */
 		sclp_tty_tolower = 1;
 	}
 	sclp_tty_chars_count = 0;
+<<<<<<< HEAD
 	sclp_tty = NULL;
 
 	rc = sclp_register(&sclp_input_event);
@@ -551,6 +711,17 @@ sclp_tty_init(void)
 		return rc;
 	}
 
+=======
+
+	rc = sclp_register(&sclp_input_event);
+	if (rc) {
+		tty_driver_kref_put(driver);
+		return rc;
+	}
+
+	tty_port_init(&sclp_port);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	driver->driver_name = "sclp_line";
 	driver->name = "sclp_line";
 	driver->major = TTY_MAJOR;
@@ -559,6 +730,7 @@ sclp_tty_init(void)
 	driver->subtype = SYSTEM_TYPE_TTY;
 	driver->init_termios = tty_std_termios;
 	driver->init_termios.c_iflag = IGNBRK | IGNPAR;
+<<<<<<< HEAD
 	driver->init_termios.c_oflag = ONLCR | XTABS;
 	driver->init_termios.c_lflag = ISIG | ECHO;
 	driver->flags = TTY_DRIVER_REAL_RAW;
@@ -566,9 +738,23 @@ sclp_tty_init(void)
 	rc = tty_register_driver(driver);
 	if (rc) {
 		put_tty_driver(driver);
+=======
+	driver->init_termios.c_oflag = ONLCR;
+	driver->init_termios.c_lflag = ISIG | ECHO;
+	tty_set_operations(driver, &sclp_ops);
+	tty_port_link_device(&sclp_port, driver, 0);
+	rc = tty_register_driver(driver);
+	if (rc) {
+		tty_driver_kref_put(driver);
+		tty_port_destroy(&sclp_port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return rc;
 	}
 	sclp_tty_driver = driver;
 	return 0;
 }
+<<<<<<< HEAD
 module_init(sclp_tty_init);
+=======
+device_initcall(sclp_tty_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * include/asm-sh/dma.h
  *
@@ -10,11 +11,22 @@
 #ifndef __ASM_SH_DMA_H
 #define __ASM_SH_DMA_H
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ * include/asm-sh/dma.h
+ *
+ * Copyright (C) 2003, 2004  Paul Mundt
+ */
+#ifndef __ASM_SH_DMA_H
+#define __ASM_SH_DMA_H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/spinlock.h>
 #include <linux/wait.h>
 #include <linux/sched.h>
 #include <linux/device.h>
+<<<<<<< HEAD
 #include <cpu/dma.h>
 #include <asm-generic/dma.h>
 
@@ -26,6 +38,10 @@
 #  define MAX_DMA_CHANNELS	0
 #endif
 
+=======
+#include <asm-generic/dma.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Read and write modes can mean drastically different things depending on the
  * channel configuration. Consult your DMAC documentation and module
@@ -150,6 +166,7 @@ extern int register_chan_caps(const char *dmac, struct dma_chan_caps *capslist);
 extern int dma_create_sysfs_files(struct dma_channel *, struct dma_info *);
 extern void dma_remove_sysfs_files(struct dma_channel *, struct dma_info *);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 extern int isa_dma_bridge_buggy;
 #else
@@ -157,4 +174,6 @@ extern int isa_dma_bridge_buggy;
 #endif
 
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_DMA_H */

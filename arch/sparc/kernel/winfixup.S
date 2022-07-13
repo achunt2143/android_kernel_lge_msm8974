@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* winfixup.S: Handle cases where user stack pointer is found to be bogus.
  *
  * Copyright (C) 1997, 2006 David S. Miller (davem@davemloft.net)
@@ -32,8 +36,12 @@ fill_fixup:
 	 rd	%pc, %g7
 	call	do_sparc64_fault
 	 add	%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt	%xcc, rtrap
 	 nop
+=======
+	ba,a,pt	%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Be very careful about usage of the trap globals here.
 	 * You cannot touch %g5 as that has the fault information.
@@ -43,6 +51,11 @@ spill_fixup_mna:
 spill_fixup_dax:
 	TRAP_LOAD_THREAD_REG(%g6, %g1)
 	ldx	[%g6 + TI_FLAGS], %g1
+<<<<<<< HEAD
+=======
+	andcc	%sp, 0x1, %g0
+	movne	%icc, 0, %g1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	andcc	%g1, _TIF_32BIT, %g0
 	ldub	[%g6 + TI_WSAVED], %g1
 	sll	%g1, 3, %g3
@@ -151,6 +164,14 @@ fill_fixup_dax:
 	call	sun4v_data_access_exception
 	 nop
 	ba,a,pt	%xcc, rtrap
+<<<<<<< HEAD
 1:	call	spitfire_data_access_exception
 	 nop
 	ba,a,pt	%xcc, rtrap
+=======
+	 nop
+1:	call	spitfire_data_access_exception
+	 nop
+	ba,a,pt	%xcc, rtrap
+	 nop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

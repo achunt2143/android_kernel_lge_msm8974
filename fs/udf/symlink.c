@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * symlink.c
  *
@@ -5,11 +9,14 @@
  *	Symlink handling routines for the OSTA-UDF(tm) filesystem.
  *
  * COPYRIGHT
+<<<<<<< HEAD
  *	This file is distributed under the terms of the GNU General Public
  *	License (GPL). Copies of the GPL can be obtained from:
  *		ftp://prep.ai.mit.edu/pub/gnu/GPL
  *	Each contributing author retains all rights to their own work.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  (C) 1998-2001 Ben Fennema
  *  (C) 1999 Stelias Computing Inc
  *
@@ -20,14 +27,21 @@
  */
 
 #include "udfdecl.h"
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/time.h>
 #include <linux/mm.h>
 #include <linux/stat.h>
 #include <linux/pagemap.h>
+<<<<<<< HEAD
 #include <linux/buffer_head.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "udf_i.h"
 
 static int udf_pc_to_char(struct super_block *sb, unsigned char *from,
@@ -53,7 +67,11 @@ static int udf_pc_to_char(struct super_block *sb, unsigned char *from,
 				elen += pc->lengthComponentIdent;
 				break;
 			}
+<<<<<<< HEAD
 			/* Fall through */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 2:
 			if (tolen == 0)
 				return -ENAMETOOLONG;
@@ -83,6 +101,12 @@ static int udf_pc_to_char(struct super_block *sb, unsigned char *from,
 			comp_len = udf_get_filename(sb, pc->componentIdent,
 						    pc->lengthComponentIdent,
 						    p, tolen);
+<<<<<<< HEAD
+=======
+			if (comp_len < 0)
+				return comp_len;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			p += comp_len;
 			tolen -= comp_len;
 			if (tolen == 0)
@@ -99,6 +123,7 @@ static int udf_pc_to_char(struct super_block *sb, unsigned char *from,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int udf_symlink_filler(struct file *file, struct page *page)
 {
 	struct inode *inode = page->mapping->host;
@@ -108,10 +133,22 @@ static int udf_symlink_filler(struct file *file, struct page *page)
 	unsigned char *p = kmap(page);
 	struct udf_inode_info *iinfo;
 	uint32_t pos;
+=======
+static int udf_symlink_filler(struct file *file, struct folio *folio)
+{
+	struct page *page = &folio->page;
+	struct inode *inode = page->mapping->host;
+	struct buffer_head *bh = NULL;
+	unsigned char *symlink;
+	int err = 0;
+	unsigned char *p = page_address(page);
+	struct udf_inode_info *iinfo = UDF_I(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We don't support symlinks longer than one block */
 	if (inode->i_size > inode->i_sb->s_blocksize) {
 		err = -ENAMETOOLONG;
+<<<<<<< HEAD
 		goto out_unmap;
 	}
 
@@ -129,12 +166,27 @@ static int udf_symlink_filler(struct file *file, struct page *page)
 			goto out_unlock_inode;
 		}
 
+=======
+		goto out_unlock;
+	}
+
+	if (iinfo->i_alloc_type == ICBTAG_FLAG_AD_IN_ICB) {
+		symlink = iinfo->i_data + iinfo->i_lenEAttr;
+	} else {
+		bh = udf_bread(inode, 0, 0, &err);
+		if (!bh) {
+			if (!err)
+				err = -EFSCORRUPTED;
+			goto out_err;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		symlink = bh->b_data;
 	}
 
 	err = udf_pc_to_char(inode->i_sb, symlink, inode->i_size, p, PAGE_SIZE);
 	brelse(bh);
 	if (err)
+<<<<<<< HEAD
 		goto out_unlock_inode;
 
 	up_read(&iinfo->i_data_sem);
@@ -148,13 +200,63 @@ out_unlock_inode:
 	SetPageError(page);
 out_unmap:
 	kunmap(page);
+=======
+		goto out_err;
+
+	SetPageUptodate(page);
+	unlock_page(page);
+	return 0;
+
+out_err:
+	SetPageError(page);
+out_unlock:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unlock_page(page);
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static int udf_symlink_getattr(struct mnt_idmap *idmap,
+			       const struct path *path, struct kstat *stat,
+			       u32 request_mask, unsigned int flags)
+{
+	struct dentry *dentry = path->dentry;
+	struct inode *inode = d_backing_inode(dentry);
+	struct page *page;
+
+	generic_fillattr(&nop_mnt_idmap, request_mask, inode, stat);
+	page = read_mapping_page(inode->i_mapping, 0, NULL);
+	if (IS_ERR(page))
+		return PTR_ERR(page);
+	/*
+	 * UDF uses non-trivial encoding of symlinks so i_size does not match
+	 * number of characters reported by readlink(2) which apparently some
+	 * applications expect. Also POSIX says that "The value returned in the
+	 * st_size field shall be the length of the contents of the symbolic
+	 * link, and shall not count a trailing null if one is present." So
+	 * let's report the length of string returned by readlink(2) for
+	 * st_size.
+	 */
+	stat->size = strlen(page_address(page));
+	put_page(page);
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * symlinks can't do much...
  */
 const struct address_space_operations udf_symlink_aops = {
+<<<<<<< HEAD
 	.readpage		= udf_symlink_filler,
+=======
+	.read_folio		= udf_symlink_filler,
+};
+
+const struct inode_operations udf_symlink_inode_operations = {
+	.get_link	= page_get_link,
+	.getattr	= udf_symlink_getattr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

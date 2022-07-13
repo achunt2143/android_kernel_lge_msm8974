@@ -1,24 +1,37 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2008-2009 Michal Simek <monstr@monstr.eu>
  * Copyright (C) 2008-2009 PetaLogix
  * Copyright (C) 2006 Atmark Techno, Inc.
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License. See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_MICROBLAZE_TLBFLUSH_H
 #define _ASM_MICROBLAZE_TLBFLUSH_H
 
+<<<<<<< HEAD
 #ifdef CONFIG_MMU
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sched.h>
 #include <linux/threads.h>
 #include <asm/processor.h>	/* For TASK_SIZE */
 #include <asm/mmu.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/pgalloc.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void _tlbie(unsigned long address);
 extern void _tlbia(void);
@@ -39,7 +52,13 @@ static inline void local_flush_tlb_range(struct vm_area_struct *vma,
 
 #define flush_tlb_kernel_range(start, end)	do { } while (0)
 
+<<<<<<< HEAD
 #define update_mmu_cache(vma, addr, ptep)	do { } while (0)
+=======
+#define update_mmu_cache_range(vmf, vma, addr, ptep, nr) do { } while (0)
+#define update_mmu_cache(vma, addr, pte) \
+	update_mmu_cache_range(NULL, vma, addr, ptep, 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define flush_tlb_all local_flush_tlb_all
 #define flush_tlb_mm local_flush_tlb_mm
@@ -54,6 +73,7 @@ static inline void local_flush_tlb_range(struct vm_area_struct *vma,
 static inline void flush_tlb_pgtables(struct mm_struct *mm,
 	unsigned long start, unsigned long end) { }
 
+<<<<<<< HEAD
 #else /* CONFIG_MMU */
 
 #define flush_tlb()				BUG()
@@ -66,4 +86,6 @@ static inline void flush_tlb_pgtables(struct mm_struct *mm,
 
 #endif /* CONFIG_MMU */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_MICROBLAZE_TLBFLUSH_H */

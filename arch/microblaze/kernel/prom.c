@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Procedures for creating, accessing and interpreting the device tree.
  *
@@ -6,6 +10,7 @@
  *
  *  Adapted for 64bit PowerPC by Dave Engebretsen and Peter Bergner.
  *    {engebret|bergner}@us.ibm.com
+<<<<<<< HEAD
  *
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
@@ -106,11 +111,20 @@ int __init of_early_console(void *version)
 	return of_scan_flat_dt(early_init_dt_scan_chosen_serial, version);
 }
 #endif
+=======
+ */
+
+#include <linux/kernel.h>
+#include <linux/string.h>
+#include <linux/memblock.h>
+#include <linux/of_fdt.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init early_init_devtree(void *params)
 {
 	pr_debug(" -> early_init_devtree(%p)\n", params);
 
+<<<<<<< HEAD
 	/* Setup flat device-tree pointer */
 	initial_boot_params = params;
 
@@ -127,6 +141,11 @@ void __init early_init_devtree(void *params)
 	/* Save command line for /proc/cmdline and then parse parameters */
 	strlcpy(boot_command_line, cmd_line, COMMAND_LINE_SIZE);
 	parse_early_param();
+=======
+	early_init_dt_scan(params);
+	if (!strlen(boot_command_line))
+		strscpy(boot_command_line, cmd_line, COMMAND_LINE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memblock_allow_resize();
 
@@ -134,6 +153,7 @@ void __init early_init_devtree(void *params)
 
 	pr_debug(" <- early_init_devtree()\n");
 }
+<<<<<<< HEAD
 
 #ifdef CONFIG_BLK_DEV_INITRD
 void __init early_init_dt_setup_initrd_arch(unsigned long start,
@@ -175,3 +195,5 @@ static int __init export_flat_device_tree(void)
 }
 device_initcall(export_flat_device_tree);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -42,6 +42,10 @@
  */
 
 #include <linux/types.h>
+<<<<<<< HEAD
+=======
+#include <scsi/scsi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	SRP_LOGIN_REQ	= 0x00,
@@ -66,7 +70,12 @@ enum {
 enum {
 	SRP_NO_DATA_DESC	= 0,
 	SRP_DATA_DESC_DIRECT	= 1,
+<<<<<<< HEAD
 	SRP_DATA_DESC_INDIRECT	= 2
+=======
+	SRP_DATA_DESC_INDIRECT	= 2,
+	SRP_DATA_DESC_IMM	= 3,	/* new in SRP2 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -105,6 +114,7 @@ struct srp_direct_buf {
  * having the 20-byte structure padded to 24 bytes on 64-bit architectures.
  */
 struct srp_indirect_buf {
+<<<<<<< HEAD
 	struct srp_direct_buf	table_desc;
 	__be32			len;
 	struct srp_direct_buf	desc_list[0];
@@ -113,6 +123,23 @@ struct srp_indirect_buf {
 enum {
 	SRP_MULTICHAN_SINGLE = 0,
 	SRP_MULTICHAN_MULTI  = 1
+=======
+	struct srp_direct_buf	table_desc __packed __aligned(4);
+	__be32			len;
+	struct srp_direct_buf	desc_list[] __packed __aligned(4);
+};
+
+/* Immediate data buffer descriptor as defined in SRP2. */
+struct srp_imm_buf {
+	__be32	len;
+};
+
+/* srp_login_req.flags */
+enum {
+	SRP_MULTICHAN_SINGLE = 0,
+	SRP_MULTICHAN_MULTI  = 1,
+	SRP_IMMED_REQUESTED  = 0x80,	/* new in SRP2 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct srp_login_req {
@@ -123,11 +150,47 @@ struct srp_login_req {
 	u8	reserved2[4];
 	__be16	req_buf_fmt;
 	u8	req_flags;
+<<<<<<< HEAD
 	u8	reserved3[5];
+=======
+	u8	reserved3[1];
+	__be16	imm_data_offset;	/* new in SRP2 */
+	u8	reserved4[2];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	initiator_port_id[16];
 	u8	target_port_id[16];
 };
 
+<<<<<<< HEAD
+=======
+/**
+ * struct srp_login_req_rdma - RDMA/CM login parameters.
+ *
+ * RDMA/CM over InfiniBand can only carry 92 - 36 = 56 bytes of private
+ * data. The %srp_login_req_rdma structure contains the same information as
+ * %srp_login_req but with the reserved data removed.
+ */
+struct srp_login_req_rdma {
+	u64	tag;
+	__be16	req_buf_fmt;
+	u8	req_flags;
+	u8	opcode;
+	__be32	req_it_iu_len;
+	u8	initiator_port_id[16];
+	u8	target_port_id[16];
+	__be16	imm_data_offset;
+	u8	reserved[6];
+};
+
+/* srp_login_rsp.rsp_flags */
+enum {
+	SRP_LOGIN_RSP_MULTICHAN_NO_CHAN	   = 0x0,
+	SRP_LOGIN_RSP_MULTICHAN_TERMINATED = 0x1,
+	SRP_LOGIN_RSP_MULTICHAN_MAINTAINED = 0x2,
+	SRP_LOGIN_RSP_IMMED_SUPP	   = 0x80, /* new in SRP2 */
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The SRP spec defines the size of the LOGIN_RSP structure to be 52
  * bytes, so it needs to be packed to avoid having it padded to 56
@@ -137,13 +200,21 @@ struct srp_login_rsp {
 	u8	opcode;
 	u8	reserved1[3];
 	__be32	req_lim_delta;
+<<<<<<< HEAD
 	u64	tag;
+=======
+	u64	tag __packed __aligned(4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32	max_it_iu_len;
 	__be32	max_ti_iu_len;
 	__be16	buf_fmt;
 	u8	rsp_flags;
 	u8	reserved2[25];
+<<<<<<< HEAD
 } __attribute__((packed));
+=======
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct srp_login_rej {
 	u8	opcode;
@@ -169,17 +240,24 @@ struct srp_t_logout {
 	u64	tag;
 };
 
+<<<<<<< HEAD
 /*
  * We need the packed attribute because the SRP spec only aligns the
  * 8-byte LUN field to 4 bytes.
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct srp_tsk_mgmt {
 	u8	opcode;
 	u8	sol_not;
 	u8	reserved1[6];
 	u64	tag;
 	u8	reserved2[4];
+<<<<<<< HEAD
 	__be64	lun __attribute__((packed));
+=======
+	struct scsi_lun	lun;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	reserved3[2];
 	u8	tsk_mgmt_func;
 	u8	reserved4;
@@ -187,10 +265,13 @@ struct srp_tsk_mgmt {
 	u8	reserved5[8];
 };
 
+<<<<<<< HEAD
 /*
  * We need the packed attribute because the SRP spec only aligns the
  * 8-byte LUN field to 4 bytes.
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct srp_cmd {
 	u8	opcode;
 	u8	sol_not;
@@ -200,13 +281,21 @@ struct srp_cmd {
 	u8	data_in_desc_cnt;
 	u64	tag;
 	u8	reserved2[4];
+<<<<<<< HEAD
 	__be64	lun __attribute__((packed));
+=======
+	struct scsi_lun	lun;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	reserved3;
 	u8	task_attr;
 	u8	reserved4;
 	u8	add_cdb_len;
 	u8	cdb[16];
+<<<<<<< HEAD
 	u8	add_data[0];
+=======
+	u8	add_data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -228,7 +317,11 @@ struct srp_rsp {
 	u8	sol_not;
 	u8	reserved1[2];
 	__be32	req_lim_delta;
+<<<<<<< HEAD
 	u64	tag;
+=======
+	u64	tag __packed __aligned(4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	reserved2[2];
 	u8	flags;
 	u8	status;
@@ -236,8 +329,13 @@ struct srp_rsp {
 	__be32	data_in_res_cnt;
 	__be32	sense_data_len;
 	__be32	resp_data_len;
+<<<<<<< HEAD
 	u8	data[0];
 } __attribute__((packed));
+=======
+	u8	data[];
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct srp_cred_req {
 	u8	opcode;
@@ -263,6 +361,7 @@ struct srp_aer_req {
 	u8	sol_not;
 	u8	reserved[2];
 	__be32	req_lim_delta;
+<<<<<<< HEAD
 	u64	tag;
 	u32	reserved2;
 	__be64	lun;
@@ -270,6 +369,15 @@ struct srp_aer_req {
 	u32	reserved3;
 	u8	sense_data[0];
 } __attribute__((packed));
+=======
+	u64	tag __packed __aligned(4);
+	u32	reserved2;
+	struct scsi_lun	lun;
+	__be32	sense_data_len;
+	u32	reserved3;
+	u8	sense_data[];
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct srp_aer_rsp {
 	u8	opcode;

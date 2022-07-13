@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Force feedback support for EMS Trio Linker Plus II
  *
@@ -5,6 +9,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -18,16 +23,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
 #include <linux/hid.h>
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <linux/usb.h>
 #include <linux/module.h>
 
 #include "hid-ids.h"
 #include "usbhid/usbhid.h"
+=======
+#include <linux/module.h>
+
+#include "hid-ids.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct emsff_device {
 	struct hid_report *report;
@@ -52,7 +65,11 @@ static int emsff_play(struct input_dev *dev, void *data,
 	emsff->report->field[0]->value[2] = strong;
 
 	dbg_hid("running with 0x%02x 0x%02x\n", strong, weak);
+<<<<<<< HEAD
 	usbhid_submit_report(hid, emsff->report, USB_DIR_OUT);
+=======
+	hid_hw_request(hid, emsff->report, HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -61,6 +78,7 @@ static int emsff_init(struct hid_device *hid)
 {
 	struct emsff_device *emsff;
 	struct hid_report *report;
+<<<<<<< HEAD
 	struct hid_input *hidinput = list_first_entry(&hid->inputs,
 						struct hid_input, list);
 	struct list_head *report_list =
@@ -68,6 +86,21 @@ static int emsff_init(struct hid_device *hid)
 	struct input_dev *dev = hidinput->input;
 	int error;
 
+=======
+	struct hid_input *hidinput;
+	struct list_head *report_list =
+			&hid->report_enum[HID_OUTPUT_REPORT].report_list;
+	struct input_dev *dev;
+	int error;
+
+	if (list_empty(&hid->inputs)) {
+		hid_err(hid, "no inputs found\n");
+		return -ENODEV;
+	}
+	hidinput = list_first_entry(&hid->inputs, struct hid_input, list);
+	dev = hidinput->input;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (list_empty(report_list)) {
 		hid_err(hid, "no output reports found\n");
 		return -ENODEV;
@@ -104,7 +137,11 @@ static int emsff_init(struct hid_device *hid)
 	emsff->report->field[0]->value[4] = 0x00;
 	emsff->report->field[0]->value[5] = 0x00;
 	emsff->report->field[0]->value[6] = 0x00;
+<<<<<<< HEAD
 	usbhid_submit_report(hid, emsff->report, USB_DIR_OUT);
+=======
+	hid_hw_request(hid, emsff->report, HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hid_info(hid, "force feedback for EMS based devices by Ignaz Forster <ignaz.forster@gmx.de>\n");
 
@@ -150,6 +187,7 @@ static struct hid_driver ems_driver = {
 	.id_table = ems_devices,
 	.probe = ems_probe,
 };
+<<<<<<< HEAD
 
 static int ems_init(void)
 {
@@ -163,5 +201,9 @@ static void ems_exit(void)
 
 module_init(ems_init);
 module_exit(ems_exit);
+=======
+module_hid_driver(ems_driver);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 

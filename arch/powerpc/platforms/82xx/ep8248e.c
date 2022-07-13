@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Embedded Planet EP8248E support
  *
  * Copyright 2007 Freescale Semiconductor, Inc.
  * Author: Scott Wood <scottwood@freescale.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -17,14 +24,21 @@
 #include <linux/of_mdio.h>
 #include <linux/slab.h>
 #include <linux/of_platform.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 #include <asm/cpm2.h>
 #include <asm/udbg.h>
 #include <asm/machdep.h>
 #include <asm/time.h>
+<<<<<<< HEAD
 #include <asm/mpc8260.h>
 #include <asm/prom.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sysdev/fsl_soc.h>
 #include <sysdev/cpm2_pic.h>
@@ -111,7 +125,11 @@ static struct mdiobb_ctrl ep8248e_mdio_ctrl = {
 	.ops = &ep8248e_mdio_ops,
 };
 
+<<<<<<< HEAD
 static int __devinit ep8248e_mdio_probe(struct platform_device *ofdev)
+=======
+static int ep8248e_mdio_probe(struct platform_device *ofdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mii_bus *bus;
 	struct resource res;
@@ -131,34 +149,46 @@ static int __devinit ep8248e_mdio_probe(struct platform_device *ofdev)
 	if (!bus)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
 	if (bus->irq == NULL) {
 		ret = -ENOMEM;
 		goto err_free_bus;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bus->name = "ep8248e-mdio-bitbang";
 	bus->parent = &ofdev->dev;
 	snprintf(bus->id, MII_BUS_ID_SIZE, "%x", res.start);
 
 	ret = of_mdiobus_register(bus, ofdev->dev.of_node);
 	if (ret)
+<<<<<<< HEAD
 		goto err_free_irq;
 
 	return 0;
 err_free_irq:
 	kfree(bus->irq);
+=======
+		goto err_free_bus;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free_bus:
 	free_mdio_bitbang(bus);
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ep8248e_mdio_remove(struct platform_device *ofdev)
 {
 	BUG();
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct of_device_id ep8248e_mdio_match[] = {
 	{
 		.compatible = "fsl,ep8248e-mdio-bitbang",
@@ -169,11 +199,18 @@ static const struct of_device_id ep8248e_mdio_match[] = {
 static struct platform_driver ep8248e_mdio_driver = {
 	.driver = {
 		.name = "ep8248e-mdio-bitbang",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = ep8248e_mdio_match,
 	},
 	.probe = ep8248e_mdio_probe,
 	.remove = ep8248e_mdio_remove,
+=======
+		.of_match_table = ep8248e_mdio_match,
+		.suppress_bind_attrs = true,
+	},
+	.probe = ep8248e_mdio_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct cpm_pin {
@@ -298,7 +335,11 @@ static void __init ep8248e_setup_arch(void)
 		ppc_md.progress("ep8248e_setup_arch(), finish", 0);
 }
 
+<<<<<<< HEAD
 static  __initdata struct of_device_id of_bus_ids[] = {
+=======
+static const struct of_device_id of_bus_ids[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "simple-bus", },
 	{ .compatible = "fsl,ep8248e-bcsr", },
 	{},
@@ -307,12 +348,19 @@ static  __initdata struct of_device_id of_bus_ids[] = {
 static int __init declare_of_platform_devices(void)
 {
 	of_platform_bus_probe(NULL, of_bus_ids, NULL);
+<<<<<<< HEAD
 	platform_driver_register(&ep8248e_mdio_driver);
+=======
+
+	if (IS_ENABLED(CONFIG_MDIO_BITBANG))
+		platform_driver_register(&ep8248e_mdio_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 machine_device_initcall(ep8248e, declare_of_platform_devices);
 
+<<<<<<< HEAD
 /*
  * Called very early, device-tree isn't unflattened
  */
@@ -330,6 +378,15 @@ define_machine(ep8248e)
 	.init_IRQ = ep8248e_pic_init,
 	.get_irq = cpm2_get_irq,
 	.calibrate_decr = generic_calibrate_decr,
+=======
+define_machine(ep8248e)
+{
+	.name = "Embedded Planet EP8248E",
+	.compatible = "fsl,ep8248e",
+	.setup_arch = ep8248e_setup_arch,
+	.init_IRQ = ep8248e_pic_init,
+	.get_irq = cpm2_get_irq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.restart = pq2_restart,
 	.progress = udbg_progress,
 };

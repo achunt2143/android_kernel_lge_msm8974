@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #SPI drivers
 
 menuconfig SND_SPI
@@ -18,7 +22,11 @@ config SND_AT73C213
 	  DAC can be found on Atmel development boards.
 
 	  This driver requires the Atmel SSC driver for sound sink, a
+<<<<<<< HEAD
 	  peripheral found on most AT91 and AVR32 microprocessors.
+=======
+	  peripheral found on most AT91 microprocessors.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	  To compile this driver as a module, choose M here: the module will be
 	  called snd-at73c213.

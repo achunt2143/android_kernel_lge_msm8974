@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  * Filename: target_core_ua.c
  *
  * This file contains logic for SPC-3 Unit Attention emulation
  *
+<<<<<<< HEAD
  * Copyright (c) 2009,2010 Rising Tide Systems
  * Copyright (c) 2009,2010 Linux-iSCSI.org
  *
@@ -22,25 +27,43 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
  *
+=======
+ * (c) Copyright 2009-2013 Datera, Inc.
+ *
+ * Nicholas A. Bellinger <nab@kernel.org>
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ******************************************************************************/
 
 #include <linux/slab.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
 
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
 #include <target/target_core_configfs.h>
+=======
+#include <scsi/scsi_proto.h>
+
+#include <target/target_core_base.h>
+#include <target/target_core_fabric.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "target_core_internal.h"
 #include "target_core_alua.h"
 #include "target_core_pr.h"
 #include "target_core_ua.h"
 
+<<<<<<< HEAD
 int core_scsi3_ua_check(
 	struct se_cmd *cmd,
 	unsigned char *cdb)
+=======
+sense_reason_t
+target_scsi3_ua_check(struct se_cmd *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct se_dev_entry *deve;
 	struct se_session *sess = cmd->se_sess;
@@ -53,9 +76,23 @@ int core_scsi3_ua_check(
 	if (!nacl)
 		return 0;
 
+<<<<<<< HEAD
 	deve = nacl->device_list[cmd->orig_fe_lun];
 	if (!atomic_read(&deve->ua_count))
 		return 0;
+=======
+	rcu_read_lock();
+	deve = target_nacl_find_deve(nacl, cmd->orig_fe_lun);
+	if (!deve) {
+		rcu_read_unlock();
+		return 0;
+	}
+	if (list_empty_careful(&deve->ua_list)) {
+		rcu_read_unlock();
+		return 0;
+	}
+	rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * From sam4r14, section 5.14 Unit attention condition:
 	 *
@@ -71,12 +108,17 @@ int core_scsi3_ua_check(
 	 *    was received, then the device server shall process the command
 	 *    and either:
 	 */
+<<<<<<< HEAD
 	switch (cdb[0]) {
+=======
+	switch (cmd->t_task_cdb[0]) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case INQUIRY:
 	case REPORT_LUNS:
 	case REQUEST_SENSE:
 		return 0;
 	default:
+<<<<<<< HEAD
 		return -EINVAL;
 	}
 
@@ -96,12 +138,25 @@ int core_scsi3_ua_allocate(
 	 */
 	if (!nacl)
 		return -EINVAL;
+=======
+		return TCM_CHECK_CONDITION_UNIT_ATTENTION;
+	}
+}
+
+int core_scsi3_ua_allocate(
+	struct se_dev_entry *deve,
+	u8 asc,
+	u8 ascq)
+{
+	struct se_ua *ua, *ua_p, *ua_tmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ua = kmem_cache_zalloc(se_ua_cache, GFP_ATOMIC);
 	if (!ua) {
 		pr_err("Unable to allocate struct se_ua\n");
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	INIT_LIST_HEAD(&ua->ua_dev_list);
 	INIT_LIST_HEAD(&ua->ua_nacl_list);
 
@@ -112,6 +167,13 @@ int core_scsi3_ua_allocate(
 	spin_lock_irq(&nacl->device_list_lock);
 	deve = nacl->device_list[unpacked_lun];
 
+=======
+	INIT_LIST_HEAD(&ua->ua_nacl_list);
+
+	ua->ua_asc = asc;
+	ua->ua_ascq = ascq;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock(&deve->ua_lock);
 	list_for_each_entry_safe(ua_p, ua_tmp, &deve->ua_list, ua_nacl_list) {
 		/*
@@ -119,7 +181,10 @@ int core_scsi3_ua_allocate(
 		 */
 		if ((ua_p->ua_asc == asc) && (ua_p->ua_ascq == ascq)) {
 			spin_unlock(&deve->ua_lock);
+<<<<<<< HEAD
 			spin_unlock_irq(&nacl->device_list_lock);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kmem_cache_free(se_ua_cache, ua);
 			return 0;
 		}
@@ -164,14 +229,19 @@ int core_scsi3_ua_allocate(
 			list_add_tail(&ua->ua_nacl_list,
 				&deve->ua_list);
 		spin_unlock(&deve->ua_lock);
+<<<<<<< HEAD
 		spin_unlock_irq(&nacl->device_list_lock);
 
 		atomic_inc(&deve->ua_count);
 		smp_mb__after_atomic_inc();
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	list_add_tail(&ua->ua_nacl_list, &deve->ua_list);
 	spin_unlock(&deve->ua_lock);
+<<<<<<< HEAD
 	spin_unlock_irq(&nacl->device_list_lock);
 
 	pr_debug("[%s]: Allocated UNIT ATTENTION, mapped LUN: %u, ASC:"
@@ -184,6 +254,35 @@ int core_scsi3_ua_allocate(
 	return 0;
 }
 
+=======
+
+	pr_debug("Allocated UNIT ATTENTION, mapped LUN: %llu, ASC:"
+		" 0x%02x, ASCQ: 0x%02x\n", deve->mapped_lun,
+		asc, ascq);
+
+	return 0;
+}
+
+void target_ua_allocate_lun(struct se_node_acl *nacl,
+			    u32 unpacked_lun, u8 asc, u8 ascq)
+{
+	struct se_dev_entry *deve;
+
+	if (!nacl)
+		return;
+
+	rcu_read_lock();
+	deve = target_nacl_find_deve(nacl, unpacked_lun);
+	if (!deve) {
+		rcu_read_unlock();
+		return;
+	}
+
+	core_scsi3_ua_allocate(deve, asc, ascq);
+	rcu_read_unlock();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void core_scsi3_ua_release_all(
 	struct se_dev_entry *deve)
 {
@@ -193,17 +292,30 @@ void core_scsi3_ua_release_all(
 	list_for_each_entry_safe(ua, ua_p, &deve->ua_list, ua_nacl_list) {
 		list_del(&ua->ua_nacl_list);
 		kmem_cache_free(se_ua_cache, ua);
+<<<<<<< HEAD
 
 		atomic_dec(&deve->ua_count);
 		smp_mb__after_atomic_dec();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	spin_unlock(&deve->ua_lock);
 }
 
+<<<<<<< HEAD
 void core_scsi3_ua_for_check_condition(
 	struct se_cmd *cmd,
 	u8 *asc,
 	u8 *ascq)
+=======
+/*
+ * Dequeue a unit attention from the unit attention list. This function
+ * returns true if the dequeuing succeeded and if *@key, *@asc and *@ascq have
+ * been set.
+ */
+bool core_scsi3_ua_for_check_condition(struct se_cmd *cmd, u8 *key, u8 *asc,
+				       u8 *ascq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct se_device *dev = cmd->se_dev;
 	struct se_dev_entry *deve;
@@ -211,6 +323,7 @@ void core_scsi3_ua_for_check_condition(
 	struct se_node_acl *nacl;
 	struct se_ua *ua = NULL, *ua_p;
 	int head = 1;
+<<<<<<< HEAD
 
 	if (!sess)
 		return;
@@ -225,6 +338,28 @@ void core_scsi3_ua_for_check_condition(
 		spin_unlock_irq(&nacl->device_list_lock);
 		return;
 	}
+=======
+	bool dev_ua_intlck_clear = (dev->dev_attrib.emulate_ua_intlck_ctrl
+						== TARGET_UA_INTLCK_CTRL_CLEAR);
+
+	if (WARN_ON_ONCE(!sess))
+		return false;
+
+	nacl = sess->se_node_acl;
+	if (WARN_ON_ONCE(!nacl))
+		return false;
+
+	rcu_read_lock();
+	deve = target_nacl_find_deve(nacl, cmd->orig_fe_lun);
+	if (!deve) {
+		rcu_read_unlock();
+		*key = ILLEGAL_REQUEST;
+		*asc = 0x25; /* LOGICAL UNIT NOT SUPPORTED */
+		*ascq = 0;
+		return true;
+	}
+	*key = UNIT_ATTENTION;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The highest priority Unit Attentions are placed at the head of the
 	 * struct se_dev_entry->ua_list, and will be returned in CHECK_CONDITION +
@@ -237,7 +372,11 @@ void core_scsi3_ua_for_check_condition(
 		 * highest priority UNIT_ATTENTION and ASC/ASCQ without
 		 * clearing it.
 		 */
+<<<<<<< HEAD
 		if (dev->se_sub_dev->se_dev_attrib.emulate_ua_intlck_ctrl != 0) {
+=======
+		if (!dev_ua_intlck_clear) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*asc = ua->ua_asc;
 			*ascq = ua->ua_ascq;
 			break;
@@ -254,6 +393,7 @@ void core_scsi3_ua_for_check_condition(
 		}
 		list_del(&ua->ua_nacl_list);
 		kmem_cache_free(se_ua_cache, ua);
+<<<<<<< HEAD
 
 		atomic_dec(&deve->ua_count);
 		smp_mb__after_atomic_dec();
@@ -268,6 +408,21 @@ void core_scsi3_ua_for_check_condition(
 		(dev->se_sub_dev->se_dev_attrib.emulate_ua_intlck_ctrl != 0) ? "Reporting" :
 		"Releasing", dev->se_sub_dev->se_dev_attrib.emulate_ua_intlck_ctrl,
 		cmd->orig_fe_lun, cmd->t_task_cdb[0], *asc, *ascq);
+=======
+	}
+	spin_unlock(&deve->ua_lock);
+	rcu_read_unlock();
+
+	pr_debug("[%s]: %s UNIT ATTENTION condition with"
+		" INTLCK_CTRL: %d, mapped LUN: %llu, got CDB: 0x%02x"
+		" reported ASC: 0x%02x, ASCQ: 0x%02x\n",
+		nacl->se_tpg->se_tpg_tfo->fabric_name,
+		dev_ua_intlck_clear ? "Releasing" : "Reporting",
+		dev->dev_attrib.emulate_ua_intlck_ctrl,
+		cmd->orig_fe_lun, cmd->t_task_cdb[0], *asc, *ascq);
+
+	return head == 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int core_scsi3_ua_clear_for_request_sense(
@@ -288,10 +443,21 @@ int core_scsi3_ua_clear_for_request_sense(
 	if (!nacl)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	spin_lock_irq(&nacl->device_list_lock);
 	deve = nacl->device_list[cmd->orig_fe_lun];
 	if (!atomic_read(&deve->ua_count)) {
 		spin_unlock_irq(&nacl->device_list_lock);
+=======
+	rcu_read_lock();
+	deve = target_nacl_find_deve(nacl, cmd->orig_fe_lun);
+	if (!deve) {
+		rcu_read_unlock();
+		return -EINVAL;
+	}
+	if (list_empty_careful(&deve->ua_list)) {
+		rcu_read_unlock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EPERM;
 	}
 	/*
@@ -313,6 +479,7 @@ int core_scsi3_ua_clear_for_request_sense(
 		}
 		list_del(&ua->ua_nacl_list);
 		kmem_cache_free(se_ua_cache, ua);
+<<<<<<< HEAD
 
 		atomic_dec(&deve->ua_count);
 		smp_mb__after_atomic_dec();
@@ -323,6 +490,15 @@ int core_scsi3_ua_clear_for_request_sense(
 	pr_debug("[%s]: Released UNIT ATTENTION condition, mapped"
 		" LUN: %u, got REQUEST_SENSE reported ASC: 0x%02x,"
 		" ASCQ: 0x%02x\n", nacl->se_tpg->se_tpg_tfo->get_fabric_name(),
+=======
+	}
+	spin_unlock(&deve->ua_lock);
+	rcu_read_unlock();
+
+	pr_debug("[%s]: Released UNIT ATTENTION condition, mapped"
+		" LUN: %llu, got REQUEST_SENSE reported ASC: 0x%02x,"
+		" ASCQ: 0x%02x\n", nacl->se_tpg->se_tpg_tfo->fabric_name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmd->orig_fe_lun, *asc, *ascq);
 
 	return (head) ? -EPERM : 0;

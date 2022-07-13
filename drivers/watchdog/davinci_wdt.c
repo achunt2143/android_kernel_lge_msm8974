@@ -1,18 +1,29 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/char/watchdog/davinci_wdt.c
  *
  * Watchdog driver for DaVinci DM644x/DM646x processors
  *
+<<<<<<< HEAD
  * Copyright (C) 2006 Texas Instruments.
  *
  * 2007 (c) MontaVista Software, Inc. This file is licensed under
  * the terms of the GNU General Public License version 2. This program
  * is licensed "as is" without any warranty of any kind, whether express
  * or implied.
+=======
+ * Copyright (C) 2006-2013 Texas Instruments.
+ *
+ * 2007 (c) MontaVista Software, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/fs.h>
@@ -27,6 +38,17 @@
 #include <linux/device.h>
 #include <linux/clk.h>
 #include <linux/slab.h>
+=======
+#include <linux/mod_devicetable.h>
+#include <linux/types.h>
+#include <linux/kernel.h>
+#include <linux/watchdog.h>
+#include <linux/platform_device.h>
+#include <linux/io.h>
+#include <linux/device.h>
+#include <linux/clk.h>
+#include <linux/err.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MODULE_NAME "DAVINCI-WDT: "
 
@@ -60,6 +82,7 @@
 #define WDKEY_SEQ0		(0xa5c6 << 16)
 #define WDKEY_SEQ1		(0xda7e << 16)
 
+<<<<<<< HEAD
 static int heartbeat = DEFAULT_HEARTBEAT;
 
 static DEFINE_SPINLOCK(io_lock);
@@ -86,10 +109,28 @@ static void wdt_service(void)
 }
 
 static void wdt_enable(void)
+=======
+static int heartbeat;
+
+/*
+ * struct to hold data for each WDT device
+ * @base - base io address of WD device
+ * @clk - source clock of WDT
+ * @wdd - hold watchdog device as is in WDT core
+ */
+struct davinci_wdt_device {
+	void __iomem		*base;
+	struct clk		*clk;
+	struct watchdog_device	wdd;
+};
+
+static int davinci_wdt_start(struct watchdog_device *wdd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 tgcr;
 	u32 timer_margin;
 	unsigned long wdt_freq;
+<<<<<<< HEAD
 
 	wdt_freq = clk_get_rate(wdt_clk);
 
@@ -111,11 +152,34 @@ static void wdt_enable(void)
 	iowrite32(timer_margin, wdt_base + PRD34);
 	/* enable run continuously */
 	iowrite32(ENAMODE12_PERIODIC, wdt_base + TCR);
+=======
+	struct davinci_wdt_device *davinci_wdt = watchdog_get_drvdata(wdd);
+
+	wdt_freq = clk_get_rate(davinci_wdt->clk);
+
+	/* disable, internal clock source */
+	iowrite32(0, davinci_wdt->base + TCR);
+	/* reset timer, set mode to 64-bit watchdog, and unreset */
+	iowrite32(0, davinci_wdt->base + TGCR);
+	tgcr = TIMMODE_64BIT_WDOG | TIM12RS_UNRESET | TIM34RS_UNRESET;
+	iowrite32(tgcr, davinci_wdt->base + TGCR);
+	/* clear counter regs */
+	iowrite32(0, davinci_wdt->base + TIM12);
+	iowrite32(0, davinci_wdt->base + TIM34);
+	/* set timeout period */
+	timer_margin = (((u64)wdd->timeout * wdt_freq) & 0xffffffff);
+	iowrite32(timer_margin, davinci_wdt->base + PRD12);
+	timer_margin = (((u64)wdd->timeout * wdt_freq) >> 32);
+	iowrite32(timer_margin, davinci_wdt->base + PRD34);
+	/* enable run continuously */
+	iowrite32(ENAMODE12_PERIODIC, davinci_wdt->base + TCR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Once the WDT is in pre-active state write to
 	 * TIM12, TIM34, PRD12, PRD34, TCR, TGCR, WDTCR are
 	 * write protected (except for the WDKEY field)
 	 */
 	/* put watchdog in pre-active state */
+<<<<<<< HEAD
 	iowrite32(WDKEY_SEQ0 | WDEN, wdt_base + WDTCR);
 	/* put watchdog in active state */
 	iowrite32(WDKEY_SEQ1 | WDEN, wdt_base + WDTCR);
@@ -269,6 +333,152 @@ static struct platform_driver platform_wdt_driver = {
 	},
 	.probe = davinci_wdt_probe,
 	.remove = __devexit_p(davinci_wdt_remove),
+=======
+	iowrite32(WDKEY_SEQ0 | WDEN, davinci_wdt->base + WDTCR);
+	/* put watchdog in active state */
+	iowrite32(WDKEY_SEQ1 | WDEN, davinci_wdt->base + WDTCR);
+	return 0;
+}
+
+static int davinci_wdt_ping(struct watchdog_device *wdd)
+{
+	struct davinci_wdt_device *davinci_wdt = watchdog_get_drvdata(wdd);
+
+	/* put watchdog in service state */
+	iowrite32(WDKEY_SEQ0, davinci_wdt->base + WDTCR);
+	/* put watchdog in active state */
+	iowrite32(WDKEY_SEQ1, davinci_wdt->base + WDTCR);
+	return 0;
+}
+
+static unsigned int davinci_wdt_get_timeleft(struct watchdog_device *wdd)
+{
+	u64 timer_counter;
+	unsigned long freq;
+	u32 val;
+	struct davinci_wdt_device *davinci_wdt = watchdog_get_drvdata(wdd);
+
+	/* if timeout has occured then return 0 */
+	val = ioread32(davinci_wdt->base + WDTCR);
+	if (val & WDFLAG)
+		return 0;
+
+	freq = clk_get_rate(davinci_wdt->clk);
+
+	if (!freq)
+		return 0;
+
+	timer_counter = ioread32(davinci_wdt->base + TIM12);
+	timer_counter |= ((u64)ioread32(davinci_wdt->base + TIM34) << 32);
+
+	timer_counter = div64_ul(timer_counter, freq);
+
+	return wdd->timeout - timer_counter;
+}
+
+static int davinci_wdt_restart(struct watchdog_device *wdd,
+			       unsigned long action, void *data)
+{
+	struct davinci_wdt_device *davinci_wdt = watchdog_get_drvdata(wdd);
+	u32 tgcr, wdtcr;
+
+	/* disable, internal clock source */
+	iowrite32(0, davinci_wdt->base + TCR);
+
+	/* reset timer, set mode to 64-bit watchdog, and unreset */
+	tgcr = 0;
+	iowrite32(tgcr, davinci_wdt->base + TGCR);
+	tgcr = TIMMODE_64BIT_WDOG | TIM12RS_UNRESET | TIM34RS_UNRESET;
+	iowrite32(tgcr, davinci_wdt->base + TGCR);
+
+	/* clear counter and period regs */
+	iowrite32(0, davinci_wdt->base + TIM12);
+	iowrite32(0, davinci_wdt->base + TIM34);
+	iowrite32(0, davinci_wdt->base + PRD12);
+	iowrite32(0, davinci_wdt->base + PRD34);
+
+	/* put watchdog in pre-active state */
+	wdtcr = WDKEY_SEQ0 | WDEN;
+	iowrite32(wdtcr, davinci_wdt->base + WDTCR);
+
+	/* put watchdog in active state */
+	wdtcr = WDKEY_SEQ1 | WDEN;
+	iowrite32(wdtcr, davinci_wdt->base + WDTCR);
+
+	/* write an invalid value to the WDKEY field to trigger a restart */
+	wdtcr = 0x00004000;
+	iowrite32(wdtcr, davinci_wdt->base + WDTCR);
+
+	return 0;
+}
+
+static const struct watchdog_info davinci_wdt_info = {
+	.options = WDIOF_KEEPALIVEPING,
+	.identity = "DaVinci/Keystone Watchdog",
+};
+
+static const struct watchdog_ops davinci_wdt_ops = {
+	.owner		= THIS_MODULE,
+	.start		= davinci_wdt_start,
+	.stop		= davinci_wdt_ping,
+	.ping		= davinci_wdt_ping,
+	.get_timeleft	= davinci_wdt_get_timeleft,
+	.restart	= davinci_wdt_restart,
+};
+
+static int davinci_wdt_probe(struct platform_device *pdev)
+{
+	struct device *dev = &pdev->dev;
+	struct watchdog_device *wdd;
+	struct davinci_wdt_device *davinci_wdt;
+
+	davinci_wdt = devm_kzalloc(dev, sizeof(*davinci_wdt), GFP_KERNEL);
+	if (!davinci_wdt)
+		return -ENOMEM;
+
+	davinci_wdt->clk = devm_clk_get_enabled(dev, NULL);
+	if (IS_ERR(davinci_wdt->clk))
+		return dev_err_probe(dev, PTR_ERR(davinci_wdt->clk),
+				     "failed to get clock node\n");
+
+	platform_set_drvdata(pdev, davinci_wdt);
+
+	wdd			= &davinci_wdt->wdd;
+	wdd->info		= &davinci_wdt_info;
+	wdd->ops		= &davinci_wdt_ops;
+	wdd->min_timeout	= 1;
+	wdd->max_timeout	= MAX_HEARTBEAT;
+	wdd->timeout		= DEFAULT_HEARTBEAT;
+	wdd->parent		= dev;
+
+	watchdog_init_timeout(wdd, heartbeat, dev);
+
+	dev_info(dev, "heartbeat %d sec\n", wdd->timeout);
+
+	watchdog_set_drvdata(wdd, davinci_wdt);
+	watchdog_set_nowayout(wdd, 1);
+	watchdog_set_restart_priority(wdd, 128);
+
+	davinci_wdt->base = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(davinci_wdt->base))
+		return PTR_ERR(davinci_wdt->base);
+
+	return devm_watchdog_register_device(dev, wdd);
+}
+
+static const struct of_device_id davinci_wdt_of_match[] = {
+	{ .compatible = "ti,davinci-wdt", },
+	{},
+};
+MODULE_DEVICE_TABLE(of, davinci_wdt_of_match);
+
+static struct platform_driver platform_wdt_driver = {
+	.driver = {
+		.name = "davinci-wdt",
+		.of_match_table = davinci_wdt_of_match,
+	},
+	.probe = davinci_wdt_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(platform_wdt_driver);
@@ -283,5 +493,9 @@ MODULE_PARM_DESC(heartbeat,
 		 __MODULE_STRING(DEFAULT_HEARTBEAT));
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
 MODULE_ALIAS("platform:watchdog");
+=======
+MODULE_ALIAS("platform:davinci-wdt");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

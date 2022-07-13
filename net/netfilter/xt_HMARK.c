@@ -1,14 +1,25 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xt_HMARK - Netfilter module to set mark by means of hashing
  *
  * (C) 2012 by Hans Schillstrom <hans.schillstrom@ericsson.com>
  * (C) 2012 by Pablo Neira Ayuso <pablo@netfilter.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
  */
 
+=======
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/skbuff.h>
 #include <linux/icmp.h>
@@ -84,7 +95,11 @@ hmark_ct_set_htuple(const struct sk_buff *skb, struct hmark_tuple *t,
 	struct nf_conntrack_tuple *otuple;
 	struct nf_conntrack_tuple *rtuple;
 
+<<<<<<< HEAD
 	if (ct == NULL || nf_ct_is_untracked(ct))
+=======
+	if (ct == NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 
 	otuple = &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple;
@@ -126,7 +141,11 @@ hmark_hash(struct hmark_tuple *t, const struct xt_hmark_info *info)
 	hash = jhash_3words(src, dst, t->uports.v32, info->hashrnd);
 	hash = hash ^ (t->proto & info->proto_mask);
 
+<<<<<<< HEAD
 	return (((u64)hash * info->hmodulus) >> 32) + info->hoffset;
+=======
+	return reciprocal_scale(hash, info->hmodulus) + info->hoffset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -167,7 +186,11 @@ hmark_pkt_set_htuple_ipv6(const struct sk_buff *skb, struct hmark_tuple *t,
 			  const struct xt_hmark_info *info)
 {
 	struct ipv6hdr *ip6, _ip6;
+<<<<<<< HEAD
 	int flag = IP6T_FH_F_AUTH;
+=======
+	int flag = IP6_FH_F_AUTH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int nhoff = 0;
 	u16 fragoff = 0;
 	int nexthdr;
@@ -177,7 +200,11 @@ hmark_pkt_set_htuple_ipv6(const struct sk_buff *skb, struct hmark_tuple *t,
 	if (nexthdr < 0)
 		return 0;
 	/* No need to check for icmp errors on fragments */
+<<<<<<< HEAD
 	if ((flag & IP6T_FH_F_FRAG) || (nexthdr != IPPROTO_ICMPV6))
+=======
+	if ((flag & IP6_FH_F_FRAG) || (nexthdr != IPPROTO_ICMPV6))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto noicmp;
 	/* Use inner header in case of ICMP errors */
 	if (get_inner6_hdr(skb, &nhoff)) {
@@ -185,7 +212,11 @@ hmark_pkt_set_htuple_ipv6(const struct sk_buff *skb, struct hmark_tuple *t,
 		if (ip6 == NULL)
 			return -1;
 		/* If AH present, use SPI like in ESP. */
+<<<<<<< HEAD
 		flag = IP6T_FH_F_AUTH;
+=======
+		flag = IP6_FH_F_AUTH;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nexthdr = ipv6_find_hdr(skb, &nhoff, -1, &fragoff, &flag);
 		if (nexthdr < 0)
 			return -1;
@@ -201,7 +232,11 @@ noicmp:
 	if (t->proto == IPPROTO_ICMPV6)
 		return 0;
 
+<<<<<<< HEAD
 	if (flag & IP6T_FH_F_FRAG)
+=======
+	if (flag & IP6_FH_F_FRAG)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	hmark_set_tuple_ports(skb, nhoff, t, info);
@@ -240,11 +275,15 @@ static int get_inner_hdr(const struct sk_buff *skb, int iphsz, int *nhoff)
 		return 0;
 
 	/* Error message? */
+<<<<<<< HEAD
 	if (icmph->type != ICMP_DEST_UNREACH &&
 	    icmph->type != ICMP_SOURCE_QUENCH &&
 	    icmph->type != ICMP_TIME_EXCEEDED &&
 	    icmph->type != ICMP_PARAMETERPROB &&
 	    icmph->type != ICMP_REDIRECT)
+=======
+	if (!icmp_is_err(icmph->type))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	*nhoff += iphsz + sizeof(_ih);
@@ -281,7 +320,11 @@ hmark_pkt_set_htuple_ipv4(const struct sk_buff *skb, struct hmark_tuple *t,
 		return 0;
 
 	/* follow-up fragments don't contain ports, skip all fragments */
+<<<<<<< HEAD
 	if (ip->frag_off & htons(IP_MF | IP_OFFSET))
+=======
+	if (ip_is_fragment(ip))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	hmark_set_tuple_ports(skb, (ip->ihl * 4) + nhoff, t, info);
@@ -312,6 +355,7 @@ hmark_tg_v4(struct sk_buff *skb, const struct xt_action_param *par)
 static int hmark_tg_check(const struct xt_tgchk_param *par)
 {
 	const struct xt_hmark_info *info = par->targinfo;
+<<<<<<< HEAD
 
 	if (!info->hmodulus) {
 		pr_info("xt_HMARK: hash modulus can't be zero\n");
@@ -335,6 +379,32 @@ static int hmark_tg_check(const struct xt_tgchk_param *par)
 		return -EINVAL;
 	}
 	return 0;
+=======
+	const char *errmsg = "proto mask must be zero with L3 mode";
+
+	if (!info->hmodulus)
+		return -EINVAL;
+
+	if (info->proto_mask &&
+	    (info->flags & XT_HMARK_FLAG(XT_HMARK_METHOD_L3)))
+		goto err;
+
+	if (info->flags & XT_HMARK_FLAG(XT_HMARK_SPI_MASK) &&
+	    (info->flags & (XT_HMARK_FLAG(XT_HMARK_SPORT_MASK) |
+			     XT_HMARK_FLAG(XT_HMARK_DPORT_MASK))))
+		return -EINVAL;
+
+	if (info->flags & XT_HMARK_FLAG(XT_HMARK_SPI) &&
+	    (info->flags & (XT_HMARK_FLAG(XT_HMARK_SPORT) |
+			     XT_HMARK_FLAG(XT_HMARK_DPORT)))) {
+		errmsg = "spi-set and port-set can't be combined";
+		goto err;
+	}
+	return 0;
+err:
+	pr_info_ratelimited("%s\n", errmsg);
+	return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xt_target hmark_tg_reg[] __read_mostly = {

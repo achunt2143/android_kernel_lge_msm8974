@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *	xt_iprange - Netfilter module to match IP address ranges
  *
@@ -7,6 +8,14 @@
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License version 2 as
  *	published by the Free Software Foundation.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *	xt_iprange - Netfilter module to match IP address ranges
+ *
+ *	(C) 2003 Jozsef Kadlecsik <kadlec@netfilter.org>
+ *	(C) CC Computer Consultants GmbH, 2008
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
@@ -133,7 +142,11 @@ static void __exit iprange_mt_exit(void)
 module_init(iprange_mt_init);
 module_exit(iprange_mt_exit);
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>");
+=======
+MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@netfilter.org>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Jan Engelhardt <jengelh@medozas.de>");
 MODULE_DESCRIPTION("Xtables: arbitrary IPv4 range matching");
 MODULE_ALIAS("ipt_iprange");

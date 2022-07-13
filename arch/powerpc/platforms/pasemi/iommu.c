@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2005-2008, PA Semi, Inc
  *
  * Maintained by: Olof Johansson <olof@lixom.net>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,10 +20,13 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #undef DEBUG
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/spinlock.h>
 #include <linux/pci.h>
@@ -27,6 +35,19 @@
 #include <asm/abs_addr.h>
 #include <asm/firmware.h>
 
+=======
+#include <linux/memblock.h>
+#include <linux/types.h>
+#include <linux/spinlock.h>
+#include <linux/pci.h>
+#include <linux/of.h>
+#include <asm/iommu.h>
+#include <asm/machdep.h>
+#include <asm/firmware.h>
+
+#include "pasemi.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IOBMAP_PAGE_SHIFT	12
 #define IOBMAP_PAGE_SIZE	(1 << IOBMAP_PAGE_SHIFT)
 #define IOBMAP_PAGE_MASK	(IOBMAP_PAGE_SIZE - 1)
@@ -86,7 +107,11 @@ static int iommu_table_iobmap_inited;
 static int iobmap_build(struct iommu_table *tbl, long index,
 			 long npages, unsigned long uaddr,
 			 enum dma_data_direction direction,
+<<<<<<< HEAD
 			 struct dma_attrs *attrs)
+=======
+			 unsigned long attrs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 *ip;
 	u32 rpn;
@@ -99,7 +124,11 @@ static int iobmap_build(struct iommu_table *tbl, long index,
 	ip = ((u32 *)tbl->it_base) + index;
 
 	while (npages--) {
+<<<<<<< HEAD
 		rpn = virt_to_abs(uaddr) >> IOBMAP_PAGE_SHIFT;
+=======
+		rpn = __pa(uaddr) >> IOBMAP_PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		*(ip++) = IOBMAP_L2E_V | rpn;
 		/* invalidate tlb, can be optimized more */
@@ -132,14 +161,29 @@ static void iobmap_free(struct iommu_table *tbl, long index,
 	}
 }
 
+<<<<<<< HEAD
+=======
+static struct iommu_table_ops iommu_table_iobmap_ops = {
+	.set = iobmap_build,
+	.clear  = iobmap_free
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void iommu_table_iobmap_setup(void)
 {
 	pr_debug(" -> %s\n", __func__);
 	iommu_table_iobmap.it_busno = 0;
 	iommu_table_iobmap.it_offset = 0;
+<<<<<<< HEAD
 	/* it_size is in number of entries */
 	iommu_table_iobmap.it_size = 0x80000000 >> IOBMAP_PAGE_SHIFT;
+=======
+	iommu_table_iobmap.it_page_shift = IOBMAP_PAGE_SHIFT;
+
+	/* it_size is in number of entries */
+	iommu_table_iobmap.it_size =
+		0x80000000 >> iommu_table_iobmap.it_page_shift;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Initialize the common IOMMU code */
 	iommu_table_iobmap.it_base = (unsigned long)iob_l2_base;
@@ -148,7 +192,14 @@ static void iommu_table_iobmap_setup(void)
 	 * Should probably be 8 (64 bytes)
 	 */
 	iommu_table_iobmap.it_blocksize = 4;
+<<<<<<< HEAD
 	iommu_init_table(&iommu_table_iobmap, 0);
+=======
+	iommu_table_iobmap.it_ops = &iommu_table_iobmap_ops;
+	if (!iommu_init_table(&iommu_table_iobmap, 0, 0, 0))
+		panic("Failed to initialize iommu table");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug(" <- %s\n", __func__);
 }
 
@@ -176,7 +227,16 @@ static void pci_dma_dev_setup_pasemi(struct pci_dev *dev)
 	 */
 	if (dev->vendor == 0x1959 && dev->device == 0xa007 &&
 	    !firmware_has_feature(FW_FEATURE_LPAR)) {
+<<<<<<< HEAD
 		dev->dev.archdata.dma_ops = &dma_direct_ops;
+=======
+		dev->dev.dma_ops = NULL;
+		/*
+		 * Set the coherent DMA mask to prevent the iommu
+		 * being used unnecessarily
+		 */
+		dev->dev.coherent_dma_mask = DMA_BIT_MASK(44);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 #endif
@@ -184,7 +244,11 @@ static void pci_dma_dev_setup_pasemi(struct pci_dev *dev)
 	set_iommu_table_base(&dev->dev, &iommu_table_iobmap);
 }
 
+<<<<<<< HEAD
 int __init iob_init(struct device_node *dn)
+=======
+static int __init iob_init(struct device_node *dn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long tmp;
 	u32 regword;
@@ -192,8 +256,23 @@ int __init iob_init(struct device_node *dn)
 
 	pr_debug(" -> %s\n", __func__);
 
+<<<<<<< HEAD
 	/* Allocate a spare page to map all invalid IOTLB pages. */
 	tmp = memblock_alloc(IOBMAP_PAGE_SIZE, IOBMAP_PAGE_SIZE);
+=======
+	/* For 2G space, 8x64 pages (2^21 bytes) is max total l2 size */
+	iob_l2_base = memblock_alloc_try_nid_raw(1UL << 21, 1UL << 21,
+					MEMBLOCK_LOW_LIMIT, 0x80000000,
+					NUMA_NO_NODE);
+	if (!iob_l2_base)
+		panic("%s: Failed to allocate %lu bytes align=0x%lx max_addr=%x\n",
+		      __func__, 1UL << 21, 1UL << 21, 0x80000000);
+
+	pr_info("IOBMAP L2 allocated at: %p\n", iob_l2_base);
+
+	/* Allocate a spare page to map all invalid IOTLB pages. */
+	tmp = memblock_phys_alloc(IOBMAP_PAGE_SIZE, IOBMAP_PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tmp)
 		panic("IOBMAP: Cannot allocate spare page!");
 	/* Empty l1 is marked invalid */
@@ -238,13 +317,18 @@ void __init iommu_init_early_pasemi(void)
 	iommu_off = 1;
 #else
 	iommu_off = of_chosen &&
+<<<<<<< HEAD
 			of_get_property(of_chosen, "linux,iommu-off", NULL);
+=======
+			of_property_read_bool(of_chosen, "linux,iommu-off");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	if (iommu_off)
 		return;
 
 	iob_init(NULL);
 
+<<<<<<< HEAD
 	ppc_md.pci_dma_dev_setup = pci_dma_dev_setup_pasemi;
 	ppc_md.pci_dma_bus_setup = pci_dma_bus_setup_pasemi;
 	ppc_md.tce_build = iobmap_build;
@@ -262,3 +346,9 @@ void __init alloc_iobmap_l2(void)
 
 	printk(KERN_INFO "IOBMAP L2 allocated at: %p\n", iob_l2_base);
 }
+=======
+	pasemi_pci_controller_ops.dma_dev_setup = pci_dma_dev_setup_pasemi;
+	pasemi_pci_controller_ops.dma_bus_setup = pci_dma_bus_setup_pasemi;
+	set_pci_dma_ops(&dma_iommu_ops);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

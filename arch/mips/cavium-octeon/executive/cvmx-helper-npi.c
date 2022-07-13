@@ -59,6 +59,7 @@ int __cvmx_helper_npi_probe(int interface)
 		 && !OCTEON_IS_MODEL(OCTEON_CN52XX_PASS1_X))
 		/* The packet engines didn't exist before pass 2 */
 		return 4;
+<<<<<<< HEAD
 #if 0
 	/*
 	 * Technically CN30XX, CN31XX, and CN50XX contain packet
@@ -71,6 +72,8 @@ int __cvmx_helper_npi_probe(int interface)
 	else if (OCTEON_IS_MODEL(OCTEON_CN30XX))
 		return 1;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	return 0;
 }

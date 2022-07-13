@@ -61,10 +61,17 @@ MODULE_ALIAS("arusb_lnx");
  * Note:
  *
  * Always update our wiki's device list (located at:
+<<<<<<< HEAD
  * http://wireless.kernel.org/en/users/Drivers/ar9170/devices ),
  * whenever you add a new device.
  */
 static struct usb_device_id carl9170_usb_ids[] = {
+=======
+ * https://wireless.wiki.kernel.org/en/users/Drivers/ar9170/devices ),
+ * whenever you add a new device.
+ */
+static const struct usb_device_id carl9170_usb_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Atheros 9170 */
 	{ USB_DEVICE(0x0cf3, 0x9170) },
 	/* Atheros TG121N */
@@ -128,6 +135,11 @@ static struct usb_device_id carl9170_usb_ids[] = {
 };
 MODULE_DEVICE_TABLE(usb, carl9170_usb_ids);
 
+<<<<<<< HEAD
+=======
+static struct usb_driver carl9170_driver;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void carl9170_usb_submit_data_urb(struct ar9170 *ar)
 {
 	struct urb *urb;
@@ -176,7 +188,11 @@ static void carl9170_usb_tx_data_complete(struct urb *urb)
 	switch (urb->status) {
 	/* everything is fine */
 	case 0:
+<<<<<<< HEAD
 		carl9170_tx_callback(ar, (void *)urb->context);
+=======
+		carl9170_tx_callback(ar, urb->context);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	/* disconnect */
@@ -295,6 +311,16 @@ static void carl9170_usb_rx_irq_complete(struct urb *urb)
 		goto resubmit;
 	}
 
+<<<<<<< HEAD
+=======
+	/*
+	 * While the carl9170 firmware does not use this EP, the
+	 * firmware loader in the EEPROM unfortunately does.
+	 * Therefore we need to be ready to handle out-of-band
+	 * responses and traps in case the firmware crashed and
+	 * the loader took over again.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	carl9170_handle_command_response(ar, urb->transfer_buffer,
 					 urb->actual_length);
 
@@ -360,7 +386,11 @@ void carl9170_usb_handle_tx_err(struct ar9170 *ar)
 	struct urb *urb;
 
 	while ((urb = usb_get_from_anchor(&ar->tx_err))) {
+<<<<<<< HEAD
 		struct sk_buff *skb = (void *)urb->context;
+=======
+		struct sk_buff *skb = urb->context;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		carl9170_tx_drop(ar, skb);
 		carl9170_tx_callback(ar, skb);
@@ -368,9 +398,15 @@ void carl9170_usb_handle_tx_err(struct ar9170 *ar)
 	}
 }
 
+<<<<<<< HEAD
 static void carl9170_usb_tasklet(unsigned long data)
 {
 	struct ar9170 *ar = (struct ar9170 *) data;
+=======
+static void carl9170_usb_tasklet(struct tasklet_struct *t)
+{
+	struct ar9170 *ar = from_tasklet(ar, t, usb_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_INITIALIZED(ar))
 		return;
@@ -388,7 +424,11 @@ static void carl9170_usb_tasklet(unsigned long data)
 
 static void carl9170_usb_rx_complete(struct urb *urb)
 {
+<<<<<<< HEAD
 	struct ar9170 *ar = (struct ar9170 *)urb->context;
+=======
+	struct ar9170 *ar = urb->context;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (WARN_ON_ONCE(!ar))
@@ -550,7 +590,11 @@ static int carl9170_usb_flush(struct ar9170 *ar)
 	int ret, err = 0;
 
 	while ((urb = usb_get_from_anchor(&ar->tx_wait))) {
+<<<<<<< HEAD
 		struct sk_buff *skb = (void *)urb->context;
+=======
+		struct sk_buff *skb = urb->context;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		carl9170_tx_drop(ar, skb);
 		carl9170_tx_callback(ar, skb);
 		usb_free_urb(urb);
@@ -614,9 +658,22 @@ int __carl9170_exec_cmd(struct ar9170 *ar, struct carl9170_cmd *cmd,
 		goto err_free;
 	}
 
+<<<<<<< HEAD
 	usb_fill_int_urb(urb, ar->udev, usb_sndintpipe(ar->udev,
 		AR9170_USB_EP_CMD), cmd, cmd->hdr.len + 4,
 		carl9170_usb_cmd_complete, ar, 1);
+=======
+	if (ar->usb_ep_cmd_is_bulk)
+		usb_fill_bulk_urb(urb, ar->udev,
+				  usb_sndbulkpipe(ar->udev, AR9170_USB_EP_CMD),
+				  cmd, cmd->hdr.len + 4,
+				  carl9170_usb_cmd_complete, ar);
+	else
+		usb_fill_int_urb(urb, ar->udev,
+				 usb_sndintpipe(ar->udev, AR9170_USB_EP_CMD),
+				 cmd, cmd->hdr.len + 4,
+				 carl9170_usb_cmd_complete, ar, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (free_buf)
 		urb->transfer_flags |= URB_FREE_BUFFER;
@@ -637,6 +694,10 @@ int carl9170_exec_cmd(struct ar9170 *ar, const enum carl9170_cmd_oids cmd,
 	unsigned int plen, void *payload, unsigned int outlen, void *out)
 {
 	int err = -ENOMEM;
+<<<<<<< HEAD
+=======
+	unsigned long time_left;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_ACCEPTING_CMD(ar))
 		return -EIO;
@@ -651,6 +712,7 @@ int carl9170_exec_cmd(struct ar9170 *ar, const enum carl9170_cmd_oids cmd,
 		memcpy(ar->cmd.data, payload, plen);
 
 	spin_lock_bh(&ar->cmd_lock);
+<<<<<<< HEAD
 	ar->readbuf = (u8 *)out;
 	ar->readlen = outlen;
 	spin_unlock_bh(&ar->cmd_lock);
@@ -660,6 +722,18 @@ int carl9170_exec_cmd(struct ar9170 *ar, const enum carl9170_cmd_oids cmd,
 	if (!(cmd & CARL9170_CMD_ASYNC_FLAG)) {
 		err = wait_for_completion_timeout(&ar->cmd_wait, HZ);
 		if (err == 0) {
+=======
+	ar->readbuf = out;
+	ar->readlen = outlen;
+	spin_unlock_bh(&ar->cmd_lock);
+
+	reinit_completion(&ar->cmd_wait);
+	err = __carl9170_exec_cmd(ar, &ar->cmd, false);
+
+	if (!(cmd & CARL9170_CMD_ASYNC_FLAG)) {
+		time_left = wait_for_completion_timeout(&ar->cmd_wait, HZ);
+		if (time_left == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -ETIMEDOUT;
 			goto err_unbuf;
 		}
@@ -763,10 +837,14 @@ void carl9170_usb_stop(struct ar9170 *ar)
 	spin_lock_bh(&ar->cmd_lock);
 	ar->readlen = 0;
 	spin_unlock_bh(&ar->cmd_lock);
+<<<<<<< HEAD
 	complete_all(&ar->cmd_wait);
 
 	/* This is required to prevent an early completion on _start */
 	INIT_COMPLETION(ar->cmd_wait);
+=======
+	complete(&ar->cmd_wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Note:
@@ -953,6 +1031,7 @@ err_out:
 
 static void carl9170_usb_firmware_failed(struct ar9170 *ar)
 {
+<<<<<<< HEAD
 	struct device *parent = ar->udev->dev.parent;
 	struct usb_device *udev;
 
@@ -975,10 +1054,33 @@ static void carl9170_usb_firmware_failed(struct ar9170 *ar)
 		device_unlock(parent);
 
 	usb_put_dev(udev);
+=======
+	/* Store a copies of the usb_interface and usb_device pointer locally.
+	 * This is because release_driver initiates carl9170_usb_disconnect,
+	 * which in turn frees our driver context (ar).
+	 */
+	struct usb_interface *intf = ar->intf;
+	struct usb_device *udev = ar->udev;
+
+	complete(&ar->fw_load_wait);
+	/* at this point 'ar' could be already freed. Don't use it anymore */
+	ar = NULL;
+
+	/* unbind anything failed */
+	usb_lock_device(udev);
+	usb_driver_release_interface(&carl9170_driver, intf);
+	usb_unlock_device(udev);
+
+	usb_put_intf(intf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void carl9170_usb_firmware_finish(struct ar9170 *ar)
 {
+<<<<<<< HEAD
+=======
+	struct usb_interface *intf = ar->intf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = carl9170_parse_firmware(ar);
@@ -996,7 +1098,11 @@ static void carl9170_usb_firmware_finish(struct ar9170 *ar)
 		goto err_unrx;
 
 	complete(&ar->fw_load_wait);
+<<<<<<< HEAD
 	usb_put_dev(ar->udev);
+=======
+	usb_put_intf(intf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 err_unrx:
@@ -1025,9 +1131,16 @@ static void carl9170_usb_firmware_step2(const struct firmware *fw,
 static int carl9170_usb_probe(struct usb_interface *intf,
 			      const struct usb_device_id *id)
 {
+<<<<<<< HEAD
 	struct ar9170 *ar;
 	struct usb_device *udev;
 	int err;
+=======
+	struct usb_endpoint_descriptor *ep;
+	struct ar9170 *ar;
+	struct usb_device *udev;
+	int i, err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = usb_reset_device(interface_to_usbdev(intf));
 	if (err)
@@ -1038,11 +1151,32 @@ static int carl9170_usb_probe(struct usb_interface *intf,
 		return PTR_ERR(ar);
 
 	udev = interface_to_usbdev(intf);
+<<<<<<< HEAD
 	usb_get_dev(udev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ar->udev = udev;
 	ar->intf = intf;
 	ar->features = id->driver_info;
 
+<<<<<<< HEAD
+=======
+	/* We need to remember the type of endpoint 4 because it differs
+	 * between high- and full-speed configuration. The high-speed
+	 * configuration specifies it as interrupt and the full-speed
+	 * configuration as bulk endpoint. This information is required
+	 * later when sending urbs to that endpoint.
+	 */
+	for (i = 0; i < intf->cur_altsetting->desc.bNumEndpoints; ++i) {
+		ep = &intf->cur_altsetting->endpoint[i].desc;
+
+		if (usb_endpoint_num(ep) == AR9170_USB_EP_CMD &&
+		    usb_endpoint_dir_out(ep) &&
+		    usb_endpoint_type(ep) == USB_ENDPOINT_XFER_BULK)
+			ar->usb_ep_cmd_is_bulk = true;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_set_intfdata(intf, ar);
 	SET_IEEE80211_DEV(ar->hw, &intf->dev);
 
@@ -1056,8 +1190,12 @@ static int carl9170_usb_probe(struct usb_interface *intf,
 	init_completion(&ar->cmd_wait);
 	init_completion(&ar->fw_boot_wait);
 	init_completion(&ar->fw_load_wait);
+<<<<<<< HEAD
 	tasklet_init(&ar->usb_tasklet, carl9170_usb_tasklet,
 		     (unsigned long)ar);
+=======
+	tasklet_setup(&ar->usb_tasklet, carl9170_usb_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_set(&ar->tx_cmd_urbs, 0);
 	atomic_set(&ar->tx_anch_urbs, 0);
@@ -1065,23 +1203,43 @@ static int carl9170_usb_probe(struct usb_interface *intf,
 	atomic_set(&ar->rx_anch_urbs, 0);
 	atomic_set(&ar->rx_pool_urbs, 0);
 
+<<<<<<< HEAD
 	usb_get_dev(ar->udev);
 
 	carl9170_set_state(ar, CARL9170_STOPPED);
 
 	return request_firmware_nowait(THIS_MODULE, 1, CARL9170FW_NAME,
 		&ar->udev->dev, GFP_KERNEL, ar, carl9170_usb_firmware_step2);
+=======
+	usb_get_intf(intf);
+
+	carl9170_set_state(ar, CARL9170_STOPPED);
+
+	err = request_firmware_nowait(THIS_MODULE, 1, CARL9170FW_NAME,
+		&ar->udev->dev, GFP_KERNEL, ar, carl9170_usb_firmware_step2);
+	if (err) {
+		usb_put_intf(intf);
+		carl9170_free(ar);
+	}
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void carl9170_usb_disconnect(struct usb_interface *intf)
 {
 	struct ar9170 *ar = usb_get_intfdata(intf);
+<<<<<<< HEAD
 	struct usb_device *udev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (WARN_ON(!ar))
 		return;
 
+<<<<<<< HEAD
 	udev = ar->udev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wait_for_completion(&ar->fw_load_wait);
 
 	if (IS_INITIALIZED(ar)) {
@@ -1096,7 +1254,10 @@ static void carl9170_usb_disconnect(struct usb_interface *intf)
 
 	carl9170_release_firmware(ar);
 	carl9170_free(ar);
+<<<<<<< HEAD
 	usb_put_dev(udev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -1159,6 +1320,10 @@ static struct usb_driver carl9170_driver = {
 	.resume = carl9170_usb_resume,
 	.reset_resume = carl9170_usb_resume,
 #endif /* CONFIG_PM */
+<<<<<<< HEAD
+=======
+	.disable_hub_initiated_lpm = 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_usb_driver(carl9170_driver);

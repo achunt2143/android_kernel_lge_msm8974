@@ -1,14 +1,25 @@
+<<<<<<< HEAD
 /*
  * adm1029.c - Part of lm_sensors, Linux kernel modules for hardware monitoring
  *
  * Copyright (C) 2006 Corentin LABBE <corentin.labbe@geomatys.fr>
  *
  * Based on LM83 Driver by Jean Delvare <khali@linux-fr.org>
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * adm1029.c - Part of lm_sensors, Linux kernel modules for hardware monitoring
+ *
+ * Copyright (C) 2006 Corentin LABBE <clabbe.montjoie@gmail.com>
+ *
+ * Based on LM83 Driver by Jean Delvare <jdelvare@suse.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Give only processor, motherboard temperatures and fan tachs
  * Very rare chip please let me know if you use it
  *
  * http://www.analog.com/UploadedFiles/Data_Sheets/ADM1029.pdf
+<<<<<<< HEAD
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -23,6 +34,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -106,6 +119,7 @@ static const u8 ADM1029_REG_FAN_DIV[] = {
 };
 
 /*
+<<<<<<< HEAD
  * Functions declaration
  */
 
@@ -140,13 +154,21 @@ static struct i2c_driver adm1029_driver = {
 };
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Client data (each client gets its own)
  */
 
 struct adm1029_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
 	struct mutex update_lock;
 	char valid;		/* zero until following fields are valid */
+=======
+	struct i2c_client *client;
+	struct mutex update_lock; /* protect register access */
+	bool valid;		/* false until following fields are valid */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated;	/* in jiffies */
 
 	/* registers values, signed for temperature, unsigned for other stuff */
@@ -156,26 +178,91 @@ struct adm1029_data {
 };
 
 /*
+<<<<<<< HEAD
+=======
+ * function that update the status of the chips (temperature for example)
+ */
+static struct adm1029_data *adm1029_update_device(struct device *dev)
+{
+	struct adm1029_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+
+	mutex_lock(&data->update_lock);
+	/*
+	 * Use the "cache" Luke, don't recheck values
+	 * if there are already checked not a long time later
+	 */
+	if (time_after(jiffies, data->last_updated + HZ * 2) || !data->valid) {
+		int nr;
+
+		dev_dbg(&client->dev, "Updating adm1029 data\n");
+
+		for (nr = 0; nr < ARRAY_SIZE(ADM1029_REG_TEMP); nr++) {
+			data->temp[nr] =
+			    i2c_smbus_read_byte_data(client,
+						     ADM1029_REG_TEMP[nr]);
+		}
+		for (nr = 0; nr < ARRAY_SIZE(ADM1029_REG_FAN); nr++) {
+			data->fan[nr] =
+			    i2c_smbus_read_byte_data(client,
+						     ADM1029_REG_FAN[nr]);
+		}
+		for (nr = 0; nr < ARRAY_SIZE(ADM1029_REG_FAN_DIV); nr++) {
+			data->fan_div[nr] =
+			    i2c_smbus_read_byte_data(client,
+						     ADM1029_REG_FAN_DIV[nr]);
+		}
+
+		data->last_updated = jiffies;
+		data->valid = true;
+	}
+
+	mutex_unlock(&data->update_lock);
+
+	return data;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Sysfs stuff
  */
 
 static ssize_t
+<<<<<<< HEAD
 show_temp(struct device *dev, struct device_attribute *devattr, char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adm1029_data *data = adm1029_update_device(dev);
+=======
+temp_show(struct device *dev, struct device_attribute *devattr, char *buf)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	struct adm1029_data *data = adm1029_update_device(dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp[attr->index]));
 }
 
 static ssize_t
+<<<<<<< HEAD
 show_fan(struct device *dev, struct device_attribute *devattr, char *buf)
+=======
+fan_show(struct device *dev, struct device_attribute *devattr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adm1029_data *data = adm1029_update_device(dev);
 	u16 val;
+<<<<<<< HEAD
 	if (data->fan[attr->index] == 0
 	    || (data->fan_div[attr->index] & 0xC0) == 0
 	    || data->fan[attr->index] == 255) {
+=======
+
+	if (data->fan[attr->index] == 0 ||
+	    (data->fan_div[attr->index] & 0xC0) == 0 ||
+	    data->fan[attr->index] == 255) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return sprintf(buf, "0\n");
 	}
 
@@ -185,24 +272,45 @@ show_fan(struct device *dev, struct device_attribute *devattr, char *buf)
 }
 
 static ssize_t
+<<<<<<< HEAD
 show_fan_div(struct device *dev, struct device_attribute *devattr, char *buf)
 {
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	struct adm1029_data *data = adm1029_update_device(dev);
+=======
+fan_div_show(struct device *dev, struct device_attribute *devattr, char *buf)
+{
+	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
+	struct adm1029_data *data = adm1029_update_device(dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((data->fan_div[attr->index] & 0xC0) == 0)
 		return sprintf(buf, "0\n");
 	return sprintf(buf, "%d\n", DIV_FROM_REG(data->fan_div[attr->index]));
 }
 
+<<<<<<< HEAD
 static ssize_t set_fan_div(struct device *dev,
 	    struct device_attribute *devattr, const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
 	struct adm1029_data *data = i2c_get_clientdata(client);
+=======
+static ssize_t fan_div_store(struct device *dev,
+			     struct device_attribute *devattr,
+			     const char *buf, size_t count)
+{
+	struct adm1029_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(devattr);
 	u8 reg;
 	long val;
 	int ret = kstrtol(buf, 10, &val);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0)
 		return ret;
 
@@ -224,8 +332,14 @@ static ssize_t set_fan_div(struct device *dev,
 		break;
 	default:
 		mutex_unlock(&data->update_lock);
+<<<<<<< HEAD
 		dev_err(&client->dev, "fan_div value %ld not "
 			"supported. Choose one of 1, 2 or 4!\n", val);
+=======
+		dev_err(&client->dev,
+			"fan_div value %ld not supported. Choose one of 1, 2 or 4!\n",
+			val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	/* Update the value */
@@ -242,6 +356,7 @@ static ssize_t set_fan_div(struct device *dev,
 	return count;
 }
 
+<<<<<<< HEAD
 /*
  * Access rights on sysfs. S_IRUGO: Is Readable by User, Group and Others
  *			   S_IWUSR: Is Writable by User.
@@ -270,6 +385,31 @@ static SENSOR_DEVICE_ATTR(fan2_div, S_IRUGO | S_IWUSR,
 			  show_fan_div, set_fan_div, 1);
 
 static struct attribute *adm1029_attributes[] = {
+=======
+/* Access rights on sysfs. */
+static SENSOR_DEVICE_ATTR_RO(temp1_input, temp, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_input, temp, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_input, temp, 2);
+
+static SENSOR_DEVICE_ATTR_RO(temp1_max, temp, 3);
+static SENSOR_DEVICE_ATTR_RO(temp2_max, temp, 4);
+static SENSOR_DEVICE_ATTR_RO(temp3_max, temp, 5);
+
+static SENSOR_DEVICE_ATTR_RO(temp1_min, temp, 6);
+static SENSOR_DEVICE_ATTR_RO(temp2_min, temp, 7);
+static SENSOR_DEVICE_ATTR_RO(temp3_min, temp, 8);
+
+static SENSOR_DEVICE_ATTR_RO(fan1_input, fan, 0);
+static SENSOR_DEVICE_ATTR_RO(fan2_input, fan, 1);
+
+static SENSOR_DEVICE_ATTR_RO(fan1_min, fan, 2);
+static SENSOR_DEVICE_ATTR_RO(fan2_min, fan, 3);
+
+static SENSOR_DEVICE_ATTR_RW(fan1_div, fan_div, 0);
+static SENSOR_DEVICE_ATTR_RW(fan2_div, fan_div, 1);
+
+static struct attribute *adm1029_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
 	&sensor_dev_attr_temp1_min.dev_attr.attr,
 	&sensor_dev_attr_temp1_max.dev_attr.attr,
@@ -288,9 +428,13 @@ static struct attribute *adm1029_attributes[] = {
 	NULL
 };
 
+<<<<<<< HEAD
 static const struct attribute_group adm1029_group = {
 	.attrs = adm1029_attributes,
 };
+=======
+ATTRIBUTE_GROUPS(adm1029);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Real code
@@ -318,10 +462,17 @@ static int adm1029_detect(struct i2c_client *client,
 	temp_devices_installed = i2c_smbus_read_byte_data(client,
 					ADM1029_REG_TEMP_DEVICES_INSTALLED);
 	nb_fan_support = i2c_smbus_read_byte_data(client,
+<<<<<<< HEAD
 						ADM1029_REG_NB_FAN_SUPPORT);
 	/* 0x41 is Analog Devices */
 	if (man_id != 0x41 || (temp_devices_installed & 0xf9) != 0x01
 	    || nb_fan_support != 0x03)
+=======
+						  ADM1029_REG_NB_FAN_SUPPORT);
+	/* 0x41 is Analog Devices */
+	if (man_id != 0x41 || (temp_devices_installed & 0xf9) != 0x01 ||
+	    nb_fan_support != 0x03)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	if ((chip_id & 0xF0) != 0x00) {
@@ -329,16 +480,26 @@ static int adm1029_detect(struct i2c_client *client,
 		 * There are no "official" CHIP ID, so actually
 		 * we use Major/Minor revision for that
 		 */
+<<<<<<< HEAD
 		pr_info("adm1029: Unknown major revision %x, "
 			"please let us know\n", chip_id);
 		return -ENODEV;
 	}
 
 	strlcpy(info->type, "adm1029", I2C_NAME_SIZE);
+=======
+		pr_info("Unknown major revision %x, please let us know\n",
+			chip_id);
+		return -ENODEV;
+	}
+
+	strscpy(info->type, "adm1029", I2C_NAME_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int adm1029_probe(struct i2c_client *client,
 			 const struct i2c_device_id *id)
 {
@@ -387,6 +548,12 @@ static int adm1029_probe(struct i2c_client *client,
 static int adm1029_init_client(struct i2c_client *client)
 {
 	u8 config;
+=======
+static int adm1029_init_client(struct i2c_client *client)
+{
+	u8 config;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	config = i2c_smbus_read_byte_data(client, ADM1029_REG_CONFIG);
 	if ((config & 0x10) == 0) {
 		i2c_smbus_write_byte_data(client, ADM1029_REG_CONFIG,
@@ -401,6 +568,7 @@ static int adm1029_init_client(struct i2c_client *client)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int adm1029_remove(struct i2c_client *client)
 {
 	struct adm1029_data *data = i2c_get_clientdata(client);
@@ -459,5 +627,53 @@ static struct adm1029_data *adm1029_update_device(struct device *dev)
 module_i2c_driver(adm1029_driver);
 
 MODULE_AUTHOR("Corentin LABBE <corentin.labbe@geomatys.fr>");
+=======
+static int adm1029_probe(struct i2c_client *client)
+{
+	struct device *dev = &client->dev;
+	struct adm1029_data *data;
+	struct device *hwmon_dev;
+
+	data = devm_kzalloc(dev, sizeof(struct adm1029_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+	mutex_init(&data->update_lock);
+
+	/*
+	 * Initialize the ADM1029 chip
+	 * Check config register
+	 */
+	if (adm1029_init_client(client) == 0)
+		return -ENODEV;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, client->name,
+							   data,
+							   adm1029_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+}
+
+static const struct i2c_device_id adm1029_id[] = {
+	{ "adm1029", 0 },
+	{ }
+};
+MODULE_DEVICE_TABLE(i2c, adm1029_id);
+
+static struct i2c_driver adm1029_driver = {
+	.class		= I2C_CLASS_HWMON,
+	.driver = {
+		.name = "adm1029",
+	},
+	.probe		= adm1029_probe,
+	.id_table	= adm1029_id,
+	.detect		= adm1029_detect,
+	.address_list	= normal_i2c,
+};
+
+module_i2c_driver(adm1029_driver);
+
+MODULE_AUTHOR("Corentin LABBE <clabbe.montjoie@gmail.com>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("adm1029 driver");
 MODULE_LICENSE("GPL v2");

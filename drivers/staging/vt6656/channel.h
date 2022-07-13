@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -19,6 +24,8 @@
  *
  * File: channel.h
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Purpose: Country Regulation Rules header file
  *
  * Author: Lucas Lin
@@ -30,6 +37,7 @@
 #ifndef _CHANNEL_H_
 #define _CHANNEL_H_
 
+<<<<<<< HEAD
 #include "ttype.h"
 
 /*---------------------  Export Definitions -------------------------*/
@@ -51,5 +59,10 @@ void    CHvInitChannelTable(void *pDeviceHandler);
 BYTE    CHbyGetChannelMapping(BYTE byChannelNumber);
 
 BOOL CHvChannelGetList(unsigned int uCountryCodeIdx, PBYTE pbyChannelTable);
+=======
+#include "device.h"
+
+void vnt_init_bands(struct vnt_private *priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif  /* _CHANNEL_H_ */

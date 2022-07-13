@@ -73,7 +73,10 @@ earlier 3Com products.
 
 #include <linux/module.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/timer.h>
@@ -93,7 +96,11 @@ earlier 3Com products.
 #include <pcmcia/ciscode.h>
 #include <pcmcia/ds.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 
 /*====================================================================*/
@@ -226,7 +233,11 @@ static unsigned short read_eeprom(unsigned int ioaddr, int index);
 static void tc574_wait_for_completion(struct net_device *dev, int cmd);
 
 static void tc574_reset(struct net_device *dev);
+<<<<<<< HEAD
 static void media_check(unsigned long arg);
+=======
+static void media_check(struct timer_list *t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int el3_open(struct net_device *dev);
 static netdev_tx_t el3_start_xmit(struct sk_buff *skb,
 					struct net_device *dev);
@@ -235,7 +246,11 @@ static void update_stats(struct net_device *dev);
 static struct net_device_stats *el3_get_stats(struct net_device *dev);
 static int el3_rx(struct net_device *dev, int worklimit);
 static int el3_close(struct net_device *dev);
+<<<<<<< HEAD
 static void el3_tx_timeout(struct net_device *dev);
+=======
+static void el3_tx_timeout(struct net_device *dev, unsigned int txqueue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int el3_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
 static void set_rx_mode(struct net_device *dev);
 static void set_multicast_list(struct net_device *dev);
@@ -253,9 +268,14 @@ static const struct net_device_ops el3_netdev_ops = {
 	.ndo_start_xmit		= el3_start_xmit,
 	.ndo_tx_timeout 	= el3_tx_timeout,
 	.ndo_get_stats		= el3_get_stats,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= el3_ioctl,
 	.ndo_set_rx_mode	= set_multicast_list,
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+	.ndo_eth_ioctl		= el3_ioctl,
+	.ndo_set_rx_mode	= set_multicast_list,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 };
@@ -307,15 +327,23 @@ static int tc574_config(struct pcmcia_device *link)
 	struct net_device *dev = link->priv;
 	struct el3_private *lp = netdev_priv(dev);
 	int ret, i, j;
+<<<<<<< HEAD
 	unsigned int ioaddr;
 	__be16 *phys_addr;
+=======
+	__be16 addr[ETH_ALEN / 2];
+	unsigned int ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *cardname;
 	__u32 config;
 	u8 *buf;
 	size_t len;
 
+<<<<<<< HEAD
 	phys_addr = (__be16 *)dev->dev_addr;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(&link->dev, "3c574_config()\n");
 
 	link->io_lines = 16;
@@ -349,19 +377,32 @@ static int tc574_config(struct pcmcia_device *link)
 	len = pcmcia_get_tuple(link, 0x88, &buf);
 	if (buf && len >= 6) {
 		for (i = 0; i < 3; i++)
+<<<<<<< HEAD
 			phys_addr[i] = htons(le16_to_cpu(buf[i * 2]));
+=======
+			addr[i] = htons(le16_to_cpu(buf[i * 2]));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(buf);
 	} else {
 		kfree(buf); /* 0 < len < 6 */
 		EL3WINDOW(0);
 		for (i = 0; i < 3; i++)
+<<<<<<< HEAD
 			phys_addr[i] = htons(read_eeprom(ioaddr, i + 10));
 		if (phys_addr[0] == htons(0x6060)) {
+=======
+			addr[i] = htons(read_eeprom(ioaddr, i + 10));
+		if (addr[0] == htons(0x6060)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_notice("IO port conflict at 0x%03lx-0x%03lx\n",
 				  dev->base_addr, dev->base_addr+15);
 			goto failed;
 		}
 	}
+<<<<<<< HEAD
+=======
+	eth_hw_addr_set(dev, (u8 *)addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (link->prod_id[1])
 		cardname = link->prod_id[1];
 	else
@@ -379,7 +420,11 @@ static int tc574_config(struct pcmcia_device *link)
 		lp->autoselect = config & Autoselect ? 1 : 0;
 	}
 
+<<<<<<< HEAD
 	init_timer(&lp->media);
+=======
+	timer_setup(&lp->media, media_check, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{
 		int phy;
@@ -432,7 +477,11 @@ static int tc574_config(struct pcmcia_device *link)
 	netdev_info(dev, "%s at io %#3lx, irq %d, hw_addr %pM\n",
 		    cardname, dev->base_addr, dev->irq, dev->dev_addr);
 	netdev_info(dev, " %dK FIFO split %s Rx:Tx, %sMII interface.\n",
+<<<<<<< HEAD
 		    8 << config & Ram_size,
+=======
+		    8 << (config & Ram_size),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    ram_split[(config & Ram_split) >> Ram_split_shift],
 		    config & Autoselect ? "autoselect " : "");
 
@@ -683,8 +732,11 @@ static int el3_open(struct net_device *dev)
 	netif_start_queue(dev);
 	
 	tc574_reset(dev);
+<<<<<<< HEAD
 	lp->media.function = media_check;
 	lp->media.data = (unsigned long) dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lp->media.expires = jiffies + HZ;
 	add_timer(&lp->media);
 	
@@ -694,14 +746,22 @@ static int el3_open(struct net_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void el3_tx_timeout(struct net_device *dev)
+=======
+static void el3_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int ioaddr = dev->base_addr;
 	
 	netdev_notice(dev, "Transmit timed out!\n");
 	dump_status(dev);
 	dev->stats.tx_errors++;
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Issue TX_RESET and TX_START commands. */
 	tc574_wait_for_completion(dev, TxReset);
 	outw(TxEnable, ioaddr + EL3_CMD);
@@ -861,10 +921,17 @@ static irqreturn_t el3_interrupt(int irq, void *dev_id)
 	(and as a last resort, poll the NIC for events), and to monitor
 	the MII, reporting changes in cable status.
 */
+<<<<<<< HEAD
 static void media_check(unsigned long arg)
 {
 	struct net_device *dev = (struct net_device *) arg;
 	struct el3_private *lp = netdev_priv(dev);
+=======
+static void media_check(struct timer_list *t)
+{
+	struct el3_private *lp = from_timer(lp, t, media);
+	struct net_device *dev = lp->p_dev->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int ioaddr = dev->base_addr;
 	unsigned long flags;
 	unsigned short /* cable, */ media, partner;
@@ -955,7 +1022,11 @@ static struct net_device_stats *el3_get_stats(struct net_device *dev)
 static void update_stats(struct net_device *dev)
 {
 	unsigned int ioaddr = dev->base_addr;
+<<<<<<< HEAD
 	u8 rx, tx, up;
+=======
+	u8 up;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("%s: updating the statistics.\n", dev->name);
 
@@ -976,8 +1047,13 @@ static void update_stats(struct net_device *dev)
 	dev->stats.tx_packets			+= (up&0x30) << 4;
 	/* Rx packets   */			   inb(ioaddr + 7);
 	/* Tx deferrals */			   inb(ioaddr + 8);
+<<<<<<< HEAD
 	rx		 			 = inw(ioaddr + 10);
 	tx					 = inw(ioaddr + 12);
+=======
+	/* rx */				   inw(ioaddr + 10);
+	/* tx */				   inw(ioaddr + 12);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	EL3WINDOW(4);
 	/* BadSSD */				   inb(ioaddr + 12);
@@ -1050,6 +1126,10 @@ static int el3_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 	switch(cmd) {
 	case SIOCGMIIPHY:		/* Get the address of the PHY in use. */
 		data->phy_id = phy;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SIOCGMIIREG:		/* Read the specified MII register. */
 		{
 			int saved_window;
@@ -1165,6 +1245,7 @@ static struct pcmcia_driver tc574_driver = {
 	.suspend	= tc574_suspend,
 	.resume		= tc574_resume,
 };
+<<<<<<< HEAD
 
 static int __init init_tc574(void)
 {
@@ -1178,3 +1259,6 @@ static void __exit exit_tc574(void)
 
 module_init(init_tc574);
 module_exit(exit_tc574);
+=======
+module_pcmcia_driver(tc574_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

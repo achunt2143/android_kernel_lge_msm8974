@@ -60,6 +60,7 @@
 #include <linux/types.h>
 #include <linux/jiffies.h>
 #include <linux/sunrpc/gss_krb5.h>
+<<<<<<< HEAD
 #include <linux/crypto.h>
 
 #ifdef RPC_DEBUG
@@ -160,6 +161,36 @@ gss_verify_mic_v2(struct krb5_ctx *ctx,
 	dprintk("RPC:       %s\n", __func__);
 
 	if (be16_to_cpu(*((__be16 *)ptr)) != KG2_TOK_MIC)
+=======
+
+#include "gss_krb5_internal.h"
+
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+# define RPCDBG_FACILITY        RPCDBG_AUTH
+#endif
+
+u32
+gss_krb5_verify_mic_v2(struct krb5_ctx *ctx, struct xdr_buf *message_buffer,
+		       struct xdr_netobj *read_token)
+{
+	struct crypto_ahash *tfm = ctx->initiate ?
+				   ctx->acceptor_sign : ctx->initiator_sign;
+	char cksumdata[GSS_KRB5_MAX_CKSUM_LEN];
+	struct xdr_netobj cksumobj = {
+		.len	= ctx->gk5e->cksumlength,
+		.data	= cksumdata,
+	};
+	u8 *ptr = read_token->data;
+	__be16 be16_ptr;
+	time64_t now;
+	u8 flags;
+	int i;
+
+	dprintk("RPC:       %s\n", __func__);
+
+	memcpy(&be16_ptr, (char *) ptr, 2);
+	if (be16_to_cpu(be16_ptr) != KG2_TOK_MIC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return GSS_S_DEFECTIVE_TOKEN;
 
 	flags = ptr[2];
@@ -176,6 +207,7 @@ gss_verify_mic_v2(struct krb5_ctx *ctx,
 		if (ptr[i] != 0xff)
 			return GSS_S_DEFECTIVE_TOKEN;
 
+<<<<<<< HEAD
 	if (ctx->initiate) {
 		cksumkey = ctx->acceptor_sign;
 		cksum_usage = KG_USAGE_ACCEPTOR_SIGN;
@@ -186,6 +218,10 @@ gss_verify_mic_v2(struct krb5_ctx *ctx,
 
 	if (make_checksum_v2(ctx, ptr, GSS_KRB5_TOK_HDR_LEN, message_buffer, 0,
 			     cksumkey, cksum_usage, &cksumobj))
+=======
+	if (gss_krb5_checksum(tfm, ptr, GSS_KRB5_TOK_HDR_LEN,
+			      message_buffer, 0, &cksumobj))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return GSS_S_FAILURE;
 
 	if (memcmp(cksumobj.data, ptr + GSS_KRB5_TOK_HDR_LEN,
@@ -193,6 +229,7 @@ gss_verify_mic_v2(struct krb5_ctx *ctx,
 		return GSS_S_BAD_SIG;
 
 	/* it got through unscathed.  Make sure the context is unexpired */
+<<<<<<< HEAD
 	now = get_seconds();
 	if (now > ctx->endtime)
 		return GSS_S_CONTEXT_EXPIRED;
@@ -224,3 +261,16 @@ gss_verify_mic_kerberos(struct gss_ctx *gss_ctx,
 	}
 }
 
+=======
+	now = ktime_get_real_seconds();
+	if (now > ctx->endtime)
+		return GSS_S_CONTEXT_EXPIRED;
+
+	/*
+	 * NOTE: the sequence number at ptr + 8 is skipped, rpcsec_gss
+	 * doesn't want it checked; see page 6 of rfc 2203.
+	 */
+
+	return GSS_S_COMPLETE;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Audio support for PS3
  * Copyright (C) 2007 Sony Computer Entertainment Inc.
  * Copyright 2006, 2007 Sony Corporation
  * All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -320,7 +327,11 @@ Indicates Interrupt status, which interrupt has occurred, and can clear
 each interrupt in this register.
 Writing 1b to a field containing 1b clears field and de-asserts interrupt.
 Writing 0b to a field has no effect.
+<<<<<<< HEAD
 Field vaules are the following:
+=======
+Field values are the following:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 0 - Interrupt hasn't occurred.
 1 - Interrupt has occurred.
 

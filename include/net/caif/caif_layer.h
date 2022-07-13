@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson AB 2010
  * Author:	Sjur Brendeland / sjur.brandeland@stericsson.com
  * License terms: GNU General Public License (GPL) version 2
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) ST-Ericsson AB 2010
+ * Author:	Sjur Brendeland
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef CAIF_LAYER_H_
@@ -156,7 +163,11 @@ struct cflayer {
 	 *  CAIF packets upwards in the stack.
 	 *	Packet handling rules:
 	 *	      - The CAIF packet (cfpkt) ownership is passed to the
+<<<<<<< HEAD
 	 *		called receive function. This means that the the
+=======
+	 *		called receive function. This means that the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *		packet cannot be accessed after passing it to the
 	 *		above layer using up->receive().
 	 *
@@ -184,7 +195,11 @@ struct cflayer {
 	 *	CAIF packet downwards in the stack.
 	 *	Packet handling rules:
 	 *	      - The CAIF packet (cfpkt) ownership is passed to the
+<<<<<<< HEAD
 	 *		transmit function. This means that the the packet
+=======
+	 *		transmit function. This means that the packet
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *		cannot be accessed after passing it to the below
 	 *		layer using dn->transmit().
 	 *

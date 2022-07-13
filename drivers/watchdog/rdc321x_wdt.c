@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * RDC321x watchdog driver
  *
  * Copyright (C) 2007-2010 Florian Fainelli <florian@openwrt.org>
  *
  * This driver is highly inspired from the cpu5_wdt driver
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -27,7 +34,10 @@
 #include <linux/errno.h>
 #include <linux/miscdevice.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ioport.h>
 #include <linux/timer.h>
 #include <linux/completion.h>
@@ -68,7 +78,11 @@ static struct {
 
 /* generic helper functions */
 
+<<<<<<< HEAD
 static void rdc321x_wdt_trigger(unsigned long unused)
+=======
+static void rdc321x_wdt_trigger(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	u32 val;
@@ -143,7 +157,11 @@ static int rdc321x_wdt_open(struct inode *inode, struct file *file)
 	if (test_and_set_bit(0, &rdc321x_wdt_device.inuse))
 		return -EBUSY;
 
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int rdc321x_wdt_release(struct inode *inode, struct file *file)
@@ -214,6 +232,10 @@ static const struct file_operations rdc321x_wdt_fops = {
 	.owner		= THIS_MODULE,
 	.llseek		= no_llseek,
 	.unlocked_ioctl	= rdc321x_wdt_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.open		= rdc321x_wdt_open,
 	.write		= rdc321x_wdt_write,
 	.release	= rdc321x_wdt_release,
@@ -225,13 +247,21 @@ static struct miscdevice rdc321x_wdt_misc = {
 	.fops	= &rdc321x_wdt_fops,
 };
 
+<<<<<<< HEAD
 static int __devinit rdc321x_wdt_probe(struct platform_device *pdev)
+=======
+static int rdc321x_wdt_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 	struct resource *r;
 	struct rdc321x_wdt_pdata *pdata;
 
+<<<<<<< HEAD
 	pdata = pdev->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pdata) {
 		dev_err(&pdev->dev, "no platform data supplied\n");
 		return -ENODEV;
@@ -245,6 +275,11 @@ static int __devinit rdc321x_wdt_probe(struct platform_device *pdev)
 
 	rdc321x_wdt_device.sb_pdev = pdata->sb_pdev;
 	rdc321x_wdt_device.base_reg = r->start;
+<<<<<<< HEAD
+=======
+	rdc321x_wdt_device.queue = 0;
+	rdc321x_wdt_device.default_ticks = ticks;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = misc_register(&rdc321x_wdt_misc);
 	if (err < 0) {
@@ -259,6 +294,7 @@ static int __devinit rdc321x_wdt_probe(struct platform_device *pdev)
 				rdc321x_wdt_device.base_reg, RDC_WDT_RST);
 
 	init_completion(&rdc321x_wdt_device.stop);
+<<<<<<< HEAD
 	rdc321x_wdt_device.queue = 0;
 
 	clear_bit(0, &rdc321x_wdt_device.inuse);
@@ -266,13 +302,23 @@ static int __devinit rdc321x_wdt_probe(struct platform_device *pdev)
 	setup_timer(&rdc321x_wdt_device.timer, rdc321x_wdt_trigger, 0);
 
 	rdc321x_wdt_device.default_ticks = ticks;
+=======
+
+	clear_bit(0, &rdc321x_wdt_device.inuse);
+
+	timer_setup(&rdc321x_wdt_device.timer, rdc321x_wdt_trigger, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(&pdev->dev, "watchdog init success\n");
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit rdc321x_wdt_remove(struct platform_device *pdev)
+=======
+static void rdc321x_wdt_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (rdc321x_wdt_device.queue) {
 		rdc321x_wdt_device.queue = 0;
@@ -280,15 +326,23 @@ static int __devexit rdc321x_wdt_remove(struct platform_device *pdev)
 	}
 
 	misc_deregister(&rdc321x_wdt_misc);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver rdc321x_wdt_driver = {
 	.probe = rdc321x_wdt_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(rdc321x_wdt_remove),
 	.driver = {
 		.owner = THIS_MODULE,
+=======
+	.remove_new = rdc321x_wdt_remove,
+	.driver = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name = "rdc321x-wdt",
 	},
 };
@@ -298,4 +352,7 @@ module_platform_driver(rdc321x_wdt_driver);
 MODULE_AUTHOR("Florian Fainelli <florian@openwrt.org>");
 MODULE_DESCRIPTION("RDC321x watchdog driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

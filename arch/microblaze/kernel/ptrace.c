@@ -27,12 +27,19 @@
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/ptrace.h>
 #include <linux/signal.h>
 #include <linux/elf.h>
 #include <linux/audit.h>
 #include <linux/seccomp.h>
+<<<<<<< HEAD
 #include <linux/tracehook.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/errno.h>
 #include <asm/processor.h>
@@ -40,7 +47,11 @@
 #include <asm/asm-offsets.h>
 #include <asm/cacheflush.h>
 #include <asm/syscall.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Returns the address where the register at REG_OFFS in P is stashed away. */
 static microblaze_reg_t *reg_save_addr(unsigned reg_offs,
@@ -132,14 +143,24 @@ long arch_ptrace(struct task_struct *child, long request,
 	return rval;
 }
 
+<<<<<<< HEAD
 asmlinkage long do_syscall_trace_enter(struct pt_regs *regs)
 {
 	long ret = 0;
+=======
+asmlinkage unsigned long do_syscall_trace_enter(struct pt_regs *regs)
+{
+	unsigned long ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	secure_computing_strict(regs->r12);
 
 	if (test_thread_flag(TIF_SYSCALL_TRACE) &&
+<<<<<<< HEAD
 	    tracehook_report_syscall_entry(regs))
+=======
+	    ptrace_report_syscall_entry(regs))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Tracing decided this syscall should not happen.
 		 * We'll return a bogus call number to get an ENOSYS
@@ -147,8 +168,12 @@ asmlinkage long do_syscall_trace_enter(struct pt_regs *regs)
 		 */
 		ret = -1L;
 
+<<<<<<< HEAD
 	audit_syscall_entry(EM_MICROBLAZE, regs->r12, regs->r5, regs->r6,
 			    regs->r7, regs->r8);
+=======
+	audit_syscall_entry(regs->r12, regs->r5, regs->r6, regs->r7, regs->r8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret ?: regs->r12;
 }
@@ -161,6 +186,7 @@ asmlinkage void do_syscall_trace_leave(struct pt_regs *regs)
 
 	step = test_thread_flag(TIF_SINGLESTEP);
 	if (step || test_thread_flag(TIF_SYSCALL_TRACE))
+<<<<<<< HEAD
 		tracehook_report_syscall_exit(regs, step);
 }
 
@@ -187,6 +213,11 @@ static asmlinkage void syscall_trace(void)
 }
 #endif
 
+=======
+		ptrace_report_syscall_exit(regs, step);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void ptrace_disable(struct task_struct *child)
 {
 	/* nothing to do */

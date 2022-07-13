@@ -6,6 +6,10 @@
  * Copyright (C) 1995-99, 2000- 02, 06 Ralf Baechle <ralf@linux-mips.org>
  * Copyright (C) 2001 MIPS Technologies, Inc.
  * Copyright (C) 2004 Thiemo Seufer
+<<<<<<< HEAD
+=======
+ * Copyright (C) 2014 Imagination Technologies Ltd.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/errno.h>
 #include <asm/asm.h>
@@ -18,6 +22,7 @@
 #include <asm/sysmips.h>
 #include <asm/thread_info.h>
 #include <asm/unistd.h>
+<<<<<<< HEAD
 #include <asm/war.h>
 #include <asm/asm-offsets.h>
 
@@ -25,6 +30,11 @@
 #define MAX_SYSCALL_NO	__NR_O32_Linux + __NR_O32_Linux_syscalls
 
 	.align  5
+=======
+#include <asm/asm-offsets.h>
+
+	.align	5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 NESTED(handle_sys, PT_SIZE, sp)
 	.set	noat
 	SAVE_SOME
@@ -34,6 +44,7 @@ NESTED(handle_sys, PT_SIZE, sp)
 
 	lw	t1, PT_EPC(sp)		# skip syscall on return
 
+<<<<<<< HEAD
 	subu	v0, v0, __NR_O32_Linux	# check syscall number
 	sltiu	t0, v0, __NR_O32_Linux_syscalls + 1
 	addiu	t1, 4			# skip to next instruction
@@ -56,6 +67,82 @@ stack_done:
 	and	t0, t1
 	bnez	t0, syscall_trace_entry	# -> yes
 
+=======
+	addiu	t1, 4			# skip to next instruction
+	sw	t1, PT_EPC(sp)
+
+	sw	a3, PT_R26(sp)		# save a3 for syscall restarting
+
+	/*
+	 * More than four arguments.  Try to deal with it by copying the
+	 * stack arguments from the user stack to the kernel stack.
+	 * This Sucks (TM).
+	 */
+	lw	t0, PT_R29(sp)		# get old user stack pointer
+
+	/*
+	 * We intentionally keep the kernel stack a little below the top of
+	 * userspace so we don't have to do a slower byte accurate check here.
+	 */
+	addu	t4, t0, 32
+	bltz	t4, bad_stack		# -> sp is bad
+
+	/*
+	 * Ok, copy the args from the luser stack to the kernel stack.
+	 */
+
+	.set    push
+	.set    noreorder
+	.set	nomacro
+
+load_a4: user_lw(t5, 16(t0))		# argument #5 from usp
+load_a5: user_lw(t6, 20(t0))		# argument #6 from usp
+load_a6: user_lw(t7, 24(t0))		# argument #7 from usp
+load_a7: user_lw(t8, 28(t0))		# argument #8 from usp
+loads_done:
+
+	sw	t5, 16(sp)		# argument #5 to ksp
+	sw	t6, 20(sp)		# argument #6 to ksp
+	sw	t7, 24(sp)		# argument #7 to ksp
+	sw	t8, 28(sp)		# argument #8 to ksp
+	.set	pop
+
+	.section __ex_table,"a"
+	PTR_WD	load_a4, bad_stack_a4
+	PTR_WD	load_a5, bad_stack_a5
+	PTR_WD	load_a6, bad_stack_a6
+	PTR_WD	load_a7, bad_stack_a7
+	.previous
+
+	/*
+	 * syscall number is in v0 unless we called syscall(__NR_###)
+	 * where the real syscall number is in a0
+	 */
+	subu	t2, v0,  __NR_O32_Linux
+	bnez	t2, 1f /* __NR_syscall at offset 0 */
+	LONG_S	a0, TI_SYSCALL($28)	# Save a0 as syscall number
+	b	2f
+1:
+	LONG_S	v0, TI_SYSCALL($28)	# Save v0 as syscall number
+2:
+
+	lw	t0, TI_FLAGS($28)	# syscall tracing enabled?
+	li	t1, _TIF_WORK_SYSCALL_ENTRY
+	and	t0, t1
+	bnez	t0, syscall_trace_entry # -> yes
+syscall_common:
+	subu	v0, v0, __NR_O32_Linux	# check syscall number
+	sltiu	t0, v0, __NR_O32_Linux_syscalls
+	beqz	t0, illegal_syscall
+
+	sll	t0, v0, 2
+	la	t1, sys_call_table
+	addu	t1, t0
+	lw	t2, (t1)		# syscall routine
+
+	beqz	t2, illegal_syscall
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jalr	t2			# Do The Real Thing (TM)
 
 	li	t0, -EMAXERRNO - 1	# error?
@@ -69,6 +156,7 @@ stack_done:
 1:	sw	v0, PT_R2(sp)		# result
 
 o32_syscall_exit:
+<<<<<<< HEAD
 	local_irq_disable		# make sure need_resched and
 					# signals dont change between
 					# sampling and return
@@ -81,21 +169,36 @@ o32_syscall_exit:
 
 o32_syscall_exit_work:
 	j	syscall_exit_work_partial
+=======
+	j	syscall_exit_partial
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ------------------------------------------------------------------------ */
 
 syscall_trace_entry:
 	SAVE_STATIC
+<<<<<<< HEAD
 	move	s0, t2
 	move	a0, sp
 	jal	syscall_trace_enter
 
 	move	t0, s0
 	RESTORE_STATIC
+=======
+	move	a0, sp
+
+	jal	syscall_trace_enter
+
+	bltz	v0, 1f			# seccomp failed? Skip syscall
+
+	RESTORE_STATIC
+	lw	v0, PT_R2(sp)		# Restore syscall (maybe modified)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lw	a0, PT_R4(sp)		# Restore argument registers
 	lw	a1, PT_R5(sp)
 	lw	a2, PT_R6(sp)
 	lw	a3, PT_R7(sp)
+<<<<<<< HEAD
 	jalr	t0
 
 	li	t0, -EMAXERRNO - 1	# error?
@@ -109,10 +212,16 @@ syscall_trace_entry:
 1:	sw	v0, PT_R2(sp)		# result
 
 	j	syscall_exit
+=======
+	j	syscall_common
+
+1:	j	syscall_exit
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ------------------------------------------------------------------------ */
 
 	/*
+<<<<<<< HEAD
 	 * More than four arguments.  Try to deal with it by copying the
 	 * stack arguments from the user stack to the kernel stack.
 	 * This Sucks (TM).
@@ -166,6 +275,10 @@ stackargs:
 	/*
 	 * The stackpointer for a call with more than 4 arguments is bad.
 	 * We probably should handle this case a bit more drastic.
+=======
+	 * Our open-coded access area sanity test for the stack pointer
+	 * failed. We probably should handle this case a bit more drastic.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 bad_stack:
 	li	v0, EFAULT
@@ -174,6 +287,25 @@ bad_stack:
 	sw	t0, PT_R7(sp)
 	j	o32_syscall_exit
 
+<<<<<<< HEAD
+=======
+bad_stack_a4:
+	li	t5, 0
+	b	load_a5
+
+bad_stack_a5:
+	li	t6, 0
+	b	load_a6
+
+bad_stack_a6:
+	li	t7, 0
+	b	load_a7
+
+bad_stack_a7:
+	li	t8, 0
+	b	loads_done
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The system call does not exist in this kernel
 	 */
@@ -187,6 +319,7 @@ illegal_syscall:
 
 	LEAF(sys_syscall)
 	subu	t0, a0, __NR_O32_Linux	# check syscall number
+<<<<<<< HEAD
 	sltiu	v0, t0, __NR_O32_Linux_syscalls + 1
 	beqz	t0, einval		# do not recurse
 	sll	t1, t0, 3
@@ -198,6 +331,14 @@ illegal_syscall:
 	   assume the worst case and shuffle around all potential arguments.
 	   If you want performance, don't use indirect syscalls. */
 
+=======
+	sltiu	v0, t0, __NR_O32_Linux_syscalls
+	beqz	t0, einval		# do not recurse
+	sll	t1, t0, 2
+	beqz	v0, einval
+	lw	t2, sys_call_table(t1)		# syscall routine
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	move	a0, a1				# shift argument registers
 	move	a1, a2
 	move	a2, a3
@@ -208,6 +349,7 @@ illegal_syscall:
 	sw	t4, 16(sp)
 	sw	t5, 20(sp)
 	sw	t6, 24(sp)
+<<<<<<< HEAD
 	sw	a0, PT_R4(sp)			# .. and push back a0 - a3, some
 	sw	a1, PT_R5(sp)			# syscalls expect them there
 	sw	a2, PT_R6(sp)
@@ -474,10 +616,20 @@ einval:	li	v0, -ENOSYS
 	sys	sys_tkill		2
 	sys	sys_sendfile64		5
 	sys	sys_futex		6
+=======
+	jr	t2
+	/* Unreached */
+
+einval: li	v0, -ENOSYS
+	jr	ra
+	END(sys_syscall)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_MIPS_MT_FPAFF
 	/*
 	 * For FPU affinity scheduling on MIPS MT processors, we need to
 	 * intercept sys_sched_xxxaffinity() calls until we get a proper hook
+<<<<<<< HEAD
 	 * in kernel/sched.c.  Considered only temporary we only support these
 	 * hooks for the 32-bit kernel - there is no MIPS64 MT processor atm.
 	 */
@@ -608,3 +760,19 @@ einval:	li	v0, -ENOSYS
 EXPORT(sys_call_table)
 	syscalltable
 	.size	sys_call_table, . - sys_call_table
+=======
+	 * in kernel/sched/core.c.  Considered only temporary we only support
+	 * these hooks for the 32-bit kernel - there is no MIPS64 MT processor
+	 * atm.
+	 */
+#define sys_sched_setaffinity	mipsmt_sys_sched_setaffinity
+#define sys_sched_getaffinity	mipsmt_sys_sched_getaffinity
+#endif /* CONFIG_MIPS_MT_FPAFF */
+
+#define __SYSCALL_WITH_COMPAT(nr, native, compat)	__SYSCALL(nr, native)
+#define __SYSCALL(nr, entry) 	PTR_WD entry
+	.align	2
+	.type	sys_call_table, @object
+EXPORT(sys_call_table)
+#include <asm/syscall_table_o32.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

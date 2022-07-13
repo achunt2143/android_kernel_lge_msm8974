@@ -37,12 +37,18 @@
 
 #include <asm/io.h>
 #include <asm/irq.h>
+<<<<<<< HEAD
 #include <asm/mpc8260.h>
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #include <asm/cpm2.h>
 #include <asm/rheap.h>
 #include <asm/fs_pd.h>
+=======
+#include <asm/page.h>
+#include <asm/cpm2.h>
+#include <asm/rheap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <sysdev/fsl_soc.h>
 
@@ -66,10 +72,13 @@ void __init cpm2_reset(void)
 	cpm2_immr = ioremap(get_immrbase(), CPM_MAP_SIZE);
 #endif
 
+<<<<<<< HEAD
 	/* Reclaim the DP memory for our use.
 	 */
 	cpm_muram_init();
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Tell everyone where the comm processor resides.
 	 */
 	cpmp = &cpm2_immr->im_cpm;
@@ -112,7 +121,11 @@ EXPORT_SYMBOL(cpm_command);
  * memory mapped space.
  * The baud rate clock is the system clock divided by something.
  * It was set up long ago during the initial boot phase and is
+<<<<<<< HEAD
  * is given to us.
+=======
+ * given to us.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Baud rate clocks are zero-based in the driver code (as that maps
  * to port numbers).  Documentation uses 1-based numbering.
  */
@@ -124,9 +137,15 @@ void __cpm2_setbrg(uint brg, uint rate, uint clk, int div16, int src)
 	/* This is good enough to get SMCs running.....
 	*/
 	if (brg < 4) {
+<<<<<<< HEAD
 		bp = cpm2_map_size(im_brgc1, 16);
 	} else {
 		bp = cpm2_map_size(im_brgc5, 16);
+=======
+		bp = &cpm2_immr->im_brgc1;
+	} else {
+		bp = &cpm2_immr->im_brgc5;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		brg -= 4;
 	}
 	bp += brg;
@@ -136,16 +155,26 @@ void __cpm2_setbrg(uint brg, uint rate, uint clk, int div16, int src)
 		val |= CPM_BRG_DIV16;
 
 	out_be32(bp, val);
+<<<<<<< HEAD
 	cpm2_unmap(bp);
 }
 EXPORT_SYMBOL(__cpm2_setbrg);
 
 int cpm2_clk_setup(enum cpm_clk_target target, int clock, int mode)
+=======
+}
+EXPORT_SYMBOL(__cpm2_setbrg);
+
+int __init cpm2_clk_setup(enum cpm_clk_target target, int clock, int mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	int shift;
 	int i, bits = 0;
+<<<<<<< HEAD
 	cpmux_t __iomem *im_cpmux;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 __iomem *reg;
 	u32 mask = 7;
 
@@ -208,6 +237,7 @@ int cpm2_clk_setup(enum cpm_clk_target target, int clock, int mode)
 		{CPM_CLK_SCC4, CPM_CLK8, 7},
 	};
 
+<<<<<<< HEAD
 	im_cpmux = cpm2_map(im_cpmux);
 
 	switch (target) {
@@ -237,6 +267,35 @@ int cpm2_clk_setup(enum cpm_clk_target target, int clock, int mode)
 		break;
 	case CPM_CLK_FCC3:
 		reg = &im_cpmux->cmx_fcr;
+=======
+	switch (target) {
+	case CPM_CLK_SCC1:
+		reg = &cpm2_immr->im_cpmux.cmx_scr;
+		shift = 24;
+		break;
+	case CPM_CLK_SCC2:
+		reg = &cpm2_immr->im_cpmux.cmx_scr;
+		shift = 16;
+		break;
+	case CPM_CLK_SCC3:
+		reg = &cpm2_immr->im_cpmux.cmx_scr;
+		shift = 8;
+		break;
+	case CPM_CLK_SCC4:
+		reg = &cpm2_immr->im_cpmux.cmx_scr;
+		shift = 0;
+		break;
+	case CPM_CLK_FCC1:
+		reg = &cpm2_immr->im_cpmux.cmx_fcr;
+		shift = 24;
+		break;
+	case CPM_CLK_FCC2:
+		reg = &cpm2_immr->im_cpmux.cmx_fcr;
+		shift = 16;
+		break;
+	case CPM_CLK_FCC3:
+		reg = &cpm2_immr->im_cpmux.cmx_fcr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		shift = 8;
 		break;
 	default:
@@ -266,16 +325,26 @@ int cpm2_clk_setup(enum cpm_clk_target target, int clock, int mode)
 
 	out_be32(reg, (in_be32(reg) & ~mask) | bits);
 
+<<<<<<< HEAD
 	cpm2_unmap(im_cpmux);
 	return ret;
 }
 
 int cpm2_smc_clk_setup(enum cpm_clk_target target, int clock)
+=======
+	return ret;
+}
+
+int __init cpm2_smc_clk_setup(enum cpm_clk_target target, int clock)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret = 0;
 	int shift;
 	int i, bits = 0;
+<<<<<<< HEAD
 	cpmux_t __iomem *im_cpmux;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 __iomem *reg;
 	u8 mask = 3;
 
@@ -290,16 +359,26 @@ int cpm2_smc_clk_setup(enum cpm_clk_target target, int clock)
 		{CPM_CLK_SMC2, CPM_CLK15, 3},
 	};
 
+<<<<<<< HEAD
 	im_cpmux = cpm2_map(im_cpmux);
 
 	switch (target) {
 	case CPM_CLK_SMC1:
 		reg = &im_cpmux->cmx_smr;
+=======
+	switch (target) {
+	case CPM_CLK_SMC1:
+		reg = &cpm2_immr->im_cpmux.cmx_smr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mask = 3;
 		shift = 4;
 		break;
 	case CPM_CLK_SMC2:
+<<<<<<< HEAD
 		reg = &im_cpmux->cmx_smr;
+=======
+		reg = &cpm2_immr->im_cpmux.cmx_smr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mask = 3;
 		shift = 0;
 		break;
@@ -322,7 +401,10 @@ int cpm2_smc_clk_setup(enum cpm_clk_target target, int clock)
 
 	out_8(reg, (in_8(reg) & ~mask) | bits);
 
+<<<<<<< HEAD
 	cpm2_unmap(im_cpmux);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -331,7 +413,11 @@ struct cpm2_ioports {
 	u32 res[3];
 };
 
+<<<<<<< HEAD
 void cpm2_set_pin(int port, int pin, int flags)
+=======
+void __init cpm2_set_pin(int port, int pin, int flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cpm2_ioports __iomem *iop =
 		(struct cpm2_ioports __iomem *)&cpm2_immr->im_ioport;
@@ -358,6 +444,7 @@ void cpm2_set_pin(int port, int pin, int flags)
 	else
 		clrbits32(&iop[port].odr, pin);
 }
+<<<<<<< HEAD
 
 static int cpm_init_par_io(void)
 {
@@ -369,3 +456,5 @@ static int cpm_init_par_io(void)
 }
 arch_initcall(cpm_init_par_io);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

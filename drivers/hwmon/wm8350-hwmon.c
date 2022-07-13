@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/hwmon/wm8350-hwmon.c - Wolfson Microelectronics WM8350 PMIC
  *                                  hardware monitoring features.
  *
  * Copyright (C) 2009 Wolfson Microelectronics plc
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License v2 as published by the
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -28,19 +35,25 @@
 #include <linux/mfd/wm8350/core.h>
 #include <linux/mfd/wm8350/comparator.h>
 
+<<<<<<< HEAD
 static ssize_t show_name(struct device *dev,
 			 struct device_attribute *attr, char *buf)
 {
 	return sprintf(buf, "wm8350\n");
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char * const input_names[] = {
 	[WM8350_AUXADC_USB]  = "USB",
 	[WM8350_AUXADC_LINE] = "Line",
 	[WM8350_AUXADC_BATT] = "Battery",
 };
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t show_voltage(struct device *dev,
 			    struct device_attribute *attr, char *buf)
 {
@@ -68,15 +81,22 @@ static ssize_t show_label(struct device *dev,
 	static SENSOR_DEVICE_ATTR(in##id##_label, S_IRUGO, show_label,	\
 				  NULL, name)
 
+<<<<<<< HEAD
 static DEVICE_ATTR(name, S_IRUGO, show_name, NULL);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 WM8350_NAMED_VOLTAGE(0, WM8350_AUXADC_USB);
 WM8350_NAMED_VOLTAGE(1, WM8350_AUXADC_BATT);
 WM8350_NAMED_VOLTAGE(2, WM8350_AUXADC_LINE);
 
+<<<<<<< HEAD
 static struct attribute *wm8350_attributes[] = {
 	&dev_attr_name.attr,
 
+=======
+static struct attribute *wm8350_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sensor_dev_attr_in0_input.dev_attr.attr,
 	&sensor_dev_attr_in0_label.dev_attr.attr,
 	&sensor_dev_attr_in1_input.dev_attr.attr,
@@ -87,6 +107,7 @@ static struct attribute *wm8350_attributes[] = {
 	NULL,
 };
 
+<<<<<<< HEAD
 static const struct attribute_group wm8350_attr_group = {
 	.attrs	= wm8350_attributes,
 };
@@ -122,14 +143,32 @@ static int __devexit wm8350_hwmon_remove(struct platform_device *pdev)
 	sysfs_remove_group(&pdev->dev.kobj, &wm8350_attr_group);
 
 	return 0;
+=======
+ATTRIBUTE_GROUPS(wm8350);
+
+static int wm8350_hwmon_probe(struct platform_device *pdev)
+{
+	struct wm8350 *wm8350 = platform_get_drvdata(pdev);
+	struct device *hwmon_dev;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(&pdev->dev, "wm8350",
+							   wm8350,
+							   wm8350_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver wm8350_hwmon_driver = {
 	.probe = wm8350_hwmon_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(wm8350_hwmon_remove),
 	.driver = {
 		.name = "wm8350-hwmon",
 		.owner = THIS_MODULE,
+=======
+	.driver = {
+		.name = "wm8350-hwmon",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

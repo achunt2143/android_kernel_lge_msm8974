@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2008 Red Hat.  All rights reserved.
  *
@@ -18,6 +19,15 @@
 
 #include "ctree.h"
 #include "disk-io.h"
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2008 Red Hat.  All rights reserved.
+ */
+
+#include "ctree.h"
+#include "orphan.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int btrfs_insert_orphan_item(struct btrfs_trans_handle *trans,
 			     struct btrfs_root *root, u64 offset)
@@ -27,7 +37,11 @@ int btrfs_insert_orphan_item(struct btrfs_trans_handle *trans,
 	int ret = 0;
 
 	key.objectid = BTRFS_ORPHAN_OBJECTID;
+<<<<<<< HEAD
 	btrfs_set_key_type(&key, BTRFS_ORPHAN_ITEM_KEY);
+=======
+	key.type = BTRFS_ORPHAN_ITEM_KEY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key.offset = offset;
 
 	path = btrfs_alloc_path();
@@ -48,7 +62,11 @@ int btrfs_del_orphan_item(struct btrfs_trans_handle *trans,
 	int ret = 0;
 
 	key.objectid = BTRFS_ORPHAN_OBJECTID;
+<<<<<<< HEAD
 	btrfs_set_key_type(&key, BTRFS_ORPHAN_ITEM_KEY);
+=======
+	key.type = BTRFS_ORPHAN_ITEM_KEY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	key.offset = offset;
 
 	path = btrfs_alloc_path();
@@ -69,6 +87,7 @@ out:
 	btrfs_free_path(path);
 	return ret;
 }
+<<<<<<< HEAD
 
 int btrfs_find_orphan_item(struct btrfs_root *root, u64 offset)
 {
@@ -89,3 +108,5 @@ int btrfs_find_orphan_item(struct btrfs_root *root, u64 offset)
 	btrfs_free_path(path);
 	return ret;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

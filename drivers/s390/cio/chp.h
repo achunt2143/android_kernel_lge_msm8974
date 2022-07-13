@@ -1,12 +1,22 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/cio/chp.h
  *
  *    Copyright IBM Corp. 2007,2010
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ *    Copyright IBM Corp. 2007, 2010
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Author(s): Peter Oberparleiter <peter.oberparleiter@de.ibm.com>
  */
 
 #ifndef S390_CHP_H
+<<<<<<< HEAD
 #define S390_CHP_H S390_CHP_H
+=======
+#define S390_CHP_H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/types.h>
 #include <linux/device.h>
@@ -24,6 +34,10 @@
 #define CHP_OFFLINE 1
 #define CHP_VARY_ON 2
 #define CHP_VARY_OFF 3
+<<<<<<< HEAD
+=======
+#define CHP_FCES_EVENT 4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct chp_link {
 	struct chp_id chpid;
@@ -45,25 +59,46 @@ struct channel_path {
 	struct chp_id chpid;
 	struct mutex lock; /* Serialize access to below members. */
 	int state;
+<<<<<<< HEAD
 	struct channel_path_desc desc;
 	/* Channel-measurement related stuff: */
 	int cmg;
 	int shared;
 	void *cmg_chars;
+=======
+	struct channel_path_desc_fmt0 desc;
+	struct channel_path_desc_fmt1 desc_fmt1;
+	struct channel_path_desc_fmt3 desc_fmt3;
+	/* Channel-measurement related stuff: */
+	int cmg;
+	int shared;
+	struct cmg_chars cmg_chars;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Return channel_path struct for given chpid. */
 static inline struct channel_path *chpid_to_chp(struct chp_id chpid)
 {
+<<<<<<< HEAD
 	return channel_subsystems[chpid.cssid]->chps[chpid.id];
+=======
+	return css_by_id(chpid.cssid)->chps[chpid.id];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int chp_get_status(struct chp_id chpid);
 u8 chp_get_sch_opm(struct subchannel *sch);
 int chp_is_registered(struct chp_id chpid);
+<<<<<<< HEAD
 void *chp_get_chp_desc(struct chp_id chpid);
 void chp_remove_cmg_attr(struct channel_path *chp);
 int chp_add_cmg_attr(struct channel_path *chp);
+=======
+struct channel_path_desc_fmt0 *chp_get_chp_desc(struct chp_id chpid);
+void chp_remove_cmg_attr(struct channel_path *chp);
+int chp_add_cmg_attr(struct channel_path *chp);
+int chp_update_desc(struct channel_path *chp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int chp_new(struct chp_id chpid);
 void chp_cfg_schedule(struct chp_id chpid, int configure);
 void chp_cfg_cancel_deconfigure(struct chp_id chpid);

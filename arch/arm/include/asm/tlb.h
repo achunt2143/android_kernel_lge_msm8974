@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/tlb.h
  *
  *  Copyright (C) 2002 Russell King
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Experimentation shows that on a StrongARM, it appears to be faster
  *  to use the "invalidate whole tlb" rather than "invalidate single
  *  tlb" for this.
@@ -30,6 +37,7 @@
 #else /* !CONFIG_MMU */
 
 #include <linux/swap.h>
+<<<<<<< HEAD
 #include <asm/pgalloc.h>
 #include <asm/tlbflush.h>
 
@@ -199,10 +207,30 @@ static inline void __pte_free_tlb(struct mmu_gather *tlb, pgtable_t pte,
 {
 	pgtable_page_dtor(pte);
 
+=======
+#include <asm/tlbflush.h>
+
+static inline void __tlb_remove_table(void *_table)
+{
+	free_page_and_swap_cache((struct page *)_table);
+}
+
+#include <asm-generic/tlb.h>
+
+static inline void
+__pte_free_tlb(struct mmu_gather *tlb, pgtable_t pte, unsigned long addr)
+{
+	struct ptdesc *ptdesc = page_ptdesc(pte);
+
+	pagetable_pte_dtor(ptdesc);
+
+#ifndef CONFIG_ARM_LPAE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * With the classic ARM MMU, a pte page has two corresponding pmd
 	 * entries, each covering 1MB.
 	 */
+<<<<<<< HEAD
 	addr &= PMD_MASK;
 	tlb_add_flush(tlb, addr + SZ_1M - PAGE_SIZE);
 	tlb_add_flush(tlb, addr + SZ_1M);
@@ -225,5 +253,25 @@ static inline void __pmd_free_tlb(struct mmu_gather *tlb, pmd_t *pmdp,
 
 #define tlb_migrate_finish(mm)		do { } while (0)
 
+=======
+	addr = (addr & PMD_MASK) + SZ_1M;
+	__tlb_adjust_range(tlb, addr - PAGE_SIZE, 2 * PAGE_SIZE);
+#endif
+
+	tlb_remove_ptdesc(tlb, ptdesc);
+}
+
+static inline void
+__pmd_free_tlb(struct mmu_gather *tlb, pmd_t *pmdp, unsigned long addr)
+{
+#ifdef CONFIG_ARM_LPAE
+	struct ptdesc *ptdesc = virt_to_ptdesc(pmdp);
+
+	pagetable_pmd_dtor(ptdesc);
+	tlb_remove_ptdesc(tlb, ptdesc);
+#endif
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_MMU */
 #endif

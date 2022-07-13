@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * AIRcable USB Bluetooth Dongle Driver.
  *
  * Copyright (C) 2010 Johan Hovold <jhovold@gmail.com>
  * Copyright (C) 2006 Manuel Francisco Naranjo (naranjo.manuel@gmail.com)
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2 as published by the
  * Free Software Foundation.
@@ -13,6 +18,13 @@
  * The protocol is very simply, there are two posibilities reading or writing.
  * When writing the first urb must have a Header that starts with 0x20 0x29 the
  * next two bytes must say how much data will be sended.
+=======
+ * The device works as an standard CDC device, it has 2 interfaces, the first
+ * one is for firmware access and the second is the serial one.
+ * The protocol is very simply, there are two possibilities reading or writing.
+ * When writing the first urb must have a Header that starts with 0x20 0x29 the
+ * next two bytes must say how much data will be sent.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * When reading the process is almost equal except that the header starts with
  * 0x00 0x20.
  *
@@ -29,6 +41,7 @@
  * is any other control code, I will simply check for the first
  * one.
  *
+<<<<<<< HEAD
  * The driver registers himself with the USB-serial core and the USB Core. I had
  * to implement a probe function against USB-serial, because other way, the
  * driver was attaching himself to both interfaces. I have tryed with different
@@ -40,6 +53,13 @@
  * And from Linux Device Driver Kit CD, which is a great work, the authors taken
  * the work to recompile lots of information an knowladge in drivers development
  * and made it all avaible inside a cd.
+=======
+ * I have taken some info from a Greg Kroah-Hartman article:
+ * http://www.linuxjournal.com/article/6573
+ * And from Linux Device Driver Kit CD, which is a great work, the authors taken
+ * the work to recompile lots of information an knowledge in drivers development
+ * and made it all available inside a cd.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * URL: http://kernel.org/pub/linux/kernel/people/gregkh/ddk/
  *
  */
@@ -52,8 +72,11 @@
 #include <linux/usb.h>
 #include <linux/usb/serial.h>
 
+<<<<<<< HEAD
 static bool debug;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Vendor and Product ID */
 #define AIRCABLE_VID		0x16CA
 #define AIRCABLE_USB_PID	0x1502
@@ -70,10 +93,13 @@ static bool debug;
 #define THROTTLED		0x01
 #define ACTUALLY_THROTTLED	0x02
 
+<<<<<<< HEAD
 /*
  * Version Information
  */
 #define DRIVER_VERSION "v2.0"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRIVER_AUTHOR "Naranjo, Manuel Francisco <naranjo.manuel@gmail.com>, Johan Hovold <jhovold@gmail.com>"
 #define DRIVER_DESC "AIRcable USB Driver"
 
@@ -99,6 +125,7 @@ static int aircable_prepare_write_buffer(struct usb_serial_port *port,
 	return count + HCI_HEADER_LENGTH;
 }
 
+<<<<<<< HEAD
 static int aircable_probe(struct usb_serial *serial,
 			  const struct usb_device_id *id)
 {
@@ -127,17 +154,42 @@ static int aircable_probe(struct usb_serial *serial,
 static int aircable_process_packet(struct tty_struct *tty,
 			struct usb_serial_port *port, int has_headers,
 			char *packet, int len)
+=======
+static int aircable_calc_num_ports(struct usb_serial *serial,
+					struct usb_serial_endpoints *epds)
+{
+	/* Ignore the first interface, which has no bulk endpoints. */
+	if (epds->num_bulk_out == 0) {
+		dev_dbg(&serial->interface->dev,
+			"ignoring interface with no bulk-out endpoints\n");
+		return -ENODEV;
+	}
+
+	return 1;
+}
+
+static int aircable_process_packet(struct usb_serial_port *port,
+		int has_headers, char *packet, int len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (has_headers) {
 		len -= HCI_HEADER_LENGTH;
 		packet += HCI_HEADER_LENGTH;
 	}
 	if (len <= 0) {
+<<<<<<< HEAD
 		dbg("%s - malformed packet", __func__);
 		return 0;
 	}
 
 	tty_insert_flip_string(tty, packet, len);
+=======
+		dev_dbg(&port->dev, "%s - malformed packet\n", __func__);
+		return 0;
+	}
+
+	tty_insert_flip_string(&port->port, packet, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return len;
 }
@@ -145,27 +197,39 @@ static int aircable_process_packet(struct tty_struct *tty,
 static void aircable_process_read_urb(struct urb *urb)
 {
 	struct usb_serial_port *port = urb->context;
+<<<<<<< HEAD
 	char *data = (char *)urb->transfer_buffer;
 	struct tty_struct *tty;
+=======
+	char *data = urb->transfer_buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int has_headers;
 	int count;
 	int len;
 	int i;
 
+<<<<<<< HEAD
 	tty = tty_port_tty_get(&port->port);
 	if (!tty)
 		return;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	has_headers = (urb->actual_length > 2 && data[0] == RX_HEADER_0);
 
 	count = 0;
 	for (i = 0; i < urb->actual_length; i += HCI_COMPLETE_FRAME) {
 		len = min_t(int, urb->actual_length - i, HCI_COMPLETE_FRAME);
+<<<<<<< HEAD
 		count += aircable_process_packet(tty, port, has_headers,
+=======
+		count += aircable_process_packet(port, has_headers,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 								&data[i], len);
 	}
 
 	if (count)
+<<<<<<< HEAD
 		tty_flip_buffer_push(tty);
 	tty_kref_put(tty);
 }
@@ -177,15 +241,25 @@ static struct usb_driver aircable_driver = {
 	.id_table =	id_table,
 };
 
+=======
+		tty_flip_buffer_push(&port->port);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct usb_serial_driver aircable_device = {
 	.driver = {
 		.owner =	THIS_MODULE,
 		.name =		"aircable",
 	},
 	.id_table = 		id_table,
+<<<<<<< HEAD
 	.num_ports =		1,
 	.bulk_out_size =	HCI_COMPLETE_FRAME,
 	.probe =		aircable_probe,
+=======
+	.bulk_out_size =	HCI_COMPLETE_FRAME,
+	.calc_num_ports =	aircable_calc_num_ports,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.process_read_urb =	aircable_process_read_urb,
 	.prepare_write_buffer =	aircable_prepare_write_buffer,
 	.throttle =		usb_serial_generic_throttle,
@@ -196,6 +270,7 @@ static struct usb_serial_driver * const serial_drivers[] = {
 	&aircable_device, NULL
 };
 
+<<<<<<< HEAD
 module_usb_serial_driver(aircable_driver, serial_drivers);
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
@@ -205,3 +280,10 @@ MODULE_LICENSE("GPL");
 
 module_param(debug, bool, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(debug, "Debug enabled or not");
+=======
+module_usb_serial_driver(serial_drivers, id_table);
+
+MODULE_AUTHOR(DRIVER_AUTHOR);
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

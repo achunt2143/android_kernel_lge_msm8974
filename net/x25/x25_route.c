@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	X.25 Packet Layer release 002
  *
@@ -7,12 +11,15 @@
  *
  *	This code REQUIRES 2.1.15 or higher
  *
+<<<<<<< HEAD
  *	This module:
  *		This module is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	History
  *	X.25 001	Jonathan Naylor	Started coding.
  */
@@ -21,9 +28,13 @@
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <net/x25.h>
+<<<<<<< HEAD
 #ifdef KW_TAINT_ANALYSIS
    extern void * get_tainted_stuff();
 #endif
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 LIST_HEAD(x25_route_list);
 DEFINE_RWLOCK(x25_route_list_lock);
 
@@ -34,14 +45,21 @@ static int x25_add_route(struct x25_address *address, unsigned int sigdigits,
 			 struct net_device *dev)
 {
 	struct x25_route *rt;
+<<<<<<< HEAD
 	struct list_head *entry;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = -EINVAL;
 
 	write_lock_bh(&x25_route_list_lock);
 
+<<<<<<< HEAD
 	list_for_each(entry, &x25_route_list) {
 		rt = list_entry(entry, struct x25_route, node);
 
+=======
+	list_for_each_entry(rt, &x25_route_list, node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!memcmp(&rt->address, address, sigdigits) &&
 		    rt->sigdigits == sigdigits)
 			goto out;
@@ -57,7 +75,11 @@ static int x25_add_route(struct x25_address *address, unsigned int sigdigits,
 
 	rt->sigdigits = sigdigits;
 	rt->dev       = dev;
+<<<<<<< HEAD
 	atomic_set(&rt->refcnt, 1);
+=======
+	refcount_set(&rt->refcnt, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_add(&rt->node, &x25_route_list);
 	rc = 0;
@@ -68,7 +90,11 @@ out:
 
 /**
  * __x25_remove_route - remove route from x25_route_list
+<<<<<<< HEAD
  * @rt - route to remove
+=======
+ * @rt: route to remove
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Remove route from x25_route_list. If it was there.
  * Caller must hold x25_route_list_lock.
@@ -85,14 +111,21 @@ static int x25_del_route(struct x25_address *address, unsigned int sigdigits,
 			 struct net_device *dev)
 {
 	struct x25_route *rt;
+<<<<<<< HEAD
 	struct list_head *entry;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = -EINVAL;
 
 	write_lock_bh(&x25_route_list_lock);
 
+<<<<<<< HEAD
 	list_for_each(entry, &x25_route_list) {
 		rt = list_entry(entry, struct x25_route, node);
 
+=======
+	list_for_each_entry(rt, &x25_route_list, node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!memcmp(&rt->address, address, sigdigits) &&
 		    rt->sigdigits == sigdigits && rt->dev == dev) {
 			__x25_remove_route(rt);
@@ -122,9 +155,12 @@ void x25_route_device_down(struct net_device *dev)
 			__x25_remove_route(rt);
 	}
 	write_unlock_bh(&x25_route_list_lock);
+<<<<<<< HEAD
 
 	/* Remove any related forwarding */
 	x25_clear_forward_by_dev(dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -134,12 +170,16 @@ struct net_device *x25_dev_get(char *devname)
 {
 	struct net_device *dev = dev_get_by_name(&init_net, devname);
 
+<<<<<<< HEAD
 	if (dev &&
 	    (!(dev->flags & IFF_UP) || (dev->type != ARPHRD_X25
 #if IS_ENABLED(CONFIG_LLC)
 					&& dev->type != ARPHRD_ETHER
 #endif
 					))){
+=======
+	if (dev && (!(dev->flags & IFF_UP) || dev->type != ARPHRD_X25)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_put(dev);
 		dev = NULL;
 	}
@@ -149,13 +189,18 @@ struct net_device *x25_dev_get(char *devname)
 
 /**
  * 	x25_get_route -	Find a route given an X.25 address.
+<<<<<<< HEAD
  * 	@addr - address to find a route for
+=======
+ *	@addr: - address to find a route for
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * 	Find a route given an X.25 address.
  */
 struct x25_route *x25_get_route(struct x25_address *addr)
 {
 	struct x25_route *rt, *use = NULL;
+<<<<<<< HEAD
 	struct list_head *entry;
 
 	read_lock_bh(&x25_route_list_lock);
@@ -163,6 +208,12 @@ struct x25_route *x25_get_route(struct x25_address *addr)
 	list_for_each(entry, &x25_route_list) {
 		rt = list_entry(entry, struct x25_route, node);
 
+=======
+
+	read_lock_bh(&x25_route_list_lock);
+
+	list_for_each_entry(rt, &x25_route_list, node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!memcmp(&rt->address, addr, rt->sigdigits)) {
 			if (!use)
 				use = rt;
@@ -181,16 +232,24 @@ struct x25_route *x25_get_route(struct x25_address *addr)
 /*
  *	Handle the ioctls that control the routing functions.
  */
+<<<<<<< HEAD
 int x25_route_ioctl(unsigned int cmd, void __user *arg_actual)
+=======
+int x25_route_ioctl(unsigned int cmd, void __user *arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct x25_route_struct rt;
 	struct net_device *dev;
 	int rc = -EINVAL;
+<<<<<<< HEAD
 	#ifdef KW_TAINT_ANALYSIS
 	void __user *arg = (void __user *)get_tainted_stuff();
 	#else
 	void __user *arg = arg_actual;
 	#endif
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cmd != SIOCADDRT && cmd != SIOCDELRT)
 		goto out;
 

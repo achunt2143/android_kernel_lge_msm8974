@@ -13,6 +13,7 @@
  */
 
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/string.h>
 #include <linux/mm.h>
 #include <linux/interrupt.h>
@@ -95,3 +96,20 @@ EXPORT_SYMBOL(outsl);
 EXPORT_SYMBOL(insb);
 EXPORT_SYMBOL(insw);
 EXPORT_SYMBOL(insl);
+=======
+#include <asm/pgtable.h>
+
+EXPORT_SYMBOL(empty_zero_page);
+
+unsigned int __sync_fetch_and_and_4(volatile void *p, unsigned int v)
+{
+	BUG();
+}
+EXPORT_SYMBOL(__sync_fetch_and_and_4);
+
+unsigned int __sync_fetch_and_or_4(volatile void *p, unsigned int v)
+{
+	BUG();
+}
+EXPORT_SYMBOL(__sync_fetch_and_or_4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

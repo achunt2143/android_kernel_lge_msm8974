@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: evglock - Global Lock support
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acevents.h"
@@ -128,6 +139,10 @@ acpi_status acpi_ev_remove_global_lock_handler(void)
 	status = acpi_remove_fixed_event_handler(ACPI_EVENT_GLOBAL,
 						 acpi_ev_global_lock_handler);
 
+<<<<<<< HEAD
+=======
+	acpi_os_delete_lock(acpi_gbl_global_lock_pending_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 
@@ -135,7 +150,11 @@ acpi_status acpi_ev_remove_global_lock_handler(void)
  *
  * FUNCTION:    acpi_ev_global_lock_handler
  *
+<<<<<<< HEAD
  * PARAMETERS:  Context         - From thread interface, not used
+=======
+ * PARAMETERS:  context         - From thread interface, not used
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      ACPI_INTERRUPT_HANDLED
  *
@@ -172,7 +191,11 @@ static u32 acpi_ev_global_lock_handler(void *context)
 
 	acpi_gbl_global_lock_pending = FALSE;
 
+<<<<<<< HEAD
       cleanup_and_exit:
+=======
+cleanup_and_exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	acpi_os_release_lock(acpi_gbl_global_lock_pending_lock, flags);
 	return (ACPI_INTERRUPT_HANDLED);
@@ -182,7 +205,11 @@ static u32 acpi_ev_global_lock_handler(void *context)
  *
  * FUNCTION:    acpi_ev_acquire_global_lock
  *
+<<<<<<< HEAD
  * PARAMETERS:  Timeout         - Max time to wait for the lock, in millisec.
+=======
+ * PARAMETERS:  timeout         - Max time to wait for the lock, in millisec.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *

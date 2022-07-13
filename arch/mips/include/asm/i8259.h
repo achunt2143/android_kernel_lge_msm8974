@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	include/asm-mips/i8259.h
  *
@@ -5,11 +9,14 @@
  *
  *	Copyright (C) 2003  Maciej W. Rozycki
  *	Copyright (C) 2003  Ralf Baechle <ralf@linux-mips.org>
+<<<<<<< HEAD
  *
  *	This program is free software; you can redistribute it and/or
  *	modify it under the terms of the GNU General Public License
  *	as published by the Free Software Foundation; either version
  *	2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _ASM_I8259_H
 #define _ASM_I8259_H
@@ -37,10 +44,28 @@
 
 extern raw_spinlock_t i8259A_lock;
 
+<<<<<<< HEAD
 extern int i8259A_irq_pending(unsigned int irq);
 extern void make_8259A_irq(unsigned int irq);
 
 extern void init_i8259_irqs(void);
+=======
+extern void make_8259A_irq(unsigned int irq);
+
+extern void init_i8259_irqs(void);
+extern struct irq_domain *__init_i8259_irqs(struct device_node *node);
+
+/**
+ * i8159_set_poll() - Override the i8259 polling function
+ * @poll: pointer to platform-specific polling function
+ *
+ * Call this to override the generic i8259 polling function, which directly
+ * accesses i8259 registers, with a platform specific one which may be faster
+ * in cases where hardware provides a more optimal means of polling for an
+ * interrupt.
+ */
+extern void i8259_set_poll(int (*poll)(void));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Do the traditional i8259 interrupt polling thing.  This is for the few

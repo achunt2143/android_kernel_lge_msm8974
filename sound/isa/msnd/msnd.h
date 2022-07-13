@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*********************************************************************
  *
  * msnd.h
@@ -10,6 +14,7 @@
  * Copyright (C) 1998 Andrew Veliath
  * Copyright (C) 1993 Turtle Beach Systems, Inc.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -24,6 +29,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ********************************************************************/
 #ifndef __MSND_H
 #define __MSND_H
@@ -283,7 +290,11 @@ struct snd_msnd {
 
 };
 
+<<<<<<< HEAD
 void snd_msnd_init_queue(void *base, int start, int size);
+=======
+void snd_msnd_init_queue(void __iomem *base, int start, int size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int snd_msnd_send_dsp_cmd(struct snd_msnd *chip, u8 cmd);
 int snd_msnd_send_word(struct snd_msnd *chip,
@@ -297,12 +308,20 @@ int snd_msnd_disable_irq(struct snd_msnd *chip);
 void snd_msnd_dsp_halt(struct snd_msnd *chip, struct file *file);
 int snd_msnd_DAPQ(struct snd_msnd *chip, int start);
 int snd_msnd_DARQ(struct snd_msnd *chip, int start);
+<<<<<<< HEAD
 int snd_msnd_pcm(struct snd_card *card, int device, struct snd_pcm **rpcm);
+=======
+int snd_msnd_pcm(struct snd_card *card, int device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int snd_msndmidi_new(struct snd_card *card, int device);
 void snd_msndmidi_input_read(void *mpu);
 
 void snd_msndmix_setup(struct snd_msnd *chip);
+<<<<<<< HEAD
 int __devinit snd_msndmix_new(struct snd_card *card);
+=======
+int snd_msndmix_new(struct snd_card *card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int snd_msndmix_force_recsrc(struct snd_msnd *chip, int recsrc);
 #endif /* __MSND_H */

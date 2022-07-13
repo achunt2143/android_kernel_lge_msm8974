@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_POWERPC_IO_H
 #define _ASM_POWERPC_IO_H
 #ifdef __KERNEL__
 
+<<<<<<< HEAD
 #define ARCH_HAS_IOREMAP_WC
 
 /*
@@ -9,12 +14,16 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Check of existence of legacy devices */
 extern int check_legacy_ioport(unsigned long base_port);
 #define I8042_DATA_REG	0x60
 #define FDC_BASE	0x3f0
+<<<<<<< HEAD
 /* only relevant for PReP */
 #define _PIDXR		0x279
 #define _PNPWRP		0xa79
@@ -24,10 +33,25 @@ extern int check_legacy_ioport(unsigned long base_port);
 #include <linux/io.h>
 
 #include <linux/compiler.h>
+=======
+
+#if defined(CONFIG_PPC64) && defined(CONFIG_PCI)
+extern struct pci_dev *isa_bridge_pcidev;
+/*
+ * has legacy ISA devices ?
+ */
+#define arch_has_dev_port()	(isa_bridge_pcidev != NULL || isa_io_special)
+#endif
+
+#include <linux/device.h>
+#include <linux/compiler.h>
+#include <linux/mm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/page.h>
 #include <asm/byteorder.h>
 #include <asm/synch.h>
 #include <asm/delay.h>
+<<<<<<< HEAD
 #include <asm/mmu.h>
 
 #include <asm-generic/iomap.h>
@@ -41,6 +65,14 @@ extern int check_legacy_ioport(unsigned long base_port);
 
 #define SLOW_DOWN_IO
 
+=======
+#include <asm/mmiowb.h>
+#include <asm/mmu.h>
+
+#define SIO_CONFIG_RA	0x398
+#define SIO_CONFIG_RD	0x399
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 32 bits uses slightly different variables for the various IO
  * bases. Most of this file only uses _IO_BASE though which we
  * define properly based on the platform
@@ -65,8 +97,23 @@ extern unsigned long pci_dram_offset;
 
 extern resource_size_t isa_mem_base;
 
+<<<<<<< HEAD
 #if defined(CONFIG_PPC32) && defined(CONFIG_PPC_INDIRECT_IO)
 #error CONFIG_PPC_INDIRECT_IO is not yet supported on 32 bits
+=======
+/* Boolean set by platform if PIO accesses are suppored while _IO_BASE
+ * is not set or addresses cannot be translated to MMIO. This is typically
+ * set when the platform supports "special" PIO accesses via a non memory
+ * mapped mechanism, and allows things like the early udbg UART code to
+ * function.
+ */
+extern bool isa_io_special;
+
+#ifdef CONFIG_PPC32
+#if defined(CONFIG_PPC_INDIRECT_PIO) || defined(CONFIG_PPC_INDIRECT_MMIO)
+#error CONFIG_PPC_INDIRECT_{PIO,MMIO} are not yet supported on 32 bits
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -91,6 +138,7 @@ extern resource_size_t isa_mem_base;
  *
  */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC64
 #define IO_SET_SYNC_FLAG()	do { local_paca->io_sync = 1; } while(0)
 #else
@@ -100,10 +148,16 @@ extern resource_size_t isa_mem_base;
 /* gcc 4.0 and older doesn't have 'Z' constraint */
 #if __GNUC__ < 4 || (__GNUC__ == 4 && __GNUC_MINOR__ == 0)
 #define DEF_MMIO_IN_LE(name, size, insn)				\
+=======
+/* -mprefixed can generate offsets beyond range, fall back hack */
+#ifdef CONFIG_PPC_KERNEL_PREFIXED
+#define DEF_MMIO_IN_X(name, size, insn)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u##size name(const volatile u##size __iomem *addr)	\
 {									\
 	u##size ret;							\
 	__asm__ __volatile__("sync;"#insn" %0,0,%1;twi 0,%0,0;isync"	\
+<<<<<<< HEAD
 		: "=r" (ret) : "r" (addr), "m" (*addr) : "memory");	\
 	return ret;							\
 }
@@ -117,6 +171,38 @@ static inline void name(volatile u##size __iomem *addr, u##size val)	\
 }
 #else /* newer gcc */
 #define DEF_MMIO_IN_LE(name, size, insn)				\
+=======
+		: "=r" (ret) : "r" (addr) : "memory");			\
+	return ret;							\
+}
+
+#define DEF_MMIO_OUT_X(name, size, insn)				\
+static inline void name(volatile u##size __iomem *addr, u##size val)	\
+{									\
+	__asm__ __volatile__("sync;"#insn" %1,0,%0"			\
+		: : "r" (addr), "r" (val) : "memory");			\
+	mmiowb_set_pending();						\
+}
+
+#define DEF_MMIO_IN_D(name, size, insn)				\
+static inline u##size name(const volatile u##size __iomem *addr)	\
+{									\
+	u##size ret;							\
+	__asm__ __volatile__("sync;"#insn" %0,0(%1);twi 0,%0,0;isync"\
+		: "=r" (ret) : "b" (addr) : "memory");	\
+	return ret;							\
+}
+
+#define DEF_MMIO_OUT_D(name, size, insn)				\
+static inline void name(volatile u##size __iomem *addr, u##size val)	\
+{									\
+	__asm__ __volatile__("sync;"#insn" %1,0(%0)"			\
+		: : "b" (addr), "r" (val) : "memory");	\
+	mmiowb_set_pending();						\
+}
+#else
+#define DEF_MMIO_IN_X(name, size, insn)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u##size name(const volatile u##size __iomem *addr)	\
 {									\
 	u##size ret;							\
@@ -125,20 +211,32 @@ static inline u##size name(const volatile u##size __iomem *addr)	\
 	return ret;							\
 }
 
+<<<<<<< HEAD
 #define DEF_MMIO_OUT_LE(name, size, insn) 				\
+=======
+#define DEF_MMIO_OUT_X(name, size, insn)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void name(volatile u##size __iomem *addr, u##size val)	\
 {									\
 	__asm__ __volatile__("sync;"#insn" %1,%y0"			\
 		: "=Z" (*addr) : "r" (val) : "memory");			\
+<<<<<<< HEAD
 	IO_SET_SYNC_FLAG();						\
 }
 #endif
 
 #define DEF_MMIO_IN_BE(name, size, insn)				\
+=======
+	mmiowb_set_pending();						\
+}
+
+#define DEF_MMIO_IN_D(name, size, insn)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u##size name(const volatile u##size __iomem *addr)	\
 {									\
 	u##size ret;							\
 	__asm__ __volatile__("sync;"#insn"%U1%X1 %0,%1;twi 0,%0,0;isync"\
+<<<<<<< HEAD
 		: "=r" (ret) : "m" (*addr) : "memory");			\
 	return ret;							\
 }
@@ -167,6 +265,52 @@ DEF_MMIO_OUT_LE(out_le32, 32, stwbrx);
 #ifdef __powerpc64__
 DEF_MMIO_OUT_BE(out_be64, 64, std);
 DEF_MMIO_IN_BE(in_be64, 64, ld);
+=======
+		: "=r" (ret) : "m<>" (*addr) : "memory");	\
+	return ret;							\
+}
+
+#define DEF_MMIO_OUT_D(name, size, insn)				\
+static inline void name(volatile u##size __iomem *addr, u##size val)	\
+{									\
+	__asm__ __volatile__("sync;"#insn"%U0%X0 %1,%0"			\
+		: "=m<>" (*addr) : "r" (val) : "memory");	\
+	mmiowb_set_pending();						\
+}
+#endif
+
+DEF_MMIO_IN_D(in_8,     8, lbz);
+DEF_MMIO_OUT_D(out_8,   8, stb);
+
+#ifdef __BIG_ENDIAN__
+DEF_MMIO_IN_D(in_be16, 16, lhz);
+DEF_MMIO_IN_D(in_be32, 32, lwz);
+DEF_MMIO_IN_X(in_le16, 16, lhbrx);
+DEF_MMIO_IN_X(in_le32, 32, lwbrx);
+
+DEF_MMIO_OUT_D(out_be16, 16, sth);
+DEF_MMIO_OUT_D(out_be32, 32, stw);
+DEF_MMIO_OUT_X(out_le16, 16, sthbrx);
+DEF_MMIO_OUT_X(out_le32, 32, stwbrx);
+#else
+DEF_MMIO_IN_X(in_be16, 16, lhbrx);
+DEF_MMIO_IN_X(in_be32, 32, lwbrx);
+DEF_MMIO_IN_D(in_le16, 16, lhz);
+DEF_MMIO_IN_D(in_le32, 32, lwz);
+
+DEF_MMIO_OUT_X(out_be16, 16, sthbrx);
+DEF_MMIO_OUT_X(out_be32, 32, stwbrx);
+DEF_MMIO_OUT_D(out_le16, 16, sth);
+DEF_MMIO_OUT_D(out_le32, 32, stw);
+
+#endif /* __BIG_ENDIAN */
+
+#ifdef __powerpc64__
+
+#ifdef __BIG_ENDIAN__
+DEF_MMIO_OUT_D(out_be64, 64, std);
+DEF_MMIO_IN_D(in_be64, 64, ld);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* There is no asm instructions for 64 bits reverse loads and stores */
 static inline u64 in_le64(const volatile u64 __iomem *addr)
@@ -178,6 +322,25 @@ static inline void out_le64(volatile u64 __iomem *addr, u64 val)
 {
 	out_be64(addr, swab64(val));
 }
+<<<<<<< HEAD
+=======
+#else
+DEF_MMIO_OUT_D(out_le64, 64, std);
+DEF_MMIO_IN_D(in_le64, 64, ld);
+
+/* There is no asm instructions for 64 bits reverse loads and stores */
+static inline u64 in_be64(const volatile u64 __iomem *addr)
+{
+	return swab64(in_le64(addr));
+}
+
+static inline void out_be64(volatile u64 __iomem *addr, u64 val)
+{
+	out_le64(addr, swab64(val));
+}
+
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __powerpc64__ */
 
 /*
@@ -218,9 +381,15 @@ extern void _memcpy_toio(volatile void __iomem *dest, const void *src,
  * for PowerPC is as close as possible to the x86 version of these, and thus
  * provides fairly heavy weight barriers for the non-raw versions
  *
+<<<<<<< HEAD
  * In addition, they support a hook mechanism when CONFIG_PPC_INDIRECT_IO
  * allowing the platform to provide its own implementation of some or all
  * of the accessors.
+=======
+ * In addition, they support a hook mechanism when CONFIG_PPC_INDIRECT_MMIO
+ * or CONFIG_PPC_INDIRECT_PIO are set allowing the platform to provide its
+ * own implementation of some or all of the accessors.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -236,6 +405,7 @@ extern void _memcpy_toio(volatile void __iomem *dest, const void *src,
 
 /* Indirect IO address tokens:
  *
+<<<<<<< HEAD
  * When CONFIG_PPC_INDIRECT_IO is set, the platform can provide hooks
  * on all IOs. (Note that this is all 64 bits only for now)
  *
@@ -266,6 +436,35 @@ extern void _memcpy_toio(volatile void __iomem *dest, const void *src,
 #ifdef CONFIG_PPC_INDIRECT_IO
 #define PCI_IO_IND_TOKEN_MASK	0x0fff000000000000ul
 #define PCI_IO_IND_TOKEN_SHIFT	48
+=======
+ * When CONFIG_PPC_INDIRECT_MMIO is set, the platform can provide hooks
+ * on all MMIOs. (Note that this is all 64 bits only for now)
+ *
+ * To help platforms who may need to differentiate MMIO addresses in
+ * their hooks, a bitfield is reserved for use by the platform near the
+ * top of MMIO addresses (not PIO, those have to cope the hard way).
+ *
+ * The highest address in the kernel virtual space are:
+ *
+ *  d0003fffffffffff	# with Hash MMU
+ *  c00fffffffffffff	# with Radix MMU
+ *
+ * The top 4 bits are reserved as the region ID on hash, leaving us 8 bits
+ * that can be used for the field.
+ *
+ * The direct IO mapping operations will then mask off those bits
+ * before doing the actual access, though that only happen when
+ * CONFIG_PPC_INDIRECT_MMIO is set, thus be careful when you use that
+ * mechanism
+ *
+ * For PIO, there is a separate CONFIG_PPC_INDIRECT_PIO which makes
+ * all PIO functions call through a hook.
+ */
+
+#ifdef CONFIG_PPC_INDIRECT_MMIO
+#define PCI_IO_IND_TOKEN_SHIFT	52
+#define PCI_IO_IND_TOKEN_MASK	(0xfful << PCI_IO_IND_TOKEN_SHIFT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_FIX_ADDR(addr)						\
 	((PCI_IO_ADDR)(((unsigned long)(addr)) & ~PCI_IO_IND_TOKEN_MASK))
 #define PCI_GET_ADDR_TOKEN(addr)					\
@@ -291,36 +490,169 @@ static inline unsigned char __raw_readb(const volatile void __iomem *addr)
 {
 	return *(volatile unsigned char __force *)PCI_FIX_ADDR(addr);
 }
+<<<<<<< HEAD
+=======
+#define __raw_readb __raw_readb
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned short __raw_readw(const volatile void __iomem *addr)
 {
 	return *(volatile unsigned short __force *)PCI_FIX_ADDR(addr);
 }
+<<<<<<< HEAD
+=======
+#define __raw_readw __raw_readw
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int __raw_readl(const volatile void __iomem *addr)
 {
 	return *(volatile unsigned int __force *)PCI_FIX_ADDR(addr);
 }
+<<<<<<< HEAD
+=======
+#define __raw_readl __raw_readl
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void __raw_writeb(unsigned char v, volatile void __iomem *addr)
 {
 	*(volatile unsigned char __force *)PCI_FIX_ADDR(addr) = v;
 }
+<<<<<<< HEAD
+=======
+#define __raw_writeb __raw_writeb
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void __raw_writew(unsigned short v, volatile void __iomem *addr)
 {
 	*(volatile unsigned short __force *)PCI_FIX_ADDR(addr) = v;
 }
+<<<<<<< HEAD
+=======
+#define __raw_writew __raw_writew
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void __raw_writel(unsigned int v, volatile void __iomem *addr)
 {
 	*(volatile unsigned int __force *)PCI_FIX_ADDR(addr) = v;
 }
+<<<<<<< HEAD
+=======
+#define __raw_writel __raw_writel
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef __powerpc64__
 static inline unsigned long __raw_readq(const volatile void __iomem *addr)
 {
 	return *(volatile unsigned long __force *)PCI_FIX_ADDR(addr);
 }
+<<<<<<< HEAD
+=======
+#define __raw_readq __raw_readq
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void __raw_writeq(unsigned long v, volatile void __iomem *addr)
 {
 	*(volatile unsigned long __force *)PCI_FIX_ADDR(addr) = v;
 }
+<<<<<<< HEAD
+=======
+#define __raw_writeq __raw_writeq
+
+static inline void __raw_writeq_be(unsigned long v, volatile void __iomem *addr)
+{
+	__raw_writeq((__force unsigned long)cpu_to_be64(v), addr);
+}
+#define __raw_writeq_be __raw_writeq_be
+
+/*
+ * Real mode versions of the above. Those instructions are only supposed
+ * to be used in hypervisor real mode as per the architecture spec.
+ */
+static inline void __raw_rm_writeb(u8 val, volatile void __iomem *paddr)
+{
+	__asm__ __volatile__(".machine push;   \
+			      .machine power6; \
+			      stbcix %0,0,%1;  \
+			      .machine pop;"
+		: : "r" (val), "r" (paddr) : "memory");
+}
+
+static inline void __raw_rm_writew(u16 val, volatile void __iomem *paddr)
+{
+	__asm__ __volatile__(".machine push;   \
+			      .machine power6; \
+			      sthcix %0,0,%1;  \
+			      .machine pop;"
+		: : "r" (val), "r" (paddr) : "memory");
+}
+
+static inline void __raw_rm_writel(u32 val, volatile void __iomem *paddr)
+{
+	__asm__ __volatile__(".machine push;   \
+			      .machine power6; \
+			      stwcix %0,0,%1;  \
+			      .machine pop;"
+		: : "r" (val), "r" (paddr) : "memory");
+}
+
+static inline void __raw_rm_writeq(u64 val, volatile void __iomem *paddr)
+{
+	__asm__ __volatile__(".machine push;   \
+			      .machine power6; \
+			      stdcix %0,0,%1;  \
+			      .machine pop;"
+		: : "r" (val), "r" (paddr) : "memory");
+}
+
+static inline void __raw_rm_writeq_be(u64 val, volatile void __iomem *paddr)
+{
+	__raw_rm_writeq((__force u64)cpu_to_be64(val), paddr);
+}
+
+static inline u8 __raw_rm_readb(volatile void __iomem *paddr)
+{
+	u8 ret;
+	__asm__ __volatile__(".machine push;   \
+			      .machine power6; \
+			      lbzcix %0,0, %1; \
+			      .machine pop;"
+			     : "=r" (ret) : "r" (paddr) : "memory");
+	return ret;
+}
+
+static inline u16 __raw_rm_readw(volatile void __iomem *paddr)
+{
+	u16 ret;
+	__asm__ __volatile__(".machine push;   \
+			      .machine power6; \
+			      lhzcix %0,0, %1; \
+			      .machine pop;"
+			     : "=r" (ret) : "r" (paddr) : "memory");
+	return ret;
+}
+
+static inline u32 __raw_rm_readl(volatile void __iomem *paddr)
+{
+	u32 ret;
+	__asm__ __volatile__(".machine push;   \
+			      .machine power6; \
+			      lwzcix %0,0, %1; \
+			      .machine pop;"
+			     : "=r" (ret) : "r" (paddr) : "memory");
+	return ret;
+}
+
+static inline u64 __raw_rm_readq(volatile void __iomem *paddr)
+{
+	u64 ret;
+	__asm__ __volatile__(".machine push;   \
+			      .machine power6; \
+			      ldcix %0,0, %1;  \
+			      .machine pop;"
+			     : "=r" (ret) : "r" (paddr) : "memory");
+	return ret;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __powerpc64__ */
 
 /*
@@ -354,6 +686,7 @@ static inline unsigned int name(unsigned int port)	\
 		"5:	li	%0,-1\n"		\
 		"	b	4b\n"			\
 		".previous\n"				\
+<<<<<<< HEAD
 		".section __ex_table,\"a\"\n"		\
 		"	.align	2\n"			\
 		"	.long	0b,5b\n"		\
@@ -361,6 +694,12 @@ static inline unsigned int name(unsigned int port)	\
 		"	.long	2b,5b\n"		\
 		"	.long	3b,5b\n"		\
 		".previous"				\
+=======
+		EX_TABLE(0b, 5b)			\
+		EX_TABLE(1b, 5b)			\
+		EX_TABLE(2b, 5b)			\
+		EX_TABLE(3b, 5b)			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=&r" (x)				\
 		: "r" (port + _IO_BASE)			\
 		: "memory");  				\
@@ -375,11 +714,16 @@ static inline void name(unsigned int val, unsigned int port) \
 		"0:" op " %0,0,%1\n"			\
 		"1:	sync\n"				\
 		"2:\n"					\
+<<<<<<< HEAD
 		".section __ex_table,\"a\"\n"		\
 		"	.align	2\n"			\
 		"	.long	0b,2b\n"		\
 		"	.long	1b,2b\n"		\
 		".previous"				\
+=======
+		EX_TABLE(0b, 2b)			\
+		EX_TABLE(1b, 2b)			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: : "r" (val), "r" (port + _IO_BASE)	\
 		: "memory");   	   	   		\
 }
@@ -534,10 +878,38 @@ static inline void name at					\
 /* Some drivers check for the presence of readq & writeq with
  * a #ifdef, so we make them happy here.
  */
+<<<<<<< HEAD
+=======
+#define readb readb
+#define readw readw
+#define readl readl
+#define writeb writeb
+#define writew writew
+#define writel writel
+#define readsb readsb
+#define readsw readsw
+#define readsl readsl
+#define writesb writesb
+#define writesw writesw
+#define writesl writesl
+#define inb inb
+#define inw inw
+#define inl inl
+#define outb outb
+#define outw outw
+#define outl outl
+#define insb insb
+#define insw insw
+#define insl insl
+#define outsb outsb
+#define outsw outsw
+#define outsl outsl
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __powerpc64__
 #define readq	readq
 #define writeq	writeq
 #endif
+<<<<<<< HEAD
 
 /*
  * Convert a physical pointer to a virtual kernel pointer for /dev/mem
@@ -549,10 +921,16 @@ static inline void name at					\
  * Convert a virtual cached pointer to an uncached pointer
  */
 #define xlate_dev_kmem_ptr(p)	p
+=======
+#define memset_io memset_io
+#define memcpy_fromio memcpy_fromio
+#define memcpy_toio memcpy_toio
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We don't do relaxed operations yet, at least not with this semantic
  */
+<<<<<<< HEAD
 #define readb_relaxed(addr) readb(addr)
 #define readw_relaxed(addr) readw(addr)
 #define readl_relaxed(addr) readl(addr)
@@ -575,6 +953,115 @@ static inline void mmiowb(void)
 	: "memory");
 }
 #endif /* !CONFIG_PPC32 */
+=======
+#define readb_relaxed(addr)	readb(addr)
+#define readw_relaxed(addr)	readw(addr)
+#define readl_relaxed(addr)	readl(addr)
+#define readq_relaxed(addr)	readq(addr)
+#define writeb_relaxed(v, addr)	writeb(v, addr)
+#define writew_relaxed(v, addr)	writew(v, addr)
+#define writel_relaxed(v, addr)	writel(v, addr)
+#define writeq_relaxed(v, addr)	writeq(v, addr)
+
+#ifndef CONFIG_GENERIC_IOMAP
+/*
+ * Here comes the implementation of the IOMAP interfaces.
+ */
+static inline unsigned int ioread16be(const void __iomem *addr)
+{
+	return readw_be(addr);
+}
+#define ioread16be ioread16be
+
+static inline unsigned int ioread32be(const void __iomem *addr)
+{
+	return readl_be(addr);
+}
+#define ioread32be ioread32be
+
+#ifdef __powerpc64__
+static inline u64 ioread64_lo_hi(const void __iomem *addr)
+{
+	return readq(addr);
+}
+#define ioread64_lo_hi ioread64_lo_hi
+
+static inline u64 ioread64_hi_lo(const void __iomem *addr)
+{
+	return readq(addr);
+}
+#define ioread64_hi_lo ioread64_hi_lo
+
+static inline u64 ioread64be(const void __iomem *addr)
+{
+	return readq_be(addr);
+}
+#define ioread64be ioread64be
+
+static inline u64 ioread64be_lo_hi(const void __iomem *addr)
+{
+	return readq_be(addr);
+}
+#define ioread64be_lo_hi ioread64be_lo_hi
+
+static inline u64 ioread64be_hi_lo(const void __iomem *addr)
+{
+	return readq_be(addr);
+}
+#define ioread64be_hi_lo ioread64be_hi_lo
+#endif /* __powerpc64__ */
+
+static inline void iowrite16be(u16 val, void __iomem *addr)
+{
+	writew_be(val, addr);
+}
+#define iowrite16be iowrite16be
+
+static inline void iowrite32be(u32 val, void __iomem *addr)
+{
+	writel_be(val, addr);
+}
+#define iowrite32be iowrite32be
+
+#ifdef __powerpc64__
+static inline void iowrite64_lo_hi(u64 val, void __iomem *addr)
+{
+	writeq(val, addr);
+}
+#define iowrite64_lo_hi iowrite64_lo_hi
+
+static inline void iowrite64_hi_lo(u64 val, void __iomem *addr)
+{
+	writeq(val, addr);
+}
+#define iowrite64_hi_lo iowrite64_hi_lo
+
+static inline void iowrite64be(u64 val, void __iomem *addr)
+{
+	writeq_be(val, addr);
+}
+#define iowrite64be iowrite64be
+
+static inline void iowrite64be_lo_hi(u64 val, void __iomem *addr)
+{
+	writeq_be(val, addr);
+}
+#define iowrite64be_lo_hi iowrite64be_lo_hi
+
+static inline void iowrite64be_hi_lo(u64 val, void __iomem *addr)
+{
+	writeq_be(val, addr);
+}
+#define iowrite64be_hi_lo iowrite64be_hi_lo
+#endif /* __powerpc64__ */
+
+struct pci_dev;
+void pci_iounmap(struct pci_dev *dev, void __iomem *addr);
+#define pci_iounmap pci_iounmap
+void __iomem *ioport_map(unsigned long port, unsigned int len);
+#define ioport_map ioport_map
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void iosync(void)
 {
@@ -607,7 +1094,10 @@ static inline void iosync(void)
 
 #define IO_SPACE_LIMIT ~(0UL)
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ioremap     -   map bus memory into CPU space
  * @address:   bus address of the memory
@@ -627,6 +1117,7 @@ static inline void iosync(void)
  * * ioremap_prot allows to specify the page flags as an argument and can
  *   also be hooked by the platform via ppc_md.
  *
+<<<<<<< HEAD
  * * ioremap_nocache is identical to ioremap
  *
  * * ioremap_wc enables write combining
@@ -669,6 +1160,47 @@ extern void __iounmap_at(void *ea, unsigned long size);
 
 /*
  * When CONFIG_PPC_INDIRECT_IO is set, we use the generic iomap implementation
+=======
+ * * ioremap_wc enables write combining
+ *
+ * * ioremap_wt enables write through
+ *
+ * * ioremap_coherent maps coherent cached memory
+ *
+ * * iounmap undoes such a mapping and can be hooked
+ *
+ * * __ioremap_caller is the same as above but takes an explicit caller
+ *   reference rather than using __builtin_return_address(0)
+ *
+ */
+extern void __iomem *ioremap(phys_addr_t address, unsigned long size);
+#define ioremap ioremap
+#define ioremap_prot ioremap_prot
+extern void __iomem *ioremap_wc(phys_addr_t address, unsigned long size);
+#define ioremap_wc ioremap_wc
+
+#ifdef CONFIG_PPC32
+void __iomem *ioremap_wt(phys_addr_t address, unsigned long size);
+#define ioremap_wt ioremap_wt
+#endif
+
+void __iomem *ioremap_coherent(phys_addr_t address, unsigned long size);
+#define ioremap_cache(addr, size) \
+	ioremap_prot((addr), (size), pgprot_val(PAGE_KERNEL))
+
+#define iounmap iounmap
+
+void __iomem *ioremap_phb(phys_addr_t paddr, unsigned long size);
+
+int early_ioremap_range(unsigned long ea, phys_addr_t pa,
+			unsigned long size, pgprot_t prot);
+
+extern void __iomem *__ioremap_caller(phys_addr_t, unsigned long size,
+				      pgprot_t prot, void *caller);
+
+/*
+ * When CONFIG_PPC_INDIRECT_PIO is set, we use the generic iomap implementation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * which needs some additional definitions here. They basically allow PIO
  * space overall to be 1GB. This will work as long as we never try to use
  * iomap to map MMIO below 1GB which should be fine on ppc64
@@ -680,8 +1212,15 @@ extern void __iounmap_at(void *ea, unsigned long size);
 
 #define mmio_read16be(addr)		readw_be(addr)
 #define mmio_read32be(addr)		readl_be(addr)
+<<<<<<< HEAD
 #define mmio_write16be(val, addr)	writew_be(val, addr)
 #define mmio_write32be(val, addr)	writel_be(val, addr)
+=======
+#define mmio_read64be(addr)		readq_be(addr)
+#define mmio_write16be(val, addr)	writew_be(val, addr)
+#define mmio_write32be(val, addr)	writel_be(val, addr)
+#define mmio_write64be(val, addr)	writeq_be(val, addr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define mmio_insb(addr, dst, count)	readsb(addr, dst, count)
 #define mmio_insw(addr, dst, count)	readsw(addr, dst, count)
 #define mmio_insl(addr, dst, count)	readsl(addr, dst, count)
@@ -701,10 +1240,20 @@ extern void __iounmap_at(void *ea, unsigned long size);
  *	almost all conceivable cases a device driver should not be using
  *	this function
  */
+<<<<<<< HEAD
 static inline unsigned long virt_to_phys(volatile void * address)
 {
 	return __pa((unsigned long)address);
 }
+=======
+static inline unsigned long virt_to_phys(const volatile void * address)
+{
+	WARN_ON(IS_ENABLED(CONFIG_DEBUG_VIRTUAL) && !virt_addr_valid(address));
+
+	return __pa((unsigned long)address);
+}
+#define virt_to_phys virt_to_phys
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	phys_to_virt	-	map physical address to virtual
@@ -722,11 +1271,26 @@ static inline void * phys_to_virt(unsigned long address)
 {
 	return (void *)__va(address);
 }
+<<<<<<< HEAD
+=======
+#define phys_to_virt phys_to_virt
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Change "struct page" to physical address.
  */
+<<<<<<< HEAD
 #define page_to_phys(page)	((phys_addr_t)page_to_pfn(page) << PAGE_SHIFT)
+=======
+static inline phys_addr_t page_to_phys(struct page *page)
+{
+	unsigned long pfn = page_to_pfn(page);
+
+	WARN_ON(IS_ENABLED(CONFIG_DEBUG_VIRTUAL) && !pfn_valid(pfn));
+
+	return PFN_PHYS(pfn);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 32 bits still uses virt_to_bus() for it's implementation of DMA
@@ -742,6 +1306,10 @@ static inline unsigned long virt_to_bus(volatile void * address)
 		return 0;
         return __pa(address) + PCI_DRAM_OFFSET;
 }
+<<<<<<< HEAD
+=======
+#define virt_to_bus virt_to_bus
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void * bus_to_virt(unsigned long address)
 {
@@ -749,8 +1317,12 @@ static inline void * bus_to_virt(unsigned long address)
 		return NULL;
         return __va(address - PCI_DRAM_OFFSET);
 }
+<<<<<<< HEAD
 
 #define page_to_bus(page)	(page_to_phys(page) + PCI_DRAM_OFFSET)
+=======
+#define bus_to_virt bus_to_virt
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* CONFIG_PPC32 */
 
@@ -787,8 +1359,12 @@ static inline void * bus_to_virt(unsigned long address)
 
 #define clrsetbits_8(addr, clear, set) clrsetbits(8, addr, clear, set)
 
+<<<<<<< HEAD
 void __iomem *devm_ioremap_prot(struct device *dev, resource_size_t offset,
 				size_t size, unsigned long flags);
+=======
+#include <asm-generic/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __KERNEL__ */
 

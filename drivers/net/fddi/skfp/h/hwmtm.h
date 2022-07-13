@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  *	(C)Copyright 1998,1999 SysKonnect,
  *	a business unit of Schneider & Koch & Co. Datensysteme GmbH.
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; either version 2 of the License, or
  *	(at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The information in this file is provided "AS IS" without warranty.
  *
  ******************************************************************************/
@@ -74,6 +81,7 @@
 #define NULL 		0
 #endif
 
+<<<<<<< HEAD
 #ifdef	LITTLE_ENDIAN
 #define HWM_REVERSE(x)	(x)
 #else
@@ -83,6 +91,8 @@
 				 (((x)>>24L)&0x000000ffL))
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define C_INDIC		(1L<<25)
 #define A_INDIC		(1L<<26)
 #define	RD_FS_LOCAL	0x80
@@ -177,6 +187,7 @@ struct os_debug {
 #define DB_P	debug
 #endif
 
+<<<<<<< HEAD
 #define DB_RX(a,b,c,lev) if (DB_P.d_os.hwm_rx >= (lev))	printf(a,b,c)
 #define DB_TX(a,b,c,lev) if (DB_P.d_os.hwm_tx >= (lev))	printf(a,b,c)
 #define DB_GEN(a,b,c,lev) if (DB_P.d_os.hwm_gen >= (lev)) printf(a,b,c)
@@ -184,6 +195,27 @@ struct os_debug {
 #define DB_RX(a,b,c,lev)
 #define DB_TX(a,b,c,lev)
 #define DB_GEN(a,b,c,lev)
+=======
+#define DB_RX(lev, fmt, ...)						\
+do {									\
+	if (DB_P.d_os.hwm_rx >= (lev))					\
+		printf(fmt "\n", ##__VA_ARGS__);			\
+} while (0)
+#define DB_TX(lev, fmt, ...)						\
+do {									\
+	if (DB_P.d_os.hwm_tx >= (lev))					\
+		printf(fmt "\n", ##__VA_ARGS__);			\
+} while (0)
+#define DB_GEN(lev, fmt, ...)						\
+do {									\
+	if (DB_P.d_os.hwm_gen >= (lev))					\
+		printf(fmt "\n", ##__VA_ARGS__);			\
+} while (0)
+#else	/* DEBUG */
+#define DB_RX(lev, fmt, ...)	no_printk(fmt "\n", ##__VA_ARGS__)
+#define DB_TX(lev, fmt, ...)	no_printk(fmt "\n", ##__VA_ARGS__)
+#define DB_GEN(lev, fmt, ...)	no_printk(fmt "\n", ##__VA_ARGS__)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* DEBUG */
 
 #ifndef	SK_BREAK
@@ -349,7 +381,11 @@ struct os_debug {
  *		This macro is invoked by the OS-specific before it left the
  *		function mac_drv_rx_complete. This macro calls mac_drv_fill_rxd
  *		if the number of used RxDs is equal or lower than the
+<<<<<<< HEAD
  *		the given low water mark.
+=======
+ *		given low water mark.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * para	low_water	low water mark of used RxD's
  *

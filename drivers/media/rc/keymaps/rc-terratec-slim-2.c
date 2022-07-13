@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TerraTec remote controller keytable
  *
  * Copyright (C) 2011 Martin Groszhauser <mgroszhauser@gmail.com>
  * Copyright (C) 2011 Antti Palosaari <crope@iki.fi>
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *    You should have received a copy of the GNU General Public License along
  *    with this program; if not, write to the Free Software Foundation, Inc.,
  *    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <media/rc-map.h>
@@ -30,6 +37,7 @@ static struct rc_map_table terratec_slim_2[] = {
 	{ 0x8001, KEY_MUTE },            /* MUTE */
 	{ 0x8002, KEY_VOLUMEDOWN },
 	{ 0x8003, KEY_CHANNELDOWN },
+<<<<<<< HEAD
 	{ 0x8004, KEY_1 },
 	{ 0x8005, KEY_2 },
 	{ 0x8006, KEY_3 },
@@ -45,14 +53,38 @@ static struct rc_map_table terratec_slim_2[] = {
 	{ 0x801b, KEY_8 },
 	{ 0x801e, KEY_CHANNELUP },
 	{ 0x801f, KEY_9 },
+=======
+	{ 0x8004, KEY_NUMERIC_1 },
+	{ 0x8005, KEY_NUMERIC_2 },
+	{ 0x8006, KEY_NUMERIC_3 },
+	{ 0x8007, KEY_NUMERIC_4 },
+	{ 0x8008, KEY_NUMERIC_5 },
+	{ 0x8009, KEY_NUMERIC_6 },
+	{ 0x800a, KEY_NUMERIC_7 },
+	{ 0x800c, KEY_ZOOM },            /* [fullscreen] */
+	{ 0x800d, KEY_NUMERIC_0 },
+	{ 0x800e, KEY_AGAIN },           /* [two arrows forming a circle] */
+	{ 0x8012, KEY_POWER2 },          /* [red power button] */
+	{ 0x801a, KEY_VOLUMEUP },
+	{ 0x801b, KEY_NUMERIC_8 },
+	{ 0x801e, KEY_CHANNELUP },
+	{ 0x801f, KEY_NUMERIC_9 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct rc_map_list terratec_slim_2_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = terratec_slim_2,
 		.size    = ARRAY_SIZE(terratec_slim_2),
 		.rc_type = RC_TYPE_NEC,
 		.name    = RC_MAP_TERRATEC_SLIM_2,
+=======
+		.scan     = terratec_slim_2,
+		.size     = ARRAY_SIZE(terratec_slim_2),
+		.rc_proto = RC_PROTO_NEC,
+		.name     = RC_MAP_TERRATEC_SLIM_2,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -71,3 +103,7 @@ module_exit(exit_rc_map_terratec_slim_2)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Antti Palosaari <crope@iki.fi>");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("TerraTec slim remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

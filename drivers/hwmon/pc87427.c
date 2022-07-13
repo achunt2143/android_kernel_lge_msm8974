@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  pc87427.c - hardware monitoring driver for the
  *              National Semiconductor PC87427 Super-I/O chip
@@ -11,6 +12,13 @@
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  *  GNU General Public License for more details.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  pc87427.c - hardware monitoring driver for the
+ *              National Semiconductor PC87427 Super-I/O chip
+ *  Copyright (C) 2006, 2008, 2010  Jean Delvare <jdelvare@suse.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Supports the following chips:
  *
@@ -106,6 +114,16 @@ static const char *logdev_str[2] = { DRVNAME " FMC", DRVNAME " HMC" };
 #define LD_IN		1
 #define LD_TEMP		1
 
+<<<<<<< HEAD
+=======
+static inline int superio_enter(int sioaddr)
+{
+	if (!request_muxed_region(sioaddr, 2, DRVNAME))
+		return -EBUSY;
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void superio_outb(int sioaddr, int reg, int val)
 {
 	outb(reg, sioaddr);
@@ -122,6 +140,10 @@ static inline void superio_exit(int sioaddr)
 {
 	outb(0x02, sioaddr);
 	outb(0x02, sioaddr + 1);
+<<<<<<< HEAD
+=======
+	release_region(sioaddr, 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -384,8 +406,13 @@ done:
 	return data;
 }
 
+<<<<<<< HEAD
 static ssize_t show_fan_input(struct device *dev, struct device_attribute
 			      *devattr, char *buf)
+=======
+static ssize_t fan_input_show(struct device *dev,
+			      struct device_attribute *devattr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -393,8 +420,13 @@ static ssize_t show_fan_input(struct device *dev, struct device_attribute
 	return sprintf(buf, "%lu\n", fan_from_reg(data->fan[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t show_fan_min(struct device *dev, struct device_attribute
 			    *devattr, char *buf)
+=======
+static ssize_t fan_min_show(struct device *dev,
+			    struct device_attribute *devattr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -402,8 +434,13 @@ static ssize_t show_fan_min(struct device *dev, struct device_attribute
 	return sprintf(buf, "%lu\n", fan_from_reg(data->fan_min[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t show_fan_alarm(struct device *dev, struct device_attribute
 			      *devattr, char *buf)
+=======
+static ssize_t fan_alarm_show(struct device *dev,
+			      struct device_attribute *devattr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -412,8 +449,13 @@ static ssize_t show_fan_alarm(struct device *dev, struct device_attribute
 				       & FAN_STATUS_LOSPD));
 }
 
+<<<<<<< HEAD
 static ssize_t show_fan_fault(struct device *dev, struct device_attribute
 			      *devattr, char *buf)
+=======
+static ssize_t fan_fault_show(struct device *dev,
+			      struct device_attribute *devattr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -422,8 +464,14 @@ static ssize_t show_fan_fault(struct device *dev, struct device_attribute
 				       & FAN_STATUS_STALL));
 }
 
+<<<<<<< HEAD
 static ssize_t set_fan_min(struct device *dev, struct device_attribute
 			   *devattr, const char *buf, size_t count)
+=======
+static ssize_t fan_min_store(struct device *dev,
+			     struct device_attribute *devattr,
+			     const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = dev_get_drvdata(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -449,6 +497,7 @@ static ssize_t set_fan_min(struct device *dev, struct device_attribute
 	return count;
 }
 
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(fan1_input, S_IRUGO, show_fan_input, NULL, 0);
 static SENSOR_DEVICE_ATTR(fan2_input, S_IRUGO, show_fan_input, NULL, 1);
 static SENSOR_DEVICE_ATTR(fan3_input, S_IRUGO, show_fan_input, NULL, 2);
@@ -492,6 +541,43 @@ static SENSOR_DEVICE_ATTR(fan5_fault, S_IRUGO, show_fan_fault, NULL, 4);
 static SENSOR_DEVICE_ATTR(fan6_fault, S_IRUGO, show_fan_fault, NULL, 5);
 static SENSOR_DEVICE_ATTR(fan7_fault, S_IRUGO, show_fan_fault, NULL, 6);
 static SENSOR_DEVICE_ATTR(fan8_fault, S_IRUGO, show_fan_fault, NULL, 7);
+=======
+static SENSOR_DEVICE_ATTR_RO(fan1_input, fan_input, 0);
+static SENSOR_DEVICE_ATTR_RO(fan2_input, fan_input, 1);
+static SENSOR_DEVICE_ATTR_RO(fan3_input, fan_input, 2);
+static SENSOR_DEVICE_ATTR_RO(fan4_input, fan_input, 3);
+static SENSOR_DEVICE_ATTR_RO(fan5_input, fan_input, 4);
+static SENSOR_DEVICE_ATTR_RO(fan6_input, fan_input, 5);
+static SENSOR_DEVICE_ATTR_RO(fan7_input, fan_input, 6);
+static SENSOR_DEVICE_ATTR_RO(fan8_input, fan_input, 7);
+
+static SENSOR_DEVICE_ATTR_RW(fan1_min, fan_min, 0);
+static SENSOR_DEVICE_ATTR_RW(fan2_min, fan_min, 1);
+static SENSOR_DEVICE_ATTR_RW(fan3_min, fan_min, 2);
+static SENSOR_DEVICE_ATTR_RW(fan4_min, fan_min, 3);
+static SENSOR_DEVICE_ATTR_RW(fan5_min, fan_min, 4);
+static SENSOR_DEVICE_ATTR_RW(fan6_min, fan_min, 5);
+static SENSOR_DEVICE_ATTR_RW(fan7_min, fan_min, 6);
+static SENSOR_DEVICE_ATTR_RW(fan8_min, fan_min, 7);
+
+static SENSOR_DEVICE_ATTR_RO(fan1_alarm, fan_alarm, 0);
+static SENSOR_DEVICE_ATTR_RO(fan2_alarm, fan_alarm, 1);
+static SENSOR_DEVICE_ATTR_RO(fan3_alarm, fan_alarm, 2);
+static SENSOR_DEVICE_ATTR_RO(fan4_alarm, fan_alarm, 3);
+static SENSOR_DEVICE_ATTR_RO(fan5_alarm, fan_alarm, 4);
+static SENSOR_DEVICE_ATTR_RO(fan6_alarm, fan_alarm, 5);
+static SENSOR_DEVICE_ATTR_RO(fan7_alarm, fan_alarm, 6);
+static SENSOR_DEVICE_ATTR_RO(fan8_alarm, fan_alarm, 7);
+
+static SENSOR_DEVICE_ATTR_RO(fan1_fault, fan_fault, 0);
+static SENSOR_DEVICE_ATTR_RO(fan2_fault, fan_fault, 1);
+static SENSOR_DEVICE_ATTR_RO(fan3_fault, fan_fault, 2);
+static SENSOR_DEVICE_ATTR_RO(fan4_fault, fan_fault, 3);
+static SENSOR_DEVICE_ATTR_RO(fan5_fault, fan_fault, 4);
+static SENSOR_DEVICE_ATTR_RO(fan6_fault, fan_fault, 5);
+static SENSOR_DEVICE_ATTR_RO(fan7_fault, fan_fault, 6);
+static SENSOR_DEVICE_ATTR_RO(fan8_fault, fan_fault, 7);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *pc87427_attributes_fan[8][5] = {
 	{
@@ -568,8 +654,13 @@ static void update_pwm_enable(struct pc87427_data *data, int nr, u8 mode)
 	outb(data->pwm_enable[nr], iobase + PC87427_REG_PWM_ENABLE);
 }
 
+<<<<<<< HEAD
 static ssize_t show_pwm_enable(struct device *dev, struct device_attribute
 			       *devattr, char *buf)
+=======
+static ssize_t pwm_enable_show(struct device *dev,
+			       struct device_attribute *devattr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -581,8 +672,14 @@ static ssize_t show_pwm_enable(struct device *dev, struct device_attribute
 	return sprintf(buf, "%d\n", pwm_enable);
 }
 
+<<<<<<< HEAD
 static ssize_t set_pwm_enable(struct device *dev, struct device_attribute
 			      *devattr, const char *buf, size_t count)
+=======
+static ssize_t pwm_enable_store(struct device *dev,
+				struct device_attribute *devattr,
+				const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = dev_get_drvdata(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -602,8 +699,13 @@ static ssize_t set_pwm_enable(struct device *dev, struct device_attribute
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t show_pwm(struct device *dev, struct device_attribute
 			*devattr, char *buf)
+=======
+static ssize_t pwm_show(struct device *dev, struct device_attribute *devattr,
+			char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -611,8 +713,13 @@ static ssize_t show_pwm(struct device *dev, struct device_attribute
 	return sprintf(buf, "%d\n", (int)data->pwm[nr]);
 }
 
+<<<<<<< HEAD
 static ssize_t set_pwm(struct device *dev, struct device_attribute
 		       *devattr, const char *buf, size_t count)
+=======
+static ssize_t pwm_store(struct device *dev, struct device_attribute *devattr,
+			 const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = dev_get_drvdata(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -627,8 +734,14 @@ static ssize_t set_pwm(struct device *dev, struct device_attribute
 	pc87427_readall_pwm(data, nr);
 	mode = data->pwm_enable[nr] & PWM_ENABLE_MODE_MASK;
 	if (mode != PWM_MODE_MANUAL && mode != PWM_MODE_OFF) {
+<<<<<<< HEAD
 		dev_notice(dev, "Can't set PWM%d duty cycle while not in "
 			   "manual mode\n", nr + 1);
+=======
+		dev_notice(dev,
+			   "Can't set PWM%d duty cycle while not in manual mode\n",
+			   nr + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&data->lock);
 		return -EPERM;
 	}
@@ -656,6 +769,7 @@ static ssize_t set_pwm(struct device *dev, struct device_attribute
 	return count;
 }
 
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(pwm1_enable, S_IWUSR | S_IRUGO,
 			  show_pwm_enable, set_pwm_enable, 0);
 static SENSOR_DEVICE_ATTR(pwm2_enable, S_IWUSR | S_IRUGO,
@@ -669,6 +783,17 @@ static SENSOR_DEVICE_ATTR(pwm1, S_IWUSR | S_IRUGO, show_pwm, set_pwm, 0);
 static SENSOR_DEVICE_ATTR(pwm2, S_IWUSR | S_IRUGO, show_pwm, set_pwm, 1);
 static SENSOR_DEVICE_ATTR(pwm3, S_IWUSR | S_IRUGO, show_pwm, set_pwm, 2);
 static SENSOR_DEVICE_ATTR(pwm4, S_IWUSR | S_IRUGO, show_pwm, set_pwm, 3);
+=======
+static SENSOR_DEVICE_ATTR_RW(pwm1_enable, pwm_enable, 0);
+static SENSOR_DEVICE_ATTR_RW(pwm2_enable, pwm_enable, 1);
+static SENSOR_DEVICE_ATTR_RW(pwm3_enable, pwm_enable, 2);
+static SENSOR_DEVICE_ATTR_RW(pwm4_enable, pwm_enable, 3);
+
+static SENSOR_DEVICE_ATTR_RW(pwm1, pwm, 0);
+static SENSOR_DEVICE_ATTR_RW(pwm2, pwm, 1);
+static SENSOR_DEVICE_ATTR_RW(pwm3, pwm, 2);
+static SENSOR_DEVICE_ATTR_RW(pwm4, pwm, 3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *pc87427_attributes_pwm[4][3] = {
 	{
@@ -697,8 +822,13 @@ static const struct attribute_group pc87427_group_pwm[4] = {
 	{ .attrs = pc87427_attributes_pwm[3] },
 };
 
+<<<<<<< HEAD
 static ssize_t show_temp_input(struct device *dev, struct device_attribute
 			       *devattr, char *buf)
+=======
+static ssize_t temp_input_show(struct device *dev,
+			       struct device_attribute *devattr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -706,8 +836,13 @@ static ssize_t show_temp_input(struct device *dev, struct device_attribute
 	return sprintf(buf, "%ld\n", temp_from_reg(data->temp[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_min(struct device *dev, struct device_attribute
 			     *devattr, char *buf)
+=======
+static ssize_t temp_min_show(struct device *dev,
+			     struct device_attribute *devattr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -715,8 +850,13 @@ static ssize_t show_temp_min(struct device *dev, struct device_attribute
 	return sprintf(buf, "%ld\n", temp_from_reg8(data->temp_min[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_max(struct device *dev, struct device_attribute
 			     *devattr, char *buf)
+=======
+static ssize_t temp_max_show(struct device *dev,
+			     struct device_attribute *devattr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -724,8 +864,13 @@ static ssize_t show_temp_max(struct device *dev, struct device_attribute
 	return sprintf(buf, "%ld\n", temp_from_reg8(data->temp_max[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_crit(struct device *dev, struct device_attribute
 			      *devattr, char *buf)
+=======
+static ssize_t temp_crit_show(struct device *dev,
+			      struct device_attribute *devattr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -733,8 +878,13 @@ static ssize_t show_temp_crit(struct device *dev, struct device_attribute
 	return sprintf(buf, "%ld\n", temp_from_reg8(data->temp_crit[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_type(struct device *dev, struct device_attribute
 			      *devattr, char *buf)
+=======
+static ssize_t temp_type_show(struct device *dev,
+			      struct device_attribute *devattr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -742,8 +892,14 @@ static ssize_t show_temp_type(struct device *dev, struct device_attribute
 	return sprintf(buf, "%u\n", temp_type_from_reg(data->temp_type[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_min_alarm(struct device *dev, struct device_attribute
 				   *devattr, char *buf)
+=======
+static ssize_t temp_min_alarm_show(struct device *dev,
+				   struct device_attribute *devattr,
+				   char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -752,8 +908,14 @@ static ssize_t show_temp_min_alarm(struct device *dev, struct device_attribute
 				       & TEMP_STATUS_LOWFLG));
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_max_alarm(struct device *dev, struct device_attribute
 				   *devattr, char *buf)
+=======
+static ssize_t temp_max_alarm_show(struct device *dev,
+				   struct device_attribute *devattr,
+				   char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -762,8 +924,14 @@ static ssize_t show_temp_max_alarm(struct device *dev, struct device_attribute
 				       & TEMP_STATUS_HIGHFLG));
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_crit_alarm(struct device *dev, struct device_attribute
 				   *devattr, char *buf)
+=======
+static ssize_t temp_crit_alarm_show(struct device *dev,
+				    struct device_attribute *devattr,
+				    char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -772,8 +940,13 @@ static ssize_t show_temp_crit_alarm(struct device *dev, struct device_attribute
 				       & TEMP_STATUS_CRITFLG));
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_fault(struct device *dev, struct device_attribute
 			       *devattr, char *buf)
+=======
+static ssize_t temp_fault_show(struct device *dev,
+			       struct device_attribute *devattr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pc87427_data *data = pc87427_update_device(dev);
 	int nr = to_sensor_dev_attr(devattr)->index;
@@ -782,6 +955,7 @@ static ssize_t show_temp_fault(struct device *dev, struct device_attribute
 				       & TEMP_STATUS_SENSERR));
 }
 
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(temp1_input, S_IRUGO, show_temp_input, NULL, 0);
 static SENSOR_DEVICE_ATTR(temp2_input, S_IRUGO, show_temp_input, NULL, 1);
 static SENSOR_DEVICE_ATTR(temp3_input, S_IRUGO, show_temp_input, NULL, 2);
@@ -862,6 +1036,70 @@ static SENSOR_DEVICE_ATTR(temp3_fault, S_IRUGO, show_temp_fault, NULL, 2);
 static SENSOR_DEVICE_ATTR(temp4_fault, S_IRUGO, show_temp_fault, NULL, 3);
 static SENSOR_DEVICE_ATTR(temp5_fault, S_IRUGO, show_temp_fault, NULL, 4);
 static SENSOR_DEVICE_ATTR(temp6_fault, S_IRUGO, show_temp_fault, NULL, 5);
+=======
+static SENSOR_DEVICE_ATTR_RO(temp1_input, temp_input, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_input, temp_input, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_input, temp_input, 2);
+static SENSOR_DEVICE_ATTR_RO(temp4_input, temp_input, 3);
+static SENSOR_DEVICE_ATTR_RO(temp5_input, temp_input, 4);
+static SENSOR_DEVICE_ATTR_RO(temp6_input, temp_input, 5);
+
+static SENSOR_DEVICE_ATTR_RO(temp1_min, temp_min, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_min, temp_min, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_min, temp_min, 2);
+static SENSOR_DEVICE_ATTR_RO(temp4_min, temp_min, 3);
+static SENSOR_DEVICE_ATTR_RO(temp5_min, temp_min, 4);
+static SENSOR_DEVICE_ATTR_RO(temp6_min, temp_min, 5);
+
+static SENSOR_DEVICE_ATTR_RO(temp1_max, temp_max, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_max, temp_max, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_max, temp_max, 2);
+static SENSOR_DEVICE_ATTR_RO(temp4_max, temp_max, 3);
+static SENSOR_DEVICE_ATTR_RO(temp5_max, temp_max, 4);
+static SENSOR_DEVICE_ATTR_RO(temp6_max, temp_max, 5);
+
+static SENSOR_DEVICE_ATTR_RO(temp1_crit, temp_crit, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_crit, temp_crit, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_crit, temp_crit, 2);
+static SENSOR_DEVICE_ATTR_RO(temp4_crit, temp_crit, 3);
+static SENSOR_DEVICE_ATTR_RO(temp5_crit, temp_crit, 4);
+static SENSOR_DEVICE_ATTR_RO(temp6_crit, temp_crit, 5);
+
+static SENSOR_DEVICE_ATTR_RO(temp1_type, temp_type, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_type, temp_type, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_type, temp_type, 2);
+static SENSOR_DEVICE_ATTR_RO(temp4_type, temp_type, 3);
+static SENSOR_DEVICE_ATTR_RO(temp5_type, temp_type, 4);
+static SENSOR_DEVICE_ATTR_RO(temp6_type, temp_type, 5);
+
+static SENSOR_DEVICE_ATTR_RO(temp1_min_alarm, temp_min_alarm, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_min_alarm, temp_min_alarm, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_min_alarm, temp_min_alarm, 2);
+static SENSOR_DEVICE_ATTR_RO(temp4_min_alarm, temp_min_alarm, 3);
+static SENSOR_DEVICE_ATTR_RO(temp5_min_alarm, temp_min_alarm, 4);
+static SENSOR_DEVICE_ATTR_RO(temp6_min_alarm, temp_min_alarm, 5);
+
+static SENSOR_DEVICE_ATTR_RO(temp1_max_alarm, temp_max_alarm, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_max_alarm, temp_max_alarm, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_max_alarm, temp_max_alarm, 2);
+static SENSOR_DEVICE_ATTR_RO(temp4_max_alarm, temp_max_alarm, 3);
+static SENSOR_DEVICE_ATTR_RO(temp5_max_alarm, temp_max_alarm, 4);
+static SENSOR_DEVICE_ATTR_RO(temp6_max_alarm, temp_max_alarm, 5);
+
+static SENSOR_DEVICE_ATTR_RO(temp1_crit_alarm, temp_crit_alarm, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_crit_alarm, temp_crit_alarm, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_crit_alarm, temp_crit_alarm, 2);
+static SENSOR_DEVICE_ATTR_RO(temp4_crit_alarm, temp_crit_alarm, 3);
+static SENSOR_DEVICE_ATTR_RO(temp5_crit_alarm, temp_crit_alarm, 4);
+static SENSOR_DEVICE_ATTR_RO(temp6_crit_alarm, temp_crit_alarm, 5);
+
+static SENSOR_DEVICE_ATTR_RO(temp1_fault, temp_fault, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_fault, temp_fault, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_fault, temp_fault, 2);
+static SENSOR_DEVICE_ATTR_RO(temp4_fault, temp_fault, 3);
+static SENSOR_DEVICE_ATTR_RO(temp5_fault, temp_fault, 4);
+static SENSOR_DEVICE_ATTR_RO(temp6_fault, temp_fault, 5);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *pc87427_attributes_temp[6][10] = {
 	{
@@ -942,27 +1180,41 @@ static const struct attribute_group pc87427_group_temp[6] = {
 	{ .attrs = pc87427_attributes_temp[5] },
 };
 
+<<<<<<< HEAD
 static ssize_t show_name(struct device *dev, struct device_attribute
+=======
+static ssize_t name_show(struct device *dev, struct device_attribute
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 *devattr, char *buf)
 {
 	struct pc87427_data *data = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%s\n", data->name);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(name, S_IRUGO, show_name, NULL);
+=======
+static DEVICE_ATTR_RO(name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
  * Device detection, attach and detach
  */
 
+<<<<<<< HEAD
 static void pc87427_release_regions(struct platform_device *pdev, int count)
+=======
+static int pc87427_request_regions(struct platform_device *pdev,
+					     int count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *res;
 	int i;
 
 	for (i = 0; i < count; i++) {
 		res = platform_get_resource(pdev, IORESOURCE_IO, i);
+<<<<<<< HEAD
 		release_region(res->start, resource_size(res));
 	}
 }
@@ -982,10 +1234,19 @@ static int __devinit pc87427_request_regions(struct platform_device *pdev,
 		}
 		if (!request_region(res->start, resource_size(res), DRVNAME)) {
 			err = -EBUSY;
+=======
+		if (!res) {
+			dev_err(&pdev->dev, "Missing resource #%d\n", i);
+			return -ENOENT;
+		}
+		if (!devm_request_region(&pdev->dev, res->start,
+					 resource_size(res), DRVNAME)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_err(&pdev->dev,
 				"Failed to request region 0x%lx-0x%lx\n",
 				(unsigned long)res->start,
 				(unsigned long)res->end);
+<<<<<<< HEAD
 			break;
 		}
 	}
@@ -999,6 +1260,17 @@ static int __devinit pc87427_request_regions(struct platform_device *pdev,
 static void __devinit pc87427_init_device(struct device *dev)
 {
 	struct pc87427_sio_data *sio_data = dev->platform_data;
+=======
+			return -EBUSY;
+		}
+	}
+	return 0;
+}
+
+static void pc87427_init_device(struct device *dev)
+{
+	struct pc87427_sio_data *sio_data = dev_get_platdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pc87427_data *data = dev_get_drvdata(dev);
 	int i;
 	u8 reg;
@@ -1088,6 +1360,7 @@ static void pc87427_remove_files(struct device *dev)
 	}
 }
 
+<<<<<<< HEAD
 static int __devinit pc87427_probe(struct platform_device *pdev)
 {
 	struct pc87427_sio_data *sio_data = pdev->dev.platform_data;
@@ -1100,6 +1373,18 @@ static int __devinit pc87427_probe(struct platform_device *pdev)
 		pr_err("Out of memory\n");
 		goto exit;
 	}
+=======
+static int pc87427_probe(struct platform_device *pdev)
+{
+	struct pc87427_sio_data *sio_data = dev_get_platdata(&pdev->dev);
+	struct pc87427_data *data;
+	int i, err, res_count;
+
+	data = devm_kzalloc(&pdev->dev, sizeof(struct pc87427_data),
+			    GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->address[0] = sio_data->address[0];
 	data->address[1] = sio_data->address[1];
@@ -1107,7 +1392,11 @@ static int __devinit pc87427_probe(struct platform_device *pdev)
 
 	err = pc87427_request_regions(pdev, res_count);
 	if (err)
+<<<<<<< HEAD
 		goto exit_kfree;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_init(&data->lock);
 	data->name = "pc87427";
@@ -1117,7 +1406,11 @@ static int __devinit pc87427_probe(struct platform_device *pdev)
 	/* Register sysfs hooks */
 	err = device_create_file(&pdev->dev, &dev_attr_name);
 	if (err)
+<<<<<<< HEAD
 		goto exit_release_region;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 8; i++) {
 		if (!(data->fan_enabled & (1 << i)))
 			continue;
@@ -1154,6 +1447,7 @@ static int __devinit pc87427_probe(struct platform_device *pdev)
 
 exit_remove_files:
 	pc87427_remove_files(&pdev->dev);
+<<<<<<< HEAD
 exit_release_region:
 	pc87427_release_regions(pdev, res_count);
 exit_kfree:
@@ -1178,16 +1472,34 @@ static int __devexit pc87427_remove(struct platform_device *pdev)
 	pc87427_release_regions(pdev, res_count);
 
 	return 0;
+=======
+	return err;
+}
+
+static void pc87427_remove(struct platform_device *pdev)
+{
+	struct pc87427_data *data = platform_get_drvdata(pdev);
+
+	hwmon_device_unregister(data->hwmon_dev);
+	pc87427_remove_files(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static struct platform_driver pc87427_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.name	= DRVNAME,
 	},
 	.probe		= pc87427_probe,
 	.remove		= __devexit_p(pc87427_remove),
+=======
+		.name	= DRVNAME,
+	},
+	.probe		= pc87427_probe,
+	.remove_new	= pc87427_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init pc87427_device_add(const struct pc87427_sio_data *sio_data)
@@ -1251,7 +1563,15 @@ static int __init pc87427_find(int sioaddr, struct pc87427_sio_data *sio_data)
 {
 	u16 val;
 	u8 cfg, cfg_b;
+<<<<<<< HEAD
 	int i, err = 0;
+=======
+	int i, err;
+
+	err = superio_enter(sioaddr);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Identify device */
 	val = force_id ? force_id : superio_inb(sioaddr, SIOREG_DEVID);
@@ -1274,16 +1594,26 @@ static int __init pc87427_find(int sioaddr, struct pc87427_sio_data *sio_data)
 
 		val = superio_inb(sioaddr, SIOREG_MAP);
 		if (val & 0x01) {
+<<<<<<< HEAD
 			pr_warn("Logical device 0x%02x is memory-mapped, "
 				"can't use\n", logdev[i]);
+=======
+			pr_warn("Logical device 0x%02x is memory-mapped, can't use\n",
+				logdev[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
 		val = (superio_inb(sioaddr, SIOREG_IOBASE) << 8)
 		    | superio_inb(sioaddr, SIOREG_IOBASE + 1);
 		if (!val) {
+<<<<<<< HEAD
 			pr_info("I/O base address not set for logical device "
 				"0x%02x\n", logdev[i]);
+=======
+			pr_info("I/O base address not set for logical device 0x%02x\n",
+				logdev[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		sio_data->address[i] = val;
@@ -1375,7 +1705,11 @@ static void __exit pc87427_exit(void)
 	platform_driver_unregister(&pc87427_driver);
 }
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Jean Delvare <khali@linux-fr.org>");
+=======
+MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("PC87427 hardware monitoring driver");
 MODULE_LICENSE("GPL");
 

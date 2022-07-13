@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /******************************************************************************
  *
  * Module Name: utids - support for device IDs - HID, UID, CID
@@ -41,6 +42,17 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+/******************************************************************************
+ *
+ * Module Name: utids - support for device Ids - HID, UID, CID, SUB, CLS
+ *
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
@@ -67,10 +79,17 @@ ACPI_MODULE_NAME("utids")
  ******************************************************************************/
 acpi_status
 acpi_ut_execute_HID(struct acpi_namespace_node *device_node,
+<<<<<<< HEAD
 		    struct acpica_device_id **return_id)
 {
 	union acpi_operand_object *obj_desc;
 	struct acpica_device_id *hid;
+=======
+		    struct acpi_pnp_device_id **return_id)
+{
+	union acpi_operand_object *obj_desc;
+	struct acpi_pnp_device_id *hid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 length;
 	acpi_status status;
 
@@ -94,23 +113,39 @@ acpi_ut_execute_HID(struct acpi_namespace_node *device_node,
 	/* Allocate a buffer for the HID */
 
 	hid =
+<<<<<<< HEAD
 	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpica_device_id) +
 				 (acpi_size) length);
+=======
+	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_pnp_device_id) +
+				 (acpi_size)length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hid) {
 		status = AE_NO_MEMORY;
 		goto cleanup;
 	}
 
+<<<<<<< HEAD
 	/* Area for the string starts after DEVICE_ID struct */
 
 	hid->string = ACPI_ADD_PTR(char, hid, sizeof(struct acpica_device_id));
+=======
+	/* Area for the string starts after PNP_DEVICE_ID struct */
+
+	hid->string =
+	    ACPI_ADD_PTR(char, hid, sizeof(struct acpi_pnp_device_id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Convert EISAID to a string or simply copy existing string */
 
 	if (obj_desc->common.type == ACPI_TYPE_INTEGER) {
 		acpi_ex_eisa_id_to_string(hid->string, obj_desc->integer.value);
 	} else {
+<<<<<<< HEAD
 		ACPI_STRCPY(hid->string, obj_desc->string.pointer);
+=======
+		strcpy(hid->string, obj_desc->string.pointer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	hid->length = length;
@@ -144,10 +179,17 @@ cleanup:
 
 acpi_status
 acpi_ut_execute_UID(struct acpi_namespace_node *device_node,
+<<<<<<< HEAD
 		    struct acpica_device_id **return_id)
 {
 	union acpi_operand_object *obj_desc;
 	struct acpica_device_id *uid;
+=======
+		    struct acpi_pnp_device_id **return_id)
+{
+	union acpi_operand_object *obj_desc;
+	struct acpi_pnp_device_id *uid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 length;
 	acpi_status status;
 
@@ -171,23 +213,39 @@ acpi_ut_execute_UID(struct acpi_namespace_node *device_node,
 	/* Allocate a buffer for the UID */
 
 	uid =
+<<<<<<< HEAD
 	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpica_device_id) +
 				 (acpi_size) length);
+=======
+	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_pnp_device_id) +
+				 (acpi_size)length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!uid) {
 		status = AE_NO_MEMORY;
 		goto cleanup;
 	}
 
+<<<<<<< HEAD
 	/* Area for the string starts after DEVICE_ID struct */
 
 	uid->string = ACPI_ADD_PTR(char, uid, sizeof(struct acpica_device_id));
+=======
+	/* Area for the string starts after PNP_DEVICE_ID struct */
+
+	uid->string =
+	    ACPI_ADD_PTR(char, uid, sizeof(struct acpi_pnp_device_id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Convert an Integer to string, or just copy an existing string */
 
 	if (obj_desc->common.type == ACPI_TYPE_INTEGER) {
 		acpi_ex_integer_to_string(uid->string, obj_desc->integer.value);
 	} else {
+<<<<<<< HEAD
 		ACPI_STRCPY(uid->string, obj_desc->string.pointer);
+=======
+		strcpy(uid->string, obj_desc->string.pointer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	uid->length = length;
@@ -226,11 +284,19 @@ cleanup:
 
 acpi_status
 acpi_ut_execute_CID(struct acpi_namespace_node *device_node,
+<<<<<<< HEAD
 		    struct acpica_device_id_list **return_cid_list)
 {
 	union acpi_operand_object **cid_objects;
 	union acpi_operand_object *obj_desc;
 	struct acpica_device_id_list *cid_list;
+=======
+		    struct acpi_pnp_device_id_list **return_cid_list)
+{
+	union acpi_operand_object **cid_objects;
+	union acpi_operand_object *obj_desc;
+	struct acpi_pnp_device_id_list *cid_list;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *next_id_string;
 	u32 string_area_size;
 	u32 length;
@@ -272,14 +338,26 @@ acpi_ut_execute_CID(struct acpi_namespace_node *device_node,
 
 		switch (cid_objects[i]->common.type) {
 		case ACPI_TYPE_INTEGER:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			string_area_size += ACPI_EISAID_STRING_SIZE;
 			break;
 
 		case ACPI_TYPE_STRING:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			string_area_size += cid_objects[i]->string.length + 1;
 			break;
 
 		default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = AE_TYPE;
 			goto cleanup;
 		}
@@ -288,11 +366,19 @@ acpi_ut_execute_CID(struct acpi_namespace_node *device_node,
 	/*
 	 * Now that we know the length of the CIDs, allocate return buffer:
 	 * 1) Size of the base structure +
+<<<<<<< HEAD
 	 * 2) Size of the CID DEVICE_ID array +
 	 * 3) Size of the actual CID strings
 	 */
 	cid_list_size = sizeof(struct acpica_device_id_list) +
 	    ((count - 1) * sizeof(struct acpica_device_id)) + string_area_size;
+=======
+	 * 2) Size of the CID PNP_DEVICE_ID array +
+	 * 3) Size of the actual CID strings
+	 */
+	cid_list_size = sizeof(struct acpi_pnp_device_id_list) +
+	    (count * sizeof(struct acpi_pnp_device_id)) + string_area_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cid_list = ACPI_ALLOCATE_ZEROED(cid_list_size);
 	if (!cid_list) {
@@ -300,10 +386,17 @@ acpi_ut_execute_CID(struct acpi_namespace_node *device_node,
 		goto cleanup;
 	}
 
+<<<<<<< HEAD
 	/* Area for CID strings starts after the CID DEVICE_ID array */
 
 	next_id_string = ACPI_CAST_PTR(char, cid_list->ids) +
 	    ((acpi_size) count * sizeof(struct acpica_device_id));
+=======
+	/* Area for CID strings starts after the CID PNP_DEVICE_ID array */
+
+	next_id_string = ACPI_CAST_PTR(char, cid_list->ids) +
+	    ((acpi_size)count * sizeof(struct acpi_pnp_device_id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Copy/convert the CIDs to the return buffer */
 
@@ -317,11 +410,16 @@ acpi_ut_execute_CID(struct acpi_namespace_node *device_node,
 						  value);
 			length = ACPI_EISAID_STRING_SIZE;
 		} else {	/* ACPI_TYPE_STRING */
+<<<<<<< HEAD
 
 			/* Copy the String CID from the returned object */
 
 			ACPI_STRCPY(next_id_string,
 				    cid_objects[i]->string.pointer);
+=======
+			/* Copy the String CID from the returned object */
+			strcpy(next_id_string, cid_objects[i]->string.pointer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			length = cid_objects[i]->string.length + 1;
 		}
 
@@ -343,3 +441,95 @@ cleanup:
 	acpi_ut_remove_reference(obj_desc);
 	return_ACPI_STATUS(status);
 }
+<<<<<<< HEAD
+=======
+
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_ut_execute_CLS
+ *
+ * PARAMETERS:  device_node         - Node for the device
+ *              return_id           - Where the _CLS is returned
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Executes the _CLS control method that returns PCI-defined
+ *              class code of the device. The _CLS value is always a package
+ *              containing PCI class information as a list of integers.
+ *              The returned string has format "BBSSPP", where:
+ *                BB = Base-class code
+ *                SS = Sub-class code
+ *                PP = Programming Interface code
+ *
+ ******************************************************************************/
+
+acpi_status
+acpi_ut_execute_CLS(struct acpi_namespace_node *device_node,
+		    struct acpi_pnp_device_id **return_id)
+{
+	union acpi_operand_object *obj_desc;
+	union acpi_operand_object **cls_objects;
+	u32 count;
+	struct acpi_pnp_device_id *cls;
+	u32 length;
+	acpi_status status;
+	u8 class_code[3] = { 0, 0, 0 };
+
+	ACPI_FUNCTION_TRACE(ut_execute_CLS);
+
+	status = acpi_ut_evaluate_object(device_node, METHOD_NAME__CLS,
+					 ACPI_BTYPE_PACKAGE, &obj_desc);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+	/* Get the size of the String to be returned, includes null terminator */
+
+	length = ACPI_PCICLS_STRING_SIZE;
+	cls_objects = obj_desc->package.elements;
+	count = obj_desc->package.count;
+
+	if (obj_desc->common.type == ACPI_TYPE_PACKAGE) {
+		if (count > 0
+		    && cls_objects[0]->common.type == ACPI_TYPE_INTEGER) {
+			class_code[0] = (u8)cls_objects[0]->integer.value;
+		}
+		if (count > 1
+		    && cls_objects[1]->common.type == ACPI_TYPE_INTEGER) {
+			class_code[1] = (u8)cls_objects[1]->integer.value;
+		}
+		if (count > 2
+		    && cls_objects[2]->common.type == ACPI_TYPE_INTEGER) {
+			class_code[2] = (u8)cls_objects[2]->integer.value;
+		}
+	}
+
+	/* Allocate a buffer for the CLS */
+
+	cls =
+	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_pnp_device_id) +
+				 (acpi_size)length);
+	if (!cls) {
+		status = AE_NO_MEMORY;
+		goto cleanup;
+	}
+
+	/* Area for the string starts after PNP_DEVICE_ID struct */
+
+	cls->string =
+	    ACPI_ADD_PTR(char, cls, sizeof(struct acpi_pnp_device_id));
+
+	/* Simply copy existing string */
+
+	acpi_ex_pci_cls_to_string(cls->string, class_code);
+	cls->length = length;
+	*return_id = cls;
+
+cleanup:
+
+	/* On exit, we must delete the return object */
+
+	acpi_ut_remove_reference(obj_desc);
+	return_ACPI_STATUS(status);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

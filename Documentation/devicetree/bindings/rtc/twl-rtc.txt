@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 * TI twl RTC
 
 The TWL family (twl4030/6030) contains a RTC.
@@ -10,3 +11,16 @@ Examples:
 rtc@0 {
     compatible = "ti,twl4030-rtc";
 };
+=======
+* Texas Instruments TWL4030/6030 RTC
+
+Required properties:
+- compatible : Should be "ti,twl4030-rtc"
+- interrupts : Should be the interrupt number.
+
+Example:
+	rtc {
+		compatible = "ti,twl4030-rtc";
+		interrupts = <11>;
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

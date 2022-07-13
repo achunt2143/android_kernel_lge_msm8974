@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * \file drm_ioc32.c
  *
  * 32-bit ioctl compatibility routines for the DRM.
@@ -31,8 +35,17 @@
 #include <linux/ratelimit.h>
 #include <linux/export.h>
 
+<<<<<<< HEAD
 #include "drmP.h"
 #include "drm_core.h"
+=======
+#include <drm/drm_device.h>
+#include <drm/drm_file.h>
+#include <drm/drm_print.h>
+
+#include "drm_crtc_internal.h"
+#include "drm_internal.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRM_IOCTL_VERSION32		DRM_IOWR(0x00, drm_version32_t)
 #define DRM_IOCTL_GET_UNIQUE32		DRM_IOWR(0x01, drm_unique32_t)
@@ -70,6 +83,7 @@
 
 #define DRM_IOCTL_WAIT_VBLANK32		DRM_IOWR(0x3a, drm_wait_vblank32_t)
 
+<<<<<<< HEAD
 typedef struct drm_version_32 {
 	int version_major;	  /**< Major version */
 	int version_minor;	  /**< Minor version */
@@ -80,18 +94,37 @@ typedef struct drm_version_32 {
 	u32 date;		  /**< User-space buffer to hold date */
 	u32 desc_len;		  /**< Length of desc buffer */
 	u32 desc;		  /**< User-space buffer to hold desc */
+=======
+#define DRM_IOCTL_MODE_ADDFB232		DRM_IOWR(0xb8, drm_mode_fb_cmd232_t)
+
+typedef struct drm_version_32 {
+	int version_major;	  /* Major version */
+	int version_minor;	  /* Minor version */
+	int version_patchlevel;	   /* Patch level */
+	u32 name_len;		  /* Length of name buffer */
+	u32 name;		  /* Name of driver */
+	u32 date_len;		  /* Length of date buffer */
+	u32 date;		  /* User-space buffer to hold date */
+	u32 desc_len;		  /* Length of desc buffer */
+	u32 desc;		  /* User-space buffer to hold desc */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } drm_version32_t;
 
 static int compat_drm_version(struct file *file, unsigned int cmd,
 			      unsigned long arg)
 {
 	drm_version32_t v32;
+<<<<<<< HEAD
 	struct drm_version __user *version;
+=======
+	struct drm_version v;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (copy_from_user(&v32, (void __user *)arg, sizeof(v32)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	version = compat_alloc_user_space(sizeof(*version));
 	if (!access_ok(VERIFY_WRITE, version, sizeof(*version)))
 		return -EFAULT;
@@ -119,26 +152,59 @@ static int compat_drm_version(struct file *file, unsigned int cmd,
 	    || __get_user(v32.desc_len, &version->desc_len))
 		return -EFAULT;
 
+=======
+	memset(&v, 0, sizeof(v));
+
+	v = (struct drm_version) {
+		.name_len = v32.name_len,
+		.name = compat_ptr(v32.name),
+		.date_len = v32.date_len,
+		.date = compat_ptr(v32.date),
+		.desc_len = v32.desc_len,
+		.desc = compat_ptr(v32.desc),
+	};
+	err = drm_ioctl_kernel(file, drm_version, &v,
+			       DRM_RENDER_ALLOW);
+	if (err)
+		return err;
+
+	v32.version_major = v.version_major;
+	v32.version_minor = v.version_minor;
+	v32.version_patchlevel = v.version_patchlevel;
+	v32.name_len = v.name_len;
+	v32.date_len = v.date_len;
+	v32.desc_len = v.desc_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy_to_user((void __user *)arg, &v32, sizeof(v32)))
 		return -EFAULT;
 	return 0;
 }
 
 typedef struct drm_unique32 {
+<<<<<<< HEAD
 	u32 unique_len;	/**< Length of unique */
 	u32 unique;	/**< Unique name for driver instantiation */
+=======
+	u32 unique_len;	/* Length of unique */
+	u32 unique;	/* Unique name for driver instantiation */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } drm_unique32_t;
 
 static int compat_drm_getunique(struct file *file, unsigned int cmd,
 				unsigned long arg)
 {
 	drm_unique32_t uq32;
+<<<<<<< HEAD
 	struct drm_unique __user *u;
+=======
+	struct drm_unique uq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (copy_from_user(&uq32, (void __user *)arg, sizeof(uq32)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	u = compat_alloc_user_space(sizeof(*u));
 	if (!access_ok(VERIFY_WRITE, u, sizeof(*u)))
 		return -EFAULT;
@@ -153,6 +219,20 @@ static int compat_drm_getunique(struct file *file, unsigned int cmd,
 
 	if (__get_user(uq32.unique_len, &u->unique_len))
 		return -EFAULT;
+=======
+	memset(&uq, 0, sizeof(uq));
+
+	uq = (struct drm_unique){
+		.unique_len = uq32.unique_len,
+		.unique = compat_ptr(uq32.unique),
+	};
+
+	err = drm_ioctl_kernel(file, drm_getunique, &uq, 0);
+	if (err)
+		return err;
+
+	uq32.unique_len = uq.unique_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (copy_to_user((void __user *)arg, &uq32, sizeof(uq32)))
 		return -EFAULT;
 	return 0;
@@ -161,6 +241,7 @@ static int compat_drm_getunique(struct file *file, unsigned int cmd,
 static int compat_drm_setunique(struct file *file, unsigned int cmd,
 				unsigned long arg)
 {
+<<<<<<< HEAD
 	drm_unique32_t uq32;
 	struct drm_unique __user *u;
 
@@ -292,6 +373,19 @@ typedef struct drm_client32 {
 	u32 uid;	/**< User ID */
 	u32 magic;	/**< Magic */
 	u32 iocs;	/**< Ioctl count */
+=======
+	/* it's dead */
+	return -EINVAL;
+}
+
+typedef struct drm_client32 {
+	int idx;	/* Which client desired? */
+	int auth;	/* Is client authenticated? */
+	u32 pid;	/* Process ID */
+	u32 uid;	/* User ID */
+	u32 magic;	/* Magic */
+	u32 iocs;	/* Ioctl count */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } drm_client32_t;
 
 static int compat_drm_getclient(struct file *file, unsigned int cmd,
@@ -299,6 +393,7 @@ static int compat_drm_getclient(struct file *file, unsigned int cmd,
 {
 	drm_client32_t c32;
 	drm_client32_t __user *argp = (void __user *)arg;
+<<<<<<< HEAD
 	struct drm_client __user *client;
 	int idx, err;
 
@@ -322,6 +417,28 @@ static int compat_drm_getclient(struct file *file, unsigned int cmd,
 	    || __get_user(c32.magic, &client->magic)
 	    || __get_user(c32.iocs, &client->iocs))
 		return -EFAULT;
+=======
+	struct drm_client client;
+	int err;
+
+	if (copy_from_user(&c32, argp, sizeof(c32)))
+		return -EFAULT;
+
+	memset(&client, 0, sizeof(client));
+
+	client.idx = c32.idx;
+
+	err = drm_ioctl_kernel(file, drm_getclient, &client, 0);
+	if (err)
+		return err;
+
+	c32.idx = client.idx;
+	c32.auth = client.auth;
+	c32.pid = client.pid;
+	c32.uid = client.uid;
+	c32.magic = client.magic;
+	c32.iocs = client.iocs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_to_user(argp, &c32, sizeof(c32)))
 		return -EFAULT;
@@ -339,6 +456,7 @@ typedef struct drm_stats32 {
 static int compat_drm_getstats(struct file *file, unsigned int cmd,
 			       unsigned long arg)
 {
+<<<<<<< HEAD
 	drm_stats32_t s32;
 	drm_stats32_t __user *argp = (void __user *)arg;
 	struct drm_stats __user *stats;
@@ -360,10 +478,17 @@ static int compat_drm_getstats(struct file *file, unsigned int cmd,
 			return -EFAULT;
 
 	if (copy_to_user(argp, &s32, sizeof(s32)))
+=======
+	drm_stats32_t __user *argp = (void __user *)arg;
+
+	/* getstats is defunct, just clear */
+	if (clear_user(argp, sizeof(drm_stats32_t)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 	return 0;
 }
 
+<<<<<<< HEAD
 typedef struct drm_buf_desc32 {
 	int count;		 /**< Number of buffers of this size */
 	int size;		 /**< Size in bytes */
@@ -933,17 +1058,25 @@ static int compat_drm_sg_free(struct file *file, unsigned int cmd,
 }
 
 #if defined(CONFIG_X86) || defined(CONFIG_IA64)
+=======
+#if defined(CONFIG_X86)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef struct drm_update_draw32 {
 	drm_drawable_t handle;
 	unsigned int type;
 	unsigned int num;
 	/* 64-bit version has a 32-bit pad here */
 	u64 data;	/**< Pointer */
+<<<<<<< HEAD
 } __attribute__((packed)) drm_update_draw32_t;
+=======
+} __packed drm_update_draw32_t;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int compat_drm_update_draw(struct file *file, unsigned int cmd,
 				  unsigned long arg)
 {
+<<<<<<< HEAD
 	drm_update_draw32_t update32;
 	struct drm_update_draw __user *request;
 	int err;
@@ -961,6 +1094,10 @@ static int compat_drm_update_draw(struct file *file, unsigned int cmd,
 
 	err = drm_ioctl(file, DRM_IOCTL_UPDATE_DRAW, (unsigned long)request);
 	return err;
+=======
+	/* update_draw is defunct */
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -987,12 +1124,17 @@ static int compat_drm_wait_vblank(struct file *file, unsigned int cmd,
 {
 	drm_wait_vblank32_t __user *argp = (void __user *)arg;
 	drm_wait_vblank32_t req32;
+<<<<<<< HEAD
 	union drm_wait_vblank __user *request;
+=======
+	union drm_wait_vblank req;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	if (copy_from_user(&req32, argp, sizeof(req32)))
 		return -EFAULT;
 
+<<<<<<< HEAD
 	request = compat_alloc_user_space(sizeof(*request));
 	if (!access_ok(VERIFY_WRITE, request, sizeof(*request))
 	    || __put_user(req32.request.type, &request->request.type)
@@ -1011,10 +1153,65 @@ static int compat_drm_wait_vblank(struct file *file, unsigned int cmd,
 		return -EFAULT;
 
 	if (copy_to_user(argp, &req32, sizeof(req32)))
+=======
+	memset(&req, 0, sizeof(req));
+
+	req.request.type = req32.request.type;
+	req.request.sequence = req32.request.sequence;
+	req.request.signal = req32.request.signal;
+	err = drm_ioctl_kernel(file, drm_wait_vblank_ioctl, &req, 0);
+
+	req32.reply.type = req.reply.type;
+	req32.reply.sequence = req.reply.sequence;
+	req32.reply.tval_sec = req.reply.tval_sec;
+	req32.reply.tval_usec = req.reply.tval_usec;
+	if (copy_to_user(argp, &req32, sizeof(req32)))
+		return -EFAULT;
+
+	return err;
+}
+
+#if defined(CONFIG_X86)
+typedef struct drm_mode_fb_cmd232 {
+	u32 fb_id;
+	u32 width;
+	u32 height;
+	u32 pixel_format;
+	u32 flags;
+	u32 handles[4];
+	u32 pitches[4];
+	u32 offsets[4];
+	u64 modifier[4];
+} __packed drm_mode_fb_cmd232_t;
+
+static int compat_drm_mode_addfb2(struct file *file, unsigned int cmd,
+				  unsigned long arg)
+{
+	struct drm_mode_fb_cmd232 __user *argp = (void __user *)arg;
+	struct drm_mode_fb_cmd2 req64;
+	int err;
+
+	memset(&req64, 0, sizeof(req64));
+
+	if (copy_from_user(&req64, argp,
+			   offsetof(drm_mode_fb_cmd232_t, modifier)))
+		return -EFAULT;
+
+	if (copy_from_user(&req64.modifier, &argp->modifier,
+			   sizeof(req64.modifier)))
+		return -EFAULT;
+
+	err = drm_ioctl_kernel(file, drm_mode_addfb2, &req64, 0);
+	if (err)
+		return err;
+
+	if (put_user(req64.fb_id, &argp->fb_id))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EFAULT;
 
 	return 0;
 }
+<<<<<<< HEAD
 
 drm_ioctl_compat_t *drm_compat_ioctls[] = {
 	[DRM_IOCTL_NR(DRM_IOCTL_VERSION32)] = compat_drm_version,
@@ -1058,10 +1255,51 @@ drm_ioctl_compat_t *drm_compat_ioctls[] = {
  * \param cmd command.
  * \param arg user argument.
  * \return zero on success or negative number on failure.
+=======
+#endif
+
+static struct {
+	drm_ioctl_compat_t *fn;
+	char *name;
+} drm_compat_ioctls[] = {
+#define DRM_IOCTL32_DEF(n, f) [DRM_IOCTL_NR(n##32)] = {.fn = f, .name = #n}
+	DRM_IOCTL32_DEF(DRM_IOCTL_VERSION, compat_drm_version),
+	DRM_IOCTL32_DEF(DRM_IOCTL_GET_UNIQUE, compat_drm_getunique),
+	DRM_IOCTL32_DEF(DRM_IOCTL_GET_CLIENT, compat_drm_getclient),
+	DRM_IOCTL32_DEF(DRM_IOCTL_GET_STATS, compat_drm_getstats),
+	DRM_IOCTL32_DEF(DRM_IOCTL_SET_UNIQUE, compat_drm_setunique),
+#if defined(CONFIG_X86)
+	DRM_IOCTL32_DEF(DRM_IOCTL_UPDATE_DRAW, compat_drm_update_draw),
+#endif
+	DRM_IOCTL32_DEF(DRM_IOCTL_WAIT_VBLANK, compat_drm_wait_vblank),
+#if defined(CONFIG_X86)
+	DRM_IOCTL32_DEF(DRM_IOCTL_MODE_ADDFB2, compat_drm_mode_addfb2),
+#endif
+};
+
+/**
+ * drm_compat_ioctl - 32bit IOCTL compatibility handler for DRM drivers
+ * @filp: file this ioctl is called on
+ * @cmd: ioctl cmd number
+ * @arg: user argument
+ *
+ * Compatibility handler for 32 bit userspace running on 64 kernels. All actual
+ * IOCTL handling is forwarded to drm_ioctl(), while marshalling structures as
+ * appropriate. Note that this only handles DRM core IOCTLs, if the driver has
+ * botched IOCTL itself, it must handle those by wrapping this function.
+ *
+ * Returns:
+ * Zero on success, negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 long drm_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
 	unsigned int nr = DRM_IOCTL_NR(cmd);
+<<<<<<< HEAD
+=======
+	struct drm_file *file_priv = filp->private_data;
+	struct drm_device *dev = file_priv->minor->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	drm_ioctl_compat_t *fn;
 	int ret;
 
@@ -1072,6 +1310,7 @@ long drm_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	if (nr >= ARRAY_SIZE(drm_compat_ioctls))
 		return drm_ioctl(filp, cmd, arg);
 
+<<<<<<< HEAD
 	fn = drm_compat_ioctls[nr];
 
 	if (fn != NULL)
@@ -1082,4 +1321,20 @@ long drm_compat_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	return ret;
 }
 
+=======
+	fn = drm_compat_ioctls[nr].fn;
+	if (!fn)
+		return drm_ioctl(filp, cmd, arg);
+
+	drm_dbg_core(dev, "comm=\"%s\", pid=%d, dev=0x%lx, auth=%d, %s\n",
+		     current->comm, task_pid_nr(current),
+		     (long)old_encode_dev(file_priv->minor->kdev->devt),
+		     file_priv->authenticated,
+		     drm_compat_ioctls[nr].name);
+	ret = (*fn)(filp, cmd, arg);
+	if (ret)
+		drm_dbg_core(dev, "ret = %d\n", ret);
+	return ret;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(drm_compat_ioctl);

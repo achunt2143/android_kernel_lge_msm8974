@@ -1,9 +1,14 @@
+<<<<<<< HEAD
 /* Copyright (C) 2003-2011 Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/* Copyright (C) 2003-2013 Jozsef Kadlecsik <kadlec@netfilter.org> */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Kernel module implementing an IP set type: the hash:ip,port type */
 
@@ -21,6 +26,7 @@
 #include <linux/netfilter.h>
 #include <linux/netfilter/ipset/pfxlen.h>
 #include <linux/netfilter/ipset/ip_set.h>
+<<<<<<< HEAD
 #include <linux/netfilter/ipset/ip_set_timeout.h>
 #include <linux/netfilter/ipset/ip_set_getport.h>
 #include <linux/netfilter/ipset/ip_set_hash.h>
@@ -42,6 +48,33 @@ hash_ipport_same_set(const struct ip_set *a, const struct ip_set *b);
 /* The type variant functions: IPv4 */
 
 /* Member elements without timeout */
+=======
+#include <linux/netfilter/ipset/ip_set_getport.h>
+#include <linux/netfilter/ipset/ip_set_hash.h>
+
+#define IPSET_TYPE_REV_MIN	0
+/*				1    SCTP and UDPLITE support added */
+/*				2    Counters support added */
+/*				3    Comments support added */
+/*				4    Forceadd support added */
+/*				5    skbinfo support added */
+/*				6    bucketsize, initval support added */
+#define IPSET_TYPE_REV_MAX	7 /* bitmask support added */
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@netfilter.org>");
+IP_SET_MODULE_DESC("hash:ip,port", IPSET_TYPE_REV_MIN, IPSET_TYPE_REV_MAX);
+MODULE_ALIAS("ip_set_hash:ip,port");
+
+/* Type specific function prefix */
+#define HTYPE		hash_ipport
+#define IP_SET_HASH_WITH_NETMASK
+#define IP_SET_HASH_WITH_BITMASK
+
+/* IPv4 variant */
+
+/* Member elements */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hash_ipport4_elem {
 	__be32 ip;
 	__be16 port;
@@ -49,6 +82,7 @@ struct hash_ipport4_elem {
 	u8 padding;
 };
 
+<<<<<<< HEAD
 /* Member elements with timeout support */
 struct hash_ipport4_telem {
 	__be32 ip;
@@ -59,6 +93,11 @@ struct hash_ipport4_telem {
 };
 
 static inline bool
+=======
+/* Common functions */
+
+static bool
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 hash_ipport4_data_equal(const struct hash_ipport4_elem *ip1,
 			const struct hash_ipport4_elem *ip2,
 			u32 *multi)
@@ -68,6 +107,7 @@ hash_ipport4_data_equal(const struct hash_ipport4_elem *ip1,
 	       ip1->proto == ip2->proto;
 }
 
+<<<<<<< HEAD
 static inline bool
 hash_ipport4_data_isnull(const struct hash_ipport4_elem *elem)
 {
@@ -89,10 +129,13 @@ hash_ipport4_data_zero_out(struct hash_ipport4_elem *elem)
 	elem->proto = 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool
 hash_ipport4_data_list(struct sk_buff *skb,
 		       const struct hash_ipport4_elem *data)
 {
+<<<<<<< HEAD
 	NLA_PUT_IPADDR4(skb, IPSET_ATTR_IP, data->ip);
 	NLA_PUT_NET16(skb, IPSET_ATTR_PORT, data->port);
 	NLA_PUT_U8(skb, IPSET_ATTR_PROTO, data->proto);
@@ -149,12 +192,56 @@ hash_ipport4_kadt(struct ip_set *set, const struct sk_buff *skb,
 	ip4addrptr(skb, opt->flags & IPSET_DIM_ONE_SRC, &data.ip);
 
 	return adtfn(set, &data, opt_timeout(opt, h), opt->cmdflags);
+=======
+	if (nla_put_ipaddr4(skb, IPSET_ATTR_IP, data->ip) ||
+	    nla_put_net16(skb, IPSET_ATTR_PORT, data->port) ||
+	    nla_put_u8(skb, IPSET_ATTR_PROTO, data->proto))
+		goto nla_put_failure;
+	return false;
+
+nla_put_failure:
+	return true;
+}
+
+static void
+hash_ipport4_data_next(struct hash_ipport4_elem *next,
+		       const struct hash_ipport4_elem *d)
+{
+	next->ip = d->ip;
+	next->port = d->port;
+}
+
+#define MTYPE		hash_ipport4
+#define HOST_MASK	32
+#include "ip_set_hash_gen.h"
+
+static int
+hash_ipport4_kadt(struct ip_set *set, const struct sk_buff *skb,
+		  const struct xt_action_param *par,
+		  enum ipset_adt adt, struct ip_set_adt_opt *opt)
+{
+	ipset_adtfn adtfn = set->variant->adt[adt];
+	struct hash_ipport4_elem e = { .ip = 0 };
+	struct ip_set_ext ext = IP_SET_INIT_KEXT(skb, opt, set);
+	const struct MTYPE *h = set->data;
+
+	if (!ip_set_get_ip4_port(skb, opt->flags & IPSET_DIM_TWO_SRC,
+				 &e.port, &e.proto))
+		return -EINVAL;
+
+	ip4addrptr(skb, opt->flags & IPSET_DIM_ONE_SRC, &e.ip);
+	e.ip &= h->bitmask.ip;
+	if (e.ip == 0)
+		return -EINVAL;
+	return adtfn(set, &e, &ext, &opt->ext, opt->cmdflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 hash_ipport4_uadt(struct ip_set *set, struct nlattr *tb[],
 		  enum ipset_adt adt, u32 *lineno, u32 flags, bool retried)
 {
+<<<<<<< HEAD
 	const struct ip_set_hash *h = set->data;
 	ipset_adtfn adtfn = set->variant->adt[adt];
 	struct hash_ipport4_elem data = { };
@@ -207,6 +294,59 @@ hash_ipport4_uadt(struct ip_set *set, struct nlattr *tb[],
 	}
 
 	ip = ntohl(data.ip);
+=======
+	struct hash_ipport4 *h = set->data;
+	ipset_adtfn adtfn = set->variant->adt[adt];
+	struct hash_ipport4_elem e = { .ip = 0 };
+	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
+	u32 ip, ip_to = 0, p = 0, port, port_to, i = 0;
+	bool with_ports = false;
+	int ret;
+
+	if (tb[IPSET_ATTR_LINENO])
+		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
+
+	if (unlikely(!tb[IPSET_ATTR_IP] ||
+		     !ip_set_attr_netorder(tb, IPSET_ATTR_PORT) ||
+		     !ip_set_optattr_netorder(tb, IPSET_ATTR_PORT_TO)))
+		return -IPSET_ERR_PROTOCOL;
+
+	ret = ip_set_get_ipaddr4(tb[IPSET_ATTR_IP], &e.ip);
+	if (ret)
+		return ret;
+
+	ret = ip_set_get_extensions(set, tb, &ext);
+	if (ret)
+		return ret;
+
+	e.ip &= h->bitmask.ip;
+	if (e.ip == 0)
+		return -EINVAL;
+
+	e.port = nla_get_be16(tb[IPSET_ATTR_PORT]);
+
+	if (tb[IPSET_ATTR_PROTO]) {
+		e.proto = nla_get_u8(tb[IPSET_ATTR_PROTO]);
+		with_ports = ip_set_proto_with_ports(e.proto);
+
+		if (e.proto == 0)
+			return -IPSET_ERR_INVALID_PROTO;
+	} else {
+		return -IPSET_ERR_MISSING_PROTO;
+	}
+
+	if (!(with_ports || e.proto == IPPROTO_ICMP))
+		e.port = 0;
+
+	if (adt == IPSET_TEST ||
+	    !(tb[IPSET_ATTR_IP_TO] || tb[IPSET_ATTR_CIDR] ||
+	      tb[IPSET_ATTR_PORT_TO])) {
+		ret = adtfn(set, &e, &ext, &ext, flags);
+		return ip_set_eexist(ret, flags) ? 0 : ret;
+	}
+
+	ip_to = ip = ntohl(e.ip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tb[IPSET_ATTR_IP_TO]) {
 		ret = ip_set_get_hostipaddr4(tb[IPSET_ATTR_IP_TO], &ip_to);
 		if (ret)
@@ -216,6 +356,7 @@ hash_ipport4_uadt(struct ip_set *set, struct nlattr *tb[],
 	} else if (tb[IPSET_ATTR_CIDR]) {
 		u8 cidr = nla_get_u8(tb[IPSET_ATTR_CIDR]);
 
+<<<<<<< HEAD
 		if (cidr > 32)
 			return -IPSET_ERR_INVALID_CIDR;
 		ip_set_mask_from_to(ip, ip_to, cidr);
@@ -223,6 +364,14 @@ hash_ipport4_uadt(struct ip_set *set, struct nlattr *tb[],
 		ip_to = ip;
 
 	port_to = port = ntohs(data.port);
+=======
+		if (!cidr || cidr > HOST_MASK)
+			return -IPSET_ERR_INVALID_CIDR;
+		ip_set_mask_from_to(ip, ip_to, cidr);
+	}
+
+	port_to = port = ntohs(e.port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (with_ports && tb[IPSET_ATTR_PORT_TO]) {
 		port_to = ip_set_get_h16(tb[IPSET_ATTR_PORT_TO]);
 		if (port > port_to)
@@ -230,6 +379,7 @@ hash_ipport4_uadt(struct ip_set *set, struct nlattr *tb[],
 	}
 
 	if (retried)
+<<<<<<< HEAD
 		ip = h->next.ip;
 	for (; !before(ip_to, ip); ip++) {
 		p = retried && ip == h->next.ip ? h->next.port : port;
@@ -242,11 +392,31 @@ hash_ipport4_uadt(struct ip_set *set, struct nlattr *tb[],
 				return ret;
 			else
 				ret = 0;
+=======
+		ip = ntohl(h->next.ip);
+	for (; ip <= ip_to; ip++) {
+		p = retried && ip == ntohl(h->next.ip) ? ntohs(h->next.port)
+						       : port;
+		for (; p <= port_to; p++, i++) {
+			e.ip = htonl(ip);
+			e.port = htons(p);
+			if (i > IPSET_MAX_RANGE) {
+				hash_ipport4_data_next(&h->next, &e);
+				return -ERANGE;
+			}
+			ret = adtfn(set, &e, &ext, &ext, flags);
+
+			if (ret && !ip_set_eexist(ret, flags))
+				return ret;
+
+			ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return ret;
 }
 
+<<<<<<< HEAD
 static bool
 hash_ipport_same_set(const struct ip_set *a, const struct ip_set *b)
 {
@@ -259,6 +429,9 @@ hash_ipport_same_set(const struct ip_set *a, const struct ip_set *b)
 }
 
 /* The type variant functions: IPv6 */
+=======
+/* IPv6 variant */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct hash_ipport6_elem {
 	union nf_inet_addr ip;
@@ -267,6 +440,7 @@ struct hash_ipport6_elem {
 	u8 padding;
 };
 
+<<<<<<< HEAD
 struct hash_ipport6_telem {
 	union nf_inet_addr ip;
 	__be16 port;
@@ -276,15 +450,25 @@ struct hash_ipport6_telem {
 };
 
 static inline bool
+=======
+/* Common functions */
+
+static bool
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 hash_ipport6_data_equal(const struct hash_ipport6_elem *ip1,
 			const struct hash_ipport6_elem *ip2,
 			u32 *multi)
 {
+<<<<<<< HEAD
 	return ipv6_addr_cmp(&ip1->ip.in6, &ip2->ip.in6) == 0 &&
+=======
+	return ipv6_addr_equal(&ip1->ip.in6, &ip2->ip.in6) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       ip1->port == ip2->port &&
 	       ip1->proto == ip2->proto;
 }
 
+<<<<<<< HEAD
 static inline bool
 hash_ipport6_data_isnull(const struct hash_ipport6_elem *elem)
 {
@@ -304,10 +488,13 @@ hash_ipport6_data_zero_out(struct hash_ipport6_elem *elem)
 	elem->proto = 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool
 hash_ipport6_data_list(struct sk_buff *skb,
 		       const struct hash_ipport6_elem *data)
 {
+<<<<<<< HEAD
 	NLA_PUT_IPADDR6(skb, IPSET_ATTR_IP, &data->ip);
 	NLA_PUT_NET16(skb, IPSET_ATTR_PORT, data->port);
 	NLA_PUT_U8(skb, IPSET_ATTR_PROTO, data->proto);
@@ -365,12 +552,60 @@ hash_ipport6_kadt(struct ip_set *set, const struct sk_buff *skb,
 	ip6addrptr(skb, opt->flags & IPSET_DIM_ONE_SRC, &data.ip.in6);
 
 	return adtfn(set, &data, opt_timeout(opt, h), opt->cmdflags);
+=======
+	if (nla_put_ipaddr6(skb, IPSET_ATTR_IP, &data->ip.in6) ||
+	    nla_put_net16(skb, IPSET_ATTR_PORT, data->port) ||
+	    nla_put_u8(skb, IPSET_ATTR_PROTO, data->proto))
+		goto nla_put_failure;
+	return false;
+
+nla_put_failure:
+	return true;
+}
+
+static void
+hash_ipport6_data_next(struct hash_ipport6_elem *next,
+		       const struct hash_ipport6_elem *d)
+{
+	next->port = d->port;
+}
+
+#undef MTYPE
+#undef HOST_MASK
+
+#define MTYPE		hash_ipport6
+#define HOST_MASK	128
+#define IP_SET_EMIT_CREATE
+#include "ip_set_hash_gen.h"
+
+static int
+hash_ipport6_kadt(struct ip_set *set, const struct sk_buff *skb,
+		  const struct xt_action_param *par,
+		  enum ipset_adt adt, struct ip_set_adt_opt *opt)
+{
+	ipset_adtfn adtfn = set->variant->adt[adt];
+	struct hash_ipport6_elem e = { .ip = { .all = { 0 } } };
+	struct ip_set_ext ext = IP_SET_INIT_KEXT(skb, opt, set);
+	const struct MTYPE *h = set->data;
+
+	if (!ip_set_get_ip6_port(skb, opt->flags & IPSET_DIM_TWO_SRC,
+				 &e.port, &e.proto))
+		return -EINVAL;
+
+	ip6addrptr(skb, opt->flags & IPSET_DIM_ONE_SRC, &e.ip.in6);
+	nf_inet_addr_mask_inplace(&e.ip, &h->bitmask);
+	if (ipv6_addr_any(&e.ip.in6))
+		return -EINVAL;
+
+	return adtfn(set, &e, &ext, &opt->ext, opt->cmdflags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
 hash_ipport6_uadt(struct ip_set *set, struct nlattr *tb[],
 		  enum ipset_adt adt, u32 *lineno, u32 flags, bool retried)
 {
+<<<<<<< HEAD
 	const struct ip_set_hash *h = set->data;
 	ipset_adtfn adtfn = set->variant->adt[adt];
 	struct hash_ipport6_elem data = { };
@@ -423,11 +658,71 @@ hash_ipport6_uadt(struct ip_set *set, struct nlattr *tb[],
 	}
 
 	port = ntohs(data.port);
+=======
+	const struct hash_ipport6 *h = set->data;
+	ipset_adtfn adtfn = set->variant->adt[adt];
+	struct hash_ipport6_elem e = { .ip = { .all = { 0 } } };
+	struct ip_set_ext ext = IP_SET_INIT_UEXT(set);
+	u32 port, port_to;
+	bool with_ports = false;
+	int ret;
+
+	if (tb[IPSET_ATTR_LINENO])
+		*lineno = nla_get_u32(tb[IPSET_ATTR_LINENO]);
+
+	if (unlikely(!tb[IPSET_ATTR_IP] ||
+		     !ip_set_attr_netorder(tb, IPSET_ATTR_PORT) ||
+		     !ip_set_optattr_netorder(tb, IPSET_ATTR_PORT_TO)))
+		return -IPSET_ERR_PROTOCOL;
+	if (unlikely(tb[IPSET_ATTR_IP_TO]))
+		return -IPSET_ERR_HASH_RANGE_UNSUPPORTED;
+	if (unlikely(tb[IPSET_ATTR_CIDR])) {
+		u8 cidr = nla_get_u8(tb[IPSET_ATTR_CIDR]);
+
+		if (cidr != HOST_MASK)
+			return -IPSET_ERR_INVALID_CIDR;
+	}
+
+	ret = ip_set_get_ipaddr6(tb[IPSET_ATTR_IP], &e.ip);
+	if (ret)
+		return ret;
+
+	ret = ip_set_get_extensions(set, tb, &ext);
+	if (ret)
+		return ret;
+
+	nf_inet_addr_mask_inplace(&e.ip, &h->bitmask);
+	if (ipv6_addr_any(&e.ip.in6))
+		return -EINVAL;
+
+	e.port = nla_get_be16(tb[IPSET_ATTR_PORT]);
+
+	if (tb[IPSET_ATTR_PROTO]) {
+		e.proto = nla_get_u8(tb[IPSET_ATTR_PROTO]);
+		with_ports = ip_set_proto_with_ports(e.proto);
+
+		if (e.proto == 0)
+			return -IPSET_ERR_INVALID_PROTO;
+	} else {
+		return -IPSET_ERR_MISSING_PROTO;
+	}
+
+	if (!(with_ports || e.proto == IPPROTO_ICMPV6))
+		e.port = 0;
+
+	if (adt == IPSET_TEST || !with_ports || !tb[IPSET_ATTR_PORT_TO]) {
+		ret = adtfn(set, &e, &ext, &ext, flags);
+		return ip_set_eexist(ret, flags) ? 0 : ret;
+	}
+
+	port = ntohs(e.port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	port_to = ip_set_get_h16(tb[IPSET_ATTR_PORT_TO]);
 	if (port > port_to)
 		swap(port, port_to);
 
 	if (retried)
+<<<<<<< HEAD
 		port = h->next.port;
 	for (; port <= port_to; port++) {
 		data.port = htons(port);
@@ -437,10 +732,22 @@ hash_ipport6_uadt(struct ip_set *set, struct nlattr *tb[],
 			return ret;
 		else
 			ret = 0;
+=======
+		port = ntohs(h->next.port);
+	for (; port <= port_to; port++) {
+		e.port = htons(port);
+		ret = adtfn(set, &e, &ext, &ext, flags);
+
+		if (ret && !ip_set_eexist(ret, flags))
+			return ret;
+
+		ret = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
 
+<<<<<<< HEAD
 /* Create hash:ip type of sets */
 
 static int
@@ -513,22 +820,41 @@ hash_ipport_create(struct ip_set *set, struct nlattr *tb[], u32 flags)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ip_set_type hash_ipport_type __read_mostly = {
 	.name		= "hash:ip,port",
 	.protocol	= IPSET_PROTOCOL,
 	.features	= IPSET_TYPE_IP | IPSET_TYPE_PORT,
 	.dimension	= IPSET_DIM_TWO,
 	.family		= NFPROTO_UNSPEC,
+<<<<<<< HEAD
 	.revision_min	= 0,
 	.revision_max	= 1,	/* SCTP and UDPLITE support added */
+=======
+	.revision_min	= IPSET_TYPE_REV_MIN,
+	.revision_max	= IPSET_TYPE_REV_MAX,
+	.create_flags[IPSET_TYPE_REV_MAX] = IPSET_CREATE_FLAG_BUCKETSIZE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.create		= hash_ipport_create,
 	.create_policy	= {
 		[IPSET_ATTR_HASHSIZE]	= { .type = NLA_U32 },
 		[IPSET_ATTR_MAXELEM]	= { .type = NLA_U32 },
+<<<<<<< HEAD
 		[IPSET_ATTR_PROBES]	= { .type = NLA_U8 },
 		[IPSET_ATTR_RESIZE]	= { .type = NLA_U8  },
 		[IPSET_ATTR_PROTO]	= { .type = NLA_U8 },
 		[IPSET_ATTR_TIMEOUT]	= { .type = NLA_U32 },
+=======
+		[IPSET_ATTR_INITVAL]	= { .type = NLA_U32 },
+		[IPSET_ATTR_BUCKETSIZE]	= { .type = NLA_U8 },
+		[IPSET_ATTR_RESIZE]	= { .type = NLA_U8  },
+		[IPSET_ATTR_PROTO]	= { .type = NLA_U8 },
+		[IPSET_ATTR_TIMEOUT]	= { .type = NLA_U32 },
+		[IPSET_ATTR_CADT_FLAGS]	= { .type = NLA_U32 },
+		[IPSET_ATTR_NETMASK]	= { .type = NLA_U8 },
+		[IPSET_ATTR_BITMASK]	= { .type = NLA_NESTED },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.adt_policy	= {
 		[IPSET_ATTR_IP]		= { .type = NLA_NESTED },
@@ -539,6 +865,16 @@ static struct ip_set_type hash_ipport_type __read_mostly = {
 		[IPSET_ATTR_PROTO]	= { .type = NLA_U8 },
 		[IPSET_ATTR_TIMEOUT]	= { .type = NLA_U32 },
 		[IPSET_ATTR_LINENO]	= { .type = NLA_U32 },
+<<<<<<< HEAD
+=======
+		[IPSET_ATTR_BYTES]	= { .type = NLA_U64 },
+		[IPSET_ATTR_PACKETS]	= { .type = NLA_U64 },
+		[IPSET_ATTR_COMMENT]	= { .type = NLA_NUL_STRING,
+					    .len  = IPSET_MAX_COMMENT_SIZE },
+		[IPSET_ATTR_SKBMARK]	= { .type = NLA_U64 },
+		[IPSET_ATTR_SKBPRIO]	= { .type = NLA_U32 },
+		[IPSET_ATTR_SKBQUEUE]	= { .type = NLA_U16 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.me		= THIS_MODULE,
 };
@@ -552,6 +888,10 @@ hash_ipport_init(void)
 static void __exit
 hash_ipport_fini(void)
 {
+<<<<<<< HEAD
+=======
+	rcu_barrier();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ip_set_type_unregister(&hash_ipport_type);
 }
 

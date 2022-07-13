@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
  * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
@@ -14,6 +15,12 @@
  * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
  * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
+ * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
@@ -79,8 +86,11 @@ int vnic_wq_copy_alloc(struct vnic_dev *vdev, struct vnic_wq_copy *wq,
 		       unsigned int index, unsigned int desc_count,
 		       unsigned int desc_size)
 {
+<<<<<<< HEAD
 	int err;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wq->index = index;
 	wq->vdev = vdev;
 	wq->to_use_index = wq->to_clean_index = 0;
@@ -92,11 +102,15 @@ int vnic_wq_copy_alloc(struct vnic_dev *vdev, struct vnic_wq_copy *wq,
 
 	vnic_wq_copy_disable(wq);
 
+<<<<<<< HEAD
 	err = vnic_dev_alloc_desc_ring(vdev, &wq->ring, desc_count, desc_size);
 	if (err)
 		return err;
 
 	return 0;
+=======
+	return vnic_dev_alloc_desc_ring(vdev, &wq->ring, desc_count, desc_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void vnic_wq_copy_init(struct vnic_wq_copy *wq, unsigned int cq_index,
@@ -114,4 +128,7 @@ void vnic_wq_copy_init(struct vnic_wq_copy *wq, unsigned int cq_index,
 	iowrite32(error_interrupt_enable, &wq->ctrl->error_interrupt_enable);
 	iowrite32(error_interrupt_offset, &wq->ctrl->error_interrupt_offset);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

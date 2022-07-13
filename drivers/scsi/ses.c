@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SCSI Enclosure Services
  *
  * Copyright (C) 2008 James Bottomley <James.Bottomley@HansenPartnership.com>
+<<<<<<< HEAD
  *
 **-----------------------------------------------------------------------------
 **
@@ -20,11 +25,18 @@
 **
 **-----------------------------------------------------------------------------
 */
+=======
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/enclosure.h>
+<<<<<<< HEAD
+=======
+#include <asm/unaligned.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_cmnd.h>
@@ -33,6 +45,11 @@
 #include <scsi/scsi_driver.h>
 #include <scsi/scsi_host.h>
 
+<<<<<<< HEAD
+=======
+#include <scsi/scsi_transport_sas.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ses_device {
 	unsigned char *page1;
 	unsigned char *page1_types;
@@ -46,9 +63,21 @@ struct ses_device {
 
 struct ses_component {
 	u64 addr;
+<<<<<<< HEAD
 	unsigned char *desc;
 };
 
+=======
+};
+
+static bool ses_page2_supported(struct enclosure_device *edev)
+{
+	struct ses_device *ses_dev = edev->scratch;
+
+	return (ses_dev->page2 != NULL);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ses_probe(struct device *dev)
 {
 	struct scsi_device *sdev = to_scsi_device(dev);
@@ -67,6 +96,23 @@ static int ses_probe(struct device *dev)
 #define SES_TIMEOUT (30 * HZ)
 #define SES_RETRIES 3
 
+<<<<<<< HEAD
+=======
+static void init_device_slot_control(unsigned char *dest_desc,
+				     struct enclosure_component *ecomp,
+				     unsigned char *status)
+{
+	memcpy(dest_desc, status, 4);
+	dest_desc[0] = 0;
+	/* only clear byte 1 for ENCLOSURE_COMPONENT_DEVICE */
+	if (ecomp->type == ENCLOSURE_COMPONENT_DEVICE)
+		dest_desc[1] = 0;
+	dest_desc[2] &= 0xde;
+	dest_desc[3] &= 0x3c;
+}
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ses_recv_diag(struct scsi_device *sdev, int page_code,
 			 void *buf, int bufflen)
 {
@@ -80,10 +126,40 @@ static int ses_recv_diag(struct scsi_device *sdev, int page_code,
 		0
 	};
 	unsigned char recv_page_code;
+<<<<<<< HEAD
 
 	ret =  scsi_execute_req(sdev, cmd, DMA_FROM_DEVICE, buf, bufflen,
 				NULL, SES_TIMEOUT, SES_RETRIES, NULL);
 	if (unlikely(!ret))
+=======
+	struct scsi_failure failure_defs[] = {
+		{
+			.sense = UNIT_ATTENTION,
+			.asc = 0x29,
+			.ascq = SCMD_FAILURE_ASCQ_ANY,
+			.allowed = SES_RETRIES,
+			.result = SAM_STAT_CHECK_CONDITION,
+		},
+		{
+			.sense = NOT_READY,
+			.asc = SCMD_FAILURE_ASC_ANY,
+			.ascq = SCMD_FAILURE_ASCQ_ANY,
+			.allowed = SES_RETRIES,
+			.result = SAM_STAT_CHECK_CONDITION,
+		},
+		{}
+	};
+	struct scsi_failures failures = {
+		.failure_definitions = failure_defs,
+	};
+	const struct scsi_exec_args exec_args = {
+		.failures = &failures,
+	};
+
+	ret = scsi_execute_cmd(sdev, cmd, REQ_OP_DRV_IN, buf, bufflen,
+			       SES_TIMEOUT, 1, &exec_args);
+	if (unlikely(ret))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 
 	recv_page_code = ((unsigned char *)buf)[0];
@@ -104,7 +180,11 @@ static int ses_recv_diag(struct scsi_device *sdev, int page_code,
 static int ses_send_diag(struct scsi_device *sdev, int page_code,
 			 void *buf, int bufflen)
 {
+<<<<<<< HEAD
 	u32 result;
+=======
+	int result;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned char cmd[] = {
 		SEND_DIAGNOSTIC,
@@ -114,9 +194,38 @@ static int ses_send_diag(struct scsi_device *sdev, int page_code,
 		bufflen & 0xff,
 		0
 	};
+<<<<<<< HEAD
 
 	result = scsi_execute_req(sdev, cmd, DMA_TO_DEVICE, buf, bufflen,
 				  NULL, SES_TIMEOUT, SES_RETRIES, NULL);
+=======
+	struct scsi_failure failure_defs[] = {
+		{
+			.sense = UNIT_ATTENTION,
+			.asc = 0x29,
+			.ascq = SCMD_FAILURE_ASCQ_ANY,
+			.allowed = SES_RETRIES,
+			.result = SAM_STAT_CHECK_CONDITION,
+		},
+		{
+			.sense = NOT_READY,
+			.asc = SCMD_FAILURE_ASC_ANY,
+			.ascq = SCMD_FAILURE_ASCQ_ANY,
+			.allowed = SES_RETRIES,
+			.result = SAM_STAT_CHECK_CONDITION,
+		},
+		{}
+	};
+	struct scsi_failures failures = {
+		.failure_definitions = failure_defs,
+	};
+	const struct scsi_exec_args exec_args = {
+		.failures = &failures,
+	};
+
+	result = scsi_execute_cmd(sdev, cmd, REQ_OP_DRV_OUT, buf, bufflen,
+				  SES_TIMEOUT, 1, &exec_args);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result)
 		sdev_printk(KERN_ERR, sdev, "SEND DIAGNOSTIC result: %8x\n",
 			    result);
@@ -163,7 +272,12 @@ static unsigned char *ses_get_page2_descriptor(struct enclosure_device *edev,
 	unsigned char *type_ptr = ses_dev->page1_types;
 	unsigned char *desc_ptr = ses_dev->page2 + 8;
 
+<<<<<<< HEAD
 	ses_recv_diag(sdev, 2, ses_dev->page2, ses_dev->page2_len);
+=======
+	if (ses_recv_diag(sdev, 2, ses_dev->page2, ses_dev->page2_len) < 0)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ses_dev->page1_num_types; i++, type_ptr += 4) {
 		for (j = 0; j < type_ptr[1]; j++) {
@@ -187,6 +301,13 @@ static void ses_get_fault(struct enclosure_device *edev,
 {
 	unsigned char *desc;
 
+<<<<<<< HEAD
+=======
+	if (!ses_page2_supported(edev)) {
+		ecomp->fault = 0;
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc = ses_get_page2_descriptor(edev, ecomp);
 	if (desc)
 		ecomp->fault = (desc[3] & 0x60) >> 4;
@@ -196,6 +317,7 @@ static int ses_set_fault(struct enclosure_device *edev,
 			  struct enclosure_component *ecomp,
 			 enum enclosure_component_setting val)
 {
+<<<<<<< HEAD
 	unsigned char desc[4] = {0 };
 
 	switch (val) {
@@ -204,6 +326,27 @@ static int ses_set_fault(struct enclosure_device *edev,
 		break;
 	case ENCLOSURE_SETTING_ENABLED:
 		desc[3] = 0x20;
+=======
+	unsigned char desc[4];
+	unsigned char *desc_ptr;
+
+	if (!ses_page2_supported(edev))
+		return -EINVAL;
+
+	desc_ptr = ses_get_page2_descriptor(edev, ecomp);
+
+	if (!desc_ptr)
+		return -EIO;
+
+	init_device_slot_control(desc, ecomp, desc_ptr);
+
+	switch (val) {
+	case ENCLOSURE_SETTING_DISABLED:
+		desc[3] &= 0xdf;
+		break;
+	case ENCLOSURE_SETTING_ENABLED:
+		desc[3] |= 0x20;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		/* SES doesn't do the SGPIO blink settings */
@@ -218,6 +361,13 @@ static void ses_get_status(struct enclosure_device *edev,
 {
 	unsigned char *desc;
 
+<<<<<<< HEAD
+=======
+	if (!ses_page2_supported(edev)) {
+		ecomp->status = 0;
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc = ses_get_page2_descriptor(edev, ecomp);
 	if (desc)
 		ecomp->status = (desc[0] & 0x0f);
@@ -228,6 +378,13 @@ static void ses_get_locate(struct enclosure_device *edev,
 {
 	unsigned char *desc;
 
+<<<<<<< HEAD
+=======
+	if (!ses_page2_supported(edev)) {
+		ecomp->locate = 0;
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	desc = ses_get_page2_descriptor(edev, ecomp);
 	if (desc)
 		ecomp->locate = (desc[2] & 0x02) ? 1 : 0;
@@ -237,6 +394,7 @@ static int ses_set_locate(struct enclosure_device *edev,
 			  struct enclosure_component *ecomp,
 			  enum enclosure_component_setting val)
 {
+<<<<<<< HEAD
 	unsigned char desc[4] = {0 };
 
 	switch (val) {
@@ -245,6 +403,27 @@ static int ses_set_locate(struct enclosure_device *edev,
 		break;
 	case ENCLOSURE_SETTING_ENABLED:
 		desc[2] = 0x02;
+=======
+	unsigned char desc[4];
+	unsigned char *desc_ptr;
+
+	if (!ses_page2_supported(edev))
+		return -EINVAL;
+
+	desc_ptr = ses_get_page2_descriptor(edev, ecomp);
+
+	if (!desc_ptr)
+		return -EIO;
+
+	init_device_slot_control(desc, ecomp, desc_ptr);
+
+	switch (val) {
+	case ENCLOSURE_SETTING_DISABLED:
+		desc[2] &= 0xfd;
+		break;
+	case ENCLOSURE_SETTING_ENABLED:
+		desc[2] |= 0x02;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		/* SES doesn't do the SGPIO blink settings */
@@ -257,6 +436,7 @@ static int ses_set_active(struct enclosure_device *edev,
 			  struct enclosure_component *ecomp,
 			  enum enclosure_component_setting val)
 {
+<<<<<<< HEAD
 	unsigned char desc[4] = {0 };
 
 	switch (val) {
@@ -266,6 +446,28 @@ static int ses_set_active(struct enclosure_device *edev,
 		break;
 	case ENCLOSURE_SETTING_ENABLED:
 		desc[2] = 0x80;
+=======
+	unsigned char desc[4];
+	unsigned char *desc_ptr;
+
+	if (!ses_page2_supported(edev))
+		return -EINVAL;
+
+	desc_ptr = ses_get_page2_descriptor(edev, ecomp);
+
+	if (!desc_ptr)
+		return -EIO;
+
+	init_device_slot_control(desc, ecomp, desc_ptr);
+
+	switch (val) {
+	case ENCLOSURE_SETTING_DISABLED:
+		desc[2] &= 0x7f;
+		ecomp->active = 0;
+		break;
+	case ENCLOSURE_SETTING_ENABLED:
+		desc[2] |= 0x80;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ecomp->active = 1;
 		break;
 	default:
@@ -275,13 +477,78 @@ static int ses_set_active(struct enclosure_device *edev,
 	return ses_set_page2_descriptor(edev, ecomp, desc);
 }
 
+<<<<<<< HEAD
+=======
+static int ses_show_id(struct enclosure_device *edev, char *buf)
+{
+	struct ses_device *ses_dev = edev->scratch;
+	unsigned long long id = get_unaligned_be64(ses_dev->page1+8+4);
+
+	return sprintf(buf, "%#llx\n", id);
+}
+
+static void ses_get_power_status(struct enclosure_device *edev,
+				 struct enclosure_component *ecomp)
+{
+	unsigned char *desc;
+
+	if (!ses_page2_supported(edev)) {
+		ecomp->power_status = 0;
+		return;
+	}
+
+	desc = ses_get_page2_descriptor(edev, ecomp);
+	if (desc)
+		ecomp->power_status = (desc[3] & 0x10) ? 0 : 1;
+}
+
+static int ses_set_power_status(struct enclosure_device *edev,
+				struct enclosure_component *ecomp,
+				int val)
+{
+	unsigned char desc[4];
+	unsigned char *desc_ptr;
+
+	if (!ses_page2_supported(edev))
+		return -EINVAL;
+
+	desc_ptr = ses_get_page2_descriptor(edev, ecomp);
+
+	if (!desc_ptr)
+		return -EIO;
+
+	init_device_slot_control(desc, ecomp, desc_ptr);
+
+	switch (val) {
+	/* power = 1 is device_off = 0 and vice versa */
+	case 0:
+		desc[3] |= 0x10;
+		break;
+	case 1:
+		desc[3] &= 0xef;
+		break;
+	default:
+		return -EINVAL;
+	}
+	ecomp->power_status = val;
+	return ses_set_page2_descriptor(edev, ecomp, desc);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct enclosure_component_callbacks ses_enclosure_callbacks = {
 	.get_fault		= ses_get_fault,
 	.set_fault		= ses_set_fault,
 	.get_status		= ses_get_status,
 	.get_locate		= ses_get_locate,
 	.set_locate		= ses_set_locate,
+<<<<<<< HEAD
 	.set_active		= ses_set_active,
+=======
+	.get_power_status	= ses_get_power_status,
+	.set_power_status	= ses_set_power_status,
+	.set_active		= ses_set_active,
+	.show_id		= ses_show_id,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ses_host_edev {
@@ -308,13 +575,19 @@ int ses_match_host(struct enclosure_device *edev, void *data)
 }
 #endif  /*  0  */
 
+<<<<<<< HEAD
 static void ses_process_descriptor(struct enclosure_component *ecomp,
 				   unsigned char *desc)
+=======
+static int ses_process_descriptor(struct enclosure_component *ecomp,
+				   unsigned char *desc, int max_desc_len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int eip = desc[0] & 0x10;
 	int invalid = desc[0] & 0x80;
 	enum scsi_protocol proto = desc[0] & 0x0f;
 	u64 addr = 0;
+<<<<<<< HEAD
 	struct ses_component *scomp = ecomp->scratch;
 	unsigned char *d;
 
@@ -329,6 +602,39 @@ static void ses_process_descriptor(struct enclosure_component *ecomp,
 			d = desc + 8;
 		else
 			d = desc + 4;
+=======
+	int slot = -1;
+	struct ses_component *scomp = ecomp->scratch;
+	unsigned char *d;
+
+	if (invalid)
+		return 0;
+
+	switch (proto) {
+	case SCSI_PROTOCOL_FCP:
+		if (eip) {
+			if (max_desc_len <= 7)
+				return 1;
+			d = desc + 4;
+			slot = d[3];
+		}
+		break;
+	case SCSI_PROTOCOL_SAS:
+
+		if (eip) {
+			if (max_desc_len <= 27)
+				return 1;
+			d = desc + 4;
+			slot = d[3];
+			d = desc + 8;
+		} else {
+			if (max_desc_len <= 23)
+				return 1;
+			d = desc + 4;
+		}
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* only take the phy0 addr */
 		addr = (u64)d[12] << 56 |
 			(u64)d[13] << 48 |
@@ -343,7 +649,14 @@ static void ses_process_descriptor(struct enclosure_component *ecomp,
 		/* FIXME: Need to add more protocols than just SAS */
 		break;
 	}
+<<<<<<< HEAD
 	scomp->addr = addr;
+=======
+	ecomp->slot = slot;
+	scomp->addr = addr;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 struct efd {
@@ -358,15 +671,23 @@ static int ses_enclosure_find_by_addr(struct enclosure_device *edev,
 	int i;
 	struct ses_component *scomp;
 
+<<<<<<< HEAD
 	if (!edev->component[0].scratch)
 		return 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < edev->components; i++) {
 		scomp = edev->component[i].scratch;
 		if (scomp->addr != efd->addr)
 			continue;
 
+<<<<<<< HEAD
 		enclosure_add_device(edev, i, efd->dev);
+=======
+		if (enclosure_add_device(edev, i, efd->dev) == 0)
+			kobject_uevent(&efd->dev->kobj, KOBJ_CHANGE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 	}
 	return 0;
@@ -415,7 +736,11 @@ static void ses_enclosure_data_process(struct enclosure_device *edev,
 		/* skip past overall descriptor */
 		desc_ptr += len + 4;
 	}
+<<<<<<< HEAD
 	if (ses_dev->page10)
+=======
+	if (ses_dev->page10 && ses_dev->page10_len > 9)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		addl_desc_ptr = ses_dev->page10 + 8;
 	type_ptr = ses_dev->page1_types;
 	components = 0;
@@ -423,23 +748,42 @@ static void ses_enclosure_data_process(struct enclosure_device *edev,
 		for (j = 0; j < type_ptr[1]; j++) {
 			char *name = NULL;
 			struct enclosure_component *ecomp;
+<<<<<<< HEAD
 
 			if (desc_ptr) {
 				if (desc_ptr >= buf + page7_len) {
+=======
+			int max_desc_len;
+
+			if (desc_ptr) {
+				if (desc_ptr + 3 >= buf + page7_len) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					desc_ptr = NULL;
 				} else {
 					len = (desc_ptr[2] << 8) + desc_ptr[3];
 					desc_ptr += 4;
+<<<<<<< HEAD
 					/* Add trailing zero - pushes into
 					 * reserved space */
 					desc_ptr[len] = '\0';
 					name = desc_ptr;
+=======
+					if (desc_ptr + len > buf + page7_len)
+						desc_ptr = NULL;
+					else {
+						/* Add trailing zero - pushes into
+						 * reserved space */
+						desc_ptr[len] = '\0';
+						name = desc_ptr;
+					}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 			}
 			if (type_ptr[0] == ENCLOSURE_COMPONENT_DEVICE ||
 			    type_ptr[0] == ENCLOSURE_COMPONENT_ARRAY_DEVICE) {
 
 				if (create)
+<<<<<<< HEAD
 					ecomp =	enclosure_component_register(edev,
 									     components++,
 									     type_ptr[0],
@@ -450,6 +794,31 @@ static void ses_enclosure_data_process(struct enclosure_device *edev,
 				if (!IS_ERR(ecomp) && addl_desc_ptr)
 					ses_process_descriptor(ecomp,
 							       addl_desc_ptr);
+=======
+					ecomp =	enclosure_component_alloc(
+						edev,
+						components++,
+						type_ptr[0],
+						name);
+				else if (components < edev->components)
+					ecomp = &edev->component[components++];
+				else
+					ecomp = ERR_PTR(-EINVAL);
+
+				if (!IS_ERR(ecomp)) {
+					if (addl_desc_ptr) {
+						max_desc_len = ses_dev->page10_len -
+						    (addl_desc_ptr - ses_dev->page10);
+						if (ses_process_descriptor(ecomp,
+						    addl_desc_ptr,
+						    max_desc_len))
+							addl_desc_ptr = NULL;
+					}
+					if (create)
+						enclosure_component_register(
+							ecomp);
+				}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			if (desc_ptr)
 				desc_ptr += len;
@@ -462,9 +831,17 @@ static void ses_enclosure_data_process(struct enclosure_device *edev,
 			     /* these elements are optional */
 			     type_ptr[0] == ENCLOSURE_COMPONENT_SCSI_TARGET_PORT ||
 			     type_ptr[0] == ENCLOSURE_COMPONENT_SCSI_INITIATOR_PORT ||
+<<<<<<< HEAD
 			     type_ptr[0] == ENCLOSURE_COMPONENT_CONTROLLER_ELECTRONICS))
 				addl_desc_ptr += addl_desc_ptr[1] + 2;
 
+=======
+			     type_ptr[0] == ENCLOSURE_COMPONENT_CONTROLLER_ELECTRONICS)) {
+				addl_desc_ptr += addl_desc_ptr[1] + 2;
+				if (addl_desc_ptr + 1 >= ses_dev->page10 + ses_dev->page10_len)
+					addl_desc_ptr = NULL;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	kfree(buf);
@@ -472,15 +849,23 @@ static void ses_enclosure_data_process(struct enclosure_device *edev,
 }
 
 static void ses_match_to_enclosure(struct enclosure_device *edev,
+<<<<<<< HEAD
 				   struct scsi_device *sdev)
 {
 	unsigned char *buf;
 	unsigned char *desc;
 	unsigned int vpd_len;
+=======
+				   struct scsi_device *sdev,
+				   int refresh)
+{
+	struct scsi_device *edev_sdev = to_scsi_device(edev->edev.parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct efd efd = {
 		.addr = 0,
 	};
 
+<<<<<<< HEAD
 	buf = kmalloc(INIT_ALLOC_SIZE, GFP_KERNEL);
 	if (!buf || scsi_get_vpd_page(sdev, 0x83, buf, INIT_ALLOC_SIZE))
 		goto free;
@@ -531,6 +916,26 @@ static int ses_intf_add(struct device *cdev,
 	struct scsi_device *sdev = to_scsi_device(cdev->parent);
 	struct scsi_device *tmp_sdev;
 	unsigned char *buf = NULL, *hdr_buf, *type_ptr;
+=======
+	if (refresh)
+		ses_enclosure_data_process(edev, edev_sdev, 0);
+
+	if (scsi_is_sas_rphy(sdev->sdev_target->dev.parent))
+		efd.addr = sas_get_address(sdev);
+
+	if (efd.addr) {
+		efd.dev = &sdev->sdev_gendev;
+
+		enclosure_for_each_device(ses_enclosure_find_by_addr, &efd);
+	}
+}
+
+static int ses_intf_add(struct device *cdev)
+{
+	struct scsi_device *sdev = to_scsi_device(cdev->parent);
+	struct scsi_device *tmp_sdev;
+	unsigned char *buf = NULL, *hdr_buf, *type_ptr, page;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ses_device *ses_dev;
 	u32 result;
 	int i, types, len, components = 0;
@@ -544,7 +949,11 @@ static int ses_intf_add(struct device *cdev,
 		struct enclosure_device *prev = NULL;
 
 		while ((edev = enclosure_find(&sdev->host->shost_gendev, prev)) != NULL) {
+<<<<<<< HEAD
 			ses_match_to_enclosure(edev, sdev);
+=======
+			ses_match_to_enclosure(edev, sdev, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			prev = edev;
 		}
 		return -ENODEV;
@@ -559,7 +968,12 @@ static int ses_intf_add(struct device *cdev,
 	if (!hdr_buf || !ses_dev)
 		goto err_init_free;
 
+<<<<<<< HEAD
 	result = ses_recv_diag(sdev, 1, hdr_buf, INIT_ALLOC_SIZE);
+=======
+	page = 1;
+	result = ses_recv_diag(sdev, page, hdr_buf, INIT_ALLOC_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result)
 		goto recv_failed;
 
@@ -568,7 +982,11 @@ static int ses_intf_add(struct device *cdev,
 	if (!buf)
 		goto err_free;
 
+<<<<<<< HEAD
 	result = ses_recv_diag(sdev, 1, buf, len);
+=======
+	result = ses_recv_diag(sdev, page, buf, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result)
 		goto recv_failed;
 
@@ -594,13 +1012,24 @@ static int ses_intf_add(struct device *cdev,
 		    type_ptr[0] == ENCLOSURE_COMPONENT_ARRAY_DEVICE)
 			components += type_ptr[1];
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ses_dev->page1 = buf;
 	ses_dev->page1_len = len;
 	buf = NULL;
 
+<<<<<<< HEAD
 	result = ses_recv_diag(sdev, 2, hdr_buf, INIT_ALLOC_SIZE);
 	if (result)
 		goto recv_failed;
+=======
+	page = 2;
+	result = ses_recv_diag(sdev, page, hdr_buf, INIT_ALLOC_SIZE);
+	if (result)
+		goto page2_not_supported;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	len = (hdr_buf[2] << 8) + hdr_buf[3] + 4;
 	buf = kzalloc(len, GFP_KERNEL);
@@ -617,7 +1046,12 @@ static int ses_intf_add(struct device *cdev,
 
 	/* The additional information page --- allows us
 	 * to match up the devices */
+<<<<<<< HEAD
 	result = ses_recv_diag(sdev, 10, hdr_buf, INIT_ALLOC_SIZE);
+=======
+	page = 10;
+	result = ses_recv_diag(sdev, page, hdr_buf, INIT_ALLOC_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!result) {
 
 		len = (hdr_buf[2] << 8) + hdr_buf[3] + 4;
@@ -625,16 +1059,29 @@ static int ses_intf_add(struct device *cdev,
 		if (!buf)
 			goto err_free;
 
+<<<<<<< HEAD
 		result = ses_recv_diag(sdev, 10, buf, len);
+=======
+		result = ses_recv_diag(sdev, page, buf, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (result)
 			goto recv_failed;
 		ses_dev->page10 = buf;
 		ses_dev->page10_len = len;
 		buf = NULL;
 	}
+<<<<<<< HEAD
 	scomp = kzalloc(sizeof(struct ses_component) * components, GFP_KERNEL);
 	if (!scomp)
 		goto err_free;
+=======
+page2_not_supported:
+	if (components > 0) {
+		scomp = kcalloc(components, sizeof(struct ses_component), GFP_KERNEL);
+		if (!scomp)
+			goto err_free;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	edev = enclosure_register(cdev->parent, dev_name(&sdev->sdev_gendev),
 				  components, &ses_enclosure_callbacks);
@@ -656,14 +1103,22 @@ static int ses_intf_add(struct device *cdev,
 	shost_for_each_device(tmp_sdev, sdev->host) {
 		if (tmp_sdev->lun != 0 || scsi_device_enclosure(tmp_sdev))
 			continue;
+<<<<<<< HEAD
 		ses_match_to_enclosure(edev, tmp_sdev);
+=======
+		ses_match_to_enclosure(edev, tmp_sdev, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 
  recv_failed:
 	sdev_printk(KERN_ERR, sdev, "Failed to get diagnostic page 0x%x\n",
+<<<<<<< HEAD
 		    result);
+=======
+		    page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -ENODEV;
  err_free:
 	kfree(buf);
@@ -714,14 +1169,23 @@ static void ses_intf_remove_enclosure(struct scsi_device *sdev)
 	kfree(ses_dev->page2);
 	kfree(ses_dev);
 
+<<<<<<< HEAD
 	kfree(edev->component[0].scratch);
+=======
+	if (edev->components)
+		kfree(edev->component[0].scratch);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	put_device(&edev->edev);
 	enclosure_unregister(edev);
 }
 
+<<<<<<< HEAD
 static void ses_intf_remove(struct device *cdev,
 			    struct class_interface *intf)
+=======
+static void ses_intf_remove(struct device *cdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scsi_device *sdev = to_scsi_device(cdev->parent);
 
@@ -737,9 +1201,15 @@ static struct class_interface ses_interface = {
 };
 
 static struct scsi_driver ses_template = {
+<<<<<<< HEAD
 	.owner			= THIS_MODULE,
 	.gendrv = {
 		.name		= "ses",
+=======
+	.gendrv = {
+		.name		= "ses",
+		.owner		= THIS_MODULE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.probe		= ses_probe,
 		.remove		= ses_remove,
 	},

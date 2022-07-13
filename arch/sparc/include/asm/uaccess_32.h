@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * uaccess.h: User space memore access functions.
  *
@@ -7,6 +11,7 @@
 #ifndef _ASM_UACCESS_H
 #define _ASM_UACCESS_H
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
 #include <linux/compiler.h>
 #include <linux/sched.h>
@@ -80,6 +85,13 @@ struct exception_table_entry
 extern unsigned long search_extables_range(unsigned long addr, unsigned long *g2);
 
 extern void __ret_efault(void);
+=======
+#include <linux/compiler.h>
+#include <linux/string.h>
+
+#include <asm/processor.h>
+#include <asm-generic/access_ok.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Uh, these should become the main single-value transfer routines..
  * They automatically use the right size if we just have the right
@@ -90,6 +102,7 @@ extern void __ret_efault(void);
  * of a performance impact. Thus we have a few rather ugly macros here,
  * and hide all the ugliness from the user.
  */
+<<<<<<< HEAD
 #define put_user(x,ptr) ({ \
 unsigned long __pu_addr = (unsigned long)(ptr); \
 __chk_user_ptr(ptr); \
@@ -99,18 +112,39 @@ __put_user_check((__typeof__(*(ptr)))(x),__pu_addr,sizeof(*(ptr))); })
 unsigned long __gu_addr = (unsigned long)(ptr); \
 __chk_user_ptr(ptr); \
 __get_user_check((x),__gu_addr,sizeof(*(ptr)),__typeof__(*(ptr))); })
+=======
+#define put_user(x, ptr) ({ \
+	void __user *__pu_addr = (ptr); \
+	__chk_user_ptr(ptr); \
+	__put_user_check((__typeof__(*(ptr)))(x), __pu_addr, sizeof(*(ptr))); \
+})
+
+#define get_user(x, ptr) ({ \
+	const void __user *__gu_addr = (ptr); \
+	__chk_user_ptr(ptr); \
+	__get_user_check((x), __gu_addr, sizeof(*(ptr)), __typeof__(*(ptr))); \
+})
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The "__xxx" versions do not do address space checking, useful when
  * doing multiple accesses to the same area (the user has to do the
  * checks by hand with "access_ok()")
  */
+<<<<<<< HEAD
 #define __put_user(x,ptr) __put_user_nocheck((__typeof__(*(ptr)))(x),(ptr),sizeof(*(ptr)))
 #define __get_user(x,ptr) __get_user_nocheck((x),(ptr),sizeof(*(ptr)),__typeof__(*(ptr)))
+=======
+#define __put_user(x, ptr) \
+	__put_user_nocheck((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)))
+#define __get_user(x, ptr) \
+    __get_user_nocheck((x), (ptr), sizeof(*(ptr)), __typeof__(*(ptr)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct __large_struct { unsigned long buf[100]; };
 #define __m(x) ((struct __large_struct __user *)(x))
 
+<<<<<<< HEAD
 #define __put_user_check(x,addr,size) ({ \
 register int __pu_ret; \
 if (__access_ok(addr,size)) { \
@@ -256,10 +290,144 @@ static inline unsigned long copy_to_user(void __user *to, const void *from, unsi
 }
 
 static inline unsigned long __copy_to_user(void __user *to, const void *from, unsigned long n)
+=======
+#define __put_user_check(x, addr, size) ({ \
+	register int __pu_ret; \
+	if (__access_ok(addr, size)) { \
+		switch (size) { \
+		case 1: \
+			__put_user_asm(x, b, addr, __pu_ret); \
+			break; \
+		case 2: \
+			__put_user_asm(x, h, addr, __pu_ret); \
+			break; \
+		case 4: \
+			__put_user_asm(x, , addr, __pu_ret); \
+			break; \
+		case 8: \
+			__put_user_asm(x, d, addr, __pu_ret); \
+			break; \
+		default: \
+			__pu_ret = __put_user_bad(); \
+			break; \
+		} \
+	} else { \
+		__pu_ret = -EFAULT; \
+	} \
+	__pu_ret; \
+})
+
+#define __put_user_nocheck(x, addr, size) ({			\
+	register int __pu_ret;					\
+	switch (size) {						\
+	case 1: __put_user_asm(x, b, addr, __pu_ret); break;	\
+	case 2: __put_user_asm(x, h, addr, __pu_ret); break;	\
+	case 4: __put_user_asm(x, , addr, __pu_ret); break;	\
+	case 8: __put_user_asm(x, d, addr, __pu_ret); break;	\
+	default: __pu_ret = __put_user_bad(); break;		\
+	} \
+	__pu_ret; \
+})
+
+#define __put_user_asm(x, size, addr, ret)				\
+__asm__ __volatile__(							\
+		"/* Put user asm, inline. */\n"				\
+	"1:\t"	"st"#size " %1, %2\n\t"					\
+		"clr	%0\n"						\
+	"2:\n\n\t"							\
+		".section .fixup,#alloc,#execinstr\n\t"			\
+		".align	4\n"						\
+	"3:\n\t"							\
+		"b	2b\n\t"						\
+		" mov	%3, %0\n\t"					\
+		".previous\n\n\t"					\
+		".section __ex_table,#alloc\n\t"			\
+		".align	4\n\t"						\
+		".word	1b, 3b\n\t"					\
+		".previous\n\n\t"					\
+	       : "=&r" (ret) : "r" (x), "m" (*__m(addr)),		\
+		 "i" (-EFAULT))
+
+int __put_user_bad(void);
+
+#define __get_user_check(x, addr, size, type) ({ \
+	register int __gu_ret; \
+	register unsigned long __gu_val; \
+	if (__access_ok(addr, size)) { \
+		switch (size) { \
+		case 1: \
+			 __get_user_asm(__gu_val, ub, addr, __gu_ret); \
+			break; \
+		case 2: \
+			__get_user_asm(__gu_val, uh, addr, __gu_ret); \
+			break; \
+		case 4: \
+			__get_user_asm(__gu_val, , addr, __gu_ret); \
+			break; \
+		case 8: \
+			__get_user_asm(__gu_val, d, addr, __gu_ret); \
+			break; \
+		default: \
+			__gu_val = 0; \
+			__gu_ret = __get_user_bad(); \
+			break; \
+		} \
+	 } else { \
+		 __gu_val = 0; \
+		 __gu_ret = -EFAULT; \
+	} \
+	x = (__force type) __gu_val; \
+	__gu_ret; \
+})
+
+#define __get_user_nocheck(x, addr, size, type) ({			\
+	register int __gu_ret;						\
+	register unsigned long __gu_val;				\
+	switch (size) {							\
+	case 1: __get_user_asm(__gu_val, ub, addr, __gu_ret); break;	\
+	case 2: __get_user_asm(__gu_val, uh, addr, __gu_ret); break;	\
+	case 4: __get_user_asm(__gu_val, , addr, __gu_ret); break;	\
+	case 8: __get_user_asm(__gu_val, d, addr, __gu_ret); break;	\
+	default:							\
+		__gu_val = 0;						\
+		__gu_ret = __get_user_bad();				\
+		break;							\
+	}								\
+	x = (__force type) __gu_val;					\
+	__gu_ret;							\
+})
+
+#define __get_user_asm(x, size, addr, ret)				\
+__asm__ __volatile__(							\
+		"/* Get user asm, inline. */\n"				\
+	"1:\t"	"ld"#size " %2, %1\n\t"					\
+		"clr	%0\n"						\
+	"2:\n\n\t"							\
+		".section .fixup,#alloc,#execinstr\n\t"			\
+		".align	4\n"						\
+	"3:\n\t"							\
+		"clr	%1\n\t"						\
+		"b	2b\n\t"						\
+		" mov	%3, %0\n\n\t"					\
+		".previous\n\t"						\
+		".section __ex_table,#alloc\n\t"			\
+		".align	4\n\t"						\
+		".word	1b, 3b\n\n\t"					\
+		".previous\n\t"						\
+	       : "=&r" (ret), "=&r" (x) : "m" (*__m(addr)),		\
+		 "i" (-EFAULT))
+
+int __get_user_bad(void);
+
+unsigned long __copy_user(void __user *to, const void __user *from, unsigned long size);
+
+static inline unsigned long raw_copy_to_user(void __user *to, const void *from, unsigned long n)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __copy_user(to, (__force void __user *) from, n);
 }
 
+<<<<<<< HEAD
 static inline unsigned long copy_from_user(void *to, const void __user *from, unsigned long n)
 {
 	if (n && __access_ok((unsigned long) from, n))
@@ -269,24 +437,36 @@ static inline unsigned long copy_from_user(void *to, const void __user *from, un
 }
 
 static inline unsigned long __copy_from_user(void *to, const void __user *from, unsigned long n)
+=======
+static inline unsigned long raw_copy_from_user(void *to, const void __user *from, unsigned long n)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return __copy_user((__force void __user *) to, from, n);
 }
 
+<<<<<<< HEAD
 #define __copy_to_user_inatomic __copy_to_user
 #define __copy_from_user_inatomic __copy_from_user
+=======
+#define INLINE_COPY_FROM_USER
+#define INLINE_COPY_TO_USER
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned long __clear_user(void __user *addr, unsigned long size)
 {
 	unsigned long ret;
 
 	__asm__ __volatile__ (
+<<<<<<< HEAD
 		".section __ex_table,#alloc\n\t"
 		".align 4\n\t"
 		".word 1f,3\n\t"
 		".previous\n\t"
 		"mov %2, %%o1\n"
 		"1:\n\t"
+=======
+		"mov %2, %%o1\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"call __bzero\n\t"
 		" mov %1, %%o0\n\t"
 		"mov %%o0, %0\n"
@@ -299,12 +479,17 @@ static inline unsigned long __clear_user(void __user *addr, unsigned long size)
 
 static inline unsigned long clear_user(void __user *addr, unsigned long n)
 {
+<<<<<<< HEAD
 	if (n && __access_ok((unsigned long) addr, n))
+=======
+	if (n && __access_ok(addr, n))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return __clear_user(addr, n);
 	else
 		return n;
 }
 
+<<<<<<< HEAD
 extern long __strncpy_from_user(char *dest, const char __user *src, long count);
 
 static inline long strncpy_from_user(char *dest, const char __user *src, long count)
@@ -335,5 +520,8 @@ static inline long strnlen_user(const char __user *str, long len)
 }
 
 #endif  /* __ASSEMBLY__ */
+=======
+__must_check long strnlen_user(const char __user *str, long n);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_UACCESS_H */

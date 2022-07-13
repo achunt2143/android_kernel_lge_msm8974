@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Windfarm PowerMac thermal control. SMU based controls
  *
  * (c) Copyright 2005 Benjamin Herrenschmidt, IBM Corp.
  *                    <benh@kernel.crashing.org>
+<<<<<<< HEAD
  *
  * Released under the term of the GNU GPL v2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -15,7 +22,12 @@
 #include <linux/init.h>
 #include <linux/wait.h>
 #include <linux/completion.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+#include <linux/of.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/io.h>
 #include <asm/sections.h>
@@ -95,7 +107,11 @@ static int smu_set_fan(int pwm, u8 id, u16 value)
 		return rc;
 	wait_for_completion(&comp);
 
+<<<<<<< HEAD
 	/* Handle fallback (see coment above) */
+=======
+	/* Handle fallback (see comment above) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cmd.status != 0 && smu_supports_new_fans_ops) {
 		printk(KERN_WARNING "windfarm: SMU failed new fan command "
 		       "falling back to old method\n");
@@ -145,7 +161,11 @@ static s32 smu_fan_max(struct wf_control *ct)
 	return fct->max;
 }
 
+<<<<<<< HEAD
 static struct wf_control_ops smu_fan_ops = {
+=======
+static const struct wf_control_ops smu_fan_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_value	= smu_fan_set,
 	.get_value	= smu_fan_get,
 	.get_min	= smu_fan_min,
@@ -172,7 +192,10 @@ static struct smu_fan_control *smu_fan_create(struct device_node *node,
 
 	fct->fan_type = pwm_fan;
 	fct->ctrl.type = pwm_fan ? WF_CONTROL_PWM_FAN : WF_CONTROL_RPM_FAN;
+<<<<<<< HEAD
 	sysfs_attr_init(&fct->ctrl.attr.attr);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We use the name & location here the same way we do for SMU sensors,
 	 * see the comment in windfarm_smu_sensors.c. The locations are a bit
@@ -267,18 +290,30 @@ static int __init smu_controls_init(void)
 		return -ENODEV;
 
 	/* Look for RPM fans */
+<<<<<<< HEAD
 	for (fans = NULL; (fans = of_get_next_child(smu, fans)) != NULL;)
 		if (!strcmp(fans->name, "rpm-fans") ||
 		    of_device_is_compatible(fans, "smu-rpm-fans"))
 			break;
 	for (fan = NULL;
 	     fans && (fan = of_get_next_child(fans, fan)) != NULL;) {
+=======
+	for_each_child_of_node(smu, fans)
+		if (of_node_name_eq(fans, "rpm-fans") ||
+		    of_device_is_compatible(fans, "smu-rpm-fans"))
+			break;
+	for_each_child_of_node(fans, fan) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct smu_fan_control *fct;
 
 		fct = smu_fan_create(fan, 0);
 		if (fct == NULL) {
 			printk(KERN_WARNING "windfarm: Failed to create SMU "
+<<<<<<< HEAD
 			       "RPM fan %s\n", fan->name);
+=======
+			       "RPM fan %pOFn\n", fan);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		list_add(&fct->link, &smu_fans);
@@ -287,17 +322,28 @@ static int __init smu_controls_init(void)
 
 
 	/* Look for PWM fans */
+<<<<<<< HEAD
 	for (fans = NULL; (fans = of_get_next_child(smu, fans)) != NULL;)
 		if (!strcmp(fans->name, "pwm-fans"))
 			break;
 	for (fan = NULL;
 	     fans && (fan = of_get_next_child(fans, fan)) != NULL;) {
+=======
+	for_each_child_of_node(smu, fans)
+		if (of_node_name_eq(fans, "pwm-fans"))
+			break;
+	for_each_child_of_node(fans, fan) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct smu_fan_control *fct;
 
 		fct = smu_fan_create(fan, 1);
 		if (fct == NULL) {
 			printk(KERN_WARNING "windfarm: Failed to create SMU "
+<<<<<<< HEAD
 			       "PWM fan %s\n", fan->name);
+=======
+			       "PWM fan %pOFn\n", fan);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 		list_add(&fct->link, &smu_fans);

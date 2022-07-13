@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SPARC_SWITCH_TO_H
 #define __SPARC_SWITCH_TO_H
 
@@ -9,7 +13,11 @@ extern struct thread_info *current_set[NR_CPUS];
  * Flush windows so that the VM switch which follows
  * would not pull the stack from under us.
  *
+<<<<<<< HEAD
  * SWITCH_ENTER and SWITH_DO_LAZY_FPU do not work yet (e.g. SMP does not work)
+=======
+ * SWITCH_ENTER and SWITCH_DO_LAZY_FPU do not work yet (e.g. SMP does not work)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * XXX WTF is the above comment? Found in late teen 2.4.x.
  */
 #ifdef CONFIG_SMP
@@ -99,8 +107,14 @@ extern struct thread_info *current_set[NR_CPUS];
 	  "o0", "o1", "o2", "o3",                   "o7");	\
 	} while(0)
 
+<<<<<<< HEAD
 extern void fpsave(unsigned long *fpregs, unsigned long *fsr,
 		   void *fpqueue, unsigned long *fpqdepth);
 extern void synchronize_user_stack(void);
+=======
+void fpsave(unsigned long *fpregs, unsigned long *fsr,
+	    void *fpqueue, unsigned long *fpqdepth);
+void synchronize_user_stack(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __SPARC_SWITCH_TO_H */

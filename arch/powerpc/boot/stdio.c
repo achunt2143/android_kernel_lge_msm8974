@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) Paul Mackerras 1997.
  *
@@ -5,6 +6,11 @@
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (C) Paul Mackerras 1997.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <stdarg.h>
 #include <stddef.h>
@@ -21,6 +27,31 @@ size_t strnlen(const char * s, size_t count)
 	return sc - s;
 }
 
+<<<<<<< HEAD
+=======
+char *strrchr(const char *s, int c)
+{
+	const char *last = NULL;
+	do {
+		if (*s == (char)c)
+			last = s;
+	} while (*s++);
+	return (char *)last;
+}
+
+#ifdef __powerpc64__
+
+# define do_div(n, base) ({						\
+	unsigned int __base = (base);					\
+	unsigned int __rem;						\
+	__rem = ((unsigned long long)(n)) % __base;			\
+	(n) = ((unsigned long long)(n)) / __base;			\
+	__rem;								\
+})
+
+#else
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern unsigned int __div64_32(unsigned long long *dividend,
 			       unsigned int divisor);
 
@@ -39,6 +70,11 @@ extern unsigned int __div64_32(unsigned long long *dividend,
 	__rem;								\
  })
 
+<<<<<<< HEAD
+=======
+#endif /* __powerpc64__ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int skip_atoi(const char **s)
 {
 	int i, c;

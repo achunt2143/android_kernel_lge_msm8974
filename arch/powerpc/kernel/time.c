@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Common time routines among all ppc machines.
  *
@@ -24,16 +28,24 @@
  *
  * 1997-09-10  Updated NTP code according to technical memorandum Jan '96
  *             "A Kernel Model for Precision Timekeeping" by Dave Mills
+<<<<<<< HEAD
  *
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
  *      as published by the Free Software Foundation; either version
  *      2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/errno.h>
 #include <linux/export.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/clock.h>
+#include <linux/sched/cputime.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/param.h>
 #include <linux/string.h>
@@ -53,6 +65,7 @@
 #include <linux/irq.h>
 #include <linux/delay.h>
 #include <linux/irq_work.h>
+<<<<<<< HEAD
 #include <asm/trace.h>
 
 #include <asm/io.h>
@@ -63,16 +76,37 @@
 #include <asm/uaccess.h>
 #include <asm/time.h>
 #include <asm/prom.h>
+=======
+#include <linux/of_clk.h>
+#include <linux/suspend.h>
+#include <linux/processor.h>
+#include <linux/mc146818rtc.h>
+#include <linux/platform_device.h>
+
+#include <asm/trace.h>
+#include <asm/interrupt.h>
+#include <asm/io.h>
+#include <asm/nvram.h>
+#include <asm/cache.h>
+#include <asm/machdep.h>
+#include <linux/uaccess.h>
+#include <asm/time.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 #include <asm/div64.h>
 #include <asm/smp.h>
 #include <asm/vdso_datapage.h>
 #include <asm/firmware.h>
+<<<<<<< HEAD
 #include <asm/cputime.h>
+=======
+#include <asm/mce.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* powerpc clocksource/clockevent code */
 
 #include <linux/clockchips.h>
+<<<<<<< HEAD
 #include <linux/clocksource.h>
 
 static cycle_t rtc_read(struct clocksource *);
@@ -85,12 +119,18 @@ static struct clocksource clocksource_rtc = {
 };
 
 static cycle_t timebase_read(struct clocksource *);
+=======
+#include <linux/timekeeper_internal.h>
+
+static u64 timebase_read(struct clocksource *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct clocksource clocksource_timebase = {
 	.name         = "timebase",
 	.rating       = 400,
 	.flags        = CLOCK_SOURCE_IS_CONTINUOUS,
 	.mask         = CLOCKSOURCE_MASK(64),
 	.read         = timebase_read,
+<<<<<<< HEAD
 };
 
 #define DECREMENTER_MAX	0x7fffffff
@@ -110,6 +150,39 @@ static struct clock_event_device decrementer_clockevent = {
 };
 
 DEFINE_PER_CPU(u64, decrementers_next_tb);
+=======
+	.vdso_clock_mode	= VDSO_CLOCKMODE_ARCHTIMER,
+};
+
+#define DECREMENTER_DEFAULT_MAX 0x7FFFFFFF
+u64 decrementer_max = DECREMENTER_DEFAULT_MAX;
+EXPORT_SYMBOL_GPL(decrementer_max); /* for KVM HDEC */
+
+static int decrementer_set_next_event(unsigned long evt,
+				      struct clock_event_device *dev);
+static int decrementer_shutdown(struct clock_event_device *evt);
+
+struct clock_event_device decrementer_clockevent = {
+	.name			= "decrementer",
+	.rating			= 200,
+	.irq			= 0,
+	.set_next_event		= decrementer_set_next_event,
+	.set_state_oneshot_stopped = decrementer_shutdown,
+	.set_state_shutdown	= decrementer_shutdown,
+	.tick_resume		= decrementer_shutdown,
+	.features		= CLOCK_EVT_FEAT_ONESHOT |
+				  CLOCK_EVT_FEAT_C3STOP,
+};
+EXPORT_SYMBOL(decrementer_clockevent);
+
+/*
+ * This always puts next_tb beyond now, so the clock event will never fire
+ * with the usual comparison, no need for a separate test for stopped.
+ */
+#define DEC_CLOCKEVENT_STOPPED ~0ULL
+DEFINE_PER_CPU(u64, decrementers_next_tb) = DEC_CLOCKEVENT_STOPPED;
+EXPORT_SYMBOL_GPL(decrementers_next_tb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_PER_CPU(struct clock_event_device, decrementers);
 
 #define XSEC_PER_SEC (1024*1024)
@@ -125,7 +198,11 @@ unsigned long tb_ticks_per_jiffy;
 unsigned long tb_ticks_per_usec = 100; /* sane default */
 EXPORT_SYMBOL(tb_ticks_per_usec);
 unsigned long tb_ticks_per_sec;
+<<<<<<< HEAD
 EXPORT_SYMBOL(tb_ticks_per_sec);	/* for cputime_t conversions */
+=======
+EXPORT_SYMBOL(tb_ticks_per_sec);	/* for cputime conversions */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DEFINE_SPINLOCK(rtc_lock);
 EXPORT_SYMBOL_GPL(rtc_lock);
@@ -142,6 +219,7 @@ EXPORT_SYMBOL_GPL(ppc_proc_freq);
 unsigned long ppc_tb_freq;
 EXPORT_SYMBOL_GPL(ppc_tb_freq);
 
+<<<<<<< HEAD
 #ifdef CONFIG_VIRT_CPU_ACCOUNTING
 /*
  * Factors for converting from cputime_t (timebase ticks) to
@@ -177,11 +255,20 @@ static void calc_cputime_factors(void)
 	__cputime_clockt_factor = res.result_low;
 }
 
+=======
+bool tb_invalid;
+
+#ifdef CONFIG_VIRT_CPU_ACCOUNTING_NATIVE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Read the SPURR on systems that have it, otherwise the PURR,
  * or if that doesn't exist return the timebase value passed in.
  */
+<<<<<<< HEAD
 static u64 read_spurr(u64 tb)
+=======
+static inline unsigned long read_spurr(unsigned long tb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (cpu_has_feature(CPU_FTR_SPURR))
 		return mfspr(SPRN_SPURR);
@@ -190,6 +277,7 @@ static u64 read_spurr(u64 tb)
 	return tb;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_SPLPAR
 
 /*
@@ -286,10 +374,13 @@ static inline u64 calculate_stolen_time(u64 stop_tb)
 
 #endif /* CONFIG_PPC_SPLPAR */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Account time for a transition between system, hard irq
  * or soft irq state.
  */
+<<<<<<< HEAD
 void account_system_vtime(struct task_struct *tsk)
 {
 	u64 now, nowscaled, delta, deltascaled;
@@ -310,6 +401,21 @@ void account_system_vtime(struct task_struct *tsk)
 	get_paca()->system_time = 0;
 	udelta = get_paca()->user_time - get_paca()->utime_sspurr;
 	get_paca()->utime_sspurr = get_paca()->user_time;
+=======
+static unsigned long vtime_delta_scaled(struct cpu_accounting_data *acct,
+					unsigned long now, unsigned long stime)
+{
+	unsigned long stime_scaled = 0;
+#ifdef CONFIG_ARCH_HAS_SCALED_CPUTIME
+	unsigned long nowscaled, deltascaled;
+	unsigned long utime, utime_scaled;
+
+	nowscaled = read_spurr(now);
+	deltascaled = nowscaled - acct->startspurr;
+	acct->startspurr = nowscaled;
+	utime = acct->utime - acct->utime_sspurr;
+	acct->utime_sspurr = acct->utime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Because we don't read the SPURR on every kernel entry/exit,
@@ -321,6 +427,7 @@ void account_system_vtime(struct task_struct *tsk)
 	 * the user ticks get saved up in paca->user_time_scaled to be
 	 * used by account_process_tick.
 	 */
+<<<<<<< HEAD
 	sys_scaled = delta;
 	user_scaled = udelta;
 	if (deltascaled != delta + udelta) {
@@ -392,6 +499,195 @@ void __delay(unsigned long loops)
 EXPORT_SYMBOL(__delay);
 
 void udelay(unsigned long usecs)
+=======
+	stime_scaled = stime;
+	utime_scaled = utime;
+	if (deltascaled != stime + utime) {
+		if (utime) {
+			stime_scaled = deltascaled * stime / (stime + utime);
+			utime_scaled = deltascaled - stime_scaled;
+		} else {
+			stime_scaled = deltascaled;
+		}
+	}
+	acct->utime_scaled += utime_scaled;
+#endif
+
+	return stime_scaled;
+}
+
+static unsigned long vtime_delta(struct cpu_accounting_data *acct,
+				 unsigned long *stime_scaled,
+				 unsigned long *steal_time)
+{
+	unsigned long now, stime;
+
+	WARN_ON_ONCE(!irqs_disabled());
+
+	now = mftb();
+	stime = now - acct->starttime;
+	acct->starttime = now;
+
+	*stime_scaled = vtime_delta_scaled(acct, now, stime);
+
+	if (IS_ENABLED(CONFIG_PPC_SPLPAR) &&
+			firmware_has_feature(FW_FEATURE_SPLPAR))
+		*steal_time = pseries_calculate_stolen_time(now);
+	else
+		*steal_time = 0;
+
+	return stime;
+}
+
+static void vtime_delta_kernel(struct cpu_accounting_data *acct,
+			       unsigned long *stime, unsigned long *stime_scaled)
+{
+	unsigned long steal_time;
+
+	*stime = vtime_delta(acct, stime_scaled, &steal_time);
+	*stime -= min(*stime, steal_time);
+	acct->steal_time += steal_time;
+}
+
+void vtime_account_kernel(struct task_struct *tsk)
+{
+	struct cpu_accounting_data *acct = get_accounting(tsk);
+	unsigned long stime, stime_scaled;
+
+	vtime_delta_kernel(acct, &stime, &stime_scaled);
+
+	if (tsk->flags & PF_VCPU) {
+		acct->gtime += stime;
+#ifdef CONFIG_ARCH_HAS_SCALED_CPUTIME
+		acct->utime_scaled += stime_scaled;
+#endif
+	} else {
+		acct->stime += stime;
+#ifdef CONFIG_ARCH_HAS_SCALED_CPUTIME
+		acct->stime_scaled += stime_scaled;
+#endif
+	}
+}
+EXPORT_SYMBOL_GPL(vtime_account_kernel);
+
+void vtime_account_idle(struct task_struct *tsk)
+{
+	unsigned long stime, stime_scaled, steal_time;
+	struct cpu_accounting_data *acct = get_accounting(tsk);
+
+	stime = vtime_delta(acct, &stime_scaled, &steal_time);
+	acct->idle_time += stime + steal_time;
+}
+
+static void vtime_account_irq_field(struct cpu_accounting_data *acct,
+				    unsigned long *field)
+{
+	unsigned long stime, stime_scaled;
+
+	vtime_delta_kernel(acct, &stime, &stime_scaled);
+	*field += stime;
+#ifdef CONFIG_ARCH_HAS_SCALED_CPUTIME
+	acct->stime_scaled += stime_scaled;
+#endif
+}
+
+void vtime_account_softirq(struct task_struct *tsk)
+{
+	struct cpu_accounting_data *acct = get_accounting(tsk);
+	vtime_account_irq_field(acct, &acct->softirq_time);
+}
+
+void vtime_account_hardirq(struct task_struct *tsk)
+{
+	struct cpu_accounting_data *acct = get_accounting(tsk);
+	vtime_account_irq_field(acct, &acct->hardirq_time);
+}
+
+static void vtime_flush_scaled(struct task_struct *tsk,
+			       struct cpu_accounting_data *acct)
+{
+#ifdef CONFIG_ARCH_HAS_SCALED_CPUTIME
+	if (acct->utime_scaled)
+		tsk->utimescaled += cputime_to_nsecs(acct->utime_scaled);
+	if (acct->stime_scaled)
+		tsk->stimescaled += cputime_to_nsecs(acct->stime_scaled);
+
+	acct->utime_scaled = 0;
+	acct->utime_sspurr = 0;
+	acct->stime_scaled = 0;
+#endif
+}
+
+/*
+ * Account the whole cputime accumulated in the paca
+ * Must be called with interrupts disabled.
+ * Assumes that vtime_account_kernel/idle() has been called
+ * recently (i.e. since the last entry from usermode) so that
+ * get_paca()->user_time_scaled is up to date.
+ */
+void vtime_flush(struct task_struct *tsk)
+{
+	struct cpu_accounting_data *acct = get_accounting(tsk);
+
+	if (acct->utime)
+		account_user_time(tsk, cputime_to_nsecs(acct->utime));
+
+	if (acct->gtime)
+		account_guest_time(tsk, cputime_to_nsecs(acct->gtime));
+
+	if (IS_ENABLED(CONFIG_PPC_SPLPAR) && acct->steal_time) {
+		account_steal_time(cputime_to_nsecs(acct->steal_time));
+		acct->steal_time = 0;
+	}
+
+	if (acct->idle_time)
+		account_idle_time(cputime_to_nsecs(acct->idle_time));
+
+	if (acct->stime)
+		account_system_index_time(tsk, cputime_to_nsecs(acct->stime),
+					  CPUTIME_SYSTEM);
+
+	if (acct->hardirq_time)
+		account_system_index_time(tsk, cputime_to_nsecs(acct->hardirq_time),
+					  CPUTIME_IRQ);
+	if (acct->softirq_time)
+		account_system_index_time(tsk, cputime_to_nsecs(acct->softirq_time),
+					  CPUTIME_SOFTIRQ);
+
+	vtime_flush_scaled(tsk, acct);
+
+	acct->utime = 0;
+	acct->gtime = 0;
+	acct->idle_time = 0;
+	acct->stime = 0;
+	acct->hardirq_time = 0;
+	acct->softirq_time = 0;
+}
+#endif /* CONFIG_VIRT_CPU_ACCOUNTING_NATIVE */
+
+void __no_kcsan __delay(unsigned long loops)
+{
+	unsigned long start;
+
+	spin_begin();
+	if (tb_invalid) {
+		/*
+		 * TB is in error state and isn't ticking anymore.
+		 * HMI handler was unable to recover from TB error.
+		 * Return immediately, so that kernel won't get stuck here.
+		 */
+		spin_cpu_relax();
+	} else {
+		start = mftb();
+		while (mftb() - start < loops)
+			spin_cpu_relax();
+	}
+	spin_end();
+}
+EXPORT_SYMBOL(__delay);
+
+void __no_kcsan udelay(unsigned long usecs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__delay(tb_ticks_per_usec * usecs);
 }
@@ -444,31 +740,92 @@ static inline void clear_irq_work_pending(void)
 
 DEFINE_PER_CPU(u8, irq_work_pending);
 
+<<<<<<< HEAD
 #define set_irq_work_pending_flag()	__get_cpu_var(irq_work_pending) = 1
 #define test_irq_work_pending()		__get_cpu_var(irq_work_pending)
 #define clear_irq_work_pending()	__get_cpu_var(irq_work_pending) = 0
+=======
+#define set_irq_work_pending_flag()	__this_cpu_write(irq_work_pending, 1)
+#define test_irq_work_pending()		__this_cpu_read(irq_work_pending)
+#define clear_irq_work_pending()	__this_cpu_write(irq_work_pending, 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* 32 vs 64 bit */
 
 void arch_irq_work_raise(void)
 {
+<<<<<<< HEAD
+=======
+	/*
+	 * 64-bit code that uses irq soft-mask can just cause an immediate
+	 * interrupt here that gets soft masked, if this is called under
+	 * local_irq_disable(). It might be possible to prevent that happening
+	 * by noticing interrupts are disabled and setting decrementer pending
+	 * to be replayed when irqs are enabled. The problem there is that
+	 * tracing can call irq_work_raise, including in code that does low
+	 * level manipulations of irq soft-mask state (e.g., trace_hardirqs_on)
+	 * which could get tangled up if we're messing with the same state
+	 * here.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	preempt_disable();
 	set_irq_work_pending_flag();
 	set_dec(1);
 	preempt_enable();
 }
 
+<<<<<<< HEAD
+=======
+static void set_dec_or_work(u64 val)
+{
+	set_dec(val);
+	/* We may have raced with new irq work */
+	if (unlikely(test_irq_work_pending()))
+		set_dec(1);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else  /* CONFIG_IRQ_WORK */
 
 #define test_irq_work_pending()	0
 #define clear_irq_work_pending()
 
+<<<<<<< HEAD
 #endif /* CONFIG_IRQ_WORK */
 
+=======
+static void set_dec_or_work(u64 val)
+{
+	set_dec(val);
+}
+#endif /* CONFIG_IRQ_WORK */
+
+#ifdef CONFIG_KVM_BOOK3S_HV_POSSIBLE
+void timer_rearm_host_dec(u64 now)
+{
+	u64 *next_tb = this_cpu_ptr(&decrementers_next_tb);
+
+	WARN_ON_ONCE(!arch_irqs_disabled());
+	WARN_ON_ONCE(mfmsr() & MSR_EE);
+
+	if (now >= *next_tb) {
+		local_paca->irq_happened |= PACA_IRQ_DEC;
+	} else {
+		now = *next_tb - now;
+		if (now > decrementer_max)
+			now = decrementer_max;
+		set_dec_or_work(now);
+	}
+}
+EXPORT_SYMBOL_GPL(timer_rearm_host_dec);
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * timer_interrupt - gets called when the decrementer overflows,
  * with interrupts disabled.
  */
+<<<<<<< HEAD
 void timer_interrupt(struct pt_regs * regs)
 {
 	struct pt_regs *old_regs;
@@ -551,23 +908,126 @@ static void generic_suspend_enable_irqs(void)
 	local_irq_enable();
 }
 
+=======
+DEFINE_INTERRUPT_HANDLER_ASYNC(timer_interrupt)
+{
+	struct clock_event_device *evt = this_cpu_ptr(&decrementers);
+	u64 *next_tb = this_cpu_ptr(&decrementers_next_tb);
+	struct pt_regs *old_regs;
+	u64 now;
+
+	/*
+	 * Some implementations of hotplug will get timer interrupts while
+	 * offline, just ignore these.
+	 */
+	if (unlikely(!cpu_online(smp_processor_id()))) {
+		set_dec(decrementer_max);
+		return;
+	}
+
+	/* Conditionally hard-enable interrupts. */
+	if (should_hard_irq_enable(regs)) {
+		/*
+		 * Ensure a positive value is written to the decrementer, or
+		 * else some CPUs will continue to take decrementer exceptions.
+		 * When the PPC_WATCHDOG (decrementer based) is configured,
+		 * keep this at most 31 bits, which is about 4 seconds on most
+		 * systems, which gives the watchdog a chance of catching timer
+		 * interrupt hard lockups.
+		 */
+		if (IS_ENABLED(CONFIG_PPC_WATCHDOG))
+			set_dec(0x7fffffff);
+		else
+			set_dec(decrementer_max);
+
+		do_hard_irq_enable();
+	}
+
+#if defined(CONFIG_PPC32) && defined(CONFIG_PPC_PMAC)
+	if (atomic_read(&ppc_n_lost_interrupts) != 0)
+		__do_IRQ(regs);
+#endif
+
+	old_regs = set_irq_regs(regs);
+
+	trace_timer_interrupt_entry(regs);
+
+	if (test_irq_work_pending()) {
+		clear_irq_work_pending();
+		mce_run_irq_context_handlers();
+		irq_work_run();
+	}
+
+	now = get_tb();
+	if (now >= *next_tb) {
+		evt->event_handler(evt);
+		__this_cpu_inc(irq_stat.timer_irqs_event);
+	} else {
+		now = *next_tb - now;
+		if (now > decrementer_max)
+			now = decrementer_max;
+		set_dec_or_work(now);
+		__this_cpu_inc(irq_stat.timer_irqs_others);
+	}
+
+	trace_timer_interrupt_exit(regs);
+
+	set_irq_regs(old_regs);
+}
+EXPORT_SYMBOL(timer_interrupt);
+
+#ifdef CONFIG_GENERIC_CLOCKEVENTS_BROADCAST
+void timer_broadcast_interrupt(void)
+{
+	tick_receive_broadcast();
+	__this_cpu_inc(irq_stat.broadcast_irqs_event);
+}
+#endif
+
+#ifdef CONFIG_SUSPEND
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Overrides the weak version in kernel/power/main.c */
 void arch_suspend_disable_irqs(void)
 {
 	if (ppc_md.suspend_disable_irqs)
 		ppc_md.suspend_disable_irqs();
+<<<<<<< HEAD
 	generic_suspend_disable_irqs();
+=======
+
+	/* Disable the decrementer, so that it doesn't interfere
+	 * with suspending.
+	 */
+
+	set_dec(decrementer_max);
+	local_irq_disable();
+	set_dec(decrementer_max);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Overrides the weak version in kernel/power/main.c */
 void arch_suspend_enable_irqs(void)
 {
+<<<<<<< HEAD
 	generic_suspend_enable_irqs();
+=======
+	local_irq_enable();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ppc_md.suspend_enable_irqs)
 		ppc_md.suspend_enable_irqs();
 }
 #endif
 
+<<<<<<< HEAD
+=======
+unsigned long long tb_to_ns(unsigned long long ticks)
+{
+	return mulhdu(ticks, tb_to_ns_scale) << tb_to_ns_shift;
+}
+EXPORT_SYMBOL_GPL(tb_to_ns);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Scheduler clock - returns current time in nanosec units.
  *
@@ -575,6 +1035,7 @@ void arch_suspend_enable_irqs(void)
  * the high 64 bits of a * b, i.e. (a * b) >> 64, where a and b
  * are 64-bit unsigned numbers.
  */
+<<<<<<< HEAD
 unsigned long long sched_clock(void)
 {
 	if (__USE_RTC())
@@ -586,6 +1047,49 @@ static int __init get_freq(char *name, int cells, unsigned long *val)
 {
 	struct device_node *cpu;
 	const unsigned int *fp;
+=======
+notrace unsigned long long sched_clock(void)
+{
+	return mulhdu(get_tb() - boot_tb, tb_to_ns_scale) << tb_to_ns_shift;
+}
+
+
+#ifdef CONFIG_PPC_PSERIES
+
+/*
+ * Running clock - attempts to give a view of time passing for a virtualised
+ * kernels.
+ * Uses the VTB register if available otherwise a next best guess.
+ */
+unsigned long long running_clock(void)
+{
+	/*
+	 * Don't read the VTB as a host since KVM does not switch in host
+	 * timebase into the VTB when it takes a guest off the CPU, reading the
+	 * VTB would result in reading 'last switched out' guest VTB.
+	 *
+	 * Host kernels are often compiled with CONFIG_PPC_PSERIES checked, it
+	 * would be unsafe to rely only on the #ifdef above.
+	 */
+	if (firmware_has_feature(FW_FEATURE_LPAR) &&
+	    cpu_has_feature(CPU_FTR_ARCH_207S))
+		return mulhdu(get_vtb() - boot_tb, tb_to_ns_scale) << tb_to_ns_shift;
+
+	/*
+	 * This is a next best approximation without a VTB.
+	 * On a host which is running bare metal there should never be any stolen
+	 * time and on a host which doesn't do any virtualisation TB *should* equal
+	 * VTB so it makes no difference anyway.
+	 */
+	return local_clock() - kcpustat_this_cpu->cpustat[CPUTIME_STEAL];
+}
+#endif
+
+static int __init get_freq(char *name, int cells, unsigned long *val)
+{
+	struct device_node *cpu;
+	const __be32 *fp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int found = 0;
 
 	/* The cpu node should have timebase and clock frequency properties */
@@ -604,6 +1108,7 @@ static int __init get_freq(char *name, int cells, unsigned long *val)
 	return found;
 }
 
+<<<<<<< HEAD
 /* should become __cpuinit when secondary_cpu_time_init also is */
 void start_cpu_decrementer(void)
 {
@@ -614,6 +1119,25 @@ void start_cpu_decrementer(void)
 	/* Enable decrementer interrupt */
 	mtspr(SPRN_TCR, TCR_DIE);
 #endif /* defined(CONFIG_BOOKE) || defined(CONFIG_40x) */
+=======
+static void start_cpu_decrementer(void)
+{
+#ifdef CONFIG_BOOKE_OR_40x
+	unsigned int tcr;
+
+	/* Clear any pending timer interrupts */
+	mtspr(SPRN_TSR, TSR_ENW | TSR_WIS | TSR_DIS | TSR_FIS);
+
+	tcr = mfspr(SPRN_TCR);
+	/*
+	 * The watchdog may have already been enabled by u-boot. So leave
+	 * TRC[WP] (Watchdog Period) alone.
+	 */
+	tcr &= TCR_WP_MASK;	/* Clear all bits except for TCR[WP] */
+	tcr |= TCR_DIE;		/* Enable decrementer */
+	mtspr(SPRN_TCR, tcr);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void __init generic_calibrate_decr(void)
@@ -637,27 +1161,45 @@ void __init generic_calibrate_decr(void)
 	}
 }
 
+<<<<<<< HEAD
 int update_persistent_clock(struct timespec now)
+=======
+int update_persistent_clock64(struct timespec64 now)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtc_time tm;
 
 	if (!ppc_md.set_rtc_time)
+<<<<<<< HEAD
 		return 0;
 
 	to_tm(now.tv_sec + 1 + timezone_offset, &tm);
 	tm.tm_year -= 1900;
 	tm.tm_mon -= 1;
+=======
+		return -ENODEV;
+
+	rtc_time64_to_tm(now.tv_sec + 1 + timezone_offset, &tm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ppc_md.set_rtc_time(&tm);
 }
 
+<<<<<<< HEAD
 static void __read_persistent_clock(struct timespec *ts)
+=======
+static void __read_persistent_clock(struct timespec64 *ts)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct rtc_time tm;
 	static int first = 1;
 
 	ts->tv_nsec = 0;
+<<<<<<< HEAD
 	/* XXX this is a litle fragile but will work okay in the short term */
+=======
+	/* XXX this is a little fragile but will work okay in the short term */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (first) {
 		first = 0;
 		if (ppc_md.time_init)
@@ -675,11 +1217,18 @@ static void __read_persistent_clock(struct timespec *ts)
 	}
 	ppc_md.get_rtc_time(&tm);
 
+<<<<<<< HEAD
 	ts->tv_sec = mktime(tm.tm_year+1900, tm.tm_mon+1, tm.tm_mday,
 			    tm.tm_hour, tm.tm_min, tm.tm_sec);
 }
 
 void read_persistent_clock(struct timespec *ts)
+=======
+	ts->tv_sec = rtc_tm_to_time64(&tm);
+}
+
+void read_persistent_clock64(struct timespec64 *ts)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__read_persistent_clock(ts);
 
@@ -692,6 +1241,7 @@ void read_persistent_clock(struct timespec *ts)
 }
 
 /* clocksource code */
+<<<<<<< HEAD
 static cycle_t rtc_read(struct clocksource *cs)
 {
 	return (cycle_t)get_rtc();
@@ -751,16 +1301,25 @@ void update_vsyscall_tz(void)
 {
 	vdso_data->tz_minuteswest = sys_tz.tz_minuteswest;
 	vdso_data->tz_dsttime = sys_tz.tz_dsttime;
+=======
+static notrace u64 timebase_read(struct clocksource *cs)
+{
+	return (u64)get_tb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init clocksource_init(void)
 {
+<<<<<<< HEAD
 	struct clocksource *clock;
 
 	if (__USE_RTC())
 		clock = &clocksource_rtc;
 	else
 		clock = &clocksource_timebase;
+=======
+	struct clocksource *clock = &clocksource_timebase;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (clocksource_register_hz(clock, tb_ticks_per_sec)) {
 		printk(KERN_ERR "clocksource: %s is already registered\n",
@@ -775,6 +1334,7 @@ static void __init clocksource_init(void)
 static int decrementer_set_next_event(unsigned long evt,
 				      struct clock_event_device *dev)
 {
+<<<<<<< HEAD
 	__get_cpu_var(decrementers_next_tb) = get_tb_or_rtc() + evt;
 	set_dec(evt);
 	return 0;
@@ -785,6 +1345,20 @@ static void decrementer_set_mode(enum clock_event_mode mode,
 {
 	if (mode != CLOCK_EVT_MODE_ONESHOT)
 		decrementer_set_next_event(DECREMENTER_MAX, dev);
+=======
+	__this_cpu_write(decrementers_next_tb, get_tb() + evt);
+	set_dec_or_work(evt);
+
+	return 0;
+}
+
+static int decrementer_shutdown(struct clock_event_device *dev)
+{
+	__this_cpu_write(decrementers_next_tb, DEC_CLOCKEVENT_STOPPED);
+	set_dec_or_work(decrementer_max);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void register_decrementer_clockevent(int cpu)
@@ -794,14 +1368,69 @@ static void register_decrementer_clockevent(int cpu)
 	*dec = decrementer_clockevent;
 	dec->cpumask = cpumask_of(cpu);
 
+<<<<<<< HEAD
 	printk_once(KERN_DEBUG "clockevent: %s mult[%x] shift[%d] cpu[%d]\n",
 		    dec->name, dec->mult, dec->shift, cpu);
 
 	clockevents_register_device(dec);
+=======
+	clockevents_config_and_register(dec, ppc_tb_freq, 2, decrementer_max);
+
+	printk_once(KERN_DEBUG "clockevent: %s mult[%x] shift[%d] cpu[%d]\n",
+		    dec->name, dec->mult, dec->shift, cpu);
+
+	/* Set values for KVM, see kvm_emulate_dec() */
+	decrementer_clockevent.mult = dec->mult;
+	decrementer_clockevent.shift = dec->shift;
+}
+
+static void enable_large_decrementer(void)
+{
+	if (!cpu_has_feature(CPU_FTR_ARCH_300))
+		return;
+
+	if (decrementer_max <= DECREMENTER_DEFAULT_MAX)
+		return;
+
+	/*
+	 * If we're running as the hypervisor we need to enable the LD manually
+	 * otherwise firmware should have done it for us.
+	 */
+	if (cpu_has_feature(CPU_FTR_HVMODE))
+		mtspr(SPRN_LPCR, mfspr(SPRN_LPCR) | LPCR_LD);
+}
+
+static void __init set_decrementer_max(void)
+{
+	struct device_node *cpu;
+	u32 bits = 32;
+
+	/* Prior to ISAv3 the decrementer is always 32 bit */
+	if (!cpu_has_feature(CPU_FTR_ARCH_300))
+		return;
+
+	cpu = of_find_node_by_type(NULL, "cpu");
+
+	if (of_property_read_u32(cpu, "ibm,dec-bits", &bits) == 0) {
+		if (bits > 64 || bits < 32) {
+			pr_warn("time_init: firmware supplied invalid ibm,dec-bits");
+			bits = 32;
+		}
+
+		/* calculate the signed maximum given this many bits */
+		decrementer_max = (1ul << (bits - 1)) - 1;
+	}
+
+	of_node_put(cpu);
+
+	pr_info("time_init: %u bit decrementer (max: %llx)\n",
+		bits, decrementer_max);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init init_decrementer_clockevent(void)
 {
+<<<<<<< HEAD
 	int cpu = smp_processor_id();
 
 	clockevents_calc_mult_shift(&decrementer_clockevent, ppc_tb_freq, 4);
@@ -812,16 +1441,29 @@ static void __init init_decrementer_clockevent(void)
 		clockevent_delta2ns(2, &decrementer_clockevent);
 
 	register_decrementer_clockevent(cpu);
+=======
+	register_decrementer_clockevent(smp_processor_id());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void secondary_cpu_time_init(void)
 {
+<<<<<<< HEAD
+=======
+	/* Enable and test the large decrementer for this cpu */
+	enable_large_decrementer();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Start the decrementer on CPUs that have manual control
 	 * such as BookE
 	 */
 	start_cpu_decrementer();
 
+<<<<<<< HEAD
 	/* FIME: Should make unrelatred change to move snapshot_timebase
+=======
+	/* FIME: Should make unrelated change to move snapshot_timebase
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * call here ! */
 	register_decrementer_clockevent(smp_processor_id());
 }
@@ -833,6 +1475,7 @@ void __init time_init(void)
 	u64 scale;
 	unsigned shift;
 
+<<<<<<< HEAD
 	if (__USE_RTC()) {
 		/* 601 processor: dec counts down by 128 every 128ns */
 		ppc_tb_freq = 1000000000;
@@ -844,12 +1487,27 @@ void __init time_init(void)
 		printk(KERN_DEBUG "time_init: processor frequency   = %lu.%.6lu MHz\n",
 		       ppc_proc_freq / 1000000, ppc_proc_freq % 1000000);
 	}
+=======
+	/* Normal PowerPC with timebase register */
+	if (ppc_md.calibrate_decr)
+		ppc_md.calibrate_decr();
+	else
+		generic_calibrate_decr();
+
+	printk(KERN_DEBUG "time_init: decrementer frequency = %lu.%.6lu MHz\n",
+	       ppc_tb_freq / 1000000, ppc_tb_freq % 1000000);
+	printk(KERN_DEBUG "time_init: processor frequency   = %lu.%.6lu MHz\n",
+	       ppc_proc_freq / 1000000, ppc_proc_freq % 1000000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tb_ticks_per_jiffy = ppc_tb_freq / HZ;
 	tb_ticks_per_sec = ppc_tb_freq;
 	tb_ticks_per_usec = ppc_tb_freq / 1000000;
+<<<<<<< HEAD
 	calc_cputime_factors();
 	setup_cputime_one_jiffy();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Compute scale factor for sched_clock.
@@ -870,7 +1528,11 @@ void __init time_init(void)
 	tb_to_ns_scale = scale;
 	tb_to_ns_shift = shift;
 	/* Save the current timebase to pretty up CONFIG_PRINTK_TIME */
+<<<<<<< HEAD
 	boot_tb = get_tb_or_rtc();
+=======
+	boot_tb = get_tb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If platform provided a timezone (pmac), we correct the time */
 	if (timezone_offset) {
@@ -878,9 +1540,18 @@ void __init time_init(void)
 		sys_tz.tz_dsttime = 0;
 	}
 
+<<<<<<< HEAD
 	vdso_data->tb_update_count = 0;
 	vdso_data->tb_ticks_per_sec = tb_ticks_per_sec;
 
+=======
+	vdso_data->tb_ticks_per_sec = tb_ticks_per_sec;
+
+	/* initialise and enable the large decrementer (if we have one) */
+	set_decrementer_max();
+	enable_large_decrementer();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Start the decrementer on CPUs that have manual control
 	 * such as BookE
 	 */
@@ -890,6 +1561,7 @@ void __init time_init(void)
 	clocksource_init();
 
 	init_decrementer_clockevent();
+<<<<<<< HEAD
 }
 
 
@@ -970,6 +1642,12 @@ void to_tm(int tim, struct rtc_time * tm)
 	 * Determine the day of week
 	 */
 	GregorianDay(tm);
+=======
+	tick_setup_hrtimer_broadcast();
+
+	of_clk_init(NULL);
+	enable_sched_clock_irqtime();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1014,6 +1692,32 @@ void calibrate_delay(void)
 	loops_per_jiffy = tb_ticks_per_jiffy;
 }
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_RTC_DRV_GENERIC)
+static int rtc_generic_get_time(struct device *dev, struct rtc_time *tm)
+{
+	ppc_md.get_rtc_time(tm);
+	return 0;
+}
+
+static int rtc_generic_set_time(struct device *dev, struct rtc_time *tm)
+{
+	if (!ppc_md.set_rtc_time)
+		return -EOPNOTSUPP;
+
+	if (ppc_md.set_rtc_time(tm) < 0)
+		return -EOPNOTSUPP;
+
+	return 0;
+}
+
+static const struct rtc_class_ops rtc_generic_ops = {
+	.read_time = rtc_generic_get_time,
+	.set_time = rtc_generic_set_time,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init rtc_init(void)
 {
 	struct platform_device *pdev;
@@ -1021,6 +1725,7 @@ static int __init rtc_init(void)
 	if (!ppc_md.get_rtc_time)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	pdev = platform_device_register_simple("rtc-generic", -1, NULL, 0);
 	if (IS_ERR(pdev))
 		return PTR_ERR(pdev);
@@ -1029,3 +1734,14 @@ static int __init rtc_init(void)
 }
 
 module_init(rtc_init);
+=======
+	pdev = platform_device_register_data(NULL, "rtc-generic", -1,
+					     &rtc_generic_ops,
+					     sizeof(rtc_generic_ops));
+
+	return PTR_ERR_OR_ZERO(pdev);
+}
+
+device_initcall(rtc_init);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

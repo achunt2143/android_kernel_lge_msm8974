@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* xfrm_hash.c: Common hash table code.
  *
  * Copyright (C) 2006 David S. Miller (davem@davemloft.net)
@@ -5,7 +9,11 @@
 
 #include <linux/kernel.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/vmalloc.h>
 #include <linux/slab.h>
 #include <linux/xfrm.h>

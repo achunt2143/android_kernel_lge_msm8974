@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Roccat Kova[+] driver for Linux
  *
@@ -5,10 +9,13 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -27,8 +34,11 @@
 
 static uint profile_numbers[5] = {0, 1, 2, 3, 4};
 
+<<<<<<< HEAD
 static struct class *kovaplus_class;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static uint kovaplus_convert_event_cpi(uint value)
 {
 	return (value == 7 ? 4 : (value == 4 ? 3 : value));
@@ -37,6 +47,11 @@ static uint kovaplus_convert_event_cpi(uint value)
 static void kovaplus_profile_activated(struct kovaplus_device *kovaplus,
 		uint new_profile_index)
 {
+<<<<<<< HEAD
+=======
+	if (new_profile_index >= ARRAY_SIZE(kovaplus->profile_settings))
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kovaplus->actual_profile = new_profile_index;
 	kovaplus->actual_cpi = kovaplus->profile_settings[new_profile_index].cpi_startup_level;
 	kovaplus->actual_x_sensitivity = kovaplus->profile_settings[new_profile_index].sensitivity_x;
@@ -47,23 +62,37 @@ static int kovaplus_send_control(struct usb_device *usb_dev, uint value,
 		enum kovaplus_control_requests request)
 {
 	int retval;
+<<<<<<< HEAD
 	struct kovaplus_control control;
+=======
+	struct roccat_common2_control control;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((request == KOVAPLUS_CONTROL_REQUEST_PROFILE_SETTINGS ||
 			request == KOVAPLUS_CONTROL_REQUEST_PROFILE_BUTTONS) &&
 			value > 4)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	control.command = KOVAPLUS_COMMAND_CONTROL;
 	control.value = value;
 	control.request = request;
 
 	retval = roccat_common_send(usb_dev, KOVAPLUS_COMMAND_CONTROL,
 			&control, sizeof(struct kovaplus_control));
+=======
+	control.command = ROCCAT_COMMON_COMMAND_CONTROL;
+	control.value = value;
+	control.request = request;
+
+	retval = roccat_common2_send(usb_dev, ROCCAT_COMMON_COMMAND_CONTROL,
+			&control, sizeof(struct roccat_common2_control));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
 
+<<<<<<< HEAD
 static int kovaplus_receive_control_status(struct usb_device *usb_dev)
 {
 	int retval;
@@ -110,12 +139,15 @@ static int kovaplus_send(struct usb_device *usb_dev, uint command,
 	return kovaplus_receive_control_status(usb_dev);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int kovaplus_select_profile(struct usb_device *usb_dev, uint number,
 		enum kovaplus_control_requests request)
 {
 	return kovaplus_send_control(usb_dev, number, request);
 }
 
+<<<<<<< HEAD
 static int kovaplus_get_info(struct usb_device *usb_dev,
 		struct kovaplus_info *buf)
 {
@@ -123,6 +155,8 @@ static int kovaplus_get_info(struct usb_device *usb_dev,
 			buf, sizeof(struct kovaplus_info));
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int kovaplus_get_profile_settings(struct usb_device *usb_dev,
 		struct kovaplus_profile_settings *buf, uint number)
 {
@@ -133,6 +167,7 @@ static int kovaplus_get_profile_settings(struct usb_device *usb_dev,
 	if (retval)
 		return retval;
 
+<<<<<<< HEAD
 	return roccat_common_receive(usb_dev, KOVAPLUS_COMMAND_PROFILE_SETTINGS,
 			buf, sizeof(struct kovaplus_profile_settings));
 }
@@ -142,6 +177,10 @@ static int kovaplus_set_profile_settings(struct usb_device *usb_dev,
 {
 	return kovaplus_send(usb_dev, KOVAPLUS_COMMAND_PROFILE_SETTINGS,
 			settings, sizeof(struct kovaplus_profile_settings));
+=======
+	return roccat_common2_receive(usb_dev, KOVAPLUS_COMMAND_PROFILE_SETTINGS,
+			buf, KOVAPLUS_SIZE_PROFILE_SETTINGS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int kovaplus_get_profile_buttons(struct usb_device *usb_dev,
@@ -154,6 +193,7 @@ static int kovaplus_get_profile_buttons(struct usb_device *usb_dev,
 	if (retval)
 		return retval;
 
+<<<<<<< HEAD
 	return roccat_common_receive(usb_dev, KOVAPLUS_COMMAND_PROFILE_BUTTONS,
 			buf, sizeof(struct kovaplus_profile_buttons));
 }
@@ -163,6 +203,10 @@ static int kovaplus_set_profile_buttons(struct usb_device *usb_dev,
 {
 	return kovaplus_send(usb_dev, KOVAPLUS_COMMAND_PROFILE_BUTTONS,
 			buttons, sizeof(struct kovaplus_profile_buttons));
+=======
+	return roccat_common2_receive(usb_dev, KOVAPLUS_COMMAND_PROFILE_BUTTONS,
+			buf, KOVAPLUS_SIZE_PROFILE_BUTTONS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* retval is 0-4 on success, < 0 on error */
@@ -171,7 +215,11 @@ static int kovaplus_get_actual_profile(struct usb_device *usb_dev)
 	struct kovaplus_actual_profile buf;
 	int retval;
 
+<<<<<<< HEAD
 	retval = roccat_common_receive(usb_dev, KOVAPLUS_COMMAND_ACTUAL_PROFILE,
+=======
+	retval = roccat_common2_receive(usb_dev, KOVAPLUS_COMMAND_ACTUAL_PROFILE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&buf, sizeof(struct kovaplus_actual_profile));
 
 	return retval ? retval : buf.actual_profile;
@@ -186,6 +234,7 @@ static int kovaplus_set_actual_profile(struct usb_device *usb_dev,
 	buf.size = sizeof(struct kovaplus_actual_profile);
 	buf.actual_profile = new_profile;
 
+<<<<<<< HEAD
 	return kovaplus_send(usb_dev, KOVAPLUS_COMMAND_ACTUAL_PROFILE,
 			&buf, sizeof(struct kovaplus_actual_profile));
 }
@@ -241,18 +290,131 @@ static ssize_t kovaplus_sysfs_write_profile_settings(struct file *fp,
 			memcpy(profile_settings, buf,
 					sizeof(struct kovaplus_profile_settings));
 	}
+=======
+	return roccat_common2_send_with_status(usb_dev,
+			KOVAPLUS_COMMAND_ACTUAL_PROFILE,
+			&buf, sizeof(struct kovaplus_actual_profile));
+}
+
+static ssize_t kovaplus_sysfs_read(struct file *fp, struct kobject *kobj,
+		char *buf, loff_t off, size_t count,
+		size_t real_size, uint command)
+{
+	struct device *dev = kobj_to_dev(kobj)->parent->parent;
+	struct kovaplus_device *kovaplus = hid_get_drvdata(dev_get_drvdata(dev));
+	struct usb_device *usb_dev = interface_to_usbdev(to_usb_interface(dev));
+	int retval;
+
+	if (off >= real_size)
+		return 0;
+
+	if (off != 0 || count != real_size)
+		return -EINVAL;
+
+	mutex_lock(&kovaplus->kovaplus_lock);
+	retval = roccat_common2_receive(usb_dev, command, buf, real_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&kovaplus->kovaplus_lock);
 
 	if (retval)
 		return retval;
 
+<<<<<<< HEAD
 	return sizeof(struct kovaplus_profile_settings);
+=======
+	return real_size;
+}
+
+static ssize_t kovaplus_sysfs_write(struct file *fp, struct kobject *kobj,
+		void const *buf, loff_t off, size_t count,
+		size_t real_size, uint command)
+{
+	struct device *dev = kobj_to_dev(kobj)->parent->parent;
+	struct kovaplus_device *kovaplus = hid_get_drvdata(dev_get_drvdata(dev));
+	struct usb_device *usb_dev = interface_to_usbdev(to_usb_interface(dev));
+	int retval;
+
+	if (off != 0 || count != real_size)
+		return -EINVAL;
+
+	mutex_lock(&kovaplus->kovaplus_lock);
+	retval = roccat_common2_send_with_status(usb_dev, command,
+			buf, real_size);
+	mutex_unlock(&kovaplus->kovaplus_lock);
+
+	if (retval)
+		return retval;
+
+	return real_size;
+}
+
+#define KOVAPLUS_SYSFS_W(thingy, THINGY) \
+static ssize_t kovaplus_sysfs_write_ ## thingy(struct file *fp, \
+		struct kobject *kobj, struct bin_attribute *attr, char *buf, \
+		loff_t off, size_t count) \
+{ \
+	return kovaplus_sysfs_write(fp, kobj, buf, off, count, \
+			KOVAPLUS_SIZE_ ## THINGY, KOVAPLUS_COMMAND_ ## THINGY); \
+}
+
+#define KOVAPLUS_SYSFS_R(thingy, THINGY) \
+static ssize_t kovaplus_sysfs_read_ ## thingy(struct file *fp, \
+		struct kobject *kobj, struct bin_attribute *attr, char *buf, \
+		loff_t off, size_t count) \
+{ \
+	return kovaplus_sysfs_read(fp, kobj, buf, off, count, \
+			KOVAPLUS_SIZE_ ## THINGY, KOVAPLUS_COMMAND_ ## THINGY); \
+}
+
+#define KOVAPLUS_SYSFS_RW(thingy, THINGY) \
+KOVAPLUS_SYSFS_W(thingy, THINGY) \
+KOVAPLUS_SYSFS_R(thingy, THINGY)
+
+#define KOVAPLUS_BIN_ATTRIBUTE_RW(thingy, THINGY) \
+KOVAPLUS_SYSFS_RW(thingy, THINGY); \
+static struct bin_attribute bin_attr_##thingy = { \
+	.attr = { .name = #thingy, .mode = 0660 }, \
+	.size = KOVAPLUS_SIZE_ ## THINGY, \
+	.read = kovaplus_sysfs_read_ ## thingy, \
+	.write = kovaplus_sysfs_write_ ## thingy \
+}
+
+#define KOVAPLUS_BIN_ATTRIBUTE_W(thingy, THINGY) \
+KOVAPLUS_SYSFS_W(thingy, THINGY); \
+static struct bin_attribute bin_attr_##thingy = { \
+	.attr = { .name = #thingy, .mode = 0220 }, \
+	.size = KOVAPLUS_SIZE_ ## THINGY, \
+	.write = kovaplus_sysfs_write_ ## thingy \
+}
+KOVAPLUS_BIN_ATTRIBUTE_W(control, CONTROL);
+KOVAPLUS_BIN_ATTRIBUTE_RW(info, INFO);
+KOVAPLUS_BIN_ATTRIBUTE_RW(profile_settings, PROFILE_SETTINGS);
+KOVAPLUS_BIN_ATTRIBUTE_RW(profile_buttons, PROFILE_BUTTONS);
+
+static ssize_t kovaplus_sysfs_read_profilex_settings(struct file *fp,
+		struct kobject *kobj, struct bin_attribute *attr, char *buf,
+		loff_t off, size_t count)
+{
+	struct device *dev = kobj_to_dev(kobj)->parent->parent;
+	struct usb_device *usb_dev = interface_to_usbdev(to_usb_interface(dev));
+	ssize_t retval;
+
+	retval = kovaplus_select_profile(usb_dev, *(uint *)(attr->private),
+			KOVAPLUS_CONTROL_REQUEST_PROFILE_SETTINGS);
+	if (retval)
+		return retval;
+
+	return kovaplus_sysfs_read(fp, kobj, buf, off, count,
+			KOVAPLUS_SIZE_PROFILE_SETTINGS,
+			KOVAPLUS_COMMAND_PROFILE_SETTINGS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t kovaplus_sysfs_read_profilex_buttons(struct file *fp,
 		struct kobject *kobj, struct bin_attribute *attr, char *buf,
 		loff_t off, size_t count)
 {
+<<<<<<< HEAD
 	struct device *dev =
 			container_of(kobj, struct device, kobj)->parent->parent;
 	struct kovaplus_device *kovaplus = hid_get_drvdata(dev_get_drvdata(dev));
@@ -308,6 +470,41 @@ static ssize_t kovaplus_sysfs_write_profile_buttons(struct file *fp,
 	return sizeof(struct kovaplus_profile_buttons);
 }
 
+=======
+	struct device *dev = kobj_to_dev(kobj)->parent->parent;
+	struct usb_device *usb_dev = interface_to_usbdev(to_usb_interface(dev));
+	ssize_t retval;
+
+	retval = kovaplus_select_profile(usb_dev, *(uint *)(attr->private),
+			KOVAPLUS_CONTROL_REQUEST_PROFILE_BUTTONS);
+	if (retval)
+		return retval;
+
+	return kovaplus_sysfs_read(fp, kobj, buf, off, count,
+			KOVAPLUS_SIZE_PROFILE_BUTTONS,
+			KOVAPLUS_COMMAND_PROFILE_BUTTONS);
+}
+
+#define PROFILE_ATTR(number)						\
+static struct bin_attribute bin_attr_profile##number##_settings = {	\
+	.attr = { .name = "profile" #number "_settings", .mode = 0440 },	\
+	.size = KOVAPLUS_SIZE_PROFILE_SETTINGS,				\
+	.read = kovaplus_sysfs_read_profilex_settings,			\
+	.private = &profile_numbers[number-1],				\
+};									\
+static struct bin_attribute bin_attr_profile##number##_buttons = {	\
+	.attr = { .name = "profile" #number "_buttons", .mode = 0440 },	\
+	.size = KOVAPLUS_SIZE_PROFILE_BUTTONS,				\
+	.read = kovaplus_sysfs_read_profilex_buttons,			\
+	.private = &profile_numbers[number-1],				\
+};
+PROFILE_ATTR(1);
+PROFILE_ATTR(2);
+PROFILE_ATTR(3);
+PROFILE_ATTR(4);
+PROFILE_ATTR(5);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t kovaplus_sysfs_show_actual_profile(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -329,7 +526,11 @@ static ssize_t kovaplus_sysfs_set_actual_profile(struct device *dev,
 	kovaplus = hid_get_drvdata(dev_get_drvdata(dev));
 	usb_dev = interface_to_usbdev(to_usb_interface(dev));
 
+<<<<<<< HEAD
 	retval = strict_strtoul(buf, 10, &profile);
+=======
+	retval = kstrtoul(buf, 10, &profile);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		return retval;
 
@@ -357,6 +558,12 @@ static ssize_t kovaplus_sysfs_set_actual_profile(struct device *dev,
 
 	return size;
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(actual_profile, 0660,
+		   kovaplus_sysfs_show_actual_profile,
+		   kovaplus_sysfs_set_actual_profile);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t kovaplus_sysfs_show_actual_cpi(struct device *dev,
 		struct device_attribute *attr, char *buf)
@@ -365,6 +572,10 @@ static ssize_t kovaplus_sysfs_show_actual_cpi(struct device *dev,
 			hid_get_drvdata(dev_get_drvdata(dev->parent->parent));
 	return snprintf(buf, PAGE_SIZE, "%d\n", kovaplus->actual_cpi);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(actual_cpi, 0440, kovaplus_sysfs_show_actual_cpi, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t kovaplus_sysfs_show_actual_sensitivity_x(struct device *dev,
 		struct device_attribute *attr, char *buf)
@@ -373,6 +584,11 @@ static ssize_t kovaplus_sysfs_show_actual_sensitivity_x(struct device *dev,
 			hid_get_drvdata(dev_get_drvdata(dev->parent->parent));
 	return snprintf(buf, PAGE_SIZE, "%d\n", kovaplus->actual_x_sensitivity);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(actual_sensitivity_x, 0440,
+		   kovaplus_sysfs_show_actual_sensitivity_x, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t kovaplus_sysfs_show_actual_sensitivity_y(struct device *dev,
 		struct device_attribute *attr, char *buf)
@@ -381,10 +597,16 @@ static ssize_t kovaplus_sysfs_show_actual_sensitivity_y(struct device *dev,
 			hid_get_drvdata(dev_get_drvdata(dev->parent->parent));
 	return snprintf(buf, PAGE_SIZE, "%d\n", kovaplus->actual_y_sensitivity);
 }
+<<<<<<< HEAD
+=======
+static DEVICE_ATTR(actual_sensitivity_y, 0440,
+		   kovaplus_sysfs_show_actual_sensitivity_y, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t kovaplus_sysfs_show_firmware_version(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct kovaplus_device *kovaplus =
 			hid_get_drvdata(dev_get_drvdata(dev->parent->parent));
 	return snprintf(buf, PAGE_SIZE, "%d\n", kovaplus->info.firmware_version);
@@ -477,6 +699,66 @@ static struct bin_attribute kovaplus_bin_attributes[] = {
 		.private = &profile_numbers[4]
 	},
 	__ATTR_NULL
+=======
+	struct kovaplus_device *kovaplus;
+	struct usb_device *usb_dev;
+	struct kovaplus_info info;
+
+	dev = dev->parent->parent;
+	kovaplus = hid_get_drvdata(dev_get_drvdata(dev));
+	usb_dev = interface_to_usbdev(to_usb_interface(dev));
+
+	mutex_lock(&kovaplus->kovaplus_lock);
+	roccat_common2_receive(usb_dev, KOVAPLUS_COMMAND_INFO,
+			&info, KOVAPLUS_SIZE_INFO);
+	mutex_unlock(&kovaplus->kovaplus_lock);
+
+	return snprintf(buf, PAGE_SIZE, "%d\n", info.firmware_version);
+}
+static DEVICE_ATTR(firmware_version, 0440,
+		   kovaplus_sysfs_show_firmware_version, NULL);
+
+static struct attribute *kovaplus_attrs[] = {
+	&dev_attr_actual_cpi.attr,
+	&dev_attr_firmware_version.attr,
+	&dev_attr_actual_profile.attr,
+	&dev_attr_actual_sensitivity_x.attr,
+	&dev_attr_actual_sensitivity_y.attr,
+	NULL,
+};
+
+static struct bin_attribute *kovaplus_bin_attributes[] = {
+	&bin_attr_control,
+	&bin_attr_info,
+	&bin_attr_profile_settings,
+	&bin_attr_profile_buttons,
+	&bin_attr_profile1_settings,
+	&bin_attr_profile2_settings,
+	&bin_attr_profile3_settings,
+	&bin_attr_profile4_settings,
+	&bin_attr_profile5_settings,
+	&bin_attr_profile1_buttons,
+	&bin_attr_profile2_buttons,
+	&bin_attr_profile3_buttons,
+	&bin_attr_profile4_buttons,
+	&bin_attr_profile5_buttons,
+	NULL,
+};
+
+static const struct attribute_group kovaplus_group = {
+	.attrs = kovaplus_attrs,
+	.bin_attrs = kovaplus_bin_attributes,
+};
+
+static const struct attribute_group *kovaplus_groups[] = {
+	&kovaplus_group,
+	NULL,
+};
+
+static const struct class kovaplus_class = {
+	.name = "kovaplus",
+	.dev_groups = kovaplus_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int kovaplus_init_kovaplus_device_struct(struct usb_device *usb_dev,
@@ -487,10 +769,13 @@ static int kovaplus_init_kovaplus_device_struct(struct usb_device *usb_dev,
 
 	mutex_init(&kovaplus->kovaplus_lock);
 
+<<<<<<< HEAD
 	retval = kovaplus_get_info(usb_dev, &kovaplus->info);
 	if (retval)
 		return retval;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 5; ++i) {
 		msleep(wait);
 		retval = kovaplus_get_profile_settings(usb_dev,
@@ -537,8 +822,13 @@ static int kovaplus_init_specials(struct hid_device *hdev)
 			goto exit_free;
 		}
 
+<<<<<<< HEAD
 		retval = roccat_connect(kovaplus_class, hdev,
 				sizeof(struct kovaplus_roccat_report));
+=======
+		retval = roccat_connect(&kovaplus_class, hdev,
+					sizeof(struct kovaplus_roccat_report));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (retval < 0) {
 			hid_err(hdev, "couldn't init char dev\n");
 		} else {
@@ -575,6 +865,12 @@ static int kovaplus_probe(struct hid_device *hdev,
 {
 	int retval;
 
+<<<<<<< HEAD
+=======
+	if (!hid_is_usb(hdev))
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = hid_parse(hdev);
 	if (retval) {
 		hid_err(hdev, "parse failed\n");
@@ -709,6 +1005,7 @@ static int __init kovaplus_init(void)
 {
 	int retval;
 
+<<<<<<< HEAD
 	kovaplus_class = class_create(THIS_MODULE, "kovaplus");
 	if (IS_ERR(kovaplus_class))
 		return PTR_ERR(kovaplus_class);
@@ -718,13 +1015,26 @@ static int __init kovaplus_init(void)
 	retval = hid_register_driver(&kovaplus_driver);
 	if (retval)
 		class_destroy(kovaplus_class);
+=======
+	retval = class_register(&kovaplus_class);
+	if (retval)
+		return retval;
+
+	retval = hid_register_driver(&kovaplus_driver);
+	if (retval)
+		class_unregister(&kovaplus_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
 static void __exit kovaplus_exit(void)
 {
 	hid_unregister_driver(&kovaplus_driver);
+<<<<<<< HEAD
 	class_destroy(kovaplus_class);
+=======
+	class_unregister(&kovaplus_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(kovaplus_init);

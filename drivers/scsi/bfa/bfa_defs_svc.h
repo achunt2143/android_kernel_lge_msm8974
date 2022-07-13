@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
@@ -13,6 +14,16 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __BFA_DEFS_SVC_H__
@@ -105,6 +116,12 @@ struct bfa_fw_ioim_stats_s {
 					 *  an error condition*/
 	u32	wait_for_si;		/*  FW wait for SI */
 	u32	rec_rsp_inval;		/*  REC rsp invalid */
+<<<<<<< HEAD
+=======
+	u32     rec_rsp_xchg_comp;	/*  REC rsp xchg complete */
+	u32     rec_rsp_rd_si_ownd;	/*  REC rsp read si owned */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	seqr_io_abort;		/*  target does not know cmd so abort */
 	u32	seqr_io_retry;		/*  SEQR failed so retry IO */
 
@@ -257,7 +274,10 @@ struct bfa_fw_port_lksm_stats_s {
 	u32    nos_tx;             /*  No. of times NOS tx started         */
 	u32    hwsm_lrr_rx;        /*  No. of times LRR rx-ed by HWSM      */
 	u32    hwsm_lr_rx;         /*  No. of times LR rx-ed by HWSM       */
+<<<<<<< HEAD
 	u32    bbsc_lr;		   /* LKSM LR tx for credit recovery       */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct bfa_fw_port_snsm_stats_s {
@@ -270,6 +290,12 @@ struct bfa_fw_port_snsm_stats_s {
 	u32    sync_lost;          /*  Sync loss count                     */
 	u32    sig_lost;           /*  Signal loss count                   */
 	u32    asn8g_attempts;	   /* SNSM HWSM at 8Gbps attempts	   */
+<<<<<<< HEAD
+=======
+	u32    adapt_success;	   /* SNSM adaptation success	*/
+	u32    adapt_fails;	   /* SNSM adaptation failures */
+	u32    adapt_ign_fails;	   /* SNSM adaptation failures ignored */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct bfa_fw_port_physm_stats_s {
@@ -324,12 +350,52 @@ struct bfa_fw_fcoe_port_stats_s {
 	struct bfa_fw_fip_stats_s		fip_stats;
 };
 
+<<<<<<< HEAD
+=======
+/**
+ * @brief LPSM statistics
+ */
+struct bfa_fw_lpsm_stats_s {
+	u32	cls_rx;		/* LPSM cls_rx			*/
+	u32	cls_tx;		/* LPSM cls_tx			*/
+	u32	arbf0_rx;	/* LPSM abrf0 rcvd		*/
+	u32	arbf0_tx;	/* LPSM abrf0 xmit		*/
+	u32	init_rx;	/* LPSM loop init start		*/
+	u32	unexp_hwst;	/* LPSM unknown hw state	*/
+	u32	unexp_frame;	/* LPSM unknown_frame		*/
+	u32	unexp_prim;	/* LPSM unexpected primitive	*/
+	u32	prev_alpa_unavail; /* LPSM prev alpa unavailable */
+	u32	alpa_unavail;	/* LPSM alpa not available	*/
+	u32	lip_rx;		/* LPSM lip rcvd		*/
+	u32	lip_f7f7_rx;	/* LPSM lip f7f7 rcvd		*/
+	u32	lip_f8_rx;	/* LPSM lip f8 rcvd		*/
+	u32	lip_f8f7_rx;	/* LPSM lip f8f7 rcvd		*/
+	u32	lip_other_rx;	/* LPSM lip other rcvd		*/
+	u32	lip_tx;		/* LPSM lip xmit		*/
+	u32	retry_tov;	/* LPSM retry TOV		*/
+	u32	lip_tov;	/* LPSM LIP wait TOV		*/
+	u32	idle_tov;	/* LPSM idle wait TOV		*/
+	u32	arbf0_tov;	/* LPSM arbfo wait TOV		*/
+	u32	stop_loop_tov;	/* LPSM stop loop wait TOV	*/
+	u32	lixa_tov;	/* LPSM lisa wait TOV		*/
+	u32	lixx_tov;	/* LPSM lilp/lirp wait TOV	*/
+	u32	cls_tov;	/* LPSM cls wait TOV		*/
+	u32	sler;		/* LPSM SLER recvd		*/
+	u32	failed;		/* LPSM failed			*/
+	u32	success;	/* LPSM online			*/
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IOC firmware FC uport stats
  */
 struct bfa_fw_fc_uport_stats_s {
 	struct bfa_fw_port_snsm_stats_s		snsm_stats;
 	struct bfa_fw_port_lksm_stats_s		lksm_stats;
+<<<<<<< HEAD
+=======
+	struct bfa_fw_lpsm_stats_s		lpsm_stats;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -357,11 +423,14 @@ struct bfa_fw_fcxchg_stats_s {
 	u32	ua_state_inv;
 };
 
+<<<<<<< HEAD
 struct bfa_fw_lpsm_stats_s {
 	u32	cls_rx;
 	u32	cls_tx;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Trunk statistics
  */
@@ -376,7 +445,11 @@ struct bfa_fw_trunk_stats_s {
 	u32 rsvd;		/*  padding for 64 bit alignment */
 };
 
+<<<<<<< HEAD
 struct bfa_fw_advsm_stats_s {
+=======
+struct bfa_fw_aport_stats_s {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 flogi_sent;		/*  Flogi sent			*/
 	u32 flogi_acc_recvd;	/*  Flogi Acc received		*/
 	u32 flogi_rjt_recvd;	/*  Flogi rejects received	*/
@@ -386,6 +459,15 @@ struct bfa_fw_advsm_stats_s {
 	u32 elp_accepted;	/*  ELP Accepted		*/
 	u32 elp_rejected;	/*  ELP rejected		*/
 	u32 elp_dropped;	/*  ELP dropped			*/
+<<<<<<< HEAD
+=======
+
+	u32 bbcr_lr_count;	/*!< BBCR Link Resets		*/
+	u32 frame_lost_intrs;	/*!< BBCR Frame loss intrs	*/
+	u32 rrdy_lost_intrs;	/*!< BBCR Rrdy loss intrs	*/
+
+	u32 rsvd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -446,6 +528,17 @@ struct bfa_fw_ct_mod_stats_s {
 };
 
 /*
+<<<<<<< HEAD
+=======
+ * RDS mod stats
+ */
+struct bfa_fw_rds_stats_s {
+	u32	no_fid_drop_err; /* RDS no fid drop error */
+	u32	rsvd;		 /* 64bit align */
+};
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * IOC firmware stats
  */
 struct bfa_fw_stats_s {
@@ -454,6 +547,7 @@ struct bfa_fw_stats_s {
 	struct bfa_fw_io_stats_s	io_stats;
 	struct bfa_fw_port_stats_s	port_stats;
 	struct bfa_fw_fcxchg_stats_s	fcxchg_stats;
+<<<<<<< HEAD
 	struct bfa_fw_lpsm_stats_s	lpsm_stats;
 	struct bfa_fw_lps_stats_s	lps_stats;
 	struct bfa_fw_trunk_stats_s	trunk_stats;
@@ -461,6 +555,15 @@ struct bfa_fw_stats_s {
 	struct bfa_fw_mac_mod_stats_s	macmod_stats;
 	struct bfa_fw_ct_mod_stats_s	ctmod_stats;
 	struct bfa_fw_eth_sndrcv_stats_s	ethsndrcv_stats;
+=======
+	struct bfa_fw_lps_stats_s	lps_stats;
+	struct bfa_fw_trunk_stats_s	trunk_stats;
+	struct bfa_fw_aport_stats_s	aport_stats;
+	struct bfa_fw_mac_mod_stats_s	macmod_stats;
+	struct bfa_fw_ct_mod_stats_s	ctmod_stats;
+	struct bfa_fw_eth_sndrcv_stats_s	ethsndrcv_stats;
+	struct bfa_fw_rds_stats_s	rds_stats;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define BFA_IOCFC_PATHTOV_MAX	60
@@ -494,13 +597,53 @@ enum bfa_qos_bw_alloc {
 	BFA_QOS_BW_LOW  =  10,	/*  bandwidth allocation for Low */
 };
 #pragma pack(1)
+<<<<<<< HEAD
+=======
+
+struct bfa_qos_bw_s {
+	u8	qos_bw_set;
+	u8	high;
+	u8	med;
+	u8	low;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * QoS attribute returned in QoS Query
  */
 struct bfa_qos_attr_s {
+<<<<<<< HEAD
 	u8		state;		/*  QoS current state */
 	u8		rsvd[3];
 	u32  total_bb_cr;		/*  Total BB Credits */
+=======
+	u8	state;		/*  QoS current state */
+	u8	rsvd1[3];
+	u32	total_bb_cr;	/*  Total BB Credits */
+	struct bfa_qos_bw_s qos_bw;	/* QOS bw cfg */
+	struct bfa_qos_bw_s qos_bw_op;	/* QOS bw operational */
+};
+
+enum bfa_bbcr_state {
+	BFA_BBCR_DISABLED,	/*!< BBCR is disable */
+	BFA_BBCR_ONLINE,	/*!< BBCR is online  */
+	BFA_BBCR_OFFLINE,	/*!< BBCR is offline */
+};
+
+enum bfa_bbcr_err_reason {
+	BFA_BBCR_ERR_REASON_NONE, /*!< Unknown */
+	BFA_BBCR_ERR_REASON_SPEED_UNSUP, /*!< Port speed < max sup_speed */
+	BFA_BBCR_ERR_REASON_PEER_UNSUP,	/*!< BBCR is disable on peer port */
+	BFA_BBCR_ERR_REASON_NON_BRCD_SW, /*!< Connected to non BRCD switch */
+	BFA_BBCR_ERR_REASON_FLOGI_RJT, /*!< Login rejected by the switch */
+};
+
+struct bfa_bbcr_attr_s {
+	u8	state;
+	u8	peer_bb_scn;
+	u8	reason;
+	u8	rsvd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -692,7 +835,13 @@ enum bfa_port_states {
 	BFA_PORT_ST_FWMISMATCH		= 12,
 	BFA_PORT_ST_PREBOOT_DISABLED	= 13,
 	BFA_PORT_ST_TOGGLING_QWAIT	= 14,
+<<<<<<< HEAD
 	BFA_PORT_ST_ACQ_ADDR		= 15,
+=======
+	BFA_PORT_ST_FAA_MISCONFIG	= 15,
+	BFA_PORT_ST_DPORT		= 16,
+	BFA_PORT_ST_DDPORT		= 17,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BFA_PORT_ST_MAX_STATE,
 };
 
@@ -714,9 +863,17 @@ enum bfa_port_type {
  */
 enum bfa_port_topology {
 	BFA_PORT_TOPOLOGY_NONE = 0,	/*  No valid topology */
+<<<<<<< HEAD
 	BFA_PORT_TOPOLOGY_P2P  = 1,	/*  P2P only */
 	BFA_PORT_TOPOLOGY_LOOP = 2,	/*  LOOP topology */
 	BFA_PORT_TOPOLOGY_AUTO = 3,	/*  auto topology selection */
+=======
+	BFA_PORT_TOPOLOGY_P2P_OLD_VER = 1, /* P2P def for older ver */
+	BFA_PORT_TOPOLOGY_LOOP = 2,	/* LOOP topology */
+	BFA_PORT_TOPOLOGY_AUTO_OLD_VER = 3, /* auto def for older ver */
+	BFA_PORT_TOPOLOGY_AUTO = 4,	/* auto topology selection */
+	BFA_PORT_TOPOLOGY_P2P = 5,	/* P2P only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -760,6 +917,10 @@ enum bfa_port_linkstate_rsn {
 	BFA_PORT_LINKSTATE_RSN_LOCAL_FAULT	= 9,
 	BFA_PORT_LINKSTATE_RSN_REMOTE_FAULT	= 10,
 	BFA_PORT_LINKSTATE_RSN_TIMEOUT		= 11,
+<<<<<<< HEAD
+=======
+	BFA_PORT_LINKSTATE_RSN_FAA_MISCONFIG	= 12,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 
@@ -794,7 +955,11 @@ enum bfa_port_linkstate_rsn {
 
 /*
  * Initially flash content may be fff. On making LUN mask enable and disable
+<<<<<<< HEAD
  * state chnage.  when report lun command is being processed it goes from
+=======
+ * state change.  when report lun command is being processed it goes from
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * BFA_LUN_MASK_ACTIVE to BFA_LUN_MASK_FETCH and comes back to
  * BFA_LUN_MASK_ACTIVE.
  */
@@ -811,6 +976,18 @@ enum bfa_lunmask_state_s {
 	BFA_LUNMASK_UNINITIALIZED = 0xff,
 };
 
+<<<<<<< HEAD
+=======
+/**
+ * FEC states
+ */
+enum bfa_fec_state_s {
+	BFA_FEC_ONLINE = 1,		/*!< FEC is online */
+	BFA_FEC_OFFLINE = 2,		/*!< FEC is offline */
+	BFA_FEC_OFFLINE_NOT_16G = 3,	/*!< FEC is offline (speed not 16Gig) */
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #pragma pack(1)
 /*
  * LUN mask configuration
@@ -833,6 +1010,25 @@ struct bfa_lunmask_cfg_s {
 	struct bfa_lun_mask_s	lun_list[MAX_LUN_MASK_CFG];
 };
 
+<<<<<<< HEAD
+=======
+struct bfa_throttle_cfg_s {
+	u16	is_valid;
+	u16	value;
+	u32	rsvd;
+};
+
+struct bfa_defs_fcpim_throttle_s {
+	u16	max_value;
+	u16	cur_value;
+	u16	cfg_value;
+	u16	rsvd;
+};
+
+#define BFA_BB_SCN_DEF 3
+#define BFA_BB_SCN_MAX 0x0F
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *      Physical port configuration
  */
@@ -848,12 +1044,22 @@ struct bfa_port_cfg_s {
 	u8	 tx_bbcredit;	/*  transmit buffer credits	*/
 	u8	 ratelimit;	/*  ratelimit enabled or not	*/
 	u8	 trl_def_speed;	/*  ratelimit default speed	*/
+<<<<<<< HEAD
 	u8	 bb_scn;	/*  BB_SCN value from FLOGI Exchg */
 	u8	 bb_scn_state;	/*  Config state of BB_SCN */
 	u8	 faa_state;	/*  FAA enabled/disabled        */
 	u8	 rsvd[1];
 	u16	 path_tov;	/*  device path timeout	*/
 	u16	 q_depth;	/*  SCSI Queue depth		*/
+=======
+	u8	 bb_cr_enabled; /*!< Config state of BB_SCN	*/
+	u8	 bb_scn;	/*!< BB_SCN value for FLOGI Exchg */
+	u8	 faa_state;	/*  FAA enabled/disabled        */
+	u8	 rsvd1;
+	u16	 path_tov;	/*  device path timeout	*/
+	u16	 q_depth;	/*  SCSI Queue depth		*/
+	struct bfa_qos_bw_s qos_bw;	/* QOS bandwidth	*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #pragma pack()
 
@@ -890,6 +1096,10 @@ struct bfa_port_attr_s {
 	bfa_boolean_t		link_e2e_beacon; /* link beacon is on */
 	bfa_boolean_t		bbsc_op_status;	/* fc credit recovery oper
 						 * state */
+<<<<<<< HEAD
+=======
+	enum bfa_fec_state_s	fec_state;	/*!< current FEC state */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Dynamic field - info from FCS
@@ -971,6 +1181,16 @@ struct bfa_trunk_vc_attr_s {
 	u16 vc_credits[8];
 };
 
+<<<<<<< HEAD
+=======
+struct bfa_fcport_loop_info_s {
+	u8	myalpa;		/* alpa claimed */
+	u8	alpabm_val;	/* alpa bitmap valid or not (1 or 0) */
+	u8	resvd[6];
+	struct fc_alpabm_s alpabm;	/* alpa bitmap */
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Link state information
  */
@@ -981,6 +1201,7 @@ struct bfa_port_link_s {
 	u8	 speed;		/*  Link speed (1/2/4/8 G) */
 	u32	 linkstate_opt; /*  Linkstate optional data (debug) */
 	u8	 trunked;	/*  Trunked or not (1 or 0) */
+<<<<<<< HEAD
 	u8	 resvd[3];
 	struct bfa_qos_attr_s  qos_attr;   /* QoS Attributes */
 	union {
@@ -988,6 +1209,22 @@ struct bfa_port_link_s {
 		struct bfa_trunk_vc_attr_s trunk_vc_attr;
 		struct bfa_fcport_fcf_s fcf; /*  FCF information (for FCoE) */
 	} vc_fcf;
+=======
+	u8	 fec_state;	/*!< State of FEC */
+	u8	 resvd[6];
+	struct bfa_qos_attr_s  qos_attr;   /* QoS Attributes */
+	union {
+		struct bfa_fcport_loop_info_s loop_info;
+		struct bfa_bbcr_attr_s bbcr_attr;
+		union {
+			struct bfa_qos_vc_attr_s qos_vc_attr;
+					/*  VC info from ELP */
+			struct bfa_trunk_vc_attr_s trunk_vc_attr;
+			struct bfa_fcport_fcf_s fcf;
+					/*  FCF information (for FCoE) */
+		} vc_fcf;
+	} attr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #pragma pack()
 
@@ -1112,6 +1349,12 @@ struct bfa_port_fc_stats_s {
 	u64     tx_frames;      /*  Tx frames                   */
 	u64     tx_words;       /*  Tx words                    */
 	u64     tx_lip;         /*  Tx LIP                      */
+<<<<<<< HEAD
+=======
+	u64	tx_lip_f7f7;	/*  Tx LIP_F7F7		*/
+	u64	tx_lip_f8f7;	/*  Tx LIP_F8F7		*/
+	u64	tx_arbf0;	/*  Tx ARB F0			*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64     tx_nos;         /*  Tx NOS                      */
 	u64     tx_ols;         /*  Tx OLS                      */
 	u64     tx_lr;          /*  Tx LR                       */
@@ -1119,6 +1362,12 @@ struct bfa_port_fc_stats_s {
 	u64     rx_frames;      /*  Rx frames                   */
 	u64     rx_words;       /*  Rx words                    */
 	u64     lip_count;      /*  Rx LIP                      */
+<<<<<<< HEAD
+=======
+	u64	rx_lip_f7f7;	/*  Rx LIP_F7F7		*/
+	u64	rx_lip_f8f7;	/*  Rx LIP_F8F7		*/
+	u64	rx_arbf0;	/*  Rx ARB F0			*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64     nos_count;      /*  Rx NOS                      */
 	u64     ols_count;      /*  Rx OLS                      */
 	u64     lr_count;       /*  Rx LR                       */
@@ -1137,9 +1386,18 @@ struct bfa_port_fc_stats_s {
 	u64     bad_os_count;   /*  Invalid ordered sets        */
 	u64     err_enc_out;    /*  Encoding err nonframe_8b10b */
 	u64     err_enc;        /*  Encoding err frame_8b10b    */
+<<<<<<< HEAD
 	u64	bbsc_frames_lost; /* Credit Recovery-Frames Lost  */
 	u64	bbsc_credits_lost; /* Credit Recovery-Credits Lost */
 	u64	bbsc_link_resets; /* Credit Recovery-Link Resets   */
+=======
+	u64	bbcr_frames_lost; /*!< BBCR Frames Lost */
+	u64	bbcr_rrdys_lost; /*!< BBCR RRDYs Lost */
+	u64	bbcr_link_resets; /*!< BBCR Link Resets */
+	u64	bbcr_frame_lost_intrs; /*!< BBCR Frame loss intrs */
+	u64	bbcr_rrdy_lost_intrs; /*!< BBCR Rrdy loss intrs */
+	u64	loop_timeouts;	/*  Loop timeouts		*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -1318,9 +1576,16 @@ union bfa_aen_data_u {
 struct bfa_aen_entry_s {
 	struct list_head	qe;
 	enum bfa_aen_category   aen_category;
+<<<<<<< HEAD
 	u32                     aen_type;
 	union bfa_aen_data_u    aen_data;
 	struct timeval          aen_tv;
+=======
+	int                     aen_type;
+	union bfa_aen_data_u    aen_data;
+	u64			aen_tv_sec;
+	u64			aen_tv_usec;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32                     seq_num;
 	u32                     bfad_num;
 };

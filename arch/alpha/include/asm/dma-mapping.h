@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ALPHA_DMA_MAPPING_H
 #define _ALPHA_DMA_MAPPING_H
 
@@ -50,4 +51,21 @@ static inline int dma_set_mask(struct device *dev, u64 mask)
 
 #define dma_cache_sync(dev, va, size, dir)		  ((void)0)
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ALPHA_DMA_MAPPING_H
+#define _ALPHA_DMA_MAPPING_H
+
+extern const struct dma_map_ops alpha_pci_ops;
+
+static inline const struct dma_map_ops *get_arch_dma_ops(void)
+{
+#ifdef CONFIG_ALPHA_JENSEN
+	return NULL;
+#else
+	return &alpha_pci_ops;
+#endif
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* _ALPHA_DMA_MAPPING_H */

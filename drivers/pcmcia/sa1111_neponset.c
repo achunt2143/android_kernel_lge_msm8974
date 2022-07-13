@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/drivers/pcmcia/sa1100_neponset.c
  *
@@ -9,12 +13,19 @@
 #include <linux/errno.h>
 #include <linux/init.h>
 
+<<<<<<< HEAD
 #include <mach/hardware.h>
 #include <asm/mach-types.h>
 #include <mach/neponset.h>
 #include <asm/hardware/sa1111.h>
 
 #include "sa1111_generic.h"
+=======
+#include <asm/mach-types.h>
+
+#include "sa1111_generic.h"
+#include "max1600.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Neponset uses the Maxim MAX1600, with the following connections:
@@ -39,10 +50,27 @@
  * "Standard Intel code" mode. Refer to the Maxim data sheet for
  * the corresponding truth table.
  */
+<<<<<<< HEAD
+=======
+static int neponset_pcmcia_hw_init(struct soc_pcmcia_socket *skt)
+{
+	struct max1600 *m;
+	int ret;
+
+	ret = max1600_init(skt->socket.dev.parent, &m,
+			   skt->nr ? MAX1600_CHAN_B : MAX1600_CHAN_A,
+			   MAX1600_CODE_LOW);
+	if (ret == 0)
+		skt->driver_data = m;
+
+	return ret;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int
 neponset_pcmcia_configure_socket(struct soc_pcmcia_socket *skt, const socket_state_t *state)
 {
+<<<<<<< HEAD
 	struct sa1111_pcmcia_socket *s = to_skt(skt);
 	unsigned int ncr_mask, ncr_set, pa_dwr_mask, pa_dwr_set;
 	int ret;
@@ -97,12 +125,24 @@ neponset_pcmcia_configure_socket(struct soc_pcmcia_socket *skt, const socket_sta
 		neponset_ncr_frob(ncr_mask, ncr_set);
 		sa1111_set_io(s->dev, pa_dwr_mask, pa_dwr_set);
 	}
+=======
+	struct max1600 *m = skt->driver_data;
+	int ret;
+
+	ret = sa1111_pcmcia_configure_socket(skt, state);
+	if (ret == 0)
+		ret = max1600_configure(m, state->Vcc, state->Vpp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
 static struct pcmcia_low_level neponset_pcmcia_ops = {
 	.owner			= THIS_MODULE,
+<<<<<<< HEAD
+=======
+	.hw_init		= neponset_pcmcia_hw_init,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.configure_socket	= neponset_pcmcia_configure_socket,
 	.first			= 0,
 	.nr			= 2,
@@ -110,6 +150,7 @@ static struct pcmcia_low_level neponset_pcmcia_ops = {
 
 int pcmcia_neponset_init(struct sa1111_dev *sadev)
 {
+<<<<<<< HEAD
 	int ret = -ENODEV;
 
 	if (machine_is_assabet()) {
@@ -126,4 +167,9 @@ int pcmcia_neponset_init(struct sa1111_dev *sadev)
 	}
 
 	return ret;
+=======
+	sa11xx_drv_pcmcia_ops(&neponset_pcmcia_ops);
+	return sa1111_pcmcia_add(sadev, &neponset_pcmcia_ops,
+				 sa11xx_drv_pcmcia_add_one);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

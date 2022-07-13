@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* const.h: Macros for dealing with constants.  */
 
 #ifndef _LINUX_CONST_H
@@ -22,3 +23,11 @@
 #endif
 
 #endif /* !(_LINUX_CONST_H) */
+=======
+#ifndef _LINUX_CONST_H
+#define _LINUX_CONST_H
+
+#include <vdso/const.h>
+
+#endif /* _LINUX_CONST_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __LINUX_FUNCTIONFS_H__
 #define __LINUX_FUNCTIONFS_H__ 1
 
@@ -207,5 +208,12 @@ static void functionfs_release_dev_callback(struct ffs_data *ffs_data)
 
 
 #endif
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __LINUX_FUNCTIONFS_H__
+#define __LINUX_FUNCTIONFS_H__ 1
+
+#include <uapi/linux/usb/functionfs.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

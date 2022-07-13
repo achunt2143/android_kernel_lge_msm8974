@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 if ARCH_DAVINCI
 
 config AINTC
@@ -234,6 +235,42 @@ config MACH_OMAPL138_HAWKBOARD
 	  Information of this board may be found at
 	  http://www.hawkboard.org/
 
+=======
+# SPDX-License-Identifier: GPL-2.0
+
+menuconfig ARCH_DAVINCI
+	bool "TI DaVinci"
+	depends on ARCH_MULTI_V5
+	depends on CPU_LITTLE_ENDIAN
+	select CPU_ARM926T
+	select DAVINCI_TIMER
+	select ZONE_DMA
+	select PM_GENERIC_DOMAINS if PM
+	select PM_GENERIC_DOMAINS_OF if PM && OF
+	select REGMAP_MMIO
+	select RESET_CONTROLLER
+	select PINCTRL
+	select PINCTRL_SINGLE
+
+if ARCH_DAVINCI
+
+comment "DaVinci Core Type"
+
+config ARCH_DAVINCI_DA830
+	bool "DA830/OMAP-L137/AM17x based system"
+	select ARCH_DAVINCI_DA8XX
+	# needed on silicon revs 1.0, 1.1:
+	select CPU_DCACHE_WRITETHROUGH if !CPU_DCACHE_DISABLE
+	select DAVINCI_CP_INTC
+
+config ARCH_DAVINCI_DA850
+	bool "DA850/OMAP-L138/AM18x based system"
+	select DAVINCI_CP_INTC
+
+config ARCH_DAVINCI_DA8XX
+	bool
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 config DAVINCI_MUX
 	bool "DAVINCI multiplexing support"
 	depends on ARCH_DAVINCI
@@ -259,6 +296,7 @@ config DAVINCI_MUX_WARNINGS
 	  to change the pin multiplexing setup. When there are no warnings
 	  printed, it's safe to deselect DAVINCI_MUX for your product.
 
+<<<<<<< HEAD
 config DAVINCI_RESET_CLOCKS
 	bool "Reset unused clocks during boot"
 	depends on ARCH_DAVINCI
@@ -273,4 +311,6 @@ config DAVINCI_RESET_CLOCKS
 
 endmenu
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif

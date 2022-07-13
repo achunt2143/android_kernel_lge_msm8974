@@ -18,8 +18,13 @@
 
 #include <linux/nl80211.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/ath9k_platform.h>
 #include <linux/module.h>
+=======
+#include <linux/module.h>
+#include <linux/mod_devicetable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ath9k.h"
 
 static const struct platform_device_id ath9k_platform_id_table[] = {
@@ -35,6 +40,21 @@ static const struct platform_device_id ath9k_platform_id_table[] = {
 		.name = "ar934x_wmac",
 		.driver_data = AR9300_DEVID_AR9340,
 	},
+<<<<<<< HEAD
+=======
+	{
+		.name = "qca955x_wmac",
+		.driver_data = AR9300_DEVID_QCA955X,
+	},
+	{
+		.name = "qca953x_wmac",
+		.driver_data = AR9300_DEVID_AR953X,
+	},
+	{
+		.name = "qca956x_wmac",
+		.driver_data = AR9300_DEVID_QCA956X,
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{},
 };
 
@@ -46,6 +66,7 @@ static void ath_ahb_read_cachesize(struct ath_common *common, int *csz)
 
 static bool ath_ahb_eeprom_read(struct ath_common *common, u32 off, u16 *data)
 {
+<<<<<<< HEAD
 	struct ath_softc *sc = (struct ath_softc *)common->priv;
 	struct platform_device *pdev = to_platform_device(sc->dev);
 	struct ath9k_platform_data *pdata;
@@ -63,6 +84,14 @@ static bool ath_ahb_eeprom_read(struct ath_common *common, u32 off, u16 *data)
 }
 
 static struct ath_bus_ops ath_ahb_bus_ops  = {
+=======
+	ath_err(common, "%s: eeprom data has to be provided externally\n",
+		__func__);
+	return false;
+}
+
+static const struct ath_bus_ops ath_ahb_bus_ops  = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ath_bus_type = ATH_AHB,
 	.read_cachesize = ath_ahb_read_cachesize,
 	.eeprom_read = ath_ahb_eeprom_read,
@@ -80,15 +109,22 @@ static int ath_ahb_probe(struct platform_device *pdev)
 	struct ath_hw *ah;
 	char hw_name[64];
 
+<<<<<<< HEAD
 	if (!pdev->dev.platform_data) {
 		dev_err(&pdev->dev, "no platform data specified\n");
 		ret = -EINVAL;
 		goto err_out;
+=======
+	if (!dev_get_platdata(&pdev->dev)) {
+		dev_err(&pdev->dev, "no platform data specified\n");
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (res == NULL) {
 		dev_err(&pdev->dev, "no memory resource found\n");
+<<<<<<< HEAD
 		ret = -ENXIO;
 		goto err_out;
 	}
@@ -114,6 +150,26 @@ static int ath_ahb_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "no memory for ieee80211_hw\n");
 		ret = -ENOMEM;
 		goto err_iounmap;
+=======
+		return -ENXIO;
+	}
+
+	mem = devm_ioremap(&pdev->dev, res->start, resource_size(res));
+	if (mem == NULL) {
+		dev_err(&pdev->dev, "ioremap failed\n");
+		return -ENOMEM;
+	}
+
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		return irq;
+
+	ath9k_fill_chanctx_ops();
+	hw = ieee80211_alloc_hw(sizeof(struct ath_softc), &ath9k_ops);
+	if (hw == NULL) {
+		dev_err(&pdev->dev, "no memory for ieee80211_hw\n");
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	SET_IEEE80211_DEV(hw, &pdev->dev);
@@ -125,9 +181,12 @@ static int ath_ahb_probe(struct platform_device *pdev)
 	sc->mem = mem;
 	sc->irq = irq;
 
+<<<<<<< HEAD
 	/* Will be cleared in ath9k_start() */
 	sc->sc_flags |= SC_OP_INVALID;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = request_irq(irq, ath_isr, IRQF_SHARED, "ath9k", sc);
 	if (ret) {
 		dev_err(&pdev->dev, "request_irq failed\n");
@@ -142,8 +201,13 @@ static int ath_ahb_probe(struct platform_device *pdev)
 
 	ah = sc->sc_ah;
 	ath9k_hw_name(ah, hw_name, sizeof(hw_name));
+<<<<<<< HEAD
 	wiphy_info(hw->wiphy, "%s mem=0x%lx, irq=%d\n",
 		   hw_name, (unsigned long)mem, irq);
+=======
+	wiphy_info(hw->wiphy, "%s mem=0x%p, irq=%d\n",
+		   hw_name, mem, irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -151,6 +215,7 @@ static int ath_ahb_probe(struct platform_device *pdev)
 	free_irq(irq, sc);
  err_free_hw:
 	ieee80211_free_hw(hw);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
  err_iounmap:
 	iounmap(mem);
@@ -159,29 +224,48 @@ static int ath_ahb_probe(struct platform_device *pdev)
 }
 
 static int ath_ahb_remove(struct platform_device *pdev)
+=======
+	return ret;
+}
+
+static void ath_ahb_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_hw *hw = platform_get_drvdata(pdev);
 
 	if (hw) {
 		struct ath_softc *sc = hw->priv;
+<<<<<<< HEAD
 		void __iomem *mem = sc->mem;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		ath9k_deinit_device(sc);
 		free_irq(sc->irq, sc);
 		ieee80211_free_hw(sc->hw);
+<<<<<<< HEAD
 		iounmap(mem);
 		platform_set_drvdata(pdev, NULL);
 	}
 
 	return 0;
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver ath_ahb_driver = {
 	.probe      = ath_ahb_probe,
+<<<<<<< HEAD
 	.remove     = ath_ahb_remove,
 	.driver		= {
 		.name	= "ath9k",
 		.owner	= THIS_MODULE,
+=======
+	.remove_new = ath_ahb_remove,
+	.driver		= {
+		.name	= "ath9k",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.id_table    = ath9k_platform_id_table,
 };

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Descending-priority-sorted double-linked list
  *
@@ -12,8 +16,11 @@
  * Simplifications of the original code by
  * Oleg Nesterov <oleg@tv-sign.ru>
  *
+<<<<<<< HEAD
  * Licensed under the FSF's GNU Public License v2 or later.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based on simple lists (include/linux/list.h).
  *
  * This is a priority-sorted list of nodes; each node has a
@@ -70,11 +77,15 @@
  * is lowest priority.
  *
  * No locking is done, up to the caller.
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_PLIST_H_
 #define _LINUX_PLIST_H_
 
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/list.h>
 
@@ -87,6 +98,13 @@ struct plist_node {
 	struct list_head	prio_list;
 	struct list_head	node_list;
 };
+=======
+#include <linux/container_of.h>
+#include <linux/list.h>
+#include <linux/plist_types.h>
+
+#include <asm/bug.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * PLIST_HEAD_INIT - static struct plist_head initializer
@@ -98,6 +116,16 @@ struct plist_node {
 }
 
 /**
+<<<<<<< HEAD
+=======
+ * PLIST_HEAD - declare and init plist_head
+ * @head:	name for struct plist_head variable
+ */
+#define PLIST_HEAD(head) \
+	struct plist_head head = PLIST_HEAD_INIT(head)
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * PLIST_NODE_INIT - static struct plist_node initializer
  * @node:	struct plist_node variable name
  * @__prio:	initial node priority
@@ -134,6 +162,11 @@ static inline void plist_node_init(struct plist_node *node, int prio)
 extern void plist_add(struct plist_node *node, struct plist_head *head);
 extern void plist_del(struct plist_node *node, struct plist_head *head);
 
+<<<<<<< HEAD
+=======
+extern void plist_requeue(struct plist_node *node, struct plist_head *head);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * plist_for_each - iterate over the plist
  * @pos:	the type * to use as a loop counter
@@ -143,6 +176,19 @@ extern void plist_del(struct plist_node *node, struct plist_head *head);
 	 list_for_each_entry(pos, &(head)->node_list, node_list)
 
 /**
+<<<<<<< HEAD
+=======
+ * plist_for_each_continue - continue iteration over the plist
+ * @pos:	the type * to use as a loop cursor
+ * @head:	the head for your list
+ *
+ * Continue to iterate over plist, continuing after the current position.
+ */
+#define plist_for_each_continue(pos, head)	\
+	 list_for_each_entry_continue(pos, &(head)->node_list, node_list)
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * plist_for_each_safe - iterate safely over a plist of given type
  * @pos:	the type * to use as a loop counter
  * @n:	another type * to use as temporary storage
@@ -157,17 +203,40 @@ extern void plist_del(struct plist_node *node, struct plist_head *head);
  * plist_for_each_entry	- iterate over list of given type
  * @pos:	the type * to use as a loop counter
  * @head:	the head for your list
+<<<<<<< HEAD
  * @mem:	the name of the list_struct within the struct
+=======
+ * @mem:	the name of the list_head within the struct
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define plist_for_each_entry(pos, head, mem)	\
 	 list_for_each_entry(pos, &(head)->node_list, mem.node_list)
 
 /**
+<<<<<<< HEAD
+=======
+ * plist_for_each_entry_continue - continue iteration over list of given type
+ * @pos:	the type * to use as a loop cursor
+ * @head:	the head for your list
+ * @m:		the name of the list_head within the struct
+ *
+ * Continue to iterate over list of given type, continuing after
+ * the current position.
+ */
+#define plist_for_each_entry_continue(pos, head, m)	\
+	list_for_each_entry_continue(pos, &(head)->node_list, m.node_list)
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * plist_for_each_entry_safe - iterate safely over list of given type
  * @pos:	the type * to use as a loop counter
  * @n:		another type * to use as temporary storage
  * @head:	the head for your list
+<<<<<<< HEAD
  * @m:		the name of the list_struct within the struct
+=======
+ * @m:		the name of the list_head within the struct
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Iterate over list of given type, safe against removal of list entry.
  */
@@ -198,9 +267,15 @@ static inline int plist_node_empty(const struct plist_node *node)
  * plist_first_entry - get the struct for the first entry
  * @head:	the &struct plist_head pointer
  * @type:	the type of the struct this is embedded in
+<<<<<<< HEAD
  * @member:	the name of the list_struct within the struct
  */
 #ifdef CONFIG_DEBUG_PI_LIST
+=======
+ * @member:	the name of the list_head within the struct
+ */
+#ifdef CONFIG_DEBUG_PLIST
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define plist_first_entry(head, type, member)	\
 ({ \
 	WARN_ON(plist_head_empty(head)); \
@@ -215,9 +290,15 @@ static inline int plist_node_empty(const struct plist_node *node)
  * plist_last_entry - get the struct for the last entry
  * @head:	the &struct plist_head pointer
  * @type:	the type of the struct this is embedded in
+<<<<<<< HEAD
  * @member:	the name of the list_struct within the struct
  */
 #ifdef CONFIG_DEBUG_PI_LIST
+=======
+ * @member:	the name of the list_head within the struct
+ */
+#ifdef CONFIG_DEBUG_PLIST
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # define plist_last_entry(head, type, member)	\
 ({ \
 	WARN_ON(plist_head_empty(head)); \
@@ -229,6 +310,23 @@ static inline int plist_node_empty(const struct plist_node *node)
 #endif
 
 /**
+<<<<<<< HEAD
+=======
+ * plist_next - get the next entry in list
+ * @pos:	the type * to cursor
+ */
+#define plist_next(pos) \
+	list_next_entry(pos, node_list)
+
+/**
+ * plist_prev - get the prev entry in list
+ * @pos:	the type * to cursor
+ */
+#define plist_prev(pos) \
+	list_prev_entry(pos, node_list)
+
+/**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * plist_first - return the first node (and thus, highest priority)
  * @head:	the &struct plist_head pointer
  *

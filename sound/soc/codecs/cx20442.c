@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * cx20442.c  --  CX20442 ALSA Soc Audio driver
  *
@@ -6,11 +10,14 @@
  * Initially based on sound/soc/codecs/wm8400.c
  * Copyright 2008, 2009 Wolfson Microelectronics PLC.
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/tty.h>
@@ -26,8 +33,14 @@
 
 
 struct cx20442_priv {
+<<<<<<< HEAD
 	void *control_data;
 	struct regulator *por;
+=======
+	struct tty_struct *tty;
+	struct regulator *por;
+	u8 reg_cache;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define CX20442_PM		0x0
@@ -88,6 +101,7 @@ static const struct snd_soc_dapm_route cx20442_audio_map[] = {
 	{"ADC", NULL, "Input Mixer"},
 };
 
+<<<<<<< HEAD
 static unsigned int cx20442_read_reg_cache(struct snd_soc_codec *codec,
 							unsigned int reg)
 {
@@ -97,6 +111,17 @@ static unsigned int cx20442_read_reg_cache(struct snd_soc_codec *codec,
 		return -EINVAL;
 
 	return reg_cache[reg];
+=======
+static unsigned int cx20442_read_reg_cache(struct snd_soc_component *component,
+					   unsigned int reg)
+{
+	struct cx20442_priv *cx20442 = snd_soc_component_get_drvdata(component);
+
+	if (reg >= 1)
+		return -EINVAL;
+
+	return cx20442->reg_cache;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 enum v253_vls {
@@ -152,6 +177,7 @@ static int cx20442_pm_to_v253_vsp(u8 value)
 	return (value & (1 << CX20442_AGC)) ? -EINVAL : 0;
 }
 
+<<<<<<< HEAD
 static int cx20442_write(struct snd_soc_codec *codec, unsigned int reg,
 							unsigned int value)
 {
@@ -170,6 +196,25 @@ static int cx20442_write(struct snd_soc_codec *codec, unsigned int reg,
 
 	old = reg_cache[reg];
 	reg_cache[reg] = value;
+=======
+static int cx20442_write(struct snd_soc_component *component, unsigned int reg,
+							unsigned int value)
+{
+	struct cx20442_priv *cx20442 = snd_soc_component_get_drvdata(component);
+	int vls, vsp, old, len;
+	char buf[18];
+
+	if (reg >= 1)
+		return -EINVAL;
+
+	/* tty and write pointers required for talking to the modem
+	 * are expected to be set by the line discipline initialization code */
+	if (!cx20442->tty || !cx20442->tty->ops->write)
+		return -EIO;
+
+	old = cx20442->reg_cache;
+	cx20442->reg_cache = value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vls = cx20442_pm_to_v253_vls(value);
 	if (vls < 0)
@@ -193,14 +238,22 @@ static int cx20442_write(struct snd_soc_codec *codec, unsigned int reg,
 	if (unlikely(len > (ARRAY_SIZE(buf) - 1)))
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	dev_dbg(codec->dev, "%s: %s\n", __func__, buf);
 	if (codec->hw_write(cx20442->control_data, buf, len) != len)
+=======
+	dev_dbg(component->dev, "%s: %s\n", __func__, buf);
+	if (cx20442->tty->ops->write(cx20442->tty, buf, len) != len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 
 	return 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Line discpline related code
  *
@@ -211,7 +264,11 @@ static int cx20442_write(struct snd_soc_codec *codec, unsigned int reg,
  */
 
 /* Modem init: echo off, digital speaker off, quiet off, voice mode */
+<<<<<<< HEAD
 static const char *v253_init = "ate0m0q0+fclass=8\r";
+=======
+static const char v253_init[] = "ate0m0q0+fclass=8\r";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Line discipline .open() */
 static int v253_open(struct tty_struct *tty)
@@ -226,6 +283,10 @@ static int v253_open(struct tty_struct *tty)
 	if (!tty->disc_data)
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	tty->receive_room = 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tty->ops->write(tty, v253_init, len) != len) {
 		ret = -EIO;
 		goto err;
@@ -240,11 +301,16 @@ err:
 /* Line discipline .close() */
 static void v253_close(struct tty_struct *tty)
 {
+<<<<<<< HEAD
 	struct snd_soc_codec *codec = tty->disc_data;
+=======
+	struct snd_soc_component *component = tty->disc_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct cx20442_priv *cx20442;
 
 	tty->disc_data = NULL;
 
+<<<<<<< HEAD
 	if (!codec)
 		return;
 
@@ -292,13 +358,56 @@ static void v253_wakeup(struct tty_struct *tty)
 
 struct tty_ldisc_ops v253_ops = {
 	.magic = TTY_LDISC_MAGIC,
+=======
+	if (!component)
+		return;
+
+	cx20442 = snd_soc_component_get_drvdata(component);
+
+	/* Prevent the codec driver from further accessing the modem */
+	cx20442->tty = NULL;
+	component->card->pop_time = 0;
+}
+
+/* Line discipline .hangup() */
+static void v253_hangup(struct tty_struct *tty)
+{
+	v253_close(tty);
+}
+
+/* Line discipline .receive_buf() */
+static void v253_receive(struct tty_struct *tty, const u8 *cp, const u8 *fp,
+			 size_t count)
+{
+	struct snd_soc_component *component = tty->disc_data;
+	struct cx20442_priv *cx20442;
+
+	if (!component)
+		return;
+
+	cx20442 = snd_soc_component_get_drvdata(component);
+
+	if (!cx20442->tty) {
+		/* First modem response, complete setup procedure */
+
+		/* Set up codec driver access to modem controls */
+		cx20442->tty = tty;
+		component->card->pop_time = 1;
+	}
+}
+
+struct tty_ldisc_ops v253_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "cx20442",
 	.owner = THIS_MODULE,
 	.open = v253_open,
 	.close = v253_close,
 	.hangup = v253_hangup,
 	.receive_buf = v253_receive,
+<<<<<<< HEAD
 	.write_wakeup = v253_wakeup,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 EXPORT_SYMBOL_GPL(v253_ops);
 
@@ -325,15 +434,26 @@ static struct snd_soc_dai_driver cx20442_dai = {
 	},
 };
 
+<<<<<<< HEAD
 static int cx20442_set_bias_level(struct snd_soc_codec *codec,
 		enum snd_soc_bias_level level)
 {
 	struct cx20442_priv *cx20442 = snd_soc_codec_get_drvdata(codec);
+=======
+static int cx20442_set_bias_level(struct snd_soc_component *component,
+		enum snd_soc_bias_level level)
+{
+	struct cx20442_priv *cx20442 = snd_soc_component_get_drvdata(component);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	switch (level) {
 	case SND_SOC_BIAS_PREPARE:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level != SND_SOC_BIAS_STANDBY)
+=======
+		if (snd_soc_component_get_bias_level(component) != SND_SOC_BIAS_STANDBY)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		if (IS_ERR(cx20442->por))
 			err = PTR_ERR(cx20442->por);
@@ -341,7 +461,11 @@ static int cx20442_set_bias_level(struct snd_soc_codec *codec,
 			err = regulator_enable(cx20442->por);
 		break;
 	case SND_SOC_BIAS_STANDBY:
+<<<<<<< HEAD
 		if (codec->dapm.bias_level != SND_SOC_BIAS_PREPARE)
+=======
+		if (snd_soc_component_get_bias_level(component) != SND_SOC_BIAS_PREPARE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		if (IS_ERR(cx20442->por))
 			err = PTR_ERR(cx20442->por);
@@ -351,13 +475,20 @@ static int cx20442_set_bias_level(struct snd_soc_codec *codec,
 	default:
 		break;
 	}
+<<<<<<< HEAD
 	if (!err)
 		codec->dapm.bias_level = level;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
 
+<<<<<<< HEAD
 static int cx20442_codec_probe(struct snd_soc_codec *codec)
+=======
+static int cx20442_component_probe(struct snd_soc_component *component)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct cx20442_priv *cx20442;
 
@@ -365,6 +496,7 @@ static int cx20442_codec_probe(struct snd_soc_codec *codec)
 	if (cx20442 == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	cx20442->por = regulator_get(codec->dev, "POR");
 	if (IS_ERR(cx20442->por))
 		dev_warn(codec->dev, "failed to get the regulator");
@@ -373,11 +505,40 @@ static int cx20442_codec_probe(struct snd_soc_codec *codec)
 	snd_soc_codec_set_drvdata(codec, cx20442);
 	codec->hw_write = NULL;
 	codec->card->pop_time = 0;
+=======
+	cx20442->por = regulator_get(component->dev, "POR");
+	if (IS_ERR(cx20442->por)) {
+		int err = PTR_ERR(cx20442->por);
+
+		dev_warn(component->dev, "failed to get POR supply (%d)", err);
+		/*
+		 * When running on a non-dt platform and requested regulator
+		 * is not available, regulator_get() never returns
+		 * -EPROBE_DEFER as it is not able to justify if the regulator
+		 * may still appear later.  On the other hand, the board can
+		 * still set full constraints flag at late_initcall in order
+		 * to instruct regulator_get() to return a dummy one if
+		 * sufficient.  Hence, if we get -ENODEV here, let's convert
+		 * it to -EPROBE_DEFER and wait for the board to decide or
+		 * let Deferred Probe infrastructure handle this error.
+		 */
+		if (err == -ENODEV)
+			err = -EPROBE_DEFER;
+		kfree(cx20442);
+		return err;
+	}
+
+	cx20442->tty = NULL;
+
+	snd_soc_component_set_drvdata(component, cx20442);
+	component->card->pop_time = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 /* power down chip */
+<<<<<<< HEAD
 static int cx20442_codec_remove(struct snd_soc_codec *codec)
 {
 	struct cx20442_priv *cx20442 = snd_soc_codec_get_drvdata(codec);
@@ -385,6 +546,15 @@ static int cx20442_codec_remove(struct snd_soc_codec *codec)
 	if (cx20442->control_data) {
 			struct tty_struct *tty = cx20442->control_data;
 			tty_hangup(tty);
+=======
+static void cx20442_component_remove(struct snd_soc_component *component)
+{
+	struct cx20442_priv *cx20442 = snd_soc_component_get_drvdata(component);
+
+	if (cx20442->tty) {
+		struct tty_struct *tty = cx20442->tty;
+		tty_hangup(tty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (!IS_ERR(cx20442->por)) {
@@ -392,6 +562,7 @@ static int cx20442_codec_remove(struct snd_soc_codec *codec)
 		regulator_put(cx20442->por);
 	}
 
+<<<<<<< HEAD
 	snd_soc_codec_set_drvdata(codec, NULL);
 	kfree(cx20442);
 	return 0;
@@ -412,10 +583,30 @@ static struct snd_soc_codec_driver cx20442_codec_dev = {
 	.num_dapm_widgets = ARRAY_SIZE(cx20442_dapm_widgets),
 	.dapm_routes = cx20442_audio_map,
 	.num_dapm_routes = ARRAY_SIZE(cx20442_audio_map),
+=======
+	snd_soc_component_set_drvdata(component, NULL);
+	kfree(cx20442);
+}
+
+static const struct snd_soc_component_driver cx20442_component_dev = {
+	.probe			= cx20442_component_probe,
+	.remove			= cx20442_component_remove,
+	.set_bias_level		= cx20442_set_bias_level,
+	.read			= cx20442_read_reg_cache,
+	.write			= cx20442_write,
+	.dapm_widgets		= cx20442_dapm_widgets,
+	.num_dapm_widgets	= ARRAY_SIZE(cx20442_dapm_widgets),
+	.dapm_routes		= cx20442_audio_map,
+	.num_dapm_routes	= ARRAY_SIZE(cx20442_audio_map),
+	.idle_bias_on		= 1,
+	.use_pmdown_time	= 1,
+	.endianness		= 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int cx20442_platform_probe(struct platform_device *pdev)
 {
+<<<<<<< HEAD
 	return snd_soc_register_codec(&pdev->dev,
 			&cx20442_codec_dev, &cx20442_dai, 1);
 }
@@ -424,15 +615,24 @@ static int __exit cx20442_platform_remove(struct platform_device *pdev)
 {
 	snd_soc_unregister_codec(&pdev->dev);
 	return 0;
+=======
+	return devm_snd_soc_register_component(&pdev->dev,
+			&cx20442_component_dev, &cx20442_dai, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver cx20442_platform_driver = {
 	.driver = {
 		.name = "cx20442-codec",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		},
 	.probe = cx20442_platform_probe,
 	.remove = __exit_p(cx20442_platform_remove),
+=======
+		},
+	.probe = cx20442_platform_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(cx20442_platform_driver);

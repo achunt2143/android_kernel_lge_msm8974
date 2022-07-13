@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _M68K_DMA_H
 #define _M68K_DMA_H 1
 
@@ -477,10 +478,17 @@ static __inline__ int get_dma_residue(unsigned int dmanr)
 #endif /* !defined(CONFIG_M5272) */
 #endif /* CONFIG_COLDFIRE */
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _M68K_DMA_H
+#define _M68K_DMA_H 1
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* it's useless on the m68k, but unfortunately needed by the new
    bootmem allocator (but this should do it for this) */
 #define MAX_DMA_ADDRESS PAGE_OFFSET
 
+<<<<<<< HEAD
 #define MAX_DMA_CHANNELS 8
 
 extern int request_dma(unsigned int dmanr, const char * device_id);	/* reserve a DMA channel */
@@ -488,4 +496,6 @@ extern void free_dma(unsigned int dmanr);	/* release it again */
 
 #define isa_dma_bridge_buggy    (0)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _M68K_DMA_H */

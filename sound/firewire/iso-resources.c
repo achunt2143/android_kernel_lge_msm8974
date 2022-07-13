@@ -1,8 +1,15 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * isochronous resources helper functions
  *
  * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
+<<<<<<< HEAD
  * Licensed under the terms of the GNU General Public License, version 2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
@@ -26,7 +33,11 @@
 int fw_iso_resources_init(struct fw_iso_resources *r, struct fw_unit *unit)
 {
 	r->channels_mask = ~0uLL;
+<<<<<<< HEAD
 	r->unit = fw_unit_get(unit);
+=======
+	r->unit = unit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&r->mutex);
 	r->allocated = false;
 
@@ -42,7 +53,10 @@ void fw_iso_resources_destroy(struct fw_iso_resources *r)
 {
 	WARN_ON(r->allocated);
 	mutex_destroy(&r->mutex);
+<<<<<<< HEAD
 	fw_unit_put(r->unit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(fw_iso_resources_destroy);
 
@@ -211,9 +225,20 @@ EXPORT_SYMBOL(fw_iso_resources_update);
  */
 void fw_iso_resources_free(struct fw_iso_resources *r)
 {
+<<<<<<< HEAD
 	struct fw_card *card = fw_parent_device(r->unit)->card;
 	int bandwidth, channel;
 
+=======
+	struct fw_card *card;
+	int bandwidth, channel;
+
+	/* Not initialized. */
+	if (r->unit == NULL)
+		return;
+	card = fw_parent_device(r->unit)->card;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&r->mutex);
 
 	if (r->allocated) {

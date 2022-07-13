@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * Copyright (c) 1999-2000 Cisco, Inc.
  * Copyright (c) 1999-2001 Motorola, Inc.
@@ -11,6 +15,7 @@
  * (which might be bundles or fragments of chunks) and out of which you
  * pop SCTP whole chunks.
  *
+<<<<<<< HEAD
  * This SCTP implementation is free software;
  * you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by
@@ -34,13 +39,21 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
  *    Karl Knutson <karl@athena.chicago.il.us>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -58,8 +71,19 @@ void sctp_inq_init(struct sctp_inq *queue)
 
 	/* Create a task for delivering data.  */
 	INIT_WORK(&queue->immediate, NULL);
+<<<<<<< HEAD
 
 	queue->malloced = 0;
+=======
+}
+
+/* Properly release the chunk which is being worked on. */
+static inline void sctp_inq_chunk_free(struct sctp_chunk *chunk)
+{
+	if (chunk->head_skb)
+		chunk->skb = chunk->head_skb;
+	sctp_chunk_free(chunk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Release the memory associated with an SCTP inqueue.  */
@@ -77,6 +101,7 @@ void sctp_inq_free(struct sctp_inq *queue)
 	 * free it as well.
 	 */
 	if (queue->in_progress) {
+<<<<<<< HEAD
 		sctp_chunk_free(queue->in_progress);
 		queue->in_progress = NULL;
 	}
@@ -85,6 +110,11 @@ void sctp_inq_free(struct sctp_inq *queue)
 		/* Dump the master memory segment.  */
 		kfree(queue);
 	}
+=======
+		sctp_inq_chunk_free(queue->in_progress);
+		queue->in_progress = NULL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Put a new packet in an SCTP inqueue.
@@ -104,6 +134,11 @@ void sctp_inq_push(struct sctp_inq *q, struct sctp_chunk *chunk)
 	 * on the BH related data structures.
 	 */
 	list_add_tail(&chunk->list, &q->in_chunk_list);
+<<<<<<< HEAD
+=======
+	if (chunk->asoc)
+		chunk->asoc->stats.ipackets++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	q->immediate.func(&q->immediate);
 }
 
@@ -111,7 +146,11 @@ void sctp_inq_push(struct sctp_inq *q, struct sctp_chunk *chunk)
 struct sctp_chunkhdr *sctp_inq_peek(struct sctp_inq *queue)
 {
 	struct sctp_chunk *chunk;
+<<<<<<< HEAD
 	sctp_chunkhdr_t *ch = NULL;
+=======
+	struct sctp_chunkhdr *ch = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chunk = queue->in_progress;
 	/* If there is no more chunks in this packet, say so */
@@ -120,7 +159,11 @@ struct sctp_chunkhdr *sctp_inq_peek(struct sctp_inq *queue)
 	    chunk->pdiscard)
 		    return NULL;
 
+<<<<<<< HEAD
 	ch = (sctp_chunkhdr_t *)chunk->chunk_end;
+=======
+	ch = (struct sctp_chunkhdr *)chunk->chunk_end;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ch;
 }
@@ -134,19 +177,29 @@ struct sctp_chunkhdr *sctp_inq_peek(struct sctp_inq *queue)
 struct sctp_chunk *sctp_inq_pop(struct sctp_inq *queue)
 {
 	struct sctp_chunk *chunk;
+<<<<<<< HEAD
 	sctp_chunkhdr_t *ch = NULL;
+=======
+	struct sctp_chunkhdr *ch = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The assumption is that we are safe to process the chunks
 	 * at this time.
 	 */
 
+<<<<<<< HEAD
 	if ((chunk = queue->in_progress)) {
+=======
+	chunk = queue->in_progress;
+	if (chunk) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* There is a packet that we have been working on.
 		 * Any post processing work to do before we move on?
 		 */
 		if (chunk->singleton ||
 		    chunk->end_of_packet ||
 		    chunk->pdiscard) {
+<<<<<<< HEAD
 			sctp_chunk_free(chunk);
 			chunk = queue->in_progress = NULL;
 		} else {
@@ -164,6 +217,25 @@ struct sctp_chunk *sctp_inq_pop(struct sctp_inq *queue)
 				sctp_chunk_free(chunk);
 				chunk = queue->in_progress = NULL;
 			}
+=======
+			if (chunk->head_skb == chunk->skb) {
+				chunk->skb = skb_shinfo(chunk->skb)->frag_list;
+				goto new_skb;
+			}
+			if (chunk->skb->next) {
+				chunk->skb = chunk->skb->next;
+				goto new_skb;
+			}
+
+			sctp_inq_chunk_free(chunk);
+			chunk = queue->in_progress = NULL;
+		} else {
+			/* Nothing to do. Next chunk in the packet, please. */
+			ch = (struct sctp_chunkhdr *)chunk->chunk_end;
+			/* Force chunk->skb->data to chunk->chunk_end.  */
+			skb_pull(chunk->skb, chunk->chunk_end - chunk->skb->data);
+			/* We are guaranteed to pull a SCTP header. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -171,6 +243,7 @@ struct sctp_chunk *sctp_inq_pop(struct sctp_inq *queue)
 	if (!chunk) {
 		struct list_head *entry;
 
+<<<<<<< HEAD
 		/* Is the queue empty?  */
 		if (list_empty(&queue->in_chunk_list))
 			return NULL;
@@ -217,6 +290,70 @@ struct sctp_chunk *sctp_inq_pop(struct sctp_inq *queue)
 		chunk = queue->in_progress = NULL;
 
 		return NULL;
+=======
+next_chunk:
+		/* Is the queue empty?  */
+		entry = sctp_list_dequeue(&queue->in_chunk_list);
+		if (!entry)
+			return NULL;
+
+		chunk = list_entry(entry, struct sctp_chunk, list);
+
+		if (skb_is_gso(chunk->skb) && skb_is_gso_sctp(chunk->skb)) {
+			/* GSO-marked skbs but without frags, handle
+			 * them normally
+			 */
+			if (skb_shinfo(chunk->skb)->frag_list)
+				chunk->head_skb = chunk->skb;
+
+			/* skbs with "cover letter" */
+			if (chunk->head_skb && chunk->skb->data_len == chunk->skb->len)
+				chunk->skb = skb_shinfo(chunk->skb)->frag_list;
+
+			if (WARN_ON(!chunk->skb)) {
+				__SCTP_INC_STATS(dev_net(chunk->skb->dev), SCTP_MIB_IN_PKT_DISCARDS);
+				sctp_chunk_free(chunk);
+				goto next_chunk;
+			}
+		}
+
+		if (chunk->asoc)
+			sock_rps_save_rxhash(chunk->asoc->base.sk, chunk->skb);
+
+		queue->in_progress = chunk;
+
+new_skb:
+		/* This is the first chunk in the packet.  */
+		ch = (struct sctp_chunkhdr *)chunk->skb->data;
+		chunk->singleton = 1;
+		chunk->data_accepted = 0;
+		chunk->pdiscard = 0;
+		chunk->auth = 0;
+		chunk->has_asconf = 0;
+		chunk->end_of_packet = 0;
+		if (chunk->head_skb) {
+			struct sctp_input_cb
+				*cb = SCTP_INPUT_CB(chunk->skb),
+				*head_cb = SCTP_INPUT_CB(chunk->head_skb);
+
+			cb->chunk = head_cb->chunk;
+			cb->af = head_cb->af;
+		}
+	}
+
+	chunk->chunk_hdr = ch;
+	chunk->chunk_end = ((__u8 *)ch) + SCTP_PAD4(ntohs(ch->length));
+	skb_pull(chunk->skb, sizeof(*ch));
+	chunk->subh.v = NULL; /* Subheader is no longer valid.  */
+
+	if (chunk->chunk_end + sizeof(*ch) <= skb_tail_pointer(chunk->skb)) {
+		/* This is not a singleton */
+		chunk->singleton = 0;
+	} else if (chunk->chunk_end > skb_tail_pointer(chunk->skb)) {
+		/* Discard inside state machine. */
+		chunk->pdiscard = 1;
+		chunk->chunk_end = skb_tail_pointer(chunk->skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* We are at the end of the packet, so mark the chunk
 		 * in case we need to send a SACK.
@@ -224,10 +361,17 @@ struct sctp_chunk *sctp_inq_pop(struct sctp_inq *queue)
 		chunk->end_of_packet = 1;
 	}
 
+<<<<<<< HEAD
 	SCTP_DEBUG_PRINTK("+++sctp_inq_pop+++ chunk %p[%s],"
 			  " length %d, skb->len %d\n",chunk,
 			  sctp_cname(SCTP_ST_CHUNK(chunk->chunk_hdr->type)),
 			  ntohs(chunk->chunk_hdr->length), chunk->skb->len);
+=======
+	pr_debug("+++sctp_inq_pop+++ chunk:%p[%s], length:%d, skb->len:%d\n",
+		 chunk, sctp_cname(SCTP_ST_CHUNK(chunk->chunk_hdr->type)),
+		 ntohs(chunk->chunk_hdr->length), chunk->skb->len);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return chunk;
 }
 
@@ -243,4 +387,7 @@ void sctp_inq_set_th_handler(struct sctp_inq *q, work_func_t callback)
 {
 	INIT_WORK(&q->immediate, callback);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

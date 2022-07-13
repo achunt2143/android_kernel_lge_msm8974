@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Linux network driver for Brocade Converged Network Adapter.
  *
@@ -14,6 +15,17 @@
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+ */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __BNAD_H__
 #define __BNAD_H__
@@ -26,7 +38,10 @@
 #include <linux/firmware.h>
 #include <linux/if_vlan.h>
 
+<<<<<<< HEAD
 /* Fix for IA64 */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/checksum.h>
 #include <net/ip6_checksum.h>
 
@@ -71,8 +86,11 @@ struct bnad_rx_ctrl {
 #define BNAD_NAME			"bna"
 #define BNAD_NAME_LEN			64
 
+<<<<<<< HEAD
 #define BNAD_VERSION			"3.0.2.2"
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BNAD_MAILBOX_MSIX_INDEX		0
 #define BNAD_MAILBOX_MSIX_VECTORS	1
 #define BNAD_INTX_TX_IB_BITMASK		0x1
@@ -83,12 +101,18 @@ struct bnad_rx_ctrl {
 
 #define BNAD_IOCETH_TIMEOUT	     10000
 
+<<<<<<< HEAD
 #define BNAD_MAX_Q_DEPTH		0x10000
 #define BNAD_MIN_Q_DEPTH		0x200
 
 #define BNAD_MAX_RXQ_DEPTH		(BNAD_MAX_Q_DEPTH / bnad_rxqs_per_cq)
 /* keeping MAX TX and RX Q depth equal */
 #define BNAD_MAX_TXQ_DEPTH		BNAD_MAX_RXQ_DEPTH
+=======
+#define BNAD_MIN_Q_DEPTH		512
+#define BNAD_MAX_RXQ_DEPTH		16384
+#define BNAD_MAX_TXQ_DEPTH		2048
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BNAD_JUMBO_MTU			9000
 
@@ -101,14 +125,25 @@ struct bnad_rx_ctrl {
 #define BNAD_TXQ_TX_STARTED		1
 
 /* Bit positions for rcb->flags */
+<<<<<<< HEAD
 #define BNAD_RXQ_REFILL			0
 #define BNAD_RXQ_STARTED		1
 #define BNAD_RXQ_POST_OK		2
+=======
+#define BNAD_RXQ_STARTED		0
+#define BNAD_RXQ_POST_OK		1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Resource limits */
 #define BNAD_NUM_TXQ			(bnad->num_tx * bnad->num_txq_per_tx)
 #define BNAD_NUM_RXP			(bnad->num_rx * bnad->num_rxp_per_rx)
 
+<<<<<<< HEAD
+=======
+#define BNAD_FRAME_SIZE(_mtu) \
+	(ETH_HLEN + VLAN_HLEN + (_mtu) + ETH_FCS_LEN)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DATA STRUCTURES
  */
@@ -175,6 +210,10 @@ struct bnad_drv_stats {
 	u64		tx_skb_headlen_zero;
 	u64		tx_skb_frag_zero;
 	u64		tx_skb_len_mismatch;
+<<<<<<< HEAD
+=======
+	u64		tx_skb_map_failed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u64		hw_stats_updates;
 	u64		netif_rx_dropped;
@@ -189,6 +228,10 @@ struct bnad_drv_stats {
 	u64		rx_unmap_q_alloc_failed;
 
 	u64		rxbuf_alloc_failed;
+<<<<<<< HEAD
+=======
+	u64		rxbuf_map_failed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Complete driver stats */
@@ -210,6 +253,10 @@ struct bnad_tx_info {
 	struct bna_tx *tx; /* 1:1 between tx_info & tx */
 	struct bna_tcb *tcb[BNAD_MAX_TXQ_PER_TX];
 	u32 tx_id;
+<<<<<<< HEAD
+=======
+	struct delayed_work tx_cleanup_work;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } ____cacheline_aligned;
 
 struct bnad_rx_info {
@@ -217,6 +264,7 @@ struct bnad_rx_info {
 
 	struct bnad_rx_ctrl rx_ctrl[BNAD_MAX_RXP_PER_RX];
 	u32 rx_id;
+<<<<<<< HEAD
 } ____cacheline_aligned;
 
 /* Unmap queues for Tx / Rx cleanup */
@@ -233,11 +281,65 @@ struct bnad_unmap_q {
 	struct bnad_skb_unmap unmap_array[1];
 };
 
+=======
+	struct work_struct rx_cleanup_work;
+} ____cacheline_aligned;
+
+struct bnad_tx_vector {
+	DEFINE_DMA_UNMAP_ADDR(dma_addr);
+	DEFINE_DMA_UNMAP_LEN(dma_len);
+};
+
+struct bnad_tx_unmap {
+	struct sk_buff		*skb;
+	u32			nvecs;
+	struct bnad_tx_vector	vectors[BFI_TX_MAX_VECTORS_PER_WI];
+};
+
+struct bnad_rx_vector {
+	DEFINE_DMA_UNMAP_ADDR(dma_addr);
+	u32			len;
+};
+
+struct bnad_rx_unmap {
+	struct page		*page;
+	struct sk_buff		*skb;
+	struct bnad_rx_vector	vector;
+	u32			page_offset;
+};
+
+enum bnad_rxbuf_type {
+	BNAD_RXBUF_NONE		= 0,
+	BNAD_RXBUF_SK_BUFF	= 1,
+	BNAD_RXBUF_PAGE		= 2,
+	BNAD_RXBUF_MULTI_BUFF	= 3
+};
+
+#define BNAD_RXBUF_IS_SK_BUFF(_type)	((_type) == BNAD_RXBUF_SK_BUFF)
+#define BNAD_RXBUF_IS_MULTI_BUFF(_type)	((_type) == BNAD_RXBUF_MULTI_BUFF)
+
+struct bnad_rx_unmap_q {
+	int			reuse_pi;
+	int			alloc_order;
+	u32			map_size;
+	enum bnad_rxbuf_type	type;
+	struct bnad_rx_unmap	unmap[] ____cacheline_aligned;
+};
+
+#define BNAD_PCI_DEV_IS_CAT2(_bnad) \
+	((_bnad)->pcidev->device == BFA_PCI_DEVICE_ID_CT2)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Bit mask values for bnad->cfg_flags */
 #define	BNAD_CF_DIM_ENABLED		0x01	/* DIM */
 #define	BNAD_CF_PROMISC			0x02
 #define BNAD_CF_ALLMULTI		0x04
+<<<<<<< HEAD
 #define	BNAD_CF_MSIX			0x08	/* If in MSIx mode */
+=======
+#define	BNAD_CF_DEFAULT			0x08
+#define	BNAD_CF_MSIX			0x10	/* If in MSIx mode */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Defines for run_flags bit-mask */
 /* Set, tested & cleared using xxx_bit() functions */
@@ -250,6 +352,7 @@ struct bnad_unmap_q {
 #define BNAD_RF_STATS_TIMER_RUNNING	5
 #define BNAD_RF_TX_PRIO_SET		6
 
+<<<<<<< HEAD
 
 /* Define for Fast Path flags */
 /* Defined as bit positions */
@@ -259,6 +362,11 @@ struct bnad {
 	struct net_device	*netdev;
 	u32			id;
 	struct list_head	list_entry;
+=======
+struct bnad {
+	struct net_device	*netdev;
+	u32			id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Data path */
 	struct bnad_tx_info tx_info[BNAD_MAX_TX];
@@ -282,8 +390,13 @@ struct bnad {
 	u8			tx_coalescing_timeo;
 	u8			rx_coalescing_timeo;
 
+<<<<<<< HEAD
 	struct bna_rx_config rx_config[BNAD_MAX_RX];
 	struct bna_tx_config tx_config[BNAD_MAX_TX];
+=======
+	struct bna_rx_config rx_config[BNAD_MAX_RX] ____cacheline_aligned;
+	struct bna_tx_config tx_config[BNAD_MAX_TX] ____cacheline_aligned;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void __iomem		*bar0;	/* BAR0 address */
 
@@ -316,9 +429,15 @@ struct bnad {
 	struct bnad_completion bnad_completions;
 
 	/* Burnt in MAC address */
+<<<<<<< HEAD
 	mac_t			perm_addr;
 
 	struct tasklet_struct	tx_free_tasklet;
+=======
+	u8			perm_addr[ETH_ALEN];
+
+	struct workqueue_struct *work_q;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Statistics */
 	struct bnad_stats stats;
@@ -328,6 +447,10 @@ struct bnad {
 	char			adapter_name[BNAD_NAME_LEN];
 	char			port_name[BNAD_NAME_LEN];
 	char			mbox_irq_name[BNAD_NAME_LEN];
+<<<<<<< HEAD
+=======
+	char			wq_name[BNAD_NAME_LEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* debugfs specific data */
 	char	*regdata;
@@ -348,11 +471,15 @@ struct bnad_drvinfo {
  * EXTERN VARIABLES
  */
 extern const struct firmware *bfi_fw;
+<<<<<<< HEAD
 extern u32		bnad_rxqs_per_cq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * EXTERN PROTOTYPES
  */
+<<<<<<< HEAD
 extern u32 *cna_get_firmware_buf(struct pci_dev *pdev);
 /* Netdev entry point prototypes */
 extern void bnad_set_rx_mode(struct net_device *netdev);
@@ -389,6 +516,41 @@ void	bnad_debugfs_uninit(struct bnad *bnad);
 /**
  * MACROS
  */
+=======
+u32 *cna_get_firmware_buf(struct pci_dev *pdev);
+/* Netdev entry point prototypes */
+void bnad_set_rx_mode(struct net_device *netdev);
+struct net_device_stats *bnad_get_netdev_stats(struct net_device *netdev);
+int bnad_mac_addr_set_locked(struct bnad *bnad, const u8 *mac_addr);
+int bnad_enable_default_bcast(struct bnad *bnad);
+void bnad_restore_vlans(struct bnad *bnad, u32 rx_id);
+void bnad_set_ethtool_ops(struct net_device *netdev);
+void bnad_cb_completion(void *arg, enum bfa_status status);
+
+/* Configuration & setup */
+void bnad_tx_coalescing_timeo_set(struct bnad *bnad);
+void bnad_rx_coalescing_timeo_set(struct bnad *bnad);
+
+int bnad_setup_rx(struct bnad *bnad, u32 rx_id);
+int bnad_setup_tx(struct bnad *bnad, u32 tx_id);
+void bnad_destroy_tx(struct bnad *bnad, u32 tx_id);
+void bnad_destroy_rx(struct bnad *bnad, u32 rx_id);
+
+/* Timer start/stop protos */
+void bnad_dim_timer_start(struct bnad *bnad);
+
+/* Statistics */
+void bnad_netdev_qstats_fill(struct bnad *bnad,
+			     struct rtnl_link_stats64 *stats);
+void bnad_netdev_hwstats_fill(struct bnad *bnad,
+			      struct rtnl_link_stats64 *stats);
+
+/* Debugfs */
+void bnad_debugfs_init(struct bnad *bnad);
+void bnad_debugfs_uninit(struct bnad *bnad);
+
+/* MACROS */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* To set & get the stats counters */
 #define BNAD_UPDATE_CTR(_bnad, _ctr)				\
 				(((_bnad)->stats.drv_stats._ctr)++)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ADS7846 based touchscreen and sensor driver
  *
@@ -12,6 +16,7 @@
  *	Copyright (C) 2002 MontaVista Software
  *	Copyright (C) 2004 Texas Instruments
  *	Copyright (C) 2005 Dirk Behme
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -20,19 +25,37 @@
 #include <linux/types.h>
 #include <linux/hwmon.h>
 #include <linux/init.h>
+=======
+ */
+#include <linux/types.h>
+#include <linux/hwmon.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/sched.h>
 #include <linux/delay.h>
 #include <linux/input.h>
+<<<<<<< HEAD
 #include <linux/interrupt.h>
 #include <linux/slab.h>
 #include <linux/pm.h>
 #include <linux/gpio.h>
+=======
+#include <linux/input/touchscreen.h>
+#include <linux/interrupt.h>
+#include <linux/slab.h>
+#include <linux/pm.h>
+#include <linux/property.h>
+#include <linux/gpio/consumer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spi/spi.h>
 #include <linux/spi/ads7846.h>
 #include <linux/regulator/consumer.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/irq.h>
+=======
+#include <asm/unaligned.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This code has been heavily tested on a Nokia 770, and lightly
@@ -62,6 +85,7 @@
 /* this driver doesn't aim at the peak continuous sample rate */
 #define	SAMPLE_BITS	(8 /*cmd*/ + 16 /*sample*/ + 2 /* before, after */)
 
+<<<<<<< HEAD
 struct ts_event {
 	/*
 	 * For portability, we can't read 12 bit values using SPI (which
@@ -75,6 +99,17 @@ struct ts_event {
 	bool	ignore;
 	u8	x_buf[3];
 	u8	y_buf[3];
+=======
+struct ads7846_buf {
+	u8 cmd;
+	__be16 data;
+} __packed;
+
+struct ads7846_buf_layout {
+	unsigned int offset;
+	unsigned int count;
+	unsigned int skip;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -83,11 +118,26 @@ struct ts_event {
  * systems where main memory is not DMA-coherent (most non-x86 boards).
  */
 struct ads7846_packet {
+<<<<<<< HEAD
 	u8			read_x, read_y, read_z1, read_z2, pwrdown;
 	u16			dummy;		/* for the pwrdown read */
 	struct ts_event		tc;
 	/* for ads7845 with mpc5121 psc spi we use 3-byte buffers */
 	u8			read_x_cmd[3], read_y_cmd[3], pwrdown_cmd[3];
+=======
+	unsigned int count;
+	unsigned int count_skip;
+	unsigned int cmds;
+	unsigned int last_cmd_idx;
+	struct ads7846_buf_layout l[5];
+	struct ads7846_buf *rx;
+	struct ads7846_buf *tx;
+
+	struct ads7846_buf pwrdown_cmd;
+
+	bool ignore;
+	u16 x, y, z1, z2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct ads7846 {
@@ -98,11 +148,14 @@ struct ads7846 {
 	struct spi_device	*spi;
 	struct regulator	*reg;
 
+<<<<<<< HEAD
 #if defined(CONFIG_HWMON) || defined(CONFIG_HWMON_MODULE)
 	struct attribute_group	*attr_group;
 	struct device		*hwmon;
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16			model;
 	u16			vref_mv;
 	u16			vref_delay_usecs;
@@ -131,6 +184,11 @@ struct ads7846 {
 
 	u16			penirq_recheck_delay_usecs;
 
+<<<<<<< HEAD
+=======
+	struct touchscreen_properties core_prop;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex		lock;
 	bool			stopped;	/* P: lock */
 	bool			disabled;	/* P: lock */
@@ -138,13 +196,27 @@ struct ads7846 {
 
 	int			(*filter)(void *data, int data_idx, int *val);
 	void			*filter_data;
+<<<<<<< HEAD
 	void			(*filter_cleanup)(void *data);
 	int			(*get_pendown_state)(void);
 	int			gpio_pendown;
+=======
+	int			(*get_pendown_state)(void);
+	struct gpio_desc	*gpio_pendown;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void			(*wait_for_sync)(void);
 };
 
+<<<<<<< HEAD
+=======
+enum ads7846_filter {
+	ADS7846_FILTER_OK,
+	ADS7846_FILTER_REPEAT,
+	ADS7846_FILTER_IGNORE,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* leave chip selected when we're done, for quicker re-select? */
 #if	0
 #define	CS_CHANGE(xfer)	((xfer).cs_change = 1)
@@ -185,7 +257,10 @@ struct ads7846 {
 #define	READ_Y(vref)	(READ_12BIT_DFR(y,  1, vref))
 #define	READ_Z1(vref)	(READ_12BIT_DFR(z1, 1, vref))
 #define	READ_Z2(vref)	(READ_12BIT_DFR(z2, 1, vref))
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	READ_X(vref)	(READ_12BIT_DFR(x,  1, vref))
 #define	PWRDOWN		(READ_12BIT_DFR(y,  0, 0))	/* LAST */
 
@@ -198,6 +273,44 @@ struct ads7846 {
 #define	REF_ON	(READ_12BIT_DFR(x, 1, 1))
 #define	REF_OFF	(READ_12BIT_DFR(y, 0, 0))
 
+<<<<<<< HEAD
+=======
+/* Order commands in the most optimal way to reduce Vref switching and
+ * settling time:
+ * Measure:  X; Vref: X+, X-; IN: Y+
+ * Measure:  Y; Vref: Y+, Y-; IN: X+
+ * Measure: Z1; Vref: Y+, X-; IN: X+
+ * Measure: Z2; Vref: Y+, X-; IN: Y-
+ */
+enum ads7846_cmds {
+	ADS7846_X,
+	ADS7846_Y,
+	ADS7846_Z1,
+	ADS7846_Z2,
+	ADS7846_PWDOWN,
+};
+
+static int get_pendown_state(struct ads7846 *ts)
+{
+	if (ts->get_pendown_state)
+		return ts->get_pendown_state();
+
+	return gpiod_get_value(ts->gpio_pendown);
+}
+
+static void ads7846_report_pen_up(struct ads7846 *ts)
+{
+	struct input_dev *input = ts->input;
+
+	input_report_key(input, BTN_TOUCH, 0);
+	input_report_abs(input, ABS_PRESSURE, 0);
+	input_sync(input);
+
+	ts->pendown = false;
+	dev_vdbg(&ts->spi->dev, "UP\n");
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Must be called with ts->lock held */
 static void ads7846_stop(struct ads7846 *ts)
 {
@@ -214,6 +327,13 @@ static void ads7846_stop(struct ads7846 *ts)
 static void ads7846_restart(struct ads7846 *ts)
 {
 	if (!ts->disabled && !ts->suspended) {
+<<<<<<< HEAD
+=======
+		/* Check if pen was released since last stop */
+		if (ts->pendown && !get_pendown_state(ts))
+			ads7846_report_pen_up(ts);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Tell IRQ thread that it may poll the device. */
 		ts->stopped = false;
 		mb();
@@ -236,7 +356,16 @@ static void __ads7846_disable(struct ads7846 *ts)
 /* Must be called with ts->lock held */
 static void __ads7846_enable(struct ads7846 *ts)
 {
+<<<<<<< HEAD
 	regulator_enable(ts->reg);
+=======
+	int error;
+
+	error = regulator_enable(ts->reg);
+	if (error != 0)
+		dev_err(&ts->spi->dev, "Failed to enable supply: %d\n", error);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ads7846_restart(ts);
 }
 
@@ -327,7 +456,12 @@ static int ads7846_read12_ser(struct device *dev, unsigned command)
 		req->xfer[1].len = 2;
 
 		/* for 1uF, settle for 800 usec; no cap, 100 usec.  */
+<<<<<<< HEAD
 		req->xfer[1].delay_usecs = ts->vref_delay_usecs;
+=======
+		req->xfer[1].delay.value = ts->vref_delay_usecs;
+		req->xfer[1].delay.unit = SPI_DELAY_UNIT_USECS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spi_message_add_tail(&req->xfer[1], &req->msg);
 
 		/* Enable reference voltage */
@@ -404,7 +538,11 @@ static int ads7845_read12_ser(struct device *dev, unsigned command)
 
 	if (status == 0) {
 		/* BE12 value, then padding */
+<<<<<<< HEAD
 		status = be16_to_cpu(*((u16 *)&req->sample[1]));
+=======
+		status = get_unaligned_be16(&req->sample[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = status >> 3;
 		status &= 0x0fff;
 	}
@@ -413,13 +551,21 @@ static int ads7845_read12_ser(struct device *dev, unsigned command)
 	return status;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_HWMON) || defined(CONFIG_HWMON_MODULE)
+=======
+#if IS_ENABLED(CONFIG_HWMON)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SHOW(name, var, adjust) static ssize_t \
 name ## _show(struct device *dev, struct device_attribute *attr, char *buf) \
 { \
 	struct ads7846 *ts = dev_get_drvdata(dev); \
+<<<<<<< HEAD
 	ssize_t v = ads7846_read12_ser(dev, \
+=======
+	ssize_t v = ads7846_read12_ser(&ts->spi->dev, \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			READ_12BIT_SER(var)); \
 	if (v < 0) \
 		return v; \
@@ -471,6 +617,7 @@ static inline unsigned vbatt_adjust(struct ads7846 *ts, ssize_t v)
 SHOW(in0_input, vaux, vaux_adjust)
 SHOW(in1_input, vbatt, vbatt_adjust)
 
+<<<<<<< HEAD
 static struct attribute *ads7846_attributes[] = {
 	&dev_attr_temp0.attr,
 	&dev_attr_temp1.attr,
@@ -501,11 +648,43 @@ static struct attribute *ads7845_attributes[] = {
 static struct attribute_group ads7845_attr_group = {
 	.attrs = ads7845_attributes,
 };
+=======
+static umode_t ads7846_is_visible(struct kobject *kobj, struct attribute *attr,
+				  int index)
+{
+	struct device *dev = kobj_to_dev(kobj);
+	struct ads7846 *ts = dev_get_drvdata(dev);
+
+	if (ts->model == 7843 && index < 2)	/* in0, in1 */
+		return 0;
+	if (ts->model == 7845 && index != 2)	/* in0 */
+		return 0;
+
+	return attr->mode;
+}
+
+static struct attribute *ads7846_attributes[] = {
+	&dev_attr_temp0.attr,		/* 0 */
+	&dev_attr_temp1.attr,		/* 1 */
+	&dev_attr_in0_input.attr,	/* 2 */
+	&dev_attr_in1_input.attr,	/* 3 */
+	NULL,
+};
+
+static const struct attribute_group ads7846_attr_group = {
+	.attrs = ads7846_attributes,
+	.is_visible = ads7846_is_visible,
+};
+__ATTRIBUTE_GROUPS(ads7846_attr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int ads784x_hwmon_register(struct spi_device *spi, struct ads7846 *ts)
 {
 	struct device *hwmon;
+<<<<<<< HEAD
 	int err;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* hwmon sensors need a reference voltage */
 	switch (ts->model) {
@@ -527,6 +706,7 @@ static int ads784x_hwmon_register(struct spi_device *spi, struct ads7846 *ts)
 		break;
 	}
 
+<<<<<<< HEAD
 	/* different chips have different sensor groups */
 	switch (ts->model) {
 	case 7846:
@@ -564,6 +744,13 @@ static void ads784x_hwmon_unregister(struct spi_device *spi,
 		sysfs_remove_group(&spi->dev.kobj, ts->attr_group);
 		hwmon_device_unregister(ts->hwmon);
 	}
+=======
+	hwmon = devm_hwmon_device_register_with_groups(&spi->dev,
+						       spi->modalias, ts,
+						       ads7846_attr_groups);
+
+	return PTR_ERR_OR_ZERO(hwmon);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else
@@ -572,11 +759,14 @@ static inline int ads784x_hwmon_register(struct spi_device *spi,
 {
 	return 0;
 }
+<<<<<<< HEAD
 
 static inline void ads784x_hwmon_unregister(struct spi_device *spi,
 					    struct ads7846 *ts)
 {
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static ssize_t ads7846_pen_down_show(struct device *dev,
@@ -619,11 +809,16 @@ static ssize_t ads7846_disable_store(struct device *dev,
 
 static DEVICE_ATTR(disable, 0664, ads7846_disable_show, ads7846_disable_store);
 
+<<<<<<< HEAD
 static struct attribute *ads784x_attributes[] = {
+=======
+static struct attribute *ads784x_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_pen_down.attr,
 	&dev_attr_disable.attr,
 	NULL,
 };
+<<<<<<< HEAD
 
 static struct attribute_group ads784x_attr_group = {
 	.attrs = ads784x_attributes,
@@ -639,6 +834,12 @@ static int get_pendown_state(struct ads7846 *ts)
 	return !gpio_get_value(ts->gpio_pendown);
 }
 
+=======
+ATTRIBUTE_GROUPS(ads784x);
+
+/*--------------------------------------------------------------------------*/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void null_wait_for_sync(void)
 {
 }
@@ -690,6 +891,7 @@ static int ads7846_no_filter(void *ads, int data_idx, int *val)
 	return ADS7846_FILTER_OK;
 }
 
+<<<<<<< HEAD
 static int ads7846_get_value(struct ads7846 *ts, struct spi_message *m)
 {
 	struct spi_transfer *t =
@@ -712,6 +914,111 @@ static void ads7846_update_value(struct spi_message *m, int val)
 		list_entry(m->transfers.prev, struct spi_transfer, transfer_list);
 
 	*(u16 *)t->rx_buf = val;
+=======
+static int ads7846_get_value(struct ads7846_buf *buf)
+{
+	int value;
+
+	value = be16_to_cpup(&buf->data);
+
+	/* enforce ADC output is 12 bits width */
+	return (value >> 3) & 0xfff;
+}
+
+static void ads7846_set_cmd_val(struct ads7846 *ts, enum ads7846_cmds cmd_idx,
+				u16 val)
+{
+	struct ads7846_packet *packet = ts->packet;
+
+	switch (cmd_idx) {
+	case ADS7846_Y:
+		packet->y = val;
+		break;
+	case ADS7846_X:
+		packet->x = val;
+		break;
+	case ADS7846_Z1:
+		packet->z1 = val;
+		break;
+	case ADS7846_Z2:
+		packet->z2 = val;
+		break;
+	default:
+		WARN_ON_ONCE(1);
+	}
+}
+
+static u8 ads7846_get_cmd(enum ads7846_cmds cmd_idx, int vref)
+{
+	switch (cmd_idx) {
+	case ADS7846_Y:
+		return READ_Y(vref);
+	case ADS7846_X:
+		return READ_X(vref);
+
+	/* 7846 specific commands  */
+	case ADS7846_Z1:
+		return READ_Z1(vref);
+	case ADS7846_Z2:
+		return READ_Z2(vref);
+	case ADS7846_PWDOWN:
+		return PWRDOWN;
+	default:
+		WARN_ON_ONCE(1);
+	}
+
+	return 0;
+}
+
+static bool ads7846_cmd_need_settle(enum ads7846_cmds cmd_idx)
+{
+	switch (cmd_idx) {
+	case ADS7846_X:
+	case ADS7846_Y:
+	case ADS7846_Z1:
+	case ADS7846_Z2:
+		return true;
+	case ADS7846_PWDOWN:
+		return false;
+	default:
+		WARN_ON_ONCE(1);
+	}
+
+	return false;
+}
+
+static int ads7846_filter(struct ads7846 *ts)
+{
+	struct ads7846_packet *packet = ts->packet;
+	int action;
+	int val;
+	unsigned int cmd_idx, b;
+
+	packet->ignore = false;
+	for (cmd_idx = packet->last_cmd_idx; cmd_idx < packet->cmds - 1; cmd_idx++) {
+		struct ads7846_buf_layout *l = &packet->l[cmd_idx];
+
+		packet->last_cmd_idx = cmd_idx;
+
+		for (b = l->skip; b < l->count; b++) {
+			val = ads7846_get_value(&packet->rx[l->offset + b]);
+
+			action = ts->filter(ts->filter_data, cmd_idx, &val);
+			if (action == ADS7846_FILTER_REPEAT) {
+				if (b == l->count - 1)
+					return -EAGAIN;
+			} else if (action == ADS7846_FILTER_OK) {
+				ads7846_set_cmd_val(ts, cmd_idx, val);
+				break;
+			} else {
+				packet->ignore = true;
+				return 0;
+			}
+		}
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ads7846_read_state(struct ads7846 *ts)
@@ -719,17 +1026,26 @@ static void ads7846_read_state(struct ads7846 *ts)
 	struct ads7846_packet *packet = ts->packet;
 	struct spi_message *m;
 	int msg_idx = 0;
+<<<<<<< HEAD
 	int val;
 	int action;
 	int error;
 
 	while (msg_idx < ts->msg_count) {
 
+=======
+	int error;
+
+	packet->last_cmd_idx = 0;
+
+	while (true) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ts->wait_for_sync();
 
 		m = &ts->msg[msg_idx];
 		error = spi_sync(ts->spi, m);
 		if (error) {
+<<<<<<< HEAD
 			dev_err(&ts->spi->dev, "spi_async --> %d\n", error);
 			packet->tc.ignore = true;
 			return;
@@ -765,6 +1081,18 @@ static void ads7846_read_state(struct ads7846 *ts)
 		} else {
 			msg_idx++;
 		}
+=======
+			dev_err(&ts->spi->dev, "spi_sync --> %d\n", error);
+			packet->ignore = true;
+			return;
+		}
+
+		error = ads7846_filter(ts);
+		if (error)
+			continue;
+
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -774,6 +1102,7 @@ static void ads7846_report_state(struct ads7846 *ts)
 	unsigned int Rt;
 	u16 x, y, z1, z2;
 
+<<<<<<< HEAD
 	/*
 	 * ads7846_get_value() does in-place conversion (including byte swap)
 	 * from on-the-wire format as part of debouncing to get stable
@@ -789,12 +1118,23 @@ static void ads7846_report_state(struct ads7846 *ts)
 		y = packet->tc.y;
 		z1 = packet->tc.z1;
 		z2 = packet->tc.z2;
+=======
+	x = packet->x;
+	y = packet->y;
+	if (ts->model == 7845) {
+		z1 = 0;
+		z2 = 0;
+	} else {
+		z1 = packet->z1;
+		z2 = packet->z2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* range filtering */
 	if (x == MAX_12BIT)
 		x = 0;
 
+<<<<<<< HEAD
 	if (ts->model == 7843) {
 		Rt = ts->pressure_max / 2;
 	} else if (ts->model == 7845) {
@@ -803,14 +1143,26 @@ static void ads7846_report_state(struct ads7846 *ts)
 		else
 			Rt = 0;
 		dev_vdbg(&ts->spi->dev, "x/y: %d/%d, PD %d\n", x, y, Rt);
+=======
+	if (ts->model == 7843 || ts->model == 7845) {
+		Rt = ts->pressure_max / 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (likely(x && z1)) {
 		/* compute touch pressure resistance using equation #2 */
 		Rt = z2;
 		Rt -= z1;
+<<<<<<< HEAD
 		Rt *= x;
 		Rt *= ts->x_plate_ohms;
 		Rt /= z1;
 		Rt = (Rt + 2047) >> 12;
+=======
+		Rt *= ts->x_plate_ohms;
+		Rt = DIV_ROUND_CLOSEST(Rt, 16);
+		Rt *= x;
+		Rt /= z1;
+		Rt = DIV_ROUND_CLOSEST(Rt, 256);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		Rt = 0;
 	}
@@ -820,9 +1172,15 @@ static void ads7846_report_state(struct ads7846 *ts)
 	 * the maximum. Don't report it to user space, repeat at least
 	 * once more the measurement
 	 */
+<<<<<<< HEAD
 	if (packet->tc.ignore || Rt > ts->pressure_max) {
 		dev_vdbg(&ts->spi->dev, "ignored %d pressure %d\n",
 			 packet->tc.ignore, Rt);
+=======
+	if (packet->ignore || Rt > ts->pressure_max) {
+		dev_vdbg(&ts->spi->dev, "ignored %d pressure %d\n",
+			 packet->ignore, Rt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -848,17 +1206,24 @@ static void ads7846_report_state(struct ads7846 *ts)
 	if (Rt) {
 		struct input_dev *input = ts->input;
 
+<<<<<<< HEAD
 		if (ts->swap_xy)
 			swap(x, y);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!ts->pendown) {
 			input_report_key(input, BTN_TOUCH, 1);
 			ts->pendown = true;
 			dev_vdbg(&ts->spi->dev, "DOWN\n");
 		}
 
+<<<<<<< HEAD
 		input_report_abs(input, ABS_X, x);
 		input_report_abs(input, ABS_Y, y);
+=======
+		touchscreen_report_pos(input, &ts->core_prop, x, y, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_report_abs(input, ABS_PRESSURE, ts->pressure_max - Rt);
 
 		input_sync(input);
@@ -893,6 +1258,7 @@ static irqreturn_t ads7846_irq(int irq, void *handle)
 				   msecs_to_jiffies(TS_POLL_PERIOD));
 	}
 
+<<<<<<< HEAD
 	if (ts->pendown) {
 		struct input_dev *input = ts->input;
 
@@ -903,11 +1269,18 @@ static irqreturn_t ads7846_irq(int irq, void *handle)
 		ts->pendown = false;
 		dev_vdbg(&ts->spi->dev, "UP\n");
 	}
+=======
+	if (ts->pendown && !ts->stopped)
+		ads7846_report_pen_up(ts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ads7846_suspend(struct device *dev)
 {
 	struct ads7846 *ts = dev_get_drvdata(dev);
@@ -951,6 +1324,7 @@ static int ads7846_resume(struct device *dev)
 
 	return 0;
 }
+<<<<<<< HEAD
 #endif
 
 static SIMPLE_DEV_PM_OPS(ads7846_pm, ads7846_suspend, ads7846_resume);
@@ -960,6 +1334,15 @@ static int __devinit ads7846_setup_pendown(struct spi_device *spi, struct ads784
 	struct ads7846_platform_data *pdata = spi->dev.platform_data;
 	int err;
 
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(ads7846_pm, ads7846_suspend, ads7846_resume);
+
+static int ads7846_setup_pendown(struct spi_device *spi,
+				 struct ads7846 *ts,
+				 const struct ads7846_platform_data *pdata)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * REVISIT when the irq can be triggered active-low, or if for some
 	 * reason the touchscreen isn't hooked up, we don't need to access
@@ -968,6 +1351,7 @@ static int __devinit ads7846_setup_pendown(struct spi_device *spi, struct ads784
 
 	if (pdata->get_pendown_state) {
 		ts->get_pendown_state = pdata->get_pendown_state;
+<<<<<<< HEAD
 	} else if (gpio_is_valid(pdata->gpio_pendown)) {
 
 		err = gpio_request_one(pdata->gpio_pendown, GPIOF_IN,
@@ -984,6 +1368,17 @@ static int __devinit ads7846_setup_pendown(struct spi_device *spi, struct ads784
 	} else {
 		dev_err(&spi->dev, "no get_pendown_state nor gpio_pendown?\n");
 		return -EINVAL;
+=======
+	} else {
+		ts->gpio_pendown = gpiod_get(&spi->dev, "pendown", GPIOD_IN);
+		if (IS_ERR(ts->gpio_pendown)) {
+			dev_err(&spi->dev, "failed to request pendown GPIO\n");
+			return PTR_ERR(ts->gpio_pendown);
+		}
+		if (pdata->gpio_pendown_debounce)
+			gpiod_set_debounce(ts->gpio_pendown,
+					   pdata->gpio_pendown_debounce);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -993,13 +1388,70 @@ static int __devinit ads7846_setup_pendown(struct spi_device *spi, struct ads784
  * Set up the transfers to read touchscreen state; this assumes we
  * use formula #2 for pressure, not #3.
  */
+<<<<<<< HEAD
 static void __devinit ads7846_setup_spi_msg(struct ads7846 *ts,
 				const struct ads7846_platform_data *pdata)
+=======
+static int ads7846_setup_spi_msg(struct ads7846 *ts,
+				  const struct ads7846_platform_data *pdata)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct spi_message *m = &ts->msg[0];
 	struct spi_transfer *x = ts->xfer;
 	struct ads7846_packet *packet = ts->packet;
 	int vref = pdata->keep_vref_on;
+<<<<<<< HEAD
+=======
+	unsigned int count, offset = 0;
+	unsigned int cmd_idx, b;
+	unsigned long time;
+	size_t size = 0;
+
+	/* time per bit */
+	time = NSEC_PER_SEC / ts->spi->max_speed_hz;
+
+	count = pdata->settle_delay_usecs * NSEC_PER_USEC / time;
+	packet->count_skip = DIV_ROUND_UP(count, 24);
+
+	if (ts->debounce_max && ts->debounce_rep)
+		/* ads7846_debounce_filter() is making ts->debounce_rep + 2
+		 * reads. So we need to get all samples for normal case. */
+		packet->count = ts->debounce_rep + 2;
+	else
+		packet->count = 1;
+
+	if (ts->model == 7846)
+		packet->cmds = 5; /* x, y, z1, z2, pwdown */
+	else
+		packet->cmds = 3; /* x, y, pwdown */
+
+	for (cmd_idx = 0; cmd_idx < packet->cmds; cmd_idx++) {
+		struct ads7846_buf_layout *l = &packet->l[cmd_idx];
+		unsigned int max_count;
+
+		if (cmd_idx == packet->cmds - 1)
+			cmd_idx = ADS7846_PWDOWN;
+
+		if (ads7846_cmd_need_settle(cmd_idx))
+			max_count = packet->count + packet->count_skip;
+		else
+			max_count = packet->count;
+
+		l->offset = offset;
+		offset += max_count;
+		l->count = max_count;
+		l->skip = packet->count_skip;
+		size += sizeof(*packet->tx) * max_count;
+	}
+
+	packet->tx = devm_kzalloc(&ts->spi->dev, size, GFP_KERNEL);
+	if (!packet->tx)
+		return -ENOMEM;
+
+	packet->rx = devm_kzalloc(&ts->spi->dev, size, GFP_KERNEL);
+	if (!packet->rx)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ts->model == 7873) {
 		/*
@@ -1015,6 +1467,7 @@ static void __devinit ads7846_setup_spi_msg(struct ads7846 *ts,
 	spi_message_init(m);
 	m->context = ts;
 
+<<<<<<< HEAD
 	if (ts->model == 7845) {
 		packet->read_y_cmd[0] = READ_Y(vref);
 		packet->read_y_cmd[1] = 0;
@@ -1198,10 +1651,111 @@ static int __devinit ads7846_probe(struct spi_device *spi)
 	struct ads7846_packet *packet;
 	struct input_dev *input_dev;
 	struct ads7846_platform_data *pdata = spi->dev.platform_data;
+=======
+	for (cmd_idx = 0; cmd_idx < packet->cmds; cmd_idx++) {
+		struct ads7846_buf_layout *l = &packet->l[cmd_idx];
+		u8 cmd;
+
+		if (cmd_idx == packet->cmds - 1)
+			cmd_idx = ADS7846_PWDOWN;
+
+		cmd = ads7846_get_cmd(cmd_idx, vref);
+
+		for (b = 0; b < l->count; b++)
+			packet->tx[l->offset + b].cmd = cmd;
+	}
+
+	x->tx_buf = packet->tx;
+	x->rx_buf = packet->rx;
+	x->len = size;
+	spi_message_add_tail(x, m);
+
+	return 0;
+}
+
+static const struct of_device_id ads7846_dt_ids[] = {
+	{ .compatible = "ti,tsc2046",	.data = (void *) 7846 },
+	{ .compatible = "ti,ads7843",	.data = (void *) 7843 },
+	{ .compatible = "ti,ads7845",	.data = (void *) 7845 },
+	{ .compatible = "ti,ads7846",	.data = (void *) 7846 },
+	{ .compatible = "ti,ads7873",	.data = (void *) 7873 },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, ads7846_dt_ids);
+
+static const struct ads7846_platform_data *ads7846_get_props(struct device *dev)
+{
+	struct ads7846_platform_data *pdata;
+	u32 value;
+
+	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+	if (!pdata)
+		return ERR_PTR(-ENOMEM);
+
+	pdata->model = (uintptr_t)device_get_match_data(dev);
+
+	device_property_read_u16(dev, "ti,vref-delay-usecs",
+				 &pdata->vref_delay_usecs);
+	device_property_read_u16(dev, "ti,vref-mv", &pdata->vref_mv);
+	pdata->keep_vref_on = device_property_read_bool(dev, "ti,keep-vref-on");
+
+	pdata->swap_xy = device_property_read_bool(dev, "ti,swap-xy");
+
+	device_property_read_u16(dev, "ti,settle-delay-usec",
+				 &pdata->settle_delay_usecs);
+	device_property_read_u16(dev, "ti,penirq-recheck-delay-usecs",
+				 &pdata->penirq_recheck_delay_usecs);
+
+	device_property_read_u16(dev, "ti,x-plate-ohms", &pdata->x_plate_ohms);
+	device_property_read_u16(dev, "ti,y-plate-ohms", &pdata->y_plate_ohms);
+
+	device_property_read_u16(dev, "ti,x-min", &pdata->x_min);
+	device_property_read_u16(dev, "ti,y-min", &pdata->y_min);
+	device_property_read_u16(dev, "ti,x-max", &pdata->x_max);
+	device_property_read_u16(dev, "ti,y-max", &pdata->y_max);
+
+	/*
+	 * touchscreen-max-pressure gets parsed during
+	 * touchscreen_parse_properties()
+	 */
+	device_property_read_u16(dev, "ti,pressure-min", &pdata->pressure_min);
+	if (!device_property_read_u32(dev, "touchscreen-min-pressure", &value))
+		pdata->pressure_min = (u16) value;
+	device_property_read_u16(dev, "ti,pressure-max", &pdata->pressure_max);
+
+	device_property_read_u16(dev, "ti,debounce-max", &pdata->debounce_max);
+	if (!device_property_read_u32(dev, "touchscreen-average-samples", &value))
+		pdata->debounce_max = (u16) value;
+	device_property_read_u16(dev, "ti,debounce-tol", &pdata->debounce_tol);
+	device_property_read_u16(dev, "ti,debounce-rep", &pdata->debounce_rep);
+
+	device_property_read_u32(dev, "ti,pendown-gpio-debounce",
+			     &pdata->gpio_pendown_debounce);
+
+	pdata->wakeup = device_property_read_bool(dev, "wakeup-source") ||
+			device_property_read_bool(dev, "linux,wakeup");
+
+	return pdata;
+}
+
+static void ads7846_regulator_disable(void *regulator)
+{
+	regulator_disable(regulator);
+}
+
+static int ads7846_probe(struct spi_device *spi)
+{
+	const struct ads7846_platform_data *pdata;
+	struct ads7846 *ts;
+	struct device *dev = &spi->dev;
+	struct ads7846_packet *packet;
+	struct input_dev *input_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long irq_flags;
 	int err;
 
 	if (!spi->irq) {
+<<<<<<< HEAD
 		dev_dbg(&spi->dev, "no IRQ?\n");
 		return -ENODEV;
 	}
@@ -1209,25 +1763,45 @@ static int __devinit ads7846_probe(struct spi_device *spi)
 	if (!pdata) {
 		dev_dbg(&spi->dev, "no platform data?\n");
 		return -ENODEV;
+=======
+		dev_dbg(dev, "no IRQ?\n");
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* don't exceed max specified sample rate */
 	if (spi->max_speed_hz > (125000 * SAMPLE_BITS)) {
+<<<<<<< HEAD
 		dev_dbg(&spi->dev, "f(sample) %d KHz?\n",
 				(spi->max_speed_hz/SAMPLE_BITS)/1000);
 		return -EINVAL;
 	}
 
 	/* We'd set TX word size 8 bits and RX word size to 13 bits ... except
+=======
+		dev_err(dev, "f(sample) %d KHz?\n",
+			(spi->max_speed_hz/SAMPLE_BITS)/1000);
+		return -EINVAL;
+	}
+
+	/*
+	 * We'd set TX word size 8 bits and RX word size to 13 bits ... except
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * that even if the hardware can do that, the SPI controller driver
 	 * may not.  So we stick to very-portable 8 bit words, both RX and TX.
 	 */
 	spi->bits_per_word = 8;
+<<<<<<< HEAD
 	spi->mode = SPI_MODE_0;
+=======
+	spi->mode &= ~SPI_MODE_X_MASK;
+	spi->mode |= SPI_MODE_0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = spi_setup(spi);
 	if (err < 0)
 		return err;
 
+<<<<<<< HEAD
 	ts = kzalloc(sizeof(struct ads7846), GFP_KERNEL);
 	packet = kzalloc(sizeof(struct ads7846_packet), GFP_KERNEL);
 	input_dev = input_allocate_device();
@@ -1237,16 +1811,35 @@ static int __devinit ads7846_probe(struct spi_device *spi)
 	}
 
 	dev_set_drvdata(&spi->dev, ts);
+=======
+	ts = devm_kzalloc(dev, sizeof(struct ads7846), GFP_KERNEL);
+	if (!ts)
+		return -ENOMEM;
+
+	packet = devm_kzalloc(dev, sizeof(struct ads7846_packet), GFP_KERNEL);
+	if (!packet)
+		return -ENOMEM;
+
+	input_dev = devm_input_allocate_device(dev);
+	if (!input_dev)
+		return -ENOMEM;
+
+	spi_set_drvdata(spi, ts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ts->packet = packet;
 	ts->spi = spi;
 	ts->input = input_dev;
+<<<<<<< HEAD
 	ts->vref_mv = pdata->vref_mv;
 	ts->swap_xy = pdata->swap_xy;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_init(&ts->lock);
 	init_waitqueue_head(&ts->wait);
 
+<<<<<<< HEAD
 	ts->model = pdata->model ? : 7846;
 	ts->vref_delay_usecs = pdata->vref_delay_usecs ? : 100;
 	ts->x_plate_ohms = pdata->x_plate_ohms ? : 400;
@@ -1261,6 +1854,21 @@ static int __devinit ads7846_probe(struct spi_device *spi)
 		ts->filter = pdata->filter;
 		ts->filter_cleanup = pdata->filter_cleanup;
 	} else if (pdata->debounce_max) {
+=======
+	pdata = dev_get_platdata(dev);
+	if (!pdata) {
+		pdata = ads7846_get_props(dev);
+		if (IS_ERR(pdata))
+			return PTR_ERR(pdata);
+	}
+
+	ts->model = pdata->model ? : 7846;
+	ts->vref_delay_usecs = pdata->vref_delay_usecs ? : 100;
+	ts->x_plate_ohms = pdata->x_plate_ohms ? : 400;
+	ts->vref_mv = pdata->vref_mv;
+
+	if (pdata->debounce_max) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ts->debounce_max = pdata->debounce_max;
 		if (ts->debounce_max < 2)
 			ts->debounce_max = 2;
@@ -1272,9 +1880,15 @@ static int __devinit ads7846_probe(struct spi_device *spi)
 		ts->filter = ads7846_no_filter;
 	}
 
+<<<<<<< HEAD
 	err = ads7846_setup_pendown(spi, ts);
 	if (err)
 		goto err_cleanup_filter;
+=======
+	err = ads7846_setup_pendown(spi, ts, pdata);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pdata->penirq_recheck_delay_usecs)
 		ts->penirq_recheck_delay_usecs =
@@ -1282,15 +1896,27 @@ static int __devinit ads7846_probe(struct spi_device *spi)
 
 	ts->wait_for_sync = pdata->wait_for_sync ? : null_wait_for_sync;
 
+<<<<<<< HEAD
 	snprintf(ts->phys, sizeof(ts->phys), "%s/input0", dev_name(&spi->dev));
+=======
+	snprintf(ts->phys, sizeof(ts->phys), "%s/input0", dev_name(dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snprintf(ts->name, sizeof(ts->name), "ADS%d Touchscreen", ts->model);
 
 	input_dev->name = ts->name;
 	input_dev->phys = ts->phys;
+<<<<<<< HEAD
 	input_dev->dev.parent = &spi->dev;
 
 	input_dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
 	input_dev->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
+=======
+
+	input_dev->id.bustype = BUS_SPI;
+	input_dev->id.product = pdata->model;
+
+	input_set_capability(input_dev, EV_KEY, BTN_TOUCH);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	input_set_abs_params(input_dev, ABS_X,
 			pdata->x_min ? : 0,
 			pdata->x_max ? : MAX_12BIT,
@@ -1299,6 +1925,7 @@ static int __devinit ads7846_probe(struct spi_device *spi)
 			pdata->y_min ? : 0,
 			pdata->y_max ? : MAX_12BIT,
 			0, 0);
+<<<<<<< HEAD
 	input_set_abs_params(input_dev, ABS_PRESSURE,
 			pdata->pressure_min, pdata->pressure_max, 0, 0);
 
@@ -1309,10 +1936,41 @@ static int __devinit ads7846_probe(struct spi_device *spi)
 		err = PTR_ERR(ts->reg);
 		dev_err(&spi->dev, "unable to get regulator: %d\n", err);
 		goto err_free_gpio;
+=======
+	if (ts->model != 7845)
+		input_set_abs_params(input_dev, ABS_PRESSURE,
+				pdata->pressure_min, pdata->pressure_max, 0, 0);
+
+	/*
+	 * Parse common framework properties. Must be done here to ensure the
+	 * correct behaviour in case of using the legacy vendor bindings. The
+	 * general binding value overrides the vendor specific one.
+	 */
+	touchscreen_parse_properties(ts->input, false, &ts->core_prop);
+	ts->pressure_max = input_abs_get_max(input_dev, ABS_PRESSURE) ? : ~0;
+
+	/*
+	 * Check if legacy ti,swap-xy binding is used instead of
+	 * touchscreen-swapped-x-y
+	 */
+	if (!ts->core_prop.swap_x_y && pdata->swap_xy) {
+		swap(input_dev->absinfo[ABS_X], input_dev->absinfo[ABS_Y]);
+		ts->core_prop.swap_x_y = true;
+	}
+
+	ads7846_setup_spi_msg(ts, pdata);
+
+	ts->reg = devm_regulator_get(dev, "vcc");
+	if (IS_ERR(ts->reg)) {
+		err = PTR_ERR(ts->reg);
+		dev_err(dev, "unable to get regulator: %d\n", err);
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = regulator_enable(ts->reg);
 	if (err) {
+<<<<<<< HEAD
 		dev_err(&spi->dev, "unable to enable regulator: %d\n", err);
 		goto err_put_regulator;
 	}
@@ -1334,19 +1992,55 @@ static int __devinit ads7846_probe(struct spi_device *spi)
 	if (err) {
 		dev_dbg(&spi->dev, "irq %d busy?\n", spi->irq);
 		goto err_disable_regulator;
+=======
+		dev_err(dev, "unable to enable regulator: %d\n", err);
+		return err;
+	}
+
+	err = devm_add_action_or_reset(dev, ads7846_regulator_disable, ts->reg);
+	if (err)
+		return err;
+
+	irq_flags = pdata->irq_flags ? : IRQF_TRIGGER_FALLING;
+	irq_flags |= IRQF_ONESHOT;
+
+	err = devm_request_threaded_irq(dev, spi->irq,
+					ads7846_hard_irq, ads7846_irq,
+					irq_flags, dev->driver->name, ts);
+	if (err && err != -EPROBE_DEFER && !pdata->irq_flags) {
+		dev_info(dev,
+			"trying pin change workaround on irq %d\n", spi->irq);
+		irq_flags |= IRQF_TRIGGER_RISING;
+		err = devm_request_threaded_irq(dev, spi->irq,
+						ads7846_hard_irq, ads7846_irq,
+						irq_flags, dev->driver->name,
+						ts);
+	}
+
+	if (err) {
+		dev_dbg(dev, "irq %d busy?\n", spi->irq);
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = ads784x_hwmon_register(spi, ts);
 	if (err)
+<<<<<<< HEAD
 		goto err_free_irq;
 
 	dev_info(&spi->dev, "touchscreen, irq %d\n", spi->irq);
+=======
+		return err;
+
+	dev_info(dev, "touchscreen, irq %d\n", spi->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Take a first sample, leaving nPENIRQ active and vREF off; avoid
 	 * the touchscreen, in case it's not connected.
 	 */
 	if (ts->model == 7845)
+<<<<<<< HEAD
 		ads7845_read12_ser(&spi->dev, PWRDOWN);
 	else
 		(void) ads7846_read12_ser(&spi->dev, READ_12BIT_SER(vaux));
@@ -1421,16 +2115,53 @@ static int __devexit ads7846_remove(struct spi_device *spi)
 	dev_dbg(&spi->dev, "unregistered touchscreen\n");
 
 	return 0;
+=======
+		ads7845_read12_ser(dev, PWRDOWN);
+	else
+		(void) ads7846_read12_ser(dev, READ_12BIT_SER(vaux));
+
+	err = input_register_device(input_dev);
+	if (err)
+		return err;
+
+	device_init_wakeup(dev, pdata->wakeup);
+
+	/*
+	 * If device does not carry platform data we must have allocated it
+	 * when parsing DT data.
+	 */
+	if (!dev_get_platdata(dev))
+		devm_kfree(dev, (void *)pdata);
+
+	return 0;
+}
+
+static void ads7846_remove(struct spi_device *spi)
+{
+	struct ads7846 *ts = spi_get_drvdata(spi);
+
+	ads7846_stop(ts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver ads7846_driver = {
 	.driver = {
+<<<<<<< HEAD
 		.name	= "ads7846",
 		.owner	= THIS_MODULE,
 		.pm	= &ads7846_pm,
 	},
 	.probe		= ads7846_probe,
 	.remove		= __devexit_p(ads7846_remove),
+=======
+		.name		= "ads7846",
+		.dev_groups	= ads784x_groups,
+		.pm		= pm_sleep_ptr(&ads7846_pm),
+		.of_match_table	= ads7846_dt_ids,
+	},
+	.probe		= ads7846_probe,
+	.remove		= ads7846_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(ads7846_driver);

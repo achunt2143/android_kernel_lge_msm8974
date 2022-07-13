@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC Linux
  *
@@ -9,11 +13,14 @@
  * Copyright (C) 2003 Matjaz Breskvar <phoenix@bsemi.com>
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
  * et al.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __ASM_OPENRISC_CACHE_H
@@ -23,6 +30,11 @@
  * they shouldn't be hard-coded!
  */
 
+<<<<<<< HEAD
+=======
+#define __ro_after_init __read_mostly
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define L1_CACHE_BYTES 16
 #define L1_CACHE_SHIFT 4
 

@@ -1,6 +1,7 @@
 #
 # Core Alchemy code
 #
+<<<<<<< HEAD
 platform-$(CONFIG_MIPS_ALCHEMY)	+= alchemy/common/
 
 
@@ -49,28 +50,53 @@ load-$(CONFIG_MIPS_DB1200)	+= 0xffffffff80100000
 platform-$(CONFIG_MIPS_DB1300)	+= alchemy/devboards/
 cflags-$(CONFIG_MIPS_DB1300)	+= -I$(srctree)/arch/mips/include/asm/mach-db1x00
 load-$(CONFIG_MIPS_DB1300)	+= 0xffffffff80100000
+=======
+platform-$(CONFIG_MIPS_ALCHEMY) += alchemy/common/
+
+
+#
+# AMD Alchemy Db1000/Db1500/Pb1500/Db1100/Pb1100
+#             Db1550/Pb1550/Db1200/Pb1200/Db1300
+#
+platform-$(CONFIG_MIPS_DB1XXX)	+= alchemy/devboards/
+cflags-$(CONFIG_MIPS_DB1XXX)	+= -I$(srctree)/arch/mips/include/asm/mach-db1x00
+load-$(CONFIG_MIPS_DB1XXX)	+= 0xffffffff80100000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # 4G-Systems MTX-1 "MeshCube" wireless router
 #
+<<<<<<< HEAD
 platform-$(CONFIG_MIPS_MTX1)	+= alchemy/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 load-$(CONFIG_MIPS_MTX1)	+= 0xffffffff80100000
 
 #
 # MyCable eval board
 #
+<<<<<<< HEAD
 platform-$(CONFIG_MIPS_XXS1500)	+= alchemy/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 load-$(CONFIG_MIPS_XXS1500)	+= 0xffffffff80100000
 
 #
 # Trapeze ITS GRP board
 #
+<<<<<<< HEAD
 platform-$(CONFIG_MIPS_GPR)	+= alchemy/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 load-$(CONFIG_MIPS_GPR)		+= 0xffffffff80100000
 
 # boards can specify their own <gpio.h> in one of their include dirs.
 # If they do, placing this line here at the end will make sure the
+<<<<<<< HEAD
 # compiler picks the board one.  If they don't, it will make sure
+=======
+# compiler picks the board one.	 If they don't, it will make sure
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # the alchemy generic gpio header is picked up.
 
 cflags-$(CONFIG_MIPS_ALCHEMY)	+= -I$(srctree)/arch/mips/include/asm/mach-au1x00

@@ -1,16 +1,27 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Real Time Clock driver for Marvell 88PM860x PMIC
  *
  * Copyright (c) 2010 Marvell International Ltd.
  * Author:	Haojian Zhuang <haojian.zhuang@marvell.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/mutex.h>
@@ -30,7 +41,10 @@ struct pm860x_rtc_info {
 
 	int			irq;
 	int			vrtc;
+<<<<<<< HEAD
 	int			(*sync)(unsigned int ticks);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define REG_VRTC_MEAS1		0x7D
@@ -78,6 +92,7 @@ static int pm860x_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Calculate the next alarm time given the requested alarm time mask
  * and the current time.
@@ -105,6 +120,8 @@ static void rtc_next_alarm_time(struct rtc_time *next, struct rtc_time *now,
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int pm860x_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct pm860x_rtc_info *info = dev_get_drvdata(dev);
@@ -114,16 +131,30 @@ static int pm860x_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	pm860x_page_bulk_read(info->i2c, REG0_ADDR, 8, buf);
 	dev_dbg(info->dev, "%x-%x-%x-%x-%x-%x-%x-%x\n", buf[0], buf[1],
 		buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+<<<<<<< HEAD
 	base = (buf[1] << 24) | (buf[3] << 16) | (buf[5] << 8) | buf[7];
 
 	/* load 32-bit read-only counter */
 	pm860x_bulk_read(info->i2c, PM8607_RTC_COUNTER1, 4, buf);
 	data = (buf[3] << 24) | (buf[2] << 16) | (buf[1] << 8) | buf[0];
+=======
+	base = ((unsigned long)buf[1] << 24) | (buf[3] << 16) |
+		(buf[5] << 8) | buf[7];
+
+	/* load 32-bit read-only counter */
+	pm860x_bulk_read(info->i2c, PM8607_RTC_COUNTER1, 4, buf);
+	data = ((unsigned long)buf[3] << 24) | (buf[2] << 16) |
+		(buf[1] << 8) | buf[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ticks = base + data;
 	dev_dbg(info->dev, "get base:0x%lx, RO count:0x%lx, ticks:0x%lx\n",
 		base, data, ticks);
 
+<<<<<<< HEAD
 	rtc_time_to_tm(ticks, tm);
+=======
+	rtc_time64_to_tm(ticks, tm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -134,6 +165,7 @@ static int pm860x_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	unsigned char buf[4];
 	unsigned long ticks, base, data;
 
+<<<<<<< HEAD
 	if ((tm->tm_year < 70) || (tm->tm_year > 138)) {
 		dev_dbg(info->dev, "Set time %d out of range. "
 			"Please set time between 1970 to 2038.\n",
@@ -145,6 +177,14 @@ static int pm860x_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	/* load 32-bit read-only counter */
 	pm860x_bulk_read(info->i2c, PM8607_RTC_COUNTER1, 4, buf);
 	data = (buf[3] << 24) | (buf[2] << 16) | (buf[1] << 8) | buf[0];
+=======
+	ticks = rtc_tm_to_time64(tm);
+
+	/* load 32-bit read-only counter */
+	pm860x_bulk_read(info->i2c, PM8607_RTC_COUNTER1, 4, buf);
+	data = ((unsigned long)buf[3] << 24) | (buf[2] << 16) |
+		(buf[1] << 8) | buf[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	base = ticks - data;
 	dev_dbg(info->dev, "set base:0x%lx, RO count:0x%lx, ticks:0x%lx\n",
 		base, data, ticks);
@@ -154,8 +194,11 @@ static int pm860x_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	pm860x_page_reg_write(info->i2c, REG2_DATA, (base >> 8) & 0xFF);
 	pm860x_page_reg_write(info->i2c, REG3_DATA, base & 0xFF);
 
+<<<<<<< HEAD
 	if (info->sync)
 		info->sync(ticks);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -169,15 +212,28 @@ static int pm860x_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	pm860x_page_bulk_read(info->i2c, REG0_ADDR, 8, buf);
 	dev_dbg(info->dev, "%x-%x-%x-%x-%x-%x-%x-%x\n", buf[0], buf[1],
 		buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+<<<<<<< HEAD
 	base = (buf[1] << 24) | (buf[3] << 16) | (buf[5] << 8) | buf[7];
 
 	pm860x_bulk_read(info->i2c, PM8607_RTC_EXPIRE1, 4, buf);
 	data = (buf[3] << 24) | (buf[2] << 16) | (buf[1] << 8) | buf[0];
+=======
+	base = ((unsigned long)buf[1] << 24) | (buf[3] << 16) |
+		(buf[5] << 8) | buf[7];
+
+	pm860x_bulk_read(info->i2c, PM8607_RTC_EXPIRE1, 4, buf);
+	data = ((unsigned long)buf[3] << 24) | (buf[2] << 16) |
+		(buf[1] << 8) | buf[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ticks = base + data;
 	dev_dbg(info->dev, "get base:0x%lx, RO count:0x%lx, ticks:0x%lx\n",
 		base, data, ticks);
 
+<<<<<<< HEAD
 	rtc_time_to_tm(ticks, &alrm->time);
+=======
+	rtc_time64_to_tm(ticks, &alrm->time);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = pm860x_reg_read(info->i2c, PM8607_RTC1);
 	alrm->enabled = (ret & ALARM_EN) ? 1 : 0;
 	alrm->pending = (ret & (ALARM | ALARM_WAKEUP)) ? 1 : 0;
@@ -187,7 +243,10 @@ static int pm860x_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 static int pm860x_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
 	struct pm860x_rtc_info *info = dev_get_drvdata(dev);
+<<<<<<< HEAD
 	struct rtc_time now_tm, alarm_tm;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long ticks, base, data;
 	unsigned char buf[8];
 	int mask;
@@ -197,6 +256,7 @@ static int pm860x_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	pm860x_page_bulk_read(info->i2c, REG0_ADDR, 8, buf);
 	dev_dbg(info->dev, "%x-%x-%x-%x-%x-%x-%x-%x\n", buf[0], buf[1],
 		buf[2], buf[3], buf[4], buf[5], buf[6], buf[7]);
+<<<<<<< HEAD
 	base = (buf[1] << 24) | (buf[3] << 16) | (buf[5] << 8) | buf[7];
 
 	/* load 32-bit read-only counter */
@@ -210,6 +270,12 @@ static int pm860x_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	rtc_next_alarm_time(&alarm_tm, &now_tm, &alrm->time);
 	/* get new ticks for alarm in 24 hours */
 	rtc_tm_to_time(&alarm_tm, &ticks);
+=======
+	base = ((unsigned long)buf[1] << 24) | (buf[3] << 16) |
+		(buf[5] << 8) | buf[7];
+
+	ticks = rtc_tm_to_time64(&alrm->time);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data = ticks - base;
 
 	buf[0] = data & 0xff;
@@ -284,6 +350,7 @@ out:
 }
 #endif
 
+<<<<<<< HEAD
 static int __devinit pm860x_rtc_probe(struct platform_device *pdev)
 {
 	struct pm860x_chip *chip = dev_get_drvdata(pdev->dev.parent);
@@ -306,18 +373,70 @@ static int __devinit pm860x_rtc_probe(struct platform_device *pdev)
 		ret = -EINVAL;
 		goto out;
 	}
+=======
+#ifdef CONFIG_OF
+static int pm860x_rtc_dt_init(struct platform_device *pdev,
+			      struct pm860x_rtc_info *info)
+{
+	struct device_node *np = pdev->dev.parent->of_node;
+	int ret;
+	if (!np)
+		return -ENODEV;
+	np = of_get_child_by_name(np, "rtc");
+	if (!np) {
+		dev_err(&pdev->dev, "failed to find rtc node\n");
+		return -ENODEV;
+	}
+	ret = of_property_read_u32(np, "marvell,88pm860x-vrtc", &info->vrtc);
+	if (ret)
+		info->vrtc = 0;
+	of_node_put(np);
+	return 0;
+}
+#else
+#define pm860x_rtc_dt_init(x, y)	do { } while (0)
+#endif
+
+static int pm860x_rtc_probe(struct platform_device *pdev)
+{
+	struct pm860x_chip *chip = dev_get_drvdata(pdev->dev.parent);
+	struct pm860x_rtc_info *info;
+	int ret;
+
+	info = devm_kzalloc(&pdev->dev, sizeof(struct pm860x_rtc_info),
+			    GFP_KERNEL);
+	if (!info)
+		return -ENOMEM;
+	info->irq = platform_get_irq(pdev, 0);
+	if (info->irq < 0)
+		return info->irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	info->chip = chip;
 	info->i2c = (chip->id == CHIP_PM8607) ? chip->client : chip->companion;
 	info->dev = &pdev->dev;
 	dev_set_drvdata(&pdev->dev, info);
 
+<<<<<<< HEAD
 	ret = request_threaded_irq(info->irq, NULL, rtc_update_handler,
 				   IRQF_ONESHOT, "rtc", info);
 	if (ret < 0) {
 		dev_err(chip->dev, "Failed to request IRQ: #%d: %d\n",
 			info->irq, ret);
 		goto out;
+=======
+	info->rtc_dev = devm_rtc_allocate_device(&pdev->dev);
+	if (IS_ERR(info->rtc_dev))
+		return PTR_ERR(info->rtc_dev);
+
+	ret = devm_request_threaded_irq(&pdev->dev, info->irq, NULL,
+					rtc_update_handler, IRQF_ONESHOT, "rtc",
+					info);
+	if (ret < 0) {
+		dev_err(chip->dev, "Failed to request IRQ: #%d: %d\n",
+			info->irq, ret);
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* set addresses of 32-bit base value for RTC time */
@@ -326,6 +445,7 @@ static int __devinit pm860x_rtc_probe(struct platform_device *pdev)
 	pm860x_page_reg_write(info->i2c, REG2_ADDR, REG2_DATA);
 	pm860x_page_reg_write(info->i2c, REG3_ADDR, REG3_DATA);
 
+<<<<<<< HEAD
 	ret = pm860x_rtc_read_time(&pdev->dev, &tm);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Failed to read initial time.\n");
@@ -357,6 +477,16 @@ static int __devinit pm860x_rtc_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "Failed to register RTC device: %d\n", ret);
 		goto out_rtc;
 	}
+=======
+	pm860x_rtc_dt_init(pdev, info);
+
+	info->rtc_dev->ops = &pm860x_rtc_ops;
+	info->rtc_dev->range_max = U32_MAX;
+
+	ret = devm_rtc_register_device(info->rtc_dev);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * enable internal XO instead of internal 3.25MHz clock since it can
@@ -366,10 +496,13 @@ static int __devinit pm860x_rtc_probe(struct platform_device *pdev)
 
 #ifdef VRTC_CALIBRATION
 	/* <00> -- 2.7V, <01> -- 2.9V, <10> -- 3.1V, <11> -- 3.3V */
+<<<<<<< HEAD
 	if (pdata && pdata->vrtc)
 		info->vrtc = pdata->vrtc & 0x3;
 	else
 		info->vrtc = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pm860x_set_bits(info->i2c, PM8607_MEAS_EN2, MEAS2_VRTC, MEAS2_VRTC);
 
 	/* calibrate VRTC */
@@ -380,6 +513,7 @@ static int __devinit pm860x_rtc_probe(struct platform_device *pdev)
 	device_init_wakeup(&pdev->dev, 1);
 
 	return 0;
+<<<<<<< HEAD
 out_rtc:
 	free_irq(info->irq, info);
 out:
@@ -388,10 +522,16 @@ out:
 }
 
 static int __devexit pm860x_rtc_remove(struct platform_device *pdev)
+=======
+}
+
+static void pm860x_rtc_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pm860x_rtc_info *info = platform_get_drvdata(pdev);
 
 #ifdef VRTC_CALIBRATION
+<<<<<<< HEAD
 	flush_scheduled_work();
 	/* disable measurement */
 	pm860x_set_bits(info->i2c, PM8607_MEAS_EN2, MEAS2_VRTC, 0);
@@ -402,6 +542,12 @@ static int __devexit pm860x_rtc_remove(struct platform_device *pdev)
 	free_irq(info->irq, info);
 	kfree(info);
 	return 0;
+=======
+	cancel_delayed_work_sync(&info->calib_work);
+	/* disable measurement */
+	pm860x_set_bits(info->i2c, PM8607_MEAS_EN2, MEAS2_VRTC, 0);
+#endif	/* VRTC_CALIBRATION */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -430,11 +576,18 @@ static SIMPLE_DEV_PM_OPS(pm860x_rtc_pm_ops, pm860x_rtc_suspend, pm860x_rtc_resum
 static struct platform_driver pm860x_rtc_driver = {
 	.driver		= {
 		.name	= "88pm860x-rtc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= &pm860x_rtc_pm_ops,
 	},
 	.probe		= pm860x_rtc_probe,
 	.remove		= __devexit_p(pm860x_rtc_remove),
+=======
+		.pm	= &pm860x_rtc_pm_ops,
+	},
+	.probe		= pm860x_rtc_probe,
+	.remove_new	= pm860x_rtc_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(pm860x_rtc_driver);

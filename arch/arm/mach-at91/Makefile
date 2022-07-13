@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the linux kernel.
 #
 
+<<<<<<< HEAD
 obj-y		:= irq.o gpio.o setup.o
 obj-m		:=
 obj-n		:=
@@ -91,7 +96,30 @@ obj-y				+= leds.o
 obj-$(CONFIG_PM)		+= pm.o
 obj-$(CONFIG_AT91_SLOW_CLOCK)	+= pm_slowclock.o
 obj-$(CONFIG_CPU_IDLE)	+= cpuidle.o
+=======
+# CPU-specific support
+obj-$(CONFIG_SOC_AT91RM9200)	+= at91rm9200.o
+obj-$(CONFIG_SOC_AT91SAM9)	+= at91sam9.o
+obj-$(CONFIG_SOC_SAM9X60)	+= sam9x60.o
+obj-$(CONFIG_SOC_SAMA5)		+= sama5.o sam_secure.o
+obj-$(CONFIG_SOC_SAMA7)		+= sama7.o
+obj-$(CONFIG_SOC_SAMV7)		+= samv7.o
+
+# Power Management
+obj-$(CONFIG_ATMEL_PM)		+= pm.o pm_suspend.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ifeq ($(CONFIG_PM_DEBUG),y)
 CFLAGS_pm.o += -DDEBUG
 endif
+<<<<<<< HEAD
+=======
+
+$(obj)/pm_data-offsets.h: $(obj)/pm_data-offsets.s FORCE
+	$(call filechk,offsets,__PM_DATA_OFFSETS_H__)
+
+$(obj)/pm_suspend.o: $(obj)/pm_data-offsets.h
+
+targets += pm_data-offsets.s
+clean-files += pm_data-offsets.h
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

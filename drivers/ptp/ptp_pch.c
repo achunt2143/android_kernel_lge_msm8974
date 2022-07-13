@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * PTP 1588 clock using the EG20T PCH
  *
@@ -5,6 +9,7 @@
  * Copyright (C) 2011-2012 LAPIS SEMICONDUCTOR Co., LTD.
  *
  * This code was derived from the IXP46X driver.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,18 +23,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/device.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/io.h>
+=======
+#include <linux/interrupt.h>
+#include <linux/io.h>
+#include <linux/io-64-nonatomic-lo-hi.h>
+#include <linux/io-64-nonatomic-hi-lo.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/irq.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/ptp_clock_kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/ptp_pch.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 #define STATION_ADDR_LEN	20
@@ -48,7 +66,12 @@ enum pch_status {
 	PCH_FAILED,
 	PCH_UNSUPPORTED,
 };
+<<<<<<< HEAD
 /**
+=======
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * struct pch_ts_regs - IEEE 1588 registers
  */
 struct pch_ts_regs {
@@ -110,6 +133,7 @@ struct pch_ts_regs {
 #define PCH_ECS_ETH		(1 << 0)
 
 #define PCH_ECS_CAN		(1 << 1)
+<<<<<<< HEAD
 #define PCH_STATION_BYTES	6
 
 #define PCH_IEEE1588_ETH	(1 << 0)
@@ -119,19 +143,37 @@ struct pch_ts_regs {
  */
 struct pch_dev {
 	struct pch_ts_regs *regs;
+=======
+
+#define PCH_IEEE1588_ETH	(1 << 0)
+#define PCH_IEEE1588_CAN	(1 << 1)
+
+/*
+ * struct pch_dev - Driver private data
+ */
+struct pch_dev {
+	struct pch_ts_regs __iomem *regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ptp_clock *ptp_clock;
 	struct ptp_clock_info caps;
 	int exts0_enabled;
 	int exts1_enabled;
 
+<<<<<<< HEAD
 	u32 mem_base;
 	u32 mem_size;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 irq;
 	struct pci_dev *pdev;
 	spinlock_t register_lock;
 };
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * struct pch_params - 1588 module parameter
  */
 struct pch_params {
@@ -154,6 +196,7 @@ static inline void pch_eth_enable_set(struct pch_dev *chip)
 	iowrite32(val, (&chip->regs->ts_sel));
 }
 
+<<<<<<< HEAD
 static u64 pch_systime_read(struct pch_ts_regs *regs)
 {
 	u64 ns;
@@ -179,6 +222,20 @@ static void pch_systime_write(struct pch_ts_regs *regs, u64 ns)
 
 	iowrite32(lo, &regs->systime_lo);
 	iowrite32(hi, &regs->systime_hi);
+=======
+static u64 pch_systime_read(struct pch_ts_regs __iomem *regs)
+{
+	u64 ns;
+
+	ns = ioread64_lo_hi(&regs->systime_lo);
+
+	return ns << TICKS_NS_SHIFT;
+}
+
+static void pch_systime_write(struct pch_ts_regs __iomem *regs, u64 ns)
+{
+	iowrite64_lo_hi(ns >> TICKS_NS_SHIFT, &regs->systime_lo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void pch_block_reset(struct pch_dev *chip)
@@ -191,6 +248,7 @@ static inline void pch_block_reset(struct pch_dev *chip)
 	iowrite32(val, (&chip->regs->control));
 }
 
+<<<<<<< HEAD
 u32 pch_ch_control_read(struct pci_dev *pdev)
 {
 	struct pch_dev *chip = pci_get_drvdata(pdev);
@@ -202,6 +260,8 @@ u32 pch_ch_control_read(struct pci_dev *pdev)
 }
 EXPORT_SYMBOL(pch_ch_control_read);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void pch_ch_control_write(struct pci_dev *pdev, u32 val)
 {
 	struct pch_dev *chip = pci_get_drvdata(pdev);
@@ -255,6 +315,7 @@ u64 pch_rx_snap_read(struct pci_dev *pdev)
 {
 	struct pch_dev *chip = pci_get_drvdata(pdev);
 	u64 ns;
+<<<<<<< HEAD
 	u32 lo, hi;
 
 	lo = ioread32(&chip->regs->rx_snap_lo);
@@ -264,6 +325,12 @@ u64 pch_rx_snap_read(struct pci_dev *pdev)
 	ns |= lo;
 
 	return ns;
+=======
+
+	ns = ioread64_lo_hi(&chip->regs->rx_snap_lo);
+
+	return ns << TICKS_NS_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(pch_rx_snap_read);
 
@@ -271,6 +338,7 @@ u64 pch_tx_snap_read(struct pci_dev *pdev)
 {
 	struct pch_dev *chip = pci_get_drvdata(pdev);
 	u64 ns;
+<<<<<<< HEAD
 	u32 lo, hi;
 
 	lo = ioread32(&chip->regs->tx_snap_lo);
@@ -280,6 +348,12 @@ u64 pch_tx_snap_read(struct pci_dev *pdev)
 	ns |= lo;
 
 	return ns;
+=======
+
+	ns = ioread64_lo_hi(&chip->regs->tx_snap_lo);
+
+	return ns << TICKS_NS_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(pch_tx_snap_read);
 
@@ -306,6 +380,7 @@ static void pch_reset(struct pch_dev *chip)
  *				    IEEE 1588 hardware when looking at PTP
  *				    traffic on the  ethernet interface
  * @addr:	dress which contain the column separated address to be used.
+<<<<<<< HEAD
  */
 static int pch_set_station_address(u8 *addr, struct pci_dev *pdev)
 {
@@ -314,10 +389,23 @@ static int pch_set_station_address(u8 *addr, struct pci_dev *pdev)
 
 	/* Verify the parameter */
 	if ((chip->regs == 0) || addr == (u8 *)NULL) {
+=======
+ * @pdev:	PCI device.
+ */
+int pch_set_station_address(u8 *addr, struct pci_dev *pdev)
+{
+	struct pch_dev *chip = pci_get_drvdata(pdev);
+	bool valid;
+	u64 mac;
+
+	/* Verify the parameter */
+	if ((chip->regs == NULL) || addr == (u8 *)NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev,
 			"invalid params returning PCH_INVALIDPARAM\n");
 		return PCH_INVALIDPARAM;
 	}
+<<<<<<< HEAD
 	/* For all station address bytes */
 	for (i = 0; i < PCH_STATION_BYTES; i++) {
 		u32 val;
@@ -351,6 +439,20 @@ static int pch_set_station_address(u8 *addr, struct pci_dev *pdev)
 	}
 	return 0;
 }
+=======
+
+	valid = mac_pton(addr, (u8 *)&mac);
+	if (!valid) {
+		dev_err(&pdev->dev, "invalid params returning PCH_INVALIDPARAM\n");
+		return PCH_INVALIDPARAM;
+	}
+
+	dev_dbg(&pdev->dev, "invoking pch_station_set\n");
+	iowrite64_lo_hi(mac, &chip->regs->ts_st);
+	return 0;
+}
+EXPORT_SYMBOL(pch_set_station_address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Interrupt service routine
@@ -358,21 +460,33 @@ static int pch_set_station_address(u8 *addr, struct pci_dev *pdev)
 static irqreturn_t isr(int irq, void *priv)
 {
 	struct pch_dev *pch_dev = priv;
+<<<<<<< HEAD
 	struct pch_ts_regs *regs = pch_dev->regs;
 	struct ptp_clock_event event;
 	u32 ack = 0, lo, hi, val;
+=======
+	struct pch_ts_regs __iomem *regs = pch_dev->regs;
+	struct ptp_clock_event event;
+	u32 ack = 0, val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = ioread32(&regs->event);
 
 	if (val & PCH_TSE_SNS) {
 		ack |= PCH_TSE_SNS;
 		if (pch_dev->exts0_enabled) {
+<<<<<<< HEAD
 			hi = ioread32(&regs->asms_hi);
 			lo = ioread32(&regs->asms_lo);
 			event.type = PTP_CLOCK_EXTTS;
 			event.index = 0;
 			event.timestamp = ((u64) hi) << 32;
 			event.timestamp |= lo;
+=======
+			event.type = PTP_CLOCK_EXTTS;
+			event.index = 0;
+			event.timestamp = ioread64_hi_lo(&regs->asms_hi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			event.timestamp <<= TICKS_NS_SHIFT;
 			ptp_clock_event(pch_dev->ptp_clock, &event);
 		}
@@ -381,12 +495,18 @@ static irqreturn_t isr(int irq, void *priv)
 	if (val & PCH_TSE_SNM) {
 		ack |= PCH_TSE_SNM;
 		if (pch_dev->exts1_enabled) {
+<<<<<<< HEAD
 			hi = ioread32(&regs->amms_hi);
 			lo = ioread32(&regs->amms_lo);
 			event.type = PTP_CLOCK_EXTTS;
 			event.index = 1;
 			event.timestamp = ((u64) hi) << 32;
 			event.timestamp |= lo;
+=======
+			event.type = PTP_CLOCK_EXTTS;
+			event.index = 1;
+			event.timestamp = ioread64_hi_lo(&regs->asms_hi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			event.timestamp <<= TICKS_NS_SHIFT;
 			ptp_clock_event(pch_dev->ptp_clock, &event);
 		}
@@ -406,6 +526,7 @@ static irqreturn_t isr(int irq, void *priv)
  * PTP clock operations
  */
 
+<<<<<<< HEAD
 static int ptp_pch_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
 {
 	u64 adj;
@@ -424,6 +545,15 @@ static int ptp_pch_adjfreq(struct ptp_clock_info *ptp, s32 ppb)
 	diff = div_u64(adj, 1000000000ULL);
 
 	addend = neg_adj ? addend - diff : addend + diff;
+=======
+static int ptp_pch_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
+{
+	u32 addend;
+	struct pch_dev *pch_dev = container_of(ptp, struct pch_dev, caps);
+	struct pch_ts_regs __iomem *regs = pch_dev->regs;
+
+	addend = adjust_by_scaled_ppm(DEFAULT_ADDEND, scaled_ppm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iowrite32(addend, &regs->addend);
 
@@ -435,7 +565,11 @@ static int ptp_pch_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	s64 now;
 	unsigned long flags;
 	struct pch_dev *pch_dev = container_of(ptp, struct pch_dev, caps);
+<<<<<<< HEAD
 	struct pch_ts_regs *regs = pch_dev->regs;
+=======
+	struct pch_ts_regs __iomem *regs = pch_dev->regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&pch_dev->register_lock, flags);
 	now = pch_systime_read(regs);
@@ -446,6 +580,7 @@ static int ptp_pch_adjtime(struct ptp_clock_info *ptp, s64 delta)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int ptp_pch_gettime(struct ptp_clock_info *ptp, struct timespec *ts)
 {
 	u64 ns;
@@ -453,26 +588,48 @@ static int ptp_pch_gettime(struct ptp_clock_info *ptp, struct timespec *ts)
 	unsigned long flags;
 	struct pch_dev *pch_dev = container_of(ptp, struct pch_dev, caps);
 	struct pch_ts_regs *regs = pch_dev->regs;
+=======
+static int ptp_pch_gettime(struct ptp_clock_info *ptp, struct timespec64 *ts)
+{
+	u64 ns;
+	unsigned long flags;
+	struct pch_dev *pch_dev = container_of(ptp, struct pch_dev, caps);
+	struct pch_ts_regs __iomem *regs = pch_dev->regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&pch_dev->register_lock, flags);
 	ns = pch_systime_read(regs);
 	spin_unlock_irqrestore(&pch_dev->register_lock, flags);
 
+<<<<<<< HEAD
 	ts->tv_sec = div_u64_rem(ns, 1000000000, &remainder);
 	ts->tv_nsec = remainder;
+=======
+	*ts = ns_to_timespec64(ns);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int ptp_pch_settime(struct ptp_clock_info *ptp,
+<<<<<<< HEAD
 			   const struct timespec *ts)
+=======
+			   const struct timespec64 *ts)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 ns;
 	unsigned long flags;
 	struct pch_dev *pch_dev = container_of(ptp, struct pch_dev, caps);
+<<<<<<< HEAD
 	struct pch_ts_regs *regs = pch_dev->regs;
 
 	ns = ts->tv_sec * 1000000000ULL;
 	ns += ts->tv_nsec;
+=======
+	struct pch_ts_regs __iomem *regs = pch_dev->regs;
+
+	ns = timespec64_to_ns(ts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&pch_dev->register_lock, flags);
 	pch_systime_write(regs, ns);
@@ -506,11 +663,16 @@ static int ptp_pch_enable(struct ptp_clock_info *ptp,
 	return -EOPNOTSUPP;
 }
 
+<<<<<<< HEAD
 static struct ptp_clock_info ptp_pch_caps = {
+=======
+static const struct ptp_clock_info ptp_pch_caps = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner		= THIS_MODULE,
 	.name		= "PCH timer",
 	.max_adj	= 50000000,
 	.n_ext_ts	= N_EXT_TS,
+<<<<<<< HEAD
 	.pps		= 0,
 	.adjfreq	= ptp_pch_adjfreq,
 	.adjtime	= ptp_pch_adjtime,
@@ -579,17 +741,42 @@ static void __devexit pch_remove(struct pci_dev *pdev)
 }
 
 static s32 __devinit
+=======
+	.n_pins		= 0,
+	.pps		= 0,
+	.adjfine	= ptp_pch_adjfine,
+	.adjtime	= ptp_pch_adjtime,
+	.gettime64	= ptp_pch_gettime,
+	.settime64	= ptp_pch_settime,
+	.enable		= ptp_pch_enable,
+};
+
+static void pch_remove(struct pci_dev *pdev)
+{
+	struct pch_dev *chip = pci_get_drvdata(pdev);
+
+	free_irq(pdev->irq, chip);
+	ptp_clock_unregister(chip->ptp_clock);
+}
+
+static s32
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 pch_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 {
 	s32 ret;
 	unsigned long flags;
 	struct pch_dev *chip;
 
+<<<<<<< HEAD
 	chip = kzalloc(sizeof(struct pch_dev), GFP_KERNEL);
+=======
+	chip = devm_kzalloc(&pdev->dev, sizeof(*chip), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip == NULL)
 		return -ENOMEM;
 
 	/* enable the 1588 pci device */
+<<<<<<< HEAD
 	ret = pci_enable_device(pdev);
 	if (ret != 0) {
 		dev_err(&pdev->dev, "could not enable the pci device\n");
@@ -626,6 +813,24 @@ pch_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	chip->caps = ptp_pch_caps;
 	chip->ptp_clock = ptp_clock_register(&chip->caps);
 
+=======
+	ret = pcim_enable_device(pdev);
+	if (ret != 0) {
+		dev_err(&pdev->dev, "could not enable the pci device\n");
+		return ret;
+	}
+
+	ret = pcim_iomap_regions(pdev, BIT(IO_MEM_BAR), "1588_regs");
+	if (ret) {
+		dev_err(&pdev->dev, "could not locate IO memory address\n");
+		return ret;
+	}
+
+	/* get the virtual address to the 1588 registers */
+	chip->regs = pcim_iomap_table(pdev)[IO_MEM_BAR];
+	chip->caps = ptp_pch_caps;
+	chip->ptp_clock = ptp_clock_register(&chip->caps, &pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(chip->ptp_clock))
 		return PTR_ERR(chip->ptp_clock);
 
@@ -647,11 +852,16 @@ pch_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	pch_reset(chip);
 
 	iowrite32(DEFAULT_ADDEND, &chip->regs->addend);
+<<<<<<< HEAD
 	iowrite32(1, &chip->regs->trgt_lo);
 	iowrite32(0, &chip->regs->trgt_hi);
 	iowrite32(PCH_TSE_TTIPEND, &chip->regs->event);
 	/* Version: IEEE1588 v1 and IEEE1588-2008,  Mode: All Evwnt, Locked  */
 	iowrite32(0x80020000, &chip->regs->ch_control);
+=======
+	iowrite64_lo_hi(1, &chip->regs->trgt_lo);
+	iowrite32(PCH_TSE_TTIPEND, &chip->regs->event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pch_eth_enable_set(chip);
 
@@ -668,6 +878,7 @@ pch_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 err_req_irq:
 	ptp_clock_unregister(chip->ptp_clock);
+<<<<<<< HEAD
 	iounmap(chip->regs);
 	chip->regs = 0;
 
@@ -682,24 +893,36 @@ err_pci_start:
 
 err_pci_en:
 	kfree(chip);
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_err(&pdev->dev, "probe failed(ret=0x%x)\n", ret);
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(pch_ieee1588_pcidev_id) = {
+=======
+static const struct pci_device_id pch_ieee1588_pcidev_id[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	  .vendor = PCI_VENDOR_ID_INTEL,
 	  .device = PCI_DEVICE_ID_PCH_1588
 	 },
 	{0}
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(pci, pch_ieee1588_pcidev_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct pci_driver pch_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = pch_ieee1588_pcidev_id,
 	.probe = pch_probe,
 	.remove = pch_remove,
+<<<<<<< HEAD
 	.suspend = pch_suspend,
 	.resume = pch_resume,
 };
@@ -725,6 +948,15 @@ module_exit(ptp_pch_exit);
 module_param_string(station, pch_param.station, sizeof pch_param.station, 0444);
 MODULE_PARM_DESC(station,
 	 "IEEE 1588 station address to use - column separated hex values");
+=======
+};
+module_pci_driver(pch_driver);
+
+module_param_string(station,
+		    pch_param.station, sizeof(pch_param.station), 0444);
+MODULE_PARM_DESC(station,
+	 "IEEE 1588 station address to use - colon separated hex values");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("LAPIS SEMICONDUCTOR, <tshimizu818@gmail.com>");
 MODULE_DESCRIPTION("PTP clock using the EG20T timer");

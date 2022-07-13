@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  ALSA driver for Echoaudio soundcards.
  *  Copyright (C) 2003-2004 Giuliano Pochini <pochini@shiny.it>
@@ -14,6 +15,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  ALSA driver for Echoaudio soundcards.
+ *  Copyright (C) 2003-2004 Giuliano Pochini <pochini@shiny.it>
+ *  Copyright (C) 2020 Mark Hills <mark@xwax.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -21,7 +29,10 @@
 MODULE_AUTHOR("Giuliano Pochini <pochini@shiny.it>");
 MODULE_LICENSE("GPL v2");
 MODULE_DESCRIPTION("Echoaudio " ECHOCARD_NAME " soundcards driver");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Echoaudio," ECHOCARD_NAME "}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DEVICE_TABLE(pci, snd_echo_ids);
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;
@@ -35,7 +46,11 @@ MODULE_PARM_DESC(id, "ID string for " ECHOCARD_NAME " soundcard.");
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable " ECHOCARD_NAME " soundcard.");
 
+<<<<<<< HEAD
 static unsigned int channels_list[10] = {1, 2, 4, 6, 8, 10, 12, 14, 16, 999999};
+=======
+static const unsigned int channels_list[10] = {1, 2, 4, 6, 8, 10, 12, 14, 16, 999999};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const DECLARE_TLV_DB_SCALE(db_scale_output_gain, -12800, 100, 1);
 
 
@@ -46,6 +61,7 @@ static int get_firmware(const struct firmware **fw_entry,
 	int err;
 	char name[30];
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 	if (chip->fw_cache[fw_index]) {
 		DE_ACT(("firmware requested: %s is cached\n", card_fw[fw_index].data));
@@ -63,11 +79,31 @@ static int get_firmware(const struct firmware **fw_entry,
 	else
 		chip->fw_cache[fw_index] = *fw_entry;
 #endif
+=======
+	if (chip->fw_cache[fw_index]) {
+		dev_dbg(chip->card->dev,
+			"firmware requested: %s is cached\n",
+			card_fw[fw_index].data);
+		*fw_entry = chip->fw_cache[fw_index];
+		return 0;
+	}
+
+	dev_dbg(chip->card->dev,
+		"firmware requested: %s\n", card_fw[fw_index].data);
+	snprintf(name, sizeof(name), "ea/%s", card_fw[fw_index].data);
+	err = request_firmware(fw_entry, name, &chip->pci->dev);
+	if (err < 0)
+		dev_err(chip->card->dev,
+			"get_firmware(): Firmware not available (%d)\n", err);
+	else
+		chip->fw_cache[fw_index] = *fw_entry;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 
 
+<<<<<<< HEAD
 static void free_firmware(const struct firmware *fw_entry)
 {
 #ifdef CONFIG_PM
@@ -76,23 +112,37 @@ static void free_firmware(const struct firmware *fw_entry)
 	release_firmware(fw_entry);
 	DE_ACT(("firmware released\n"));
 #endif
+=======
+static void free_firmware(const struct firmware *fw_entry,
+			  struct echoaudio *chip)
+{
+	dev_dbg(chip->card->dev, "firmware not released (kept in cache)\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 
 static void free_firmware_cache(struct echoaudio *chip)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	for (i = 0; i < 8 ; i++)
 		if (chip->fw_cache[i]) {
 			release_firmware(chip->fw_cache[i]);
+<<<<<<< HEAD
 			DE_ACT(("release_firmware(%d)\n", i));
 		}
 
 	DE_ACT(("firmware_cache released\n"));
 #endif
+=======
+			dev_dbg(chip->card->dev, "release_firmware(%d)\n", i);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -254,6 +304,7 @@ static int hw_rule_sample_rate(struct snd_pcm_hw_params *params,
 						      SNDRV_PCM_HW_PARAM_RATE);
 	struct echoaudio *chip = rule->private;
 	struct snd_interval fixed;
+<<<<<<< HEAD
 
 	if (!chip->can_set_rate) {
 		snd_interval_any(&fixed);
@@ -261,6 +312,22 @@ static int hw_rule_sample_rate(struct snd_pcm_hw_params *params,
 		return snd_interval_refine(rate, &fixed);
 	}
 	return 0;
+=======
+	int err;
+
+	mutex_lock(&chip->mode_mutex);
+
+	if (chip->can_set_rate) {
+		err = 0;
+	} else {
+		snd_interval_any(&fixed);
+		fixed.min = fixed.max = chip->sample_rate;
+		err = snd_interval_refine(rate, &fixed);
+	}
+
+	mutex_unlock(&chip->mode_mutex);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -285,7 +352,11 @@ static int pcm_open(struct snd_pcm_substream *substream,
 
 	/* Set up hw capabilities and contraints */
 	memcpy(&pipe->hw, &pcm_hardware_skel, sizeof(struct snd_pcm_hardware));
+<<<<<<< HEAD
 	DE_HWP(("max_channels=%d\n", max_channels));
+=======
+	dev_dbg(chip->card->dev, "max_channels=%d\n", max_channels);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pipe->constr.list = channels_list;
 	pipe->constr.mask = 0;
 	for (i = 0; channels_list[i] <= max_channels; i++);
@@ -303,6 +374,7 @@ static int pcm_open(struct snd_pcm_substream *substream,
 	snd_pcm_set_sync(substream);
 
 	/* Only mono and any even number of channels are allowed */
+<<<<<<< HEAD
 	if ((err = snd_pcm_hw_constraint_list(runtime, 0,
 					      SNDRV_PCM_HW_PARAM_CHANNELS,
 					      &pipe->constr)) < 0)
@@ -311,11 +383,24 @@ static int pcm_open(struct snd_pcm_substream *substream,
 	/* All periods should have the same size */
 	if ((err = snd_pcm_hw_constraint_integer(runtime,
 						 SNDRV_PCM_HW_PARAM_PERIODS)) < 0)
+=======
+	err = snd_pcm_hw_constraint_list(runtime, 0,
+					 SNDRV_PCM_HW_PARAM_CHANNELS,
+					 &pipe->constr);
+	if (err < 0)
+		return err;
+
+	/* All periods should have the same size */
+	err = snd_pcm_hw_constraint_integer(runtime,
+					    SNDRV_PCM_HW_PARAM_PERIODS);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	/* The hw accesses memory in chunks 32 frames long and they should be
 	32-bytes-aligned. It's not a requirement, but it seems that IRQs are
 	generated with a resolution of 32 frames. Thus we need the following */
+<<<<<<< HEAD
 	if ((err = snd_pcm_hw_constraint_step(runtime, 0,
 					      SNDRV_PCM_HW_PARAM_PERIOD_SIZE,
 					      32)) < 0)
@@ -339,6 +424,44 @@ static int pcm_open(struct snd_pcm_substream *substream,
 		return err;
 	}
 
+=======
+	err = snd_pcm_hw_constraint_step(runtime, 0,
+					 SNDRV_PCM_HW_PARAM_PERIOD_SIZE, 32);
+	if (err < 0)
+		return err;
+	err = snd_pcm_hw_constraint_step(runtime, 0,
+					 SNDRV_PCM_HW_PARAM_BUFFER_SIZE, 32);
+	if (err < 0)
+		return err;
+
+	err = snd_pcm_hw_rule_add(substream->runtime, 0,
+				  SNDRV_PCM_HW_PARAM_RATE,
+				  hw_rule_sample_rate, chip,
+				  SNDRV_PCM_HW_PARAM_RATE, -1);
+	if (err < 0)
+		return err;
+
+	/* Allocate a page for the scatter-gather list */
+	err = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV,
+				  &chip->pci->dev,
+				  PAGE_SIZE, &pipe->sgpage);
+	if (err < 0) {
+		dev_err(chip->card->dev, "s-g list allocation failed\n");
+		return err;
+	}
+
+	/*
+	 * Sole ownership required to set the rate
+	 */
+
+	dev_dbg(chip->card->dev, "pcm_open opencount=%d can_set_rate=%d, rate_set=%d",
+		chip->opencount, chip->can_set_rate, chip->rate_set);
+
+	chip->opencount++;
+	if (chip->opencount > 1 && chip->rate_set)
+		chip->can_set_rate = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -349,6 +472,7 @@ static int pcm_analog_in_open(struct snd_pcm_substream *substream)
 	struct echoaudio *chip = snd_pcm_substream_chip(substream);
 	int err;
 
+<<<<<<< HEAD
 	DE_ACT(("pcm_analog_in_open\n"));
 	if ((err = pcm_open(substream, num_analog_busses_in(chip) -
 			    substream->number)) < 0)
@@ -369,6 +493,25 @@ static int pcm_analog_in_open(struct snd_pcm_substream *substream)
 	DE_HWP(("pcm_analog_in_open  cs=%d  oc=%d  r=%d\n",
 		chip->can_set_rate, atomic_read(&chip->opencount),
 		chip->sample_rate));
+=======
+	err = pcm_open(substream,
+		       num_analog_busses_in(chip) - substream->number);
+	if (err < 0)
+		return err;
+	err = snd_pcm_hw_rule_add(substream->runtime, 0,
+				  SNDRV_PCM_HW_PARAM_CHANNELS,
+				  hw_rule_capture_channels_by_format, NULL,
+				  SNDRV_PCM_HW_PARAM_FORMAT, -1);
+	if (err < 0)
+		return err;
+	err = snd_pcm_hw_rule_add(substream->runtime, 0,
+				  SNDRV_PCM_HW_PARAM_FORMAT,
+				  hw_rule_capture_format_by_channels, NULL,
+				  SNDRV_PCM_HW_PARAM_CHANNELS, -1);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -384,6 +527,7 @@ static int pcm_analog_out_open(struct snd_pcm_substream *substream)
 #else
 	max_channels = num_analog_busses_out(chip);
 #endif
+<<<<<<< HEAD
 	DE_ACT(("pcm_analog_out_open\n"));
 	if ((err = pcm_open(substream, max_channels - substream->number)) < 0)
 		return err;
@@ -405,6 +549,26 @@ static int pcm_analog_out_open(struct snd_pcm_substream *substream)
 	DE_HWP(("pcm_analog_out_open  cs=%d  oc=%d  r=%d\n",
 		chip->can_set_rate, atomic_read(&chip->opencount),
 		chip->sample_rate));
+=======
+	err = pcm_open(substream, max_channels - substream->number);
+	if (err < 0)
+		return err;
+	err = snd_pcm_hw_rule_add(substream->runtime, 0,
+				  SNDRV_PCM_HW_PARAM_CHANNELS,
+				  hw_rule_playback_channels_by_format,
+				  NULL,
+				  SNDRV_PCM_HW_PARAM_FORMAT, -1);
+	if (err < 0)
+		return err;
+	err = snd_pcm_hw_rule_add(substream->runtime, 0,
+				  SNDRV_PCM_HW_PARAM_FORMAT,
+				  hw_rule_playback_format_by_channels,
+				  NULL,
+				  SNDRV_PCM_HW_PARAM_CHANNELS, -1);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -417,7 +581,10 @@ static int pcm_digital_in_open(struct snd_pcm_substream *substream)
 	struct echoaudio *chip = snd_pcm_substream_chip(substream);
 	int err, max_channels;
 
+<<<<<<< HEAD
 	DE_ACT(("pcm_digital_in_open\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max_channels = num_digital_busses_in(chip) - substream->number;
 	mutex_lock(&chip->mode_mutex);
 	if (chip->digital_mode == DIGITAL_MODE_ADAT)
@@ -430,6 +597,7 @@ static int pcm_digital_in_open(struct snd_pcm_substream *substream)
 	if (err < 0)
 		goto din_exit;
 
+<<<<<<< HEAD
 	if ((err = snd_pcm_hw_rule_add(substream->runtime, 0,
 				       SNDRV_PCM_HW_PARAM_CHANNELS,
 				       hw_rule_capture_channels_by_format, NULL,
@@ -445,6 +613,21 @@ static int pcm_digital_in_open(struct snd_pcm_substream *substream)
 	if (atomic_read(&chip->opencount) > 1 && chip->rate_set)
 		chip->can_set_rate=0;
 
+=======
+	err = snd_pcm_hw_rule_add(substream->runtime, 0,
+				  SNDRV_PCM_HW_PARAM_CHANNELS,
+				  hw_rule_capture_channels_by_format, NULL,
+				  SNDRV_PCM_HW_PARAM_FORMAT, -1);
+	if (err < 0)
+		goto din_exit;
+	err = snd_pcm_hw_rule_add(substream->runtime, 0,
+				  SNDRV_PCM_HW_PARAM_FORMAT,
+				  hw_rule_capture_format_by_channels, NULL,
+				  SNDRV_PCM_HW_PARAM_CHANNELS, -1);
+	if (err < 0)
+		goto din_exit;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 din_exit:
 	mutex_unlock(&chip->mode_mutex);
 	return err;
@@ -459,7 +642,10 @@ static int pcm_digital_out_open(struct snd_pcm_substream *substream)
 	struct echoaudio *chip = snd_pcm_substream_chip(substream);
 	int err, max_channels;
 
+<<<<<<< HEAD
 	DE_ACT(("pcm_digital_out_open\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	max_channels = num_digital_busses_out(chip) - substream->number;
 	mutex_lock(&chip->mode_mutex);
 	if (chip->digital_mode == DIGITAL_MODE_ADAT)
@@ -472,6 +658,7 @@ static int pcm_digital_out_open(struct snd_pcm_substream *substream)
 	if (err < 0)
 		goto dout_exit;
 
+<<<<<<< HEAD
 	if ((err = snd_pcm_hw_rule_add(substream->runtime, 0,
 				       SNDRV_PCM_HW_PARAM_CHANNELS,
 				       hw_rule_playback_channels_by_format,
@@ -487,6 +674,23 @@ static int pcm_digital_out_open(struct snd_pcm_substream *substream)
 	atomic_inc(&chip->opencount);
 	if (atomic_read(&chip->opencount) > 1 && chip->rate_set)
 		chip->can_set_rate=0;
+=======
+	err = snd_pcm_hw_rule_add(substream->runtime, 0,
+				  SNDRV_PCM_HW_PARAM_CHANNELS,
+				  hw_rule_playback_channels_by_format,
+				  NULL, SNDRV_PCM_HW_PARAM_FORMAT,
+				  -1);
+	if (err < 0)
+		goto dout_exit;
+	err = snd_pcm_hw_rule_add(substream->runtime, 0,
+				  SNDRV_PCM_HW_PARAM_FORMAT,
+				  hw_rule_playback_format_by_channels,
+				  NULL, SNDRV_PCM_HW_PARAM_CHANNELS,
+				  -1);
+	if (err < 0)
+		goto dout_exit;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 dout_exit:
 	mutex_unlock(&chip->mode_mutex);
 	return err;
@@ -501,11 +705,15 @@ dout_exit:
 static int pcm_close(struct snd_pcm_substream *substream)
 {
 	struct echoaudio *chip = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	int oc;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Nothing to do here. Audio is already off and pipe will be
 	 * freed by its callback
 	 */
+<<<<<<< HEAD
 	DE_ACT(("pcm_close\n"));
 
 	atomic_dec(&chip->opencount);
@@ -519,6 +727,27 @@ static int pcm_close(struct snd_pcm_substream *substream)
 	DE_ACT(("pcm_close2 oc=%d  cs=%d  rs=%d\n", oc,
 		chip->can_set_rate,chip->rate_set));
 
+=======
+
+	mutex_lock(&chip->mode_mutex);
+
+	dev_dbg(chip->card->dev, "pcm_open opencount=%d can_set_rate=%d, rate_set=%d",
+		chip->opencount, chip->can_set_rate, chip->rate_set);
+
+	chip->opencount--;
+
+	switch (chip->opencount) {
+	case 1:
+		chip->can_set_rate = 1;
+		break;
+
+	case 0:
+		chip->rate_set = 0;
+		break;
+	}
+
+	mutex_unlock(&chip->mode_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -541,7 +770,11 @@ static int init_engine(struct snd_pcm_substream *substream,
 	 */
 	spin_lock_irq(&chip->lock);
 	if (pipe->index >= 0) {
+<<<<<<< HEAD
 		DE_HWP(("hwp_ie free(%d)\n", pipe->index));
+=======
+		dev_dbg(chip->card->dev, "hwp_ie free(%d)\n", pipe->index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = free_pipes(chip, pipe);
 		snd_BUG_ON(err);
 		chip->substream[pipe->index] = NULL;
@@ -550,6 +783,7 @@ static int init_engine(struct snd_pcm_substream *substream,
 	err = allocate_pipes(chip, pipe, pipe_index, interleave);
 	if (err < 0) {
 		spin_unlock_irq(&chip->lock);
+<<<<<<< HEAD
 		DE_ACT((KERN_NOTICE "allocate_pipes(%d) err=%d\n",
 			pipe_index, err));
 		return err;
@@ -570,6 +804,19 @@ static int init_engine(struct snd_pcm_substream *substream,
 		pipe->index = -1;
 		return err;
 	}
+=======
+		dev_err(chip->card->dev, "allocate_pipes(%d) err=%d\n",
+			pipe_index, err);
+		return err;
+	}
+	spin_unlock_irq(&chip->lock);
+	dev_dbg(chip->card->dev, "allocate_pipes()=%d\n", pipe_index);
+
+	dev_dbg(chip->card->dev,
+		"pcm_hw_params (bufsize=%dB periods=%d persize=%dB)\n",
+		params_buffer_bytes(hw_params), params_periods(hw_params),
+		params_period_bytes(hw_params));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sglist_init(chip, pipe);
 	edge = PAGE_SIZE;
@@ -605,7 +852,11 @@ static int init_engine(struct snd_pcm_substream *substream,
 	/* This stuff is used by the irq handler, so it must be
 	 * initialized before chip->substream
 	 */
+<<<<<<< HEAD
 	chip->last_period[pipe_index] = 0;
+=======
+	pipe->last_period = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pipe->last_counter = 0;
 	pipe->position = 0;
 	smp_wmb();
@@ -614,7 +865,10 @@ static int init_engine(struct snd_pcm_substream *substream,
 	spin_lock_irq(&chip->lock);
 	set_sample_rate(chip, hw_params->rate_num / hw_params->rate_den);
 	spin_unlock_irq(&chip->lock);
+<<<<<<< HEAD
 	DE_HWP(("pcm_hw_params ok\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -678,15 +932,22 @@ static int pcm_hw_free(struct snd_pcm_substream *substream)
 
 	spin_lock_irq(&chip->lock);
 	if (pipe->index >= 0) {
+<<<<<<< HEAD
 		DE_HWP(("pcm_hw_free(%d)\n", pipe->index));
+=======
+		dev_dbg(chip->card->dev, "pcm_hw_free(%d)\n", pipe->index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_pipes(chip, pipe);
 		chip->substream[pipe->index] = NULL;
 		pipe->index = -1;
 	}
 	spin_unlock_irq(&chip->lock);
 
+<<<<<<< HEAD
 	DE_HWP(("pcm_hw_freed\n"));
 	snd_pcm_lib_free_pages(substream);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -699,8 +960,13 @@ static int pcm_prepare(struct snd_pcm_substream *substream)
 	struct audioformat format;
 	int pipe_index = ((struct audiopipe *)runtime->private_data)->index;
 
+<<<<<<< HEAD
 	DE_HWP(("Prepare rate=%d format=%d channels=%d\n",
 		runtime->rate, runtime->format, runtime->channels));
+=======
+	dev_dbg(chip->card->dev, "Prepare rate=%d format=%d channels=%d\n",
+		runtime->rate, runtime->format, runtime->channels);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	format.interleave = runtime->channels;
 	format.data_are_bigendian = 0;
 	format.mono_to_stereo = 0;
@@ -716,20 +982,49 @@ static int pcm_prepare(struct snd_pcm_substream *substream)
 		break;
 	case SNDRV_PCM_FORMAT_S32_BE:
 		format.data_are_bigendian = 1;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case SNDRV_PCM_FORMAT_S32_LE:
 		format.bits_per_sample = 32;
 		break;
 	default:
+<<<<<<< HEAD
 		DE_HWP(("Prepare error: unsupported format %d\n",
 			runtime->format));
+=======
+		dev_err(chip->card->dev,
+			"Prepare error: unsupported format %d\n",
+			runtime->format);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (snd_BUG_ON(pipe_index >= px_num(chip)))
 		return -EINVAL;
+<<<<<<< HEAD
 	if (snd_BUG_ON(!is_pipe_allocated(chip, pipe_index)))
 		return -EINVAL;
 	set_audio_format(chip, pipe_index, &format);
+=======
+
+	/*
+	 * We passed checks we can do independently; now take
+	 * exclusive control
+	 */
+
+	spin_lock_irq(&chip->lock);
+
+	if (snd_BUG_ON(!is_pipe_allocated(chip, pipe_index))) {
+		spin_unlock_irq(&chip->lock);
+		return -EINVAL;
+	}
+
+	set_audio_format(chip, pipe_index, &format);
+	spin_unlock_irq(&chip->lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -738,8 +1033,12 @@ static int pcm_prepare(struct snd_pcm_substream *substream)
 static int pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 {
 	struct echoaudio *chip = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct audiopipe *pipe = runtime->private_data;
+=======
+	struct audiopipe *pipe;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, err;
 	u32 channelmask = 0;
 	struct snd_pcm_substream *s;
@@ -756,19 +1055,32 @@ static int pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	spin_lock(&chip->lock);
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_RESUME:
+<<<<<<< HEAD
 		DE_ACT(("pcm_trigger resume\n"));
 	case SNDRV_PCM_TRIGGER_START:
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
 		DE_ACT(("pcm_trigger start\n"));
+=======
+	case SNDRV_PCM_TRIGGER_START:
+	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < DSP_MAXPIPES; i++) {
 			if (channelmask & (1 << i)) {
 				pipe = chip->substream[i]->runtime->private_data;
 				switch (pipe->state) {
 				case PIPE_STATE_STOPPED:
+<<<<<<< HEAD
 					chip->last_period[i] = 0;
 					pipe->last_counter = 0;
 					pipe->position = 0;
 					*pipe->dma_counter = 0;
+=======
+					pipe->last_period = 0;
+					pipe->last_counter = 0;
+					pipe->position = 0;
+					*pipe->dma_counter = 0;
+					fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				case PIPE_STATE_PAUSED:
 					pipe->state = PIPE_STATE_STARTED;
 					break;
@@ -781,9 +1093,13 @@ static int pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 				      chip->pipe_cyclic_mask);
 		break;
 	case SNDRV_PCM_TRIGGER_SUSPEND:
+<<<<<<< HEAD
 		DE_ACT(("pcm_trigger suspend\n"));
 	case SNDRV_PCM_TRIGGER_STOP:
 		DE_ACT(("pcm_trigger stop\n"));
+=======
+	case SNDRV_PCM_TRIGGER_STOP:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < DSP_MAXPIPES; i++) {
 			if (channelmask & (1 << i)) {
 				pipe = chip->substream[i]->runtime->private_data;
@@ -793,7 +1109,10 @@ static int pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 		err = stop_transport(chip, channelmask);
 		break;
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+<<<<<<< HEAD
 		DE_ACT(("pcm_trigger pause\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < DSP_MAXPIPES; i++) {
 			if (channelmask & (1 << i)) {
 				pipe = chip->substream[i]->runtime->private_data;
@@ -815,6 +1134,7 @@ static snd_pcm_uframes_t pcm_pointer(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct audiopipe *pipe = runtime->private_data;
+<<<<<<< HEAD
 	size_t cnt, bufsize, pos;
 
 	cnt = le32_to_cpu(*pipe->dma_counter);
@@ -828,31 +1148,67 @@ static snd_pcm_uframes_t pcm_pointer(struct snd_pcm_substream *substream)
 		pos -= bufsize;
 	}
 	return pos;
+=======
+	u32 counter, step;
+
+	/*
+	 * IRQ handling runs concurrently. Do not share tracking of
+	 * counter with it, which would race or require locking
+	 */
+
+	counter = le32_to_cpu(*pipe->dma_counter);  /* presumed atomic */
+
+	step = counter - pipe->last_counter;  /* handles wrapping */
+	pipe->last_counter = counter;
+
+	/* counter doesn't neccessarily wrap on a multiple of
+	 * buffer_size, so can't derive the position; must
+	 * accumulate */
+
+	pipe->position += step;
+	pipe->position %= frames_to_bytes(runtime, runtime->buffer_size); /* wrap */
+
+	return bytes_to_frames(runtime, pipe->position);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 
 /* pcm *_ops structures */
+<<<<<<< HEAD
 static struct snd_pcm_ops analog_playback_ops = {
 	.open = pcm_analog_out_open,
 	.close = pcm_close,
 	.ioctl = snd_pcm_lib_ioctl,
+=======
+static const struct snd_pcm_ops analog_playback_ops = {
+	.open = pcm_analog_out_open,
+	.close = pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params = pcm_analog_out_hw_params,
 	.hw_free = pcm_hw_free,
 	.prepare = pcm_prepare,
 	.trigger = pcm_trigger,
 	.pointer = pcm_pointer,
+<<<<<<< HEAD
 	.page = snd_pcm_sgbuf_ops_page,
 };
 static struct snd_pcm_ops analog_capture_ops = {
 	.open = pcm_analog_in_open,
 	.close = pcm_close,
 	.ioctl = snd_pcm_lib_ioctl,
+=======
+};
+static const struct snd_pcm_ops analog_capture_ops = {
+	.open = pcm_analog_in_open,
+	.close = pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params = pcm_analog_in_hw_params,
 	.hw_free = pcm_hw_free,
 	.prepare = pcm_prepare,
 	.trigger = pcm_trigger,
 	.pointer = pcm_pointer,
+<<<<<<< HEAD
 	.page = snd_pcm_sgbuf_ops_page,
 };
 #ifdef ECHOCARD_HAS_DIGITAL_IO
@@ -861,11 +1217,20 @@ static struct snd_pcm_ops digital_playback_ops = {
 	.open = pcm_digital_out_open,
 	.close = pcm_close,
 	.ioctl = snd_pcm_lib_ioctl,
+=======
+};
+#ifdef ECHOCARD_HAS_DIGITAL_IO
+#ifndef ECHOCARD_HAS_VMIXER
+static const struct snd_pcm_ops digital_playback_ops = {
+	.open = pcm_digital_out_open,
+	.close = pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params = pcm_digital_out_hw_params,
 	.hw_free = pcm_hw_free,
 	.prepare = pcm_prepare,
 	.trigger = pcm_trigger,
 	.pointer = pcm_pointer,
+<<<<<<< HEAD
 	.page = snd_pcm_sgbuf_ops_page,
 };
 #endif /* !ECHOCARD_HAS_VMIXER */
@@ -873,12 +1238,22 @@ static struct snd_pcm_ops digital_capture_ops = {
 	.open = pcm_digital_in_open,
 	.close = pcm_close,
 	.ioctl = snd_pcm_lib_ioctl,
+=======
+};
+#endif /* !ECHOCARD_HAS_VMIXER */
+static const struct snd_pcm_ops digital_capture_ops = {
+	.open = pcm_digital_in_open,
+	.close = pcm_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.hw_params = pcm_digital_in_hw_params,
 	.hw_free = pcm_hw_free,
 	.prepare = pcm_prepare,
 	.trigger = pcm_trigger,
 	.pointer = pcm_pointer,
+<<<<<<< HEAD
 	.page = snd_pcm_sgbuf_ops_page,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif /* ECHOCARD_HAS_DIGITAL_IO */
 
@@ -887,6 +1262,7 @@ static struct snd_pcm_ops digital_capture_ops = {
 /* Preallocate memory only for the first substream because it's the most
  * used one
  */
+<<<<<<< HEAD
 static int snd_echo_preallocate_pages(struct snd_pcm *pcm, struct device *dev)
 {
 	struct snd_pcm_substream *ss;
@@ -902,12 +1278,29 @@ static int snd_echo_preallocate_pages(struct snd_pcm *pcm, struct device *dev)
 				return err;
 		}
 	return 0;
+=======
+static void snd_echo_preallocate_pages(struct snd_pcm *pcm, struct device *dev)
+{
+	struct snd_pcm_substream *ss;
+	int stream;
+
+	for (stream = 0; stream < 2; stream++)
+		for (ss = pcm->streams[stream].substream; ss; ss = ss->next)
+			snd_pcm_set_managed_buffer(ss, SNDRV_DMA_TYPE_DEV_SG,
+						   dev,
+						   ss->number ? 0 : 128<<10,
+						   256<<10);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 
 /*<--snd_echo_probe() */
+<<<<<<< HEAD
 static int __devinit snd_echo_new_pcm(struct echoaudio *chip)
+=======
+static int snd_echo_new_pcm(struct echoaudio *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -920,14 +1313,21 @@ static int __devinit snd_echo_new_pcm(struct echoaudio *chip)
 	separated */
 
 	/* PCM#0 Virtual outputs and analog inputs */
+<<<<<<< HEAD
 	if ((err = snd_pcm_new(chip->card, "PCM", 0, num_pipes_out(chip),
 				num_analog_busses_in(chip), &pcm)) < 0)
+=======
+	err = snd_pcm_new(chip->card, "PCM", 0, num_pipes_out(chip),
+			  num_analog_busses_in(chip), &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	pcm->private_data = chip;
 	chip->analog_pcm = pcm;
 	strcpy(pcm->name, chip->card->shortname);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &analog_playback_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &analog_capture_ops);
+<<<<<<< HEAD
 	if ((err = snd_echo_preallocate_pages(pcm, snd_dma_pci_data(chip->pci))) < 0)
 		return err;
 	DE_INIT(("Analog PCM ok\n"));
@@ -936,14 +1336,27 @@ static int __devinit snd_echo_new_pcm(struct echoaudio *chip)
 	/* PCM#1 Digital inputs, no outputs */
 	if ((err = snd_pcm_new(chip->card, "Digital PCM", 1, 0,
 			       num_digital_busses_in(chip), &pcm)) < 0)
+=======
+	snd_echo_preallocate_pages(pcm, &chip->pci->dev);
+
+#ifdef ECHOCARD_HAS_DIGITAL_IO
+	/* PCM#1 Digital inputs, no outputs */
+	err = snd_pcm_new(chip->card, "Digital PCM", 1, 0,
+			  num_digital_busses_in(chip), &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	pcm->private_data = chip;
 	chip->digital_pcm = pcm;
 	strcpy(pcm->name, chip->card->shortname);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &digital_capture_ops);
+<<<<<<< HEAD
 	if ((err = snd_echo_preallocate_pages(pcm, snd_dma_pci_data(chip->pci))) < 0)
 		return err;
 	DE_INIT(("Digital PCM ok\n"));
+=======
+	snd_echo_preallocate_pages(pcm, &chip->pci->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* ECHOCARD_HAS_DIGITAL_IO */
 
 #else /* ECHOCARD_HAS_VMIXER */
@@ -954,15 +1367,23 @@ static int __devinit snd_echo_new_pcm(struct echoaudio *chip)
 	register two PCM devices: */
 
 	/* PCM#0 Analog i/o */
+<<<<<<< HEAD
 	if ((err = snd_pcm_new(chip->card, "Analog PCM", 0,
 			       num_analog_busses_out(chip),
 			       num_analog_busses_in(chip), &pcm)) < 0)
+=======
+	err = snd_pcm_new(chip->card, "Analog PCM", 0,
+			  num_analog_busses_out(chip),
+			  num_analog_busses_in(chip), &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	pcm->private_data = chip;
 	chip->analog_pcm = pcm;
 	strcpy(pcm->name, chip->card->shortname);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &analog_playback_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &analog_capture_ops);
+<<<<<<< HEAD
 	if ((err = snd_echo_preallocate_pages(pcm, snd_dma_pci_data(chip->pci))) < 0)
 		return err;
 	DE_INIT(("Analog PCM ok\n"));
@@ -972,15 +1393,29 @@ static int __devinit snd_echo_new_pcm(struct echoaudio *chip)
 	if ((err = snd_pcm_new(chip->card, "Digital PCM", 1,
 			       num_digital_busses_out(chip),
 			       num_digital_busses_in(chip), &pcm)) < 0)
+=======
+	snd_echo_preallocate_pages(pcm, &chip->pci->dev);
+
+#ifdef ECHOCARD_HAS_DIGITAL_IO
+	/* PCM#1 Digital i/o */
+	err = snd_pcm_new(chip->card, "Digital PCM", 1,
+			  num_digital_busses_out(chip),
+			  num_digital_busses_in(chip), &pcm);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	pcm->private_data = chip;
 	chip->digital_pcm = pcm;
 	strcpy(pcm->name, chip->card->shortname);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &digital_playback_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &digital_capture_ops);
+<<<<<<< HEAD
 	if ((err = snd_echo_preallocate_pages(pcm, snd_dma_pci_data(chip->pci))) < 0)
 		return err;
 	DE_INIT(("Digital PCM ok\n"));
+=======
+	snd_echo_preallocate_pages(pcm, &chip->pci->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* ECHOCARD_HAS_DIGITAL_IO */
 
 #endif /* ECHOCARD_HAS_VMIXER */
@@ -1050,7 +1485,11 @@ static int snd_echo_output_gain_put(struct snd_kcontrol *kcontrol,
 
 #ifdef ECHOCARD_HAS_LINE_OUT_GAIN
 /* On the Mia this one controls the line-out volume */
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_line_output_gain __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_echo_line_output_gain = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "Line Playback Volume",
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE |
@@ -1061,7 +1500,11 @@ static struct snd_kcontrol_new snd_echo_line_output_gain __devinitdata = {
 	.tlv = {.p = db_scale_output_gain},
 };
 #else
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_pcm_output_gain __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_echo_pcm_output_gain = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "PCM Playback Volume",
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE | SNDRV_CTL_ELEM_ACCESS_TLV_READ,
@@ -1131,7 +1574,11 @@ static int snd_echo_input_gain_put(struct snd_kcontrol *kcontrol,
 
 static const DECLARE_TLV_DB_SCALE(db_scale_input_gain, -2500, 50, 0);
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_line_input_gain __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_echo_line_input_gain = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "Line Capture Volume",
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE | SNDRV_CTL_ELEM_ACCESS_TLV_READ,
@@ -1195,7 +1642,11 @@ static int snd_echo_output_nominal_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_output_nominal_level __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_echo_output_nominal_level = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "Line Playback Switch (-10dBV)",
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.info = snd_echo_output_nominal_info,
@@ -1261,7 +1712,11 @@ static int snd_echo_input_nominal_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_intput_nominal_level __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_echo_intput_nominal_level = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "Line Capture Switch (-10dBV)",
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.info = snd_echo_input_nominal_info,
@@ -1279,27 +1734,44 @@ static struct snd_kcontrol_new snd_echo_intput_nominal_level __devinitdata = {
 static int snd_echo_mixer_info(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	struct echoaudio *chip;
 
 	chip = snd_kcontrol_chip(kcontrol);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = 1;
 	uinfo->value.integer.min = ECHOGAIN_MINOUT;
 	uinfo->value.integer.max = ECHOGAIN_MAXOUT;
+<<<<<<< HEAD
 	uinfo->dimen.d[0] = num_busses_out(chip);
 	uinfo->dimen.d[1] = num_busses_in(chip);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int snd_echo_mixer_get(struct snd_kcontrol *kcontrol,
 			      struct snd_ctl_elem_value *ucontrol)
 {
+<<<<<<< HEAD
 	struct echoaudio *chip;
 
 	chip = snd_kcontrol_chip(kcontrol);
 	ucontrol->value.integer.value[0] =
 		chip->monitor_gain[ucontrol->id.index / num_busses_in(chip)]
 			[ucontrol->id.index % num_busses_in(chip)];
+=======
+	struct echoaudio *chip = snd_kcontrol_chip(kcontrol);
+	unsigned int out = ucontrol->id.index / num_busses_in(chip);
+	unsigned int in = ucontrol->id.index % num_busses_in(chip);
+
+	if (out >= ECHO_MAXAUDIOOUTPUTS || in >= ECHO_MAXAUDIOINPUTS)
+		return -EINVAL;
+
+	ucontrol->value.integer.value[0] = chip->monitor_gain[out][in];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1308,12 +1780,21 @@ static int snd_echo_mixer_put(struct snd_kcontrol *kcontrol,
 {
 	struct echoaudio *chip;
 	int changed,  gain;
+<<<<<<< HEAD
 	short out, in;
+=======
+	unsigned int out, in;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	changed = 0;
 	chip = snd_kcontrol_chip(kcontrol);
 	out = ucontrol->id.index / num_busses_in(chip);
 	in = ucontrol->id.index % num_busses_in(chip);
+<<<<<<< HEAD
+=======
+	if (out >= ECHO_MAXAUDIOOUTPUTS || in >= ECHO_MAXAUDIOINPUTS)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gain = ucontrol->value.integer.value[0];
 	if (gain < ECHOGAIN_MINOUT || gain > ECHOGAIN_MAXOUT)
 		return -EINVAL;
@@ -1327,7 +1808,11 @@ static int snd_echo_mixer_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_monitor_mixer __devinitdata = {
+=======
+static struct snd_kcontrol_new snd_echo_monitor_mixer = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "Monitor Mixer Volume",
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE | SNDRV_CTL_ELEM_ACCESS_TLV_READ,
@@ -1347,15 +1832,21 @@ static struct snd_kcontrol_new snd_echo_monitor_mixer __devinitdata = {
 static int snd_echo_vmixer_info(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	struct echoaudio *chip;
 
 	chip = snd_kcontrol_chip(kcontrol);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = 1;
 	uinfo->value.integer.min = ECHOGAIN_MINOUT;
 	uinfo->value.integer.max = ECHOGAIN_MAXOUT;
+<<<<<<< HEAD
 	uinfo->dimen.d[0] = num_busses_out(chip);
 	uinfo->dimen.d[1] = num_pipes_out(chip);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1395,7 +1886,11 @@ static int snd_echo_vmixer_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_vmixer __devinitdata = {
+=======
+static struct snd_kcontrol_new snd_echo_vmixer = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "VMixer Volume",
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE | SNDRV_CTL_ELEM_ACCESS_TLV_READ,
@@ -1415,13 +1910,18 @@ static struct snd_kcontrol_new snd_echo_vmixer __devinitdata = {
 static int snd_echo_digital_mode_info(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *names[4] = {
+=======
+	static const char * const names[4] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"S/PDIF Coaxial", "S/PDIF Optical", "ADAT Optical",
 		"S/PDIF Cdrom"
 	};
 	struct echoaudio *chip;
 
 	chip = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->value.enumerated.items = chip->num_digital_modes;
 	uinfo->count = 1;
@@ -1430,6 +1930,9 @@ static int snd_echo_digital_mode_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name, names[
 			chip->digital_mode_list[uinfo->value.enumerated.item]]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, chip->num_digital_modes, names);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_echo_digital_mode_get(struct snd_kcontrol *kcontrol,
@@ -1471,7 +1974,11 @@ static int snd_echo_digital_mode_put(struct snd_kcontrol *kcontrol,
 		/* Do not allow the user to change the digital mode when a pcm
 		device is open because it also changes the number of channels
 		and the allowed sample rates */
+<<<<<<< HEAD
 		if (atomic_read(&chip->opencount)) {
+=======
+		if (chip->opencount) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			changed = -EAGAIN;
 		} else {
 			changed = set_digital_mode(chip, dmode);
@@ -1480,7 +1987,12 @@ static int snd_echo_digital_mode_put(struct snd_kcontrol *kcontrol,
 				snd_ctl_notify(chip->card,
 					       SNDRV_CTL_EVENT_MASK_VALUE,
 					       &chip->clock_src_ctl->id);
+<<<<<<< HEAD
 				DE_ACT(("SDM() =%d\n", changed));
+=======
+				dev_dbg(chip->card->dev,
+					"SDM() =%d\n", changed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			if (changed >= 0)
 				changed = 1;	/* No errors */
@@ -1490,7 +2002,11 @@ static int snd_echo_digital_mode_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_digital_mode_switch __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_echo_digital_mode_switch = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "Digital mode Switch",
 	.iface = SNDRV_CTL_ELEM_IFACE_CARD,
 	.info = snd_echo_digital_mode_info,
@@ -1508,6 +2024,7 @@ static struct snd_kcontrol_new snd_echo_digital_mode_switch __devinitdata = {
 static int snd_echo_spdif_mode_info(struct snd_kcontrol *kcontrol,
 				    struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *names[2] = {"Consumer", "Professional"};
 
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
@@ -1518,6 +2035,11 @@ static int snd_echo_spdif_mode_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       names[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const names[2] = {"Consumer", "Professional"};
+
+	return snd_ctl_enum_info(uinfo, 1, 2, names);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_echo_spdif_mode_get(struct snd_kcontrol *kcontrol,
@@ -1547,7 +2069,11 @@ static int snd_echo_spdif_mode_put(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_spdif_mode_switch __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_echo_spdif_mode_switch = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "S/PDIF mode Switch",
 	.iface = SNDRV_CTL_ELEM_IFACE_CARD,
 	.info = snd_echo_spdif_mode_info,
@@ -1565,13 +2091,18 @@ static struct snd_kcontrol_new snd_echo_spdif_mode_switch __devinitdata = {
 static int snd_echo_clock_source_info(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static char *names[8] = {
+=======
+	static const char * const names[8] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		"Internal", "Word", "Super", "S/PDIF", "ADAT", "ESync",
 		"ESync96", "MTC"
 	};
 	struct echoaudio *chip;
 
 	chip = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_ENUMERATED;
 	uinfo->value.enumerated.items = chip->num_clock_sources;
 	uinfo->count = 1;
@@ -1580,6 +2111,9 @@ static int snd_echo_clock_source_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name, names[
 			chip->clock_source_list[uinfo->value.enumerated.item]]);
 	return 0;
+=======
+	return snd_ctl_enum_info(uinfo, 1, chip->num_clock_sources, names);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_echo_clock_source_get(struct snd_kcontrol *kcontrol,
@@ -1614,19 +2148,33 @@ static int snd_echo_clock_source_put(struct snd_kcontrol *kcontrol,
 	if (chip->input_clock != dclock) {
 		mutex_lock(&chip->mode_mutex);
 		spin_lock_irq(&chip->lock);
+<<<<<<< HEAD
 		if ((changed = set_input_clock(chip, dclock)) == 0)
+=======
+		changed = set_input_clock(chip, dclock);
+		if (!changed)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			changed = 1;	/* no errors */
 		spin_unlock_irq(&chip->lock);
 		mutex_unlock(&chip->mode_mutex);
 	}
 
 	if (changed < 0)
+<<<<<<< HEAD
 		DE_ACT(("seticlk val%d err 0x%x\n", dclock, changed));
+=======
+		dev_dbg(chip->card->dev,
+			"seticlk val%d err 0x%x\n", dclock, changed);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_clock_source_switch __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_echo_clock_source_switch = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "Sample Clock Source",
 	.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 	.info = snd_echo_clock_source_info,
@@ -1669,7 +2217,11 @@ static int snd_echo_phantom_power_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_phantom_power_switch __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_echo_phantom_power_switch = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "Phantom power Switch",
 	.iface = SNDRV_CTL_ELEM_IFACE_CARD,
 	.info = snd_echo_phantom_power_info,
@@ -1712,7 +2264,11 @@ static int snd_echo_automute_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_automute_switch __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_echo_automute_switch = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "Digital Capture Switch (automute)",
 	.iface = SNDRV_CTL_ELEM_IFACE_CARD,
 	.info = snd_echo_automute_info,
@@ -1739,7 +2295,11 @@ static int snd_echo_vumeters_switch_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_vumeters_switch __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_echo_vumeters_switch = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "VU-meters Switch",
 	.iface = SNDRV_CTL_ELEM_IFACE_CARD,
 	.access = SNDRV_CTL_ELEM_ACCESS_WRITE,
@@ -1753,13 +2313,17 @@ static struct snd_kcontrol_new snd_echo_vumeters_switch __devinitdata = {
 static int snd_echo_vumeters_info(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	struct echoaudio *chip;
 
 	chip = snd_kcontrol_chip(kcontrol);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = 96;
 	uinfo->value.integer.min = ECHOGAIN_MINOUT;
 	uinfo->value.integer.max = 0;
+<<<<<<< HEAD
 #ifdef ECHOCARD_HAS_VMIXER
 	uinfo->dimen.d[0] = 3;	/* Out, In, Virt */
 #else
@@ -1767,6 +2331,8 @@ static int snd_echo_vumeters_info(struct snd_kcontrol *kcontrol,
 #endif
 	uinfo->dimen.d[1] = 16;	/* 16 channels */
 	uinfo->dimen.d[2] = 2;	/* 0=level, 1=peak */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1780,7 +2346,11 @@ static int snd_echo_vumeters_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_vumeters __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_echo_vumeters = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "VU-meters",
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.access = SNDRV_CTL_ELEM_ACCESS_READ |
@@ -1797,9 +2367,12 @@ static struct snd_kcontrol_new snd_echo_vumeters __devinitdata = {
 static int snd_echo_channels_info_info(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	struct echoaudio *chip;
 
 	chip = snd_kcontrol_chip(kcontrol);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = 6;
 	uinfo->value.integer.min = 0;
@@ -1836,7 +2409,11 @@ static int snd_echo_channels_info_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_echo_channels_info __devinitdata = {
+=======
+static const struct snd_kcontrol_new snd_echo_channels_info = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "Channels info",
 	.iface = SNDRV_CTL_ELEM_IFACE_HWDEP,
 	.access = SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_VOLATILE,
@@ -1848,14 +2425,53 @@ static struct snd_kcontrol_new snd_echo_channels_info __devinitdata = {
 
 
 /******************************************************************************
+<<<<<<< HEAD
 	IRQ Handler
 ******************************************************************************/
+=======
+	IRQ Handling
+******************************************************************************/
+/* Check if a period has elapsed since last interrupt
+ *
+ * Don't make any updates to state; PCM core handles this with the
+ * correct locks.
+ *
+ * \return true if a period has elapsed, otherwise false
+ */
+static bool period_has_elapsed(struct snd_pcm_substream *substream)
+{
+	struct snd_pcm_runtime *runtime = substream->runtime;
+	struct audiopipe *pipe = runtime->private_data;
+	u32 counter, step;
+	size_t period_bytes;
+
+	if (pipe->state != PIPE_STATE_STARTED)
+		return false;
+
+	period_bytes = frames_to_bytes(runtime, runtime->period_size);
+
+	counter = le32_to_cpu(*pipe->dma_counter);  /* presumed atomic */
+
+	step = counter - pipe->last_period;  /* handles wrapping */
+	step -= step % period_bytes;  /* acknowledge whole periods only */
+
+	if (step == 0)
+		return false;  /* haven't advanced a whole period yet */
+
+	pipe->last_period += step;  /* used exclusively by us */
+	return true;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static irqreturn_t snd_echo_interrupt(int irq, void *dev_id)
 {
 	struct echoaudio *chip = dev_id;
+<<<<<<< HEAD
 	struct snd_pcm_substream *substream;
 	int period, ss, st;
+=======
+	int ss, st;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&chip->lock);
 	st = service_irq(chip);
@@ -1866,6 +2482,7 @@ static irqreturn_t snd_echo_interrupt(int irq, void *dev_id)
 	/* The hardware doesn't tell us which substream caused the irq,
 	thus we have to check all running substreams. */
 	for (ss = 0; ss < DSP_MAXPIPES; ss++) {
+<<<<<<< HEAD
 		substream = chip->substream[ss];
 		if (substream && ((struct audiopipe *)substream->runtime->
 				private_data)->state == PIPE_STATE_STARTED) {
@@ -1877,6 +2494,15 @@ static irqreturn_t snd_echo_interrupt(int irq, void *dev_id)
 				snd_pcm_period_elapsed(substream);
 				spin_lock(&chip->lock);
 			}
+=======
+		struct snd_pcm_substream *substream;
+
+		substream = chip->substream[ss];
+		if (substream && period_has_elapsed(substream)) {
+			spin_unlock(&chip->lock);
+			snd_pcm_period_elapsed(substream);
+			spin_lock(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	spin_unlock(&chip->lock);
@@ -1884,7 +2510,11 @@ static irqreturn_t snd_echo_interrupt(int irq, void *dev_id)
 #ifdef ECHOCARD_HAS_MIDI
 	if (st > 0 && chip->midi_in) {
 		snd_rawmidi_receive(chip->midi_in, chip->midi_buffer, st);
+<<<<<<< HEAD
 		DE_MID(("rawmidi_iread=%d\n", st));
+=======
+		dev_dbg(chip->card->dev, "rawmidi_iread=%d\n", st);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	return IRQ_HANDLED;
@@ -1897,16 +2527,26 @@ static irqreturn_t snd_echo_interrupt(int irq, void *dev_id)
 	Module construction / destruction
 ******************************************************************************/
 
+<<<<<<< HEAD
 static int snd_echo_free(struct echoaudio *chip)
 {
 	DE_INIT(("Stop DSP...\n"));
 	if (chip->comm_page)
 		rest_in_peace(chip);
 	DE_INIT(("Stopped.\n"));
+=======
+static void snd_echo_free(struct snd_card *card)
+{
+	struct echoaudio *chip = card->private_data;
+
+	if (chip->comm_page)
+		rest_in_peace(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (chip->irq >= 0)
 		free_irq(chip->irq, chip);
 
+<<<<<<< HEAD
 	if (chip->comm_page)
 		snd_dma_free_pages(&chip->commpage_dma_buf);
 
@@ -1956,10 +2596,29 @@ static __devinit int snd_echo_create(struct snd_card *card,
 	pci_write_config_byte(pci, PCI_LATENCY_TIMER, 0xC0);
 
 	if ((err = pci_enable_device(pci)) < 0)
+=======
+	/* release chip data */
+	free_firmware_cache(chip);
+}
+
+/* <--snd_echo_probe() */
+static int snd_echo_create(struct snd_card *card,
+			   struct pci_dev *pci)
+{
+	struct echoaudio *chip = card->private_data;
+	int err;
+	size_t sz;
+
+	pci_write_config_byte(pci, PCI_LATENCY_TIMER, 0xC0);
+
+	err = pcim_enable_device(pci);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	pci_set_master(pci);
 
 	/* Allocate chip if needed */
+<<<<<<< HEAD
 	if (!*rchip) {
 		chip = kzalloc(sizeof(*chip), GFP_KERNEL);
 		if (!chip) {
@@ -1982,11 +2641,27 @@ static __devinit int snd_echo_create(struct snd_card *card,
 	}
 
 	/* PCI resource allocation */
+=======
+	spin_lock_init(&chip->lock);
+	chip->card = card;
+	chip->pci = pci;
+	chip->irq = -1;
+	chip->opencount = 0;
+	mutex_init(&chip->mode_mutex);
+	chip->can_set_rate = 1;
+
+	/* PCI resource allocation */
+	err = pci_request_regions(pci, ECHOCARD_NAME);
+	if (err < 0)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->dsp_registers_phys = pci_resource_start(pci, 0);
 	sz = pci_resource_len(pci, 0);
 	if (sz > PAGE_SIZE)
 		sz = PAGE_SIZE;		/* We map only the required part */
 
+<<<<<<< HEAD
 	if ((chip->iores = request_mem_region(chip->dsp_registers_phys, sz,
 					      ECHOCARD_NAME)) == NULL) {
 		snd_echo_free(chip);
@@ -2017,11 +2692,41 @@ static __devinit int snd_echo_create(struct snd_card *card,
 	}
 	chip->comm_page_phys = chip->commpage_dma_buf.addr;
 	chip->comm_page = (struct comm_page *)chip->commpage_dma_buf.area;
+=======
+	chip->dsp_registers = devm_ioremap(&pci->dev, chip->dsp_registers_phys, sz);
+	if (!chip->dsp_registers) {
+		dev_err(chip->card->dev, "ioremap failed\n");
+		return -ENOMEM;
+	}
+
+	if (request_irq(pci->irq, snd_echo_interrupt, IRQF_SHARED,
+			KBUILD_MODNAME, chip)) {
+		dev_err(chip->card->dev, "cannot grab irq\n");
+		return -EBUSY;
+	}
+	chip->irq = pci->irq;
+	card->sync_irq = chip->irq;
+	dev_dbg(card->dev, "pci=%p irq=%d subdev=%04x Init hardware...\n",
+		chip->pci, chip->irq, chip->pci->subsystem_device);
+
+	card->private_free = snd_echo_free;
+
+	/* Create the DSP comm page - this is the area of memory used for most
+	of the communication with the DSP, which accesses it via bus mastering */
+	chip->commpage_dma_buf =
+		snd_devm_alloc_pages(&pci->dev, SNDRV_DMA_TYPE_DEV,
+				     sizeof(struct comm_page));
+	if (!chip->commpage_dma_buf)
+		return -ENOMEM;
+	chip->comm_page_phys = chip->commpage_dma_buf->addr;
+	chip->comm_page = (struct comm_page *)chip->commpage_dma_buf->area;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = init_hw(chip, chip->pci->device, chip->pci->subsystem_device);
 	if (err >= 0)
 		err = set_mixer_defaults(chip);
 	if (err < 0) {
+<<<<<<< HEAD
 		DE_INIT(("init_hw err=%d\n", err));
 		snd_echo_free(chip);
 		return err;
@@ -2042,12 +2747,29 @@ static __devinit int snd_echo_create(struct snd_card *card,
 /* constructor */
 static int __devinit snd_echo_probe(struct pci_dev *pci,
 				    const struct pci_device_id *pci_id)
+=======
+		dev_err(card->dev, "init_hw err=%d\n", err);
+		return err;
+	}
+
+	return 0;
+}
+
+/* constructor */
+static int __snd_echo_probe(struct pci_dev *pci,
+			    const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
 	struct echoaudio *chip;
 	char *dsp;
+<<<<<<< HEAD
 	int i, err;
+=======
+	__maybe_unused int i;
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev >= SNDRV_CARDS)
 		return -ENODEV;
@@ -2056,6 +2778,7 @@ static int __devinit snd_echo_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
+<<<<<<< HEAD
 	DE_INIT(("Echoaudio driver starting...\n"));
 	i = 0;
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 0, &card);
@@ -2069,6 +2792,18 @@ static int __devinit snd_echo_probe(struct pci_dev *pci,
 		snd_card_free(card);
 		return err;
 	}
+=======
+	i = 0;
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(*chip), &card);
+	if (err < 0)
+		return err;
+	chip = card->private_data;
+
+	err = snd_echo_create(card, pci);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(card->driver, "Echo_" ECHOCARD_NAME);
 	strcpy(card->shortname, chip->card_name);
@@ -2081,17 +2816,29 @@ static int __devinit snd_echo_probe(struct pci_dev *pci,
 		card->shortname, pci_id->subdevice & 0x000f, dsp,
 		chip->dsp_registers_phys, chip->irq);
 
+<<<<<<< HEAD
 	if ((err = snd_echo_new_pcm(chip)) < 0) {
 		snd_printk(KERN_ERR "new pcm error %d\n", err);
 		snd_card_free(card);
+=======
+	err = snd_echo_new_pcm(chip);
+	if (err < 0) {
+		dev_err(chip->card->dev, "new pcm error %d\n", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 #ifdef ECHOCARD_HAS_MIDI
 	if (chip->has_midi) {	/* Some Mia's do not have midi */
+<<<<<<< HEAD
 		if ((err = snd_echo_midi_create(card, chip)) < 0) {
 			snd_printk(KERN_ERR "new midi error %d\n", err);
 			snd_card_free(card);
+=======
+		err = snd_echo_midi_create(card, chip);
+		if (err < 0) {
+			dev_err(chip->card->dev, "new midi error %d\n", err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		}
 	}
@@ -2099,18 +2846,29 @@ static int __devinit snd_echo_probe(struct pci_dev *pci,
 
 #ifdef ECHOCARD_HAS_VMIXER
 	snd_echo_vmixer.count = num_pipes_out(chip) * num_busses_out(chip);
+<<<<<<< HEAD
 	if ((err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_vmixer, chip))) < 0)
 		goto ctl_error;
+=======
+	err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_vmixer, chip));
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef ECHOCARD_HAS_LINE_OUT_GAIN
 	err = snd_ctl_add(chip->card,
 			  snd_ctl_new1(&snd_echo_line_output_gain, chip));
 	if (err < 0)
+<<<<<<< HEAD
 		goto ctl_error;
+=======
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #else /* ECHOCARD_HAS_VMIXER */
 	err = snd_ctl_add(chip->card,
 			  snd_ctl_new1(&snd_echo_pcm_output_gain, chip));
 	if (err < 0)
+<<<<<<< HEAD
 		goto ctl_error;
 #endif /* ECHOCARD_HAS_VMIXER */
 
@@ -2149,6 +2907,55 @@ static int __devinit snd_echo_probe(struct pci_dev *pci,
 
 	if ((err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_channels_info, chip))) < 0)
 		goto ctl_error;
+=======
+		return err;
+#endif /* ECHOCARD_HAS_VMIXER */
+
+#ifdef ECHOCARD_HAS_INPUT_GAIN
+	err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_line_input_gain, chip));
+	if (err < 0)
+		return err;
+#endif
+
+#ifdef ECHOCARD_HAS_INPUT_NOMINAL_LEVEL
+	if (!chip->hasnt_input_nominal_level) {
+		err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_intput_nominal_level, chip));
+		if (err < 0)
+			return err;
+	}
+#endif
+
+#ifdef ECHOCARD_HAS_OUTPUT_NOMINAL_LEVEL
+	err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_output_nominal_level, chip));
+	if (err < 0)
+		return err;
+#endif
+
+	err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_vumeters_switch, chip));
+	if (err < 0)
+		return err;
+
+	err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_vumeters, chip));
+	if (err < 0)
+		return err;
+
+#ifdef ECHOCARD_HAS_MONITOR
+	snd_echo_monitor_mixer.count = num_busses_in(chip) * num_busses_out(chip);
+	err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_monitor_mixer, chip));
+	if (err < 0)
+		return err;
+#endif
+
+#ifdef ECHOCARD_HAS_DIGITAL_IN_AUTOMUTE
+	err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_automute_switch, chip));
+	if (err < 0)
+		return err;
+#endif
+
+	err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_channels_info, chip));
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef ECHOCARD_HAS_DIGITAL_MODE_SWITCH
 	/* Creates a list of available digital modes */
@@ -2157,8 +2964,14 @@ static int __devinit snd_echo_probe(struct pci_dev *pci,
 		if (chip->digital_modes & (1 << i))
 			chip->digital_mode_list[chip->num_digital_modes++] = i;
 
+<<<<<<< HEAD
 	if ((err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_digital_mode_switch, chip))) < 0)
 		goto ctl_error;
+=======
+	err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_digital_mode_switch, chip));
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* ECHOCARD_HAS_DIGITAL_MODE_SWITCH */
 
 #ifdef ECHOCARD_HAS_EXTERNAL_CLOCK
@@ -2170,12 +2983,19 @@ static int __devinit snd_echo_probe(struct pci_dev *pci,
 
 	if (chip->num_clock_sources > 1) {
 		chip->clock_src_ctl = snd_ctl_new1(&snd_echo_clock_source_switch, chip);
+<<<<<<< HEAD
 		if ((err = snd_ctl_add(chip->card, chip->clock_src_ctl)) < 0)
 			goto ctl_error;
+=======
+		err = snd_ctl_add(chip->card, chip->clock_src_ctl);
+		if (err < 0)
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif /* ECHOCARD_HAS_EXTERNAL_CLOCK */
 
 #ifdef ECHOCARD_HAS_DIGITAL_IO
+<<<<<<< HEAD
 	if ((err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_spdif_mode_switch, chip))) < 0)
 		goto ctl_error;
 #endif
@@ -2184,16 +3004,35 @@ static int __devinit snd_echo_probe(struct pci_dev *pci,
 	if (chip->has_phantom_power)
 		if ((err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_phantom_power_switch, chip))) < 0)
 			goto ctl_error;
+=======
+	err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_spdif_mode_switch, chip));
+	if (err < 0)
+		return err;
+#endif
+
+#ifdef ECHOCARD_HAS_PHANTOM_POWER
+	if (chip->has_phantom_power) {
+		err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_echo_phantom_power_switch, chip));
+		if (err < 0)
+			return err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	err = snd_card_register(card);
 	if (err < 0)
+<<<<<<< HEAD
 		goto ctl_error;
 	snd_printk(KERN_INFO "Card registered: %s\n", card->longname);
+=======
+		return err;
+	dev_info(card->dev, "Card registered: %s\n", card->longname);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pci, chip);
 	dev++;
 	return 0;
+<<<<<<< HEAD
 
 ctl_error:
 	snd_printk(KERN_ERR "new control error %d\n", err);
@@ -2212,6 +3051,20 @@ static int snd_echo_suspend(struct pci_dev *pci, pm_message_t state)
 	DE_INIT(("suspend start\n"));
 	snd_pcm_suspend_all(chip->analog_pcm);
 	snd_pcm_suspend_all(chip->digital_pcm);
+=======
+}
+
+static int snd_echo_probe(struct pci_dev *pci,
+			  const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_echo_probe(pci, pci_id));
+}
+
+
+static int snd_echo_suspend(struct device *dev)
+{
+	struct echoaudio *chip = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef ECHOCARD_HAS_MIDI
 	/* This call can sleep */
@@ -2233,22 +3086,34 @@ static int snd_echo_suspend(struct pci_dev *pci, pm_message_t state)
 	chip->dsp_code = NULL;
 	free_irq(chip->irq, chip);
 	chip->irq = -1;
+<<<<<<< HEAD
 	pci_save_state(pci);
 	pci_disable_device(pci);
 
 	DE_INIT(("suspend done\n"));
+=======
+	chip->card->sync_irq = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 
 
+<<<<<<< HEAD
 static int snd_echo_resume(struct pci_dev *pci)
 {
 	struct echoaudio *chip = pci_get_drvdata(pci);
+=======
+static int snd_echo_resume(struct device *dev)
+{
+	struct pci_dev *pci = to_pci_dev(dev);
+	struct echoaudio *chip = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct comm_page *commpage, *commpage_bak;
 	u32 pipe_alloc_mask;
 	int err;
 
+<<<<<<< HEAD
 	DE_INIT(("resume start\n"));
 	pci_restore_state(pci);
 	commpage_bak = kmalloc(sizeof(struct echoaudio), GFP_KERNEL);
@@ -2256,15 +3121,27 @@ static int snd_echo_resume(struct pci_dev *pci)
 		return -ENOMEM;
 	commpage = chip->comm_page;
 	memcpy(commpage_bak, commpage, sizeof(struct comm_page));
+=======
+	commpage = chip->comm_page;
+	commpage_bak = kmemdup(commpage, sizeof(*commpage), GFP_KERNEL);
+	if (commpage_bak == NULL)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = init_hw(chip, chip->pci->device, chip->pci->subsystem_device);
 	if (err < 0) {
 		kfree(commpage_bak);
+<<<<<<< HEAD
 		DE_INIT(("resume init_hw err=%d\n", err));
 		snd_echo_free(chip);
 		return err;
 	}
 	DE_INIT(("resume init OK\n"));
+=======
+		dev_err(dev, "resume init_hw err=%d\n", err);
+		return err;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Temporarily set chip->pipe_alloc_mask=0 otherwise
 	 * restore_dsp_settings() fails.
@@ -2277,7 +3154,10 @@ static int snd_echo_resume(struct pci_dev *pci)
 		kfree(commpage_bak);
 		return err;
 	}
+<<<<<<< HEAD
 	DE_INIT(("resume restore OK\n"));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memcpy(&commpage->audio_format, &commpage_bak->audio_format,
 		sizeof(commpage->audio_format));
@@ -2289,6 +3169,7 @@ static int snd_echo_resume(struct pci_dev *pci)
 
 	if (request_irq(pci->irq, snd_echo_interrupt, IRQF_SHARED,
 			KBUILD_MODNAME, chip)) {
+<<<<<<< HEAD
 		snd_echo_free(chip);
 		snd_printk(KERN_ERR "cannot grab irq\n");
 		return -EBUSY;
@@ -2299,10 +3180,23 @@ static int snd_echo_resume(struct pci_dev *pci)
 #ifdef ECHOCARD_HAS_MIDI
 	if (chip->midi_input_enabled)
 		enable_midi_input(chip, TRUE);
+=======
+		dev_err(chip->card->dev, "cannot grab irq\n");
+		return -EBUSY;
+	}
+	chip->irq = pci->irq;
+	chip->card->sync_irq = chip->irq;
+	dev_dbg(dev, "resume irq=%d\n", chip->irq);
+
+#ifdef ECHOCARD_HAS_MIDI
+	if (chip->midi_input_enabled)
+		enable_midi_input(chip, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip->midi_out)
 		snd_echo_midi_output_trigger(chip->midi_out, 1);
 #endif
 
+<<<<<<< HEAD
 	DE_INIT(("resume done\n"));
 	return 0;
 }
@@ -2322,12 +3216,19 @@ static void __devexit snd_echo_remove(struct pci_dev *pci)
 }
 
 
+=======
+	return 0;
+}
+
+static DEFINE_SIMPLE_DEV_PM_OPS(snd_echo_pm, snd_echo_suspend, snd_echo_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /******************************************************************************
 	Everything starts and ends here
 ******************************************************************************/
 
 /* pci_driver definition */
+<<<<<<< HEAD
 static struct pci_driver driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = snd_echo_ids,
@@ -2358,3 +3259,15 @@ static void __exit alsa_card_echo_exit(void)
 
 module_init(alsa_card_echo_init)
 module_exit(alsa_card_echo_exit)
+=======
+static struct pci_driver echo_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_echo_ids,
+	.probe = snd_echo_probe,
+	.driver = {
+		.pm = &snd_echo_pm,
+	},
+};
+
+module_pci_driver(echo_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

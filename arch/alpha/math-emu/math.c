@@ -1,9 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
+=======
+#include <asm/ptrace.h>
+
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "sfp-util.h"
 #include <math-emu/soft-fp.h>
@@ -52,6 +62,10 @@ extern void alpha_write_fp_reg_s (unsigned long reg, unsigned long val);
 #ifdef MODULE
 
 MODULE_DESCRIPTION("FP Software completion module");
+<<<<<<< HEAD
+=======
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern long (*alpha_fp_emul_imprecise)(struct pt_regs *, unsigned long);
 extern long (*alpha_fp_emul) (unsigned long pc);
@@ -62,7 +76,11 @@ static long (*save_emul) (unsigned long pc);
 long do_alpha_fp_emul_imprecise(struct pt_regs *, unsigned long);
 long do_alpha_fp_emul(unsigned long);
 
+<<<<<<< HEAD
 int init_module(void)
+=======
+static int alpha_fp_emul_init_module(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	save_emul_imprecise = alpha_fp_emul_imprecise;
 	save_emul = alpha_fp_emul;
@@ -70,12 +88,22 @@ int init_module(void)
 	alpha_fp_emul = do_alpha_fp_emul;
 	return 0;
 }
+<<<<<<< HEAD
 
 void cleanup_module(void)
+=======
+module_init(alpha_fp_emul_init_module);
+
+static void alpha_fp_emul_cleanup_module(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	alpha_fp_emul_imprecise = save_emul_imprecise;
 	alpha_fp_emul = save_emul;
 }
+<<<<<<< HEAD
+=======
+module_exit(alpha_fp_emul_cleanup_module);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef  alpha_fp_emul_imprecise
 #define alpha_fp_emul_imprecise		do_alpha_fp_emul_imprecise

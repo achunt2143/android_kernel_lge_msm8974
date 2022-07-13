@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/drivers/pci/fixups-dreamcast.c
  *
@@ -9,10 +13,13 @@
  * This file originally bore the message (with enclosed-$):
  *	Id: pci.c,v 1.3 2003/05/04 19:29:46 lethal Exp
  *	Dreamcast PCI: Supports SEGA Broadband Adaptor only.
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/sched.h>
@@ -22,15 +29,27 @@
 #include <linux/init.h>
 #include <linux/irq.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/dma-mapping.h>
+=======
+#include <linux/dma-map-ops.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <mach/pci.h>
 
+<<<<<<< HEAD
 static void __init gapspci_fixup_resources(struct pci_dev *dev)
 {
 	struct pci_channel *p = dev->sysdata;
+=======
+static void gapspci_fixup_resources(struct pci_dev *dev)
+{
+	struct pci_channel *p = dev->sysdata;
+	struct resource res;
+	struct pci_bus_region region;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_NOTICE "PCI: Fixing up device %s\n", pci_name(dev));
 
@@ -50,6 +69,7 @@ static void __init gapspci_fixup_resources(struct pci_dev *dev)
 
 		/*
 		 * Redirect dma memory allocations to special memory window.
+<<<<<<< HEAD
 		 */
 		BUG_ON(!dma_declare_coherent_memory(&dev->dev,
 						GAPSPCI_DMA_BASE,
@@ -57,6 +77,23 @@ static void __init gapspci_fixup_resources(struct pci_dev *dev)
 						GAPSPCI_DMA_SIZE,
 						DMA_MEMORY_MAP |
 						DMA_MEMORY_EXCLUSIVE));
+=======
+		 *
+		 * If this GAPSPCI region were mapped by a BAR, the CPU
+		 * phys_addr_t would be pci_resource_start(), and the bus
+		 * address would be pci_bus_address(pci_resource_start()).
+		 * But apparently there's no BAR mapping it, so we just
+		 * "know" its CPU address is GAPSPCI_DMA_BASE.
+		 */
+		res.start = GAPSPCI_DMA_BASE;
+		res.end = GAPSPCI_DMA_BASE + GAPSPCI_DMA_SIZE - 1;
+		res.flags = IORESOURCE_MEM;
+		pcibios_resource_to_bus(dev->bus, &region, &res);
+		BUG_ON(dma_declare_coherent_memory(&dev->dev,
+						res.start,
+						region.start,
+						resource_size(&res)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		printk("PCI: Failed resource fixup\n");
@@ -64,7 +101,11 @@ static void __init gapspci_fixup_resources(struct pci_dev *dev)
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_ANY_ID, PCI_ANY_ID, gapspci_fixup_resources);
 
+<<<<<<< HEAD
 int __init pcibios_map_platform_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+=======
+int pcibios_map_platform_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/*
 	 * The interrupt routing semantics here are quite trivial.

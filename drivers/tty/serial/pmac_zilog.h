@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __PMAC_ZILOG_H__
 #define __PMAC_ZILOG_H__
 
@@ -42,7 +46,10 @@ struct uart_pmac_port {
 #define PMACZILOG_FLAG_TX_ACTIVE	0x00000040
 #define PMACZILOG_FLAG_IS_IRDA		0x00000100
 #define PMACZILOG_FLAG_IS_INTMODEM	0x00000200
+<<<<<<< HEAD
 #define PMACZILOG_FLAG_HAS_DMA		0x00000400
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PMACZILOG_FLAG_RSRC_REQUESTED	0x00000800
 #define PMACZILOG_FLAG_IS_OPEN		0x00002000
 #define PMACZILOG_FLAG_IS_EXTCLK	0x00008000
@@ -54,6 +61,7 @@ struct uart_pmac_port {
 	volatile u8			__iomem *control_reg;
 	volatile u8			__iomem *data_reg;
 
+<<<<<<< HEAD
 #ifdef CONFIG_PPC_PMAC
 	unsigned int			tx_dma_irq;
 	unsigned int			rx_dma_irq;
@@ -64,6 +72,9 @@ struct uart_pmac_port {
 	unsigned char			irq_name[8];
 
 	struct ktermios			termios_cache;
+=======
+	unsigned char			irq_name[8];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define to_pmz(p) ((struct uart_pmac_port *)(p))
@@ -361,10 +372,17 @@ static inline void zssync(struct uart_pmac_port *port)
 
 /* Misc macros */
 #define ZS_CLEARERR(port)    (write_zsreg(port, 0, ERR_RES))
+<<<<<<< HEAD
 #define ZS_CLEARFIFO(port)   do { volatile unsigned char garbage; \
 				     garbage = read_zsdata(port); \
 				     garbage = read_zsdata(port); \
 				     garbage = read_zsdata(port); \
+=======
+#define ZS_CLEARFIFO(port)   do {                       \
+				     read_zsdata(port); \
+				     read_zsdata(port); \
+				     read_zsdata(port); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				} while(0)
 
 #define ZS_IS_CONS(UP)			((UP)->flags & PMACZILOG_FLAG_IS_CONS)
@@ -376,7 +394,10 @@ static inline void zssync(struct uart_pmac_port *port)
 #define ZS_WANTS_MODEM_STATUS(UP)	((UP)->flags & PMACZILOG_FLAG_MODEM_STATUS)
 #define ZS_IS_IRDA(UP)			((UP)->flags & PMACZILOG_FLAG_IS_IRDA)
 #define ZS_IS_INTMODEM(UP)		((UP)->flags & PMACZILOG_FLAG_IS_INTMODEM)
+<<<<<<< HEAD
 #define ZS_HAS_DMA(UP)			((UP)->flags & PMACZILOG_FLAG_HAS_DMA)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ZS_IS_OPEN(UP)			((UP)->flags & PMACZILOG_FLAG_IS_OPEN)
 #define ZS_IS_EXTCLK(UP)		((UP)->flags & PMACZILOG_FLAG_IS_EXTCLK)
 

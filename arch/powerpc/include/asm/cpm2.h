@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Communication Processor Module v2.
  *
@@ -86,10 +90,13 @@
  */
 extern cpm_cpm2_t __iomem *cpmp; /* Pointer to comm processor */
 
+<<<<<<< HEAD
 #define cpm_dpalloc cpm_muram_alloc
 #define cpm_dpfree cpm_muram_free
 #define cpm_dpram_addr cpm_muram_addr
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void cpm2_reset(void);
 
 /* Baud rate generators.
@@ -489,7 +496,10 @@ typedef struct scc_trans {
 #define FCC_GFMR_TCI		((uint)0x20000000)
 #define FCC_GFMR_TRX		((uint)0x10000000)
 #define FCC_GFMR_TTX		((uint)0x08000000)
+<<<<<<< HEAD
 #define FCC_GFMR_TTX		((uint)0x08000000)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FCC_GFMR_CDP		((uint)0x04000000)
 #define FCC_GFMR_CTSP		((uint)0x02000000)
 #define FCC_GFMR_CDS		((uint)0x01000000)
@@ -594,7 +604,11 @@ typedef struct fcc_enet {
 	uint	fen_p256c;	/* Total packets 256 < bytes <= 511 */
 	uint	fen_p512c;	/* Total packets 512 < bytes <= 1023 */
 	uint	fen_p1024c;	/* Total packets 1024 < bytes <= 1518 */
+<<<<<<< HEAD
 	uint	fen_cambuf;	/* Internal CAM buffer poiner */
+=======
+	uint	fen_cambuf;	/* Internal CAM buffer pointer */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ushort	fen_rfthr;	/* Received frames threshold */
 	ushort	fen_rfcnt;	/* Received frames count */
 } fcc_enet_t;
@@ -1080,6 +1094,12 @@ typedef struct im_idma {
 #define FCC2_MEM_OFFSET FCC_MEM_OFFSET(1)
 #define FCC3_MEM_OFFSET FCC_MEM_OFFSET(2)
 
+<<<<<<< HEAD
+=======
+/* Pipeline Maximum Depth */
+#define MPC82XX_BCR_PLDP 0x00800000
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Clocks and GRG's */
 
 enum cpm_clk_dir {
@@ -1133,8 +1153,13 @@ enum cpm_clk {
 	CPM_CLK_DUMMY
 };
 
+<<<<<<< HEAD
 extern int cpm2_clk_setup(enum cpm_clk_target target, int clock, int mode);
 extern int cpm2_smc_clk_setup(enum cpm_clk_target target, int clock);
+=======
+int __init cpm2_clk_setup(enum cpm_clk_target target, int clock, int mode);
+int __init cpm2_smc_clk_setup(enum cpm_clk_target target, int clock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CPM_PIN_INPUT     0
 #define CPM_PIN_OUTPUT    1
@@ -1143,7 +1168,11 @@ extern int cpm2_smc_clk_setup(enum cpm_clk_target target, int clock);
 #define CPM_PIN_GPIO      4
 #define CPM_PIN_OPENDRAIN 8
 
+<<<<<<< HEAD
 void cpm2_set_pin(int port, int pin, int flags);
+=======
+void __init cpm2_set_pin(int port, int pin, int flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __CPM2__ */
 #endif /* __KERNEL__ */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * core routines for the asynchronous memory transfer/transform api
  *
@@ -8,6 +12,7 @@
  *	with architecture considerations by:
  *	Neil Brown <neilb@suse.de>
  *	Jeff Garzik <jeff@garzik.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms and conditions of the GNU General Public License,
@@ -22,6 +27,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/rculist.h>
 #include <linux/module.h>
@@ -128,8 +135,13 @@ async_tx_channel_switch(struct dma_async_tx_descriptor *depend_tx,
 		}
 		device->device_issue_pending(chan);
 	} else {
+<<<<<<< HEAD
 		if (dma_wait_for_async_tx(depend_tx) == DMA_ERROR)
 			panic("%s: DMA_ERROR waiting for depend_tx\n",
+=======
+		if (dma_wait_for_async_tx(depend_tx) != DMA_COMPLETE)
+			panic("%s: DMA error waiting for depend_tx\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      __func__);
 		tx->tx_submit(tx);
 	}
@@ -137,7 +149,11 @@ async_tx_channel_switch(struct dma_async_tx_descriptor *depend_tx,
 
 
 /**
+<<<<<<< HEAD
  * submit_disposition - flags for routing an incoming operation
+=======
+ * enum submit_disposition - flags for routing an incoming operation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ASYNC_TX_SUBMITTED: we were able to append the new operation under the lock
  * @ASYNC_TX_CHANNEL_SWITCH: when the lock is dropped schedule a channel switch
  * @ASYNC_TX_DIRECT_SUBMIT: when the lock is dropped submit directly
@@ -271,7 +287,11 @@ EXPORT_SYMBOL_GPL(async_trigger_callback);
 
 /**
  * async_tx_quiesce - ensure tx is complete and freeable upon return
+<<<<<<< HEAD
  * @tx - transaction to quiesce
+=======
+ * @tx: transaction to quiesce
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void async_tx_quiesce(struct dma_async_tx_descriptor **tx)
 {
@@ -280,8 +300,14 @@ void async_tx_quiesce(struct dma_async_tx_descriptor **tx)
 		 * we are referring to the correct operation
 		 */
 		BUG_ON(async_tx_test_ack(*tx));
+<<<<<<< HEAD
 		if (dma_wait_for_async_tx(*tx) == DMA_ERROR)
 			panic("DMA_ERROR waiting for transaction\n");
+=======
+		if (dma_wait_for_async_tx(*tx) != DMA_COMPLETE)
+			panic("%s: DMA error waiting for transaction\n",
+			      __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		async_tx_ack(*tx);
 		*tx = NULL;
 	}

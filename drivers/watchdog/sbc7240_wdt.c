@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	NANO7240 SBC Watchdog device driver
  *
  *	Based on w83877f.c by Scott Jennings,
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License version 2 as
  *	published by the Free Software Foundation;
@@ -14,6 +19,9 @@
  *
  *	(c) Copyright 2007  Gilles GIGAN <gilles.gigan@jcu.edu.au>
  *
+=======
+ *	(c) Copyright 2007  Gilles GIGAN <gilles.gigan@jcu.edu.au>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -136,7 +144,11 @@ static int fop_open(struct inode *inode, struct file *file)
 
 	wdt_enable();
 
+<<<<<<< HEAD
 	return nonseekable_open(inode, file);
+=======
+	return stream_open(inode, file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int fop_close(struct inode *inode, struct file *file)
@@ -203,9 +215,14 @@ static long fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		if (wdt_set_timeout(new_timeout))
 			return -EINVAL;
+<<<<<<< HEAD
 
 		/* Fall through */
 	}
+=======
+	}
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case WDIOC_GETTIMEOUT:
 		return put_user(timeout, (int __user *)arg);
 	default:
@@ -220,6 +237,10 @@ static const struct file_operations wdt_fops = {
 	.open = fop_open,
 	.release = fop_close,
 	.unlocked_ioctl = fop_ioctl,
+<<<<<<< HEAD
+=======
+	.compat_ioctl = compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct miscdevice wdt_miscdev = {
@@ -309,5 +330,8 @@ MODULE_AUTHOR("Gilles Gigan");
 MODULE_DESCRIPTION("Watchdog device driver for single board"
 		   " computers EPIC Nano 7240 from iEi");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_ALIAS_MISCDEV(WATCHDOG_MINOR);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

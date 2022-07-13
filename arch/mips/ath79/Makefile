@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the Atheros AR71XX/AR724X/AR913X specific parts of the kernel
 #
 # Copyright (C) 2008-2011 Gabor Juhos <juhosg@openwrt.org>
 # Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
 #
+<<<<<<< HEAD
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License version 2 as published
 # by the Free Software Foundation.
@@ -29,3 +34,9 @@ obj-$(CONFIG_ATH79_MACH_AP121)		+= mach-ap121.o
 obj-$(CONFIG_ATH79_MACH_AP81)		+= mach-ap81.o
 obj-$(CONFIG_ATH79_MACH_PB44)		+= mach-pb44.o
 obj-$(CONFIG_ATH79_MACH_UBNT_XM)	+= mach-ubnt-xm.o
+=======
+
+obj-y	:= prom.o setup.o common.o clock.o
+
+obj-$(CONFIG_EARLY_PRINTK)		+= early_printk.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

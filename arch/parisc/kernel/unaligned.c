@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    Unaligned memory access handler
  *
  *    Copyright (C) 2001 Randolph Chung <tausq@debian.org>
+<<<<<<< HEAD
  *    Significantly tweaked by LaMont Jones <lamont@debian.org>
  *
  *    This program is free software; you can redistribute it and/or modify
@@ -27,6 +32,20 @@
 #include <linux/signal.h>
 #include <linux/ratelimit.h>
 #include <asm/uaccess.h>
+=======
+ *    Copyright (C) 2022 Helge Deller <deller@gmx.de>
+ *    Significantly tweaked by LaMont Jones <lamont@debian.org>
+ */
+
+#include <linux/sched/signal.h>
+#include <linux/signal.h>
+#include <linux/ratelimit.h>
+#include <linux/uaccess.h>
+#include <linux/sysctl.h>
+#include <asm/unaligned.h>
+#include <asm/hardirq.h>
+#include <asm/traps.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* #define DEBUG_UNALIGNED 1 */
 
@@ -36,6 +55,7 @@
 #define DPRINTF(fmt, args...)
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_64BIT
 #define RFMT "%016lx"
 #else
@@ -48,6 +68,9 @@
 	"\tbv,n %%r0(%%r1)\n"
 /* If you use FIXUP_BRANCH, then you must list this clobber */
 #define FIXUP_BRANCH_CLOBBER "r1"
+=======
+#define RFMT "%#08lx"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* 1111 1100 0000 0000 0001 0011 1100 0000 */
 #define OPCODE1(a,b,c)	((a)<<26|(b)<<12|(c)<<6) 
@@ -118,13 +141,18 @@
 #define R1(i) (((i)>>21)&0x1f)
 #define R2(i) (((i)>>16)&0x1f)
 #define R3(i) ((i)&0x1f)
+<<<<<<< HEAD
 #define FR3(i) ((((i)<<1)&0x1f)|(((i)>>6)&1))
+=======
+#define FR3(i) ((((i)&0x1f)<<1)|(((i)>>6)&1))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IM(i,n) (((i)>>1&((1<<(n-1))-1))|((i)&1?((0-1L)<<(n-1)):0))
 #define IM5_2(i) IM((i)>>16,5)
 #define IM5_3(i) IM((i),5)
 #define IM14(i) IM((i),14)
 
 #define ERR_NOTHANDLED	-1
+<<<<<<< HEAD
 #define ERR_PAGEFAULT	-2
 
 int unaligned_enabled __read_mostly = 1;
@@ -136,12 +164,23 @@ static int emulate_ldh(struct pt_regs *regs, int toreg)
 	unsigned long saddr = regs->ior;
 	unsigned long val = 0;
 	int ret;
+=======
+
+int unaligned_enabled __read_mostly = 1;
+
+static int emulate_ldh(struct pt_regs *regs, int toreg)
+{
+	unsigned long saddr = regs->ior;
+	unsigned long val = 0, temp1;
+	ASM_EXCEPTIONTABLE_VAR(ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DPRINTF("load " RFMT ":" RFMT " to r%d for 2 bytes\n", 
 		regs->isr, regs->ior, toreg);
 
 	__asm__ __volatile__  (
 "	mtsp	%4, %%sr1\n"
+<<<<<<< HEAD
 "1:	ldbs	0(%%sr1,%3), %%r20\n"
 "2:	ldbs	1(%%sr1,%3), %0\n"
 "	depw	%%r20, 23, 24, %0\n"
@@ -158,6 +197,18 @@ static int emulate_ldh(struct pt_regs *regs, int toreg)
 	: "r20", FIXUP_BRANCH_CLOBBER );
 
 	DPRINTF("val = 0x" RFMT "\n", val);
+=======
+"1:	ldbs	0(%%sr1,%3), %2\n"
+"2:	ldbs	1(%%sr1,%3), %0\n"
+"	depw	%2, 23, 24, %0\n"
+"3:	\n"
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(1b, 3b, "%1")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(2b, 3b, "%1")
+	: "+r" (val), "+r" (ret), "=&r" (temp1)
+	: "r" (saddr), "r" (regs->isr) );
+
+	DPRINTF("val = " RFMT "\n", val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (toreg)
 		regs->gr[toreg] = val;
@@ -168,13 +219,19 @@ static int emulate_ldh(struct pt_regs *regs, int toreg)
 static int emulate_ldw(struct pt_regs *regs, int toreg, int flop)
 {
 	unsigned long saddr = regs->ior;
+<<<<<<< HEAD
 	unsigned long val = 0;
 	int ret;
+=======
+	unsigned long val = 0, temp1, temp2;
+	ASM_EXCEPTIONTABLE_VAR(ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DPRINTF("load " RFMT ":" RFMT " to r%d for 4 bytes\n", 
 		regs->isr, regs->ior, toreg);
 
 	__asm__ __volatile__  (
+<<<<<<< HEAD
 "	zdep	%3,28,2,%%r19\n"		/* r19=(ofs&3)*8 */
 "	mtsp	%4, %%sr1\n"
 "	depw	%%r0,31,2,%3\n"
@@ -196,6 +253,23 @@ static int emulate_ldw(struct pt_regs *regs, int toreg, int flop)
 	: "r19", "r20", FIXUP_BRANCH_CLOBBER );
 
 	DPRINTF("val = 0x" RFMT "\n", val);
+=======
+"	zdep	%4,28,2,%2\n"		/* r19=(ofs&3)*8 */
+"	mtsp	%5, %%sr1\n"
+"	depw	%%r0,31,2,%4\n"
+"1:	ldw	0(%%sr1,%4),%0\n"
+"2:	ldw	4(%%sr1,%4),%3\n"
+"	subi	32,%2,%2\n"
+"	mtctl	%2,11\n"
+"	vshd	%0,%3,%0\n"
+"3:	\n"
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(1b, 3b, "%1")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(2b, 3b, "%1")
+	: "+r" (val), "+r" (ret), "=&r" (temp1), "=&r" (temp2)
+	: "r" (saddr), "r" (regs->isr) );
+
+	DPRINTF("val = " RFMT "\n", val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (flop)
 		((__u32*)(regs->fr))[toreg] = val;
@@ -207,6 +281,7 @@ static int emulate_ldw(struct pt_regs *regs, int toreg, int flop)
 static int emulate_ldd(struct pt_regs *regs, int toreg, int flop)
 {
 	unsigned long saddr = regs->ior;
+<<<<<<< HEAD
 	__u64 val = 0;
 	int ret;
 
@@ -266,6 +341,51 @@ static int emulate_ldd(struct pt_regs *regs, int toreg, int flop)
 	: "r19", "r20", FIXUP_BRANCH_CLOBBER );
 	val=((__u64)valh<<32)|(__u64)vall;
     }
+=======
+	unsigned long shift, temp1;
+	__u64 val = 0;
+	ASM_EXCEPTIONTABLE_VAR(ret);
+
+	DPRINTF("load " RFMT ":" RFMT " to r%d for 8 bytes\n", 
+		regs->isr, regs->ior, toreg);
+
+	if (!IS_ENABLED(CONFIG_64BIT) && !flop)
+		return ERR_NOTHANDLED;
+
+#ifdef CONFIG_64BIT
+	__asm__ __volatile__  (
+"	depd,z	%2,60,3,%3\n"		/* shift=(ofs&7)*8 */
+"	mtsp	%5, %%sr1\n"
+"	depd	%%r0,63,3,%2\n"
+"1:	ldd	0(%%sr1,%2),%0\n"
+"2:	ldd	8(%%sr1,%2),%4\n"
+"	subi	64,%3,%3\n"
+"	mtsar	%3\n"
+"	shrpd	%0,%4,%%sar,%0\n"
+"3:	\n"
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(1b, 3b, "%1")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(2b, 3b, "%1")
+	: "+r" (val), "+r" (ret), "+r" (saddr), "=&r" (shift), "=&r" (temp1)
+	: "r" (regs->isr) );
+#else
+	__asm__ __volatile__  (
+"	zdep	%2,29,2,%3\n"		/* shift=(ofs&3)*8 */
+"	mtsp	%5, %%sr1\n"
+"	dep	%%r0,31,2,%2\n"
+"1:	ldw	0(%%sr1,%2),%0\n"
+"2:	ldw	4(%%sr1,%2),%R0\n"
+"3:	ldw	8(%%sr1,%2),%4\n"
+"	subi	32,%3,%3\n"
+"	mtsar	%3\n"
+"	vshd	%0,%R0,%0\n"
+"	vshd	%R0,%4,%R0\n"
+"4:	\n"
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(1b, 4b, "%1")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(2b, 4b, "%1")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(3b, 4b, "%1")
+	: "+r" (val), "+r" (ret), "+r" (saddr), "=&r" (shift), "=&r" (temp1)
+	: "r" (regs->isr) );
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	DPRINTF("val = 0x%llx\n", val);
@@ -280,12 +400,18 @@ static int emulate_ldd(struct pt_regs *regs, int toreg, int flop)
 
 static int emulate_sth(struct pt_regs *regs, int frreg)
 {
+<<<<<<< HEAD
 	unsigned long val = regs->gr[frreg];
 	int ret;
+=======
+	unsigned long val = regs->gr[frreg], temp1;
+	ASM_EXCEPTIONTABLE_VAR(ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!frreg)
 		val = 0;
 
+<<<<<<< HEAD
 	DPRINTF("store r%d (0x" RFMT ") to " RFMT ":" RFMT " for 2 bytes\n", frreg, 
 		val, regs->isr, regs->ior);
 
@@ -305,6 +431,21 @@ static int emulate_sth(struct pt_regs *regs, int frreg)
 	: "=r" (ret)
 	: "r" (val), "r" (regs->ior), "r" (regs->isr)
 	: "r19", FIXUP_BRANCH_CLOBBER );
+=======
+	DPRINTF("store r%d (" RFMT ") to " RFMT ":" RFMT " for 2 bytes\n", frreg,
+		val, regs->isr, regs->ior);
+
+	__asm__ __volatile__ (
+"	mtsp %4, %%sr1\n"
+"	extrw,u %2, 23, 8, %1\n"
+"1:	stb %1, 0(%%sr1, %3)\n"
+"2:	stb %2, 1(%%sr1, %3)\n"
+"3:	\n"
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(1b, 3b, "%0")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(2b, 3b, "%0")
+	: "+r" (ret), "=&r" (temp1)
+	: "r" (val), "r" (regs->ior), "r" (regs->isr) );
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -312,7 +453,11 @@ static int emulate_sth(struct pt_regs *regs, int frreg)
 static int emulate_stw(struct pt_regs *regs, int frreg, int flop)
 {
 	unsigned long val;
+<<<<<<< HEAD
 	int ret;
+=======
+	ASM_EXCEPTIONTABLE_VAR(ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (flop)
 		val = ((__u32*)(regs->fr))[frreg];
@@ -321,7 +466,11 @@ static int emulate_stw(struct pt_regs *regs, int frreg, int flop)
 	else
 		val = 0;
 
+<<<<<<< HEAD
 	DPRINTF("store r%d (0x" RFMT ") to " RFMT ":" RFMT " for 4 bytes\n", frreg, 
+=======
+	DPRINTF("store r%d (" RFMT ") to " RFMT ":" RFMT " for 4 bytes\n", frreg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val, regs->isr, regs->ior);
 
 
@@ -341,6 +490,7 @@ static int emulate_stw(struct pt_regs *regs, int frreg, int flop)
 "	or	%%r1, %%r21, %%r21\n"
 "	stw	%%r20,0(%%sr1,%2)\n"
 "	stw	%%r21,4(%%sr1,%2)\n"
+<<<<<<< HEAD
 "	copy	%%r0, %0\n"
 "3:	\n"
 "	.section .fixup,\"ax\"\n"
@@ -354,11 +504,25 @@ static int emulate_stw(struct pt_regs *regs, int frreg, int flop)
 	: "r19", "r20", "r21", "r22", "r1", FIXUP_BRANCH_CLOBBER );
 
 	return 0;
+=======
+"3:	\n"
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(1b, 3b, "%0")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(2b, 3b, "%0")
+	: "+r" (ret)
+	: "r" (val), "r" (regs->ior), "r" (regs->isr)
+	: "r19", "r20", "r21", "r22", "r1" );
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static int emulate_std(struct pt_regs *regs, int frreg, int flop)
 {
 	__u64 val;
+<<<<<<< HEAD
 	int ret;
+=======
+	ASM_EXCEPTIONTABLE_VAR(ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (flop)
 		val = regs->fr[frreg];
@@ -370,11 +534,18 @@ static int emulate_std(struct pt_regs *regs, int frreg, int flop)
 	DPRINTF("store r%d (0x%016llx) to " RFMT ":" RFMT " for 8 bytes\n", frreg, 
 		val,  regs->isr, regs->ior);
 
+<<<<<<< HEAD
 #ifdef CONFIG_PA20
 #ifndef CONFIG_64BIT
 	if (!flop)
 		return -1;
 #endif
+=======
+	if (!IS_ENABLED(CONFIG_64BIT) && !flop)
+		return ERR_NOTHANDLED;
+
+#ifdef CONFIG_64BIT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__asm__ __volatile__ (
 "	mtsp %3, %%sr1\n"
 "	depd,z	%2, 60, 3, %%r19\n"
@@ -391,6 +562,7 @@ static int emulate_std(struct pt_regs *regs, int frreg, int flop)
 "	or	%%r1, %%r21, %%r21\n"
 "3:	std	%%r20,0(%%sr1,%2)\n"
 "4:	std	%%r21,8(%%sr1,%2)\n"
+<<<<<<< HEAD
 "	copy	%%r0, %0\n"
 "5:	\n"
 "	.section .fixup,\"ax\"\n"
@@ -439,6 +611,45 @@ static int emulate_std(struct pt_regs *regs, int frreg, int flop)
 	: "=r" (ret)
 	: "r" (valh), "r" (vall), "r" (regs->ior), "r" (regs->isr)
 	: "r19", "r20", "r21", "r1", FIXUP_BRANCH_CLOBBER );
+=======
+"5:	\n"
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(1b, 5b, "%0")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(2b, 5b, "%0")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(3b, 5b, "%0")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(4b, 5b, "%0")
+	: "+r" (ret)
+	: "r" (val), "r" (regs->ior), "r" (regs->isr)
+	: "r19", "r20", "r21", "r22", "r1" );
+#else
+    {
+	__asm__ __volatile__ (
+"	mtsp	%3, %%sr1\n"
+"	zdep	%R1, 29, 2, %%r19\n"
+"	dep	%%r0, 31, 2, %2\n"
+"	mtsar	%%r19\n"
+"	zvdepi	-2, 32, %%r19\n"
+"1:	ldw	0(%%sr1,%2),%%r20\n"
+"2:	ldw	8(%%sr1,%2),%%r21\n"
+"	vshd	%1, %R1, %%r1\n"
+"	vshd	%%r0, %1, %1\n"
+"	vshd	%R1, %%r0, %R1\n"
+"	and	%%r20, %%r19, %%r20\n"
+"	andcm	%%r21, %%r19, %%r21\n"
+"	or	%1, %%r20, %1\n"
+"	or	%R1, %%r21, %R1\n"
+"3:	stw	%1,0(%%sr1,%2)\n"
+"4:	stw	%%r1,4(%%sr1,%2)\n"
+"5:	stw	%R1,8(%%sr1,%2)\n"
+"6:	\n"
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(1b, 6b, "%0")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(2b, 6b, "%0")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(3b, 6b, "%0")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(4b, 6b, "%0")
+	ASM_EXCEPTIONTABLE_ENTRY_EFAULT(5b, 6b, "%0")
+	: "+r" (ret)
+	: "r" (val), "r" (regs->ior), "r" (regs->isr)
+	: "r19", "r20", "r21", "r1" );
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     }
 #endif
 
@@ -451,8 +662,13 @@ void handle_unaligned(struct pt_regs *regs)
 	unsigned long newbase = R1(regs->iir)?regs->gr[R1(regs->iir)]:0;
 	int modify = 0;
 	int ret = ERR_NOTHANDLED;
+<<<<<<< HEAD
 	struct siginfo si;
 	register int flop=0;	/* true if this is a flop */
+=======
+
+	__inc_irq_stat(irq_unaligned_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* log a message with pacing */
 	if (user_mode(regs)) {
@@ -462,10 +678,17 @@ void handle_unaligned(struct pt_regs *regs)
 
 		if (!(current->thread.flags & PARISC_UAC_NOPRINT) &&
 			__ratelimit(&ratelimit)) {
+<<<<<<< HEAD
 			char buf[256];
 			sprintf(buf, "%s(%d): unaligned access to 0x" RFMT " at ip=0x" RFMT "\n",
 				current->comm, task_pid_nr(current), regs->ior, regs->iaoq[0]);
 			printk(KERN_WARNING "%s", buf);
+=======
+			printk(KERN_WARNING "%s(%d): unaligned access to " RFMT
+				" at ip " RFMT " (iir " RFMT ")\n",
+				current->comm, task_pid_nr(current), regs->ior,
+				regs->iaoq[0], regs->iir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef DEBUG_UNALIGNED
 			show_regs(regs);
 #endif		
@@ -473,6 +696,16 @@ void handle_unaligned(struct pt_regs *regs)
 
 		if (!unaligned_enabled)
 			goto force_sigbus;
+<<<<<<< HEAD
+=======
+	} else {
+		static DEFINE_RATELIMIT_STATE(kernel_ratelimit, 5 * HZ, 5);
+		if (!(current->thread.flags & PARISC_UAC_NOPRINT) &&
+			__ratelimit(&kernel_ratelimit))
+			pr_warn("Kernel: unaligned access to " RFMT " in %pS "
+					"(iir " RFMT ")\n",
+				regs->ior, (void *)regs->iaoq[0], regs->iir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* handle modification - OK, it's ugly, see the instruction manual */
@@ -547,7 +780,11 @@ void handle_unaligned(struct pt_regs *regs)
 	case OPCODE_LDWA_I:
 	case OPCODE_LDW_S:
 	case OPCODE_LDWA_S:
+<<<<<<< HEAD
 		ret = emulate_ldw(regs, R3(regs->iir),0);
+=======
+		ret = emulate_ldw(regs, R3(regs->iir), 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case OPCODE_STH:
@@ -556,20 +793,35 @@ void handle_unaligned(struct pt_regs *regs)
 
 	case OPCODE_STW:
 	case OPCODE_STWA:
+<<<<<<< HEAD
 		ret = emulate_stw(regs, R2(regs->iir),0);
 		break;
 
 #ifdef CONFIG_PA20
+=======
+		ret = emulate_stw(regs, R2(regs->iir), 0);
+		break;
+
+#ifdef CONFIG_64BIT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case OPCODE_LDD_I:
 	case OPCODE_LDDA_I:
 	case OPCODE_LDD_S:
 	case OPCODE_LDDA_S:
+<<<<<<< HEAD
 		ret = emulate_ldd(regs, R3(regs->iir),0);
+=======
+		ret = emulate_ldd(regs, R3(regs->iir), 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case OPCODE_STD:
 	case OPCODE_STDA:
+<<<<<<< HEAD
 		ret = emulate_std(regs, R2(regs->iir),0);
+=======
+		ret = emulate_std(regs, R2(regs->iir), 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #endif
 
@@ -577,28 +829,44 @@ void handle_unaligned(struct pt_regs *regs)
 	case OPCODE_FLDWS:
 	case OPCODE_FLDWXR:
 	case OPCODE_FLDWSR:
+<<<<<<< HEAD
 		flop=1;
 		ret = emulate_ldw(regs,FR3(regs->iir),1);
+=======
+		ret = emulate_ldw(regs, FR3(regs->iir), 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case OPCODE_FLDDX:
 	case OPCODE_FLDDS:
+<<<<<<< HEAD
 		flop=1;
 		ret = emulate_ldd(regs,R3(regs->iir),1);
+=======
+		ret = emulate_ldd(regs, R3(regs->iir), 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case OPCODE_FSTWX:
 	case OPCODE_FSTWS:
 	case OPCODE_FSTWXR:
 	case OPCODE_FSTWSR:
+<<<<<<< HEAD
 		flop=1;
 		ret = emulate_stw(regs,FR3(regs->iir),1);
+=======
+		ret = emulate_stw(regs, FR3(regs->iir), 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case OPCODE_FSTDX:
 	case OPCODE_FSTDS:
+<<<<<<< HEAD
 		flop=1;
 		ret = emulate_std(regs,R3(regs->iir),1);
+=======
+		ret = emulate_std(regs, R3(regs->iir), 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case OPCODE_LDCD_I:
@@ -608,6 +876,7 @@ void handle_unaligned(struct pt_regs *regs)
 		ret = ERR_NOTHANDLED;	/* "undefined", but lets kill them. */
 		break;
 	}
+<<<<<<< HEAD
 #ifdef CONFIG_PA20
 	switch (regs->iir & OPCODE2_MASK)
 	{
@@ -619,12 +888,24 @@ void handle_unaligned(struct pt_regs *regs)
 		flop=1;
 		ret = emulate_std(regs, R2(regs->iir),1);
 		break;
+=======
+	switch (regs->iir & OPCODE2_MASK)
+	{
+	case OPCODE_FLDD_L:
+		ret = emulate_ldd(regs,R2(regs->iir),1);
+		break;
+	case OPCODE_FSTD_L:
+		ret = emulate_std(regs, R2(regs->iir),1);
+		break;
+#ifdef CONFIG_64BIT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case OPCODE_LDD_L:
 		ret = emulate_ldd(regs, R2(regs->iir),0);
 		break;
 	case OPCODE_STD_L:
 		ret = emulate_std(regs, R2(regs->iir),0);
 		break;
+<<<<<<< HEAD
 	}
 #endif
 	switch (regs->iir & OPCODE3_MASK)
@@ -639,6 +920,20 @@ void handle_unaligned(struct pt_regs *regs)
 
 	case OPCODE_FSTW_L:
 		flop=1;
+=======
+#endif
+	}
+	switch (regs->iir & OPCODE3_MASK)
+	{
+	case OPCODE_FLDW_L:
+		ret = emulate_ldw(regs, R2(regs->iir), 1);
+		break;
+	case OPCODE_LDW_M:
+		ret = emulate_ldw(regs, R2(regs->iir), 0);
+		break;
+
+	case OPCODE_FSTW_L:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = emulate_stw(regs, R2(regs->iir),1);
 		break;
 	case OPCODE_STW_M:
@@ -663,7 +958,11 @@ void handle_unaligned(struct pt_regs *regs)
 		break;
 	}
 
+<<<<<<< HEAD
 	if (modify && R1(regs->iir))
+=======
+	if (ret == 0 && modify && R1(regs->iir))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		regs->gr[R1(regs->iir)] = newbase;
 
 
@@ -674,6 +973,7 @@ void handle_unaligned(struct pt_regs *regs)
 
 	if (ret)
 	{
+<<<<<<< HEAD
 		printk(KERN_CRIT "Unaligned handler failed, ret = %d\n", ret);
 		die_if_kernel("Unaligned data reference", regs, 28);
 
@@ -684,16 +984,38 @@ void handle_unaligned(struct pt_regs *regs)
 			si.si_code = SEGV_MAPERR;
 			si.si_addr = (void __user *)regs->ior;
 			force_sig_info(SIGSEGV, &si, current);
+=======
+		/*
+		 * The unaligned handler failed.
+		 * If we were called by __get_user() or __put_user() jump
+		 * to it's exception fixup handler instead of crashing.
+		 */
+		if (!user_mode(regs) && fixup_exception(regs))
+			return;
+
+		printk(KERN_CRIT "Unaligned handler failed, ret = %d\n", ret);
+		die_if_kernel("Unaligned data reference", regs, 28);
+
+		if (ret == -EFAULT)
+		{
+			force_sig_fault(SIGSEGV, SEGV_MAPERR,
+					(void __user *)regs->ior);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		else
 		{
 force_sigbus:
 			/* couldn't handle it ... */
+<<<<<<< HEAD
 			si.si_signo = SIGBUS;
 			si.si_errno = 0;
 			si.si_code = BUS_ADRALN;
 			si.si_addr = (void __user *)regs->ior;
 			force_sig_info(SIGBUS, &si, current);
+=======
+			force_sig_fault(SIGBUS, BUS_ADRALN,
+					(void __user *)regs->ior);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		
 		return;

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * the_nilfs.h - the_nilfs shared structure.
  *
@@ -18,6 +19,15 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * Written by Ryusuke Konishi <ryusuke@osrg.net>
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * the_nilfs shared structure.
+ *
+ * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
+ *
+ * Written by Ryusuke Konishi.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 
@@ -31,8 +41,15 @@
 #include <linux/blkdev.h>
 #include <linux/backing-dev.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 struct nilfs_sc_info;
+=======
+#include <linux/refcount.h>
+
+struct nilfs_sc_info;
+struct nilfs_sysfs_dev_subgroups;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* the_nilfs struct */
 enum {
@@ -40,11 +57,20 @@ enum {
 	THE_NILFS_DISCONTINUED,	/* 'next' pointer chain has broken */
 	THE_NILFS_GC_RUNNING,	/* gc process is running */
 	THE_NILFS_SB_DIRTY,	/* super block is dirty */
+<<<<<<< HEAD
+=======
+	THE_NILFS_PURGING,	/* disposing dirty files for cleanup */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
  * struct the_nilfs - struct to supervise multiple nilfs mount points
  * @ns_flags: flags
+<<<<<<< HEAD
+=======
+ * @ns_flushed_device: flag indicating if all volatile data was flushed
+ * @ns_sb: back pointer to super block instance
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ns_bdev: block device
  * @ns_sem: semaphore for shared states
  * @ns_snapshot_mount_mutex: mutex to protect snapshot mounts
@@ -53,6 +79,11 @@ enum {
  * @ns_sbwtime: previous write time of super block
  * @ns_sbwcount: write count of super block
  * @ns_sbsize: size of valid data in super block
+<<<<<<< HEAD
+=======
+ * @ns_mount_state: file system state
+ * @ns_sb_update_freq: interval of periodical update of superblocks (in seconds)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ns_seg_seq: segment sequence counter
  * @ns_segnum: index number of the latest full segment.
  * @ns_nextnum: index number of the full segment index to be used next
@@ -94,10 +125,22 @@ enum {
  * @ns_inode_size: size of on-disk inode
  * @ns_first_ino: first not-special inode number
  * @ns_crc_seed: seed value of CRC32 calculation
+<<<<<<< HEAD
  */
 struct the_nilfs {
 	unsigned long		ns_flags;
 
+=======
+ * @ns_dev_kobj: /sys/fs/<nilfs>/<device>
+ * @ns_dev_kobj_unregister: completion state
+ * @ns_dev_subgroups: <device> subgroups pointer
+ */
+struct the_nilfs {
+	unsigned long		ns_flags;
+	int			ns_flushed_device;
+
+	struct super_block     *ns_sb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct block_device    *ns_bdev;
 	struct rw_semaphore	ns_sem;
 	struct mutex		ns_snapshot_mount_mutex;
@@ -106,6 +149,7 @@ struct the_nilfs {
 	 * used for
 	 * - loading the latest checkpoint exclusively.
 	 * - allocating a new full segment.
+<<<<<<< HEAD
 	 * - protecting s_dirt in the super_block struct
 	 *   (see nilfs_write_super) and the following fields.
 	 */
@@ -122,14 +166,33 @@ struct the_nilfs {
 	 * constructor must lock a segment semaphore while accessing these
 	 * fields.
 	 * The writable FS-instance is sole during a lifetime of the_nilfs.
+=======
+	 */
+	struct buffer_head     *ns_sbh[2];
+	struct nilfs_super_block *ns_sbp[2];
+	time64_t		ns_sbwtime;
+	unsigned int		ns_sbwcount;
+	unsigned int		ns_sbsize;
+	unsigned int		ns_mount_state;
+	unsigned int		ns_sb_update_freq;
+
+	/*
+	 * The following fields are updated by a writable FS-instance.
+	 * These fields are protected by ns_segctor_sem outside load_nilfs().
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	u64			ns_seg_seq;
 	__u64			ns_segnum;
 	__u64			ns_nextnum;
 	unsigned long		ns_pseg_offset;
 	__u64			ns_cno;
+<<<<<<< HEAD
 	time_t			ns_ctime;
 	time_t			ns_nongc_ctime;
+=======
+	time64_t		ns_ctime;
+	time64_t		ns_nongc_ctime;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_t		ns_ndirtyblks;
 
 	/*
@@ -189,6 +252,14 @@ struct the_nilfs {
 	int			ns_inode_size;
 	int			ns_first_ino;
 	u32			ns_crc_seed;
+<<<<<<< HEAD
+=======
+
+	/* /sys/fs/<nilfs>/<device> */
+	struct kobject ns_dev_kobj;
+	struct completion ns_dev_kobj_unregister;
+	struct nilfs_sysfs_dev_subgroups *ns_dev_subgroups;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define THE_NILFS_FNS(bit, name)					\
@@ -209,11 +280,16 @@ THE_NILFS_FNS(INIT, init)
 THE_NILFS_FNS(DISCONTINUED, discontinued)
 THE_NILFS_FNS(GC_RUNNING, gc_running)
 THE_NILFS_FNS(SB_DIRTY, sb_dirty)
+<<<<<<< HEAD
+=======
+THE_NILFS_FNS(PURGING, purging)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Mount option operations
  */
 #define nilfs_clear_opt(nilfs, opt)  \
+<<<<<<< HEAD
 	do { (nilfs)->ns_mount_opt &= ~NILFS_MOUNT_##opt; } while (0)
 #define nilfs_set_opt(nilfs, opt)  \
 	do { (nilfs)->ns_mount_opt |= NILFS_MOUNT_##opt; } while (0)
@@ -223,6 +299,16 @@ THE_NILFS_FNS(SB_DIRTY, sb_dirty)
 		(((nilfs)->ns_mount_opt & ~NILFS_MOUNT_##mask) |	\
 		 NILFS_MOUNT_##opt);					\
 	} while (0)
+=======
+	((nilfs)->ns_mount_opt &= ~NILFS_MOUNT_##opt)
+#define nilfs_set_opt(nilfs, opt)  \
+	((nilfs)->ns_mount_opt |= NILFS_MOUNT_##opt)
+#define nilfs_test_opt(nilfs, opt) ((nilfs)->ns_mount_opt & NILFS_MOUNT_##opt)
+#define nilfs_write_opt(nilfs, mask, opt)				\
+	((nilfs)->ns_mount_opt =					\
+		(((nilfs)->ns_mount_opt & ~NILFS_MOUNT_##mask) |	\
+		 NILFS_MOUNT_##opt))					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * struct nilfs_root - nilfs root object
@@ -231,20 +317,40 @@ THE_NILFS_FNS(SB_DIRTY, sb_dirty)
  * @count: refcount of this structure
  * @nilfs: nilfs object
  * @ifile: inode file
+<<<<<<< HEAD
  * @root: root inode
  * @inodes_count: number of inodes
  * @blocks_count: number of blocks (Reserved)
+=======
+ * @inodes_count: number of inodes
+ * @blocks_count: number of blocks
+ * @snapshot_kobj: /sys/fs/<nilfs>/<device>/mounted_snapshots/<snapshot>
+ * @snapshot_kobj_unregister: completion state for kernel object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct nilfs_root {
 	__u64 cno;
 	struct rb_node rb_node;
 
+<<<<<<< HEAD
 	atomic_t count;
 	struct the_nilfs *nilfs;
 	struct inode *ifile;
 
 	atomic_t inodes_count;
 	atomic_t blocks_count;
+=======
+	refcount_t count;
+	struct the_nilfs *nilfs;
+	struct inode *ifile;
+
+	atomic64_t inodes_count;
+	atomic64_t blocks_count;
+
+	/* /sys/fs/<nilfs>/<device>/mounted_snapshots/<snapshot> */
+	struct kobject snapshot_kobj;
+	struct completion snapshot_kobj_unregister;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Special checkpoint number */
@@ -255,18 +361,33 @@ struct nilfs_root {
 
 static inline int nilfs_sb_need_update(struct the_nilfs *nilfs)
 {
+<<<<<<< HEAD
 	u64 t = get_seconds();
 	return t < nilfs->ns_sbwtime || t > nilfs->ns_sbwtime + NILFS_SB_FREQ;
+=======
+	u64 t = ktime_get_real_seconds();
+
+	return t < nilfs->ns_sbwtime ||
+		t > nilfs->ns_sbwtime + nilfs->ns_sb_update_freq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int nilfs_sb_will_flip(struct the_nilfs *nilfs)
 {
 	int flip_bits = nilfs->ns_sbwcount & 0x0FL;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (flip_bits != 0x08 && flip_bits != 0x0F);
 }
 
 void nilfs_set_last_segment(struct the_nilfs *, sector_t, u64, __u64);
+<<<<<<< HEAD
 struct the_nilfs *alloc_nilfs(struct block_device *bdev);
+=======
+struct the_nilfs *alloc_nilfs(struct super_block *sb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void destroy_nilfs(struct the_nilfs *nilfs);
 int init_nilfs(struct the_nilfs *nilfs, struct super_block *sb, char *data);
 int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb);
@@ -285,12 +406,20 @@ void nilfs_swap_super_block(struct the_nilfs *);
 
 static inline void nilfs_get_root(struct nilfs_root *root)
 {
+<<<<<<< HEAD
 	atomic_inc(&root->count);
+=======
+	refcount_inc(&root->count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int nilfs_valid_fs(struct the_nilfs *nilfs)
 {
+<<<<<<< HEAD
 	unsigned valid_fs;
+=======
+	unsigned int valid_fs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	down_read(&nilfs->ns_sem);
 	valid_fs = (nilfs->ns_mount_state & NILFS_VALID_FS);
@@ -355,4 +484,27 @@ static inline int nilfs_segment_is_active(struct the_nilfs *nilfs, __u64 n)
 	return n == nilfs->ns_segnum || n == nilfs->ns_nextnum;
 }
 
+<<<<<<< HEAD
+=======
+static inline int nilfs_flush_device(struct the_nilfs *nilfs)
+{
+	int err;
+
+	if (!nilfs_test_opt(nilfs, BARRIER) || nilfs->ns_flushed_device)
+		return 0;
+
+	nilfs->ns_flushed_device = 1;
+	/*
+	 * the store to ns_flushed_device must not be reordered after
+	 * blkdev_issue_flush().
+	 */
+	smp_wmb();
+
+	err = blkdev_issue_flush(nilfs->ns_bdev);
+	if (err != -EIO)
+		err = 0;
+	return err;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _THE_NILFS_H */

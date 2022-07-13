@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2001-2005 Edouard TISSERANT   <edouard.tisserant@wanadoo.fr>
  *  Copyright (c) 2004-2005 Stephane VOLTZ      <svoltz@numericable.fr>
@@ -8,6 +12,7 @@
  *      v3.2 - Added sysfs support
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -42,6 +47,16 @@
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE(DRIVER_LICENSE);
+=======
+#include <linux/kernel.h>
+#include <linux/slab.h>
+#include <linux/module.h>
+#include <linux/usb/input.h>
+
+MODULE_AUTHOR("Edouard TISSERANT <edouard.tisserant@wanadoo.fr>");
+MODULE_DESCRIPTION("USB Acecad Flair tablet driver");
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define USB_VENDOR_ID_ACECAD	0x0460
 #define USB_DEVICE_ID_FLAIR	0x0004
@@ -50,7 +65,11 @@ MODULE_LICENSE(DRIVER_LICENSE);
 struct usb_acecad {
 	char name[128];
 	char phys[64];
+<<<<<<< HEAD
 	struct usb_device *usbdev;
+=======
+	struct usb_interface *intf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct input_dev *input;
 	struct urb *irq;
 
@@ -63,6 +82,11 @@ static void usb_acecad_irq(struct urb *urb)
 	struct usb_acecad *acecad = urb->context;
 	unsigned char *data = acecad->data;
 	struct input_dev *dev = acecad->input;
+<<<<<<< HEAD
+=======
+	struct usb_interface *intf = acecad->intf;
+	struct usb_device *udev = interface_to_usbdev(intf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int prox, status;
 
 	switch (urb->status) {
@@ -73,10 +97,19 @@ static void usb_acecad_irq(struct urb *urb)
 	case -ENOENT:
 	case -ESHUTDOWN:
 		/* this urb is terminated, clean up */
+<<<<<<< HEAD
 		dbg("%s - urb shutting down with status: %d", __func__, urb->status);
 		return;
 	default:
 		dbg("%s - nonzero urb status received: %d", __func__, urb->status);
+=======
+		dev_dbg(&intf->dev, "%s - urb shutting down with status: %d\n",
+			__func__, urb->status);
+		return;
+	default:
+		dev_dbg(&intf->dev, "%s - nonzero urb status received: %d\n",
+			__func__, urb->status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto resubmit;
 	}
 
@@ -105,15 +138,26 @@ static void usb_acecad_irq(struct urb *urb)
 resubmit:
 	status = usb_submit_urb(urb, GFP_ATOMIC);
 	if (status)
+<<<<<<< HEAD
 		err("can't resubmit intr, %s-%s/input0, status %d",
 			acecad->usbdev->bus->bus_name, acecad->usbdev->devpath, status);
+=======
+		dev_err(&intf->dev,
+			"can't resubmit intr, %s-%s/input0, status %d\n",
+			udev->bus->bus_name,
+			udev->devpath, status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int usb_acecad_open(struct input_dev *dev)
 {
 	struct usb_acecad *acecad = input_get_drvdata(dev);
 
+<<<<<<< HEAD
 	acecad->irq->dev = acecad->usbdev;
+=======
+	acecad->irq->dev = interface_to_usbdev(acecad->intf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (usb_submit_urb(acecad->irq, GFP_KERNEL))
 		return -EIO;
 
@@ -146,7 +190,11 @@ static int usb_acecad_probe(struct usb_interface *intf, const struct usb_device_
 		return -ENODEV;
 
 	pipe = usb_rcvintpipe(dev, endpoint->bEndpointAddress);
+<<<<<<< HEAD
 	maxp = usb_maxpacket(dev, pipe, usb_pipeout(pipe));
+=======
+	maxp = usb_maxpacket(dev, pipe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	acecad = kzalloc(sizeof(struct usb_acecad), GFP_KERNEL);
 	input_dev = input_allocate_device();
@@ -167,11 +215,19 @@ static int usb_acecad_probe(struct usb_interface *intf, const struct usb_device_
 		goto fail2;
 	}
 
+<<<<<<< HEAD
 	acecad->usbdev = dev;
 	acecad->input = input_dev;
 
 	if (dev->manufacturer)
 		strlcpy(acecad->name, dev->manufacturer, sizeof(acecad->name));
+=======
+	acecad->intf = intf;
+	acecad->input = input_dev;
+
+	if (dev->manufacturer)
+		strscpy(acecad->name, dev->manufacturer, sizeof(acecad->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->product) {
 		if (dev->manufacturer)
@@ -245,16 +301,28 @@ static int usb_acecad_probe(struct usb_interface *intf, const struct usb_device_
 static void usb_acecad_disconnect(struct usb_interface *intf)
 {
 	struct usb_acecad *acecad = usb_get_intfdata(intf);
+<<<<<<< HEAD
+=======
+	struct usb_device *udev = interface_to_usbdev(intf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_set_intfdata(intf, NULL);
 
 	input_unregister_device(acecad->input);
 	usb_free_urb(acecad->irq);
+<<<<<<< HEAD
 	usb_free_coherent(acecad->usbdev, 8, acecad->data, acecad->data_dma);
 	kfree(acecad);
 }
 
 static struct usb_device_id usb_acecad_id_table [] = {
+=======
+	usb_free_coherent(udev, 8, acecad->data, acecad->data_dma);
+	kfree(acecad);
+}
+
+static const struct usb_device_id usb_acecad_id_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_DEVICE(USB_VENDOR_ID_ACECAD, USB_DEVICE_ID_FLAIR), .driver_info = 0 },
 	{ USB_DEVICE(USB_VENDOR_ID_ACECAD, USB_DEVICE_ID_302),	 .driver_info = 1 },
 	{ }

@@ -11,12 +11,45 @@
 
 #include <linux/linkage.h>
 #include <linux/smp.h>
+<<<<<<< HEAD
 #include <linux/irqdomain.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mipsmtregs.h>
 
 #include <irq.h>
 
+<<<<<<< HEAD
+=======
+#define IRQ_STACK_SIZE			THREAD_SIZE
+#define IRQ_STACK_START			(IRQ_STACK_SIZE - 16)
+
+extern void *irq_stack[NR_CPUS];
+
+/*
+ * The highest address on the IRQ stack contains a dummy frame put down in
+ * genex.S (handle_int & except_vec_vi_handler) which is structured as follows:
+ *
+ *   top ------------
+ *       | task sp  | <- irq_stack[cpu] + IRQ_STACK_START
+ *       ------------
+ *       |          | <- First frame of IRQ context
+ *       ------------
+ *
+ * task sp holds a copy of the task stack pointer where the struct pt_regs
+ * from exception entry can be found.
+ */
+
+static inline bool on_irq_stack(int cpu, unsigned long sp)
+{
+	unsigned long low = (unsigned long)irq_stack[cpu];
+	unsigned long high = low + IRQ_STACK_SIZE;
+
+	return (low <= sp && sp <= high);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_I8259
 static inline int irq_canonicalize(int irq)
 {
@@ -26,6 +59,7 @@ static inline int irq_canonicalize(int irq)
 #define irq_canonicalize(irq) (irq)	/* Sane hardware, sane code ... */
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_MIPS_MT_SMTC
 
 struct irqaction;
@@ -123,10 +157,19 @@ extern void do_IRQ(unsigned int irq);
 extern void do_IRQ_no_affinity(unsigned int irq);
 
 #endif /* CONFIG_MIPS_MT_SMTC_IRQAFF */
+=======
+asmlinkage void plat_irq_dispatch(void);
+
+extern void do_IRQ(unsigned int irq);
+
+struct irq_domain;
+extern void do_domain_IRQ(struct irq_domain *domain, unsigned int irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern void arch_init_irq(void);
 extern void spurious_interrupt(void);
 
+<<<<<<< HEAD
 extern int allocate_irqno(void);
 extern void alloc_legacy_irqno(void);
 extern void free_irqno(unsigned int irq);
@@ -136,9 +179,27 @@ extern void free_irqno(unsigned int irq);
  * IE7.  Since R2 their number has to be read from the c0_intctl register.
  */
 #define CP0_LEGACY_COMPARE_IRQ 7
+=======
+/*
+ * Before R2 the timer and performance counter interrupts were both fixed to
+ * IE7.	 Since R2 their number has to be read from the c0_intctl register.
+ */
+#define CP0_LEGACY_COMPARE_IRQ 7
+#define CP0_LEGACY_PERFCNT_IRQ 7
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int cp0_compare_irq;
 extern int cp0_compare_irq_shift;
 extern int cp0_perfcount_irq;
+<<<<<<< HEAD
+=======
+extern int cp0_fdc_irq;
+
+extern int get_c0_fdc_int(void);
+
+void arch_trigger_cpumask_backtrace(const struct cpumask *mask,
+				    int exclude_cpu);
+#define arch_trigger_cpumask_backtrace arch_trigger_cpumask_backtrace
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_IRQ_H */

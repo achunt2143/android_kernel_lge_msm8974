@@ -237,7 +237,11 @@
 			};
 		};
 
+<<<<<<< HEAD
 		PCIE0: pciex@0a0000000 {
+=======
+		PCIE0: pcie@a0000000 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			device_type = "pci";
 			#interrupt-cells = <1>;
 			#size-cells = <2>;

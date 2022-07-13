@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -20,31 +25,46 @@
  * File: power.c
  *
  * Purpose: Handles 802.11 power management  functions
+=======
+ * Purpose: Handles 802.11 power management functions
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Author: Lyndon Chen
  *
  * Date: July 17, 2002
  *
  * Functions:
+<<<<<<< HEAD
  *      PSvEnablePowerSaving - Enable Power Saving Mode
  *      PSvDiasblePowerSaving - Disable Power Saving Mode
  *      PSbConsiderPowerDown - Decide if we can Power Down
  *      PSvSendPSPOLL - Send PS-POLL packet
  *      PSbSendNullPacket - Send Null packet
  *      PSbIsNextTBTTWakeUp - Decide if we need to wake up at next Beacon
+=======
+ *      vnt_enable_power_saving - Enable Power Saving Mode
+ *      PSvDiasblePowerSaving - Disable Power Saving Mode
+ *      vnt_next_tbtt_wakeup - Decide if we need to wake up at next Beacon
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Revision History:
  *
  */
 
+<<<<<<< HEAD
 #include "ttype.h"
 #include "mac.h"
 #include "device.h"
 #include "wmgr.h"
+=======
+#include "mac.h"
+#include "device.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "power.h"
 #include "wcmd.h"
 #include "rxtx.h"
 #include "card.h"
+<<<<<<< HEAD
 #include "control.h"
 #include "rndis.h"
 
@@ -59,6 +79,9 @@ static int msglevel = MSG_LEVEL_INFO;
 /*---------------------  Export Variables  --------------------------*/
 
 /*---------------------  Export Functions  --------------------------*/
+=======
+#include "usbpipe.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *
@@ -70,6 +93,7 @@ static int msglevel = MSG_LEVEL_INFO;
  *
  */
 
+<<<<<<< HEAD
 void PSvEnablePowerSaving(void *hDeviceContext,
 			  WORD wListenInterval)
 {
@@ -306,6 +330,56 @@ BOOL PSbSendNullPacket(void *hDeviceContext)
 		return FALSE;
 	}
 	return TRUE;
+=======
+void vnt_enable_power_saving(struct vnt_private *priv, u16 listen_interval)
+{
+	u16 aid = priv->current_aid | BIT(14) | BIT(15);
+
+	/* set period of power up before TBTT */
+	vnt_mac_write_word(priv, MAC_REG_PWBT, C_PWBT);
+
+	if (priv->op_mode != NL80211_IFTYPE_ADHOC)
+		/* set AID */
+		vnt_mac_write_word(priv, MAC_REG_AIDATIM, aid);
+
+	/* Warren:06-18-2004,the sequence must follow
+	 * PSEN->AUTOSLEEP->GO2DOZE
+	 */
+	/* enable power saving hw function */
+	vnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_PSEN);
+
+	/* Set AutoSleep */
+	vnt_mac_reg_bits_on(priv, MAC_REG_PSCFG, PSCFG_AUTOSLEEP);
+
+	/* Warren:MUST turn on this once before turn on AUTOSLEEP ,or the
+	 * AUTOSLEEP doesn't work
+	 */
+	vnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_GO2DOZE);
+
+	/* always listen beacon */
+	vnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_ALBCN);
+
+	dev_dbg(&priv->usb->dev,  "PS:Power Saving Mode Enable...\n");
+}
+
+int vnt_disable_power_saving(struct vnt_private *priv)
+{
+	int ret;
+
+	/* disable power saving hw function */
+	ret = vnt_control_out(priv, MESSAGE_TYPE_DISABLE_PS, 0,
+			      0, 0, NULL);
+	if (ret)
+		return ret;
+
+	/* clear AutoSleep */
+	vnt_mac_reg_bits_off(priv, MAC_REG_PSCFG, PSCFG_AUTOSLEEP);
+
+	/* set always listen beacon */
+	vnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_ALBCN);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -318,6 +392,7 @@ BOOL PSbSendNullPacket(void *hDeviceContext)
  *
  */
 
+<<<<<<< HEAD
 BOOL PSbIsNextTBTTWakeUp(void *hDeviceContext)
 {
 	PSDevice pDevice = (PSDevice)hDeviceContext;
@@ -343,3 +418,19 @@ BOOL PSbIsNextTBTTWakeUp(void *hDeviceContext)
 	return bWakeUp;
 }
 
+=======
+int vnt_next_tbtt_wakeup(struct vnt_private *priv)
+{
+	struct ieee80211_hw *hw = priv->hw;
+	struct ieee80211_conf *conf = &hw->conf;
+	int wake_up = false;
+
+	if (conf->listen_interval > 1) {
+		/* Turn on wake up to listen next beacon */
+		vnt_mac_reg_bits_on(priv, MAC_REG_PSCTL, PSCTL_LNBCN);
+		wake_up = true;
+	}
+
+	return wake_up;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

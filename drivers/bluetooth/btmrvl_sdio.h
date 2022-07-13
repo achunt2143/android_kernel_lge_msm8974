@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * Marvell BT-over-SDIO driver: SDIO interface related definitions
  *
  * Copyright (C) 2009, Marvell International Ltd.
+<<<<<<< HEAD
  *
  * This software file (the "File") is distributed by Marvell International
  * Ltd. under the terms of the GNU General Public License Version 2, June 1991
@@ -17,6 +22,8 @@
  * ARE EXPRESSLY DISCLAIMED.  The License provides additional details about
  * this warranty disclaimer.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  **/
 
 #define SDIO_HEADER_LEN			4
@@ -62,6 +69,13 @@
 
 #define FIRMWARE_READY				0xfedc
 
+<<<<<<< HEAD
+=======
+struct btmrvl_plt_wake_cfg {
+	int irq_bt;
+	bool wake_by_bt;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct btmrvl_sdio_card_reg {
 	u8 cfg;
@@ -78,6 +92,15 @@ struct btmrvl_sdio_card_reg {
 	u8 io_port_0;
 	u8 io_port_1;
 	u8 io_port_2;
+<<<<<<< HEAD
+=======
+	bool int_read_to_clear;
+	u8 host_int_rsr;
+	u8 card_misc_cfg;
+	u8 fw_dump_ctrl;
+	u8 fw_dump_start;
+	u8 fw_dump_end;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct btmrvl_sdio_card {
@@ -86,16 +109,32 @@ struct btmrvl_sdio_card {
 	const char *helper;
 	const char *firmware;
 	const struct btmrvl_sdio_card_reg *reg;
+<<<<<<< HEAD
 	u16 sd_blksz_fw_dl;
 	u8 rx_unit;
 	struct btmrvl_private *priv;
+=======
+	bool support_pscan_win_report;
+	bool supports_fw_dump;
+	u16 sd_blksz_fw_dl;
+	u8 rx_unit;
+	struct btmrvl_private *priv;
+	struct device_node *plt_of_node;
+	struct btmrvl_plt_wake_cfg *plt_wake_cfg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct btmrvl_sdio_device {
 	const char *helper;
 	const char *firmware;
 	const struct btmrvl_sdio_card_reg *reg;
+<<<<<<< HEAD
 	u16 sd_blksz_fw_dl;
+=======
+	const bool support_pscan_win_report;
+	u16 sd_blksz_fw_dl;
+	bool supports_fw_dump;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 

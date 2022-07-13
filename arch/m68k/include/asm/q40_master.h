@@ -1,13 +1,24 @@
+<<<<<<< HEAD
 /*
  * Q40 master Chip Control
  * RTC stuff merged for compactnes..
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Q40 master Chip Control
+ * RTC stuff merged for compactness.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #ifndef _Q40_MASTER_H
 #define _Q40_MASTER_H
 
 #include <asm/raw_io.h>
+<<<<<<< HEAD
 
+=======
+#include <asm/kmap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define q40_master_addr 0xff000000
 
@@ -60,7 +71,11 @@
 #define Q40_RTC_WRITE  128
 
 /* define some Q40 specific ints */
+<<<<<<< HEAD
 #include "q40ints.h"
+=======
+#include <asm/q40ints.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* misc defs */
 #define DAC_LEFT  ((unsigned char *)0xff008000)

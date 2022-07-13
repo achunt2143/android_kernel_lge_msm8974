@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2007-2009 ST-Ericsson AB
  * License terms: GNU General Public License (GPL) version 2
@@ -7,6 +8,14 @@
  * ABX500 core access functions.
  * The abx500 interface is used for the Analog Baseband chip
  * ab3100, ab5500, and ab8500.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) 2007-2009 ST-Ericsson AB
+ *
+ * ABX500 core access functions.
+ * The abx500 interface is used for the Analog Baseband chips.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Author: Mattias Wallin <mattias.wallin@stericsson.com>
  * Author: Mattias Nilsson <mattias.i.nilsson@stericsson.com>
@@ -21,6 +30,7 @@ struct device;
 #ifndef MFD_ABX500_H
 #define MFD_ABX500_H
 
+<<<<<<< HEAD
 #define AB3100_P1A	0xc0
 #define AB3100_P1B	0xc1
 #define AB3100_P1C	0xc2
@@ -136,6 +146,8 @@ int ab3100_event_register(struct ab3100 *ab3100,
 int ab3100_event_unregister(struct ab3100 *ab3100,
 			    struct notifier_block *nb);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * struct abx500_init_setting
  * Initial value of the registers for driver to use during setup.
@@ -146,6 +158,7 @@ struct abx500_init_settings {
 	u8 setting;
 };
 
+<<<<<<< HEAD
 /* Battery driver related data */
 /*
  * ADC for the battery thermistor.
@@ -419,6 +432,8 @@ struct abx500_bm_plat_data {
 	struct abx500_chargalg_platform_data *chargalg;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int abx500_set_register_interruptible(struct device *dev, u8 bank, u8 reg,
 	u8 value);
 int abx500_get_register_interruptible(struct device *dev, u8 bank, u8 reg,
@@ -454,6 +469,10 @@ struct abx500_ops {
 	int (*mask_and_set_register) (struct device *, u8, u8, u8, u8);
 	int (*event_registers_startup_state_get) (struct device *, u8 *);
 	int (*startup_irq_enabled) (struct device *, unsigned int);
+<<<<<<< HEAD
+=======
+	void (*dump_all_banks) (struct device *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int abx500_register_ops(struct device *core_dev, struct abx500_ops *ops);

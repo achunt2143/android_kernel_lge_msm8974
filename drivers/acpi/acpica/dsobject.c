@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: dsobject - Dispatcher object management routines
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acparser.h"
@@ -52,6 +63,7 @@
 #define _COMPONENT          ACPI_DISPATCHER
 ACPI_MODULE_NAME("dsobject")
 
+<<<<<<< HEAD
 /* Local prototypes */
 static acpi_status
 acpi_ds_build_internal_object(struct acpi_walk_state *walk_state,
@@ -59,12 +71,18 @@ acpi_ds_build_internal_object(struct acpi_walk_state *walk_state,
 			      union acpi_operand_object **obj_desc_ptr);
 
 #ifndef ACPI_NO_METHOD_EXECUTION
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ds_build_internal_object
  *
  * PARAMETERS:  walk_state      - Current walk state
+<<<<<<< HEAD
  *              Op              - Parser object to be translated
+=======
+ *              op              - Parser object to be translated
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              obj_desc_ptr    - Where the ACPI internal object is returned
  *
  * RETURN:      Status
@@ -73,15 +91,22 @@ acpi_ds_build_internal_object(struct acpi_walk_state *walk_state,
  *              Simple objects are any objects other than a package object!
  *
  ******************************************************************************/
+<<<<<<< HEAD
 
 static acpi_status
+=======
+acpi_status
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_ds_build_internal_object(struct acpi_walk_state *walk_state,
 			      union acpi_parse_object *op,
 			      union acpi_operand_object **obj_desc_ptr)
 {
 	union acpi_operand_object *obj_desc;
 	acpi_status status;
+<<<<<<< HEAD
 	acpi_object_type type;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE(ds_build_internal_object);
 
@@ -89,6 +114,7 @@ acpi_ds_build_internal_object(struct acpi_walk_state *walk_state,
 	if (op->common.aml_opcode == AML_INT_NAMEPATH_OP) {
 		/*
 		 * This is a named object reference. If this name was
+<<<<<<< HEAD
 		 * previously looked up in the namespace, it was stored in this op.
 		 * Otherwise, go ahead and look it up now
 		 */
@@ -219,10 +245,54 @@ acpi_ds_build_internal_object(struct acpi_walk_state *walk_state,
 				 * object, we are done.
 				 */
 				goto exit;
+=======
+		 * previously looked up in the namespace, it was stored in
+		 * this op. Otherwise, go ahead and look it up now
+		 */
+		if (!op->common.node) {
+
+			/* Check if we are resolving a named reference within a package */
+
+			if ((op->common.parent->common.aml_opcode ==
+			     AML_PACKAGE_OP)
+			    || (op->common.parent->common.aml_opcode ==
+				AML_VARIABLE_PACKAGE_OP)) {
+				/*
+				 * We won't resolve package elements here, we will do this
+				 * after all ACPI tables are loaded into the namespace. This
+				 * behavior supports both forward references to named objects
+				 * and external references to objects in other tables.
+				 */
+				goto create_new_object;
+			} else {
+				status = acpi_ns_lookup(walk_state->scope_info,
+							op->common.value.string,
+							ACPI_TYPE_ANY,
+							ACPI_IMODE_EXECUTE,
+							ACPI_NS_SEARCH_PARENT |
+							ACPI_NS_DONT_OPEN_SCOPE,
+							NULL,
+							ACPI_CAST_INDIRECT_PTR
+							(struct
+							 acpi_namespace_node,
+							 &(op->common.node)));
+				if (ACPI_FAILURE(status)) {
+					ACPI_ERROR_NAMESPACE(walk_state->
+							     scope_info,
+							     op->common.value.
+							     string, status);
+					return_ACPI_STATUS(status);
+				}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
 
+<<<<<<< HEAD
+=======
+create_new_object:
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Create and init a new internal ACPI object */
 
 	obj_desc = acpi_ut_create_internal_object((acpi_ps_get_opcode_info
@@ -240,7 +310,31 @@ acpi_ds_build_internal_object(struct acpi_walk_state *walk_state,
 		return_ACPI_STATUS(status);
 	}
 
+<<<<<<< HEAD
       exit:
+=======
+	/*
+	 * Handling for unresolved package reference elements.
+	 * These are elements that are namepaths.
+	 */
+	if ((op->common.parent->common.aml_opcode == AML_PACKAGE_OP) ||
+	    (op->common.parent->common.aml_opcode == AML_VARIABLE_PACKAGE_OP)) {
+		obj_desc->reference.resolved = TRUE;
+
+		if ((op->common.aml_opcode == AML_INT_NAMEPATH_OP) &&
+		    !obj_desc->reference.node) {
+			/*
+			 * Name was unresolved above.
+			 * Get the prefix node for later lookup
+			 */
+			obj_desc->reference.node =
+			    walk_state->scope_info->scope.node;
+			obj_desc->reference.aml = op->common.aml;
+			obj_desc->reference.resolved = FALSE;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*obj_desc_ptr = obj_desc;
 	return_ACPI_STATUS(status);
 }
@@ -250,7 +344,11 @@ acpi_ds_build_internal_object(struct acpi_walk_state *walk_state,
  * FUNCTION:    acpi_ds_build_internal_buffer_obj
  *
  * PARAMETERS:  walk_state      - Current walk state
+<<<<<<< HEAD
  *              Op              - Parser object to be translated
+=======
+ *              op              - Parser object to be translated
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              buffer_length   - Length of the buffer
  *              obj_desc_ptr    - Where the ACPI internal object is returned
  *
@@ -293,7 +391,11 @@ acpi_ds_build_internal_buffer_obj(struct acpi_walk_state *walk_state,
 
 	/*
 	 * Second arg is the buffer data (optional) byte_list can be either
+<<<<<<< HEAD
 	 * individual bytes or a string initializer.  In either case, a
+=======
+	 * individual bytes or a string initializer. In either case, a
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * byte_list appears in the AML.
 	 */
 	arg = op->common.value.arg;	/* skip first arg */
@@ -339,8 +441,13 @@ acpi_ds_build_internal_buffer_obj(struct acpi_walk_state *walk_state,
 		/* Initialize buffer from the byte_list (if present) */
 
 		if (byte_list) {
+<<<<<<< HEAD
 			ACPI_MEMCPY(obj_desc->buffer.pointer,
 				    byte_list->named.data, byte_list_length);
+=======
+			memcpy(obj_desc->buffer.pointer, byte_list->named.data,
+			       byte_list_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -351,6 +458,7 @@ acpi_ds_build_internal_buffer_obj(struct acpi_walk_state *walk_state,
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ds_build_internal_package_obj
  *
  * PARAMETERS:  walk_state      - Current walk state
@@ -549,6 +657,13 @@ acpi_ds_build_internal_package_obj(struct acpi_walk_state *walk_state,
  * PARAMETERS:  walk_state      - Current walk state
  *              Node            - NS Node to be initialized
  *              Op              - Parser object to be translated
+=======
+ * FUNCTION:    acpi_ds_create_node
+ *
+ * PARAMETERS:  walk_state      - Current walk state
+ *              node            - NS Node to be initialized
+ *              op              - Parser object to be translated
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -568,7 +683,11 @@ acpi_ds_create_node(struct acpi_walk_state *walk_state,
 
 	/*
 	 * Because of the execution pass through the non-control-method
+<<<<<<< HEAD
 	 * parts of the table, we can arrive here twice.  Only init
+=======
+	 * parts of the table, we can arrive here twice. Only init
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the named object node the first time through
 	 */
 	if (acpi_ns_get_attached_object(node)) {
@@ -584,8 +703,14 @@ acpi_ds_create_node(struct acpi_walk_state *walk_state,
 
 	/* Build an internal object for the argument(s) */
 
+<<<<<<< HEAD
 	status = acpi_ds_build_internal_object(walk_state, op->common.value.arg,
 					       &obj_desc);
+=======
+	status =
+	    acpi_ds_build_internal_object(walk_state, op->common.value.arg,
+					  &obj_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
@@ -604,21 +729,33 @@ acpi_ds_create_node(struct acpi_walk_state *walk_state,
 	return_ACPI_STATUS(status);
 }
 
+<<<<<<< HEAD
 #endif				/* ACPI_NO_METHOD_EXECUTION */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ds_init_object_from_op
  *
  * PARAMETERS:  walk_state      - Current walk state
+<<<<<<< HEAD
  *              Op              - Parser op used to init the internal object
  *              Opcode          - AML opcode associated with the object
+=======
+ *              op              - Parser op used to init the internal object
+ *              opcode          - AML opcode associated with the object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              ret_obj_desc    - Namespace object to be initialized
  *
  * RETURN:      Status
  *
  * DESCRIPTION: Initialize a namespace object from a parser Op and its
+<<<<<<< HEAD
  *              associated arguments.  The namespace object is a more compact
+=======
+ *              associated arguments. The namespace object is a more compact
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              representation of the Op and its arguments.
  *
  ******************************************************************************/
@@ -648,7 +785,10 @@ acpi_ds_init_object_from_op(struct acpi_walk_state *walk_state,
 
 	switch (obj_desc->common.type) {
 	case ACPI_TYPE_BUFFER:
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Defer evaluation of Buffer term_arg operand
 		 */
@@ -660,13 +800,30 @@ acpi_ds_init_object_from_op(struct acpi_walk_state *walk_state,
 		break;
 
 	case ACPI_TYPE_PACKAGE:
+<<<<<<< HEAD
 
 		/*
 		 * Defer evaluation of Package term_arg operand
+=======
+		/*
+		 * Defer evaluation of Package term_arg operand and all
+		 * package elements. (01/2017): We defer the element
+		 * resolution to allow forward references from the package
+		 * in order to provide compatibility with other ACPI
+		 * implementations.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		obj_desc->package.node =
 		    ACPI_CAST_PTR(struct acpi_namespace_node,
 				  walk_state->operands[0]);
+<<<<<<< HEAD
+=======
+
+		if (!op->named.data) {
+			return_ACPI_STATUS(AE_OK);
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		obj_desc->package.aml_start = op->named.data;
 		obj_desc->package.aml_length = op->named.length;
 		break;
@@ -702,9 +859,13 @@ acpi_ds_init_object_from_op(struct acpi_walk_state *walk_state,
 
 				/* Truncate value if we are executing from a 32-bit ACPI table */
 
+<<<<<<< HEAD
 #ifndef ACPI_NO_METHOD_EXECUTION
 				acpi_ex_truncate_for32bit_table(obj_desc);
 #endif
+=======
+				(void)acpi_ex_truncate_for32bit_table(obj_desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 
 			case AML_REVISION_OP:
@@ -725,12 +886,30 @@ acpi_ds_init_object_from_op(struct acpi_walk_state *walk_state,
 		case AML_TYPE_LITERAL:
 
 			obj_desc->integer.value = op->common.value.integer;
+<<<<<<< HEAD
 #ifndef ACPI_NO_METHOD_EXECUTION
 			acpi_ex_truncate_for32bit_table(obj_desc);
 #endif
 			break;
 
 		default:
+=======
+
+			if (acpi_ex_truncate_for32bit_table(obj_desc)) {
+
+				/* Warn if we found a 64-bit constant in a 32-bit table */
+
+				ACPI_WARNING((AE_INFO,
+					      "Truncated 64-bit constant found in 32-bit table: %8.8X%8.8X => %8.8X",
+					      ACPI_FORMAT_UINT64(op->common.
+								 value.integer),
+					      (u32)obj_desc->integer.value));
+			}
+			break;
+
+		default:
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ACPI_ERROR((AE_INFO, "Unknown Integer type 0x%X",
 				    op_info->type));
 			status = AE_AML_OPERAND_TYPE;
@@ -741,8 +920,12 @@ acpi_ds_init_object_from_op(struct acpi_walk_state *walk_state,
 	case ACPI_TYPE_STRING:
 
 		obj_desc->string.pointer = op->common.value.string;
+<<<<<<< HEAD
 		obj_desc->string.length =
 		    (u32) ACPI_STRLEN(op->common.value.string);
+=======
+		obj_desc->string.length = (u32)strlen(op->common.value.string);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * The string is contained in the ACPI table, don't ever try
@@ -759,6 +942,7 @@ acpi_ds_init_object_from_op(struct acpi_walk_state *walk_state,
 		switch (op_info->type) {
 		case AML_TYPE_LOCAL_VARIABLE:
 
+<<<<<<< HEAD
 			/* Local ID (0-7) is (AML opcode - base AML_LOCAL_OP) */
 
 			obj_desc->reference.value =
@@ -766,6 +950,14 @@ acpi_ds_init_object_from_op(struct acpi_walk_state *walk_state,
 			obj_desc->reference.class = ACPI_REFCLASS_LOCAL;
 
 #ifndef ACPI_NO_METHOD_EXECUTION
+=======
+			/* Local ID (0-7) is (AML opcode - base AML_FIRST_LOCAL_OP) */
+
+			obj_desc->reference.value =
+			    ((u32)opcode) - AML_FIRST_LOCAL_OP;
+			obj_desc->reference.class = ACPI_REFCLASS_LOCAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status =
 			    acpi_ds_method_data_get_node(ACPI_REFCLASS_LOCAL,
 							 obj_desc->reference.
@@ -775,17 +967,29 @@ acpi_ds_init_object_from_op(struct acpi_walk_state *walk_state,
 							  acpi_namespace_node,
 							  &obj_desc->reference.
 							  object));
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case AML_TYPE_METHOD_ARGUMENT:
 
+<<<<<<< HEAD
 			/* Arg ID (0-6) is (AML opcode - base AML_ARG_OP) */
 
 			obj_desc->reference.value = ((u32)opcode) - AML_ARG_OP;
 			obj_desc->reference.class = ACPI_REFCLASS_ARG;
 
 #ifndef ACPI_NO_METHOD_EXECUTION
+=======
+			/* Arg ID (0-6) is (AML opcode - base AML_FIRST_ARG_OP) */
+
+			obj_desc->reference.value =
+			    ((u32)opcode) - AML_FIRST_ARG_OP;
+			obj_desc->reference.class = ACPI_REFCLASS_ARG;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			status = acpi_ds_method_data_get_node(ACPI_REFCLASS_ARG,
 							      obj_desc->
 							      reference.value,
@@ -796,7 +1000,10 @@ acpi_ds_init_object_from_op(struct acpi_walk_state *walk_state,
 							       &obj_desc->
 							       reference.
 							       object));
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		default:	/* Object name or Debug object */
@@ -807,9 +1014,17 @@ acpi_ds_init_object_from_op(struct acpi_walk_state *walk_state,
 				/* Node was saved in Op */
 
 				obj_desc->reference.node = op->common.node;
+<<<<<<< HEAD
 				obj_desc->reference.object =
 				    op->common.node->object;
 				obj_desc->reference.class = ACPI_REFCLASS_NAME;
+=======
+				obj_desc->reference.class = ACPI_REFCLASS_NAME;
+				if (op->common.node) {
+					obj_desc->reference.object =
+					    op->common.node->object;
+				}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 
 			case AML_DEBUG_OP:

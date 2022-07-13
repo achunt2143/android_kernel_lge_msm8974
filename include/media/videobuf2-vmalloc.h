@@ -13,7 +13,11 @@
 #ifndef _MEDIA_VIDEOBUF2_VMALLOC_H
 #define _MEDIA_VIDEOBUF2_VMALLOC_H
 
+<<<<<<< HEAD
 #include <media/videobuf2-core.h>
+=======
+#include <media/videobuf2-v4l2.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern const struct vb2_mem_ops vb2_vmalloc_memops;
 

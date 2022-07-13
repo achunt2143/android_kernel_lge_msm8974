@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* bbc_envctrl.c: UltraSPARC-III environment control driver.
  *
  * Copyright (C) 2001, 2008 David S. Miller (davem@davemloft.net)
@@ -8,8 +12,13 @@
 #include <linux/kmod.h>
 #include <linux/reboot.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
 #include <linux/of_device.h>
+=======
+#include <linux/platform_device.h>
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/oplib.h>
 
 #include "bbc_i2c.h"
@@ -160,8 +169,12 @@ static void do_envctrl_shutdown(struct bbc_cpu_temperature *tp)
 	printk(KERN_CRIT "kenvctrld: Shutting down the system now.\n");
 
 	shutting_down = 1;
+<<<<<<< HEAD
 	if (orderly_poweroff(true) < 0)
 		printk(KERN_CRIT "envctrl: shutdown execution failed\n");
+=======
+	orderly_poweroff(true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define WARN_INTERVAL	(30 * HZ)
@@ -571,9 +584,15 @@ int bbc_envctrl_init(struct bbc_i2c_bus *bp)
 	int devidx = 0;
 
 	while ((op = bbc_i2c_getdev(bp, devidx++)) != NULL) {
+<<<<<<< HEAD
 		if (!strcmp(op->dev.of_node->name, "temperature"))
 			attach_one_temp(bp, op, temp_index++);
 		if (!strcmp(op->dev.of_node->name, "fan-control"))
+=======
+		if (of_node_name_eq(op->dev.of_node, "temperature"))
+			attach_one_temp(bp, op, temp_index++);
+		if (of_node_name_eq(op->dev.of_node, "fan-control"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			attach_one_fan(bp, op, fan_index++);
 	}
 	if (temp_index != 0 && fan_index != 0) {

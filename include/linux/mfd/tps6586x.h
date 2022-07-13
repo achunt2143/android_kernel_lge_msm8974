@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __LINUX_MFD_TPS6586X_H
 #define __LINUX_MFD_TPS6586X_H
 
@@ -13,7 +17,21 @@
 #define TPS6586X_SLEW_RATE_SET		0x08
 #define TPS6586X_SLEW_RATE_MASK         0x07
 
+<<<<<<< HEAD
 enum {
+=======
+/* VERSION CRC */
+#define TPS658621A	0x15
+#define TPS658621CD	0x2c
+#define TPS658623	0x1b
+#define TPS658624	0x0a
+#define TPS658640	0x01
+#define TPS658640v2	0x02
+#define TPS658643	0x03
+
+enum {
+	TPS6586X_ID_SYS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	TPS6586X_ID_SM_0,
 	TPS6586X_ID_SM_1,
 	TPS6586X_ID_SM_2,
@@ -28,6 +46,10 @@ enum {
 	TPS6586X_ID_LDO_8,
 	TPS6586X_ID_LDO_9,
 	TPS6586X_ID_LDO_RTC,
+<<<<<<< HEAD
+=======
+	TPS6586X_ID_MAX_REGULATOR,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum {
@@ -68,6 +90,10 @@ struct tps6586x_subdev_info {
 	int		id;
 	const char	*name;
 	void		*platform_data;
+<<<<<<< HEAD
+=======
+	struct device_node *of_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct tps6586x_platform_data {
@@ -76,6 +102,12 @@ struct tps6586x_platform_data {
 
 	int gpio_base;
 	int irq_base;
+<<<<<<< HEAD
+=======
+	bool pm_off;
+
+	struct regulator_init_data *reg_init_data[TPS6586X_ID_MAX_REGULATOR];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -90,5 +122,10 @@ extern int tps6586x_set_bits(struct device *dev, int reg, uint8_t bit_mask);
 extern int tps6586x_clr_bits(struct device *dev, int reg, uint8_t bit_mask);
 extern int tps6586x_update(struct device *dev, int reg, uint8_t val,
 			   uint8_t mask);
+<<<<<<< HEAD
+=======
+extern int tps6586x_irq_get_virq(struct device *dev, int irq);
+extern int tps6586x_get_version(struct device *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /*__LINUX_MFD_TPS6586X_H */

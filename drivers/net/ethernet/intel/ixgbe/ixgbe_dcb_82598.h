@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel 10 Gigabit PCI Express Linux driver
@@ -25,6 +26,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/* Copyright(c) 1999 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _DCB_82598_CONFIG_H_
 #define _DCB_82598_CONFIG_H_
@@ -71,6 +76,7 @@
 /* DCB hardware-specific driver APIs */
 
 /* DCB PFC functions */
+<<<<<<< HEAD
 s32 ixgbe_dcb_config_pfc_82598(struct ixgbe_hw *, u8 pfc_en);
 
 /* DCB hw initialization */
@@ -92,6 +98,21 @@ s32 ixgbe_dcb_config_tx_data_arbiter_82598(struct ixgbe_hw *hw,
 						u8 *prio_type);
 
 s32 ixgbe_dcb_hw_config_82598(struct ixgbe_hw *hw, u8 pfc_en, u16 *refill,
+=======
+int ixgbe_dcb_config_pfc_82598(struct ixgbe_hw *, u8 pfc_en);
+
+/* DCB hw initialization */
+int ixgbe_dcb_config_rx_arbiter_82598(struct ixgbe_hw *hw, u16 *refill,
+				      u16 *max, u8 *prio_type);
+
+int ixgbe_dcb_config_tx_desc_arbiter_82598(struct ixgbe_hw *hw, u16 *refill,
+					   u16 *max, u8 *bwg_id, u8 *prio_type);
+
+int ixgbe_dcb_config_tx_data_arbiter_82598(struct ixgbe_hw *hw, u16 *refill,
+					   u16 *max, u8 *bwg_id, u8 *prio_type);
+
+int ixgbe_dcb_hw_config_82598(struct ixgbe_hw *hw, u8 pfc_en, u16 *refill,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      u16 *max, u8 *bwg_id, u8 *prio_type);
 
 #endif /* _DCB_82598_CONFIG_H */

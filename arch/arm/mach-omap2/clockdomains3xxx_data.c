@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP3xxx clockdomains
  *
@@ -33,6 +37,10 @@
 #include <linux/kernel.h>
 #include <linux/io.h>
 
+<<<<<<< HEAD
+=======
+#include "soc.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "clockdomain.h"
 #include "prm2xxx_3xxx.h"
 #include "cm2xxx_3xxx.h"
@@ -53,9 +61,21 @@
  * 3430ES2 PM_WKDEP_SGX: adds IVA2, removes CORE
  */
 static struct clkdm_dep gfx_sgx_3xxx_wkdeps[] = {
+<<<<<<< HEAD
 	{ .clkdm_name = "iva2_clkdm", },
 	{ .clkdm_name = "mpu_clkdm", },
 	{ .clkdm_name = "wkup_clkdm", },
+=======
+	{ .clkdm_name = "iva2_clkdm" },
+	{ .clkdm_name = "mpu_clkdm" },
+	{ .clkdm_name = "wkup_clkdm" },
+	{ NULL },
+};
+
+static struct clkdm_dep gfx_sgx_am35x_wkdeps[] = {
+	{ .clkdm_name = "mpu_clkdm" },
+	{ .clkdm_name = "wkup_clkdm" },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ NULL },
 };
 
@@ -69,6 +89,17 @@ static struct clkdm_dep per_wkdeps[] = {
 	{ NULL },
 };
 
+<<<<<<< HEAD
+=======
+static struct clkdm_dep per_am35x_wkdeps[] = {
+	{ .clkdm_name = "core_l3_clkdm" },
+	{ .clkdm_name = "core_l4_clkdm" },
+	{ .clkdm_name = "mpu_clkdm" },
+	{ .clkdm_name = "wkup_clkdm" },
+	{ NULL },
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 3430ES2: PM_WKDEP_USBHOST: CORE, IVA2, MPU, WKUP */
 static struct clkdm_dep usbhost_wkdeps[] = {
 	{ .clkdm_name = "core_l3_clkdm" },
@@ -79,6 +110,17 @@ static struct clkdm_dep usbhost_wkdeps[] = {
 	{ NULL },
 };
 
+<<<<<<< HEAD
+=======
+static struct clkdm_dep usbhost_am35x_wkdeps[] = {
+	{ .clkdm_name = "core_l3_clkdm" },
+	{ .clkdm_name = "core_l4_clkdm" },
+	{ .clkdm_name = "mpu_clkdm" },
+	{ .clkdm_name = "wkup_clkdm" },
+	{ NULL },
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 3430 PM_WKDEP_MPU: CORE, IVA2, DSS, PER */
 static struct clkdm_dep mpu_3xxx_wkdeps[] = {
 	{ .clkdm_name = "core_l3_clkdm" },
@@ -89,6 +131,17 @@ static struct clkdm_dep mpu_3xxx_wkdeps[] = {
 	{ NULL },
 };
 
+<<<<<<< HEAD
+=======
+static struct clkdm_dep mpu_am35x_wkdeps[] = {
+	{ .clkdm_name = "core_l3_clkdm" },
+	{ .clkdm_name = "core_l4_clkdm" },
+	{ .clkdm_name = "dss_clkdm" },
+	{ .clkdm_name = "per_clkdm" },
+	{ NULL },
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 3430 PM_WKDEP_IVA2: CORE, MPU, WKUP, DSS, PER */
 static struct clkdm_dep iva2_wkdeps[] = {
 	{ .clkdm_name = "core_l3_clkdm" },
@@ -116,6 +169,15 @@ static struct clkdm_dep dss_wkdeps[] = {
 	{ NULL },
 };
 
+<<<<<<< HEAD
+=======
+static struct clkdm_dep dss_am35x_wkdeps[] = {
+	{ .clkdm_name = "mpu_clkdm" },
+	{ .clkdm_name = "wkup_clkdm" },
+	{ NULL },
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 3430: PM_WKDEP_NEON: MPU */
 static struct clkdm_dep neon_wkdeps[] = {
 	{ .clkdm_name = "mpu_clkdm" },
@@ -131,6 +193,14 @@ static struct clkdm_dep dss_sleepdeps[] = {
 	{ NULL },
 };
 
+<<<<<<< HEAD
+=======
+static struct clkdm_dep dss_am35x_sleepdeps[] = {
+	{ .clkdm_name = "mpu_clkdm" },
+	{ NULL },
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 3430: CM_SLEEPDEP_PER: MPU, IVA */
 static struct clkdm_dep per_sleepdeps[] = {
 	{ .clkdm_name = "mpu_clkdm" },
@@ -138,6 +208,14 @@ static struct clkdm_dep per_sleepdeps[] = {
 	{ NULL },
 };
 
+<<<<<<< HEAD
+=======
+static struct clkdm_dep per_am35x_sleepdeps[] = {
+	{ .clkdm_name = "mpu_clkdm" },
+	{ NULL },
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 3430ES2: CM_SLEEPDEP_USBHOST: MPU, IVA */
 static struct clkdm_dep usbhost_sleepdeps[] = {
 	{ .clkdm_name = "mpu_clkdm" },
@@ -145,6 +223,14 @@ static struct clkdm_dep usbhost_sleepdeps[] = {
 	{ NULL },
 };
 
+<<<<<<< HEAD
+=======
+static struct clkdm_dep usbhost_am35x_sleepdeps[] = {
+	{ .clkdm_name = "mpu_clkdm" },
+	{ NULL },
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 3430: CM_SLEEPDEP_CAM: MPU */
 static struct clkdm_dep cam_sleepdeps[] = {
 	{ .clkdm_name = "mpu_clkdm" },
@@ -175,6 +261,18 @@ static struct clockdomain mpu_3xxx_clkdm = {
 	.clktrctrl_mask = OMAP3430_CLKTRCTRL_MPU_MASK,
 };
 
+<<<<<<< HEAD
+=======
+static struct clockdomain mpu_am35x_clkdm = {
+	.name		= "mpu_clkdm",
+	.pwrdm		= { .name = "mpu_pwrdm" },
+	.flags		= CLKDM_CAN_HWSUP | CLKDM_CAN_FORCE_WAKEUP,
+	.dep_bit	= OMAP3430_EN_MPU_SHIFT,
+	.wkdep_srcs	= mpu_am35x_wkdeps,
+	.clktrctrl_mask = OMAP3430_CLKTRCTRL_MPU_MASK,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct clockdomain neon_clkdm = {
 	.name		= "neon_clkdm",
 	.pwrdm		= { .name = "neon_pwrdm" },
@@ -186,7 +284,11 @@ static struct clockdomain neon_clkdm = {
 static struct clockdomain iva2_clkdm = {
 	.name		= "iva2_clkdm",
 	.pwrdm		= { .name = "iva2_pwrdm" },
+<<<<<<< HEAD
 	.flags		= CLKDM_CAN_HWSUP_SWSUP,
+=======
+	.flags		= CLKDM_CAN_SWSUP,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dep_bit	= OMAP3430_PM_WKDEP_MPU_EN_IVA2_SHIFT,
 	.wkdep_srcs	= iva2_wkdeps,
 	.clktrctrl_mask = OMAP3430_CLKTRCTRL_IVA2_MASK,
@@ -210,6 +312,18 @@ static struct clockdomain sgx_clkdm = {
 	.clktrctrl_mask = OMAP3430ES2_CLKTRCTRL_SGX_MASK,
 };
 
+<<<<<<< HEAD
+=======
+static struct clockdomain sgx_am35x_clkdm = {
+	.name		= "sgx_clkdm",
+	.pwrdm		= { .name = "sgx_pwrdm" },
+	.flags		= CLKDM_CAN_HWSUP_SWSUP,
+	.wkdep_srcs	= gfx_sgx_am35x_wkdeps,
+	.sleepdep_srcs	= gfx_sgx_sleepdeps,
+	.clktrctrl_mask = OMAP3430ES2_CLKTRCTRL_SGX_MASK,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The die-to-die clockdomain was documented in the 34xx ES1 TRM, but
  * then that information was removed from the 34xx ES2+ TRM.  It is
@@ -261,6 +375,19 @@ static struct clockdomain dss_3xxx_clkdm = {
 	.clktrctrl_mask = OMAP3430_CLKTRCTRL_DSS_MASK,
 };
 
+<<<<<<< HEAD
+=======
+static struct clockdomain dss_am35x_clkdm = {
+	.name		= "dss_clkdm",
+	.pwrdm		= { .name = "dss_pwrdm" },
+	.flags		= CLKDM_CAN_HWSUP_SWSUP,
+	.dep_bit	= OMAP3430_PM_WKDEP_MPU_EN_DSS_SHIFT,
+	.wkdep_srcs	= dss_am35x_wkdeps,
+	.sleepdep_srcs	= dss_am35x_sleepdeps,
+	.clktrctrl_mask = OMAP3430_CLKTRCTRL_DSS_MASK,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct clockdomain cam_clkdm = {
 	.name		= "cam_clkdm",
 	.pwrdm		= { .name = "cam_pwrdm" },
@@ -279,6 +406,18 @@ static struct clockdomain usbhost_clkdm = {
 	.clktrctrl_mask = OMAP3430ES2_CLKTRCTRL_USBHOST_MASK,
 };
 
+<<<<<<< HEAD
+=======
+static struct clockdomain usbhost_am35x_clkdm = {
+	.name		= "usbhost_clkdm",
+	.pwrdm		= { .name = "core_pwrdm" },
+	.flags		= CLKDM_CAN_HWSUP_SWSUP,
+	.wkdep_srcs	= usbhost_am35x_wkdeps,
+	.sleepdep_srcs	= usbhost_am35x_sleepdeps,
+	.clktrctrl_mask = OMAP3430ES2_CLKTRCTRL_USBHOST_MASK,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct clockdomain per_clkdm = {
 	.name		= "per_clkdm",
 	.pwrdm		= { .name = "per_pwrdm" },
@@ -289,6 +428,7 @@ static struct clockdomain per_clkdm = {
 	.clktrctrl_mask = OMAP3430_CLKTRCTRL_PER_MASK,
 };
 
+<<<<<<< HEAD
 /*
  * Disable hw supervised mode for emu_clkdm, because emu_pwrdm is
  * switched of even if sdti is in use
@@ -297,6 +437,23 @@ static struct clockdomain emu_clkdm = {
 	.name		= "emu_clkdm",
 	.pwrdm		= { .name = "emu_pwrdm" },
 	.flags		= /* CLKDM_CAN_ENABLE_AUTO |  */CLKDM_CAN_SWSUP,
+=======
+static struct clockdomain per_am35x_clkdm = {
+	.name		= "per_clkdm",
+	.pwrdm		= { .name = "per_pwrdm" },
+	.flags		= CLKDM_CAN_HWSUP_SWSUP,
+	.dep_bit	= OMAP3430_EN_PER_SHIFT,
+	.wkdep_srcs	= per_am35x_wkdeps,
+	.sleepdep_srcs	= per_am35x_sleepdeps,
+	.clktrctrl_mask = OMAP3430_CLKTRCTRL_PER_MASK,
+};
+
+static struct clockdomain emu_clkdm = {
+	.name		= "emu_clkdm",
+	.pwrdm		= { .name = "emu_pwrdm" },
+	.flags		= (CLKDM_CAN_ENABLE_AUTO | CLKDM_CAN_SWSUP |
+			   CLKDM_MISSING_IDLE_REPORTING),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.clktrctrl_mask = OMAP3430_CLKTRCTRL_EMU_MASK,
 };
 
@@ -341,10 +498,23 @@ static struct clkdm_autodep clkdm_autodeps[] = {
 	}
 };
 
+<<<<<<< HEAD
+=======
+static struct clkdm_autodep clkdm_am35x_autodeps[] = {
+	{
+		.clkdm = { .name = "mpu_clkdm" },
+	},
+	{
+		.clkdm = { .name = NULL },
+	}
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  */
 
+<<<<<<< HEAD
 static struct clockdomain *clockdomains_omap3430_common[] __initdata = {
 	&wkup_common_clkdm,
 	&cm_common_clkdm,
@@ -363,6 +533,28 @@ static struct clockdomain *clockdomains_omap3430_common[] __initdata = {
 	&dpll2_clkdm,
 	&dpll3_clkdm,
 	&dpll4_clkdm,
+=======
+static struct clockdomain *clockdomains_common[] __initdata = {
+	&wkup_common_clkdm,
+	&neon_clkdm,
+	&core_l3_3xxx_clkdm,
+	&core_l4_3xxx_clkdm,
+	&emu_clkdm,
+	&dpll1_clkdm,
+	&dpll3_clkdm,
+	&dpll4_clkdm,
+	NULL
+};
+
+static struct clockdomain *clockdomains_omap3430[] __initdata = {
+	&mpu_3xxx_clkdm,
+	&iva2_clkdm,
+	&d2d_clkdm,
+	&dss_3xxx_clkdm,
+	&cam_clkdm,
+	&per_clkdm,
+	&dpll2_clkdm,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	NULL
 };
 
@@ -378,14 +570,32 @@ static struct clockdomain *clockdomains_omap3430es2plus[] __initdata = {
 	NULL,
 };
 
+<<<<<<< HEAD
 void __init omap3xxx_clockdomains_init(void)
 {
 	struct clockdomain **sc;
+=======
+static struct clockdomain *clockdomains_am35x[] __initdata = {
+	&mpu_am35x_clkdm,
+	&sgx_am35x_clkdm,
+	&dss_am35x_clkdm,
+	&per_am35x_clkdm,
+	&usbhost_am35x_clkdm,
+	&dpll5_clkdm,
+	NULL
+};
+
+void __init omap3xxx_clockdomains_init(void)
+{
+	struct clockdomain **sc;
+	unsigned int rev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!cpu_is_omap34xx())
 		return;
 
 	clkdm_register_platform_funcs(&omap3_clkdm_operations);
+<<<<<<< HEAD
 	clkdm_register_clkdms(clockdomains_omap3430_common);
 
 	sc = (omap_rev() == OMAP3430_REV_ES1_0) ? clockdomains_omap3430es1 :
@@ -394,5 +604,24 @@ void __init omap3xxx_clockdomains_init(void)
 	clkdm_register_clkdms(sc);
 
 	clkdm_register_autodeps(clkdm_autodeps);
+=======
+	clkdm_register_clkdms(clockdomains_common);
+
+	rev = omap_rev();
+
+	if (rev == AM35XX_REV_ES1_0 || rev == AM35XX_REV_ES1_1) {
+		clkdm_register_clkdms(clockdomains_am35x);
+		clkdm_register_autodeps(clkdm_am35x_autodeps);
+	} else {
+		clkdm_register_clkdms(clockdomains_omap3430);
+
+		sc = (rev == OMAP3430_REV_ES1_0) ?
+			clockdomains_omap3430es1 : clockdomains_omap3430es2plus;
+
+		clkdm_register_clkdms(sc);
+		clkdm_register_autodeps(clkdm_autodeps);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	clkdm_complete_init();
 }

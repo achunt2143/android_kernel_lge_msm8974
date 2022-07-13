@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OS info memory interface
  *
@@ -7,13 +11,24 @@
 #ifndef _ASM_S390_OS_INFO_H
 #define _ASM_S390_OS_INFO_H
 
+<<<<<<< HEAD
+=======
+#include <linux/uio.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OS_INFO_VERSION_MAJOR	1
 #define OS_INFO_VERSION_MINOR	1
 #define OS_INFO_MAGIC		0x4f53494e464f535aULL /* OSINFOSZ */
 
 #define OS_INFO_VMCOREINFO	0
 #define OS_INFO_REIPL_BLOCK	1
+<<<<<<< HEAD
 #define OS_INFO_INIT_FN		2
+=======
+#define OS_INFO_FLAGS_ENTRY	2
+
+#define OS_INFO_FLAG_REIPL_CLEAR	(1UL << 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct os_info_entry {
 	u64	addr;
@@ -39,7 +54,10 @@ u32 os_info_csum(struct os_info *os_info);
 
 #ifdef CONFIG_CRASH_DUMP
 void *os_info_old_entry(int nr, unsigned long *size);
+<<<<<<< HEAD
 int copy_from_oldmem(void *dest, void *src, size_t count);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 static inline void *os_info_old_entry(int nr, unsigned long *size)
 {

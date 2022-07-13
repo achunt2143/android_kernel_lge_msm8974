@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Direct MTD block device access
  *
  * Copyright © 1999-2010 David Woodhouse <dwmw2@infradead.org>
  * Copyright © 2000-2003 Nicolas Pitre <nico@fluxnic.net>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -32,6 +39,10 @@
 #include <linux/mtd/mtd.h>
 #include <linux/mtd/blktrans.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/major.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 struct mtdblk_dev {
@@ -44,8 +55,11 @@ struct mtdblk_dev {
 	enum { STATE_EMPTY, STATE_CLEAN, STATE_DIRTY } cache_state;
 };
 
+<<<<<<< HEAD
 static DEFINE_MUTEX(mtdblks_lock);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Cache stuff...
  *
@@ -56,6 +70,7 @@ static DEFINE_MUTEX(mtdblks_lock);
  * being written to until a different sector is required.
  */
 
+<<<<<<< HEAD
 static void erase_callback(struct erase_info *done)
 {
 	wait_queue_head_t *wait_q = (wait_queue_head_t *)done->priv;
@@ -68,12 +83,19 @@ static int erase_write (struct mtd_info *mtd, unsigned long pos,
 	struct erase_info erase;
 	DECLARE_WAITQUEUE(wait, current);
 	wait_queue_head_t wait_q;
+=======
+static int erase_write (struct mtd_info *mtd, unsigned long pos,
+			unsigned int len, const char *buf)
+{
+	struct erase_info erase;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	size_t retlen;
 	int ret;
 
 	/*
 	 * First, let's erase the flash block.
 	 */
+<<<<<<< HEAD
 
 	init_waitqueue_head(&wait_q);
 	erase.mtd = mtd;
@@ -89,15 +111,25 @@ static int erase_write (struct mtd_info *mtd, unsigned long pos,
 	if (ret) {
 		set_current_state(TASK_RUNNING);
 		remove_wait_queue(&wait_q, &wait);
+=======
+	erase.addr = pos;
+	erase.len = len;
+
+	ret = mtd_erase(mtd, &erase);
+	if (ret) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk (KERN_WARNING "mtdblock: erase of region [0x%lx, 0x%x] "
 				     "on \"%s\" failed\n",
 			pos, len, mtd->name);
 		return ret;
 	}
 
+<<<<<<< HEAD
 	schedule();  /* Wait for erase to finish. */
 	remove_wait_queue(&wait_q, &wait);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Next, write the data to flash.
 	 */
@@ -125,8 +157,11 @@ static int write_cached_data (struct mtdblk_dev *mtdblk)
 
 	ret = erase_write (mtd, mtdblk->cache_offset,
 			   mtdblk->cache_size, mtdblk->cache_data);
+<<<<<<< HEAD
 	if (ret)
 		return ret;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Here we could arguably set the cache state to STATE_CLEAN.
@@ -134,9 +169,20 @@ static int write_cached_data (struct mtdblk_dev *mtdblk)
 	 * be notified if this content is altered on the flash by other
 	 * means.  Let's declare it empty and leave buffering tasks to
 	 * the buffer cache instead.
+<<<<<<< HEAD
 	 */
 	mtdblk->cache_state = STATE_EMPTY;
 	return 0;
+=======
+	 *
+	 * If this cache_offset points to a bad block, data cannot be
+	 * written to the device. Clear cache_state to avoid writing to
+	 * bad blocks repeatedly.
+	 */
+	if (ret == 0 || ret == -EIO)
+		mtdblk->cache_state = STATE_EMPTY;
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -186,7 +232,11 @@ static int do_cached_write (struct mtdblk_dev *mtdblk, unsigned long pos,
 				mtdblk->cache_state = STATE_EMPTY;
 				ret = mtd_read(mtd, sect_start, sect_size,
 					       &retlen, mtdblk->cache_data);
+<<<<<<< HEAD
 				if (ret)
+=======
+				if (ret && !mtd_is_bitflip(ret))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					return ret;
 				if (retlen != sect_size)
 					return -EIO;
@@ -221,8 +271,17 @@ static int do_cached_read (struct mtdblk_dev *mtdblk, unsigned long pos,
 	pr_debug("mtdblock: read on \"%s\" at 0x%lx, size 0x%x\n",
 			mtd->name, pos, len);
 
+<<<<<<< HEAD
 	if (!sect_size)
 		return mtd_read(mtd, pos, len, &retlen, buf);
+=======
+	if (!sect_size) {
+		ret = mtd_read(mtd, pos, len, &retlen, buf);
+		if (ret && !mtd_is_bitflip(ret))
+			return ret;
+		return 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (len > 0) {
 		unsigned long sect_start = (pos/sect_size)*sect_size;
@@ -242,7 +301,11 @@ static int do_cached_read (struct mtdblk_dev *mtdblk, unsigned long pos,
 			memcpy (buf, mtdblk->cache_data + offset, size);
 		} else {
 			ret = mtd_read(mtd, pos, size, &retlen, buf);
+<<<<<<< HEAD
 			if (ret)
+=======
+			if (ret && !mtd_is_bitflip(ret))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return ret;
 			if (retlen != size)
 				return -EIO;
@@ -285,6 +348,7 @@ static int mtdblock_open(struct mtd_blktrans_dev *mbd)
 
 	pr_debug("mtdblock_open\n");
 
+<<<<<<< HEAD
 	mutex_lock(&mtdblks_lock);
 	if (mtdblk->count) {
 		mtdblk->count++;
@@ -292,6 +356,17 @@ static int mtdblock_open(struct mtd_blktrans_dev *mbd)
 		return 0;
 	}
 
+=======
+	if (mtdblk->count) {
+		mtdblk->count++;
+		return 0;
+	}
+
+	if (mtd_type_is_nand(mbd->mtd))
+		pr_warn_ratelimited("%s: MTD device '%s' is NAND, please consider using UBI block devices instead.\n",
+			mbd->tr->name, mbd->mtd->name);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* OK, it's not open. Create cache info for it */
 	mtdblk->count = 1;
 	mutex_init(&mtdblk->cache_mutex);
@@ -301,21 +376,31 @@ static int mtdblock_open(struct mtd_blktrans_dev *mbd)
 		mtdblk->cache_data = NULL;
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&mtdblks_lock);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pr_debug("ok\n");
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mtdblock_release(struct mtd_blktrans_dev *mbd)
+=======
+static void mtdblock_release(struct mtd_blktrans_dev *mbd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mtdblk_dev *mtdblk = container_of(mbd, struct mtdblk_dev, mbd);
 
 	pr_debug("mtdblock_release\n");
 
+<<<<<<< HEAD
 	mutex_lock(&mtdblks_lock);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&mtdblk->cache_mutex);
 	write_cached_data(mtdblk);
 	mutex_unlock(&mtdblk->cache_mutex);
@@ -325,27 +410,45 @@ static int mtdblock_release(struct mtd_blktrans_dev *mbd)
 		 * It was the last usage. Free the cache, but only sync if
 		 * opened for writing.
 		 */
+<<<<<<< HEAD
 		if (mbd->file_mode & FMODE_WRITE)
+=======
+		if (mbd->writable)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mtd_sync(mbd->mtd);
 		vfree(mtdblk->cache_data);
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&mtdblks_lock);
 
 	pr_debug("ok\n");
 
 	return 0;
+=======
+	pr_debug("ok\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mtdblock_flush(struct mtd_blktrans_dev *dev)
 {
 	struct mtdblk_dev *mtdblk = container_of(dev, struct mtdblk_dev, mbd);
+<<<<<<< HEAD
 
 	mutex_lock(&mtdblk->cache_mutex);
 	write_cached_data(mtdblk);
 	mutex_unlock(&mtdblk->cache_mutex);
 	mtd_sync(dev->mtd);
 	return 0;
+=======
+	int ret;
+
+	mutex_lock(&mtdblk->cache_mutex);
+	ret = write_cached_data(mtdblk);
+	mutex_unlock(&mtdblk->cache_mutex);
+	mtd_sync(dev->mtd);
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mtdblock_add_mtd(struct mtd_blktrans_ops *tr, struct mtd_info *mtd)
@@ -375,7 +478,11 @@ static void mtdblock_remove_dev(struct mtd_blktrans_dev *dev)
 
 static struct mtd_blktrans_ops mtdblock_tr = {
 	.name		= "mtdblock",
+<<<<<<< HEAD
 	.major		= 31,
+=======
+	.major		= MTD_BLOCK_MAJOR,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.part_bits	= 0,
 	.blksize 	= 512,
 	.open		= mtdblock_open,
@@ -388,6 +495,7 @@ static struct mtd_blktrans_ops mtdblock_tr = {
 	.owner		= THIS_MODULE,
 };
 
+<<<<<<< HEAD
 static int __init init_mtdblock(void)
 {
 	return register_mtd_blktrans(&mtdblock_tr);
@@ -401,6 +509,9 @@ static void __exit cleanup_mtdblock(void)
 module_init(init_mtdblock);
 module_exit(cleanup_mtdblock);
 
+=======
+module_mtd_blktrans(mtdblock_tr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Nicolas Pitre <nico@fluxnic.net> et al.");

@@ -1,15 +1,24 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/base/power/generic_ops.c - Generic PM callbacks for subsystems
  *
  * Copyright (c) 2010 Rafael J. Wysocki <rjw@sisk.pl>, Novell Inc.
+<<<<<<< HEAD
  *
  * This file is released under the GPLv2.
  */
 
+=======
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pm.h>
 #include <linux/pm_runtime.h>
 #include <linux/export.h>
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_RUNTIME
 /**
  * pm_generic_runtime_idle - Generic runtime idle callback for subsystems.
@@ -34,6 +43,9 @@ int pm_generic_runtime_idle(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(pm_generic_runtime_idle);
 
+=======
+#ifdef CONFIG_PM
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * pm_generic_runtime_suspend - Generic runtime suspend callback for subsystems.
  * @dev: Device to suspend.
@@ -71,7 +83,11 @@ int pm_generic_runtime_resume(struct device *dev)
 	return ret;
 }
 EXPORT_SYMBOL_GPL(pm_generic_runtime_resume);
+<<<<<<< HEAD
 #endif /* CONFIG_PM_RUNTIME */
+=======
+#endif /* CONFIG_PM */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PM_SLEEP
 /**
@@ -308,7 +324,11 @@ int pm_generic_restore(struct device *dev)
 EXPORT_SYMBOL_GPL(pm_generic_restore);
 
 /**
+<<<<<<< HEAD
  * pm_generic_complete - Generic routine competing a device power transition.
+=======
+ * pm_generic_complete - Generic routine completing a device power transition.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @dev: Device to handle.
  *
  * Complete a device power transition during a system-wide power transition.
@@ -319,11 +339,14 @@ void pm_generic_complete(struct device *dev)
 
 	if (drv && drv->pm && drv->pm->complete)
 		drv->pm->complete(dev);
+<<<<<<< HEAD
 
 	/*
 	 * Let runtime PM try to suspend devices that haven't been in use before
 	 * going into the system-wide sleep state we're resuming from.
 	 */
 	pm_runtime_idle(dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_PM_SLEEP */

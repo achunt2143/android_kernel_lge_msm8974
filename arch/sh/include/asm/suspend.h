@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_SH_SUSPEND_H
 #define _ASM_SH_SUSPEND_H
 
@@ -14,9 +18,15 @@ struct swsusp_arch_regs {
 void sh_mobile_call_standby(unsigned long mode);
 
 #ifdef CONFIG_CPU_IDLE
+<<<<<<< HEAD
 void sh_mobile_setup_cpuidle(void);
 #else
 static inline void sh_mobile_setup_cpuidle(void) {}
+=======
+int sh_mobile_setup_cpuidle(void);
+#else
+static inline int sh_mobile_setup_cpuidle(void) { return 0; }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* notifier chains for pre/post sleep hooks */

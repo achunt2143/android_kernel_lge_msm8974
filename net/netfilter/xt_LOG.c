@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is a module which is used for logging packets.
  */
 
 /* (C) 1999-2001 Paul `Rusty' Russell
  * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -27,6 +34,7 @@
 #include <linux/netfilter/xt_LOG.h>
 #include <linux/netfilter_ipv6/ip6_tables.h>
 #include <net/netfilter/nf_log.h>
+<<<<<<< HEAD
 #include <net/netfilter/xt_log.h>
 
 static struct nf_loginfo default_loginfo = {
@@ -810,17 +818,24 @@ ip6t_log_packet(u_int8_t pf,
 	sb_close(m);
 }
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int
 log_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
 	const struct xt_log_info *loginfo = par->targinfo;
+<<<<<<< HEAD
+=======
+	struct net *net = xt_net(par);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nf_loginfo li;
 
 	li.type = NF_LOG_TYPE_LOG;
 	li.u.log.level = loginfo->level;
 	li.u.log.logflags = loginfo->logflags;
 
+<<<<<<< HEAD
 	if (par->family == NFPROTO_IPV4)
 		ipt_log_packet(NFPROTO_IPV4, par->hooknum, skb, par->in,
 			       par->out, &li, loginfo->prefix);
@@ -832,12 +847,20 @@ log_tg(struct sk_buff *skb, const struct xt_action_param *par)
 	else
 		WARN_ON_ONCE(1);
 
+=======
+	nf_log_packet(net, xt_family(par), xt_hooknum(par), skb, xt_in(par),
+		      xt_out(par), &li, "%s", loginfo->prefix);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return XT_CONTINUE;
 }
 
 static int log_tg_check(const struct xt_tgchk_param *par)
 {
 	const struct xt_log_info *loginfo = par->targinfo;
+<<<<<<< HEAD
+=======
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (par->family != NFPROTO_IPV4 && par->family != NFPROTO_IPV6)
 		return -EINVAL;
@@ -852,7 +875,23 @@ static int log_tg_check(const struct xt_tgchk_param *par)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	return 0;
+=======
+	ret = nf_logger_find_get(par->family, NF_LOG_TYPE_LOG);
+	if (ret != 0 && !par->nft_compat) {
+		request_module("%s", "nf_log_syslog");
+
+		ret = nf_logger_find_get(par->family, NF_LOG_TYPE_LOG);
+	}
+
+	return ret;
+}
+
+static void log_tg_destroy(const struct xt_tgdtor_param *par)
+{
+	nf_logger_put(par->family, NF_LOG_TYPE_LOG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xt_target log_tg_regs[] __read_mostly = {
@@ -862,6 +901,10 @@ static struct xt_target log_tg_regs[] __read_mostly = {
 		.target		= log_tg,
 		.targetsize	= sizeof(struct xt_log_info),
 		.checkentry	= log_tg_check,
+<<<<<<< HEAD
+=======
+		.destroy	= log_tg_destroy,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.me		= THIS_MODULE,
 	},
 #if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
@@ -871,11 +914,16 @@ static struct xt_target log_tg_regs[] __read_mostly = {
 		.target		= log_tg,
 		.targetsize	= sizeof(struct xt_log_info),
 		.checkentry	= log_tg_check,
+<<<<<<< HEAD
+=======
+		.destroy	= log_tg_destroy,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.me		= THIS_MODULE,
 	},
 #endif
 };
 
+<<<<<<< HEAD
 static struct nf_logger ipt_log_logger __read_mostly = {
 	.name		= "ipt_LOG",
 	.logfn		= &ipt_log_packet,
@@ -903,14 +951,22 @@ static int __init log_tg_init(void)
 	nf_log_register(NFPROTO_IPV6, &ip6t_log_logger);
 #endif
 	return 0;
+=======
+static int __init log_tg_init(void)
+{
+	return xt_register_targets(log_tg_regs, ARRAY_SIZE(log_tg_regs));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit log_tg_exit(void)
 {
+<<<<<<< HEAD
 	nf_log_unregister(&ipt_log_logger);
 #if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
 	nf_log_unregister(&ip6t_log_logger);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xt_unregister_targets(log_tg_regs, ARRAY_SIZE(log_tg_regs));
 }
 
@@ -923,3 +979,7 @@ MODULE_AUTHOR("Jan Rekorajski <baggins@pld.org.pl>");
 MODULE_DESCRIPTION("Xtables: IPv4/IPv6 packet logging");
 MODULE_ALIAS("ipt_LOG");
 MODULE_ALIAS("ip6t_LOG");
+<<<<<<< HEAD
+=======
+MODULE_SOFTDEP("pre: nf_log_syslog");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

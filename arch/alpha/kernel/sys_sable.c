@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/sys_sable.c
  *
@@ -20,7 +24,10 @@
 #include <asm/irq.h>
 #include <asm/mmu_context.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/core_t2.h>
 #include <asm/tlbflush.h>
 
@@ -192,10 +199,17 @@ sable_init_irq(void)
  * with the values in the irq swizzling tables above.
  */
 
+<<<<<<< HEAD
 static int __init
 sable_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	static char irq_tab[9][5] __initdata = {
+=======
+static int
+sable_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+{
+	static char irq_tab[9][5] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*INT    INTA   INTB   INTC   INTD */
 		{ 32+0,  32+0,  32+0,  32+0,  32+0},  /* IdSel 0,  TULIP  */
 		{ 32+1,  32+1,  32+1,  32+1,  32+1},  /* IdSel 1,  SCSI   */
@@ -374,10 +388,17 @@ lynx_init_irq(void)
  * with the values in the irq swizzling tables above.
  */
 
+<<<<<<< HEAD
 static int __init
 lynx_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	static char irq_tab[19][5] __initdata = {
+=======
+static int
+lynx_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+{
+	static char irq_tab[19][5] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*INT    INTA   INTB   INTC   INTD */
 		{   -1,    -1,    -1,    -1,    -1},  /* IdSel 13,  PCEB   */
 		{   -1,    -1,    -1,    -1,    -1},  /* IdSel 14,  PPB    */
@@ -404,7 +425,11 @@ lynx_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
 	return COMMON_TABLE_LOOKUP;
 }
 
+<<<<<<< HEAD
 static u8 __init
+=======
+static u8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lynx_swizzle(struct pci_dev *dev, u8 *pinp)
 {
 	int slot, pin = *pinp;

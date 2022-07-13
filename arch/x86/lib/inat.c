@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * x86 instruction attribute tables
  *
  * Written by Masami Hiramatsu <mhiramat@redhat.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +24,10 @@
  *
  */
 #include <asm/insn.h>
+=======
+ */
+#include <asm/insn.h> /* __ignore_sync_check__ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Attribute tables are generated from opcode map */
 #include "inat-tables.c"

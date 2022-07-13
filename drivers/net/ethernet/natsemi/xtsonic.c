@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * xtsonic.c
  *
@@ -34,9 +38,15 @@
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/pgtable.h>
+
+#include <asm/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dma.h>
 
 static char xtsonic_string[] = "xtsonic";
@@ -72,6 +82,7 @@ extern void xtboard_get_ether_addr(unsigned char *buf);
 #define SONIC_WRITE(reg,val) \
 	*((volatile unsigned int *)dev->base_addr+reg) = val
 
+<<<<<<< HEAD
 
 /* Use 0 for production, 1 for verification, and >2 for debug */
 #ifdef SONIC_DEBUG
@@ -80,6 +91,8 @@ static unsigned int sonic_debug = SONIC_DEBUG;
 static unsigned int sonic_debug = 1;
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * We cannot use station (ethernet) address prefixes to detect the
  * sonic controller since these are board manufacturer depended.
@@ -95,8 +108,12 @@ static int xtsonic_open(struct net_device *dev)
 {
 	int retval;
 
+<<<<<<< HEAD
 	retval = request_irq(dev->irq, sonic_interrupt, IRQF_DISABLED,
 				"sonic", dev);
+=======
+	retval = request_irq(dev->irq, sonic_interrupt, 0, "sonic", dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval) {
 		printk(KERN_ERR "%s: unable to get IRQ %d.\n",
 		       dev->name, dev->irq);
@@ -125,6 +142,7 @@ static const struct net_device_ops xtsonic_netdev_ops = {
 	.ndo_set_rx_mode	= sonic_multicast_list,
 	.ndo_tx_timeout		= sonic_tx_timeout,
 	.ndo_validate_addr	= eth_validate_addr,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
 	.ndo_set_mac_address	= eth_mac_addr,
 };
@@ -132,11 +150,22 @@ static const struct net_device_ops xtsonic_netdev_ops = {
 static int __init sonic_probe1(struct net_device *dev)
 {
 	static unsigned version_printed = 0;
+=======
+	.ndo_set_mac_address	= eth_mac_addr,
+};
+
+static int sonic_probe1(struct net_device *dev)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int silicon_revision;
 	struct sonic_local *lp = netdev_priv(dev);
 	unsigned int base_addr = dev->base_addr;
 	int i;
 	int err = 0;
+<<<<<<< HEAD
+=======
+	unsigned char addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!request_mem_region(base_addr, 0x100, xtsonic_string))
 		return -EBUSY;
@@ -147,15 +176,19 @@ static int __init sonic_probe1(struct net_device *dev)
 	 * the expected location.
 	 */
 	silicon_revision = SONIC_READ(SONIC_SR);
+<<<<<<< HEAD
 	if (sonic_debug > 1)
 		printk("SONIC Silicon Revision = 0x%04x\n",silicon_revision);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i = 0;
 	while ((known_revisions[i] != 0xffff) &&
 			(known_revisions[i] != silicon_revision))
 		i++;
 
 	if (known_revisions[i] == 0xffff) {
+<<<<<<< HEAD
 		printk("SONIC ethernet controller not found (0x%4x)\n",
 				silicon_revision);
 		return -ENODEV;
@@ -164,6 +197,13 @@ static int __init sonic_probe1(struct net_device *dev)
 	if (sonic_debug  &&  version_printed++ == 0)
 		printk(version);
 
+=======
+		pr_info("SONIC ethernet controller not found (0x%4x)\n",
+			silicon_revision);
+		return -ENODEV;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Put the sonic into software reset, then retrieve ethernet address.
 	 * Note: we are assuming that the boot-loader has initialized the cam.
@@ -179,6 +219,7 @@ static int __init sonic_probe1(struct net_device *dev)
 
 	for (i=0; i<3; i++) {
 		unsigned int val = SONIC_READ(SONIC_CAP0-i);
+<<<<<<< HEAD
 		dev->dev_addr[i*2] = val;
 		dev->dev_addr[i*2+1] = val >> 8;
 	}
@@ -225,6 +266,18 @@ static int __init sonic_probe1(struct net_device *dev)
 					 * SONIC_BUS_SCALE(lp->dma_bitmode));
 	lp->rra_laddr = lp->rda_laddr + (SIZEOF_SONIC_RD * SONIC_NUM_RDS
 					 * SONIC_BUS_SCALE(lp->dma_bitmode));
+=======
+		addr[i*2] = val;
+		addr[i*2+1] = val >> 8;
+	}
+	eth_hw_addr_set(dev, addr);
+
+	lp->dma_bitmode = SONIC_BITMODE32;
+
+	err = sonic_alloc_descriptors(dev);
+	if (err)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->netdev_ops		= &xtsonic_netdev_ops;
 	dev->watchdog_timeo	= TX_TIMEOUT;
@@ -248,7 +301,11 @@ out:
  * Actually probing is superfluous but we're paranoid.
  */
 
+<<<<<<< HEAD
 int __devinit xtsonic_probe(struct platform_device *pdev)
+=======
+int xtsonic_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct sonic_local *lp;
@@ -266,14 +323,20 @@ int __devinit xtsonic_probe(struct platform_device *pdev)
 
 	lp = netdev_priv(dev);
 	lp->device = &pdev->dev;
+<<<<<<< HEAD
 	SET_NETDEV_DEV(dev, &pdev->dev);
 	netdev_boot_setup_check(dev);
+=======
+	platform_set_drvdata(pdev, dev);
+	SET_NETDEV_DEV(dev, &pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->base_addr = resmem->start;
 	dev->irq = resirq->start;
 
 	if ((err = sonic_probe1(dev)))
 		goto out;
+<<<<<<< HEAD
 	if ((err = register_netdev(dev)))
 		goto out1;
 
@@ -283,6 +346,23 @@ int __devinit xtsonic_probe(struct platform_device *pdev)
 	return 0;
 
 out1:
+=======
+
+	pr_info("SONIC ethernet @%08lx, MAC %pM, IRQ %d\n",
+		dev->base_addr, dev->dev_addr, dev->irq);
+
+	sonic_msg_init(dev);
+
+	if ((err = register_netdev(dev)))
+		goto undo_probe1;
+
+	return 0;
+
+undo_probe1:
+	dma_free_coherent(lp->device,
+			  SIZEOF_SONIC_DESC * SONIC_BUS_SCALE(lp->dma_bitmode),
+			  lp->descriptors, lp->descriptors_laddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_region(dev->base_addr, SONIC_MEM_SIZE);
 out:
 	free_netdev(dev);
@@ -291,12 +371,19 @@ out:
 }
 
 MODULE_DESCRIPTION("Xtensa XT2000 SONIC ethernet driver");
+<<<<<<< HEAD
 module_param(sonic_debug, int, 0);
 MODULE_PARM_DESC(sonic_debug, "xtsonic debug level (1-4)");
 
 #include "sonic.c"
 
 static int __devexit xtsonic_device_remove (struct platform_device *pdev)
+=======
+
+#include "sonic.c"
+
+static void xtsonic_device_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
 	struct sonic_local *lp = netdev_priv(dev);
@@ -307,13 +394,20 @@ static int __devexit xtsonic_device_remove (struct platform_device *pdev)
 			  lp->descriptors, lp->descriptors_laddr);
 	release_region (dev->base_addr, SONIC_MEM_SIZE);
 	free_netdev(dev);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver xtsonic_driver = {
 	.probe = xtsonic_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(xtsonic_device_remove),
+=======
+	.remove_new = xtsonic_device_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.driver = {
 		.name = xtsonic_string,
 	},

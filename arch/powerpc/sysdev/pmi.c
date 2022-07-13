@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * pmi driver
  *
@@ -8,6 +12,7 @@
  * Unlike IPMI it is bidirectional and has a low latency.
  *
  * Author: Christian Krafft <krafft@de.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -22,6 +27,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/interrupt.h>
@@ -29,6 +36,7 @@
 #include <linux/completion.h>
 #include <linux/spinlock.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
@@ -36,6 +44,16 @@
 #include <asm/io.h>
 #include <asm/pmi.h>
 #include <asm/prom.h>
+=======
+#include <linux/mod_devicetable.h>
+#include <linux/workqueue.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+#include <linux/platform_device.h>
+
+#include <asm/io.h>
+#include <asm/pmi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct pmi_data {
 	struct list_head	handler;
@@ -101,7 +119,11 @@ out:
 }
 
 
+<<<<<<< HEAD
 static struct of_device_id pmi_match[] = {
+=======
+static const struct of_device_id pmi_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .type = "ibm,pmi", .name = "ibm,pmi" },
 	{ .type = "ibm,pmi" },
 	{},
@@ -158,7 +180,11 @@ static int pmi_of_probe(struct platform_device *dev)
 	data->dev = dev;
 
 	data->irq = irq_of_parse_and_map(np, 0);
+<<<<<<< HEAD
 	if (data->irq == NO_IRQ) {
+=======
+	if (!data->irq) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "pmi: invalid interrupt.\n");
 		rc = -EFAULT;
 		goto error_cleanup_iomap;
@@ -185,7 +211,11 @@ out:
 	return rc;
 }
 
+<<<<<<< HEAD
 static int pmi_of_remove(struct platform_device *dev)
+=======
+static void pmi_of_remove(struct platform_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pmi_handler *handler, *tmp;
 
@@ -201,12 +231,16 @@ static int pmi_of_remove(struct platform_device *dev)
 
 	kfree(data);
 	data = NULL;
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver pmi_of_platform_driver = {
 	.probe		= pmi_of_probe,
+<<<<<<< HEAD
 	.remove		= pmi_of_remove,
 	.driver = {
 		.name = "pmi",
@@ -226,6 +260,15 @@ static void __exit pmi_module_exit(void)
 	platform_driver_unregister(&pmi_of_platform_driver);
 }
 module_exit(pmi_module_exit);
+=======
+	.remove_new	= pmi_of_remove,
+	.driver = {
+		.name = "pmi",
+		.of_match_table = pmi_match,
+	},
+};
+module_platform_driver(pmi_of_platform_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int pmi_send_message(pmi_message_t msg)
 {

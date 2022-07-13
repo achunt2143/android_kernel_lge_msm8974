@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2009 Extreme Engineering Solutions, Inc.
  *
@@ -6,10 +10,13 @@
  * Based on mpc85xx_ds code from Freescale Semiconductor, Inc.
  *
  * Author: Nate Case <ncase@xes-inc.com>
+<<<<<<< HEAD
  *
  * This is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
@@ -19,13 +26,21 @@
 #include <linux/delay.h>
 #include <linux/seq_file.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/time.h>
 #include <asm/machdep.h>
 #include <asm/pci-bridge.h>
 #include <mm/mmu_decl.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/udbg.h>
 #include <asm/mpic.h>
 
@@ -40,7 +55,11 @@
 #define MPC85xx_L2CTL_L2I		0x40000000 /* L2 flash invalidate */
 #define MPC85xx_L2CTL_L2SIZ_MASK	0x30000000 /* L2 SRAM size (R/O) */
 
+<<<<<<< HEAD
 void __init xes_mpc85xx_pic_init(void)
+=======
+static void __init xes_mpc85xx_pic_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct mpic *mpic = mpic_alloc(NULL, 0, MPIC_BIG_ENDIAN,
 			0, 256, " OpenPIC  ");
@@ -48,7 +67,11 @@ void __init xes_mpc85xx_pic_init(void)
 	mpic_init(mpic);
 }
 
+<<<<<<< HEAD
 static void xes_mpc85xx_configure_l2(void __iomem *l2_base)
+=======
+static void __init xes_mpc85xx_configure_l2(void __iomem *l2_base)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	volatile uint32_t ctl, tmp;
 
@@ -75,7 +98,11 @@ static void xes_mpc85xx_configure_l2(void __iomem *l2_base)
 	asm volatile("msync; isync");
 }
 
+<<<<<<< HEAD
 static void xes_mpc85xx_fixups(void)
+=======
+static void __init xes_mpc85xx_fixups(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *np;
 	int err;
@@ -100,8 +127,13 @@ static void xes_mpc85xx_fixups(void)
 		err = of_address_to_resource(np, 0, &r[0]);
 		if (err) {
 			printk(KERN_WARNING "xes_mpc85xx: Could not get "
+<<<<<<< HEAD
 			       "resource for device tree node '%s'",
 			       np->full_name);
+=======
+			       "resource for device tree node '%pOF'",
+			       np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		}
 
@@ -111,18 +143,24 @@ static void xes_mpc85xx_fixups(void)
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 static int primary_phb_addr;
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Setup the architecture
  */
 static void __init xes_mpc85xx_setup_arch(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 	struct device_node *np;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_node *root;
 	const char *model = "Unknown";
 
@@ -137,6 +175,7 @@ static void __init xes_mpc85xx_setup_arch(void)
 
 	xes_mpc85xx_fixups();
 
+<<<<<<< HEAD
 #ifdef CONFIG_PCI
 	for_each_node_by_type(np, "pci") {
 		if (of_device_is_compatible(np, "fsl,mpc8540-pci") ||
@@ -206,41 +245,81 @@ static int __init xes_mpc8540_probe(void)
 define_machine(xes_mpc8572) {
 	.name			= "X-ES MPC8572",
 	.probe			= xes_mpc8572_probe,
+=======
+	mpc85xx_smp_init();
+
+	fsl_pci_assign_primary();
+}
+
+machine_arch_initcall(xes_mpc8572, mpc85xx_common_publish_devices);
+machine_arch_initcall(xes_mpc8548, mpc85xx_common_publish_devices);
+machine_arch_initcall(xes_mpc8540, mpc85xx_common_publish_devices);
+
+define_machine(xes_mpc8572) {
+	.name			= "X-ES MPC8572",
+	.compatible		= "xes,MPC8572",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup_arch		= xes_mpc85xx_setup_arch,
 	.init_IRQ		= xes_mpc85xx_pic_init,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+<<<<<<< HEAD
 #endif
 	.get_irq		= mpic_get_irq,
 	.restart		= fsl_rstcr_restart,
 	.calibrate_decr		= generic_calibrate_decr,
+=======
+	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+#endif
+	.get_irq		= mpic_get_irq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= udbg_progress,
 };
 
 define_machine(xes_mpc8548) {
 	.name			= "X-ES MPC8548",
+<<<<<<< HEAD
 	.probe			= xes_mpc8548_probe,
+=======
+	.compatible		= "xes,MPC8548",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup_arch		= xes_mpc85xx_setup_arch,
 	.init_IRQ		= xes_mpc85xx_pic_init,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+<<<<<<< HEAD
 #endif
 	.get_irq		= mpic_get_irq,
 	.restart		= fsl_rstcr_restart,
 	.calibrate_decr		= generic_calibrate_decr,
+=======
+	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+#endif
+	.get_irq		= mpic_get_irq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= udbg_progress,
 };
 
 define_machine(xes_mpc8540) {
 	.name			= "X-ES MPC8540",
+<<<<<<< HEAD
 	.probe			= xes_mpc8540_probe,
+=======
+	.compatible		= "xes,MPC8540",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.setup_arch		= xes_mpc85xx_setup_arch,
 	.init_IRQ		= xes_mpc85xx_pic_init,
 #ifdef CONFIG_PCI
 	.pcibios_fixup_bus	= fsl_pcibios_fixup_bus,
+<<<<<<< HEAD
 #endif
 	.get_irq		= mpic_get_irq,
 	.restart		= fsl_rstcr_restart,
 	.calibrate_decr		= generic_calibrate_decr,
+=======
+	.pcibios_fixup_phb      = fsl_pcibios_fixup_phb,
+#endif
+	.get_irq		= mpic_get_irq,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= udbg_progress,
 };

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /// Find missing clk_puts.
 ///
 //# This only signals a missing clk_put when there is a clk_put later
@@ -5,9 +9,15 @@
 //# False positives can be due to loops.
 //
 // Confidence: Moderate
+<<<<<<< HEAD
 // Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.  GPLv2.
 // Copyright: (C) 2012 Gilles Muller, INRIA/LiP6.  GPLv2.
 // URL: http://coccinelle.lip6.fr/
+=======
+// Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.
+// Copyright: (C) 2012 Gilles Muller, INRIA/LiP6.
+// URL: https://coccinelle.gitlabpages.inria.fr/website
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 // Comments:
 // Options:
 

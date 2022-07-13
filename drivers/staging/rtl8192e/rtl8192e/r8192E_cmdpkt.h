@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /******************************************************************************
  * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
  *
@@ -156,4 +157,17 @@ extern bool cmpk_message_handle_tx(struct net_device *dev,
 				   u32 buffer_len);
 
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
+ *
+ * Contact Information: wlanfae <wlanfae@realtek.com>
+ */
+#ifndef R819XUSB_CMDPKT_H
+#define R819XUSB_CMDPKT_H
+
+bool rtl92e_send_cmd_pkt(struct net_device *dev, u32 type, const void *data,
+			 u32 len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

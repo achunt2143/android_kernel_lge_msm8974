@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * MT regs definitions, follows on from mipsregs.h
  * Copyright (C) 2004 - 2005 MIPS Technologies, Inc.  All rights reserved.
@@ -8,7 +12,10 @@
 #define _ASM_MIPSMTREGS_H
 
 #include <asm/mipsregs.h>
+<<<<<<< HEAD
 #include <asm/war.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 
@@ -28,11 +35,22 @@
 #define read_c0_vpeconf0()		__read_32bit_c0_register($1, 2)
 #define write_c0_vpeconf0(val)		__write_32bit_c0_register($1, 2, val)
 
+<<<<<<< HEAD
+=======
+#define read_c0_vpeconf1()		__read_32bit_c0_register($1, 3)
+#define write_c0_vpeconf1(val)		__write_32bit_c0_register($1, 3, val)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define read_c0_tcstatus()		__read_32bit_c0_register($2, 1)
 #define write_c0_tcstatus(val)		__write_32bit_c0_register($2, 1, val)
 
 #define read_c0_tcbind()		__read_32bit_c0_register($2, 2)
 
+<<<<<<< HEAD
+=======
+#define write_c0_tchalt(val)		__write_32bit_c0_register($2, 4, val)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define read_c0_tccontext()		__read_32bit_c0_register($2, 5)
 #define write_c0_tccontext(val)		__write_32bit_c0_register($2, 5, val)
 
@@ -48,7 +66,11 @@
 #define CP0_VPECONF0		$1, 2
 #define CP0_VPECONF1		$1, 3
 #define CP0_YQMASK		$1, 4
+<<<<<<< HEAD
 #define CP0_VPESCHEDULE	$1, 5
+=======
+#define CP0_VPESCHEDULE		$1, 5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CP0_VPESCHEFBK		$1, 6
 #define CP0_TCSTATUS		$2, 1
 #define CP0_TCBIND		$2, 2
@@ -124,6 +146,17 @@
 #define VPECONF0_XTC_SHIFT	21
 #define VPECONF0_XTC		(_ULCAST_(0xff) << VPECONF0_XTC_SHIFT)
 
+<<<<<<< HEAD
+=======
+/* VPEConf1 fields (per VPE) */
+#define VPECONF1_NCP1_SHIFT	0
+#define VPECONF1_NCP1		(_ULCAST_(0xff) << VPECONF1_NCP1_SHIFT)
+#define VPECONF1_NCP2_SHIFT	10
+#define VPECONF1_NCP2		(_ULCAST_(0xff) << VPECONF1_NCP2_SHIFT)
+#define VPECONF1_NCX_SHIFT	20
+#define VPECONF1_NCX		(_ULCAST_(0xff) << VPECONF1_NCX_SHIFT)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* TCStatus fields (per TC) */
 #define TCSTATUS_TASID		(_ULCAST_(0xff))
 #define TCSTATUS_IXMT_SHIFT	10
@@ -165,11 +198,32 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
+=======
+static inline unsigned core_nvpes(void)
+{
+	unsigned conf0;
+
+	if (!cpu_has_mipsmt)
+		return 1;
+
+	conf0 = read_c0_mvpconf0();
+	return ((conf0 & MVPCONF0_PVPE) >> MVPCONF0_PVPE_SHIFT) + 1;
+}
+
+#define _ASM_SET_DVPE							\
+	_ASM_MACRO_1R(dvpe, rt,						\
+			_ASM_INSN_IF_MIPS(0x41600001 | __rt << 16)	\
+			_ASM_INSN32_IF_MM(0x0000157C | __rt << 21))
+#define _ASM_UNSET_DVPE ".purgem dvpe\n\t"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int dvpe(void)
 {
 	int res = 0;
 
 	__asm__ __volatile__(
+<<<<<<< HEAD
 	"	.set	push						\n"
 	"	.set	noreorder					\n"
 	"	.set	noat						\n"
@@ -178,6 +232,15 @@ static inline unsigned int dvpe(void)
 	"	move	%0, $1						\n"
 	"	ehb							\n"
 	"	.set	pop						\n"
+=======
+	"	.set	push					\n"
+	"	.set	"MIPS_ISA_LEVEL"			\n"
+	_ASM_SET_DVPE
+	"	dvpe	%0					\n"
+	"	ehb						\n"
+	_ASM_UNSET_DVPE
+	"	.set	pop					\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	: "=r" (res));
 
 	instruction_hazard();
@@ -185,6 +248,7 @@ static inline unsigned int dvpe(void)
 	return res;
 }
 
+<<<<<<< HEAD
 static inline void __raw_evpe(void)
 {
 	__asm__ __volatile__(
@@ -195,6 +259,24 @@ static inline void __raw_evpe(void)
 	"	.word	0x41600021		# evpe			\n"
 	"	ehb							\n"
 	"	.set	pop						\n");
+=======
+#define _ASM_SET_EVPE							\
+	_ASM_MACRO_1R(evpe, rt,					\
+			_ASM_INSN_IF_MIPS(0x41600021 | __rt << 16)	\
+			_ASM_INSN32_IF_MM(0x0000357C | __rt << 21))
+#define _ASM_UNSET_EVPE ".purgem evpe\n\t"
+
+static inline void __raw_evpe(void)
+{
+	__asm__ __volatile__(
+	"	.set	push					\n"
+	"	.set	"MIPS_ISA_LEVEL"			\n"
+	_ASM_SET_EVPE
+	"	evpe    $0					\n"
+	"	ehb						\n"
+	_ASM_UNSET_EVPE
+	"	.set	pop					\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Enable virtual processor execution if previous suggested it should be.
@@ -208,11 +290,21 @@ static inline void evpe(int previous)
 		__raw_evpe();
 }
 
+<<<<<<< HEAD
+=======
+#define _ASM_SET_DMT							\
+	_ASM_MACRO_1R(dmt, rt,						\
+			_ASM_INSN_IF_MIPS(0x41600bc1 | __rt << 16)	\
+			_ASM_INSN32_IF_MM(0x0000057C | __rt << 21))
+#define _ASM_UNSET_DMT ".purgem dmt\n\t"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned int dmt(void)
 {
 	int res;
 
 	__asm__ __volatile__(
+<<<<<<< HEAD
 	"	.set	push						\n"
 	"	.set	mips32r2					\n"
 	"	.set	noat						\n"
@@ -220,6 +312,15 @@ static inline unsigned int dmt(void)
 	"	ehb							\n"
 	"	move	%0, $1						\n"
 	"	.set	pop						\n"
+=======
+	"	.set	push					\n"
+	"	.set	"MIPS_ISA_LEVEL"			\n"
+	_ASM_SET_DMT
+	"	dmt	%0					\n"
+	"	ehb						\n"
+	_ASM_UNSET_DMT
+	"	.set	pop					\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	: "=r" (res));
 
 	instruction_hazard();
@@ -227,6 +328,7 @@ static inline unsigned int dmt(void)
 	return res;
 }
 
+<<<<<<< HEAD
 static inline void __raw_emt(void)
 {
 	__asm__ __volatile__(
@@ -236,6 +338,24 @@ static inline void __raw_emt(void)
 	"	ehb							\n"
 	"	.set	mips0						\n"
 	"	.set	reorder");
+=======
+#define _ASM_SET_EMT							\
+	_ASM_MACRO_1R(emt, rt,						\
+			_ASM_INSN_IF_MIPS(0x41600be1 | __rt << 16)	\
+			_ASM_INSN32_IF_MM(0x0000257C | __rt << 21))
+#define _ASM_UNSET_EMT ".purgem emt\n\t"
+
+static inline void __raw_emt(void)
+{
+	__asm__ __volatile__(
+	"	.set	push					\n"
+	"	.set	"MIPS_ISA_LEVEL"			\n"
+	_ASM_SET_EMT
+	"	emt	$0					\n"
+	_ASM_UNSET_EMT
+	"	ehb						\n"
+	"	.set	pop");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* enable multi-threaded execution if previous suggested it should be.
@@ -252,6 +372,7 @@ static inline void emt(int previous)
 static inline void ehb(void)
 {
 	__asm__ __volatile__(
+<<<<<<< HEAD
 	"	.set	mips32r2				\n"
 	"	ehb						\n"
 	"	.set	mips0					\n");
@@ -269,16 +390,55 @@ static inline void ehb(void)
 	"	.word	0x41000800 | (" #rt " << 16) | " #sel "	\n"	\
 	"	move	%0, $1					\n"	\
 	"	.set	pop					\n"	\
+=======
+	"	.set	push				\n"
+	"	.set	"MIPS_ISA_LEVEL"		\n"
+	"	ehb					\n"
+	"	.set	pop				\n");
+}
+
+#define _ASM_SET_MFTC0							\
+	_ASM_MACRO_2R_1S(mftc0, rs, rt, sel,				\
+			_ASM_INSN_IF_MIPS(0x41000000 | __rt << 16 |	\
+				__rs << 11 | \\sel)			\
+			_ASM_INSN32_IF_MM(0x0000000E | __rt << 21 |	\
+				__rs << 16 | \\sel << 4))
+#define _ASM_UNSET_MFTC0 ".purgem mftc0\n\t"
+
+#define mftc0(rt, sel)							\
+({									\
+	unsigned long	__res;						\
+									\
+	__asm__ __volatile__(						\
+	"	.set	push				\n"	\
+	"	.set	"MIPS_ISA_LEVEL"		\n"	\
+	_ASM_SET_MFTC0							\
+	"	mftc0	$1, " #rt ", " #sel "		\n"	\
+	_ASM_UNSET_MFTC0						\
+	"	.set	pop				\n"	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	: "=r" (__res));						\
 									\
 	__res;								\
 })
 
+<<<<<<< HEAD
+=======
+#define _ASM_SET_MFTGPR							\
+	_ASM_MACRO_2R(mftgpr, rs, rt,					\
+			_ASM_INSN_IF_MIPS(0x41000020 | __rt << 16 |	\
+				__rs << 11)				\
+			_ASM_INSN32_IF_MM(0x0000040E | __rt << 21 |	\
+				__rs << 16))
+#define _ASM_UNSET_MFTGPR ".purgem mftgpr\n\t"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define mftgpr(rt)							\
 ({									\
 	unsigned long __res;						\
 									\
 	__asm__ __volatile__(						\
+<<<<<<< HEAD
 	"	.set	push					\n"	\
 	"	.set	noat					\n"	\
 	"	.set	mips32r2				\n"	\
@@ -286,6 +446,14 @@ static inline void ehb(void)
 	"	.word	0x41000820 | (" #rt " << 16)		\n"	\
 	"	move	%0, $1					\n"	\
 	"	.set	pop					\n"	\
+=======
+	"	.set	push				\n"	\
+	"	.set	"MIPS_ISA_LEVEL"		\n"	\
+	_ASM_SET_MFTGPR							\
+	"	mftgpr	%0," #rt "			\n"	\
+	_ASM_UNSET_MFTGPR						\
+	"	.set	pop				\n"	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	: "=r" (__res));						\
 									\
 	__res;								\
@@ -296,12 +464,17 @@ static inline void ehb(void)
 	unsigned long __res;						\
 									\
 	__asm__ __volatile__(						\
+<<<<<<< HEAD
 	"	mftr	%0, " #rt ", " #u ", " #sel "		\n"	\
+=======
+	"	mftr	%0, " #rt ", " #u ", " #sel "	\n"	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	: "=r" (__res));						\
 									\
 	__res;								\
 })
 
+<<<<<<< HEAD
 #define mttgpr(rd,v)							\
 do {									\
 	__asm__ __volatile__(						\
@@ -325,6 +498,45 @@ do {									\
 	"	# mttc0 %0," #rd ", " #sel "			\n"	\
 	"	.word	0x41810000 | (" #rd " << 11) | " #sel "	\n"	\
 	"	.set	pop					\n"	\
+=======
+#define _ASM_SET_MTTGPR							\
+	_ASM_MACRO_2R(mttgpr, rt, rs,					\
+			_ASM_INSN_IF_MIPS(0x41800020 | __rt << 16 |	\
+				__rs << 11)				\
+			_ASM_INSN32_IF_MM(0x00000406 | __rt << 21 |	\
+				__rs << 16))
+#define _ASM_UNSET_MTTGPR ".purgem mttgpr\n\t"
+
+#define mttgpr(rs, v)							\
+do {									\
+	__asm__ __volatile__(						\
+	"	.set	push				\n"	\
+	"	.set	"MIPS_ISA_LEVEL"		\n"	\
+	_ASM_SET_MTTGPR							\
+	"	mttgpr	%0, " #rs "			\n"	\
+	_ASM_UNSET_MTTGPR						\
+	"	.set	pop				\n"	\
+	: : "r" (v));							\
+} while (0)
+
+#define _ASM_SET_MTTC0							\
+	_ASM_MACRO_2R_1S(mttc0, rt, rs, sel,				\
+			_ASM_INSN_IF_MIPS(0x41800000 | __rt << 16 |	\
+				__rs << 11 | \\sel)			\
+			_ASM_INSN32_IF_MM(0x0000040E | __rt << 21 |	\
+				__rs << 16 | \\sel << 4))
+#define _ASM_UNSET_MTTC0 ".purgem mttc0\n\t"
+
+#define mttc0(rs, sel, v)							\
+({									\
+	__asm__ __volatile__(						\
+	"	.set	push				\n"	\
+	"	.set	"MIPS_ISA_LEVEL"		\n"	\
+	_ASM_SET_MTTC0							\
+	"	mttc0	%0," #rs ", " #sel "		\n"	\
+	_ASM_UNSET_MTTC0						\
+	"	.set	pop				\n"	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	:								\
 	: "r" (v));							\
 })
@@ -346,6 +558,7 @@ do {									\
 
 
 /* you *must* set the target tc (settc) before trying to use these */
+<<<<<<< HEAD
 #define read_vpe_c0_vpecontrol()	mftc0(1, 1)
 #define write_vpe_c0_vpecontrol(val)	mttc0(1, 1, val)
 #define read_vpe_c0_vpeconf0()		mftc0(1, 2)
@@ -387,6 +600,51 @@ do {									\
 #define write_tc_gpr_sp(val)		mttgpr(29, val)
 #define read_tc_gpr_gp()		mftgpr(28)
 #define write_tc_gpr_gp(val)		mttgpr(28, val)
+=======
+#define read_vpe_c0_vpecontrol()	mftc0($1, 1)
+#define write_vpe_c0_vpecontrol(val)	mttc0($1, 1, val)
+#define read_vpe_c0_vpeconf0()		mftc0($1, 2)
+#define write_vpe_c0_vpeconf0(val)	mttc0($1, 2, val)
+#define read_vpe_c0_vpeconf1()		mftc0($1, 3)
+#define write_vpe_c0_vpeconf1(val)	mttc0($1, 3, val)
+#define read_vpe_c0_count()		mftc0($9, 0)
+#define write_vpe_c0_count(val)		mttc0($9, 0, val)
+#define read_vpe_c0_status()		mftc0($12, 0)
+#define write_vpe_c0_status(val)	mttc0($12, 0, val)
+#define read_vpe_c0_cause()		mftc0($13, 0)
+#define write_vpe_c0_cause(val)		mttc0($13, 0, val)
+#define read_vpe_c0_config()		mftc0($16, 0)
+#define write_vpe_c0_config(val)	mttc0($16, 0, val)
+#define read_vpe_c0_config1()		mftc0($16, 1)
+#define write_vpe_c0_config1(val)	mttc0($16, 1, val)
+#define read_vpe_c0_config7()		mftc0($16, 7)
+#define write_vpe_c0_config7(val)	mttc0($16, 7, val)
+#define read_vpe_c0_ebase()		mftc0($15, 1)
+#define write_vpe_c0_ebase(val)		mttc0($15, 1, val)
+#define write_vpe_c0_compare(val)	mttc0($11, 0, val)
+#define read_vpe_c0_badvaddr()		mftc0($8, 0)
+#define read_vpe_c0_epc()		mftc0($14, 0)
+#define write_vpe_c0_epc(val)		mttc0($14, 0, val)
+
+
+/* TC */
+#define read_tc_c0_tcstatus()		mftc0($2, 1)
+#define write_tc_c0_tcstatus(val)	mttc0($2, 1, val)
+#define read_tc_c0_tcbind()		mftc0($2, 2)
+#define write_tc_c0_tcbind(val)		mttc0($2, 2, val)
+#define read_tc_c0_tcrestart()		mftc0($2, 3)
+#define write_tc_c0_tcrestart(val)	mttc0($2, 3, val)
+#define read_tc_c0_tchalt()		mftc0($2, 4)
+#define write_tc_c0_tchalt(val)		mttc0($2, 4, val)
+#define read_tc_c0_tccontext()		mftc0($2, 5)
+#define write_tc_c0_tccontext(val)	mttc0($2, 5, val)
+
+/* GPR */
+#define read_tc_gpr_sp()		mftgpr($29)
+#define write_tc_gpr_sp(val)		mttgpr($29, val)
+#define read_tc_gpr_gp()		mftgpr($28)
+#define write_tc_gpr_gp(val)		mttgpr($28, val)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 __BUILD_SET_C0(mvpcontrol)
 

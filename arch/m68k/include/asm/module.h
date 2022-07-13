@@ -1,6 +1,15 @@
+<<<<<<< HEAD
 #ifndef _ASM_M68K_MODULE_H
 #define _ASM_M68K_MODULE_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_M68K_MODULE_H
+#define _ASM_M68K_MODULE_H
+
+#include <asm-generic/module.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum m68k_fixup_type {
 	m68k_fixup_memoffset,
 	m68k_fixup_vnode_shift,
@@ -36,8 +45,11 @@ struct module;
 extern void module_fixup(struct module *mod, struct m68k_fixup_info *start,
 			 struct m68k_fixup_info *end);
 
+<<<<<<< HEAD
 #define Elf_Shdr Elf32_Shdr
 #define Elf_Sym Elf32_Sym
 #define Elf_Ehdr Elf32_Ehdr
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_M68K_MODULE_H */

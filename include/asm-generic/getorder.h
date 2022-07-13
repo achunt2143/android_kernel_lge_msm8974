@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_GENERIC_GETORDER_H
 #define __ASM_GENERIC_GETORDER_H
 
@@ -6,6 +10,7 @@
 #include <linux/compiler.h>
 #include <linux/log2.h>
 
+<<<<<<< HEAD
 /*
  * Runtime evaluation of get_order()
  */
@@ -24,6 +29,8 @@ int __get_order(unsigned long size)
 	return order;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * get_order - Determine the allocation order of a memory size
  * @size: The size for which to get the order
@@ -42,6 +49,7 @@ int __get_order(unsigned long size)
  * to hold an object of the specified size.
  *
  * The result is undefined if the size is 0.
+<<<<<<< HEAD
  *
  * This function may be used to initialise variables with compile time
  * evaluations of constants.
@@ -55,6 +63,29 @@ int __get_order(unsigned long size)
 	) :							\
 	__get_order(n)						\
 )
+=======
+ */
+static __always_inline __attribute_const__ int get_order(unsigned long size)
+{
+	if (__builtin_constant_p(size)) {
+		if (!size)
+			return BITS_PER_LONG - PAGE_SHIFT;
+
+		if (size < (1UL << PAGE_SHIFT))
+			return 0;
+
+		return ilog2((size) - 1) - PAGE_SHIFT + 1;
+	}
+
+	size--;
+	size >>= PAGE_SHIFT;
+#if BITS_PER_LONG == 32
+	return fls(size);
+#else
+	return fls64(size);
+#endif
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __ASSEMBLY__ */
 

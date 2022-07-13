@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ADB through the IOP
  * Written by Joshua M. Thompson
@@ -28,6 +32,10 @@
 
 #define ADB_IOP_EXPLICIT	0x80	/* nonzero if explicit command */
 #define ADB_IOP_AUTOPOLL	0x40	/* auto/SRQ polling enabled    */
+<<<<<<< HEAD
+=======
+#define ADB_IOP_SET_AUTOPOLL	0x20	/* set autopoll device list    */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ADB_IOP_SRQ		0x04	/* SRQ detected                */
 #define ADB_IOP_TIMEOUT		0x02	/* nonzero if timeout          */
 

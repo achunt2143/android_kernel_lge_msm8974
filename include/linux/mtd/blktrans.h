@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright © 2003-2010 David Woodhouse <dwmw2@infradead.org>
  *
@@ -15,6 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright © 2003-2010 David Woodhouse <dwmw2@infradead.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __MTD_TRANS_H__
@@ -43,11 +49,20 @@ struct mtd_blktrans_dev {
 	struct kref ref;
 	struct gendisk *disk;
 	struct attribute_group *disk_attributes;
+<<<<<<< HEAD
 	struct task_struct *thread;
 	struct request_queue *rq;
 	spinlock_t queue_lock;
 	void *priv;
 	fmode_t file_mode;
+=======
+	struct request_queue *rq;
+	struct list_head rq_list;
+	struct blk_mq_tag_set *tag_set;
+	spinlock_t queue_lock;
+	void *priv;
+	bool writable;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct mtd_blktrans_ops {
@@ -72,7 +87,11 @@ struct mtd_blktrans_ops {
 
 	/* Called with mtd_table_mutex held; no race with add/remove */
 	int (*open)(struct mtd_blktrans_dev *dev);
+<<<<<<< HEAD
 	int (*release)(struct mtd_blktrans_dev *dev);
+=======
+	void (*release)(struct mtd_blktrans_dev *dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Called on {de,}registration and on subsequent addition/removal
 	   of devices, with mtd_table_mutex held. */
@@ -90,5 +109,19 @@ extern int add_mtd_blktrans_dev(struct mtd_blktrans_dev *dev);
 extern int del_mtd_blktrans_dev(struct mtd_blktrans_dev *dev);
 extern int mtd_blktrans_cease_background(struct mtd_blktrans_dev *dev);
 
+<<<<<<< HEAD
+=======
+/**
+ * module_mtd_blktrans() - Helper macro for registering a mtd blktrans driver
+ * @__mtd_blktrans: mtd_blktrans_ops struct
+ *
+ * Helper macro for mtd blktrans drivers which do not do anything special in
+ * module init/exit. This eliminates a lot of boilerplate. Each module may only
+ * use this macro once, and calling it replaces module_init() and module_exit()
+ */
+#define module_mtd_blktrans(__mtd_blktrans) \
+	module_driver(__mtd_blktrans, register_mtd_blktrans, \
+					deregister_mtd_blktrans)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __MTD_TRANS_H__ */

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C)2003-2006 Helsinki University of Technology
  * Copyright (C)2003-2006 USAGI/WIDE Project
@@ -15,6 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (C)2003-2006 Helsinki University of Technology
+ * Copyright (C)2003-2006 USAGI/WIDE Project
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * Authors:
@@ -22,6 +29,11 @@
  *	Masahide NAKAMURA @USAGI
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/skbuff.h>
 #include <linux/time.h>
@@ -44,7 +56,11 @@ static inline void *mip6_padn(__u8 *data, __u8 padlen)
 	if (!data)
 		return NULL;
 	if (padlen == 1) {
+<<<<<<< HEAD
 		data[0] = IPV6_TLV_PAD0;
+=======
+		data[0] = IPV6_TLV_PAD1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (padlen > 1) {
 		data[0] = IPV6_TLV_PADN;
 		data[1] = padlen - 2;
@@ -96,16 +112,27 @@ static int mip6_mh_filter(struct sock *sk, struct sk_buff *skb)
 		return -1;
 
 	if (mh->ip6mh_hdrlen < mip6_mh_len(mh->ip6mh_type)) {
+<<<<<<< HEAD
 		LIMIT_NETDEBUG(KERN_DEBUG "mip6: MH message too short: %d vs >=%d\n",
 			       mh->ip6mh_hdrlen, mip6_mh_len(mh->ip6mh_type));
+=======
+		net_dbg_ratelimited("mip6: MH message too short: %d vs >=%d\n",
+				    mh->ip6mh_hdrlen,
+				    mip6_mh_len(mh->ip6mh_type));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mip6_param_prob(skb, 0, offsetof(struct ip6_mh, ip6mh_hdrlen) +
 				skb_network_header_len(skb));
 		return -1;
 	}
 
 	if (mh->ip6mh_proto != IPPROTO_NONE) {
+<<<<<<< HEAD
 		LIMIT_NETDEBUG(KERN_DEBUG "mip6: MH invalid payload proto = %d\n",
 			       mh->ip6mh_proto);
+=======
+		net_dbg_ratelimited("mip6: MH invalid payload proto = %d\n",
+				    mh->ip6mh_proto);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mip6_param_prob(skb, 0, offsetof(struct ip6_mh, ip6mh_proto) +
 				skb_network_header_len(skb));
 		return -1;
@@ -116,7 +143,11 @@ static int mip6_mh_filter(struct sock *sk, struct sk_buff *skb)
 
 struct mip6_report_rate_limiter {
 	spinlock_t lock;
+<<<<<<< HEAD
 	struct timeval stamp;
+=======
+	ktime_t stamp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int iif;
 	struct in6_addr src;
 	struct in6_addr dst;
@@ -182,13 +213,18 @@ static int mip6_destopt_output(struct xfrm_state *x, struct sk_buff *skb)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline int mip6_report_rl_allow(struct timeval *stamp,
+=======
+static inline int mip6_report_rl_allow(ktime_t stamp,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       const struct in6_addr *dst,
 				       const struct in6_addr *src, int iif)
 {
 	int allow = 0;
 
 	spin_lock_bh(&mip6_report_rl.lock);
+<<<<<<< HEAD
 	if (mip6_report_rl.stamp.tv_sec != stamp->tv_sec ||
 	    mip6_report_rl.stamp.tv_usec != stamp->tv_usec ||
 	    mip6_report_rl.iif != iif ||
@@ -196,6 +232,13 @@ static inline int mip6_report_rl_allow(struct timeval *stamp,
 	    !ipv6_addr_equal(&mip6_report_rl.dst, dst)) {
 		mip6_report_rl.stamp.tv_sec = stamp->tv_sec;
 		mip6_report_rl.stamp.tv_usec = stamp->tv_usec;
+=======
+	if (mip6_report_rl.stamp != stamp ||
+	    mip6_report_rl.iif != iif ||
+	    !ipv6_addr_equal(&mip6_report_rl.src, src) ||
+	    !ipv6_addr_equal(&mip6_report_rl.dst, dst)) {
+		mip6_report_rl.stamp = stamp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mip6_report_rl.iif = iif;
 		mip6_report_rl.src = *src;
 		mip6_report_rl.dst = *dst;
@@ -214,7 +257,11 @@ static int mip6_destopt_reject(struct xfrm_state *x, struct sk_buff *skb,
 	struct ipv6_destopt_hao *hao = NULL;
 	struct xfrm_selector sel;
 	int offset;
+<<<<<<< HEAD
 	struct timeval stamp;
+=======
+	ktime_t stamp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err = 0;
 
 	if (unlikely(fl6->flowi6_proto == IPPROTO_MH &&
@@ -228,9 +275,15 @@ static int mip6_destopt_reject(struct xfrm_state *x, struct sk_buff *skb,
 					(skb_network_header(skb) + offset);
 	}
 
+<<<<<<< HEAD
 	skb_get_timestamp(skb, &stamp);
 
 	if (!mip6_report_rl_allow(&stamp, &ipv6_hdr(skb)->daddr,
+=======
+	stamp = skb_get_ktime(skb);
+
+	if (!mip6_report_rl_allow(stamp, &ipv6_hdr(skb)->daddr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  hao ? &hao->addr : &ipv6_hdr(skb)->saddr,
 				  opt->iif))
 		goto out;
@@ -259,6 +312,7 @@ static int mip6_destopt_reject(struct xfrm_state *x, struct sk_buff *skb,
 	return err;
 }
 
+<<<<<<< HEAD
 static int mip6_destopt_offset(struct xfrm_state *x, struct sk_buff *skb,
 			       u8 **nexthdr)
 {
@@ -316,6 +370,16 @@ static int mip6_destopt_init_state(struct xfrm_state *x)
 	if (x->props.mode != XFRM_MODE_ROUTEOPTIMIZATION) {
 		printk(KERN_INFO "%s: state's mode is not %u: %u\n",
 		       __func__, XFRM_MODE_ROUTEOPTIMIZATION, x->props.mode);
+=======
+static int mip6_destopt_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
+{
+	if (x->id.spi) {
+		NL_SET_ERR_MSG(extack, "SPI must be 0");
+		return -EINVAL;
+	}
+	if (x->props.mode != XFRM_MODE_ROUTEOPTIMIZATION) {
+		NL_SET_ERR_MSG(extack, "XFRM mode must be XFRM_MODE_ROUTEOPTIMIZATION");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -335,18 +399,27 @@ static void mip6_destopt_destroy(struct xfrm_state *x)
 {
 }
 
+<<<<<<< HEAD
 static const struct xfrm_type mip6_destopt_type =
 {
 	.description	= "MIP6DESTOPT",
 	.owner		= THIS_MODULE,
 	.proto	     	= IPPROTO_DSTOPTS,
+=======
+static const struct xfrm_type mip6_destopt_type = {
+	.owner		= THIS_MODULE,
+	.proto		= IPPROTO_DSTOPTS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flags		= XFRM_TYPE_NON_FRAGMENT | XFRM_TYPE_LOCAL_COADDR,
 	.init_state	= mip6_destopt_init_state,
 	.destructor	= mip6_destopt_destroy,
 	.input		= mip6_destopt_input,
 	.output		= mip6_destopt_output,
 	.reject		= mip6_destopt_reject,
+<<<<<<< HEAD
 	.hdr_offset	= mip6_destopt_offset,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int mip6_rthdr_input(struct xfrm_state *x, struct sk_buff *skb)
@@ -396,6 +469,7 @@ static int mip6_rthdr_output(struct xfrm_state *x, struct sk_buff *skb)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int mip6_rthdr_offset(struct xfrm_state *x, struct sk_buff *skb,
 			     u8 **nexthdr)
 {
@@ -452,6 +526,16 @@ static int mip6_rthdr_init_state(struct xfrm_state *x)
 	if (x->props.mode != XFRM_MODE_ROUTEOPTIMIZATION) {
 		printk(KERN_INFO "%s: state's mode is not %u: %u\n",
 		       __func__, XFRM_MODE_ROUTEOPTIMIZATION, x->props.mode);
+=======
+static int mip6_rthdr_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
+{
+	if (x->id.spi) {
+		NL_SET_ERR_MSG(extack, "SPI must be 0");
+		return -EINVAL;
+	}
+	if (x->props.mode != XFRM_MODE_ROUTEOPTIMIZATION) {
+		NL_SET_ERR_MSG(extack, "XFRM mode must be XFRM_MODE_ROUTEOPTIMIZATION");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -468,21 +552,31 @@ static void mip6_rthdr_destroy(struct xfrm_state *x)
 {
 }
 
+<<<<<<< HEAD
 static const struct xfrm_type mip6_rthdr_type =
 {
 	.description	= "MIP6RT",
 	.owner		= THIS_MODULE,
 	.proto	     	= IPPROTO_ROUTING,
+=======
+static const struct xfrm_type mip6_rthdr_type = {
+	.owner		= THIS_MODULE,
+	.proto		= IPPROTO_ROUTING,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.flags		= XFRM_TYPE_NON_FRAGMENT | XFRM_TYPE_REMOTE_COADDR,
 	.init_state	= mip6_rthdr_init_state,
 	.destructor	= mip6_rthdr_destroy,
 	.input		= mip6_rthdr_input,
 	.output		= mip6_rthdr_output,
+<<<<<<< HEAD
 	.hdr_offset	= mip6_rthdr_offset,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init mip6_init(void)
 {
+<<<<<<< HEAD
 	printk(KERN_INFO "Mobile IPv6\n");
 
 	if (xfrm_register_type(&mip6_destopt_type, AF_INET6) < 0) {
@@ -495,6 +589,20 @@ static int __init mip6_init(void)
 	}
 	if (rawv6_mh_filter_register(mip6_mh_filter) < 0) {
 		printk(KERN_INFO "%s: can't add rawv6 mh filter\n", __func__);
+=======
+	pr_info("Mobile IPv6\n");
+
+	if (xfrm_register_type(&mip6_destopt_type, AF_INET6) < 0) {
+		pr_info("%s: can't add xfrm type(destopt)\n", __func__);
+		goto mip6_destopt_xfrm_fail;
+	}
+	if (xfrm_register_type(&mip6_rthdr_type, AF_INET6) < 0) {
+		pr_info("%s: can't add xfrm type(rthdr)\n", __func__);
+		goto mip6_rthdr_xfrm_fail;
+	}
+	if (rawv6_mh_filter_register(mip6_mh_filter) < 0) {
+		pr_info("%s: can't add rawv6 mh filter\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto mip6_rawv6_mh_fail;
 	}
 
@@ -512,16 +620,26 @@ static int __init mip6_init(void)
 static void __exit mip6_fini(void)
 {
 	if (rawv6_mh_filter_unregister(mip6_mh_filter) < 0)
+<<<<<<< HEAD
 		printk(KERN_INFO "%s: can't remove rawv6 mh filter\n", __func__);
 	if (xfrm_unregister_type(&mip6_rthdr_type, AF_INET6) < 0)
 		printk(KERN_INFO "%s: can't remove xfrm type(rthdr)\n", __func__);
 	if (xfrm_unregister_type(&mip6_destopt_type, AF_INET6) < 0)
 		printk(KERN_INFO "%s: can't remove xfrm type(destopt)\n", __func__);
+=======
+		pr_info("%s: can't remove rawv6 mh filter\n", __func__);
+	xfrm_unregister_type(&mip6_rthdr_type, AF_INET6);
+	xfrm_unregister_type(&mip6_destopt_type, AF_INET6);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(mip6_init);
 module_exit(mip6_fini);
 
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("IPv6 Mobility driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_XFRM_TYPE(AF_INET6, XFRM_PROTO_DSTOPTS);
 MODULE_ALIAS_XFRM_TYPE(AF_INET6, XFRM_PROTO_ROUTING);

@@ -1,13 +1,25 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * strncmp.S: Hand optimized Sparc assembly of GCC output from GNU libc
  *            generic strncmp routine.
  */
 
+<<<<<<< HEAD
 	.text
 	.align 4
 	.global __strncmp, strncmp
 __strncmp:
 strncmp:
+=======
+#include <linux/export.h>
+#include <linux/linkage.h>
+
+	.text
+ENTRY(strncmp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov	%o0, %g3
 	mov	0, %o3
 
@@ -116,3 +128,8 @@ strncmp:
 	and	%g2, 0xff, %o0
 	retl
 	 sub	%o3, %o0, %o0
+<<<<<<< HEAD
+=======
+ENDPROC(strncmp)
+EXPORT_SYMBOL(strncmp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
     i2c Support for Via Technologies 82C586B South Bridge
 
     Copyright (c) 1998, 1999 Kyösti Mälkki <kmalkki@cc.hut.fi>
 
+<<<<<<< HEAD
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
@@ -16,13 +21,18 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/ioport.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/i2c.h>
 #include <linux/i2c-algo-bit.h>
 #include <linux/io.h>
@@ -83,20 +93,32 @@ static struct i2c_algo_bit_data bit_data = {
 
 static struct i2c_adapter vt586b_adapter = {
 	.owner		= THIS_MODULE,
+<<<<<<< HEAD
 	.class          = I2C_CLASS_HWMON | I2C_CLASS_SPD,
+=======
+	.class          = I2C_CLASS_HWMON,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name		= "VIA i2c",
 	.algo_data	= &bit_data,
 };
 
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(vt586b_ids) = {
+=======
+static const struct pci_device_id vt586b_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_3) },
 	{ 0, }
 };
 
 MODULE_DEVICE_TABLE (pci, vt586b_ids);
 
+<<<<<<< HEAD
 static int __devinit vt586b_probe(struct pci_dev *dev, const struct pci_device_id *id)
+=======
+static int vt586b_probe(struct pci_dev *dev, const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 base;
 	u8 rev;
@@ -146,7 +168,11 @@ static int __devinit vt586b_probe(struct pci_dev *dev, const struct pci_device_i
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit vt586b_remove(struct pci_dev *dev)
+=======
+static void vt586b_remove(struct pci_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	i2c_del_adapter(&vt586b_adapter);
 	release_region(I2C_DIR, IOSPACE);
@@ -158,6 +184,7 @@ static struct pci_driver vt586b_driver = {
 	.name		= "vt586b_smbus",
 	.id_table	= vt586b_ids,
 	.probe		= vt586b_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(vt586b_remove),
 };
 
@@ -171,10 +198,19 @@ static void __exit i2c_vt586b_exit(void)
 	pci_unregister_driver(&vt586b_driver);
 }
 
+=======
+	.remove		= vt586b_remove,
+};
+
+module_pci_driver(vt586b_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Kyösti Mälkki <kmalkki@cc.hut.fi>");
 MODULE_DESCRIPTION("i2c for Via vt82c586b southbridge");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 
 module_init(i2c_vt586b_init);
 module_exit(i2c_vt586b_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

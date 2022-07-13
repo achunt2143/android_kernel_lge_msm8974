@@ -1,10 +1,15 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8 -*- */
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* PARISC LASI driver for the 53c700 chip
  *
  * Copyright (C) 2001 by James.Bottomley@HansenPartnership.com
 **-----------------------------------------------------------------------------
 **  
+<<<<<<< HEAD
 **  This program is free software; you can redistribute it and/or modify
 **  it under the terms of the GNU General Public License as published by
 **  the Free Software Foundation; either version 2 of the License, or
@@ -18,6 +23,8 @@
 **  You should have received a copy of the GNU General Public License
 **  along with this program; if not, write to the Free Software
 **  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 **-----------------------------------------------------------------------------
  */
@@ -43,7 +50,10 @@
 #include <linux/slab.h>
 
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 #include <asm/hardware.h>
 #include <asm/parisc-device.h>
@@ -81,7 +91,11 @@ MODULE_LICENSE("GPL");
 #define LASI710_CLOCK	40
 #define LASI_SCSI_CORE_OFFSET 0x100
 
+<<<<<<< HEAD
 static struct parisc_device_id lasi700_ids[] = {
+=======
+static const struct parisc_device_id lasi700_ids[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LASI700_ID_TABLE,
 	LASI710_ID_TABLE,
 	{ 0 }
@@ -110,7 +124,11 @@ lasi700_probe(struct parisc_device *dev)
 
 	hostdata->dev = &dev->dev;
 	dma_set_mask(&dev->dev, DMA_BIT_MASK(32));
+<<<<<<< HEAD
 	hostdata->base = ioremap_nocache(base, 0x100);
+=======
+	hostdata->base = ioremap(base, 0x100);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hostdata->differential = 0;
 
 	if (dev->id.sversion == LASI_700_SVERSION) {
@@ -148,7 +166,11 @@ lasi700_probe(struct parisc_device *dev)
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 static int __exit
+=======
+static void __exit
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 lasi700_driver_remove(struct parisc_device *dev)
 {
 	struct Scsi_Host *host = dev_get_drvdata(&dev->dev);
@@ -160,6 +182,7 @@ lasi700_driver_remove(struct parisc_device *dev)
 	free_irq(host->irq, host);
 	iounmap(hostdata->base);
 	kfree(hostdata);
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -169,6 +192,15 @@ static struct parisc_driver lasi700_driver = {
 	.id_table =	lasi700_ids,
 	.probe =	lasi700_probe,
 	.remove =	__devexit_p(lasi700_driver_remove),
+=======
+}
+
+static struct parisc_driver lasi700_driver __refdata = {
+	.name =		"lasi_scsi",
+	.id_table =	lasi700_ids,
+	.probe =	lasi700_probe,
+	.remove =	__exit_p(lasi700_driver_remove),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Driver for A2 audio system used in SGI machines
  *  Copyright (c) 2008 Thomas Bogendoerfer <tsbogend@alpha.fanken.de>
  *
  *  Based on OSS code from Ladislav Michl <ladis@linux-mips.org>, which
  *  was based on code from Ulf Carlsson
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -18,6 +23,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -219,6 +226,11 @@ static int hal2_gain_get(struct snd_kcontrol *kcontrol,
 		l = (tmp >> H2I_C2_L_GAIN_SHIFT) & 15;
 		r = (tmp >> H2I_C2_R_GAIN_SHIFT) & 15;
 		break;
+<<<<<<< HEAD
+=======
+	default:
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ucontrol->value.integer.value[0] = l;
 	ucontrol->value.integer.value[1] = r;
@@ -256,11 +268,20 @@ static int hal2_gain_put(struct snd_kcontrol *kcontrol,
 		new |= (r << H2I_C2_R_GAIN_SHIFT);
 		hal2_i_write32(hal2, H2I_ADC_C2, new);
 		break;
+<<<<<<< HEAD
+=======
+	default:
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return old != new;
 }
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new hal2_ctrl_headphone __devinitdata = {
+=======
+static const struct snd_kcontrol_new hal2_ctrl_headphone = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface          = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name           = "Headphone Playback Volume",
 	.access         = SNDRV_CTL_ELEM_ACCESS_READWRITE,
@@ -270,7 +291,11 @@ static struct snd_kcontrol_new hal2_ctrl_headphone __devinitdata = {
 	.put            = hal2_gain_put,
 };
 
+<<<<<<< HEAD
 static struct snd_kcontrol_new hal2_ctrl_mic __devinitdata = {
+=======
+static const struct snd_kcontrol_new hal2_ctrl_mic = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface          = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name           = "Mic Capture Volume",
 	.access         = SNDRV_CTL_ELEM_ACCESS_READWRITE,
@@ -280,7 +305,11 @@ static struct snd_kcontrol_new hal2_ctrl_mic __devinitdata = {
 	.put            = hal2_gain_put,
 };
 
+<<<<<<< HEAD
 static int __devinit hal2_mixer_create(struct snd_hal2 *hal2)
+=======
+static int hal2_mixer_create(struct snd_hal2 *hal2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -450,13 +479,21 @@ static inline void hal2_stop_adc(struct snd_hal2 *hal2)
 	hal2->adc.pbus.pbus->pbdma_ctrl = HPC3_PDMACTRL_LD;
 }
 
+<<<<<<< HEAD
 static int hal2_alloc_dmabuf(struct hal2_codec *codec)
 {
+=======
+static int hal2_alloc_dmabuf(struct snd_hal2 *hal2, struct hal2_codec *codec,
+		enum dma_data_direction buffer_dir)
+{
+	struct device *dev = hal2->card->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hal2_desc *desc;
 	dma_addr_t desc_dma, buffer_dma;
 	int count = H2_BUF_SIZE / H2_BLOCK_SIZE;
 	int i;
 
+<<<<<<< HEAD
 	codec->buffer = dma_alloc_noncoherent(NULL, H2_BUF_SIZE,
 					      &buffer_dma, GFP_KERNEL);
 	if (!codec->buffer)
@@ -466,6 +503,17 @@ static int hal2_alloc_dmabuf(struct hal2_codec *codec)
 	if (!desc) {
 		dma_free_noncoherent(NULL, H2_BUF_SIZE,
 				     codec->buffer, buffer_dma);
+=======
+	codec->buffer = dma_alloc_noncoherent(dev, H2_BUF_SIZE, &buffer_dma,
+					buffer_dir, GFP_KERNEL);
+	if (!codec->buffer)
+		return -ENOMEM;
+	desc = dma_alloc_noncoherent(dev, count * sizeof(struct hal2_desc),
+			&desc_dma, DMA_BIDIRECTIONAL, GFP_KERNEL);
+	if (!desc) {
+		dma_free_noncoherent(dev, H2_BUF_SIZE, codec->buffer, buffer_dma,
+				buffer_dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 	codec->buffer_dma = buffer_dma;
@@ -478,12 +526,19 @@ static int hal2_alloc_dmabuf(struct hal2_codec *codec)
 		      desc_dma : desc_dma + (i + 1) * sizeof(struct hal2_desc);
 		desc++;
 	}
+<<<<<<< HEAD
 	dma_cache_sync(NULL, codec->desc, count * sizeof(struct hal2_desc),
 		       DMA_TO_DEVICE);
+=======
+	dma_sync_single_for_device(dev, codec->desc_dma,
+				   count * sizeof(struct hal2_desc),
+				   DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	codec->desc_count = count;
 	return 0;
 }
 
+<<<<<<< HEAD
 static void hal2_free_dmabuf(struct hal2_codec *codec)
 {
 	dma_free_noncoherent(NULL, codec->desc_count * sizeof(struct hal2_desc),
@@ -497,6 +552,25 @@ static struct snd_pcm_hardware hal2_pcm_hw = {
 		 SNDRV_PCM_INFO_MMAP_VALID |
 		 SNDRV_PCM_INFO_INTERLEAVED |
 		 SNDRV_PCM_INFO_BLOCK_TRANSFER),
+=======
+static void hal2_free_dmabuf(struct snd_hal2 *hal2, struct hal2_codec *codec,
+		enum dma_data_direction buffer_dir)
+{
+	struct device *dev = hal2->card->dev;
+
+	dma_free_noncoherent(dev, codec->desc_count * sizeof(struct hal2_desc),
+		       codec->desc, codec->desc_dma, DMA_BIDIRECTIONAL);
+	dma_free_noncoherent(dev, H2_BUF_SIZE, codec->buffer, codec->buffer_dma,
+			buffer_dir);
+}
+
+static const struct snd_pcm_hardware hal2_pcm_hw = {
+	.info = (SNDRV_PCM_INFO_MMAP |
+		 SNDRV_PCM_INFO_MMAP_VALID |
+		 SNDRV_PCM_INFO_INTERLEAVED |
+		 SNDRV_PCM_INFO_BLOCK_TRANSFER |
+		 SNDRV_PCM_INFO_SYNC_APPLPTR),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.formats =          SNDRV_PCM_FMTBIT_S16_BE,
 	.rates =            SNDRV_PCM_RATE_8000_48000,
 	.rate_min =         8000,
@@ -510,6 +584,7 @@ static struct snd_pcm_hardware hal2_pcm_hw = {
 	.periods_max =      1024,
 };
 
+<<<<<<< HEAD
 static int hal2_pcm_hw_params(struct snd_pcm_substream *substream,
 			      struct snd_pcm_hw_params *params)
 {
@@ -527,10 +602,13 @@ static int hal2_pcm_hw_free(struct snd_pcm_substream *substream)
 	return snd_pcm_lib_free_pages(substream);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int hal2_playback_open(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_hal2 *hal2 = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	int err;
 
 	runtime->hw = hal2_pcm_hw;
@@ -539,13 +617,22 @@ static int hal2_playback_open(struct snd_pcm_substream *substream)
 	if (err)
 		return err;
 	return 0;
+=======
+
+	runtime->hw = hal2_pcm_hw;
+	return hal2_alloc_dmabuf(hal2, &hal2->dac, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hal2_playback_close(struct snd_pcm_substream *substream)
 {
 	struct snd_hal2 *hal2 = snd_pcm_substream_chip(substream);
 
+<<<<<<< HEAD
 	hal2_free_dmabuf(&hal2->dac);
+=======
+	hal2_free_dmabuf(hal2, &hal2->dac, DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -559,6 +646,11 @@ static int hal2_playback_prepare(struct snd_pcm_substream *substream)
 	dac->sample_rate = hal2_compute_rate(dac, runtime->rate);
 	memset(&dac->pcm_indirect, 0, sizeof(dac->pcm_indirect));
 	dac->pcm_indirect.hw_buffer_size = H2_BUF_SIZE;
+<<<<<<< HEAD
+=======
+	dac->pcm_indirect.hw_queue_size = H2_BUF_SIZE / 2;
+	dac->pcm_indirect.hw_io = dac->buffer_dma;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dac->pcm_indirect.sw_buffer_size = snd_pcm_lib_buffer_bytes(substream);
 	dac->substream = substream;
 	hal2_setup_dac(hal2);
@@ -571,9 +663,12 @@ static int hal2_playback_trigger(struct snd_pcm_substream *substream, int cmd)
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
+<<<<<<< HEAD
 		hal2->dac.pcm_indirect.hw_io = hal2->dac.buffer_dma;
 		hal2->dac.pcm_indirect.hw_data = 0;
 		substream->ops->ack(substream);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hal2_start_dac(hal2);
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
@@ -602,7 +697,13 @@ static void hal2_playback_transfer(struct snd_pcm_substream *substream,
 	unsigned char *buf = hal2->dac.buffer + rec->hw_data;
 
 	memcpy(buf, substream->runtime->dma_area + rec->sw_data, bytes);
+<<<<<<< HEAD
 	dma_cache_sync(NULL, buf, bytes, DMA_TO_DEVICE);
+=======
+	dma_sync_single_for_device(hal2->card->dev,
+			hal2->dac.buffer_dma + rec->hw_data, bytes,
+			DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 }
 
@@ -611,17 +712,24 @@ static int hal2_playback_ack(struct snd_pcm_substream *substream)
 	struct snd_hal2 *hal2 = snd_pcm_substream_chip(substream);
 	struct hal2_codec *dac = &hal2->dac;
 
+<<<<<<< HEAD
 	dac->pcm_indirect.hw_queue_size = H2_BUF_SIZE / 2;
 	snd_pcm_indirect_playback_transfer(substream,
 					   &dac->pcm_indirect,
 					   hal2_playback_transfer);
 	return 0;
+=======
+	return snd_pcm_indirect_playback_transfer(substream,
+						  &dac->pcm_indirect,
+						  hal2_playback_transfer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hal2_capture_open(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	struct snd_hal2 *hal2 = snd_pcm_substream_chip(substream);
+<<<<<<< HEAD
 	struct hal2_codec *adc = &hal2->adc;
 	int err;
 
@@ -631,13 +739,22 @@ static int hal2_capture_open(struct snd_pcm_substream *substream)
 	if (err)
 		return err;
 	return 0;
+=======
+
+	runtime->hw = hal2_pcm_hw;
+	return hal2_alloc_dmabuf(hal2, &hal2->adc, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hal2_capture_close(struct snd_pcm_substream *substream)
 {
 	struct snd_hal2 *hal2 = snd_pcm_substream_chip(substream);
 
+<<<<<<< HEAD
 	hal2_free_dmabuf(&hal2->adc);
+=======
+	hal2_free_dmabuf(hal2, &hal2->adc, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -652,6 +769,10 @@ static int hal2_capture_prepare(struct snd_pcm_substream *substream)
 	memset(&adc->pcm_indirect, 0, sizeof(adc->pcm_indirect));
 	adc->pcm_indirect.hw_buffer_size = H2_BUF_SIZE;
 	adc->pcm_indirect.hw_queue_size = H2_BUF_SIZE / 2;
+<<<<<<< HEAD
+=======
+	adc->pcm_indirect.hw_io = adc->buffer_dma;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	adc->pcm_indirect.sw_buffer_size = snd_pcm_lib_buffer_bytes(substream);
 	adc->substream = substream;
 	hal2_setup_adc(hal2);
@@ -664,9 +785,12 @@ static int hal2_capture_trigger(struct snd_pcm_substream *substream, int cmd)
 
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
+<<<<<<< HEAD
 		hal2->adc.pcm_indirect.hw_io = hal2->adc.buffer_dma;
 		hal2->adc.pcm_indirect.hw_data = 0;
 		printk(KERN_DEBUG "buffer_dma %x\n", hal2->adc.buffer_dma);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hal2_start_adc(hal2);
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
@@ -694,7 +818,13 @@ static void hal2_capture_transfer(struct snd_pcm_substream *substream,
 	struct snd_hal2 *hal2 = snd_pcm_substream_chip(substream);
 	unsigned char *buf = hal2->adc.buffer + rec->hw_data;
 
+<<<<<<< HEAD
 	dma_cache_sync(NULL, buf, bytes, DMA_FROM_DEVICE);
+=======
+	dma_sync_single_for_cpu(hal2->card->dev,
+			hal2->adc.buffer_dma + rec->hw_data, bytes,
+			DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memcpy(substream->runtime->dma_area + rec->sw_data, buf, bytes);
 }
 
@@ -703,6 +833,7 @@ static int hal2_capture_ack(struct snd_pcm_substream *substream)
 	struct snd_hal2 *hal2 = snd_pcm_substream_chip(substream);
 	struct hal2_codec *adc = &hal2->adc;
 
+<<<<<<< HEAD
 	snd_pcm_indirect_capture_transfer(substream,
 					  &adc->pcm_indirect,
 					  hal2_capture_transfer);
@@ -715,25 +846,45 @@ static struct snd_pcm_ops hal2_playback_ops = {
 	.ioctl =       snd_pcm_lib_ioctl,
 	.hw_params =   hal2_pcm_hw_params,
 	.hw_free =     hal2_pcm_hw_free,
+=======
+	return snd_pcm_indirect_capture_transfer(substream,
+						 &adc->pcm_indirect,
+						 hal2_capture_transfer);
+}
+
+static const struct snd_pcm_ops hal2_playback_ops = {
+	.open =        hal2_playback_open,
+	.close =       hal2_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =     hal2_playback_prepare,
 	.trigger =     hal2_playback_trigger,
 	.pointer =     hal2_playback_pointer,
 	.ack =         hal2_playback_ack,
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops hal2_capture_ops = {
 	.open =        hal2_capture_open,
 	.close =       hal2_capture_close,
 	.ioctl =       snd_pcm_lib_ioctl,
 	.hw_params =   hal2_pcm_hw_params,
 	.hw_free =     hal2_pcm_hw_free,
+=======
+static const struct snd_pcm_ops hal2_capture_ops = {
+	.open =        hal2_capture_open,
+	.close =       hal2_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =     hal2_capture_prepare,
 	.trigger =     hal2_capture_trigger,
 	.pointer =     hal2_capture_pointer,
 	.ack =         hal2_capture_ack,
 };
 
+<<<<<<< HEAD
 static int __devinit hal2_pcm_create(struct snd_hal2 *hal2)
+=======
+static int hal2_pcm_create(struct snd_hal2 *hal2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -751,9 +902,14 @@ static int __devinit hal2_pcm_create(struct snd_hal2 *hal2)
 			&hal2_playback_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE,
 			&hal2_capture_ops);
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_CONTINUOUS,
 					   snd_dma_continuous_data(GFP_KERNEL),
 					   0, 1024 * 1024);
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_CONTINUOUS,
+				       NULL, 0, 1024 * 1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -767,7 +923,11 @@ static int hal2_dev_free(struct snd_device *device)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct snd_device_ops hal2_ops = {
+=======
+static const struct snd_device_ops hal2_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.dev_free = hal2_dev_free,
 };
 
@@ -812,7 +972,11 @@ static int hal2_create(struct snd_card *card, struct snd_hal2 **rchip)
 	struct hpc3_regs *hpc3 = hpc3c0;
 	int err;
 
+<<<<<<< HEAD
 	hal2 = kzalloc(sizeof(struct snd_hal2), GFP_KERNEL);
+=======
+	hal2 = kzalloc(sizeof(*hal2), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!hal2)
 		return -ENOMEM;
 
@@ -874,13 +1038,21 @@ static int hal2_create(struct snd_card *card, struct snd_hal2 **rchip)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit hal2_probe(struct platform_device *pdev)
+=======
+static int hal2_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct snd_hal2 *chip;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&pdev->dev, index, id, THIS_MODULE, 0, &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -889,7 +1061,10 @@ static int __devinit hal2_probe(struct platform_device *pdev)
 		snd_card_free(card);
 		return err;
 	}
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pdev->dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = hal2_pcm_create(chip);
 	if (err < 0) {
@@ -917,21 +1092,34 @@ static int __devinit hal2_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit hal2_remove(struct platform_device *pdev)
+=======
+static void hal2_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = platform_get_drvdata(pdev);
 
 	snd_card_free(card);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver hal2_driver = {
 	.probe	= hal2_probe,
+<<<<<<< HEAD
 	.remove	= __devexit_p(hal2_remove),
 	.driver = {
 		.name	= "sgihal2",
 		.owner	= THIS_MODULE,
+=======
+	.remove_new = hal2_remove,
+	.driver = {
+		.name	= "sgihal2",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 

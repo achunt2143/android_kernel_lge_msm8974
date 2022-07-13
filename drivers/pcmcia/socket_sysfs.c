@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * socket_sysfs.c -- most of socket-related sysfs output
  *
@@ -5,6 +6,12 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * socket_sysfs.c -- most of socket-related sysfs output
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * (C) 2003 - 2004		Dominik Brodowski
  */
 
@@ -41,8 +48,13 @@ static ssize_t pccard_show_type(struct device *dev, struct device_attribute *att
 	if (!(s->state & SOCKET_PRESENT))
 		return -ENODEV;
 	if (s->state & SOCKET_CARDBUS)
+<<<<<<< HEAD
 		return sprintf(buf, "32-bit\n");
 	return sprintf(buf, "16-bit\n");
+=======
+		return sysfs_emit(buf, "32-bit\n");
+	return sysfs_emit(buf, "16-bit\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static DEVICE_ATTR(card_type, 0444, pccard_show_type, NULL);
 
@@ -54,9 +66,15 @@ static ssize_t pccard_show_voltage(struct device *dev, struct device_attribute *
 	if (!(s->state & SOCKET_PRESENT))
 		return -ENODEV;
 	if (s->socket.Vcc)
+<<<<<<< HEAD
 		return sprintf(buf, "%d.%dV\n", s->socket.Vcc / 10,
 			       s->socket.Vcc % 10);
 	return sprintf(buf, "X.XV\n");
+=======
+		return sysfs_emit(buf, "%d.%dV\n", s->socket.Vcc / 10,
+			       s->socket.Vcc % 10);
+	return sysfs_emit(buf, "X.XV\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static DEVICE_ATTR(card_voltage, 0444, pccard_show_voltage, NULL);
 
@@ -66,7 +84,11 @@ static ssize_t pccard_show_vpp(struct device *dev, struct device_attribute *attr
 	struct pcmcia_socket *s = to_socket(dev);
 	if (!(s->state & SOCKET_PRESENT))
 		return -ENODEV;
+<<<<<<< HEAD
 	return sprintf(buf, "%d.%dV\n", s->socket.Vpp / 10, s->socket.Vpp % 10);
+=======
+	return sysfs_emit(buf, "%d.%dV\n", s->socket.Vpp / 10, s->socket.Vpp % 10);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static DEVICE_ATTR(card_vpp, 0444, pccard_show_vpp, NULL);
 
@@ -76,7 +98,11 @@ static ssize_t pccard_show_vcc(struct device *dev, struct device_attribute *attr
 	struct pcmcia_socket *s = to_socket(dev);
 	if (!(s->state & SOCKET_PRESENT))
 		return -ENODEV;
+<<<<<<< HEAD
 	return sprintf(buf, "%d.%dV\n", s->socket.Vcc / 10, s->socket.Vcc % 10);
+=======
+	return sysfs_emit(buf, "%d.%dV\n", s->socket.Vcc / 10, s->socket.Vcc % 10);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static DEVICE_ATTR(card_vcc, 0444, pccard_show_vcc, NULL);
 
@@ -101,7 +127,11 @@ static ssize_t pccard_show_card_pm_state(struct device *dev,
 					 char *buf)
 {
 	struct pcmcia_socket *s = to_socket(dev);
+<<<<<<< HEAD
 	return sprintf(buf, "%s\n", s->state & SOCKET_SUSPEND ? "off" : "on");
+=======
+	return sysfs_emit(buf, "%s\n", s->state & SOCKET_SUSPEND ? "off" : "on");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t pccard_store_card_pm_state(struct device *dev,
@@ -148,7 +178,11 @@ static ssize_t pccard_show_irq_mask(struct device *dev,
 				    char *buf)
 {
 	struct pcmcia_socket *s = to_socket(dev);
+<<<<<<< HEAD
 	return sprintf(buf, "0x%04x\n", s->irq_mask);
+=======
+	return sysfs_emit(buf, "0x%04x\n", s->irq_mask);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t pccard_store_irq_mask(struct device *dev,
@@ -180,7 +214,11 @@ static ssize_t pccard_show_resource(struct device *dev,
 				    struct device_attribute *attr, char *buf)
 {
 	struct pcmcia_socket *s = to_socket(dev);
+<<<<<<< HEAD
 	return sprintf(buf, "%s\n", s->resource_setup_done ? "yes" : "no");
+=======
+	return sysfs_emit(buf, "%s\n", s->resource_setup_done ? "yes" : "no");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t pccard_store_resource(struct device *dev,

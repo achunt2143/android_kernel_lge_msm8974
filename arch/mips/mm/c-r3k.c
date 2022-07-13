@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * r2300.c: R2000 and R3000 specific mmu/cache code.
  *
@@ -9,14 +13,20 @@
  * Copyright (C) 1998 Gleb Raiko & Vladimir Roganov
  * Copyright (C) 2001, 2004, 2007  Maciej W. Rozycki
  */
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/sched.h>
 #include <linux/smp.h>
 #include <linux/mm.h>
 
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mmu_context.h>
 #include <asm/isadep.h>
 #include <asm/io.h>
@@ -26,7 +36,11 @@
 static unsigned long icache_size, dcache_size;		/* Size in bytes */
 static unsigned long icache_lsize, dcache_lsize;	/* Size in bytes */
 
+<<<<<<< HEAD
 unsigned long __cpuinit r3k_cache_size(unsigned long ca_flags)
+=======
+unsigned long r3k_cache_size(unsigned long ca_flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags, status, dummy, size;
 	volatile unsigned long *p;
@@ -61,7 +75,11 @@ unsigned long __cpuinit r3k_cache_size(unsigned long ca_flags)
 	return size * sizeof(*p);
 }
 
+<<<<<<< HEAD
 unsigned long __cpuinit r3k_cache_lsize(unsigned long ca_flags)
+=======
+unsigned long r3k_cache_lsize(unsigned long ca_flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags, status, lsize, i;
 	volatile unsigned long *p;
@@ -90,7 +108,11 @@ unsigned long __cpuinit r3k_cache_lsize(unsigned long ca_flags)
 	return lsize * sizeof(*p);
 }
 
+<<<<<<< HEAD
 static void __cpuinit r3k_probe_cache(void)
+=======
+static void r3k_probe_cache(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	dcache_size = r3k_cache_size(ST0_ISC);
 	if (dcache_size)
@@ -119,7 +141,11 @@ static void r3k_flush_icache_range(unsigned long start, unsigned long end)
 	write_c0_status((ST0_ISC|ST0_SWC|flags)&~ST0_IEC);
 
 	for (i = 0; i < size; i += 0x080) {
+<<<<<<< HEAD
 		asm( 	"sb\t$0, 0x000(%0)\n\t"
+=======
+		asm(	"sb\t$0, 0x000(%0)\n\t"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"sb\t$0, 0x004(%0)\n\t"
 			"sb\t$0, 0x008(%0)\n\t"
 			"sb\t$0, 0x00c(%0)\n\t"
@@ -176,7 +202,11 @@ static void r3k_flush_dcache_range(unsigned long start, unsigned long end)
 	write_c0_status((ST0_ISC|flags)&~ST0_IEC);
 
 	for (i = 0; i < size; i += 0x080) {
+<<<<<<< HEAD
 		asm( 	"sb\t$0, 0x000(%0)\n\t"
+=======
+		asm(	"sb\t$0, 0x000(%0)\n\t"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"sb\t$0, 0x004(%0)\n\t"
 			"sb\t$0, 0x008(%0)\n\t"
 			"sb\t$0, 0x00c(%0)\n\t"
@@ -240,22 +270,34 @@ static void r3k_flush_cache_page(struct vm_area_struct *vma,
 	unsigned long kaddr = KSEG0ADDR(pfn << PAGE_SHIFT);
 	int exec = vma->vm_flags & VM_EXEC;
 	struct mm_struct *mm = vma->vm_mm;
+<<<<<<< HEAD
 	pgd_t *pgdp;
 	pud_t *pudp;
 	pmd_t *pmdp;
 	pte_t *ptep;
 
 	pr_debug("cpage[%08lx,%08lx]\n",
+=======
+	pmd_t *pmdp;
+	pte_t *ptep;
+
+	pr_debug("cpage[%08llx,%08lx]\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 cpu_context(smp_processor_id(), mm), addr);
 
 	/* No ASID => no such page in the cache.  */
 	if (cpu_context(smp_processor_id(), mm) == 0)
 		return;
 
+<<<<<<< HEAD
 	pgdp = pgd_offset(mm, addr);
 	pudp = pud_offset(pgdp, addr);
 	pmdp = pmd_offset(pudp, addr);
 	ptep = pte_offset(pmdp, addr);
+=======
+	pmdp = pmd_off(mm, addr);
+	ptep = pte_offset_kernel(pmdp, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Invalid => no such page in the cache.  */
 	if (!(pte_val(*ptep) & _PAGE_PRESENT))
@@ -266,14 +308,18 @@ static void r3k_flush_cache_page(struct vm_area_struct *vma,
 		r3k_flush_icache_range(kaddr, kaddr + PAGE_SIZE);
 }
 
+<<<<<<< HEAD
 static void local_r3k_flush_data_cache_page(void *addr)
 {
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void r3k_flush_data_cache_page(unsigned long addr)
 {
 }
 
+<<<<<<< HEAD
 static void r3k_flush_cache_sigtramp(unsigned long addr)
 {
 	unsigned long flags;
@@ -298,6 +344,8 @@ static void r3k_flush_cache_sigtramp(unsigned long addr)
 	write_c0_status(flags);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void r3k_flush_kernel_vmap_range(unsigned long vaddr, int size)
 {
 	BUG();
@@ -312,7 +360,11 @@ static void r3k_dma_cache_wback_inv(unsigned long start, unsigned long size)
 	r3k_flush_dcache_range(start, start + size);
 }
 
+<<<<<<< HEAD
 void __cpuinit r3k_cache_init(void)
+=======
+void r3k_cache_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	extern void build_clear_page(void);
 	extern void build_copy_page(void);
@@ -326,20 +378,34 @@ void __cpuinit r3k_cache_init(void)
 	flush_cache_page = r3k_flush_cache_page;
 	flush_icache_range = r3k_flush_icache_range;
 	local_flush_icache_range = r3k_flush_icache_range;
+<<<<<<< HEAD
 
 	__flush_kernel_vmap_range = r3k_flush_kernel_vmap_range;
 
 	flush_cache_sigtramp = r3k_flush_cache_sigtramp;
 	local_flush_data_cache_page = local_r3k_flush_data_cache_page;
+=======
+	__flush_icache_user_range = r3k_flush_icache_range;
+	__local_flush_icache_user_range = r3k_flush_icache_range;
+
+	__flush_kernel_vmap_range = r3k_flush_kernel_vmap_range;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_data_cache_page = r3k_flush_data_cache_page;
 
 	_dma_cache_wback_inv = r3k_dma_cache_wback_inv;
 	_dma_cache_wback = r3k_dma_cache_wback_inv;
 	_dma_cache_inv = r3k_dma_cache_wback_inv;
 
+<<<<<<< HEAD
 	printk("Primary instruction cache %ldkB, linesize %ld bytes.\n",
 		icache_size >> 10, icache_lsize);
 	printk("Primary data cache %ldkB, linesize %ld bytes.\n",
+=======
+	pr_info("Primary instruction cache %ldkB, linesize %ld bytes.\n",
+		icache_size >> 10, icache_lsize);
+	pr_info("Primary data cache %ldkB, linesize %ld bytes.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dcache_size >> 10, dcache_lsize);
 
 	build_clear_page();

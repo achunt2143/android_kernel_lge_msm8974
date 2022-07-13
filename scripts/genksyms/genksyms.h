@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Generate kernel symbol version hashes.
    Copyright 1996, 1997 Linux International.
 
@@ -6,6 +10,7 @@
 
    This file is part of the Linux modutils.
 
+<<<<<<< HEAD
    This program is free software; you can redistribute it and/or modify it
    under the terms of the GNU General Public License as published by the
    Free Software Foundation; either version 2 of the License, or (at your
@@ -19,6 +24,9 @@
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software Foundation,
    Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+=======
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef MODUTILS_GENKSYMS_H
 #define MODUTILS_GENKSYMS_H 1
@@ -58,7 +66,11 @@ typedef struct string_list **yystype;
 #define YYSTYPE yystype
 
 extern int cur_line;
+<<<<<<< HEAD
 extern char *cur_filename, *source_file;
+=======
+extern char *cur_filename;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int in_source_file;
 
 struct symbol *find_symbol(const char *name, enum symbol_type ns, int exact);
@@ -75,7 +87,11 @@ struct string_list *copy_list_range(struct string_list *start,
 int yylex(void);
 int yyparse(void);
 
+<<<<<<< HEAD
 void error_with_pos(const char *, ...);
+=======
+void error_with_pos(const char *, ...) __attribute__ ((format(printf, 1, 2)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*----------------------------------------------------------------------*/
 #define xmalloc(size) ({ void *__ptr = malloc(size);		\

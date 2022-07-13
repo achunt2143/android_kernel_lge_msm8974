@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Nothing to see here yet
  */
@@ -8,6 +12,7 @@ static inline void ack_bad_irq(int irq)
 {
 	extern unsigned long irq_err_count;
 	irq_err_count++;
+<<<<<<< HEAD
 }
 
 void set_irq_flags(unsigned int irq, unsigned int flags);
@@ -16,6 +21,11 @@ void set_irq_flags(unsigned int irq, unsigned int flags);
 #define IRQF_PROBE	(1 << 1)
 #define IRQF_NOAUTOEN	(1 << 2)
 
+=======
+	pr_crit("unexpected IRQ trap at vector %02x\n", irq);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ARCH_IRQ_INIT_FLAGS	(IRQ_NOREQUEST | IRQ_NOPROBE)
 
 #endif

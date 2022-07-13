@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  card-als4000.c - driver for Avance Logic ALS4000 based soundcards.
  *  Copyright (C) 2000 by Bart Hartgers <bart@etpmod.phys.tue.nl>,
@@ -6,6 +10,7 @@
  *
  *  Framework borrowed from Massimo Piccioni's card-als100.c.
  *
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +26,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NOTES
  *
  *  Since Avance does not provide any meaningful documentation, and I
@@ -65,7 +72,11 @@
  * - power management? (card can do voice wakeup according to datasheet!!)
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/gameport.h>
@@ -82,9 +93,14 @@
 MODULE_AUTHOR("Bart Hartgers <bart@etpmod.phys.tue.nl>, Andreas Mohr");
 MODULE_DESCRIPTION("Avance Logic ALS4000");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Avance Logic,ALS4000}}");
 
 #if defined(CONFIG_GAMEPORT) || (defined(MODULE) && defined(CONFIG_GAMEPORT_MODULE))
+=======
+
+#if IS_REACHABLE(CONFIG_GAMEPORT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SUPPORT_JOYSTICK 1
 #endif
 
@@ -102,7 +118,11 @@ MODULE_PARM_DESC(id, "ID string for ALS4000 soundcard.");
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable ALS4000 soundcard.");
 #ifdef SUPPORT_JOYSTICK
+<<<<<<< HEAD
 module_param_array(joystick_port, int, NULL, 0444);
+=======
+module_param_hw_array(joystick_port, int, ioport, NULL, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(joystick_port, "Joystick port address for ALS4000 soundcard. (0 = disabled)");
 #endif
 
@@ -116,7 +136,11 @@ struct snd_card_als4000 {
 #endif
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(snd_als4000_ids) = {
+=======
+static const struct pci_device_id snd_als4000_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x4005, 0x4000, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0, },   /* ALS4000 */
 	{ 0, }
 };
@@ -368,6 +392,7 @@ CMD_SIGNED|CMD_STEREO,			/* ALS4000_FORMAT_S16L_STEREO */
 };	
 #define capture_cmd(chip) (capture_cmd_vals[(chip)->capture_format])
 
+<<<<<<< HEAD
 static int snd_als4000_hw_params(struct snd_pcm_substream *substream,
 				 struct snd_pcm_hw_params *hw_params)
 {
@@ -380,6 +405,8 @@ static int snd_als4000_hw_free(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_als4000_capture_prepare(struct snd_pcm_substream *substream)
 {
 	struct snd_sb *chip = snd_pcm_substream_chip(substream);
@@ -578,7 +605,11 @@ static irqreturn_t snd_als4000_interrupt(int irq, void *dev_id)
 		snd_als4k_iobase_readb(chip->alt_port,
 					ALS4K_IOB_16_ACK_FOR_CR1E);
 
+<<<<<<< HEAD
 	/* printk(KERN_INFO "als4000: irq 0x%04x 0x%04x\n",
+=======
+	/* dev_dbg(chip->card->dev, "als4000: irq 0x%04x 0x%04x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 pci_irqstatus, sb_irqstatus); */
 
 	/* only ack the things we actually handled above */
@@ -592,7 +623,11 @@ static irqreturn_t snd_als4000_interrupt(int irq, void *dev_id)
 
 /*****************************************************************/
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_als4000_playback =
+=======
+static const struct snd_pcm_hardware snd_als4000_playback =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_MMAP_VALID),
@@ -611,7 +646,11 @@ static struct snd_pcm_hardware snd_als4000_playback =
 	.fifo_size =		0
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_als4000_capture =
+=======
+static const struct snd_pcm_hardware snd_als4000_capture =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_MMAP_VALID),
@@ -647,7 +686,10 @@ static int snd_als4000_playback_close(struct snd_pcm_substream *substream)
 	struct snd_sb *chip = snd_pcm_substream_chip(substream);
 
 	chip->playback_substream = NULL;
+<<<<<<< HEAD
 	snd_pcm_lib_free_pages(substream);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -666,35 +708,54 @@ static int snd_als4000_capture_close(struct snd_pcm_substream *substream)
 	struct snd_sb *chip = snd_pcm_substream_chip(substream);
 
 	chip->capture_substream = NULL;
+<<<<<<< HEAD
 	snd_pcm_lib_free_pages(substream);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 /******************************************************************/
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_als4000_playback_ops = {
 	.open =		snd_als4000_playback_open,
 	.close =	snd_als4000_playback_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_als4000_hw_params,
 	.hw_free =	snd_als4000_hw_free,
+=======
+static const struct snd_pcm_ops snd_als4000_playback_ops = {
+	.open =		snd_als4000_playback_open,
+	.close =	snd_als4000_playback_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_als4000_playback_prepare,
 	.trigger =	snd_als4000_playback_trigger,
 	.pointer =	snd_als4000_playback_pointer
 };
 
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_als4000_capture_ops = {
 	.open =		snd_als4000_capture_open,
 	.close =	snd_als4000_capture_close,
 	.ioctl =	snd_pcm_lib_ioctl,
 	.hw_params =	snd_als4000_hw_params,
 	.hw_free =	snd_als4000_hw_free,
+=======
+static const struct snd_pcm_ops snd_als4000_capture_ops = {
+	.open =		snd_als4000_capture_open,
+	.close =	snd_als4000_capture_close,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.prepare =	snd_als4000_capture_prepare,
 	.trigger =	snd_als4000_capture_trigger,
 	.pointer =	snd_als4000_capture_pointer
 };
 
+<<<<<<< HEAD
 static int __devinit snd_als4000_pcm(struct snd_sb *chip, int device)
+=======
+static int snd_als4000_pcm(struct snd_sb *chip, int device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -707,8 +768,13 @@ static int __devinit snd_als4000_pcm(struct snd_sb *chip, int device)
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_als4000_playback_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &snd_als4000_capture_ops);
 
+<<<<<<< HEAD
 	snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV, snd_dma_pci_data(chip->pci),
 					      64*1024, 64*1024);
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_DEV,
+				       &chip->pci->dev, 64*1024, 64*1024);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->pcm = pcm;
 
@@ -770,7 +836,11 @@ static void snd_als4000_configure(struct snd_sb *chip)
 }
 
 #ifdef SUPPORT_JOYSTICK
+<<<<<<< HEAD
 static int __devinit snd_als4000_create_gameport(struct snd_card_als4000 *acard, int dev)
+=======
+static int snd_als4000_create_gameport(struct snd_card_als4000 *acard, int dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct gameport *gp;
 	struct resource *r;
@@ -781,24 +851,42 @@ static int __devinit snd_als4000_create_gameport(struct snd_card_als4000 *acard,
 
 	if (joystick_port[dev] == 1) { /* auto-detect */
 		for (io_port = 0x200; io_port <= 0x218; io_port += 8) {
+<<<<<<< HEAD
 			r = request_region(io_port, 8, "ALS4000 gameport");
+=======
+			r = devm_request_region(&acard->pci->dev, io_port, 8,
+						"ALS4000 gameport");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (r)
 				break;
 		}
 	} else {
 		io_port = joystick_port[dev];
+<<<<<<< HEAD
 		r = request_region(io_port, 8, "ALS4000 gameport");
 	}
 
 	if (!r) {
 		printk(KERN_WARNING "als4000: cannot reserve joystick ports\n");
+=======
+		r = devm_request_region(&acard->pci->dev, io_port, 8,
+					"ALS4000 gameport");
+	}
+
+	if (!r) {
+		dev_warn(&acard->pci->dev, "cannot reserve joystick ports\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 
 	acard->gameport = gp = gameport_allocate_port();
 	if (!gp) {
+<<<<<<< HEAD
 		printk(KERN_ERR "als4000: cannot allocate memory for gameport\n");
 		release_and_free_resource(r);
+=======
+		dev_err(&acard->pci->dev, "cannot allocate memory for gameport\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -806,7 +894,10 @@ static int __devinit snd_als4000_create_gameport(struct snd_card_als4000 *acard,
 	gameport_set_phys(gp, "pci%s/gameport0", pci_name(acard->pci));
 	gameport_set_dev_parent(gp, &acard->pci->dev);
 	gp->io = io_port;
+<<<<<<< HEAD
 	gameport_set_port_data(gp, r);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Enable legacy joystick port */
 	snd_als4000_set_addr(acard->iobase, 0, 0, 0, 1);
@@ -819,15 +910,21 @@ static int __devinit snd_als4000_create_gameport(struct snd_card_als4000 *acard,
 static void snd_als4000_free_gameport(struct snd_card_als4000 *acard)
 {
 	if (acard->gameport) {
+<<<<<<< HEAD
 		struct resource *r = gameport_get_port_data(acard->gameport);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gameport_unregister_port(acard->gameport);
 		acard->gameport = NULL;
 
 		/* disable joystick */
 		snd_als4000_set_addr(acard->iobase, 0, 0, 0, 0);
+<<<<<<< HEAD
 
 		release_and_free_resource(r);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 #else
@@ -843,12 +940,19 @@ static void snd_card_als4000_free( struct snd_card *card )
 	snd_als4k_gcr_write_addr(acard->iobase, ALS4K_GCR8C_MISC_CTRL, 0);
 	/* free resources */
 	snd_als4000_free_gameport(acard);
+<<<<<<< HEAD
 	pci_release_regions(acard->pci);
 	pci_disable_device(acard->pci);
 }
 
 static int __devinit snd_card_als4000_probe(struct pci_dev *pci,
 					  const struct pci_device_id *pci_id)
+=======
+}
+
+static int __snd_card_als4000_probe(struct pci_dev *pci,
+				    const struct pci_device_id *pci_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static int dev;
 	struct snd_card *card;
@@ -867,6 +971,7 @@ static int __devinit snd_card_als4000_probe(struct pci_dev *pci,
 	}
 
 	/* enable PCI device */
+<<<<<<< HEAD
 	if ((err = pci_enable_device(pci)) < 0) {
 		return err;
 	}
@@ -882,12 +987,28 @@ static int __devinit snd_card_als4000_probe(struct pci_dev *pci,
 		pci_disable_device(pci);
 		return err;
 	}
+=======
+	err = pcim_enable_device(pci);
+	if (err < 0)
+		return err;
+
+	/* check, if we can restrict PCI DMA transfers to 24 bits */
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(24))) {
+		dev_err(&pci->dev, "architecture does not support 24bit PCI busmaster DMA\n");
+		return -ENXIO;
+	}
+
+	err = pci_request_regions(pci, "ALS4000");
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iobase = pci_resource_start(pci, 0);
 
 	pci_read_config_word(pci, PCI_COMMAND, &word);
 	pci_write_config_word(pci, PCI_COMMAND, word | PCI_COMMAND_IO);
 	pci_set_master(pci);
 	
+<<<<<<< HEAD
 	err = snd_card_create(index[dev], id[dev], THIS_MODULE, 
 			      sizeof(*acard) /* private_data: acard */,
 			      &card);
@@ -896,6 +1017,13 @@ static int __devinit snd_card_als4000_probe(struct pci_dev *pci,
 		pci_disable_device(pci);
 		return err;
 	}
+=======
+	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
+				sizeof(*acard) /* private_data: acard */,
+				&card);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	acard = card->private_data;
 	acard->pci = pci;
@@ -905,6 +1033,7 @@ static int __devinit snd_card_als4000_probe(struct pci_dev *pci,
 	/* disable all legacy ISA stuff */
 	snd_als4000_set_addr(acard->iobase, 0, 0, 0, 0);
 
+<<<<<<< HEAD
 	if ((err = snd_sbdsp_create(card,
 				    iobase + ALS4K_IOB_10_ADLIB_ADDR0,
 				    pci->irq,
@@ -916,11 +1045,27 @@ static int __devinit snd_card_als4000_probe(struct pci_dev *pci,
 				    &chip)) < 0) {
 		goto out_err;
 	}
+=======
+	err = snd_sbdsp_create(card,
+			       iobase + ALS4K_IOB_10_ADLIB_ADDR0,
+			       pci->irq,
+		/* internally registered as IRQF_SHARED in case of ALS4000 SB */
+			       snd_als4000_interrupt,
+			       -1,
+			       -1,
+			       SB_HW_ALS4000,
+			       &chip);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acard->chip = chip;
 
 	chip->pci = pci;
 	chip->alt_port = iobase;
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pci->dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_als4000_configure(chip);
 
@@ -929,6 +1074,7 @@ static int __devinit snd_card_als4000_probe(struct pci_dev *pci,
 	sprintf(card->longname, "%s at 0x%lx, irq %i",
 		card->shortname, chip->alt_port, chip->irq);
 
+<<<<<<< HEAD
 	if ((err = snd_mpu401_uart_new( card, 0, MPU401_HW_ALS4000,
 					iobase + ALS4K_IOB_30_MIDI_DATA,
 					MPU401_INFO_INTEGRATED |
@@ -937,6 +1083,17 @@ static int __devinit snd_card_als4000_probe(struct pci_dev *pci,
 		printk(KERN_ERR "als4000: no MPU-401 device at 0x%lx?\n",
 				iobase + ALS4K_IOB_30_MIDI_DATA);
 		goto out_err;
+=======
+	err = snd_mpu401_uart_new(card, 0, MPU401_HW_ALS4000,
+				  iobase + ALS4K_IOB_30_MIDI_DATA,
+				  MPU401_INFO_INTEGRATED |
+				  MPU401_INFO_IRQ_HOOK,
+				  -1, &chip->rmidi);
+	if (err < 0) {
+		dev_err(&pci->dev, "no MPU-401 device at 0x%lx?\n",
+				iobase + ALS4K_IOB_30_MIDI_DATA);
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* FIXME: ALS4000 has interesting MPU401 configuration features
 	 * at ALS4K_CR1A_MPU401_UART_MODE_CONTROL
@@ -944,17 +1101,28 @@ static int __devinit snd_card_als4000_probe(struct pci_dev *pci,
 	 * however there doesn't seem to be an ALSA API for this...
 	 * SPECS_PAGE: 21 */
 
+<<<<<<< HEAD
 	if ((err = snd_als4000_pcm(chip, 0)) < 0) {
 		goto out_err;
 	}
 	if ((err = snd_sbmixer_new(chip)) < 0) {
 		goto out_err;
 	}	    
+=======
+	err = snd_als4000_pcm(chip, 0);
+	if (err < 0)
+		return err;
+
+	err = snd_sbmixer_new(chip);
+	if (err < 0)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (snd_opl3_create(card,
 				iobase + ALS4K_IOB_10_ADLIB_ADDR0,
 				iobase + ALS4K_IOB_12_ADLIB_ADDR2,
 			    OPL3_HW_AUTO, 1, &opl3) < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR "als4000: no OPL device at 0x%lx-0x%lx?\n",
 			   iobase + ALS4K_IOB_10_ADLIB_ADDR0,
 			   iobase + ALS4K_IOB_12_ADLIB_ADDR2);
@@ -962,10 +1130,20 @@ static int __devinit snd_card_als4000_probe(struct pci_dev *pci,
 		if ((err = snd_opl3_hwdep_new(opl3, 0, 1, NULL)) < 0) {
 			goto out_err;
 		}
+=======
+		dev_err(&pci->dev, "no OPL device at 0x%lx-0x%lx?\n",
+			   iobase + ALS4K_IOB_10_ADLIB_ADDR0,
+			   iobase + ALS4K_IOB_12_ADLIB_ADDR2);
+	} else {
+		err = snd_opl3_hwdep_new(opl3, 0, 1, NULL);
+		if (err < 0)
+			return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	snd_als4000_create_gameport(acard, dev);
 
+<<<<<<< HEAD
 	if ((err = snd_card_register(card)) < 0) {
 		goto out_err;
 	}
@@ -991,11 +1169,32 @@ static void __devexit snd_card_als4000_remove(struct pci_dev *pci)
 static int snd_als4000_suspend(struct pci_dev *pci, pm_message_t state)
 {
 	struct snd_card *card = pci_get_drvdata(pci);
+=======
+	err = snd_card_register(card);
+	if (err < 0)
+		return err;
+
+	pci_set_drvdata(pci, card);
+	dev++;
+	return 0;
+}
+
+static int snd_card_als4000_probe(struct pci_dev *pci,
+				  const struct pci_device_id *pci_id)
+{
+	return snd_card_free_on_error(&pci->dev, __snd_card_als4000_probe(pci, pci_id));
+}
+
+static int snd_als4000_suspend(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_card_als4000 *acard = card->private_data;
 	struct snd_sb *chip = acard->chip;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
 	
+<<<<<<< HEAD
 	snd_pcm_suspend_all(chip->pcm);
 	snd_sbmixer_suspend(chip);
 
@@ -1021,6 +1220,18 @@ static int snd_als4000_resume(struct pci_dev *pci)
 	}
 	pci_set_master(pci);
 
+=======
+	snd_sbmixer_suspend(chip);
+	return 0;
+}
+
+static int snd_als4000_resume(struct device *dev)
+{
+	struct snd_card *card = dev_get_drvdata(dev);
+	struct snd_card_als4000 *acard = card->private_data;
+	struct snd_sb *chip = acard->chip;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_als4000_configure(chip);
 	snd_sbdsp_reset(chip);
 	snd_sbmixer_resume(chip);
@@ -1033,6 +1244,7 @@ static int snd_als4000_resume(struct pci_dev *pci)
 	snd_power_change_state(card, SNDRV_CTL_POWER_D0);
 	return 0;
 }
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
 
 
@@ -1059,3 +1271,18 @@ static void __exit alsa_card_als4000_exit(void)
 
 module_init(alsa_card_als4000_init)
 module_exit(alsa_card_als4000_exit)
+=======
+
+static DEFINE_SIMPLE_DEV_PM_OPS(snd_als4000_pm, snd_als4000_suspend, snd_als4000_resume);
+
+static struct pci_driver als4000_driver = {
+	.name = KBUILD_MODNAME,
+	.id_table = snd_als4000_ids,
+	.probe = snd_card_als4000_probe,
+	.driver = {
+		.pm = &snd_als4000_pm,
+	},
+};
+
+module_pci_driver(als4000_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

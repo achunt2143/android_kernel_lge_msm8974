@@ -4,7 +4,11 @@
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
  *
+<<<<<<< HEAD
  * Copyright (c) 2003-2008 Cavium Networks
+=======
+ * Copyright (c) 2003-2016 Cavium, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
@@ -32,6 +36,11 @@
 #ifndef __CVMX_SYSINFO_H__
 #define __CVMX_SYSINFO_H__
 
+<<<<<<< HEAD
+=======
+#include "cvmx-coremask.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OCTEON_SERIAL_LEN 20
 /**
  * Structure describing application specific information.
@@ -50,8 +59,12 @@ struct cvmx_sysinfo {
 	uint64_t system_dram_size;
 
 	/* ptr to memory descriptor block */
+<<<<<<< HEAD
 	void *phy_mem_desc_ptr;
 
+=======
+	uint64_t phy_mem_desc_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Application image specific variables */
 	/* stack top address (virtual) */
@@ -63,7 +76,11 @@ struct cvmx_sysinfo {
 	/* heap size in bytes */
 	uint32_t heap_size;
 	/* coremask defining cores running application */
+<<<<<<< HEAD
 	uint32_t core_mask;
+=======
+	struct cvmx_coremask core_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Deprecated, use cvmx_coremask_first_core() to select init core */
 	uint32_t init_core;
 
@@ -85,7 +102,11 @@ struct cvmx_sysinfo {
 	char board_serial_number[OCTEON_SERIAL_LEN];
 	/*
 	 * Several boards support compact flash on the Octeon boot
+<<<<<<< HEAD
 	 * bus.  The CF memory spaces may be mapped to different
+=======
+	 * bus.	 The CF memory spaces may be mapped to different
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * addresses on different boards.  These values will be 0 if
 	 * CF is not present.  Note that these addresses are physical
 	 * addresses, and it is up to the application to use the
@@ -121,6 +142,7 @@ struct cvmx_sysinfo {
 
 extern struct cvmx_sysinfo *cvmx_sysinfo_get(void);
 
+<<<<<<< HEAD
 /**
  * This function is used in non-simple executive environments (such as
  * Linux kernel, u-boot, etc.)  to configure the minimal fields that
@@ -149,4 +171,6 @@ extern int cvmx_sysinfo_minimal_initialize(void *phy_mem_desc_ptr,
 					   uint8_t board_rev_minor,
 					   uint32_t cpu_clock_hz);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __CVMX_SYSINFO_H__ */

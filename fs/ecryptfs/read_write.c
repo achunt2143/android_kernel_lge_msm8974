@@ -1,8 +1,14 @@
+<<<<<<< HEAD
 /**
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * eCryptfs: Linux filesystem encryption layer
  *
  * Copyright (C) 2007 International Business Machines Corp.
  *   Author(s): Michael A. Halcrow <mahalcro@us.ibm.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -18,10 +24,17 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA
  * 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
 #include <linux/pagemap.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "ecryptfs_kernel.h"
 
 /**
@@ -40,16 +53,23 @@ int ecryptfs_write_lower(struct inode *ecryptfs_inode, char *data,
 			 loff_t offset, size_t size)
 {
 	struct file *lower_file;
+<<<<<<< HEAD
 	mm_segment_t fs_save;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ssize_t rc;
 
 	lower_file = ecryptfs_inode_to_private(ecryptfs_inode)->lower_file;
 	if (!lower_file)
 		return -EIO;
+<<<<<<< HEAD
 	fs_save = get_fs();
 	set_fs(get_ds());
 	rc = vfs_write(lower_file, data, size, &offset);
 	set_fs(fs_save);
+=======
+	rc = kernel_write(lower_file, data, size, &offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_inode_dirty_sync(ecryptfs_inode);
 	return rc;
 }
@@ -78,6 +98,7 @@ int ecryptfs_write_lower_page_segment(struct inode *ecryptfs_inode,
 	loff_t offset;
 	int rc;
 
+<<<<<<< HEAD
 	offset = ((((loff_t)page_for_lower->index) << PAGE_CACHE_SHIFT)
 		  + offset_in_page);
 	virt = kmap(page_for_lower);
@@ -85,6 +106,15 @@ int ecryptfs_write_lower_page_segment(struct inode *ecryptfs_inode,
 	if (rc > 0)
 		rc = 0;
 	kunmap(page_for_lower);
+=======
+	offset = ((((loff_t)page_for_lower->index) << PAGE_SHIFT)
+		  + offset_in_page);
+	virt = kmap_local_page(page_for_lower);
+	rc = ecryptfs_write_lower(ecryptfs_inode, virt, offset, size);
+	if (rc > 0)
+		rc = 0;
+	kunmap_local(virt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return rc;
 }
 
@@ -127,9 +157,15 @@ int ecryptfs_write(struct inode *ecryptfs_inode, char *data, loff_t offset,
 	else
 		pos = offset;
 	while (pos < (offset + size)) {
+<<<<<<< HEAD
 		pgoff_t ecryptfs_page_idx = (pos >> PAGE_CACHE_SHIFT);
 		size_t start_offset_in_page = (pos & ~PAGE_CACHE_MASK);
 		size_t num_bytes = (PAGE_CACHE_SIZE - start_offset_in_page);
+=======
+		pgoff_t ecryptfs_page_idx = (pos >> PAGE_SHIFT);
+		size_t start_offset_in_page = (pos & ~PAGE_MASK);
+		size_t num_bytes = (PAGE_SIZE - start_offset_in_page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		loff_t total_remaining_bytes = ((offset + size) - pos);
 
 		if (fatal_signal_pending(current)) {
@@ -156,7 +192,11 @@ int ecryptfs_write(struct inode *ecryptfs_inode, char *data, loff_t offset,
 			       ecryptfs_page_idx, rc);
 			goto out;
 		}
+<<<<<<< HEAD
 		ecryptfs_page_virt = kmap_atomic(ecryptfs_page);
+=======
+		ecryptfs_page_virt = kmap_local_page(ecryptfs_page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * pos: where we're now writing, offset: where the request was
@@ -169,7 +209,11 @@ int ecryptfs_write(struct inode *ecryptfs_inode, char *data, loff_t offset,
 			 * Fill in zero values to the end of the page */
 			memset(((char *)ecryptfs_page_virt
 				+ start_offset_in_page), 0,
+<<<<<<< HEAD
 				PAGE_CACHE_SIZE - start_offset_in_page);
+=======
+				PAGE_SIZE - start_offset_in_page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* pos >= offset, we are now writing the data request */
@@ -179,7 +223,11 @@ int ecryptfs_write(struct inode *ecryptfs_inode, char *data, loff_t offset,
 			       (data + data_offset), num_bytes);
 			data_offset += num_bytes;
 		}
+<<<<<<< HEAD
 		kunmap_atomic(ecryptfs_page_virt);
+=======
+		kunmap_local(ecryptfs_page_virt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flush_dcache_page(ecryptfs_page);
 		SetPageUptodate(ecryptfs_page);
 		unlock_page(ecryptfs_page);
@@ -190,7 +238,11 @@ int ecryptfs_write(struct inode *ecryptfs_inode, char *data, loff_t offset,
 						ecryptfs_page,
 						start_offset_in_page,
 						data_offset);
+<<<<<<< HEAD
 		page_cache_release(ecryptfs_page);
+=======
+		put_page(ecryptfs_page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc) {
 			printk(KERN_ERR "%s: Error encrypting "
 			       "page; rc = [%d]\n", __func__, rc);
@@ -236,6 +288,7 @@ int ecryptfs_read_lower(char *data, loff_t offset, size_t size,
 			struct inode *ecryptfs_inode)
 {
 	struct file *lower_file;
+<<<<<<< HEAD
 	mm_segment_t fs_save;
 	ssize_t rc;
 
@@ -247,12 +300,23 @@ int ecryptfs_read_lower(char *data, loff_t offset, size_t size,
 	rc = vfs_read(lower_file, data, size, &offset);
 	set_fs(fs_save);
 	return rc;
+=======
+	lower_file = ecryptfs_inode_to_private(ecryptfs_inode)->lower_file;
+	if (!lower_file)
+		return -EIO;
+	return kernel_read(lower_file, data, size, &offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * ecryptfs_read_lower_page_segment
  * @page_for_ecryptfs: The page into which data for eCryptfs will be
  *                     written
+<<<<<<< HEAD
+=======
+ * @page_index: Page index in @page_for_ecryptfs from which to start
+ *		writing
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @offset_in_page: Offset in @page_for_ecryptfs from which to start
  *                  writing
  * @size: The number of bytes to write into @page_for_ecryptfs
@@ -273,12 +337,21 @@ int ecryptfs_read_lower_page_segment(struct page *page_for_ecryptfs,
 	loff_t offset;
 	int rc;
 
+<<<<<<< HEAD
 	offset = ((((loff_t)page_index) << PAGE_CACHE_SHIFT) + offset_in_page);
 	virt = kmap(page_for_ecryptfs);
 	rc = ecryptfs_read_lower(virt, offset, size, ecryptfs_inode);
 	if (rc > 0)
 		rc = 0;
 	kunmap(page_for_ecryptfs);
+=======
+	offset = ((((loff_t)page_index) << PAGE_SHIFT) + offset_in_page);
+	virt = kmap_local_page(page_for_ecryptfs);
+	rc = ecryptfs_read_lower(virt, offset, size, ecryptfs_inode);
+	if (rc > 0)
+		rc = 0;
+	kunmap_local(virt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_dcache_page(page_for_ecryptfs);
 	return rc;
 }

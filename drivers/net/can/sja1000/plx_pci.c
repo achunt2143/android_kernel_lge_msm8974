@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2008-2010 Pavel Cheblakov <P.B.Cheblakov@inp.nsk.su>
  *
@@ -5,6 +9,7 @@
  *	Copyright (C) 2007 Wolfgang Grandegger <wg@grandegger.com>
  *	Copyright (C) 2008 Markus Plessing <plessing@ems-wuensche.com>
  *	Copyright (C) 2008 Sebastian Haas <haas@ems-wuensche.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the version 2 of the GNU General Public License
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -37,6 +44,7 @@
 MODULE_AUTHOR("Pavel Cheblakov <P.B.Cheblakov@inp.nsk.su>");
 MODULE_DESCRIPTION("Socket-CAN driver for PLX90xx PCI-bridge cards with "
 		   "the SJA1000 chips");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("Adlink PCI-7841/cPCI-7841, "
 			"Adlink PCI-7841/cPCI-7841 SE, "
 			"Marathon CAN-bus-PCI, "
@@ -45,6 +53,8 @@ MODULE_SUPPORTED_DEVICE("Adlink PCI-7841/cPCI-7841, "
 			"esd CAN-PCI/PMC/266, "
 			"esd CAN-PCIe/2000, "
 			"IXXAT PC-I 04/PCI")
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL v2");
 
 #define PLX_PCI_MAX_CHAN 2
@@ -68,7 +78,13 @@ struct plx_pci_card {
 					 */
 
 #define PLX_LINT1_EN	0x1		/* Local interrupt 1 enable */
+<<<<<<< HEAD
 #define PLX_LINT2_EN	(1 << 3)	/* Local interrupt 2 enable */
+=======
+#define PLX_LINT1_POL	(1 << 1)	/* Local interrupt 1 polarity */
+#define PLX_LINT2_EN	(1 << 3)	/* Local interrupt 2 enable */
+#define PLX_LINT2_POL	(1 << 4)	/* Local interrupt 2 polarity */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PLX_PCI_INT_EN	(1 << 6)	/* PCI Interrupt Enable */
 #define PLX_PCI_RESET	(1 << 30)	/* PCI Adapter Software Reset */
 
@@ -90,6 +106,12 @@ struct plx_pci_card {
  */
 #define PLX_PCI_OCR	(OCR_TX0_PUSHPULL | OCR_TX1_PUSHPULL)
 
+<<<<<<< HEAD
+=======
+/* OCR setting for ASEM Dual CAN raw */
+#define ASEM_PCI_OCR	0xfe
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * In the CDR register, you should set CBP to 1.
  * You will probably also want to set the clock divider value to 7
@@ -122,18 +144,53 @@ struct plx_pci_card {
 #define ESD_PCI_SUB_SYS_ID_PCIE2000	0x0200
 #define ESD_PCI_SUB_SYS_ID_PCI104200	0x0501
 
+<<<<<<< HEAD
+=======
+#define CAN200PCI_DEVICE_ID		0x9030
+#define CAN200PCI_VENDOR_ID		0x10b5
+#define CAN200PCI_SUB_DEVICE_ID		0x0301
+#define CAN200PCI_SUB_VENDOR_ID		0xe1c5
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IXXAT_PCI_VENDOR_ID		0x10b5
 #define IXXAT_PCI_DEVICE_ID		0x9050
 #define IXXAT_PCI_SUB_SYS_ID		0x2540
 
 #define MARATHON_PCI_DEVICE_ID		0x2715
+<<<<<<< HEAD
+=======
+#define MARATHON_PCIE_DEVICE_ID		0x3432
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define TEWS_PCI_VENDOR_ID		0x1498
 #define TEWS_PCI_DEVICE_ID_TMPC810	0x032A
 
+<<<<<<< HEAD
 static void plx_pci_reset_common(struct pci_dev *pdev);
 static void plx_pci_reset_marathon(struct pci_dev *pdev);
 static void plx9056_pci_reset_common(struct pci_dev *pdev);
+=======
+#define CTI_PCI_VENDOR_ID		0x12c4
+#define CTI_PCI_DEVICE_ID_CRG001	0x0900
+
+#define MOXA_PCI_VENDOR_ID		0x1393
+#define MOXA_PCI_DEVICE_ID		0x0100
+
+#define ASEM_RAW_CAN_VENDOR_ID		0x10b5
+#define ASEM_RAW_CAN_DEVICE_ID		0x9030
+#define ASEM_RAW_CAN_SUB_VENDOR_ID	0x3000
+#define ASEM_RAW_CAN_SUB_DEVICE_ID	0x1001
+#define ASEM_RAW_CAN_SUB_DEVICE_ID_BIS	0x1002
+#define ASEM_RAW_CAN_RST_REGISTER	0x54
+#define ASEM_RAW_CAN_RST_MASK_CAN1	0x20
+#define ASEM_RAW_CAN_RST_MASK_CAN2	0x04
+
+static void plx_pci_reset_common(struct pci_dev *pdev);
+static void plx9056_pci_reset_common(struct pci_dev *pdev);
+static void plx_pci_reset_marathon_pci(struct pci_dev *pdev);
+static void plx_pci_reset_marathon_pcie(struct pci_dev *pdev);
+static void plx_pci_reset_asem_dual_can_raw(struct pci_dev *pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct plx_pci_channel_map {
 	u32 bar;
@@ -158,7 +215,11 @@ struct plx_pci_card_info {
 	void (*reset_func)(struct pci_dev *pdev);
 };
 
+<<<<<<< HEAD
 static struct plx_pci_card_info plx_pci_card_info_adlink __devinitdata = {
+=======
+static struct plx_pci_card_info plx_pci_card_info_adlink = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Adlink PCI-7841/cPCI-7841", 2,
 	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
 	{1, 0x00, 0x00}, { {2, 0x00, 0x80}, {2, 0x80, 0x80} },
@@ -166,7 +227,11 @@ static struct plx_pci_card_info plx_pci_card_info_adlink __devinitdata = {
 	/* based on PLX9052 */
 };
 
+<<<<<<< HEAD
 static struct plx_pci_card_info plx_pci_card_info_adlink_se __devinitdata = {
+=======
+static struct plx_pci_card_info plx_pci_card_info_adlink_se = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"Adlink PCI-7841/cPCI-7841 SE", 2,
 	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
 	{0, 0x00, 0x00}, { {2, 0x00, 0x80}, {2, 0x80, 0x80} },
@@ -174,7 +239,11 @@ static struct plx_pci_card_info plx_pci_card_info_adlink_se __devinitdata = {
 	/* based on PLX9052 */
 };
 
+<<<<<<< HEAD
 static struct plx_pci_card_info plx_pci_card_info_esd200 __devinitdata = {
+=======
+static struct plx_pci_card_info plx_pci_card_info_esd200 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"esd CAN-PCI/CPCI/PCI104/200", 2,
 	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
 	{0, 0x00, 0x00}, { {2, 0x00, 0x80}, {2, 0x100, 0x80} },
@@ -182,7 +251,11 @@ static struct plx_pci_card_info plx_pci_card_info_esd200 __devinitdata = {
 	/* based on PLX9030/9050 */
 };
 
+<<<<<<< HEAD
 static struct plx_pci_card_info plx_pci_card_info_esd266 __devinitdata = {
+=======
+static struct plx_pci_card_info plx_pci_card_info_esd266 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"esd CAN-PCI/PMC/266", 2,
 	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
 	{0, 0x00, 0x00}, { {2, 0x00, 0x80}, {2, 0x100, 0x80} },
@@ -190,7 +263,11 @@ static struct plx_pci_card_info plx_pci_card_info_esd266 __devinitdata = {
 	/* based on PLX9056 */
 };
 
+<<<<<<< HEAD
 static struct plx_pci_card_info plx_pci_card_info_esd2000 __devinitdata = {
+=======
+static struct plx_pci_card_info plx_pci_card_info_esd2000 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"esd CAN-PCIe/2000", 2,
 	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
 	{0, 0x00, 0x00}, { {2, 0x00, 0x80}, {2, 0x100, 0x80} },
@@ -198,7 +275,11 @@ static struct plx_pci_card_info plx_pci_card_info_esd2000 __devinitdata = {
 	/* based on PEX8311 */
 };
 
+<<<<<<< HEAD
 static struct plx_pci_card_info plx_pci_card_info_ixxat __devinitdata = {
+=======
+static struct plx_pci_card_info plx_pci_card_info_ixxat = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"IXXAT PC-I 04/PCI", 2,
 	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
 	{0, 0x00, 0x00}, { {2, 0x00, 0x80}, {2, 0x200, 0x80} },
@@ -206,6 +287,7 @@ static struct plx_pci_card_info plx_pci_card_info_ixxat __devinitdata = {
 	/* based on PLX9050 */
 };
 
+<<<<<<< HEAD
 static struct plx_pci_card_info plx_pci_card_info_marathon __devinitdata = {
 	"Marathon CAN-bus-PCI", 2,
 	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
@@ -215,6 +297,25 @@ static struct plx_pci_card_info plx_pci_card_info_marathon __devinitdata = {
 };
 
 static struct plx_pci_card_info plx_pci_card_info_tews __devinitdata = {
+=======
+static struct plx_pci_card_info plx_pci_card_info_marathon_pci = {
+	"Marathon CAN-bus-PCI", 2,
+	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
+	{0, 0x00, 0x00}, { {2, 0x00, 0x00}, {4, 0x00, 0x00} },
+	&plx_pci_reset_marathon_pci
+	/* based on PLX9052 */
+};
+
+static struct plx_pci_card_info plx_pci_card_info_marathon_pcie = {
+	"Marathon CAN-bus-PCIe", 2,
+	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
+	{0, 0x00, 0x00}, { {2, 0x00, 0x00}, {3, 0x80, 0x00} },
+	&plx_pci_reset_marathon_pcie
+	/* based on PEX8311 */
+};
+
+static struct plx_pci_card_info plx_pci_card_info_tews = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"TEWS TECHNOLOGIES TPMC810", 2,
 	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
 	{0, 0x00, 0x00}, { {2, 0x000, 0x80}, {2, 0x100, 0x80} },
@@ -222,7 +323,43 @@ static struct plx_pci_card_info plx_pci_card_info_tews __devinitdata = {
 	/* based on PLX9030 */
 };
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(plx_pci_tbl) = {
+=======
+static struct plx_pci_card_info plx_pci_card_info_cti = {
+	"Connect Tech Inc. CANpro/104-Plus Opto (CRG001)", 2,
+	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
+	{0, 0x00, 0x00}, { {2, 0x000, 0x80}, {2, 0x100, 0x80} },
+	&plx_pci_reset_common
+	/* based on PLX9030 */
+};
+
+static struct plx_pci_card_info plx_pci_card_info_elcus = {
+	"Eclus CAN-200-PCI", 2,
+	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
+	{1, 0x00, 0x00}, { {2, 0x00, 0x80}, {3, 0x00, 0x80} },
+	&plx_pci_reset_common
+	/* based on PLX9030 */
+};
+
+static struct plx_pci_card_info plx_pci_card_info_moxa = {
+	"MOXA", 2,
+	PLX_PCI_CAN_CLOCK, PLX_PCI_OCR, PLX_PCI_CDR,
+	{0, 0x00, 0x00}, { {0, 0x00, 0x80}, {1, 0x00, 0x80} },
+	&plx_pci_reset_common
+	 /* based on PLX9052 */
+};
+
+static struct plx_pci_card_info plx_pci_card_info_asem_dual_can = {
+	"ASEM Dual CAN raw PCI", 2,
+	PLX_PCI_CAN_CLOCK, ASEM_PCI_OCR, PLX_PCI_CDR,
+	{0, 0x00, 0x00}, { {2, 0x00, 0x00}, {4, 0x00, 0x00} },
+	&plx_pci_reset_asem_dual_can_raw
+	/* based on PLX9030 */
+};
+
+static const struct pci_device_id plx_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		/* Adlink PCI-7841/cPCI-7841 */
 		ADLINK_PCI_VENDOR_ID, ADLINK_PCI_DEVICE_ID,
@@ -291,7 +428,18 @@ static DEFINE_PCI_DEVICE_TABLE(plx_pci_tbl) = {
 		PCI_VENDOR_ID_PLX, MARATHON_PCI_DEVICE_ID,
 		PCI_ANY_ID, PCI_ANY_ID,
 		0, 0,
+<<<<<<< HEAD
 		(kernel_ulong_t)&plx_pci_card_info_marathon
+=======
+		(kernel_ulong_t)&plx_pci_card_info_marathon_pci
+	},
+	{
+		/* Marathon CAN-bus-PCIe card */
+		PCI_VENDOR_ID_PLX, MARATHON_PCIE_DEVICE_ID,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0, 0,
+		(kernel_ulong_t)&plx_pci_card_info_marathon_pcie
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{
 		/* TEWS TECHNOLOGIES TPMC810 card */
@@ -300,6 +448,44 @@ static DEFINE_PCI_DEVICE_TABLE(plx_pci_tbl) = {
 		0, 0,
 		(kernel_ulong_t)&plx_pci_card_info_tews
 	},
+<<<<<<< HEAD
+=======
+	{
+		/* Connect Tech Inc. CANpro/104-Plus Opto (CRG001) card */
+		PCI_VENDOR_ID_PLX, PCI_DEVICE_ID_PLX_9030,
+		CTI_PCI_VENDOR_ID, CTI_PCI_DEVICE_ID_CRG001,
+		0, 0,
+		(kernel_ulong_t)&plx_pci_card_info_cti
+	},
+	{
+		/* Elcus CAN-200-PCI */
+		CAN200PCI_VENDOR_ID, CAN200PCI_DEVICE_ID,
+		CAN200PCI_SUB_VENDOR_ID, CAN200PCI_SUB_DEVICE_ID,
+		0, 0,
+		(kernel_ulong_t)&plx_pci_card_info_elcus
+	},
+	{
+		/* moxa */
+		MOXA_PCI_VENDOR_ID, MOXA_PCI_DEVICE_ID,
+		PCI_ANY_ID, PCI_ANY_ID,
+		0, 0,
+		(kernel_ulong_t)&plx_pci_card_info_moxa
+	},
+	{
+		/* ASEM Dual CAN raw */
+		ASEM_RAW_CAN_VENDOR_ID, ASEM_RAW_CAN_DEVICE_ID,
+		ASEM_RAW_CAN_SUB_VENDOR_ID, ASEM_RAW_CAN_SUB_DEVICE_ID,
+		0, 0,
+		(kernel_ulong_t)&plx_pci_card_info_asem_dual_can
+	},
+	{
+		/* ASEM Dual CAN raw -new model */
+		ASEM_RAW_CAN_VENDOR_ID, ASEM_RAW_CAN_DEVICE_ID,
+		ASEM_RAW_CAN_SUB_VENDOR_ID, ASEM_RAW_CAN_SUB_DEVICE_ID_BIS,
+		0, 0,
+		(kernel_ulong_t)&plx_pci_card_info_asem_dual_can
+	},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0,}
 };
 MODULE_DEVICE_TABLE(pci, plx_pci_tbl);
@@ -329,20 +515,35 @@ static inline int plx_pci_check_sja1000(const struct sja1000_priv *priv)
 	 */
 	if ((priv->read_reg(priv, REG_CR) & REG_CR_BASICCAN_INITIAL_MASK) ==
 	    REG_CR_BASICCAN_INITIAL &&
+<<<<<<< HEAD
 	    (priv->read_reg(priv, SJA1000_REG_SR) == REG_SR_BASICCAN_INITIAL) &&
 	    (priv->read_reg(priv, REG_IR) == REG_IR_BASICCAN_INITIAL))
 		flag = 1;
 
 	/* Bring the SJA1000 into the PeliCAN mode*/
 	priv->write_reg(priv, REG_CDR, CDR_PELICAN);
+=======
+	    (priv->read_reg(priv, SJA1000_SR) == REG_SR_BASICCAN_INITIAL) &&
+	    (priv->read_reg(priv, SJA1000_IR) == REG_IR_BASICCAN_INITIAL))
+		flag = 1;
+
+	/* Bring the SJA1000 into the PeliCAN mode*/
+	priv->write_reg(priv, SJA1000_CDR, CDR_PELICAN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Check registers after reset in the PeliCAN mode.
 	 * See states on p. 23 of the Datasheet.
 	 */
+<<<<<<< HEAD
 	if (priv->read_reg(priv, REG_MOD) == REG_MOD_PELICAN_INITIAL &&
 	    priv->read_reg(priv, SJA1000_REG_SR) == REG_SR_PELICAN_INITIAL &&
 	    priv->read_reg(priv, REG_IR) == REG_IR_PELICAN_INITIAL)
+=======
+	if (priv->read_reg(priv, SJA1000_MOD) == REG_MOD_PELICAN_INITIAL &&
+	    priv->read_reg(priv, SJA1000_SR) == REG_SR_PELICAN_INITIAL &&
+	    priv->read_reg(priv, SJA1000_IR) == REG_IR_PELICAN_INITIAL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return flag;
 
 	return 0;
@@ -398,8 +599,13 @@ static void plx9056_pci_reset_common(struct pci_dev *pdev)
 	iowrite32(cntrl, card->conf_addr + PLX9056_CNTRL);
 };
 
+<<<<<<< HEAD
 /* Special reset function for Marathon card */
 static void plx_pci_reset_marathon(struct pci_dev *pdev)
+=======
+/* Special reset function for Marathon CAN-bus-PCI card */
+static void plx_pci_reset_marathon_pci(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *reset_addr;
 	int i;
@@ -421,6 +627,62 @@ static void plx_pci_reset_marathon(struct pci_dev *pdev)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/* Special reset function for Marathon CAN-bus-PCIe card */
+static void plx_pci_reset_marathon_pcie(struct pci_dev *pdev)
+{
+	void __iomem *addr;
+	void __iomem *reset_addr;
+	int i;
+
+	plx9056_pci_reset_common(pdev);
+
+	for (i = 0; i < 2; i++) {
+		struct plx_pci_channel_map *chan_map =
+			&plx_pci_card_info_marathon_pcie.chan_map_tbl[i];
+		addr = pci_iomap(pdev, chan_map->bar, chan_map->size);
+		if (!addr) {
+			dev_err(&pdev->dev, "Failed to remap reset "
+				"space %d (BAR%d)\n", i, chan_map->bar);
+		} else {
+			/* reset the SJA1000 chip */
+			#define MARATHON_PCIE_RESET_OFFSET 32
+			reset_addr = addr + chan_map->offset +
+			             MARATHON_PCIE_RESET_OFFSET;
+			iowrite8(0x1, reset_addr);
+			udelay(100);
+			pci_iounmap(pdev, addr);
+		}
+	}
+}
+
+/* Special reset function for ASEM Dual CAN raw card */
+static void plx_pci_reset_asem_dual_can_raw(struct pci_dev *pdev)
+{
+	void __iomem *bar0_addr;
+	u8 tmpval;
+
+	plx_pci_reset_common(pdev);
+
+	bar0_addr = pci_iomap(pdev, 0, 0);
+	if (!bar0_addr) {
+		dev_err(&pdev->dev, "Failed to remap reset space 0 (BAR0)\n");
+		return;
+	}
+
+	/* reset the two SJA1000 chips */
+	tmpval = ioread8(bar0_addr + ASEM_RAW_CAN_RST_REGISTER);
+	tmpval &= ~(ASEM_RAW_CAN_RST_MASK_CAN1 | ASEM_RAW_CAN_RST_MASK_CAN2);
+	iowrite8(tmpval, bar0_addr + ASEM_RAW_CAN_RST_REGISTER);
+	usleep_range(300, 400);
+	tmpval |= ASEM_RAW_CAN_RST_MASK_CAN1 | ASEM_RAW_CAN_RST_MASK_CAN2;
+	iowrite8(tmpval, bar0_addr + ASEM_RAW_CAN_RST_REGISTER);
+	usleep_range(300, 400);
+	pci_iounmap(pdev, bar0_addr);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void plx_pci_del_card(struct pci_dev *pdev)
 {
 	struct plx_pci_card *card = pci_get_drvdata(pdev);
@@ -447,7 +709,12 @@ static void plx_pci_del_card(struct pci_dev *pdev)
 	 * Disable interrupts from PCI-card and disable local
 	 * interrupts
 	 */
+<<<<<<< HEAD
 	if (pdev->device != PCI_DEVICE_ID_PLX_9056)
+=======
+	if (pdev->device != PCI_DEVICE_ID_PLX_9056 &&
+	    pdev->device != MARATHON_PCIE_DEVICE_ID)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iowrite32(0x0, card->conf_addr + PLX_INTCSR);
 	else
 		iowrite32(0x0, card->conf_addr + PLX9056_INTCSR);
@@ -458,15 +725,23 @@ static void plx_pci_del_card(struct pci_dev *pdev)
 	kfree(card);
 
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Probe PLX90xx based device for the SJA1000 chips and register each
  * available CAN channel to SJA1000 Socket-CAN subsystem.
  */
+<<<<<<< HEAD
 static int __devinit plx_pci_add_card(struct pci_dev *pdev,
 				      const struct pci_device_id *ent)
+=======
+static int plx_pci_add_card(struct pci_dev *pdev,
+			    const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sja1000_priv *priv;
 	struct net_device *dev;
@@ -489,7 +764,10 @@ static int __devinit plx_pci_add_card(struct pci_dev *pdev,
 	/* Allocate card structures to hold addresses, ... */
 	card = kzalloc(sizeof(*card), GFP_KERNEL);
 	if (!card) {
+<<<<<<< HEAD
 		dev_err(&pdev->dev, "Unable to allocate memory\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_disable_device(pdev);
 		return -ENOMEM;
 	}
@@ -550,6 +828,10 @@ static int __devinit plx_pci_add_card(struct pci_dev *pdev,
 			priv->cdr = ci->cdr;
 
 			SET_NETDEV_DEV(dev, &pdev->dev);
+<<<<<<< HEAD
+=======
+			dev->dev_id = i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Register SJA1000 device */
 			err = register_sja1000dev(dev);
@@ -581,7 +863,12 @@ static int __devinit plx_pci_add_card(struct pci_dev *pdev,
 	 * Enable interrupts from PCI-card (PLX90xx) and enable Local_1,
 	 * Local_2 interrupts from the SJA1000 chips
 	 */
+<<<<<<< HEAD
 	if (pdev->device != PCI_DEVICE_ID_PLX_9056) {
+=======
+	if (pdev->device != PCI_DEVICE_ID_PLX_9056 &&
+	    pdev->device != MARATHON_PCIE_DEVICE_ID) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		val = ioread32(card->conf_addr + PLX_INTCSR);
 		if (pdev->subsystem_vendor == PCI_VENDOR_ID_ESDGMBH)
 			val |= PLX_LINT1_EN | PLX_PCI_INT_EN;
@@ -609,6 +896,7 @@ static struct pci_driver plx_pci_driver = {
 	.remove = plx_pci_del_card,
 };
 
+<<<<<<< HEAD
 static int __init plx_pci_init(void)
 {
 	return pci_register_driver(&plx_pci_driver);
@@ -621,3 +909,6 @@ static void __exit plx_pci_exit(void)
 
 module_init(plx_pci_init);
 module_exit(plx_pci_exit);
+=======
+module_pci_driver(plx_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

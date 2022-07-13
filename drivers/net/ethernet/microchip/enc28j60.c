@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Microchip ENC28J60 ethernet driver (MAC + PHY)
  *
@@ -5,11 +9,14 @@
  * Author: Claudio Lanconelli <lanconelli.claudio@eptar.com>
  * based on enc28j60.c written by David Anders for 2.4 kernel version
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * $Id: enc28j60.c,v 1.22 2007/12/20 10:47:01 claudio Exp $
  */
 
@@ -18,9 +25,15 @@
 #include <linux/types.h>
 #include <linux/fcntl.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/string.h>
 #include <linux/errno.h>
 #include <linux/init.h>
+=======
+#include <linux/property.h>
+#include <linux/string.h>
+#include <linux/errno.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -32,7 +45,11 @@
 #include "enc28j60_hw.h"
 
 #define DRV_NAME	"enc28j60"
+<<<<<<< HEAD
 #define DRV_VERSION	"1.01"
+=======
+#define DRV_VERSION	"1.02"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SPI_OPLEN	1
 
@@ -40,10 +57,18 @@
 	(NETIF_MSG_PROBE | NETIF_MSG_IFUP | NETIF_MSG_IFDOWN | NETIF_MSG_LINK)
 
 /* Buffer size required for the largest SPI transfer (i.e., reading a
+<<<<<<< HEAD
  * frame). */
 #define SPI_TRANSFER_BUF_LEN	(4 + MAX_FRAMELEN)
 
 #define TX_TIMEOUT	(4 * HZ)
+=======
+ * frame).
+ */
+#define SPI_TRANSFER_BUF_LEN	(4 + MAX_FRAMELEN)
+
+#define TX_TIMEOUT		(4 * HZ)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Max TX retries in case of collision as suggested by errata datasheet */
 #define MAX_TX_RETRYCOUNT	16
@@ -61,7 +86,10 @@ struct enc28j60_net {
 	struct mutex lock;
 	struct sk_buff *tx_skb;
 	struct work_struct tx_work;
+<<<<<<< HEAD
 	struct work_struct irq_work;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct work_struct setrx_work;
 	struct work_struct restart_work;
 	u8 bank;		/* current register bank selected */
@@ -82,22 +110,40 @@ static struct {
 
 /*
  * SPI read buffer
+<<<<<<< HEAD
  * wait for the SPI transfer and copy received data to destination
+=======
+ * Wait for the SPI transfer and copy received data to destination.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int
 spi_read_buf(struct enc28j60_net *priv, int len, u8 *data)
 {
+<<<<<<< HEAD
 	u8 *rx_buf = priv->spi_transfer_buf + 4;
 	u8 *tx_buf = priv->spi_transfer_buf;
 	struct spi_transfer t = {
 		.tx_buf = tx_buf,
 		.rx_buf = rx_buf,
 		.len = SPI_OPLEN + len,
+=======
+	struct device *dev = &priv->spi->dev;
+	u8 *rx_buf = priv->spi_transfer_buf + 4;
+	u8 *tx_buf = priv->spi_transfer_buf;
+	struct spi_transfer tx = {
+		.tx_buf = tx_buf,
+		.len = SPI_OPLEN,
+	};
+	struct spi_transfer rx = {
+		.rx_buf = rx_buf,
+		.len = len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 	struct spi_message msg;
 	int ret;
 
 	tx_buf[0] = ENC28J60_READ_BUF_MEM;
+<<<<<<< HEAD
 	tx_buf[1] = tx_buf[2] = tx_buf[3] = 0;	/* don't care */
 
 	spi_message_init(&msg);
@@ -110,6 +156,21 @@ spi_read_buf(struct enc28j60_net *priv, int len, u8 *data)
 	if (ret && netif_msg_drv(priv))
 		printk(KERN_DEBUG DRV_NAME ": %s() failed: ret = %d\n",
 			__func__, ret);
+=======
+
+	spi_message_init(&msg);
+	spi_message_add_tail(&tx, &msg);
+	spi_message_add_tail(&rx, &msg);
+
+	ret = spi_sync(priv->spi, &msg);
+	if (ret == 0) {
+		memcpy(data, rx_buf, len);
+		ret = msg.status;
+	}
+	if (ret && netif_msg_drv(priv))
+		dev_printk(KERN_DEBUG, dev, "%s() failed: ret = %d\n",
+			   __func__, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -117,9 +178,15 @@ spi_read_buf(struct enc28j60_net *priv, int len, u8 *data)
 /*
  * SPI write buffer
  */
+<<<<<<< HEAD
 static int spi_write_buf(struct enc28j60_net *priv, int len,
 			 const u8 *data)
 {
+=======
+static int spi_write_buf(struct enc28j60_net *priv, int len, const u8 *data)
+{
+	struct device *dev = &priv->spi->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	if (len > SPI_TRANSFER_BUF_LEN - 1 || len <= 0)
@@ -129,8 +196,13 @@ static int spi_write_buf(struct enc28j60_net *priv, int len,
 		memcpy(&priv->spi_transfer_buf[1], data, len);
 		ret = spi_write(priv->spi, priv->spi_transfer_buf, len + 1);
 		if (ret && netif_msg_drv(priv))
+<<<<<<< HEAD
 			printk(KERN_DEBUG DRV_NAME ": %s() failed: ret = %d\n",
 				__func__, ret);
+=======
+			dev_printk(KERN_DEBUG, dev, "%s() failed: ret = %d\n",
+				   __func__, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return ret;
 }
@@ -138,9 +210,15 @@ static int spi_write_buf(struct enc28j60_net *priv, int len,
 /*
  * basic SPI read operation
  */
+<<<<<<< HEAD
 static u8 spi_read_op(struct enc28j60_net *priv, u8 op,
 			   u8 addr)
 {
+=======
+static u8 spi_read_op(struct enc28j60_net *priv, u8 op, u8 addr)
+{
+	struct device *dev = &priv->spi->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 tx_buf[2];
 	u8 rx_buf[4];
 	u8 val = 0;
@@ -154,8 +232,13 @@ static u8 spi_read_op(struct enc28j60_net *priv, u8 op,
 	tx_buf[0] = op | (addr & ADDR_MASK);
 	ret = spi_write_then_read(priv->spi, tx_buf, 1, rx_buf, slen);
 	if (ret)
+<<<<<<< HEAD
 		printk(KERN_DEBUG DRV_NAME ": %s() failed: ret = %d\n",
 			__func__, ret);
+=======
+		dev_printk(KERN_DEBUG, dev, "%s() failed: ret = %d\n",
+			   __func__, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		val = rx_buf[slen - 1];
 
@@ -165,28 +248,45 @@ static u8 spi_read_op(struct enc28j60_net *priv, u8 op,
 /*
  * basic SPI write operation
  */
+<<<<<<< HEAD
 static int spi_write_op(struct enc28j60_net *priv, u8 op,
 			u8 addr, u8 val)
 {
+=======
+static int spi_write_op(struct enc28j60_net *priv, u8 op, u8 addr, u8 val)
+{
+	struct device *dev = &priv->spi->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	priv->spi_transfer_buf[0] = op | (addr & ADDR_MASK);
 	priv->spi_transfer_buf[1] = val;
 	ret = spi_write(priv->spi, priv->spi_transfer_buf, 2);
 	if (ret && netif_msg_drv(priv))
+<<<<<<< HEAD
 		printk(KERN_DEBUG DRV_NAME ": %s() failed: ret = %d\n",
 			__func__, ret);
+=======
+		dev_printk(KERN_DEBUG, dev, "%s() failed: ret = %d\n",
+			   __func__, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 static void enc28j60_soft_reset(struct enc28j60_net *priv)
 {
+<<<<<<< HEAD
 	if (netif_msg_hw(priv))
 		printk(KERN_DEBUG DRV_NAME ": %s() enter\n", __func__);
 
 	spi_write_op(priv, ENC28J60_SOFT_RESET, 0, ENC28J60_SOFT_RESET);
 	/* Errata workaround #1, CLKRDY check is unreliable,
 	 * delay at least 1 mS instead */
+=======
+	spi_write_op(priv, ENC28J60_SOFT_RESET, 0, ENC28J60_SOFT_RESET);
+	/* Errata workaround #1, CLKRDY check is unreliable,
+	 * delay at least 1 ms instead */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	udelay(2000);
 }
 
@@ -198,7 +298,11 @@ static void enc28j60_set_bank(struct enc28j60_net *priv, u8 addr)
 	u8 b = (addr & BANK_MASK) >> 5;
 
 	/* These registers (EIE, EIR, ESTAT, ECON2, ECON1)
+<<<<<<< HEAD
 	 * are present in all banks, no need to switch bank
+=======
+	 * are present in all banks, no need to switch bank.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (addr >= EIE && addr <= ECON1)
 		return;
@@ -237,15 +341,23 @@ static void enc28j60_set_bank(struct enc28j60_net *priv, u8 addr)
 /*
  * Register bit field Set
  */
+<<<<<<< HEAD
 static void nolock_reg_bfset(struct enc28j60_net *priv,
 				      u8 addr, u8 mask)
+=======
+static void nolock_reg_bfset(struct enc28j60_net *priv, u8 addr, u8 mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	enc28j60_set_bank(priv, addr);
 	spi_write_op(priv, ENC28J60_BIT_FIELD_SET, addr, mask);
 }
 
+<<<<<<< HEAD
 static void locked_reg_bfset(struct enc28j60_net *priv,
 				      u8 addr, u8 mask)
+=======
+static void locked_reg_bfset(struct enc28j60_net *priv, u8 addr, u8 mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&priv->lock);
 	nolock_reg_bfset(priv, addr, mask);
@@ -255,15 +367,23 @@ static void locked_reg_bfset(struct enc28j60_net *priv,
 /*
  * Register bit field Clear
  */
+<<<<<<< HEAD
 static void nolock_reg_bfclr(struct enc28j60_net *priv,
 				      u8 addr, u8 mask)
+=======
+static void nolock_reg_bfclr(struct enc28j60_net *priv, u8 addr, u8 mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	enc28j60_set_bank(priv, addr);
 	spi_write_op(priv, ENC28J60_BIT_FIELD_CLR, addr, mask);
 }
 
+<<<<<<< HEAD
 static void locked_reg_bfclr(struct enc28j60_net *priv,
 				      u8 addr, u8 mask)
+=======
+static void locked_reg_bfclr(struct enc28j60_net *priv, u8 addr, u8 mask)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&priv->lock);
 	nolock_reg_bfclr(priv, addr, mask);
@@ -273,15 +393,23 @@ static void locked_reg_bfclr(struct enc28j60_net *priv,
 /*
  * Register byte read
  */
+<<<<<<< HEAD
 static int nolock_regb_read(struct enc28j60_net *priv,
 				     u8 address)
+=======
+static int nolock_regb_read(struct enc28j60_net *priv, u8 address)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	enc28j60_set_bank(priv, address);
 	return spi_read_op(priv, ENC28J60_READ_CTRL_REG, address);
 }
 
+<<<<<<< HEAD
 static int locked_regb_read(struct enc28j60_net *priv,
 				     u8 address)
+=======
+static int locked_regb_read(struct enc28j60_net *priv, u8 address)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -295,8 +423,12 @@ static int locked_regb_read(struct enc28j60_net *priv,
 /*
  * Register word read
  */
+<<<<<<< HEAD
 static int nolock_regw_read(struct enc28j60_net *priv,
 				     u8 address)
+=======
+static int nolock_regw_read(struct enc28j60_net *priv, u8 address)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int rl, rh;
 
@@ -307,8 +439,12 @@ static int nolock_regw_read(struct enc28j60_net *priv,
 	return (rh << 8) | rl;
 }
 
+<<<<<<< HEAD
 static int locked_regw_read(struct enc28j60_net *priv,
 				     u8 address)
+=======
+static int locked_regw_read(struct enc28j60_net *priv, u8 address)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int ret;
 
@@ -322,15 +458,23 @@ static int locked_regw_read(struct enc28j60_net *priv,
 /*
  * Register byte write
  */
+<<<<<<< HEAD
 static void nolock_regb_write(struct enc28j60_net *priv,
 				       u8 address, u8 data)
+=======
+static void nolock_regb_write(struct enc28j60_net *priv, u8 address, u8 data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	enc28j60_set_bank(priv, address);
 	spi_write_op(priv, ENC28J60_WRITE_CTRL_REG, address, data);
 }
 
+<<<<<<< HEAD
 static void locked_regb_write(struct enc28j60_net *priv,
 				       u8 address, u8 data)
+=======
+static void locked_regb_write(struct enc28j60_net *priv, u8 address, u8 data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&priv->lock);
 	nolock_regb_write(priv, address, data);
@@ -340,8 +484,12 @@ static void locked_regb_write(struct enc28j60_net *priv,
 /*
  * Register word write
  */
+<<<<<<< HEAD
 static void nolock_regw_write(struct enc28j60_net *priv,
 				       u8 address, u16 data)
+=======
+static void nolock_regw_write(struct enc28j60_net *priv, u8 address, u16 data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	enc28j60_set_bank(priv, address);
 	spi_write_op(priv, ENC28J60_WRITE_CTRL_REG, address, (u8) data);
@@ -349,8 +497,12 @@ static void nolock_regw_write(struct enc28j60_net *priv,
 		     (u8) (data >> 8));
 }
 
+<<<<<<< HEAD
 static void locked_regw_write(struct enc28j60_net *priv,
 				       u8 address, u16 data)
+=======
+static void locked_regw_write(struct enc28j60_net *priv, u8 address, u16 data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&priv->lock);
 	nolock_regw_write(priv, address, data);
@@ -359,20 +511,38 @@ static void locked_regw_write(struct enc28j60_net *priv,
 
 /*
  * Buffer memory read
+<<<<<<< HEAD
  * Select the starting address and execute a SPI buffer read
  */
 static void enc28j60_mem_read(struct enc28j60_net *priv,
 				     u16 addr, int len, u8 *data)
+=======
+ * Select the starting address and execute a SPI buffer read.
+ */
+static void enc28j60_mem_read(struct enc28j60_net *priv, u16 addr, int len,
+			      u8 *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	mutex_lock(&priv->lock);
 	nolock_regw_write(priv, ERDPTL, addr);
 #ifdef CONFIG_ENC28J60_WRITEVERIFY
 	if (netif_msg_drv(priv)) {
+<<<<<<< HEAD
 		u16 reg;
 		reg = nolock_regw_read(priv, ERDPTL);
 		if (reg != addr)
 			printk(KERN_DEBUG DRV_NAME ": %s() error writing ERDPT "
 				"(0x%04x - 0x%04x)\n", __func__, reg, addr);
+=======
+		struct device *dev = &priv->spi->dev;
+		u16 reg;
+
+		reg = nolock_regw_read(priv, ERDPTL);
+		if (reg != addr)
+			dev_printk(KERN_DEBUG, dev,
+				   "%s() error writing ERDPT (0x%04x - 0x%04x)\n",
+				   __func__, reg, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	spi_read_buf(priv, len, data);
@@ -385,6 +555,11 @@ static void enc28j60_mem_read(struct enc28j60_net *priv,
 static void
 enc28j60_packet_write(struct enc28j60_net *priv, int len, const u8 *data)
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = &priv->spi->dev;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&priv->lock);
 	/* Set the write pointer to start of transmit buffer area */
 	nolock_regw_write(priv, EWRPTL, TXSTART_INIT);
@@ -393,9 +568,15 @@ enc28j60_packet_write(struct enc28j60_net *priv, int len, const u8 *data)
 		u16 reg;
 		reg = nolock_regw_read(priv, EWRPTL);
 		if (reg != TXSTART_INIT)
+<<<<<<< HEAD
 			printk(KERN_DEBUG DRV_NAME
 				": %s() ERWPT:0x%04x != 0x%04x\n",
 				__func__, reg, TXSTART_INIT);
+=======
+			dev_printk(KERN_DEBUG, dev,
+				   "%s() ERWPT:0x%04x != 0x%04x\n",
+				   __func__, reg, TXSTART_INIT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	/* Set the TXND pointer to correspond to the packet size given */
@@ -403,6 +584,7 @@ enc28j60_packet_write(struct enc28j60_net *priv, int len, const u8 *data)
 	/* write per-packet control byte */
 	spi_write_op(priv, ENC28J60_WRITE_BUF_MEM, 0, 0x00);
 	if (netif_msg_hw(priv))
+<<<<<<< HEAD
 		printk(KERN_DEBUG DRV_NAME
 			": %s() after control byte ERWPT:0x%04x\n",
 			__func__, nolock_regw_read(priv, EWRPTL));
@@ -420,13 +602,35 @@ static unsigned long msec20_to_jiffies;
 static int poll_ready(struct enc28j60_net *priv, u8 reg, u8 mask, u8 val)
 {
 	unsigned long timeout = jiffies + msec20_to_jiffies;
+=======
+		dev_printk(KERN_DEBUG, dev,
+			   "%s() after control byte ERWPT:0x%04x\n",
+			   __func__, nolock_regw_read(priv, EWRPTL));
+	/* copy the packet into the transmit buffer */
+	spi_write_buf(priv, len, data);
+	if (netif_msg_hw(priv))
+		dev_printk(KERN_DEBUG, dev,
+			   "%s() after write packet ERWPT:0x%04x, len=%d\n",
+			   __func__, nolock_regw_read(priv, EWRPTL), len);
+	mutex_unlock(&priv->lock);
+}
+
+static int poll_ready(struct enc28j60_net *priv, u8 reg, u8 mask, u8 val)
+{
+	struct device *dev = &priv->spi->dev;
+	unsigned long timeout = jiffies + msecs_to_jiffies(20);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 20 msec timeout read */
 	while ((nolock_regb_read(priv, reg) & mask) != val) {
 		if (time_after(jiffies, timeout)) {
 			if (netif_msg_drv(priv))
+<<<<<<< HEAD
 				dev_dbg(&priv->spi->dev,
 					"reg %02x ready timeout!\n", reg);
+=======
+				dev_dbg(dev, "reg %02x ready timeout!\n", reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ETIMEDOUT;
 		}
 		cpu_relax();
@@ -444,7 +648,11 @@ static int wait_phy_ready(struct enc28j60_net *priv)
 
 /*
  * PHY register read
+<<<<<<< HEAD
  * PHY registers are not accessed directly, but through the MII
+=======
+ * PHY registers are not accessed directly, but through the MII.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static u16 enc28j60_phy_read(struct enc28j60_net *priv, u8 address)
 {
@@ -460,7 +668,11 @@ static u16 enc28j60_phy_read(struct enc28j60_net *priv, u8 address)
 	/* quit reading */
 	nolock_regb_write(priv, MICMD, 0x00);
 	/* return the data */
+<<<<<<< HEAD
 	ret  = nolock_regw_read(priv, MIRDL);
+=======
+	ret = nolock_regw_read(priv, MIRDL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&priv->lock);
 
 	return ret;
@@ -489,13 +701,22 @@ static int enc28j60_set_hw_macaddr(struct net_device *ndev)
 {
 	int ret;
 	struct enc28j60_net *priv = netdev_priv(ndev);
+<<<<<<< HEAD
+=======
+	struct device *dev = &priv->spi->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&priv->lock);
 	if (!priv->hw_enable) {
 		if (netif_msg_drv(priv))
+<<<<<<< HEAD
 			printk(KERN_INFO DRV_NAME
 				": %s: Setting MAC address to %pM\n",
 				ndev->name, ndev->dev_addr);
+=======
+			dev_info(dev, "%s: Setting MAC address to %pM\n",
+				 ndev->name, ndev->dev_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* NOTE: MAC address in ENC28J60 is byte-backward */
 		nolock_regb_write(priv, MAADR5, ndev->dev_addr[0]);
 		nolock_regb_write(priv, MAADR4, ndev->dev_addr[1]);
@@ -506,9 +727,15 @@ static int enc28j60_set_hw_macaddr(struct net_device *ndev)
 		ret = 0;
 	} else {
 		if (netif_msg_drv(priv))
+<<<<<<< HEAD
 			printk(KERN_DEBUG DRV_NAME
 				": %s() Hardware must be disabled to set "
 				"Mac address\n", __func__);
+=======
+			dev_printk(KERN_DEBUG, dev,
+				   "%s() Hardware must be disabled to set Mac address\n",
+				   __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBUSY;
 	}
 	mutex_unlock(&priv->lock);
@@ -527,8 +754,12 @@ static int enc28j60_set_mac_address(struct net_device *dev, void *addr)
 	if (!is_valid_ether_addr(address->sa_data))
 		return -EADDRNOTAVAIL;
 
+<<<<<<< HEAD
 	dev->addr_assign_type &= ~NET_ADDR_RANDOM;
 	memcpy(dev->dev_addr, address->sa_data, dev->addr_len);
+=======
+	eth_hw_addr_set(dev, address->sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return enc28j60_set_hw_macaddr(dev);
 }
 
@@ -537,6 +768,7 @@ static int enc28j60_set_mac_address(struct net_device *dev, void *addr)
  */
 static void enc28j60_dump_regs(struct enc28j60_net *priv, const char *msg)
 {
+<<<<<<< HEAD
 	mutex_lock(&priv->lock);
 	printk(KERN_DEBUG DRV_NAME " %s\n"
 		"HwRevID: 0x%02x\n"
@@ -564,6 +796,38 @@ static void enc28j60_dump_regs(struct enc28j60_net *priv, const char *msg)
 		nolock_regb_read(priv, MACLCON1),
 		nolock_regb_read(priv, MACLCON2),
 		nolock_regb_read(priv, MAPHSUP));
+=======
+	struct device *dev = &priv->spi->dev;
+
+	mutex_lock(&priv->lock);
+	dev_printk(KERN_DEBUG, dev,
+		   " %s\n"
+		   "HwRevID: 0x%02x\n"
+		   "Cntrl: ECON1 ECON2 ESTAT  EIR  EIE\n"
+		   "       0x%02x  0x%02x  0x%02x  0x%02x  0x%02x\n"
+		   "MAC  : MACON1 MACON3 MACON4\n"
+		   "       0x%02x   0x%02x   0x%02x\n"
+		   "Rx   : ERXST  ERXND  ERXWRPT ERXRDPT ERXFCON EPKTCNT MAMXFL\n"
+		   "       0x%04x 0x%04x 0x%04x  0x%04x  "
+		   "0x%02x    0x%02x    0x%04x\n"
+		   "Tx   : ETXST  ETXND  MACLCON1 MACLCON2 MAPHSUP\n"
+		   "       0x%04x 0x%04x 0x%02x     0x%02x     0x%02x\n",
+		   msg, nolock_regb_read(priv, EREVID),
+		   nolock_regb_read(priv, ECON1), nolock_regb_read(priv, ECON2),
+		   nolock_regb_read(priv, ESTAT), nolock_regb_read(priv, EIR),
+		   nolock_regb_read(priv, EIE), nolock_regb_read(priv, MACON1),
+		   nolock_regb_read(priv, MACON3), nolock_regb_read(priv, MACON4),
+		   nolock_regw_read(priv, ERXSTL), nolock_regw_read(priv, ERXNDL),
+		   nolock_regw_read(priv, ERXWRPTL),
+		   nolock_regw_read(priv, ERXRDPTL),
+		   nolock_regb_read(priv, ERXFCON),
+		   nolock_regb_read(priv, EPKTCNT),
+		   nolock_regw_read(priv, MAMXFLL), nolock_regw_read(priv, ETXSTL),
+		   nolock_regw_read(priv, ETXNDL),
+		   nolock_regb_read(priv, MACLCON1),
+		   nolock_regb_read(priv, MACLCON2),
+		   nolock_regb_read(priv, MAPHSUP));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&priv->lock);
 }
 
@@ -595,12 +859,21 @@ static u16 rx_packet_start(u16 ptr)
 
 static void nolock_rxfifo_init(struct enc28j60_net *priv, u16 start, u16 end)
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = &priv->spi->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 erxrdpt;
 
 	if (start > 0x1FFF || end > 0x1FFF || start > end) {
 		if (netif_msg_drv(priv))
+<<<<<<< HEAD
 			printk(KERN_ERR DRV_NAME ": %s(%d, %d) RXFIFO "
 				"bad parameters!\n", __func__, start, end);
+=======
+			dev_err(dev, "%s(%d, %d) RXFIFO bad parameters!\n",
+				__func__, start, end);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	/* set receive buffer start + end */
@@ -613,10 +886,19 @@ static void nolock_rxfifo_init(struct enc28j60_net *priv, u16 start, u16 end)
 
 static void nolock_txfifo_init(struct enc28j60_net *priv, u16 start, u16 end)
 {
+<<<<<<< HEAD
 	if (start > 0x1FFF || end > 0x1FFF || start > end) {
 		if (netif_msg_drv(priv))
 			printk(KERN_ERR DRV_NAME ": %s(%d, %d) TXFIFO "
 				"bad parameters!\n", __func__, start, end);
+=======
+	struct device *dev = &priv->spi->dev;
+
+	if (start > 0x1FFF || end > 0x1FFF || start > end) {
+		if (netif_msg_drv(priv))
+			dev_err(dev, "%s(%d, %d) TXFIFO bad parameters!\n",
+				__func__, start, end);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 	/* set transmit buffer start + end */
@@ -626,6 +908,7 @@ static void nolock_txfifo_init(struct enc28j60_net *priv, u16 start, u16 end)
 
 /*
  * Low power mode shrinks power consumption about 100x, so we'd like
+<<<<<<< HEAD
  * the chip to be in that mode whenever it's inactive.  (However, we
  * can't stay in lowpower mode during suspend with WOL active.)
  */
@@ -634,6 +917,17 @@ static void enc28j60_lowpower(struct enc28j60_net *priv, bool is_low)
 	if (netif_msg_drv(priv))
 		dev_dbg(&priv->spi->dev, "%s power...\n",
 				is_low ? "low" : "high");
+=======
+ * the chip to be in that mode whenever it's inactive. (However, we
+ * can't stay in low power mode during suspend with WOL active.)
+ */
+static void enc28j60_lowpower(struct enc28j60_net *priv, bool is_low)
+{
+	struct device *dev = &priv->spi->dev;
+
+	if (netif_msg_drv(priv))
+		dev_dbg(dev, "%s power...\n", is_low ? "low" : "high");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&priv->lock);
 	if (is_low) {
@@ -652,11 +946,20 @@ static void enc28j60_lowpower(struct enc28j60_net *priv, bool is_low)
 
 static int enc28j60_hw_init(struct enc28j60_net *priv)
 {
+<<<<<<< HEAD
 	u8 reg;
 
 	if (netif_msg_drv(priv))
 		printk(KERN_DEBUG DRV_NAME ": %s() - %s\n", __func__,
 			priv->full_duplex ? "FullDuplex" : "HalfDuplex");
+=======
+	struct device *dev = &priv->spi->dev;
+	u8 reg;
+
+	if (netif_msg_drv(priv))
+		dev_printk(KERN_DEBUG, dev, "%s() - %s\n", __func__,
+			   priv->full_duplex ? "FullDuplex" : "HalfDuplex");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&priv->lock);
 	/* first reset the chip */
@@ -678,6 +981,7 @@ static int enc28j60_hw_init(struct enc28j60_net *priv)
 	/*
 	 * Check the RevID.
 	 * If it's 0x00 or 0xFF probably the enc28j60 is not mounted or
+<<<<<<< HEAD
 	 * damaged
 	 */
 	reg = locked_regb_read(priv, EREVID);
@@ -687,6 +991,17 @@ static int enc28j60_hw_init(struct enc28j60_net *priv)
 		if (netif_msg_drv(priv))
 			printk(KERN_DEBUG DRV_NAME ": %s() Invalid RevId %d\n",
 				__func__, reg);
+=======
+	 * damaged.
+	 */
+	reg = locked_regb_read(priv, EREVID);
+	if (netif_msg_drv(priv))
+		dev_info(dev, "chip RevID: 0x%02x\n", reg);
+	if (reg == 0x00 || reg == 0xff) {
+		if (netif_msg_drv(priv))
+			dev_printk(KERN_DEBUG, dev, "%s() Invalid RevId %d\n",
+				   __func__, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -719,7 +1034,11 @@ static int enc28j60_hw_init(struct enc28j60_net *priv)
 	/*
 	 * MACLCON1 (default)
 	 * MACLCON2 (default)
+<<<<<<< HEAD
 	 * Set the maximum packet size which the controller will accept
+=======
+	 * Set the maximum packet size which the controller will accept.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	locked_regw_write(priv, MAMXFLL, MAX_FRAMELEN);
 
@@ -746,10 +1065,19 @@ static int enc28j60_hw_init(struct enc28j60_net *priv)
 
 static void enc28j60_hw_enable(struct enc28j60_net *priv)
 {
+<<<<<<< HEAD
 	/* enable interrupts */
 	if (netif_msg_hw(priv))
 		printk(KERN_DEBUG DRV_NAME ": %s() enabling interrupts.\n",
 			__func__);
+=======
+	struct device *dev = &priv->spi->dev;
+
+	/* enable interrupts */
+	if (netif_msg_hw(priv))
+		dev_printk(KERN_DEBUG, dev, "%s() enabling interrupts.\n",
+			   __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enc28j60_phy_write(priv, PHIE, PHIE_PGEIE | PHIE_PLNKIE);
 
@@ -768,7 +1096,11 @@ static void enc28j60_hw_enable(struct enc28j60_net *priv)
 static void enc28j60_hw_disable(struct enc28j60_net *priv)
 {
 	mutex_lock(&priv->lock);
+<<<<<<< HEAD
 	/* disable interrutps and packet reception */
+=======
+	/* disable interrupts and packet reception */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nolock_regb_write(priv, EIE, 0x00);
 	nolock_reg_bfclr(priv, ECON1, ECON1_RXEN);
 	priv->hw_enable = false;
@@ -789,14 +1121,22 @@ enc28j60_setlink(struct net_device *ndev, u8 autoneg, u16 speed, u8 duplex)
 			priv->full_duplex = (duplex == DUPLEX_FULL);
 		else {
 			if (netif_msg_link(priv))
+<<<<<<< HEAD
 				dev_warn(&ndev->dev,
 					"unsupported link setting\n");
+=======
+				netdev_warn(ndev, "unsupported link setting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EOPNOTSUPP;
 		}
 	} else {
 		if (netif_msg_link(priv))
+<<<<<<< HEAD
 			dev_warn(&ndev->dev, "Warning: hw must be disabled "
 				"to set link mode\n");
+=======
+			netdev_warn(ndev, "Warning: hw must be disabled to set link mode\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EBUSY;
 	}
 	return ret;
@@ -807,21 +1147,39 @@ enc28j60_setlink(struct net_device *ndev, u8 autoneg, u16 speed, u8 duplex)
  */
 static void enc28j60_read_tsv(struct enc28j60_net *priv, u8 tsv[TSV_SIZE])
 {
+<<<<<<< HEAD
+=======
+	struct device *dev = &priv->spi->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int endptr;
 
 	endptr = locked_regw_read(priv, ETXNDL);
 	if (netif_msg_hw(priv))
+<<<<<<< HEAD
 		printk(KERN_DEBUG DRV_NAME ": reading TSV at addr:0x%04x\n",
 			 endptr + 1);
+=======
+		dev_printk(KERN_DEBUG, dev, "reading TSV at addr:0x%04x\n",
+			   endptr + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enc28j60_mem_read(priv, endptr + 1, TSV_SIZE, tsv);
 }
 
 static void enc28j60_dump_tsv(struct enc28j60_net *priv, const char *msg,
+<<<<<<< HEAD
 				u8 tsv[TSV_SIZE])
 {
 	u16 tmp1, tmp2;
 
 	printk(KERN_DEBUG DRV_NAME ": %s - TSV:\n", msg);
+=======
+			      u8 tsv[TSV_SIZE])
+{
+	struct device *dev = &priv->spi->dev;
+	u16 tmp1, tmp2;
+
+	dev_printk(KERN_DEBUG, dev, "%s - TSV:\n", msg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tmp1 = tsv[1];
 	tmp1 <<= 8;
 	tmp1 |= tsv[0];
@@ -830,6 +1188,7 @@ static void enc28j60_dump_tsv(struct enc28j60_net *priv, const char *msg,
 	tmp2 <<= 8;
 	tmp2 |= tsv[4];
 
+<<<<<<< HEAD
 	printk(KERN_DEBUG DRV_NAME ": ByteCount: %d, CollisionCount: %d,"
 		" TotByteOnWire: %d\n", tmp1, tsv[2] & 0x0f, tmp2);
 	printk(KERN_DEBUG DRV_NAME ": TxDone: %d, CRCErr:%d, LenChkErr: %d,"
@@ -854,6 +1213,34 @@ static void enc28j60_dump_tsv(struct enc28j60_net *priv, const char *msg,
 		 TSV_GETBIT(tsv, TSV_TXPAUSEFRAME),
 		 TSV_GETBIT(tsv, TSV_BACKPRESSUREAPP),
 		 TSV_GETBIT(tsv, TSV_TXVLANTAGFRAME));
+=======
+	dev_printk(KERN_DEBUG, dev,
+		   "ByteCount: %d, CollisionCount: %d, TotByteOnWire: %d\n",
+		   tmp1, tsv[2] & 0x0f, tmp2);
+	dev_printk(KERN_DEBUG, dev,
+		   "TxDone: %d, CRCErr:%d, LenChkErr: %d, LenOutOfRange: %d\n",
+		   TSV_GETBIT(tsv, TSV_TXDONE),
+		   TSV_GETBIT(tsv, TSV_TXCRCERROR),
+		   TSV_GETBIT(tsv, TSV_TXLENCHKERROR),
+		   TSV_GETBIT(tsv, TSV_TXLENOUTOFRANGE));
+	dev_printk(KERN_DEBUG, dev,
+		   "Multicast: %d, Broadcast: %d, PacketDefer: %d, ExDefer: %d\n",
+		   TSV_GETBIT(tsv, TSV_TXMULTICAST),
+		   TSV_GETBIT(tsv, TSV_TXBROADCAST),
+		   TSV_GETBIT(tsv, TSV_TXPACKETDEFER),
+		   TSV_GETBIT(tsv, TSV_TXEXDEFER));
+	dev_printk(KERN_DEBUG, dev,
+		   "ExCollision: %d, LateCollision: %d, Giant: %d, Underrun: %d\n",
+		   TSV_GETBIT(tsv, TSV_TXEXCOLLISION),
+		   TSV_GETBIT(tsv, TSV_TXLATECOLLISION),
+		   TSV_GETBIT(tsv, TSV_TXGIANT), TSV_GETBIT(tsv, TSV_TXUNDERRUN));
+	dev_printk(KERN_DEBUG, dev,
+		   "ControlFrame: %d, PauseFrame: %d, BackPressApp: %d, VLanTagFrame: %d\n",
+		   TSV_GETBIT(tsv, TSV_TXCONTROLFRAME),
+		   TSV_GETBIT(tsv, TSV_TXPAUSEFRAME),
+		   TSV_GETBIT(tsv, TSV_BACKPRESSUREAPP),
+		   TSV_GETBIT(tsv, TSV_TXVLANTAGFRAME));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -862,6 +1249,7 @@ static void enc28j60_dump_tsv(struct enc28j60_net *priv, const char *msg,
 static void enc28j60_dump_rsv(struct enc28j60_net *priv, const char *msg,
 			      u16 pk_ptr, int len, u16 sts)
 {
+<<<<<<< HEAD
 	printk(KERN_DEBUG DRV_NAME ": %s - NextPk: 0x%04x - RSV:\n",
 		msg, pk_ptr);
 	printk(KERN_DEBUG DRV_NAME ": ByteCount: %d, DribbleNibble: %d\n", len,
@@ -883,6 +1271,31 @@ static void enc28j60_dump_rsv(struct enc28j60_net *priv, const char *msg,
 		 RSV_GETBIT(sts, RSV_RXPAUSEFRAME),
 		 RSV_GETBIT(sts, RSV_RXUNKNOWNOPCODE),
 		 RSV_GETBIT(sts, RSV_RXTYPEVLAN));
+=======
+	struct device *dev = &priv->spi->dev;
+
+	dev_printk(KERN_DEBUG, dev, "%s - NextPk: 0x%04x - RSV:\n", msg, pk_ptr);
+	dev_printk(KERN_DEBUG, dev, "ByteCount: %d, DribbleNibble: %d\n",
+		   len, RSV_GETBIT(sts, RSV_DRIBBLENIBBLE));
+	dev_printk(KERN_DEBUG, dev,
+		   "RxOK: %d, CRCErr:%d, LenChkErr: %d, LenOutOfRange: %d\n",
+		   RSV_GETBIT(sts, RSV_RXOK),
+		   RSV_GETBIT(sts, RSV_CRCERROR),
+		   RSV_GETBIT(sts, RSV_LENCHECKERR),
+		   RSV_GETBIT(sts, RSV_LENOUTOFRANGE));
+	dev_printk(KERN_DEBUG, dev,
+		   "Multicast: %d, Broadcast: %d, LongDropEvent: %d, CarrierEvent: %d\n",
+		   RSV_GETBIT(sts, RSV_RXMULTICAST),
+		   RSV_GETBIT(sts, RSV_RXBROADCAST),
+		   RSV_GETBIT(sts, RSV_RXLONGEVDROPEV),
+		   RSV_GETBIT(sts, RSV_CARRIEREV));
+	dev_printk(KERN_DEBUG, dev,
+		   "ControlFrame: %d, PauseFrame: %d, UnknownOp: %d, VLanTagFrame: %d\n",
+		   RSV_GETBIT(sts, RSV_RXCONTROLFRAME),
+		   RSV_GETBIT(sts, RSV_RXPAUSEFRAME),
+		   RSV_GETBIT(sts, RSV_RXUNKNOWNOPCODE),
+		   RSV_GETBIT(sts, RSV_RXTYPEVLAN));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void dump_packet(const char *msg, int len, const char *data)
@@ -900,12 +1313,17 @@ static void dump_packet(const char *msg, int len, const char *data)
 static void enc28j60_hw_rx(struct net_device *ndev)
 {
 	struct enc28j60_net *priv = netdev_priv(ndev);
+<<<<<<< HEAD
+=======
+	struct device *dev = &priv->spi->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb = NULL;
 	u16 erxrdpt, next_packet, rxstat;
 	u8 rsv[RSV_SIZE];
 	int len;
 
 	if (netif_msg_rx_status(priv))
+<<<<<<< HEAD
 		printk(KERN_DEBUG DRV_NAME ": RX pk_addr:0x%04x\n",
 			priv->next_pk_ptr);
 
@@ -914,6 +1332,15 @@ static void enc28j60_hw_rx(struct net_device *ndev)
 			dev_err(&ndev->dev,
 				"%s() Invalid packet address!! 0x%04x\n",
 				__func__, priv->next_pk_ptr);
+=======
+		netdev_printk(KERN_DEBUG, ndev, "RX pk_addr:0x%04x\n",
+			      priv->next_pk_ptr);
+
+	if (unlikely(priv->next_pk_ptr > RXEND_INIT)) {
+		if (netif_msg_rx_err(priv))
+			netdev_err(ndev, "%s() Invalid packet address!! 0x%04x\n",
+				   __func__, priv->next_pk_ptr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* packet address corrupted: reset RX logic */
 		mutex_lock(&priv->lock);
 		nolock_reg_bfclr(priv, ECON1, ECON1_RXEN);
@@ -946,7 +1373,11 @@ static void enc28j60_hw_rx(struct net_device *ndev)
 
 	if (!RSV_GETBIT(rxstat, RSV_RXOK) || len > MAX_FRAMELEN) {
 		if (netif_msg_rx_err(priv))
+<<<<<<< HEAD
 			dev_err(&ndev->dev, "Rx Error (%04x)\n", rxstat);
+=======
+			netdev_err(ndev, "Rx Error (%04x)\n", rxstat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ndev->stats.rx_errors++;
 		if (RSV_GETBIT(rxstat, RSV_CRCERROR))
 			ndev->stats.rx_crc_errors++;
@@ -958,8 +1389,12 @@ static void enc28j60_hw_rx(struct net_device *ndev)
 		skb = netdev_alloc_skb(ndev, len + NET_IP_ALIGN);
 		if (!skb) {
 			if (netif_msg_rx_err(priv))
+<<<<<<< HEAD
 				dev_err(&ndev->dev,
 					"out of memory for Rx'd frame\n");
+=======
+				netdev_err(ndev, "out of memory for Rx'd frame\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ndev->stats.rx_dropped++;
 		} else {
 			skb_reserve(skb, NET_IP_ALIGN);
@@ -973,18 +1408,31 @@ static void enc28j60_hw_rx(struct net_device *ndev)
 			/* update statistics */
 			ndev->stats.rx_packets++;
 			ndev->stats.rx_bytes += len;
+<<<<<<< HEAD
 			netif_rx_ni(skb);
+=======
+			netif_rx(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	/*
 	 * Move the RX read pointer to the start of the next
 	 * received packet.
+<<<<<<< HEAD
 	 * This frees the memory we just read out
 	 */
 	erxrdpt = erxrdpt_workaround(next_packet, RXSTART_INIT, RXEND_INIT);
 	if (netif_msg_hw(priv))
 		printk(KERN_DEBUG DRV_NAME ": %s() ERXRDPT:0x%04x\n",
 			__func__, erxrdpt);
+=======
+	 * This frees the memory we just read out.
+	 */
+	erxrdpt = erxrdpt_workaround(next_packet, RXSTART_INIT, RXEND_INIT);
+	if (netif_msg_hw(priv))
+		dev_printk(KERN_DEBUG, dev, "%s() ERXRDPT:0x%04x\n",
+			   __func__, erxrdpt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&priv->lock);
 	nolock_regw_write(priv, ERXRDPTL, erxrdpt);
@@ -993,9 +1441,15 @@ static void enc28j60_hw_rx(struct net_device *ndev)
 		u16 reg;
 		reg = nolock_regw_read(priv, ERXRDPTL);
 		if (reg != erxrdpt)
+<<<<<<< HEAD
 			printk(KERN_DEBUG DRV_NAME ": %s() ERXRDPT verify "
 				"error (0x%04x - 0x%04x)\n", __func__,
 				reg, erxrdpt);
+=======
+			dev_printk(KERN_DEBUG, dev,
+				   "%s() ERXRDPT verify error (0x%04x - 0x%04x)\n",
+				   __func__, reg, erxrdpt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	priv->next_pk_ptr = next_packet;
@@ -1009,6 +1463,10 @@ static void enc28j60_hw_rx(struct net_device *ndev)
  */
 static int enc28j60_get_free_rxfifo(struct enc28j60_net *priv)
 {
+<<<<<<< HEAD
+=======
+	struct net_device *ndev = priv->netdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int epkcnt, erxst, erxnd, erxwr, erxrd;
 	int free_space;
 
@@ -1031,8 +1489,13 @@ static int enc28j60_get_free_rxfifo(struct enc28j60_net *priv)
 	}
 	mutex_unlock(&priv->lock);
 	if (netif_msg_rx_status(priv))
+<<<<<<< HEAD
 		printk(KERN_DEBUG DRV_NAME ": %s() free_space = %d\n",
 			__func__, free_space);
+=======
+		netdev_printk(KERN_DEBUG, ndev, "%s() free_space = %d\n",
+			      __func__, free_space);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return free_space;
 }
 
@@ -1042,24 +1505,42 @@ static int enc28j60_get_free_rxfifo(struct enc28j60_net *priv)
 static void enc28j60_check_link_status(struct net_device *ndev)
 {
 	struct enc28j60_net *priv = netdev_priv(ndev);
+<<<<<<< HEAD
+=======
+	struct device *dev = &priv->spi->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 reg;
 	int duplex;
 
 	reg = enc28j60_phy_read(priv, PHSTAT2);
 	if (netif_msg_hw(priv))
+<<<<<<< HEAD
 		printk(KERN_DEBUG DRV_NAME ": %s() PHSTAT1: %04x, "
 			"PHSTAT2: %04x\n", __func__,
 			enc28j60_phy_read(priv, PHSTAT1), reg);
+=======
+		dev_printk(KERN_DEBUG, dev,
+			   "%s() PHSTAT1: %04x, PHSTAT2: %04x\n", __func__,
+			   enc28j60_phy_read(priv, PHSTAT1), reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	duplex = reg & PHSTAT2_DPXSTAT;
 
 	if (reg & PHSTAT2_LSTAT) {
 		netif_carrier_on(ndev);
 		if (netif_msg_ifup(priv))
+<<<<<<< HEAD
 			dev_info(&ndev->dev, "link up - %s\n",
 				duplex ? "Full duplex" : "Half duplex");
 	} else {
 		if (netif_msg_ifdown(priv))
 			dev_info(&ndev->dev, "link down\n");
+=======
+			netdev_info(ndev, "link up - %s\n",
+				    duplex ? "Full duplex" : "Half duplex");
+	} else {
+		if (netif_msg_ifdown(priv))
+			netdev_info(ndev, "link down\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_carrier_off(ndev);
 	}
 }
@@ -1085,8 +1566,13 @@ static void enc28j60_tx_clear(struct net_device *ndev, bool err)
 
 /*
  * RX handler
+<<<<<<< HEAD
  * ignore PKTIF because is unreliable! (look at the errata datasheet)
  * check EPKTCNT is the suggested workaround.
+=======
+ * Ignore PKTIF because is unreliable! (Look at the errata datasheet)
+ * Check EPKTCNT is the suggested workaround.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * We don't need to clear interrupt flag, automatically done when
  * enc28j60_hw_rx() decrements the packet counter.
  * Returns how many packet processed.
@@ -1098,13 +1584,23 @@ static int enc28j60_rx_interrupt(struct net_device *ndev)
 
 	pk_counter = locked_regb_read(priv, EPKTCNT);
 	if (pk_counter && netif_msg_intr(priv))
+<<<<<<< HEAD
 		printk(KERN_DEBUG DRV_NAME ": intRX, pk_cnt: %d\n", pk_counter);
+=======
+		netdev_printk(KERN_DEBUG, ndev, "intRX, pk_cnt: %d\n",
+			      pk_counter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pk_counter > priv->max_pk_counter) {
 		/* update statistics */
 		priv->max_pk_counter = pk_counter;
 		if (netif_msg_rx_status(priv) && priv->max_pk_counter > 1)
+<<<<<<< HEAD
 			printk(KERN_DEBUG DRV_NAME ": RX max_pk_cnt: %d\n",
 				priv->max_pk_counter);
+=======
+			netdev_printk(KERN_DEBUG, ndev, "RX max_pk_cnt: %d\n",
+				      priv->max_pk_counter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	ret = pk_counter;
 	while (pk_counter-- > 0)
@@ -1113,6 +1609,7 @@ static int enc28j60_rx_interrupt(struct net_device *ndev)
 	return ret;
 }
 
+<<<<<<< HEAD
 static void enc28j60_irq_work_handler(struct work_struct *work)
 {
 	struct enc28j60_net *priv =
@@ -1122,6 +1619,14 @@ static void enc28j60_irq_work_handler(struct work_struct *work)
 
 	if (netif_msg_intr(priv))
 		printk(KERN_DEBUG DRV_NAME ": %s() enter\n", __func__);
+=======
+static irqreturn_t enc28j60_irq(int irq, void *dev_id)
+{
+	struct enc28j60_net *priv = dev_id;
+	struct net_device *ndev = priv->netdev;
+	int intflags, loop;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* disable further interrupts */
 	locked_reg_bfclr(priv, EIE, EIE_INTIE);
 
@@ -1132,21 +1637,32 @@ static void enc28j60_irq_work_handler(struct work_struct *work)
 		if ((intflags & EIR_DMAIF) != 0) {
 			loop++;
 			if (netif_msg_intr(priv))
+<<<<<<< HEAD
 				printk(KERN_DEBUG DRV_NAME
 					": intDMA(%d)\n", loop);
+=======
+				netdev_printk(KERN_DEBUG, ndev, "intDMA(%d)\n",
+					      loop);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			locked_reg_bfclr(priv, EIR, EIR_DMAIF);
 		}
 		/* LINK changed handler */
 		if ((intflags & EIR_LINKIF) != 0) {
 			loop++;
 			if (netif_msg_intr(priv))
+<<<<<<< HEAD
 				printk(KERN_DEBUG DRV_NAME
 					": intLINK(%d)\n", loop);
+=======
+				netdev_printk(KERN_DEBUG, ndev, "intLINK(%d)\n",
+					      loop);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			enc28j60_check_link_status(ndev);
 			/* read PHIR to clear the flag */
 			enc28j60_phy_read(priv, PHIR);
 		}
 		/* TX complete handler */
+<<<<<<< HEAD
 		if ((intflags & EIR_TXIF) != 0) {
 			bool err = false;
 			loop++;
@@ -1158,6 +1674,19 @@ static void enc28j60_irq_work_handler(struct work_struct *work)
 				if (netif_msg_tx_err(priv))
 					dev_err(&ndev->dev,
 						"Tx Error (aborted)\n");
+=======
+		if (((intflags & EIR_TXIF) != 0) &&
+		    ((intflags & EIR_TXERIF) == 0)) {
+			bool err = false;
+			loop++;
+			if (netif_msg_intr(priv))
+				netdev_printk(KERN_DEBUG, ndev, "intTX(%d)\n",
+					      loop);
+			priv->tx_retry_count = 0;
+			if (locked_regb_read(priv, ESTAT) & ESTAT_TXABRT) {
+				if (netif_msg_tx_err(priv))
+					netdev_err(ndev, "Tx Error (aborted)\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				err = true;
 			}
 			if (netif_msg_tx_done(priv)) {
@@ -1174,8 +1703,13 @@ static void enc28j60_irq_work_handler(struct work_struct *work)
 
 			loop++;
 			if (netif_msg_intr(priv))
+<<<<<<< HEAD
 				printk(KERN_DEBUG DRV_NAME
 					": intTXErr(%d)\n", loop);
+=======
+				netdev_printk(KERN_DEBUG, ndev, "intTXErr(%d)\n",
+					      loop);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			locked_reg_bfclr(priv, ECON1, ECON1_TXRTS);
 			enc28j60_read_tsv(priv, tsv);
 			if (netif_msg_tx_err(priv))
@@ -1189,9 +1723,15 @@ static void enc28j60_irq_work_handler(struct work_struct *work)
 			/* Transmit Late collision check for retransmit */
 			if (TSV_GETBIT(tsv, TSV_TXLATECOLLISION)) {
 				if (netif_msg_tx_err(priv))
+<<<<<<< HEAD
 					printk(KERN_DEBUG DRV_NAME
 						": LateCollision TXErr (%d)\n",
 						priv->tx_retry_count);
+=======
+					netdev_printk(KERN_DEBUG, ndev,
+						      "LateCollision TXErr (%d)\n",
+						      priv->tx_retry_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (priv->tx_retry_count++ < MAX_TX_RETRYCOUNT)
 					locked_reg_bfset(priv, ECON1,
 							   ECON1_TXRTS);
@@ -1199,12 +1739,17 @@ static void enc28j60_irq_work_handler(struct work_struct *work)
 					enc28j60_tx_clear(ndev, true);
 			} else
 				enc28j60_tx_clear(ndev, true);
+<<<<<<< HEAD
 			locked_reg_bfclr(priv, EIR, EIR_TXERIF);
+=======
+			locked_reg_bfclr(priv, EIR, EIR_TXERIF | EIR_TXIF);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* RX Error handler */
 		if ((intflags & EIR_RXERIF) != 0) {
 			loop++;
 			if (netif_msg_intr(priv))
+<<<<<<< HEAD
 				printk(KERN_DEBUG DRV_NAME
 					": intRXErr(%d)\n", loop);
 			/* Check free FIFO space to flag RX overrun */
@@ -1212,6 +1757,14 @@ static void enc28j60_irq_work_handler(struct work_struct *work)
 				if (netif_msg_rx_err(priv))
 					printk(KERN_DEBUG DRV_NAME
 						": RX Overrun\n");
+=======
+				netdev_printk(KERN_DEBUG, ndev, "intRXErr(%d)\n",
+					      loop);
+			/* Check free FIFO space to flag RX overrun */
+			if (enc28j60_get_free_rxfifo(priv) <= 0) {
+				if (netif_msg_rx_err(priv))
+					netdev_printk(KERN_DEBUG, ndev, "RX Overrun\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				ndev->stats.rx_dropped++;
 			}
 			locked_reg_bfclr(priv, EIR, EIR_RXERIF);
@@ -1223,8 +1776,13 @@ static void enc28j60_irq_work_handler(struct work_struct *work)
 
 	/* re-enable interrupts */
 	locked_reg_bfset(priv, EIE, EIE_INTIE);
+<<<<<<< HEAD
 	if (netif_msg_intr(priv))
 		printk(KERN_DEBUG DRV_NAME ": %s() exit\n", __func__);
+=======
+
+	return IRQ_HANDLED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1234,9 +1792,19 @@ static void enc28j60_irq_work_handler(struct work_struct *work)
  */
 static void enc28j60_hw_tx(struct enc28j60_net *priv)
 {
+<<<<<<< HEAD
 	if (netif_msg_tx_queued(priv))
 		printk(KERN_DEBUG DRV_NAME
 			": Tx Packet Len:%d\n", priv->tx_skb->len);
+=======
+	struct net_device *ndev = priv->netdev;
+
+	BUG_ON(!priv->tx_skb);
+
+	if (netif_msg_tx_queued(priv))
+		netdev_printk(KERN_DEBUG, ndev, "Tx Packet Len:%d\n",
+			      priv->tx_skb->len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_msg_pktdata(priv))
 		dump_packet(__func__,
@@ -1246,6 +1814,10 @@ static void enc28j60_hw_tx(struct enc28j60_net *priv)
 #ifdef CONFIG_ENC28J60_WRITEVERIFY
 	/* readback and verify written data */
 	if (netif_msg_drv(priv)) {
+<<<<<<< HEAD
+=======
+		struct device *dev = &priv->spi->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int test_len, k;
 		u8 test_buf[64]; /* limit the test to the first 64 bytes */
 		int okflag;
@@ -1259,16 +1831,26 @@ static void enc28j60_hw_tx(struct enc28j60_net *priv)
 		okflag = 1;
 		for (k = 0; k < test_len; k++) {
 			if (priv->tx_skb->data[k] != test_buf[k]) {
+<<<<<<< HEAD
 				printk(KERN_DEBUG DRV_NAME
 					 ": Error, %d location differ: "
 					 "0x%02x-0x%02x\n", k,
 					 priv->tx_skb->data[k], test_buf[k]);
+=======
+				dev_printk(KERN_DEBUG, dev,
+					   "Error, %d location differ: 0x%02x-0x%02x\n",
+					   k, priv->tx_skb->data[k], test_buf[k]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				okflag = 0;
 			}
 		}
 		if (!okflag)
+<<<<<<< HEAD
 			printk(KERN_DEBUG DRV_NAME ": Tx write buffer, "
 				"verify ERROR!\n");
+=======
+			dev_printk(KERN_DEBUG, dev, "Tx write buffer, verify ERROR!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	/* set TX request flag */
@@ -1280,14 +1862,21 @@ static netdev_tx_t enc28j60_send_packet(struct sk_buff *skb,
 {
 	struct enc28j60_net *priv = netdev_priv(dev);
 
+<<<<<<< HEAD
 	if (netif_msg_tx_queued(priv))
 		printk(KERN_DEBUG DRV_NAME ": %s() enter\n", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If some error occurs while trying to transmit this
 	 * packet, you should return '1' from this function.
 	 * In such a case you _may not_ do anything to the
 	 * SKB, it is still owned by the network queueing
+<<<<<<< HEAD
 	 * layer when an error is returned.  This means you
+=======
+	 * layer when an error is returned. This means you
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * may not modify any SKB fields, you may not free
 	 * the SKB, etc.
 	 */
@@ -1309,6 +1898,7 @@ static void enc28j60_tx_work_handler(struct work_struct *work)
 	enc28j60_hw_tx(priv);
 }
 
+<<<<<<< HEAD
 static irqreturn_t enc28j60_irq(int irq, void *dev_id)
 {
 	struct enc28j60_net *priv = dev_id;
@@ -1326,11 +1916,18 @@ static irqreturn_t enc28j60_irq(int irq, void *dev_id)
 }
 
 static void enc28j60_tx_timeout(struct net_device *ndev)
+=======
+static void enc28j60_tx_timeout(struct net_device *ndev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct enc28j60_net *priv = netdev_priv(ndev);
 
 	if (netif_msg_timer(priv))
+<<<<<<< HEAD
 		dev_err(&ndev->dev, DRV_NAME " tx timeout\n");
+=======
+		netdev_err(ndev, "tx timeout\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ndev->stats.tx_errors++;
 	/* can't restart safely under softirq */
@@ -1349,6 +1946,7 @@ static int enc28j60_net_open(struct net_device *dev)
 {
 	struct enc28j60_net *priv = netdev_priv(dev);
 
+<<<<<<< HEAD
 	if (netif_msg_drv(priv))
 		printk(KERN_DEBUG DRV_NAME ": %s() enter\n", __func__);
 
@@ -1356,6 +1954,11 @@ static int enc28j60_net_open(struct net_device *dev)
 		if (netif_msg_ifup(priv))
 			dev_err(&dev->dev, "invalid MAC address %pM\n",
 				dev->dev_addr);
+=======
+	if (!is_valid_ether_addr(dev->dev_addr)) {
+		if (netif_msg_ifup(priv))
+			netdev_err(dev, "invalid MAC address %pM\n", dev->dev_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EADDRNOTAVAIL;
 	}
 	/* Reset the hardware here (and take it out of low power mode) */
@@ -1363,7 +1966,11 @@ static int enc28j60_net_open(struct net_device *dev)
 	enc28j60_hw_disable(priv);
 	if (!enc28j60_hw_init(priv)) {
 		if (netif_msg_ifup(priv))
+<<<<<<< HEAD
 			dev_err(&dev->dev, "hw_reset() failed\n");
+=======
+			netdev_err(dev, "hw_reset() failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	/* Update the MAC address (in case user has changed it) */
@@ -1385,9 +1992,12 @@ static int enc28j60_net_close(struct net_device *dev)
 {
 	struct enc28j60_net *priv = netdev_priv(dev);
 
+<<<<<<< HEAD
 	if (netif_msg_drv(priv))
 		printk(KERN_DEBUG DRV_NAME ": %s() enter\n", __func__);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enc28j60_hw_disable(priv);
 	enc28j60_lowpower(priv, true);
 	netif_stop_queue(dev);
@@ -1408,6 +2018,7 @@ static void enc28j60_set_multicast_list(struct net_device *dev)
 
 	if (dev->flags & IFF_PROMISC) {
 		if (netif_msg_link(priv))
+<<<<<<< HEAD
 			dev_info(&dev->dev, "promiscuous mode\n");
 		priv->rxfilter = RXFILTER_PROMISC;
 	} else if ((dev->flags & IFF_ALLMULTI) || !netdev_mc_empty(dev)) {
@@ -1418,6 +2029,18 @@ static void enc28j60_set_multicast_list(struct net_device *dev)
 	} else {
 		if (netif_msg_link(priv))
 			dev_info(&dev->dev, "normal mode\n");
+=======
+			netdev_info(dev, "promiscuous mode\n");
+		priv->rxfilter = RXFILTER_PROMISC;
+	} else if ((dev->flags & IFF_ALLMULTI) || !netdev_mc_empty(dev)) {
+		if (netif_msg_link(priv))
+			netdev_info(dev, "%smulticast mode\n",
+				    (dev->flags & IFF_ALLMULTI) ? "all-" : "");
+		priv->rxfilter = RXFILTER_MULTI;
+	} else {
+		if (netif_msg_link(priv))
+			netdev_info(dev, "normal mode\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		priv->rxfilter = RXFILTER_NORMAL;
 	}
 
@@ -1429,6 +2052,7 @@ static void enc28j60_setrx_work_handler(struct work_struct *work)
 {
 	struct enc28j60_net *priv =
 		container_of(work, struct enc28j60_net, setrx_work);
+<<<<<<< HEAD
 
 	if (priv->rxfilter == RXFILTER_PROMISC) {
 		if (netif_msg_drv(priv))
@@ -1437,12 +2061,27 @@ static void enc28j60_setrx_work_handler(struct work_struct *work)
 	} else if (priv->rxfilter == RXFILTER_MULTI) {
 		if (netif_msg_drv(priv))
 			printk(KERN_DEBUG DRV_NAME ": multicast mode\n");
+=======
+	struct device *dev = &priv->spi->dev;
+
+	if (priv->rxfilter == RXFILTER_PROMISC) {
+		if (netif_msg_drv(priv))
+			dev_printk(KERN_DEBUG, dev, "promiscuous mode\n");
+		locked_regb_write(priv, ERXFCON, 0x00);
+	} else if (priv->rxfilter == RXFILTER_MULTI) {
+		if (netif_msg_drv(priv))
+			dev_printk(KERN_DEBUG, dev, "multicast mode\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		locked_regb_write(priv, ERXFCON,
 					ERXFCON_UCEN | ERXFCON_CRCEN |
 					ERXFCON_BCEN | ERXFCON_MCEN);
 	} else {
 		if (netif_msg_drv(priv))
+<<<<<<< HEAD
 			printk(KERN_DEBUG DRV_NAME ": normal mode\n");
+=======
+			dev_printk(KERN_DEBUG, dev, "normal mode\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		locked_regb_write(priv, ERXFCON,
 					ERXFCON_UCEN | ERXFCON_CRCEN |
 					ERXFCON_BCEN);
@@ -1461,7 +2100,11 @@ static void enc28j60_restart_work_handler(struct work_struct *work)
 		enc28j60_net_close(ndev);
 		ret = enc28j60_net_open(ndev);
 		if (unlikely(ret)) {
+<<<<<<< HEAD
 			dev_info(&ndev->dev, " could not restart %d\n", ret);
+=======
+			netdev_info(ndev, "could not restart %d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_close(ndev);
 		}
 	}
@@ -1473,13 +2116,20 @@ static void enc28j60_restart_work_handler(struct work_struct *work)
 static void
 enc28j60_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
+<<<<<<< HEAD
 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
 	strlcpy(info->bus_info,
+=======
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	strscpy(info->version, DRV_VERSION, sizeof(info->version));
+	strscpy(info->bus_info,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_name(dev->dev.parent), sizeof(info->bus_info));
 }
 
 static int
+<<<<<<< HEAD
 enc28j60_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	struct enc28j60_net *priv = netdev_priv(dev);
@@ -1492,15 +2142,39 @@ enc28j60_get_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 	cmd->duplex	= priv->full_duplex ? DUPLEX_FULL : DUPLEX_HALF;
 	cmd->port	= PORT_TP;
 	cmd->autoneg	= AUTONEG_DISABLE;
+=======
+enc28j60_get_link_ksettings(struct net_device *dev,
+			    struct ethtool_link_ksettings *cmd)
+{
+	struct enc28j60_net *priv = netdev_priv(dev);
+
+	ethtool_link_ksettings_zero_link_mode(cmd, supported);
+	ethtool_link_ksettings_add_link_mode(cmd, supported, 10baseT_Half);
+	ethtool_link_ksettings_add_link_mode(cmd, supported, 10baseT_Full);
+	ethtool_link_ksettings_add_link_mode(cmd, supported, TP);
+
+	cmd->base.speed = SPEED_10;
+	cmd->base.duplex = priv->full_duplex ? DUPLEX_FULL : DUPLEX_HALF;
+	cmd->base.port	= PORT_TP;
+	cmd->base.autoneg = AUTONEG_DISABLE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int
+<<<<<<< HEAD
 enc28j60_set_settings(struct net_device *dev, struct ethtool_cmd *cmd)
 {
 	return enc28j60_setlink(dev, cmd->autoneg,
 				ethtool_cmd_speed(cmd), cmd->duplex);
+=======
+enc28j60_set_link_ksettings(struct net_device *dev,
+			    const struct ethtool_link_ksettings *cmd)
+{
+	return enc28j60_setlink(dev, cmd->base.autoneg,
+				cmd->base.speed, cmd->base.duplex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u32 enc28j60_get_msglevel(struct net_device *dev)
@@ -1516,11 +2190,19 @@ static void enc28j60_set_msglevel(struct net_device *dev, u32 val)
 }
 
 static const struct ethtool_ops enc28j60_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings	= enc28j60_get_settings,
 	.set_settings	= enc28j60_set_settings,
 	.get_drvinfo	= enc28j60_get_drvinfo,
 	.get_msglevel	= enc28j60_get_msglevel,
 	.set_msglevel	= enc28j60_set_msglevel,
+=======
+	.get_drvinfo	= enc28j60_get_drvinfo,
+	.get_msglevel	= enc28j60_get_msglevel,
+	.set_msglevel	= enc28j60_set_msglevel,
+	.get_link_ksettings = enc28j60_get_link_ksettings,
+	.set_link_ksettings = enc28j60_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int enc28j60_chipset_init(struct net_device *dev)
@@ -1537,19 +2219,30 @@ static const struct net_device_ops enc28j60_netdev_ops = {
 	.ndo_set_rx_mode	= enc28j60_set_multicast_list,
 	.ndo_set_mac_address	= enc28j60_set_mac_address,
 	.ndo_tx_timeout		= enc28j60_tx_timeout,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
 static int __devinit enc28j60_probe(struct spi_device *spi)
+=======
+	.ndo_validate_addr	= eth_validate_addr,
+};
+
+static int enc28j60_probe(struct spi_device *spi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	struct enc28j60_net *priv;
 	int ret = 0;
 
 	if (netif_msg_drv(&debug))
+<<<<<<< HEAD
 		dev_info(&spi->dev, DRV_NAME " Ethernet driver %s loaded\n",
 			DRV_VERSION);
+=======
+		dev_info(&spi->dev, "Ethernet driver %s loaded\n", DRV_VERSION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = alloc_etherdev(sizeof(struct enc28j60_net));
 	if (!dev) {
@@ -1560,6 +2253,7 @@ static int __devinit enc28j60_probe(struct spi_device *spi)
 
 	priv->netdev = dev;	/* priv to netdev reference */
 	priv->spi = spi;	/* priv to spi reference */
+<<<<<<< HEAD
 	priv->msg_enable = netif_msg_init(debug.msg_enable,
 						ENC28J60_MSG_DEFAULT);
 	mutex_init(&priv->lock);
@@ -1568,25 +2262,52 @@ static int __devinit enc28j60_probe(struct spi_device *spi)
 	INIT_WORK(&priv->irq_work, enc28j60_irq_work_handler);
 	INIT_WORK(&priv->restart_work, enc28j60_restart_work_handler);
 	dev_set_drvdata(&spi->dev, priv);	/* spi to priv reference */
+=======
+	priv->msg_enable = netif_msg_init(debug.msg_enable, ENC28J60_MSG_DEFAULT);
+	mutex_init(&priv->lock);
+	INIT_WORK(&priv->tx_work, enc28j60_tx_work_handler);
+	INIT_WORK(&priv->setrx_work, enc28j60_setrx_work_handler);
+	INIT_WORK(&priv->restart_work, enc28j60_restart_work_handler);
+	spi_set_drvdata(spi, priv);	/* spi to priv reference */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SET_NETDEV_DEV(dev, &spi->dev);
 
 	if (!enc28j60_chipset_init(dev)) {
 		if (netif_msg_probe(priv))
+<<<<<<< HEAD
 			dev_info(&spi->dev, DRV_NAME " chip not found\n");
 		ret = -EIO;
 		goto error_irq;
 	}
 	eth_hw_addr_random(dev);
+=======
+			dev_info(&spi->dev, "chip not found\n");
+		ret = -EIO;
+		goto error_irq;
+	}
+
+	if (device_get_ethdev_address(&spi->dev, dev))
+		eth_hw_addr_random(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enc28j60_set_hw_macaddr(dev);
 
 	/* Board setup must set the relevant edge trigger type;
 	 * level triggers won't currently work.
 	 */
+<<<<<<< HEAD
 	ret = request_irq(spi->irq, enc28j60_irq, 0, DRV_NAME, priv);
 	if (ret < 0) {
 		if (netif_msg_probe(priv))
 			dev_err(&spi->dev, DRV_NAME ": request irq %d failed "
 				"(ret = %d)\n", spi->irq, ret);
+=======
+	ret = request_threaded_irq(spi->irq, NULL, enc28j60_irq, IRQF_ONESHOT,
+				   DRV_NAME, priv);
+	if (ret < 0) {
+		if (netif_msg_probe(priv))
+			dev_err(&spi->dev, "request irq %d failed (ret = %d)\n",
+				spi->irq, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error_irq;
 	}
 
@@ -1594,18 +2315,29 @@ static int __devinit enc28j60_probe(struct spi_device *spi)
 	dev->irq = spi->irq;
 	dev->netdev_ops = &enc28j60_netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(dev, &enc28j60_ethtool_ops);
+=======
+	dev->ethtool_ops = &enc28j60_ethtool_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	enc28j60_lowpower(priv, true);
 
 	ret = register_netdev(dev);
 	if (ret) {
 		if (netif_msg_probe(priv))
+<<<<<<< HEAD
 			dev_err(&spi->dev, "register netdev " DRV_NAME
 				" failed (ret = %d)\n", ret);
 		goto error_register;
 	}
 	dev_info(&dev->dev, DRV_NAME " driver registered\n");
+=======
+			dev_err(&spi->dev, "register netdev failed (ret = %d)\n",
+				ret);
+		goto error_register;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -1617,16 +2349,23 @@ error_alloc:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __devexit enc28j60_remove(struct spi_device *spi)
 {
 	struct enc28j60_net *priv = dev_get_drvdata(&spi->dev);
 
 	if (netif_msg_drv(priv))
 		printk(KERN_DEBUG DRV_NAME ": remove\n");
+=======
+static void enc28j60_remove(struct spi_device *spi)
+{
+	struct enc28j60_net *priv = spi_get_drvdata(spi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unregister_netdev(priv->netdev);
 	free_irq(spi->irq, priv);
 	free_netdev(priv->netdev);
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -1655,10 +2394,33 @@ static void __exit enc28j60_exit(void)
 }
 
 module_exit(enc28j60_exit);
+=======
+}
+
+static const struct of_device_id enc28j60_dt_ids[] = {
+	{ .compatible = "microchip,enc28j60" },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, enc28j60_dt_ids);
+
+static struct spi_driver enc28j60_driver = {
+	.driver = {
+		.name = DRV_NAME,
+		.of_match_table = enc28j60_dt_ids,
+	 },
+	.probe = enc28j60_probe,
+	.remove = enc28j60_remove,
+};
+module_spi_driver(enc28j60_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION(DRV_NAME " ethernet driver");
 MODULE_AUTHOR("Claudio Lanconelli <lanconelli.claudio@eptar.com>");
 MODULE_LICENSE("GPL");
 module_param_named(debug, debug.msg_enable, int, 0);
+<<<<<<< HEAD
 MODULE_PARM_DESC(debug, "Debug verbosity level (0=none, ..., ffff=all)");
+=======
+MODULE_PARM_DESC(debug, "Debug verbosity level in amount of bits set (0=none, ..., 31=all)");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_ALIAS("spi:" DRV_NAME);

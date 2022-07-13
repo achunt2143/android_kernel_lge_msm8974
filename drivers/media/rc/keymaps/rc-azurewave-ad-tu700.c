@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * TwinHan AzureWave AD-TU700(704J) remote controller keytable
  *
  * Copyright (C) 2010 Antti Palosaari <crope@iki.fi>
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *    You should have received a copy of the GNU General Public License along
  *    with this program; if not, write to the Free Software Foundation, Inc.,
  *    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <media/rc-map.h>
@@ -23,6 +30,7 @@
 
 static struct rc_map_table azurewave_ad_tu700[] = {
 	{ 0x0000, KEY_TAB },             /* Tab */
+<<<<<<< HEAD
 	{ 0x0001, KEY_2 },
 	{ 0x0002, KEY_CHANNELDOWN },
 	{ 0x0003, KEY_1 },
@@ -35,6 +43,20 @@ static struct rc_map_table azurewave_ad_tu700[] = {
 	{ 0x000a, KEY_VOLUMEDOWN },
 	{ 0x000c, KEY_CANCEL },          /* Cancel */
 	{ 0x000d, KEY_7 },
+=======
+	{ 0x0001, KEY_NUMERIC_2 },
+	{ 0x0002, KEY_CHANNELDOWN },
+	{ 0x0003, KEY_NUMERIC_1 },
+	{ 0x0004, KEY_MENU },            /* Record List */
+	{ 0x0005, KEY_CHANNELUP },
+	{ 0x0006, KEY_NUMERIC_3 },
+	{ 0x0007, KEY_SLEEP },           /* Hibernate */
+	{ 0x0008, KEY_VIDEO },           /* A/V */
+	{ 0x0009, KEY_NUMERIC_4 },
+	{ 0x000a, KEY_VOLUMEDOWN },
+	{ 0x000c, KEY_CANCEL },          /* Cancel */
+	{ 0x000d, KEY_NUMERIC_7 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x000e, KEY_AGAIN },           /* Recall */
 	{ 0x000f, KEY_TEXT },            /* Teletext */
 	{ 0x0010, KEY_MUTE },
@@ -42,6 +64,7 @@ static struct rc_map_table azurewave_ad_tu700[] = {
 	{ 0x0012, KEY_FASTFORWARD },     /* FF >> */
 	{ 0x0013, KEY_BACK },            /* Back */
 	{ 0x0014, KEY_PLAY },
+<<<<<<< HEAD
 	{ 0x0015, KEY_0 },
 	{ 0x0016, KEY_POWER2 },          /* [red power button] */
 	{ 0x0017, KEY_FAVORITES },       /* Favorite List */
@@ -53,6 +76,19 @@ static struct rc_map_table azurewave_ad_tu700[] = {
 	{ 0x001d, KEY_5 },
 	{ 0x001e, KEY_VOLUMEUP },
 	{ 0x001f, KEY_6 },
+=======
+	{ 0x0015, KEY_NUMERIC_0 },
+	{ 0x0016, KEY_POWER2 },          /* [red power button] */
+	{ 0x0017, KEY_FAVORITES },       /* Favorite List */
+	{ 0x0018, KEY_RED },
+	{ 0x0019, KEY_NUMERIC_8 },
+	{ 0x001a, KEY_STOP },
+	{ 0x001b, KEY_NUMERIC_9 },
+	{ 0x001c, KEY_EPG },             /* Info/EPG */
+	{ 0x001d, KEY_NUMERIC_5 },
+	{ 0x001e, KEY_VOLUMEUP },
+	{ 0x001f, KEY_NUMERIC_6 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x0040, KEY_REWIND },          /* FR << */
 	{ 0x0041, KEY_PREVIOUS },        /* Replay */
 	{ 0x0042, KEY_NEXT },            /* Skip */
@@ -79,10 +115,17 @@ static struct rc_map_table azurewave_ad_tu700[] = {
 
 static struct rc_map_list azurewave_ad_tu700_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = azurewave_ad_tu700,
 		.size    = ARRAY_SIZE(azurewave_ad_tu700),
 		.rc_type = RC_TYPE_NEC,
 		.name    = RC_MAP_AZUREWAVE_AD_TU700,
+=======
+		.scan     = azurewave_ad_tu700,
+		.size     = ARRAY_SIZE(azurewave_ad_tu700),
+		.rc_proto = RC_PROTO_NEC,
+		.name     = RC_MAP_AZUREWAVE_AD_TU700,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -101,3 +144,7 @@ module_exit(exit_rc_map_azurewave_ad_tu700)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Antti Palosaari <crope@iki.fi>");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("TwinHan AzureWave AD-TU700(704J) remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

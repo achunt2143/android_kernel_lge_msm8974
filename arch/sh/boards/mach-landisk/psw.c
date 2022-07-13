@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/boards/landisk/psw.c
  *
@@ -5,10 +9,13 @@
  *
  * Copyright (C) 2006-2007  Paul Mundt
  * Copyright (C) 2007  kogiidena
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/io.h>
 #include <linux/init.h>
@@ -140,4 +147,8 @@ static int __init psw_init(void)
 {
 	return platform_add_devices(psw_devices, ARRAY_SIZE(psw_devices));
 }
+<<<<<<< HEAD
 module_init(psw_init);
+=======
+device_initcall(psw_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -62,6 +62,10 @@ EXPORT_SYMBOL(agp_find_bridge);
 
 /**
  *	agp_backend_acquire  -  attempt to acquire an agp backend.
+<<<<<<< HEAD
+=======
+ *	@pdev: the PCI device
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  */
 struct agp_bridge_data *agp_backend_acquire(struct pci_dev *pdev)
@@ -83,6 +87,10 @@ EXPORT_SYMBOL(agp_backend_acquire);
 
 /**
  *	agp_backend_release  -  release the lock on the agp backend.
+<<<<<<< HEAD
+=======
+ *	@bridge: the AGP backend to release
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	The caller must insure that the graphics aperture translation table
  *	is read for use by another entity.
@@ -115,9 +123,15 @@ static int agp_find_max(void)
 	long memory, index, result;
 
 #if PAGE_SHIFT < 20
+<<<<<<< HEAD
 	memory = totalram_pages >> (20 - PAGE_SHIFT);
 #else
 	memory = totalram_pages << (PAGE_SHIFT - 20);
+=======
+	memory = totalram_pages() >> (20 - PAGE_SHIFT);
+#else
+	memory = totalram_pages() << (PAGE_SHIFT - 20);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	index = 1;
 
@@ -291,6 +305,7 @@ int agp_add_bridge(struct agp_bridge_data *bridge)
 	}
 
 	if (list_empty(&agp_bridges)) {
+<<<<<<< HEAD
 		error = agp_frontend_initialize();
 		if (error) {
 			dev_info(&bridge->dev->dev,
@@ -298,6 +313,8 @@ int agp_add_bridge(struct agp_bridge_data *bridge)
 			goto frontend_err;
 		}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_info(&bridge->dev->dev, "AGP aperture is %dM @ 0x%lx\n",
 			 bridge->driver->fetch_size(), bridge->gart_bus_addr);
 
@@ -306,8 +323,11 @@ int agp_add_bridge(struct agp_bridge_data *bridge)
 	list_add(&bridge->list, &agp_bridges);
 	return 0;
 
+<<<<<<< HEAD
 frontend_err:
 	agp_backend_cleanup(bridge);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out:
 	module_put(bridge->driver->owner);
 err_put_bridge:
@@ -321,8 +341,11 @@ void agp_remove_bridge(struct agp_bridge_data *bridge)
 {
 	agp_backend_cleanup(bridge);
 	list_del(&bridge->list);
+<<<<<<< HEAD
 	if (list_empty(&agp_bridges))
 		agp_frontend_cleanup();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	module_put(bridge->driver->owner);
 }
 EXPORT_SYMBOL_GPL(agp_remove_bridge);
@@ -356,7 +379,11 @@ static __init int agp_setup(char *s)
 __setup("agp=", agp_setup);
 #endif
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>");
+=======
+MODULE_AUTHOR("Dave Jones, Jeff Hartmann");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("AGP GART driver");
 MODULE_LICENSE("GPL and additional rights");
 MODULE_ALIAS_MISCDEV(AGPGART_MINOR);

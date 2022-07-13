@@ -33,17 +33,28 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 {
 	int err;
 
+<<<<<<< HEAD
 	DE_INIT(("init_hw() - Darla24\n"));
 	if (snd_BUG_ON((subdevice_id & 0xfff0) != DARLA24))
 		return -ENODEV;
 
 	if ((err = init_dsp_comm_page(chip))) {
 		DE_INIT(("init_hw - could not initialize DSP comm page\n"));
+=======
+	if (snd_BUG_ON((subdevice_id & 0xfff0) != DARLA24))
+		return -ENODEV;
+
+	err = init_dsp_comm_page(chip);
+	if (err) {
+		dev_err(chip->card->dev,
+			"init_hw: could not initialize DSP comm page\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
 	chip->device_id = device_id;
 	chip->subdevice_id = subdevice_id;
+<<<<<<< HEAD
 	chip->bad_board = TRUE;
 	chip->dsp_code_to_load = FW_DARLA24_DSP;
 	/* Since this card has no ASIC, mark it as loaded so everything
@@ -57,6 +68,21 @@ static int init_hw(struct echoaudio *chip, u16 device_id, u16 subdevice_id)
 	chip->bad_board = FALSE;
 
 	DE_INIT(("init_hw done\n"));
+=======
+	chip->bad_board = true;
+	chip->dsp_code_to_load = FW_DARLA24_DSP;
+	/* Since this card has no ASIC, mark it as loaded so everything
+	   works OK */
+	chip->asic_loaded = true;
+	chip->input_clock_types = ECHO_CLOCK_BIT_INTERNAL |
+		ECHO_CLOCK_BIT_ESYNC;
+
+	err = load_firmware(chip);
+	if (err < 0)
+		return err;
+	chip->bad_board = false;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -128,15 +154,26 @@ static int set_sample_rate(struct echoaudio *chip, u32 rate)
 		clock = GD24_8000;
 		break;
 	default:
+<<<<<<< HEAD
 		DE_ACT(("set_sample_rate: Error, invalid sample rate %d\n",
 			rate));
+=======
+		dev_err(chip->card->dev,
+			"set_sample_rate: Error, invalid sample rate %d\n",
+			rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
 	if (wait_handshake(chip))
 		return -EIO;
 
+<<<<<<< HEAD
 	DE_ACT(("set_sample_rate: %d clock %d\n", rate, clock));
+=======
+	dev_dbg(chip->card->dev,
+		"set_sample_rate: %d clock %d\n", rate, clock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->sample_rate = rate;
 
 	/* Override the sample rate if this card is set to Echo sync. */

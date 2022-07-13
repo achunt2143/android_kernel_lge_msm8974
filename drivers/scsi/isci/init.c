@@ -66,7 +66,11 @@
 #include "probe_roms.h"
 
 #define MAJ 1
+<<<<<<< HEAD
 #define MIN 1
+=======
+#define MIN 2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BUILD 0
 #define DRV_VERSION __stringify(MAJ) "." __stringify(MIN) "." \
 	__stringify(BUILD)
@@ -75,7 +79,11 @@ MODULE_VERSION(DRV_VERSION);
 
 static struct scsi_transport_template *isci_transport_template;
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(isci_id_table) = {
+=======
+static const struct pci_device_id isci_id_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(INTEL, 0x1D61),},
 	{ PCI_VDEVICE(INTEL, 0x1D63),},
 	{ PCI_VDEVICE(INTEL, 0x1D65),},
@@ -137,22 +145,38 @@ static ssize_t isci_show_id(struct device *dev, struct device_attribute *attr, c
 	struct sas_ha_struct *sas_ha = SHOST_TO_SAS_HA(shost);
 	struct isci_host *ihost = container_of(sas_ha, typeof(*ihost), sas_ha);
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%d\n", ihost->id);
+=======
+	return sysfs_emit(buf, "%d\n", ihost->id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEVICE_ATTR(isci_id, S_IRUGO, isci_show_id, NULL);
 
+<<<<<<< HEAD
 struct device_attribute *isci_host_attrs[] = {
 	&dev_attr_isci_id,
 	NULL
 };
 
 static struct scsi_host_template isci_sht = {
+=======
+static struct attribute *isci_host_attrs[] = {
+	&dev_attr_isci_id.attr,
+	NULL
+};
+
+ATTRIBUTE_GROUPS(isci_host);
+
+static const struct scsi_host_template isci_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.module				= THIS_MODULE,
 	.name				= DRV_NAME,
 	.proc_name			= DRV_NAME,
 	.queuecommand			= sas_queuecommand,
+<<<<<<< HEAD
 	.target_alloc			= sas_target_alloc,
 	.slave_configure		= sas_slave_configure,
 	.scan_finished			= isci_host_scan_finished,
@@ -169,6 +193,30 @@ static struct scsi_host_template isci_sht = {
 	.target_destroy			= sas_target_destroy,
 	.ioctl				= sas_ioctl,
 	.shost_attrs			= isci_host_attrs,
+=======
+	.dma_need_drain			= ata_scsi_dma_need_drain,
+	.target_alloc			= sas_target_alloc,
+	.slave_configure		= sas_slave_configure,
+	.scan_finished			= isci_host_scan_finished,
+	.scan_start			= isci_host_start,
+	.change_queue_depth		= sas_change_queue_depth,
+	.bios_param			= sas_bios_param,
+	.can_queue			= ISCI_CAN_QUEUE_VAL,
+	.this_id			= -1,
+	.sg_tablesize			= SG_ALL,
+	.max_sectors			= SCSI_DEFAULT_MAX_SECTORS,
+	.eh_abort_handler		= sas_eh_abort_handler,
+	.eh_device_reset_handler        = sas_eh_device_reset_handler,
+	.eh_target_reset_handler        = sas_eh_target_reset_handler,
+	.slave_alloc			= sas_slave_alloc,
+	.target_destroy			= sas_target_destroy,
+	.ioctl				= sas_ioctl,
+#ifdef CONFIG_COMPAT
+	.compat_ioctl			= sas_ioctl,
+#endif
+	.shost_groups			= isci_host_groups,
+	.track_queue_depth		= 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct sas_domain_function_template isci_transport_ops  = {
@@ -185,7 +233,10 @@ static struct sas_domain_function_template isci_transport_ops  = {
 	/* Task Management Functions. Must be called from process context. */
 	.lldd_abort_task	= isci_task_abort_task,
 	.lldd_abort_task_set	= isci_task_abort_task_set,
+<<<<<<< HEAD
 	.lldd_clear_aca		= isci_task_clear_aca,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.lldd_clear_task_set	= isci_task_clear_task_set,
 	.lldd_I_T_nexus_reset	= isci_task_I_T_nexus_reset,
 	.lldd_lu_reset		= isci_task_lu_reset,
@@ -219,7 +270,11 @@ static struct sas_domain_function_template isci_transport_ops  = {
  * @isci_host: This parameter specifies the lldd specific wrapper for the
  *    libsas sas_ha struct.
  *
+<<<<<<< HEAD
  * This method returns an error code indicating sucess or failure. The user
+=======
+ * This method returns an error code indicating success or failure. The user
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * should check for possible memory allocation error return otherwise, a zero
  * indicates success.
  */
@@ -230,20 +285,33 @@ static int isci_register_sas_ha(struct isci_host *isci_host)
 	struct asd_sas_phy **sas_phys;
 	struct asd_sas_port **sas_ports;
 
+<<<<<<< HEAD
 	sas_phys = devm_kzalloc(&isci_host->pdev->dev,
 				SCI_MAX_PHYS * sizeof(void *),
+=======
+	sas_phys = devm_kcalloc(&isci_host->pdev->dev,
+				SCI_MAX_PHYS, sizeof(void *),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				GFP_KERNEL);
 	if (!sas_phys)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	sas_ports = devm_kzalloc(&isci_host->pdev->dev,
 				 SCI_MAX_PORTS * sizeof(void *),
+=======
+	sas_ports = devm_kcalloc(&isci_host->pdev->dev,
+				 SCI_MAX_PORTS, sizeof(void *),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 GFP_KERNEL);
 	if (!sas_ports)
 		return -ENOMEM;
 
 	sas_ha->sas_ha_name = DRV_NAME;
+<<<<<<< HEAD
 	sas_ha->lldd_module = THIS_MODULE;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sas_ha->sas_addr    = &isci_host->phys[0].sas_addr[0];
 
 	for (i = 0; i < SCI_MAX_PHYS; i++) {
@@ -255,6 +323,7 @@ static int isci_register_sas_ha(struct isci_host *isci_host)
 	sas_ha->sas_port = sas_ports;
 	sas_ha->num_phys = SCI_MAX_PHYS;
 
+<<<<<<< HEAD
 	sas_ha->lldd_queue_size = ISCI_CAN_QUEUE_VAL;
 	sas_ha->lldd_max_execute_num = 1;
 	sas_ha->strict_wide_ports = 1;
@@ -262,6 +331,11 @@ static int isci_register_sas_ha(struct isci_host *isci_host)
 	sas_register_ha(sas_ha);
 
 	return 0;
+=======
+	sas_ha->strict_wide_ports = 1;
+
+	return sas_register_ha(sas_ha);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void isci_unregister(struct isci_host *isci_host)
@@ -271,6 +345,7 @@ static void isci_unregister(struct isci_host *isci_host)
 	if (!isci_host)
 		return;
 
+<<<<<<< HEAD
 	shost = isci_host->shost;
 
 	sas_unregister_ha(&isci_host->sas_ha);
@@ -281,6 +356,16 @@ static void isci_unregister(struct isci_host *isci_host)
 }
 
 static int __devinit isci_pci_init(struct pci_dev *pdev)
+=======
+	shost = to_shost(isci_host);
+	sas_unregister_ha(&isci_host->sas_ha);
+
+	sas_remove_host(shost);
+	scsi_host_put(shost);
+}
+
+static int isci_pci_init(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err, bar_num, bar_mask = 0;
 	void __iomem * const *iomap;
@@ -306,6 +391,7 @@ static int __devinit isci_pci_init(struct pci_dev *pdev)
 
 	pci_set_master(pdev);
 
+<<<<<<< HEAD
 	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
 	if (err) {
 		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
@@ -321,6 +407,12 @@ static int __devinit isci_pci_init(struct pci_dev *pdev)
 	}
 
 	return 0;
+=======
+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+	if (err)
+		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int num_controllers(struct pci_dev *pdev)
@@ -351,16 +443,24 @@ static int isci_setup_interrupts(struct pci_dev *pdev)
 	 */
 	num_msix = num_controllers(pdev) * SCI_NUM_MSI_X_INT;
 
+<<<<<<< HEAD
 	for (i = 0; i < num_msix; i++)
 		pci_info->msix_entries[i].entry = i;
 
 	err = pci_enable_msix(pdev, pci_info->msix_entries, num_msix);
 	if (err)
+=======
+	err = pci_alloc_irq_vectors(pdev, num_msix, num_msix, PCI_IRQ_MSIX);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto intx;
 
 	for (i = 0; i < num_msix; i++) {
 		int id = i / SCI_NUM_MSI_X_INT;
+<<<<<<< HEAD
 		struct msix_entry *msix = &pci_info->msix_entries[i];
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		irq_handler_t isr;
 
 		ihost = pci_info->hosts[id];
@@ -370,8 +470,13 @@ static int isci_setup_interrupts(struct pci_dev *pdev)
 		else
 			isr = isci_msix_isr;
 
+<<<<<<< HEAD
 		err = devm_request_irq(&pdev->dev, msix->vector, isr, 0,
 				       DRV_NAME"-msix", ihost);
+=======
+		err = devm_request_irq(&pdev->dev, pci_irq_vector(pdev, i),
+				isr, 0, DRV_NAME"-msix", ihost);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!err)
 			continue;
 
@@ -379,24 +484,38 @@ static int isci_setup_interrupts(struct pci_dev *pdev)
 		while (i--) {
 			id = i / SCI_NUM_MSI_X_INT;
 			ihost = pci_info->hosts[id];
+<<<<<<< HEAD
 			msix = &pci_info->msix_entries[i];
 			devm_free_irq(&pdev->dev, msix->vector, ihost);
 		}
 		pci_disable_msix(pdev);
+=======
+			devm_free_irq(&pdev->dev, pci_irq_vector(pdev, i),
+					ihost);
+		}
+		pci_free_irq_vectors(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto intx;
 	}
 	return 0;
 
  intx:
 	for_each_isci_host(i, ihost, pdev) {
+<<<<<<< HEAD
 		err = devm_request_irq(&pdev->dev, pdev->irq, isci_intx_isr,
 				       IRQF_SHARED, DRV_NAME"-intx", ihost);
+=======
+		err = devm_request_irq(&pdev->dev, pci_irq_vector(pdev, 0),
+				isci_intx_isr, IRQF_SHARED, DRV_NAME"-intx",
+				ihost);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (err)
 			break;
 	}
 	return err;
 }
 
+<<<<<<< HEAD
 static struct isci_host *isci_host_alloc(struct pci_dev *pdev, int id)
 {
 	struct isci_host *isci_host;
@@ -409,10 +528,184 @@ static struct isci_host *isci_host_alloc(struct pci_dev *pdev, int id)
 
 	isci_host->pdev = pdev;
 	isci_host->id = id;
+=======
+static void isci_user_parameters_get(struct sci_user_parameters *u)
+{
+	int i;
+
+	for (i = 0; i < SCI_MAX_PHYS; i++) {
+		struct sci_phy_user_params *u_phy = &u->phys[i];
+
+		u_phy->max_speed_generation = phy_gen;
+
+		/* we are not exporting these for now */
+		u_phy->align_insertion_frequency = 0x7f;
+		u_phy->in_connection_align_insertion_frequency = 0xff;
+		u_phy->notify_enable_spin_up_insertion_frequency = 0x33;
+	}
+
+	u->stp_inactivity_timeout = stp_inactive_to;
+	u->ssp_inactivity_timeout = ssp_inactive_to;
+	u->stp_max_occupancy_timeout = stp_max_occ_to;
+	u->ssp_max_occupancy_timeout = ssp_max_occ_to;
+	u->no_outbound_task_timeout = no_outbound_task_to;
+	u->max_concurr_spinup = max_concurr_spinup;
+}
+
+static enum sci_status sci_user_parameters_set(struct isci_host *ihost,
+					       struct sci_user_parameters *sci_parms)
+{
+	u16 index;
+
+	/*
+	 * Validate the user parameters.  If they are not legal, then
+	 * return a failure.
+	 */
+	for (index = 0; index < SCI_MAX_PHYS; index++) {
+		struct sci_phy_user_params *u;
+
+		u = &sci_parms->phys[index];
+
+		if (!((u->max_speed_generation <= SCIC_SDS_PARM_MAX_SPEED) &&
+		      (u->max_speed_generation > SCIC_SDS_PARM_NO_SPEED)))
+			return SCI_FAILURE_INVALID_PARAMETER_VALUE;
+
+		if ((u->in_connection_align_insertion_frequency < 3) ||
+		    (u->align_insertion_frequency == 0) ||
+		    (u->notify_enable_spin_up_insertion_frequency == 0))
+			return SCI_FAILURE_INVALID_PARAMETER_VALUE;
+	}
+
+	if ((sci_parms->stp_inactivity_timeout == 0) ||
+	    (sci_parms->ssp_inactivity_timeout == 0) ||
+	    (sci_parms->stp_max_occupancy_timeout == 0) ||
+	    (sci_parms->ssp_max_occupancy_timeout == 0) ||
+	    (sci_parms->no_outbound_task_timeout == 0))
+		return SCI_FAILURE_INVALID_PARAMETER_VALUE;
+
+	memcpy(&ihost->user_parameters, sci_parms, sizeof(*sci_parms));
+
+	return SCI_SUCCESS;
+}
+
+static void sci_oem_defaults(struct isci_host *ihost)
+{
+	/* these defaults are overridden by the platform / firmware */
+	struct sci_user_parameters *user = &ihost->user_parameters;
+	struct sci_oem_params *oem = &ihost->oem_parameters;
+	int i;
+
+	/* Default to APC mode. */
+	oem->controller.mode_type = SCIC_PORT_AUTOMATIC_CONFIGURATION_MODE;
+
+	/* Default to APC mode. */
+	oem->controller.max_concurr_spin_up = 1;
+
+	/* Default to no SSC operation. */
+	oem->controller.do_enable_ssc = false;
+
+	/* Default to short cables on all phys. */
+	oem->controller.cable_selection_mask = 0;
+
+	/* Initialize all of the port parameter information to narrow ports. */
+	for (i = 0; i < SCI_MAX_PORTS; i++)
+		oem->ports[i].phy_mask = 0;
+
+	/* Initialize all of the phy parameter information. */
+	for (i = 0; i < SCI_MAX_PHYS; i++) {
+		/* Default to 3G (i.e. Gen 2). */
+		user->phys[i].max_speed_generation = SCIC_SDS_PARM_GEN2_SPEED;
+
+		/* the frequencies cannot be 0 */
+		user->phys[i].align_insertion_frequency = 0x7f;
+		user->phys[i].in_connection_align_insertion_frequency = 0xff;
+		user->phys[i].notify_enable_spin_up_insertion_frequency = 0x33;
+
+		/* Previous Vitesse based expanders had a arbitration issue that
+		 * is worked around by having the upper 32-bits of SAS address
+		 * with a value greater then the Vitesse company identifier.
+		 * Hence, usage of 0x5FCFFFFF.
+		 */
+		oem->phys[i].sas_address.low = 0x1 + ihost->id;
+		oem->phys[i].sas_address.high = 0x5FCFFFFF;
+	}
+
+	user->stp_inactivity_timeout = 5;
+	user->ssp_inactivity_timeout = 5;
+	user->stp_max_occupancy_timeout = 5;
+	user->ssp_max_occupancy_timeout = 20;
+	user->no_outbound_task_timeout = 2;
+}
+
+static struct isci_host *isci_host_alloc(struct pci_dev *pdev, int id)
+{
+	struct isci_orom *orom = to_pci_info(pdev)->orom;
+	struct sci_user_parameters sci_user_params;
+	u8 oem_version = ISCI_ROM_VER_1_0;
+	struct isci_host *ihost;
+	struct Scsi_Host *shost;
+	int err, i;
+
+	ihost = devm_kzalloc(&pdev->dev, sizeof(*ihost), GFP_KERNEL);
+	if (!ihost)
+		return NULL;
+
+	ihost->pdev = pdev;
+	ihost->id = id;
+	spin_lock_init(&ihost->scic_lock);
+	init_waitqueue_head(&ihost->eventq);
+	ihost->sas_ha.dev = &ihost->pdev->dev;
+	ihost->sas_ha.lldd_ha = ihost;
+	tasklet_init(&ihost->completion_tasklet,
+		     isci_host_completion_routine, (unsigned long)ihost);
+
+	/* validate module parameters */
+	/* TODO: kill struct sci_user_parameters and reference directly */
+	sci_oem_defaults(ihost);
+	isci_user_parameters_get(&sci_user_params);
+	if (sci_user_parameters_set(ihost, &sci_user_params)) {
+		dev_warn(&pdev->dev,
+			 "%s: sci_user_parameters_set failed\n", __func__);
+		return NULL;
+	}
+
+	/* sanity check platform (or 'firmware') oem parameters */
+	if (orom) {
+		if (id < 0 || id >= SCI_MAX_CONTROLLERS || id > orom->hdr.num_elements) {
+			dev_warn(&pdev->dev, "parsing firmware oem parameters failed\n");
+			return NULL;
+		}
+		ihost->oem_parameters = orom->ctrl[id];
+		oem_version = orom->hdr.version;
+	}
+
+	/* validate oem parameters (platform, firmware, or built-in defaults) */
+	if (sci_oem_parameters_validate(&ihost->oem_parameters, oem_version)) {
+		dev_warn(&pdev->dev, "oem parameter validation failed\n");
+		return NULL;
+	}
+
+	for (i = 0; i < SCI_MAX_PORTS; i++) {
+		struct isci_port *iport = &ihost->ports[i];
+
+		INIT_LIST_HEAD(&iport->remote_dev_list);
+		iport->isci_host = ihost;
+	}
+
+	for (i = 0; i < SCI_MAX_PHYS; i++)
+		isci_phy_init(&ihost->phys[i], ihost, i);
+
+	for (i = 0; i < SCI_MAX_REMOTE_DEVICES; i++) {
+		struct isci_remote_device *idev = &ihost->devices[i];
+
+		INIT_LIST_HEAD(&idev->node);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	shost = scsi_host_alloc(&isci_sht, sizeof(void *));
 	if (!shost)
 		return NULL;
+<<<<<<< HEAD
 	isci_host->shost = shost;
 
 	dev_info(&pdev->dev, "%sSCU controller %d: phy 3-0 cables: "
@@ -429,21 +722,56 @@ static struct isci_host *isci_host_alloc(struct pci_dev *pdev, int id)
 
 	SHOST_TO_SAS_HA(shost) = &isci_host->sas_ha;
 	isci_host->sas_ha.core.shost = shost;
+=======
+
+	dev_info(&pdev->dev, "%sSCU controller %d: phy 3-0 cables: "
+		 "{%s, %s, %s, %s}\n",
+		 (is_cable_select_overridden() ? "* " : ""), ihost->id,
+		 lookup_cable_names(decode_cable_selection(ihost, 3)),
+		 lookup_cable_names(decode_cable_selection(ihost, 2)),
+		 lookup_cable_names(decode_cable_selection(ihost, 1)),
+		 lookup_cable_names(decode_cable_selection(ihost, 0)));
+
+	err = isci_host_init(ihost);
+	if (err)
+		goto err_shost;
+
+	SHOST_TO_SAS_HA(shost) = &ihost->sas_ha;
+	ihost->sas_ha.shost = shost;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	shost->transportt = isci_transport_template;
 
 	shost->max_id = ~0;
 	shost->max_lun = ~0;
 	shost->max_cmd_len = MAX_COMMAND_SIZE;
 
+<<<<<<< HEAD
+=======
+	/* turn on DIF support */
+	scsi_host_set_prot(shost,
+			   SHOST_DIF_TYPE1_PROTECTION |
+			   SHOST_DIF_TYPE2_PROTECTION |
+			   SHOST_DIF_TYPE3_PROTECTION);
+	scsi_host_set_guard(shost, SHOST_DIX_GUARD_CRC);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = scsi_add_host(shost, &pdev->dev);
 	if (err)
 		goto err_shost;
 
+<<<<<<< HEAD
 	err = isci_register_sas_ha(isci_host);
 	if (err)
 		goto err_shost_remove;
 
 	return isci_host;
+=======
+	err = isci_register_sas_ha(ihost);
+	if (err)
+		goto err_shost_remove;
+
+	return ihost;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  err_shost_remove:
 	scsi_remove_host(shost);
@@ -453,7 +781,11 @@ static struct isci_host *isci_host_alloc(struct pci_dev *pdev, int id)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static int __devinit isci_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+=======
+static int isci_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct isci_pci_info *pci_info;
 	int err, i;
@@ -470,7 +802,11 @@ static int __devinit isci_pci_probe(struct pci_dev *pdev, const struct pci_devic
 		return -ENOMEM;
 	pci_set_drvdata(pdev, pci_info);
 
+<<<<<<< HEAD
 	if (efi_enabled(EFI_RUNTIME_SERVICES))
+=======
+	if (efi_rt_services_supported(EFI_RT_SUPPORTED_GET_VARIABLE))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		orom = isci_get_efi_var(pdev);
 
 	if (!orom)
@@ -522,6 +858,7 @@ static int __devinit isci_pci_probe(struct pci_dev *pdev, const struct pci_devic
 			goto err_host_alloc;
 		}
 		pci_info->hosts[i] = h;
+<<<<<<< HEAD
 
 		/* turn on DIF support */
 		scsi_host_set_prot(h->shost,
@@ -529,6 +866,8 @@ static int __devinit isci_pci_probe(struct pci_dev *pdev, const struct pci_devic
 				   SHOST_DIF_TYPE2_PROTECTION |
 				   SHOST_DIF_TYPE3_PROTECTION);
 		scsi_host_set_guard(h->shost, SHOST_DIX_GUARD_CRC);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = isci_setup_interrupts(pdev);
@@ -536,7 +875,11 @@ static int __devinit isci_pci_probe(struct pci_dev *pdev, const struct pci_devic
 		goto err_host_alloc;
 
 	for_each_isci_host(i, isci_host, pdev)
+<<<<<<< HEAD
 		scsi_scan_host(isci_host->shost);
+=======
+		scsi_scan_host(to_shost(isci_host));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -546,7 +889,11 @@ static int __devinit isci_pci_probe(struct pci_dev *pdev, const struct pci_devic
 	return err;
 }
 
+<<<<<<< HEAD
 static void __devexit isci_pci_remove(struct pci_dev *pdev)
+=======
+static void isci_pci_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct isci_host *ihost;
 	int i;
@@ -558,11 +905,56 @@ static void __devexit isci_pci_remove(struct pci_dev *pdev)
 	}
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PM_SLEEP
+static int isci_suspend(struct device *dev)
+{
+	struct pci_dev *pdev = to_pci_dev(dev);
+	struct isci_host *ihost;
+	int i;
+
+	for_each_isci_host(i, ihost, pdev) {
+		sas_suspend_ha(&ihost->sas_ha);
+		isci_host_deinit(ihost);
+	}
+
+	return 0;
+}
+
+static int isci_resume(struct device *dev)
+{
+	struct pci_dev *pdev = to_pci_dev(dev);
+	struct isci_host *ihost;
+	int i;
+
+	for_each_isci_host(i, ihost, pdev) {
+		sas_prep_resume_ha(&ihost->sas_ha);
+
+		isci_host_init(ihost);
+		isci_host_start(ihost->sas_ha.shost);
+		wait_for_start(ihost);
+
+		sas_resume_ha(&ihost->sas_ha);
+	}
+
+	return 0;
+}
+#endif
+
+static SIMPLE_DEV_PM_OPS(isci_pm_ops, isci_suspend, isci_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver isci_pci_driver = {
 	.name		= DRV_NAME,
 	.id_table	= isci_id_table,
 	.probe		= isci_pci_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(isci_pci_remove),
+=======
+	.remove		= isci_pci_remove,
+	.driver.pm      = &isci_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static __init int isci_init(void)

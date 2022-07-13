@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * libfdt - Flat Device Tree manipulation
  * Copyright (C) 2006 David Gibson, IBM Corporation.
@@ -47,6 +48,12 @@
  *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  *     OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=======
+// SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
+/*
+ * libfdt - Flat Device Tree manipulation
+ * Copyright (C) 2006 David Gibson, IBM Corporation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include "libfdt_env.h"
 
@@ -55,6 +62,7 @@
 
 #include "libfdt_internal.h"
 
+<<<<<<< HEAD
 static int _fdt_sw_check_header(void *fdt)
 {
 	if (fdt_magic(fdt) != FDT_SW_MAGIC)
@@ -74,6 +82,93 @@ static void *_fdt_grab_space(void *fdt, size_t len)
 {
 	int offset = fdt_size_dt_struct(fdt);
 	int spaceleft;
+=======
+static int fdt_sw_probe_(void *fdt)
+{
+	if (!can_assume(VALID_INPUT)) {
+		if (fdt_magic(fdt) == FDT_MAGIC)
+			return -FDT_ERR_BADSTATE;
+		else if (fdt_magic(fdt) != FDT_SW_MAGIC)
+			return -FDT_ERR_BADMAGIC;
+	}
+
+	return 0;
+}
+
+#define FDT_SW_PROBE(fdt) \
+	{ \
+		int err; \
+		if ((err = fdt_sw_probe_(fdt)) != 0) \
+			return err; \
+	}
+
+/* 'memrsv' state:	Initial state after fdt_create()
+ *
+ * Allowed functions:
+ *	fdt_add_reservemap_entry()
+ *	fdt_finish_reservemap()		[moves to 'struct' state]
+ */
+static int fdt_sw_probe_memrsv_(void *fdt)
+{
+	int err = fdt_sw_probe_(fdt);
+	if (err)
+		return err;
+
+	if (!can_assume(VALID_INPUT) && fdt_off_dt_strings(fdt) != 0)
+		return -FDT_ERR_BADSTATE;
+	return 0;
+}
+
+#define FDT_SW_PROBE_MEMRSV(fdt) \
+	{ \
+		int err; \
+		if ((err = fdt_sw_probe_memrsv_(fdt)) != 0) \
+			return err; \
+	}
+
+/* 'struct' state:	Enter this state after fdt_finish_reservemap()
+ *
+ * Allowed functions:
+ *	fdt_begin_node()
+ *	fdt_end_node()
+ *	fdt_property*()
+ *	fdt_finish()			[moves to 'complete' state]
+ */
+static int fdt_sw_probe_struct_(void *fdt)
+{
+	int err = fdt_sw_probe_(fdt);
+	if (err)
+		return err;
+
+	if (!can_assume(VALID_INPUT) &&
+	    fdt_off_dt_strings(fdt) != fdt_totalsize(fdt))
+		return -FDT_ERR_BADSTATE;
+	return 0;
+}
+
+#define FDT_SW_PROBE_STRUCT(fdt) \
+	{ \
+		int err; \
+		if ((err = fdt_sw_probe_struct_(fdt)) != 0) \
+			return err; \
+	}
+
+static inline uint32_t sw_flags(void *fdt)
+{
+	/* assert: (fdt_magic(fdt) == FDT_SW_MAGIC) */
+	return fdt_last_comp_version(fdt);
+}
+
+/* 'complete' state:	Enter this state after fdt_finish()
+ *
+ * Allowed functions: none
+ */
+
+static void *fdt_grab_space_(void *fdt, size_t len)
+{
+	unsigned int offset = fdt_size_dt_struct(fdt);
+	unsigned int spaceleft;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spaceleft = fdt_totalsize(fdt) - fdt_off_dt_struct(fdt)
 		- fdt_size_dt_strings(fdt);
@@ -82,11 +177,50 @@ static void *_fdt_grab_space(void *fdt, size_t len)
 		return NULL;
 
 	fdt_set_size_dt_struct(fdt, offset + len);
+<<<<<<< HEAD
 	return _fdt_offset_ptr_w(fdt, offset);
+=======
+	return fdt_offset_ptr_w_(fdt, offset);
+}
+
+int fdt_create_with_flags(void *buf, int bufsize, uint32_t flags)
+{
+	const int hdrsize = FDT_ALIGN(sizeof(struct fdt_header),
+				      sizeof(struct fdt_reserve_entry));
+	void *fdt = buf;
+
+	if (bufsize < hdrsize)
+		return -FDT_ERR_NOSPACE;
+
+	if (flags & ~FDT_CREATE_FLAGS_ALL)
+		return -FDT_ERR_BADFLAGS;
+
+	memset(buf, 0, bufsize);
+
+	/*
+	 * magic and last_comp_version keep intermediate state during the fdt
+	 * creation process, which is replaced with the proper FDT format by
+	 * fdt_finish().
+	 *
+	 * flags should be accessed with sw_flags().
+	 */
+	fdt_set_magic(fdt, FDT_SW_MAGIC);
+	fdt_set_version(fdt, FDT_LAST_SUPPORTED_VERSION);
+	fdt_set_last_comp_version(fdt, flags);
+
+	fdt_set_totalsize(fdt,  bufsize);
+
+	fdt_set_off_mem_rsvmap(fdt, hdrsize);
+	fdt_set_off_dt_struct(fdt, fdt_off_mem_rsvmap(fdt));
+	fdt_set_off_dt_strings(fdt, 0);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int fdt_create(void *buf, int bufsize)
 {
+<<<<<<< HEAD
 	void *fdt = buf;
 
 	if (bufsize < sizeof(struct fdt_header))
@@ -103,6 +237,47 @@ int fdt_create(void *buf, int bufsize)
 					      sizeof(struct fdt_reserve_entry)));
 	fdt_set_off_dt_struct(fdt, fdt_off_mem_rsvmap(fdt));
 	fdt_set_off_dt_strings(fdt, bufsize);
+=======
+	return fdt_create_with_flags(buf, bufsize, 0);
+}
+
+int fdt_resize(void *fdt, void *buf, int bufsize)
+{
+	size_t headsize, tailsize;
+	char *oldtail, *newtail;
+
+	FDT_SW_PROBE(fdt);
+
+	if (bufsize < 0)
+		return -FDT_ERR_NOSPACE;
+
+	headsize = fdt_off_dt_struct(fdt) + fdt_size_dt_struct(fdt);
+	tailsize = fdt_size_dt_strings(fdt);
+
+	if (!can_assume(VALID_DTB) &&
+	    headsize + tailsize > fdt_totalsize(fdt))
+		return -FDT_ERR_INTERNAL;
+
+	if ((headsize + tailsize) > (unsigned)bufsize)
+		return -FDT_ERR_NOSPACE;
+
+	oldtail = (char *)fdt + fdt_totalsize(fdt) - tailsize;
+	newtail = (char *)buf + bufsize - tailsize;
+
+	/* Two cases to avoid clobbering data if the old and new
+	 * buffers partially overlap */
+	if (buf <= fdt) {
+		memmove(buf, fdt, headsize);
+		memmove(newtail, oldtail, tailsize);
+	} else {
+		memmove(newtail, oldtail, tailsize);
+		memmove(buf, fdt, headsize);
+	}
+
+	fdt_set_totalsize(buf, bufsize);
+	if (fdt_off_dt_strings(buf))
+		fdt_set_off_dt_strings(buf, bufsize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -112,10 +287,14 @@ int fdt_add_reservemap_entry(void *fdt, uint64_t addr, uint64_t size)
 	struct fdt_reserve_entry *re;
 	int offset;
 
+<<<<<<< HEAD
 	FDT_SW_CHECK_HEADER(fdt);
 
 	if (fdt_size_dt_struct(fdt))
 		return -FDT_ERR_BADSTATE;
+=======
+	FDT_SW_PROBE_MEMRSV(fdt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	offset = fdt_off_dt_struct(fdt);
 	if ((offset + sizeof(*re)) > fdt_totalsize(fdt))
@@ -132,17 +311,36 @@ int fdt_add_reservemap_entry(void *fdt, uint64_t addr, uint64_t size)
 
 int fdt_finish_reservemap(void *fdt)
 {
+<<<<<<< HEAD
 	return fdt_add_reservemap_entry(fdt, 0, 0);
+=======
+	int err = fdt_add_reservemap_entry(fdt, 0, 0);
+
+	if (err)
+		return err;
+
+	fdt_set_off_dt_strings(fdt, fdt_totalsize(fdt));
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int fdt_begin_node(void *fdt, const char *name)
 {
 	struct fdt_node_header *nh;
+<<<<<<< HEAD
 	int namelen = strlen(name) + 1;
 
 	FDT_SW_CHECK_HEADER(fdt);
 
 	nh = _fdt_grab_space(fdt, sizeof(*nh) + FDT_TAGALIGN(namelen));
+=======
+	int namelen;
+
+	FDT_SW_PROBE_STRUCT(fdt);
+
+	namelen = strlen(name) + 1;
+	nh = fdt_grab_space_(fdt, sizeof(*nh) + FDT_TAGALIGN(namelen));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (! nh)
 		return -FDT_ERR_NOSPACE;
 
@@ -153,11 +351,19 @@ int fdt_begin_node(void *fdt, const char *name)
 
 int fdt_end_node(void *fdt)
 {
+<<<<<<< HEAD
 	uint32_t *en;
 
 	FDT_SW_CHECK_HEADER(fdt);
 
 	en = _fdt_grab_space(fdt, FDT_TAGSIZE);
+=======
+	fdt32_t *en;
+
+	FDT_SW_PROBE_STRUCT(fdt);
+
+	en = fdt_grab_space_(fdt, FDT_TAGSIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (! en)
 		return -FDT_ERR_NOSPACE;
 
@@ -165,6 +371,7 @@ int fdt_end_node(void *fdt)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int _fdt_find_add_string(void *fdt, const char *s)
 {
 	char *strtab = (char *)fdt + fdt_totalsize(fdt);
@@ -202,26 +409,122 @@ int fdt_property(void *fdt, const char *name, const void *val, int len)
 	prop = _fdt_grab_space(fdt, sizeof(*prop) + FDT_TAGALIGN(len));
 	if (! prop)
 		return -FDT_ERR_NOSPACE;
+=======
+static int fdt_add_string_(void *fdt, const char *s)
+{
+	char *strtab = (char *)fdt + fdt_totalsize(fdt);
+	unsigned int strtabsize = fdt_size_dt_strings(fdt);
+	unsigned int len = strlen(s) + 1;
+	unsigned int struct_top, offset;
+
+	offset = strtabsize + len;
+	struct_top = fdt_off_dt_struct(fdt) + fdt_size_dt_struct(fdt);
+	if (fdt_totalsize(fdt) - offset < struct_top)
+		return 0; /* no more room :( */
+
+	memcpy(strtab - offset, s, len);
+	fdt_set_size_dt_strings(fdt, strtabsize + len);
+	return -offset;
+}
+
+/* Must only be used to roll back in case of error */
+static void fdt_del_last_string_(void *fdt, const char *s)
+{
+	int strtabsize = fdt_size_dt_strings(fdt);
+	int len = strlen(s) + 1;
+
+	fdt_set_size_dt_strings(fdt, strtabsize - len);
+}
+
+static int fdt_find_add_string_(void *fdt, const char *s, int *allocated)
+{
+	char *strtab = (char *)fdt + fdt_totalsize(fdt);
+	int strtabsize = fdt_size_dt_strings(fdt);
+	const char *p;
+
+	*allocated = 0;
+
+	p = fdt_find_string_(strtab - strtabsize, strtabsize, s);
+	if (p)
+		return p - strtab;
+
+	*allocated = 1;
+
+	return fdt_add_string_(fdt, s);
+}
+
+int fdt_property_placeholder(void *fdt, const char *name, int len, void **valp)
+{
+	struct fdt_property *prop;
+	int nameoff;
+	int allocated;
+
+	FDT_SW_PROBE_STRUCT(fdt);
+
+	/* String de-duplication can be slow, _NO_NAME_DEDUP skips it */
+	if (sw_flags(fdt) & FDT_CREATE_FLAG_NO_NAME_DEDUP) {
+		allocated = 1;
+		nameoff = fdt_add_string_(fdt, name);
+	} else {
+		nameoff = fdt_find_add_string_(fdt, name, &allocated);
+	}
+	if (nameoff == 0)
+		return -FDT_ERR_NOSPACE;
+
+	prop = fdt_grab_space_(fdt, sizeof(*prop) + FDT_TAGALIGN(len));
+	if (! prop) {
+		if (allocated)
+			fdt_del_last_string_(fdt, name);
+		return -FDT_ERR_NOSPACE;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	prop->tag = cpu_to_fdt32(FDT_PROP);
 	prop->nameoff = cpu_to_fdt32(nameoff);
 	prop->len = cpu_to_fdt32(len);
+<<<<<<< HEAD
 	memcpy(prop->data, val, len);
+=======
+	*valp = prop->data;
+	return 0;
+}
+
+int fdt_property(void *fdt, const char *name, const void *val, int len)
+{
+	void *ptr;
+	int ret;
+
+	ret = fdt_property_placeholder(fdt, name, len, &ptr);
+	if (ret)
+		return ret;
+	memcpy(ptr, val, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 int fdt_finish(void *fdt)
 {
 	char *p = (char *)fdt;
+<<<<<<< HEAD
 	uint32_t *end;
+=======
+	fdt32_t *end;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int oldstroffset, newstroffset;
 	uint32_t tag;
 	int offset, nextoffset;
 
+<<<<<<< HEAD
 	FDT_SW_CHECK_HEADER(fdt);
 
 	/* Add terminator */
 	end = _fdt_grab_space(fdt, sizeof(*end));
+=======
+	FDT_SW_PROBE_STRUCT(fdt);
+
+	/* Add terminator */
+	end = fdt_grab_space_(fdt, sizeof(*end));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (! end)
 		return -FDT_ERR_NOSPACE;
 	*end = cpu_to_fdt32(FDT_END);
@@ -237,7 +540,11 @@ int fdt_finish(void *fdt)
 	while ((tag = fdt_next_tag(fdt, offset, &nextoffset)) != FDT_END) {
 		if (tag == FDT_PROP) {
 			struct fdt_property *prop =
+<<<<<<< HEAD
 				_fdt_offset_ptr_w(fdt, offset);
+=======
+				fdt_offset_ptr_w_(fdt, offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			int nameoff;
 
 			nameoff = fdt32_to_cpu(prop->nameoff);
@@ -251,6 +558,14 @@ int fdt_finish(void *fdt)
 
 	/* Finally, adjust the header */
 	fdt_set_totalsize(fdt, newstroffset + fdt_size_dt_strings(fdt));
+<<<<<<< HEAD
 	fdt_set_magic(fdt, FDT_MAGIC);
+=======
+
+	/* And fix up fields that were keeping intermediate state. */
+	fdt_set_last_comp_version(fdt, FDT_LAST_COMPATIBLE_VERSION);
+	fdt_set_magic(fdt, FDT_MAGIC);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

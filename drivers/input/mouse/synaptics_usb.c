@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * USB Synaptics device driver
  *
@@ -16,11 +20,14 @@
  *		drivers/hid/usbhid/usbmouse.c by Vojtech Pavlik
  *		drivers/input/mouse/synaptics.c by Peter Osterlund
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Trademarks are the property of their respective owners.
  */
 
@@ -39,7 +46,10 @@
  */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -83,6 +93,13 @@ struct synusb {
 	struct urb *urb;
 	unsigned char *data;
 
+<<<<<<< HEAD
+=======
+	/* serialize access to open/suspend */
+	struct mutex pm_mutex;
+	bool is_open;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* input device related data structures */
 	struct input_dev *input;
 	char name[128];
@@ -253,6 +270,10 @@ static int synusb_open(struct input_dev *dev)
 		return retval;
 	}
 
+<<<<<<< HEAD
+=======
+	mutex_lock(&synusb->pm_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = usb_submit_urb(synusb->urb, GFP_KERNEL);
 	if (retval) {
 		dev_err(&synusb->intf->dev,
@@ -263,8 +284,15 @@ static int synusb_open(struct input_dev *dev)
 	}
 
 	synusb->intf->needs_remote_wakeup = 1;
+<<<<<<< HEAD
 
 out:
+=======
+	synusb->is_open = true;
+
+out:
+	mutex_unlock(&synusb->pm_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_autopm_put_interface(synusb->intf);
 	return retval;
 }
@@ -276,8 +304,16 @@ static void synusb_close(struct input_dev *dev)
 
 	autopm_error = usb_autopm_get_interface(synusb->intf);
 
+<<<<<<< HEAD
 	usb_kill_urb(synusb->urb);
 	synusb->intf->needs_remote_wakeup = 0;
+=======
+	mutex_lock(&synusb->pm_mutex);
+	usb_kill_urb(synusb->urb);
+	synusb->intf->needs_remote_wakeup = 0;
+	synusb->is_open = false;
+	mutex_unlock(&synusb->pm_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!autopm_error)
 		usb_autopm_put_interface(synusb->intf);
@@ -316,6 +352,10 @@ static int synusb_probe(struct usb_interface *intf,
 	synusb->udev = udev;
 	synusb->intf = intf;
 	synusb->input = input_dev;
+<<<<<<< HEAD
+=======
+	mutex_init(&synusb->pm_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	synusb->flags = id->driver_info;
 	if (synusb->flags & SYNUSB_COMBO) {
@@ -348,7 +388,11 @@ static int synusb_probe(struct usb_interface *intf,
 	synusb->urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
 	if (udev->manufacturer)
+<<<<<<< HEAD
 		strlcpy(synusb->name, udev->manufacturer,
+=======
+		strscpy(synusb->name, udev->manufacturer,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(synusb->name));
 
 	if (udev->product) {
@@ -364,7 +408,11 @@ static int synusb_probe(struct usb_interface *intf,
 			 le16_to_cpu(udev->descriptor.idProduct));
 
 	if (synusb->flags & SYNUSB_STICK)
+<<<<<<< HEAD
 		strlcat(synusb->name, " (Stick) ", sizeof(synusb->name));
+=======
+		strlcat(synusb->name, " (Stick)", sizeof(synusb->name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_make_path(udev, synusb->phys, sizeof(synusb->phys));
 	strlcat(synusb->phys, "/input0", sizeof(synusb->phys));
@@ -388,6 +436,10 @@ static int synusb_probe(struct usb_interface *intf,
 		__set_bit(EV_REL, input_dev->evbit);
 		__set_bit(REL_X, input_dev->relbit);
 		__set_bit(REL_Y, input_dev->relbit);
+<<<<<<< HEAD
+=======
+		__set_bit(INPUT_PROP_POINTING_STICK, input_dev->propbit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		input_set_abs_params(input_dev, ABS_PRESSURE, 0, 127, 0, 0);
 	} else {
 		input_set_abs_params(input_dev, ABS_X,
@@ -402,6 +454,14 @@ static int synusb_probe(struct usb_interface *intf,
 		__set_bit(BTN_TOOL_TRIPLETAP, input_dev->keybit);
 	}
 
+<<<<<<< HEAD
+=======
+	if (synusb->flags & SYNUSB_TOUCHSCREEN)
+		__set_bit(INPUT_PROP_DIRECT, input_dev->propbit);
+	else
+		__set_bit(INPUT_PROP_POINTER, input_dev->propbit);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__set_bit(BTN_LEFT, input_dev->keybit);
 	__set_bit(BTN_RIGHT, input_dev->keybit);
 	__set_bit(BTN_MIDDLE, input_dev->keybit);
@@ -461,11 +521,18 @@ static void synusb_disconnect(struct usb_interface *intf)
 static int synusb_suspend(struct usb_interface *intf, pm_message_t message)
 {
 	struct synusb *synusb = usb_get_intfdata(intf);
+<<<<<<< HEAD
 	struct input_dev *input_dev = synusb->input;
 
 	mutex_lock(&input_dev->mutex);
 	usb_kill_urb(synusb->urb);
 	mutex_unlock(&input_dev->mutex);
+=======
+
+	mutex_lock(&synusb->pm_mutex);
+	usb_kill_urb(synusb->urb);
+	mutex_unlock(&synusb->pm_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -473,17 +540,29 @@ static int synusb_suspend(struct usb_interface *intf, pm_message_t message)
 static int synusb_resume(struct usb_interface *intf)
 {
 	struct synusb *synusb = usb_get_intfdata(intf);
+<<<<<<< HEAD
 	struct input_dev *input_dev = synusb->input;
 	int retval = 0;
 
 	mutex_lock(&input_dev->mutex);
 
 	if ((input_dev->users || (synusb->flags & SYNUSB_IO_ALWAYS)) &&
+=======
+	int retval = 0;
+
+	mutex_lock(&synusb->pm_mutex);
+
+	if ((synusb->is_open || (synusb->flags & SYNUSB_IO_ALWAYS)) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    usb_submit_urb(synusb->urb, GFP_NOIO) < 0) {
 		retval = -EIO;
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&input_dev->mutex);
+=======
+	mutex_unlock(&synusb->pm_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
@@ -491,9 +570,14 @@ static int synusb_resume(struct usb_interface *intf)
 static int synusb_pre_reset(struct usb_interface *intf)
 {
 	struct synusb *synusb = usb_get_intfdata(intf);
+<<<<<<< HEAD
 	struct input_dev *input_dev = synusb->input;
 
 	mutex_lock(&input_dev->mutex);
+=======
+
+	mutex_lock(&synusb->pm_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_kill_urb(synusb->urb);
 
 	return 0;
@@ -502,15 +586,25 @@ static int synusb_pre_reset(struct usb_interface *intf)
 static int synusb_post_reset(struct usb_interface *intf)
 {
 	struct synusb *synusb = usb_get_intfdata(intf);
+<<<<<<< HEAD
 	struct input_dev *input_dev = synusb->input;
 	int retval = 0;
 
 	if ((input_dev->users || (synusb->flags & SYNUSB_IO_ALWAYS)) &&
+=======
+	int retval = 0;
+
+	if ((synusb->is_open || (synusb->flags & SYNUSB_IO_ALWAYS)) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    usb_submit_urb(synusb->urb, GFP_NOIO) < 0) {
 		retval = -EIO;
 	}
 
+<<<<<<< HEAD
 	mutex_unlock(&input_dev->mutex);
+=======
+	mutex_unlock(&synusb->pm_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
@@ -520,7 +614,11 @@ static int synusb_reset_resume(struct usb_interface *intf)
 	return synusb_resume(intf);
 }
 
+<<<<<<< HEAD
 static struct usb_device_id synusb_idtable[] = {
+=======
+static const struct usb_device_id synusb_idtable[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ USB_DEVICE_SYNAPTICS(TP, SYNUSB_TOUCHPAD) },
 	{ USB_DEVICE_SYNAPTICS(INT_TP, SYNUSB_TOUCHPAD) },
 	{ USB_DEVICE_SYNAPTICS(CPAD,

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  pci_slot.c - ACPI PCI Slot Driver
  *
@@ -9,6 +13,7 @@
  *  Copyright (C) 2007-2008 Hewlett-Packard Development Company, L.P.
  *  	Alex Chiang <achiang@hp.com>
  *
+<<<<<<< HEAD
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms and conditions of the GNU General Public License,
  *  version 2, as published by the Free Software Foundation.
@@ -63,10 +68,34 @@ ACPI_MODULE_NAME("pci_slot");
 
 struct acpi_pci_slot {
 	acpi_handle root_handle;	/* handle of the root bridge */
+=======
+ *  Copyright (C) 2013 Huawei Tech. Co., Ltd.
+ *	Jiang Liu <jiang.liu@huawei.com>
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/kernel.h>
+#include <linux/init.h>
+#include <linux/slab.h>
+#include <linux/types.h>
+#include <linux/list.h>
+#include <linux/pci.h>
+#include <linux/acpi.h>
+#include <linux/dmi.h>
+#include <linux/pci-acpi.h>
+
+static int check_sta_before_sun;
+
+#define SLOT_NAME_SIZE 21		/* Inspired by #define in acpiphp.h */
+
+struct acpi_pci_slot {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_slot *pci_slot;	/* corresponding pci_slot */
 	struct list_head list;		/* node in the list of slots */
 };
 
+<<<<<<< HEAD
 static int acpi_pci_slot_add(acpi_handle handle);
 static void acpi_pci_slot_remove(acpi_handle handle);
 
@@ -76,6 +105,10 @@ static struct acpi_pci_driver acpi_pci_slot_driver = {
 	.add = acpi_pci_slot_add,
 	.remove = acpi_pci_slot_remove,
 };
+=======
+static LIST_HEAD(slot_list);
+static DEFINE_MUTEX(slot_list_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int
 check_slot(acpi_handle handle, unsigned long long *sun)
@@ -86,7 +119,11 @@ check_slot(acpi_handle handle, unsigned long long *sun)
 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
 
 	acpi_get_name(handle, ACPI_FULL_PATHNAME, &buffer);
+<<<<<<< HEAD
 	dbg("Checking slot on path: %s\n", (char *)buffer.pointer);
+=======
+	pr_debug("Checking slot on path: %s\n", (char *)buffer.pointer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (check_sta_before_sun) {
 		/* If SxFy doesn't have _STA, we just assume it's there */
@@ -97,14 +134,24 @@ check_slot(acpi_handle handle, unsigned long long *sun)
 
 	status = acpi_evaluate_integer(handle, "_ADR", NULL, &adr);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		dbg("_ADR returned %d on %s\n", status, (char *)buffer.pointer);
+=======
+		pr_debug("_ADR returned %d on %s\n",
+			 status, (char *)buffer.pointer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	/* No _SUN == not a slot == bail */
 	status = acpi_evaluate_integer(handle, "_SUN", NULL, sun);
 	if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 		dbg("_SUN returned %d on %s\n", status, (char *)buffer.pointer);
+=======
+		pr_debug("_SUN returned %d on %s\n",
+			 status, (char *)buffer.pointer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -114,6 +161,7 @@ out:
 	return device;
 }
 
+<<<<<<< HEAD
 struct callback_args {
 	acpi_walk_callback	user_function;	/* only for walk_p2p_bridge */
 	struct pci_bus		*pci_bus;
@@ -129,6 +177,10 @@ struct callback_args {
  *
  * The number of calls to pci_destroy_slot from unregister_slot is
  * symmetrical.
+=======
+/*
+ * Check whether handle has an associated slot and create PCI slot if it has.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static acpi_status
 register_slot(acpi_handle handle, u32 lvl, void *context, void **rv)
@@ -138,13 +190,18 @@ register_slot(acpi_handle handle, u32 lvl, void *context, void **rv)
 	char name[SLOT_NAME_SIZE];
 	struct acpi_pci_slot *slot;
 	struct pci_slot *pci_slot;
+<<<<<<< HEAD
 	struct callback_args *parent_context = context;
 	struct pci_bus *pci_bus = parent_context->pci_bus;
+=======
+	struct pci_bus *pci_bus = context;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	device = check_slot(handle, &sun);
 	if (device < 0)
 		return AE_OK;
 
+<<<<<<< HEAD
 	slot = kmalloc(sizeof(*slot), GFP_KERNEL);
 	if (!slot) {
 		err("%s: cannot allocate memory\n", __func__);
@@ -155,10 +212,31 @@ register_slot(acpi_handle handle, u32 lvl, void *context, void **rv)
 	pci_slot = pci_create_slot(pci_bus, device, name, NULL);
 	if (IS_ERR(pci_slot)) {
 		err("pci_create_slot returned %ld\n", PTR_ERR(pci_slot));
+=======
+	/*
+	 * There may be multiple PCI functions associated with the same slot.
+	 * Check whether PCI slot has already been created for this PCI device.
+	 */
+	list_for_each_entry(slot, &slot_list, list) {
+		pci_slot = slot->pci_slot;
+		if (pci_slot->bus == pci_bus && pci_slot->number == device)
+			return AE_OK;
+	}
+
+	slot = kmalloc(sizeof(*slot), GFP_KERNEL);
+	if (!slot)
+		return AE_OK;
+
+	snprintf(name, sizeof(name), "%llu", sun);
+	pci_slot = pci_create_slot(pci_bus, device, name, NULL);
+	if (IS_ERR(pci_slot)) {
+		pr_err("pci_create_slot returned %pe\n", pci_slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(slot);
 		return AE_OK;
 	}
 
+<<<<<<< HEAD
 	slot->root_handle = parent_context->root_handle;
 	slot->pci_slot = pci_slot;
 	INIT_LIST_HEAD(&slot->list);
@@ -170,10 +248,20 @@ register_slot(acpi_handle handle, u32 lvl, void *context, void **rv)
 
 	dbg("pci_slot: %p, pci_bus: %x, device: %d, name: %s\n",
 		pci_slot, pci_bus->number, device, name);
+=======
+	slot->pci_slot = pci_slot;
+	list_add(&slot->list, &slot_list);
+
+	get_device(&pci_bus->dev);
+
+	pr_debug("%p, pci_bus: %x, device: %d, name: %s\n",
+		 pci_slot, pci_bus->number, device, name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return AE_OK;
 }
 
+<<<<<<< HEAD
 /*
  * walk_p2p_bridge - discover and walk p2p bridges
  * @handle: points to an acpi_pci_root
@@ -323,6 +411,30 @@ acpi_pci_slot_remove(acpi_handle handle)
 			pbus = slot->pci_slot->bus;
 			pci_destroy_slot(slot->pci_slot);
 			put_device(&pbus->dev);
+=======
+void acpi_pci_slot_enumerate(struct pci_bus *bus)
+{
+	acpi_handle handle = ACPI_HANDLE(bus->bridge);
+
+	if (handle) {
+		mutex_lock(&slot_list_lock);
+		acpi_walk_namespace(ACPI_TYPE_DEVICE, handle, 1,
+				    register_slot, NULL, bus, NULL);
+		mutex_unlock(&slot_list_lock);
+	}
+}
+
+void acpi_pci_slot_remove(struct pci_bus *bus)
+{
+	struct acpi_pci_slot *slot, *tmp;
+
+	mutex_lock(&slot_list_lock);
+	list_for_each_entry_safe(slot, tmp, &slot_list, list) {
+		if (slot->pci_slot->bus == bus) {
+			list_del(&slot->list);
+			pci_destroy_slot(slot->pci_slot);
+			put_device(&bus->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			kfree(slot);
 		}
 	}
@@ -331,12 +443,21 @@ acpi_pci_slot_remove(acpi_handle handle)
 
 static int do_sta_before_sun(const struct dmi_system_id *d)
 {
+<<<<<<< HEAD
 	info("%s detected: will evaluate _STA before calling _SUN\n", d->ident);
+=======
+	pr_info("%s detected: will evaluate _STA before calling _SUN\n",
+		d->ident);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	check_sta_before_sun = 1;
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dmi_system_id acpi_pci_slot_dmi_table[] __initdata = {
+=======
+static const struct dmi_system_id acpi_pci_slot_dmi_table[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Fujitsu Primequest machines will return 1023 to indicate an
 	 * error if the _SUN method is evaluated on SxFy objects that
@@ -354,6 +475,7 @@ static struct dmi_system_id acpi_pci_slot_dmi_table[] __initdata = {
 	{}
 };
 
+<<<<<<< HEAD
 static int __init
 acpi_pci_slot_init(void)
 {
@@ -370,3 +492,9 @@ acpi_pci_slot_exit(void)
 
 module_init(acpi_pci_slot_init);
 module_exit(acpi_pci_slot_exit);
+=======
+void __init acpi_pci_slot_init(void)
+{
+	dmi_check_system(acpi_pci_slot_dmi_table);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2000-2001 Christoph Hellwig.
  * All rights reserved.
@@ -25,6 +26,11 @@
  * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
  * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
  * SUCH DAMAGE.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2000-2001 Christoph Hellwig.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -38,11 +44,19 @@
 #include "vxfs_extern.h"
 
 
+<<<<<<< HEAD
 static int		vxfs_readpage(struct file *, struct page *);
 static sector_t		vxfs_bmap(struct address_space *, sector_t);
 
 const struct address_space_operations vxfs_aops = {
 	.readpage =		vxfs_readpage,
+=======
+static int		vxfs_read_folio(struct file *, struct folio *);
+static sector_t		vxfs_bmap(struct address_space *, sector_t);
+
+const struct address_space_operations vxfs_aops = {
+	.read_folio =		vxfs_read_folio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bmap =			vxfs_bmap,
 };
 
@@ -50,12 +64,20 @@ inline void
 vxfs_put_page(struct page *pp)
 {
 	kunmap(pp);
+<<<<<<< HEAD
 	page_cache_release(pp);
+=======
+	put_page(pp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
  * vxfs_get_page - read a page into memory.
+<<<<<<< HEAD
  * @ip:		inode to read from
+=======
+ * @mapping:	mapping to read from
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @n:		page number
  *
  * Description:
@@ -75,6 +97,7 @@ vxfs_get_page(struct address_space *mapping, u_long n)
 		kmap(pp);
 		/** if (!PageChecked(pp)) **/
 			/** vxfs_check_page(pp); **/
+<<<<<<< HEAD
 		if (PageError(pp))
 			goto fail;
 	}
@@ -84,6 +107,11 @@ vxfs_get_page(struct address_space *mapping, u_long n)
 fail:
 	vxfs_put_page(pp);
 	return ERR_PTR(-EIO);
+=======
+	}
+	
+	return (pp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -111,14 +139,22 @@ vxfs_bread(struct inode *ip, int block)
 }
 
 /**
+<<<<<<< HEAD
  * vxfs_get_block - locate buffer for given inode,block tuple 
+=======
+ * vxfs_getblk - locate buffer for given inode,block tuple
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ip:		inode
  * @iblock:	logical block
  * @bp:		buffer skeleton
  * @create:	%TRUE if blocks may be newly allocated.
  *
  * Description:
+<<<<<<< HEAD
  *   The vxfs_get_block function fills @bp with the right physical
+=======
+ *   The vxfs_getblk function fills @bp with the right physical
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   block and device number to perform a lowlevel read/write on
  *   it.
  *
@@ -141,24 +177,41 @@ vxfs_getblk(struct inode *ip, sector_t iblock,
 }
 
 /**
+<<<<<<< HEAD
  * vxfs_readpage - read one page synchronously into the pagecache
  * @file:	file context (unused)
  * @page:	page frame to fill in.
  *
  * Description:
  *   The vxfs_readpage routine reads @page synchronously into the
+=======
+ * vxfs_read_folio - read one page synchronously into the pagecache
+ * @file:	file context (unused)
+ * @folio:	folio to fill in.
+ *
+ * Description:
+ *   The vxfs_read_folio routine reads @folio synchronously into the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   pagecache.
  *
  * Returns:
  *   Zero on success, else a negative error code.
  *
  * Locking status:
+<<<<<<< HEAD
  *   @page is locked and will be unlocked.
  */
 static int
 vxfs_readpage(struct file *file, struct page *page)
 {
 	return block_read_full_page(page, vxfs_getblk);
+=======
+ *   @folio is locked and will be unlocked.
+ */
+static int vxfs_read_folio(struct file *file, struct folio *folio)
+{
+	return block_read_full_folio(folio, vxfs_getblk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
  
 /**

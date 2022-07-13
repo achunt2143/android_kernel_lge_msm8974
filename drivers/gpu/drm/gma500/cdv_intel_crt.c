@@ -24,6 +24,7 @@
  *	Eric Anholt <eric@anholt.net>
  */
 
+<<<<<<< HEAD
 #include <linux/i2c.h>
 #include <drm/drmP.h>
 
@@ -34,6 +35,22 @@
 #include "power.h"
 #include "cdv_device.h"
 #include <linux/pm_runtime.h>
+=======
+#include <linux/delay.h>
+#include <linux/i2c.h>
+#include <linux/pm_runtime.h>
+
+#include <drm/drm_crtc_helper.h>
+#include <drm/drm_modeset_helper_vtables.h>
+#include <drm/drm_simple_kms_helper.h>
+
+#include "cdv_device.h"
+#include "intel_bios.h"
+#include "power.h"
+#include "psb_drv.h"
+#include "psb_intel_drv.h"
+#include "psb_intel_reg.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static void cdv_intel_crt_dpms(struct drm_encoder *encoder, int mode)
@@ -64,11 +81,17 @@ static void cdv_intel_crt_dpms(struct drm_encoder *encoder, int mode)
 	REG_WRITE(reg, temp);
 }
 
+<<<<<<< HEAD
 static int cdv_intel_crt_mode_valid(struct drm_connector *connector,
 				struct drm_display_mode *mode)
 {
 	struct drm_psb_private *dev_priv = connector->dev->dev_private;
 	int max_clock = 0;
+=======
+static enum drm_mode_status cdv_intel_crt_mode_valid(struct drm_connector *connector,
+				struct drm_display_mode *mode)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (mode->flags & DRM_MODE_FLAG_DBLSCAN)
 		return MODE_NO_DBLESCAN;
 
@@ -77,6 +100,7 @@ static int cdv_intel_crt_mode_valid(struct drm_connector *connector,
 		return MODE_CLOCK_LOW;
 
 	/* The max clock for CDV is 355 instead of 400 */
+<<<<<<< HEAD
 	max_clock = 355000;
 	if (mode->clock > max_clock)
 		return MODE_CLOCK_HIGH;
@@ -99,6 +123,14 @@ static bool cdv_intel_crt_mode_fixup(struct drm_encoder *encoder,
 	return true;
 }
 
+=======
+	if (mode->clock > 355000)
+		return MODE_CLOCK_HIGH;
+
+	return MODE_OK;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void cdv_intel_crt_mode_set(struct drm_encoder *encoder,
 			       struct drm_display_mode *mode,
 			       struct drm_display_mode *adjusted_mode)
@@ -106,13 +138,21 @@ static void cdv_intel_crt_mode_set(struct drm_encoder *encoder,
 
 	struct drm_device *dev = encoder->dev;
 	struct drm_crtc *crtc = encoder->crtc;
+<<<<<<< HEAD
 	struct psb_intel_crtc *psb_intel_crtc =
 					to_psb_intel_crtc(crtc);
+=======
+	struct gma_crtc *gma_crtc = to_gma_crtc(crtc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dpll_md_reg;
 	u32 adpa, dpll_md;
 	u32 adpa_reg;
 
+<<<<<<< HEAD
 	if (psb_intel_crtc->pipe == 0)
+=======
+	if (gma_crtc->pipe == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dpll_md_reg = DPLL_A_MD;
 	else
 		dpll_md_reg = DPLL_B_MD;
@@ -135,7 +175,11 @@ static void cdv_intel_crt_mode_set(struct drm_encoder *encoder,
 	if (adjusted_mode->flags & DRM_MODE_FLAG_PVSYNC)
 		adpa |= ADPA_VSYNC_ACTIVE_HIGH;
 
+<<<<<<< HEAD
 	if (psb_intel_crtc->pipe == 0)
+=======
+	if (gma_crtc->pipe == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		adpa |= ADPA_PIPE_A_SELECT;
 	else
 		adpa |= ADPA_PIPE_B_SELECT;
@@ -144,7 +188,11 @@ static void cdv_intel_crt_mode_set(struct drm_encoder *encoder,
 }
 
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Uses CRT_HOTPLUG_EN and CRT_HOTPLUG_STAT to detect CRT presence.
  *
  * \return true if CRT is connected.
@@ -156,6 +204,7 @@ static bool cdv_intel_crt_detect_hotplug(struct drm_connector *connector,
 	struct drm_device *dev = connector->dev;
 	u32 hotplug_en;
 	int i, tries = 0, ret = false;
+<<<<<<< HEAD
 	u32 adpa_orig;
 
 	/* disable the DAC when doing the hotplug detection */
@@ -163,6 +212,9 @@ static bool cdv_intel_crt_detect_hotplug(struct drm_connector *connector,
 	adpa_orig = REG_READ(ADPA);
 
 	REG_WRITE(ADPA, adpa_orig & ~(ADPA_DAC_ENABLE));
+=======
+	u32 orig;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * On a CDV thep, CRT detect sequence need to be done twice
@@ -170,7 +222,11 @@ static bool cdv_intel_crt_detect_hotplug(struct drm_connector *connector,
 	 */
 	tries = 2;
 
+<<<<<<< HEAD
 	hotplug_en = REG_READ(PORT_HOTPLUG_EN);
+=======
+	orig = hotplug_en = REG_READ(PORT_HOTPLUG_EN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hotplug_en &= ~(CRT_HOTPLUG_DETECT_MASK);
 	hotplug_en |= CRT_HOTPLUG_FORCE_DETECT;
 
@@ -195,8 +251,16 @@ static bool cdv_intel_crt_detect_hotplug(struct drm_connector *connector,
 	    CRT_HOTPLUG_MONITOR_NONE)
 		ret = true;
 
+<<<<<<< HEAD
 	/* Restore the saved ADPA */
 	REG_WRITE(ADPA, adpa_orig);
+=======
+	 /* clear the interrupt we just generated, if any */
+	REG_WRITE(PORT_HOTPLUG_STAT, CRT_HOTPLUG_INT_STATUS);
+
+	/* and put the bits back */
+	REG_WRITE(PORT_HOTPLUG_EN, orig);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -211,6 +275,7 @@ static enum drm_connector_status cdv_intel_crt_detect(
 
 static void cdv_intel_crt_destroy(struct drm_connector *connector)
 {
+<<<<<<< HEAD
 	struct psb_intel_encoder *psb_intel_encoder =
 					psb_intel_attached_encoder(connector);
 
@@ -218,13 +283,25 @@ static void cdv_intel_crt_destroy(struct drm_connector *connector)
 	drm_sysfs_connector_remove(connector);
 	drm_connector_cleanup(connector);
 	kfree(connector);
+=======
+	struct gma_connector *gma_connector = to_gma_connector(connector);
+	struct gma_i2c_chan *ddc_bus = to_gma_i2c_chan(connector->ddc);
+
+	gma_i2c_destroy(ddc_bus);
+	drm_connector_cleanup(connector);
+	kfree(gma_connector);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cdv_intel_crt_get_modes(struct drm_connector *connector)
 {
+<<<<<<< HEAD
 	struct psb_intel_encoder *psb_intel_encoder =
 				psb_intel_attached_encoder(connector);
 	return psb_intel_ddc_get_modes(connector, &psb_intel_encoder->ddc_bus->adapter);
+=======
+	return psb_intel_ddc_get_modes(connector, connector->ddc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int cdv_intel_crt_set_property(struct drm_connector *connector,
@@ -240,9 +317,14 @@ static int cdv_intel_crt_set_property(struct drm_connector *connector,
 
 static const struct drm_encoder_helper_funcs cdv_intel_crt_helper_funcs = {
 	.dpms = cdv_intel_crt_dpms,
+<<<<<<< HEAD
 	.mode_fixup = cdv_intel_crt_mode_fixup,
 	.prepare = psb_intel_encoder_prepare,
 	.commit = psb_intel_encoder_commit,
+=======
+	.prepare = gma_encoder_prepare,
+	.commit = gma_encoder_commit,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mode_set = cdv_intel_crt_mode_set,
 };
 
@@ -258,6 +340,7 @@ static const struct drm_connector_helper_funcs
 				cdv_intel_crt_connector_helper_funcs = {
 	.mode_valid = cdv_intel_crt_mode_valid,
 	.get_modes = cdv_intel_crt_get_modes,
+<<<<<<< HEAD
 	.best_encoder = psb_intel_best_encoder,
 };
 
@@ -268,12 +351,16 @@ static void cdv_intel_crt_enc_destroy(struct drm_encoder *encoder)
 
 static const struct drm_encoder_funcs cdv_intel_crt_enc_funcs = {
 	.destroy = cdv_intel_crt_enc_destroy,
+=======
+	.best_encoder = gma_best_encoder,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void cdv_intel_crt_init(struct drm_device *dev,
 			struct psb_intel_mode_device *mode_dev)
 {
 
+<<<<<<< HEAD
 	struct psb_intel_connector *psb_intel_connector;
 	struct psb_intel_encoder *psb_intel_encoder;
 	struct drm_connector *connector;
@@ -320,6 +407,47 @@ void cdv_intel_crt_init(struct drm_device *dev,
 	psb_intel_output->clone_mask = (1 << INTEL_ANALOG_CLONE_BIT);
 	psb_intel_output->crtc_mask = (1 << 0) | (1 << 1);
 	*/
+=======
+	struct gma_connector *gma_connector;
+	struct gma_encoder *gma_encoder;
+	struct gma_i2c_chan *ddc_bus;
+	struct drm_connector *connector;
+	struct drm_encoder *encoder;
+	int ret;
+
+	gma_encoder = kzalloc(sizeof(struct gma_encoder), GFP_KERNEL);
+	if (!gma_encoder)
+		return;
+
+	gma_connector = kzalloc(sizeof(struct gma_connector), GFP_KERNEL);
+	if (!gma_connector)
+		goto err_free_encoder;
+
+	/* Set up the DDC bus. */
+	ddc_bus = gma_i2c_create(dev, GPIOA, "CRTDDC_A");
+	if (!ddc_bus) {
+		dev_printk(KERN_ERR, dev->dev, "DDC bus registration failed.\n");
+		goto err_free_connector;
+	}
+
+	connector = &gma_connector->base;
+	connector->polled = DRM_CONNECTOR_POLL_HPD;
+	ret = drm_connector_init_with_ddc(dev, connector,
+					  &cdv_intel_crt_connector_funcs,
+					  DRM_MODE_CONNECTOR_VGA,
+					  &ddc_bus->base);
+	if (ret)
+		goto err_ddc_destroy;
+
+	encoder = &gma_encoder->base;
+	ret = drm_simple_encoder_init(dev, encoder, DRM_MODE_ENCODER_DAC);
+	if (ret)
+		goto err_connector_cleanup;
+
+	gma_connector_attach_encoder(gma_connector, gma_encoder);
+
+	gma_encoder->type = INTEL_OUTPUT_ANALOG;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	connector->interlace_allowed = 0;
 	connector->doublescan_allowed = 0;
 
@@ -327,6 +455,7 @@ void cdv_intel_crt_init(struct drm_device *dev,
 	drm_connector_helper_add(connector,
 					&cdv_intel_crt_connector_helper_funcs);
 
+<<<<<<< HEAD
 	drm_sysfs_connector_add(connector);
 
 	return;
@@ -336,5 +465,17 @@ failed_ddc:
 	kfree(psb_intel_connector);
 failed_connector:
 	kfree(psb_intel_encoder);
+=======
+	return;
+
+err_connector_cleanup:
+	drm_connector_cleanup(&gma_connector->base);
+err_ddc_destroy:
+	gma_i2c_destroy(ddc_bus);
+err_free_connector:
+	kfree(gma_connector);
+err_free_encoder:
+	kfree(gma_encoder);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }

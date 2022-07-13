@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Stacktrace support for Hexagon
  *
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -19,12 +24,21 @@
  */
 
 #include <linux/sched.h>
+=======
+ */
+
+#include <linux/sched.h>
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/stacktrace.h>
 #include <linux/thread_info.h>
 #include <linux/module.h>
 
+<<<<<<< HEAD
 register unsigned long current_frame_pointer asm("r30");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct stackframe {
 	unsigned long fp;
 	unsigned long rets;
@@ -42,7 +56,11 @@ void save_stack_trace(struct stack_trace *trace)
 
 	low = (unsigned long)task_stack_page(current);
 	high = low + THREAD_SIZE;
+<<<<<<< HEAD
 	fp = current_frame_pointer;
+=======
+	fp = (unsigned long)__builtin_frame_address(0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (fp >= low && fp <= (high - sizeof(*frame))) {
 		frame = (struct stackframe *)fp;

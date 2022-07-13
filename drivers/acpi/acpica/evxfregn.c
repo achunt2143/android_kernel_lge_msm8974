@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: evxfregn - External Interfaces, ACPI Operation Regions and
  *                         Address Spaces.
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -43,6 +48,14 @@
  */
 
 #include <linux/export.h>
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+#define EXPORT_ACPI_INTERFACES
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acnamesp.h"
@@ -53,6 +66,7 @@ ACPI_MODULE_NAME("evxfregn")
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_install_address_space_handler
  *
  * PARAMETERS:  Device          - Handle for the device
@@ -60,6 +74,16 @@ ACPI_MODULE_NAME("evxfregn")
  *              Handler         - Address of the handler
  *              Setup           - Address of the setup function
  *              Context         - Value passed to the handler on each access
+=======
+ * FUNCTION:    acpi_install_address_space_handler_internal
+ *
+ * PARAMETERS:  device          - Handle for the device
+ *              space_id        - The address space ID
+ *              handler         - Address of the handler
+ *              setup           - Address of the setup function
+ *              context         - Value passed to the handler on each access
+ *              Run_reg         - Run _REG methods for this address space?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -70,6 +94,7 @@ ACPI_MODULE_NAME("evxfregn")
  * are executed here, and these methods can only be safely executed after
  * the default handlers have been installed and the hardware has been
  * initialized (via acpi_enable_subsystem.)
+<<<<<<< HEAD
  *
  ******************************************************************************/
 acpi_status
@@ -77,6 +102,18 @@ acpi_install_address_space_handler(acpi_handle device,
 				   acpi_adr_space_type space_id,
 				   acpi_adr_space_handler handler,
 				   acpi_adr_space_setup setup, void *context)
+=======
+ * To avoid this problem pass FALSE for Run_Reg and later on call
+ * acpi_execute_reg_methods() to execute _REG.
+ *
+ ******************************************************************************/
+static acpi_status
+acpi_install_address_space_handler_internal(acpi_handle device,
+					    acpi_adr_space_type space_id,
+					    acpi_adr_space_handler handler,
+					    acpi_adr_space_setup setup,
+					    void *context, u8 run_reg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct acpi_namespace_node *node;
 	acpi_status status;
@@ -111,6 +148,7 @@ acpi_install_address_space_handler(acpi_handle device,
 		goto unlock_and_exit;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * For the default space_iDs, (the IDs for which there are default region handlers
 	 * installed) Only execute the _REG methods if the global initialization _REG
@@ -147,19 +185,62 @@ acpi_install_address_space_handler(acpi_handle device,
 	status = acpi_ev_execute_reg_methods(node, space_id);
 
       unlock_and_exit:
+=======
+	/* Run all _REG methods for this address space */
+
+	if (run_reg) {
+		acpi_ev_execute_reg_methods(node, space_id, ACPI_REG_CONNECT);
+	}
+
+unlock_and_exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	return_ACPI_STATUS(status);
 }
 
+<<<<<<< HEAD
 ACPI_EXPORT_SYMBOL(acpi_install_address_space_handler)
+=======
+acpi_status
+acpi_install_address_space_handler(acpi_handle device,
+				   acpi_adr_space_type space_id,
+				   acpi_adr_space_handler handler,
+				   acpi_adr_space_setup setup, void *context)
+{
+	return acpi_install_address_space_handler_internal(device, space_id,
+							   handler, setup,
+							   context, TRUE);
+}
+
+ACPI_EXPORT_SYMBOL(acpi_install_address_space_handler)
+acpi_status
+acpi_install_address_space_handler_no_reg(acpi_handle device,
+					  acpi_adr_space_type space_id,
+					  acpi_adr_space_handler handler,
+					  acpi_adr_space_setup setup,
+					  void *context)
+{
+	return acpi_install_address_space_handler_internal(device, space_id,
+							   handler, setup,
+							   context, FALSE);
+}
+
+ACPI_EXPORT_SYMBOL(acpi_install_address_space_handler_no_reg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*******************************************************************************
  *
  * FUNCTION:    acpi_remove_address_space_handler
  *
+<<<<<<< HEAD
  * PARAMETERS:  Device          - Handle for the device
  *              space_id        - The address space ID
  *              Handler         - Address of the handler
+=======
+ * PARAMETERS:  device          - Handle for the device
+ *              space_id        - The address space ID
+ *              handler         - Address of the handler
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -213,8 +294,13 @@ acpi_remove_address_space_handler(acpi_handle device,
 
 	/* Find the address handler the user requested */
 
+<<<<<<< HEAD
 	handler_obj = obj_desc->device.handler;
 	last_obj_ptr = &obj_desc->device.handler;
+=======
+	handler_obj = obj_desc->common_notify.handler;
+	last_obj_ptr = &obj_desc->common_notify.handler;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (handler_obj) {
 
 		/* We have a handler, see if user requested this one */
@@ -257,7 +343,10 @@ acpi_remove_address_space_handler(acpi_handle device,
 				 */
 				region_obj =
 				    handler_obj->address_space.region_list;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 
 			/* Remove this Handler object from the list */
@@ -266,6 +355,11 @@ acpi_remove_address_space_handler(acpi_handle device,
 
 			/* Now we can delete the handler object */
 
+<<<<<<< HEAD
+=======
+			acpi_os_release_mutex(handler_obj->address_space.
+					      context_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			acpi_ut_remove_reference(handler_obj);
 			goto unlock_and_exit;
 		}
@@ -285,9 +379,64 @@ acpi_remove_address_space_handler(acpi_handle device,
 
 	status = AE_NOT_EXIST;
 
+<<<<<<< HEAD
       unlock_and_exit:
+=======
+unlock_and_exit:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	return_ACPI_STATUS(status);
 }
 
 ACPI_EXPORT_SYMBOL(acpi_remove_address_space_handler)
+<<<<<<< HEAD
+=======
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_execute_reg_methods
+ *
+ * PARAMETERS:  device          - Handle for the device
+ *              space_id        - The address space ID
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Execute _REG for all op_regions of a given space_id.
+ *
+ ******************************************************************************/
+acpi_status
+acpi_execute_reg_methods(acpi_handle device, acpi_adr_space_type space_id)
+{
+	struct acpi_namespace_node *node;
+	acpi_status status;
+
+	ACPI_FUNCTION_TRACE(acpi_execute_reg_methods);
+
+	/* Parameter validation */
+
+	if (!device) {
+		return_ACPI_STATUS(AE_BAD_PARAMETER);
+	}
+
+	status = acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+	/* Convert and validate the device handle */
+
+	node = acpi_ns_validate_handle(device);
+	if (node) {
+
+		/* Run all _REG methods for this address space */
+
+		acpi_ev_execute_reg_methods(node, space_id, ACPI_REG_CONNECT);
+	} else {
+		status = AE_BAD_PARAMETER;
+	}
+
+	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
+	return_ACPI_STATUS(status);
+}
+
+ACPI_EXPORT_SYMBOL(acpi_execute_reg_methods)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2003 Sistina Software Limited.
  * Copyright (C) 2005-2008 Red Hat, Inc. All rights reserved.
@@ -19,10 +23,16 @@
 #include <linux/dm-kcopyd.h>
 #include <linux/dm-region-hash.h>
 
+<<<<<<< HEAD
+=======
+static struct workqueue_struct *dm_raid1_wq;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DM_MSG_PREFIX "raid1"
 
 #define MAX_RECOVERY 1	/* Maximum number of regions recovered in parallel. */
 
+<<<<<<< HEAD
 #define DM_RAID1_HANDLE_ERRORS 0x01
 #define errors_handled(p)	((p)->features & DM_RAID1_HANDLE_ERRORS)
 
@@ -31,6 +41,22 @@ static DECLARE_WAIT_QUEUE_HEAD(_kmirrord_recovery_stopped);
 /*-----------------------------------------------------------------
  * Mirror set structures.
  *---------------------------------------------------------------*/
+=======
+#define MAX_NR_MIRRORS	(DM_KCOPYD_MAX_REGIONS + 1)
+
+#define DM_RAID1_HANDLE_ERRORS	0x01
+#define DM_RAID1_KEEP_LOG	0x02
+#define errors_handled(p)	((p)->features & DM_RAID1_HANDLE_ERRORS)
+#define keep_log(p)		((p)->features & DM_RAID1_KEEP_LOG)
+
+static DECLARE_WAIT_QUEUE_HEAD(_kmirrord_recovery_stopped);
+
+/*
+ *---------------------------------------------------------------
+ * Mirror set structures.
+ *---------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum dm_raid1_error {
 	DM_RAID1_WRITE_ERROR,
 	DM_RAID1_FLUSH_ERROR,
@@ -61,7 +87,10 @@ struct mirror_set {
 	struct dm_region_hash *rh;
 	struct dm_kcopyd_client *kcopyd_client;
 	struct dm_io_client *io_client;
+<<<<<<< HEAD
 	mempool_t *read_record_pool;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* recovery */
 	region_t nr_regions;
@@ -79,10 +108,20 @@ struct mirror_set {
 
 	struct work_struct trigger_event;
 
+<<<<<<< HEAD
 	unsigned nr_mirrors;
 	struct mirror mirror[0];
 };
 
+=======
+	unsigned int nr_mirrors;
+	struct mirror mirror[];
+};
+
+DECLARE_DM_KCOPYD_THROTTLE_WITH_MODULE_PARM(raid1_resync_throttle,
+		"A percentage of time allocated for raid resynchronization");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void wakeup_mirrord(void *context)
 {
 	struct mirror_set *ms = context;
@@ -90,9 +129,15 @@ static void wakeup_mirrord(void *context)
 	queue_work(ms->kmirrord_wq, &ms->kmirrord_work);
 }
 
+<<<<<<< HEAD
 static void delayed_wake_fn(unsigned long data)
 {
 	struct mirror_set *ms = (struct mirror_set *) data;
+=======
+static void delayed_wake_fn(struct timer_list *t)
+{
+	struct mirror_set *ms = from_timer(ms, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clear_bit(0, &ms->timer_pending);
 	wakeup_mirrord(ms);
@@ -104,8 +149,11 @@ static void delayed_wake(struct mirror_set *ms)
 		return;
 
 	ms->timer.expires = jiffies + HZ / 5;
+<<<<<<< HEAD
 	ms->timer.data = (unsigned long) ms;
 	ms->timer.function = delayed_wake_fn;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_timer(&ms->timer);
 }
 
@@ -139,6 +187,7 @@ static void dispatch_bios(void *context, struct bio_list *bio_list)
 		queue_bio(ms, bio, WRITE);
 }
 
+<<<<<<< HEAD
 #define MIN_READ_RECORDS 20
 struct dm_raid1_read_record {
 	struct mirror *m;
@@ -147,6 +196,15 @@ struct dm_raid1_read_record {
 
 static struct kmem_cache *_dm_raid1_read_record_cache;
 
+=======
+struct dm_raid1_bio_record {
+	struct mirror *m;
+	/* if details->bi_bdev == NULL, details were not saved */
+	struct dm_bio_details details;
+	region_t write_region;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Every mirror should look like this one.
  */
@@ -228,13 +286,22 @@ static void fail_mirror(struct mirror *m, enum dm_raid1_error error_type)
 	if (m != get_default_mirror(ms))
 		goto out;
 
+<<<<<<< HEAD
 	if (!ms->in_sync) {
+=======
+	if (!ms->in_sync && !keep_log(ms)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * Better to issue requests to same failing device
 		 * than to risk returning corrupt data.
 		 */
+<<<<<<< HEAD
 		DMERR("Primary mirror (%s) failed while out-of-sync: "
 		      "Reads may fail.", m->dev->name);
+=======
+		DMERR("Primary mirror (%s) failed while out-of-sync: Reads may fail.",
+		      m->dev->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -245,7 +312,11 @@ static void fail_mirror(struct mirror *m, enum dm_raid1_error error_type)
 		DMWARN("All sides of mirror have failed.");
 
 out:
+<<<<<<< HEAD
 	schedule_work(&ms->trigger_event);
+=======
+	queue_work(dm_raid1_wq, &ms->trigger_event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mirror_flush(struct dm_target *ti)
@@ -254,10 +325,17 @@ static int mirror_flush(struct dm_target *ti)
 	unsigned long error_bits;
 
 	unsigned int i;
+<<<<<<< HEAD
 	struct dm_io_region io[ms->nr_mirrors];
 	struct mirror *m;
 	struct dm_io_request io_req = {
 		.bi_rw = WRITE_FLUSH,
+=======
+	struct dm_io_region io[MAX_NR_MIRRORS];
+	struct mirror *m;
+	struct dm_io_request io_req = {
+		.bi_opf = REQ_OP_WRITE | REQ_PREFLUSH | REQ_SYNC,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.mem.type = DM_IO_KMEM,
 		.mem.ptr.addr = NULL,
 		.client = ms->io_client,
@@ -270,7 +348,11 @@ static int mirror_flush(struct dm_target *ti)
 	}
 
 	error_bits = -1;
+<<<<<<< HEAD
 	dm_io(&io_req, ms->nr_mirrors, io, &error_bits);
+=======
+	dm_io(&io_req, ms->nr_mirrors, io, &error_bits, IOPRIO_DEFAULT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(error_bits != 0)) {
 		for (i = 0; i < ms->nr_mirrors; i++)
 			if (test_bit(i, &error_bits))
@@ -282,13 +364,23 @@ static int mirror_flush(struct dm_target *ti)
 	return 0;
 }
 
+<<<<<<< HEAD
 /*-----------------------------------------------------------------
+=======
+/*
+ *---------------------------------------------------------------
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Recovery.
  *
  * When a mirror is first activated we may find that some regions
  * are in the no-sync state.  We have to recover these by
  * recopying from the default mirror to all the others.
+<<<<<<< HEAD
  *---------------------------------------------------------------*/
+=======
+ *---------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void recovery_complete(int read_err, unsigned long write_err,
 			      void *context)
 {
@@ -322,10 +414,16 @@ static void recovery_complete(int read_err, unsigned long write_err,
 	dm_rh_recovery_end(reg, !(read_err || write_err));
 }
 
+<<<<<<< HEAD
 static int recover(struct mirror_set *ms, struct dm_region *reg)
 {
 	int r;
 	unsigned i;
+=======
+static void recover(struct mirror_set *ms, struct dm_region *reg)
+{
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_io_region from, to[DM_KCOPYD_MAX_REGIONS], *dest;
 	struct mirror *m;
 	unsigned long flags = 0;
@@ -361,19 +459,40 @@ static int recover(struct mirror_set *ms, struct dm_region *reg)
 
 	/* hand to kcopyd */
 	if (!errors_handled(ms))
+<<<<<<< HEAD
 		set_bit(DM_KCOPYD_IGNORE_ERROR, &flags);
 
 	r = dm_kcopyd_copy(ms->kcopyd_client, &from, ms->nr_mirrors - 1, to,
 			   flags, recovery_complete, reg);
 
 	return r;
+=======
+		flags |= BIT(DM_KCOPYD_IGNORE_ERROR);
+
+	dm_kcopyd_copy(ms->kcopyd_client, &from, ms->nr_mirrors - 1, to,
+		       flags, recovery_complete, reg);
+}
+
+static void reset_ms_flags(struct mirror_set *ms)
+{
+	unsigned int m;
+
+	ms->leg_failure = 0;
+	for (m = 0; m < ms->nr_mirrors; m++) {
+		atomic_set(&(ms->mirror[m].error_count), 0);
+		ms->mirror[m].error_type = 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void do_recovery(struct mirror_set *ms)
 {
 	struct dm_region *reg;
 	struct dm_dirty_log *log = dm_rh_dirty_log(ms->rh);
+<<<<<<< HEAD
 	int r;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Start quiescing some regions.
@@ -383,11 +502,16 @@ static void do_recovery(struct mirror_set *ms)
 	/*
 	 * Copy any already quiesced regions.
 	 */
+<<<<<<< HEAD
 	while ((reg = dm_rh_recovery_start(ms->rh))) {
 		r = recover(ms, reg);
 		if (r)
 			dm_rh_recovery_end(reg, 0);
 	}
+=======
+	while ((reg = dm_rh_recovery_start(ms->rh)))
+		recover(ms, reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Update the in sync flag.
@@ -397,12 +521,24 @@ static void do_recovery(struct mirror_set *ms)
 		/* the sync is complete */
 		dm_table_event(ms->ti->table);
 		ms->in_sync = 1;
+<<<<<<< HEAD
 	}
 }
 
 /*-----------------------------------------------------------------
  * Reads
  *---------------------------------------------------------------*/
+=======
+		reset_ms_flags(ms);
+	}
+}
+
+/*
+ *---------------------------------------------------------------
+ * Reads
+ *---------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct mirror *choose_mirror(struct mirror_set *ms, sector_t sector)
 {
 	struct mirror *m = get_default_mirror(ms);
@@ -431,7 +567,11 @@ static int mirror_available(struct mirror_set *ms, struct bio *bio)
 	region_t region = dm_rh_bio_to_region(ms->rh, bio);
 
 	if (log->type->in_sync(log, region, 0))
+<<<<<<< HEAD
 		return choose_mirror(ms,  bio->bi_sector) ? 1 : 0;
+=======
+		return choose_mirror(ms,  bio->bi_iter.bi_sector) ? 1 : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -441,15 +581,26 @@ static int mirror_available(struct mirror_set *ms, struct bio *bio)
  */
 static sector_t map_sector(struct mirror *m, struct bio *bio)
 {
+<<<<<<< HEAD
 	if (unlikely(!bio->bi_size))
 		return 0;
 	return m->offset + dm_target_offset(m->ms->ti, bio->bi_sector);
+=======
+	if (unlikely(!bio->bi_iter.bi_size))
+		return 0;
+	return m->offset + dm_target_offset(m->ms->ti, bio->bi_iter.bi_sector);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void map_bio(struct mirror *m, struct bio *bio)
 {
+<<<<<<< HEAD
 	bio->bi_bdev = m->dev->bdev;
 	bio->bi_sector = map_sector(m, bio);
+=======
+	bio_set_dev(bio, m->dev->bdev);
+	bio->bi_iter.bi_sector = map_sector(m, bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void map_region(struct dm_io_region *io, struct mirror *m,
@@ -457,7 +608,11 @@ static void map_region(struct dm_io_region *io, struct mirror *m,
 {
 	io->bdev = m->dev->bdev;
 	io->sector = map_sector(m, bio);
+<<<<<<< HEAD
 	io->count = bio->bi_size >> 9;
+=======
+	io->count = bio_sectors(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void hold_bio(struct mirror_set *ms, struct bio *bio)
@@ -475,9 +630,17 @@ static void hold_bio(struct mirror_set *ms, struct bio *bio)
 		 * If device is suspended, complete the bio.
 		 */
 		if (dm_noflush_suspending(ms->ti))
+<<<<<<< HEAD
 			bio_endio(bio, DM_ENDIO_REQUEUE);
 		else
 			bio_endio(bio, -EIO);
+=======
+			bio->bi_status = BLK_STS_DM_REQUEUE;
+		else
+			bio->bi_status = BLK_STS_IOERR;
+
+		bio_endio(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -488,9 +651,17 @@ static void hold_bio(struct mirror_set *ms, struct bio *bio)
 	spin_unlock_irq(&ms->lock);
 }
 
+<<<<<<< HEAD
 /*-----------------------------------------------------------------
  * Reads
  *---------------------------------------------------------------*/
+=======
+/*
+ *---------------------------------------------------------------
+ * Reads
+ *---------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void read_callback(unsigned long error, void *context)
 {
 	struct bio *bio = context;
@@ -500,23 +671,37 @@ static void read_callback(unsigned long error, void *context)
 	bio_set_m(bio, NULL);
 
 	if (likely(!error)) {
+<<<<<<< HEAD
 		bio_endio(bio, 0);
+=======
+		bio_endio(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	fail_mirror(m, DM_RAID1_READ_ERROR);
 
 	if (likely(default_ok(m)) || mirror_available(m->ms, bio)) {
+<<<<<<< HEAD
 		DMWARN_LIMIT("Read failure on mirror device %s.  "
 			     "Trying alternative device.",
 			     m->dev->name);
 		queue_bio(m->ms, bio, bio_rw(bio));
+=======
+		DMWARN_LIMIT("Read failure on mirror device %s. Trying alternative device.",
+			     m->dev->name);
+		queue_bio(m->ms, bio, bio_data_dir(bio));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
 	DMERR_LIMIT("Read failure on mirror device %s.  Failing I/O.",
 		    m->dev->name);
+<<<<<<< HEAD
 	bio_endio(bio, -EIO);
+=======
+	bio_io_error(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Asynchronous read. */
@@ -524,9 +709,15 @@ static void read_async_bio(struct mirror *m, struct bio *bio)
 {
 	struct dm_io_region io;
 	struct dm_io_request io_req = {
+<<<<<<< HEAD
 		.bi_rw = READ,
 		.mem.type = DM_IO_BVEC,
 		.mem.ptr.bvec = bio->bi_io_vec + bio->bi_idx,
+=======
+		.bi_opf = REQ_OP_READ,
+		.mem.type = DM_IO_BIO,
+		.mem.ptr.bio = bio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.notify.fn = read_callback,
 		.notify.context = bio,
 		.client = m->ms->io_client,
@@ -534,7 +725,11 @@ static void read_async_bio(struct mirror *m, struct bio *bio)
 
 	map_region(&io, m, bio);
 	bio_set_m(bio, m);
+<<<<<<< HEAD
 	BUG_ON(dm_io(&io_req, 1, &io, NULL));
+=======
+	BUG_ON(dm_io(&io_req, 1, &io, NULL, IOPRIO_DEFAULT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int region_in_sync(struct mirror_set *ms, region_t region,
@@ -558,23 +753,37 @@ static void do_reads(struct mirror_set *ms, struct bio_list *reads)
 		 * We can only read balance if the region is in sync.
 		 */
 		if (likely(region_in_sync(ms, region, 1)))
+<<<<<<< HEAD
 			m = choose_mirror(ms, bio->bi_sector);
+=======
+			m = choose_mirror(ms, bio->bi_iter.bi_sector);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else if (m && atomic_read(&m->error_count))
 			m = NULL;
 
 		if (likely(m))
 			read_async_bio(m, bio);
 		else
+<<<<<<< HEAD
 			bio_endio(bio, -EIO);
 	}
 }
 
 /*-----------------------------------------------------------------
+=======
+			bio_io_error(bio);
+	}
+}
+
+/*
+ *---------------------------------------------------------------------
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Writes.
  *
  * We do different things with the write io depending on the
  * state of the region that it's in:
  *
+<<<<<<< HEAD
  * SYNC: 	increment pending, use kcopyd to write to *all* mirrors
  * RECOVERING:	delay the io until recovery completes
  * NOSYNC:	increment pending, just write to the default mirror
@@ -585,6 +794,17 @@ static void write_callback(unsigned long error, void *context)
 {
 	unsigned i, ret = 0;
 	struct bio *bio = (struct bio *) context;
+=======
+ * SYNC:	increment pending, use kcopyd to write to *all* mirrors
+ * RECOVERING:	delay the io until recovery completes
+ * NOSYNC:	increment pending, just write to the default mirror
+ *---------------------------------------------------------------------
+ */
+static void write_callback(unsigned long error, void *context)
+{
+	unsigned int i;
+	struct bio *bio = context;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mirror_set *ms;
 	int should_wake = 0;
 	unsigned long flags;
@@ -599,7 +819,11 @@ static void write_callback(unsigned long error, void *context)
 	 * regions with the same code.
 	 */
 	if (likely(!error)) {
+<<<<<<< HEAD
 		bio_endio(bio, ret);
+=======
+		bio_endio(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -607,8 +831,14 @@ static void write_callback(unsigned long error, void *context)
 	 * If the bio is discard, return an error, but do not
 	 * degrade the array.
 	 */
+<<<<<<< HEAD
 	if (bio->bi_rw & REQ_DISCARD) {
 		bio_endio(bio, -EOPNOTSUPP);
+=======
+	if (bio_op(bio) == REQ_OP_DISCARD) {
+		bio->bi_status = BLK_STS_NOTSUPP;
+		bio_endio(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -633,19 +863,34 @@ static void write_callback(unsigned long error, void *context)
 static void do_write(struct mirror_set *ms, struct bio *bio)
 {
 	unsigned int i;
+<<<<<<< HEAD
 	struct dm_io_region io[ms->nr_mirrors], *dest = io;
 	struct mirror *m;
 	struct dm_io_request io_req = {
 		.bi_rw = WRITE | (bio->bi_rw & WRITE_FLUSH_FUA),
 		.mem.type = DM_IO_BVEC,
 		.mem.ptr.bvec = bio->bi_io_vec + bio->bi_idx,
+=======
+	struct dm_io_region io[MAX_NR_MIRRORS], *dest = io;
+	struct mirror *m;
+	blk_opf_t op_flags = bio->bi_opf & (REQ_FUA | REQ_PREFLUSH);
+	struct dm_io_request io_req = {
+		.bi_opf = REQ_OP_WRITE | op_flags,
+		.mem.type = DM_IO_BIO,
+		.mem.ptr.bio = bio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.notify.fn = write_callback,
 		.notify.context = bio,
 		.client = ms->io_client,
 	};
 
+<<<<<<< HEAD
 	if (bio->bi_rw & REQ_DISCARD) {
 		io_req.bi_rw |= REQ_DISCARD;
+=======
+	if (bio_op(bio) == REQ_OP_DISCARD) {
+		io_req.bi_opf = REQ_OP_DISCARD | op_flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		io_req.mem.type = DM_IO_KMEM;
 		io_req.mem.ptr.addr = NULL;
 	}
@@ -659,7 +904,11 @@ static void do_write(struct mirror_set *ms, struct bio *bio)
 	 */
 	bio_set_m(bio, get_default_mirror(ms));
 
+<<<<<<< HEAD
 	BUG_ON(dm_io(&io_req, ms->nr_mirrors, io, NULL));
+=======
+	BUG_ON(dm_io(&io_req, ms->nr_mirrors, io, NULL, IOPRIO_DEFAULT));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void do_writes(struct mirror_set *ms, struct bio_list *writes)
@@ -683,8 +932,13 @@ static void do_writes(struct mirror_set *ms, struct bio_list *writes)
 	bio_list_init(&requeue);
 
 	while ((bio = bio_list_pop(writes))) {
+<<<<<<< HEAD
 		if ((bio->bi_rw & REQ_FLUSH) ||
 		    (bio->bi_rw & REQ_DISCARD)) {
+=======
+		if ((bio->bi_opf & REQ_PREFLUSH) ||
+		    (bio_op(bio) == REQ_OP_DISCARD)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bio_list_add(&sync, bio);
 			continue;
 		}
@@ -758,14 +1012,22 @@ static void do_writes(struct mirror_set *ms, struct bio_list *writes)
 		dm_rh_delay(ms->rh, bio);
 
 	while ((bio = bio_list_pop(&nosync))) {
+<<<<<<< HEAD
 		if (unlikely(ms->leg_failure) && errors_handled(ms)) {
+=======
+		if (unlikely(ms->leg_failure) && errors_handled(ms) && !keep_log(ms)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_lock_irq(&ms->lock);
 			bio_list_add(&ms->failures, bio);
 			spin_unlock_irq(&ms->lock);
 			wakeup_mirrord(ms);
 		} else {
 			map_bio(get_default_mirror(ms), bio);
+<<<<<<< HEAD
 			generic_make_request(bio);
+=======
+			submit_bio_noacct(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -802,18 +1064,37 @@ static void do_failures(struct mirror_set *ms, struct bio_list *failures)
 
 		/*
 		 * If all the legs are dead, fail the I/O.
+<<<<<<< HEAD
 		 * If we have been told to handle errors, hold the bio
 		 * and wait for userspace to deal with the problem.
+=======
+		 * If the device has failed and keep_log is enabled,
+		 * fail the I/O.
+		 *
+		 * If we have been told to handle errors, and keep_log
+		 * isn't enabled, hold the bio and wait for userspace to
+		 * deal with the problem.
+		 *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * Otherwise pretend that the I/O succeeded. (This would
 		 * be wrong if the failed leg returned after reboot and
 		 * got replicated back to the good legs.)
 		 */
+<<<<<<< HEAD
 		if (!get_valid_mirror(ms))
 			bio_endio(bio, -EIO);
 		else if (errors_handled(ms))
 			hold_bio(ms, bio);
 		else
 			bio_endio(bio, 0);
+=======
+		if (unlikely(!get_valid_mirror(ms) || (keep_log(ms) && ms->log_failure)))
+			bio_io_error(bio);
+		else if (errors_handled(ms) && !keep_log(ms))
+			hold_bio(ms, bio);
+		else
+			bio_endio(bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -825,9 +1106,17 @@ static void trigger_event(struct work_struct *work)
 	dm_table_event(ms->ti->table);
 }
 
+<<<<<<< HEAD
 /*-----------------------------------------------------------------
  * kmirrord
  *---------------------------------------------------------------*/
+=======
+/*
+ *---------------------------------------------------------------
+ * kmirrord
+ *---------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void do_mirror(struct work_struct *work)
 {
 	struct mirror_set *ms = container_of(work, struct mirror_set,
@@ -851,20 +1140,34 @@ static void do_mirror(struct work_struct *work)
 	do_failures(ms, &failures);
 }
 
+<<<<<<< HEAD
 /*-----------------------------------------------------------------
  * Target functions
  *---------------------------------------------------------------*/
+=======
+/*
+ *---------------------------------------------------------------
+ * Target functions
+ *---------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct mirror_set *alloc_context(unsigned int nr_mirrors,
 					uint32_t region_size,
 					struct dm_target *ti,
 					struct dm_dirty_log *dl)
 {
+<<<<<<< HEAD
 	size_t len;
 	struct mirror_set *ms = NULL;
 
 	len = sizeof(*ms) + (sizeof(ms->mirror[0]) * nr_mirrors);
 
 	ms = kzalloc(len, GFP_KERNEL);
+=======
+	struct mirror_set *ms =
+		kzalloc(struct_size(ms, mirror, nr_mirrors), GFP_KERNEL);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ms) {
 		ti->error = "Cannot allocate mirror context";
 		return NULL;
@@ -885,6 +1188,7 @@ static struct mirror_set *alloc_context(unsigned int nr_mirrors,
 	atomic_set(&ms->suspend, 0);
 	atomic_set(&ms->default_mirror, DEFAULT_MIRROR);
 
+<<<<<<< HEAD
 	ms->read_record_pool = mempool_create_slab_pool(MIN_READ_RECORDS,
 						_dm_raid1_read_record_cache);
 
@@ -900,6 +1204,13 @@ static struct mirror_set *alloc_context(unsigned int nr_mirrors,
 		mempool_destroy(ms->read_record_pool);
 		kfree(ms);
  		return NULL;
+=======
+	ms->io_client = dm_io_client_create();
+	if (IS_ERR(ms->io_client)) {
+		ti->error = "Error creating dm_io client";
+		kfree(ms);
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ms->rh = dm_region_hash_create(ms, dispatch_bios, wakeup_mirrord,
@@ -909,7 +1220,10 @@ static struct mirror_set *alloc_context(unsigned int nr_mirrors,
 	if (IS_ERR(ms->rh)) {
 		ti->error = "Error creating dirty region hash";
 		dm_io_client_destroy(ms->io_client);
+<<<<<<< HEAD
 		mempool_destroy(ms->read_record_pool);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(ms);
 		return NULL;
 	}
@@ -925,7 +1239,10 @@ static void free_context(struct mirror_set *ms, struct dm_target *ti,
 
 	dm_io_client_destroy(ms->io_client);
 	dm_region_hash_destroy(ms->rh);
+<<<<<<< HEAD
 	mempool_destroy(ms->read_record_pool);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(ms);
 }
 
@@ -934,16 +1251,31 @@ static int get_mirror(struct mirror_set *ms, struct dm_target *ti,
 {
 	unsigned long long offset;
 	char dummy;
+<<<<<<< HEAD
 
 	if (sscanf(argv[1], "%llu%c", &offset, &dummy) != 1) {
+=======
+	int ret;
+
+	if (sscanf(argv[1], "%llu%c", &offset, &dummy) != 1 ||
+	    offset != (sector_t)offset) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ti->error = "Invalid offset";
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (dm_get_device(ti, argv[0], dm_table_get_mode(ti->table),
 			  &ms->mirror[mirror].dev)) {
 		ti->error = "Device lookup failure";
 		return -ENXIO;
+=======
+	ret = dm_get_device(ti, argv[0], dm_table_get_mode(ti->table),
+			    &ms->mirror[mirror].dev);
+	if (ret) {
+		ti->error = "Device lookup failure";
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ms->mirror[mirror].ms = ms;
@@ -958,10 +1290,17 @@ static int get_mirror(struct mirror_set *ms, struct dm_target *ti,
  * Create dirty log: log_type #log_params <log_params>
  */
 static struct dm_dirty_log *create_dirty_log(struct dm_target *ti,
+<<<<<<< HEAD
 					     unsigned argc, char **argv,
 					     unsigned *args_used)
 {
 	unsigned param_count;
+=======
+					     unsigned int argc, char **argv,
+					     unsigned int *args_used)
+{
+	unsigned int param_count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_dirty_log *dl;
 	char dummy;
 
@@ -992,12 +1331,22 @@ static struct dm_dirty_log *create_dirty_log(struct dm_target *ti,
 	return dl;
 }
 
+<<<<<<< HEAD
 static int parse_features(struct mirror_set *ms, unsigned argc, char **argv,
 			  unsigned *args_used)
 {
 	unsigned num_features;
 	struct dm_target *ti = ms->ti;
 	char dummy;
+=======
+static int parse_features(struct mirror_set *ms, unsigned int argc, char **argv,
+			  unsigned int *args_used)
+{
+	unsigned int num_features;
+	struct dm_target *ti = ms->ti;
+	char dummy;
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*args_used = 0;
 
@@ -1018,6 +1367,7 @@ static int parse_features(struct mirror_set *ms, unsigned argc, char **argv,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	if (!strcmp("handle_errors", argv[0]))
 		ms->features |= DM_RAID1_HANDLE_ERRORS;
 	else {
@@ -1027,6 +1377,27 @@ static int parse_features(struct mirror_set *ms, unsigned argc, char **argv,
 
 	(*args_used)++;
 
+=======
+	for (i = 0; i < num_features; i++) {
+		if (!strcmp("handle_errors", argv[0]))
+			ms->features |= DM_RAID1_HANDLE_ERRORS;
+		else if (!strcmp("keep_log", argv[0]))
+			ms->features |= DM_RAID1_KEEP_LOG;
+		else {
+			ti->error = "Unrecognised feature requested";
+			return -EINVAL;
+		}
+
+		argc--;
+		argv++;
+		(*args_used)++;
+	}
+	if (!errors_handled(ms) && keep_log(ms)) {
+		ti->error = "keep_log feature requires the handle_errors feature";
+		return -EINVAL;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1040,7 +1411,11 @@ static int parse_features(struct mirror_set *ms, unsigned argc, char **argv,
  * log_type is "core" or "disk"
  * #log_params is between 1 and 3
  *
+<<<<<<< HEAD
  * If present, features must be "handle_errors".
+=======
+ * If present, supported features are "handle_errors" and "keep_log".
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int mirror_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
@@ -1058,7 +1433,11 @@ static int mirror_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	argc -= args_used;
 
 	if (!argc || sscanf(argv[0], "%u%c", &nr_mirrors, &dummy) != 1 ||
+<<<<<<< HEAD
 	    nr_mirrors < 2 || nr_mirrors > DM_KCOPYD_MAX_REGIONS + 1) {
+=======
+	    nr_mirrors < 2 || nr_mirrors > MAX_NR_MIRRORS) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ti->error = "Invalid number of mirrors";
 		dm_dirty_log_destroy(dl);
 		return -EINVAL;
@@ -1090,6 +1469,7 @@ static int mirror_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	}
 
 	ti->private = ms;
+<<<<<<< HEAD
 	ti->split_io = dm_rh_get_region_size(ms->rh);
 	ti->num_flush_requests = 1;
 	ti->num_discard_requests = 1;
@@ -1097,13 +1477,29 @@ static int mirror_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	ms->kmirrord_wq = alloc_workqueue("kmirrord",
 					  WQ_NON_REENTRANT | WQ_MEM_RECLAIM, 0);
+=======
+
+	r = dm_set_target_max_io_len(ti, dm_rh_get_region_size(ms->rh));
+	if (r)
+		goto err_free_context;
+
+	ti->num_flush_bios = 1;
+	ti->num_discard_bios = 1;
+	ti->per_io_data_size = sizeof(struct dm_raid1_bio_record);
+
+	ms->kmirrord_wq = alloc_workqueue("kmirrord", WQ_MEM_RECLAIM, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ms->kmirrord_wq) {
 		DMERR("couldn't start kmirrord");
 		r = -ENOMEM;
 		goto err_free_context;
 	}
 	INIT_WORK(&ms->kmirrord_work, do_mirror);
+<<<<<<< HEAD
 	init_timer(&ms->timer);
+=======
+	timer_setup(&ms->timer, delayed_wake_fn, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ms->timer_pending = 0;
 	INIT_WORK(&ms->trigger_event, trigger_event);
 
@@ -1129,7 +1525,11 @@ static int mirror_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		goto err_destroy_wq;
 	}
 
+<<<<<<< HEAD
 	ms->kcopyd_client = dm_kcopyd_client_create();
+=======
+	ms->kcopyd_client = dm_kcopyd_client_create(&dm_kcopyd_throttle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(ms->kcopyd_client)) {
 		r = PTR_ERR(ms->kcopyd_client);
 		goto err_destroy_wq;
@@ -1147,11 +1547,19 @@ err_free_context:
 
 static void mirror_dtr(struct dm_target *ti)
 {
+<<<<<<< HEAD
 	struct mirror_set *ms = (struct mirror_set *) ti->private;
 
 	del_timer_sync(&ms->timer);
 	flush_workqueue(ms->kmirrord_wq);
 	flush_work_sync(&ms->trigger_event);
+=======
+	struct mirror_set *ms = ti->private;
+
+	del_timer_sync(&ms->timer);
+	flush_workqueue(ms->kmirrord_wq);
+	flush_work(&ms->trigger_event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dm_kcopyd_client_destroy(ms->kcopyd_client);
 	destroy_workqueue(ms->kmirrord_wq);
 	free_context(ms, ti, ms->nr_mirrors);
@@ -1160,6 +1568,7 @@ static void mirror_dtr(struct dm_target *ti)
 /*
  * Mirror mapping function
  */
+<<<<<<< HEAD
 static int mirror_map(struct dm_target *ti, struct bio *bio,
 		      union map_info *map_context)
 {
@@ -1172,20 +1581,45 @@ static int mirror_map(struct dm_target *ti, struct bio *bio,
 	if (rw == WRITE) {
 		/* Save region for mirror_end_io() handler */
 		map_context->ll = dm_rh_bio_to_region(ms->rh, bio);
+=======
+static int mirror_map(struct dm_target *ti, struct bio *bio)
+{
+	int r, rw = bio_data_dir(bio);
+	struct mirror *m;
+	struct mirror_set *ms = ti->private;
+	struct dm_dirty_log *log = dm_rh_dirty_log(ms->rh);
+	struct dm_raid1_bio_record *bio_record =
+	  dm_per_bio_data(bio, sizeof(struct dm_raid1_bio_record));
+
+	bio_record->details.bi_bdev = NULL;
+
+	if (rw == WRITE) {
+		/* Save region for mirror_end_io() handler */
+		bio_record->write_region = dm_rh_bio_to_region(ms->rh, bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		queue_bio(ms, bio, rw);
 		return DM_MAPIO_SUBMITTED;
 	}
 
 	r = log->type->in_sync(log, dm_rh_bio_to_region(ms->rh, bio), 0);
 	if (r < 0 && r != -EWOULDBLOCK)
+<<<<<<< HEAD
 		return r;
+=======
+		return DM_MAPIO_KILL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If region is not in-sync queue the bio.
 	 */
 	if (!r || (r == -EWOULDBLOCK)) {
+<<<<<<< HEAD
 		if (rw == READA)
 			return -EWOULDBLOCK;
+=======
+		if (bio->bi_opf & REQ_RAHEAD)
+			return DM_MAPIO_KILL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		queue_bio(ms, bio, rw);
 		return DM_MAPIO_SUBMITTED;
@@ -1195,6 +1629,7 @@ static int mirror_map(struct dm_target *ti, struct bio *bio,
 	 * The region is in-sync and we can perform reads directly.
 	 * Store enough information so we can retry if it fails.
 	 */
+<<<<<<< HEAD
 	m = choose_mirror(ms, bio->bi_sector);
 	if (unlikely(!m))
 		return -EIO;
@@ -1205,6 +1640,14 @@ static int mirror_map(struct dm_target *ti, struct bio *bio,
 		map_context->ptr = read_record;
 		read_record->m = m;
 	}
+=======
+	m = choose_mirror(ms, bio->bi_iter.bi_sector);
+	if (unlikely(!m))
+		return DM_MAPIO_KILL;
+
+	dm_bio_record(&bio_record->details, bio);
+	bio_record->m = m;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	map_bio(m, bio);
 
@@ -1212,6 +1655,7 @@ static int mirror_map(struct dm_target *ti, struct bio *bio,
 }
 
 static int mirror_end_io(struct dm_target *ti, struct bio *bio,
+<<<<<<< HEAD
 			 int error, union map_info *map_context)
 {
 	int rw = bio_rw(bio);
@@ -1219,11 +1663,22 @@ static int mirror_end_io(struct dm_target *ti, struct bio *bio,
 	struct mirror *m = NULL;
 	struct dm_bio_details *bd = NULL;
 	struct dm_raid1_read_record *read_record = map_context->ptr;
+=======
+		blk_status_t *error)
+{
+	int rw = bio_data_dir(bio);
+	struct mirror_set *ms = ti->private;
+	struct mirror *m = NULL;
+	struct dm_bio_details *bd = NULL;
+	struct dm_raid1_bio_record *bio_record =
+	  dm_per_bio_data(bio, sizeof(struct dm_raid1_bio_record));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We need to dec pending if this was a write.
 	 */
 	if (rw == WRITE) {
+<<<<<<< HEAD
 		if (!(bio->bi_rw & (REQ_FLUSH | REQ_DISCARD)))
 			dm_rh_dec(ms->rh, map_context->ll);
 		return error;
@@ -1237,16 +1692,39 @@ static int mirror_end_io(struct dm_target *ti, struct bio *bio,
 
 	if (unlikely(error)) {
 		if (!read_record) {
+=======
+		if (!(bio->bi_opf & REQ_PREFLUSH) &&
+		    bio_op(bio) != REQ_OP_DISCARD)
+			dm_rh_dec(ms->rh, bio_record->write_region);
+		return DM_ENDIO_DONE;
+	}
+
+	if (*error == BLK_STS_NOTSUPP)
+		goto out;
+
+	if (bio->bi_opf & REQ_RAHEAD)
+		goto out;
+
+	if (unlikely(*error)) {
+		if (!bio_record->details.bi_bdev) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * There wasn't enough memory to record necessary
 			 * information for a retry or there was no other
 			 * mirror in-sync.
 			 */
 			DMERR_LIMIT("Mirror read failed.");
+<<<<<<< HEAD
 			return -EIO;
 		}
 
 		m = read_record->m;
+=======
+			return DM_ENDIO_DONE;
+		}
+
+		m = bio_record->m;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		DMERR("Mirror read failed from %s. Trying alternative device.",
 		      m->dev->name);
@@ -1258,6 +1736,7 @@ static int mirror_end_io(struct dm_target *ti, struct bio *bio,
 		 * mirror.
 		 */
 		if (default_ok(m) || mirror_available(ms, bio)) {
+<<<<<<< HEAD
 			bd = &read_record->details;
 
 			dm_bio_restore(bd, bio);
@@ -1265,22 +1744,42 @@ static int mirror_end_io(struct dm_target *ti, struct bio *bio,
 			map_context->ptr = NULL;
 			queue_bio(ms, bio, rw);
 			return 1;
+=======
+			bd = &bio_record->details;
+
+			dm_bio_restore(bd, bio);
+			bio_record->details.bi_bdev = NULL;
+			bio->bi_status = 0;
+
+			queue_bio(ms, bio, rw);
+			return DM_ENDIO_INCOMPLETE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		DMERR("All replicated volumes dead, failing I/O");
 	}
 
 out:
+<<<<<<< HEAD
 	if (read_record) {
 		mempool_free(read_record, ms->read_record_pool);
 		map_context->ptr = NULL;
 	}
 
 	return error;
+=======
+	bio_record->details.bi_bdev = NULL;
+
+	return DM_ENDIO_DONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void mirror_presuspend(struct dm_target *ti)
 {
+<<<<<<< HEAD
 	struct mirror_set *ms = (struct mirror_set *) ti->private;
+=======
+	struct mirror_set *ms = ti->private;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dm_dirty_log *log = dm_rh_dirty_log(ms->rh);
 
 	struct bio_list holds;
@@ -1372,12 +1871,22 @@ static char device_status_char(struct mirror *m)
 
 
 static void mirror_status(struct dm_target *ti, status_type_t type,
+<<<<<<< HEAD
 			  char *result, unsigned int maxlen)
 {
 	unsigned int m, sz = 0;
 	struct mirror_set *ms = (struct mirror_set *) ti->private;
 	struct dm_dirty_log *log = dm_rh_dirty_log(ms->rh);
 	char buffer[ms->nr_mirrors + 1];
+=======
+			  unsigned int status_flags, char *result, unsigned int maxlen)
+{
+	unsigned int m, sz = 0;
+	int num_feature_args = 0;
+	struct mirror_set *ms = ti->private;
+	struct dm_dirty_log *log = dm_rh_dirty_log(ms->rh);
+	char buffer[MAX_NR_MIRRORS + 1];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (type) {
 	case STATUSTYPE_INFO:
@@ -1404,8 +1913,39 @@ static void mirror_status(struct dm_target *ti, status_type_t type,
 			DMEMIT(" %s %llu", ms->mirror[m].dev->name,
 			       (unsigned long long)ms->mirror[m].offset);
 
+<<<<<<< HEAD
 		if (ms->features & DM_RAID1_HANDLE_ERRORS)
 			DMEMIT(" 1 handle_errors");
+=======
+		num_feature_args += !!errors_handled(ms);
+		num_feature_args += !!keep_log(ms);
+		if (num_feature_args) {
+			DMEMIT(" %d", num_feature_args);
+			if (errors_handled(ms))
+				DMEMIT(" handle_errors");
+			if (keep_log(ms))
+				DMEMIT(" keep_log");
+		}
+
+		break;
+
+	case STATUSTYPE_IMA:
+		DMEMIT_TARGET_NAME_VERSION(ti->type);
+		DMEMIT(",nr_mirrors=%d", ms->nr_mirrors);
+		for (m = 0; m < ms->nr_mirrors; m++) {
+			DMEMIT(",mirror_device_%d=%s", m, ms->mirror[m].dev->name);
+			DMEMIT(",mirror_device_%d_status=%c",
+			       m, device_status_char(&(ms->mirror[m])));
+		}
+
+		DMEMIT(",handle_errors=%c", errors_handled(ms) ? 'y' : 'n');
+		DMEMIT(",keep_log=%c", keep_log(ms) ? 'y' : 'n');
+
+		DMEMIT(",log_type_status=");
+		sz += log->type->status(log, type, result+sz, maxlen-sz);
+		DMEMIT(";");
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1414,7 +1954,11 @@ static int mirror_iterate_devices(struct dm_target *ti,
 {
 	struct mirror_set *ms = ti->private;
 	int ret = 0;
+<<<<<<< HEAD
 	unsigned i;
+=======
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; !ret && i < ms->nr_mirrors; i++)
 		ret = fn(ti, ms->mirror[i].dev,
@@ -1425,7 +1969,11 @@ static int mirror_iterate_devices(struct dm_target *ti,
 
 static struct target_type mirror_target = {
 	.name	 = "mirror",
+<<<<<<< HEAD
 	.version = {1, 12, 1},
+=======
+	.version = {1, 14, 0},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module	 = THIS_MODULE,
 	.ctr	 = mirror_ctr,
 	.dtr	 = mirror_dtr,
@@ -1442,15 +1990,23 @@ static int __init dm_mirror_init(void)
 {
 	int r;
 
+<<<<<<< HEAD
 	_dm_raid1_read_record_cache = KMEM_CACHE(dm_raid1_read_record, 0);
 	if (!_dm_raid1_read_record_cache) {
 		DMERR("Can't allocate dm_raid1_read_record cache");
 		r = -ENOMEM;
 		goto bad_cache;
+=======
+	dm_raid1_wq = alloc_workqueue("dm_raid1_wq", 0, 0);
+	if (!dm_raid1_wq) {
+		DMERR("Failed to alloc workqueue");
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	r = dm_register_target(&mirror_target);
 	if (r < 0) {
+<<<<<<< HEAD
 		DMERR("Failed to register mirror target");
 		goto bad_target;
 	}
@@ -1461,12 +2017,24 @@ bad_target:
 	kmem_cache_destroy(_dm_raid1_read_record_cache);
 bad_cache:
 	return r;
+=======
+		destroy_workqueue(dm_raid1_wq);
+		return r;
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit dm_mirror_exit(void)
 {
+<<<<<<< HEAD
 	dm_unregister_target(&mirror_target);
 	kmem_cache_destroy(_dm_raid1_read_record_cache);
+=======
+	destroy_workqueue(dm_raid1_wq);
+	dm_unregister_target(&mirror_target);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Module hooks */

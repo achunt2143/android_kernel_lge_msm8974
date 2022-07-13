@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IEEE754 floating point arithmetic
  * single precision
  */
 /*
  * MIPS floating point support
  * Copyright (C) 1994-2000 Algorithmics Ltd.
+<<<<<<< HEAD
  *
  * ########################################################################
  *
@@ -28,31 +33,60 @@
 
 ieee754sp ieee754sp_sub(ieee754sp x, ieee754sp y)
 {
+=======
+ */
+
+#include "ieee754sp.h"
+
+union ieee754sp ieee754sp_sub(union ieee754sp x, union ieee754sp y)
+{
+	int s;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	COMPXSP;
 	COMPYSP;
 
 	EXPLODEXSP;
 	EXPLODEYSP;
 
+<<<<<<< HEAD
 	CLEARCX;
+=======
+	ieee754_clearcx();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	FLUSHXSP;
 	FLUSHYSP;
 
 	switch (CLPAIR(xc, yc)) {
+<<<<<<< HEAD
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_QNAN):
 	case CLPAIR(IEEE754_CLASS_QNAN, IEEE754_CLASS_SNAN):
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_SNAN):
+=======
+	case CLPAIR(IEEE754_CLASS_QNAN, IEEE754_CLASS_SNAN):
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_SNAN):
 	case CLPAIR(IEEE754_CLASS_NORM, IEEE754_CLASS_SNAN):
 	case CLPAIR(IEEE754_CLASS_DNORM, IEEE754_CLASS_SNAN):
 	case CLPAIR(IEEE754_CLASS_INF, IEEE754_CLASS_SNAN):
+<<<<<<< HEAD
+=======
+		return ieee754sp_nanxcpt(y);
+
+	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_SNAN):
+	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_QNAN):
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_ZERO):
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_NORM):
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_DNORM):
 	case CLPAIR(IEEE754_CLASS_SNAN, IEEE754_CLASS_INF):
+<<<<<<< HEAD
 		SETCX(IEEE754_INVALID_OPERATION);
 		return ieee754sp_nanxcpt(ieee754sp_indef(), "sub", x, y);
+=======
+		return ieee754sp_nanxcpt(x);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_QNAN):
 	case CLPAIR(IEEE754_CLASS_NORM, IEEE754_CLASS_QNAN):
@@ -68,6 +102,7 @@ ieee754sp ieee754sp_sub(ieee754sp x, ieee754sp y)
 		return x;
 
 
+<<<<<<< HEAD
 		/* Infinity handling
 		 */
 
@@ -76,6 +111,16 @@ ieee754sp ieee754sp_sub(ieee754sp x, ieee754sp y)
 			return x;
 		SETCX(IEEE754_INVALID_OPERATION);
 		return ieee754sp_xcpt(ieee754sp_indef(), "sub", x, y);
+=======
+	/*
+	 * Infinity handling
+	 */
+	case CLPAIR(IEEE754_CLASS_INF, IEEE754_CLASS_INF):
+		if (xs != ys)
+			return x;
+		ieee754_setcx(IEEE754_INVALID_OPERATION);
+		return ieee754sp_indef();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_INF):
 	case CLPAIR(IEEE754_CLASS_DNORM, IEEE754_CLASS_INF):
@@ -87,15 +132,25 @@ ieee754sp ieee754sp_sub(ieee754sp x, ieee754sp y)
 	case CLPAIR(IEEE754_CLASS_INF, IEEE754_CLASS_DNORM):
 		return x;
 
+<<<<<<< HEAD
 		/* Zero handling
 		 */
 
+=======
+	/*
+	 * Zero handling
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_ZERO):
 		if (xs != ys)
 			return x;
 		else
+<<<<<<< HEAD
 			return ieee754sp_zero(ieee754_csr.rm ==
 					      IEEE754_RD);
+=======
+			return ieee754sp_zero(ieee754_csr.rm == FPU_CSR_RD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case CLPAIR(IEEE754_CLASS_NORM, IEEE754_CLASS_ZERO):
 	case CLPAIR(IEEE754_CLASS_DNORM, IEEE754_CLASS_ZERO):
@@ -104,12 +159,20 @@ ieee754sp ieee754sp_sub(ieee754sp x, ieee754sp y)
 	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_NORM):
 	case CLPAIR(IEEE754_CLASS_ZERO, IEEE754_CLASS_DNORM):
 		/* quick fix up */
+<<<<<<< HEAD
 		DPSIGN(y) ^= 1;
+=======
+		SPSIGN(y) ^= 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return y;
 
 	case CLPAIR(IEEE754_CLASS_DNORM, IEEE754_CLASS_DNORM):
 		SPDNORMX;
+<<<<<<< HEAD
 
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CLPAIR(IEEE754_CLASS_NORM, IEEE754_CLASS_DNORM):
 		SPDNORMY;
 		break;
@@ -133,6 +196,7 @@ ieee754sp ieee754sp_sub(ieee754sp x, ieee754sp y)
 	ym <<= 3;
 
 	if (xe > ye) {
+<<<<<<< HEAD
 		/* have to shift y fraction right to align
 		 */
 		int s = xe - ye;
@@ -142,6 +206,21 @@ ieee754sp ieee754sp_sub(ieee754sp x, ieee754sp y)
 		 */
 		int s = ye - xe;
 		SPXSRSXn(s);
+=======
+		/*
+		 * have to shift y fraction right to align
+		 */
+		s = xe - ye;
+		ym = XSPSRS(ym, s);
+		ye += s;
+	} else if (ye > xe) {
+		/*
+		 * have to shift x fraction right to align
+		 */
+		s = ye - xe;
+		xm = XSPSRS(xm, s);
+		xe += s;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	assert(xe == ye);
 	assert(xe <= SP_EMAX);
@@ -150,15 +229,21 @@ ieee754sp ieee754sp_sub(ieee754sp x, ieee754sp y)
 		/* generate 28 bit result of adding two 27 bit numbers
 		 */
 		xm = xm + ym;
+<<<<<<< HEAD
 		xe = xe;
 		xs = xs;
 
 		if (xm >> (SP_MBITS + 1 + 3)) {	/* carry out */
+=======
+
+		if (xm >> (SP_FBITS + 1 + 3)) { /* carry out */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			SPXSRSX1();	/* shift preserving sticky */
 		}
 	} else {
 		if (xm >= ym) {
 			xm = xm - ym;
+<<<<<<< HEAD
 			xe = xe;
 			xs = xs;
 		} else {
@@ -168,16 +253,33 @@ ieee754sp ieee754sp_sub(ieee754sp x, ieee754sp y)
 		}
 		if (xm == 0) {
 			if (ieee754_csr.rm == IEEE754_RD)
+=======
+		} else {
+			xm = ym - xm;
+			xs = ys;
+		}
+		if (xm == 0) {
+			if (ieee754_csr.rm == FPU_CSR_RD)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return ieee754sp_zero(1);	/* round negative inf. => sign = -1 */
 			else
 				return ieee754sp_zero(0);	/* other round modes   => sign = 1 */
 		}
 		/* normalize to rounding precision
 		 */
+<<<<<<< HEAD
 		while ((xm >> (SP_MBITS + 3)) == 0) {
+=======
+		while ((xm >> (SP_FBITS + 3)) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			xm <<= 1;
 			xe--;
 		}
 	}
+<<<<<<< HEAD
 	SPNORMRET2(xs, xe, xm, "sub", x, y);
+=======
+
+	return ieee754sp_format(xs, xe, xm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

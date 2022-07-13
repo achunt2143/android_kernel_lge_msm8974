@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_TIME_H
 #define _LINUX_TIME_H
 
@@ -210,6 +211,38 @@ extern int timekeeping_inject_offset(struct timespec *ts);
 
 struct tms;
 extern void do_sys_times(struct tms *);
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_TIME_H
+#define _LINUX_TIME_H
+
+# include <linux/cache.h>
+# include <linux/math64.h>
+# include <linux/time64.h>
+
+extern struct timezone sys_tz;
+
+int get_timespec64(struct timespec64 *ts,
+		const struct __kernel_timespec __user *uts);
+int put_timespec64(const struct timespec64 *ts,
+		struct __kernel_timespec __user *uts);
+int get_itimerspec64(struct itimerspec64 *it,
+			const struct __kernel_itimerspec __user *uit);
+int put_itimerspec64(const struct itimerspec64 *it,
+			struct __kernel_itimerspec __user *uit);
+
+extern time64_t mktime64(const unsigned int year, const unsigned int mon,
+			const unsigned int day, const unsigned int hour,
+			const unsigned int min, const unsigned int sec);
+
+#ifdef CONFIG_POSIX_TIMERS
+extern void clear_itimer(void);
+#else
+static inline void clear_itimer(void) {}
+#endif
+
+extern long do_utimes(int dfd, const char __user *filename, struct timespec64 *times, int flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Similar to the struct tm in userspace <time.h>, but it needs to be here so
@@ -237,6 +270,7 @@ struct tm {
 	int tm_yday;
 };
 
+<<<<<<< HEAD
 void time_to_tm(time_t totalsecs, int offset, struct tm *result);
 
 /**
@@ -340,5 +374,50 @@ struct itimerval {
  * The various flags for setting POSIX.1b interval timers:
  */
 #define TIMER_ABSTIME			0x01
+=======
+void time64_to_tm(time64_t totalsecs, int offset, struct tm *result);
+
+# include <linux/time32.h>
+
+static inline bool itimerspec64_valid(const struct itimerspec64 *its)
+{
+	if (!timespec64_valid(&(its->it_interval)) ||
+		!timespec64_valid(&(its->it_value)))
+		return false;
+
+	return true;
+}
+
+/**
+ * time_after32 - compare two 32-bit relative times
+ * @a:	the time which may be after @b
+ * @b:	the time which may be before @a
+ *
+ * time_after32(a, b) returns true if the time @a is after time @b.
+ * time_before32(b, a) returns true if the time @b is before time @a.
+ *
+ * Similar to time_after(), compare two 32-bit timestamps for relative
+ * times.  This is useful for comparing 32-bit seconds values that can't
+ * be converted to 64-bit values (e.g. due to disk format or wire protocol
+ * issues) when it is known that the times are less than 68 years apart.
+ */
+#define time_after32(a, b)	((s32)((u32)(b) - (u32)(a)) < 0)
+#define time_before32(b, a)	time_after32(a, b)
+
+/**
+ * time_between32 - check if a 32-bit timestamp is within a given time range
+ * @t:	the time which may be within [l,h]
+ * @l:	the lower bound of the range
+ * @h:	the higher bound of the range
+ *
+ * time_before32(t, l, h) returns true if @l <= @t <= @h. All operands are
+ * treated as 32-bit integers.
+ *
+ * Equivalent to !(time_before32(@t, @l) || time_after32(@t, @h)).
+ */
+#define time_between32(t, l, h) ((u32)(h) - (u32)(l) >= (u32)(t) - (u32)(l))
+
+# include <vdso/time.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

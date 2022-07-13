@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-1.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* lasi_82596.c -- driver for the intel 82596 ethernet controller, as
    munged into HPPA boxen .
 
@@ -59,9 +63,13 @@
    Driver skeleton
    Written 1993 by Donald Becker.
    Copyright 1993 United States Government as represented by the Director,
+<<<<<<< HEAD
    National Security Agency. This software may only be used and distributed
    according to the terms of the GNU General Public License as modified by SRC,
    incorporated herein by reference.
+=======
+   National Security Agency.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    The author may be reached as becker@scyld.com, or C/O
    Scyld Computing Corporation, 410 Severn Ave., Suite 210, Annapolis MD 21403
@@ -78,7 +86,10 @@
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/bitops.h>
 #include <linux/dma-mapping.h>
@@ -348,11 +359,19 @@ static const char init_setup[] =
 	0x7f /*  *multi IA */ };
 
 static int i596_open(struct net_device *dev);
+<<<<<<< HEAD
 static int i596_start_xmit(struct sk_buff *skb, struct net_device *dev);
 static irqreturn_t i596_interrupt(int irq, void *dev_id);
 static int i596_close(struct net_device *dev);
 static void i596_add_cmd(struct net_device *dev, struct i596_cmd *cmd);
 static void i596_tx_timeout (struct net_device *dev);
+=======
+static netdev_tx_t i596_start_xmit(struct sk_buff *skb, struct net_device *dev);
+static irqreturn_t i596_interrupt(int irq, void *dev_id);
+static int i596_close(struct net_device *dev);
+static void i596_add_cmd(struct net_device *dev, struct i596_cmd *cmd);
+static void i596_tx_timeout (struct net_device *dev, unsigned int txqueue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void print_eth(unsigned char *buf, char *str);
 static void set_multicast_list(struct net_device *dev);
 static inline void ca(struct net_device *dev);
@@ -366,6 +385,7 @@ static int max_cmd_backlog = TX_RING_SIZE-1;
 static void i596_poll_controller(struct net_device *dev);
 #endif
 
+<<<<<<< HEAD
 
 static inline int wait_istat(struct net_device *dev, struct i596_dma *dma, int delcnt, char *str)
 {
@@ -373,6 +393,46 @@ static inline int wait_istat(struct net_device *dev, struct i596_dma *dma, int d
 	while (--delcnt && dma->iscp.stat) {
 		udelay(10);
 		DMA_INV(dev, &(dma->iscp), sizeof(struct i596_iscp));
+=======
+static inline dma_addr_t virt_to_dma(struct i596_private *lp, volatile void *v)
+{
+	return lp->dma_addr + ((unsigned long)v - (unsigned long)lp->dma);
+}
+
+#ifdef NONCOHERENT_DMA
+static inline void dma_sync_dev(struct net_device *ndev, volatile void *addr,
+		size_t len)
+{
+	dma_sync_single_for_device(ndev->dev.parent,
+			virt_to_dma(netdev_priv(ndev), addr), len,
+			DMA_BIDIRECTIONAL);
+}
+
+static inline void dma_sync_cpu(struct net_device *ndev, volatile void *addr,
+		size_t len)
+{
+	dma_sync_single_for_cpu(ndev->dev.parent,
+			virt_to_dma(netdev_priv(ndev), addr), len,
+			DMA_BIDIRECTIONAL);
+}
+#else
+static inline void dma_sync_dev(struct net_device *ndev, volatile void *addr,
+		size_t len)
+{
+}
+static inline void dma_sync_cpu(struct net_device *ndev, volatile void *addr,
+		size_t len)
+{
+}
+#endif /* NONCOHERENT_DMA */
+
+static inline int wait_istat(struct net_device *dev, struct i596_dma *dma, int delcnt, char *str)
+{
+	dma_sync_cpu(dev, &(dma->iscp), sizeof(struct i596_iscp));
+	while (--delcnt && dma->iscp.stat) {
+		udelay(10);
+		dma_sync_cpu(dev, &(dma->iscp), sizeof(struct i596_iscp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!delcnt) {
 		printk(KERN_ERR "%s: %s, iscp.stat %04x, didn't clear\n",
@@ -385,10 +445,17 @@ static inline int wait_istat(struct net_device *dev, struct i596_dma *dma, int d
 
 static inline int wait_cmd(struct net_device *dev, struct i596_dma *dma, int delcnt, char *str)
 {
+<<<<<<< HEAD
 	DMA_INV(dev, &(dma->scb), sizeof(struct i596_scb));
 	while (--delcnt && dma->scb.command) {
 		udelay(10);
 		DMA_INV(dev, &(dma->scb), sizeof(struct i596_scb));
+=======
+	dma_sync_cpu(dev, &(dma->scb), sizeof(struct i596_scb));
+	while (--delcnt && dma->scb.command) {
+		udelay(10);
+		dma_sync_cpu(dev, &(dma->scb), sizeof(struct i596_scb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (!delcnt) {
 		printk(KERN_ERR "%s: %s, status %4.4x, cmd %4.4x.\n",
@@ -452,12 +519,18 @@ static void i596_display_data(struct net_device *dev)
 		       SWAP32(rbd->b_data), SWAP16(rbd->size));
 		rbd = rbd->v_next;
 	} while (rbd != lp->rbd_head);
+<<<<<<< HEAD
 	DMA_INV(dev, dma, sizeof(struct i596_dma));
 }
 
 
 #define virt_to_dma(lp, v) ((lp)->dma_addr + (dma_addr_t)((unsigned long)(v)-(unsigned long)((lp)->dma)))
 
+=======
+	dma_sync_cpu(dev, dma, sizeof(struct i596_dma));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int init_rx_bufs(struct net_device *dev)
 {
 	struct i596_private *lp = netdev_priv(dev);
@@ -509,7 +582,11 @@ static inline int init_rx_bufs(struct net_device *dev)
 	rfd->b_next = SWAP32(virt_to_dma(lp, dma->rfds));
 	rfd->cmd = SWAP16(CMD_EOL|CMD_FLEX);
 
+<<<<<<< HEAD
 	DMA_WBACK_INV(dev, dma, sizeof(struct i596_dma));
+=======
+	dma_sync_dev(dev, dma, sizeof(struct i596_dma));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -548,7 +625,11 @@ static void rebuild_rx_bufs(struct net_device *dev)
 	lp->rbd_head = dma->rbds;
 	dma->rfds[0].rbd = SWAP32(virt_to_dma(lp, dma->rbds));
 
+<<<<<<< HEAD
 	DMA_WBACK_INV(dev, dma, sizeof(struct i596_dma));
+=======
+	dma_sync_dev(dev, dma, sizeof(struct i596_dma));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -576,9 +657,15 @@ static int init_i596_mem(struct net_device *dev)
 
 	DEB(DEB_INIT, printk(KERN_DEBUG "%s: starting i82596.\n", dev->name));
 
+<<<<<<< HEAD
 	DMA_WBACK(dev, &(dma->scp), sizeof(struct i596_scp));
 	DMA_WBACK(dev, &(dma->iscp), sizeof(struct i596_iscp));
 	DMA_WBACK(dev, &(dma->scb), sizeof(struct i596_scb));
+=======
+	dma_sync_dev(dev, &(dma->scp), sizeof(struct i596_scp));
+	dma_sync_dev(dev, &(dma->iscp), sizeof(struct i596_iscp));
+	dma_sync_dev(dev, &(dma->scb), sizeof(struct i596_scb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mpu_port(dev, PORT_ALTSCP, virt_to_dma(lp, &dma->scp));
 	ca(dev);
@@ -597,12 +684,17 @@ static int init_i596_mem(struct net_device *dev)
 	rebuild_rx_bufs(dev);
 
 	dma->scb.command = 0;
+<<<<<<< HEAD
 	DMA_WBACK(dev, &(dma->scb), sizeof(struct i596_scb));
+=======
+	dma_sync_dev(dev, &(dma->scb), sizeof(struct i596_scb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DEB(DEB_INIT, printk(KERN_DEBUG
 			     "%s: queuing CmdConfigure\n", dev->name));
 	memcpy(dma->cf_cmd.i596_config, init_setup, 14);
 	dma->cf_cmd.cmd.command = SWAP16(CmdConfigure);
+<<<<<<< HEAD
 	DMA_WBACK(dev, &(dma->cf_cmd), sizeof(struct cf_cmd));
 	i596_add_cmd(dev, &dma->cf_cmd.cmd);
 
@@ -610,11 +702,24 @@ static int init_i596_mem(struct net_device *dev)
 	memcpy(dma->sa_cmd.eth_addr, dev->dev_addr, 6);
 	dma->sa_cmd.cmd.command = SWAP16(CmdSASetup);
 	DMA_WBACK(dev, &(dma->sa_cmd), sizeof(struct sa_cmd));
+=======
+	dma_sync_dev(dev, &(dma->cf_cmd), sizeof(struct cf_cmd));
+	i596_add_cmd(dev, &dma->cf_cmd.cmd);
+
+	DEB(DEB_INIT, printk(KERN_DEBUG "%s: queuing CmdSASetup\n", dev->name));
+	memcpy(dma->sa_cmd.eth_addr, dev->dev_addr, ETH_ALEN);
+	dma->sa_cmd.cmd.command = SWAP16(CmdSASetup);
+	dma_sync_dev(dev, &(dma->sa_cmd), sizeof(struct sa_cmd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i596_add_cmd(dev, &dma->sa_cmd.cmd);
 
 	DEB(DEB_INIT, printk(KERN_DEBUG "%s: queuing CmdTDR\n", dev->name));
 	dma->tdr_cmd.cmd.command = SWAP16(CmdTDR);
+<<<<<<< HEAD
 	DMA_WBACK(dev, &(dma->tdr_cmd), sizeof(struct tdr_cmd));
+=======
+	dma_sync_dev(dev, &(dma->tdr_cmd), sizeof(struct tdr_cmd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i596_add_cmd(dev, &dma->tdr_cmd.cmd);
 
 	spin_lock_irqsave (&lp->lock, flags);
@@ -626,7 +731,11 @@ static int init_i596_mem(struct net_device *dev)
 	DEB(DEB_INIT, printk(KERN_DEBUG "%s: Issuing RX_START\n", dev->name));
 	dma->scb.command = SWAP16(RX_START);
 	dma->scb.rfd = SWAP32(virt_to_dma(lp, dma->rfds));
+<<<<<<< HEAD
 	DMA_WBACK(dev, &(dma->scb), sizeof(struct i596_scb));
+=======
+	dma_sync_dev(dev, &(dma->scb), sizeof(struct i596_scb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ca(dev);
 
@@ -660,13 +769,21 @@ static inline int i596_rx(struct net_device *dev)
 
 	rfd = lp->rfd_head;		/* Ref next frame to check */
 
+<<<<<<< HEAD
 	DMA_INV(dev, rfd, sizeof(struct i596_rfd));
+=======
+	dma_sync_cpu(dev, rfd, sizeof(struct i596_rfd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (rfd->stat & SWAP16(STAT_C)) {	/* Loop while complete frames */
 		if (rfd->rbd == I596_NULL)
 			rbd = NULL;
 		else if (rfd->rbd == lp->rbd_head->b_addr) {
 			rbd = lp->rbd_head;
+<<<<<<< HEAD
 			DMA_INV(dev, rbd, sizeof(struct i596_rbd));
+=======
+			dma_sync_cpu(dev, rbd, sizeof(struct i596_rbd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			printk(KERN_ERR "%s: rbd chain broken!\n", dev->name);
 			/* XXX Now what? */
@@ -714,6 +831,7 @@ static inline int i596_rx(struct net_device *dev)
 							  DMA_FROM_DEVICE);
 				rbd->v_data = newskb->data;
 				rbd->b_data = SWAP32(dma_addr);
+<<<<<<< HEAD
 				DMA_WBACK_INV(dev, rbd, sizeof(struct i596_rbd));
 			} else
 				skb = netdev_alloc_skb_ip_align(dev, pkt_len);
@@ -723,6 +841,15 @@ memory_squeeze:
 				printk(KERN_ERR
 				       "%s: i596_rx Memory squeeze, dropping packet.\n",
 				       dev->name);
+=======
+				dma_sync_dev(dev, rbd, sizeof(struct i596_rbd));
+			} else {
+				skb = netdev_alloc_skb_ip_align(dev, pkt_len);
+			}
+memory_squeeze:
+			if (skb == NULL) {
+				/* XXX tulip.c can defer packets here!! */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev->stats.rx_dropped++;
 			} else {
 				if (!rx_in_place) {
@@ -730,7 +857,12 @@ memory_squeeze:
 					dma_sync_single_for_cpu(dev->dev.parent,
 								(dma_addr_t)SWAP32(rbd->b_data),
 								PKT_BUF_SZ, DMA_FROM_DEVICE);
+<<<<<<< HEAD
 					memcpy(skb_put(skb, pkt_len), rbd->v_data, pkt_len);
+=======
+					skb_put_data(skb, rbd->v_data,
+						     pkt_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					dma_sync_single_for_device(dev->dev.parent,
 								   (dma_addr_t)SWAP32(rbd->b_data),
 								   PKT_BUF_SZ, DMA_FROM_DEVICE);
@@ -767,7 +899,11 @@ memory_squeeze:
 		if (rbd != NULL && (rbd->count & SWAP16(0x4000))) {
 			rbd->count = 0;
 			lp->rbd_head = rbd->v_next;
+<<<<<<< HEAD
 			DMA_WBACK_INV(dev, rbd, sizeof(struct i596_rbd));
+=======
+			dma_sync_dev(dev, rbd, sizeof(struct i596_rbd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* Tidy the frame descriptor, marking it as end of list */
@@ -781,14 +917,24 @@ memory_squeeze:
 
 		lp->dma->scb.rfd = rfd->b_next;
 		lp->rfd_head = rfd->v_next;
+<<<<<<< HEAD
 		DMA_WBACK_INV(dev, rfd, sizeof(struct i596_rfd));
+=======
+		dma_sync_dev(dev, rfd, sizeof(struct i596_rfd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Remove end-of-list from old end descriptor */
 
 		rfd->v_prev->cmd = SWAP16(CMD_FLEX);
+<<<<<<< HEAD
 		DMA_WBACK_INV(dev, rfd->v_prev, sizeof(struct i596_rfd));
 		rfd = lp->rfd_head;
 		DMA_INV(dev, rfd, sizeof(struct i596_rfd));
+=======
+		dma_sync_dev(dev, rfd->v_prev, sizeof(struct i596_rfd));
+		rfd = lp->rfd_head;
+		dma_sync_cpu(dev, rfd, sizeof(struct i596_rfd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	DEB(DEB_RXFRAME, printk(KERN_DEBUG "frames %d\n", frames));
@@ -829,12 +975,20 @@ static inline void i596_cleanup_cmd(struct net_device *dev, struct i596_private 
 			ptr->v_next = NULL;
 			ptr->b_next = I596_NULL;
 		}
+<<<<<<< HEAD
 		DMA_WBACK_INV(dev, ptr, sizeof(struct i596_cmd));
+=======
+		dma_sync_dev(dev, ptr, sizeof(struct i596_cmd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	wait_cmd(dev, lp->dma, 100, "i596_cleanup_cmd timed out");
 	lp->dma->scb.cmd = I596_NULL;
+<<<<<<< HEAD
 	DMA_WBACK(dev, &(lp->dma->scb), sizeof(struct i596_scb));
+=======
+	dma_sync_dev(dev, &(lp->dma->scb), sizeof(struct i596_scb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -852,7 +1006,11 @@ static inline void i596_reset(struct net_device *dev, struct i596_private *lp)
 
 	/* FIXME: this command might cause an lpmc */
 	lp->dma->scb.command = SWAP16(CUC_ABORT | RX_ABORT);
+<<<<<<< HEAD
 	DMA_WBACK(dev, &(lp->dma->scb), sizeof(struct i596_scb));
+=======
+	dma_sync_dev(dev, &(lp->dma->scb), sizeof(struct i596_scb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ca(dev);
 
 	/* wait for shutdown */
@@ -880,20 +1038,32 @@ static void i596_add_cmd(struct net_device *dev, struct i596_cmd *cmd)
 	cmd->command |= SWAP16(CMD_EOL | CMD_INTR);
 	cmd->v_next = NULL;
 	cmd->b_next = I596_NULL;
+<<<<<<< HEAD
 	DMA_WBACK(dev, cmd, sizeof(struct i596_cmd));
+=======
+	dma_sync_dev(dev, cmd, sizeof(struct i596_cmd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave (&lp->lock, flags);
 
 	if (lp->cmd_head != NULL) {
 		lp->cmd_tail->v_next = cmd;
 		lp->cmd_tail->b_next = SWAP32(virt_to_dma(lp, &cmd->status));
+<<<<<<< HEAD
 		DMA_WBACK(dev, lp->cmd_tail, sizeof(struct i596_cmd));
+=======
+		dma_sync_dev(dev, lp->cmd_tail, sizeof(struct i596_cmd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		lp->cmd_head = cmd;
 		wait_cmd(dev, dma, 100, "i596_add_cmd timed out");
 		dma->scb.cmd = SWAP32(virt_to_dma(lp, &cmd->status));
 		dma->scb.command = SWAP16(CUC_START);
+<<<<<<< HEAD
 		DMA_WBACK(dev, &(dma->scb), sizeof(struct i596_scb));
+=======
+		dma_sync_dev(dev, &(dma->scb), sizeof(struct i596_scb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ca(dev);
 	}
 	lp->cmd_tail = cmd;
@@ -938,7 +1108,11 @@ out_remove_rx_bufs:
 	return -EAGAIN;
 }
 
+<<<<<<< HEAD
 static void i596_tx_timeout (struct net_device *dev)
+=======
+static void i596_tx_timeout (struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i596_private *lp = netdev_priv(dev);
 
@@ -958,17 +1132,29 @@ static void i596_tx_timeout (struct net_device *dev)
 		/* Issue a channel attention signal */
 		DEB(DEB_ERRORS, printk(KERN_DEBUG "Kicking board.\n"));
 		lp->dma->scb.command = SWAP16(CUC_START | RX_START);
+<<<<<<< HEAD
 		DMA_WBACK_INV(dev, &(lp->dma->scb), sizeof(struct i596_scb));
+=======
+		dma_sync_dev(dev, &(lp->dma->scb), sizeof(struct i596_scb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ca (dev);
 		lp->last_restart = dev->stats.tx_packets;
 	}
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue (dev);
 }
 
 
+<<<<<<< HEAD
 static int i596_start_xmit(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t i596_start_xmit(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i596_private *lp = netdev_priv(dev);
 	struct tx_cmd *tx_cmd;
@@ -996,7 +1182,11 @@ static int i596_start_xmit(struct sk_buff *skb, struct net_device *dev)
 				       dev->name));
 		dev->stats.tx_dropped++;
 
+<<<<<<< HEAD
 		dev_kfree_skb(skb);
+=======
+		dev_kfree_skb_any(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		if (++lp->next_tx_cmd == TX_RING_SIZE)
 			lp->next_tx_cmd = 0;
@@ -1016,8 +1206,13 @@ static int i596_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		tbd->data = SWAP32(tx_cmd->dma_addr);
 
 		DEB(DEB_TXADDR, print_eth(skb->data, "tx-queued"));
+<<<<<<< HEAD
 		DMA_WBACK_INV(dev, tx_cmd, sizeof(struct tx_cmd));
 		DMA_WBACK_INV(dev, tbd, sizeof(struct i596_tbd));
+=======
+		dma_sync_dev(dev, tx_cmd, sizeof(struct tx_cmd));
+		dma_sync_dev(dev, tbd, sizeof(struct i596_tbd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i596_add_cmd(dev, &tx_cmd->cmd);
 
 		dev->stats.tx_packets++;
@@ -1040,7 +1235,10 @@ static const struct net_device_ops i596_netdev_ops = {
 	.ndo_start_xmit		= i596_start_xmit,
 	.ndo_set_rx_mode	= set_multicast_list,
 	.ndo_tx_timeout		= i596_tx_timeout,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= eth_mac_addr,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -1048,11 +1246,18 @@ static const struct net_device_ops i596_netdev_ops = {
 #endif
 };
 
+<<<<<<< HEAD
 static int __devinit i82596_probe(struct net_device *dev)
 {
 	int i;
 	struct i596_private *lp = netdev_priv(dev);
 	struct i596_dma *dma;
+=======
+static int i82596_probe(struct net_device *dev)
+{
+	struct i596_private *lp = netdev_priv(dev);
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* This lot is ensure things have been cache line aligned. */
 	BUILD_BUG_ON(sizeof(struct i596_rfd) != 32);
@@ -1066,6 +1271,7 @@ static int __devinit i82596_probe(struct net_device *dev)
 	if (!dev->base_addr || !dev->irq)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	dma = (struct i596_dma *) DMA_ALLOC(dev->dev.parent,
 		sizeof(struct i596_dma), &lp->dma_addr, GFP_KERNEL);
 	if (!dma) {
@@ -1092,14 +1298,35 @@ static int __devinit i82596_probe(struct net_device *dev)
 				    (void *)dma, lp->dma_addr);
 		return i;
 	}
+=======
+	dev->netdev_ops = &i596_netdev_ops;
+	dev->watchdog_timeo = TX_TIMEOUT;
+
+	memset(lp->dma, 0, sizeof(struct i596_dma));
+	lp->dma->scb.command = 0;
+	lp->dma->scb.cmd = I596_NULL;
+	lp->dma->scb.rfd = I596_NULL;
+	spin_lock_init(&lp->lock);
+
+	dma_sync_dev(dev, lp->dma, sizeof(struct i596_dma));
+
+	ret = register_netdev(dev);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DEB(DEB_PROBE, printk(KERN_INFO "%s: 82596 at %#3lx, %pM IRQ %d.\n",
 			      dev->name, dev->base_addr, dev->dev_addr,
 			      dev->irq));
 	DEB(DEB_INIT, printk(KERN_INFO
 			     "%s: dma at 0x%p (%d bytes), lp->scb at 0x%p\n",
+<<<<<<< HEAD
 			     dev->name, dma, (int)sizeof(struct i596_dma),
 			     &dma->scb));
+=======
+			     dev->name, lp->dma, (int)sizeof(struct i596_dma),
+			     &lp->dma->scb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1157,7 +1384,11 @@ static irqreturn_t i596_interrupt(int irq, void *dev_id)
 				   dev->name, status & 0x0700));
 
 		while (lp->cmd_head != NULL) {
+<<<<<<< HEAD
 			DMA_INV(dev, lp->cmd_head, sizeof(struct i596_cmd));
+=======
+			dma_sync_cpu(dev, lp->cmd_head, sizeof(struct i596_cmd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!(lp->cmd_head->status & SWAP16(STAT_C)))
 				break;
 
@@ -1196,7 +1427,11 @@ static irqreturn_t i596_interrupt(int irq, void *dev_id)
 				dma_unmap_single(dev->dev.parent,
 						 tx_cmd->dma_addr,
 						 skb->len, DMA_TO_DEVICE);
+<<<<<<< HEAD
 				dev_kfree_skb_irq(skb);
+=======
+				dev_consume_skb_irq(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				tx_cmd->cmd.command = 0; /* Mark free */
 				break;
@@ -1239,7 +1474,11 @@ static irqreturn_t i596_interrupt(int irq, void *dev_id)
 			}
 			ptr->v_next = NULL;
 			ptr->b_next = I596_NULL;
+<<<<<<< HEAD
 			DMA_WBACK(dev, ptr, sizeof(struct i596_cmd));
+=======
+			dma_sync_dev(dev, ptr, sizeof(struct i596_cmd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			lp->last_cmd = jiffies;
 		}
 
@@ -1253,13 +1492,21 @@ static irqreturn_t i596_interrupt(int irq, void *dev_id)
 
 			ptr->command &= SWAP16(0x1fff);
 			ptr = ptr->v_next;
+<<<<<<< HEAD
 			DMA_WBACK_INV(dev, prev, sizeof(struct i596_cmd));
+=======
+			dma_sync_dev(dev, prev, sizeof(struct i596_cmd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (lp->cmd_head != NULL)
 			ack_cmd |= CUC_START;
 		dma->scb.cmd = SWAP32(virt_to_dma(lp, &lp->cmd_head->status));
+<<<<<<< HEAD
 		DMA_WBACK_INV(dev, &dma->scb, sizeof(struct i596_scb));
+=======
+		dma_sync_dev(dev, &dma->scb, sizeof(struct i596_scb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if ((status & 0x1000) || (status & 0x4000)) {
 		if ((status & 0x4000))
@@ -1284,7 +1531,11 @@ static irqreturn_t i596_interrupt(int irq, void *dev_id)
 	}
 	wait_cmd(dev, dma, 100, "i596 interrupt, timeout");
 	dma->scb.command = SWAP16(ack_cmd);
+<<<<<<< HEAD
 	DMA_WBACK(dev, &dma->scb, sizeof(struct i596_scb));
+=======
+	dma_sync_dev(dev, &dma->scb, sizeof(struct i596_scb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* DANGER: I suspect that some kind of interrupt
 	 acknowledgement aside from acking the 82596 might be needed
@@ -1315,7 +1566,11 @@ static int i596_close(struct net_device *dev)
 
 	wait_cmd(dev, lp->dma, 100, "close1 timed out");
 	lp->dma->scb.command = SWAP16(CUC_ABORT | RX_ABORT);
+<<<<<<< HEAD
 	DMA_WBACK(dev, &lp->dma->scb, sizeof(struct i596_scb));
+=======
+	dma_sync_dev(dev, &lp->dma->scb, sizeof(struct i596_scb));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ca(dev);
 
@@ -1374,7 +1629,11 @@ static void set_multicast_list(struct net_device *dev)
 			       dev->name);
 		else {
 			dma->cf_cmd.cmd.command = SWAP16(CmdConfigure);
+<<<<<<< HEAD
 			DMA_WBACK_INV(dev, &dma->cf_cmd, sizeof(struct cf_cmd));
+=======
+			dma_sync_dev(dev, &dma->cf_cmd, sizeof(struct cf_cmd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			i596_add_cmd(dev, &dma->cf_cmd.cmd);
 		}
 	}
@@ -1398,15 +1657,25 @@ static void set_multicast_list(struct net_device *dev)
 		netdev_for_each_mc_addr(ha, dev) {
 			if (!cnt--)
 				break;
+<<<<<<< HEAD
 			memcpy(cp, ha->addr, 6);
+=======
+			memcpy(cp, ha->addr, ETH_ALEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i596_debug > 1)
 				DEB(DEB_MULTI,
 				    printk(KERN_DEBUG
 					   "%s: Adding address %pM\n",
 					   dev->name, cp));
+<<<<<<< HEAD
 			cp += 6;
 		}
 		DMA_WBACK_INV(dev, &dma->mc_cmd, sizeof(struct mc_cmd));
+=======
+			cp += ETH_ALEN;
+		}
+		dma_sync_dev(dev, &dma->mc_cmd, sizeof(struct mc_cmd));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		i596_add_cmd(dev, &cmd->cmd);
 	}
 }

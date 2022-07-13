@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-ep93xx/dma.c
  *
@@ -11,11 +15,14 @@
  *   Copyright (C) 2006 Lennert Buytenhek <buytenh@wantstofly.org>
  *   Copyright (C) 2006 Applied Data Systems
  *   Copyright (C) 2009 Ryan Mallon <rmallon@gmail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/dmaengine.h>
@@ -25,8 +32,13 @@
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
 
+<<<<<<< HEAD
 #include <mach/dma.h>
 #include <mach/hardware.h>
+=======
+#include <linux/platform_data/dma-ep93xx.h>
+#include "hardware.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "soc.h"
 
@@ -66,11 +78,22 @@ static struct ep93xx_dma_platform_data ep93xx_dma_m2p_data = {
 	.num_channels		= ARRAY_SIZE(ep93xx_dma_m2p_channels),
 };
 
+<<<<<<< HEAD
+=======
+static u64 ep93xx_dma_m2p_mask = DMA_BIT_MASK(32);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_device ep93xx_dma_m2p_device = {
 	.name			= "ep93xx-dma-m2p",
 	.id			= -1,
 	.dev			= {
+<<<<<<< HEAD
 		.platform_data	= &ep93xx_dma_m2p_data,
+=======
+		.platform_data		= &ep93xx_dma_m2p_data,
+		.dma_mask		= &ep93xx_dma_m2p_mask,
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -93,11 +116,22 @@ static struct ep93xx_dma_platform_data ep93xx_dma_m2m_data = {
 	.num_channels		= ARRAY_SIZE(ep93xx_dma_m2m_channels),
 };
 
+<<<<<<< HEAD
+=======
+static u64 ep93xx_dma_m2m_mask = DMA_BIT_MASK(32);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct platform_device ep93xx_dma_m2m_device = {
 	.name			= "ep93xx-dma-m2m",
 	.id			= -1,
 	.dev			= {
+<<<<<<< HEAD
 		.platform_data	= &ep93xx_dma_m2m_data,
+=======
+		.platform_data		= &ep93xx_dma_m2m_data,
+		.dma_mask		= &ep93xx_dma_m2m_mask,
+		.coherent_dma_mask	= DMA_BIT_MASK(32),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

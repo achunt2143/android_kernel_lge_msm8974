@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _M68K_TLB_H
 #define _M68K_TLB_H
 
@@ -15,6 +16,12 @@
  */
 #define tlb_flush(tlb)		flush_tlb_mm((tlb)->mm)
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _M68K_TLB_H
+#define _M68K_TLB_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm-generic/tlb.h>
 
 #endif /* _M68K_TLB_H */

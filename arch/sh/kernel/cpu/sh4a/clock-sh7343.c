@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/cpu/sh4a/clock-sh7343.c
  *
  * SH7343 clock framework support
  *
  * Copyright (C) 2009 Magnus Damm
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -227,15 +234,26 @@ static struct clk_lookup lookups[] = {
 	CLKDEV_CON_ID("hudi0", &mstp_clks[MSTP019]),
 	CLKDEV_CON_ID("ubc0", &mstp_clks[MSTP017]),
 	CLKDEV_CON_ID("tmu_fck", &mstp_clks[MSTP015]),
+<<<<<<< HEAD
 	CLKDEV_CON_ID("cmt_fck", &mstp_clks[MSTP014]),
+=======
+	CLKDEV_ICK_ID("fck", "sh-cmt-32.0", &mstp_clks[MSTP014]),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CLKDEV_CON_ID("rwdt0", &mstp_clks[MSTP013]),
 	CLKDEV_CON_ID("mfi0", &mstp_clks[MSTP011]),
 	CLKDEV_CON_ID("flctl0", &mstp_clks[MSTP010]),
 
+<<<<<<< HEAD
 	CLKDEV_ICK_ID("sci_fck", "sh-sci.0", &mstp_clks[MSTP007]),
 	CLKDEV_ICK_ID("sci_fck", "sh-sci.1", &mstp_clks[MSTP006]),
 	CLKDEV_ICK_ID("sci_fck", "sh-sci.2", &mstp_clks[MSTP005]),
 	CLKDEV_ICK_ID("sci_fck", "sh-sci.3", &mstp_clks[MSTP004]),
+=======
+	CLKDEV_ICK_ID("fck", "sh-sci.0", &mstp_clks[MSTP007]),
+	CLKDEV_ICK_ID("fck", "sh-sci.1", &mstp_clks[MSTP006]),
+	CLKDEV_ICK_ID("fck", "sh-sci.2", &mstp_clks[MSTP005]),
+	CLKDEV_ICK_ID("fck", "sh-sci.3", &mstp_clks[MSTP004]),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	CLKDEV_CON_ID("sio0", &mstp_clks[MSTP003]),
 	CLKDEV_CON_ID("siof0", &mstp_clks[MSTP002]),
@@ -283,7 +301,11 @@ int __init arch_clk_init(void)
 		ret = sh_clk_div6_register(div6_clks, DIV6_NR);
 
 	if (!ret)
+<<<<<<< HEAD
 		ret = sh_clk_mstp32_register(mstp_clks, MSTP_NR);
+=======
+		ret = sh_clk_mstp_register(mstp_clks, MSTP_NR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }

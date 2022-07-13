@@ -1,10 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SCSI_SAS_INTERNAL_H
 #define _SCSI_SAS_INTERNAL_H
 
 #define SAS_HOST_ATTRS		0
 #define SAS_PHY_ATTRS		17
 #define SAS_PORT_ATTRS		1
+<<<<<<< HEAD
 #define SAS_RPORT_ATTRS		7
+=======
+#define SAS_RPORT_ATTRS		8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SAS_END_DEV_ATTRS	5
 #define SAS_EXPANDER_ATTRS	7
 

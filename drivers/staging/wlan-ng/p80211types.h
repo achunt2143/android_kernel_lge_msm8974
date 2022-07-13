@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* p80211types.h
 *
 * Macros, constants, types, and funcs for p80211 data types
@@ -53,6 +54,44 @@
 * All functions and statics declared here are implemented in p80211types.c
 *   --------------------------------------------------------------------
 */
+=======
+/* SPDX-License-Identifier: (GPL-2.0 OR MPL-1.1) */
+/*
+ *
+ *
+ * Macros, constants, types, and funcs for p80211 data types
+ *
+ * Copyright (C) 1999 AbsoluteValue Systems, Inc.  All Rights Reserved.
+ * --------------------------------------------------------------------
+ *
+ * linux-wlan
+ *
+ * --------------------------------------------------------------------
+ *
+ * Inquiries regarding the linux-wlan Open Source project can be
+ * made directly to:
+ *
+ * AbsoluteValue Systems Inc.
+ * info@linux-wlan.com
+ * http://www.linux-wlan.com
+ *
+ * --------------------------------------------------------------------
+ *
+ * Portions of the development of this software were funded by
+ * Intersil Corporation as part of PRISM(R) chipset product development.
+ *
+ * --------------------------------------------------------------------
+ *
+ * This file declares some of the constants and types used in various
+ * parts of the linux-wlan system.
+ *
+ * Notes:
+ *   - Constant values are always in HOST byte order.
+ *
+ * All functions and statics declared here are implemented in p80211types.c
+ *   --------------------------------------------------------------------
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _P80211TYPES_H
 #define _P80211TYPES_H
@@ -117,6 +156,7 @@
 					/* is a DID-LEN-DATA triple */
 					/* with a max size of 4+4+384 */
 
+<<<<<<< HEAD
 /*----------------------------------------------------------------*/
 /* The following macro creates a name for an enum */
 
@@ -135,6 +175,21 @@
 *                                           r - Read flag
 *                                           . - Unused
 */
+=======
+/*----------------------------------------------------------------
+ * The following constants and macros are used to construct and
+ * deconstruct the Data ID codes.  The coding is as follows:
+ *
+ *     ...rwtnnnnnnnniiiiiiggggggssssss      s - Section
+ *                                           g - Group
+ *                                           i - Item
+ *                                           n - Index
+ *                                           t - Table flag
+ *                                           w - Write flag
+ *                                           r - Read flag
+ *                                           . - Unused
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define P80211DID_LSB_SECTION		(0)
 #define P80211DID_LSB_GROUP		(6)
@@ -197,6 +252,7 @@
 					P80211DID_LSB_ACCESS)
 
 /*----------------------------------------------------------------*/
+<<<<<<< HEAD
 /* The following structure types are used for the represenation */
 /*  of ENUMint type metadata. */
 
@@ -211,10 +267,13 @@ typedef struct p80211enum {
 } p80211enum_t;
 
 /*----------------------------------------------------------------*/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The following structure types are used to store data items in */
 /*  messages. */
 
 /* Template pascal string */
+<<<<<<< HEAD
 typedef struct p80211pstr {
 	u8 len;
 } __packed p80211pstr_t;
@@ -271,10 +330,63 @@ typedef struct p80211itemd {
 
 /* message data item for int, BOUNDEDINT, ENUMINT */
 typedef struct p80211item_uint32 {
+=======
+struct p80211pstr {
+	u8 len;
+} __packed;
+
+struct p80211pstrd {
+	u8 len;
+	u8 data[];
+} __packed;
+
+/* Maximum pascal string */
+struct p80211pstr255 {
+	u8 len;
+	u8 data[MAXLEN_PSTR255];
+} __packed;
+
+/* pascal string for macaddress and bssid */
+struct p80211pstr6 {
+	u8 len;
+	u8 data[MAXLEN_PSTR6];
+} __packed;
+
+/* pascal string for channel list */
+struct p80211pstr14 {
+	u8 len;
+	u8 data[MAXLEN_PSTR14];
+} __packed;
+
+/* pascal string for ssid */
+struct p80211pstr32 {
+	u8 len;
+	u8 data[MAXLEN_PSTR32];
+} __packed;
+
+/* prototype template */
+struct p80211item {
+	u32 did;
+	u16 status;
+	u16 len;
+} __packed;
+
+/* prototype template w/ data item */
+struct p80211itemd {
+	u32 did;
+	u16 status;
+	u16 len;
+	u8 data[];
+} __packed;
+
+/* message data item for int, BOUNDEDINT, ENUMINT */
+struct p80211item_uint32 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 did;
 	u16 status;
 	u16 len;
 	u32 data;
+<<<<<<< HEAD
 } __packed p80211item_uint32_t;
 
 /* message data item for OCTETSTR, DISPLAYSTR */
@@ -311,26 +423,79 @@ typedef struct p80211item_pstr255 {
 
 /* message data item for UNK 392, namely mib items */
 typedef struct p80211item_unk392 {
+=======
+} __packed;
+
+/* message data item for OCTETSTR, DISPLAYSTR */
+struct p80211item_pstr6 {
+	u32 did;
+	u16 status;
+	u16 len;
+	struct p80211pstr6 data;
+} __packed;
+
+/* message data item for OCTETSTR, DISPLAYSTR */
+struct p80211item_pstr14 {
+	u32 did;
+	u16 status;
+	u16 len;
+	struct p80211pstr14 data;
+} __packed;
+
+/* message data item for OCTETSTR, DISPLAYSTR */
+struct p80211item_pstr32 {
+	u32 did;
+	u16 status;
+	u16 len;
+	struct p80211pstr32 data;
+} __packed;
+
+/* message data item for OCTETSTR, DISPLAYSTR */
+struct p80211item_pstr255 {
+	u32 did;
+	u16 status;
+	u16 len;
+	struct p80211pstr255 data;
+} __packed;
+
+/* message data item for UNK 392, namely mib items */
+struct p80211item_unk392 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 did;
 	u16 status;
 	u16 len;
 	u8 data[MAXLEN_MIBATTRIBUTE];
+<<<<<<< HEAD
 } __packed p80211item_unk392_t;
 
 /* message data item for UNK 1025, namely p2 pdas */
 typedef struct p80211item_unk1024 {
+=======
+} __packed;
+
+/* message data item for UNK 1025, namely p2 pdas */
+struct p80211item_unk1024 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 did;
 	u16 status;
 	u16 len;
 	u8 data[1024];
+<<<<<<< HEAD
 } __packed p80211item_unk1024_t;
 
 /* message data item for UNK 4096, namely p2 download chunks */
 typedef struct p80211item_unk4096 {
+=======
+} __packed;
+
+/* message data item for UNK 4096, namely p2 download chunks */
+struct p80211item_unk4096 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 did;
 	u16 status;
 	u16 len;
 	u8 data[4096];
+<<<<<<< HEAD
 } __packed p80211item_unk4096_t;
 
 struct catlistitem;
@@ -371,5 +536,8 @@ extern p80211enum_t MKENUMNAME(msgitem_status);
 extern p80211enum_t MKENUMNAME(lnxroam_reason);
 
 extern p80211enum_t MKENUMNAME(p2preamble);
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _P80211TYPES_H */

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Copyright(c) 2004 Intel Corporation. All rights reserved.
@@ -29,6 +30,22 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright(c) 2004 Intel Corporation. All rights reserved.
+ *
+ * Portions of this file are based on the WEP enablement code provided by the
+ * Host AP project hostap-drivers v0.1.3
+ * Copyright (c) 2001-2002, SSH Communications Security Corp and Jouni Malinen
+ * <jkmaline@cc.hut.fi>
+ * Copyright (c) 2002-2003, Jouni Malinen <jkmaline@cc.hut.fi>
+ *
+ * Contact Information:
+ * James P. Ketrenos <ipw2100-admin@linux.intel.com>
+ * Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/compiler.h>
 #include <linux/errno.h>
@@ -49,6 +66,7 @@
 #include <linux/etherdevice.h>
 #include <linux/uaccess.h>
 #include <net/arp.h>
+<<<<<<< HEAD
 
 #include "rtllib.h"
 
@@ -64,11 +82,16 @@ void _setup_timer(struct timer_list *ptimer, void *fun, unsigned long data)
 	init_timer(ptimer);
 }
 
+=======
+#include "rtllib.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int rtllib_networks_allocate(struct rtllib_device *ieee)
 {
 	if (ieee->networks)
 		return 0;
 
+<<<<<<< HEAD
 	ieee->networks = kzalloc(
 		MAX_NETWORK_COUNT * sizeof(struct rtllib_network),
 		GFP_KERNEL);
@@ -77,6 +100,12 @@ static inline int rtllib_networks_allocate(struct rtllib_device *ieee)
 		       ieee->dev->name);
 		return -ENOMEM;
 	}
+=======
+	ieee->networks = kcalloc(MAX_NETWORK_COUNT,
+				 sizeof(struct rtllib_network), GFP_KERNEL);
+	if (!ieee->networks)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -106,6 +135,7 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 	struct net_device *dev;
 	int i, err;
 
+<<<<<<< HEAD
 	RTLLIB_DEBUG_INFO("Initializing...\n");
 
 	dev = alloc_etherdev(sizeof(struct rtllib_device) + sizeof_priv);
@@ -115,10 +145,21 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 	}
 	ieee = (struct rtllib_device *)netdev_priv_rsl(dev);
 	memset(ieee, 0, sizeof(struct rtllib_device)+sizeof_priv);
+=======
+	pr_debug("rtllib: Initializing...\n");
+
+	dev = alloc_etherdev(sizeof(struct rtllib_device) + sizeof_priv);
+	if (!dev) {
+		pr_err("Unable to allocate net_device.\n");
+		return NULL;
+	}
+	ieee = (struct rtllib_device *)netdev_priv_rsl(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ieee->dev = dev;
 
 	err = rtllib_networks_allocate(ieee);
 	if (err) {
+<<<<<<< HEAD
 		RTLLIB_ERROR("Unable to allocate beacon storage: %d\n",
 				err);
 		goto failed;
@@ -126,34 +167,53 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 	rtllib_networks_initialize(ieee);
 
 
+=======
+		pr_err("Unable to allocate beacon storage: %d\n", err);
+		goto free_netdev;
+	}
+	rtllib_networks_initialize(ieee);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Default fragmentation threshold is maximum payload size */
 	ieee->fts = DEFAULT_FTS;
 	ieee->scan_age = DEFAULT_MAX_SCAN_AGE;
 	ieee->open_wep = 1;
 
+<<<<<<< HEAD
 	/* Default to enabling full open WEP with host based encrypt/decrypt */
 	ieee->host_encrypt = 1;
 	ieee->host_decrypt = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ieee->ieee802_1x = 1; /* Default to supporting 802.1x */
 
 	ieee->rtllib_ap_sec_type = rtllib_ap_sec_type;
 
 	spin_lock_init(&ieee->lock);
 	spin_lock_init(&ieee->wpax_suitlist_lock);
+<<<<<<< HEAD
 	spin_lock_init(&ieee->bw_spinlock);
 	spin_lock_init(&ieee->reorder_spinlock);
 	atomic_set(&(ieee->atm_chnlop), 0);
 	atomic_set(&(ieee->atm_swbw), 0);
+=======
+	spin_lock_init(&ieee->reorder_spinlock);
+	atomic_set(&ieee->atm_swbw, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* SAM FIXME */
 	lib80211_crypt_info_init(&ieee->crypt_info, "RTLLIB", &ieee->lock);
 
+<<<<<<< HEAD
 	ieee->bHalfNMode = false;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ieee->wpa_enabled = 0;
 	ieee->tkip_countermeasures = 0;
 	ieee->drop_unencrypted = 0;
 	ieee->privacy_invoked = 0;
 	ieee->ieee802_1x = 1;
+<<<<<<< HEAD
 	ieee->raw_tx = 0;
 	ieee->hwsec_active = 0;
 
@@ -168,6 +228,22 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 	HTUpdateDefaultSetting(ieee);
 	HTInitializeHTInfo(ieee);
 	TSInitialize(ieee);
+=======
+	ieee->hwsec_active = 0;
+
+	memset(ieee->swcamtable, 0, sizeof(struct sw_cam_table) * 32);
+	err = rtllib_softmac_init(ieee);
+	if (err)
+		goto free_crypt_info;
+
+	ieee->ht_info = kzalloc(sizeof(struct rt_hi_throughput), GFP_KERNEL);
+	if (!ieee->ht_info)
+		goto free_softmac;
+
+	ht_update_default_setting(ieee);
+	ht_initialize_ht_info(ieee);
+	rtllib_ts_init(ieee);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < IEEE_IBSS_MAC_HASH_SIZE; i++)
 		INIT_LIST_HEAD(&ieee->ibss_mac_hash[i]);
 
@@ -179,9 +255,20 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 
 	return dev;
 
+<<<<<<< HEAD
  failed:
 	if (dev)
 		free_netdev(dev);
+=======
+free_softmac:
+	rtllib_softmac_free(ieee);
+free_crypt_info:
+	lib80211_crypt_info_free(&ieee->crypt_info);
+	rtllib_networks_free(ieee);
+free_netdev:
+	free_netdev(dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 EXPORT_SYMBOL(alloc_rtllib);
@@ -191,8 +278,12 @@ void free_rtllib(struct net_device *dev)
 	struct rtllib_device *ieee = (struct rtllib_device *)
 				      netdev_priv_rsl(dev);
 
+<<<<<<< HEAD
 	kfree(ieee->pHTInfo);
 	ieee->pHTInfo = NULL;
+=======
+	kfree(ieee->ht_info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rtllib_softmac_free(ieee);
 
 	lib80211_crypt_info_free(&ieee->crypt_info);
@@ -202,6 +293,7 @@ void free_rtllib(struct net_device *dev)
 }
 EXPORT_SYMBOL(free_rtllib);
 
+<<<<<<< HEAD
 u32 rtllib_debug_level;
 static int debug = \
 			    RTLLIB_DL_ERR
@@ -273,6 +365,15 @@ void __exit rtllib_exit(void)
 		remove_proc_entry(DRV_NAME, init_net.proc_net);
 		rtllib_proc = NULL;
 	}
+=======
+static int __init rtllib_init(void)
+{
+	return 0;
+}
+
+static void __exit rtllib_exit(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(rtllib_init);

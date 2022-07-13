@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IEEE754 floating point arithmetic
  * double precision: common utilities
  */
 /*
  * MIPS floating point support
  * Copyright (C) 1994-2000 Algorithmics Ltd.
+<<<<<<< HEAD
  *
  * ########################################################################
  *
@@ -32,6 +37,22 @@ int ieee754dp_tint(ieee754dp x)
 	COMPXDP;
 
 	CLEARCX;
+=======
+ */
+
+#include "ieee754dp.h"
+
+int ieee754dp_tint(union ieee754dp x)
+{
+	u64 residue;
+	int round;
+	int sticky;
+	int odd;
+
+	COMPXDP;
+
+	ieee754_clearcx();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	EXPLODEXDP;
 	FLUSHXDP;
@@ -39,11 +60,24 @@ int ieee754dp_tint(ieee754dp x)
 	switch (xc) {
 	case IEEE754_CLASS_SNAN:
 	case IEEE754_CLASS_QNAN:
+<<<<<<< HEAD
 	case IEEE754_CLASS_INF:
 		SETCX(IEEE754_INVALID_OPERATION);
 		return ieee754si_xcpt(ieee754si_indef(), "dp_tint", x);
 	case IEEE754_CLASS_ZERO:
 		return 0;
+=======
+		ieee754_setcx(IEEE754_INVALID_OPERATION);
+		return ieee754si_indef();
+
+	case IEEE754_CLASS_INF:
+		ieee754_setcx(IEEE754_INVALID_OPERATION);
+		return ieee754si_overflow(xs);
+
+	case IEEE754_CLASS_ZERO:
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case IEEE754_CLASS_DNORM:
 	case IEEE754_CLASS_NORM:
 		break;
@@ -51,6 +85,7 @@ int ieee754dp_tint(ieee754dp x)
 	if (xe > 31) {
 		/* Set invalid. We will only use overflow for floating
 		   point overflow */
+<<<<<<< HEAD
 		SETCX(IEEE754_INVALID_OPERATION);
 		return ieee754si_xcpt(ieee754si_indef(), "dp_tint", x);
 	}
@@ -63,21 +98,38 @@ int ieee754dp_tint(ieee754dp x)
 		int sticky;
 		int odd;
 
+=======
+		ieee754_setcx(IEEE754_INVALID_OPERATION);
+		return ieee754si_overflow(xs);
+	}
+	/* oh gawd */
+	if (xe > DP_FBITS) {
+		xm <<= xe - DP_FBITS;
+	} else if (xe < DP_FBITS) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (xe < -1) {
 			residue = xm;
 			round = 0;
 			sticky = residue != 0;
 			xm = 0;
 		} else {
+<<<<<<< HEAD
 			residue = xm << (64 - DP_MBITS + xe);
 			round = (residue >> 63) != 0;
 			sticky = (residue << 1) != 0;
 			xm >>= DP_MBITS - xe;
+=======
+			residue = xm << (64 - DP_FBITS + xe);
+			round = (residue >> 63) != 0;
+			sticky = (residue << 1) != 0;
+			xm >>= DP_FBITS - xe;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		/* Note: At this point upper 32 bits of xm are guaranteed
 		   to be zero */
 		odd = (xm & 0x1) != 0x0;
 		switch (ieee754_csr.rm) {
+<<<<<<< HEAD
 		case IEEE754_RN:
 			if (round && (sticky || odd))
 				xm++;
@@ -89,6 +141,19 @@ int ieee754dp_tint(ieee754dp x)
 				xm++;
 			break;
 		case IEEE754_RD:	/* toward -Infinity */
+=======
+		case FPU_CSR_RN:
+			if (round && (sticky || odd))
+				xm++;
+			break;
+		case FPU_CSR_RZ:
+			break;
+		case FPU_CSR_RU:	/* toward +Infinity */
+			if ((round || sticky) && !xs)
+				xm++;
+			break;
+		case FPU_CSR_RD:	/* toward -Infinity */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if ((round || sticky) && xs)
 				xm++;
 			break;
@@ -96,17 +161,26 @@ int ieee754dp_tint(ieee754dp x)
 		/* look for valid corner case 0x80000000 */
 		if ((xm >> 31) != 0 && (xs == 0 || xm != 0x80000000)) {
 			/* This can happen after rounding */
+<<<<<<< HEAD
 			SETCX(IEEE754_INVALID_OPERATION);
 			return ieee754si_xcpt(ieee754si_indef(), "dp_tint", x);
 		}
 		if (round || sticky)
 			SETCX(IEEE754_INEXACT);
+=======
+			ieee754_setcx(IEEE754_INVALID_OPERATION);
+			return ieee754si_overflow(xs);
+		}
+		if (round || sticky)
+			ieee754_setcx(IEEE754_INEXACT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (xs)
 		return -xm;
 	else
 		return xm;
 }
+<<<<<<< HEAD
 
 
 unsigned int ieee754dp_tuns(ieee754dp x)
@@ -120,3 +194,5 @@ unsigned int ieee754dp_tuns(ieee754dp x)
 	return (unsigned) ieee754dp_tint(ieee754dp_sub(x, hb)) |
 	    ((unsigned) 1 << 31);
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

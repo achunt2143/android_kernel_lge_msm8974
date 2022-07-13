@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CS4245_CHIP_ID		0x01
 #define CS4245_POWER_CTRL	0x02
 #define CS4245_DAC_CTRL_1	0x03
@@ -102,6 +106,15 @@
 #define CS4245_ADC_OVFL		0x02
 #define CS4245_ADC_UNDRFL	0x01
 
+<<<<<<< HEAD
 
 #define CS4245_SPI_ADDRESS	(0x9e << 16)
 #define CS4245_SPI_WRITE	(0 << 16)
+=======
+#define CS4245_SPI_ADDRESS_S	(0x9e << 16)
+#define CS4245_SPI_WRITE_S	(0 << 16)
+
+#define CS4245_SPI_ADDRESS	0x9e
+#define CS4245_SPI_WRITE	0
+#define CS4245_SPI_READ		1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

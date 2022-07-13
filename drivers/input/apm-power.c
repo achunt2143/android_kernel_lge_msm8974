@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Input Power Event -> APM Bridge
  *
  *  Copyright (c) 2007 Richard Purdie
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
  *  published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -33,7 +40,11 @@ static void system_power_event(unsigned int keycode)
 }
 
 static void apmpower_event(struct input_handle *handle, unsigned int type,
+<<<<<<< HEAD
 		        unsigned int code, int value)
+=======
+			   unsigned int code, int value)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* only react on key down events */
 	if (value != 1)

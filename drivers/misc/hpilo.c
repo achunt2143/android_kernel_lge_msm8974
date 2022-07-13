@@ -1,12 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for the HP iLO management processor.
  *
  * Copyright (C) 2008 Hewlett-Packard Development Company, L.P.
+<<<<<<< HEAD
  *	David Altobelli <david.altobelli@hp.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+ *	David Altobelli <david.altobelli@hpe.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -28,9 +36,25 @@
 #include <linux/slab.h>
 #include "hpilo.h"
 
+<<<<<<< HEAD
 static struct class *ilo_class;
 static unsigned int ilo_major;
 static char ilo_hwdev[MAX_ILO_DEV];
+=======
+static const struct class ilo_class = {
+	.name = "iLO",
+};
+static unsigned int ilo_major;
+static unsigned int max_ccb = 16;
+static char ilo_hwdev[MAX_ILO_DEV];
+static const struct pci_device_id ilo_blacklist[] = {
+	/* auxiliary iLO */
+	{PCI_DEVICE_SUB(PCI_VENDOR_ID_HP, 0x3307, PCI_VENDOR_ID_HP, 0x1979)},
+	/* CL */
+	{PCI_DEVICE_SUB(PCI_VENDOR_ID_HP, 0x3307, PCI_VENDOR_ID_HP_3PAR, 0x0289)},
+	{}
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int get_entry_id(int entry)
 {
@@ -202,7 +226,11 @@ static void ctrl_setup(struct ccb *ccb, int nr_desc, int l2desc_sz)
 static inline int fifo_sz(int nr_entry)
 {
 	/* size of a fifo is determined by the number of entries it contains */
+<<<<<<< HEAD
 	return (nr_entry * sizeof(u64)) + FIFOHANDLESIZE;
+=======
+	return nr_entry * sizeof(u64) + FIFOHANDLESIZE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fifo_setup(void *base_addr, int nr_entry)
@@ -251,7 +279,12 @@ static void ilo_ccb_close(struct pci_dev *pdev, struct ccb_data *data)
 	memset_io(device_ccb, 0, sizeof(struct ccb));
 
 	/* free resources used to back send/recv queues */
+<<<<<<< HEAD
 	pci_free_consistent(pdev, data->dma_size, data->dma_va, data->dma_pa);
+=======
+	dma_free_coherent(&pdev->dev, data->dma_size, data->dma_va,
+			  data->dma_pa);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ilo_ccb_setup(struct ilo_hwinfo *hw, struct ccb_data *data, int slot)
@@ -267,16 +300,24 @@ static int ilo_ccb_setup(struct ilo_hwinfo *hw, struct ccb_data *data, int slot)
 			 2 * desc_mem_sz(NR_QENTRY) +
 			 ILO_START_ALIGN + ILO_CACHE_SZ;
 
+<<<<<<< HEAD
 	data->dma_va = pci_alloc_consistent(hw->ilo_dev, data->dma_size,
 					    &data->dma_pa);
+=======
+	data->dma_va = dma_alloc_coherent(&hw->ilo_dev->dev, data->dma_size,
+					  &data->dma_pa, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data->dma_va)
 		return -ENOMEM;
 
 	dma_va = (char *)data->dma_va;
 	dma_pa = data->dma_pa;
 
+<<<<<<< HEAD
 	memset(dma_va, 0, data->dma_size);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_va = (char *)roundup((unsigned long)dma_va, ILO_START_ALIGN);
 	dma_pa = roundup(dma_pa, ILO_START_ALIGN);
 
@@ -388,12 +429,15 @@ static inline int is_db_reset(int db_out)
 	return db_out & (1 << DB_RESET);
 }
 
+<<<<<<< HEAD
 static inline int is_device_reset(struct ilo_hwinfo *hw)
 {
 	/* check for global reset condition */
 	return is_db_reset(get_device_outbound(hw));
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void clear_pending_db(struct ilo_hwinfo *hw, int clr)
 {
 	iowrite32(clr, &hw->mmio_vaddr[DB_OUT]);
@@ -424,7 +468,11 @@ static void ilo_set_reset(struct ilo_hwinfo *hw)
 	 * Mapped memory is zeroed on ilo reset, so set a per ccb flag
 	 * to indicate that this ccb needs to be closed and reopened.
 	 */
+<<<<<<< HEAD
 	for (slot = 0; slot < MAX_CCB; slot++) {
+=======
+	for (slot = 0; slot < max_ccb; slot++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!hw->ccb_alloc[slot])
 			continue;
 		set_channel_reset(&hw->ccb_alloc[slot]->driver_ccb);
@@ -513,7 +561,11 @@ static ssize_t ilo_write(struct file *fp, const char __user *buf,
 	return err ? -EFAULT : len;
 }
 
+<<<<<<< HEAD
 static unsigned int ilo_poll(struct file *fp, poll_table *wait)
+=======
+static __poll_t ilo_poll(struct file *fp, poll_table *wait)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ccb_data *data = fp->private_data;
 	struct ccb *driver_ccb = &data->driver_ccb;
@@ -521,9 +573,15 @@ static unsigned int ilo_poll(struct file *fp, poll_table *wait)
 	poll_wait(fp, &data->ccb_waitq, wait);
 
 	if (is_channel_reset(driver_ccb))
+<<<<<<< HEAD
 		return POLLERR;
 	else if (ilo_pkt_recv(data->ilo_hw, driver_ccb))
 		return POLLIN | POLLRDNORM;
+=======
+		return EPOLLERR;
+	else if (ilo_pkt_recv(data->ilo_hw, driver_ccb))
+		return EPOLLIN | EPOLLRDNORM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -535,7 +593,11 @@ static int ilo_close(struct inode *ip, struct file *fp)
 	struct ilo_hwinfo *hw;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	slot = iminor(ip) % MAX_CCB;
+=======
+	slot = iminor(ip) % max_ccb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw = container_of(ip->i_cdev, struct ilo_hwinfo, cdev);
 
 	spin_lock(&hw->open_lock);
@@ -566,7 +628,11 @@ static int ilo_open(struct inode *ip, struct file *fp)
 	struct ilo_hwinfo *hw;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	slot = iminor(ip) % MAX_CCB;
+=======
+	slot = iminor(ip) % max_ccb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hw = container_of(ip->i_cdev, struct ilo_hwinfo, cdev);
 
 	/* new ccb allocation */
@@ -663,7 +729,11 @@ static irqreturn_t ilo_isr(int irq, void *data)
 		ilo_set_reset(hw);
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < MAX_CCB; i++) {
+=======
+	for (i = 0; i < max_ccb; i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!hw->ccb_alloc[i])
 			continue;
 		if (pending & (1 << i))
@@ -685,9 +755,18 @@ static void ilo_unmap_device(struct pci_dev *pdev, struct ilo_hwinfo *hw)
 	pci_iounmap(pdev, hw->mmio_vaddr);
 }
 
+<<<<<<< HEAD
 static int __devinit ilo_map_device(struct pci_dev *pdev, struct ilo_hwinfo *hw)
 {
 	int error = -ENOMEM;
+=======
+static int ilo_map_device(struct pci_dev *pdev, struct ilo_hwinfo *hw)
+{
+	int bar;
+	unsigned long off;
+	u8 pci_rev_id;
+	int rc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* map the memory mapped i/o registers */
 	hw->mmio_vaddr = pci_iomap(pdev, 1, 0);
@@ -697,14 +776,36 @@ static int __devinit ilo_map_device(struct pci_dev *pdev, struct ilo_hwinfo *hw)
 	}
 
 	/* map the adapter shared memory region */
+<<<<<<< HEAD
 	hw->ram_vaddr = pci_iomap(pdev, 2, MAX_CCB * ILOHW_CCB_SZ);
+=======
+	rc = pci_read_config_byte(pdev, PCI_REVISION_ID, &pci_rev_id);
+	if (rc != 0) {
+		dev_err(&pdev->dev, "Error reading PCI rev id: %d\n", rc);
+		goto out;
+	}
+
+	if (pci_rev_id >= PCI_REV_ID_NECHES) {
+		bar = 5;
+		/* Last 8k is reserved for CCBs */
+		off = pci_resource_len(pdev, bar) - 0x2000;
+	} else {
+		bar = 2;
+		off = 0;
+	}
+	hw->ram_vaddr = pci_iomap_range(pdev, bar, off, max_ccb * ILOHW_CCB_SZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->ram_vaddr == NULL) {
 		dev_err(&pdev->dev, "Error mapping shared mem\n");
 		goto mmio_free;
 	}
 
 	/* map the doorbell aperture */
+<<<<<<< HEAD
 	hw->db_vaddr = pci_iomap(pdev, 3, MAX_CCB * ONE_DB_SIZE);
+=======
+	hw->db_vaddr = pci_iomap(pdev, 3, max_ccb * ONE_DB_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hw->db_vaddr == NULL) {
 		dev_err(&pdev->dev, "Error mapping doorbell\n");
 		goto ram_free;
@@ -716,7 +817,11 @@ ram_free:
 mmio_free:
 	pci_iounmap(pdev, hw->mmio_vaddr);
 out:
+<<<<<<< HEAD
 	return error;
+=======
+	return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ilo_remove(struct pci_dev *pdev)
@@ -724,11 +829,22 @@ static void ilo_remove(struct pci_dev *pdev)
 	int i, minor;
 	struct ilo_hwinfo *ilo_hw = pci_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	clear_device(ilo_hw);
 
 	minor = MINOR(ilo_hw->cdev.dev);
 	for (i = minor; i < minor + MAX_CCB; i++)
 		device_destroy(ilo_class, MKDEV(ilo_major, i));
+=======
+	if (!ilo_hw)
+		return;
+
+	clear_device(ilo_hw);
+
+	minor = MINOR(ilo_hw->cdev.dev);
+	for (i = minor; i < minor + max_ccb; i++)
+		device_destroy(&ilo_class, MKDEV(ilo_major, i));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cdev_del(&ilo_hw->cdev);
 	ilo_disable_interrupts(ilo_hw);
@@ -744,6 +860,7 @@ static void ilo_remove(struct pci_dev *pdev)
 	 * yet. See acpi_pci_link_free_irq called from acpi_pci_irq_disable.
 	 */
 	kfree(ilo_hw);
+<<<<<<< HEAD
 	ilo_hwdev[(minor / MAX_CCB)] = 0;
 }
 
@@ -753,6 +870,27 @@ static int __devinit ilo_probe(struct pci_dev *pdev,
 	int devnum, minor, start, error;
 	struct ilo_hwinfo *ilo_hw;
 
+=======
+	ilo_hwdev[(minor / max_ccb)] = 0;
+}
+
+static int ilo_probe(struct pci_dev *pdev,
+			       const struct pci_device_id *ent)
+{
+	int devnum, slot, start, error = 0;
+	struct ilo_hwinfo *ilo_hw;
+
+	if (pci_match_id(ilo_blacklist, pdev)) {
+		dev_dbg(&pdev->dev, "Not supported on this device\n");
+		return -ENODEV;
+	}
+
+	if (max_ccb > MAX_CCB)
+		max_ccb = MAX_CCB;
+	else if (max_ccb < MIN_CCB)
+		max_ccb = MIN_CCB;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* find a free range for device files */
 	for (devnum = 0; devnum < MAX_ILO_DEV; devnum++) {
 		if (ilo_hwdev[devnum] == 0) {
@@ -802,18 +940,31 @@ static int __devinit ilo_probe(struct pci_dev *pdev,
 
 	cdev_init(&ilo_hw->cdev, &ilo_fops);
 	ilo_hw->cdev.owner = THIS_MODULE;
+<<<<<<< HEAD
 	start = devnum * MAX_CCB;
 	error = cdev_add(&ilo_hw->cdev, MKDEV(ilo_major, start), MAX_CCB);
+=======
+	start = devnum * max_ccb;
+	error = cdev_add(&ilo_hw->cdev, MKDEV(ilo_major, start), max_ccb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error) {
 		dev_err(&pdev->dev, "Could not add cdev\n");
 		goto remove_isr;
 	}
 
+<<<<<<< HEAD
 	for (minor = 0 ; minor < MAX_CCB; minor++) {
 		struct device *dev;
 		dev = device_create(ilo_class, &pdev->dev,
 				    MKDEV(ilo_major, minor), NULL,
 				    "hpilo!d%dccb%d", devnum, minor);
+=======
+	for (slot = 0; slot < max_ccb; slot++) {
+		struct device *dev;
+		dev = device_create(&ilo_class, &pdev->dev,
+				    MKDEV(ilo_major, start + slot), NULL,
+				    "hpilo!d%dccb%d", devnum, slot);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(dev))
 			dev_err(&pdev->dev, "Could not create files\n");
 	}
@@ -835,7 +986,11 @@ out:
 	return error;
 }
 
+<<<<<<< HEAD
 static struct pci_device_id ilo_devices[] = {
+=======
+static const struct pci_device_id ilo_devices[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_COMPAQ, 0xB204) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_HP, 0x3307) },
 	{ }
@@ -846,7 +1001,11 @@ static struct pci_driver ilo_driver = {
 	.name 	  = ILO_NAME,
 	.id_table = ilo_devices,
 	.probe 	  = ilo_probe,
+<<<<<<< HEAD
 	.remove   = __devexit_p(ilo_remove),
+=======
+	.remove   = ilo_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ilo_init(void)
@@ -854,11 +1013,17 @@ static int __init ilo_init(void)
 	int error;
 	dev_t dev;
 
+<<<<<<< HEAD
 	ilo_class = class_create(THIS_MODULE, "iLO");
 	if (IS_ERR(ilo_class)) {
 		error = PTR_ERR(ilo_class);
 		goto out;
 	}
+=======
+	error = class_register(&ilo_class);
+	if (error)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = alloc_chrdev_region(&dev, 0, MAX_OPEN, ILO_NAME);
 	if (error)
@@ -874,7 +1039,11 @@ static int __init ilo_init(void)
 chr_remove:
 	unregister_chrdev_region(dev, MAX_OPEN);
 class_destroy:
+<<<<<<< HEAD
 	class_destroy(ilo_class);
+=======
+	class_unregister(&ilo_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return error;
 }
@@ -883,6 +1052,7 @@ static void __exit ilo_exit(void)
 {
 	pci_unregister_driver(&ilo_driver);
 	unregister_chrdev_region(MKDEV(ilo_major, 0), MAX_OPEN);
+<<<<<<< HEAD
 	class_destroy(ilo_class);
 }
 
@@ -892,5 +1062,19 @@ MODULE_DESCRIPTION(ILO_NAME);
 MODULE_AUTHOR("David Altobelli <david.altobelli@hp.com>");
 MODULE_LICENSE("GPL v2");
 
+=======
+	class_unregister(&ilo_class);
+}
+
+MODULE_VERSION("1.5.0");
+MODULE_ALIAS(ILO_NAME);
+MODULE_DESCRIPTION(ILO_NAME);
+MODULE_AUTHOR("David Altobelli <david.altobelli@hpe.com>");
+MODULE_LICENSE("GPL v2");
+
+module_param(max_ccb, uint, 0444);
+MODULE_PARM_DESC(max_ccb, "Maximum number of HP iLO channels to attach (8-24)(default=16)");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_init(ilo_init);
 module_exit(ilo_exit);

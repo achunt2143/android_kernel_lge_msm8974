@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Driver for Rio Karma
  *
  *   (c) 2006 Bob Copeland <me@bobcopeland.com>
@@ -16,6 +17,14 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0+
+/*
+ * Driver for Rio Karma
+ *
+ *   (c) 2006 Bob Copeland <me@bobcopeland.com>
+ *   (c) 2006 Keith Bennett <keith@mcs.st-and.ac.uk>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -28,10 +37,20 @@
 #include "usb.h"
 #include "transport.h"
 #include "debug.h"
+<<<<<<< HEAD
+=======
+#include "scsiglue.h"
+
+#define DRV_NAME "ums-karma"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Driver for Rio Karma");
 MODULE_AUTHOR("Bob Copeland <me@bobcopeland.com>, Keith Bennett <keith@mcs.st-and.ac.uk>");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_IMPORT_NS(USB_STORAGE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RIO_PREFIX "RIOP\x00"
 #define RIO_PREFIX_LEN 5
@@ -57,7 +76,11 @@ static int rio_karma_init(struct us_data *us);
 		    vendorName, productName, useProtocol, useTransport, \
 		    initFunction, flags) \
 { USB_DEVICE_VER(id_vendor, id_product, bcdDeviceMin, bcdDeviceMax), \
+<<<<<<< HEAD
   .driver_info = (flags)|(USB_US_TYPE_STOR<<24) }
+=======
+  .driver_info = (flags) }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct usb_device_id karma_usb_ids[] = {
 #	include "unusual_karma.h"
@@ -101,12 +124,20 @@ static struct us_unusual_dev karma_unusual_dev_list[] = {
  */
 static int rio_karma_send_command(char cmd, struct us_data *us)
 {
+<<<<<<< HEAD
 	int result, partial;
+=======
+	int result;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long timeout;
 	static unsigned char seq = 1;
 	struct karma_data *data = (struct karma_data *) us->extra;
 
+<<<<<<< HEAD
 	US_DEBUGP("karma: sending command %04x\n", cmd);
+=======
+	usb_stor_dbg(us, "sending command %04x\n", cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	memset(us->iobuf, 0, RIO_SEND_LEN);
 	memcpy(us->iobuf, RIO_PREFIX, RIO_PREFIX_LEN);
 	us->iobuf[5] = cmd;
@@ -115,12 +146,20 @@ static int rio_karma_send_command(char cmd, struct us_data *us)
 	timeout = jiffies + msecs_to_jiffies(6000);
 	for (;;) {
 		result = usb_stor_bulk_transfer_buf(us, us->send_bulk_pipe,
+<<<<<<< HEAD
 			us->iobuf, RIO_SEND_LEN, &partial);
+=======
+			us->iobuf, RIO_SEND_LEN, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (result != USB_STOR_XFER_GOOD)
 			goto err;
 
 		result = usb_stor_bulk_transfer_buf(us, us->recv_bulk_pipe,
+<<<<<<< HEAD
 			data->recv, RIO_RECV_LEN, &partial);
+=======
+			data->recv, RIO_RECV_LEN, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (result != USB_STOR_XFER_GOOD)
 			goto err;
 
@@ -139,10 +178,17 @@ static int rio_karma_send_command(char cmd, struct us_data *us)
 	if (seq == 0)
 		seq = 1;
 
+<<<<<<< HEAD
 	US_DEBUGP("karma: sent command %04x\n", cmd);
 	return 0;
 err:
 	US_DEBUGP("karma: command %04x failed\n", cmd);
+=======
+	usb_stor_dbg(us, "sent command %04x\n", cmd);
+	return 0;
+err:
+	usb_stor_dbg(us, "command %04x failed\n", cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return USB_STOR_TRANSPORT_FAILED;
 }
 
@@ -176,30 +222,58 @@ static int rio_karma_transport(struct scsi_cmnd *srb, struct us_data *us)
 static void rio_karma_destructor(void *extra)
 {
 	struct karma_data *data = (struct karma_data *) extra;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(data->recv);
 }
 
 static int rio_karma_init(struct us_data *us)
 {
+<<<<<<< HEAD
 	int ret = 0;
 	struct karma_data *data = kzalloc(sizeof(struct karma_data), GFP_NOIO);
 	if (!data)
 		goto out;
+=======
+	struct karma_data *data = kzalloc(sizeof(struct karma_data), GFP_NOIO);
+
+	if (!data)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->recv = kmalloc(RIO_RECV_LEN, GFP_NOIO);
 	if (!data->recv) {
 		kfree(data);
+<<<<<<< HEAD
 		goto out;
+=======
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	us->extra = data;
 	us->extra_destructor = rio_karma_destructor;
+<<<<<<< HEAD
 	ret = rio_karma_send_command(RIO_ENTER_STORAGE, us);
 	data->in_storage = (ret == 0);
 out:
 	return ret;
 }
 
+=======
+	if (rio_karma_send_command(RIO_ENTER_STORAGE, us))
+		return -EIO;
+
+	data->in_storage = 1;
+
+	return 0;
+}
+
+static struct scsi_host_template karma_host_template;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int karma_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
 {
@@ -207,7 +281,12 @@ static int karma_probe(struct usb_interface *intf,
 	int result;
 
 	result = usb_stor_probe1(&us, intf, id,
+<<<<<<< HEAD
 			(id - karma_usb_ids) + karma_unusual_dev_list);
+=======
+			(id - karma_usb_ids) + karma_unusual_dev_list,
+			&karma_host_template);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (result)
 		return result;
 
@@ -220,7 +299,11 @@ static int karma_probe(struct usb_interface *intf,
 }
 
 static struct usb_driver karma_driver = {
+<<<<<<< HEAD
 	.name =		"ums-karma",
+=======
+	.name =		DRV_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe =	karma_probe,
 	.disconnect =	usb_stor_disconnect,
 	.suspend =	usb_stor_suspend,
@@ -233,4 +316,8 @@ static struct usb_driver karma_driver = {
 	.no_dynamic_id = 1,
 };
 
+<<<<<<< HEAD
 module_usb_driver(karma_driver);
+=======
+module_usb_stor_driver(karma_driver, karma_host_template, DRV_NAME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

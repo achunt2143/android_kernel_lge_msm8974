@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Checksum functions for Hexagon
  *
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -16,6 +21,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*  This was derived from arch/alpha/lib/checksum.c  */
@@ -60,18 +67,28 @@ static inline unsigned short from64to16(u64 x)
  * computes the checksum of the TCP/UDP pseudo-header
  * returns a 16-bit checksum, already complemented.
  */
+<<<<<<< HEAD
 __sum16 csum_tcpudp_magic(unsigned long saddr, unsigned long daddr,
 			  unsigned short len, unsigned short proto,
 			  __wsum sum)
+=======
+__sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
+			  __u32 len, __u8 proto, __wsum sum)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (__force __sum16)~from64to16(
 		(__force u64)saddr + (__force u64)daddr +
 		(__force u64)sum + ((len + proto) << 8));
 }
 
+<<<<<<< HEAD
 __wsum csum_tcpudp_nofold(unsigned long saddr, unsigned long daddr,
 			  unsigned short len, unsigned short proto,
 			  __wsum sum)
+=======
+__wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
+			  __u32 len, __u8 proto, __wsum sum)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 result;
 
@@ -191,6 +208,7 @@ unsigned int do_csum(const void *voidptr, int len)
 
 	return 0xFFFF & sum0;
 }
+<<<<<<< HEAD
 
 /*
  * copy from ds while checksumming, otherwise like csum_partial
@@ -201,3 +219,5 @@ csum_partial_copy_nocheck(const void *src, void *dst, int len, __wsum sum)
 	memcpy(dst, src, len);
 	return csum_partial(dst, len, sum);
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************/
 /*
  *           moxa.c  -- MOXA Intellio family multiport serial driver.
@@ -7,11 +11,14 @@
  *
  *      This code is loosely based on the Linux serial driver, written by
  *      Linus Torvalds, Theodore T'so and others.
+<<<<<<< HEAD
  *
  *      This program is free software; you can redistribute it and/or modify
  *      it under the terms of the GNU General Public License as published by
  *      the Free Software Foundation; either version 2 of the License, or
  *      (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -47,9 +54,315 @@
 #include <linux/ratelimit.h>
 
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 #include "moxa.h"
+=======
+#include <linux/uaccess.h>
+
+#define	MOXA			0x400
+#define MOXA_GET_IQUEUE		(MOXA + 1)	/* get input buffered count */
+#define MOXA_GET_OQUEUE		(MOXA + 2)	/* get output buffered count */
+#define MOXA_GETDATACOUNT       (MOXA + 23)
+#define MOXA_GET_IOQUEUE	(MOXA + 27)
+#define MOXA_FLUSH_QUEUE	(MOXA + 28)
+#define MOXA_GETMSTATUS         (MOXA + 65)
+
+/*
+ *    System Configuration
+ */
+
+#define Magic_code	0x404
+
+/*
+ *    for C218 BIOS initialization
+ */
+#define C218_ConfBase	0x800
+#define C218_status	(C218_ConfBase + 0)	/* BIOS running status    */
+#define C218_diag	(C218_ConfBase + 2)	/* diagnostic status      */
+#define C218_key	(C218_ConfBase + 4)	/* WORD (0x218 for C218) */
+#define C218DLoad_len	(C218_ConfBase + 6)	/* WORD           */
+#define C218check_sum	(C218_ConfBase + 8)	/* BYTE           */
+#define C218chksum_ok	(C218_ConfBase + 0x0a)	/* BYTE (1:ok)            */
+#define C218_TestRx	(C218_ConfBase + 0x10)	/* 8 bytes for 8 ports    */
+#define C218_TestTx	(C218_ConfBase + 0x18)	/* 8 bytes for 8 ports    */
+#define C218_RXerr	(C218_ConfBase + 0x20)	/* 8 bytes for 8 ports    */
+#define C218_ErrFlag	(C218_ConfBase + 0x28)	/* 8 bytes for 8 ports    */
+
+#define C218_LoadBuf	0x0F00
+#define C218_KeyCode	0x218
+#define CP204J_KeyCode	0x204
+
+/*
+ *    for C320 BIOS initialization
+ */
+#define C320_ConfBase	0x800
+#define C320_LoadBuf	0x0f00
+#define STS_init	0x05	/* for C320_status        */
+
+#define C320_status	C320_ConfBase + 0	/* BIOS running status    */
+#define C320_diag	C320_ConfBase + 2	/* diagnostic status      */
+#define C320_key	C320_ConfBase + 4	/* WORD (0320H for C320) */
+#define C320DLoad_len	C320_ConfBase + 6	/* WORD           */
+#define C320check_sum	C320_ConfBase + 8	/* WORD           */
+#define C320chksum_ok	C320_ConfBase + 0x0a	/* WORD (1:ok)            */
+#define C320bapi_len	C320_ConfBase + 0x0c	/* WORD           */
+#define C320UART_no	C320_ConfBase + 0x0e	/* WORD           */
+
+#define C320_KeyCode	0x320
+
+#define FixPage_addr	0x0000	/* starting addr of static page  */
+#define DynPage_addr	0x2000	/* starting addr of dynamic page */
+#define C218_start	0x3000	/* starting addr of C218 BIOS prg */
+#define Control_reg	0x1ff0	/* select page and reset control */
+#define HW_reset	0x80
+
+/*
+ *    Function Codes
+ */
+#define FC_CardReset	0x80
+#define FC_ChannelReset 1	/* C320 firmware not supported */
+#define FC_EnableCH	2
+#define FC_DisableCH	3
+#define FC_SetParam	4
+#define FC_SetMode	5
+#define FC_SetRate	6
+#define FC_LineControl	7
+#define FC_LineStatus	8
+#define FC_XmitControl	9
+#define FC_FlushQueue	10
+#define FC_SendBreak	11
+#define FC_StopBreak	12
+#define FC_LoopbackON	13
+#define FC_LoopbackOFF	14
+#define FC_ClrIrqTable	15
+#define FC_SendXon	16
+#define FC_SetTermIrq	17	/* C320 firmware not supported */
+#define FC_SetCntIrq	18	/* C320 firmware not supported */
+#define FC_SetBreakIrq	19
+#define FC_SetLineIrq	20
+#define FC_SetFlowCtl	21
+#define FC_GenIrq	22
+#define FC_InCD180	23
+#define FC_OutCD180	24
+#define FC_InUARTreg	23
+#define FC_OutUARTreg	24
+#define FC_SetXonXoff	25
+#define FC_OutCD180CCR	26
+#define FC_ExtIQueue	27
+#define FC_ExtOQueue	28
+#define FC_ClrLineIrq	29
+#define FC_HWFlowCtl	30
+#define FC_GetClockRate 35
+#define FC_SetBaud	36
+#define FC_SetDataMode  41
+#define FC_GetCCSR      43
+#define FC_GetDataError 45
+#define FC_RxControl	50
+#define FC_ImmSend	51
+#define FC_SetXonState	52
+#define FC_SetXoffState	53
+#define FC_SetRxFIFOTrig 54
+#define FC_SetTxFIFOCnt 55
+#define FC_UnixRate	56
+#define FC_UnixResetTimer 57
+
+#define	RxFIFOTrig1	0
+#define	RxFIFOTrig4	1
+#define	RxFIFOTrig8	2
+#define	RxFIFOTrig14	3
+
+/*
+ *    Dual-Ported RAM
+ */
+#define DRAM_global	0
+#define INT_data	(DRAM_global + 0)
+#define Config_base	(DRAM_global + 0x108)
+
+#define IRQindex	(INT_data + 0)
+#define IRQpending	(INT_data + 4)
+#define IRQtable	(INT_data + 8)
+
+/*
+ *    Interrupt Status
+ */
+#define IntrRx		0x01	/* receiver data O.K.             */
+#define IntrTx		0x02	/* transmit buffer empty  */
+#define IntrFunc	0x04	/* function complete              */
+#define IntrBreak	0x08	/* received break         */
+#define IntrLine	0x10	/* line status change
+				   for transmitter                */
+#define IntrIntr	0x20	/* received INTR code             */
+#define IntrQuit	0x40	/* received QUIT code             */
+#define IntrEOF		0x80	/* received EOF code              */
+
+#define IntrRxTrigger	0x100	/* rx data count reach trigger value */
+#define IntrTxTrigger	0x200	/* tx data count below trigger value */
+
+#define Magic_no	(Config_base + 0)
+#define Card_model_no	(Config_base + 2)
+#define Total_ports	(Config_base + 4)
+#define Module_cnt	(Config_base + 8)
+#define Module_no	(Config_base + 10)
+#define Timer_10ms	(Config_base + 14)
+#define Disable_IRQ	(Config_base + 20)
+#define TMS320_PORT1	(Config_base + 22)
+#define TMS320_PORT2	(Config_base + 24)
+#define TMS320_CLOCK	(Config_base + 26)
+
+/*
+ *    DATA BUFFER in DRAM
+ */
+#define Extern_table	0x400	/* Base address of the external table
+				   (24 words *    64) total 3K bytes
+				   (24 words * 128) total 6K bytes */
+#define Extern_size	0x60	/* 96 bytes                       */
+#define RXrptr		0x00	/* read pointer for RX buffer     */
+#define RXwptr		0x02	/* write pointer for RX buffer    */
+#define TXrptr		0x04	/* read pointer for TX buffer     */
+#define TXwptr		0x06	/* write pointer for TX buffer    */
+#define HostStat	0x08	/* IRQ flag and general flag      */
+#define FlagStat	0x0A
+#define FlowControl	0x0C	/* B7 B6 B5 B4 B3 B2 B1 B0              */
+				/*  x  x  x  x  |  |  |  |            */
+				/*              |  |  |  + CTS flow   */
+				/*              |  |  +--- RTS flow   */
+				/*              |  +------ TX Xon/Xoff */
+				/*              +--------- RX Xon/Xoff */
+#define Break_cnt	0x0E	/* received break count   */
+#define CD180TXirq	0x10	/* if non-0: enable TX irq        */
+#define RX_mask		0x12
+#define TX_mask		0x14
+#define Ofs_rxb		0x16
+#define Ofs_txb		0x18
+#define Page_rxb	0x1A
+#define Page_txb	0x1C
+#define EndPage_rxb	0x1E
+#define EndPage_txb	0x20
+#define Data_error	0x22
+#define RxTrigger	0x28
+#define TxTrigger	0x2a
+
+#define rRXwptr		0x34
+#define Low_water	0x36
+
+#define FuncCode	0x40
+#define FuncArg		0x42
+#define FuncArg1	0x44
+
+#define C218rx_size	0x2000	/* 8K bytes */
+#define C218tx_size	0x8000	/* 32K bytes */
+
+#define C218rx_mask	(C218rx_size - 1)
+#define C218tx_mask	(C218tx_size - 1)
+
+#define C320p8rx_size	0x2000
+#define C320p8tx_size	0x8000
+#define C320p8rx_mask	(C320p8rx_size - 1)
+#define C320p8tx_mask	(C320p8tx_size - 1)
+
+#define C320p16rx_size	0x2000
+#define C320p16tx_size	0x4000
+#define C320p16rx_mask	(C320p16rx_size - 1)
+#define C320p16tx_mask	(C320p16tx_size - 1)
+
+#define C320p24rx_size	0x2000
+#define C320p24tx_size	0x2000
+#define C320p24rx_mask	(C320p24rx_size - 1)
+#define C320p24tx_mask	(C320p24tx_size - 1)
+
+#define C320p32rx_size	0x1000
+#define C320p32tx_size	0x1000
+#define C320p32rx_mask	(C320p32rx_size - 1)
+#define C320p32tx_mask	(C320p32tx_size - 1)
+
+#define Page_size	0x2000U
+#define Page_mask	(Page_size - 1)
+#define C218rx_spage	3
+#define C218tx_spage	4
+#define C218rx_pageno	1
+#define C218tx_pageno	4
+#define C218buf_pageno	5
+
+#define C320p8rx_spage	3
+#define C320p8tx_spage	4
+#define C320p8rx_pgno	1
+#define C320p8tx_pgno	4
+#define C320p8buf_pgno	5
+
+#define C320p16rx_spage 3
+#define C320p16tx_spage 4
+#define C320p16rx_pgno	1
+#define C320p16tx_pgno	2
+#define C320p16buf_pgno 3
+
+#define C320p24rx_spage 3
+#define C320p24tx_spage 4
+#define C320p24rx_pgno	1
+#define C320p24tx_pgno	1
+#define C320p24buf_pgno 2
+
+#define C320p32rx_spage 3
+#define C320p32tx_ofs	C320p32rx_size
+#define C320p32tx_spage 3
+#define C320p32buf_pgno 1
+
+/*
+ *    Host Status
+ */
+#define WakeupRx	0x01
+#define WakeupTx	0x02
+#define WakeupBreak	0x08
+#define WakeupLine	0x10
+#define WakeupIntr	0x20
+#define WakeupQuit	0x40
+#define WakeupEOF	0x80	/* used in VTIME control */
+#define WakeupRxTrigger	0x100
+#define WakeupTxTrigger	0x200
+/*
+ *    Flag status
+ */
+#define Rx_over		0x01
+#define Xoff_state	0x02
+#define Tx_flowOff	0x04
+#define Tx_enable	0x08
+#define CTS_state	0x10
+#define DSR_state	0x20
+#define DCD_state	0x80
+/*
+ *    FlowControl
+ */
+#define CTS_FlowCtl	1
+#define RTS_FlowCtl	2
+#define Tx_FlowCtl	4
+#define Rx_FlowCtl	8
+#define IXM_IXANY	0x10
+
+#define LowWater	128
+
+#define DTR_ON		1
+#define RTS_ON		2
+#define CTS_ON		1
+#define DSR_ON		2
+#define DCD_ON		8
+
+/* mode definition */
+#define	MX_CS8		0x03
+#define	MX_CS7		0x02
+#define	MX_CS6		0x01
+#define	MX_CS5		0x00
+
+#define	MX_STOP1	0x00
+#define	MX_STOP15	0x04
+#define	MX_STOP2	0x08
+
+#define	MX_PARNONE	0x00
+#define	MX_PAREVEN	0x40
+#define	MX_PARODD	0xC0
+#define	MX_PARMARK	0xA0
+#define	MX_PARSPACE	0x20
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MOXA_VERSION		"6.0k"
 
@@ -88,7 +401,11 @@ static char *moxa_brdname[] =
 };
 
 #ifdef CONFIG_PCI
+<<<<<<< HEAD
 static struct pci_device_id moxa_pcibrds[] = {
+=======
+static const struct pci_device_id moxa_pcibrds[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_C218),
 		.driver_data = MOXA_BOARD_C218_PCI },
 	{ PCI_DEVICE(PCI_VENDOR_ID_MOXA, PCI_DEVICE_ID_MOXA_C320),
@@ -155,7 +472,10 @@ struct mon_str {
 #define LOWWAIT 	2
 #define EMPTYWAIT	3
 
+<<<<<<< HEAD
 #define SERIAL_DO_RESTART
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define WAKEUP_CHARS		256
 
@@ -169,6 +489,10 @@ static DEFINE_SPINLOCK(moxa_lock);
 static unsigned long baseaddr[MAX_BOARDS];
 static unsigned int type[MAX_BOARDS];
 static unsigned int numports[MAX_BOARDS];
+<<<<<<< HEAD
+=======
+static struct tty_port moxa_service_port;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("William Chen");
 MODULE_DESCRIPTION("MOXA Intellio Family Multiport Board Device Driver");
@@ -179,7 +503,11 @@ MODULE_FIRMWARE("c320tunx.cod");
 
 module_param_array(type, uint, NULL, 0);
 MODULE_PARM_DESC(type, "card type: C218=2, C320=4");
+<<<<<<< HEAD
 module_param_array(baseaddr, ulong, NULL, 0);
+=======
+module_param_hw_array(baseaddr, ulong, ioport, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(baseaddr, "base address");
 module_param_array(numports, uint, NULL, 0);
 MODULE_PARM_DESC(numports, "numports (ignored for C218)");
@@ -191,28 +519,45 @@ module_param(ttymajor, int, 0);
  */
 static int moxa_open(struct tty_struct *, struct file *);
 static void moxa_close(struct tty_struct *, struct file *);
+<<<<<<< HEAD
 static int moxa_write(struct tty_struct *, const unsigned char *, int);
 static int moxa_write_room(struct tty_struct *);
 static void moxa_flush_buffer(struct tty_struct *);
 static int moxa_chars_in_buffer(struct tty_struct *);
 static void moxa_set_termios(struct tty_struct *, struct ktermios *);
+=======
+static ssize_t moxa_write(struct tty_struct *, const u8 *, size_t);
+static unsigned int moxa_write_room(struct tty_struct *);
+static void moxa_flush_buffer(struct tty_struct *);
+static unsigned int moxa_chars_in_buffer(struct tty_struct *);
+static void moxa_set_termios(struct tty_struct *, const struct ktermios *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void moxa_stop(struct tty_struct *);
 static void moxa_start(struct tty_struct *);
 static void moxa_hangup(struct tty_struct *);
 static int moxa_tiocmget(struct tty_struct *tty);
 static int moxa_tiocmset(struct tty_struct *tty,
 			 unsigned int set, unsigned int clear);
+<<<<<<< HEAD
 static void moxa_poll(unsigned long);
 static void moxa_set_tty_param(struct tty_struct *, struct ktermios *);
 static void moxa_shutdown(struct tty_port *);
 static int moxa_carrier_raised(struct tty_port *);
 static void moxa_dtr_rts(struct tty_port *, int);
+=======
+static void moxa_poll(struct timer_list *);
+static void moxa_set_tty_param(struct tty_struct *, const struct ktermios *);
+static void moxa_shutdown(struct tty_port *);
+static bool moxa_carrier_raised(struct tty_port *);
+static void moxa_dtr_rts(struct tty_port *, bool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * moxa board interface functions:
  */
 static void MoxaPortEnable(struct moxa_port *);
 static void MoxaPortDisable(struct moxa_port *);
 static int MoxaPortSetTermio(struct moxa_port *, struct ktermios *, speed_t);
+<<<<<<< HEAD
 static int MoxaPortGetLineOut(struct moxa_port *, int *, int *);
 static void MoxaPortLineCtrl(struct moxa_port *, int, int);
 static void MoxaPortFlowCtrl(struct moxa_port *, int, int, int, int, int);
@@ -227,6 +572,22 @@ static void MoxaPortTxDisable(struct moxa_port *);
 static void MoxaPortTxEnable(struct moxa_port *);
 static int moxa_get_serial_info(struct moxa_port *, struct serial_struct __user *);
 static int moxa_set_serial_info(struct moxa_port *, struct serial_struct __user *);
+=======
+static int MoxaPortGetLineOut(struct moxa_port *, bool *, bool *);
+static void MoxaPortLineCtrl(struct moxa_port *, bool, bool);
+static void MoxaPortFlowCtrl(struct moxa_port *, int, int, int, int, int);
+static int MoxaPortLineStatus(struct moxa_port *);
+static void MoxaPortFlushData(struct moxa_port *, int);
+static ssize_t MoxaPortWriteData(struct tty_struct *, const u8 *, size_t);
+static int MoxaPortReadData(struct moxa_port *);
+static unsigned int MoxaPortTxQueue(struct moxa_port *);
+static int MoxaPortRxQueue(struct moxa_port *);
+static unsigned int MoxaPortTxFree(struct moxa_port *);
+static void MoxaPortTxDisable(struct moxa_port *);
+static void MoxaPortTxEnable(struct moxa_port *);
+static int moxa_get_serial_info(struct tty_struct *, struct serial_struct *);
+static int moxa_set_serial_info(struct tty_struct *, struct serial_struct *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void MoxaSetFifo(struct moxa_port *port, int enable);
 
 /*
@@ -367,10 +728,17 @@ static int moxa_ioctl(struct tty_struct *tty,
 					tmp.dcd = 1;
 
 				ttyp = tty_port_tty_get(&p->port);
+<<<<<<< HEAD
 				if (!ttyp || !ttyp->termios)
 					tmp.cflag = p->cflag;
 				else
 					tmp.cflag = ttyp->termios->c_cflag;
+=======
+				if (!ttyp)
+					tmp.cflag = p->cflag;
+				else
+					tmp.cflag = ttyp->termios.c_cflag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				tty_kref_put(ttyp);
 copy:
 				if (copy_to_user(argm, &tmp, sizeof(tmp)))
@@ -379,6 +747,7 @@ copy:
 		}
 		break;
 	}
+<<<<<<< HEAD
 	case TIOCGSERIAL:
 	        mutex_lock(&ch->port.mutex);
 		ret = moxa_get_serial_info(ch, argp);
@@ -389,6 +758,8 @@ copy:
 		ret = moxa_set_serial_info(ch, argp);
 		mutex_unlock(&ch->port.mutex);
 		break;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		ret = -ENOIOCTLCMD;
 	}
@@ -419,6 +790,11 @@ static const struct tty_operations moxa_ops = {
 	.break_ctl = moxa_break_ctl,
 	.tiocmget = moxa_tiocmget,
 	.tiocmset = moxa_tiocmset,
+<<<<<<< HEAD
+=======
+	.set_serial = moxa_set_serial_info,
+	.get_serial = moxa_get_serial_info,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const struct tty_port_operations moxa_port_ops = {
@@ -428,7 +804,11 @@ static const struct tty_port_operations moxa_port_ops = {
 };
 
 static struct tty_driver *moxaDriver;
+<<<<<<< HEAD
 static DEFINE_TIMER(moxaTimer, moxa_poll, 0, 0);
+=======
+static DEFINE_TIMER(moxaTimer, moxa_poll);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * HW init
@@ -834,7 +1214,11 @@ static int moxa_init_board(struct moxa_board_conf *brd, struct device *dev)
 	const struct firmware *fw;
 	const char *file;
 	struct moxa_port *p;
+<<<<<<< HEAD
 	unsigned int i;
+=======
+	unsigned int i, first_idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	brd->ports = kcalloc(MAX_PORTS_PER_BOARD, sizeof(*brd->ports),
@@ -887,8 +1271,20 @@ static int moxa_init_board(struct moxa_board_conf *brd, struct device *dev)
 		mod_timer(&moxaTimer, jiffies + HZ / 50);
 	spin_unlock_bh(&moxa_lock);
 
+<<<<<<< HEAD
 	return 0;
 err_free:
+=======
+	first_idx = (brd - moxa_boards) * MAX_PORTS_PER_BOARD;
+	for (i = 0; i < brd->numPorts; i++)
+		tty_port_register_device(&brd->ports[i].port, moxaDriver,
+				first_idx + i, dev);
+
+	return 0;
+err_free:
+	for (i = 0; i < MAX_PORTS_PER_BOARD; i++)
+		tty_port_destroy(&brd->ports[i].port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(brd->ports);
 err:
 	return ret;
@@ -896,7 +1292,11 @@ err:
 
 static void moxa_board_deinit(struct moxa_board_conf *brd)
 {
+<<<<<<< HEAD
 	unsigned int a, opened;
+=======
+	unsigned int a, opened, first_idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&moxa_openlock);
 	spin_lock_bh(&moxa_lock);
@@ -905,6 +1305,7 @@ static void moxa_board_deinit(struct moxa_board_conf *brd)
 
 	/* pci hot-un-plug support */
 	for (a = 0; a < brd->numPorts; a++)
+<<<<<<< HEAD
 		if (brd->ports[a].port.flags & ASYNC_INITIALIZED) {
 			struct tty_struct *tty = tty_port_tty_get(
 						&brd->ports[a].port);
@@ -917,6 +1318,18 @@ static void moxa_board_deinit(struct moxa_board_conf *brd)
 		opened = 0;
 		for (a = 0; a < brd->numPorts; a++)
 			if (brd->ports[a].port.flags & ASYNC_INITIALIZED)
+=======
+		if (tty_port_initialized(&brd->ports[a].port))
+			tty_port_tty_hangup(&brd->ports[a].port, false);
+
+	for (a = 0; a < MAX_PORTS_PER_BOARD; a++)
+		tty_port_destroy(&brd->ports[a].port);
+
+	while (1) {
+		opened = 0;
+		for (a = 0; a < brd->numPorts; a++)
+			if (tty_port_initialized(&brd->ports[a].port))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				opened++;
 		mutex_unlock(&moxa_openlock);
 		if (!opened)
@@ -925,13 +1338,24 @@ static void moxa_board_deinit(struct moxa_board_conf *brd)
 		mutex_lock(&moxa_openlock);
 	}
 
+<<<<<<< HEAD
+=======
+	first_idx = (brd - moxa_boards) * MAX_PORTS_PER_BOARD;
+	for (a = 0; a < brd->numPorts; a++)
+		tty_unregister_device(moxaDriver, first_idx + a);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	iounmap(brd->basemem);
 	brd->basemem = NULL;
 	kfree(brd->ports);
 }
 
 #ifdef CONFIG_PCI
+<<<<<<< HEAD
 static int __devinit moxa_pci_probe(struct pci_dev *pdev,
+=======
+static int moxa_pci_probe(struct pci_dev *pdev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const struct pci_device_id *ent)
 {
 	struct moxa_board_conf *board;
@@ -964,9 +1388,16 @@ static int __devinit moxa_pci_probe(struct pci_dev *pdev,
 		goto err;
 	}
 
+<<<<<<< HEAD
 	board->basemem = ioremap_nocache(pci_resource_start(pdev, 2), 0x4000);
 	if (board->basemem == NULL) {
 		dev_err(&pdev->dev, "can't remap io space 2\n");
+=======
+	board->basemem = ioremap(pci_resource_start(pdev, 2), 0x4000);
+	if (board->basemem == NULL) {
+		dev_err(&pdev->dev, "can't remap io space 2\n");
+		retval = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_reg;
 	}
 
@@ -1005,7 +1436,11 @@ err:
 	return retval;
 }
 
+<<<<<<< HEAD
 static void __devexit moxa_pci_remove(struct pci_dev *pdev)
+=======
+static void moxa_pci_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct moxa_board_conf *brd = pci_get_drvdata(pdev);
 
@@ -1018,7 +1453,11 @@ static struct pci_driver moxa_pci_driver = {
 	.name = "moxa",
 	.id_table = moxa_pcibrds,
 	.probe = moxa_pci_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(moxa_pci_remove)
+=======
+	.remove = moxa_pci_remove
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 #endif /* CONFIG_PCI */
 
@@ -1031,9 +1470,20 @@ static int __init moxa_init(void)
 
 	printk(KERN_INFO "MOXA Intellio family driver version %s\n",
 			MOXA_VERSION);
+<<<<<<< HEAD
 	moxaDriver = alloc_tty_driver(MAX_PORTS + 1);
 	if (!moxaDriver)
 		return -ENOMEM;
+=======
+
+	tty_port_init(&moxa_service_port);
+
+	moxaDriver = tty_alloc_driver(MAX_PORTS + 1,
+			TTY_DRIVER_REAL_RAW |
+			TTY_DRIVER_DYNAMIC_DEV);
+	if (IS_ERR(moxaDriver))
+		return PTR_ERR(moxaDriver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	moxaDriver->name = "ttyMX";
 	moxaDriver->major = ttymajor;
@@ -1044,12 +1494,22 @@ static int __init moxa_init(void)
 	moxaDriver->init_termios.c_cflag = B9600 | CS8 | CREAD | CLOCAL | HUPCL;
 	moxaDriver->init_termios.c_ispeed = 9600;
 	moxaDriver->init_termios.c_ospeed = 9600;
+<<<<<<< HEAD
 	moxaDriver->flags = TTY_DRIVER_REAL_RAW;
 	tty_set_operations(moxaDriver, &moxa_ops);
 
 	if (tty_register_driver(moxaDriver)) {
 		printk(KERN_ERR "can't register MOXA Smartio tty driver!\n");
 		put_tty_driver(moxaDriver);
+=======
+	tty_set_operations(moxaDriver, &moxa_ops);
+	/* Having one more port only for ioctls is ugly */
+	tty_port_link_device(&moxa_service_port, moxaDriver, MAX_PORTS);
+
+	if (tty_register_driver(moxaDriver)) {
+		printk(KERN_ERR "can't register MOXA Smartio tty driver!\n");
+		tty_driver_kref_put(moxaDriver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -1067,7 +1527,11 @@ static int __init moxa_init(void)
 			brd->numPorts = type[i] == MOXA_BOARD_C218_ISA ? 8 :
 					numports[i];
 			brd->busType = MOXA_BUS_TYPE_ISA;
+<<<<<<< HEAD
 			brd->basemem = ioremap_nocache(baseaddr[i], 0x4000);
+=======
+			brd->basemem = ioremap(baseaddr[i], 0x4000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!brd->basemem) {
 				printk(KERN_ERR "MOXA: can't remap %lx\n",
 						baseaddr[i]);
@@ -1079,7 +1543,11 @@ static int __init moxa_init(void)
 				continue;
 			}
 
+<<<<<<< HEAD
 			printk(KERN_INFO "MOXA isa board found at 0x%.8lu and "
+=======
+			printk(KERN_INFO "MOXA isa board found at 0x%.8lx and "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					"ready (%u ports, firmware loaded)\n",
 					baseaddr[i], brd->numPorts);
 
@@ -1114,10 +1582,15 @@ static void __exit moxa_exit(void)
 
 	del_timer_sync(&moxaTimer);
 
+<<<<<<< HEAD
 	if (tty_unregister_driver(moxaDriver))
 		printk(KERN_ERR "Couldn't unregister MOXA Intellio family "
 				"serial driver\n");
 	put_tty_driver(moxaDriver);
+=======
+	tty_unregister_driver(moxaDriver);
+	tty_driver_kref_put(moxaDriver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(moxa_init);
@@ -1130,7 +1603,11 @@ static void moxa_shutdown(struct tty_port *port)
 	MoxaPortFlushData(ch, 2);
 }
 
+<<<<<<< HEAD
 static int moxa_carrier_raised(struct tty_port *port)
+=======
+static bool moxa_carrier_raised(struct tty_port *port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct moxa_port *ch = container_of(port, struct moxa_port, port);
 	int dcd;
@@ -1141,10 +1618,17 @@ static int moxa_carrier_raised(struct tty_port *port)
 	return dcd;
 }
 
+<<<<<<< HEAD
 static void moxa_dtr_rts(struct tty_port *port, int onoff)
 {
 	struct moxa_port *ch = container_of(port, struct moxa_port, port);
 	MoxaPortLineCtrl(ch, onoff, onoff);
+=======
+static void moxa_dtr_rts(struct tty_port *port, bool active)
+{
+	struct moxa_port *ch = container_of(port, struct moxa_port, port);
+	MoxaPortLineCtrl(ch, active, active);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1176,6 +1660,7 @@ static int moxa_open(struct tty_struct *tty, struct file *filp)
 	tty->driver_data = ch;
 	tty_port_tty_set(&ch->port, tty);
 	mutex_lock(&ch->port.mutex);
+<<<<<<< HEAD
 	if (!(ch->port.flags & ASYNC_INITIALIZED)) {
 		ch->statusflags = 0;
 		moxa_set_tty_param(tty, tty->termios);
@@ -1183,6 +1668,15 @@ static int moxa_open(struct tty_struct *tty, struct file *filp)
 		MoxaPortEnable(ch);
 		MoxaSetFifo(ch, ch->type == PORT_16550A);
 		ch->port.flags |= ASYNC_INITIALIZED;
+=======
+	if (!tty_port_initialized(&ch->port)) {
+		ch->statusflags = 0;
+		moxa_set_tty_param(tty, &tty->termios);
+		MoxaPortLineCtrl(ch, true, true);
+		MoxaPortEnable(ch);
+		MoxaSetFifo(ch, ch->type == PORT_16550A);
+		tty_port_set_initialized(&ch->port, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&ch->port.mutex);
 	mutex_unlock(&moxa_openlock);
@@ -1193,12 +1687,20 @@ static int moxa_open(struct tty_struct *tty, struct file *filp)
 static void moxa_close(struct tty_struct *tty, struct file *filp)
 {
 	struct moxa_port *ch = tty->driver_data;
+<<<<<<< HEAD
 	ch->cflag = tty->termios->c_cflag;
 	tty_port_close(&ch->port, tty, filp);
 }
 
 static int moxa_write(struct tty_struct *tty,
 		      const unsigned char *buf, int count)
+=======
+	ch->cflag = tty->termios.c_cflag;
+	tty_port_close(&ch->port, tty, filp);
+}
+
+static ssize_t moxa_write(struct tty_struct *tty, const u8 *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct moxa_port *ch = tty->driver_data;
 	unsigned long flags;
@@ -1215,11 +1717,19 @@ static int moxa_write(struct tty_struct *tty,
 	return len;
 }
 
+<<<<<<< HEAD
 static int moxa_write_room(struct tty_struct *tty)
 {
 	struct moxa_port *ch;
 
 	if (tty->stopped)
+=======
+static unsigned int moxa_write_room(struct tty_struct *tty)
+{
+	struct moxa_port *ch;
+
+	if (tty->flow.stopped)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	ch = tty->driver_data;
 	if (ch == NULL)
@@ -1237,10 +1747,17 @@ static void moxa_flush_buffer(struct tty_struct *tty)
 	tty_wakeup(tty);
 }
 
+<<<<<<< HEAD
 static int moxa_chars_in_buffer(struct tty_struct *tty)
 {
 	struct moxa_port *ch = tty->driver_data;
 	int chars;
+=======
+static unsigned int moxa_chars_in_buffer(struct tty_struct *tty)
+{
+	struct moxa_port *ch = tty->driver_data;
+	unsigned int chars;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chars = MoxaPortTxQueue(ch);
 	if (chars)
@@ -1255,6 +1772,7 @@ static int moxa_chars_in_buffer(struct tty_struct *tty)
 static int moxa_tiocmget(struct tty_struct *tty)
 {
 	struct moxa_port *ch = tty->driver_data;
+<<<<<<< HEAD
 	int flag = 0, dtr, rts;
 
 	MoxaPortGetLineOut(ch, &dtr, &rts);
@@ -1268,6 +1786,23 @@ static int moxa_tiocmget(struct tty_struct *tty)
 	if (dtr & 2)
 		flag |= TIOCM_DSR;
 	if (dtr & 4)
+=======
+	bool dtr_active, rts_active;
+	int flag = 0;
+	int status;
+
+	MoxaPortGetLineOut(ch, &dtr_active, &rts_active);
+	if (dtr_active)
+		flag |= TIOCM_DTR;
+	if (rts_active)
+		flag |= TIOCM_RTS;
+	status = MoxaPortLineStatus(ch);
+	if (status & 1)
+		flag |= TIOCM_CTS;
+	if (status & 2)
+		flag |= TIOCM_DSR;
+	if (status & 4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flag |= TIOCM_CD;
 	return flag;
 }
@@ -1275,8 +1810,13 @@ static int moxa_tiocmget(struct tty_struct *tty)
 static int moxa_tiocmset(struct tty_struct *tty,
 			 unsigned int set, unsigned int clear)
 {
+<<<<<<< HEAD
 	struct moxa_port *ch;
 	int dtr, rts;
+=======
+	bool dtr_active, rts_active;
+	struct moxa_port *ch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&moxa_openlock);
 	ch = tty->driver_data;
@@ -1285,6 +1825,7 @@ static int moxa_tiocmset(struct tty_struct *tty,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	MoxaPortGetLineOut(ch, &dtr, &rts);
 	if (set & TIOCM_RTS)
 		rts = 1;
@@ -1295,12 +1836,28 @@ static int moxa_tiocmset(struct tty_struct *tty,
 	if (clear & TIOCM_DTR)
 		dtr = 0;
 	MoxaPortLineCtrl(ch, dtr, rts);
+=======
+	MoxaPortGetLineOut(ch, &dtr_active, &rts_active);
+	if (set & TIOCM_RTS)
+		rts_active = true;
+	if (set & TIOCM_DTR)
+		dtr_active = true;
+	if (clear & TIOCM_RTS)
+		rts_active = false;
+	if (clear & TIOCM_DTR)
+		dtr_active = false;
+	MoxaPortLineCtrl(ch, dtr_active, rts_active);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&moxa_openlock);
 	return 0;
 }
 
 static void moxa_set_termios(struct tty_struct *tty,
+<<<<<<< HEAD
 		struct ktermios *old_termios)
+=======
+		             const struct ktermios *old_termios)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct moxa_port *ch = tty->driver_data;
 
@@ -1344,7 +1901,10 @@ static void moxa_hangup(struct tty_struct *tty)
 
 static void moxa_new_dcdstate(struct moxa_port *p, u8 dcd)
 {
+<<<<<<< HEAD
 	struct tty_struct *tty;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	dcd = !!dcd;
 
@@ -1352,10 +1912,15 @@ static void moxa_new_dcdstate(struct moxa_port *p, u8 dcd)
 	if (dcd != p->DCDState) {
         	p->DCDState = dcd;
         	spin_unlock_irqrestore(&p->port.lock, flags);
+<<<<<<< HEAD
 		tty = tty_port_tty_get(&p->port);
 		if (tty && C_CLOCAL(tty) && !dcd)
 			tty_hangup(tty);
 		tty_kref_put(tty);
+=======
+		if (!dcd)
+			tty_port_tty_hangup(&p->port, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	else
 		spin_unlock_irqrestore(&p->port.lock, flags);
@@ -1365,8 +1930,13 @@ static int moxa_poll_port(struct moxa_port *p, unsigned int handle,
 		u16 __iomem *ip)
 {
 	struct tty_struct *tty = tty_port_tty_get(&p->port);
+<<<<<<< HEAD
 	void __iomem *ofsAddr;
 	unsigned int inited = p->port.flags & ASYNC_INITIALIZED;
+=======
+	bool inited = tty_port_initialized(&p->port);
+	void __iomem *ofsAddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 intr;
 
 	if (tty) {
@@ -1375,16 +1945,27 @@ static int moxa_poll_port(struct moxa_port *p, unsigned int handle,
 			clear_bit(EMPTYWAIT, &p->statusflags);
 			tty_wakeup(tty);
 		}
+<<<<<<< HEAD
 		if (test_bit(LOWWAIT, &p->statusflags) && !tty->stopped &&
+=======
+		if (test_bit(LOWWAIT, &p->statusflags) && !tty->flow.stopped &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				MoxaPortTxQueue(p) <= WAKEUP_CHARS) {
 			clear_bit(LOWWAIT, &p->statusflags);
 			tty_wakeup(tty);
 		}
 
+<<<<<<< HEAD
 		if (inited && !test_bit(TTY_THROTTLED, &tty->flags) &&
 				MoxaPortRxQueue(p) > 0) { /* RX */
 			MoxaPortReadData(p);
 			tty_schedule_flip(tty);
+=======
+		if (inited && !tty_throttled(tty) &&
+				MoxaPortRxQueue(p) > 0) { /* RX */
+			MoxaPortReadData(p);
+			tty_flip_buffer_push(&p->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else {
 		clear_bit(EMPTYWAIT, &p->statusflags);
@@ -1408,8 +1989,13 @@ static int moxa_poll_port(struct moxa_port *p, unsigned int handle,
 		goto put;
 
 	if (tty && (intr & IntrBreak) && !I_IGNBRK(tty)) { /* BREAK */
+<<<<<<< HEAD
 		tty_insert_flip_char(tty, 0, TTY_BREAK);
 		tty_schedule_flip(tty);
+=======
+		tty_insert_flip_char(&p->port, 0, TTY_BREAK);
+		tty_flip_buffer_push(&p->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (intr & IntrLine)
@@ -1420,7 +2006,11 @@ put:
 	return 0;
 }
 
+<<<<<<< HEAD
 static void moxa_poll(unsigned long ignored)
+=======
+static void moxa_poll(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct moxa_board_conf *brd;
 	u16 __iomem *ip;
@@ -1462,9 +2052,16 @@ static void moxa_poll(unsigned long ignored)
 
 /******************************************************************************/
 
+<<<<<<< HEAD
 static void moxa_set_tty_param(struct tty_struct *tty, struct ktermios *old_termios)
 {
 	register struct ktermios *ts = tty->termios;
+=======
+static void moxa_set_tty_param(struct tty_struct *tty,
+			       const struct ktermios *old_termios)
+{
+	register struct ktermios *ts = &tty->termios;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct moxa_port *ch = tty->driver_data;
 	int rts, cts, txflow, rxflow, xany, baud;
 
@@ -1478,8 +2075,11 @@ static void moxa_set_tty_param(struct tty_struct *tty, struct ktermios *old_term
 	if (ts->c_iflag & IXANY)
 		xany = 1;
 
+<<<<<<< HEAD
 	/* Clear the features we don't support */
 	ts->c_cflag &= ~CMSPAR;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MoxaPortFlowCtrl(ch, rts, cts, txflow, rxflow, xany);
 	baud = MoxaPortSetTermio(ch, ts, tty_get_baud_rate(tty));
 	if (baud == -1)
@@ -1579,12 +2179,21 @@ static void MoxaPortFlushData(struct moxa_port *port, int mode)
  *
  *      Function 13:    Get the DTR/RTS state of this port.
  *      Syntax:
+<<<<<<< HEAD
  *      int  MoxaPortGetLineOut(int port, int *dtrState, int *rtsState);
  *           int port           : port number (0 - 127)
  *           int * dtrState     : pointer to INT to receive the current DTR
  *                                state. (if NULL, this function will not
  *                                write to this address)
  *           int * rtsState     : pointer to INT to receive the current RTS
+=======
+ *      int  MoxaPortGetLineOut(int port, bool *dtrState, bool *rtsState);
+ *           int port           : port number (0 - 127)
+ *           bool * dtr_active  : pointer to bool to receive the current DTR
+ *                                state. (if NULL, this function will not
+ *                                write to this address)
+ *           bool * rts_active  : pointer to bool to receive the current RTS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                state. (if NULL, this function will not
  *                                write to this address)
  *
@@ -1594,10 +2203,17 @@ static void MoxaPortFlushData(struct moxa_port *port, int mode)
  *
  *      Function 14:    Setting the DTR/RTS output state of this port.
  *      Syntax:
+<<<<<<< HEAD
  *      void MoxaPortLineCtrl(int port, int dtrState, int rtsState);
  *           int port           : port number (0 - 127)
  *           int dtrState       : DTR output state (0: off, 1: on)
  *           int rtsState       : RTS output state (0: off, 1: on)
+=======
+ *      void MoxaPortLineCtrl(int port, bool dtrState, bool rtsState);
+ *           int port           : port number (0 - 127)
+ *           bool dtr_active    : DTR output state
+ *           bool rts_active    : RTS output state
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *
  *      Function 15:    Setting the flow control of this port.
@@ -1634,10 +2250,17 @@ static void MoxaPortFlushData(struct moxa_port *port, int mode)
  *
  *      Function 20:    Write data.
  *      Syntax:
+<<<<<<< HEAD
  *      int  MoxaPortWriteData(int port, unsigned char * buffer, int length);
  *           int port           : port number (0 - 127)
  *           unsigned char * buffer     : pointer to write data buffer.
  *           int length         : write data length
+=======
+ *      ssize_t  MoxaPortWriteData(int port, u8 *buffer, size_t length);
+ *           int port           : port number (0 - 127)
+ *           u8 *buffer         : pointer to write data buffer.
+ *           size_t length      : write data length
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *           return:    0 - length      : real write data length
  *
@@ -1772,10 +2395,24 @@ static int MoxaPortSetTermio(struct moxa_port *port, struct ktermios *termio,
 		mode |= MX_STOP1;
 
 	if (termio->c_cflag & PARENB) {
+<<<<<<< HEAD
 		if (termio->c_cflag & PARODD)
 			mode |= MX_PARODD;
 		else
 			mode |= MX_PAREVEN;
+=======
+		if (termio->c_cflag & PARODD) {
+			if (termio->c_cflag & CMSPAR)
+				mode |= MX_PARMARK;
+			else
+				mode |= MX_PARODD;
+		} else {
+			if (termio->c_cflag & CMSPAR)
+				mode |= MX_PARSPACE;
+			else
+				mode |= MX_PAREVEN;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		mode |= MX_PARNONE;
 
@@ -1798,6 +2435,7 @@ static int MoxaPortSetTermio(struct moxa_port *port, struct ktermios *termio,
 	return baud;
 }
 
+<<<<<<< HEAD
 static int MoxaPortGetLineOut(struct moxa_port *port, int *dtrState,
 		int *rtsState)
 {
@@ -1805,10 +2443,20 @@ static int MoxaPortGetLineOut(struct moxa_port *port, int *dtrState,
 		*dtrState = !!(port->lineCtrl & DTR_ON);
 	if (rtsState)
 		*rtsState = !!(port->lineCtrl & RTS_ON);
+=======
+static int MoxaPortGetLineOut(struct moxa_port *port, bool *dtr_active,
+		bool *rts_active)
+{
+	if (dtr_active)
+		*dtr_active = port->lineCtrl & DTR_ON;
+	if (rts_active)
+		*rts_active = port->lineCtrl & RTS_ON;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void MoxaPortLineCtrl(struct moxa_port *port, int dtr, int rts)
 {
 	u8 mode = 0;
@@ -1816,6 +2464,15 @@ static void MoxaPortLineCtrl(struct moxa_port *port, int dtr, int rts)
 	if (dtr)
 		mode |= DTR_ON;
 	if (rts)
+=======
+static void MoxaPortLineCtrl(struct moxa_port *port, bool dtr_active, bool rts_active)
+{
+	u8 mode = 0;
+
+	if (dtr_active)
+		mode |= DTR_ON;
+	if (rts_active)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mode |= RTS_ON;
 	port->lineCtrl = mode;
 	moxafunc(port->tableAddr, FC_LineControl, mode);
@@ -1857,12 +2514,21 @@ static int MoxaPortLineStatus(struct moxa_port *port)
 	return val;
 }
 
+<<<<<<< HEAD
 static int MoxaPortWriteData(struct tty_struct *tty,
 		const unsigned char *buffer, int len)
 {
 	struct moxa_port *port = tty->driver_data;
 	void __iomem *baseAddr, *ofsAddr, *ofs;
 	unsigned int c, total;
+=======
+static ssize_t MoxaPortWriteData(struct tty_struct *tty, const u8 *buffer,
+				 size_t len)
+{
+	struct moxa_port *port = tty->driver_data;
+	void __iomem *baseAddr, *ofsAddr, *ofs;
+	size_t c, total;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 head, tail, tx_mask, spage, epage;
 	u16 pageno, pageofs, bufhead;
 
@@ -1919,8 +2585,13 @@ static int MoxaPortWriteData(struct tty_struct *tty,
 static int MoxaPortReadData(struct moxa_port *port)
 {
 	struct tty_struct *tty = port->port.tty;
+<<<<<<< HEAD
 	unsigned char *dst;
 	void __iomem *baseAddr, *ofsAddr, *ofs;
+=======
+	void __iomem *baseAddr, *ofsAddr, *ofs;
+	u8 *dst;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int count, len, total;
 	u16 tail, rx_mask, spage, epage;
 	u16 pageno, pageofs, bufhead, head;
@@ -1945,7 +2616,11 @@ static int MoxaPortReadData(struct moxa_port *port)
 			ofs = baseAddr + DynPage_addr + bufhead + head;
 			len = (tail >= head) ? (tail - head) :
 					(rx_mask + 1 - head);
+<<<<<<< HEAD
 			len = tty_prepare_flip_string(tty, &dst,
+=======
+			len = tty_prepare_flip_string(&port->port, &dst,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					min(len, count));
 			memcpy_fromio(dst, ofs, len);
 			head = (head + len) & rx_mask;
@@ -1957,7 +2632,11 @@ static int MoxaPortReadData(struct moxa_port *port)
 		while (count > 0) {
 			writew(pageno, baseAddr + Control_reg);
 			ofs = baseAddr + DynPage_addr + pageofs;
+<<<<<<< HEAD
 			len = tty_prepare_flip_string(tty, &dst,
+=======
+			len = tty_prepare_flip_string(&port->port, &dst,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					min(Page_size - pageofs, count));
 			memcpy_fromio(dst, ofs, len);
 
@@ -1977,7 +2656,11 @@ static int MoxaPortReadData(struct moxa_port *port)
 }
 
 
+<<<<<<< HEAD
 static int MoxaPortTxQueue(struct moxa_port *port)
+=======
+static unsigned int MoxaPortTxQueue(struct moxa_port *port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *ofsAddr = port->tableAddr;
 	u16 rptr, wptr, mask;
@@ -1988,7 +2671,11 @@ static int MoxaPortTxQueue(struct moxa_port *port)
 	return (wptr - rptr) & mask;
 }
 
+<<<<<<< HEAD
 static int MoxaPortTxFree(struct moxa_port *port)
+=======
+static unsigned int MoxaPortTxFree(struct moxa_port *port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	void __iomem *ofsAddr = port->tableAddr;
 	u16 rptr, wptr, mask;
@@ -2020,6 +2707,7 @@ static void MoxaPortTxEnable(struct moxa_port *port)
 	moxafunc(port->tableAddr, FC_SetXonState, Magic_code);
 }
 
+<<<<<<< HEAD
 static int moxa_get_serial_info(struct moxa_port *info,
 		struct serial_struct __user *retinfo)
 {
@@ -2060,6 +2748,58 @@ static int moxa_set_serial_info(struct moxa_port *info,
 	MoxaSetFifo(info, new_serial.type == PORT_16550A);
 
 	info->type = new_serial.type;
+=======
+static int moxa_get_serial_info(struct tty_struct *tty,
+		struct serial_struct *ss)
+{
+	struct moxa_port *info = tty->driver_data;
+
+	if (tty->index == MAX_PORTS)
+		return -EINVAL;
+	if (!info)
+		return -ENODEV;
+	mutex_lock(&info->port.mutex);
+	ss->type = info->type;
+	ss->line = info->port.tty->index;
+	ss->flags = info->port.flags;
+	ss->baud_base = 921600;
+	ss->close_delay = jiffies_to_msecs(info->port.close_delay) / 10;
+	mutex_unlock(&info->port.mutex);
+	return 0;
+}
+
+
+static int moxa_set_serial_info(struct tty_struct *tty,
+		struct serial_struct *ss)
+{
+	struct moxa_port *info = tty->driver_data;
+	unsigned int close_delay;
+
+	if (tty->index == MAX_PORTS)
+		return -EINVAL;
+	if (!info)
+		return -ENODEV;
+
+	close_delay = msecs_to_jiffies(ss->close_delay * 10);
+
+	mutex_lock(&info->port.mutex);
+	if (!capable(CAP_SYS_ADMIN)) {
+		if (close_delay != info->port.close_delay ||
+		    ss->type != info->type ||
+		    ((ss->flags & ~ASYNC_USR_MASK) !=
+		     (info->port.flags & ~ASYNC_USR_MASK))) {
+			mutex_unlock(&info->port.mutex);
+			return -EPERM;
+		}
+	} else {
+		info->port.close_delay = close_delay;
+
+		MoxaSetFifo(info, ss->type == PORT_16550A);
+
+		info->type = ss->type;
+	}
+	mutex_unlock(&info->port.mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

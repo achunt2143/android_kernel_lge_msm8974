@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * timberdale.h timberdale FPGA MFD driver defines
  * Copyright (c) 2009 Intel Corporation
@@ -14,6 +15,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * timberdale.h timberdale FPGA MFD driver defines
+ * Copyright (c) 2009 Intel Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* Supports:

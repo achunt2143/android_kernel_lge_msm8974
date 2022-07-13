@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Written for linux by Johan Myreen as a translation from
  * the assembly version by Linus (with diacriticals added)
@@ -25,6 +29,7 @@
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/consolemap.h>
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/sched.h>
 #include <linux/tty.h>
@@ -47,10 +52,36 @@
 
 extern void ctrl_alt_del(void);
 
+=======
+#include <linux/init.h>
+#include <linux/input.h>
+#include <linux/jiffies.h>
+#include <linux/kbd_diacr.h>
+#include <linux/kbd_kern.h>
+#include <linux/leds.h>
+#include <linux/mm.h>
+#include <linux/module.h>
+#include <linux/nospec.h>
+#include <linux/notifier.h>
+#include <linux/reboot.h>
+#include <linux/sched/debug.h>
+#include <linux/sched/signal.h>
+#include <linux/slab.h>
+#include <linux/spinlock.h>
+#include <linux/string.h>
+#include <linux/tty_flip.h>
+#include <linux/tty.h>
+#include <linux/uaccess.h>
+#include <linux/vt_kern.h>
+
+#include <asm/irq_regs.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Exported functions/variables
  */
 
+<<<<<<< HEAD
 #define KBD_DEFMODE ((1 << VC_REPEAT) | (1 << VC_META))
 
 /*
@@ -64,6 +95,17 @@ extern void ctrl_alt_del(void);
 #define KBD_DEFLEDS (1 << VC_NUMLOCK)
 #else
 #define KBD_DEFLEDS 0
+=======
+#define KBD_DEFMODE (BIT(VC_REPEAT) | BIT(VC_META))
+
+#if defined(CONFIG_X86) || defined(CONFIG_PARISC)
+#include <asm/kbdleds.h>
+#else
+static inline int kbd_defleds(void)
+{
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define KBD_DEFLOCK 0
@@ -113,14 +155,34 @@ static struct kbd_struct kbd_table[MAX_NR_CONSOLES];
 static struct kbd_struct *kbd = kbd_table;
 
 /* maximum values each key_handler can handle */
+<<<<<<< HEAD
 static const int max_vals[] = {
 	255, ARRAY_SIZE(func_table) - 1, ARRAY_SIZE(fn_handler) - 1, NR_PAD - 1,
 	NR_DEAD - 1, 255, 3, NR_SHIFT - 1, 255, NR_ASCII - 1, NR_LOCK - 1,
 	255, NR_LOCK - 1, 255, NR_BRL - 1
+=======
+static const unsigned char max_vals[] = {
+	[ KT_LATIN	] = 255,
+	[ KT_FN		] = ARRAY_SIZE(func_table) - 1,
+	[ KT_SPEC	] = ARRAY_SIZE(fn_handler) - 1,
+	[ KT_PAD	] = NR_PAD - 1,
+	[ KT_DEAD	] = NR_DEAD - 1,
+	[ KT_CONS	] = 255,
+	[ KT_CUR	] = 3,
+	[ KT_SHIFT	] = NR_SHIFT - 1,
+	[ KT_META	] = 255,
+	[ KT_ASCII	] = NR_ASCII - 1,
+	[ KT_LOCK	] = NR_LOCK - 1,
+	[ KT_LETTER	] = 255,
+	[ KT_SLOCK	] = NR_LOCK - 1,
+	[ KT_DEAD2	] = 255,
+	[ KT_BRL	] = NR_BRL - 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const int NR_TYPES = ARRAY_SIZE(max_vals);
 
+<<<<<<< HEAD
 static struct input_handler kbd_handler;
 static DEFINE_SPINLOCK(kbd_event_lock);
 static unsigned long key_down[BITS_TO_LONGS(KEY_CNT)];	/* keyboard key bitmap */
@@ -140,6 +202,31 @@ static struct ledptr {
 	unsigned int mask;
 	unsigned char valid:1;
 } ledptrs[3];
+=======
+static void kbd_bh(struct tasklet_struct *unused);
+static DECLARE_TASKLET_DISABLED(keyboard_tasklet, kbd_bh);
+
+static struct input_handler kbd_handler;
+static DEFINE_SPINLOCK(kbd_event_lock);
+static DEFINE_SPINLOCK(led_lock);
+static DEFINE_SPINLOCK(func_buf_lock); /* guard 'func_buf'  and friends */
+static DECLARE_BITMAP(key_down, KEY_CNT);	/* keyboard key bitmap */
+static unsigned char shift_down[NR_SHIFT];		/* shift state counters.. */
+static bool dead_key_next;
+
+/* Handles a number being assembled on the number pad */
+static bool npadch_active;
+static unsigned int npadch_value;
+
+static unsigned int diacr;
+static bool rep;			/* flag telling character repeat */
+
+static int shift_state = 0;
+
+static unsigned int ledstate = -1U;			/* undefined */
+static unsigned char ledioctl;
+static bool vt_switch;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Notifier list for console keyboard events
@@ -250,14 +337,22 @@ static int kd_sound_helper(struct input_handle *handle, void *data)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void kd_nosound(unsigned long ignored)
+=======
+static void kd_nosound(struct timer_list *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static unsigned int zero;
 
 	input_handler_for_each_handle(&kbd_handler, &zero, kd_sound_helper);
 }
 
+<<<<<<< HEAD
 static DEFINE_TIMER(kd_mksound_timer, kd_nosound, 0, 0);
+=======
+static DEFINE_TIMER(kd_mksound_timer, kd_nosound);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void kd_mksound(unsigned int hz, unsigned int ticks)
 {
@@ -277,6 +372,7 @@ EXPORT_SYMBOL(kd_mksound);
 static int kbd_rate_helper(struct input_handle *handle, void *data)
 {
 	struct input_dev *dev = handle->dev;
+<<<<<<< HEAD
 	struct kbd_repeat *rep = data;
 
 	if (test_bit(EV_REP, dev->evbit)) {
@@ -290,17 +386,41 @@ static int kbd_rate_helper(struct input_handle *handle, void *data)
 
 		rep[1].delay = dev->rep[REP_DELAY];
 		rep[1].period = dev->rep[REP_PERIOD];
+=======
+	struct kbd_repeat *rpt = data;
+
+	if (test_bit(EV_REP, dev->evbit)) {
+
+		if (rpt[0].delay > 0)
+			input_inject_event(handle,
+					   EV_REP, REP_DELAY, rpt[0].delay);
+		if (rpt[0].period > 0)
+			input_inject_event(handle,
+					   EV_REP, REP_PERIOD, rpt[0].period);
+
+		rpt[1].delay = dev->rep[REP_DELAY];
+		rpt[1].period = dev->rep[REP_PERIOD];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 int kbd_rate(struct kbd_repeat *rep)
 {
 	struct kbd_repeat data[2] = { *rep };
 
 	input_handler_for_each_handle(&kbd_handler, data, kbd_rate_helper);
 	*rep = data[1];	/* Copy currently used settings */
+=======
+int kbd_rate(struct kbd_repeat *rpt)
+{
+	struct kbd_repeat data[2] = { *rpt };
+
+	input_handler_for_each_handle(&kbd_handler, data, kbd_rate_helper);
+	*rpt = data[1];	/* Copy currently used settings */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -310,6 +430,7 @@ int kbd_rate(struct kbd_repeat *rep)
  */
 static void put_queue(struct vc_data *vc, int ch)
 {
+<<<<<<< HEAD
 	struct tty_struct *tty = vc->port.tty;
 
 	if (tty) {
@@ -330,6 +451,16 @@ static void puts_queue(struct vc_data *vc, char *cp)
 		cp++;
 	}
 	con_schedule_flip(tty);
+=======
+	tty_insert_flip_char(&vc->port, ch, 0);
+	tty_flip_buffer_push(&vc->port);
+}
+
+static void puts_queue(struct vc_data *vc, const char *cp)
+{
+	tty_insert_flip_string(&vc->port, cp, strlen(cp));
+	tty_flip_buffer_push(&vc->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void applkey(struct vc_data *vc, int key, char mode)
@@ -374,6 +505,15 @@ static void to_utf8(struct vc_data *vc, uint c)
 	}
 }
 
+<<<<<<< HEAD
+=======
+/* FIXME: review locking for vt.c callers */
+static void set_leds(void)
+{
+	tasklet_schedule(&keyboard_tasklet);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Called after returning from RAW mode or when changing consoles - recompute
  * shift_down[] and shift_state from key_down[] maybe called when keymap is
@@ -383,11 +523,16 @@ static void to_utf8(struct vc_data *vc, uint c)
 
 static void do_compute_shiftstate(void)
 {
+<<<<<<< HEAD
 	unsigned int i, j, k, sym, val;
+=======
+	unsigned int k, sym, val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	shift_state = 0;
 	memset(shift_down, 0, sizeof(shift_down));
 
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(key_down); i++) {
 
 		if (!key_down[i])
@@ -411,13 +556,41 @@ static void do_compute_shiftstate(void)
 			shift_down[val]++;
 			shift_state |= (1 << val);
 		}
+=======
+	for_each_set_bit(k, key_down, min(NR_KEYS, KEY_CNT)) {
+		sym = U(key_maps[0][k]);
+		if (KTYP(sym) != KT_SHIFT && KTYP(sym) != KT_SLOCK)
+			continue;
+
+		val = KVAL(sym);
+		if (val == KVAL(K_CAPSSHIFT))
+			val = KVAL(K_SHIFT);
+
+		shift_down[val]++;
+		shift_state |= BIT(val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /* We still have to export this method to vt.c */
+<<<<<<< HEAD
 void compute_shiftstate(void)
 {
 	unsigned long flags;
+=======
+void vt_set_leds_compute_shiftstate(void)
+{
+	unsigned long flags;
+
+	/*
+	 * When VT is switched, the keyboard led needs to be set once.
+	 * Ensure that after the switch is completed, the state of the
+	 * keyboard LED is consistent with the state of the keyboard lock.
+	 */
+	vt_switch = true;
+	set_leds();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(&kbd_event_lock, flags);
 	do_compute_shiftstate();
 	spin_unlock_irqrestore(&kbd_event_lock, flags);
@@ -476,9 +649,15 @@ static void fn_enter(struct vc_data *vc)
 		diacr = 0;
 	}
 
+<<<<<<< HEAD
 	put_queue(vc, 13);
 	if (vc_kbd_mode(kbd, VC_CRLF))
 		put_queue(vc, 10);
+=======
+	put_queue(vc, '\r');
+	if (vc_kbd_mode(kbd, VC_CRLF))
+		put_queue(vc, '\n');
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fn_caps_toggle(struct vc_data *vc)
@@ -517,7 +696,11 @@ static void fn_hold(struct vc_data *vc)
 	 * these routines are also activated by ^S/^Q.
 	 * (And SCROLLOCK can also be set by the ioctl KDSKBLED.)
 	 */
+<<<<<<< HEAD
 	if (tty->stopped)
+=======
+	if (tty->flow.stopped)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		start_tty(tty);
 	else
 		stop_tty(tty);
@@ -585,12 +768,17 @@ static void fn_inc_console(struct vc_data *vc)
 
 static void fn_send_intr(struct vc_data *vc)
 {
+<<<<<<< HEAD
 	struct tty_struct *tty = vc->port.tty;
 
 	if (!tty)
 		return;
 	tty_insert_flip_char(tty, 0, TTY_BREAK);
 	con_schedule_flip(tty);
+=======
+	tty_insert_flip_char(&vc->port, 0, TTY_BREAK);
+	tty_flip_buffer_push(&vc->port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fn_scroll_forw(struct vc_data *vc)
@@ -600,12 +788,20 @@ static void fn_scroll_forw(struct vc_data *vc)
 
 static void fn_scroll_back(struct vc_data *vc)
 {
+<<<<<<< HEAD
 	scrollback(vc, 0);
+=======
+	scrollback(vc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fn_show_mem(struct vc_data *vc)
 {
+<<<<<<< HEAD
 	show_mem(0);
+=======
+	show_mem();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void fn_show_state(struct vc_data *vc)
@@ -721,7 +917,39 @@ static void k_dead2(struct vc_data *vc, unsigned char value, char up_flag)
  */
 static void k_dead(struct vc_data *vc, unsigned char value, char up_flag)
 {
+<<<<<<< HEAD
 	static const unsigned char ret_diacr[NR_DEAD] = {'`', '\'', '^', '~', '"', ',' };
+=======
+	static const unsigned char ret_diacr[NR_DEAD] = {
+		'`',	/* dead_grave */
+		'\'',	/* dead_acute */
+		'^',	/* dead_circumflex */
+		'~',	/* dead_tilda */
+		'"',	/* dead_diaeresis */
+		',',	/* dead_cedilla */
+		'_',	/* dead_macron */
+		'U',	/* dead_breve */
+		'.',	/* dead_abovedot */
+		'*',	/* dead_abovering */
+		'=',	/* dead_doubleacute */
+		'c',	/* dead_caron */
+		'k',	/* dead_ogonek */
+		'i',	/* dead_iota */
+		'#',	/* dead_voiced_sound */
+		'o',	/* dead_semivoiced_sound */
+		'!',	/* dead_belowdot */
+		'?',	/* dead_hook */
+		'+',	/* dead_horn */
+		'-',	/* dead_stroke */
+		')',	/* dead_abovecomma */
+		'(',	/* dead_abovereversedcomma */
+		':',	/* dead_doublegrave */
+		'n',	/* dead_invertedbreve */
+		';',	/* dead_belowcomma */
+		'$',	/* dead_currency */
+		'@',	/* dead_greek */
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	k_deadunicode(vc, ret_diacr[value], up_flag);
 }
@@ -740,8 +968,18 @@ static void k_fn(struct vc_data *vc, unsigned char value, char up_flag)
 		return;
 
 	if ((unsigned)value < ARRAY_SIZE(func_table)) {
+<<<<<<< HEAD
 		if (func_table[value])
 			puts_queue(vc, func_table[value]);
+=======
+		unsigned long flags;
+
+		spin_lock_irqsave(&func_buf_lock, flags);
+		if (func_table[value])
+			puts_queue(vc, func_table[value]);
+		spin_unlock_irqrestore(&func_buf_lock, flags);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		pr_err("k_fn called with value=%d\n", value);
 }
@@ -812,7 +1050,11 @@ static void k_pad(struct vc_data *vc, unsigned char value, char up_flag)
 
 	put_queue(vc, pad_chars[value]);
 	if (value == KVAL(K_PENTER) && vc_kbd_mode(kbd, VC_CRLF))
+<<<<<<< HEAD
 		put_queue(vc, 10);
+=======
+		put_queue(vc, '\n');
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void k_shift(struct vc_data *vc, unsigned char value, char up_flag)
@@ -842,6 +1084,7 @@ static void k_shift(struct vc_data *vc, unsigned char value, char up_flag)
 		shift_down[value]++;
 
 	if (shift_down[value])
+<<<<<<< HEAD
 		shift_state |= (1 << value);
 	else
 		shift_state &= ~(1 << value);
@@ -853,6 +1096,19 @@ static void k_shift(struct vc_data *vc, unsigned char value, char up_flag)
 		else
 			put_queue(vc, npadch & 0xff);
 		npadch = -1;
+=======
+		shift_state |= BIT(value);
+	else
+		shift_state &= ~BIT(value);
+
+	/* kludge */
+	if (up_flag && shift_state != old_state && npadch_active) {
+		if (kbd->kbdmode == VC_UNICODE)
+			to_utf8(vc, npadch_value);
+		else
+			put_queue(vc, npadch_value & 0xff);
+		npadch_active = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -865,12 +1121,20 @@ static void k_meta(struct vc_data *vc, unsigned char value, char up_flag)
 		put_queue(vc, '\033');
 		put_queue(vc, value);
 	} else
+<<<<<<< HEAD
 		put_queue(vc, value | 0x80);
+=======
+		put_queue(vc, value | BIT(7));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void k_ascii(struct vc_data *vc, unsigned char value, char up_flag)
 {
+<<<<<<< HEAD
 	int base;
+=======
+	unsigned int base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (up_flag)
 		return;
@@ -884,10 +1148,19 @@ static void k_ascii(struct vc_data *vc, unsigned char value, char up_flag)
 		base = 16;
 	}
 
+<<<<<<< HEAD
 	if (npadch == -1)
 		npadch = value;
 	else
 		npadch = npadch * base + value;
+=======
+	if (!npadch_active) {
+		npadch_value = 0;
+		npadch_active = true;
+	}
+
+	npadch_value = npadch_value * base + value;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void k_lock(struct vc_data *vc, unsigned char value, char up_flag)
@@ -946,7 +1219,11 @@ static void k_brl(struct vc_data *vc, unsigned char value, char up_flag)
 
 	if (kbd->kbdmode != VC_UNICODE) {
 		if (!up_flag)
+<<<<<<< HEAD
 			pr_warning("keyboard mode must be unicode for braille patterns\n");
+=======
+			pr_warn("keyboard mode must be unicode for braille patterns\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -959,7 +1236,11 @@ static void k_brl(struct vc_data *vc, unsigned char value, char up_flag)
 		return;
 
 	if (!up_flag) {
+<<<<<<< HEAD
 		pressed |= 1 << (value - 1);
+=======
+		pressed |= BIT(value - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!brl_timeout)
 			committing = pressed;
 	} else if (brl_timeout) {
@@ -969,7 +1250,11 @@ static void k_brl(struct vc_data *vc, unsigned char value, char up_flag)
 			committing = pressed;
 			releasestart = jiffies;
 		}
+<<<<<<< HEAD
 		pressed &= ~(1 << (value - 1));
+=======
+		pressed &= ~BIT(value - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!pressed && committing) {
 			k_brlcommit(vc, committing, 0);
 			committing = 0;
@@ -979,15 +1264,141 @@ static void k_brl(struct vc_data *vc, unsigned char value, char up_flag)
 			k_brlcommit(vc, committing, 0);
 			committing = 0;
 		}
+<<<<<<< HEAD
 		pressed &= ~(1 << (value - 1));
 	}
 }
 
+=======
+		pressed &= ~BIT(value - 1);
+	}
+}
+
+#if IS_ENABLED(CONFIG_INPUT_LEDS) && IS_ENABLED(CONFIG_LEDS_TRIGGERS)
+
+struct kbd_led_trigger {
+	struct led_trigger trigger;
+	unsigned int mask;
+};
+
+static int kbd_led_trigger_activate(struct led_classdev *cdev)
+{
+	struct kbd_led_trigger *trigger =
+		container_of(cdev->trigger, struct kbd_led_trigger, trigger);
+
+	tasklet_disable(&keyboard_tasklet);
+	if (ledstate != -1U)
+		led_trigger_event(&trigger->trigger,
+				  ledstate & trigger->mask ?
+					LED_FULL : LED_OFF);
+	tasklet_enable(&keyboard_tasklet);
+
+	return 0;
+}
+
+#define KBD_LED_TRIGGER(_led_bit, _name) {			\
+		.trigger = {					\
+			.name = _name,				\
+			.activate = kbd_led_trigger_activate,	\
+		},						\
+		.mask	= BIT(_led_bit),			\
+	}
+
+#define KBD_LOCKSTATE_TRIGGER(_led_bit, _name)		\
+	KBD_LED_TRIGGER((_led_bit) + 8, _name)
+
+static struct kbd_led_trigger kbd_led_triggers[] = {
+	KBD_LED_TRIGGER(VC_SCROLLOCK, "kbd-scrolllock"),
+	KBD_LED_TRIGGER(VC_NUMLOCK,   "kbd-numlock"),
+	KBD_LED_TRIGGER(VC_CAPSLOCK,  "kbd-capslock"),
+	KBD_LED_TRIGGER(VC_KANALOCK,  "kbd-kanalock"),
+
+	KBD_LOCKSTATE_TRIGGER(VC_SHIFTLOCK,  "kbd-shiftlock"),
+	KBD_LOCKSTATE_TRIGGER(VC_ALTGRLOCK,  "kbd-altgrlock"),
+	KBD_LOCKSTATE_TRIGGER(VC_CTRLLOCK,   "kbd-ctrllock"),
+	KBD_LOCKSTATE_TRIGGER(VC_ALTLOCK,    "kbd-altlock"),
+	KBD_LOCKSTATE_TRIGGER(VC_SHIFTLLOCK, "kbd-shiftllock"),
+	KBD_LOCKSTATE_TRIGGER(VC_SHIFTRLOCK, "kbd-shiftrlock"),
+	KBD_LOCKSTATE_TRIGGER(VC_CTRLLLOCK,  "kbd-ctrlllock"),
+	KBD_LOCKSTATE_TRIGGER(VC_CTRLRLOCK,  "kbd-ctrlrlock"),
+};
+
+static void kbd_propagate_led_state(unsigned int old_state,
+				    unsigned int new_state)
+{
+	struct kbd_led_trigger *trigger;
+	unsigned int changed = old_state ^ new_state;
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(kbd_led_triggers); i++) {
+		trigger = &kbd_led_triggers[i];
+
+		if (changed & trigger->mask)
+			led_trigger_event(&trigger->trigger,
+					  new_state & trigger->mask ?
+						LED_FULL : LED_OFF);
+	}
+}
+
+static int kbd_update_leds_helper(struct input_handle *handle, void *data)
+{
+	unsigned int led_state = *(unsigned int *)data;
+
+	if (test_bit(EV_LED, handle->dev->evbit))
+		kbd_propagate_led_state(~led_state, led_state);
+
+	return 0;
+}
+
+static void kbd_init_leds(void)
+{
+	int error;
+	int i;
+
+	for (i = 0; i < ARRAY_SIZE(kbd_led_triggers); i++) {
+		error = led_trigger_register(&kbd_led_triggers[i].trigger);
+		if (error)
+			pr_err("error %d while registering trigger %s\n",
+			       error, kbd_led_triggers[i].trigger.name);
+	}
+}
+
+#else
+
+static int kbd_update_leds_helper(struct input_handle *handle, void *data)
+{
+	unsigned int leds = *(unsigned int *)data;
+
+	if (test_bit(EV_LED, handle->dev->evbit)) {
+		input_inject_event(handle, EV_LED, LED_SCROLLL, !!(leds & BIT(0)));
+		input_inject_event(handle, EV_LED, LED_NUML,    !!(leds & BIT(1)));
+		input_inject_event(handle, EV_LED, LED_CAPSL,   !!(leds & BIT(2)));
+		input_inject_event(handle, EV_SYN, SYN_REPORT, 0);
+	}
+
+	return 0;
+}
+
+static void kbd_propagate_led_state(unsigned int old_state,
+				    unsigned int new_state)
+{
+	input_handler_for_each_handle(&kbd_handler, &new_state,
+				      kbd_update_leds_helper);
+}
+
+static void kbd_init_leds(void)
+{
+}
+
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The leds display either (i) the status of NumLock, CapsLock, ScrollLock,
  * or (ii) whatever pattern of lights people want to show using KDSETLED,
  * or (iii) specified bits of specified words in kernel memory.
  */
+<<<<<<< HEAD
 unsigned char getledstate(void)
 {
 	return ledstate;
@@ -1005,10 +1416,30 @@ void setledstate(struct kbd_struct *kbd, unsigned int led)
 
 	set_leds();
 	spin_unlock_irqrestore(&kbd_event_lock, flags);
+=======
+static unsigned char getledstate(void)
+{
+	return ledstate & 0xff;
+}
+
+void setledstate(struct kbd_struct *kb, unsigned int led)
+{
+        unsigned long flags;
+        spin_lock_irqsave(&led_lock, flags);
+	if (!(led & ~7)) {
+		ledioctl = led;
+		kb->ledmode = LED_SHOW_IOCTL;
+	} else
+		kb->ledmode = LED_SHOW_FLAGS;
+
+	set_leds();
+	spin_unlock_irqrestore(&led_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned char getleds(void)
 {
+<<<<<<< HEAD
 	struct kbd_struct *kbd = kbd_table + fg_console;
 	unsigned char leds;
 	int i;
@@ -1042,6 +1473,14 @@ static int kbd_update_leds_helper(struct input_handle *handle, void *data)
 	}
 
 	return 0;
+=======
+	struct kbd_struct *kb = kbd_table + fg_console;
+
+	if (kb->ledmode == LED_SHOW_IOCTL)
+		return ledioctl;
+
+	return kb->ledflagstate;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1051,12 +1490,24 @@ static int kbd_update_leds_helper(struct input_handle *handle, void *data)
  *
  *	Check the status of a keyboard led flag and report it back
  */
+<<<<<<< HEAD
 int vt_get_leds(int console, int flag)
 {
 	struct kbd_struct * kbd = kbd_table + console;
 	int ret;
 
 	ret = vc_kbd_led(kbd, flag);
+=======
+int vt_get_leds(unsigned int console, int flag)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+	int ret;
+	unsigned long flags;
+
+	spin_lock_irqsave(&led_lock, flags);
+	ret = vc_kbd_led(kb, flag);
+	spin_unlock_irqrestore(&led_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -1070,10 +1521,17 @@ EXPORT_SYMBOL_GPL(vt_get_leds);
  *	Set the LEDs on a console. This is a wrapper for the VT layer
  *	so that we can keep kbd knowledge internal
  */
+<<<<<<< HEAD
 void vt_set_led_state(int console, int leds)
 {
 	struct kbd_struct * kbd = kbd_table + console;
 	setledstate(kbd, leds);
+=======
+void vt_set_led_state(unsigned int console, int leds)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+	setledstate(kb, leds);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1089,6 +1547,7 @@ void vt_set_led_state(int console, int leds)
  *	don't hold the lock. We probably need to split out an LED lock
  *	but not during an -rc release!
  */
+<<<<<<< HEAD
 void vt_kbd_con_start(int console)
 {
 	struct kbd_struct * kbd = kbd_table + console;
@@ -1097,6 +1556,16 @@ void vt_kbd_con_start(int console)
 	clr_vc_kbd_led(kbd, VC_SCROLLOCK);
 	set_leds();
 /*	spin_unlock_irqrestore(&kbd_event_lock, flags); */
+=======
+void vt_kbd_con_start(unsigned int console)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+	unsigned long flags;
+	spin_lock_irqsave(&led_lock, flags);
+	clr_vc_kbd_led(kb, VC_SCROLLOCK);
+	set_leds();
+	spin_unlock_irqrestore(&led_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -1105,6 +1574,7 @@ void vt_kbd_con_start(int console)
  *
  *	Handle console stop. This is a wrapper for the VT layer
  *	so that we can keep kbd knowledge internal
+<<<<<<< HEAD
  *
  *	FIXME: We eventually need to hold the kbd lock here to protect
  *	the LED updating. We can't do it yet because fn_hold calls stop_tty
@@ -1136,10 +1606,47 @@ static void kbd_bh(unsigned long dummy)
 	if (leds != ledstate) {
 		input_handler_for_each_handle(&kbd_handler, &leds,
 					      kbd_update_leds_helper);
+=======
+ */
+void vt_kbd_con_stop(unsigned int console)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+	unsigned long flags;
+	spin_lock_irqsave(&led_lock, flags);
+	set_vc_kbd_led(kb, VC_SCROLLOCK);
+	set_leds();
+	spin_unlock_irqrestore(&led_lock, flags);
+}
+
+/*
+ * This is the tasklet that updates LED state of LEDs using standard
+ * keyboard triggers. The reason we use tasklet is that we need to
+ * handle the scenario when keyboard handler is not registered yet
+ * but we already getting updates from the VT to update led state.
+ */
+static void kbd_bh(struct tasklet_struct *unused)
+{
+	unsigned int leds;
+	unsigned long flags;
+
+	spin_lock_irqsave(&led_lock, flags);
+	leds = getleds();
+	leds |= (unsigned int)kbd->lockstate << 8;
+	spin_unlock_irqrestore(&led_lock, flags);
+
+	if (vt_switch) {
+		ledstate = ~leds;
+		vt_switch = false;
+	}
+
+	if (leds != ledstate) {
+		kbd_propagate_led_state(ledstate, leds);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ledstate = leds;
 	}
 }
 
+<<<<<<< HEAD
 DECLARE_TASKLET_DISABLED(keyboard_tasklet, kbd_bh, 0);
 
 #if defined(CONFIG_X86) || defined(CONFIG_IA64) || defined(CONFIG_ALPHA) ||\
@@ -1150,6 +1657,21 @@ DECLARE_TASKLET_DISABLED(keyboard_tasklet, kbd_bh, 0);
 
 #define HW_RAW(dev) (test_bit(EV_MSC, dev->evbit) && test_bit(MSC_RAW, dev->mscbit) &&\
 			((dev)->id.bustype == BUS_I8042) && ((dev)->id.vendor == 0x0001) && ((dev)->id.product == 0x0001))
+=======
+#if defined(CONFIG_X86) || defined(CONFIG_ALPHA) ||\
+    defined(CONFIG_MIPS) || defined(CONFIG_PPC) || defined(CONFIG_SPARC) ||\
+    defined(CONFIG_PARISC) || defined(CONFIG_SUPERH) ||\
+    (defined(CONFIG_ARM) && defined(CONFIG_KEYBOARD_ATKBD) && !defined(CONFIG_ARCH_RPC))
+
+static inline bool kbd_is_hw_raw(const struct input_dev *dev)
+{
+	if (!test_bit(EV_MSC, dev->evbit) || !test_bit(MSC_RAW, dev->mscbit))
+		return false;
+
+	return dev->id.bustype == BUS_I8042 &&
+		dev->id.vendor == 0x0001 && dev->id.product == 0x0001;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const unsigned short x86_keycodes[256] =
 	{ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15,
@@ -1199,7 +1721,11 @@ static int emulate_raw(struct vc_data *vc, unsigned int keycode,
 	case KEY_SYSRQ:
 		/*
 		 * Real AT keyboards (that's what we're trying
+<<<<<<< HEAD
 		 * to emulate here emit 0xe0 0x2a 0xe0 0x37 when
+=======
+		 * to emulate here) emit 0xe0 0x2a 0xe0 0x37 when
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * pressing PrtSc/SysRq alone, but simply 0x54
 		 * when pressing Alt+PrtSc/SysRq.
 		 */
@@ -1234,7 +1760,14 @@ static int emulate_raw(struct vc_data *vc, unsigned int keycode,
 
 #else
 
+<<<<<<< HEAD
 #define HW_RAW(dev)	0
+=======
+static inline bool kbd_is_hw_raw(const struct input_dev *dev)
+{
+	return false;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int emulate_raw(struct vc_data *vc, unsigned int keycode, unsigned char up_flag)
 {
@@ -1250,12 +1783,20 @@ static void kbd_rawcode(unsigned char data)
 {
 	struct vc_data *vc = vc_cons[fg_console].d;
 
+<<<<<<< HEAD
 	kbd = kbd_table + vc->vc_num;
+=======
+	kbd = &kbd_table[vc->vc_num];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (kbd->kbdmode == VC_RAW)
 		put_queue(vc, data);
 }
 
+<<<<<<< HEAD
 static void kbd_keycode(unsigned int keycode, int down, int hw_raw)
+=======
+static void kbd_keycode(unsigned int keycode, int down, bool hw_raw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct vc_data *vc = vc_cons[fg_console].d;
 	unsigned short keysym, *key_map;
@@ -1273,7 +1814,11 @@ static void kbd_keycode(unsigned int keycode, int down, int hw_raw)
 		tty->driver_data = vc;
 	}
 
+<<<<<<< HEAD
 	kbd = kbd_table + vc->vc_num;
+=======
+	kbd = &kbd_table[vc->vc_num];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SPARC
 	if (keycode == KEY_STOP)
@@ -1286,8 +1831,13 @@ static void kbd_keycode(unsigned int keycode, int down, int hw_raw)
 	if (raw_mode && !hw_raw)
 		if (emulate_raw(vc, keycode, !down << 7))
 			if (keycode < BTN_MISC && printk_ratelimit())
+<<<<<<< HEAD
 				pr_warning("can't emulate rawmode for keycode %d\n",
 					   keycode);
+=======
+				pr_warn("can't emulate rawmode for keycode %d\n",
+					keycode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SPARC
 	if (keycode == KEY_A && sparc_l1_a_state) {
@@ -1310,16 +1860,25 @@ static void kbd_keycode(unsigned int keycode, int down, int hw_raw)
 			put_queue(vc, keycode | (!down << 7));
 		} else {
 			put_queue(vc, !down << 7);
+<<<<<<< HEAD
 			put_queue(vc, (keycode >> 7) | 0x80);
 			put_queue(vc, keycode | 0x80);
+=======
+			put_queue(vc, (keycode >> 7) | BIT(7));
+			put_queue(vc, keycode | BIT(7));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		raw_mode = true;
 	}
 
+<<<<<<< HEAD
 	if (down)
 		set_bit(keycode, key_down);
 	else
 		clear_bit(keycode, key_down);
+=======
+	assign_bit(keycode, key_down, down);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (rep &&
 	    (!vc_kbd_mode(kbd, VC_REPEAT) ||
@@ -1361,7 +1920,11 @@ static void kbd_keycode(unsigned int keycode, int down, int hw_raw)
 						KBD_UNICODE, &param);
 		if (rc != NOTIFY_STOP)
 			if (down && !raw_mode)
+<<<<<<< HEAD
 				to_utf8(vc, keysym);
+=======
+				k_unicode(vc, keysym, !down);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -1370,7 +1933,11 @@ static void kbd_keycode(unsigned int keycode, int down, int hw_raw)
 	if (type == KT_LETTER) {
 		type = KT_LATIN;
 		if (vc_kbd_led(kbd, VC_CAPSLOCK)) {
+<<<<<<< HEAD
 			key_map = key_maps[shift_final ^ (1 << KG_SHIFT)];
+=======
+			key_map = key_maps[shift_final ^ BIT(KG_SHIFT)];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (key_map)
 				keysym = key_map[keycode];
 		}
@@ -1400,10 +1967,18 @@ static void kbd_event(struct input_handle *handle, unsigned int event_type,
 	/* We are called with interrupts disabled, just take the lock */
 	spin_lock(&kbd_event_lock);
 
+<<<<<<< HEAD
 	if (event_type == EV_MSC && event_code == MSC_RAW && HW_RAW(handle->dev))
 		kbd_rawcode(value);
 	if (event_type == EV_KEY)
 		kbd_keycode(event_code, value, HW_RAW(handle->dev));
+=======
+	if (event_type == EV_MSC && event_code == MSC_RAW &&
+			kbd_is_hw_raw(handle->dev))
+		kbd_rawcode(value);
+	if (event_type == EV_KEY && event_code <= KEY_MAX)
+		kbd_keycode(event_code, value, kbd_is_hw_raw(handle->dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock(&kbd_event_lock);
 
@@ -1414,18 +1989,30 @@ static void kbd_event(struct input_handle *handle, unsigned int event_type,
 
 static bool kbd_match(struct input_handler *handler, struct input_dev *dev)
 {
+<<<<<<< HEAD
 	int i;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_bit(EV_SND, dev->evbit))
 		return true;
 
 	if (test_bit(EV_KEY, dev->evbit)) {
+<<<<<<< HEAD
 		for (i = KEY_RESERVED; i < BTN_MISC; i++)
 			if (test_bit(i, dev->keybit))
 				return true;
 		for (i = KEY_BRL_DOT1; i <= KEY_BRL_DOT10; i++)
 			if (test_bit(i, dev->keybit))
 				return true;
+=======
+		if (find_next_bit(dev->keybit, BTN_MISC, KEY_RESERVED) <
+				BTN_MISC)
+			return true;
+		if (find_next_bit(dev->keybit, KEY_BRL_DOT10 + 1,
+					KEY_BRL_DOT1) <= KEY_BRL_DOT10)
+			return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return false;
@@ -1483,7 +2070,11 @@ static void kbd_start(struct input_handle *handle)
 {
 	tasklet_disable(&keyboard_tasklet);
 
+<<<<<<< HEAD
 	if (ledstate != 0xff)
+=======
+	if (ledstate != -1U)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kbd_update_leds_helper(handle, &ledstate);
 
 	tasklet_enable(&keyboard_tasklet);
@@ -1521,8 +2112,13 @@ int __init kbd_init(void)
 	int error;
 
 	for (i = 0; i < MAX_NR_CONSOLES; i++) {
+<<<<<<< HEAD
 		kbd_table[i].ledflagstate = KBD_DEFLEDS;
 		kbd_table[i].default_ledflagstate = KBD_DEFLEDS;
+=======
+		kbd_table[i].ledflagstate = kbd_defleds();
+		kbd_table[i].default_ledflagstate = kbd_defleds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kbd_table[i].ledmode = LED_SHOW_FLAGS;
 		kbd_table[i].lockstate = KBD_DEFLOCK;
 		kbd_table[i].slockstate = 0;
@@ -1530,6 +2126,11 @@ int __init kbd_init(void)
 		kbd_table[i].kbdmode = default_utf8 ? VC_UNICODE : VC_XLATE;
 	}
 
+<<<<<<< HEAD
+=======
+	kbd_init_leds();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = input_register_handler(&kbd_handler);
 	if (error)
 		return error;
@@ -1545,15 +2146,24 @@ int __init kbd_init(void)
 /**
  *	vt_do_diacrit		-	diacritical table updates
  *	@cmd: ioctl request
+<<<<<<< HEAD
  *	@up: pointer to user data for ioctl
+=======
+ *	@udp: pointer to user data for ioctl
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@perm: permissions check computed by caller
  *
  *	Update the diacritical tables atomically and safely. Lock them
  *	against simultaneous keypresses
  */
+<<<<<<< HEAD
 int vt_do_diacrit(unsigned int cmd, void __user *up, int perm)
 {
 	struct kbdiacrs __user *a = up;
+=======
+int vt_do_diacrit(unsigned int cmd, void __user *udp, int perm)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int asize;
 	int ret = 0;
@@ -1561,12 +2171,22 @@ int vt_do_diacrit(unsigned int cmd, void __user *up, int perm)
 	switch (cmd) {
 	case KDGKBDIACR:
 	{
+<<<<<<< HEAD
 		struct kbdiacr *diacr;
 		int i;
 
 		diacr = kmalloc(MAX_DIACR * sizeof(struct kbdiacr),
 								GFP_KERNEL);
 		if (diacr == NULL)
+=======
+		struct kbdiacrs __user *a = udp;
+		struct kbdiacr *dia;
+		int i;
+
+		dia = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacr),
+								GFP_KERNEL);
+		if (!dia)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -ENOMEM;
 
 		/* Lock the diacriticals table, make a copy and then
@@ -1575,29 +2195,51 @@ int vt_do_diacrit(unsigned int cmd, void __user *up, int perm)
 
 		asize = accent_table_size;
 		for (i = 0; i < asize; i++) {
+<<<<<<< HEAD
 			diacr[i].diacr = conv_uni_to_8bit(
 						accent_table[i].diacr);
 			diacr[i].base = conv_uni_to_8bit(
 						accent_table[i].base);
 			diacr[i].result = conv_uni_to_8bit(
+=======
+			dia[i].diacr = conv_uni_to_8bit(
+						accent_table[i].diacr);
+			dia[i].base = conv_uni_to_8bit(
+						accent_table[i].base);
+			dia[i].result = conv_uni_to_8bit(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						accent_table[i].result);
 		}
 		spin_unlock_irqrestore(&kbd_event_lock, flags);
 
 		if (put_user(asize, &a->kb_cnt))
 			ret = -EFAULT;
+<<<<<<< HEAD
 		else  if (copy_to_user(a->kbdiacr, diacr,
 				asize * sizeof(struct kbdiacr)))
 			ret = -EFAULT;
 		kfree(diacr);
+=======
+		else  if (copy_to_user(a->kbdiacr, dia,
+				asize * sizeof(struct kbdiacr)))
+			ret = -EFAULT;
+		kfree(dia);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 	}
 	case KDGKBDIACRUC:
 	{
+<<<<<<< HEAD
 		struct kbdiacrsuc __user *a = up;
 		void *buf;
 
 		buf = kmalloc(MAX_DIACR * sizeof(struct kbdiacruc),
+=======
+		struct kbdiacrsuc __user *a = udp;
+		void *buf;
+
+		buf = kmalloc_array(MAX_DIACR, sizeof(struct kbdiacruc),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 								GFP_KERNEL);
 		if (buf == NULL)
 			return -ENOMEM;
@@ -1622,8 +2264,13 @@ int vt_do_diacrit(unsigned int cmd, void __user *up, int perm)
 
 	case KDSKBDIACR:
 	{
+<<<<<<< HEAD
 		struct kbdiacrs __user *a = up;
 		struct kbdiacr *diacr = NULL;
+=======
+		struct kbdiacrs __user *a = udp;
+		struct kbdiacr *dia = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int ct;
 		int i;
 
@@ -1635,6 +2282,7 @@ int vt_do_diacrit(unsigned int cmd, void __user *up, int perm)
 			return -EINVAL;
 
 		if (ct) {
+<<<<<<< HEAD
 			diacr = kmalloc(sizeof(struct kbdiacr) * ct,
 								GFP_KERNEL);
 			if (diacr == NULL)
@@ -1645,12 +2293,19 @@ int vt_do_diacrit(unsigned int cmd, void __user *up, int perm)
 				kfree(diacr);
 				return -EFAULT;
 			}
+=======
+			dia = memdup_array_user(a->kbdiacr,
+						ct, sizeof(struct kbdiacr));
+			if (IS_ERR(dia))
+				return PTR_ERR(dia);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		spin_lock_irqsave(&kbd_event_lock, flags);
 		accent_table_size = ct;
 		for (i = 0; i < ct; i++) {
 			accent_table[i].diacr =
+<<<<<<< HEAD
 					conv_8bit_to_uni(diacr[i].diacr);
 			accent_table[i].base =
 					conv_8bit_to_uni(diacr[i].base);
@@ -1659,12 +2314,26 @@ int vt_do_diacrit(unsigned int cmd, void __user *up, int perm)
 		}
 		spin_unlock_irqrestore(&kbd_event_lock, flags);
 		kfree(diacr);
+=======
+					conv_8bit_to_uni(dia[i].diacr);
+			accent_table[i].base =
+					conv_8bit_to_uni(dia[i].base);
+			accent_table[i].result =
+					conv_8bit_to_uni(dia[i].result);
+		}
+		spin_unlock_irqrestore(&kbd_event_lock, flags);
+		kfree(dia);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
 	case KDSKBDIACRUC:
 	{
+<<<<<<< HEAD
 		struct kbdiacrsuc __user *a = up;
+=======
+		struct kbdiacrsuc __user *a = udp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int ct;
 		void *buf = NULL;
 
@@ -1678,6 +2347,7 @@ int vt_do_diacrit(unsigned int cmd, void __user *up, int perm)
 			return -EINVAL;
 
 		if (ct) {
+<<<<<<< HEAD
 			buf = kmalloc(ct * sizeof(struct kbdiacruc),
 								GFP_KERNEL);
 			if (buf == NULL)
@@ -1688,6 +2358,12 @@ int vt_do_diacrit(unsigned int cmd, void __user *up, int perm)
 				kfree(buf);
 				return -EFAULT;
 			}
+=======
+			buf = memdup_array_user(a->kbdiacruc,
+						ct, sizeof(struct kbdiacruc));
+			if (IS_ERR(buf))
+				return PTR_ERR(buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} 
 		spin_lock_irqsave(&kbd_event_lock, flags);
 		if (ct)
@@ -1710,15 +2386,22 @@ int vt_do_diacrit(unsigned int cmd, void __user *up, int perm)
  *	Update the keyboard mode bits while holding the correct locks.
  *	Return 0 for success or an error code.
  */
+<<<<<<< HEAD
 int vt_do_kdskbmode(int console, unsigned int arg)
 {
 	struct kbd_struct * kbd = kbd_table + console;
+=======
+int vt_do_kdskbmode(unsigned int console, unsigned int arg)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 	unsigned long flags;
 
 	spin_lock_irqsave(&kbd_event_lock, flags);
 	switch(arg) {
 	case K_RAW:
+<<<<<<< HEAD
 		kbd->kbdmode = VC_RAW;
 		break;
 	case K_MEDIUMRAW:
@@ -1734,6 +2417,23 @@ int vt_do_kdskbmode(int console, unsigned int arg)
 		break;
 	case K_OFF:
 		kbd->kbdmode = VC_OFF;
+=======
+		kb->kbdmode = VC_RAW;
+		break;
+	case K_MEDIUMRAW:
+		kb->kbdmode = VC_MEDIUMRAW;
+		break;
+	case K_XLATE:
+		kb->kbdmode = VC_XLATE;
+		do_compute_shiftstate();
+		break;
+	case K_UNICODE:
+		kb->kbdmode = VC_UNICODE;
+		do_compute_shiftstate();
+		break;
+	case K_OFF:
+		kb->kbdmode = VC_OFF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		ret = -EINVAL;
@@ -1750,19 +2450,32 @@ int vt_do_kdskbmode(int console, unsigned int arg)
  *	Update the keyboard meta bits while holding the correct locks.
  *	Return 0 for success or an error code.
  */
+<<<<<<< HEAD
 int vt_do_kdskbmeta(int console, unsigned int arg)
 {
 	struct kbd_struct * kbd = kbd_table + console;
+=======
+int vt_do_kdskbmeta(unsigned int console, unsigned int arg)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 	unsigned long flags;
 
 	spin_lock_irqsave(&kbd_event_lock, flags);
 	switch(arg) {
 	case K_METABIT:
+<<<<<<< HEAD
 		clr_vc_kbd_mode(kbd, VC_META);
 		break;
 	case K_ESCPREFIX:
 		set_vc_kbd_mode(kbd, VC_META);
+=======
+		clr_vc_kbd_mode(kb, VC_META);
+		break;
+	case K_ESCPREFIX:
+		set_vc_kbd_mode(kb, VC_META);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		ret = -EINVAL;
@@ -1794,6 +2507,7 @@ int vt_do_kbkeycode_ioctl(int cmd, struct kbkeycode __user *user_kbkc,
 	return kc;
 }
 
+<<<<<<< HEAD
 #define i (tmp.kb_index)
 #define s (tmp.kb_table)
 #define v (tmp.kb_value)
@@ -2019,6 +2733,202 @@ reterr:
 int vt_do_kdskled(int console, int cmd, unsigned long arg, int perm)
 {
 	struct kbd_struct * kbd = kbd_table + console;
+=======
+static unsigned short vt_kdgkbent(unsigned char kbdmode, unsigned char idx,
+		unsigned char map)
+{
+	unsigned short *key_map, val;
+	unsigned long flags;
+
+	/* Ensure another thread doesn't free it under us */
+	spin_lock_irqsave(&kbd_event_lock, flags);
+	key_map = key_maps[map];
+	if (key_map) {
+		val = U(key_map[idx]);
+		if (kbdmode != VC_UNICODE && KTYP(val) >= NR_TYPES)
+			val = K_HOLE;
+	} else
+		val = idx ? K_HOLE : K_NOSUCHMAP;
+	spin_unlock_irqrestore(&kbd_event_lock, flags);
+
+	return val;
+}
+
+static int vt_kdskbent(unsigned char kbdmode, unsigned char idx,
+		unsigned char map, unsigned short val)
+{
+	unsigned long flags;
+	unsigned short *key_map, *new_map, oldval;
+
+	if (!idx && val == K_NOSUCHMAP) {
+		spin_lock_irqsave(&kbd_event_lock, flags);
+		/* deallocate map */
+		key_map = key_maps[map];
+		if (map && key_map) {
+			key_maps[map] = NULL;
+			if (key_map[0] == U(K_ALLOCATED)) {
+				kfree(key_map);
+				keymap_count--;
+			}
+		}
+		spin_unlock_irqrestore(&kbd_event_lock, flags);
+
+		return 0;
+	}
+
+	if (KTYP(val) < NR_TYPES) {
+		if (KVAL(val) > max_vals[KTYP(val)])
+			return -EINVAL;
+	} else if (kbdmode != VC_UNICODE)
+		return -EINVAL;
+
+	/* ++Geert: non-PC keyboards may generate keycode zero */
+#if !defined(__mc68000__) && !defined(__powerpc__)
+	/* assignment to entry 0 only tests validity of args */
+	if (!idx)
+		return 0;
+#endif
+
+	new_map = kmalloc(sizeof(plain_map), GFP_KERNEL);
+	if (!new_map)
+		return -ENOMEM;
+
+	spin_lock_irqsave(&kbd_event_lock, flags);
+	key_map = key_maps[map];
+	if (key_map == NULL) {
+		int j;
+
+		if (keymap_count >= MAX_NR_OF_USER_KEYMAPS &&
+		    !capable(CAP_SYS_RESOURCE)) {
+			spin_unlock_irqrestore(&kbd_event_lock, flags);
+			kfree(new_map);
+			return -EPERM;
+		}
+		key_maps[map] = new_map;
+		key_map = new_map;
+		key_map[0] = U(K_ALLOCATED);
+		for (j = 1; j < NR_KEYS; j++)
+			key_map[j] = U(K_HOLE);
+		keymap_count++;
+	} else
+		kfree(new_map);
+
+	oldval = U(key_map[idx]);
+	if (val == oldval)
+		goto out;
+
+	/* Attention Key */
+	if ((oldval == K_SAK || val == K_SAK) && !capable(CAP_SYS_ADMIN)) {
+		spin_unlock_irqrestore(&kbd_event_lock, flags);
+		return -EPERM;
+	}
+
+	key_map[idx] = U(val);
+	if (!map && (KTYP(oldval) == KT_SHIFT || KTYP(val) == KT_SHIFT))
+		do_compute_shiftstate();
+out:
+	spin_unlock_irqrestore(&kbd_event_lock, flags);
+
+	return 0;
+}
+
+int vt_do_kdsk_ioctl(int cmd, struct kbentry __user *user_kbe, int perm,
+						unsigned int console)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+	struct kbentry kbe;
+
+	if (copy_from_user(&kbe, user_kbe, sizeof(struct kbentry)))
+		return -EFAULT;
+
+	switch (cmd) {
+	case KDGKBENT:
+		return put_user(vt_kdgkbent(kb->kbdmode, kbe.kb_index,
+					kbe.kb_table),
+				&user_kbe->kb_value);
+	case KDSKBENT:
+		if (!perm || !capable(CAP_SYS_TTY_CONFIG))
+			return -EPERM;
+		return vt_kdskbent(kb->kbdmode, kbe.kb_index, kbe.kb_table,
+				kbe.kb_value);
+	}
+	return 0;
+}
+
+static char *vt_kdskbsent(char *kbs, unsigned char cur)
+{
+	static DECLARE_BITMAP(is_kmalloc, MAX_NR_FUNC);
+	char *cur_f = func_table[cur];
+
+	if (cur_f && strlen(cur_f) >= strlen(kbs)) {
+		strcpy(cur_f, kbs);
+		return kbs;
+	}
+
+	func_table[cur] = kbs;
+
+	return __test_and_set_bit(cur, is_kmalloc) ? cur_f : NULL;
+}
+
+int vt_do_kdgkb_ioctl(int cmd, struct kbsentry __user *user_kdgkb, int perm)
+{
+	unsigned char kb_func;
+	unsigned long flags;
+	char *kbs;
+	int ret;
+
+	if (get_user(kb_func, &user_kdgkb->kb_func))
+		return -EFAULT;
+
+	kb_func = array_index_nospec(kb_func, MAX_NR_FUNC);
+
+	switch (cmd) {
+	case KDGKBSENT: {
+		/* size should have been a struct member */
+		ssize_t len = sizeof(user_kdgkb->kb_string);
+
+		kbs = kmalloc(len, GFP_KERNEL);
+		if (!kbs)
+			return -ENOMEM;
+
+		spin_lock_irqsave(&func_buf_lock, flags);
+		len = strscpy(kbs, func_table[kb_func] ? : "", len);
+		spin_unlock_irqrestore(&func_buf_lock, flags);
+
+		if (len < 0) {
+			ret = -ENOSPC;
+			break;
+		}
+		ret = copy_to_user(user_kdgkb->kb_string, kbs, len + 1) ?
+			-EFAULT : 0;
+		break;
+	}
+	case KDSKBSENT:
+		if (!perm || !capable(CAP_SYS_TTY_CONFIG))
+			return -EPERM;
+
+		kbs = strndup_user(user_kdgkb->kb_string,
+				sizeof(user_kdgkb->kb_string));
+		if (IS_ERR(kbs))
+			return PTR_ERR(kbs);
+
+		spin_lock_irqsave(&func_buf_lock, flags);
+		kbs = vt_kdskbsent(kbs, kb_func);
+		spin_unlock_irqrestore(&func_buf_lock, flags);
+
+		ret = 0;
+		break;
+	}
+
+	kfree(kbs);
+
+	return ret;
+}
+
+int vt_do_kdskled(unsigned int console, int cmd, unsigned long arg, int perm)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
         unsigned long flags;
 	unsigned char ucval;
 
@@ -2027,7 +2937,11 @@ int vt_do_kdskled(int console, int cmd, unsigned long arg, int perm)
 	/* don't use them - they will go away without warning */
 	case KDGKBLED:
                 spin_lock_irqsave(&kbd_event_lock, flags);
+<<<<<<< HEAD
 		ucval = kbd->ledflagstate | (kbd->default_ledflagstate << 4);
+=======
+		ucval = kb->ledflagstate | (kb->default_ledflagstate << 4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
                 spin_unlock_irqrestore(&kbd_event_lock, flags);
 		return put_user(ucval, (char __user *)arg);
 
@@ -2036,11 +2950,19 @@ int vt_do_kdskled(int console, int cmd, unsigned long arg, int perm)
 			return -EPERM;
 		if (arg & ~0x77)
 			return -EINVAL;
+<<<<<<< HEAD
                 spin_lock_irqsave(&kbd_event_lock, flags);
 		kbd->ledflagstate = (arg & 7);
 		kbd->default_ledflagstate = ((arg >> 4) & 7);
 		set_leds();
                 spin_unlock_irqrestore(&kbd_event_lock, flags);
+=======
+                spin_lock_irqsave(&led_lock, flags);
+		kb->ledflagstate = (arg & 7);
+		kb->default_ledflagstate = ((arg >> 4) & 7);
+		set_leds();
+                spin_unlock_irqrestore(&led_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* the ioctls below only set the lights, not the functions */
@@ -2052,17 +2974,29 @@ int vt_do_kdskled(int console, int cmd, unsigned long arg, int perm)
 	case KDSETLED:
 		if (!perm)
 			return -EPERM;
+<<<<<<< HEAD
 		setledstate(kbd, arg);
+=======
+		setledstate(kb, arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
         }
         return -ENOIOCTLCMD;
 }
 
+<<<<<<< HEAD
 int vt_do_kdgkbmode(int console)
 {
 	struct kbd_struct * kbd = kbd_table + console;
 	/* This is a spot read so needs no locking */
 	switch (kbd->kbdmode) {
+=======
+int vt_do_kdgkbmode(unsigned int console)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+	/* This is a spot read so needs no locking */
+	switch (kb->kbdmode) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case VC_RAW:
 		return K_RAW;
 	case VC_MEDIUMRAW:
@@ -2082,11 +3016,19 @@ int vt_do_kdgkbmode(int console)
  *
  *	Report the meta flag status of this console
  */
+<<<<<<< HEAD
 int vt_do_kdgkbmeta(int console)
 {
 	struct kbd_struct * kbd = kbd_table + console;
         /* Again a spot read so no locking */
 	return vc_kbd_mode(kbd, VC_META) ? K_ESCPREFIX : K_METABIT;
+=======
+int vt_do_kdgkbmeta(unsigned int console)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+        /* Again a spot read so no locking */
+	return vc_kbd_mode(kb, VC_META) ? K_ESCPREFIX : K_METABIT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2095,7 +3037,11 @@ int vt_do_kdgkbmeta(int console)
  *
  *	Restore the unicode console state to its default
  */
+<<<<<<< HEAD
 void vt_reset_unicode(int console)
+=======
+void vt_reset_unicode(unsigned int console)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -2105,7 +3051,11 @@ void vt_reset_unicode(int console)
 }
 
 /**
+<<<<<<< HEAD
  *	vt_get_shiftstate	-	shift bit state
+=======
+ *	vt_get_shift_state	-	shift bit state
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	Report the shift bits from the keyboard state. We have to export
  *	this to support some oddities in the vt layer.
@@ -2123,6 +3073,7 @@ int vt_get_shift_state(void)
  *	Reset the keyboard bits for a console as part of a general console
  *	reset event
  */
+<<<<<<< HEAD
 void vt_reset_keyboard(int console)
 {
 	struct kbd_struct * kbd = kbd_table + console;
@@ -2137,6 +3088,24 @@ void vt_reset_keyboard(int console)
 	kbd->slockstate = 0;
 	kbd->ledmode = LED_SHOW_FLAGS;
 	kbd->ledflagstate = kbd->default_ledflagstate;
+=======
+void vt_reset_keyboard(unsigned int console)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+	unsigned long flags;
+
+	spin_lock_irqsave(&kbd_event_lock, flags);
+	set_vc_kbd_mode(kb, VC_REPEAT);
+	clr_vc_kbd_mode(kb, VC_CKMODE);
+	clr_vc_kbd_mode(kb, VC_APPLIC);
+	clr_vc_kbd_mode(kb, VC_CRLF);
+	kb->lockstate = 0;
+	kb->slockstate = 0;
+	spin_lock(&led_lock);
+	kb->ledmode = LED_SHOW_FLAGS;
+	kb->ledflagstate = kb->default_ledflagstate;
+	spin_unlock(&led_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* do not do set_leds here because this causes an endless tasklet loop
 	   when the keyboard hasn't been initialized yet */
 	spin_unlock_irqrestore(&kbd_event_lock, flags);
@@ -2151,10 +3120,17 @@ void vt_reset_keyboard(int console)
  *	caller must be sure that there are no synchronization needs
  */
 
+<<<<<<< HEAD
 int vt_get_kbd_mode_bit(int console, int bit)
 {
 	struct kbd_struct * kbd = kbd_table + console;
 	return vc_kbd_mode(kbd, bit);
+=======
+int vt_get_kbd_mode_bit(unsigned int console, int bit)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+	return vc_kbd_mode(kb, bit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -2166,6 +3142,7 @@ int vt_get_kbd_mode_bit(int console, int bit)
  *	caller must be sure that there are no synchronization needs
  */
 
+<<<<<<< HEAD
 void vt_set_kbd_mode_bit(int console, int bit)
 {
 	struct kbd_struct * kbd = kbd_table + console;
@@ -2173,6 +3150,15 @@ void vt_set_kbd_mode_bit(int console, int bit)
 
 	spin_lock_irqsave(&kbd_event_lock, flags);
 	set_vc_kbd_mode(kbd, bit);
+=======
+void vt_set_kbd_mode_bit(unsigned int console, int bit)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+	unsigned long flags;
+
+	spin_lock_irqsave(&kbd_event_lock, flags);
+	set_vc_kbd_mode(kb, bit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&kbd_event_lock, flags);
 }
 
@@ -2185,6 +3171,7 @@ void vt_set_kbd_mode_bit(int console, int bit)
  *	caller must be sure that there are no synchronization needs
  */
 
+<<<<<<< HEAD
 void vt_clr_kbd_mode_bit(int console, int bit)
 {
 	struct kbd_struct * kbd = kbd_table + console;
@@ -2192,5 +3179,14 @@ void vt_clr_kbd_mode_bit(int console, int bit)
 
 	spin_lock_irqsave(&kbd_event_lock, flags);
 	clr_vc_kbd_mode(kbd, bit);
+=======
+void vt_clr_kbd_mode_bit(unsigned int console, int bit)
+{
+	struct kbd_struct *kb = &kbd_table[console];
+	unsigned long flags;
+
+	spin_lock_irqsave(&kbd_event_lock, flags);
+	clr_vc_kbd_mode(kb, bit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(&kbd_event_lock, flags);
 }

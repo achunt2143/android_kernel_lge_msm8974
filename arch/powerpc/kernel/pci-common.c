@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Contains common pci routines for ALL ppc platform
  * (based on pci_32.c and pci_64.c)
@@ -9,36 +13,58 @@
  *   Rework, based on alpha PCI code.
  *
  * Common pmac/prep/chrp pci routines. -- Cort
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/pci.h>
 #include <linux/string.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+#include <linux/delay.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/of_address.h>
 #include <linux/of_pci.h>
 #include <linux/mm.h>
+<<<<<<< HEAD
+=======
+#include <linux/shmem_fs.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/syscalls.h>
 #include <linux/irq.h>
 #include <linux/vmalloc.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 #include <asm/processor.h>
 #include <asm/io.h>
 #include <asm/prom.h>
+=======
+#include <linux/vgaarb.h>
+#include <linux/numa.h>
+#include <linux/msi.h>
+#include <linux/irqdomain.h>
+
+#include <asm/processor.h>
+#include <asm/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pci-bridge.h>
 #include <asm/byteorder.h>
 #include <asm/machdep.h>
 #include <asm/ppc-pci.h>
 #include <asm/eeh.h>
+<<<<<<< HEAD
 
 static DEFINE_SPINLOCK(hose_spinlock);
 LIST_HEAD(hose_list);
@@ -53,20 +79,103 @@ resource_size_t isa_mem_base;
 static struct dma_map_ops *pci_dma_ops = &dma_direct_ops;
 
 void set_pci_dma_ops(struct dma_map_ops *dma_ops)
+=======
+#include <asm/setup.h>
+
+#include "../../../drivers/pci/pci.h"
+
+/* hose_spinlock protects accesses to the phb_bitmap. */
+static DEFINE_SPINLOCK(hose_spinlock);
+LIST_HEAD(hose_list);
+
+/* For dynamic PHB numbering on get_phb_number(): max number of PHBs. */
+#define MAX_PHBS 0x10000
+
+/*
+ * For dynamic PHB numbering: used/free PHBs tracking bitmap.
+ * Accesses to this bitmap should be protected by hose_spinlock.
+ */
+static DECLARE_BITMAP(phb_bitmap, MAX_PHBS);
+
+/* ISA Memory physical address */
+resource_size_t isa_mem_base;
+EXPORT_SYMBOL(isa_mem_base);
+
+
+static const struct dma_map_ops *pci_dma_ops;
+
+void __init set_pci_dma_ops(const struct dma_map_ops *dma_ops)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pci_dma_ops = dma_ops;
 }
 
+<<<<<<< HEAD
 struct dma_map_ops *get_pci_dma_ops(void)
 {
 	return pci_dma_ops;
 }
 EXPORT_SYMBOL(get_pci_dma_ops);
+=======
+static int get_phb_number(struct device_node *dn)
+{
+	int ret, phb_id = -1;
+	u64 prop;
+
+	/*
+	 * Try fixed PHB numbering first, by checking archs and reading
+	 * the respective device-tree properties. Firstly, try reading
+	 * standard "linux,pci-domain", then try reading "ibm,opal-phbid"
+	 * (only present in powernv OPAL environment), then try device-tree
+	 * alias and as the last try to use lower bits of "reg" property.
+	 */
+	ret = of_get_pci_domain_nr(dn);
+	if (ret >= 0) {
+		prop = ret;
+		ret = 0;
+	}
+	if (ret)
+		ret = of_property_read_u64(dn, "ibm,opal-phbid", &prop);
+
+	if (ret) {
+		ret = of_alias_get_id(dn, "pci");
+		if (ret >= 0) {
+			prop = ret;
+			ret = 0;
+		}
+	}
+	if (ret) {
+		u32 prop_32;
+		ret = of_property_read_u32_index(dn, "reg", 1, &prop_32);
+		prop = prop_32;
+	}
+
+	if (!ret)
+		phb_id = (int)(prop & (MAX_PHBS - 1));
+
+	spin_lock(&hose_spinlock);
+
+	/* We need to be sure to not use the same PHB number twice. */
+	if ((phb_id >= 0) && !test_and_set_bit(phb_id, phb_bitmap))
+		goto out_unlock;
+
+	/* If everything fails then fallback to dynamic PHB numbering. */
+	phb_id = find_first_zero_bit(phb_bitmap, MAX_PHBS);
+	BUG_ON(phb_id >= MAX_PHBS);
+	set_bit(phb_id, phb_bitmap);
+
+out_unlock:
+	spin_unlock(&hose_spinlock);
+
+	return phb_id;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct pci_controller *pcibios_alloc_controller(struct device_node *dev)
 {
 	struct pci_controller *phb;
 
+<<<<<<< HEAD
 	phb = zalloc_maybe_bootmem(sizeof(struct pci_controller), GFP_KERNEL);
 	if (phb == NULL)
 		return NULL;
@@ -76,28 +185,175 @@ struct pci_controller *pcibios_alloc_controller(struct device_node *dev)
 	spin_unlock(&hose_spinlock);
 	phb->dn = dev;
 	phb->is_dynamic = mem_init_done;
+=======
+	phb = kzalloc(sizeof(struct pci_controller), GFP_KERNEL);
+	if (phb == NULL)
+		return NULL;
+
+	phb->global_number = get_phb_number(dev);
+
+	spin_lock(&hose_spinlock);
+	list_add_tail(&phb->list_node, &hose_list);
+	spin_unlock(&hose_spinlock);
+
+	phb->dn = of_node_get(dev);
+	phb->is_dynamic = slab_is_available();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PPC64
 	if (dev) {
 		int nid = of_node_to_nid(dev);
 
 		if (nid < 0 || !node_online(nid))
+<<<<<<< HEAD
 			nid = -1;
+=======
+			nid = NUMA_NO_NODE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		PHB_SET_NODE(phb, nid);
 	}
 #endif
 	return phb;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(pcibios_alloc_controller);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void pcibios_free_controller(struct pci_controller *phb)
 {
 	spin_lock(&hose_spinlock);
+<<<<<<< HEAD
+=======
+
+	/* Clear bit of phb_bitmap to allow reuse of this PHB number. */
+	if (phb->global_number < MAX_PHBS)
+		clear_bit(phb->global_number, phb_bitmap);
+	of_node_put(phb->dn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del(&phb->list_node);
 	spin_unlock(&hose_spinlock);
 
 	if (phb->is_dynamic)
 		kfree(phb);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(pcibios_free_controller);
+
+/*
+ * This function is used to call pcibios_free_controller()
+ * in a deferred manner: a callback from the PCI subsystem.
+ *
+ * _*DO NOT*_ call pcibios_free_controller() explicitly if
+ * this is used (or it may access an invalid *phb pointer).
+ *
+ * The callback occurs when all references to the root bus
+ * are dropped (e.g., child buses/devices and their users).
+ *
+ * It's called as .release_fn() of 'struct pci_host_bridge'
+ * which is associated with the 'struct pci_controller.bus'
+ * (root bus) - it expects .release_data to hold a pointer
+ * to 'struct pci_controller'.
+ *
+ * In order to use it, register .release_fn()/release_data
+ * like this:
+ *
+ * pci_set_host_bridge_release(bridge,
+ *                             pcibios_free_controller_deferred
+ *                             (void *) phb);
+ *
+ * e.g. in the pcibios_root_bridge_prepare() callback from
+ * pci_create_root_bus().
+ */
+void pcibios_free_controller_deferred(struct pci_host_bridge *bridge)
+{
+	struct pci_controller *phb = (struct pci_controller *)
+					 bridge->release_data;
+
+	pr_debug("domain %d, dynamic %d\n", phb->global_number, phb->is_dynamic);
+
+	pcibios_free_controller(phb);
+}
+EXPORT_SYMBOL_GPL(pcibios_free_controller_deferred);
+
+/*
+ * The function is used to return the minimal alignment
+ * for memory or I/O windows of the associated P2P bridge.
+ * By default, 4KiB alignment for I/O windows and 1MiB for
+ * memory windows.
+ */
+resource_size_t pcibios_window_alignment(struct pci_bus *bus,
+					 unsigned long type)
+{
+	struct pci_controller *phb = pci_bus_to_host(bus);
+
+	if (phb->controller_ops.window_alignment)
+		return phb->controller_ops.window_alignment(bus, type);
+
+	/*
+	 * PCI core will figure out the default
+	 * alignment: 4KiB for I/O and 1MiB for
+	 * memory window.
+	 */
+	return 1;
+}
+
+void pcibios_setup_bridge(struct pci_bus *bus, unsigned long type)
+{
+	struct pci_controller *hose = pci_bus_to_host(bus);
+
+	if (hose->controller_ops.setup_bridge)
+		hose->controller_ops.setup_bridge(bus, type);
+}
+
+void pcibios_reset_secondary_bus(struct pci_dev *dev)
+{
+	struct pci_controller *phb = pci_bus_to_host(dev->bus);
+
+	if (phb->controller_ops.reset_secondary_bus) {
+		phb->controller_ops.reset_secondary_bus(dev);
+		return;
+	}
+
+	pci_reset_secondary_bus(dev);
+}
+
+resource_size_t pcibios_default_alignment(void)
+{
+	if (ppc_md.pcibios_default_alignment)
+		return ppc_md.pcibios_default_alignment();
+
+	return 0;
+}
+
+#ifdef CONFIG_PCI_IOV
+resource_size_t pcibios_iov_resource_alignment(struct pci_dev *pdev, int resno)
+{
+	if (ppc_md.pcibios_iov_resource_alignment)
+		return ppc_md.pcibios_iov_resource_alignment(pdev, resno);
+
+	return pci_iov_resource_size(pdev, resno);
+}
+
+int pcibios_sriov_enable(struct pci_dev *pdev, u16 num_vfs)
+{
+	if (ppc_md.pcibios_sriov_enable)
+		return ppc_md.pcibios_sriov_enable(pdev, num_vfs);
+
+	return 0;
+}
+
+int pcibios_sriov_disable(struct pci_dev *pdev)
+{
+	if (ppc_md.pcibios_sriov_disable)
+		return ppc_md.pcibios_sriov_disable(pdev);
+
+	return 0;
+}
+
+#endif /* CONFIG_PCI_IOV */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static resource_size_t pcibios_io_size(const struct pci_controller *hose)
 {
@@ -180,6 +436,7 @@ struct pci_controller* pci_find_hose_for_OF_device(struct device_node* node)
 	return NULL;
 }
 
+<<<<<<< HEAD
 static ssize_t pci_show_devspec(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -205,6 +462,68 @@ char __devinit *pcibios_setup(char *str)
 	return str;
 }
 
+=======
+struct pci_controller *pci_find_controller_for_domain(int domain_nr)
+{
+	struct pci_controller *hose;
+
+	list_for_each_entry(hose, &hose_list, list_node)
+		if (hose->global_number == domain_nr)
+			return hose;
+
+	return NULL;
+}
+
+struct pci_intx_virq {
+	int virq;
+	struct kref kref;
+	struct list_head list_node;
+};
+
+static LIST_HEAD(intx_list);
+static DEFINE_MUTEX(intx_mutex);
+
+static void ppc_pci_intx_release(struct kref *kref)
+{
+	struct pci_intx_virq *vi = container_of(kref, struct pci_intx_virq, kref);
+
+	list_del(&vi->list_node);
+	irq_dispose_mapping(vi->virq);
+	kfree(vi);
+}
+
+static int ppc_pci_unmap_irq_line(struct notifier_block *nb,
+			       unsigned long action, void *data)
+{
+	struct pci_dev *pdev = to_pci_dev(data);
+
+	if (action == BUS_NOTIFY_DEL_DEVICE) {
+		struct pci_intx_virq *vi;
+
+		mutex_lock(&intx_mutex);
+		list_for_each_entry(vi, &intx_list, list_node) {
+			if (vi->virq == pdev->irq) {
+				kref_put(&vi->kref, ppc_pci_intx_release);
+				break;
+			}
+		}
+		mutex_unlock(&intx_mutex);
+	}
+
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block ppc_pci_unmap_irq_notifier = {
+	.notifier_call = ppc_pci_unmap_irq_line,
+};
+
+static int ppc_pci_register_irq_notifier(void)
+{
+	return bus_register_notifier(&pci_bus_type, &ppc_pci_unmap_irq_notifier);
+}
+arch_initcall(ppc_pci_register_irq_notifier);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Reads the interrupt pin to determine if interrupt is use by card.
  * If the interrupt is used, then gets the interrupt line from the
@@ -212,6 +531,7 @@ char __devinit *pcibios_setup(char *str)
  */
 static int pci_read_irq_line(struct pci_dev *pci_dev)
 {
+<<<<<<< HEAD
 	struct of_irq oirq;
 	unsigned int virq;
 
@@ -222,6 +542,21 @@ static int pci_read_irq_line(struct pci_dev *pci_dev)
 #endif
 	/* Try to get a mapping from the device-tree */
 	if (of_irq_map_pci(pci_dev, &oirq)) {
+=======
+	int virq;
+	struct pci_intx_virq *vi, *vitmp;
+
+	/* Preallocate vi as rewind is complex if this fails after mapping */
+	vi = kzalloc(sizeof(struct pci_intx_virq), GFP_KERNEL);
+	if (!vi)
+		return -1;
+
+	pr_debug("PCI: Try to map irq for %s...\n", pci_name(pci_dev));
+
+	/* Try to get a mapping from the device-tree */
+	virq = of_irq_parse_and_map_pci(pci_dev, 0, 0);
+	if (virq <= 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u8 line, pin;
 
 		/* If that fails, lets fallback to what is in the config
@@ -232,17 +567,27 @@ static int pci_read_irq_line(struct pci_dev *pci_dev)
 		 * function.
 		 */
 		if (pci_read_config_byte(pci_dev, PCI_INTERRUPT_PIN, &pin))
+<<<<<<< HEAD
 			return -1;
 		if (pin == 0)
 			return -1;
 		if (pci_read_config_byte(pci_dev, PCI_INTERRUPT_LINE, &line) ||
 		    line == 0xff || line == 0) {
 			return -1;
+=======
+			goto error_exit;
+		if (pin == 0)
+			goto error_exit;
+		if (pci_read_config_byte(pci_dev, PCI_INTERRUPT_LINE, &line) ||
+		    line == 0xff || line == 0) {
+			goto error_exit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		pr_debug(" No map ! Using line %d (pin %d) from PCI config\n",
 			 line, pin);
 
 		virq = irq_create_mapping(NULL, line);
+<<<<<<< HEAD
 		if (virq != NO_IRQ)
 			irq_set_irq_type(virq, IRQ_TYPE_LEVEL_LOW);
 	} else {
@@ -257,12 +602,22 @@ static int pci_read_irq_line(struct pci_dev *pci_dev)
 	if(virq == NO_IRQ) {
 		pr_debug(" Failed to map !\n");
 		return -1;
+=======
+		if (virq)
+			irq_set_irq_type(virq, IRQ_TYPE_LEVEL_LOW);
+	}
+
+	if (!virq) {
+		pr_debug(" Failed to map !\n");
+		goto error_exit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pr_debug(" Mapped to linux irq %d\n", virq);
 
 	pci_dev->irq = virq;
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -364,6 +719,47 @@ static pgprot_t __pci_mmap_set_pgprot(struct pci_dev *dev, struct resource *rp,
 		return pgprot_noncached_wc(prot);
 	else
 		return pgprot_noncached(prot);
+=======
+	mutex_lock(&intx_mutex);
+	list_for_each_entry(vitmp, &intx_list, list_node) {
+		if (vitmp->virq == virq) {
+			kref_get(&vitmp->kref);
+			kfree(vi);
+			vi = NULL;
+			break;
+		}
+	}
+	if (vi) {
+		vi->virq = virq;
+		kref_init(&vi->kref);
+		list_add_tail(&vi->list_node, &intx_list);
+	}
+	mutex_unlock(&intx_mutex);
+
+	return 0;
+error_exit:
+	kfree(vi);
+	return -1;
+}
+
+/*
+ * Platform support for /proc/bus/pci/X/Y mmap()s.
+ *  -- paulus.
+ */
+int pci_iobar_pfn(struct pci_dev *pdev, int bar, struct vm_area_struct *vma)
+{
+	struct pci_controller *hose = pci_bus_to_host(pdev->bus);
+	resource_size_t ioaddr = pci_resource_start(pdev, bar);
+
+	if (!hose)
+		return -EINVAL;
+
+	/* Convert to an offset within this PCI controller */
+	ioaddr -= (unsigned long)hose->io_base_virt - _IO_BASE;
+
+	vma->vm_pgoff += (ioaddr + hose->io_base_phys) >> PAGE_SHIFT;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -371,8 +767,12 @@ static pgprot_t __pci_mmap_set_pgprot(struct pci_dev *dev, struct resource *rp,
  * PCI device, it tries to find the PCI device first and calls the
  * above routine
  */
+<<<<<<< HEAD
 pgprot_t pci_phys_mem_access_prot(struct file *file,
 				  unsigned long pfn,
+=======
+pgprot_t pci_phys_mem_access_prot(unsigned long pfn,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  unsigned long size,
 				  pgprot_t prot)
 {
@@ -415,6 +815,7 @@ pgprot_t pci_phys_mem_access_prot(struct file *file,
 	return prot;
 }
 
+<<<<<<< HEAD
 
 /*
  * Perform the actual remap of the pages for a PCI device mapping, as
@@ -449,6 +850,8 @@ int pci_mmap_page_range(struct pci_dev *dev, struct vm_area_struct *vma,
 	return ret;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This provides legacy IO read access on a bus */
 int pci_legacy_read(struct pci_bus *bus, loff_t port, u32 *val, size_t size)
 {
@@ -591,6 +994,7 @@ void pci_resource_to_user(const struct pci_dev *dev, int bar,
 			  const struct resource *rsrc,
 			  resource_size_t *start, resource_size_t *end)
 {
+<<<<<<< HEAD
 	struct pci_controller *hose = pci_bus_to_host(dev->bus);
 	resource_size_t offset = 0;
 
@@ -624,6 +1028,27 @@ void pci_resource_to_user(const struct pci_dev *dev, int bar,
 
 	*start = rsrc->start - offset;
 	*end = rsrc->end - offset;
+=======
+	struct pci_bus_region region;
+
+	if (rsrc->flags & IORESOURCE_IO) {
+		pcibios_resource_to_bus(dev->bus, &region,
+					(struct resource *) rsrc);
+		*start = region.start;
+		*end = region.end;
+		return;
+	}
+
+	/* We pass a CPU physical address to userland for MMIO instead of a
+	 * BAR value because X is lame and expects to be able to use that
+	 * to pass to /dev/mem!
+	 *
+	 * That means we may have 64-bit values where some apps only expect
+	 * 32 (like X itself since it thinks only Sparc has 64-bit MMIO).
+	 */
+	*start = rsrc->start;
+	*end = rsrc->end;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -643,6 +1068,7 @@ void pci_resource_to_user(const struct pci_dev *dev, int bar,
  *     ranges. However, some machines (thanks Apple !) tend to split their
  *     space into lots of small contiguous ranges. So we have to coalesce.
  *
+<<<<<<< HEAD
  *   - We can only cope with all memory ranges having the same offset
  *     between CPU addresses and PCI addresses. Unfortunately, some bridges
  *     are setup for a large 1:1 mapping along with a small "window" which
@@ -652,6 +1078,8 @@ void pci_resource_to_user(const struct pci_dev *dev, int bar,
  *     offset based on the first resource found, then override it if we
  *     have a different offset and the previous was set by an ISA hole.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   - Some busses have IO space not starting at 0, which causes trouble with
  *     the way we do our IO resource renumbering. The code somewhat deals with
  *     it for 64 bits but I would expect problems on 32 bits.
@@ -659,6 +1087,7 @@ void pci_resource_to_user(const struct pci_dev *dev, int bar,
  *   - Some 32 bits platforms such as 4xx can have physical space larger than
  *     32 bits so we need to use 64 bits values for the parsing
  */
+<<<<<<< HEAD
 void __devinit pci_process_bridge_OF_ranges(struct pci_controller *hose,
 					    struct device_node *dev,
 					    int primary)
@@ -690,11 +1119,31 @@ void __devinit pci_process_bridge_OF_ranges(struct pci_controller *hose,
 		size = of_read_number(ranges + pna + 3, 2);
 		ranges += np;
 
+=======
+void pci_process_bridge_OF_ranges(struct pci_controller *hose,
+				  struct device_node *dev, int primary)
+{
+	int memno = 0;
+	struct resource *res;
+	struct of_pci_range range;
+	struct of_pci_range_parser parser;
+
+	printk(KERN_INFO "PCI host bridge %pOF %s ranges:\n",
+	       dev, primary ? "(primary)" : "");
+
+	/* Check for ranges property */
+	if (of_pci_range_parser_init(&parser, dev))
+		return;
+
+	/* Parse it */
+	for_each_of_pci_range(&parser, &range) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* If we failed translation or got a zero-sized region
 		 * (some FW try to feed us with non sensical zero sized regions
 		 * such as power3 which look like some kind of attempt at exposing
 		 * the VGA memory hole)
 		 */
+<<<<<<< HEAD
 		if (cpu_addr == OF_BAD_ADDR || size == 0)
 			continue;
 
@@ -718,6 +1167,19 @@ void __devinit pci_process_bridge_OF_ranges(struct pci_controller *hose,
 			printk(KERN_INFO
 			       "  IO 0x%016llx..0x%016llx -> 0x%016llx\n",
 			       cpu_addr, cpu_addr + size - 1, pci_addr);
+=======
+		if (range.cpu_addr == OF_BAD_ADDR || range.size == 0)
+			continue;
+
+		/* Act based on address space type */
+		res = NULL;
+		switch (range.flags & IORESOURCE_TYPE_BITS) {
+		case IORESOURCE_IO:
+			printk(KERN_INFO
+			       "  IO 0x%016llx..0x%016llx -> 0x%016llx\n",
+			       range.cpu_addr, range.cpu_addr + range.size - 1,
+			       range.pci_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* We support only one IO range */
 			if (hose->pci_io_size) {
@@ -727,11 +1189,20 @@ void __devinit pci_process_bridge_OF_ranges(struct pci_controller *hose,
 			}
 #ifdef CONFIG_PPC32
 			/* On 32 bits, limit I/O space to 16MB */
+<<<<<<< HEAD
 			if (size > 0x01000000)
 				size = 0x01000000;
 
 			/* 32 bits needs to map IOs here */
 			hose->io_base_virt = ioremap(cpu_addr, size);
+=======
+			if (range.size > 0x01000000)
+				range.size = 0x01000000;
+
+			/* 32 bits needs to map IOs here */
+			hose->io_base_virt = ioremap(range.cpu_addr,
+						range.size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Expect trouble if pci_addr is not 0 */
 			if (primary)
@@ -741,6 +1212,7 @@ void __devinit pci_process_bridge_OF_ranges(struct pci_controller *hose,
 			/* pci_io_size and io_base_phys always represent IO
 			 * space starting at 0 so we factor in pci_addr
 			 */
+<<<<<<< HEAD
 			hose->pci_io_size = pci_addr + size;
 			hose->io_base_phys = cpu_addr - pci_addr;
 
@@ -755,6 +1227,22 @@ void __devinit pci_process_bridge_OF_ranges(struct pci_controller *hose,
 			       " MEM 0x%016llx..0x%016llx -> 0x%016llx %s\n",
 			       cpu_addr, cpu_addr + size - 1, pci_addr,
 			       (pci_space & 0x40000000) ? "Prefetch" : "");
+=======
+			hose->pci_io_size = range.pci_addr + range.size;
+			hose->io_base_phys = range.cpu_addr - range.pci_addr;
+
+			/* Build resource */
+			res = &hose->io_resource;
+			range.cpu_addr = range.pci_addr;
+			break;
+		case IORESOURCE_MEM:
+			printk(KERN_INFO
+			       " MEM 0x%016llx..0x%016llx -> 0x%016llx %s\n",
+			       range.cpu_addr, range.cpu_addr + range.size - 1,
+			       range.pci_addr,
+			       (range.flags & IORESOURCE_PREFETCH) ?
+			       "Prefetch" : "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* We support only 3 memory ranges */
 			if (memno >= 3) {
@@ -763,6 +1251,7 @@ void __devinit pci_process_bridge_OF_ranges(struct pci_controller *hose,
 				continue;
 			}
 			/* Handles ISA memory hole space here */
+<<<<<<< HEAD
 			if (pci_addr == 0) {
 				isa_mb = cpu_addr;
 				isa_hole = memno;
@@ -793,10 +1282,24 @@ void __devinit pci_process_bridge_OF_ranges(struct pci_controller *hose,
 			if (pci_space & 0x40000000)
 				res->flags |= IORESOURCE_PREFETCH;
 			res->start = cpu_addr;
+=======
+			if (range.pci_addr == 0) {
+				if (primary || isa_mem_base == 0)
+					isa_mem_base = range.cpu_addr;
+				hose->isa_mem_phys = range.cpu_addr;
+				hose->isa_mem_size = range.size;
+			}
+
+			/* Build resource */
+			hose->mem_offset[memno] = range.cpu_addr -
+							range.pci_addr;
+			res = &hose->mem_resources[memno++];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 		if (res != NULL) {
 			res->name = dev->full_name;
+<<<<<<< HEAD
 			res->end = res->start + size - 1;
 			res->parent = NULL;
 			res->sibling = NULL;
@@ -817,6 +1320,14 @@ void __devinit pci_process_bridge_OF_ranges(struct pci_controller *hose,
 				sizeof(struct resource) * (memno - next));
 		hose->mem_resources[--memno].flags = 0;
 	}
+=======
+			res->flags = range.flags;
+			res->start = range.cpu_addr;
+			res->end = range.cpu_addr + range.size - 1;
+			res->parent = res->child = res->sibling = NULL;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Decide whether to display the domain number in /proc */
@@ -831,12 +1342,30 @@ int pci_proc_domain(struct pci_bus *bus)
 	return 1;
 }
 
+<<<<<<< HEAD
 /* This header fixup will do the resource fixup for all devices as they are
  * probed, but not for bridge ranges
  */
 static void __devinit pcibios_fixup_resources(struct pci_dev *dev)
 {
 	struct pci_controller *hose = pci_bus_to_host(dev->bus);
+=======
+int pcibios_root_bridge_prepare(struct pci_host_bridge *bridge)
+{
+	if (ppc_md.pcibios_root_bridge_prepare)
+		return ppc_md.pcibios_root_bridge_prepare(bridge);
+
+	return 0;
+}
+
+/* This header fixup will do the resource fixup for all devices as they are
+ * probed, but not for bridge ranges
+ */
+static void pcibios_fixup_resources(struct pci_dev *dev)
+{
+	struct pci_controller *hose = pci_bus_to_host(dev->bus);
+	struct resource *res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	if (!hose) {
@@ -844,8 +1373,18 @@ static void __devinit pcibios_fixup_resources(struct pci_dev *dev)
 		       pci_name(dev));
 		return;
 	}
+<<<<<<< HEAD
 	for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
 		struct resource *res = dev->resource + i;
+=======
+
+	if (dev->is_virtfn)
+		return;
+
+	pci_dev_for_each_resource(dev, res, i) {
+		struct pci_bus_region reg;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!res->flags)
 			continue;
 
@@ -854,6 +1393,7 @@ static void __devinit pcibios_fixup_resources(struct pci_dev *dev)
 		 * at 0 as unset as well, except if PCI_PROBE_ONLY is also set
 		 * since in that case, we don't want to re-assign anything
 		 */
+<<<<<<< HEAD
 		if (pci_has_flag(PCI_REASSIGN_ALL_RSRC) ||
 		    (res->start == 0 && !pci_has_flag(PCI_PROBE_ONLY))) {
 			/* Only print message if not re-assigning */
@@ -864,17 +1404,30 @@ static void __devinit pcibios_fixup_resources(struct pci_dev *dev)
 					 (unsigned long long)res->start,
 					 (unsigned long long)res->end,
 					 (unsigned int)res->flags);
+=======
+		pcibios_resource_to_bus(dev->bus, &reg, res);
+		if (pci_has_flag(PCI_REASSIGN_ALL_RSRC) ||
+		    (reg.start == 0 && !pci_has_flag(PCI_PROBE_ONLY))) {
+			/* Only print message if not re-assigning */
+			if (!pci_has_flag(PCI_REASSIGN_ALL_RSRC))
+				pr_debug("PCI:%s Resource %d %pR is unassigned\n",
+					 pci_name(dev), i, res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			res->end -= res->start;
 			res->start = 0;
 			res->flags |= IORESOURCE_UNSET;
 			continue;
 		}
 
+<<<<<<< HEAD
 		pr_debug("PCI:%s Resource %d %016llx-%016llx [%x]\n",
 			 pci_name(dev), i,
 			 (unsigned long long)res->start,\
 			 (unsigned long long)res->end,
 			 (unsigned int)res->flags);
+=======
+		pr_debug("PCI:%s Resource %d %pR\n", pci_name(dev), i, res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Call machine specific resource fixup */
@@ -888,12 +1441,21 @@ DECLARE_PCI_FIXUP_HEADER(PCI_ANY_ID, PCI_ANY_ID, pcibios_fixup_resources);
  * things go more smoothly when it gets it right. It should covers cases such
  * as Apple "closed" bridge resources and bare-metal pSeries unassigned bridges
  */
+<<<<<<< HEAD
 static int __devinit pcibios_uninitialized_bridge_resource(struct pci_bus *bus,
 							   struct resource *res)
+=======
+static int pcibios_uninitialized_bridge_resource(struct pci_bus *bus,
+						 struct resource *res)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_controller *hose = pci_bus_to_host(bus);
 	struct pci_dev *dev = bus->self;
 	resource_size_t offset;
+<<<<<<< HEAD
+=======
+	struct pci_bus_region region;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 command;
 	int i;
 
@@ -903,10 +1465,17 @@ static int __devinit pcibios_uninitialized_bridge_resource(struct pci_bus *bus,
 
 	/* Job is a bit different between memory and IO */
 	if (res->flags & IORESOURCE_MEM) {
+<<<<<<< HEAD
 		/* If the BAR is non-0 (res != pci_mem_offset) then it's probably been
 		 * initialized by somebody
 		 */
 		if (res->start != hose->pci_mem_offset)
+=======
+		pcibios_resource_to_bus(dev->bus, &region, res);
+
+		/* If the BAR is non-0 then it's probably been initialized */
+		if (region.start != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 
 		/* The BAR is 0, let's check if memory decoding is enabled on
@@ -918,11 +1487,19 @@ static int __devinit pcibios_uninitialized_bridge_resource(struct pci_bus *bus,
 
 		/* Memory decoding is enabled and the BAR is 0. If any of the bridge
 		 * resources covers that starting address (0 then it's good enough for
+<<<<<<< HEAD
 		 * us for memory
 		 */
 		for (i = 0; i < 3; i++) {
 			if ((hose->mem_resources[i].flags & IORESOURCE_MEM) &&
 			    hose->mem_resources[i].start == hose->pci_mem_offset)
+=======
+		 * us for memory space)
+		 */
+		for (i = 0; i < 3; i++) {
+			if ((hose->mem_resources[i].flags & IORESOURCE_MEM) &&
+			    hose->mem_resources[i].start == hose->mem_offset[i])
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return 0;
 		}
 
@@ -953,7 +1530,11 @@ static int __devinit pcibios_uninitialized_bridge_resource(struct pci_bus *bus,
 }
 
 /* Fixup resources of a PCI<->PCI bridge */
+<<<<<<< HEAD
 static void __devinit pcibios_fixup_bridge(struct pci_bus *bus)
+=======
+static void pcibios_fixup_bridge(struct pci_bus *bus)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct resource *res;
 	int i;
@@ -966,6 +1547,7 @@ static void __devinit pcibios_fixup_bridge(struct pci_bus *bus)
 		if (i >= 3 && bus->self->transparent)
 			continue;
 
+<<<<<<< HEAD
 		/* If we are going to re-assign everything, mark the resource
 		 * as unset and move it down to 0
 		 */
@@ -981,6 +1563,20 @@ static void __devinit pcibios_fixup_bridge(struct pci_bus *bus)
 			 (unsigned long long)res->start,\
 			 (unsigned long long)res->end,
 			 (unsigned int)res->flags);
+=======
+		/* If we're going to reassign everything, we can
+		 * shrink the P2P resource to have size as being
+		 * of 0 in order to save space.
+		 */
+		if (pci_has_flag(PCI_REASSIGN_ALL_RSRC)) {
+			res->flags |= IORESOURCE_UNSET;
+			res->start = 0;
+			res->end = -1;
+			continue;
+		}
+
+		pr_debug("PCI:%s Bus rsrc %d %pR\n", pci_name(dev), i, res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Try to detect uninitialized P2P bridge resources,
 		 * and clear them out so they get re-assigned later
@@ -992,8 +1588,15 @@ static void __devinit pcibios_fixup_bridge(struct pci_bus *bus)
 	}
 }
 
+<<<<<<< HEAD
 void __devinit pcibios_setup_bus_self(struct pci_bus *bus)
 {
+=======
+void pcibios_setup_bus_self(struct pci_bus *bus)
+{
+	struct pci_controller *phb;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Fix up the bus resources for P2P bridges */
 	if (bus->self != NULL)
 		pcibios_fixup_bridge(bus);
@@ -1005,6 +1608,7 @@ void __devinit pcibios_setup_bus_self(struct pci_bus *bus)
 		ppc_md.pcibios_fixup_bus(bus);
 
 	/* Setup bus DMA mappings */
+<<<<<<< HEAD
 	if (ppc_md.pci_dma_bus_setup)
 		ppc_md.pci_dma_bus_setup(bus);
 }
@@ -1041,6 +1645,52 @@ void __devinit pcibios_setup_bus_devices(struct pci_bus *bus)
 		if (ppc_md.pci_irq_fixup)
 			ppc_md.pci_irq_fixup(dev);
 	}
+=======
+	phb = pci_bus_to_host(bus);
+	if (phb->controller_ops.dma_bus_setup)
+		phb->controller_ops.dma_bus_setup(bus);
+}
+
+void pcibios_bus_add_device(struct pci_dev *dev)
+{
+	struct pci_controller *phb;
+	/* Fixup NUMA node as it may not be setup yet by the generic
+	 * code and is needed by the DMA init
+	 */
+	set_dev_node(&dev->dev, pcibus_to_node(dev->bus));
+
+	/* Hook up default DMA ops */
+	set_dma_ops(&dev->dev, pci_dma_ops);
+	dev->dev.archdata.dma_offset = PCI_DRAM_OFFSET;
+
+	/* Additional platform DMA/iommu setup */
+	phb = pci_bus_to_host(dev->bus);
+	if (phb->controller_ops.dma_dev_setup)
+		phb->controller_ops.dma_dev_setup(dev);
+
+	/* Read default IRQs and fixup if necessary */
+	pci_read_irq_line(dev);
+	if (ppc_md.pci_irq_fixup)
+		ppc_md.pci_irq_fixup(dev);
+
+	if (ppc_md.pcibios_bus_add_device)
+		ppc_md.pcibios_bus_add_device(dev);
+}
+
+int pcibios_device_add(struct pci_dev *dev)
+{
+	struct irq_domain *d;
+
+#ifdef CONFIG_PCI_IOV
+	if (ppc_md.pcibios_fixup_sriov)
+		ppc_md.pcibios_fixup_sriov(dev);
+#endif /* CONFIG_PCI_IOV */
+
+	d = dev_get_msi_domain(&dev->bus->dev);
+	if (d)
+		dev_set_msi_domain(&dev->dev, d);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void pcibios_set_master(struct pci_dev *dev)
@@ -1048,12 +1698,17 @@ void pcibios_set_master(struct pci_dev *dev)
 	/* No special bus mastering setup handling */
 }
 
+<<<<<<< HEAD
 void __devinit pcibios_fixup_bus(struct pci_bus *bus)
+=======
+void pcibios_fixup_bus(struct pci_bus *bus)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* When called from the generic PCI probe, read PCI<->PCI bridge
 	 * bases. This is -not- called when generating the PCI tree from
 	 * the OF device-tree.
 	 */
+<<<<<<< HEAD
 	if (bus->self != NULL)
 		pci_read_bridge_bases(bus);
 
@@ -1072,6 +1727,15 @@ void __devinit pci_fixup_cardbus(struct pci_bus *bus)
 }
 
 
+=======
+	pci_read_bridge_bases(bus);
+
+	/* Now fixup the bus */
+	pcibios_setup_bus_self(bus);
+}
+EXPORT_SYMBOL(pcibios_fixup_bus);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int skip_isa_ioresource_align(struct pci_dev *dev)
 {
 	if (pci_has_flag(PCI_CAN_SKIP_ISA_ALIGN) &&
@@ -1139,10 +1803,15 @@ static int reparent_resources(struct resource *parent,
 	*pp = NULL;
 	for (p = res->child; p != NULL; p = p->sibling) {
 		p->parent = res;
+<<<<<<< HEAD
 		pr_debug("PCI: Reparented %s [%llx..%llx] under %s\n",
 			 p->name,
 			 (unsigned long long)p->start,
 			 (unsigned long long)p->end, res->name);
+=======
+		pr_debug("PCI: Reparented %s %pR under %s\n",
+			 p->name, p, res->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return 0;
 }
@@ -1180,7 +1849,11 @@ static int reparent_resources(struct resource *parent,
  *	    as well.
  */
 
+<<<<<<< HEAD
 void pcibios_allocate_bus_resources(struct pci_bus *bus)
+=======
+static void pcibios_allocate_bus_resources(struct pci_bus *bus)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_bus *b;
 	int i;
@@ -1211,6 +1884,7 @@ void pcibios_allocate_bus_resources(struct pci_bus *bus)
 			}
 		}
 
+<<<<<<< HEAD
 		pr_debug("PCI: %s (bus %d) bridge rsrc %d: %016llx-%016llx "
 			 "[0x%x], parent %p (%s)\n",
 			 bus->self ? pci_name(bus->self) : "PHB",
@@ -1221,6 +1895,15 @@ void pcibios_allocate_bus_resources(struct pci_bus *bus)
 			 pr, (pr && pr->name) ? pr->name : "nil");
 
 		if (pr && !(pr->flags & IORESOURCE_UNSET)) {
+=======
+		pr_debug("PCI: %s (bus %d) bridge rsrc %d: %pR, parent %p (%s)\n",
+			 bus->self ? pci_name(bus->self) : "PHB", bus->number,
+			 i, res, pr, (pr && pr->name) ? pr->name : "nil");
+
+		if (pr && !(pr->flags & IORESOURCE_UNSET)) {
+			struct pci_dev *dev = bus->self;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (request_resource(pr, res) == 0)
 				continue;
 			/*
@@ -1230,11 +1913,31 @@ void pcibios_allocate_bus_resources(struct pci_bus *bus)
 			 */
 			if (reparent_resources(pr, res) == 0)
 				continue;
+<<<<<<< HEAD
 		}
 		pr_warning("PCI: Cannot allocate resource region "
 			   "%d of PCI bridge %d, will remap\n", i, bus->number);
 	clear_resource:
 		res->start = res->end = 0;
+=======
+
+			if (dev && i < PCI_BRIDGE_RESOURCE_NUM &&
+			    pci_claim_bridge_resource(dev,
+						i + PCI_BRIDGE_RESOURCES) == 0)
+				continue;
+		}
+		pr_warn("PCI: Cannot allocate resource region %d of PCI bridge %d, will remap\n",
+			i, bus->number);
+	clear_resource:
+		/* The resource might be figured out when doing
+		 * reassignment based on the resources required
+		 * by the downstream PCI devices. Here we set
+		 * the size of the resource to be 0 in order to
+		 * save more space.
+		 */
+		res->start = 0;
+		res->end = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res->flags = 0;
 	}
 
@@ -1242,6 +1945,7 @@ void pcibios_allocate_bus_resources(struct pci_bus *bus)
 		pcibios_allocate_bus_resources(b);
 }
 
+<<<<<<< HEAD
 static inline void __devinit alloc_resource(struct pci_dev *dev, int idx)
 {
 	struct resource *pr, *r = &dev->resource[idx];
@@ -1251,6 +1955,14 @@ static inline void __devinit alloc_resource(struct pci_dev *dev, int idx)
 		 (unsigned long long)r->start,
 		 (unsigned long long)r->end,
 		 (unsigned int)r->flags);
+=======
+static inline void alloc_resource(struct pci_dev *dev, int idx)
+{
+	struct resource *pr, *r = &dev->resource[idx];
+
+	pr_debug("PCI: Allocating %s: Resource %d: %pR\n",
+		 pci_name(dev), idx, r);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr = pci_find_parent_resource(dev, r);
 	if (!pr || (pr->flags & IORESOURCE_UNSET) ||
@@ -1258,11 +1970,15 @@ static inline void __devinit alloc_resource(struct pci_dev *dev, int idx)
 		printk(KERN_WARNING "PCI: Cannot allocate resource region %d"
 		       " of device %s, will remap\n", idx, pci_name(dev));
 		if (pr)
+<<<<<<< HEAD
 			pr_debug("PCI:  parent is %p: %016llx-%016llx [%x]\n",
 				 pr,
 				 (unsigned long long)pr->start,
 				 (unsigned long long)pr->end,
 				 (unsigned int)pr->flags);
+=======
+			pr_debug("PCI:  parent is %p: %pR\n", pr, pr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* We'll assign a new address later */
 		r->flags |= IORESOURCE_UNSET;
 		r->end -= r->start;
@@ -1346,10 +2062,16 @@ static void __init pcibios_reserve_legacy_regions(struct pci_bus *bus)
 
  no_io:
 	/* Check for memory */
+<<<<<<< HEAD
 	offset = hose->pci_mem_offset;
 	pr_debug("hose mem offset: %016llx\n", (unsigned long long)offset);
 	for (i = 0; i < 3; i++) {
 		pres = &hose->mem_resources[i];
+=======
+	for (i = 0; i < 3; i++) {
+		pres = &hose->mem_resources[i];
+		offset = hose->mem_offset[i];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!(pres->flags & IORESOURCE_MEM))
 			continue;
 		pr_debug("hose mem res: %pR\n", pres);
@@ -1381,8 +2103,15 @@ void __init pcibios_resource_survey(void)
 	/* Allocate and assign resources */
 	list_for_each_entry(b, &pci_root_buses, node)
 		pcibios_allocate_bus_resources(b);
+<<<<<<< HEAD
 	pcibios_allocate_resources(0);
 	pcibios_allocate_resources(1);
+=======
+	if (!pci_has_flag(PCI_REASSIGN_ALL_RSRC)) {
+		pcibios_allocate_resources(0);
+		pcibios_allocate_resources(1);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Before we start assigning unassigned resource, we try to reserve
 	 * the low IO area and the VGA memory area if they intersect the
@@ -1400,6 +2129,7 @@ void __init pcibios_resource_survey(void)
 		pr_debug("PCI: Assigning unassigned resources...\n");
 		pci_assign_unassigned_resources();
 	}
+<<<<<<< HEAD
 
 	/* Call machine dependent fixup */
 	if (ppc_md.pcibios_fixup)
@@ -1408,6 +2138,10 @@ void __init pcibios_resource_survey(void)
 
 #ifdef CONFIG_HOTPLUG
 
+=======
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* This is used by the PCI hotplug driver to allocate resource
  * of newly plugged busses. We can try to consolidate with the
  * rest of the code later, for now, keep it as-is as our main
@@ -1419,6 +2153,7 @@ void pcibios_claim_one_bus(struct pci_bus *bus)
 	struct pci_bus *child_bus;
 
 	list_for_each_entry(dev, &bus->devices, bus_list) {
+<<<<<<< HEAD
 		int i;
 
 		for (i = 0; i < PCI_NUM_RESOURCES; i++) {
@@ -1435,12 +2170,32 @@ void pcibios_claim_one_bus(struct pci_bus *bus)
 				 (unsigned int)r->flags);
 
 			pci_claim_resource(dev, i);
+=======
+		struct resource *r;
+		int i;
+
+		pci_dev_for_each_resource(dev, r, i) {
+			if (r->parent || !r->start || !r->flags)
+				continue;
+
+			pr_debug("PCI: Claiming %s: Resource %d: %pR\n",
+				 pci_name(dev), i, r);
+
+			if (pci_claim_resource(dev, i) == 0)
+				continue;
+
+			pci_claim_bridge_resource(dev, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	list_for_each_entry(child_bus, &bus->children, node)
 		pcibios_claim_one_bus(child_bus);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(pcibios_claim_one_bus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* pcibios_finish_adding_to_bus
@@ -1457,6 +2212,7 @@ void pcibios_finish_adding_to_bus(struct pci_bus *bus)
 	/* Allocate bus and devices resources */
 	pcibios_allocate_bus_resources(bus);
 	pcibios_claim_one_bus(bus);
+<<<<<<< HEAD
 
 	/* Add new devices to global lists.  Register in proc, sysfs. */
 	pci_bus_add_devices(bus);
@@ -1472,25 +2228,65 @@ int pcibios_enable_device(struct pci_dev *dev, int mask)
 {
 	if (ppc_md.pcibios_enable_device_hook)
 		if (ppc_md.pcibios_enable_device_hook(dev))
+=======
+	if (!pci_has_flag(PCI_PROBE_ONLY)) {
+		if (bus->self)
+			pci_assign_unassigned_bridge_resources(bus->self);
+		else
+			pci_assign_unassigned_bus_resources(bus);
+	}
+
+	/* Add new devices to global lists.  Register in proc, sysfs. */
+	pci_bus_add_devices(bus);
+}
+EXPORT_SYMBOL_GPL(pcibios_finish_adding_to_bus);
+
+int pcibios_enable_device(struct pci_dev *dev, int mask)
+{
+	struct pci_controller *phb = pci_bus_to_host(dev->bus);
+
+	if (phb->controller_ops.enable_device_hook)
+		if (!phb->controller_ops.enable_device_hook(dev))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 
 	return pci_enable_resources(dev, mask);
 }
 
+<<<<<<< HEAD
+=======
+void pcibios_disable_device(struct pci_dev *dev)
+{
+	struct pci_controller *phb = pci_bus_to_host(dev->bus);
+
+	if (phb->controller_ops.disable_device)
+		phb->controller_ops.disable_device(dev);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 resource_size_t pcibios_io_space_offset(struct pci_controller *hose)
 {
 	return (unsigned long) hose->io_base_virt - _IO_BASE;
 }
 
+<<<<<<< HEAD
 static void __devinit pcibios_setup_phb_resources(struct pci_controller *hose, struct list_head *resources)
 {
 	struct resource *res;
+=======
+static void pcibios_setup_phb_resources(struct pci_controller *hose,
+					struct list_head *resources)
+{
+	struct resource *res;
+	resource_size_t offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 
 	/* Hookup PHB IO resource */
 	res = &hose->io_resource;
 
 	if (!res->flags) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "PCI: I/O resource not set for host"
 		       " bridge %s (domain %d)\n",
 		       hose->dn->full_name, hose->global_number);
@@ -1507,10 +2303,23 @@ static void __devinit pcibios_setup_phb_resources(struct pci_controller *hose, s
 		 (unsigned long long)res->end,
 		 (unsigned long)res->flags);
 	pci_add_resource_offset(resources, res, pcibios_io_space_offset(hose));
+=======
+		pr_debug("PCI: I/O resource not set for host"
+			 " bridge %pOF (domain %d)\n",
+			 hose->dn, hose->global_number);
+	} else {
+		offset = pcibios_io_space_offset(hose);
+
+		pr_debug("PCI: PHB IO resource    = %pR off 0x%08llx\n",
+			 res, (unsigned long long)offset);
+		pci_add_resource_offset(resources, res, offset);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Hookup PHB Memory resources */
 	for (i = 0; i < 3; ++i) {
 		res = &hose->mem_resources[i];
+<<<<<<< HEAD
 		if (!res->flags) {
 			if (i > 0)
 				continue;
@@ -1537,6 +2346,17 @@ static void __devinit pcibios_setup_phb_resources(struct pci_controller *hose, s
 	pr_debug("PCI: PHB IO  offset     = %08lx\n",
 		 (unsigned long)hose->io_base_virt - _IO_BASE);
 
+=======
+		if (!res->flags)
+			continue;
+
+		offset = hose->mem_offset[i];
+		pr_debug("PCI: PHB MEM resource %d = %pR off 0x%08llx\n", i,
+			 res, (unsigned long long)offset);
+
+		pci_add_resource_offset(resources, res, offset);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1579,7 +2399,11 @@ fake_pci_bus(struct pci_controller *hose, int busnr)
 {
 	static struct pci_bus bus;
 
+<<<<<<< HEAD
 	if (hose == 0) {
+=======
+	if (hose == NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "Can't find hose for PCI bus %d!\n", busnr);
 	}
 	bus.number = busnr;
@@ -1603,7 +2427,10 @@ EARLY_PCI_OP(write, byte, u8)
 EARLY_PCI_OP(write, word, u16)
 EARLY_PCI_OP(write, dword, u32)
 
+<<<<<<< HEAD
 extern int pci_bus_find_capability (struct pci_bus *bus, unsigned int devfn, int cap);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int early_find_capability(struct pci_controller *hose, int bus, int devfn,
 			  int cap)
 {
@@ -1621,15 +2448,23 @@ struct device_node *pcibios_get_phb_of_node(struct pci_bus *bus)
  * pci_scan_phb - Given a pci_controller, setup and scan the PCI bus
  * @hose: Pointer to the PCI host controller instance structure
  */
+<<<<<<< HEAD
 void __devinit pcibios_scan_phb(struct pci_controller *hose)
+=======
+void pcibios_scan_phb(struct pci_controller *hose)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	LIST_HEAD(resources);
 	struct pci_bus *bus;
 	struct device_node *node = hose->dn;
 	int mode;
 
+<<<<<<< HEAD
 	pr_debug("PCI: Scanning PHB %s\n",
 		 node ? node->full_name : "<NO NAME>");
+=======
+	pr_debug("PCI: Scanning PHB %pOF\n", node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get some IO space for the new PHB */
 	pcibios_setup_phb_io_space(hose);
@@ -1637,6 +2472,14 @@ void __devinit pcibios_scan_phb(struct pci_controller *hose)
 	/* Wire up PHB bus resources */
 	pcibios_setup_phb_resources(hose, &resources);
 
+<<<<<<< HEAD
+=======
+	hose->busn.start = hose->first_busno;
+	hose->busn.end	 = hose->last_busno;
+	hose->busn.flags = IORESOURCE_BUS;
+	pci_add_resource(&resources, &hose->busn);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Create an empty bus for the toplevel */
 	bus = pci_create_root_bus(hose->parent, hose->first_busno,
 				  hose->ops, hose, &resources);
@@ -1646,11 +2489,15 @@ void __devinit pcibios_scan_phb(struct pci_controller *hose)
 		pci_free_resource_list(&resources);
 		return;
 	}
+<<<<<<< HEAD
 	bus->secondary = hose->first_busno;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hose->bus = bus;
 
 	/* Get probe mode and perform scan */
 	mode = PCI_PROBE_NORMAL;
+<<<<<<< HEAD
 	if (node && ppc_md.pci_probe_mode)
 		mode = ppc_md.pci_probe_mode(bus);
 	pr_debug("    probe mode: %d\n", mode);
@@ -1661,6 +2508,19 @@ void __devinit pcibios_scan_phb(struct pci_controller *hose)
 
 	if (mode == PCI_PROBE_NORMAL)
 		hose->last_busno = bus->subordinate = pci_scan_child_bus(bus);
+=======
+	if (node && hose->controller_ops.probe_mode)
+		mode = hose->controller_ops.probe_mode(bus);
+	pr_debug("    probe mode: %d\n", mode);
+	if (mode == PCI_PROBE_DEVTREE)
+		of_scan_bus(node, bus);
+
+	if (mode == PCI_PROBE_NORMAL) {
+		pci_bus_update_busn_res_end(bus, 255);
+		hose->last_busno = pci_scan_child_bus(bus);
+		pci_bus_update_busn_res_end(bus, hose->last_busno);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Platform gets a chance to do some global fixups before
 	 * we proceed to resource allocation
@@ -1671,6 +2531,7 @@ void __devinit pcibios_scan_phb(struct pci_controller *hose)
 	/* Configure PCI Express settings */
 	if (bus && !pci_has_flag(PCI_PROBE_ONLY)) {
 		struct pci_bus *child;
+<<<<<<< HEAD
 		list_for_each_entry(child, &bus->children, node) {
 			struct pci_dev *self = child->self;
 			if (!self)
@@ -1685,18 +2546,52 @@ static void fixup_hide_host_resource_fsl(struct pci_dev *dev)
 	int i, class = dev->class >> 8;
 	/* When configured as agent, programing interface = 1 */
 	int prog_if = dev->class & 0xf;
+=======
+		list_for_each_entry(child, &bus->children, node)
+			pcie_bus_configure_settings(child);
+	}
+}
+EXPORT_SYMBOL_GPL(pcibios_scan_phb);
+
+static void fixup_hide_host_resource_fsl(struct pci_dev *dev)
+{
+	int class = dev->class >> 8;
+	/* When configured as agent, programming interface = 1 */
+	int prog_if = dev->class & 0xf;
+	struct resource *r;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((class == PCI_CLASS_PROCESSOR_POWERPC ||
 	     class == PCI_CLASS_BRIDGE_OTHER) &&
 		(dev->hdr_type == PCI_HEADER_TYPE_NORMAL) &&
 		(prog_if == 0) &&
 		(dev->bus->parent == NULL)) {
+<<<<<<< HEAD
 		for (i = 0; i < DEVICE_COUNT_RESOURCE; i++) {
 			dev->resource[i].start = 0;
 			dev->resource[i].end = 0;
 			dev->resource[i].flags = 0;
+=======
+		pci_dev_for_each_resource(dev, r) {
+			r->start = 0;
+			r->end = 0;
+			r->flags = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_MOTOROLA, PCI_ANY_ID, fixup_hide_host_resource_fsl);
 DECLARE_PCI_FIXUP_HEADER(PCI_VENDOR_ID_FREESCALE, PCI_ANY_ID, fixup_hide_host_resource_fsl);
+<<<<<<< HEAD
+=======
+
+
+static int __init discover_phbs(void)
+{
+	if (ppc_md.discover_phbs)
+		ppc_md.discover_phbs();
+
+	return 0;
+}
+core_initcall(discover_phbs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

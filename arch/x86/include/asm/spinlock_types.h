@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_X86_SPINLOCK_TYPES_H
 #define _ASM_X86_SPINLOCK_TYPES_H
 
@@ -29,5 +30,14 @@ typedef struct arch_spinlock {
 #define __ARCH_SPIN_LOCK_UNLOCKED	{ { 0 } }
 
 #include <asm/rwlock.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_X86_SPINLOCK_TYPES_H
+#define _ASM_X86_SPINLOCK_TYPES_H
+
+#include <linux/types.h>
+#include <asm-generic/qspinlock_types.h>
+#include <asm-generic/qrwlock_types.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_X86_SPINLOCK_TYPES_H */

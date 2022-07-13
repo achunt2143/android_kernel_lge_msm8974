@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 # ==========================================================================
 # Cleaning up
 # ==========================================================================
@@ -7,6 +11,7 @@ src := $(obj)
 PHONY := __clean
 __clean:
 
+<<<<<<< HEAD
 # Shorthand for $(Q)$(MAKE) scripts/Makefile.clean obj=dir
 # Usage:
 # $(Q)$(MAKE) $(clean)=dir
@@ -19,10 +24,15 @@ include $(if $(wildcard $(kbuild-dir)/Kbuild), $(kbuild-dir)/Kbuild, $(kbuild-di
 else ifdef CONFIG_TOUCHSCREEN_SYNAPTICS_G3
 include $(if $(wildcard $(kbuild-dir)/Kbuild), $(kbuild-dir)/Kbuild, $(kbuild-dir)/g3/Makefile)
 endif
+=======
+include $(srctree)/scripts/Kbuild.include
+include $(kbuild-file)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Figure out what we need to build from the various variables
 # ==========================================================================
 
+<<<<<<< HEAD
 __subdir-y	:= $(patsubst %/,%,$(filter %/, $(obj-y)))
 subdir-y	+= $(__subdir-y)
 __subdir-m	:= $(patsubst %/,%,$(filter %/, $(obj-m)))
@@ -36,6 +46,10 @@ subdir-		+= $(__subdir-)
 
 subdir-ym	:= $(sort $(subdir-y) $(subdir-m))
 subdir-ymn      := $(sort $(subdir-ym) $(subdir-n) $(subdir-))
+=======
+subdir-ymn := $(sort $(subdir-y) $(subdir-m) $(subdir-) \
+		$(patsubst %/,%, $(filter %/, $(obj-y) $(obj-m) $(obj-))))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Add subdir path
 
@@ -44,6 +58,7 @@ subdir-ymn	:= $(addprefix $(obj)/,$(subdir-ymn))
 # build a list of files to remove, usually relative to the current
 # directory
 
+<<<<<<< HEAD
 __clean-files	:= $(extra-y) $(always)                  \
 		   $(targets) $(clean-files)             \
 		   $(host-progs)                         \
@@ -82,6 +97,29 @@ ifneq ($(strip $(__clean-dirs)),)
 endif
 ifneq ($(strip $(clean-rule)),)
 	+$(clean-rule)
+=======
+__clean-files	:= \
+	$(clean-files) $(targets) $(hostprogs) $(userprogs) \
+	$(extra-y) $(extra-m) $(extra-) \
+	$(always-y) $(always-m) $(always-) \
+	$(hostprogs-always-y) $(hostprogs-always-m) $(hostprogs-always-) \
+	$(userprogs-always-y) $(userprogs-always-m) $(userprogs-always-)
+
+__clean-files   := $(filter-out $(no-clean-files), $(__clean-files))
+
+__clean-files   := $(wildcard $(addprefix $(obj)/, $(__clean-files)))
+
+# ==========================================================================
+
+# To make this rule robust against "Argument list too long" error,
+# remove $(obj)/ prefix, and restore it by a shell command.
+quiet_cmd_clean = CLEAN   $(obj)
+      cmd_clean = printf '$(obj)/%s ' $(patsubst $(obj)/%,%,$(__clean-files)) | xargs rm -rf
+
+__clean: $(subdir-ymn)
+ifneq ($(strip $(__clean-files)),)
+	$(call cmd,clean)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 endif
 	@:
 
@@ -97,6 +135,7 @@ PHONY += $(subdir-ymn)
 $(subdir-ymn):
 	$(Q)$(MAKE) $(clean)=$@
 
+<<<<<<< HEAD
 # If quiet is set, only print short version of command
 
 cmd = @$(if $($(quiet)cmd_$(1)),echo '  $($(quiet)cmd_$(1))' &&) $(cmd_$(1))
@@ -105,4 +144,6 @@ cmd = @$(if $($(quiet)cmd_$(1)),echo '  $($(quiet)cmd_$(1))' &&) $(cmd_$(1))
 # Declare the contents of the .PHONY variable as phony.  We keep that
 # information in a variable se we can use it in if_changed and friends.
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .PHONY: $(PHONY)

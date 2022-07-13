@@ -1,13 +1,33 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* U3copy_from_user.S: UltraSparc-III optimized copy from userspace.
  *
  * Copyright (C) 1999, 2000, 2004 David S. Miller (davem@redhat.com)
  */
 
+<<<<<<< HEAD
 #define EX_LD(x)		\
 98:	x;			\
 	.section __ex_table,"a";\
 	.align 4;		\
 	.word 98b, __retl_one;	\
+=======
+#define EX_LD(x,y)		\
+98:	x;			\
+	.section __ex_table,"a";\
+	.align 4;		\
+	.word 98b, y;		\
+	.text;			\
+	.align 4;
+
+#define EX_LD_FP(x,y)		\
+98:	x;			\
+	.section __ex_table,"a";\
+	.align 4;		\
+	.word 98b, y##_fp;	\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.text;			\
 	.align 4;
 

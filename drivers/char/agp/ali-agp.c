@@ -85,8 +85,13 @@ static int ali_configure(void)
 	pci_write_config_dword(agp_bridge->dev, ALI_TLBCTRL, ((temp & 0xffffff00) | 0x00000010));
 
 	/* address to map to */
+<<<<<<< HEAD
 	pci_read_config_dword(agp_bridge->dev, AGP_APBASE, &temp);
 	agp_bridge->gart_bus_addr = (temp & PCI_BASE_ADDRESS_MEM_MASK);
+=======
+	agp_bridge->gart_bus_addr = pci_bus_address(agp_bridge->dev,
+						    AGP_APERTURE_BAR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if 0
 	if (agp_bridge->type == ALI_M1541) {
@@ -249,7 +254,11 @@ static const struct agp_bridge_driver ali_m1541_bridge = {
 };
 
 
+<<<<<<< HEAD
 static struct agp_device_ids ali_agp_device_ids[] __devinitdata =
+=======
+static struct agp_device_ids ali_agp_device_ids[] =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	{
 		.device_id	= PCI_DEVICE_ID_AL_M1541,
@@ -299,8 +308,12 @@ static struct agp_device_ids ali_agp_device_ids[] __devinitdata =
 	{ }, /* dummy final entry, always present */
 };
 
+<<<<<<< HEAD
 static int __devinit agp_ali_probe(struct pci_dev *pdev,
 				const struct pci_device_id *ent)
+=======
+static int agp_ali_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct agp_device_ids *devs = ali_agp_device_ids;
 	struct agp_bridge_data *bridge;
@@ -358,7 +371,11 @@ found:
 		default:
 			break;
 		}
+<<<<<<< HEAD
 		/*FALLTHROUGH*/
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		bridge->driver = &ali_generic_bridge;
 	}
@@ -374,7 +391,11 @@ found:
 	return agp_add_bridge(bridge);
 }
 
+<<<<<<< HEAD
 static void __devexit agp_ali_remove(struct pci_dev *pdev)
+=======
+static void agp_ali_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct agp_bridge_data *bridge = pci_get_drvdata(pdev);
 
@@ -382,7 +403,11 @@ static void __devexit agp_ali_remove(struct pci_dev *pdev)
 	agp_put_bridge(bridge);
 }
 
+<<<<<<< HEAD
 static struct pci_device_id agp_ali_pci_table[] = {
+=======
+static const struct pci_device_id agp_ali_pci_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 	.class		= (PCI_CLASS_BRIDGE_HOST << 8),
 	.class_mask	= ~0,
@@ -418,6 +443,10 @@ static void __exit agp_ali_cleanup(void)
 module_init(agp_ali_init);
 module_exit(agp_ali_cleanup);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>");
+=======
+MODULE_AUTHOR("Dave Jones");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL and additional rights");
 

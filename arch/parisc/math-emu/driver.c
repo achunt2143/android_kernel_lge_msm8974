@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux/PA-RISC Project (http://www.parisc-linux.org/)
  *
  * Floating-point emulation code
  *  Copyright (C) 2001 Hewlett-Packard (Paul Bame) <bame@debian.org>
+<<<<<<< HEAD
  *
  *    This program is free software; you can redistribute it and/or modify
  *    it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *    You should have received a copy of the GNU General Public License
  *    along with this program; if not, write to the Free Software
  *    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  *  linux/arch/math-emu/driver.c.c
@@ -27,7 +34,12 @@
  *  Copyright (C) 2001	      Hewlett-Packard <bame@debian.org>
  */
 
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "float.h"
 #include "math-emu.h"
 
@@ -80,7 +92,10 @@ int
 handle_fpe(struct pt_regs *regs)
 {
 	extern void printbinary(unsigned long x, int nbits);
+<<<<<<< HEAD
 	struct siginfo si;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int orig_sw, sw;
 	int signalcode;
 	/* need an intermediate copy of float regs because FPU emulation
@@ -116,11 +131,16 @@ handle_fpe(struct pt_regs *regs)
 
 	memcpy(regs->fr, frcopy, sizeof regs->fr);
 	if (signalcode != 0) {
+<<<<<<< HEAD
 	    si.si_signo = signalcode >> 24;
 	    si.si_errno = 0;
 	    si.si_code = signalcode & 0xffffff;
 	    si.si_addr = (void __user *) regs->iaoq[0];
 	    force_sig_info(si.si_signo, &si, current);
+=======
+	    force_sig_fault(signalcode >> 24, signalcode & 0xffffff,
+			    (void __user *) regs->iaoq[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    return -1;
 	}
 

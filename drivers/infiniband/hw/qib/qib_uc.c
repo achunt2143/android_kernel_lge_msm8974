@@ -40,6 +40,7 @@
 /**
  * qib_make_uc_req - construct a request packet (SEND, RDMA write)
  * @qp: a pointer to the QP
+<<<<<<< HEAD
  *
  * Return 1 if constructed; otherwise, return 0.
  */
@@ -48,12 +49,26 @@ int qib_make_uc_req(struct qib_qp *qp)
 	struct qib_other_headers *ohdr;
 	struct qib_swqe *wqe;
 	unsigned long flags;
+=======
+ * @flags: unused
+ *
+ * Assumes the s_lock is held.
+ *
+ * Return 1 if constructed; otherwise, return 0.
+ */
+int qib_make_uc_req(struct rvt_qp *qp, unsigned long *flags)
+{
+	struct qib_qp_priv *priv = qp->priv;
+	struct ib_other_headers *ohdr;
+	struct rvt_swqe *wqe;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 hwords;
 	u32 bth0;
 	u32 len;
 	u32 pmtu = qp->pmtu;
 	int ret = 0;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&qp->s_lock, flags);
 
 	if (!(ib_qib_state_ops[qp->state] & QIB_PROCESS_SEND_OK)) {
@@ -75,12 +90,34 @@ int qib_make_uc_req(struct qib_qp *qp)
 	ohdr = &qp->s_hdr.u.oth;
 	if (qp->remote_ah_attr.ah_flags & IB_AH_GRH)
 		ohdr = &qp->s_hdr.u.l.oth;
+=======
+	if (!(ib_rvt_state_ops[qp->state] & RVT_PROCESS_SEND_OK)) {
+		if (!(ib_rvt_state_ops[qp->state] & RVT_FLUSH_SEND))
+			goto bail;
+		/* We are in the error state, flush the work request. */
+		if (qp->s_last == READ_ONCE(qp->s_head))
+			goto bail;
+		/* If DMAs are in progress, we can't flush immediately. */
+		if (atomic_read(&priv->s_dma_busy)) {
+			qp->s_flags |= RVT_S_WAIT_DMA;
+			goto bail;
+		}
+		wqe = rvt_get_swqe_ptr(qp, qp->s_last);
+		rvt_send_complete(qp, wqe, IB_WC_WR_FLUSH_ERR);
+		goto done;
+	}
+
+	ohdr = &priv->s_hdr->u.oth;
+	if (rdma_ah_get_ah_flags(&qp->remote_ah_attr) & IB_AH_GRH)
+		ohdr = &priv->s_hdr->u.l.oth;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* header size in 32-bit words LRH+BTH = (8+12)/4. */
 	hwords = 5;
 	bth0 = 0;
 
 	/* Get the next send request. */
+<<<<<<< HEAD
 	wqe = get_swqe_ptr(qp, qp->s_cur);
 	qp->s_wqe = NULL;
 	switch (qp->s_state) {
@@ -90,12 +127,27 @@ int qib_make_uc_req(struct qib_qp *qp)
 			goto bail;
 		/* Check if send work queue is empty. */
 		if (qp->s_cur == qp->s_head)
+=======
+	wqe = rvt_get_swqe_ptr(qp, qp->s_cur);
+	qp->s_wqe = NULL;
+	switch (qp->s_state) {
+	default:
+		if (!(ib_rvt_state_ops[qp->state] &
+		    RVT_PROCESS_NEXT_SEND_OK))
+			goto bail;
+		/* Check if send work queue is empty. */
+		if (qp->s_cur == READ_ONCE(qp->s_head))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto bail;
 		/*
 		 * Start a new request.
 		 */
+<<<<<<< HEAD
 		wqe->psn = qp->s_next_psn;
 		qp->s_psn = qp->s_next_psn;
+=======
+		qp->s_psn = wqe->psn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qp->s_sge.sge = wqe->sg_list[0];
 		qp->s_sge.sg_list = wqe->sg_list + 1;
 		qp->s_sge.num_sge = wqe->wr.num_sge;
@@ -129,9 +181,15 @@ int qib_make_uc_req(struct qib_qp *qp)
 		case IB_WR_RDMA_WRITE:
 		case IB_WR_RDMA_WRITE_WITH_IMM:
 			ohdr->u.rc.reth.vaddr =
+<<<<<<< HEAD
 				cpu_to_be64(wqe->wr.wr.rdma.remote_addr);
 			ohdr->u.rc.reth.rkey =
 				cpu_to_be32(wqe->wr.wr.rdma.rkey);
+=======
+				cpu_to_be64(wqe->rdma_wr.remote_addr);
+			ohdr->u.rc.reth.rkey =
+				cpu_to_be32(wqe->rdma_wr.rkey);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ohdr->u.rc.reth.length = cpu_to_be32(len);
 			hwords += sizeof(struct ib_reth) / 4;
 			if (len > pmtu) {
@@ -162,7 +220,11 @@ int qib_make_uc_req(struct qib_qp *qp)
 
 	case OP(SEND_FIRST):
 		qp->s_state = OP(SEND_MIDDLE);
+<<<<<<< HEAD
 		/* FALLTHROUGH */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case OP(SEND_MIDDLE):
 		len = qp->s_len;
 		if (len > pmtu) {
@@ -186,7 +248,11 @@ int qib_make_uc_req(struct qib_qp *qp)
 
 	case OP(RDMA_WRITE_FIRST):
 		qp->s_state = OP(RDMA_WRITE_MIDDLE);
+<<<<<<< HEAD
 		/* FALLTHROUGH */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case OP(RDMA_WRITE_MIDDLE):
 		len = qp->s_len;
 		if (len > pmtu) {
@@ -214,6 +280,7 @@ int qib_make_uc_req(struct qib_qp *qp)
 	qp->s_cur_sge = &qp->s_sge;
 	qp->s_cur_size = len;
 	qib_make_ruc_header(qp, ohdr, bth0 | (qp->s_state << 24),
+<<<<<<< HEAD
 			    qp->s_next_psn++ & QIB_PSN_MASK);
 done:
 	ret = 1;
@@ -223,6 +290,13 @@ bail:
 	qp->s_flags &= ~QIB_S_BUSY;
 unlock:
 	spin_unlock_irqrestore(&qp->s_lock, flags);
+=======
+			    qp->s_psn++ & QIB_PSN_MASK);
+done:
+	return 1;
+bail:
+	qp->s_flags &= ~RVT_S_BUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -239,10 +313,17 @@ unlock:
  * for the given QP.
  * Called at interrupt level.
  */
+<<<<<<< HEAD
 void qib_uc_rcv(struct qib_ibport *ibp, struct qib_ib_header *hdr,
 		int has_grh, void *data, u32 tlen, struct qib_qp *qp)
 {
 	struct qib_other_headers *ohdr;
+=======
+void qib_uc_rcv(struct qib_ibport *ibp, struct ib_header *hdr,
+		int has_grh, void *data, u32 tlen, struct rvt_qp *qp)
+{
+	struct ib_other_headers *ohdr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 opcode;
 	u32 hdrsize;
 	u32 psn;
@@ -278,6 +359,7 @@ void qib_uc_rcv(struct qib_ibport *ibp, struct qib_ib_header *hdr,
 inv:
 		if (qp->r_state == OP(SEND_FIRST) ||
 		    qp->r_state == OP(SEND_MIDDLE)) {
+<<<<<<< HEAD
 			set_bit(QIB_R_REWIND_SGE, &qp->r_aflags);
 			qp->r_sge.num_sge = 0;
 		} else
@@ -286,6 +368,12 @@ inv:
 				if (--qp->r_sge.num_sge)
 					qp->r_sge.sge = *qp->r_sge.sg_list++;
 			}
+=======
+			set_bit(RVT_R_REWIND_SGE, &qp->r_aflags);
+			qp->r_sge.num_sge = 0;
+		} else
+			rvt_put_ss(&qp->r_sge);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qp->r_state = OP(SEND_LAST);
 		switch (opcode) {
 		case OP(SEND_FIRST):
@@ -332,6 +420,7 @@ inv:
 		goto inv;
 	}
 
+<<<<<<< HEAD
 	if (qp->state == IB_QPS_RTR && !(qp->r_flags & QIB_R_COMM_EST)) {
 		qp->r_flags |= QIB_R_COMM_EST;
 		if (qp->ibqp.event_handler) {
@@ -343,6 +432,10 @@ inv:
 			qp->ibqp.event_handler(&ev, qp->ibqp.qp_context);
 		}
 	}
+=======
+	if (qp->state == IB_QPS_RTR && !(qp->r_flags & RVT_R_COMM_EST))
+		rvt_comm_est(qp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* OK, process the packet. */
 	switch (opcode) {
@@ -350,10 +443,17 @@ inv:
 	case OP(SEND_ONLY):
 	case OP(SEND_ONLY_WITH_IMMEDIATE):
 send_first:
+<<<<<<< HEAD
 		if (test_and_clear_bit(QIB_R_REWIND_SGE, &qp->r_aflags))
 			qp->r_sge = qp->s_rdma_read_sge;
 		else {
 			ret = qib_get_rwqe(qp, 0);
+=======
+		if (test_and_clear_bit(RVT_R_REWIND_SGE, &qp->r_aflags))
+			qp->r_sge = qp->s_rdma_read_sge;
+		else {
+			ret = rvt_get_rwqe(qp, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret < 0)
 				goto op_err;
 			if (!ret)
@@ -369,7 +469,11 @@ send_first:
 			goto no_immediate_data;
 		else if (opcode == OP(SEND_ONLY_WITH_IMMEDIATE))
 			goto send_last_imm;
+<<<<<<< HEAD
 		/* FALLTHROUGH */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case OP(SEND_MIDDLE):
 		/* Check for invalid length PMTU or posted rwqe len. */
 		if (unlikely(tlen != (hdrsize + pmtu + 4)))
@@ -377,7 +481,11 @@ send_first:
 		qp->r_rcv_len += pmtu;
 		if (unlikely(qp->r_rcv_len > qp->r_len))
 			goto rewind;
+<<<<<<< HEAD
 		qib_copy_sge(&qp->r_sge, data, pmtu, 0);
+=======
+		rvt_copy_sge(qp, &qp->r_sge, data, pmtu, false, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case OP(SEND_LAST_WITH_IMMEDIATE):
@@ -403,6 +511,7 @@ send_last:
 		if (unlikely(wc.byte_len > qp->r_len))
 			goto rewind;
 		wc.opcode = IB_WC_RECV;
+<<<<<<< HEAD
 last_imm:
 		qib_copy_sge(&qp->r_sge, data, tlen, 0);
 		while (qp->s_rdma_read_sge.num_sge) {
@@ -411,21 +520,35 @@ last_imm:
 				qp->s_rdma_read_sge.sge =
 					*qp->s_rdma_read_sge.sg_list++;
 		}
+=======
+		rvt_copy_sge(qp, &qp->r_sge, data, tlen, false, false);
+		rvt_put_ss(&qp->s_rdma_read_sge);
+last_imm:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		wc.wr_id = qp->r_wr_id;
 		wc.status = IB_WC_SUCCESS;
 		wc.qp = &qp->ibqp;
 		wc.src_qp = qp->remote_qpn;
+<<<<<<< HEAD
 		wc.slid = qp->remote_ah_attr.dlid;
 		wc.sl = qp->remote_ah_attr.sl;
+=======
+		wc.slid = rdma_ah_get_dlid(&qp->remote_ah_attr);
+		wc.sl = rdma_ah_get_sl(&qp->remote_ah_attr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* zero fields that are N/A */
 		wc.vendor_err = 0;
 		wc.pkey_index = 0;
 		wc.dlid_path_bits = 0;
 		wc.port_num = 0;
 		/* Signal completion event if the solicited bit is set. */
+<<<<<<< HEAD
 		qib_cq_enter(to_icq(qp->ibqp.recv_cq), &wc,
 			     (ohdr->bth[0] &
 				cpu_to_be32(IB_BTH_SOLICITED)) != 0);
+=======
+		rvt_recv_cq(qp, &wc, ib_bth_is_solicited(ohdr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case OP(RDMA_WRITE_FIRST):
@@ -447,7 +570,11 @@ rdma_first:
 			int ok;
 
 			/* Check rkey */
+<<<<<<< HEAD
 			ok = qib_rkey_ok(qp, &qp->r_sge.sge, qp->r_len,
+=======
+			ok = rvt_rkey_ok(qp, &qp->r_sge.sge, qp->r_len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 vaddr, rkey, IB_ACCESS_REMOTE_WRITE);
 			if (unlikely(!ok))
 				goto drop;
@@ -465,7 +592,11 @@ rdma_first:
 			wc.ex.imm_data = ohdr->u.rc.imm_data;
 			goto rdma_last_imm;
 		}
+<<<<<<< HEAD
 		/* FALLTHROUGH */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case OP(RDMA_WRITE_MIDDLE):
 		/* Check for invalid length PMTU or posted rwqe len. */
 		if (unlikely(tlen != (hdrsize + pmtu + 4)))
@@ -473,7 +604,11 @@ rdma_first:
 		qp->r_rcv_len += pmtu;
 		if (unlikely(qp->r_rcv_len > qp->r_len))
 			goto drop;
+<<<<<<< HEAD
 		qib_copy_sge(&qp->r_sge, data, pmtu, 1);
+=======
+		rvt_copy_sge(qp, &qp->r_sge, data, pmtu, true, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case OP(RDMA_WRITE_LAST_WITH_IMMEDIATE):
@@ -492,6 +627,7 @@ rdma_last_imm:
 		tlen -= (hdrsize + pad + 4);
 		if (unlikely(tlen + qp->r_rcv_len != qp->r_len))
 			goto drop;
+<<<<<<< HEAD
 		if (test_and_clear_bit(QIB_R_REWIND_SGE, &qp->r_aflags))
 			while (qp->s_rdma_read_sge.num_sge) {
 				atomic_dec(&qp->s_rdma_read_sge.sge.mr->
@@ -502,6 +638,12 @@ rdma_last_imm:
 			}
 		else {
 			ret = qib_get_rwqe(qp, 1);
+=======
+		if (test_and_clear_bit(RVT_R_REWIND_SGE, &qp->r_aflags))
+			rvt_put_ss(&qp->s_rdma_read_sge);
+		else {
+			ret = rvt_get_rwqe(qp, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret < 0)
 				goto op_err;
 			if (!ret)
@@ -509,6 +651,11 @@ rdma_last_imm:
 		}
 		wc.byte_len = qp->r_len;
 		wc.opcode = IB_WC_RECV_RDMA_WITH_IMM;
+<<<<<<< HEAD
+=======
+		rvt_copy_sge(qp, &qp->r_sge, data, tlen, true, false);
+		rvt_put_ss(&qp->r_sge);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto last_imm;
 
 	case OP(RDMA_WRITE_LAST):
@@ -523,12 +670,17 @@ rdma_last:
 		tlen -= (hdrsize + pad + 4);
 		if (unlikely(tlen + qp->r_rcv_len != qp->r_len))
 			goto drop;
+<<<<<<< HEAD
 		qib_copy_sge(&qp->r_sge, data, tlen, 1);
 		while (qp->r_sge.num_sge) {
 			atomic_dec(&qp->r_sge.sge.mr->refcount);
 			if (--qp->r_sge.num_sge)
 				qp->r_sge.sge = *qp->r_sge.sg_list++;
 		}
+=======
+		rvt_copy_sge(qp, &qp->r_sge, data, tlen, true, false);
+		rvt_put_ss(&qp->r_sge);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	default:
@@ -540,6 +692,7 @@ rdma_last:
 	return;
 
 rewind:
+<<<<<<< HEAD
 	set_bit(QIB_R_REWIND_SGE, &qp->r_aflags);
 	qp->r_sge.num_sge = 0;
 drop:
@@ -548,6 +701,16 @@ drop:
 
 op_err:
 	qib_rc_error(qp, IB_WC_LOC_QP_OP_ERR);
+=======
+	set_bit(RVT_R_REWIND_SGE, &qp->r_aflags);
+	qp->r_sge.num_sge = 0;
+drop:
+	ibp->rvp.n_pkt_drops++;
+	return;
+
+op_err:
+	rvt_rc_error(qp, IB_WC_LOC_QP_OP_ERR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 
 }

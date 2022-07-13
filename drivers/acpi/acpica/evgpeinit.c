@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: evgpeinit - System GPE initialization and update
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acevents.h"
@@ -66,6 +77,19 @@ ACPI_MODULE_NAME("evgpeinit")
  * kernel boot time as well.
  */
 
+<<<<<<< HEAD
+=======
+#ifdef ACPI_GPE_USE_LOGICAL_ADDRESSES
+#define ACPI_FADT_GPE_BLOCK_ADDRESS(N)	\
+	acpi_gbl_FADT.xgpe##N##_block.space_id == \
+					ACPI_ADR_SPACE_SYSTEM_MEMORY ? \
+		(u64)acpi_gbl_xgpe##N##_block_logical_address : \
+		acpi_gbl_FADT.xgpe##N##_block.address
+#else
+#define ACPI_FADT_GPE_BLOCK_ADDRESS(N)	acpi_gbl_FADT.xgpe##N##_block.address
+#endif		/* ACPI_GPE_USE_LOGICAL_ADDRESSES */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ev_gpe_initialize
@@ -83,9 +107,19 @@ acpi_status acpi_ev_gpe_initialize(void)
 	u32 register_count1 = 0;
 	u32 gpe_number_max = 0;
 	acpi_status status;
+<<<<<<< HEAD
 
 	ACPI_FUNCTION_TRACE(ev_gpe_initialize);
 
+=======
+	u64 address;
+
+	ACPI_FUNCTION_TRACE(ev_gpe_initialize);
+
+	ACPI_DEBUG_PRINT_RAW((ACPI_DB_INIT,
+			      "Initializing General Purpose Events (GPEs):\n"));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	status = acpi_ut_acquire_mutex(ACPI_MTX_NAMESPACE);
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
@@ -116,21 +150,36 @@ acpi_status acpi_ev_gpe_initialize(void)
 	 * If EITHER the register length OR the block address are zero, then that
 	 * particular block is not supported.
 	 */
+<<<<<<< HEAD
 	if (acpi_gbl_FADT.gpe0_block_length &&
 	    acpi_gbl_FADT.xgpe0_block.address) {
+=======
+	address = ACPI_FADT_GPE_BLOCK_ADDRESS(0);
+
+	if (acpi_gbl_FADT.gpe0_block_length && address) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* GPE block 0 exists (has both length and address > 0) */
 
 		register_count0 = (u16)(acpi_gbl_FADT.gpe0_block_length / 2);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		gpe_number_max =
 		    (register_count0 * ACPI_GPE_REGISTER_WIDTH) - 1;
 
 		/* Install GPE Block 0 */
 
 		status = acpi_ev_create_gpe_block(acpi_gbl_fadt_gpe_device,
+<<<<<<< HEAD
 						  &acpi_gbl_FADT.xgpe0_block,
 						  register_count0, 0,
+=======
+						  address,
+						  acpi_gbl_FADT.xgpe0_block.
+						  space_id, register_count0, 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						  acpi_gbl_FADT.sci_interrupt,
 						  &acpi_gbl_gpe_fadt_blocks[0]);
 
@@ -140,8 +189,14 @@ acpi_status acpi_ev_gpe_initialize(void)
 		}
 	}
 
+<<<<<<< HEAD
 	if (acpi_gbl_FADT.gpe1_block_length &&
 	    acpi_gbl_FADT.xgpe1_block.address) {
+=======
+	address = ACPI_FADT_GPE_BLOCK_ADDRESS(1);
+
+	if (acpi_gbl_FADT.gpe1_block_length && address) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* GPE block 1 exists (has both length and address > 0) */
 
@@ -167,8 +222,14 @@ acpi_status acpi_ev_gpe_initialize(void)
 
 			status =
 			    acpi_ev_create_gpe_block(acpi_gbl_fadt_gpe_device,
+<<<<<<< HEAD
 						     &acpi_gbl_FADT.xgpe1_block,
 						     register_count1,
+=======
+						     address,
+						     acpi_gbl_FADT.xgpe1_block.
+						     space_id, register_count1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						     acpi_gbl_FADT.gpe1_base,
 						     acpi_gbl_FADT.
 						     sci_interrupt,
@@ -184,8 +245,11 @@ acpi_status acpi_ev_gpe_initialize(void)
 			 * GPE0 and GPE1 do not have to be contiguous in the GPE number
 			 * space. However, GPE0 always starts at GPE number zero.
 			 */
+<<<<<<< HEAD
 			gpe_number_max = acpi_gbl_FADT.gpe1_base +
 			    ((register_count1 * ACPI_GPE_REGISTER_WIDTH) - 1);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -197,6 +261,7 @@ acpi_status acpi_ev_gpe_initialize(void)
 
 		ACPI_DEBUG_PRINT((ACPI_DB_INIT,
 				  "There are no GPE blocks defined in the FADT\n"));
+<<<<<<< HEAD
 		status = AE_OK;
 		goto cleanup;
 	}
@@ -212,6 +277,12 @@ acpi_status acpi_ev_gpe_initialize(void)
 	}
 
       cleanup:
+=======
+		goto cleanup;
+	}
+
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)acpi_ut_release_mutex(ACPI_MTX_NAMESPACE);
 	return_ACPI_STATUS(AE_OK);
 }
@@ -285,7 +356,11 @@ void acpi_ev_update_gpes(acpi_owner_id table_owner_id)
 	}
 
 	if (walk_info.count) {
+<<<<<<< HEAD
 		ACPI_INFO((AE_INFO, "Enabled %u new GPEs", walk_info.count));
+=======
+		ACPI_INFO(("Enabled %u new GPEs", walk_info.count));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	(void)acpi_ut_release_mutex(ACPI_MTX_EVENTS);
@@ -327,8 +402,15 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 	struct acpi_gpe_walk_info *walk_info =
 	    ACPI_CAST_PTR(struct acpi_gpe_walk_info, context);
 	struct acpi_gpe_event_info *gpe_event_info;
+<<<<<<< HEAD
 	u32 gpe_number;
 	char name[ACPI_NAME_SIZE + 1];
+=======
+	acpi_status status;
+	u32 gpe_number;
+	u8 temp_gpe_number;
+	char name[ACPI_NAMESEG_SIZE + 1];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 type;
 
 	ACPI_FUNCTION_TRACE(ev_match_gpe_method);
@@ -346,7 +428,11 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 	 * 1) Extract the method name and null terminate it
 	 */
 	ACPI_MOVE_32_TO_32(name, &method_node->name.integer);
+<<<<<<< HEAD
 	name[ACPI_NAME_SIZE] = 0;
+=======
+	name[ACPI_NAMESEG_SIZE] = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* 2) Name must begin with an underscore */
 
@@ -360,14 +446,26 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 	 */
 	switch (name[1]) {
 	case 'L':
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		type = ACPI_GPE_LEVEL_TRIGGERED;
 		break;
 
 	case 'E':
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		type = ACPI_GPE_EDGE_TRIGGERED;
 		break;
 
 	default:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Unknown method type, just ignore it */
 
 		ACPI_DEBUG_PRINT((ACPI_DB_LOAD,
@@ -378,8 +476,13 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 
 	/* 4) The last two characters of the name are the hex GPE Number */
 
+<<<<<<< HEAD
 	gpe_number = ACPI_STRTOUL(&name[2], NULL, 16);
 	if (gpe_number == ACPI_UINT32_MAX) {
+=======
+	status = acpi_ut_ascii_to_hex_byte(&name[2], &temp_gpe_number);
+	if (ACPI_FAILURE(status)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Conversion failed; invalid method, just ignore it */
 
@@ -391,6 +494,10 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 
 	/* Ensure that we have a valid GPE number for this GPE block */
 
+<<<<<<< HEAD
+=======
+	gpe_number = (u32)temp_gpe_number;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gpe_event_info =
 	    acpi_ev_low_get_gpe_info(gpe_number, walk_info->gpe_block);
 	if (!gpe_event_info) {
@@ -402,15 +509,26 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 		return_ACPI_STATUS(AE_OK);
 	}
 
+<<<<<<< HEAD
 	if ((gpe_event_info->flags & ACPI_GPE_DISPATCH_MASK) ==
 	    ACPI_GPE_DISPATCH_HANDLER) {
+=======
+	if ((ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+	     ACPI_GPE_DISPATCH_HANDLER) ||
+	    (ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+	     ACPI_GPE_DISPATCH_RAW_HANDLER)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* If there is already a handler, ignore this GPE method */
 
 		return_ACPI_STATUS(AE_OK);
 	}
 
+<<<<<<< HEAD
 	if ((gpe_event_info->flags & ACPI_GPE_DISPATCH_MASK) ==
+=======
+	if (ACPI_GPE_DISPATCH_TYPE(gpe_event_info->flags) ==
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    ACPI_GPE_DISPATCH_METHOD) {
 		/*
 		 * If there is already a method, ignore this method. But check
@@ -425,6 +543,10 @@ acpi_ev_match_gpe_method(acpi_handle obj_handle,
 	}
 
 	/* Disable the GPE in case it's been enabled already. */
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	(void)acpi_hw_low_set_gpe(gpe_event_info, ACPI_GPE_DISABLE);
 
 	/*

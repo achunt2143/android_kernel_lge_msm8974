@@ -64,6 +64,7 @@ static inline u32 H(u32 x, u32 y, u32 z)
 #define ROUND2(a,b,c,d,k,s) (a = lshift(a + G(b,c,d) + k + (u32)0x5A827999,s))
 #define ROUND3(a,b,c,d,k,s) (a = lshift(a + H(b,c,d) + k + (u32)0x6ED9EBA1,s))
 
+<<<<<<< HEAD
 /* XXX: this stuff can be optimized */
 static inline void le32_to_cpu_array(u32 *buf, unsigned int words)
 {
@@ -81,6 +82,8 @@ static inline void cpu_to_le32_array(u32 *buf, unsigned int words)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void md4_transform(u32 *hash, u32 const *in)
 {
 	u32 a, b, c, d;
@@ -233,10 +236,17 @@ static struct shash_alg alg = {
 	.final		=	md4_final,
 	.descsize	=	sizeof(struct md4_ctx),
 	.base		=	{
+<<<<<<< HEAD
 		.cra_name	=	"md4",
 		.cra_flags	=	CRYPTO_ALG_TYPE_SHASH,
 		.cra_blocksize	=	MD4_HMAC_BLOCK_SIZE,
 		.cra_module	=	THIS_MODULE,
+=======
+		.cra_name	 =	"md4",
+		.cra_driver_name =	"md4-generic",
+		.cra_blocksize	 =	MD4_HMAC_BLOCK_SIZE,
+		.cra_module	 =	THIS_MODULE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -250,9 +260,17 @@ static void __exit md4_mod_fini(void)
 	crypto_unregister_shash(&alg);
 }
 
+<<<<<<< HEAD
 module_init(md4_mod_init);
+=======
+subsys_initcall(md4_mod_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(md4_mod_fini);
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("MD4 Message Digest Algorithm");
+<<<<<<< HEAD
 
+=======
+MODULE_ALIAS_CRYPTO("md4");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

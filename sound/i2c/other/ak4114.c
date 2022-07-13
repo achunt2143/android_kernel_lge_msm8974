@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Routines for control of the AK4114 via I2C and 4-wire serial interface
  *  IEC958 (S/PDIF) receiver by Asahi Kasei
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *
  *   This program is free software; you can redistribute it and/or modify
@@ -18,6 +23,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -60,7 +67,11 @@ static void reg_dump(struct ak4114 *ak4114)
 
 	printk(KERN_DEBUG "AK4114 REG DUMP:\n");
 	for (i = 0; i < 0x20; i++)
+<<<<<<< HEAD
 		printk(KERN_DEBUG "reg[%02x] = %02x (%02x)\n", i, reg_read(ak4114, i), i < sizeof(ak4114->regmap) ? ak4114->regmap[i] : 0);
+=======
+		printk(KERN_DEBUG "reg[%02x] = %02x (%02x)\n", i, reg_read(ak4114, i), i < ARRAY_SIZE(ak4114->regmap) ? ak4114->regmap[i] : 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -80,13 +91,21 @@ static int snd_ak4114_dev_free(struct snd_device *device)
 
 int snd_ak4114_create(struct snd_card *card,
 		      ak4114_read_t *read, ak4114_write_t *write,
+<<<<<<< HEAD
 		      const unsigned char pgm[7], const unsigned char txcsb[5],
+=======
+		      const unsigned char pgm[6], const unsigned char txcsb[5],
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      void *private_data, struct ak4114 **r_ak4114)
 {
 	struct ak4114 *chip;
 	int err = 0;
 	unsigned char reg;
+<<<<<<< HEAD
 	static struct snd_device_ops ops = {
+=======
+	static const struct snd_device_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.dev_free =     snd_ak4114_dev_free,
 	};
 
@@ -100,8 +119,14 @@ int snd_ak4114_create(struct snd_card *card,
 	chip->private_data = private_data;
 	INIT_DELAYED_WORK(&chip->work, ak4114_stats);
 	atomic_set(&chip->wq_processing, 0);
+<<<<<<< HEAD
 
 	for (reg = 0; reg < 7; reg++)
+=======
+	mutex_init(&chip->reinit_mutex);
+
+	for (reg = 0; reg < 6; reg++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->regmap[reg] = pgm[reg];
 	for (reg = 0; reg < 5; reg++)
 		chip->txcsb[reg] = txcsb[reg];
@@ -111,7 +136,12 @@ int snd_ak4114_create(struct snd_card *card,
 	chip->rcs0 = reg_read(chip, AK4114_REG_RCS0) & ~(AK4114_QINT | AK4114_CINT);
 	chip->rcs1 = reg_read(chip, AK4114_REG_RCS1);
 
+<<<<<<< HEAD
 	if ((err = snd_device_new(card, SNDRV_DEV_LOWLEVEL, chip, &ops)) < 0)
+=======
+	err = snd_device_new(card, SNDRV_DEV_CODEC, chip, &ops);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto __fail;
 
 	if (r_ak4114)
@@ -120,8 +150,14 @@ int snd_ak4114_create(struct snd_card *card,
 
       __fail:
 	snd_ak4114_free(chip);
+<<<<<<< HEAD
 	return err < 0 ? err : -EIO;
 }
+=======
+	return err;
+}
+EXPORT_SYMBOL(snd_ak4114_create);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void snd_ak4114_reg_write(struct ak4114 *chip, unsigned char reg, unsigned char mask, unsigned char val)
 {
@@ -131,6 +167,10 @@ void snd_ak4114_reg_write(struct ak4114 *chip, unsigned char reg, unsigned char 
 		reg_write(chip, reg,
 			  (chip->txcsb[reg-AK4114_REG_TXCSB0] & ~mask) | val);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_ak4114_reg_write);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ak4114_init_regs(struct ak4114 *chip)
 {
@@ -142,7 +182,11 @@ static void ak4114_init_regs(struct ak4114 *chip)
 	/* release reset, but leave powerdown */
 	reg_write(chip, AK4114_REG_PWRDN, (old | AK4114_RST) & ~AK4114_PWN);
 	udelay(200);
+<<<<<<< HEAD
 	for (reg = 1; reg < 7; reg++)
+=======
+	for (reg = 1; reg < 6; reg++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg_write(chip, reg, chip->regmap[reg]);
 	for (reg = 0; reg < 5; reg++)
 		reg_write(chip, reg + AK4114_REG_TXCSB0, chip->txcsb[reg]);
@@ -154,11 +198,21 @@ void snd_ak4114_reinit(struct ak4114 *chip)
 {
 	if (atomic_inc_return(&chip->wq_processing) == 1)
 		cancel_delayed_work_sync(&chip->work);
+<<<<<<< HEAD
 	ak4114_init_regs(chip);
+=======
+	mutex_lock(&chip->reinit_mutex);
+	ak4114_init_regs(chip);
+	mutex_unlock(&chip->reinit_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* bring up statistics / event queing */
 	if (atomic_dec_and_test(&chip->wq_processing))
 		schedule_delayed_work(&chip->work, HZ / 10);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_ak4114_reinit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned int external_rate(unsigned char rcs1)
 {
@@ -188,12 +242,20 @@ static int snd_ak4114_in_error_get(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_value *ucontrol)
 {
 	struct ak4114 *chip = snd_kcontrol_chip(kcontrol);
+<<<<<<< HEAD
 	long *ptr;
 
 	spin_lock_irq(&chip->lock);
 	ptr = (long *)(((char *)chip) + kcontrol->private_value);
 	ucontrol->value.integer.value[0] = *ptr;
 	*ptr = 0;
+=======
+
+	spin_lock_irq(&chip->lock);
+	ucontrol->value.integer.value[0] =
+		chip->errors[kcontrol->private_value];
+	chip->errors[kcontrol->private_value] = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(&chip->lock);
 	return 0;
 }
@@ -328,14 +390,22 @@ static int snd_ak4114_spdif_qget(struct snd_kcontrol *kcontrol,
 }
 
 /* Don't forget to change AK4114_CONTROLS define!!! */
+<<<<<<< HEAD
 static struct snd_kcontrol_new snd_ak4114_iec958_controls[] = {
+=======
+static const struct snd_kcontrol_new snd_ak4114_iec958_controls[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
 	.name =		"IEC958 Parity Errors",
 	.access =	SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_VOLATILE,
 	.info =		snd_ak4114_in_error_info,
 	.get =		snd_ak4114_in_error_get,
+<<<<<<< HEAD
 	.private_value = offsetof(struct ak4114, parity_errors),
+=======
+	.private_value = AK4114_PARITY_ERRORS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 },
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
@@ -343,7 +413,11 @@ static struct snd_kcontrol_new snd_ak4114_iec958_controls[] = {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_VOLATILE,
 	.info =		snd_ak4114_in_error_info,
 	.get =		snd_ak4114_in_error_get,
+<<<<<<< HEAD
 	.private_value = offsetof(struct ak4114, v_bit_errors),
+=======
+	.private_value = AK4114_V_BIT_ERRORS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 },
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
@@ -351,7 +425,11 @@ static struct snd_kcontrol_new snd_ak4114_iec958_controls[] = {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_VOLATILE,
 	.info =		snd_ak4114_in_error_info,
 	.get =		snd_ak4114_in_error_get,
+<<<<<<< HEAD
 	.private_value = offsetof(struct ak4114, ccrc_errors),
+=======
+	.private_value = AK4114_CCRC_ERRORS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 },
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
@@ -359,7 +437,11 @@ static struct snd_kcontrol_new snd_ak4114_iec958_controls[] = {
 	.access =	SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_VOLATILE,
 	.info =		snd_ak4114_in_error_info,
 	.get =		snd_ak4114_in_error_get,
+<<<<<<< HEAD
 	.private_value = offsetof(struct ak4114, qcrc_errors),
+=======
+	.private_value = AK4114_QCRC_ERRORS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 },
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
@@ -399,7 +481,11 @@ static struct snd_kcontrol_new snd_ak4114_iec958_controls[] = {
 },
 {
 	.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
+<<<<<<< HEAD
 	.name =		"IEC958 Preample Capture Default",
+=======
+	.name =		"IEC958 Preamble Capture Default",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.access =	SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_VOLATILE,
 	.info =		snd_ak4114_spdif_pinfo,
 	.get =		snd_ak4114_spdif_pget,
@@ -460,9 +546,14 @@ static void snd_ak4114_proc_regs_read(struct snd_info_entry *entry,
 
 static void snd_ak4114_proc_init(struct ak4114 *ak4114)
 {
+<<<<<<< HEAD
 	struct snd_info_entry *entry;
 	if (!snd_card_proc_new(ak4114->card, "ak4114", &entry))
 		snd_info_set_text_ops(entry, ak4114, snd_ak4114_proc_regs_read);
+=======
+	snd_card_ro_proc_new(ak4114->card, "ak4114", ak4114,
+			     snd_ak4114_proc_regs_read);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int snd_ak4114_build(struct ak4114 *ak4114,
@@ -503,6 +594,10 @@ int snd_ak4114_build(struct ak4114 *ak4114,
 	schedule_delayed_work(&ak4114->work, HZ / 10);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_ak4114_build);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* notify kcontrols if any parameters are changed */
 static void ak4114_notify(struct ak4114 *ak4114,
@@ -558,6 +653,10 @@ int snd_ak4114_external_rate(struct ak4114 *ak4114)
 	rcs1 = reg_read(ak4114, AK4114_REG_RCS1);
 	return external_rate(rcs1);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_ak4114_external_rate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int snd_ak4114_check_rate_and_errors(struct ak4114 *ak4114, unsigned int flags)
 {
@@ -573,6 +672,7 @@ int snd_ak4114_check_rate_and_errors(struct ak4114 *ak4114, unsigned int flags)
 	rcs0 = reg_read(ak4114, AK4114_REG_RCS0);
 	spin_lock_irqsave(&ak4114->lock, _flags);
 	if (rcs0 & AK4114_PAR)
+<<<<<<< HEAD
 		ak4114->parity_errors++;
 	if (rcs1 & AK4114_V)
 		ak4114->v_bit_errors++;
@@ -580,6 +680,15 @@ int snd_ak4114_check_rate_and_errors(struct ak4114 *ak4114, unsigned int flags)
 		ak4114->ccrc_errors++;
 	if (rcs1 & AK4114_QCRC)
 		ak4114->qcrc_errors++;
+=======
+		ak4114->errors[AK4114_PARITY_ERRORS]++;
+	if (rcs1 & AK4114_V)
+		ak4114->errors[AK4114_V_BIT_ERRORS]++;
+	if (rcs1 & AK4114_CCRC)
+		ak4114->errors[AK4114_CCRC_ERRORS]++;
+	if (rcs1 & AK4114_QCRC)
+		ak4114->errors[AK4114_QCRC_ERRORS]++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c0 = (ak4114->rcs0 & (AK4114_QINT | AK4114_CINT | AK4114_PEM | AK4114_AUDION | AK4114_AUTO | AK4114_UNLCK)) ^
                      (rcs0 & (AK4114_QINT | AK4114_CINT | AK4114_PEM | AK4114_AUDION | AK4114_AUTO | AK4114_UNLCK));
 	c1 = (ak4114->rcs1 & 0xf0) ^ (rcs1 & 0xf0);
@@ -605,6 +714,10 @@ int snd_ak4114_check_rate_and_errors(struct ak4114 *ak4114, unsigned int flags)
 	}
 	return res;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_ak4114_check_rate_and_errors);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ak4114_stats(struct work_struct *work)
 {
@@ -616,9 +729,27 @@ static void ak4114_stats(struct work_struct *work)
 		schedule_delayed_work(&chip->work, HZ / 10);
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(snd_ak4114_create);
 EXPORT_SYMBOL(snd_ak4114_reg_write);
 EXPORT_SYMBOL(snd_ak4114_reinit);
 EXPORT_SYMBOL(snd_ak4114_build);
 EXPORT_SYMBOL(snd_ak4114_external_rate);
 EXPORT_SYMBOL(snd_ak4114_check_rate_and_errors);
+=======
+#ifdef CONFIG_PM
+void snd_ak4114_suspend(struct ak4114 *chip)
+{
+	atomic_inc(&chip->wq_processing); /* don't schedule new work */
+	cancel_delayed_work_sync(&chip->work);
+}
+EXPORT_SYMBOL(snd_ak4114_suspend);
+
+void snd_ak4114_resume(struct ak4114 *chip)
+{
+	atomic_dec(&chip->wq_processing);
+	snd_ak4114_reinit(chip);
+}
+EXPORT_SYMBOL(snd_ak4114_resume);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

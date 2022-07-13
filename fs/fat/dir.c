@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/fat/dir.c
  *
@@ -13,6 +17,7 @@
  *  Short name translation 1999, 2001 by Wolfram Pienkoss <wp@bszh.de>
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/time.h>
@@ -20,6 +25,12 @@
 #include <linux/compat.h>
 #include <asm/uaccess.h>
 #include <linux/kernel.h>
+=======
+#include <linux/slab.h>
+#include <linux/compat.h>
+#include <linux/uaccess.h>
+#include <linux/iversion.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "fat.h"
 
 /*
@@ -35,6 +46,14 @@
 #define FAT_MAX_UNI_CHARS	((MSDOS_SLOTS - 1) * 13 + 1)
 #define FAT_MAX_UNI_SIZE	(FAT_MAX_UNI_CHARS * sizeof(wchar_t))
 
+<<<<<<< HEAD
+=======
+static inline unsigned char fat_tolower(unsigned char c)
+{
+	return ((c >= 'A') && (c <= 'Z')) ? c+32 : c;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline loff_t fat_make_i_pos(struct super_block *sb,
 				    struct buffer_head *bh,
 				    struct msdos_dir_entry *de)
@@ -55,7 +74,11 @@ static inline void fat_dir_readahead(struct inode *dir, sector_t iblock,
 	if ((iblock & (sbi->sec_per_clus - 1)) || sbi->sec_per_clus == 1)
 		return;
 	/* root dir of FAT12/FAT16 */
+<<<<<<< HEAD
 	if ((sbi->fat_bits != 32) && (dir->i_ino == MSDOS_ROOT_INO))
+=======
+	if (!is_fat32(sbi) && (dir->i_ino == MSDOS_ROOT_INO))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	bh = sb_find_get_block(sb, phys);
@@ -85,12 +108,19 @@ static int fat__get_entry(struct inode *dir, loff_t *pos,
 	int err, offset;
 
 next:
+<<<<<<< HEAD
 	if (*bh)
 		brelse(*bh);
 
 	*bh = NULL;
 	iblock = *pos >> sb->s_blocksize_bits;
 	err = fat_bmap(dir, iblock, &phys, &mapped_blocks, 0);
+=======
+	brelse(*bh);
+	*bh = NULL;
+	iblock = *pos >> sb->s_blocksize_bits;
+	err = fat_bmap(dir, iblock, &phys, &mapped_blocks, 0, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err || !phys)
 		return -1;	/* beyond EOF or error */
 
@@ -98,8 +128,13 @@ next:
 
 	*bh = sb_bread(sb, phys);
 	if (*bh == NULL) {
+<<<<<<< HEAD
 		fat_msg(sb, KERN_ERR, "Directory bread(block %llu) failed",
 		       (llu)phys);
+=======
+		fat_msg_ratelimit(sb, KERN_ERR,
+			"Directory bread(block %llu) failed", (llu)phys);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* skip this block */
 		*pos = (iblock + 1) << sb->s_blocksize_bits;
 		goto next;
@@ -118,7 +153,12 @@ static inline int fat_get_entry(struct inode *dir, loff_t *pos,
 {
 	/* Fast stuff first */
 	if (*bh && *de &&
+<<<<<<< HEAD
 	    (*de - (struct msdos_dir_entry *)(*bh)->b_data) < MSDOS_SB(dir->i_sb)->dir_per_block - 1) {
+=======
+	   (*de - (struct msdos_dir_entry *)(*bh)->b_data) <
+				MSDOS_SB(dir->i_sb)->dir_per_block - 1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		*pos += sizeof(struct msdos_dir_entry);
 		(*de)++;
 		return 0;
@@ -150,7 +190,12 @@ static int uni16_to_x8(struct super_block *sb, unsigned char *ascii,
 
 	while (*ip && ((len - NLS_MAX_CHARSET_SIZE) > 0)) {
 		ec = *ip++;
+<<<<<<< HEAD
 		if ((charlen = nls->uni2char(ec, op, NLS_MAX_CHARSET_SIZE)) > 0) {
+=======
+		charlen = nls->uni2char(ec, op, NLS_MAX_CHARSET_SIZE);
+		if (charlen > 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			op += charlen;
 			len -= charlen;
 		} else {
@@ -167,12 +212,21 @@ static int uni16_to_x8(struct super_block *sb, unsigned char *ascii,
 	}
 
 	if (unlikely(*ip)) {
+<<<<<<< HEAD
 		fat_msg(sb, KERN_WARNING, "filename was truncated while "
 			"converting.");
 	}
 
 	*op = 0;
 	return (op - ascii);
+=======
+		fat_msg(sb, KERN_WARNING,
+			"filename was truncated while converting.");
+	}
+
+	*op = 0;
+	return op - ascii;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int fat_uni_to_x8(struct super_block *sb, const wchar_t *uni,
@@ -200,7 +254,12 @@ fat_short2uni(struct nls_table *t, unsigned char *c, int clen, wchar_t *uni)
 }
 
 static inline int
+<<<<<<< HEAD
 fat_short2lower_uni(struct nls_table *t, unsigned char *c, int clen, wchar_t *uni)
+=======
+fat_short2lower_uni(struct nls_table *t, unsigned char *c,
+		    int clen, wchar_t *uni)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int charlen;
 	wchar_t wc;
@@ -215,7 +274,12 @@ fat_short2lower_uni(struct nls_table *t, unsigned char *c, int clen, wchar_t *un
 		if (!nc)
 			nc = *c;
 
+<<<<<<< HEAD
 		if ( (charlen = t->char2uni(&nc, 1, uni)) < 0) {
+=======
+		charlen = t->char2uni(&nc, 1, uni);
+		if (charlen < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*uni = 0x003f;	/* a question mark */
 			charlen = 1;
 		}
@@ -286,7 +350,10 @@ static int fat_parse_long(struct inode *dir, loff_t *pos,
 		}
 	}
 parse_long:
+<<<<<<< HEAD
 	slots = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ds = (struct msdos_dir_slot *)*de;
 	id = ds->id;
 	if (!(id & 0x40))
@@ -333,9 +400,134 @@ parse_long:
 	return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Return values: negative -> error, 0 -> not found, positive -> found,
  * value is the total amount of slots, including the shortname entry.
+=======
+/**
+ * fat_parse_short - Parse MS-DOS (short) directory entry.
+ * @sb:		superblock
+ * @de:		directory entry to parse
+ * @name:	FAT_MAX_SHORT_SIZE array in which to place extracted name
+ * @dot_hidden:	Nonzero == prepend '.' to names with ATTR_HIDDEN
+ *
+ * Returns the number of characters extracted into 'name'.
+ */
+static int fat_parse_short(struct super_block *sb,
+			   const struct msdos_dir_entry *de,
+			   unsigned char *name, int dot_hidden)
+{
+	const struct msdos_sb_info *sbi = MSDOS_SB(sb);
+	int isvfat = sbi->options.isvfat;
+	int nocase = sbi->options.nocase;
+	unsigned short opt_shortname = sbi->options.shortname;
+	struct nls_table *nls_disk = sbi->nls_disk;
+	wchar_t uni_name[14];
+	unsigned char c, work[MSDOS_NAME];
+	unsigned char *ptname = name;
+	int chi, chl, i, j, k;
+	int dotoffset = 0;
+	int name_len = 0, uni_len = 0;
+
+	if (!isvfat && dot_hidden && (de->attr & ATTR_HIDDEN)) {
+		*ptname++ = '.';
+		dotoffset = 1;
+	}
+
+	memcpy(work, de->name, sizeof(work));
+	/* For an explanation of the special treatment of 0x05 in
+	 * filenames, see msdos_format_name in namei_msdos.c
+	 */
+	if (work[0] == 0x05)
+		work[0] = 0xE5;
+
+	/* Filename */
+	for (i = 0, j = 0; i < 8;) {
+		c = work[i];
+		if (!c)
+			break;
+		chl = fat_shortname2uni(nls_disk, &work[i], 8 - i,
+					&uni_name[j++], opt_shortname,
+					de->lcase & CASE_LOWER_BASE);
+		if (chl <= 1) {
+			if (!isvfat)
+				ptname[i] = nocase ? c : fat_tolower(c);
+			i++;
+			if (c != ' ') {
+				name_len = i;
+				uni_len  = j;
+			}
+		} else {
+			uni_len = j;
+			if (isvfat)
+				i += min(chl, 8-i);
+			else {
+				for (chi = 0; chi < chl && i < 8; chi++, i++)
+					ptname[i] = work[i];
+			}
+			if (chl)
+				name_len = i;
+		}
+	}
+
+	i = name_len;
+	j = uni_len;
+	fat_short2uni(nls_disk, ".", 1, &uni_name[j++]);
+	if (!isvfat)
+		ptname[i] = '.';
+	i++;
+
+	/* Extension */
+	for (k = 8; k < MSDOS_NAME;) {
+		c = work[k];
+		if (!c)
+			break;
+		chl = fat_shortname2uni(nls_disk, &work[k], MSDOS_NAME - k,
+					&uni_name[j++], opt_shortname,
+					de->lcase & CASE_LOWER_EXT);
+		if (chl <= 1) {
+			k++;
+			if (!isvfat)
+				ptname[i] = nocase ? c : fat_tolower(c);
+			i++;
+			if (c != ' ') {
+				name_len = i;
+				uni_len  = j;
+			}
+		} else {
+			uni_len = j;
+			if (isvfat) {
+				int offset = min(chl, MSDOS_NAME-k);
+				k += offset;
+				i += offset;
+			} else {
+				for (chi = 0; chi < chl && k < MSDOS_NAME;
+				     chi++, i++, k++) {
+						ptname[i] = work[k];
+				}
+			}
+			if (chl)
+				name_len = i;
+		}
+	}
+
+	if (name_len > 0) {
+		name_len += dotoffset;
+
+		if (sbi->options.isvfat) {
+			uni_name[uni_len] = 0x0000;
+			name_len = fat_uni_to_x8(sb, uni_name, name,
+						 FAT_MAX_SHORT_SIZE);
+		}
+	}
+
+	return name_len;
+}
+
+/*
+ * Return values: negative -> error/not found, 0 -> found.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int fat_search_long(struct inode *inode, const unsigned char *name,
 		    int name_len, struct fat_slot_info *sinfo)
@@ -344,6 +536,7 @@ int fat_search_long(struct inode *inode, const unsigned char *name,
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	struct buffer_head *bh = NULL;
 	struct msdos_dir_entry *de;
+<<<<<<< HEAD
 	struct nls_table *nls_disk = sbi->nls_disk;
 	unsigned char nr_slots;
 	wchar_t bufuname[14];
@@ -353,6 +546,13 @@ int fat_search_long(struct inode *inode, const unsigned char *name,
 	unsigned short opt_shortname = sbi->options.shortname;
 	loff_t cpos = 0;
 	int chl, i, j, last_u, err, len;
+=======
+	unsigned char nr_slots;
+	wchar_t *unicode = NULL;
+	unsigned char bufname[FAT_MAX_SHORT_SIZE];
+	loff_t cpos = 0;
+	int err, len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = -ENOENT;
 	while (1) {
@@ -380,6 +580,7 @@ parse_record:
 				goto end_of_dir;
 		}
 
+<<<<<<< HEAD
 		memcpy(work, de->name, sizeof(de->name));
 		/* see namei.c, msdos_format_name */
 		if (work[0] == 0x05)
@@ -421,6 +622,18 @@ parse_record:
 		/* Compare shortname */
 		bufuname[last_u] = 0x0000;
 		len = fat_uni_to_x8(sb, bufuname, bufname, sizeof(bufname));
+=======
+		/* Never prepend '.' to hidden files here.
+		 * That is done only for msdos mounts (and only when
+		 * 'dotsOK=yes'); if we are executing here, it is in the
+		 * context of a vfat mount.
+		 */
+		len = fat_parse_short(sb, de, bufname, 0);
+		if (len == 0)
+			continue;
+
+		/* Compare shortname */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fat_name_match(sbi, name, name_len, bufname, len))
 			goto found;
 
@@ -449,10 +662,17 @@ end_of_dir:
 
 	return err;
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL_GPL(fat_search_long);
 
 struct fat_ioctl_filldir_callback {
+=======
+EXPORT_SYMBOL_GPL(fat_search_long);
+
+struct fat_ioctl_filldir_callback {
+	struct dir_context ctx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __user *dirent;
 	int result;
 	/* for dir ioctl */
@@ -462,13 +682,20 @@ struct fat_ioctl_filldir_callback {
 	int short_len;
 };
 
+<<<<<<< HEAD
 static int __fat_readdir(struct inode *inode, struct file *filp, void *dirent,
 			 filldir_t filldir, int short_only, int both)
+=======
+static int __fat_readdir(struct inode *inode, struct file *file,
+			 struct dir_context *ctx, int short_only,
+			 struct fat_ioctl_filldir_callback *both)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct super_block *sb = inode->i_sb;
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	struct buffer_head *bh;
 	struct msdos_dir_entry *de;
+<<<<<<< HEAD
 	struct nls_table *nls_disk = sbi->nls_disk;
 	unsigned char nr_slots;
 	wchar_t bufuname[14];
@@ -499,6 +726,27 @@ static int __fat_readdir(struct inode *inode, struct file *filp, void *dirent,
 		if (cpos == 2) {
 			dummy = 2;
 			furrfu = &dummy;
+=======
+	unsigned char nr_slots;
+	wchar_t *unicode = NULL;
+	unsigned char bufname[FAT_MAX_SHORT_SIZE];
+	int isvfat = sbi->options.isvfat;
+	const char *fill_name = NULL;
+	int fake_offset = 0;
+	loff_t cpos;
+	int short_len = 0, fill_len = 0;
+	int ret = 0;
+
+	mutex_lock(&sbi->s_lock);
+
+	cpos = ctx->pos;
+	/* Fake . and .. for the root directory. */
+	if (inode->i_ino == MSDOS_ROOT_INO) {
+		if (!dir_emit_dots(file, ctx))
+			goto out;
+		if (ctx->pos == 2) {
+			fake_offset = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cpos = 0;
 		}
 	}
@@ -533,9 +781,15 @@ parse_record:
 		int status = fat_parse_long(inode, &cpos, &bh, &de,
 					    &unicode, &nr_slots);
 		if (status < 0) {
+<<<<<<< HEAD
 			filp->f_pos = cpos;
 			ret = status;
 			goto out;
+=======
+			bh = NULL;
+			ret = status;
+			goto end_of_dir;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else if (status == PARSE_INVALID)
 			goto record_end;
 		else if (status == PARSE_NOT_LONGNAME)
@@ -553,6 +807,7 @@ parse_record:
 			/* !both && !short_only, so we don't need shortname. */
 			if (!both)
 				goto start_filldir;
+<<<<<<< HEAD
 		}
 	}
 
@@ -646,6 +901,44 @@ start_filldir:
 	else if (!memcmp(de->name, MSDOS_DOTDOT, MSDOS_NAME)) {
 		inum = parent_ino(filp->f_path.dentry);
 	} else {
+=======
+
+			short_len = fat_parse_short(sb, de, bufname,
+						    sbi->options.dotsOK);
+			if (short_len == 0)
+				goto record_end;
+			/* hack for fat_ioctl_filldir() */
+			both->longname = fill_name;
+			both->long_len = fill_len;
+			both->shortname = bufname;
+			both->short_len = short_len;
+			fill_name = NULL;
+			fill_len = 0;
+			goto start_filldir;
+		}
+	}
+
+	short_len = fat_parse_short(sb, de, bufname, sbi->options.dotsOK);
+	if (short_len == 0)
+		goto record_end;
+
+	fill_name = bufname;
+	fill_len = short_len;
+
+start_filldir:
+	ctx->pos = cpos - (nr_slots + 1) * sizeof(struct msdos_dir_entry);
+	if (fake_offset && ctx->pos < 2)
+		ctx->pos = 2;
+
+	if (!memcmp(de->name, MSDOS_DOT, MSDOS_NAME)) {
+		if (!dir_emit_dot(file, ctx))
+			goto fill_failed;
+	} else if (!memcmp(de->name, MSDOS_DOTDOT, MSDOS_NAME)) {
+		if (!dir_emit_dotdot(file, ctx))
+			goto fill_failed;
+	} else {
+		unsigned long inum;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		loff_t i_pos = fat_make_i_pos(sb, bh, de);
 		struct inode *tmp = fat_iget(sb, i_pos);
 		if (tmp) {
@@ -653,6 +946,7 @@ start_filldir:
 			iput(tmp);
 		} else
 			inum = iunique(sb, MSDOS_ROOT_INO);
+<<<<<<< HEAD
 	}
 
 	if (filldir(dirent, fill_name, fill_len, *furrfu, inum,
@@ -665,11 +959,29 @@ record_end:
 	goto get_new;
 end_of_dir:
 	filp->f_pos = cpos;
+=======
+		if (!dir_emit(ctx, fill_name, fill_len, inum,
+			    (de->attr & ATTR_DIR) ? DT_DIR : DT_REG))
+			goto fill_failed;
+	}
+
+record_end:
+	fake_offset = 0;
+	ctx->pos = cpos;
+	goto get_new;
+
+end_of_dir:
+	if (fake_offset && cpos < 2)
+		ctx->pos = 2;
+	else
+		ctx->pos = cpos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fill_failed:
 	brelse(bh);
 	if (unicode)
 		__putname(unicode);
 out:
+<<<<<<< HEAD
 	unlock_super(sb);
 	return ret;
 }
@@ -685,11 +997,33 @@ static int func(void *__buf, const char *name, int name_len,		   \
 			     loff_t offset, u64 ino, unsigned int d_type)  \
 {									   \
 	struct fat_ioctl_filldir_callback *buf = __buf;			   \
+=======
+	mutex_unlock(&sbi->s_lock);
+
+	return ret;
+}
+
+static int fat_readdir(struct file *file, struct dir_context *ctx)
+{
+	return __fat_readdir(file_inode(file), file, ctx, 0, NULL);
+}
+
+#define FAT_IOCTL_FILLDIR_FUNC(func, dirent_type)			   \
+static bool func(struct dir_context *ctx, const char *name, int name_len,  \
+			     loff_t offset, u64 ino, unsigned int d_type)  \
+{									   \
+	struct fat_ioctl_filldir_callback *buf =			   \
+		container_of(ctx, struct fat_ioctl_filldir_callback, ctx); \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dirent_type __user *d1 = buf->dirent;			   \
 	struct dirent_type __user *d2 = d1 + 1;				   \
 									   \
 	if (buf->result)						   \
+<<<<<<< HEAD
 		return -EINVAL;						   \
+=======
+		return false;						   \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf->result++;							   \
 									   \
 	if (name != NULL) {						   \
@@ -697,7 +1031,11 @@ static int func(void *__buf, const char *name, int name_len,		   \
 		if (name_len >= sizeof(d1->d_name))			   \
 			name_len = sizeof(d1->d_name) - 1;		   \
 									   \
+<<<<<<< HEAD
 		if (put_user(0, d2->d_name)			||	   \
+=======
+		if (put_user(0, &d2->d_name[0])			||	   \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    put_user(0, &d2->d_reclen)			||	   \
 		    copy_to_user(d1->d_name, name, name_len)	||	   \
 		    put_user(0, d1->d_name + name_len)		||	   \
@@ -725,23 +1063,42 @@ static int func(void *__buf, const char *name, int name_len,		   \
 		    put_user(short_len, &d1->d_reclen))			   \
 			goto efault;					   \
 	}								   \
+<<<<<<< HEAD
 	return 0;							   \
 efault:									   \
 	buf->result = -EFAULT;						   \
 	return -EFAULT;							   \
+=======
+	return true;							   \
+efault:									   \
+	buf->result = -EFAULT;						   \
+	return false;							   \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 FAT_IOCTL_FILLDIR_FUNC(fat_ioctl_filldir, __fat_dirent)
 
+<<<<<<< HEAD
 static int fat_ioctl_readdir(struct inode *inode, struct file *filp,
 			     void __user *dirent, filldir_t filldir,
 			     int short_only, int both)
 {
 	struct fat_ioctl_filldir_callback buf;
+=======
+static int fat_ioctl_readdir(struct inode *inode, struct file *file,
+			     void __user *dirent, filldir_t filldir,
+			     int short_only, int both)
+{
+	struct fat_ioctl_filldir_callback buf = {
+		.ctx.actor = filldir,
+		.dirent = dirent
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	buf.dirent = dirent;
 	buf.result = 0;
+<<<<<<< HEAD
 	mutex_lock(&inode->i_mutex);
 	ret = -ENOENT;
 	if (!IS_DEADDIR(inode)) {
@@ -749,11 +1106,23 @@ static int fat_ioctl_readdir(struct inode *inode, struct file *filp,
 				    short_only, both);
 	}
 	mutex_unlock(&inode->i_mutex);
+=======
+	inode_lock_shared(inode);
+	buf.ctx.pos = file->f_pos;
+	ret = -ENOENT;
+	if (!IS_DEADDIR(inode)) {
+		ret = __fat_readdir(inode, file, &buf.ctx,
+				    short_only, both ? &buf : NULL);
+		file->f_pos = buf.ctx.pos;
+	}
+	inode_unlock_shared(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret >= 0)
 		ret = buf.result;
 	return ret;
 }
 
+<<<<<<< HEAD
 static int fat_ioctl_volume_id(struct inode *dir)
 {
 	struct super_block *sb = dir->i_sb;
@@ -765,6 +1134,12 @@ static long fat_dir_ioctl(struct file *filp, unsigned int cmd,
 			  unsigned long arg)
 {
 	struct inode *inode = filp->f_path.dentry->d_inode;
+=======
+static long fat_dir_ioctl(struct file *filp, unsigned int cmd,
+			  unsigned long arg)
+{
+	struct inode *inode = file_inode(filp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct __fat_dirent __user *d1 = (struct __fat_dirent __user *)arg;
 	int short_only, both;
 
@@ -777,14 +1152,20 @@ static long fat_dir_ioctl(struct file *filp, unsigned int cmd,
 		short_only = 0;
 		both = 1;
 		break;
+<<<<<<< HEAD
 	case VFAT_IOCTL_GET_VOLUME_ID:
 		return fat_ioctl_volume_id(inode);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return fat_generic_ioctl(filp, cmd, arg);
 	}
 
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_WRITE, d1, sizeof(struct __fat_dirent[2])))
 		return -EFAULT;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Yes, we don't need this put_user() absolutely. However old
 	 * code didn't return the right value. So, app use this value,
@@ -806,7 +1187,11 @@ FAT_IOCTL_FILLDIR_FUNC(fat_compat_ioctl_filldir, compat_dirent)
 static long fat_compat_dir_ioctl(struct file *filp, unsigned cmd,
 				 unsigned long arg)
 {
+<<<<<<< HEAD
 	struct inode *inode = filp->f_path.dentry->d_inode;
+=======
+	struct inode *inode = file_inode(filp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct compat_dirent __user *d1 = compat_ptr(arg);
 	int short_only, both;
 
@@ -823,8 +1208,11 @@ static long fat_compat_dir_ioctl(struct file *filp, unsigned cmd,
 		return fat_generic_ioctl(filp, cmd, (unsigned long)arg);
 	}
 
+<<<<<<< HEAD
 	if (!access_ok(VERIFY_WRITE, d1, sizeof(struct compat_dirent[2])))
 		return -EFAULT;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Yes, we don't need this put_user() absolutely. However old
 	 * code didn't return the right value. So, app use this value,
@@ -841,7 +1229,11 @@ static long fat_compat_dir_ioctl(struct file *filp, unsigned cmd,
 const struct file_operations fat_dir_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.readdir	= fat_readdir,
+=======
+	.iterate_shared	= fat_readdir,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.unlocked_ioctl	= fat_dir_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= fat_compat_dir_ioctl,
@@ -862,6 +1254,7 @@ static int fat_get_short_entry(struct inode *dir, loff_t *pos,
 }
 
 /*
+<<<<<<< HEAD
  * The ".." entry can not provide the "struct fat_slot_info" informations
  * for inode. So, this function provide the some informations only.
  */
@@ -881,6 +1274,28 @@ int fat_get_dotdot_entry(struct inode *dir, struct buffer_head **bh,
 	return -ENOENT;
 }
 
+=======
+ * The ".." entry can not provide the "struct fat_slot_info" information
+ * for inode, nor a usable i_pos. So, this function provides some information
+ * only.
+ *
+ * Since this function walks through the on-disk inodes within a directory,
+ * callers are responsible for taking any locks necessary to prevent the
+ * directory from changing.
+ */
+int fat_get_dotdot_entry(struct inode *dir, struct buffer_head **bh,
+			 struct msdos_dir_entry **de)
+{
+	loff_t offset = 0;
+
+	*de = NULL;
+	while (fat_get_short_entry(dir, &offset, bh, de) >= 0) {
+		if (!strncmp((*de)->name, MSDOS_DOTDOT, MSDOS_NAME))
+			return 0;
+	}
+	return -ENOENT;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(fat_get_dotdot_entry);
 
 /* See if directory is empty */
@@ -903,7 +1318,10 @@ int fat_dir_empty(struct inode *dir)
 	brelse(bh);
 	return result;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(fat_dir_empty);
 
 /*
@@ -949,9 +1367,37 @@ int fat_scan(struct inode *dir, const unsigned char *name,
 	}
 	return -ENOENT;
 }
+<<<<<<< HEAD
 
 EXPORT_SYMBOL_GPL(fat_scan);
 
+=======
+EXPORT_SYMBOL_GPL(fat_scan);
+
+/*
+ * Scans a directory for a given logstart.
+ * Returns an error code or zero.
+ */
+int fat_scan_logstart(struct inode *dir, int i_logstart,
+		      struct fat_slot_info *sinfo)
+{
+	struct super_block *sb = dir->i_sb;
+
+	sinfo->slot_off = 0;
+	sinfo->bh = NULL;
+	while (fat_get_short_entry(dir, &sinfo->slot_off, &sinfo->bh,
+				   &sinfo->de) >= 0) {
+		if (fat_get_start(MSDOS_SB(sb), sinfo->de) == i_logstart) {
+			sinfo->slot_off -= sizeof(*sinfo->de);
+			sinfo->nr_slots = 1;
+			sinfo->i_pos = fat_make_i_pos(sb, sinfo->bh, sinfo->de);
+			return 0;
+		}
+	}
+	return -ENOENT;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __fat_remove_entries(struct inode *dir, loff_t pos, int nr_slots)
 {
 	struct super_block *sb = dir->i_sb;
@@ -1014,7 +1460,11 @@ int fat_remove_entries(struct inode *dir, struct fat_slot_info *sinfo)
 	brelse(bh);
 	if (err)
 		return err;
+<<<<<<< HEAD
 	dir->i_version++;
+=======
+	inode_inc_iversion(dir);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (nr_slots) {
 		/*
@@ -1029,7 +1479,11 @@ int fat_remove_entries(struct inode *dir, struct fat_slot_info *sinfo)
 		}
 	}
 
+<<<<<<< HEAD
 	dir->i_mtime = dir->i_atime = CURRENT_TIME_SEC;
+=======
+	fat_truncate_time(dir, NULL, S_ATIME|S_MTIME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_DIRSYNC(dir))
 		(void)fat_sync_inode(dir);
 	else
@@ -1037,7 +1491,10 @@ int fat_remove_entries(struct inode *dir, struct fat_slot_info *sinfo)
 
 	return 0;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(fat_remove_entries);
 
 static int fat_zeroed_cluster(struct inode *dir, sector_t blknr, int nr_used,
@@ -1056,8 +1513,16 @@ static int fat_zeroed_cluster(struct inode *dir, sector_t blknr, int nr_used,
 			err = -ENOMEM;
 			goto error;
 		}
+<<<<<<< HEAD
 		memset(bhs[n]->b_data, 0, sb->s_blocksize);
 		set_buffer_uptodate(bhs[n]);
+=======
+		/* Avoid race with userspace read via bdev */
+		lock_buffer(bhs[n]);
+		memset(bhs[n]->b_data, 0, sb->s_blocksize);
+		set_buffer_uptodate(bhs[n]);
+		unlock_buffer(bhs[n]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mark_buffer_dirty_inode(bhs[n], dir);
 
 		n++;
@@ -1089,7 +1554,11 @@ error:
 	return err;
 }
 
+<<<<<<< HEAD
 int fat_alloc_new_dir(struct inode *dir, struct timespec *ts)
+=======
+int fat_alloc_new_dir(struct inode *dir, struct timespec64 *ts)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct super_block *sb = dir->i_sb;
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
@@ -1114,6 +1583,11 @@ int fat_alloc_new_dir(struct inode *dir, struct timespec *ts)
 	fat_time_unix2fat(sbi, ts, &time, &date, &time_cs);
 
 	de = (struct msdos_dir_entry *)bhs[0]->b_data;
+<<<<<<< HEAD
+=======
+	/* Avoid race with userspace read via bdev */
+	lock_buffer(bhs[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* filling the new directory slots ("." and ".." entries) */
 	memcpy(de[0].name, MSDOS_DOT, MSDOS_NAME);
 	memcpy(de[1].name, MSDOS_DOTDOT, MSDOS_NAME);
@@ -1131,6 +1605,7 @@ int fat_alloc_new_dir(struct inode *dir, struct timespec *ts)
 		de[0].ctime_cs = de[1].ctime_cs = 0;
 		de[0].adate = de[0].cdate = de[1].adate = de[1].cdate = 0;
 	}
+<<<<<<< HEAD
 	de[0].start = cpu_to_le16(cluster);
 	de[0].starthi = cpu_to_le16(cluster >> 16);
 	de[1].start = cpu_to_le16(MSDOS_I(dir)->i_logstart);
@@ -1138,6 +1613,14 @@ int fat_alloc_new_dir(struct inode *dir, struct timespec *ts)
 	de[0].size = de[1].size = 0;
 	memset(de + 2, 0, sb->s_blocksize - 2 * sizeof(*de));
 	set_buffer_uptodate(bhs[0]);
+=======
+	fat_set_start(&de[0], cluster);
+	fat_set_start(&de[1], MSDOS_I(dir)->i_logstart);
+	de[0].size = de[1].size = 0;
+	memset(de + 2, 0, sb->s_blocksize - 2 * sizeof(*de));
+	set_buffer_uptodate(bhs[0]);
+	unlock_buffer(bhs[0]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mark_buffer_dirty_inode(bhs[0], dir);
 
 	err = fat_zeroed_cluster(dir, blknr, 1, bhs, MAX_BUF_PER_PAGE);
@@ -1151,7 +1634,10 @@ error_free:
 error:
 	return err;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(fat_alloc_new_dir);
 
 static int fat_add_new_entries(struct inode *dir, void *slots, int nr_slots,
@@ -1196,11 +1682,22 @@ static int fat_add_new_entries(struct inode *dir, void *slots, int nr_slots,
 
 			/* fill the directory entry */
 			copy = min(size, sb->s_blocksize);
+<<<<<<< HEAD
 			memcpy(bhs[n]->b_data, slots, copy);
 			slots += copy;
 			size -= copy;
 			set_buffer_uptodate(bhs[n]);
 			mark_buffer_dirty_inode(bhs[n], dir);
+=======
+			/* Avoid race with userspace read via bdev */
+			lock_buffer(bhs[n]);
+			memcpy(bhs[n]->b_data, slots, copy);
+			set_buffer_uptodate(bhs[n]);
+			unlock_buffer(bhs[n]);
+			mark_buffer_dirty_inode(bhs[n], dir);
+			slots += copy;
+			size -= copy;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!size)
 				break;
 			n++;
@@ -1240,13 +1737,21 @@ int fat_add_entries(struct inode *dir, void *slots, int nr_slots,
 	struct super_block *sb = dir->i_sb;
 	struct msdos_sb_info *sbi = MSDOS_SB(sb);
 	struct buffer_head *bh, *prev, *bhs[3]; /* 32*slots (672bytes) */
+<<<<<<< HEAD
 	struct msdos_dir_entry *uninitialized_var(de);
+=======
+	struct msdos_dir_entry *de;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err, free_slots, i, nr_bhs;
 	loff_t pos, i_pos;
 
 	sinfo->nr_slots = nr_slots;
 
+<<<<<<< HEAD
 	/* First stage: search free direcotry entries */
+=======
+	/* First stage: search free directory entries */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_slots = nr_bhs = 0;
 	bh = prev = NULL;
 	pos = 0;
@@ -1273,7 +1778,11 @@ int fat_add_entries(struct inode *dir, void *slots, int nr_slots,
 		}
 	}
 	if (dir->i_ino == MSDOS_ROOT_INO) {
+<<<<<<< HEAD
 		if (sbi->fat_bits != 32)
+=======
+		if (!is_fat32(sbi))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto error;
 	} else if (MSDOS_I(dir)->i_start == 0) {
 		fat_msg(sb, KERN_ERR, "Corrupted directory (i_pos %lld)",
@@ -1367,5 +1876,8 @@ error_remove:
 		__fat_remove_entries(dir, pos, free_slots);
 	return err;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL_GPL(fat_add_entries);

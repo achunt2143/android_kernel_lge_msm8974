@@ -1,6 +1,11 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * reservations.c
  *
  * Allocation reservations implementation
@@ -13,6 +18,7 @@
  * Universite Pierre et Marie Curie (Paris VI)
  *
  * The rest is copyright (C) 2010 Novell.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -22,6 +28,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/fs.h>
@@ -39,10 +47,14 @@
 #define OCFS2_CHECK_RESERVATIONS
 #endif
 
+<<<<<<< HEAD
 DEFINE_SPINLOCK(resv_lock);
 
 #define	OCFS2_MIN_RESV_WINDOW_BITS	8
 #define	OCFS2_MAX_RESV_WINDOW_BITS	1024
+=======
+static DEFINE_SPINLOCK(resv_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int ocfs2_dir_resv_allowed(struct ocfs2_super *osb)
 {
@@ -211,7 +223,11 @@ void ocfs2_resv_set_type(struct ocfs2_alloc_reservation *resv,
 	resv->r_flags |= flags;
 }
 
+<<<<<<< HEAD
 int ocfs2_resmap_init(struct ocfs2_super *osb,
+=======
+void ocfs2_resmap_init(struct ocfs2_super *osb,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      struct ocfs2_reservation_map *resmap)
 {
 	memset(resmap, 0, sizeof(*resmap));
@@ -220,8 +236,11 @@ int ocfs2_resmap_init(struct ocfs2_super *osb,
 	resmap->m_reservations = RB_ROOT;
 	/* m_bitmap_len is initialized to zero by the above memset. */
 	INIT_LIST_HEAD(&resmap->m_lru);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ocfs2_resv_mark_lru(struct ocfs2_reservation_map *resmap,

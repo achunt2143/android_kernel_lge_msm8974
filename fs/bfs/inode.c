@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *	fs/bfs/inode.c
  *	BFS superblock and inode operations.
@@ -5,6 +6,15 @@
  *	From fs/minix, Copyright (C) 1991, 1992 Linus Torvalds.
  *
  *      Made endianness-clean by Andrew Stribblehill <ads@wompom.org>, 2005.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *	fs/bfs/inode.c
+ *	BFS superblock and inode operations.
+ *	Copyright (C) 1999-2018 Tigran Aivazian <aivazian.tigran@gmail.com>
+ *	From fs/minix, Copyright (C) 1991, 1992 Linus Torvalds.
+ *	Made endianness-clean by Andrew Stribblehill <ads@wompom.org>, 2005.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -15,10 +25,18 @@
 #include <linux/buffer_head.h>
 #include <linux/vfs.h>
 #include <linux/writeback.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include "bfs.h"
 
 MODULE_AUTHOR("Tigran Aivazian <tigran@aivazian.fsnet.co.uk>");
+=======
+#include <linux/uio.h>
+#include <linux/uaccess.h>
+#include "bfs.h"
+
+MODULE_AUTHOR("Tigran Aivazian <aivazian.tigran@gmail.com>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("SCO UnixWare BFS filesystem for Linux");
 MODULE_LICENSE("GPL");
 
@@ -30,8 +48,11 @@ MODULE_LICENSE("GPL");
 #define dprintf(x...)
 #endif
 
+<<<<<<< HEAD
 void dump_imap(const char *prefix, struct super_block *s);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct inode *bfs_iget(struct super_block *sb, unsigned long ino)
 {
 	struct bfs_inode *di;
@@ -40,7 +61,11 @@ struct inode *bfs_iget(struct super_block *sb, unsigned long ino)
 	int block, off;
 
 	inode = iget_locked(sb, ino);
+<<<<<<< HEAD
 	if (IS_ERR(inode))
+=======
+	if (!inode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ERR_PTR(-ENOMEM);
 	if (!(inode->i_state & I_NEW))
 		return inode;
@@ -76,6 +101,7 @@ struct inode *bfs_iget(struct super_block *sb, unsigned long ino)
 	BFS_I(inode)->i_sblock =  le32_to_cpu(di->i_sblock);
 	BFS_I(inode)->i_eblock =  le32_to_cpu(di->i_eblock);
 	BFS_I(inode)->i_dsk_ino = le16_to_cpu(di->i_ino);
+<<<<<<< HEAD
 	inode->i_uid =  le32_to_cpu(di->i_uid);
 	inode->i_gid =  le32_to_cpu(di->i_gid);
 	set_nlink(inode, le32_to_cpu(di->i_nlink));
@@ -87,6 +113,16 @@ struct inode *bfs_iget(struct super_block *sb, unsigned long ino)
 	inode->i_atime.tv_nsec = 0;
 	inode->i_mtime.tv_nsec = 0;
 	inode->i_ctime.tv_nsec = 0;
+=======
+	i_uid_write(inode, le32_to_cpu(di->i_uid));
+	i_gid_write(inode,  le32_to_cpu(di->i_gid));
+	set_nlink(inode, le32_to_cpu(di->i_nlink));
+	inode->i_size = BFS_FILESIZE(di);
+	inode->i_blocks = BFS_FILEBLOCKS(di);
+	inode_set_atime(inode, le32_to_cpu(di->i_atime), 0);
+	inode_set_mtime(inode, le32_to_cpu(di->i_mtime), 0);
+	inode_set_ctime(inode, le32_to_cpu(di->i_ctime), 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	brelse(bh);
 	unlock_new_inode(inode);
@@ -119,12 +155,20 @@ static int bfs_write_inode(struct inode *inode, struct writeback_control *wbc)
 {
 	struct bfs_sb_info *info = BFS_SB(inode->i_sb);
 	unsigned int ino = (u16)inode->i_ino;
+<<<<<<< HEAD
         unsigned long i_sblock;
+=======
+	unsigned long i_sblock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfs_inode *di;
 	struct buffer_head *bh;
 	int err = 0;
 
+<<<<<<< HEAD
         dprintf("ino=%08x\n", ino);
+=======
+	dprintf("ino=%08x\n", ino);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	di = find_inode(inode->i_sb, ino, &bh);
 	if (IS_ERR(di))
@@ -139,6 +183,7 @@ static int bfs_write_inode(struct inode *inode, struct writeback_control *wbc)
 
 	di->i_ino = cpu_to_le16(ino);
 	di->i_mode = cpu_to_le32(inode->i_mode);
+<<<<<<< HEAD
 	di->i_uid = cpu_to_le32(inode->i_uid);
 	di->i_gid = cpu_to_le32(inode->i_gid);
 	di->i_nlink = cpu_to_le32(inode->i_nlink);
@@ -146,6 +191,15 @@ static int bfs_write_inode(struct inode *inode, struct writeback_control *wbc)
 	di->i_mtime = cpu_to_le32(inode->i_mtime.tv_sec);
 	di->i_ctime = cpu_to_le32(inode->i_ctime.tv_sec);
         i_sblock = BFS_I(inode)->i_sblock;
+=======
+	di->i_uid = cpu_to_le32(i_uid_read(inode));
+	di->i_gid = cpu_to_le32(i_gid_read(inode));
+	di->i_nlink = cpu_to_le32(inode->i_nlink);
+	di->i_atime = cpu_to_le32(inode_get_atime_sec(inode));
+	di->i_mtime = cpu_to_le32(inode_get_mtime_sec(inode));
+	di->i_ctime = cpu_to_le32(inode_get_ctime_sec(inode));
+	i_sblock = BFS_I(inode)->i_sblock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	di->i_sblock = cpu_to_le32(i_sblock);
 	di->i_eblock = cpu_to_le32(BFS_I(inode)->i_eblock);
 	di->i_eoffset = cpu_to_le32(i_sblock * BFS_BSIZE + inode->i_size - 1);
@@ -172,9 +226,15 @@ static void bfs_evict_inode(struct inode *inode)
 
 	dprintf("ino=%08lx\n", ino);
 
+<<<<<<< HEAD
 	truncate_inode_pages(&inode->i_data, 0);
 	invalidate_inode_buffers(inode);
 	end_writeback(inode);
+=======
+	truncate_inode_pages_final(&inode->i_data);
+	invalidate_inode_buffers(inode);
+	clear_inode(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (inode->i_nlink)
 		return;
@@ -189,13 +249,22 @@ static void bfs_evict_inode(struct inode *inode)
 	mark_buffer_dirty(bh);
 	brelse(bh);
 
+<<<<<<< HEAD
         if (bi->i_dsk_ino) {
+=======
+	if (bi->i_dsk_ino) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (bi->i_sblock)
 			info->si_freeb += bi->i_eblock + 1 - bi->i_sblock;
 		info->si_freei++;
 		clear_bit(ino, info->si_imap);
+<<<<<<< HEAD
 		dump_imap("delete_inode", s);
         }
+=======
+		bfs_dump_imap("evict_inode", s);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If this was the last file, make the previous block
@@ -215,7 +284,10 @@ static void bfs_put_super(struct super_block *s)
 		return;
 
 	mutex_destroy(&info->bfs_lock);
+<<<<<<< HEAD
 	kfree(info->si_imap);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(info);
 	s->s_fs_info = NULL;
 }
@@ -231,8 +303,12 @@ static int bfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_bfree = buf->f_bavail = info->si_freeb;
 	buf->f_files = info->si_lasti + 1 - BFS_ROOT_INO;
 	buf->f_ffree = info->si_freei;
+<<<<<<< HEAD
 	buf->f_fsid.val[0] = (u32)id;
 	buf->f_fsid.val[1] = (u32)(id >> 32);
+=======
+	buf->f_fsid = u64_to_fsid(id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf->f_namelen = BFS_NAMELEN;
 	return 0;
 }
@@ -242,12 +318,17 @@ static struct kmem_cache *bfs_inode_cachep;
 static struct inode *bfs_alloc_inode(struct super_block *sb)
 {
 	struct bfs_inode_info *bi;
+<<<<<<< HEAD
 	bi = kmem_cache_alloc(bfs_inode_cachep, GFP_KERNEL);
+=======
+	bi = alloc_inode_sb(sb, bfs_inode_cachep, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!bi)
 		return NULL;
 	return &bi->vfs_inode;
 }
 
+<<<<<<< HEAD
 static void bfs_i_callback(struct rcu_head *head)
 {
 	struct inode *inode = container_of(head, struct inode, i_rcu);
@@ -259,6 +340,13 @@ static void bfs_destroy_inode(struct inode *inode)
 	call_rcu(&inode->i_rcu, bfs_i_callback);
 }
 
+=======
+static void bfs_free_inode(struct inode *inode)
+{
+	kmem_cache_free(bfs_inode_cachep, BFS_I(inode));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void init_once(void *foo)
 {
 	struct bfs_inode_info *bi = foo;
@@ -266,12 +354,20 @@ static void init_once(void *foo)
 	inode_init_once(&bi->vfs_inode);
 }
 
+<<<<<<< HEAD
 static int init_inodecache(void)
+=======
+static int __init init_inodecache(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	bfs_inode_cachep = kmem_cache_create("bfs_inode_cache",
 					     sizeof(struct bfs_inode_info),
 					     0, (SLAB_RECLAIM_ACCOUNT|
+<<<<<<< HEAD
 						SLAB_MEM_SPREAD),
+=======
+						SLAB_ACCOUNT),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					     init_once);
 	if (bfs_inode_cachep == NULL)
 		return -ENOMEM;
@@ -290,14 +386,22 @@ static void destroy_inodecache(void)
 
 static const struct super_operations bfs_sops = {
 	.alloc_inode	= bfs_alloc_inode,
+<<<<<<< HEAD
 	.destroy_inode	= bfs_destroy_inode,
+=======
+	.free_inode	= bfs_free_inode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.write_inode	= bfs_write_inode,
 	.evict_inode	= bfs_evict_inode,
 	.put_super	= bfs_put_super,
 	.statfs		= bfs_statfs,
 };
 
+<<<<<<< HEAD
 void dump_imap(const char *prefix, struct super_block *s)
+=======
+void bfs_dump_imap(const char *prefix, struct super_block *s)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef DEBUG
 	int i;
@@ -312,8 +416,12 @@ void dump_imap(const char *prefix, struct super_block *s)
 		else
 			strcat(tmpbuf, "0");
 	}
+<<<<<<< HEAD
 	printf("BFS-fs: %s: lasti=%08lx <%s>\n",
 				prefix, BFS_SB(s)->si_lasti, tmpbuf);
+=======
+	printf("%s: lasti=%08lx <%s>\n", prefix, BFS_SB(s)->si_lasti, tmpbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_page((unsigned long)tmpbuf);
 #endif
 }
@@ -323,7 +431,11 @@ static int bfs_fill_super(struct super_block *s, void *data, int silent)
 	struct buffer_head *bh, *sbh;
 	struct bfs_super_block *bfs_sb;
 	struct inode *inode;
+<<<<<<< HEAD
 	unsigned i, imap_len;
+=======
+	unsigned i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfs_sb_info *info;
 	int ret = -EINVAL;
 	unsigned long i_sblock, i_eblock, i_eoff, s_size;
@@ -333,6 +445,11 @@ static int bfs_fill_super(struct super_block *s, void *data, int silent)
 		return -ENOMEM;
 	mutex_init(&info->bfs_lock);
 	s->s_fs_info = info;
+<<<<<<< HEAD
+=======
+	s->s_time_min = 0;
+	s->s_time_max = U32_MAX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sb_set_blocksize(s, BFS_BSIZE);
 
@@ -342,8 +459,12 @@ static int bfs_fill_super(struct super_block *s, void *data, int silent)
 	bfs_sb = (struct bfs_super_block *)sbh->b_data;
 	if (le32_to_cpu(bfs_sb->s_magic) != BFS_MAGIC) {
 		if (!silent)
+<<<<<<< HEAD
 			printf("No BFS filesystem on %s (magic=%08x)\n", 
 				s->s_id,  le32_to_cpu(bfs_sb->s_magic));
+=======
+			printf("No BFS filesystem on %s (magic=%08x)\n", s->s_id,  le32_to_cpu(bfs_sb->s_magic));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out1;
 	}
 	if (BFS_UNCLEAN(bfs_sb, s) && !silent)
@@ -351,6 +472,7 @@ static int bfs_fill_super(struct super_block *s, void *data, int silent)
 
 	s->s_magic = BFS_MAGIC;
 
+<<<<<<< HEAD
 	if (le32_to_cpu(bfs_sb->s_start) > le32_to_cpu(bfs_sb->s_end)) {
 		printf("Superblock is corrupted\n");
 		goto out1;
@@ -363,6 +485,21 @@ static int bfs_fill_super(struct super_block *s, void *data, int silent)
 	info->si_imap = kzalloc(imap_len, GFP_KERNEL);
 	if (!info->si_imap)
 		goto out1;
+=======
+	if (le32_to_cpu(bfs_sb->s_start) > le32_to_cpu(bfs_sb->s_end) ||
+	    le32_to_cpu(bfs_sb->s_start) < sizeof(struct bfs_super_block) + sizeof(struct bfs_dirent)) {
+		printf("Superblock is corrupted on %s\n", s->s_id);
+		goto out1;
+	}
+
+	info->si_lasti = (le32_to_cpu(bfs_sb->s_start) - BFS_BSIZE) / sizeof(struct bfs_inode) + BFS_ROOT_INO - 1;
+	if (info->si_lasti == BFS_MAX_LASTI)
+		printf("NOTE: filesystem %s was created with 512 inodes, the real maximum is 511, mounting anyway\n", s->s_id);
+	else if (info->si_lasti > BFS_MAX_LASTI) {
+		printf("Impossible last inode number %lu > %d on %s\n", info->si_lasti, BFS_MAX_LASTI, s->s_id);
+		goto out1;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < BFS_ROOT_INO; i++)
 		set_bit(i, info->si_imap);
 
@@ -370,26 +507,44 @@ static int bfs_fill_super(struct super_block *s, void *data, int silent)
 	inode = bfs_iget(s, BFS_ROOT_INO);
 	if (IS_ERR(inode)) {
 		ret = PTR_ERR(inode);
+<<<<<<< HEAD
 		goto out2;
+=======
+		goto out1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	s->s_root = d_make_root(inode);
 	if (!s->s_root) {
 		ret = -ENOMEM;
+<<<<<<< HEAD
 		goto out2;
 	}
 
 	info->si_blocks = (le32_to_cpu(bfs_sb->s_end) + 1) >> BFS_BSIZE_BITS;
 	info->si_freeb = (le32_to_cpu(bfs_sb->s_end) + 1
 			- le32_to_cpu(bfs_sb->s_start)) >> BFS_BSIZE_BITS;
+=======
+		goto out1;
+	}
+
+	info->si_blocks = (le32_to_cpu(bfs_sb->s_end) + 1) >> BFS_BSIZE_BITS;
+	info->si_freeb = (le32_to_cpu(bfs_sb->s_end) + 1 - le32_to_cpu(bfs_sb->s_start)) >> BFS_BSIZE_BITS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info->si_freei = 0;
 	info->si_lf_eblk = 0;
 
 	/* can we read the last block? */
 	bh = sb_bread(s, info->si_blocks - 1);
 	if (!bh) {
+<<<<<<< HEAD
 		printf("Last block not available: %lu\n", info->si_blocks - 1);
 		ret = -EIO;
 		goto out3;
+=======
+		printf("Last block not available on %s: %lu\n", s->s_id, info->si_blocks - 1);
+		ret = -EIO;
+		goto out2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	brelse(bh);
 
@@ -420,6 +575,7 @@ static int bfs_fill_super(struct super_block *s, void *data, int silent)
 		if (i_sblock > info->si_blocks ||
 			i_eblock > info->si_blocks ||
 			i_sblock > i_eblock ||
+<<<<<<< HEAD
 			i_eoff > s_size ||
 			i_sblock * BFS_BSIZE > i_eoff) {
 
@@ -428,6 +584,16 @@ static int bfs_fill_super(struct super_block *s, void *data, int silent)
 			brelse(bh);
 			ret = -EIO;
 			goto out3;
+=======
+			(i_eoff != le32_to_cpu(-1) && i_eoff > s_size) ||
+			i_sblock * BFS_BSIZE > i_eoff) {
+
+			printf("Inode 0x%08x corrupted on %s\n", i, s->s_id);
+
+			brelse(bh);
+			ret = -EIO;
+			goto out2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		if (!di->i_ino) {
@@ -443,6 +609,7 @@ static int bfs_fill_super(struct super_block *s, void *data, int silent)
 	}
 	brelse(bh);
 	brelse(sbh);
+<<<<<<< HEAD
 	dump_imap("read_super", s);
 	return 0;
 
@@ -451,6 +618,14 @@ out3:
 	s->s_root = NULL;
 out2:
 	kfree(info->si_imap);
+=======
+	bfs_dump_imap("fill_super", s);
+	return 0;
+
+out2:
+	dput(s->s_root);
+	s->s_root = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out1:
 	brelse(sbh);
 out:
@@ -480,7 +655,11 @@ static int __init init_bfs_fs(void)
 	int err = init_inodecache();
 	if (err)
 		goto out1;
+<<<<<<< HEAD
         err = register_filesystem(&bfs_fs_type);
+=======
+	err = register_filesystem(&bfs_fs_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		goto out;
 	return 0;

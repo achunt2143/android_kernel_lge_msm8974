@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * omap_hwmod_common_data.h - OMAP hwmod common macros and declarations
  *
  * Copyright (C) 2010-2011 Nokia Corporation
+<<<<<<< HEAD
  * Paul Walmsley
  *
  * Copyright (C) 2010-2011 Texas Instruments, Inc.
@@ -10,10 +15,16 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+ * Copyright (C) 2010-2012 Texas Instruments, Inc.
+ * Paul Walmsley
+ * Benoît Cousson
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ARCH_ARM_MACH_OMAP2_OMAP_HWMOD_COMMON_DATA_H
 #define __ARCH_ARM_MACH_OMAP2_OMAP_HWMOD_COMMON_DATA_H
 
+<<<<<<< HEAD
 #include <plat/omap_hwmod.h>
 
 #include "display.h"
@@ -94,6 +105,74 @@ extern struct omap_hwmod_irq_info omap2_gpio4_irqs[];
 extern struct omap_hwmod_irq_info omap2_dma_system_irqs[];
 extern struct omap_hwmod_irq_info omap2_mcspi1_mpu_irqs[];
 extern struct omap_hwmod_irq_info omap2_mcspi2_mpu_irqs[];
+=======
+#include "omap_hwmod.h"
+
+#include "common.h"
+#include "display.h"
+
+/* Common IP block data across OMAP2xxx */
+extern struct omap_hwmod omap2xxx_l3_main_hwmod;
+extern struct omap_hwmod omap2xxx_l4_core_hwmod;
+extern struct omap_hwmod omap2xxx_l4_wkup_hwmod;
+extern struct omap_hwmod omap2xxx_mpu_hwmod;
+extern struct omap_hwmod omap2xxx_timer3_hwmod;
+extern struct omap_hwmod omap2xxx_timer4_hwmod;
+extern struct omap_hwmod omap2xxx_timer5_hwmod;
+extern struct omap_hwmod omap2xxx_timer6_hwmod;
+extern struct omap_hwmod omap2xxx_timer7_hwmod;
+extern struct omap_hwmod omap2xxx_timer8_hwmod;
+extern struct omap_hwmod omap2xxx_timer9_hwmod;
+extern struct omap_hwmod omap2xxx_timer10_hwmod;
+extern struct omap_hwmod omap2xxx_timer11_hwmod;
+extern struct omap_hwmod omap2xxx_timer12_hwmod;
+extern struct omap_hwmod omap2xxx_wd_timer2_hwmod;
+extern struct omap_hwmod omap2xxx_uart1_hwmod;
+extern struct omap_hwmod omap2xxx_uart2_hwmod;
+extern struct omap_hwmod omap2xxx_uart3_hwmod;
+extern struct omap_hwmod omap2xxx_dss_core_hwmod;
+extern struct omap_hwmod omap2xxx_dss_dispc_hwmod;
+extern struct omap_hwmod omap2xxx_dss_rfbi_hwmod;
+extern struct omap_hwmod omap2xxx_dss_venc_hwmod;
+extern struct omap_hwmod omap2xxx_gpio1_hwmod;
+extern struct omap_hwmod omap2xxx_gpio2_hwmod;
+extern struct omap_hwmod omap2xxx_gpio3_hwmod;
+extern struct omap_hwmod omap2xxx_gpio4_hwmod;
+extern struct omap_hwmod omap2xxx_mcspi1_hwmod;
+extern struct omap_hwmod omap2xxx_mcspi2_hwmod;
+extern struct omap_hwmod omap2xxx_gpmc_hwmod;
+extern struct omap_hwmod omap2xxx_rng_hwmod;
+extern struct omap_hwmod omap2xxx_sham_hwmod;
+extern struct omap_hwmod omap2xxx_aes_hwmod;
+
+/* Common interface data across OMAP2xxx */
+extern struct omap_hwmod_ocp_if omap2xxx_l3_main__l4_core;
+extern struct omap_hwmod_ocp_if omap2xxx_mpu__l3_main;
+extern struct omap_hwmod_ocp_if omap2xxx_dss__l3;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__l4_wkup;
+extern struct omap_hwmod_ocp_if omap2_l4_core__uart1;
+extern struct omap_hwmod_ocp_if omap2_l4_core__uart2;
+extern struct omap_hwmod_ocp_if omap2_l4_core__uart3;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__mcspi1;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__mcspi2;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__timer3;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__timer4;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__timer5;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__timer6;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__timer7;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__timer8;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__timer9;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__timer10;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__timer11;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__timer12;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__dss;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__dss_dispc;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__dss_rfbi;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__dss_venc;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__rng;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__sham;
+extern struct omap_hwmod_ocp_if omap2xxx_l4_core__aes;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* OMAP hwmod classes - forward declarations */
 extern struct omap_hwmod_class l3_hwmod_class;
@@ -102,6 +181,7 @@ extern struct omap_hwmod_class mpu_hwmod_class;
 extern struct omap_hwmod_class iva_hwmod_class;
 extern struct omap_hwmod_class omap2_uart_class;
 extern struct omap_hwmod_class omap2_dss_hwmod_class;
+<<<<<<< HEAD
 extern struct omap_hwmod_class omap2_dispc_hwmod_class;
 extern struct omap_hwmod_class omap2_rfbi_hwmod_class;
 extern struct omap_hwmod_class omap2_venc_hwmod_class;
@@ -110,6 +190,13 @@ extern struct omap_hwmod_class omap2xxx_timer_hwmod_class;
 extern struct omap_hwmod_class omap2xxx_wd_timer_hwmod_class;
 extern struct omap_hwmod_class omap2xxx_gpio_hwmod_class;
 extern struct omap_hwmod_class omap2xxx_dma_hwmod_class;
+=======
+extern struct omap_hwmod_class omap2_rfbi_hwmod_class;
+extern struct omap_hwmod_class omap2_venc_hwmod_class;
+extern struct omap_hwmod_class omap2_hdq1w_class;
+
+extern struct omap_hwmod_class omap2xxx_gpio_hwmod_class;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern struct omap_hwmod_class omap2xxx_mailbox_hwmod_class;
 extern struct omap_hwmod_class omap2xxx_mcspi_class;
 

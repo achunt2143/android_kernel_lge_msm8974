@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef LINUX_SPI_FLASH_H
 #define LINUX_SPI_FLASH_H
 
@@ -7,7 +11,11 @@ struct mtd_partition;
  * struct flash_platform_data: board-specific flash data
  * @name: optional flash device name (eg, as used with mtdparts=)
  * @parts: optional array of mtd_partitions for static partitioning
+<<<<<<< HEAD
  * @nr_parts: number of mtd_partitions for static partitoning
+=======
+ * @nr_parts: number of mtd_partitions for static partitioning
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @type: optional flash device type (e.g. m25p80 vs m25p64), for use
  *	with chips that can't be queried for JEDEC or other IDs
  *

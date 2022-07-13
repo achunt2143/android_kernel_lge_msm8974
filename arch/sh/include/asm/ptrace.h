@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __ASM_SH_PTRACE_H
 #define __ASM_SH_PTRACE_H
 
@@ -31,18 +32,59 @@
 #endif
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright (C) 1999, 2000  Niibe Yutaka
+ */
+#ifndef __ASM_SH_PTRACE_H
+#define __ASM_SH_PTRACE_H
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/stringify.h>
 #include <linux/stddef.h>
 #include <linux/thread_info.h>
 #include <asm/addrspace.h>
 #include <asm/page.h>
+<<<<<<< HEAD
+=======
+#include <uapi/asm/ptrace.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define user_mode(regs)			(((regs)->sr & 0x40000000)==0)
 #define kernel_stack_pointer(_regs)	((unsigned long)(_regs)->regs[15])
 
+<<<<<<< HEAD
 #define GET_FP(regs)	((regs)->regs[14])
 #define GET_USP(regs)	((regs)->regs[15])
+=======
+static inline unsigned long instruction_pointer(struct pt_regs *regs)
+{
+	return regs->pc;
+}
+static inline void instruction_pointer_set(struct pt_regs *regs,
+		unsigned long val)
+{
+	regs->pc = val;
+}
+
+static inline unsigned long frame_pointer(struct pt_regs *regs)
+{
+	return regs->regs[14];
+}
+
+static inline unsigned long user_stack_pointer(struct pt_regs *regs)
+{
+	return regs->regs[15];
+}
+
+static inline void user_stack_pointer_set(struct pt_regs *regs,
+		unsigned long val)
+{
+	regs->regs[15] = val;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define arch_has_single_step()	(1)
 
@@ -137,9 +179,12 @@ static inline unsigned long profile_pc(struct pt_regs *regs)
 
 	return pc;
 }
+<<<<<<< HEAD
 #define profile_pc profile_pc
 
 #include <asm-generic/ptrace.h>
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_SH_PTRACE_H */

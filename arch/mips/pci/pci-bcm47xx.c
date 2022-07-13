@@ -28,7 +28,11 @@
 #include <linux/bcma/bcma.h>
 #include <bcm47xx.h>
 
+<<<<<<< HEAD
 int __init pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+=======
+int pcibios_map_irq(const struct pci_dev *dev, u8 slot, u8 pin)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
@@ -41,8 +45,12 @@ static int bcm47xx_pcibios_plat_dev_init_ssb(struct pci_dev *dev)
 
 	res = ssb_pcibios_plat_dev_init(dev);
 	if (res < 0) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "PCI: Failed to init device %s\n",
 		       pci_name(dev));
+=======
+		pci_alert(dev, "PCI: Failed to init device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return res;
 	}
 
@@ -52,8 +60,12 @@ static int bcm47xx_pcibios_plat_dev_init_ssb(struct pci_dev *dev)
 
 	/* IRQ-0 and IRQ-1 are software interrupts. */
 	if (res < 2) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "PCI: Failed to map IRQ of device %s\n",
 		       pci_name(dev));
+=======
+		pci_alert(dev, "PCI: Failed to map IRQ of device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return res;
 	}
 
@@ -69,8 +81,12 @@ static int bcm47xx_pcibios_plat_dev_init_bcma(struct pci_dev *dev)
 
 	res = bcma_core_pci_plat_dev_init(dev);
 	if (res < 0) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "PCI: Failed to init device %s\n",
 		       pci_name(dev));
+=======
+		pci_alert(dev, "PCI: Failed to init device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return res;
 	}
 
@@ -78,8 +94,12 @@ static int bcm47xx_pcibios_plat_dev_init_bcma(struct pci_dev *dev)
 
 	/* IRQ-0 and IRQ-1 are software interrupts. */
 	if (res < 2) {
+<<<<<<< HEAD
 		printk(KERN_ALERT "PCI: Failed to map IRQ of device %s\n",
 		       pci_name(dev));
+=======
+		pci_alert(dev, "PCI: Failed to map IRQ of device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return res;
 	}
 
@@ -91,14 +111,24 @@ static int bcm47xx_pcibios_plat_dev_init_bcma(struct pci_dev *dev)
 int pcibios_plat_dev_init(struct pci_dev *dev)
 {
 #ifdef CONFIG_BCM47XX_SSB
+<<<<<<< HEAD
 	if (bcm47xx_bus_type ==  BCM47XX_BUS_TYPE_SSB)
 		return bcm47xx_pcibios_plat_dev_init_ssb(dev);
 	else
+=======
+	if (bcm47xx_bus_type ==	 BCM47XX_BUS_TYPE_SSB)
+		return bcm47xx_pcibios_plat_dev_init_ssb(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #ifdef CONFIG_BCM47XX_BCMA
 	if  (bcm47xx_bus_type ==  BCM47XX_BUS_TYPE_BCMA)
 		return bcm47xx_pcibios_plat_dev_init_bcma(dev);
+<<<<<<< HEAD
 	else
 #endif
 		return 0;
+=======
+#endif
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

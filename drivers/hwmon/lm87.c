@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * lm87.c
  *
@@ -5,7 +9,11 @@
  *                          Philip Edelbrock <phil@netroedge.com>
  *                          Stephen Rousset <stephen.rousset@rocketlogix.com>
  *                          Dan Eaton <dan.eaton@rocketlogix.com>
+<<<<<<< HEAD
  * Copyright (C) 2004-2008  Jean Delvare <khali@linux-fr.org>
+=======
+ * Copyright (C) 2004-2008  Jean Delvare <jdelvare@suse.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Original port to Linux 2.6 by Jeff Oliver.
  *
@@ -39,6 +47,7 @@
  * This driver also supports the ADM1024, a sensor chip made by Analog
  * Devices. That chip is fully compatible with the LM87. Complete
  * datasheet can be obtained from Analog's website at:
+<<<<<<< HEAD
  *   http://www.analog.com/en/prod/0,2877,ADM1024,00.html
  *
  * This program is free software; you can redistribute it and/or modify
@@ -54,6 +63,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+ *   https://www.analog.com/en/prod/0,2877,ADM1024,00.html
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -66,6 +78,10 @@
 #include <linux/hwmon-vid.h>
 #include <linux/err.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/consumer.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Addresses to scan
@@ -74,8 +90,11 @@
 
 static const unsigned short normal_i2c[] = { 0x2c, 0x2d, 0x2e, I2C_CLIENT_END };
 
+<<<<<<< HEAD
 enum chips { lm87, adm1024 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The LM87 registers
  */
@@ -121,7 +140,11 @@ static u8 LM87_REG_TEMP_LOW[3] = { 0x3A, 0x38, 0x2C };
 
 #define IN_FROM_REG(reg, scale)	(((reg) * (scale) + 96) / 192)
 #define IN_TO_REG(val, scale)	((val) <= 0 ? 0 : \
+<<<<<<< HEAD
 				 (val) * 192 >= (scale) * 255 ? 255 : \
+=======
+				 (val) >= (scale) * 255 / 192 ? 255 : \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 ((val) * 192 + (scale) / 2) / (scale))
 
 #define TEMP_FROM_REG(reg)	((reg) * 1000)
@@ -154,9 +177,14 @@ static u8 LM87_REG_TEMP_LOW[3] = { 0x3A, 0x38, 0x2C };
  */
 
 struct lm87_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
 	struct mutex update_lock;
 	char valid; /* zero until following fields are valid */
+=======
+	struct mutex update_lock;
+	bool valid; /* false until following fields are valid */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long last_updated; /* In jiffies */
 
 	u8 channel;		/* register value */
@@ -181,6 +209,11 @@ struct lm87_data {
 	u16 alarms;		/* register values, combined */
 	u8 vid;			/* register values, combined */
 	u8 vrm;
+<<<<<<< HEAD
+=======
+
+	const struct attribute_group *attr_groups[6];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline int lm87_read_value(struct i2c_client *client, u8 reg)
@@ -195,7 +228,11 @@ static inline int lm87_write_value(struct i2c_client *client, u8 reg, u8 value)
 
 static struct lm87_data *lm87_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+	struct i2c_client *client = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lm87_data *data = i2c_get_clientdata(client);
 
 	mutex_lock(&data->update_lock);
@@ -264,7 +301,11 @@ static struct lm87_data *lm87_update_device(struct device *dev)
 		data->aout = lm87_read_value(client, LM87_REG_AOUT);
 
 		data->last_updated = jiffies;
+<<<<<<< HEAD
 		data->valid = 1;
+=======
+		data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&data->update_lock);
@@ -276,8 +317,13 @@ static struct lm87_data *lm87_update_device(struct device *dev)
  * Sysfs stuff
  */
 
+<<<<<<< HEAD
 static ssize_t show_in_input(struct device *dev, struct device_attribute *attr,
 			     char *buf)
+=======
+static ssize_t in_input_show(struct device *dev,
+			     struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lm87_data *data = lm87_update_device(dev);
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -286,8 +332,13 @@ static ssize_t show_in_input(struct device *dev, struct device_attribute *attr,
 		       data->in_scale[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t show_in_min(struct device *dev,
 				     struct device_attribute *attr, char *buf)
+=======
+static ssize_t in_min_show(struct device *dev, struct device_attribute *attr,
+			   char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lm87_data *data = lm87_update_device(dev);
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -296,8 +347,13 @@ static ssize_t show_in_min(struct device *dev,
 		       data->in_scale[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t show_in_max(struct device *dev,
 				     struct device_attribute *attr, char *buf)
+=======
+static ssize_t in_max_show(struct device *dev, struct device_attribute *attr,
+			   char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lm87_data *data = lm87_update_device(dev);
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -306,10 +362,17 @@ static ssize_t show_in_max(struct device *dev,
 		       data->in_scale[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t set_in_min(struct device *dev, struct device_attribute *attr,
 			  const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+static ssize_t in_min_store(struct device *dev, struct device_attribute *attr,
+			    const char *buf, size_t count)
+{
+	struct i2c_client *client = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lm87_data *data = i2c_get_clientdata(client);
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
@@ -327,10 +390,17 @@ static ssize_t set_in_min(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t set_in_max(struct device *dev,  struct device_attribute *attr,
 			  const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+static ssize_t in_max_store(struct device *dev, struct device_attribute *attr,
+			    const char *buf, size_t count)
+{
+	struct i2c_client *client = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lm87_data *data = i2c_get_clientdata(client);
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
@@ -348,6 +418,7 @@ static ssize_t set_in_max(struct device *dev,  struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 #define set_in(offset) \
 static SENSOR_DEVICE_ATTR(in##offset##_input, S_IRUGO, \
 		show_in_input, NULL, offset); \
@@ -365,6 +436,34 @@ set_in(6);
 set_in(7);
 
 static ssize_t show_temp_input(struct device *dev,
+=======
+static SENSOR_DEVICE_ATTR_RO(in0_input, in_input, 0);
+static SENSOR_DEVICE_ATTR_RW(in0_min, in_min, 0);
+static SENSOR_DEVICE_ATTR_RW(in0_max, in_max, 0);
+static SENSOR_DEVICE_ATTR_RO(in1_input, in_input, 1);
+static SENSOR_DEVICE_ATTR_RW(in1_min, in_min, 1);
+static SENSOR_DEVICE_ATTR_RW(in1_max, in_max, 1);
+static SENSOR_DEVICE_ATTR_RO(in2_input, in_input, 2);
+static SENSOR_DEVICE_ATTR_RW(in2_min, in_min, 2);
+static SENSOR_DEVICE_ATTR_RW(in2_max, in_max, 2);
+static SENSOR_DEVICE_ATTR_RO(in3_input, in_input, 3);
+static SENSOR_DEVICE_ATTR_RW(in3_min, in_min, 3);
+static SENSOR_DEVICE_ATTR_RW(in3_max, in_max, 3);
+static SENSOR_DEVICE_ATTR_RO(in4_input, in_input, 4);
+static SENSOR_DEVICE_ATTR_RW(in4_min, in_min, 4);
+static SENSOR_DEVICE_ATTR_RW(in4_max, in_max, 4);
+static SENSOR_DEVICE_ATTR_RO(in5_input, in_input, 5);
+static SENSOR_DEVICE_ATTR_RW(in5_min, in_min, 5);
+static SENSOR_DEVICE_ATTR_RW(in5_max, in_max, 5);
+static SENSOR_DEVICE_ATTR_RO(in6_input, in_input, 6);
+static SENSOR_DEVICE_ATTR_RW(in6_min, in_min, 6);
+static SENSOR_DEVICE_ATTR_RW(in6_max, in_max, 6);
+static SENSOR_DEVICE_ATTR_RO(in7_input, in_input, 7);
+static SENSOR_DEVICE_ATTR_RW(in7_min, in_min, 7);
+static SENSOR_DEVICE_ATTR_RW(in7_max, in_max, 7);
+
+static ssize_t temp_input_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       struct device_attribute *attr, char *buf)
 {
 	struct lm87_data *data = lm87_update_device(dev);
@@ -373,7 +472,11 @@ static ssize_t show_temp_input(struct device *dev,
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_low(struct device *dev,
+=======
+static ssize_t temp_low_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct device_attribute *attr, char *buf)
 {
 	struct lm87_data *data = lm87_update_device(dev);
@@ -383,7 +486,11 @@ static ssize_t show_temp_low(struct device *dev,
 		       TEMP_FROM_REG(data->temp_low[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_high(struct device *dev,
+=======
+static ssize_t temp_high_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      struct device_attribute *attr, char *buf)
 {
 	struct lm87_data *data = lm87_update_device(dev);
@@ -393,10 +500,18 @@ static ssize_t show_temp_high(struct device *dev,
 		       TEMP_FROM_REG(data->temp_high[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t set_temp_low(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+static ssize_t temp_low_store(struct device *dev,
+			      struct device_attribute *attr, const char *buf,
+			      size_t count)
+{
+	struct i2c_client *client = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lm87_data *data = i2c_get_clientdata(client);
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
@@ -413,10 +528,18 @@ static ssize_t set_temp_low(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 static ssize_t set_temp_high(struct device *dev, struct device_attribute *attr,
 			     const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+static ssize_t temp_high_store(struct device *dev,
+			       struct device_attribute *attr, const char *buf,
+			       size_t count)
+{
+	struct i2c_client *client = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lm87_data *data = i2c_get_clientdata(client);
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
@@ -433,6 +556,7 @@ static ssize_t set_temp_high(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 #define set_temp(offset) \
 static SENSOR_DEVICE_ATTR(temp##offset##_input, S_IRUGO, \
 		show_temp_input, NULL, offset - 1); \
@@ -446,23 +570,50 @@ set_temp(3);
 
 static ssize_t show_temp_crit_int(struct device *dev,
 				  struct device_attribute *attr, char *buf)
+=======
+static SENSOR_DEVICE_ATTR_RO(temp1_input, temp_input, 0);
+static SENSOR_DEVICE_ATTR_RW(temp1_min, temp_low, 0);
+static SENSOR_DEVICE_ATTR_RW(temp1_max, temp_high, 0);
+static SENSOR_DEVICE_ATTR_RO(temp2_input, temp_input, 1);
+static SENSOR_DEVICE_ATTR_RW(temp2_min, temp_low, 1);
+static SENSOR_DEVICE_ATTR_RW(temp2_max, temp_high, 1);
+static SENSOR_DEVICE_ATTR_RO(temp3_input, temp_input, 2);
+static SENSOR_DEVICE_ATTR_RW(temp3_min, temp_low, 2);
+static SENSOR_DEVICE_ATTR_RW(temp3_max, temp_high, 2);
+
+static ssize_t temp1_crit_show(struct device *dev,
+			       struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lm87_data *data = lm87_update_device(dev);
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp_crit_int));
 }
 
+<<<<<<< HEAD
 static ssize_t show_temp_crit_ext(struct device *dev,
 				  struct device_attribute *attr, char *buf)
+=======
+static ssize_t temp2_crit_show(struct device *dev,
+			       struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lm87_data *data = lm87_update_device(dev);
 	return sprintf(buf, "%d\n", TEMP_FROM_REG(data->temp_crit_ext));
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(temp1_crit, S_IRUGO, show_temp_crit_int, NULL);
 static DEVICE_ATTR(temp2_crit, S_IRUGO, show_temp_crit_ext, NULL);
 static DEVICE_ATTR(temp3_crit, S_IRUGO, show_temp_crit_ext, NULL);
 
 static ssize_t show_fan_input(struct device *dev,
+=======
+static DEVICE_ATTR_RO(temp1_crit);
+static DEVICE_ATTR_RO(temp2_crit);
+static DEVICE_ATTR(temp3_crit, 0444, temp2_crit_show, NULL);
+
+static ssize_t fan_input_show(struct device *dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      struct device_attribute *attr, char *buf)
 {
 	struct lm87_data *data = lm87_update_device(dev);
@@ -472,8 +623,13 @@ static ssize_t show_fan_input(struct device *dev,
 		       FAN_DIV_FROM_REG(data->fan_div[nr])));
 }
 
+<<<<<<< HEAD
 static ssize_t show_fan_min(struct device *dev,
 			    struct device_attribute *attr, char *buf)
+=======
+static ssize_t fan_min_show(struct device *dev, struct device_attribute *attr,
+			    char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lm87_data *data = lm87_update_device(dev);
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -482,8 +638,13 @@ static ssize_t show_fan_min(struct device *dev,
 		       FAN_DIV_FROM_REG(data->fan_div[nr])));
 }
 
+<<<<<<< HEAD
 static ssize_t show_fan_div(struct device *dev,
 			    struct device_attribute *attr, char *buf)
+=======
+static ssize_t fan_div_show(struct device *dev, struct device_attribute *attr,
+			    char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lm87_data *data = lm87_update_device(dev);
 	int nr = to_sensor_dev_attr(attr)->index;
@@ -492,10 +653,18 @@ static ssize_t show_fan_div(struct device *dev,
 		       FAN_DIV_FROM_REG(data->fan_div[nr]));
 }
 
+<<<<<<< HEAD
 static ssize_t set_fan_min(struct device *dev, struct device_attribute *attr,
 			   const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+static ssize_t fan_min_store(struct device *dev,
+			     struct device_attribute *attr, const char *buf,
+			     size_t count)
+{
+	struct i2c_client *client = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lm87_data *data = i2c_get_clientdata(client);
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
@@ -519,10 +688,18 @@ static ssize_t set_fan_min(struct device *dev, struct device_attribute *attr,
  * of least surprise; the user doesn't expect the fan minimum to change just
  * because the divider changed.
  */
+<<<<<<< HEAD
 static ssize_t set_fan_div(struct device *dev, struct device_attribute *attr,
 			   const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+static ssize_t fan_div_store(struct device *dev,
+			     struct device_attribute *attr, const char *buf,
+			     size_t count)
+{
+	struct i2c_client *client = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lm87_data *data = i2c_get_clientdata(client);
 	int nr = to_sensor_dev_attr(attr)->index;
 	long val;
@@ -575,6 +752,7 @@ static ssize_t set_fan_div(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 #define set_fan(offset) \
 static SENSOR_DEVICE_ATTR(fan##offset##_input, S_IRUGO, \
 		show_fan_input, NULL, offset - 1); \
@@ -586,29 +764,57 @@ set_fan(1);
 set_fan(2);
 
 static ssize_t show_alarms(struct device *dev, struct device_attribute *attr,
+=======
+static SENSOR_DEVICE_ATTR_RO(fan1_input, fan_input, 0);
+static SENSOR_DEVICE_ATTR_RW(fan1_min, fan_min, 0);
+static SENSOR_DEVICE_ATTR_RW(fan1_div, fan_div, 0);
+static SENSOR_DEVICE_ATTR_RO(fan2_input, fan_input, 1);
+static SENSOR_DEVICE_ATTR_RW(fan2_min, fan_min, 1);
+static SENSOR_DEVICE_ATTR_RW(fan2_div, fan_div, 1);
+
+static ssize_t alarms_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   char *buf)
 {
 	struct lm87_data *data = lm87_update_device(dev);
 	return sprintf(buf, "%d\n", data->alarms);
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(alarms, S_IRUGO, show_alarms, NULL);
 
 static ssize_t show_vid(struct device *dev, struct device_attribute *attr,
 			char *buf)
+=======
+static DEVICE_ATTR_RO(alarms);
+
+static ssize_t cpu0_vid_show(struct device *dev,
+			     struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lm87_data *data = lm87_update_device(dev);
 	return sprintf(buf, "%d\n", vid_from_reg(data->vid, data->vrm));
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(cpu0_vid, S_IRUGO, show_vid, NULL);
 
 static ssize_t show_vrm(struct device *dev, struct device_attribute *attr,
+=======
+static DEVICE_ATTR_RO(cpu0_vid);
+
+static ssize_t vrm_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			char *buf)
 {
 	struct lm87_data *data = dev_get_drvdata(dev);
 	return sprintf(buf, "%d\n", data->vrm);
 }
+<<<<<<< HEAD
 static ssize_t set_vrm(struct device *dev, struct device_attribute *attr,
 		       const char *buf, size_t count)
+=======
+static ssize_t vrm_store(struct device *dev, struct device_attribute *attr,
+			 const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lm87_data *data = dev_get_drvdata(dev);
 	unsigned long val;
@@ -617,6 +823,7 @@ static ssize_t set_vrm(struct device *dev, struct device_attribute *attr,
 	err = kstrtoul(buf, 10, &val);
 	if (err)
 		return err;
+<<<<<<< HEAD
 	data->vrm = val;
 	return count;
 }
@@ -624,14 +831,35 @@ static DEVICE_ATTR(vrm, S_IRUGO | S_IWUSR, show_vrm, set_vrm);
 
 static ssize_t show_aout(struct device *dev, struct device_attribute *attr,
 			 char *buf)
+=======
+
+	if (val > 255)
+		return -EINVAL;
+
+	data->vrm = val;
+	return count;
+}
+static DEVICE_ATTR_RW(vrm);
+
+static ssize_t aout_output_show(struct device *dev,
+				struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lm87_data *data = lm87_update_device(dev);
 	return sprintf(buf, "%d\n", AOUT_FROM_REG(data->aout));
 }
+<<<<<<< HEAD
 static ssize_t set_aout(struct device *dev, struct device_attribute *attr,
 			const char *buf, size_t count)
 {
 	struct i2c_client *client = to_i2c_client(dev);
+=======
+static ssize_t aout_output_store(struct device *dev,
+				 struct device_attribute *attr,
+				 const char *buf, size_t count)
+{
+	struct i2c_client *client = dev_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct lm87_data *data = i2c_get_clientdata(client);
 	long val;
 	int err;
@@ -646,15 +874,22 @@ static ssize_t set_aout(struct device *dev, struct device_attribute *attr,
 	mutex_unlock(&data->update_lock);
 	return count;
 }
+<<<<<<< HEAD
 static DEVICE_ATTR(aout_output, S_IRUGO | S_IWUSR, show_aout, set_aout);
 
 static ssize_t show_alarm(struct device *dev, struct device_attribute *attr,
+=======
+static DEVICE_ATTR_RW(aout_output);
+
+static ssize_t alarm_show(struct device *dev, struct device_attribute *attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  char *buf)
 {
 	struct lm87_data *data = lm87_update_device(dev);
 	int bitnr = to_sensor_dev_attr(attr)->index;
 	return sprintf(buf, "%u\n", (data->alarms >> bitnr) & 1);
 }
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(in0_alarm, S_IRUGO, show_alarm, NULL, 0);
 static SENSOR_DEVICE_ATTR(in1_alarm, S_IRUGO, show_alarm, NULL, 1);
 static SENSOR_DEVICE_ATTR(in2_alarm, S_IRUGO, show_alarm, NULL, 2);
@@ -670,6 +905,23 @@ static SENSOR_DEVICE_ATTR(fan1_alarm, S_IRUGO, show_alarm, NULL, 6);
 static SENSOR_DEVICE_ATTR(fan2_alarm, S_IRUGO, show_alarm, NULL, 7);
 static SENSOR_DEVICE_ATTR(temp2_fault, S_IRUGO, show_alarm, NULL, 14);
 static SENSOR_DEVICE_ATTR(temp3_fault, S_IRUGO, show_alarm, NULL, 15);
+=======
+static SENSOR_DEVICE_ATTR_RO(in0_alarm, alarm, 0);
+static SENSOR_DEVICE_ATTR_RO(in1_alarm, alarm, 1);
+static SENSOR_DEVICE_ATTR_RO(in2_alarm, alarm, 2);
+static SENSOR_DEVICE_ATTR_RO(in3_alarm, alarm, 3);
+static SENSOR_DEVICE_ATTR_RO(in4_alarm, alarm, 8);
+static SENSOR_DEVICE_ATTR_RO(in5_alarm, alarm, 9);
+static SENSOR_DEVICE_ATTR_RO(in6_alarm, alarm, 6);
+static SENSOR_DEVICE_ATTR_RO(in7_alarm, alarm, 7);
+static SENSOR_DEVICE_ATTR_RO(temp1_alarm, alarm, 4);
+static SENSOR_DEVICE_ATTR_RO(temp2_alarm, alarm, 5);
+static SENSOR_DEVICE_ATTR_RO(temp3_alarm, alarm, 5);
+static SENSOR_DEVICE_ATTR_RO(fan1_alarm, alarm, 6);
+static SENSOR_DEVICE_ATTR_RO(fan2_alarm, alarm, 7);
+static SENSOR_DEVICE_ATTR_RO(temp2_fault, alarm, 14);
+static SENSOR_DEVICE_ATTR_RO(temp3_fault, alarm, 15);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Real code
@@ -832,11 +1084,16 @@ static int lm87_detect(struct i2c_client *client, struct i2c_board_info *info)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	strlcpy(info->type, name, I2C_NAME_SIZE);
+=======
+	strscpy(info->type, name, I2C_NAME_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void lm87_remove_files(struct i2c_client *client)
 {
 	struct device *dev = &client->dev;
@@ -857,6 +1114,41 @@ static void lm87_init_client(struct i2c_client *client)
 
 	if (client->dev.platform_data) {
 		data->channel = *(u8 *)client->dev.platform_data;
+=======
+static void lm87_restore_config(void *arg)
+{
+	struct i2c_client *client = arg;
+	struct lm87_data *data = i2c_get_clientdata(client);
+
+	lm87_write_value(client, LM87_REG_CONFIG, data->config);
+}
+
+static int lm87_init_client(struct i2c_client *client)
+{
+	struct lm87_data *data = i2c_get_clientdata(client);
+	int rc;
+	struct device_node *of_node = client->dev.of_node;
+	u8 val = 0;
+	struct regulator *vcc = NULL;
+
+	if (of_node) {
+		if (of_property_read_bool(of_node, "has-temp3"))
+			val |= CHAN_TEMP3;
+		if (of_property_read_bool(of_node, "has-in6"))
+			val |= CHAN_NO_FAN(0);
+		if (of_property_read_bool(of_node, "has-in7"))
+			val |= CHAN_NO_FAN(1);
+		vcc = devm_regulator_get_optional(&client->dev, "vcc");
+		if (!IS_ERR(vcc)) {
+			if (regulator_get_voltage(vcc) == 5000000)
+				val |= CHAN_VCC_5V;
+		}
+		data->channel = val;
+		lm87_write_value(client,
+				LM87_REG_CHANNEL_MODE, data->channel);
+	} else if (dev_get_platdata(&client->dev)) {
+		data->channel = *(u8 *)dev_get_platdata(&client->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lm87_write_value(client,
 				 LM87_REG_CHANNEL_MODE, data->channel);
 	} else {
@@ -864,6 +1156,13 @@ static void lm87_init_client(struct i2c_client *client)
 	}
 	data->config = lm87_read_value(client, LM87_REG_CONFIG) & 0x6F;
 
+<<<<<<< HEAD
+=======
+	rc = devm_add_action(&client->dev, lm87_restore_config, client);
+	if (rc)
+		return rc;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!(data->config & 0x01)) {
 		int i;
 
@@ -891,6 +1190,7 @@ static void lm87_init_client(struct i2c_client *client)
 	if ((data->config & 0x09) != 0x01)
 		lm87_write_value(client, LM87_REG_CONFIG,
 				 (data->config & 0x77) | 0x01);
+<<<<<<< HEAD
 }
 
 static int lm87_probe(struct i2c_client *client, const struct i2c_device_id *id)
@@ -910,6 +1210,29 @@ static int lm87_probe(struct i2c_client *client, const struct i2c_device_id *id)
 
 	/* Initialize the LM87 chip */
 	lm87_init_client(client);
+=======
+	return 0;
+}
+
+static int lm87_probe(struct i2c_client *client)
+{
+	struct lm87_data *data;
+	struct device *hwmon_dev;
+	int err;
+	unsigned int group_tail = 0;
+
+	data = devm_kzalloc(&client->dev, sizeof(struct lm87_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	i2c_set_clientdata(client, data);
+	mutex_init(&data->update_lock);
+
+	/* Initialize the LM87 chip */
+	err = lm87_init_client(client);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->in_scale[0] = 2500;
 	data->in_scale[1] = 2700;
@@ -920,6 +1243,7 @@ static int lm87_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	data->in_scale[6] = 1875;
 	data->in_scale[7] = 1875;
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	err = sysfs_create_group(&client->dev.kobj, &lm87_group);
 	if (err)
@@ -989,6 +1313,36 @@ static int lm87_remove(struct i2c_client *client)
 	lm87_write_value(client, LM87_REG_CONFIG, data->config);
 	kfree(data);
 	return 0;
+=======
+	/*
+	 * Construct the list of attributes, the list depends on the
+	 * configuration of the chip
+	 */
+	data->attr_groups[group_tail++] = &lm87_group;
+	if (data->channel & CHAN_NO_FAN(0))
+		data->attr_groups[group_tail++] = &lm87_group_in6;
+	else
+		data->attr_groups[group_tail++] = &lm87_group_fan1;
+
+	if (data->channel & CHAN_NO_FAN(1))
+		data->attr_groups[group_tail++] = &lm87_group_in7;
+	else
+		data->attr_groups[group_tail++] = &lm87_group_fan2;
+
+	if (data->channel & CHAN_TEMP3)
+		data->attr_groups[group_tail++] = &lm87_group_temp3;
+	else
+		data->attr_groups[group_tail++] = &lm87_group_in0_5;
+
+	if (!(data->channel & CHAN_NO_VID)) {
+		data->vrm = vid_which_vrm();
+		data->attr_groups[group_tail++] = &lm87_group_vid;
+	}
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(
+	    &client->dev, client->name, client, data->attr_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -996,19 +1350,40 @@ static int lm87_remove(struct i2c_client *client)
  */
 
 static const struct i2c_device_id lm87_id[] = {
+<<<<<<< HEAD
 	{ "lm87", lm87 },
 	{ "adm1024", adm1024 },
+=======
+	{ "lm87", 0 },
+	{ "adm1024", 0 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }
 };
 MODULE_DEVICE_TABLE(i2c, lm87_id);
 
+<<<<<<< HEAD
+=======
+static const struct of_device_id lm87_of_match[] = {
+	{ .compatible = "ti,lm87" },
+	{ .compatible = "adi,adm1024" },
+	{ },
+};
+MODULE_DEVICE_TABLE(of, lm87_of_match);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct i2c_driver lm87_driver = {
 	.class		= I2C_CLASS_HWMON,
 	.driver = {
 		.name	= "lm87",
+<<<<<<< HEAD
 	},
 	.probe		= lm87_probe,
 	.remove		= lm87_remove,
+=======
+		.of_match_table = lm87_of_match,
+	},
+	.probe		= lm87_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= lm87_id,
 	.detect		= lm87_detect,
 	.address_list	= normal_i2c,
@@ -1016,6 +1391,10 @@ static struct i2c_driver lm87_driver = {
 
 module_i2c_driver(lm87_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Jean Delvare <khali@linux-fr.org> and others");
+=======
+MODULE_AUTHOR("Jean Delvare <jdelvare@suse.de> and others");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("LM87 driver");
 MODULE_LICENSE("GPL");

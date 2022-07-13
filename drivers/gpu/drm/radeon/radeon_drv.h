@@ -108,6 +108,7 @@
  * 1.31- Add support for num Z pipes from GET_PARAM
  * 1.32- fixes for rv740 setup
  * 1.33- Add r6xx/r7xx const buffer support
+<<<<<<< HEAD
  */
 #define DRIVER_MAJOR		1
 #define DRIVER_MINOR		33
@@ -462,11 +463,28 @@ extern void r600_blit_swap(struct drm_device *dev,
 			   uint64_t src_gpu_addr, uint64_t dst_gpu_addr,
 			   int sx, int sy, int dx, int dy,
 			   int w, int h, int src_pitch, int dst_pitch, int cpp);
+=======
+ * 1.34- fix evergreen/cayman GS register
+ */
+#define DRIVER_MAJOR		1
+#define DRIVER_MINOR		34
+#define DRIVER_PATCHLEVEL	0
+
+long radeon_drm_ioctl(struct file *filp,
+		      unsigned int cmd, unsigned long arg);
+
+int radeon_driver_load_kms(struct drm_device *dev, unsigned long flags);
+void radeon_driver_unload_kms(struct drm_device *dev);
+int radeon_driver_open_kms(struct drm_device *dev, struct drm_file *file_priv);
+void radeon_driver_postclose_kms(struct drm_device *dev,
+				 struct drm_file *file_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* atpx handler */
 #if defined(CONFIG_VGA_SWITCHEROO)
 void radeon_register_atpx_handler(void);
 void radeon_unregister_atpx_handler(void);
+<<<<<<< HEAD
 #else
 static inline void radeon_register_atpx_handler(void) {}
 static inline void radeon_unregister_atpx_handler(void) {}
@@ -2168,4 +2186,15 @@ extern void radeon_commit_ring(drm_radeon_private_t *dev_priv);
 } while (0)
 
 
+=======
+bool radeon_has_atpx_dgpu_power_cntl(void);
+bool radeon_is_atpx_hybrid(void);
+#else
+static inline void radeon_register_atpx_handler(void) {}
+static inline void radeon_unregister_atpx_handler(void) {}
+static inline bool radeon_has_atpx_dgpu_power_cntl(void) { return false; }
+static inline bool radeon_is_atpx_hybrid(void) { return false; }
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* __RADEON_DRV_H__ */

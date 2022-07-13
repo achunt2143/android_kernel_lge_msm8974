@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mm/cache-tauros2.c - Tauros2 L2 cache controller support
  *
  * Copyright (C) 2008 Marvell Semiconductor
  *
+<<<<<<< HEAD
  * This file is licensed under the terms of the GNU General Public
  * License version 2.  This program is licensed "as is" without any
  * warranty of any kind, whether express or implied.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * References:
  * - PJ1 CPU Core Datasheet,
  *   Document ID MV-S104837-01, Rev 0.7, January 24 2008.
@@ -15,10 +22,25 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <asm/cacheflush.h>
 #include <asm/cp15.h>
 #include <asm/hardware/cache-tauros2.h>
 
+=======
+#include <linux/of.h>
+#include <linux/of_address.h>
+#include <asm/cacheflush.h>
+#include <asm/cp15.h>
+#include <asm/cputype.h>
+#include <asm/hardware/cache-tauros2.h>
+
+/* CP15 PJ4 Control configuration register */
+#define CCR_L2C_PREFETCH_DISABLE	BIT(24)
+#define CCR_L2C_ECC_ENABLE		BIT(23)
+#define CCR_L2C_WAY7_4_DISABLE		BIT(21)
+#define CCR_L2C_BURST8_ENABLE		BIT(20)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * When Tauros2 is used on a CPU that supports the v7 hierarchical
@@ -30,7 +52,11 @@
  * outer cache operations into the kernel image if the kernel has been
  * configured to support a pre-v7 CPU.
  */
+<<<<<<< HEAD
 #if __LINUX_ARM_ARCH__ < 7
+=======
+#ifdef CONFIG_CPU_32v5
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Low-level cache maintenance operations.
  */
@@ -108,6 +134,29 @@ static void tauros2_flush_range(unsigned long start, unsigned long end)
 
 	dsb();
 }
+<<<<<<< HEAD
+=======
+
+static void tauros2_disable(void)
+{
+	__asm__ __volatile__ (
+	"mcr	p15, 1, %0, c7, c11, 0 @L2 Cache Clean All\n\t"
+	"mrc	p15, 0, %0, c1, c0, 0\n\t"
+	"bic	%0, %0, #(1 << 26)\n\t"
+	"mcr	p15, 0, %0, c1, c0, 0  @Disable L2 Cache\n\t"
+	: : "r" (0x0));
+}
+
+static void tauros2_resume(void)
+{
+	__asm__ __volatile__ (
+	"mcr	p15, 1, %0, c7, c7, 0 @L2 Cache Invalidate All\n\t"
+	"mrc	p15, 0, %0, c1, c0, 0\n\t"
+	"orr	%0, %0, #(1 << 26)\n\t"
+	"mcr	p15, 0, %0, c1, c0, 0 @Enable L2 Cache\n\t"
+	: : "r" (0x0));
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static inline u32 __init read_extra_features(void)
@@ -124,6 +173,7 @@ static inline void __init write_extra_features(u32 u)
 	__asm__("mcr p15, 1, %0, c15, c1, 0" : : "r" (u));
 }
 
+<<<<<<< HEAD
 static void __init disable_l2_prefetch(void)
 {
 	u32 u;
@@ -143,6 +193,10 @@ static inline int __init cpuid_scheme(void)
 {
 	extern int processor_id;
 
+=======
+static inline int __init cpuid_scheme(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return !!((processor_id & 0x000f0000) == 0x000f0000);
 }
 
@@ -169,12 +223,45 @@ static inline void __init write_actlr(u32 actlr)
 	__asm__("mcr p15, 0, %0, c1, c0, 1\n" : : "r" (actlr));
 }
 
+<<<<<<< HEAD
 void __init tauros2_init(void)
 {
 	extern int processor_id;
 	char *mode;
 
 	disable_l2_prefetch();
+=======
+static void enable_extra_feature(unsigned int features)
+{
+	u32 u;
+
+	u = read_extra_features();
+
+	if (features & CACHE_TAUROS2_PREFETCH_ON)
+		u &= ~CCR_L2C_PREFETCH_DISABLE;
+	else
+		u |= CCR_L2C_PREFETCH_DISABLE;
+	pr_info("Tauros2: %s L2 prefetch.\n",
+			(features & CACHE_TAUROS2_PREFETCH_ON)
+			? "Enabling" : "Disabling");
+
+	if (features & CACHE_TAUROS2_LINEFILL_BURST8)
+		u |= CCR_L2C_BURST8_ENABLE;
+	else
+		u &= ~CCR_L2C_BURST8_ENABLE;
+	pr_info("Tauros2: %s burst8 line fill.\n",
+			(features & CACHE_TAUROS2_LINEFILL_BURST8)
+			? "Enabling" : "Disabling");
+
+	write_extra_features(u);
+}
+
+static void __init tauros2_internal_init(unsigned int features)
+{
+	char *mode = NULL;
+
+	enable_extra_feature(features);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_CPU_32v5
 	if ((processor_id & 0xff0f0000) == 0x56050000) {
@@ -186,7 +273,11 @@ void __init tauros2_init(void)
 		 */
 		feat = read_extra_features();
 		if (!(feat & 0x00400000)) {
+<<<<<<< HEAD
 			printk(KERN_INFO "Tauros2: Enabling L2 cache.\n");
+=======
+			pr_info("Tauros2: Enabling L2 cache.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			write_extra_features(feat | 0x00400000);
 		}
 
@@ -194,6 +285,7 @@ void __init tauros2_init(void)
 		outer_cache.inv_range = tauros2_inv_range;
 		outer_cache.clean_range = tauros2_clean_range;
 		outer_cache.flush_range = tauros2_flush_range;
+<<<<<<< HEAD
 	}
 #endif
 
@@ -219,6 +311,10 @@ void __init tauros2_init(void)
 		outer_cache.inv_range = tauros2_inv_range;
 		outer_cache.clean_range = tauros2_clean_range;
 		outer_cache.flush_range = tauros2_flush_range;
+=======
+		outer_cache.disable = tauros2_disable;
+		outer_cache.resume = tauros2_resume;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 
@@ -246,7 +342,11 @@ void __init tauros2_init(void)
 		 */
 		actlr = read_actlr();
 		if (!(actlr & 0x00000002)) {
+<<<<<<< HEAD
 			printk(KERN_INFO "Tauros2: Enabling L2 cache.\n");
+=======
+			pr_info("Tauros2: Enabling L2 cache.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			write_actlr(actlr | 0x00000002);
 		}
 
@@ -255,6 +355,7 @@ void __init tauros2_init(void)
 #endif
 
 	if (mode == NULL) {
+<<<<<<< HEAD
 		printk(KERN_CRIT "Tauros2: Unable to detect CPU mode.\n");
 		return;
 	}
@@ -262,3 +363,42 @@ void __init tauros2_init(void)
 	printk(KERN_INFO "Tauros2: L2 cache support initialised "
 			 "in %s mode.\n", mode);
 }
+=======
+		pr_crit("Tauros2: Unable to detect CPU mode.\n");
+		return;
+	}
+
+	pr_info("Tauros2: L2 cache support initialised "
+			 "in %s mode.\n", mode);
+}
+
+#ifdef CONFIG_OF
+static const struct of_device_id tauros2_ids[] __initconst = {
+	{ .compatible = "marvell,tauros2-cache"},
+	{}
+};
+#endif
+
+void __init tauros2_init(unsigned int features)
+{
+#ifdef CONFIG_OF
+	struct device_node *node;
+	int ret;
+	unsigned int f;
+
+	node = of_find_matching_node(NULL, tauros2_ids);
+	if (!node) {
+		pr_info("Not found marvell,tauros2-cache, disable it\n");
+	} else {
+		ret = of_property_read_u32(node, "marvell,tauros2-cache-features", &f);
+		if (ret) {
+			pr_info("Not found marvell,tauros-cache-features property, "
+				"disable extra features\n");
+			features = 0;
+		} else
+			features = f;
+	}
+#endif
+	tauros2_internal_init(features);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

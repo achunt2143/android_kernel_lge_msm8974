@@ -1,9 +1,17 @@
 /*******************************************************************
  * This file is part of the Emulex Linux Device Driver for         *
  * Fibre Channel Host Bus Adapters.                                *
+<<<<<<< HEAD
  * Copyright (C) 2004-2011 Emulex.  All rights reserved.           *
  * EMULEX and SLI are trademarks of Emulex.                        *
  * www.emulex.com                                                  *
+=======
+ * Copyright (C) 2017-2023 Broadcom. All Rights Reserved. The term *
+ * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.     *
+ * Copyright (C) 2004-2016 Emulex.  All rights reserved.           *
+ * EMULEX and SLI are trademarks of Emulex.                        *
+ * www.broadcom.com                                                *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                 *
  * This program is free software; you can redistribute it and/or   *
  * modify it under the terms of version 2 of the GNU General       *
@@ -20,7 +28,11 @@
 
 #define FDMI_DID        0xfffffaU
 #define NameServer_DID  0xfffffcU
+<<<<<<< HEAD
 #define SCR_DID         0xfffffdU
+=======
+#define Fabric_Cntl_DID 0xfffffdU
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define Fabric_DID      0xfffffeU
 #define Bcast_DID       0xffffffU
 #define Mask_DID        0xffffffU
@@ -33,7 +45,11 @@
 
 #define FF_DEF_EDTOV          2000	/* Default E_D_TOV (2000ms) */
 #define FF_DEF_ALTOV            15	/* Default AL_TIME (15ms) */
+<<<<<<< HEAD
 #define FF_DEF_RATOV             2	/* Default RA_TOV (2s) */
+=======
+#define FF_DEF_RATOV            10	/* Default RA_TOV (10s) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FF_DEF_ARBTOV         1900	/* Default ARB_TOV (1900ms) */
 
 #define LPFC_BUF_RING0        64	/* Number of buffers to post to RING
@@ -44,7 +60,10 @@
 #define LPFC_FCP_RING            0	/* ring 0 for FCP initiator commands */
 #define LPFC_EXTRA_RING          1	/* ring 1 for other protocols */
 #define LPFC_ELS_RING            2	/* ring 2 for ELS commands */
+<<<<<<< HEAD
 #define LPFC_FCP_NEXT_RING       3
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SLI2_IOCB_CMD_R0_ENTRIES    172	/* SLI-2 FCP command ring entries */
 #define SLI2_IOCB_RSP_R0_ENTRIES    134	/* SLI-2 FCP response ring entries */
@@ -85,14 +104,38 @@ union CtRevisionId {
 union CtCommandResponse {
 	/* Structure is in Big Endian format */
 	struct {
+<<<<<<< HEAD
 		uint32_t CmdRsp:16;
 		uint32_t Size:16;
+=======
+		__be16 CmdRsp;
+		__be16 Size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} bits;
 	uint32_t word;
 };
 
+<<<<<<< HEAD
 #define FC4_FEATURE_INIT 0x2
 #define FC4_FEATURE_TARGET 0x1
+=======
+/* FC4 Feature bits for RFF_ID */
+#define FC4_FEATURE_TARGET	0x1
+#define FC4_FEATURE_INIT	0x2
+#define FC4_FEATURE_NVME_DISC	0x4
+
+enum rft_word0 {
+	RFT_FCP_REG	= (0x1 << 8),
+};
+
+enum rft_word1 {
+	RFT_NVME_REG	= (0x1 << 8),
+};
+
+enum rft_word3 {
+	RFT_APP_SERV_REG	= (0x1 << 0),
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct lpfc_sli_ct_request {
 	/* Structure is in Big Endian format */
@@ -106,15 +149,26 @@ struct lpfc_sli_ct_request {
 	uint8_t ReasonCode;
 	uint8_t Explanation;
 	uint8_t VendorUnique;
+<<<<<<< HEAD
 
 	union {
 		uint32_t PortID;
 		struct gid {
 			uint8_t PortType;	/* for GID_PT requests */
+=======
+#define LPFC_CT_PREAMBLE	20	/* Size of CTReq + 4 up to here */
+
+	union {
+		__be32 PortID;
+		struct gid {
+			uint8_t PortType;	/* for GID_PT requests */
+#define GID_PT_N_PORT	1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			uint8_t DomainScope;
 			uint8_t AreaScope;
 			uint8_t Fc4Type;	/* for GID_FT requests */
 		} gid;
+<<<<<<< HEAD
 		struct rft {
 			uint32_t PortId;	/* For RFT_ID requests */
 
@@ -135,6 +189,26 @@ struct lpfc_sli_ct_request {
 #endif
 
 			uint32_t rsvd[7];
+=======
+		struct gid_ff {
+			uint8_t Flags;
+			uint8_t DomainScope;
+			uint8_t AreaScope;
+			uint8_t rsvd1;
+			uint8_t rsvd2;
+			uint8_t rsvd3;
+			uint8_t Fc4FBits;
+			uint8_t Fc4Type;
+		} gid_ff;
+		struct rft {
+			__be32 port_id; /* For RFT_ID requests */
+
+			__be32 fcp_reg;	/* rsvd 31:9, fcp_reg 8, rsvd 7:0 */
+			__be32 nvme_reg; /* rsvd 31:9, nvme_reg 8, rsvd 7:0 */
+			__be32 word2;
+			__be32 app_serv_reg; /* rsvd 31:1, app_serv_reg 0 */
+			__be32 word[4];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} rft;
 		struct rnn {
 			uint32_t PortId;	/* For RNN_ID requests */
@@ -159,6 +233,15 @@ struct lpfc_sli_ct_request {
 		struct gff_acc {
 			uint8_t fbits[128];
 		} gff_acc;
+<<<<<<< HEAD
+=======
+		struct gft {
+			uint32_t PortId;
+		} gft;
+		struct gft_acc {
+			uint32_t fc4_types[8];
+		} gft_acc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define FCP_TYPE_FEATURE_OFFSET 7
 		struct rff {
 			uint32_t PortId;
@@ -169,11 +252,25 @@ struct lpfc_sli_ct_request {
 	} un;
 };
 
+<<<<<<< HEAD
 #define  SLI_CT_REVISION        1
 #define  GID_REQUEST_SZ   (offsetof(struct lpfc_sli_ct_request, un) + \
 			   sizeof(struct gid))
 #define  GFF_REQUEST_SZ   (offsetof(struct lpfc_sli_ct_request, un) + \
 			   sizeof(struct gff))
+=======
+#define LPFC_MAX_CT_SIZE	(60 * 4096)
+
+#define  SLI_CT_REVISION        1
+#define  GID_REQUEST_SZ   (offsetof(struct lpfc_sli_ct_request, un) + \
+			   sizeof(struct gid))
+#define  GIDFF_REQUEST_SZ (offsetof(struct lpfc_sli_ct_request, un) + \
+			   sizeof(struct gid_ff))
+#define  GFF_REQUEST_SZ   (offsetof(struct lpfc_sli_ct_request, un) + \
+			   sizeof(struct gff))
+#define  GFT_REQUEST_SZ   (offsetof(struct lpfc_sli_ct_request, un) + \
+			   sizeof(struct gft))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define  RFT_REQUEST_SZ   (offsetof(struct lpfc_sli_ct_request, un) + \
 			   sizeof(struct rft))
 #define  RFF_REQUEST_SZ   (offsetof(struct lpfc_sli_ct_request, un) + \
@@ -248,6 +345,10 @@ struct lpfc_sli_ct_request {
 #define  SLI_CT_ACCESS_DENIED             0x10
 #define  SLI_CT_INVALID_PORT_ID           0x11
 #define  SLI_CT_DATABASE_EMPTY            0x12
+<<<<<<< HEAD
+=======
+#define  SLI_CT_APP_ID_NOT_AVAILABLE      0x40
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Name Server Command Codes
@@ -269,6 +370,10 @@ struct lpfc_sli_ct_request {
 #define  SLI_CTNS_GNN_IP      0x0153
 #define  SLI_CTNS_GIPA_IP     0x0156
 #define  SLI_CTNS_GID_FT      0x0171
+<<<<<<< HEAD
+=======
+#define  SLI_CTNS_GID_FF      0x01F1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define  SLI_CTNS_GID_PT      0x01A1
 #define  SLI_CTNS_RPN_ID      0x0212
 #define  SLI_CTNS_RNN_ID      0x0213
@@ -286,6 +391,7 @@ struct lpfc_sli_ct_request {
  * Port Types
  */
 
+<<<<<<< HEAD
 #define  SLI_CTPT_N_PORT      0x01
 #define  SLI_CTPT_NL_PORT     0x02
 #define  SLI_CTPT_FNL_PORT    0x03
@@ -295,6 +401,18 @@ struct lpfc_sli_ct_request {
 #define  SLI_CTPT_F_PORT      0x81
 #define  SLI_CTPT_FL_PORT     0x82
 #define  SLI_CTPT_E_PORT      0x84
+=======
+#define SLI_CTPT_N_PORT		0x01
+#define SLI_CTPT_NL_PORT	0x02
+#define SLI_CTPT_FNL_PORT	0x03
+#define SLI_CTPT_IP		0x04
+#define SLI_CTPT_FCP		0x08
+#define SLI_CTPT_NVME		0x28
+#define SLI_CTPT_NX_PORT	0x7F
+#define SLI_CTPT_F_PORT		0x81
+#define SLI_CTPT_FL_PORT	0x82
+#define SLI_CTPT_E_PORT		0x84
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SLI_CT_LAST_ENTRY     0x80000000
 
@@ -335,6 +453,10 @@ struct lpfc_name {
 			uint8_t IEEE[6];	/* FC IEEE address */
 		} s;
 		uint8_t wwn[8];
+<<<<<<< HEAD
+=======
+		uint64_t name __packed __aligned(4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} u;
 };
 
@@ -342,7 +464,11 @@ struct csp {
 	uint8_t fcphHigh;	/* FC Word 0, byte 0 */
 	uint8_t fcphLow;
 	uint8_t bbCreditMsb;
+<<<<<<< HEAD
 	uint8_t bbCreditlsb;	/* FC Word 0, byte 3 */
+=======
+	uint8_t bbCreditLsb;	/* FC Word 0, byte 3 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Word 1 Bit 31 in common service parameter is overloaded.
@@ -356,6 +482,15 @@ struct csp {
  * Word 1 Bit 30 in PLOGI request is random offset
  */
 #define virtual_fabric_support randomOffset /* Word 1, bit 30 */
+<<<<<<< HEAD
+=======
+/*
+ * Word 1 Bit 29 in common service parameter is overloaded.
+ * Word 1 Bit 29 in FLOGI response is multiple NPort assignment
+ * Word 1 Bit 29 in FLOGI/PLOGI request is Valid Vendor Version Level
+ */
+#define valid_vendor_ver_level response_multiple_NPort /* Word 1, bit 29 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint16_t request_multiple_Nport:1;	/* FC Word 1, bit 31 */
 	uint16_t randomOffset:1;	/* FC Word 1, bit 30 */
@@ -364,16 +499,26 @@ struct csp {
 	uint16_t altBbCredit:1;	/* FC Word 1, bit 27 */
 	uint16_t edtovResolution:1;	/* FC Word 1, bit 26 */
 	uint16_t multicast:1;	/* FC Word 1, bit 25 */
+<<<<<<< HEAD
 	uint16_t broadcast:1;	/* FC Word 1, bit 24 */
 
 	uint16_t huntgroup:1;	/* FC Word 1, bit 23 */
+=======
+	uint16_t app_hdr_support:1;	/* FC Word 1, bit 24 */
+
+	uint16_t priority_tagging:1;	/* FC Word 1, bit 23 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t simplex:1;	/* FC Word 1, bit 22 */
 	uint16_t word1Reserved1:3;	/* FC Word 1, bit 21:19 */
 	uint16_t dhd:1;		/* FC Word 1, bit 18 */
 	uint16_t contIncSeqCnt:1;	/* FC Word 1, bit 17 */
 	uint16_t payloadlength:1;	/* FC Word 1, bit 16 */
 #else	/*  __LITTLE_ENDIAN_BITFIELD */
+<<<<<<< HEAD
 	uint16_t broadcast:1;	/* FC Word 1, bit 24 */
+=======
+	uint16_t app_hdr_support:1;	/* FC Word 1, bit 24 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint16_t multicast:1;	/* FC Word 1, bit 25 */
 	uint16_t edtovResolution:1;	/* FC Word 1, bit 26 */
 	uint16_t altBbCredit:1;	/* FC Word 1, bit 27 */
@@ -387,7 +532,11 @@ struct csp {
 	uint16_t dhd:1;		/* FC Word 1, bit 18 */
 	uint16_t word1Reserved1:3;	/* FC Word 1, bit 21:19 */
 	uint16_t simplex:1;	/* FC Word 1, bit 22 */
+<<<<<<< HEAD
 	uint16_t huntgroup:1;	/* FC Word 1, bit 23 */
+=======
+	uint16_t priority_tagging:1;	/* FC Word 1, bit 23 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	uint8_t bbRcvSizeMsb;	/* Upper nibble is reserved */
@@ -482,7 +631,19 @@ struct serv_parm {	/* Structure is in Big Endian format */
 	struct class_parms cls2;
 	struct class_parms cls3;
 	struct class_parms cls4;
+<<<<<<< HEAD
 	uint8_t vendorVersion[16];
+=======
+	union {
+		uint8_t vendorVersion[16];
+		struct {
+			uint32_t vid;
+#define LPFC_VV_EMLX_ID	0x454d4c58	/* EMLX */
+			uint32_t flags;
+#define LPFC_VV_SUPPRESS_RSP	1
+		} vv;
+	} un;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -514,6 +675,11 @@ struct fc_vft_header {
 #define fc_vft_hdr_hopct_WORD		word1
 };
 
+<<<<<<< HEAD
+=======
+#include <uapi/scsi/fc/fc_els.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Extended Link Service LS_COMMAND codes (Payload Word 0)
  */
@@ -538,7 +704,15 @@ struct fc_vft_header {
 #define ELS_CMD_ECHO      0x10000000
 #define ELS_CMD_TEST      0x11000000
 #define ELS_CMD_RRQ       0x12000000
+<<<<<<< HEAD
 #define ELS_CMD_PRLI      0x20100014
+=======
+#define ELS_CMD_REC       0x13000000
+#define ELS_CMD_RDP       0x18000000
+#define ELS_CMD_RDF       0x19000000
+#define ELS_CMD_PRLI      0x20100014
+#define ELS_CMD_NVMEPRLI  0x20140018
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ELS_CMD_PRLO      0x21100014
 #define ELS_CMD_PRLO_ACC  0x02100014
 #define ELS_CMD_PDISC     0x50000000
@@ -546,6 +720,7 @@ struct fc_vft_header {
 #define ELS_CMD_ADISC     0x52000000
 #define ELS_CMD_FARP      0x54000000
 #define ELS_CMD_FARPR     0x55000000
+<<<<<<< HEAD
 #define ELS_CMD_RPS       0x56000000
 #define ELS_CMD_RPL       0x57000000
 #define ELS_CMD_FAN       0x60000000
@@ -553,6 +728,20 @@ struct fc_vft_header {
 #define ELS_CMD_SCR       0x62000000
 #define ELS_CMD_RNID      0x78000000
 #define ELS_CMD_LIRR      0x7A000000
+=======
+#define ELS_CMD_RPL       0x57000000
+#define ELS_CMD_FAN       0x60000000
+#define ELS_CMD_RSCN      0x61040000
+#define ELS_CMD_RSCN_XMT  0x61040008
+#define ELS_CMD_SCR       0x62000000
+#define ELS_CMD_RNID      0x78000000
+#define ELS_CMD_LIRR      0x7A000000
+#define ELS_CMD_LCB	  0x81000000
+#define ELS_CMD_FPIN	  0x16000000
+#define ELS_CMD_EDC	  0x17000000
+#define ELS_CMD_QFPA      0xB0000000
+#define ELS_CMD_UVEM      0xB1000000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else	/*  __LITTLE_ENDIAN_BITFIELD */
 #define ELS_CMD_MASK      0xffff
 #define ELS_RSP_MASK      0xff
@@ -574,7 +763,15 @@ struct fc_vft_header {
 #define ELS_CMD_ECHO      0x10
 #define ELS_CMD_TEST      0x11
 #define ELS_CMD_RRQ       0x12
+<<<<<<< HEAD
 #define ELS_CMD_PRLI      0x14001020
+=======
+#define ELS_CMD_REC       0x13
+#define ELS_CMD_RDP	  0x18
+#define ELS_CMD_RDF	  0x19
+#define ELS_CMD_PRLI      0x14001020
+#define ELS_CMD_NVMEPRLI  0x18001420
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ELS_CMD_PRLO      0x14001021
 #define ELS_CMD_PRLO_ACC  0x14001002
 #define ELS_CMD_PDISC     0x50
@@ -582,6 +779,7 @@ struct fc_vft_header {
 #define ELS_CMD_ADISC     0x52
 #define ELS_CMD_FARP      0x54
 #define ELS_CMD_FARPR     0x55
+<<<<<<< HEAD
 #define ELS_CMD_RPS       0x56
 #define ELS_CMD_RPL       0x57
 #define ELS_CMD_FAN       0x60
@@ -589,6 +787,20 @@ struct fc_vft_header {
 #define ELS_CMD_SCR       0x62
 #define ELS_CMD_RNID      0x78
 #define ELS_CMD_LIRR      0x7A
+=======
+#define ELS_CMD_RPL       0x57
+#define ELS_CMD_FAN       0x60
+#define ELS_CMD_RSCN      0x0461
+#define ELS_CMD_RSCN_XMT  0x08000461
+#define ELS_CMD_SCR       0x62
+#define ELS_CMD_RNID      0x78
+#define ELS_CMD_LIRR      0x7A
+#define ELS_CMD_LCB	  0x81
+#define ELS_CMD_FPIN	  ELS_FPIN
+#define ELS_CMD_EDC	  ELS_EDC
+#define ELS_CMD_QFPA      0xB0
+#define ELS_CMD_UVEM      0xB1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -597,6 +809,10 @@ struct fc_vft_header {
 
 struct ls_rjt {	/* Structure is in Big Endian format */
 	union {
+<<<<<<< HEAD
+=======
+		__be32 ls_rjt_error_be;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		uint32_t lsRjtError;
 		struct {
 			uint8_t lsRjtRsvd0;	/* FC Word 0, bit 24:31 */
@@ -637,6 +853,10 @@ struct ls_rjt {	/* Structure is in Big Endian format */
 #define LSEXP_OUT_OF_RESOURCE   0x29
 #define LSEXP_CANT_GIVE_DATA    0x2A
 #define LSEXP_REQ_UNSUPPORTED   0x2C
+<<<<<<< HEAD
+=======
+#define LSEXP_NO_RSRC_ASSIGN    0x52
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			uint8_t vendorUnique;	/* FC Word 0, bit  0: 7 */
 		} b;
 	} un;
@@ -670,6 +890,10 @@ typedef struct _PRLI {		/* Structure is in Big Endian format */
 	uint8_t prliType;	/* FC Parm Word 0, bit 24:31 */
 
 #define PRLI_FCP_TYPE 0x08
+<<<<<<< HEAD
+=======
+#define PRLI_NVME_TYPE 0x28
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t word0Reserved1;	/* FC Parm Word 0, bit 16:23 */
 
 #ifdef __BIG_ENDIAN_BITFIELD
@@ -696,6 +920,11 @@ typedef struct _PRLI {		/* Structure is in Big Endian format */
 #define PRLI_PREDEF_CONFIG    0x5
 #define PRLI_PARTIAL_SUCCESS  0x6
 #define PRLI_INVALID_PAGE_CNT 0x7
+<<<<<<< HEAD
+=======
+#define PRLI_INV_SRV_PARM     0x8
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint8_t word0Reserved3;	/* FC Parm Word 0, bit 0:7 */
 
 	uint32_t origProcAssoc;	/* FC Parm Word 1, bit 0:31 */
@@ -858,6 +1087,7 @@ typedef struct _RNID {		/* Structure is in Big Endian format */
 	} un;
 } RNID;
 
+<<<<<<< HEAD
 typedef struct  _RPS {		/* Structure is in Big Endian format */
 	union {
 		uint32_t portNum;
@@ -876,6 +1106,8 @@ typedef struct  _RPS_RSP {	/* Structure is in Big Endian format */
 	uint32_t crcCnt;
 } RPS_RSP;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct RLS {			/* Structure is in Big Endian format */
 	uint32_t rls;
 #define rls_rsvd_SHIFT		24
@@ -1005,18 +1237,515 @@ typedef struct _ELS_PKT {	/* Structure is in Big Endian format */
 } ELS_PKT;
 
 /*
+<<<<<<< HEAD
  * FDMI
+=======
+ * Link Cable Beacon (LCB) ELS Frame
+ */
+
+struct fc_lcb_request_frame {
+	uint32_t      lcb_command;      /* ELS command opcode (0x81)     */
+	uint8_t       lcb_sub_command;/* LCB Payload Word 1, bit 24:31 */
+#define LPFC_LCB_ON		0x1
+#define LPFC_LCB_OFF		0x2
+	uint8_t       reserved[2];
+	uint8_t	      capability;	/* LCB Payload Word 1, bit 0:7 */
+	uint8_t       lcb_type; /* LCB Payload Word 2, bit 24:31 */
+#define LPFC_LCB_GREEN		0x1
+#define LPFC_LCB_AMBER		0x2
+	uint8_t       lcb_frequency;    /* LCB Payload Word 2, bit 16:23 */
+#define LCB_CAPABILITY_DURATION	1
+#define BEACON_VERSION_V1	1
+#define BEACON_VERSION_V0	0
+	uint16_t      lcb_duration;     /* LCB Payload Word 2, bit 15:0  */
+};
+
+/*
+ * Link Cable Beacon (LCB) ELS Response Frame
+ */
+struct fc_lcb_res_frame {
+	uint32_t      lcb_ls_acc;       /* Acceptance of LCB request (0x02) */
+	uint8_t       lcb_sub_command;/* LCB Payload Word 1, bit 24:31 */
+	uint8_t       reserved[2];
+	uint8_t	      capability;	/* LCB Payload Word 1, bit 0:7 */
+	uint8_t       lcb_type; /* LCB Payload Word 2, bit 24:31 */
+	uint8_t       lcb_frequency;    /* LCB Payload Word 2, bit 16:23 */
+	uint16_t      lcb_duration;     /* LCB Payload Word 2, bit 15:0  */
+};
+
+/*
+ * Read Diagnostic Parameters (RDP) ELS frame.
+ */
+#define SFF_PG0_IDENT_SFP              0x3
+
+#define SFP_FLAG_PT_OPTICAL            0x0
+#define SFP_FLAG_PT_SWLASER            0x01
+#define SFP_FLAG_PT_LWLASER_LC1310     0x02
+#define SFP_FLAG_PT_LWLASER_LL1550     0x03
+#define SFP_FLAG_PT_MASK               0x0F
+#define SFP_FLAG_PT_SHIFT              0
+
+#define SFP_FLAG_IS_OPTICAL_PORT       0x01
+#define SFP_FLAG_IS_OPTICAL_MASK       0x010
+#define SFP_FLAG_IS_OPTICAL_SHIFT      4
+
+#define SFP_FLAG_IS_DESC_VALID         0x01
+#define SFP_FLAG_IS_DESC_VALID_MASK    0x020
+#define SFP_FLAG_IS_DESC_VALID_SHIFT   5
+
+#define SFP_FLAG_CT_UNKNOWN            0x0
+#define SFP_FLAG_CT_SFP_PLUS           0x01
+#define SFP_FLAG_CT_MASK               0x3C
+#define SFP_FLAG_CT_SHIFT              6
+
+struct fc_rdp_port_name_info {
+	uint8_t wwnn[8];
+	uint8_t wwpn[8];
+};
+
+
+/*
+ * Link Error Status Block Structure (FC-FS-3) for RDP
+ * This similar to RPS ELS
+ */
+struct fc_link_status {
+	uint32_t      link_failure_cnt;
+	uint32_t      loss_of_synch_cnt;
+	uint32_t      loss_of_signal_cnt;
+	uint32_t      primitive_seq_proto_err;
+	uint32_t      invalid_trans_word;
+	uint32_t      invalid_crc_cnt;
+
+};
+
+#define RDP_PORT_NAMES_DESC_TAG  0x00010003
+struct fc_rdp_port_name_desc {
+	uint32_t	tag;     /* 0001 0003h */
+	uint32_t	length;  /* set to size of payload struct */
+	struct fc_rdp_port_name_info  port_names;
+};
+
+
+struct fc_rdp_fec_info {
+	uint32_t CorrectedBlocks;
+	uint32_t UncorrectableBlocks;
+};
+
+#define RDP_FEC_DESC_TAG  0x00010005
+struct fc_fec_rdp_desc {
+	uint32_t tag;
+	uint32_t length;
+	struct fc_rdp_fec_info info;
+};
+
+struct fc_rdp_link_error_status_payload_info {
+	struct fc_link_status link_status; /* 24 bytes */
+	uint32_t  port_type;             /* bits 31-30 only */
+};
+
+#define RDP_LINK_ERROR_STATUS_DESC_TAG  0x00010002
+struct fc_rdp_link_error_status_desc {
+	uint32_t         tag;     /* 0001 0002h */
+	uint32_t         length;  /* set to size of payload struct */
+	struct fc_rdp_link_error_status_payload_info info;
+};
+
+#define VN_PT_PHY_UNKNOWN      0x00
+#define VN_PT_PHY_PF_PORT      0x01
+#define VN_PT_PHY_ETH_MAC      0x10
+#define VN_PT_PHY_SHIFT                30
+
+#define RDP_PS_1GB             0x8000
+#define RDP_PS_2GB             0x4000
+#define RDP_PS_4GB             0x2000
+#define RDP_PS_10GB            0x1000
+#define RDP_PS_8GB             0x0800
+#define RDP_PS_16GB            0x0400
+#define RDP_PS_32GB            0x0200
+#define RDP_PS_64GB            0x0100
+#define RDP_PS_128GB           0x0080
+#define RDP_PS_256GB           0x0040
+
+#define RDP_CAP_USER_CONFIGURED 0x0002
+#define RDP_CAP_UNKNOWN         0x0001
+#define RDP_PS_UNKNOWN          0x0002
+#define RDP_PS_NOT_ESTABLISHED  0x0001
+
+struct fc_rdp_port_speed {
+	uint16_t   capabilities;
+	uint16_t   speed;
+};
+
+struct fc_rdp_port_speed_info {
+	struct fc_rdp_port_speed   port_speed;
+};
+
+#define RDP_PORT_SPEED_DESC_TAG  0x00010001
+struct fc_rdp_port_speed_desc {
+	uint32_t         tag;            /* 00010001h */
+	uint32_t         length;         /* set to size of payload struct */
+	struct fc_rdp_port_speed_info info;
+};
+
+#define RDP_NPORT_ID_SIZE      4
+#define RDP_N_PORT_DESC_TAG    0x00000003
+struct fc_rdp_nport_desc {
+	uint32_t         tag;          /* 0000 0003h, big endian */
+	uint32_t         length;       /* size of RDP_N_PORT_ID struct */
+	uint32_t         nport_id : 12;
+	uint32_t         reserved : 8;
+};
+
+
+struct fc_rdp_link_service_info {
+	uint32_t         els_req;    /* Request payload word 0 value.*/
+};
+
+#define RDP_LINK_SERVICE_DESC_TAG  0x00000001
+struct fc_rdp_link_service_desc {
+	uint32_t         tag;     /* Descriptor tag  1 */
+	uint32_t         length;  /* set to size of payload struct. */
+	struct fc_rdp_link_service_info  payload;
+				  /* must be ELS req Word 0(0x18) */
+};
+
+struct fc_rdp_sfp_info {
+	uint16_t	temperature;
+	uint16_t	vcc;
+	uint16_t	tx_bias;
+	uint16_t	tx_power;
+	uint16_t	rx_power;
+	uint16_t	flags;
+};
+
+#define RDP_SFP_DESC_TAG  0x00010000
+struct fc_rdp_sfp_desc {
+	uint32_t         tag;
+	uint32_t         length;  /* set to size of sfp_info struct */
+	struct fc_rdp_sfp_info sfp_info;
+};
+
+/* Buffer Credit Descriptor */
+struct fc_rdp_bbc_info {
+	uint32_t              port_bbc; /* FC_Port buffer-to-buffer credit */
+	uint32_t              attached_port_bbc;
+	uint32_t              rtt;      /* Round trip time */
+};
+#define RDP_BBC_DESC_TAG  0x00010006
+struct fc_rdp_bbc_desc {
+	uint32_t              tag;
+	uint32_t              length;
+	struct fc_rdp_bbc_info  bbc_info;
+};
+
+/* Optical Element Type Transgression Flags */
+#define RDP_OET_LOW_WARNING  0x1
+#define RDP_OET_HIGH_WARNING 0x2
+#define RDP_OET_LOW_ALARM    0x4
+#define RDP_OET_HIGH_ALARM   0x8
+
+#define RDP_OED_TEMPERATURE  0x1
+#define RDP_OED_VOLTAGE      0x2
+#define RDP_OED_TXBIAS       0x3
+#define RDP_OED_TXPOWER      0x4
+#define RDP_OED_RXPOWER      0x5
+
+#define RDP_OED_TYPE_SHIFT   28
+/* Optical Element Data descriptor */
+struct fc_rdp_oed_info {
+	uint16_t            hi_alarm;
+	uint16_t            lo_alarm;
+	uint16_t            hi_warning;
+	uint16_t            lo_warning;
+	uint32_t            function_flags;
+};
+#define RDP_OED_DESC_TAG  0x00010007
+struct fc_rdp_oed_sfp_desc {
+	uint32_t             tag;
+	uint32_t             length;
+	struct fc_rdp_oed_info oed_info;
+};
+
+/* Optical Product Data descriptor */
+struct fc_rdp_opd_sfp_info {
+	uint8_t            vendor_name[16];
+	uint8_t            model_number[16];
+	uint8_t            serial_number[16];
+	uint8_t            revision[4];
+	uint8_t            date[8];
+};
+
+#define RDP_OPD_DESC_TAG  0x00010008
+struct fc_rdp_opd_sfp_desc {
+	uint32_t             tag;
+	uint32_t             length;
+	struct fc_rdp_opd_sfp_info opd_info;
+};
+
+struct fc_rdp_req_frame {
+	uint32_t         rdp_command;           /* ELS command opcode (0x18)*/
+	uint32_t         rdp_des_length;        /* RDP Payload Word 1 */
+	struct fc_rdp_nport_desc nport_id_desc; /* RDP Payload Word 2 - 4 */
+};
+
+
+struct fc_rdp_res_frame {
+	uint32_t    reply_sequence;		/* FC word0 LS_ACC or LS_RJT */
+	uint32_t   length;			/* FC Word 1      */
+	struct fc_rdp_link_service_desc link_service_desc;    /* Word 2 -4   */
+	struct fc_rdp_sfp_desc sfp_desc;                      /* Word 5 -9   */
+	struct fc_rdp_port_speed_desc portspeed_desc;         /* Word 10 -12 */
+	struct fc_rdp_link_error_status_desc link_error_desc; /* Word 13 -21 */
+	struct fc_rdp_port_name_desc diag_port_names_desc;    /* Word 22 -27 */
+	struct fc_rdp_port_name_desc attached_port_names_desc;/* Word 28 -33 */
+	struct fc_fec_rdp_desc fec_desc;                      /* FC word 34-37*/
+	struct fc_rdp_bbc_desc bbc_desc;                      /* FC Word 38-42*/
+	struct fc_rdp_oed_sfp_desc oed_temp_desc;             /* FC Word 43-47*/
+	struct fc_rdp_oed_sfp_desc oed_voltage_desc;          /* FC word 48-52*/
+	struct fc_rdp_oed_sfp_desc oed_txbias_desc;           /* FC word 53-57*/
+	struct fc_rdp_oed_sfp_desc oed_txpower_desc;          /* FC word 58-62*/
+	struct fc_rdp_oed_sfp_desc oed_rxpower_desc;          /* FC word 63-67*/
+	struct fc_rdp_opd_sfp_desc opd_desc;                  /* FC word 68-84*/
+};
+
+
+/* UVEM */
+
+#define LPFC_UVEM_SIZE 60
+#define LPFC_UVEM_VEM_ID_DESC_SIZE 16
+#define LPFC_UVEM_VE_MAP_DESC_SIZE 20
+
+#define VEM_ID_DESC_TAG  0x0001000A
+struct lpfc_vem_id_desc {
+	uint32_t tag;
+	uint32_t length;
+	uint8_t vem_id[16];
+};
+
+#define LPFC_QFPA_SIZE	4
+
+#define INSTANTIATED_VE_DESC_TAG  0x0001000B
+struct instantiated_ve_desc {
+	uint32_t tag;
+	uint32_t length;
+	uint8_t global_vem_id[16];
+	uint32_t word6;
+#define lpfc_instantiated_local_id_SHIFT   0
+#define lpfc_instantiated_local_id_MASK    0x000000ff
+#define lpfc_instantiated_local_id_WORD    word6
+#define lpfc_instantiated_nport_id_SHIFT   8
+#define lpfc_instantiated_nport_id_MASK    0x00ffffff
+#define lpfc_instantiated_nport_id_WORD    word6
+};
+
+#define DEINSTANTIATED_VE_DESC_TAG  0x0001000C
+struct deinstantiated_ve_desc {
+	uint32_t tag;
+	uint32_t length;
+	uint8_t global_vem_id[16];
+	uint32_t word6;
+#define lpfc_deinstantiated_nport_id_SHIFT   0
+#define lpfc_deinstantiated_nport_id_MASK    0x000000ff
+#define lpfc_deinstantiated_nport_id_WORD    word6
+#define lpfc_deinstantiated_local_id_SHIFT   24
+#define lpfc_deinstantiated_local_id_MASK    0x00ffffff
+#define lpfc_deinstantiated_local_id_WORD    word6
+};
+
+/* Query Fabric Priority Allocation Response */
+#define LPFC_PRIORITY_RANGE_DESC_SIZE 12
+
+struct priority_range_desc {
+	uint32_t tag;
+	uint32_t length;
+	uint8_t lo_range;
+	uint8_t hi_range;
+	uint8_t qos_priority;
+	uint8_t local_ve_id;
+};
+
+struct fc_qfpa_res {
+	uint32_t reply_sequence;	/* LS_ACC or LS_RJT */
+	uint32_t length;	/* FC Word 1    */
+	struct priority_range_desc desc[1];
+};
+
+/* Application Server command code */
+/* VMID               */
+
+#define SLI_CT_APP_SEV_Subtypes     0x20	/* Application Server subtype */
+
+#define SLI_CTAS_GAPPIA_ENT    0x0100	/* Get Application Identifier */
+#define SLI_CTAS_GALLAPPIA     0x0101	/* Get All Application Identifier */
+#define SLI_CTAS_GALLAPPIA_ID  0x0102	/* Get All Application Identifier */
+					/* for Nport */
+#define SLI_CTAS_GAPPIA_IDAPP  0x0103	/* Get Application Identifier */
+					/* for Nport */
+#define SLI_CTAS_RAPP_IDENT    0x0200	/* Register Application Identifier */
+#define SLI_CTAS_DAPP_IDENT    0x0300	/* Deregister Application */
+					/* Identifier */
+#define SLI_CTAS_DALLAPP_ID    0x0301	/* Deregister All Application */
+					/* Identifier */
+
+struct entity_id_object {
+	uint8_t entity_id_len;
+	uint8_t entity_id[255];	/* VM UUID */
+};
+
+struct app_id_object {
+	__be32 port_id;
+	__be32 app_id;
+	struct entity_id_object obj;
+};
+
+struct lpfc_vmid_rapp_ident_list {
+	__be32 no_of_objects;
+	struct entity_id_object obj[];
+};
+
+struct lpfc_vmid_dapp_ident_list {
+	__be32 no_of_objects;
+	struct entity_id_object obj[];
+};
+
+#define GALLAPPIA_ID_LAST  0x80
+struct lpfc_vmid_gallapp_ident_list {
+	uint8_t control;
+	uint8_t reserved[3];
+	struct app_id_object app_id;
+};
+
+#define RAPP_IDENT_OFFSET  (offsetof(struct lpfc_sli_ct_request, un) + 4)
+#define DAPP_IDENT_OFFSET  (offsetof(struct lpfc_sli_ct_request, un) + 4)
+#define GALLAPPIA_ID_SIZE  (offsetof(struct lpfc_sli_ct_request, un) + 4)
+#define DALLAPP_ID_SIZE    (offsetof(struct lpfc_sli_ct_request, un) + 4)
+
+/******** FDMI ********/
+
+/* lpfc_sli_ct_request defines the CT_IU preamble for FDMI commands */
+#define  SLI_CT_FDMI_Subtypes     0x10	/* Management Service Subtype */
+
+/* Definitions for HBA / Port attribute entries */
+
+/* Attribute Entry Structures */
+
+struct lpfc_fdmi_attr_u32 {
+	__be16 type;
+	__be16 len;
+	__be32 value_u32;
+};
+
+struct lpfc_fdmi_attr_wwn {
+	__be16 type;
+	__be16 len;
+
+	/* Keep as u8[8] instead of __be64 to avoid accidental zero padding
+	 * by compiler
+	 */
+	u8 name[8];
+};
+
+struct lpfc_fdmi_attr_fullwwn {
+	__be16 type;
+	__be16 len;
+
+	/* Keep as u8[8] instead of __be64 to avoid accidental zero padding
+	 * by compiler
+	 */
+	u8 nname[8];
+	u8 pname[8];
+};
+
+struct lpfc_fdmi_attr_fc4types {
+	__be16 type;
+	__be16 len;
+	u8 value_types[32];
+};
+
+struct lpfc_fdmi_attr_string {
+	__be16 type;
+	__be16 len;
+	char value_string[256];
+};
+
+/* Maximum FDMI attribute length is Type+Len (4 bytes) + 256 byte string */
+#define FDMI_MAX_ATTRLEN	sizeof(struct lpfc_fdmi_attr_string)
+
+/*
+ * HBA Attribute Block
+ */
+struct lpfc_fdmi_attr_block {
+	uint32_t EntryCnt;		/* Number of HBA attribute entries */
+	/* Variable Length Attribute Entry TLV's follow */
+};
+
+/*
+ * Port Entry
+ */
+struct lpfc_fdmi_port_entry {
+	struct lpfc_name PortName;
+};
+
+/*
+ * HBA Identifier
+ */
+struct lpfc_fdmi_hba_ident {
+	struct lpfc_name PortName;
+};
+
+/*
+ * Registered Port List Format
+ */
+struct lpfc_fdmi_reg_port_list {
+	__be32 EntryCnt;
+	struct lpfc_fdmi_port_entry pe;
+};
+
+/*
+ * Register HBA(RHBA)
+ */
+struct lpfc_fdmi_reg_hba {
+	struct lpfc_fdmi_hba_ident hi;
+	struct lpfc_fdmi_reg_port_list rpl;
+};
+
+/******** MI MIB ********/
+#define SLI_CT_MIB_Subtypes	0x11
+
+/*
+ * Register HBA Attributes (RHAT)
+ */
+struct lpfc_fdmi_reg_hbaattr {
+	struct lpfc_name HBA_PortName;
+	struct lpfc_fdmi_attr_block ab;
+};
+
+/*
+ * Register Port Attributes (RPA)
+ */
+struct lpfc_fdmi_reg_portattr {
+	struct lpfc_name PortName;
+	struct lpfc_fdmi_attr_block ab;
+};
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * HBA MAnagement Operations Command Codes
  */
 #define  SLI_MGMT_GRHL     0x100	/* Get registered HBA list */
 #define  SLI_MGMT_GHAT     0x101	/* Get HBA attributes */
 #define  SLI_MGMT_GRPL     0x102	/* Get registered Port list */
 #define  SLI_MGMT_GPAT     0x110	/* Get Port attributes */
+<<<<<<< HEAD
+=======
+#define  SLI_MGMT_GPAS     0x120	/* Get Port Statistics */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define  SLI_MGMT_RHBA     0x200	/* Register HBA */
 #define  SLI_MGMT_RHAT     0x201	/* Register HBA attributes */
 #define  SLI_MGMT_RPRT     0x210	/* Register Port */
 #define  SLI_MGMT_RPA      0x211	/* Register Port attributes */
 #define  SLI_MGMT_DHBA     0x300	/* De-register HBA */
+<<<<<<< HEAD
 #define  SLI_MGMT_DPRT     0x310	/* De-register Port */
 
 /*
@@ -1033,10 +1762,18 @@ typedef struct _ELS_PKT {	/* Structure is in Big Endian format */
  * HBA Management Service Reject Reason Code
  * Please refer to the Reason Codes above
  */
+=======
+#define  SLI_MGMT_DHAT     0x301	/* De-register HBA attributes */
+#define  SLI_MGMT_DPRT     0x310	/* De-register Port */
+#define  SLI_MGMT_DPA      0x311	/* De-register Port attributes */
+
+#define LPFC_FDMI_MAX_RETRY     3  /* Max retries for a FDMI command */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * HBA Attribute Types
  */
+<<<<<<< HEAD
 #define  NODE_NAME               0x1
 #define  MANUFACTURER            0x2
 #define  SERIAL_NUMBER           0x3
@@ -1175,6 +1912,125 @@ typedef struct {
 	ATTRIBUTE_BLOCK pab;
 } GPAT_ACC_PAYLOAD;
 
+=======
+#define  RHBA_NODENAME           0x1 /* 8 byte WWNN */
+#define  RHBA_MANUFACTURER       0x2 /* 4 to 64 byte ASCII string */
+#define  RHBA_SERIAL_NUMBER      0x3 /* 4 to 64 byte ASCII string */
+#define  RHBA_MODEL              0x4 /* 4 to 256 byte ASCII string */
+#define  RHBA_MODEL_DESCRIPTION  0x5 /* 4 to 256 byte ASCII string */
+#define  RHBA_HARDWARE_VERSION   0x6 /* 4 to 256 byte ASCII string */
+#define  RHBA_DRIVER_VERSION     0x7 /* 4 to 256 byte ASCII string */
+#define  RHBA_OPTION_ROM_VERSION 0x8 /* 4 to 256 byte ASCII string */
+#define  RHBA_FIRMWARE_VERSION   0x9 /* 4 to 256 byte ASCII string */
+#define  RHBA_OS_NAME_VERSION	 0xa /* 4 to 256 byte ASCII string */
+#define  RHBA_MAX_CT_PAYLOAD_LEN 0xb /* 32-bit unsigned int */
+#define  RHBA_SYM_NODENAME       0xc /* 4 to 256 byte ASCII string */
+#define  RHBA_VENDOR_INFO        0xd  /* 32-bit unsigned int */
+#define  RHBA_NUM_PORTS          0xe  /* 32-bit unsigned int */
+#define  RHBA_FABRIC_WWNN        0xf  /* 8 byte WWNN */
+#define  RHBA_BIOS_VERSION       0x10 /* 4 to 256 byte ASCII string */
+#define  RHBA_BIOS_STATE         0x11 /* 32-bit unsigned int */
+#define  RHBA_VENDOR_ID          0xe0 /* 8 byte ASCII string */
+
+/* Bit mask for all individual HBA attributes */
+#define LPFC_FDMI_HBA_ATTR_wwnn			0x00000001
+#define LPFC_FDMI_HBA_ATTR_manufacturer		0x00000002
+#define LPFC_FDMI_HBA_ATTR_sn			0x00000004
+#define LPFC_FDMI_HBA_ATTR_model		0x00000008
+#define LPFC_FDMI_HBA_ATTR_description		0x00000010
+#define LPFC_FDMI_HBA_ATTR_hdw_ver		0x00000020
+#define LPFC_FDMI_HBA_ATTR_drvr_ver		0x00000040
+#define LPFC_FDMI_HBA_ATTR_rom_ver		0x00000080
+#define LPFC_FDMI_HBA_ATTR_fmw_ver		0x00000100
+#define LPFC_FDMI_HBA_ATTR_os_ver		0x00000200
+#define LPFC_FDMI_HBA_ATTR_ct_len		0x00000400
+#define LPFC_FDMI_HBA_ATTR_symbolic_name	0x00000800
+#define LPFC_FDMI_HBA_ATTR_vendor_info		0x00001000 /* Not used */
+#define LPFC_FDMI_HBA_ATTR_num_ports		0x00002000
+#define LPFC_FDMI_HBA_ATTR_fabric_wwnn		0x00004000
+#define LPFC_FDMI_HBA_ATTR_bios_ver		0x00008000
+#define LPFC_FDMI_HBA_ATTR_bios_state		0x00010000 /* Not used */
+#define LPFC_FDMI_HBA_ATTR_vendor_id		0x00020000
+
+/* Bit mask for FDMI-1 defined HBA attributes */
+#define LPFC_FDMI1_HBA_ATTR			0x000007ff
+
+/* Bit mask for FDMI-2 defined HBA attributes */
+/* Skip vendor_info and bios_state */
+#define LPFC_FDMI2_HBA_ATTR			0x0002efff
+
+/*
+ * Port Attribute Types
+ */
+#define  RPRT_SUPPORTED_FC4_TYPES     0x1 /* 32 byte binary array */
+#define  RPRT_SUPPORTED_SPEED         0x2 /* 32-bit unsigned int */
+#define  RPRT_PORT_SPEED              0x3 /* 32-bit unsigned int */
+#define  RPRT_MAX_FRAME_SIZE          0x4 /* 32-bit unsigned int */
+#define  RPRT_OS_DEVICE_NAME          0x5 /* 4 to 256 byte ASCII string */
+#define  RPRT_HOST_NAME               0x6 /* 4 to 256 byte ASCII string */
+#define  RPRT_NODENAME                0x7 /* 8 byte WWNN */
+#define  RPRT_PORTNAME                0x8 /* 8 byte WWPN */
+#define  RPRT_SYM_PORTNAME            0x9 /* 4 to 256 byte ASCII string */
+#define  RPRT_PORT_TYPE               0xa /* 32-bit unsigned int */
+#define  RPRT_SUPPORTED_CLASS         0xb /* 32-bit unsigned int */
+#define  RPRT_FABRICNAME              0xc /* 8 byte Fabric WWPN */
+#define  RPRT_ACTIVE_FC4_TYPES        0xd /* 32 byte binary array */
+#define  RPRT_PORT_STATE              0x101 /* 32-bit unsigned int */
+#define  RPRT_DISC_PORT               0x102 /* 32-bit unsigned int */
+#define  RPRT_PORT_ID                 0x103 /* 32-bit unsigned int */
+#define  RPRT_VENDOR_MI               0xf047 /* vendor ascii string */
+#define  RPRT_SMART_SERVICE           0xf100 /* 4 to 256 byte ASCII string */
+#define  RPRT_SMART_GUID              0xf101 /* 8 byte WWNN + 8 byte WWPN */
+#define  RPRT_SMART_VERSION           0xf102 /* 4 to 256 byte ASCII string */
+#define  RPRT_SMART_MODEL             0xf103 /* 4 to 256 byte ASCII string */
+#define  RPRT_SMART_PORT_INFO         0xf104 /* 32-bit unsigned int */
+#define  RPRT_SMART_QOS               0xf105 /* 32-bit unsigned int */
+#define  RPRT_SMART_SECURITY          0xf106 /* 32-bit unsigned int */
+
+/* Bit mask for all individual PORT attributes */
+#define LPFC_FDMI_PORT_ATTR_fc4type		0x00000001
+#define LPFC_FDMI_PORT_ATTR_support_speed	0x00000002
+#define LPFC_FDMI_PORT_ATTR_speed		0x00000004
+#define LPFC_FDMI_PORT_ATTR_max_frame		0x00000008
+#define LPFC_FDMI_PORT_ATTR_os_devname		0x00000010
+#define LPFC_FDMI_PORT_ATTR_host_name		0x00000020
+#define LPFC_FDMI_PORT_ATTR_wwnn		0x00000040
+#define LPFC_FDMI_PORT_ATTR_wwpn		0x00000080
+#define LPFC_FDMI_PORT_ATTR_symbolic_name	0x00000100
+#define LPFC_FDMI_PORT_ATTR_port_type		0x00000200
+#define LPFC_FDMI_PORT_ATTR_class		0x00000400
+#define LPFC_FDMI_PORT_ATTR_fabric_wwpn		0x00000800
+#define LPFC_FDMI_PORT_ATTR_port_state		0x00001000
+#define LPFC_FDMI_PORT_ATTR_active_fc4type	0x00002000
+#define LPFC_FDMI_PORT_ATTR_num_disc		0x00004000
+#define LPFC_FDMI_PORT_ATTR_nportid		0x00008000
+#define LPFC_FDMI_SMART_ATTR_service		0x00010000 /* Vendor specific */
+#define LPFC_FDMI_SMART_ATTR_guid		0x00020000 /* Vendor specific */
+#define LPFC_FDMI_SMART_ATTR_version		0x00040000 /* Vendor specific */
+#define LPFC_FDMI_SMART_ATTR_model		0x00080000 /* Vendor specific */
+#define LPFC_FDMI_SMART_ATTR_port_info		0x00100000 /* Vendor specific */
+#define LPFC_FDMI_SMART_ATTR_qos		0x00200000 /* Vendor specific */
+#define LPFC_FDMI_SMART_ATTR_security		0x00400000 /* Vendor specific */
+#define LPFC_FDMI_VENDOR_ATTR_mi		0x00800000 /* Vendor specific */
+
+/* Bit mask for FDMI-1 defined PORT attributes */
+#define LPFC_FDMI1_PORT_ATTR			0x0000003f
+
+/* Bit mask for FDMI-2 defined PORT attributes */
+#define LPFC_FDMI2_PORT_ATTR			0x0000ffff
+
+/* Bit mask for Smart SAN defined PORT attributes */
+#define LPFC_FDMI2_SMART_ATTR			0x007fffff
+
+/* Defines for PORT port state attribute */
+#define LPFC_FDMI_PORTSTATE_UNKNOWN	1
+#define LPFC_FDMI_PORTSTATE_ONLINE	2
+
+/* Defines for PORT port type attribute */
+#define LPFC_FDMI_PORTTYPE_UNKNOWN	0
+#define LPFC_FDMI_PORTTYPE_NPORT	1
+#define LPFC_FDMI_PORTTYPE_NLPORT	2
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *  Begin HBA configuration parameters.
@@ -1188,8 +2044,13 @@ typedef struct {
  */
 
 /* Number of rings currently used and available. */
+<<<<<<< HEAD
 #define MAX_CONFIGURED_RINGS     3
 #define MAX_RINGS                4
+=======
+#define MAX_SLI3_CONFIGURED_RINGS     3
+#define MAX_SLI3_RINGS                4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* IOCB / Mailbox is owned by FireFly */
 #define OWN_CHIP        1
@@ -1213,6 +2074,12 @@ typedef struct {
 #define PCI_DEVICE_ID_LANCER_FC_VF  0xe208
 #define PCI_DEVICE_ID_LANCER_FCOE   0xe260
 #define PCI_DEVICE_ID_LANCER_FCOE_VF 0xe268
+<<<<<<< HEAD
+=======
+#define PCI_DEVICE_ID_LANCER_G6_FC  0xe300
+#define PCI_DEVICE_ID_LANCER_G7_FC  0xf400
+#define PCI_DEVICE_ID_LANCER_G7P_FC 0xf500
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_SAT_SMB       0xf011
 #define PCI_DEVICE_ID_SAT_MID       0xf015
 #define PCI_DEVICE_ID_RFLY          0xf095
@@ -1245,12 +2112,42 @@ typedef struct {
 #define PCI_DEVICE_ID_HELIOS_SCSP   0xfd11
 #define PCI_DEVICE_ID_HELIOS_DCSP   0xfd12
 #define PCI_DEVICE_ID_ZEPHYR        0xfe00
+<<<<<<< HEAD
 #define PCI_DEVICE_ID_HORNET        0xfe05
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PCI_DEVICE_ID_ZEPHYR_SCSP   0xfe11
 #define PCI_DEVICE_ID_ZEPHYR_DCSP   0xfe12
 #define PCI_VENDOR_ID_SERVERENGINE  0x19a2
 #define PCI_DEVICE_ID_TIGERSHARK    0x0704
 #define PCI_DEVICE_ID_TOMCAT        0x0714
+<<<<<<< HEAD
+=======
+#define PCI_DEVICE_ID_SKYHAWK       0x0724
+#define PCI_DEVICE_ID_SKYHAWK_VF    0x072c
+#define PCI_VENDOR_ID_ATTO          0x117c
+#define PCI_DEVICE_ID_CLRY_16XE     0x0064
+#define PCI_DEVICE_ID_CLRY_161E     0x0063
+#define PCI_DEVICE_ID_CLRY_162E     0x0064
+#define PCI_DEVICE_ID_CLRY_164E     0x0065
+#define PCI_DEVICE_ID_CLRY_16XP     0x0094
+#define PCI_DEVICE_ID_CLRY_161P     0x00a0
+#define PCI_DEVICE_ID_CLRY_162P     0x0094
+#define PCI_DEVICE_ID_CLRY_164P     0x00a1
+#define PCI_DEVICE_ID_CLRY_32XE     0x0094
+#define PCI_DEVICE_ID_CLRY_321E     0x00a2
+#define PCI_DEVICE_ID_CLRY_322E     0x00a3
+#define PCI_DEVICE_ID_CLRY_324E     0x00ac
+#define PCI_DEVICE_ID_CLRY_32XP     0x00bb
+#define PCI_DEVICE_ID_CLRY_321P     0x00bc
+#define PCI_DEVICE_ID_CLRY_322P     0x00bd
+#define PCI_DEVICE_ID_CLRY_324P     0x00be
+#define PCI_DEVICE_ID_TLFC_2        0x0064
+#define PCI_DEVICE_ID_TLFC_2XX2     0x4064
+#define PCI_DEVICE_ID_TLFC_3        0x0094
+#define PCI_DEVICE_ID_TLFC_3162     0x40a6
+#define PCI_DEVICE_ID_TLFC_3322     0x40a7
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define JEDEC_ID_ADDRESS            0x0080001c
 #define FIREFLY_JEDEC_ID            0x1ACC
@@ -1266,7 +2163,10 @@ typedef struct {
 #define ZEPHYR_JEDEC_ID             0x0577
 #define VIPER_JEDEC_ID              0x4838
 #define SATURN_JEDEC_ID             0x1004
+<<<<<<< HEAD
 #define HORNET_JDEC_ID              0x2057706D
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define JEDEC_ID_MASK               0x0FFFF000
 #define JEDEC_ID_SHIFT              12
@@ -1458,6 +2358,11 @@ typedef struct {		/* FireFly BIU registers */
 #define MBX_UNREG_FCFI	    0xA2
 #define MBX_INIT_VFI        0xA3
 #define MBX_INIT_VPI        0xA4
+<<<<<<< HEAD
+=======
+#define MBX_ACCESS_VDATA    0xA5
+#define MBX_REG_FCFI_MRQ    0xAF
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MBX_AUTH_PORT       0xF8
 #define MBX_SECURITY_MGMT   0xF9
@@ -1593,6 +2498,14 @@ typedef struct {		/* FireFly BIU registers */
 #define TEMPERATURE_OFFSET 0xB0	/* Slim offset for critical temperature event */
 
 /*
+<<<<<<< HEAD
+=======
+ * return code Fail
+ */
+#define FAILURE 1
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *    Begin Structure Definitions for Mailbox Commands
  */
 
@@ -1662,6 +2575,10 @@ enum lpfc_protgrp_type {
 #define	BG_OP_IN_CSUM_OUT_CSUM		0x5
 #define	BG_OP_IN_CRC_OUT_CSUM		0x6
 #define	BG_OP_IN_CSUM_OUT_CRC		0x7
+<<<<<<< HEAD
+=======
+#define	BG_OP_RAW_MODE			0x8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct lpfc_pde5 {
 	uint32_t word0;
@@ -1879,6 +2796,13 @@ typedef struct {
 #define LINK_SPEED_8G   0x8     /* 8 Gigabaud */
 #define LINK_SPEED_10G  0x10    /* 10 Gigabaud */
 #define LINK_SPEED_16G  0x11    /* 16 Gigabaud */
+<<<<<<< HEAD
+=======
+#define LINK_SPEED_32G  0x14    /* 32 Gigabaud */
+#define LINK_SPEED_64G  0x17    /* 64 Gigabaud */
+#define LINK_SPEED_128G 0x1A    /* 128 Gigabaud */
+#define LINK_SPEED_256G 0x1D    /* 256 Gigabaud */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 } INIT_LINK_VAR;
 
@@ -1915,6 +2839,7 @@ typedef struct {
 	uint32_t rttov;
 	uint32_t altov;
 	uint32_t crtov;
+<<<<<<< HEAD
 	uint32_t citov;
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t rrq_enable:1;
@@ -1924,6 +2849,29 @@ typedef struct {
 #else	/*  __LITTLE_ENDIAN_BITFIELD */
 	uint32_t ack0_enable:1;
 	uint32_t rsvd4:29;
+=======
+
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t rsvd4:19;
+	uint32_t cscn:1;
+	uint32_t bbscn:4;
+	uint32_t rsvd3:8;
+#else	/*  __LITTLE_ENDIAN_BITFIELD */
+	uint32_t rsvd3:8;
+	uint32_t bbscn:4;
+	uint32_t cscn:1;
+	uint32_t rsvd4:19;
+#endif
+
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t rrq_enable:1;
+	uint32_t rrq_immed:1;
+	uint32_t rsvd5:29;
+	uint32_t ack0_enable:1;
+#else	/*  __LITTLE_ENDIAN_BITFIELD */
+	uint32_t ack0_enable:1;
+	uint32_t rsvd5:29;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t rrq_immed:1;
 	uint32_t rrq_enable:1;
 #endif
@@ -2050,6 +2998,13 @@ typedef struct {
 #define LMT_8Gb       0x080
 #define LMT_10Gb      0x100
 #define LMT_16Gb      0x200
+<<<<<<< HEAD
+=======
+#define LMT_32Gb      0x400
+#define LMT_64Gb      0x800
+#define LMT_128Gb     0x1000
+#define LMT_256Gb     0x2000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t rsvd2;
 	uint32_t rsvd3;
 	uint32_t max_xri;
@@ -2135,6 +3090,7 @@ typedef struct {
 } READ_SPARM_VAR;
 
 /* Structure for MB Command READ_STATUS (14) */
+<<<<<<< HEAD
 
 typedef struct {
 #ifdef __BIG_ENDIAN_BITFIELD
@@ -2148,6 +3104,28 @@ typedef struct {
 	uint16_t activeRpiCnt;
 	uint16_t activeXriCnt;
 #endif
+=======
+enum read_status_word1 {
+	RD_ST_CC	= 0x01,
+	RD_ST_XKB	= 0x80,
+};
+
+enum read_status_word17 {
+	RD_ST_XMIT_XKB_MASK = 0x3fffff,
+};
+
+enum read_status_word18 {
+	RD_ST_RCV_XKB_MASK = 0x3fffff,
+};
+
+typedef struct {
+	u8 clear_counters; /* rsvd 7:1, cc 0 */
+	u8 rsvd5;
+	u8 rsvd6;
+	u8 xkb; /* xkb 7, rsvd 6:0 */
+
+	u32 rsvd8;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	uint32_t xmitByteCnt;
 	uint32_t rcvByteCnt;
@@ -2159,6 +3137,17 @@ typedef struct {
 	uint32_t totalRespExchanges;
 	uint32_t rcvPbsyCnt;
 	uint32_t rcvFbsyCnt;
+<<<<<<< HEAD
+=======
+
+	u32 drop_frame_no_rq;
+	u32 empty_rq;
+	u32 drop_frame_no_xri;
+	u32 empty_xri;
+
+	u32 xmit_xkb; /* rsvd 31:22, xmit_xkb 21:0 */
+	u32 rcv_xkb; /* rsvd 31:22, rcv_xkb 21:0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } READ_STATUS_VAR;
 
 /* Structure for MB Command READ_RPI (15) */
@@ -2299,10 +3288,45 @@ typedef struct {
 /* Structure for MB Command READ_LINK_STAT (18) */
 
 typedef struct {
+<<<<<<< HEAD
 	uint32_t rsvd1;
 	uint32_t linkFailureCnt;
 	uint32_t lossSyncCnt;
 
+=======
+	uint32_t word0;
+
+#define lpfc_read_link_stat_rec_SHIFT   0
+#define lpfc_read_link_stat_rec_MASK   0x1
+#define lpfc_read_link_stat_rec_WORD   word0
+
+#define lpfc_read_link_stat_gec_SHIFT	1
+#define lpfc_read_link_stat_gec_MASK   0x1
+#define lpfc_read_link_stat_gec_WORD   word0
+
+#define lpfc_read_link_stat_w02oftow23of_SHIFT	2
+#define lpfc_read_link_stat_w02oftow23of_MASK   0x3FFFFF
+#define lpfc_read_link_stat_w02oftow23of_WORD   word0
+
+#define lpfc_read_link_stat_rsvd_SHIFT	24
+#define lpfc_read_link_stat_rsvd_MASK   0x1F
+#define lpfc_read_link_stat_rsvd_WORD   word0
+
+#define lpfc_read_link_stat_gec2_SHIFT  29
+#define lpfc_read_link_stat_gec2_MASK   0x1
+#define lpfc_read_link_stat_gec2_WORD   word0
+
+#define lpfc_read_link_stat_clrc_SHIFT  30
+#define lpfc_read_link_stat_clrc_MASK   0x1
+#define lpfc_read_link_stat_clrc_WORD   word0
+
+#define lpfc_read_link_stat_clof_SHIFT  31
+#define lpfc_read_link_stat_clof_MASK   0x1
+#define lpfc_read_link_stat_clof_WORD   word0
+
+	uint32_t linkFailureCnt;
+	uint32_t lossSyncCnt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t lossSignalCnt;
 	uint32_t primSeqErrCnt;
 	uint32_t invalidXmitWord;
@@ -2310,6 +3334,22 @@ typedef struct {
 	uint32_t primSeqTimeout;
 	uint32_t elasticOverrun;
 	uint32_t arbTimeout;
+<<<<<<< HEAD
+=======
+	uint32_t advRecBufCredit;
+	uint32_t curRecBufCredit;
+	uint32_t advTransBufCredit;
+	uint32_t curTransBufCredit;
+	uint32_t recEofCount;
+	uint32_t recEofdtiCount;
+	uint32_t recEofniCount;
+	uint32_t recSofcount;
+	uint32_t rsvd1;
+	uint32_t rsvd2;
+	uint32_t recDrpXriCount;
+	uint32_t fecCorrBlkCount;
+	uint32_t fecUncorrBlkCount;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } READ_LNK_VAR;
 
 /* Structure for MB Command REG_LOGIN (19) */
@@ -2467,6 +3507,10 @@ struct lpfc_mbx_read_top {
 #define LPFC_ATT_RESERVED    0x00	/* Reserved - attType */
 #define LPFC_ATT_LINK_UP     0x01	/* Link is up */
 #define LPFC_ATT_LINK_DOWN   0x02	/* Link is down */
+<<<<<<< HEAD
+=======
+#define LPFC_ATT_UNEXP_WWPN  0x06	/* Link is down Unexpected WWWPN */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t word3;
 #define lpfc_mbx_read_top_alpa_granted_SHIFT	24
 #define lpfc_mbx_read_top_alpa_granted_MASK	0x000000FF
@@ -2482,7 +3526,10 @@ struct lpfc_mbx_read_top {
 #define lpfc_mbx_read_top_topology_WORD		word3
 #define LPFC_TOPOLOGY_PT_PT 0x01	/* Topology is pt-pt / pt-fabric */
 #define LPFC_TOPOLOGY_LOOP  0x02	/* Topology is FC-AL */
+<<<<<<< HEAD
 #define LPFC_TOPOLOGY_MM    0x05	/* maint mode zephtr to menlo */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* store the LILP AL_PA position map into */
 	struct ulp_bde64 lilpBde64;
 #define LPFC_ALPA_MAP_SIZE	128
@@ -2531,6 +3578,13 @@ struct lpfc_mbx_read_top {
 #define LPFC_LINK_SPEED_8GHZ	0x20
 #define LPFC_LINK_SPEED_10GHZ	0x40
 #define LPFC_LINK_SPEED_16GHZ	0x80
+<<<<<<< HEAD
+=======
+#define LPFC_LINK_SPEED_32GHZ	0x90
+#define LPFC_LINK_SPEED_64GHZ	0xA0
+#define LPFC_LINK_SPEED_128GHZ	0xB0
+#define LPFC_LINK_SPEED_256GHZ	0xC0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Structure for MB Command CLEAR_LA (22) */
@@ -2826,8 +3880,12 @@ typedef struct {
 #endif
 
 #ifdef __BIG_ENDIAN_BITFIELD
+<<<<<<< HEAD
 	uint32_t rsvd1     : 19;  /* Reserved                             */
 	uint32_t cdss      :  1;  /* Configure Data Security SLI          */
+=======
+	uint32_t rsvd1     : 20;  /* Reserved                             */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t casabt    :  1;  /* Configure async abts status notice   */
 	uint32_t rsvd2     :  2;  /* Reserved                             */
 	uint32_t cbg       :  1;  /* Configure BlockGuard                 */
@@ -2851,12 +3909,19 @@ typedef struct {
 	uint32_t cbg       :  1;  /* Configure BlockGuard                 */
 	uint32_t rsvd2     :  2;  /* Reserved                             */
 	uint32_t casabt    :  1;  /* Configure async abts status notice   */
+<<<<<<< HEAD
 	uint32_t cdss      :  1;  /* Configure Data Security SLI          */
 	uint32_t rsvd1     : 19;  /* Reserved                             */
 #endif
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint32_t rsvd3     : 19;  /* Reserved                             */
 	uint32_t gdss      :  1;  /* Configure Data Security SLI          */
+=======
+	uint32_t rsvd1     : 20;  /* Reserved                             */
+#endif
+#ifdef __BIG_ENDIAN_BITFIELD
+	uint32_t rsvd3     : 20;  /* Reserved                             */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t gasabt    :  1;  /* Grant async abts status notice       */
 	uint32_t rsvd4     :  2;  /* Reserved                             */
 	uint32_t gbg       :  1;  /* Grant BlockGuard                     */
@@ -2880,8 +3945,12 @@ typedef struct {
 	uint32_t gbg       :  1;  /* Grant BlockGuard                     */
 	uint32_t rsvd4     :  2;  /* Reserved                             */
 	uint32_t gasabt    :  1;  /* Grant async abts status notice       */
+<<<<<<< HEAD
 	uint32_t gdss      :  1;  /* Configure Data Security SLI          */
 	uint32_t rsvd3     : 19;  /* Reserved                             */
+=======
+	uint32_t rsvd3     : 20;  /* Reserved                             */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef __BIG_ENDIAN_BITFIELD
@@ -2903,6 +3972,7 @@ typedef struct {
 	uint32_t rsvd6;           /* Reserved                             */
 
 #ifdef __BIG_ENDIAN_BITFIELD
+<<<<<<< HEAD
 	uint32_t fips_rev   : 3;   /* FIPS Spec Revision                   */
 	uint32_t fips_level : 4;   /* FIPS Level                           */
 	uint32_t sec_err    : 9;   /* security crypto error                */
@@ -2912,6 +3982,13 @@ typedef struct {
 	uint32_t sec_err    : 9;   /* security crypto error                */
 	uint32_t fips_level : 4;   /* FIPS Level                           */
 	uint32_t fips_rev   : 3;   /* FIPS Spec Revision                   */
+=======
+	uint32_t rsvd7      : 16;
+	uint32_t max_vpi    : 16;  /* Max number of virt N-Ports           */
+#else	/*  __LITTLE_ENDIAN */
+	uint32_t max_vpi    : 16;  /* Max number of virt N-Ports           */
+	uint32_t rsvd7      : 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 } CONFIG_PORT_VAR;
@@ -2991,7 +4068,11 @@ typedef struct _PCB {
 
 	uint32_t pgpAddrLow;
 	uint32_t pgpAddrHigh;
+<<<<<<< HEAD
 	SLI2_RDSC rdsc[MAX_RINGS];
+=======
+	SLI2_RDSC rdsc[MAX_SLI3_RINGS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } PCB_t;
 
 /* NEW_FEATURE */
@@ -3101,18 +4182,31 @@ struct lpfc_pgp {
 
 struct sli2_desc {
 	uint32_t unused1[16];
+<<<<<<< HEAD
 	struct lpfc_hgp host[MAX_RINGS];
 	struct lpfc_pgp port[MAX_RINGS];
 };
 
 struct sli3_desc {
 	struct lpfc_hgp host[MAX_RINGS];
+=======
+	struct lpfc_hgp host[MAX_SLI3_RINGS];
+	struct lpfc_pgp port[MAX_SLI3_RINGS];
+};
+
+struct sli3_desc {
+	struct lpfc_hgp host[MAX_SLI3_RINGS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t reserved[8];
 	uint32_t hbq_put[16];
 };
 
 struct sli3_pgp {
+<<<<<<< HEAD
 	struct lpfc_pgp port[MAX_RINGS];
+=======
+	struct lpfc_pgp port[MAX_SLI3_RINGS];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t hbq_get[16];
 };
 
@@ -3123,6 +4217,7 @@ union sli_var {
 };
 
 typedef struct {
+<<<<<<< HEAD
 #ifdef __BIG_ENDIAN_BITFIELD
 	uint16_t mbxStatus;
 	uint8_t mbxCommand;
@@ -3136,6 +4231,28 @@ typedef struct {
 	uint8_t mbxCommand;
 	uint16_t mbxStatus;
 #endif
+=======
+	struct_group_tagged(MAILBOX_word0, bits,
+		union {
+			struct {
+#ifdef __BIG_ENDIAN_BITFIELD
+				uint16_t mbxStatus;
+				uint8_t mbxCommand;
+				uint8_t mbxReserved:6;
+				uint8_t mbxHc:1;
+				uint8_t mbxOwner:1;	/* Low order bit first word */
+#else	/*  __LITTLE_ENDIAN_BITFIELD */
+				uint8_t mbxOwner:1;	/* Low order bit first word */
+				uint8_t mbxHc:1;
+				uint8_t mbxReserved:6;
+				uint8_t mbxCommand;
+				uint16_t mbxStatus;
+#endif
+			};
+			u32 word0;
+		};
+	);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	MAILVARIANTS un;
 	union sli_var us;
@@ -3194,7 +4311,11 @@ typedef struct {
 #define IOERR_ILLEGAL_COMMAND         0x06
 #define IOERR_XCHG_DROPPED            0x07
 #define IOERR_ILLEGAL_FIELD           0x08
+<<<<<<< HEAD
 #define IOERR_BAD_CONTINUE            0x09
+=======
+#define IOERR_RPI_SUSPENDED           0x09
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define IOERR_TOO_MANY_BUFFERS        0x0A
 #define IOERR_RCV_BUFFER_WAITING      0x0B
 #define IOERR_NO_CONNECTION           0x0C
@@ -3242,6 +4363,10 @@ typedef struct {
 #define IOERR_SLI_DOWN                0x101  /* ulpStatus  - Driver defined */
 #define IOERR_SLI_BRESET              0x102
 #define IOERR_SLI_ABORTED             0x103
+<<<<<<< HEAD
+=======
+#define IOERR_PARAM_MASK              0x1ff
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } PARM_ERR;
 
 typedef union {
@@ -3374,6 +4499,12 @@ typedef struct {
 	WORD5 w5;		/* Header control/status word */
 } XMT_SEQ_FIELDS64;
 
+<<<<<<< HEAD
+=======
+/* This word is remote ports D_ID for XMIT_ELS_RSP64 */
+#define xmit_els_remoteID xrsqRo
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* IOCB Command template for 64 bit RCV_SEQUENCE64 */
 typedef struct {
 	struct ulp_bde64 rcvBde;
@@ -3812,6 +4943,7 @@ lpfc_is_LC_HBA(unsigned short device)
 		return 0;
 }
 
+<<<<<<< HEAD
 /*
  * Determine if an IOCB failed because of a link event or firmware reset.
  */
@@ -3832,4 +4964,6 @@ lpfc_error_lost_link(IOCB_t *iocbp)
 #define SETVAR_MLOMNT 0x103107
 #define SETVAR_MLORST 0x103007
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BPL_ALIGN_SZ 8 /* 8 byte alignment for bpl and mbufs */

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * udbg interface to hvc_console.c
  *
  * (C) Copyright David Gibson, IBM Corporation 2008.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/console.h>
@@ -30,11 +37,19 @@
 
 #include "hvc_console.h"
 
+<<<<<<< HEAD
 struct hvc_struct *hvc_udbg_dev;
 
 static int hvc_udbg_put(uint32_t vtermno, const char *buf, int count)
 {
 	int i;
+=======
+static struct hvc_struct *hvc_udbg_dev;
+
+static ssize_t hvc_udbg_put(uint32_t vtermno, const u8 *buf, size_t count)
+{
+	size_t i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < count && udbg_putc; i++)
 		udbg_putc(buf[i]);
@@ -42,9 +57,16 @@ static int hvc_udbg_put(uint32_t vtermno, const char *buf, int count)
 	return i;
 }
 
+<<<<<<< HEAD
 static int hvc_udbg_get(uint32_t vtermno, char *buf, int count)
 {
 	int i, c;
+=======
+static ssize_t hvc_udbg_get(uint32_t vtermno, u8 *buf, size_t count)
+{
+	size_t i;
+	int c;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!udbg_getc_poll)
 		return 0;
@@ -80,6 +102,7 @@ static int __init hvc_udbg_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 module_init(hvc_udbg_init);
 
 static void __exit hvc_udbg_exit(void)
@@ -88,6 +111,9 @@ static void __exit hvc_udbg_exit(void)
 		hvc_remove(hvc_udbg_dev);
 }
 module_exit(hvc_udbg_exit);
+=======
+device_initcall(hvc_udbg_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init hvc_udbg_console_init(void)
 {

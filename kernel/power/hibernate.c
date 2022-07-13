@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * kernel/power/hibernate.c - Hibernation (a.k.a suspend-to-disk) support.
  *
@@ -5,6 +9,7 @@
  * Copyright (c) 2003 Open Source Development Lab
  * Copyright (c) 2004 Pavel Machek <pavel@ucw.cz>
  * Copyright (c) 2009 Rafael J. Wysocki, Novell Inc.
+<<<<<<< HEAD
  *
  * This file is released under the GPLv2.
  */
@@ -12,6 +17,16 @@
 #include <linux/export.h>
 #include <linux/suspend.h>
 #include <linux/syscalls.h>
+=======
+ * Copyright (C) 2012 Bojan Smojver <bojan@rexursive.com>
+ */
+
+#define pr_fmt(fmt) "PM: hibernation: " fmt
+
+#include <linux/blkdev.h>
+#include <linux/export.h>
+#include <linux/suspend.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/reboot.h>
 #include <linux/string.h>
 #include <linux/device.h>
@@ -20,30 +35,68 @@
 #include <linux/fs.h>
 #include <linux/mount.h>
 #include <linux/pm.h>
+<<<<<<< HEAD
+=======
+#include <linux/nmi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/console.h>
 #include <linux/cpu.h>
 #include <linux/freezer.h>
 #include <linux/gfp.h>
 #include <linux/syscore_ops.h>
+<<<<<<< HEAD
 #include <scsi/scsi_scan.h>
+=======
+#include <linux/ctype.h>
+#include <linux/ktime.h>
+#include <linux/security.h>
+#include <linux/secretmem.h>
+#include <trace/events/power.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "power.h"
 
 
 static int nocompress;
 static int noresume;
+<<<<<<< HEAD
 static int resume_wait;
 static int resume_delay;
 static char resume_file[256] = CONFIG_PM_STD_PARTITION;
 dev_t swsusp_resume_device;
 sector_t swsusp_resume_block;
 int in_suspend __nosavedata;
+=======
+static int nohibernate;
+static int resume_wait;
+static unsigned int resume_delay;
+static char resume_file[256] = CONFIG_PM_STD_PARTITION;
+dev_t swsusp_resume_device;
+sector_t swsusp_resume_block;
+__visible int in_suspend __nosavedata;
+
+static char hibernate_compressor[CRYPTO_MAX_ALG_NAME] = CONFIG_HIBERNATION_DEF_COMP;
+
+/*
+ * Compression/decompression algorithm to be used while saving/loading
+ * image to/from disk. This would later be used in 'kernel/power/swap.c'
+ * to allocate comp streams.
+ */
+char hib_comp_algo[CRYPTO_MAX_ALG_NAME];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	HIBERNATION_INVALID,
 	HIBERNATION_PLATFORM,
 	HIBERNATION_SHUTDOWN,
 	HIBERNATION_REBOOT,
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SUSPEND
+	HIBERNATION_SUSPEND,
+#endif
+	HIBERNATION_TEST_RESUME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* keep last */
 	__HIBERNATION_AFTER_LAST
 };
@@ -56,27 +109,66 @@ bool freezer_test_done;
 
 static const struct platform_hibernation_ops *hibernation_ops;
 
+<<<<<<< HEAD
+=======
+static atomic_t hibernate_atomic = ATOMIC_INIT(1);
+
+bool hibernate_acquire(void)
+{
+	return atomic_add_unless(&hibernate_atomic, -1, 0);
+}
+
+void hibernate_release(void)
+{
+	atomic_inc(&hibernate_atomic);
+}
+
+bool hibernation_available(void)
+{
+	return nohibernate == 0 &&
+		!security_locked_down(LOCKDOWN_HIBERNATION) &&
+		!secretmem_active() && !cxl_mem_active();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * hibernation_set_ops - Set the global hibernate operations.
  * @ops: Hibernation operations to use in subsequent hibernation transitions.
  */
 void hibernation_set_ops(const struct platform_hibernation_ops *ops)
 {
+<<<<<<< HEAD
+=======
+	unsigned int sleep_flags;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ops && !(ops->begin && ops->end &&  ops->pre_snapshot
 	    && ops->prepare && ops->finish && ops->enter && ops->pre_restore
 	    && ops->restore_cleanup && ops->leave)) {
 		WARN_ON(1);
 		return;
 	}
+<<<<<<< HEAD
 	lock_system_sleep();
+=======
+
+	sleep_flags = lock_system_sleep();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hibernation_ops = ops;
 	if (ops)
 		hibernation_mode = HIBERNATION_PLATFORM;
 	else if (hibernation_mode == HIBERNATION_PLATFORM)
 		hibernation_mode = HIBERNATION_SHUTDOWN;
 
+<<<<<<< HEAD
 	unlock_system_sleep();
 }
+=======
+	unlock_system_sleep(sleep_flags);
+}
+EXPORT_SYMBOL_GPL(hibernation_set_ops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool entering_platform_hibernation;
 
@@ -89,7 +181,11 @@ EXPORT_SYMBOL(system_entering_hibernation);
 #ifdef CONFIG_PM_DEBUG
 static void hibernation_debug_sleep(void)
 {
+<<<<<<< HEAD
 	printk(KERN_INFO "hibernation debug: Waiting for 5 seconds.\n");
+=======
+	pr_info("debug: Waiting for 5 seconds.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mdelay(5000);
 }
 
@@ -112,7 +208,11 @@ static int hibernation_test(int level) { return 0; }
 static int platform_begin(int platform_mode)
 {
 	return (platform_mode && hibernation_ops) ?
+<<<<<<< HEAD
 		hibernation_ops->begin() : 0;
+=======
+		hibernation_ops->begin(PMSG_FREEZE) : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -219,6 +319,7 @@ static void platform_recover(int platform_mode)
  * @nr_pages: Number of memory pages processed between @start and @stop.
  * @msg: Additional diagnostic message to print.
  */
+<<<<<<< HEAD
 void swsusp_show_speed(struct timeval *start, struct timeval *stop,
 			unsigned nr_pages, char *msg)
 {
@@ -229,15 +330,39 @@ void swsusp_show_speed(struct timeval *start, struct timeval *stop,
 
 	elapsed_centisecs64 = timeval_to_ns(stop) - timeval_to_ns(start);
 	do_div(elapsed_centisecs64, NSEC_PER_SEC / 100);
+=======
+void swsusp_show_speed(ktime_t start, ktime_t stop,
+		      unsigned nr_pages, char *msg)
+{
+	ktime_t diff;
+	u64 elapsed_centisecs64;
+	unsigned int centisecs;
+	unsigned int k;
+	unsigned int kps;
+
+	diff = ktime_sub(stop, start);
+	elapsed_centisecs64 = ktime_divns(diff, 10*NSEC_PER_MSEC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	centisecs = elapsed_centisecs64;
 	if (centisecs == 0)
 		centisecs = 1;	/* avoid div-by-zero */
 	k = nr_pages * (PAGE_SIZE / 1024);
 	kps = (k * 100) / centisecs;
+<<<<<<< HEAD
 	printk(KERN_INFO "PM: %s %d kbytes in %d.%02d seconds (%d.%02d MB/s)\n",
 			msg, k,
 			centisecs / 100, centisecs % 100,
 			kps / 1000, (kps % 1000) / 10);
+=======
+	pr_info("%s %u kbytes in %u.%02u seconds (%u.%02u MB/s)\n",
+		msg, k, centisecs / 100, centisecs % 100, kps / 1000,
+		(kps % 1000) / 10);
+}
+
+__weak int arch_resume_nosmt(void)
+{
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -255,8 +380,12 @@ static int create_image(int platform_mode)
 
 	error = dpm_suspend_end(PMSG_FREEZE);
 	if (error) {
+<<<<<<< HEAD
 		printk(KERN_ERR "PM: Some devices failed to power down, "
 			"aborting hibernation\n");
+=======
+		pr_err("Some devices failed to power down, aborting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return error;
 	}
 
@@ -264,16 +393,28 @@ static int create_image(int platform_mode)
 	if (error || hibernation_test(TEST_PLATFORM))
 		goto Platform_finish;
 
+<<<<<<< HEAD
 	error = disable_nonboot_cpus();
+=======
+	error = pm_sleep_disable_secondary_cpus();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error || hibernation_test(TEST_CPUS))
 		goto Enable_cpus;
 
 	local_irq_disable();
 
+<<<<<<< HEAD
 	error = syscore_suspend();
 	if (error) {
 		printk(KERN_ERR "PM: Some system devices failed to power down, "
 			"aborting hibernation\n");
+=======
+	system_state = SYSTEM_SUSPEND;
+
+	error = syscore_suspend();
+	if (error) {
+		pr_err("Some system devices failed to power down, aborting\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto Enable_irqs;
 	}
 
@@ -282,6 +423,7 @@ static int create_image(int platform_mode)
 
 	in_suspend = 1;
 	save_processor_state();
+<<<<<<< HEAD
 	error = swsusp_arch_suspend();
 	if (error)
 		printk(KERN_ERR "PM: Error %d creating hibernation image\n",
@@ -293,14 +435,43 @@ static int create_image(int platform_mode)
 		platform_leave(platform_mode);
 	}
 
+=======
+	trace_suspend_resume(TPS("machine_suspend"), PM_EVENT_HIBERNATE, true);
+	error = swsusp_arch_suspend();
+	/* Restore control flow magically appears here */
+	restore_processor_state();
+	trace_suspend_resume(TPS("machine_suspend"), PM_EVENT_HIBERNATE, false);
+	if (error)
+		pr_err("Error %d creating image\n", error);
+
+	if (!in_suspend) {
+		events_check_enabled = false;
+		clear_or_poison_free_pages();
+	}
+
+	platform_leave(platform_mode);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  Power_up:
 	syscore_resume();
 
  Enable_irqs:
+<<<<<<< HEAD
 	local_irq_enable();
 
  Enable_cpus:
 	enable_nonboot_cpus();
+=======
+	system_state = SYSTEM_RUNNING;
+	local_irq_enable();
+
+ Enable_cpus:
+	pm_sleep_enable_secondary_cpus();
+
+	/* Allow architectures to do nosmt-specific post-resume dances */
+	if (!in_suspend)
+		error = arch_resume_nosmt();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  Platform_finish:
 	platform_finish(platform_mode);
@@ -315,13 +486,21 @@ static int create_image(int platform_mode)
  * hibernation_snapshot - Quiesce devices and create a hibernation image.
  * @platform_mode: If set, use platform driver to prepare for the transition.
  *
+<<<<<<< HEAD
  * This routine must be called with pm_mutex held.
+=======
+ * This routine must be called with system_transition_mutex held.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int hibernation_snapshot(int platform_mode)
 {
 	pm_message_t msg;
 	int error;
 
+<<<<<<< HEAD
+=======
+	pm_suspend_clear_flags();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = platform_begin(platform_mode);
 	if (error)
 		goto Close;
@@ -352,7 +531,10 @@ int hibernation_snapshot(int platform_mode)
 	}
 
 	suspend_console();
+<<<<<<< HEAD
 	ftrace_stop();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pm_restrict_gfp_mask();
 
 	error = dpm_suspend(PMSG_FREEZE);
@@ -378,7 +560,10 @@ int hibernation_snapshot(int platform_mode)
 	if (error || !in_suspend)
 		pm_restore_gfp_mask();
 
+<<<<<<< HEAD
 	ftrace_start();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	resume_console();
 	dpm_complete(msg);
 
@@ -393,6 +578,14 @@ int hibernation_snapshot(int platform_mode)
 	goto Close;
 }
 
+<<<<<<< HEAD
+=======
+int __weak hibernate_resume_nonboot_cpu_disable(void)
+{
+	return suspend_disable_secondary_cpus();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * resume_target_kernel - Restore system state from a hibernation image.
  * @platform_mode: Whether or not to use the platform driver.
@@ -408,8 +601,12 @@ static int resume_target_kernel(bool platform_mode)
 
 	error = dpm_suspend_end(PMSG_QUIESCE);
 	if (error) {
+<<<<<<< HEAD
 		printk(KERN_ERR "PM: Some devices failed to power down, "
 			"aborting resume\n");
+=======
+		pr_err("Some devices failed to power down, aborting resume\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return error;
 	}
 
@@ -417,11 +614,21 @@ static int resume_target_kernel(bool platform_mode)
 	if (error)
 		goto Cleanup;
 
+<<<<<<< HEAD
 	error = disable_nonboot_cpus();
+=======
+	cpuidle_pause();
+
+	error = hibernate_resume_nonboot_cpu_disable();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto Enable_cpus;
 
 	local_irq_disable();
+<<<<<<< HEAD
+=======
+	system_state = SYSTEM_SUSPEND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	error = syscore_suspend();
 	if (error)
@@ -455,10 +662,18 @@ static int resume_target_kernel(bool platform_mode)
 	syscore_resume();
 
  Enable_irqs:
+<<<<<<< HEAD
 	local_irq_enable();
 
  Enable_cpus:
 	enable_nonboot_cpus();
+=======
+	system_state = SYSTEM_RUNNING;
+	local_irq_enable();
+
+ Enable_cpus:
+	pm_sleep_enable_secondary_cpus();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  Cleanup:
 	platform_restore_cleanup(platform_mode);
@@ -472,8 +687,14 @@ static int resume_target_kernel(bool platform_mode)
  * hibernation_restore - Quiesce devices and restore from a hibernation image.
  * @platform_mode: If set, use platform driver to prepare for the transition.
  *
+<<<<<<< HEAD
  * This routine must be called with pm_mutex held.  If it is successful, control
  * reappears in the restored target kernel in hibernation_snapshot().
+=======
+ * This routine must be called with system_transition_mutex held.  If it is
+ * successful, control reappears in the restored target kernel in
+ * hibernation_snapshot().
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int hibernation_restore(int platform_mode)
 {
@@ -481,7 +702,10 @@ int hibernation_restore(int platform_mode)
 
 	pm_prepare_console();
 	suspend_console();
+<<<<<<< HEAD
 	ftrace_stop();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pm_restrict_gfp_mask();
 	error = dpm_suspend_start(PMSG_QUIESCE);
 	if (!error) {
@@ -495,7 +719,10 @@ int hibernation_restore(int platform_mode)
 	}
 	dpm_resume_end(PMSG_RECOVER);
 	pm_restore_gfp_mask();
+<<<<<<< HEAD
 	ftrace_start();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	resume_console();
 	pm_restore_console();
 	return error;
@@ -516,13 +743,20 @@ int hibernation_platform_enter(void)
 	 * hibernation_ops->finish() before saving the image, so we should let
 	 * the firmware know that we're going to enter the sleep state after all
 	 */
+<<<<<<< HEAD
 	error = hibernation_ops->begin();
+=======
+	error = hibernation_ops->begin(PMSG_HIBERNATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error)
 		goto Close;
 
 	entering_platform_hibernation = true;
 	suspend_console();
+<<<<<<< HEAD
 	ftrace_stop();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	error = dpm_suspend_start(PMSG_HIBERNATE);
 	if (error) {
 		if (hibernation_ops->recover)
@@ -538,11 +772,20 @@ int hibernation_platform_enter(void)
 	if (error)
 		goto Platform_finish;
 
+<<<<<<< HEAD
 	error = disable_nonboot_cpus();
 	if (error)
 		goto Platform_finish;
 
 	local_irq_disable();
+=======
+	error = pm_sleep_disable_secondary_cpus();
+	if (error)
+		goto Enable_cpus;
+
+	local_irq_disable();
+	system_state = SYSTEM_SUSPEND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	syscore_suspend();
 	if (pm_wakeup_pending()) {
 		error = -EAGAIN;
@@ -555,8 +798,16 @@ int hibernation_platform_enter(void)
 
  Power_up:
 	syscore_resume();
+<<<<<<< HEAD
 	local_irq_enable();
 	enable_nonboot_cpus();
+=======
+	system_state = SYSTEM_RUNNING;
+	local_irq_enable();
+
+ Enable_cpus:
+	pm_sleep_enable_secondary_cpus();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  Platform_finish:
 	hibernation_ops->finish();
@@ -566,7 +817,10 @@ int hibernation_platform_enter(void)
  Resume_devices:
 	entering_platform_hibernation = false;
 	dpm_resume_end(PMSG_RESTORE);
+<<<<<<< HEAD
 	ftrace_start();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	resume_console();
 
  Close:
@@ -584,14 +838,51 @@ int hibernation_platform_enter(void)
  */
 static void power_down(void)
 {
+<<<<<<< HEAD
+=======
+	int error;
+
+#ifdef CONFIG_SUSPEND
+	if (hibernation_mode == HIBERNATION_SUSPEND) {
+		error = suspend_devices_and_enter(mem_sleep_current);
+		if (error) {
+			hibernation_mode = hibernation_ops ?
+						HIBERNATION_PLATFORM :
+						HIBERNATION_SHUTDOWN;
+		} else {
+			/* Restore swap signature. */
+			error = swsusp_unmark();
+			if (error)
+				pr_err("Swap will be unusable! Try swapon -a.\n");
+
+			return;
+		}
+	}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (hibernation_mode) {
 	case HIBERNATION_REBOOT:
 		kernel_restart(NULL);
 		break;
 	case HIBERNATION_PLATFORM:
+<<<<<<< HEAD
 		hibernation_platform_enter();
 	case HIBERNATION_SHUTDOWN:
 		kernel_power_off();
+=======
+		error = hibernation_platform_enter();
+		if (error == -EAGAIN || error == -EBUSY) {
+			swsusp_unmark();
+			events_check_enabled = false;
+			pr_info("Wakeup event detected during hibernation, rolling back.\n");
+			return;
+		}
+		fallthrough;
+	case HIBERNATION_SHUTDOWN:
+		if (kernel_can_power_off())
+			kernel_power_off();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	kernel_halt();
@@ -599,24 +890,90 @@ static void power_down(void)
 	 * Valid image is on the disk, if we continue we risk serious data
 	 * corruption after resume.
 	 */
+<<<<<<< HEAD
 	printk(KERN_CRIT "PM: Please power down manually\n");
 	while(1);
 }
 
+=======
+	pr_crit("Power down manually\n");
+	while (1)
+		cpu_relax();
+}
+
+static int load_image_and_restore(void)
+{
+	int error;
+	unsigned int flags;
+
+	pm_pr_dbg("Loading hibernation image.\n");
+
+	lock_device_hotplug();
+	error = create_basic_memory_bitmaps();
+	if (error) {
+		swsusp_close();
+		goto Unlock;
+	}
+
+	error = swsusp_read(&flags);
+	swsusp_close();
+	if (!error)
+		error = hibernation_restore(flags & SF_PLATFORM_MODE);
+
+	pr_err("Failed to load image, recovering.\n");
+	swsusp_free();
+	free_basic_memory_bitmaps();
+ Unlock:
+	unlock_device_hotplug();
+
+	return error;
+}
+
+#define COMPRESSION_ALGO_LZO "lzo"
+#define COMPRESSION_ALGO_LZ4 "lz4"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * hibernate - Carry out system hibernation, including saving the image.
  */
 int hibernate(void)
 {
+<<<<<<< HEAD
 	int error;
 
 	lock_system_sleep();
 	/* The snapshot device should not be opened while we're running */
 	if (!atomic_add_unless(&snapshot_device_available, -1, 0)) {
+=======
+	bool snapshot_test = false;
+	unsigned int sleep_flags;
+	int error;
+
+	if (!hibernation_available()) {
+		pm_pr_dbg("Hibernation not available.\n");
+		return -EPERM;
+	}
+
+	/*
+	 * Query for the compression algorithm support if compression is enabled.
+	 */
+	if (!nocompress) {
+		strscpy(hib_comp_algo, hibernate_compressor, sizeof(hib_comp_algo));
+		if (crypto_has_comp(hib_comp_algo, 0, 0) != 1) {
+			pr_err("%s compression is not available\n", hib_comp_algo);
+			return -EOPNOTSUPP;
+		}
+	}
+
+	sleep_flags = lock_system_sleep();
+	/* The snapshot device should not be opened while we're running */
+	if (!hibernate_acquire()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		error = -EBUSY;
 		goto Unlock;
 	}
 
+<<<<<<< HEAD
 	pm_prepare_console();
 	error = pm_notifier_call_chain(PM_HIBERNATION_PREPARE);
 	if (error)
@@ -638,12 +995,36 @@ int hibernate(void)
 	error = hibernation_snapshot(hibernation_mode == HIBERNATION_PLATFORM);
 	if (error || freezer_test_done)
 		goto Thaw;
+=======
+	pr_info("hibernation entry\n");
+	pm_prepare_console();
+	error = pm_notifier_call_chain_robust(PM_HIBERNATION_PREPARE, PM_POST_HIBERNATION);
+	if (error)
+		goto Restore;
+
+	ksys_sync_helper();
+
+	error = freeze_processes();
+	if (error)
+		goto Exit;
+
+	lock_device_hotplug();
+	/* Allocate memory management structures */
+	error = create_basic_memory_bitmaps();
+	if (error)
+		goto Thaw;
+
+	error = hibernation_snapshot(hibernation_mode == HIBERNATION_PLATFORM);
+	if (error || freezer_test_done)
+		goto Free_bitmaps;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (in_suspend) {
 		unsigned int flags = 0;
 
 		if (hibernation_mode == HIBERNATION_PLATFORM)
 			flags |= SF_PLATFORM_MODE;
+<<<<<<< HEAD
 		if (nocompress)
 			flags |= SF_NOCOMPRESS_MODE;
 		else
@@ -661,10 +1042,56 @@ int hibernate(void)
 	}
 
  Thaw:
+=======
+		if (nocompress) {
+			flags |= SF_NOCOMPRESS_MODE;
+		} else {
+		        flags |= SF_CRC32_MODE;
+
+			/*
+			 * By default, LZO compression is enabled. Use SF_COMPRESSION_ALG_LZ4
+			 * to override this behaviour and use LZ4.
+			 *
+			 * Refer kernel/power/power.h for more details
+			 */
+
+			if (!strcmp(hib_comp_algo, COMPRESSION_ALGO_LZ4))
+				flags |= SF_COMPRESSION_ALG_LZ4;
+			else
+				flags |= SF_COMPRESSION_ALG_LZO;
+		}
+
+		pm_pr_dbg("Writing hibernation image.\n");
+		error = swsusp_write(flags);
+		swsusp_free();
+		if (!error) {
+			if (hibernation_mode == HIBERNATION_TEST_RESUME)
+				snapshot_test = true;
+			else
+				power_down();
+		}
+		in_suspend = 0;
+		pm_restore_gfp_mask();
+	} else {
+		pm_pr_dbg("Hibernation image restored successfully.\n");
+	}
+
+ Free_bitmaps:
+	free_basic_memory_bitmaps();
+ Thaw:
+	unlock_device_hotplug();
+	if (snapshot_test) {
+		pm_pr_dbg("Checking hibernation image\n");
+		error = swsusp_check(false);
+		if (!error)
+			error = load_image_and_restore();
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	thaw_processes();
 
 	/* Don't bother checking whether freezer_test_done is true */
 	freezer_test_done = false;
+<<<<<<< HEAD
 
  Free_bitmaps:
 	free_basic_memory_bitmaps();
@@ -680,6 +1107,223 @@ int hibernate(void)
 
 /**
  * software_resume - Resume from a saved hibernation image.
+=======
+ Exit:
+	pm_notifier_call_chain(PM_POST_HIBERNATION);
+ Restore:
+	pm_restore_console();
+	hibernate_release();
+ Unlock:
+	unlock_system_sleep(sleep_flags);
+	pr_info("hibernation exit\n");
+
+	return error;
+}
+
+/**
+ * hibernate_quiet_exec - Execute a function with all devices frozen.
+ * @func: Function to execute.
+ * @data: Data pointer to pass to @func.
+ *
+ * Return the @func return value or an error code if it cannot be executed.
+ */
+int hibernate_quiet_exec(int (*func)(void *data), void *data)
+{
+	unsigned int sleep_flags;
+	int error;
+
+	sleep_flags = lock_system_sleep();
+
+	if (!hibernate_acquire()) {
+		error = -EBUSY;
+		goto unlock;
+	}
+
+	pm_prepare_console();
+
+	error = pm_notifier_call_chain_robust(PM_HIBERNATION_PREPARE, PM_POST_HIBERNATION);
+	if (error)
+		goto restore;
+
+	error = freeze_processes();
+	if (error)
+		goto exit;
+
+	lock_device_hotplug();
+
+	pm_suspend_clear_flags();
+
+	error = platform_begin(true);
+	if (error)
+		goto thaw;
+
+	error = freeze_kernel_threads();
+	if (error)
+		goto thaw;
+
+	error = dpm_prepare(PMSG_FREEZE);
+	if (error)
+		goto dpm_complete;
+
+	suspend_console();
+
+	error = dpm_suspend(PMSG_FREEZE);
+	if (error)
+		goto dpm_resume;
+
+	error = dpm_suspend_end(PMSG_FREEZE);
+	if (error)
+		goto dpm_resume;
+
+	error = platform_pre_snapshot(true);
+	if (error)
+		goto skip;
+
+	error = func(data);
+
+skip:
+	platform_finish(true);
+
+	dpm_resume_start(PMSG_THAW);
+
+dpm_resume:
+	dpm_resume(PMSG_THAW);
+
+	resume_console();
+
+dpm_complete:
+	dpm_complete(PMSG_THAW);
+
+	thaw_kernel_threads();
+
+thaw:
+	platform_end(true);
+
+	unlock_device_hotplug();
+
+	thaw_processes();
+
+exit:
+	pm_notifier_call_chain(PM_POST_HIBERNATION);
+
+restore:
+	pm_restore_console();
+
+	hibernate_release();
+
+unlock:
+	unlock_system_sleep(sleep_flags);
+
+	return error;
+}
+EXPORT_SYMBOL_GPL(hibernate_quiet_exec);
+
+static int __init find_resume_device(void)
+{
+	if (!strlen(resume_file))
+		return -ENOENT;
+
+	pm_pr_dbg("Checking hibernation image partition %s\n", resume_file);
+
+	if (resume_delay) {
+		pr_info("Waiting %dsec before reading resume device ...\n",
+			resume_delay);
+		ssleep(resume_delay);
+	}
+
+	/* Check if the device is there */
+	if (!early_lookup_bdev(resume_file, &swsusp_resume_device))
+		return 0;
+
+	/*
+	 * Some device discovery might still be in progress; we need to wait for
+	 * this to finish.
+	 */
+	wait_for_device_probe();
+	if (resume_wait) {
+		while (early_lookup_bdev(resume_file, &swsusp_resume_device))
+			msleep(10);
+		async_synchronize_full();
+	}
+
+	return early_lookup_bdev(resume_file, &swsusp_resume_device);
+}
+
+static int software_resume(void)
+{
+	int error;
+
+	pm_pr_dbg("Hibernation image partition %d:%d present\n",
+		MAJOR(swsusp_resume_device), MINOR(swsusp_resume_device));
+
+	pm_pr_dbg("Looking for hibernation image.\n");
+
+	mutex_lock(&system_transition_mutex);
+	error = swsusp_check(true);
+	if (error)
+		goto Unlock;
+
+	/*
+	 * Check if the hibernation image is compressed. If so, query for
+	 * the algorithm support.
+	 */
+	if (!(swsusp_header_flags & SF_NOCOMPRESS_MODE)) {
+		if (swsusp_header_flags & SF_COMPRESSION_ALG_LZ4)
+			strscpy(hib_comp_algo, COMPRESSION_ALGO_LZ4, sizeof(hib_comp_algo));
+		else
+			strscpy(hib_comp_algo, COMPRESSION_ALGO_LZO, sizeof(hib_comp_algo));
+		if (crypto_has_comp(hib_comp_algo, 0, 0) != 1) {
+			pr_err("%s compression is not available\n", hib_comp_algo);
+			error = -EOPNOTSUPP;
+			goto Unlock;
+		}
+	}
+
+	/* The snapshot device should not be opened while we're running */
+	if (!hibernate_acquire()) {
+		error = -EBUSY;
+		swsusp_close();
+		goto Unlock;
+	}
+
+	pr_info("resume from hibernation\n");
+	pm_prepare_console();
+	error = pm_notifier_call_chain_robust(PM_RESTORE_PREPARE, PM_POST_RESTORE);
+	if (error)
+		goto Restore;
+
+	pm_pr_dbg("Preparing processes for hibernation restore.\n");
+	error = freeze_processes();
+	if (error)
+		goto Close_Finish;
+
+	error = freeze_kernel_threads();
+	if (error) {
+		thaw_processes();
+		goto Close_Finish;
+	}
+
+	error = load_image_and_restore();
+	thaw_processes();
+ Finish:
+	pm_notifier_call_chain(PM_POST_RESTORE);
+ Restore:
+	pm_restore_console();
+	pr_info("resume failed (%d)\n", error);
+	hibernate_release();
+	/* For success case, the suspend path will release the lock */
+ Unlock:
+	mutex_unlock(&system_transition_mutex);
+	pm_pr_dbg("Hibernation image not present or could not be loaded.\n");
+	return error;
+ Close_Finish:
+	swsusp_close();
+	goto Finish;
+}
+
+/**
+ * software_resume_initcall - Resume from a saved hibernation image.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This routine is called as a late initcall, when all devices have been
  * discovered and initialized already.
@@ -689,6 +1333,7 @@ int hibernate(void)
  * contents of memory is restored from the saved image.
  *
  * If this is successful, control reappears in the restored target kernel in
+<<<<<<< HEAD
  * hibernation_snaphot() which returns to hibernate().  Otherwise, the routine
  * attempts to recover gracefully and make the kernel return to the normal mode
  * of operation.
@@ -820,12 +1465,43 @@ close_finish:
 }
 
 late_initcall(software_resume);
+=======
+ * hibernation_snapshot() which returns to hibernate().  Otherwise, the routine
+ * attempts to recover gracefully and make the kernel return to the normal mode
+ * of operation.
+ */
+static int __init software_resume_initcall(void)
+{
+	/*
+	 * If the user said "noresume".. bail out early.
+	 */
+	if (noresume || !hibernation_available())
+		return 0;
+
+	if (!swsusp_resume_device) {
+		int error = find_resume_device();
+
+		if (error)
+			return error;
+	}
+
+	return software_resume();
+}
+late_initcall_sync(software_resume_initcall);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 static const char * const hibernation_modes[] = {
 	[HIBERNATION_PLATFORM]	= "platform",
 	[HIBERNATION_SHUTDOWN]	= "shutdown",
 	[HIBERNATION_REBOOT]	= "reboot",
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SUSPEND
+	[HIBERNATION_SUSPEND]	= "suspend",
+#endif
+	[HIBERNATION_TEST_RESUME]	= "test_resume",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -860,12 +1536,25 @@ static ssize_t disk_show(struct kobject *kobj, struct kobj_attribute *attr,
 	int i;
 	char *start = buf;
 
+<<<<<<< HEAD
+=======
+	if (!hibernation_available())
+		return sprintf(buf, "[disabled]\n");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = HIBERNATION_FIRST; i <= HIBERNATION_MAX; i++) {
 		if (!hibernation_modes[i])
 			continue;
 		switch (i) {
 		case HIBERNATION_SHUTDOWN:
 		case HIBERNATION_REBOOT:
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SUSPEND
+		case HIBERNATION_SUSPEND:
+#endif
+		case HIBERNATION_TEST_RESUME:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case HIBERNATION_PLATFORM:
 			if (hibernation_ops)
@@ -885,16 +1574,32 @@ static ssize_t disk_show(struct kobject *kobj, struct kobj_attribute *attr,
 static ssize_t disk_store(struct kobject *kobj, struct kobj_attribute *attr,
 			  const char *buf, size_t n)
 {
+<<<<<<< HEAD
 	int error = 0;
 	int i;
 	int len;
 	char *p;
 	int mode = HIBERNATION_INVALID;
+=======
+	int mode = HIBERNATION_INVALID;
+	unsigned int sleep_flags;
+	int error = 0;
+	int len;
+	char *p;
+	int i;
+
+	if (!hibernation_available())
+		return -EPERM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p = memchr(buf, '\n', n);
 	len = p ? p - buf : n;
 
+<<<<<<< HEAD
 	lock_system_sleep();
+=======
+	sleep_flags = lock_system_sleep();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = HIBERNATION_FIRST; i <= HIBERNATION_MAX; i++) {
 		if (len == strlen(hibernation_modes[i])
 		    && !strncmp(buf, hibernation_modes[i], len)) {
@@ -906,6 +1611,13 @@ static ssize_t disk_store(struct kobject *kobj, struct kobj_attribute *attr,
 		switch (mode) {
 		case HIBERNATION_SHUTDOWN:
 		case HIBERNATION_REBOOT:
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_SUSPEND
+		case HIBERNATION_SUSPEND:
+#endif
+		case HIBERNATION_TEST_RESUME:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hibernation_mode = mode;
 			break;
 		case HIBERNATION_PLATFORM:
@@ -918,9 +1630,15 @@ static ssize_t disk_store(struct kobject *kobj, struct kobj_attribute *attr,
 		error = -EINVAL;
 
 	if (!error)
+<<<<<<< HEAD
 		pr_debug("PM: Hibernation mode set to '%s'\n",
 			 hibernation_modes[mode]);
 	unlock_system_sleep();
+=======
+		pm_pr_dbg("Hibernation mode set to '%s'\n",
+			       hibernation_modes[mode]);
+	unlock_system_sleep(sleep_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return error ? error : n;
 }
 
@@ -929,13 +1647,18 @@ power_attr(disk);
 static ssize_t resume_show(struct kobject *kobj, struct kobj_attribute *attr,
 			   char *buf)
 {
+<<<<<<< HEAD
 	return sprintf(buf,"%d:%d\n", MAJOR(swsusp_resume_device),
+=======
+	return sprintf(buf, "%d:%d\n", MAJOR(swsusp_resume_device),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       MINOR(swsusp_resume_device));
 }
 
 static ssize_t resume_store(struct kobject *kobj, struct kobj_attribute *attr,
 			    const char *buf, size_t n)
 {
+<<<<<<< HEAD
 	unsigned int maj, min;
 	dev_t res;
 	int ret = -EINVAL;
@@ -956,10 +1679,84 @@ static ssize_t resume_store(struct kobject *kobj, struct kobj_attribute *attr,
 	ret = n;
  out:
 	return ret;
+=======
+	unsigned int sleep_flags;
+	int len = n;
+	char *name;
+	dev_t dev;
+	int error;
+
+	if (!hibernation_available())
+		return n;
+
+	if (len && buf[len-1] == '\n')
+		len--;
+	name = kstrndup(buf, len, GFP_KERNEL);
+	if (!name)
+		return -ENOMEM;
+
+	error = lookup_bdev(name, &dev);
+	if (error) {
+		unsigned maj, min, offset;
+		char *p, dummy;
+
+		error = 0;
+		if (sscanf(name, "%u:%u%c", &maj, &min, &dummy) == 2 ||
+		    sscanf(name, "%u:%u:%u:%c", &maj, &min, &offset,
+				&dummy) == 3) {
+			dev = MKDEV(maj, min);
+			if (maj != MAJOR(dev) || min != MINOR(dev))
+				error = -EINVAL;
+		} else {
+			dev = new_decode_dev(simple_strtoul(name, &p, 16));
+			if (*p)
+				error = -EINVAL;
+		}
+	}
+	kfree(name);
+	if (error)
+		return error;
+
+	sleep_flags = lock_system_sleep();
+	swsusp_resume_device = dev;
+	unlock_system_sleep(sleep_flags);
+
+	pm_pr_dbg("Configured hibernation resume from disk to %u\n",
+		  swsusp_resume_device);
+	noresume = 0;
+	software_resume();
+	return n;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 power_attr(resume);
 
+<<<<<<< HEAD
+=======
+static ssize_t resume_offset_show(struct kobject *kobj,
+				  struct kobj_attribute *attr, char *buf)
+{
+	return sprintf(buf, "%llu\n", (unsigned long long)swsusp_resume_block);
+}
+
+static ssize_t resume_offset_store(struct kobject *kobj,
+				   struct kobj_attribute *attr, const char *buf,
+				   size_t n)
+{
+	unsigned long long offset;
+	int rc;
+
+	rc = kstrtoull(buf, 0, &offset);
+	if (rc)
+		return rc;
+	swsusp_resume_block = offset;
+
+	return n;
+}
+
+power_attr(resume_offset);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static ssize_t image_size_show(struct kobject *kobj, struct kobj_attribute *attr,
 			       char *buf)
 {
@@ -1003,8 +1800,14 @@ static ssize_t reserved_size_store(struct kobject *kobj,
 
 power_attr(reserved_size);
 
+<<<<<<< HEAD
 static struct attribute * g[] = {
 	&disk_attr.attr,
+=======
+static struct attribute *g[] = {
+	&disk_attr.attr,
+	&resume_offset_attr.attr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&resume_attr.attr,
 	&image_size_attr.attr,
 	&reserved_size_attr.attr,
@@ -1012,7 +1815,11 @@ static struct attribute * g[] = {
 };
 
 
+<<<<<<< HEAD
 static struct attribute_group attr_group = {
+=======
+static const struct attribute_group attr_group = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = g,
 };
 
@@ -1030,7 +1837,11 @@ static int __init resume_setup(char *str)
 	if (noresume)
 		return 1;
 
+<<<<<<< HEAD
 	strncpy( resume_file, str, 255 );
+=======
+	strncpy(resume_file, str, 255);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -1049,10 +1860,24 @@ static int __init resume_offset_setup(char *str)
 
 static int __init hibernate_setup(char *str)
 {
+<<<<<<< HEAD
 	if (!strncmp(str, "noresume", 8))
 		noresume = 1;
 	else if (!strncmp(str, "nocompress", 10))
 		nocompress = 1;
+=======
+	if (!strncmp(str, "noresume", 8)) {
+		noresume = 1;
+	} else if (!strncmp(str, "nocompress", 10)) {
+		nocompress = 1;
+	} else if (!strncmp(str, "no", 2)) {
+		noresume = 1;
+		nohibernate = 1;
+	} else if (IS_ENABLED(CONFIG_STRICT_KERNEL_RWX)
+		   && !strncmp(str, "protect_image", 13)) {
+		enable_restore_image_protection();
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -1070,13 +1895,85 @@ static int __init resumewait_setup(char *str)
 
 static int __init resumedelay_setup(char *str)
 {
+<<<<<<< HEAD
 	resume_delay = simple_strtoul(str, NULL, 0);
 	return 1;
 }
 
+=======
+	int rc = kstrtouint(str, 0, &resume_delay);
+
+	if (rc)
+		pr_warn("resumedelay: bad option string '%s'\n", str);
+	return 1;
+}
+
+static int __init nohibernate_setup(char *str)
+{
+	noresume = 1;
+	nohibernate = 1;
+	return 1;
+}
+
+static const char * const comp_alg_enabled[] = {
+#if IS_ENABLED(CONFIG_CRYPTO_LZO)
+	COMPRESSION_ALGO_LZO,
+#endif
+#if IS_ENABLED(CONFIG_CRYPTO_LZ4)
+	COMPRESSION_ALGO_LZ4,
+#endif
+};
+
+static int hibernate_compressor_param_set(const char *compressor,
+		const struct kernel_param *kp)
+{
+	unsigned int sleep_flags;
+	int index, ret;
+
+	sleep_flags = lock_system_sleep();
+
+	index = sysfs_match_string(comp_alg_enabled, compressor);
+	if (index >= 0) {
+		ret = param_set_copystring(comp_alg_enabled[index], kp);
+		if (!ret)
+			strscpy(hib_comp_algo, comp_alg_enabled[index],
+				sizeof(hib_comp_algo));
+	} else {
+		ret = index;
+	}
+
+	unlock_system_sleep(sleep_flags);
+
+	if (ret)
+		pr_debug("Cannot set specified compressor %s\n",
+			 compressor);
+
+	return ret;
+}
+
+static const struct kernel_param_ops hibernate_compressor_param_ops = {
+	.set    = hibernate_compressor_param_set,
+	.get    = param_get_string,
+};
+
+static struct kparam_string hibernate_compressor_param_string = {
+	.maxlen = sizeof(hibernate_compressor),
+	.string = hibernate_compressor,
+};
+
+module_param_cb(compressor, &hibernate_compressor_param_ops,
+		&hibernate_compressor_param_string, 0644);
+MODULE_PARM_DESC(compressor,
+		 "Compression algorithm to be used with hibernation");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 __setup("noresume", noresume_setup);
 __setup("resume_offset=", resume_offset_setup);
 __setup("resume=", resume_setup);
 __setup("hibernate=", hibernate_setup);
 __setup("resumewait", resumewait_setup);
 __setup("resumedelay=", resumedelay_setup);
+<<<<<<< HEAD
+=======
+__setup("nohibernate", nohibernate_setup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

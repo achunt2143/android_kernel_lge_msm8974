@@ -11,6 +11,7 @@
 #ifndef _ASM_INST_H
 #define _ASM_INST_H
 
+<<<<<<< HEAD
 /*
  * Major opcodes; before MIPS IV cop1x was called cop3.
  */
@@ -357,6 +358,9 @@ union mips_instruction {
 	struct ma_format ma_format;
 	struct b_format b_format;
 };
+=======
+#include <uapi/asm/inst.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* HACHACHAHCAHC ...  */
 
@@ -410,6 +414,7 @@ union mips_instruction {
 #define I_FR_SFT	21
 #define MIPSInst_FR(x) ((MIPSInst(x) & 0x03e00000) >> I_FR_SFT)
 
+<<<<<<< HEAD
 #define I_FMA_FUNC_SFT	2
 #define MIPSInst_FMA_FUNC(x) ((MIPSInst(x) & 0x0000003c) >> I_FMA_FUNC_SFT)
 
@@ -418,4 +423,26 @@ union mips_instruction {
 
 typedef unsigned int mips_instruction;
 
+=======
+#define I_FMA_FUNC_SFT	3
+#define MIPSInst_FMA_FUNC(x) ((MIPSInst(x) & 0x00000038) >> I_FMA_FUNC_SFT)
+
+#define I_FMA_FFMT_SFT	0
+#define MIPSInst_FMA_FFMT(x) (MIPSInst(x) & 0x00000007)
+
+typedef unsigned int mips_instruction;
+
+/* microMIPS instruction decode structure. Do NOT export!!! */
+struct mm_decoded_insn {
+	mips_instruction insn;
+	mips_instruction next_insn;
+	int pc_inc;
+	int next_pc_inc;
+	int micro_mips_mode;
+};
+
+/* Recode table from 16-bit register notation to 32-bit GPR. Do NOT export!!! */
+extern const int reg16to32[];
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ASM_INST_H */

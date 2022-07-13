@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 config ARM_GIC
 	select IRQ_DOMAIN
 	select MULTI_IRQ_HANDLER
@@ -36,6 +37,15 @@ config SA1111
 config DMABOUNCE
 	bool
 	select ZONE_DMA
+=======
+# SPDX-License-Identifier: GPL-2.0
+config SA1111
+	bool
+	select ZONE_DMA if ARCH_SA1100
+
+config KRAIT_L2_ACCESSORS
+	bool
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config SHARP_LOCOMO
 	bool
@@ -45,6 +55,7 @@ config SHARP_PARAM
 
 config SHARP_SCOOP
 	bool
+<<<<<<< HEAD
 
 config FIQ_GLUE
 	bool
@@ -95,3 +106,5 @@ config FIQ_DEBUGGER_CONSOLE_DEFAULT_ENABLE
 	help
 	  If enabled, this puts the fiq debugger into console mode by default.
 	  Otherwise, the fiq debugger will start out in debug mode.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

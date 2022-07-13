@@ -1,8 +1,15 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST Ericsson SA 2011
  *
  * License Terms: GNU General Public License v2
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (C) ST Ericsson SA 2011
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * STE Ux500 PRCMU API
  */
 #ifndef __MACH_PRCMU_H
@@ -12,6 +19,15 @@
 #include <linux/notifier.h>
 #include <linux/err.h>
 
+<<<<<<< HEAD
+=======
+#include <dt-bindings/mfd/dbx500-prcmu.h> /* For clock identifiers */
+
+/* Offset for the firmware version within the TCPM */
+#define DB8500_PRCMU_FW_VERSION_OFFSET 0xA4
+#define DBX540_PRCMU_FW_VERSION_OFFSET 0xA8
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PRCMU Wakeup defines */
 enum prcmu_wakeup_index {
 	PRCMU_WAKEUP_INDEX_RTC,
@@ -55,6 +71,7 @@ enum prcmu_wakeup_index {
 #define NUM_EPOD_ID		8
 
 /*
+<<<<<<< HEAD
  * DB5500 EPODs
  */
 #define DB5500_EPOD_ID_BASE 0x0100
@@ -66,6 +83,8 @@ enum prcmu_wakeup_index {
 #define DB5500_NUM_EPOD_ID 7
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * state definition for EPOD (power domain)
  * - EPOD_STATE_NO_CHANGE: The EPOD should remain unchanged
  * - EPOD_STATE_OFF: The EPOD is switched off
@@ -80,6 +99,7 @@ enum prcmu_wakeup_index {
 #define EPOD_STATE_ON_CLK_OFF	0x03
 #define EPOD_STATE_ON		0x04
 
+<<<<<<< HEAD
 /* DB5500 CLKOUT IDs */
 enum {
 	DB5500_CLKOUT0 = 0,
@@ -103,6 +123,8 @@ enum {
 	DB5500_CLKOUT_IRDACLK,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * CLKOUT sources
  */
@@ -124,6 +146,7 @@ enum {
 #define PRCMU_CLKSRC_ARMCLKFIX		0x46
 #define PRCMU_CLKSRC_HDMICLK		0x47
 
+<<<<<<< HEAD
 /*
  * Clock identifiers.
  */
@@ -177,6 +200,18 @@ enum prcmu_clock {
 	PRCMU_DSI0ESCCLK,
 	PRCMU_DSI1ESCCLK,
 	PRCMU_DSI2ESCCLK,
+=======
+/**
+ * enum prcmu_wdog_id - PRCMU watchdog IDs
+ * @PRCMU_WDOG_ALL: use all timers
+ * @PRCMU_WDOG_CPU1: use first CPU timer only
+ * @PRCMU_WDOG_CPU2: use second CPU timer conly
+ */
+enum prcmu_wdog_id {
+	PRCMU_WDOG_ALL = 0x00,
+	PRCMU_WDOG_CPU1 = 0x01,
+	PRCMU_WDOG_CPU2 = 0x02,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -247,6 +282,7 @@ enum ddr_pwrst {
 	DDR_PWR_STATE_OFFHIGHLAT    = 0x03
 };
 
+<<<<<<< HEAD
 #include <linux/mfd/db8500-prcmu.h>
 #include <linux/mfd/db5500-prcmu.h>
 
@@ -260,21 +296,70 @@ static inline void __init prcmu_early_init(void)
 		return db5500_prcmu_early_init();
 	else
 		return db8500_prcmu_early_init();
+=======
+#define DB8500_PRCMU_LEGACY_OFFSET		0xDD4
+
+#define PRCMU_FW_PROJECT_U8500		2
+#define PRCMU_FW_PROJECT_U8400		3
+#define PRCMU_FW_PROJECT_U9500		4 /* Customer specific */
+#define PRCMU_FW_PROJECT_U8500_MBB	5
+#define PRCMU_FW_PROJECT_U8500_C1	6
+#define PRCMU_FW_PROJECT_U8500_C2	7
+#define PRCMU_FW_PROJECT_U8500_C3	8
+#define PRCMU_FW_PROJECT_U8500_C4	9
+#define PRCMU_FW_PROJECT_U9500_MBL	10
+#define PRCMU_FW_PROJECT_U8500_SSG1	11 /* Samsung specific */
+#define PRCMU_FW_PROJECT_U8500_MBL2	12 /* Customer specific */
+#define PRCMU_FW_PROJECT_U8520		13
+#define PRCMU_FW_PROJECT_U8420		14
+#define PRCMU_FW_PROJECT_U8500_SSG2	15 /* Samsung specific */
+#define PRCMU_FW_PROJECT_U8420_SYSCLK	17
+#define PRCMU_FW_PROJECT_A9420		20
+/* [32..63] 9540 and derivatives */
+#define PRCMU_FW_PROJECT_U9540		32
+/* [64..95] 8540 and derivatives */
+#define PRCMU_FW_PROJECT_L8540		64
+/* [96..126] 8580 and derivatives */
+#define PRCMU_FW_PROJECT_L8580		96
+
+#define PRCMU_FW_PROJECT_NAME_LEN	20
+struct prcmu_fw_version {
+	u32 project; /* Notice, project shifted with 8 on ux540 */
+	u8 api_version;
+	u8 func_version;
+	u8 errata;
+	char project_name[PRCMU_FW_PROJECT_NAME_LEN];
+};
+
+#include <linux/mfd/db8500-prcmu.h>
+
+#if defined(CONFIG_UX500_SOC_DB8500)
+
+static inline void prcmu_early_init(void)
+{
+	return db8500_prcmu_early_init();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_set_power_state(u8 state, bool keep_ulp_clk,
 		bool keep_ap_pll)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return db5500_prcmu_set_power_state(state, keep_ulp_clk,
 			keep_ap_pll);
 	else
 		return db8500_prcmu_set_power_state(state, keep_ulp_clk,
 			keep_ap_pll);
+=======
+	return db8500_prcmu_set_power_state(state, keep_ulp_clk,
+		keep_ap_pll);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u8 prcmu_get_power_state_result(void)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
@@ -327,22 +412,33 @@ static inline bool prcmu_pending_irq(void)
                 return -EINVAL;
         else
                 return db8500_prcmu_pending_irq();
+=======
+	return db8500_prcmu_get_power_state_result();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_set_epod(u16 epod_id, u8 epod_state)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
 		return db8500_prcmu_set_epod(epod_id, epod_state);
+=======
+	return db8500_prcmu_set_epod(epod_id, epod_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void prcmu_enable_wakeups(u32 wakeups)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		db5500_prcmu_enable_wakeups(wakeups);
 	else
 		db8500_prcmu_enable_wakeups(wakeups);
+=======
+	db8500_prcmu_enable_wakeups(wakeups);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void prcmu_disable_wakeups(void)
@@ -352,18 +448,26 @@ static inline void prcmu_disable_wakeups(void)
 
 static inline void prcmu_config_abb_event_readout(u32 abb_events)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		db5500_prcmu_config_abb_event_readout(abb_events);
 	else
 		db8500_prcmu_config_abb_event_readout(abb_events);
+=======
+	db8500_prcmu_config_abb_event_readout(abb_events);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void prcmu_get_abb_event_buffer(void __iomem **buf)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		db5500_prcmu_get_abb_event_buffer(buf);
 	else
 		db8500_prcmu_get_abb_event_buffer(buf);
+=======
+	db8500_prcmu_get_abb_event_buffer(buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int prcmu_abb_read(u8 slave, u8 reg, u8 *value, u8 size);
@@ -374,16 +478,21 @@ int prcmu_config_clkout(u8 clkout, u8 source, u8 div);
 
 static inline int prcmu_request_clock(u8 clock, bool enable)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return db5500_prcmu_request_clock(clock, enable);
 	else
 		return db8500_prcmu_request_clock(clock, enable);
+=======
+	return db8500_prcmu_request_clock(clock, enable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 unsigned long prcmu_clock_rate(u8 clock);
 long prcmu_round_clock_rate(u8 clock, unsigned long rate);
 int prcmu_set_clock_rate(u8 clock, unsigned long rate);
 
+<<<<<<< HEAD
 static inline int prcmu_set_ddr_opp(u8 opp)
 {
 	if (cpu_is_u5500())
@@ -397,50 +506,81 @@ static inline int prcmu_get_ddr_opp(void)
 		return -EINVAL;
 	else
 		return db8500_prcmu_get_ddr_opp();
+=======
+static inline int prcmu_get_ddr_opp(void)
+{
+	return db8500_prcmu_get_ddr_opp();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_set_arm_opp(u8 opp)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
 		return db8500_prcmu_set_arm_opp(opp);
+=======
+	return db8500_prcmu_set_arm_opp(opp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_get_arm_opp(void)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
 		return db8500_prcmu_get_arm_opp();
+=======
+	return db8500_prcmu_get_arm_opp();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_set_ape_opp(u8 opp)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
 		return db8500_prcmu_set_ape_opp(opp);
+=======
+	return db8500_prcmu_set_ape_opp(opp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_get_ape_opp(void)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
 		return db8500_prcmu_get_ape_opp();
+=======
+	return db8500_prcmu_get_ape_opp();
+}
+
+static inline int prcmu_request_ape_opp_100_voltage(bool enable)
+{
+	return db8500_prcmu_request_ape_opp_100_voltage(enable);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void prcmu_system_reset(u16 reset_code)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return db5500_prcmu_system_reset(reset_code);
 	else
 		return db8500_prcmu_system_reset(reset_code);
+=======
+	return db8500_prcmu_system_reset(reset_code);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u16 prcmu_get_reset_code(void)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return db5500_prcmu_get_reset_code();
 	else
@@ -455,10 +595,21 @@ static inline void prcmu_modem_reset(void)
 		return;
 	else
 		return db8500_prcmu_modem_reset();
+=======
+	return db8500_prcmu_get_reset_code();
+}
+
+int prcmu_ac_wake_req(void);
+void prcmu_ac_sleep_req(void);
+static inline void prcmu_modem_reset(void)
+{
+	return db8500_prcmu_modem_reset();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool prcmu_is_ac_wake_requested(void)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return db5500_prcmu_is_ac_wake_requested();
 	else
@@ -487,106 +638,158 @@ static inline int prcmu_enable_dsipll(void)
 		return db5500_prcmu_enable_dsipll();
 	else
 		return db8500_prcmu_enable_dsipll();
+=======
+	return db8500_prcmu_is_ac_wake_requested();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_config_esram0_deep_sleep(u8 state)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
 		return db8500_prcmu_config_esram0_deep_sleep(state);
+=======
+	return db8500_prcmu_config_esram0_deep_sleep(state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_config_hotdog(u8 threshold)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
 		return db8500_prcmu_config_hotdog(threshold);
+=======
+	return db8500_prcmu_config_hotdog(threshold);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_config_hotmon(u8 low, u8 high)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
 		return db8500_prcmu_config_hotmon(low, high);
+=======
+	return db8500_prcmu_config_hotmon(low, high);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_start_temp_sense(u16 cycles32k)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return  -EINVAL;
 	else
 		return  db8500_prcmu_start_temp_sense(cycles32k);
+=======
+	return  db8500_prcmu_start_temp_sense(cycles32k);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_stop_temp_sense(void)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return  -EINVAL;
 	else
 		return  db8500_prcmu_stop_temp_sense();
+=======
+	return  db8500_prcmu_stop_temp_sense();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline u32 prcmu_read(unsigned int reg)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
 		return db8500_prcmu_read(reg);
+=======
+	return db8500_prcmu_read(reg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void prcmu_write(unsigned int reg, u32 value)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return;
 	else
 		db8500_prcmu_write(reg, value);
+=======
+	db8500_prcmu_write(reg, value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void prcmu_write_masked(unsigned int reg, u32 mask, u32 value)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return;
 	else
 		db8500_prcmu_write_masked(reg, mask, value);
+=======
+	db8500_prcmu_write_masked(reg, mask, value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_enable_a9wdog(u8 id)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
 		return db8500_prcmu_enable_a9wdog(id);
+=======
+	return db8500_prcmu_enable_a9wdog(id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_disable_a9wdog(u8 id)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
 		return db8500_prcmu_disable_a9wdog(id);
+=======
+	return db8500_prcmu_disable_a9wdog(id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_kick_a9wdog(u8 id)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
 		return db8500_prcmu_kick_a9wdog(id);
+=======
+	return db8500_prcmu_kick_a9wdog(id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_load_a9wdog(u8 id, u32 timeout)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
 		return db8500_prcmu_load_a9wdog(id, timeout);
+=======
+	return db8500_prcmu_load_a9wdog(id, timeout);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int prcmu_config_a9wdog(u8 num, bool sleep_auto_off)
 {
+<<<<<<< HEAD
 	if (cpu_is_u5500())
 		return -EINVAL;
 	else
@@ -595,6 +798,13 @@ static inline int prcmu_config_a9wdog(u8 num, bool sleep_auto_off)
 #else
 
 static inline void __init prcmu_early_init(void) {}
+=======
+	return db8500_prcmu_config_a9wdog(num, sleep_auto_off);
+}
+#else
+
+static inline void prcmu_early_init(void) {}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline int prcmu_set_power_state(u8 state, bool keep_ulp_clk,
 	bool keep_ap_pll)
@@ -662,6 +872,14 @@ static inline int prcmu_get_ape_opp(void)
 	return APE_100_OPP;
 }
 
+<<<<<<< HEAD
+=======
+static inline int prcmu_request_ape_opp_100_voltage(bool enable)
+{
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int prcmu_set_arm_opp(u8 opp)
 {
 	return 0;
@@ -672,11 +890,14 @@ static inline int prcmu_get_arm_opp(void)
 	return ARM_100_OPP;
 }
 
+<<<<<<< HEAD
 static inline int prcmu_set_ddr_opp(u8 opp)
 {
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int prcmu_get_ddr_opp(void)
 {
 	return DDR_100_OPP;
@@ -689,7 +910,14 @@ static inline u16 prcmu_get_reset_code(void)
 	return 0;
 }
 
+<<<<<<< HEAD
 static inline void prcmu_ac_wake_req(void) {}
+=======
+static inline int prcmu_ac_wake_req(void)
+{
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void prcmu_ac_sleep_req(void) {}
 
@@ -700,6 +928,7 @@ static inline bool prcmu_is_ac_wake_requested(void)
 	return false;
 }
 
+<<<<<<< HEAD
 static inline int prcmu_set_display_clocks(void)
 {
 	return 0;
@@ -715,6 +944,8 @@ static inline int prcmu_enable_dsipll(void)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int prcmu_config_esram0_deep_sleep(u8 state)
 {
 	return 0;
@@ -768,6 +999,7 @@ static inline void prcmu_clear(unsigned int reg, u32 bits)
 	prcmu_write_masked(reg, bits, 0);
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_UX500_SOC_DB8500) || defined(CONFIG_UX500_SOC_DB5500)
 
 /**
@@ -847,12 +1079,15 @@ static inline void prcmu_disable_stm_ape(void) {}
 
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PRCMU QoS APE OPP class */
 #define PRCMU_QOS_APE_OPP 1
 #define PRCMU_QOS_DDR_OPP 2
 #define PRCMU_QOS_ARM_OPP 3
 #define PRCMU_QOS_DEFAULT_VALUE -1
 
+<<<<<<< HEAD
 #ifdef CONFIG_DBX500_PRCMU_QOS_POWER
 
 unsigned long prcmu_qos_get_cpufreq_opp_delay(void);
@@ -883,6 +1118,8 @@ static inline int prcmu_qos_requirement(int prcmu_qos_class)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline int prcmu_qos_add_requirement(int prcmu_qos_class,
 					    char *name, s32 value)
 {
@@ -899,6 +1136,7 @@ static inline void prcmu_qos_remove_requirement(int prcmu_qos_class, char *name)
 {
 }
 
+<<<<<<< HEAD
 static inline int prcmu_qos_add_notifier(int prcmu_qos_class,
 					 struct notifier_block *notifier)
 {
@@ -912,4 +1150,6 @@ static inline int prcmu_qos_remove_notifier(int prcmu_qos_class,
 
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __MACH_PRCMU_H */

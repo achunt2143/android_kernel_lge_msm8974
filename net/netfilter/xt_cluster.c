@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 /*
  * (C) 2008-2009 Pablo Neira Ayuso <pablo@netfilter.org>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * (C) 2008-2009 Pablo Neira Ayuso <pablo@netfilter.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
@@ -55,6 +61,7 @@ xt_cluster_hash(const struct nf_conn *ct,
 		WARN_ON(1);
 		break;
 	}
+<<<<<<< HEAD
 	return (((u64)hash * info->total_nodes) >> 32);
 }
 
@@ -63,6 +70,10 @@ xt_cluster_ipv6_is_multicast(const struct in6_addr *addr)
 {
 	__be32 st = addr->s6_addr32[0];
 	return ((st & htonl(0xFF000000)) == htonl(0xFF000000));
+=======
+
+	return reciprocal_scale(hash, info->total_nodes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline bool
@@ -75,8 +86,12 @@ xt_cluster_is_multicast_addr(const struct sk_buff *skb, u_int8_t family)
 		is_multicast = ipv4_is_multicast(ip_hdr(skb)->daddr);
 		break;
 	case NFPROTO_IPV6:
+<<<<<<< HEAD
 		is_multicast =
 			xt_cluster_ipv6_is_multicast(&ipv6_hdr(skb)->daddr);
+=======
+		is_multicast = ipv6_addr_is_multicast(&ipv6_hdr(skb)->daddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		WARN_ON(1);
@@ -111,7 +126,11 @@ xt_cluster_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	 * know, matches should not alter packets, but we are doing this here
 	 * because we would need to add a PKTTYPE target for this sole purpose.
 	 */
+<<<<<<< HEAD
 	if (!xt_cluster_is_multicast_addr(skb, par->family) &&
+=======
+	if (!xt_cluster_is_multicast_addr(skb, xt_family(par)) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    skb->pkt_type == PACKET_MULTICAST) {
 	    	pskb->pkt_type = PACKET_HOST;
 	}
@@ -120,9 +139,12 @@ xt_cluster_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	if (ct == NULL)
 		return false;
 
+<<<<<<< HEAD
 	if (nf_ct_is_untracked(ct))
 		return false;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ct->master)
 		hash = xt_cluster_hash(ct->master, info);
 	else
@@ -135,6 +157,7 @@ xt_cluster_mt(const struct sk_buff *skb, struct xt_action_param *par)
 static int xt_cluster_mt_checkentry(const struct xt_mtchk_param *par)
 {
 	struct xt_cluster_match_info *info = par->matchinfo;
+<<<<<<< HEAD
 
 	if (info->total_nodes > XT_CLUSTER_NODES_MAX) {
 		pr_info("you have exceeded the maximum "
@@ -148,6 +171,30 @@ static int xt_cluster_mt_checkentry(const struct xt_mtchk_param *par)
 		return -EDOM;
 	}
 	return 0;
+=======
+	int ret;
+
+	if (info->total_nodes > XT_CLUSTER_NODES_MAX) {
+		pr_info_ratelimited("you have exceeded the maximum number of cluster nodes (%u > %u)\n",
+				    info->total_nodes, XT_CLUSTER_NODES_MAX);
+		return -EINVAL;
+	}
+	if (info->node_mask >= (1ULL << info->total_nodes)) {
+		pr_info_ratelimited("node mask cannot exceed total number of nodes\n");
+		return -EDOM;
+	}
+
+	ret = nf_ct_netns_get(par->net, par->family);
+	if (ret < 0)
+		pr_info_ratelimited("cannot load conntrack support for proto=%u\n",
+				    par->family);
+	return ret;
+}
+
+static void xt_cluster_mt_destroy(const struct xt_mtdtor_param *par)
+{
+	nf_ct_netns_put(par->net, par->family);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xt_match xt_cluster_match __read_mostly = {
@@ -156,6 +203,10 @@ static struct xt_match xt_cluster_match __read_mostly = {
 	.match		= xt_cluster_mt,
 	.checkentry	= xt_cluster_mt_checkentry,
 	.matchsize	= sizeof(struct xt_cluster_match_info),
+<<<<<<< HEAD
+=======
+	.destroy	= xt_cluster_mt_destroy,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.me		= THIS_MODULE,
 };
 

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * string.h: External definitions for optimized assembly string
  *           routines for the Linux Kernel.
@@ -11,6 +15,7 @@
 
 #include <asm/page.h>
 
+<<<<<<< HEAD
 /* Really, userland/ksyms should not see any of this stuff. */
 
 #ifdef __KERNEL__
@@ -128,4 +133,6 @@ static inline int __constant_strncmp(const char *src, const char *dest, __kernel
 
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(__SPARC_STRING_H__) */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ebt_arp
  *
@@ -25,6 +29,7 @@ ebt_arp_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	ah = skb_header_pointer(skb, 0, sizeof(_arph), &_arph);
 	if (ah == NULL)
 		return false;
+<<<<<<< HEAD
 	if (info->bitmask & EBT_ARP_OPCODE && FWINV(info->opcode !=
 	   ah->ar_op, EBT_ARP_OPCODE))
 		return false;
@@ -33,6 +38,16 @@ ebt_arp_mt(const struct sk_buff *skb, struct xt_action_param *par)
 		return false;
 	if (info->bitmask & EBT_ARP_PTYPE && FWINV(info->ptype !=
 	   ah->ar_pro, EBT_ARP_PTYPE))
+=======
+	if ((info->bitmask & EBT_ARP_OPCODE) &&
+	    NF_INVF(info, EBT_ARP_OPCODE, info->opcode != ah->ar_op))
+		return false;
+	if ((info->bitmask & EBT_ARP_HTYPE) &&
+	    NF_INVF(info, EBT_ARP_HTYPE, info->htype != ah->ar_hrd))
+		return false;
+	if ((info->bitmask & EBT_ARP_PTYPE) &&
+	    NF_INVF(info, EBT_ARP_PTYPE, info->ptype != ah->ar_pro))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 
 	if (info->bitmask & (EBT_ARP_SRC_IP | EBT_ARP_DST_IP | EBT_ARP_GRAT)) {
@@ -51,6 +66,7 @@ ebt_arp_mt(const struct sk_buff *skb, struct xt_action_param *par)
 					sizeof(daddr), &daddr);
 		if (dap == NULL)
 			return false;
+<<<<<<< HEAD
 		if (info->bitmask & EBT_ARP_SRC_IP &&
 		    FWINV(info->saddr != (*sap & info->smsk), EBT_ARP_SRC_IP))
 			return false;
@@ -59,13 +75,28 @@ ebt_arp_mt(const struct sk_buff *skb, struct xt_action_param *par)
 			return false;
 		if (info->bitmask & EBT_ARP_GRAT &&
 		    FWINV(*dap != *sap, EBT_ARP_GRAT))
+=======
+		if ((info->bitmask & EBT_ARP_SRC_IP) &&
+		    NF_INVF(info, EBT_ARP_SRC_IP,
+			    info->saddr != (*sap & info->smsk)))
+			return false;
+		if ((info->bitmask & EBT_ARP_DST_IP) &&
+		    NF_INVF(info, EBT_ARP_DST_IP,
+			    info->daddr != (*dap & info->dmsk)))
+			return false;
+		if ((info->bitmask & EBT_ARP_GRAT) &&
+		    NF_INVF(info, EBT_ARP_GRAT, *dap != *sap))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return false;
 	}
 
 	if (info->bitmask & (EBT_ARP_SRC_MAC | EBT_ARP_DST_MAC)) {
 		const unsigned char *mp;
 		unsigned char _mac[ETH_ALEN];
+<<<<<<< HEAD
 		uint8_t verdict, i;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ah->ar_hln != ETH_ALEN || ah->ar_hrd != htons(ARPHRD_ETHER))
 			return false;
@@ -74,11 +105,17 @@ ebt_arp_mt(const struct sk_buff *skb, struct xt_action_param *par)
 						sizeof(_mac), &_mac);
 			if (mp == NULL)
 				return false;
+<<<<<<< HEAD
 			verdict = 0;
 			for (i = 0; i < 6; i++)
 				verdict |= (mp[i] ^ info->smaddr[i]) &
 				       info->smmsk[i];
 			if (FWINV(verdict != 0, EBT_ARP_SRC_MAC))
+=======
+			if (NF_INVF(info, EBT_ARP_SRC_MAC,
+				    !ether_addr_equal_masked(mp, info->smaddr,
+							     info->smmsk)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return false;
 		}
 
@@ -88,11 +125,17 @@ ebt_arp_mt(const struct sk_buff *skb, struct xt_action_param *par)
 						sizeof(_mac), &_mac);
 			if (mp == NULL)
 				return false;
+<<<<<<< HEAD
 			verdict = 0;
 			for (i = 0; i < 6; i++)
 				verdict |= (mp[i] ^ info->dmaddr[i]) &
 					info->dmmsk[i];
 			if (FWINV(verdict != 0, EBT_ARP_DST_MAC))
+=======
+			if (NF_INVF(info, EBT_ARP_DST_MAC,
+				    !ether_addr_equal_masked(mp, info->dmaddr,
+							     info->dmmsk)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return false;
 		}
 	}

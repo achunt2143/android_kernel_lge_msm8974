@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * A hwmon driver for the IBM System Director Active Energy Manager (AEM)
  * temperature/power/energy sensors and capping functionality.
  * Copyright (C) 2008 IBM
  *
+<<<<<<< HEAD
  * Author: Darrick J. Wong <djwong@us.ibm.com>
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,6 +23,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+ * Author: Darrick J. Wong <darrick.wong@oracle.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -36,6 +44,10 @@
 #include <linux/platform_device.h>
 #include <linux/math64.h>
 #include <linux/time.h>
+<<<<<<< HEAD
+=======
+#include <linux/err.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define REFRESH_INTERVAL	(HZ)
 #define IPMI_TIMEOUT		(30 * HZ)
@@ -100,7 +112,11 @@ static struct platform_driver aem_driver = {
 struct aem_ipmi_data {
 	struct completion	read_complete;
 	struct ipmi_addr	address;
+<<<<<<< HEAD
 	ipmi_user_t		user;
+=======
+	struct ipmi_user	*user;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int			interface;
 
 	struct kernel_ipmi_msg	tx_message;
@@ -139,7 +155,11 @@ struct aem_data {
 	struct device		*hwmon_dev;
 	struct platform_device	*pdev;
 	struct mutex		lock;
+<<<<<<< HEAD
 	char			valid;
+=======
+	bool			valid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		last_updated;	/* In jiffies */
 	u8			ver_major;
 	u8			ver_minor;
@@ -231,7 +251,11 @@ struct aem_read_sensor_req {
 
 struct aem_read_sensor_resp {
 	struct aem_iana_id	id;
+<<<<<<< HEAD
 	u8			bytes[0];
+=======
+	u8			bytes[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __packed;
 
 /* Data structures to talk to the IPMI layer */
@@ -288,9 +312,16 @@ static int aem_init_ipmi_data(struct aem_ipmi_data *data, int iface,
 	err = ipmi_create_user(data->interface, &driver_data.ipmi_hndlrs,
 			       data, &data->user);
 	if (err < 0) {
+<<<<<<< HEAD
 		dev_err(bmc, "Unable to register user with IPMI "
 			"interface %d\n", data->interface);
 		return -EACCES;
+=======
+		dev_err(bmc,
+			"Unable to register user with IPMI interface %d\n",
+			data->interface);
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -327,8 +358,13 @@ static void aem_msg_handler(struct ipmi_recv_msg *msg, void *user_msg_data)
 	struct aem_ipmi_data *data = user_msg_data;
 
 	if (msg->msgid != data->tx_msgid) {
+<<<<<<< HEAD
 		dev_err(data->bmc_device, "Mismatch between received msgid "
 			"(%02x) and transmitted msgid (%02x)!\n",
+=======
+		dev_err(data->bmc_device,
+			"Mismatch between received msgid (%02x) and transmitted msgid (%02x)!\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(int)msg->msgid,
 			(int)data->tx_msgid);
 		ipmi_free_recv_msg(msg);
@@ -493,7 +529,11 @@ static void aem_delete(struct aem_data *data)
 	ipmi_destroy_user(data->ipmi.user);
 	platform_set_drvdata(data->pdev, NULL);
 	platform_device_unregister(data->pdev);
+<<<<<<< HEAD
 	ida_simple_remove(&aem_ida, data->id);
+=======
+	ida_free(&aem_ida, data->id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(data);
 }
 
@@ -550,7 +590,11 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
 		data->power_period[i] = AEM_DEFAULT_POWER_INTERVAL;
 
 	/* Create sub-device for this fw instance */
+<<<<<<< HEAD
 	data->id = ida_simple_get(&aem_ida, 0, 0, GFP_KERNEL);
+=======
+	data->id = ida_alloc(&aem_ida, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data->id < 0)
 		goto id_err;
 
@@ -561,7 +605,11 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
 
 	res = platform_device_add(data->pdev);
 	if (res)
+<<<<<<< HEAD
 		goto ipmi_err;
+=======
+		goto dev_add_err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(data->pdev, data);
 
@@ -574,8 +622,13 @@ static int aem_init_aem1_inst(struct aem_ipmi_data *probe, u8 module_handle)
 	/* Register with hwmon */
 	data->hwmon_dev = hwmon_device_register(&data->pdev->dev);
 	if (IS_ERR(data->hwmon_dev)) {
+<<<<<<< HEAD
 		dev_err(&data->pdev->dev, "Unable to register hwmon "
 			"device for IPMI interface %d\n",
+=======
+		dev_err(&data->pdev->dev,
+			"Unable to register hwmon device for IPMI interface %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			probe->interface);
 		res = PTR_ERR(data->hwmon_dev);
 		goto hwmon_reg_err;
@@ -609,9 +662,17 @@ hwmon_reg_err:
 	ipmi_destroy_user(data->ipmi.user);
 ipmi_err:
 	platform_set_drvdata(data->pdev, NULL);
+<<<<<<< HEAD
 	platform_device_unregister(data->pdev);
 dev_err:
 	ida_simple_remove(&aem_ida, data->id);
+=======
+	platform_device_del(data->pdev);
+dev_add_err:
+	platform_device_put(data->pdev);
+dev_err:
+	ida_free(&aem_ida, data->id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 id_err:
 	kfree(data);
 
@@ -690,7 +751,11 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
 		data->power_period[i] = AEM_DEFAULT_POWER_INTERVAL;
 
 	/* Create sub-device for this fw instance */
+<<<<<<< HEAD
 	data->id = ida_simple_get(&aem_ida, 0, 0, GFP_KERNEL);
+=======
+	data->id = ida_alloc(&aem_ida, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (data->id < 0)
 		goto id_err;
 
@@ -701,7 +766,11 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
 
 	res = platform_device_add(data->pdev);
 	if (res)
+<<<<<<< HEAD
 		goto ipmi_err;
+=======
+		goto dev_add_err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_set_drvdata(data->pdev, data);
 
@@ -714,8 +783,13 @@ static int aem_init_aem2_inst(struct aem_ipmi_data *probe,
 	/* Register with hwmon */
 	data->hwmon_dev = hwmon_device_register(&data->pdev->dev);
 	if (IS_ERR(data->hwmon_dev)) {
+<<<<<<< HEAD
 		dev_err(&data->pdev->dev, "Unable to register hwmon "
 			"device for IPMI interface %d\n",
+=======
+		dev_err(&data->pdev->dev,
+			"Unable to register hwmon device for IPMI interface %d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			probe->interface);
 		res = PTR_ERR(data->hwmon_dev);
 		goto hwmon_reg_err;
@@ -749,9 +823,17 @@ hwmon_reg_err:
 	ipmi_destroy_user(data->ipmi.user);
 ipmi_err:
 	platform_set_drvdata(data->pdev, NULL);
+<<<<<<< HEAD
 	platform_device_unregister(data->pdev);
 dev_err:
 	ida_simple_remove(&aem_ida, data->id);
+=======
+	platform_device_del(data->pdev);
+dev_add_err:
+	platform_device_put(data->pdev);
+dev_err:
+	ida_free(&aem_ida, data->id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 id_err:
 	kfree(data);
 
@@ -767,8 +849,13 @@ static void aem_init_aem2(struct aem_ipmi_data *probe)
 
 	while (!aem_find_aem2(probe, &fi_resp, i)) {
 		if (fi_resp.major != 2) {
+<<<<<<< HEAD
 			dev_err(probe->bmc_device, "Unknown AEM v%d; please "
 				"report this to the maintainer.\n",
+=======
+			dev_err(probe->bmc_device,
+				"Unknown AEM v%d; please report this to the maintainer.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				fi_resp.major);
 			i++;
 			continue;
@@ -811,25 +898,41 @@ static void aem_bmc_gone(int iface)
 /* sysfs support functions */
 
 /* AEM device name */
+<<<<<<< HEAD
 static ssize_t show_name(struct device *dev, struct device_attribute *devattr,
+=======
+static ssize_t name_show(struct device *dev, struct device_attribute *devattr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 char *buf)
 {
 	struct aem_data *data = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%s%d\n", DRVNAME, data->ver_major);
 }
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(name, S_IRUGO, show_name, NULL, 0);
 
 /* AEM device version */
 static ssize_t show_version(struct device *dev,
 			    struct device_attribute *devattr,
 			    char *buf)
+=======
+static SENSOR_DEVICE_ATTR_RO(name, name, 0);
+
+/* AEM device version */
+static ssize_t version_show(struct device *dev,
+			    struct device_attribute *devattr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct aem_data *data = dev_get_drvdata(dev);
 
 	return sprintf(buf, "%d.%d\n", data->ver_major, data->ver_minor);
 }
+<<<<<<< HEAD
 static SENSOR_DEVICE_ATTR(version, S_IRUGO, show_version, NULL, 0);
+=======
+static SENSOR_DEVICE_ATTR_RO(version, version, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Display power use */
 static ssize_t aem_show_power(struct device *dev,
@@ -840,11 +943,18 @@ static ssize_t aem_show_power(struct device *dev,
 	struct aem_data *data = dev_get_drvdata(dev);
 	u64 before, after, delta, time;
 	signed long leftover;
+<<<<<<< HEAD
 	struct timespec b, a;
 
 	mutex_lock(&data->lock);
 	update_aem_energy_one(data, attr->index);
 	getnstimeofday(&b);
+=======
+
+	mutex_lock(&data->lock);
+	update_aem_energy_one(data, attr->index);
+	time = ktime_get_ns();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	before = data->energy[attr->index];
 
 	leftover = schedule_timeout_interruptible(
@@ -856,11 +966,18 @@ static ssize_t aem_show_power(struct device *dev,
 	}
 
 	update_aem_energy_one(data, attr->index);
+<<<<<<< HEAD
 	getnstimeofday(&a);
 	after = data->energy[attr->index];
 	mutex_unlock(&data->lock);
 
 	time = timespec_to_ns(&a) - timespec_to_ns(&b);
+=======
+	time = ktime_get_ns() - time;
+	after = data->energy[attr->index];
+	mutex_unlock(&data->lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	delta = (after - before) * UJ_PER_MJ;
 
 	return sprintf(buf, "%llu\n",
@@ -920,8 +1037,13 @@ static ssize_t aem_set_power_period(struct device *dev,
 
 /* Discover sensors on an AEM device */
 static int aem_register_sensors(struct aem_data *data,
+<<<<<<< HEAD
 				struct aem_ro_sensor_template *ro,
 				struct aem_rw_sensor_template *rw)
+=======
+				const struct aem_ro_sensor_template *ro,
+				const struct aem_rw_sensor_template *rw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev = &data->pdev->dev;
 	struct sensor_device_attribute *sensors = data->sensors;
@@ -931,7 +1053,11 @@ static int aem_register_sensors(struct aem_data *data,
 	while (ro->label) {
 		sysfs_attr_init(&sensors->dev_attr.attr);
 		sensors->dev_attr.attr.name = ro->label;
+<<<<<<< HEAD
 		sensors->dev_attr.attr.mode = S_IRUGO;
+=======
+		sensors->dev_attr.attr.mode = 0444;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sensors->dev_attr.show = ro->show;
 		sensors->index = ro->index;
 
@@ -948,7 +1074,11 @@ static int aem_register_sensors(struct aem_data *data,
 	while (rw->label) {
 		sysfs_attr_init(&sensors->dev_attr.attr);
 		sensors->dev_attr.attr.name = rw->label;
+<<<<<<< HEAD
 		sensors->dev_attr.attr.mode = S_IRUGO | S_IWUSR;
+=======
+		sensors->dev_attr.attr.mode = 0644;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sensors->dev_attr.show = rw->show;
 		sensors->dev_attr.store = rw->set;
 		sensors->index = rw->index;
@@ -1020,19 +1150,31 @@ static void aem_remove_sensors(struct aem_data *data)
 /* Sensor probe functions */
 
 /* Description of AEM1 sensors */
+<<<<<<< HEAD
 static struct aem_ro_sensor_template aem1_ro_sensors[] = {
+=======
+static const struct aem_ro_sensor_template aem1_ro_sensors[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {"energy1_input",  aem_show_energy, 0},
 {"power1_average", aem_show_power,  0},
 {NULL,		   NULL,	    0},
 };
 
+<<<<<<< HEAD
 static struct aem_rw_sensor_template aem1_rw_sensors[] = {
+=======
+static const struct aem_rw_sensor_template aem1_rw_sensors[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {"power1_average_interval", aem_show_power_period, aem_set_power_period, 0},
 {NULL,			    NULL,                  NULL,                 0},
 };
 
 /* Description of AEM2 sensors */
+<<<<<<< HEAD
 static struct aem_ro_sensor_template aem2_ro_sensors[] = {
+=======
+static const struct aem_ro_sensor_template aem2_ro_sensors[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {"energy1_input",	  aem_show_energy,	0},
 {"energy2_input",	  aem_show_energy,	1},
 {"power1_average",	  aem_show_power,	0},
@@ -1050,7 +1192,11 @@ static struct aem_ro_sensor_template aem2_ro_sensors[] = {
 {NULL,                    NULL,                 0},
 };
 
+<<<<<<< HEAD
 static struct aem_rw_sensor_template aem2_rw_sensors[] = {
+=======
+static const struct aem_rw_sensor_template aem2_rw_sensors[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {"power1_average_interval", aem_show_power_period, aem_set_power_period, 0},
 {"power2_average_interval", aem_show_power_period, aem_set_power_period, 1},
 {NULL,			    NULL,                  NULL,                 0},
@@ -1101,7 +1247,11 @@ static void __exit aem_exit(void)
 		aem_delete(p1);
 }
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Darrick J. Wong <djwong@us.ibm.com>");
+=======
+MODULE_AUTHOR("Darrick J. Wong <darrick.wong@oracle.com>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("IBM AEM power/temp/energy sensor driver");
 MODULE_LICENSE("GPL");
 

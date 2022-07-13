@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *  usbatm.h - Generic USB xDSL driver core
  *
  *  Copyright (C) 2001, Alcatel
  *  Copyright (C) 2003, Duncan Sands, SolNegro, Josep Comas
  *  Copyright (C) 2004, David Woodhouse
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License as published by the Free
@@ -19,6 +24,8 @@
  *  this program; if not, write to the Free Software Foundation, Inc., 59
  *  Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ******************************************************************************/
 
 #ifndef	_USBATM_H_
@@ -34,11 +41,16 @@
 #include <linux/stringify.h>
 #include <linux/usb.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
+=======
+#include <linux/ratelimit.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
 #define VERBOSE_DEBUG
 */
 
+<<<<<<< HEAD
 #ifdef DEBUG
 #define UDSL_ASSERT(instance, x)	BUG_ON(!(x))
 #else
@@ -51,12 +63,15 @@
 	} while (0)
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define usb_err(instance, format, arg...)	\
 	dev_err(&(instance)->usb_intf->dev , format , ## arg)
 #define usb_info(instance, format, arg...)	\
 	dev_info(&(instance)->usb_intf->dev , format , ## arg)
 #define usb_warn(instance, format, arg...)	\
 	dev_warn(&(instance)->usb_intf->dev , format , ## arg)
+<<<<<<< HEAD
 #ifdef DEBUG
 #define usb_dbg(instance, format, arg...)	\
 	dev_printk(KERN_DEBUG , &(instance)->usb_intf->dev , format , ## arg)
@@ -64,6 +79,10 @@
 #define usb_dbg(instance, format, arg...)	\
 	do {} while (0)
 #endif
+=======
+#define usb_dbg(instance, format, arg...)	\
+	dev_dbg(&(instance)->usb_intf->dev , format , ## arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* FIXME: move to dev_* once ATM is driver model aware */
 #define atm_printk(level, instance, format, arg...)	\
@@ -76,6 +95,7 @@
 	atm_printk(KERN_INFO, instance , format , ## arg)
 #define atm_warn(instance, format, arg...)	\
 	atm_printk(KERN_WARNING, instance , format , ## arg)
+<<<<<<< HEAD
 #ifdef DEBUG
 #define atm_dbg(instance, format, arg...)	\
 	atm_printk(KERN_DEBUG, instance , format , ## arg)
@@ -89,6 +109,14 @@
 	do {} while (0)
 #endif
 
+=======
+#define atm_dbg(instance, format, ...)					\
+	pr_debug("ATM dev %d: " format,					\
+		 (instance)->atm_dev->number, ##__VA_ARGS__)
+#define atm_rldbg(instance, format, ...)				\
+	pr_debug_ratelimited("ATM dev %d: " format,			\
+			     (instance)->atm_dev->number, ##__VA_ARGS__)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* flags, set by mini-driver in bind() */
 
@@ -201,7 +229,11 @@ struct usbatm_data {
 	unsigned char *cell_buf;	/* holds partial rx cell */
 	unsigned int buf_usage;
 
+<<<<<<< HEAD
 	struct urb *urbs[0];
+=======
+	struct urb *urbs[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline void *to_usbatm_driver_data(struct usb_interface *intf)

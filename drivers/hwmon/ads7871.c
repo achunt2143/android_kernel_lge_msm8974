@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  ads7871 - driver for TI ADS7871 A/D converter
  *
  *  Copyright (c) 2010 Paul Thomas <pthomas8589@gmail.com>
  *
+<<<<<<< HEAD
  *  This program is distributed in the hope that it will be useful,
  *  but WITHOUT ANY WARRANTY; without even the implied warranty of
  *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
@@ -12,6 +17,8 @@
  *  it under the terms of the GNU General Public License version 2 or
  *  later as publishhed by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	You need to have something like this in struct spi_board_info
  *	{
  *		.modalias	= "ads7871",
@@ -40,6 +47,7 @@
  * the instruction byte
  */
 /*Instruction Bit masks*/
+<<<<<<< HEAD
 #define INST_MODE_bm	(1<<7)
 #define INST_READ_bm	(1<<6)
 #define INST_16BIT_bm	(1<<5)
@@ -59,6 +67,27 @@
 #define OSC_BUFE_bm	(1<<2)
 #define OSC_R2V_bm	(1<<1)
 #define OSC_RBG_bm	(1<<0)
+=======
+#define INST_MODE_BM	(1 << 7)
+#define INST_READ_BM	(1 << 6)
+#define INST_16BIT_BM	(1 << 5)
+
+/*From figure 18 in the datasheet*/
+/*bit masks for Rev/Oscillator Control Register*/
+#define MUX_CNV_BV	7
+#define MUX_CNV_BM	(1 << MUX_CNV_BV)
+#define MUX_M3_BM	(1 << 3) /*M3 selects single ended*/
+#define MUX_G_BV	4 /*allows for reg = (gain << MUX_G_BV) | ...*/
+
+/*From figure 18 in the datasheet*/
+/*bit masks for Rev/Oscillator Control Register*/
+#define OSC_OSCR_BM	(1 << 5)
+#define OSC_OSCE_BM	(1 << 4)
+#define OSC_REFE_BM	(1 << 3)
+#define OSC_BUFE_BM	(1 << 2)
+#define OSC_R2V_BM	(1 << 1)
+#define OSC_RBG_BM	(1 << 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -66,20 +95,31 @@
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/mutex.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 
 #define DEVICE_NAME	"ads7871"
 
 struct ads7871_data {
+<<<<<<< HEAD
 	struct device	*hwmon_dev;
 	struct mutex	update_lock;
+=======
+	struct spi_device *spi;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int ads7871_read_reg8(struct spi_device *spi, int reg)
 {
 	int ret;
+<<<<<<< HEAD
 	reg = reg | INST_READ_bm;
+=======
+	reg = reg | INST_READ_BM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = spi_w8r8(spi, reg);
 	return ret;
 }
@@ -87,7 +127,11 @@ static int ads7871_read_reg8(struct spi_device *spi, int reg)
 static int ads7871_read_reg16(struct spi_device *spi, int reg)
 {
 	int ret;
+<<<<<<< HEAD
 	reg = reg | INST_READ_bm | INST_16BIT_bm;
+=======
+	reg = reg | INST_READ_BM | INST_16BIT_BM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = spi_w8r16(spi, reg);
 	return ret;
 }
@@ -98,10 +142,18 @@ static int ads7871_write_reg8(struct spi_device *spi, int reg, u8 val)
 	return spi_write(spi, tmp, sizeof(tmp));
 }
 
+<<<<<<< HEAD
 static ssize_t show_voltage(struct device *dev,
 		struct device_attribute *da, char *buf)
 {
 	struct spi_device *spi = to_spi_device(dev);
+=======
+static ssize_t voltage_show(struct device *dev, struct device_attribute *da,
+			    char *buf)
+{
+	struct ads7871_data *pdata = dev_get_drvdata(dev);
+	struct spi_device *spi = pdata->spi;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sensor_device_attribute *attr = to_sensor_dev_attr(da);
 	int ret, val, i = 0;
 	uint8_t channel, mux_cnv;
@@ -111,6 +163,7 @@ static ssize_t show_voltage(struct device *dev,
 	 * TODO: add support for conversions
 	 * other than single ended with a gain of 1
 	 */
+<<<<<<< HEAD
 	/*MUX_M3_bm forces single ended*/
 	/*This is also where the gain of the PGA would be set*/
 	ads7871_write_reg8(spi, REG_GAIN_MUX,
@@ -118,6 +171,15 @@ static ssize_t show_voltage(struct device *dev,
 
 	ret = ads7871_read_reg8(spi, REG_GAIN_MUX);
 	mux_cnv = ((ret & MUX_CNV_bm)>>MUX_CNV_bv);
+=======
+	/*MUX_M3_BM forces single ended*/
+	/*This is also where the gain of the PGA would be set*/
+	ads7871_write_reg8(spi, REG_GAIN_MUX,
+		(MUX_CNV_BM | MUX_M3_BM | channel));
+
+	ret = ads7871_read_reg8(spi, REG_GAIN_MUX);
+	mux_cnv = ((ret & MUX_CNV_BM) >> MUX_CNV_BV);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * on 400MHz arm9 platform the conversion
 	 * is already done when we do this test
@@ -125,20 +187,29 @@ static ssize_t show_voltage(struct device *dev,
 	while ((i < 2) && mux_cnv) {
 		i++;
 		ret = ads7871_read_reg8(spi, REG_GAIN_MUX);
+<<<<<<< HEAD
 		mux_cnv = ((ret & MUX_CNV_bm)>>MUX_CNV_bv);
+=======
+		mux_cnv = ((ret & MUX_CNV_BM) >> MUX_CNV_BV);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep_interruptible(1);
 	}
 
 	if (mux_cnv == 0) {
 		val = ads7871_read_reg16(spi, REG_LS_BYTE);
 		/*result in volts*10000 = (val/8192)*2.5*10000*/
+<<<<<<< HEAD
 		val = ((val>>2) * 25000) / 8192;
+=======
+		val = ((val >> 2) * 25000) / 8192;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return sprintf(buf, "%d\n", val);
 	} else {
 		return -1;
 	}
 }
 
+<<<<<<< HEAD
 static ssize_t ads7871_show_name(struct device *dev,
 				 struct device_attribute *devattr, char *buf)
 {
@@ -157,6 +228,18 @@ static SENSOR_DEVICE_ATTR(in7_input, S_IRUGO, show_voltage, NULL, 7);
 static DEVICE_ATTR(name, S_IRUGO, ads7871_show_name, NULL);
 
 static struct attribute *ads7871_attributes[] = {
+=======
+static SENSOR_DEVICE_ATTR_RO(in0_input, voltage, 0);
+static SENSOR_DEVICE_ATTR_RO(in1_input, voltage, 1);
+static SENSOR_DEVICE_ATTR_RO(in2_input, voltage, 2);
+static SENSOR_DEVICE_ATTR_RO(in3_input, voltage, 3);
+static SENSOR_DEVICE_ATTR_RO(in4_input, voltage, 4);
+static SENSOR_DEVICE_ATTR_RO(in5_input, voltage, 5);
+static SENSOR_DEVICE_ATTR_RO(in6_input, voltage, 6);
+static SENSOR_DEVICE_ATTR_RO(in7_input, voltage, 7);
+
+static struct attribute *ads7871_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&sensor_dev_attr_in0_input.dev_attr.attr,
 	&sensor_dev_attr_in1_input.dev_attr.attr,
 	&sensor_dev_attr_in2_input.dev_attr.attr,
@@ -165,6 +248,7 @@ static struct attribute *ads7871_attributes[] = {
 	&sensor_dev_attr_in5_input.dev_attr.attr,
 	&sensor_dev_attr_in6_input.dev_attr.attr,
 	&sensor_dev_attr_in7_input.dev_attr.attr,
+<<<<<<< HEAD
 	&dev_attr_name.attr,
 	NULL
 };
@@ -180,6 +264,20 @@ static int __devinit ads7871_probe(struct spi_device *spi)
 	struct ads7871_data *pdata;
 
 	dev_dbg(&spi->dev, "probe\n");
+=======
+	NULL
+};
+
+ATTRIBUTE_GROUPS(ads7871);
+
+static int ads7871_probe(struct spi_device *spi)
+{
+	struct device *dev = &spi->dev;
+	int ret;
+	uint8_t val;
+	struct ads7871_data *pdata;
+	struct device *hwmon_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Configure the SPI bus */
 	spi->mode = (SPI_MODE_0);
@@ -189,15 +287,24 @@ static int __devinit ads7871_probe(struct spi_device *spi)
 	ads7871_write_reg8(spi, REG_SER_CONTROL, 0);
 	ads7871_write_reg8(spi, REG_AD_CONTROL, 0);
 
+<<<<<<< HEAD
 	val = (OSC_OSCR_bm | OSC_OSCE_bm | OSC_REFE_bm | OSC_BUFE_bm);
 	ads7871_write_reg8(spi, REG_OSC_CONTROL, val);
 	ret = ads7871_read_reg8(spi, REG_OSC_CONTROL);
 
 	dev_dbg(&spi->dev, "REG_OSC_CONTROL write:%x, read:%x\n", val, ret);
+=======
+	val = (OSC_OSCR_BM | OSC_OSCE_BM | OSC_REFE_BM | OSC_BUFE_BM);
+	ads7871_write_reg8(spi, REG_OSC_CONTROL, val);
+	ret = ads7871_read_reg8(spi, REG_OSC_CONTROL);
+
+	dev_dbg(dev, "REG_OSC_CONTROL write:%x, read:%x\n", val, ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * because there is no other error checking on an SPI bus
 	 * we need to make sure we really have a chip
 	 */
+<<<<<<< HEAD
 	if (val != ret) {
 		err = -ENODEV;
 		goto exit;
@@ -239,16 +346,36 @@ static int __devexit ads7871_remove(struct spi_device *spi)
 	sysfs_remove_group(&spi->dev.kobj, &ads7871_group);
 	kfree(pdata);
 	return 0;
+=======
+	if (val != ret)
+		return -ENODEV;
+
+	pdata = devm_kzalloc(dev, sizeof(struct ads7871_data), GFP_KERNEL);
+	if (!pdata)
+		return -ENOMEM;
+
+	pdata->spi = spi;
+
+	hwmon_dev = devm_hwmon_device_register_with_groups(dev, spi->modalias,
+							   pdata,
+							   ads7871_groups);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct spi_driver ads7871_driver = {
 	.driver = {
 		.name = DEVICE_NAME,
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 	},
 
 	.probe = ads7871_probe,
 	.remove = __devexit_p(ads7871_remove),
+=======
+	},
+	.probe = ads7871_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_spi_driver(ads7871_driver);

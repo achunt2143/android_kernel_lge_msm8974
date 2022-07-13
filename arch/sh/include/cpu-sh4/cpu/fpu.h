@@ -1,12 +1,20 @@
+<<<<<<< HEAD
 /*
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * linux/arch/sh/kernel/cpu/sh4/sh4_fpu.h
  *
  * Copyright (C) 2006 STMicroelectronics Limited
  * Author: Carl Shaw <carl.shaw@st.com>
  *
+<<<<<<< HEAD
  * May be copied or modified under the terms of the GNU General Public
  * License Version 2.  See linux/COPYING for more information.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Definitions for SH4 FPU operations
  */
 

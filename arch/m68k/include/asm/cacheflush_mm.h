@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _M68K_CACHEFLUSH_H
 #define _M68K_CACHEFLUSH_H
 
@@ -16,7 +20,52 @@
 #define DCACHE_MAX_ADDR	0
 #define DCACHE_SETMASK	0
 #endif
+<<<<<<< HEAD
 
+=======
+#ifndef CACHE_MODE
+#define	CACHE_MODE	0
+#define	CACR_ICINVA	0
+#define	CACR_DCINVA	0
+#define	CACR_BCINVA	0
+#endif
+
+/*
+ * ColdFire architecture has no way to clear individual cache lines, so we
+ * are stuck invalidating all the cache entries when we want a clear operation.
+ */
+static inline void clear_cf_icache(unsigned long start, unsigned long end)
+{
+	__asm__ __volatile__ (
+		"movec	%0,%%cacr\n\t"
+		"nop"
+		:
+		: "r" (CACHE_MODE | CACR_ICINVA | CACR_BCINVA));
+}
+
+static inline void clear_cf_dcache(unsigned long start, unsigned long end)
+{
+	__asm__ __volatile__ (
+		"movec	%0,%%cacr\n\t"
+		"nop"
+		:
+		: "r" (CACHE_MODE | CACR_DCINVA));
+}
+
+static inline void clear_cf_bcache(unsigned long start, unsigned long end)
+{
+	__asm__ __volatile__ (
+		"movec	%0,%%cacr\n\t"
+		"nop"
+		:
+		: "r" (CACHE_MODE | CACR_ICINVA | CACR_BCINVA | CACR_DCINVA));
+}
+
+/*
+ * Use the ColdFire cpushl instruction to push (and invalidate) cache lines.
+ * The start and end addresses are cache line numbers not memory addresses.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void flush_cf_icache(unsigned long start, unsigned long end)
 {
 	unsigned long set;
@@ -149,6 +198,10 @@ extern void cache_push_v(unsigned long vaddr, int len);
 #define flush_cache_all() __flush_cache_all()
 
 #define flush_cache_vmap(start, end)		flush_cache_all()
+<<<<<<< HEAD
+=======
+#define flush_cache_vmap_early(start, end)	do { } while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define flush_cache_vunmap(start, end)		flush_cache_all()
 
 static inline void flush_cache_mm(struct mm_struct *mm)
@@ -178,24 +231,45 @@ static inline void flush_cache_page(struct vm_area_struct *vma, unsigned long vm
 
 /* Push the page at kernel virtual address and clear the icache */
 /* RZ: use cpush %bc instead of cpush %dc, cinv %ic */
+<<<<<<< HEAD
 static inline void __flush_page_to_ram(void *vaddr)
+=======
+static inline void __flush_pages_to_ram(void *vaddr, unsigned int nr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (CPU_IS_COLDFIRE) {
 		unsigned long addr, start, end;
 		addr = ((unsigned long) vaddr) & ~(PAGE_SIZE - 1);
 		start = addr & ICACHE_SET_MASK;
+<<<<<<< HEAD
 		end = (addr + PAGE_SIZE - 1) & ICACHE_SET_MASK;
+=======
+		end = (addr + nr * PAGE_SIZE - 1) & ICACHE_SET_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (start > end) {
 			flush_cf_bcache(0, end);
 			end = ICACHE_MAX_ADDR;
 		}
 		flush_cf_bcache(start, end);
 	} else if (CPU_IS_040_OR_060) {
+<<<<<<< HEAD
 		__asm__ __volatile__("nop\n\t"
 				     ".chip 68040\n\t"
 				     "cpushp %%bc,(%0)\n\t"
 				     ".chip 68k"
 				     : : "a" (__pa(vaddr)));
+=======
+		unsigned long paddr = __pa(vaddr);
+
+		do {
+			__asm__ __volatile__("nop\n\t"
+					     ".chip 68040\n\t"
+					     "cpushp %%bc,(%0)\n\t"
+					     ".chip 68k"
+					     : : "a" (paddr));
+			paddr += PAGE_SIZE;
+		} while (--nr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		unsigned long _tmp;
 		__asm__ __volatile__("movec %%cacr,%0\n\t"
@@ -207,6 +281,7 @@ static inline void __flush_page_to_ram(void *vaddr)
 }
 
 #define ARCH_IMPLEMENTS_FLUSH_DCACHE_PAGE 1
+<<<<<<< HEAD
 #define flush_dcache_page(page)		__flush_page_to_ram(page_address(page))
 #define flush_dcache_mmap_lock(mapping)		do { } while (0)
 #define flush_dcache_mmap_unlock(mapping)	do { } while (0)
@@ -215,6 +290,21 @@ static inline void __flush_page_to_ram(void *vaddr)
 extern void flush_icache_user_range(struct vm_area_struct *vma, struct page *page,
 				    unsigned long addr, int len);
 extern void flush_icache_range(unsigned long address, unsigned long endaddr);
+=======
+#define flush_dcache_page(page)	__flush_pages_to_ram(page_address(page), 1)
+#define flush_dcache_folio(folio)		\
+	__flush_pages_to_ram(folio_address(folio), folio_nr_pages(folio))
+#define flush_dcache_mmap_lock(mapping)		do { } while (0)
+#define flush_dcache_mmap_unlock(mapping)	do { } while (0)
+#define flush_icache_pages(vma, page, nr)	\
+	__flush_pages_to_ram(page_address(page), nr)
+
+extern void flush_icache_user_page(struct vm_area_struct *vma, struct page *page,
+				    unsigned long addr, int len);
+extern void flush_icache_range(unsigned long address, unsigned long endaddr);
+extern void flush_icache_user_range(unsigned long address,
+		unsigned long endaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void copy_to_user_page(struct vm_area_struct *vma,
 				     struct page *page, unsigned long vaddr,
@@ -222,7 +312,11 @@ static inline void copy_to_user_page(struct vm_area_struct *vma,
 {
 	flush_cache_page(vma, vaddr, page_to_pfn(page));
 	memcpy(dst, src, len);
+<<<<<<< HEAD
 	flush_icache_user_range(vma, page, vaddr, len);
+=======
+	flush_icache_user_page(vma, page, vaddr, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 static inline void copy_from_user_page(struct vm_area_struct *vma,
 				       struct page *page, unsigned long vaddr,

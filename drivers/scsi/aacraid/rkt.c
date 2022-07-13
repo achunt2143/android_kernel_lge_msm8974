@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	Adaptec AAC series RAID controller driver
  *	(c) Copyright 2001 Red Hat Inc.
@@ -6,6 +10,7 @@
  * Adaptec aacraid device driver for Linux.
  *
  * Copyright (c) 2000-2010 Adaptec, Inc.
+<<<<<<< HEAD
  *               2010 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,12 +26,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; see the file COPYING.  If not, write to
  * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+ *               2010-2015 PMC-Sierra, Inc. (aacraid@pmc-sierra.com)
+ *		 2016-2017 Microsemi Corp. (aacraid@microsemi.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Module Name:
  *  rkt.c
  *
  * Abstract: Hardware miniport for Drawbridge specific hardware functions.
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/blkdev.h>
@@ -60,7 +72,11 @@ static int aac_rkt_select_comm(struct aac_dev *dev, int comm)
 		 * case warrants this half baked, but convenient, check here.
 		 */
 		if (dev->scsi_host_ptr->can_queue > AAC_NUM_IO_FIB_RKT) {
+<<<<<<< HEAD
 			dev->init->MaxIoCommands =
+=======
+			dev->init->r7.max_io_commands =
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cpu_to_le32(AAC_NUM_IO_FIB_RKT + AAC_NUM_MGT_FIB);
 			dev->scsi_host_ptr->can_queue = AAC_NUM_IO_FIB_RKT;
 		}
@@ -70,6 +86,10 @@ static int aac_rkt_select_comm(struct aac_dev *dev, int comm)
 
 /**
  *	aac_rkt_ioremap
+<<<<<<< HEAD
+=======
+ *	@dev: device to ioremap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	@size: mapping resize request
  *
  */
@@ -79,7 +99,11 @@ static int aac_rkt_ioremap(struct aac_dev * dev, u32 size)
 		iounmap(dev->regs.rkt);
 		return 0;
 	}
+<<<<<<< HEAD
 	dev->base = dev->regs.rkt = ioremap(dev->scsi_host_ptr->base, size);
+=======
+	dev->base = dev->regs.rkt = ioremap(dev->base_start, size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev->base == NULL)
 		return -1;
 	dev->IndexRegs = &dev->regs.rkt->IndexRegs;
@@ -90,8 +114,13 @@ static int aac_rkt_ioremap(struct aac_dev * dev, u32 size)
  *	aac_rkt_init	-	initialize an i960 based AAC card
  *	@dev: device to configure
  *
+<<<<<<< HEAD
  *	Allocate and set up resources for the i960 based AAC variants. The 
  *	device_interface in the commregion will be allocated and linked 
+=======
+ *	Allocate and set up resources for the i960 based AAC variants. The
+ *	device_interface in the commregion will be allocated and linked
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	to the comm region.
  */
 

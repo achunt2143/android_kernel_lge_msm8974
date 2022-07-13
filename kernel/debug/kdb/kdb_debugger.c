@@ -12,6 +12,10 @@
 #include <linux/kdb.h>
 #include <linux/kdebug.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <linux/hardirq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "kdb_private.h"
 #include "../debug_core.h"
 
@@ -33,6 +37,25 @@ EXPORT_SYMBOL_GPL(kdb_poll_idx);
 
 static struct kgdb_state *kdb_ks;
 
+<<<<<<< HEAD
+=======
+int kdb_common_init_state(struct kgdb_state *ks)
+{
+	kdb_initial_cpu = atomic_read(&kgdb_active);
+	kdb_current_task = kgdb_info[ks->cpu].task;
+	kdb_current_regs = kgdb_info[ks->cpu].debuggerinfo;
+	return 0;
+}
+
+int kdb_common_deinit_state(void)
+{
+	kdb_initial_cpu = -1;
+	kdb_current_task = NULL;
+	kdb_current_regs = NULL;
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int kdb_stub(struct kgdb_state *ks)
 {
 	int error = 0;
@@ -52,6 +75,15 @@ int kdb_stub(struct kgdb_state *ks)
 	if (atomic_read(&kgdb_setting_breakpoint))
 		reason = KDB_REASON_KEYBOARD;
 
+<<<<<<< HEAD
+=======
+	if (ks->err_code == KDB_REASON_SYSTEM_NMI && ks->signo == SIGTRAP)
+		reason = KDB_REASON_SYSTEM_NMI;
+
+	else if (in_nmi())
+		reason = KDB_REASON_NMI;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0, bp = kdb_breakpoints; i < KDB_MAXBPT; i++, bp++) {
 		if ((bp->bp_enabled) && (bp->bp_addr == addr)) {
 			reason = KDB_REASON_BREAK;
@@ -90,6 +122,7 @@ int kdb_stub(struct kgdb_state *ks)
 	}
 	/* Set initial kdb state variables */
 	KDB_STATE_CLEAR(KGDB_TRANS);
+<<<<<<< HEAD
 	kdb_initial_cpu = atomic_read(&kgdb_active);
 	kdb_current_task = kgdb_info[ks->cpu].task;
 	kdb_current_regs = kgdb_info[ks->cpu].debuggerinfo;
@@ -105,10 +138,24 @@ int kdb_stub(struct kgdb_state *ks)
 			kgdb_info[i].task = NULL;
 		}
 	}
+=======
+	kdb_common_init_state(ks);
+	/* Remove any breakpoints as needed by kdb and clear single step */
+	kdb_bp_remove();
+	KDB_STATE_CLEAR(DOING_SS);
+	KDB_STATE_SET(PAGER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ks->err_code == DIE_OOPS || reason == KDB_REASON_OOPS) {
 		ks->pass_exception = 1;
 		KDB_FLAG_SET(CATASTROPHIC);
 	}
+<<<<<<< HEAD
+=======
+	/* set CATASTROPHIC if the system contains unresponsive processors */
+	for_each_online_cpu(i)
+		if (!kgdb_info[i].enter_kgdb)
+			KDB_FLAG_SET(CATASTROPHIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (KDB_STATE(SSBPT) && reason == KDB_REASON_SSTEP) {
 		KDB_STATE_CLEAR(SSBPT);
 		KDB_STATE_CLEAR(DOING_SS);
@@ -121,18 +168,26 @@ int kdb_stub(struct kgdb_state *ks)
 	 * Upon exit from the kdb main loop setup break points and restart
 	 * the system based on the requested continue state
 	 */
+<<<<<<< HEAD
 	kdb_initial_cpu = -1;
 	kdb_current_task = NULL;
 	kdb_current_regs = NULL;
 	KDB_STATE_CLEAR(PAGER);
 	kdbnearsym_cleanup();
+=======
+	kdb_common_deinit_state();
+	KDB_STATE_CLEAR(PAGER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error == KDB_CMD_KGDB) {
 		if (KDB_STATE(DOING_KGDB))
 			KDB_STATE_CLEAR(DOING_KGDB);
 		return DBG_PASS_EVENT;
 	}
 	kdb_bp_install(ks->linux_regs);
+<<<<<<< HEAD
 	dbg_activate_sw_breakpoints();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set the exit state to a single step or a continue */
 	if (KDB_STATE(DOING_SS))
 		gdbstub_state(ks, "s");
@@ -152,7 +207,10 @@ int kdb_stub(struct kgdb_state *ks)
 		 * differently vs the gdbstub
 		 */
 		kgdb_single_step = 0;
+<<<<<<< HEAD
 		dbg_deactivate_sw_breakpoints();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return DBG_SWITCH_CPU_EVENT;
 	}
 	return kgdb_info[ks->cpu].ret_state;

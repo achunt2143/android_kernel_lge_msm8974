@@ -1,13 +1,24 @@
+<<<<<<< HEAD
 /*
  *  drivers/s390/char/sclp_quiesce.c
  *     signal quiesce handler
  *
  *  (C) Copyright IBM Corp. 1999,2004
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ *     signal quiesce handler
+ *
+ *  Copyright IBM Corp. 1999, 2004
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Author(s): Martin Schwidefsky <schwidefsky@de.ibm.com>
  *             Peter Oberparleiter <peter.oberparleiter@de.ibm.com>
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 #include <linux/cpumask.h>
 #include <linux/smp.h>
@@ -19,10 +30,13 @@
 
 #include "sclp.h"
 
+<<<<<<< HEAD
 static void (*old_machine_restart)(char *);
 static void (*old_machine_halt)(void);
 static void (*old_machine_power_off)(void);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Shutdown handler. Signal completion of shutdown by loading special PSW. */
 static void do_machine_quiesce(void)
 {
@@ -38,6 +52,7 @@ static void do_machine_quiesce(void)
 /* Handler for quiesce event. Start shutdown procedure. */
 static void sclp_quiesce_handler(struct evbuf_header *evbuf)
 {
+<<<<<<< HEAD
 	if (_machine_restart != (void *) do_machine_quiesce) {
 		old_machine_restart = _machine_restart;
 		old_machine_halt = _machine_halt;
@@ -74,6 +89,17 @@ static struct sclp_register sclp_quiesce_event = {
 	.receive_mask = EVTYP_SIGQUIESCE_MASK,
 	.receiver_fn = sclp_quiesce_handler,
 	.pm_event_fn = sclp_quiesce_pm_event
+=======
+	_machine_restart = (void *) do_machine_quiesce;
+	_machine_halt = do_machine_quiesce;
+	_machine_power_off = do_machine_quiesce;
+	ctrl_alt_del();
+}
+
+static struct sclp_register sclp_quiesce_event = {
+	.receive_mask = EVTYP_SIGQUIESCE_MASK,
+	.receiver_fn = sclp_quiesce_handler,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Initialize quiesce driver. */
@@ -81,5 +107,9 @@ static int __init sclp_quiesce_init(void)
 {
 	return sclp_register(&sclp_quiesce_event);
 }
+<<<<<<< HEAD
 
 module_init(sclp_quiesce_init);
+=======
+device_initcall(sclp_quiesce_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

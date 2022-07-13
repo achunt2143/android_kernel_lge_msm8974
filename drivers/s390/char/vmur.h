@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux driver for System z and s390 unit record devices
  * (z/VM virtual punch, reader, printer)
@@ -11,6 +15,12 @@
 #ifndef _VMUR_H_
 #define _VMUR_H_
 
+<<<<<<< HEAD
+=======
+#include <linux/refcount.h>
+#include <linux/workqueue.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEV_CLASS_UR_I 0x20 /* diag210 unit record input device class */
 #define DEV_CLASS_UR_O 0x10 /* diag210 unit record output device class */
 /*
@@ -69,10 +79,18 @@ struct urdev {
 	size_t reclen;			/* Record length for *write* CCWs */
 	int class;			/* VM device class */
 	int io_request_rc;		/* return code from I/O request */
+<<<<<<< HEAD
 	atomic_t ref_count;		/* reference counter */
 	wait_queue_head_t wait;		/* wait queue to serialize open */
 	int open_flag;			/* "urdev is open" flag */
 	spinlock_t open_lock;		/* serialize critical sections */
+=======
+	refcount_t ref_count;		/* reference counter */
+	wait_queue_head_t wait;		/* wait queue to serialize open */
+	int open_flag;			/* "urdev is open" flag */
+	spinlock_t open_lock;		/* serialize critical sections */
+	struct work_struct uevent_work;	/* work to send uevent */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*

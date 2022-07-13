@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __CPM_H
 #define __CPM_H
 
@@ -210,3 +211,6 @@ static inline int cpm_command(u32 command, u8 opcode)
 int cpm2_gpiochip_add32(struct device_node *np);
 
 #endif
+=======
+#include <soc/fsl/cpm.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if !defined(_TRACE_KVM_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_KVM_H
 
@@ -5,8 +9,11 @@
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM kvm
+<<<<<<< HEAD
 #define TRACE_INCLUDE_PATH .
 #define TRACE_INCLUDE_FILE trace
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Tracepoint for guest mode entry.
@@ -98,6 +105,7 @@ TRACE_EVENT(kvm_gtlb_write,
 		__entry->word1, __entry->word2)
 );
 
+<<<<<<< HEAD
 
 /*************************************************************************
  *                         Book3S trace points                           *
@@ -400,4 +408,33 @@ TRACE_EVENT(kvm_booke206_gtlb_write,
 #endif /* _TRACE_KVM_H */
 
 /* This part must be outside protection */
+=======
+TRACE_EVENT(kvm_check_requests,
+	TP_PROTO(struct kvm_vcpu *vcpu),
+	TP_ARGS(vcpu),
+
+	TP_STRUCT__entry(
+		__field(	__u32,	cpu_nr		)
+		__field(	__u32,	requests	)
+	),
+
+	TP_fast_assign(
+		__entry->cpu_nr		= vcpu->vcpu_id;
+		__entry->requests	= vcpu->requests;
+	),
+
+	TP_printk("vcpu=%x requests=%x",
+		__entry->cpu_nr, __entry->requests)
+);
+
+#endif /* _TRACE_KVM_H */
+
+/* This part must be outside protection */
+#undef TRACE_INCLUDE_PATH
+#undef TRACE_INCLUDE_FILE
+
+#define TRACE_INCLUDE_PATH .
+#define TRACE_INCLUDE_FILE trace
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <trace/define_trace.h>

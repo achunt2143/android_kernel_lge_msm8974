@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/powerpc/platforms/cell/cell_setup.c
  *
@@ -6,11 +10,14 @@
  *  Modified by Cort Dougan (cort@cs.nmt.edu)
  *  Modified by PPC64 Team, IBM Corp
  *  Modified by Cell Team, IBM Deutschland Entwicklung GmbH
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #undef DEBUG
 
@@ -31,12 +38,19 @@
 #include <linux/mutex.h>
 #include <linux/memory_hotplug.h>
 #include <linux/of_platform.h>
+<<<<<<< HEAD
+=======
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/mmu.h>
 #include <asm/processor.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/prom.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/rtas.h>
 #include <asm/pci-bridge.h>
 #include <asm/iommu.h>
@@ -54,6 +68,10 @@
 #include <asm/cell-regs.h>
 #include <asm/io-workarounds.h>
 
+<<<<<<< HEAD
+=======
+#include "cell.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "interrupt.h"
 #include "pervasive.h"
 #include "ras.h"
@@ -117,7 +135,11 @@ static void cell_fixup_pcie_rootcomplex(struct pci_dev *dev)
 }
 DECLARE_PCI_FIXUP_HEADER(PCI_ANY_ID, PCI_ANY_ID, cell_fixup_pcie_rootcomplex);
 
+<<<<<<< HEAD
 static int __devinit cell_setup_phb(struct pci_controller *phb)
+=======
+static int cell_setup_phb(struct pci_controller *phb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const char *model;
 	struct device_node *np;
@@ -126,9 +148,17 @@ static int __devinit cell_setup_phb(struct pci_controller *phb)
 	if (rc)
 		return rc;
 
+<<<<<<< HEAD
 	np = phb->dn;
 	model = of_get_property(np, "model", NULL);
 	if (model == NULL || strcmp(np->name, "pci"))
+=======
+	phb->controller_ops = cell_pci_controller_ops;
+
+	np = phb->dn;
+	model = of_get_property(np, "model", NULL);
+	if (model == NULL || !of_node_name_eq(np, "pci"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	/* Setup workarounds for spider */
@@ -165,12 +195,21 @@ static int __init cell_publish_devices(void)
 	 * platform devices for the PCI host bridges
 	 */
 	for_each_child_of_node(root, np) {
+<<<<<<< HEAD
 		if (np->type == NULL || (strcmp(np->type, "pci") != 0 &&
 					 strcmp(np->type, "pciex") != 0))
+=======
+		if (!of_node_is_type(np, "pci") && !of_node_is_type(np, "pciex"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 		of_platform_device_create(np, NULL, NULL);
 	}
 
+<<<<<<< HEAD
+=======
+	of_node_put(root);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* There is no device for the MIC memory controller, thus we create
 	 * a platform device for it to attach the EDAC driver to.
 	 */
@@ -189,8 +228,12 @@ static void __init mpic_init_IRQ(void)
 	struct device_node *dn;
 	struct mpic *mpic;
 
+<<<<<<< HEAD
 	for (dn = NULL;
 	     (dn = of_find_node_by_name(dn, "interrupt-controller"));) {
+=======
+	for_each_node_by_name(dn, "interrupt-controller") {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!of_device_is_compatible(dn, "CBEA,platform-open-pic"))
 			continue;
 
@@ -243,15 +286,19 @@ static void __init cell_setup_arch(void)
 	init_pci_config_tokens();
 
 	cbe_pervasive_init();
+<<<<<<< HEAD
 #ifdef CONFIG_DUMMY_CONSOLE
 	conswitchp = &dummy_con;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmio_nvram_init();
 }
 
 static int __init cell_probe(void)
 {
+<<<<<<< HEAD
 	unsigned long root = of_get_flat_dt_root();
 
 	if (!of_flat_dt_is_compatible(root, "IBM,CBEA") &&
@@ -259,6 +306,13 @@ static int __init cell_probe(void)
 		return 0;
 
 	hpte_init_native();
+=======
+	if (!of_machine_is_compatible("IBM,CBEA") &&
+	    !of_machine_is_compatible("IBM,CPBW-1.0"))
+		return 0;
+
+	pm_power_off = rtas_power_off;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
@@ -269,13 +323,24 @@ define_machine(cell) {
 	.setup_arch		= cell_setup_arch,
 	.show_cpuinfo		= cell_show_cpuinfo,
 	.restart		= rtas_restart,
+<<<<<<< HEAD
 	.power_off		= rtas_power_off,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.halt			= rtas_halt,
 	.get_boot_time		= rtas_get_boot_time,
 	.get_rtc_time		= rtas_get_rtc_time,
 	.set_rtc_time		= rtas_set_rtc_time,
+<<<<<<< HEAD
 	.calibrate_decr		= generic_calibrate_decr,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.progress		= cell_progress,
 	.init_IRQ       	= cell_init_irq,
 	.pci_setup_phb		= cell_setup_phb,
 };
+<<<<<<< HEAD
+=======
+
+struct pci_controller_ops cell_pci_controller_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

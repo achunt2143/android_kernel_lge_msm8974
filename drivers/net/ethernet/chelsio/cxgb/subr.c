@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************
  *                                                                           *
  * File: subr.c                                                              *
@@ -7,6 +11,7 @@
  *  Various subroutines (intr,pio,etc.) used by Chelsio 10G Ethernet driver. *
  *  part of the Chelsio 10Gb Ethernet Driver.                                *
  *                                                                           *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify      *
  * it under the terms of the GNU General Public License, version 2, as       *
  * published by the Free Software Foundation.                                *
@@ -18,6 +23,8 @@
  * THIS SOFTWARE IS PROVIDED ``AS IS'' AND WITHOUT ANY EXPRESS OR IMPLIED    *
  * WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED WARRANTIES OF      *
  * MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.                     *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                                                                           *
  * http://www.chelsio.com                                                    *
  *                                                                           *
@@ -171,7 +178,11 @@ void t1_link_changed(adapter_t *adapter, int port_id)
 	t1_link_negotiated(adapter, port_id, link_ok, speed, duplex, fc);
 }
 
+<<<<<<< HEAD
 static int t1_pci_intr_handler(adapter_t *adapter)
+=======
+static bool t1_pci_intr_handler(adapter_t *adapter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 pcix_cause;
 
@@ -180,9 +191,19 @@ static int t1_pci_intr_handler(adapter_t *adapter)
 	if (pcix_cause) {
 		pci_write_config_dword(adapter->pdev, A_PCICFG_INTR_CAUSE,
 				       pcix_cause);
+<<<<<<< HEAD
 		t1_fatal_err(adapter);    /* PCI errors are fatal */
 	}
 	return 0;
+=======
+		/* PCI errors are fatal */
+		t1_interrupts_disable(adapter);
+		adapter->pending_thread_intr |= F_PL_INTR_SGE_ERR;
+		pr_alert("%s: PCI error encountered.\n", adapter->name);
+		return true;
+	}
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_CHELSIO_T1_1G
@@ -211,6 +232,7 @@ static int fpga_phy_intr_handler(adapter_t *adapter)
 /*
  * Slow path interrupt handler for FPGAs.
  */
+<<<<<<< HEAD
 static int fpga_slow_intr(adapter_t *adapter)
 {
 	u32 cause = readl(adapter->regs + A_PL_CAUSE);
@@ -218,6 +240,18 @@ static int fpga_slow_intr(adapter_t *adapter)
 	cause &= ~F_PL_INTR_SGE_DATA;
 	if (cause & F_PL_INTR_SGE_ERR)
 		t1_sge_intr_error_handler(adapter->sge);
+=======
+static irqreturn_t fpga_slow_intr(adapter_t *adapter)
+{
+	u32 cause = readl(adapter->regs + A_PL_CAUSE);
+	irqreturn_t ret = IRQ_NONE;
+
+	cause &= ~F_PL_INTR_SGE_DATA;
+	if (cause & F_PL_INTR_SGE_ERR) {
+		if (t1_sge_intr_error_handler(adapter->sge))
+			ret = IRQ_WAKE_THREAD;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (cause & FPGA_PCIX_INTERRUPT_GMAC)
 		fpga_phy_intr_handler(adapter);
@@ -232,14 +266,28 @@ static int fpga_slow_intr(adapter_t *adapter)
 		/* Clear TP interrupt */
 		writel(tp_cause, adapter->regs + FPGA_TP_ADDR_INTERRUPT_CAUSE);
 	}
+<<<<<<< HEAD
 	if (cause & FPGA_PCIX_INTERRUPT_PCIX)
 		t1_pci_intr_handler(adapter);
+=======
+	if (cause & FPGA_PCIX_INTERRUPT_PCIX) {
+		if (t1_pci_intr_handler(adapter))
+			ret = IRQ_WAKE_THREAD;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the interrupts just processed. */
 	if (cause)
 		writel(cause, adapter->regs + A_PL_CAUSE);
 
+<<<<<<< HEAD
 	return cause != 0;
+=======
+	if (ret != IRQ_NONE)
+		return ret;
+
+	return cause == 0 ? IRQ_NONE : IRQ_HANDLED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -523,7 +571,11 @@ static const struct board_info t1_board[] = {
 
 };
 
+<<<<<<< HEAD
 DEFINE_PCI_DEVICE_TABLE(t1_pci_tbl) = {
+=======
+const struct pci_device_id t1_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CH_DEVICE(8, 0, CH_BRD_T110_1CU),
 	CH_DEVICE(8, 1, CH_BRD_T110_1CU),
 	CH_DEVICE(7, 0, CH_BRD_N110_1F),
@@ -843,6 +895,7 @@ void t1_interrupts_clear(adapter_t* adapter)
 /*
  * Slow path interrupt handler for ASICs.
  */
+<<<<<<< HEAD
 static int asic_slow_intr(adapter_t *adapter)
 {
 	u32 cause = readl(adapter->regs + A_PL_CAUSE);
@@ -852,22 +905,61 @@ static int asic_slow_intr(adapter_t *adapter)
 		return 0;
 	if (cause & F_PL_INTR_SGE_ERR)
 		t1_sge_intr_error_handler(adapter->sge);
+=======
+static irqreturn_t asic_slow_intr(adapter_t *adapter)
+{
+	u32 cause = readl(adapter->regs + A_PL_CAUSE);
+	irqreturn_t ret = IRQ_HANDLED;
+
+	cause &= adapter->slow_intr_mask;
+	if (!cause)
+		return IRQ_NONE;
+	if (cause & F_PL_INTR_SGE_ERR) {
+		if (t1_sge_intr_error_handler(adapter->sge))
+			ret = IRQ_WAKE_THREAD;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cause & F_PL_INTR_TP)
 		t1_tp_intr_handler(adapter->tp);
 	if (cause & F_PL_INTR_ESPI)
 		t1_espi_intr_handler(adapter->espi);
+<<<<<<< HEAD
 	if (cause & F_PL_INTR_PCIX)
 		t1_pci_intr_handler(adapter);
 	if (cause & F_PL_INTR_EXT)
 		t1_elmer0_ext_intr(adapter);
+=======
+	if (cause & F_PL_INTR_PCIX) {
+		if (t1_pci_intr_handler(adapter))
+			ret = IRQ_WAKE_THREAD;
+	}
+	if (cause & F_PL_INTR_EXT) {
+		/* Wake the threaded interrupt to handle external interrupts as
+		 * we require a process context. We disable EXT interrupts in
+		 * the interim and let the thread reenable them when it's done.
+		 */
+		adapter->pending_thread_intr |= F_PL_INTR_EXT;
+		adapter->slow_intr_mask &= ~F_PL_INTR_EXT;
+		writel(adapter->slow_intr_mask | F_PL_INTR_SGE_DATA,
+		       adapter->regs + A_PL_ENABLE);
+		ret = IRQ_WAKE_THREAD;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Clear the interrupts just processed. */
 	writel(cause, adapter->regs + A_PL_CAUSE);
 	readl(adapter->regs + A_PL_CAUSE); /* flush writes */
+<<<<<<< HEAD
 	return 1;
 }
 
 int t1_slow_intr_handler(adapter_t *adapter)
+=======
+	return ret;
+}
+
+irqreturn_t t1_slow_intr_handler(adapter_t *adapter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef CONFIG_CHELSIO_T1_1G
 	if (!t1_is_asic(adapter))
@@ -892,8 +984,13 @@ static void power_sequence_xpak(adapter_t* adapter)
 	}
 }
 
+<<<<<<< HEAD
 int __devinit t1_get_board_rev(adapter_t *adapter, const struct board_info *bi,
 			       struct adapter_params *p)
+=======
+int t1_get_board_rev(adapter_t *adapter, const struct board_info *bi,
+		     struct adapter_params *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	p->chip_version = bi->chip_term;
 	p->is_asic = (p->chip_version != CHBT_TERM_FPGA);
@@ -992,7 +1089,11 @@ out_err:
 /*
  * Determine a card's PCI mode.
  */
+<<<<<<< HEAD
 static void __devinit get_pci_mode(adapter_t *adapter, struct chelsio_pci_params *p)
+=======
+static void get_pci_mode(adapter_t *adapter, struct chelsio_pci_params *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	static const unsigned short speed_map[] = { 33, 66, 100, 133 };
 	u32 pci_mode;
@@ -1028,8 +1129,13 @@ void t1_free_sw_modules(adapter_t *adapter)
 		t1_espi_destroy(adapter->espi);
 }
 
+<<<<<<< HEAD
 static void __devinit init_link_config(struct link_config *lc,
 				       const struct board_info *bi)
+=======
+static void init_link_config(struct link_config *lc,
+			     const struct board_info *bi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	lc->supported = bi->caps;
 	lc->requested_speed = lc->speed = SPEED_INVALID;
@@ -1049,8 +1155,12 @@ static void __devinit init_link_config(struct link_config *lc,
  * Allocate and initialize the data structures that hold the SW state of
  * the Terminator HW modules.
  */
+<<<<<<< HEAD
 int __devinit t1_init_sw_modules(adapter_t *adapter,
 				 const struct board_info *bi)
+=======
+int t1_init_sw_modules(adapter_t *adapter, const struct board_info *bi)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 
@@ -1116,7 +1226,11 @@ int __devinit t1_init_sw_modules(adapter_t *adapter,
 			       adapter->port[i].dev->name);
 			goto error;
 		}
+<<<<<<< HEAD
 		memcpy(adapter->port[i].dev->dev_addr, hw_addr, ETH_ALEN);
+=======
+		eth_hw_addr_set(adapter->port[i].dev, hw_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		init_link_config(&adapter->port[i].link_config, bi);
 	}
 

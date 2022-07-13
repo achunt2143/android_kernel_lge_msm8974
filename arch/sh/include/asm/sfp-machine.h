@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 /* Machine-dependent software floating-point definitions.
+=======
+/* SPDX-License-Identifier: GPL-2.0+
+ *
+ * Machine-dependent software floating-point definitions.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
    SuperH kernel version.
    Copyright (C) 1997,1998,1999 Free Software Foundation, Inc.
    This file is part of the GNU C Library.
@@ -6,6 +12,7 @@
 		  Jakub Jelinek (jj@ultra.linux.cz),
 		  David S. Miller (davem@redhat.com) and
 		  Peter Maydell (pmaydell@chiark.greenend.org.uk).
+<<<<<<< HEAD
 
    The GNU C Library is free software; you can redistribute it and/or
    modify it under the terms of the GNU Library General Public License as
@@ -21,10 +28,24 @@
    License along with the GNU C Library; see the file COPYING.LIB.  If
    not, write to the Free Software Foundation, Inc.,
    59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.  */
+=======
+*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef _SFP_MACHINE_H
 #define _SFP_MACHINE_H
 
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN__
+#define __BYTE_ORDER __BIG_ENDIAN
+#define __LITTLE_ENDIAN 0
+#else
+#define __BYTE_ORDER __LITTLE_ENDIAN
+#define __BIG_ENDIAN 0
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define _FP_W_TYPE_SIZE		32
 #define _FP_W_TYPE		unsigned long
 #define _FP_WS_TYPE		signed long

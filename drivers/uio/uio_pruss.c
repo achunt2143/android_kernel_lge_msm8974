@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Programmable Real-Time Unit Sub System (PRUSS) UIO driver (uio_pruss)
  *
@@ -5,6 +9,7 @@
  * and DDR RAM to user space for applications interacting with PRUSS firmware
  *
  * Copyright (C) 2010-11 Texas Instruments Incorporated - http://www.ti.com/
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -14,6 +19,8 @@
  * kind, whether express or implied; without even the implied warranty
  * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/device.h>
 #include <linux/module.h>
@@ -24,8 +31,14 @@
 #include <linux/io.h>
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
 #include <mach/sram.h>
+=======
+#include <linux/sizes.h>
+#include <linux/slab.h>
+#include <linux/genalloc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRV_NAME "pruss_uio"
 #define DRV_VERSION "1.0"
@@ -65,10 +78,18 @@ struct uio_pruss_dev {
 	dma_addr_t sram_paddr;
 	dma_addr_t ddr_paddr;
 	void __iomem *prussio_vaddr;
+<<<<<<< HEAD
 	void *sram_vaddr;
 	void *ddr_vaddr;
 	unsigned int hostirq_start;
 	unsigned int pintc_base;
+=======
+	unsigned long sram_vaddr;
+	void *ddr_vaddr;
+	unsigned int hostirq_start;
+	unsigned int pintc_base;
+	struct gen_pool *sram_pool;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static irqreturn_t pruss_handler(int irq, struct uio_info *info)
@@ -90,14 +111,19 @@ static irqreturn_t pruss_handler(int irq, struct uio_info *info)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static void pruss_cleanup(struct platform_device *dev,
 			struct uio_pruss_dev *gdev)
+=======
+static void pruss_cleanup(struct device *dev, struct uio_pruss_dev *gdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cnt;
 	struct uio_info *p = gdev->info;
 
 	for (cnt = 0; cnt < MAX_PRUSS_EVT; cnt++, p++) {
 		uio_unregister_device(p);
+<<<<<<< HEAD
 		kfree(p->name);
 	}
 	iounmap(gdev->prussio_vaddr);
@@ -113,10 +139,27 @@ static void pruss_cleanup(struct platform_device *dev,
 }
 
 static int __devinit pruss_probe(struct platform_device *dev)
+=======
+	}
+	iounmap(gdev->prussio_vaddr);
+	if (gdev->ddr_vaddr) {
+		dma_free_coherent(dev, extram_pool_sz, gdev->ddr_vaddr,
+			gdev->ddr_paddr);
+	}
+	if (gdev->sram_vaddr)
+		gen_pool_free(gdev->sram_pool,
+			      gdev->sram_vaddr,
+			      sram_pool_sz);
+	clk_disable(gdev->pruss_clk);
+}
+
+static int pruss_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uio_info *p;
 	struct uio_pruss_dev *gdev;
 	struct resource *regs_prussio;
+<<<<<<< HEAD
 	int ret = -ENODEV, cnt = 0, len;
 	struct uio_pruss_pdata *pdata = dev->dev.platform_data;
 
@@ -163,17 +206,89 @@ static int __devinit pruss_probe(struct platform_device *dev)
 	if (!gdev->ddr_vaddr) {
 		dev_err(&dev->dev, "Could not allocate external memory\n");
 		goto out_free;
+=======
+	struct device *dev = &pdev->dev;
+	int ret, cnt, i, len;
+	struct uio_pruss_pdata *pdata = dev_get_platdata(dev);
+
+	gdev = devm_kzalloc(dev, sizeof(struct uio_pruss_dev), GFP_KERNEL);
+	if (!gdev)
+		return -ENOMEM;
+
+	gdev->info = devm_kcalloc(dev, MAX_PRUSS_EVT, sizeof(*p), GFP_KERNEL);
+	if (!gdev->info)
+		return -ENOMEM;
+
+	/* Power on PRU in case its not done as part of boot-loader */
+	gdev->pruss_clk = devm_clk_get(dev, "pruss");
+	if (IS_ERR(gdev->pruss_clk)) {
+		dev_err(dev, "Failed to get clock\n");
+		return PTR_ERR(gdev->pruss_clk);
+	}
+
+	ret = clk_enable(gdev->pruss_clk);
+	if (ret) {
+		dev_err(dev, "Failed to enable clock\n");
+		return ret;
+	}
+
+	regs_prussio = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+	if (!regs_prussio) {
+		dev_err(dev, "No PRUSS I/O resource specified\n");
+		ret = -EIO;
+		goto err_clk_disable;
+	}
+
+	if (!regs_prussio->start) {
+		dev_err(dev, "Invalid memory resource\n");
+		ret = -EIO;
+		goto err_clk_disable;
+	}
+
+	if (pdata->sram_pool) {
+		gdev->sram_pool = pdata->sram_pool;
+		gdev->sram_vaddr =
+			(unsigned long)gen_pool_dma_alloc(gdev->sram_pool,
+					sram_pool_sz, &gdev->sram_paddr);
+		if (!gdev->sram_vaddr) {
+			dev_err(dev, "Could not allocate SRAM pool\n");
+			ret = -ENOMEM;
+			goto err_clk_disable;
+		}
+	}
+
+	gdev->ddr_vaddr = dma_alloc_coherent(dev, extram_pool_sz,
+				&(gdev->ddr_paddr), GFP_KERNEL | GFP_DMA);
+	if (!gdev->ddr_vaddr) {
+		dev_err(dev, "Could not allocate external memory\n");
+		ret = -ENOMEM;
+		goto err_free_sram;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	len = resource_size(regs_prussio);
 	gdev->prussio_vaddr = ioremap(regs_prussio->start, len);
 	if (!gdev->prussio_vaddr) {
+<<<<<<< HEAD
 		dev_err(&dev->dev, "Can't remap PRUSS I/O  address range\n");
 		goto out_free;
 	}
 
 	gdev->pintc_base = pdata->pintc_base;
 	gdev->hostirq_start = platform_get_irq(dev, 0);
+=======
+		dev_err(dev, "Can't remap PRUSS I/O  address range\n");
+		ret = -ENOMEM;
+		goto err_free_ddr_vaddr;
+	}
+
+	ret = platform_get_irq(pdev, 0);
+	if (ret < 0)
+		goto err_unmap;
+
+	gdev->hostirq_start = ret;
+	gdev->pintc_base = pdata->pintc_base;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (cnt = 0, p = gdev->info; cnt < MAX_PRUSS_EVT; cnt++, p++) {
 		p->mem[0].addr = regs_prussio->start;
@@ -184,11 +299,21 @@ static int __devinit pruss_probe(struct platform_device *dev)
 		p->mem[1].size = sram_pool_sz;
 		p->mem[1].memtype = UIO_MEM_PHYS;
 
+<<<<<<< HEAD
 		p->mem[2].addr = gdev->ddr_paddr;
 		p->mem[2].size = extram_pool_sz;
 		p->mem[2].memtype = UIO_MEM_PHYS;
 
 		p->name = kasprintf(GFP_KERNEL, "pruss_evt%d", cnt);
+=======
+		p->mem[2].addr = (uintptr_t) gdev->ddr_vaddr;
+		p->mem[2].dma_addr = gdev->ddr_paddr;
+		p->mem[2].size = extram_pool_sz;
+		p->mem[2].memtype = UIO_MEM_DMA_COHERENT;
+		p->mem[2].dma_device = dev;
+
+		p->name = devm_kasprintf(dev, GFP_KERNEL, "pruss_evt%d", cnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p->version = DRV_VERSION;
 
 		/* Register PRUSS IRQ lines */
@@ -196,6 +321,7 @@ static int __devinit pruss_probe(struct platform_device *dev)
 		p->handler = pruss_handler;
 		p->priv = gdev;
 
+<<<<<<< HEAD
 		ret = uio_register_device(&dev->dev, p);
 		if (ret < 0)
 			goto out_free;
@@ -215,15 +341,54 @@ static int __devexit pruss_remove(struct platform_device *dev)
 
 	pruss_cleanup(dev, gdev);
 	platform_set_drvdata(dev, NULL);
+=======
+		ret = uio_register_device(dev, p);
+		if (ret < 0)
+			goto err_unloop;
+	}
+
+	platform_set_drvdata(pdev, gdev);
+	return 0;
+
+err_unloop:
+	for (i = 0, p = gdev->info; i < cnt; i++, p++) {
+		uio_unregister_device(p);
+	}
+err_unmap:
+	iounmap(gdev->prussio_vaddr);
+err_free_ddr_vaddr:
+	dma_free_coherent(dev, extram_pool_sz, gdev->ddr_vaddr,
+			  gdev->ddr_paddr);
+err_free_sram:
+	if (pdata->sram_pool)
+		gen_pool_free(gdev->sram_pool, gdev->sram_vaddr, sram_pool_sz);
+err_clk_disable:
+	clk_disable(gdev->pruss_clk);
+
+	return ret;
+}
+
+static int pruss_remove(struct platform_device *dev)
+{
+	struct uio_pruss_dev *gdev = platform_get_drvdata(dev);
+
+	pruss_cleanup(&dev->dev, gdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static struct platform_driver pruss_driver = {
 	.probe = pruss_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(pruss_remove),
 	.driver = {
 		   .name = DRV_NAME,
 		   .owner = THIS_MODULE,
+=======
+	.remove = pruss_remove,
+	.driver = {
+		   .name = DRV_NAME,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   },
 };
 

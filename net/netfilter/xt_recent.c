@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 2006 Patrick McHardy <kaber@trash.net>
  * Copyright © CC Computer Consultants GmbH, 2007 - 2008
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This is a replacement of the old ipt_recent module, which carried the
  * following copyright notice:
  *
@@ -29,6 +36,10 @@
 #include <linux/skbuff.h>
 #include <linux/inet.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/vmalloc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/net_namespace.h>
 #include <net/netns/generic.h>
 
@@ -42,6 +53,7 @@ MODULE_LICENSE("GPL");
 MODULE_ALIAS("ipt_recent");
 MODULE_ALIAS("ip6t_recent");
 
+<<<<<<< HEAD
 static unsigned int ip_list_tot = 100;
 static unsigned int ip_pkt_list_tot = 20;
 static unsigned int ip_list_hash_size = 0;
@@ -56,11 +68,34 @@ module_param(ip_list_uid, uint, S_IRUGO | S_IWUSR);
 module_param(ip_list_gid, uint, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(ip_list_tot, "number of IPs to remember per list");
 MODULE_PARM_DESC(ip_pkt_list_tot, "number of packets per IP address to remember (max. 255)");
+=======
+static unsigned int ip_list_tot __read_mostly = 100;
+static unsigned int ip_list_hash_size __read_mostly;
+static unsigned int ip_list_perms __read_mostly = 0644;
+static unsigned int ip_list_uid __read_mostly;
+static unsigned int ip_list_gid __read_mostly;
+module_param(ip_list_tot, uint, 0400);
+module_param(ip_list_hash_size, uint, 0400);
+module_param(ip_list_perms, uint, 0400);
+module_param(ip_list_uid, uint, 0644);
+module_param(ip_list_gid, uint, 0644);
+MODULE_PARM_DESC(ip_list_tot, "number of IPs to remember per list");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(ip_list_hash_size, "size of hash table used to look up IPs");
 MODULE_PARM_DESC(ip_list_perms, "permissions on /proc/net/xt_recent/* files");
 MODULE_PARM_DESC(ip_list_uid, "default owner of /proc/net/xt_recent/* files");
 MODULE_PARM_DESC(ip_list_gid, "default owning group of /proc/net/xt_recent/* files");
 
+<<<<<<< HEAD
+=======
+/* retained for backwards compatibility */
+static unsigned int ip_pkt_list_tot __read_mostly;
+module_param(ip_pkt_list_tot, uint, 0400);
+MODULE_PARM_DESC(ip_pkt_list_tot, "number of packets per IP address to remember (max. 255)");
+
+#define XT_RECENT_MAX_NSTAMPS	256
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct recent_entry {
 	struct list_head	list;
 	struct list_head	lru_list;
@@ -69,16 +104,29 @@ struct recent_entry {
 	u_int8_t		ttl;
 	u_int8_t		index;
 	u_int16_t		nstamps;
+<<<<<<< HEAD
 	unsigned long		stamps[0];
+=======
+	unsigned long		stamps[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct recent_table {
 	struct list_head	list;
 	char			name[XT_RECENT_NAME_LEN];
+<<<<<<< HEAD
 	unsigned int		refcnt;
 	unsigned int		entries;
 	struct list_head	lru_list;
 	struct list_head	iphash[0];
+=======
+	union nf_inet_addr	mask;
+	unsigned int		refcnt;
+	unsigned int		entries;
+	u8			nstamps_max_mask;
+	struct list_head	lru_list;
+	struct list_head	iphash[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct recent_net {
@@ -88,7 +136,12 @@ struct recent_net {
 #endif
 };
 
+<<<<<<< HEAD
 static int recent_net_id;
+=======
+static unsigned int recent_net_id __read_mostly;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct recent_net *recent_pernet(struct net *net)
 {
 	return net_generic(net, recent_net_id);
@@ -98,11 +151,18 @@ static DEFINE_SPINLOCK(recent_lock);
 static DEFINE_MUTEX(recent_mutex);
 
 #ifdef CONFIG_PROC_FS
+<<<<<<< HEAD
 static const struct file_operations recent_old_fops, recent_mt_fops;
 #endif
 
 static u_int32_t hash_rnd __read_mostly;
 static bool hash_rnd_inited __read_mostly;
+=======
+static const struct proc_ops recent_mt_proc_ops;
+#endif
+
+static u_int32_t hash_rnd __read_mostly;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline unsigned int recent_entry_hash4(const union nf_inet_addr *addr)
 {
@@ -148,7 +208,12 @@ static void recent_entry_remove(struct recent_table *t, struct recent_entry *e)
 /*
  * Drop entries with timestamps older then 'time'.
  */
+<<<<<<< HEAD
 static void recent_entry_reap(struct recent_table *t, unsigned long time)
+=======
+static void recent_entry_reap(struct recent_table *t, unsigned long time,
+			      struct recent_entry *working, bool update)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct recent_entry *e;
 
@@ -158,6 +223,15 @@ static void recent_entry_reap(struct recent_table *t, unsigned long time)
 	e = list_entry(t->lru_list.next, struct recent_entry, lru_list);
 
 	/*
+<<<<<<< HEAD
+=======
+	 * Do not reap the entry which are going to be updated.
+	 */
+	if (e == working && update)
+		return;
+
+	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * The last time stamp is the most recent.
 	 */
 	if (time_after(time, e->stamps[e->index-1]))
@@ -169,13 +243,23 @@ recent_entry_init(struct recent_table *t, const union nf_inet_addr *addr,
 		  u_int16_t family, u_int8_t ttl)
 {
 	struct recent_entry *e;
+<<<<<<< HEAD
+=======
+	unsigned int nstamps_max = t->nstamps_max_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (t->entries >= ip_list_tot) {
 		e = list_entry(t->lru_list.next, struct recent_entry, lru_list);
 		recent_entry_remove(t, e);
 	}
+<<<<<<< HEAD
 	e = kmalloc(sizeof(*e) + sizeof(e->stamps[0]) * ip_pkt_list_tot,
 		    GFP_ATOMIC);
+=======
+
+	nstamps_max += 1;
+	e = kmalloc(struct_size(e, stamps, nstamps_max), GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (e == NULL)
 		return NULL;
 	memcpy(&e->addr, addr, sizeof(e->addr));
@@ -195,7 +279,11 @@ recent_entry_init(struct recent_table *t, const union nf_inet_addr *addr,
 
 static void recent_entry_update(struct recent_table *t, struct recent_entry *e)
 {
+<<<<<<< HEAD
 	e->index %= ip_pkt_list_tot;
+=======
+	e->index &= t->nstamps_max_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e->stamps[e->index++] = jiffies;
 	if (e->index > e->nstamps)
 		e->nstamps = e->index;
@@ -226,6 +314,7 @@ static void recent_table_flush(struct recent_table *t)
 static bool
 recent_mt(const struct sk_buff *skb, struct xt_action_param *par)
 {
+<<<<<<< HEAD
 	struct net *net = dev_net(par->in ? par->in : par->out);
 	struct recent_net *recent_net = recent_pernet(net);
 	const struct xt_recent_mtinfo *info = par->matchinfo;
@@ -236,6 +325,18 @@ recent_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	bool ret = info->invert;
 
 	if (par->family == NFPROTO_IPV4) {
+=======
+	struct net *net = xt_net(par);
+	struct recent_net *recent_net = recent_pernet(net);
+	const struct xt_recent_mtinfo_v1 *info = par->matchinfo;
+	struct recent_table *t;
+	struct recent_entry *e;
+	union nf_inet_addr addr = {}, addr_mask;
+	u_int8_t ttl;
+	bool ret = info->invert;
+
+	if (xt_family(par) == NFPROTO_IPV4) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const struct iphdr *iph = ip_hdr(skb);
 
 		if (info->side == XT_RECENT_DEST)
@@ -256,17 +357,33 @@ recent_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	}
 
 	/* use TTL as seen before forwarding */
+<<<<<<< HEAD
 	if (par->out != NULL && skb->sk == NULL)
+=======
+	if (xt_out(par) != NULL &&
+	    (!skb->sk || !net_eq(net, sock_net(skb->sk))))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ttl++;
 
 	spin_lock_bh(&recent_lock);
 	t = recent_table_lookup(recent_net, info->name);
+<<<<<<< HEAD
 	e = recent_entry_lookup(t, &addr, par->family,
+=======
+
+	nf_inet_addr_mask(&addr, &addr_mask, &t->mask);
+
+	e = recent_entry_lookup(t, &addr_mask, xt_family(par),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(info->check_set & XT_RECENT_TTL) ? ttl : 0);
 	if (e == NULL) {
 		if (!(info->check_set & XT_RECENT_SET))
 			goto out;
+<<<<<<< HEAD
 		e = recent_entry_init(t, &addr, par->family, ttl);
+=======
+		e = recent_entry_init(t, &addr_mask, xt_family(par), ttl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (e == NULL)
 			par->hotdrop = true;
 		ret = !ret;
@@ -293,7 +410,12 @@ recent_mt(const struct sk_buff *skb, struct xt_action_param *par)
 
 		/* info->seconds must be non-zero */
 		if (info->check_set & XT_RECENT_REAP)
+<<<<<<< HEAD
 			recent_entry_reap(t, time);
+=======
+			recent_entry_reap(t, time, e,
+				info->check_set & XT_RECENT_UPDATE && ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (info->check_set & XT_RECENT_SET ||
@@ -306,6 +428,7 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int recent_mt_check(const struct xt_mtchk_param *par)
 {
 	struct recent_net *recent_net = recent_pernet(par->net);
@@ -324,6 +447,32 @@ static int recent_mt_check(const struct xt_mtchk_param *par)
 	if (info->check_set & ~XT_RECENT_VALID_FLAGS) {
 		pr_info("Unsupported user space flags (%08x)\n",
 			info->check_set);
+=======
+static void recent_table_free(void *addr)
+{
+	kvfree(addr);
+}
+
+static int recent_mt_check(const struct xt_mtchk_param *par,
+			   const struct xt_recent_mtinfo_v1 *info)
+{
+	struct recent_net *recent_net = recent_pernet(par->net);
+	struct recent_table *t;
+#ifdef CONFIG_PROC_FS
+	struct proc_dir_entry *pde;
+	kuid_t uid;
+	kgid_t gid;
+#endif
+	unsigned int nstamp_mask;
+	unsigned int i;
+	int ret = -EINVAL;
+
+	net_get_random_once(&hash_rnd, sizeof(hash_rnd));
+
+	if (info->check_set & ~XT_RECENT_VALID_FLAGS) {
+		pr_info_ratelimited("Unsupported userspace flags (%08x)\n",
+				    info->check_set);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	if (hweight8(info->check_set &
@@ -336,6 +485,7 @@ static int recent_mt_check(const struct xt_mtchk_param *par)
 		return -EINVAL;
 	if ((info->check_set & XT_RECENT_REAP) && !info->seconds)
 		return -EINVAL;
+<<<<<<< HEAD
 	if (info->hit_count > ip_pkt_list_tot) {
 		pr_info("hitcount (%u) is larger than "
 			"packets to be remembered (%u)\n",
@@ -345,27 +495,65 @@ static int recent_mt_check(const struct xt_mtchk_param *par)
 	if (info->name[0] == '\0' ||
 	    strnlen(info->name, XT_RECENT_NAME_LEN) == XT_RECENT_NAME_LEN)
 		return -EINVAL;
+=======
+	if (info->hit_count >= XT_RECENT_MAX_NSTAMPS) {
+		pr_info_ratelimited("hitcount (%u) is larger than allowed maximum (%u)\n",
+				    info->hit_count, XT_RECENT_MAX_NSTAMPS - 1);
+		return -EINVAL;
+	}
+	ret = xt_check_proc_name(info->name, sizeof(info->name));
+	if (ret)
+		return ret;
+
+	if (ip_pkt_list_tot && info->hit_count < ip_pkt_list_tot)
+		nstamp_mask = roundup_pow_of_two(ip_pkt_list_tot) - 1;
+	else if (info->hit_count)
+		nstamp_mask = roundup_pow_of_two(info->hit_count) - 1;
+	else
+		nstamp_mask = 32 - 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&recent_mutex);
 	t = recent_table_lookup(recent_net, info->name);
 	if (t != NULL) {
+<<<<<<< HEAD
+=======
+		if (nstamp_mask > t->nstamps_max_mask) {
+			spin_lock_bh(&recent_lock);
+			recent_table_flush(t);
+			t->nstamps_max_mask = nstamp_mask;
+			spin_unlock_bh(&recent_lock);
+		}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		t->refcnt++;
 		ret = 0;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	t = kzalloc(sizeof(*t) + sizeof(t->iphash[0]) * ip_list_hash_size,
 		    GFP_KERNEL);
+=======
+	t = kvzalloc(struct_size(t, iphash, ip_list_hash_size), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (t == NULL) {
 		ret = -ENOMEM;
 		goto out;
 	}
 	t->refcnt = 1;
+<<<<<<< HEAD
+=======
+	t->nstamps_max_mask = nstamp_mask;
+
+	memcpy(&t->mask, &info->mask, sizeof(t->mask));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	strcpy(t->name, info->name);
 	INIT_LIST_HEAD(&t->lru_list);
 	for (i = 0; i < ip_list_hash_size; i++)
 		INIT_LIST_HEAD(&t->iphash[i]);
 #ifdef CONFIG_PROC_FS
+<<<<<<< HEAD
 	pde = proc_create_data(t->name, ip_list_perms, recent_net->xt_recent,
 		  &recent_mt_fops, t);
 	if (pde == NULL) {
@@ -375,6 +563,23 @@ static int recent_mt_check(const struct xt_mtchk_param *par)
 	}
 	pde->uid = ip_list_uid;
 	pde->gid = ip_list_gid;
+=======
+	uid = make_kuid(&init_user_ns, ip_list_uid);
+	gid = make_kgid(&init_user_ns, ip_list_gid);
+	if (!uid_valid(uid) || !gid_valid(gid)) {
+		recent_table_free(t);
+		ret = -EINVAL;
+		goto out;
+	}
+	pde = proc_create_data(t->name, ip_list_perms, recent_net->xt_recent,
+			       &recent_mt_proc_ops, t);
+	if (pde == NULL) {
+		recent_table_free(t);
+		ret = -ENOMEM;
+		goto out;
+	}
+	proc_set_user(pde, uid, gid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	spin_lock_bh(&recent_lock);
 	list_add_tail(&t->list, &recent_net->tables);
@@ -385,10 +590,35 @@ out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void recent_mt_destroy(const struct xt_mtdtor_param *par)
 {
 	struct recent_net *recent_net = recent_pernet(par->net);
 	const struct xt_recent_mtinfo *info = par->matchinfo;
+=======
+static int recent_mt_check_v0(const struct xt_mtchk_param *par)
+{
+	const struct xt_recent_mtinfo_v0 *info_v0 = par->matchinfo;
+	struct xt_recent_mtinfo_v1 info_v1;
+
+	/* Copy revision 0 structure to revision 1 */
+	memcpy(&info_v1, info_v0, sizeof(struct xt_recent_mtinfo));
+	/* Set default mask to ensure backward compatible behaviour */
+	memset(info_v1.mask.all, 0xFF, sizeof(info_v1.mask.all));
+
+	return recent_mt_check(par, &info_v1);
+}
+
+static int recent_mt_check_v1(const struct xt_mtchk_param *par)
+{
+	return recent_mt_check(par, par->matchinfo);
+}
+
+static void recent_mt_destroy(const struct xt_mtdtor_param *par)
+{
+	struct recent_net *recent_net = recent_pernet(par->net);
+	const struct xt_recent_mtinfo_v1 *info = par->matchinfo;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct recent_table *t;
 
 	mutex_lock(&recent_mutex);
@@ -398,10 +628,18 @@ static void recent_mt_destroy(const struct xt_mtdtor_param *par)
 		list_del(&t->list);
 		spin_unlock_bh(&recent_lock);
 #ifdef CONFIG_PROC_FS
+<<<<<<< HEAD
 		remove_proc_entry(t->name, recent_net->xt_recent);
 #endif
 		recent_table_flush(t);
 		kfree(t);
+=======
+		if (recent_net->xt_recent != NULL)
+			remove_proc_entry(t->name, recent_net->xt_recent);
+#endif
+		recent_table_flush(t);
+		recent_table_free(t);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	mutex_unlock(&recent_mutex);
 }
@@ -436,12 +674,19 @@ static void *recent_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 	const struct recent_entry *e = v;
 	const struct list_head *head = e->list.next;
 
+<<<<<<< HEAD
+=======
+	(*pos)++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (head == &t->iphash[st->bucket]) {
 		if (++st->bucket >= ip_list_hash_size)
 			return NULL;
 		head = t->iphash[st->bucket].next;
 	}
+<<<<<<< HEAD
 	(*pos)++;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return list_entry(head, struct recent_entry, list);
 }
 
@@ -454,9 +699,18 @@ static void recent_seq_stop(struct seq_file *s, void *v)
 static int recent_seq_show(struct seq_file *seq, void *v)
 {
 	const struct recent_entry *e = v;
+<<<<<<< HEAD
 	unsigned int i;
 
 	i = (e->index - 1) % ip_pkt_list_tot;
+=======
+	struct recent_iter_state *st = seq->private;
+	const struct recent_table *t = st->table;
+	unsigned int i;
+
+	i = (e->index - 1) & t->nstamps_max_mask;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (e->family == NFPROTO_IPV4)
 		seq_printf(seq, "src=%pI4 ttl: %u last_seen: %lu oldest_pkt: %u",
 			   &e->addr.ip, e->ttl, e->stamps[i], e->index);
@@ -465,7 +719,11 @@ static int recent_seq_show(struct seq_file *seq, void *v)
 			   &e->addr.in6, e->ttl, e->stamps[i], e->index);
 	for (i = 0; i < e->nstamps; i++)
 		seq_printf(seq, "%s %lu", i ? "," : "", e->stamps[i]);
+<<<<<<< HEAD
 	seq_printf(seq, "\n");
+=======
+	seq_putc(seq, '\n');
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -478,14 +736,21 @@ static const struct seq_operations recent_seq_ops = {
 
 static int recent_seq_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	struct proc_dir_entry *pde = PDE(inode);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct recent_iter_state *st;
 
 	st = __seq_open_private(file, &recent_seq_ops, sizeof(*st));
 	if (st == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	st->table    = pde->data;
+=======
+	st->table    = pde_data(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -493,10 +758,16 @@ static ssize_t
 recent_mt_proc_write(struct file *file, const char __user *input,
 		     size_t size, loff_t *loff)
 {
+<<<<<<< HEAD
 	const struct proc_dir_entry *pde = PDE(file->f_path.dentry->d_inode);
 	struct recent_table *t = pde->data;
 	struct recent_entry *e;
 	char buf[sizeof("+b335:1d35:1e55:dead:c0de:1715:5afe:c0de")];
+=======
+	struct recent_table *t = pde_data(file_inode(file));
+	struct recent_entry *e;
+	char buf[sizeof("+b335:1d35:1e55:dead:c0de:1715:255.255.255.255")];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const char *c = buf;
 	union nf_inet_addr addr = {};
 	u_int16_t family;
@@ -525,7 +796,11 @@ recent_mt_proc_write(struct file *file, const char __user *input,
 		add = true;
 		break;
 	default:
+<<<<<<< HEAD
 		pr_info("Need \"+ip\", \"-ip\" or \"/\"\n");
+=======
+		pr_info_ratelimited("Need \"+ip\", \"-ip\" or \"/\"\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -539,10 +814,15 @@ recent_mt_proc_write(struct file *file, const char __user *input,
 		succ   = in4_pton(c, size, (void *)&addr, '\n', NULL);
 	}
 
+<<<<<<< HEAD
 	if (!succ) {
 		pr_info("illegal address written to procfs\n");
 		return -EINVAL;
 	}
+=======
+	if (!succ)
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_bh(&recent_lock);
 	e = recent_entry_lookup(t, &addr, family, 0);
@@ -561,6 +841,7 @@ recent_mt_proc_write(struct file *file, const char __user *input,
 	return size + 1;
 }
 
+<<<<<<< HEAD
 static const struct file_operations recent_mt_fops = {
 	.open    = recent_seq_open,
 	.read    = seq_read,
@@ -568,6 +849,14 @@ static const struct file_operations recent_mt_fops = {
 	.release = seq_release_private,
 	.owner   = THIS_MODULE,
 	.llseek = seq_lseek,
+=======
+static const struct proc_ops recent_mt_proc_ops = {
+	.proc_open	= recent_seq_open,
+	.proc_read	= seq_read,
+	.proc_write	= recent_mt_proc_write,
+	.proc_release	= seq_release_private,
+	.proc_lseek	= seq_lseek,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __net_init recent_proc_net_init(struct net *net)
@@ -582,7 +871,25 @@ static int __net_init recent_proc_net_init(struct net *net)
 
 static void __net_exit recent_proc_net_exit(struct net *net)
 {
+<<<<<<< HEAD
 	proc_net_remove(net, "xt_recent");
+=======
+	struct recent_net *recent_net = recent_pernet(net);
+	struct recent_table *t;
+
+	/* recent_net_exit() is called before recent_mt_destroy(). Make sure
+	 * that the parent xt_recent proc entry is empty before trying to
+	 * remove it.
+	 */
+	spin_lock_bh(&recent_lock);
+	list_for_each_entry(t, &recent_net->tables, list)
+	        remove_proc_entry(t->name, recent_net->xt_recent);
+
+	recent_net->xt_recent = NULL;
+	spin_unlock_bh(&recent_lock);
+
+	remove_proc_entry("xt_recent", net->proc_net);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #else
 static inline int recent_proc_net_init(struct net *net)
@@ -605,9 +912,12 @@ static int __net_init recent_net_init(struct net *net)
 
 static void __net_exit recent_net_exit(struct net *net)
 {
+<<<<<<< HEAD
 	struct recent_net *recent_net = recent_pernet(net);
 
 	BUG_ON(!list_empty(&recent_net->tables));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	recent_proc_net_exit(net);
 }
 
@@ -625,7 +935,11 @@ static struct xt_match recent_mt_reg[] __read_mostly = {
 		.family     = NFPROTO_IPV4,
 		.match      = recent_mt,
 		.matchsize  = sizeof(struct xt_recent_mtinfo),
+<<<<<<< HEAD
 		.checkentry = recent_mt_check,
+=======
+		.checkentry = recent_mt_check_v0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.destroy    = recent_mt_destroy,
 		.me         = THIS_MODULE,
 	},
@@ -635,17 +949,50 @@ static struct xt_match recent_mt_reg[] __read_mostly = {
 		.family     = NFPROTO_IPV6,
 		.match      = recent_mt,
 		.matchsize  = sizeof(struct xt_recent_mtinfo),
+<<<<<<< HEAD
 		.checkentry = recent_mt_check,
 		.destroy    = recent_mt_destroy,
 		.me         = THIS_MODULE,
 	},
+=======
+		.checkentry = recent_mt_check_v0,
+		.destroy    = recent_mt_destroy,
+		.me         = THIS_MODULE,
+	},
+	{
+		.name       = "recent",
+		.revision   = 1,
+		.family     = NFPROTO_IPV4,
+		.match      = recent_mt,
+		.matchsize  = sizeof(struct xt_recent_mtinfo_v1),
+		.checkentry = recent_mt_check_v1,
+		.destroy    = recent_mt_destroy,
+		.me         = THIS_MODULE,
+	},
+	{
+		.name       = "recent",
+		.revision   = 1,
+		.family     = NFPROTO_IPV6,
+		.match      = recent_mt,
+		.matchsize  = sizeof(struct xt_recent_mtinfo_v1),
+		.checkentry = recent_mt_check_v1,
+		.destroy    = recent_mt_destroy,
+		.me         = THIS_MODULE,
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init recent_mt_init(void)
 {
 	int err;
 
+<<<<<<< HEAD
 	if (!ip_list_tot || !ip_pkt_list_tot || ip_pkt_list_tot > 255)
+=======
+	BUILD_BUG_ON_NOT_POWER_OF_2(XT_RECENT_MAX_NSTAMPS);
+
+	if (!ip_list_tot || ip_pkt_list_tot >= XT_RECENT_MAX_NSTAMPS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	ip_list_hash_size = 1 << fls(ip_list_tot);
 

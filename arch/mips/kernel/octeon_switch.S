@@ -11,6 +11,7 @@
  *    written by Carsten Langgaard, carstenl@mips.com
  */
 #include <asm/asm.h>
+<<<<<<< HEAD
 #include <asm/cachectl.h>
 #include <asm/fpregdef.h>
 #include <asm/mipsregs.h>
@@ -32,6 +33,16 @@
 /*
  * task_struct *resume(task_struct *prev, task_struct *next,
  *                     struct thread_info *next_ti)
+=======
+#include <asm/asm-offsets.h>
+#include <asm/mipsregs.h>
+#include <asm/regdef.h>
+#include <asm/stackframe.h>
+
+/*
+ * task_struct *resume(task_struct *prev, task_struct *next,
+ *		       struct thread_info *next_ti)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 	.align	7
 	LEAF(resume)
@@ -41,6 +52,7 @@
 	cpu_save_nonscratch a0
 	LONG_S	ra, THREAD_REG31(a0)
 
+<<<<<<< HEAD
 	/* check if we need to save COP2 registers */
 	PTR_L	t2, TASK_THREAD_INFO(a0)
 	LONG_L	t0, ST_OFF(t2)
@@ -71,6 +83,11 @@
 #if CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE > 0
 	/* Check if we need to store CVMSEG state */
 	mfc0	t0, $11,7 	/* CvmMemCtl */
+=======
+#if CONFIG_CAVIUM_OCTEON_CVMSEG_SIZE > 0
+	/* Check if we need to store CVMSEG state */
+	dmfc0	t0, $11,7	/* CvmMemCtl */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bbit0	t0, 6, 3f	/* Is user access enabled? */
 
 	/* Store the CVMSEG state */
@@ -78,8 +95,13 @@
 	andi	t0, 0x3f
 	/* Multiply * (cache line size/sizeof(long)/2) */
 	sll	t0, 7-LONGLOG-1
+<<<<<<< HEAD
 	li	t1, -32768 	/* Base address of CVMSEG */
 	LONG_ADDI t2, a0, THREAD_CVMSEG	/* Where to store CVMSEG to */
+=======
+	li	t1, -32768	/* Base address of CVMSEG */
+	LONG_ADDI t2, a0, THREAD_CVMSEG /* Where to store CVMSEG to */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	synciobdma
 2:
 	.set noreorder
@@ -90,6 +112,7 @@
 	LONG_S	t8, 0(t2)	/* Store CVMSEG to thread storage */
 	LONG_ADDU t2, LONGSIZE*2 /* Increment loc in thread storage */
 	bnez	t0, 2b		/* Loop until we've copied it all */
+<<<<<<< HEAD
 	 LONG_S	t9, -LONGSIZE(t2)/* Store CVMSEG to thread storage */
 	.set reorder
 
@@ -99,6 +122,24 @@
 	mtc0	t0, $11,7 	/* CvmMemCtl */
 #endif
 3:
+=======
+	 LONG_S t9, -LONGSIZE(t2)/* Store CVMSEG to thread storage */
+	.set reorder
+
+	/* Disable access to CVMSEG */
+	dmfc0	t0, $11,7	/* CvmMemCtl */
+	xori	t0, t0, 0x40	/* Bit 6 is CVMSEG user enable */
+	dmtc0	t0, $11,7	/* CvmMemCtl */
+#endif
+3:
+
+#if defined(CONFIG_STACKPROTECTOR) && !defined(CONFIG_SMP)
+	PTR_LA	t8, __stack_chk_guard
+	LONG_L	t9, TASK_STACK_CANARY(a1)
+	LONG_S	t9, 0(t8)
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The order of restoring the registers takes care of the race
 	 * updating $28, $29 and kernelsp without disabling ints.
@@ -106,12 +147,16 @@
 	move	$28, a2
 	cpu_restore_nonscratch a1
 
+<<<<<<< HEAD
 #if (_THREAD_SIZE - 32) < 0x8000
 	PTR_ADDIU	t0, $28, _THREAD_SIZE - 32
 #else
 	PTR_LI		t0, _THREAD_SIZE - 32
 	PTR_ADDU	t0, $28
 #endif
+=======
+	PTR_ADDU	t0, $28, _THREAD_SIZE - 32
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	set_saved_sp	t0, t1, t2
 
 	mfc0	t1, CP0_STATUS		/* Do we really need this? */
@@ -130,24 +175,40 @@
  * void octeon_cop2_save(struct octeon_cop2_state *a0)
  */
 	.align	7
+<<<<<<< HEAD
+=======
+	.set push
+	.set noreorder
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LEAF(octeon_cop2_save)
 
 	dmfc0	t9, $9,7	/* CvmCtl register. */
 
+<<<<<<< HEAD
         /* Save the COP2 CRC state */
+=======
+	/* Save the COP2 CRC state */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dmfc2	t0, 0x0201
 	dmfc2	t1, 0x0202
 	dmfc2	t2, 0x0200
 	sd	t0, OCTEON_CP2_CRC_IV(a0)
 	sd	t1, OCTEON_CP2_CRC_LENGTH(a0)
+<<<<<<< HEAD
 	sd	t2, OCTEON_CP2_CRC_POLY(a0)
 	/* Skip next instructions if CvmCtl[NODFA_CP2] set */
 	bbit1	t9, 28, 1f
+=======
+	/* Skip next instructions if CvmCtl[NODFA_CP2] set */
+	bbit1	t9, 28, 1f
+	 sd	t2, OCTEON_CP2_CRC_POLY(a0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Save the LLM state */
 	dmfc2	t0, 0x0402
 	dmfc2	t1, 0x040A
 	sd	t0, OCTEON_CP2_LLM_DAT(a0)
+<<<<<<< HEAD
 	sd	t1, OCTEON_CP2_LLM_DAT+8(a0)
 
 1:      bbit1	t9, 26, 3f	/* done if CvmCtl[NOCRYPTO] set */
@@ -174,6 +235,34 @@
 	dmfc2	t2, 0x0106
 	sd	t3, OCTEON_CP2_AES_IV+8(a0)
 	dmfc2 	t3, 0x0107
+=======
+
+1:	bbit1	t9, 26, 3f	/* done if CvmCtl[NOCRYPTO] set */
+	 sd	t1, OCTEON_CP2_LLM_DAT+8(a0)
+
+	/* Save the COP2 crypto state */
+	/* this part is mostly common to both pass 1 and later revisions */
+	dmfc2	t0, 0x0084
+	dmfc2	t1, 0x0080
+	dmfc2	t2, 0x0081
+	dmfc2	t3, 0x0082
+	sd	t0, OCTEON_CP2_3DES_IV(a0)
+	dmfc2	t0, 0x0088
+	sd	t1, OCTEON_CP2_3DES_KEY(a0)
+	dmfc2	t1, 0x0111			/* only necessary for pass 1 */
+	sd	t2, OCTEON_CP2_3DES_KEY+8(a0)
+	dmfc2	t2, 0x0102
+	sd	t3, OCTEON_CP2_3DES_KEY+16(a0)
+	dmfc2	t3, 0x0103
+	sd	t0, OCTEON_CP2_3DES_RESULT(a0)
+	dmfc2	t0, 0x0104
+	sd	t1, OCTEON_CP2_AES_INP0(a0)	/* only necessary for pass 1 */
+	dmfc2	t1, 0x0105
+	sd	t2, OCTEON_CP2_AES_IV(a0)
+	dmfc2	t2, 0x0106
+	sd	t3, OCTEON_CP2_AES_IV+8(a0)
+	dmfc2	t3, 0x0107
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sd	t0, OCTEON_CP2_AES_KEY(a0)
 	dmfc2	t0, 0x0110
 	sd	t1, OCTEON_CP2_AES_KEY+8(a0)
@@ -181,6 +270,7 @@
 	sd	t2, OCTEON_CP2_AES_KEY+16(a0)
 	dmfc2	t2, 0x0101
 	sd	t3, OCTEON_CP2_AES_KEY+24(a0)
+<<<<<<< HEAD
 	mfc0	t3, $15,0 	/* Get the processor ID register */
 	sd	t0, OCTEON_CP2_AES_KEYLEN(a0)
 	li	t0, 0x000d0000	/* This is the processor ID of Octeon Pass1 */
@@ -193,6 +283,22 @@
 	dmfc2	t1, 0x0240
 	dmfc2	t2, 0x0241
 	dmfc2	t3, 0x0242
+=======
+	mfc0	v0, $15,0	/* Get the processor ID register */
+	sd	t0, OCTEON_CP2_AES_KEYLEN(a0)
+	li	v1, 0x000d0000	/* This is the processor ID of Octeon Pass1 */
+	sd	t1, OCTEON_CP2_AES_RESULT(a0)
+	/* Skip to the Pass1 version of the remainder of the COP2 state */
+	beq	v0, v1, 2f
+	 sd	t2, OCTEON_CP2_AES_RESULT+8(a0)
+
+	/* the non-pass1 state when !CvmCtl[NOCRYPTO] */
+	dmfc2	t1, 0x0240
+	dmfc2	t2, 0x0241
+	ori	v1, v1, 0x9500 /* lowest OCTEON III PrId*/
+	dmfc2	t3, 0x0242
+	subu	v1, v0, v1 /* prid - lowest OCTEON III PrId */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dmfc2	t0, 0x0243
 	sd	t1, OCTEON_CP2_HSH_DATW(a0)
 	dmfc2	t1, 0x0244
@@ -215,7 +321,11 @@
 	sd	t2, OCTEON_CP2_HSH_DATW+72(a0)
 	dmfc2	t2, 0x024D
 	sd	t3, OCTEON_CP2_HSH_DATW+80(a0)
+<<<<<<< HEAD
 	dmfc2 	t3, 0x024E
+=======
+	dmfc2	t3, 0x024E
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sd	t0, OCTEON_CP2_HSH_DATW+88(a0)
 	dmfc2	t0, 0x0250
 	sd	t1, OCTEON_CP2_HSH_DATW+96(a0)
@@ -233,9 +343,15 @@
 	sd	t3, OCTEON_CP2_HSH_IVW+24(a0)
 	dmfc2	t3, 0x0257
 	sd	t0, OCTEON_CP2_HSH_IVW+32(a0)
+<<<<<<< HEAD
 	dmfc2 	t0, 0x0258
 	sd	t1, OCTEON_CP2_HSH_IVW+40(a0)
 	dmfc2 	t1, 0x0259
+=======
+	dmfc2	t0, 0x0258
+	sd	t1, OCTEON_CP2_HSH_IVW+40(a0)
+	dmfc2	t1, 0x0259
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sd	t2, OCTEON_CP2_HSH_IVW+48(a0)
 	dmfc2	t2, 0x025E
 	sd	t3, OCTEON_CP2_HSH_IVW+56(a0)
@@ -245,10 +361,25 @@
 	sd	t1, OCTEON_CP2_GFM_MULT+8(a0)
 	sd	t2, OCTEON_CP2_GFM_POLY(a0)
 	sd	t3, OCTEON_CP2_GFM_RESULT(a0)
+<<<<<<< HEAD
 	sd	t0, OCTEON_CP2_GFM_RESULT+8(a0)
 	jr	ra
 
 2:      /* pass 1 special stuff when !CvmCtl[NOCRYPTO] */
+=======
+	bltz	v1, 4f
+	 sd	t0, OCTEON_CP2_GFM_RESULT+8(a0)
+	/* OCTEON III things*/
+	dmfc2	t0, 0x024F
+	dmfc2	t1, 0x0050
+	sd	t0, OCTEON_CP2_SHA3(a0)
+	sd	t1, OCTEON_CP2_SHA3+8(a0)
+4:
+	jr	ra
+	 nop
+
+2:	/* pass 1 special stuff when !CvmCtl[NOCRYPTO] */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dmfc2	t3, 0x0040
 	dmfc2	t0, 0x0041
 	dmfc2	t1, 0x0042
@@ -270,9 +401,17 @@
 	sd	t3, OCTEON_CP2_HSH_IVW+8(a0)
 	sd	t0, OCTEON_CP2_HSH_IVW+16(a0)
 
+<<<<<<< HEAD
 3:      /* pass 1 or CvmCtl[NOCRYPTO] set */
 	jr	ra
 	END(octeon_cop2_save)
+=======
+3:	/* pass 1 or CvmCtl[NOCRYPTO] set */
+	jr	ra
+	 nop
+	END(octeon_cop2_save)
+	.set pop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * void octeon_cop2_restore(struct octeon_cop2_state *a0)
@@ -281,6 +420,7 @@
 	.set push
 	.set noreorder
 	LEAF(octeon_cop2_restore)
+<<<<<<< HEAD
         /* First cache line was prefetched before the call */
         pref    4,  128(a0)
 	dmfc0	t9, $9,7	/* CvmCtl register. */
@@ -288,12 +428,25 @@
         pref    4,  256(a0)
 	ld	t0, OCTEON_CP2_CRC_IV(a0)
         pref    4,  384(a0)
+=======
+	/* First cache line was prefetched before the call */
+	pref	4,  128(a0)
+	dmfc0	t9, $9,7	/* CvmCtl register. */
+
+	pref	4,  256(a0)
+	ld	t0, OCTEON_CP2_CRC_IV(a0)
+	pref	4,  384(a0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ld	t1, OCTEON_CP2_CRC_LENGTH(a0)
 	ld	t2, OCTEON_CP2_CRC_POLY(a0)
 
 	/* Restore the COP2 CRC state */
 	dmtc2	t0, 0x0201
+<<<<<<< HEAD
 	dmtc2 	t1, 0x1202
+=======
+	dmtc2	t1, 0x1202
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bbit1	t9, 28, 2f	/* Skip LLM if CvmCtl[NODFA_CP2] is set */
 	 dmtc2	t2, 0x4200
 
@@ -311,6 +464,7 @@
 	ld	t0, OCTEON_CP2_3DES_IV(a0)
 	ld	t1, OCTEON_CP2_3DES_KEY(a0)
 	ld	t2, OCTEON_CP2_3DES_KEY+8(a0)
+<<<<<<< HEAD
 	dmtc2 	t0, 0x0084
 	ld	t0, OCTEON_CP2_3DES_KEY+16(a0)
 	dmtc2 	t1, 0x0080
@@ -324,6 +478,21 @@
 	dmtc2 	t2, 0x010A                  /* only really needed for pass 1 */
 	ld	t2, OCTEON_CP2_AES_KEY(a0)
 	dmtc2 	t0, 0x0102
+=======
+	dmtc2	t0, 0x0084
+	ld	t0, OCTEON_CP2_3DES_KEY+16(a0)
+	dmtc2	t1, 0x0080
+	ld	t1, OCTEON_CP2_3DES_RESULT(a0)
+	dmtc2	t2, 0x0081
+	ld	t2, OCTEON_CP2_AES_INP0(a0) /* only really needed for pass 1 */
+	dmtc2	t0, 0x0082
+	ld	t0, OCTEON_CP2_AES_IV(a0)
+	dmtc2	t1, 0x0098
+	ld	t1, OCTEON_CP2_AES_IV+8(a0)
+	dmtc2	t2, 0x010A		    /* only really needed for pass 1 */
+	ld	t2, OCTEON_CP2_AES_KEY(a0)
+	dmtc2	t0, 0x0102
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ld	t0, OCTEON_CP2_AES_KEY+8(a0)
 	dmtc2	t1, 0x0103
 	ld	t1, OCTEON_CP2_AES_KEY+16(a0)
@@ -335,6 +504,7 @@
 	ld	t1, OCTEON_CP2_AES_RESULT(a0)
 	dmtc2	t2, 0x0107
 	ld	t2, OCTEON_CP2_AES_RESULT+8(a0)
+<<<<<<< HEAD
 	mfc0	t3, $15,0 	/* Get the processor ID register */
 	dmtc2	t0, 0x0110
 	li	t0, 0x000d0000	/* This is the processor ID of Octeon Pass1 */
@@ -343,6 +513,16 @@
 	 dmtc2	t2, 0x0101
 
         /* this code is specific for pass 1 */
+=======
+	mfc0	t3, $15,0	/* Get the processor ID register */
+	dmtc2	t0, 0x0110
+	li	v0, 0x000d0000	/* This is the processor ID of Octeon Pass1 */
+	dmtc2	t1, 0x0100
+	bne	v0, t3, 3f	/* Skip the next stuff for non-pass1 */
+	 dmtc2	t2, 0x0101
+
+	/* this code is specific for pass 1 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ld	t0, OCTEON_CP2_HSH_DATW(a0)
 	ld	t1, OCTEON_CP2_HSH_DATW+8(a0)
 	ld	t2, OCTEON_CP2_HSH_DATW+16(a0)
@@ -362,11 +542,20 @@
 	ld	t0, OCTEON_CP2_HSH_IVW+16(a0)
 	dmtc2	t1, 0x0048
 	dmtc2	t2, 0x0049
+<<<<<<< HEAD
         b done_restore   /* unconditional branch */
 	 dmtc2	t0, 0x004A
 
 3:      /* this is post-pass1 code */
 	ld	t2, OCTEON_CP2_HSH_DATW(a0)
+=======
+	b done_restore	 /* unconditional branch */
+	 dmtc2	t0, 0x004A
+
+3:	/* this is post-pass1 code */
+	ld	t2, OCTEON_CP2_HSH_DATW(a0)
+	ori	v0, v0, 0x9500 /* lowest OCTEON III PrId*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ld	t0, OCTEON_CP2_HSH_DATW+8(a0)
 	ld	t1, OCTEON_CP2_HSH_DATW+16(a0)
 	dmtc2	t2, 0x0240
@@ -420,9 +609,21 @@
 	dmtc2	t2, 0x0259
 	ld	t2, OCTEON_CP2_GFM_RESULT+8(a0)
 	dmtc2	t0, 0x025E
+<<<<<<< HEAD
 	dmtc2	t1, 0x025A
 	dmtc2	t2, 0x025B
 
+=======
+	subu	v0, t3, v0 /* prid - lowest OCTEON III PrId */
+	dmtc2	t1, 0x025A
+	bltz	v0, done_restore
+	 dmtc2	t2, 0x025B
+	/* OCTEON III things*/
+	ld	t0, OCTEON_CP2_SHA3(a0)
+	ld	t1, OCTEON_CP2_SHA3+8(a0)
+	dmtc2	t0, 0x0051
+	dmtc2	t1, 0x0050
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 done_restore:
 	jr	ra
 	 nop
@@ -433,6 +634,7 @@ done_restore:
  * void octeon_mult_save()
  * sp is assumed to point to a struct pt_regs
  *
+<<<<<<< HEAD
  * NOTE: This is called in SAVE_SOME in stackframe.h. It can only
  *       safely modify k0 and k1.
  */
@@ -448,27 +650,89 @@ done_restore:
 	v3mulu	k0, $0, $0
 	v3mulu	k1, $0, $0
 	sd	k0, PT_MTP(sp)        /* PT_MTP    has P0 */
+=======
+ * NOTE: This is called in SAVE_TEMP in stackframe.h. It can
+ *       safely modify v1,k0, k1,$10-$15, and $24.  It will
+ *	 be overwritten with a processor specific version of the code.
+ */
+	.p2align 7
+	.set push
+	.set noreorder
+	LEAF(octeon_mult_save)
+	jr	ra
+	 nop
+	.space 30 * 4, 0
+	EXPORT(octeon_mult_save_end)
+	END(octeon_mult_save)
+
+	LEAF(octeon_mult_save2)
+	/* Save the multiplier state OCTEON II and earlier*/
+	v3mulu	k0, $0, $0
+	v3mulu	k1, $0, $0
+	sd	k0, PT_MTP(sp)	      /* PT_MTP	   has P0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v3mulu	k0, $0, $0
 	sd	k1, PT_MTP+8(sp)      /* PT_MTP+8  has P1 */
 	ori	k1, $0, 1
 	v3mulu	k1, k1, $0
 	sd	k0, PT_MTP+16(sp)     /* PT_MTP+16 has P2 */
 	v3mulu	k0, $0, $0
+<<<<<<< HEAD
 	sd	k1, PT_MPL(sp)        /* PT_MPL    has MPL0 */
+=======
+	sd	k1, PT_MPL(sp)	      /* PT_MPL	   has MPL0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	v3mulu	k1, $0, $0
 	sd	k0, PT_MPL+8(sp)      /* PT_MPL+8  has MPL1 */
 	jr	ra
 	 sd	k1, PT_MPL+16(sp)     /* PT_MPL+16 has MPL2 */
+<<<<<<< HEAD
 
 1:	/* Resume here if CvmCtl[NOMUL] */
 	jr	ra
 	END(octeon_mult_save)
+=======
+	EXPORT(octeon_mult_save2_end)
+	END(octeon_mult_save2)
+
+	LEAF(octeon_mult_save3)
+	/* Save the multiplier state OCTEON III */
+	v3mulu	$10, $0, $0		/* read P0 */
+	v3mulu	$11, $0, $0		/* read P1 */
+	v3mulu	$12, $0, $0		/* read P2 */
+	sd	$10, PT_MTP+(0*8)(sp)	/* store P0 */
+	v3mulu	$10, $0, $0		/* read P3 */
+	sd	$11, PT_MTP+(1*8)(sp)	/*  store P1 */
+	v3mulu	$11, $0, $0		/* read P4 */
+	sd	$12, PT_MTP+(2*8)(sp)	/* store P2 */
+	ori	$13, $0, 1
+	v3mulu	$12, $0, $0		/* read P5 */
+	sd	$10, PT_MTP+(3*8)(sp)	/* store P3 */
+	v3mulu	$13, $13, $0		/* P4-P0 = MPL5-MPL1, $13 = MPL0 */
+	sd	$11, PT_MTP+(4*8)(sp)	/* store P4 */
+	v3mulu	$10, $0, $0		/* read MPL1 */
+	sd	$12, PT_MTP+(5*8)(sp)	/* store P5 */
+	v3mulu	$11, $0, $0		/* read MPL2 */
+	sd	$13, PT_MPL+(0*8)(sp)	/* store MPL0 */
+	v3mulu	$12, $0, $0		/* read MPL3 */
+	sd	$10, PT_MPL+(1*8)(sp)	/* store MPL1 */
+	v3mulu	$10, $0, $0		/* read MPL4 */
+	sd	$11, PT_MPL+(2*8)(sp)	/* store MPL2 */
+	v3mulu	$11, $0, $0		/* read MPL5 */
+	sd	$12, PT_MPL+(3*8)(sp)	/* store MPL3 */
+	sd	$10, PT_MPL+(4*8)(sp)	/* store MPL4 */
+	jr	ra
+	 sd	$11, PT_MPL+(5*8)(sp)	/* store MPL5 */
+	EXPORT(octeon_mult_save3_end)
+	END(octeon_mult_save3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set pop
 
 /*
  * void octeon_mult_restore()
  * sp is assumed to point to a struct pt_regs
  *
+<<<<<<< HEAD
  * NOTE: This is called in RESTORE_SOME in stackframe.h.
  */
 	.align	7
@@ -499,4 +763,65 @@ done_restore:
 	jr	ra
 	 nop
 	END(octeon_mult_restore)
+=======
+ * NOTE: This is called in RESTORE_TEMP in stackframe.h.
+ */
+	.p2align 7
+	.set push
+	.set noreorder
+	LEAF(octeon_mult_restore)
+	jr	ra
+	 nop
+	.space 30 * 4, 0
+	EXPORT(octeon_mult_restore_end)
+	END(octeon_mult_restore)
+
+	LEAF(octeon_mult_restore2)
+	ld	v0, PT_MPL(sp)        	/* MPL0 */
+	ld	v1, PT_MPL+8(sp)      	/* MPL1 */
+	ld	k0, PT_MPL+16(sp)     	/* MPL2 */
+	/* Restore the multiplier state */
+	ld	k1, PT_MTP+16(sp)     	/* P2 */
+	mtm0	v0			/* MPL0 */
+	ld	v0, PT_MTP+8(sp)	/* P1 */
+	mtm1	v1			/* MPL1 */
+	ld	v1, PT_MTP(sp)   	/* P0 */
+	mtm2	k0			/* MPL2 */
+	mtp2	k1			/* P2 */
+	mtp1	v0			/* P1 */
+	jr	ra
+	 mtp0	v1			/* P0 */
+	EXPORT(octeon_mult_restore2_end)
+	END(octeon_mult_restore2)
+
+	LEAF(octeon_mult_restore3)
+	ld	$12, PT_MPL+(0*8)(sp)	/* read MPL0 */
+	ld	$13, PT_MPL+(3*8)(sp)	/* read MPL3 */
+	ld	$10, PT_MPL+(1*8)(sp)	/* read MPL1 */
+	ld	$11, PT_MPL+(4*8)(sp)	/* read MPL4 */
+	.word	0x718d0008
+	/* mtm0	$12, $13		   restore MPL0 and MPL3 */
+	ld	$12, PT_MPL+(2*8)(sp)	/* read MPL2 */
+	.word	0x714b000c
+	/* mtm1	$10, $11		   restore MPL1 and MPL4 */
+	ld	$13, PT_MPL+(5*8)(sp)	/* read MPL5 */
+	ld	$10, PT_MTP+(0*8)(sp)	/* read P0 */
+	ld	$11, PT_MTP+(3*8)(sp)	/* read P3 */
+	.word	0x718d000d
+	/* mtm2	$12, $13		   restore MPL2 and MPL5 */
+	ld	$12, PT_MTP+(1*8)(sp)	/* read P1 */
+	.word	0x714b0009
+	/* mtp0	$10, $11		   restore P0 and P3 */
+	ld	$13, PT_MTP+(4*8)(sp)	/* read P4 */
+	ld	$10, PT_MTP+(2*8)(sp)	/* read P2 */
+	ld	$11, PT_MTP+(5*8)(sp)	/* read P5 */
+	.word	0x718d000a
+	/* mtp1	$12, $13		   restore P1 and P4 */
+	jr	ra
+	.word	0x714b000b
+	/* mtp2	$10, $11		   restore P2 and P5 */
+
+	EXPORT(octeon_mult_restore3_end)
+	END(octeon_mult_restore3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set pop

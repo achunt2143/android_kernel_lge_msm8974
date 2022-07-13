@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 /*
    SCSI Tape Driver for Linux version 1.1 and newer. See the accompanying
    file Documentation/scsi/st.txt for more information.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+   SCSI Tape Driver for Linux version 1.1 and newer. See the accompanying
+   file Documentation/scsi/st.rst for more information.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    History:
    Rewritten from Dwayne Forsyth's SCSI tape driver by Kai Makisara.
@@ -9,7 +16,11 @@
    Steve Hirsch, Andreas Koppenh"ofer, Michael Leodolter, Eyal Lebedinsky,
    Michael Schaefer, J"org Weule, and Eric Youngdale.
 
+<<<<<<< HEAD
    Copyright 1992 - 2010 Kai Makisara
+=======
+   Copyright 1992 - 2016 Kai Makisara
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
    email Kai.Makisara@kolumbus.fi
 
    Some small formal changes - aeb, 950809
@@ -17,6 +28,7 @@
    Last modified: 18-JAN-1998 Richard Gooch <rgooch@atnf.csiro.au> Devfs support
  */
 
+<<<<<<< HEAD
 static const char *verstr = "20101219";
 
 #include <linux/module.h>
@@ -24,12 +36,26 @@ static const char *verstr = "20101219";
 #include <linux/fs.h>
 #include <linux/kernel.h>
 #include <linux/sched.h>
+=======
+static const char *verstr = "20160209";
+
+#include <linux/module.h>
+
+#include <linux/compat.h>
+#include <linux/fs.h>
+#include <linux/kernel.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/mm.h>
 #include <linux/init.h>
 #include <linux/string.h>
 #include <linux/slab.h>
 #include <linux/errno.h>
 #include <linux/mtio.h>
+<<<<<<< HEAD
+=======
+#include <linux/major.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/cdrom.h>
 #include <linux/ioctl.h>
 #include <linux/fcntl.h>
@@ -37,11 +63,21 @@ static const char *verstr = "20101219";
 #include <linux/blkdev.h>
 #include <linux/moduleparam.h>
 #include <linux/cdev.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
 #include <linux/mutex.h>
 
 #include <asm/uaccess.h>
 #include <asm/dma.h>
+=======
+#include <linux/idr.h>
+#include <linux/delay.h>
+#include <linux/mutex.h>
+
+#include <linux/uaccess.h>
+#include <asm/dma.h>
+#include <asm/unaligned.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <scsi/scsi.h>
 #include <scsi/scsi_dbg.h>
@@ -55,13 +91,23 @@ static const char *verstr = "20101219";
 
 /* The driver prints some debugging information on the console if DEBUG
    is defined and non-zero. */
+<<<<<<< HEAD
 #define DEBUG 0
 
+=======
+#define DEBUG 1
+#define NO_DEBUG 0
+
+#define ST_DEB_MSG  KERN_NOTICE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if DEBUG
 /* The message level for the debug messages is currently set to KERN_NOTICE
    so that people can easily see the messages. Later when the debugging messages
    in the drivers are more widely classified, this may be changed to KERN_DEBUG. */
+<<<<<<< HEAD
 #define ST_DEB_MSG  KERN_NOTICE
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DEB(a) a
 #define DEBC(a) if (debugging) { a ; }
 #else
@@ -74,17 +120,28 @@ static const char *verstr = "20101219";
 #include "st_options.h"
 #include "st.h"
 
+<<<<<<< HEAD
 static DEFINE_MUTEX(st_mutex);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int buffer_kbs;
 static int max_sg_segs;
 static int try_direct_io = TRY_DIRECT_IO;
 static int try_rdio = 1;
 static int try_wdio = 1;
+<<<<<<< HEAD
 
 static int st_dev_max;
 static int st_nr_dev;
 
 static struct class *st_sysfs_class;
+=======
+static int debug_flag;
+
+static const struct class st_sysfs_class;
+static const struct attribute_group *st_dev_groups[];
+static const struct attribute_group *st_drv_groups[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Kai Makisara");
 MODULE_DESCRIPTION("SCSI tape (st) driver");
@@ -102,6 +159,12 @@ module_param_named(max_sg_segs, max_sg_segs, int, 0);
 MODULE_PARM_DESC(max_sg_segs, "Maximum number of scatter/gather segments to use (256)");
 module_param_named(try_direct_io, try_direct_io, int, 0);
 MODULE_PARM_DESC(try_direct_io, "Try direct I/O between user buffer and tape drive (1)");
+<<<<<<< HEAD
+=======
+module_param_named(debug_flag, debug_flag, int, 0);
+MODULE_PARM_DESC(debug_flag, "Enable DEBUG, same as setting debugging=1");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Extra parameters for testing */
 module_param_named(try_rdio, try_rdio, int, 0);
@@ -126,6 +189,12 @@ static struct st_dev_parm {
 	},
 	{
 		"try_direct_io", &try_direct_io
+<<<<<<< HEAD
+=======
+	},
+	{
+		"debug_flag", &debug_flag
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 #endif
@@ -162,7 +231,11 @@ static int debugging = DEBUG;
 
 /* Remove mode bits and auto-rewind bit (7) */
 #define TAPE_NR(x) ( ((iminor(x) & ~255) >> (ST_NBR_MODE_BITS + 1)) | \
+<<<<<<< HEAD
     (iminor(x) & ~(-1 << ST_MODE_SHIFT)) )
+=======
+	(iminor(x) & ((1 << ST_MODE_SHIFT)-1)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TAPE_MODE(x) ((iminor(x) & ST_MODE_MASK) >> ST_MODE_SHIFT)
 
 /* Construct the minor number from the device (d), mode (m), and non-rewind (n) data */
@@ -173,6 +246,7 @@ static int debugging = DEBUG;
    24 bits) */
 #define SET_DENS_AND_BLK 0x10001
 
+<<<<<<< HEAD
 static DEFINE_RWLOCK(st_dev_arr_lock);
 
 static int st_fixed_buffer_size = ST_FIXED_BUFFER_SIZE;
@@ -183,6 +257,14 @@ static struct scsi_tape **scsi_tapes = NULL;
 static int modes_defined;
 
 static int enlarge_buffer(struct st_buffer *, int, int);
+=======
+static int st_fixed_buffer_size = ST_FIXED_BUFFER_SIZE;
+static int st_max_sg_segs = ST_MAX_SG;
+
+static int modes_defined;
+
+static int enlarge_buffer(struct st_buffer *, int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void clear_buffer(struct st_buffer *);
 static void normalize_buffer(struct st_buffer *);
 static int append_to_buffer(const char __user *, struct st_buffer *, int);
@@ -196,6 +278,7 @@ static int sgl_unmap_user_pages(struct st_buffer *, const unsigned int, int);
 static int st_probe(struct device *);
 static int st_remove(struct device *);
 
+<<<<<<< HEAD
 static int do_create_sysfs_files(void);
 static void do_remove_sysfs_files(void);
 static int do_create_class_files(struct scsi_tape *, int, int);
@@ -206,6 +289,15 @@ static struct scsi_driver st_template = {
 		.name		= "st",
 		.probe		= st_probe,
 		.remove		= st_remove,
+=======
+static struct scsi_driver st_template = {
+	.gendrv = {
+		.name		= "st",
+		.owner		= THIS_MODULE,
+		.probe		= st_probe,
+		.remove		= st_remove,
+		.groups		= st_drv_groups,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 
@@ -221,9 +313,18 @@ static void scsi_tape_release(struct kref *);
 #define to_scsi_tape(obj) container_of(obj, struct scsi_tape, kref)
 
 static DEFINE_MUTEX(st_ref_mutex);
+<<<<<<< HEAD
 
 
 #include "osst_detect.h"
+=======
+static DEFINE_SPINLOCK(st_index_lock);
+static DEFINE_SPINLOCK(st_use_lock);
+static DEFINE_IDR(st_index_idr);
+
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef SIGS_FROM_OSST
 #define SIGS_FROM_OSST \
 	{"OnStream", "SC-", "", "osst"}, \
@@ -238,10 +339,16 @@ static struct scsi_tape *scsi_tape_get(int dev)
 	struct scsi_tape *STp = NULL;
 
 	mutex_lock(&st_ref_mutex);
+<<<<<<< HEAD
 	write_lock(&st_dev_arr_lock);
 
 	if (dev < st_dev_max && scsi_tapes != NULL)
 		STp = scsi_tapes[dev];
+=======
+	spin_lock(&st_index_lock);
+
+	STp = idr_find(&st_index_idr, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!STp) goto out;
 
 	kref_get(&STp->kref);
@@ -258,7 +365,11 @@ out_put:
 	kref_put(&STp->kref, scsi_tape_release);
 	STp = NULL;
 out:
+<<<<<<< HEAD
 	write_unlock(&st_dev_arr_lock);
+=======
+	spin_unlock(&st_index_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&st_ref_mutex);
 	return STp;
 }
@@ -304,11 +415,22 @@ static char * st_incompatible(struct scsi_device* SDp)
 }
 
 
+<<<<<<< HEAD
 static inline char *tape_name(struct scsi_tape *tape)
 {
 	return tape->disk->disk_name;
 }
 
+=======
+#define st_printk(prefix, t, fmt, a...) \
+	sdev_prefix_printk(prefix, (t)->device, (t)->name, fmt, ##a)
+#ifdef DEBUG
+#define DEBC_printk(t, fmt, a...) \
+	if (debugging) { st_printk(ST_DEB_MSG, t, fmt, ##a ); }
+#else
+#define DEBC_printk(t, fmt, a...)
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void st_analyze_sense(struct st_request *SRpnt, struct st_cmdstatus *s)
 {
@@ -326,12 +448,20 @@ static void st_analyze_sense(struct st_request *SRpnt, struct st_cmdstatus *s)
 		switch (sense[0] & 0x7f) {
 		case 0x71:
 			s->deferred = 1;
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x70:
 			s->fixed_format = 1;
 			s->flags = sense[2] & 0xe0;
 			break;
 		case 0x73:
 			s->deferred = 1;
+<<<<<<< HEAD
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0x72:
 			s->fixed_format = 0;
 			ucp = scsi_sense_desc_find(sense, SCSI_SENSE_BUFFERSIZE, 4);
@@ -348,7 +478,11 @@ static int st_chk_result(struct scsi_tape *STp, struct st_request * SRpnt)
 	int result = SRpnt->result;
 	u8 scode;
 	DEB(const char *stp;)
+<<<<<<< HEAD
 	char *name = tape_name(STp);
+=======
+	char *name = STp->name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct st_cmdstatus *cmdstatp;
 
 	if (!result)
@@ -362,6 +496,7 @@ static int st_chk_result(struct scsi_tape *STp, struct st_request * SRpnt)
 	else
 		scode = 0;
 
+<<<<<<< HEAD
         DEB(
         if (debugging) {
                 printk(ST_DEB_MSG "%s: Error: %x, cmd: %x %x %x %x %x %x\n",
@@ -377,6 +512,23 @@ static int st_chk_result(struct scsi_tape *STp, struct st_request * SRpnt)
 			       "%s: Error %x (driver bt 0x%x, host bt 0x%x).\n",
 			       name, result, driver_byte(result),
 			       host_byte(result));
+=======
+	DEB(
+	if (debugging) {
+		st_printk(ST_DEB_MSG, STp,
+			    "Error: %x, cmd: %x %x %x %x %x %x\n", result,
+			    SRpnt->cmd[0], SRpnt->cmd[1], SRpnt->cmd[2],
+			    SRpnt->cmd[3], SRpnt->cmd[4], SRpnt->cmd[5]);
+		if (cmdstatp->have_sense)
+			__scsi_print_sense(STp->device, name,
+					   SRpnt->sense, SCSI_SENSE_BUFFERSIZE);
+	} ) /* end DEB */
+	if (!debugging) { /* Abnormal conditions for tape */
+		if (!cmdstatp->have_sense)
+			st_printk(KERN_WARNING, STp,
+			       "Error %x (driver bt 0, host bt 0x%x).\n",
+			       result, host_byte(result));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else if (cmdstatp->have_sense &&
 			 scode != NO_SENSE &&
 			 scode != RECOVERED_ERROR &&
@@ -386,7 +538,12 @@ static int st_chk_result(struct scsi_tape *STp, struct st_request * SRpnt)
 			 SRpnt->cmd[0] != MODE_SENSE &&
 			 SRpnt->cmd[0] != TEST_UNIT_READY) {
 
+<<<<<<< HEAD
 			__scsi_print_sense(name, SRpnt->sense, SCSI_SENSE_BUFFERSIZE);
+=======
+			__scsi_print_sense(STp->device, name,
+					   SRpnt->sense, SCSI_SENSE_BUFFERSIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -402,6 +559,11 @@ static int st_chk_result(struct scsi_tape *STp, struct st_request * SRpnt)
 	if (cmdstatp->have_sense &&
 	    cmdstatp->sense_hdr.asc == 0 && cmdstatp->sense_hdr.ascq == 0x17)
 		STp->cleaning_req = 1; /* ASC and ASCQ => cleaning requested */
+<<<<<<< HEAD
+=======
+	if (cmdstatp->have_sense && scode == UNIT_ATTENTION && cmdstatp->sense_hdr.asc == 0x29)
+		STp->pos_unknown = 1; /* ASC => power on / reset */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	STp->pos_unknown |= STp->device->was_reset;
 
@@ -415,7 +577,11 @@ static int st_chk_result(struct scsi_tape *STp, struct st_request * SRpnt)
 		STp->recover_count++;
 		STp->recover_reg++;
 
+<<<<<<< HEAD
                 DEB(
+=======
+		DEB(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (debugging) {
 			if (SRpnt->cmd[0] == READ_6)
 				stp = "read";
@@ -423,8 +589,14 @@ static int st_chk_result(struct scsi_tape *STp, struct st_request * SRpnt)
 				stp = "write";
 			else
 				stp = "ioctl";
+<<<<<<< HEAD
 			printk(ST_DEB_MSG "%s: Recovered %s error (%d).\n", name, stp,
 			       STp->recover_count);
+=======
+			st_printk(ST_DEB_MSG, STp,
+				  "Recovered %s error (%d).\n",
+				  stp, STp->recover_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} ) /* end DEB */
 
 		if (cmdstatp->flags == 0)
@@ -441,8 +613,13 @@ static struct st_request *st_allocate_request(struct scsi_tape *stp)
 	if (streq)
 		streq->stp = stp;
 	else {
+<<<<<<< HEAD
 		DEBC(printk(KERN_ERR "%s: Can't get SCSI request.\n",
 			    tape_name(stp)););
+=======
+		st_printk(KERN_ERR, stp,
+			  "Can't get SCSI request.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (signal_pending(current))
 			stp->buffer->syscall_result = -EINTR;
 		else
@@ -457,21 +634,86 @@ static void st_release_request(struct st_request *streq)
 	kfree(streq);
 }
 
+<<<<<<< HEAD
 static void st_scsi_execute_end(struct request *req, int uptodate)
 {
+=======
+static void st_do_stats(struct scsi_tape *STp, struct request *req)
+{
+	struct scsi_cmnd *scmd = blk_mq_rq_to_pdu(req);
+	ktime_t now;
+
+	now = ktime_get();
+	if (scmd->cmnd[0] == WRITE_6) {
+		now = ktime_sub(now, STp->stats->write_time);
+		atomic64_add(ktime_to_ns(now), &STp->stats->tot_write_time);
+		atomic64_add(ktime_to_ns(now), &STp->stats->tot_io_time);
+		atomic64_inc(&STp->stats->write_cnt);
+		if (scmd->result) {
+			atomic64_add(atomic_read(&STp->stats->last_write_size)
+				- STp->buffer->cmdstat.residual,
+				&STp->stats->write_byte_cnt);
+			if (STp->buffer->cmdstat.residual > 0)
+				atomic64_inc(&STp->stats->resid_cnt);
+		} else
+			atomic64_add(atomic_read(&STp->stats->last_write_size),
+				&STp->stats->write_byte_cnt);
+	} else if (scmd->cmnd[0] == READ_6) {
+		now = ktime_sub(now, STp->stats->read_time);
+		atomic64_add(ktime_to_ns(now), &STp->stats->tot_read_time);
+		atomic64_add(ktime_to_ns(now), &STp->stats->tot_io_time);
+		atomic64_inc(&STp->stats->read_cnt);
+		if (scmd->result) {
+			atomic64_add(atomic_read(&STp->stats->last_read_size)
+				- STp->buffer->cmdstat.residual,
+				&STp->stats->read_byte_cnt);
+			if (STp->buffer->cmdstat.residual > 0)
+				atomic64_inc(&STp->stats->resid_cnt);
+		} else
+			atomic64_add(atomic_read(&STp->stats->last_read_size),
+				&STp->stats->read_byte_cnt);
+	} else {
+		now = ktime_sub(now, STp->stats->other_time);
+		atomic64_add(ktime_to_ns(now), &STp->stats->tot_io_time);
+		atomic64_inc(&STp->stats->other_cnt);
+	}
+	atomic64_dec(&STp->stats->in_flight);
+}
+
+static enum rq_end_io_ret st_scsi_execute_end(struct request *req,
+					      blk_status_t status)
+{
+	struct scsi_cmnd *scmd = blk_mq_rq_to_pdu(req);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct st_request *SRpnt = req->end_io_data;
 	struct scsi_tape *STp = SRpnt->stp;
 	struct bio *tmp;
 
+<<<<<<< HEAD
 	STp->buffer->cmdstat.midlevel_result = SRpnt->result = req->errors;
 	STp->buffer->cmdstat.residual = req->resid_len;
 
 	tmp = SRpnt->bio;
+=======
+	STp->buffer->cmdstat.midlevel_result = SRpnt->result = scmd->result;
+	STp->buffer->cmdstat.residual = scmd->resid_len;
+
+	st_do_stats(STp, req);
+
+	tmp = SRpnt->bio;
+	if (scmd->sense_len)
+		memcpy(SRpnt->sense, scmd->sense_buffer, SCSI_SENSE_BUFFERSIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (SRpnt->waiting)
 		complete(SRpnt->waiting);
 
 	blk_rq_unmap_user(tmp);
+<<<<<<< HEAD
 	__blk_put_request(req->q, req);
+=======
+	blk_mq_free_request(req);
+	return RQ_END_IO_NONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int st_scsi_execute(struct st_request *SRpnt, const unsigned char *cmd,
@@ -481,6 +723,7 @@ static int st_scsi_execute(struct st_request *SRpnt, const unsigned char *cmd,
 	struct request *req;
 	struct rq_map_data *mdata = &SRpnt->stp->buffer->map_data;
 	int err = 0;
+<<<<<<< HEAD
 	int write = (data_direction == DMA_TO_DEVICE);
 
 	req = blk_get_request(SRpnt->stp->device->request_queue, write,
@@ -490,6 +733,18 @@ static int st_scsi_execute(struct st_request *SRpnt, const unsigned char *cmd,
 
 	blk_rq_set_block_pc(req);
 	req->cmd_flags |= REQ_QUIET;
+=======
+	struct scsi_tape *STp = SRpnt->stp;
+	struct scsi_cmnd *scmd;
+
+	req = scsi_alloc_request(SRpnt->stp->device->request_queue,
+			data_direction == DMA_TO_DEVICE ?
+			REQ_OP_DRV_OUT : REQ_OP_DRV_IN, 0);
+	if (IS_ERR(req))
+		return PTR_ERR(req);
+	scmd = blk_mq_rq_to_pdu(req);
+	req->rq_flags |= RQF_QUIET;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mdata->null_mapped = 1;
 
@@ -497,6 +752,7 @@ static int st_scsi_execute(struct st_request *SRpnt, const unsigned char *cmd,
 		err = blk_rq_map_user(req->q, req, mdata, NULL, bufflen,
 				      GFP_KERNEL);
 		if (err) {
+<<<<<<< HEAD
 			blk_put_request(req);
 			return DRIVER_ERROR << 24;
 		}
@@ -513,6 +769,33 @@ static int st_scsi_execute(struct st_request *SRpnt, const unsigned char *cmd,
 	req->end_io_data = SRpnt;
 
 	blk_execute_rq_nowait(req->q, NULL, req, 1, st_scsi_execute_end);
+=======
+			blk_mq_free_request(req);
+			return err;
+		}
+	}
+
+	atomic64_inc(&STp->stats->in_flight);
+	if (cmd[0] == WRITE_6) {
+		atomic_set(&STp->stats->last_write_size, bufflen);
+		STp->stats->write_time = ktime_get();
+	} else if (cmd[0] == READ_6) {
+		atomic_set(&STp->stats->last_read_size, bufflen);
+		STp->stats->read_time = ktime_get();
+	} else {
+		STp->stats->other_time = ktime_get();
+	}
+
+	SRpnt->bio = req->bio;
+	scmd->cmd_len = COMMAND_SIZE(cmd[0]);
+	memcpy(scmd->cmnd, cmd, scmd->cmd_len);
+	req->timeout = timeout;
+	scmd->allowed = retries;
+	req->end_io = st_scsi_execute_end;
+	req->end_io_data = SRpnt;
+
+	blk_execute_rq_nowait(req, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -529,8 +812,13 @@ st_do_scsi(struct st_request * SRpnt, struct scsi_tape * STp, unsigned char *cmd
 
 	/* if async, make sure there's no command outstanding */
 	if (!do_wait && ((STp->buffer)->last_SRpnt)) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Async command already active.\n",
 		       tape_name(STp));
+=======
+		st_printk(KERN_ERR, STp,
+			  "Async command already active.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (signal_pending(current))
 			(STp->buffer)->syscall_result = (-EINTR);
 		else
@@ -601,12 +889,20 @@ static int write_behind_check(struct scsi_tape * STp)
 	if (!STbuffer->writing)
 		return 0;
 
+<<<<<<< HEAD
         DEB(
+=======
+	DEB(
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (STp->write_pending)
 		STp->nbr_waits++;
 	else
 		STp->nbr_finished++;
+<<<<<<< HEAD
         ) /* end DEB */
+=======
+	) /* end DEB */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wait_for_completion(&(STp->wait));
 	SRpnt = STbuffer->last_SRpnt;
@@ -643,8 +939,14 @@ static int write_behind_check(struct scsi_tape * STp)
 	STbuffer->writing = 0;
 
 	DEB(if (debugging && retval)
+<<<<<<< HEAD
 	    printk(ST_DEB_MSG "%s: Async write error %x, return value %d.\n",
 		   tape_name(STp), STbuffer->cmdstat.midlevel_result, retval);) /* end DEB */
+=======
+		    st_printk(ST_DEB_MSG, STp,
+				"Async write error %x, return value %d.\n",
+				STbuffer->cmdstat.midlevel_result, retval);) /* end DEB */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return retval;
 }
@@ -666,8 +968,13 @@ static int cross_eof(struct scsi_tape * STp, int forward)
 		cmd[2] = cmd[3] = cmd[4] = 0xff;	/* -1 filemarks */
 	cmd[5] = 0;
 
+<<<<<<< HEAD
         DEBC(printk(ST_DEB_MSG "%s: Stepping over filemark %s.\n",
 		   tape_name(STp), forward ? "forward" : "backward"));
+=======
+	DEBC_printk(STp, "Stepping over filemark %s.\n",
+		    forward ? "forward" : "backward");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	SRpnt = st_do_scsi(NULL, STp, cmd, 0, DMA_NONE,
 			   STp->device->request_queue->rq_timeout,
@@ -679,8 +986,14 @@ static int cross_eof(struct scsi_tape * STp, int forward)
 	SRpnt = NULL;
 
 	if ((STp->buffer)->cmdstat.midlevel_result != 0)
+<<<<<<< HEAD
 		printk(KERN_ERR "%s: Stepping over filemark %s failed.\n",
 		   tape_name(STp), forward ? "forward" : "backward");
+=======
+		st_printk(KERN_ERR, STp,
+			  "Stepping over filemark %s failed.\n",
+			  forward ? "forward" : "backward");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (STp->buffer)->syscall_result;
 }
@@ -703,8 +1016,12 @@ static int st_flush_write_buffer(struct scsi_tape * STp)
 	if (STp->dirty == 1) {
 
 		transfer = STp->buffer->buffer_bytes;
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Flushing %d bytes.\n",
                                tape_name(STp), transfer));
+=======
+		DEBC_printk(STp, "Flushing %d bytes.\n", transfer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		memset(cmd, 0, MAX_COMMAND_SIZE);
 		cmd[0] = WRITE_6;
@@ -736,8 +1053,12 @@ static int st_flush_write_buffer(struct scsi_tape * STp)
 					STps->drv_block += blks;
 				result = (-ENOSPC);
 			} else {
+<<<<<<< HEAD
 				printk(KERN_ERR "%s: Error on flush.\n",
                                        tape_name(STp));
+=======
+				st_printk(KERN_ERR, STp, "Error on flush.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				STps->drv_block = (-1);
 				result = (-EIO);
 			}
@@ -759,11 +1080,16 @@ static int st_flush_write_buffer(struct scsi_tape * STp)
 static int flush_buffer(struct scsi_tape *STp, int seek_next)
 {
 	int backspace, result;
+<<<<<<< HEAD
 	struct st_buffer *STbuffer;
 	struct st_partstat *STps;
 
 	STbuffer = STp->buffer;
 
+=======
+	struct st_partstat *STps;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * If there was a bus reset, block further access
 	 * to this device.
@@ -815,7 +1141,10 @@ static int set_mode_densblk(struct scsi_tape * STp, struct st_modedef * STm)
 {
 	int set_it = 0;
 	unsigned long arg;
+<<<<<<< HEAD
 	char *name = tape_name(STp);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!STp->density_changed &&
 	    STm->default_density >= 0 &&
@@ -834,9 +1163,16 @@ static int set_mode_densblk(struct scsi_tape * STp, struct st_modedef * STm)
 		arg |= STp->block_size;
 	if (set_it &&
 	    st_int_ioctl(STp, SET_DENS_AND_BLK, arg)) {
+<<<<<<< HEAD
 		printk(KERN_WARNING
 		       "%s: Can't set default block size to %d bytes and density %x.\n",
 		       name, STm->default_blksize, STm->default_density);
+=======
+		st_printk(KERN_WARNING, STp,
+			  "Can't set default block size to %d bytes "
+			  "and density %x.\n",
+			  STm->default_blksize, STm->default_density);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (modes_defined)
 			return (-EINVAL);
 	}
@@ -847,6 +1183,7 @@ static int set_mode_densblk(struct scsi_tape * STp, struct st_modedef * STm)
 /* Lock or unlock the drive door. Don't use when st_request allocated. */
 static int do_door_lock(struct scsi_tape * STp, int do_lock)
 {
+<<<<<<< HEAD
 	int retval, cmd;
 	DEB(char *name = tape_name(STp);)
 
@@ -861,6 +1198,18 @@ static int do_door_lock(struct scsi_tape * STp, int do_lock)
 	else {
 		STp->door_locked = ST_LOCK_FAILS;
 	}
+=======
+	int retval;
+
+	DEBC_printk(STp, "%socking drive door.\n", do_lock ? "L" : "Unl");
+
+	retval = scsi_set_medium_removal(STp->device,
+			do_lock ? SCSI_REMOVAL_PREVENT : SCSI_REMOVAL_ALLOW);
+	if (!retval)
+		STp->door_locked = do_lock ? ST_LOCKED_EXPLICIT : ST_UNLOCKED;
+	else
+		STp->door_locked = ST_LOCK_FAILS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -980,15 +1329,24 @@ static int check_tape(struct scsi_tape *STp, struct file *filp)
 	struct st_request *SRpnt = NULL;
 	struct st_modedef *STm;
 	struct st_partstat *STps;
+<<<<<<< HEAD
 	char *name = tape_name(STp);
 	struct inode *inode = filp->f_path.dentry->d_inode;
+=======
+	struct inode *inode = file_inode(filp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int mode = TAPE_MODE(inode);
 
 	STp->ready = ST_READY;
 
 	if (mode != STp->current_mode) {
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Mode change from %d to %d.\n",
 			       name, STp->current_mode, mode));
+=======
+		DEBC_printk(STp, "Mode change from %d to %d.\n",
+			    STp->current_mode, mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		new_session = 1;
 		STp->current_mode = mode;
 	}
@@ -1059,6 +1417,7 @@ static int check_tape(struct scsi_tape *STp, struct file *filp)
 			STp->min_block = ((STp->buffer)->b_data[4] << 8) |
 			    (STp->buffer)->b_data[5];
 			if ( DEB( debugging || ) !STp->inited)
+<<<<<<< HEAD
 				printk(KERN_INFO
                                        "%s: Block limits %d - %d bytes.\n", name,
                                        STp->min_block, STp->max_block);
@@ -1066,6 +1425,14 @@ static int check_tape(struct scsi_tape *STp, struct file *filp)
 			STp->min_block = STp->max_block = (-1);
                         DEBC(printk(ST_DEB_MSG "%s: Can't read block limits.\n",
                                        name));
+=======
+				st_printk(KERN_INFO, STp,
+					  "Block limits %d - %d bytes.\n",
+					  STp->min_block, STp->max_block);
+		} else {
+			STp->min_block = STp->max_block = (-1);
+			DEBC_printk(STp, "Can't read block limits.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1082,22 +1449,36 @@ static int check_tape(struct scsi_tape *STp, struct file *filp)
 	}
 
 	if ((STp->buffer)->syscall_result != 0) {
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: No Mode Sense.\n", name));
+=======
+		DEBC_printk(STp, "No Mode Sense.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		STp->block_size = ST_DEFAULT_BLOCK;	/* Educated guess (?) */
 		(STp->buffer)->syscall_result = 0;	/* Prevent error propagation */
 		STp->drv_write_prot = 0;
 	} else {
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG
                             "%s: Mode sense. Length %d, medium %x, WBS %x, BLL %d\n",
                             name,
                             (STp->buffer)->b_data[0], (STp->buffer)->b_data[1],
                             (STp->buffer)->b_data[2], (STp->buffer)->b_data[3]));
+=======
+		DEBC_printk(STp,"Mode sense. Length %d, "
+			    "medium %x, WBS %x, BLL %d\n",
+			    (STp->buffer)->b_data[0],
+			    (STp->buffer)->b_data[1],
+			    (STp->buffer)->b_data[2],
+			    (STp->buffer)->b_data[3]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if ((STp->buffer)->b_data[3] >= 8) {
 			STp->drv_buffer = ((STp->buffer)->b_data[2] >> 4) & 7;
 			STp->density = (STp->buffer)->b_data[4];
 			STp->block_size = (STp->buffer)->b_data[9] * 65536 +
 			    (STp->buffer)->b_data[10] * 256 + (STp->buffer)->b_data[11];
+<<<<<<< HEAD
                         DEBC(printk(ST_DEB_MSG
                                     "%s: Density %x, tape length: %x, drv buffer: %d\n",
                                     name, STp->density, (STp->buffer)->b_data[5] * 65536 +
@@ -1109,29 +1490,62 @@ static int check_tape(struct scsi_tape *STp, struct file *filp)
 			printk(KERN_WARNING
 			    "%s: non-buffered tape: disabling writing immediate filemarks\n",
 			    name);
+=======
+			DEBC_printk(STp, "Density %x, tape length: %x, "
+				    "drv buffer: %d\n",
+				    STp->density,
+				    (STp->buffer)->b_data[5] * 65536 +
+				    (STp->buffer)->b_data[6] * 256 +
+				    (STp->buffer)->b_data[7],
+				    STp->drv_buffer);
+		}
+		STp->drv_write_prot = ((STp->buffer)->b_data[2] & 0x80) != 0;
+		if (!STp->drv_buffer && STp->immediate_filemark) {
+			st_printk(KERN_WARNING, STp,
+				  "non-buffered tape: disabling "
+				  "writing immediate filemarks\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			STp->immediate_filemark = 0;
 		}
 	}
 	st_release_request(SRpnt);
 	SRpnt = NULL;
+<<<<<<< HEAD
         STp->inited = 1;
 
 	if (STp->block_size > 0)
 		(STp->buffer)->buffer_blocks =
                         (STp->buffer)->buffer_size / STp->block_size;
+=======
+	STp->inited = 1;
+
+	if (STp->block_size > 0)
+		(STp->buffer)->buffer_blocks =
+			(STp->buffer)->buffer_size / STp->block_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		(STp->buffer)->buffer_blocks = 1;
 	(STp->buffer)->buffer_bytes = (STp->buffer)->read_pointer = 0;
 
+<<<<<<< HEAD
         DEBC(printk(ST_DEB_MSG
                        "%s: Block size: %d, buffer size: %d (%d blocks).\n", name,
 		       STp->block_size, (STp->buffer)->buffer_size,
 		       (STp->buffer)->buffer_blocks));
+=======
+	DEBC_printk(STp, "Block size: %d, buffer size: %d (%d blocks).\n",
+		    STp->block_size, (STp->buffer)->buffer_size,
+		    (STp->buffer)->buffer_blocks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (STp->drv_write_prot) {
 		STp->write_prot = 1;
 
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Write protected\n", name));
+=======
+		DEBC_printk(STp, "Write protected\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (do_wait &&
 		    ((st_flags & O_ACCMODE) == O_WRONLY ||
@@ -1145,8 +1559,12 @@ static int check_tape(struct scsi_tape *STp, struct file *filp)
 		/* This code is reached when the device is opened for the first time
 		   after the driver has been initialized with tape in the drive and the
 		   partition support has been enabled. */
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG
                             "%s: Updating partition number in status.\n", name));
+=======
+		DEBC_printk(STp, "Updating partition number in status.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if ((STp->partition = find_partition(STp)) < 0) {
 			retval = STp->partition;
 			goto err_out;
@@ -1164,9 +1582,16 @@ static int check_tape(struct scsi_tape *STp, struct file *filp)
 
 		if (STp->default_drvbuffer != 0xff) {
 			if (st_int_ioctl(STp, MTSETDRVBUFFER, STp->default_drvbuffer))
+<<<<<<< HEAD
 				printk(KERN_WARNING
                                        "%s: Can't set default drive buffering to %d.\n",
 				       name, STp->default_drvbuffer);
+=======
+				st_printk(KERN_WARNING, STp,
+					  "Can't set default drive "
+					  "buffering to %d.\n",
+					  STp->default_drvbuffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -1186,9 +1611,13 @@ static int st_open(struct inode *inode, struct file *filp)
 	struct scsi_tape *STp;
 	struct st_partstat *STps;
 	int dev = TAPE_NR(inode);
+<<<<<<< HEAD
 	char *name;
 
 	mutex_lock(&st_mutex);
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We really want to do nonseekable_open(inode, filp); here, but some
 	 * versions of tar incorrectly call lseek on tapes and bail out if that
@@ -1197,6 +1626,7 @@ static int st_open(struct inode *inode, struct file *filp)
 	filp->f_mode &= ~(FMODE_PREAD | FMODE_PWRITE);
 
 	if (!(STp = scsi_tape_get(dev))) {
+<<<<<<< HEAD
 		mutex_unlock(&st_mutex);
 		return -ENXIO;
 	}
@@ -1210,11 +1640,27 @@ static int st_open(struct inode *inode, struct file *filp)
 		scsi_tape_put(STp);
 		mutex_unlock(&st_mutex);
 		DEB( printk(ST_DEB_MSG "%s: Device already in use.\n", name); )
+=======
+		return -ENXIO;
+	}
+
+	filp->private_data = STp;
+
+	spin_lock(&st_use_lock);
+	if (STp->in_use) {
+		spin_unlock(&st_use_lock);
+		DEBC_printk(STp, "Device already in use.\n");
+		scsi_tape_put(STp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (-EBUSY);
 	}
 
 	STp->in_use = 1;
+<<<<<<< HEAD
 	write_unlock(&st_dev_arr_lock);
+=======
+	spin_unlock(&st_use_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	STp->rew_at_close = STp->autorew_dev = (iminor(inode) & 0x80) == 0;
 
 	if (scsi_autopm_get_device(STp->device) < 0) {
@@ -1228,9 +1674,15 @@ static int st_open(struct inode *inode, struct file *filp)
 	}
 
 	/* See that we have at least a one page buffer available */
+<<<<<<< HEAD
 	if (!enlarge_buffer(STp->buffer, PAGE_SIZE, STp->restr_dma)) {
 		printk(KERN_WARNING "%s: Can't allocate one page tape buffer.\n",
 		       name);
+=======
+	if (!enlarge_buffer(STp->buffer, PAGE_SIZE)) {
+		st_printk(KERN_WARNING, STp,
+			  "Can't allocate one page tape buffer.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = (-EOVERFLOW);
 		goto err_out;
 	}
@@ -1262,16 +1714,28 @@ static int st_open(struct inode *inode, struct file *filp)
 			retval = (-EIO);
 		goto err_out;
 	}
+<<<<<<< HEAD
 	mutex_unlock(&st_mutex);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
  err_out:
 	normalize_buffer(STp->buffer);
+<<<<<<< HEAD
 	STp->in_use = 0;
 	if (resumed)
 		scsi_autopm_put_device(STp->device);
 	scsi_tape_put(STp);
 	mutex_unlock(&st_mutex);
+=======
+	spin_lock(&st_use_lock);
+	STp->in_use = 0;
+	spin_unlock(&st_use_lock);
+	if (resumed)
+		scsi_autopm_put_device(STp->device);
+	scsi_tape_put(STp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 
 }
@@ -1286,7 +1750,10 @@ static int st_flush(struct file *filp, fl_owner_t id)
 	struct scsi_tape *STp = filp->private_data;
 	struct st_modedef *STm = &(STp->modes[STp->current_mode]);
 	struct st_partstat *STps = &(STp->ps[STp->partition]);
+<<<<<<< HEAD
 	char *name = tape_name(STp);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (file_count(filp) > 1)
 		return 0;
@@ -1299,24 +1766,42 @@ static int st_flush(struct file *filp, fl_owner_t id)
 
 	if (STp->can_partitions &&
 	    (result2 = switch_partition(STp)) < 0) {
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG
                                "%s: switch_partition at close failed.\n", name));
+=======
+		DEBC_printk(STp, "switch_partition at close failed.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (result == 0)
 			result = result2;
 		goto out;
 	}
 
 	DEBC( if (STp->nbr_requests)
+<<<<<<< HEAD
 		printk(KERN_DEBUG "%s: Number of r/w requests %d, dio used in %d, pages %d.\n",
 		       name, STp->nbr_requests, STp->nbr_dio, STp->nbr_pages));
+=======
+		st_printk(KERN_DEBUG, STp,
+			  "Number of r/w requests %d, dio used in %d, "
+			  "pages %d.\n", STp->nbr_requests, STp->nbr_dio,
+			  STp->nbr_pages));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (STps->rw == ST_WRITING && !STp->pos_unknown) {
 		struct st_cmdstatus *cmdstatp = &STp->buffer->cmdstat;
 
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Async write waits %d, finished %d.\n",
                             name, STp->nbr_waits, STp->nbr_finished);
 		)
 
+=======
+#if DEBUG
+		DEBC_printk(STp, "Async write waits %d, finished %d.\n",
+			    STp->nbr_waits, STp->nbr_finished);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		memset(cmd, 0, MAX_COMMAND_SIZE);
 		cmd[0] = WRITE_FILEMARKS;
 		if (STp->immediate_filemark)
@@ -1350,13 +1835,22 @@ static int st_flush(struct file *filp, fl_owner_t id)
 		else { /* Write error */
 			st_release_request(SRpnt);
 			SRpnt = NULL;
+<<<<<<< HEAD
 			printk(KERN_ERR "%s: Error on write filemark.\n", name);
+=======
+			st_printk(KERN_ERR, STp,
+				  "Error on write filemark.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (result == 0)
 				result = (-EIO);
 		}
 
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Buffer flushed, %d EOF(s) written\n",
                             name, cmd[4]));
+=======
+		DEBC_printk(STp, "Buffer flushed, %d EOF(s) written\n", cmd[4]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (!STp->rew_at_close) {
 		STps = &(STp->ps[STp->partition]);
 		if (!STm->sysv || STps->rw != ST_READING) {
@@ -1396,13 +1890,17 @@ static int st_flush(struct file *filp, fl_owner_t id)
    accessing this tape. */
 static int st_release(struct inode *inode, struct file *filp)
 {
+<<<<<<< HEAD
 	int result = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scsi_tape *STp = filp->private_data;
 
 	if (STp->door_locked == ST_LOCKED_AUTO)
 		do_door_lock(STp, 0);
 
 	normalize_buffer(STp->buffer);
+<<<<<<< HEAD
 	write_lock(&st_dev_arr_lock);
 	STp->in_use = 0;
 	write_unlock(&st_dev_arr_lock);
@@ -1412,6 +1910,17 @@ static int st_release(struct inode *inode, struct file *filp)
 	return result;
 }
 
+=======
+	spin_lock(&st_use_lock);
+	STp->in_use = 0;
+	spin_unlock(&st_use_lock);
+	scsi_autopm_put_device(STp->device);
+	scsi_tape_put(STp);
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The checks common to both reading and writing */
 static ssize_t rw_checks(struct scsi_tape *STp, struct file *filp, size_t count)
 {
@@ -1454,9 +1963,16 @@ static ssize_t rw_checks(struct scsi_tape *STp, struct file *filp, size_t count)
 	if (count == 0)
 		goto out;
 
+<<<<<<< HEAD
         DEB(
 	if (!STp->in_use) {
 		printk(ST_DEB_MSG "%s: Incorrect device.\n", tape_name(STp));
+=======
+	DEB(
+	if (!STp->in_use) {
+		st_printk(ST_DEB_MSG, STp,
+			  "Incorrect device.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = (-EIO);
 		goto out;
 	} ) /* end DEB */
@@ -1525,9 +2041,16 @@ static int setup_buffering(struct scsi_tape *STp, const char __user *buf,
 		}
 
 		if (bufsize > STbp->buffer_size &&
+<<<<<<< HEAD
 		    !enlarge_buffer(STbp, bufsize, STp->restr_dma)) {
 			printk(KERN_WARNING "%s: Can't allocate %d byte tape buffer.\n",
 			       tape_name(STp), bufsize);
+=======
+		    !enlarge_buffer(STbp, bufsize)) {
+			st_printk(KERN_WARNING, STp,
+				  "Can't allocate %d byte tape buffer.\n",
+				  bufsize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retval = (-EOVERFLOW);
 			goto out;
 		}
@@ -1570,7 +2093,10 @@ st_write(struct file *filp, const char __user *buf, size_t count, loff_t * ppos)
 	struct st_modedef *STm;
 	struct st_partstat *STps;
 	struct st_buffer *STbp;
+<<<<<<< HEAD
 	char *name = tape_name(STp);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mutex_lock_interruptible(&STp->lock))
 		return -ERESTARTSYS;
@@ -1581,8 +2107,13 @@ st_write(struct file *filp, const char __user *buf, size_t count, loff_t * ppos)
 
 	/* Write must be integral number of blocks */
 	if (STp->block_size != 0 && (count % STp->block_size) != 0) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: Write not multiple of tape block size.\n",
 		       name);
+=======
+		st_printk(KERN_WARNING, STp,
+			  "Write not multiple of tape block size.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = (-EINVAL);
 		goto out;
 	}
@@ -1608,8 +2139,13 @@ st_write(struct file *filp, const char __user *buf, size_t count, loff_t * ppos)
 		if (STm->default_compression != ST_DONT_TOUCH &&
 		    !(STp->compression_changed)) {
 			if (st_compression(STp, (STm->default_compression == ST_YES))) {
+<<<<<<< HEAD
 				printk(KERN_WARNING "%s: Can't set default compression.\n",
 				       name);
+=======
+				st_printk(KERN_WARNING, STp,
+					  "Can't set default compression.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (modes_defined) {
 					retval = (-EINVAL);
 					goto out;
@@ -1730,7 +2266,11 @@ st_write(struct file *filp, const char __user *buf, size_t count, loff_t * ppos)
 		if (STbp->syscall_result != 0) {
 			struct st_cmdstatus *cmdstatp = &STp->buffer->cmdstat;
 
+<<<<<<< HEAD
                         DEBC(printk(ST_DEB_MSG "%s: Error on write:\n", name));
+=======
+			DEBC_printk(STp, "Error on write:\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (cmdstatp->have_sense && (cmdstatp->flags & SENSE_EOM)) {
 				scode = cmdstatp->sense_hdr.sense_key;
 				if (cmdstatp->remainder_valid)
@@ -1757,9 +2297,15 @@ st_write(struct file *filp, const char __user *buf, size_t count, loff_t * ppos)
 					if (STp->block_size == 0 ||
 					    undone > 0 || count == 0)
 						retval = (-ENOSPC); /* EOM within current request */
+<<<<<<< HEAD
                                         DEBC(printk(ST_DEB_MSG
                                                        "%s: EOM with %d bytes unwritten.\n",
 						       name, (int)count));
+=======
+					DEBC_printk(STp, "EOM with %d "
+						    "bytes unwritten.\n",
+						    (int)count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				} else {
 					/* EOT within data buffered earlier (possible only
 					   in fixed block mode without direct i/o) */
@@ -1772,9 +2318,16 @@ st_write(struct file *filp, const char __user *buf, size_t count, loff_t * ppos)
 								STp->block_size;
 						}
 						STps->eof = ST_EOM_OK;
+<<<<<<< HEAD
 						DEBC(printk(ST_DEB_MSG
 							    "%s: Retry write of %d bytes at EOM.\n",
 							    name, STp->buffer->buffer_bytes));
+=======
+						DEBC_printk(STp, "Retry "
+							    "write of %d "
+							    "bytes at EOM.\n",
+							    STp->buffer->buffer_bytes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						goto retry_write;
 					}
 					else {
@@ -1785,9 +2338,14 @@ st_write(struct file *filp, const char __user *buf, size_t count, loff_t * ppos)
 						STps->eof = ST_EOM_ERROR;
 						STps->drv_block = (-1); /* Too cautious? */
 						retval = (-EIO);	/* EOM for old data */
+<<<<<<< HEAD
 						DEBC(printk(ST_DEB_MSG
 							    "%s: EOM with lost data.\n",
 							    name));
+=======
+						DEBC_printk(STp, "EOM with "
+							    "lost data.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					}
 				}
 			} else {
@@ -1846,7 +2404,10 @@ static long read_tape(struct scsi_tape *STp, long count,
 	struct st_partstat *STps;
 	struct st_buffer *STbp;
 	int retval = 0;
+<<<<<<< HEAD
 	char *name = tape_name(STp);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (count == 0)
 		return 0;
@@ -1898,12 +2459,21 @@ static long read_tape(struct scsi_tape *STp, long count,
 		struct st_cmdstatus *cmdstatp = &STp->buffer->cmdstat;
 
 		retval = 1;
+<<<<<<< HEAD
 		DEBC(printk(ST_DEB_MSG "%s: Sense: %2x %2x %2x %2x %2x %2x %2x %2x\n",
                             name,
                             SRpnt->sense[0], SRpnt->sense[1],
                             SRpnt->sense[2], SRpnt->sense[3],
                             SRpnt->sense[4], SRpnt->sense[5],
                             SRpnt->sense[6], SRpnt->sense[7]));
+=======
+		DEBC_printk(STp,
+			    "Sense: %2x %2x %2x %2x %2x %2x %2x %2x\n",
+			    SRpnt->sense[0], SRpnt->sense[1],
+			    SRpnt->sense[2], SRpnt->sense[3],
+			    SRpnt->sense[4], SRpnt->sense[5],
+			    SRpnt->sense[6], SRpnt->sense[7]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cmdstatp->have_sense) {
 
 			if (cmdstatp->sense_hdr.sense_key == BLANK_CHECK)
@@ -1915,6 +2485,7 @@ static long read_tape(struct scsi_tape *STp, long count,
 					transfer = (int)cmdstatp->uremainder64;
 				else
 					transfer = 0;
+<<<<<<< HEAD
 				if (STp->block_size == 0 &&
 				    cmdstatp->sense_hdr.sense_key == MEDIUM_ERROR)
 					transfer = bytes;
@@ -1931,12 +2502,41 @@ static long read_tape(struct scsi_tape *STp, long count,
 							STbp->buffer_bytes = 0;
 							return (-ENOMEM);
 						}
+=======
+				if (cmdstatp->sense_hdr.sense_key == MEDIUM_ERROR) {
+					if (STp->block_size == 0)
+						transfer = bytes;
+					/* Some drives set ILI with MEDIUM ERROR */
+					cmdstatp->flags &= ~SENSE_ILI;
+				}
+
+				if (cmdstatp->flags & SENSE_ILI) {	/* ILI */
+					if (STp->block_size == 0 &&
+					    transfer < 0) {
+						st_printk(KERN_NOTICE, STp,
+							  "Failed to read %d "
+							  "byte block with %d "
+							  "byte transfer.\n",
+							  bytes - transfer,
+							  bytes);
+						if (STps->drv_block >= 0)
+							STps->drv_block += 1;
+						STbp->buffer_bytes = 0;
+						return (-ENOMEM);
+					} else if (STp->block_size == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						STbp->buffer_bytes = bytes - transfer;
 					} else {
 						st_release_request(SRpnt);
 						SRpnt = *aSRpnt = NULL;
 						if (transfer == blks) {	/* We did not get anything, error */
+<<<<<<< HEAD
 							printk(KERN_NOTICE "%s: Incorrect block size.\n", name);
+=======
+							st_printk(KERN_NOTICE, STp,
+								  "Incorrect "
+								  "block size.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							if (STps->drv_block >= 0)
 								STps->drv_block += blks - transfer + 1;
 							st_int_ioctl(STp, MTBSR, 1);
@@ -1945,9 +2545,17 @@ static long read_tape(struct scsi_tape *STp, long count,
 						/* We have some data, deliver it */
 						STbp->buffer_bytes = (blks - transfer) *
 						    STp->block_size;
+<<<<<<< HEAD
                                                 DEBC(printk(ST_DEB_MSG
                                                             "%s: ILI but enough data received %ld %d.\n",
                                                             name, count, STbp->buffer_bytes));
+=======
+						DEBC_printk(STp, "ILI but "
+							    "enough data "
+							    "received %ld "
+							    "%d.\n", count,
+							    STbp->buffer_bytes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						if (STps->drv_block >= 0)
 							STps->drv_block += 1;
 						if (st_int_ioctl(STp, MTBSR, 1))
@@ -1963,9 +2571,15 @@ static long read_tape(struct scsi_tape *STp, long count,
 					else
 						STbp->buffer_bytes =
 						    bytes - transfer * STp->block_size;
+<<<<<<< HEAD
                                         DEBC(printk(ST_DEB_MSG
                                                     "%s: EOF detected (%d bytes read).\n",
                                                     name, STbp->buffer_bytes));
+=======
+					DEBC_printk(STp, "EOF detected (%d "
+						    "bytes read).\n",
+						    STbp->buffer_bytes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				} else if (cmdstatp->flags & SENSE_EOM) {
 					if (STps->eof == ST_FM)
 						STps->eof = ST_EOD_1;
@@ -1977,6 +2591,7 @@ static long read_tape(struct scsi_tape *STp, long count,
 						STbp->buffer_bytes =
 						    bytes - transfer * STp->block_size;
 
+<<<<<<< HEAD
                                         DEBC(printk(ST_DEB_MSG "%s: EOM detected (%d bytes read).\n",
                                                     name, STbp->buffer_bytes));
 				}
@@ -1991,6 +2606,22 @@ static long read_tape(struct scsi_tape *STp, long count,
                                         DEBC(printk(ST_DEB_MSG
                                                     "%s: Zero returned for first BLANK CHECK after EOF.\n",
                                                     name));
+=======
+					DEBC_printk(STp, "EOM detected (%d "
+						    "bytes read).\n",
+						    STbp->buffer_bytes);
+				}
+			}
+			/* end of EOF, EOM, ILI test */
+			else {	/* nonzero sense key */
+				DEBC_printk(STp, "Tape error while reading.\n");
+				STps->drv_block = (-1);
+				if (STps->eof == ST_FM &&
+				    cmdstatp->sense_hdr.sense_key == BLANK_CHECK) {
+					DEBC_printk(STp, "Zero returned for "
+						    "first BLANK CHECK "
+						    "after EOF.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					STps->eof = ST_EOD_2;	/* First BLANK_CHECK after FM */
 				} else	/* Some other extended sense code */
 					retval = (-EIO);
@@ -1999,13 +2630,21 @@ static long read_tape(struct scsi_tape *STp, long count,
 			if (STbp->buffer_bytes < 0)  /* Caused by bogus sense data */
 				STbp->buffer_bytes = 0;
 		}
+<<<<<<< HEAD
 		/* End of extended sense test */ 
+=======
+		/* End of extended sense test */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else {		/* Non-extended sense */
 			retval = STbp->syscall_result;
 		}
 
 	}
+<<<<<<< HEAD
 	/* End of error handling */ 
+=======
+	/* End of error handling */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else {			/* Read successful */
 		STbp->buffer_bytes = bytes;
 		if (STp->sili) /* In fixed block mode residual is always zero here */
@@ -2035,7 +2674,10 @@ st_read(struct file *filp, char __user *buf, size_t count, loff_t * ppos)
 	struct st_modedef *STm;
 	struct st_partstat *STps;
 	struct st_buffer *STbp = STp->buffer;
+<<<<<<< HEAD
 	DEB( char *name = tape_name(STp); )
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mutex_lock_interruptible(&STp->lock))
 		return -ERESTARTSYS;
@@ -2060,11 +2702,20 @@ st_read(struct file *filp, char __user *buf, size_t count, loff_t * ppos)
 			goto out;
 		STps->rw = ST_READING;
 	}
+<<<<<<< HEAD
         DEB(
 	if (debugging && STps->eof != ST_NOEOF)
 		printk(ST_DEB_MSG "%s: EOF/EOM flag up (%d). Bytes %d\n", name,
 		       STps->eof, STbp->buffer_bytes);
         ) /* end DEB */
+=======
+	DEB(
+	if (debugging && STps->eof != ST_NOEOF)
+		st_printk(ST_DEB_MSG, STp,
+			  "EOF/EOM flag up (%d). Bytes %d\n",
+			  STps->eof, STbp->buffer_bytes);
+	) /* end DEB */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	retval = setup_buffering(STp, buf, count, 1);
 	if (retval)
@@ -2111,6 +2762,7 @@ st_read(struct file *filp, char __user *buf, size_t count, loff_t * ppos)
 
 		/* Move the data from driver buffer to user buffer */
 		if (STbp->buffer_bytes > 0) {
+<<<<<<< HEAD
                         DEB(
 			if (debugging && STps->eof != ST_NOEOF)
 				printk(ST_DEB_MSG
@@ -2118,6 +2770,15 @@ st_read(struct file *filp, char __user *buf, size_t count, loff_t * ppos)
 				       STps->eof, STbp->buffer_bytes,
                                        (int)(count - total));
                         ) /* end DEB */
+=======
+			DEB(
+			if (debugging && STps->eof != ST_NOEOF)
+				st_printk(ST_DEB_MSG, STp,
+					  "EOF up (%d). Left %d, needed %d.\n",
+					  STps->eof, STbp->buffer_bytes,
+					  (int)(count - total));
+			) /* end DEB */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			transfer = STbp->buffer_bytes < count - total ?
 			    STbp->buffer_bytes : count - total;
 			if (!do_dio) {
@@ -2173,6 +2834,7 @@ st_read(struct file *filp, char __user *buf, size_t count, loff_t * ppos)
 
 DEB(
 /* Set the driver options */
+<<<<<<< HEAD
 static void st_log_options(struct scsi_tape * STp, struct st_modedef * STm, char *name)
 {
 	if (debugging) {
@@ -2193,6 +2855,32 @@ static void st_log_options(struct scsi_tape * STp, struct st_modedef * STm, char
 		       STp->immediate_filemark);
 		printk(KERN_INFO "%s:    debugging: %d\n",
 		       name, debugging);
+=======
+static void st_log_options(struct scsi_tape * STp, struct st_modedef * STm)
+{
+	if (debugging) {
+		st_printk(KERN_INFO, STp,
+			  "Mode %d options: buffer writes: %d, "
+			  "async writes: %d, read ahead: %d\n",
+			  STp->current_mode, STm->do_buffer_writes,
+			  STm->do_async_writes, STm->do_read_ahead);
+		st_printk(KERN_INFO, STp,
+			  "    can bsr: %d, two FMs: %d, "
+			  "fast mteom: %d, auto lock: %d,\n",
+			  STp->can_bsr, STp->two_fm, STp->fast_mteom,
+			  STp->do_auto_lock);
+		st_printk(KERN_INFO, STp,
+			  "    defs for wr: %d, no block limits: %d, "
+			  "partitions: %d, s2 log: %d\n",
+			  STm->defaults_for_writes, STp->omit_blklims,
+			  STp->can_partitions, STp->scsi2_logical);
+		st_printk(KERN_INFO, STp,
+			  "    sysv: %d nowait: %d sili: %d "
+			  "nowait_filemark: %d\n",
+			  STm->sysv, STp->immediate, STp->sili,
+			  STp->immediate_filemark);
+		st_printk(KERN_INFO, STp, "    debugging: %d\n", debugging);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 	)
@@ -2203,6 +2891,7 @@ static int st_set_options(struct scsi_tape *STp, long options)
 	int value;
 	long code;
 	struct st_modedef *STm;
+<<<<<<< HEAD
 	char *name = tape_name(STp);
 	struct cdev *cd0, *cd1;
 
@@ -2215,6 +2904,25 @@ static int st_set_options(struct scsi_tape *STp, long options)
                 DEBC(printk(ST_DEB_MSG
                             "%s: Initialized mode %d definition from mode 0\n",
                             name, STp->current_mode));
+=======
+	struct cdev *cd0, *cd1;
+	struct device *d0, *d1;
+
+	STm = &(STp->modes[STp->current_mode]);
+	if (!STm->defined) {
+		cd0 = STm->cdevs[0];
+		cd1 = STm->cdevs[1];
+		d0  = STm->devs[0];
+		d1  = STm->devs[1];
+		memcpy(STm, &(STp->modes[0]), sizeof(struct st_modedef));
+		STm->cdevs[0] = cd0;
+		STm->cdevs[1] = cd1;
+		STm->devs[0]  = d0;
+		STm->devs[1]  = d1;
+		modes_defined = 1;
+		DEBC_printk(STp, "Initialized mode %d definition from mode 0\n",
+			    STp->current_mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	code = options & MT_ST_OPTIONS;
@@ -2236,7 +2944,11 @@ static int st_set_options(struct scsi_tape *STp, long options)
 		STm->sysv = (options & MT_ST_SYSV) != 0;
 		STp->sili = (options & MT_ST_SILI) != 0;
 		DEB( debugging = (options & MT_ST_DEBUGGING) != 0;
+<<<<<<< HEAD
 		     st_log_options(STp, STm, name); )
+=======
+		     st_log_options(STp, STm); )
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (code == MT_ST_SETBOOLEANS || code == MT_ST_CLEARBOOLEANS) {
 		value = (code == MT_ST_SETBOOLEANS);
 		if ((options & MT_ST_BUFFER_WRITES) != 0)
@@ -2270,21 +2982,36 @@ static int st_set_options(struct scsi_tape *STp, long options)
 			STm->sysv = value;
 		if ((options & MT_ST_SILI) != 0)
 			STp->sili = value;
+<<<<<<< HEAD
                 DEB(
 		if ((options & MT_ST_DEBUGGING) != 0)
 			debugging = value;
 			st_log_options(STp, STm, name); )
+=======
+		DEB(
+		if ((options & MT_ST_DEBUGGING) != 0)
+			debugging = value;
+			st_log_options(STp, STm); )
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (code == MT_ST_WRITE_THRESHOLD) {
 		/* Retained for compatibility */
 	} else if (code == MT_ST_DEF_BLKSIZE) {
 		value = (options & ~MT_ST_OPTIONS);
 		if (value == ~MT_ST_OPTIONS) {
 			STm->default_blksize = (-1);
+<<<<<<< HEAD
 			DEBC( printk(KERN_INFO "%s: Default block size disabled.\n", name));
 		} else {
 			STm->default_blksize = value;
 			DEBC( printk(KERN_INFO "%s: Default block size set to %d bytes.\n",
 			       name, STm->default_blksize));
+=======
+			DEBC_printk(STp, "Default block size disabled.\n");
+		} else {
+			STm->default_blksize = value;
+			DEBC_printk(STp,"Default block size set to "
+				    "%d bytes.\n", STm->default_blksize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (STp->ready == ST_READY) {
 				STp->blksize_changed = 0;
 				set_mode_densblk(STp, STm);
@@ -2294,6 +3021,7 @@ static int st_set_options(struct scsi_tape *STp, long options)
 		value = (options & ~MT_ST_OPTIONS);
 		if ((value & MT_ST_SET_LONG_TIMEOUT) != 0) {
 			STp->long_timeout = (value & ~MT_ST_SET_LONG_TIMEOUT) * HZ;
+<<<<<<< HEAD
 			DEBC( printk(KERN_INFO "%s: Long timeout set to %d seconds.\n", name,
 			       (value & ~MT_ST_SET_LONG_TIMEOUT)));
 		} else {
@@ -2301,6 +3029,15 @@ static int st_set_options(struct scsi_tape *STp, long options)
 					     value * HZ);
 			DEBC( printk(KERN_INFO "%s: Normal timeout set to %d seconds.\n",
 				name, value) );
+=======
+			DEBC_printk(STp, "Long timeout set to %d seconds.\n",
+				    (value & ~MT_ST_SET_LONG_TIMEOUT));
+		} else {
+			blk_queue_rq_timeout(STp->device->request_queue,
+					     value * HZ);
+			DEBC_printk(STp, "Normal timeout set to %d seconds.\n",
+				    value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	} else if (code == MT_ST_SET_CLN) {
 		value = (options & ~MT_ST_OPTIONS) & 0xff;
@@ -2311,21 +3048,36 @@ static int st_set_options(struct scsi_tape *STp, long options)
 		STp->cln_mode = value;
 		STp->cln_sense_mask = (options >> 8) & 0xff;
 		STp->cln_sense_value = (options >> 16) & 0xff;
+<<<<<<< HEAD
 		printk(KERN_INFO
 		       "%s: Cleaning request mode %d, mask %02x, value %02x\n",
 		       name, value, STp->cln_sense_mask, STp->cln_sense_value);
+=======
+		st_printk(KERN_INFO, STp,
+			  "Cleaning request mode %d, mask %02x, value %02x\n",
+			  value, STp->cln_sense_mask, STp->cln_sense_value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else if (code == MT_ST_DEF_OPTIONS) {
 		code = (options & ~MT_ST_CLEAR_DEFAULT);
 		value = (options & MT_ST_CLEAR_DEFAULT);
 		if (code == MT_ST_DEF_DENSITY) {
 			if (value == MT_ST_CLEAR_DEFAULT) {
 				STm->default_density = (-1);
+<<<<<<< HEAD
 				DEBC( printk(KERN_INFO "%s: Density default disabled.\n",
                                        name));
 			} else {
 				STm->default_density = value & 0xff;
 				DEBC( printk(KERN_INFO "%s: Density default set to %x\n",
 				       name, STm->default_density));
+=======
+				DEBC_printk(STp,
+					    "Density default disabled.\n");
+			} else {
+				STm->default_density = value & 0xff;
+				DEBC_printk(STp, "Density default set to %x\n",
+					    STm->default_density);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (STp->ready == ST_READY) {
 					STp->density_changed = 0;
 					set_mode_densblk(STp, STm);
@@ -2334,6 +3086,7 @@ static int st_set_options(struct scsi_tape *STp, long options)
 		} else if (code == MT_ST_DEF_DRVBUFFER) {
 			if (value == MT_ST_CLEAR_DEFAULT) {
 				STp->default_drvbuffer = 0xff;
+<<<<<<< HEAD
 				DEBC( printk(KERN_INFO
                                        "%s: Drive buffer default disabled.\n", name));
 			} else {
@@ -2341,12 +3094,22 @@ static int st_set_options(struct scsi_tape *STp, long options)
 				DEBC( printk(KERN_INFO
                                        "%s: Drive buffer default set to %x\n",
 				       name, STp->default_drvbuffer));
+=======
+				DEBC_printk(STp,
+					    "Drive buffer default disabled.\n");
+			} else {
+				STp->default_drvbuffer = value & 7;
+				DEBC_printk(STp,
+					    "Drive buffer default set to %x\n",
+					    STp->default_drvbuffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (STp->ready == ST_READY)
 					st_int_ioctl(STp, MTSETDRVBUFFER, STp->default_drvbuffer);
 			}
 		} else if (code == MT_ST_DEF_COMPRESSION) {
 			if (value == MT_ST_CLEAR_DEFAULT) {
 				STm->default_compression = ST_DONT_TOUCH;
+<<<<<<< HEAD
 				DEBC( printk(KERN_INFO
                                        "%s: Compression default disabled.\n", name));
 			} else {
@@ -2359,6 +3122,22 @@ static int st_set_options(struct scsi_tape *STp, long options)
 					STm->default_compression = (value & 1 ? ST_YES : ST_NO);
 					DEBC( printk(KERN_INFO "%s: Compression default set to %x\n",
 					       name, (value & 1)));
+=======
+				DEBC_printk(STp,
+					    "Compression default disabled.\n");
+			} else {
+				if ((value & 0xff00) != 0) {
+					STp->c_algo = (value & 0xff00) >> 8;
+					DEBC_printk(STp, "Compression "
+						    "algorithm set to 0x%x.\n",
+						    STp->c_algo);
+				}
+				if ((value & 0xff) != 0xff) {
+					STm->default_compression = (value & 1 ? ST_YES : ST_NO);
+					DEBC_printk(STp, "Compression default "
+						    "set to %x\n",
+						    (value & 1));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					if (STp->ready == ST_READY) {
 						STp->compression_changed = 0;
 						st_compression(STp, (STm->default_compression == ST_YES));
@@ -2473,7 +3252,10 @@ static int st_compression(struct scsi_tape * STp, int state)
 	int retval;
 	int mpoffs;  /* Offset to mode page start */
 	unsigned char *b_data = (STp->buffer)->b_data;
+<<<<<<< HEAD
 	DEB( char *name = tape_name(STp); )
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (STp->ready != ST_READY)
 		return (-EIO);
@@ -2481,18 +3263,31 @@ static int st_compression(struct scsi_tape * STp, int state)
 	/* Read the current page contents */
 	retval = read_mode_page(STp, COMPRESSION_PAGE, 0);
 	if (retval) {
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Compression mode page not supported.\n",
                             name));
+=======
+		DEBC_printk(STp, "Compression mode page not supported.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (-EIO);
 	}
 
 	mpoffs = MODE_HEADER_LENGTH + b_data[MH_OFF_BDESCS_LENGTH];
+<<<<<<< HEAD
         DEBC(printk(ST_DEB_MSG "%s: Compression state is %d.\n", name,
                     (b_data[mpoffs + CP_OFF_DCE_DCC] & DCE_MASK ? 1 : 0)));
 
 	/* Check if compression can be changed */
 	if ((b_data[mpoffs + CP_OFF_DCE_DCC] & DCC_MASK) == 0) {
                 DEBC(printk(ST_DEB_MSG "%s: Compression not supported.\n", name));
+=======
+	DEBC_printk(STp, "Compression state is %d.\n",
+		    (b_data[mpoffs + CP_OFF_DCE_DCC] & DCE_MASK ? 1 : 0));
+
+	/* Check if compression can be changed */
+	if ((b_data[mpoffs + CP_OFF_DCE_DCC] & DCC_MASK) == 0) {
+		DEBC_printk(STp, "Compression not supported.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (-EIO);
 	}
 
@@ -2510,11 +3305,18 @@ static int st_compression(struct scsi_tape * STp, int state)
 
 	retval = write_mode_page(STp, COMPRESSION_PAGE, 0);
 	if (retval) {
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Compression change failed.\n", name));
 		return (-EIO);
 	}
         DEBC(printk(ST_DEB_MSG "%s: Compression state changed to %d.\n",
 		       name, state));
+=======
+		DEBC_printk(STp, "Compression change failed.\n");
+		return (-EIO);
+	}
+	DEBC_printk(STp, "Compression state changed to %d.\n", state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	STp->compression_changed = 1;
 	return 0;
@@ -2525,7 +3327,10 @@ static int st_compression(struct scsi_tape * STp, int state)
 static int do_load_unload(struct scsi_tape *STp, struct file *filp, int load_code)
 {
 	int retval = (-EIO), timeout;
+<<<<<<< HEAD
 	DEB( char *name = tape_name(STp); )
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char cmd[MAX_COMMAND_SIZE];
 	struct st_partstat *STps;
 	struct st_request *SRpnt;
@@ -2546,9 +3351,15 @@ static int do_load_unload(struct scsi_tape *STp, struct file *filp, int load_cod
 	 */
 	if (load_code >= 1 + MT_ST_HPLOADER_OFFSET
 	    && load_code <= 6 + MT_ST_HPLOADER_OFFSET) {
+<<<<<<< HEAD
 		DEBC(printk(ST_DEB_MSG "%s: Enhanced %sload slot %2d.\n",
 			    name, (cmd[4]) ? "" : "un",
 			    load_code - MT_ST_HPLOADER_OFFSET));
+=======
+		DEBC_printk(STp, " Enhanced %sload slot %2d.\n",
+			    (cmd[4]) ? "" : "un",
+			    load_code - MT_ST_HPLOADER_OFFSET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cmd[3] = load_code - MT_ST_HPLOADER_OFFSET; /* MediaID field of C1553A */
 	}
 	if (STp->immediate) {
@@ -2560,9 +3371,15 @@ static int do_load_unload(struct scsi_tape *STp, struct file *filp, int load_cod
 
 	DEBC(
 		if (!load_code)
+<<<<<<< HEAD
 		printk(ST_DEB_MSG "%s: Unloading tape.\n", name);
 		else
 		printk(ST_DEB_MSG "%s: Loading tape.\n", name);
+=======
+			st_printk(ST_DEB_MSG, STp, "Unloading tape.\n");
+		else
+			st_printk(ST_DEB_MSG, STp, "Loading tape.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		);
 
 	SRpnt = st_do_scsi(NULL, STp, cmd, 0, DMA_NONE,
@@ -2597,6 +3414,7 @@ static int do_load_unload(struct scsi_tape *STp, struct file *filp, int load_cod
 #if DEBUG
 #define ST_DEB_FORWARD  0
 #define ST_DEB_BACKWARD 1
+<<<<<<< HEAD
 static void deb_space_print(char *name, int direction, char *units, unsigned char *cmd)
 {
 	s32 sc;
@@ -2608,6 +3426,25 @@ static void deb_space_print(char *name, int direction, char *units, unsigned cha
 	printk(ST_DEB_MSG "%s: Spacing tape %s over %d %s.\n", name,
 	       direction ? "backward" : "forward", sc, units);
 }
+=======
+static void deb_space_print(struct scsi_tape *STp, int direction, char *units, unsigned char *cmd)
+{
+	s32 sc;
+
+	if (!debugging)
+		return;
+
+	sc = sign_extend32(get_unaligned_be24(&cmd[2]), 23);
+	if (direction)
+		sc = -sc;
+	st_printk(ST_DEB_MSG, STp, "Spacing tape %s over %d %s.\n",
+		  direction ? "backward" : "forward", sc, units);
+}
+#else
+#define ST_DEB_FORWARD  0
+#define ST_DEB_BACKWARD 1
+static void deb_space_print(struct scsi_tape *STp, int direction, char *units, unsigned char *cmd) {}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 
@@ -2623,7 +3460,10 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 	struct st_partstat *STps;
 	int fileno, blkno, at_sm, undone;
 	int datalen = 0, direction = DMA_NONE;
+<<<<<<< HEAD
 	char *name = tape_name(STp);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	WARN_ON(STp->buffer->do_dio != 0);
 	if (STp->ready != ST_READY) {
@@ -2642,13 +3482,21 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 	switch (cmd_in) {
 	case MTFSFM:
 		chg_eof = 0;	/* Changed from the FSF after this */
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MTFSF:
 		cmd[0] = SPACE;
 		cmd[1] = 0x01;	/* Space FileMarks */
 		cmd[2] = (arg >> 16);
 		cmd[3] = (arg >> 8);
 		cmd[4] = arg;
+<<<<<<< HEAD
                 DEBC(deb_space_print(name, ST_DEB_FORWARD, "filemarks", cmd);)
+=======
+		deb_space_print(STp, ST_DEB_FORWARD, "filemarks", cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fileno >= 0)
 			fileno += arg;
 		blkno = 0;
@@ -2656,6 +3504,10 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 		break;
 	case MTBSFM:
 		chg_eof = 0;	/* Changed from the FSF after this */
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MTBSF:
 		cmd[0] = SPACE;
 		cmd[1] = 0x01;	/* Space FileMarks */
@@ -2663,7 +3515,11 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 		cmd[2] = (ltmp >> 16);
 		cmd[3] = (ltmp >> 8);
 		cmd[4] = ltmp;
+<<<<<<< HEAD
                 DEBC(deb_space_print(name, ST_DEB_BACKWARD, "filemarks", cmd);)
+=======
+		deb_space_print(STp, ST_DEB_BACKWARD, "filemarks", cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (fileno >= 0)
 			fileno -= arg;
 		blkno = (-1);	/* We can't know the block number */
@@ -2675,7 +3531,11 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 		cmd[2] = (arg >> 16);
 		cmd[3] = (arg >> 8);
 		cmd[4] = arg;
+<<<<<<< HEAD
                 DEBC(deb_space_print(name, ST_DEB_FORWARD, "blocks", cmd);)
+=======
+		deb_space_print(STp, ST_DEB_FORWARD, "blocks", cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (blkno >= 0)
 			blkno += arg;
 		at_sm &= (arg == 0);
@@ -2687,7 +3547,11 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 		cmd[2] = (ltmp >> 16);
 		cmd[3] = (ltmp >> 8);
 		cmd[4] = ltmp;
+<<<<<<< HEAD
                 DEBC(deb_space_print(name, ST_DEB_BACKWARD, "blocks", cmd);)
+=======
+		deb_space_print(STp, ST_DEB_BACKWARD, "blocks", cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (blkno >= 0)
 			blkno -= arg;
 		at_sm &= (arg == 0);
@@ -2698,7 +3562,11 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 		cmd[2] = (arg >> 16);
 		cmd[3] = (arg >> 8);
 		cmd[4] = arg;
+<<<<<<< HEAD
                 DEBC(deb_space_print(name, ST_DEB_FORWARD, "setmarks", cmd);)
+=======
+		deb_space_print(STp, ST_DEB_FORWARD, "setmarks", cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (arg != 0) {
 			blkno = fileno = (-1);
 			at_sm = 1;
@@ -2711,7 +3579,11 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 		cmd[2] = (ltmp >> 16);
 		cmd[3] = (ltmp >> 8);
 		cmd[4] = ltmp;
+<<<<<<< HEAD
                 DEBC(deb_space_print(name, ST_DEB_BACKWARD, "setmarks", cmd);)
+=======
+		deb_space_print(STp, ST_DEB_BACKWARD, "setmarks", cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (arg != 0) {
 			blkno = fileno = (-1);
 			at_sm = 1;
@@ -2732,6 +3604,7 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 		cmd[3] = (arg >> 8);
 		cmd[4] = arg;
 		timeout = STp->device->request_queue->rq_timeout;
+<<<<<<< HEAD
                 DEBC(
 		     if (cmd_in != MTWSM)
                                printk(ST_DEB_MSG "%s: Writing %d filemarks.\n", name,
@@ -2739,6 +3612,21 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
                      else
 				printk(ST_DEB_MSG "%s: Writing %d setmarks.\n", name,
 				 cmd[2] * 65536 + cmd[3] * 256 + cmd[4]);
+=======
+		DEBC(
+			if (cmd_in != MTWSM)
+				st_printk(ST_DEB_MSG, STp,
+					  "Writing %d filemarks.\n",
+					  cmd[2] * 65536 +
+					  cmd[3] * 256 +
+					  cmd[4]);
+			else
+				st_printk(ST_DEB_MSG, STp,
+					  "Writing %d setmarks.\n",
+					  cmd[2] * 65536 +
+					  cmd[3] * 256 +
+					  cmd[4]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		)
 		if (fileno >= 0)
 			fileno += arg;
@@ -2751,6 +3639,7 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 			cmd[1] = 1;	/* Don't wait for completion */
 			timeout = STp->device->request_queue->rq_timeout;
 		}
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Rewinding tape.\n", name));
 		fileno = blkno = at_sm = 0;
 		break;
@@ -2758,6 +3647,14 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
                 DEBC(printk(ST_DEB_MSG "%s: No op on tape.\n", name));
 		return 0;	/* Should do something ? */
 		break;
+=======
+		DEBC_printk(STp, "Rewinding tape.\n");
+		fileno = blkno = at_sm = 0;
+		break;
+	case MTNOP:
+		DEBC_printk(STp, "No op on tape.\n");
+		return 0;	/* Should do something ? */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case MTRETEN:
 		cmd[0] = START_STOP;
 		if (STp->immediate) {
@@ -2765,7 +3662,11 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 			timeout = STp->device->request_queue->rq_timeout;
 		}
 		cmd[4] = 3;
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Retensioning tape.\n", name));
+=======
+		DEBC_printk(STp, "Retensioning tape.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fileno = blkno = at_sm = 0;
 		break;
 	case MTEOM:
@@ -2783,8 +3684,12 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 			fileno = (-1);
 		cmd[0] = SPACE;
 		cmd[1] = 3;
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Spacing to end of recorded medium.\n",
                             name));
+=======
+		DEBC_printk(STp, "Spacing to end of recorded medium.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		blkno = -1;
 		at_sm = 0;
 		break;
@@ -2800,7 +3705,11 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 		else
 			timeout = STp->long_timeout * 8;
 
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Erasing tape.\n", name));
+=======
+		DEBC_printk(STp, "Erasing tape.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fileno = blkno = at_sm = 0;
 		break;
 	case MTSETBLK:		/* Set block length */
@@ -2815,7 +3724,11 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 		    STp->max_block > 0 &&
 		    ((arg & MT_ST_BLKSIZE_MASK) < STp->min_block ||
 		     (arg & MT_ST_BLKSIZE_MASK) > STp->max_block)) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "%s: Illegal block size.\n", name);
+=======
+			st_printk(KERN_WARNING, STp, "Illegal block size.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return (-EINVAL);
 		}
 		cmd[0] = MODE_SELECT;
@@ -2848,6 +3761,7 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 		(STp->buffer)->b_data[10] = (ltmp >> 8);
 		(STp->buffer)->b_data[11] = ltmp;
 		timeout = STp->device->request_queue->rq_timeout;
+<<<<<<< HEAD
                 DEBC(
 			if (cmd_in == MTSETBLK || cmd_in == SET_DENS_AND_BLK)
 				printk(ST_DEB_MSG
@@ -2863,6 +3777,23 @@ static int st_int_ioctl(struct scsi_tape *STp, unsigned int cmd_in, unsigned lon
 				printk(ST_DEB_MSG
                                        "%s: Setting drive buffer code to %d.\n", name,
 				    ((STp->buffer)->b_data[2] >> 4) & 7);
+=======
+		DEBC(
+			if (cmd_in == MTSETBLK || cmd_in == SET_DENS_AND_BLK)
+				st_printk(ST_DEB_MSG, STp,
+					  "Setting block size to %d bytes.\n",
+					  (STp->buffer)->b_data[9] * 65536 +
+					  (STp->buffer)->b_data[10] * 256 +
+					  (STp->buffer)->b_data[11]);
+			if (cmd_in == MTSETDENSITY || cmd_in == SET_DENS_AND_BLK)
+				st_printk(ST_DEB_MSG, STp,
+					  "Setting density code to %x.\n",
+					  (STp->buffer)->b_data[4]);
+			if (cmd_in == MTSETDRVBUFFER)
+				st_printk(ST_DEB_MSG, STp,
+					  "Setting drive buffer code to %d.\n",
+					  ((STp->buffer)->b_data[2] >> 4) & 7);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		)
 		break;
 	default:
@@ -3019,7 +3950,10 @@ static int get_location(struct scsi_tape *STp, unsigned int *block, int *partiti
 	int result;
 	unsigned char scmd[MAX_COMMAND_SIZE];
 	struct st_request *SRpnt;
+<<<<<<< HEAD
 	DEB( char *name = tape_name(STp); )
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (STp->ready != ST_READY)
 		return (-EIO);
@@ -3043,7 +3977,11 @@ static int get_location(struct scsi_tape *STp, unsigned int *block, int *partiti
 	    (STp->device->scsi_level >= SCSI_2 &&
 	     ((STp->buffer)->b_data[0] & 4) != 0)) {
 		*block = *partition = 0;
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Can't read tape position.\n", name));
+=======
+		DEBC_printk(STp, " Can't read tape position.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = (-EIO);
 	} else {
 		result = 0;
@@ -3062,8 +4000,13 @@ static int get_location(struct scsi_tape *STp, unsigned int *block, int *partiti
 			    (STp->buffer)->b_data[1] == 0)	/* BOP of partition 0 */
 				STp->ps[0].drv_block = STp->ps[0].drv_file = 0;
 		}
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Got tape pos. blk %d part %d.\n", name,
                             *block, *partition));
+=======
+		DEBC_printk(STp, "Got tape pos. blk %d part %d.\n",
+			    *block, *partition);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	st_release_request(SRpnt);
 	SRpnt = NULL;
@@ -3083,15 +4026,23 @@ static int set_location(struct scsi_tape *STp, unsigned int block, int partition
 	int timeout;
 	unsigned char scmd[MAX_COMMAND_SIZE];
 	struct st_request *SRpnt;
+<<<<<<< HEAD
 	DEB( char *name = tape_name(STp); )
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (STp->ready != ST_READY)
 		return (-EIO);
 	timeout = STp->long_timeout;
 	STps = &(STp->ps[STp->partition]);
 
+<<<<<<< HEAD
         DEBC(printk(ST_DEB_MSG "%s: Setting block to %d and partition to %d.\n",
                     name, block, partition));
+=======
+	DEBC_printk(STp, "Setting block to %d and partition to %d.\n",
+		    block, partition);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DEB(if (partition < 0)
 		return (-EIO); )
 
@@ -3105,9 +4056,15 @@ static int set_location(struct scsi_tape *STp, unsigned int block, int partition
 		else {
 			STps->last_block_valid = 1;
 			STps->last_block_visited = blk;
+<<<<<<< HEAD
                         DEBC(printk(ST_DEB_MSG
                                     "%s: Visited block %d for partition %d saved.\n",
                                     name, blk, STp->partition));
+=======
+			DEBC_printk(STp, "Visited block %d for "
+				    "partition %d saved.\n",
+				    blk, STp->partition);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -3129,9 +4086,15 @@ static int set_location(struct scsi_tape *STp, unsigned int block, int partition
 		if (STp->partition != partition) {
 			scmd[1] |= 2;
 			scmd[8] = partition;
+<<<<<<< HEAD
                         DEBC(printk(ST_DEB_MSG
                                     "%s: Trying to change partition from %d to %d\n",
                                     name, STp->partition, partition));
+=======
+			DEBC_printk(STp, "Trying to change partition "
+				    "from %d to %d\n", STp->partition,
+				    partition);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	if (STp->immediate) {
@@ -3215,14 +4178,24 @@ static int switch_partition(struct scsi_tape *STp)
 #define PP_OFF_RESERVED        7
 
 #define PP_BIT_IDP             0x20
+<<<<<<< HEAD
 #define PP_MSK_PSUM_MB         0x10
+=======
+#define PP_BIT_FDP             0x80
+#define PP_MSK_PSUM_MB         0x10
+#define PP_MSK_PSUM_UNITS      0x18
+#define PP_MSK_POFM            0x04
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Get the number of partitions on the tape. As a side effect reads the
    mode page into the tape buffer. */
 static int nbr_partitions(struct scsi_tape *STp)
 {
 	int result;
+<<<<<<< HEAD
 	DEB( char *name = tape_name(STp); )
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (STp->ready != ST_READY)
 		return (-EIO);
@@ -3230,19 +4203,53 @@ static int nbr_partitions(struct scsi_tape *STp)
 	result = read_mode_page(STp, PART_PAGE, 1);
 
 	if (result) {
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Can't read medium partition page.\n",
                             name));
+=======
+		DEBC_printk(STp, "Can't read medium partition page.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		result = (-EIO);
 	} else {
 		result = (STp->buffer)->b_data[MODE_HEADER_LENGTH +
 					      PP_OFF_NBR_ADD_PARTS] + 1;
+<<<<<<< HEAD
                 DEBC(printk(ST_DEB_MSG "%s: Number of partitions %d.\n", name, result));
+=======
+		DEBC_printk(STp, "Number of partitions %d.\n", result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return result;
 }
 
 
+<<<<<<< HEAD
+=======
+static int format_medium(struct scsi_tape *STp, int format)
+{
+	int result = 0;
+	int timeout = STp->long_timeout;
+	unsigned char scmd[MAX_COMMAND_SIZE];
+	struct st_request *SRpnt;
+
+	memset(scmd, 0, MAX_COMMAND_SIZE);
+	scmd[0] = FORMAT_UNIT;
+	scmd[2] = format;
+	if (STp->immediate) {
+		scmd[1] |= 1;		/* Don't wait for completion */
+		timeout = STp->device->request_queue->rq_timeout;
+	}
+	DEBC_printk(STp, "Sending FORMAT MEDIUM\n");
+	SRpnt = st_do_scsi(NULL, STp, scmd, 0, DMA_NONE,
+			   timeout, MAX_RETRIES, 1);
+	if (!SRpnt)
+		result = STp->buffer->syscall_result;
+	return result;
+}
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Partition the tape into two partitions if size > 0 or one partition if
    size == 0.
 
@@ -3261,16 +4268,30 @@ static int nbr_partitions(struct scsi_tape *STp)
    and 10 when 1 partition is defined (information from Eric Lee Green). This is
    is acceptable also to some other old drives and enforced if the first partition
    size field is used for the first additional partition size.
+<<<<<<< HEAD
  */
 static int partition_tape(struct scsi_tape *STp, int size)
 {
 	char *name = tape_name(STp);
 	int result;
 	int pgo, psd_cnt, psdo;
+=======
+
+   For drives that advertize SCSI-3 or newer, use the SSC-3 methods.
+ */
+static int partition_tape(struct scsi_tape *STp, int size)
+{
+	int result;
+	int target_partition;
+	bool scsi3 = STp->device->scsi_level >= SCSI_3, needs_format = false;
+	int pgo, psd_cnt, psdo;
+	int psum = PP_MSK_PSUM_MB, units = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *bp;
 
 	result = read_mode_page(STp, PART_PAGE, 0);
 	if (result) {
+<<<<<<< HEAD
 		DEBC(printk(ST_DEB_MSG "%s: Can't read partition mode page.\n", name));
 		return result;
 	}
@@ -3284,10 +4305,75 @@ static int partition_tape(struct scsi_tape *STp, int size)
 	psdo = pgo + PART_PAGE_FIXED_LENGTH;
 	if (psd_cnt > bp[pgo + PP_OFF_MAX_ADD_PARTS]) {
 		bp[psdo] = bp[psdo + 1] = 0xff;  /* Rest of the tape */
+=======
+		DEBC_printk(STp, "Can't read partition mode page.\n");
+		return result;
+	}
+	target_partition = 1;
+	if (size < 0) {
+		target_partition = 0;
+		size = -size;
+	}
+
+	/* The mode page is in the buffer. Let's modify it and write it. */
+	bp = (STp->buffer)->b_data;
+	pgo = MODE_HEADER_LENGTH + bp[MH_OFF_BDESCS_LENGTH];
+	DEBC_printk(STp, "Partition page length is %d bytes.\n",
+		    bp[pgo + MP_OFF_PAGE_LENGTH] + 2);
+
+	psd_cnt = (bp[pgo + MP_OFF_PAGE_LENGTH] + 2 - PART_PAGE_FIXED_LENGTH) / 2;
+
+	if (scsi3) {
+		needs_format = (bp[pgo + PP_OFF_FLAGS] & PP_MSK_POFM) != 0;
+		if (needs_format && size == 0) {
+			/* No need to write the mode page when clearing
+			 *  partitioning
+			 */
+			DEBC_printk(STp, "Formatting tape with one partition.\n");
+			result = format_medium(STp, 0);
+			goto out;
+		}
+		if (needs_format)  /* Leave the old value for HP DATs claiming SCSI_3 */
+			psd_cnt = 2;
+		if ((bp[pgo + PP_OFF_FLAGS] & PP_MSK_PSUM_UNITS) == PP_MSK_PSUM_UNITS) {
+			/* Use units scaling for large partitions if the device
+			 * suggests it and no precision lost. Required for IBM
+			 * TS1140/50 drives that don't support MB units.
+			 */
+			if (size >= 1000 && (size % 1000) == 0) {
+				size /= 1000;
+				psum = PP_MSK_PSUM_UNITS;
+				units = 9; /* GB */
+			}
+		}
+		/* Try it anyway if too large to specify in MB */
+		if (psum == PP_MSK_PSUM_MB && size >= 65534) {
+			size /= 1000;
+			psum = PP_MSK_PSUM_UNITS;
+			units = 9;  /* GB */
+		}
+	}
+
+	if (size >= 65535 ||  /* Does not fit into two bytes */
+	    (target_partition == 0 && psd_cnt < 2)) {
+		result = -EINVAL;
+		goto out;
+	}
+
+	psdo = pgo + PART_PAGE_FIXED_LENGTH;
+	/* The second condition is for HP DDS which use only one partition size
+	 * descriptor
+	 */
+	if (target_partition > 0 &&
+	    (psd_cnt > bp[pgo + PP_OFF_MAX_ADD_PARTS] ||
+	     bp[pgo + PP_OFF_MAX_ADD_PARTS] != 1)) {
+		bp[psdo] = bp[psdo + 1] = 0xff;  /* Rest to partition 0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psdo += 2;
 	}
 	memset(bp + psdo, 0, bp[pgo + PP_OFF_NBR_ADD_PARTS] * 2);
 
+<<<<<<< HEAD
 	DEBC(printk("%s: psd_cnt %d, max.parts %d, nbr_parts %d\n", name,
 		    psd_cnt, bp[pgo + PP_OFF_MAX_ADD_PARTS],
 		    bp[pgo + PP_OFF_NBR_ADD_PARTS]));
@@ -3318,6 +4404,51 @@ static int partition_tape(struct scsi_tape *STp, int size)
 		result = (-EIO);
 	}
 
+=======
+	DEBC_printk(STp, "psd_cnt %d, max.parts %d, nbr_parts %d\n",
+		    psd_cnt, bp[pgo + PP_OFF_MAX_ADD_PARTS],
+		    bp[pgo + PP_OFF_NBR_ADD_PARTS]);
+
+	if (size == 0) {
+		bp[pgo + PP_OFF_NBR_ADD_PARTS] = 0;
+		if (psd_cnt <= bp[pgo + PP_OFF_MAX_ADD_PARTS])
+		    bp[pgo + MP_OFF_PAGE_LENGTH] = 6;
+		DEBC_printk(STp, "Formatting tape with one partition.\n");
+	} else {
+		bp[psdo] = (size >> 8) & 0xff;
+		bp[psdo + 1] = size & 0xff;
+		if (target_partition == 0)
+			bp[psdo + 2] = bp[psdo + 3] = 0xff;
+		bp[pgo + 3] = 1;
+		if (bp[pgo + MP_OFF_PAGE_LENGTH] < 8)
+		    bp[pgo + MP_OFF_PAGE_LENGTH] = 8;
+		DEBC_printk(STp,
+			    "Formatting tape with two partitions (%i = %d MB).\n",
+			    target_partition, units > 0 ? size * 1000 : size);
+	}
+	bp[pgo + PP_OFF_PART_UNITS] = 0;
+	bp[pgo + PP_OFF_RESERVED] = 0;
+	if (size != 1 || units != 0) {
+		bp[pgo + PP_OFF_FLAGS] = PP_BIT_IDP | psum |
+			(bp[pgo + PP_OFF_FLAGS] & 0x07);
+		bp[pgo + PP_OFF_PART_UNITS] = units;
+	} else
+		bp[pgo + PP_OFF_FLAGS] = PP_BIT_FDP |
+			(bp[pgo + PP_OFF_FLAGS] & 0x1f);
+	bp[pgo + MP_OFF_PAGE_LENGTH] = 6 + psd_cnt * 2;
+
+	result = write_mode_page(STp, PART_PAGE, 1);
+
+	if (!result && needs_format)
+		result = format_medium(STp, 1);
+
+	if (result) {
+		st_printk(KERN_INFO, STp, "Partitioning of tape failed.\n");
+		result = (-EIO);
+	}
+
+out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -3326,21 +4457,34 @@ static int partition_tape(struct scsi_tape *STp, int size)
 /* The ioctl command */
 static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 {
+<<<<<<< HEAD
+=======
+	void __user *p = (void __user *)arg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, cmd_nr, cmd_type, bt;
 	int retval = 0;
 	unsigned int blk;
 	struct scsi_tape *STp = file->private_data;
 	struct st_modedef *STm;
 	struct st_partstat *STps;
+<<<<<<< HEAD
 	char *name = tape_name(STp);
 	void __user *p = (void __user *)arg;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mutex_lock_interruptible(&STp->lock))
 		return -ERESTARTSYS;
 
+<<<<<<< HEAD
         DEB(
 	if (debugging && !STp->in_use) {
 		printk(ST_DEB_MSG "%s: Incorrect device.\n", name);
+=======
+	DEB(
+	if (debugging && !STp->in_use) {
+		st_printk(ST_DEB_MSG, STp, "Incorrect device.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		retval = (-EIO);
 		goto out;
 	} ) /* end DEB */
@@ -3354,11 +4498,18 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 	 * may try and take the device offline, in which case all further
 	 * access to the device is prohibited.
 	 */
+<<<<<<< HEAD
 	retval = scsi_nonblockable_ioctl(STp->device, cmd_in, p,
 					file->f_flags & O_NDELAY);
 	if (!scsi_block_when_processing_errors(STp->device) || retval != -ENODEV)
 		goto out;
 	retval = 0;
+=======
+	retval = scsi_ioctl_block_when_processing_errors(STp->device, cmd_in,
+			file->f_flags & O_NDELAY);
+	if (retval)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd_type = _IOC_TYPE(cmd_in);
 	cmd_nr = _IOC_NR(cmd_in);
@@ -3378,8 +4529,13 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 		}
 
 		if (mtc.mt_op == MTSETDRVBUFFER && !capable(CAP_SYS_ADMIN)) {
+<<<<<<< HEAD
 			printk(KERN_WARNING
                                "%s: MTSETDRVBUFFER only allowed for root.\n", name);
+=======
+			st_printk(KERN_WARNING, STp,
+				  "MTSETDRVBUFFER only allowed for root.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			retval = (-EPERM);
 			goto out;
 		}
@@ -3496,8 +4652,18 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 				retval = (-EINVAL);
 				goto out;
 			}
+<<<<<<< HEAD
 			if ((i = st_int_ioctl(STp, MTREW, 0)) < 0 ||
 			    (i = partition_tape(STp, mtc.mt_count)) < 0) {
+=======
+			i = do_load_unload(STp, file, 1);
+			if (i < 0) {
+				retval = i;
+				goto out;
+			}
+			i = partition_tape(STp, mtc.mt_count);
+			if (i < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				retval = i;
 				goto out;
 			}
@@ -3507,7 +4673,11 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 				STp->ps[i].last_block_valid = 0;
 			}
 			STp->partition = STp->new_partition = 0;
+<<<<<<< HEAD
 			STp->nbr_partitions = 1;	/* Bad guess ?-) */
+=======
+			STp->nbr_partitions = mtc.mt_count != 0 ? 2 : 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			STps->drv_block = STps->drv_file = 0;
 			retval = 0;
 			goto out;
@@ -3621,6 +4791,7 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 		if (STp->cleaning_req)
 			mt_status.mt_gstat |= GMT_CLN(0xffffffff);
 
+<<<<<<< HEAD
 		i = copy_to_user(p, &mt_status, sizeof(struct mtget));
 		if (i) {
 			retval = (-EFAULT);
@@ -3629,6 +4800,13 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 
 		STp->recover_reg = 0;		/* Clear after read */
 		retval = 0;
+=======
+		retval = put_user_mtget(p, &mt_status);
+		if (retval)
+			goto out;
+
+		STp->recover_reg = 0;		/* Clear after read */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}			/* End of MTIOCGET */
 	if (cmd_type == _IOC_TYPE(MTIOCPOS) && cmd_nr == _IOC_NR(MTIOCPOS)) {
@@ -3642,6 +4820,7 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 			goto out;
 		}
 		mt_pos.mt_blkno = blk;
+<<<<<<< HEAD
 		i = copy_to_user(p, &mt_pos, sizeof(struct mtpos));
 		if (i)
 			retval = (-EFAULT);
@@ -3667,6 +4846,27 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 	}
 	retval = scsi_ioctl(STp->device, cmd_in, p);
 	if (!retval && cmd_in == SCSI_IOCTL_STOP_UNIT) { /* unload */
+=======
+		retval = put_user_mtpos(p, &mt_pos);
+		goto out;
+	}
+	mutex_unlock(&STp->lock);
+
+	switch (cmd_in) {
+	case SG_IO:
+	case SCSI_IOCTL_SEND_COMMAND:
+	case CDROM_SEND_PACKET:
+		if (!capable(CAP_SYS_RAWIO))
+			return -EPERM;
+		break;
+	default:
+		break;
+	}
+
+	retval = scsi_ioctl(STp->device, file->f_mode & FMODE_WRITE, cmd_in, p);
+	if (!retval && cmd_in == SCSI_IOCTL_STOP_UNIT) {
+		/* unload */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		STp->rew_at_close = 0;
 		STp->ready = ST_NO_TAPE;
 	}
@@ -3678,6 +4878,7 @@ static long st_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
 }
 
 #ifdef CONFIG_COMPAT
+<<<<<<< HEAD
 static long st_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
 	struct scsi_tape *STp = file->private_data;
@@ -3689,6 +4890,21 @@ static long st_compat_ioctl(struct file *file, unsigned int cmd, unsigned long a
 
 	}
 	return ret;
+=======
+static long st_compat_ioctl(struct file *file, unsigned int cmd_in, unsigned long arg)
+{
+	/* argument conversion is handled using put_user_mtpos/put_user_mtget */
+	switch (cmd_in) {
+	case MTIOCPOS32:
+		cmd_in = MTIOCPOS;
+		break;
+	case MTIOCGET32:
+		cmd_in = MTIOCGET;
+		break;
+	}
+
+	return st_ioctl(file, cmd_in, arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -3696,22 +4912,37 @@ static long st_compat_ioctl(struct file *file, unsigned int cmd, unsigned long a
 
 /* Try to allocate a new tape buffer. Calling function must not hold
    dev_arr_lock. */
+<<<<<<< HEAD
 static struct st_buffer *new_tape_buffer(int need_dma, int max_sg)
 {
 	struct st_buffer *tb;
 
 	tb = kzalloc(sizeof(struct st_buffer), GFP_ATOMIC);
+=======
+static struct st_buffer *new_tape_buffer(int max_sg)
+{
+	struct st_buffer *tb;
+
+	tb = kzalloc(sizeof(struct st_buffer), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tb) {
 		printk(KERN_NOTICE "st: Can't allocate new tape buffer.\n");
 		return NULL;
 	}
 	tb->frp_segs = 0;
 	tb->use_sg = max_sg;
+<<<<<<< HEAD
 	tb->dma = need_dma;
 	tb->buffer_size = 0;
 
 	tb->reserved_pages = kzalloc(max_sg * sizeof(struct page *),
 				     GFP_ATOMIC);
+=======
+	tb->buffer_size = 0;
+
+	tb->reserved_pages = kcalloc(max_sg, sizeof(struct page *),
+				     GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!tb->reserved_pages) {
 		kfree(tb);
 		return NULL;
@@ -3724,9 +4955,15 @@ static struct st_buffer *new_tape_buffer(int need_dma, int max_sg)
 /* Try to allocate enough space in the tape buffer */
 #define ST_MAX_ORDER 6
 
+<<<<<<< HEAD
 static int enlarge_buffer(struct st_buffer * STbuffer, int new_size, int need_dma)
 {
 	int segs, nbr, max_segs, b_size, order, got;
+=======
+static int enlarge_buffer(struct st_buffer * STbuffer, int new_size)
+{
+	int segs, max_segs, b_size, order, got;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	gfp_t priority;
 
 	if (new_size <= STbuffer->buffer_size)
@@ -3736,6 +4973,7 @@ static int enlarge_buffer(struct st_buffer * STbuffer, int new_size, int need_dm
 		normalize_buffer(STbuffer);  /* Avoid extra segment */
 
 	max_segs = STbuffer->use_sg;
+<<<<<<< HEAD
 	nbr = max_segs - STbuffer->frp_segs;
 	if (nbr <= 0)
 		return 0;
@@ -3743,6 +4981,10 @@ static int enlarge_buffer(struct st_buffer * STbuffer, int new_size, int need_dm
 	priority = GFP_KERNEL | __GFP_NOWARN;
 	if (need_dma)
 		priority |= GFP_DMA;
+=======
+
+	priority = GFP_KERNEL | __GFP_NOWARN;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (STbuffer->cleared)
 		priority |= __GFP_ZERO;
@@ -3762,7 +5004,11 @@ static int enlarge_buffer(struct st_buffer * STbuffer, int new_size, int need_dm
 		if (order == ST_MAX_ORDER)
 			return 0;
 		normalize_buffer(STbuffer);
+<<<<<<< HEAD
 		return enlarge_buffer(STbuffer, new_size, need_dma);
+=======
+		return enlarge_buffer(STbuffer, new_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (segs = STbuffer->frp_segs, got = STbuffer->buffer_size;
@@ -3992,15 +5238,106 @@ static const struct file_operations st_fops =
 	.llseek =	noop_llseek,
 };
 
+<<<<<<< HEAD
 static int st_probe(struct device *dev)
 {
 	struct scsi_device *SDp = to_scsi_device(dev);
 	struct gendisk *disk = NULL;
 	struct cdev *cdev = NULL;
+=======
+static int create_one_cdev(struct scsi_tape *tape, int mode, int rew)
+{
+	int i, error;
+	dev_t cdev_devno;
+	struct cdev *cdev;
+	struct device *dev;
+	struct st_modedef *STm = &(tape->modes[mode]);
+	char name[10];
+	int dev_num = tape->index;
+
+	cdev_devno = MKDEV(SCSI_TAPE_MAJOR, TAPE_MINOR(dev_num, mode, rew));
+
+	cdev = cdev_alloc();
+	if (!cdev) {
+		pr_err("st%d: out of memory. Device not attached.\n", dev_num);
+		error = -ENOMEM;
+		goto out;
+	}
+	cdev->owner = THIS_MODULE;
+	cdev->ops = &st_fops;
+	STm->cdevs[rew] = cdev;
+
+	error = cdev_add(cdev, cdev_devno, 1);
+	if (error) {
+		pr_err("st%d: Can't add %s-rewind mode %d\n", dev_num,
+		       rew ? "non" : "auto", mode);
+		pr_err("st%d: Device not attached.\n", dev_num);
+		goto out_free;
+	}
+
+	i = mode << (4 - ST_NBR_MODE_BITS);
+	snprintf(name, 10, "%s%s%s", rew ? "n" : "",
+		 tape->name, st_formats[i]);
+
+	dev = device_create(&st_sysfs_class, &tape->device->sdev_gendev,
+			    cdev_devno, &tape->modes[mode], "%s", name);
+	if (IS_ERR(dev)) {
+		pr_err("st%d: device_create failed\n", dev_num);
+		error = PTR_ERR(dev);
+		goto out_free;
+	}
+
+	STm->devs[rew] = dev;
+
+	return 0;
+out_free:
+	cdev_del(STm->cdevs[rew]);
+out:
+	STm->cdevs[rew] = NULL;
+	STm->devs[rew] = NULL;
+	return error;
+}
+
+static int create_cdevs(struct scsi_tape *tape)
+{
+	int mode, error;
+	for (mode = 0; mode < ST_NBR_MODES; ++mode) {
+		error = create_one_cdev(tape, mode, 0);
+		if (error)
+			return error;
+		error = create_one_cdev(tape, mode, 1);
+		if (error)
+			return error;
+	}
+
+	return sysfs_create_link(&tape->device->sdev_gendev.kobj,
+				 &tape->modes[0].devs[0]->kobj, "tape");
+}
+
+static void remove_cdevs(struct scsi_tape *tape)
+{
+	int mode, rew;
+	sysfs_remove_link(&tape->device->sdev_gendev.kobj, "tape");
+	for (mode = 0; mode < ST_NBR_MODES; mode++) {
+		struct st_modedef *STm = &(tape->modes[mode]);
+		for (rew = 0; rew < 2; rew++) {
+			if (STm->cdevs[rew])
+				cdev_del(STm->cdevs[rew]);
+			if (STm->devs[rew])
+				device_unregister(STm->devs[rew]);
+		}
+	}
+}
+
+static int st_probe(struct device *dev)
+{
+	struct scsi_device *SDp = to_scsi_device(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct scsi_tape *tpnt = NULL;
 	struct st_modedef *STm;
 	struct st_partstat *STps;
 	struct st_buffer *buffer;
+<<<<<<< HEAD
 	int i, j, mode, dev_num, error;
 	char *stp;
 
@@ -4080,6 +5417,39 @@ static int st_probe(struct device *dev)
 	tpnt->driver = &st_template;
 	scsi_tapes[i] = tpnt;
 	dev_num = i;
+=======
+	int i, error;
+
+	if (SDp->type != TYPE_TAPE)
+		return -ENODEV;
+	if (st_incompatible(SDp)) {
+		sdev_printk(KERN_INFO, SDp,
+			    "OnStream tapes are no longer supported;\n");
+		sdev_printk(KERN_INFO, SDp,
+			    "please mail to linux-scsi@vger.kernel.org.\n");
+		return -ENODEV;
+	}
+
+	scsi_autopm_get_device(SDp);
+	i = queue_max_segments(SDp->request_queue);
+	if (st_max_sg_segs < i)
+		i = st_max_sg_segs;
+	buffer = new_tape_buffer(i);
+	if (buffer == NULL) {
+		sdev_printk(KERN_ERR, SDp,
+			    "st: Can't allocate new tape buffer. "
+			    "Device not attached.\n");
+		goto out;
+	}
+
+	tpnt = kzalloc(sizeof(struct scsi_tape), GFP_KERNEL);
+	if (tpnt == NULL) {
+		sdev_printk(KERN_ERR, SDp,
+			    "st: Can't allocate device descriptor.\n");
+		goto out_buffer_free;
+	}
+	kref_init(&tpnt->kref);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tpnt->device = SDp;
 	if (SDp->scsi_level <= 2)
@@ -4094,7 +5464,10 @@ static int st_probe(struct device *dev)
 	tpnt->dirty = 0;
 	tpnt->in_use = 0;
 	tpnt->drv_buffer = 1;	/* Try buffering if no mode sense */
+<<<<<<< HEAD
 	tpnt->restr_dma = (SDp->host)->unchecked_isa_dma;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tpnt->use_pf = (SDp->scsi_level >= SCSI_2);
 	tpnt->density = 0;
 	tpnt->do_auto_lock = ST_AUTO_LOCK;
@@ -4112,7 +5485,11 @@ static int st_probe(struct device *dev)
 	tpnt->nbr_partitions = 0;
 	blk_queue_rq_timeout(tpnt->device->request_queue, ST_TIMEOUT);
 	tpnt->long_timeout = ST_LONG_TIMEOUT;
+<<<<<<< HEAD
 	tpnt->try_dio = try_direct_io && !SDp->host->unchecked_isa_dma;
+=======
+	tpnt->try_dio = try_direct_io;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ST_NBR_MODES; i++) {
 		STm = &(tpnt->modes[i]);
@@ -4125,6 +5502,10 @@ static int st_probe(struct device *dev)
 		STm->default_compression = ST_DONT_TOUCH;
 		STm->default_blksize = (-1);	/* No forced size */
 		STm->default_density = (-1);	/* No forced density */
+<<<<<<< HEAD
+=======
+		STm->tape = tpnt;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	for (i = 0; i < ST_NBR_PARTITIONS; i++) {
@@ -4144,6 +5525,7 @@ static int st_probe(struct device *dev)
 	    tpnt->blksize_changed = 0;
 	mutex_init(&tpnt->lock);
 
+<<<<<<< HEAD
 	st_nr_dev++;
 	write_unlock(&st_dev_arr_lock);
 
@@ -4182,10 +5564,43 @@ static int st_probe(struct device *dev)
 		    "Attached scsi tape %s\n", tape_name(tpnt));
 	sdev_printk(KERN_INFO, SDp, "%s: try direct i/o: %s (alignment %d B)\n",
 		    tape_name(tpnt), tpnt->try_dio ? "yes" : "no",
+=======
+	idr_preload(GFP_KERNEL);
+	spin_lock(&st_index_lock);
+	error = idr_alloc(&st_index_idr, tpnt, 0, ST_MAX_TAPES + 1, GFP_NOWAIT);
+	spin_unlock(&st_index_lock);
+	idr_preload_end();
+	if (error < 0) {
+		pr_warn("st: idr allocation failed: %d\n", error);
+		goto out_free_tape;
+	}
+	tpnt->index = error;
+	sprintf(tpnt->name, "st%d", tpnt->index);
+	tpnt->stats = kzalloc(sizeof(struct scsi_tape_stats), GFP_KERNEL);
+	if (tpnt->stats == NULL) {
+		sdev_printk(KERN_ERR, SDp,
+			    "st: Can't allocate statistics.\n");
+		goto out_idr_remove;
+	}
+
+	dev_set_drvdata(dev, tpnt);
+
+
+	error = create_cdevs(tpnt);
+	if (error)
+		goto out_remove_devs;
+	scsi_autopm_put_device(SDp);
+
+	sdev_printk(KERN_NOTICE, SDp,
+		    "Attached scsi tape %s\n", tpnt->name);
+	sdev_printk(KERN_INFO, SDp, "%s: try direct i/o: %s (alignment %d B)\n",
+		    tpnt->name, tpnt->try_dio ? "yes" : "no",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    queue_dma_alignment(SDp->request_queue) + 1);
 
 	return 0;
 
+<<<<<<< HEAD
 out_free_tape:
 	for (mode=0; mode < ST_NBR_MODES; mode++) {
 		STm = &(tpnt->modes[mode]);
@@ -4210,16 +5625,31 @@ out_free_tape:
 	write_unlock(&st_dev_arr_lock);
 out_put_disk:
 	put_disk(disk);
+=======
+out_remove_devs:
+	remove_cdevs(tpnt);
+	kfree(tpnt->stats);
+out_idr_remove:
+	spin_lock(&st_index_lock);
+	idr_remove(&st_index_idr, tpnt->index);
+	spin_unlock(&st_index_lock);
+out_free_tape:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(tpnt);
 out_buffer_free:
 	kfree(buffer);
 out:
+<<<<<<< HEAD
+=======
+	scsi_autopm_put_device(SDp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENODEV;
 };
 
 
 static int st_remove(struct device *dev)
 {
+<<<<<<< HEAD
 	struct scsi_device *SDp = to_scsi_device(dev);
 	struct scsi_tape *tpnt;
 	int i, j, mode;
@@ -4252,6 +5682,20 @@ static int st_remove(struct device *dev)
 	}
 
 	write_unlock(&st_dev_arr_lock);
+=======
+	struct scsi_tape *tpnt = dev_get_drvdata(dev);
+	int index = tpnt->index;
+
+	scsi_autopm_get_device(to_scsi_device(dev));
+	remove_cdevs(tpnt);
+
+	mutex_lock(&st_ref_mutex);
+	kref_put(&tpnt->kref, scsi_tape_release);
+	mutex_unlock(&st_ref_mutex);
+	spin_lock(&st_index_lock);
+	idr_remove(&st_index_idr, index);
+	spin_unlock(&st_index_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -4267,7 +5711,10 @@ static int st_remove(struct device *dev)
 static void scsi_tape_release(struct kref *kref)
 {
 	struct scsi_tape *tpnt = to_scsi_tape(kref);
+<<<<<<< HEAD
 	struct gendisk *disk = tpnt->disk;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tpnt->device = NULL;
 
@@ -4277,12 +5724,24 @@ static void scsi_tape_release(struct kref *kref)
 		kfree(tpnt->buffer);
 	}
 
+<<<<<<< HEAD
 	disk->private_data = NULL;
 	put_disk(disk);
+=======
+	kfree(tpnt->stats);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(tpnt);
 	return;
 }
 
+<<<<<<< HEAD
+=======
+static const struct class st_sysfs_class = {
+	.name = "scsi_tape",
+	.dev_groups = st_dev_groups,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init init_st(void)
 {
 	int err;
@@ -4292,10 +5751,23 @@ static int __init init_st(void)
 	printk(KERN_INFO "st: Version %s, fixed bufsize %d, s/g segs %d\n",
 		verstr, st_fixed_buffer_size, st_max_sg_segs);
 
+<<<<<<< HEAD
 	st_sysfs_class = class_create(THIS_MODULE, "scsi_tape");
 	if (IS_ERR(st_sysfs_class)) {
 		printk(KERN_ERR "Unable create sysfs class for SCSI tapes\n");
 		return PTR_ERR(st_sysfs_class);
+=======
+	debugging = (debug_flag > 0) ? debug_flag : NO_DEBUG;
+	if (debugging) {
+		printk(KERN_INFO "st: Debugging enabled debug_flag = %d\n",
+			debugging);
+	}
+
+	err = class_register(&st_sysfs_class);
+	if (err) {
+		pr_err("Unable register sysfs class for SCSI tapes\n");
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = register_chrdev_region(MKDEV(SCSI_TAPE_MAJOR, 0),
@@ -4310,6 +5782,7 @@ static int __init init_st(void)
 	if (err)
 		goto err_chrdev;
 
+<<<<<<< HEAD
 	err = do_create_sysfs_files();
 	if (err)
 		goto err_scsidrv;
@@ -4318,22 +5791,38 @@ static int __init init_st(void)
 
 err_scsidrv:
 	scsi_unregister_driver(&st_template.gendrv);
+=======
+	return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_chrdev:
 	unregister_chrdev_region(MKDEV(SCSI_TAPE_MAJOR, 0),
 				 ST_MAX_TAPE_ENTRIES);
 err_class:
+<<<<<<< HEAD
 	class_destroy(st_sysfs_class);
+=======
+	class_unregister(&st_sysfs_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static void __exit exit_st(void)
 {
+<<<<<<< HEAD
 	do_remove_sysfs_files();
 	scsi_unregister_driver(&st_template.gendrv);
 	unregister_chrdev_region(MKDEV(SCSI_TAPE_MAJOR, 0),
 				 ST_MAX_TAPE_ENTRIES);
 	class_destroy(st_sysfs_class);
 	kfree(scsi_tapes);
+=======
+	scsi_unregister_driver(&st_template.gendrv);
+	unregister_chrdev_region(MKDEV(SCSI_TAPE_MAJOR, 0),
+				 ST_MAX_TAPE_ENTRIES);
+	class_unregister(&st_sysfs_class);
+	idr_destroy(&st_index_idr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO "st: Unloaded.\n");
 }
 
@@ -4342,6 +5831,7 @@ module_exit(exit_st);
 
 
 /* The sysfs driver interface. Read-only at the moment */
+<<<<<<< HEAD
 static ssize_t st_try_direct_io_show(struct device_driver *ddp, char *buf)
 {
 	return snprintf(buf, PAGE_SIZE, "%d\n", try_direct_io);
@@ -4409,6 +5899,74 @@ static void do_remove_sysfs_files(void)
 /* The sysfs simple class interface */
 static ssize_t
 st_defined_show(struct device *dev, struct device_attribute *attr, char *buf)
+=======
+static ssize_t try_direct_io_show(struct device_driver *ddp, char *buf)
+{
+	return scnprintf(buf, PAGE_SIZE, "%d\n", try_direct_io);
+}
+static DRIVER_ATTR_RO(try_direct_io);
+
+static ssize_t fixed_buffer_size_show(struct device_driver *ddp, char *buf)
+{
+	return scnprintf(buf, PAGE_SIZE, "%d\n", st_fixed_buffer_size);
+}
+static DRIVER_ATTR_RO(fixed_buffer_size);
+
+static ssize_t max_sg_segs_show(struct device_driver *ddp, char *buf)
+{
+	return scnprintf(buf, PAGE_SIZE, "%d\n", st_max_sg_segs);
+}
+static DRIVER_ATTR_RO(max_sg_segs);
+
+static ssize_t version_show(struct device_driver *ddd, char *buf)
+{
+	return scnprintf(buf, PAGE_SIZE, "[%s]\n", verstr);
+}
+static DRIVER_ATTR_RO(version);
+
+#if DEBUG
+static ssize_t debug_flag_store(struct device_driver *ddp,
+	const char *buf, size_t count)
+{
+/* We only care what the first byte of the data is the rest is unused.
+ * if it's a '1' we turn on debug and if it's a '0' we disable it. All
+ * other values have -EINVAL returned if they are passed in.
+ */
+	if (count > 0) {
+		if (buf[0] == '0') {
+			debugging = NO_DEBUG;
+			return count;
+		} else if (buf[0] == '1') {
+			debugging = 1;
+			return count;
+		}
+	}
+	return -EINVAL;
+}
+
+static ssize_t debug_flag_show(struct device_driver *ddp, char *buf)
+{
+	return scnprintf(buf, PAGE_SIZE, "%d\n", debugging);
+}
+static DRIVER_ATTR_RW(debug_flag);
+#endif
+
+static struct attribute *st_drv_attrs[] = {
+	&driver_attr_try_direct_io.attr,
+	&driver_attr_fixed_buffer_size.attr,
+	&driver_attr_max_sg_segs.attr,
+	&driver_attr_version.attr,
+#if DEBUG
+	&driver_attr_debug_flag.attr,
+#endif
+	NULL,
+};
+ATTRIBUTE_GROUPS(st_drv);
+
+/* The sysfs simple class interface */
+static ssize_t
+defined_show(struct device *dev, struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct st_modedef *STm = dev_get_drvdata(dev);
 	ssize_t l = 0;
@@ -4416,11 +5974,19 @@ st_defined_show(struct device *dev, struct device_attribute *attr, char *buf)
 	l = snprintf(buf, PAGE_SIZE, "%d\n", STm->defined);
 	return l;
 }
+<<<<<<< HEAD
 
 DEVICE_ATTR(defined, S_IRUGO, st_defined_show, NULL);
 
 static ssize_t
 st_defblk_show(struct device *dev, struct device_attribute *attr, char *buf)
+=======
+static DEVICE_ATTR_RO(defined);
+
+static ssize_t
+default_blksize_show(struct device *dev, struct device_attribute *attr,
+		     char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct st_modedef *STm = dev_get_drvdata(dev);
 	ssize_t l = 0;
@@ -4428,11 +5994,19 @@ st_defblk_show(struct device *dev, struct device_attribute *attr, char *buf)
 	l = snprintf(buf, PAGE_SIZE, "%d\n", STm->default_blksize);
 	return l;
 }
+<<<<<<< HEAD
 
 DEVICE_ATTR(default_blksize, S_IRUGO, st_defblk_show, NULL);
 
 static ssize_t
 st_defdensity_show(struct device *dev, struct device_attribute *attr, char *buf)
+=======
+static DEVICE_ATTR_RO(default_blksize);
+
+static ssize_t
+default_density_show(struct device *dev, struct device_attribute *attr,
+		     char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct st_modedef *STm = dev_get_drvdata(dev);
 	ssize_t l = 0;
@@ -4442,12 +6016,20 @@ st_defdensity_show(struct device *dev, struct device_attribute *attr, char *buf)
 	l = snprintf(buf, PAGE_SIZE, fmt, STm->default_density);
 	return l;
 }
+<<<<<<< HEAD
 
 DEVICE_ATTR(default_density, S_IRUGO, st_defdensity_show, NULL);
 
 static ssize_t
 st_defcompression_show(struct device *dev, struct device_attribute *attr,
 		       char *buf)
+=======
+static DEVICE_ATTR_RO(default_density);
+
+static ssize_t
+default_compression_show(struct device *dev, struct device_attribute *attr,
+			 char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct st_modedef *STm = dev_get_drvdata(dev);
 	ssize_t l = 0;
@@ -4455,6 +6037,7 @@ st_defcompression_show(struct device *dev, struct device_attribute *attr,
 	l = snprintf(buf, PAGE_SIZE, "%d\n", STm->default_compression - 1);
 	return l;
 }
+<<<<<<< HEAD
 
 DEVICE_ATTR(default_compression, S_IRUGO, st_defcompression_show, NULL);
 
@@ -4478,6 +6061,18 @@ st_options_show(struct device *dev, struct device_attribute *attr, char *buf)
 
 	STp = scsi_tapes[i];
 
+=======
+static DEVICE_ATTR_RO(default_compression);
+
+static ssize_t
+options_show(struct device *dev, struct device_attribute *attr, char *buf)
+{
+	struct st_modedef *STm = dev_get_drvdata(dev);
+	struct scsi_tape *STp = STm->tape;
+	int options;
+	ssize_t l = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	options = STm->do_buffer_writes ? MT_ST_BUFFER_WRITES : 0;
 	options |= STm->do_async_writes ? MT_ST_ASYNC_WRITES : 0;
 	options |= STm->do_read_ahead ? MT_ST_READ_AHEAD : 0;
@@ -4497,6 +6092,7 @@ st_options_show(struct device *dev, struct device_attribute *attr, char *buf)
 	l = snprintf(buf, PAGE_SIZE, "0x%08x\n", options);
 	return l;
 }
+<<<<<<< HEAD
 
 DEVICE_ATTR(options, S_IRUGO, st_options_show, NULL);
 
@@ -4558,6 +6154,225 @@ static int do_create_class_files(struct scsi_tape *STp, int dev_num, int mode)
 out:
 	return error;
 }
+=======
+static DEVICE_ATTR_RO(options);
+
+/* Support for tape stats */
+
+/**
+ * read_cnt_show - return read count - count of reads made from tape drive
+ * @dev: struct device
+ * @attr: attribute structure
+ * @buf: buffer to return formatted data in
+ */
+static ssize_t read_cnt_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	struct st_modedef *STm = dev_get_drvdata(dev);
+
+	return sprintf(buf, "%lld",
+		       (long long)atomic64_read(&STm->tape->stats->read_cnt));
+}
+static DEVICE_ATTR_RO(read_cnt);
+
+/**
+ * read_byte_cnt_show - return read byte count - tape drives
+ * may use blocks less than 512 bytes this gives the raw byte count of
+ * of data read from the tape drive.
+ * @dev: struct device
+ * @attr: attribute structure
+ * @buf: buffer to return formatted data in
+ */
+static ssize_t read_byte_cnt_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	struct st_modedef *STm = dev_get_drvdata(dev);
+
+	return sprintf(buf, "%lld",
+		       (long long)atomic64_read(&STm->tape->stats->read_byte_cnt));
+}
+static DEVICE_ATTR_RO(read_byte_cnt);
+
+/**
+ * read_ns_show - return read ns - overall time spent waiting on reads in ns.
+ * @dev: struct device
+ * @attr: attribute structure
+ * @buf: buffer to return formatted data in
+ */
+static ssize_t read_ns_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	struct st_modedef *STm = dev_get_drvdata(dev);
+
+	return sprintf(buf, "%lld",
+		       (long long)atomic64_read(&STm->tape->stats->tot_read_time));
+}
+static DEVICE_ATTR_RO(read_ns);
+
+/**
+ * write_cnt_show - write count - number of user calls
+ * to write(2) that have written data to tape.
+ * @dev: struct device
+ * @attr: attribute structure
+ * @buf: buffer to return formatted data in
+ */
+static ssize_t write_cnt_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	struct st_modedef *STm = dev_get_drvdata(dev);
+
+	return sprintf(buf, "%lld",
+		       (long long)atomic64_read(&STm->tape->stats->write_cnt));
+}
+static DEVICE_ATTR_RO(write_cnt);
+
+/**
+ * write_byte_cnt_show - write byte count - raw count of
+ * bytes written to tape.
+ * @dev: struct device
+ * @attr: attribute structure
+ * @buf: buffer to return formatted data in
+ */
+static ssize_t write_byte_cnt_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	struct st_modedef *STm = dev_get_drvdata(dev);
+
+	return sprintf(buf, "%lld",
+		       (long long)atomic64_read(&STm->tape->stats->write_byte_cnt));
+}
+static DEVICE_ATTR_RO(write_byte_cnt);
+
+/**
+ * write_ns_show - write ns - number of nanoseconds waiting on write
+ * requests to complete.
+ * @dev: struct device
+ * @attr: attribute structure
+ * @buf: buffer to return formatted data in
+ */
+static ssize_t write_ns_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	struct st_modedef *STm = dev_get_drvdata(dev);
+
+	return sprintf(buf, "%lld",
+		       (long long)atomic64_read(&STm->tape->stats->tot_write_time));
+}
+static DEVICE_ATTR_RO(write_ns);
+
+/**
+ * in_flight_show - number of I/Os currently in flight -
+ * in most cases this will be either 0 or 1. It may be higher if someone
+ * has also issued other SCSI commands such as via an ioctl.
+ * @dev: struct device
+ * @attr: attribute structure
+ * @buf: buffer to return formatted data in
+ */
+static ssize_t in_flight_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	struct st_modedef *STm = dev_get_drvdata(dev);
+
+	return sprintf(buf, "%lld",
+		       (long long)atomic64_read(&STm->tape->stats->in_flight));
+}
+static DEVICE_ATTR_RO(in_flight);
+
+/**
+ * io_ns_show - io wait ns - this is the number of ns spent
+ * waiting on all I/O to complete. This includes tape movement commands
+ * such as rewinding, seeking to end of file or tape, it also includes
+ * read and write. To determine the time spent on tape movement
+ * subtract the read and write ns from this value.
+ * @dev: struct device
+ * @attr: attribute structure
+ * @buf: buffer to return formatted data in
+ */
+static ssize_t io_ns_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	struct st_modedef *STm = dev_get_drvdata(dev);
+
+	return sprintf(buf, "%lld",
+		       (long long)atomic64_read(&STm->tape->stats->tot_io_time));
+}
+static DEVICE_ATTR_RO(io_ns);
+
+/**
+ * other_cnt_show - other io count - this is the number of
+ * I/O requests other than read and write requests.
+ * Typically these are tape movement requests but will include driver
+ * tape movement. This includes only requests issued by the st driver.
+ * @dev: struct device
+ * @attr: attribute structure
+ * @buf: buffer to return formatted data in
+ */
+static ssize_t other_cnt_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	struct st_modedef *STm = dev_get_drvdata(dev);
+
+	return sprintf(buf, "%lld",
+		       (long long)atomic64_read(&STm->tape->stats->other_cnt));
+}
+static DEVICE_ATTR_RO(other_cnt);
+
+/**
+ * resid_cnt_show - A count of the number of times we get a residual
+ * count - this should indicate someone issuing reads larger than the
+ * block size on tape.
+ * @dev: struct device
+ * @attr: attribute structure
+ * @buf: buffer to return formatted data in
+ */
+static ssize_t resid_cnt_show(struct device *dev,
+	struct device_attribute *attr, char *buf)
+{
+	struct st_modedef *STm = dev_get_drvdata(dev);
+
+	return sprintf(buf, "%lld",
+		       (long long)atomic64_read(&STm->tape->stats->resid_cnt));
+}
+static DEVICE_ATTR_RO(resid_cnt);
+
+static struct attribute *st_dev_attrs[] = {
+	&dev_attr_defined.attr,
+	&dev_attr_default_blksize.attr,
+	&dev_attr_default_density.attr,
+	&dev_attr_default_compression.attr,
+	&dev_attr_options.attr,
+	NULL,
+};
+
+static struct attribute *st_stats_attrs[] = {
+	&dev_attr_read_cnt.attr,
+	&dev_attr_read_byte_cnt.attr,
+	&dev_attr_read_ns.attr,
+	&dev_attr_write_cnt.attr,
+	&dev_attr_write_byte_cnt.attr,
+	&dev_attr_write_ns.attr,
+	&dev_attr_in_flight.attr,
+	&dev_attr_io_ns.attr,
+	&dev_attr_other_cnt.attr,
+	&dev_attr_resid_cnt.attr,
+	NULL,
+};
+
+static struct attribute_group stats_group = {
+	.name = "stats",
+	.attrs = st_stats_attrs,
+};
+
+static struct attribute_group st_group = {
+	.attrs = st_dev_attrs,
+};
+
+static const struct attribute_group *st_dev_groups[] = {
+	&st_group,
+	&stats_group,
+	NULL,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The following functions may be useful for a larger audience. */
 static int sgl_map_user_pages(struct st_buffer *STbp,
@@ -4567,7 +6382,11 @@ static int sgl_map_user_pages(struct st_buffer *STbp,
 	unsigned long end = (uaddr + count + PAGE_SIZE - 1) >> PAGE_SHIFT;
 	unsigned long start = uaddr >> PAGE_SHIFT;
 	const int nr_pages = end - start;
+<<<<<<< HEAD
 	int res, i, j;
+=======
+	int res, i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct page **pages;
 	struct rq_map_data *mdata = &STbp->map_data;
 
@@ -4583,6 +6402,7 @@ static int sgl_map_user_pages(struct st_buffer *STbp,
 	if (count == 0)
 		return 0;
 
+<<<<<<< HEAD
 	if ((pages = kmalloc(max_pages * sizeof(*pages), GFP_KERNEL)) == NULL)
 		return -ENOMEM;
 
@@ -4599,6 +6419,16 @@ static int sgl_map_user_pages(struct st_buffer *STbp,
 		pages,
 		NULL);
 	up_read(&current->mm->mmap_sem);
+=======
+	pages = kmalloc_array(max_pages, sizeof(*pages), GFP_KERNEL);
+	if (pages == NULL)
+		return -ENOMEM;
+
+        /* Try to fault in all of the necessary pages */
+        /* rw==READ means read from drive, write into memory area */
+	res = pin_user_pages_fast(uaddr, nr_pages, rw == READ ? FOLL_WRITE : 0,
+				  pages);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Errors and no page mapped should return here */
 	if (res < nr_pages)
@@ -4617,8 +6447,12 @@ static int sgl_map_user_pages(struct st_buffer *STbp,
 	return nr_pages;
  out_unmap:
 	if (res > 0) {
+<<<<<<< HEAD
 		for (j=0; j < res; j++)
 			page_cache_release(pages[j]);
+=======
+		unpin_user_pages(pages, res);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		res = 0;
 	}
 	kfree(pages);
@@ -4630,6 +6464,7 @@ static int sgl_map_user_pages(struct st_buffer *STbp,
 static int sgl_unmap_user_pages(struct st_buffer *STbp,
 				const unsigned int nr_pages, int dirtied)
 {
+<<<<<<< HEAD
 	int i;
 
 	for (i=0; i < nr_pages; i++) {
@@ -4642,6 +6477,11 @@ static int sgl_unmap_user_pages(struct st_buffer *STbp,
 		 */
 		page_cache_release(page);
 	}
+=======
+	/* FIXME: cache flush missing for rw==READ */
+	unpin_user_pages_dirty_lock(STbp->mapped_pages, nr_pages, dirtied);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(STbp->mapped_pages);
 	STbp->mapped_pages = NULL;
 

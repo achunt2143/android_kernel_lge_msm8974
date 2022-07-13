@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * QLogic qlcnic NIC Driver
  * Copyright (c)  2009-2010 QLogic Corporation
@@ -10,6 +11,16 @@
 #include <linux/slab.h>
 #include <linux/if_vlan.h>
 #include "qlcnic.h"
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * QLogic qlcnic NIC Driver
+ * Copyright (c) 2009-2013 QLogic Corporation
+ */
+
+#include "qlcnic.h"
+#include "qlcnic_hw.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct crb_addr_pair {
 	u32 addr;
@@ -25,10 +36,13 @@ static unsigned int crb_addr_xform[QLCNIC_MAX_CRB_XFORM];
 
 #define QLCNIC_ADDR_ERROR (0xffffffff)
 
+<<<<<<< HEAD
 static void
 qlcnic_post_rx_buffers_nodb(struct qlcnic_adapter *adapter,
 		struct qlcnic_host_rds_ring *rds_ring);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 qlcnic_check_fw_hearbeat(struct qlcnic_adapter *adapter);
 
@@ -102,10 +116,15 @@ void qlcnic_release_rx_buffers(struct qlcnic_adapter *adapter)
 			if (rx_buf->skb == NULL)
 				continue;
 
+<<<<<<< HEAD
 			pci_unmap_single(adapter->pdev,
 					rx_buf->dma,
 					rds_ring->dma_size,
 					PCI_DMA_FROMDEVICE);
+=======
+			dma_unmap_single(&adapter->pdev->dev, rx_buf->dma,
+					 rds_ring->dma_size, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			dev_kfree_skb_any(rx_buf->skb);
 		}
@@ -134,17 +153,28 @@ void qlcnic_reset_rx_buffers_list(struct qlcnic_adapter *adapter)
 	}
 }
 
+<<<<<<< HEAD
 void qlcnic_release_tx_buffers(struct qlcnic_adapter *adapter)
+=======
+void qlcnic_release_tx_buffers(struct qlcnic_adapter *adapter,
+			       struct qlcnic_host_tx_ring *tx_ring)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct qlcnic_cmd_buffer *cmd_buf;
 	struct qlcnic_skb_frag *buffrag;
 	int i, j;
+<<<<<<< HEAD
 	struct qlcnic_host_tx_ring *tx_ring = adapter->tx_ring;
+=======
+
+	spin_lock(&tx_ring->tx_clean_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd_buf = tx_ring->cmd_buf_arr;
 	for (i = 0; i < tx_ring->num_desc; i++) {
 		buffrag = cmd_buf->frag_array;
 		if (buffrag->dma) {
+<<<<<<< HEAD
 			pci_unmap_single(adapter->pdev, buffrag->dma,
 					 buffrag->length, PCI_DMA_TODEVICE);
 			buffrag->dma = 0ULL;
@@ -155,6 +185,18 @@ void qlcnic_release_tx_buffers(struct qlcnic_adapter *adapter)
 				pci_unmap_page(adapter->pdev, buffrag->dma,
 					       buffrag->length,
 					       PCI_DMA_TODEVICE);
+=======
+			dma_unmap_single(&adapter->pdev->dev, buffrag->dma,
+					 buffrag->length, DMA_TO_DEVICE);
+			buffrag->dma = 0ULL;
+		}
+		for (j = 1; j < cmd_buf->frag_count; j++) {
+			buffrag++;
+			if (buffrag->dma) {
+				dma_unmap_page(&adapter->pdev->dev,
+					       buffrag->dma, buffrag->length,
+					       DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				buffrag->dma = 0ULL;
 			}
 		}
@@ -164,19 +206,31 @@ void qlcnic_release_tx_buffers(struct qlcnic_adapter *adapter)
 		}
 		cmd_buf++;
 	}
+<<<<<<< HEAD
+=======
+
+	spin_unlock(&tx_ring->tx_clean_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void qlcnic_free_sw_resources(struct qlcnic_adapter *adapter)
 {
 	struct qlcnic_recv_context *recv_ctx;
 	struct qlcnic_host_rds_ring *rds_ring;
+<<<<<<< HEAD
 	struct qlcnic_host_tx_ring *tx_ring;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ring;
 
 	recv_ctx = adapter->recv_ctx;
 
 	if (recv_ctx->rds_rings == NULL)
+<<<<<<< HEAD
 		goto skip_rds;
+=======
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (ring = 0; ring < adapter->max_rds_rings; ring++) {
 		rds_ring = &recv_ctx->rds_rings[ring];
@@ -184,6 +238,7 @@ void qlcnic_free_sw_resources(struct qlcnic_adapter *adapter)
 		rds_ring->rx_buf_arr = NULL;
 	}
 	kfree(recv_ctx->rds_rings);
+<<<<<<< HEAD
 
 skip_rds:
 	if (adapter->tx_ring == NULL)
@@ -194,6 +249,8 @@ skip_rds:
 	tx_ring->cmd_buf_arr = NULL;
 	kfree(adapter->tx_ring);
 	adapter->tx_ring = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int qlcnic_alloc_sw_resources(struct qlcnic_adapter *adapter)
@@ -201,6 +258,7 @@ int qlcnic_alloc_sw_resources(struct qlcnic_adapter *adapter)
 	struct qlcnic_recv_context *recv_ctx;
 	struct qlcnic_host_rds_ring *rds_ring;
 	struct qlcnic_host_sds_ring *sds_ring;
+<<<<<<< HEAD
 	struct qlcnic_host_tx_ring *tx_ring;
 	struct qlcnic_rx_buffer *rx_buf;
 	int ring, i, size;
@@ -234,6 +292,18 @@ int qlcnic_alloc_sw_resources(struct qlcnic_adapter *adapter)
 		dev_err(&netdev->dev, "failed to allocate rds ring struct\n");
 		goto err_out;
 	}
+=======
+	struct qlcnic_rx_buffer *rx_buf;
+	int ring, i;
+
+	recv_ctx = adapter->recv_ctx;
+
+	rds_ring = kcalloc(adapter->max_rds_rings,
+			   sizeof(struct qlcnic_host_rds_ring), GFP_KERNEL);
+	if (rds_ring == NULL)
+		goto err_out;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	recv_ctx->rds_rings = rds_ring;
 
 	for (ring = 0; ring < adapter->max_rds_rings; ring++) {
@@ -250,7 +320,12 @@ int qlcnic_alloc_sw_resources(struct qlcnic_adapter *adapter)
 			rds_ring->dma_size =
 				QLCNIC_P3P_RX_JUMBO_BUF_MAX_LEN;
 
+<<<<<<< HEAD
 			if (adapter->capabilities & QLCNIC_FW_CAPABILITY_HW_LRO)
+=======
+			if (adapter->ahw->capabilities &
+			    QLCNIC_FW_CAPABILITY_HW_LRO)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				rds_ring->dma_size += QLCNIC_LRO_BUFFER_EXTRA;
 
 			rds_ring->skb_size =
@@ -258,11 +333,17 @@ int qlcnic_alloc_sw_resources(struct qlcnic_adapter *adapter)
 			break;
 		}
 		rds_ring->rx_buf_arr = vzalloc(RCV_BUFF_RINGSIZE(rds_ring));
+<<<<<<< HEAD
 		if (rds_ring->rx_buf_arr == NULL) {
 			dev_err(&netdev->dev, "Failed to allocate "
 				"rx buffer ring %d\n", ring);
 			goto err_out;
 		}
+=======
+		if (rds_ring->rx_buf_arr == NULL)
+			goto err_out;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		INIT_LIST_HEAD(&rds_ring->free_list);
 		/*
 		 * Now go through all of them, set reference handles
@@ -278,12 +359,26 @@ int qlcnic_alloc_sw_resources(struct qlcnic_adapter *adapter)
 		spin_lock_init(&rds_ring->lock);
 	}
 
+<<<<<<< HEAD
 	for (ring = 0; ring < adapter->max_sds_rings; ring++) {
+=======
+	for (ring = 0; ring < adapter->drv_sds_rings; ring++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sds_ring = &recv_ctx->sds_rings[ring];
 		sds_ring->irq = adapter->msix_entries[ring].vector;
 		sds_ring->adapter = adapter;
 		sds_ring->num_desc = adapter->num_rxd;
+<<<<<<< HEAD
 
+=======
+		if (qlcnic_82xx_check(adapter)) {
+			if (qlcnic_check_multi_tx(adapter) &&
+			    !adapter->ahw->diag_test)
+				sds_ring->tx_ring = &adapter->tx_ring[ring];
+			else
+				sds_ring->tx_ring = &adapter->tx_ring[0];
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < NUM_RCV_DESC_RINGS; i++)
 			INIT_LIST_HEAD(&sds_ring->free_list[i]);
 	}
@@ -328,11 +423,19 @@ static int qlcnic_wait_rom_done(struct qlcnic_adapter *adapter)
 {
 	long timeout = 0;
 	long done = 0;
+<<<<<<< HEAD
 
 	cond_resched();
 
 	while (done == 0) {
 		done = QLCRD32(adapter, QLCNIC_ROMUSB_GLB_STATUS);
+=======
+	int err = 0;
+
+	cond_resched();
+	while (done == 0) {
+		done = QLCRD32(adapter, QLCNIC_ROMUSB_GLB_STATUS, &err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		done &= 2;
 		if (++timeout >= QLCNIC_MAX_ROM_WAIT_USEC) {
 			dev_err(&adapter->pdev->dev,
@@ -347,6 +450,11 @@ static int qlcnic_wait_rom_done(struct qlcnic_adapter *adapter)
 static int do_rom_fast_read(struct qlcnic_adapter *adapter,
 			    u32 addr, u32 *valp)
 {
+<<<<<<< HEAD
+=======
+	int err = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	QLCWR32(adapter, QLCNIC_ROMUSB_ROM_ADDRESS, addr);
 	QLCWR32(adapter, QLCNIC_ROMUSB_ROM_DUMMY_BYTE_CNT, 0);
 	QLCWR32(adapter, QLCNIC_ROMUSB_ROM_ABYTE_CNT, 3);
@@ -360,7 +468,13 @@ static int do_rom_fast_read(struct qlcnic_adapter *adapter,
 	udelay(10);
 	QLCWR32(adapter, QLCNIC_ROMUSB_ROM_DUMMY_BYTE_CNT, 0);
 
+<<<<<<< HEAD
 	*valp = QLCRD32(adapter, QLCNIC_ROMUSB_ROM_RDATA);
+=======
+	*valp = QLCRD32(adapter, QLCNIC_ROMUSB_ROM_RDATA, &err);
+	if (err == -EIO)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -412,6 +526,7 @@ int qlcnic_rom_fast_read(struct qlcnic_adapter *adapter, u32 addr, u32 *valp)
 
 int qlcnic_pinit_from_rom(struct qlcnic_adapter *adapter)
 {
+<<<<<<< HEAD
 	int addr, val;
 	int i, n, init_delay;
 	struct crb_addr_pair *buf;
@@ -421,6 +536,17 @@ int qlcnic_pinit_from_rom(struct qlcnic_adapter *adapter)
 
 	QLCWR32(adapter, CRB_CMDPEG_STATE, 0);
 	QLCWR32(adapter, CRB_RCVPEG_STATE, 0);
+=======
+	int addr, err = 0;
+	int i, n, init_delay;
+	struct crb_addr_pair *buf;
+	unsigned offset;
+	u32 off, val;
+	struct pci_dev *pdev = adapter->pdev;
+
+	QLC_SHARED_REG_WR32(adapter, QLCNIC_CMDPEG_STATE, 0);
+	QLC_SHARED_REG_WR32(adapter, QLCNIC_RCVPEG_STATE, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Halt all the indiviual PEGs and other blocks */
 	/* disable all I2Q */
@@ -445,7 +571,13 @@ int qlcnic_pinit_from_rom(struct qlcnic_adapter *adapter)
 	QLCWR32(adapter, QLCNIC_CRB_NIU + 0xb0000, 0x00);
 
 	/* halt sre */
+<<<<<<< HEAD
 	val = QLCRD32(adapter, QLCNIC_CRB_SRE + 0x1000);
+=======
+	val = QLCRD32(adapter, QLCNIC_CRB_SRE + 0x1000, &err);
+	if (err == -EIO)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	QLCWR32(adapter, QLCNIC_CRB_SRE + 0x1000, val & (~(0x1)));
 
 	/* halt epg */
@@ -466,7 +598,10 @@ int qlcnic_pinit_from_rom(struct qlcnic_adapter *adapter)
 	QLCWR32(adapter, QLCNIC_CRB_PEG_NET_4 + 0x3c, 1);
 	msleep(20);
 
+<<<<<<< HEAD
 	qlcnic_rom_unlock(adapter);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* big hammer don't reset CAM block on reset */
 	QLCWR32(adapter, QLCNIC_ROMUSB_GLB_SW_RESET, 0xfeffffff);
 
@@ -485,10 +620,15 @@ int qlcnic_pinit_from_rom(struct qlcnic_adapter *adapter)
 	}
 
 	buf = kcalloc(n, sizeof(struct crb_addr_pair), GFP_KERNEL);
+<<<<<<< HEAD
 	if (buf == NULL) {
 		dev_err(&pdev->dev, "Unable to calloc memory for rom read.\n");
 		return -ENOMEM;
 	}
+=======
+	if (buf == NULL)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < n; i++) {
 		if (qlcnic_rom_fast_read(adapter, 8*i + 4*offset, &val) != 0 ||
@@ -565,10 +705,17 @@ int qlcnic_pinit_from_rom(struct qlcnic_adapter *adapter)
 	QLCWR32(adapter, QLCNIC_CRB_PEG_NET_3 + 0xc, 0);
 	QLCWR32(adapter, QLCNIC_CRB_PEG_NET_4 + 0x8, 0);
 	QLCWR32(adapter, QLCNIC_CRB_PEG_NET_4 + 0xc, 0);
+<<<<<<< HEAD
 	msleep(1);
 
 	QLCWR32(adapter, QLCNIC_PEG_HALT_STATUS1, 0);
 	QLCWR32(adapter, QLCNIC_PEG_HALT_STATUS2, 0);
+=======
+	usleep_range(1000, 1500);
+
+	QLC_SHARED_REG_WR32(adapter, QLCNIC_PEG_HALT_STATUS1, 0);
+	QLC_SHARED_REG_WR32(adapter, QLCNIC_PEG_HALT_STATUS2, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -579,7 +726,11 @@ static int qlcnic_cmd_peg_ready(struct qlcnic_adapter *adapter)
 	int retries = QLCNIC_CMDPEG_CHECK_RETRY_COUNT;
 
 	do {
+<<<<<<< HEAD
 		val = QLCRD32(adapter, CRB_CMDPEG_STATE);
+=======
+		val = QLC_SHARED_REG_RD32(adapter, QLCNIC_CMDPEG_STATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		switch (val) {
 		case PHAN_INITIALIZE_COMPLETE:
@@ -595,7 +746,12 @@ static int qlcnic_cmd_peg_ready(struct qlcnic_adapter *adapter)
 
 	} while (--retries);
 
+<<<<<<< HEAD
 	QLCWR32(adapter, CRB_CMDPEG_STATE, PHAN_INITIALIZE_FAILED);
+=======
+	QLC_SHARED_REG_WR32(adapter, QLCNIC_CMDPEG_STATE,
+			    PHAN_INITIALIZE_FAILED);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out_err:
 	dev_err(&adapter->pdev->dev, "Command Peg initialization not "
@@ -610,7 +766,11 @@ qlcnic_receive_peg_ready(struct qlcnic_adapter *adapter)
 	int retries = QLCNIC_RCVPEG_CHECK_RETRY_COUNT;
 
 	do {
+<<<<<<< HEAD
 		val = QLCRD32(adapter, CRB_RCVPEG_STATE);
+=======
+		val = QLC_SHARED_REG_RD32(adapter, QLCNIC_RCVPEG_STATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (val == PHAN_PEG_RCV_INITIALIZED)
 			return 0;
@@ -619,6 +779,7 @@ qlcnic_receive_peg_ready(struct qlcnic_adapter *adapter)
 
 	} while (--retries);
 
+<<<<<<< HEAD
 	if (!retries) {
 		dev_err(&adapter->pdev->dev, "Receive Peg initialization not "
 			      "complete, state: 0x%x.\n", val);
@@ -626,6 +787,11 @@ qlcnic_receive_peg_ready(struct qlcnic_adapter *adapter)
 	}
 
 	return 0;
+=======
+	dev_err(&adapter->pdev->dev, "Receive Peg initialization not complete, state: 0x%x.\n",
+		val);
+	return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int
@@ -641,7 +807,11 @@ qlcnic_check_fw_status(struct qlcnic_adapter *adapter)
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	QLCWR32(adapter, CRB_CMDPEG_STATE, PHAN_INITIALIZE_ACK);
+=======
+	QLC_SHARED_REG_WR32(adapter, QLCNIC_CMDPEG_STATE, PHAN_INITIALIZE_ACK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return err;
 }
@@ -652,14 +822,22 @@ qlcnic_setup_idc_param(struct qlcnic_adapter *adapter) {
 	int timeo;
 	u32 val;
 
+<<<<<<< HEAD
 	val = QLCRD32(adapter, QLCNIC_CRB_DEV_PARTITION_INFO);
+=======
+	val = QLC_SHARED_REG_RD32(adapter, QLCNIC_CRB_DEV_PARTITION_INFO);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = QLC_DEV_GET_DRV(val, adapter->portnum);
 	if ((val & 0x3) != QLCNIC_TYPE_NIC) {
 		dev_err(&adapter->pdev->dev,
 			"Not an Ethernet NIC func=%u\n", val);
 		return -EIO;
 	}
+<<<<<<< HEAD
 	adapter->physical_port = (val >> 2);
+=======
+	adapter->ahw->physical_port = (val >> 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (qlcnic_rom_fast_read(adapter, QLCNIC_ROM_DEV_INIT_TIMEOUT, &timeo))
 		timeo = QLCNIC_INIT_TIMEOUT_SECS;
 
@@ -692,11 +870,17 @@ static int qlcnic_get_flt_entry(struct qlcnic_adapter *adapter, u8 region,
 	}
 
 	entry_size = flt_hdr.len - sizeof(struct qlcnic_flt_header);
+<<<<<<< HEAD
 	flt_entry = (struct qlcnic_flt_entry *)vzalloc(entry_size);
 	if (flt_entry == NULL) {
 		dev_warn(&adapter->pdev->dev, "error allocating memory\n");
 		return -EIO;
 	}
+=======
+	flt_entry = vzalloc(entry_size);
+	if (flt_entry == NULL)
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = qlcnic_rom_fast_read_words(adapter, QLCNIC_FLT_LOCATION +
 					 sizeof(struct qlcnic_flt_header),
@@ -765,10 +949,19 @@ qlcnic_check_flash_fw_ver(struct qlcnic_adapter *adapter)
 static int
 qlcnic_has_mn(struct qlcnic_adapter *adapter)
 {
+<<<<<<< HEAD
 	u32 capability;
 	capability = 0;
 
 	capability = QLCRD32(adapter, QLCNIC_PEG_TUNE_CAPABILITY);
+=======
+	u32 capability = 0;
+	int err = 0;
+
+	capability = QLCRD32(adapter, QLCNIC_PEG_TUNE_CAPABILITY, &err);
+	if (err == -EIO)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (capability & QLCNIC_PEG_TUNE_MN_PRESENT)
 		return 1;
 
@@ -778,6 +971,7 @@ qlcnic_has_mn(struct qlcnic_adapter *adapter)
 static
 struct uni_table_desc *qlcnic_get_table_desc(const u8 *unirom, int section)
 {
+<<<<<<< HEAD
 	u32 i;
 	struct uni_table_desc *directory = (struct uni_table_desc *) &unirom[0];
 	__le32 entries = cpu_to_le32(directory->num_entries);
@@ -787,6 +981,17 @@ struct uni_table_desc *qlcnic_get_table_desc(const u8 *unirom, int section)
 		__le32 offs = cpu_to_le32(directory->findex) +
 				(i * cpu_to_le32(directory->entry_size));
 		__le32 tab_type = cpu_to_le32(*((u32 *)&unirom[offs] + 8));
+=======
+	u32 i, entries;
+	struct uni_table_desc *directory = (struct uni_table_desc *) &unirom[0];
+	entries = le32_to_cpu(directory->num_entries);
+
+	for (i = 0; i < entries; i++) {
+
+		u32 offs = le32_to_cpu(directory->findex) +
+			   i * le32_to_cpu(directory->entry_size);
+		u32 tab_type = le32_to_cpu(*((__le32 *)&unirom[offs] + 8));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (tab_type == section)
 			return (struct uni_table_desc *) &unirom[offs];
@@ -802,17 +1007,29 @@ qlcnic_validate_header(struct qlcnic_adapter *adapter)
 {
 	const u8 *unirom = adapter->fw->data;
 	struct uni_table_desc *directory = (struct uni_table_desc *) &unirom[0];
+<<<<<<< HEAD
 	__le32 fw_file_size = adapter->fw->size;
 	__le32 entries;
 	__le32 entry_size;
 	__le32 tab_size;
+=======
+	u32 entries, entry_size, tab_size, fw_file_size;
+
+	fw_file_size = adapter->fw->size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fw_file_size < FILEHEADER_SIZE)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	entries = cpu_to_le32(directory->num_entries);
 	entry_size = cpu_to_le32(directory->entry_size);
 	tab_size = cpu_to_le32(directory->findex) + (entries * entry_size);
+=======
+	entries = le32_to_cpu(directory->num_entries);
+	entry_size = le32_to_cpu(directory->entry_size);
+	tab_size = le32_to_cpu(directory->findex) + (entries * entry_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fw_file_size < tab_size)
 		return -EINVAL;
@@ -825,6 +1042,7 @@ qlcnic_validate_bootld(struct qlcnic_adapter *adapter)
 {
 	struct uni_table_desc *tab_desc;
 	struct uni_data_desc *descr;
+<<<<<<< HEAD
 	const u8 *unirom = adapter->fw->data;
 	int idx = cpu_to_le32(*((int *)&unirom[adapter->file_prd_off] +
 				QLCNIC_UNI_BOOTLD_IDX_OFF));
@@ -832,22 +1050,44 @@ qlcnic_validate_bootld(struct qlcnic_adapter *adapter)
 	__le32 tab_size;
 	__le32 data_size;
 
+=======
+	u32 offs, tab_size, data_size, idx;
+	const u8 *unirom = adapter->fw->data;
+	__le32 temp;
+
+	temp = *((__le32 *)&unirom[adapter->file_prd_off] +
+		 QLCNIC_UNI_BOOTLD_IDX_OFF);
+	idx = le32_to_cpu(temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tab_desc = qlcnic_get_table_desc(unirom, QLCNIC_UNI_DIR_SECT_BOOTLD);
 
 	if (!tab_desc)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	tab_size = cpu_to_le32(tab_desc->findex) +
 			(cpu_to_le32(tab_desc->entry_size) * (idx + 1));
+=======
+	tab_size = le32_to_cpu(tab_desc->findex) +
+		   le32_to_cpu(tab_desc->entry_size) * (idx + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adapter->fw->size < tab_size)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	offs = cpu_to_le32(tab_desc->findex) +
 		(cpu_to_le32(tab_desc->entry_size) * (idx));
 	descr = (struct uni_data_desc *)&unirom[offs];
 
 	data_size = cpu_to_le32(descr->findex) + cpu_to_le32(descr->size);
+=======
+	offs = le32_to_cpu(tab_desc->findex) +
+	       le32_to_cpu(tab_desc->entry_size) * idx;
+	descr = (struct uni_data_desc *)&unirom[offs];
+
+	data_size = le32_to_cpu(descr->findex) + le32_to_cpu(descr->size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adapter->fw->size < data_size)
 		return -EINVAL;
@@ -861,27 +1101,48 @@ qlcnic_validate_fw(struct qlcnic_adapter *adapter)
 	struct uni_table_desc *tab_desc;
 	struct uni_data_desc *descr;
 	const u8 *unirom = adapter->fw->data;
+<<<<<<< HEAD
 	int idx = cpu_to_le32(*((int *)&unirom[adapter->file_prd_off] +
 				QLCNIC_UNI_FIRMWARE_IDX_OFF));
 	__le32 offs;
 	__le32 tab_size;
 	__le32 data_size;
 
+=======
+	u32 offs, tab_size, data_size, idx;
+	__le32 temp;
+
+	temp = *((__le32 *)&unirom[adapter->file_prd_off] +
+		 QLCNIC_UNI_FIRMWARE_IDX_OFF);
+	idx = le32_to_cpu(temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tab_desc = qlcnic_get_table_desc(unirom, QLCNIC_UNI_DIR_SECT_FW);
 
 	if (!tab_desc)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	tab_size = cpu_to_le32(tab_desc->findex) +
 			(cpu_to_le32(tab_desc->entry_size) * (idx + 1));
+=======
+	tab_size = le32_to_cpu(tab_desc->findex) +
+		   le32_to_cpu(tab_desc->entry_size) * (idx + 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adapter->fw->size < tab_size)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	offs = cpu_to_le32(tab_desc->findex) +
 		(cpu_to_le32(tab_desc->entry_size) * (idx));
 	descr = (struct uni_data_desc *)&unirom[offs];
 	data_size = cpu_to_le32(descr->findex) + cpu_to_le32(descr->size);
+=======
+	offs = le32_to_cpu(tab_desc->findex) +
+	       le32_to_cpu(tab_desc->entry_size) * idx;
+	descr = (struct uni_data_desc *)&unirom[offs];
+	data_size = le32_to_cpu(descr->findex) + le32_to_cpu(descr->size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adapter->fw->size < data_size)
 		return -EINVAL;
@@ -895,19 +1156,30 @@ qlcnic_validate_product_offs(struct qlcnic_adapter *adapter)
 	struct uni_table_desc *ptab_descr;
 	const u8 *unirom = adapter->fw->data;
 	int mn_present = qlcnic_has_mn(adapter);
+<<<<<<< HEAD
 	__le32 entries;
 	__le32 entry_size;
 	__le32 tab_size;
 	u32 i;
+=======
+	u32 entries, entry_size, tab_size, i;
+	__le32 temp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ptab_descr = qlcnic_get_table_desc(unirom,
 				QLCNIC_UNI_DIR_SECT_PRODUCT_TBL);
 	if (!ptab_descr)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	entries = cpu_to_le32(ptab_descr->num_entries);
 	entry_size = cpu_to_le32(ptab_descr->entry_size);
 	tab_size = cpu_to_le32(ptab_descr->findex) + (entries * entry_size);
+=======
+	entries = le32_to_cpu(ptab_descr->num_entries);
+	entry_size = le32_to_cpu(ptab_descr->entry_size);
+	tab_size = le32_to_cpu(ptab_descr->findex) + (entries * entry_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (adapter->fw->size < tab_size)
 		return -EINVAL;
@@ -915,6 +1187,7 @@ qlcnic_validate_product_offs(struct qlcnic_adapter *adapter)
 nomn:
 	for (i = 0; i < entries; i++) {
 
+<<<<<<< HEAD
 		__le32 flags, file_chiprev, offs;
 		u8 chiprev = adapter->ahw->revision_id;
 		u32 flagbit;
@@ -925,6 +1198,18 @@ nomn:
 						QLCNIC_UNI_FLAGS_OFF));
 		file_chiprev = cpu_to_le32(*((int *)&unirom[offs] +
 						QLCNIC_UNI_CHIP_REV_OFF));
+=======
+		u32 flags, file_chiprev, offs;
+		u8 chiprev = adapter->ahw->revision_id;
+		u32 flagbit;
+
+		offs = le32_to_cpu(ptab_descr->findex) +
+		       i * le32_to_cpu(ptab_descr->entry_size);
+		temp = *((__le32 *)&unirom[offs] + QLCNIC_UNI_FLAGS_OFF);
+		flags = le32_to_cpu(temp);
+		temp = *((__le32 *)&unirom[offs] + QLCNIC_UNI_CHIP_REV_OFF);
+		file_chiprev = le32_to_cpu(temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		flagbit = mn_present ? 1 : 2;
 
@@ -976,18 +1261,32 @@ struct uni_data_desc *qlcnic_get_data_desc(struct qlcnic_adapter *adapter,
 			u32 section, u32 idx_offset)
 {
 	const u8 *unirom = adapter->fw->data;
+<<<<<<< HEAD
 	int idx = cpu_to_le32(*((int *)&unirom[adapter->file_prd_off] +
 								idx_offset));
 	struct uni_table_desc *tab_desc;
 	__le32 offs;
+=======
+	struct uni_table_desc *tab_desc;
+	u32 offs, idx;
+	__le32 temp;
+
+	temp = *((__le32 *)&unirom[adapter->file_prd_off] + idx_offset);
+	idx = le32_to_cpu(temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tab_desc = qlcnic_get_table_desc(unirom, section);
 
 	if (tab_desc == NULL)
 		return NULL;
 
+<<<<<<< HEAD
 	offs = cpu_to_le32(tab_desc->findex) +
 			(cpu_to_le32(tab_desc->entry_size) * idx);
+=======
+	offs = le32_to_cpu(tab_desc->findex) +
+	       le32_to_cpu(tab_desc->entry_size) * idx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (struct uni_data_desc *)&unirom[offs];
 }
@@ -996,11 +1295,21 @@ static u8 *
 qlcnic_get_bootld_offs(struct qlcnic_adapter *adapter)
 {
 	u32 offs = QLCNIC_BOOTLD_START;
+<<<<<<< HEAD
 
 	if (adapter->fw_type == QLCNIC_UNIFIED_ROMIMAGE)
 		offs = cpu_to_le32((qlcnic_get_data_desc(adapter,
 					QLCNIC_UNI_DIR_SECT_BOOTLD,
 					QLCNIC_UNI_BOOTLD_IDX_OFF))->findex);
+=======
+	struct uni_data_desc *data_desc;
+
+	data_desc = qlcnic_get_data_desc(adapter, QLCNIC_UNI_DIR_SECT_BOOTLD,
+					 QLCNIC_UNI_BOOTLD_IDX_OFF);
+
+	if (adapter->ahw->fw_type == QLCNIC_UNIFIED_ROMIMAGE)
+		offs = le32_to_cpu(data_desc->findex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (u8 *)&adapter->fw->data[offs];
 }
@@ -1009,15 +1318,25 @@ static u8 *
 qlcnic_get_fw_offs(struct qlcnic_adapter *adapter)
 {
 	u32 offs = QLCNIC_IMAGE_START;
+<<<<<<< HEAD
 
 	if (adapter->fw_type == QLCNIC_UNIFIED_ROMIMAGE)
 		offs = cpu_to_le32((qlcnic_get_data_desc(adapter,
 					QLCNIC_UNI_DIR_SECT_FW,
 					QLCNIC_UNI_FIRMWARE_IDX_OFF))->findex);
+=======
+	struct uni_data_desc *data_desc;
+
+	data_desc = qlcnic_get_data_desc(adapter, QLCNIC_UNI_DIR_SECT_FW,
+					 QLCNIC_UNI_FIRMWARE_IDX_OFF);
+	if (adapter->ahw->fw_type == QLCNIC_UNIFIED_ROMIMAGE)
+		offs = le32_to_cpu(data_desc->findex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (u8 *)&adapter->fw->data[offs];
 }
 
+<<<<<<< HEAD
 static __le32
 qlcnic_get_fw_size(struct qlcnic_adapter *adapter)
 {
@@ -1046,6 +1365,40 @@ qlcnic_get_fw_version(struct qlcnic_adapter *adapter)
 			QLCNIC_UNI_FIRMWARE_IDX_OFF);
 	ver_str = fw->data + cpu_to_le32(fw_data_desc->findex) +
 		cpu_to_le32(fw_data_desc->size) - 17;
+=======
+static u32 qlcnic_get_fw_size(struct qlcnic_adapter *adapter)
+{
+	struct uni_data_desc *data_desc;
+	const u8 *unirom = adapter->fw->data;
+
+	data_desc = qlcnic_get_data_desc(adapter, QLCNIC_UNI_DIR_SECT_FW,
+					 QLCNIC_UNI_FIRMWARE_IDX_OFF);
+
+	if (adapter->ahw->fw_type == QLCNIC_UNIFIED_ROMIMAGE)
+		return le32_to_cpu(data_desc->size);
+	else
+		return le32_to_cpu(*(__le32 *)&unirom[QLCNIC_FW_SIZE_OFFSET]);
+}
+
+static u32 qlcnic_get_fw_version(struct qlcnic_adapter *adapter)
+{
+	struct uni_data_desc *fw_data_desc;
+	const struct firmware *fw = adapter->fw;
+	u32 major, minor, sub;
+	__le32 version_offset;
+	const u8 *ver_str;
+	int i, ret;
+
+	if (adapter->ahw->fw_type != QLCNIC_UNIFIED_ROMIMAGE) {
+		version_offset = *(__le32 *)&fw->data[QLCNIC_FW_VERSION_OFFSET];
+		return le32_to_cpu(version_offset);
+	}
+
+	fw_data_desc = qlcnic_get_data_desc(adapter, QLCNIC_UNI_DIR_SECT_FW,
+			QLCNIC_UNI_FIRMWARE_IDX_OFF);
+	ver_str = fw->data + le32_to_cpu(fw_data_desc->findex) +
+		  le32_to_cpu(fw_data_desc->size) - 17;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < 12; i++) {
 		if (!strncmp(&ver_str[i], "REV=", 4)) {
@@ -1061,6 +1414,7 @@ qlcnic_get_fw_version(struct qlcnic_adapter *adapter)
 	return 0;
 }
 
+<<<<<<< HEAD
 static __le32
 qlcnic_get_bios_version(struct qlcnic_adapter *adapter)
 {
@@ -1073,6 +1427,22 @@ qlcnic_get_bios_version(struct qlcnic_adapter *adapter)
 
 	bios_ver = cpu_to_le32(*((u32 *) (&fw->data[prd_off])
 				+ QLCNIC_UNI_BIOS_VERSION_OFF));
+=======
+static u32 qlcnic_get_bios_version(struct qlcnic_adapter *adapter)
+{
+	const struct firmware *fw = adapter->fw;
+	u32 bios_ver, prd_off = adapter->file_prd_off;
+	u8 *version_offset;
+	__le32 temp;
+
+	if (adapter->ahw->fw_type != QLCNIC_UNIFIED_ROMIMAGE) {
+		version_offset = (u8 *)&fw->data[QLCNIC_BIOS_VERSION_OFFSET];
+		return le32_to_cpu(*(__le32 *)version_offset);
+	}
+
+	temp = *((__le32 *)(&fw->data[prd_off]) + QLCNIC_UNI_BIOS_VERSION_OFF);
+	bios_ver = le32_to_cpu(temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (bios_ver << 16) + ((bios_ver >> 8) & 0xff00) + (bios_ver >> 24);
 }
@@ -1091,11 +1461,21 @@ qlcnic_check_fw_hearbeat(struct qlcnic_adapter *adapter)
 	u32 heartbeat, ret = -EIO;
 	int retries = QLCNIC_HEARTBEAT_CHECK_RETRY_COUNT;
 
+<<<<<<< HEAD
 	adapter->heartbeat = QLCRD32(adapter, QLCNIC_PEG_ALIVE_COUNTER);
 
 	do {
 		msleep(QLCNIC_HEARTBEAT_PERIOD_MSECS);
 		heartbeat = QLCRD32(adapter, QLCNIC_PEG_ALIVE_COUNTER);
+=======
+	adapter->heartbeat = QLC_SHARED_REG_RD32(adapter,
+						 QLCNIC_PEG_ALIVE_COUNTER);
+
+	do {
+		msleep(QLCNIC_HEARTBEAT_PERIOD_MSECS);
+		heartbeat = QLC_SHARED_REG_RD32(adapter,
+						QLCNIC_PEG_ALIVE_COUNTER);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (heartbeat != adapter->heartbeat) {
 			ret = QLCNIC_RCODE_SUCCESS;
 			break;
@@ -1131,12 +1511,17 @@ static const char *fw_name[] = {
 int
 qlcnic_load_firmware(struct qlcnic_adapter *adapter)
 {
+<<<<<<< HEAD
 	u64 *ptr64;
+=======
+	__le64 *ptr64;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 i, flashaddr, size;
 	const struct firmware *fw = adapter->fw;
 	struct pci_dev *pdev = adapter->pdev;
 
 	dev_info(&pdev->dev, "loading firmware from %s\n",
+<<<<<<< HEAD
 			fw_name[adapter->fw_type]);
 
 	if (fw) {
@@ -1149,6 +1534,20 @@ qlcnic_load_firmware(struct qlcnic_adapter *adapter)
 
 		for (i = 0; i < size; i++) {
 			data = cpu_to_le64(ptr64[i]);
+=======
+		 fw_name[adapter->ahw->fw_type]);
+
+	if (fw) {
+		u64 data;
+
+		size = (QLCNIC_IMAGE_START - QLCNIC_BOOTLD_START) / 8;
+
+		ptr64 = (__le64 *)qlcnic_get_bootld_offs(adapter);
+		flashaddr = QLCNIC_BOOTLD_START;
+
+		for (i = 0; i < size; i++) {
+			data = le64_to_cpu(ptr64[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (qlcnic_pci_mem_write_2M(adapter, flashaddr, data))
 				return -EIO;
@@ -1156,6 +1555,7 @@ qlcnic_load_firmware(struct qlcnic_adapter *adapter)
 			flashaddr += 8;
 		}
 
+<<<<<<< HEAD
 		size = (__force u32)qlcnic_get_fw_size(adapter) / 8;
 
 		ptr64 = (u64 *)qlcnic_get_fw_offs(adapter);
@@ -1163,6 +1563,15 @@ qlcnic_load_firmware(struct qlcnic_adapter *adapter)
 
 		for (i = 0; i < size; i++) {
 			data = cpu_to_le64(ptr64[i]);
+=======
+		size = qlcnic_get_fw_size(adapter) / 8;
+
+		ptr64 = (__le64 *)qlcnic_get_fw_offs(adapter);
+		flashaddr = QLCNIC_IMAGE_START;
+
+		for (i = 0; i < size; i++) {
+			data = le64_to_cpu(ptr64[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (qlcnic_pci_mem_write_2M(adapter,
 						flashaddr, data))
@@ -1171,9 +1580,15 @@ qlcnic_load_firmware(struct qlcnic_adapter *adapter)
 			flashaddr += 8;
 		}
 
+<<<<<<< HEAD
 		size = (__force u32)qlcnic_get_fw_size(adapter) % 8;
 		if (size) {
 			data = cpu_to_le64(ptr64[i]);
+=======
+		size = qlcnic_get_fw_size(adapter) % 8;
+		if (size) {
+			data = le64_to_cpu(ptr64[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			if (qlcnic_pci_mem_write_2M(adapter,
 						flashaddr, data))
@@ -1215,7 +1630,11 @@ qlcnic_load_firmware(struct qlcnic_adapter *adapter)
 			flashaddr += 8;
 		}
 	}
+<<<<<<< HEAD
 	msleep(1);
+=======
+	usleep_range(1000, 1500);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	QLCWR32(adapter, QLCNIC_CRB_PEG_NET_0 + 0x18, 0x1020);
 	QLCWR32(adapter, QLCNIC_ROMUSB_GLB_SW_RESET, 0x80001e);
@@ -1225,11 +1644,19 @@ qlcnic_load_firmware(struct qlcnic_adapter *adapter)
 static int
 qlcnic_validate_firmware(struct qlcnic_adapter *adapter)
 {
+<<<<<<< HEAD
 	__le32 val;
 	u32 ver, bios, min_size;
 	struct pci_dev *pdev = adapter->pdev;
 	const struct firmware *fw = adapter->fw;
 	u8 fw_type = adapter->fw_type;
+=======
+	u32 val;
+	u32 ver, bios, min_size;
+	struct pci_dev *pdev = adapter->pdev;
+	const struct firmware *fw = adapter->fw;
+	u8 fw_type = adapter->ahw->fw_type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (fw_type == QLCNIC_UNIFIED_ROMIMAGE) {
 		if (qlcnic_validate_unified_romimage(adapter))
@@ -1237,8 +1664,13 @@ qlcnic_validate_firmware(struct qlcnic_adapter *adapter)
 
 		min_size = QLCNIC_UNI_FW_MIN_SIZE;
 	} else {
+<<<<<<< HEAD
 		val = cpu_to_le32(*(u32 *)&fw->data[QLCNIC_FW_MAGIC_OFFSET]);
 		if ((__force u32)val != QLCNIC_BDINFO_MAGIC)
+=======
+		val = le32_to_cpu(*(__le32 *)&fw->data[QLCNIC_FW_MAGIC_OFFSET]);
+		if (val != QLCNIC_BDINFO_MAGIC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 
 		min_size = QLCNIC_FW_MIN_SIZE;
@@ -1259,13 +1691,21 @@ qlcnic_validate_firmware(struct qlcnic_adapter *adapter)
 
 	val = qlcnic_get_bios_version(adapter);
 	qlcnic_rom_fast_read(adapter, QLCNIC_BIOS_VERSION_OFFSET, (int *)&bios);
+<<<<<<< HEAD
 	if ((__force u32)val != bios) {
+=======
+	if (val != bios) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "%s: firmware bios is incompatible\n",
 				fw_name[fw_type]);
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	QLCWR32(adapter, QLCNIC_CAM_RAM(0x1fc), QLCNIC_BDINFO_MAGIC);
+=======
+	QLC_SHARED_REG_WR32(adapter, QLCNIC_FW_IMG_VALID, QLCNIC_BDINFO_MAGIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1274,7 +1714,11 @@ qlcnic_get_next_fwtype(struct qlcnic_adapter *adapter)
 {
 	u8 fw_type;
 
+<<<<<<< HEAD
 	switch (adapter->fw_type) {
+=======
+	switch (adapter->ahw->fw_type) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case QLCNIC_UNKNOWN_ROMIMAGE:
 		fw_type = QLCNIC_UNIFIED_ROMIMAGE;
 		break;
@@ -1285,7 +1729,11 @@ qlcnic_get_next_fwtype(struct qlcnic_adapter *adapter)
 		break;
 	}
 
+<<<<<<< HEAD
 	adapter->fw_type = fw_type;
+=======
+	adapter->ahw->fw_type = fw_type;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1295,23 +1743,40 @@ void qlcnic_request_firmware(struct qlcnic_adapter *adapter)
 	struct pci_dev *pdev = adapter->pdev;
 	int rc;
 
+<<<<<<< HEAD
 	adapter->fw_type = QLCNIC_UNKNOWN_ROMIMAGE;
+=======
+	adapter->ahw->fw_type = QLCNIC_UNKNOWN_ROMIMAGE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 next:
 	qlcnic_get_next_fwtype(adapter);
 
+<<<<<<< HEAD
 	if (adapter->fw_type == QLCNIC_FLASH_ROMIMAGE) {
 		adapter->fw = NULL;
 	} else {
 		rc = request_firmware(&adapter->fw,
 				fw_name[adapter->fw_type], &pdev->dev);
+=======
+	if (adapter->ahw->fw_type == QLCNIC_FLASH_ROMIMAGE) {
+		adapter->fw = NULL;
+	} else {
+		rc = request_firmware(&adapter->fw,
+				      fw_name[adapter->ahw->fw_type],
+				      &pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rc != 0)
 			goto next;
 
 		rc = qlcnic_validate_firmware(adapter);
 		if (rc != 0) {
 			release_firmware(adapter->fw);
+<<<<<<< HEAD
 			msleep(1);
+=======
+			usleep_range(1000, 1500);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto next;
 		}
 	}
@@ -1321,6 +1786,7 @@ next:
 void
 qlcnic_release_firmware(struct qlcnic_adapter *adapter)
 {
+<<<<<<< HEAD
 	if (adapter->fw)
 		release_firmware(adapter->fw);
 	adapter->fw = NULL;
@@ -1954,3 +2420,8 @@ qlcnic_fetch_mac(struct qlcnic_adapter *adapter, u32 off1, u32 off2,
 	for (i = 2; i < 6; i++)
 		mac[i] = (u8)(mac_low >> ((5 - i) * 8));
 }
+=======
+	release_firmware(adapter->fw);
+	adapter->fw = NULL;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

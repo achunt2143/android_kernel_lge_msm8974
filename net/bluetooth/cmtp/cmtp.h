@@ -26,7 +26,11 @@
 #include <linux/types.h>
 #include <net/bluetooth/bluetooth.h>
 
+<<<<<<< HEAD
 #define BTNAMSIZ 18
+=======
+#define BTNAMSIZ 21
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* CMTP ioctl defines */
 #define CMTPCONNADD	_IOW('C', 200, int)
@@ -81,6 +85,10 @@ struct cmtp_session {
 
 	char name[BTNAMSIZ];
 
+<<<<<<< HEAD
+=======
+	atomic_t terminate;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct task_struct *task;
 
 	wait_queue_head_t wait;

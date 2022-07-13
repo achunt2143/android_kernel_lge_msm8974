@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * libfdt - Flat Device Tree manipulation
  * Copyright (C) 2006 David Gibson, IBM Corporation.
@@ -47,6 +48,12 @@
  *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
  *     OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
  *     EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=======
+// SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
+/*
+ * libfdt - Flat Device Tree manipulation
+ * Copyright (C) 2006 David Gibson, IBM Corporation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include "libfdt_env.h"
 
@@ -55,6 +62,7 @@
 
 #include "libfdt_internal.h"
 
+<<<<<<< HEAD
 int fdt_check_header(const void *fdt)
 {
 	if (fdt_magic(fdt) == FDT_MAGIC) {
@@ -66,11 +74,42 @@ int fdt_check_header(const void *fdt)
 	} else if (fdt_magic(fdt) == FDT_SW_MAGIC) {
 		/* Unfinished sequential-write blob */
 		if (fdt_size_dt_struct(fdt) == 0)
+=======
+/*
+ * Minimal sanity check for a read-only tree. fdt_ro_probe_() checks
+ * that the given buffer contains what appears to be a flattened
+ * device tree with sane information in its header.
+ */
+int32_t fdt_ro_probe_(const void *fdt)
+{
+	uint32_t totalsize = fdt_totalsize(fdt);
+
+	if (can_assume(VALID_DTB))
+		return totalsize;
+
+	/* The device tree must be at an 8-byte aligned address */
+	if ((uintptr_t)fdt & 7)
+		return -FDT_ERR_ALIGNMENT;
+
+	if (fdt_magic(fdt) == FDT_MAGIC) {
+		/* Complete tree */
+		if (!can_assume(LATEST)) {
+			if (fdt_version(fdt) < FDT_FIRST_SUPPORTED_VERSION)
+				return -FDT_ERR_BADVERSION;
+			if (fdt_last_comp_version(fdt) >
+					FDT_LAST_SUPPORTED_VERSION)
+				return -FDT_ERR_BADVERSION;
+		}
+	} else if (fdt_magic(fdt) == FDT_SW_MAGIC) {
+		/* Unfinished sequential-write blob */
+		if (!can_assume(VALID_INPUT) && fdt_size_dt_struct(fdt) == 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -FDT_ERR_BADSTATE;
 	} else {
 		return -FDT_ERR_BADMAGIC;
 	}
 
+<<<<<<< HEAD
 	if (fdt_off_dt_struct(fdt) > (UINT_MAX - fdt_size_dt_struct(fdt)))
 		return FDT_ERR_BADOFFSET;
 
@@ -84,12 +123,105 @@ int fdt_check_header(const void *fdt)
 	if ((fdt_off_dt_strings(fdt) + fdt_size_dt_strings(fdt))
 	    > fdt_totalsize(fdt))
 		return FDT_ERR_BADOFFSET;
+=======
+	if (totalsize < INT32_MAX)
+		return totalsize;
+	else
+		return -FDT_ERR_TRUNCATED;
+}
+
+static int check_off_(uint32_t hdrsize, uint32_t totalsize, uint32_t off)
+{
+	return (off >= hdrsize) && (off <= totalsize);
+}
+
+static int check_block_(uint32_t hdrsize, uint32_t totalsize,
+			uint32_t base, uint32_t size)
+{
+	if (!check_off_(hdrsize, totalsize, base))
+		return 0; /* block start out of bounds */
+	if ((base + size) < base)
+		return 0; /* overflow */
+	if (!check_off_(hdrsize, totalsize, base + size))
+		return 0; /* block end out of bounds */
+	return 1;
+}
+
+size_t fdt_header_size_(uint32_t version)
+{
+	if (version <= 1)
+		return FDT_V1_SIZE;
+	else if (version <= 2)
+		return FDT_V2_SIZE;
+	else if (version <= 3)
+		return FDT_V3_SIZE;
+	else if (version <= 16)
+		return FDT_V16_SIZE;
+	else
+		return FDT_V17_SIZE;
+}
+
+size_t fdt_header_size(const void *fdt)
+{
+	return can_assume(LATEST) ? FDT_V17_SIZE :
+		fdt_header_size_(fdt_version(fdt));
+}
+
+int fdt_check_header(const void *fdt)
+{
+	size_t hdrsize;
+
+	/* The device tree must be at an 8-byte aligned address */
+	if ((uintptr_t)fdt & 7)
+		return -FDT_ERR_ALIGNMENT;
+
+	if (fdt_magic(fdt) != FDT_MAGIC)
+		return -FDT_ERR_BADMAGIC;
+	if (!can_assume(LATEST)) {
+		if ((fdt_version(fdt) < FDT_FIRST_SUPPORTED_VERSION)
+		    || (fdt_last_comp_version(fdt) >
+			FDT_LAST_SUPPORTED_VERSION))
+			return -FDT_ERR_BADVERSION;
+		if (fdt_version(fdt) < fdt_last_comp_version(fdt))
+			return -FDT_ERR_BADVERSION;
+	}
+	hdrsize = fdt_header_size(fdt);
+	if (!can_assume(VALID_DTB)) {
+		if ((fdt_totalsize(fdt) < hdrsize)
+		    || (fdt_totalsize(fdt) > INT_MAX))
+			return -FDT_ERR_TRUNCATED;
+
+		/* Bounds check memrsv block */
+		if (!check_off_(hdrsize, fdt_totalsize(fdt),
+				fdt_off_mem_rsvmap(fdt)))
+			return -FDT_ERR_TRUNCATED;
+
+		/* Bounds check structure block */
+		if (!can_assume(LATEST) && fdt_version(fdt) < 17) {
+			if (!check_off_(hdrsize, fdt_totalsize(fdt),
+					fdt_off_dt_struct(fdt)))
+				return -FDT_ERR_TRUNCATED;
+		} else {
+			if (!check_block_(hdrsize, fdt_totalsize(fdt),
+					  fdt_off_dt_struct(fdt),
+					  fdt_size_dt_struct(fdt)))
+				return -FDT_ERR_TRUNCATED;
+		}
+
+		/* Bounds check strings block */
+		if (!check_block_(hdrsize, fdt_totalsize(fdt),
+				  fdt_off_dt_strings(fdt),
+				  fdt_size_dt_strings(fdt)))
+			return -FDT_ERR_TRUNCATED;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 const void *fdt_offset_ptr(const void *fdt, int offset, unsigned int len)
 {
+<<<<<<< HEAD
 	const char *p;
 
 	if (fdt_version(fdt) >= 0x11)
@@ -102,18 +234,47 @@ const void *fdt_offset_ptr(const void *fdt, int offset, unsigned int len)
 	if (p + len < p)
 		return NULL;
 	return p;
+=======
+	unsigned int uoffset = offset;
+	unsigned int absoffset = offset + fdt_off_dt_struct(fdt);
+
+	if (offset < 0)
+		return NULL;
+
+	if (!can_assume(VALID_INPUT))
+		if ((absoffset < uoffset)
+		    || ((absoffset + len) < absoffset)
+		    || (absoffset + len) > fdt_totalsize(fdt))
+			return NULL;
+
+	if (can_assume(LATEST) || fdt_version(fdt) >= 0x11)
+		if (((uoffset + len) < uoffset)
+		    || ((offset + len) > fdt_size_dt_struct(fdt)))
+			return NULL;
+
+	return fdt_offset_ptr_(fdt, offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 uint32_t fdt_next_tag(const void *fdt, int startoffset, int *nextoffset)
 {
+<<<<<<< HEAD
 	const uint32_t *tagp, *lenp;
 	uint32_t tag;
+=======
+	const fdt32_t *tagp, *lenp;
+	uint32_t tag, len, sum;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int offset = startoffset;
 	const char *p;
 
 	*nextoffset = -FDT_ERR_TRUNCATED;
 	tagp = fdt_offset_ptr(fdt, offset, FDT_TAGSIZE);
+<<<<<<< HEAD
 	if (!tagp)
+=======
+	if (!can_assume(VALID_DTB) && !tagp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return FDT_END; /* premature end */
 	tag = fdt32_to_cpu(*tagp);
 	offset += FDT_TAGSIZE;
@@ -125,17 +286,40 @@ uint32_t fdt_next_tag(const void *fdt, int startoffset, int *nextoffset)
 		do {
 			p = fdt_offset_ptr(fdt, offset++, 1);
 		} while (p && (*p != '\0'));
+<<<<<<< HEAD
 		if (!p)
+=======
+		if (!can_assume(VALID_DTB) && !p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return FDT_END; /* premature end */
 		break;
 
 	case FDT_PROP:
 		lenp = fdt_offset_ptr(fdt, offset, sizeof(*lenp));
+<<<<<<< HEAD
 		if (!lenp)
 			return FDT_END; /* premature end */
 		/* skip-name offset, length and value */
 		offset += sizeof(struct fdt_property) - FDT_TAGSIZE
 			+ fdt32_to_cpu(*lenp);
+=======
+		if (!can_assume(VALID_DTB) && !lenp)
+			return FDT_END; /* premature end */
+
+		len = fdt32_to_cpu(*lenp);
+		sum = len + offset;
+		if (!can_assume(VALID_DTB) &&
+		    (INT_MAX <= sum || sum < (uint32_t) offset))
+			return FDT_END; /* premature end */
+
+		/* skip-name offset, length and value */
+		offset += sizeof(struct fdt_property) - FDT_TAGSIZE + len;
+
+		if (!can_assume(LATEST) &&
+		    fdt_version(fdt) < 0x10 && len >= 8 &&
+		    ((offset - len) % 8) != 0)
+			offset += 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case FDT_END:
@@ -154,19 +338,39 @@ uint32_t fdt_next_tag(const void *fdt, int startoffset, int *nextoffset)
 	return tag;
 }
 
+<<<<<<< HEAD
 int _fdt_check_node_offset(const void *fdt, int offset)
 {
 	if ((offset < 0) || (offset % FDT_TAGSIZE)
 	    || (fdt_next_tag(fdt, offset, &offset) != FDT_BEGIN_NODE))
+=======
+int fdt_check_node_offset_(const void *fdt, int offset)
+{
+	if (!can_assume(VALID_INPUT)
+	    && ((offset < 0) || (offset % FDT_TAGSIZE)))
+		return -FDT_ERR_BADOFFSET;
+
+	if (fdt_next_tag(fdt, offset, &offset) != FDT_BEGIN_NODE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -FDT_ERR_BADOFFSET;
 
 	return offset;
 }
 
+<<<<<<< HEAD
 int _fdt_check_prop_offset(const void *fdt, int offset)
 {
 	if ((offset < 0) || (offset % FDT_TAGSIZE)
 	    || (fdt_next_tag(fdt, offset, &offset) != FDT_PROP))
+=======
+int fdt_check_prop_offset_(const void *fdt, int offset)
+{
+	if (!can_assume(VALID_INPUT)
+	    && ((offset < 0) || (offset % FDT_TAGSIZE)))
+		return -FDT_ERR_BADOFFSET;
+
+	if (fdt_next_tag(fdt, offset, &offset) != FDT_PROP)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -FDT_ERR_BADOFFSET;
 
 	return offset;
@@ -178,7 +382,11 @@ int fdt_next_node(const void *fdt, int offset, int *depth)
 	uint32_t tag;
 
 	if (offset >= 0)
+<<<<<<< HEAD
 		if ((nextoffset = _fdt_check_node_offset(fdt, offset)) < 0)
+=======
+		if ((nextoffset = fdt_check_node_offset_(fdt, offset)) < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return nextoffset;
 
 	do {
@@ -212,7 +420,39 @@ int fdt_next_node(const void *fdt, int offset, int *depth)
 	return offset;
 }
 
+<<<<<<< HEAD
 const char *_fdt_find_string(const char *strtab, int tabsize, const char *s)
+=======
+int fdt_first_subnode(const void *fdt, int offset)
+{
+	int depth = 0;
+
+	offset = fdt_next_node(fdt, offset, &depth);
+	if (offset < 0 || depth != 1)
+		return -FDT_ERR_NOTFOUND;
+
+	return offset;
+}
+
+int fdt_next_subnode(const void *fdt, int offset)
+{
+	int depth = 1;
+
+	/*
+	 * With respect to the parent, the depth of the next subnode will be
+	 * the same as the last.
+	 */
+	do {
+		offset = fdt_next_node(fdt, offset, &depth);
+		if (offset < 0 || depth < 1)
+			return -FDT_ERR_NOTFOUND;
+	} while (depth > 1);
+
+	return offset;
+}
+
+const char *fdt_find_string_(const char *strtab, int tabsize, const char *s)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len = strlen(s) + 1;
 	const char *last = strtab + tabsize - len;
@@ -226,9 +466,18 @@ const char *_fdt_find_string(const char *strtab, int tabsize, const char *s)
 
 int fdt_move(const void *fdt, void *buf, int bufsize)
 {
+<<<<<<< HEAD
 	FDT_CHECK_HEADER(fdt);
 
 	if (fdt_totalsize(fdt) > bufsize)
+=======
+	if (!can_assume(VALID_INPUT) && bufsize < 0)
+		return -FDT_ERR_NOSPACE;
+
+	FDT_RO_PROBE(fdt);
+
+	if (fdt_totalsize(fdt) > (unsigned int)bufsize)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -FDT_ERR_NOSPACE;
 
 	memmove(buf, fdt, fdt_totalsize(fdt));

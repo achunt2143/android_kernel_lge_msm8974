@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -21,6 +25,7 @@
  *		Paul Gortmaker (06/98):
  *		 - sort probes in a sane way, make sure all (safe) probes
  *		   get run once & failed autoprobes don't autoprobe again.
+<<<<<<< HEAD
  *
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
@@ -90,6 +95,161 @@ extern int iph5526_probe(struct net_device *dev);
 
 /* SBNI adapters */
 extern int sbni_probe(int unit);
+=======
+ */
+#include <linux/netdevice.h>
+#include <linux/etherdevice.h>
+#include <linux/errno.h>
+#include <linux/init.h>
+#include <linux/netlink.h>
+#include <net/Space.h>
+
+/*
+ * This structure holds boot-time configured netdevice settings. They
+ * are then used in the device probing.
+ */
+struct netdev_boot_setup {
+	char name[IFNAMSIZ];
+	struct ifmap map;
+};
+#define NETDEV_BOOT_SETUP_MAX 8
+
+
+/******************************************************************************
+ *
+ *		      Device Boot-time Settings Routines
+ *
+ ******************************************************************************/
+
+/* Boot time configuration table */
+static struct netdev_boot_setup dev_boot_setup[NETDEV_BOOT_SETUP_MAX];
+
+/**
+ *	netdev_boot_setup_add	- add new setup entry
+ *	@name: name of the device
+ *	@map: configured settings for the device
+ *
+ *	Adds new setup entry to the dev_boot_setup list.  The function
+ *	returns 0 on error and 1 on success.  This is a generic routine to
+ *	all netdevices.
+ */
+static int netdev_boot_setup_add(char *name, struct ifmap *map)
+{
+	struct netdev_boot_setup *s;
+	int i;
+
+	s = dev_boot_setup;
+	for (i = 0; i < NETDEV_BOOT_SETUP_MAX; i++) {
+		if (s[i].name[0] == '\0' || s[i].name[0] == ' ') {
+			memset(s[i].name, 0, sizeof(s[i].name));
+			strscpy(s[i].name, name, IFNAMSIZ);
+			memcpy(&s[i].map, map, sizeof(s[i].map));
+			break;
+		}
+	}
+
+	return i >= NETDEV_BOOT_SETUP_MAX ? 0 : 1;
+}
+
+/**
+ * netdev_boot_setup_check	- check boot time settings
+ * @dev: the netdevice
+ *
+ * Check boot time settings for the device.
+ * The found settings are set for the device to be used
+ * later in the device probing.
+ * Returns 0 if no settings found, 1 if they are.
+ */
+int netdev_boot_setup_check(struct net_device *dev)
+{
+	struct netdev_boot_setup *s = dev_boot_setup;
+	int i;
+
+	for (i = 0; i < NETDEV_BOOT_SETUP_MAX; i++) {
+		if (s[i].name[0] != '\0' && s[i].name[0] != ' ' &&
+		    !strcmp(dev->name, s[i].name)) {
+			dev->irq = s[i].map.irq;
+			dev->base_addr = s[i].map.base_addr;
+			dev->mem_start = s[i].map.mem_start;
+			dev->mem_end = s[i].map.mem_end;
+			return 1;
+		}
+	}
+	return 0;
+}
+EXPORT_SYMBOL(netdev_boot_setup_check);
+
+/**
+ * netdev_boot_base	- get address from boot time settings
+ * @prefix: prefix for network device
+ * @unit: id for network device
+ *
+ * Check boot time settings for the base address of device.
+ * The found settings are set for the device to be used
+ * later in the device probing.
+ * Returns 0 if no settings found.
+ */
+static unsigned long netdev_boot_base(const char *prefix, int unit)
+{
+	const struct netdev_boot_setup *s = dev_boot_setup;
+	char name[IFNAMSIZ];
+	int i;
+
+	sprintf(name, "%s%d", prefix, unit);
+
+	/*
+	 * If device already registered then return base of 1
+	 * to indicate not to probe for this interface
+	 */
+	if (__dev_get_by_name(&init_net, name))
+		return 1;
+
+	for (i = 0; i < NETDEV_BOOT_SETUP_MAX; i++)
+		if (!strcmp(name, s[i].name))
+			return s[i].map.base_addr;
+	return 0;
+}
+
+/*
+ * Saves at boot time configured settings for any netdevice.
+ */
+static int __init netdev_boot_setup(char *str)
+{
+	int ints[5];
+	struct ifmap map;
+
+	str = get_options(str, ARRAY_SIZE(ints), ints);
+	if (!str || !*str)
+		return 0;
+
+	/* Save settings */
+	memset(&map, 0, sizeof(map));
+	if (ints[0] > 0)
+		map.irq = ints[1];
+	if (ints[0] > 1)
+		map.base_addr = ints[2];
+	if (ints[0] > 2)
+		map.mem_start = ints[3];
+	if (ints[0] > 3)
+		map.mem_end = ints[4];
+
+	/* Add new entry to the list */
+	return netdev_boot_setup_add(str, &map);
+}
+
+__setup("netdev=", netdev_boot_setup);
+
+static int __init ether_boot_setup(char *str)
+{
+	return netdev_boot_setup(str);
+}
+__setup("ether=", ether_boot_setup);
+
+
+/* A unified ethernet device probe.  This is the easiest way to have every
+ * ethernet adaptor have the name "eth[0123...]".
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct devprobe2 {
 	struct net_device *(*probe)(int unit);
@@ -99,6 +259,10 @@ struct devprobe2 {
 static int __init probe_list2(int unit, struct devprobe2 *p, int autoprobe)
 {
 	struct net_device *dev;
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (; p->probe; p++) {
 		if (autoprobe && p->status)
 			continue;
@@ -111,6 +275,7 @@ static int __init probe_list2(int unit, struct devprobe2 *p, int autoprobe)
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 /*
  * This is a bit of an artificial separation as there are PCI drivers
  * that also probe for EISA cards (in the PCI group) and there are ISA
@@ -155,6 +320,12 @@ static struct devprobe2 isa_probes[] __initdata = {
 #if defined(CONFIG_HP100) && defined(CONFIG_ISA)	/* ISA, EISA */
 	{hp100_probe, 0},
 #endif
+=======
+/* ISA probes that touch addresses < 0x400 (including those that also
+ * look for EISA/PCI cards in addition to ISA cards).
+ */
+static struct devprobe2 isa_probes[] __initdata = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_3C515
 	{tc515_probe, 0},
 #endif
@@ -164,6 +335,7 @@ static struct devprobe2 isa_probes[] __initdata = {
 #ifdef CONFIG_WD80x3
 	{wd_probe, 0},
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_EL2 		/* 3c503 */
 	{el2_probe, 0},
 #endif
@@ -178,6 +350,9 @@ static struct devprobe2 isa_probes[] __initdata = {
 #endif
 #if defined(CONFIG_NE2000) || \
     defined(CONFIG_NE_H8300)  /* ISA (use ne2k-pci for PCI cards) */
+=======
+#if defined(CONFIG_NE2000) /* ISA (use ne2k-pci for PCI cards) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ne_probe, 0},
 #endif
 #ifdef CONFIG_LANCE		/* ISA/VLB (use pcnet32 for PCI cards) */
@@ -186,6 +361,7 @@ static struct devprobe2 isa_probes[] __initdata = {
 #ifdef CONFIG_SMC9194
 	{smc_init, 0},
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_SEEQ8005
 	{seeq8005_probe, 0},
 #endif
@@ -229,10 +405,15 @@ static struct devprobe2 isa_probes[] __initdata = {
 #endif
 #ifdef CONFIG_NI65
 	{ni65_probe, 0},
+=======
+#ifdef CONFIG_CS89x0_ISA
+	{cs89x0_probe, 0},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	{NULL, 0},
 };
 
+<<<<<<< HEAD
 static struct devprobe2 parport_probes[] __initdata = {
 #ifdef CONFIG_DE620		/* D-Link DE-620 adapter */
 	{de620_probe, 0},
@@ -267,6 +448,9 @@ static struct devprobe2 m68k_probes[] __initdata = {
 
 /*
  * Unified ethernet device probe, segmented per architecture and
+=======
+/* Unified ethernet device probe, segmented per architecture and
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * per bus interface. This drives the legacy devices only for now.
  */
 
@@ -277,6 +461,7 @@ static void __init ethif_probe2(int unit)
 	if (base_addr == 1)
 		return;
 
+<<<<<<< HEAD
 	(void)(	probe_list2(unit, m68k_probes, base_addr == 0) &&
 		probe_list2(unit, eisa_probes, base_addr == 0) &&
 		probe_list2(unit, mca_probes, base_addr == 0) &&
@@ -324,11 +509,17 @@ static void __init trif_probe2(int unit)
 #endif
 
 
+=======
+	probe_list2(unit, isa_probes, base_addr == 0);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  Statically configured drivers -- order matters here. */
 static int __init net_olddevs_init(void)
 {
 	int num;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SBNI
 	for (num = 0; num < 8; ++num)
 		sbni_probe(num);
@@ -350,6 +541,11 @@ static int __init net_olddevs_init(void)
 	ltpc_probe();
 #endif
 
+=======
+	for (num = 0; num < 8; ++num)
+		ethif_probe2(num);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

@@ -1,8 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	xt_hashlimit - Netfilter module to limit the number of packets per time
  *	separately for each hashbucket (sourceip/sourceport/dstip/dstport)
  *
  *	(C) 2003-2004 by Harald Welte <laforge@netfilter.org>
+<<<<<<< HEAD
+=======
+ *	(C) 2006-2012 Patrick McHardy <kaber@trash.net>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Copyright © CC Computer Consultants GmbH, 2007 - 2008
  *
  * Development of this code was funded by Astaro AG, http://www.astaro.com/
@@ -32,8 +40,20 @@
 #include <linux/netfilter/x_tables.h>
 #include <linux/netfilter_ipv4/ip_tables.h>
 #include <linux/netfilter_ipv6/ip6_tables.h>
+<<<<<<< HEAD
 #include <linux/netfilter/xt_hashlimit.h>
 #include <linux/mutex.h>
+=======
+#include <linux/mutex.h>
+#include <linux/kernel.h>
+#include <linux/refcount.h>
+#include <uapi/linux/netfilter/xt_hashlimit.h>
+
+#define XT_HASHLIMIT_ALL (XT_HASHLIMIT_HASH_DIP | XT_HASHLIMIT_HASH_DPT | \
+			  XT_HASHLIMIT_HASH_SIP | XT_HASHLIMIT_HASH_SPT | \
+			  XT_HASHLIMIT_INVERT | XT_HASHLIMIT_BYTES |\
+			  XT_HASHLIMIT_RATE_MATCH)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Harald Welte <laforge@netfilter.org>");
@@ -48,14 +68,24 @@ struct hashlimit_net {
 	struct proc_dir_entry	*ip6t_hashlimit;
 };
 
+<<<<<<< HEAD
 static int hashlimit_net_id;
+=======
+static unsigned int hashlimit_net_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline struct hashlimit_net *hashlimit_pernet(struct net *net)
 {
 	return net_generic(net, hashlimit_net_id);
 }
 
 /* need to declare this at the top */
+<<<<<<< HEAD
 static const struct file_operations dl_file_ops;
+=======
+static const struct seq_operations dl_seq_ops_v2;
+static const struct seq_operations dl_seq_ops_v1;
+static const struct seq_operations dl_seq_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* hash table crap */
 struct dsthash_dst {
@@ -85,24 +115,49 @@ struct dsthash_ent {
 	unsigned long expires;		/* precalculated expiry time */
 	struct {
 		unsigned long prev;	/* last modification */
+<<<<<<< HEAD
 		u_int32_t credit;
 		u_int32_t credit_cap, cost;
+=======
+		union {
+			struct {
+				u_int64_t credit;
+				u_int64_t credit_cap;
+				u_int64_t cost;
+			};
+			struct {
+				u_int32_t interval, prev_window;
+				u_int64_t current_rate;
+				u_int64_t rate;
+				int64_t burst;
+			};
+		};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} rateinfo;
 	struct rcu_head rcu;
 };
 
 struct xt_hashlimit_htable {
 	struct hlist_node node;		/* global list of all htables */
+<<<<<<< HEAD
 	int use;
 	u_int8_t family;
 	bool rnd_initialized;
 
 	struct hashlimit_cfg1 cfg;	/* config */
+=======
+	refcount_t use;
+	u_int8_t family;
+	bool rnd_initialized;
+
+	struct hashlimit_cfg3 cfg;	/* config */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* used internally */
 	spinlock_t lock;		/* lock for list_head */
 	u_int32_t rnd;			/* random seed for hash */
 	unsigned int count;		/* number entries in table */
+<<<<<<< HEAD
 	struct timer_list timer;	/* timer for gc */
 
 	/* seq_file stuff */
@@ -112,6 +167,54 @@ struct xt_hashlimit_htable {
 	struct hlist_head hash[0];	/* hashtable itself */
 };
 
+=======
+	struct delayed_work gc_work;
+
+	/* seq_file stuff */
+	struct proc_dir_entry *pde;
+	const char *name;
+	struct net *net;
+
+	struct hlist_head hash[];	/* hashtable itself */
+};
+
+static int
+cfg_copy(struct hashlimit_cfg3 *to, const void *from, int revision)
+{
+	if (revision == 1) {
+		struct hashlimit_cfg1 *cfg = (struct hashlimit_cfg1 *)from;
+
+		to->mode = cfg->mode;
+		to->avg = cfg->avg;
+		to->burst = cfg->burst;
+		to->size = cfg->size;
+		to->max = cfg->max;
+		to->gc_interval = cfg->gc_interval;
+		to->expire = cfg->expire;
+		to->srcmask = cfg->srcmask;
+		to->dstmask = cfg->dstmask;
+	} else if (revision == 2) {
+		struct hashlimit_cfg2 *cfg = (struct hashlimit_cfg2 *)from;
+
+		to->mode = cfg->mode;
+		to->avg = cfg->avg;
+		to->burst = cfg->burst;
+		to->size = cfg->size;
+		to->max = cfg->max;
+		to->gc_interval = cfg->gc_interval;
+		to->expire = cfg->expire;
+		to->srcmask = cfg->srcmask;
+		to->dstmask = cfg->dstmask;
+	} else if (revision == 3) {
+		memcpy(to, from, sizeof(struct hashlimit_cfg3));
+	} else {
+		return -EINVAL;
+	}
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static DEFINE_MUTEX(hashlimit_mutex);	/* protects htables list */
 static struct kmem_cache *hashlimit_cachep __read_mostly;
 
@@ -133,7 +236,11 @@ hash_dst(const struct xt_hashlimit_htable *ht, const struct dsthash_dst *dst)
 	 * give results between [0 and cfg.size-1] and same hash distribution,
 	 * but using a multiply, less expensive than a divide
 	 */
+<<<<<<< HEAD
 	return ((u64)hash * ht->cfg.size) >> 32;
+=======
+	return reciprocal_scale(hash, ht->cfg.size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct dsthash_ent *
@@ -141,11 +248,18 @@ dsthash_find(const struct xt_hashlimit_htable *ht,
 	     const struct dsthash_dst *dst)
 {
 	struct dsthash_ent *ent;
+<<<<<<< HEAD
 	struct hlist_node *pos;
 	u_int32_t hash = hash_dst(ht, dst);
 
 	if (!hlist_empty(&ht->hash[hash])) {
 		hlist_for_each_entry_rcu(ent, pos, &ht->hash[hash], node)
+=======
+	u_int32_t hash = hash_dst(ht, dst);
+
+	if (!hlist_empty(&ht->hash[hash])) {
+		hlist_for_each_entry_rcu(ent, &ht->hash[hash], node)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (dst_cmp(ent, dst)) {
 				spin_lock(&ent->lock);
 				return ent;
@@ -157,11 +271,29 @@ dsthash_find(const struct xt_hashlimit_htable *ht,
 /* allocate dsthash_ent, initialize dst, put in htable and lock it */
 static struct dsthash_ent *
 dsthash_alloc_init(struct xt_hashlimit_htable *ht,
+<<<<<<< HEAD
 		   const struct dsthash_dst *dst)
+=======
+		   const struct dsthash_dst *dst, bool *race)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dsthash_ent *ent;
 
 	spin_lock(&ht->lock);
+<<<<<<< HEAD
+=======
+
+	/* Two or more packets may race to create the same entry in the
+	 * hashtable, double check if this packet lost race.
+	 */
+	ent = dsthash_find(ht, dst);
+	if (ent != NULL) {
+		spin_unlock(&ht->lock);
+		*race = true;
+		return ent;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* initialize hash with random val at the time we allocate
 	 * the first hashtable entry */
 	if (unlikely(!ht->rnd_initialized)) {
@@ -171,8 +303,12 @@ dsthash_alloc_init(struct xt_hashlimit_htable *ht,
 
 	if (ht->cfg.max && ht->count >= ht->cfg.max) {
 		/* FIXME: do something. question is what.. */
+<<<<<<< HEAD
 		if (net_ratelimit())
 			pr_err("max count of %u reached\n", ht->cfg.max);
+=======
+		net_err_ratelimited("max count of %u reached\n", ht->cfg.max);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ent = NULL;
 	} else
 		ent = kmem_cache_alloc(hashlimit_cachep, GFP_ATOMIC);
@@ -199,6 +335,7 @@ static inline void
 dsthash_free(struct xt_hashlimit_htable *ht, struct dsthash_ent *ent)
 {
 	hlist_del_rcu(&ent->node);
+<<<<<<< HEAD
 	call_rcu_bh(&ent->rcu, dsthash_free_rcu);
 	ht->count--;
 }
@@ -218,11 +355,37 @@ static int htable_create(struct net *net, struct xt_hashlimit_mtinfo1 *minfo,
 		size = (totalram_pages << PAGE_SHIFT) / 16384 /
 		       sizeof(struct list_head);
 		if (totalram_pages > 1024 * 1024 * 1024 / PAGE_SIZE)
+=======
+	call_rcu(&ent->rcu, dsthash_free_rcu);
+	ht->count--;
+}
+static void htable_gc(struct work_struct *work);
+
+static int htable_create(struct net *net, struct hashlimit_cfg3 *cfg,
+			 const char *name, u_int8_t family,
+			 struct xt_hashlimit_htable **out_hinfo,
+			 int revision)
+{
+	struct hashlimit_net *hashlimit_net = hashlimit_pernet(net);
+	struct xt_hashlimit_htable *hinfo;
+	const struct seq_operations *ops;
+	unsigned int size, i;
+	unsigned long nr_pages = totalram_pages();
+	int ret;
+
+	if (cfg->size) {
+		size = cfg->size;
+	} else {
+		size = (nr_pages << PAGE_SHIFT) / 16384 /
+		       sizeof(struct hlist_head);
+		if (nr_pages > 1024 * 1024 * 1024 / PAGE_SIZE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			size = 8192;
 		if (size < 16)
 			size = 16;
 	}
 	/* FIXME: don't use vmalloc() here or anywhere else -HW */
+<<<<<<< HEAD
 	hinfo = vmalloc(sizeof(struct xt_hashlimit_htable) +
 	                sizeof(struct list_head) * size);
 	if (hinfo == NULL)
@@ -231,6 +394,20 @@ static int htable_create(struct net *net, struct xt_hashlimit_mtinfo1 *minfo,
 
 	/* copy match config into hashtable config */
 	memcpy(&hinfo->cfg, &minfo->cfg, sizeof(hinfo->cfg));
+=======
+	hinfo = vmalloc(struct_size(hinfo, hash, size));
+	if (hinfo == NULL)
+		return -ENOMEM;
+	*out_hinfo = hinfo;
+
+	/* copy match config into hashtable config */
+	ret = cfg_copy(&hinfo->cfg, (void *)cfg, 3);
+	if (ret) {
+		vfree(hinfo);
+		return ret;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hinfo->cfg.size = size;
 	if (hinfo->cfg.max == 0)
 		hinfo->cfg.max = 8 * hinfo->cfg.size;
@@ -240,6 +417,7 @@ static int htable_create(struct net *net, struct xt_hashlimit_mtinfo1 *minfo,
 	for (i = 0; i < hinfo->cfg.size; i++)
 		INIT_HLIST_HEAD(&hinfo->hash[i]);
 
+<<<<<<< HEAD
 	hinfo->use = 1;
 	hinfo->count = 0;
 	hinfo->family = family;
@@ -251,20 +429,57 @@ static int htable_create(struct net *net, struct xt_hashlimit_mtinfo1 *minfo,
 		hashlimit_net->ipt_hashlimit : hashlimit_net->ip6t_hashlimit,
 		&dl_file_ops, hinfo);
 	if (hinfo->pde == NULL) {
+=======
+	refcount_set(&hinfo->use, 1);
+	hinfo->count = 0;
+	hinfo->family = family;
+	hinfo->rnd_initialized = false;
+	hinfo->name = kstrdup(name, GFP_KERNEL);
+	if (!hinfo->name) {
+		vfree(hinfo);
+		return -ENOMEM;
+	}
+	spin_lock_init(&hinfo->lock);
+
+	switch (revision) {
+	case 1:
+		ops = &dl_seq_ops_v1;
+		break;
+	case 2:
+		ops = &dl_seq_ops_v2;
+		break;
+	default:
+		ops = &dl_seq_ops;
+	}
+
+	hinfo->pde = proc_create_seq_data(name, 0,
+		(family == NFPROTO_IPV4) ?
+		hashlimit_net->ipt_hashlimit : hashlimit_net->ip6t_hashlimit,
+		ops, hinfo);
+	if (hinfo->pde == NULL) {
+		kfree(hinfo->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		vfree(hinfo);
 		return -ENOMEM;
 	}
 	hinfo->net = net;
 
+<<<<<<< HEAD
 	setup_timer(&hinfo->timer, htable_gc, (unsigned long)hinfo);
 	hinfo->timer.expires = jiffies + msecs_to_jiffies(hinfo->cfg.gc_interval);
 	add_timer(&hinfo->timer);
+=======
+	INIT_DEFERRABLE_WORK(&hinfo->gc_work, htable_gc);
+	queue_delayed_work(system_power_efficient_wq, &hinfo->gc_work,
+			   msecs_to_jiffies(hinfo->cfg.gc_interval));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hlist_add_head(&hinfo->node, &hashlimit_net->htables);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static bool select_all(const struct xt_hashlimit_htable *ht,
 		       const struct dsthash_ent *he)
 {
@@ -309,19 +524,61 @@ static void htable_gc(unsigned long htlong)
 }
 
 static void htable_destroy(struct xt_hashlimit_htable *hinfo)
+=======
+static void htable_selective_cleanup(struct xt_hashlimit_htable *ht, bool select_all)
+{
+	unsigned int i;
+
+	for (i = 0; i < ht->cfg.size; i++) {
+		struct dsthash_ent *dh;
+		struct hlist_node *n;
+
+		spin_lock_bh(&ht->lock);
+		hlist_for_each_entry_safe(dh, n, &ht->hash[i], node) {
+			if (time_after_eq(jiffies, dh->expires) || select_all)
+				dsthash_free(ht, dh);
+		}
+		spin_unlock_bh(&ht->lock);
+		cond_resched();
+	}
+}
+
+static void htable_gc(struct work_struct *work)
+{
+	struct xt_hashlimit_htable *ht;
+
+	ht = container_of(work, struct xt_hashlimit_htable, gc_work.work);
+
+	htable_selective_cleanup(ht, false);
+
+	queue_delayed_work(system_power_efficient_wq,
+			   &ht->gc_work, msecs_to_jiffies(ht->cfg.gc_interval));
+}
+
+static void htable_remove_proc_entry(struct xt_hashlimit_htable *hinfo)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hashlimit_net *hashlimit_net = hashlimit_pernet(hinfo->net);
 	struct proc_dir_entry *parent;
 
+<<<<<<< HEAD
 	del_timer_sync(&hinfo->timer);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (hinfo->family == NFPROTO_IPV4)
 		parent = hashlimit_net->ipt_hashlimit;
 	else
 		parent = hashlimit_net->ip6t_hashlimit;
+<<<<<<< HEAD
 	remove_proc_entry(hinfo->pde->name, parent);
 	htable_selective_cleanup(hinfo, select_all);
 	vfree(hinfo);
+=======
+
+	if (parent != NULL)
+		remove_proc_entry(hinfo->name, parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct xt_hashlimit_htable *htable_find_get(struct net *net,
@@ -330,12 +587,20 @@ static struct xt_hashlimit_htable *htable_find_get(struct net *net,
 {
 	struct hashlimit_net *hashlimit_net = hashlimit_pernet(net);
 	struct xt_hashlimit_htable *hinfo;
+<<<<<<< HEAD
 	struct hlist_node *pos;
 
 	hlist_for_each_entry(hinfo, pos, &hashlimit_net->htables, node) {
 		if (!strcmp(name, hinfo->pde->name) &&
 		    hinfo->family == family) {
 			hinfo->use++;
+=======
+
+	hlist_for_each_entry(hinfo, &hashlimit_net->htables, node) {
+		if (!strcmp(name, hinfo->name) &&
+		    hinfo->family == family) {
+			refcount_inc(&hinfo->use);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return hinfo;
 		}
 	}
@@ -344,12 +609,25 @@ static struct xt_hashlimit_htable *htable_find_get(struct net *net,
 
 static void htable_put(struct xt_hashlimit_htable *hinfo)
 {
+<<<<<<< HEAD
 	mutex_lock(&hashlimit_mutex);
 	if (--hinfo->use == 0) {
 		hlist_del(&hinfo->node);
 		htable_destroy(hinfo);
 	}
 	mutex_unlock(&hashlimit_mutex);
+=======
+	if (refcount_dec_and_mutex_lock(&hinfo->use, &hashlimit_mutex)) {
+		hlist_del(&hinfo->node);
+		htable_remove_proc_entry(hinfo);
+		mutex_unlock(&hashlimit_mutex);
+
+		cancel_delayed_work_sync(&hinfo->gc_work);
+		htable_selective_cleanup(hinfo, true);
+		kfree(hinfo->name);
+		vfree(hinfo);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* The algorithm used is the Simple Token Bucket Filter (TBF)
@@ -374,7 +652,12 @@ static void htable_put(struct xt_hashlimit_htable *hinfo)
    (slowest userspace tool allows), which means
    CREDITS_PER_JIFFY*HZ*60*60*24 < 2^32 ie.
 */
+<<<<<<< HEAD
 #define MAX_CPJ (0xFFFFFFFF / (HZ*60*60*24))
+=======
+#define MAX_CPJ_v1 (0xFFFFFFFF / (HZ*60*60*24))
+#define MAX_CPJ (0xFFFFFFFFFFFFFFFFULL / (HZ*60*60*24))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Repeated shift and or gives us all 1s, final shift and add 1 gives
  * us the power of 2 below the theoretical max, so GCC simply does a
@@ -384,6 +667,7 @@ static void htable_put(struct xt_hashlimit_htable *hinfo)
 #define _POW2_BELOW8(x) (_POW2_BELOW4(x)|_POW2_BELOW4((x)>>4))
 #define _POW2_BELOW16(x) (_POW2_BELOW8(x)|_POW2_BELOW8((x)>>8))
 #define _POW2_BELOW32(x) (_POW2_BELOW16(x)|_POW2_BELOW16((x)>>16))
+<<<<<<< HEAD
 #define POW2_BELOW32(x) ((_POW2_BELOW32(x)>>1) + 1)
 
 #define CREDITS_PER_JIFFY POW2_BELOW32(MAX_CPJ)
@@ -405,6 +689,143 @@ static void rateinfo_recalc(struct dsthash_ent *dh, unsigned long now)
 	if (dh->rateinfo.credit > dh->rateinfo.credit_cap)
 		dh->rateinfo.credit = dh->rateinfo.credit_cap;
 	dh->rateinfo.prev = now;
+=======
+#define _POW2_BELOW64(x) (_POW2_BELOW32(x)|_POW2_BELOW32((x)>>32))
+#define POW2_BELOW32(x) ((_POW2_BELOW32(x)>>1) + 1)
+#define POW2_BELOW64(x) ((_POW2_BELOW64(x)>>1) + 1)
+
+#define CREDITS_PER_JIFFY POW2_BELOW64(MAX_CPJ)
+#define CREDITS_PER_JIFFY_v1 POW2_BELOW32(MAX_CPJ_v1)
+
+/* in byte mode, the lowest possible rate is one packet/second.
+ * credit_cap is used as a counter that tells us how many times we can
+ * refill the "credits available" counter when it becomes empty.
+ */
+#define MAX_CPJ_BYTES (0xFFFFFFFF / HZ)
+#define CREDITS_PER_JIFFY_BYTES POW2_BELOW32(MAX_CPJ_BYTES)
+
+static u32 xt_hashlimit_len_to_chunks(u32 len)
+{
+	return (len >> XT_HASHLIMIT_BYTE_SHIFT) + 1;
+}
+
+/* Precision saver. */
+static u64 user2credits(u64 user, int revision)
+{
+	u64 scale = (revision == 1) ?
+		XT_HASHLIMIT_SCALE : XT_HASHLIMIT_SCALE_v2;
+	u64 cpj = (revision == 1) ?
+		CREDITS_PER_JIFFY_v1 : CREDITS_PER_JIFFY;
+
+	/* Avoid overflow: divide the constant operands first */
+	if (scale >= HZ * cpj)
+		return div64_u64(user, div64_u64(scale, HZ * cpj));
+
+	return user * div64_u64(HZ * cpj, scale);
+}
+
+static u32 user2credits_byte(u32 user)
+{
+	u64 us = user;
+	us *= HZ * CREDITS_PER_JIFFY_BYTES;
+	return (u32) (us >> 32);
+}
+
+static u64 user2rate(u64 user)
+{
+	if (user != 0) {
+		return div64_u64(XT_HASHLIMIT_SCALE_v2, user);
+	} else {
+		pr_info_ratelimited("invalid rate from userspace: %llu\n",
+				    user);
+		return 0;
+	}
+}
+
+static u64 user2rate_bytes(u32 user)
+{
+	u64 r;
+
+	r = user ? U32_MAX / user : U32_MAX;
+	return (r - 1) << XT_HASHLIMIT_BYTE_SHIFT;
+}
+
+static void rateinfo_recalc(struct dsthash_ent *dh, unsigned long now,
+			    u32 mode, int revision)
+{
+	unsigned long delta = now - dh->rateinfo.prev;
+	u64 cap, cpj;
+
+	if (delta == 0)
+		return;
+
+	if (revision >= 3 && mode & XT_HASHLIMIT_RATE_MATCH) {
+		u64 interval = dh->rateinfo.interval * HZ;
+
+		if (delta < interval)
+			return;
+
+		dh->rateinfo.prev = now;
+		dh->rateinfo.prev_window =
+			((dh->rateinfo.current_rate * interval) >
+			 (delta * dh->rateinfo.rate));
+		dh->rateinfo.current_rate = 0;
+
+		return;
+	}
+
+	dh->rateinfo.prev = now;
+
+	if (mode & XT_HASHLIMIT_BYTES) {
+		u64 tmp = dh->rateinfo.credit;
+		dh->rateinfo.credit += CREDITS_PER_JIFFY_BYTES * delta;
+		cap = CREDITS_PER_JIFFY_BYTES * HZ;
+		if (tmp >= dh->rateinfo.credit) {/* overflow */
+			dh->rateinfo.credit = cap;
+			return;
+		}
+	} else {
+		cpj = (revision == 1) ?
+			CREDITS_PER_JIFFY_v1 : CREDITS_PER_JIFFY;
+		dh->rateinfo.credit += delta * cpj;
+		cap = dh->rateinfo.credit_cap;
+	}
+	if (dh->rateinfo.credit > cap)
+		dh->rateinfo.credit = cap;
+}
+
+static void rateinfo_init(struct dsthash_ent *dh,
+			  struct xt_hashlimit_htable *hinfo, int revision)
+{
+	dh->rateinfo.prev = jiffies;
+	if (revision >= 3 && hinfo->cfg.mode & XT_HASHLIMIT_RATE_MATCH) {
+		dh->rateinfo.prev_window = 0;
+		dh->rateinfo.current_rate = 0;
+		if (hinfo->cfg.mode & XT_HASHLIMIT_BYTES) {
+			dh->rateinfo.rate =
+				user2rate_bytes((u32)hinfo->cfg.avg);
+			if (hinfo->cfg.burst)
+				dh->rateinfo.burst =
+					hinfo->cfg.burst * dh->rateinfo.rate;
+			else
+				dh->rateinfo.burst = dh->rateinfo.rate;
+		} else {
+			dh->rateinfo.rate = user2rate(hinfo->cfg.avg);
+			dh->rateinfo.burst =
+				hinfo->cfg.burst + dh->rateinfo.rate;
+		}
+		dh->rateinfo.interval = hinfo->cfg.interval;
+	} else if (hinfo->cfg.mode & XT_HASHLIMIT_BYTES) {
+		dh->rateinfo.credit = CREDITS_PER_JIFFY_BYTES * HZ;
+		dh->rateinfo.cost = user2credits_byte(hinfo->cfg.avg);
+		dh->rateinfo.credit_cap = hinfo->cfg.burst;
+	} else {
+		dh->rateinfo.credit = user2credits(hinfo->cfg.avg *
+						   hinfo->cfg.burst, revision);
+		dh->rateinfo.cost = user2credits(hinfo->cfg.avg, revision);
+		dh->rateinfo.credit_cap = dh->rateinfo.credit;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline __be32 maskl(__be32 a, unsigned int l)
@@ -510,6 +931,7 @@ hashlimit_init_dst(const struct xt_hashlimit_htable *hinfo,
 	return 0;
 }
 
+<<<<<<< HEAD
 static bool
 hashlimit_mt(const struct sk_buff *skb, struct xt_action_param *par)
 {
@@ -518,10 +940,38 @@ hashlimit_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	unsigned long now = jiffies;
 	struct dsthash_ent *dh;
 	struct dsthash_dst dst;
+=======
+static u32 hashlimit_byte_cost(unsigned int len, struct dsthash_ent *dh)
+{
+	u64 tmp = xt_hashlimit_len_to_chunks(len);
+	tmp = tmp * dh->rateinfo.cost;
+
+	if (unlikely(tmp > CREDITS_PER_JIFFY_BYTES * HZ))
+		tmp = CREDITS_PER_JIFFY_BYTES * HZ;
+
+	if (dh->rateinfo.credit < tmp && dh->rateinfo.credit_cap) {
+		dh->rateinfo.credit_cap--;
+		dh->rateinfo.credit = CREDITS_PER_JIFFY_BYTES * HZ;
+	}
+	return (u32) tmp;
+}
+
+static bool
+hashlimit_mt_common(const struct sk_buff *skb, struct xt_action_param *par,
+		    struct xt_hashlimit_htable *hinfo,
+		    const struct hashlimit_cfg3 *cfg, int revision)
+{
+	unsigned long now = jiffies;
+	struct dsthash_ent *dh;
+	struct dsthash_dst dst;
+	bool race = false;
+	u64 cost;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (hashlimit_init_dst(hinfo, &dst, skb, par->thoff) < 0)
 		goto hotdrop;
 
+<<<<<<< HEAD
 	rcu_read_lock_bh();
 	dh = dsthash_find(hinfo, &dst);
 	if (dh == NULL) {
@@ -554,12 +1004,68 @@ hashlimit_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	rcu_read_unlock_bh();
 	/* default match is underlimit - so over the limit, we need to invert */
 	return info->cfg.mode & XT_HASHLIMIT_INVERT;
+=======
+	local_bh_disable();
+	dh = dsthash_find(hinfo, &dst);
+	if (dh == NULL) {
+		dh = dsthash_alloc_init(hinfo, &dst, &race);
+		if (dh == NULL) {
+			local_bh_enable();
+			goto hotdrop;
+		} else if (race) {
+			/* Already got an entry, update expiration timeout */
+			dh->expires = now + msecs_to_jiffies(hinfo->cfg.expire);
+			rateinfo_recalc(dh, now, hinfo->cfg.mode, revision);
+		} else {
+			dh->expires = jiffies + msecs_to_jiffies(hinfo->cfg.expire);
+			rateinfo_init(dh, hinfo, revision);
+		}
+	} else {
+		/* update expiration timeout */
+		dh->expires = now + msecs_to_jiffies(hinfo->cfg.expire);
+		rateinfo_recalc(dh, now, hinfo->cfg.mode, revision);
+	}
+
+	if (cfg->mode & XT_HASHLIMIT_RATE_MATCH) {
+		cost = (cfg->mode & XT_HASHLIMIT_BYTES) ? skb->len : 1;
+		dh->rateinfo.current_rate += cost;
+
+		if (!dh->rateinfo.prev_window &&
+		    (dh->rateinfo.current_rate <= dh->rateinfo.burst)) {
+			spin_unlock(&dh->lock);
+			local_bh_enable();
+			return !(cfg->mode & XT_HASHLIMIT_INVERT);
+		} else {
+			goto overlimit;
+		}
+	}
+
+	if (cfg->mode & XT_HASHLIMIT_BYTES)
+		cost = hashlimit_byte_cost(skb->len, dh);
+	else
+		cost = dh->rateinfo.cost;
+
+	if (dh->rateinfo.credit >= cost) {
+		/* below the limit */
+		dh->rateinfo.credit -= cost;
+		spin_unlock(&dh->lock);
+		local_bh_enable();
+		return !(cfg->mode & XT_HASHLIMIT_INVERT);
+	}
+
+overlimit:
+	spin_unlock(&dh->lock);
+	local_bh_enable();
+	/* default match is underlimit - so over the limit, we need to invert */
+	return cfg->mode & XT_HASHLIMIT_INVERT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  hotdrop:
 	par->hotdrop = true;
 	return false;
 }
 
+<<<<<<< HEAD
 static int hashlimit_mt_check(const struct xt_mtchk_param *par)
 {
 	struct net *net = par->net;
@@ -590,18 +1096,196 @@ static int hashlimit_mt_check(const struct xt_mtchk_param *par)
 	info->hinfo = htable_find_get(net, info->name, par->family);
 	if (info->hinfo == NULL) {
 		ret = htable_create(net, info, par->family);
+=======
+static bool
+hashlimit_mt_v1(const struct sk_buff *skb, struct xt_action_param *par)
+{
+	const struct xt_hashlimit_mtinfo1 *info = par->matchinfo;
+	struct xt_hashlimit_htable *hinfo = info->hinfo;
+	struct hashlimit_cfg3 cfg = {};
+	int ret;
+
+	ret = cfg_copy(&cfg, (void *)&info->cfg, 1);
+	if (ret)
+		return ret;
+
+	return hashlimit_mt_common(skb, par, hinfo, &cfg, 1);
+}
+
+static bool
+hashlimit_mt_v2(const struct sk_buff *skb, struct xt_action_param *par)
+{
+	const struct xt_hashlimit_mtinfo2 *info = par->matchinfo;
+	struct xt_hashlimit_htable *hinfo = info->hinfo;
+	struct hashlimit_cfg3 cfg = {};
+	int ret;
+
+	ret = cfg_copy(&cfg, (void *)&info->cfg, 2);
+	if (ret)
+		return ret;
+
+	return hashlimit_mt_common(skb, par, hinfo, &cfg, 2);
+}
+
+static bool
+hashlimit_mt(const struct sk_buff *skb, struct xt_action_param *par)
+{
+	const struct xt_hashlimit_mtinfo3 *info = par->matchinfo;
+	struct xt_hashlimit_htable *hinfo = info->hinfo;
+
+	return hashlimit_mt_common(skb, par, hinfo, &info->cfg, 3);
+}
+
+#define HASHLIMIT_MAX_SIZE 1048576
+
+static int hashlimit_mt_check_common(const struct xt_mtchk_param *par,
+				     struct xt_hashlimit_htable **hinfo,
+				     struct hashlimit_cfg3 *cfg,
+				     const char *name, int revision)
+{
+	struct net *net = par->net;
+	int ret;
+
+	if (cfg->gc_interval == 0 || cfg->expire == 0)
+		return -EINVAL;
+	if (cfg->size > HASHLIMIT_MAX_SIZE) {
+		cfg->size = HASHLIMIT_MAX_SIZE;
+		pr_info_ratelimited("size too large, truncated to %u\n", cfg->size);
+	}
+	if (cfg->max > HASHLIMIT_MAX_SIZE) {
+		cfg->max = HASHLIMIT_MAX_SIZE;
+		pr_info_ratelimited("max too large, truncated to %u\n", cfg->max);
+	}
+	if (par->family == NFPROTO_IPV4) {
+		if (cfg->srcmask > 32 || cfg->dstmask > 32)
+			return -EINVAL;
+	} else {
+		if (cfg->srcmask > 128 || cfg->dstmask > 128)
+			return -EINVAL;
+	}
+
+	if (cfg->mode & ~XT_HASHLIMIT_ALL) {
+		pr_info_ratelimited("Unknown mode mask %X, kernel too old?\n",
+				    cfg->mode);
+		return -EINVAL;
+	}
+
+	/* Check for overflow. */
+	if (revision >= 3 && cfg->mode & XT_HASHLIMIT_RATE_MATCH) {
+		if (cfg->avg == 0 || cfg->avg > U32_MAX) {
+			pr_info_ratelimited("invalid rate\n");
+			return -ERANGE;
+		}
+
+		if (cfg->interval == 0) {
+			pr_info_ratelimited("invalid interval\n");
+			return -EINVAL;
+		}
+	} else if (cfg->mode & XT_HASHLIMIT_BYTES) {
+		if (user2credits_byte(cfg->avg) == 0) {
+			pr_info_ratelimited("overflow, rate too high: %llu\n",
+					    cfg->avg);
+			return -EINVAL;
+		}
+	} else if (cfg->burst == 0 ||
+		   user2credits(cfg->avg * cfg->burst, revision) <
+		   user2credits(cfg->avg, revision)) {
+		pr_info_ratelimited("overflow, try lower: %llu/%llu\n",
+				    cfg->avg, cfg->burst);
+		return -ERANGE;
+	}
+
+	mutex_lock(&hashlimit_mutex);
+	*hinfo = htable_find_get(net, name, par->family);
+	if (*hinfo == NULL) {
+		ret = htable_create(net, cfg, name, par->family,
+				    hinfo, revision);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0) {
 			mutex_unlock(&hashlimit_mutex);
 			return ret;
 		}
 	}
 	mutex_unlock(&hashlimit_mutex);
+<<<<<<< HEAD
 	return 0;
 }
 
 static void hashlimit_mt_destroy(const struct xt_mtdtor_param *par)
 {
 	const struct xt_hashlimit_mtinfo1 *info = par->matchinfo;
+=======
+
+	return 0;
+}
+
+static int hashlimit_mt_check_v1(const struct xt_mtchk_param *par)
+{
+	struct xt_hashlimit_mtinfo1 *info = par->matchinfo;
+	struct hashlimit_cfg3 cfg = {};
+	int ret;
+
+	ret = xt_check_proc_name(info->name, sizeof(info->name));
+	if (ret)
+		return ret;
+
+	ret = cfg_copy(&cfg, (void *)&info->cfg, 1);
+	if (ret)
+		return ret;
+
+	return hashlimit_mt_check_common(par, &info->hinfo,
+					 &cfg, info->name, 1);
+}
+
+static int hashlimit_mt_check_v2(const struct xt_mtchk_param *par)
+{
+	struct xt_hashlimit_mtinfo2 *info = par->matchinfo;
+	struct hashlimit_cfg3 cfg = {};
+	int ret;
+
+	ret = xt_check_proc_name(info->name, sizeof(info->name));
+	if (ret)
+		return ret;
+
+	ret = cfg_copy(&cfg, (void *)&info->cfg, 2);
+	if (ret)
+		return ret;
+
+	return hashlimit_mt_check_common(par, &info->hinfo,
+					 &cfg, info->name, 2);
+}
+
+static int hashlimit_mt_check(const struct xt_mtchk_param *par)
+{
+	struct xt_hashlimit_mtinfo3 *info = par->matchinfo;
+	int ret;
+
+	ret = xt_check_proc_name(info->name, sizeof(info->name));
+	if (ret)
+		return ret;
+
+	return hashlimit_mt_check_common(par, &info->hinfo, &info->cfg,
+					 info->name, 3);
+}
+
+static void hashlimit_mt_destroy_v2(const struct xt_mtdtor_param *par)
+{
+	const struct xt_hashlimit_mtinfo2 *info = par->matchinfo;
+
+	htable_put(info->hinfo);
+}
+
+static void hashlimit_mt_destroy_v1(const struct xt_mtdtor_param *par)
+{
+	const struct xt_hashlimit_mtinfo1 *info = par->matchinfo;
+
+	htable_put(info->hinfo);
+}
+
+static void hashlimit_mt_destroy(const struct xt_mtdtor_param *par)
+{
+	const struct xt_hashlimit_mtinfo3 *info = par->matchinfo;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	htable_put(info->hinfo);
 }
@@ -611,8 +1295,36 @@ static struct xt_match hashlimit_mt_reg[] __read_mostly = {
 		.name           = "hashlimit",
 		.revision       = 1,
 		.family         = NFPROTO_IPV4,
+<<<<<<< HEAD
 		.match          = hashlimit_mt,
 		.matchsize      = sizeof(struct xt_hashlimit_mtinfo1),
+=======
+		.match          = hashlimit_mt_v1,
+		.matchsize      = sizeof(struct xt_hashlimit_mtinfo1),
+		.usersize	= offsetof(struct xt_hashlimit_mtinfo1, hinfo),
+		.checkentry     = hashlimit_mt_check_v1,
+		.destroy        = hashlimit_mt_destroy_v1,
+		.me             = THIS_MODULE,
+	},
+	{
+		.name           = "hashlimit",
+		.revision       = 2,
+		.family         = NFPROTO_IPV4,
+		.match          = hashlimit_mt_v2,
+		.matchsize      = sizeof(struct xt_hashlimit_mtinfo2),
+		.usersize	= offsetof(struct xt_hashlimit_mtinfo2, hinfo),
+		.checkentry     = hashlimit_mt_check_v2,
+		.destroy        = hashlimit_mt_destroy_v2,
+		.me             = THIS_MODULE,
+	},
+	{
+		.name           = "hashlimit",
+		.revision       = 3,
+		.family         = NFPROTO_IPV4,
+		.match          = hashlimit_mt,
+		.matchsize      = sizeof(struct xt_hashlimit_mtinfo3),
+		.usersize	= offsetof(struct xt_hashlimit_mtinfo3, hinfo),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.checkentry     = hashlimit_mt_check,
 		.destroy        = hashlimit_mt_destroy,
 		.me             = THIS_MODULE,
@@ -622,8 +1334,36 @@ static struct xt_match hashlimit_mt_reg[] __read_mostly = {
 		.name           = "hashlimit",
 		.revision       = 1,
 		.family         = NFPROTO_IPV6,
+<<<<<<< HEAD
 		.match          = hashlimit_mt,
 		.matchsize      = sizeof(struct xt_hashlimit_mtinfo1),
+=======
+		.match          = hashlimit_mt_v1,
+		.matchsize      = sizeof(struct xt_hashlimit_mtinfo1),
+		.usersize	= offsetof(struct xt_hashlimit_mtinfo1, hinfo),
+		.checkentry     = hashlimit_mt_check_v1,
+		.destroy        = hashlimit_mt_destroy_v1,
+		.me             = THIS_MODULE,
+	},
+	{
+		.name           = "hashlimit",
+		.revision       = 2,
+		.family         = NFPROTO_IPV6,
+		.match          = hashlimit_mt_v2,
+		.matchsize      = sizeof(struct xt_hashlimit_mtinfo2),
+		.usersize	= offsetof(struct xt_hashlimit_mtinfo2, hinfo),
+		.checkentry     = hashlimit_mt_check_v2,
+		.destroy        = hashlimit_mt_destroy_v2,
+		.me             = THIS_MODULE,
+	},
+	{
+		.name           = "hashlimit",
+		.revision       = 3,
+		.family         = NFPROTO_IPV6,
+		.match          = hashlimit_mt,
+		.matchsize      = sizeof(struct xt_hashlimit_mtinfo3),
+		.usersize	= offsetof(struct xt_hashlimit_mtinfo3, hinfo),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.checkentry     = hashlimit_mt_check,
 		.destroy        = hashlimit_mt_destroy,
 		.me             = THIS_MODULE,
@@ -635,7 +1375,11 @@ static struct xt_match hashlimit_mt_reg[] __read_mostly = {
 static void *dl_seq_start(struct seq_file *s, loff_t *pos)
 	__acquires(htable->lock)
 {
+<<<<<<< HEAD
 	struct xt_hashlimit_htable *htable = s->private;
+=======
+	struct xt_hashlimit_htable *htable = pde_data(file_inode(s->file));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int *bucket;
 
 	spin_lock_bh(&htable->lock);
@@ -652,8 +1396,13 @@ static void *dl_seq_start(struct seq_file *s, loff_t *pos)
 
 static void *dl_seq_next(struct seq_file *s, void *v, loff_t *pos)
 {
+<<<<<<< HEAD
 	struct xt_hashlimit_htable *htable = s->private;
 	unsigned int *bucket = (unsigned int *)v;
+=======
+	struct xt_hashlimit_htable *htable = pde_data(file_inode(s->file));
+	unsigned int *bucket = v;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*pos = ++(*bucket);
 	if (*pos >= htable->cfg.size) {
@@ -666,14 +1415,20 @@ static void *dl_seq_next(struct seq_file *s, void *v, loff_t *pos)
 static void dl_seq_stop(struct seq_file *s, void *v)
 	__releases(htable->lock)
 {
+<<<<<<< HEAD
 	struct xt_hashlimit_htable *htable = s->private;
 	unsigned int *bucket = (unsigned int *)v;
+=======
+	struct xt_hashlimit_htable *htable = pde_data(file_inode(s->file));
+	unsigned int *bucket = v;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!IS_ERR(bucket))
 		kfree(bucket);
 	spin_unlock_bh(&htable->lock);
 }
 
+<<<<<<< HEAD
 static int dl_seq_real_show(struct dsthash_ent *ent, u_int8_t family,
 				   struct seq_file *s)
 {
@@ -704,18 +1459,122 @@ static int dl_seq_real_show(struct dsthash_ent *ent, u_int8_t family,
 				 ntohs(ent->dst.dst_port),
 				 ent->rateinfo.credit, ent->rateinfo.credit_cap,
 				 ent->rateinfo.cost);
+=======
+static void dl_seq_print(struct dsthash_ent *ent, u_int8_t family,
+			 struct seq_file *s)
+{
+	switch (family) {
+	case NFPROTO_IPV4:
+		seq_printf(s, "%ld %pI4:%u->%pI4:%u %llu %llu %llu\n",
+			   (long)(ent->expires - jiffies)/HZ,
+			   &ent->dst.ip.src,
+			   ntohs(ent->dst.src_port),
+			   &ent->dst.ip.dst,
+			   ntohs(ent->dst.dst_port),
+			   ent->rateinfo.credit, ent->rateinfo.credit_cap,
+			   ent->rateinfo.cost);
+		break;
+#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
+	case NFPROTO_IPV6:
+		seq_printf(s, "%ld %pI6:%u->%pI6:%u %llu %llu %llu\n",
+			   (long)(ent->expires - jiffies)/HZ,
+			   &ent->dst.ip6.src,
+			   ntohs(ent->dst.src_port),
+			   &ent->dst.ip6.dst,
+			   ntohs(ent->dst.dst_port),
+			   ent->rateinfo.credit, ent->rateinfo.credit_cap,
+			   ent->rateinfo.cost);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 #endif
 	default:
 		BUG();
+<<<<<<< HEAD
 		res = 0;
 	}
 	spin_unlock(&ent->lock);
 	return res;
+=======
+	}
+}
+
+static int dl_seq_real_show_v2(struct dsthash_ent *ent, u_int8_t family,
+			       struct seq_file *s)
+{
+	struct xt_hashlimit_htable *ht = pde_data(file_inode(s->file));
+
+	spin_lock(&ent->lock);
+	/* recalculate to show accurate numbers */
+	rateinfo_recalc(ent, jiffies, ht->cfg.mode, 2);
+
+	dl_seq_print(ent, family, s);
+
+	spin_unlock(&ent->lock);
+	return seq_has_overflowed(s);
+}
+
+static int dl_seq_real_show_v1(struct dsthash_ent *ent, u_int8_t family,
+			       struct seq_file *s)
+{
+	struct xt_hashlimit_htable *ht = pde_data(file_inode(s->file));
+
+	spin_lock(&ent->lock);
+	/* recalculate to show accurate numbers */
+	rateinfo_recalc(ent, jiffies, ht->cfg.mode, 1);
+
+	dl_seq_print(ent, family, s);
+
+	spin_unlock(&ent->lock);
+	return seq_has_overflowed(s);
+}
+
+static int dl_seq_real_show(struct dsthash_ent *ent, u_int8_t family,
+			    struct seq_file *s)
+{
+	struct xt_hashlimit_htable *ht = pde_data(file_inode(s->file));
+
+	spin_lock(&ent->lock);
+	/* recalculate to show accurate numbers */
+	rateinfo_recalc(ent, jiffies, ht->cfg.mode, 3);
+
+	dl_seq_print(ent, family, s);
+
+	spin_unlock(&ent->lock);
+	return seq_has_overflowed(s);
+}
+
+static int dl_seq_show_v2(struct seq_file *s, void *v)
+{
+	struct xt_hashlimit_htable *htable = pde_data(file_inode(s->file));
+	unsigned int *bucket = (unsigned int *)v;
+	struct dsthash_ent *ent;
+
+	if (!hlist_empty(&htable->hash[*bucket])) {
+		hlist_for_each_entry(ent, &htable->hash[*bucket], node)
+			if (dl_seq_real_show_v2(ent, htable->family, s))
+				return -1;
+	}
+	return 0;
+}
+
+static int dl_seq_show_v1(struct seq_file *s, void *v)
+{
+	struct xt_hashlimit_htable *htable = pde_data(file_inode(s->file));
+	unsigned int *bucket = v;
+	struct dsthash_ent *ent;
+
+	if (!hlist_empty(&htable->hash[*bucket])) {
+		hlist_for_each_entry(ent, &htable->hash[*bucket], node)
+			if (dl_seq_real_show_v1(ent, htable->family, s))
+				return -1;
+	}
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dl_seq_show(struct seq_file *s, void *v)
 {
+<<<<<<< HEAD
 	struct xt_hashlimit_htable *htable = s->private;
 	unsigned int *bucket = (unsigned int *)v;
 	struct dsthash_ent *ent;
@@ -723,12 +1582,37 @@ static int dl_seq_show(struct seq_file *s, void *v)
 
 	if (!hlist_empty(&htable->hash[*bucket])) {
 		hlist_for_each_entry(ent, pos, &htable->hash[*bucket], node)
+=======
+	struct xt_hashlimit_htable *htable = pde_data(file_inode(s->file));
+	unsigned int *bucket = v;
+	struct dsthash_ent *ent;
+
+	if (!hlist_empty(&htable->hash[*bucket])) {
+		hlist_for_each_entry(ent, &htable->hash[*bucket], node)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (dl_seq_real_show(ent, htable->family, s))
 				return -1;
 	}
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static const struct seq_operations dl_seq_ops_v1 = {
+	.start = dl_seq_start,
+	.next  = dl_seq_next,
+	.stop  = dl_seq_stop,
+	.show  = dl_seq_show_v1
+};
+
+static const struct seq_operations dl_seq_ops_v2 = {
+	.start = dl_seq_start,
+	.next  = dl_seq_next,
+	.stop  = dl_seq_stop,
+	.show  = dl_seq_show_v2
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct seq_operations dl_seq_ops = {
 	.start = dl_seq_start,
 	.next  = dl_seq_next,
@@ -736,6 +1620,7 @@ static const struct seq_operations dl_seq_ops = {
 	.show  = dl_seq_show
 };
 
+<<<<<<< HEAD
 static int dl_proc_open(struct inode *inode, struct file *file)
 {
 	int ret = seq_open(file, &dl_seq_ops);
@@ -755,6 +1640,8 @@ static const struct file_operations dl_file_ops = {
 	.release = seq_release
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __net_init hashlimit_proc_net_init(struct net *net)
 {
 	struct hashlimit_net *hashlimit_net = hashlimit_pernet(net);
@@ -765,7 +1652,11 @@ static int __net_init hashlimit_proc_net_init(struct net *net)
 #if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
 	hashlimit_net->ip6t_hashlimit = proc_mkdir("ip6t_hashlimit", net->proc_net);
 	if (!hashlimit_net->ip6t_hashlimit) {
+<<<<<<< HEAD
 		proc_net_remove(net, "ipt_hashlimit");
+=======
+		remove_proc_entry("ipt_hashlimit", net->proc_net);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 #endif
@@ -774,9 +1665,29 @@ static int __net_init hashlimit_proc_net_init(struct net *net)
 
 static void __net_exit hashlimit_proc_net_exit(struct net *net)
 {
+<<<<<<< HEAD
 	proc_net_remove(net, "ipt_hashlimit");
 #if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
 	proc_net_remove(net, "ip6t_hashlimit");
+=======
+	struct xt_hashlimit_htable *hinfo;
+	struct hashlimit_net *hashlimit_net = hashlimit_pernet(net);
+
+	/* hashlimit_net_exit() is called before hashlimit_mt_destroy().
+	 * Make sure that the parent ipt_hashlimit and ip6t_hashlimit proc
+	 * entries is empty before trying to remove it.
+	 */
+	mutex_lock(&hashlimit_mutex);
+	hlist_for_each_entry(hinfo, &hashlimit_net->htables, node)
+		htable_remove_proc_entry(hinfo);
+	hashlimit_net->ipt_hashlimit = NULL;
+	hashlimit_net->ip6t_hashlimit = NULL;
+	mutex_unlock(&hashlimit_mutex);
+
+	remove_proc_entry("ipt_hashlimit", net->proc_net);
+#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
+	remove_proc_entry("ip6t_hashlimit", net->proc_net);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
@@ -790,9 +1701,12 @@ static int __net_init hashlimit_net_init(struct net *net)
 
 static void __net_exit hashlimit_net_exit(struct net *net)
 {
+<<<<<<< HEAD
 	struct hashlimit_net *hashlimit_net = hashlimit_pernet(net);
 
 	BUG_ON(!hlist_empty(&hashlimit_net->htables));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hashlimit_proc_net_exit(net);
 }
 
@@ -820,7 +1734,11 @@ static int __init hashlimit_mt_init(void)
 					    sizeof(struct dsthash_ent), 0, 0,
 					    NULL);
 	if (!hashlimit_cachep) {
+<<<<<<< HEAD
 		pr_warning("unable to create slab cache\n");
+=======
+		pr_warn("unable to create slab cache\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err2;
 	}
 	return 0;
@@ -838,7 +1756,11 @@ static void __exit hashlimit_mt_exit(void)
 	xt_unregister_matches(hashlimit_mt_reg, ARRAY_SIZE(hashlimit_mt_reg));
 	unregister_pernet_subsys(&hashlimit_net_ops);
 
+<<<<<<< HEAD
 	rcu_barrier_bh();
+=======
+	rcu_barrier();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kmem_cache_destroy(hashlimit_cachep);
 }
 

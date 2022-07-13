@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /************************************************************************
 
     AudioScience HPI driver
     Copyright (C) 1997-2011  AudioScience Inc. <support@audioscience.com>
 
+<<<<<<< HEAD
     This program is free software; you can redistribute it and/or modify
     it under the terms of version 2 of the GNU General Public License as
     published by the Free Software Foundation;
@@ -15,6 +20,8 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 Debug macro translation.
 
@@ -63,7 +70,11 @@ void hpi_debug_data(u16 *pdata, u32 len)
 	int lines;
 	int cols = 8;
 
+<<<<<<< HEAD
 	lines = (len + cols - 1) / cols;
+=======
+	lines = DIV_ROUND_UP(len, cols);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lines > 8)
 		lines = 8;
 
@@ -71,8 +82,14 @@ void hpi_debug_data(u16 *pdata, u32 len)
 		printk(KERN_DEBUG "%p:", (pdata + i));
 
 		for (k = 0; k < cols && i < len; i++, k++)
+<<<<<<< HEAD
 			printk("%s%04x", k == 0 ? "" : " ", pdata[i]);
 
 		printk("\n");
+=======
+			printk(KERN_CONT "%s%04x", k == 0 ? "" : " ", pdata[i]);
+
+		printk(KERN_CONT "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }

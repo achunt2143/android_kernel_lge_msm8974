@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2011 Freescale Semiconductor, Inc. All Rights Reserved.
  *
@@ -14,6 +15,11 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Copyright (C) 2011 Freescale Semiconductor, Inc. All Rights Reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -116,16 +122,29 @@ struct mxs_saif {
 	unsigned int mclk;
 	unsigned int mclk_in_use;
 	void __iomem *base;
+<<<<<<< HEAD
 	int irq;
 	struct mxs_pcm_dma_params dma_param;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int id;
 	unsigned int master_id;
 	unsigned int cur_rate;
 	unsigned int ongoing;
 
+<<<<<<< HEAD
 	struct platform_device *soc_platform_pdev;
 	u32 fifo_underrun;
 	u32 fifo_overrun;
+=======
+	u32 fifo_underrun;
+	u32 fifo_overrun;
+
+	enum {
+		MXS_SAIF_STATE_STOPPED,
+		MXS_SAIF_STATE_RUNNING,
+	} state;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 extern int mxs_saif_put_mclk(unsigned int saif_id);

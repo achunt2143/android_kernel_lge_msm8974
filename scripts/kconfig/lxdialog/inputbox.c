@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  inputbox.c -- implements the input box
  *
  *  ORIGINAL AUTHOR: Savio Lam (lam836@cs.cuhk.hk)
  *  MODIFIED FOR LINUX KERNEL CONFIG BY: William Roadcap (roadcap@cfw.com)
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -17,6 +22,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "dialog.h"
@@ -31,8 +38,13 @@ static void print_buttons(WINDOW * dialog, int height, int width, int selected)
 	int x = width / 2 - 11;
 	int y = height - 2;
 
+<<<<<<< HEAD
 	print_button(dialog, gettext("  Ok  "), y, x, selected == 0);
 	print_button(dialog, gettext(" Help "), y, x + 14, selected == 1);
+=======
+	print_button(dialog, "  Ok  ", y, x, selected == 0);
+	print_button(dialog, " Help ", y, x + 14, selected == 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wmove(dialog, y, x + 1 + 14 * selected);
 	wrefresh(dialog);
@@ -42,10 +54,18 @@ static void print_buttons(WINDOW * dialog, int height, int width, int selected)
  * Display a dialog box for inputing a string
  */
 int dialog_inputbox(const char *title, const char *prompt, int height, int width,
+<<<<<<< HEAD
                     const char *init)
 {
 	int i, x, y, box_y, box_x, box_width;
 	int input_x = 0, scroll = 0, key = 0, button = -1;
+=======
+		    const char *init)
+{
+	int i, x, y, box_y, box_x, box_width;
+	int input_x = 0, key = 0, button = -1;
+	int show_x, len, pos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *instr = dialog_input_result;
 	WINDOW *dialog;
 
@@ -55,6 +75,7 @@ int dialog_inputbox(const char *title, const char *prompt, int height, int width
 		strcpy(instr, init);
 
 do_resize:
+<<<<<<< HEAD
 	if (getmaxy(stdscr) <= (height - 2))
 		return -ERRDISPLAYTOOSMALL;
 	if (getmaxx(stdscr) <= (width - 2))
@@ -63,6 +84,16 @@ do_resize:
 	/* center dialog box on screen */
 	x = (COLS - width) / 2;
 	y = (LINES - height) / 2;
+=======
+	if (getmaxy(stdscr) <= (height - INPUTBOX_HEIGHT_MIN))
+		return -ERRDISPLAYTOOSMALL;
+	if (getmaxx(stdscr) <= (width - INPUTBOX_WIDTH_MIN))
+		return -ERRDISPLAYTOOSMALL;
+
+	/* center dialog box on screen */
+	x = (getmaxx(stdscr) - width) / 2;
+	y = (getmaxy(stdscr) - height) / 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	draw_shadow(stdscr, y, x, height, width);
 
@@ -97,6 +128,7 @@ do_resize:
 	wmove(dialog, box_y, box_x);
 	wattrset(dialog, dlg.inputbox.atr);
 
+<<<<<<< HEAD
 	input_x = strlen(instr);
 
 	if (input_x >= box_width) {
@@ -105,6 +137,19 @@ do_resize:
 		for (i = 0; i < box_width - 1; i++)
 			waddch(dialog, instr[scroll + i]);
 	} else {
+=======
+	len = strlen(instr);
+	pos = len;
+
+	if (len >= box_width) {
+		show_x = len - box_width + 1;
+		input_x = box_width - 1;
+		for (i = 0; i < box_width - 1; i++)
+			waddch(dialog, instr[show_x + i]);
+	} else {
+		show_x = 0;
+		input_x = len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		waddstr(dialog, instr);
 	}
 
@@ -121,6 +166,7 @@ do_resize:
 			case KEY_UP:
 			case KEY_DOWN:
 				break;
+<<<<<<< HEAD
 			case KEY_LEFT:
 				continue;
 			case KEY_RIGHT:
@@ -141,10 +187,40 @@ do_resize:
 						input_x--;
 					instr[scroll + input_x] = '\0';
 					mvwaddch(dialog, box_y, input_x + box_x, ' ');
+=======
+			case KEY_BACKSPACE:
+			case 8:   /* ^H */
+			case 127: /* ^? */
+				if (pos) {
+					wattrset(dialog, dlg.inputbox.atr);
+					if (input_x == 0) {
+						show_x--;
+					} else
+						input_x--;
+
+					if (pos < len) {
+						for (i = pos - 1; i < len; i++) {
+							instr[i] = instr[i+1];
+						}
+					}
+
+					pos--;
+					len--;
+					instr[len] = '\0';
+					wmove(dialog, box_y, box_x);
+					for (i = 0; i < box_width; i++) {
+						if (!instr[show_x + i]) {
+							waddch(dialog, ' ');
+							break;
+						}
+						waddch(dialog, instr[show_x + i]);
+					}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					wmove(dialog, box_y, input_x + box_x);
 					wrefresh(dialog);
 				}
 				continue;
+<<<<<<< HEAD
 			default:
 				if (key < 0x100 && isprint(key)) {
 					if (scroll + input_x < MAX_LEN) {
@@ -160,6 +236,76 @@ do_resize:
 							wmove(dialog, box_y, input_x++ + box_x);
 							waddch(dialog, key);
 						}
+=======
+			case KEY_LEFT:
+				if (pos > 0) {
+					if (input_x > 0) {
+						wmove(dialog, box_y, --input_x + box_x);
+					} else if (input_x == 0) {
+						show_x--;
+						wmove(dialog, box_y, box_x);
+						for (i = 0; i < box_width; i++) {
+							if (!instr[show_x + i]) {
+								waddch(dialog, ' ');
+								break;
+							}
+							waddch(dialog, instr[show_x + i]);
+						}
+						wmove(dialog, box_y, box_x);
+					}
+					pos--;
+				}
+				continue;
+			case KEY_RIGHT:
+				if (pos < len) {
+					if (input_x < box_width - 1) {
+						wmove(dialog, box_y, ++input_x + box_x);
+					} else if (input_x == box_width - 1) {
+						show_x++;
+						wmove(dialog, box_y, box_x);
+						for (i = 0; i < box_width; i++) {
+							if (!instr[show_x + i]) {
+								waddch(dialog, ' ');
+								break;
+							}
+							waddch(dialog, instr[show_x + i]);
+						}
+						wmove(dialog, box_y, input_x + box_x);
+					}
+					pos++;
+				}
+				continue;
+			default:
+				if (key < 0x100 && isprint(key)) {
+					if (len < MAX_LEN) {
+						wattrset(dialog, dlg.inputbox.atr);
+						if (pos < len) {
+							for (i = len; i > pos; i--)
+								instr[i] = instr[i-1];
+							instr[pos] = key;
+						} else {
+							instr[len] = key;
+						}
+						pos++;
+						len++;
+						instr[len] = '\0';
+
+						if (input_x == box_width - 1) {
+							show_x++;
+						} else {
+							input_x++;
+						}
+
+						wmove(dialog, box_y, box_x);
+						for (i = 0; i < box_width; i++) {
+							if (!instr[show_x + i]) {
+								waddch(dialog, ' ');
+								break;
+							}
+							waddch(dialog, instr[show_x + i]);
+						}
+						wmove(dialog, box_y, input_x + box_x);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						wrefresh(dialog);
 					} else
 						flash();	/* Alarm user about overflow */

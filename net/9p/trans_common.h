@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright IBM Corporation, 2010
  * Author Venkateswararao Jujjuri <jvrao@linux.vnet.ibm.com>
@@ -15,3 +16,12 @@
 void p9_release_pages(struct page **, int);
 int p9_payload_gup(char *, int *, struct page **, int);
 int p9_nr_pages(char *, int);
+=======
+/* SPDX-License-Identifier: LGPL-2.1 */
+/*
+ * Copyright IBM Corporation, 2010
+ * Author Venkateswararao Jujjuri <jvrao@linux.vnet.ibm.com>
+ */
+
+void p9_release_pages(struct page **pages, int nr_pages);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

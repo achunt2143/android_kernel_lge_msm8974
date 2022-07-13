@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * Author	Karsten Keil <kkeil@novell.com>
  *
  * Copyright 2008  by Karsten Keil <kkeil@novell.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -13,6 +18,8 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/mISDNif.h>
@@ -58,6 +65,11 @@ enum {
 	EV_L1_DEACTIVATE,
 	EV_L2_T200,
 	EV_L2_T203,
+<<<<<<< HEAD
+=======
+	EV_L2_T200I,
+	EV_L2_T203I,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	EV_L2_SET_OWN_BUSY,
 	EV_L2_CLEAR_OWN_BUSY,
 	EV_L2_FRAME_ERROR,
@@ -86,6 +98,11 @@ static char *strL2Event[] =
 	"EV_L1_DEACTIVATE",
 	"EV_L2_T200",
 	"EV_L2_T203",
+<<<<<<< HEAD
+=======
+	"EV_L2_T200I",
+	"EV_L2_T203I",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"EV_L2_SET_OWN_BUSY",
 	"EV_L2_CLEAR_OWN_BUSY",
 	"EV_L2_FRAME_ERROR",
@@ -106,8 +123,13 @@ l2m_debug(struct FsmInst *fi, char *fmt, ...)
 	vaf.fmt = fmt;
 	vaf.va = &va;
 
+<<<<<<< HEAD
 	printk(KERN_DEBUG "l2 (sapi %d tei %d): %pV\n",
 	       l2->sapi, l2->tei, &vaf);
+=======
+	printk(KERN_DEBUG "%s l2 (sapi %d tei %d): %pV\n",
+	       mISDNDevName4ch(&l2->ch), l2->sapi, l2->tei, &vaf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	va_end(va);
 }
@@ -150,7 +172,12 @@ l2up(struct layer2 *l2, u_int prim, struct sk_buff *skb)
 	mISDN_HEAD_ID(skb) = (l2->ch.nr << 16) | l2->ch.addr;
 	err = l2->up->send(l2->up, skb);
 	if (err) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: err=%d\n", __func__, err);
+=======
+		printk(KERN_WARNING "%s: dev %s err=%d\n", __func__,
+		       mISDNDevName4ch(&l2->ch), err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb(skb);
 	}
 }
@@ -171,10 +198,18 @@ l2up_create(struct layer2 *l2, u_int prim, int len, void *arg)
 	hh->prim = prim;
 	hh->id = (l2->ch.nr << 16) | l2->ch.addr;
 	if (len)
+<<<<<<< HEAD
 		memcpy(skb_put(skb, len), arg, len);
 	err = l2->up->send(l2->up, skb);
 	if (err) {
 		printk(KERN_WARNING "%s: err=%d\n", __func__, err);
+=======
+		skb_put_data(skb, arg, len);
+	err = l2->up->send(l2->up, skb);
+	if (err) {
+		printk(KERN_WARNING "%s: dev %s err=%d\n", __func__,
+		       mISDNDevName4ch(&l2->ch), err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb(skb);
 	}
 }
@@ -185,7 +220,12 @@ l2down_skb(struct layer2 *l2, struct sk_buff *skb) {
 
 	ret = l2->ch.recv(l2->ch.peer, skb);
 	if (ret && (*debug & DEBUG_L2_RECV))
+<<<<<<< HEAD
 		printk(KERN_DEBUG "l2down_skb: ret(%d)\n", ret);
+=======
+		printk(KERN_DEBUG "l2down_skb: dev %s ret(%d)\n",
+		       mISDNDevName4ch(&l2->ch), ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -228,7 +268,11 @@ l2down_create(struct layer2 *l2, u_int prim, u_int id, int len, void *arg)
 	hh->prim = prim;
 	hh->id = id;
 	if (len)
+<<<<<<< HEAD
 		memcpy(skb_put(skb, len), arg, len);
+=======
+		skb_put_data(skb, arg, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = l2down_raw(l2, skb);
 	if (err)
 		dev_kfree_skb(skb);
@@ -276,12 +320,45 @@ ph_data_confirm(struct layer2 *l2, struct mISDNhead *hh, struct sk_buff *skb) {
 	return ret;
 }
 
+<<<<<<< HEAD
+=======
+static void
+l2_timeout(struct FsmInst *fi, int event, void *arg)
+{
+	struct layer2 *l2 = fi->userdata;
+	struct sk_buff *skb;
+	struct mISDNhead *hh;
+
+	skb = mI_alloc_skb(0, GFP_ATOMIC);
+	if (!skb) {
+		printk(KERN_WARNING "%s: L2(%d,%d) nr:%x timer %s no skb\n",
+		       mISDNDevName4ch(&l2->ch), l2->sapi, l2->tei,
+		       l2->ch.nr, event == EV_L2_T200 ? "T200" : "T203");
+		return;
+	}
+	hh = mISDN_HEAD_P(skb);
+	hh->prim = event == EV_L2_T200 ? DL_TIMER200_IND : DL_TIMER203_IND;
+	hh->id = l2->ch.nr;
+	if (*debug & DEBUG_TIMER)
+		printk(KERN_DEBUG "%s: L2(%d,%d) nr:%x timer %s expired\n",
+		       mISDNDevName4ch(&l2->ch), l2->sapi, l2->tei,
+		       l2->ch.nr, event == EV_L2_T200 ? "T200" : "T203");
+	if (l2->ch.st)
+		l2->ch.st->own.recv(&l2->ch.st->own, skb);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 l2mgr(struct layer2 *l2, u_int prim, void *arg) {
 	long c = (long)arg;
 
+<<<<<<< HEAD
 	printk(KERN_WARNING
 	       "l2mgr: addr:%x prim %x %c\n", l2->id, prim, (char)c);
+=======
+	printk(KERN_WARNING "l2mgr: dev %s addr:%x prim %x %c\n",
+	       mISDNDevName4ch(&l2->ch), l2->id, prim, (char)c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_bit(FLG_LAPD, &l2->flag) &&
 	    !test_bit(FLG_FIXED_TEI, &l2->flag)) {
 		switch (c) {
@@ -603,12 +680,21 @@ send_uframe(struct layer2 *l2, struct sk_buff *skb, u_char cmd, u_char cr)
 	else {
 		skb = mI_alloc_skb(i, GFP_ATOMIC);
 		if (!skb) {
+<<<<<<< HEAD
 			printk(KERN_WARNING "%s: can't alloc skbuff\n",
 			       __func__);
 			return;
 		}
 	}
 	memcpy(skb_put(skb, i), tmp, i);
+=======
+			printk(KERN_WARNING "%s: can't alloc skbuff in %s\n",
+			       mISDNDevName4ch(&l2->ch), __func__);
+			return;
+		}
+	}
+	skb_put_data(skb, tmp, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enqueue_super(l2, skb);
 }
 
@@ -877,8 +963,12 @@ l2_disconnect(struct FsmInst *fi, int event, void *arg)
 	send_uframe(l2, NULL, DISC | 0x10, CMD);
 	mISDN_FsmDelTimer(&l2->t203, 1);
 	restart_t200(l2, 2);
+<<<<<<< HEAD
 	if (skb)
 		dev_kfree_skb(skb);
+=======
+	dev_kfree_skb(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1089,11 +1179,19 @@ enquiry_cr(struct layer2 *l2, u_char typ, u_char cr, u_char pf)
 		tmp[i++] = (l2->vr << 5) | typ | (pf ? 0x10 : 0);
 	skb = mI_alloc_skb(i, GFP_ATOMIC);
 	if (!skb) {
+<<<<<<< HEAD
 		printk(KERN_WARNING
 		       "isdnl2 can't alloc sbbuff for enquiry_cr\n");
 		return;
 	}
 	memcpy(skb_put(skb, i), tmp, i);
+=======
+		printk(KERN_WARNING "%s: isdnl2 can't alloc sbbuff in %s\n",
+		       mISDNDevName4ch(&l2->ch), __func__);
+		return;
+	}
+	skb_put_data(skb, tmp, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enqueue_super(l2, skb);
 }
 
@@ -1150,7 +1248,11 @@ invoke_retransmission(struct layer2 *l2, unsigned int nr)
 			else
 				printk(KERN_WARNING
 				       "%s: windowar[%d] is NULL\n",
+<<<<<<< HEAD
 				       __func__, p1);
+=======
+				       mISDNDevName4ch(&l2->ch), p1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			l2->windowar[p1] = NULL;
 		}
 		mISDN_FsmEvent(&l2->l2m, EV_L2_ACK_PULL, NULL);
@@ -1444,7 +1546,11 @@ static void
 l2_pull_iqueue(struct FsmInst *fi, int event, void *arg)
 {
 	struct layer2	*l2 = fi->userdata;
+<<<<<<< HEAD
 	struct sk_buff	*skb, *nskb, *oskb;
+=======
+	struct sk_buff	*skb, *nskb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u_char		header[MAX_L2HEADER_LEN];
 	u_int		i, p1;
 
@@ -1454,6 +1560,7 @@ l2_pull_iqueue(struct FsmInst *fi, int event, void *arg)
 	skb = skb_dequeue(&l2->i_queue);
 	if (!skb)
 		return;
+<<<<<<< HEAD
 
 	if (test_bit(FLG_MOD128, &l2->flag))
 		p1 = (l2->vs - l2->va) % 128;
@@ -1466,10 +1573,13 @@ l2_pull_iqueue(struct FsmInst *fi, int event, void *arg)
 		dev_kfree_skb(l2->windowar[p1]);
 	}
 	l2->windowar[p1] = skb;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	i = sethdraddr(l2, header, CMD);
 	if (test_bit(FLG_MOD128, &l2->flag)) {
 		header[i++] = l2->vs << 1;
 		header[i++] = l2->vr << 1;
+<<<<<<< HEAD
 		l2->vs = (l2->vs + 1) % 128;
 	} else {
 		header[i++] = (l2->vr << 5) | (l2->vs << 1);
@@ -1494,6 +1604,32 @@ l2_pull_iqueue(struct FsmInst *fi, int event, void *arg)
 		memcpy(skb_put(nskb, oskb->len), oskb->data, oskb->len);
 		dev_kfree_skb(oskb);
 	}
+=======
+	} else
+		header[i++] = (l2->vr << 5) | (l2->vs << 1);
+	nskb = skb_realloc_headroom(skb, i);
+	if (!nskb) {
+		printk(KERN_WARNING "%s: no headroom(%d) copy for IFrame\n",
+		       mISDNDevName4ch(&l2->ch), i);
+		skb_queue_head(&l2->i_queue, skb);
+		return;
+	}
+	if (test_bit(FLG_MOD128, &l2->flag)) {
+		p1 = (l2->vs - l2->va) % 128;
+		l2->vs = (l2->vs + 1) % 128;
+	} else {
+		p1 = (l2->vs - l2->va) % 8;
+		l2->vs = (l2->vs + 1) % 8;
+	}
+	p1 = (p1 + l2->sow) % l2->window;
+	if (l2->windowar[p1]) {
+		printk(KERN_WARNING "%s: l2 try overwrite ack queue entry %d\n",
+		       mISDNDevName4ch(&l2->ch), p1);
+		dev_kfree_skb(l2->windowar[p1]);
+	}
+	l2->windowar[p1] = skb;
+	memcpy(skb_push(nskb, i), header, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	l2down(l2, PH_DATA_REQ, l2_newid(l2), nskb);
 	test_and_clear_bit(FLG_ACK_PEND, &l2->flag);
 	if (!test_and_set_bit(FLG_T200_RUN, &l2->flag)) {
@@ -1711,8 +1847,12 @@ l2_set_own_busy(struct FsmInst *fi, int event, void *arg)
 		enquiry_cr(l2, RNR, RSP, 0);
 		test_and_clear_bit(FLG_ACK_PEND, &l2->flag);
 	}
+<<<<<<< HEAD
 	if (skb)
 		dev_kfree_skb(skb);
+=======
+	dev_kfree_skb(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1725,8 +1865,12 @@ l2_clear_own_busy(struct FsmInst *fi, int event, void *arg)
 		enquiry_cr(l2, RR, RSP, 0);
 		test_and_clear_bit(FLG_ACK_PEND, &l2->flag);
 	}
+<<<<<<< HEAD
 	if (skb)
 		dev_kfree_skb(skb);
+=======
+	dev_kfree_skb(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -1814,11 +1958,24 @@ static struct FsmNode L2FnList[] =
 	{ST_L2_8, EV_L2_SUPER, l2_st8_got_super},
 	{ST_L2_7, EV_L2_I, l2_got_iframe},
 	{ST_L2_8, EV_L2_I, l2_got_iframe},
+<<<<<<< HEAD
 	{ST_L2_5, EV_L2_T200, l2_st5_tout_200},
 	{ST_L2_6, EV_L2_T200, l2_st6_tout_200},
 	{ST_L2_7, EV_L2_T200, l2_st7_tout_200},
 	{ST_L2_8, EV_L2_T200, l2_st8_tout_200},
 	{ST_L2_7, EV_L2_T203, l2_st7_tout_203},
+=======
+	{ST_L2_5, EV_L2_T200, l2_timeout},
+	{ST_L2_6, EV_L2_T200, l2_timeout},
+	{ST_L2_7, EV_L2_T200, l2_timeout},
+	{ST_L2_8, EV_L2_T200, l2_timeout},
+	{ST_L2_7, EV_L2_T203, l2_timeout},
+	{ST_L2_5, EV_L2_T200I, l2_st5_tout_200},
+	{ST_L2_6, EV_L2_T200I, l2_st6_tout_200},
+	{ST_L2_7, EV_L2_T200I, l2_st7_tout_200},
+	{ST_L2_8, EV_L2_T200I, l2_st8_tout_200},
+	{ST_L2_7, EV_L2_T203I, l2_st7_tout_203},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ST_L2_7, EV_L2_ACK_PULL, l2_pull_iqueue},
 	{ST_L2_7, EV_L2_SET_OWN_BUSY, l2_set_own_busy},
 	{ST_L2_8, EV_L2_SET_OWN_BUSY, l2_set_own_busy},
@@ -1858,7 +2015,12 @@ ph_data_indication(struct layer2 *l2, struct mISDNhead *hh, struct sk_buff *skb)
 		ptei = *datap++;
 		if ((psapi & 1) || !(ptei & 1)) {
 			printk(KERN_WARNING
+<<<<<<< HEAD
 			       "l2 D-channel frame wrong EA0/EA1\n");
+=======
+			       "%s l2 D-channel frame wrong EA0/EA1\n",
+			       mISDNDevName4ch(&l2->ch));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return ret;
 		}
 		psapi >>= 2;
@@ -1867,7 +2029,12 @@ ph_data_indication(struct layer2 *l2, struct mISDNhead *hh, struct sk_buff *skb)
 			/* not our business */
 			if (*debug & DEBUG_L2)
 				printk(KERN_DEBUG "%s: sapi %d/%d mismatch\n",
+<<<<<<< HEAD
 				       __func__, psapi, l2->sapi);
+=======
+				       mISDNDevName4ch(&l2->ch), psapi,
+				       l2->sapi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(skb);
 			return 0;
 		}
@@ -1875,7 +2042,11 @@ ph_data_indication(struct layer2 *l2, struct mISDNhead *hh, struct sk_buff *skb)
 			/* not our business */
 			if (*debug & DEBUG_L2)
 				printk(KERN_DEBUG "%s: tei %d/%d mismatch\n",
+<<<<<<< HEAD
 				       __func__, ptei, l2->tei);
+=======
+				       mISDNDevName4ch(&l2->ch), ptei, l2->tei);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb(skb);
 			return 0;
 		}
@@ -1916,7 +2087,12 @@ ph_data_indication(struct layer2 *l2, struct mISDNhead *hh, struct sk_buff *skb)
 	} else
 		c = 'L';
 	if (c) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "l2 D-channel frame error %c\n", c);
+=======
+		printk(KERN_WARNING "%s:l2 D-channel frame error %c\n",
+		       mISDNDevName4ch(&l2->ch), c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mISDN_FsmEvent(&l2->l2m, EV_L2_FRAME_ERROR, (void *)(long)c);
 	}
 	return ret;
@@ -1930,8 +2106,22 @@ l2_send(struct mISDNchannel *ch, struct sk_buff *skb)
 	int			ret = -EINVAL;
 
 	if (*debug & DEBUG_L2_RECV)
+<<<<<<< HEAD
 		printk(KERN_DEBUG "%s: prim(%x) id(%x) sapi(%d) tei(%d)\n",
 		       __func__, hh->prim, hh->id, l2->sapi, l2->tei);
+=======
+		printk(KERN_DEBUG "%s: %s prim(%x) id(%x) sapi(%d) tei(%d)\n",
+		       __func__, mISDNDevName4ch(&l2->ch), hh->prim, hh->id,
+		       l2->sapi, l2->tei);
+	if (hh->prim == DL_INTERN_MSG) {
+		struct mISDNhead *chh = hh + 1; /* saved copy */
+
+		*hh = *chh;
+		if (*debug & DEBUG_L2_RECV)
+			printk(KERN_DEBUG "%s: prim(%x) id(%x) internal msg\n",
+				mISDNDevName4ch(&l2->ch), hh->prim, hh->id);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (hh->prim) {
 	case PH_DATA_IND:
 		ret = ph_data_indication(l2, hh, skb);
@@ -1987,6 +2177,15 @@ l2_send(struct mISDNchannel *ch, struct sk_buff *skb)
 		ret = mISDN_FsmEvent(&l2->l2m, EV_L2_DL_RELEASE_REQ,
 				     skb);
 		break;
+<<<<<<< HEAD
+=======
+	case DL_TIMER200_IND:
+		mISDN_FsmEvent(&l2->l2m, EV_L2_T200I, NULL);
+		break;
+	case DL_TIMER203_IND:
+		mISDN_FsmEvent(&l2->l2m, EV_L2_T203I, NULL);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		if (*debug & DEBUG_L2)
 			l2m_debug(&l2->l2m, "l2 unknown pr %04x",
@@ -2005,7 +2204,12 @@ tei_l2(struct layer2 *l2, u_int cmd, u_long arg)
 	int		ret = -EINVAL;
 
 	if (*debug & DEBUG_L2_TEI)
+<<<<<<< HEAD
 		printk(KERN_DEBUG "%s: cmd(%x)\n", __func__, cmd);
+=======
+		printk(KERN_DEBUG "%s: cmd(%x) in %s\n",
+		       mISDNDevName4ch(&l2->ch), cmd, __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (cmd) {
 	case (MDL_ASSIGN_REQ):
 		ret = mISDN_FsmEvent(&l2->l2m, EV_L2_MDL_ASSIGN, (void *)arg);
@@ -2018,7 +2222,12 @@ tei_l2(struct layer2 *l2, u_int cmd, u_long arg)
 		break;
 	case (MDL_ERROR_RSP):
 		/* ETS 300-125 5.3.2.1 Test: TC13010 */
+<<<<<<< HEAD
 		printk(KERN_NOTICE "MDL_ERROR|REQ (tei_l2)\n");
+=======
+		printk(KERN_NOTICE "%s: MDL_ERROR|REQ (tei_l2)\n",
+		       mISDNDevName4ch(&l2->ch));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = mISDN_FsmEvent(&l2->l2m, EV_L2_MDL_ERROR, NULL);
 		break;
 	}
@@ -2050,7 +2259,12 @@ l2_ctrl(struct mISDNchannel *ch, u_int cmd, void *arg)
 	u_int			info;
 
 	if (*debug & DEBUG_L2_CTRL)
+<<<<<<< HEAD
 		printk(KERN_DEBUG "%s:(%x)\n", __func__, cmd);
+=======
+		printk(KERN_DEBUG "%s: %s cmd(%x)\n",
+		       mISDNDevName4ch(ch), __func__, cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (cmd) {
 	case OPEN_CHANNEL:
@@ -2162,7 +2376,11 @@ create_l2(struct mISDNchannel *ch, u_int protocol, u_long options, int tei,
 	InitWin(l2);
 	l2->l2m.fsm = &l2fsm;
 	if (test_bit(FLG_LAPB, &l2->flag) ||
+<<<<<<< HEAD
 	    test_bit(FLG_PTP, &l2->flag) ||
+=======
+	    test_bit(FLG_FIXED_TEI, &l2->flag) ||
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    test_bit(FLG_LAPD_NET, &l2->flag))
 		l2->l2m.state = ST_L2_4;
 	else
@@ -2201,15 +2419,35 @@ static struct Bprotocol X75SLP = {
 int
 Isdnl2_Init(u_int *deb)
 {
+<<<<<<< HEAD
+=======
+	int res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	debug = deb;
 	mISDN_register_Bprotocol(&X75SLP);
 	l2fsm.state_count = L2_STATE_COUNT;
 	l2fsm.event_count = L2_EVENT_COUNT;
 	l2fsm.strEvent = strL2Event;
 	l2fsm.strState = strL2State;
+<<<<<<< HEAD
 	mISDN_FsmNew(&l2fsm, L2FnList, ARRAY_SIZE(L2FnList));
 	TEIInit(deb);
 	return 0;
+=======
+	res = mISDN_FsmNew(&l2fsm, L2FnList, ARRAY_SIZE(L2FnList));
+	if (res)
+		goto error;
+	res = TEIInit(deb);
+	if (res)
+		goto error_fsm;
+	return 0;
+
+error_fsm:
+	mISDN_FsmFree(&l2fsm);
+error:
+	mISDN_unregister_Bprotocol(&X75SLP);
+	return res;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void

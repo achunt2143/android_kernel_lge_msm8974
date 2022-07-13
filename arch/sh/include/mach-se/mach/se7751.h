@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_HITACHI_7751SE_H
 #define __ASM_SH_HITACHI_7751SE_H
 
@@ -11,6 +15,10 @@
  * Modified for 7751 Solution Engine by
  * Ian da Silva and Jeremy Siegel, 2001.
  */
+<<<<<<< HEAD
+=======
+#include <linux/sh_intc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Box specific addresses.  */
 
@@ -63,7 +71,11 @@
 #define BCR_ILCRF	(PA_BCR + 10)
 #define BCR_ILCRG	(PA_BCR + 12)
 
+<<<<<<< HEAD
 #define IRQ_79C973	13
+=======
+#define IRQ_79C973	evt2irq(0x3a0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void init_7751se_IRQ(void);
 

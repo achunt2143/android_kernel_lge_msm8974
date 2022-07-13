@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Sun3 i82586 Ethernet driver
  *
@@ -29,6 +33,10 @@ static int rfdadd = 0; /* rfdadd=1 may be better for 8K MEM cards */
 static int fifo=0x8;	/* don't change */
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/errno.h>
 #include <linux/ioport.h>
@@ -121,10 +129,18 @@ static int     sun3_82586_probe1(struct net_device *dev,int ioaddr);
 static irqreturn_t sun3_82586_interrupt(int irq,void *dev_id);
 static int     sun3_82586_open(struct net_device *dev);
 static int     sun3_82586_close(struct net_device *dev);
+<<<<<<< HEAD
 static int     sun3_82586_send_packet(struct sk_buff *,struct net_device *);
 static struct  net_device_stats *sun3_82586_get_stats(struct net_device *dev);
 static void    set_multicast_list(struct net_device *dev);
 static void    sun3_82586_timeout(struct net_device *dev);
+=======
+static netdev_tx_t     sun3_82586_send_packet(struct sk_buff *,
+					      struct net_device *);
+static struct  net_device_stats *sun3_82586_get_stats(struct net_device *dev);
+static void    set_multicast_list(struct net_device *dev);
+static void    sun3_82586_timeout(struct net_device *dev, unsigned int txqueue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if 0
 static void    sun3_82586_dump(struct net_device *,void *);
 #endif
@@ -275,7 +291,11 @@ static void alloc586(struct net_device *dev)
 	memset((char *)p->scb,0,sizeof(struct scb_struct));
 }
 
+<<<<<<< HEAD
 struct net_device * __init sun3_82586_probe(int unit)
+=======
+static int __init sun3_82586_probe(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	unsigned long ioaddr;
@@ -290,6 +310,7 @@ struct net_device * __init sun3_82586_probe(int unit)
 		break;
 
 	default:
+<<<<<<< HEAD
 		return ERR_PTR(-ENODEV);
 	}
 
@@ -299,16 +320,30 @@ struct net_device * __init sun3_82586_probe(int unit)
 	ioaddr = (unsigned long)ioremap(IE_OBIO, SUN3_82586_TOTAL_SIZE);
 	if (!ioaddr)
 		return ERR_PTR(-ENOMEM);
+=======
+		return -ENODEV;
+	}
+
+	if (found)
+		return -ENODEV;
+
+	ioaddr = (unsigned long)ioremap(IE_OBIO, SUN3_82586_TOTAL_SIZE);
+	if (!ioaddr)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	found = 1;
 
 	dev = alloc_etherdev(sizeof(struct priv));
 	if (!dev)
 		goto out;
+<<<<<<< HEAD
 	if (unit >= 0) {
 		sprintf(dev->name, "eth%d", unit);
 		netdev_boot_setup_check(dev);
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->irq = IE_IRQ;
 	dev->base_addr = ioaddr;
 	err = sun3_82586_probe1(dev, ioaddr);
@@ -317,7 +352,11 @@ struct net_device * __init sun3_82586_probe(int unit)
 	err = register_netdev(dev);
 	if (err)
 		goto out2;
+<<<<<<< HEAD
 	return dev;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out2:
 	release_region(ioaddr, SUN3_82586_TOTAL_SIZE);
@@ -325,8 +364,14 @@ out1:
 	free_netdev(dev);
 out:
 	iounmap((void __iomem *)ioaddr);
+<<<<<<< HEAD
 	return ERR_PTR(err);
 }
+=======
+	return err;
+}
+module_init(sun3_82586_probe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct net_device_ops sun3_82586_netdev_ops = {
 	.ndo_open		= sun3_82586_open,
@@ -337,19 +382,30 @@ static const struct net_device_ops sun3_82586_netdev_ops = {
 	.ndo_get_stats		= sun3_82586_get_stats,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= eth_mac_addr,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init sun3_82586_probe1(struct net_device *dev,int ioaddr)
 {
+<<<<<<< HEAD
 	int i, size, retval;
+=======
+	int size, retval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!request_region(ioaddr, SUN3_82586_TOTAL_SIZE, DRV_NAME))
 		return -EBUSY;
 
 	/* copy in the ethernet address from the prom */
+<<<<<<< HEAD
 	for(i = 0; i < 6 ; i++)
 	     dev->dev_addr[i] = idprom->id_ethaddr[i];
+=======
+	eth_hw_addr_set(dev, idprom->id_ethaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk("%s: SUN3 Intel 82586 found at %lx, ",dev->name,dev->base_addr);
 
@@ -464,7 +520,11 @@ static int init586(struct net_device *dev)
 	ias_cmd->cmd_cmd	= swab16(CMD_IASETUP | CMD_LAST);
 	ias_cmd->cmd_link	= 0xffff;
 
+<<<<<<< HEAD
 	memcpy((char *)&ias_cmd->iaddr,(char *) dev->dev_addr,ETH_ALEN);
+=======
+	memcpy((char *)&ias_cmd->iaddr,(const char *) dev->dev_addr,ETH_ALEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	p->scb->cbl_offset = make16(ias_cmd);
 
@@ -571,7 +631,11 @@ static int init586(struct net_device *dev)
 	}
 #endif
 
+<<<<<<< HEAD
 	ptr = alloc_rfa(dev,(void *)ptr); /* init receive-frame-area */
+=======
+	ptr = alloc_rfa(dev,ptr); /* init receive-frame-area */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * alloc xmit-buffs / init xmit_cmds
@@ -584,7 +648,11 @@ static int init586(struct net_device *dev)
 		ptr = (char *) ptr + XMIT_BUFF_SIZE;
 		p->xmit_buffs[i] = (struct tbd_struct *)ptr; /* TBD */
 		ptr = (char *) ptr + sizeof(struct tbd_struct);
+<<<<<<< HEAD
 		if((void *)ptr > (void *)dev->mem_end)
+=======
+		if(ptr > (void *)dev->mem_end)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		{
 			printk("%s: not enough shared-mem for your configuration!\n",dev->name);
 			return 1;
@@ -965,7 +1033,11 @@ static void startrecv586(struct net_device *dev)
 	WAIT_4_SCB_CMD_RUC();	/* wait for accept cmd. (no timeout!!) */
 }
 
+<<<<<<< HEAD
 static void sun3_82586_timeout(struct net_device *dev)
+=======
+static void sun3_82586_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct priv *p = netdev_priv(dev);
 #ifndef NO_NOPCOMMANDS
@@ -983,27 +1055,44 @@ static void sun3_82586_timeout(struct net_device *dev)
 		p->scb->cmd_cuc = CUC_START;
 		sun3_attn586();
 		WAIT_4_SCB_CMD();
+<<<<<<< HEAD
 		dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+		netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 #endif
 	{
 #ifdef DEBUG
 		printk("%s: xmitter timed out, try to restart! stat: %02x\n",dev->name,p->scb->cus);
+<<<<<<< HEAD
 		printk("%s: command-stats: %04x %04x\n",dev->name,swab16(p->xmit_cmds[0]->cmd_status),swab16(p->xmit_cmds[1]->cmd_status));
+=======
+		printk("%s: command-stats: %04x\n", dev->name, swab16(p->xmit_cmds[0]->cmd_status));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk("%s: check, whether you set the right interrupt number!\n",dev->name);
 #endif
 		sun3_82586_close(dev);
 		sun3_82586_open(dev);
 	}
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /******************************************************
  * send frame
  */
 
+<<<<<<< HEAD
 static int sun3_82586_send_packet(struct sk_buff *skb, struct net_device *dev)
+=======
+static netdev_tx_t
+sun3_82586_send_packet(struct sk_buff *skb, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int len,i;
 #ifndef NO_NOPCOMMANDS

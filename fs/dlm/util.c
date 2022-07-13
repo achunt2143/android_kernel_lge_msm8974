@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 *******************************************************************************
 **
 **  Copyright (C) 2005-2008 Red Hat, Inc.  All rights reserved.
 **
+<<<<<<< HEAD
 **  This copyrighted material is made available to anyone wishing to use,
 **  modify, copy, or redistribute it subject to the terms and conditions
 **  of the GNU General Public License v.2.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **
 *******************************************************************************
 ******************************************************************************/
@@ -22,6 +29,7 @@
 #define DLM_ERRNO_ETIMEDOUT	       110
 #define DLM_ERRNO_EINPROGRESS	       115
 
+<<<<<<< HEAD
 static void header_out(struct dlm_header *hd)
 {
 	hd->h_version		= cpu_to_le32(hd->h_version);
@@ -42,6 +50,12 @@ static void header_in(struct dlm_header *hd)
    one set of values for on the wire */
 
 static int to_dlm_errno(int err)
+=======
+/* higher errno values are inconsistent across architectures, so select
+   one set of values for on the wire */
+
+int to_dlm_errno(int err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (err) {
 	case -EDEADLK:
@@ -62,7 +76,11 @@ static int to_dlm_errno(int err)
 	return err;
 }
 
+<<<<<<< HEAD
 static int from_dlm_errno(int err)
+=======
+int from_dlm_errno(int err)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	switch (err) {
 	case -DLM_ERRNO_EDEADLK:
@@ -82,6 +100,7 @@ static int from_dlm_errno(int err)
 	}
 	return err;
 }
+<<<<<<< HEAD
 
 void dlm_message_out(struct dlm_message *ms)
 {
@@ -152,3 +171,5 @@ void dlm_rcom_in(struct dlm_rcom *rc)
 	rc->rc_seq		= le64_to_cpu(rc->rc_seq);
 	rc->rc_seq_reply	= le64_to_cpu(rc->rc_seq_reply);
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

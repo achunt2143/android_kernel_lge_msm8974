@@ -1,12 +1,23 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * H.323 connection tracking helper
  *
  * Copyright (c) 2006 Jing Min Zhao <zhaojingmin@users.sourceforge.net>
+<<<<<<< HEAD
  *
  * This source code is licensed under General Public License version 2.
  *
  * Based on the 'brute force' H.323 connection tracking module by
  * Jozsef Kadlecsik <kadlec@blackhole.kfki.hu>
+=======
+ * Copyright (c) 2006-2012 Patrick McHardy <kaber@trash.net>
+ *
+ * Based on the 'brute force' H.323 connection tracking module by
+ * Jozsef Kadlecsik <kadlec@netfilter.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * For more information, please see http://nath323.sourceforge.net/
  */
@@ -23,6 +34,10 @@
 #include <linux/skbuff.h>
 #include <net/route.h>
 #include <net/ip6_route.h>
+<<<<<<< HEAD
+=======
+#include <linux/netfilter_ipv6.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/netfilter/nf_conntrack.h>
 #include <net/netfilter/nf_conntrack_core.h>
@@ -33,6 +48,11 @@
 #include <net/netfilter/nf_conntrack_zones.h>
 #include <linux/netfilter/nf_conntrack_h323.h>
 
+<<<<<<< HEAD
+=======
+#define H323_MAX_SIZE 65535
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Parameters */
 static unsigned int default_rrq_ttl __read_mostly = 300;
 module_param(default_rrq_ttl, uint, 0600);
@@ -48,6 +68,7 @@ MODULE_PARM_DESC(callforward_filter, "only create call forwarding expectations "
 				     "if both endpoints are on different sides "
 				     "(determined by routing information)");
 
+<<<<<<< HEAD
 /* Hooks for NAT */
 int (*set_h245_addr_hook) (struct sk_buff *skb, unsigned int protoff,
 			   unsigned char **data, int dataoff,
@@ -106,6 +127,10 @@ int (*nat_q931_hook) (struct sk_buff *skb,
 		      unsigned char **data, TransportAddress *taddr, int idx,
 		      __be16 port, struct nf_conntrack_expect *exp)
 		      __read_mostly;
+=======
+const struct nfct_h323_nat_hooks __rcu *nfct_h323_nat_hook __read_mostly;
+EXPORT_SYMBOL_GPL(nfct_h323_nat_hook);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_SPINLOCK(nf_h323_lock);
 static char *h323_buffer;
@@ -114,7 +139,10 @@ static struct nf_conntrack_helper nf_conntrack_helper_h245;
 static struct nf_conntrack_helper nf_conntrack_helper_q931[];
 static struct nf_conntrack_helper nf_conntrack_helper_ras[];
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int get_tpkt_data(struct sk_buff *skb, unsigned int protoff,
 			 struct nf_conn *ct, enum ip_conntrack_info ctinfo,
 			 unsigned char **data, int *datalen, int *dataoff)
@@ -142,11 +170,22 @@ static int get_tpkt_data(struct sk_buff *skb, unsigned int protoff,
 	if (tcpdatalen <= 0)	/* No TCP data */
 		goto clear_out;
 
+<<<<<<< HEAD
+=======
+	if (tcpdatalen > H323_MAX_SIZE)
+		tcpdatalen = H323_MAX_SIZE;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (*data == NULL) {	/* first TPKT */
 		/* Get first TPKT pointer */
 		tpkt = skb_header_pointer(skb, tcpdataoff, tcpdatalen,
 					  h323_buffer);
+<<<<<<< HEAD
 		BUG_ON(tpkt == NULL);
+=======
+		if (!tpkt)
+			goto clear_out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Validate TPKT identifier */
 		if (tcpdatalen < 4 || tpkt[0] != 0x03 || tpkt[1] != 0) {
@@ -193,7 +232,11 @@ static int get_tpkt_data(struct sk_buff *skb, unsigned int protoff,
 		if (tcpdatalen == 4) {	/* Separate TPKT header */
 			/* Netmeeting sends TPKT header and data separately */
 			pr_debug("nf_ct_h323: separate TPKT header indicates "
+<<<<<<< HEAD
 				 "there will be TPKT data of %hu bytes\n",
+=======
+				 "there will be TPKT data of %d bytes\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 tpktlen - 4);
 			info->tpkt_len[dir] = tpktlen - 4;
 			return 0;
@@ -218,7 +261,10 @@ static int get_tpkt_data(struct sk_buff *skb, unsigned int protoff,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int get_h245_addr(struct nf_conn *ct, const unsigned char *data,
 			 H245_TransportAddress *taddr,
 			 union nf_inet_addr *addr, __be16 *port)
@@ -253,13 +299,20 @@ static int get_h245_addr(struct nf_conn *ct, const unsigned char *data,
 	return 1;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int expect_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 			   enum ip_conntrack_info ctinfo,
 			   unsigned int protoff,
 			   unsigned char **data, int dataoff,
 			   H245_TransportAddress *taddr)
 {
+<<<<<<< HEAD
+=======
+	const struct nfct_h323_nat_hooks *nathook;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dir = CTINFO2DIR(ctinfo);
 	int ret = 0;
 	__be16 port;
@@ -267,7 +320,10 @@ static int expect_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 	union nf_inet_addr addr;
 	struct nf_conntrack_expect *rtp_exp;
 	struct nf_conntrack_expect *rtcp_exp;
+<<<<<<< HEAD
 	typeof(nat_rtp_rtcp_hook) nat_rtp_rtcp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read RTP or RTCP address */
 	if (!get_h245_addr(ct, *data, taddr, &addr, &port) ||
@@ -276,9 +332,14 @@ static int expect_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 		return 0;
 
 	/* RTP port is even */
+<<<<<<< HEAD
 	port &= htons(~1);
 	rtp_port = port;
 	rtcp_port = htons(ntohs(port) + 1);
+=======
+	rtp_port = port & ~htons(1);
+	rtcp_port = port | htons(1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create expect for RTP */
 	if ((rtp_exp = nf_ct_expect_alloc(ct)) == NULL)
@@ -298,6 +359,7 @@ static int expect_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 			  &ct->tuplehash[!dir].tuple.dst.u3,
 			  IPPROTO_UDP, NULL, &rtcp_port);
 
+<<<<<<< HEAD
 	if (memcmp(&ct->tuplehash[dir].tuple.src.u3,
 		   &ct->tuplehash[!dir].tuple.dst.u3,
 		   sizeof(ct->tuplehash[dir].tuple.src.u3)) &&
@@ -310,6 +372,21 @@ static int expect_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 	} else {		/* Conntrack only */
 		if (nf_ct_expect_related(rtp_exp) == 0) {
 			if (nf_ct_expect_related(rtcp_exp) == 0) {
+=======
+	nathook = rcu_dereference(nfct_h323_nat_hook);
+	if (memcmp(&ct->tuplehash[dir].tuple.src.u3,
+		   &ct->tuplehash[!dir].tuple.dst.u3,
+		   sizeof(ct->tuplehash[dir].tuple.src.u3)) &&
+		   nathook &&
+		   nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+		   ct->status & IPS_NAT_MASK) {
+		/* NAT needed */
+		ret = nathook->nat_rtp_rtcp(skb, ct, ctinfo, protoff, data, dataoff,
+					    taddr, port, rtp_port, rtp_exp, rtcp_exp);
+	} else {		/* Conntrack only */
+		if (nf_ct_expect_related(rtp_exp, 0) == 0) {
+			if (nf_ct_expect_related(rtcp_exp, 0) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pr_debug("nf_ct_h323: expect RTP ");
 				nf_ct_dump_tuple(&rtp_exp->tuple);
 				pr_debug("nf_ct_h323: expect RTCP ");
@@ -328,7 +405,10 @@ static int expect_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 	return ret;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int expect_t120(struct sk_buff *skb,
 		       struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
@@ -336,12 +416,19 @@ static int expect_t120(struct sk_buff *skb,
 		       unsigned char **data, int dataoff,
 		       H245_TransportAddress *taddr)
 {
+<<<<<<< HEAD
+=======
+	const struct nfct_h323_nat_hooks *nathook;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dir = CTINFO2DIR(ctinfo);
 	int ret = 0;
 	__be16 port;
 	union nf_inet_addr addr;
 	struct nf_conntrack_expect *exp;
+<<<<<<< HEAD
 	typeof(nat_t120_hook) nat_t120;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read T.120 address */
 	if (!get_h245_addr(ct, *data, taddr, &addr, &port) ||
@@ -358,6 +445,7 @@ static int expect_t120(struct sk_buff *skb,
 			  IPPROTO_TCP, NULL, &port);
 	exp->flags = NF_CT_EXPECT_PERMANENT;	/* Accept multiple channels */
 
+<<<<<<< HEAD
 	if (memcmp(&ct->tuplehash[dir].tuple.src.u3,
 		   &ct->tuplehash[!dir].tuple.dst.u3,
 		   sizeof(ct->tuplehash[dir].tuple.src.u3)) &&
@@ -369,6 +457,20 @@ static int expect_t120(struct sk_buff *skb,
 			       port, exp);
 	} else {		/* Conntrack only */
 		if (nf_ct_expect_related(exp) == 0) {
+=======
+	nathook = rcu_dereference(nfct_h323_nat_hook);
+	if (memcmp(&ct->tuplehash[dir].tuple.src.u3,
+		   &ct->tuplehash[!dir].tuple.dst.u3,
+		   sizeof(ct->tuplehash[dir].tuple.src.u3)) &&
+	    nathook &&
+	    nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+	    ct->status & IPS_NAT_MASK) {
+		/* NAT needed */
+		ret = nathook->nat_t120(skb, ct, ctinfo, protoff, data,
+					dataoff, taddr, port, exp);
+	} else {		/* Conntrack only */
+		if (nf_ct_expect_related(exp, 0) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_debug("nf_ct_h323: expect T.120 ");
 			nf_ct_dump_tuple(&exp->tuple);
 		} else
@@ -380,7 +482,10 @@ static int expect_t120(struct sk_buff *skb,
 	return ret;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_h245_channel(struct sk_buff *skb,
 				struct nf_conn *ct,
 				enum ip_conntrack_info ctinfo,
@@ -410,7 +515,10 @@ static int process_h245_channel(struct sk_buff *skb,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_olc(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff,
@@ -472,7 +580,10 @@ static int process_olc(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_olca(struct sk_buff *skb, struct nf_conn *ct,
 			enum ip_conntrack_info ctinfo,
 			unsigned int protoff, unsigned char **data, int dataoff,
@@ -542,7 +653,10 @@ static int process_olca(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_h245(struct sk_buff *skb, struct nf_conn *ct,
 			enum ip_conntrack_info ctinfo,
 			unsigned int protoff, unsigned char **data, int dataoff,
@@ -578,7 +692,10 @@ static int process_h245(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int h245_help(struct sk_buff *skb, unsigned int protoff,
 		     struct nf_conn *ct, enum ip_conntrack_info ctinfo)
 {
@@ -624,12 +741,19 @@ static int h245_help(struct sk_buff *skb, unsigned int protoff,
 
       drop:
 	spin_unlock_bh(&nf_h323_lock);
+<<<<<<< HEAD
 	if (net_ratelimit())
 		pr_info("nf_ct_h245: packet dropped\n");
 	return NF_DROP;
 }
 
 /****************************************************************************/
+=======
+	nf_ct_helper_log(skb, ct, "cannot process H.245 message");
+	return NF_DROP;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct nf_conntrack_expect_policy h245_exp_policy = {
 	.max_expected	= H323_RTP_CHANNEL_MAX * 4 + 2 /* T.120 */,
 	.timeout	= 240,
@@ -638,14 +762,20 @@ static const struct nf_conntrack_expect_policy h245_exp_policy = {
 static struct nf_conntrack_helper nf_conntrack_helper_h245 __read_mostly = {
 	.name			= "H.245",
 	.me			= THIS_MODULE,
+<<<<<<< HEAD
 	.data_len		= sizeof(struct nf_ct_h323_master),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tuple.src.l3num	= AF_UNSPEC,
 	.tuple.dst.protonum	= IPPROTO_UDP,
 	.help			= h245_help,
 	.expect_policy		= &h245_exp_policy,
 };
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int get_h225_addr(struct nf_conn *ct, unsigned char *data,
 		  TransportAddress *taddr,
 		  union nf_inet_addr *addr, __be16 *port)
@@ -676,19 +806,31 @@ int get_h225_addr(struct nf_conn *ct, unsigned char *data,
 
 	return 1;
 }
+<<<<<<< HEAD
 
 /****************************************************************************/
+=======
+EXPORT_SYMBOL_GPL(get_h225_addr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int expect_h245(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff, unsigned char **data, int dataoff,
 		       TransportAddress *taddr)
 {
+<<<<<<< HEAD
+=======
+	const struct nfct_h323_nat_hooks *nathook;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dir = CTINFO2DIR(ctinfo);
 	int ret = 0;
 	__be16 port;
 	union nf_inet_addr addr;
 	struct nf_conntrack_expect *exp;
+<<<<<<< HEAD
 	typeof(nat_h245_hook) nat_h245;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read h245Address */
 	if (!get_h225_addr(ct, *data, taddr, &addr, &port) ||
@@ -705,6 +847,7 @@ static int expect_h245(struct sk_buff *skb, struct nf_conn *ct,
 			  IPPROTO_TCP, NULL, &port);
 	exp->helper = &nf_conntrack_helper_h245;
 
+<<<<<<< HEAD
 	if (memcmp(&ct->tuplehash[dir].tuple.src.u3,
 		   &ct->tuplehash[!dir].tuple.dst.u3,
 		   sizeof(ct->tuplehash[dir].tuple.src.u3)) &&
@@ -716,6 +859,20 @@ static int expect_h245(struct sk_buff *skb, struct nf_conn *ct,
 			       port, exp);
 	} else {		/* Conntrack only */
 		if (nf_ct_expect_related(exp) == 0) {
+=======
+	nathook = rcu_dereference(nfct_h323_nat_hook);
+	if (memcmp(&ct->tuplehash[dir].tuple.src.u3,
+		   &ct->tuplehash[!dir].tuple.dst.u3,
+		   sizeof(ct->tuplehash[dir].tuple.src.u3)) &&
+	    nathook &&
+	    nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+	    ct->status & IPS_NAT_MASK) {
+		/* NAT needed */
+		ret = nathook->nat_h245(skb, ct, ctinfo, protoff, data,
+					dataoff, taddr, port, exp);
+	} else {		/* Conntrack only */
+		if (nf_ct_expect_related(exp, 0) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_debug("nf_ct_q931: expect H.245 ");
 			nf_ct_dump_tuple(&exp->tuple);
 		} else
@@ -728,6 +885,7 @@ static int expect_h245(struct sk_buff *skb, struct nf_conn *ct,
 }
 
 /* If the calling party is on the same side of the forward-to party,
+<<<<<<< HEAD
  * we don't need to track the second call */
 static int callforward_do_filter(const union nf_inet_addr *src,
 				 const union nf_inet_addr *dst,
@@ -741,6 +899,17 @@ static int callforward_do_filter(const union nf_inet_addr *src,
 	if (!afinfo)
 		return 0;
 
+=======
+ * we don't need to track the second call
+ */
+static int callforward_do_filter(struct net *net,
+				 const union nf_inet_addr *src,
+				 const union nf_inet_addr *dst,
+				 u_int8_t family)
+{
+	int ret = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (family) {
 	case AF_INET: {
 		struct flowi4 fl1, fl2;
@@ -751,11 +920,20 @@ static int callforward_do_filter(const union nf_inet_addr *src,
 
 		memset(&fl2, 0, sizeof(fl2));
 		fl2.daddr = dst->ip;
+<<<<<<< HEAD
 		if (!afinfo->route(&init_net, (struct dst_entry **)&rt1,
 				   flowi4_to_flowi(&fl1), false)) {
 			if (!afinfo->route(&init_net, (struct dst_entry **)&rt2,
 					   flowi4_to_flowi(&fl2), false)) {
 				if (rt1->rt_gateway == rt2->rt_gateway &&
+=======
+		if (!nf_ip_route(net, (struct dst_entry **)&rt1,
+				 flowi4_to_flowi(&fl1), false)) {
+			if (!nf_ip_route(net, (struct dst_entry **)&rt2,
+					 flowi4_to_flowi(&fl2), false)) {
+				if (rt_nexthop(rt1, fl1.daddr) ==
+				    rt_nexthop(rt2, fl2.daddr) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    rt1->dst.dev  == rt2->dst.dev)
 					ret = 1;
 				dst_release(&rt2->dst);
@@ -764,22 +942,38 @@ static int callforward_do_filter(const union nf_inet_addr *src,
 		}
 		break;
 	}
+<<<<<<< HEAD
 #if IS_ENABLED(CONFIG_NF_CONNTRACK_IPV6)
 	case AF_INET6: {
 		struct flowi6 fl1, fl2;
 		struct rt6_info *rt1, *rt2;
+=======
+#if IS_ENABLED(CONFIG_IPV6)
+	case AF_INET6: {
+		struct rt6_info *rt1, *rt2;
+		struct flowi6 fl1, fl2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		memset(&fl1, 0, sizeof(fl1));
 		fl1.daddr = src->in6;
 
 		memset(&fl2, 0, sizeof(fl2));
 		fl2.daddr = dst->in6;
+<<<<<<< HEAD
 		if (!afinfo->route(&init_net, (struct dst_entry **)&rt1,
 				   flowi6_to_flowi(&fl1), false)) {
 			if (!afinfo->route(&init_net, (struct dst_entry **)&rt2,
 					   flowi6_to_flowi(&fl2), false)) {
 				if (!memcmp(&rt1->rt6i_gateway, &rt2->rt6i_gateway,
 					    sizeof(rt1->rt6i_gateway)) &&
+=======
+		if (!nf_ip6_route(net, (struct dst_entry **)&rt1,
+				  flowi6_to_flowi(&fl1), false)) {
+			if (!nf_ip6_route(net, (struct dst_entry **)&rt2,
+					  flowi6_to_flowi(&fl2), false)) {
+				if (ipv6_addr_equal(rt6_nexthop(rt1, &fl1.daddr),
+						    rt6_nexthop(rt2, &fl2.daddr)) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    rt1->dst.dev == rt2->dst.dev)
 					ret = 1;
 				dst_release(&rt2->dst);
@@ -794,7 +988,10 @@ static int callforward_do_filter(const union nf_inet_addr *src,
 
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int expect_callforwarding(struct sk_buff *skb,
 				 struct nf_conn *ct,
 				 enum ip_conntrack_info ctinfo,
@@ -802,21 +999,36 @@ static int expect_callforwarding(struct sk_buff *skb,
 				 unsigned char **data, int dataoff,
 				 TransportAddress *taddr)
 {
+<<<<<<< HEAD
+=======
+	const struct nfct_h323_nat_hooks *nathook;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dir = CTINFO2DIR(ctinfo);
 	int ret = 0;
 	__be16 port;
 	union nf_inet_addr addr;
 	struct nf_conntrack_expect *exp;
+<<<<<<< HEAD
 	typeof(nat_callforwarding_hook) nat_callforwarding;
+=======
+	struct net *net = nf_ct_net(ct);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Read alternativeAddress */
 	if (!get_h225_addr(ct, *data, taddr, &addr, &port) || port == 0)
 		return 0;
 
 	/* If the calling party is on the same side of the forward-to party,
+<<<<<<< HEAD
 	 * we don't need to track the second call */
 	if (callforward_filter &&
 	    callforward_do_filter(&addr, &ct->tuplehash[!dir].tuple.src.u3,
+=======
+	 * we don't need to track the second call
+	 */
+	if (callforward_filter &&
+	    callforward_do_filter(net, &addr, &ct->tuplehash[!dir].tuple.src.u3,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				  nf_ct_l3num(ct))) {
 		pr_debug("nf_ct_q931: Call Forwarding not tracked\n");
 		return 0;
@@ -830,6 +1042,7 @@ static int expect_callforwarding(struct sk_buff *skb,
 			  IPPROTO_TCP, NULL, &port);
 	exp->helper = nf_conntrack_helper_q931;
 
+<<<<<<< HEAD
 	if (memcmp(&ct->tuplehash[dir].tuple.src.u3,
 		   &ct->tuplehash[!dir].tuple.dst.u3,
 		   sizeof(ct->tuplehash[dir].tuple.src.u3)) &&
@@ -842,6 +1055,21 @@ static int expect_callforwarding(struct sk_buff *skb,
 					 taddr, port, exp);
 	} else {		/* Conntrack only */
 		if (nf_ct_expect_related(exp) == 0) {
+=======
+	nathook = rcu_dereference(nfct_h323_nat_hook);
+	if (memcmp(&ct->tuplehash[dir].tuple.src.u3,
+		   &ct->tuplehash[!dir].tuple.dst.u3,
+		   sizeof(ct->tuplehash[dir].tuple.src.u3)) &&
+	    nathook &&
+	    nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+	    ct->status & IPS_NAT_MASK) {
+		/* Need NAT */
+		ret = nathook->nat_callforwarding(skb, ct, ctinfo,
+						  protoff, data, dataoff,
+						  taddr, port, exp);
+	} else {		/* Conntrack only */
+		if (nf_ct_expect_related(exp, 0) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_debug("nf_ct_q931: expect Call Forwarding ");
 			nf_ct_dump_tuple(&exp->tuple);
 		} else
@@ -853,19 +1081,29 @@ static int expect_callforwarding(struct sk_buff *skb,
 	return ret;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_setup(struct sk_buff *skb, struct nf_conn *ct,
 			 enum ip_conntrack_info ctinfo,
 			 unsigned int protoff,
 			 unsigned char **data, int dataoff,
 			 Setup_UUIE *setup)
 {
+<<<<<<< HEAD
+=======
+	const struct nfct_h323_nat_hooks *nathook;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dir = CTINFO2DIR(ctinfo);
 	int ret;
 	int i;
 	__be16 port;
 	union nf_inet_addr addr;
+<<<<<<< HEAD
 	typeof(set_h225_addr_hook) set_h225_addr;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("nf_ct_q931: Setup\n");
 
@@ -876,9 +1114,15 @@ static int process_setup(struct sk_buff *skb, struct nf_conn *ct,
 			return -1;
 	}
 
+<<<<<<< HEAD
 	set_h225_addr = rcu_dereference(set_h225_addr_hook);
 	if ((setup->options & eSetup_UUIE_destCallSignalAddress) &&
 	    (set_h225_addr) && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+=======
+	nathook = rcu_dereference(nfct_h323_nat_hook);
+	if ((setup->options & eSetup_UUIE_destCallSignalAddress) &&
+	    nathook && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    ct->status & IPS_NAT_MASK &&
 	    get_h225_addr(ct, *data, &setup->destCallSignalAddress,
 			  &addr, &port) &&
@@ -886,16 +1130,27 @@ static int process_setup(struct sk_buff *skb, struct nf_conn *ct,
 		pr_debug("nf_ct_q931: set destCallSignalAddress %pI6:%hu->%pI6:%hu\n",
 			 &addr, ntohs(port), &ct->tuplehash[!dir].tuple.src.u3,
 			 ntohs(ct->tuplehash[!dir].tuple.src.u.tcp.port));
+<<<<<<< HEAD
 		ret = set_h225_addr(skb, protoff, data, dataoff,
 				    &setup->destCallSignalAddress,
 				    &ct->tuplehash[!dir].tuple.src.u3,
 				    ct->tuplehash[!dir].tuple.src.u.tcp.port);
+=======
+		ret = nathook->set_h225_addr(skb, protoff, data, dataoff,
+					     &setup->destCallSignalAddress,
+					     &ct->tuplehash[!dir].tuple.src.u3,
+					     ct->tuplehash[!dir].tuple.src.u.tcp.port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return -1;
 	}
 
 	if ((setup->options & eSetup_UUIE_sourceCallSignalAddress) &&
+<<<<<<< HEAD
 	    (set_h225_addr) && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+=======
+	    nathook && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    ct->status & IPS_NAT_MASK &&
 	    get_h225_addr(ct, *data, &setup->sourceCallSignalAddress,
 			  &addr, &port) &&
@@ -903,10 +1158,17 @@ static int process_setup(struct sk_buff *skb, struct nf_conn *ct,
 		pr_debug("nf_ct_q931: set sourceCallSignalAddress %pI6:%hu->%pI6:%hu\n",
 			 &addr, ntohs(port), &ct->tuplehash[!dir].tuple.dst.u3,
 			 ntohs(ct->tuplehash[!dir].tuple.dst.u.tcp.port));
+<<<<<<< HEAD
 		ret = set_h225_addr(skb, protoff, data, dataoff,
 				    &setup->sourceCallSignalAddress,
 				    &ct->tuplehash[!dir].tuple.dst.u3,
 				    ct->tuplehash[!dir].tuple.dst.u.tcp.port);
+=======
+		ret = nathook->set_h225_addr(skb, protoff, data, dataoff,
+					     &setup->sourceCallSignalAddress,
+					     &ct->tuplehash[!dir].tuple.dst.u3,
+					     ct->tuplehash[!dir].tuple.dst.u.tcp.port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return -1;
 	}
@@ -924,7 +1186,10 @@ static int process_setup(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_callproceeding(struct sk_buff *skb,
 				  struct nf_conn *ct,
 				  enum ip_conntrack_info ctinfo,
@@ -957,7 +1222,10 @@ static int process_callproceeding(struct sk_buff *skb,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_connect(struct sk_buff *skb, struct nf_conn *ct,
 			   enum ip_conntrack_info ctinfo,
 			   unsigned int protoff,
@@ -989,7 +1257,10 @@ static int process_connect(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_alerting(struct sk_buff *skb, struct nf_conn *ct,
 			    enum ip_conntrack_info ctinfo,
 			    unsigned int protoff,
@@ -1021,7 +1292,10 @@ static int process_alerting(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_facility(struct sk_buff *skb, struct nf_conn *ct,
 			    enum ip_conntrack_info ctinfo,
 			    unsigned int protoff,
@@ -1062,7 +1336,10 @@ static int process_facility(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_progress(struct sk_buff *skb, struct nf_conn *ct,
 			    enum ip_conntrack_info ctinfo,
 			    unsigned int protoff,
@@ -1094,7 +1371,10 @@ static int process_progress(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_q931(struct sk_buff *skb, struct nf_conn *ct,
 			enum ip_conntrack_info ctinfo,
 			unsigned int protoff, unsigned char **data, int dataoff,
@@ -1153,7 +1433,10 @@ static int process_q931(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int q931_help(struct sk_buff *skb, unsigned int protoff,
 		     struct nf_conn *ct, enum ip_conntrack_info ctinfo)
 {
@@ -1198,12 +1481,19 @@ static int q931_help(struct sk_buff *skb, unsigned int protoff,
 
       drop:
 	spin_unlock_bh(&nf_h323_lock);
+<<<<<<< HEAD
 	if (net_ratelimit())
 		pr_info("nf_ct_q931: packet dropped\n");
 	return NF_DROP;
 }
 
 /****************************************************************************/
+=======
+	nf_ct_helper_log(skb, ct, "cannot process Q.931 message");
+	return NF_DROP;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct nf_conntrack_expect_policy q931_exp_policy = {
 	/* T.120 and H.245 */
 	.max_expected		= H323_RTP_CHANNEL_MAX * 4 + 4,
@@ -1214,7 +1504,10 @@ static struct nf_conntrack_helper nf_conntrack_helper_q931[] __read_mostly = {
 	{
 		.name			= "Q.931",
 		.me			= THIS_MODULE,
+<<<<<<< HEAD
 		.data_len		= sizeof(struct nf_ct_h323_master),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.tuple.src.l3num	= AF_INET,
 		.tuple.src.u.tcp.port	= cpu_to_be16(Q931_PORT),
 		.tuple.dst.protonum	= IPPROTO_TCP,
@@ -1232,7 +1525,10 @@ static struct nf_conntrack_helper nf_conntrack_helper_q931[] __read_mostly = {
 	},
 };
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned char *get_udp_data(struct sk_buff *skb, unsigned int protoff,
 				   int *datalen)
 {
@@ -1247,10 +1543,19 @@ static unsigned char *get_udp_data(struct sk_buff *skb, unsigned int protoff,
 	if (dataoff >= skb->len)
 		return NULL;
 	*datalen = skb->len - dataoff;
+<<<<<<< HEAD
 	return skb_header_pointer(skb, dataoff, *datalen, h323_buffer);
 }
 
 /****************************************************************************/
+=======
+	if (*datalen > H323_MAX_SIZE)
+		*datalen = H323_MAX_SIZE;
+
+	return skb_header_pointer(skb, dataoff, *datalen, h323_buffer);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct nf_conntrack_expect *find_expect(struct nf_conn *ct,
 					       union nf_inet_addr *addr,
 					       __be16 port)
@@ -1271,6 +1576,7 @@ static struct nf_conntrack_expect *find_expect(struct nf_conn *ct,
 	return NULL;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
 static int set_expect_timeout(struct nf_conntrack_expect *exp,
 			      unsigned timeout)
@@ -1285,19 +1591,28 @@ static int set_expect_timeout(struct nf_conntrack_expect *exp,
 }
 
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int expect_q931(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff, unsigned char **data,
 		       TransportAddress *taddr, int count)
 {
 	struct nf_ct_h323_master *info = nfct_help_data(ct);
+<<<<<<< HEAD
+=======
+	const struct nfct_h323_nat_hooks *nathook;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int dir = CTINFO2DIR(ctinfo);
 	int ret = 0;
 	int i;
 	__be16 port;
 	union nf_inet_addr addr;
 	struct nf_conntrack_expect *exp;
+<<<<<<< HEAD
 	typeof(nat_q931_hook) nat_q931;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Look for the first related address */
 	for (i = 0; i < count; i++) {
@@ -1321,6 +1636,7 @@ static int expect_q931(struct sk_buff *skb, struct nf_conn *ct,
 	exp->helper = nf_conntrack_helper_q931;
 	exp->flags = NF_CT_EXPECT_PERMANENT;	/* Accept multiple calls */
 
+<<<<<<< HEAD
 	nat_q931 = rcu_dereference(nat_q931_hook);
 	if (nat_q931 && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
 	    ct->status & IPS_NAT_MASK) {	/* Need NAT */
@@ -1328,6 +1644,15 @@ static int expect_q931(struct sk_buff *skb, struct nf_conn *ct,
 			       taddr, i, port, exp);
 	} else {		/* Conntrack only */
 		if (nf_ct_expect_related(exp) == 0) {
+=======
+	nathook = rcu_dereference(nfct_h323_nat_hook);
+	if (nathook && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+	    ct->status & IPS_NAT_MASK) {	/* Need NAT */
+		ret = nathook->nat_q931(skb, ct, ctinfo, protoff, data,
+					taddr, i, port, exp);
+	} else {		/* Conntrack only */
+		if (nf_ct_expect_related(exp, 0) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pr_debug("nf_ct_ras: expect Q.931 ");
 			nf_ct_dump_tuple(&exp->tuple);
 
@@ -1342,12 +1667,16 @@ static int expect_q931(struct sk_buff *skb, struct nf_conn *ct,
 	return ret;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_grq(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff,
 		       unsigned char **data, GatekeeperRequest *grq)
 {
+<<<<<<< HEAD
 	typeof(set_ras_addr_hook) set_ras_addr;
 
 	pr_debug("nf_ct_ras: GRQ\n");
@@ -1361,6 +1690,20 @@ static int process_grq(struct sk_buff *skb, struct nf_conn *ct,
 }
 
 /****************************************************************************/
+=======
+	const struct nfct_h323_nat_hooks *nathook;
+
+	pr_debug("nf_ct_ras: GRQ\n");
+
+	nathook = rcu_dereference(nfct_h323_nat_hook);
+	if (nathook && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+	    ct->status & IPS_NAT_MASK)	/* NATed */
+		return nathook->set_ras_addr(skb, ct, ctinfo, protoff, data,
+					     &grq->rasAddress, 1);
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_gcf(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff,
@@ -1394,7 +1737,11 @@ static int process_gcf(struct sk_buff *skb, struct nf_conn *ct,
 			  IPPROTO_UDP, NULL, &port);
 	exp->helper = nf_conntrack_helper_ras;
 
+<<<<<<< HEAD
 	if (nf_ct_expect_related(exp) == 0) {
+=======
+	if (nf_ct_expect_related(exp, 0) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_debug("nf_ct_ras: expect RAS ");
 		nf_ct_dump_tuple(&exp->tuple);
 	} else
@@ -1405,15 +1752,23 @@ static int process_gcf(struct sk_buff *skb, struct nf_conn *ct,
 	return ret;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_rrq(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff,
 		       unsigned char **data, RegistrationRequest *rrq)
 {
 	struct nf_ct_h323_master *info = nfct_help_data(ct);
+<<<<<<< HEAD
 	int ret;
 	typeof(set_ras_addr_hook) set_ras_addr;
+=======
+	const struct nfct_h323_nat_hooks *nathook;
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("nf_ct_ras: RRQ\n");
 
@@ -1423,12 +1778,21 @@ static int process_rrq(struct sk_buff *skb, struct nf_conn *ct,
 	if (ret < 0)
 		return -1;
 
+<<<<<<< HEAD
 	set_ras_addr = rcu_dereference(set_ras_addr_hook);
 	if (set_ras_addr && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
 	    ct->status & IPS_NAT_MASK) {
 		ret = set_ras_addr(skb, ct, ctinfo, protoff, data,
 				   rrq->rasAddress.item,
 				   rrq->rasAddress.count);
+=======
+	nathook = rcu_dereference(nfct_h323_nat_hook);
+	if (nathook && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+	    ct->status & IPS_NAT_MASK) {
+		ret = nathook->set_ras_addr(skb, ct, ctinfo, protoff, data,
+					    rrq->rasAddress.item,
+					    rrq->rasAddress.count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return -1;
 	}
@@ -1442,13 +1806,17 @@ static int process_rrq(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_rcf(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff,
 		       unsigned char **data, RegistrationConfirm *rcf)
 {
 	struct nf_ct_h323_master *info = nfct_help_data(ct);
+<<<<<<< HEAD
 	int dir = CTINFO2DIR(ctinfo);
 	int ret;
 	struct nf_conntrack_expect *exp;
@@ -1462,6 +1830,21 @@ static int process_rcf(struct sk_buff *skb, struct nf_conn *ct,
 		ret = set_sig_addr(skb, ct, ctinfo, protoff, data,
 					rcf->callSignalAddress.item,
 					rcf->callSignalAddress.count);
+=======
+	const struct nfct_h323_nat_hooks *nathook;
+	int dir = CTINFO2DIR(ctinfo);
+	int ret;
+	struct nf_conntrack_expect *exp;
+
+	pr_debug("nf_ct_ras: RCF\n");
+
+	nathook = rcu_dereference(nfct_h323_nat_hook);
+	if (nathook && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+	    ct->status & IPS_NAT_MASK) {
+		ret = nathook->set_sig_addr(skb, ct, ctinfo, protoff, data,
+					    rcf->callSignalAddress.item,
+					    rcf->callSignalAddress.count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return -1;
 	}
@@ -1477,7 +1860,11 @@ static int process_rcf(struct sk_buff *skb, struct nf_conn *ct,
 		nf_ct_refresh(ct, skb, info->timeout * HZ);
 
 		/* Set expect timeout */
+<<<<<<< HEAD
 		spin_lock_bh(&nf_conntrack_lock);
+=======
+		spin_lock_bh(&nf_conntrack_expect_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		exp = find_expect(ct, &ct->tuplehash[dir].tuple.dst.u3,
 				  info->sig_port[!dir]);
 		if (exp) {
@@ -1485,21 +1872,32 @@ static int process_rcf(struct sk_buff *skb, struct nf_conn *ct,
 				 "timeout to %u seconds for",
 				 info->timeout);
 			nf_ct_dump_tuple(&exp->tuple);
+<<<<<<< HEAD
 			set_expect_timeout(exp, info->timeout);
 		}
 		spin_unlock_bh(&nf_conntrack_lock);
+=======
+			mod_timer_pending(&exp->timeout,
+					  jiffies + info->timeout * HZ);
+		}
+		spin_unlock_bh(&nf_conntrack_expect_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_urq(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff,
 		       unsigned char **data, UnregistrationRequest *urq)
 {
 	struct nf_ct_h323_master *info = nfct_help_data(ct);
+<<<<<<< HEAD
 	int dir = CTINFO2DIR(ctinfo);
 	int ret;
 	typeof(set_sig_addr_hook) set_sig_addr;
@@ -1512,6 +1910,20 @@ static int process_urq(struct sk_buff *skb, struct nf_conn *ct,
 		ret = set_sig_addr(skb, ct, ctinfo, protoff, data,
 				   urq->callSignalAddress.item,
 				   urq->callSignalAddress.count);
+=======
+	const struct nfct_h323_nat_hooks *nathook;
+	int dir = CTINFO2DIR(ctinfo);
+	int ret;
+
+	pr_debug("nf_ct_ras: URQ\n");
+
+	nathook = rcu_dereference(nfct_h323_nat_hook);
+	if (nathook && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+	    ct->status & IPS_NAT_MASK) {
+		ret = nathook->set_sig_addr(skb, ct, ctinfo, protoff, data,
+					    urq->callSignalAddress.item,
+					    urq->callSignalAddress.count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return -1;
 	}
@@ -1527,13 +1939,17 @@ static int process_urq(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_arq(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff,
 		       unsigned char **data, AdmissionRequest *arq)
 {
 	const struct nf_ct_h323_master *info = nfct_help_data(ct);
+<<<<<<< HEAD
 	int dir = CTINFO2DIR(ctinfo);
 	__be16 port;
 	union nf_inet_addr addr;
@@ -1542,24 +1958,47 @@ static int process_arq(struct sk_buff *skb, struct nf_conn *ct,
 	pr_debug("nf_ct_ras: ARQ\n");
 
 	set_h225_addr = rcu_dereference(set_h225_addr_hook);
+=======
+	const struct nfct_h323_nat_hooks *nathook;
+	int dir = CTINFO2DIR(ctinfo);
+	__be16 port;
+	union nf_inet_addr addr;
+
+	pr_debug("nf_ct_ras: ARQ\n");
+
+	nathook = rcu_dereference(nfct_h323_nat_hook);
+	if (!nathook)
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((arq->options & eAdmissionRequest_destCallSignalAddress) &&
 	    get_h225_addr(ct, *data, &arq->destCallSignalAddress,
 			  &addr, &port) &&
 	    !memcmp(&addr, &ct->tuplehash[dir].tuple.src.u3, sizeof(addr)) &&
 	    port == info->sig_port[dir] &&
 	    nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+<<<<<<< HEAD
 	    set_h225_addr && ct->status & IPS_NAT_MASK) {
 		/* Answering ARQ */
 		return set_h225_addr(skb, protoff, data, 0,
 				     &arq->destCallSignalAddress,
 				     &ct->tuplehash[!dir].tuple.dst.u3,
 				     info->sig_port[!dir]);
+=======
+	    ct->status & IPS_NAT_MASK) {
+		/* Answering ARQ */
+		return nathook->set_h225_addr(skb, protoff, data, 0,
+					      &arq->destCallSignalAddress,
+					      &ct->tuplehash[!dir].tuple.dst.u3,
+					      info->sig_port[!dir]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if ((arq->options & eAdmissionRequest_srcCallSignalAddress) &&
 	    get_h225_addr(ct, *data, &arq->srcCallSignalAddress,
 			  &addr, &port) &&
 	    !memcmp(&addr, &ct->tuplehash[dir].tuple.src.u3, sizeof(addr)) &&
+<<<<<<< HEAD
 	    set_h225_addr && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
 	    ct->status & IPS_NAT_MASK) {
 		/* Calling ARQ */
@@ -1567,12 +2006,24 @@ static int process_arq(struct sk_buff *skb, struct nf_conn *ct,
 				     &arq->srcCallSignalAddress,
 				     &ct->tuplehash[!dir].tuple.dst.u3,
 				     port);
+=======
+	    nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+	    ct->status & IPS_NAT_MASK) {
+		/* Calling ARQ */
+		return nathook->set_h225_addr(skb, protoff, data, 0,
+					      &arq->srcCallSignalAddress,
+					      &ct->tuplehash[!dir].tuple.dst.u3,
+					      port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_acf(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff,
@@ -1583,7 +2034,10 @@ static int process_acf(struct sk_buff *skb, struct nf_conn *ct,
 	__be16 port;
 	union nf_inet_addr addr;
 	struct nf_conntrack_expect *exp;
+<<<<<<< HEAD
 	typeof(set_sig_addr_hook) set_sig_addr;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("nf_ct_ras: ACF\n");
 
@@ -1592,12 +2046,24 @@ static int process_acf(struct sk_buff *skb, struct nf_conn *ct,
 		return 0;
 
 	if (!memcmp(&addr, &ct->tuplehash[dir].tuple.dst.u3, sizeof(addr))) {
+<<<<<<< HEAD
 		/* Answering ACF */
 		set_sig_addr = rcu_dereference(set_sig_addr_hook);
 		if (set_sig_addr && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
 		    ct->status & IPS_NAT_MASK)
 			return set_sig_addr(skb, ct, ctinfo, protoff, data,
 					    &acf->destCallSignalAddress, 1);
+=======
+		const struct nfct_h323_nat_hooks *nathook;
+
+		/* Answering ACF */
+		nathook = rcu_dereference(nfct_h323_nat_hook);
+		if (nathook && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+		    ct->status & IPS_NAT_MASK)
+			return nathook->set_sig_addr(skb, ct, ctinfo, protoff,
+						     data,
+						     &acf->destCallSignalAddress, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 
@@ -1610,7 +2076,11 @@ static int process_acf(struct sk_buff *skb, struct nf_conn *ct,
 	exp->flags = NF_CT_EXPECT_PERMANENT;
 	exp->helper = nf_conntrack_helper_q931;
 
+<<<<<<< HEAD
 	if (nf_ct_expect_related(exp) == 0) {
+=======
+	if (nf_ct_expect_related(exp, 0) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_debug("nf_ct_ras: expect Q.931 ");
 		nf_ct_dump_tuple(&exp->tuple);
 	} else
@@ -1621,12 +2091,16 @@ static int process_acf(struct sk_buff *skb, struct nf_conn *ct,
 	return ret;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_lrq(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff,
 		       unsigned char **data, LocationRequest *lrq)
 {
+<<<<<<< HEAD
 	typeof(set_ras_addr_hook) set_ras_addr;
 
 	pr_debug("nf_ct_ras: LRQ\n");
@@ -1640,6 +2114,20 @@ static int process_lrq(struct sk_buff *skb, struct nf_conn *ct,
 }
 
 /****************************************************************************/
+=======
+	const struct nfct_h323_nat_hooks *nathook;
+
+	pr_debug("nf_ct_ras: LRQ\n");
+
+	nathook = rcu_dereference(nfct_h323_nat_hook);
+	if (nathook && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+	    ct->status & IPS_NAT_MASK)
+		return nathook->set_ras_addr(skb, ct, ctinfo, protoff, data,
+					     &lrq->replyAddress, 1);
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_lcf(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff,
@@ -1666,7 +2154,11 @@ static int process_lcf(struct sk_buff *skb, struct nf_conn *ct,
 	exp->flags = NF_CT_EXPECT_PERMANENT;
 	exp->helper = nf_conntrack_helper_q931;
 
+<<<<<<< HEAD
 	if (nf_ct_expect_related(exp) == 0) {
+=======
+	if (nf_ct_expect_related(exp, 0) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_debug("nf_ct_ras: expect Q.931 ");
 		nf_ct_dump_tuple(&exp->tuple);
 	} else
@@ -1679,12 +2171,16 @@ static int process_lcf(struct sk_buff *skb, struct nf_conn *ct,
 	return ret;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_irr(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff,
 		       unsigned char **data, InfoRequestResponse *irr)
 {
+<<<<<<< HEAD
 	int ret;
 	typeof(set_ras_addr_hook) set_ras_addr;
 	typeof(set_sig_addr_hook) set_sig_addr;
@@ -1706,6 +2202,24 @@ static int process_irr(struct sk_buff *skb, struct nf_conn *ct,
 		ret = set_sig_addr(skb, ct, ctinfo, protoff, data,
 					irr->callSignalAddress.item,
 					irr->callSignalAddress.count);
+=======
+	const struct nfct_h323_nat_hooks *nathook;
+	int ret;
+
+	pr_debug("nf_ct_ras: IRR\n");
+
+	nathook = rcu_dereference(nfct_h323_nat_hook);
+	if (nathook && nf_ct_l3num(ct) == NFPROTO_IPV4 &&
+	    ct->status & IPS_NAT_MASK) {
+		ret = nathook->set_ras_addr(skb, ct, ctinfo, protoff, data,
+					    &irr->rasAddress, 1);
+		if (ret < 0)
+			return -1;
+
+		ret = nathook->set_sig_addr(skb, ct, ctinfo, protoff, data,
+					    irr->callSignalAddress.item,
+					    irr->callSignalAddress.count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret < 0)
 			return -1;
 	}
@@ -1713,7 +2227,10 @@ static int process_irr(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int process_ras(struct sk_buff *skb, struct nf_conn *ct,
 		       enum ip_conntrack_info ctinfo,
 		       unsigned int protoff,
@@ -1758,7 +2275,10 @@ static int process_ras(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ras_help(struct sk_buff *skb, unsigned int protoff,
 		    struct nf_conn *ct, enum ip_conntrack_info ctinfo)
 {
@@ -1797,12 +2317,19 @@ static int ras_help(struct sk_buff *skb, unsigned int protoff,
 
       drop:
 	spin_unlock_bh(&nf_h323_lock);
+<<<<<<< HEAD
 	if (net_ratelimit())
 		pr_info("nf_ct_ras: packet dropped\n");
 	return NF_DROP;
 }
 
 /****************************************************************************/
+=======
+	nf_ct_helper_log(skb, ct, "cannot process RAS message");
+	return NF_DROP;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct nf_conntrack_expect_policy ras_exp_policy = {
 	.max_expected		= 32,
 	.timeout		= 240,
@@ -1812,7 +2339,10 @@ static struct nf_conntrack_helper nf_conntrack_helper_ras[] __read_mostly = {
 	{
 		.name			= "RAS",
 		.me			= THIS_MODULE,
+<<<<<<< HEAD
 		.data_len		= sizeof(struct nf_ct_h323_master),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.tuple.src.l3num	= AF_INET,
 		.tuple.src.u.udp.port	= cpu_to_be16(RAS_PORT),
 		.tuple.dst.protonum	= IPPROTO_UDP,
@@ -1822,7 +2352,10 @@ static struct nf_conntrack_helper nf_conntrack_helper_ras[] __read_mostly = {
 	{
 		.name			= "RAS",
 		.me			= THIS_MODULE,
+<<<<<<< HEAD
 		.data_len		= sizeof(struct nf_ct_h323_master),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.tuple.src.l3num	= AF_INET6,
 		.tuple.src.u.udp.port	= cpu_to_be16(RAS_PORT),
 		.tuple.dst.protonum	= IPPROTO_UDP,
@@ -1831,6 +2364,7 @@ static struct nf_conntrack_helper nf_conntrack_helper_ras[] __read_mostly = {
 	},
 };
 
+<<<<<<< HEAD
 /****************************************************************************/
 static void __exit nf_conntrack_h323_fini(void)
 {
@@ -1839,15 +2373,58 @@ static void __exit nf_conntrack_h323_fini(void)
 	nf_conntrack_helper_unregister(&nf_conntrack_helper_q931[1]);
 	nf_conntrack_helper_unregister(&nf_conntrack_helper_q931[0]);
 	nf_conntrack_helper_unregister(&nf_conntrack_helper_h245);
+=======
+static int __init h323_helper_init(void)
+{
+	int ret;
+
+	ret = nf_conntrack_helper_register(&nf_conntrack_helper_h245);
+	if (ret < 0)
+		return ret;
+	ret = nf_conntrack_helpers_register(nf_conntrack_helper_q931,
+					ARRAY_SIZE(nf_conntrack_helper_q931));
+	if (ret < 0)
+		goto err1;
+	ret = nf_conntrack_helpers_register(nf_conntrack_helper_ras,
+					ARRAY_SIZE(nf_conntrack_helper_ras));
+	if (ret < 0)
+		goto err2;
+
+	return 0;
+err2:
+	nf_conntrack_helpers_unregister(nf_conntrack_helper_q931,
+					ARRAY_SIZE(nf_conntrack_helper_q931));
+err1:
+	nf_conntrack_helper_unregister(&nf_conntrack_helper_h245);
+	return ret;
+}
+
+static void __exit h323_helper_exit(void)
+{
+	nf_conntrack_helpers_unregister(nf_conntrack_helper_ras,
+					ARRAY_SIZE(nf_conntrack_helper_ras));
+	nf_conntrack_helpers_unregister(nf_conntrack_helper_q931,
+					ARRAY_SIZE(nf_conntrack_helper_q931));
+	nf_conntrack_helper_unregister(&nf_conntrack_helper_h245);
+}
+
+static void __exit nf_conntrack_h323_fini(void)
+{
+	h323_helper_exit();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(h323_buffer);
 	pr_debug("nf_ct_h323: fini\n");
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init nf_conntrack_h323_init(void)
 {
 	int ret;
 
+<<<<<<< HEAD
 	h323_buffer = kmalloc(65536, GFP_KERNEL);
 	if (!h323_buffer)
 		return -ENOMEM;
@@ -1877,11 +2454,24 @@ err3:
 	nf_conntrack_helper_unregister(&nf_conntrack_helper_q931[0]);
 err2:
 	nf_conntrack_helper_unregister(&nf_conntrack_helper_h245);
+=======
+	NF_CT_HELPER_BUILD_BUG_ON(sizeof(struct nf_ct_h323_master));
+
+	h323_buffer = kmalloc(H323_MAX_SIZE + 1, GFP_KERNEL);
+	if (!h323_buffer)
+		return -ENOMEM;
+	ret = h323_helper_init();
+	if (ret < 0)
+		goto err1;
+	pr_debug("nf_ct_h323: init success\n");
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err1:
 	kfree(h323_buffer);
 	return ret;
 }
 
+<<<<<<< HEAD
 /****************************************************************************/
 module_init(nf_conntrack_h323_init);
 module_exit(nf_conntrack_h323_fini);
@@ -1897,8 +2487,19 @@ EXPORT_SYMBOL_GPL(nat_h245_hook);
 EXPORT_SYMBOL_GPL(nat_callforwarding_hook);
 EXPORT_SYMBOL_GPL(nat_q931_hook);
 
+=======
+module_init(nf_conntrack_h323_init);
+module_exit(nf_conntrack_h323_fini);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Jing Min Zhao <zhaojingmin@users.sourceforge.net>");
 MODULE_DESCRIPTION("H.323 connection tracking helper");
 MODULE_LICENSE("GPL");
 MODULE_ALIAS("ip_conntrack_h323");
+<<<<<<< HEAD
 MODULE_ALIAS_NFCT_HELPER("h323");
+=======
+MODULE_ALIAS_NFCT_HELPER("RAS");
+MODULE_ALIAS_NFCT_HELPER("Q.931");
+MODULE_ALIAS_NFCT_HELPER("H.245");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

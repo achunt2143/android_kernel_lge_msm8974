@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 comment "S/390 block device drivers"
 	depends on S390 && BLOCK
 
@@ -14,6 +15,16 @@ config BLK_DEV_XPRAM
 
 config DCSSBLK
 	def_tristate m
+=======
+# SPDX-License-Identifier: GPL-2.0
+comment "S/390 block device drivers"
+	depends on S390 && BLOCK
+
+config DCSSBLK
+	def_tristate m
+	select FS_DAX_LIMITED
+	select DAX
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	prompt "DCSSBLK support"
 	depends on S390 && BLOCK
 	help
@@ -23,7 +34,10 @@ config DASD
 	def_tristate y
 	prompt "Support for DASD devices"
 	depends on CCW && BLOCK
+<<<<<<< HEAD
 	select IOSCHED_DEADLINE
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	help
 	  Enable this option if you want to access DASDs directly utilizing
 	  S/390s channel subsystem commands. This is necessary for running
@@ -35,7 +49,11 @@ config DASD_PROFILE
 	depends on DASD
 	help
 	  Enable this option if you want to see profiling information
+<<<<<<< HEAD
           in /proc/dasd/statistics.
+=======
+	  in /proc/dasd/statistics.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 config DASD_ECKD
 	def_tristate y
@@ -70,3 +88,17 @@ config DASD_EER
 	  This driver provides a character device interface to the
 	  DASD extended error reporting. This is only needed if you want to
 	  use applications written for the EER facility.
+<<<<<<< HEAD
+=======
+
+config SCM_BLOCK
+	def_tristate m
+	prompt "Support for Storage Class Memory"
+	depends on S390 && BLOCK && EADM_SCH && SCM_BUS
+	help
+	  Block device driver for Storage Class Memory (SCM). This driver
+	  provides a block device interface for each available SCM increment.
+
+	  To compile this driver as a module, choose M here: the
+	  module will be called scm_block.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

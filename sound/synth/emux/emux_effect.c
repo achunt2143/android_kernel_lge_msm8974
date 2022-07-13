@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Midi synth routines for the Emu8k/Emu10k1
  *
@@ -5,6 +9,7 @@
  *  Copyright (c) 1999-2000 Takashi Iwai <tiwai@suse.de>
  *
  *  Contains code based on awe_wave.c by Takashi Iwai
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "emux_voice.h"
@@ -150,7 +157,11 @@ effect_get_offset(struct snd_midi_channel *chan, int lo, int hi, int mode)
 	return addr;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SND_SEQUENCER_OSS
+=======
+#if IS_ENABLED(CONFIG_SND_SEQUENCER_OSS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* change effects - for OSS sequencer compatibility */
 void
 snd_emux_send_effect_oss(struct snd_emux_port *port,
@@ -195,7 +206,14 @@ snd_emux_send_effect(struct snd_emux_port *port, struct snd_midi_channel *chan,
 	fx->flag[type] = mode;
 
 	/* do we need to modify the register in realtime ? */
+<<<<<<< HEAD
 	if (! parm_defs[type].update || (offset = parm_defs[type].offset) < 0)
+=======
+	if (!parm_defs[type].update)
+		return;
+	offset = parm_defs[type].offset;
+	if (offset < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 #ifdef SNDRV_LITTLE_ENDIAN
@@ -237,13 +255,25 @@ snd_emux_setup_effect(struct snd_emux_voice *vp)
 	unsigned char *srcp;
 	int i;
 
+<<<<<<< HEAD
 	if (! (fx = chan->private))
+=======
+	fx = chan->private;
+	if (!fx)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	/* modify the register values via effect table */
 	for (i = 0; i < EMUX_FX_END; i++) {
 		int offset;
+<<<<<<< HEAD
 		if (! fx->flag[i] || (offset = parm_defs[i].offset) < 0)
+=======
+		if (!fx->flag[i])
+			continue;
+		offset = parm_defs[i].offset;
+		if (offset < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 #ifdef SNDRV_LITTLE_ENDIAN
 		if (parm_defs[i].type & PARM_IS_ALIGN_HI)

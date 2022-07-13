@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /***********************************
  * $Id: quicc_simple.h,v 1.1 2002/03/02 15:01:10 gerg Exp $
  ***********************************

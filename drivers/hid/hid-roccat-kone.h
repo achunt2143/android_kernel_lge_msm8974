@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __HID_ROCCAT_KONE_H
 #define __HID_ROCCAT_KONE_H
 
@@ -6,10 +10,13 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or (at your option)
  * any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -155,11 +162,21 @@ struct kone_mouse_event {
 	uint16_t x;
 	uint16_t y;
 	uint8_t wheel; /* up = 1, down = -1 */
+<<<<<<< HEAD
 	uint8_t tilt; /* right = 1, left = -1 */
 	uint8_t unknown;
 	uint8_t event;
 	uint8_t value; /* press = 0, release = 1 */
 	uint8_t macro_key; /* 0 to 8 */
+=======
+	struct_group(wipe,
+		uint8_t tilt; /* right = 1, left = -1 */
+		uint8_t unknown;
+		uint8_t event;
+		uint8_t value; /* press = 0, release = 1 */
+		uint8_t macro_key; /* 0 to 8 */
+	);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((__packed__));
 
 enum kone_mouse_events {
@@ -169,6 +186,10 @@ enum kone_mouse_events {
 	/* TODO clarify meaning and occurence of kone_mouse_event_calibration */
 	kone_mouse_event_calibration = 0xc0,
 	kone_mouse_event_call_overlong_macro = 0xe0,
+<<<<<<< HEAD
+=======
+	kone_mouse_event_multimedia = 0xe1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* switch events notify if user changed values with mousebutton click */
 	kone_mouse_event_switch_dpi = 0xf0,
 	kone_mouse_event_switch_profile = 0xf1

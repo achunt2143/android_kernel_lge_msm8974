@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 #include <asm-generic/vmlinux.lds.h>
 
 OUTPUT_FORMAT(CONFIG_OUTPUT_FORMAT, CONFIG_OUTPUT_FORMAT, CONFIG_OUTPUT_FORMAT)
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#include <asm-generic/vmlinux.lds.h>
+
+OUTPUT_FORMAT(CONFIG_OUTPUT_FORMAT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef i386
 
@@ -33,6 +40,10 @@ SECTIONS
 		_text = .; 	/* Text */
 		*(.text)
 		*(.text.*)
+<<<<<<< HEAD
+=======
+		*(.noinstr.text)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		_etext = . ;
 	}
 	.rodata : {
@@ -41,6 +52,7 @@ SECTIONS
 		*(.rodata.*)
 		_erodata = . ;
 	}
+<<<<<<< HEAD
 	.got : {
 		_got = .;
 		KEEP(*(.got.plt))
@@ -51,6 +63,15 @@ SECTIONS
 		_data = . ;
 		*(.data)
 		*(.data.*)
+=======
+	.data :	ALIGN(0x1000) {
+		_data = . ;
+		*(.data)
+		*(.data.*)
+
+		/* Add 4 bytes of extra space for a CRC-32 checksum */
+		. = ALIGN(. + 4, 0x200);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		_edata = . ;
 	}
 	. = ALIGN(L1_CACHE_BYTES);
@@ -70,5 +91,56 @@ SECTIONS
 		_epgtable = . ;
 	}
 #endif
+<<<<<<< HEAD
 	_end = .;
+=======
+	. = ALIGN(PAGE_SIZE);	/* keep ZO size page aligned */
+	_end = .;
+
+	STABS_DEBUG
+	DWARF_DEBUG
+	ELF_DETAILS
+
+	DISCARDS
+	/DISCARD/ : {
+		*(.dynamic) *(.dynsym) *(.dynstr) *(.dynbss)
+		*(.hash) *(.gnu.hash)
+		*(.note.*)
+	}
+
+	.got.plt (INFO) : {
+		*(.got.plt)
+	}
+	ASSERT(SIZEOF(.got.plt) == 0 ||
+#ifdef CONFIG_X86_64
+	       SIZEOF(.got.plt) == 0x18,
+#else
+	       SIZEOF(.got.plt) == 0xc,
+#endif
+	       "Unexpected GOT/PLT entries detected!")
+
+	/*
+	 * Sections that should stay zero sized, which is safer to
+	 * explicitly check instead of blindly discarding.
+	 */
+	.got : {
+		*(.got)
+	}
+	ASSERT(SIZEOF(.got) == 0, "Unexpected GOT entries detected!")
+
+	.plt : {
+		*(.plt) *(.plt.*)
+	}
+	ASSERT(SIZEOF(.plt) == 0, "Unexpected run-time procedure linkages detected!")
+
+	.rel.dyn : {
+		*(.rel.*) *(.rel_*)
+	}
+	ASSERT(SIZEOF(.rel.dyn) == 0, "Unexpected run-time relocations (.rel) detected!")
+
+	.rela.dyn : {
+		*(.rela.*) *(.rela_*)
+	}
+	ASSERT(SIZEOF(.rela.dyn) == 0, "Unexpected run-time relocations (.rela) detected!")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

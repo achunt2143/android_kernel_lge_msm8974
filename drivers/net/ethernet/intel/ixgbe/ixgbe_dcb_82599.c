@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel 10 Gigabit PCI Express Linux driver
@@ -24,6 +25,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* Copyright(c) 1999 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "ixgbe.h"
 #include "ixgbe_type.h"
@@ -37,10 +42,18 @@
  * @max: max credits index by traffic class
  * @bwg_id: bandwidth grouping indexed by traffic class
  * @prio_type: priority type indexed by traffic class
+<<<<<<< HEAD
  *
  * Configure Rx Packet Arbiter and credits for each traffic class.
  */
 s32 ixgbe_dcb_config_rx_arbiter_82599(struct ixgbe_hw *hw,
+=======
+ * @prio_tc: priority to tc assignments indexed by priority
+ *
+ * Configure Rx Packet Arbiter and credits for each traffic class.
+ */
+int ixgbe_dcb_config_rx_arbiter_82599(struct ixgbe_hw *hw,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				      u16 *refill,
 				      u16 *max,
 				      u8 *bwg_id,
@@ -99,7 +112,11 @@ s32 ixgbe_dcb_config_rx_arbiter_82599(struct ixgbe_hw *hw,
  *
  * Configure Tx Descriptor Arbiter and credits for each traffic class.
  */
+<<<<<<< HEAD
 s32 ixgbe_dcb_config_tx_desc_arbiter_82599(struct ixgbe_hw *hw,
+=======
+int ixgbe_dcb_config_tx_desc_arbiter_82599(struct ixgbe_hw *hw,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   u16 *refill,
 					   u16 *max,
 					   u8 *bwg_id,
@@ -147,10 +164,18 @@ s32 ixgbe_dcb_config_tx_desc_arbiter_82599(struct ixgbe_hw *hw,
  * @max: max credits index by traffic class
  * @bwg_id: bandwidth grouping indexed by traffic class
  * @prio_type: priority type indexed by traffic class
+<<<<<<< HEAD
  *
  * Configure Tx Packet Arbiter and credits for each traffic class.
  */
 s32 ixgbe_dcb_config_tx_data_arbiter_82599(struct ixgbe_hw *hw,
+=======
+ * @prio_tc: priority to tc assignments indexed by priority
+ *
+ * Configure Tx Packet Arbiter and credits for each traffic class.
+ */
+int ixgbe_dcb_config_tx_data_arbiter_82599(struct ixgbe_hw *hw,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					   u16 *refill,
 					   u16 *max,
 					   u8 *bwg_id,
@@ -209,6 +234,7 @@ s32 ixgbe_dcb_config_tx_data_arbiter_82599(struct ixgbe_hw *hw,
  *
  * Configure Priority Flow Control (PFC) for each traffic class.
  */
+<<<<<<< HEAD
 s32 ixgbe_dcb_config_pfc_82599(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc)
 {
 	u32 i, j, reg;
@@ -231,11 +257,53 @@ s32 ixgbe_dcb_config_pfc_82599(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc)
 
 		for (j = 0; j < MAX_USER_PRIORITY; j++) {
 			if ((prio_tc[j] == i) && (pfc_en & (1 << j))) {
+=======
+int ixgbe_dcb_config_pfc_82599(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc)
+{
+	u32 i, j, fcrtl, reg;
+	u8 max_tc = 0;
+
+	/* Enable Transmit Priority Flow Control */
+	IXGBE_WRITE_REG(hw, IXGBE_FCCFG, IXGBE_FCCFG_TFCE_PRIORITY);
+
+	/* Enable Receive Priority Flow Control */
+	reg = IXGBE_READ_REG(hw, IXGBE_MFLCN);
+	reg |= IXGBE_MFLCN_DPF;
+
+	/*
+	 * X540 & X550 supports per TC Rx priority flow control.
+	 * So clear all TCs and only enable those that should be
+	 * enabled.
+	 */
+	reg &= ~(IXGBE_MFLCN_RPFCE_MASK | IXGBE_MFLCN_RFCE);
+
+	if (hw->mac.type >= ixgbe_mac_X540)
+		reg |= pfc_en << IXGBE_MFLCN_RPFCE_SHIFT;
+
+	if (pfc_en)
+		reg |= IXGBE_MFLCN_RPFCE;
+
+	IXGBE_WRITE_REG(hw, IXGBE_MFLCN, reg);
+
+	for (i = 0; i < MAX_USER_PRIORITY; i++) {
+		if (prio_tc[i] > max_tc)
+			max_tc = prio_tc[i];
+	}
+
+
+	/* Configure PFC Tx thresholds per TC */
+	for (i = 0; i <= max_tc; i++) {
+		int enabled = 0;
+
+		for (j = 0; j < MAX_USER_PRIORITY; j++) {
+			if ((prio_tc[j] == i) && (pfc_en & BIT(j))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				enabled = 1;
 				break;
 			}
 		}
 
+<<<<<<< HEAD
 		reg = hw->fc.low_water << 10;
 
 		if (enabled)
@@ -292,6 +360,39 @@ s32 ixgbe_dcb_config_pfc_82599(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc)
 			hw->mac.ops.fc_enable(hw, i);
 	}
 
+=======
+		if (enabled) {
+			reg = (hw->fc.high_water[i] << 10) | IXGBE_FCRTH_FCEN;
+			fcrtl = (hw->fc.low_water[i] << 10) | IXGBE_FCRTL_XONE;
+			IXGBE_WRITE_REG(hw, IXGBE_FCRTL_82599(i), fcrtl);
+		} else {
+			/* In order to prevent Tx hangs when the internal Tx
+			 * switch is enabled we must set the high water mark
+			 * to the Rx packet buffer size - 24KB.  This allows
+			 * the Tx switch to function even under heavy Rx
+			 * workloads.
+			 */
+			reg = IXGBE_READ_REG(hw, IXGBE_RXPBSIZE(i)) - 24576;
+			IXGBE_WRITE_REG(hw, IXGBE_FCRTL_82599(i), 0);
+		}
+
+		IXGBE_WRITE_REG(hw, IXGBE_FCRTH_82599(i), reg);
+	}
+
+	for (; i < MAX_TRAFFIC_CLASS; i++) {
+		IXGBE_WRITE_REG(hw, IXGBE_FCRTL_82599(i), 0);
+		IXGBE_WRITE_REG(hw, IXGBE_FCRTH_82599(i), 0);
+	}
+
+	/* Configure pause time (2 TCs per register) */
+	reg = hw->fc.pause_time * 0x00010001;
+	for (i = 0; i < (MAX_TRAFFIC_CLASS / 2); i++)
+		IXGBE_WRITE_REG(hw, IXGBE_FCTTV(i), reg);
+
+	/* Configure flow control refresh threshold value */
+	IXGBE_WRITE_REG(hw, IXGBE_FCRTV, hw->fc.pause_time / 2);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -302,7 +403,11 @@ s32 ixgbe_dcb_config_pfc_82599(struct ixgbe_hw *hw, u8 pfc_en, u8 *prio_tc)
  * Configure queue statistics registers, all queues belonging to same traffic
  * class uses a single set of queue statistics counters.
  */
+<<<<<<< HEAD
 static s32 ixgbe_dcb_config_tc_stats_82599(struct ixgbe_hw *hw)
+=======
+static int ixgbe_dcb_config_tc_stats_82599(struct ixgbe_hw *hw)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 reg = 0;
 	u8  i   = 0;
@@ -351,15 +456,27 @@ static s32 ixgbe_dcb_config_tc_stats_82599(struct ixgbe_hw *hw)
 /**
  * ixgbe_dcb_hw_config_82599 - Configure and enable DCB
  * @hw: pointer to hardware structure
+<<<<<<< HEAD
+=======
+ * @pfc_en: enabled pfc bitmask
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @refill: refill credits index by traffic class
  * @max: max credits index by traffic class
  * @bwg_id: bandwidth grouping indexed by traffic class
  * @prio_type: priority type indexed by traffic class
+<<<<<<< HEAD
  * @pfc_en: enabled pfc bitmask
  *
  * Configure dcb settings and enable dcb mode.
  */
 s32 ixgbe_dcb_hw_config_82599(struct ixgbe_hw *hw, u8 pfc_en, u16 *refill,
+=======
+ * @prio_tc: priority to tc assignments indexed by priority
+ *
+ * Configure dcb settings and enable dcb mode.
+ */
+int ixgbe_dcb_hw_config_82599(struct ixgbe_hw *hw, u8 pfc_en, u16 *refill,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      u16 *max, u8 *bwg_id, u8 *prio_type, u8 *prio_tc)
 {
 	ixgbe_dcb_config_rx_arbiter_82599(hw, refill, max, bwg_id,

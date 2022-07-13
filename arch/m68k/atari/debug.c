@@ -287,6 +287,11 @@ static void __init atari_init_midi_port(int cflag)
 
 static int __init atari_debug_setup(char *arg)
 {
+<<<<<<< HEAD
+=======
+	bool registered;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!MACH_IS_ATARI)
 		return 0;
 
@@ -294,6 +299,10 @@ static int __init atari_debug_setup(char *arg)
 		/* defaults to ser2 for a Falcon and ser1 otherwise */
 		arg = MACH_IS_FALCON ? "ser2" : "ser1";
 
+<<<<<<< HEAD
+=======
+	registered = !!atari_console_driver.write;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!strcmp(arg, "ser1")) {
 		/* ST-MFP Modem1 serial port */
 		atari_init_mfp_port(B9600|CS8);
@@ -317,7 +326,11 @@ static int __init atari_debug_setup(char *arg)
 		sound_ym.wd_data = sound_ym.rd_data_reg_sel | 0x20; /* strobe H */
 		atari_console_driver.write = atari_par_console_write;
 	}
+<<<<<<< HEAD
 	if (atari_console_driver.write)
+=======
+	if (atari_console_driver.write && !registered)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		register_console(&atari_console_driver);
 
 	return 0;

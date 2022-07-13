@@ -1,19 +1,31 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-ep93xx/soc.h
  *
  * Copyright (C) 2012 Open Kernel Labs <www.ok-labs.com>
  * Copyright (C) 2012 Ryan Mallon <rmallon@gmail.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _EP93XX_SOC_H
 #define _EP93XX_SOC_H
 
+<<<<<<< HEAD
 #include <mach/ep93xx-regs.h>
+=======
+#include "ep93xx-regs.h"
+#include "irqs.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * EP93xx Physical Memory Map:
@@ -69,6 +81,10 @@
 
 #define EP93XX_BOOT_ROM_BASE		EP93XX_AHB_IOMEM(0x00090000)
 
+<<<<<<< HEAD
+=======
+#define EP93XX_IDE_PHYS_BASE		EP93XX_AHB_PHYS(0x000a0000)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EP93XX_IDE_BASE			EP93XX_AHB_IOMEM(0x000a0000)
 
 #define EP93XX_VIC1_BASE		EP93XX_AHB_IOMEM(0x000b0000)
@@ -94,6 +110,10 @@
 #define EP93XX_KEY_MATRIX_PHYS_BASE	EP93XX_APB_PHYS(0x000f0000)
 #define EP93XX_KEY_MATRIX_BASE		EP93XX_APB_IOMEM(0x000f0000)
 
+<<<<<<< HEAD
+=======
+#define EP93XX_ADC_PHYS_BASE		EP93XX_APB_PHYS(0x00100000)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EP93XX_ADC_BASE			EP93XX_APB_IOMEM(0x00100000)
 #define EP93XX_TOUCHSCREEN_BASE		EP93XX_APB_IOMEM(0x00100000)
 
@@ -113,6 +133,7 @@
 #define EP93XX_SYSCON_PWRCNT		EP93XX_SYSCON_REG(0x04)
 #define EP93XX_SYSCON_PWRCNT_FIR_EN	(1<<31)
 #define EP93XX_SYSCON_PWRCNT_UARTBAUD	(1<<29)
+<<<<<<< HEAD
 #define EP93XX_SYSCON_PWRCNT_USH_EN	(1<<28)
 #define EP93XX_SYSCON_PWRCNT_DMA_M2M1	(1<<27)
 #define EP93XX_SYSCON_PWRCNT_DMA_M2M0	(1<<26)
@@ -126,6 +147,21 @@
 #define EP93XX_SYSCON_PWRCNT_DMA_M2P3	(1<<18)
 #define EP93XX_SYSCON_PWRCNT_DMA_M2P0	(1<<17)
 #define EP93XX_SYSCON_PWRCNT_DMA_M2P1	(1<<16)
+=======
+#define EP93XX_SYSCON_PWRCNT_USH_EN	28
+#define EP93XX_SYSCON_PWRCNT_DMA_M2M1	27
+#define EP93XX_SYSCON_PWRCNT_DMA_M2M0	26
+#define EP93XX_SYSCON_PWRCNT_DMA_M2P8	25
+#define EP93XX_SYSCON_PWRCNT_DMA_M2P9	24
+#define EP93XX_SYSCON_PWRCNT_DMA_M2P6	23
+#define EP93XX_SYSCON_PWRCNT_DMA_M2P7	22
+#define EP93XX_SYSCON_PWRCNT_DMA_M2P4	21
+#define EP93XX_SYSCON_PWRCNT_DMA_M2P5	20
+#define EP93XX_SYSCON_PWRCNT_DMA_M2P2	19
+#define EP93XX_SYSCON_PWRCNT_DMA_M2P3	18
+#define EP93XX_SYSCON_PWRCNT_DMA_M2P0	17
+#define EP93XX_SYSCON_PWRCNT_DMA_M2P1	16
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EP93XX_SYSCON_HALT		EP93XX_SYSCON_REG(0x08)
 #define EP93XX_SYSCON_STANDBY		EP93XX_SYSCON_REG(0x0c)
 #define EP93XX_SYSCON_CLKSET1		EP93XX_SYSCON_REG(0x20)
@@ -141,6 +177,7 @@
 #define EP93XX_SYSCON_DEVCFG_GONK	(1<<27)
 #define EP93XX_SYSCON_DEVCFG_TONG	(1<<26)
 #define EP93XX_SYSCON_DEVCFG_MONG	(1<<25)
+<<<<<<< HEAD
 #define EP93XX_SYSCON_DEVCFG_U3EN	(1<<24)
 #define EP93XX_SYSCON_DEVCFG_CPENA	(1<<23)
 #define EP93XX_SYSCON_DEVCFG_A2ONG	(1<<22)
@@ -148,6 +185,15 @@
 #define EP93XX_SYSCON_DEVCFG_U2EN	(1<<20)
 #define EP93XX_SYSCON_DEVCFG_EXVC	(1<<19)
 #define EP93XX_SYSCON_DEVCFG_U1EN	(1<<18)
+=======
+#define EP93XX_SYSCON_DEVCFG_U3EN	24
+#define EP93XX_SYSCON_DEVCFG_CPENA	(1<<23)
+#define EP93XX_SYSCON_DEVCFG_A2ONG	(1<<22)
+#define EP93XX_SYSCON_DEVCFG_A1ONG	(1<<21)
+#define EP93XX_SYSCON_DEVCFG_U2EN	20
+#define EP93XX_SYSCON_DEVCFG_EXVC	(1<<19)
+#define EP93XX_SYSCON_DEVCFG_U1EN	18
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EP93XX_SYSCON_DEVCFG_TIN	(1<<17)
 #define EP93XX_SYSCON_DEVCFG_HC3IN	(1<<15)
 #define EP93XX_SYSCON_DEVCFG_HC3EN	(1<<14)
@@ -165,12 +211,20 @@
 #define EP93XX_SYSCON_DEVCFG_KEYS	(1<<1)
 #define EP93XX_SYSCON_DEVCFG_SHENA	(1<<0)
 #define EP93XX_SYSCON_VIDCLKDIV		EP93XX_SYSCON_REG(0x84)
+<<<<<<< HEAD
 #define EP93XX_SYSCON_CLKDIV_ENABLE	(1<<15)
+=======
+#define EP93XX_SYSCON_CLKDIV_ENABLE	15
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EP93XX_SYSCON_CLKDIV_ESEL	(1<<14)
 #define EP93XX_SYSCON_CLKDIV_PSEL	(1<<13)
 #define EP93XX_SYSCON_CLKDIV_PDIV_SHIFT	8
 #define EP93XX_SYSCON_I2SCLKDIV		EP93XX_SYSCON_REG(0x8c)
+<<<<<<< HEAD
 #define EP93XX_SYSCON_I2SCLKDIV_SENA	(1<<31)
+=======
+#define EP93XX_SYSCON_I2SCLKDIV_SENA	31
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EP93XX_SYSCON_I2SCLKDIV_ORIDE   (1<<29)
 #define EP93XX_SYSCON_I2SCLKDIV_SPOL	(1<<19)
 #define EP93XX_I2SCLKDIV_SDIV		(1 << 16)
@@ -179,9 +233,15 @@
 #define EP93XX_I2SCLKDIV_LRDIV128	(2 << 17)
 #define EP93XX_I2SCLKDIV_LRDIV_MASK	(3 << 17)
 #define EP93XX_SYSCON_KEYTCHCLKDIV	EP93XX_SYSCON_REG(0x90)
+<<<<<<< HEAD
 #define EP93XX_SYSCON_KEYTCHCLKDIV_TSEN	(1<<31)
 #define EP93XX_SYSCON_KEYTCHCLKDIV_ADIV	(1<<16)
 #define EP93XX_SYSCON_KEYTCHCLKDIV_KEN	(1<<15)
+=======
+#define EP93XX_SYSCON_KEYTCHCLKDIV_TSEN	31
+#define EP93XX_SYSCON_KEYTCHCLKDIV_ADIV	16
+#define EP93XX_SYSCON_KEYTCHCLKDIV_KEN	15
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define EP93XX_SYSCON_KEYTCHCLKDIV_KDIV	(1<<0)
 #define EP93XX_SYSCON_SYSCFG		EP93XX_SYSCON_REG(0x9c)
 #define EP93XX_SYSCON_SYSCFG_REV_MASK	(0xf0000000)

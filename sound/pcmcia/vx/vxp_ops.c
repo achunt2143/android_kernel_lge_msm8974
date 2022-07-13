@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram VXpocket soundcards
  *
  * lowlevel routines for VXpocket soundcards
  *
  * Copyright (c) 2002 by Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -28,7 +35,11 @@
 #include "vxpocket.h"
 
 
+<<<<<<< HEAD
 static int vxp_reg_offset[VX_REG_MAX] = {
+=======
+static const int vxp_reg_offset[VX_REG_MAX] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[VX_ICR]	= 0x00,		// ICR
 	[VX_CVR]	= 0x01,		// CVR
 	[VX_ISR]	= 0x02,		// ISR
@@ -50,7 +61,11 @@ static int vxp_reg_offset[VX_REG_MAX] = {
 
 static inline unsigned long vxp_reg_addr(struct vx_core *_chip, int reg)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return chip->port + vxp_reg_offset[reg];
 }
 
@@ -110,7 +125,11 @@ static int vx_check_magic(struct vx_core *chip)
 
 static void vxp_reset_dsp(struct vx_core *_chip)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set the reset dsp bit to 1 */
 	vx_outb(chip, CDSP, chip->regCDSP | VXP_CDSP_DSP_RESET_MASK);
@@ -128,7 +147,11 @@ static void vxp_reset_dsp(struct vx_core *_chip)
  */
 static void vxp_reset_codec(struct vx_core *_chip)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set the reset CODEC bit to 1. */
 	vx_outb(chip, CDSP, chip->regCDSP | VXP_CDSP_CODEC_RESET_MASK);
@@ -147,7 +170,11 @@ static void vxp_reset_codec(struct vx_core *_chip)
  */
 static int vxp_load_xilinx_binary(struct vx_core *_chip, const struct firmware *fw)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int i;
 	int c;
 	int regCSUER, regRUER;
@@ -201,7 +228,11 @@ static int vxp_load_xilinx_binary(struct vx_core *_chip, const struct firmware *
 	c |= (int)vx_inb(chip, RXM) << 8;
 	c |= vx_inb(chip, RXL);
 
+<<<<<<< HEAD
 	snd_printdd(KERN_DEBUG "xilinx: dsp size received 0x%x, orig 0x%Zx\n", c, fw->size);
+=======
+	snd_printdd(KERN_DEBUG "xilinx: dsp size received 0x%x, orig 0x%zx\n", c, fw->size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	vx_outb(chip, ICR, ICR_HF0);
 
@@ -250,9 +281,17 @@ static int vxp_load_dsp(struct vx_core *vx, int index, const struct firmware *fw
 	switch (index) {
 	case 0:
 		/* xilinx boot */
+<<<<<<< HEAD
 		if ((err = vx_check_magic(vx)) < 0)
 			return err;
 		if ((err = snd_vx_load_boot_image(vx, fw)) < 0)
+=======
+		err = vx_check_magic(vx);
+		if (err < 0)
+			return err;
+		err = snd_vx_load_boot_image(vx, fw);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		return 0;
 	case 1:
@@ -280,7 +319,11 @@ static int vxp_load_dsp(struct vx_core *vx, int index, const struct firmware *fw
  */
 static int vxp_test_and_ack(struct vx_core *_chip)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* not booted yet? */
 	if (! (_chip->chip_status & VX_STAT_XILINX_LOADED))
@@ -307,7 +350,11 @@ static int vxp_test_and_ack(struct vx_core *_chip)
  */
 static void vxp_validate_irq(struct vx_core *_chip, int enable)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set the interrupt enable bit to 1 in CDSP register */
 	if (enable)
@@ -323,7 +370,11 @@ static void vxp_validate_irq(struct vx_core *_chip, int enable)
  */
 static void vx_setup_pseudo_dma(struct vx_core *_chip, int do_write)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Interrupt mode and HREQ pin enabled for host transmit / receive data transfers */
 	vx_outb(chip, ICR, do_write ? ICR_TREQ : ICR_RREQ);
@@ -343,7 +394,11 @@ static void vx_setup_pseudo_dma(struct vx_core *_chip, int do_write)
  */
 static void vx_release_pseudo_dma(struct vx_core *_chip)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Disable DMA and 16-bit accesses */
 	chip->regDIALOG &= ~(VXP_DLG_DMAWRITE_SEL_MASK|
@@ -369,13 +424,22 @@ static void vxp_dma_write(struct vx_core *chip, struct snd_pcm_runtime *runtime,
 	unsigned short *addr = (unsigned short *)(runtime->dma_area + offset);
 
 	vx_setup_pseudo_dma(chip, 1);
+<<<<<<< HEAD
 	if (offset + count > pipe->buffer_bytes) {
+=======
+	if (offset + count >= pipe->buffer_bytes) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int length = pipe->buffer_bytes - offset;
 		count -= length;
 		length >>= 1; /* in 16bit words */
 		/* Transfer using pseudo-dma. */
+<<<<<<< HEAD
 		while (length-- > 0) {
 			outw(cpu_to_le16(*addr), port);
+=======
+		for (; length > 0; length--) {
+			outw(*addr, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			addr++;
 		}
 		addr = (unsigned short *)runtime->dma_area;
@@ -384,8 +448,13 @@ static void vxp_dma_write(struct vx_core *chip, struct snd_pcm_runtime *runtime,
 	pipe->hw_ptr += count;
 	count >>= 1; /* in 16bit words */
 	/* Transfer using pseudo-dma. */
+<<<<<<< HEAD
 	while (count-- > 0) {
 		outw(cpu_to_le16(*addr), port);
+=======
+	for (; count > 0; count--) {
+		outw(*addr, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		addr++;
 	}
 	vx_release_pseudo_dma(chip);
@@ -403,7 +472,11 @@ static void vxp_dma_write(struct vx_core *chip, struct snd_pcm_runtime *runtime,
 static void vxp_dma_read(struct vx_core *chip, struct snd_pcm_runtime *runtime,
 			 struct vx_pipe *pipe, int count)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *pchip = (struct snd_vxpocket *)chip;
+=======
+	struct snd_vxpocket *pchip = to_vxpocket(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	long port = vxp_reg_addr(chip, VX_DMA);
 	int offset = pipe->hw_ptr;
 	unsigned short *addr = (unsigned short *)(runtime->dma_area + offset);
@@ -411,26 +484,44 @@ static void vxp_dma_read(struct vx_core *chip, struct snd_pcm_runtime *runtime,
 	if (snd_BUG_ON(count % 2))
 		return;
 	vx_setup_pseudo_dma(chip, 0);
+<<<<<<< HEAD
 	if (offset + count > pipe->buffer_bytes) {
+=======
+	if (offset + count >= pipe->buffer_bytes) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int length = pipe->buffer_bytes - offset;
 		count -= length;
 		length >>= 1; /* in 16bit words */
 		/* Transfer using pseudo-dma. */
+<<<<<<< HEAD
 		while (length-- > 0)
 			*addr++ = le16_to_cpu(inw(port));
+=======
+		for (; length > 0; length--)
+			*addr++ = inw(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		addr = (unsigned short *)runtime->dma_area;
 		pipe->hw_ptr = 0;
 	}
 	pipe->hw_ptr += count;
 	count >>= 1; /* in 16bit words */
 	/* Transfer using pseudo-dma. */
+<<<<<<< HEAD
 	while (count-- > 1)
 		*addr++ = le16_to_cpu(inw(port));
+=======
+	for (; count > 1; count--)
+		*addr++ = inw(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Disable DMA */
 	pchip->regDIALOG &= ~VXP_DLG_DMAREAD_SEL_MASK;
 	vx_outb(chip, DIALOG, pchip->regDIALOG);
 	/* Read the last word (16 bits) */
+<<<<<<< HEAD
 	*addr = le16_to_cpu(inw(port));
+=======
+	*addr = inw(port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Disable 16-bit accesses */
 	pchip->regDIALOG &= ~VXP_DLG_DMA16_SEL_MASK;
 	vx_outb(chip, DIALOG, pchip->regDIALOG);
@@ -467,13 +558,21 @@ static void vxp_write_codec_reg(struct vx_core *chip, int codec, unsigned int da
  */
 void vx_set_mic_boost(struct vx_core *chip, int boost)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *pchip = (struct snd_vxpocket *)chip;
 	unsigned long flags;
+=======
+	struct snd_vxpocket *pchip = to_vxpocket(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (chip->chip_status & VX_STAT_IS_STALE)
 		return;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&chip->lock, flags);
+=======
+	mutex_lock(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pchip->regCDSP & P24_CDSP_MICS_SEL_MASK) {
 		if (boost) {
 			/* boost: 38 dB */
@@ -486,7 +585,11 @@ void vx_set_mic_boost(struct vx_core *chip, int boost)
                 }
 		vx_outb(chip, CDSP, pchip->regCDSP);
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->lock, flags);
+=======
+	mutex_unlock(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -510,18 +613,30 @@ static int vx_compute_mic_level(int level)
  */
 void vx_set_mic_level(struct vx_core *chip, int level)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *pchip = (struct snd_vxpocket *)chip;
 	unsigned long flags;
+=======
+	struct snd_vxpocket *pchip = to_vxpocket(chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (chip->chip_status & VX_STAT_IS_STALE)
 		return;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&chip->lock, flags);
+=======
+	mutex_lock(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pchip->regCDSP & VXP_CDSP_MIC_SEL_MASK) {
 		level = vx_compute_mic_level(level);
 		vx_outb(chip, MICRO, level);
 	}
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&chip->lock, flags);
+=======
+	mutex_unlock(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -530,7 +645,11 @@ void vx_set_mic_level(struct vx_core *chip, int level)
  */
 static void vxp_change_audio_source(struct vx_core *_chip, int src)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (src) {
 	case VX_AUDIO_SRC_DIGITAL:
@@ -570,7 +689,11 @@ static void vxp_change_audio_source(struct vx_core *_chip, int src)
  */
 static void vxp_set_clock_source(struct vx_core *_chip, int source)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (source == INTERNAL_QUARTZ)
 		chip->regCDSP &= ~VXP_CDSP_CLOCKIN_SEL_MASK;
@@ -585,7 +708,11 @@ static void vxp_set_clock_source(struct vx_core *_chip, int source)
  */
 static void vxp_reset_board(struct vx_core *_chip, int cold_reset)
 {
+<<<<<<< HEAD
 	struct snd_vxpocket *chip = (struct snd_vxpocket *)_chip;
+=======
+	struct snd_vxpocket *chip = to_vxpocket(_chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->regCDSP = 0;
 	chip->regDIALOG = 0;
@@ -596,7 +723,11 @@ static void vxp_reset_board(struct vx_core *_chip, int cold_reset)
  * callbacks
  */
 /* exported */
+<<<<<<< HEAD
 struct snd_vx_ops snd_vxpocket_ops = {
+=======
+const struct snd_vx_ops snd_vxpocket_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.in8 = vxp_inb,
 	.out8 = vxp_outb,
 	.test_and_ack = vxp_test_and_ack,

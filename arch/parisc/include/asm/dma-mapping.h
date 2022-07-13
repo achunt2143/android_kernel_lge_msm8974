@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _PARISC_DMA_MAPPING_H
 #define _PARISC_DMA_MAPPING_H
 
@@ -25,6 +26,15 @@ struct hppa_dma_ops {
 ** We could live without the hppa_dma_ops indirection if we didn't want
 ** to support 4 different coherent dma models with one binary (they will
 ** someday be loadable modules):
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _PARISC_DMA_MAPPING_H
+#define _PARISC_DMA_MAPPING_H
+
+/*
+** We need to support 4 different coherent dma models with one binary:
+**
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 **     I/O MMU        consistent method           dma_sync behavior
 **  =============   ======================       =======================
 **  a) PA-7x00LC    uncachable host memory          flush/purge
@@ -39,6 +49,7 @@ struct hppa_dma_ops {
 ** flush/purge and allocate "regular" cacheable pages for everything.
 */
 
+<<<<<<< HEAD
 #ifdef CONFIG_PA11
 extern struct hppa_dma_ops pcxl_dma_ops;
 extern struct hppa_dma_ops pcx_dma_ops;
@@ -238,4 +249,13 @@ void * sba_get_iommu(struct parisc_device *dev);
 /* At the moment, we panic on error for IOMMU resource exaustion */
 #define dma_mapping_error(dev, x)	0
 
+=======
+extern const struct dma_map_ops *hppa_dma_ops;
+
+static inline const struct dma_map_ops *get_arch_dma_ops(void)
+{
+	return hppa_dma_ops;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

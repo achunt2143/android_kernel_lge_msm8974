@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/drivers/net/ethernet/ibm/ehea/ehea_qmr.c
  *
@@ -9,6 +13,7 @@
  *       Christoph Raisch <raisch@de.ibm.com>
  *       Jan-Bernd Themann <themann@de.ibm.com>
  *       Thomas Klein <tklein@de.ibm.com>
+<<<<<<< HEAD
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -24,6 +29,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
@@ -64,11 +71,18 @@ static int hw_queue_ctor(struct hw_queue *queue, const u32 nr_of_pages,
 	}
 
 	queue->queue_length = nr_of_pages * pagesize;
+<<<<<<< HEAD
 	queue->queue_pages = kmalloc(nr_of_pages * sizeof(void *), GFP_KERNEL);
 	if (!queue->queue_pages) {
 		pr_err("no mem for queue_pages\n");
 		return -ENOMEM;
 	}
+=======
+	queue->queue_pages = kmalloc_array(nr_of_pages, sizeof(void *),
+					   GFP_KERNEL);
+	if (!queue->queue_pages)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * allocate pages for queue:
@@ -104,12 +118,21 @@ out_nomem:
 
 static void hw_queue_dtor(struct hw_queue *queue)
 {
+<<<<<<< HEAD
 	int pages_per_kpage = PAGE_SIZE / queue->pagesize;
+=======
+	int pages_per_kpage;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, nr_pages;
 
 	if (!queue || !queue->queue_pages)
 		return;
 
+<<<<<<< HEAD
+=======
+	pages_per_kpage = PAGE_SIZE / queue->pagesize;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nr_pages = queue->queue_length / queue->pagesize;
 
 	for (i = 0; i < nr_pages; i += pages_per_kpage)
@@ -122,17 +145,27 @@ struct ehea_cq *ehea_create_cq(struct ehea_adapter *adapter,
 			       int nr_of_cqe, u64 eq_handle, u32 cq_token)
 {
 	struct ehea_cq *cq;
+<<<<<<< HEAD
 	struct h_epa epa;
 	u64 *cq_handle_ref, hret, rpage;
 	u32 act_nr_of_entries, act_pages, counter;
+=======
+	u64 hret, rpage;
+	u32 counter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	void *vpage;
 
 	cq = kzalloc(sizeof(*cq), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!cq) {
 		pr_err("no mem for cq\n");
 		goto out_nomem;
 	}
+=======
+	if (!cq)
+		goto out_nomem;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cq->attr.max_nr_of_cqes = nr_of_cqe;
 	cq->attr.cq_token = cq_token;
@@ -140,10 +173,13 @@ struct ehea_cq *ehea_create_cq(struct ehea_adapter *adapter,
 
 	cq->adapter = adapter;
 
+<<<<<<< HEAD
 	cq_handle_ref = &cq->fw_handle;
 	act_nr_of_entries = 0;
 	act_pages = 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hret = ehea_h_alloc_resource_cq(adapter->handle, &cq->attr,
 					&cq->fw_handle, &cq->epas);
 	if (hret != H_SUCCESS) {
@@ -163,7 +199,11 @@ struct ehea_cq *ehea_create_cq(struct ehea_adapter *adapter,
 			goto out_kill_hwq;
 		}
 
+<<<<<<< HEAD
 		rpage = virt_to_abs(vpage);
+=======
+		rpage = __pa(vpage);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hret = ehea_h_register_rpage(adapter->handle,
 					     0, EHEA_CQ_REGISTER_ORIG,
 					     cq->fw_handle, rpage, 1);
@@ -191,7 +231,10 @@ struct ehea_cq *ehea_create_cq(struct ehea_adapter *adapter,
 	}
 
 	hw_qeit_reset(&cq->hw_queue);
+<<<<<<< HEAD
 	epa = cq->epas.kernel;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ehea_reset_cq_ep(cq);
 	ehea_reset_cq_n1(cq);
 
@@ -257,10 +300,15 @@ struct ehea_eq *ehea_create_eq(struct ehea_adapter *adapter,
 	struct ehea_eq *eq;
 
 	eq = kzalloc(sizeof(*eq), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!eq) {
 		pr_err("no mem for eq\n");
 		return NULL;
 	}
+=======
+	if (!eq)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	eq->adapter = adapter;
 	eq->attr.type = type;
@@ -290,7 +338,11 @@ struct ehea_eq *ehea_create_eq(struct ehea_adapter *adapter,
 			goto out_kill_hwq;
 		}
 
+<<<<<<< HEAD
 		rpage = virt_to_abs(vpage);
+=======
+		rpage = __pa(vpage);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		hret = ehea_h_register_rpage(adapter->handle, 0,
 					     EHEA_EQ_REGISTER_ORIG,
@@ -376,9 +428,13 @@ int ehea_destroy_eq(struct ehea_eq *eq)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
  * allocates memory for a queue and registers pages in phyp
  */
+=======
+/* allocates memory for a queue and registers pages in phyp */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ehea_qp_alloc_register(struct ehea_qp *qp, struct hw_queue *hw_queue,
 			   int nr_pages, int wqe_size, int act_nr_sges,
 			   struct ehea_adapter *adapter, int h_call_q_selector)
@@ -397,7 +453,11 @@ static int ehea_qp_alloc_register(struct ehea_qp *qp, struct hw_queue *hw_queue,
 			pr_err("hw_qpageit_get_inc failed\n");
 			goto out_kill_hwq;
 		}
+<<<<<<< HEAD
 		rpage = virt_to_abs(vpage);
+=======
+		rpage = __pa(vpage);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hret = ehea_h_register_rpage(adapter->handle,
 					     0, h_call_q_selector,
 					     qp->fw_handle, rpage, 1);
@@ -430,10 +490,15 @@ struct ehea_qp *ehea_create_qp(struct ehea_adapter *adapter,
 
 
 	qp = kzalloc(sizeof(*qp), GFP_KERNEL);
+<<<<<<< HEAD
 	if (!qp) {
 		pr_err("no mem for qp\n");
 		return NULL;
 	}
+=======
+	if (!qp)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	qp->adapter = adapter;
 
@@ -697,6 +762,7 @@ int ehea_rem_sect_bmap(unsigned long pfn, unsigned long nr_pages)
 
 static int ehea_is_hugepage(unsigned long pfn)
 {
+<<<<<<< HEAD
 	int page_order;
 
 	if (pfn & EHEA_HUGEPAGE_PFN_MASK)
@@ -704,6 +770,12 @@ static int ehea_is_hugepage(unsigned long pfn)
 
 	page_order = compound_order(pfn_to_page(pfn));
 	if (page_order + PAGE_SHIFT != EHEA_HUGEPAGESHIFT)
+=======
+	if (pfn & EHEA_HUGEPAGE_PFN_MASK)
+		return 0;
+
+	if (page_shift(pfn_to_page(pfn)) != EHEA_HUGEPAGESHIFT)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	return 1;
@@ -792,7 +864,11 @@ u64 ehea_map_vaddr(void *caddr)
 	if (!ehea_bmap)
 		return EHEA_INVAL_ADDR;
 
+<<<<<<< HEAD
 	index = virt_to_abs(caddr) >> SECTION_SIZE_BITS;
+=======
+	index = __pa(caddr) >> SECTION_SIZE_BITS;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	top = (index >> EHEA_TOP_INDEX_SHIFT) & EHEA_INDEX_MASK;
 	if (!ehea_bmap->top[top])
 		return EHEA_INVAL_ADDR;
@@ -814,7 +890,11 @@ static inline void *ehea_calc_sectbase(int top, int dir, int idx)
 	unsigned long ret = idx;
 	ret |= dir << EHEA_DIR_INDEX_SHIFT;
 	ret |= top << EHEA_TOP_INDEX_SHIFT;
+<<<<<<< HEAD
 	return abs_to_virt(ret << SECTION_SIZE_BITS);
+=======
+	return __va(ret << SECTION_SIZE_BITS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static u64 ehea_reg_mr_section(int top, int dir, int idx, u64 *pt,
@@ -824,7 +904,11 @@ static u64 ehea_reg_mr_section(int top, int dir, int idx, u64 *pt,
 	void *pg;
 	u64 j, m, hret;
 	unsigned long k = 0;
+<<<<<<< HEAD
 	u64 pt_abs = virt_to_abs(pt);
+=======
+	u64 pt_abs = __pa(pt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void *sectbase = ehea_calc_sectbase(top, dir, idx);
 
@@ -832,7 +916,11 @@ static u64 ehea_reg_mr_section(int top, int dir, int idx, u64 *pt,
 
 		for (m = 0; m < EHEA_MAX_RPAGE; m++) {
 			pg = sectbase + ((k++) * EHEA_PAGESIZE);
+<<<<<<< HEAD
 			pt[m] = virt_to_abs(pg);
+=======
+			pt[m] = __pa(pg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		hret = ehea_h_register_rpage_mr(adapter->handle, mr->handle, 0,
 						0, pt_abs, EHEA_MAX_RPAGE);

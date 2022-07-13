@@ -1,11 +1,23 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the Zorro bus specific drivers.
 #
 
+<<<<<<< HEAD
 obj-$(CONFIG_ZORRO)	+= zorro.o zorro-driver.o zorro-sysfs.o names.o
 obj-$(CONFIG_PROC_FS)	+= proc.o
 
 hostprogs-y 		:= gen-devlist
+=======
+obj-$(CONFIG_ZORRO)	+= zorro.o zorro-driver.o zorro-sysfs.o
+obj-$(CONFIG_PROC_FS)	+= proc.o
+obj-$(CONFIG_ZORRO_NAMES) +=  names.o
+
+hostprogs		:= gen-devlist
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 # Files generated that shall be removed upon make clean
 clean-files := devlist.h

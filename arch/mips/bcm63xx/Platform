@@ -1,7 +1,10 @@
 #
 # Broadcom BCM63XX boards
 #
+<<<<<<< HEAD
 platform-$(CONFIG_BCM63XX)	+= bcm63xx/
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 cflags-$(CONFIG_BCM63XX)	+=					\
 		-I$(srctree)/arch/mips/include/asm/mach-bcm63xx/
 load-$(CONFIG_BCM63XX)		:= 0xffffffff80010000

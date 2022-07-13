@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *    ata_piix.c - Intel PATA/SATA controllers
  *
@@ -10,12 +11,26 @@
  *	Copyright 2003-2005 Jeff Garzik
  *
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *    ata_piix.c - Intel PATA/SATA controllers
+ *
+ *    Maintained by:  Tejun Heo <tj@kernel.org>
+ *    		    Please ALWAYS copy linux-ide@vger.kernel.org
+ *		    on emails.
+ *
+ *	Copyright 2003-2005 Red Hat Inc
+ *	Copyright 2003-2005 Jeff Garzik
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	Copyright header from piix.c:
  *
  *  Copyright (C) 1998-1999 Andrzej Krzysztofowicz, Author and Maintainer
  *  Copyright (C) 1998-2000 Andre Hedrick <andre@linux-ide.org>
  *  Copyright (C) 2003 Red Hat Inc
  *
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -34,6 +49,10 @@
  *
  *  libata documentation is available via 'make {ps|pdf}docs',
  *  as Documentation/DocBook/libata.*
+=======
+ *  libata documentation is available via 'make {ps|pdf}docs',
+ *  as Documentation/driver-api/libata.rst
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Hardware documentation available at http://developer.intel.com/
  *
@@ -94,13 +113,21 @@
 #include <scsi/scsi_host.h>
 #include <linux/libata.h>
 #include <linux/dmi.h>
+<<<<<<< HEAD
+=======
+#include <trace/events/libata.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRV_NAME	"ata_piix"
 #define DRV_VERSION	"2.13"
 
 enum {
 	PIIX_IOCFG		= 0x54, /* IDE I/O configuration register */
+<<<<<<< HEAD
 	ICH5_PMR		= 0x90, /* port mapping register */
+=======
+	ICH5_PMR		= 0x90, /* address map register */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ICH5_PCS		= 0x92,	/* port control and status */
 	PIIX_SIDPR_BAR		= 5,
 	PIIX_SIDPR_LEN		= 16,
@@ -166,6 +193,7 @@ struct piix_host_priv {
 	void __iomem *sidpr;
 };
 
+<<<<<<< HEAD
 static int piix_init_one(struct pci_dev *pdev,
 			 const struct pci_device_id *ent);
 static void piix_remove_one(struct pci_dev *pdev);
@@ -188,6 +216,8 @@ static int piix_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg);
 static int piix_pci_device_resume(struct pci_dev *pdev);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int in_module_init = 1;
 
 static const struct pci_device_id piix_pci_tbl[] = {
@@ -255,7 +285,11 @@ static const struct pci_device_id piix_pci_tbl[] = {
 	  PCI_CLASS_STORAGE_IDE << 8, 0xffff00, ich6m_sata },
 	/* 82801GB/GR/GH (ICH7, identical to ICH6) */
 	{ 0x8086, 0x27c0, PCI_ANY_ID, PCI_ANY_ID, 0, 0, ich6_sata },
+<<<<<<< HEAD
 	/* 2801GBM/GHM (ICH7M, identical to ICH6M) */
+=======
+	/* 82801GBM/GHM (ICH7M, identical to ICH6M)  */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x8086, 0x27c4, PCI_ANY_ID, PCI_ANY_ID, 0, 0, ich6m_sata },
 	/* Enterprise Southbridge 2 (631xESB/632xESB) */
 	{ 0x8086, 0x2680, PCI_ANY_ID, PCI_ANY_ID, 0, 0, ich6_sata },
@@ -374,6 +408,7 @@ static const struct pci_device_id piix_pci_tbl[] = {
 	{ }	/* terminate list */
 };
 
+<<<<<<< HEAD
 static struct pci_driver piix_pci_driver = {
 	.name			= DRV_NAME,
 	.id_table		= piix_pci_tbl,
@@ -432,6 +467,8 @@ static struct ata_port_operations piix_sidpr_sata_ops = {
 	.set_lpm		= piix_sidpr_set_lpm,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct piix_map_db ich5_map_db = {
 	.mask = 0x7,
 	.port_enable = 0x3,
@@ -538,6 +575,7 @@ static const struct piix_map_db *piix_map_db_table[] = {
 	[ich8_2port_sata_byt]	= &ich8_2port_map_db,
 };
 
+<<<<<<< HEAD
 static struct ata_port_info piix_port_info[] = {
 	[piix_pata_mwdma] = 	/* PIIX3 MWDMA only */
 	{
@@ -699,6 +737,9 @@ static struct ata_port_info piix_port_info[] = {
 };
 
 static struct pci_bits piix_enable_bits[] = {
+=======
+static const struct pci_bits piix_enable_bits[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x41U, 1U, 0x80UL, 0x80UL },	/* port 0 */
 	{ 0x43U, 1U, 0x80UL, 0x80UL },	/* port 1 */
 };
@@ -732,6 +773,10 @@ static const struct ich_laptop ich_laptop[] = {
 	{ 0x27DF, 0x152D, 0x0778 },	/* ICH7 on unknown Intel */
 	{ 0x24CA, 0x1025, 0x0061 },	/* ICH4 on ACER Aspire 2023WLMi */
 	{ 0x24CA, 0x1025, 0x003d },	/* ICH4 on ACER TM290 */
+<<<<<<< HEAD
+=======
+	{ 0x24CA, 0x10CF, 0x11AB },	/* ICH4M on Fujitsu-Siemens Lifebook S6120 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x266F, 0x1025, 0x0066 },	/* ICH6 on ACER Aspire 1694WLMi */
 	{ 0x2653, 0x1043, 0x82D8 },	/* ICH6M on Asus Eee 701 */
 	{ 0x27df, 0x104d, 0x900e },	/* ICH7 on Sony TZ-90 */
@@ -765,7 +810,11 @@ static int ich_pata_cable_detect(struct ata_port *ap)
 	const struct ich_laptop *lap = &ich_laptop[0];
 	u8 mask;
 
+<<<<<<< HEAD
 	/* Check for specials - Acer Aspire 5602WLMi */
+=======
+	/* Check for specials */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (lap->device) {
 		if (lap->device == pdev->device &&
 		    lap->subvendor == pdev->subsystem_vendor &&
@@ -1072,6 +1121,7 @@ static int piix_sidpr_set_lpm(struct ata_link *link, enum ata_lpm_policy policy,
 
 static bool piix_irq_check(struct ata_port *ap)
 {
+<<<<<<< HEAD
 	if (unlikely(!ap->ioaddr.bmdma_addr))
 		return false;
 
@@ -1079,6 +1129,20 @@ static bool piix_irq_check(struct ata_port *ap)
 }
 
 #ifdef CONFIG_PM
+=======
+	unsigned char host_stat;
+
+	if (unlikely(!ap->ioaddr.bmdma_addr))
+		return false;
+
+	host_stat = ap->ops->bmdma_status(ap);
+	trace_ata_bmdma_status(ap, host_stat);
+
+	return host_stat & ATA_DMA_INTR;
+}
+
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int piix_broken_suspend(void)
 {
 	static const struct dmi_system_id sysids[] = {
@@ -1097,6 +1161,15 @@ static int piix_broken_suspend(void)
 			},
 		},
 		{
+<<<<<<< HEAD
+=======
+			.ident = "TECRA M3",
+			.matches = {
+				DMI_MATCH(DMI_OEM_STRING, "Tecra M3,"),
+			},
+		},
+		{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			.ident = "TECRA M4",
 			.matches = {
 				DMI_MATCH(DMI_SYS_VENDOR, "TOSHIBA"),
@@ -1211,18 +1284,24 @@ static int piix_broken_suspend(void)
 
 		{ }	/* terminate list */
 	};
+<<<<<<< HEAD
 	static const char *oemstrs[] = {
 		"Tecra M3,",
 	};
 	int i;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dmi_check_system(sysids))
 		return 1;
 
+<<<<<<< HEAD
 	for (i = 0; i < ARRAY_SIZE(oemstrs); i++)
 		if (dmi_find_device(DMI_DEV_TYPE_OEM_STRING, oemstrs[i], NULL))
 			return 1;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* TECRA M4 sometimes forgets its identify and reports bogus
 	 * DMI information.  As the bogus information is a bit
 	 * generic, match as many entries as possible.  This manual
@@ -1243,6 +1322,7 @@ static int piix_broken_suspend(void)
 
 static int piix_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
 	unsigned long flags;
 	int rc = 0;
@@ -1250,6 +1330,12 @@ static int piix_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
 	rc = ata_host_suspend(host, mesg);
 	if (rc)
 		return rc;
+=======
+	struct ata_host *host = pci_get_drvdata(pdev);
+	unsigned long flags;
+
+	ata_host_suspend(host, mesg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Some braindamaged ACPI suspend implementations expect the
 	 * controller to be awake on entry; otherwise, it burns cpu
@@ -1278,7 +1364,11 @@ static int piix_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
 
 static int piix_pci_device_resume(struct pci_dev *pdev)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int rc;
 
@@ -1314,6 +1404,218 @@ static u8 piix_vmw_bmdma_status(struct ata_port *ap)
 	return ata_bmdma_status(ap) & ~ATA_DMA_ERR;
 }
 
+<<<<<<< HEAD
+=======
+static const struct scsi_host_template piix_sht = {
+	ATA_BMDMA_SHT(DRV_NAME),
+};
+
+static struct ata_port_operations piix_sata_ops = {
+	.inherits		= &ata_bmdma32_port_ops,
+	.sff_irq_check		= piix_irq_check,
+	.port_start		= piix_port_start,
+};
+
+static struct ata_port_operations piix_pata_ops = {
+	.inherits		= &piix_sata_ops,
+	.cable_detect		= ata_cable_40wire,
+	.set_piomode		= piix_set_piomode,
+	.set_dmamode		= piix_set_dmamode,
+	.prereset		= piix_pata_prereset,
+};
+
+static struct ata_port_operations piix_vmw_ops = {
+	.inherits		= &piix_pata_ops,
+	.bmdma_status		= piix_vmw_bmdma_status,
+};
+
+static struct ata_port_operations ich_pata_ops = {
+	.inherits		= &piix_pata_ops,
+	.cable_detect		= ich_pata_cable_detect,
+	.set_dmamode		= ich_set_dmamode,
+};
+
+static struct attribute *piix_sidpr_shost_attrs[] = {
+	&dev_attr_link_power_management_policy.attr,
+	NULL
+};
+
+ATTRIBUTE_GROUPS(piix_sidpr_shost);
+
+static const struct scsi_host_template piix_sidpr_sht = {
+	ATA_BMDMA_SHT(DRV_NAME),
+	.shost_groups		= piix_sidpr_shost_groups,
+};
+
+static struct ata_port_operations piix_sidpr_sata_ops = {
+	.inherits		= &piix_sata_ops,
+	.hardreset		= sata_std_hardreset,
+	.scr_read		= piix_sidpr_scr_read,
+	.scr_write		= piix_sidpr_scr_write,
+	.set_lpm		= piix_sidpr_set_lpm,
+};
+
+static struct ata_port_info piix_port_info[] = {
+	[piix_pata_mwdma] =	/* PIIX3 MWDMA only */
+	{
+		.flags		= PIIX_PATA_FLAGS,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA12_ONLY, /* mwdma1-2 ?? CHECK 0 should be ok but slow */
+		.port_ops	= &piix_pata_ops,
+	},
+
+	[piix_pata_33] =	/* PIIX4 at 33MHz */
+	{
+		.flags		= PIIX_PATA_FLAGS,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA12_ONLY, /* mwdma1-2 ?? CHECK 0 should be ok but slow */
+		.udma_mask	= ATA_UDMA2,
+		.port_ops	= &piix_pata_ops,
+	},
+
+	[ich_pata_33] =		/* ICH0 - ICH at 33Mhz*/
+	{
+		.flags		= PIIX_PATA_FLAGS,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA12_ONLY, /* Check: maybe MWDMA0 is ok  */
+		.udma_mask	= ATA_UDMA2,
+		.port_ops	= &ich_pata_ops,
+	},
+
+	[ich_pata_66] =		/* ICH controllers up to 66MHz */
+	{
+		.flags		= PIIX_PATA_FLAGS,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA12_ONLY, /* MWDMA0 is broken on chip */
+		.udma_mask	= ATA_UDMA4,
+		.port_ops	= &ich_pata_ops,
+	},
+
+	[ich_pata_100] =
+	{
+		.flags		= PIIX_PATA_FLAGS | PIIX_FLAG_CHECKINTR,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA12_ONLY,
+		.udma_mask	= ATA_UDMA5,
+		.port_ops	= &ich_pata_ops,
+	},
+
+	[ich_pata_100_nomwdma1] =
+	{
+		.flags		= PIIX_PATA_FLAGS | PIIX_FLAG_CHECKINTR,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA2_ONLY,
+		.udma_mask	= ATA_UDMA5,
+		.port_ops	= &ich_pata_ops,
+	},
+
+	[ich5_sata] =
+	{
+		.flags		= PIIX_SATA_FLAGS,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA2,
+		.udma_mask	= ATA_UDMA6,
+		.port_ops	= &piix_sata_ops,
+	},
+
+	[ich6_sata] =
+	{
+		.flags		= PIIX_SATA_FLAGS,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA2,
+		.udma_mask	= ATA_UDMA6,
+		.port_ops	= &piix_sata_ops,
+	},
+
+	[ich6m_sata] =
+	{
+		.flags		= PIIX_SATA_FLAGS,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA2,
+		.udma_mask	= ATA_UDMA6,
+		.port_ops	= &piix_sata_ops,
+	},
+
+	[ich8_sata] =
+	{
+		.flags		= PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA2,
+		.udma_mask	= ATA_UDMA6,
+		.port_ops	= &piix_sata_ops,
+	},
+
+	[ich8_2port_sata] =
+	{
+		.flags		= PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA2,
+		.udma_mask	= ATA_UDMA6,
+		.port_ops	= &piix_sata_ops,
+	},
+
+	[tolapai_sata] =
+	{
+		.flags		= PIIX_SATA_FLAGS,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA2,
+		.udma_mask	= ATA_UDMA6,
+		.port_ops	= &piix_sata_ops,
+	},
+
+	[ich8m_apple_sata] =
+	{
+		.flags		= PIIX_SATA_FLAGS,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA2,
+		.udma_mask	= ATA_UDMA6,
+		.port_ops	= &piix_sata_ops,
+	},
+
+	[piix_pata_vmw] =
+	{
+		.flags		= PIIX_PATA_FLAGS,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA12_ONLY, /* mwdma1-2 ?? CHECK 0 should be ok but slow */
+		.udma_mask	= ATA_UDMA2,
+		.port_ops	= &piix_vmw_ops,
+	},
+
+	/*
+	 * some Sandybridge chipsets have broken 32 mode up to now,
+	 * see https://bugzilla.kernel.org/show_bug.cgi?id=40592
+	 */
+	[ich8_sata_snb] =
+	{
+		.flags		= PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR | PIIX_FLAG_PIO16,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA2,
+		.udma_mask	= ATA_UDMA6,
+		.port_ops	= &piix_sata_ops,
+	},
+
+	[ich8_2port_sata_snb] =
+	{
+		.flags		= PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR
+					| PIIX_FLAG_PIO16,
+		.pio_mask	= ATA_PIO4,
+		.mwdma_mask	= ATA_MWDMA2,
+		.udma_mask	= ATA_UDMA6,
+		.port_ops	= &piix_sata_ops,
+	},
+
+	[ich8_2port_sata_byt] =
+	{
+		.flags          = PIIX_SATA_FLAGS | PIIX_FLAG_SIDPR | PIIX_FLAG_PIO16,
+		.pio_mask       = ATA_PIO4,
+		.mwdma_mask     = ATA_MWDMA2,
+		.udma_mask      = ATA_UDMA6,
+		.port_ops       = &piix_sata_ops,
+	},
+
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AHCI_PCI_BAR 5
 #define AHCI_GLOBAL_CTL 0x04
 #define AHCI_ENABLE (1 << 31)
@@ -1357,7 +1659,11 @@ static int piix_disable_ahci(struct pci_dev *pdev)
  *	they are found return an error code so we can turn off DMA
  */
 
+<<<<<<< HEAD
 static int __devinit piix_check_450nx_errata(struct pci_dev *ata_dev)
+=======
+static int piix_check_450nx_errata(struct pci_dev *ata_dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = NULL;
 	u16 cfg;
@@ -1383,8 +1689,13 @@ static int __devinit piix_check_450nx_errata(struct pci_dev *ata_dev)
 	return no_piix_dma;
 }
 
+<<<<<<< HEAD
 static void __devinit piix_init_pcs(struct ata_host *host,
 				    const struct piix_map_db *map_db)
+=======
+static void piix_init_pcs(struct ata_host *host,
+			  const struct piix_map_db *map_db)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = to_pci_dev(host->dev);
 	u16 pcs, new_pcs;
@@ -1394,51 +1705,88 @@ static void __devinit piix_init_pcs(struct ata_host *host,
 	new_pcs = pcs | map_db->port_enable;
 
 	if (new_pcs != pcs) {
+<<<<<<< HEAD
 		DPRINTK("updating PCS from 0x%x to 0x%x\n", pcs, new_pcs);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pci_write_config_word(pdev, ICH5_PCS, new_pcs);
 		msleep(150);
 	}
 }
 
+<<<<<<< HEAD
 static const int *__devinit piix_init_sata_map(struct pci_dev *pdev,
 					       struct ata_port_info *pinfo,
 					       const struct piix_map_db *map_db)
+=======
+static const int *piix_init_sata_map(struct pci_dev *pdev,
+				     struct ata_port_info *pinfo,
+				     const struct piix_map_db *map_db)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const int *map;
 	int i, invalid_map = 0;
 	u8 map_value;
+<<<<<<< HEAD
+=======
+	char buf[32];
+	char *p = buf, *end = buf + sizeof(buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_read_config_byte(pdev, ICH5_PMR, &map_value);
 
 	map = map_db->map[map_value & map_db->mask];
 
+<<<<<<< HEAD
 	dev_info(&pdev->dev, "MAP [");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 4; i++) {
 		switch (map[i]) {
 		case RV:
 			invalid_map = 1;
+<<<<<<< HEAD
 			pr_cont(" XX");
 			break;
 
 		case NA:
 			pr_cont(" --");
+=======
+			p += scnprintf(p, end - p, " XX");
+			break;
+
+		case NA:
+			p += scnprintf(p, end - p, " --");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		case IDE:
 			WARN_ON((i & 1) || map[i + 1] != IDE);
 			pinfo[i / 2] = piix_port_info[ich_pata_100];
 			i++;
+<<<<<<< HEAD
 			pr_cont(" IDE IDE");
 			break;
 
 		default:
 			pr_cont(" P%d", map[i]);
+=======
+			p += scnprintf(p, end - p, " IDE IDE");
+			break;
+
+		default:
+			p += scnprintf(p, end - p, " P%d", map[i]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (i & 1)
 				pinfo[i / 2].flags |= ATA_FLAG_SLAVE_POSS;
 			break;
 		}
 	}
+<<<<<<< HEAD
 	pr_cont(" ]\n");
+=======
+	dev_info(&pdev->dev, "MAP [%s ]\n", buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (invalid_map)
 		dev_err(&pdev->dev, "invalid MAP value %u\n", map_value);
@@ -1479,7 +1827,11 @@ static bool piix_no_sidpr(struct ata_host *host)
 	return false;
 }
 
+<<<<<<< HEAD
 static int __devinit piix_init_sidpr(struct ata_host *host)
+=======
+static int piix_init_sidpr(struct ata_host *host)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pdev = to_pci_dev(host->dev);
 	struct piix_host_priv *hpriv = host->private_data;
@@ -1617,6 +1969,13 @@ static bool piix_broken_system_poweroff(struct pci_dev *pdev)
 
 static int prefer_ms_hyperv = 1;
 module_param(prefer_ms_hyperv, int, 0);
+<<<<<<< HEAD
+=======
+MODULE_PARM_DESC(prefer_ms_hyperv,
+	"Prefer Hyper-V paravirtualization drivers instead of ATA, "
+	"0 - Use ATA drivers, "
+	"1 (Default) - Use the paravirtualization drivers.");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void piix_ignore_devices_quirk(struct ata_host *host)
 {
@@ -1682,13 +2041,21 @@ static void piix_ignore_devices_quirk(struct ata_host *host)
  *	Zero on success, or -ERRNO value.
  */
 
+<<<<<<< HEAD
 static int __devinit piix_init_one(struct pci_dev *pdev,
 				   const struct pci_device_id *ent)
+=======
+static int piix_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device *dev = &pdev->dev;
 	struct ata_port_info port_info[2];
 	const struct ata_port_info *ppi[] = { &port_info[0], &port_info[1] };
+<<<<<<< HEAD
 	struct scsi_host_template *sht = &piix_sht;
+=======
+	const struct scsi_host_template *sht = &piix_sht;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long port_flags;
 	struct ata_host *host;
 	struct piix_host_priv *hpriv;
@@ -1791,7 +2158,11 @@ static int __devinit piix_init_one(struct pci_dev *pdev,
 
 static void piix_remove_one(struct pci_dev *pdev)
 {
+<<<<<<< HEAD
 	struct ata_host *host = dev_get_drvdata(&pdev->dev);
+=======
+	struct ata_host *host = pci_get_drvdata(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct piix_host_priv *hpriv = host->private_data;
 
 	pci_write_config_dword(pdev, PIIX_IOCFG, hpriv->saved_iocfg);
@@ -1799,18 +2170,38 @@ static void piix_remove_one(struct pci_dev *pdev)
 	ata_pci_remove_one(pdev);
 }
 
+<<<<<<< HEAD
+=======
+static struct pci_driver piix_pci_driver = {
+	.name			= DRV_NAME,
+	.id_table		= piix_pci_tbl,
+	.probe			= piix_init_one,
+	.remove			= piix_remove_one,
+#ifdef CONFIG_PM_SLEEP
+	.suspend		= piix_pci_device_suspend,
+	.resume			= piix_pci_device_resume,
+#endif
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init piix_init(void)
 {
 	int rc;
 
+<<<<<<< HEAD
 	DPRINTK("pci_register_driver\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = pci_register_driver(&piix_pci_driver);
 	if (rc)
 		return rc;
 
 	in_module_init = 0;
 
+<<<<<<< HEAD
 	DPRINTK("done\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 

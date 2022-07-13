@@ -1,16 +1,27 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  arch/arm/include/asm/domain.h
  *
  *  Copyright (C) 1999 Russell King.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef __ASM_PROC_DOMAIN_H
 #define __ASM_PROC_DOMAIN_H
 
 #ifndef __ASSEMBLY__
+<<<<<<< HEAD
+=======
+#include <linux/thread_info.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/barrier.h>
 #endif
 
@@ -31,6 +42,7 @@
  *
  * 36-bit addressing and supersections are only available on
  * CPUs based on ARMv6+ or the Intel XSC3 core.
+<<<<<<< HEAD
  *
  * We cannot use domain 0 for the kernel on QSD8x50 since the kernel domain
  * is set to manager mode when set_fs(KERNEL_DS) is called. Setting domain 0
@@ -40,14 +52,26 @@
 #if !defined(CONFIG_IO_36) && !defined(CONFIG_VERIFY_PERMISSION_FAULT)
 #define DOMAIN_KERNEL	0
 #define DOMAIN_TABLE	0
+=======
+ */
+#ifndef CONFIG_IO_36
+#define DOMAIN_KERNEL	0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DOMAIN_USER	1
 #define DOMAIN_IO	2
 #else
 #define DOMAIN_KERNEL	2
+<<<<<<< HEAD
 #define DOMAIN_TABLE	2
 #define DOMAIN_USER	1
 #define DOMAIN_IO	0
 #endif
+=======
+#define DOMAIN_USER	1
+#define DOMAIN_IO	0
+#endif
+#define DOMAIN_VECTORS	3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Domain types
@@ -60,6 +84,7 @@
 #define DOMAIN_MANAGER	1
 #endif
 
+<<<<<<< HEAD
 #define domain_val(dom,type)	((type) << (2*(dom)))
 
 #ifndef __ASSEMBLY__
@@ -85,6 +110,66 @@
 #else
 #define set_domain(x)		do { } while (0)
 #define modify_domain(dom,type)	do { } while (0)
+=======
+#define domain_mask(dom)	((3) << (2 * (dom)))
+#define domain_val(dom,type)	((type) << (2 * (dom)))
+
+#ifdef CONFIG_CPU_SW_DOMAIN_PAN
+#define DACR_INIT \
+	(domain_val(DOMAIN_USER, DOMAIN_NOACCESS) | \
+	 domain_val(DOMAIN_KERNEL, DOMAIN_MANAGER) | \
+	 domain_val(DOMAIN_IO, DOMAIN_CLIENT) | \
+	 domain_val(DOMAIN_VECTORS, DOMAIN_CLIENT))
+#else
+#define DACR_INIT \
+	(domain_val(DOMAIN_USER, DOMAIN_CLIENT) | \
+	 domain_val(DOMAIN_KERNEL, DOMAIN_MANAGER) | \
+	 domain_val(DOMAIN_IO, DOMAIN_CLIENT) | \
+	 domain_val(DOMAIN_VECTORS, DOMAIN_CLIENT))
+#endif
+
+#define __DACR_DEFAULT \
+	domain_val(DOMAIN_KERNEL, DOMAIN_CLIENT) | \
+	domain_val(DOMAIN_IO, DOMAIN_CLIENT) | \
+	domain_val(DOMAIN_VECTORS, DOMAIN_CLIENT)
+
+#define DACR_UACCESS_DISABLE	\
+	(__DACR_DEFAULT | domain_val(DOMAIN_USER, DOMAIN_NOACCESS))
+#define DACR_UACCESS_ENABLE	\
+	(__DACR_DEFAULT | domain_val(DOMAIN_USER, DOMAIN_CLIENT))
+
+#ifndef __ASSEMBLY__
+
+#ifdef CONFIG_CPU_CP15_MMU
+static __always_inline unsigned int get_domain(void)
+{
+	unsigned int domain;
+
+	asm(
+	"mrc	p15, 0, %0, c3, c0	@ get domain"
+	 : "=r" (domain)
+	 : "m" (current_thread_info()->cpu_domain));
+
+	return domain;
+}
+
+static __always_inline void set_domain(unsigned int val)
+{
+	asm volatile(
+	"mcr	p15, 0, %0, c3, c0	@ set domain"
+	  : : "r" (val) : "memory");
+	isb();
+}
+#else
+static __always_inline unsigned int get_domain(void)
+{
+	return 0;
+}
+
+static __always_inline void set_domain(unsigned int val)
+{
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -92,9 +177,17 @@
  * instructions (inline assembly)
  */
 #ifdef CONFIG_CPU_USE_DOMAINS
+<<<<<<< HEAD
 #define TUSER(instr)	#instr "t"
 #else
 #define TUSER(instr)	#instr
+=======
+#define TUSER(instr)		TUSERCOND(instr, )
+#define TUSERCOND(instr, cond)	#instr "t" #cond
+#else
+#define TUSER(instr)		TUSERCOND(instr, )
+#define TUSERCOND(instr, cond)	#instr #cond
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #else /* __ASSEMBLY__ */

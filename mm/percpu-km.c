@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * mm/percpu-km.c - kernel memory based chunk allocation
  *
  * Copyright (C) 2010		SUSE Linux Products GmbH
  * Copyright (C) 2010		Tejun Heo <tj@kernel.org>
  *
+<<<<<<< HEAD
  * This file is released under the GPLv2.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Chunks are allocated as a contiguous kernel memory using gfp
  * allocation.  This is to be used on nommu architectures.
  *
@@ -33,6 +40,7 @@
 
 #include <linux/log2.h>
 
+<<<<<<< HEAD
 static int pcpu_populate_chunk(struct pcpu_chunk *chunk, int off, int size)
 {
 	unsigned int cpu;
@@ -44,15 +52,36 @@ static int pcpu_populate_chunk(struct pcpu_chunk *chunk, int off, int size)
 }
 
 static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk, int off, int size)
+=======
+static void pcpu_post_unmap_tlb_flush(struct pcpu_chunk *chunk,
+				      int page_start, int page_end)
+{
+	/* nothing */
+}
+
+static int pcpu_populate_chunk(struct pcpu_chunk *chunk,
+			       int page_start, int page_end, gfp_t gfp)
+{
+	return 0;
+}
+
+static void pcpu_depopulate_chunk(struct pcpu_chunk *chunk,
+				  int page_start, int page_end)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* nada */
 }
 
+<<<<<<< HEAD
 static struct pcpu_chunk *pcpu_create_chunk(void)
+=======
+static struct pcpu_chunk *pcpu_create_chunk(gfp_t gfp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const int nr_pages = pcpu_group_sizes[0] >> PAGE_SHIFT;
 	struct pcpu_chunk *chunk;
 	struct page *pages;
+<<<<<<< HEAD
 	int i;
 
 	chunk = pcpu_alloc_chunk();
@@ -60,6 +89,16 @@ static struct pcpu_chunk *pcpu_create_chunk(void)
 		return NULL;
 
 	pages = alloc_pages(GFP_KERNEL, order_base_2(nr_pages));
+=======
+	unsigned long flags;
+	int i;
+
+	chunk = pcpu_alloc_chunk(gfp);
+	if (!chunk)
+		return NULL;
+
+	pages = alloc_pages(gfp, order_base_2(nr_pages));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pages) {
 		pcpu_free_chunk(chunk);
 		return NULL;
@@ -69,7 +108,19 @@ static struct pcpu_chunk *pcpu_create_chunk(void)
 		pcpu_set_page_chunk(nth_page(pages, i), chunk);
 
 	chunk->data = pages;
+<<<<<<< HEAD
 	chunk->base_addr = page_address(pages) - pcpu_group_offsets[0];
+=======
+	chunk->base_addr = page_address(pages);
+
+	spin_lock_irqsave(&pcpu_lock, flags);
+	pcpu_chunk_populated(chunk, 0, nr_pages);
+	spin_unlock_irqrestore(&pcpu_lock, flags);
+
+	pcpu_stats_chunk_alloc();
+	trace_percpu_create_chunk(chunk->base_addr);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return chunk;
 }
 
@@ -77,7 +128,17 @@ static void pcpu_destroy_chunk(struct pcpu_chunk *chunk)
 {
 	const int nr_pages = pcpu_group_sizes[0] >> PAGE_SHIFT;
 
+<<<<<<< HEAD
 	if (chunk && chunk->data)
+=======
+	if (!chunk)
+		return;
+
+	pcpu_stats_chunk_dealloc();
+	trace_percpu_destroy_chunk(chunk->base_addr);
+
+	if (chunk->data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		__free_pages(chunk->data, order_base_2(nr_pages));
 	pcpu_free_chunk(chunk);
 }
@@ -93,7 +154,11 @@ static int __init pcpu_verify_alloc_info(const struct pcpu_alloc_info *ai)
 
 	/* all units must be in a single group */
 	if (ai->nr_groups != 1) {
+<<<<<<< HEAD
 		printk(KERN_CRIT "percpu: can't handle more than one groups\n");
+=======
+		pr_crit("can't handle more than one group\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -101,8 +166,21 @@ static int __init pcpu_verify_alloc_info(const struct pcpu_alloc_info *ai)
 	alloc_pages = roundup_pow_of_two(nr_pages);
 
 	if (alloc_pages > nr_pages)
+<<<<<<< HEAD
 		printk(KERN_WARNING "percpu: wasting %zu pages per chunk\n",
 		       alloc_pages - nr_pages);
 
 	return 0;
 }
+=======
+		pr_warn("wasting %zu pages per chunk\n",
+			alloc_pages - nr_pages);
+
+	return 0;
+}
+
+static bool pcpu_should_reclaim_chunk(struct pcpu_chunk *chunk)
+{
+	return false;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

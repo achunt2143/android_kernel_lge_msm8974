@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * String handling functions for PowerPC.
  *
  * Copyright (C) 1996 Paul Mackerras.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -13,16 +18,52 @@
 #include <asm/ppc_asm.h>
 
 _GLOBAL(memset)
+=======
+ */
+#include <linux/export.h>
+#include <asm/processor.h>
+#include <asm/errno.h>
+#include <asm/ppc_asm.h>
+#include <asm/kasan.h>
+
+#ifndef CONFIG_KASAN
+_GLOBAL(__memset16)
+	rlwimi	r4,r4,16,0,15
+	/* fall through */
+
+_GLOBAL(__memset32)
+	rldimi	r4,r4,32,0
+	/* fall through */
+
+_GLOBAL(__memset64)
+	neg	r0,r3
+	andi.	r0,r0,7
+	cmplw	cr1,r5,r0
+	b	.Lms
+EXPORT_SYMBOL(__memset16)
+EXPORT_SYMBOL(__memset32)
+EXPORT_SYMBOL(__memset64)
+#endif
+
+_GLOBAL_KASAN(memset)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	neg	r0,r3
 	rlwimi	r4,r4,8,16,23
 	andi.	r0,r0,7			/* # bytes to be 8-byte aligned */
 	rlwimi	r4,r4,16,0,15
 	cmplw	cr1,r5,r0		/* do we get that far? */
 	rldimi	r4,r4,32,0
+<<<<<<< HEAD
 	PPC_MTOCRF	1,r0
 	mr	r6,r3
 	blt	cr1,8f
 	beq+	3f			/* if already 8-byte aligned */
+=======
+.Lms:	PPC_MTOCRF(1,r0)
+	mr	r6,r3
+	blt	cr1,8f
+	beq	3f			/* if already 8-byte aligned */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	subf	r5,r0,r5
 	bf	31,1f
 	stb	r4,0(r6)
@@ -37,6 +78,10 @@ _GLOBAL(memset)
 	clrldi	r5,r5,58
 	mtctr	r0
 	beq	5f
+<<<<<<< HEAD
+=======
+	.balign 16
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 4:	std	r4,0(r6)
 	std	r4,8(r6)
 	std	r4,16(r6)
@@ -49,7 +94,11 @@ _GLOBAL(memset)
 	bdnz	4b
 5:	srwi.	r0,r5,3
 	clrlwi	r5,r5,29
+<<<<<<< HEAD
 	PPC_MTOCRF	1,r0
+=======
+	PPC_MTOCRF(1,r0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	beq	8f
 	bf	29,6f
 	std	r4,0(r6)
@@ -65,8 +114,13 @@ _GLOBAL(memset)
 	std	r4,0(r6)
 	addi	r6,r6,8
 8:	cmpwi	r5,0
+<<<<<<< HEAD
 	PPC_MTOCRF	1,r5
 	beqlr+
+=======
+	PPC_MTOCRF(1,r5)
+	beqlr
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bf	29,9f
 	stw	r4,0(r6)
 	addi	r6,r6,4
@@ -76,11 +130,21 @@ _GLOBAL(memset)
 10:	bflr	31
 	stb	r4,0(r6)
 	blr
+<<<<<<< HEAD
 
 _GLOBAL(memmove)
 	cmplw	0,r3,r4
 	bgt	.backwards_memcpy
 	b	.memcpy
+=======
+EXPORT_SYMBOL(memset)
+EXPORT_SYMBOL_KASAN(memset)
+
+_GLOBAL_TOC_KASAN(memmove)
+	cmplw	0,r3,r4
+	bgt	backwards_memcpy
+	b	memcpy
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 _GLOBAL(backwards_memcpy)
 	rlwinm.	r7,r5,32-3,3,31		/* r0 = r5 >> 3 */
@@ -90,6 +154,10 @@ _GLOBAL(backwards_memcpy)
 	andi.	r0,r6,3
 	mtctr	r7
 	bne	5f
+<<<<<<< HEAD
+=======
+	.balign 16
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	lwz	r7,-4(r4)
 	lwzu	r8,-8(r4)
 	stw	r7,-4(r6)
@@ -117,3 +185,8 @@ _GLOBAL(backwards_memcpy)
 	beq	2b
 	mtctr	r7
 	b	1b
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(memmove)
+EXPORT_SYMBOL_KASAN(memmove)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

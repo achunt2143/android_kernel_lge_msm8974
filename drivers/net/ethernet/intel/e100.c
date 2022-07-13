@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel PRO/100 Linux driver
@@ -25,6 +26,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* Copyright(c) 1999 - 2006 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	e100.c: Intel(R) PRO/100 ethernet driver
@@ -175,8 +180,11 @@
 
 
 #define DRV_NAME		"e100"
+<<<<<<< HEAD
 #define DRV_EXT			"-NAPI"
 #define DRV_VERSION		"3.5.24-k2"DRV_EXT
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define DRV_DESCRIPTION		"Intel(R) PRO/100 Network Driver"
 #define DRV_COPYRIGHT		"Copyright(c) 1999-2006 Intel Corporation"
 
@@ -189,8 +197,12 @@
 
 MODULE_DESCRIPTION(DRV_DESCRIPTION);
 MODULE_AUTHOR(DRV_COPYRIGHT);
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
 MODULE_VERSION(DRV_VERSION);
+=======
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_FIRMWARE(FIRMWARE_D101M);
 MODULE_FIRMWARE(FIRMWARE_D101S);
 MODULE_FIRMWARE(FIRMWARE_D102E);
@@ -199,8 +211,13 @@ static int debug = 3;
 static int eeprom_bad_csum_allow = 0;
 static int use_io = 0;
 module_param(debug, int, 0);
+<<<<<<< HEAD
 module_param(eeprom_bad_csum_allow, int, 0);
 module_param(use_io, int, 0);
+=======
+module_param(eeprom_bad_csum_allow, int, 0444);
+module_param(use_io, int, 0444);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(debug, "Debug level (0=none,...,16=all)");
 MODULE_PARM_DESC(eeprom_bad_csum_allow, "Allow bad eeprom checksums");
 MODULE_PARM_DESC(use_io, "Force use of i/o access mode");
@@ -208,7 +225,11 @@ MODULE_PARM_DESC(use_io, "Force use of i/o access mode");
 #define INTEL_8255X_ETHERNET_DEVICE(device_id, ich) {\
 	PCI_VENDOR_ID_INTEL, device_id, PCI_ANY_ID, PCI_ANY_ID, \
 	PCI_CLASS_NETWORK_ETHERNET << 8, 0xFFFF00, ich }
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(e100_id_table) = {
+=======
+static const struct pci_device_id e100_id_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	INTEL_8255X_ETHERNET_DEVICE(0x1029, 0),
 	INTEL_8255X_ETHERNET_DEVICE(0x1030, 0),
 	INTEL_8255X_ETHERNET_DEVICE(0x1031, 3),
@@ -412,9 +433,15 @@ enum cb_status {
 	cb_ok       = 0x2000,
 };
 
+<<<<<<< HEAD
 /**
  * cb_command - Command Block flags
  * @cb_tx_nc:  0: controler does CRC (normal),  1: CRC from skb memory
+=======
+/*
+ * cb_command - Command Block flags
+ * @cb_tx_nc:  0: controller does CRC (normal),  1: CRC from skb memory
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 enum cb_command {
 	cb_nop    = 0x0000,
@@ -607,7 +634,11 @@ struct nic {
 	struct mem *mem;
 	dma_addr_t dma_addr;
 
+<<<<<<< HEAD
 	struct pci_pool *cbs_pool;
+=======
+	struct dma_pool *cbs_pool;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dma_addr_t cbs_dma_addr;
 	u8 adaptive_ifs;
 	u8 tx_threshold;
@@ -870,11 +901,19 @@ err_unlock:
 }
 
 static int e100_exec_cb(struct nic *nic, struct sk_buff *skb,
+<<<<<<< HEAD
 	void (*cb_prepare)(struct nic *, struct cb *, struct sk_buff *))
 {
 	struct cb *cb;
 	unsigned long flags;
 	int err = 0;
+=======
+	int (*cb_prepare)(struct nic *, struct cb *, struct sk_buff *))
+{
+	struct cb *cb;
+	unsigned long flags;
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&nic->cb_lock, flags);
 
@@ -888,15 +927,29 @@ static int e100_exec_cb(struct nic *nic, struct sk_buff *skb,
 	nic->cbs_avail--;
 	cb->skb = skb;
 
+<<<<<<< HEAD
 	if (unlikely(!nic->cbs_avail))
 		err = -ENOSPC;
 
 	cb_prepare(nic, cb, skb);
+=======
+	err = cb_prepare(nic, cb, skb);
+	if (err)
+		goto err_unlock;
+
+	if (unlikely(!nic->cbs_avail))
+		err = -ENOSPC;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Order is important otherwise we'll be in a race with h/w:
 	 * set S-bit in current first, then clear S-bit in previous. */
 	cb->command |= cpu_to_le16(cb_s);
+<<<<<<< HEAD
 	wmb();
+=======
+	dma_wmb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cb->prev->command &= cpu_to_le16(~cb_s);
 
 	while (nic->cb_to_send != nic->cb_to_use) {
@@ -1091,7 +1144,11 @@ static void e100_get_defaults(struct nic *nic)
 	nic->mii.mdio_write = mdio_write;
 }
 
+<<<<<<< HEAD
 static void e100_configure(struct nic *nic, struct cb *cb, struct sk_buff *skb)
+=======
+static int e100_configure(struct nic *nic, struct cb *cb, struct sk_buff *skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct config *config = &cb->u.config;
 	u8 *c = (u8 *)config;
@@ -1172,6 +1229,7 @@ static void e100_configure(struct nic *nic, struct cb *cb, struct sk_buff *skb)
 		config->rx_discard_short_frames = 0x0;  /* 1=discard, 0=save */
 	}
 
+<<<<<<< HEAD
 	netif_printk(nic, hw, KERN_DEBUG, nic->netdev,
 		     "[00-07]=%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X\n",
 		     c[0], c[1], c[2], c[3], c[4], c[5], c[6], c[7]);
@@ -1181,6 +1239,15 @@ static void e100_configure(struct nic *nic, struct cb *cb, struct sk_buff *skb)
 	netif_printk(nic, hw, KERN_DEBUG, nic->netdev,
 		     "[16-23]=%02X:%02X:%02X:%02X:%02X:%02X:%02X:%02X\n",
 		     c[16], c[17], c[18], c[19], c[20], c[21], c[22], c[23]);
+=======
+	netif_printk(nic, hw, KERN_DEBUG, nic->netdev, "[00-07]=%8ph\n",
+		     c + 0);
+	netif_printk(nic, hw, KERN_DEBUG, nic->netdev, "[08-15]=%8ph\n",
+		     c + 8);
+	netif_printk(nic, hw, KERN_DEBUG, nic->netdev, "[16-23]=%8ph\n",
+		     c + 16);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*************************************************************************
@@ -1249,11 +1316,16 @@ static const struct firmware *e100_request_firmware(struct nic *nic)
 	const struct firmware *fw = nic->fw;
 	u8 timer, bundle, min_size;
 	int err = 0;
+<<<<<<< HEAD
+=======
+	bool required = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* do not load u-code for ICH devices */
 	if (nic->flags & ich)
 		return NULL;
 
+<<<<<<< HEAD
 	/* Search for ucode match against h/w revision */
 	if (nic->mac == mac_82559_D101M)
 		fw_name = FIRMWARE_D101M;
@@ -1263,6 +1335,31 @@ static const struct firmware *e100_request_firmware(struct nic *nic)
 		fw_name = FIRMWARE_D102E;
 	else /* No ucode on other devices */
 		return NULL;
+=======
+	/* Search for ucode match against h/w revision
+	 *
+	 * Based on comments in the source code for the FreeBSD fxp
+	 * driver, the FIRMWARE_D102E ucode includes both CPUSaver and
+	 *
+	 *    "fixes for bugs in the B-step hardware (specifically, bugs
+	 *     with Inline Receive)."
+	 *
+	 * So we must fail if it cannot be loaded.
+	 *
+	 * The other microcode files are only required for the optional
+	 * CPUSaver feature.  Nice to have, but no reason to fail.
+	 */
+	if (nic->mac == mac_82559_D101M) {
+		fw_name = FIRMWARE_D101M;
+	} else if (nic->mac == mac_82559_D101S) {
+		fw_name = FIRMWARE_D101S;
+	} else if (nic->mac == mac_82551_F || nic->mac == mac_82551_10) {
+		fw_name = FIRMWARE_D102E;
+		required = true;
+	} else { /* No ucode on other devices */
+		return NULL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If the firmware has not previously been loaded, request a pointer
 	 * to it. If it was previously loaded, we are reinitializing the
@@ -1273,10 +1370,24 @@ static const struct firmware *e100_request_firmware(struct nic *nic)
 		err = request_firmware(&fw, fw_name, &nic->pdev->dev);
 
 	if (err) {
+<<<<<<< HEAD
 		netif_err(nic, probe, nic->netdev,
 			  "Failed to load firmware \"%s\": %d\n",
 			  fw_name, err);
 		return ERR_PTR(err);
+=======
+		if (required) {
+			netif_err(nic, probe, nic->netdev,
+				  "Failed to load firmware \"%s\": %d\n",
+				  fw_name, err);
+			return ERR_PTR(err);
+		} else {
+			netif_info(nic, probe, nic->netdev,
+				   "CPUSaver disabled. Needs \"%s\": %d\n",
+				   fw_name, err);
+			return NULL;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Firmware should be precisely UCODE_SIZE (words) plus three bytes
@@ -1309,7 +1420,11 @@ static const struct firmware *e100_request_firmware(struct nic *nic)
 	return fw;
 }
 
+<<<<<<< HEAD
 static void e100_setup_ucode(struct nic *nic, struct cb *cb,
+=======
+static int e100_setup_ucode(struct nic *nic, struct cb *cb,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			     struct sk_buff *skb)
 {
 	const struct firmware *fw = (void *)skb;
@@ -1336,6 +1451,10 @@ static void e100_setup_ucode(struct nic *nic, struct cb *cb,
 	cb->u.ucode[min_size] |= cpu_to_le32((BUNDLESMALL) ? 0xFFFF : 0xFF80);
 
 	cb->command = cpu_to_le16(cb_ucode | cb_el);
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline int e100_load_ucode_wait(struct nic *nic)
@@ -1346,8 +1465,13 @@ static inline int e100_load_ucode_wait(struct nic *nic)
 
 	fw = e100_request_firmware(nic);
 	/* If it's NULL, then no ucode is required */
+<<<<<<< HEAD
 	if (!fw || IS_ERR(fw))
 		return PTR_ERR(fw);
+=======
+	if (IS_ERR_OR_NULL(fw))
+		return PTR_ERR_OR_ZERO(fw);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((err = e100_exec_cb(nic, (void *)fw, e100_setup_ucode)))
 		netif_err(nic, probe, nic->netdev,
@@ -1378,18 +1502,33 @@ static inline int e100_load_ucode_wait(struct nic *nic)
 	return err;
 }
 
+<<<<<<< HEAD
 static void e100_setup_iaaddr(struct nic *nic, struct cb *cb,
+=======
+static int e100_setup_iaaddr(struct nic *nic, struct cb *cb,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff *skb)
 {
 	cb->command = cpu_to_le16(cb_iaaddr);
 	memcpy(cb->u.iaaddr, nic->netdev->dev_addr, ETH_ALEN);
+<<<<<<< HEAD
 }
 
 static void e100_dump(struct nic *nic, struct cb *cb, struct sk_buff *skb)
+=======
+	return 0;
+}
+
+static int e100_dump(struct nic *nic, struct cb *cb, struct sk_buff *skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	cb->command = cpu_to_le16(cb_dump);
 	cb->u.dump_buffer_addr = cpu_to_le32(nic->dma_addr +
 		offsetof(struct mem, dump_buf));
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int e100_phy_check_without_mii(struct nic *nic)
@@ -1397,7 +1536,11 @@ static int e100_phy_check_without_mii(struct nic *nic)
 	u8 phy_type;
 	int without_mii;
 
+<<<<<<< HEAD
 	phy_type = (nic->eeprom[eeprom_phy_iface] >> 8) & 0x0f;
+=======
+	phy_type = (le16_to_cpu(nic->eeprom[eeprom_phy_iface]) >> 8) & 0x0f;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (phy_type) {
 	case NoSuchPhy: /* Non-MII PHY; UNTESTED! */
@@ -1432,7 +1575,10 @@ static int e100_phy_check_without_mii(struct nic *nic)
 #define MII_NSC_CONG		MII_RESV1
 #define NSC_CONG_ENABLE		0x0100
 #define NSC_CONG_TXREADY	0x0400
+<<<<<<< HEAD
 #define ADVERTISE_FC_SUPPORTED	0x0400
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int e100_phy_init(struct nic *nic)
 {
 	struct net_device *netdev = nic->netdev;
@@ -1517,7 +1663,11 @@ static int e100_phy_init(struct nic *nic)
 		mdio_write(netdev, nic->mii.phy_id, MII_BMCR, bmcr);
 	} else if ((nic->mac >= mac_82550_D102) || ((nic->flags & ich) &&
 	   (mdio_read(netdev, nic->mii.phy_id, MII_TPISTATUS) & 0x8000) &&
+<<<<<<< HEAD
 		!(nic->eeprom[eeprom_cnfg_mdix] & eeprom_mdix_enabled))) {
+=======
+	   (le16_to_cpu(nic->eeprom[eeprom_cnfg_mdix]) & eeprom_mdix_enabled))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* enable/disable MDI/MDI-X auto-switching. */
 		mdio_write(netdev, nic->mii.phy_id, MII_NCONFIG,
 				nic->mii.force_media ? 0 : NCONFIG_AUTO_SWITCH);
@@ -1533,7 +1683,11 @@ static int e100_hw_init(struct nic *nic)
 	e100_hw_reset(nic);
 
 	netif_err(nic, hw, nic->netdev, "e100_hw_init\n");
+<<<<<<< HEAD
 	if (!in_interrupt() && (err = e100_self_test(nic)))
+=======
+	if ((err = e100_self_test(nic)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	if ((err = e100_phy_init(nic)))
@@ -1559,7 +1713,11 @@ static int e100_hw_init(struct nic *nic)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void e100_multi(struct nic *nic, struct cb *cb, struct sk_buff *skb)
+=======
+static int e100_multi(struct nic *nic, struct cb *cb, struct sk_buff *skb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = nic->netdev;
 	struct netdev_hw_addr *ha;
@@ -1574,6 +1732,10 @@ static void e100_multi(struct nic *nic, struct cb *cb, struct sk_buff *skb)
 		memcpy(&cb->u.multi.addr[i++ * ETH_ALEN], &ha->addr,
 			ETH_ALEN);
 	}
+<<<<<<< HEAD
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void e100_set_multicast_list(struct net_device *netdev)
@@ -1683,9 +1845,15 @@ static void e100_adjust_adaptive_ifs(struct nic *nic, int speed, int duplex)
 	}
 }
 
+<<<<<<< HEAD
 static void e100_watchdog(unsigned long data)
 {
 	struct nic *nic = (struct nic *)data;
+=======
+static void e100_watchdog(struct timer_list *t)
+{
+	struct nic *nic = from_timer(nic, t, watchdog);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct ethtool_cmd cmd = { .cmd = ETHTOOL_GSET };
 	u32 speed;
 
@@ -1734,19 +1902,40 @@ static void e100_watchdog(unsigned long data)
 		  round_jiffies(jiffies + E100_WATCHDOG_PERIOD));
 }
 
+<<<<<<< HEAD
 static void e100_xmit_prepare(struct nic *nic, struct cb *cb,
 	struct sk_buff *skb)
 {
 	cb->command = nic->tx_command;
 
+=======
+static int e100_xmit_prepare(struct nic *nic, struct cb *cb,
+	struct sk_buff *skb)
+{
+	dma_addr_t dma_addr;
+	cb->command = nic->tx_command;
+
+	dma_addr = dma_map_single(&nic->pdev->dev, skb->data, skb->len,
+				  DMA_TO_DEVICE);
+	/* If we can't map the skb, have the upper layer try later */
+	if (dma_mapping_error(&nic->pdev->dev, dma_addr))
+		return -ENOMEM;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Use the last 4 bytes of the SKB payload packet as the CRC, used for
 	 * testing, ie sending frames with bad CRC.
 	 */
 	if (unlikely(skb->no_fcs))
+<<<<<<< HEAD
 		cb->command |= __constant_cpu_to_le16(cb_tx_nc);
 	else
 		cb->command &= ~__constant_cpu_to_le16(cb_tx_nc);
+=======
+		cb->command |= cpu_to_le16(cb_tx_nc);
+	else
+		cb->command &= ~cpu_to_le16(cb_tx_nc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* interrupt every 16 packets regardless of delay */
 	if ((nic->cbs_avail & ~15) == nic->cbs_avail)
@@ -1755,10 +1944,17 @@ static void e100_xmit_prepare(struct nic *nic, struct cb *cb,
 	cb->u.tcb.tcb_byte_count = 0;
 	cb->u.tcb.threshold = nic->tx_threshold;
 	cb->u.tcb.tbd_count = 1;
+<<<<<<< HEAD
 	cb->u.tcb.tbd.buf_addr = cpu_to_le32(pci_map_single(nic->pdev,
 		skb->data, skb->len, PCI_DMA_TODEVICE));
 	/* check for mapping failure? */
 	cb->u.tcb.tbd.size = cpu_to_le16(skb->len);
+=======
+	cb->u.tcb.tbd.buf_addr = cpu_to_le32(dma_addr);
+	cb->u.tcb.tbd.size = cpu_to_le16(skb->len);
+	skb_tx_timestamp(skb);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static netdev_tx_t e100_xmit_frame(struct sk_buff *skb,
@@ -1809,7 +2005,11 @@ static int e100_tx_clean(struct nic *nic)
 	for (cb = nic->cb_to_clean;
 	    cb->status & cpu_to_le16(cb_complete);
 	    cb = nic->cb_to_clean = cb->next) {
+<<<<<<< HEAD
 		rmb(); /* read skb after status */
+=======
+		dma_rmb(); /* read skb after status */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_printk(nic, tx_done, KERN_DEBUG, nic->netdev,
 			     "cb[%d]->status = 0x%04X\n",
 			     (int)(((void*)cb - (void*)nic->cbs)/sizeof(struct cb)),
@@ -1819,10 +2019,17 @@ static int e100_tx_clean(struct nic *nic)
 			dev->stats.tx_packets++;
 			dev->stats.tx_bytes += cb->skb->len;
 
+<<<<<<< HEAD
 			pci_unmap_single(nic->pdev,
 				le32_to_cpu(cb->u.tcb.tbd.buf_addr),
 				le16_to_cpu(cb->u.tcb.tbd.size),
 				PCI_DMA_TODEVICE);
+=======
+			dma_unmap_single(&nic->pdev->dev,
+					 le32_to_cpu(cb->u.tcb.tbd.buf_addr),
+					 le16_to_cpu(cb->u.tcb.tbd.size),
+					 DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb_any(cb->skb);
 			cb->skb = NULL;
 			tx_cleaned = 1;
@@ -1846,16 +2053,27 @@ static void e100_clean_cbs(struct nic *nic)
 		while (nic->cbs_avail != nic->params.cbs.count) {
 			struct cb *cb = nic->cb_to_clean;
 			if (cb->skb) {
+<<<<<<< HEAD
 				pci_unmap_single(nic->pdev,
 					le32_to_cpu(cb->u.tcb.tbd.buf_addr),
 					le16_to_cpu(cb->u.tcb.tbd.size),
 					PCI_DMA_TODEVICE);
+=======
+				dma_unmap_single(&nic->pdev->dev,
+						 le32_to_cpu(cb->u.tcb.tbd.buf_addr),
+						 le16_to_cpu(cb->u.tcb.tbd.size),
+						 DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_kfree_skb(cb->skb);
 			}
 			nic->cb_to_clean = nic->cb_to_clean->next;
 			nic->cbs_avail++;
 		}
+<<<<<<< HEAD
 		pci_pool_free(nic->cbs_pool, nic->cbs, nic->cbs_dma_addr);
+=======
+		dma_pool_free(nic->cbs_pool, nic->cbs, nic->cbs_dma_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nic->cbs = NULL;
 		nic->cbs_avail = 0;
 	}
@@ -1873,11 +2091,18 @@ static int e100_alloc_cbs(struct nic *nic)
 	nic->cb_to_use = nic->cb_to_send = nic->cb_to_clean = NULL;
 	nic->cbs_avail = 0;
 
+<<<<<<< HEAD
 	nic->cbs = pci_pool_alloc(nic->cbs_pool, GFP_KERNEL,
 				  &nic->cbs_dma_addr);
 	if (!nic->cbs)
 		return -ENOMEM;
 	memset(nic->cbs, 0, count * sizeof(struct cb));
+=======
+	nic->cbs = dma_pool_zalloc(nic->cbs_pool, GFP_KERNEL,
+				   &nic->cbs_dma_addr);
+	if (!nic->cbs)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (cb = nic->cbs, i = 0; i < count; cb++, i++) {
 		cb->next = (i + 1 < count) ? cb + 1 : nic->cbs;
@@ -1917,10 +2142,17 @@ static int e100_rx_alloc_skb(struct nic *nic, struct rx *rx)
 
 	/* Init, and map the RFD. */
 	skb_copy_to_linear_data(rx->skb, &nic->blank_rfd, sizeof(struct rfd));
+<<<<<<< HEAD
 	rx->dma_addr = pci_map_single(nic->pdev, rx->skb->data,
 		RFD_BUF_LEN, PCI_DMA_BIDIRECTIONAL);
 
 	if (pci_dma_mapping_error(nic->pdev, rx->dma_addr)) {
+=======
+	rx->dma_addr = dma_map_single(&nic->pdev->dev, rx->skb->data,
+				      RFD_BUF_LEN, DMA_BIDIRECTIONAL);
+
+	if (dma_mapping_error(&nic->pdev->dev, rx->dma_addr)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_kfree_skb_any(rx->skb);
 		rx->skb = NULL;
 		rx->dma_addr = 0;
@@ -1933,8 +2165,15 @@ static int e100_rx_alloc_skb(struct nic *nic, struct rx *rx)
 	if (rx->prev->skb) {
 		struct rfd *prev_rfd = (struct rfd *)rx->prev->skb->data;
 		put_unaligned_le32(rx->dma_addr, &prev_rfd->link);
+<<<<<<< HEAD
 		pci_dma_sync_single_for_device(nic->pdev, rx->prev->dma_addr,
 			sizeof(struct rfd), PCI_DMA_BIDIRECTIONAL);
+=======
+		dma_sync_single_for_device(&nic->pdev->dev,
+					   rx->prev->dma_addr,
+					   sizeof(struct rfd),
+					   DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -1953,13 +2192,22 @@ static int e100_rx_indicate(struct nic *nic, struct rx *rx,
 		return -EAGAIN;
 
 	/* Need to sync before taking a peek at cb_complete bit */
+<<<<<<< HEAD
 	pci_dma_sync_single_for_cpu(nic->pdev, rx->dma_addr,
 		sizeof(struct rfd), PCI_DMA_BIDIRECTIONAL);
+=======
+	dma_sync_single_for_cpu(&nic->pdev->dev, rx->dma_addr,
+				sizeof(struct rfd), DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rfd_status = le16_to_cpu(rfd->status);
 
 	netif_printk(nic, rx_status, KERN_DEBUG, nic->netdev,
 		     "status=0x%04X\n", rfd_status);
+<<<<<<< HEAD
 	rmb(); /* read size after status bit */
+=======
+	dma_rmb(); /* read size after status bit */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If data isn't ready, nothing to indicate */
 	if (unlikely(!(rfd_status & cb_complete))) {
@@ -1973,9 +2221,15 @@ static int e100_rx_indicate(struct nic *nic, struct rx *rx,
 
 			if (ioread8(&nic->csr->scb.status) & rus_no_res)
 				nic->ru_running = RU_SUSPENDED;
+<<<<<<< HEAD
 		pci_dma_sync_single_for_device(nic->pdev, rx->dma_addr,
 					       sizeof(struct rfd),
 					       PCI_DMA_FROMDEVICE);
+=======
+		dma_sync_single_for_device(&nic->pdev->dev, rx->dma_addr,
+					   sizeof(struct rfd),
+					   DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODATA;
 	}
 
@@ -1987,8 +2241,13 @@ static int e100_rx_indicate(struct nic *nic, struct rx *rx,
 		actual_size = RFD_BUF_LEN - sizeof(struct rfd);
 
 	/* Get data */
+<<<<<<< HEAD
 	pci_unmap_single(nic->pdev, rx->dma_addr,
 		RFD_BUF_LEN, PCI_DMA_BIDIRECTIONAL);
+=======
+	dma_unmap_single(&nic->pdev->dev, rx->dma_addr, RFD_BUF_LEN,
+			 DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If this buffer has the el bit, but we think the receiver
 	 * is still running, check to see if it really stopped while
@@ -2089,14 +2348,22 @@ static void e100_rx_clean(struct nic *nic, unsigned int *work_done,
 			(struct rfd *)new_before_last_rx->skb->data;
 		new_before_last_rfd->size = 0;
 		new_before_last_rfd->command |= cpu_to_le16(cb_el);
+<<<<<<< HEAD
 		pci_dma_sync_single_for_device(nic->pdev,
 			new_before_last_rx->dma_addr, sizeof(struct rfd),
 			PCI_DMA_BIDIRECTIONAL);
+=======
+		dma_sync_single_for_device(&nic->pdev->dev,
+					   new_before_last_rx->dma_addr,
+					   sizeof(struct rfd),
+					   DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Now that we have a new stopping point, we can clear the old
 		 * stopping point.  We must sync twice to get the proper
 		 * ordering on the hardware side of things. */
 		old_before_last_rfd->command &= ~cpu_to_le16(cb_el);
+<<<<<<< HEAD
 		pci_dma_sync_single_for_device(nic->pdev,
 			old_before_last_rx->dma_addr, sizeof(struct rfd),
 			PCI_DMA_BIDIRECTIONAL);
@@ -2105,6 +2372,18 @@ static void e100_rx_clean(struct nic *nic, unsigned int *work_done,
 		pci_dma_sync_single_for_device(nic->pdev,
 			old_before_last_rx->dma_addr, sizeof(struct rfd),
 			PCI_DMA_BIDIRECTIONAL);
+=======
+		dma_sync_single_for_device(&nic->pdev->dev,
+					   old_before_last_rx->dma_addr,
+					   sizeof(struct rfd),
+					   DMA_BIDIRECTIONAL);
+		old_before_last_rfd->size = cpu_to_le16(VLAN_ETH_FRAME_LEN
+							+ ETH_FCS_LEN);
+		dma_sync_single_for_device(&nic->pdev->dev,
+					   old_before_last_rx->dma_addr,
+					   sizeof(struct rfd),
+					   DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (restart_required) {
@@ -2126,8 +2405,14 @@ static void e100_rx_clean_list(struct nic *nic)
 	if (nic->rxs) {
 		for (rx = nic->rxs, i = 0; i < count; rx++, i++) {
 			if (rx->skb) {
+<<<<<<< HEAD
 				pci_unmap_single(nic->pdev, rx->dma_addr,
 					RFD_BUF_LEN, PCI_DMA_BIDIRECTIONAL);
+=======
+				dma_unmap_single(&nic->pdev->dev,
+						 rx->dma_addr, RFD_BUF_LEN,
+						 DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dev_kfree_skb(rx->skb);
 			}
 		}
@@ -2147,7 +2432,11 @@ static int e100_rx_alloc_list(struct nic *nic)
 	nic->rx_to_use = nic->rx_to_clean = NULL;
 	nic->ru_running = RU_UNINITIALIZED;
 
+<<<<<<< HEAD
 	if (!(nic->rxs = kcalloc(count, sizeof(struct rx), GFP_ATOMIC)))
+=======
+	if (!(nic->rxs = kcalloc(count, sizeof(struct rx), GFP_KERNEL)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 
 	for (rx = nic->rxs, i = 0; i < count; rx++, i++) {
@@ -2169,8 +2458,13 @@ static int e100_rx_alloc_list(struct nic *nic)
 	before_last = (struct rfd *)rx->skb->data;
 	before_last->command |= cpu_to_le16(cb_el);
 	before_last->size = 0;
+<<<<<<< HEAD
 	pci_dma_sync_single_for_device(nic->pdev, rx->dma_addr,
 		sizeof(struct rfd), PCI_DMA_BIDIRECTIONAL);
+=======
+	dma_sync_single_for_device(&nic->pdev->dev, rx->dma_addr,
+				   sizeof(struct rfd), DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	nic->rx_to_use = nic->rx_to_clean = nic->rxs;
 	nic->ru_running = RU_SUSPENDED;
@@ -2214,11 +2508,21 @@ static int e100_poll(struct napi_struct *napi, int budget)
 	e100_rx_clean(nic, &work_done, budget);
 	e100_tx_clean(nic);
 
+<<<<<<< HEAD
 	/* If budget not fully consumed, exit the polling mode */
 	if (work_done < budget) {
 		napi_complete(napi);
 		e100_enable_irq(nic);
 	}
+=======
+	/* If budget fully consumed, continue polling */
+	if (work_done == budget)
+		return budget;
+
+	/* only re-enable interrupt if stack agrees polling is really done */
+	if (likely(napi_complete_done(napi, work_done)))
+		e100_enable_irq(nic);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return work_done;
 }
@@ -2243,12 +2547,17 @@ static int e100_set_mac_address(struct net_device *netdev, void *p)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
+<<<<<<< HEAD
 	memcpy(netdev->dev_addr, addr->sa_data, netdev->addr_len);
+=======
+	eth_hw_addr_set(netdev, addr->sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e100_exec_cb(nic, NULL, e100_setup_iaaddr);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int e100_change_mtu(struct net_device *netdev, int new_mtu)
 {
 	if (new_mtu < ETH_ZLEN || new_mtu > ETH_DATA_LEN)
@@ -2257,13 +2566,21 @@ static int e100_change_mtu(struct net_device *netdev, int new_mtu)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int e100_asf(struct nic *nic)
 {
 	/* ASF can be enabled from eeprom */
 	return (nic->pdev->device >= 0x1050) && (nic->pdev->device <= 0x1057) &&
+<<<<<<< HEAD
 	   (nic->eeprom[eeprom_config_asf] & eeprom_asf) &&
 	   !(nic->eeprom[eeprom_config_asf] & eeprom_gcl) &&
 	   ((nic->eeprom[eeprom_smbus_addr] & 0xFF) != 0xFE);
+=======
+	   (le16_to_cpu(nic->eeprom[eeprom_config_asf]) & eeprom_asf) &&
+	   !(le16_to_cpu(nic->eeprom[eeprom_config_asf]) & eeprom_gcl) &&
+	   ((le16_to_cpu(nic->eeprom[eeprom_smbus_addr]) & 0xFF) != 0xFE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int e100_up(struct nic *nic)
@@ -2311,7 +2628,11 @@ static void e100_down(struct nic *nic)
 	e100_rx_clean_list(nic);
 }
 
+<<<<<<< HEAD
 static void e100_tx_timeout(struct net_device *netdev)
+=======
+static void e100_tx_timeout(struct net_device *netdev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nic *nic = netdev_priv(netdev);
 
@@ -2375,8 +2696,13 @@ static int e100_loopback_test(struct nic *nic, enum loopback loopback_mode)
 
 	msleep(10);
 
+<<<<<<< HEAD
 	pci_dma_sync_single_for_cpu(nic->pdev, nic->rx_to_clean->dma_addr,
 			RFD_BUF_LEN, PCI_DMA_BIDIRECTIONAL);
+=======
+	dma_sync_single_for_cpu(&nic->pdev->dev, nic->rx_to_clean->dma_addr,
+				RFD_BUF_LEN, DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (memcmp(nic->rx_to_clean->skb->data + sizeof(struct rfd),
 	   skb->data, ETH_DATA_LEN))
@@ -2397,6 +2723,7 @@ err_clean_rx:
 #define E100_82552_LED_ON       0x000F /* LEDTX and LED_RX both on */
 #define E100_82552_LED_OFF      0x000A /* LEDTX and LED_RX both off */
 
+<<<<<<< HEAD
 static int e100_get_settings(struct net_device *netdev, struct ethtool_cmd *cmd)
 {
 	struct nic *nic = netdev_priv(netdev);
@@ -2404,12 +2731,30 @@ static int e100_get_settings(struct net_device *netdev, struct ethtool_cmd *cmd)
 }
 
 static int e100_set_settings(struct net_device *netdev, struct ethtool_cmd *cmd)
+=======
+static int e100_get_link_ksettings(struct net_device *netdev,
+				   struct ethtool_link_ksettings *cmd)
+{
+	struct nic *nic = netdev_priv(netdev);
+
+	mii_ethtool_get_link_ksettings(&nic->mii, cmd);
+
+	return 0;
+}
+
+static int e100_set_link_ksettings(struct net_device *netdev,
+				   const struct ethtool_link_ksettings *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nic *nic = netdev_priv(netdev);
 	int err;
 
 	mdio_write(netdev, nic->mii.phy_id, MII_BMCR, BMCR_RESET);
+<<<<<<< HEAD
 	err = mii_ethtool_sset(&nic->mii, cmd);
+=======
+	err = mii_ethtool_set_link_ksettings(&nic->mii, cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	e100_exec_cb(nic, NULL, e100_configure);
 
 	return err;
@@ -2419,6 +2764,7 @@ static void e100_get_drvinfo(struct net_device *netdev,
 	struct ethtool_drvinfo *info)
 {
 	struct nic *nic = netdev_priv(netdev);
+<<<<<<< HEAD
 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
 	strlcpy(info->bus_info, pci_name(nic->pdev),
@@ -2430,6 +2776,22 @@ static int e100_get_regs_len(struct net_device *netdev)
 {
 	struct nic *nic = netdev_priv(netdev);
 	return 1 + E100_PHY_REGS + sizeof(nic->mem->dump_buf);
+=======
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	strscpy(info->bus_info, pci_name(nic->pdev),
+		sizeof(info->bus_info));
+}
+
+#define E100_PHY_REGS 0x1D
+static int e100_get_regs_len(struct net_device *netdev)
+{
+	struct nic *nic = netdev_priv(netdev);
+
+	/* We know the number of registers, and the size of the dump buffer.
+	 * Calculate the total size in bytes.
+	 */
+	return (1 + E100_PHY_REGS) * sizeof(u32) + sizeof(nic->mem->dump_buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void e100_get_regs(struct net_device *netdev,
@@ -2443,6 +2805,7 @@ static void e100_get_regs(struct net_device *netdev,
 	buff[0] = ioread8(&nic->csr->scb.cmd_hi) << 24 |
 		ioread8(&nic->csr->scb.cmd_lo) << 16 |
 		ioread16(&nic->csr->scb.status);
+<<<<<<< HEAD
 	for (i = E100_PHY_REGS; i >= 0; i--)
 		buff[1 + E100_PHY_REGS - i] =
 			mdio_read(netdev, nic->mii.phy_id, i);
@@ -2451,6 +2814,20 @@ static void e100_get_regs(struct net_device *netdev,
 	msleep(10);
 	memcpy(&buff[2 + E100_PHY_REGS], nic->mem->dump_buf,
 		sizeof(nic->mem->dump_buf));
+=======
+	for (i = 0; i < E100_PHY_REGS; i++)
+		/* Note that we read the registers in reverse order. This
+		 * ordering is the ABI apparently used by ethtool and other
+		 * applications.
+		 */
+		buff[1 + i] = mdio_read(netdev, nic->mii.phy_id,
+					E100_PHY_REGS - 1 - i);
+	memset(nic->mem->dump_buf, 0, sizeof(nic->mem->dump_buf));
+	e100_exec_cb(nic, NULL, e100_dump);
+	msleep(10);
+	memcpy(&buff[1 + E100_PHY_REGS], nic->mem->dump_buf,
+	       sizeof(nic->mem->dump_buf));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void e100_get_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
@@ -2537,7 +2914,13 @@ static int e100_set_eeprom(struct net_device *netdev,
 }
 
 static void e100_get_ringparam(struct net_device *netdev,
+<<<<<<< HEAD
 	struct ethtool_ringparam *ring)
+=======
+			       struct ethtool_ringparam *ring,
+			       struct kernel_ethtool_ringparam *kernel_ring,
+			       struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nic *nic = netdev_priv(netdev);
 	struct param_range *rfds = &nic->params.rfds;
@@ -2550,7 +2933,13 @@ static void e100_get_ringparam(struct net_device *netdev,
 }
 
 static int e100_set_ringparam(struct net_device *netdev,
+<<<<<<< HEAD
 	struct ethtool_ringparam *ring)
+=======
+			      struct ethtool_ringparam *ring,
+			      struct kernel_ethtool_ringparam *kernel_ring,
+			      struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct nic *nic = netdev_priv(netdev);
 	struct param_range *rfds = &nic->params.rfds;
@@ -2587,7 +2976,11 @@ static void e100_diag_test(struct net_device *netdev,
 {
 	struct ethtool_cmd cmd;
 	struct nic *nic = netdev_priv(netdev);
+<<<<<<< HEAD
 	int i, err;
+=======
+	int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	memset(data, 0, E100_TEST_LEN * sizeof(u64));
 	data[0] = !mii_link_ok(&nic->mii);
@@ -2595,7 +2988,11 @@ static void e100_diag_test(struct net_device *netdev,
 	if (test->flags & ETH_TEST_FL_OFFLINE) {
 
 		/* save speed, duplex & autoneg settings */
+<<<<<<< HEAD
 		err = mii_ethtool_gset(&nic->mii, &cmd);
+=======
+		mii_ethtool_gset(&nic->mii, &cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (netif_running(netdev))
 			e100_down(nic);
@@ -2604,7 +3001,11 @@ static void e100_diag_test(struct net_device *netdev,
 		data[4] = e100_loopback_test(nic, lb_phy);
 
 		/* restore speed, duplex & autoneg settings */
+<<<<<<< HEAD
 		err = mii_ethtool_sset(&nic->mii, &cmd);
+=======
+		mii_ethtool_sset(&nic->mii, &cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (netif_running(netdev))
 			e100_up(nic);
@@ -2703,17 +3104,27 @@ static void e100_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
 {
 	switch (stringset) {
 	case ETH_SS_TEST:
+<<<<<<< HEAD
 		memcpy(data, *e100_gstrings_test, sizeof(e100_gstrings_test));
 		break;
 	case ETH_SS_STATS:
 		memcpy(data, *e100_gstrings_stats, sizeof(e100_gstrings_stats));
+=======
+		memcpy(data, e100_gstrings_test, sizeof(e100_gstrings_test));
+		break;
+	case ETH_SS_STATS:
+		memcpy(data, e100_gstrings_stats, sizeof(e100_gstrings_stats));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 }
 
 static const struct ethtool_ops e100_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings		= e100_get_settings,
 	.set_settings		= e100_set_settings,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo		= e100_get_drvinfo,
 	.get_regs_len		= e100_get_regs_len,
 	.get_regs		= e100_get_regs,
@@ -2733,6 +3144,12 @@ static const struct ethtool_ops e100_ethtool_ops = {
 	.set_phys_id		= e100_set_phys_id,
 	.get_ethtool_stats	= e100_get_ethtool_stats,
 	.get_sset_count		= e100_get_sset_count,
+<<<<<<< HEAD
+=======
+	.get_ts_info		= ethtool_op_get_ts_info,
+	.get_link_ksettings	= e100_get_link_ksettings,
+	.set_link_ksettings	= e100_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int e100_do_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
@@ -2744,16 +3161,26 @@ static int e100_do_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
 
 static int e100_alloc(struct nic *nic)
 {
+<<<<<<< HEAD
 	nic->mem = pci_alloc_consistent(nic->pdev, sizeof(struct mem),
 		&nic->dma_addr);
+=======
+	nic->mem = dma_alloc_coherent(&nic->pdev->dev, sizeof(struct mem),
+				      &nic->dma_addr, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return nic->mem ? 0 : -ENOMEM;
 }
 
 static void e100_free(struct nic *nic)
 {
 	if (nic->mem) {
+<<<<<<< HEAD
 		pci_free_consistent(nic->pdev, sizeof(struct mem),
 			nic->mem, nic->dma_addr);
+=======
+		dma_free_coherent(&nic->pdev->dev, sizeof(struct mem),
+				  nic->mem, nic->dma_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nic->mem = NULL;
 	}
 }
@@ -2786,7 +3213,11 @@ static int e100_set_features(struct net_device *netdev,
 
 	netdev->features = features;
 	e100_exec_cb(nic, NULL, e100_configure);
+<<<<<<< HEAD
 	return 0;
+=======
+	return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct net_device_ops e100_netdev_ops = {
@@ -2796,8 +3227,12 @@ static const struct net_device_ops e100_netdev_ops = {
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_rx_mode	= e100_set_multicast_list,
 	.ndo_set_mac_address	= e100_set_mac_address,
+<<<<<<< HEAD
 	.ndo_change_mtu		= e100_change_mtu,
 	.ndo_do_ioctl		= e100_do_ioctl,
+=======
+	.ndo_eth_ioctl		= e100_do_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_tx_timeout		= e100_tx_timeout,
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller	= e100_netpoll,
@@ -2805,8 +3240,12 @@ static const struct net_device_ops e100_netdev_ops = {
 	.ndo_set_features	= e100_set_features,
 };
 
+<<<<<<< HEAD
 static int __devinit e100_probe(struct pci_dev *pdev,
 	const struct pci_device_id *ent)
+=======
+static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev;
 	struct nic *nic;
@@ -2820,12 +3259,21 @@ static int __devinit e100_probe(struct pci_dev *pdev,
 	netdev->hw_features |= NETIF_F_RXALL;
 
 	netdev->netdev_ops = &e100_netdev_ops;
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &e100_ethtool_ops);
 	netdev->watchdog_timeo = E100_WATCHDOG_PERIOD;
 	strncpy(netdev->name, pci_name(pdev), sizeof(netdev->name) - 1);
 
 	nic = netdev_priv(netdev);
 	netif_napi_add(netdev, &nic->napi, e100_poll, E100_NAPI_WEIGHT);
+=======
+	netdev->ethtool_ops = &e100_ethtool_ops;
+	netdev->watchdog_timeo = E100_WATCHDOG_PERIOD;
+	strscpy(netdev->name, pci_name(pdev), sizeof(netdev->name));
+
+	nic = netdev_priv(netdev);
+	netif_napi_add_weight(netdev, &nic->napi, e100_poll, E100_NAPI_WEIGHT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	nic->netdev = netdev;
 	nic->pdev = pdev;
 	nic->msg_enable = (1 << debug) - 1;
@@ -2848,7 +3296,11 @@ static int __devinit e100_probe(struct pci_dev *pdev,
 		goto err_out_disable_pdev;
 	}
 
+<<<<<<< HEAD
 	if ((err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32)))) {
+=======
+	if ((err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32)))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netif_err(nic, probe, nic->netdev, "No usable DMA configuration, aborting\n");
 		goto err_out_free_res;
 	}
@@ -2888,9 +3340,13 @@ static int __devinit e100_probe(struct pci_dev *pdev,
 
 	pci_set_master(pdev);
 
+<<<<<<< HEAD
 	init_timer(&nic->watchdog);
 	nic->watchdog.function = e100_watchdog;
 	nic->watchdog.data = (unsigned long)nic;
+=======
+	timer_setup(&nic->watchdog, e100_watchdog, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_WORK(&nic->tx_timeout_task, e100_tx_timeout_task);
 
@@ -2904,9 +3360,14 @@ static int __devinit e100_probe(struct pci_dev *pdev,
 
 	e100_phy_init(nic);
 
+<<<<<<< HEAD
 	memcpy(netdev->dev_addr, nic->eeprom, ETH_ALEN);
 	memcpy(netdev->perm_addr, nic->eeprom, ETH_ALEN);
 	if (!is_valid_ether_addr(netdev->perm_addr)) {
+=======
+	eth_hw_addr_set(netdev, (u8 *)nic->eeprom);
+	if (!is_valid_ether_addr(netdev->dev_addr)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!eeprom_bad_csum_allow) {
 			netif_err(nic, probe, nic->netdev, "Invalid MAC address from EEPROM, aborting\n");
 			err = -EAGAIN;
@@ -2918,7 +3379,11 @@ static int __devinit e100_probe(struct pci_dev *pdev,
 
 	/* Wol magic packet can be enabled from eeprom */
 	if ((nic->mac >= mac_82558_D101_A4) &&
+<<<<<<< HEAD
 	   (nic->eeprom[eeprom_id] & eeprom_id_wol)) {
+=======
+	   (le16_to_cpu(nic->eeprom[eeprom_id]) & eeprom_id_wol)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		nic->flags |= wol_magic;
 		device_set_wakeup_enable(&pdev->dev, true);
 	}
@@ -2931,11 +3396,24 @@ static int __devinit e100_probe(struct pci_dev *pdev,
 		netif_err(nic, probe, nic->netdev, "Cannot register net device, aborting\n");
 		goto err_out_free;
 	}
+<<<<<<< HEAD
 	nic->cbs_pool = pci_pool_create(netdev->name,
 			   nic->pdev,
 			   nic->params.cbs.max * sizeof(struct cb),
 			   sizeof(u32),
 			   0);
+=======
+	nic->cbs_pool = dma_pool_create(netdev->name,
+			   &nic->pdev->dev,
+			   nic->params.cbs.max * sizeof(struct cb),
+			   sizeof(u32),
+			   0);
+	if (!nic->cbs_pool) {
+		netif_err(nic, probe, nic->netdev, "Cannot create DMA pool, aborting\n");
+		err = -ENOMEM;
+		goto err_out_pool;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_info(nic, probe, nic->netdev,
 		   "addr 0x%llx, irq %d, MAC addr %pM\n",
 		   (unsigned long long)pci_resource_start(pdev, use_io ? 1 : 0),
@@ -2943,6 +3421,11 @@ static int __devinit e100_probe(struct pci_dev *pdev,
 
 	return 0;
 
+<<<<<<< HEAD
+=======
+err_out_pool:
+	unregister_netdev(netdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_out_free:
 	e100_free(nic);
 err_out_iounmap:
@@ -2952,12 +3435,19 @@ err_out_free_res:
 err_out_disable_pdev:
 	pci_disable_device(pdev);
 err_out_free_dev:
+<<<<<<< HEAD
 	pci_set_drvdata(pdev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_netdev(netdev);
 	return err;
 }
 
+<<<<<<< HEAD
 static void __devexit e100_remove(struct pci_dev *pdev)
+=======
+static void e100_remove(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *netdev = pci_get_drvdata(pdev);
 
@@ -2966,11 +3456,18 @@ static void __devexit e100_remove(struct pci_dev *pdev)
 		unregister_netdev(netdev);
 		e100_free(nic);
 		pci_iounmap(pdev, nic->csr);
+<<<<<<< HEAD
 		pci_pool_destroy(nic->cbs_pool);
 		free_netdev(netdev);
 		pci_release_regions(pdev);
 		pci_disable_device(pdev);
 		pci_set_drvdata(pdev, NULL);
+=======
+		dma_pool_destroy(nic->cbs_pool);
+		free_netdev(netdev);
+		pci_release_regions(pdev);
+		pci_disable_device(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2982,11 +3479,18 @@ static void __e100_shutdown(struct pci_dev *pdev, bool *enable_wake)
 	struct net_device *netdev = pci_get_drvdata(pdev);
 	struct nic *nic = netdev_priv(netdev);
 
+<<<<<<< HEAD
 	if (netif_running(netdev))
 		e100_down(nic);
 	netif_device_detach(netdev);
 
 	pci_save_state(pdev);
+=======
+	netif_device_detach(netdev);
+
+	if (netif_running(netdev))
+		e100_down(nic);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((nic->flags & wol_magic) | e100_asf(nic)) {
 		/* enable reverse auto-negotiation */
@@ -3017,6 +3521,7 @@ static int __e100_power_off(struct pci_dev *pdev, bool wake)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int e100_suspend(struct pci_dev *pdev, pm_message_t state)
 {
@@ -3034,6 +3539,29 @@ static int e100_resume(struct pci_dev *pdev)
 	pci_restore_state(pdev);
 	/* ack any pending wake events, disable PME */
 	pci_enable_wake(pdev, 0, 0);
+=======
+static int __maybe_unused e100_suspend(struct device *dev_d)
+{
+	bool wake;
+
+	__e100_shutdown(to_pci_dev(dev_d), &wake);
+
+	return 0;
+}
+
+static int __maybe_unused e100_resume(struct device *dev_d)
+{
+	struct net_device *netdev = dev_get_drvdata(dev_d);
+	struct nic *nic = netdev_priv(netdev);
+	int err;
+
+	err = pci_enable_device(to_pci_dev(dev_d));
+	if (err) {
+		netdev_err(netdev, "Resume cannot enable PCI device, aborting\n");
+		return err;
+	}
+	pci_set_master(to_pci_dev(dev_d));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* disable reverse auto-negotiation */
 	if (nic->phy == phy_82552_v) {
@@ -3045,6 +3573,7 @@ static int e100_resume(struct pci_dev *pdev)
 		           smartspeed & ~(E100_82552_REV_ANEG));
 	}
 
+<<<<<<< HEAD
 	netif_device_attach(netdev);
 	if (netif_running(netdev))
 		e100_up(nic);
@@ -3052,6 +3581,15 @@ static int e100_resume(struct pci_dev *pdev)
 	return 0;
 }
 #endif /* CONFIG_PM */
+=======
+	if (netif_running(netdev))
+		e100_up(nic);
+
+	netif_device_attach(netdev);
+
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void e100_shutdown(struct pci_dev *pdev)
 {
@@ -3124,7 +3662,11 @@ static void e100_io_resume(struct pci_dev *pdev)
 	struct nic *nic = netdev_priv(netdev);
 
 	/* ack any pending wake events, disable PME */
+<<<<<<< HEAD
 	pci_enable_wake(pdev, 0, 0);
+=======
+	pci_enable_wake(pdev, PCI_D0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netif_device_attach(netdev);
 	if (netif_running(netdev)) {
@@ -3133,22 +3675,39 @@ static void e100_io_resume(struct pci_dev *pdev)
 	}
 }
 
+<<<<<<< HEAD
 static struct pci_error_handlers e100_err_handler = {
+=======
+static const struct pci_error_handlers e100_err_handler = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.error_detected = e100_io_error_detected,
 	.slot_reset = e100_io_slot_reset,
 	.resume = e100_io_resume,
 };
 
+<<<<<<< HEAD
+=======
+static SIMPLE_DEV_PM_OPS(e100_pm_ops, e100_suspend, e100_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver e100_driver = {
 	.name =         DRV_NAME,
 	.id_table =     e100_id_table,
 	.probe =        e100_probe,
+<<<<<<< HEAD
 	.remove =       __devexit_p(e100_remove),
 #ifdef CONFIG_PM
 	/* Power Management hooks */
 	.suspend =      e100_suspend,
 	.resume =       e100_resume,
 #endif
+=======
+	.remove =       e100_remove,
+
+	/* Power Management hooks */
+	.driver.pm =	&e100_pm_ops,
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.shutdown =     e100_shutdown,
 	.err_handler = &e100_err_handler,
 };
@@ -3156,7 +3715,11 @@ static struct pci_driver e100_driver = {
 static int __init e100_init_module(void)
 {
 	if (((1 << debug) - 1) & NETIF_MSG_DRV) {
+<<<<<<< HEAD
 		pr_info("%s, %s\n", DRV_DESCRIPTION, DRV_VERSION);
+=======
+		pr_info("%s\n", DRV_DESCRIPTION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_info("%s\n", DRV_COPYRIGHT);
 	}
 	return pci_register_driver(&e100_driver);

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2007 Intel Corporation
  *
@@ -14,17 +15,33 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2007 Intel Corporation
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authers: Jesse Barnes <jesse.barnes@intel.com>
  */
 
 #include <linux/i2c.h>
+<<<<<<< HEAD
 #include <linux/fb.h>
 #include <drm/drmP.h>
+=======
+
+#include <drm/drm_edid.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "psb_intel_drv.h"
 
 /**
  * psb_intel_ddc_probe
+<<<<<<< HEAD
  *
+=======
+ * @adapter:   Associated I2C adaptor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 bool psb_intel_ddc_probe(struct i2c_adapter *adapter)
 {
@@ -56,6 +73,10 @@ bool psb_intel_ddc_probe(struct i2c_adapter *adapter)
 /**
  * psb_intel_ddc_get_modes - get modelist from monitor
  * @connector: DRM connector device to use
+<<<<<<< HEAD
+=======
+ * @adapter:   Associated I2C adaptor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Fetch the EDID information from @connector using the DDC bus.
  */
@@ -67,7 +88,11 @@ int psb_intel_ddc_get_modes(struct drm_connector *connector,
 
 	edid = drm_get_edid(connector, adapter);
 	if (edid) {
+<<<<<<< HEAD
 		drm_mode_connector_update_edid_property(connector, edid);
+=======
+		drm_connector_update_edid_property(connector, edid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = drm_add_edid_modes(connector, edid);
 		kfree(edid);
 	}

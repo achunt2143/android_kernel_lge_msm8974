@@ -1,6 +1,14 @@
+<<<<<<< HEAD
 #ifndef __ASM_SMP_H
 #define __ASM_SMP_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ASM_SMP_H
+#define __ASM_SMP_H
+
+extern int init_per_cpu(int cpuid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #if defined(CONFIG_SMP)
 
@@ -25,15 +33,24 @@ typedef unsigned long address_t;
 #define cpu_number_map(cpu)	(cpu)
 #define cpu_logical_map(cpu)	(cpu)
 
+<<<<<<< HEAD
 extern void smp_send_reschedule(int cpu);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void smp_send_all_nop(void);
 
 extern void arch_send_call_function_single_ipi(int cpu);
 extern void arch_send_call_function_ipi_mask(const struct cpumask *mask);
 
+<<<<<<< HEAD
 #endif /* !ASSEMBLY */
 
 #define raw_smp_processor_id()	(current_thread_info()->cpu)
+=======
+#define raw_smp_processor_id()		(current_thread_info()->cpu)
+
+#endif /* !ASSEMBLY */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else /* CONFIG_SMP */
 
@@ -43,6 +60,7 @@ static inline void smp_send_all_nop(void) { return; }
 
 #define NO_PROC_ID		0xFF		/* No processor magic marker */
 #define ANY_PROC_ID		0xFF		/* Any processor magic marker */
+<<<<<<< HEAD
 static inline int __cpu_disable (void) {
   return 0;
 }
@@ -51,5 +69,9 @@ static inline void __cpu_die (unsigned int cpu) {
     ;
 }
 extern int __cpu_up (unsigned int cpu);
+=======
+int __cpu_disable(void);
+void __cpu_die(unsigned int cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /*  __ASM_SMP_H */

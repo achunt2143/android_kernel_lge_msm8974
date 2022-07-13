@@ -17,6 +17,7 @@
 #include <asm/sn/sn0/arch.h>
 #endif
 
+<<<<<<< HEAD
 typedef u64	hubreg_t;
 
 #define cputonasid(cpu)		(sn_cpu_info[(cpu)].p_nasid)
@@ -60,5 +61,14 @@ extern cnodeid_t cpuid_to_compact_node[MAXCPUS];
 #define NASID_TO_COMPACT_NODEID(nnode)	(nasid_to_compact_node[nnode])
 #define COMPACT_TO_NASID_NODEID(cnode)	(compact_to_nasid_node[cnode])
 #define CPUID_TO_COMPACT_NODEID(cpu)	(cpuid_to_compact_node[(cpu)])
+=======
+#define cputonasid(cpu)		(sn_cpu_info[(cpu)].p_nasid)
+#define cputoslice(cpu)		(sn_cpu_info[(cpu)].p_slice)
+
+#define INVALID_NASID		(nasid_t)-1
+#define INVALID_PNODEID		(pnodeid_t)-1
+#define INVALID_MODULE		(moduleid_t)-1
+#define INVALID_PARTID		(partid_t)-1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_SN_ARCH_H */

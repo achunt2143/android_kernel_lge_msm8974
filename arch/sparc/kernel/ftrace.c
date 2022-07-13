@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 #include <linux/hardirq.h>
 #include <linux/ftrace.h>
@@ -81,6 +85,7 @@ int ftrace_update_ftrace_func(ftrace_func_t func)
 	new = ftrace_call_replace(ip, (unsigned long)func);
 	return ftrace_modify_code(ip, old, new);
 }
+<<<<<<< HEAD
 
 int __init ftrace_dyn_arch_init(void *data)
 {
@@ -90,6 +95,8 @@ int __init ftrace_dyn_arch_init(void *data)
 
 	return 0;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #ifdef CONFIG_FUNCTION_GRAPH_TRACER
@@ -129,11 +136,15 @@ unsigned long prepare_ftrace_return(unsigned long parent,
 				    unsigned long frame_pointer)
 {
 	unsigned long return_hooker = (unsigned long) &return_to_handler;
+<<<<<<< HEAD
 	struct ftrace_graph_ent trace;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(atomic_read(&current->tracing_graph_pause)))
 		return parent + 8UL;
 
+<<<<<<< HEAD
 	if (ftrace_push_return_trace(parent, self_addr, &trace.depth,
 				     frame_pointer) == -EBUSY)
 		return parent + 8UL;
@@ -146,6 +157,11 @@ unsigned long prepare_ftrace_return(unsigned long parent,
 		return parent + 8UL;
 	}
 
+=======
+	if (function_graph_enter(parent, self_addr, frame_pointer, NULL))
+		return parent + 8UL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return return_hooker;
 }
 #endif /* CONFIG_FUNCTION_GRAPH_TRACER */

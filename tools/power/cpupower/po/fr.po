@@ -95,7 +95,11 @@ msgstr ""
 
 #: utils/idle_monitor/cpupower-monitor.c:74
 #, c-format
+<<<<<<< HEAD
 msgid "\t -i: time intervall to measure for in seconds (default 1)\n"
+=======
+msgid "\t -i: time interval to measure for in seconds (default 1)\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 msgstr ""
 
 #: utils/idle_monitor/cpupower-monitor.c:75
@@ -212,7 +216,11 @@ msgstr ""
 #: utils/cpupower.c:91
 #, c-format
 msgid "Report errors and bugs to %s, please.\n"
+<<<<<<< HEAD
 msgstr "Veuillez rapportez les erreurs et les bogues à %s, s'il vous plait.\n"
+=======
+msgstr "Veuillez rapportez les erreurs et les bogues Ã  %s, s'il vous plait.\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpupower.c:114
 #, c-format
@@ -227,14 +235,22 @@ msgstr ""
 #: utils/cpufreq-info.c:31
 #, c-format
 msgid "Couldn't count the number of CPUs (%s: %s), assuming 1\n"
+<<<<<<< HEAD
 msgstr "Détermination du nombre de CPUs (%s : %s) impossible.  Assume 1\n"
+=======
+msgstr "DÃ©termination du nombre de CPUs (%s : %s) impossible.  Assume 1\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:63
 #, c-format
 msgid ""
 "          minimum CPU frequency  -  maximum CPU frequency  -  governor\n"
 msgstr ""
+<<<<<<< HEAD
 "         Fréquence CPU minimale - Fréquence CPU maximale  - régulateur\n"
+=======
+"         FrÃ©quence CPU minimale - FrÃ©quence CPU maximale  - rÃ©gulateur\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:151
 #, c-format
@@ -302,12 +318,20 @@ msgstr "  pilote : %s\n"
 #: utils/cpufreq-info.c:219
 #, fuzzy, c-format
 msgid "  CPUs which run at the same hardware frequency: "
+<<<<<<< HEAD
 msgstr "  CPUs qui doivent changer de fréquences en même temps : "
+=======
+msgstr "  CPUs qui doivent changer de frÃ©quences en mÃªme temps : "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:230
 #, fuzzy, c-format
 msgid "  CPUs which need to have their frequency coordinated by software: "
+<<<<<<< HEAD
 msgstr "  CPUs qui doivent changer de fréquences en même temps : "
+=======
+msgstr "  CPUs qui doivent changer de frÃ©quences en mÃªme temps : "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:241
 #, c-format
@@ -317,22 +341,38 @@ msgstr ""
 #: utils/cpufreq-info.c:247
 #, c-format
 msgid "  hardware limits: "
+<<<<<<< HEAD
 msgstr "  limitation matérielle : "
+=======
+msgstr "  limitation matÃ©rielle : "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:256
 #, c-format
 msgid "  available frequency steps: "
+<<<<<<< HEAD
 msgstr "  plage de fréquence : "
+=======
+msgstr "  plage de frÃ©quence : "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:269
 #, c-format
 msgid "  available cpufreq governors: "
+<<<<<<< HEAD
 msgstr "  régulateurs disponibles : "
+=======
+msgstr "  rÃ©gulateurs disponibles : "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:280
 #, c-format
 msgid "  current policy: frequency should be within "
+<<<<<<< HEAD
 msgstr "  tactique actuelle : la fréquence doit être comprise entre "
+=======
+msgstr "  tactique actuelle : la frÃ©quence doit Ãªtre comprise entre "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:282
 #, c-format
@@ -345,18 +385,31 @@ msgid ""
 "The governor \"%s\" may decide which speed to use\n"
 "                  within this range.\n"
 msgstr ""
+<<<<<<< HEAD
 "Le régulateur \"%s\" est libre de choisir la vitesse\n"
 "                  dans cette plage de fréquences.\n"
+=======
+"Le rÃ©gulateur \"%s\" est libre de choisir la vitesse\n"
+"                  dans cette plage de frÃ©quences.\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:293
 #, c-format
 msgid "  current CPU frequency is "
+<<<<<<< HEAD
 msgstr "  la fréquence actuelle de ce CPU est "
+=======
+msgstr "  la frÃ©quence actuelle de ce CPU est "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:296
 #, c-format
 msgid " (asserted by call to hardware)"
+<<<<<<< HEAD
 msgstr " (vérifié par un appel direct du matériel)"
+=======
+msgstr " (vÃ©rifiÃ© par un appel direct du matÃ©riel)"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:304
 #, c-format
@@ -377,7 +430,11 @@ msgstr "Options :\n"
 #: utils/cpufreq-info.c:474
 #, fuzzy, c-format
 msgid "  -e, --debug          Prints out debug information [default]\n"
+<<<<<<< HEAD
 msgstr "  -e, --debug          Afficher les informations de déboguage\n"
+=======
+msgstr "  -e, --debug          Afficher les informations de dÃ©boguage\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:475
 #, c-format
@@ -385,8 +442,13 @@ msgid ""
 "  -f, --freq           Get frequency the CPU currently runs at, according\n"
 "                       to the cpufreq core *\n"
 msgstr ""
+<<<<<<< HEAD
 "  -f, --freq           Obtenir la fréquence actuelle du CPU selon le point\n"
 "                       de vue du coeur du système de cpufreq *\n"
+=======
+"  -f, --freq           Obtenir la frÃ©quence actuelle du CPU selon le point\n"
+"                       de vue du coeur du systÃ¨me de cpufreq *\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:477
 #, c-format
@@ -394,8 +456,13 @@ msgid ""
 "  -w, --hwfreq         Get frequency the CPU currently runs at, by reading\n"
 "                       it from hardware (only available to root) *\n"
 msgstr ""
+<<<<<<< HEAD
 "  -w, --hwfreq         Obtenir la fréquence actuelle du CPU directement par\n"
 "                       le matériel (doit être root) *\n"
+=======
+"  -w, --hwfreq         Obtenir la frÃ©quence actuelle du CPU directement par\n"
+"                       le matÃ©riel (doit Ãªtre root) *\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:479
 #, c-format
@@ -403,13 +470,21 @@ msgid ""
 "  -l, --hwlimits       Determine the minimum and maximum CPU frequency "
 "allowed *\n"
 msgstr ""
+<<<<<<< HEAD
 "  -l, --hwlimits       Affiche les fréquences minimales et maximales du CPU "
+=======
+"  -l, --hwlimits       Affiche les frÃ©quences minimales et maximales du CPU "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "*\n"
 
 #: utils/cpufreq-info.c:480
 #, c-format
 msgid "  -d, --driver         Determines the used cpufreq kernel driver *\n"
+<<<<<<< HEAD
 msgstr "  -d, --driver         Affiche le pilote cpufreq utilisé *\n"
+=======
+msgstr "  -d, --driver         Affiche le pilote cpufreq utilisÃ© *\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:481
 #, c-format
@@ -420,7 +495,11 @@ msgstr "  -p, --policy         Affiche la tactique actuelle de cpufreq *\n"
 #, c-format
 msgid "  -g, --governors      Determines available cpufreq governors *\n"
 msgstr ""
+<<<<<<< HEAD
 "  -g, --governors      Affiche les régulateurs disponibles de cpufreq *\n"
+=======
+"  -g, --governors      Affiche les rÃ©gulateurs disponibles de cpufreq *\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:483
 #, fuzzy, c-format
@@ -429,7 +508,11 @@ msgid ""
 "frequency *\n"
 msgstr ""
 "  -a, --affected-cpus   Affiche quels sont les CPUs qui doivent changer de\n"
+<<<<<<< HEAD
 "                        fréquences en même temps *\n"
+=======
+"                        frÃ©quences en mÃªme temps *\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:484
 #, fuzzy, c-format
@@ -438,7 +521,11 @@ msgid ""
 "                       coordinated by software *\n"
 msgstr ""
 "  -a, --affected-cpus   Affiche quels sont les CPUs qui doivent changer de\n"
+<<<<<<< HEAD
 "                        fréquences en même temps *\n"
+=======
+"                        frÃ©quences en mÃªme temps *\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:486
 #, c-format
@@ -453,7 +540,11 @@ msgid ""
 "  -y, --latency        Determines the maximum latency on CPU frequency "
 "changes *\n"
 msgstr ""
+<<<<<<< HEAD
 "  -l, --hwlimits       Affiche les fréquences minimales et maximales du CPU "
+=======
+"  -l, --hwlimits       Affiche les frÃ©quences minimales et maximales du CPU "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "*\n"
 
 #: utils/cpufreq-info.c:488
@@ -469,7 +560,11 @@ msgid ""
 "                       interface in 2.4. and early 2.6. kernels\n"
 msgstr ""
 "  -o, --proc           Affiche les informations en utilisant l'interface\n"
+<<<<<<< HEAD
 "                       fournie par /proc/cpufreq, présente dans les "
+=======
+"                       fournie par /proc/cpufreq, prÃ©sente dans les "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "versions\n"
 "                       2.4 et les anciennes versions 2.6 du noyau\n"
 
@@ -485,7 +580,11 @@ msgstr ""
 #: utils/cpufreq-info.c:492 utils/cpuidle-info.c:152
 #, c-format
 msgid "  -h, --help           Prints out this screen\n"
+<<<<<<< HEAD
 msgstr "  -h, --help           affiche l'aide-mémoire\n"
+=======
+msgstr "  -h, --help           affiche l'aide-mÃ©moire\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:495
 #, c-format
@@ -493,8 +592,13 @@ msgid ""
 "If no argument or only the -c, --cpu parameter is given, debug output about\n"
 "cpufreq is printed which is useful e.g. for reporting bugs.\n"
 msgstr ""
+<<<<<<< HEAD
 "Par défaut, les informations de déboguage seront affichées si aucun\n"
 "argument, ou bien si seulement l'argument -c (--cpu) est donné, afin de\n"
+=======
+"Par dÃ©faut, les informations de dÃ©boguage seront affichÃ©es si aucun\n"
+"argument, ou bien si seulement l'argument -c (--cpu) est donnÃ©, afin de\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "faciliter les rapports de bogues par exemple\n"
 
 #: utils/cpufreq-info.c:497
@@ -517,8 +621,13 @@ msgid ""
 "You can't specify more than one --cpu parameter and/or\n"
 "more than one output-specific argument\n"
 msgstr ""
+<<<<<<< HEAD
 "On ne peut indiquer plus d'un paramètre --cpu, tout comme l'on ne peut\n"
 "spécifier plus d'un argument de formatage\n"
+=======
+"On ne peut indiquer plus d'un paramÃ¨tre --cpu, tout comme l'on ne peut\n"
+"spÃ©cifier plus d'un argument de formatage\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:600 utils/cpufreq-set.c:82 utils/cpupower-set.c:42
 #: utils/cpupower-info.c:42 utils/cpuidle-info.c:213
@@ -529,7 +638,11 @@ msgstr "option invalide\n"
 #: utils/cpufreq-info.c:617
 #, c-format
 msgid "couldn't analyze CPU %d as it doesn't seem to be present\n"
+<<<<<<< HEAD
 msgstr "analyse du CPU %d impossible puisqu'il ne semble pas être présent\n"
+=======
+msgstr "analyse du CPU %d impossible puisqu'il ne semble pas Ãªtre prÃ©sent\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-info.c:620 utils/cpupower-info.c:142
 #, c-format
@@ -547,8 +660,13 @@ msgid ""
 "  -d FREQ, --min FREQ      new minimum CPU frequency the governor may "
 "select\n"
 msgstr ""
+<<<<<<< HEAD
 "  -d FREQ, --min FREQ       nouvelle fréquence minimale du CPU à utiliser\n"
 "                            par le régulateur\n"
+=======
+"  -d FREQ, --min FREQ       nouvelle frÃ©quence minimale du CPU Ã  utiliser\n"
+"                            par le rÃ©gulateur\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-set.c:28
 #, c-format
@@ -556,13 +674,22 @@ msgid ""
 "  -u FREQ, --max FREQ      new maximum CPU frequency the governor may "
 "select\n"
 msgstr ""
+<<<<<<< HEAD
 "  -u FREQ, --max FREQ       nouvelle fréquence maximale du CPU à utiliser\n"
 "                            par le régulateur\n"
+=======
+"  -u FREQ, --max FREQ       nouvelle frÃ©quence maximale du CPU Ã  utiliser\n"
+"                            par le rÃ©gulateur\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-set.c:29
 #, c-format
 msgid "  -g GOV, --governor GOV   new cpufreq governor\n"
+<<<<<<< HEAD
 msgstr "  -g GOV, --governor GOV   active le régulateur GOV\n"
+=======
+msgstr "  -g GOV, --governor GOV   active le rÃ©gulateur GOV\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-set.c:30
 #, c-format
@@ -570,9 +697,15 @@ msgid ""
 "  -f FREQ, --freq FREQ     specific frequency to be set. Requires userspace\n"
 "                           governor to be available and loaded\n"
 msgstr ""
+<<<<<<< HEAD
 "  -f FREQ, --freq FREQ     fixe la fréquence du processeur à FREQ. Il faut\n"
 "                           que le régulateur « userspace » soit disponible \n"
 "                           et activé.\n"
+=======
+"  -f FREQ, --freq FREQ     fixe la frÃ©quence du processeur Ã  FREQ. Il faut\n"
+"                           que le rÃ©gulateur Â« userspace Â» soit disponible \n"
+"                           et activÃ©.\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-set.c:32
 #, c-format
@@ -582,7 +715,11 @@ msgstr ""
 #: utils/cpufreq-set.c:33 utils/cpupower-set.c:28 utils/cpupower-info.c:27
 #, fuzzy, c-format
 msgid "  -h, --help               Prints out this screen\n"
+<<<<<<< HEAD
 msgstr "  -h, --help           affiche l'aide-mémoire\n"
+=======
+msgstr "  -h, --help           affiche l'aide-mÃ©moire\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-set.c:35
 #, fuzzy, c-format
@@ -602,11 +739,19 @@ msgid ""
 "   (FREQuency in kHz =^ Hz * 0.001 =^ MHz * 1000 =^ GHz * 1000000).\n"
 msgstr ""
 "Remarque :\n"
+<<<<<<< HEAD
 "1. Le CPU numéro 0 sera utilisé par défaut si -c (ou --cpu) est omis ;\n"
 "2. l'argument -f FREQ (ou --freq FREQ) ne peut être utilisé qu'avec --cpu ;\n"
 "3. on pourra préciser l'unité des fréquences en postfixant sans aucune "
 "espace\n"
 "   les valeurs par hz, kHz (par défaut), MHz, GHz ou THz\n"
+=======
+"1. Le CPU numÃ©ro 0 sera utilisÃ© par dÃ©faut si -c (ou --cpu) est omis ;\n"
+"2. l'argument -f FREQ (ou --freq FREQ) ne peut Ãªtre utilisÃ© qu'avec --cpu ;\n"
+"3. on pourra prÃ©ciser l'unitÃ© des frÃ©quences en postfixant sans aucune "
+"espace\n"
+"   les valeurs par hz, kHz (par dÃ©faut), MHz, GHz ou THz\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "   (kHz =^ Hz * 0.001 =^ MHz * 1000 =^ GHz * 1000000).\n"
 
 #: utils/cpufreq-set.c:57
@@ -622,6 +767,7 @@ msgid ""
 "frequency\n"
 "   or because the userspace governor isn't loaded?\n"
 msgstr ""
+<<<<<<< HEAD
 "En ajustant les nouveaux paramètres, une erreur est apparue. Les sources\n"
 "d'erreur typique sont :\n"
 "- droit d'administration insuffisant (êtes-vous root ?) ;\n"
@@ -632,11 +778,27 @@ msgstr ""
 "- vous voulez utiliser l'option -f/--freq, mais le régulateur « userspace »\n"
 "  n'est pas disponible, par exemple parce que le matériel ne le supporte\n"
 "  pas, ou bien n'est tout simplement pas chargé.\n"
+=======
+"En ajustant les nouveaux paramÃ¨tres, une erreur est apparue. Les sources\n"
+"d'erreur typique sont :\n"
+"- droit d'administration insuffisant (Ãªtes-vous root ?) ;\n"
+"- le rÃ©gulateur choisi n'est pas disponible, ou bien n'est pas disponible "
+"en\n"
+"  tant que module noyau ;\n"
+"- la tactique n'est pas disponible ;\n"
+"- vous voulez utiliser l'option -f/--freq, mais le rÃ©gulateur Â« userspace Â»\n"
+"  n'est pas disponible, par exemple parce que le matÃ©riel ne le supporte\n"
+"  pas, ou bien n'est tout simplement pas chargÃ©.\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-set.c:170
 #, c-format
 msgid "wrong, unknown or unhandled CPU?\n"
+<<<<<<< HEAD
 msgstr "CPU inconnu ou non supporté ?\n"
+=======
+msgstr "CPU inconnu ou non supportÃ© ?\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpufreq-set.c:302
 #, c-format
@@ -653,7 +815,11 @@ msgid ""
 "At least one parameter out of -f/--freq, -d/--min, -u/--max, and\n"
 "-g/--governor must be passed\n"
 msgstr ""
+<<<<<<< HEAD
 "L'un de ces paramètres est obligatoire : -f/--freq, -d/--min, -u/--max et\n"
+=======
+"L'un de ces paramÃ¨tres est obligatoire : -f/--freq, -d/--min, -u/--max et\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "-g/--governor\n"
 
 #: utils/cpufreq-set.c:347
@@ -810,7 +976,11 @@ msgstr ""
 #: utils/cpuidle-info.c:48
 #, fuzzy, c-format
 msgid "Available idle states:"
+<<<<<<< HEAD
 msgstr "  plage de fréquence : "
+=======
+msgstr "  plage de frÃ©quence : "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpuidle-info.c:71
 #, c-format
@@ -911,7 +1081,11 @@ msgstr "Usage : cpufreq-info [options]\n"
 #: utils/cpuidle-info.c:149
 #, fuzzy, c-format
 msgid "  -s, --silent         Only show general C-state information\n"
+<<<<<<< HEAD
 msgstr "  -e, --debug          Afficher les informations de déboguage\n"
+=======
+msgstr "  -e, --debug          Afficher les informations de dÃ©boguage\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #: utils/cpuidle-info.c:150
 #, fuzzy, c-format
@@ -921,7 +1095,11 @@ msgid ""
 "                       interface in older kernels\n"
 msgstr ""
 "  -o, --proc           Affiche les informations en utilisant l'interface\n"
+<<<<<<< HEAD
 "                       fournie par /proc/cpufreq, présente dans les "
+=======
+"                       fournie par /proc/cpufreq, prÃ©sente dans les "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 "versions\n"
 "                       2.4 et les anciennes versions 2.6 du noyau\n"
 
@@ -929,19 +1107,33 @@ msgstr ""
 #, fuzzy, c-format
 msgid "You can't specify more than one output-specific argument\n"
 msgstr ""
+<<<<<<< HEAD
 "On ne peut indiquer plus d'un paramètre --cpu, tout comme l'on ne peut\n"
 "spécifier plus d'un argument de formatage\n"
+=======
+"On ne peut indiquer plus d'un paramÃ¨tre --cpu, tout comme l'on ne peut\n"
+"spÃ©cifier plus d'un argument de formatage\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #~ msgid ""
 #~ "  -c CPU, --cpu CPU    CPU number which information shall be determined "
 #~ "about\n"
 #~ msgstr ""
+<<<<<<< HEAD
 #~ "  -c CPU, --cpu CPU    Numéro du CPU pour lequel l'information sera "
 #~ "affichée\n"
+=======
+#~ "  -c CPU, --cpu CPU    NumÃ©ro du CPU pour lequel l'information sera "
+#~ "affichÃ©e\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #~ msgid ""
 #~ "  -c CPU, --cpu CPU        number of CPU where cpufreq settings shall be "
 #~ "modified\n"
 #~ msgstr ""
+<<<<<<< HEAD
 #~ "  -c CPU, --cpu CPU        numéro du CPU à prendre en compte pour les\n"
+=======
+#~ "  -c CPU, --cpu CPU        numÃ©ro du CPU Ã  prendre en compte pour les\n"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #~ "                           changements\n"

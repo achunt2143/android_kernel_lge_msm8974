@@ -10,10 +10,15 @@
  * IP32 changes by Ilya.
  * Copyright (C) 2010 Cavium Networks, Inc.
  */
+<<<<<<< HEAD
 #include <linux/dma-mapping.h>
 #include <linux/scatterlist.h>
 #include <linux/bootmem.h>
 #include <linux/export.h>
+=======
+#include <linux/dma-direct.h>
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/swiotlb.h>
 #include <linux/types.h>
 #include <linux/init.h>
@@ -24,10 +29,22 @@
 #include <asm/octeon/octeon.h>
 
 #ifdef CONFIG_PCI
+<<<<<<< HEAD
+=======
+#include <linux/pci.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/octeon/pci-octeon.h>
 #include <asm/octeon/cvmx-npi-defs.h>
 #include <asm/octeon/cvmx-pci-defs.h>
 
+<<<<<<< HEAD
+=======
+struct octeon_dma_map_ops {
+	dma_addr_t (*phys_to_dma)(struct device *dev, phys_addr_t paddr);
+	phys_addr_t (*dma_to_phys)(struct device *dev, dma_addr_t daddr);
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static dma_addr_t octeon_hole_phys_to_dma(phys_addr_t paddr)
 {
 	if (paddr >= CVMX_PCIE_BAR1_PHYS_BASE && paddr < (CVMX_PCIE_BAR1_PHYS_BASE + CVMX_PCIE_BAR1_PHYS_SIZE))
@@ -61,6 +78,14 @@ static phys_addr_t octeon_gen1_dma_to_phys(struct device *dev, dma_addr_t daddr)
 	return daddr;
 }
 
+<<<<<<< HEAD
+=======
+static const struct octeon_dma_map_ops octeon_gen1_ops = {
+	.phys_to_dma	= octeon_gen1_phys_to_dma,
+	.dma_to_phys	= octeon_gen1_dma_to_phys,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static dma_addr_t octeon_gen2_phys_to_dma(struct device *dev, phys_addr_t paddr)
 {
 	return octeon_hole_phys_to_dma(paddr);
@@ -71,6 +96,14 @@ static phys_addr_t octeon_gen2_dma_to_phys(struct device *dev, dma_addr_t daddr)
 	return octeon_hole_dma_to_phys(daddr);
 }
 
+<<<<<<< HEAD
+=======
+static const struct octeon_dma_map_ops octeon_gen2_ops = {
+	.phys_to_dma	= octeon_gen2_phys_to_dma,
+	.dma_to_phys	= octeon_gen2_dma_to_phys,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static dma_addr_t octeon_big_phys_to_dma(struct device *dev, phys_addr_t paddr)
 {
 	if (paddr >= 0x410000000ull && paddr < 0x420000000ull)
@@ -93,6 +126,14 @@ static phys_addr_t octeon_big_dma_to_phys(struct device *dev, dma_addr_t daddr)
 	return daddr;
 }
 
+<<<<<<< HEAD
+=======
+static const struct octeon_dma_map_ops octeon_big_ops = {
+	.phys_to_dma	= octeon_big_phys_to_dma,
+	.dma_to_phys	= octeon_big_dma_to_phys,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static dma_addr_t octeon_small_phys_to_dma(struct device *dev,
 					   phys_addr_t paddr)
 {
@@ -121,6 +162,7 @@ static phys_addr_t octeon_small_dma_to_phys(struct device *dev,
 	return daddr;
 }
 
+<<<<<<< HEAD
 #endif /* CONFIG_PCI */
 
 static dma_addr_t octeon_dma_map_page(struct device *dev, struct page *page,
@@ -266,10 +308,66 @@ void __init plat_swiotlb_setup(void)
 	phys_t addr_size;
 	size_t swiotlbsize;
 	unsigned long swiotlb_nslabs;
+=======
+static const struct octeon_dma_map_ops octeon_small_ops = {
+	.phys_to_dma	= octeon_small_phys_to_dma,
+	.dma_to_phys	= octeon_small_dma_to_phys,
+};
+
+static const struct octeon_dma_map_ops *octeon_pci_dma_ops;
+
+void __init octeon_pci_dma_init(void)
+{
+	switch (octeon_dma_bar_type) {
+	case OCTEON_DMA_BAR_TYPE_PCIE:
+		octeon_pci_dma_ops = &octeon_gen1_ops;
+		break;
+	case OCTEON_DMA_BAR_TYPE_PCIE2:
+		octeon_pci_dma_ops = &octeon_gen2_ops;
+		break;
+	case OCTEON_DMA_BAR_TYPE_BIG:
+		octeon_pci_dma_ops = &octeon_big_ops;
+		break;
+	case OCTEON_DMA_BAR_TYPE_SMALL:
+		octeon_pci_dma_ops = &octeon_small_ops;
+		break;
+	default:
+		BUG();
+	}
+}
+#endif /* CONFIG_PCI */
+
+dma_addr_t phys_to_dma(struct device *dev, phys_addr_t paddr)
+{
+#ifdef CONFIG_PCI
+	if (dev && dev_is_pci(dev))
+		return octeon_pci_dma_ops->phys_to_dma(dev, paddr);
+#endif
+	return paddr;
+}
+
+phys_addr_t dma_to_phys(struct device *dev, dma_addr_t daddr)
+{
+#ifdef CONFIG_PCI
+	if (dev && dev_is_pci(dev))
+		return octeon_pci_dma_ops->dma_to_phys(dev, daddr);
+#endif
+	return daddr;
+}
+
+void __init plat_swiotlb_setup(void)
+{
+	phys_addr_t start, end;
+	phys_addr_t max_addr;
+	phys_addr_t addr_size;
+	size_t swiotlbsize;
+	u64 i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	max_addr = 0;
 	addr_size = 0;
 
+<<<<<<< HEAD
 	for (i = 0 ; i < boot_mem_map.nr_map; i++) {
 		struct boot_mem_map_entry *e = &boot_mem_map.map[i];
 		if (e->type != BOOT_MEM_RAM && e->type != BOOT_MEM_INIT_RAM)
@@ -284,6 +382,17 @@ void __init plat_swiotlb_setup(void)
 		if (max_addr < e->addr + e->size)
 			max_addr = e->addr + e->size;
 
+=======
+	for_each_mem_range(i, &start, &end) {
+		/* These addresses map low for PCI. */
+		if (start > 0x410000000ull && !OCTEON_IS_OCTEON2())
+			continue;
+
+		addr_size += (end - start);
+
+		if (max_addr < end)
+			max_addr = end;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	swiotlbsize = PAGE_SIZE;
@@ -306,6 +415,7 @@ void __init plat_swiotlb_setup(void)
 		swiotlbsize = 64 * (1<<20);
 	}
 #endif
+<<<<<<< HEAD
 #ifdef CONFIG_USB_OCTEON_OHCI
 	/* OCTEON II ohci is only 32-bit. */
 	if (OCTEON_IS_MODEL(OCTEON_CN6XXX) && max_addr >= 0x100000000ul)
@@ -367,3 +477,14 @@ void __init octeon_pci_dma_init(void)
 	octeon_pci_dma_map_ops = &_octeon_pci_dma_map_ops.dma_map_ops;
 }
 #endif /* CONFIG_PCI */
+=======
+#ifdef CONFIG_USB_OHCI_HCD_PLATFORM
+	/* OCTEON II ohci is only 32-bit. */
+	if (OCTEON_IS_OCTEON2() && max_addr >= 0x100000000ul)
+		swiotlbsize = 64 * (1<<20);
+#endif
+
+	swiotlb_adjust_size(swiotlbsize);
+	swiotlb_init(true, SWIOTLB_VERBOSE);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * unaligned.c: Unaligned load/store trap handling with special
  *              cases for the kernel to do them more quickly.
@@ -8,6 +12,7 @@
 
 
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
 #include <linux/mm.h>
 #include <asm/ptrace.h>
@@ -15,6 +20,20 @@
 #include <asm/uaccess.h>
 #include <linux/smp.h>
 #include <linux/perf_event.h>
+=======
+#include <linux/sched/signal.h>
+#include <linux/mm.h>
+#include <asm/ptrace.h>
+#include <asm/processor.h>
+#include <linux/uaccess.h>
+#include <linux/smp.h>
+#include <linux/perf_event.h>
+#include <linux/extable.h>
+
+#include <asm/setup.h>
+
+#include "kernel.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum direction {
 	load,    /* ld, ldd, ldh, ldsh */
@@ -162,7 +181,11 @@ unsigned long safe_compute_effective_address(struct pt_regs *regs,
 /* This is just to make gcc think panic does return... */
 static void unaligned_panic(char *str)
 {
+<<<<<<< HEAD
 	panic(str);
+=======
+	panic("%s", str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* una_asm.S */
@@ -208,10 +231,17 @@ static inline int ok_for_kernel(unsigned int insn)
 
 static void kernel_mna_trap_fault(struct pt_regs *regs, unsigned int insn)
 {
+<<<<<<< HEAD
 	unsigned long g2 = regs->u_regs [UREG_G2];
 	unsigned long fixup = search_extables_range(regs->pc, &g2);
 
 	if (!fixup) {
+=======
+	const struct exception_table_entry *entry;
+
+	entry = search_exception_tables(regs->pc);
+	if (!entry) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long address = compute_effective_address(regs, insn);
         	if(address < PAGE_SIZE) {
                 	printk(KERN_ALERT "Unable to handle kernel NULL pointer dereference in mna handler");
@@ -227,9 +257,14 @@ static void kernel_mna_trap_fault(struct pt_regs *regs, unsigned int insn)
 	        die_if_kernel("Oops", regs);
 		/* Not reached */
 	}
+<<<<<<< HEAD
 	regs->pc = fixup;
 	regs->npc = regs->pc + 4;
 	regs->u_regs [UREG_G2] = g2;
+=======
+	regs->pc = entry->fixup;
+	regs->npc = regs->pc + 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 asmlinkage void kernel_unaligned_trap(struct pt_regs *regs, unsigned int insn)
@@ -269,6 +304,7 @@ asmlinkage void kernel_unaligned_trap(struct pt_regs *regs, unsigned int insn)
 	}
 }
 
+<<<<<<< HEAD
 static inline int ok_for_user(struct pt_regs *regs, unsigned int insn,
 			      enum direction dir)
 {
@@ -374,4 +410,11 @@ kill_user:
 	user_mna_trap_fault(regs, insn);
 out:
 	;
+=======
+asmlinkage void user_unaligned_trap(struct pt_regs *regs, unsigned int insn)
+{
+	send_sig_fault(SIGBUS, BUS_ADRALN,
+		       (void __user *)safe_compute_effective_address(regs, insn),
+		       current);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

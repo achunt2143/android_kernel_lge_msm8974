@@ -1,12 +1,29 @@
+<<<<<<< HEAD
 /*
  *	fs/bfs/bfs.h
  *	Copyright (C) 1999 Tigran Aivazian <tigran@veritas.com>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ *	fs/bfs/bfs.h
+ *	Copyright (C) 1999-2018 Tigran Aivazian <aivazian.tigran@gmail.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _FS_BFS_BFS_H
 #define _FS_BFS_BFS_H
 
 #include <linux/bfs_fs.h>
 
+<<<<<<< HEAD
+=======
+/* In theory BFS supports up to 512 inodes, numbered from 2 (for /) up to 513 inclusive.
+   In actual fact, attempting to create the 512th inode (i.e. inode No. 513 or file No. 511)
+   will fail with ENOSPC in bfs_add_entry(): the root directory cannot contain so many entries, counting '..'.
+   So, mkfs.bfs(8) should really limit its -N option to 511 and not 512. For now, we just print a warning
+   if a filesystem is mounted with such "impossible to fill up" number of inodes */
+#define BFS_MAX_LASTI	513
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * BFS file system in-core superblock info
  */
@@ -16,7 +33,11 @@ struct bfs_sb_info {
 	unsigned long si_freei;
 	unsigned long si_lf_eblk;
 	unsigned long si_lasti;
+<<<<<<< HEAD
 	unsigned long *si_imap;
+=======
+	DECLARE_BITMAP(si_imap, BFS_MAX_LASTI+1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mutex bfs_lock;
 };
 
@@ -46,6 +67,10 @@ static inline struct bfs_inode_info *BFS_I(struct inode *inode)
 
 /* inode.c */
 extern struct inode *bfs_iget(struct super_block *sb, unsigned long ino);
+<<<<<<< HEAD
+=======
+extern void bfs_dump_imap(const char *, struct super_block *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* file.c */
 extern const struct inode_operations bfs_file_inops;

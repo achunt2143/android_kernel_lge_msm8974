@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 include include/asm-generic/Kbuild.asm
 
 header-y += spr_defs.h
@@ -64,4 +65,14 @@ generic-y += termios.h
 generic-y += topology.h
 generic-y += types.h
 generic-y += ucontext.h
+=======
+# SPDX-License-Identifier: GPL-2.0
+generic-y += extable.h
+generic-y += kvm_para.h
+generic-y += parport.h
+generic-y += spinlock_types.h
+generic-y += spinlock.h
+generic-y += qrwlock_types.h
+generic-y += qrwlock.h
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 generic-y += user.h

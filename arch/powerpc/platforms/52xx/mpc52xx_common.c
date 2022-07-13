@@ -15,20 +15,35 @@
 #include <linux/gpio.h>
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <linux/of_address.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of_platform.h>
 #include <linux/of_gpio.h>
 #include <linux/export.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
 #include <asm/mpc52xx.h>
 
 /* MPC5200 device tree match tables */
 static struct of_device_id mpc52xx_xlb_ids[] __initdata = {
+=======
+#include <asm/mpc52xx.h>
+
+/* MPC5200 device tree match tables */
+static const struct of_device_id mpc52xx_xlb_ids[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "fsl,mpc5200-xlb", },
 	{ .compatible = "mpc5200-xlb", },
 	{}
 };
+<<<<<<< HEAD
 static struct of_device_id mpc52xx_bus_ids[] __initdata = {
+=======
+static const struct of_device_id mpc52xx_bus_ids[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "fsl,mpc5200-immr", },
 	{ .compatible = "fsl,mpc5200b-immr", },
 	{ .compatible = "simple-bus", },
@@ -108,21 +123,37 @@ void __init mpc52xx_declare_of_platform_devices(void)
 /*
  * match tables used by mpc52xx_map_common_devices()
  */
+<<<<<<< HEAD
 static struct of_device_id mpc52xx_gpt_ids[] __initdata = {
+=======
+static const struct of_device_id mpc52xx_gpt_ids[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "fsl,mpc5200-gpt", },
 	{ .compatible = "mpc5200-gpt", }, /* old */
 	{}
 };
+<<<<<<< HEAD
 static struct of_device_id mpc52xx_cdm_ids[] __initdata = {
+=======
+static const struct of_device_id mpc52xx_cdm_ids[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "fsl,mpc5200-cdm", },
 	{ .compatible = "mpc5200-cdm", }, /* old */
 	{}
 };
+<<<<<<< HEAD
 static const struct of_device_id mpc52xx_gpio_simple[] = {
 	{ .compatible = "fsl,mpc5200-gpio", },
 	{}
 };
 static const struct of_device_id mpc52xx_gpio_wkup[] = {
+=======
+static const struct of_device_id mpc52xx_gpio_simple[] __initconst = {
+	{ .compatible = "fsl,mpc5200-gpio", },
+	{}
+};
+static const struct of_device_id mpc52xx_gpio_wkup[] __initconst = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "fsl,mpc5200-gpio-wkup", },
 	{}
 };
@@ -141,8 +172,13 @@ mpc52xx_map_common_devices(void)
 	 * on a gpt0, so check has-wdt property before mapping.
 	 */
 	for_each_matching_node(np, mpc52xx_gpt_ids) {
+<<<<<<< HEAD
 		if (of_get_property(np, "fsl,has-wdt", NULL) ||
 		    of_get_property(np, "has-wdt", NULL)) {
+=======
+		if (of_property_read_bool(np, "fsl,has-wdt") ||
+		    of_property_read_bool(np, "has-wdt")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			mpc52xx_wdt = of_iomap(np, 0);
 			of_node_put(np);
 			break;
@@ -204,6 +240,7 @@ int mpc52xx_set_psc_clkdiv(int psc_id, int clkdiv)
 EXPORT_SYMBOL(mpc52xx_set_psc_clkdiv);
 
 /**
+<<<<<<< HEAD
  * mpc52xx_get_xtal_freq - Get SYS_XTAL_IN frequency for a device
  *
  * @node: device node
@@ -245,6 +282,11 @@ EXPORT_SYMBOL(mpc52xx_get_xtal_freq);
  */
 void
 mpc52xx_restart(char *cmd)
+=======
+ * mpc52xx_restart: ppc_md->restart hook for mpc5200 using the watchdog timer
+ */
+void __noreturn mpc52xx_restart(char *cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	local_irq_disable();
 
@@ -309,7 +351,11 @@ int mpc5200_psc_ac97_gpio_reset(int psc_number)
 
 	spin_lock_irqsave(&gpio_lock, flags);
 
+<<<<<<< HEAD
 	/* Reconfiure pin-muxing to gpio */
+=======
+	/* Reconfigure pin-muxing to gpio */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mux = in_be32(&simple_gpio->port_config);
 	out_be32(&simple_gpio->port_config, mux & (~gpio));
 

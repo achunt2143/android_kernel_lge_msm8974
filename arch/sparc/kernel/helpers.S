@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.align	32
 	.globl	__flushw_user
 	.type	__flushw_user,#function
@@ -15,6 +19,10 @@ __flushw_user:
 2:	retl
 	 nop
 	.size	__flushw_user,.-__flushw_user
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__flushw_user)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Flush %fp and %i7 to the stack for all register
 	 * windows active inside of the cpu.  This allows
@@ -61,3 +69,7 @@ real_hard_smp_processor_id:
 	.size		hard_smp_processor_id,.-hard_smp_processor_id
 #endif
 	.size		real_hard_smp_processor_id,.-real_hard_smp_processor_id
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(real_hard_smp_processor_id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -35,6 +35,10 @@
 /* #include "deflate.h" */
 
 #include <linux/zutil.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitrev.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "defutil.h"
 
 #ifdef DEBUG_ZLIB
@@ -75,11 +79,14 @@ static const uch bl_order[BL_CODES]
  * probability, to avoid transmitting the lengths for unused bit length codes.
  */
 
+<<<<<<< HEAD
 #define Buf_size (8 * 2*sizeof(char))
 /* Number of bits used within bi_buf. (bi_buf might be implemented on
  * more than 16 bits on some systems.)
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ===========================================================================
  * Local data. These are initialized only once.
  */
@@ -146,8 +153,11 @@ static void send_all_trees (deflate_state *s, int lcodes, int dcodes,
 static void compress_block (deflate_state *s, ct_data *ltree,
                            ct_data *dtree);
 static void set_data_type  (deflate_state *s);
+<<<<<<< HEAD
 static unsigned bi_reverse (unsigned value, int length);
 static void bi_windup      (deflate_state *s);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void bi_flush       (deflate_state *s);
 static void copy_block     (deflate_state *s, char *buf, unsigned len,
                            int header);
@@ -170,6 +180,7 @@ static void copy_block     (deflate_state *s, char *buf, unsigned len,
  */
 
 /* ===========================================================================
+<<<<<<< HEAD
  * Send a value on a given number of bits.
  * IN assertion: length <= 16 and value fits in length bits.
  */
@@ -218,6 +229,8 @@ static void send_bits(
 #endif /* DEBUG_ZLIB */
 
 /* ===========================================================================
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Initialize the various 'constant' tables. In a multi-threaded environment,
  * this function may be called by two threads concurrently, but this is
  * harmless since both invocations do exactly the same thing.
@@ -284,7 +297,11 @@ static void tr_static_init(void)
     /* The static distance tree is trivial: */
     for (n = 0; n < D_CODES; n++) {
         static_dtree[n].Len = 5;
+<<<<<<< HEAD
         static_dtree[n].Code = bi_reverse((unsigned)n, 5);
+=======
+        static_dtree[n].Code = bitrev32((u32)n) >> (32 - 5);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     }
     static_init_done = 1;
 }
@@ -520,7 +537,11 @@ static void gen_codes(
         int len = tree[n].Len;
         if (len == 0) continue;
         /* Now reverse the bits */
+<<<<<<< HEAD
         tree[n].Code = bi_reverse(next_code[len]++, len);
+=======
+        tree[n].Code = bitrev32((u32)(next_code[len]++)) >> (32 - len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
         Tracecv(tree != static_ltree, (stderr,"\nn %3d %c l %2d c %4x (%x) ",
              n, (isgraph(n) ? n : ' '), len, tree[n].Code, next_code[len]-1));

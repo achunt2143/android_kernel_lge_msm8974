@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SAS structures and definitions header file
  *
  * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
  * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
+<<<<<<< HEAD
  *
  * This file is licensed under GPLv2.
  *
@@ -21,6 +26,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307
  * USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _SAS_H_
@@ -90,6 +97,7 @@ enum sas_oob_mode {
 };
 
 /* See sas_discover.c if you plan on changing these */
+<<<<<<< HEAD
 enum sas_dev_type {
 	NO_DEVICE   = 0,	  /* protocol */
 	SAS_END_DEV = 1,	  /* protocol */
@@ -103,12 +111,35 @@ enum sas_dev_type {
 };
 
 enum sas_protocol {
+=======
+enum sas_device_type {
+	/* these are SAS protocol defined (attached device type field) */
+	SAS_PHY_UNUSED = 0,
+	SAS_END_DEVICE = 1,
+	SAS_EDGE_EXPANDER_DEVICE = 2,
+	SAS_FANOUT_EXPANDER_DEVICE = 3,
+	/* these are internal to libsas */
+	SAS_HA = 4,
+	SAS_SATA_DEV = 5,
+	SAS_SATA_PM = 7,
+	SAS_SATA_PM_PORT = 8,
+	SAS_SATA_PENDING = 9,
+};
+
+enum sas_protocol {
+	SAS_PROTOCOL_NONE		= 0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SAS_PROTOCOL_SATA		= 0x01,
 	SAS_PROTOCOL_SMP		= 0x02,
 	SAS_PROTOCOL_STP		= 0x04,
 	SAS_PROTOCOL_SSP		= 0x08,
 	SAS_PROTOCOL_ALL		= 0x0E,
 	SAS_PROTOCOL_STP_ALL		= SAS_PROTOCOL_STP|SAS_PROTOCOL_SATA,
+<<<<<<< HEAD
+=======
+	/* these are internal to libsas */
+	SAS_PROTOCOL_INTERNAL_ABORT	= 0x10,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* From the spec; local phys only */
@@ -205,6 +236,16 @@ enum sas_gpio_reg_type {
 	SAS_GPIO_REG_TX_GP = 4,
 };
 
+<<<<<<< HEAD
+=======
+/* Response frame DATAPRES field */
+enum {
+	SAS_DATAPRES_NO_DATA		= 0,
+	SAS_DATAPRES_RESPONSE_DATA	= 1,
+	SAS_DATAPRES_SENSE_DATA		= 2,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct  dev_to_host_fis {
 	u8     fis_type;	  /* 0x34 */
 	u8     flags;
@@ -337,8 +378,52 @@ struct ssp_response_iu {
 	__be32 sense_data_len;
 	__be32 response_data_len;
 
+<<<<<<< HEAD
 	u8     resp_data[0];
 	u8     sense_data[0];
+=======
+	union {
+		DECLARE_FLEX_ARRAY(u8, resp_data);
+		DECLARE_FLEX_ARRAY(u8, sense_data);
+	};
+} __attribute__ ((packed));
+
+struct ssp_command_iu {
+	u8     lun[8];
+	u8     _r_a;
+
+	union {
+		struct {
+			u8  attr:3;
+			u8  prio:4;
+			u8  efb:1;
+		};
+		u8 efb_prio_attr;
+	};
+
+	u8    _r_b;
+
+	u8    _r_c:2;
+	u8    add_cdb_len:6;
+
+	u8    cdb[16];
+	u8    add_cdb[];
+} __attribute__ ((packed));
+
+struct xfer_rdy_iu {
+	__be32 requested_offset;
+	__be32 write_data_len;
+	__be32 _r_a;
+} __attribute__ ((packed));
+
+struct ssp_tmf_iu {
+	u8     lun[8];
+	u16    _r_a;
+	u8     tmf;
+	u8     _r_b;
+	__be16 tag;
+	u8     _r_c[14];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 /* ---------- SMP ---------- */
@@ -437,6 +522,7 @@ struct report_phy_sata_resp {
 	__be32 crc;
 } __attribute__ ((packed));
 
+<<<<<<< HEAD
 struct smp_resp {
 	u8    frame_type;
 	u8    function;
@@ -449,6 +535,8 @@ struct smp_resp {
 	};
 } __attribute__ ((packed));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #elif defined(__BIG_ENDIAN_BITFIELD)
 struct sas_identify_frame {
 	/* Byte 0 */
@@ -531,8 +619,52 @@ struct ssp_response_iu {
 	__be32 sense_data_len;
 	__be32 response_data_len;
 
+<<<<<<< HEAD
 	u8     resp_data[0];
 	u8     sense_data[0];
+=======
+	union {
+		DECLARE_FLEX_ARRAY(u8, resp_data);
+		DECLARE_FLEX_ARRAY(u8, sense_data);
+	};
+} __attribute__ ((packed));
+
+struct ssp_command_iu {
+	u8     lun[8];
+	u8     _r_a;
+
+	union {
+		struct {
+			u8  efb:1;
+			u8  prio:4;
+			u8  attr:3;
+		};
+		u8 efb_prio_attr;
+	};
+
+	u8    _r_b;
+
+	u8    add_cdb_len:6;
+	u8    _r_c:2;
+
+	u8    cdb[16];
+	u8    add_cdb[];
+} __attribute__ ((packed));
+
+struct xfer_rdy_iu {
+	__be32 requested_offset;
+	__be32 write_data_len;
+	__be32 _r_a;
+} __attribute__ ((packed));
+
+struct ssp_tmf_iu {
+	u8     lun[8];
+	u16    _r_a;
+	u8     tmf;
+	u8     _r_b;
+	__be16 tag;
+	u8     _r_c[14];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 /* ---------- SMP ---------- */
@@ -631,6 +763,7 @@ struct report_phy_sata_resp {
 	__be32 crc;
 } __attribute__ ((packed));
 
+<<<<<<< HEAD
 struct smp_resp {
 	u8    frame_type;
 	u8    function;
@@ -643,8 +776,37 @@ struct smp_resp {
 	};
 } __attribute__ ((packed));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #error "Bitfield order not defined!"
 #endif
 
+<<<<<<< HEAD
+=======
+struct smp_rg_resp {
+	u8    frame_type;
+	u8    function;
+	u8    result;
+	u8    reserved;
+	struct report_general_resp rg;
+} __attribute__ ((packed));
+
+struct smp_disc_resp {
+	u8    frame_type;
+	u8    function;
+	u8    result;
+	u8    reserved;
+	struct discover_resp disc;
+} __attribute__ ((packed));
+
+struct smp_rps_resp {
+	u8    frame_type;
+	u8    function;
+	u8    result;
+	u8    reserved;
+	struct report_phy_sata_resp rps;
+} __attribute__ ((packed));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _SAS_H_ */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*---------------------------------------------------------------------------+
  |  mul_Xsig.S                                                               |
  |                                                                           |
@@ -24,7 +28,11 @@
 #include "fpu_emu.h"
 
 .text
+<<<<<<< HEAD
 ENTRY(mul32_Xsig)
+=======
+SYM_FUNC_START(mul32_Xsig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl %ebp
 	movl %esp,%ebp
 	subl $16,%esp
@@ -61,10 +69,18 @@ ENTRY(mul32_Xsig)
 
 	popl %esi
 	leave
+<<<<<<< HEAD
 	ret
 
 
 ENTRY(mul64_Xsig)
+=======
+	RET
+SYM_FUNC_END(mul32_Xsig)
+
+
+SYM_FUNC_START(mul64_Xsig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl %ebp
 	movl %esp,%ebp
 	subl $16,%esp
@@ -113,11 +129,20 @@ ENTRY(mul64_Xsig)
 
 	popl %esi
 	leave
+<<<<<<< HEAD
 	ret
 
 
 
 ENTRY(mul_Xsig_Xsig)
+=======
+	RET
+SYM_FUNC_END(mul64_Xsig)
+
+
+
+SYM_FUNC_START(mul_Xsig_Xsig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pushl %ebp
 	movl %esp,%ebp
 	subl $16,%esp
@@ -172,5 +197,10 @@ ENTRY(mul_Xsig_Xsig)
 
 	popl %esi
 	leave
+<<<<<<< HEAD
 	ret
 
+=======
+	RET
+SYM_FUNC_END(mul_Xsig_Xsig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

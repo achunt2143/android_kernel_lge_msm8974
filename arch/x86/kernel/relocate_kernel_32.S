@@ -1,18 +1,34 @@
+<<<<<<< HEAD
 /*
  * relocate_kernel.S - put the kernel image in place to boot
  * Copyright (C) 2002-2004 Eric Biederman  <ebiederm@xmission.com>
  *
  * This source code is licensed under the GNU General Public License,
  * Version 2.  See the file COPYING for more details.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * relocate_kernel.S - put the kernel image in place to boot
+ * Copyright (C) 2002-2004 Eric Biederman  <ebiederm@xmission.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/linkage.h>
 #include <asm/page_types.h>
 #include <asm/kexec.h>
+<<<<<<< HEAD
 #include <asm/processor-flags.h>
 
 /*
  * Must be relocatable PIC code callable as a C function
+=======
+#include <asm/nospec-branch.h>
+#include <asm/processor-flags.h>
+
+/*
+ * Must be relocatable PIC code callable as a C function, in particular
+ * there must be a plain RET and not jump to return thunk.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define PTR(x) (x << 2)
@@ -37,8 +53,12 @@
 #define CP_PA_BACKUP_PAGES_MAP	DATA(0x1c)
 
 	.text
+<<<<<<< HEAD
 	.globl relocate_kernel
 relocate_kernel:
+=======
+SYM_CODE_START_NOALIGN(relocate_kernel)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Save the CPU context, used for jumping back */
 
 	pushl	%ebx
@@ -94,9 +114,18 @@ relocate_kernel:
 	movl    %edi, %eax
 	addl    $(identity_mapped - relocate_kernel), %eax
 	pushl   %eax
+<<<<<<< HEAD
 	ret
 
 identity_mapped:
+=======
+	ANNOTATE_UNRET_SAFE
+	ret
+	int3
+SYM_CODE_END(relocate_kernel)
+
+SYM_CODE_START_LOCAL_NOALIGN(identity_mapped)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* set return address to 0 if not preserving context */
 	pushl	$0
 	/* store the start address on the stack */
@@ -109,7 +138,11 @@ identity_mapped:
 	 *  - Write protect disabled
 	 *  - No task switch
 	 *  - Don't do FP software emulation.
+<<<<<<< HEAD
 	 *  - Proctected mode enabled
+=======
+	 *  - Protected mode enabled
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	movl	%cr0, %eax
 	andl	$~(X86_CR0_PG | X86_CR0_AM | X86_CR0_WP | X86_CR0_TS | X86_CR0_EM), %eax
@@ -161,12 +194,22 @@ identity_mapped:
 	xorl    %edx, %edx
 	xorl    %esi, %esi
 	xorl    %ebp, %ebp
+<<<<<<< HEAD
 	ret
+=======
+	ANNOTATE_UNRET_SAFE
+	ret
+	int3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:
 	popl	%edx
 	movl	CP_PA_SWAP_PAGE(%edi), %esp
 	addl	$PAGE_SIZE, %esp
 2:
+<<<<<<< HEAD
+=======
+	ANNOTATE_RETPOLINE_SAFE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	call	*%edx
 
 	/* get the re-entry point of the peer system */
@@ -186,15 +229,28 @@ identity_mapped:
 	movl	CP_PA_PGD(%ebx), %eax
 	movl	%eax, %cr3
 	movl	%cr0, %eax
+<<<<<<< HEAD
 	orl	$(1<<31), %eax
+=======
+	orl	$X86_CR0_PG, %eax
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl	%eax, %cr0
 	lea	PAGE_SIZE(%edi), %esp
 	movl	%edi, %eax
 	addl	$(virtual_mapped - relocate_kernel), %eax
 	pushl	%eax
+<<<<<<< HEAD
 	ret
 
 virtual_mapped:
+=======
+	ANNOTATE_UNRET_SAFE
+	ret
+	int3
+SYM_CODE_END(identity_mapped)
+
+SYM_CODE_START_LOCAL_NOALIGN(virtual_mapped)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl	CR4(%edi), %eax
 	movl	%eax, %cr4
 	movl	CR3(%edi), %eax
@@ -209,10 +265,20 @@ virtual_mapped:
 	popl	%edi
 	popl	%esi
 	popl	%ebx
+<<<<<<< HEAD
 	ret
 
 	/* Do the copies */
 swap_pages:
+=======
+	ANNOTATE_UNRET_SAFE
+	ret
+	int3
+SYM_CODE_END(virtual_mapped)
+
+	/* Do the copies */
+SYM_CODE_START_LOCAL_NOALIGN(swap_pages)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl	8(%esp), %edx
 	movl	4(%esp), %ecx
 	pushl	%ebp
@@ -226,23 +292,39 @@ swap_pages:
 	movl	(%ebx), %ecx
 	addl	$4, %ebx
 1:
+<<<<<<< HEAD
 	testl	$0x1,   %ecx  /* is it a destination page */
+=======
+	testb	$0x1, %cl     /* is it a destination page */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jz	2f
 	movl	%ecx,	%edi
 	andl	$0xfffff000, %edi
 	jmp     0b
 2:
+<<<<<<< HEAD
 	testl	$0x2,	%ecx  /* is it an indirection page */
+=======
+	testb	$0x2, %cl    /* is it an indirection page */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jz	2f
 	movl	%ecx,	%ebx
 	andl	$0xfffff000, %ebx
 	jmp     0b
 2:
+<<<<<<< HEAD
 	testl   $0x4,   %ecx /* is it the done indicator */
 	jz      2f
 	jmp     3f
 2:
 	testl   $0x8,   %ecx /* is it the source indicator */
+=======
+	testb   $0x4, %cl    /* is it the done indicator */
+	jz      2f
+	jmp     3f
+2:
+	testb   $0x8, %cl    /* is it the source indicator */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	jz      0b	     /* Ignore it otherwise */
 	movl    %ecx,   %esi /* For every source page do a copy */
 	andl    $0xfffff000, %esi
@@ -271,7 +353,14 @@ swap_pages:
 	popl	%edi
 	popl	%ebx
 	popl	%ebp
+<<<<<<< HEAD
 	ret
+=======
+	ANNOTATE_UNRET_SAFE
+	ret
+	int3
+SYM_CODE_END(swap_pages)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	.globl kexec_control_code_size
 .set kexec_control_code_size, . - relocate_kernel

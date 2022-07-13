@@ -1,10 +1,18 @@
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+#include <linux/compiler.h>
+#include <linux/init.h>
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/highmem.h>
 #include <linux/sched.h>
 #include <linux/smp.h>
 #include <asm/fixmap.h>
 #include <asm/tlbflush.h>
 
+<<<<<<< HEAD
 static pte_t *kmap_pte;
 
 unsigned long highstart_pfn, highend_pfn;
@@ -135,3 +143,12 @@ void __init kmap_init(void)
 	kmap_vstart = __fix_to_virt(FIX_KMAP_BEGIN);
 	kmap_pte = kmap_get_fixmap_pte(kmap_vstart);
 }
+=======
+unsigned long highstart_pfn, highend_pfn;
+
+void kmap_flush_tlb(unsigned long addr)
+{
+	flush_tlb_one(addr);
+}
+EXPORT_SYMBOL(kmap_flush_tlb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

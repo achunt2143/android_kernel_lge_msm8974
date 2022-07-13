@@ -14,6 +14,10 @@
 #include <linux/compiler.h>
 #include <asm/exceptions.h>
 #include <asm/pvr.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqflags.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Until we get an assembler that knows about the pvr registers,
@@ -27,7 +31,11 @@
 	tmp = 0x0;	/* Prevent warning about unused */	\
 	__asm__ __volatile__ (					\
 			"mfs	%0, rpvr" #pvrid ";"		\
+<<<<<<< HEAD
 			: "=r" (tmp) : : "memory"); 		\
+=======
+			: "=r" (tmp) : : "memory");		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	val = tmp;						\
 }
 

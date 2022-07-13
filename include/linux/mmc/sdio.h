@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  include/linux/mmc/sdio.h
  *
  *  Copyright 2006-2007 Pierre Ossman
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
  * your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef LINUX_MMC_SDIO_H
@@ -86,7 +93,11 @@
 #define  SDIO_SD_REV_1_01	0	/* SD Physical Spec Version 1.01 */
 #define  SDIO_SD_REV_1_10	1	/* SD Physical Spec Version 1.10 */
 #define  SDIO_SD_REV_2_00	2	/* SD Physical Spec Version 2.00 */
+<<<<<<< HEAD
 #define  SDIO_SD_REV_3_00	3	/* SD Physical Spev Version 3.00 */
+=======
+#define  SDIO_SD_REV_3_00	3	/* SD Physical Spec Version 3.00 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define SDIO_CCCR_IOEx		0x02
 #define SDIO_CCCR_IORx		0x03
@@ -98,9 +109,16 @@
 
 #define SDIO_CCCR_IF		0x07	/* bus interface controls */
 
+<<<<<<< HEAD
 #define  SDIO_BUS_WIDTH_1BIT	0x00
 #define  SDIO_BUS_WIDTH_4BIT	0x02
 #define  SDIO_BUS_WIDTH_8BIT  	0x03
+=======
+#define  SDIO_BUS_WIDTH_MASK	0x03	/* data bus width setting */
+#define  SDIO_BUS_WIDTH_1BIT	0x00
+#define  SDIO_BUS_WIDTH_RESERVED 0x01
+#define  SDIO_BUS_WIDTH_4BIT	0x02
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define  SDIO_BUS_ECSI		0x20	/* Enable continuous SPI interrupt */
 #define  SDIO_BUS_SCSI		0x40	/* Support continuous SPI interrupt */
 
@@ -163,9 +181,16 @@
 #define  SDIO_DTSx_SET_TYPE_C	(2 << SDIO_DRIVE_DTSx_SHIFT)
 #define  SDIO_DTSx_SET_TYPE_D	(3 << SDIO_DRIVE_DTSx_SHIFT)
 
+<<<<<<< HEAD
 #define SDIO_CCCR_INTERRUPT_EXTENSION	0x16
 #define	SDIO_SUPPORT_ASYNC_INTR		(1<<0)
 #define	SDIO_ENABLE_ASYNC_INTR		(1<<1)
+=======
+#define SDIO_CCCR_INTERRUPT_EXT	0x16
+#define SDIO_INTERRUPT_EXT_SAI	(1 << 0)
+#define SDIO_INTERRUPT_EXT_EAI	(1 << 1)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Function Basic Registers (FBR)
  */

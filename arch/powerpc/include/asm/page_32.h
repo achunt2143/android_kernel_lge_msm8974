@@ -1,6 +1,15 @@
+<<<<<<< HEAD
 #ifndef _ASM_POWERPC_PAGE_32_H
 #define _ASM_POWERPC_PAGE_32_H
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_POWERPC_PAGE_32_H
+#define _ASM_POWERPC_PAGE_32_H
+
+#include <asm/cache.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(CONFIG_PHYSICAL_ALIGN) && (CONFIG_PHYSICAL_START != 0)
 #if (CONFIG_PHYSICAL_START % CONFIG_PHYSICAL_ALIGN) != 0
 #error "CONFIG_PHYSICAL_START must be a multiple of CONFIG_PHYSICAL_ALIGN"
@@ -9,6 +18,7 @@
 
 #define VM_DATA_DEFAULT_FLAGS	VM_DATA_DEFAULT_FLAGS32
 
+<<<<<<< HEAD
 #ifdef CONFIG_NOT_COHERENT_CACHE
 #define ARCH_DMA_MINALIGN	L1_CACHE_BYTES
 #endif
@@ -20,6 +30,10 @@
 #endif
 
 #ifdef CONFIG_PPC_256K_PAGES
+=======
+#if defined(CONFIG_PPC_256K_PAGES) || \
+    (defined(CONFIG_PPC_8xx) && defined(CONFIG_PPC_16K_PAGES))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PTE_SHIFT	(PAGE_SHIFT - PTE_T_LOG2 - 2)	/* 1/4 of a page */
 #else
 #define PTE_SHIFT	(PAGE_SHIFT - PTE_T_LOG2)	/* full page */
@@ -36,9 +50,28 @@ typedef unsigned long long pte_basic_t;
 typedef unsigned long pte_basic_t;
 #endif
 
+<<<<<<< HEAD
 struct page;
 extern void clear_pages(void *page, int order);
 static inline void clear_page(void *page) { clear_pages(page, 0); }
+=======
+#include <asm/bug.h>
+
+/*
+ * Clear page using the dcbz instruction, which doesn't cause any
+ * memory traffic (except to write out any cache lines which get
+ * displaced).  This only works on cacheable memory.
+ */
+static inline void clear_page(void *addr)
+{
+	unsigned int i;
+
+	WARN_ON((unsigned long)addr & (L1_CACHE_BYTES - 1));
+
+	for (i = 0; i < PAGE_SIZE / L1_CACHE_BYTES; i++, addr += L1_CACHE_BYTES)
+		dcbz(addr);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void copy_page(void *to, void *from);
 
 #include <asm-generic/getorder.h>

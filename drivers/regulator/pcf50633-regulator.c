@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* NXP PCF50633 PMIC Driver
  *
  * (C) 2006-2008 by Openmoko, Inc.
@@ -6,12 +10,15 @@
  *
  * Broken down from monstrous PCF50633 driver mainly by
  * Harald Welte and Andy Green and Werner Almesberger
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -24,6 +31,7 @@
 #include <linux/mfd/pcf50633/core.h>
 #include <linux/mfd/pcf50633/pmic.h>
 
+<<<<<<< HEAD
 #define PCF50633_REGULATOR(_name, _id, _n) 		\
 	{					\
 		.name = _name, 			\
@@ -314,12 +322,81 @@ static int __devinit pcf50633_regulator_probe(struct platform_device *pdev)
 {
 	struct regulator_dev *rdev;
 	struct pcf50633 *pcf;
+=======
+#define PCF50633_REGULATOR(_name, _id, _min_uV, _uV_step, _min_sel, _n) \
+	{							\
+		.name = _name,					\
+		.id = PCF50633_REGULATOR_##_id,			\
+		.ops = &pcf50633_regulator_ops,			\
+		.n_voltages = _n,				\
+		.min_uV = _min_uV,				\
+		.uV_step = _uV_step,				\
+		.linear_min_sel = _min_sel,			\
+		.type = REGULATOR_VOLTAGE,			\
+		.owner = THIS_MODULE,				\
+		.vsel_reg = PCF50633_REG_##_id##OUT,		\
+		.vsel_mask = 0xff,				\
+		.enable_reg = PCF50633_REG_##_id##OUT + 1,	\
+		.enable_mask = PCF50633_REGULATOR_ON,		\
+	}
+
+static const struct regulator_ops pcf50633_regulator_ops = {
+	.set_voltage_sel = regulator_set_voltage_sel_regmap,
+	.get_voltage_sel = regulator_get_voltage_sel_regmap,
+	.list_voltage = regulator_list_voltage_linear,
+	.map_voltage = regulator_map_voltage_linear,
+	.enable = regulator_enable_regmap,
+	.disable = regulator_disable_regmap,
+	.is_enabled = regulator_is_enabled_regmap,
+};
+
+static const struct regulator_desc regulators[] = {
+	[PCF50633_REGULATOR_AUTO] =
+		PCF50633_REGULATOR("auto", AUTO, 1800000, 25000, 0x2f, 128),
+	[PCF50633_REGULATOR_DOWN1] =
+		PCF50633_REGULATOR("down1", DOWN1, 625000, 25000, 0, 96),
+	[PCF50633_REGULATOR_DOWN2] =
+		PCF50633_REGULATOR("down2", DOWN2, 625000, 25000, 0, 96),
+	[PCF50633_REGULATOR_LDO1] =
+		PCF50633_REGULATOR("ldo1", LDO1, 900000, 100000, 0, 28),
+	[PCF50633_REGULATOR_LDO2] =
+		PCF50633_REGULATOR("ldo2", LDO2, 900000, 100000, 0, 28),
+	[PCF50633_REGULATOR_LDO3] =
+		PCF50633_REGULATOR("ldo3", LDO3, 900000, 100000, 0, 28),
+	[PCF50633_REGULATOR_LDO4] =
+		PCF50633_REGULATOR("ldo4", LDO4, 900000, 100000, 0, 28),
+	[PCF50633_REGULATOR_LDO5] =
+		PCF50633_REGULATOR("ldo5", LDO5, 900000, 100000, 0, 28),
+	[PCF50633_REGULATOR_LDO6] =
+		PCF50633_REGULATOR("ldo6", LDO6, 900000, 100000, 0, 28),
+	[PCF50633_REGULATOR_HCLDO] =
+		PCF50633_REGULATOR("hcldo", HCLDO, 900000, 100000, 0, 28),
+	[PCF50633_REGULATOR_MEMLDO] =
+		PCF50633_REGULATOR("memldo", MEMLDO, 900000, 100000, 0, 28),
+};
+
+static int pcf50633_regulator_probe(struct platform_device *pdev)
+{
+	struct regulator_dev *rdev;
+	struct pcf50633 *pcf;
+	struct regulator_config config = { };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Already set by core driver */
 	pcf = dev_to_pcf50633(pdev->dev.parent);
 
+<<<<<<< HEAD
 	rdev = regulator_register(&regulators[pdev->id], &pdev->dev,
 				  pdev->dev.platform_data, pcf, NULL);
+=======
+	config.dev = &pdev->dev;
+	config.init_data = dev_get_platdata(&pdev->dev);
+	config.driver_data = pcf;
+	config.regmap = pcf->regmap;
+
+	rdev = devm_regulator_register(&pdev->dev, &regulators[pdev->id],
+				       &config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(rdev))
 		return PTR_ERR(rdev);
 
@@ -331,6 +408,7 @@ static int __devinit pcf50633_regulator_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit pcf50633_regulator_remove(struct platform_device *pdev)
 {
 	struct regulator_dev *rdev = platform_get_drvdata(pdev);
@@ -347,6 +425,14 @@ static struct platform_driver pcf50633_regulator_driver = {
 	},
 	.probe = pcf50633_regulator_probe,
 	.remove = __devexit_p(pcf50633_regulator_remove),
+=======
+static struct platform_driver pcf50633_regulator_driver = {
+	.driver = {
+		.name = "pcf50633-regulator",
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+	},
+	.probe = pcf50633_regulator_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init pcf50633_regulator_init(void)

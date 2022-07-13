@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006-2009 Red Hat, Inc.
  *
@@ -6,16 +10,32 @@
 
 #include <linux/bio.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/jiffies.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/dm-dirty-log.h>
 #include <linux/device-mapper.h>
 #include <linux/dm-log-userspace.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
 #include "dm-log-userspace-transfer.h"
 
 #define DM_LOG_USERSPACE_VSN "1.1.0"
 
 struct flush_entry {
+=======
+#include <linux/workqueue.h>
+
+#include "dm-log-userspace-transfer.h"
+
+#define DM_LOG_USERSPACE_VSN "1.3.0"
+
+#define FLUSH_ENTRY_POOL_SIZE 16
+
+struct dm_dirty_log_flush_entry {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int type;
 	region_t region;
 	struct list_head list;
@@ -32,13 +52,32 @@ struct flush_entry {
 struct log_c {
 	struct dm_target *ti;
 	struct dm_dev *log_dev;
+<<<<<<< HEAD
+=======
+
+	char *usr_argv_str;
+	uint32_t usr_argc;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	uint32_t region_size;
 	region_t region_count;
 	uint64_t luid;
 	char uuid[DM_UUID_LEN];
 
+<<<<<<< HEAD
 	char *usr_argv_str;
 	uint32_t usr_argc;
+=======
+	/*
+	 * Mark and clear requests are held until a flush is issued
+	 * so that we can group, and thereby limit, the amount of
+	 * network traffic between kernel and userspace.  The 'flush_lock'
+	 * is used to protect these lists.
+	 */
+	spinlock_t flush_lock;
+	struct list_head mark_list;
+	struct list_head clear_list;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * in_sync_hint gets set when doing is_remote_recovering.  It
@@ -50,6 +89,7 @@ struct log_c {
 	uint64_t in_sync_hint;
 
 	/*
+<<<<<<< HEAD
 	 * Mark and clear requests are held until a flush is issued
 	 * so that we can group, and thereby limit, the amount of
 	 * network traffic between kernel and userspace.  The 'flush_lock'
@@ -71,6 +111,23 @@ static void flush_entry_free(void *element, void *pool_data)
 {
 	kfree(element);
 }
+=======
+	 * Workqueue for flush of clear region requests.
+	 */
+	struct workqueue_struct *dmlog_wq;
+	struct delayed_work flush_log_work;
+	atomic_t sched_flush;
+
+	/*
+	 * Combine userspace flush and mark requests for efficiency.
+	 */
+	uint32_t integrated_flush;
+
+	mempool_t flush_entry_pool;
+};
+
+static struct kmem_cache *_flush_entry_cache;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int userspace_do_request(struct log_c *lc, const char *uuid,
 				int request_type, char *data, size_t data_size,
@@ -114,7 +171,11 @@ retry:
 }
 
 static int build_constructor_string(struct dm_target *ti,
+<<<<<<< HEAD
 				    unsigned argc, char **argv,
+=======
+				    unsigned int argc, char **argv,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				    char **ctr_str)
 {
 	int i, str_size;
@@ -122,6 +183,12 @@ static int build_constructor_string(struct dm_target *ti,
 
 	*ctr_str = NULL;
 
+<<<<<<< HEAD
+=======
+	/*
+	 * Determine overall size of the string.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0, str_size = 0; i < argc; i++)
 		str_size += strlen(argv[i]) + 1; /* +1 for space between args */
 
@@ -141,10 +208,27 @@ static int build_constructor_string(struct dm_target *ti,
 	return str_size;
 }
 
+<<<<<<< HEAD
+=======
+static void do_flush(struct work_struct *work)
+{
+	int r;
+	struct log_c *lc = container_of(work, struct log_c, flush_log_work.work);
+
+	atomic_set(&lc->sched_flush, 0);
+
+	r = userspace_do_request(lc, lc->uuid, DM_ULOG_FLUSH, NULL, 0, NULL, NULL);
+
+	if (r)
+		dm_table_event(lc->ti->table);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * userspace_ctr
  *
  * argv contains:
+<<<<<<< HEAD
  *	<UUID> <other args>
  * Where 'other args' is the userspace implementation specific log
  * arguments.  An example might be:
@@ -156,6 +240,27 @@ static int build_constructor_string(struct dm_target *ti,
  */
 static int userspace_ctr(struct dm_dirty_log *log, struct dm_target *ti,
 			 unsigned argc, char **argv)
+=======
+ *	<UUID> [integrated_flush] <other args>
+ * Where 'other args' are the userspace implementation-specific log
+ * arguments.
+ *
+ * Example:
+ *	<UUID> [integrated_flush] clustered-disk <arg count> <log dev>
+ *	<region_size> [[no]sync]
+ *
+ * This module strips off the <UUID> and uses it for identification
+ * purposes when communicating with userspace about a log.
+ *
+ * If integrated_flush is defined, the kernel combines flush
+ * and mark requests.
+ *
+ * The rest of the line, beginning with 'clustered-disk', is passed
+ * to the userspace ctr function.
+ */
+static int userspace_ctr(struct dm_dirty_log *log, struct dm_target *ti,
+			 unsigned int argc, char **argv)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r = 0;
 	int str_size;
@@ -188,12 +293,30 @@ static int userspace_ctr(struct dm_dirty_log *log, struct dm_target *ti,
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	strncpy(lc->uuid, argv[0], DM_UUID_LEN);
+=======
+	lc->usr_argc = argc;
+
+	strscpy(lc->uuid, argv[0], sizeof(lc->uuid));
+	argc--;
+	argv++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&lc->flush_lock);
 	INIT_LIST_HEAD(&lc->mark_list);
 	INIT_LIST_HEAD(&lc->clear_list);
 
+<<<<<<< HEAD
 	str_size = build_constructor_string(ti, argc - 1, argv + 1, &ctr_str);
+=======
+	if (!strcasecmp(argv[0], "integrated_flush")) {
+		lc->integrated_flush = 1;
+		argc--;
+		argv++;
+	}
+
+	str_size = build_constructor_string(ti, argc, argv, &ctr_str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (str_size < 0) {
 		kfree(lc);
 		return str_size;
@@ -206,6 +329,16 @@ static int userspace_ctr(struct dm_dirty_log *log, struct dm_target *ti,
 		goto out;
 	}
 
+<<<<<<< HEAD
+=======
+	r = mempool_init_slab_pool(&lc->flush_entry_pool, FLUSH_ENTRY_POOL_SIZE,
+				   _flush_entry_cache);
+	if (r) {
+		DMERR("Failed to create flush_entry_pool");
+		goto out;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Send table string and get back any opened device.
 	 */
@@ -246,14 +379,37 @@ static int userspace_ctr(struct dm_dirty_log *log, struct dm_target *ti,
 			DMERR("Failed to register %s with device-mapper",
 			      devices_rdata);
 	}
+<<<<<<< HEAD
 out:
 	kfree(devices_rdata);
 	if (r) {
+=======
+
+	if (lc->integrated_flush) {
+		lc->dmlog_wq = alloc_workqueue("dmlogd", WQ_MEM_RECLAIM, 0);
+		if (!lc->dmlog_wq) {
+			DMERR("couldn't start dmlogd");
+			r = -ENOMEM;
+			goto out;
+		}
+
+		INIT_DELAYED_WORK(&lc->flush_log_work, do_flush);
+		atomic_set(&lc->sched_flush, 0);
+	}
+
+out:
+	kfree(devices_rdata);
+	if (r) {
+		mempool_exit(&lc->flush_entry_pool);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(lc);
 		kfree(ctr_str);
 	} else {
 		lc->usr_argv_str = ctr_str;
+<<<<<<< HEAD
 		lc->usr_argc = argc;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		log->context = lc;
 	}
 
@@ -264,17 +420,37 @@ static void userspace_dtr(struct dm_dirty_log *log)
 {
 	struct log_c *lc = log->context;
 
+<<<<<<< HEAD
 	(void) dm_consult_userspace(lc->uuid, lc->luid, DM_ULOG_DTR,
 				 NULL, 0,
 				 NULL, NULL);
+=======
+	if (lc->integrated_flush) {
+		/* flush workqueue */
+		if (atomic_read(&lc->sched_flush))
+			flush_delayed_work(&lc->flush_log_work);
+
+		destroy_workqueue(lc->dmlog_wq);
+	}
+
+	(void) dm_consult_userspace(lc->uuid, lc->luid, DM_ULOG_DTR,
+				    NULL, 0, NULL, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (lc->log_dev)
 		dm_put_device(lc->ti, lc->log_dev);
 
+<<<<<<< HEAD
 	kfree(lc->usr_argv_str);
 	kfree(lc);
 
 	return;
+=======
+	mempool_exit(&lc->flush_entry_pool);
+
+	kfree(lc->usr_argv_str);
+	kfree(lc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int userspace_presuspend(struct dm_dirty_log *log)
@@ -283,8 +459,12 @@ static int userspace_presuspend(struct dm_dirty_log *log)
 	struct log_c *lc = log->context;
 
 	r = dm_consult_userspace(lc->uuid, lc->luid, DM_ULOG_PRESUSPEND,
+<<<<<<< HEAD
 				 NULL, 0,
 				 NULL, NULL);
+=======
+				 NULL, 0, NULL, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
@@ -294,9 +474,20 @@ static int userspace_postsuspend(struct dm_dirty_log *log)
 	int r;
 	struct log_c *lc = log->context;
 
+<<<<<<< HEAD
 	r = dm_consult_userspace(lc->uuid, lc->luid, DM_ULOG_POSTSUSPEND,
 				 NULL, 0,
 				 NULL, NULL);
+=======
+	/*
+	 * Run planned flush earlier.
+	 */
+	if (lc->integrated_flush && atomic_read(&lc->sched_flush))
+		flush_delayed_work(&lc->flush_log_work);
+
+	r = dm_consult_userspace(lc->uuid, lc->luid, DM_ULOG_POSTSUSPEND,
+				 NULL, 0, NULL, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
@@ -308,8 +499,12 @@ static int userspace_resume(struct dm_dirty_log *log)
 
 	lc->in_sync_hint = 0;
 	r = dm_consult_userspace(lc->uuid, lc->luid, DM_ULOG_RESUME,
+<<<<<<< HEAD
 				 NULL, 0,
 				 NULL, NULL);
+=======
+				 NULL, 0, NULL, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return r;
 }
@@ -391,7 +586,11 @@ static int userspace_in_sync(struct dm_dirty_log *log, region_t region,
 static int flush_one_by_one(struct log_c *lc, struct list_head *flush_list)
 {
 	int r = 0;
+<<<<<<< HEAD
 	struct flush_entry *fe;
+=======
+	struct dm_dirty_log_flush_entry *fe;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each_entry(fe, flush_list, list) {
 		r = userspace_do_request(lc, lc->uuid, fe->type,
@@ -405,12 +604,21 @@ static int flush_one_by_one(struct log_c *lc, struct list_head *flush_list)
 	return r;
 }
 
+<<<<<<< HEAD
 static int flush_by_group(struct log_c *lc, struct list_head *flush_list)
+=======
+static int flush_by_group(struct log_c *lc, struct list_head *flush_list,
+			  int flush_with_payload)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r = 0;
 	int count;
 	uint32_t type = 0;
+<<<<<<< HEAD
 	struct flush_entry *fe, *tmp_fe;
+=======
+	struct dm_dirty_log_flush_entry *fe, *tmp_fe;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	LIST_HEAD(tmp_list);
 	uint64_t group[MAX_FLUSH_GROUP_COUNT];
 
@@ -431,6 +639,7 @@ static int flush_by_group(struct log_c *lc, struct list_head *flush_list)
 				break;
 		}
 
+<<<<<<< HEAD
 		r = userspace_do_request(lc, lc->uuid, type,
 					 (char *)(group),
 					 count * sizeof(uint64_t),
@@ -440,6 +649,31 @@ static int flush_by_group(struct log_c *lc, struct list_head *flush_list)
 			list_splice_init(&tmp_list, flush_list);
 			r = flush_one_by_one(lc, flush_list);
 			break;
+=======
+		if (flush_with_payload) {
+			r = userspace_do_request(lc, lc->uuid, DM_ULOG_FLUSH,
+						 (char *)(group),
+						 count * sizeof(uint64_t),
+						 NULL, NULL);
+			/*
+			 * Integrated flush failed.
+			 */
+			if (r)
+				break;
+		} else {
+			r = userspace_do_request(lc, lc->uuid, type,
+						 (char *)(group),
+						 count * sizeof(uint64_t),
+						 NULL, NULL);
+			if (r) {
+				/*
+				 * Group send failed.  Attempt one-by-one.
+				 */
+				list_splice_init(&tmp_list, flush_list);
+				r = flush_one_by_one(lc, flush_list);
+				break;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -476,13 +710,21 @@ static int userspace_flush(struct dm_dirty_log *log)
 	struct log_c *lc = log->context;
 	LIST_HEAD(mark_list);
 	LIST_HEAD(clear_list);
+<<<<<<< HEAD
 	struct flush_entry *fe, *tmp_fe;
+=======
+	int mark_list_is_empty;
+	int clear_list_is_empty;
+	struct dm_dirty_log_flush_entry *fe, *tmp_fe;
+	mempool_t *flush_entry_pool = &lc->flush_entry_pool;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&lc->flush_lock, flags);
 	list_splice_init(&lc->mark_list, &mark_list);
 	list_splice_init(&lc->clear_list, &clear_list);
 	spin_unlock_irqrestore(&lc->flush_lock, flags);
 
+<<<<<<< HEAD
 	if (list_empty(&mark_list) && list_empty(&clear_list))
 		return 0;
 
@@ -500,6 +742,53 @@ static int userspace_flush(struct dm_dirty_log *log)
 fail:
 	/*
 	 * We can safely remove these entries, even if failure.
+=======
+	mark_list_is_empty = list_empty(&mark_list);
+	clear_list_is_empty = list_empty(&clear_list);
+
+	if (mark_list_is_empty && clear_list_is_empty)
+		return 0;
+
+	r = flush_by_group(lc, &clear_list, 0);
+	if (r)
+		goto out;
+
+	if (!lc->integrated_flush) {
+		r = flush_by_group(lc, &mark_list, 0);
+		if (r)
+			goto out;
+		r = userspace_do_request(lc, lc->uuid, DM_ULOG_FLUSH,
+					 NULL, 0, NULL, NULL);
+		goto out;
+	}
+
+	/*
+	 * Send integrated flush request with mark_list as payload.
+	 */
+	r = flush_by_group(lc, &mark_list, 1);
+	if (r)
+		goto out;
+
+	if (mark_list_is_empty && !atomic_read(&lc->sched_flush)) {
+		/*
+		 * When there are only clear region requests,
+		 * we schedule a flush in the future.
+		 */
+		queue_delayed_work(lc->dmlog_wq, &lc->flush_log_work, 3 * HZ);
+		atomic_set(&lc->sched_flush, 1);
+	} else {
+		/*
+		 * Cancel pending flush because we
+		 * have already flushed in mark_region.
+		 */
+		cancel_delayed_work(&lc->flush_log_work);
+		atomic_set(&lc->sched_flush, 0);
+	}
+
+out:
+	/*
+	 * We can safely remove these entries, even after failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Calling code will receive an error and will know that
 	 * the log facility has failed.
 	 */
@@ -528,10 +817,17 @@ static void userspace_mark_region(struct dm_dirty_log *log, region_t region)
 {
 	unsigned long flags;
 	struct log_c *lc = log->context;
+<<<<<<< HEAD
 	struct flush_entry *fe;
 
 	/* Wait for an allocation, but _never_ fail */
 	fe = mempool_alloc(flush_entry_pool, GFP_NOIO);
+=======
+	struct dm_dirty_log_flush_entry *fe;
+
+	/* Wait for an allocation, but _never_ fail */
+	fe = mempool_alloc(&lc->flush_entry_pool, GFP_NOIO);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(!fe);
 
 	spin_lock_irqsave(&lc->flush_lock, flags);
@@ -539,8 +835,11 @@ static void userspace_mark_region(struct dm_dirty_log *log, region_t region)
 	fe->region = region;
 	list_add(&fe->list, &lc->mark_list);
 	spin_unlock_irqrestore(&lc->flush_lock, flags);
+<<<<<<< HEAD
 
 	return;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -557,7 +856,11 @@ static void userspace_clear_region(struct dm_dirty_log *log, region_t region)
 {
 	unsigned long flags;
 	struct log_c *lc = log->context;
+<<<<<<< HEAD
 	struct flush_entry *fe;
+=======
+	struct dm_dirty_log_flush_entry *fe;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * If we fail to allocate, we skip the clearing of
@@ -565,7 +868,11 @@ static void userspace_clear_region(struct dm_dirty_log *log, region_t region)
 	 * to cause the region to be resync'ed when the
 	 * device is activated next time.
 	 */
+<<<<<<< HEAD
 	fe = mempool_alloc(flush_entry_pool, GFP_ATOMIC);
+=======
+	fe = mempool_alloc(&lc->flush_entry_pool, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!fe) {
 		DMERR("Failed to allocate memory to clear region.");
 		return;
@@ -576,8 +883,11 @@ static void userspace_clear_region(struct dm_dirty_log *log, region_t region)
 	fe->region = region;
 	list_add(&fe->list, &lc->clear_list);
 	spin_unlock_irqrestore(&lc->flush_lock, flags);
+<<<<<<< HEAD
 
 	return;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -603,8 +913,12 @@ static int userspace_get_resync_work(struct dm_dirty_log *log, region_t *region)
 
 	rdata_size = sizeof(pkg);
 	r = userspace_do_request(lc, lc->uuid, DM_ULOG_GET_RESYNC_WORK,
+<<<<<<< HEAD
 				 NULL, 0,
 				 (char *)&pkg, &rdata_size);
+=======
+				 NULL, 0, (char *)&pkg, &rdata_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*region = pkg.r;
 	return (r) ? r : (int)pkg.i;
@@ -619,7 +933,10 @@ static int userspace_get_resync_work(struct dm_dirty_log *log, region_t *region)
 static void userspace_set_region_sync(struct dm_dirty_log *log,
 				      region_t region, int in_sync)
 {
+<<<<<<< HEAD
 	int r;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct log_c *lc = log->context;
 	struct {
 		region_t r;
@@ -629,6 +946,7 @@ static void userspace_set_region_sync(struct dm_dirty_log *log,
 	pkg.r = region;
 	pkg.i = (int64_t)in_sync;
 
+<<<<<<< HEAD
 	r = userspace_do_request(lc, lc->uuid, DM_ULOG_SET_REGION_SYNC,
 				 (char *)&pkg, sizeof(pkg),
 				 NULL, NULL);
@@ -638,6 +956,15 @@ static void userspace_set_region_sync(struct dm_dirty_log *log,
 	 * However, it is easy emough to detect and resolve.
 	 */
 	return;
+=======
+	(void) userspace_do_request(lc, lc->uuid, DM_ULOG_SET_REGION_SYNC,
+				    (char *)&pkg, sizeof(pkg), NULL, NULL);
+
+	/*
+	 * It would be nice to be able to report failures.
+	 * However, it is easy enough to detect and resolve.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -657,8 +984,12 @@ static region_t userspace_get_sync_count(struct dm_dirty_log *log)
 
 	rdata_size = sizeof(sync_count);
 	r = userspace_do_request(lc, lc->uuid, DM_ULOG_GET_SYNC_COUNT,
+<<<<<<< HEAD
 				 NULL, 0,
 				 (char *)&sync_count, &rdata_size);
+=======
+				 NULL, 0, (char *)&sync_count, &rdata_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (r)
 		return 0;
@@ -675,7 +1006,11 @@ static region_t userspace_get_sync_count(struct dm_dirty_log *log)
  * Returns: amount of space consumed
  */
 static int userspace_status(struct dm_dirty_log *log, status_type_t status_type,
+<<<<<<< HEAD
 			    char *result, unsigned maxlen)
+=======
+			    char *result, unsigned int maxlen)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int r = 0;
 	char *table_args;
@@ -685,8 +1020,12 @@ static int userspace_status(struct dm_dirty_log *log, status_type_t status_type,
 	switch (status_type) {
 	case STATUSTYPE_INFO:
 		r = userspace_do_request(lc, lc->uuid, DM_ULOG_STATUS_INFO,
+<<<<<<< HEAD
 					 NULL, 0,
 					 result, &sz);
+=======
+					 NULL, 0, result, &sz);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (r) {
 			sz = 0;
@@ -699,8 +1038,18 @@ static int userspace_status(struct dm_dirty_log *log, status_type_t status_type,
 		BUG_ON(!table_args); /* There will always be a ' ' */
 		table_args++;
 
+<<<<<<< HEAD
 		DMEMIT("%s %u %s %s ", log->type->name, lc->usr_argc,
 		       lc->uuid, table_args);
+=======
+		DMEMIT("%s %u %s ", log->type->name, lc->usr_argc, lc->uuid);
+		if (lc->integrated_flush)
+			DMEMIT("integrated_flush ");
+		DMEMIT("%s ", table_args);
+		break;
+	case STATUSTYPE_IMA:
+		*result = '\0';
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	return (r) ? 0 : (int)sz;
@@ -717,7 +1066,11 @@ static int userspace_is_remote_recovering(struct dm_dirty_log *log,
 	int r;
 	uint64_t region64 = region;
 	struct log_c *lc = log->context;
+<<<<<<< HEAD
 	static unsigned long long limit;
+=======
+	static unsigned long limit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {
 		int64_t is_recovering;
 		uint64_t in_sync_hint;
@@ -733,7 +1086,11 @@ static int userspace_is_remote_recovering(struct dm_dirty_log *log,
 	 */
 	if (region < lc->in_sync_hint)
 		return 0;
+<<<<<<< HEAD
 	else if (jiffies < limit)
+=======
+	else if (time_after(limit, jiffies))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 1;
 
 	limit = jiffies + (HZ / 4);
@@ -773,18 +1130,28 @@ static int __init userspace_dirty_log_init(void)
 {
 	int r = 0;
 
+<<<<<<< HEAD
 	flush_entry_pool = mempool_create(100, flush_entry_alloc,
 					  flush_entry_free, NULL);
 
 	if (!flush_entry_pool) {
 		DMWARN("Unable to create flush_entry_pool:  No memory.");
+=======
+	_flush_entry_cache = KMEM_CACHE(dm_dirty_log_flush_entry, 0);
+	if (!_flush_entry_cache) {
+		DMWARN("Unable to create flush_entry_cache: No memory.");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
 	r = dm_ulog_tfr_init();
 	if (r) {
 		DMWARN("Unable to initialize userspace log communications");
+<<<<<<< HEAD
 		mempool_destroy(flush_entry_pool);
+=======
+		kmem_cache_destroy(_flush_entry_cache);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return r;
 	}
 
@@ -792,7 +1159,11 @@ static int __init userspace_dirty_log_init(void)
 	if (r) {
 		DMWARN("Couldn't register userspace dirty log type");
 		dm_ulog_tfr_exit();
+<<<<<<< HEAD
 		mempool_destroy(flush_entry_pool);
+=======
+		kmem_cache_destroy(_flush_entry_cache);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return r;
 	}
 
@@ -804,15 +1175,25 @@ static void __exit userspace_dirty_log_exit(void)
 {
 	dm_dirty_log_type_unregister(&_userspace_type);
 	dm_ulog_tfr_exit();
+<<<<<<< HEAD
 	mempool_destroy(flush_entry_pool);
 
 	DMINFO("version " DM_LOG_USERSPACE_VSN " unloaded");
 	return;
+=======
+	kmem_cache_destroy(_flush_entry_cache);
+
+	DMINFO("version " DM_LOG_USERSPACE_VSN " unloaded");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(userspace_dirty_log_init);
 module_exit(userspace_dirty_log_exit);
 
 MODULE_DESCRIPTION(DM_NAME " userspace dirty log link");
+<<<<<<< HEAD
 MODULE_AUTHOR("Jonathan Brassow <dm-devel@redhat.com>");
+=======
+MODULE_AUTHOR("Jonathan Brassow <dm-devel@lists.linux.dev>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

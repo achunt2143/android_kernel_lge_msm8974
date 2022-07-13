@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2010, Intel Corporation.
  *
@@ -14,12 +15,22 @@
  * this program; if not, write to the Free Software Foundation, Inc., 59 Temple
  * Place - Suite 330, Boston, MA 02111-1307 USA.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2010, Intel Corporation.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: John Fastabend <john.r.fastabend@intel.com>
  */
 
 #include <linux/rtnetlink.h>
 #include <linux/notifier.h>
 #include <linux/export.h>
+<<<<<<< HEAD
+=======
+#include <net/dcbevent.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ATOMIC_NOTIFIER_HEAD(dcbevent_notif_chain);
 

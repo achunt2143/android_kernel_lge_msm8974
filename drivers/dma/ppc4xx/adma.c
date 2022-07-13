@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006-2009 DENX Software Engineering.
  *
@@ -5,6 +9,7 @@
  *
  * Further porting to arch/powerpc by
  * 	Anatolij Gustschin <agust@denx.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -22,6 +27,8 @@
  *
  * The full GNU General Public License is included in this distribution in the
  * file called COPYING.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -42,7 +49,13 @@
 #include <linux/uaccess.h>
 #include <linux/proc_fs.h>
 #include <linux/of.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
+=======
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+#include <linux/platform_device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/dcr.h>
 #include <asm/dcr-regs.h>
 #include "adma.h"
@@ -83,7 +96,11 @@ struct ppc_dma_chan_ref {
 };
 
 /* The list of channels exported by ppc440spe ADMA */
+<<<<<<< HEAD
 struct list_head
+=======
+static struct list_head
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ppc440spe_adma_chan_list = LIST_HEAD_INIT(ppc440spe_adma_chan_list);
 
 /* This flag is set when want to refetch the xor chain in the interrupt
@@ -531,6 +548,7 @@ static void ppc440spe_desc_init_memcpy(struct ppc440spe_adma_desc_slot *desc,
 }
 
 /**
+<<<<<<< HEAD
  * ppc440spe_desc_init_memset - initialize the descriptor for MEMSET operation
  */
 static void ppc440spe_desc_init_memset(struct ppc440spe_adma_desc_slot *desc,
@@ -554,6 +572,8 @@ static void ppc440spe_desc_init_memset(struct ppc440spe_adma_desc_slot *desc,
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ppc440spe_desc_set_src_addr - set source address into the descriptor
  */
 static void ppc440spe_desc_set_src_addr(struct ppc440spe_adma_desc_slot *desc,
@@ -596,7 +616,10 @@ static void ppc440spe_desc_set_src_mult(struct ppc440spe_adma_desc_slot *desc,
 			int sg_index, unsigned char mult_value)
 {
 	struct dma_cdb *dma_hw_desc;
+<<<<<<< HEAD
 	struct xor_cb *xor_hw_desc;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 *psgu;
 
 	switch (chan->device->id) {
@@ -627,7 +650,10 @@ static void ppc440spe_desc_set_src_mult(struct ppc440spe_adma_desc_slot *desc,
 		*psgu |= cpu_to_le32(mult_value << mult_index);
 		break;
 	case PPC440SPE_XOR_ID:
+<<<<<<< HEAD
 		xor_hw_desc = desc->hw_desc;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		BUG();
@@ -802,6 +828,7 @@ static void ppc440spe_desc_set_link(struct ppc440spe_adma_chan *chan,
 }
 
 /**
+<<<<<<< HEAD
  * ppc440spe_desc_get_src_addr - extract the source address from the descriptor
  */
 static u32 ppc440spe_desc_get_src_addr(struct ppc440spe_adma_desc_slot *desc,
@@ -1014,6 +1041,8 @@ static u32 ppc440spe_desc_get_dst_num(struct ppc440spe_adma_desc_slot *desc,
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ppc440spe_desc_get_link - get the address of the descriptor that
  * follows this one
  */
@@ -1705,6 +1734,7 @@ static void ppc440spe_adma_free_slots(struct ppc440spe_adma_desc_slot *slot,
 	}
 }
 
+<<<<<<< HEAD
 static void ppc440spe_adma_unmap(struct ppc440spe_adma_chan *chan,
 				 struct ppc440spe_adma_desc_slot *desc)
 {
@@ -1742,6 +1772,8 @@ static void ppc440spe_adma_unmap(struct ppc440spe_adma_chan *chan,
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ppc440spe_adma_run_tx_complete_actions - call functions to be called
  * upon completion
@@ -1751,13 +1783,17 @@ static dma_cookie_t ppc440spe_adma_run_tx_complete_actions(
 		struct ppc440spe_adma_chan *chan,
 		dma_cookie_t cookie)
 {
+<<<<<<< HEAD
 	int i;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	BUG_ON(desc->async_tx.cookie < 0);
 	if (desc->async_tx.cookie > 0) {
 		cookie = desc->async_tx.cookie;
 		desc->async_tx.cookie = 0;
 
+<<<<<<< HEAD
 		/* call the callback (must not sleep or submit new
 		 * operations to this channel)
 		 */
@@ -1785,6 +1821,13 @@ static dma_cookie_t ppc440spe_adma_run_tx_complete_actions(
 				unmap = unmap->hw_next;
 			}
 		}
+=======
+		dma_descriptor_unmap(&desc->async_tx);
+		/* call the callback (must not sleep or submit new
+		 * operations to this channel)
+		 */
+		dmaengine_desc_get_callback_invoke(&desc->async_tx, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* run dependent operations */
@@ -1970,9 +2013,15 @@ static void __ppc440spe_adma_slot_cleanup(struct ppc440spe_adma_chan *chan)
 /**
  * ppc440spe_adma_tasklet - clean up watch-dog initiator
  */
+<<<<<<< HEAD
 static void ppc440spe_adma_tasklet(unsigned long data)
 {
 	struct ppc440spe_adma_chan *chan = (struct ppc440spe_adma_chan *) data;
+=======
+static void ppc440spe_adma_tasklet(struct tasklet_struct *t)
+{
+	struct ppc440spe_adma_chan *chan = from_tasklet(chan, t, irq_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_nested(&chan->lock, SINGLE_DEPTH_NESTING);
 	__ppc440spe_adma_slot_cleanup(chan);
@@ -1998,8 +2047,13 @@ static struct ppc440spe_adma_desc_slot *ppc440spe_adma_alloc_slots(
 {
 	struct ppc440spe_adma_desc_slot *iter = NULL, *_iter;
 	struct ppc440spe_adma_desc_slot *alloc_start = NULL;
+<<<<<<< HEAD
 	struct list_head chain = LIST_HEAD_INIT(chain);
 	int slots_found, retry = 0;
+=======
+	int slots_found, retry = 0;
+	LIST_HEAD(chain);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 	BUG_ON(!num_slots || !slots_per_op);
@@ -2323,6 +2377,7 @@ static struct dma_async_tx_descriptor *ppc440spe_adma_prep_dma_memcpy(
 }
 
 /**
+<<<<<<< HEAD
  * ppc440spe_adma_prep_dma_memset - prepare CDB for a MEMSET operation
  */
 static struct dma_async_tx_descriptor *ppc440spe_adma_prep_dma_memset(
@@ -2364,6 +2419,8 @@ static struct dma_async_tx_descriptor *ppc440spe_adma_prep_dma_memset(
 }
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ppc440spe_adma_prep_dma_xor - prepare CDB for a XOR operation
  */
 static struct dma_async_tx_descriptor *ppc440spe_adma_prep_dma_xor(
@@ -3593,7 +3650,10 @@ static int ppc440spe_adma_dma2rxor_prep_src(
 		struct ppc440spe_rxor *cursor, int index,
 		int src_cnt, u32 addr)
 {
+<<<<<<< HEAD
 	int rval = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 sign;
 	struct ppc440spe_adma_desc_slot *desc = hdesc;
 	int i;
@@ -3701,7 +3761,11 @@ static int ppc440spe_adma_dma2rxor_prep_src(
 		break;
 	}
 
+<<<<<<< HEAD
 	return rval;
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -3932,7 +3996,11 @@ static enum dma_status ppc440spe_adma_tx_status(struct dma_chan *chan,
 
 	ppc440spe_chan = to_ppc440spe_adma_chan(chan);
 	ret = dma_cookie_status(chan, cookie, txstate);
+<<<<<<< HEAD
 	if (ret == DMA_SUCCESS)
+=======
+	if (ret == DMA_COMPLETE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 
 	ppc440spe_adma_slot_cleanup(ppc440spe_chan);
@@ -4125,7 +4193,10 @@ static void ppc440spe_adma_init_capabilities(struct ppc440spe_adma_device *adev)
 	case PPC440SPE_DMA1_ID:
 		dma_cap_set(DMA_MEMCPY, adev->common.cap_mask);
 		dma_cap_set(DMA_INTERRUPT, adev->common.cap_mask);
+<<<<<<< HEAD
 		dma_cap_set(DMA_MEMSET, adev->common.cap_mask);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dma_cap_set(DMA_PQ, adev->common.cap_mask);
 		dma_cap_set(DMA_PQ_VAL, adev->common.cap_mask);
 		dma_cap_set(DMA_XOR_VAL, adev->common.cap_mask);
@@ -4151,10 +4222,13 @@ static void ppc440spe_adma_init_capabilities(struct ppc440spe_adma_device *adev)
 		adev->common.device_prep_dma_memcpy =
 			ppc440spe_adma_prep_dma_memcpy;
 	}
+<<<<<<< HEAD
 	if (dma_has_cap(DMA_MEMSET, adev->common.cap_mask)) {
 		adev->common.device_prep_dma_memset =
 			ppc440spe_adma_prep_dma_memset;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dma_has_cap(DMA_XOR, adev->common.cap_mask)) {
 		adev->common.max_xor = XOR_MAX_OPS;
 		adev->common.device_prep_dma_xor =
@@ -4210,14 +4284,21 @@ static void ppc440spe_adma_init_capabilities(struct ppc440spe_adma_device *adev)
 			ppc440spe_adma_prep_dma_interrupt;
 	}
 	pr_info("%s: AMCC(R) PPC440SP(E) ADMA Engine: "
+<<<<<<< HEAD
 	  "( %s%s%s%s%s%s%s)\n",
+=======
+	  "( %s%s%s%s%s%s)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  dev_name(adev->dev),
 	  dma_has_cap(DMA_PQ, adev->common.cap_mask) ? "pq " : "",
 	  dma_has_cap(DMA_PQ_VAL, adev->common.cap_mask) ? "pq_val " : "",
 	  dma_has_cap(DMA_XOR, adev->common.cap_mask) ? "xor " : "",
 	  dma_has_cap(DMA_XOR_VAL, adev->common.cap_mask) ? "xor_val " : "",
 	  dma_has_cap(DMA_MEMCPY, adev->common.cap_mask) ? "memcpy " : "",
+<<<<<<< HEAD
 	  dma_has_cap(DMA_MEMSET, adev->common.cap_mask)  ? "memset " : "",
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  dma_has_cap(DMA_INTERRUPT, adev->common.cap_mask) ? "intr " : "");
 }
 
@@ -4233,7 +4314,11 @@ static int ppc440spe_adma_setup_irqs(struct ppc440spe_adma_device *adev,
 	np = ofdev->dev.of_node;
 	if (adev->id != PPC440SPE_XOR_ID) {
 		adev->err_irq = irq_of_parse_and_map(np, 1);
+<<<<<<< HEAD
 		if (adev->err_irq == NO_IRQ) {
+=======
+		if (!adev->err_irq) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_warn(adev->dev, "no err irq resource?\n");
 			*initcode = PPC_ADMA_INIT_IRQ2;
 			adev->err_irq = -ENXIO;
@@ -4244,7 +4329,11 @@ static int ppc440spe_adma_setup_irqs(struct ppc440spe_adma_device *adev,
 	}
 
 	adev->irq = irq_of_parse_and_map(np, 0);
+<<<<<<< HEAD
 	if (adev->irq == NO_IRQ) {
+=======
+	if (!adev->irq) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(adev->dev, "no irq resource\n");
 		*initcode = PPC_ADMA_INIT_IRQ1;
 		ret = -ENXIO;
@@ -4361,7 +4450,11 @@ static void ppc440spe_adma_release_irqs(struct ppc440spe_adma_device *adev,
 /**
  * ppc440spe_adma_probe - probe the asynch device
  */
+<<<<<<< HEAD
 static int __devinit ppc440spe_adma_probe(struct platform_device *ofdev)
+=======
+static int ppc440spe_adma_probe(struct platform_device *ofdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *np = ofdev->dev.of_node;
 	struct resource res;
@@ -4385,9 +4478,15 @@ static int __devinit ppc440spe_adma_probe(struct platform_device *ofdev)
 		/* it is DMA0 or DMA1 */
 		idx = of_get_property(np, "cell-index", &len);
 		if (!idx || (len != sizeof(u32))) {
+<<<<<<< HEAD
 			dev_err(&ofdev->dev, "Device node %s has missing "
 				"or invalid cell-index property\n",
 				np->full_name);
+=======
+			dev_err(&ofdev->dev, "Device node %pOF has missing "
+				"or invalid cell-index property\n",
+				np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EINVAL;
 		}
 		id = *idx;
@@ -4426,7 +4525,10 @@ static int __devinit ppc440spe_adma_probe(struct platform_device *ofdev)
 	/* create a device */
 	adev = kzalloc(sizeof(*adev), GFP_KERNEL);
 	if (!adev) {
+<<<<<<< HEAD
 		dev_err(&ofdev->dev, "failed to allocate device\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		initcode = PPC_ADMA_INIT_ALLOC;
 		ret = -ENOMEM;
 		goto err_adev_alloc;
@@ -4446,12 +4548,20 @@ static int __devinit ppc440spe_adma_probe(struct platform_device *ofdev)
 		ret = -ENOMEM;
 		goto err_dma_alloc;
 	}
+<<<<<<< HEAD
 	dev_dbg(&ofdev->dev, "allocted descriptor pool virt 0x%p phys 0x%llx\n",
+=======
+	dev_dbg(&ofdev->dev, "allocated descriptor pool virt 0x%p phys 0x%llx\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		adev->dma_desc_pool_virt, (u64)adev->dma_desc_pool);
 
 	regs = ioremap(res.start, resource_size(&res));
 	if (!regs) {
 		dev_err(&ofdev->dev, "failed to ioremap regs!\n");
+<<<<<<< HEAD
+=======
+		ret = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err_regs_alloc;
 	}
 
@@ -4481,12 +4591,19 @@ static int __devinit ppc440spe_adma_probe(struct platform_device *ofdev)
 	adev->dev = &ofdev->dev;
 	adev->common.dev = &ofdev->dev;
 	INIT_LIST_HEAD(&adev->common.channels);
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, adev);
+=======
+	platform_set_drvdata(ofdev, adev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* create a channel */
 	chan = kzalloc(sizeof(*chan), GFP_KERNEL);
 	if (!chan) {
+<<<<<<< HEAD
 		dev_err(&ofdev->dev, "can't allocate channel structure\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		initcode = PPC_ADMA_INIT_CHANNEL;
 		ret = -ENOMEM;
 		goto err_chan_alloc;
@@ -4499,8 +4616,12 @@ static int __devinit ppc440spe_adma_probe(struct platform_device *ofdev)
 	chan->common.device = &adev->common;
 	dma_cookie_init(&chan->common);
 	list_add_tail(&chan->common.device_node, &adev->common.channels);
+<<<<<<< HEAD
 	tasklet_init(&chan->irq_tasklet, ppc440spe_adma_tasklet,
 		     (unsigned long)chan);
+=======
+	tasklet_setup(&chan->irq_tasklet, ppc440spe_adma_tasklet);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* allocate and map helper pages for async validation or
 	 * async_mult/async_sum_product operations on DMA0/1.
@@ -4592,16 +4713,25 @@ out:
 /**
  * ppc440spe_adma_remove - remove the asynch device
  */
+<<<<<<< HEAD
 static int __devexit ppc440spe_adma_remove(struct platform_device *ofdev)
 {
 	struct ppc440spe_adma_device *adev = dev_get_drvdata(&ofdev->dev);
+=======
+static void ppc440spe_adma_remove(struct platform_device *ofdev)
+{
+	struct ppc440spe_adma_device *adev = platform_get_drvdata(ofdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct device_node *np = ofdev->dev.of_node;
 	struct resource res;
 	struct dma_chan *chan, *_chan;
 	struct ppc_dma_chan_ref *ref, *_ref;
 	struct ppc440spe_adma_chan *ppc440spe_chan;
 
+<<<<<<< HEAD
 	dev_set_drvdata(&ofdev->dev, NULL);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (adev->id < PPC440SPE_ADMA_ENGINES_NUM)
 		ppc440spe_adma_devices[adev->id] = -1;
 
@@ -4641,7 +4771,10 @@ static int __devexit ppc440spe_adma_remove(struct platform_device *ofdev)
 	of_address_to_resource(np, 0, &res);
 	release_mem_region(res.start, resource_size(&res));
 	kfree(adev);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -4654,7 +4787,11 @@ static int __devexit ppc440spe_adma_remove(struct platform_device *ofdev)
  * "poly" allows setting/checking used polynomial (for PPC440SPe only).
  */
 
+<<<<<<< HEAD
 static ssize_t show_ppc440spe_devices(struct device_driver *dev, char *buf)
+=======
+static ssize_t devices_show(struct device_driver *dev, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ssize_t size = 0;
 	int i;
@@ -4662,6 +4799,7 @@ static ssize_t show_ppc440spe_devices(struct device_driver *dev, char *buf)
 	for (i = 0; i < PPC440SPE_ADMA_ENGINES_NUM; i++) {
 		if (ppc440spe_adma_devices[i] == -1)
 			continue;
+<<<<<<< HEAD
 		size += snprintf(buf + size, PAGE_SIZE - size,
 				 "PPC440SP(E)-ADMA.%d: %s\n", i,
 				 ppc_adma_errors[ppc440spe_adma_devices[i]]);
@@ -4680,6 +4818,26 @@ static ssize_t store_ppc440spe_r6enable(struct device_driver *dev,
 					const char *buf, size_t count)
 {
 	unsigned long val;
+=======
+		size += sysfs_emit_at(buf, size, "PPC440SP(E)-ADMA.%d: %s\n",
+				     i, ppc_adma_errors[ppc440spe_adma_devices[i]]);
+	}
+	return size;
+}
+static DRIVER_ATTR_RO(devices);
+
+static ssize_t enable_show(struct device_driver *dev, char *buf)
+{
+	return sysfs_emit(buf, "PPC440SP(e) RAID-6 capabilities are %sABLED.\n",
+			  ppc440spe_r6_enabled ? "EN" : "DIS");
+}
+
+static ssize_t enable_store(struct device_driver *dev, const char *buf,
+			    size_t count)
+{
+	unsigned long val;
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!count || count > 11)
 		return -EINVAL;
@@ -4688,7 +4846,14 @@ static ssize_t store_ppc440spe_r6enable(struct device_driver *dev,
 		return -EFAULT;
 
 	/* Write a key */
+<<<<<<< HEAD
 	sscanf(buf, "%lx", &val);
+=======
+	err = kstrtoul(buf, 16, &val);
+	if (err)
+		return err;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dcr_write(ppc440spe_mq_dcr_host, DCRN_MQ0_XORBA, val);
 	isync();
 
@@ -4704,8 +4869,14 @@ static ssize_t store_ppc440spe_r6enable(struct device_driver *dev,
 	}
 	return count;
 }
+<<<<<<< HEAD
 
 static ssize_t show_ppc440spe_r6poly(struct device_driver *dev, char *buf)
+=======
+static DRIVER_ATTR_RW(enable);
+
+static ssize_t poly_show(struct device_driver *dev, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	ssize_t size = 0;
 	u32 reg;
@@ -4719,16 +4890,28 @@ static ssize_t show_ppc440spe_r6poly(struct device_driver *dev, char *buf)
 	reg &= 0xFF;
 #endif
 
+<<<<<<< HEAD
 	size = snprintf(buf, PAGE_SIZE, "PPC440SP(e) RAID-6 driver "
+=======
+	size = sysfs_emit(buf, "PPC440SP(e) RAID-6 driver "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"uses 0x1%02x polynomial.\n", reg);
 	return size;
 }
 
+<<<<<<< HEAD
 static ssize_t store_ppc440spe_r6poly(struct device_driver *dev,
 				      const char *buf, size_t count)
 {
 	unsigned long reg, val;
 
+=======
+static ssize_t poly_store(struct device_driver *dev, const char *buf,
+			  size_t count)
+{
+	unsigned long reg, val;
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_440SP
 	/* 440SP uses default 0x14D polynomial only */
 	return -EINVAL;
@@ -4738,7 +4921,13 @@ static ssize_t store_ppc440spe_r6poly(struct device_driver *dev,
 		return -EINVAL;
 
 	/* e.g., 0x14D or 0x11D */
+<<<<<<< HEAD
 	sscanf(buf, "%lx", &val);
+=======
+	err = kstrtoul(buf, 16, &val);
+	if (err)
+		return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (val & ~0x1FF)
 		return -EINVAL;
@@ -4751,12 +4940,16 @@ static ssize_t store_ppc440spe_r6poly(struct device_driver *dev,
 
 	return count;
 }
+<<<<<<< HEAD
 
 static DRIVER_ATTR(devices, S_IRUGO, show_ppc440spe_devices, NULL);
 static DRIVER_ATTR(enable, S_IRUGO | S_IWUSR, show_ppc440spe_r6enable,
 		   store_ppc440spe_r6enable);
 static DRIVER_ATTR(poly, S_IRUGO | S_IWUSR, show_ppc440spe_r6poly,
 		   store_ppc440spe_r6poly);
+=======
+static DRIVER_ATTR_RW(poly);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Common initialisation for RAID engines; allocate memory for
@@ -4795,8 +4988,12 @@ static int ppc440spe_configure_raid_devices(void)
 	dcr_base = dcr_resource_start(np, 0);
 	dcr_len = dcr_resource_len(np, 0);
 	if (!dcr_base && !dcr_len) {
+<<<<<<< HEAD
 		pr_err("%s: can't get DCR registers base/len!\n",
 			np->full_name);
+=======
+		pr_err("%pOF: can't get DCR registers base/len!\n", np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_node_put(np);
 		iounmap(i2o_reg);
 		return -ENODEV;
@@ -4804,7 +5001,11 @@ static int ppc440spe_configure_raid_devices(void)
 
 	i2o_dcr_host = dcr_map(np, dcr_base, dcr_len);
 	if (!DCR_MAP_OK(i2o_dcr_host)) {
+<<<<<<< HEAD
 		pr_err("%s: failed to map DCRs!\n", np->full_name);
+=======
+		pr_err("%pOF: failed to map DCRs!\n", np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_node_put(np);
 		iounmap(i2o_reg);
 		return -ENODEV;
@@ -4865,15 +5066,23 @@ static int ppc440spe_configure_raid_devices(void)
 	dcr_base = dcr_resource_start(np, 0);
 	dcr_len = dcr_resource_len(np, 0);
 	if (!dcr_base && !dcr_len) {
+<<<<<<< HEAD
 		pr_err("%s: can't get DCR registers base/len!\n",
 			np->full_name);
+=======
+		pr_err("%pOF: can't get DCR registers base/len!\n", np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENODEV;
 		goto out_mq;
 	}
 
 	ppc440spe_mq_dcr_host = dcr_map(np, dcr_base, dcr_len);
 	if (!DCR_MAP_OK(ppc440spe_mq_dcr_host)) {
+<<<<<<< HEAD
 		pr_err("%s: failed to map DCRs!\n", np->full_name);
+=======
+		pr_err("%pOF: failed to map DCRs!\n", np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENODEV;
 		goto out_mq;
 	}
@@ -4905,7 +5114,11 @@ out_free:
 	return ret;
 }
 
+<<<<<<< HEAD
 static const struct of_device_id ppc440spe_adma_of_match[] __devinitconst = {
+=======
+static const struct of_device_id ppc440spe_adma_of_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible	= "ibm,dma-440spe", },
 	{ .compatible	= "amcc,xor-accelerator", },
 	{},
@@ -4914,10 +5127,16 @@ MODULE_DEVICE_TABLE(of, ppc440spe_adma_of_match);
 
 static struct platform_driver ppc440spe_adma_driver = {
 	.probe = ppc440spe_adma_probe,
+<<<<<<< HEAD
 	.remove = __devexit_p(ppc440spe_adma_remove),
 	.driver = {
 		.name = "PPC440SP(E)-ADMA",
 		.owner = THIS_MODULE,
+=======
+	.remove_new = ppc440spe_adma_remove,
+	.driver = {
+		.name = "PPC440SP(E)-ADMA",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.of_match_table = ppc440spe_adma_of_match,
 	},
 };

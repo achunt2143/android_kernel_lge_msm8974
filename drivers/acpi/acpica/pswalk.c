@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: pswalk - Parser routines to walk parsed op tree(s)
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acparser.h"
@@ -59,11 +70,16 @@ ACPI_MODULE_NAME("pswalk")
  * DESCRIPTION: Delete a portion of or an entire parse tree.
  *
  ******************************************************************************/
+<<<<<<< HEAD
+=======
+#include "amlcode.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void acpi_ps_delete_parse_tree(union acpi_parse_object *subtree_root)
 {
 	union acpi_parse_object *op = subtree_root;
 	union acpi_parse_object *next = NULL;
 	union acpi_parse_object *parent = NULL;
+<<<<<<< HEAD
 
 	ACPI_FUNCTION_TRACE_PTR(ps_delete_parse_tree, subtree_root);
 
@@ -75,6 +91,44 @@ void acpi_ps_delete_parse_tree(union acpi_parse_object *subtree_root)
 
 		if (op != parent) {
 
+=======
+	u32 level = 0;
+
+	ACPI_FUNCTION_TRACE_PTR(ps_delete_parse_tree, subtree_root);
+
+	ACPI_DEBUG_PRINT((ACPI_DB_PARSE_TREES, " root %p\n", subtree_root));
+
+	/* Visit all nodes in the subtree */
+
+	while (op) {
+		if (op != parent) {
+
+			/* This is the descending case */
+
+			if (ACPI_IS_DEBUG_ENABLED
+			    (ACPI_LV_PARSE_TREES, _COMPONENT)) {
+
+				/* This debug option will print the entire parse tree */
+
+				acpi_os_printf("      %*.s%s %p", (level * 4),
+					       " ",
+					       acpi_ps_get_opcode_name(op->
+								       common.
+								       aml_opcode),
+					       op);
+
+				if (op->named.aml_opcode == AML_INT_NAMEPATH_OP) {
+					acpi_os_printf("  %4.4s",
+						       op->common.value.string);
+				}
+				if (op->named.aml_opcode == AML_STRING_OP) {
+					acpi_os_printf("  %s",
+						       op->common.value.string);
+				}
+				acpi_os_printf("\n");
+			}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Look for an argument or child of the current op */
 
 			next = acpi_ps_get_arg(op, 0);
@@ -83,6 +137,10 @@ void acpi_ps_delete_parse_tree(union acpi_parse_object *subtree_root)
 				/* Still going downward in tree (Op is not completed yet) */
 
 				op = next;
+<<<<<<< HEAD
+=======
+				level++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			}
 		}
@@ -99,9 +157,17 @@ void acpi_ps_delete_parse_tree(union acpi_parse_object *subtree_root)
 		if (op == subtree_root) {
 			return_VOID;
 		}
+<<<<<<< HEAD
 		if (next) {
 			op = next;
 		} else {
+=======
+
+		if (next) {
+			op = next;
+		} else {
+			level--;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			op = parent;
 		}
 	}

@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * max8997.h - Driver for the Maxim 8997/8966
  *
  *  Copyright (C) 2009-2010 Samsung Electrnoics
  *  MyungJoo Ham <myungjoo.ham@samsung.com>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -18,6 +23,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This driver is based on max8998.h
  *
  * MAX8997 has PMIC, MUIC, HAPTIC, RTC, FLASH, and Fuel Gauge devices.
@@ -27,13 +34,22 @@
  * others and b) it can be enabled simply by using MAX17042 driver.
  */
 
+<<<<<<< HEAD
 #ifndef __LINUX_MFD_MAX8998_H
 #define __LINUX_MFD_MAX8998_H
+=======
+#ifndef __LINUX_MFD_MAX8997_H
+#define __LINUX_MFD_MAX8997_H
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/regulator/consumer.h>
 
 /* MAX8997/8966 regulator IDs */
+<<<<<<< HEAD
 enum max8998_regulators {
+=======
+enum max8997_regulators {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MAX8997_LDO1 = 0,
 	MAX8997_LDO2,
 	MAX8997_LDO3,
@@ -75,6 +91,7 @@ enum max8998_regulators {
 struct max8997_regulator_data {
 	int id;
 	struct regulator_init_data *initdata;
+<<<<<<< HEAD
 };
 
 enum max8997_muic_usb_type {
@@ -90,6 +107,9 @@ enum max8997_muic_charger_type {
 	MAX8997_CHARGER_TYPE_500MA,
 	MAX8997_CHARGER_TYPE_1A,
 	MAX8997_CHARGER_TYPE_DEAD_BATTERY = 7,
+=======
+	struct device_node *reg_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct max8997_muic_reg_data {
@@ -99,6 +119,7 @@ struct max8997_muic_reg_data {
 
 /**
  * struct max8997_muic_platform_data
+<<<<<<< HEAD
  * @usb_callback: callback function for USB
  *		  inform callee of USB type (HOST or DEVICE)
  *		  and attached state(true or false)
@@ -113,11 +134,14 @@ struct max8997_muic_reg_data {
  *		  inform callee of attached state(true or false)
  * @uart_callback: callback function for JIG UART
  *		   inform callee of attached state(true or false)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @init_data: array of max8997_muic_reg_data
  *	       used for initializing registers of MAX8997 MUIC device
  * @num_init_data: array size of init_data
  */
 struct max8997_muic_platform_data {
+<<<<<<< HEAD
 	void (*usb_callback)(enum max8997_muic_usb_type usb_type,
 		bool attached);
 	void (*charger_callback)(bool attached,
@@ -129,6 +153,20 @@ struct max8997_muic_platform_data {
 
 	struct max8997_muic_reg_data *init_data;
 	int num_init_data;
+=======
+	struct max8997_muic_reg_data *init_data;
+	int num_init_data;
+
+	/* Check cable state after certain delay */
+	int detcable_delay_ms;
+
+	/*
+	 * Default usb/uart path whether UART/USB or AUX_UART/AUX_USB
+	 * h/w path of COMP2/COMN1 on CONTROL1 register.
+	 */
+	int path_usb;
+	int path_uart;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum max8997_haptic_motor_type {
@@ -150,8 +188,11 @@ enum max8997_haptic_pwm_divisor {
 
 /**
  * max8997_haptic_platform_data
+<<<<<<< HEAD
  * @pwm_channel_id: channel number of PWM device
  *		    valid for MAX8997_EXTERNAL_MODE
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pwm_period: period in nano second for PWM device
  *		valid for MAX8997_EXTERNAL_MODE
  * @type: motor type
@@ -168,7 +209,10 @@ enum max8997_haptic_pwm_divisor {
  *     [0 - 255]: available period
  */
 struct max8997_haptic_platform_data {
+<<<<<<< HEAD
 	unsigned int pwm_channel_id;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int pwm_period;
 
 	enum max8997_haptic_motor_type type;
@@ -204,9 +248,13 @@ struct max8997_led_platform_data {
 
 struct max8997_platform_data {
 	/* IRQ */
+<<<<<<< HEAD
 	int irq_base;
 	int ono;
 	int wakeup;
+=======
+	int ono;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ---- PMIC ---- */
 	struct max8997_regulator_data *regulators;
@@ -223,7 +271,10 @@ struct max8997_platform_data {
 	 *
 	 */
 	bool ignore_gpiodvs_side_effect;
+<<<<<<< HEAD
 	int buck125_gpios[3]; /* GPIO of [0]SET1, [1]SET2, [2]SET3 */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int buck125_default_idx; /* Default value of SET1, 2, 3 */
 	unsigned int buck1_voltage[8]; /* buckx_voltage in uV */
 	bool buck1_gpiodvs;
@@ -249,4 +300,8 @@ struct max8997_platform_data {
 	struct max8997_led_platform_data *led_pdata;
 };
 
+<<<<<<< HEAD
 #endif /* __LINUX_MFD_MAX8998_H */
+=======
+#endif /* __LINUX_MFD_MAX8997_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

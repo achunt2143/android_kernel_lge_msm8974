@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Profiling infrastructure declarations.
  *
@@ -14,6 +18,10 @@
 #ifndef GCOV_H
 #define GCOV_H GCOV_H
 
+<<<<<<< HEAD
+=======
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 
 /*
@@ -21,7 +29,10 @@
  * gcc and need to be kept as close to the original definition as possible to
  * remain compatible.
  */
+<<<<<<< HEAD
 #define GCOV_COUNTERS		5
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GCOV_DATA_MAGIC		((unsigned int) 0x67636461)
 #define GCOV_TAG_FUNCTION	((unsigned int) 0x01000000)
 #define GCOV_TAG_COUNTER_BASE	((unsigned int) 0x01a10000)
@@ -34,6 +45,7 @@ typedef long gcov_type;
 typedef long long gcov_type;
 #endif
 
+<<<<<<< HEAD
 /**
  * struct gcov_fn_info - profiling meta data per function
  * @ident: object file-unique function identifier
@@ -88,6 +100,22 @@ struct gcov_info {
 	unsigned int			ctr_mask;
 	struct gcov_ctr_info		counts[0];
 };
+=======
+/* Opaque gcov_info. The gcov structures can change as for example in gcc 4.7 so
+ * we cannot use full definition here and they need to be placed in gcc specific
+ * implementation of gcov. This also means no direct access to the members in
+ * generic code and usage of the interface below.*/
+struct gcov_info;
+
+/* Interface to access gcov_info data  */
+const char *gcov_info_filename(struct gcov_info *info);
+unsigned int gcov_info_version(struct gcov_info *info);
+struct gcov_info *gcov_info_next(struct gcov_info *info);
+void gcov_info_link(struct gcov_info *info);
+void gcov_info_unlink(struct gcov_info *prev, struct gcov_info *info);
+bool gcov_info_within_module(struct gcov_info *info, struct module *mod);
+size_t convert_to_gcda(char *buffer, struct gcov_info *info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Base interface. */
 enum gcov_action {
@@ -98,6 +126,7 @@ enum gcov_action {
 void gcov_event(enum gcov_action action, struct gcov_info *info);
 void gcov_enable_events(void);
 
+<<<<<<< HEAD
 /* Iterator control. */
 struct seq_file;
 struct gcov_iterator;
@@ -108,6 +137,11 @@ void gcov_iter_start(struct gcov_iterator *iter);
 int gcov_iter_next(struct gcov_iterator *iter);
 int gcov_iter_write(struct gcov_iterator *iter, struct seq_file *seq);
 struct gcov_info *gcov_iter_get_info(struct gcov_iterator *iter);
+=======
+/* writing helpers */
+size_t store_gcov_u32(void *buffer, size_t off, u32 v);
+size_t store_gcov_u64(void *buffer, size_t off, u64 v);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* gcov_info control. */
 void gcov_info_reset(struct gcov_info *info);
@@ -125,4 +159,10 @@ struct gcov_link {
 };
 extern const struct gcov_link gcov_link[];
 
+<<<<<<< HEAD
+=======
+extern int gcov_events_enabled;
+extern struct mutex gcov_lock;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* GCOV_H */

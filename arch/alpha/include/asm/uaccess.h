@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __ALPHA_UACCESS_H
 #define __ALPHA_UACCESS_H
 
@@ -48,6 +49,13 @@
 	__access_ok(((unsigned long)(addr)),(size),get_fs());	\
 })
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ALPHA_UACCESS_H
+#define __ALPHA_UACCESS_H
+
+#include <asm-generic/access_ok.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * These are the main single-value transfer routines.  They automatically
  * use the right size if we just have the right pointer type.
@@ -60,20 +68,34 @@
  * (a) re-use the arguments for side effects (sizeof/typeof is ok)
  * (b) require any knowledge of processes at this stage
  */
+<<<<<<< HEAD
 #define put_user(x,ptr) \
   __put_user_check((__typeof__(*(ptr)))(x),(ptr),sizeof(*(ptr)),get_fs())
 #define get_user(x,ptr) \
   __get_user_check((x),(ptr),sizeof(*(ptr)),get_fs())
+=======
+#define put_user(x, ptr) \
+  __put_user_check((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)))
+#define get_user(x, ptr) \
+  __get_user_check((x), (ptr), sizeof(*(ptr)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * The "__xxx" versions do not do address space checking, useful when
  * doing multiple accesses to the same area (the programmer has to do the
  * checks by hand with "access_ok()")
  */
+<<<<<<< HEAD
 #define __put_user(x,ptr) \
   __put_user_nocheck((__typeof__(*(ptr)))(x),(ptr),sizeof(*(ptr)))
 #define __get_user(x,ptr) \
   __get_user_nocheck((x),(ptr),sizeof(*(ptr)))
+=======
+#define __put_user(x, ptr) \
+  __put_user_nocheck((__typeof__(*(ptr)))(x), (ptr), sizeof(*(ptr)))
+#define __get_user(x, ptr) \
+  __get_user_nocheck((x), (ptr), sizeof(*(ptr)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   
 /*
  * The "lda %1, 2b-1b(%0)" bits are magic to get the assembler to
@@ -81,10 +103,22 @@
  * more extensive comments with fixup_inline_exception below for
  * more information.
  */
+<<<<<<< HEAD
 
 extern void __get_user_unknown(void);
 
 #define __get_user_nocheck(x,ptr,size)				\
+=======
+#define EXC(label,cont,res,err)				\
+	".section __ex_table,\"a\"\n"			\
+	"	.long "#label"-.\n"			\
+	"	lda "#res","#cont"-"#label"("#err")\n"	\
+	".previous\n"
+
+extern void __get_user_unknown(void);
+
+#define __get_user_nocheck(x, ptr, size)			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ({								\
 	long __gu_err = 0;					\
 	unsigned long __gu_val;					\
@@ -96,6 +130,7 @@ extern void __get_user_unknown(void);
 	  case 8: __get_user_64(ptr); break;			\
 	  default: __get_user_unknown(); break;			\
 	}							\
+<<<<<<< HEAD
 	(x) = (__typeof__(*(ptr))) __gu_val;			\
 	__gu_err;						\
 })
@@ -117,6 +152,29 @@ extern void __get_user_unknown(void);
 	}								\
 	(x) = (__typeof__(*(ptr))) __gu_val;				\
 	__gu_err;							\
+=======
+	(x) = (__force __typeof__(*(ptr))) __gu_val;		\
+	__gu_err;						\
+})
+
+#define __get_user_check(x, ptr, size)				\
+({								\
+	long __gu_err = -EFAULT;				\
+	unsigned long __gu_val = 0;				\
+	const __typeof__(*(ptr)) __user *__gu_addr = (ptr);	\
+	if (__access_ok(__gu_addr, size)) {			\
+		__gu_err = 0;					\
+		switch (size) {					\
+		  case 1: __get_user_8(__gu_addr); break;	\
+		  case 2: __get_user_16(__gu_addr); break;	\
+		  case 4: __get_user_32(__gu_addr); break;	\
+		  case 8: __get_user_64(__gu_addr); break;	\
+		  default: __get_user_unknown(); break;		\
+		}						\
+	}							\
+	(x) = (__force __typeof__(*(ptr))) __gu_val;		\
+	__gu_err;						\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 })
 
 struct __large_struct { unsigned long buf[100]; };
@@ -125,20 +183,28 @@ struct __large_struct { unsigned long buf[100]; };
 #define __get_user_64(addr)				\
 	__asm__("1: ldq %0,%2\n"			\
 	"2:\n"						\
+<<<<<<< HEAD
 	".section __ex_table,\"a\"\n"			\
 	"	.long 1b - .\n"				\
 	"	lda %0, 2b-1b(%1)\n"			\
 	".previous"					\
+=======
+	EXC(1b,2b,%0,%1)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=r"(__gu_val), "=r"(__gu_err)	\
 		: "m"(__m(addr)), "1"(__gu_err))
 
 #define __get_user_32(addr)				\
 	__asm__("1: ldl %0,%2\n"			\
 	"2:\n"						\
+<<<<<<< HEAD
 	".section __ex_table,\"a\"\n"			\
 	"	.long 1b - .\n"				\
 	"	lda %0, 2b-1b(%1)\n"			\
 	".previous"					\
+=======
+	EXC(1b,2b,%0,%1)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=r"(__gu_val), "=r"(__gu_err)	\
 		: "m"(__m(addr)), "1"(__gu_err))
 
@@ -148,20 +214,28 @@ struct __large_struct { unsigned long buf[100]; };
 #define __get_user_16(addr)				\
 	__asm__("1: ldwu %0,%2\n"			\
 	"2:\n"						\
+<<<<<<< HEAD
 	".section __ex_table,\"a\"\n"			\
 	"	.long 1b - .\n"				\
 	"	lda %0, 2b-1b(%1)\n"			\
 	".previous"					\
+=======
+	EXC(1b,2b,%0,%1)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=r"(__gu_val), "=r"(__gu_err)	\
 		: "m"(__m(addr)), "1"(__gu_err))
 
 #define __get_user_8(addr)				\
 	__asm__("1: ldbu %0,%2\n"			\
 	"2:\n"						\
+<<<<<<< HEAD
 	".section __ex_table,\"a\"\n"			\
 	"	.long 1b - .\n"				\
 	"	lda %0, 2b-1b(%1)\n"			\
 	".previous"					\
+=======
+	EXC(1b,2b,%0,%1)				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=r"(__gu_val), "=r"(__gu_err)	\
 		: "m"(__m(addr)), "1"(__gu_err))
 #else
@@ -177,12 +251,17 @@ struct __large_struct { unsigned long buf[100]; };
 	"	extwh %1,%3,%1\n"					\
 	"	or %0,%1,%0\n"						\
 	"3:\n"								\
+<<<<<<< HEAD
 	".section __ex_table,\"a\"\n"					\
 	"	.long 1b - .\n"						\
 	"	lda %0, 3b-1b(%2)\n"					\
 	"	.long 2b - .\n"						\
 	"	lda %0, 3b-2b(%2)\n"					\
 	".previous"							\
+=======
+	EXC(1b,3b,%0,%2)						\
+	EXC(2b,3b,%0,%2)						\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=&r"(__gu_val), "=&r"(__gu_tmp), "=r"(__gu_err)	\
 		: "r"(addr), "2"(__gu_err));				\
 }
@@ -191,30 +270,46 @@ struct __large_struct { unsigned long buf[100]; };
 	__asm__("1: ldq_u %0,0(%2)\n"					\
 	"	extbl %0,%2,%0\n"					\
 	"2:\n"								\
+<<<<<<< HEAD
 	".section __ex_table,\"a\"\n"					\
 	"	.long 1b - .\n"						\
 	"	lda %0, 2b-1b(%1)\n"					\
 	".previous"							\
+=======
+	EXC(1b,2b,%0,%1)						\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=&r"(__gu_val), "=r"(__gu_err)			\
 		: "r"(addr), "1"(__gu_err))
 #endif
 
 extern void __put_user_unknown(void);
 
+<<<<<<< HEAD
 #define __put_user_nocheck(x,ptr,size)				\
+=======
+#define __put_user_nocheck(x, ptr, size)			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ({								\
 	long __pu_err = 0;					\
 	__chk_user_ptr(ptr);					\
 	switch (size) {						\
+<<<<<<< HEAD
 	  case 1: __put_user_8(x,ptr); break;			\
 	  case 2: __put_user_16(x,ptr); break;			\
 	  case 4: __put_user_32(x,ptr); break;			\
 	  case 8: __put_user_64(x,ptr); break;			\
+=======
+	  case 1: __put_user_8(x, ptr); break;			\
+	  case 2: __put_user_16(x, ptr); break;			\
+	  case 4: __put_user_32(x, ptr); break;			\
+	  case 8: __put_user_64(x, ptr); break;			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  default: __put_user_unknown(); break;			\
 	}							\
 	__pu_err;						\
 })
 
+<<<<<<< HEAD
 #define __put_user_check(x,ptr,size,segment)				\
 ({									\
 	long __pu_err = -EFAULT;					\
@@ -230,6 +325,23 @@ extern void __put_user_unknown(void);
 		}							\
 	}								\
 	__pu_err;							\
+=======
+#define __put_user_check(x, ptr, size)				\
+({								\
+	long __pu_err = -EFAULT;				\
+	__typeof__(*(ptr)) __user *__pu_addr = (ptr);		\
+	if (__access_ok(__pu_addr, size)) {			\
+		__pu_err = 0;					\
+		switch (size) {					\
+		  case 1: __put_user_8(x, __pu_addr); break;	\
+		  case 2: __put_user_16(x, __pu_addr); break;	\
+		  case 4: __put_user_32(x, __pu_addr); break;	\
+		  case 8: __put_user_64(x, __pu_addr); break;	\
+		  default: __put_user_unknown(); break;		\
+		}						\
+	}							\
+	__pu_err;						\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 })
 
 /*
@@ -237,6 +349,7 @@ extern void __put_user_unknown(void);
  * instead of writing: this is because they do not write to
  * any memory gcc knows about, so there are no aliasing issues
  */
+<<<<<<< HEAD
 #define __put_user_64(x,addr)					\
 __asm__ __volatile__("1: stq %r2,%1\n"				\
 	"2:\n"							\
@@ -254,12 +367,26 @@ __asm__ __volatile__("1: stl %r2,%1\n"				\
 	"	.long 1b - .\n"					\
 	"	lda $31,2b-1b(%0)\n"				\
 	".previous"						\
+=======
+#define __put_user_64(x, addr)					\
+__asm__ __volatile__("1: stq %r2,%1\n"				\
+	"2:\n"							\
+	EXC(1b,2b,$31,%0)					\
+		: "=r"(__pu_err)				\
+		: "m" (__m(addr)), "rJ" (x), "0"(__pu_err))
+
+#define __put_user_32(x, addr)					\
+__asm__ __volatile__("1: stl %r2,%1\n"				\
+	"2:\n"							\
+	EXC(1b,2b,$31,%0)					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=r"(__pu_err)				\
 		: "m"(__m(addr)), "rJ"(x), "0"(__pu_err))
 
 #ifdef __alpha_bwx__
 /* Those lucky bastards with ev56 and later CPUs can do byte/word moves.  */
 
+<<<<<<< HEAD
 #define __put_user_16(x,addr)					\
 __asm__ __volatile__("1: stw %r2,%1\n"				\
 	"2:\n"							\
@@ -277,13 +404,30 @@ __asm__ __volatile__("1: stb %r2,%1\n"				\
 	"	.long 1b - .\n"					\
 	"	lda $31,2b-1b(%0)\n"				\
 	".previous"						\
+=======
+#define __put_user_16(x, addr)					\
+__asm__ __volatile__("1: stw %r2,%1\n"				\
+	"2:\n"							\
+	EXC(1b,2b,$31,%0)					\
+		: "=r"(__pu_err)				\
+		: "m"(__m(addr)), "rJ"(x), "0"(__pu_err))
+
+#define __put_user_8(x, addr)					\
+__asm__ __volatile__("1: stb %r2,%1\n"				\
+	"2:\n"							\
+	EXC(1b,2b,$31,%0)					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		: "=r"(__pu_err)				\
 		: "m"(__m(addr)), "rJ"(x), "0"(__pu_err))
 #else
 /* Unfortunately, we can't get an unaligned access trap for the sub-word
    write, so we have to do a general unaligned operation.  */
 
+<<<<<<< HEAD
 #define __put_user_16(x,addr)					\
+=======
+#define __put_user_16(x, addr)					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {								\
 	long __pu_tmp1, __pu_tmp2, __pu_tmp3, __pu_tmp4;	\
 	__asm__ __volatile__(					\
@@ -298,6 +442,7 @@ __asm__ __volatile__("1: stb %r2,%1\n"				\
 	"3:	stq_u %2,1(%5)\n"				\
 	"4:	stq_u %1,0(%5)\n"				\
 	"5:\n"							\
+<<<<<<< HEAD
 	".section __ex_table,\"a\"\n"				\
 	"	.long 1b - .\n"					\
 	"	lda $31, 5b-1b(%0)\n"				\
@@ -310,11 +455,23 @@ __asm__ __volatile__("1: stb %r2,%1\n"				\
 	".previous"						\
 		: "=r"(__pu_err), "=&r"(__pu_tmp1),		\
 		  "=&r"(__pu_tmp2), "=&r"(__pu_tmp3),		\
+=======
+	EXC(1b,5b,$31,%0)					\
+	EXC(2b,5b,$31,%0)					\
+	EXC(3b,5b,$31,%0)					\
+	EXC(4b,5b,$31,%0)					\
+		: "=r"(__pu_err), "=&r"(__pu_tmp1), 		\
+		  "=&r"(__pu_tmp2), "=&r"(__pu_tmp3), 		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		  "=&r"(__pu_tmp4)				\
 		: "r"(addr), "r"((unsigned long)(x)), "0"(__pu_err)); \
 }
 
+<<<<<<< HEAD
 #define __put_user_8(x,addr)					\
+=======
+#define __put_user_8(x, addr)					\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {								\
 	long __pu_tmp1, __pu_tmp2;				\
 	__asm__ __volatile__(					\
@@ -324,6 +481,7 @@ __asm__ __volatile__("1: stb %r2,%1\n"				\
 	"	or %1,%2,%1\n"					\
 	"2:	stq_u %1,0(%4)\n"				\
 	"3:\n"							\
+<<<<<<< HEAD
 	".section __ex_table,\"a\"\n"				\
 	"	.long 1b - .\n"					\
 	"	lda $31, 3b-1b(%0)\n"				\
@@ -331,6 +489,11 @@ __asm__ __volatile__("1: stb %r2,%1\n"				\
 	"	lda $31, 3b-2b(%0)\n"				\
 	".previous"						\
 		: "=r"(__pu_err),				\
+=======
+	EXC(1b,3b,$31,%0)					\
+	EXC(2b,3b,$31,%0)					\
+		: "=r"(__pu_err), 				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  	  "=&r"(__pu_tmp1), "=&r"(__pu_tmp2)		\
 		: "r"((unsigned long)(x)), "r"(addr), "0"(__pu_err)); \
 }
@@ -341,6 +504,7 @@ __asm__ __volatile__("1: stb %r2,%1\n"				\
  * Complex access routines
  */
 
+<<<<<<< HEAD
 /* This little bit of silliness is to get the GP loaded for a function
    that ordinarily wouldn't.  Otherwise we could have it done by the macro
    directly, which can be optimized the linker.  */
@@ -426,10 +590,33 @@ extern inline long
 clear_user(void __user *to, long len)
 {
 	if (__access_ok((unsigned long)to, len, get_fs()))
+=======
+extern long __copy_user(void *to, const void *from, long len);
+
+static inline unsigned long
+raw_copy_from_user(void *to, const void __user *from, unsigned long len)
+{
+	return __copy_user(to, (__force const void *)from, len);
+}
+
+static inline unsigned long
+raw_copy_to_user(void __user *to, const void *from, unsigned long len)
+{
+	return __copy_user((__force void *)to, from, len);
+}
+
+extern long __clear_user(void __user *to, long len);
+
+static inline long
+clear_user(void __user *to, long len)
+{
+	if (__access_ok(to, len))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		len = __clear_user(to, len);
 	return len;
 }
 
+<<<<<<< HEAD
 #undef __module_address
 #undef __module_call
 
@@ -509,5 +696,11 @@ struct exception_table_entry
 
 #define ARCH_HAS_SORT_EXTABLE
 #define ARCH_HAS_SEARCH_EXTABLE
+=======
+extern long strncpy_from_user(char *dest, const char __user *src, long count);
+extern __must_check long strnlen_user(const char __user *str, long n);
+
+#include <asm/extable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ALPHA_UACCESS_H */

@@ -14,6 +14,11 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "htc.h"
 
 MODULE_AUTHOR("Atheros Communications");
@@ -28,6 +33,7 @@ int htc_modparam_nohwcrypt;
 module_param_named(nohwcrypt, htc_modparam_nohwcrypt, int, 0444);
 MODULE_PARM_DESC(nohwcrypt, "Disable hardware encryption");
 
+<<<<<<< HEAD
 #define CHAN2G(_freq, _idx)  { \
 	.center_freq = (_freq), \
 	.hw_value = (_idx), \
@@ -116,6 +122,25 @@ static struct ieee80211_rate ath9k_legacy_rates[] = {
 };
 
 #ifdef CONFIG_MAC80211_LEDS
+=======
+static int ath9k_htc_btcoex_enable;
+module_param_named(btcoex_enable, ath9k_htc_btcoex_enable, int, 0444);
+MODULE_PARM_DESC(btcoex_enable, "Enable wifi-BT coexistence");
+
+static int ath9k_ps_enable;
+module_param_named(ps_enable, ath9k_ps_enable, int, 0444);
+MODULE_PARM_DESC(ps_enable, "Enable WLAN PowerSave");
+
+int htc_use_dev_fw = 0;
+module_param_named(use_dev_fw, htc_use_dev_fw, int, 0444);
+MODULE_PARM_DESC(use_dev_fw, "Use development FW version");
+
+#ifdef CONFIG_MAC80211_LEDS
+int ath9k_htc_led_blink = 1;
+module_param_named(blink, ath9k_htc_led_blink, int, 0444);
+MODULE_PARM_DESC(blink, "Enable LED blink on activity");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct ieee80211_tpt_blink ath9k_htc_tpt_blink[] = {
 	{ .throughput = 0 * 1024, .blink_time = 334 },
 	{ .throughput = 1 * 1024, .blink_time = 260 },
@@ -130,9 +155,30 @@ static const struct ieee80211_tpt_blink ath9k_htc_tpt_blink[] = {
 };
 #endif
 
+<<<<<<< HEAD
 static int ath9k_htc_wait_for_target(struct ath9k_htc_priv *priv)
 {
 	int time_left;
+=======
+static void ath9k_htc_op_ps_wakeup(struct ath_common *common)
+{
+	ath9k_htc_ps_wakeup(common->priv);
+}
+
+static void ath9k_htc_op_ps_restore(struct ath_common *common)
+{
+	ath9k_htc_ps_restore(common->priv);
+}
+
+static const struct ath_ps_ops ath9k_htc_ps_ops = {
+	.wakeup = ath9k_htc_op_ps_wakeup,
+	.restore = ath9k_htc_op_ps_restore,
+};
+
+static int ath9k_htc_wait_for_target(struct ath9k_htc_priv *priv)
+{
+	unsigned long time_left;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (atomic_read(&priv->htc->tgt_ready) > 0) {
 		atomic_dec(&priv->htc->tgt_ready);
@@ -164,6 +210,10 @@ static void ath9k_deinit_device(struct ath9k_htc_priv *priv)
 
 	wiphy_rfkill_stop_polling(hw->wiphy);
 	ath9k_deinit_leds(priv);
+<<<<<<< HEAD
+=======
+	ath9k_htc_deinit_debug(priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ieee80211_unregister_hw(hw);
 	ath9k_rx_cleanup(priv);
 	ath9k_tx_cleanup(priv);
@@ -274,21 +324,37 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ath9k_reg_notifier(struct wiphy *wiphy,
 			      struct regulatory_request *request)
+=======
+static void ath9k_reg_notifier(struct wiphy *wiphy,
+			       struct regulatory_request *request)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ieee80211_hw *hw = wiphy_to_ieee80211_hw(wiphy);
 	struct ath9k_htc_priv *priv = hw->priv;
 
+<<<<<<< HEAD
 	return ath_reg_notifier_apply(wiphy, request,
 				      ath9k_hw_regulatory(priv->ah));
+=======
+	ath_reg_notifier_apply(wiphy, request,
+			       ath9k_hw_regulatory(priv->ah));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static unsigned int ath9k_regread(void *hw_priv, u32 reg_offset)
 {
+<<<<<<< HEAD
 	struct ath_hw *ah = (struct ath_hw *) hw_priv;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
+=======
+	struct ath_hw *ah = hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = common->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 val, reg = cpu_to_be32(reg_offset);
 	int r;
 
@@ -299,7 +365,11 @@ static unsigned int ath9k_regread(void *hw_priv, u32 reg_offset)
 	if (unlikely(r)) {
 		ath_dbg(common, WMI, "REGISTER READ FAILED: (0x%04x, %d)\n",
 			reg_offset, r);
+<<<<<<< HEAD
 		return -EIO;
+=======
+		return -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return be32_to_cpu(val);
@@ -308,18 +378,32 @@ static unsigned int ath9k_regread(void *hw_priv, u32 reg_offset)
 static void ath9k_multi_regread(void *hw_priv, u32 *addr,
 				u32 *val, u16 count)
 {
+<<<<<<< HEAD
 	struct ath_hw *ah = (struct ath_hw *) hw_priv;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
+=======
+	struct ath_hw *ah = hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = common->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be32 tmpaddr[8];
 	__be32 tmpval[8];
 	int i, ret;
 
+<<<<<<< HEAD
        for (i = 0; i < count; i++) {
 	       tmpaddr[i] = cpu_to_be32(addr[i]);
        }
 
        ret = ath9k_wmi_cmd(priv->wmi, WMI_REG_READ_CMDID,
+=======
+	for (i = 0; i < count; i++) {
+		tmpaddr[i] = cpu_to_be32(addr[i]);
+	}
+
+	ret = ath9k_wmi_cmd(priv->wmi, WMI_REG_READ_CMDID,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   (u8 *)tmpaddr , sizeof(u32) * count,
 			   (u8 *)tmpval, sizeof(u32) * count,
 			   100);
@@ -328,16 +412,47 @@ static void ath9k_multi_regread(void *hw_priv, u32 *addr,
 			"Multiple REGISTER READ FAILED (count: %d)\n", count);
 	}
 
+<<<<<<< HEAD
        for (i = 0; i < count; i++) {
 	       val[i] = be32_to_cpu(tmpval[i]);
        }
+=======
+	for (i = 0; i < count; i++) {
+		val[i] = be32_to_cpu(tmpval[i]);
+	}
+}
+
+static void ath9k_regwrite_multi(struct ath_common *common)
+{
+	struct ath9k_htc_priv *priv = common->priv;
+	u32 rsp_status;
+	int r;
+
+	r = ath9k_wmi_cmd(priv->wmi, WMI_REG_WRITE_CMDID,
+			  (u8 *) &priv->wmi->multi_write,
+			  sizeof(struct register_write) * priv->wmi->multi_write_idx,
+			  (u8 *) &rsp_status, sizeof(rsp_status),
+			  100);
+	if (unlikely(r)) {
+		ath_dbg(common, WMI,
+			"REGISTER WRITE FAILED, multi len: %d\n",
+			priv->wmi->multi_write_idx);
+	}
+	priv->wmi->multi_write_idx = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ath9k_regwrite_single(void *hw_priv, u32 val, u32 reg_offset)
 {
+<<<<<<< HEAD
 	struct ath_hw *ah = (struct ath_hw *) hw_priv;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
+=======
+	struct ath_hw *ah = hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = common->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const __be32 buf[2] = {
 		cpu_to_be32(reg_offset),
 		cpu_to_be32(val),
@@ -356,11 +471,17 @@ static void ath9k_regwrite_single(void *hw_priv, u32 val, u32 reg_offset)
 
 static void ath9k_regwrite_buffer(void *hw_priv, u32 val, u32 reg_offset)
 {
+<<<<<<< HEAD
 	struct ath_hw *ah = (struct ath_hw *) hw_priv;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
 	u32 rsp_status;
 	int r;
+=======
+	struct ath_hw *ah = hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = common->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&priv->wmi->multi_write_mutex);
 
@@ -373,6 +494,7 @@ static void ath9k_regwrite_buffer(void *hw_priv, u32 val, u32 reg_offset)
 	priv->wmi->multi_write_idx++;
 
 	/* If the buffer is full, send it out. */
+<<<<<<< HEAD
 	if (priv->wmi->multi_write_idx == MAX_CMD_NUMBER) {
 		r = ath9k_wmi_cmd(priv->wmi, WMI_REG_WRITE_CMDID,
 			  (u8 *) &priv->wmi->multi_write,
@@ -386,15 +508,25 @@ static void ath9k_regwrite_buffer(void *hw_priv, u32 val, u32 reg_offset)
 		}
 		priv->wmi->multi_write_idx = 0;
 	}
+=======
+	if (priv->wmi->multi_write_idx == MAX_CMD_NUMBER)
+		ath9k_regwrite_multi(common);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&priv->wmi->multi_write_mutex);
 }
 
 static void ath9k_regwrite(void *hw_priv, u32 val, u32 reg_offset)
 {
+<<<<<<< HEAD
 	struct ath_hw *ah = (struct ath_hw *) hw_priv;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
+=======
+	struct ath_hw *ah = hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = common->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (atomic_read(&priv->wmi->mwrite_cnt))
 		ath9k_regwrite_buffer(hw_priv, val, reg_offset);
@@ -404,25 +536,38 @@ static void ath9k_regwrite(void *hw_priv, u32 val, u32 reg_offset)
 
 static void ath9k_enable_regwrite_buffer(void *hw_priv)
 {
+<<<<<<< HEAD
 	struct ath_hw *ah = (struct ath_hw *) hw_priv;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
+=======
+	struct ath_hw *ah = hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = common->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_inc(&priv->wmi->mwrite_cnt);
 }
 
 static void ath9k_regwrite_flush(void *hw_priv)
 {
+<<<<<<< HEAD
 	struct ath_hw *ah = (struct ath_hw *) hw_priv;
 	struct ath_common *common = ath9k_hw_common(ah);
 	struct ath9k_htc_priv *priv = (struct ath9k_htc_priv *) common->priv;
 	u32 rsp_status;
 	int r;
+=======
+	struct ath_hw *ah = hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = common->priv;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_dec(&priv->wmi->mwrite_cnt);
 
 	mutex_lock(&priv->wmi->multi_write_mutex);
 
+<<<<<<< HEAD
 	if (priv->wmi->multi_write_idx) {
 		r = ath9k_wmi_cmd(priv->wmi, WMI_REG_WRITE_CMDID,
 			  (u8 *) &priv->wmi->multi_write,
@@ -436,10 +581,15 @@ static void ath9k_regwrite_flush(void *hw_priv)
 		}
 		priv->wmi->multi_write_idx = 0;
 	}
+=======
+	if (priv->wmi->multi_write_idx)
+		ath9k_regwrite_multi(common);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&priv->wmi->multi_write_mutex);
 }
 
+<<<<<<< HEAD
 static u32 ath9k_reg_rmw(void *hw_priv, u32 reg_offset, u32 set, u32 clr)
 {
 	u32 val;
@@ -449,6 +599,137 @@ static u32 ath9k_reg_rmw(void *hw_priv, u32 reg_offset, u32 set, u32 clr)
 	val |= set;
 	ath9k_regwrite(hw_priv, val, reg_offset);
 	return val;
+=======
+static void ath9k_reg_rmw_buffer(void *hw_priv,
+				 u32 reg_offset, u32 set, u32 clr)
+{
+	struct ath_hw *ah = hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = common->priv;
+	u32 rsp_status;
+	int r;
+
+	mutex_lock(&priv->wmi->multi_rmw_mutex);
+
+	/* Store the register/value */
+	priv->wmi->multi_rmw[priv->wmi->multi_rmw_idx].reg =
+		cpu_to_be32(reg_offset);
+	priv->wmi->multi_rmw[priv->wmi->multi_rmw_idx].set =
+		cpu_to_be32(set);
+	priv->wmi->multi_rmw[priv->wmi->multi_rmw_idx].clr =
+		cpu_to_be32(clr);
+
+	priv->wmi->multi_rmw_idx++;
+
+	/* If the buffer is full, send it out. */
+	if (priv->wmi->multi_rmw_idx == MAX_RMW_CMD_NUMBER) {
+		r = ath9k_wmi_cmd(priv->wmi, WMI_REG_RMW_CMDID,
+			  (u8 *) &priv->wmi->multi_rmw,
+			  sizeof(struct register_write) * priv->wmi->multi_rmw_idx,
+			  (u8 *) &rsp_status, sizeof(rsp_status),
+			  100);
+		if (unlikely(r)) {
+			ath_dbg(common, WMI,
+				"REGISTER RMW FAILED, multi len: %d\n",
+				priv->wmi->multi_rmw_idx);
+		}
+		priv->wmi->multi_rmw_idx = 0;
+	}
+
+	mutex_unlock(&priv->wmi->multi_rmw_mutex);
+}
+
+static void ath9k_reg_rmw_flush(void *hw_priv)
+{
+	struct ath_hw *ah = hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = common->priv;
+	u32 rsp_status;
+	int r;
+
+	if (test_bit(HTC_FWFLAG_NO_RMW, &priv->fw_flags))
+		return;
+
+	atomic_dec(&priv->wmi->m_rmw_cnt);
+
+	mutex_lock(&priv->wmi->multi_rmw_mutex);
+
+	if (priv->wmi->multi_rmw_idx) {
+		r = ath9k_wmi_cmd(priv->wmi, WMI_REG_RMW_CMDID,
+			  (u8 *) &priv->wmi->multi_rmw,
+			  sizeof(struct register_rmw) * priv->wmi->multi_rmw_idx,
+			  (u8 *) &rsp_status, sizeof(rsp_status),
+			  100);
+		if (unlikely(r)) {
+			ath_dbg(common, WMI,
+				"REGISTER RMW FAILED, multi len: %d\n",
+				priv->wmi->multi_rmw_idx);
+		}
+		priv->wmi->multi_rmw_idx = 0;
+	}
+
+	mutex_unlock(&priv->wmi->multi_rmw_mutex);
+}
+
+static void ath9k_enable_rmw_buffer(void *hw_priv)
+{
+	struct ath_hw *ah = hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = common->priv;
+
+	if (test_bit(HTC_FWFLAG_NO_RMW, &priv->fw_flags))
+		return;
+
+	atomic_inc(&priv->wmi->m_rmw_cnt);
+}
+
+static void ath9k_reg_rmw_single(void *hw_priv,
+				 u32 reg_offset, u32 set, u32 clr)
+{
+	struct ath_hw *ah = hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = common->priv;
+	struct register_rmw buf, buf_ret;
+	int ret;
+
+	buf.reg = cpu_to_be32(reg_offset);
+	buf.set = cpu_to_be32(set);
+	buf.clr = cpu_to_be32(clr);
+
+	ret = ath9k_wmi_cmd(priv->wmi, WMI_REG_RMW_CMDID,
+			  (u8 *) &buf, sizeof(buf),
+			  (u8 *) &buf_ret, sizeof(buf_ret),
+			  100);
+	if (unlikely(ret)) {
+		ath_dbg(common, WMI, "REGISTER RMW FAILED:(0x%04x, %d)\n",
+			reg_offset, ret);
+	}
+}
+
+static u32 ath9k_reg_rmw(void *hw_priv, u32 reg_offset, u32 set, u32 clr)
+{
+	struct ath_hw *ah = hw_priv;
+	struct ath_common *common = ath9k_hw_common(ah);
+	struct ath9k_htc_priv *priv = common->priv;
+
+	if (test_bit(HTC_FWFLAG_NO_RMW, &priv->fw_flags)) {
+		u32 val;
+
+		val = REG_READ(ah, reg_offset);
+		val &= ~clr;
+		val |= set;
+		REG_WRITE(ah, reg_offset, val);
+
+		return 0;
+	}
+
+	if (atomic_read(&priv->wmi->m_rmw_cnt))
+		ath9k_reg_rmw_buffer(hw_priv, reg_offset, set, clr);
+	else
+		ath9k_reg_rmw_single(hw_priv, reg_offset, set, clr);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ath_usb_read_cachesize(struct ath_common *common, int *csz)
@@ -458,18 +739,30 @@ static void ath_usb_read_cachesize(struct ath_common *common, int *csz)
 
 static bool ath_usb_eeprom_read(struct ath_common *common, u32 off, u16 *data)
 {
+<<<<<<< HEAD
 	struct ath_hw *ah = (struct ath_hw *) common->ah;
+=======
+	struct ath_hw *ah = common->ah;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	(void)REG_READ(ah, AR5416_EEPROM_OFFSET + (off << AR5416_EEPROM_S));
 
 	if (!ath9k_hw_wait(ah,
+<<<<<<< HEAD
 			   AR_EEPROM_STATUS_DATA,
+=======
+			   AR_EEPROM_STATUS_DATA(ah),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   AR_EEPROM_STATUS_DATA_BUSY |
 			   AR_EEPROM_STATUS_DATA_PROT_ACCESS, 0,
 			   AH_WAIT_TIMEOUT))
 		return false;
 
+<<<<<<< HEAD
 	*data = MS(REG_READ(ah, AR_EEPROM_STATUS_DATA),
+=======
+	*data = MS(REG_READ(ah, AR_EEPROM_STATUS_DATA(ah)),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		   AR_EEPROM_STATUS_DATA_VAL);
 
 	return true;
@@ -481,6 +774,7 @@ static const struct ath_bus_ops ath9k_usb_bus_ops = {
 	.eeprom_read = ath_usb_eeprom_read,
 };
 
+<<<<<<< HEAD
 static void setup_ht_cap(struct ath9k_htc_priv *priv,
 			 struct ieee80211_sta_ht_cap *ht_info)
 {
@@ -523,6 +817,8 @@ static void setup_ht_cap(struct ath9k_htc_priv *priv,
 	ht_info->mcs.tx_params |= IEEE80211_HT_MCS_TX_DEFINED;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ath9k_init_queues(struct ath9k_htc_priv *priv)
 {
 	struct ath_common *common = ath9k_hw_common(priv->ah);
@@ -531,8 +827,13 @@ static int ath9k_init_queues(struct ath9k_htc_priv *priv)
 	for (i = 0; i < ARRAY_SIZE(priv->hwq_map); i++)
 		priv->hwq_map[i] = -1;
 
+<<<<<<< HEAD
 	priv->beaconq = ath9k_hw_beaconq_setup(priv->ah);
 	if (priv->beaconq == -1) {
+=======
+	priv->beacon.beaconq = ath9k_hw_beaconq_setup(priv->ah);
+	if (priv->beacon.beaconq == -1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ath_err(common, "Unable to setup BEACON xmit queue\n");
 		goto err;
 	}
@@ -543,11 +844,16 @@ static int ath9k_init_queues(struct ath9k_htc_priv *priv)
 		goto err;
 	}
 
+<<<<<<< HEAD
 	if (!ath9k_htc_txq_setup(priv, WME_AC_BE)) {
+=======
+	if (!ath9k_htc_txq_setup(priv, IEEE80211_AC_BE)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ath_err(common, "Unable to setup xmit queue for BE traffic\n");
 		goto err;
 	}
 
+<<<<<<< HEAD
 	if (!ath9k_htc_txq_setup(priv, WME_AC_BK)) {
 		ath_err(common, "Unable to setup xmit queue for BK traffic\n");
 		goto err;
@@ -557,6 +863,17 @@ static int ath9k_init_queues(struct ath9k_htc_priv *priv)
 		goto err;
 	}
 	if (!ath9k_htc_txq_setup(priv, WME_AC_VO)) {
+=======
+	if (!ath9k_htc_txq_setup(priv, IEEE80211_AC_BK)) {
+		ath_err(common, "Unable to setup xmit queue for BK traffic\n");
+		goto err;
+	}
+	if (!ath9k_htc_txq_setup(priv, IEEE80211_AC_VI)) {
+		ath_err(common, "Unable to setup xmit queue for VI traffic\n");
+		goto err;
+	}
+	if (!ath9k_htc_txq_setup(priv, IEEE80211_AC_VO)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ath_err(common, "Unable to setup xmit queue for VO traffic\n");
 		goto err;
 	}
@@ -567,6 +884,7 @@ err:
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static void ath9k_init_channels_rates(struct ath9k_htc_priv *priv)
 {
 	if (priv->ah->caps.hw_caps & ATH9K_HW_CAP_2GHZ) {
@@ -592,13 +910,30 @@ static void ath9k_init_channels_rates(struct ath9k_htc_priv *priv)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ath9k_init_misc(struct ath9k_htc_priv *priv)
 {
 	struct ath_common *common = ath9k_hw_common(priv->ah);
 
+<<<<<<< HEAD
 	memcpy(common->bssidmask, ath_bcast_mac, ETH_ALEN);
 
 	priv->ah->opmode = NL80211_IFTYPE_STATION;
+=======
+	eth_broadcast_addr(common->bssidmask);
+
+	common->last_rssi = ATH_RSSI_DUMMY_MARKER;
+	priv->ah->opmode = NL80211_IFTYPE_STATION;
+
+	priv->spec_priv.ah = priv->ah;
+	priv->spec_priv.spec_config.enabled = 0;
+	priv->spec_priv.spec_config.short_repeat = true;
+	priv->spec_priv.spec_config.count = 8;
+	priv->spec_priv.spec_config.endless = false;
+	priv->spec_priv.spec_config.period = 0x12;
+	priv->spec_priv.spec_config.fft_period = 0x02;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath9k_init_priv(struct ath9k_htc_priv *priv,
@@ -609,12 +944,20 @@ static int ath9k_init_priv(struct ath9k_htc_priv *priv,
 	struct ath_common *common;
 	int i, ret = 0, csz = 0;
 
+<<<<<<< HEAD
 	priv->op_flags |= OP_INVALID;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ah = kzalloc(sizeof(struct ath_hw), GFP_KERNEL);
 	if (!ah)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	ah->dev = priv->dev;
+	ah->hw = priv->hw;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ah->hw_version.devid = devid;
 	ah->hw_version.usbdev = drv_info;
 	ah->ah_flags |= AH_USE_EEPROM;
@@ -623,21 +966,36 @@ static int ath9k_init_priv(struct ath9k_htc_priv *priv,
 	ah->reg_ops.write = ath9k_regwrite;
 	ah->reg_ops.enable_write_buffer = ath9k_enable_regwrite_buffer;
 	ah->reg_ops.write_flush = ath9k_regwrite_flush;
+<<<<<<< HEAD
+=======
+	ah->reg_ops.enable_rmw_buffer = ath9k_enable_rmw_buffer;
+	ah->reg_ops.rmw_flush = ath9k_reg_rmw_flush;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ah->reg_ops.rmw = ath9k_reg_rmw;
 	priv->ah = ah;
 
 	common = ath9k_hw_common(ah);
 	common->ops = &ah->reg_ops;
+<<<<<<< HEAD
+=======
+	common->ps_ops = &ath9k_htc_ps_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	common->bus_ops = &ath9k_usb_bus_ops;
 	common->ah = ah;
 	common->hw = priv->hw;
 	common->priv = priv;
 	common->debug_mask = ath9k_debug;
+<<<<<<< HEAD
+=======
+	common->btcoex_enabled = ath9k_htc_btcoex_enable == 1;
+	set_bit(ATH_OP_INVALID, &common->op_flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_init(&priv->beacon_lock);
 	spin_lock_init(&priv->tx.tx_lock);
 	mutex_init(&priv->mutex);
 	mutex_init(&priv->htc_pm_lock);
+<<<<<<< HEAD
 	tasklet_init(&priv->rx_tasklet, ath9k_rx_tasklet,
 		     (unsigned long)priv);
 	tasklet_init(&priv->tx_failed_tasklet, ath9k_tx_failed_tasklet,
@@ -647,6 +1005,14 @@ static int ath9k_init_priv(struct ath9k_htc_priv *priv,
 	INIT_WORK(&priv->fatal_work, ath9k_fatal_work);
 	setup_timer(&priv->tx.cleanup_timer, ath9k_htc_tx_cleanup_timer,
 		    (unsigned long)priv);
+=======
+	tasklet_setup(&priv->rx_tasklet, ath9k_rx_tasklet);
+	tasklet_setup(&priv->tx_failed_tasklet, ath9k_tx_failed_tasklet);
+	INIT_DELAYED_WORK(&priv->ani_work, ath9k_htc_ani_work);
+	INIT_WORK(&priv->ps_work, ath9k_ps_work);
+	INIT_WORK(&priv->fatal_work, ath9k_fatal_work);
+	timer_setup(&priv->tx.cleanup_timer, ath9k_htc_tx_cleanup_timer, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Cache line size is used to size and align various
@@ -668,10 +1034,18 @@ static int ath9k_init_priv(struct ath9k_htc_priv *priv,
 		goto err_queues;
 
 	for (i = 0; i < ATH9K_HTC_MAX_BCN_VIF; i++)
+<<<<<<< HEAD
 		priv->cur_beacon_conf.bslot[i] = NULL;
 
 	ath9k_cmn_init_crypto(ah);
 	ath9k_init_channels_rates(priv);
+=======
+		priv->beacon.bslot[i] = NULL;
+	priv->beacon.slottime = 9;
+
+	ath9k_cmn_init_channels_rates(common);
+	ath9k_cmn_init_crypto(ah);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ath9k_init_misc(priv);
 	ath9k_htc_init_btcoex(priv, product);
 
@@ -687,6 +1061,7 @@ err_hw:
 	return ret;
 }
 
+<<<<<<< HEAD
 static void ath9k_set_hw_capab(struct ath9k_htc_priv *priv,
 			       struct ieee80211_hw *hw)
 {
@@ -701,12 +1076,52 @@ static void ath9k_set_hw_capab(struct ath9k_htc_priv *priv,
 		IEEE80211_HW_PS_NULLFUNC_STACK |
 		IEEE80211_HW_REPORTS_TX_ACK_STATUS |
 		IEEE80211_HW_HOST_BROADCAST_PS_BUFFERING;
+=======
+static const struct ieee80211_iface_limit if_limits[] = {
+	{ .max = 2,	.types = BIT(NL80211_IFTYPE_STATION) |
+				 BIT(NL80211_IFTYPE_P2P_CLIENT) },
+	{ .max = 2,	.types = BIT(NL80211_IFTYPE_AP) |
+#ifdef CONFIG_MAC80211_MESH
+				 BIT(NL80211_IFTYPE_MESH_POINT) |
+#endif
+				 BIT(NL80211_IFTYPE_P2P_GO) },
+};
+
+static const struct ieee80211_iface_combination if_comb = {
+	.limits = if_limits,
+	.n_limits = ARRAY_SIZE(if_limits),
+	.max_interfaces = 2,
+	.num_different_channels = 1,
+};
+
+static void ath9k_set_hw_capab(struct ath9k_htc_priv *priv,
+			       struct ieee80211_hw *hw)
+{
+	struct ath_hw *ah = priv->ah;
+	struct ath_common *common = ath9k_hw_common(priv->ah);
+	struct base_eep_header *pBase;
+
+	ieee80211_hw_set(hw, HOST_BROADCAST_PS_BUFFERING);
+	ieee80211_hw_set(hw, MFP_CAPABLE);
+	ieee80211_hw_set(hw, REPORTS_TX_ACK_STATUS);
+	ieee80211_hw_set(hw, PS_NULLFUNC_STACK);
+	ieee80211_hw_set(hw, RX_INCLUDES_FCS);
+	ieee80211_hw_set(hw, HAS_RATE_CONTROL);
+	ieee80211_hw_set(hw, SPECTRUM_MGMT);
+	ieee80211_hw_set(hw, SIGNAL_DBM);
+	ieee80211_hw_set(hw, AMPDU_AGGREGATION);
+	ieee80211_hw_set(hw, DOESNT_SUPPORT_QOS_NDP);
+
+	if (ath9k_ps_enable)
+		ieee80211_hw_set(hw, SUPPORTS_PS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hw->wiphy->interface_modes =
 		BIT(NL80211_IFTYPE_STATION) |
 		BIT(NL80211_IFTYPE_ADHOC) |
 		BIT(NL80211_IFTYPE_AP) |
 		BIT(NL80211_IFTYPE_P2P_GO) |
+<<<<<<< HEAD
 		BIT(NL80211_IFTYPE_P2P_CLIENT);
 
 	hw->wiphy->flags &= ~WIPHY_FLAG_PS_ON_BY_DEFAULT;
@@ -716,6 +1131,25 @@ static void ath9k_set_hw_capab(struct ath9k_htc_priv *priv,
 	hw->queues = 4;
 	hw->channel_change_time = 5000;
 	hw->max_listen_interval = 10;
+=======
+		BIT(NL80211_IFTYPE_P2P_CLIENT) |
+		BIT(NL80211_IFTYPE_MESH_POINT) |
+		BIT(NL80211_IFTYPE_OCB);
+
+	hw->wiphy->iface_combinations = &if_comb;
+	hw->wiphy->n_iface_combinations = 1;
+
+	hw->wiphy->flags &= ~WIPHY_FLAG_PS_ON_BY_DEFAULT;
+
+	hw->wiphy->flags |= WIPHY_FLAG_IBSS_RSN |
+			    WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL |
+			    WIPHY_FLAG_HAS_CHANNEL_SWITCH;
+
+	hw->wiphy->flags |= WIPHY_FLAG_SUPPORTS_TDLS;
+
+	hw->queues = 4;
+	hw->max_listen_interval = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	hw->vif_data_size = sizeof(struct ath9k_htc_vif);
 	hw->sta_data_size = sizeof(struct ath9k_htc_sta);
@@ -725,6 +1159,7 @@ static void ath9k_set_hw_capab(struct ath9k_htc_priv *priv,
 		sizeof(struct htc_frame_hdr) + 4;
 
 	if (priv->ah->caps.hw_caps & ATH9K_HW_CAP_2GHZ)
+<<<<<<< HEAD
 		hw->wiphy->bands[IEEE80211_BAND_2GHZ] =
 			&priv->sbands[IEEE80211_BAND_2GHZ];
 	if (priv->ah->caps.hw_caps & ATH9K_HW_CAP_5GHZ)
@@ -741,6 +1176,27 @@ static void ath9k_set_hw_capab(struct ath9k_htc_priv *priv,
 	}
 
 	SET_IEEE80211_PERM_ADDR(hw, common->macaddr);
+=======
+		hw->wiphy->bands[NL80211_BAND_2GHZ] =
+			&common->sbands[NL80211_BAND_2GHZ];
+	if (priv->ah->caps.hw_caps & ATH9K_HW_CAP_5GHZ)
+		hw->wiphy->bands[NL80211_BAND_5GHZ] =
+			&common->sbands[NL80211_BAND_5GHZ];
+
+	ath9k_cmn_reload_chainmask(ah);
+
+	pBase = ath9k_htc_get_eeprom_base(priv);
+	if (pBase) {
+		hw->wiphy->available_antennas_rx = pBase->rxMask;
+		hw->wiphy->available_antennas_tx = pBase->txMask;
+	}
+
+	SET_IEEE80211_PERM_ADDR(hw, common->macaddr);
+
+	wiphy_ext_feature_set(hw->wiphy, NL80211_EXT_FEATURE_CQM_RSSI_LIST);
+	wiphy_ext_feature_set(hw->wiphy,
+			      NL80211_EXT_FEATURE_MULTICAST_REGISTRATIONS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int ath9k_init_firmware_version(struct ath9k_htc_priv *priv)
@@ -758,7 +1214,11 @@ static int ath9k_init_firmware_version(struct ath9k_htc_priv *priv)
 	priv->fw_version_major = be16_to_cpu(cmd_rsp.major);
 	priv->fw_version_minor = be16_to_cpu(cmd_rsp.minor);
 
+<<<<<<< HEAD
 	snprintf(hw->wiphy->fw_version, ETHTOOL_BUSINFO_LEN, "%d.%d",
+=======
+	snprintf(hw->wiphy->fw_version, sizeof(hw->wiphy->fw_version), "%d.%d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 priv->fw_version_major,
 		 priv->fw_version_minor);
 
@@ -777,6 +1237,15 @@ static int ath9k_init_firmware_version(struct ath9k_htc_priv *priv)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
+=======
+	if (priv->fw_version_major == 1 && priv->fw_version_minor < 4)
+		set_bit(HTC_FWFLAG_NO_RMW, &priv->fw_flags);
+
+	dev_info(priv->dev, "FW RMW support: %s\n",
+		test_bit(HTC_FWFLAG_NO_RMW, &priv->fw_flags) ? "Off" : "On");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -886,8 +1355,14 @@ err_init:
 int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
 			   u16 devid, char *product, u32 drv_info)
 {
+<<<<<<< HEAD
 	struct ieee80211_hw *hw;
 	struct ath9k_htc_priv *priv;
+=======
+	struct hif_device_usb *hif_dev;
+	struct ath9k_htc_priv *priv;
+	struct ieee80211_hw *hw;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 
 	hw = ieee80211_alloc_hw(sizeof(struct ath9k_htc_priv), &ath9k_htc_ops);
@@ -898,7 +1373,10 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
 	priv->hw = hw;
 	priv->htc = htc_handle;
 	priv->dev = dev;
+<<<<<<< HEAD
 	htc_handle->drv_priv = priv;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SET_IEEE80211_DEV(hw, priv->dev);
 
 	ret = ath9k_htc_wait_for_target(priv);
@@ -919,10 +1397,26 @@ int ath9k_htc_probe_device(struct htc_target *htc_handle, struct device *dev,
 	if (ret)
 		goto err_init;
 
+<<<<<<< HEAD
 	return 0;
 
 err_init:
 	ath9k_deinit_wmi(priv);
+=======
+	htc_handle->drv_priv = priv;
+
+	/* Allow ath9k_wmi_event_tasklet() to operate. */
+	smp_wmb();
+	priv->initialized = true;
+
+	return 0;
+
+err_init:
+	ath9k_stop_wmi(priv);
+	hif_dev = htc_handle->hif_dev;
+	ath9k_hif_usb_dealloc_urbs(hif_dev);
+	ath9k_destroy_wmi(priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 err_free:
 	ieee80211_free_hw(hw);
 	return ret;
@@ -937,7 +1431,13 @@ void ath9k_htc_disconnect_device(struct htc_target *htc_handle, bool hotunplug)
 			htc_handle->drv_priv->ah->ah_flags |= AH_UNPLUGGED;
 
 		ath9k_deinit_device(htc_handle->drv_priv);
+<<<<<<< HEAD
 		ath9k_deinit_wmi(htc_handle->drv_priv);
+=======
+		ath9k_stop_wmi(htc_handle->drv_priv);
+		ath9k_hif_usb_dealloc_urbs(htc_handle->hif_dev);
+		ath9k_destroy_wmi(htc_handle->drv_priv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ieee80211_free_hw(htc_handle->drv_priv->hw);
 	}
 }
@@ -960,6 +1460,11 @@ int ath9k_htc_resume(struct htc_target *htc_handle)
 
 	ret = ath9k_init_htc_services(priv, priv->ah->hw_version.devid,
 				      priv->ah->hw_version.usbdev);
+<<<<<<< HEAD
+=======
+	ath9k_configure_leds(priv);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 #endif
@@ -967,9 +1472,13 @@ int ath9k_htc_resume(struct htc_target *htc_handle)
 static int __init ath9k_htc_init(void)
 {
 	if (ath9k_hif_usb_init() < 0) {
+<<<<<<< HEAD
 		printk(KERN_ERR
 			"ath9k_htc: No USB devices found,"
 			" driver not installed.\n");
+=======
+		pr_err("No USB devices found, driver not installed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -980,6 +1489,10 @@ module_init(ath9k_htc_init);
 static void __exit ath9k_htc_exit(void)
 {
 	ath9k_hif_usb_exit();
+<<<<<<< HEAD
 	printk(KERN_INFO "ath9k_htc: Driver unloaded\n");
+=======
+	pr_info("Driver unloaded\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 module_exit(ath9k_htc_exit);

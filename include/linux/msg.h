@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_MSG_H
 #define _LINUX_MSG_H
 
@@ -73,17 +74,30 @@ struct msginfo {
 
 #ifdef __KERNEL__
 #include <linux/list.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _LINUX_MSG_H
+#define _LINUX_MSG_H
+
+#include <linux/list.h>
+#include <uapi/linux/msg.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* one msg_msg structure for each message */
 struct msg_msg {
 	struct list_head m_list;
 	long m_type;
 	size_t m_ts;		/* message text size */
+<<<<<<< HEAD
 	struct msg_msgseg* next;
+=======
+	struct msg_msgseg *next;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void *security;
 	/* the actual message follows immediately */
 };
 
+<<<<<<< HEAD
 /* one msq_queue structure for each present queue on the system */
 struct msg_queue {
 	struct kern_ipc_perm q_perm;
@@ -109,4 +123,6 @@ extern long do_msgrcv(int msqid, long *pmtype, void __user *mtext,
 
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_MSG_H */

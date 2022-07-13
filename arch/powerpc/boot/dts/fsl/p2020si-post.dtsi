@@ -48,6 +48,10 @@
 	bus-range = <0 255>;
 	clock-frequency = <33333333>;
 	interrupts = <26 2 0 0>;
+<<<<<<< HEAD
+=======
+	law_trgt_if = <2>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcie@0 {
 		reg = <0 0 0 0 0>;
@@ -76,6 +80,10 @@
 	bus-range = <0 255>;
 	clock-frequency = <33333333>;
 	interrupts = <25 2 0 0>;
+<<<<<<< HEAD
+=======
+	law_trgt_if = <1>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcie@0 {
 		reg = <0 0 0 0 0>;
@@ -105,6 +113,10 @@
 	bus-range = <0 255>;
 	clock-frequency = <33333333>;
 	interrupts = <24 2 0 0>;
+<<<<<<< HEAD
+=======
+	law_trgt_if = <0>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pcie@0 {
 		reg = <0 0 0 0 0>;
@@ -198,4 +210,12 @@
 		reg = <0xe0000 0x1000>;
 		fsl,has-rstcr;
 	};
+<<<<<<< HEAD
+=======
+
+	pmc: power@e0070 {
+		compatible = "fsl,mpc8548-pmc";
+		reg = <0xe0070 0x20>;
+	};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

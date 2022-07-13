@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 *  sym53c500_cs.c	Bob Tracy (rct@frus.com)
 *
@@ -25,6 +29,7 @@
 *	Original by Tom Corner (tcorner@via.at) was adapted from a
 *	driver for the Qlogic SCSI card written by
 *	David Hinds (dhinds@allegro.stanford.edu).
+<<<<<<< HEAD
 * 
 *  This program is free software; you can redistribute it and/or modify it
 *  under the terms of the GNU General Public License as published by the
@@ -35,6 +40,8 @@
 *  WITHOUT ANY WARRANTY; without even the implied warranty of
 *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 *  General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #define SYM53C500_DEBUG 0
@@ -201,6 +208,15 @@ struct sym53c500_data {
 	int fast_pio;
 };
 
+<<<<<<< HEAD
+=======
+struct sym53c500_cmd_priv {
+	int status;
+	int message;
+	int phase;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum Phase {
     idle,
     data_out,
@@ -360,6 +376,10 @@ SYM53C500_intr(int irq, void *dev_id)
 	struct sym53c500_data *data =
 	    (struct sym53c500_data *)dev->hostdata;
 	struct scsi_cmnd *curSC = data->current_SC;
+<<<<<<< HEAD
+=======
+	struct sym53c500_cmd_priv *scp = scsi_cmd_priv(curSC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int fast_pio = data->fast_pio;
 
 	spin_lock_irqsave(dev->host_lock, flags);
@@ -406,11 +426,19 @@ SYM53C500_intr(int irq, void *dev_id)
 
 	if (int_reg & 0x20) {		/* Disconnect */
 		DEB(printk("SYM53C500: disconnect intr received\n"));
+<<<<<<< HEAD
 		if (curSC->SCp.phase != message_in) {	/* Unexpected disconnect */
 			curSC->result = DID_NO_CONNECT << 16;
 		} else {	/* Command complete, return status and message */
 			curSC->result = (curSC->SCp.Status & 0xff)
 			    | ((curSC->SCp.Message & 0xff) << 8) | (DID_OK << 16);
+=======
+		if (scp->phase != message_in) {	/* Unexpected disconnect */
+			curSC->result = DID_NO_CONNECT << 16;
+		} else {	/* Command complete, return status and message */
+			curSC->result = (scp->status & 0xff) |
+				((scp->message & 0xff) << 8) | (DID_OK << 16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		goto idle_out;
 	}
@@ -421,7 +449,11 @@ SYM53C500_intr(int irq, void *dev_id)
 			struct scatterlist *sg;
 			int i;
 
+<<<<<<< HEAD
 			curSC->SCp.phase = data_out;
+=======
+			scp->phase = data_out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			VDEB(printk("SYM53C500: Data-Out phase\n"));
 			outb(FLUSH_FIFO, port_base + CMD_REG);
 			LOAD_DMA_COUNT(port_base, scsi_bufflen(curSC));	/* Max transfer size */
@@ -440,7 +472,11 @@ SYM53C500_intr(int irq, void *dev_id)
 			struct scatterlist *sg;
 			int i;
 
+<<<<<<< HEAD
 			curSC->SCp.phase = data_in;
+=======
+			scp->phase = data_in;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			VDEB(printk("SYM53C500: Data-In phase\n"));
 			outb(FLUSH_FIFO, port_base + CMD_REG);
 			LOAD_DMA_COUNT(port_base, scsi_bufflen(curSC));	/* Max transfer size */
@@ -455,12 +491,20 @@ SYM53C500_intr(int irq, void *dev_id)
 		break;
 
 	case 0x02:		/* COMMAND */
+<<<<<<< HEAD
 		curSC->SCp.phase = command_ph;
+=======
+		scp->phase = command_ph;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk("SYM53C500: Warning: Unknown interrupt occurred in command phase!\n");
 		break;
 
 	case 0x03:		/* STATUS */
+<<<<<<< HEAD
 		curSC->SCp.phase = status_ph;
+=======
+		scp->phase = status_ph;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		VDEB(printk("SYM53C500: Status phase\n"));
 		outb(FLUSH_FIFO, port_base + CMD_REG);
 		outb(INIT_CMD_COMPLETE, port_base + CMD_REG);
@@ -473,13 +517,18 @@ SYM53C500_intr(int irq, void *dev_id)
 
 	case 0x06:		/* MESSAGE-OUT */
 		DEB(printk("SYM53C500: Message-Out phase\n"));
+<<<<<<< HEAD
 		curSC->SCp.phase = message_out;
+=======
+		scp->phase = message_out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		outb(SET_ATN, port_base + CMD_REG);	/* Reject the message */
 		outb(MSG_ACCEPT, port_base + CMD_REG);
 		break;
 
 	case 0x07:		/* MESSAGE-IN */
 		VDEB(printk("SYM53C500: Message-In phase\n"));
+<<<<<<< HEAD
 		curSC->SCp.phase = message_in;
 
 		curSC->SCp.Status = inb(port_base + SCSI_FIFO);
@@ -489,6 +538,17 @@ SYM53C500_intr(int irq, void *dev_id)
 		DEB(printk("Status = %02x  Message = %02x\n", curSC->SCp.Status, curSC->SCp.Message));
 
 		if (curSC->SCp.Message == SAVE_POINTERS || curSC->SCp.Message == DISCONNECT) {
+=======
+		scp->phase = message_in;
+
+		scp->status = inb(port_base + SCSI_FIFO);
+		scp->message = inb(port_base + SCSI_FIFO);
+
+		VDEB(printk("SCSI FIFO size=%d\n", inb(port_base + FIFO_FLAGS) & 0x1f));
+		DEB(printk("Status = %02x  Message = %02x\n", scp->status, scp->message));
+
+		if (scp->message == SAVE_POINTERS || scp->message == DISCONNECT) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			outb(SET_ATN, port_base + CMD_REG);	/* Reject message */
 			DEB(printk("Discarding SAVE_POINTERS message\n"));
 		}
@@ -500,8 +560,13 @@ out:
 	return IRQ_HANDLED;
 
 idle_out:
+<<<<<<< HEAD
 	curSC->SCp.phase = idle;
 	curSC->scsi_done(curSC);
+=======
+	scp->phase = idle;
+	scsi_done(curSC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	goto out;
 }
 
@@ -546,9 +611,15 @@ SYM53C500_info(struct Scsi_Host *SChost)
 	return (info_msg);
 }
 
+<<<<<<< HEAD
 static int 
 SYM53C500_queue_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_cmnd *))
 {
+=======
+static int SYM53C500_queue_lck(struct scsi_cmnd *SCpnt)
+{
+	struct sym53c500_cmd_priv *scp = scsi_cmd_priv(SCpnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i;
 	int port_base = SCpnt->device->host->io_port;
 	struct sym53c500_data *data =
@@ -558,17 +629,27 @@ SYM53C500_queue_lck(struct scsi_cmnd *SCpnt, void (*done)(struct scsi_cmnd *))
 
 	DEB(printk("cmd=%02x, cmd_len=%02x, target=%02x, lun=%02x, bufflen=%d\n", 
 	    SCpnt->cmnd[0], SCpnt->cmd_len, SCpnt->device->id, 
+<<<<<<< HEAD
 	    SCpnt->device->lun,  scsi_bufflen(SCpnt)));
+=======
+		   (u8)SCpnt->device->lun,  scsi_bufflen(SCpnt)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	VDEB(for (i = 0; i < SCpnt->cmd_len; i++)
 	    printk("cmd[%d]=%02x  ", i, SCpnt->cmnd[i]));
 	VDEB(printk("\n"));
 
 	data->current_SC = SCpnt;
+<<<<<<< HEAD
 	data->current_SC->scsi_done = done;
 	data->current_SC->SCp.phase = command_ph;
 	data->current_SC->SCp.Status = 0;
 	data->current_SC->SCp.Message = 0;
+=======
+	scp->phase = command_ph;
+	scp->status = 0;
+	scp->message = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We are locked here already by the mid layer */
 	REG0(port_base);
@@ -661,6 +742,7 @@ static struct device_attribute SYM53C500_pio_attr = {
 	.store = SYM53C500_store_pio,
 };
 
+<<<<<<< HEAD
 static struct device_attribute *SYM53C500_shost_attrs[] = {
 	&SYM53C500_pio_attr,
 	NULL,
@@ -670,6 +752,19 @@ static struct device_attribute *SYM53C500_shost_attrs[] = {
 *  scsi_host_template initializer
 */
 static struct scsi_host_template sym53c500_driver_template = {
+=======
+static struct attribute *SYM53C500_shost_attrs[] = {
+	&SYM53C500_pio_attr.attr,
+	NULL,
+};
+
+ATTRIBUTE_GROUPS(SYM53C500_shost);
+
+/*
+*  scsi_host_template initializer
+*/
+static const struct scsi_host_template sym53c500_driver_template = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
      .module			= THIS_MODULE,
      .name			= "SYM53C500",
      .info			= SYM53C500_info,
@@ -680,9 +775,14 @@ static struct scsi_host_template sym53c500_driver_template = {
      .can_queue			= 1,
      .this_id			= 7,
      .sg_tablesize		= 32,
+<<<<<<< HEAD
      .cmd_per_lun		= 1,
      .use_clustering		= ENABLE_CLUSTERING,
      .shost_attrs		= SYM53C500_shost_attrs
+=======
+     .shost_groups		= SYM53C500_shost_groups,
+     .cmd_size			= sizeof(struct sym53c500_cmd_priv),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int SYM53C500_config_check(struct pcmcia_device *p_dev, void *priv_data)
@@ -704,7 +804,11 @@ SYM53C500_config(struct pcmcia_device *link)
 	int ret;
 	int irq_level, port_base;
 	struct Scsi_Host *host;
+<<<<<<< HEAD
 	struct scsi_host_template *tpnt = &sym53c500_driver_template;
+=======
+	const struct scsi_host_template *tpnt = &sym53c500_driver_template;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sym53c500_data *data;
 
 	dev_dbg(&link->dev, "SYM53C500_config\n");
@@ -881,6 +985,7 @@ static struct pcmcia_driver sym53c500_cs_driver = {
 	.id_table       = sym53c500_ids,
 	.resume		= sym53c500_resume,
 };
+<<<<<<< HEAD
 
 static int __init
 init_sym53c500_cs(void)
@@ -896,3 +1001,6 @@ exit_sym53c500_cs(void)
 
 module_init(init_sym53c500_cs);
 module_exit(exit_sym53c500_cs);
+=======
+module_pcmcia_driver(sym53c500_cs_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

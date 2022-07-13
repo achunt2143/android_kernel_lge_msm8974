@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Linux network driver for Brocade Converged Network Adapter.
  *
@@ -14,6 +15,17 @@
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
  * www.brocade.com
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Linux network driver for QLogic BR-series Converged Network Adapter.
+ */
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014-2015 QLogic Corporation
+ * All rights reserved
+ * www.qlogic.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "cna.h"
@@ -30,6 +42,7 @@
 #define BNAD_NUM_TXF_COUNTERS 12
 #define BNAD_NUM_RXF_COUNTERS 10
 #define BNAD_NUM_CQ_COUNTERS (3 + 5)
+<<<<<<< HEAD
 #define BNAD_NUM_RXQ_COUNTERS 6
 #define BNAD_NUM_TXQ_COUNTERS 5
 
@@ -39,6 +52,12 @@
 	offsetof(struct bfi_enet_stats, rxf_stats[0]) / sizeof(u64))
 
 static const char *bnad_net_stats_strings[BNAD_ETHTOOL_STATS_NUM] = {
+=======
+#define BNAD_NUM_RXQ_COUNTERS 7
+#define BNAD_NUM_TXQ_COUNTERS 5
+
+static const char *bnad_net_stats_strings[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"rx_packets",
 	"tx_packets",
 	"rx_bytes",
@@ -49,6 +68,7 @@ static const char *bnad_net_stats_strings[BNAD_ETHTOOL_STATS_NUM] = {
 	"tx_dropped",
 	"multicast",
 	"collisions",
+<<<<<<< HEAD
 
 	"rx_length_errors",
 	"rx_over_errors",
@@ -65,6 +85,12 @@ static const char *bnad_net_stats_strings[BNAD_ETHTOOL_STATS_NUM] = {
 
 	"rx_compressed",
 	"tx_compressed",
+=======
+	"rx_length_errors",
+	"rx_crc_errors",
+	"rx_frame_errors",
+	"tx_fifo_errors",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	"netif_queue_stop",
 	"netif_queue_wakeup",
@@ -89,6 +115,10 @@ static const char *bnad_net_stats_strings[BNAD_ETHTOOL_STATS_NUM] = {
 	"tx_skb_headlen_zero",
 	"tx_skb_frag_zero",
 	"tx_skb_len_mismatch",
+<<<<<<< HEAD
+=======
+	"tx_skb_map_failed",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"hw_stats_updates",
 	"netif_rx_dropped",
 
@@ -101,7 +131,13 @@ static const char *bnad_net_stats_strings[BNAD_ETHTOOL_STATS_NUM] = {
 	"tx_unmap_q_alloc_failed",
 	"rx_unmap_q_alloc_failed",
 	"rxbuf_alloc_failed",
+<<<<<<< HEAD
 
+=======
+	"rxbuf_map_failed",
+
+	"mac_stats_clr_cnt",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"mac_frame_64",
 	"mac_frame_65_127",
 	"mac_frame_128_255",
@@ -135,7 +171,11 @@ static const char *bnad_net_stats_strings[BNAD_ETHTOOL_STATS_NUM] = {
 	"mac_tx_deferral",
 	"mac_tx_excessive_deferral",
 	"mac_tx_single_collision",
+<<<<<<< HEAD
 	"mac_tx_muliple_collision",
+=======
+	"mac_tx_multiple_collision",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"mac_tx_late_collision",
 	"mac_tx_excessive_collision",
 	"mac_tx_total_collision",
@@ -250,6 +290,7 @@ static const char *bnad_net_stats_strings[BNAD_ETHTOOL_STATS_NUM] = {
 	"fc_tx_fid_parity_errors",
 };
 
+<<<<<<< HEAD
 static int
 bnad_get_settings(struct net_device *netdev, struct ethtool_cmd *cmd)
 {
@@ -271,11 +312,42 @@ bnad_get_settings(struct net_device *netdev, struct ethtool_cmd *cmd)
 	cmd->transceiver = XCVR_EXTERNAL;
 	cmd->maxtxpkt = 0;
 	cmd->maxrxpkt = 0;
+=======
+#define BNAD_ETHTOOL_STATS_NUM	ARRAY_SIZE(bnad_net_stats_strings)
+
+static int
+bnad_get_link_ksettings(struct net_device *netdev,
+			struct ethtool_link_ksettings *cmd)
+{
+	ethtool_link_ksettings_zero_link_mode(cmd, supported);
+	ethtool_link_ksettings_zero_link_mode(cmd, advertising);
+
+	ethtool_link_ksettings_add_link_mode(cmd, supported, 10000baseCR_Full);
+	ethtool_link_ksettings_add_link_mode(cmd, supported, 10000baseSR_Full);
+	ethtool_link_ksettings_add_link_mode(cmd, supported, 10000baseLR_Full);
+	ethtool_link_ksettings_add_link_mode(cmd, advertising, 10000baseCR_Full);
+	ethtool_link_ksettings_add_link_mode(cmd, advertising, 10000baseSR_Full);
+	ethtool_link_ksettings_add_link_mode(cmd, advertising, 10000baseLR_Full);
+	cmd->base.autoneg = AUTONEG_DISABLE;
+	ethtool_link_ksettings_add_link_mode(cmd, supported, FIBRE);
+	ethtool_link_ksettings_add_link_mode(cmd, advertising, FIBRE);
+	cmd->base.port = PORT_FIBRE;
+	cmd->base.phy_address = 0;
+
+	if (netif_carrier_ok(netdev)) {
+		cmd->base.speed = SPEED_10000;
+		cmd->base.duplex = DUPLEX_FULL;
+	} else {
+		cmd->base.speed = SPEED_UNKNOWN;
+		cmd->base.duplex = DUPLEX_UNKNOWN;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static int
+<<<<<<< HEAD
 bnad_set_settings(struct net_device *netdev, struct ethtool_cmd *cmd)
 {
 	/* 10G full duplex setting supported only */
@@ -285,6 +357,18 @@ bnad_set_settings(struct net_device *netdev, struct ethtool_cmd *cmd)
 		    && (cmd->duplex == DUPLEX_FULL))
 			return 0;
 	}
+=======
+bnad_set_link_ksettings(struct net_device *netdev,
+			const struct ethtool_link_ksettings *cmd)
+{
+	/* 10G full duplex setting supported only */
+	if (cmd->base.autoneg == AUTONEG_ENABLE)
+		return -EOPNOTSUPP;
+
+	if ((cmd->base.speed == SPEED_10000) &&
+	    (cmd->base.duplex == DUPLEX_FULL))
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return -EOPNOTSUPP;
 }
@@ -296,8 +380,12 @@ bnad_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
 	struct bfa_ioc_attr *ioc_attr;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	strlcpy(drvinfo->driver, BNAD_NAME, sizeof(drvinfo->driver));
 	strlcpy(drvinfo->version, BNAD_VERSION, sizeof(drvinfo->version));
+=======
+	strscpy(drvinfo->driver, BNAD_NAME, sizeof(drvinfo->driver));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ioc_attr = kzalloc(sizeof(*ioc_attr), GFP_KERNEL);
 	if (ioc_attr) {
@@ -305,12 +393,20 @@ bnad_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo)
 		bfa_nw_ioc_get_attr(&bnad->bna.ioceth.ioc, ioc_attr);
 		spin_unlock_irqrestore(&bnad->bna_lock, flags);
 
+<<<<<<< HEAD
 		strlcpy(drvinfo->fw_version, ioc_attr->adapter_attr.fw_ver,
+=======
+		strscpy(drvinfo->fw_version, ioc_attr->adapter_attr.fw_ver,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(drvinfo->fw_version));
 		kfree(ioc_attr);
 	}
 
+<<<<<<< HEAD
 	strlcpy(drvinfo->bus_info, pci_name(bnad->pcidev),
+=======
+	strscpy(drvinfo->bus_info, pci_name(bnad->pcidev),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sizeof(drvinfo->bus_info));
 }
 
@@ -321,8 +417,15 @@ bnad_get_wol(struct net_device *netdev, struct ethtool_wolinfo *wolinfo)
 	wolinfo->wolopts = 0;
 }
 
+<<<<<<< HEAD
 static int
 bnad_get_coalesce(struct net_device *netdev, struct ethtool_coalesce *coalesce)
+=======
+static int bnad_get_coalesce(struct net_device *netdev,
+			     struct ethtool_coalesce *coalesce,
+			     struct kernel_ethtool_coalesce *kernel_coal,
+			     struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnad *bnad = netdev_priv(netdev);
 	unsigned long flags;
@@ -342,8 +445,15 @@ bnad_get_coalesce(struct net_device *netdev, struct ethtool_coalesce *coalesce)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int
 bnad_set_coalesce(struct net_device *netdev, struct ethtool_coalesce *coalesce)
+=======
+static int bnad_set_coalesce(struct net_device *netdev,
+			     struct ethtool_coalesce *coalesce,
+			     struct kernel_ethtool_coalesce *kernel_coal,
+			     struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnad *bnad = netdev_priv(netdev);
 	unsigned long flags;
@@ -415,7 +525,13 @@ bnad_set_coalesce(struct net_device *netdev, struct ethtool_coalesce *coalesce)
 
 static void
 bnad_get_ringparam(struct net_device *netdev,
+<<<<<<< HEAD
 		   struct ethtool_ringparam *ringparam)
+=======
+		   struct ethtool_ringparam *ringparam,
+		   struct kernel_ethtool_ringparam *kernel_ringparam,
+		   struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnad *bnad = netdev_priv(netdev);
 
@@ -428,7 +544,13 @@ bnad_get_ringparam(struct net_device *netdev,
 
 static int
 bnad_set_ringparam(struct net_device *netdev,
+<<<<<<< HEAD
 		   struct ethtool_ringparam *ringparam)
+=======
+		   struct ethtool_ringparam *ringparam,
+		   struct kernel_ethtool_ringparam *kernel_ringparam,
+		   struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, current_err, err = 0;
 	struct bnad *bnad = netdev_priv(netdev);
@@ -443,13 +565,21 @@ bnad_set_ringparam(struct net_device *netdev,
 
 	if (ringparam->rx_pending < BNAD_MIN_Q_DEPTH ||
 	    ringparam->rx_pending > BNAD_MAX_RXQ_DEPTH ||
+<<<<<<< HEAD
 	    !BNA_POWER_OF_2(ringparam->rx_pending)) {
+=======
+	    !is_power_of_2(ringparam->rx_pending)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&bnad->conf_mutex);
 		return -EINVAL;
 	}
 	if (ringparam->tx_pending < BNAD_MIN_Q_DEPTH ||
 	    ringparam->tx_pending > BNAD_MAX_TXQ_DEPTH ||
+<<<<<<< HEAD
 	    !BNA_POWER_OF_2(ringparam->tx_pending)) {
+=======
+	    !is_power_of_2(ringparam->tx_pending)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mutex_unlock(&bnad->conf_mutex);
 		return -EINVAL;
 	}
@@ -464,7 +594,11 @@ bnad_set_ringparam(struct net_device *netdev,
 		for (i = 0; i < bnad->num_rx; i++) {
 			if (!bnad->rx_info[i].rx)
 				continue;
+<<<<<<< HEAD
 			bnad_cleanup_rx(bnad, i);
+=======
+			bnad_destroy_rx(bnad, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			current_err = bnad_setup_rx(bnad, i);
 			if (current_err && !err)
 				err = current_err;
@@ -492,7 +626,11 @@ bnad_set_ringparam(struct net_device *netdev,
 		for (i = 0; i < bnad->num_tx; i++) {
 			if (!bnad->tx_info[i].tx)
 				continue;
+<<<<<<< HEAD
 			bnad_cleanup_tx(bnad, i);
+=======
+			bnad_destroy_tx(bnad, i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			current_err = bnad_setup_tx(bnad, i);
 			if (current_err && !err)
 				err = current_err;
@@ -531,20 +669,92 @@ bnad_set_pauseparam(struct net_device *netdev,
 		pause_config.rx_pause = pauseparam->rx_pause;
 		pause_config.tx_pause = pauseparam->tx_pause;
 		spin_lock_irqsave(&bnad->bna_lock, flags);
+<<<<<<< HEAD
 		bna_enet_pause_config(&bnad->bna.enet, &pause_config, NULL);
+=======
+		bna_enet_pause_config(&bnad->bna.enet, &pause_config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(&bnad->bna_lock, flags);
 	}
 	mutex_unlock(&bnad->conf_mutex);
 	return 0;
 }
 
+<<<<<<< HEAD
 static void
 bnad_get_strings(struct net_device *netdev, u32 stringset, u8 * string)
+=======
+static void bnad_get_txf_strings(u8 **string, int f_num)
+{
+	ethtool_sprintf(string, "txf%d_ucast_octets", f_num);
+	ethtool_sprintf(string, "txf%d_ucast", f_num);
+	ethtool_sprintf(string, "txf%d_ucast_vlan", f_num);
+	ethtool_sprintf(string, "txf%d_mcast_octets", f_num);
+	ethtool_sprintf(string, "txf%d_mcast", f_num);
+	ethtool_sprintf(string, "txf%d_mcast_vlan", f_num);
+	ethtool_sprintf(string, "txf%d_bcast_octets", f_num);
+	ethtool_sprintf(string, "txf%d_bcast", f_num);
+	ethtool_sprintf(string, "txf%d_bcast_vlan", f_num);
+	ethtool_sprintf(string, "txf%d_errors", f_num);
+	ethtool_sprintf(string, "txf%d_filter_vlan", f_num);
+	ethtool_sprintf(string, "txf%d_filter_mac_sa", f_num);
+}
+
+static void bnad_get_rxf_strings(u8 **string, int f_num)
+{
+	ethtool_sprintf(string, "rxf%d_ucast_octets", f_num);
+	ethtool_sprintf(string, "rxf%d_ucast", f_num);
+	ethtool_sprintf(string, "rxf%d_ucast_vlan", f_num);
+	ethtool_sprintf(string, "rxf%d_mcast_octets", f_num);
+	ethtool_sprintf(string, "rxf%d_mcast", f_num);
+	ethtool_sprintf(string, "rxf%d_mcast_vlan", f_num);
+	ethtool_sprintf(string, "rxf%d_bcast_octets", f_num);
+	ethtool_sprintf(string, "rxf%d_bcast", f_num);
+	ethtool_sprintf(string, "rxf%d_bcast_vlan", f_num);
+	ethtool_sprintf(string, "rxf%d_frame_drops", f_num);
+}
+
+static void bnad_get_cq_strings(u8 **string, int q_num)
+{
+	ethtool_sprintf(string, "cq%d_producer_index", q_num);
+	ethtool_sprintf(string, "cq%d_consumer_index", q_num);
+	ethtool_sprintf(string, "cq%d_hw_producer_index", q_num);
+	ethtool_sprintf(string, "cq%d_intr", q_num);
+	ethtool_sprintf(string, "cq%d_poll", q_num);
+	ethtool_sprintf(string, "cq%d_schedule", q_num);
+	ethtool_sprintf(string, "cq%d_keep_poll", q_num);
+	ethtool_sprintf(string, "cq%d_complete", q_num);
+}
+
+static void bnad_get_rxq_strings(u8 **string, int q_num)
+{
+	ethtool_sprintf(string, "rxq%d_packets", q_num);
+	ethtool_sprintf(string, "rxq%d_bytes", q_num);
+	ethtool_sprintf(string, "rxq%d_packets_with_error", q_num);
+	ethtool_sprintf(string, "rxq%d_allocbuf_failed", q_num);
+	ethtool_sprintf(string, "rxq%d_mapbuf_failed", q_num);
+	ethtool_sprintf(string, "rxq%d_producer_index", q_num);
+	ethtool_sprintf(string, "rxq%d_consumer_index", q_num);
+}
+
+static void bnad_get_txq_strings(u8 **string, int q_num)
+{
+	ethtool_sprintf(string, "txq%d_packets", q_num);
+	ethtool_sprintf(string, "txq%d_bytes", q_num);
+	ethtool_sprintf(string, "txq%d_producer_index", q_num);
+	ethtool_sprintf(string, "txq%d_consumer_index", q_num);
+	ethtool_sprintf(string, "txq%d_hw_consumer_index", q_num);
+}
+
+static void
+bnad_get_strings(struct net_device *netdev, u32 stringset, u8 *string)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bnad *bnad = netdev_priv(netdev);
 	int i, j, q_num;
 	u32 bmap;
 
+<<<<<<< HEAD
 	mutex_lock(&bnad->conf_mutex);
 
 	switch (stringset) {
@@ -709,6 +919,59 @@ bnad_get_strings(struct net_device *netdev, u32 stringset, u8 * string)
 
 	default:
 		break;
+=======
+	if (stringset != ETH_SS_STATS)
+		return;
+
+	mutex_lock(&bnad->conf_mutex);
+
+	for (i = 0; i < BNAD_ETHTOOL_STATS_NUM; i++) {
+		BUG_ON(!(strlen(bnad_net_stats_strings[i]) < ETH_GSTRING_LEN));
+		ethtool_puts(&string, bnad_net_stats_strings[i]);
+	}
+
+	bmap = bna_tx_rid_mask(&bnad->bna);
+	for (i = 0; bmap; i++) {
+		if (bmap & 1)
+			bnad_get_txf_strings(&string, i);
+		bmap >>= 1;
+	}
+
+	bmap = bna_rx_rid_mask(&bnad->bna);
+	for (i = 0; bmap; i++, bmap >>= 1) {
+		if (bmap & 1)
+			bnad_get_rxf_strings(&string, i);
+		bmap >>= 1;
+	}
+
+	q_num = 0;
+	for (i = 0; i < bnad->num_rx; i++) {
+		if (!bnad->rx_info[i].rx)
+			continue;
+		for (j = 0; j < bnad->num_rxp_per_rx; j++)
+			bnad_get_cq_strings(&string, q_num++);
+	}
+
+	q_num = 0;
+	for (i = 0; i < bnad->num_rx; i++) {
+		if (!bnad->rx_info[i].rx)
+			continue;
+		for (j = 0; j < bnad->num_rxp_per_rx; j++) {
+			bnad_get_rxq_strings(&string, q_num++);
+			if (bnad->rx_info[i].rx_ctrl[j].ccb &&
+			    bnad->rx_info[i].rx_ctrl[j].ccb->rcb[1] &&
+			    bnad->rx_info[i].rx_ctrl[j].ccb->rcb[1]->rxq)
+				bnad_get_rxq_strings(&string, q_num++);
+		}
+	}
+
+	q_num = 0;
+	for (i = 0; i < bnad->num_tx; i++) {
+		if (!bnad->tx_info[i].tx)
+			continue;
+		for (j = 0; j < bnad->num_txq_per_tx; j++)
+			bnad_get_txq_strings(&string, q_num++);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&bnad->conf_mutex);
@@ -805,6 +1068,10 @@ bnad_per_q_stats_fill(struct bnad *bnad, u64 *buf, int bi)
 							rx_packets_with_error;
 					buf[bi++] = rcb->rxq->
 							rxbuf_alloc_failed;
+<<<<<<< HEAD
+=======
+					buf[bi++] = rcb->rxq->rxbuf_map_failed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					buf[bi++] = rcb->producer_index;
 					buf[bi++] = rcb->consumer_index;
 				}
@@ -819,6 +1086,10 @@ bnad_per_q_stats_fill(struct bnad *bnad, u64 *buf, int bi)
 							rx_packets_with_error;
 					buf[bi++] = rcb->rxq->
 							rxbuf_alloc_failed;
+<<<<<<< HEAD
+=======
+					buf[bi++] = rcb->rxq->rxbuf_map_failed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					buf[bi++] = rcb->producer_index;
 					buf[bi++] = rcb->consumer_index;
 				}
@@ -848,9 +1119,15 @@ bnad_get_ethtool_stats(struct net_device *netdev, struct ethtool_stats *stats,
 		       u64 *buf)
 {
 	struct bnad *bnad = netdev_priv(netdev);
+<<<<<<< HEAD
 	int i, j, bi;
 	unsigned long flags;
 	struct rtnl_link_stats64 *net_stats64;
+=======
+	int i, j, bi = 0;
+	unsigned long flags;
+	struct rtnl_link_stats64 net_stats64;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 *stats64;
 	u32 bmap;
 
@@ -865,6 +1142,7 @@ bnad_get_ethtool_stats(struct net_device *netdev, struct ethtool_stats *stats,
 	 * under the same lock
 	 */
 	spin_lock_irqsave(&bnad->bna_lock, flags);
+<<<<<<< HEAD
 	bi = 0;
 	memset(buf, 0, stats->n_stats * sizeof(u64));
 
@@ -873,6 +1151,27 @@ bnad_get_ethtool_stats(struct net_device *netdev, struct ethtool_stats *stats,
 	bnad_netdev_hwstats_fill(bnad, net_stats64);
 
 	bi = sizeof(*net_stats64) / sizeof(u64);
+=======
+
+	memset(&net_stats64, 0, sizeof(net_stats64));
+	bnad_netdev_qstats_fill(bnad, &net_stats64);
+	bnad_netdev_hwstats_fill(bnad, &net_stats64);
+
+	buf[bi++] = net_stats64.rx_packets;
+	buf[bi++] = net_stats64.tx_packets;
+	buf[bi++] = net_stats64.rx_bytes;
+	buf[bi++] = net_stats64.tx_bytes;
+	buf[bi++] = net_stats64.rx_errors;
+	buf[bi++] = net_stats64.tx_errors;
+	buf[bi++] = net_stats64.rx_dropped;
+	buf[bi++] = net_stats64.tx_dropped;
+	buf[bi++] = net_stats64.multicast;
+	buf[bi++] = net_stats64.collisions;
+	buf[bi++] = net_stats64.rx_length_errors;
+	buf[bi++] = net_stats64.rx_crc_errors;
+	buf[bi++] = net_stats64.rx_frame_errors;
+	buf[bi++] = net_stats64.tx_fifo_errors;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Get netif_queue_stopped from stack */
 	bnad->stats.drv_stats.netif_queue_stopped = netif_queue_stopped(netdev);
@@ -996,10 +1295,15 @@ bnad_get_eeprom(struct net_device *netdev, struct ethtool_eeprom *eeprom,
 	unsigned long flags = 0;
 	int ret = 0;
 
+<<<<<<< HEAD
 	/* Check if the flash read request is valid */
 	if (eeprom->magic != (bnad->pcidev->vendor |
 			     (bnad->pcidev->device << 16)))
 		return -EFAULT;
+=======
+	/* Fill the magic value */
+	eeprom->magic = bnad->pcidev->vendor | (bnad->pcidev->device << 16);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Query the flash partition based on the offset */
 	flash_part = bnad_get_flash_partition_by_offset(bnad,
@@ -1080,7 +1384,11 @@ bnad_flash_device(struct net_device *netdev, struct ethtool_flash *eflash)
 
 	ret = request_firmware(&fw, eflash->data, &bnad->pcidev->dev);
 	if (ret) {
+<<<<<<< HEAD
 		pr_err("BNA: Can't locate firmware %s\n", eflash->data);
+=======
+		netdev_err(netdev, "can't load firmware %s\n", eflash->data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -1093,7 +1401,11 @@ bnad_flash_device(struct net_device *netdev, struct ethtool_flash *eflash)
 				bnad->id, (u8 *)fw->data, fw->size, 0,
 				bnad_cb_completion, &fcomp);
 	if (ret != BFA_STATUS_OK) {
+<<<<<<< HEAD
 		pr_warn("BNA: Flash update failed with err: %d\n", ret);
+=======
+		netdev_warn(netdev, "flash update failed with err=%d\n", ret);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -EIO;
 		spin_unlock_irq(&bnad->bna_lock);
 		goto out;
@@ -1103,8 +1415,14 @@ bnad_flash_device(struct net_device *netdev, struct ethtool_flash *eflash)
 	wait_for_completion(&fcomp.comp);
 	if (fcomp.comp_status != BFA_STATUS_OK) {
 		ret = -EIO;
+<<<<<<< HEAD
 		pr_warn("BNA: Firmware image update to flash failed with: %d\n",
 			fcomp.comp_status);
+=======
+		netdev_warn(netdev,
+			    "firmware image update failed with err=%d\n",
+			    fcomp.comp_status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 out:
 	release_firmware(fw);
@@ -1112,8 +1430,14 @@ out:
 }
 
 static const struct ethtool_ops bnad_ethtool_ops = {
+<<<<<<< HEAD
 	.get_settings = bnad_get_settings,
 	.set_settings = bnad_set_settings,
+=======
+	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+				     ETHTOOL_COALESCE_TX_MAX_FRAMES |
+				     ETHTOOL_COALESCE_USE_ADAPTIVE_RX,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo = bnad_get_drvinfo,
 	.get_wol = bnad_get_wol,
 	.get_link = ethtool_op_get_link,
@@ -1130,10 +1454,20 @@ static const struct ethtool_ops bnad_ethtool_ops = {
 	.get_eeprom = bnad_get_eeprom,
 	.set_eeprom = bnad_set_eeprom,
 	.flash_device = bnad_flash_device,
+<<<<<<< HEAD
+=======
+	.get_ts_info = ethtool_op_get_ts_info,
+	.get_link_ksettings = bnad_get_link_ksettings,
+	.set_link_ksettings = bnad_set_link_ksettings,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void
 bnad_set_ethtool_ops(struct net_device *netdev)
 {
+<<<<<<< HEAD
 	SET_ETHTOOL_OPS(netdev, &bnad_ethtool_ops);
+=======
+	netdev->ethtool_ops = &bnad_ethtool_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

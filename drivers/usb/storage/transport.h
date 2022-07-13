@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 /* Driver for USB Mass Storage compliant devices
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+/*
+ * Driver for USB Mass Storage compliant devices
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Transport Functions Header File
  *
  * Current development and maintenance by:
@@ -17,6 +23,7 @@
  *
  * Also, for certain devices, the interrupt endpoint is used to convey
  * status of a command.
+<<<<<<< HEAD
  *
  * Please see http://www.one-eyed-alien.net/~mdharm/linux-usb for more
  * information about this driver.
@@ -34,6 +41,8 @@
  * You should have received a copy of the GNU General Public License along
  * with this program; if not, write to the Free Software Foundation, Inc.,
  * 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _TRANSPORT_H_

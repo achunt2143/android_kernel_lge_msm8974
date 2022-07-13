@@ -2,9 +2,16 @@
  * ecma_167.h
  *
  * This file is based on ECMA-167 3rd edition (June 1997)
+<<<<<<< HEAD
  * http://www.ecma.ch
  *
  * Copyright (c) 2001-2002  Ben Fennema <bfennema@falcon.csc.calpoly.edu>
+=======
+ * https://www.ecma.ch
+ *
+ * Copyright (c) 2001-2002  Ben Fennema
+ * Copyright (c) 2017-2019  Pali Rohár <pali@kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -32,16 +39,34 @@
  * SUCH DAMAGE.
  */
 
+<<<<<<< HEAD
+=======
+/**
+ * @file
+ * ECMA-167r3 defines and structure definitions
+ */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/types.h>
 
 #ifndef _ECMA_167_H
 #define _ECMA_167_H 1
 
+<<<<<<< HEAD
+=======
+/* Character sets and coding - d-characters (ECMA 167r3 1/7.2) */
+typedef uint8_t		dchars;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Character set specification (ECMA 167r3 1/7.2.1) */
 struct charspec {
 	uint8_t		charSetType;
 	uint8_t		charSetInfo[63];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Character Set Type (ECMA 167r3 1/7.2.1.1) */
 #define CHARSPEC_TYPE_CS0		0x00	/* (1/7.2.2) */
@@ -54,6 +79,10 @@ struct charspec {
 #define CHARSPEC_TYPE_CS7		0x07	/* (1/7.2.9) */
 #define CHARSPEC_TYPE_CS8		0x08	/* (1/7.2.10) */
 
+<<<<<<< HEAD
+=======
+/* Fixed-length character fields - d-string (EMCA 167r3 1/7.2.12) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 typedef uint8_t		dstring;
 
 /* Timestamp (ECMA 167r3 1/7.3) */
@@ -68,7 +97,11 @@ struct timestamp {
 	uint8_t		centiseconds;
 	uint8_t		hundredsOfMicroseconds;
 	uint8_t		microseconds;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Type and Time Zone (ECMA 167r3 1/7.3.1) */
 #define TIMESTAMP_TYPE_MASK		0xF000
@@ -82,11 +115,19 @@ struct regid {
 	uint8_t		flags;
 	uint8_t		ident[23];
 	uint8_t		identSuffix[8];
+<<<<<<< HEAD
 } __attribute__ ((packed));
 
 /* Flags (ECMA 167r3 1/7.4.1) */
 #define ENTITYID_FLAGS_DIRTY		0x00
 #define ENTITYID_FLAGS_PROTECTED	0x01
+=======
+} __packed;
+
+/* Flags (ECMA 167r3 1/7.4.1) */
+#define ENTITYID_FLAGS_DIRTY		0x01
+#define ENTITYID_FLAGS_PROTECTED	0x02
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Volume Structure Descriptor (ECMA 167r3 2/9.1) */
 #define VSD_STD_ID_LEN			5
@@ -95,7 +136,11 @@ struct volStructDesc {
 	uint8_t		stdIdent[VSD_STD_ID_LEN];
 	uint8_t		structVersion;
 	uint8_t		structData[2041];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Standard Identifier (EMCA 167r2 2/9.1.2) */
 #define VSD_STD_ID_NSR02		"NSR02"	/* (3/9.1) */
@@ -114,7 +159,11 @@ struct beginningExtendedAreaDesc {
 	uint8_t		stdIdent[VSD_STD_ID_LEN];
 	uint8_t		structVersion;
 	uint8_t		structData[2041];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Terminating Extended Area Descriptor (ECMA 167r3 2/9.3) */
 struct terminatingExtendedAreaDesc {
@@ -122,7 +171,11 @@ struct terminatingExtendedAreaDesc {
 	uint8_t		stdIdent[VSD_STD_ID_LEN];
 	uint8_t		structVersion;
 	uint8_t		structData[2041];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Boot Descriptor (ECMA 167r3 2/9.4) */
 struct bootDesc {
@@ -140,7 +193,11 @@ struct bootDesc {
 	__le16			flags;
 	uint8_t			reserved2[32];
 	uint8_t			bootUse[1906];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flags (ECMA 167r3 2/9.4.12) */
 #define BOOT_FLAGS_ERASE		0x01
@@ -149,7 +206,11 @@ struct bootDesc {
 struct extent_ad {
 	__le32		extLength;
 	__le32		extLocation;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct kernel_extent_ad {
 	uint32_t	extLength;
@@ -166,7 +227,11 @@ struct tag {
 	__le16		descCRC;
 	__le16		descCRCLength;
 	__le32		tagLocation;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Tag Identifier (ECMA 167r3 3/7.2.1) */
 #define TAG_IDENT_PVD			0x0001
@@ -186,7 +251,18 @@ struct NSRDesc {
 	uint8_t		structVersion;
 	uint8_t		reserved;
 	uint8_t		structData[2040];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+
+/* Generic Descriptor */
+struct genericDesc {
+	struct tag	descTag;
+	__le32		volDescSeqNum;
+	uint8_t		reserved[492];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Primary Volume Descriptor (ECMA 167r3 3/10.1) */
 struct primaryVolDesc {
@@ -212,7 +288,11 @@ struct primaryVolDesc {
 	__le32			predecessorVolDescSeqLocation;
 	__le16			flags;
 	uint8_t			reserved[22];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Flags (ECMA 167r3 3/10.1.21) */
 #define PVD_FLAGS_VSID_COMMON		0x0001
@@ -223,7 +303,11 @@ struct anchorVolDescPtr {
 	struct extent_ad	mainVolDescSeqExt;
 	struct extent_ad	reserveVolDescSeqExt;
 	uint8_t	 		reserved[480];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Volume Descriptor Pointer (ECMA 167r3 3/10.3) */
 struct volDescPtr {
@@ -231,7 +315,11 @@ struct volDescPtr {
 	__le32			volDescSeqNum;
 	struct extent_ad	nextVolDescSeqExt;
 	uint8_t			reserved[484];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Implementation Use Volume Descriptor (ECMA 167r3 3/10.4) */
 struct impUseVolDesc {
@@ -239,7 +327,11 @@ struct impUseVolDesc {
 	__le32		volDescSeqNum;
 	struct regid	impIdent;
 	uint8_t		impUse[460];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Partition Descriptor (ECMA 167r3 3/10.5) */
 struct partitionDesc {
@@ -255,7 +347,11 @@ struct partitionDesc {
 	struct regid impIdent;
 	uint8_t impUse[128];
 	uint8_t reserved[156];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Partition Flags (ECMA 167r3 3/10.5.3) */
 #define PD_PARTITION_FLAGS_ALLOC	0x0001
@@ -290,19 +386,33 @@ struct logicalVolDesc {
 	struct regid		impIdent;
 	uint8_t			impUse[128];
 	struct extent_ad	integritySeqExt;
+<<<<<<< HEAD
 	uint8_t			partitionMaps[0];
 } __attribute__ ((packed));
+=======
+	uint8_t			partitionMaps[];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Generic Partition Map (ECMA 167r3 3/10.7.1) */
 struct genericPartitionMap {
 	uint8_t		partitionMapType;
 	uint8_t		partitionMapLength;
+<<<<<<< HEAD
 	uint8_t		partitionMapping[0];
 } __attribute__ ((packed));
 
 /* Partition Map Type (ECMA 167r3 3/10.7.1.1) */
 #define GP_PARTITION_MAP_TYPE_UNDEF	0x00
 #define GP_PARTIITON_MAP_TYPE_1		0x01
+=======
+	uint8_t		partitionMapping[];
+} __packed;
+
+/* Partition Map Type (ECMA 167r3 3/10.7.1.1) */
+#define GP_PARTITION_MAP_TYPE_UNDEF	0x00
+#define GP_PARTITION_MAP_TYPE_1		0x01
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define GP_PARTITION_MAP_TYPE_2		0x02
 
 /* Type 1 Partition Map (ECMA 167r3 3/10.7.2) */
@@ -311,28 +421,45 @@ struct genericPartitionMap1 {
 	uint8_t		partitionMapLength;
 	__le16		volSeqNum;
 	__le16		partitionNum;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Type 2 Partition Map (ECMA 167r3 3/10.7.3) */
 struct genericPartitionMap2 {
 	uint8_t		partitionMapType;
 	uint8_t		partitionMapLength;
 	uint8_t		partitionIdent[62];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Unallocated Space Descriptor (ECMA 167r3 3/10.8) */
 struct unallocSpaceDesc {
 	struct tag		descTag;
 	__le32			volDescSeqNum;
 	__le32			numAllocDescs;
+<<<<<<< HEAD
 	struct extent_ad	allocDescs[0];
 } __attribute__ ((packed));
+=======
+	struct extent_ad	allocDescs[];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Terminating Descriptor (ECMA 167r3 3/10.9) */
 struct terminatingDesc {
 	struct tag	descTag;
 	uint8_t		reserved[496];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Logical Volume Integrity Descriptor (ECMA 167r3 3/10.10) */
 struct logicalVolIntegrityDesc {
@@ -343,10 +470,17 @@ struct logicalVolIntegrityDesc {
 	uint8_t			logicalVolContentsUse[32];
 	__le32			numOfPartitions;
 	__le32			lengthOfImpUse;
+<<<<<<< HEAD
 	__le32			freeSpaceTable[0];
 	__le32			sizeTable[0];
 	uint8_t			impUse[0];
 } __attribute__ ((packed));
+=======
+	__le32			freeSpaceTable[];
+	/* __le32		sizeTable[]; */
+	/* uint8_t		impUse[]; */
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Integrity Type (ECMA 167r3 3/10.10.3) */
 #define LVID_INTEGRITY_TYPE_OPEN	0x00000000
@@ -356,7 +490,11 @@ struct logicalVolIntegrityDesc {
 struct lb_addr {
 	__le32		logicalBlockNum;
 	__le16	 	partitionReferenceNum;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ... and its in-core analog */
 struct kernel_lb_addr {
@@ -368,14 +506,22 @@ struct kernel_lb_addr {
 struct short_ad {
         __le32		extLength;
         __le32		extPosition;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Long Allocation Descriptor (ECMA 167r3 4/14.14.2) */
 struct long_ad {
 	__le32		extLength;
 	struct lb_addr	extLocation;
 	uint8_t		impUse[6];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct kernel_long_ad {
 	uint32_t		extLength;
@@ -389,7 +535,11 @@ struct ext_ad {
 	__le32		recordedLength;
 	__le32		informationLength;
 	struct lb_addr	extLocation;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct kernel_ext_ad {
 	uint32_t		extLength;
@@ -434,7 +584,11 @@ struct fileSetDesc {
 	struct long_ad		nextExt;
 	struct long_ad		streamDirectoryICB;
 	uint8_t			reserved[32];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Partition Header Descriptor (ECMA 167r3 4/14.3) */
 struct partitionHeaderDesc {
@@ -444,7 +598,11 @@ struct partitionHeaderDesc {
 	struct short_ad	freedSpaceTable;
 	struct short_ad	freedSpaceBitmap;
 	uint8_t		reserved[88];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* File Identifier Descriptor (ECMA 167r3 4/14.4) */
 struct fileIdentDesc {
@@ -454,10 +612,17 @@ struct fileIdentDesc {
 	uint8_t		lengthFileIdent;
 	struct long_ad	icb;
 	__le16		lengthOfImpUse;
+<<<<<<< HEAD
 	uint8_t		impUse[0];
 	uint8_t		fileIdent[0];
 	uint8_t		padding[0];
 } __attribute__ ((packed));
+=======
+	/* uint8_t	impUse[]; */
+	/* uint8_t	fileIdent[]; */
+	/* uint8_t	padding[]; */
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* File Characteristics (ECMA 167r3 4/14.4.3) */
 #define FID_FILE_CHAR_HIDDEN		0x01
@@ -471,7 +636,11 @@ struct allocExtDesc {
 	struct tag	descTag;
 	__le32		previousAllocExtLocation;
 	__le32		lengthAllocDescs;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* ICB Tag (ECMA 167r3 4/14.6) */
 struct icbtag {
@@ -483,7 +652,11 @@ struct icbtag {
 	uint8_t		fileType;
 	struct lb_addr	parentICBLocation;
 	__le16		flags;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Strategy Type (ECMA 167r3 4/14.6.2) */
 #define ICBTAG_STRATEGY_TYPE_UNDEF	0x0000
@@ -531,13 +704,21 @@ struct indirectEntry {
 	struct tag	descTag;
 	struct icbtag	icbTag;
 	struct long_ad	indirectICB;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Terminal Entry (ECMA 167r3 4/14.8) */
 struct terminalEntry {
 	struct tag	descTag;
 	struct icbtag	icbTag;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* File Entry (ECMA 167r3 4/14.9) */
 struct fileEntry {
@@ -561,9 +742,15 @@ struct fileEntry {
 	__le64			uniqueID;
 	__le32			lengthExtendedAttr;
 	__le32			lengthAllocDescs;
+<<<<<<< HEAD
 	uint8_t			extendedAttr[0];
 	uint8_t			allocDescs[0];
 } __attribute__ ((packed));
+=======
+	uint8_t			extendedAttr[];
+	/* uint8_t		allocDescs[]; */
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Permissions (ECMA 167r3 4/14.9.5) */
 #define FE_PERM_O_EXEC			0x00000001U
@@ -607,7 +794,11 @@ struct extendedAttrHeaderDesc {
 	struct tag	descTag;
 	__le32		impAttrLocation;
 	__le32		appAttrLocation;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Generic Format (ECMA 167r3 4/14.10.2) */
 struct genericFormat {
@@ -615,8 +806,13 @@ struct genericFormat {
 	uint8_t		attrSubtype;
 	uint8_t		reserved[3];
 	__le32		attrLength;
+<<<<<<< HEAD
 	uint8_t		attrData[0];
 } __attribute__ ((packed));
+=======
+	uint8_t		attrData[];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Character Set Information (ECMA 167r3 4/14.10.3) */
 struct charSetInfo {
@@ -626,8 +822,13 @@ struct charSetInfo {
 	__le32		attrLength;
 	__le32		escapeSeqLength;
 	uint8_t		charSetType;
+<<<<<<< HEAD
 	uint8_t		escapeSeq[0];
 } __attribute__ ((packed));
+=======
+	uint8_t		escapeSeq[];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Alternate Permissions (ECMA 167r3 4/14.10.4) */
 struct altPerms {
@@ -638,7 +839,11 @@ struct altPerms {
 	__le16		ownerIdent;
 	__le16		groupIdent;
 	__le16		permission;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* File Times Extended Attribute (ECMA 167r3 4/14.10.5) */
 struct fileTimesExtAttr {
@@ -649,7 +854,11 @@ struct fileTimesExtAttr {
 	__le32		dataLength;
 	__le32		fileTimeExistence;
 	uint8_t		fileTimes;
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* FileTimeExistence (ECMA 167r3 4/14.10.5.6) */
 #define FTE_CREATION			0x00000001
@@ -665,8 +874,13 @@ struct infoTimesExtAttr {
 	__le32		attrLength;
 	__le32		dataLength;
 	__le32		infoTimeExistence;
+<<<<<<< HEAD
 	uint8_t		infoTimes[0];
 } __attribute__ ((packed));
+=======
+	uint8_t		infoTimes[];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Device Specification (ECMA 167r3 4/14.10.7) */
 struct deviceSpec {
@@ -677,8 +891,13 @@ struct deviceSpec {
 	__le32		impUseLength;
 	__le32		majorDeviceIdent;
 	__le32		minorDeviceIdent;
+<<<<<<< HEAD
 	uint8_t		impUse[0];
 } __attribute__ ((packed));
+=======
+	uint8_t		impUse[];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Implementation Use Extended Attr (ECMA 167r3 4/14.10.8) */
 struct impUseExtAttr {
@@ -688,8 +907,13 @@ struct impUseExtAttr {
 	__le32		attrLength;
 	__le32		impUseLength;
 	struct regid	impIdent;
+<<<<<<< HEAD
 	uint8_t		impUse[0];
 } __attribute__ ((packed));
+=======
+	uint8_t		impUse[];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Application Use Extended Attribute (ECMA 167r3 4/14.10.9) */
 struct appUseExtAttr {
@@ -699,8 +923,13 @@ struct appUseExtAttr {
 	__le32		attrLength;
 	__le32		appUseLength;
 	struct regid	appIdent;
+<<<<<<< HEAD
 	uint8_t		appUse[0];
 } __attribute__ ((packed));
+=======
+	uint8_t		appUse[];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define EXTATTR_CHAR_SET		1
 #define EXTATTR_ALT_PERMS		3
@@ -709,22 +938,36 @@ struct appUseExtAttr {
 #define EXTATTR_DEV_SPEC		12
 #define EXTATTR_IMP_USE			2048
 #define EXTATTR_APP_USE			65536
+<<<<<<< HEAD
+=======
+#define EXTATTR_SUBTYPE			1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Unallocated Space Entry (ECMA 167r3 4/14.11) */
 struct unallocSpaceEntry {
 	struct tag	descTag;
 	struct icbtag	icbTag;
 	__le32		lengthAllocDescs;
+<<<<<<< HEAD
 	uint8_t		allocDescs[0];
 } __attribute__ ((packed));
+=======
+	uint8_t		allocDescs[];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Space Bitmap Descriptor (ECMA 167r3 4/14.12) */
 struct spaceBitmapDesc {
 	struct tag	descTag;
 	__le32		numOfBits;
 	__le32		numOfBytes;
+<<<<<<< HEAD
 	uint8_t		bitmap[0];
 } __attribute__ ((packed));
+=======
+	uint8_t		bitmap[];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Partition Integrity Entry (ECMA 167r3 4/14.13) */
 struct partitionIntegrityEntry {
@@ -735,15 +978,28 @@ struct partitionIntegrityEntry {
 	uint8_t			reserved[175];
 	struct regid		impIdent;
 	uint8_t			impUse[256];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Short Allocation Descriptor (ECMA 167r3 4/14.14.1) */
 
 /* Extent Length (ECMA 167r3 4/14.14.1.1) */
+<<<<<<< HEAD
 #define EXT_RECORDED_ALLOCATED		0x00000000
 #define EXT_NOT_RECORDED_ALLOCATED	0x40000000
 #define EXT_NOT_RECORDED_NOT_ALLOCATED	0x80000000
 #define EXT_NEXT_EXTENT_ALLOCDECS	0xC0000000
+=======
+#define EXT_LENGTH_MASK			0x3FFFFFFF
+#define EXT_TYPE_MASK			0xC0000000
+#define EXT_RECORDED_ALLOCATED		0x00000000
+#define EXT_NOT_RECORDED_ALLOCATED	0x40000000
+#define EXT_NOT_RECORDED_NOT_ALLOCATED	0x80000000
+#define EXT_NEXT_EXTENT_ALLOCDESCS	0xC0000000
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Long Allocation Descriptor (ECMA 167r3 4/14.14.2) */
 
@@ -753,15 +1009,24 @@ struct partitionIntegrityEntry {
 struct logicalVolHeaderDesc {
 	__le64		uniqueID;
 	uint8_t		reserved[24];
+<<<<<<< HEAD
 } __attribute__ ((packed));
+=======
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Path Component (ECMA 167r3 4/14.16.1) */
 struct pathComponent {
 	uint8_t		componentType;
 	uint8_t		lengthComponentIdent;
 	__le16		componentFileVersionNum;
+<<<<<<< HEAD
 	dstring		componentIdent[0];
 } __attribute__ ((packed));
+=======
+	dchars		componentIdent[];
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* File Entry (ECMA 167r3 4/14.17) */
 struct extendedFileEntry {
@@ -789,8 +1054,14 @@ struct extendedFileEntry {
 	__le64			uniqueID;
 	__le32			lengthExtendedAttr;
 	__le32			lengthAllocDescs;
+<<<<<<< HEAD
 	uint8_t			extendedAttr[0];
 	uint8_t			allocDescs[0];
 } __attribute__ ((packed));
+=======
+	uint8_t			extendedAttr[];
+	/* uint8_t		allocDescs[]; */
+} __packed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ECMA_167_H */

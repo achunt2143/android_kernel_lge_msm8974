@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * arch/hexagon/kernel/kgdb.c - Hexagon KGDB Support
  *
@@ -18,6 +19,18 @@
  * 02110-1301, USA.
  */
 
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * arch/hexagon/kernel/kgdb.c - Hexagon KGDB Support
+ *
+ * Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
+ */
+
+#include <linux/irq.h>
+#include <linux/sched.h>
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kdebug.h>
 #include <linux/kgdb.h>
 
@@ -70,6 +83,11 @@ struct dbg_reg_def_t dbg_reg_def[DBG_MAX_REG_NUM] = {
 	{ "lc1", GDB_SIZEOF_REG, offsetof(struct pt_regs, lc1)},
 	{ " gp", GDB_SIZEOF_REG, offsetof(struct pt_regs, gp)},
 	{ "ugp", GDB_SIZEOF_REG, offsetof(struct pt_regs, ugp)},
+<<<<<<< HEAD
+=======
+	{ "cs0", GDB_SIZEOF_REG, offsetof(struct pt_regs, cs0)},
+	{ "cs1", GDB_SIZEOF_REG, offsetof(struct pt_regs, cs1)},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "psp", GDB_SIZEOF_REG, offsetof(struct pt_regs, hvmer.vmpsp)},
 	{ "elr", GDB_SIZEOF_REG, offsetof(struct pt_regs, hvmer.vmel)},
 	{ "est", GDB_SIZEOF_REG, offsetof(struct pt_regs, hvmer.vmest)},
@@ -78,7 +96,11 @@ struct dbg_reg_def_t dbg_reg_def[DBG_MAX_REG_NUM] = {
 	{ "syscall_nr", GDB_SIZEOF_REG, offsetof(struct pt_regs, syscall_nr)},
 };
 
+<<<<<<< HEAD
 struct kgdb_arch arch_kgdb_ops = {
+=======
+const struct kgdb_arch arch_kgdb_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* trap0(#0xDB) 0x0cdb0054 */
 	.gdb_bpt_instr = {0x54, 0x00, 0xdb, 0x0c},
 };
@@ -110,6 +132,7 @@ void kgdb_arch_set_pc(struct pt_regs *regs, unsigned long pc)
 	instruction_pointer(regs) = pc;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_SMP
 
 /**
@@ -142,6 +165,8 @@ void kgdb_roundup_cpus(unsigned long flags)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*  Not yet working  */
 void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs,
@@ -232,9 +257,15 @@ static struct notifier_block kgdb_notifier = {
 };
 
 /**
+<<<<<<< HEAD
  * kgdb_arch_init - Perform any architecture specific initalization.
  *
  * This function will handle the initalization of any architecture
+=======
+ * kgdb_arch_init - Perform any architecture specific initialization.
+ *
+ * This function will handle the initialization of any architecture
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * specific callbacks.
  */
 int kgdb_arch_init(void)

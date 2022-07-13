@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _MOTOROLA_PGTABLE_H
 #define _MOTOROLA_PGTABLE_H
 
@@ -22,13 +26,34 @@
 #define _DESCTYPE_MASK	0x003
 
 #define _CACHEMASK040	(~0x060)
+<<<<<<< HEAD
 #define _TABLE_MASK	(0xfffffe00)
+=======
+
+/*
+ * Currently set to the minimum alignment of table pointers (256 bytes).
+ * The hardware only uses the low 4 bits for state:
+ *
+ *    3 - Used
+ *    2 - Write Protected
+ *  0,1 - Descriptor Type
+ *
+ * and has the rest of the bits reserved.
+ */
+#define _TABLE_MASK	(0xffffff00)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _PAGE_TABLE	(_PAGE_SHORT)
 #define _PAGE_CHG_MASK  (PAGE_MASK | _PAGE_ACCESSED | _PAGE_DIRTY | _PAGE_NOCACHE)
 
 #define _PAGE_PROTNONE	0x004
+<<<<<<< HEAD
 #define _PAGE_FILE	0x008	/* pagecache or swap? */
+=======
+
+/* We borrow bit 11 to store the exclusive marker in swap PTEs. */
+#define _PAGE_SWP_EXCLUSIVE	0x800
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __ASSEMBLY__
 
@@ -65,6 +90,7 @@ extern unsigned long mm_cachebits;
 #define PAGE_READONLY	__pgprot(_PAGE_PRESENT | _PAGE_RONLY | _PAGE_ACCESSED | mm_cachebits)
 #define PAGE_KERNEL	__pgprot(_PAGE_PRESENT | _PAGE_DIRTY | _PAGE_ACCESSED | mm_cachebits)
 
+<<<<<<< HEAD
 /* Alternate definitions that are compile time constants, for
    initializing protection_map.  The cachebits are fixed later.  */
 #define PAGE_NONE_C	__pgprot(_PAGE_PROTNONE | _PAGE_ACCESSED)
@@ -93,6 +119,9 @@ extern unsigned long mm_cachebits;
 #define __S101	PAGE_READONLY_C
 #define __S110	PAGE_SHARED_C
 #define __S111	PAGE_SHARED_C
+=======
+#define pmd_pgtable(pmd) ((pgtable_t)pmd_page_vaddr(pmd))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Conversion functions: convert a page and protection to a page entry,
@@ -108,6 +137,7 @@ static inline pte_t pte_modify(pte_t pte, pgprot_t newprot)
 
 static inline void pmd_set(pmd_t *pmdp, pte_t *ptep)
 {
+<<<<<<< HEAD
 	unsigned long ptbl = virt_to_phys(ptep) | _PAGE_TABLE | _PAGE_ACCESSED;
 	unsigned long *ptr = pmdp->pmd;
 	short i = 16;
@@ -125,12 +155,29 @@ static inline void pgd_set(pgd_t *pgdp, pmd_t *pmdp)
 #define __pte_page(pte) ((unsigned long)__va(pte_val(pte) & PAGE_MASK))
 #define __pmd_page(pmd) ((unsigned long)__va(pmd_val(pmd) & _TABLE_MASK))
 #define __pgd_page(pgd) ((unsigned long)__va(pgd_val(pgd) & _TABLE_MASK))
+=======
+	pmd_val(*pmdp) = virt_to_phys(ptep) | _PAGE_TABLE | _PAGE_ACCESSED;
+}
+
+static inline void pud_set(pud_t *pudp, pmd_t *pmdp)
+{
+	pud_val(*pudp) = _PAGE_TABLE | _PAGE_ACCESSED | __pa(pmdp);
+}
+
+#define __pte_page(pte) ((unsigned long)__va(pte_val(pte) & PAGE_MASK))
+#define pmd_page_vaddr(pmd) ((unsigned long)__va(pmd_val(pmd) & _TABLE_MASK))
+#define pud_pgtable(pud) ((pmd_t *)__va(pud_val(pud) & _TABLE_MASK))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 #define pte_none(pte)		(!pte_val(pte))
 #define pte_present(pte)	(pte_val(pte) & (_PAGE_PRESENT | _PAGE_PROTNONE))
 #define pte_clear(mm,addr,ptep)		({ pte_val(*(ptep)) = 0; })
 
+<<<<<<< HEAD
+=======
+#define PFN_PTE_SHIFT		PAGE_SHIFT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define pte_page(pte)		virt_to_page(__va(pte_val(pte)))
 #define pte_pfn(pte)		(pte_val(pte) >> PAGE_SHIFT)
 #define pfn_pte(pfn, prot)	__pte(((pfn) << PAGE_SHIFT) | pgprot_val(prot))
@@ -138,6 +185,7 @@ static inline void pgd_set(pgd_t *pgdp, pmd_t *pmdp)
 #define pmd_none(pmd)		(!pmd_val(pmd))
 #define pmd_bad(pmd)		((pmd_val(pmd) & _DESCTYPE_MASK) != _PAGE_TABLE)
 #define pmd_present(pmd)	(pmd_val(pmd) & _PAGE_TABLE)
+<<<<<<< HEAD
 #define pmd_clear(pmdp) ({			\
 	unsigned long *__ptr = pmdp->pmd;	\
 	short __i = 16;				\
@@ -152,6 +200,24 @@ static inline void pgd_set(pgd_t *pgdp, pmd_t *pmdp)
 #define pgd_present(pgd)	(pgd_val(pgd) & _PAGE_TABLE)
 #define pgd_clear(pgdp)		({ pgd_val(*pgdp) = 0; })
 #define pgd_page(pgd)		(mem_map + ((unsigned long)(__va(pgd_val(pgd)) - PAGE_OFFSET) >> PAGE_SHIFT))
+=======
+#define pmd_clear(pmdp)		({ pmd_val(*pmdp) = 0; })
+
+#define pmd_pfn(pmd)		((pmd_val(pmd) & _TABLE_MASK) >> PAGE_SHIFT)
+/*
+ * m68k does not have huge pages (020/030 actually could), but generic code
+ * expects pmd_page() to exists, only to then DCE it all. Provide a dummy to
+ * make the compiler happy.
+ */
+#define pmd_page(pmd)		((struct page *)NULL)
+
+
+#define pud_none(pud)		(!pud_val(pud))
+#define pud_bad(pud)		((pud_val(pud) & _DESCTYPE_MASK) != _PAGE_TABLE)
+#define pud_present(pud)	(pud_val(pud) & _PAGE_TABLE)
+#define pud_clear(pudp)		({ pud_val(*pudp) = 0; })
+#define pud_page(pud)		(mem_map + ((unsigned long)(__va(pud_val(pud)) - PAGE_OFFSET) >> PAGE_SHIFT))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define pte_ERROR(e) \
 	printk("%s:%d: bad pte %08lx.\n", __FILE__, __LINE__, pte_val(e))
@@ -168,13 +234,20 @@ static inline void pgd_set(pgd_t *pgdp, pmd_t *pmdp)
 static inline int pte_write(pte_t pte)		{ return !(pte_val(pte) & _PAGE_RONLY); }
 static inline int pte_dirty(pte_t pte)		{ return pte_val(pte) & _PAGE_DIRTY; }
 static inline int pte_young(pte_t pte)		{ return pte_val(pte) & _PAGE_ACCESSED; }
+<<<<<<< HEAD
 static inline int pte_file(pte_t pte)		{ return pte_val(pte) & _PAGE_FILE; }
 static inline int pte_special(pte_t pte)	{ return 0; }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline pte_t pte_wrprotect(pte_t pte)	{ pte_val(pte) |= _PAGE_RONLY; return pte; }
 static inline pte_t pte_mkclean(pte_t pte)	{ pte_val(pte) &= ~_PAGE_DIRTY; return pte; }
 static inline pte_t pte_mkold(pte_t pte)	{ pte_val(pte) &= ~_PAGE_ACCESSED; return pte; }
+<<<<<<< HEAD
 static inline pte_t pte_mkwrite(pte_t pte)	{ pte_val(pte) &= ~_PAGE_RONLY; return pte; }
+=======
+static inline pte_t pte_mkwrite_novma(pte_t pte){ pte_val(pte) &= ~_PAGE_RONLY; return pte; }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline pte_t pte_mkdirty(pte_t pte)	{ pte_val(pte) |= _PAGE_DIRTY; return pte; }
 static inline pte_t pte_mkyoung(pte_t pte)	{ pte_val(pte) |= _PAGE_ACCESSED; return pte; }
 static inline pte_t pte_mknocache(pte_t pte)
@@ -187,6 +260,7 @@ static inline pte_t pte_mkcache(pte_t pte)
 	pte_val(pte) = (pte_val(pte) & _CACHEMASK040) | m68k_supervisor_cachemode;
 	return pte;
 }
+<<<<<<< HEAD
 static inline pte_t pte_mkspecial(pte_t pte)	{ return pte; }
 
 #define PAGE_DIR_OFFSET(tsk,address) pgd_offset((tsk),(address))
@@ -199,10 +273,13 @@ static inline pgd_t *pgd_offset(const struct mm_struct *mm,
 {
 	return mm->pgd + pgd_index(address);
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define swapper_pg_dir kernel_pg_dir
 extern pgd_t kernel_pg_dir[128];
 
+<<<<<<< HEAD
 static inline pgd_t *pgd_offset_k(unsigned long address)
 {
 	return kernel_pg_dir + (address >> PGDIR_SHIFT);
@@ -286,5 +363,42 @@ static inline pte_t pgoff_to_pte(unsigned off)
 #define __pte_to_swp_entry(pte)	((swp_entry_t) { pte_val(pte) })
 #define __swp_entry_to_pte(x)	((pte_t) { (x).val })
 
+=======
+/*
+ * Encode/decode swap entries and swap PTEs. Swap PTEs are all PTEs that
+ * are !pte_none() && !pte_present().
+ *
+ * Format of swap PTEs:
+ *
+ *   3 3 2 2 2 2 2 2 2 2 2 2 1 1 1 1 1 1 1 1 1 1
+ *   1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0 9 8 7 6 5 4 3 2 1 0
+ *   <----------------- offset ------------> E <-- type ---> 0 0 0 0
+ *
+ *   E is the exclusive marker that is not stored in swap entries.
+ */
+#define __swp_type(x)		(((x).val >> 4) & 0x7f)
+#define __swp_offset(x)		((x).val >> 12)
+#define __swp_entry(type, offset) ((swp_entry_t) { (((type) & 0x7f) << 4) | ((offset) << 12) })
+#define __pte_to_swp_entry(pte)	((swp_entry_t) { pte_val(pte) })
+#define __swp_entry_to_pte(x)	((pte_t) { (x).val })
+
+static inline int pte_swp_exclusive(pte_t pte)
+{
+	return pte_val(pte) & _PAGE_SWP_EXCLUSIVE;
+}
+
+static inline pte_t pte_swp_mkexclusive(pte_t pte)
+{
+	pte_val(pte) |= _PAGE_SWP_EXCLUSIVE;
+	return pte;
+}
+
+static inline pte_t pte_swp_clear_exclusive(pte_t pte)
+{
+	pte_val(pte) &= ~_PAGE_SWP_EXCLUSIVE;
+	return pte;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* !__ASSEMBLY__ */
 #endif /* _MOTOROLA_PGTABLE_H */

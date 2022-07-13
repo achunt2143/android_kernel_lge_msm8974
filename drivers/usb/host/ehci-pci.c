@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * EHCI HCD (Host Controller Driver) PCI Bus Glue.
  *
  * Copyright (c) 2000-2004 by David Brownell
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
@@ -21,11 +26,67 @@
 #ifndef CONFIG_PCI
 #error "This file is PCI bus glue.  CONFIG_PCI must be defined."
 #endif
+=======
+ */
+
+#include <linux/kernel.h>
+#include <linux/module.h>
+#include <linux/pci.h>
+#include <linux/usb.h>
+#include <linux/usb/hcd.h>
+
+#include "ehci.h"
+#include "pci-quirks.h"
+
+#define DRIVER_DESC "EHCI PCI platform driver"
+
+static const char hcd_name[] = "ehci-pci";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* defined here to avoid adding to pci_ids.h for single instance use */
 #define PCI_DEVICE_ID_INTEL_CE4100_USB	0x2e70
 
+<<<<<<< HEAD
 /*-------------------------------------------------------------------------*/
+=======
+#define PCI_VENDOR_ID_ASPEED		0x1a03
+#define PCI_DEVICE_ID_ASPEED_EHCI	0x2603
+
+/*-------------------------------------------------------------------------*/
+#define PCI_DEVICE_ID_INTEL_QUARK_X1000_SOC		0x0939
+static inline bool is_intel_quark_x1000(struct pci_dev *pdev)
+{
+	return pdev->vendor == PCI_VENDOR_ID_INTEL &&
+		pdev->device == PCI_DEVICE_ID_INTEL_QUARK_X1000_SOC;
+}
+
+/*
+ * This is the list of PCI IDs for the devices that have EHCI USB class and
+ * specific drivers for that. One of the example is a ChipIdea device installed
+ * on some Intel MID platforms.
+ */
+static const struct pci_device_id bypass_pci_id_table[] = {
+	/* ChipIdea on Intel MID platform */
+	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x0811), },
+	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0x0829), },
+	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, 0xe006), },
+	{}
+};
+
+static inline bool is_bypassed_id(struct pci_dev *pdev)
+{
+	return !!pci_match_id(bypass_pci_id_table, pdev);
+}
+
+/*
+ * 0x84 is the offset of in/out threshold register,
+ * and it is the same offset as the register of 'hostpc'.
+ */
+#define	intel_quark_x1000_insnreg01	hostpc
+
+/* Maximum usable threshold value is 0x7f dwords for both IN and OUT */
+#define INTEL_QUARK_X1000_EHCI_MAX_THRESHOLD	0x007f007f
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* called after powerup, by probe or system-pm "wakeup" */
 static int ehci_pci_reinit(struct ehci_hcd *ehci, struct pci_dev *pdev)
@@ -41,6 +102,19 @@ static int ehci_pci_reinit(struct ehci_hcd *ehci, struct pci_dev *pdev)
 	if (!retval)
 		ehci_dbg(ehci, "MWI active\n");
 
+<<<<<<< HEAD
+=======
+	/* Reset the threshold limit */
+	if (is_intel_quark_x1000(pdev)) {
+		/*
+		 * For the Intel QUARK X1000, raise the I/O threshold to the
+		 * maximum usable value in order to improve performance.
+		 */
+		ehci_writel(ehci, INTEL_QUARK_X1000_EHCI_MAX_THRESHOLD,
+			ehci->regs->intel_quark_x1000_insnreg01);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -49,11 +123,28 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
 	struct pci_dev		*pdev = to_pci_dev(hcd->self.controller);
+<<<<<<< HEAD
 	struct pci_dev		*p_smbus;
 	u8			rev;
 	u32			temp;
 	int			retval;
 
+=======
+	u32			temp;
+	int			retval;
+
+	ehci->caps = hcd->regs;
+
+	/*
+	 * ehci_init() causes memory for DMA transfers to be
+	 * allocated.  Thus, any vendor-specific workarounds based on
+	 * limiting the type of memory used for DMA transfers must
+	 * happen before ehci_setup() is called.
+	 *
+	 * Most other workarounds can be done either before or after
+	 * init and reset; they are located here too.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (pdev->vendor) {
 	case PCI_VENDOR_ID_TOSHIBA_2:
 		/* celleb's companion chip */
@@ -66,6 +157,7 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 #endif
 		}
 		break;
+<<<<<<< HEAD
 	}
 
 	ehci->caps = hcd->regs;
@@ -80,6 +172,8 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
          * limiting the type of memory used for DMA transfers must
          * happen before ehci_init() is called. */
 	switch (pdev->vendor) {
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case PCI_VENDOR_ID_NVIDIA:
 		/* NVidia reports that certain chips don't handle
 		 * QH, ITD, or SITD addresses above 2GB.  (But TD,
@@ -90,6 +184,7 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 		case 0x005b:	/* CK804 */
 		case 0x00d8:	/* CK8 */
 		case 0x00e8:	/* CK8S */
+<<<<<<< HEAD
 			if (pci_set_consistent_dma_mask(pdev,
 						DMA_BIT_MASK(31)) < 0)
 				ehci_warn(ehci, "can't enable NVidia "
@@ -164,6 +259,13 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 		break;
 	case PCI_VENDOR_ID_NVIDIA:
 		switch (pdev->device) {
+=======
+			if (dma_set_coherent_mask(&pdev->dev, DMA_BIT_MASK(31)) < 0)
+				ehci_warn(ehci, "can't enable NVidia "
+					"workaround for >2GB RAM\n");
+			break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Some NForce2 chips have problems with selective suspend;
 		 * fixed in newer silicon.
 		 */
@@ -171,6 +273,7 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 			if (pdev->revision < 0xa4)
 				ehci->no_selective_suspend = 1;
 			break;
+<<<<<<< HEAD
 
 		/* MCP89 chips on the MacBookAir3,1 give EPROTO when
 		 * fetching device descriptors unless LPM is disabled.
@@ -183,6 +286,39 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 			ehci->has_ppcd = 0;
 			ehci->command &= ~CMD_PPCEE;
 			break;
+=======
+		}
+		break;
+	case PCI_VENDOR_ID_INTEL:
+		if (pdev->device == PCI_DEVICE_ID_INTEL_CE4100_USB)
+			hcd->has_tt = 1;
+		break;
+	case PCI_VENDOR_ID_TDI:
+		if (pdev->device == PCI_DEVICE_ID_TDI_EHCI)
+			hcd->has_tt = 1;
+		break;
+	case PCI_VENDOR_ID_AMD:
+		/* AMD PLL quirk */
+		if (usb_amd_quirk_pll_check())
+			ehci->amd_pll_fix = 1;
+		/* AMD8111 EHCI doesn't work, according to AMD errata */
+		if (pdev->device == 0x7463) {
+			ehci_info(ehci, "ignoring AMD8111 (errata)\n");
+			retval = -EIO;
+			goto done;
+		}
+
+		/*
+		 * EHCI controller on AMD SB700/SB800/Hudson-2/3 platforms may
+		 * read/write memory space which does not belong to it when
+		 * there is NULL pointer with T-bit set to 1 in the frame list
+		 * table. To avoid the issue, the frame list link pointer
+		 * should always contain a valid pointer to a inactive qh.
+		 */
+		if (pdev->device == 0x7808) {
+			ehci->use_dummy_qh = 1;
+			ehci_info(ehci, "applying AMD SB700/SB800/Hudson-2/3 EHCI dummy qh workaround\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case PCI_VENDOR_ID_VIA:
@@ -201,6 +337,7 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 		break;
 	case PCI_VENDOR_ID_ATI:
 		/* AMD PLL quirk */
+<<<<<<< HEAD
 		if (usb_amd_find_chipset_info())
 			ehci->amd_pll_fix = 1;
 		/* SB600 and old version of SB700 have a bug in EHCI controller,
@@ -222,6 +359,31 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 				pci_write_config_byte(pdev, 0x53, tmp | (1<<3));
 			}
 			pci_dev_put(p_smbus);
+=======
+		if (usb_amd_quirk_pll_check())
+			ehci->amd_pll_fix = 1;
+
+		/*
+		 * EHCI controller on AMD SB700/SB800/Hudson-2/3 platforms may
+		 * read/write memory space which does not belong to it when
+		 * there is NULL pointer with T-bit set to 1 in the frame list
+		 * table. To avoid the issue, the frame list link pointer
+		 * should always contain a valid pointer to a inactive qh.
+		 */
+		if (pdev->device == 0x4396) {
+			ehci->use_dummy_qh = 1;
+			ehci_info(ehci, "applying AMD SB700/SB800/Hudson-2/3 EHCI dummy qh workaround\n");
+		}
+		/* SB600 and old version of SB700 have a bug in EHCI controller,
+		 * which causes usb devices lose response in some cases.
+		 */
+		if ((pdev->device == 0x4386 || pdev->device == 0x4396) &&
+				usb_amd_hang_symptom_quirk()) {
+			u8 tmp;
+			ehci_info(ehci, "applying AMD SB600/SB700 USB freeze workaround\n");
+			pci_read_config_byte(pdev, 0x53, &tmp);
+			pci_write_config_byte(pdev, 0x53, tmp | (1<<3));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case PCI_VENDOR_ID_NETMOS:
@@ -229,6 +391,7 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 		ehci_info(ehci, "applying MosChip frame-index workaround\n");
 		ehci->frame_index_bug = 1;
 		break;
+<<<<<<< HEAD
 	}
 
 	/* optional debug port, normally in the first BAR */
@@ -245,12 +408,77 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 				(temp & DBGP_ENABLED)
 					? " IN USE"
 					: "");
+=======
+	case PCI_VENDOR_ID_HUAWEI:
+		/* Synopsys HC bug */
+		if (pdev->device == 0xa239) {
+			ehci_info(ehci, "applying Synopsys HC workaround\n");
+			ehci->has_synopsys_hc_bug = 1;
+		}
+		break;
+	case PCI_VENDOR_ID_ASPEED:
+		if (pdev->device == PCI_DEVICE_ID_ASPEED_EHCI) {
+			ehci_info(ehci, "applying Aspeed HC workaround\n");
+			ehci->is_aspeed = 1;
+		}
+		break;
+	case PCI_VENDOR_ID_ZHAOXIN:
+		if (pdev->device == 0x3104 && (pdev->revision & 0xf0) == 0x90)
+			ehci->zx_wakeup_clear_needed = 1;
+		break;
+	}
+
+	/* optional debug port, normally in the first BAR */
+	temp = pci_find_capability(pdev, PCI_CAP_ID_DBG);
+	if (temp) {
+		pci_read_config_dword(pdev, temp, &temp);
+		temp >>= 16;
+		if (((temp >> 13) & 7) == 1) {
+			u32 hcs_params = ehci_readl(ehci,
+						    &ehci->caps->hcs_params);
+
+			temp &= 0x1fff;
+			ehci->debug = hcd->regs + temp;
+			temp = ehci_readl(ehci, &ehci->debug->control);
+			ehci_info(ehci, "debug port %d%s\n",
+				  HCS_DEBUG_PORT(hcs_params),
+				  (temp & DBGP_ENABLED) ? " IN USE" : "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!(temp & DBGP_ENABLED))
 				ehci->debug = NULL;
 		}
 	}
 
+<<<<<<< HEAD
 	ehci_reset(ehci);
+=======
+	retval = ehci_setup(hcd);
+	if (retval)
+		return retval;
+
+	/* These workarounds need to be applied after ehci_setup() */
+	switch (pdev->vendor) {
+	case PCI_VENDOR_ID_NEC:
+	case PCI_VENDOR_ID_INTEL:
+	case PCI_VENDOR_ID_AMD:
+		ehci->need_io_watchdog = 0;
+		break;
+	case PCI_VENDOR_ID_NVIDIA:
+		switch (pdev->device) {
+		/* MCP89 chips on the MacBookAir3,1 give EPROTO when
+		 * fetching device descriptors unless LPM is disabled.
+		 * There are also intermittent problems enumerating
+		 * devices with PPCD enabled.
+		 */
+		case 0x0d9d:
+			ehci_info(ehci, "disable ppcd for nvidia mcp89\n");
+			ehci->has_ppcd = 0;
+			ehci->command &= ~CMD_PPCEE;
+			break;
+		}
+		break;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* at least the Genesys GL880S needs fixup here */
 	temp = HCS_N_CC(ehci->hcs_params) * HCS_N_PCC(ehci->hcs_params);
@@ -275,10 +503,21 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 	}
 
 	/* Serial Bus Release Number is at PCI 0x60 offset */
+<<<<<<< HEAD
 	pci_read_config_byte(pdev, 0x60, &ehci->sbrn);
 	if (pdev->vendor == PCI_VENDOR_ID_STMICRO
 	    && pdev->device == PCI_DEVICE_ID_STMICRO_USB_HOST)
 		ehci->sbrn = 0x20; /* ConneXT has no sbrn register */
+=======
+	if (pdev->vendor == PCI_VENDOR_ID_STMICRO
+	    && pdev->device == PCI_DEVICE_ID_STMICRO_USB_HOST)
+		;	/* ConneXT has no sbrn register */
+	else if (pdev->vendor == PCI_VENDOR_ID_HUAWEI
+			 && pdev->device == 0xa239)
+		;	/* HUAWEI Kunpeng920 USB EHCI has no sbrn register */
+	else
+		pci_read_config_byte(pdev, 0x60, &ehci->sbrn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Keep this around for a while just in case some EHCI
 	 * implementation uses legacy PCI PM support.  This test
@@ -295,6 +534,7 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 		}
 	}
 
+<<<<<<< HEAD
 #ifdef	CONFIG_USB_SUSPEND
 	/* REVISIT: the controller works fine for wakeup iff the root hub
 	 * itself is "globally" suspended, but usbcore currently doesn't
@@ -306,11 +546,17 @@ static int ehci_pci_setup(struct usb_hcd *hcd)
 	 * success.  That's lying to usbcore, and it matters for runtime
 	 * PM scenarios with selective suspend and remote wakeup...
 	 */
+=======
+#ifdef	CONFIG_PM
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ehci->no_selective_suspend && device_can_wakeup(&pdev->dev))
 		ehci_warn(ehci, "selective suspend/wakeup unavailable\n");
 #endif
 
+<<<<<<< HEAD
 	ehci_port_power(ehci, 1);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = ehci_pci_reinit(ehci, pdev);
 done:
 	return retval;
@@ -329,6 +575,7 @@ done:
  * Also they depend on separate root hub suspend/resume.
  */
 
+<<<<<<< HEAD
 static int ehci_pci_suspend(struct usb_hcd *hcd, bool do_wakeup)
 {
 	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
@@ -523,18 +770,62 @@ static const struct hc_driver ehci_pci_hc_driver = {
 	.update_device =	ehci_update_device,
 
 	.clear_tt_buffer_complete	= ehci_clear_tt_buffer_complete,
+=======
+static int ehci_pci_resume(struct usb_hcd *hcd, pm_message_t msg)
+{
+	struct ehci_hcd		*ehci = hcd_to_ehci(hcd);
+	struct pci_dev		*pdev = to_pci_dev(hcd->self.controller);
+	bool			hibernated = (msg.event == PM_EVENT_RESTORE);
+
+	if (ehci_resume(hcd, hibernated) != 0)
+		(void) ehci_pci_reinit(ehci, pdev);
+	return 0;
+}
+
+#else
+
+#define ehci_suspend		NULL
+#define ehci_pci_resume		NULL
+#endif	/* CONFIG_PM */
+
+static struct hc_driver __read_mostly ehci_pci_hc_driver;
+
+static const struct ehci_driver_overrides pci_overrides __initconst = {
+	.reset =		ehci_pci_setup,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*-------------------------------------------------------------------------*/
 
+<<<<<<< HEAD
+=======
+static int ehci_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+{
+	if (is_bypassed_id(pdev))
+		return -ENODEV;
+	return usb_hcd_pci_probe(pdev, &ehci_pci_hc_driver);
+}
+
+static void ehci_pci_remove(struct pci_dev *pdev)
+{
+	pci_clear_mwi(pdev);
+	usb_hcd_pci_remove(pdev);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* PCI driver selection metadata; PCI hotplugging uses this */
 static const struct pci_device_id pci_ids [] = { {
 	/* handle any USB 2.0 EHCI controller */
 	PCI_DEVICE_CLASS(PCI_CLASS_SERIAL_USB_EHCI, ~0),
+<<<<<<< HEAD
 	.driver_data =	(unsigned long) &ehci_pci_hc_driver,
 	}, {
 	PCI_VDEVICE(STMICRO, PCI_DEVICE_ID_STMICRO_USB_HOST),
 	.driver_data = (unsigned long) &ehci_pci_hc_driver,
+=======
+	}, {
+	PCI_VDEVICE(STMICRO, PCI_DEVICE_ID_STMICRO_USB_HOST),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	{ /* end: all zeroes */ }
 };
@@ -542,6 +833,7 @@ MODULE_DEVICE_TABLE(pci, pci_ids);
 
 /* pci driver glue; this is a "new style" PCI driver module */
 static struct pci_driver ehci_pci_driver = {
+<<<<<<< HEAD
 	.name =		(char *) hcd_name,
 	.id_table =	pci_ids,
 
@@ -555,3 +847,45 @@ static struct pci_driver ehci_pci_driver = {
 	},
 #endif
 };
+=======
+	.name =		hcd_name,
+	.id_table =	pci_ids,
+
+	.probe =	ehci_pci_probe,
+	.remove =	ehci_pci_remove,
+	.shutdown = 	usb_hcd_pci_shutdown,
+
+	.driver =	{
+#ifdef CONFIG_PM
+		.pm =	&usb_hcd_pci_pm_ops,
+#endif
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+	},
+};
+
+static int __init ehci_pci_init(void)
+{
+	if (usb_disabled())
+		return -ENODEV;
+
+	ehci_init_driver(&ehci_pci_hc_driver, &pci_overrides);
+
+	/* Entries for the PCI suspend/resume callbacks are special */
+	ehci_pci_hc_driver.pci_suspend = ehci_suspend;
+	ehci_pci_hc_driver.pci_resume = ehci_pci_resume;
+
+	return pci_register_driver(&ehci_pci_driver);
+}
+module_init(ehci_pci_init);
+
+static void __exit ehci_pci_cleanup(void)
+{
+	pci_unregister_driver(&ehci_pci_driver);
+}
+module_exit(ehci_pci_cleanup);
+
+MODULE_DESCRIPTION(DRIVER_DESC);
+MODULE_AUTHOR("David Brownell");
+MODULE_AUTHOR("Alan Stern");
+MODULE_LICENSE("GPL");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

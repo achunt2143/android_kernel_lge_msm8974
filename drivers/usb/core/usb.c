@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * drivers/usb/core/usb.c
  *
@@ -12,21 +16,38 @@
  *     (usb_device_id matching changes by Adam J. Richter)
  * (C) Copyright Greg Kroah-Hartman 2002-2003
  *
+<<<<<<< HEAD
+=======
+ * Released under the GPLv2 only.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * NOTE! This is not actually a driver at all, rather this is
  * just a collection of helper routines that implement the
  * generic USB things that the real drivers can use..
  *
+<<<<<<< HEAD
  * Think of this as a "USB library" rather than anything else.
  * It should be considered a slave, with no callbacks. Callbacks
  * are evil.
+=======
+ * Think of this as a "USB library" rather than anything else,
+ * with no callbacks.  Callbacks are evil.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
+<<<<<<< HEAD
 #include <linux/string.h>
 #include <linux/bitops.h>
 #include <linux/slab.h>
 #include <linux/interrupt.h>  /* for in_interrupt() */
+=======
+#include <linux/of.h>
+#include <linux/string.h>
+#include <linux/bitops.h>
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kmod.h>
 #include <linux/init.h>
 #include <linux/spinlock.h>
@@ -36,22 +57,47 @@
 #include <linux/mutex.h>
 #include <linux/workqueue.h>
 #include <linux/debugfs.h>
+<<<<<<< HEAD
+=======
+#include <linux/usb/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 #include <linux/scatterlist.h>
 #include <linux/mm.h>
 #include <linux/dma-mapping.h>
 
+<<<<<<< HEAD
 #include "usb.h"
 
+=======
+#include "hub.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 const char *usbcore_name = "usbcore";
 
 static bool nousb;	/* Disable USB when built into kernel image */
 
+<<<<<<< HEAD
 #ifdef	CONFIG_USB_SUSPEND
 static int usb_autosuspend_delay = 2;		/* Default delay value,
 						 * in seconds */
+=======
+module_param(nousb, bool, 0444);
+
+/*
+ * for external read access to <nousb>
+ */
+int usb_disabled(void)
+{
+	return nousb;
+}
+EXPORT_SYMBOL_GPL(usb_disabled);
+
+#ifdef	CONFIG_PM
+/* Default delay value, in seconds */
+static int usb_autosuspend_delay = CONFIG_USB_AUTOSUSPEND_DELAY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param_named(autosuspend, usb_autosuspend_delay, int, 0644);
 MODULE_PARM_DESC(autosuspend, "default autosuspend delay");
 
@@ -59,6 +105,219 @@ MODULE_PARM_DESC(autosuspend, "default autosuspend delay");
 #define usb_autosuspend_delay		0
 #endif
 
+<<<<<<< HEAD
+=======
+static bool match_endpoint(struct usb_endpoint_descriptor *epd,
+		struct usb_endpoint_descriptor **bulk_in,
+		struct usb_endpoint_descriptor **bulk_out,
+		struct usb_endpoint_descriptor **int_in,
+		struct usb_endpoint_descriptor **int_out)
+{
+	switch (usb_endpoint_type(epd)) {
+	case USB_ENDPOINT_XFER_BULK:
+		if (usb_endpoint_dir_in(epd)) {
+			if (bulk_in && !*bulk_in) {
+				*bulk_in = epd;
+				break;
+			}
+		} else {
+			if (bulk_out && !*bulk_out) {
+				*bulk_out = epd;
+				break;
+			}
+		}
+
+		return false;
+	case USB_ENDPOINT_XFER_INT:
+		if (usb_endpoint_dir_in(epd)) {
+			if (int_in && !*int_in) {
+				*int_in = epd;
+				break;
+			}
+		} else {
+			if (int_out && !*int_out) {
+				*int_out = epd;
+				break;
+			}
+		}
+
+		return false;
+	default:
+		return false;
+	}
+
+	return (!bulk_in || *bulk_in) && (!bulk_out || *bulk_out) &&
+			(!int_in || *int_in) && (!int_out || *int_out);
+}
+
+/**
+ * usb_find_common_endpoints() -- look up common endpoint descriptors
+ * @alt:	alternate setting to search
+ * @bulk_in:	pointer to descriptor pointer, or NULL
+ * @bulk_out:	pointer to descriptor pointer, or NULL
+ * @int_in:	pointer to descriptor pointer, or NULL
+ * @int_out:	pointer to descriptor pointer, or NULL
+ *
+ * Search the alternate setting's endpoint descriptors for the first bulk-in,
+ * bulk-out, interrupt-in and interrupt-out endpoints and return them in the
+ * provided pointers (unless they are NULL).
+ *
+ * If a requested endpoint is not found, the corresponding pointer is set to
+ * NULL.
+ *
+ * Return: Zero if all requested descriptors were found, or -ENXIO otherwise.
+ */
+int usb_find_common_endpoints(struct usb_host_interface *alt,
+		struct usb_endpoint_descriptor **bulk_in,
+		struct usb_endpoint_descriptor **bulk_out,
+		struct usb_endpoint_descriptor **int_in,
+		struct usb_endpoint_descriptor **int_out)
+{
+	struct usb_endpoint_descriptor *epd;
+	int i;
+
+	if (bulk_in)
+		*bulk_in = NULL;
+	if (bulk_out)
+		*bulk_out = NULL;
+	if (int_in)
+		*int_in = NULL;
+	if (int_out)
+		*int_out = NULL;
+
+	for (i = 0; i < alt->desc.bNumEndpoints; ++i) {
+		epd = &alt->endpoint[i].desc;
+
+		if (match_endpoint(epd, bulk_in, bulk_out, int_in, int_out))
+			return 0;
+	}
+
+	return -ENXIO;
+}
+EXPORT_SYMBOL_GPL(usb_find_common_endpoints);
+
+/**
+ * usb_find_common_endpoints_reverse() -- look up common endpoint descriptors
+ * @alt:	alternate setting to search
+ * @bulk_in:	pointer to descriptor pointer, or NULL
+ * @bulk_out:	pointer to descriptor pointer, or NULL
+ * @int_in:	pointer to descriptor pointer, or NULL
+ * @int_out:	pointer to descriptor pointer, or NULL
+ *
+ * Search the alternate setting's endpoint descriptors for the last bulk-in,
+ * bulk-out, interrupt-in and interrupt-out endpoints and return them in the
+ * provided pointers (unless they are NULL).
+ *
+ * If a requested endpoint is not found, the corresponding pointer is set to
+ * NULL.
+ *
+ * Return: Zero if all requested descriptors were found, or -ENXIO otherwise.
+ */
+int usb_find_common_endpoints_reverse(struct usb_host_interface *alt,
+		struct usb_endpoint_descriptor **bulk_in,
+		struct usb_endpoint_descriptor **bulk_out,
+		struct usb_endpoint_descriptor **int_in,
+		struct usb_endpoint_descriptor **int_out)
+{
+	struct usb_endpoint_descriptor *epd;
+	int i;
+
+	if (bulk_in)
+		*bulk_in = NULL;
+	if (bulk_out)
+		*bulk_out = NULL;
+	if (int_in)
+		*int_in = NULL;
+	if (int_out)
+		*int_out = NULL;
+
+	for (i = alt->desc.bNumEndpoints - 1; i >= 0; --i) {
+		epd = &alt->endpoint[i].desc;
+
+		if (match_endpoint(epd, bulk_in, bulk_out, int_in, int_out))
+			return 0;
+	}
+
+	return -ENXIO;
+}
+EXPORT_SYMBOL_GPL(usb_find_common_endpoints_reverse);
+
+/**
+ * usb_find_endpoint() - Given an endpoint address, search for the endpoint's
+ * usb_host_endpoint structure in an interface's current altsetting.
+ * @intf: the interface whose current altsetting should be searched
+ * @ep_addr: the endpoint address (number and direction) to find
+ *
+ * Search the altsetting's list of endpoints for one with the specified address.
+ *
+ * Return: Pointer to the usb_host_endpoint if found, %NULL otherwise.
+ */
+static const struct usb_host_endpoint *usb_find_endpoint(
+		const struct usb_interface *intf, unsigned int ep_addr)
+{
+	int n;
+	const struct usb_host_endpoint *ep;
+
+	n = intf->cur_altsetting->desc.bNumEndpoints;
+	ep = intf->cur_altsetting->endpoint;
+	for (; n > 0; (--n, ++ep)) {
+		if (ep->desc.bEndpointAddress == ep_addr)
+			return ep;
+	}
+	return NULL;
+}
+
+/**
+ * usb_check_bulk_endpoints - Check whether an interface's current altsetting
+ * contains a set of bulk endpoints with the given addresses.
+ * @intf: the interface whose current altsetting should be searched
+ * @ep_addrs: 0-terminated array of the endpoint addresses (number and
+ * direction) to look for
+ *
+ * Search for endpoints with the specified addresses and check their types.
+ *
+ * Return: %true if all the endpoints are found and are bulk, %false otherwise.
+ */
+bool usb_check_bulk_endpoints(
+		const struct usb_interface *intf, const u8 *ep_addrs)
+{
+	const struct usb_host_endpoint *ep;
+
+	for (; *ep_addrs; ++ep_addrs) {
+		ep = usb_find_endpoint(intf, *ep_addrs);
+		if (!ep || !usb_endpoint_xfer_bulk(&ep->desc))
+			return false;
+	}
+	return true;
+}
+EXPORT_SYMBOL_GPL(usb_check_bulk_endpoints);
+
+/**
+ * usb_check_int_endpoints - Check whether an interface's current altsetting
+ * contains a set of interrupt endpoints with the given addresses.
+ * @intf: the interface whose current altsetting should be searched
+ * @ep_addrs: 0-terminated array of the endpoint addresses (number and
+ * direction) to look for
+ *
+ * Search for endpoints with the specified addresses and check their types.
+ *
+ * Return: %true if all the endpoints are found and are interrupt,
+ * %false otherwise.
+ */
+bool usb_check_int_endpoints(
+		const struct usb_interface *intf, const u8 *ep_addrs)
+{
+	const struct usb_host_endpoint *ep;
+
+	for (; *ep_addrs; ++ep_addrs) {
+		ep = usb_find_endpoint(intf, *ep_addrs);
+		if (!ep || !usb_endpoint_xfer_int(&ep->desc))
+			return false;
+	}
+	return true;
+}
+EXPORT_SYMBOL_GPL(usb_check_int_endpoints);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * usb_find_alt_setting() - Given a configuration, find the alternate setting
@@ -68,6 +327,11 @@ MODULE_PARM_DESC(autosuspend, "default autosuspend delay");
  * @alt_num: alternate interface setting number to search for.
  *
  * Search the configuration's interface cache for the given alt setting.
+<<<<<<< HEAD
+=======
+ *
+ * Return: The alternate setting, if found. %NULL otherwise.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct usb_host_interface *usb_find_alt_setting(
 		struct usb_host_config *config,
@@ -77,6 +341,11 @@ struct usb_host_interface *usb_find_alt_setting(
 	struct usb_interface_cache *intf_cache = NULL;
 	int i;
 
+<<<<<<< HEAD
+=======
+	if (!config)
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < config->desc.bNumInterfaces; i++) {
 		if (config->intf_cache[i]->altsetting[0].desc.bInterfaceNumber
 				== iface_num) {
@@ -103,8 +372,12 @@ EXPORT_SYMBOL_GPL(usb_find_alt_setting);
  * @ifnum: the desired interface
  *
  * This walks the device descriptor for the currently active configuration
+<<<<<<< HEAD
  * and returns a pointer to the interface with that particular interface
  * number, or null.
+=======
+ * to find the interface object with the particular interface number.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note that configuration descriptors are not required to assign interface
  * numbers sequentially, so that it would be incorrect to assume that
@@ -115,6 +388,12 @@ EXPORT_SYMBOL_GPL(usb_find_alt_setting);
  *
  * Don't call this function unless you are bound to one of the interfaces
  * on this device or you have locked the device!
+<<<<<<< HEAD
+=======
+ *
+ * Return: A pointer to the interface that has @ifnum as interface number,
+ * if found. %NULL otherwise.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct usb_interface *usb_ifnum_to_if(const struct usb_device *dev,
 				      unsigned ifnum)
@@ -139,8 +418,12 @@ EXPORT_SYMBOL_GPL(usb_ifnum_to_if);
  * @altnum: the desired alternate setting number
  *
  * This searches the altsetting array of the specified interface for
+<<<<<<< HEAD
  * an entry with the correct bAlternateSetting value and returns a pointer
  * to that entry, or null.
+=======
+ * an entry with the correct bAlternateSetting value.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Note that altsettings need not be stored sequentially by number, so
  * it would be incorrect to assume that the first altsetting entry in
@@ -149,6 +432,12 @@ EXPORT_SYMBOL_GPL(usb_ifnum_to_if);
  *
  * Don't call this function unless you are bound to the intf interface
  * or you have locked the device!
+<<<<<<< HEAD
+=======
+ *
+ * Return: A pointer to the entry of the altsetting array of @intf that
+ * has @altnum as the alternate setting number. %NULL if not found.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct usb_host_interface *usb_altnum_to_altsetting(
 					const struct usb_interface *intf,
@@ -169,9 +458,15 @@ struct find_interface_arg {
 	struct device_driver *drv;
 };
 
+<<<<<<< HEAD
 static int __find_interface(struct device *dev, void *data)
 {
 	struct find_interface_arg *arg = data;
+=======
+static int __find_interface(struct device *dev, const void *data)
+{
+	const struct find_interface_arg *arg = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_interface *intf;
 
 	if (!is_usb_interface(dev))
@@ -191,6 +486,11 @@ static int __find_interface(struct device *dev, void *data)
  * This walks the bus device list and returns a pointer to the interface
  * with the matching minor and driver.  Note, this only works for devices
  * that share the USB major number.
+<<<<<<< HEAD
+=======
+ *
+ * Return: A pointer to the interface with the matching major and @minor.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct usb_interface *usb_find_interface(struct usb_driver *drv, int minor)
 {
@@ -198,7 +498,11 @@ struct usb_interface *usb_find_interface(struct usb_driver *drv, int minor)
 	struct device *dev;
 
 	argb.minor = minor;
+<<<<<<< HEAD
 	argb.drv = &drv->drvwrap.driver;
+=======
+	argb.drv = &drv->driver;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = bus_find_device(&usb_bus_type, NULL, &argb, __find_interface);
 
@@ -209,6 +513,42 @@ struct usb_interface *usb_find_interface(struct usb_driver *drv, int minor)
 }
 EXPORT_SYMBOL_GPL(usb_find_interface);
 
+<<<<<<< HEAD
+=======
+struct each_dev_arg {
+	void *data;
+	int (*fn)(struct usb_device *, void *);
+};
+
+static int __each_dev(struct device *dev, void *data)
+{
+	struct each_dev_arg *arg = (struct each_dev_arg *)data;
+
+	/* There are struct usb_interface on the same bus, filter them out */
+	if (!is_usb_device(dev))
+		return 0;
+
+	return arg->fn(to_usb_device(dev), arg->data);
+}
+
+/**
+ * usb_for_each_dev - iterate over all USB devices in the system
+ * @data: data pointer that will be handed to the callback function
+ * @fn: callback function to be called for each USB device
+ *
+ * Iterate over all USB devices and call @fn for each, passing it @data. If it
+ * returns anything other than 0, we break the iteration prematurely and return
+ * that value.
+ */
+int usb_for_each_dev(void *data, int (*fn)(struct usb_device *, void *))
+{
+	struct each_dev_arg arg = {data, fn};
+
+	return bus_for_each_dev(&usb_bus_type, NULL, &arg, __each_dev);
+}
+EXPORT_SYMBOL_GPL(usb_for_each_dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * usb_release_dev - free a usb device structure when all users of it are finished.
  * @dev: device that's been disconnected
@@ -226,6 +566,10 @@ static void usb_release_dev(struct device *dev)
 
 	usb_destroy_configuration(udev);
 	usb_release_bos_descriptor(udev);
+<<<<<<< HEAD
+=======
+	of_node_put(dev->of_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_put_hcd(hcd);
 	kfree(udev->product);
 	kfree(udev->manufacturer);
@@ -233,10 +577,16 @@ static void usb_release_dev(struct device *dev)
 	kfree(udev);
 }
 
+<<<<<<< HEAD
 #ifdef	CONFIG_HOTPLUG
 static int usb_dev_uevent(struct device *dev, struct kobj_uevent_env *env)
 {
 	struct usb_device *usb_dev;
+=======
+static int usb_dev_uevent(const struct device *dev, struct kobj_uevent_env *env)
+{
+	const struct usb_device *usb_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_dev = to_usb_device(dev);
 
@@ -249,6 +599,7 @@ static int usb_dev_uevent(struct device *dev, struct kobj_uevent_env *env)
 	return 0;
 }
 
+<<<<<<< HEAD
 #else
 
 static int usb_dev_uevent(struct device *dev, struct kobj_uevent_env *env)
@@ -257,6 +608,8 @@ static int usb_dev_uevent(struct device *dev, struct kobj_uevent_env *env)
 }
 #endif	/* CONFIG_HOTPLUG */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef	CONFIG_PM
 
 /* USB device Power-Management thunks.
@@ -316,26 +669,43 @@ static const struct dev_pm_ops usb_device_pm_ops = {
 	.thaw =		usb_dev_thaw,
 	.poweroff =	usb_dev_poweroff,
 	.restore =	usb_dev_restore,
+<<<<<<< HEAD
 #ifdef CONFIG_USB_SUSPEND
 	.runtime_suspend =	usb_runtime_suspend,
 	.runtime_resume =	usb_runtime_resume,
 	.runtime_idle =		usb_runtime_idle,
 #endif
+=======
+	.runtime_suspend =	usb_runtime_suspend,
+	.runtime_resume =	usb_runtime_resume,
+	.runtime_idle =		usb_runtime_idle,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif	/* CONFIG_PM */
 
 
+<<<<<<< HEAD
 static char *usb_devnode(struct device *dev, umode_t *mode)
 {
 	struct usb_device *usb_dev;
+=======
+static char *usb_devnode(const struct device *dev,
+			 umode_t *mode, kuid_t *uid, kgid_t *gid)
+{
+	const struct usb_device *usb_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	usb_dev = to_usb_device(dev);
 	return kasprintf(GFP_KERNEL, "bus/usb/%03d/%03d",
 			 usb_dev->bus->busnum, usb_dev->devnum);
 }
 
+<<<<<<< HEAD
 struct device_type usb_device_type = {
+=======
+const struct device_type usb_device_type = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name =		"usb_device",
 	.release =	usb_release_dev,
 	.uevent =	usb_dev_uevent,
@@ -345,6 +715,7 @@ struct device_type usb_device_type = {
 #endif
 };
 
+<<<<<<< HEAD
 
 /* Returns 1 if @usb_bus is WUSB, 0 otherwise */
 static unsigned usb_bus_is_wusb(struct usb_bus *bus)
@@ -353,31 +724,74 @@ static unsigned usb_bus_is_wusb(struct usb_bus *bus)
 	return hcd->wireless;
 }
 
+=======
+static bool usb_dev_authorized(struct usb_device *dev, struct usb_hcd *hcd)
+{
+	struct usb_hub *hub;
+
+	if (!dev->parent)
+		return true; /* Root hub always ok [and always wired] */
+
+	switch (hcd->dev_policy) {
+	case USB_DEVICE_AUTHORIZE_NONE:
+	default:
+		return false;
+
+	case USB_DEVICE_AUTHORIZE_ALL:
+		return true;
+
+	case USB_DEVICE_AUTHORIZE_INTERNAL:
+		hub = usb_hub_to_struct_hub(dev->parent);
+		return hub->ports[dev->portnum - 1]->connect_type ==
+				USB_PORT_CONNECT_TYPE_HARD_WIRED;
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * usb_alloc_dev - usb device constructor (usbcore-internal)
  * @parent: hub to which device is connected; null to allocate a root hub
  * @bus: bus used to access the device
  * @port1: one-based index of port; ignored for root hubs
+<<<<<<< HEAD
  * Context: !in_interrupt()
+=======
+ *
+ * Context: task context, might sleep.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Only hub drivers (including virtual root hub drivers for host
  * controllers) should ever call this.
  *
  * This call may not be used in a non-sleeping context.
+<<<<<<< HEAD
+=======
+ *
+ * Return: On success, a pointer to the allocated usb device. %NULL on
+ * failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct usb_device *usb_alloc_dev(struct usb_device *parent,
 				 struct usb_bus *bus, unsigned port1)
 {
 	struct usb_device *dev;
+<<<<<<< HEAD
 	struct usb_hcd *usb_hcd = container_of(bus, struct usb_hcd, self);
 	unsigned root_hub = 0;
+=======
+	struct usb_hcd *usb_hcd = bus_to_hcd(bus);
+	unsigned raw_port = port1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
 	if (!dev)
 		return NULL;
 
+<<<<<<< HEAD
 	if (!usb_get_hcd(bus_to_hcd(bus))) {
+=======
+	if (!usb_get_hcd(usb_hcd)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(dev);
 		return NULL;
 	}
@@ -393,9 +807,15 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
 	dev->dev.bus = &usb_bus_type;
 	dev->dev.type = &usb_device_type;
 	dev->dev.groups = usb_device_groups;
+<<<<<<< HEAD
 	dev->dev.dma_mask = bus->controller->dma_mask;
 	set_dev_node(&dev->dev, dev_to_node(bus->controller));
 	dev->state = USB_STATE_ATTACHED;
+=======
+	set_dev_node(&dev->dev, dev_to_node(bus->sysdev));
+	dev->state = USB_STATE_ATTACHED;
+	dev->lpm_disable_count = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_set(&dev->urbnum, 0);
 
 	INIT_LIST_HEAD(&dev->ep0.urb_list);
@@ -418,8 +838,13 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
 		dev->route = 0;
 
 		dev->dev.parent = bus->controller;
+<<<<<<< HEAD
 		dev_set_name(&dev->dev, "usb%d", bus->busnum);
 		root_hub = 1;
+=======
+		device_set_of_node_from_dev(&dev->dev, bus->sysdev);
+		dev_set_name(&dev->dev, "usb%d", bus->busnum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* match any labeling on the hubs; it's one-based */
 		if (parent->devpath[0] == '0') {
@@ -442,6 +867,16 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
 		dev->dev.parent = &parent->dev;
 		dev_set_name(&dev->dev, "%d-%s", bus->busnum, dev->devpath);
 
+<<<<<<< HEAD
+=======
+		if (!parent->parent) {
+			/* device under root hub's port */
+			raw_port = usb_hcd_find_raw_port_number(usb_hcd,
+				port1);
+		}
+		dev->dev.of_node = usb_of_get_device_node(parent, raw_port);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* hub driver sets up TT records */
 	}
 
@@ -451,6 +886,7 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
 	INIT_LIST_HEAD(&dev->filelist);
 
 #ifdef	CONFIG_PM
+<<<<<<< HEAD
 	if (usb_hcd->driver->set_autosuspend_delay)
 		usb_hcd->driver->set_autosuspend_delay(dev);
 	else
@@ -467,6 +903,18 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
 	}
 	return dev;
 }
+=======
+	pm_runtime_set_autosuspend_delay(&dev->dev,
+			usb_autosuspend_delay * 1000);
+	dev->connect_time = jiffies;
+	dev->active_duration = -jiffies;
+#endif
+
+	dev->authorized = usb_dev_authorized(dev, usb_hcd);
+	return dev;
+}
+EXPORT_SYMBOL_GPL(usb_alloc_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * usb_get_dev - increments the reference count of the usb device structure
@@ -477,8 +925,17 @@ struct usb_device *usb_alloc_dev(struct usb_device *parent,
  * Drivers for USB interfaces should normally record such references in
  * their probe() methods, when they bind to an interface, and release
  * them by calling usb_put_dev(), in their disconnect() methods.
+<<<<<<< HEAD
  *
  * A pointer to the device with the incremented reference counter is returned.
+=======
+ * However, if a driver does not access the usb_device structure after
+ * its disconnect() method returns then refcounting is not necessary,
+ * because the USB core guarantees that a usb_device will not be
+ * deallocated until after all of its interface drivers have been unbound.
+ *
+ * Return: A pointer to the device with the incremented reference counter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct usb_device *usb_get_dev(struct usb_device *dev)
 {
@@ -511,9 +968,18 @@ EXPORT_SYMBOL_GPL(usb_put_dev);
  * Drivers for USB interfaces should normally record such references in
  * their probe() methods, when they bind to an interface, and release
  * them by calling usb_put_intf(), in their disconnect() methods.
+<<<<<<< HEAD
  *
  * A pointer to the interface with the incremented reference counter is
  * returned.
+=======
+ * However, if a driver does not access the usb_interface structure after
+ * its disconnect() method returns then refcounting is not necessary,
+ * because the USB core guarantees that a usb_interface will not be
+ * deallocated until after its driver has been unbound.
+ *
+ * Return: A pointer to the interface with the incremented reference counter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct usb_interface *usb_get_intf(struct usb_interface *intf)
 {
@@ -538,6 +1004,41 @@ void usb_put_intf(struct usb_interface *intf)
 }
 EXPORT_SYMBOL_GPL(usb_put_intf);
 
+<<<<<<< HEAD
+=======
+/**
+ * usb_intf_get_dma_device - acquire a reference on the usb interface's DMA endpoint
+ * @intf: the usb interface
+ *
+ * While a USB device cannot perform DMA operations by itself, many USB
+ * controllers can. A call to usb_intf_get_dma_device() returns the DMA endpoint
+ * for the given USB interface, if any. The returned device structure must be
+ * released with put_device().
+ *
+ * See also usb_get_dma_device().
+ *
+ * Returns: A reference to the usb interface's DMA endpoint; or NULL if none
+ *          exists.
+ */
+struct device *usb_intf_get_dma_device(struct usb_interface *intf)
+{
+	struct usb_device *udev = interface_to_usbdev(intf);
+	struct device *dmadev;
+
+	if (!udev->bus)
+		return NULL;
+
+	dmadev = get_device(udev->bus->sysdev);
+	if (!dmadev || !dmadev->dma_mask) {
+		put_device(dmadev);
+		return NULL;
+	}
+
+	return dmadev;
+}
+EXPORT_SYMBOL_GPL(usb_intf_get_dma_device);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*			USB device locking
  *
  * USB devices and interfaces are locked using the semaphore in their
@@ -551,7 +1052,11 @@ EXPORT_SYMBOL_GPL(usb_put_intf);
  * is simple:
  *
  *	When locking both a device and its parent, always lock the
+<<<<<<< HEAD
  *	the parent first.
+=======
+ *	parent first.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /**
@@ -566,7 +1071,11 @@ EXPORT_SYMBOL_GPL(usb_put_intf);
  * disconnect; in some drivers (such as usb-storage) the disconnect()
  * or suspend() method will block waiting for a device reset to complete.
  *
+<<<<<<< HEAD
  * Returns a negative error code for failure, otherwise 0.
+=======
+ * Return: A negative error code for failure, otherwise 0.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int usb_lock_device_for_reset(struct usb_device *udev,
 			      const struct usb_interface *iface)
@@ -605,6 +1114,7 @@ EXPORT_SYMBOL_GPL(usb_lock_device_for_reset);
  * usb_get_current_frame_number - return current bus frame number
  * @dev: the device whose bus is being queried
  *
+<<<<<<< HEAD
  * Returns the current frame number for the USB host controller
  * used with the given USB device.  This can be used when scheduling
  * isochronous requests.
@@ -613,6 +1123,17 @@ EXPORT_SYMBOL_GPL(usb_lock_device_for_reset);
  * "scheduling horizons".  While one type might support scheduling only
  * 32 frames into the future, others could support scheduling up to
  * 1024 frames into the future.
+=======
+ * Return: The current frame number for the USB host controller used
+ * with the given USB device. This can be used when scheduling
+ * isochronous requests.
+ *
+ * Note: Different kinds of host controller have different "scheduling
+ * horizons". While one type might support scheduling only 32 frames
+ * into the future, others could support scheduling up to 1024 frames
+ * into the future.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int usb_get_current_frame_number(struct usb_device *dev)
 {
@@ -627,14 +1148,22 @@ EXPORT_SYMBOL_GPL(usb_get_current_frame_number);
  */
 
 int __usb_get_extra_descriptor(char *buffer, unsigned size,
+<<<<<<< HEAD
 			       unsigned char type, void **ptr)
+=======
+			       unsigned char type, void **ptr, size_t minsize)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct usb_descriptor_header *header;
 
 	while (size >= sizeof(struct usb_descriptor_header)) {
 		header = (struct usb_descriptor_header *)buffer;
 
+<<<<<<< HEAD
 		if (header->bLength < 2) {
+=======
+		if (header->bLength < 2 || header->bLength > size) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			printk(KERN_ERR
 				"%s: bogus descriptor, type %d length %d\n",
 				usbcore_name,
@@ -643,7 +1172,11 @@ int __usb_get_extra_descriptor(char *buffer, unsigned size,
 			return -1;
 		}
 
+<<<<<<< HEAD
 		if (header->bDescriptorType == type) {
+=======
+		if (header->bDescriptorType == type && header->bLength >= minsize) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*ptr = header;
 			return 0;
 		}
@@ -662,11 +1195,20 @@ EXPORT_SYMBOL_GPL(__usb_get_extra_descriptor);
  * @mem_flags: affect whether allocation may block
  * @dma: used to return DMA address of buffer
  *
+<<<<<<< HEAD
  * Return value is either null (indicating no buffer could be allocated), or
  * the cpu-space pointer to a buffer that may be used to perform DMA to the
  * specified device.  Such cpu-space buffers are returned along with the DMA
  * address (through the pointer provided).
  *
+=======
+ * Return: Either null (indicating no buffer could be allocated), or the
+ * cpu-space pointer to a buffer that may be used to perform DMA to the
+ * specified device.  Such cpu-space buffers are returned along with the DMA
+ * address (through the pointer provided).
+ *
+ * Note:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * These buffers are used with URB_NO_xxx_DMA_MAP set in urb->transfer_flags
  * to avoid behaviors like using "DMA bounce buffers", or thrashing IOMMU
  * hardware during URB completion/resubmit.  The implementation varies between
@@ -708,6 +1250,7 @@ void usb_free_coherent(struct usb_device *dev, size_t size, void *addr,
 }
 EXPORT_SYMBOL_GPL(usb_free_coherent);
 
+<<<<<<< HEAD
 /**
  * usb_buffer_map - create DMA mapping(s) for an urb
  * @urb: urb whose transfer_buffer/setup_packet will be mapped
@@ -944,6 +1487,8 @@ int usb_disabled(void)
 }
 EXPORT_SYMBOL_GPL(usb_disabled);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Notifications of device and interface registration
  */
@@ -974,6 +1519,7 @@ static struct notifier_block usb_bus_nb = {
 	.notifier_call = usb_bus_notify,
 };
 
+<<<<<<< HEAD
 struct dentry *usb_debug_root;
 EXPORT_SYMBOL_GPL(usb_debug_root);
 
@@ -995,12 +1541,22 @@ static int usb_debugfs_init(void)
 	}
 
 	return 0;
+=======
+static void usb_debugfs_init(void)
+{
+	debugfs_create_file("devices", 0444, usb_debug_root, NULL,
+			    &usbfs_devices_fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void usb_debugfs_cleanup(void)
 {
+<<<<<<< HEAD
 	debugfs_remove(usb_debug_devices);
 	debugfs_remove(usb_debug_root);
+=======
+	debugfs_lookup_and_remove("devices", usb_debug_root);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1009,16 +1565,26 @@ static void usb_debugfs_cleanup(void)
 static int __init usb_init(void)
 {
 	int retval;
+<<<<<<< HEAD
 	if (nousb) {
+=======
+	if (usb_disabled()) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_info("%s: USB support disabled\n", usbcore_name);
 		return 0;
 	}
 	usb_init_pool_max();
 
+<<<<<<< HEAD
 	retval = usb_debugfs_init();
 	if (retval)
 		goto out;
 
+=======
+	usb_debugfs_init();
+
+	usb_acpi_register();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = bus_register(&usb_bus_type);
 	if (retval)
 		goto bus_register_failed;
@@ -1028,15 +1594,24 @@ static int __init usb_init(void)
 	retval = usb_major_init();
 	if (retval)
 		goto major_init_failed;
+<<<<<<< HEAD
+=======
+	retval = class_register(&usbmisc_class);
+	if (retval)
+		goto class_register_failed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = usb_register(&usbfs_driver);
 	if (retval)
 		goto driver_register_failed;
 	retval = usb_devio_init();
 	if (retval)
 		goto usb_devio_init_failed;
+<<<<<<< HEAD
 	retval = usbfs_init();
 	if (retval)
 		goto fs_init_failed;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	retval = usb_hub_init();
 	if (retval)
 		goto hub_init_failed;
@@ -1046,18 +1621,30 @@ static int __init usb_init(void)
 
 	usb_hub_cleanup();
 hub_init_failed:
+<<<<<<< HEAD
 	usbfs_cleanup();
 fs_init_failed:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_devio_cleanup();
 usb_devio_init_failed:
 	usb_deregister(&usbfs_driver);
 driver_register_failed:
+<<<<<<< HEAD
+=======
+	class_unregister(&usbmisc_class);
+class_register_failed:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_major_cleanup();
 major_init_failed:
 	bus_unregister_notifier(&usb_bus_type, &usb_bus_nb);
 bus_notifier_failed:
 	bus_unregister(&usb_bus_type);
 bus_register_failed:
+<<<<<<< HEAD
+=======
+	usb_acpi_unregister();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_debugfs_cleanup();
 out:
 	return retval;
@@ -1069,6 +1656,7 @@ out:
 static void __exit usb_exit(void)
 {
 	/* This will matter if shutdown/reboot does exitcalls. */
+<<<<<<< HEAD
 	if (nousb)
 		return;
 
@@ -1081,6 +1669,23 @@ static void __exit usb_exit(void)
 	bus_unregister_notifier(&usb_bus_type, &usb_bus_nb);
 	bus_unregister(&usb_bus_type);
 	usb_debugfs_cleanup();
+=======
+	if (usb_disabled())
+		return;
+
+	usb_release_quirk_list();
+	usb_deregister_device_driver(&usb_generic_driver);
+	usb_major_cleanup();
+	usb_deregister(&usbfs_driver);
+	usb_devio_cleanup();
+	usb_hub_cleanup();
+	class_unregister(&usbmisc_class);
+	bus_unregister_notifier(&usb_bus_type, &usb_bus_nb);
+	bus_unregister(&usb_bus_type);
+	usb_acpi_unregister();
+	usb_debugfs_cleanup();
+	idr_destroy(&usb_bus_idr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 subsys_initcall(usb_init);

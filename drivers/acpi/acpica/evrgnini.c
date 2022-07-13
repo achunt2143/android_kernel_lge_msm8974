@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: evrgnini- ACPI address_space (op_region) init
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,23 +46,41 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acevents.h"
 #include "acnamesp.h"
+<<<<<<< HEAD
+=======
+#include "acinterp.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_EVENTS
 ACPI_MODULE_NAME("evrgnini")
 
+<<<<<<< HEAD
 /* Local prototypes */
 static u8 acpi_ev_is_pci_root_bridge(struct acpi_namespace_node *node);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ev_system_memory_region_setup
  *
+<<<<<<< HEAD
  * PARAMETERS:  Handle              - Region we are interested in
  *              Function            - Start or stop
+=======
+ * PARAMETERS:  handle              - Region we are interested in
+ *              function            - Start or stop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              handler_context     - Address space handler context
  *              region_context      - Region specific context
  *
@@ -66,7 +89,10 @@ static u8 acpi_ev_is_pci_root_bridge(struct acpi_namespace_node *node);
  * DESCRIPTION: Setup a system_memory operation region
  *
  ******************************************************************************/
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 acpi_status
 acpi_ev_system_memory_region_setup(acpi_handle handle,
 				   u32 function,
@@ -75,6 +101,10 @@ acpi_ev_system_memory_region_setup(acpi_handle handle,
 	union acpi_operand_object *region_desc =
 	    (union acpi_operand_object *)handle;
 	struct acpi_mem_space_context *local_region_context;
+<<<<<<< HEAD
+=======
+	struct acpi_mem_mapping *mm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE(ev_system_memory_region_setup);
 
@@ -83,6 +113,7 @@ acpi_ev_system_memory_region_setup(acpi_handle handle,
 			local_region_context =
 			    (struct acpi_mem_space_context *)*region_context;
 
+<<<<<<< HEAD
 			/* Delete a cached mapping if present */
 
 			if (local_region_context->mapped_length) {
@@ -90,6 +121,16 @@ acpi_ev_system_memory_region_setup(acpi_handle handle,
 						     mapped_logical_address,
 						     local_region_context->
 						     mapped_length);
+=======
+			/* Delete memory mappings if present */
+
+			while (local_region_context->first_mm) {
+				mm = local_region_context->first_mm;
+				local_region_context->first_mm = mm->next_mm;
+				acpi_os_unmap_memory(mm->logical_address,
+						     mm->length);
+				ACPI_FREE(mm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 			ACPI_FREE(local_region_context);
 			*region_context = NULL;
@@ -118,8 +159,13 @@ acpi_ev_system_memory_region_setup(acpi_handle handle,
  *
  * FUNCTION:    acpi_ev_io_space_region_setup
  *
+<<<<<<< HEAD
  * PARAMETERS:  Handle              - Region we are interested in
  *              Function            - Start or stop
+=======
+ * PARAMETERS:  handle              - Region we are interested in
+ *              function            - Start or stop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              handler_context     - Address space handler context
  *              region_context      - Region specific context
  *
@@ -149,8 +195,13 @@ acpi_ev_io_space_region_setup(acpi_handle handle,
  *
  * FUNCTION:    acpi_ev_pci_config_region_setup
  *
+<<<<<<< HEAD
  * PARAMETERS:  Handle              - Region we are interested in
  *              Function            - Start or stop
+=======
+ * PARAMETERS:  handle              - Region we are interested in
+ *              function            - Start or stop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              handler_context     - Address space handler context
  *              region_context      - Region specific context
  *
@@ -227,8 +278,12 @@ acpi_ev_pci_config_region_setup(acpi_handle handle,
 
 				/* Install a handler for this PCI root bridge */
 
+<<<<<<< HEAD
 				status =
 				    acpi_install_address_space_handler((acpi_handle) pci_root_node, ACPI_ADR_SPACE_PCI_CONFIG, ACPI_DEFAULT_HANDLER, NULL, NULL);
+=======
+				status = acpi_install_address_space_handler((acpi_handle)pci_root_node, ACPI_ADR_SPACE_PCI_CONFIG, ACPI_DEFAULT_HANDLER, NULL, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (ACPI_FAILURE(status)) {
 					if (status == AE_SAME_HANDLER) {
 						/*
@@ -236,7 +291,10 @@ acpi_ev_pci_config_region_setup(acpi_handle handle,
 						 * root bridge. Still need to return a context object
 						 * for the new PCI_Config operation region, however.
 						 */
+<<<<<<< HEAD
 						status = AE_OK;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					} else {
 						ACPI_EXCEPTION((AE_INFO, status,
 								"Could not install PciConfig handler "
@@ -338,7 +396,11 @@ acpi_ev_pci_config_region_setup(acpi_handle handle,
  *
  * FUNCTION:    acpi_ev_is_pci_root_bridge
  *
+<<<<<<< HEAD
  * PARAMETERS:  Node            - Device node being examined
+=======
+ * PARAMETERS:  node            - Device node being examined
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      TRUE if device is a PCI/PCI-Express Root Bridge
  *
@@ -347,11 +409,19 @@ acpi_ev_pci_config_region_setup(acpi_handle handle,
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 static u8 acpi_ev_is_pci_root_bridge(struct acpi_namespace_node *node)
 {
 	acpi_status status;
 	struct acpica_device_id *hid;
 	struct acpica_device_id_list *cid;
+=======
+u8 acpi_ev_is_pci_root_bridge(struct acpi_namespace_node *node)
+{
+	acpi_status status;
+	struct acpi_pnp_device_id *hid;
+	struct acpi_pnp_device_id_list *cid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 i;
 	u8 match;
 
@@ -393,14 +463,23 @@ static u8 acpi_ev_is_pci_root_bridge(struct acpi_namespace_node *node)
  *
  * FUNCTION:    acpi_ev_pci_bar_region_setup
  *
+<<<<<<< HEAD
  * PARAMETERS:  Handle              - Region we are interested in
  *              Function            - Start or stop
+=======
+ * PARAMETERS:  handle              - Region we are interested in
+ *              function            - Start or stop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              handler_context     - Address space handler context
  *              region_context      - Region specific context
  *
  * RETURN:      Status
  *
+<<<<<<< HEAD
  * DESCRIPTION: Setup a pci_bAR operation region
+=======
+ * DESCRIPTION: Setup a pci_BAR operation region
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * MUTEX:       Assumes namespace is not locked
  *
@@ -420,8 +499,13 @@ acpi_ev_pci_bar_region_setup(acpi_handle handle,
  *
  * FUNCTION:    acpi_ev_cmos_region_setup
  *
+<<<<<<< HEAD
  * PARAMETERS:  Handle              - Region we are interested in
  *              Function            - Start or stop
+=======
+ * PARAMETERS:  handle              - Region we are interested in
+ *              function            - Start or stop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              handler_context     - Address space handler context
  *              region_context      - Region specific context
  *
@@ -445,10 +529,69 @@ acpi_ev_cmos_region_setup(acpi_handle handle,
 
 /*******************************************************************************
  *
+<<<<<<< HEAD
  * FUNCTION:    acpi_ev_default_region_setup
  *
  * PARAMETERS:  Handle              - Region we are interested in
  *              Function            - Start or stop
+=======
+ * FUNCTION:    acpi_ev_data_table_region_setup
+ *
+ * PARAMETERS:  handle              - Region we are interested in
+ *              function            - Start or stop
+ *              handler_context     - Address space handler context
+ *              region_context      - Region specific context
+ *
+ * RETURN:      Status
+ *
+ * DESCRIPTION: Setup a data_table_region
+ *
+ * MUTEX:       Assumes namespace is not locked
+ *
+ ******************************************************************************/
+
+acpi_status
+acpi_ev_data_table_region_setup(acpi_handle handle,
+				u32 function,
+				void *handler_context, void **region_context)
+{
+	union acpi_operand_object *region_desc =
+	    (union acpi_operand_object *)handle;
+	struct acpi_data_table_mapping *local_region_context;
+
+	ACPI_FUNCTION_TRACE(ev_data_table_region_setup);
+
+	if (function == ACPI_REGION_DEACTIVATE) {
+		if (*region_context) {
+			ACPI_FREE(*region_context);
+			*region_context = NULL;
+		}
+		return_ACPI_STATUS(AE_OK);
+	}
+
+	/* Create a new context */
+
+	local_region_context =
+	    ACPI_ALLOCATE_ZEROED(sizeof(struct acpi_data_table_mapping));
+	if (!(local_region_context)) {
+		return_ACPI_STATUS(AE_NO_MEMORY);
+	}
+
+	/* Save the data table pointer for use in the handler */
+
+	local_region_context->pointer = region_desc->region.pointer;
+
+	*region_context = local_region_context;
+	return_ACPI_STATUS(AE_OK);
+}
+
+/*******************************************************************************
+ *
+ * FUNCTION:    acpi_ev_default_region_setup
+ *
+ * PARAMETERS:  handle              - Region we are interested in
+ *              function            - Start or stop
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              handler_context     - Address space handler context
  *              region_context      - Region specific context
  *
@@ -479,7 +622,10 @@ acpi_ev_default_region_setup(acpi_handle handle,
  * FUNCTION:    acpi_ev_initialize_region
  *
  * PARAMETERS:  region_obj      - Region we are initializing
+<<<<<<< HEAD
  *              acpi_ns_locked  - Is namespace locked?
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -497,22 +643,45 @@ acpi_ev_default_region_setup(acpi_handle handle,
  * MUTEX:       Interpreter should be unlocked, because we may run the _REG
  *              method for this region.
  *
+<<<<<<< HEAD
  ******************************************************************************/
 
 acpi_status
 acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 			  u8 acpi_ns_locked)
+=======
+ * NOTE:        Possible incompliance:
+ *              There is a behavior conflict in automatic _REG execution:
+ *              1. When the interpreter is evaluating a method, we can only
+ *                 automatically run _REG for the following case:
+ *                   operation_region (OPR1, 0x80, 0x1000010, 0x4)
+ *              2. When the interpreter is loading a table, we can also
+ *                 automatically run _REG for the following case:
+ *                   operation_region (OPR1, 0x80, 0x1000010, 0x4)
+ *              Though this may not be compliant to the de-facto standard, the
+ *              logic is kept in order not to trigger regressions. And keeping
+ *              this logic should be taken care by the caller of this function.
+ *
+ ******************************************************************************/
+
+acpi_status acpi_ev_initialize_region(union acpi_operand_object *region_obj)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	union acpi_operand_object *handler_obj;
 	union acpi_operand_object *obj_desc;
 	acpi_adr_space_type space_id;
 	struct acpi_namespace_node *node;
+<<<<<<< HEAD
 	acpi_status status;
 	struct acpi_namespace_node *method_node;
 	acpi_name *reg_name_ptr = (acpi_name *) METHOD_NAME__REG;
 	union acpi_operand_object *region_obj2;
 
 	ACPI_FUNCTION_TRACE_U32(ev_initialize_region, acpi_ns_locked);
+=======
+
+	ACPI_FUNCTION_TRACE(ev_initialize_region);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!region_obj) {
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
@@ -522,14 +691,19 @@ acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 		return_ACPI_STATUS(AE_OK);
 	}
 
+<<<<<<< HEAD
 	region_obj2 = acpi_ns_get_secondary_object(region_obj);
 	if (!region_obj2) {
 		return_ACPI_STATUS(AE_NOT_EXIST);
 	}
+=======
+	region_obj->common.flags |= AOPOBJ_OBJECT_INITIALIZED;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	node = region_obj->region.node->parent;
 	space_id = region_obj->region.space_id;
 
+<<<<<<< HEAD
 	/* Setup defaults */
 
 	region_obj->region.handler = NULL;
@@ -554,6 +728,11 @@ acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 	/*
 	 * The following loop depends upon the root Node having no parent
 	 * ie: acpi_gbl_root_node->parent_entry being set to NULL
+=======
+	/*
+	 * The following loop depends upon the root Node having no parent
+	 * ie: acpi_gbl_root_node->Parent being set to NULL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	while (node) {
 
@@ -567,6 +746,7 @@ acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 
 			switch (node->type) {
 			case ACPI_TYPE_DEVICE:
+<<<<<<< HEAD
 
 				handler_obj = obj_desc->device.handler;
 				break;
@@ -655,6 +835,44 @@ acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 				/* Try next handler in the list */
 
 				handler_obj = handler_obj->address_space.next;
+=======
+			case ACPI_TYPE_PROCESSOR:
+			case ACPI_TYPE_THERMAL:
+
+				handler_obj = obj_desc->common_notify.handler;
+				break;
+
+			default:
+
+				/* Ignore other objects */
+
+				break;
+			}
+
+			handler_obj =
+			    acpi_ev_find_region_handler(space_id, handler_obj);
+			if (handler_obj) {
+
+				/* Found correct handler */
+
+				ACPI_DEBUG_PRINT((ACPI_DB_OPREGION,
+						  "Found handler %p for region %p in obj %p\n",
+						  handler_obj, region_obj,
+						  obj_desc));
+
+				(void)acpi_ev_attach_region(handler_obj,
+							    region_obj, FALSE);
+
+				/*
+				 * Tell all users that this region is usable by
+				 * running the _REG method
+				 */
+				acpi_ex_exit_interpreter();
+				(void)acpi_ev_execute_reg_method(region_obj,
+								 ACPI_REG_CONNECT);
+				acpi_ex_enter_interpreter();
+				return_ACPI_STATUS(AE_OK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 
@@ -663,12 +881,24 @@ acpi_ev_initialize_region(union acpi_operand_object *region_obj,
 		node = node->parent;
 	}
 
+<<<<<<< HEAD
 	/* If we get here, there is no handler for this region */
 
+=======
+	/*
+	 * If we get here, there is no handler for this region. This is not
+	 * fatal because many regions get created before a handler is installed
+	 * for said region.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ACPI_DEBUG_PRINT((ACPI_DB_OPREGION,
 			  "No handler for RegionType %s(%X) (RegionObj %p)\n",
 			  acpi_ut_get_region_name(space_id), space_id,
 			  region_obj));
 
+<<<<<<< HEAD
 	return_ACPI_STATUS(AE_NOT_EXIST);
+=======
+	return_ACPI_STATUS(AE_OK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

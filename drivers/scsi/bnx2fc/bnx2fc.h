@@ -1,8 +1,16 @@
+<<<<<<< HEAD
 #ifndef _BNX2FC_H_
 #define _BNX2FC_H_
 /* bnx2fc.h: Broadcom NetXtreme II Linux FCoE offload driver.
  *
  * Copyright (c) 2008 - 2011 Broadcom Corporation
+=======
+/* bnx2fc.h: QLogic Linux FCoE offload driver.
+ *
+ * Copyright (c) 2008-2013 Broadcom Corporation
+ * Copyright (c) 2014-2016 QLogic Corporation
+ * Copyright (c) 2016-2017 Cavium Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -11,6 +19,13 @@
  * Written by: Bhanu Prakash Gollapudi (bprakash@broadcom.com)
  */
 
+<<<<<<< HEAD
+=======
+#ifndef _BNX2FC_H_
+#define _BNX2FC_H_
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/kernel.h>
@@ -36,7 +51,11 @@
 #include <linux/bitops.h>
 #include <linux/log2.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/io.h>
 
 #include <scsi/scsi.h>
@@ -47,7 +66,10 @@
 #include <scsi/scsi_tcq.h>
 #include <scsi/libfc.h>
 #include <scsi/libfcoe.h>
+<<<<<<< HEAD
 #include <scsi/fc_encode.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/scsi_transport.h>
 #include <scsi/scsi_transport_fc.h>
 #include <scsi/fc/fc_fip.h>
@@ -57,6 +79,7 @@
 #include <scsi/fc/fc_fcp.h>
 
 #include "57xx_hsi_bnx2fc.h"
+<<<<<<< HEAD
 #include "bnx2fc_debug.h"
 #include "../../net/ethernet/broadcom/cnic_if.h"
 #include "bnx2fc_constants.h"
@@ -71,6 +94,25 @@
 #define BNX2FC_MAX_BD_LEN		0xffff
 #define BNX2FC_BD_SPLIT_SZ		0x8000
 #define BNX2FC_MAX_BDS_PER_CMD		256
+=======
+#include "../../net/ethernet/broadcom/cnic_if.h"
+#include  "../../net/ethernet/broadcom/bnx2x/bnx2x_mfw_req.h"
+#include "bnx2fc_constants.h"
+
+#define BNX2FC_NAME		"bnx2fc"
+#define BNX2FC_VERSION		"2.12.13"
+
+#define PFX			"bnx2fc: "
+
+#define BCM_CHIP_LEN		16
+
+#define BNX2X_DOORBELL_PCI_BAR		2
+
+#define BNX2FC_MAX_BD_LEN		0xffff
+#define BNX2FC_BD_SPLIT_SZ		0xffff
+#define BNX2FC_MAX_BDS_PER_CMD		255
+#define BNX2FC_FW_MAX_BDS_PER_CMD	255
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BNX2FC_SQ_WQES_MAX	256
 
@@ -84,9 +126,14 @@
 #define BNX2FC_NUM_MAX_SESS	1024
 #define BNX2FC_NUM_MAX_SESS_LOG	(ilog2(BNX2FC_NUM_MAX_SESS))
 
+<<<<<<< HEAD
 #define BNX2FC_MAX_OUTSTANDING_CMNDS	2048
 #define BNX2FC_CAN_QUEUE		BNX2FC_MAX_OUTSTANDING_CMNDS
 #define BNX2FC_ELSTM_XIDS		BNX2FC_CAN_QUEUE
+=======
+#define BNX2FC_MAX_NPIV		256
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BNX2FC_MIN_PAYLOAD		256
 #define BNX2FC_MAX_PAYLOAD		2048
 #define BNX2FC_MFS			\
@@ -102,6 +149,7 @@
 #define BNX2FC_RQ_WQE_SIZE		(BNX2FC_RQ_BUF_SZ)
 #define BNX2FC_XFERQ_WQE_SIZE		(sizeof(struct fcoe_xfrqe))
 #define BNX2FC_CONFQ_WQE_SIZE		(sizeof(struct fcoe_confqe))
+<<<<<<< HEAD
 #define BNX2FC_5771X_DB_PAGE_SIZE	128
 
 #define BNX2FC_MAX_TASKS		\
@@ -109,6 +157,12 @@
 #define BNX2FC_TASK_SIZE		128
 #define	BNX2FC_TASKS_PER_PAGE		(PAGE_SIZE/BNX2FC_TASK_SIZE)
 #define BNX2FC_TASK_CTX_ARR_SZ		(BNX2FC_MAX_TASKS/BNX2FC_TASKS_PER_PAGE)
+=======
+#define BNX2X_DB_SHIFT			3
+
+#define BNX2FC_TASK_SIZE		128
+#define	BNX2FC_TASKS_PER_PAGE		(PAGE_SIZE/BNX2FC_TASK_SIZE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define BNX2FC_MAX_ROWS_IN_HASH_TBL	8
 #define BNX2FC_HASH_TBL_CHUNK_SIZE	(16 * 1024)
@@ -121,12 +175,18 @@
 #define BNX2FC_WRITE			(1 << 0)
 
 #define BNX2FC_MIN_XID			0
+<<<<<<< HEAD
 #define BNX2FC_MAX_XID			\
 			(BNX2FC_MAX_OUTSTANDING_CMNDS + BNX2FC_ELSTM_XIDS - 1)
 #define FCOE_MAX_NUM_XIDS		0x2000
 #define FCOE_MIN_XID			(BNX2FC_MAX_XID + 1)
 #define FCOE_MAX_XID			(FCOE_MIN_XID + FCOE_MAX_NUM_XIDS - 1)
 #define FCOE_XIDS_PER_CPU		(FCOE_MIN_XID + (512 * nr_cpu_ids) - 1)
+=======
+#define FCOE_MAX_NUM_XIDS		0x2000
+#define FCOE_MAX_XID_OFFSET		(FCOE_MAX_NUM_XIDS - 1)
+#define FCOE_XIDS_PER_CPU_OFFSET	((512 * nr_cpu_ids) - 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define BNX2FC_MAX_LUN			0xFFFF
 #define BNX2FC_MAX_FCP_TGT		256
 #define BNX2FC_MAX_CMD_LEN		16
@@ -138,8 +198,11 @@
 #define BNX2FC_FW_TIMEOUT		(3 * HZ)
 #define PORT_MAX			2
 
+<<<<<<< HEAD
 #define CMD_SCSI_STATUS(Cmnd)		((Cmnd)->SCp.Status)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* FC FCP Status */
 #define	FC_GOOD				0
 
@@ -152,6 +215,21 @@
 #define BNX2FC_RELOGIN_WAIT_TIME	200
 #define BNX2FC_RELOGIN_WAIT_CNT		10
 
+<<<<<<< HEAD
+=======
+#define BNX2FC_STATS(hba, stat, cnt)					\
+	do {								\
+		u32 val;						\
+									\
+		val = fw_stats->stat.cnt;				\
+		if (hba->prev_stats.stat.cnt <= val)			\
+			val -= hba->prev_stats.stat.cnt;		\
+		else							\
+			val += (0xfffffff - hba->prev_stats.stat.cnt);	\
+		hba->bfw_stats.cnt += val;				\
+	} while (0)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* bnx2fc driver uses only one instance of fcoe_percpu_s */
 extern struct fcoe_percpu_s bnx2fc_global;
 
@@ -163,6 +241,17 @@ struct bnx2fc_percpu_s {
 	spinlock_t fp_work_lock;
 };
 
+<<<<<<< HEAD
+=======
+struct bnx2fc_fw_stats {
+	u64	fc_crc_cnt;
+	u64	fcoe_tx_pkt_cnt;
+	u64	fcoe_rx_pkt_cnt;
+	u64	fcoe_tx_byte_cnt;
+	u64	fcoe_rx_byte_cnt;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bnx2fc_hba {
 	struct list_head list;
 	struct cnic_dev *cnic;
@@ -173,6 +262,10 @@ struct bnx2fc_hba {
 	struct bnx2fc_cmd_mgr *cmd_mgr;
 	spinlock_t hba_lock;
 	struct mutex hba_mutex;
+<<<<<<< HEAD
+=======
+	struct mutex hba_stats_mutex;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long adapter_state;
 		#define ADAPTER_STATE_UP		0
 		#define ADAPTER_STATE_GOING_DOWN	1
@@ -182,6 +275,16 @@ struct bnx2fc_hba {
 		#define BNX2FC_FLAG_FW_INIT_DONE	0
 		#define BNX2FC_FLAG_DESTROY_CMPL	1
 	u32 next_conn_id;
+<<<<<<< HEAD
+=======
+
+	/* xid resources */
+	u16 max_xid;
+	u32 max_tasks;
+	u32 max_outstanding_cmds;
+	u32 elstm_xids;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fcoe_task_ctx_entry **task_ctx;
 	dma_addr_t *task_ctx_dma;
 	struct regpair *task_ctx_bd_tbl;
@@ -203,9 +306,18 @@ struct bnx2fc_hba {
 	struct bnx2fc_rport **tgt_ofld_list;
 
 	/* statistics */
+<<<<<<< HEAD
 	struct fcoe_statistics_params *stats_buffer;
 	dma_addr_t stats_buf_dma;
 	struct completion stat_req_done;
+=======
+	struct bnx2fc_fw_stats bfw_stats;
+	struct fcoe_statistics_params prev_stats;
+	struct fcoe_statistics_params *stats_buffer;
+	dma_addr_t stats_buf_dma;
+	struct completion stat_req_done;
+	struct fcoe_capabilities fcoe_cap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*destroy handling */
 	struct timer_list destroy_timer;
@@ -216,6 +328,11 @@ struct bnx2fc_hba {
 	int wait_for_link_down;
 	int num_ofld_sess;
 	struct list_head vports;
+<<<<<<< HEAD
+=======
+
+	char chip_num[BCM_CHIP_LEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct bnx2fc_interface {
@@ -228,6 +345,7 @@ struct bnx2fc_interface {
 	struct packet_type fip_packet_type;
 	struct workqueue_struct *timer_work_queue;
 	struct kref kref;
+<<<<<<< HEAD
 	struct fcoe_ctlr ctlr;
 	u8 vlan_enabled;
 	int vlan_id;
@@ -235,6 +353,19 @@ struct bnx2fc_interface {
 };
 
 #define bnx2fc_from_ctlr(fip) container_of(fip, struct bnx2fc_interface, ctlr)
+=======
+	u8 vlan_enabled;
+	int vlan_id;
+	bool enabled;
+	u8 tm_timeout;
+};
+
+#define bnx2fc_from_ctlr(x)			\
+	((struct bnx2fc_interface *)((x) + 1))
+
+#define bnx2fc_to_ctlr(x)					\
+	((struct fcoe_ctlr *)(((struct fcoe_ctlr *)(x)) - 1))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bnx2fc_lport {
 	struct list_head list;
@@ -270,7 +401,12 @@ struct bnx2fc_rport {
 #define BNX2FC_FLAG_OFLD_REQ_CMPL	0x5
 #define BNX2FC_FLAG_CTX_ALLOC_FAILURE	0x6
 #define BNX2FC_FLAG_UPLD_REQ_COMPL	0x7
+<<<<<<< HEAD
 #define BNX2FC_FLAG_EXPL_LOGO		0x8
+=======
+#define BNX2FC_FLAG_DISABLE_FAILED	0x9
+#define BNX2FC_FLAG_ENABLED		0xa
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 src_addr[ETH_ALEN];
 	u32 max_sqes;
@@ -333,6 +469,10 @@ struct bnx2fc_rport {
 	atomic_t num_active_ios;
 	u32 flush_in_prog;
 	unsigned long timestamp;
+<<<<<<< HEAD
+=======
+	unsigned long retry_delay_timestamp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head free_task_list;
 	struct bnx2fc_cmd *pending_queue[BNX2FC_SQ_WQES_MAX+1];
 	struct list_head active_cmd_queue;
@@ -348,6 +488,10 @@ struct bnx2fc_rport {
 };
 
 struct bnx2fc_mp_req {
+<<<<<<< HEAD
+=======
+	u64 tm_lun;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 tm_flags;
 
 	u32 req_len;
@@ -395,8 +539,15 @@ struct bnx2fc_cmd {
 	void (*cb_func)(struct bnx2fc_els_cb_arg *cb_arg);
 	struct bnx2fc_els_cb_arg *cb_arg;
 	struct delayed_work timeout_work; /* timer for ULP timeouts */
+<<<<<<< HEAD
 	struct completion tm_done;
 	int wait_for_comp;
+=======
+	struct completion abts_done;
+	struct completion cleanup_done;
+	int wait_for_abts_comp;
+	int wait_for_cleanup_comp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 xid;
 	struct fcoe_err_report_entry err_entry;
 	struct fcoe_task_ctx_entry *task;
@@ -417,6 +568,10 @@ struct bnx2fc_cmd {
 #define BNX2FC_FLAG_ELS_TIMEOUT		0xb
 #define BNX2FC_FLAG_CMD_LOST		0xc
 #define BNX2FC_FLAG_SRR_SENT		0xd
+<<<<<<< HEAD
+=======
+#define BNX2FC_FLAG_ISSUE_CLEANUP_REQ	0xe
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 rec_retry;
 	u8 srr_retry;
 	u32 srr_offset;
@@ -440,7 +595,14 @@ struct io_bdt {
 struct bnx2fc_work {
 	struct list_head list;
 	struct bnx2fc_rport *tgt;
+<<<<<<< HEAD
 	u16 wqe;
+=======
+	struct fcoe_task_ctx_entry *task;
+	unsigned char rq_data[BNX2FC_RQ_BUF_SZ];
+	u16 wqe;
+	u8 num_rq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 struct bnx2fc_unsol_els {
 	struct fc_lport *lport;
@@ -449,7 +611,18 @@ struct bnx2fc_unsol_els {
 	struct work_struct unsol_els_work;
 };
 
+<<<<<<< HEAD
 
+=======
+struct bnx2fc_priv {
+	struct bnx2fc_cmd *io_req;
+};
+
+static inline struct bnx2fc_priv *bnx2fc_priv(struct scsi_cmnd *cmd)
+{
+	return scsi_cmd_priv(cmd);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct bnx2fc_cmd *bnx2fc_cmd_alloc(struct bnx2fc_rport *tgt);
 struct bnx2fc_cmd *bnx2fc_elstm_alloc(struct bnx2fc_rport *tgt, int type);
@@ -459,6 +632,11 @@ int bnx2fc_send_fw_fcoe_init_msg(struct bnx2fc_hba *hba);
 int bnx2fc_send_fw_fcoe_destroy_msg(struct bnx2fc_hba *hba);
 int bnx2fc_send_session_ofld_req(struct fcoe_port *port,
 					struct bnx2fc_rport *tgt);
+<<<<<<< HEAD
+=======
+int bnx2fc_send_session_enable_req(struct fcoe_port *port,
+					struct bnx2fc_rport *tgt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int bnx2fc_send_session_disable_req(struct fcoe_port *port,
 				    struct bnx2fc_rport *tgt);
 int bnx2fc_send_session_destroy_req(struct bnx2fc_hba *hba,
@@ -470,8 +648,12 @@ int bnx2fc_setup_task_ctx(struct bnx2fc_hba *hba);
 void bnx2fc_free_task_ctx(struct bnx2fc_hba *hba);
 int bnx2fc_setup_fw_resc(struct bnx2fc_hba *hba);
 void bnx2fc_free_fw_resc(struct bnx2fc_hba *hba);
+<<<<<<< HEAD
 struct bnx2fc_cmd_mgr *bnx2fc_cmd_mgr_alloc(struct bnx2fc_hba *hba,
 						u16 min_xid, u16 max_xid);
+=======
+struct bnx2fc_cmd_mgr *bnx2fc_cmd_mgr_alloc(struct bnx2fc_hba *hba);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bnx2fc_cmd_mgr_free(struct bnx2fc_cmd_mgr *cmgr);
 void bnx2fc_get_link_state(struct bnx2fc_hba *hba);
 char *bnx2fc_get_next_rqe(struct bnx2fc_rport *tgt, u8 num_items);
@@ -500,7 +682,10 @@ void bnx2fc_init_task(struct bnx2fc_cmd *io_req,
 void bnx2fc_add_2_sq(struct bnx2fc_rport *tgt, u16 xid);
 void bnx2fc_ring_doorbell(struct bnx2fc_rport *tgt);
 int bnx2fc_eh_abort(struct scsi_cmnd *sc_cmd);
+<<<<<<< HEAD
 int bnx2fc_eh_host_reset(struct scsi_cmnd *sc_cmd);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int bnx2fc_eh_target_reset(struct scsi_cmnd *sc_cmd);
 int bnx2fc_eh_device_reset(struct scsi_cmnd *sc_cmd);
 void bnx2fc_rport_event_handler(struct fc_lport *lport,
@@ -508,7 +693,11 @@ void bnx2fc_rport_event_handler(struct fc_lport *lport,
 				enum fc_rport_event event);
 void bnx2fc_process_scsi_cmd_compl(struct bnx2fc_cmd *io_req,
 				   struct fcoe_task_ctx_entry *task,
+<<<<<<< HEAD
 				   u8 num_rq);
+=======
+				   u8 num_rq, unsigned char *rq_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bnx2fc_process_cleanup_compl(struct bnx2fc_cmd *io_req,
 			       struct fcoe_task_ctx_entry *task,
 			       u8 num_rq);
@@ -517,7 +706,11 @@ void bnx2fc_process_abts_compl(struct bnx2fc_cmd *io_req,
 			       u8 num_rq);
 void bnx2fc_process_tm_compl(struct bnx2fc_cmd *io_req,
 			     struct fcoe_task_ctx_entry *task,
+<<<<<<< HEAD
 			     u8 num_rq);
+=======
+			     u8 num_rq, unsigned char *rq_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void bnx2fc_process_els_compl(struct bnx2fc_cmd *els_req,
 			      struct fcoe_task_ctx_entry *task,
 			      u8 num_rq);
@@ -535,7 +728,13 @@ struct fc_seq *bnx2fc_elsct_send(struct fc_lport *lport, u32 did,
 				      void *arg, u32 timeout);
 void bnx2fc_arm_cq(struct bnx2fc_rport *tgt);
 int bnx2fc_process_new_cqes(struct bnx2fc_rport *tgt);
+<<<<<<< HEAD
 void bnx2fc_process_cq_compl(struct bnx2fc_rport *tgt, u16 wqe);
+=======
+void bnx2fc_process_cq_compl(struct bnx2fc_rport *tgt, u16 wqe,
+			     unsigned char *rq_data, u8 num_rq,
+			     struct fcoe_task_ctx_entry *task);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bnx2fc_rport *bnx2fc_tgt_lookup(struct fcoe_port *port,
 					     u32 port_id);
 void bnx2fc_process_l2_frame_compl(struct bnx2fc_rport *tgt,
@@ -551,4 +750,10 @@ void bnx2fc_process_seq_cleanup_compl(struct bnx2fc_cmd *seq_clnup_req,
 int bnx2fc_initiate_seq_cleanup(struct bnx2fc_cmd *orig_io_req, u32 offset,
 				enum fc_rctl r_ctl);
 
+<<<<<<< HEAD
+=======
+
+#include "bnx2fc_debug.h"
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * LoCoMo keyboard driver for Linux-based ARM PDAs:
  * 	- SHARP Zaurus Collie (SL-5500)
@@ -5,6 +9,7 @@
  *
  * Copyright (c) 2005 John Lenz
  * Based on from xtkbd.c
+<<<<<<< HEAD
  *
  *
  * This program is free software; you can redistribute it and/or modify
@@ -21,6 +26,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -46,7 +53,11 @@ MODULE_LICENSE("GPL");
 #define KEY_CENTER		KEY_F15
 
 static const unsigned char
+<<<<<<< HEAD
 locomokbd_keycode[LOCOMOKBD_NUMKEYS] __devinitconst = {
+=======
+locomokbd_keycode[LOCOMOKBD_NUMKEYS] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	0, KEY_ESC, KEY_ACTIVITY, 0, 0, 0, 0, 0, 0, 0,				/* 0 - 9 */
 	0, 0, 0, 0, 0, 0, 0, KEY_MENU, KEY_HOME, KEY_CONTACT,			/* 10 - 19 */
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0,						/* 20 - 29 */
@@ -210,9 +221,15 @@ static irqreturn_t locomokbd_interrupt(int irq, void *dev_id)
 /*
  * LoCoMo timer checking for released keys
  */
+<<<<<<< HEAD
 static void locomokbd_timer_callback(unsigned long data)
 {
 	struct locomokbd *locomokbd = (struct locomokbd *) data;
+=======
+static void locomokbd_timer_callback(struct timer_list *t)
+{
+	struct locomokbd *locomokbd = from_timer(locomokbd, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	locomokbd_scankeyboard(locomokbd);
 }
@@ -236,7 +253,11 @@ static void locomokbd_close(struct input_dev *dev)
 	locomo_writel(r, locomokbd->base + LOCOMO_KIC);
 }
 
+<<<<<<< HEAD
 static int __devinit locomokbd_probe(struct locomo_dev *dev)
+=======
+static int locomokbd_probe(struct locomo_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct locomokbd *locomokbd;
 	struct input_dev *input_dev;
@@ -264,9 +285,13 @@ static int __devinit locomokbd_probe(struct locomo_dev *dev)
 
 	spin_lock_init(&locomokbd->lock);
 
+<<<<<<< HEAD
 	init_timer(&locomokbd->timer);
 	locomokbd->timer.function = locomokbd_timer_callback;
 	locomokbd->timer.data = (unsigned long) locomokbd;
+=======
+	timer_setup(&locomokbd->timer, locomokbd_timer_callback, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	locomokbd->suspend_jiffies = jiffies;
 
@@ -321,13 +346,21 @@ static int __devinit locomokbd_probe(struct locomo_dev *dev)
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit locomokbd_remove(struct locomo_dev *dev)
+=======
+static void locomokbd_remove(struct locomo_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct locomokbd *locomokbd = locomo_get_drvdata(dev);
 
 	free_irq(dev->irq[0], locomokbd);
 
+<<<<<<< HEAD
 	del_timer_sync(&locomokbd->timer);
+=======
+	timer_shutdown_sync(&locomokbd->timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input_unregister_device(locomokbd->input);
 	locomo_set_drvdata(dev, NULL);
@@ -335,8 +368,11 @@ static int __devexit locomokbd_remove(struct locomo_dev *dev)
 	release_mem_region((unsigned long) dev->mapbase, dev->length);
 
 	kfree(locomokbd);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct locomo_driver keyboard_driver = {
@@ -345,7 +381,11 @@ static struct locomo_driver keyboard_driver = {
 	},
 	.devid	= LOCOMO_DEVID_KEYBOARD,
 	.probe	= locomokbd_probe,
+<<<<<<< HEAD
 	.remove	= __devexit_p(locomokbd_remove),
+=======
+	.remove	= locomokbd_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init locomokbd_init(void)

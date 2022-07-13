@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  include/linux/signalfd.h
  *
  *  Copyright (C) 2007  Davide Libenzi <davidel@xmailserver.org>
  *
  */
+<<<<<<< HEAD
 
 #ifndef _LINUX_SIGNALFD_H
 #define _LINUX_SIGNALFD_H
@@ -49,6 +54,13 @@ struct signalfd_siginfo {
 
 
 #ifdef __KERNEL__
+=======
+#ifndef _LINUX_SIGNALFD_H
+#define _LINUX_SIGNALFD_H
+
+#include <uapi/linux/signalfd.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SIGNALFD
 
@@ -71,6 +83,9 @@ static inline void signalfd_cleanup(struct sighand_struct *sighand) { }
 
 #endif /* CONFIG_SIGNALFD */
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_SIGNALFD_H */

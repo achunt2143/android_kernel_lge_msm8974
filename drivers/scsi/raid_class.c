@@ -1,10 +1,17 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * raid_class.c - implementation of a simple raid visualisation class
  *
  * Copyright (c) 2005 - James Bottomley <James.Bottomley@steeleye.com>
  *
+<<<<<<< HEAD
  * This file is licensed under GPLv2
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This class is designed to allow raid attributes to be visualised and
  * manipulated in a form independent of the underlying raid.  Ultimately this
  * should work for both hardware and software raids.
@@ -63,8 +70,12 @@ static int raid_match(struct attribute_container *cont, struct device *dev)
 	 * emulated RAID devices, so start with SCSI */
 	struct raid_internal *i = ac_to_raid_internal(cont);
 
+<<<<<<< HEAD
 #if defined(CONFIG_SCSI) || defined(CONFIG_SCSI_MODULE)
 	if (scsi_is_sdev_device(dev)) {
+=======
+	if (IS_ENABLED(CONFIG_SCSI) && scsi_is_sdev_device(dev)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct scsi_device *sdev = to_scsi_device(dev);
 
 		if (i->f->cookie != sdev->host->hostt)
@@ -72,7 +83,10 @@ static int raid_match(struct attribute_container *cont, struct device *dev)
 
 		return i->f->is_raid(dev);
 	}
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* FIXME: look at other subsystems too */
 	return 0;
 }
@@ -157,6 +171,10 @@ static struct {
 	{ RAID_LEVEL_5, "raid5" },
 	{ RAID_LEVEL_50, "raid50" },
 	{ RAID_LEVEL_6, "raid6" },
+<<<<<<< HEAD
+=======
+	{ RAID_LEVEL_JBOD, "jbod" },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const char *raid_level_name(enum raid_level level)
@@ -211,6 +229,7 @@ raid_attr_ro_state(level);
 raid_attr_ro_fn(resync);
 raid_attr_ro_state_fn(state);
 
+<<<<<<< HEAD
 static void raid_component_release(struct device *dev)
 {
 	struct raid_component *rc =
@@ -258,6 +277,8 @@ err_out:
 }
 EXPORT_SYMBOL(raid_component_add);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct raid_template *
 raid_class_attach(struct raid_function_template *ft)
 {

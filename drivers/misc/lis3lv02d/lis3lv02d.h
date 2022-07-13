@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  lis3lv02d.h - ST LIS3LV02DL accelerometer driver
  *
  *  Copyright (C) 2007-2008 Yan Burman
  *  Copyright (C) 2008-2009 Eric Piel
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -20,18 +25,32 @@
  */
 #include <linux/platform_device.h>
 #include <linux/input-polldev.h>
+=======
+ */
+#include <linux/platform_device.h>
+#include <linux/input.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/regulator/consumer.h>
 #include <linux/miscdevice.h>
 
 /*
  * This driver tries to support the "digital" accelerometer chips from
  * STMicroelectronics such as LIS3LV02DL, LIS302DL, LIS3L02DQ, LIS331DL,
+<<<<<<< HEAD
  * LIS35DE, or LIS202DL. They are very similar in terms of programming, with
  * almost the same registers. In addition to differing on physical properties,
  * they differ on the number of axes (2/3), precision (8/12 bits), and special
  * features (freefall detection, click...). Unfortunately, not all the
  * differences can be probed via a register.
  * They can be connected either via I²C or SPI.
+=======
+ * LIS331DLH, LIS35DE, or LIS202DL. They are very similar in terms of
+ * programming, with almost the same registers. In addition to differing
+ * on physical properties, they differ on the number of axes (2/3),
+ * precision (8/12 bits), and special features (freefall detection,
+ * click...). Unfortunately, not all the differences can be probed via
+ * a register. They can be connected either via I²C or SPI.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/lis3lv02d.h>
@@ -96,12 +115,28 @@ enum lis3lv02d_reg {
 };
 
 enum lis3_who_am_i {
+<<<<<<< HEAD
+=======
+	WAI_3DLH	= 0x32,	/* 16 bits: LIS331DLH */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WAI_3DC		= 0x33,	/* 8 bits: LIS3DC, HP3DC */
 	WAI_12B		= 0x3A, /* 12 bits: LIS3LV02D[LQ]... */
 	WAI_8B		= 0x3B, /* 8 bits: LIS[23]02D[LQ]... */
 	WAI_6B		= 0x52, /* 6 bits: LIS331DLF - not supported */
 };
 
+<<<<<<< HEAD
+=======
+enum lis3_type {
+	LIS3LV02D,
+	LIS3DC,
+	HP3DC,
+	LIS2302D,
+	LIS331DLF,
+	LIS331DLH,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum lis3lv02d_ctrl1_12b {
 	CTRL1_Xen	= 0x01,
 	CTRL1_Yen	= 0x02,
@@ -129,6 +164,30 @@ enum lis3lv02d_ctrl1_3dc {
 	CTRL1_ODR3	= 0x80,
 };
 
+<<<<<<< HEAD
+=======
+enum lis331dlh_ctrl1 {
+	CTRL1_DR0	= 0x08,
+	CTRL1_DR1	= 0x10,
+	CTRL1_PM0	= 0x20,
+	CTRL1_PM1	= 0x40,
+	CTRL1_PM2	= 0x80,
+};
+
+enum lis331dlh_ctrl2 {
+	CTRL2_HPEN1	= 0x04,
+	CTRL2_HPEN2	= 0x08,
+	CTRL2_FDS_3DLH	= 0x10,
+	CTRL2_BOOT_3DLH	= 0x80,
+};
+
+enum lis331dlh_ctrl4 {
+	CTRL4_STSIGN	= 0x08,
+	CTRL4_BLE	= 0x40,
+	CTRL4_BDU	= 0x80,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 enum lis3lv02d_ctrl2 {
 	CTRL2_DAS	= 0x01,
 	CTRL2_SIM	= 0x02,
@@ -263,7 +322,11 @@ struct lis3lv02d {
 					* (1/1000th of earth gravity)
 					*/
 
+<<<<<<< HEAD
 	struct input_polled_dev	*idev;     /* input device */
+=======
+	struct input_dev	*idev;     /* input device */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct platform_device	*pdev;     /* platform device */
 	struct regulator_bulk_data regulators[2];
 	atomic_t		count;     /* interrupt count after last read */
@@ -279,9 +342,20 @@ struct lis3lv02d {
 	int                     data_ready_count[2];
 	atomic_t		wake_thread;
 	unsigned char           irq_cfg;
+<<<<<<< HEAD
 
 	struct lis3lv02d_platform_data *pdata;	/* for passing board config */
 	struct mutex		mutex;     /* Serialize poll and selftest */
+=======
+	unsigned int		shift_adj;
+
+	struct lis3lv02d_platform_data *pdata;	/* for passing board config */
+	struct mutex		mutex;     /* Serialize poll and selftest */
+
+#ifdef CONFIG_OF
+	struct device_node	*of_node;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 int lis3lv02d_init_device(struct lis3lv02d *lis3);
@@ -289,6 +363,11 @@ int lis3lv02d_joystick_enable(struct lis3lv02d *lis3);
 void lis3lv02d_joystick_disable(struct lis3lv02d *lis3);
 void lis3lv02d_poweroff(struct lis3lv02d *lis3);
 int lis3lv02d_poweron(struct lis3lv02d *lis3);
+<<<<<<< HEAD
 int lis3lv02d_remove_fs(struct lis3lv02d *lis3);
+=======
+void lis3lv02d_remove_fs(struct lis3lv02d *lis3);
+int lis3lv02d_init_dt(struct lis3lv02d *lis3);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern struct lis3lv02d lis3_dev;

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
@@ -18,6 +19,12 @@
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * mount.c - operations for initializing and mounting configfs.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based on sysfs:
  * 	sysfs is Copyright (C) 2001, 2002, 2003 Patrick Mochel
  *
@@ -27,6 +34,10 @@
 #include <linux/fs.h>
 #include <linux/module.h>
 #include <linux/mount.h>
+<<<<<<< HEAD
+=======
+#include <linux/fs_context.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pagemap.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -41,9 +52,24 @@ static struct vfsmount *configfs_mount = NULL;
 struct kmem_cache *configfs_dir_cachep;
 static int configfs_mnt_count = 0;
 
+<<<<<<< HEAD
 static const struct super_operations configfs_ops = {
 	.statfs		= simple_statfs,
 	.drop_inode	= generic_delete_inode,
+=======
+
+static void configfs_free_inode(struct inode *inode)
+{
+	if (S_ISLNK(inode->i_mode))
+		kfree(inode->i_link);
+	free_inode_nonrcu(inode);
+}
+
+static const struct super_operations configfs_ops = {
+	.statfs		= simple_statfs,
+	.drop_inode	= generic_delete_inode,
+	.free_inode	= configfs_free_inode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct config_group configfs_root_group = {
@@ -66,13 +92,22 @@ static struct configfs_dirent configfs_root = {
 	.s_iattr	= NULL,
 };
 
+<<<<<<< HEAD
 static int configfs_fill_super(struct super_block *sb, void *data, int silent)
+=======
+static int configfs_fill_super(struct super_block *sb, struct fs_context *fc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct inode *inode;
 	struct dentry *root;
 
+<<<<<<< HEAD
 	sb->s_blocksize = PAGE_CACHE_SIZE;
 	sb->s_blocksize_bits = PAGE_CACHE_SHIFT;
+=======
+	sb->s_blocksize = PAGE_SIZE;
+	sb->s_blocksize_bits = PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sb->s_magic = CONFIGFS_MAGIC;
 	sb->s_op = &configfs_ops;
 	sb->s_time_gran = 1;
@@ -85,7 +120,11 @@ static int configfs_fill_super(struct super_block *sb, void *data, int silent)
 		/* directory inodes start off with i_nlink == 2 (for "." entry) */
 		inc_nlink(inode);
 	} else {
+<<<<<<< HEAD
 		pr_debug("configfs: could not get root inode\n");
+=======
+		pr_debug("could not get root inode\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOMEM;
 	}
 
@@ -102,16 +141,36 @@ static int configfs_fill_super(struct super_block *sb, void *data, int silent)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct dentry *configfs_do_mount(struct file_system_type *fs_type,
 	int flags, const char *dev_name, void *data)
 {
 	return mount_single(fs_type, flags, data, configfs_fill_super);
+=======
+static int configfs_get_tree(struct fs_context *fc)
+{
+	return get_tree_single(fc, configfs_fill_super);
+}
+
+static const struct fs_context_operations configfs_context_ops = {
+	.get_tree	= configfs_get_tree,
+};
+
+static int configfs_init_fs_context(struct fs_context *fc)
+{
+	fc->ops = &configfs_context_ops;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct file_system_type configfs_fs_type = {
 	.owner		= THIS_MODULE,
 	.name		= "configfs",
+<<<<<<< HEAD
 	.mount		= configfs_do_mount,
+=======
+	.init_fs_context = configfs_init_fs_context,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.kill_sb	= kill_litter_super,
 };
 MODULE_ALIAS_FS("configfs");
@@ -129,8 +188,11 @@ void configfs_release_fs(void)
 }
 
 
+<<<<<<< HEAD
 static struct kobject *config_kobj;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init configfs_init(void)
 {
 	int err = -ENOMEM;
@@ -141,6 +203,7 @@ static int __init configfs_init(void)
 	if (!configfs_dir_cachep)
 		goto out;
 
+<<<<<<< HEAD
 	config_kobj = kobject_create_and_add("config", kernel_kobj);
 	if (!config_kobj)
 		goto out2;
@@ -159,6 +222,20 @@ out4:
 	configfs_inode_exit();
 out3:
 	kobject_put(config_kobj);
+=======
+	err = sysfs_create_mount_point(kernel_kobj, "config");
+	if (err)
+		goto out2;
+
+	err = register_filesystem(&configfs_fs_type);
+	if (err)
+		goto out3;
+
+	return 0;
+out3:
+	pr_err("Unable to register filesystem!\n");
+	sysfs_remove_mount_point(kernel_kobj, "config");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out2:
 	kmem_cache_destroy(configfs_dir_cachep);
 	configfs_dir_cachep = NULL;
@@ -169,10 +246,16 @@ out:
 static void __exit configfs_exit(void)
 {
 	unregister_filesystem(&configfs_fs_type);
+<<<<<<< HEAD
 	kobject_put(config_kobj);
 	kmem_cache_destroy(configfs_dir_cachep);
 	configfs_dir_cachep = NULL;
 	configfs_inode_exit();
+=======
+	sysfs_remove_mount_point(kernel_kobj, "config");
+	kmem_cache_destroy(configfs_dir_cachep);
+	configfs_dir_cachep = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MODULE_AUTHOR("Oracle");
@@ -180,5 +263,9 @@ MODULE_LICENSE("GPL");
 MODULE_VERSION("0.0.2");
 MODULE_DESCRIPTION("Simple RAM filesystem for user driven kernel subsystem configuration.");
 
+<<<<<<< HEAD
 module_init(configfs_init);
+=======
+core_initcall(configfs_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(configfs_exit);

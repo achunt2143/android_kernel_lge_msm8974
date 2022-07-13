@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-lpc32xx/common.h
  *
  * Author: Kevin Wells <kevin.wells@nxp.com>
  *
  * Copyright (C) 2009-2010 NXP Semiconductors
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,11 +19,14 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LPC32XX_COMMON_H
 #define __LPC32XX_COMMON_H
 
+<<<<<<< HEAD
 #include <mach/board.h>
 #include <linux/platform_device.h>
 
@@ -34,10 +42,14 @@ extern struct platform_device lpc32xx_adc_device;
 extern struct platform_device lpc32xx_rtc_device;
 extern struct platform_device lpc32xx_ohci_device;
 extern struct platform_device lpc32xx_net_device;
+=======
+#include <linux/init.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Other arch specific structures and functions
  */
+<<<<<<< HEAD
 extern struct sys_timer lpc32xx_timer;
 extern void __init lpc32xx_init_irq(void);
 extern void __init lpc32xx_map_io(void);
@@ -63,13 +75,20 @@ extern int clk_is_sysclk_mainosc(void);
 extern u32 clk_check_pll_setup(u32 ifreq, struct clk_pll_setup *pllsetup);
 extern u32 clk_get_pllrate_from_reg(u32 inputclk, u32 regval);
 extern u32 clk_get_pclk_div(void);
+=======
+extern void __init lpc32xx_map_io(void);
+extern void __init lpc32xx_serial_init(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Returns the LPC32xx unique 128-bit chip ID
  */
 extern void lpc32xx_get_uid(u32 devid[4]);
 
+<<<<<<< HEAD
 extern u32 lpc32xx_return_iram_size(void);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Pointers used for sizing and copying suspend function data
  */

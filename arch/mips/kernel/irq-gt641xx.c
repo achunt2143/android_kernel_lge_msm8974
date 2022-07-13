@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  GT641xx IRQ routines.
  *
@@ -16,6 +17,13 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  GT641xx IRQ routines.
+ *
+ *  Copyright (C) 2007	Yoichi Yuasa <yuasa@linux-mips.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/hardirq.h>
 #include <linux/init.h>
@@ -25,7 +33,11 @@
 
 #include <asm/gt64120.h>
 
+<<<<<<< HEAD
 #define GT641XX_IRQ_TO_BIT(irq)	(1U << (irq - GT641XX_IRQ_BASE))
+=======
+#define GT641XX_IRQ_TO_BIT(irq) (1U << (irq - GT641XX_IRQ_BASE))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_RAW_SPINLOCK(gt641xx_irq_lock);
 

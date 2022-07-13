@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef TYPECHECK_H_INCLUDED
 #define TYPECHECK_H_INCLUDED
 
@@ -21,4 +25,16 @@
 	(void)__tmp; \
 })
 
+<<<<<<< HEAD
+=======
+/*
+ * Check at compile time that something is a pointer type.
+ */
+#define typecheck_pointer(x) \
+({	typeof(x) __dummy; \
+	(void)sizeof(*__dummy); \
+	1; \
+})
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif		/* TYPECHECK_H_INCLUDED */

@@ -1,11 +1,17 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * super.h
  *
  * Function prototypes
  *
  * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -21,11 +27,14 @@
  * License along with this program; if not, write to the
  * Free Software Foundation, Inc., 59 Temple Place - Suite 330,
  * Boston, MA 021110-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef OCFS2_SUPER_H
 #define OCFS2_SUPER_H
 
+<<<<<<< HEAD
 extern struct workqueue_struct *ocfs2_wq;
 
 int ocfs2_publish_get_mount_state(struct ocfs2_super *osb,
@@ -36,12 +45,25 @@ void __ocfs2_error(struct super_block *sb, const char *function,
 		   const char *fmt, ...);
 
 #define ocfs2_error(sb, fmt, args...) __ocfs2_error(sb, __PRETTY_FUNCTION__, fmt, ##args)
+=======
+__printf(3, 4)
+int __ocfs2_error(struct super_block *sb, const char *function,
+		   const char *fmt, ...);
+
+#define ocfs2_error(sb, fmt, ...)					\
+	__ocfs2_error(sb, __PRETTY_FUNCTION__, fmt, ##__VA_ARGS__)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 __printf(3, 4)
 void __ocfs2_abort(struct super_block *sb, const char *function,
 		   const char *fmt, ...);
 
+<<<<<<< HEAD
 #define ocfs2_abort(sb, fmt, args...) __ocfs2_abort(sb, __PRETTY_FUNCTION__, fmt, ##args)
+=======
+#define ocfs2_abort(sb, fmt, ...)					\
+	__ocfs2_abort(sb, __PRETTY_FUNCTION__, fmt, ##__VA_ARGS__)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Void signal blockers, because in-kernel sigprocmask() only fails

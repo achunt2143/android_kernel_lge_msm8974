@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Kernel module to match FRAG parameters. */
 
 /* (C) 2001-2002 Andras Kis-Szabo <kisza@sch.bme.hu>
@@ -5,6 +6,12 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/* Kernel module to match FRAG parameters. */
+
+/* (C) 2001-2002 Andras Kis-Szabo <kisza@sch.bme.hu>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
@@ -88,8 +95,12 @@ frag_mt6(const struct sk_buff *skb, struct xt_action_param *par)
 		 !((fraginfo->flags & IP6T_FRAG_NMF) &&
 		   (ntohs(fh->frag_off) & IP6_MF)));
 
+<<<<<<< HEAD
 	return (fh != NULL) &&
 		id_match(fraginfo->ids[0], fraginfo->ids[1],
+=======
+	return id_match(fraginfo->ids[0], fraginfo->ids[1],
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 ntohl(fh->identification),
 			 !!(fraginfo->invflags & IP6T_FRAG_INV_IDS)) &&
 		!((fraginfo->flags & IP6T_FRAG_RES) &&

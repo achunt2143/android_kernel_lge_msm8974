@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_KEXEC_H
 #define _ASM_X86_KEXEC_H
 
@@ -20,10 +24,19 @@
 #ifndef __ASSEMBLY__
 
 #include <linux/string.h>
+<<<<<<< HEAD
+=======
+#include <linux/kernel.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/page.h>
 #include <asm/ptrace.h>
 
+<<<<<<< HEAD
+=======
+struct kimage;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * KEXEC_SOURCE_MEMORY_LIMIT maximum page get_free_page can return.
  * I.e. Maximum page that is mapped directly into kernel memory,
@@ -48,11 +61,19 @@
 # define vmcore_elf_check_arch_cross(x) ((x)->e_machine == EM_X86_64)
 #else
 /* Maximum physical address we can use pages from */
+<<<<<<< HEAD
 # define KEXEC_SOURCE_MEMORY_LIMIT      (0xFFFFFFFFFFUL)
 /* Maximum address we can reach in physical address mode */
 # define KEXEC_DESTINATION_MEMORY_LIMIT (0xFFFFFFFFFFUL)
 /* Maximum address we can use for the control pages */
 # define KEXEC_CONTROL_MEMORY_LIMIT     (0xFFFFFFFFFFUL)
+=======
+# define KEXEC_SOURCE_MEMORY_LIMIT      (MAXMEM-1)
+/* Maximum address we can reach in physical address mode */
+# define KEXEC_DESTINATION_MEMORY_LIMIT (MAXMEM-1)
+/* Maximum address we can use for the control pages */
+# define KEXEC_CONTROL_MEMORY_LIMIT     (MAXMEM-1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Allocate one page for the pdp and the second for the code */
 # define KEXEC_CONTROL_PAGE_SIZE  (4096UL + 4096UL)
@@ -62,6 +83,7 @@
 #endif
 
 /*
+<<<<<<< HEAD
  * CPU does not save ss and sp on stack if execution is already
  * running in kernel mode at the time of NMI occurrence. This code
  * fixes it.
@@ -78,6 +100,8 @@ static inline void crash_fixup_ss_esp(struct pt_regs *newregs,
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This function is responsible for capturing register states if coming
  * via panic otherwise just fix up the ss and sp if coming via kernel
  * mode exception.
@@ -87,7 +111,10 @@ static inline void crash_setup_regs(struct pt_regs *newregs,
 {
 	if (oldregs) {
 		memcpy(newregs, oldregs, sizeof(*newregs));
+<<<<<<< HEAD
 		crash_fixup_ss_esp(newregs, oldregs);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 #ifdef CONFIG_X86_32
 		asm volatile("movl %%ebx,%0" : "=m"(newregs->bx));
@@ -124,7 +151,11 @@ static inline void crash_setup_regs(struct pt_regs *newregs,
 		asm volatile("movl %%cs, %%eax;" :"=a"(newregs->cs));
 		asm volatile("pushfq; popq %0" :"=m"(newregs->flags));
 #endif
+<<<<<<< HEAD
 		newregs->ip = (unsigned long)current_text_addr();
+=======
+		newregs->ip = _THIS_IP_;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -140,7 +171,12 @@ unsigned long
 relocate_kernel(unsigned long indirection_page,
 		unsigned long page_list,
 		unsigned long start_address,
+<<<<<<< HEAD
 		unsigned int preserve_context);
+=======
+		unsigned int preserve_context,
+		unsigned int host_mem_enc_active);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #define ARCH_HAS_KIMAGE_ARCH
@@ -157,10 +193,89 @@ struct kimage_arch {
 };
 #else
 struct kimage_arch {
+<<<<<<< HEAD
+=======
+	p4d_t *p4d;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pud_t *pud;
 	pmd_t *pmd;
 	pte_t *pte;
 };
+<<<<<<< HEAD
+=======
+#endif /* CONFIG_X86_32 */
+
+#ifdef CONFIG_X86_64
+/*
+ * Number of elements and order of elements in this structure should match
+ * with the ones in arch/x86/purgatory/entry64.S. If you make a change here
+ * make an appropriate change in purgatory too.
+ */
+struct kexec_entry64_regs {
+	uint64_t rax;
+	uint64_t rcx;
+	uint64_t rdx;
+	uint64_t rbx;
+	uint64_t rsp;
+	uint64_t rbp;
+	uint64_t rsi;
+	uint64_t rdi;
+	uint64_t r8;
+	uint64_t r9;
+	uint64_t r10;
+	uint64_t r11;
+	uint64_t r12;
+	uint64_t r13;
+	uint64_t r14;
+	uint64_t r15;
+	uint64_t rip;
+};
+
+extern int arch_kexec_post_alloc_pages(void *vaddr, unsigned int pages,
+				       gfp_t gfp);
+#define arch_kexec_post_alloc_pages arch_kexec_post_alloc_pages
+
+extern void arch_kexec_pre_free_pages(void *vaddr, unsigned int pages);
+#define arch_kexec_pre_free_pages arch_kexec_pre_free_pages
+
+void arch_kexec_protect_crashkres(void);
+#define arch_kexec_protect_crashkres arch_kexec_protect_crashkres
+
+void arch_kexec_unprotect_crashkres(void);
+#define arch_kexec_unprotect_crashkres arch_kexec_unprotect_crashkres
+
+#ifdef CONFIG_KEXEC_FILE
+struct purgatory_info;
+int arch_kexec_apply_relocations_add(struct purgatory_info *pi,
+				     Elf_Shdr *section,
+				     const Elf_Shdr *relsec,
+				     const Elf_Shdr *symtab);
+#define arch_kexec_apply_relocations_add arch_kexec_apply_relocations_add
+
+int arch_kimage_file_post_load_cleanup(struct kimage *image);
+#define arch_kimage_file_post_load_cleanup arch_kimage_file_post_load_cleanup
+#endif
+#endif
+
+extern void kdump_nmi_shootdown_cpus(void);
+
+#ifdef CONFIG_CRASH_HOTPLUG
+void arch_crash_handle_hotplug_event(struct kimage *image);
+#define arch_crash_handle_hotplug_event arch_crash_handle_hotplug_event
+
+#ifdef CONFIG_HOTPLUG_CPU
+int arch_crash_hotplug_cpu_support(void);
+#define crash_hotplug_cpu_support arch_crash_hotplug_cpu_support
+#endif
+
+#ifdef CONFIG_MEMORY_HOTPLUG
+int arch_crash_hotplug_memory_support(void);
+#define crash_hotplug_memory_support arch_crash_hotplug_memory_support
+#endif
+
+unsigned int arch_crash_get_elfcorehdr_size(void);
+#define crash_get_elfcorehdr_size arch_crash_get_elfcorehdr_size
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 #endif /* __ASSEMBLY__ */

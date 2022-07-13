@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram pcxhr soundcards
  *
  * main header file
  *
  * Copyright (c) 2004 by Digigram <alsa@digigram.com>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __SOUND_PCXHR_H
@@ -75,6 +82,7 @@ struct pcxhr_mgr {
 	unsigned long port[3];
 
 	/* share the name */
+<<<<<<< HEAD
 	char shortname[32];		/* short name of this soundcard */
 	char longname[96];		/* name of this soundcard */
 
@@ -86,6 +94,14 @@ struct pcxhr_mgr {
 
 	spinlock_t lock;		/* interrupt spinlock */
 	spinlock_t msg_lock;		/* message spinlock */
+=======
+	char name[40];			/* name of this soundcard */
+
+	struct pcxhr_rmh *prmh;
+
+	struct mutex lock;		/* interrupt lock */
+	struct mutex msg_lock;		/* message lock */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex setup_mutex;	/* mutex used in hw_params, open and close */
 	struct mutex mixer_mutex;	/* mutex for mixer */
@@ -103,6 +119,10 @@ struct pcxhr_mgr {
 	unsigned int board_has_mic:1; /* if 1 the board has microphone input */
 	unsigned int board_aes_in_192k:1;/* if 1 the aes input plugs do support 192kHz */
 	unsigned int mono_capture:1; /* if 1 the board does mono capture */
+<<<<<<< HEAD
+=======
+	unsigned int capture_ltc:1; /* if 1 the board captures LTC input */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct snd_dma_buffer hostport;
 

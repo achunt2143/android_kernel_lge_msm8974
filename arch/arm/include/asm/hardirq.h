@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __ASM_HARDIRQ_H
 #define __ASM_HARDIRQ_H
 
@@ -28,5 +29,17 @@ u64 smp_irq_stat_cpu(unsigned int cpu);
 #define arch_irq_stat_cpu	smp_irq_stat_cpu
 
 #define __ARCH_IRQ_EXIT_IRQS_DISABLED	1
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __ASM_HARDIRQ_H
+#define __ASM_HARDIRQ_H
+
+#include <asm/irq.h>
+
+#define __ARCH_IRQ_EXIT_IRQS_DISABLED	1
+#define ack_bad_irq ack_bad_irq
+
+#include <asm-generic/hardirq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __ASM_HARDIRQ_H */

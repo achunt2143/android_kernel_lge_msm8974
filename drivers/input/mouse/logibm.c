@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 1999-2001 Vojtech Pavlik
  *
@@ -13,6 +17,7 @@
  * Logitech Bus Mouse Driver for Linux
  */
 
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,6 +38,8 @@
  * Vojtech Pavlik, Simunkova 1594, Prague 8, 182 00 Czech Republic
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/delay.h>
 #include <linux/ioport.h>
@@ -69,7 +76,11 @@ MODULE_LICENSE("GPL");
 #define LOGIBM_IRQ		5
 
 static int logibm_irq = LOGIBM_IRQ;
+<<<<<<< HEAD
 module_param_named(irq, logibm_irq, uint, 0);
+=======
+module_param_hw_named(irq, logibm_irq, uint, irq, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_PARM_DESC(irq, "IRQ number (5=default)");
 
 static struct input_dev *logibm_dev;

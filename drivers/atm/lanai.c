@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* lanai.c -- Copyright 1999-2003 by Mitchell Blank Jr <mitch@sfgoth.com>
  *
  *  This program is free software; you can redistribute it and/or
@@ -5,6 +6,11 @@
  *  as published by the Free Software Foundation; either version
  *  2 of the License, or (at your option) any later version.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/* lanai.c -- Copyright 1999-2003 by Mitchell Blank Jr <mitch@sfgoth.com>
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This driver supports ATM cards based on the Efficient "Lanai"
  * chipset such as the Speedstream 3010 and the ENI-25p.  The
  * Speedstream 3060 is currently not supported since we don't
@@ -346,7 +352,12 @@ static void lanai_buf_allocate(struct lanai_buffer *buf,
 		 * everything, but the way the lanai uses DMA memory would
 		 * make that a terrific pain.  This is much simpler.
 		 */
+<<<<<<< HEAD
 		buf->start = pci_alloc_consistent(pci, size, &buf->dmaaddr);
+=======
+		buf->start = dma_alloc_coherent(&pci->dev,
+						size, &buf->dmaaddr, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (buf->start != NULL) {	/* Success */
 			/* Lanai requires 256-byte alignment of DMA bufs */
 			APRINTK((buf->dmaaddr & ~0xFFFFFF00) == 0,
@@ -372,8 +383,13 @@ static void lanai_buf_deallocate(struct lanai_buffer *buf,
 	struct pci_dev *pci)
 {
 	if (buf->start != NULL) {
+<<<<<<< HEAD
 		pci_free_consistent(pci, lanai_buf_size(buf),
 		    buf->start, buf->dmaaddr);
+=======
+		dma_free_coherent(&pci->dev, lanai_buf_size(buf),
+				  buf->start, buf->dmaaddr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		buf->start = buf->end = buf->ptr = NULL;
 	}
 }
@@ -551,8 +567,13 @@ static inline void sram_write(const struct lanai_dev *lanai,
 	writel(val, sram_addr(lanai, offset));
 }
 
+<<<<<<< HEAD
 static int __devinit sram_test_word(const struct lanai_dev *lanai,
 				    int offset, u32 pattern)
+=======
+static int sram_test_word(const struct lanai_dev *lanai, int offset,
+			  u32 pattern)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u32 readback;
 	sram_write(lanai, pattern, offset);
@@ -566,7 +587,11 @@ static int __devinit sram_test_word(const struct lanai_dev *lanai,
 	return -EIO;
 }
 
+<<<<<<< HEAD
 static int __devinit sram_test_pass(const struct lanai_dev *lanai, u32 pattern)
+=======
+static int sram_test_pass(const struct lanai_dev *lanai, u32 pattern)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int offset, result = 0;
 	for (offset = 0; offset < SRAM_BYTES && result == 0; offset += 4)
@@ -574,7 +599,11 @@ static int __devinit sram_test_pass(const struct lanai_dev *lanai, u32 pattern)
 	return result;
 }
 
+<<<<<<< HEAD
 static int __devinit sram_test_and_clear(const struct lanai_dev *lanai)
+=======
+static int sram_test_and_clear(const struct lanai_dev *lanai)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef FULL_MEMORY_TEST
 	int result;
@@ -681,6 +710,7 @@ static inline int aal5_size(int size)
 	return cells * 48;
 }
 
+<<<<<<< HEAD
 /* How many bytes can we send if we have "space" space, assuming we have
  * to send full cells
  */
@@ -690,6 +720,8 @@ static inline int aal5_spacefor(int space)
 	return cells * 48;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* -------------------- FREE AN ATM SKB: */
 
 static inline void lanai_free_skb(struct atm_vcc *atmvcc, struct sk_buff *skb)
@@ -777,8 +809,12 @@ static void lanai_shutdown_tx_vci(struct lanai_dev *lanai,
 	struct sk_buff *skb;
 	unsigned long flags, timeout;
 	int read, write, lastread = -1;
+<<<<<<< HEAD
 	APRINTK(!in_interrupt(),
 	    "lanai_shutdown_tx_vci called w/o process context!\n");
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lvcc->vbase == NULL)	/* We were never bound to a VCI */
 		return;
 	/* 15.2.1 - wait for queue to drain */
@@ -860,7 +896,11 @@ static inline void aal0_buffer_free(struct lanai_dev *lanai)
 #ifndef READ_EEPROM
 
 /* Stub functions to use if EEPROM reading is disabled */
+<<<<<<< HEAD
 static int __devinit eeprom_read(struct lanai_dev *lanai)
+=======
+static int eeprom_read(struct lanai_dev *lanai)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	printk(KERN_INFO DEV_LABEL "(itf %d): *NOT* reading EEPROM\n",
 	    lanai->number);
@@ -868,7 +908,11 @@ static int __devinit eeprom_read(struct lanai_dev *lanai)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit eeprom_validate(struct lanai_dev *lanai)
+=======
+static int eeprom_validate(struct lanai_dev *lanai)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	lanai->serialno = 0;
 	lanai->magicno = EEPROM_MAGIC_VALUE;
@@ -877,7 +921,11 @@ static int __devinit eeprom_validate(struct lanai_dev *lanai)
 
 #else /* READ_EEPROM */
 
+<<<<<<< HEAD
 static int __devinit eeprom_read(struct lanai_dev *lanai)
+=======
+static int eeprom_read(struct lanai_dev *lanai)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, address;
 	u8 data;
@@ -953,7 +1001,11 @@ static inline u32 eeprom_be4(const struct lanai_dev *lanai, int address)
 }
 
 /* Checksum/validate EEPROM contents */
+<<<<<<< HEAD
 static int __devinit eeprom_validate(struct lanai_dev *lanai)
+=======
+static int eeprom_validate(struct lanai_dev *lanai)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, s;
 	u32 v;
@@ -1397,7 +1449,11 @@ static void vcc_rx_aal5(struct lanai_vcc *lvcc, int endptr)
 	if (n < 0)
 		n += lanai_buf_size(&lvcc->rx.buf);
 	APRINTK(n >= 0 && n < lanai_buf_size(&lvcc->rx.buf) && !(n & 15),
+<<<<<<< HEAD
 	    "vcc_rx_aal5: n out of range (%d/%Zu)\n",
+=======
+	    "vcc_rx_aal5: n out of range (%d/%zu)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    n, lanai_buf_size(&lvcc->rx.buf));
 	/* Recover the second-to-last word to get true pdu length */
 	if ((x = &end[-2]) < lvcc->rx.buf.start)
@@ -1448,7 +1504,11 @@ static void vcc_rx_aal0(struct lanai_dev *lanai)
 #include <linux/vmalloc.h>
 #endif
 
+<<<<<<< HEAD
 static int __devinit vcc_table_allocate(struct lanai_dev *lanai)
+=======
+static int vcc_table_allocate(struct lanai_dev *lanai)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef VCCTABLE_GETFREEPAGE
 	APRINTK((lanai->num_vci) * sizeof(struct lanai_vcc *) <= PAGE_SIZE,
@@ -1501,9 +1561,15 @@ static int lanai_get_sized_buffer(struct lanai_dev *lanai,
 		return -ENOMEM;
 	if (unlikely(lanai_buf_size(buf) < size))
 		printk(KERN_WARNING DEV_LABEL "(itf %d): wanted %d bytes "
+<<<<<<< HEAD
 		    "for %s buffer, got only %Zu\n", lanai->number, size,
 		    name, lanai_buf_size(buf));
 	DPRINTK("Allocated %Zu byte %s buffer\n", lanai_buf_size(buf), name);
+=======
+		    "for %s buffer, got only %zu\n", lanai->number, size,
+		    name, lanai_buf_size(buf));
+	DPRINTK("Allocated %zu byte %s buffer\n", lanai_buf_size(buf), name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1588,14 +1654,23 @@ static void lanai_reset(struct lanai_dev *lanai)
 /*
  * Allocate service buffer and tell card about it
  */
+<<<<<<< HEAD
 static int __devinit service_buffer_allocate(struct lanai_dev *lanai)
+=======
+static int service_buffer_allocate(struct lanai_dev *lanai)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	lanai_buf_allocate(&lanai->service, SERVICE_ENTRIES * 4, 8,
 	    lanai->pci);
 	if (unlikely(lanai->service.start == NULL))
 		return -ENOMEM;
+<<<<<<< HEAD
 	DPRINTK("allocated service buffer at 0x%08lX, size %Zu(%d)\n",
 	    (unsigned long) lanai->service.start,
+=======
+	DPRINTK("allocated service buffer at %p, size %zu(%d)\n",
+	    lanai->service.start,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	    lanai_buf_size(&lanai->service),
 	    lanai_buf_size_cardorder(&lanai->service));
 	/* Clear ServWrite register to be safe */
@@ -1769,9 +1844,15 @@ static void iter_dequeue(struct lanai_dev *lanai, vci_t vci)
 }
 #endif /* !DEBUG_RW */
 
+<<<<<<< HEAD
 static void lanai_timed_poll(unsigned long arg)
 {
 	struct lanai_dev *lanai = (struct lanai_dev *) arg;
+=======
+static void lanai_timed_poll(struct timer_list *t)
+{
+	struct lanai_dev *lanai = from_timer(lanai, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef DEBUG_RW
 	unsigned long flags;
 #ifdef USE_POWERDOWN
@@ -1798,10 +1879,15 @@ static void lanai_timed_poll(unsigned long arg)
 
 static inline void lanai_timed_poll_start(struct lanai_dev *lanai)
 {
+<<<<<<< HEAD
 	init_timer(&lanai->timer);
 	lanai->timer.expires = jiffies + LANAI_POLL_PERIOD;
 	lanai->timer.data = (unsigned long) lanai;
 	lanai->timer.function = lanai_timed_poll;
+=======
+	timer_setup(&lanai->timer, lanai_timed_poll, 0);
+	lanai->timer.expires = jiffies + LANAI_POLL_PERIOD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	add_timer(&lanai->timer);
 }
 
@@ -1942,7 +2028,11 @@ static int check_board_id_and_rev(const char *name, u32 val, int *revp)
 
 /* -------------------- PCI INITIALIZATION/SHUTDOWN: */
 
+<<<<<<< HEAD
 static int __devinit lanai_pci_start(struct lanai_dev *lanai)
+=======
+static int lanai_pci_start(struct lanai_dev *lanai)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_dev *pci = lanai->pci;
 	int result;
@@ -1953,12 +2043,16 @@ static int __devinit lanai_pci_start(struct lanai_dev *lanai)
 		return -ENXIO;
 	}
 	pci_set_master(pci);
+<<<<<<< HEAD
 	if (pci_set_dma_mask(pci, DMA_BIT_MASK(32)) != 0) {
 		printk(KERN_WARNING DEV_LABEL
 		    "(itf %d): No suitable DMA available.\n", lanai->number);
 		return -EBUSY;
 	}
 	if (pci_set_consistent_dma_mask(pci, DMA_BIT_MASK(32)) != 0) {
+=======
+	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(32)) != 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_WARNING DEV_LABEL
 		    "(itf %d): No suitable DMA available.\n", lanai->number);
 		return -EBUSY;
@@ -2038,7 +2132,11 @@ static int lanai_normalize_ci(struct lanai_dev *lanai,
 	switch (*vpip) {
 		case ATM_VPI_ANY:
 			*vpip = 0;
+<<<<<<< HEAD
 			/* FALLTHROUGH */
+=======
+			fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case 0:
 			break;
 		default:
@@ -2123,7 +2221,11 @@ static inline void lanai_cbr_shutdown(struct lanai_dev *lanai)
 /* -------------------- OPERATIONS: */
 
 /* setup a newly detected device */
+<<<<<<< HEAD
 static int __devinit lanai_dev_open(struct atm_dev *atmdev)
+=======
+static int lanai_dev_open(struct atm_dev *atmdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lanai_dev *lanai = (struct lanai_dev *) atmdev->dev_data;
 	unsigned long raw_base;
@@ -2156,6 +2258,10 @@ static int __devinit lanai_dev_open(struct atm_dev *atmdev)
 	lanai->base = (bus_addr_t) ioremap(raw_base, LANAI_MAPPING_SIZE);
 	if (lanai->base == NULL) {
 		printk(KERN_ERR DEV_LABEL ": couldn't remap I/O space\n");
+<<<<<<< HEAD
+=======
+		result = -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto error_pci;
 	}
 	/* 3.3: Reset lanai and PHY */
@@ -2232,9 +2338,15 @@ static int __devinit lanai_dev_open(struct atm_dev *atmdev)
 #endif
 	memcpy(atmdev->esi, eeprom_mac(lanai), ESI_LEN);
 	lanai_timed_poll_start(lanai);
+<<<<<<< HEAD
 	printk(KERN_NOTICE DEV_LABEL "(itf %d): rev.%d, base=0x%lx, irq=%u "
 		"(%pMF)\n", lanai->number, (int) lanai->pci->revision,
 		(unsigned long) lanai->base, lanai->pci->irq, atmdev->esi);
+=======
+	printk(KERN_NOTICE DEV_LABEL "(itf %d): rev.%d, base=%p, irq=%u "
+		"(%pMF)\n", lanai->number, (int) lanai->pci->revision,
+		lanai->base, lanai->pci->irq, atmdev->esi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_NOTICE DEV_LABEL "(itf %d): LANAI%s, serialno=%u(0x%X), "
 	    "board_rev=%d\n", lanai->number,
 	    lanai->type==lanai2 ? "2" : "HB", (unsigned int) lanai->serialno,
@@ -2252,6 +2364,10 @@ static int __devinit lanai_dev_open(struct atm_dev *atmdev)
 	conf1_write(lanai);
 #endif
 	iounmap(lanai->base);
+<<<<<<< HEAD
+=======
+	lanai->base = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     error_pci:
 	pci_disable_device(lanai->pci);
     error:
@@ -2264,6 +2380,11 @@ static int __devinit lanai_dev_open(struct atm_dev *atmdev)
 static void lanai_dev_close(struct atm_dev *atmdev)
 {
 	struct lanai_dev *lanai = (struct lanai_dev *) atmdev->dev_data;
+<<<<<<< HEAD
+=======
+	if (lanai->base==NULL)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	printk(KERN_INFO DEV_LABEL "(itf %d): shutting down interface\n",
 	    lanai->number);
 	lanai_timed_poll_stop(lanai);
@@ -2479,8 +2600,13 @@ static int lanai_proc_read(struct atm_dev *atmdev, loff_t *pos, char *page)
 		    (lanai->status & STATUS_LED) ? 1 : 0,
 		    (lanai->status & STATUS_GPIN) ? 1 : 0);
 	if (left-- == 0)
+<<<<<<< HEAD
 		return sprintf(page, "global buffer sizes: service=%Zu, "
 		    "aal0_rx=%Zu\n", lanai_buf_size(&lanai->service),
+=======
+		return sprintf(page, "global buffer sizes: service=%zu, "
+		    "aal0_rx=%zu\n", lanai_buf_size(&lanai->service),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    lanai->naal0 ? lanai_buf_size(&lanai->aal0buf) : 0);
 	if (left-- == 0) {
 		get_statistics(lanai);
@@ -2525,7 +2651,11 @@ static int lanai_proc_read(struct atm_dev *atmdev, loff_t *pos, char *page)
 		left += sprintf(&page[left], ",\n          rx_AAL=%d",
 		    lvcc->rx.atmvcc->qos.aal == ATM_AAL5 ? 5 : 0);
 		if (lvcc->rx.atmvcc->qos.aal == ATM_AAL5)
+<<<<<<< HEAD
 			left += sprintf(&page[left], ", rx_buf_size=%Zu, "
+=======
+			left += sprintf(&page[left], ", rx_buf_size=%zu, "
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    "rx_bad_len=%u,\n          rx_service_trash=%u, "
 			    "rx_service_stream=%u, rx_bad_crc=%u",
 			    lanai_buf_size(&lvcc->rx.buf),
@@ -2536,7 +2666,11 @@ static int lanai_proc_read(struct atm_dev *atmdev, loff_t *pos, char *page)
 	}
 	if (lvcc->tx.atmvcc != NULL)
 		left += sprintf(&page[left], ",\n          tx_AAL=%d, "
+<<<<<<< HEAD
 		    "tx_buf_size=%Zu, tx_qos=%cBR, tx_backlogged=%c",
+=======
+		    "tx_buf_size=%zu, tx_qos=%cBR, tx_backlogged=%c",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    lvcc->tx.atmvcc->qos.aal == ATM_AAL5 ? 5 : 0,
 		    lanai_buf_size(&lvcc->tx.buf),
 		    lvcc->tx.atmvcc == lanai->cbrvcc ? 'C' : 'U',
@@ -2555,8 +2689,11 @@ static const struct atmdev_ops ops = {
 	.dev_close	= lanai_dev_close,
 	.open		= lanai_open,
 	.close		= lanai_close,
+<<<<<<< HEAD
 	.getsockopt	= NULL,
 	.setsockopt	= NULL,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.send		= lanai_send,
 	.phy_put	= NULL,
 	.phy_get	= NULL,
@@ -2566,14 +2703,23 @@ static const struct atmdev_ops ops = {
 };
 
 /* initialize one probed card */
+<<<<<<< HEAD
 static int __devinit lanai_init_one(struct pci_dev *pci,
 				    const struct pci_device_id *ident)
+=======
+static int lanai_init_one(struct pci_dev *pci,
+			  const struct pci_device_id *ident)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct lanai_dev *lanai;
 	struct atm_dev *atmdev;
 	int result;
 
+<<<<<<< HEAD
 	lanai = kmalloc(sizeof(*lanai), GFP_KERNEL);
+=======
+	lanai = kzalloc(sizeof(*lanai), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (lanai == NULL) {
 		printk(KERN_ERR DEV_LABEL
 		       ": couldn't allocate dev_data structure!\n");
@@ -2601,7 +2747,11 @@ static int __devinit lanai_init_one(struct pci_dev *pci,
 	return result;
 }
 
+<<<<<<< HEAD
 static struct pci_device_id lanai_pci_tbl[] = {
+=======
+static const struct pci_device_id lanai_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_VDEVICE(EF, PCI_DEVICE_ID_EF_ATM_LANAI2) },
 	{ PCI_VDEVICE(EF, PCI_DEVICE_ID_EF_ATM_LANAIHB) },
 	{ 0, }	/* terminal entry */
@@ -2614,6 +2764,7 @@ static struct pci_driver lanai_driver = {
 	.probe    = lanai_init_one,
 };
 
+<<<<<<< HEAD
 static int __init lanai_module_init(void)
 {
 	int x;
@@ -2635,6 +2786,9 @@ static void __exit lanai_module_exit(void)
 
 module_init(lanai_module_init);
 module_exit(lanai_module_exit);
+=======
+module_pci_driver(lanai_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Mitchell Blank Jr <mitch@sfgoth.com>");
 MODULE_DESCRIPTION("Efficient Networks Speedstream 3010 driver");

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ----------------------------------------------------------------------- *
  *
  *   Copyright 2014 Intel Corporation; author: H. Peter Anvin
  *
+<<<<<<< HEAD
  *   This program is free software; you can redistribute it and/or modify it
  *   under the terms and conditions of the GNU General Public License,
  *   version 2, as published by the Free Software Foundation.
@@ -11,6 +16,8 @@
  *   FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
  *   more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -37,7 +44,11 @@
 #include <linux/percpu.h>
 #include <linux/gfp.h>
 #include <linux/random.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+#include <linux/pgtable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pgalloc.h>
 #include <asm/setup.h>
 #include <asm/espfix.h>
@@ -50,6 +61,7 @@
 #define ESPFIX_STACKS_PER_PAGE	(PAGE_SIZE/ESPFIX_STACK_SIZE)
 
 /* There is address space for how many espfix pages? */
+<<<<<<< HEAD
 #define ESPFIX_PAGE_SPACE	(1UL << (PGDIR_SHIFT-PAGE_SHIFT-16))
 
 #define ESPFIX_MAX_CPUS		(ESPFIX_STACKS_PER_PAGE * ESPFIX_PAGE_SPACE)
@@ -58,6 +70,16 @@
 #endif
 
 #define PGALLOC_GFP (GFP_KERNEL | __GFP_NOTRACK | __GFP_REPEAT | __GFP_ZERO)
+=======
+#define ESPFIX_PAGE_SPACE	(1UL << (P4D_SHIFT-PAGE_SHIFT-16))
+
+#define ESPFIX_MAX_CPUS		(ESPFIX_STACKS_PER_PAGE * ESPFIX_PAGE_SPACE)
+#if CONFIG_NR_CPUS > ESPFIX_MAX_CPUS
+# error "Need more virtual address space for the ESPFIX hack"
+#endif
+
+#define PGALLOC_GFP (GFP_KERNEL | __GFP_ZERO)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This contains the *bottom* address of the espfix stack */
 DEFINE_PER_CPU_READ_MOSTLY(unsigned long, espfix_stack);
@@ -102,6 +124,7 @@ static inline unsigned long espfix_base_addr(unsigned int cpu)
 
 static void init_espfix_random(void)
 {
+<<<<<<< HEAD
 	unsigned long rand;
 
 	/*
@@ -113,6 +136,9 @@ static void init_espfix_random(void)
 		rdtscll(rand);
 		rand *= 0xc345c6b72fd16123UL;
 	}
+=======
+	unsigned long rand = get_random_long();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	slot_random = rand % ESPFIX_STACKS_PER_PAGE;
 	page_random = (rand / ESPFIX_STACKS_PER_PAGE)
@@ -121,6 +147,7 @@ static void init_espfix_random(void)
 
 void __init init_espfix_bsp(void)
 {
+<<<<<<< HEAD
 	pgd_t *pgd_p;
 	pteval_t ptemask;
 
@@ -129,21 +156,44 @@ void __init init_espfix_bsp(void)
 	/* Install the espfix pud into the kernel page directory */
 	pgd_p = &init_level4_pgt[pgd_index(ESPFIX_BASE_ADDR)];
 	pgd_populate(&init_mm, pgd_p, (pud_t *)espfix_pud_page);
+=======
+	pgd_t *pgd;
+	p4d_t *p4d;
+
+	/* FRED systems always restore the full value of %rsp */
+	if (cpu_feature_enabled(X86_FEATURE_FRED))
+		return;
+
+	/* Install the espfix pud into the kernel page directory */
+	pgd = &init_top_pgt[pgd_index(ESPFIX_BASE_ADDR)];
+	p4d = p4d_alloc(&init_mm, pgd, ESPFIX_BASE_ADDR);
+	p4d_populate(&init_mm, p4d, espfix_pud_page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Randomize the locations */
 	init_espfix_random();
 
 	/* The rest is the same as for any other processor */
+<<<<<<< HEAD
 	init_espfix_ap();
 }
 
 void init_espfix_ap(void)
 {
 	unsigned int cpu, page;
+=======
+	init_espfix_ap(0);
+}
+
+void init_espfix_ap(int cpu)
+{
+	unsigned int page;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long addr;
 	pud_t pud, *pud_p;
 	pmd_t pmd, *pmd_p;
 	pte_t pte, *pte_p;
+<<<<<<< HEAD
 	int n;
 	void *stack_page;
 	pteval_t ptemask;
@@ -153,27 +203,59 @@ void init_espfix_ap(void)
 		return;		/* Already initialized */
 
 	cpu = smp_processor_id();
+=======
+	int n, node;
+	void *stack_page;
+	pteval_t ptemask;
+
+	/* FRED systems always restore the full value of %rsp */
+	if (cpu_feature_enabled(X86_FEATURE_FRED))
+		return;
+
+	/* We only have to do this once... */
+	if (likely(per_cpu(espfix_stack, cpu)))
+		return;		/* Already initialized */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addr = espfix_base_addr(cpu);
 	page = cpu/ESPFIX_STACKS_PER_PAGE;
 
 	/* Did another CPU already set this up? */
+<<<<<<< HEAD
 	stack_page = ACCESS_ONCE(espfix_pages[page]);
+=======
+	stack_page = READ_ONCE(espfix_pages[page]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (likely(stack_page))
 		goto done;
 
 	mutex_lock(&espfix_init_mutex);
 
 	/* Did we race on the lock? */
+<<<<<<< HEAD
 	stack_page = ACCESS_ONCE(espfix_pages[page]);
 	if (stack_page)
 		goto unlock_done;
 
+=======
+	stack_page = READ_ONCE(espfix_pages[page]);
+	if (stack_page)
+		goto unlock_done;
+
+	node = cpu_to_node(cpu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ptemask = __supported_pte_mask;
 
 	pud_p = &espfix_pud_page[pud_index(addr)];
 	pud = *pud_p;
 	if (!pud_present(pud)) {
+<<<<<<< HEAD
 		pmd_p = (pmd_t *)__get_free_page(PGALLOC_GFP);
+=======
+		struct page *page = alloc_pages_node(node, PGALLOC_GFP, 0);
+
+		pmd_p = (pmd_t *)page_address(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pud = __pud(__pa(pmd_p) | (PGTABLE_PROT & ptemask));
 		paravirt_alloc_pmd(&init_mm, __pa(pmd_p) >> PAGE_SHIFT);
 		for (n = 0; n < ESPFIX_PUD_CLONES; n++)
@@ -183,7 +265,13 @@ void init_espfix_ap(void)
 	pmd_p = pmd_offset(&pud, addr);
 	pmd = *pmd_p;
 	if (!pmd_present(pmd)) {
+<<<<<<< HEAD
 		pte_p = (pte_t *)__get_free_page(PGALLOC_GFP);
+=======
+		struct page *page = alloc_pages_node(node, PGALLOC_GFP, 0);
+
+		pte_p = (pte_t *)page_address(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pmd = __pmd(__pa(pte_p) | (PGTABLE_PROT & ptemask));
 		paravirt_alloc_pte(&init_mm, __pa(pte_p) >> PAGE_SHIFT);
 		for (n = 0; n < ESPFIX_PMD_CLONES; n++)
@@ -191,18 +279,37 @@ void init_espfix_ap(void)
 	}
 
 	pte_p = pte_offset_kernel(&pmd, addr);
+<<<<<<< HEAD
 	stack_page = (void *)__get_free_page(GFP_KERNEL);
 	pte = __pte(__pa(stack_page) | (__PAGE_KERNEL_RO & ptemask));
+=======
+	stack_page = page_address(alloc_pages_node(node, GFP_KERNEL, 0));
+	/*
+	 * __PAGE_KERNEL_* includes _PAGE_GLOBAL, which we want since
+	 * this is mapped to userspace.
+	 */
+	pte = __pte(__pa(stack_page) | ((__PAGE_KERNEL_RO | _PAGE_ENC) & ptemask));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (n = 0; n < ESPFIX_PTE_CLONES; n++)
 		set_pte(&pte_p[n*PTE_STRIDE], pte);
 
 	/* Job is done for this CPU and any CPU which shares this page */
+<<<<<<< HEAD
 	ACCESS_ONCE(espfix_pages[page]) = stack_page;
+=======
+	WRITE_ONCE(espfix_pages[page], stack_page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 unlock_done:
 	mutex_unlock(&espfix_init_mutex);
 done:
+<<<<<<< HEAD
 	this_cpu_write(espfix_stack, addr);
 	this_cpu_write(espfix_waddr, (unsigned long)stack_page
 		       + (addr & ~PAGE_MASK));
+=======
+	per_cpu(espfix_stack, cpu) = addr;
+	per_cpu(espfix_waddr, cpu) = (unsigned long)stack_page
+				      + (addr & ~PAGE_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

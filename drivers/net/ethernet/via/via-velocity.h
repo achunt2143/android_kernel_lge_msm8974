@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This software may be redistributed and/or modified under
  * the terms of the GNU General Public License as published by the Free
  * Software Foundation; either version 2 of the License, or
@@ -12,6 +17,8 @@
  * or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License
  * for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * File: via-velocity.h
  *
  * Purpose: Header file to define driver's private structures.
@@ -32,7 +39,10 @@
 #define VELOCITY_VERSION       "1.15"
 
 #define VELOCITY_IO_SIZE	256
+<<<<<<< HEAD
 #define VELOCITY_NAPI_WEIGHT	64
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PKT_BUF_SZ          1540
 
@@ -948,7 +958,11 @@ enum  velocity_owner {
 #define IMR_MASK_VALUE      0x0013FB0FUL	/* initial value of IMR
 						   ignore MIBFI,RACEI to
 						   reduce intr. frequency
+<<<<<<< HEAD
 						   NOTE.... do not enable NoBuf int mask at driver driver
+=======
+						   NOTE.... do not enable NoBuf int mask at driver
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						      when (1) NoBuf -> RxThreshold = SF
 							   (2) OK    -> RxThreshold = original value
 						 */
@@ -1265,7 +1279,11 @@ struct velocity_context {
 #define PHYID_VT3216_64BIT  0x000FC600UL
 #define PHYID_MARVELL_1000  0x01410C50UL
 #define PHYID_MARVELL_1000S 0x01410C40UL
+<<<<<<< HEAD
 
+=======
+#define PHYID_ICPLUS_IP101A 0x02430C54UL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define PHYID_REV_ID_MASK   0x0000000FUL
 
 #define PHYID_GET_PHY_ID(i)         ((i) & ~PHYID_REV_ID_MASK)
@@ -1295,6 +1313,7 @@ struct velocity_context {
     velocity_mii_read((p),MII_PHYSID1,((u16 *) &id)+1);\
     (id);})
 
+<<<<<<< HEAD
 /*
  * Inline debug routine
  */
@@ -1339,6 +1358,8 @@ enum velocity_msg_level {
 
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define     VELOCITY_WOL_MAGIC             0x00000000UL
 #define     VELOCITY_WOL_PHY               0x00000001UL
 #define     VELOCITY_WOL_ARP               0x00000002UL
@@ -1434,8 +1455,15 @@ struct velocity_opt {
 #define GET_RD_BY_IDX(vptr, idx)   (vptr->rd_ring[idx])
 
 struct velocity_info {
+<<<<<<< HEAD
 	struct pci_dev *pdev;
 	struct net_device *dev;
+=======
+	struct device *dev;
+	struct pci_dev *pdev;
+	struct net_device *netdev;
+	bool no_eeprom;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long active_vlans[BITS_TO_LONGS(VLAN_N_VID)];
 	u8 ip_addr[4];
@@ -1490,6 +1518,10 @@ struct velocity_info {
 	struct velocity_context context;
 
 	u32 ticks;
+<<<<<<< HEAD
+=======
+	u32 ethtool_ops_nesting;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 rev_id;
 
@@ -1514,9 +1546,15 @@ static inline int velocity_get_ip(struct velocity_info *vptr)
 	int res = -ENOENT;
 
 	rcu_read_lock();
+<<<<<<< HEAD
 	in_dev = __in_dev_get_rcu(vptr->dev);
 	if (in_dev != NULL) {
 		ifa = (struct in_ifaddr *) in_dev->ifa_list;
+=======
+	in_dev = __in_dev_get_rcu(vptr->netdev);
+	if (in_dev != NULL) {
+		ifa = rcu_dereference(in_dev->ifa_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ifa != NULL) {
 			memcpy(vptr->ip_addr, &ifa->ifa_address, 4);
 			res = 0;

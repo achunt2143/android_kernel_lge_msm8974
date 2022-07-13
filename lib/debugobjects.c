@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Generic infrastructure for lifetime debugging of objects.
  *
@@ -10,26 +11,78 @@
 #include <linux/debugobjects.h>
 #include <linux/interrupt.h>
 #include <linux/sched.h>
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Generic infrastructure for lifetime debugging of objects.
+ *
+ * Copyright (C) 2008, Thomas Gleixner <tglx@linutronix.de>
+ */
+
+#define pr_fmt(fmt) "ODEBUG: " fmt
+
+#include <linux/debugobjects.h>
+#include <linux/interrupt.h>
+#include <linux/sched.h>
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/seq_file.h>
 #include <linux/debugfs.h>
 #include <linux/slab.h>
 #include <linux/hash.h>
+<<<<<<< HEAD
+=======
+#include <linux/kmemleak.h>
+#include <linux/cpu.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ODEBUG_HASH_BITS	14
 #define ODEBUG_HASH_SIZE	(1 << ODEBUG_HASH_BITS)
 
+<<<<<<< HEAD
 #define ODEBUG_POOL_SIZE	512
 #define ODEBUG_POOL_MIN_LEVEL	256
+=======
+#define ODEBUG_POOL_SIZE	1024
+#define ODEBUG_POOL_MIN_LEVEL	256
+#define ODEBUG_POOL_PERCPU_SIZE	64
+#define ODEBUG_BATCH_SIZE	16
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ODEBUG_CHUNK_SHIFT	PAGE_SHIFT
 #define ODEBUG_CHUNK_SIZE	(1 << ODEBUG_CHUNK_SHIFT)
 #define ODEBUG_CHUNK_MASK	(~(ODEBUG_CHUNK_SIZE - 1))
 
+<<<<<<< HEAD
+=======
+/*
+ * We limit the freeing of debug objects via workqueue at a maximum
+ * frequency of 10Hz and about 1024 objects for each freeing operation.
+ * So it is freeing at most 10k debug objects per second.
+ */
+#define ODEBUG_FREE_WORK_MAX	1024
+#define ODEBUG_FREE_WORK_DELAY	DIV_ROUND_UP(HZ, 10)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct debug_bucket {
 	struct hlist_head	list;
 	raw_spinlock_t		lock;
 };
 
+<<<<<<< HEAD
+=======
+/*
+ * Debug object percpu free list
+ * Access is protected by disabling irq
+ */
+struct debug_percpu_free {
+	struct hlist_head	free_objs;
+	int			obj_free;
+};
+
+static DEFINE_PER_CPU(struct debug_percpu_free, percpu_obj_pool);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct debug_bucket	obj_hash[ODEBUG_HASH_SIZE];
 
 static struct debug_obj		obj_static_pool[ODEBUG_POOL_SIZE] __initdata;
@@ -37,23 +90,62 @@ static struct debug_obj		obj_static_pool[ODEBUG_POOL_SIZE] __initdata;
 static DEFINE_RAW_SPINLOCK(pool_lock);
 
 static HLIST_HEAD(obj_pool);
+<<<<<<< HEAD
 
+=======
+static HLIST_HEAD(obj_to_free);
+
+/*
+ * Because of the presence of percpu free pools, obj_pool_free will
+ * under-count those in the percpu free pools. Similarly, obj_pool_used
+ * will over-count those in the percpu free pools. Adjustments will be
+ * made at debug_stats_show(). Both obj_pool_min_free and obj_pool_max_used
+ * can be off.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int			obj_pool_min_free = ODEBUG_POOL_SIZE;
 static int			obj_pool_free = ODEBUG_POOL_SIZE;
 static int			obj_pool_used;
 static int			obj_pool_max_used;
+<<<<<<< HEAD
 static struct kmem_cache	*obj_cache;
 
 static int			debug_objects_maxchain __read_mostly;
+=======
+static bool			obj_freeing;
+/* The number of objs on the global free list */
+static int			obj_nr_tofree;
+
+static int			debug_objects_maxchain __read_mostly;
+static int __maybe_unused	debug_objects_maxchecked __read_mostly;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int			debug_objects_fixups __read_mostly;
 static int			debug_objects_warnings __read_mostly;
 static int			debug_objects_enabled __read_mostly
 				= CONFIG_DEBUG_OBJECTS_ENABLE_DEFAULT;
+<<<<<<< HEAD
 
 static struct debug_obj_descr	*descr_test  __read_mostly;
 
 static void free_obj_work(struct work_struct *work);
 static DECLARE_WORK(debug_obj_work, free_obj_work);
+=======
+static int			debug_objects_pool_size __read_mostly
+				= ODEBUG_POOL_SIZE;
+static int			debug_objects_pool_min_level __read_mostly
+				= ODEBUG_POOL_MIN_LEVEL;
+static const struct debug_obj_descr *descr_test  __read_mostly;
+static struct kmem_cache	*obj_cache __ro_after_init;
+
+/*
+ * Track numbers of kmem_cache_alloc()/free() calls done.
+ */
+static int			debug_objects_allocated;
+static int			debug_objects_freed;
+
+static void free_obj_work(struct work_struct *work);
+static DECLARE_DELAYED_WORK(debug_obj_work, free_obj_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init enable_object_debug(char *str)
 {
@@ -79,6 +171,7 @@ static const char *obj_states[ODEBUG_STATE_MAX] = {
 	[ODEBUG_STATE_NOTAVAILABLE]	= "not available",
 };
 
+<<<<<<< HEAD
 static int fill_pool(void)
 {
 	gfp_t gfp = GFP_ATOMIC | __GFP_NORETRY | __GFP_NOWARN;
@@ -103,6 +196,64 @@ static int fill_pool(void)
 		raw_spin_unlock_irqrestore(&pool_lock, flags);
 	}
 	return obj_pool_free;
+=======
+static void fill_pool(void)
+{
+	gfp_t gfp = __GFP_HIGH | __GFP_NOWARN;
+	struct debug_obj *obj;
+	unsigned long flags;
+
+	if (likely(READ_ONCE(obj_pool_free) >= debug_objects_pool_min_level))
+		return;
+
+	/*
+	 * Reuse objs from the global free list; they will be reinitialized
+	 * when allocating.
+	 *
+	 * Both obj_nr_tofree and obj_pool_free are checked locklessly; the
+	 * READ_ONCE()s pair with the WRITE_ONCE()s in pool_lock critical
+	 * sections.
+	 */
+	while (READ_ONCE(obj_nr_tofree) && (READ_ONCE(obj_pool_free) < obj_pool_min_free)) {
+		raw_spin_lock_irqsave(&pool_lock, flags);
+		/*
+		 * Recheck with the lock held as the worker thread might have
+		 * won the race and freed the global free list already.
+		 */
+		while (obj_nr_tofree && (obj_pool_free < obj_pool_min_free)) {
+			obj = hlist_entry(obj_to_free.first, typeof(*obj), node);
+			hlist_del(&obj->node);
+			WRITE_ONCE(obj_nr_tofree, obj_nr_tofree - 1);
+			hlist_add_head(&obj->node, &obj_pool);
+			WRITE_ONCE(obj_pool_free, obj_pool_free + 1);
+		}
+		raw_spin_unlock_irqrestore(&pool_lock, flags);
+	}
+
+	if (unlikely(!obj_cache))
+		return;
+
+	while (READ_ONCE(obj_pool_free) < debug_objects_pool_min_level) {
+		struct debug_obj *new[ODEBUG_BATCH_SIZE];
+		int cnt;
+
+		for (cnt = 0; cnt < ODEBUG_BATCH_SIZE; cnt++) {
+			new[cnt] = kmem_cache_zalloc(obj_cache, gfp);
+			if (!new[cnt])
+				break;
+		}
+		if (!cnt)
+			return;
+
+		raw_spin_lock_irqsave(&pool_lock, flags);
+		while (cnt) {
+			hlist_add_head(&new[--cnt]->node, &obj_pool);
+			debug_objects_allocated++;
+			WRITE_ONCE(obj_pool_free, obj_pool_free + 1);
+		}
+		raw_spin_unlock_irqrestore(&pool_lock, flags);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -110,11 +261,18 @@ static int fill_pool(void)
  */
 static struct debug_obj *lookup_object(void *addr, struct debug_bucket *b)
 {
+<<<<<<< HEAD
 	struct hlist_node *node;
 	struct debug_obj *obj;
 	int cnt = 0;
 
 	hlist_for_each_entry(obj, node, &b->list, node) {
+=======
+	struct debug_obj *obj;
+	int cnt = 0;
+
+	hlist_for_each_entry(obj, &b->list, node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		cnt++;
 		if (obj->object == addr)
 			return obj;
@@ -126,6 +284,7 @@ static struct debug_obj *lookup_object(void *addr, struct debug_bucket *b)
 }
 
 /*
+<<<<<<< HEAD
  * Allocate a new object. If the pool is empty, switch off the debugger.
  * Must be called with interrupts disabled.
  */
@@ -151,16 +310,88 @@ alloc_object(void *addr, struct debug_bucket *b, struct debug_obj_descr *descr)
 			obj_pool_max_used = obj_pool_used;
 
 		obj_pool_free--;
+=======
+ * Allocate a new object from the hlist
+ */
+static struct debug_obj *__alloc_object(struct hlist_head *list)
+{
+	struct debug_obj *obj = NULL;
+
+	if (list->first) {
+		obj = hlist_entry(list->first, typeof(*obj), node);
+		hlist_del(&obj->node);
+	}
+
+	return obj;
+}
+
+static struct debug_obj *
+alloc_object(void *addr, struct debug_bucket *b, const struct debug_obj_descr *descr)
+{
+	struct debug_percpu_free *percpu_pool = this_cpu_ptr(&percpu_obj_pool);
+	struct debug_obj *obj;
+
+	if (likely(obj_cache)) {
+		obj = __alloc_object(&percpu_pool->free_objs);
+		if (obj) {
+			percpu_pool->obj_free--;
+			goto init_obj;
+		}
+	}
+
+	raw_spin_lock(&pool_lock);
+	obj = __alloc_object(&obj_pool);
+	if (obj) {
+		obj_pool_used++;
+		WRITE_ONCE(obj_pool_free, obj_pool_free - 1);
+
+		/*
+		 * Looking ahead, allocate one batch of debug objects and
+		 * put them into the percpu free pool.
+		 */
+		if (likely(obj_cache)) {
+			int i;
+
+			for (i = 0; i < ODEBUG_BATCH_SIZE; i++) {
+				struct debug_obj *obj2;
+
+				obj2 = __alloc_object(&obj_pool);
+				if (!obj2)
+					break;
+				hlist_add_head(&obj2->node,
+					       &percpu_pool->free_objs);
+				percpu_pool->obj_free++;
+				obj_pool_used++;
+				WRITE_ONCE(obj_pool_free, obj_pool_free - 1);
+			}
+		}
+
+		if (obj_pool_used > obj_pool_max_used)
+			obj_pool_max_used = obj_pool_used;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (obj_pool_free < obj_pool_min_free)
 			obj_pool_min_free = obj_pool_free;
 	}
 	raw_spin_unlock(&pool_lock);
 
+<<<<<<< HEAD
+=======
+init_obj:
+	if (obj) {
+		obj->object = addr;
+		obj->descr  = descr;
+		obj->state  = ODEBUG_STATE_NONE;
+		obj->astate = 0;
+		hlist_add_head(&obj->node, &b->list);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return obj;
 }
 
 /*
  * workqueue function to free objects.
+<<<<<<< HEAD
  */
 static void free_obj_work(struct work_struct *work)
 {
@@ -181,6 +412,142 @@ static void free_obj_work(struct work_struct *work)
 		raw_spin_lock_irqsave(&pool_lock, flags);
 	}
 	raw_spin_unlock_irqrestore(&pool_lock, flags);
+=======
+ *
+ * To reduce contention on the global pool_lock, the actual freeing of
+ * debug objects will be delayed if the pool_lock is busy.
+ */
+static void free_obj_work(struct work_struct *work)
+{
+	struct hlist_node *tmp;
+	struct debug_obj *obj;
+	unsigned long flags;
+	HLIST_HEAD(tofree);
+
+	WRITE_ONCE(obj_freeing, false);
+	if (!raw_spin_trylock_irqsave(&pool_lock, flags))
+		return;
+
+	if (obj_pool_free >= debug_objects_pool_size)
+		goto free_objs;
+
+	/*
+	 * The objs on the pool list might be allocated before the work is
+	 * run, so recheck if pool list it full or not, if not fill pool
+	 * list from the global free list. As it is likely that a workload
+	 * may be gearing up to use more and more objects, don't free any
+	 * of them until the next round.
+	 */
+	while (obj_nr_tofree && obj_pool_free < debug_objects_pool_size) {
+		obj = hlist_entry(obj_to_free.first, typeof(*obj), node);
+		hlist_del(&obj->node);
+		hlist_add_head(&obj->node, &obj_pool);
+		WRITE_ONCE(obj_pool_free, obj_pool_free + 1);
+		WRITE_ONCE(obj_nr_tofree, obj_nr_tofree - 1);
+	}
+	raw_spin_unlock_irqrestore(&pool_lock, flags);
+	return;
+
+free_objs:
+	/*
+	 * Pool list is already full and there are still objs on the free
+	 * list. Move remaining free objs to a temporary list to free the
+	 * memory outside the pool_lock held region.
+	 */
+	if (obj_nr_tofree) {
+		hlist_move_list(&obj_to_free, &tofree);
+		debug_objects_freed += obj_nr_tofree;
+		WRITE_ONCE(obj_nr_tofree, 0);
+	}
+	raw_spin_unlock_irqrestore(&pool_lock, flags);
+
+	hlist_for_each_entry_safe(obj, tmp, &tofree, node) {
+		hlist_del(&obj->node);
+		kmem_cache_free(obj_cache, obj);
+	}
+}
+
+static void __free_object(struct debug_obj *obj)
+{
+	struct debug_obj *objs[ODEBUG_BATCH_SIZE];
+	struct debug_percpu_free *percpu_pool;
+	int lookahead_count = 0;
+	unsigned long flags;
+	bool work;
+
+	local_irq_save(flags);
+	if (!obj_cache)
+		goto free_to_obj_pool;
+
+	/*
+	 * Try to free it into the percpu pool first.
+	 */
+	percpu_pool = this_cpu_ptr(&percpu_obj_pool);
+	if (percpu_pool->obj_free < ODEBUG_POOL_PERCPU_SIZE) {
+		hlist_add_head(&obj->node, &percpu_pool->free_objs);
+		percpu_pool->obj_free++;
+		local_irq_restore(flags);
+		return;
+	}
+
+	/*
+	 * As the percpu pool is full, look ahead and pull out a batch
+	 * of objects from the percpu pool and free them as well.
+	 */
+	for (; lookahead_count < ODEBUG_BATCH_SIZE; lookahead_count++) {
+		objs[lookahead_count] = __alloc_object(&percpu_pool->free_objs);
+		if (!objs[lookahead_count])
+			break;
+		percpu_pool->obj_free--;
+	}
+
+free_to_obj_pool:
+	raw_spin_lock(&pool_lock);
+	work = (obj_pool_free > debug_objects_pool_size) && obj_cache &&
+	       (obj_nr_tofree < ODEBUG_FREE_WORK_MAX);
+	obj_pool_used--;
+
+	if (work) {
+		WRITE_ONCE(obj_nr_tofree, obj_nr_tofree + 1);
+		hlist_add_head(&obj->node, &obj_to_free);
+		if (lookahead_count) {
+			WRITE_ONCE(obj_nr_tofree, obj_nr_tofree + lookahead_count);
+			obj_pool_used -= lookahead_count;
+			while (lookahead_count) {
+				hlist_add_head(&objs[--lookahead_count]->node,
+					       &obj_to_free);
+			}
+		}
+
+		if ((obj_pool_free > debug_objects_pool_size) &&
+		    (obj_nr_tofree < ODEBUG_FREE_WORK_MAX)) {
+			int i;
+
+			/*
+			 * Free one more batch of objects from obj_pool.
+			 */
+			for (i = 0; i < ODEBUG_BATCH_SIZE; i++) {
+				obj = __alloc_object(&obj_pool);
+				hlist_add_head(&obj->node, &obj_to_free);
+				WRITE_ONCE(obj_pool_free, obj_pool_free - 1);
+				WRITE_ONCE(obj_nr_tofree, obj_nr_tofree + 1);
+			}
+		}
+	} else {
+		WRITE_ONCE(obj_pool_free, obj_pool_free + 1);
+		hlist_add_head(&obj->node, &obj_pool);
+		if (lookahead_count) {
+			WRITE_ONCE(obj_pool_free, obj_pool_free + lookahead_count);
+			obj_pool_used -= lookahead_count;
+			while (lookahead_count) {
+				hlist_add_head(&objs[--lookahead_count]->node,
+					       &obj_pool);
+			}
+		}
+	}
+	raw_spin_unlock(&pool_lock);
+	local_irq_restore(flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -189,6 +556,7 @@ static void free_obj_work(struct work_struct *work)
  */
 static void free_object(struct debug_obj *obj)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 	int sched = 0;
 
@@ -206,6 +574,40 @@ static void free_object(struct debug_obj *obj)
 	if (sched)
 		schedule_work(&debug_obj_work);
 }
+=======
+	__free_object(obj);
+	if (!READ_ONCE(obj_freeing) && READ_ONCE(obj_nr_tofree)) {
+		WRITE_ONCE(obj_freeing, true);
+		schedule_delayed_work(&debug_obj_work, ODEBUG_FREE_WORK_DELAY);
+	}
+}
+
+#ifdef CONFIG_HOTPLUG_CPU
+static int object_cpu_offline(unsigned int cpu)
+{
+	struct debug_percpu_free *percpu_pool;
+	struct hlist_node *tmp;
+	struct debug_obj *obj;
+	unsigned long flags;
+
+	/* Remote access is safe as the CPU is dead already */
+	percpu_pool = per_cpu_ptr(&percpu_obj_pool, cpu);
+	hlist_for_each_entry_safe(obj, tmp, &percpu_pool->free_objs, node) {
+		hlist_del(&obj->node);
+		kmem_cache_free(obj_cache, obj);
+	}
+
+	raw_spin_lock_irqsave(&pool_lock, flags);
+	obj_pool_used -= percpu_pool->obj_free;
+	debug_objects_freed += percpu_pool->obj_free;
+	raw_spin_unlock_irqrestore(&pool_lock, flags);
+
+	percpu_pool->obj_free = 0;
+
+	return 0;
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * We run out of memory. That means we probably have tons of objects
@@ -214,13 +616,21 @@ static void free_object(struct debug_obj *obj)
 static void debug_objects_oom(void)
 {
 	struct debug_bucket *db = obj_hash;
+<<<<<<< HEAD
 	struct hlist_node *node, *tmp;
+=======
+	struct hlist_node *tmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	HLIST_HEAD(freelist);
 	struct debug_obj *obj;
 	unsigned long flags;
 	int i;
 
+<<<<<<< HEAD
 	printk(KERN_WARNING "ODEBUG: Out of memory. ODEBUG disabled\n");
+=======
+	pr_warn("Out of memory. ODEBUG disabled\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ODEBUG_HASH_SIZE; i++, db++) {
 		raw_spin_lock_irqsave(&db->lock, flags);
@@ -228,7 +638,11 @@ static void debug_objects_oom(void)
 		raw_spin_unlock_irqrestore(&db->lock, flags);
 
 		/* Now free them */
+<<<<<<< HEAD
 		hlist_for_each_entry_safe(obj, node, tmp, &freelist, node) {
+=======
+		hlist_for_each_entry_safe(obj, tmp, &freelist, node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			hlist_del(&obj->node);
 			free_object(obj);
 		}
@@ -249,17 +663,38 @@ static struct debug_bucket *get_bucket(unsigned long addr)
 
 static void debug_print_object(struct debug_obj *obj, char *msg)
 {
+<<<<<<< HEAD
 	struct debug_obj_descr *descr = obj->descr;
 	static int limit;
 
+=======
+	const struct debug_obj_descr *descr = obj->descr;
+	static int limit;
+
+	/*
+	 * Don't report if lookup_object_or_alloc() by the current thread
+	 * failed because lookup_object_or_alloc()/debug_objects_oom() by a
+	 * concurrent thread turned off debug_objects_enabled and cleared
+	 * the hash buckets.
+	 */
+	if (!debug_objects_enabled)
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (limit < 5 && descr != descr_test) {
 		void *hint = descr->debug_hint ?
 			descr->debug_hint(obj->object) : NULL;
 		limit++;
 		WARN(1, KERN_ERR "ODEBUG: %s %s (active state %u) "
+<<<<<<< HEAD
 				 "object type: %s hint: %pS\n",
 			msg, obj_states[obj->state], obj->astate,
 			descr->name, hint);
+=======
+				 "object: %p object type: %s hint: %pS\n",
+			msg, obj_states[obj->state], obj->astate,
+			obj->object, descr->name, hint);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	debug_objects_warnings++;
 }
@@ -268,6 +703,7 @@ static void debug_print_object(struct debug_obj *obj, char *msg)
  * Try to repair the damage, so we have a better chance to get useful
  * debug output.
  */
+<<<<<<< HEAD
 static int
 debug_object_fixup(int (*fixup)(void *addr, enum debug_obj_state state),
 		   void * addr, enum debug_obj_state state)
@@ -278,6 +714,17 @@ debug_object_fixup(int (*fixup)(void *addr, enum debug_obj_state state),
 		fixed = fixup(addr, state);
 	debug_objects_fixups += fixed;
 	return fixed;
+=======
+static bool
+debug_object_fixup(bool (*fixup)(void *addr, enum debug_obj_state state),
+		   void * addr, enum debug_obj_state state)
+{
+	if (fixup && fixup(addr, state)) {
+		debug_objects_fixups++;
+		return true;
+	}
+	return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void debug_object_is_on_stack(void *addr, int onstack)
@@ -294,6 +741,7 @@ static void debug_object_is_on_stack(void *addr, int onstack)
 
 	limit++;
 	if (is_on_stack)
+<<<<<<< HEAD
 		printk(KERN_WARNING
 		       "ODEBUG: object is on stack, but not annotated\n");
 	else
@@ -311,11 +759,91 @@ __debug_object_init(void *addr, struct debug_obj_descr *descr, int onstack)
 	unsigned long flags;
 
 	fill_pool();
+=======
+		pr_warn("object %p is on stack %p, but NOT annotated.\n", addr,
+			 task_stack_page(current));
+	else
+		pr_warn("object %p is NOT on stack %p, but annotated.\n", addr,
+			 task_stack_page(current));
+
+	WARN_ON(1);
+}
+
+static struct debug_obj *lookup_object_or_alloc(void *addr, struct debug_bucket *b,
+						const struct debug_obj_descr *descr,
+						bool onstack, bool alloc_ifstatic)
+{
+	struct debug_obj *obj = lookup_object(addr, b);
+	enum debug_obj_state state = ODEBUG_STATE_NONE;
+
+	if (likely(obj))
+		return obj;
+
+	/*
+	 * debug_object_init() unconditionally allocates untracked
+	 * objects. It does not matter whether it is a static object or
+	 * not.
+	 *
+	 * debug_object_assert_init() and debug_object_activate() allow
+	 * allocation only if the descriptor callback confirms that the
+	 * object is static and considered initialized. For non-static
+	 * objects the allocation needs to be done from the fixup callback.
+	 */
+	if (unlikely(alloc_ifstatic)) {
+		if (!descr->is_static_object || !descr->is_static_object(addr))
+			return ERR_PTR(-ENOENT);
+		/* Statically allocated objects are considered initialized */
+		state = ODEBUG_STATE_INIT;
+	}
+
+	obj = alloc_object(addr, b, descr);
+	if (likely(obj)) {
+		obj->state = state;
+		debug_object_is_on_stack(addr, onstack);
+		return obj;
+	}
+
+	/* Out of memory. Do the cleanup outside of the locked region */
+	debug_objects_enabled = 0;
+	return NULL;
+}
+
+static void debug_objects_fill_pool(void)
+{
+	/*
+	 * On RT enabled kernels the pool refill must happen in preemptible
+	 * context -- for !RT kernels we rely on the fact that spinlock_t and
+	 * raw_spinlock_t are basically the same type and this lock-type
+	 * inversion works just fine.
+	 */
+	if (!IS_ENABLED(CONFIG_PREEMPT_RT) || preemptible()) {
+		/*
+		 * Annotate away the spinlock_t inside raw_spinlock_t warning
+		 * by temporarily raising the wait-type to WAIT_SLEEP, matching
+		 * the preemptible() condition above.
+		 */
+		static DEFINE_WAIT_OVERRIDE_MAP(fill_pool_map, LD_WAIT_SLEEP);
+		lock_map_acquire_try(&fill_pool_map);
+		fill_pool();
+		lock_map_release(&fill_pool_map);
+	}
+}
+
+static void
+__debug_object_init(void *addr, const struct debug_obj_descr *descr, int onstack)
+{
+	struct debug_obj *obj, o;
+	struct debug_bucket *db;
+	unsigned long flags;
+
+	debug_objects_fill_pool();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	db = get_bucket((unsigned long) addr);
 
 	raw_spin_lock_irqsave(&db->lock, flags);
 
+<<<<<<< HEAD
 	obj = lookup_object(addr, db);
 	if (!obj) {
 		obj = alloc_object(addr, db, descr);
@@ -326,6 +854,13 @@ __debug_object_init(void *addr, struct debug_obj_descr *descr, int onstack)
 			return;
 		}
 		debug_object_is_on_stack(addr, onstack);
+=======
+	obj = lookup_object_or_alloc(addr, db, descr, onstack, false);
+	if (unlikely(!obj)) {
+		raw_spin_unlock_irqrestore(&db->lock, flags);
+		debug_objects_oom();
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (obj->state) {
@@ -333,6 +868,7 @@ __debug_object_init(void *addr, struct debug_obj_descr *descr, int onstack)
 	case ODEBUG_STATE_INIT:
 	case ODEBUG_STATE_INACTIVE:
 		obj->state = ODEBUG_STATE_INIT;
+<<<<<<< HEAD
 		break;
 
 	case ODEBUG_STATE_ACTIVE:
@@ -345,11 +881,24 @@ __debug_object_init(void *addr, struct debug_obj_descr *descr, int onstack)
 	case ODEBUG_STATE_DESTROYED:
 		debug_print_object(obj, "init");
 		break;
+=======
+		raw_spin_unlock_irqrestore(&db->lock, flags);
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
 
+<<<<<<< HEAD
 	raw_spin_unlock_irqrestore(&db->lock, flags);
+=======
+	o = *obj;
+	raw_spin_unlock_irqrestore(&db->lock, flags);
+	debug_print_object(&o, "init");
+
+	if (o.state == ODEBUG_STATE_ACTIVE)
+		debug_object_fixup(descr->fixup_init, addr, o.state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -357,13 +906,21 @@ __debug_object_init(void *addr, struct debug_obj_descr *descr, int onstack)
  * @addr:	address of the object
  * @descr:	pointer to an object specific debug description structure
  */
+<<<<<<< HEAD
 void debug_object_init(void *addr, struct debug_obj_descr *descr)
+=======
+void debug_object_init(void *addr, const struct debug_obj_descr *descr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!debug_objects_enabled)
 		return;
 
 	__debug_object_init(addr, descr, 0);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(debug_object_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * debug_object_init_on_stack - debug checks when an object on stack is
@@ -371,18 +928,27 @@ void debug_object_init(void *addr, struct debug_obj_descr *descr)
  * @addr:	address of the object
  * @descr:	pointer to an object specific debug description structure
  */
+<<<<<<< HEAD
 void debug_object_init_on_stack(void *addr, struct debug_obj_descr *descr)
+=======
+void debug_object_init_on_stack(void *addr, const struct debug_obj_descr *descr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!debug_objects_enabled)
 		return;
 
 	__debug_object_init(addr, descr, 1);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(debug_object_init_on_stack);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * debug_object_activate - debug checks when an object is activated
  * @addr:	address of the object
  * @descr:	pointer to an object specific debug description structure
+<<<<<<< HEAD
  */
 void debug_object_activate(void *addr, struct debug_obj_descr *descr)
 {
@@ -396,11 +962,27 @@ void debug_object_activate(void *addr, struct debug_obj_descr *descr)
 
 	if (!debug_objects_enabled)
 		return;
+=======
+ * Returns 0 for success, -EINVAL for check failed.
+ */
+int debug_object_activate(void *addr, const struct debug_obj_descr *descr)
+{
+	struct debug_obj o = { .object = addr, .state = ODEBUG_STATE_NOTAVAILABLE, .descr = descr };
+	struct debug_bucket *db;
+	struct debug_obj *obj;
+	unsigned long flags;
+
+	if (!debug_objects_enabled)
+		return 0;
+
+	debug_objects_fill_pool();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	db = get_bucket((unsigned long) addr);
 
 	raw_spin_lock_irqsave(&db->lock, flags);
 
+<<<<<<< HEAD
 	obj = lookup_object(addr, db);
 	if (obj) {
 		switch (obj->state) {
@@ -436,14 +1018,57 @@ void debug_object_activate(void *addr, struct debug_obj_descr *descr)
 			   ODEBUG_STATE_NOTAVAILABLE))
 		debug_print_object(&o, "activate");
 }
+=======
+	obj = lookup_object_or_alloc(addr, db, descr, false, true);
+	if (unlikely(!obj)) {
+		raw_spin_unlock_irqrestore(&db->lock, flags);
+		debug_objects_oom();
+		return 0;
+	} else if (likely(!IS_ERR(obj))) {
+		switch (obj->state) {
+		case ODEBUG_STATE_ACTIVE:
+		case ODEBUG_STATE_DESTROYED:
+			o = *obj;
+			break;
+		case ODEBUG_STATE_INIT:
+		case ODEBUG_STATE_INACTIVE:
+			obj->state = ODEBUG_STATE_ACTIVE;
+			fallthrough;
+		default:
+			raw_spin_unlock_irqrestore(&db->lock, flags);
+			return 0;
+		}
+	}
+
+	raw_spin_unlock_irqrestore(&db->lock, flags);
+	debug_print_object(&o, "activate");
+
+	switch (o.state) {
+	case ODEBUG_STATE_ACTIVE:
+	case ODEBUG_STATE_NOTAVAILABLE:
+		if (debug_object_fixup(descr->fixup_activate, addr, o.state))
+			return 0;
+		fallthrough;
+	default:
+		return -EINVAL;
+	}
+}
+EXPORT_SYMBOL_GPL(debug_object_activate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * debug_object_deactivate - debug checks when an object is deactivated
  * @addr:	address of the object
  * @descr:	pointer to an object specific debug description structure
  */
+<<<<<<< HEAD
 void debug_object_deactivate(void *addr, struct debug_obj_descr *descr)
 {
+=======
+void debug_object_deactivate(void *addr, const struct debug_obj_descr *descr)
+{
+	struct debug_obj o = { .object = addr, .state = ODEBUG_STATE_NOTAVAILABLE, .descr = descr };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct debug_bucket *db;
 	struct debug_obj *obj;
 	unsigned long flags;
@@ -458,6 +1083,7 @@ void debug_object_deactivate(void *addr, struct debug_obj_descr *descr)
 	obj = lookup_object(addr, db);
 	if (obj) {
 		switch (obj->state) {
+<<<<<<< HEAD
 		case ODEBUG_STATE_INIT:
 		case ODEBUG_STATE_INACTIVE:
 		case ODEBUG_STATE_ACTIVE:
@@ -483,12 +1109,35 @@ void debug_object_deactivate(void *addr, struct debug_obj_descr *descr)
 
 	raw_spin_unlock_irqrestore(&db->lock, flags);
 }
+=======
+		case ODEBUG_STATE_DESTROYED:
+			break;
+		case ODEBUG_STATE_INIT:
+		case ODEBUG_STATE_INACTIVE:
+		case ODEBUG_STATE_ACTIVE:
+			if (obj->astate)
+				break;
+			obj->state = ODEBUG_STATE_INACTIVE;
+			fallthrough;
+		default:
+			raw_spin_unlock_irqrestore(&db->lock, flags);
+			return;
+		}
+		o = *obj;
+	}
+
+	raw_spin_unlock_irqrestore(&db->lock, flags);
+	debug_print_object(&o, "deactivate");
+}
+EXPORT_SYMBOL_GPL(debug_object_deactivate);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * debug_object_destroy - debug checks when an object is destroyed
  * @addr:	address of the object
  * @descr:	pointer to an object specific debug description structure
  */
+<<<<<<< HEAD
 void debug_object_destroy(void *addr, struct debug_obj_descr *descr)
 {
 	enum debug_obj_state state;
@@ -579,6 +1228,12 @@ void debug_object_assert_init(void *addr, struct debug_obj_descr *descr)
 {
 	struct debug_bucket *db;
 	struct debug_obj *obj;
+=======
+void debug_object_destroy(void *addr, const struct debug_obj_descr *descr)
+{
+	struct debug_obj *obj, o;
+	struct debug_bucket *db;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	if (!debug_objects_enabled)
@@ -590,6 +1245,7 @@ void debug_object_assert_init(void *addr, struct debug_obj_descr *descr)
 
 	obj = lookup_object(addr, db);
 	if (!obj) {
+<<<<<<< HEAD
 		struct debug_obj o = { .object = addr,
 				       .state = ODEBUG_STATE_NOTAVAILABLE,
 				       .descr = descr };
@@ -607,6 +1263,113 @@ void debug_object_assert_init(void *addr, struct debug_obj_descr *descr)
 
 	raw_spin_unlock_irqrestore(&db->lock, flags);
 }
+=======
+		raw_spin_unlock_irqrestore(&db->lock, flags);
+		return;
+	}
+
+	switch (obj->state) {
+	case ODEBUG_STATE_ACTIVE:
+	case ODEBUG_STATE_DESTROYED:
+		break;
+	case ODEBUG_STATE_NONE:
+	case ODEBUG_STATE_INIT:
+	case ODEBUG_STATE_INACTIVE:
+		obj->state = ODEBUG_STATE_DESTROYED;
+		fallthrough;
+	default:
+		raw_spin_unlock_irqrestore(&db->lock, flags);
+		return;
+	}
+
+	o = *obj;
+	raw_spin_unlock_irqrestore(&db->lock, flags);
+	debug_print_object(&o, "destroy");
+
+	if (o.state == ODEBUG_STATE_ACTIVE)
+		debug_object_fixup(descr->fixup_destroy, addr, o.state);
+}
+EXPORT_SYMBOL_GPL(debug_object_destroy);
+
+/**
+ * debug_object_free - debug checks when an object is freed
+ * @addr:	address of the object
+ * @descr:	pointer to an object specific debug description structure
+ */
+void debug_object_free(void *addr, const struct debug_obj_descr *descr)
+{
+	struct debug_obj *obj, o;
+	struct debug_bucket *db;
+	unsigned long flags;
+
+	if (!debug_objects_enabled)
+		return;
+
+	db = get_bucket((unsigned long) addr);
+
+	raw_spin_lock_irqsave(&db->lock, flags);
+
+	obj = lookup_object(addr, db);
+	if (!obj) {
+		raw_spin_unlock_irqrestore(&db->lock, flags);
+		return;
+	}
+
+	switch (obj->state) {
+	case ODEBUG_STATE_ACTIVE:
+		break;
+	default:
+		hlist_del(&obj->node);
+		raw_spin_unlock_irqrestore(&db->lock, flags);
+		free_object(obj);
+		return;
+	}
+
+	o = *obj;
+	raw_spin_unlock_irqrestore(&db->lock, flags);
+	debug_print_object(&o, "free");
+
+	debug_object_fixup(descr->fixup_free, addr, o.state);
+}
+EXPORT_SYMBOL_GPL(debug_object_free);
+
+/**
+ * debug_object_assert_init - debug checks when object should be init-ed
+ * @addr:	address of the object
+ * @descr:	pointer to an object specific debug description structure
+ */
+void debug_object_assert_init(void *addr, const struct debug_obj_descr *descr)
+{
+	struct debug_obj o = { .object = addr, .state = ODEBUG_STATE_NOTAVAILABLE, .descr = descr };
+	struct debug_bucket *db;
+	struct debug_obj *obj;
+	unsigned long flags;
+
+	if (!debug_objects_enabled)
+		return;
+
+	debug_objects_fill_pool();
+
+	db = get_bucket((unsigned long) addr);
+
+	raw_spin_lock_irqsave(&db->lock, flags);
+	obj = lookup_object_or_alloc(addr, db, descr, false, true);
+	raw_spin_unlock_irqrestore(&db->lock, flags);
+	if (likely(!IS_ERR_OR_NULL(obj)))
+		return;
+
+	/* If NULL the allocation has hit OOM */
+	if (!obj) {
+		debug_objects_oom();
+		return;
+	}
+
+	/* Object is neither tracked nor static. It's not initialized. */
+	debug_print_object(&o, "assert_init");
+	debug_object_fixup(descr->fixup_assert_init, addr, ODEBUG_STATE_NOTAVAILABLE);
+}
+EXPORT_SYMBOL_GPL(debug_object_assert_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * debug_object_active_state - debug checks object usage state machine
@@ -616,9 +1379,16 @@ void debug_object_assert_init(void *addr, struct debug_obj_descr *descr)
  * @next:	state to move to if expected state is found
  */
 void
+<<<<<<< HEAD
 debug_object_active_state(void *addr, struct debug_obj_descr *descr,
 			  unsigned int expect, unsigned int next)
 {
+=======
+debug_object_active_state(void *addr, const struct debug_obj_descr *descr,
+			  unsigned int expect, unsigned int next)
+{
+	struct debug_obj o = { .object = addr, .state = ODEBUG_STATE_NOTAVAILABLE, .descr = descr };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct debug_bucket *db;
 	struct debug_obj *obj;
 	unsigned long flags;
@@ -634,6 +1404,7 @@ debug_object_active_state(void *addr, struct debug_obj_descr *descr,
 	if (obj) {
 		switch (obj->state) {
 		case ODEBUG_STATE_ACTIVE:
+<<<<<<< HEAD
 			if (obj->astate == expect)
 				obj->astate = next;
 			else
@@ -654,11 +1425,29 @@ debug_object_active_state(void *addr, struct debug_obj_descr *descr,
 
 	raw_spin_unlock_irqrestore(&db->lock, flags);
 }
+=======
+			if (obj->astate != expect)
+				break;
+			obj->astate = next;
+			raw_spin_unlock_irqrestore(&db->lock, flags);
+			return;
+		default:
+			break;
+		}
+		o = *obj;
+	}
+
+	raw_spin_unlock_irqrestore(&db->lock, flags);
+	debug_print_object(&o, "active_state");
+}
+EXPORT_SYMBOL_GPL(debug_object_active_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_DEBUG_OBJECTS_FREE
 static void __debug_check_no_obj_freed(const void *address, unsigned long size)
 {
 	unsigned long flags, oaddr, saddr, eaddr, paddr, chunks;
+<<<<<<< HEAD
 	struct hlist_node *node, *tmp;
 	HLIST_HEAD(freelist);
 	struct debug_obj_descr *descr;
@@ -666,6 +1455,12 @@ static void __debug_check_no_obj_freed(const void *address, unsigned long size)
 	struct debug_bucket *db;
 	struct debug_obj *obj;
 	int cnt;
+=======
+	int cnt, objs_checked = 0;
+	struct debug_obj *obj, o;
+	struct debug_bucket *db;
+	struct hlist_node *tmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	saddr = (unsigned long) address;
 	eaddr = saddr + size;
@@ -679,7 +1474,11 @@ static void __debug_check_no_obj_freed(const void *address, unsigned long size)
 repeat:
 		cnt = 0;
 		raw_spin_lock_irqsave(&db->lock, flags);
+<<<<<<< HEAD
 		hlist_for_each_entry_safe(obj, node, tmp, &db->list, node) {
+=======
+		hlist_for_each_entry_safe(obj, tmp, &db->list, node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cnt++;
 			oaddr = (unsigned long) obj->object;
 			if (oaddr < saddr || oaddr >= eaddr)
@@ -687,6 +1486,7 @@ repeat:
 
 			switch (obj->state) {
 			case ODEBUG_STATE_ACTIVE:
+<<<<<<< HEAD
 				debug_print_object(obj, "free");
 				descr = obj->descr;
 				state = obj->state;
@@ -697,11 +1497,22 @@ repeat:
 			default:
 				hlist_del(&obj->node);
 				hlist_add_head(&obj->node, &freelist);
+=======
+				o = *obj;
+				raw_spin_unlock_irqrestore(&db->lock, flags);
+				debug_print_object(&o, "free");
+				debug_object_fixup(o.descr->fixup_free, (void *)oaddr, o.state);
+				goto repeat;
+			default:
+				hlist_del(&obj->node);
+				__free_object(obj);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 			}
 		}
 		raw_spin_unlock_irqrestore(&db->lock, flags);
 
+<<<<<<< HEAD
 		/* Now free them */
 		hlist_for_each_entry_safe(obj, node, tmp, &freelist, node) {
 			hlist_del(&obj->node);
@@ -710,6 +1521,21 @@ repeat:
 
 		if (cnt > debug_objects_maxchain)
 			debug_objects_maxchain = cnt;
+=======
+		if (cnt > debug_objects_maxchain)
+			debug_objects_maxchain = cnt;
+
+		objs_checked += cnt;
+	}
+
+	if (objs_checked > debug_objects_maxchecked)
+		debug_objects_maxchecked = objs_checked;
+
+	/* Schedule work to actually kmem_cache_free() objects */
+	if (!READ_ONCE(obj_freeing) && READ_ONCE(obj_nr_tofree)) {
+		WRITE_ONCE(obj_freeing, true);
+		schedule_delayed_work(&debug_obj_work, ODEBUG_FREE_WORK_DELAY);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -724,6 +1550,7 @@ void debug_check_no_obj_freed(const void *address, unsigned long size)
 
 static int debug_stats_show(struct seq_file *m, void *v)
 {
+<<<<<<< HEAD
 	seq_printf(m, "max_chain     :%d\n", debug_objects_maxchain);
 	seq_printf(m, "warnings      :%d\n", debug_objects_warnings);
 	seq_printf(m, "fixups        :%d\n", debug_objects_fixups);
@@ -749,11 +1576,38 @@ static const struct file_operations debug_stats_fops = {
 static int __init debug_objects_init_debugfs(void)
 {
 	struct dentry *dbgdir, *dbgstats;
+=======
+	int cpu, obj_percpu_free = 0;
+
+	for_each_possible_cpu(cpu)
+		obj_percpu_free += per_cpu(percpu_obj_pool.obj_free, cpu);
+
+	seq_printf(m, "max_chain     :%d\n", debug_objects_maxchain);
+	seq_printf(m, "max_checked   :%d\n", debug_objects_maxchecked);
+	seq_printf(m, "warnings      :%d\n", debug_objects_warnings);
+	seq_printf(m, "fixups        :%d\n", debug_objects_fixups);
+	seq_printf(m, "pool_free     :%d\n", READ_ONCE(obj_pool_free) + obj_percpu_free);
+	seq_printf(m, "pool_pcp_free :%d\n", obj_percpu_free);
+	seq_printf(m, "pool_min_free :%d\n", obj_pool_min_free);
+	seq_printf(m, "pool_used     :%d\n", obj_pool_used - obj_percpu_free);
+	seq_printf(m, "pool_max_used :%d\n", obj_pool_max_used);
+	seq_printf(m, "on_free_list  :%d\n", READ_ONCE(obj_nr_tofree));
+	seq_printf(m, "objs_allocated:%d\n", debug_objects_allocated);
+	seq_printf(m, "objs_freed    :%d\n", debug_objects_freed);
+	return 0;
+}
+DEFINE_SHOW_ATTRIBUTE(debug_stats);
+
+static int __init debug_objects_init_debugfs(void)
+{
+	struct dentry *dbgdir;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!debug_objects_enabled)
 		return 0;
 
 	dbgdir = debugfs_create_dir("debug_objects", NULL);
+<<<<<<< HEAD
 	if (!dbgdir)
 		return -ENOMEM;
 
@@ -768,6 +1622,12 @@ err:
 	debugfs_remove(dbgdir);
 
 	return -ENOMEM;
+=======
+
+	debugfs_create_file("stats", 0444, dbgdir, NULL, &debug_stats_fops);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 __initcall(debug_objects_init_debugfs);
 
@@ -784,13 +1644,28 @@ struct self_test {
 	unsigned long	dummy2[3];
 };
 
+<<<<<<< HEAD
 static __initdata struct debug_obj_descr descr_type_test;
+=======
+static __initconst const struct debug_obj_descr descr_type_test;
+
+static bool __init is_static_object(void *addr)
+{
+	struct self_test *obj = addr;
+
+	return obj->static_init;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * fixup_init is called when:
  * - an active object is initialized
  */
+<<<<<<< HEAD
 static int __init fixup_init(void *addr, enum debug_obj_state state)
+=======
+static bool __init fixup_init(void *addr, enum debug_obj_state state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct self_test *obj = addr;
 
@@ -798,23 +1673,36 @@ static int __init fixup_init(void *addr, enum debug_obj_state state)
 	case ODEBUG_STATE_ACTIVE:
 		debug_object_deactivate(obj, &descr_type_test);
 		debug_object_init(obj, &descr_type_test);
+<<<<<<< HEAD
 		return 1;
 	default:
 		return 0;
+=======
+		return true;
+	default:
+		return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /*
  * fixup_activate is called when:
  * - an active object is activated
+<<<<<<< HEAD
  * - an unknown object is activated (might be a statically initialized object)
  */
 static int __init fixup_activate(void *addr, enum debug_obj_state state)
+=======
+ * - an unknown non-static object is activated
+ */
+static bool __init fixup_activate(void *addr, enum debug_obj_state state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct self_test *obj = addr;
 
 	switch (state) {
 	case ODEBUG_STATE_NOTAVAILABLE:
+<<<<<<< HEAD
 		if (obj->static_init == 1) {
 			debug_object_init(obj, &descr_type_test);
 			debug_object_activate(obj, &descr_type_test);
@@ -829,6 +1717,16 @@ static int __init fixup_activate(void *addr, enum debug_obj_state state)
 
 	default:
 		return 0;
+=======
+		return true;
+	case ODEBUG_STATE_ACTIVE:
+		debug_object_deactivate(obj, &descr_type_test);
+		debug_object_activate(obj, &descr_type_test);
+		return true;
+
+	default:
+		return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -836,7 +1734,11 @@ static int __init fixup_activate(void *addr, enum debug_obj_state state)
  * fixup_destroy is called when:
  * - an active object is destroyed
  */
+<<<<<<< HEAD
 static int __init fixup_destroy(void *addr, enum debug_obj_state state)
+=======
+static bool __init fixup_destroy(void *addr, enum debug_obj_state state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct self_test *obj = addr;
 
@@ -844,9 +1746,15 @@ static int __init fixup_destroy(void *addr, enum debug_obj_state state)
 	case ODEBUG_STATE_ACTIVE:
 		debug_object_deactivate(obj, &descr_type_test);
 		debug_object_destroy(obj, &descr_type_test);
+<<<<<<< HEAD
 		return 1;
 	default:
 		return 0;
+=======
+		return true;
+	default:
+		return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -854,7 +1762,11 @@ static int __init fixup_destroy(void *addr, enum debug_obj_state state)
  * fixup_free is called when:
  * - an active object is freed
  */
+<<<<<<< HEAD
 static int __init fixup_free(void *addr, enum debug_obj_state state)
+=======
+static bool __init fixup_free(void *addr, enum debug_obj_state state)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct self_test *obj = addr;
 
@@ -862,9 +1774,15 @@ static int __init fixup_free(void *addr, enum debug_obj_state state)
 	case ODEBUG_STATE_ACTIVE:
 		debug_object_deactivate(obj, &descr_type_test);
 		debug_object_free(obj, &descr_type_test);
+<<<<<<< HEAD
 		return 1;
 	default:
 		return 0;
+=======
+		return true;
+	default:
+		return false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -908,8 +1826,14 @@ out:
 	return res;
 }
 
+<<<<<<< HEAD
 static __initdata struct debug_obj_descr descr_type_test = {
 	.name			= "selftest",
+=======
+static __initconst const struct debug_obj_descr descr_type_test = {
+	.name			= "selftest",
+	.is_static_object	= is_static_object,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.fixup_init		= fixup_init,
 	.fixup_activate		= fixup_activate,
 	.fixup_destroy		= fixup_destroy,
@@ -979,7 +1903,11 @@ static void __init debug_objects_selftest(void)
 	if (check_results(&obj, ODEBUG_STATE_NONE, ++fixups, ++warnings))
 		goto out;
 #endif
+<<<<<<< HEAD
 	printk(KERN_INFO "ODEBUG: selftest passed\n");
+=======
+	pr_info("selftest passed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	debug_objects_fixups = oldfixups;
@@ -1014,7 +1942,11 @@ void __init debug_objects_early_init(void)
 static int __init debug_objects_replace_static_objects(void)
 {
 	struct debug_bucket *db = obj_hash;
+<<<<<<< HEAD
 	struct hlist_node *node, *tmp;
+=======
+	struct hlist_node *tmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct debug_obj *obj, *new;
 	HLIST_HEAD(objects);
 	int i, cnt = 0;
@@ -1026,6 +1958,7 @@ static int __init debug_objects_replace_static_objects(void)
 		hlist_add_head(&obj->node, &objects);
 	}
 
+<<<<<<< HEAD
 	/*
 	 * When debug_objects_mem_init() is called we know that only
 	 * one CPU is up, so disabling interrupts is enough
@@ -1035,6 +1968,18 @@ static int __init debug_objects_replace_static_objects(void)
 
 	/* Remove the statically allocated objects from the pool */
 	hlist_for_each_entry_safe(obj, node, tmp, &obj_pool, node)
+=======
+	debug_objects_allocated += i;
+
+	/*
+	 * debug_objects_mem_init() is now called early that only one CPU is up
+	 * and interrupts have been disabled, so it is safe to replace the
+	 * active object references.
+	 */
+
+	/* Remove the statically allocated objects from the pool */
+	hlist_for_each_entry_safe(obj, tmp, &obj_pool, node)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hlist_del(&obj->node);
 	/* Move the allocated objects to the pool */
 	hlist_move_list(&objects, &obj_pool);
@@ -1043,7 +1988,11 @@ static int __init debug_objects_replace_static_objects(void)
 	for (i = 0; i < ODEBUG_HASH_SIZE; i++, db++) {
 		hlist_move_list(&db->list, &objects);
 
+<<<<<<< HEAD
 		hlist_for_each_entry(obj, node, &objects, node) {
+=======
+		hlist_for_each_entry(obj, &objects, node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			new = hlist_entry(obj_pool.first, typeof(*obj), node);
 			hlist_del(&new->node);
 			/* copy object data */
@@ -1053,12 +2002,20 @@ static int __init debug_objects_replace_static_objects(void)
 		}
 	}
 
+<<<<<<< HEAD
 	printk(KERN_DEBUG "ODEBUG: %d of %d active objects replaced\n", cnt,
 	       obj_pool_used);
 	local_irq_enable();
 	return 0;
 free:
 	hlist_for_each_entry_safe(obj, node, tmp, &objects, node) {
+=======
+	pr_debug("%d of %d active objects replaced\n",
+		 cnt, obj_pool_used);
+	return 0;
+free:
+	hlist_for_each_entry_safe(obj, tmp, &objects, node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hlist_del(&obj->node);
 		kmem_cache_free(obj_cache, obj);
 	}
@@ -1073,6 +2030,7 @@ free:
  */
 void __init debug_objects_mem_init(void)
 {
+<<<<<<< HEAD
 	if (!debug_objects_enabled)
 		return;
 
@@ -1087,4 +2045,45 @@ void __init debug_objects_mem_init(void)
 		printk(KERN_WARNING "ODEBUG: out of memory.\n");
 	} else
 		debug_objects_selftest();
+=======
+	int cpu, extras;
+
+	if (!debug_objects_enabled)
+		return;
+
+	/*
+	 * Initialize the percpu object pools
+	 *
+	 * Initialization is not strictly necessary, but was done for
+	 * completeness.
+	 */
+	for_each_possible_cpu(cpu)
+		INIT_HLIST_HEAD(&per_cpu(percpu_obj_pool.free_objs, cpu));
+
+	obj_cache = kmem_cache_create("debug_objects_cache",
+				      sizeof (struct debug_obj), 0,
+				      SLAB_DEBUG_OBJECTS | SLAB_NOLEAKTRACE,
+				      NULL);
+
+	if (!obj_cache || debug_objects_replace_static_objects()) {
+		debug_objects_enabled = 0;
+		kmem_cache_destroy(obj_cache);
+		pr_warn("out of memory.\n");
+		return;
+	} else
+		debug_objects_selftest();
+
+#ifdef CONFIG_HOTPLUG_CPU
+	cpuhp_setup_state_nocalls(CPUHP_DEBUG_OBJ_DEAD, "object:offline", NULL,
+					object_cpu_offline);
+#endif
+
+	/*
+	 * Increase the thresholds for allocating and freeing objects
+	 * according to the number of possible CPUs available in the system.
+	 */
+	extras = num_possible_cpus() * ODEBUG_BATCH_SIZE;
+	debug_objects_pool_size += extras;
+	debug_objects_pool_min_level += extras;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

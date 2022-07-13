@@ -36,12 +36,23 @@
 #ifndef __CVMX_FPA_H__
 #define __CVMX_FPA_H__
 
+<<<<<<< HEAD
 #include "cvmx-address.h"
 #include "cvmx-fpa-defs.h"
 
 #define CVMX_FPA_NUM_POOLS      8
 #define CVMX_FPA_MIN_BLOCK_SIZE 128
 #define CVMX_FPA_ALIGNMENT      128
+=======
+#include <linux/delay.h>
+
+#include <asm/octeon/cvmx-address.h>
+#include <asm/octeon/cvmx-fpa-defs.h>
+
+#define CVMX_FPA_NUM_POOLS	8
+#define CVMX_FPA_MIN_BLOCK_SIZE 128
+#define CVMX_FPA_ALIGNMENT	128
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * Structure describing the data format used for stores to the FPA.
@@ -49,6 +60,10 @@
 typedef union {
 	uint64_t u64;
 	struct {
+<<<<<<< HEAD
+=======
+#ifdef __BIG_ENDIAN_BITFIELD
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * the (64-bit word) location in scratchpad to write
 		 * to (if len != 0)
@@ -63,6 +78,15 @@ typedef union {
 		 * the NCB bus.
 		 */
 		uint64_t addr:40;
+<<<<<<< HEAD
+=======
+#else
+		uint64_t addr:40;
+		uint64_t did:8;
+		uint64_t len:8;
+		uint64_t scraddr:8;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} s;
 } cvmx_fpa_iobdma_data_t;
 
@@ -158,7 +182,11 @@ static inline void cvmx_fpa_enable(void)
 		}
 
 		/* Enforce a 10 cycle delay between config and enable */
+<<<<<<< HEAD
 		cvmx_wait(10);
+=======
+		__delay(10);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* FIXME: CVMX_FPA_CTL_STATUS read is unmodelled */
@@ -186,8 +214,13 @@ static inline void *cvmx_fpa_alloc(uint64_t pool)
 /**
  * Asynchronously get a new block from the FPA
  *
+<<<<<<< HEAD
  * @scr_addr: Local scratch address to put response in.  This is a byte address,
  *                  but must be 8 byte aligned.
+=======
+ * @scr_addr: Local scratch address to put response in.	 This is a byte address,
+ *		    but must be 8 byte aligned.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pool:      Pool to get the block from
  */
 static inline void cvmx_fpa_async_alloc(uint64_t scr_addr, uint64_t pool)
@@ -212,7 +245,11 @@ static inline void cvmx_fpa_async_alloc(uint64_t scr_addr, uint64_t pool)
  * @ptr:    Block to free
  * @pool:   Pool to put it in
  * @num_cache_lines:
+<<<<<<< HEAD
  *               Cache lines to invalidate
+=======
+ *		 Cache lines to invalidate
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void cvmx_fpa_free_nosync(void *ptr, uint64_t pool,
 					uint64_t num_cache_lines)
@@ -234,7 +271,11 @@ static inline void cvmx_fpa_free_nosync(void *ptr, uint64_t pool,
  * @ptr:    Block to free
  * @pool:   Pool to put it in
  * @num_cache_lines:
+<<<<<<< HEAD
  *               Cache lines to invalidate
+=======
+ *		 Cache lines to invalidate
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline void cvmx_fpa_free(void *ptr, uint64_t pool,
 				 uint64_t num_cache_lines)
@@ -245,7 +286,11 @@ static inline void cvmx_fpa_free(void *ptr, uint64_t pool,
 	    CVMX_ADDR_DIDSPACE(CVMX_FULL_DID(CVMX_OCT_DID_FPA, pool));
 	/*
 	 * Make sure that any previous writes to memory go out before
+<<<<<<< HEAD
 	 * we free this buffer.  This also serves as a barrier to
+=======
+	 * we free this buffer.	 This also serves as a barrier to
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * prevent GCC from reordering operations to after the
 	 * free.
 	 */
@@ -255,6 +300,7 @@ static inline void cvmx_fpa_free(void *ptr, uint64_t pool,
 }
 
 /**
+<<<<<<< HEAD
  * Setup a FPA pool to control a new block of memory.
  * This can only be called once per pool. Make sure proper
  * locking enforces this.
@@ -275,6 +321,8 @@ extern int cvmx_fpa_setup_pool(uint64_t pool, const char *name, void *buffer,
 			       uint64_t block_size, uint64_t num_blocks);
 
 /**
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Shutdown a Memory pool and validate that it had all of
  * the buffers originally placed in it. This should only be
  * called by one processor after all hardware has finished
@@ -282,8 +330,13 @@ extern int cvmx_fpa_setup_pool(uint64_t pool, const char *name, void *buffer,
  *
  * @pool:   Pool to shutdown
  * Returns Zero on success
+<<<<<<< HEAD
  *         - Positive is count of missing buffers
  *         - Negative is too many buffers or corrupted pointers
+=======
+ *	   - Positive is count of missing buffers
+ *	   - Negative is too many buffers or corrupted pointers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 extern uint64_t cvmx_fpa_shutdown_pool(uint64_t pool);
 

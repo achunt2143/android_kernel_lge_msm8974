@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale/Motorola Coldfire Queued SPI driver
  *
  * Copyright 2010 Steven King <sfking@fdwdc.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St - Fifth Floor, Boston, MA 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 
 #include <linux/kernel.h>
@@ -25,12 +32,19 @@
 #include <linux/errno.h>
 #include <linux/platform_device.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
 #include <linux/workqueue.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/spi/spi.h>
+<<<<<<< HEAD
+=======
+#include <linux/pm_runtime.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/coldfire.h>
 #include <asm/mcfsim.h>
@@ -77,11 +91,14 @@ struct mcfqspi {
 	struct mcfqspi_cs_control *cs_control;
 
 	wait_queue_head_t waitq;
+<<<<<<< HEAD
 
 	struct work_struct work;
 	struct workqueue_struct *workq;
 	spinlock_t lock;
 	struct list_head msgq;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static void mcfqspi_wr_qmr(struct mcfqspi *mcfqspi, u16 val)
@@ -138,13 +155,21 @@ static void mcfqspi_cs_deselect(struct mcfqspi *mcfqspi, u8 chip_select,
 
 static int mcfqspi_cs_setup(struct mcfqspi *mcfqspi)
 {
+<<<<<<< HEAD
 	return (mcfqspi->cs_control && mcfqspi->cs_control->setup) ?
+=======
+	return (mcfqspi->cs_control->setup) ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcfqspi->cs_control->setup(mcfqspi->cs_control) : 0;
 }
 
 static void mcfqspi_cs_teardown(struct mcfqspi *mcfqspi)
 {
+<<<<<<< HEAD
 	if (mcfqspi->cs_control && mcfqspi->cs_control->teardown)
+=======
+	if (mcfqspi->cs_control->teardown)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mcfqspi->cs_control->teardown(mcfqspi->cs_control);
 }
 
@@ -303,6 +328,7 @@ static void mcfqspi_transfer_msg16(struct mcfqspi *mcfqspi, unsigned count,
 	}
 }
 
+<<<<<<< HEAD
 static void mcfqspi_work(struct work_struct *work)
 {
 	struct mcfqspi *mcfqspi = container_of(work, struct mcfqspi, work);
@@ -417,10 +443,48 @@ static int mcfqspi_transfer(struct spi_device *spi, struct spi_message *msg)
 fail:
 	msg->status = -EINVAL;
 	return -EINVAL;
+=======
+static void mcfqspi_set_cs(struct spi_device *spi, bool enable)
+{
+	struct mcfqspi *mcfqspi = spi_controller_get_devdata(spi->controller);
+	bool cs_high = spi->mode & SPI_CS_HIGH;
+
+	if (enable)
+		mcfqspi_cs_select(mcfqspi, spi_get_chipselect(spi, 0), cs_high);
+	else
+		mcfqspi_cs_deselect(mcfqspi, spi_get_chipselect(spi, 0), cs_high);
+}
+
+static int mcfqspi_transfer_one(struct spi_controller *host,
+				struct spi_device *spi,
+				struct spi_transfer *t)
+{
+	struct mcfqspi *mcfqspi = spi_controller_get_devdata(host);
+	u16 qmr = MCFQSPI_QMR_MSTR;
+
+	qmr |= t->bits_per_word << 10;
+	if (spi->mode & SPI_CPHA)
+		qmr |= MCFQSPI_QMR_CPHA;
+	if (spi->mode & SPI_CPOL)
+		qmr |= MCFQSPI_QMR_CPOL;
+	qmr |= mcfqspi_qmr_baud(t->speed_hz);
+	mcfqspi_wr_qmr(mcfqspi, qmr);
+
+	mcfqspi_wr_qir(mcfqspi, MCFQSPI_QIR_SPIFE);
+	if (t->bits_per_word == 8)
+		mcfqspi_transfer_msg8(mcfqspi, t->len, t->tx_buf, t->rx_buf);
+	else
+		mcfqspi_transfer_msg16(mcfqspi, t->len / 2, t->tx_buf,
+				       t->rx_buf);
+	mcfqspi_wr_qir(mcfqspi, 0);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mcfqspi_setup(struct spi_device *spi)
 {
+<<<<<<< HEAD
 	if ((spi->bits_per_word < 8) || (spi->bits_per_word > 16)) {
 		dev_dbg(&spi->dev, "%d bits per word is not supported\n",
 			spi->bits_per_word);
@@ -438,12 +502,21 @@ static int mcfqspi_setup(struct spi_device *spi)
 	dev_dbg(&spi->dev,
 			"bits per word %d, chip select %d, speed %d KHz\n",
 			spi->bits_per_word, spi->chip_select,
+=======
+	mcfqspi_cs_deselect(spi_controller_get_devdata(spi->controller),
+			    spi_get_chipselect(spi, 0), spi->mode & SPI_CS_HIGH);
+
+	dev_dbg(&spi->dev,
+			"bits per word %d, chip select %d, speed %d KHz\n",
+			spi->bits_per_word, spi_get_chipselect(spi, 0),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(MCFQSPI_BUSCLK / mcfqspi_qmr_baud(spi->max_speed_hz))
 			/ 1000);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit mcfqspi_probe(struct platform_device *pdev)
 {
 	struct spi_master *master;
@@ -480,10 +553,45 @@ static int __devinit mcfqspi_probe(struct platform_device *pdev)
 		goto fail1;
 	}
 
+=======
+static int mcfqspi_probe(struct platform_device *pdev)
+{
+	struct spi_controller *host;
+	struct mcfqspi *mcfqspi;
+	struct mcfqspi_platform_data *pdata;
+	int status;
+
+	pdata = dev_get_platdata(&pdev->dev);
+	if (!pdata) {
+		dev_dbg(&pdev->dev, "platform data is missing\n");
+		return -ENOENT;
+	}
+
+	if (!pdata->cs_control) {
+		dev_dbg(&pdev->dev, "pdata->cs_control is NULL\n");
+		return -EINVAL;
+	}
+
+	host = spi_alloc_host(&pdev->dev, sizeof(*mcfqspi));
+	if (host == NULL) {
+		dev_dbg(&pdev->dev, "spi_alloc_host failed\n");
+		return -ENOMEM;
+	}
+
+	mcfqspi = spi_controller_get_devdata(host);
+
+	mcfqspi->iobase = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(mcfqspi->iobase)) {
+		status = PTR_ERR(mcfqspi->iobase);
+		goto fail0;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mcfqspi->irq = platform_get_irq(pdev, 0);
 	if (mcfqspi->irq < 0) {
 		dev_dbg(&pdev->dev, "platform_get_irq failed\n");
 		status = -ENXIO;
+<<<<<<< HEAD
 		goto fail2;
 	}
 
@@ -520,11 +628,33 @@ static int __devinit mcfqspi_probe(struct platform_device *pdev)
 	}
 	master->bus_num = pdata->bus_num;
 	master->num_chipselect = pdata->num_chipselect;
+=======
+		goto fail0;
+	}
+
+	status = devm_request_irq(&pdev->dev, mcfqspi->irq, mcfqspi_irq_handler,
+				0, pdev->name, mcfqspi);
+	if (status) {
+		dev_dbg(&pdev->dev, "request_irq failed\n");
+		goto fail0;
+	}
+
+	mcfqspi->clk = devm_clk_get_enabled(&pdev->dev, "qspi_clk");
+	if (IS_ERR(mcfqspi->clk)) {
+		dev_dbg(&pdev->dev, "clk_get failed\n");
+		status = PTR_ERR(mcfqspi->clk);
+		goto fail0;
+	}
+
+	host->bus_num = pdata->bus_num;
+	host->num_chipselect = pdata->num_chipselect;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mcfqspi->cs_control = pdata->cs_control;
 	status = mcfqspi_cs_setup(mcfqspi);
 	if (status) {
 		dev_dbg(&pdev->dev, "error initializing cs_control\n");
+<<<<<<< HEAD
 		goto fail5;
 	}
 
@@ -539,10 +669,34 @@ static int __devinit mcfqspi_probe(struct platform_device *pdev)
 		dev_dbg(&pdev->dev, "spi_register_master failed\n");
 		goto fail6;
 	}
+=======
+		goto fail0;
+	}
+
+	init_waitqueue_head(&mcfqspi->waitq);
+
+	host->mode_bits = SPI_CS_HIGH | SPI_CPOL | SPI_CPHA;
+	host->bits_per_word_mask = SPI_BPW_RANGE_MASK(8, 16);
+	host->setup = mcfqspi_setup;
+	host->set_cs = mcfqspi_set_cs;
+	host->transfer_one = mcfqspi_transfer_one;
+	host->auto_runtime_pm = true;
+
+	platform_set_drvdata(pdev, host);
+	pm_runtime_enable(&pdev->dev);
+
+	status = devm_spi_register_controller(&pdev->dev, host);
+	if (status) {
+		dev_dbg(&pdev->dev, "devm_spi_register_controller failed\n");
+		goto fail1;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(&pdev->dev, "Coldfire QSPI bus driver\n");
 
 	return 0;
 
+<<<<<<< HEAD
 fail6:
 	mcfqspi_cs_teardown(mcfqspi);
 fail5:
@@ -558,12 +712,20 @@ fail1:
 	release_mem_region(res->start, resource_size(res));
 fail0:
 	spi_master_put(master);
+=======
+fail1:
+	pm_runtime_disable(&pdev->dev);
+	mcfqspi_cs_teardown(mcfqspi);
+fail0:
+	spi_controller_put(host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&pdev->dev, "Coldfire QSPI probe failed\n");
 
 	return status;
 }
 
+<<<<<<< HEAD
 static int __devexit mcfqspi_remove(struct platform_device *pdev)
 {
 	struct spi_master *master = platform_get_drvdata(pdev);
@@ -592,6 +754,30 @@ static int __devexit mcfqspi_remove(struct platform_device *pdev)
 static int mcfqspi_suspend(struct device *dev)
 {
 	struct mcfqspi *mcfqspi = platform_get_drvdata(to_platform_device(dev));
+=======
+static void mcfqspi_remove(struct platform_device *pdev)
+{
+	struct spi_controller *host = platform_get_drvdata(pdev);
+	struct mcfqspi *mcfqspi = spi_controller_get_devdata(host);
+
+	pm_runtime_disable(&pdev->dev);
+	/* disable the hardware (set the baud rate to 0) */
+	mcfqspi_wr_qmr(mcfqspi, MCFQSPI_QMR_MSTR);
+
+	mcfqspi_cs_teardown(mcfqspi);
+}
+
+#ifdef CONFIG_PM_SLEEP
+static int mcfqspi_suspend(struct device *dev)
+{
+	struct spi_controller *host = dev_get_drvdata(dev);
+	struct mcfqspi *mcfqspi = spi_controller_get_devdata(host);
+	int ret;
+
+	ret = spi_controller_suspend(host);
+	if (ret)
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clk_disable(mcfqspi->clk);
 
@@ -600,12 +786,40 @@ static int mcfqspi_suspend(struct device *dev)
 
 static int mcfqspi_resume(struct device *dev)
 {
+<<<<<<< HEAD
 	struct mcfqspi *mcfqspi = platform_get_drvdata(to_platform_device(dev));
+=======
+	struct spi_controller *host = dev_get_drvdata(dev);
+	struct mcfqspi *mcfqspi = spi_controller_get_devdata(host);
+
+	clk_enable(mcfqspi->clk);
+
+	return spi_controller_resume(host);
+}
+#endif
+
+#ifdef CONFIG_PM
+static int mcfqspi_runtime_suspend(struct device *dev)
+{
+	struct spi_controller *host = dev_get_drvdata(dev);
+	struct mcfqspi *mcfqspi = spi_controller_get_devdata(host);
+
+	clk_disable(mcfqspi->clk);
+
+	return 0;
+}
+
+static int mcfqspi_runtime_resume(struct device *dev)
+{
+	struct spi_controller *host = dev_get_drvdata(dev);
+	struct mcfqspi *mcfqspi = spi_controller_get_devdata(host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clk_enable(mcfqspi->clk);
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static struct dev_pm_ops mcfqspi_dev_pm_ops = {
 	.suspend	= mcfqspi_suspend,
@@ -623,6 +837,22 @@ static struct platform_driver mcfqspi_driver = {
 	.driver.pm	= MCFQSPI_DEV_PM_OPS,
 	.probe		= mcfqspi_probe,
 	.remove		= __devexit_p(mcfqspi_remove),
+=======
+#endif
+
+static const struct dev_pm_ops mcfqspi_pm = {
+	SET_SYSTEM_SLEEP_PM_OPS(mcfqspi_suspend, mcfqspi_resume)
+	SET_RUNTIME_PM_OPS(mcfqspi_runtime_suspend, mcfqspi_runtime_resume,
+			NULL)
+};
+
+static struct platform_driver mcfqspi_driver = {
+	.driver.name	= DRIVER_NAME,
+	.driver.owner	= THIS_MODULE,
+	.driver.pm	= &mcfqspi_pm,
+	.probe		= mcfqspi_probe,
+	.remove_new	= mcfqspi_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 module_platform_driver(mcfqspi_driver);
 

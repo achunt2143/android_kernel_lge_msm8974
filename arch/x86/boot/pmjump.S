@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* ----------------------------------------------------------------------- *
  *
  *   Copyright (C) 1991, 1992 Linus Torvalds
  *   Copyright 2007 rPath, Inc. - All Rights Reserved
  *
+<<<<<<< HEAD
  *   This file is part of the Linux kernel, and is made available under
  *   the terms of the GNU General Public License version 2.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * ----------------------------------------------------------------------- */
 
 /*
@@ -23,7 +30,11 @@
 /*
  * void protected_mode_jump(u32 entrypoint, u32 bootparams);
  */
+<<<<<<< HEAD
 GLOBAL(protected_mode_jump)
+=======
+SYM_FUNC_START_NOALIGN(protected_mode_jump)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movl	%edx, %esi		# Pointer to boot_params table
 
 	xorl	%ebx, %ebx
@@ -42,6 +53,7 @@ GLOBAL(protected_mode_jump)
 
 	# Transition to 32-bit mode
 	.byte	0x66, 0xea		# ljmpl opcode
+<<<<<<< HEAD
 2:	.long	in_pm32			# offset
 	.word	__BOOT_CS		# segment
 ENDPROC(protected_mode_jump)
@@ -49,6 +61,15 @@ ENDPROC(protected_mode_jump)
 	.code32
 	.section ".text32","ax"
 GLOBAL(in_pm32)
+=======
+2:	.long	.Lin_pm32		# offset
+	.word	__BOOT_CS		# segment
+SYM_FUNC_END(protected_mode_jump)
+
+	.code32
+	.section ".text32","ax"
+SYM_FUNC_START_LOCAL_NOALIGN(.Lin_pm32)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	# Set up data segments for flat 32-bit mode
 	movl	%ecx, %ds
 	movl	%ecx, %es
@@ -74,4 +95,8 @@ GLOBAL(in_pm32)
 	lldt	%cx
 
 	jmpl	*%eax			# Jump to the 32-bit entrypoint
+<<<<<<< HEAD
 ENDPROC(in_pm32)
+=======
+SYM_FUNC_END(.Lin_pm32)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

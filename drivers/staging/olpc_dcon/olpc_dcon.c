@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Mainly by David Woodhouse, somewhat modified by Jordan Crouse
  *
@@ -5,20 +9,29 @@
  * Copyright © 2006-2007  Advanced Micro Devices, Inc.
  * Copyright © 2009       VIA Technology, Inc.
  * Copyright (c) 2010-2011  Andres Salomon <dilinger@queued.net>
+<<<<<<< HEAD
  *
  * This program is free software.  You can redistribute it and/or
  * modify it under the terms of version 2 of the GNU General Public
  * License as published by the Free Software Foundation.
  */
 
+=======
+ */
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/kernel.h>
 #include <linux/fb.h>
 #include <linux/console.h>
 #include <linux/i2c.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/pci.h>
 #include <linux/pci_ids.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -26,7 +39,13 @@
 #include <linux/device.h>
 #include <linux/uaccess.h>
 #include <linux/ctype.h>
+<<<<<<< HEAD
 #include <linux/reboot.h>
+=======
+#include <linux/panic_notifier.h>
+#include <linux/reboot.h>
+#include <linux/olpc-ec.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/tsc.h>
 #include <asm/olpc.h>
 
@@ -37,10 +56,13 @@
 static ushort resumeline = 898;
 module_param(resumeline, ushort, 0444);
 
+<<<<<<< HEAD
 /* Default off since it doesn't work on DCON ASIC in B-test OLPC board */
 static int useaa = 1;
 module_param(useaa, int, 0444);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct dcon_platform_data *pdata;
 
 /* I2C structures */
@@ -48,8 +70,11 @@ static struct dcon_platform_data *pdata;
 /* Platform devices */
 static struct platform_device *dcon_device;
 
+<<<<<<< HEAD
 static DECLARE_WAIT_QUEUE_HEAD(dcon_wait_queue);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned short normal_i2c[] = { 0x0d, I2C_CLIENT_END };
 
 static s32 dcon_write(struct dcon_priv *dcon, u8 reg, u16 val)
@@ -66,43 +91,70 @@ static s32 dcon_read(struct dcon_priv *dcon, u8 reg)
 
 static int dcon_hw_init(struct dcon_priv *dcon, int is_init)
 {
+<<<<<<< HEAD
 	uint16_t ver;
+=======
+	u16 ver;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc = 0;
 
 	ver = dcon_read(dcon, DCON_REG_ID);
 	if ((ver >> 8) != 0xDC) {
+<<<<<<< HEAD
 		printk(KERN_ERR "olpc-dcon:  DCON ID not 0xDCxx: 0x%04x "
 				"instead.\n", ver);
+=======
+		pr_err("DCON ID not 0xDCxx: 0x%04x instead.\n", ver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENXIO;
 		goto err;
 	}
 
 	if (is_init) {
+<<<<<<< HEAD
 		printk(KERN_INFO "olpc-dcon:  Discovered DCON version %x\n",
 				ver & 0xFF);
 		rc = pdata->init(dcon);
 		if (rc != 0) {
 			printk(KERN_ERR "olpc-dcon:  Unable to init.\n");
+=======
+		pr_info("Discovered DCON version %x\n", ver & 0xFF);
+		rc = pdata->init(dcon);
+		if (rc != 0) {
+			pr_err("Unable to init.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err;
 		}
 	}
 
 	if (ver < 0xdc02) {
 		dev_err(&dcon->client->dev,
+<<<<<<< HEAD
 				"DCON v1 is unsupported, giving up..\n");
+=======
+			"DCON v1 is unsupported, giving up..\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENODEV;
 		goto err;
 	}
 
 	/* SDRAM setup/hold time */
 	dcon_write(dcon, 0x3a, 0xc040);
+<<<<<<< HEAD
 	dcon_write(dcon, 0x41, 0x0000);
 	dcon_write(dcon, 0x41, 0x0101);
 	dcon_write(dcon, 0x42, 0x0101);
+=======
+	dcon_write(dcon, DCON_REG_MEM_OPT_A, 0x0000);  /* clear option bits */
+	dcon_write(dcon, DCON_REG_MEM_OPT_A,
+		   MEM_DLL_CLOCK_DELAY | MEM_POWER_DOWN);
+	dcon_write(dcon, DCON_REG_MEM_OPT_B, MEM_SOFT_RESET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Colour swizzle, AA, no passthrough, backlight */
 	if (is_init) {
 		dcon->disp_mode = MODE_PASSTHRU | MODE_BL_ENABLE |
+<<<<<<< HEAD
 				MODE_CSWIZZLE;
 		if (useaa)
 			dcon->disp_mode |= MODE_COL_AA;
@@ -110,6 +162,12 @@ static int dcon_hw_init(struct dcon_priv *dcon, int is_init)
 	dcon_write(dcon, DCON_REG_MODE, dcon->disp_mode);
 
 
+=======
+				MODE_CSWIZZLE | MODE_COL_AA;
+	}
+	dcon_write(dcon, DCON_REG_MODE, dcon->disp_mode);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Set the scanline to interrupt on during resume */
 	dcon_write(dcon, DCON_REG_SCAN_INT, resumeline);
 
@@ -129,10 +187,15 @@ err:
 static int dcon_bus_stabilize(struct dcon_priv *dcon, int is_powered_down)
 {
 	unsigned long timeout;
+<<<<<<< HEAD
+=======
+	u8 pm;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int x;
 
 power_up:
 	if (is_powered_down) {
+<<<<<<< HEAD
 		x = 1;
 		x = olpc_ec_cmd(0x26, (unsigned char *) &x, 1, NULL, 0);
 		if (x) {
@@ -141,11 +204,21 @@ power_up:
 			return x;
 		}
 		msleep(10); /* we'll be conservative */
+=======
+		pm = 1;
+		x = olpc_ec_cmd(EC_DCON_POWER_MODE, &pm, 1, NULL, 0);
+		if (x) {
+			pr_warn("unable to force dcon to power up: %d!\n", x);
+			return x;
+		}
+		usleep_range(10000, 11000);  /* we'll be conservative */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	pdata->bus_stabilize_wiggle();
 
 	for (x = -1, timeout = 50; timeout && x < 0; timeout--) {
+<<<<<<< HEAD
 		msleep(1);
 		x = dcon_read(dcon, DCON_REG_ID);
 	}
@@ -155,6 +228,16 @@ power_up:
 		BUG_ON(olpc_board_at_least(olpc_board(0xc2)));
 		x = 0;
 		olpc_ec_cmd(0x26, (unsigned char *) &x, 1, NULL, 0);
+=======
+		usleep_range(1000, 1100);
+		x = dcon_read(dcon, DCON_REG_ID);
+	}
+	if (x < 0) {
+		pr_err("unable to stabilize dcon's smbus, reasserting power and praying.\n");
+		BUG_ON(olpc_board_at_least(olpc_board(0xc2)));
+		pm = 0;
+		olpc_ec_cmd(EC_DCON_POWER_MODE, &pm, 1, NULL, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msleep(100);
 		is_powered_down = 1;
 		goto power_up;	/* argh, stupid hardware.. */
@@ -193,9 +276,13 @@ static int dcon_set_mono_mode(struct dcon_priv *dcon, bool enable_mono)
 		dcon->disp_mode |= MODE_MONO_LUMA;
 	} else {
 		dcon->disp_mode &= ~(MODE_MONO_LUMA);
+<<<<<<< HEAD
 		dcon->disp_mode |= MODE_CSWIZZLE;
 		if (useaa)
 			dcon->disp_mode |= MODE_COL_AA;
+=======
+		dcon->disp_mode |= MODE_CSWIZZLE | MODE_COL_AA;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dcon_write(dcon, DCON_REG_MODE, dcon->disp_mode);
@@ -219,11 +306,19 @@ static void dcon_sleep(struct dcon_priv *dcon, bool sleep)
 		return;
 
 	if (sleep) {
+<<<<<<< HEAD
 		x = 0;
 		x = olpc_ec_cmd(0x26, (unsigned char *) &x, 1, NULL, 0);
 		if (x)
 			printk(KERN_WARNING "olpc-dcon:  unable to force dcon "
 					"to power down: %d!\n", x);
+=======
+		u8 pm = 0;
+
+		x = olpc_ec_cmd(EC_DCON_POWER_MODE, &pm, 1, NULL, 0);
+		if (x)
+			pr_warn("unable to force dcon to power down: %d!\n", x);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			dcon->asleep = sleep;
 	} else {
@@ -232,8 +327,12 @@ static void dcon_sleep(struct dcon_priv *dcon, bool sleep)
 			dcon->disp_mode |= MODE_BL_ENABLE;
 		x = dcon_bus_stabilize(dcon, 1);
 		if (x)
+<<<<<<< HEAD
 			printk(KERN_WARNING "olpc-dcon:  unable to reinit dcon"
 					" hardware: %d!\n", x);
+=======
+			pr_warn("unable to reinit dcon hardware: %d!\n", x);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		else
 			dcon->asleep = sleep;
 
@@ -251,6 +350,7 @@ static void dcon_sleep(struct dcon_priv *dcon, bool sleep)
  */
 static void dcon_load_holdoff(struct dcon_priv *dcon)
 {
+<<<<<<< HEAD
 	struct timespec delta_t, now;
 	while (1) {
 		getnstimeofday(&now);
@@ -259,6 +359,15 @@ static void dcon_load_holdoff(struct dcon_priv *dcon)
 			delta_t.tv_nsec > NSEC_PER_MSEC * 20) {
 			break;
 		}
+=======
+	ktime_t delta_t, now;
+
+	while (1) {
+		now = ktime_get();
+		delta_t = ktime_sub(now, dcon->load_time);
+		if (ktime_to_ns(delta_t) > NSEC_PER_MSEC * 20)
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdelay(4);
 	}
 }
@@ -267,6 +376,7 @@ static bool dcon_blank_fb(struct dcon_priv *dcon, bool blank)
 {
 	int err;
 
+<<<<<<< HEAD
 	if (!lock_fb_info(dcon->fbinfo)) {
 		dev_err(&dcon->client->dev, "unable to lock framebuffer\n");
 		return false;
@@ -282,6 +392,21 @@ static bool dcon_blank_fb(struct dcon_priv *dcon, bool blank)
 	if (err) {
 		dev_err(&dcon->client->dev, "couldn't %sblank framebuffer\n",
 				blank ? "" : "un");
+=======
+	console_lock();
+	lock_fb_info(dcon->fbinfo);
+
+	dcon->ignore_fb_events = true;
+	err = fb_blank(dcon->fbinfo,
+		       blank ? FB_BLANK_POWERDOWN : FB_BLANK_UNBLANK);
+	dcon->ignore_fb_events = false;
+	unlock_fb_info(dcon->fbinfo);
+	console_unlock();
+
+	if (err) {
+		dev_err(&dcon->client->dev, "couldn't %sblank framebuffer\n",
+			blank ? "" : "un");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return false;
 	}
 	return true;
@@ -292,7 +417,10 @@ static void dcon_source_switch(struct work_struct *work)
 {
 	struct dcon_priv *dcon = container_of(work, struct dcon_priv,
 			switch_source);
+<<<<<<< HEAD
 	DECLARE_WAITQUEUE(wait, current);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int source = dcon->pending_src;
 
 	if (dcon->curr_src == source)
@@ -304,6 +432,7 @@ static void dcon_source_switch(struct work_struct *work)
 
 	switch (source) {
 	case DCON_SOURCE_CPU:
+<<<<<<< HEAD
 		printk("dcon_source_switch to CPU\n");
 		/* Enable the scanline interrupt bit */
 		if (dcon_write(dcon, DCON_REG_MODE,
@@ -322,6 +451,23 @@ static void dcon_source_switch(struct work_struct *work)
 		/* Turn off the scanline interrupt */
 		if (dcon_write(dcon, DCON_REG_MODE, dcon->disp_mode))
 			printk(KERN_ERR "olpc-dcon:  couldn't disable scanline interrupt!\n");
+=======
+		pr_info("%s to CPU\n", __func__);
+		/* Enable the scanline interrupt bit */
+		if (dcon_write(dcon, DCON_REG_MODE,
+			       dcon->disp_mode | MODE_SCAN_INT))
+			pr_err("couldn't enable scanline interrupt!\n");
+		else
+			/* Wait up to one second for the scanline interrupt */
+			wait_event_timeout(dcon->waitq, dcon->switched, HZ);
+
+		if (!dcon->switched)
+			pr_err("Timeout entering CPU mode; expect a screen glitch.\n");
+
+		/* Turn off the scanline interrupt */
+		if (dcon_write(dcon, DCON_REG_MODE, dcon->disp_mode))
+			pr_err("couldn't disable scanline interrupt!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Ideally we'd like to disable interrupts here so that the
@@ -332,13 +478,18 @@ static void dcon_source_switch(struct work_struct *work)
 		 * For now, we just hope..
 		 */
 		if (!dcon_blank_fb(dcon, false)) {
+<<<<<<< HEAD
 			printk(KERN_ERR "olpc-dcon:  Failed to enter CPU mode\n");
+=======
+			pr_err("Failed to enter CPU mode\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dcon->pending_src = DCON_SOURCE_DCON;
 			return;
 		}
 
 		/* And turn off the DCON */
 		pdata->set_dconload(1);
+<<<<<<< HEAD
 		getnstimeofday(&dcon->load_time);
 
 		printk(KERN_INFO "olpc-dcon: The CPU has control\n");
@@ -363,6 +514,26 @@ static void dcon_source_switch(struct work_struct *work)
 
 		if (!dcon->switched) {
 			printk(KERN_ERR "olpc-dcon: Timeout entering DCON mode; expect a screen glitch.\n");
+=======
+		dcon->load_time = ktime_get();
+
+		pr_info("The CPU has control\n");
+		break;
+	case DCON_SOURCE_DCON:
+	{
+		ktime_t delta_t;
+
+		pr_info("%s to DCON\n", __func__);
+
+		/* Clear DCONLOAD - this implies that the DCON is in control */
+		pdata->set_dconload(0);
+		dcon->load_time = ktime_get();
+
+		wait_event_timeout(dcon->waitq, dcon->switched, HZ / 2);
+
+		if (!dcon->switched) {
+			pr_err("Timeout entering DCON mode; expect a screen glitch.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			/* sometimes the DCON doesn't follow its own rules,
 			 * and doesn't wait for two vsync pulses before
@@ -375,6 +546,7 @@ static void dcon_source_switch(struct work_struct *work)
 			 * deassert and reassert, and hope for the best.
 			 * see http://dev.laptop.org/ticket/9664
 			 */
+<<<<<<< HEAD
 			delta_t = timespec_sub(dcon->irq_time, dcon->load_time);
 			if (dcon->switched && delta_t.tv_sec == 0 &&
 					delta_t.tv_nsec < NSEC_PER_MSEC * 20) {
@@ -383,12 +555,26 @@ static void dcon_source_switch(struct work_struct *work)
 				mdelay(41);
 				pdata->set_dconload(0);
 				getnstimeofday(&dcon->load_time);
+=======
+			delta_t = ktime_sub(dcon->irq_time, dcon->load_time);
+			if (dcon->switched && ktime_to_ns(delta_t)
+			    < NSEC_PER_MSEC * 20) {
+				pr_err("missed loading, retrying\n");
+				pdata->set_dconload(1);
+				mdelay(41);
+				pdata->set_dconload(0);
+				dcon->load_time = ktime_get();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				mdelay(41);
 			}
 		}
 
 		dcon_blank_fb(dcon, true);
+<<<<<<< HEAD
 		printk(KERN_INFO "olpc-dcon: The DCON has control\n");
+=======
+		pr_info("The DCON has control\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	default:
@@ -405,13 +591,18 @@ static void dcon_set_source(struct dcon_priv *dcon, int arg)
 
 	dcon->pending_src = arg;
 
+<<<<<<< HEAD
 	if ((dcon->curr_src != arg) && !work_pending(&dcon->switch_source))
+=======
+	if (dcon->curr_src != arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		schedule_work(&dcon->switch_source);
 }
 
 static void dcon_set_source_sync(struct dcon_priv *dcon, int arg)
 {
 	dcon_set_source(dcon, arg);
+<<<<<<< HEAD
 	flush_scheduled_work();
 }
 
@@ -419,39 +610,84 @@ static ssize_t dcon_mode_show(struct device *dev,
 	struct device_attribute *attr, char *buf)
 {
 	struct dcon_priv *dcon = dev_get_drvdata(dev);
+=======
+	flush_work(&dcon->switch_source);
+}
+
+static ssize_t dcon_mode_show(struct device *dev,
+			      struct device_attribute *attr,
+			      char *buf)
+{
+	struct dcon_priv *dcon = dev_get_drvdata(dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sprintf(buf, "%4.4X\n", dcon->disp_mode);
 }
 
 static ssize_t dcon_sleep_show(struct device *dev,
+<<<<<<< HEAD
 	struct device_attribute *attr, char *buf)
 {
 
 	struct dcon_priv *dcon = dev_get_drvdata(dev);
+=======
+			       struct device_attribute *attr,
+			       char *buf)
+{
+	struct dcon_priv *dcon = dev_get_drvdata(dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sprintf(buf, "%d\n", dcon->asleep);
 }
 
 static ssize_t dcon_freeze_show(struct device *dev,
+<<<<<<< HEAD
 	struct device_attribute *attr, char *buf)
 {
 	struct dcon_priv *dcon = dev_get_drvdata(dev);
+=======
+				struct device_attribute *attr,
+				char *buf)
+{
+	struct dcon_priv *dcon = dev_get_drvdata(dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sprintf(buf, "%d\n", dcon->curr_src == DCON_SOURCE_DCON ? 1 : 0);
 }
 
 static ssize_t dcon_mono_show(struct device *dev,
+<<<<<<< HEAD
 	struct device_attribute *attr, char *buf)
 {
 	struct dcon_priv *dcon = dev_get_drvdata(dev);
+=======
+			      struct device_attribute *attr,
+			      char *buf)
+{
+	struct dcon_priv *dcon = dev_get_drvdata(dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return sprintf(buf, "%d\n", dcon->mono);
 }
 
 static ssize_t dcon_resumeline_show(struct device *dev,
+<<<<<<< HEAD
 	struct device_attribute *attr, char *buf)
+=======
+				    struct device_attribute *attr,
+				    char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return sprintf(buf, "%d\n", resumeline);
 }
 
 static ssize_t dcon_mono_store(struct device *dev,
+<<<<<<< HEAD
 	struct device_attribute *attr, const char *buf, size_t count)
+=======
+			       struct device_attribute *attr,
+			       const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long enable_mono;
 	int rc;
@@ -466,7 +702,12 @@ static ssize_t dcon_mono_store(struct device *dev,
 }
 
 static ssize_t dcon_freeze_store(struct device *dev,
+<<<<<<< HEAD
 	struct device_attribute *attr, const char *buf, size_t count)
+=======
+				 struct device_attribute *attr,
+				 const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dcon_priv *dcon = dev_get_drvdata(dev);
 	unsigned long output;
@@ -476,8 +717,11 @@ static ssize_t dcon_freeze_store(struct device *dev,
 	if (ret)
 		return ret;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "dcon_freeze_store: %lu\n", output);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (output) {
 	case 0:
 		dcon_set_source(dcon, DCON_SOURCE_CPU);
@@ -496,7 +740,12 @@ static ssize_t dcon_freeze_store(struct device *dev,
 }
 
 static ssize_t dcon_resumeline_store(struct device *dev,
+<<<<<<< HEAD
 	struct device_attribute *attr, const char *buf, size_t count)
+=======
+				     struct device_attribute *attr,
+				     const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned short rl;
 	int rc;
@@ -512,7 +761,12 @@ static ssize_t dcon_resumeline_store(struct device *dev,
 }
 
 static ssize_t dcon_sleep_store(struct device *dev,
+<<<<<<< HEAD
 	struct device_attribute *attr, const char *buf, size_t count)
+=======
+				struct device_attribute *attr,
+				const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long output;
 	int ret;
@@ -536,20 +790,35 @@ static struct device_attribute dcon_device_files[] = {
 static int dcon_bl_update(struct backlight_device *dev)
 {
 	struct dcon_priv *dcon = bl_get_data(dev);
+<<<<<<< HEAD
 	u8 level = dev->props.brightness & 0x0F;
 
 	if (dev->props.power != FB_BLANK_UNBLANK)
 		level = 0;
+=======
+	u8 level = backlight_get_brightness(dev) & 0x0F;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (level != dcon->bl_val)
 		dcon_set_backlight(dcon, level);
 
+<<<<<<< HEAD
+=======
+	/* power down the DCON when the screen is blanked */
+	if (!dcon->ignore_fb_events)
+		dcon_sleep(dcon, !!(dev->props.state & BL_CORE_FBBLANK));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int dcon_bl_get(struct backlight_device *dev)
 {
 	struct dcon_priv *dcon = bl_get_data(dev);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return dcon->bl_val;
 }
 
@@ -570,12 +839,20 @@ static int dcon_reboot_notify(struct notifier_block *nb,
 	struct dcon_priv *dcon = container_of(nb, struct dcon_priv, reboot_nb);
 
 	if (!dcon || !dcon->client)
+<<<<<<< HEAD
 		return 0;
+=======
+		return NOTIFY_DONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Turn off the DCON. Entirely. */
 	dcon_write(dcon, DCON_REG_MODE, 0x39);
 	dcon_write(dcon, DCON_REG_MODE, 0x32);
+<<<<<<< HEAD
 	return 0;
+=======
+	return NOTIFY_DONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int unfreeze_on_panic(struct notifier_block *nb,
@@ -589,6 +866,7 @@ static struct notifier_block dcon_panic_nb = {
 	.notifier_call = unfreeze_on_panic,
 };
 
+<<<<<<< HEAD
 /*
  * When the framebuffer sleeps due to external sources (e.g. user idle), power
  * down the DCON as well.  Power it back up when the fb comes back to life.
@@ -610,11 +888,20 @@ static int dcon_fb_notifier(struct notifier_block *self,
 static int dcon_detect(struct i2c_client *client, struct i2c_board_info *info)
 {
 	strlcpy(info->type, "olpc_dcon", I2C_NAME_SIZE);
+=======
+static int dcon_detect(struct i2c_client *client, struct i2c_board_info *info)
+{
+	strscpy(info->type, "olpc_dcon", I2C_NAME_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dcon_probe(struct i2c_client *client, const struct i2c_device_id *id)
+=======
+static int dcon_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct dcon_priv *dcon;
 	int rc, i, j;
@@ -627,10 +914,17 @@ static int dcon_probe(struct i2c_client *client, const struct i2c_device_id *id)
 		return -ENOMEM;
 
 	dcon->client = client;
+<<<<<<< HEAD
 	INIT_WORK(&dcon->switch_source, dcon_source_switch);
 	dcon->reboot_nb.notifier_call = dcon_reboot_notify;
 	dcon->reboot_nb.priority = -1;
 	dcon->fbevent_nb.notifier_call = dcon_fb_notifier;
+=======
+	init_waitqueue_head(&dcon->waitq);
+	INIT_WORK(&dcon->switch_source, dcon_source_switch);
+	dcon->reboot_nb.notifier_call = dcon_reboot_notify;
+	dcon->reboot_nb.priority = -1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	i2c_set_clientdata(client, dcon);
 
@@ -649,8 +943,13 @@ static int dcon_probe(struct i2c_client *client, const struct i2c_device_id *id)
 
 	dcon_device = platform_device_alloc("dcon", -1);
 
+<<<<<<< HEAD
 	if (dcon_device == NULL) {
 		printk(KERN_ERR "dcon:  Unable to create the DCON device\n");
+=======
+	if (!dcon_device) {
+		pr_err("Unable to create the DCON device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rc = -ENOMEM;
 		goto eirq;
 	}
@@ -658,7 +957,11 @@ static int dcon_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	platform_set_drvdata(dcon_device, dcon);
 
 	if (rc) {
+<<<<<<< HEAD
 		printk(KERN_ERR "dcon:  Unable to add the DCON device\n");
+=======
+		pr_err("Unable to add the DCON device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto edev;
 	}
 
@@ -676,24 +979,41 @@ static int dcon_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	/* Add the backlight device for the DCON */
 	dcon_bl_props.brightness = dcon->bl_val;
 	dcon->bl_dev = backlight_device_register("dcon-bl", &dcon_device->dev,
+<<<<<<< HEAD
 		dcon, &dcon_bl_ops, &dcon_bl_props);
 	if (IS_ERR(dcon->bl_dev)) {
 		dev_err(&client->dev, "cannot register backlight dev (%ld)\n",
 				PTR_ERR(dcon->bl_dev));
+=======
+						 dcon, &dcon_bl_ops,
+						 &dcon_bl_props);
+	if (IS_ERR(dcon->bl_dev)) {
+		dev_err(&client->dev, "cannot register backlight dev (%ld)\n",
+			PTR_ERR(dcon->bl_dev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dcon->bl_dev = NULL;
 	}
 
 	register_reboot_notifier(&dcon->reboot_nb);
 	atomic_notifier_chain_register(&panic_notifier_list, &dcon_panic_nb);
+<<<<<<< HEAD
 	fb_register_client(&dcon->fbevent_nb);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
  ecreate:
 	for (j = 0; j < i; j++)
 		device_remove_file(&dcon_device->dev, &dcon_device_files[j]);
+<<<<<<< HEAD
  edev:
 	platform_device_unregister(dcon_device);
+=======
+	platform_device_del(dcon_device);
+ edev:
+	platform_device_put(dcon_device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dcon_device = NULL;
  eirq:
 	free_irq(DCON_IRQ, dcon);
@@ -702,24 +1022,38 @@ static int dcon_probe(struct i2c_client *client, const struct i2c_device_id *id)
 	return rc;
 }
 
+<<<<<<< HEAD
 static int dcon_remove(struct i2c_client *client)
 {
 	struct dcon_priv *dcon = i2c_get_clientdata(client);
 
 	fb_unregister_client(&dcon->fbevent_nb);
+=======
+static void dcon_remove(struct i2c_client *client)
+{
+	struct dcon_priv *dcon = i2c_get_clientdata(client);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_reboot_notifier(&dcon->reboot_nb);
 	atomic_notifier_chain_unregister(&panic_notifier_list, &dcon_panic_nb);
 
 	free_irq(DCON_IRQ, dcon);
 
+<<<<<<< HEAD
 	if (dcon->bl_dev)
 		backlight_device_unregister(dcon->bl_dev);
 
 	if (dcon_device != NULL)
+=======
+	backlight_device_unregister(dcon->bl_dev);
+
+	if (dcon_device)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		platform_device_unregister(dcon_device);
 	cancel_work_sync(&dcon->switch_source);
 
 	kfree(dcon);
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -727,6 +1061,14 @@ static int dcon_remove(struct i2c_client *client)
 #ifdef CONFIG_PM
 static int dcon_suspend(struct i2c_client *client, pm_message_t state)
 {
+=======
+}
+
+#ifdef CONFIG_PM
+static int dcon_suspend(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dcon_priv *dcon = i2c_get_clientdata(client);
 
 	if (!dcon->asleep) {
@@ -737,8 +1079,14 @@ static int dcon_suspend(struct i2c_client *client, pm_message_t state)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int dcon_resume(struct i2c_client *client)
 {
+=======
+static int dcon_resume(struct device *dev)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct dcon_priv *dcon = i2c_get_clientdata(client);
 
 	if (!dcon->asleep) {
@@ -749,8 +1097,17 @@ static int dcon_resume(struct i2c_client *client)
 	return 0;
 }
 
+<<<<<<< HEAD
 #endif
 
+=======
+#else
+
+#define dcon_suspend NULL
+#define dcon_resume NULL
+
+#endif /* CONFIG_PM */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 irqreturn_t dcon_interrupt(int irq, void *id)
 {
@@ -762,14 +1119,23 @@ irqreturn_t dcon_interrupt(int irq, void *id)
 
 	switch (status & 3) {
 	case 3:
+<<<<<<< HEAD
 		printk(KERN_DEBUG "olpc-dcon: DCONLOAD_MISSED interrupt\n");
+=======
+		pr_debug("DCONLOAD_MISSED interrupt\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case 2:	/* switch to DCON mode */
 	case 1: /* switch to CPU mode */
 		dcon->switched = true;
+<<<<<<< HEAD
 		getnstimeofday(&dcon->irq_time);
 		wake_up(&dcon_wait_queue);
+=======
+		dcon->irq_time = ktime_get();
+		wake_up(&dcon->waitq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case 0:
@@ -782,21 +1148,38 @@ irqreturn_t dcon_interrupt(int irq, void *id)
 		 */
 		if (dcon->curr_src != dcon->pending_src && !dcon->switched) {
 			dcon->switched = true;
+<<<<<<< HEAD
 			getnstimeofday(&dcon->irq_time);
 			wake_up(&dcon_wait_queue);
 			printk(KERN_DEBUG "olpc-dcon: switching w/ status 0/0\n");
 		} else {
 			printk(KERN_DEBUG "olpc-dcon: scanline interrupt w/CPU\n");
+=======
+			dcon->irq_time = ktime_get();
+			wake_up(&dcon->waitq);
+			pr_debug("switching w/ status 0/0\n");
+		} else {
+			pr_debug("scanline interrupt w/CPU\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
+=======
+static const struct dev_pm_ops dcon_pm_ops = {
+	.suspend = dcon_suspend,
+	.resume = dcon_resume,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id dcon_idtable[] = {
 	{ "olpc_dcon",  0 },
 	{ }
 };
+<<<<<<< HEAD
 
 MODULE_DEVICE_TABLE(i2c, dcon_idtable);
 
@@ -814,10 +1197,26 @@ struct i2c_driver dcon_driver = {
 	.suspend = dcon_suspend,
 	.resume = dcon_resume,
 #endif
+=======
+MODULE_DEVICE_TABLE(i2c, dcon_idtable);
+
+static struct i2c_driver dcon_driver = {
+	.driver = {
+		.name	= "olpc_dcon",
+		.pm = &dcon_pm_ops,
+	},
+	.class = I2C_CLASS_HWMON,
+	.id_table = dcon_idtable,
+	.probe = dcon_probe,
+	.remove = dcon_remove,
+	.detect = dcon_detect,
+	.address_list = normal_i2c,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init olpc_dcon_init(void)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_FB_OLPC_DCON_1_5
 	/* XO-1.5 */
 	if (olpc_board_at_least(olpc_board(0xd0)))
@@ -827,6 +1226,13 @@ static int __init olpc_dcon_init(void)
 	if (!pdata)
 		pdata = &dcon_pdata_xo_1;
 #endif
+=======
+	/* XO-1.5 */
+	if (olpc_board_at_least(olpc_board(0xd0)))
+		pdata = &dcon_pdata_xo_1_5;
+	else
+		pdata = &dcon_pdata_xo_1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return i2c_add_driver(&dcon_driver);
 }

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2009-2010 Intel Corporation
  *
@@ -17,6 +18,12 @@
  * The full GNU General Public License is included in this distribution in
  * the file called "COPYING".
  *
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (c) 2009-2010 Intel Corporation
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors:
  *	Jesse Barnes <jbarnes@virtuousgeek.org>
  */
@@ -33,7 +40,11 @@
  * performance by allocating more power or thermal budget to the CPU or GPU
  * based on available headroom and activity.
  *
+<<<<<<< HEAD
  * The basic algorithm is driven by a 5s moving average of tempurature.  If
+=======
+ * The basic algorithm is driven by a 5s moving average of temperature.  If
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * thermal headroom is available, the CPU and/or GPU power clamps may be
  * adjusted upwards.  If we hit the thermal ceiling or a thermal trigger,
  * we scale back the clamp.  Aside from trigger events (when we're critically
@@ -68,6 +79,10 @@
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/loadavg.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/seq_file.h>
 #include <linux/string.h>
 #include <linux/tick.h>
@@ -78,7 +93,11 @@
 #include <asm/processor.h>
 #include "intel_ips.h"
 
+<<<<<<< HEAD
 #include <asm-generic/io-64-nonatomic-lo-hi.h>
+=======
+#include <linux/io-64-nonatomic-lo-hi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define PCI_DEVICE_ID_INTEL_THERMAL_SENSOR 0x3b32
 
@@ -258,8 +277,11 @@ static const int IPS_SAMPLE_WINDOW = 5000; /* 5s moving window of samples */
 
 /* Per-SKU limits */
 struct ips_mcp_limits {
+<<<<<<< HEAD
 	int cpu_family;
 	int cpu_model; /* includes extended model... */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int mcp_power_limit; /* mW units */
 	int core_power_limit;
 	int mch_power_limit;
@@ -269,7 +291,11 @@ struct ips_mcp_limits {
 
 /* Max temps are -10 degrees C to avoid PROCHOT# */
 
+<<<<<<< HEAD
 struct ips_mcp_limits ips_sv_limits = {
+=======
+static struct ips_mcp_limits ips_sv_limits = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mcp_power_limit = 35000,
 	.core_power_limit = 29000,
 	.mch_power_limit = 20000,
@@ -277,7 +303,11 @@ struct ips_mcp_limits ips_sv_limits = {
 	.mch_temp_limit = 90
 };
 
+<<<<<<< HEAD
 struct ips_mcp_limits ips_lv_limits = {
+=======
+static struct ips_mcp_limits ips_lv_limits = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mcp_power_limit = 25000,
 	.core_power_limit = 21000,
 	.mch_power_limit = 13000,
@@ -285,7 +315,11 @@ struct ips_mcp_limits ips_lv_limits = {
 	.mch_temp_limit = 90
 };
 
+<<<<<<< HEAD
 struct ips_mcp_limits ips_ulv_limits = {
+=======
+static struct ips_mcp_limits ips_ulv_limits = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.mcp_power_limit = 18000,
 	.core_power_limit = 14000,
 	.mch_power_limit = 11000,
@@ -294,11 +328,22 @@ struct ips_mcp_limits ips_ulv_limits = {
 };
 
 struct ips_driver {
+<<<<<<< HEAD
 	struct pci_dev *dev;
 	void *regmap;
 	struct task_struct *monitor;
 	struct task_struct *adjust;
 	struct dentry *debug_root;
+=======
+	struct device *dev;
+	void __iomem *regmap;
+	int irq;
+
+	struct task_struct *monitor;
+	struct task_struct *adjust;
+	struct dentry *debug_root;
+	struct timer_list timer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Average CPU core temps (all averages in .01 degrees C for precision) */
 	u16 ctv1_avg_temp;
@@ -593,7 +638,11 @@ static void ips_disable_gpu_turbo(struct ips_driver *ips)
 		return;
 
 	if (!ips->gpu_turbo_disable())
+<<<<<<< HEAD
 		dev_err(&ips->dev->dev, "failed to disable graphis turbo\n");
+=======
+		dev_err(ips->dev, "failed to disable graphics turbo\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		ips->__gpu_turbo_on = false;
 }
@@ -603,6 +652,11 @@ static void ips_disable_gpu_turbo(struct ips_driver *ips)
  * @ips: IPS driver struct
  *
  * Check whether the MCP is over its thermal or power budget.
+<<<<<<< HEAD
+=======
+ *
+ * Returns: %true if the temp or power has exceeded its maximum, else %false
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static bool mcp_exceeded(struct ips_driver *ips)
 {
@@ -632,6 +686,11 @@ static bool mcp_exceeded(struct ips_driver *ips)
  * @cpu: CPU number to check
  *
  * Check a given CPU's average temp or power is over its limit.
+<<<<<<< HEAD
+=======
+ *
+ * Returns: %true if the temp or power has exceeded its maximum, else %false
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static bool cpu_exceeded(struct ips_driver *ips, int cpu)
 {
@@ -648,8 +707,12 @@ static bool cpu_exceeded(struct ips_driver *ips, int cpu)
 	spin_unlock_irqrestore(&ips->turbo_status_lock, flags);
 
 	if (ret)
+<<<<<<< HEAD
 		dev_info(&ips->dev->dev,
 			 "CPU power or thermal limit exceeded\n");
+=======
+		dev_info(ips->dev, "CPU power or thermal limit exceeded\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -659,6 +722,11 @@ static bool cpu_exceeded(struct ips_driver *ips, int cpu)
  * @ips: IPS driver struct
  *
  * Check the MCH temp & power against their maximums.
+<<<<<<< HEAD
+=======
+ *
+ * Returns: %true if the temp or power has exceeded its maximum, else %false
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static bool mch_exceeded(struct ips_driver *ips)
 {
@@ -756,19 +824,33 @@ static void update_turbo_limits(struct ips_driver *ips)
  *   - down (at TDP limit)
  *     - adjust both CPU and GPU down if possible
  *
+<<<<<<< HEAD
 		cpu+ gpu+	cpu+gpu-	cpu-gpu+	cpu-gpu-
 cpu < gpu <	cpu+gpu+	cpu+		gpu+		nothing
 cpu < gpu >=	cpu+gpu-(mcp<)	cpu+gpu-(mcp<)	gpu-		gpu-
 cpu >= gpu <	cpu-gpu+(mcp<)	cpu-		cpu-gpu+(mcp<)	cpu-
 cpu >= gpu >=	cpu-gpu-	cpu-gpu-	cpu-gpu-	cpu-gpu-
  *
+=======
+ *              |cpu+ gpu+      cpu+gpu-        cpu-gpu+        cpu-gpu-
+ * cpu < gpu <  |cpu+gpu+       cpu+            gpu+            nothing
+ * cpu < gpu >= |cpu+gpu-(mcp<) cpu+gpu-(mcp<)  gpu-            gpu-
+ * cpu >= gpu < |cpu-gpu+(mcp<) cpu-            cpu-gpu+(mcp<)  cpu-
+ * cpu >= gpu >=|cpu-gpu-       cpu-gpu-        cpu-gpu-        cpu-gpu-
+ *
+ * Returns: %0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int ips_adjust(void *data)
 {
 	struct ips_driver *ips = data;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	dev_dbg(&ips->dev->dev, "starting ips-adjust thread\n");
+=======
+	dev_dbg(ips->dev, "starting ips-adjust thread\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Adjust CPU and GPU clamps every 5s if needed.  Doing it more
@@ -815,7 +897,11 @@ sleep:
 		schedule_timeout_interruptible(msecs_to_jiffies(IPS_ADJUST_PERIOD));
 	} while (!kthread_should_stop());
 
+<<<<<<< HEAD
 	dev_dbg(&ips->dev->dev, "ips-adjust thread stopped\n");
+=======
+	dev_dbg(ips->dev, "ips-adjust thread stopped\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -843,7 +929,11 @@ static u16 calc_avg_temp(struct ips_driver *ips, u16 *array)
 
 static u16 read_mgtv(struct ips_driver *ips)
 {
+<<<<<<< HEAD
 	u16 ret;
+=======
+	u16 __maybe_unused ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u64 slope, offset;
 	u64 val;
 
@@ -861,10 +951,14 @@ static u16 read_mgtv(struct ips_driver *ips)
 
 static u16 read_ptv(struct ips_driver *ips)
 {
+<<<<<<< HEAD
 	u16 val, slope, offset;
 
 	slope = (ips->pta_val & PTA_SLOPE_MASK) >> PTA_SLOPE_SHIFT;
 	offset = ips->pta_val & PTA_OFFSET_MASK;
+=======
+	u16 val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	val = thm_readw(THM_PTV) & PTV_MASK;
 
@@ -941,9 +1035,16 @@ static u32 calc_avg_power(struct ips_driver *ips, u32 *array)
 	return avg;
 }
 
+<<<<<<< HEAD
 static void monitor_timeout(unsigned long arg)
 {
 	wake_up_process((struct task_struct *)arg);
+=======
+static void monitor_timeout(struct timer_list *t)
+{
+	struct ips_driver *ips = from_timer(ips, t, timer);
+	wake_up_process(ips->monitor);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /**
@@ -951,22 +1052,36 @@ static void monitor_timeout(unsigned long arg)
  * @data: ips driver structure
  *
  * This is the main function for the IPS driver.  It monitors power and
+<<<<<<< HEAD
  * tempurature in the MCP and adjusts CPU and GPU power clams accordingly.
  *
  * We keep a 5s moving average of power consumption and tempurature.  Using
  * that data, along with CPU vs GPU preference, we adjust the power clamps
  * up or down.
+=======
+ * temperature in the MCP and adjusts CPU and GPU power clamps accordingly.
+ *
+ * We keep a 5s moving average of power consumption and temperature.  Using
+ * that data, along with CPU vs GPU preference, we adjust the power clamps
+ * up or down.
+ *
+ * Returns: %0 on success or -errno on error
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int ips_monitor(void *data)
 {
 	struct ips_driver *ips = data;
+<<<<<<< HEAD
 	struct timer_list timer;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long seqno_timestamp, expire, last_msecs, last_sample_period;
 	int i;
 	u32 *cpu_samples, *mchp_samples, old_cpu_power;
 	u16 *mcp_samples, *ctv1_samples, *ctv2_samples, *mch_samples;
 	u8 cur_seqno, last_seqno;
 
+<<<<<<< HEAD
 	mcp_samples = kzalloc(sizeof(u16) * IPS_SAMPLE_COUNT, GFP_KERNEL);
 	ctv1_samples = kzalloc(sizeof(u16) * IPS_SAMPLE_COUNT, GFP_KERNEL);
 	ctv2_samples = kzalloc(sizeof(u16) * IPS_SAMPLE_COUNT, GFP_KERNEL);
@@ -976,6 +1091,17 @@ static int ips_monitor(void *data)
 	if (!mcp_samples || !ctv1_samples || !ctv2_samples || !mch_samples ||
 			!cpu_samples || !mchp_samples) {
 		dev_err(&ips->dev->dev,
+=======
+	mcp_samples = kcalloc(IPS_SAMPLE_COUNT, sizeof(u16), GFP_KERNEL);
+	ctv1_samples = kcalloc(IPS_SAMPLE_COUNT, sizeof(u16), GFP_KERNEL);
+	ctv2_samples = kcalloc(IPS_SAMPLE_COUNT, sizeof(u16), GFP_KERNEL);
+	mch_samples = kcalloc(IPS_SAMPLE_COUNT, sizeof(u16), GFP_KERNEL);
+	cpu_samples = kcalloc(IPS_SAMPLE_COUNT, sizeof(u32), GFP_KERNEL);
+	mchp_samples = kcalloc(IPS_SAMPLE_COUNT, sizeof(u32), GFP_KERNEL);
+	if (!mcp_samples || !ctv1_samples || !ctv2_samples || !mch_samples ||
+			!cpu_samples || !mchp_samples) {
+		dev_err(ips->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			"failed to allocate sample array, ips disabled\n");
 		kfree(mcp_samples);
 		kfree(ctv1_samples);
@@ -1048,8 +1174,12 @@ static int ips_monitor(void *data)
 	schedule_timeout_interruptible(msecs_to_jiffies(IPS_SAMPLE_PERIOD));
 	last_sample_period = IPS_SAMPLE_PERIOD;
 
+<<<<<<< HEAD
 	setup_deferrable_timer_on_stack(&timer, monitor_timeout,
 					(unsigned long)current);
+=======
+	timer_setup(&ips->timer, monitor_timeout, TIMER_DEFERRABLE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	do {
 		u32 cpu_val, mch_val;
 		u16 val;
@@ -1096,7 +1226,12 @@ static int ips_monitor(void *data)
 			ITV_ME_SEQNO_SHIFT;
 		if (cur_seqno == last_seqno &&
 		    time_after(jiffies, seqno_timestamp + HZ)) {
+<<<<<<< HEAD
 			dev_warn(&ips->dev->dev, "ME failed to update for more than 1s, likely hung\n");
+=======
+			dev_warn(ips->dev,
+				 "ME failed to update for more than 1s, likely hung\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			seqno_timestamp = get_jiffies_64();
 			last_seqno = cur_seqno;
@@ -1106,7 +1241,11 @@ static int ips_monitor(void *data)
 		expire = jiffies + msecs_to_jiffies(IPS_SAMPLE_PERIOD);
 
 		__set_current_state(TASK_INTERRUPTIBLE);
+<<<<<<< HEAD
 		mod_timer(&timer, expire);
+=======
+		mod_timer(&ips->timer, expire);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		schedule();
 
 		/* Calculate actual sample period for power averaging */
@@ -1115,14 +1254,21 @@ static int ips_monitor(void *data)
 			last_sample_period = 1;
 	} while (!kthread_should_stop());
 
+<<<<<<< HEAD
 	del_timer_sync(&timer);
 	destroy_timer_on_stack(&timer);
 
 	dev_dbg(&ips->dev->dev, "ips-monitor thread stopped\n");
+=======
+	del_timer_sync(&ips->timer);
+
+	dev_dbg(ips->dev, "ips-monitor thread stopped\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #if 0
 #define THM_DUMPW(reg) \
 	{ \
@@ -1156,6 +1302,8 @@ static void dump_thermal_info(struct ips_driver *ips)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ips_irq_handler - handle temperature triggers and other IPS events
  * @irq: irq number
@@ -1164,6 +1312,11 @@ static void dump_thermal_info(struct ips_driver *ips)
  * Handle temperature limit trigger events, generally by lowering the clamps.
  * If we're at a critical limit, we clamp back to the lowest possible value
  * to prevent emergency shutdown.
+<<<<<<< HEAD
+=======
+ *
+ * Returns: IRQ_NONE or IRQ_HANDLED
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static irqreturn_t ips_irq_handler(int irq, void *arg)
 {
@@ -1174,8 +1327,13 @@ static irqreturn_t ips_irq_handler(int irq, void *arg)
 	if (!tses && !tes)
 		return IRQ_NONE;
 
+<<<<<<< HEAD
 	dev_info(&ips->dev->dev, "TSES: 0x%02x\n", tses);
 	dev_info(&ips->dev->dev, "TES: 0x%02x\n", tes);
+=======
+	dev_info(ips->dev, "TSES: 0x%02x\n", tses);
+	dev_info(ips->dev, "TES: 0x%02x\n", tes);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* STS update from EC? */
 	if (tes & 1) {
@@ -1213,8 +1371,13 @@ static irqreturn_t ips_irq_handler(int irq, void *arg)
 
 	/* Thermal trip */
 	if (tses) {
+<<<<<<< HEAD
 		dev_warn(&ips->dev->dev,
 			 "thermal trip occurred, tses: 0x%04x\n", tses);
+=======
+		dev_warn(ips->dev, "thermal trip occurred, tses: 0x%04x\n",
+			 tses);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		thm_writeb(THM_TSES, tses);
 	}
 
@@ -1228,6 +1391,7 @@ static void ips_debugfs_cleanup(struct ips_driver *ips) { return; }
 
 /* Expose current state and limits in debugfs if possible */
 
+<<<<<<< HEAD
 struct ips_debugfs_node {
 	struct ips_driver *ips;
 	char *name;
@@ -1235,6 +1399,9 @@ struct ips_debugfs_node {
 };
 
 static int show_cpu_temp(struct seq_file *m, void *data)
+=======
+static int cpu_temp_show(struct seq_file *m, void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ips_driver *ips = m->private;
 
@@ -1243,8 +1410,14 @@ static int show_cpu_temp(struct seq_file *m, void *data)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static int show_cpu_power(struct seq_file *m, void *data)
+=======
+DEFINE_SHOW_ATTRIBUTE(cpu_temp);
+
+static int cpu_power_show(struct seq_file *m, void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ips_driver *ips = m->private;
 
@@ -1252,8 +1425,14 @@ static int show_cpu_power(struct seq_file *m, void *data)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static int show_cpu_clamp(struct seq_file *m, void *data)
+=======
+DEFINE_SHOW_ATTRIBUTE(cpu_power);
+
+static int cpu_clamp_show(struct seq_file *m, void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u64 turbo_override;
 	int tdp, tdc;
@@ -1273,8 +1452,14 @@ static int show_cpu_clamp(struct seq_file *m, void *data)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static int show_mch_temp(struct seq_file *m, void *data)
+=======
+DEFINE_SHOW_ATTRIBUTE(cpu_clamp);
+
+static int mch_temp_show(struct seq_file *m, void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ips_driver *ips = m->private;
 
@@ -1283,8 +1468,14 @@ static int show_mch_temp(struct seq_file *m, void *data)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static int show_mch_power(struct seq_file *m, void *data)
+=======
+DEFINE_SHOW_ATTRIBUTE(mch_temp);
+
+static int mch_power_show(struct seq_file *m, void *data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ips_driver *ips = m->private;
 
@@ -1292,6 +1483,7 @@ static int show_mch_power(struct seq_file *m, void *data)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static struct ips_debugfs_node ips_debug_files[] = {
 	{ NULL, "cpu_temp", show_cpu_temp },
@@ -1321,10 +1513,18 @@ static void ips_debugfs_cleanup(struct ips_driver *ips)
 	if (ips->debug_root)
 		debugfs_remove_recursive(ips->debug_root);
 	return;
+=======
+DEFINE_SHOW_ATTRIBUTE(mch_power);
+
+static void ips_debugfs_cleanup(struct ips_driver *ips)
+{
+	debugfs_remove_recursive(ips->debug_root);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void ips_debugfs_init(struct ips_driver *ips)
 {
+<<<<<<< HEAD
 	int i;
 
 	ips->debug_root = debugfs_create_dir("ips", NULL);
@@ -1356,14 +1556,32 @@ static void ips_debugfs_init(struct ips_driver *ips)
 err_cleanup:
 	ips_debugfs_cleanup(ips);
 	return;
+=======
+	ips->debug_root = debugfs_create_dir("ips", NULL);
+
+	debugfs_create_file("cpu_temp", 0444, ips->debug_root, ips, &cpu_temp_fops);
+	debugfs_create_file("cpu_power", 0444, ips->debug_root, ips, &cpu_power_fops);
+	debugfs_create_file("cpu_clamp", 0444, ips->debug_root, ips, &cpu_clamp_fops);
+	debugfs_create_file("mch_temp", 0444, ips->debug_root, ips, &mch_temp_fops);
+	debugfs_create_file("mch_power", 0444, ips->debug_root, ips, &mch_power_fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif /* CONFIG_DEBUG_FS */
 
 /**
  * ips_detect_cpu - detect whether CPU supports IPS
+<<<<<<< HEAD
  *
  * Walk our list and see if we're on a supported CPU.  If we find one,
  * return the limits for it.
+=======
+ * @ips: IPS driver struct
+ *
+ * Walk our list and see if we're on a supported CPU.  If we find one,
+ * return the limits for it.
+ *
+ * Returns: the &ips_mcp_limits struct that matches the boot CPU or %NULL
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static struct ips_mcp_limits *ips_detect_cpu(struct ips_driver *ips)
 {
@@ -1372,8 +1590,13 @@ static struct ips_mcp_limits *ips_detect_cpu(struct ips_driver *ips)
 	u16 tdp;
 
 	if (!(boot_cpu_data.x86 == 6 && boot_cpu_data.x86_model == 37)) {
+<<<<<<< HEAD
 		dev_info(&ips->dev->dev, "Non-IPS CPU detected.\n");
 		goto out;
+=======
+		dev_info(ips->dev, "Non-IPS CPU detected.\n");
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rdmsrl(IA32_MISC_ENABLE, misc_en);
@@ -1394,8 +1617,13 @@ static struct ips_mcp_limits *ips_detect_cpu(struct ips_driver *ips)
 	else if (strstr(boot_cpu_data.x86_model_id, "CPU       U"))
 		limits = &ips_ulv_limits;
 	else {
+<<<<<<< HEAD
 		dev_info(&ips->dev->dev, "No CPUID match found.\n");
 		goto out;
+=======
+		dev_info(ips->dev, "No CPUID match found.\n");
+		return NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	rdmsrl(TURBO_POWER_CURRENT_LIMIT, turbo_power);
@@ -1403,12 +1631,20 @@ static struct ips_mcp_limits *ips_detect_cpu(struct ips_driver *ips)
 
 	/* Sanity check TDP against CPU */
 	if (limits->core_power_limit != (tdp / 8) * 1000) {
+<<<<<<< HEAD
 		dev_info(&ips->dev->dev, "CPU TDP doesn't match expected value (found %d, expected %d)\n",
+=======
+		dev_info(ips->dev,
+			 "CPU TDP doesn't match expected value (found %d, expected %d)\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 tdp / 8, limits->core_power_limit / 1000);
 		limits->core_power_limit = (tdp / 8) * 1000;
 	}
 
+<<<<<<< HEAD
 out:
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return limits;
 }
 
@@ -1420,6 +1656,11 @@ out:
  * monitor and control graphics turbo mode.  If we can find them, we can
  * enable graphics turbo, otherwise we must disable it to avoid exceeding
  * thermal and power limits in the MCP.
+<<<<<<< HEAD
+=======
+ *
+ * Returns: %true if the required symbols are found, else %false
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static bool ips_get_i915_syms(struct ips_driver *ips)
 {
@@ -1458,7 +1699,11 @@ ips_gpu_turbo_enabled(struct ips_driver *ips)
 {
 	if (!ips->gpu_busy && late_i915_load) {
 		if (ips_get_i915_syms(ips)) {
+<<<<<<< HEAD
 			dev_info(&ips->dev->dev,
+=======
+			dev_info(ips->dev,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 "i915 driver attached, reenabling gpu turbo\n");
 			ips->gpu_turbo_enabled = !(thm_readl(THM_HTS) & HTS_GTD_DIS);
 		}
@@ -1478,9 +1723,14 @@ ips_link_to_i915_driver(void)
 }
 EXPORT_SYMBOL_GPL(ips_link_to_i915_driver);
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(ips_id_table) = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL,
 		     PCI_DEVICE_ID_INTEL_THERMAL_SENSOR), },
+=======
+static const struct pci_device_id ips_id_table[] = {
+	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_THERMAL_SENSOR), },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, }
 };
 
@@ -1516,16 +1766,26 @@ static int ips_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	if (dmi_check_system(ips_blacklist))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	ips = kzalloc(sizeof(struct ips_driver), GFP_KERNEL);
 	if (!ips)
 		return -ENOMEM;
 
 	pci_set_drvdata(dev, ips);
 	ips->dev = dev;
+=======
+	ips = devm_kzalloc(&dev->dev, sizeof(*ips), GFP_KERNEL);
+	if (!ips)
+		return -ENOMEM;
+
+	spin_lock_init(&ips->turbo_status_lock);
+	ips->dev = &dev->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ips->limits = ips_detect_cpu(ips);
 	if (!ips->limits) {
 		dev_info(&dev->dev, "IPS not supported on this CPU\n");
+<<<<<<< HEAD
 		ret = -ENXIO;
 		goto error_free;
 	}
@@ -1558,20 +1818,47 @@ static int ips_probe(struct pci_dev *dev, const struct pci_device_id *id)
 		ret = -EBUSY;
 		goto error_release;
 	}
+=======
+		return -ENXIO;
+	}
+
+	ret = pcim_enable_device(dev);
+	if (ret) {
+		dev_err(&dev->dev, "can't enable PCI device, aborting\n");
+		return ret;
+	}
+
+	ret = pcim_iomap_regions(dev, 1 << 0, pci_name(dev));
+	if (ret) {
+		dev_err(&dev->dev, "failed to map thermal regs, aborting\n");
+		return ret;
+	}
+	ips->regmap = pcim_iomap_table(dev)[0];
+
+	pci_set_drvdata(dev, ips);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tse = thm_readb(THM_TSE);
 	if (tse != TSE_EN) {
 		dev_err(&dev->dev, "thermal device not enabled (0x%02x), aborting\n", tse);
+<<<<<<< HEAD
 		ret = -ENXIO;
 		goto error_unmap;
+=======
+		return -ENXIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	trc = thm_readw(THM_TRC);
 	trc_required_mask = TRC_CORE1_EN | TRC_CORE_PWR | TRC_MCH_EN;
 	if ((trc & trc_required_mask) != trc_required_mask) {
 		dev_err(&dev->dev, "thermal reporting for required devices not enabled, aborting\n");
+<<<<<<< HEAD
 		ret = -ENXIO;
 		goto error_unmap;
+=======
+		return -ENXIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (trc & TRC_CORE2_EN)
@@ -1601,20 +1888,37 @@ static int ips_probe(struct pci_dev *dev, const struct pci_device_id *id)
 	rdmsrl(PLATFORM_INFO, platform_info);
 	if (!(platform_info & PLATFORM_TDP)) {
 		dev_err(&dev->dev, "platform indicates TDP override unavailable, aborting\n");
+<<<<<<< HEAD
 		ret = -ENODEV;
 		goto error_unmap;
+=======
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * IRQ handler for ME interaction
 	 * Note: don't use MSI here as the PCH has bugs.
 	 */
+<<<<<<< HEAD
 	pci_disable_msi(dev);
 	ret = request_irq(dev->irq, ips_irq_handler, IRQF_SHARED, "ips",
 			  ips);
 	if (ret) {
 		dev_err(&dev->dev, "request irq failed, aborting\n");
 		goto error_unmap;
+=======
+	ret = pci_alloc_irq_vectors(dev, 1, 1, PCI_IRQ_LEGACY);
+	if (ret < 0)
+		return ret;
+
+	ips->irq = pci_irq_vector(dev, 0);
+
+	ret = request_irq(ips->irq, ips_irq_handler, IRQF_SHARED, "ips", ips);
+	if (ret) {
+		dev_err(&dev->dev, "request irq failed, aborting\n");
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Enable aux, hot & critical interrupts */
@@ -1671,6 +1975,7 @@ static int ips_probe(struct pci_dev *dev, const struct pci_device_id *id)
 error_thread_cleanup:
 	kthread_stop(ips->adjust);
 error_free_irq:
+<<<<<<< HEAD
 	free_irq(ips->dev->irq, ips);
 error_unmap:
 	iounmap(ips->regmap);
@@ -1678,6 +1983,10 @@ error_release:
 	pci_release_regions(dev);
 error_free:
 	kfree(ips);
+=======
+	free_irq(ips->irq, ips);
+	pci_free_irq_vectors(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1686,9 +1995,12 @@ static void ips_remove(struct pci_dev *dev)
 	struct ips_driver *ips = pci_get_drvdata(dev);
 	u64 turbo_override;
 
+<<<<<<< HEAD
 	if (!ips)
 		return;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ips_debugfs_cleanup(ips);
 
 	/* Release i915 driver */
@@ -1708,11 +2020,17 @@ static void ips_remove(struct pci_dev *dev)
 	wrmsrl(TURBO_POWER_CURRENT_LIMIT, turbo_override);
 	wrmsrl(TURBO_POWER_CURRENT_LIMIT, ips->orig_turbo_limit);
 
+<<<<<<< HEAD
 	free_irq(ips->dev->irq, ips);
+=======
+	free_irq(ips->irq, ips);
+	pci_free_irq_vectors(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ips->adjust)
 		kthread_stop(ips->adjust);
 	if (ips->monitor)
 		kthread_stop(ips->monitor);
+<<<<<<< HEAD
 	iounmap(ips->regmap);
 	pci_release_regions(dev);
 	kfree(ips);
@@ -1738,11 +2056,17 @@ static void ips_shutdown(struct pci_dev *dev)
 {
 }
 
+=======
+	dev_dbg(&dev->dev, "IPS driver removed\n");
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver ips_pci_driver = {
 	.name = "intel ips",
 	.id_table = ips_id_table,
 	.probe = ips_probe,
 	.remove = ips_remove,
+<<<<<<< HEAD
 	.suspend = ips_suspend,
 	.resume = ips_resume,
 	.shutdown = ips_shutdown,
@@ -1762,5 +2086,12 @@ static void ips_exit(void)
 module_exit(ips_exit);
 
 MODULE_LICENSE("GPL");
+=======
+};
+
+module_pci_driver(ips_pci_driver);
+
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Jesse Barnes <jbarnes@virtuousgeek.org>");
 MODULE_DESCRIPTION("Intelligent Power Sharing Driver");

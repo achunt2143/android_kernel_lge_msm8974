@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ip_vs_proto_tcp.c:	TCP load balancing support for IPVS
  *
  * Authors:     Wensong Zhang <wensong@linuxvirtualserver.org>
  *              Julian Anastasov <ja@ssi.bg>
  *
+<<<<<<< HEAD
  *              This program is free software; you can redistribute it and/or
  *              modify it under the terms of the GNU General Public License
  *              as published by the Free Software Foundation; either version
  *              2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Changes:     Hans Schillstrom <hans.schillstrom@ericsson.com>
  *
  *              Network name space (netns) aware.
@@ -28,10 +35,15 @@
 #include <net/ip6_checksum.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter_ipv4.h>
+<<<<<<< HEAD
+=======
+#include <linux/indirect_call_wrapper.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <net/ip_vs.h>
 
 static int
+<<<<<<< HEAD
 tcp_conn_schedule(int af, struct sk_buff *skb, struct ip_vs_proto_data *pd,
 		  int *verdict, struct ip_vs_conn **cpp)
 {
@@ -55,11 +67,62 @@ tcp_conn_schedule(int af, struct sk_buff *skb, struct ip_vs_proto_data *pd,
 		int ignored;
 
 		if (ip_vs_todrop(net_ipvs(net))) {
+=======
+tcp_csum_check(int af, struct sk_buff *skb, struct ip_vs_protocol *pp);
+
+static int
+tcp_conn_schedule(struct netns_ipvs *ipvs, int af, struct sk_buff *skb,
+		  struct ip_vs_proto_data *pd,
+		  int *verdict, struct ip_vs_conn **cpp,
+		  struct ip_vs_iphdr *iph)
+{
+	struct ip_vs_service *svc;
+	struct tcphdr _tcph, *th;
+	__be16 _ports[2], *ports = NULL;
+
+	/* In the event of icmp, we're only guaranteed to have the first 8
+	 * bytes of the transport header, so we only check the rest of the
+	 * TCP packet for non-ICMP packets
+	 */
+	if (likely(!ip_vs_iph_icmp(iph))) {
+		th = skb_header_pointer(skb, iph->len, sizeof(_tcph), &_tcph);
+		if (th) {
+			if (th->rst || !(sysctl_sloppy_tcp(ipvs) || th->syn))
+				return 1;
+			ports = &th->source;
+		}
+	} else {
+		ports = skb_header_pointer(
+			skb, iph->len, sizeof(_ports), &_ports);
+	}
+
+	if (!ports) {
+		*verdict = NF_DROP;
+		return 0;
+	}
+
+	/* No !th->ack check to allow scheduling on SYN+ACK for Active FTP */
+
+	if (likely(!ip_vs_iph_inverse(iph)))
+		svc = ip_vs_service_find(ipvs, af, skb->mark, iph->protocol,
+					 &iph->daddr, ports[1]);
+	else
+		svc = ip_vs_service_find(ipvs, af, skb->mark, iph->protocol,
+					 &iph->saddr, ports[0]);
+
+	if (svc) {
+		int ignored;
+
+		if (ip_vs_todrop(ipvs)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * It seems that we are very loaded.
 			 * We have to drop this packet :(
 			 */
+<<<<<<< HEAD
 			ip_vs_service_put(svc);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			*verdict = NF_DROP;
 			return 0;
 		}
@@ -68,6 +131,7 @@ tcp_conn_schedule(int af, struct sk_buff *skb, struct ip_vs_proto_data *pd,
 		 * Let the virtual server select a real server for the
 		 * incoming connection, and create a connection entry.
 		 */
+<<<<<<< HEAD
 		*cpp = ip_vs_schedule(svc, skb, pd, &ignored);
 		if (!*cpp && ignored <= 0) {
 			if (!ignored)
@@ -79,6 +143,16 @@ tcp_conn_schedule(int af, struct sk_buff *skb, struct ip_vs_proto_data *pd,
 			return 0;
 		}
 		ip_vs_service_put(svc);
+=======
+		*cpp = ip_vs_schedule(svc, skb, pd, &ignored, iph);
+		if (!*cpp && ignored <= 0) {
+			if (!ignored)
+				*verdict = ip_vs_leave(svc, skb, pd, iph);
+			else
+				*verdict = NF_DROP;
+			return 0;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* NF_ACCEPT */
 	return 1;
@@ -127,6 +201,7 @@ tcp_partial_csum_update(int af, struct tcphdr *tcph,
 }
 
 
+<<<<<<< HEAD
 static int
 tcp_snat_handler(struct sk_buff *skb,
 		 struct ip_vs_protocol *pp, struct ip_vs_conn *cp)
@@ -146,23 +221,54 @@ tcp_snat_handler(struct sk_buff *skb,
 
 	/* csum_check requires unshared skb */
 	if (!skb_make_writable(skb, tcphoff+sizeof(*tcph)))
+=======
+INDIRECT_CALLABLE_SCOPE int
+tcp_snat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
+		 struct ip_vs_conn *cp, struct ip_vs_iphdr *iph)
+{
+	struct tcphdr *tcph;
+	unsigned int tcphoff = iph->len;
+	bool payload_csum = false;
+	int oldlen;
+
+#ifdef CONFIG_IP_VS_IPV6
+	if (cp->af == AF_INET6 && iph->fragoffs)
+		return 1;
+#endif
+	oldlen = skb->len - tcphoff;
+
+	/* csum_check requires unshared skb */
+	if (skb_ensure_writable(skb, tcphoff + sizeof(*tcph)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (unlikely(cp->app != NULL)) {
 		int ret;
 
 		/* Some checks before mangling */
+<<<<<<< HEAD
 		if (pp->csum_check && !pp->csum_check(cp->af, skb, pp))
 			return 0;
 
 		/* Call application helper if needed */
 		if (!(ret = ip_vs_app_pkt_out(cp, skb)))
+=======
+		if (!tcp_csum_check(cp->af, skb, pp))
+			return 0;
+
+		/* Call application helper if needed */
+		if (!(ret = ip_vs_app_pkt_out(cp, skb, iph)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		/* ret=2: csum update is needed after payload mangling */
 		if (ret == 1)
 			oldlen = skb->len - tcphoff;
 		else
+<<<<<<< HEAD
 			payload_csum = 1;
+=======
+			payload_csum = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tcph = (void *)skb_network_header(skb) + tcphoff;
@@ -178,7 +284,11 @@ tcp_snat_handler(struct sk_buff *skb,
 		tcp_fast_csum_update(cp->af, tcph, &cp->daddr, &cp->vaddr,
 				     cp->dport, cp->vport);
 		if (skb->ip_summed == CHECKSUM_COMPLETE)
+<<<<<<< HEAD
 			skb->ip_summed = (cp->app && pp->csum_check) ?
+=======
+			skb->ip_summed = cp->app ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 CHECKSUM_UNNECESSARY : CHECKSUM_NONE;
 	} else {
 		/* full checksum calculation */
@@ -208,6 +318,7 @@ tcp_snat_handler(struct sk_buff *skb,
 
 
 static int
+<<<<<<< HEAD
 tcp_dnat_handler(struct sk_buff *skb,
 		 struct ip_vs_protocol *pp, struct ip_vs_conn *cp)
 {
@@ -226,26 +337,56 @@ tcp_dnat_handler(struct sk_buff *skb,
 
 	/* csum_check requires unshared skb */
 	if (!skb_make_writable(skb, tcphoff+sizeof(*tcph)))
+=======
+tcp_dnat_handler(struct sk_buff *skb, struct ip_vs_protocol *pp,
+		 struct ip_vs_conn *cp, struct ip_vs_iphdr *iph)
+{
+	struct tcphdr *tcph;
+	unsigned int tcphoff = iph->len;
+	bool payload_csum = false;
+	int oldlen;
+
+#ifdef CONFIG_IP_VS_IPV6
+	if (cp->af == AF_INET6 && iph->fragoffs)
+		return 1;
+#endif
+	oldlen = skb->len - tcphoff;
+
+	/* csum_check requires unshared skb */
+	if (skb_ensure_writable(skb, tcphoff + sizeof(*tcph)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 
 	if (unlikely(cp->app != NULL)) {
 		int ret;
 
 		/* Some checks before mangling */
+<<<<<<< HEAD
 		if (pp->csum_check && !pp->csum_check(cp->af, skb, pp))
+=======
+		if (!tcp_csum_check(cp->af, skb, pp))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 
 		/*
 		 *	Attempt ip_vs_app call.
 		 *	It will fix ip_vs_conn and iph ack_seq stuff
 		 */
+<<<<<<< HEAD
 		if (!(ret = ip_vs_app_pkt_in(cp, skb)))
+=======
+		if (!(ret = ip_vs_app_pkt_in(cp, skb, iph)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		/* ret=2: csum update is needed after payload mangling */
 		if (ret == 1)
 			oldlen = skb->len - tcphoff;
 		else
+<<<<<<< HEAD
 			payload_csum = 1;
+=======
+			payload_csum = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	tcph = (void *)skb_network_header(skb) + tcphoff;
@@ -263,7 +404,11 @@ tcp_dnat_handler(struct sk_buff *skb,
 		tcp_fast_csum_update(cp->af, tcph, &cp->vaddr, &cp->daddr,
 				     cp->vport, cp->dport);
 		if (skb->ip_summed == CHECKSUM_COMPLETE)
+<<<<<<< HEAD
 			skb->ip_summed = (cp->app && pp->csum_check) ?
+=======
+			skb->ip_summed = cp->app ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 CHECKSUM_UNNECESSARY : CHECKSUM_NONE;
 	} else {
 		/* full checksum calculation */
@@ -303,6 +448,10 @@ tcp_csum_check(int af, struct sk_buff *skb, struct ip_vs_protocol *pp)
 	switch (skb->ip_summed) {
 	case CHECKSUM_NONE:
 		skb->csum = skb_checksum(skb, tcphoff, skb->len - tcphoff, 0);
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CHECKSUM_COMPLETE:
 #ifdef CONFIG_IP_VS_IPV6
 		if (af == AF_INET6) {
@@ -379,6 +528,23 @@ static const char *const tcp_state_name_table[IP_VS_TCP_S_LAST+1] = {
 	[IP_VS_TCP_S_LAST]		=	"BUG!",
 };
 
+<<<<<<< HEAD
+=======
+static const bool tcp_state_active_table[IP_VS_TCP_S_LAST] = {
+	[IP_VS_TCP_S_NONE]		=	false,
+	[IP_VS_TCP_S_ESTABLISHED]	=	true,
+	[IP_VS_TCP_S_SYN_SENT]		=	true,
+	[IP_VS_TCP_S_SYN_RECV]		=	true,
+	[IP_VS_TCP_S_FIN_WAIT]		=	false,
+	[IP_VS_TCP_S_TIME_WAIT]		=	false,
+	[IP_VS_TCP_S_CLOSE]		=	false,
+	[IP_VS_TCP_S_CLOSE_WAIT]	=	false,
+	[IP_VS_TCP_S_LAST_ACK]		=	false,
+	[IP_VS_TCP_S_LISTEN]		=	false,
+	[IP_VS_TCP_S_SYNACK]		=	true,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define sNO IP_VS_TCP_S_NONE
 #define sES IP_VS_TCP_S_ESTABLISHED
 #define sSS IP_VS_TCP_S_SYN_SENT
@@ -402,12 +568,27 @@ static const char * tcp_state_name(int state)
 	return tcp_state_name_table[state] ? tcp_state_name_table[state] : "?";
 }
 
+<<<<<<< HEAD
 static struct tcp_states_t tcp_states [] = {
+=======
+static bool tcp_state_active(int state)
+{
+	if (state >= IP_VS_TCP_S_LAST)
+		return false;
+	return tcp_state_active_table[state];
+}
+
+static struct tcp_states_t tcp_states[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*	INPUT */
 /*        sNO, sES, sSS, sSR, sFW, sTW, sCL, sCW, sLA, sLI, sSA	*/
 /*syn*/ {{sSR, sES, sES, sSR, sSR, sSR, sSR, sSR, sSR, sSR, sSR }},
 /*fin*/ {{sCL, sCW, sSS, sTW, sTW, sTW, sCL, sCW, sLA, sLI, sTW }},
+<<<<<<< HEAD
 /*ack*/ {{sCL, sES, sSS, sES, sFW, sTW, sCL, sCW, sCL, sLI, sES }},
+=======
+/*ack*/ {{sES, sES, sSS, sES, sFW, sTW, sCL, sCW, sCL, sLI, sES }},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*rst*/ {{sCL, sCL, sCL, sSR, sCL, sCL, sCL, sCL, sLA, sLI, sSR }},
 
 /*	OUTPUT */
@@ -421,16 +602,28 @@ static struct tcp_states_t tcp_states [] = {
 /*        sNO, sES, sSS, sSR, sFW, sTW, sCL, sCW, sLA, sLI, sSA	*/
 /*syn*/ {{sSR, sES, sES, sSR, sSR, sSR, sSR, sSR, sSR, sSR, sSR }},
 /*fin*/ {{sCL, sFW, sSS, sTW, sFW, sTW, sCL, sCW, sLA, sLI, sTW }},
+<<<<<<< HEAD
 /*ack*/ {{sCL, sES, sSS, sES, sFW, sTW, sCL, sCW, sCL, sLI, sES }},
 /*rst*/ {{sCL, sCL, sCL, sSR, sCL, sCL, sCL, sCL, sLA, sLI, sCL }},
 };
 
 static struct tcp_states_t tcp_states_dos [] = {
+=======
+/*ack*/ {{sES, sES, sSS, sES, sFW, sTW, sCL, sCW, sCL, sLI, sES }},
+/*rst*/ {{sCL, sCL, sCL, sSR, sCL, sCL, sCL, sCL, sLA, sLI, sCL }},
+};
+
+static struct tcp_states_t tcp_states_dos[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*	INPUT */
 /*        sNO, sES, sSS, sSR, sFW, sTW, sCL, sCW, sLA, sLI, sSA	*/
 /*syn*/ {{sSR, sES, sES, sSR, sSR, sSR, sSR, sSR, sSR, sSR, sSA }},
 /*fin*/ {{sCL, sCW, sSS, sTW, sTW, sTW, sCL, sCW, sLA, sLI, sSA }},
+<<<<<<< HEAD
 /*ack*/ {{sCL, sES, sSS, sSR, sFW, sTW, sCL, sCW, sCL, sLI, sSA }},
+=======
+/*ack*/ {{sES, sES, sSS, sSR, sFW, sTW, sCL, sCW, sCL, sLI, sSA }},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*rst*/ {{sCL, sCL, sCL, sSR, sCL, sCL, sCL, sCL, sLA, sLI, sCL }},
 
 /*	OUTPUT */
@@ -444,7 +637,11 @@ static struct tcp_states_t tcp_states_dos [] = {
 /*        sNO, sES, sSS, sSR, sFW, sTW, sCL, sCW, sLA, sLI, sSA	*/
 /*syn*/ {{sSA, sES, sES, sSR, sSA, sSA, sSA, sSA, sSA, sSA, sSA }},
 /*fin*/ {{sCL, sFW, sSS, sTW, sFW, sTW, sCL, sCW, sLA, sLI, sTW }},
+<<<<<<< HEAD
 /*ack*/ {{sCL, sES, sSS, sES, sFW, sTW, sCL, sCW, sCL, sLI, sES }},
+=======
+/*ack*/ {{sES, sES, sSS, sES, sFW, sTW, sCL, sCW, sCL, sLI, sES }},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*rst*/ {{sCL, sCL, sCL, sSR, sCL, sCL, sCL, sCL, sLA, sLI, sCL }},
 };
 
@@ -505,8 +702,13 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
 	if (new_state != cp->state) {
 		struct ip_vs_dest *dest = cp->dest;
 
+<<<<<<< HEAD
 		IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] %s:%d->"
 			      "%s:%d state: %s->%s conn->refcnt:%d\n",
+=======
+		IP_VS_DBG_BUF(8, "%s %s [%c%c%c%c] c:%s:%d v:%s:%d "
+			      "d:%s:%d state: %s->%s conn->refcnt:%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			      pd->pp->name,
 			      ((state_off == TCP_DIR_OUTPUT) ?
 			       "output " : "input "),
@@ -514,6 +716,7 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
 			      th->fin ? 'F' : '.',
 			      th->ack ? 'A' : '.',
 			      th->rst ? 'R' : '.',
+<<<<<<< HEAD
 			      IP_VS_DBG_ADDR(cp->af, &cp->daddr),
 			      ntohs(cp->dport),
 			      IP_VS_DBG_ADDR(cp->af, &cp->caddr),
@@ -525,16 +728,40 @@ set_tcp_state(struct ip_vs_proto_data *pd, struct ip_vs_conn *cp,
 		if (dest) {
 			if (!(cp->flags & IP_VS_CONN_F_INACTIVE) &&
 			    (new_state != IP_VS_TCP_S_ESTABLISHED)) {
+=======
+			      IP_VS_DBG_ADDR(cp->af, &cp->caddr),
+			      ntohs(cp->cport),
+			      IP_VS_DBG_ADDR(cp->af, &cp->vaddr),
+			      ntohs(cp->vport),
+			      IP_VS_DBG_ADDR(cp->daf, &cp->daddr),
+			      ntohs(cp->dport),
+			      tcp_state_name(cp->state),
+			      tcp_state_name(new_state),
+			      refcount_read(&cp->refcnt));
+
+		if (dest) {
+			if (!(cp->flags & IP_VS_CONN_F_INACTIVE) &&
+			    !tcp_state_active(new_state)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				atomic_dec(&dest->activeconns);
 				atomic_inc(&dest->inactconns);
 				cp->flags |= IP_VS_CONN_F_INACTIVE;
 			} else if ((cp->flags & IP_VS_CONN_F_INACTIVE) &&
+<<<<<<< HEAD
 				   (new_state == IP_VS_TCP_S_ESTABLISHED)) {
+=======
+				   tcp_state_active(new_state)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				atomic_inc(&dest->activeconns);
 				atomic_dec(&dest->inactconns);
 				cp->flags &= ~IP_VS_CONN_F_INACTIVE;
 			}
 		}
+<<<<<<< HEAD
+=======
+		if (new_state == IP_VS_TCP_S_ESTABLISHED)
+			ip_vs_control_assure_ct(cp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (likely(pd))
@@ -563,9 +790,15 @@ tcp_state_transition(struct ip_vs_conn *cp, int direction,
 	if (th == NULL)
 		return;
 
+<<<<<<< HEAD
 	spin_lock(&cp->lock);
 	set_tcp_state(pd, cp, direction, th);
 	spin_unlock(&cp->lock);
+=======
+	spin_lock_bh(&cp->lock);
+	set_tcp_state(pd, cp, direction, th);
+	spin_unlock_bh(&cp->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline __u16 tcp_app_hashkey(__be16 port)
@@ -575,34 +808,53 @@ static inline __u16 tcp_app_hashkey(__be16 port)
 }
 
 
+<<<<<<< HEAD
 static int tcp_register_app(struct net *net, struct ip_vs_app *inc)
+=======
+static int tcp_register_app(struct netns_ipvs *ipvs, struct ip_vs_app *inc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ip_vs_app *i;
 	__u16 hash;
 	__be16 port = inc->port;
 	int ret = 0;
+<<<<<<< HEAD
 	struct netns_ipvs *ipvs = net_ipvs(net);
 	struct ip_vs_proto_data *pd = ip_vs_proto_data_get(net, IPPROTO_TCP);
 
 	hash = tcp_app_hashkey(port);
 
 	spin_lock_bh(&ipvs->tcp_app_lock);
+=======
+	struct ip_vs_proto_data *pd = ip_vs_proto_data_get(ipvs, IPPROTO_TCP);
+
+	hash = tcp_app_hashkey(port);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_for_each_entry(i, &ipvs->tcp_apps[hash], p_list) {
 		if (i->port == port) {
 			ret = -EEXIST;
 			goto out;
 		}
 	}
+<<<<<<< HEAD
 	list_add(&inc->p_list, &ipvs->tcp_apps[hash]);
 	atomic_inc(&pd->appcnt);
 
   out:
 	spin_unlock_bh(&ipvs->tcp_app_lock);
+=======
+	list_add_rcu(&inc->p_list, &ipvs->tcp_apps[hash]);
+	atomic_inc(&pd->appcnt);
+
+  out:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 
 static void
+<<<<<<< HEAD
 tcp_unregister_app(struct net *net, struct ip_vs_app *inc)
 {
 	struct netns_ipvs *ipvs = net_ipvs(net);
@@ -612,13 +864,25 @@ tcp_unregister_app(struct net *net, struct ip_vs_app *inc)
 	atomic_dec(&pd->appcnt);
 	list_del(&inc->p_list);
 	spin_unlock_bh(&ipvs->tcp_app_lock);
+=======
+tcp_unregister_app(struct netns_ipvs *ipvs, struct ip_vs_app *inc)
+{
+	struct ip_vs_proto_data *pd = ip_vs_proto_data_get(ipvs, IPPROTO_TCP);
+
+	atomic_dec(&pd->appcnt);
+	list_del_rcu(&inc->p_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 static int
 tcp_app_conn_bind(struct ip_vs_conn *cp)
 {
+<<<<<<< HEAD
 	struct netns_ipvs *ipvs = net_ipvs(ip_vs_conn_net(cp));
+=======
+	struct netns_ipvs *ipvs = cp->ipvs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int hash;
 	struct ip_vs_app *inc;
 	int result = 0;
@@ -630,12 +894,19 @@ tcp_app_conn_bind(struct ip_vs_conn *cp)
 	/* Lookup application incarnations and bind the right one */
 	hash = tcp_app_hashkey(cp->vport);
 
+<<<<<<< HEAD
 	spin_lock(&ipvs->tcp_app_lock);
 	list_for_each_entry(inc, &ipvs->tcp_apps[hash], p_list) {
 		if (inc->port == cp->vport) {
 			if (unlikely(!ip_vs_app_inc_get(inc)))
 				break;
 			spin_unlock(&ipvs->tcp_app_lock);
+=======
+	list_for_each_entry_rcu(inc, &ipvs->tcp_apps[hash], p_list) {
+		if (inc->port == cp->vport) {
+			if (unlikely(!ip_vs_app_inc_get(inc)))
+				break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			IP_VS_DBG_BUF(9, "%s(): Binding conn %s:%u->"
 				      "%s:%u to app %s on port %u\n",
@@ -649,12 +920,19 @@ tcp_app_conn_bind(struct ip_vs_conn *cp)
 			cp->app = inc;
 			if (inc->init_conn)
 				result = inc->init_conn(inc, cp);
+<<<<<<< HEAD
 			goto out;
 		}
 	}
 	spin_unlock(&ipvs->tcp_app_lock);
 
   out:
+=======
+			break;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return result;
 }
 
@@ -662,6 +940,7 @@ tcp_app_conn_bind(struct ip_vs_conn *cp)
 /*
  *	Set LISTEN timeout. (ip_vs_conn_put will setup timer)
  */
+<<<<<<< HEAD
 void ip_vs_tcp_conn_listen(struct net *net, struct ip_vs_conn *cp)
 {
 	struct ip_vs_proto_data *pd = ip_vs_proto_data_get(net, IPPROTO_TCP);
@@ -671,27 +950,52 @@ void ip_vs_tcp_conn_listen(struct net *net, struct ip_vs_conn *cp)
 	cp->timeout = (pd ? pd->timeout_table[IP_VS_TCP_S_LISTEN]
 			   : tcp_timeouts[IP_VS_TCP_S_LISTEN]);
 	spin_unlock(&cp->lock);
+=======
+void ip_vs_tcp_conn_listen(struct ip_vs_conn *cp)
+{
+	struct ip_vs_proto_data *pd = ip_vs_proto_data_get(cp->ipvs, IPPROTO_TCP);
+
+	spin_lock_bh(&cp->lock);
+	cp->state = IP_VS_TCP_S_LISTEN;
+	cp->timeout = (pd ? pd->timeout_table[IP_VS_TCP_S_LISTEN]
+			   : tcp_timeouts[IP_VS_TCP_S_LISTEN]);
+	spin_unlock_bh(&cp->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* ---------------------------------------------
  *   timeouts is netns related now.
  * ---------------------------------------------
  */
+<<<<<<< HEAD
 static int __ip_vs_tcp_init(struct net *net, struct ip_vs_proto_data *pd)
 {
 	struct netns_ipvs *ipvs = net_ipvs(net);
 
 	ip_vs_init_hash_table(ipvs->tcp_apps, TCP_APP_TAB_SIZE);
 	spin_lock_init(&ipvs->tcp_app_lock);
+=======
+static int __ip_vs_tcp_init(struct netns_ipvs *ipvs, struct ip_vs_proto_data *pd)
+{
+	ip_vs_init_hash_table(ipvs->tcp_apps, TCP_APP_TAB_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pd->timeout_table = ip_vs_create_timeout_table((int *)tcp_timeouts,
 							sizeof(tcp_timeouts));
 	if (!pd->timeout_table)
 		return -ENOMEM;
+<<<<<<< HEAD
 	pd->tcp_state_table =  tcp_states;
 	return 0;
 }
 
 static void __ip_vs_tcp_exit(struct net *net, struct ip_vs_proto_data *pd)
+=======
+	pd->tcp_state_table = tcp_states;
+	return 0;
+}
+
+static void __ip_vs_tcp_exit(struct netns_ipvs *ipvs, struct ip_vs_proto_data *pd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	kfree(pd->timeout_table);
 }
@@ -713,7 +1017,10 @@ struct ip_vs_protocol ip_vs_protocol_tcp = {
 	.conn_out_get =		ip_vs_conn_out_get_proto,
 	.snat_handler =		tcp_snat_handler,
 	.dnat_handler =		tcp_dnat_handler,
+<<<<<<< HEAD
 	.csum_check =		tcp_csum_check,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.state_name =		tcp_state_name,
 	.state_transition =	tcp_state_transition,
 	.app_conn_bind =	tcp_app_conn_bind,

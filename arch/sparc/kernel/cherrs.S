@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* These get patched into the trap table at boot time
 	 * once we know we have a cheetah processor.
 	 */
@@ -214,8 +218,12 @@ do_dcpe_tl1_nonfatal:	/* Ok we may use interrupt globals safely. */
 	subcc		%g1, %g2, %g1		! Next cacheline
 	bge,pt		%icc, 1b
 	 nop
+<<<<<<< HEAD
 	ba,pt		%xcc, dcpe_icpe_tl1_common
 	 nop
+=======
+	ba,a,pt		%xcc, dcpe_icpe_tl1_common
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 do_dcpe_tl1_fatal:
 	sethi		%hi(1f), %g7
@@ -224,8 +232,12 @@ do_dcpe_tl1_fatal:
 	mov		0x2, %o0
 	call		cheetah_plus_parity_error
 	 add		%sp, PTREGS_OFF, %o1
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
 	 nop
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size		do_dcpe_tl1,.-do_dcpe_tl1
 
 	.globl		do_icpe_tl1
@@ -259,8 +271,12 @@ do_icpe_tl1_nonfatal:	/* Ok we may use interrupt globals safely. */
 	subcc		%g1, %g2, %g1
 	bge,pt		%icc, 1b
 	 nop
+<<<<<<< HEAD
 	ba,pt		%xcc, dcpe_icpe_tl1_common
 	 nop
+=======
+	ba,a,pt		%xcc, dcpe_icpe_tl1_common
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 do_icpe_tl1_fatal:
 	sethi		%hi(1f), %g7
@@ -269,8 +285,12 @@ do_icpe_tl1_fatal:
 	mov		0x3, %o0
 	call		cheetah_plus_parity_error
 	 add		%sp, PTREGS_OFF, %o1
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
 	 nop
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size		do_icpe_tl1,.-do_icpe_tl1
 	
 	.type		dcpe_icpe_tl1_common,#function
@@ -456,7 +476,11 @@ __cheetah_log_error:
 	 cmp		%g2, 0x63
 	be		c_cee
 	 nop
+<<<<<<< HEAD
 	ba,pt		%xcc, c_deferred
+=======
+	ba,a,pt		%xcc, c_deferred
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.size		__cheetah_log_error,.-__cheetah_log_error
 
 	/* Cheetah FECC trap handling, we get here from tl{0,1}_fecc

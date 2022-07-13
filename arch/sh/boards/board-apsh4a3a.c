@@ -1,23 +1,39 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ALPHAPROJECT AP-SH4A-3A Support.
  *
  * Copyright (C) 2010 ALPHAPROJECT Co.,Ltd.
  * Copyright (C) 2008  Yoshihiro Shimoda
  * Copyright (C) 2009  Paul Mundt
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/platform_device.h>
 #include <linux/io.h>
 #include <linux/mtd/physmap.h>
+<<<<<<< HEAD
+=======
+#include <linux/regulator/fixed.h>
+#include <linux/regulator/machine.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/smsc911x.h>
 #include <linux/irq.h>
 #include <linux/clk.h>
 #include <asm/machvec.h>
+<<<<<<< HEAD
 #include <asm/sizes.h>
+=======
+#include <linux/sizes.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/clock.h>
 
 static struct mtd_partition nor_flash_partitions[] = {
@@ -66,6 +82,15 @@ static struct platform_device nor_flash_device = {
 	.resource	= nor_flash_resources,
 };
 
+<<<<<<< HEAD
+=======
+/* Dummy supplies, where voltage doesn't matter */
+static struct regulator_consumer_supply dummy_supplies[] = {
+	REGULATOR_SUPPLY("vddvario", "smsc911x"),
+	REGULATOR_SUPPLY("vdd33a", "smsc911x"),
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct resource smsc911x_resources[] = {
 	[0] = {
 		.name		= "smsc911x-memory",
@@ -105,6 +130,11 @@ static struct platform_device *apsh4a3a_devices[] __initdata = {
 
 static int __init apsh4a3a_devices_setup(void)
 {
+<<<<<<< HEAD
+=======
+	regulator_register_fixed(0, dummy_supplies, ARRAY_SIZE(dummy_supplies));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return platform_add_devices(apsh4a3a_devices,
 				    ARRAY_SIZE(apsh4a3a_devices));
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (c) 1999-2000 Cisco, Inc.
@@ -8,6 +12,7 @@
  *
  * This abstraction carries sctp events to the ULP (sockets).
  *
+<<<<<<< HEAD
  * This SCTP implementation is free software;
  * you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by
@@ -31,46 +36,74 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * Please send any bug reports or fixes you make to the
+ * email address(es):
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *    Jon Grimm             <jgrimm@us.ibm.com>
  *    La Monte H.P. Yarroll <piggy@acm.org>
  *    Sridhar Samudrala     <sri@us.ibm.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
 #include <linux/types.h>
 #include <linux/skbuff.h>
 #include <net/sock.h>
+<<<<<<< HEAD
+=======
+#include <net/busy_poll.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/sctp/structs.h>
 #include <net/sctp/sctp.h>
 #include <net/sctp/sm.h>
 
 /* Forward declarations for internal helpers.  */
+<<<<<<< HEAD
 static struct sctp_ulpevent * sctp_ulpq_reasm(struct sctp_ulpq *ulpq,
 					      struct sctp_ulpevent *);
 static struct sctp_ulpevent * sctp_ulpq_order(struct sctp_ulpq *,
+=======
+static struct sctp_ulpevent *sctp_ulpq_reasm(struct sctp_ulpq *ulpq,
+					      struct sctp_ulpevent *);
+static struct sctp_ulpevent *sctp_ulpq_order(struct sctp_ulpq *,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					      struct sctp_ulpevent *);
 static void sctp_ulpq_reasm_drain(struct sctp_ulpq *ulpq);
 
 /* 1st Level Abstractions */
 
 /* Initialize a ULP queue from a block of memory.  */
+<<<<<<< HEAD
 struct sctp_ulpq *sctp_ulpq_init(struct sctp_ulpq *ulpq,
 				 struct sctp_association *asoc)
+=======
+void sctp_ulpq_init(struct sctp_ulpq *ulpq, struct sctp_association *asoc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	memset(ulpq, 0, sizeof(struct sctp_ulpq));
 
 	ulpq->asoc = asoc;
 	skb_queue_head_init(&ulpq->reasm);
+<<<<<<< HEAD
 	skb_queue_head_init(&ulpq->lobby);
 	ulpq->pd_mode  = 0;
 	ulpq->malloced = 0;
 
 	return ulpq;
+=======
+	skb_queue_head_init(&ulpq->reasm_uo);
+	skb_queue_head_init(&ulpq->lobby);
+	ulpq->pd_mode  = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -90,14 +123,24 @@ void sctp_ulpq_flush(struct sctp_ulpq *ulpq)
 		sctp_ulpevent_free(event);
 	}
 
+<<<<<<< HEAD
+=======
+	while ((skb = __skb_dequeue(&ulpq->reasm_uo)) != NULL) {
+		event = sctp_skb2event(skb);
+		sctp_ulpevent_free(event);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Dispose of a ulpqueue.  */
 void sctp_ulpq_free(struct sctp_ulpq *ulpq)
 {
 	sctp_ulpq_flush(ulpq);
+<<<<<<< HEAD
 	if (ulpq->malloced)
 		kfree(ulpq);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Process an incoming DATA chunk.  */
@@ -106,31 +149,59 @@ int sctp_ulpq_tail_data(struct sctp_ulpq *ulpq, struct sctp_chunk *chunk,
 {
 	struct sk_buff_head temp;
 	struct sctp_ulpevent *event;
+<<<<<<< HEAD
+=======
+	int event_eor = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Create an event from the incoming chunk. */
 	event = sctp_ulpevent_make_rcvmsg(chunk->asoc, chunk, gfp);
 	if (!event)
 		return -ENOMEM;
 
+<<<<<<< HEAD
+=======
+	event->ssn = ntohs(chunk->subh.data_hdr->ssn);
+	event->ppid = chunk->subh.data_hdr->ppid;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Do reassembly if needed.  */
 	event = sctp_ulpq_reasm(ulpq, event);
 
 	/* Do ordering if needed.  */
+<<<<<<< HEAD
 	if ((event) && (event->msg_flags & MSG_EOR)){
+=======
+	if (event) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Create a temporary list to collect chunks on.  */
 		skb_queue_head_init(&temp);
 		__skb_queue_tail(&temp, sctp_event2skb(event));
 
+<<<<<<< HEAD
 		event = sctp_ulpq_order(ulpq, event);
+=======
+		if (event->msg_flags & MSG_EOR)
+			event = sctp_ulpq_order(ulpq, event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Send event to the ULP.  'event' is the sctp_ulpevent for
 	 * very first SKB on the 'temp' list.
 	 */
+<<<<<<< HEAD
 	if (event)
 		sctp_ulpq_tail_event(ulpq, event);
 
 	return 0;
+=======
+	if (event) {
+		event_eor = (event->msg_flags & MSG_EOR) ? 1 : 0;
+		sctp_ulpq_tail_event(ulpq, &temp);
+	}
+
+	return event_eor;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Add a new event for propagation to the ULP.  */
@@ -146,10 +217,15 @@ int sctp_clear_pd(struct sock *sk, struct sctp_association *asoc)
 		 * we can go ahead and clear out the lobby in one shot
 		 */
 		if (!skb_queue_empty(&sp->pd_lobby)) {
+<<<<<<< HEAD
 			struct list_head *list;
 			sctp_skb_list_tail(&sp->pd_lobby, &sk->sk_receive_queue);
 			list = (struct list_head *)&sctp_sk(sk)->pd_lobby;
 			INIT_LIST_HEAD(list);
+=======
+			skb_queue_splice_tail_init(&sp->pd_lobby,
+						   &sk->sk_receive_queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 1;
 		}
 	} else {
@@ -193,6 +269,7 @@ static int sctp_ulpq_clear_pd(struct sctp_ulpq *ulpq)
 	return sctp_clear_pd(ulpq->asoc->base.sk, ulpq->asoc);
 }
 
+<<<<<<< HEAD
 /* If the SKB of 'event' is on a list, it is the first such member
  * of that list.
  */
@@ -204,15 +281,42 @@ int sctp_ulpq_tail_event(struct sctp_ulpq *ulpq, struct sctp_ulpevent *event)
 	int clear_pd = 0;
 
 	skb_list = (struct sk_buff_head *) skb->prev;
+=======
+int sctp_ulpq_tail_event(struct sctp_ulpq *ulpq, struct sk_buff_head *skb_list)
+{
+	struct sock *sk = ulpq->asoc->base.sk;
+	struct sctp_sock *sp = sctp_sk(sk);
+	struct sctp_ulpevent *event;
+	struct sk_buff_head *queue;
+	struct sk_buff *skb;
+	int clear_pd = 0;
+
+	skb = __skb_peek(skb_list);
+	event = sctp_skb2event(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* If the socket is just going to throw this away, do not
 	 * even try to deliver it.
 	 */
+<<<<<<< HEAD
 	if (sock_flag(sk, SOCK_DEAD) || (sk->sk_shutdown & RCV_SHUTDOWN))
 		goto out_free;
 
 	/* Check if the user wishes to receive this event.  */
 	if (!sctp_ulpevent_is_enabled(event, &sctp_sk(sk)->subscribe))
+=======
+	if (sk->sk_shutdown & RCV_SHUTDOWN &&
+	    (sk->sk_shutdown & SEND_SHUTDOWN ||
+	     !sctp_ulpevent_is_notification(event)))
+		goto out_free;
+
+	if (!sctp_ulpevent_is_notification(event)) {
+		sk_mark_napi_id(sk, skb);
+		sk_incoming_cpu_update(sk);
+	}
+	/* Check if the user wishes to receive this event.  */
+	if (!sctp_ulpevent_is_enabled(event, ulpq->asoc->subscribe))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_free;
 
 	/* If we are in partial delivery mode, post to the lobby until
@@ -220,7 +324,11 @@ int sctp_ulpq_tail_event(struct sctp_ulpq *ulpq, struct sctp_ulpevent *event)
 	 * the association the cause of the partial delivery.
 	 */
 
+<<<<<<< HEAD
 	if (atomic_read(&sctp_sk(sk)->pd_mode) == 0) {
+=======
+	if (atomic_read(&sp->pd_mode) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		queue = &sk->sk_receive_queue;
 	} else {
 		if (ulpq->pd_mode) {
@@ -232,7 +340,11 @@ int sctp_ulpq_tail_event(struct sctp_ulpq *ulpq, struct sctp_ulpevent *event)
 			if ((event->msg_flags & MSG_NOTIFICATION) ||
 			    (SCTP_DATA_NOT_FRAG ==
 				    (event->msg_flags & SCTP_DATA_FRAG_MASK)))
+<<<<<<< HEAD
 				queue = &sctp_sk(sk)->pd_lobby;
+=======
+				queue = &sp->pd_lobby;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			else {
 				clear_pd = event->msg_flags & MSG_EOR;
 				queue = &sk->sk_receive_queue;
@@ -243,6 +355,7 @@ int sctp_ulpq_tail_event(struct sctp_ulpq *ulpq, struct sctp_ulpevent *event)
 			 * can queue this to the receive queue instead
 			 * of the lobby.
 			 */
+<<<<<<< HEAD
 			if (sctp_sk(sk)->frag_interleave)
 				queue = &sk->sk_receive_queue;
 			else
@@ -257,6 +370,16 @@ int sctp_ulpq_tail_event(struct sctp_ulpq *ulpq, struct sctp_ulpevent *event)
 		sctp_skb_list_tail(skb_list, queue);
 	else
 		__skb_queue_tail(queue, skb);
+=======
+			if (sp->frag_interleave)
+				queue = &sk->sk_receive_queue;
+			else
+				queue = &sp->pd_lobby;
+		}
+	}
+
+	skb_queue_splice_tail_init(skb_list, queue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Did we just complete partial delivery and need to get
 	 * rolling again?  Move pending data to the receive
@@ -265,6 +388,7 @@ int sctp_ulpq_tail_event(struct sctp_ulpq *ulpq, struct sctp_ulpevent *event)
 	if (clear_pd)
 		sctp_ulpq_clear_pd(ulpq);
 
+<<<<<<< HEAD
 	if (queue == &sk->sk_receive_queue)
 		sk->sk_data_ready(sk, 0);
 	return 1;
@@ -274,6 +398,17 @@ out_free:
 		sctp_queue_purge_ulpevents(skb_list);
 	else
 		sctp_ulpevent_free(event);
+=======
+	if (queue == &sk->sk_receive_queue && !sp->data_ready_signalled) {
+		if (!sock_owned_by_user(sk))
+			sp->data_ready_signalled = 1;
+		sk->sk_data_ready(sk);
+	}
+	return 1;
+
+out_free:
+	sctp_queue_purge_ulpevents(skb_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -326,7 +461,14 @@ static void sctp_ulpq_store_reasm(struct sctp_ulpq *ulpq,
  * payload was fragmented on the way and ip had to reassemble them.
  * We add the rest of skb's to the first skb's fraglist.
  */
+<<<<<<< HEAD
 static struct sctp_ulpevent *sctp_make_reassembled_event(struct sk_buff_head *queue, struct sk_buff *f_frag, struct sk_buff *l_frag)
+=======
+struct sctp_ulpevent *sctp_make_reassembled_event(struct net *net,
+						  struct sk_buff_head *queue,
+						  struct sk_buff *f_frag,
+						  struct sk_buff *l_frag)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sk_buff *pos;
 	struct sk_buff *new = NULL;
@@ -341,7 +483,12 @@ static struct sctp_ulpevent *sctp_make_reassembled_event(struct sk_buff_head *qu
 		pos = f_frag->next;
 
 	/* Get the last skb in the f_frag's frag_list if present. */
+<<<<<<< HEAD
 	for (last = list; list; last = list, list = list->next);
+=======
+	for (last = list; list; last = list, list = list->next)
+		;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Add the list of remaining fragments to the first fragments
 	 * frag_list.
@@ -394,7 +541,11 @@ static struct sctp_ulpevent *sctp_make_reassembled_event(struct sk_buff_head *qu
 	}
 
 	event = sctp_skb2event(f_frag);
+<<<<<<< HEAD
 	SCTP_INC_STATS(SCTP_MIB_REASMUSRMSGS);
+=======
+	SCTP_INC_STATS(net, SCTP_MIB_REASMUSRMSGS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return event;
 }
@@ -445,7 +596,11 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_reassembled(struct sctp_ulpq *ul
 			 * element in the queue, then count it towards
 			 * possible PD.
 			 */
+<<<<<<< HEAD
 			if (pos == ulpq->reasm.next) {
+=======
+			if (skb_queue_is_first(&ulpq->reasm, pos)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			    pd_first = pos;
 			    pd_last = pos;
 			    pd_len = pos->len;
@@ -493,9 +648,15 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_reassembled(struct sctp_ulpq *ul
 		cevent = sctp_skb2event(pd_first);
 		pd_point = sctp_sk(asoc->base.sk)->pd_point;
 		if (pd_point && pd_point <= pd_len) {
+<<<<<<< HEAD
 			retval = sctp_make_reassembled_event(&ulpq->reasm,
 							     pd_first,
 							     pd_last);
+=======
+			retval = sctp_make_reassembled_event(asoc->base.net,
+							     &ulpq->reasm,
+							     pd_first, pd_last);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (retval)
 				sctp_ulpq_set_pd(ulpq);
 		}
@@ -503,7 +664,12 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_reassembled(struct sctp_ulpq *ul
 done:
 	return retval;
 found:
+<<<<<<< HEAD
 	retval = sctp_make_reassembled_event(&ulpq->reasm, first_frag, pos);
+=======
+	retval = sctp_make_reassembled_event(ulpq->asoc->base.net,
+					     &ulpq->reasm, first_frag, pos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		retval->msg_flags |= MSG_EOR;
 	goto done;
@@ -536,14 +702,28 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_partial(struct sctp_ulpq *ulpq)
 		ctsn = cevent->tsn;
 
 		switch (cevent->msg_flags & SCTP_DATA_FRAG_MASK) {
+<<<<<<< HEAD
+=======
+		case SCTP_DATA_FIRST_FRAG:
+			if (!first_frag)
+				return NULL;
+			goto done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case SCTP_DATA_MIDDLE_FRAG:
 			if (!first_frag) {
 				first_frag = pos;
 				next_tsn = ctsn + 1;
 				last_frag = pos;
+<<<<<<< HEAD
 			} else if (next_tsn == ctsn)
 				next_tsn++;
 			else
+=======
+			} else if (next_tsn == ctsn) {
+				next_tsn++;
+				last_frag = pos;
+			} else
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto done;
 			break;
 		case SCTP_DATA_LAST_FRAG:
@@ -563,7 +743,12 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_partial(struct sctp_ulpq *ulpq)
 	 * further.
 	 */
 done:
+<<<<<<< HEAD
 	retval = sctp_make_reassembled_event(&ulpq->reasm, first_frag, last_frag);
+=======
+	retval = sctp_make_reassembled_event(ulpq->asoc->base.net, &ulpq->reasm,
+					     first_frag, last_frag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval && is_last)
 		retval->msg_flags |= MSG_EOR;
 
@@ -646,6 +831,17 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_first(struct sctp_ulpq *ulpq)
 			} else
 				goto done;
 			break;
+<<<<<<< HEAD
+=======
+
+		case SCTP_DATA_LAST_FRAG:
+			if (!first_frag)
+				return NULL;
+			else
+				goto done;
+			break;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		default:
 			return NULL;
 		}
@@ -655,7 +851,12 @@ static struct sctp_ulpevent *sctp_ulpq_retrieve_first(struct sctp_ulpq *ulpq)
 	 * further.
 	 */
 done:
+<<<<<<< HEAD
 	retval = sctp_make_reassembled_event(&ulpq->reasm, first_frag, last_frag);
+=======
+	retval = sctp_make_reassembled_event(ulpq->asoc->base.net, &ulpq->reasm,
+					     first_frag, last_frag);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return retval;
 }
 
@@ -707,12 +908,16 @@ void sctp_ulpq_reasm_flushtsn(struct sctp_ulpq *ulpq, __u32 fwd_tsn)
 static void sctp_ulpq_reasm_drain(struct sctp_ulpq *ulpq)
 {
 	struct sctp_ulpevent *event = NULL;
+<<<<<<< HEAD
 	struct sk_buff_head temp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (skb_queue_empty(&ulpq->reasm))
 		return;
 
 	while ((event = sctp_ulpq_retrieve_reassembled(ulpq)) != NULL) {
+<<<<<<< HEAD
 		/* Do ordering if needed.  */
 		if ((event) && (event->msg_flags & MSG_EOR)){
 			skb_queue_head_init(&temp);
@@ -720,18 +925,36 @@ static void sctp_ulpq_reasm_drain(struct sctp_ulpq *ulpq)
 
 			event = sctp_ulpq_order(ulpq, event);
 		}
+=======
+		struct sk_buff_head temp;
+
+		skb_queue_head_init(&temp);
+		__skb_queue_tail(&temp, sctp_event2skb(event));
+
+		/* Do ordering if needed.  */
+		if (event->msg_flags & MSG_EOR)
+			event = sctp_ulpq_order(ulpq, event);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Send event to the ULP.  'event' is the
 		 * sctp_ulpevent for  very first SKB on the  temp' list.
 		 */
 		if (event)
+<<<<<<< HEAD
 			sctp_ulpq_tail_event(ulpq, event);
+=======
+			sctp_ulpq_tail_event(ulpq, &temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 
 /* Helper function to gather skbs that have possibly become
+<<<<<<< HEAD
  * ordered by an an incoming chunk.
+=======
+ * ordered by an incoming chunk.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void sctp_ulpq_retrieve_ordered(struct sctp_ulpq *ulpq,
 					      struct sctp_ulpevent *event)
@@ -739,11 +962,19 @@ static void sctp_ulpq_retrieve_ordered(struct sctp_ulpq *ulpq,
 	struct sk_buff_head *event_list;
 	struct sk_buff *pos, *tmp;
 	struct sctp_ulpevent *cevent;
+<<<<<<< HEAD
 	struct sctp_stream *in;
 	__u16 sid, csid, cssn;
 
 	sid = event->stream;
 	in  = &ulpq->asoc->ssnmap->in;
+=======
+	struct sctp_stream *stream;
+	__u16 sid, csid, cssn;
+
+	sid = event->stream;
+	stream  = &ulpq->asoc->stream;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	event_list = (struct sk_buff_head *) sctp_event2skb(event)->prev;
 
@@ -761,11 +992,19 @@ static void sctp_ulpq_retrieve_ordered(struct sctp_ulpq *ulpq,
 		if (csid < sid)
 			continue;
 
+<<<<<<< HEAD
 		if (cssn != sctp_ssn_peek(in, sid))
 			break;
 
 		/* Found it, so mark in the ssnmap. */
 		sctp_ssn_next(in, sid);
+=======
+		if (cssn != sctp_ssn_peek(stream, in, sid))
+			break;
+
+		/* Found it, so mark in the stream. */
+		sctp_ssn_next(stream, in, sid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		__skb_unlink(pos, &ulpq->lobby);
 
@@ -828,19 +1067,33 @@ static struct sctp_ulpevent *sctp_ulpq_order(struct sctp_ulpq *ulpq,
 					     struct sctp_ulpevent *event)
 {
 	__u16 sid, ssn;
+<<<<<<< HEAD
 	struct sctp_stream *in;
 
 	/* Check if this message needs ordering.  */
 	if (SCTP_DATA_UNORDERED & event->msg_flags)
+=======
+	struct sctp_stream *stream;
+
+	/* Check if this message needs ordering.  */
+	if (event->msg_flags & SCTP_DATA_UNORDERED)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return event;
 
 	/* Note: The stream ID must be verified before this routine.  */
 	sid = event->stream;
 	ssn = event->ssn;
+<<<<<<< HEAD
 	in  = &ulpq->asoc->ssnmap->in;
 
 	/* Is this the expected SSN for this stream ID?  */
 	if (ssn != sctp_ssn_peek(in, sid)) {
+=======
+	stream  = &ulpq->asoc->stream;
+
+	/* Is this the expected SSN for this stream ID?  */
+	if (ssn != sctp_ssn_peek(stream, in, sid)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* We've received something out of order, so find where it
 		 * needs to be placed.  We order by stream and then by SSN.
 		 */
@@ -849,7 +1102,11 @@ static struct sctp_ulpevent *sctp_ulpq_order(struct sctp_ulpq *ulpq,
 	}
 
 	/* Mark that the next chunk has been found.  */
+<<<<<<< HEAD
 	sctp_ssn_next(in, sid);
+=======
+	sctp_ssn_next(stream, in, sid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Go find any other chunks that were waiting for
 	 * ordering.
@@ -867,12 +1124,20 @@ static void sctp_ulpq_reap_ordered(struct sctp_ulpq *ulpq, __u16 sid)
 	struct sk_buff *pos, *tmp;
 	struct sctp_ulpevent *cevent;
 	struct sctp_ulpevent *event;
+<<<<<<< HEAD
 	struct sctp_stream *in;
+=======
+	struct sctp_stream *stream;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sk_buff_head temp;
 	struct sk_buff_head *lobby = &ulpq->lobby;
 	__u16 csid, cssn;
 
+<<<<<<< HEAD
 	in  = &ulpq->asoc->ssnmap->in;
+=======
+	stream = &ulpq->asoc->stream;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We are holding the chunks by stream, by SSN.  */
 	skb_queue_head_init(&temp);
@@ -891,7 +1156,11 @@ static void sctp_ulpq_reap_ordered(struct sctp_ulpq *ulpq, __u16 sid)
 			continue;
 
 		/* see if this ssn has been marked by skipping */
+<<<<<<< HEAD
 		if (!SSN_lt(cssn, sctp_ssn_peek(in, csid)))
+=======
+		if (!SSN_lt(cssn, sctp_ssn_peek(stream, in, csid)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		__skb_unlink(pos, lobby);
@@ -911,8 +1180,13 @@ static void sctp_ulpq_reap_ordered(struct sctp_ulpq *ulpq, __u16 sid)
 		csid = cevent->stream;
 		cssn = cevent->ssn;
 
+<<<<<<< HEAD
 		if (csid == sid && cssn == sctp_ssn_peek(in, csid)) {
 			sctp_ssn_next(in, csid);
+=======
+		if (csid == sid && cssn == sctp_ssn_peek(stream, in, csid)) {
+			sctp_ssn_next(stream, in, csid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__skb_unlink(pos, lobby);
 			__skb_queue_tail(&temp, pos);
 			event = sctp_skb2event(pos);
@@ -925,7 +1199,11 @@ static void sctp_ulpq_reap_ordered(struct sctp_ulpq *ulpq, __u16 sid)
 	if (event) {
 		/* see if we have more ordered that we can deliver */
 		sctp_ulpq_retrieve_ordered(ulpq, event);
+<<<<<<< HEAD
 		sctp_ulpq_tail_event(ulpq, event);
+=======
+		sctp_ulpq_tail_event(ulpq, &temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -934,6 +1212,7 @@ static void sctp_ulpq_reap_ordered(struct sctp_ulpq *ulpq, __u16 sid)
  */
 void sctp_ulpq_skip(struct sctp_ulpq *ulpq, __u16 sid, __u16 ssn)
 {
+<<<<<<< HEAD
 	struct sctp_stream *in;
 
 	/* Note: The stream ID must be verified before this routine.  */
@@ -945,6 +1224,19 @@ void sctp_ulpq_skip(struct sctp_ulpq *ulpq, __u16 sid, __u16 ssn)
 
 	/* Mark that we are no longer expecting this SSN or lower. */
 	sctp_ssn_skip(in, sid, ssn);
+=======
+	struct sctp_stream *stream;
+
+	/* Note: The stream ID must be verified before this routine.  */
+	stream  = &ulpq->asoc->stream;
+
+	/* Is this an old SSN?  If so ignore. */
+	if (SSN_lt(ssn, sctp_ssn_peek(stream, in, sid)))
+		return;
+
+	/* Mark that we are no longer expecting this SSN or lower. */
+	sctp_ssn_skip(stream, in, sid, ssn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Go find any other chunks that were waiting for
 	 * ordering and deliver them if needed.
@@ -952,17 +1244,27 @@ void sctp_ulpq_skip(struct sctp_ulpq *ulpq, __u16 sid, __u16 ssn)
 	sctp_ulpq_reap_ordered(ulpq, sid);
 }
 
+<<<<<<< HEAD
 static __u16 sctp_ulpq_renege_list(struct sctp_ulpq *ulpq,
 		struct sk_buff_head *list, __u16 needed)
 {
 	__u16 freed = 0;
 	__u32 tsn;
 	struct sk_buff *skb;
+=======
+__u16 sctp_ulpq_renege_list(struct sctp_ulpq *ulpq, struct sk_buff_head *list,
+			    __u16 needed)
+{
+	__u16 freed = 0;
+	__u32 tsn, last_tsn;
+	struct sk_buff *skb, *flist, *last;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sctp_ulpevent *event;
 	struct sctp_tsnmap *tsnmap;
 
 	tsnmap = &ulpq->asoc->peer.tsn_map;
 
+<<<<<<< HEAD
 	while ((skb = __skb_dequeue_tail(list)) != NULL) {
 		freed += skb_headlen(skb);
 		event = sctp_skb2event(skb);
@@ -970,6 +1272,38 @@ static __u16 sctp_ulpq_renege_list(struct sctp_ulpq *ulpq,
 
 		sctp_ulpevent_free(event);
 		sctp_tsnmap_renege(tsnmap, tsn);
+=======
+	while ((skb = skb_peek_tail(list)) != NULL) {
+		event = sctp_skb2event(skb);
+		tsn = event->tsn;
+
+		/* Don't renege below the Cumulative TSN ACK Point. */
+		if (TSN_lte(tsn, sctp_tsnmap_get_ctsn(tsnmap)))
+			break;
+
+		/* Events in ordering queue may have multiple fragments
+		 * corresponding to additional TSNs.  Sum the total
+		 * freed space; find the last TSN.
+		 */
+		freed += skb_headlen(skb);
+		flist = skb_shinfo(skb)->frag_list;
+		for (last = flist; flist; flist = flist->next) {
+			last = flist;
+			freed += skb_headlen(last);
+		}
+		if (last)
+			last_tsn = sctp_skb2event(last)->tsn;
+		else
+			last_tsn = tsn;
+
+		/* Unlink the event, then renege all applicable TSNs. */
+		__skb_unlink(skb, list);
+		sctp_ulpevent_free(event);
+		while (TSN_lte(tsn, last_tsn)) {
+			sctp_tsnmap_renege(tsnmap, tsn);
+			tsn++;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (freed >= needed)
 			return freed;
 	}
@@ -991,22 +1325,47 @@ static __u16 sctp_ulpq_renege_frags(struct sctp_ulpq *ulpq, __u16 needed)
 
 /* Partial deliver the first message as there is pressure on rwnd. */
 void sctp_ulpq_partial_delivery(struct sctp_ulpq *ulpq,
+<<<<<<< HEAD
 				struct sctp_chunk *chunk,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				gfp_t gfp)
 {
 	struct sctp_ulpevent *event;
 	struct sctp_association *asoc;
 	struct sctp_sock *sp;
+<<<<<<< HEAD
+=======
+	__u32 ctsn;
+	struct sk_buff *skb;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	asoc = ulpq->asoc;
 	sp = sctp_sk(asoc->base.sk);
 
 	/* If the association is already in Partial Delivery mode
+<<<<<<< HEAD
 	 * we have noting to do.
+=======
+	 * we have nothing to do.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	if (ulpq->pd_mode)
 		return;
 
+<<<<<<< HEAD
+=======
+	/* Data must be at or below the Cumulative TSN ACK Point to
+	 * start partial delivery.
+	 */
+	skb = skb_peek(&asoc->ulpq.reasm);
+	if (skb != NULL) {
+		ctsn = sctp_skb2event(skb)->tsn;
+		if (!TSN_lte(ctsn, sctp_tsnmap_get_ctsn(&asoc->peer.tsn_map)))
+			return;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* If the user enabled fragment interleave socket option,
 	 * multiple associations can enter partial delivery.
 	 * Otherwise, we can only enter partial delivery if the
@@ -1017,7 +1376,15 @@ void sctp_ulpq_partial_delivery(struct sctp_ulpq *ulpq,
 		event = sctp_ulpq_retrieve_first(ulpq);
 		/* Send event to the ULP.   */
 		if (event) {
+<<<<<<< HEAD
 			sctp_ulpq_tail_event(ulpq, event);
+=======
+			struct sk_buff_head temp;
+
+			skb_queue_head_init(&temp);
+			__skb_queue_tail(&temp, sctp_event2skb(event));
+			sctp_ulpq_tail_event(ulpq, &temp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sctp_ulpq_set_pd(ulpq);
 			return;
 		}
@@ -1028,6 +1395,7 @@ void sctp_ulpq_partial_delivery(struct sctp_ulpq *ulpq,
 void sctp_ulpq_renege(struct sctp_ulpq *ulpq, struct sctp_chunk *chunk,
 		      gfp_t gfp)
 {
+<<<<<<< HEAD
 	struct sctp_association *asoc;
 	__u16 needed, freed;
 
@@ -1062,27 +1430,76 @@ void sctp_ulpq_renege(struct sctp_ulpq *ulpq, struct sctp_chunk *chunk,
 
 
 
+=======
+	struct sctp_association *asoc = ulpq->asoc;
+	__u32 freed = 0;
+	__u16 needed;
+
+	needed = ntohs(chunk->chunk_hdr->length) -
+		 sizeof(struct sctp_data_chunk);
+
+	if (skb_queue_empty(&asoc->base.sk->sk_receive_queue)) {
+		freed = sctp_ulpq_renege_order(ulpq, needed);
+		if (freed < needed)
+			freed += sctp_ulpq_renege_frags(ulpq, needed - freed);
+	}
+	/* If able to free enough room, accept this chunk. */
+	if (sk_rmem_schedule(asoc->base.sk, chunk->skb, needed) &&
+	    freed >= needed) {
+		int retval = sctp_ulpq_tail_data(ulpq, chunk, gfp);
+		/*
+		 * Enter partial delivery if chunk has not been
+		 * delivered; otherwise, drain the reassembly queue.
+		 */
+		if (retval <= 0)
+			sctp_ulpq_partial_delivery(ulpq, gfp);
+		else if (retval == 1)
+			sctp_ulpq_reasm_drain(ulpq);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Notify the application if an association is aborted and in
  * partial delivery mode.  Send up any pending received messages.
  */
 void sctp_ulpq_abort_pd(struct sctp_ulpq *ulpq, gfp_t gfp)
 {
 	struct sctp_ulpevent *ev = NULL;
+<<<<<<< HEAD
+=======
+	struct sctp_sock *sp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sock *sk;
 
 	if (!ulpq->pd_mode)
 		return;
 
 	sk = ulpq->asoc->base.sk;
+<<<<<<< HEAD
 	if (sctp_ulpevent_type_enabled(SCTP_PARTIAL_DELIVERY_EVENT,
 				       &sctp_sk(sk)->subscribe))
 		ev = sctp_ulpevent_make_pdapi(ulpq->asoc,
 					      SCTP_PARTIAL_DELIVERY_ABORTED,
 					      gfp);
+=======
+	sp = sctp_sk(sk);
+	if (sctp_ulpevent_type_enabled(ulpq->asoc->subscribe,
+				       SCTP_PARTIAL_DELIVERY_EVENT))
+		ev = sctp_ulpevent_make_pdapi(ulpq->asoc,
+					      SCTP_PARTIAL_DELIVERY_ABORTED,
+					      0, 0, 0, gfp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ev)
 		__skb_queue_tail(&sk->sk_receive_queue, sctp_event2skb(ev));
 
 	/* If there is data waiting, send it up the socket now. */
+<<<<<<< HEAD
 	if (sctp_ulpq_clear_pd(ulpq) || ev)
 		sk->sk_data_ready(sk, 0);
+=======
+	if ((sctp_ulpq_clear_pd(ulpq) || ev) && !sp->data_ready_signalled) {
+		sp->data_ready_signalled = 1;
+		sk->sk_data_ready(sk);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

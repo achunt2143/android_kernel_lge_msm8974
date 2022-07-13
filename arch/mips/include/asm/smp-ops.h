@@ -24,6 +24,7 @@ struct plat_smp_ops {
 	void (*send_ipi_mask)(const struct cpumask *mask, unsigned int action);
 	void (*init_secondary)(void);
 	void (*smp_finish)(void);
+<<<<<<< HEAD
 	void (*cpus_done)(void);
 	void (*boot_secondary)(int cpu, struct task_struct *idle);
 	void (*smp_setup)(void);
@@ -39,10 +40,38 @@ extern void register_smp_ops(struct plat_smp_ops *ops);
 static inline void plat_smp_setup(void)
 {
 	extern struct plat_smp_ops *mp_ops;	/* private */
+=======
+	int (*boot_secondary)(int cpu, struct task_struct *idle);
+	void (*smp_setup)(void);
+	void (*prepare_cpus)(unsigned int max_cpus);
+	void (*prepare_boot_cpu)(void);
+#ifdef CONFIG_HOTPLUG_CPU
+	int (*cpu_disable)(void);
+	void (*cpu_die)(unsigned int cpu);
+	void (*cleanup_dead_cpu)(unsigned cpu);
+#endif
+#ifdef CONFIG_KEXEC_CORE
+	void (*kexec_nonboot_cpu)(void);
+#endif
+};
+
+extern void register_smp_ops(const struct plat_smp_ops *ops);
+
+static inline void plat_smp_setup(void)
+{
+	extern const struct plat_smp_ops *mp_ops;	/* private */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mp_ops->smp_setup();
 }
 
+<<<<<<< HEAD
+=======
+extern void mips_smp_send_ipi_single(int cpu, unsigned int action);
+extern void mips_smp_send_ipi_mask(const struct cpumask *mask,
+				      unsigned int action);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else /* !CONFIG_SMP */
 
 struct plat_smp_ops;
@@ -52,7 +81,11 @@ static inline void plat_smp_setup(void)
 	/* UP, nothing to do ...  */
 }
 
+<<<<<<< HEAD
 static inline void register_smp_ops(struct plat_smp_ops *ops)
+=======
+static inline void register_smp_ops(const struct plat_smp_ops *ops)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 
@@ -61,7 +94,11 @@ static inline void register_smp_ops(struct plat_smp_ops *ops)
 static inline int register_up_smp_ops(void)
 {
 #ifdef CONFIG_SMP_UP
+<<<<<<< HEAD
 	extern struct plat_smp_ops up_smp_ops;
+=======
+	extern const struct plat_smp_ops up_smp_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	register_smp_ops(&up_smp_ops);
 
@@ -71,6 +108,7 @@ static inline int register_up_smp_ops(void)
 #endif
 }
 
+<<<<<<< HEAD
 static inline int register_cmp_smp_ops(void)
 {
 #ifdef CONFIG_MIPS_CMP
@@ -88,6 +126,15 @@ static inline int register_vsmp_smp_ops(void)
 {
 #ifdef CONFIG_MIPS_MT_SMP
 	extern struct plat_smp_ops vsmp_smp_ops;
+=======
+static inline int register_vsmp_smp_ops(void)
+{
+#ifdef CONFIG_MIPS_MT_SMP
+	extern const struct plat_smp_ops vsmp_smp_ops;
+
+	if (!cpu_has_mipsmt)
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	register_smp_ops(&vsmp_smp_ops);
 
@@ -97,4 +144,16 @@ static inline int register_vsmp_smp_ops(void)
 #endif
 }
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_MIPS_CPS
+extern int register_cps_smp_ops(void);
+#else
+static inline int register_cps_smp_ops(void)
+{
+	return -ENODEV;
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SMP_OPS_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * i2c-au1550.c: SMBus (i2c) adapter for Alchemy PSC interface
  * Copyright (C) 2004 Embedded Edge, LLC <dan@embeddededge.com>
@@ -11,6 +15,7 @@
  * This is just a skeleton adapter to use with the Au1550 PSC
  * algorithm.  It was developed for the Pb1550, but will work with
  * any Au1550 board that has a similar PSC configuration.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -25,13 +30,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/errno.h>
 #include <linux/i2c.h>
 #include <linux/slab.h>
@@ -53,7 +63,10 @@ struct i2c_au1550_data {
 	void __iomem *psc_base;
 	int	xfer_timeout;
 	struct i2c_adapter adap;
+<<<<<<< HEAD
 	struct resource *ioarea;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static inline void WR(struct i2c_au1550_data *a, int r, unsigned long v)
@@ -289,10 +302,17 @@ static void i2c_au1550_setup(struct i2c_au1550_data *priv)
 	/* Set the protocol timer values.  See Table 71 in the
 	 * Au1550 Data Book for standard timing values.
 	 */
+<<<<<<< HEAD
 	WR(priv, PSC_SMBTMR, PSC_SMBTMR_SET_TH(0) | PSC_SMBTMR_SET_PS(15) | \
 		PSC_SMBTMR_SET_PU(15) | PSC_SMBTMR_SET_SH(15) | \
 		PSC_SMBTMR_SET_SU(15) | PSC_SMBTMR_SET_CL(15) | \
 		PSC_SMBTMR_SET_CH(15));
+=======
+	WR(priv, PSC_SMBTMR, PSC_SMBTMR_SET_TH(0) | PSC_SMBTMR_SET_PS(20) | \
+		PSC_SMBTMR_SET_PU(20) | PSC_SMBTMR_SET_SH(20) | \
+		PSC_SMBTMR_SET_SU(20) | PSC_SMBTMR_SET_CL(20) | \
+		PSC_SMBTMR_SET_CH(20));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cfg |= PSC_SMBCFG_DE_ENABLE;
 	WR(priv, PSC_SMBCFG, cfg);
@@ -313,6 +333,7 @@ static void i2c_au1550_disable(struct i2c_au1550_data *priv)
  * Prior to calling us, the 50MHz clock frequency and routing
  * must have been set up for the PSC indicated by the adapter.
  */
+<<<<<<< HEAD
 static int __devinit
 i2c_au1550_probe(struct platform_device *pdev)
 {
@@ -344,18 +365,40 @@ i2c_au1550_probe(struct platform_device *pdev)
 		ret = -EIO;
 		goto out_map;
 	}
+=======
+static int
+i2c_au1550_probe(struct platform_device *pdev)
+{
+	struct i2c_au1550_data *priv;
+	int ret;
+
+	priv = devm_kzalloc(&pdev->dev, sizeof(struct i2c_au1550_data),
+			    GFP_KERNEL);
+	if (!priv)
+		return -ENOMEM;
+
+	priv->psc_base = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
+	if (IS_ERR(priv->psc_base))
+		return PTR_ERR(priv->psc_base);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	priv->xfer_timeout = 200;
 
 	priv->adap.nr = pdev->id;
 	priv->adap.algo = &au1550_algo;
 	priv->adap.algo_data = priv;
 	priv->adap.dev.parent = &pdev->dev;
+<<<<<<< HEAD
 	strlcpy(priv->adap.name, "Au1xxx PSC I2C", sizeof(priv->adap.name));
+=======
+	strscpy(priv->adap.name, "Au1xxx PSC I2C", sizeof(priv->adap.name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Now, set up the PSC for SMBus PIO mode. */
 	i2c_au1550_setup(priv);
 
 	ret = i2c_add_numbered_adapter(&priv->adap);
+<<<<<<< HEAD
 	if (ret == 0) {
 		platform_set_drvdata(pdev, priv);
 		return 0;
@@ -387,6 +430,25 @@ static int __devexit i2c_au1550_remove(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_PM
+=======
+	if (ret) {
+		i2c_au1550_disable(priv);
+		return ret;
+	}
+
+	platform_set_drvdata(pdev, priv);
+	return 0;
+}
+
+static void i2c_au1550_remove(struct platform_device *pdev)
+{
+	struct i2c_au1550_data *priv = platform_get_drvdata(pdev);
+
+	i2c_del_adapter(&priv->adap);
+	i2c_au1550_disable(priv);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int i2c_au1550_suspend(struct device *dev)
 {
 	struct i2c_au1550_data *priv = dev_get_drvdata(dev);
@@ -405,6 +467,7 @@ static int i2c_au1550_resume(struct device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct dev_pm_ops i2c_au1550_pmops = {
 	.suspend	= i2c_au1550_suspend,
 	.resume		= i2c_au1550_resume,
@@ -415,15 +478,26 @@ static const struct dev_pm_ops i2c_au1550_pmops = {
 #else
 #define AU1XPSC_SMBUS_PMOPS NULL
 #endif
+=======
+static DEFINE_SIMPLE_DEV_PM_OPS(i2c_au1550_pmops,
+				i2c_au1550_suspend, i2c_au1550_resume);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver au1xpsc_smbus_driver = {
 	.driver = {
 		.name	= "au1xpsc_smbus",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= AU1XPSC_SMBUS_PMOPS,
 	},
 	.probe		= i2c_au1550_probe,
 	.remove		= __devexit_p(i2c_au1550_remove),
+=======
+		.pm	= pm_sleep_ptr(&i2c_au1550_pmops),
+	},
+	.probe		= i2c_au1550_probe,
+	.remove_new	= i2c_au1550_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(au1xpsc_smbus_driver);

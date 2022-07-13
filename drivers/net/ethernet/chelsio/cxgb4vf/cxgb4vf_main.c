@@ -33,6 +33,11 @@
  * SOFTWARE.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
@@ -42,6 +47,10 @@
 #include <linux/etherdevice.h>
 #include <linux/debugfs.h>
 #include <linux/ethtool.h>
+<<<<<<< HEAD
+=======
+#include <linux/mdio.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "t4vf_common.h"
 #include "t4vf_defs.h"
@@ -52,8 +61,12 @@
 /*
  * Generic information about the driver.
  */
+<<<<<<< HEAD
 #define DRV_VERSION "1.0.0"
 #define DRV_DESC "Chelsio T4 Virtual Function (VF) Network Driver"
+=======
+#define DRV_DESC "Chelsio T4/T5/T6 Virtual Function (VF) Network Driver"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Module Parameters.
@@ -67,12 +80,15 @@
 			 NETIF_MSG_TIMER | NETIF_MSG_IFDOWN | NETIF_MSG_IFUP |\
 			 NETIF_MSG_RX_ERR | NETIF_MSG_TX_ERR)
 
+<<<<<<< HEAD
 static int dflt_msg_enable = DFLT_MSG_ENABLE;
 
 module_param(dflt_msg_enable, int, 0644);
 MODULE_PARM_DESC(dflt_msg_enable,
 		 "default adapter ethtool message level bitmap");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The driver uses the best interrupt scheme available on a platform in the
  * order MSI-X then MSI.  This parameter determines which of these schemes the
@@ -161,6 +177,7 @@ void t4vf_os_link_changed(struct adapter *adapter, int pidx, int link_ok)
 		netif_carrier_on(dev);
 
 		switch (pi->link_cfg.speed) {
+<<<<<<< HEAD
 		case SPEED_10000:
 			s = "10Gbps";
 			break;
@@ -171,6 +188,25 @@ void t4vf_os_link_changed(struct adapter *adapter, int pidx, int link_ok)
 
 		case SPEED_100:
 			s = "100Mbps";
+=======
+		case 100:
+			s = "100Mbps";
+			break;
+		case 1000:
+			s = "1Gbps";
+			break;
+		case 10000:
+			s = "10Gbps";
+			break;
+		case 25000:
+			s = "25Gbps";
+			break;
+		case 40000:
+			s = "40Gbps";
+			break;
+		case 100000:
+			s = "100Gbps";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		default:
@@ -178,7 +214,11 @@ void t4vf_os_link_changed(struct adapter *adapter, int pidx, int link_ok)
 			break;
 		}
 
+<<<<<<< HEAD
 		switch (pi->link_cfg.fc) {
+=======
+		switch ((int)pi->link_cfg.fc) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case PAUSE_RX:
 			fc = "RX";
 			break;
@@ -187,7 +227,11 @@ void t4vf_os_link_changed(struct adapter *adapter, int pidx, int link_ok)
 			fc = "TX";
 			break;
 
+<<<<<<< HEAD
 		case PAUSE_RX|PAUSE_TX:
+=======
+		case PAUSE_RX | PAUSE_TX:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			fc = "RX/TX";
 			break;
 
@@ -196,15 +240,123 @@ void t4vf_os_link_changed(struct adapter *adapter, int pidx, int link_ok)
 			break;
 		}
 
+<<<<<<< HEAD
 		printk(KERN_INFO "%s: link up, %s, full-duplex, %s PAUSE\n",
 		       dev->name, s, fc);
 	} else {
 		netif_carrier_off(dev);
 		printk(KERN_INFO "%s: link down\n", dev->name);
+=======
+		netdev_info(dev, "link up, %s, full-duplex, %s PAUSE\n", s, fc);
+	} else {
+		netif_carrier_off(dev);
+		netdev_info(dev, "link down\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
 /*
+<<<<<<< HEAD
+=======
+ * THe port module type has changed on the indicated "port" (Virtual
+ * Interface).
+ */
+void t4vf_os_portmod_changed(struct adapter *adapter, int pidx)
+{
+	static const char * const mod_str[] = {
+		NULL, "LR", "SR", "ER", "passive DA", "active DA", "LRM"
+	};
+	const struct net_device *dev = adapter->port[pidx];
+	const struct port_info *pi = netdev_priv(dev);
+
+	if (pi->mod_type == FW_PORT_MOD_TYPE_NONE)
+		dev_info(adapter->pdev_dev, "%s: port module unplugged\n",
+			 dev->name);
+	else if (pi->mod_type < ARRAY_SIZE(mod_str))
+		dev_info(adapter->pdev_dev, "%s: %s port module inserted\n",
+			 dev->name, mod_str[pi->mod_type]);
+	else if (pi->mod_type == FW_PORT_MOD_TYPE_NOTSUPPORTED)
+		dev_info(adapter->pdev_dev, "%s: unsupported optical port "
+			 "module inserted\n", dev->name);
+	else if (pi->mod_type == FW_PORT_MOD_TYPE_UNKNOWN)
+		dev_info(adapter->pdev_dev, "%s: unknown port module inserted,"
+			 "forcing TWINAX\n", dev->name);
+	else if (pi->mod_type == FW_PORT_MOD_TYPE_ERROR)
+		dev_info(adapter->pdev_dev, "%s: transceiver module error\n",
+			 dev->name);
+	else
+		dev_info(adapter->pdev_dev, "%s: unknown module type %d "
+			 "inserted\n", dev->name, pi->mod_type);
+}
+
+static int cxgb4vf_set_addr_hash(struct port_info *pi)
+{
+	struct adapter *adapter = pi->adapter;
+	u64 vec = 0;
+	bool ucast = false;
+	struct hash_mac_addr *entry;
+
+	/* Calculate the hash vector for the updated list and program it */
+	list_for_each_entry(entry, &adapter->mac_hlist, list) {
+		ucast |= is_unicast_ether_addr(entry->addr);
+		vec |= (1ULL << hash_mac_addr(entry->addr));
+	}
+	return t4vf_set_addr_hash(adapter, pi->viid, ucast, vec, false);
+}
+
+/**
+ *	cxgb4vf_change_mac - Update match filter for a MAC address.
+ *	@pi: the port_info
+ *	@viid: the VI id
+ *	@tcam_idx: TCAM index of existing filter for old value of MAC address,
+ *		   or -1
+ *	@addr: the new MAC address value
+ *	@persistent: whether a new MAC allocation should be persistent
+ *
+ *	Modifies an MPS filter and sets it to the new MAC address if
+ *	@tcam_idx >= 0, or adds the MAC address to a new filter if
+ *	@tcam_idx < 0. In the latter case the address is added persistently
+ *	if @persist is %true.
+ *	Addresses are programmed to hash region, if tcam runs out of entries.
+ *
+ */
+static int cxgb4vf_change_mac(struct port_info *pi, unsigned int viid,
+			      int *tcam_idx, const u8 *addr, bool persistent)
+{
+	struct hash_mac_addr *new_entry, *entry;
+	struct adapter *adapter = pi->adapter;
+	int ret;
+
+	ret = t4vf_change_mac(adapter, viid, *tcam_idx, addr, persistent);
+	/* We ran out of TCAM entries. try programming hash region. */
+	if (ret == -ENOMEM) {
+		/* If the MAC address to be updated is in the hash addr
+		 * list, update it from the list
+		 */
+		list_for_each_entry(entry, &adapter->mac_hlist, list) {
+			if (entry->iface_mac) {
+				ether_addr_copy(entry->addr, addr);
+				goto set_hash;
+			}
+		}
+		new_entry = kzalloc(sizeof(*new_entry), GFP_KERNEL);
+		if (!new_entry)
+			return -ENOMEM;
+		ether_addr_copy(new_entry->addr, addr);
+		new_entry->iface_mac = true;
+		list_add_tail(&new_entry->list, &adapter->mac_hlist);
+set_hash:
+		ret = cxgb4vf_set_addr_hash(pi);
+	} else if (ret >= 0) {
+		*tcam_idx = ret;
+		ret = 0;
+	}
+
+	return ret;
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Net device operations.
  * ======================
  */
@@ -227,6 +379,7 @@ static int link_start(struct net_device *dev)
 	 */
 	ret = t4vf_set_rxmode(pi->adapter, pi->viid, dev->mtu, -1, -1, -1, 1,
 			      true);
+<<<<<<< HEAD
 	if (ret == 0) {
 		ret = t4vf_change_mac(pi->adapter, pi->viid,
 				      pi->xact_addr_filt, dev->dev_addr, true);
@@ -235,6 +388,12 @@ static int link_start(struct net_device *dev)
 			ret = 0;
 		}
 	}
+=======
+	if (ret == 0)
+		ret = cxgb4vf_change_mac(pi, pi->viid,
+					 &pi->xact_addr_filt,
+					 dev->dev_addr, true);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We don't need to actually "start the link" itself since the
@@ -242,7 +401,12 @@ static int link_start(struct net_device *dev)
 	 * is enabled on a port.
 	 */
 	if (ret == 0)
+<<<<<<< HEAD
 		ret = t4vf_enable_vi(pi->adapter, pi->viid, true, true);
+=======
+		ret = t4vf_enable_pi(pi->adapter, pi, true, true);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -342,9 +506,15 @@ static void qenable(struct sge_rspq *rspq)
 	 * enable interrupts.
 	 */
 	t4_write_reg(rspq->adapter, T4VF_SGE_BASE_ADDR + SGE_VF_GTS,
+<<<<<<< HEAD
 		     CIDXINC(0) |
 		     SEINTARM(rspq->intr_params) |
 		     INGRESSQID(rspq->cntxt_id));
+=======
+		     CIDXINC_V(0) |
+		     SEINTARM_V(rspq->intr_params) |
+		     INGRESSQID_V(rspq->cntxt_id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -363,11 +533,19 @@ static void enable_rx(struct adapter *adapter)
 	 * The interrupt queue doesn't use NAPI so we do the 0-increment of
 	 * its Going To Sleep register here to get it started.
 	 */
+<<<<<<< HEAD
 	if (adapter->flags & USING_MSI)
 		t4_write_reg(adapter, T4VF_SGE_BASE_ADDR + SGE_VF_GTS,
 			     CIDXINC(0) |
 			     SEINTARM(s->intrq.intr_params) |
 			     INGRESSQID(s->intrq.cntxt_id));
+=======
+	if (adapter->flags & CXGB4VF_USING_MSI)
+		t4_write_reg(adapter, T4VF_SGE_BASE_ADDR + SGE_VF_GTS,
+			     CIDXINC_V(0) |
+			     SEINTARM_V(s->intrq.intr_params) |
+			     INGRESSQID_V(s->intrq.cntxt_id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 }
 
@@ -408,6 +586,23 @@ static int fwevtq_handler(struct sge_rspq *rspq, const __be64 *rsp,
 		break;
 	}
 
+<<<<<<< HEAD
+=======
+	case CPL_FW4_MSG: {
+		/* FW can send EGR_UPDATEs encapsulated in a CPL_FW4_MSG.
+		 */
+		const struct cpl_sge_egr_update *p = (void *)(rsp + 3);
+		opcode = CPL_OPCODE_G(ntohl(p->opcode_qid));
+		if (opcode != CPL_SGE_EGR_UPDATE) {
+			dev_err(adapter->pdev_dev, "unexpected FW4/CPL %#x on FW event queue\n"
+				, opcode);
+			break;
+		}
+		cpl = (void *)p;
+	}
+		fallthrough;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case CPL_SGE_EGR_UPDATE: {
 		/*
 		 * We've received an Egress Queue Status Update message.  We
@@ -418,8 +613,13 @@ static int fwevtq_handler(struct sge_rspq *rspq, const __be64 *rsp,
 		 * restart a TX Ethernet Queue which was stopped for lack of
 		 * free TX Queue Descriptors ...
 		 */
+<<<<<<< HEAD
 		const struct cpl_sge_egr_update *p = (void *)cpl;
 		unsigned int qid = EGR_QID(be32_to_cpu(p->opcode_qid));
+=======
+		const struct cpl_sge_egr_update *p = cpl;
+		unsigned int qid = EGR_QID_G(be32_to_cpu(p->opcode_qid));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct sge *s = &adapter->sge;
 		struct sge_txq *tq;
 		struct sge_eth_txq *txq;
@@ -493,7 +693,11 @@ static int setup_sge_queues(struct adapter *adapter)
 	 * the intrq's queue ID as the interrupt forwarding queue for the
 	 * subsequent calls ...
 	 */
+<<<<<<< HEAD
 	if (adapter->flags & USING_MSI) {
+=======
+	if (adapter->flags & CXGB4VF_USING_MSI) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = t4vf_sge_alloc_rxq(adapter, &s->intrq, false,
 					 adapter->port[0], 0, NULL, NULL);
 		if (err)
@@ -653,7 +857,11 @@ static int adapter_up(struct adapter *adapter)
 	 * adapter setup.  Once we've done this, many of our adapter
 	 * parameters can no longer be changed ...
 	 */
+<<<<<<< HEAD
 	if ((adapter->flags & FULL_INIT_DONE) == 0) {
+=======
+	if ((adapter->flags & CXGB4VF_FULL_INIT_DONE) == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = setup_sge_queues(adapter);
 		if (err)
 			return err;
@@ -663,16 +871,29 @@ static int adapter_up(struct adapter *adapter)
 			return err;
 		}
 
+<<<<<<< HEAD
 		if (adapter->flags & USING_MSIX)
 			name_msix_vecs(adapter);
 		adapter->flags |= FULL_INIT_DONE;
+=======
+		if (adapter->flags & CXGB4VF_USING_MSIX)
+			name_msix_vecs(adapter);
+
+		adapter->flags |= CXGB4VF_FULL_INIT_DONE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Acquire our interrupt resources.  We only support MSI-X and MSI.
 	 */
+<<<<<<< HEAD
 	BUG_ON((adapter->flags & (USING_MSIX|USING_MSI)) == 0);
 	if (adapter->flags & USING_MSIX)
+=======
+	BUG_ON((adapter->flags &
+	       (CXGB4VF_USING_MSIX | CXGB4VF_USING_MSI)) == 0);
+	if (adapter->flags & CXGB4VF_USING_MSIX)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = request_msix_queue_irqs(adapter);
 	else
 		err = request_irq(adapter->pdev->irq,
@@ -689,6 +910,10 @@ static int adapter_up(struct adapter *adapter)
 	 */
 	enable_rx(adapter);
 	t4vf_sge_start(adapter);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -702,7 +927,11 @@ static void adapter_down(struct adapter *adapter)
 	/*
 	 * Free interrupt resources.
 	 */
+<<<<<<< HEAD
 	if (adapter->flags & USING_MSIX)
+=======
+	if (adapter->flags & CXGB4VF_USING_MSIX)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_msix_queue_irqs(adapter);
 	else
 		free_irq(adapter->pdev->irq, adapter);
@@ -723,6 +952,16 @@ static int cxgb4vf_open(struct net_device *dev)
 	struct adapter *adapter = pi->adapter;
 
 	/*
+<<<<<<< HEAD
+=======
+	 * If we don't have a connection to the firmware there's nothing we
+	 * can do.
+	 */
+	if (!(adapter->flags & CXGB4VF_FW_OK))
+		return -ENXIO;
+
+	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * If this is the first interface that we're opening on the "adapter",
 	 * bring the "adapter" up now.
 	 */
@@ -732,6 +971,7 @@ static int cxgb4vf_open(struct net_device *dev)
 			return err;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * Note that this interface is up and start everything up ...
 	 */
@@ -739,10 +979,27 @@ static int cxgb4vf_open(struct net_device *dev)
 	err = netif_set_real_num_rx_queues(dev, pi->nqsets);
 	if (err)
 		goto err_unwind;
+=======
+	/* It's possible that the basic port information could have
+	 * changed since we first read it.
+	 */
+	err = t4vf_update_port_info(pi);
+	if (err < 0)
+		goto err_unwind;
+
+	/*
+	 * Note that this interface is up and start everything up ...
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = link_start(dev);
 	if (err)
 		goto err_unwind;
 
+<<<<<<< HEAD
+=======
+	pi->vlan_id = t4vf_get_vf_vlan_acl(adapter);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_tx_start_all_queues(dev);
 	set_bit(pi->port_id, &adapter->open_device_map);
 	return 0;
@@ -764,8 +1021,12 @@ static int cxgb4vf_stop(struct net_device *dev)
 
 	netif_tx_stop_all_queues(dev);
 	netif_carrier_off(dev);
+<<<<<<< HEAD
 	t4vf_enable_vi(adapter, pi->viid, false, false);
 	pi->link_cfg.link_ok = 0;
+=======
+	t4vf_enable_pi(adapter, pi, false, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	clear_bit(pi->port_id, &adapter->open_device_map);
 	if (adapter->open_device_map == 0)
@@ -807,6 +1068,7 @@ static struct net_device_stats *cxgb4vf_get_stats(struct net_device *dev)
 	return ns;
 }
 
+<<<<<<< HEAD
 /*
  * Collect up to maxaddrs worth of a netdevice's unicast addresses, starting
  * at a specified offset within the list, into an array of addrss pointers and
@@ -898,6 +1160,61 @@ static int set_addr_filters(const struct net_device *dev, bool sleep)
 
 	return t4vf_set_addr_hash(pi->adapter, pi->viid, uhash != 0,
 				  uhash | mhash, sleep);
+=======
+static int cxgb4vf_mac_sync(struct net_device *netdev, const u8 *mac_addr)
+{
+	struct port_info *pi = netdev_priv(netdev);
+	struct adapter *adapter = pi->adapter;
+	int ret;
+	u64 mhash = 0;
+	u64 uhash = 0;
+	bool free = false;
+	bool ucast = is_unicast_ether_addr(mac_addr);
+	const u8 *maclist[1] = {mac_addr};
+	struct hash_mac_addr *new_entry;
+
+	ret = t4vf_alloc_mac_filt(adapter, pi->viid, free, 1, maclist,
+				  NULL, ucast ? &uhash : &mhash, false);
+	if (ret < 0)
+		goto out;
+	/* if hash != 0, then add the addr to hash addr list
+	 * so on the end we will calculate the hash for the
+	 * list and program it
+	 */
+	if (uhash || mhash) {
+		new_entry = kzalloc(sizeof(*new_entry), GFP_ATOMIC);
+		if (!new_entry)
+			return -ENOMEM;
+		ether_addr_copy(new_entry->addr, mac_addr);
+		list_add_tail(&new_entry->list, &adapter->mac_hlist);
+		ret = cxgb4vf_set_addr_hash(pi);
+	}
+out:
+	return ret < 0 ? ret : 0;
+}
+
+static int cxgb4vf_mac_unsync(struct net_device *netdev, const u8 *mac_addr)
+{
+	struct port_info *pi = netdev_priv(netdev);
+	struct adapter *adapter = pi->adapter;
+	int ret;
+	const u8 *maclist[1] = {mac_addr};
+	struct hash_mac_addr *entry, *tmp;
+
+	/* If the MAC address to be removed is in the hash addr
+	 * list, delete it from the list and update hash vector
+	 */
+	list_for_each_entry_safe(entry, tmp, &adapter->mac_hlist, list) {
+		if (ether_addr_equal(entry->addr, mac_addr)) {
+			list_del(&entry->list);
+			kfree(entry);
+			return cxgb4vf_set_addr_hash(pi);
+		}
+	}
+
+	ret = t4vf_free_mac_filt(adapter, pi->viid, 1, maclist, false);
+	return ret < 0 ? -EINVAL : 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -906,6 +1223,7 @@ static int set_addr_filters(const struct net_device *dev, bool sleep)
  */
 static int set_rxmode(struct net_device *dev, int mtu, bool sleep_ok)
 {
+<<<<<<< HEAD
 	int ret;
 	struct port_info *pi = netdev_priv(dev);
 
@@ -916,6 +1234,16 @@ static int set_rxmode(struct net_device *dev, int mtu, bool sleep_ok)
 				      (dev->flags & IFF_ALLMULTI) != 0,
 				      1, -1, sleep_ok);
 	return ret;
+=======
+	struct port_info *pi = netdev_priv(dev);
+
+	__dev_uc_sync(dev, cxgb4vf_mac_sync, cxgb4vf_mac_unsync);
+	__dev_mc_sync(dev, cxgb4vf_mac_sync, cxgb4vf_mac_unsync);
+	return t4vf_set_rxmode(pi->adapter, pi->viid, -1,
+			       (dev->flags & IFF_PROMISC) != 0,
+			       (dev->flags & IFF_ALLMULTI) != 0,
+			       1, -1, sleep_ok);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -969,7 +1297,11 @@ static int closest_thres(const struct sge *s, int thres)
 static unsigned int qtimer_val(const struct adapter *adapter,
 			       const struct sge_rspq *rspq)
 {
+<<<<<<< HEAD
 	unsigned int timer_idx = QINTR_TIMER_IDX_GET(rspq->intr_params);
+=======
+	unsigned int timer_idx = QINTR_TIMER_IDX_G(rspq->intr_params);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return timer_idx < SGE_NTIMERS
 		? adapter->sge.timer_val[timer_idx]
@@ -1011,10 +1343,17 @@ static int set_rxq_intr_params(struct adapter *adapter, struct sge_rspq *rspq,
 
 		pktcnt_idx = closest_thres(&adapter->sge, cnt);
 		if (rspq->desc && rspq->pktcnt_idx != pktcnt_idx) {
+<<<<<<< HEAD
 			v = FW_PARAMS_MNEM(FW_PARAMS_MNEM_DMAQ) |
 			    FW_PARAMS_PARAM_X(
 					FW_PARAMS_PARAM_DMAQ_IQ_INTCNTTHRESH) |
 			    FW_PARAMS_PARAM_YZ(rspq->cntxt_id);
+=======
+			v = FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DMAQ) |
+			    FW_PARAMS_PARAM_X_V(
+					FW_PARAMS_PARAM_DMAQ_IQ_INTCNTTHRESH) |
+			    FW_PARAMS_PARAM_YZ_V(rspq->cntxt_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = t4vf_set_params(adapter, 1, &v, &pktcnt_idx);
 			if (err)
 				return err;
@@ -1034,8 +1373,13 @@ static int set_rxq_intr_params(struct adapter *adapter, struct sge_rspq *rspq,
 	 * Update the response queue's interrupt coalescing parameters and
 	 * return success.
 	 */
+<<<<<<< HEAD
 	rspq->intr_params = (QINTR_TIMER_IDX(timer_idx) |
 			     (cnt > 0 ? QINTR_CNT_EN : 0));
+=======
+	rspq->intr_params = (QINTR_TIMER_IDX_V(timer_idx) |
+			     QINTR_CNT_EN_V(cnt > 0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1049,7 +1393,11 @@ static inline unsigned int mk_adap_vers(const struct adapter *adapter)
 	/*
 	 * Chip version 4, revision 0x3f (cxgb4vf).
 	 */
+<<<<<<< HEAD
 	return 4 | (0x3f << 10);
+=======
+	return CHELSIO_CHIP_VERSION(adapter->params.chip) | (0x3f << 10);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1081,10 +1429,13 @@ static int cxgb4vf_change_mtu(struct net_device *dev, int new_mtu)
 	int ret;
 	struct port_info *pi = netdev_priv(dev);
 
+<<<<<<< HEAD
 	/* accommodate SACK */
 	if (new_mtu < 81)
 		return -EINVAL;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ret = t4vf_set_rxmode(pi->adapter, pi->viid, new_mtu,
 			      -1, -1, -1, -1, true);
 	if (!ret)
@@ -1099,10 +1450,17 @@ static netdev_features_t cxgb4vf_fix_features(struct net_device *dev,
 	 * Since there is no support for separate rx/tx vlan accel
 	 * enable/disable make sure tx flag is always in same state as rx.
 	 */
+<<<<<<< HEAD
 	if (features & NETIF_F_HW_VLAN_RX)
 		features |= NETIF_F_HW_VLAN_TX;
 	else
 		features &= ~NETIF_F_HW_VLAN_TX;
+=======
+	if (features & NETIF_F_HW_VLAN_CTAG_RX)
+		features |= NETIF_F_HW_VLAN_CTAG_TX;
+	else
+		features &= ~NETIF_F_HW_VLAN_CTAG_TX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return features;
 }
@@ -1113,9 +1471,15 @@ static int cxgb4vf_set_features(struct net_device *dev,
 	struct port_info *pi = netdev_priv(dev);
 	netdev_features_t changed = dev->features ^ features;
 
+<<<<<<< HEAD
 	if (changed & NETIF_F_HW_VLAN_RX)
 		t4vf_set_rxmode(pi->adapter, pi->viid, -1, -1, -1, -1,
 				features & NETIF_F_HW_VLAN_TX, 0);
+=======
+	if (changed & NETIF_F_HW_VLAN_CTAG_RX)
+		t4vf_set_rxmode(pi->adapter, pi->viid, -1, -1, -1, -1,
+				features & NETIF_F_HW_VLAN_CTAG_TX, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -1132,6 +1496,7 @@ static int cxgb4vf_set_mac_addr(struct net_device *dev, void *_addr)
 	if (!is_valid_ether_addr(addr->sa_data))
 		return -EADDRNOTAVAIL;
 
+<<<<<<< HEAD
 	ret = t4vf_change_mac(pi->adapter, pi->viid, pi->xact_addr_filt,
 			      addr->sa_data, true);
 	if (ret < 0)
@@ -1139,6 +1504,14 @@ static int cxgb4vf_set_mac_addr(struct net_device *dev, void *_addr)
 
 	memcpy(dev->dev_addr, addr->sa_data, dev->addr_len);
 	pi->xact_addr_filt = ret;
+=======
+	ret = cxgb4vf_change_mac(pi, pi->viid, &pi->xact_addr_filt,
+				 addr->sa_data, true);
+	if (ret < 0)
+		return ret;
+
+	eth_hw_addr_set(dev, addr->sa_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1152,7 +1525,11 @@ static void cxgb4vf_poll_controller(struct net_device *dev)
 	struct port_info *pi = netdev_priv(dev);
 	struct adapter *adapter = pi->adapter;
 
+<<<<<<< HEAD
 	if (adapter->flags & USING_MSIX) {
+=======
+	if (adapter->flags & CXGB4VF_USING_MSIX) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct sge_eth_rxq *rxq;
 		int nqsets;
 
@@ -1174,6 +1551,7 @@ static void cxgb4vf_poll_controller(struct net_device *dev)
  * state of the port to which we're linked.
  */
 
+<<<<<<< HEAD
 /*
  * Return current port link settings.
  */
@@ -1194,6 +1572,296 @@ static int cxgb4vf_get_settings(struct net_device *dev,
 	cmd->autoneg = pi->link_cfg.autoneg;
 	cmd->maxtxpkt = 0;
 	cmd->maxrxpkt = 0;
+=======
+/**
+ *	from_fw_port_mod_type - translate Firmware Port/Module type to Ethtool
+ *	@port_type: Firmware Port Type
+ *	@mod_type: Firmware Module Type
+ *
+ *	Translate Firmware Port/Module type to Ethtool Port Type.
+ */
+static int from_fw_port_mod_type(enum fw_port_type port_type,
+				 enum fw_port_module_type mod_type)
+{
+	if (port_type == FW_PORT_TYPE_BT_SGMII ||
+	    port_type == FW_PORT_TYPE_BT_XFI ||
+	    port_type == FW_PORT_TYPE_BT_XAUI) {
+		return PORT_TP;
+	} else if (port_type == FW_PORT_TYPE_FIBER_XFI ||
+		   port_type == FW_PORT_TYPE_FIBER_XAUI) {
+		return PORT_FIBRE;
+	} else if (port_type == FW_PORT_TYPE_SFP ||
+		   port_type == FW_PORT_TYPE_QSFP_10G ||
+		   port_type == FW_PORT_TYPE_QSA ||
+		   port_type == FW_PORT_TYPE_QSFP ||
+		   port_type == FW_PORT_TYPE_CR4_QSFP ||
+		   port_type == FW_PORT_TYPE_CR_QSFP ||
+		   port_type == FW_PORT_TYPE_CR2_QSFP ||
+		   port_type == FW_PORT_TYPE_SFP28) {
+		if (mod_type == FW_PORT_MOD_TYPE_LR ||
+		    mod_type == FW_PORT_MOD_TYPE_SR ||
+		    mod_type == FW_PORT_MOD_TYPE_ER ||
+		    mod_type == FW_PORT_MOD_TYPE_LRM)
+			return PORT_FIBRE;
+		else if (mod_type == FW_PORT_MOD_TYPE_TWINAX_PASSIVE ||
+			 mod_type == FW_PORT_MOD_TYPE_TWINAX_ACTIVE)
+			return PORT_DA;
+		else
+			return PORT_OTHER;
+	} else if (port_type == FW_PORT_TYPE_KR4_100G ||
+		   port_type == FW_PORT_TYPE_KR_SFP28 ||
+		   port_type == FW_PORT_TYPE_KR_XLAUI) {
+		return PORT_NONE;
+	}
+
+	return PORT_OTHER;
+}
+
+/**
+ *	fw_caps_to_lmm - translate Firmware to ethtool Link Mode Mask
+ *	@port_type: Firmware Port Type
+ *	@fw_caps: Firmware Port Capabilities
+ *	@link_mode_mask: ethtool Link Mode Mask
+ *
+ *	Translate a Firmware Port Capabilities specification to an ethtool
+ *	Link Mode Mask.
+ */
+static void fw_caps_to_lmm(enum fw_port_type port_type,
+			   unsigned int fw_caps,
+			   unsigned long *link_mode_mask)
+{
+	#define SET_LMM(__lmm_name) \
+		__set_bit(ETHTOOL_LINK_MODE_ ## __lmm_name ## _BIT, \
+			  link_mode_mask)
+
+	#define FW_CAPS_TO_LMM(__fw_name, __lmm_name) \
+		do { \
+			if (fw_caps & FW_PORT_CAP32_ ## __fw_name) \
+				SET_LMM(__lmm_name); \
+		} while (0)
+
+	switch (port_type) {
+	case FW_PORT_TYPE_BT_SGMII:
+	case FW_PORT_TYPE_BT_XFI:
+	case FW_PORT_TYPE_BT_XAUI:
+		SET_LMM(TP);
+		FW_CAPS_TO_LMM(SPEED_100M, 100baseT_Full);
+		FW_CAPS_TO_LMM(SPEED_1G, 1000baseT_Full);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseT_Full);
+		break;
+
+	case FW_PORT_TYPE_KX4:
+	case FW_PORT_TYPE_KX:
+		SET_LMM(Backplane);
+		FW_CAPS_TO_LMM(SPEED_1G, 1000baseKX_Full);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseKX4_Full);
+		break;
+
+	case FW_PORT_TYPE_KR:
+		SET_LMM(Backplane);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseKR_Full);
+		break;
+
+	case FW_PORT_TYPE_BP_AP:
+		SET_LMM(Backplane);
+		FW_CAPS_TO_LMM(SPEED_1G, 1000baseKX_Full);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseR_FEC);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseKR_Full);
+		break;
+
+	case FW_PORT_TYPE_BP4_AP:
+		SET_LMM(Backplane);
+		FW_CAPS_TO_LMM(SPEED_1G, 1000baseKX_Full);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseR_FEC);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseKR_Full);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseKX4_Full);
+		break;
+
+	case FW_PORT_TYPE_FIBER_XFI:
+	case FW_PORT_TYPE_FIBER_XAUI:
+	case FW_PORT_TYPE_SFP:
+	case FW_PORT_TYPE_QSFP_10G:
+	case FW_PORT_TYPE_QSA:
+		SET_LMM(FIBRE);
+		FW_CAPS_TO_LMM(SPEED_1G, 1000baseT_Full);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseT_Full);
+		break;
+
+	case FW_PORT_TYPE_BP40_BA:
+	case FW_PORT_TYPE_QSFP:
+		SET_LMM(FIBRE);
+		FW_CAPS_TO_LMM(SPEED_1G, 1000baseT_Full);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseT_Full);
+		FW_CAPS_TO_LMM(SPEED_40G, 40000baseSR4_Full);
+		break;
+
+	case FW_PORT_TYPE_CR_QSFP:
+	case FW_PORT_TYPE_SFP28:
+		SET_LMM(FIBRE);
+		FW_CAPS_TO_LMM(SPEED_1G, 1000baseT_Full);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseT_Full);
+		FW_CAPS_TO_LMM(SPEED_25G, 25000baseCR_Full);
+		break;
+
+	case FW_PORT_TYPE_KR_SFP28:
+		SET_LMM(Backplane);
+		FW_CAPS_TO_LMM(SPEED_1G, 1000baseT_Full);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseKR_Full);
+		FW_CAPS_TO_LMM(SPEED_25G, 25000baseKR_Full);
+		break;
+
+	case FW_PORT_TYPE_KR_XLAUI:
+		SET_LMM(Backplane);
+		FW_CAPS_TO_LMM(SPEED_1G, 1000baseKX_Full);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseKR_Full);
+		FW_CAPS_TO_LMM(SPEED_40G, 40000baseKR4_Full);
+		break;
+
+	case FW_PORT_TYPE_CR2_QSFP:
+		SET_LMM(FIBRE);
+		FW_CAPS_TO_LMM(SPEED_50G, 50000baseSR2_Full);
+		break;
+
+	case FW_PORT_TYPE_KR4_100G:
+	case FW_PORT_TYPE_CR4_QSFP:
+		SET_LMM(FIBRE);
+		FW_CAPS_TO_LMM(SPEED_1G,  1000baseT_Full);
+		FW_CAPS_TO_LMM(SPEED_10G, 10000baseKR_Full);
+		FW_CAPS_TO_LMM(SPEED_40G, 40000baseSR4_Full);
+		FW_CAPS_TO_LMM(SPEED_25G, 25000baseCR_Full);
+		FW_CAPS_TO_LMM(SPEED_50G, 50000baseCR2_Full);
+		FW_CAPS_TO_LMM(SPEED_100G, 100000baseCR4_Full);
+		break;
+
+	default:
+		break;
+	}
+
+	if (fw_caps & FW_PORT_CAP32_FEC_V(FW_PORT_CAP32_FEC_M)) {
+		FW_CAPS_TO_LMM(FEC_RS, FEC_RS);
+		FW_CAPS_TO_LMM(FEC_BASER_RS, FEC_BASER);
+	} else {
+		SET_LMM(FEC_NONE);
+	}
+
+	FW_CAPS_TO_LMM(ANEG, Autoneg);
+	FW_CAPS_TO_LMM(802_3_PAUSE, Pause);
+	FW_CAPS_TO_LMM(802_3_ASM_DIR, Asym_Pause);
+
+	#undef FW_CAPS_TO_LMM
+	#undef SET_LMM
+}
+
+static int cxgb4vf_get_link_ksettings(struct net_device *dev,
+				  struct ethtool_link_ksettings *link_ksettings)
+{
+	struct port_info *pi = netdev_priv(dev);
+	struct ethtool_link_settings *base = &link_ksettings->base;
+
+	/* For the nonce, the Firmware doesn't send up Port State changes
+	 * when the Virtual Interface attached to the Port is down.  So
+	 * if it's down, let's grab any changes.
+	 */
+	if (!netif_running(dev))
+		(void)t4vf_update_port_info(pi);
+
+	ethtool_link_ksettings_zero_link_mode(link_ksettings, supported);
+	ethtool_link_ksettings_zero_link_mode(link_ksettings, advertising);
+	ethtool_link_ksettings_zero_link_mode(link_ksettings, lp_advertising);
+
+	base->port = from_fw_port_mod_type(pi->port_type, pi->mod_type);
+
+	if (pi->mdio_addr >= 0) {
+		base->phy_address = pi->mdio_addr;
+		base->mdio_support = (pi->port_type == FW_PORT_TYPE_BT_SGMII
+				      ? ETH_MDIO_SUPPORTS_C22
+				      : ETH_MDIO_SUPPORTS_C45);
+	} else {
+		base->phy_address = 255;
+		base->mdio_support = 0;
+	}
+
+	fw_caps_to_lmm(pi->port_type, pi->link_cfg.pcaps,
+		       link_ksettings->link_modes.supported);
+	fw_caps_to_lmm(pi->port_type, pi->link_cfg.acaps,
+		       link_ksettings->link_modes.advertising);
+	fw_caps_to_lmm(pi->port_type, pi->link_cfg.lpacaps,
+		       link_ksettings->link_modes.lp_advertising);
+
+	if (netif_carrier_ok(dev)) {
+		base->speed = pi->link_cfg.speed;
+		base->duplex = DUPLEX_FULL;
+	} else {
+		base->speed = SPEED_UNKNOWN;
+		base->duplex = DUPLEX_UNKNOWN;
+	}
+
+	base->autoneg = pi->link_cfg.autoneg;
+	if (pi->link_cfg.pcaps & FW_PORT_CAP32_ANEG)
+		ethtool_link_ksettings_add_link_mode(link_ksettings,
+						     supported, Autoneg);
+	if (pi->link_cfg.autoneg)
+		ethtool_link_ksettings_add_link_mode(link_ksettings,
+						     advertising, Autoneg);
+
+	return 0;
+}
+
+/* Translate the Firmware FEC value into the ethtool value. */
+static inline unsigned int fwcap_to_eth_fec(unsigned int fw_fec)
+{
+	unsigned int eth_fec = 0;
+
+	if (fw_fec & FW_PORT_CAP32_FEC_RS)
+		eth_fec |= ETHTOOL_FEC_RS;
+	if (fw_fec & FW_PORT_CAP32_FEC_BASER_RS)
+		eth_fec |= ETHTOOL_FEC_BASER;
+
+	/* if nothing is set, then FEC is off */
+	if (!eth_fec)
+		eth_fec = ETHTOOL_FEC_OFF;
+
+	return eth_fec;
+}
+
+/* Translate Common Code FEC value into ethtool value. */
+static inline unsigned int cc_to_eth_fec(unsigned int cc_fec)
+{
+	unsigned int eth_fec = 0;
+
+	if (cc_fec & FEC_AUTO)
+		eth_fec |= ETHTOOL_FEC_AUTO;
+	if (cc_fec & FEC_RS)
+		eth_fec |= ETHTOOL_FEC_RS;
+	if (cc_fec & FEC_BASER_RS)
+		eth_fec |= ETHTOOL_FEC_BASER;
+
+	/* if nothing is set, then FEC is off */
+	if (!eth_fec)
+		eth_fec = ETHTOOL_FEC_OFF;
+
+	return eth_fec;
+}
+
+static int cxgb4vf_get_fecparam(struct net_device *dev,
+				struct ethtool_fecparam *fec)
+{
+	const struct port_info *pi = netdev_priv(dev);
+	const struct link_config *lc = &pi->link_cfg;
+
+	/* Translate the Firmware FEC Support into the ethtool value.  We
+	 * always support IEEE 802.3 "automatic" selection of Link FEC type if
+	 * any FEC is supported.
+	 */
+	fec->fec = fwcap_to_eth_fec(lc->pcaps);
+	if (fec->fec != ETHTOOL_FEC_OFF)
+		fec->fec |= ETHTOOL_FEC_AUTO;
+
+	/* Translate the current internal FEC parameters into the
+	 * ethtool values.
+	 */
+	fec->active_fec = cc_to_eth_fec(lc->fec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -1205,6 +1873,7 @@ static void cxgb4vf_get_drvinfo(struct net_device *dev,
 {
 	struct adapter *adapter = netdev2adap(dev);
 
+<<<<<<< HEAD
 	strlcpy(drvinfo->driver, KBUILD_MODNAME, sizeof(drvinfo->driver));
 	strlcpy(drvinfo->version, DRV_VERSION, sizeof(drvinfo->version));
 	strlcpy(drvinfo->bus_info, pci_name(to_pci_dev(dev->dev.parent)),
@@ -1219,6 +1888,21 @@ static void cxgb4vf_get_drvinfo(struct net_device *dev,
 		 FW_HDR_FW_VER_MINOR_GET(adapter->params.dev.tprev),
 		 FW_HDR_FW_VER_MICRO_GET(adapter->params.dev.tprev),
 		 FW_HDR_FW_VER_BUILD_GET(adapter->params.dev.tprev));
+=======
+	strscpy(drvinfo->driver, KBUILD_MODNAME, sizeof(drvinfo->driver));
+	strscpy(drvinfo->bus_info, pci_name(to_pci_dev(dev->dev.parent)),
+		sizeof(drvinfo->bus_info));
+	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
+		 "%u.%u.%u.%u, TP %u.%u.%u.%u",
+		 FW_HDR_FW_VER_MAJOR_G(adapter->params.dev.fwrev),
+		 FW_HDR_FW_VER_MINOR_G(adapter->params.dev.fwrev),
+		 FW_HDR_FW_VER_MICRO_G(adapter->params.dev.fwrev),
+		 FW_HDR_FW_VER_BUILD_G(adapter->params.dev.fwrev),
+		 FW_HDR_FW_VER_MAJOR_G(adapter->params.dev.tprev),
+		 FW_HDR_FW_VER_MINOR_G(adapter->params.dev.tprev),
+		 FW_HDR_FW_VER_MICRO_G(adapter->params.dev.tprev),
+		 FW_HDR_FW_VER_BUILD_G(adapter->params.dev.tprev));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1244,7 +1928,13 @@ static void cxgb4vf_set_msglevel(struct net_device *dev, u32 msglevel)
  * first Queue Set.
  */
 static void cxgb4vf_get_ringparam(struct net_device *dev,
+<<<<<<< HEAD
 				  struct ethtool_ringparam *rp)
+=======
+				  struct ethtool_ringparam *rp,
+				  struct kernel_ethtool_ringparam *kernel_rp,
+				  struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct port_info *pi = netdev_priv(dev);
 	const struct sge *s = &pi->adapter->sge;
@@ -1267,7 +1957,13 @@ static void cxgb4vf_get_ringparam(struct net_device *dev,
  * device -- after vetting them of course!
  */
 static int cxgb4vf_set_ringparam(struct net_device *dev,
+<<<<<<< HEAD
 				 struct ethtool_ringparam *rp)
+=======
+				 struct ethtool_ringparam *rp,
+				 struct kernel_ethtool_ringparam *kernel_rp,
+				 struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct port_info *pi = netdev_priv(dev);
 	struct adapter *adapter = pi->adapter;
@@ -1283,7 +1979,11 @@ static int cxgb4vf_set_ringparam(struct net_device *dev,
 	    rp->tx_pending < MIN_TXQ_ENTRIES)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	if (adapter->flags & FULL_INIT_DONE)
+=======
+	if (adapter->flags & CXGB4VF_FULL_INIT_DONE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 
 	for (qs = pi->first_qset; qs < pi->first_qset + pi->nqsets; qs++) {
@@ -1300,7 +2000,13 @@ static int cxgb4vf_set_ringparam(struct net_device *dev,
  * interrupt holdoff timer to be read on all of the device's Queue Sets.
  */
 static int cxgb4vf_get_coalesce(struct net_device *dev,
+<<<<<<< HEAD
 				struct ethtool_coalesce *coalesce)
+=======
+				struct ethtool_coalesce *coalesce,
+				struct kernel_ethtool_coalesce *kernel_coal,
+				struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct port_info *pi = netdev_priv(dev);
 	const struct adapter *adapter = pi->adapter;
@@ -1308,7 +2014,11 @@ static int cxgb4vf_get_coalesce(struct net_device *dev,
 
 	coalesce->rx_coalesce_usecs = qtimer_val(adapter, rspq);
 	coalesce->rx_max_coalesced_frames =
+<<<<<<< HEAD
 		((rspq->intr_params & QINTR_CNT_EN)
+=======
+		((rspq->intr_params & QINTR_CNT_EN_F)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 ? adapter->sge.counter_val[rspq->pktcnt_idx]
 		 : 0);
 	return 0;
@@ -1320,7 +2030,13 @@ static int cxgb4vf_get_coalesce(struct net_device *dev,
  * the interrupt holdoff timer on any of the device's Queue Sets.
  */
 static int cxgb4vf_set_coalesce(struct net_device *dev,
+<<<<<<< HEAD
 				struct ethtool_coalesce *coalesce)
+=======
+				struct ethtool_coalesce *coalesce,
+				struct kernel_ethtool_coalesce *kernel_coal,
+				struct netlink_ext_ack *extack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const struct port_info *pi = netdev_priv(dev);
 	struct adapter *adapter = pi->adapter;
@@ -1340,8 +2056,13 @@ static void cxgb4vf_get_pauseparam(struct net_device *dev,
 	struct port_info *pi = netdev_priv(dev);
 
 	pauseparam->autoneg = (pi->link_cfg.requested_fc & PAUSE_AUTONEG) != 0;
+<<<<<<< HEAD
 	pauseparam->rx_pause = (pi->link_cfg.fc & PAUSE_RX) != 0;
 	pauseparam->tx_pause = (pi->link_cfg.fc & PAUSE_TX) != 0;
+=======
+	pauseparam->rx_pause = (pi->link_cfg.advertised_fc & PAUSE_RX) != 0;
+	pauseparam->tx_pause = (pi->link_cfg.advertised_fc & PAUSE_TX) != 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1536,9 +2257,19 @@ static void cxgb4vf_get_regs(struct net_device *dev,
 	reg_block_dump(adapter, regbuf,
 		       T4VF_MPS_BASE_ADDR + T4VF_MOD_MAP_MPS_FIRST,
 		       T4VF_MPS_BASE_ADDR + T4VF_MOD_MAP_MPS_LAST);
+<<<<<<< HEAD
 	reg_block_dump(adapter, regbuf,
 		       T4VF_PL_BASE_ADDR + T4VF_MOD_MAP_PL_FIRST,
 		       T4VF_PL_BASE_ADDR + T4VF_MOD_MAP_PL_LAST);
+=======
+
+	/* T5 adds new registers in the PL Register map.
+	 */
+	reg_block_dump(adapter, regbuf,
+		       T4VF_PL_BASE_ADDR + T4VF_MOD_MAP_PL_FIRST,
+		       T4VF_PL_BASE_ADDR + (is_t4(adapter->params.chip)
+		       ? PL_VF_WHOAMI_A : PL_VF_REVISION_A));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg_block_dump(adapter, regbuf,
 		       T4VF_CIM_BASE_ADDR + T4VF_MOD_MAP_CIM_FIRST,
 		       T4VF_CIM_BASE_ADDR + T4VF_MOD_MAP_CIM_LAST);
@@ -1563,9 +2294,20 @@ static void cxgb4vf_get_wol(struct net_device *dev,
  * TCP Segmentation Offload flags which we support.
  */
 #define TSO_FLAGS (NETIF_F_TSO | NETIF_F_TSO6 | NETIF_F_TSO_ECN)
+<<<<<<< HEAD
 
 static const struct ethtool_ops cxgb4vf_ethtool_ops = {
 	.get_settings		= cxgb4vf_get_settings,
+=======
+#define VLAN_FEAT (NETIF_F_SG | NETIF_F_IP_CSUM | TSO_FLAGS | \
+		   NETIF_F_GRO | NETIF_F_IPV6_CSUM | NETIF_F_HIGHDMA)
+
+static const struct ethtool_ops cxgb4vf_ethtool_ops = {
+	.supported_coalesce_params = ETHTOOL_COALESCE_RX_USECS |
+				     ETHTOOL_COALESCE_RX_MAX_FRAMES,
+	.get_link_ksettings	= cxgb4vf_get_link_ksettings,
+	.get_fecparam		= cxgb4vf_get_fecparam,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_drvinfo		= cxgb4vf_get_drvinfo,
 	.get_msglevel		= cxgb4vf_get_msglevel,
 	.set_msglevel		= cxgb4vf_set_msglevel,
@@ -1590,6 +2332,89 @@ static const struct ethtool_ops cxgb4vf_ethtool_ops = {
  */
 
 /*
+<<<<<<< HEAD
+=======
+ * Show Firmware Mailbox Command/Reply Log
+ *
+ * Note that we don't do any locking when dumping the Firmware Mailbox Log so
+ * it's possible that we can catch things during a log update and therefore
+ * see partially corrupted log entries.  But i9t's probably Good Enough(tm).
+ * If we ever decide that we want to make sure that we're dumping a coherent
+ * log, we'd need to perform locking in the mailbox logging and in
+ * mboxlog_open() where we'd need to grab the entire mailbox log in one go
+ * like we do for the Firmware Device Log.  But as stated above, meh ...
+ */
+static int mboxlog_show(struct seq_file *seq, void *v)
+{
+	struct adapter *adapter = seq->private;
+	struct mbox_cmd_log *log = adapter->mbox_log;
+	struct mbox_cmd *entry;
+	int entry_idx, i;
+
+	if (v == SEQ_START_TOKEN) {
+		seq_printf(seq,
+			   "%10s  %15s  %5s  %5s  %s\n",
+			   "Seq#", "Tstamp", "Atime", "Etime",
+			   "Command/Reply");
+		return 0;
+	}
+
+	entry_idx = log->cursor + ((uintptr_t)v - 2);
+	if (entry_idx >= log->size)
+		entry_idx -= log->size;
+	entry = mbox_cmd_log_entry(log, entry_idx);
+
+	/* skip over unused entries */
+	if (entry->timestamp == 0)
+		return 0;
+
+	seq_printf(seq, "%10u  %15llu  %5d  %5d",
+		   entry->seqno, entry->timestamp,
+		   entry->access, entry->execute);
+	for (i = 0; i < MBOX_LEN / 8; i++) {
+		u64 flit = entry->cmd[i];
+		u32 hi = (u32)(flit >> 32);
+		u32 lo = (u32)flit;
+
+		seq_printf(seq, "  %08x %08x", hi, lo);
+	}
+	seq_puts(seq, "\n");
+	return 0;
+}
+
+static inline void *mboxlog_get_idx(struct seq_file *seq, loff_t pos)
+{
+	struct adapter *adapter = seq->private;
+	struct mbox_cmd_log *log = adapter->mbox_log;
+
+	return ((pos <= log->size) ? (void *)(uintptr_t)(pos + 1) : NULL);
+}
+
+static void *mboxlog_start(struct seq_file *seq, loff_t *pos)
+{
+	return *pos ? mboxlog_get_idx(seq, *pos) : SEQ_START_TOKEN;
+}
+
+static void *mboxlog_next(struct seq_file *seq, void *v, loff_t *pos)
+{
+	++*pos;
+	return mboxlog_get_idx(seq, *pos);
+}
+
+static void mboxlog_stop(struct seq_file *seq, void *v)
+{
+}
+
+static const struct seq_operations mboxlog_sops = {
+	.start = mboxlog_start,
+	.next  = mboxlog_next,
+	.stop  = mboxlog_stop,
+	.show  = mboxlog_show
+};
+
+DEFINE_SEQ_ATTRIBUTE(mboxlog);
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Show SGE Queue Set information.  We display QPL Queues Sets per line.
  */
 #define QPL	4
@@ -1694,7 +2519,11 @@ static int sge_qinfo_show(struct seq_file *seq, void *v)
 static int sge_queue_entries(const struct adapter *adapter)
 {
 	return DIV_ROUND_UP(adapter->sge.ethqsets, QPL) + 1 +
+<<<<<<< HEAD
 		((adapter->flags & USING_MSI) != 0);
+=======
+		((adapter->flags & CXGB4VF_USING_MSI) != 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *sge_queue_start(struct seq_file *seq, loff_t *pos)
@@ -1716,13 +2545,18 @@ static void *sge_queue_next(struct seq_file *seq, void *v, loff_t *pos)
 	return *pos < entries ? (void *)((uintptr_t)*pos + 1) : NULL;
 }
 
+<<<<<<< HEAD
 static const struct seq_operations sge_qinfo_seq_ops = {
+=======
+static const struct seq_operations sge_qinfo_sops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start = sge_queue_start,
 	.next  = sge_queue_next,
 	.stop  = sge_queue_stop,
 	.show  = sge_qinfo_show
 };
 
+<<<<<<< HEAD
 static int sge_qinfo_open(struct inode *inode, struct file *file)
 {
 	int res = seq_open(file, &sge_qinfo_seq_ops);
@@ -1741,6 +2575,9 @@ static const struct file_operations sge_qinfo_debugfs_fops = {
 	.llseek  = seq_lseek,
 	.release = seq_release,
 };
+=======
+DEFINE_SEQ_ATTRIBUTE(sge_qinfo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Show SGE Queue Set statistics.  We display QPL Queues Sets per line.
@@ -1840,7 +2677,11 @@ static int sge_qstats_show(struct seq_file *seq, void *v)
 static int sge_qstats_entries(const struct adapter *adapter)
 {
 	return DIV_ROUND_UP(adapter->sge.ethqsets, QPL) + 1 +
+<<<<<<< HEAD
 		((adapter->flags & USING_MSI) != 0);
+=======
+		((adapter->flags & CXGB4VF_USING_MSI) != 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void *sge_qstats_start(struct seq_file *seq, loff_t *pos)
@@ -1862,13 +2703,18 @@ static void *sge_qstats_next(struct seq_file *seq, void *v, loff_t *pos)
 	return *pos < entries ? (void *)((uintptr_t)*pos + 1) : NULL;
 }
 
+<<<<<<< HEAD
 static const struct seq_operations sge_qstats_seq_ops = {
+=======
+static const struct seq_operations sge_qstats_sops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start = sge_qstats_start,
 	.next  = sge_qstats_next,
 	.stop  = sge_qstats_stop,
 	.show  = sge_qstats_show
 };
 
+<<<<<<< HEAD
 static int sge_qstats_open(struct inode *inode, struct file *file)
 {
 	int res = seq_open(file, &sge_qstats_seq_ops);
@@ -1887,6 +2733,9 @@ static const struct file_operations sge_qstats_proc_fops = {
 	.llseek  = seq_lseek,
 	.release = seq_release,
 };
+=======
+DEFINE_SEQ_ATTRIBUTE(sge_qstats);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Show PCI-E SR-IOV Virtual Function Resource Limits.
@@ -1915,6 +2764,7 @@ static int resources_show(struct seq_file *seq, void *v)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static int resources_open(struct inode *inode, struct file *file)
 {
@@ -1928,6 +2778,9 @@ static const struct file_operations resources_proc_fops = {
 	.llseek  = seq_lseek,
 	.release = single_release,
 };
+=======
+DEFINE_SHOW_ATTRIBUTE(resources);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Show Virtual Interfaces.
@@ -1972,13 +2825,18 @@ static void interfaces_stop(struct seq_file *seq, void *v)
 {
 }
 
+<<<<<<< HEAD
 static const struct seq_operations interfaces_seq_ops = {
+=======
+static const struct seq_operations interfaces_sops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start = interfaces_start,
 	.next  = interfaces_next,
 	.stop  = interfaces_stop,
 	.show  = interfaces_show
 };
 
+<<<<<<< HEAD
 static int interfaces_open(struct inode *inode, struct file *file)
 {
 	int res = seq_open(file, &interfaces_seq_ops);
@@ -1997,6 +2855,9 @@ static const struct file_operations interfaces_proc_fops = {
 	.llseek  = seq_lseek,
 	.release = seq_release,
 };
+=======
+DEFINE_SEQ_ATTRIBUTE(interfaces);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * /sys/kernel/debugfs/cxgb4vf/ files list.
@@ -2008,10 +2869,18 @@ struct cxgb4vf_debugfs_entry {
 };
 
 static struct cxgb4vf_debugfs_entry debugfs_files[] = {
+<<<<<<< HEAD
 	{ "sge_qinfo",  S_IRUGO, &sge_qinfo_debugfs_fops },
 	{ "sge_qstats", S_IRUGO, &sge_qstats_proc_fops },
 	{ "resources",  S_IRUGO, &resources_proc_fops },
 	{ "interfaces", S_IRUGO, &interfaces_proc_fops },
+=======
+	{ "mboxlog",    0444, &mboxlog_fops },
+	{ "sge_qinfo",  0444, &sge_qinfo_fops },
+	{ "sge_qstats", 0444, &sge_qstats_fops },
+	{ "resources",  0444, &resources_fops },
+	{ "interfaces", 0444, &interfaces_fops },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -2023,7 +2892,11 @@ static struct cxgb4vf_debugfs_entry debugfs_files[] = {
  * Set up out /sys/kernel/debug/cxgb4vf sub-nodes.  We assume that the
  * directory (debugfs_root) has already been set up.
  */
+<<<<<<< HEAD
 static int __devinit setup_debugfs(struct adapter *adapter)
+=======
+static int setup_debugfs(struct adapter *adapter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -2033,11 +2906,18 @@ static int __devinit setup_debugfs(struct adapter *adapter)
 	 * Debugfs support is best effort.
 	 */
 	for (i = 0; i < ARRAY_SIZE(debugfs_files); i++)
+<<<<<<< HEAD
 		(void)debugfs_create_file(debugfs_files[i].name,
 				  debugfs_files[i].mode,
 				  adapter->debugfs_root,
 				  (void *)adapter,
 				  debugfs_files[i].fops);
+=======
+		debugfs_create_file(debugfs_files[i].name,
+				    debugfs_files[i].mode,
+				    adapter->debugfs_root, adapter,
+				    debugfs_files[i].fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -2059,11 +2939,82 @@ static void cleanup_debugfs(struct adapter *adapter)
 	/* nothing to do */
 }
 
+<<<<<<< HEAD
+=======
+/* Figure out how many Ports and Queue Sets we can support.  This depends on
+ * knowing our Virtual Function Resources and may be called a second time if
+ * we fall back from MSI-X to MSI Interrupt Mode.
+ */
+static void size_nports_qsets(struct adapter *adapter)
+{
+	struct vf_resources *vfres = &adapter->params.vfres;
+	unsigned int ethqsets, pmask_nports;
+
+	/* The number of "ports" which we support is equal to the number of
+	 * Virtual Interfaces with which we've been provisioned.
+	 */
+	adapter->params.nports = vfres->nvi;
+	if (adapter->params.nports > MAX_NPORTS) {
+		dev_warn(adapter->pdev_dev, "only using %d of %d maximum"
+			 " allowed virtual interfaces\n", MAX_NPORTS,
+			 adapter->params.nports);
+		adapter->params.nports = MAX_NPORTS;
+	}
+
+	/* We may have been provisioned with more VIs than the number of
+	 * ports we're allowed to access (our Port Access Rights Mask).
+	 * This is obviously a configuration conflict but we don't want to
+	 * crash the kernel or anything silly just because of that.
+	 */
+	pmask_nports = hweight32(adapter->params.vfres.pmask);
+	if (pmask_nports < adapter->params.nports) {
+		dev_warn(adapter->pdev_dev, "only using %d of %d provisioned"
+			 " virtual interfaces; limited by Port Access Rights"
+			 " mask %#x\n", pmask_nports, adapter->params.nports,
+			 adapter->params.vfres.pmask);
+		adapter->params.nports = pmask_nports;
+	}
+
+	/* We need to reserve an Ingress Queue for the Asynchronous Firmware
+	 * Event Queue.  And if we're using MSI Interrupts, we'll also need to
+	 * reserve an Ingress Queue for a Forwarded Interrupts.
+	 *
+	 * The rest of the FL/Intr-capable ingress queues will be matched up
+	 * one-for-one with Ethernet/Control egress queues in order to form
+	 * "Queue Sets" which will be aportioned between the "ports".  For
+	 * each Queue Set, we'll need the ability to allocate two Egress
+	 * Contexts -- one for the Ingress Queue Free List and one for the TX
+	 * Ethernet Queue.
+	 *
+	 * Note that even if we're currently configured to use MSI-X
+	 * Interrupts (module variable msi == MSI_MSIX) we may get downgraded
+	 * to MSI Interrupts if we can't get enough MSI-X Interrupts.  If that
+	 * happens we'll need to adjust things later.
+	 */
+	ethqsets = vfres->niqflint - 1 - (msi == MSI_MSI);
+	if (vfres->nethctrl != ethqsets)
+		ethqsets = min(vfres->nethctrl, ethqsets);
+	if (vfres->neq < ethqsets*2)
+		ethqsets = vfres->neq/2;
+	if (ethqsets > MAX_ETH_QSETS)
+		ethqsets = MAX_ETH_QSETS;
+	adapter->sge.max_ethqsets = ethqsets;
+
+	if (adapter->sge.max_ethqsets < adapter->params.nports) {
+		dev_warn(adapter->pdev_dev, "only using %d of %d available"
+			 " virtual interfaces (too few Queue Sets)\n",
+			 adapter->sge.max_ethqsets, adapter->params.nports);
+		adapter->params.nports = adapter->sge.max_ethqsets;
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Perform early "adapter" initialization.  This is where we discover what
  * adapter parameters we're going to be using and initialize basic adapter
  * hardware support.
  */
+<<<<<<< HEAD
 static int __devinit adap_init0(struct adapter *adapter)
 {
 	struct vf_resources *vfres = &adapter->params.vfres;
@@ -2081,6 +3032,14 @@ static int __devinit adap_init0(struct adapter *adapter)
 			" err=%d\n", err);
 		return err;
 	}
+=======
+static int adap_init0(struct adapter *adapter)
+{
+	struct sge_params *sge_params = &adapter->params.sge;
+	struct sge *s = &adapter->sge;
+	int err;
+	u32 param, val = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Some environments do not properly handle PCIE FLRs -- e.g. in Linux
@@ -2143,11 +3102,25 @@ static int __devinit adap_init0(struct adapter *adapter)
 		return err;
 	}
 
+<<<<<<< HEAD
+=======
+	/* If we're running on newer firmware, let it know that we're
+	 * prepared to deal with encapsulated CPL messages.  Older
+	 * firmware won't understand this and we'll just get
+	 * unencapsulated messages ...
+	 */
+	param = FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_PFVF) |
+		FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_PFVF_CPLFW4MSG_ENCAP);
+	val = 1;
+	(void) t4vf_set_params(adapter, 1, &param, &val);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Retrieve our RX interrupt holdoff timer values and counter
 	 * threshold values from the SGE parameters.
 	 */
 	s->timer_val[0] = core_ticks_to_us(adapter,
+<<<<<<< HEAD
 		TIMERVALUE0_GET(sge_params->sge_timer_value_0_and_1));
 	s->timer_val[1] = core_ticks_to_us(adapter,
 		TIMERVALUE1_GET(sge_params->sge_timer_value_0_and_1));
@@ -2168,6 +3141,24 @@ static int __devinit adap_init0(struct adapter *adapter)
 		THRESHOLD_2_GET(sge_params->sge_ingress_rx_threshold);
 	s->counter_val[3] =
 		THRESHOLD_3_GET(sge_params->sge_ingress_rx_threshold);
+=======
+		TIMERVALUE0_G(sge_params->sge_timer_value_0_and_1));
+	s->timer_val[1] = core_ticks_to_us(adapter,
+		TIMERVALUE1_G(sge_params->sge_timer_value_0_and_1));
+	s->timer_val[2] = core_ticks_to_us(adapter,
+		TIMERVALUE0_G(sge_params->sge_timer_value_2_and_3));
+	s->timer_val[3] = core_ticks_to_us(adapter,
+		TIMERVALUE1_G(sge_params->sge_timer_value_2_and_3));
+	s->timer_val[4] = core_ticks_to_us(adapter,
+		TIMERVALUE0_G(sge_params->sge_timer_value_4_and_5));
+	s->timer_val[5] = core_ticks_to_us(adapter,
+		TIMERVALUE1_G(sge_params->sge_timer_value_4_and_5));
+
+	s->counter_val[0] = THRESHOLD_0_G(sge_params->sge_ingress_rx_threshold);
+	s->counter_val[1] = THRESHOLD_1_G(sge_params->sge_ingress_rx_threshold);
+	s->counter_val[2] = THRESHOLD_2_G(sge_params->sge_ingress_rx_threshold);
+	s->counter_val[3] = THRESHOLD_3_G(sge_params->sge_ingress_rx_threshold);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Grab our Virtual Interface resource allocation, extract the
@@ -2181,6 +3172,7 @@ static int __devinit adap_init0(struct adapter *adapter)
 		return err;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * The number of "ports" which we support is equal to the number of
 	 * Virtual Interfaces with which we've been provisioned.
@@ -2240,10 +3232,29 @@ static int __devinit adap_init0(struct adapter *adapter)
 		adapter->params.nports = adapter->sge.max_ethqsets;
 	}
 	if (adapter->params.nports == 0) {
+=======
+	/* Check for various parameter sanity issues */
+	if (adapter->params.vfres.pmask == 0) {
+		dev_err(adapter->pdev_dev, "no port access configured\n"
+			"usable!\n");
+		return -EINVAL;
+	}
+	if (adapter->params.vfres.nvi == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(adapter->pdev_dev, "no virtual interfaces configured/"
 			"usable!\n");
 		return -EINVAL;
 	}
+<<<<<<< HEAD
+=======
+
+	/* Initialize nports and max_ethqsets now that we have our Virtual
+	 * Function Resources.
+	 */
+	size_nports_qsets(adapter);
+
+	adapter->flags |= CXGB4VF_FW_OK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2251,8 +3262,14 @@ static inline void init_rspq(struct sge_rspq *rspq, u8 timer_idx,
 			     u8 pkt_cnt_idx, unsigned int size,
 			     unsigned int iqe_size)
 {
+<<<<<<< HEAD
 	rspq->intr_params = (QINTR_TIMER_IDX(timer_idx) |
 			     (pkt_cnt_idx < SGE_NCOUNTERS ? QINTR_CNT_EN : 0));
+=======
+	rspq->intr_params = (QINTR_TIMER_IDX_V(timer_idx) |
+			     (pkt_cnt_idx < SGE_NCOUNTERS ?
+			      QINTR_CNT_EN_F : 0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rspq->pktcnt_idx = (pkt_cnt_idx < SGE_NCOUNTERS
 			    ? pkt_cnt_idx
 			    : 0);
@@ -2266,7 +3283,11 @@ static inline void init_rspq(struct sge_rspq *rspq, u8 timer_idx,
  * be modified by the admin via ethtool and cxgbtool prior to the adapter
  * being brought up for the first time.
  */
+<<<<<<< HEAD
 static void __devinit cfg_queues(struct adapter *adapter)
+=======
+static void cfg_queues(struct adapter *adapter)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sge *s = &adapter->sge;
 	int q10g, n10g, qidx, pidx, qs;
@@ -2277,14 +3298,23 @@ static void __devinit cfg_queues(struct adapter *adapter)
 	 * support.  In particular, this means that we need to know what kind
 	 * of interrupts we'll be using ...
 	 */
+<<<<<<< HEAD
 	BUG_ON((adapter->flags & (USING_MSIX|USING_MSI)) == 0);
+=======
+	BUG_ON((adapter->flags &
+	       (CXGB4VF_USING_MSIX | CXGB4VF_USING_MSI)) == 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Count the number of 10GbE Virtual Interfaces that we have.
 	 */
 	n10g = 0;
 	for_each_port(adapter, pidx)
+<<<<<<< HEAD
 		n10g += is_10g_port(&adap2pinfo(adapter, pidx)->link_cfg);
+=======
+		n10g += is_x_10g_port(&adap2pinfo(adapter, pidx)->link_cfg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * We default to 1 queue per non-10G port and up to # of cores queues
@@ -2309,7 +3339,11 @@ static void __devinit cfg_queues(struct adapter *adapter)
 		struct port_info *pi = adap2pinfo(adapter, pidx);
 
 		pi->first_qset = qidx;
+<<<<<<< HEAD
 		pi->nqsets = is_10g_port(&pi->link_cfg) ? q10g : 1;
+=======
+		pi->nqsets = is_x_10g_port(&pi->link_cfg) ? q10g : 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		qidx += pi->nqsets;
 	}
 	s->ethqsets = qidx;
@@ -2361,7 +3395,11 @@ static void __devinit cfg_queues(struct adapter *adapter)
  * Reduce the number of Ethernet queues across all ports to at most n.
  * n provides at least one queue per port.
  */
+<<<<<<< HEAD
 static void __devinit reduce_ethqs(struct adapter *adapter, int n)
+=======
+static void reduce_ethqs(struct adapter *adapter, int n)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	struct port_info *pi;
@@ -2400,9 +3438,15 @@ static void __devinit reduce_ethqs(struct adapter *adapter, int n)
  * for our "extras".  Note that this process may lower the maximum number of
  * allowed Queue Sets ...
  */
+<<<<<<< HEAD
 static int __devinit enable_msix(struct adapter *adapter)
 {
 	int i, err, want, need;
+=======
+static int enable_msix(struct adapter *adapter)
+{
+	int i, want, need, nqsets;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct msix_entry entries[MSIX_ENTRIES];
 	struct sge *s = &adapter->sge;
 
@@ -2418,6 +3462,7 @@ static int __devinit enable_msix(struct adapter *adapter)
 	 */
 	want = s->max_ethqsets + MSIX_EXTRAS;
 	need = adapter->params.nports + MSIX_EXTRAS;
+<<<<<<< HEAD
 	while ((err = pci_enable_msix(adapter->pdev, entries, want)) >= need)
 		want = err;
 
@@ -2438,6 +3483,25 @@ static int __devinit enable_msix(struct adapter *adapter)
 			 " not using MSI-X\n", err);
 	}
 	return err;
+=======
+
+	want = pci_enable_msix_range(adapter->pdev, entries, need, want);
+	if (want < 0)
+		return want;
+
+	nqsets = want - MSIX_EXTRAS;
+	if (nqsets < s->max_ethqsets) {
+		dev_warn(adapter->pdev_dev, "only enough MSI-X vectors"
+			 " for %d Queue Sets\n", nqsets);
+		s->max_ethqsets = nqsets;
+		if (nqsets < s->ethqsets)
+			reduce_ethqs(adapter, nqsets);
+	}
+	for (i = 0; i < want; ++i)
+		adapter->msix_info[i].vec = entries[i].vector;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct net_device_ops cxgb4vf_netdev_ops	= {
@@ -2448,7 +3512,11 @@ static const struct net_device_ops cxgb4vf_netdev_ops	= {
 	.ndo_set_rx_mode	= cxgb4vf_set_rxmode,
 	.ndo_set_mac_address	= cxgb4vf_set_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
+<<<<<<< HEAD
 	.ndo_do_ioctl		= cxgb4vf_do_ioctl,
+=======
+	.ndo_eth_ioctl		= cxgb4vf_do_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_change_mtu		= cxgb4vf_change_mtu,
 	.ndo_fix_features	= cxgb4vf_fix_features,
 	.ndo_set_features	= cxgb4vf_set_features,
@@ -2457,11 +3525,48 @@ static const struct net_device_ops cxgb4vf_netdev_ops	= {
 #endif
 };
 
+<<<<<<< HEAD
+=======
+/**
+ *	cxgb4vf_get_port_mask - Get port mask for the VF based on mac
+ *				address stored on the adapter
+ *	@adapter: The adapter
+ *
+ *	Find the port mask for the VF based on the index of mac
+ *	address stored in the adapter. If no mac address is stored on
+ *	the adapter for the VF, use the port mask received from the
+ *	firmware.
+ */
+static unsigned int cxgb4vf_get_port_mask(struct adapter *adapter)
+{
+	unsigned int naddr = 1, pidx = 0;
+	unsigned int pmask, rmask = 0;
+	u8 mac[ETH_ALEN];
+	int err;
+
+	pmask = adapter->params.vfres.pmask;
+	while (pmask) {
+		if (pmask & 1) {
+			err = t4vf_get_vf_mac_acl(adapter, pidx, &naddr, mac);
+			if (!err && !is_zero_ether_addr(mac))
+				rmask |= (1 << pidx);
+		}
+		pmask >>= 1;
+		pidx++;
+	}
+	if (!rmask)
+		rmask = adapter->params.vfres.pmask;
+
+	return rmask;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * "Probe" a device: initialize a device and construct all kernel and driver
  * state needed to manage the device.  This routine is called "init_one" in
  * the PF Driver ...
  */
+<<<<<<< HEAD
 static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 				       const struct pci_device_id *ent)
 {
@@ -2482,15 +3587,30 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 		printk(KERN_INFO "%s - version %s\n", DRV_DESC, DRV_VERSION);
 		version_printed = 1;
 	}
+=======
+static int cxgb4vf_pci_probe(struct pci_dev *pdev,
+			     const struct pci_device_id *ent)
+{
+	struct adapter *adapter;
+	struct net_device *netdev;
+	struct port_info *pi;
+	unsigned int pmask;
+	int err, pidx;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Initialize generic PCI device state.
 	 */
 	err = pci_enable_device(pdev);
+<<<<<<< HEAD
 	if (err) {
 		dev_err(&pdev->dev, "cannot enable PCI device\n");
 		return err;
 	}
+=======
+	if (err)
+		return dev_err_probe(&pdev->dev, err, "cannot enable PCI device\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Reserve PCI resources for the device.  If we can't get them some
@@ -2503,6 +3623,7 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 	}
 
 	/*
+<<<<<<< HEAD
 	 * Set up our DMA mask: try for 64-bit address masking first and
 	 * fall back to 32-bit if we can't get 64 bits ...
 	 */
@@ -2522,6 +3643,14 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 			goto err_release_regions;
 		}
 		pci_using_dac = 0;
+=======
+	 * Set up our DMA mask
+	 */
+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+	if (err) {
+		dev_err(&pdev->dev, "no usable DMA configuration\n");
+		goto err_release_regions;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2541,10 +3670,28 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 	adapter->pdev = pdev;
 	adapter->pdev_dev = &pdev->dev;
 
+<<<<<<< HEAD
+=======
+	adapter->mbox_log = kzalloc(sizeof(*adapter->mbox_log) +
+				    (sizeof(struct mbox_cmd) *
+				     T4VF_OS_LOG_MBOX_CMDS),
+				    GFP_KERNEL);
+	if (!adapter->mbox_log) {
+		err = -ENOMEM;
+		goto err_free_adapter;
+	}
+	adapter->mbox_log->size = T4VF_OS_LOG_MBOX_CMDS;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Initialize SMP data synchronization resources.
 	 */
 	spin_lock_init(&adapter->stats_lock);
+<<<<<<< HEAD
+=======
+	spin_lock_init(&adapter->mbox_lock);
+	INIT_LIST_HEAD(&adapter->mlist.list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Map our I/O registers in BAR0.
@@ -2556,21 +3703,83 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 		goto err_free_adapter;
 	}
 
+<<<<<<< HEAD
+=======
+	/* Wait for the device to become ready before proceeding ...
+	 */
+	err = t4vf_prep_adapter(adapter);
+	if (err) {
+		dev_err(adapter->pdev_dev, "device didn't become ready:"
+			" err=%d\n", err);
+		goto err_unmap_bar0;
+	}
+
+	/* For T5 and later we want to use the new BAR-based User Doorbells,
+	 * so we need to map BAR2 here ...
+	 */
+	if (!is_t4(adapter->params.chip)) {
+		adapter->bar2 = ioremap_wc(pci_resource_start(pdev, 2),
+					   pci_resource_len(pdev, 2));
+		if (!adapter->bar2) {
+			dev_err(adapter->pdev_dev, "cannot map BAR2 doorbells\n");
+			err = -ENOMEM;
+			goto err_unmap_bar0;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Initialize adapter level features.
 	 */
 	adapter->name = pci_name(pdev);
+<<<<<<< HEAD
 	adapter->msg_enable = dflt_msg_enable;
 	err = adap_init0(adapter);
 	if (err)
 		goto err_unmap_bar;
+=======
+	adapter->msg_enable = DFLT_MSG_ENABLE;
+
+	/* If possible, we use PCIe Relaxed Ordering Attribute to deliver
+	 * Ingress Packet Data to Free List Buffers in order to allow for
+	 * chipset performance optimizations between the Root Complex and
+	 * Memory Controllers.  (Messages to the associated Ingress Queue
+	 * notifying new Packet Placement in the Free Lists Buffers will be
+	 * send without the Relaxed Ordering Attribute thus guaranteeing that
+	 * all preceding PCIe Transaction Layer Packets will be processed
+	 * first.)  But some Root Complexes have various issues with Upstream
+	 * Transaction Layer Packets with the Relaxed Ordering Attribute set.
+	 * The PCIe devices which under the Root Complexes will be cleared the
+	 * Relaxed Ordering bit in the configuration space, So we check our
+	 * PCIe configuration space to see if it's flagged with advice against
+	 * using Relaxed Ordering.
+	 */
+	if (!pcie_relaxed_ordering_enabled(pdev))
+		adapter->flags |= CXGB4VF_ROOT_NO_RELAXED_ORDERING;
+
+	err = adap_init0(adapter);
+	if (err)
+		dev_err(&pdev->dev,
+			"Adapter initialization failed, error %d. Continuing in debug mode\n",
+			err);
+
+	/* Initialize hash mac addr list */
+	INIT_LIST_HEAD(&adapter->mac_hlist);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Allocate our "adapter ports" and stitch everything together.
 	 */
+<<<<<<< HEAD
 	pmask = adapter->params.vfres.pmask;
 	for_each_port(adapter, pidx) {
 		int port_id, viid;
+=======
+	pmask = cxgb4vf_get_port_mask(adapter);
+	for_each_port(adapter, pidx) {
+		int port_id, viid;
+		u8 mac[ETH_ALEN];
+		unsigned int naddr = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * We simplistically allocate our virtual interfaces
@@ -2582,6 +3791,7 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 			break;
 		port_id = ffs(pmask) - 1;
 		pmask &= ~(1 << port_id);
+<<<<<<< HEAD
 		viid = t4vf_alloc_vi(adapter, port_id);
 		if (viid < 0) {
 			dev_err(&pdev->dev, "cannot allocate VI for port %d:"
@@ -2589,6 +3799,8 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 			err = viid;
 			goto err_free_dev;
 		}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Allocate our network device and stitch things together.
@@ -2596,7 +3808,10 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 		netdev = alloc_etherdev_mq(sizeof(struct port_info),
 					   MAX_PORT_QSETS);
 		if (netdev == NULL) {
+<<<<<<< HEAD
 			t4vf_free_vi(adapter, viid);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			err = -ENOMEM;
 			goto err_free_dev;
 		}
@@ -2606,13 +3821,17 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 		pi->adapter = adapter;
 		pi->pidx = pidx;
 		pi->port_id = port_id;
+<<<<<<< HEAD
 		pi->viid = viid;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Initialize the starting state of our "port" and register
 		 * it.
 		 */
 		pi->xact_addr_filt = -1;
+<<<<<<< HEAD
 		netif_carrier_off(netdev);
 		netdev->irq = pdev->irq;
 
@@ -2630,6 +3849,40 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 
 		netdev->netdev_ops = &cxgb4vf_netdev_ops;
 		SET_ETHTOOL_OPS(netdev, &cxgb4vf_ethtool_ops);
+=======
+		netdev->irq = pdev->irq;
+
+		netdev->hw_features = NETIF_F_SG | TSO_FLAGS | NETIF_F_GRO |
+			NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM | NETIF_F_RXCSUM |
+			NETIF_F_HW_VLAN_CTAG_TX | NETIF_F_HW_VLAN_CTAG_RX;
+		netdev->features = netdev->hw_features | NETIF_F_HIGHDMA;
+		netdev->vlan_features = netdev->features & VLAN_FEAT;
+
+		netdev->priv_flags |= IFF_UNICAST_FLT;
+		netdev->min_mtu = 81;
+		netdev->max_mtu = ETH_MAX_MTU;
+
+		netdev->netdev_ops = &cxgb4vf_netdev_ops;
+		netdev->ethtool_ops = &cxgb4vf_ethtool_ops;
+		netdev->dev_port = pi->port_id;
+
+		/*
+		 * If we haven't been able to contact the firmware, there's
+		 * nothing else we can do for this "port" ...
+		 */
+		if (!(adapter->flags & CXGB4VF_FW_OK))
+			continue;
+
+		viid = t4vf_alloc_vi(adapter, port_id);
+		if (viid < 0) {
+			dev_err(&pdev->dev,
+				"cannot allocate VI for port %d: err=%d\n",
+				port_id, viid);
+			err = viid;
+			goto err_free_dev;
+		}
+		pi->viid = viid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/*
 		 * Initialize the hardware/software state for the port.
@@ -2640,8 +3893,67 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 				pidx);
 			goto err_free_dev;
 		}
+<<<<<<< HEAD
 	}
 
+=======
+
+		err = t4vf_get_vf_mac_acl(adapter, port_id, &naddr, mac);
+		if (err) {
+			dev_err(&pdev->dev,
+				"unable to determine MAC ACL address, "
+				"continuing anyway.. (status %d)\n", err);
+		} else if (naddr && adapter->params.vfres.nvi == 1) {
+			struct sockaddr addr;
+
+			ether_addr_copy(addr.sa_data, mac);
+			err = cxgb4vf_set_mac_addr(netdev, &addr);
+			if (err) {
+				dev_err(&pdev->dev,
+					"unable to set MAC address %pM\n",
+					mac);
+				goto err_free_dev;
+			}
+			dev_info(&pdev->dev,
+				 "Using assigned MAC ACL: %pM\n", mac);
+		}
+	}
+
+	/* See what interrupts we'll be using.  If we've been configured to
+	 * use MSI-X interrupts, try to enable them but fall back to using
+	 * MSI interrupts if we can't enable MSI-X interrupts.  If we can't
+	 * get MSI interrupts we bail with the error.
+	 */
+	if (msi == MSI_MSIX && enable_msix(adapter) == 0)
+		adapter->flags |= CXGB4VF_USING_MSIX;
+	else {
+		if (msi == MSI_MSIX) {
+			dev_info(adapter->pdev_dev,
+				 "Unable to use MSI-X Interrupts; falling "
+				 "back to MSI Interrupts\n");
+
+			/* We're going to need a Forwarded Interrupt Queue so
+			 * that may cut into how many Queue Sets we can
+			 * support.
+			 */
+			msi = MSI_MSI;
+			size_nports_qsets(adapter);
+		}
+		err = pci_enable_msi(pdev);
+		if (err) {
+			dev_err(&pdev->dev, "Unable to allocate MSI Interrupts;"
+				" err=%d\n", err);
+			goto err_free_dev;
+		}
+		adapter->flags |= CXGB4VF_USING_MSI;
+	}
+
+	/* Now that we know how many "ports" we have and what interrupt
+	 * mechanism we're going to use, we can configure our queue resources.
+	 */
+	cfg_queues(adapter);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The "card" is now ready to go.  If any errors occur during device
 	 * registration we do not fail the whole "card" but rather proceed
@@ -2649,10 +3961,20 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 	 * must register at least one net device.
 	 */
 	for_each_port(adapter, pidx) {
+<<<<<<< HEAD
+=======
+		struct port_info *pi = netdev_priv(adapter->port[pidx]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		netdev = adapter->port[pidx];
 		if (netdev == NULL)
 			continue;
 
+<<<<<<< HEAD
+=======
+		netif_set_real_num_tx_queues(netdev, pi->nqsets);
+		netif_set_real_num_rx_queues(netdev, pi->nqsets);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = register_netdev(netdev);
 		if (err) {
 			dev_warn(&pdev->dev, "cannot register net device %s,"
@@ -2660,11 +3982,20 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 			continue;
 		}
 
+<<<<<<< HEAD
+=======
+		netif_carrier_off(netdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		set_bit(pidx, &adapter->registered_device_map);
 	}
 	if (adapter->registered_device_map == 0) {
 		dev_err(&pdev->dev, "could not register any net devices\n");
+<<<<<<< HEAD
 		goto err_free_dev;
+=======
+		err = -EINVAL;
+		goto err_disable_interrupts;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2674,6 +4005,7 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 		adapter->debugfs_root =
 			debugfs_create_dir(pci_name(pdev),
 					   cxgb4vf_debugfs_root);
+<<<<<<< HEAD
 		if (IS_ERR_OR_NULL(adapter->debugfs_root))
 			dev_warn(&pdev->dev, "could not create debugfs"
 				 " directory");
@@ -2708,14 +4040,25 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 	cfg_queues(adapter);
 
 	/*
+=======
+		setup_debugfs(adapter);
+	}
+
+	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Print a short notice on the existence and configuration of the new
 	 * VF network device ...
 	 */
 	for_each_port(adapter, pidx) {
 		dev_info(adapter->pdev_dev, "%s: Chelsio VF NIC PCIe %s\n",
 			 adapter->port[pidx]->name,
+<<<<<<< HEAD
 			 (adapter->flags & USING_MSIX) ? "MSI-X" :
 			 (adapter->flags & USING_MSI)  ? "MSI" : "");
+=======
+			 (adapter->flags & CXGB4VF_USING_MSIX) ? "MSI-X" :
+			 (adapter->flags & CXGB4VF_USING_MSI)  ? "MSI" : "");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2727,11 +4070,21 @@ static int __devinit cxgb4vf_pci_probe(struct pci_dev *pdev,
 	 * Error recovery and exit code.  Unwind state that's been created
 	 * so far and return the error.
 	 */
+<<<<<<< HEAD
 
 err_free_debugfs:
 	if (!IS_ERR_OR_NULL(adapter->debugfs_root)) {
 		cleanup_debugfs(adapter);
 		debugfs_remove_recursive(adapter->debugfs_root);
+=======
+err_disable_interrupts:
+	if (adapter->flags & CXGB4VF_USING_MSIX) {
+		pci_disable_msix(adapter->pdev);
+		adapter->flags &= ~CXGB4VF_USING_MSIX;
+	} else if (adapter->flags & CXGB4VF_USING_MSI) {
+		pci_disable_msi(adapter->pdev);
+		adapter->flags &= ~CXGB4VF_USING_MSI;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 err_free_dev:
@@ -2740,12 +4093,18 @@ err_free_dev:
 		if (netdev == NULL)
 			continue;
 		pi = netdev_priv(netdev);
+<<<<<<< HEAD
 		t4vf_free_vi(adapter, pi->viid);
+=======
+		if (pi->viid)
+			t4vf_free_vi(adapter, pi->viid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (test_bit(pidx, &adapter->registered_device_map))
 			unregister_netdev(netdev);
 		free_netdev(netdev);
 	}
 
+<<<<<<< HEAD
 err_unmap_bar:
 	iounmap(adapter->regs);
 
@@ -2757,6 +4116,20 @@ err_release_regions:
 	pci_release_regions(pdev);
 	pci_set_drvdata(pdev, NULL);
 	pci_clear_master(pdev);
+=======
+	if (!is_t4(adapter->params.chip))
+		iounmap(adapter->bar2);
+
+err_unmap_bar0:
+	iounmap(adapter->regs);
+
+err_free_adapter:
+	kfree(adapter->mbox_log);
+	kfree(adapter);
+
+err_release_regions:
+	pci_release_regions(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_disable_device:
 	pci_disable_device(pdev);
@@ -2769,9 +4142,16 @@ err_disable_device:
  * "probe" routine and quiesce the device (disable interrupts, etc.).  (Note
  * that this is called "remove_one" in the PF Driver.)
  */
+<<<<<<< HEAD
 static void __devexit cxgb4vf_pci_remove(struct pci_dev *pdev)
 {
 	struct adapter *adapter = pci_get_drvdata(pdev);
+=======
+static void cxgb4vf_pci_remove(struct pci_dev *pdev)
+{
+	struct adapter *adapter = pci_get_drvdata(pdev);
+	struct hash_mac_addr *entry, *tmp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Tear down driver state associated with device.
@@ -2787,12 +4167,21 @@ static void __devexit cxgb4vf_pci_remove(struct pci_dev *pdev)
 			if (test_bit(pidx, &adapter->registered_device_map))
 				unregister_netdev(adapter->port[pidx]);
 		t4vf_sge_stop(adapter);
+<<<<<<< HEAD
 		if (adapter->flags & USING_MSIX) {
 			pci_disable_msix(adapter->pdev);
 			adapter->flags &= ~USING_MSIX;
 		} else if (adapter->flags & USING_MSI) {
 			pci_disable_msi(adapter->pdev);
 			adapter->flags &= ~USING_MSI;
+=======
+		if (adapter->flags & CXGB4VF_USING_MSIX) {
+			pci_disable_msix(adapter->pdev);
+			adapter->flags &= ~CXGB4VF_USING_MSIX;
+		} else if (adapter->flags & CXGB4VF_USING_MSI) {
+			pci_disable_msi(adapter->pdev);
+			adapter->flags &= ~CXGB4VF_USING_MSI;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/*
@@ -2815,19 +4204,39 @@ static void __devexit cxgb4vf_pci_remove(struct pci_dev *pdev)
 				continue;
 
 			pi = netdev_priv(netdev);
+<<<<<<< HEAD
 			t4vf_free_vi(adapter, pi->viid);
 			free_netdev(netdev);
 		}
 		iounmap(adapter->regs);
 		kfree(adapter);
 		pci_set_drvdata(pdev, NULL);
+=======
+			if (pi->viid)
+				t4vf_free_vi(adapter, pi->viid);
+			free_netdev(netdev);
+		}
+		iounmap(adapter->regs);
+		if (!is_t4(adapter->params.chip))
+			iounmap(adapter->bar2);
+		kfree(adapter->mbox_log);
+		list_for_each_entry_safe(entry, tmp, &adapter->mac_hlist,
+					 list) {
+			list_del(&entry->list);
+			kfree(entry);
+		}
+		kfree(adapter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Disable the device and release its PCI resources.
 	 */
 	pci_disable_device(pdev);
+<<<<<<< HEAD
 	pci_clear_master(pdev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_release_regions(pdev);
 }
 
@@ -2835,7 +4244,11 @@ static void __devexit cxgb4vf_pci_remove(struct pci_dev *pdev)
  * "Shutdown" quiesce the device, stopping Ingress Packet and Interrupt
  * delivery.
  */
+<<<<<<< HEAD
 static void __devexit cxgb4vf_pci_shutdown(struct pci_dev *pdev)
+=======
+static void cxgb4vf_pci_shutdown(struct pci_dev *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct adapter *adapter;
 	int pidx;
@@ -2844,6 +4257,7 @@ static void __devexit cxgb4vf_pci_shutdown(struct pci_dev *pdev)
 	if (!adapter)
 		return;
 
+<<<<<<< HEAD
 	/*
 	 * Disable all Virtual Interfaces.  This will shut down the
 	 * delivery of all ingress packets into the chip for these
@@ -2862,6 +4276,26 @@ static void __devexit cxgb4vf_pci_shutdown(struct pci_dev *pdev)
 
 		pi = netdev_priv(netdev);
 		t4vf_enable_vi(adapter, pi->viid, false, false);
+=======
+	/* Disable all Virtual Interfaces.  This will shut down the
+	 * delivery of all ingress packets into the chip for these
+	 * Virtual Interfaces.
+	 */
+	for_each_port(adapter, pidx)
+		if (test_bit(pidx, &adapter->registered_device_map))
+			unregister_netdev(adapter->port[pidx]);
+
+	/* Free up all Queues which will prevent further DMA and
+	 * Interrupts allowing various internal pathways to drain.
+	 */
+	t4vf_sge_stop(adapter);
+	if (adapter->flags & CXGB4VF_USING_MSIX) {
+		pci_disable_msix(adapter->pdev);
+		adapter->flags &= ~CXGB4VF_USING_MSIX;
+	} else if (adapter->flags & CXGB4VF_USING_MSI) {
+		pci_disable_msi(adapter->pdev);
+		adapter->flags &= ~CXGB4VF_USING_MSI;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
@@ -2869,6 +4303,7 @@ static void __devexit cxgb4vf_pci_shutdown(struct pci_dev *pdev)
 	 * Interrupts allowing various internal pathways to drain.
 	 */
 	t4vf_free_sge_resources(adapter);
+<<<<<<< HEAD
 }
 
 /*
@@ -2894,19 +4329,44 @@ static struct pci_device_id cxgb4vf_pci_tbl[] = {
 	CH_DEVICE(0x480e, 0),   /* T440-lp-cr */
 	{ 0, }
 };
+=======
+	pci_set_drvdata(pdev, NULL);
+}
+
+/* Macros needed to support the PCI Device ID Table ...
+ */
+#define CH_PCI_DEVICE_ID_TABLE_DEFINE_BEGIN \
+	static const struct pci_device_id cxgb4vf_pci_tbl[] = {
+#define CH_PCI_DEVICE_ID_FUNCTION	0x8
+
+#define CH_PCI_ID_TABLE_ENTRY(devid) \
+		{ PCI_VDEVICE(CHELSIO, (devid)), 0 }
+
+#define CH_PCI_DEVICE_ID_TABLE_DEFINE_END { 0, } }
+
+#include "../cxgb4/t4_pci_id_tbl.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION(DRV_DESC);
 MODULE_AUTHOR("Chelsio Communications");
 MODULE_LICENSE("Dual BSD/GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DEVICE_TABLE(pci, cxgb4vf_pci_tbl);
 
 static struct pci_driver cxgb4vf_driver = {
 	.name		= KBUILD_MODNAME,
 	.id_table	= cxgb4vf_pci_tbl,
 	.probe		= cxgb4vf_pci_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(cxgb4vf_pci_remove),
 	.shutdown	= __devexit_p(cxgb4vf_pci_shutdown),
+=======
+	.remove		= cxgb4vf_pci_remove,
+	.shutdown	= cxgb4vf_pci_shutdown,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -2920,6 +4380,7 @@ static int __init cxgb4vf_module_init(void)
 	 * Vet our module parameters.
 	 */
 	if (msi != MSI_MSIX && msi != MSI_MSI) {
+<<<<<<< HEAD
 		printk(KERN_WARNING KBUILD_MODNAME
 		       ": bad module parameter msi=%d; must be %d"
 		       " (MSI-X or MSI) or %d (MSI)\n",
@@ -2935,6 +4396,18 @@ static int __init cxgb4vf_module_init(void)
 
 	ret = pci_register_driver(&cxgb4vf_driver);
 	if (ret < 0 && !IS_ERR_OR_NULL(cxgb4vf_debugfs_root))
+=======
+		pr_warn("bad module parameter msi=%d; must be %d (MSI-X or MSI) or %d (MSI)\n",
+			msi, MSI_MSIX, MSI_MSI);
+		return -EINVAL;
+	}
+
+	/* Debugfs support is optional, debugfs will warn if this fails */
+	cxgb4vf_debugfs_root = debugfs_create_dir(KBUILD_MODNAME, NULL);
+
+	ret = pci_register_driver(&cxgb4vf_driver);
+	if (ret < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		debugfs_remove(cxgb4vf_debugfs_root);
 	return ret;
 }

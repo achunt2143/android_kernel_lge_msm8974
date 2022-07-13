@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000, 2001, 2002, 2003 Broadcom Corporation
  *
@@ -17,11 +18,23 @@
  */
 #include <linux/init.h>
 #include <linux/module.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Copyright (C) 2000, 2001, 2002, 2003 Broadcom Corporation
+ */
+#include <linux/export.h>
+#include <linux/init.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/reboot.h>
 #include <linux/string.h>
 
 #include <asm/bootinfo.h>
+<<<<<<< HEAD
+=======
+#include <asm/cpu.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mipsregs.h>
 #include <asm/io.h>
 #include <asm/sibyte/sb1250.h>
@@ -33,6 +46,10 @@ unsigned int soc_pass;
 unsigned int soc_type;
 EXPORT_SYMBOL(soc_type);
 unsigned int periph_rev;
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL_GPL(periph_rev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned int zbbus_mhz;
 EXPORT_SYMBOL(zbbus_mhz);
 
@@ -182,7 +199,11 @@ void __init sb1250_setup(void)
 	int plldiv;
 	int bad_config = 0;
 
+<<<<<<< HEAD
 	sb1_pass = read_c0_prid() & 0xff;
+=======
+	sb1_pass = read_c0_prid() & PRID_REV_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sys_rev = __raw_readq(IOADDR(A_SCD_SYSTEM_REVISION));
 	soc_type = SYS_SOC_TYPE(sys_rev);
 	soc_pass = G_SYS_REVISION(sys_rev);
@@ -201,40 +222,66 @@ void __init sb1250_setup(void)
 
 	switch (war_pass) {
 	case K_SYS_REVISION_BCM1250_PASS1:
+<<<<<<< HEAD
 #ifndef CONFIG_SB1_PASS_1_WORKAROUNDS
 		printk("@@@@ This is a BCM1250 A0-A2 (Pass 1) board, "
 		            "and the kernel doesn't have the proper "
 		            "workarounds compiled in. @@@@\n");
 		bad_config = 1;
 #endif
+=======
+		printk("@@@@ This is a BCM1250 A0-A2 (Pass 1) board, "
+			    "and the kernel doesn't have the proper "
+			    "workarounds compiled in. @@@@\n");
+		bad_config = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case K_SYS_REVISION_BCM1250_PASS2:
 		/* Pass 2 - easiest as default for now - so many numbers */
 #if !defined(CONFIG_SB1_PASS_2_WORKAROUNDS) || \
     !defined(CONFIG_SB1_PASS_2_1_WORKAROUNDS)
 		printk("@@@@ This is a BCM1250 A3-A10 board, and the "
+<<<<<<< HEAD
 		            "kernel doesn't have the proper workarounds "
 		            "compiled in. @@@@\n");
+=======
+			    "kernel doesn't have the proper workarounds "
+			    "compiled in. @@@@\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bad_config = 1;
 #endif
 #ifdef CONFIG_CPU_HAS_PREFETCH
 		printk("@@@@ Prefetches may be enabled in this kernel, "
+<<<<<<< HEAD
 		            "but are buggy on this board.  @@@@\n");
+=======
+			    "but are buggy on this board.  @@@@\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bad_config = 1;
 #endif
 		break;
 	case K_SYS_REVISION_BCM1250_PASS2_2:
 #ifndef CONFIG_SB1_PASS_2_WORKAROUNDS
 		printk("@@@@ This is a BCM1250 B1/B2. board, and the "
+<<<<<<< HEAD
 		            "kernel doesn't have the proper workarounds "
 		            "compiled in. @@@@\n");
+=======
+			    "kernel doesn't have the proper workarounds "
+			    "compiled in. @@@@\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		bad_config = 1;
 #endif
 #if defined(CONFIG_SB1_PASS_2_1_WORKAROUNDS) || \
     !defined(CONFIG_CPU_HAS_PREFETCH)
 		printk("@@@@ This is a BCM1250 B1/B2, but the kernel is "
+<<<<<<< HEAD
 		            "conservatively configured for an 'A' stepping. "
 		            "@@@@\n");
+=======
+			    "conservatively configured for an 'A' stepping. "
+			    "@@@@\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		break;
 	default:

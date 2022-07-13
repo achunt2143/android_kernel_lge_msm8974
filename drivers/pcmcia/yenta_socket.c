@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Regular cardbus driver ("yenta_socket")
  *
@@ -26,7 +30,12 @@
 
 static bool disable_clkrun;
 module_param(disable_clkrun, bool, 0444);
+<<<<<<< HEAD
 MODULE_PARM_DESC(disable_clkrun, "If PC card doesn't function properly, please try this option");
+=======
+MODULE_PARM_DESC(disable_clkrun,
+		 "If PC card doesn't function properly, please try this option (TI and Ricoh bridges only)");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool isa_probe = 1;
 module_param(isa_probe, bool, 0444);
@@ -142,6 +151,10 @@ static inline u8 exca_readb(struct yenta_socket *socket, unsigned reg)
 	return val;
 }
 
+<<<<<<< HEAD
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline u8 exca_readw(struct yenta_socket *socket, unsigned reg)
 {
 	u16 val;
@@ -150,6 +163,10 @@ static inline u8 exca_readw(struct yenta_socket *socket, unsigned reg)
 	debug("%04x %04x\n", socket, reg, val);
 	return val;
 }
+<<<<<<< HEAD
+=======
+*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void exca_writeb(struct yenta_socket *socket, unsigned reg, u8 val)
 {
@@ -171,6 +188,7 @@ static void exca_writew(struct yenta_socket *socket, unsigned reg, u16 val)
 
 static ssize_t show_yenta_registers(struct device *yentadev, struct device_attribute *attr, char *buf)
 {
+<<<<<<< HEAD
 	struct pci_dev *dev = to_pci_dev(yentadev);
 	struct yenta_socket *socket = pci_get_drvdata(dev);
 	int offset = 0, i;
@@ -185,6 +203,21 @@ static ssize_t show_yenta_registers(struct device *yentadev, struct device_attri
 	}
 
 	offset += snprintf(buf + offset, PAGE_SIZE - offset, "\n\nExCA registers:");
+=======
+	struct yenta_socket *socket = dev_get_drvdata(yentadev);
+	int offset = 0, i;
+
+	offset = sysfs_emit(buf, "CB registers:");
+	for (i = 0; i < 0x24; i += 4) {
+		unsigned val;
+		if (!(i & 15))
+			offset += sysfs_emit_at(buf, offset, "\n%02x:", i);
+		val = cb_readl(socket, i);
+		offset += sysfs_emit_at(buf, offset, " %08x", val);
+	}
+
+	offset += sysfs_emit_at(buf, offset, "\n\nExCA registers:");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < 0x45; i++) {
 		unsigned char val;
 		if (!(i & 7)) {
@@ -192,12 +225,21 @@ static ssize_t show_yenta_registers(struct device *yentadev, struct device_attri
 				memcpy(buf + offset, " -", 2);
 				offset += 2;
 			} else
+<<<<<<< HEAD
 				offset += snprintf(buf + offset, PAGE_SIZE - offset, "\n%02x:", i);
 		}
 		val = exca_readb(socket, i);
 		offset += snprintf(buf + offset, PAGE_SIZE - offset, " %02x", val);
 	}
 	buf[offset++] = '\n';
+=======
+				offset += sysfs_emit_at(buf, offset, "\n%02x:", i);
+		}
+		val = exca_readb(socket, i);
+		offset += sysfs_emit_at(buf, offset, " %02x", val);
+	}
+	sysfs_emit_at(buf, offset, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return offset;
 }
 
@@ -534,9 +576,15 @@ static irqreturn_t yenta_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static void yenta_interrupt_wrapper(unsigned long data)
 {
 	struct yenta_socket *socket = (struct yenta_socket *) data;
+=======
+static void yenta_interrupt_wrapper(struct timer_list *t)
+{
+	struct yenta_socket *socket = from_timer(socket, t, poll_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	yenta_interrupt(0, (void *)socket);
 	socket->poll_timer.expires = jiffies + HZ;
@@ -693,7 +741,11 @@ static int yenta_allocate_res(struct yenta_socket *socket, int nr, unsigned type
 	struct pci_bus_region region;
 	unsigned mask;
 
+<<<<<<< HEAD
 	res = dev->resource + PCI_BRIDGE_RESOURCES + nr;
+=======
+	res = &dev->resource[nr];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Already allocated? */
 	if (res->parent)
 		return 0;
@@ -710,12 +762,20 @@ static int yenta_allocate_res(struct yenta_socket *socket, int nr, unsigned type
 	region.end = config_readl(socket, addr_end) | ~mask;
 	if (region.start && region.end > region.start && !override_bios) {
 		pcibios_bus_to_resource(dev->bus, res, &region);
+<<<<<<< HEAD
 		if (pci_claim_resource(dev, PCI_BRIDGE_RESOURCES + nr) == 0)
 			return 0;
 		dev_printk(KERN_INFO, &dev->dev,
 			   "Preassigned resource %d busy or not available, "
 			   "reconfiguring...\n",
 			   nr);
+=======
+		if (pci_claim_resource(dev, nr) == 0)
+			return 0;
+		dev_info(&dev->dev,
+			 "Preassigned resource %d busy or not available, reconfiguring...\n",
+			 nr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (type & IORESOURCE_IO) {
@@ -738,19 +798,41 @@ static int yenta_allocate_res(struct yenta_socket *socket, int nr, unsigned type
 			return 1;
 	}
 
+<<<<<<< HEAD
 	dev_printk(KERN_INFO, &dev->dev,
 		   "no resource of type %x available, trying to continue...\n",
 		   type);
+=======
+	dev_info(&dev->dev,
+		 "no resource of type %x available, trying to continue...\n",
+		 type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res->start = res->end = res->flags = 0;
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void yenta_free_res(struct yenta_socket *socket, int nr)
+{
+	struct pci_dev *dev = socket->dev;
+	struct resource *res;
+
+	res = &dev->resource[nr];
+	if (res->start != 0 && res->end != 0)
+		release_resource(res);
+
+	res->start = res->end = res->flags = 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Allocate the bridge mappings for the device..
  */
 static void yenta_allocate_resources(struct yenta_socket *socket)
 {
 	int program = 0;
+<<<<<<< HEAD
 	program += yenta_allocate_res(socket, 0, IORESOURCE_IO,
 			   PCI_CB_IO_BASE_0, PCI_CB_IO_LIMIT_0);
 	program += yenta_allocate_res(socket, 1, IORESOURCE_IO,
@@ -758,6 +840,19 @@ static void yenta_allocate_resources(struct yenta_socket *socket)
 	program += yenta_allocate_res(socket, 2, IORESOURCE_MEM|IORESOURCE_PREFETCH,
 			   PCI_CB_MEMORY_BASE_0, PCI_CB_MEMORY_LIMIT_0);
 	program += yenta_allocate_res(socket, 3, IORESOURCE_MEM,
+=======
+	program += yenta_allocate_res(socket, PCI_CB_BRIDGE_IO_0_WINDOW,
+			   IORESOURCE_IO,
+			   PCI_CB_IO_BASE_0, PCI_CB_IO_LIMIT_0);
+	program += yenta_allocate_res(socket, PCI_CB_BRIDGE_IO_1_WINDOW,
+			   IORESOURCE_IO,
+			   PCI_CB_IO_BASE_1, PCI_CB_IO_LIMIT_1);
+	program += yenta_allocate_res(socket, PCI_CB_BRIDGE_MEM_0_WINDOW,
+			   IORESOURCE_MEM | IORESOURCE_PREFETCH,
+			   PCI_CB_MEMORY_BASE_0, PCI_CB_MEMORY_LIMIT_0);
+	program += yenta_allocate_res(socket, PCI_CB_BRIDGE_MEM_1_WINDOW,
+			   IORESOURCE_MEM,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   PCI_CB_MEMORY_BASE_1, PCI_CB_MEMORY_LIMIT_1);
 	if (program)
 		pci_setup_cardbus(socket->dev->subordinate);
@@ -769,6 +864,7 @@ static void yenta_allocate_resources(struct yenta_socket *socket)
  */
 static void yenta_free_resources(struct yenta_socket *socket)
 {
+<<<<<<< HEAD
 	int i;
 	for (i = 0; i < 4; i++) {
 		struct resource *res;
@@ -777,13 +873,23 @@ static void yenta_free_resources(struct yenta_socket *socket)
 			release_resource(res);
 		res->start = res->end = res->flags = 0;
 	}
+=======
+	yenta_free_res(socket, PCI_CB_BRIDGE_IO_0_WINDOW);
+	yenta_free_res(socket, PCI_CB_BRIDGE_IO_1_WINDOW);
+	yenta_free_res(socket, PCI_CB_BRIDGE_MEM_0_WINDOW);
+	yenta_free_res(socket, PCI_CB_BRIDGE_MEM_1_WINDOW);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 /*
  * Close it down - release our resources and go home..
  */
+<<<<<<< HEAD
 static void __devexit yenta_close(struct pci_dev *dev)
+=======
+static void yenta_close(struct pci_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct yenta_socket *sock = pci_get_drvdata(dev);
 
@@ -800,15 +906,25 @@ static void __devexit yenta_close(struct pci_dev *dev)
 	if (sock->cb_irq)
 		free_irq(sock->cb_irq, sock);
 	else
+<<<<<<< HEAD
 		del_timer_sync(&sock->poll_timer);
 
 	if (sock->base)
 		iounmap(sock->base);
+=======
+		timer_shutdown_sync(&sock->poll_timer);
+
+	iounmap(sock->base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	yenta_free_resources(sock);
 
 	pci_release_regions(dev);
 	pci_disable_device(dev);
 	pci_set_drvdata(dev, NULL);
+<<<<<<< HEAD
+=======
+	kfree(sock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -979,8 +1095,13 @@ static int yenta_probe_cb_irq(struct yenta_socket *socket)
 	socket->probe_status = 0;
 
 	if (request_irq(socket->cb_irq, yenta_probe_handler, IRQF_SHARED, "yenta", socket)) {
+<<<<<<< HEAD
 		dev_printk(KERN_WARNING, &socket->dev->dev,
 			   "request_irq() in yenta_probe_cb_irq() failed!\n");
+=======
+		dev_warn(&socket->dev->dev,
+			 "request_irq() in yenta_probe_cb_irq() failed!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -1;
 	}
 
@@ -1019,9 +1140,14 @@ static void yenta_get_socket_capabilities(struct yenta_socket *socket, u32 isa_i
 	else
 		socket->socket.irq_mask = 0;
 
+<<<<<<< HEAD
 	dev_printk(KERN_INFO, &socket->dev->dev,
 		   "ISA IRQ mask 0x%04x, PCI irq %d\n",
 		   socket->socket.irq_mask, socket->cb_irq);
+=======
+	dev_info(&socket->dev->dev, "ISA IRQ mask 0x%04x, PCI irq %d\n",
+		 socket->socket.irq_mask, socket->cb_irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1048,8 +1174,13 @@ static void yenta_config_init(struct yenta_socket *socket)
 	config_writeb(socket, PCI_LATENCY_TIMER, 168);
 	config_writel(socket, PCI_PRIMARY_BUS,
 		(176 << 24) |			   /* sec. latency timer */
+<<<<<<< HEAD
 		(dev->subordinate->subordinate << 16) | /* subordinate bus */
 		(dev->subordinate->secondary << 8) |  /* secondary bus */
+=======
+		((unsigned int)dev->subordinate->busn_res.end << 16) | /* subordinate bus */
+		((unsigned int)dev->subordinate->busn_res.start << 8) |  /* secondary bus */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->subordinate->primary);		   /* primary bus */
 
 	/*
@@ -1076,7 +1207,11 @@ static void yenta_config_init(struct yenta_socket *socket)
  */
 static void yenta_fixup_parent_bridge(struct pci_bus *cardbus_bridge)
 {
+<<<<<<< HEAD
 	struct list_head *tmp;
+=======
+	struct pci_bus *sibling;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char upper_limit;
 	/*
 	 * We only check and fix the parent bridge: All systems which need
@@ -1086,13 +1221,18 @@ static void yenta_fixup_parent_bridge(struct pci_bus *cardbus_bridge)
 	struct pci_bus *bridge_to_fix = cardbus_bridge->parent;
 
 	/* Check bus numbers are already set up correctly: */
+<<<<<<< HEAD
 	if (bridge_to_fix->subordinate >= cardbus_bridge->subordinate)
+=======
+	if (bridge_to_fix->busn_res.end >= cardbus_bridge->busn_res.end)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return; /* The subordinate number is ok, nothing to do */
 
 	if (!bridge_to_fix->parent)
 		return; /* Root bridges are ok */
 
 	/* stay within the limits of the bus range of the parent: */
+<<<<<<< HEAD
 	upper_limit = bridge_to_fix->parent->subordinate;
 
 	/* check the bus ranges of all silbling bridges to prevent overlap */
@@ -1134,6 +1274,49 @@ static void yenta_fixup_parent_bridge(struct pci_bus *cardbus_bridge)
 		/* and update the PCI config space with the new subordinate */
 		pci_write_config_byte(bridge_to_fix->self,
 			PCI_SUBORDINATE_BUS, bridge_to_fix->subordinate);
+=======
+	upper_limit = bridge_to_fix->parent->busn_res.end;
+
+	/* check the bus ranges of all sibling bridges to prevent overlap */
+	list_for_each_entry(sibling, &bridge_to_fix->parent->children,
+			node) {
+		/*
+		 * If the sibling has a higher secondary bus number
+		 * and it's secondary is equal or smaller than our
+		 * current upper limit, set the new upper limit to
+		 * the bus number below the sibling's range:
+		 */
+		if (sibling->busn_res.start > bridge_to_fix->busn_res.end
+		    && sibling->busn_res.start <= upper_limit)
+			upper_limit = sibling->busn_res.start - 1;
+	}
+
+	/* Show that the wanted subordinate number is not possible: */
+	if (cardbus_bridge->busn_res.end > upper_limit)
+		dev_warn(&cardbus_bridge->dev,
+			 "Upper limit for fixing this bridge's parent bridge: #%02x\n",
+			 upper_limit);
+
+	/* If we have room to increase the bridge's subordinate number, */
+	if (bridge_to_fix->busn_res.end < upper_limit) {
+
+		/* use the highest number of the hidden bus, within limits */
+		unsigned char subordinate_to_assign =
+			min_t(int, cardbus_bridge->busn_res.end, upper_limit);
+
+		dev_info(&bridge_to_fix->dev,
+			 "Raising subordinate bus# of parent bus (#%02x) from #%02x to #%02x\n",
+			 bridge_to_fix->number,
+			 (int)bridge_to_fix->busn_res.end,
+			 subordinate_to_assign);
+
+		/* Save the new subordinate in the bus struct of the bridge */
+		bridge_to_fix->busn_res.end = subordinate_to_assign;
+
+		/* and update the PCI config space with the new subordinate */
+		pci_write_config_byte(bridge_to_fix->self,
+			PCI_SUBORDINATE_BUS, bridge_to_fix->busn_res.end);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -1142,7 +1325,11 @@ static void yenta_fixup_parent_bridge(struct pci_bus *cardbus_bridge)
  * interrupt, and that we can map the cardbus area. Fill in the
  * socket information structure..
  */
+<<<<<<< HEAD
 static int __devinit yenta_probe(struct pci_dev *dev, const struct pci_device_id *id)
+=======
+static int yenta_probe(struct pci_dev *dev, const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct yenta_socket *socket;
 	int ret;
@@ -1153,8 +1340,12 @@ static int __devinit yenta_probe(struct pci_dev *dev, const struct pci_device_id
 	 * Bail out if so.
 	 */
 	if (!dev->subordinate) {
+<<<<<<< HEAD
 		dev_printk(KERN_ERR, &dev->dev, "no bus associated! "
 			   "(try 'pci=assign-busses')\n");
+=======
+		dev_err(&dev->dev, "no bus associated! (try 'pci=assign-busses')\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -1189,7 +1380,11 @@ static int __devinit yenta_probe(struct pci_dev *dev, const struct pci_device_id
 		goto disable;
 
 	if (!pci_resource_start(dev, 0)) {
+<<<<<<< HEAD
 		dev_printk(KERN_ERR, &dev->dev, "No cardbus resource!\n");
+=======
+		dev_err(&dev->dev, "No cardbus resource!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENODEV;
 		goto release;
 	}
@@ -1208,8 +1403,13 @@ static int __devinit yenta_probe(struct pci_dev *dev, const struct pci_device_id
 	 * report the subsystem vendor and device for help debugging
 	 * the irq stuff...
 	 */
+<<<<<<< HEAD
 	dev_printk(KERN_INFO, &dev->dev, "CardBus bridge found [%04x:%04x]\n",
 		   dev->subsystem_vendor, dev->subsystem_device);
+=======
+	dev_info(&dev->dev, "CardBus bridge found [%04x:%04x]\n",
+		 dev->subsystem_vendor, dev->subsystem_device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	yenta_config_init(socket);
 
@@ -1236,6 +1436,7 @@ static int __devinit yenta_probe(struct pci_dev *dev, const struct pci_device_id
 	if (!socket->cb_irq || request_irq(socket->cb_irq, yenta_interrupt, IRQF_SHARED, "yenta", socket)) {
 		/* No IRQ or request_irq failed. Poll */
 		socket->cb_irq = 0; /* But zero is a valid IRQ number. */
+<<<<<<< HEAD
 		init_timer(&socket->poll_timer);
 		socket->poll_timer.function = yenta_interrupt_wrapper;
 		socket->poll_timer.data = (unsigned long)socket;
@@ -1247,6 +1448,14 @@ static int __devinit yenta_probe(struct pci_dev *dev, const struct pci_device_id
 		dev_printk(KERN_INFO, &dev->dev,
 			   "check your BIOS CardBus, BIOS IRQ or ACPI "
 			   "settings.\n");
+=======
+		timer_setup(&socket->poll_timer, yenta_interrupt_wrapper, 0);
+		mod_timer(&socket->poll_timer, jiffies + HZ);
+		dev_info(&dev->dev,
+			 "no PCI IRQ, CardBus support disabled for this socket.\n");
+		dev_info(&dev->dev,
+			 "check your BIOS CardBus, BIOS IRQ or ACPI settings.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		socket->socket.features |= SS_CAP_CARDBUS;
 	}
@@ -1254,13 +1463,19 @@ static int __devinit yenta_probe(struct pci_dev *dev, const struct pci_device_id
 	/* Figure out what the dang thing can do for the PCMCIA layer... */
 	yenta_interrogate(socket);
 	yenta_get_socket_capabilities(socket, isa_interrupts);
+<<<<<<< HEAD
 	dev_printk(KERN_INFO, &dev->dev,
 		   "Socket status: %08x\n", cb_readl(socket, CB_SOCKET_STATE));
+=======
+	dev_info(&dev->dev, "Socket status: %08x\n",
+		 cb_readl(socket, CB_SOCKET_STATE));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	yenta_fixup_parent_bridge(dev->subordinate);
 
 	/* Register it with the pcmcia layer.. */
 	ret = pcmcia_register_socket(&socket->socket);
+<<<<<<< HEAD
 	if (ret == 0) {
 		/* Add the yenta register attributes */
 		ret = device_create_file(&dev->dev, &dev_attr_yenta_registers);
@@ -1273,17 +1488,49 @@ static int __devinit yenta_probe(struct pci_dev *dev, const struct pci_device_id
 
  unmap:
 	iounmap(socket->base);
+=======
+	if (ret)
+		goto free_irq;
+
+	/* Add the yenta register attributes */
+	ret = device_create_file(&dev->dev, &dev_attr_yenta_registers);
+	if (ret)
+		goto unregister_socket;
+
+	return ret;
+
+	/* error path... */
+ unregister_socket:
+	pcmcia_unregister_socket(&socket->socket);
+ free_irq:
+	if (socket->cb_irq)
+		free_irq(socket->cb_irq, socket);
+	else
+		timer_shutdown_sync(&socket->poll_timer);
+ unmap:
+	iounmap(socket->base);
+	yenta_free_resources(socket);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  release:
 	pci_release_regions(dev);
  disable:
 	pci_disable_device(dev);
  free:
+<<<<<<< HEAD
 	kfree(socket);
  out:
 	return ret;
 }
 
 #ifdef CONFIG_PM
+=======
+	pci_set_drvdata(dev, NULL);
+	kfree(socket);
+	return ret;
+}
+
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int yenta_dev_suspend_noirq(struct device *dev)
 {
 	struct pci_dev *pdev = to_pci_dev(dev);
@@ -1328,12 +1575,16 @@ static int yenta_dev_resume_noirq(struct device *dev)
 }
 
 static const struct dev_pm_ops yenta_pm_ops = {
+<<<<<<< HEAD
 	.suspend_noirq = yenta_dev_suspend_noirq,
 	.resume_noirq = yenta_dev_resume_noirq,
 	.freeze_noirq = yenta_dev_suspend_noirq,
 	.thaw_noirq = yenta_dev_resume_noirq,
 	.poweroff_noirq = yenta_dev_suspend_noirq,
 	.restore_noirq = yenta_dev_resume_noirq,
+=======
+	SET_NOIRQ_SYSTEM_SLEEP_PM_OPS(yenta_dev_suspend_noirq, yenta_dev_resume_noirq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define YENTA_PM_OPS	(&yenta_pm_ops)
@@ -1352,7 +1603,11 @@ static const struct dev_pm_ops yenta_pm_ops = {
 		.driver_data	= CARDBUS_TYPE_##type,	\
 	}
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(yenta_table) = {
+=======
+static const struct pci_device_id yenta_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CB_ID(PCI_VENDOR_ID_TI, PCI_DEVICE_ID_TI_1031, TI),
 
 	/*
@@ -1435,6 +1690,7 @@ static struct pci_driver yenta_cardbus_driver = {
 	.name		= "yenta_cardbus",
 	.id_table	= yenta_table,
 	.probe		= yenta_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(yenta_close),
 	.driver.pm	= YENTA_PM_OPS,
 };
@@ -1454,5 +1710,12 @@ static void __exit yenta_socket_exit(void)
 
 module_init(yenta_socket_init);
 module_exit(yenta_socket_exit);
+=======
+	.remove		= yenta_close,
+	.driver.pm	= YENTA_PM_OPS,
+};
+
+module_pci_driver(yenta_cardbus_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_LICENSE("GPL");

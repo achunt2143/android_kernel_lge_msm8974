@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _M68K_MVME16xHW_H_
 #define _M68K_MVME16xHW_H_
 
 #include <asm/irq.h>
 
+<<<<<<< HEAD
 /* Board ID data structure - pointer to this retrieved from Bug by head.S */
 
 /* Note, bytes 12 and 13 are board no in BCD (0162,0166,0167,0177,etc) */
@@ -20,6 +25,8 @@ typedef struct {
 	u_long	option2;
 } t_bdid, *p_bdid;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 typedef struct {
 	u_char	ack_icr,

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  arch/sh/kernel/cpu/sh3/ex.S
  *
@@ -9,6 +10,16 @@
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ *
+ *  arch/sh/kernel/cpu/sh3/ex.S
+ *
+ *  The SH-3 and SH-4 exception vector table.
+ *
+ *  Copyright (C) 1999, 2000, 2002  Niibe Yutaka
+ *  Copyright (C) 2003 - 2008  Paul Mundt
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/linkage.h>
 

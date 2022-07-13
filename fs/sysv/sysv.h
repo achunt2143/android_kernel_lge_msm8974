@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _SYSV_H
 #define _SYSV_H
 
@@ -22,8 +26,11 @@ struct sysv_sb_info {
 	struct super_block *s_sb;	/* VFS superblock */
 	int	       s_type;		/* file system type: FSTYPE_{XENIX|SYSV|COH} */
 	char	       s_bytesex;	/* bytesex (le/be/pdp) */
+<<<<<<< HEAD
 	char	       s_truncate;	/* if 1: names > SYSV_NAMELEN chars are truncated */
 					/* if 0: they are disallowed (ENAMETOOLONG) */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int   s_inodes_per_block;	/* number of inodes per block */
 	unsigned int   s_inodes_per_block_1;	/* inodes_per_block - 1 */
 	unsigned int   s_inodes_per_block_bits;	/* log2(inodes_per_block) */
@@ -58,6 +65,10 @@ struct sysv_sb_info {
 	u32            s_nzones;	/* same as s_sbd->s_fsize */
 	u16	       s_namelen;       /* max length of dir entry */
 	int	       s_forced_ro;
+<<<<<<< HEAD
+=======
+	struct mutex s_lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -72,7 +83,11 @@ struct sysv_inode_info {
 
 static inline struct sysv_inode_info *SYSV_I(struct inode *inode)
 {
+<<<<<<< HEAD
 	return list_entry(inode, struct sysv_inode_info, vfs_inode);
+=======
+	return container_of(inode, struct sysv_inode_info, vfs_inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline struct sysv_sb_info *SYSV_SB(struct super_block *sb)
@@ -117,7 +132,10 @@ static inline void dirty_sb(struct super_block *sb)
 	mark_buffer_dirty(sbi->s_bh1);
 	if (sbi->s_bh1 != sbi->s_bh2)
 		mark_buffer_dirty(sbi->s_bh2);
+<<<<<<< HEAD
 	sb->s_dirt = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -142,7 +160,12 @@ extern struct inode *sysv_iget(struct super_block *, unsigned int);
 extern int sysv_write_inode(struct inode *, struct writeback_control *wbc);
 extern int sysv_sync_inode(struct inode *);
 extern void sysv_set_inode(struct inode *, dev_t);
+<<<<<<< HEAD
 extern int sysv_getattr(struct vfsmount *, struct dentry *, struct kstat *);
+=======
+extern int sysv_getattr(struct mnt_idmap *, const struct path *,
+			struct kstat *, u32, unsigned int);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int sysv_init_icache(void);
 extern void sysv_destroy_icache(void);
 
@@ -153,7 +176,11 @@ extern int sysv_add_link(struct dentry *, struct inode *);
 extern int sysv_delete_entry(struct sysv_dir_entry *, struct page *);
 extern int sysv_make_empty(struct inode *, struct inode *);
 extern int sysv_empty_dir(struct inode *);
+<<<<<<< HEAD
 extern void sysv_set_link(struct sysv_dir_entry *, struct page *,
+=======
+extern int sysv_set_link(struct sysv_dir_entry *, struct page *,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct inode *);
 extern struct sysv_dir_entry *sysv_dotdot(struct inode *, struct page **);
 extern ino_t sysv_inode_by_name(struct dentry *);
@@ -161,12 +188,18 @@ extern ino_t sysv_inode_by_name(struct dentry *);
 
 extern const struct inode_operations sysv_file_inode_operations;
 extern const struct inode_operations sysv_dir_inode_operations;
+<<<<<<< HEAD
 extern const struct inode_operations sysv_fast_symlink_inode_operations;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern const struct file_operations sysv_file_operations;
 extern const struct file_operations sysv_dir_operations;
 extern const struct address_space_operations sysv_aops;
 extern const struct super_operations sysv_sops;
+<<<<<<< HEAD
 extern const struct dentry_operations sysv_dentry_operations;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 enum {

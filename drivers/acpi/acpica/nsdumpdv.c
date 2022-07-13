@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: nsdump - table dumping routines for debug
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -43,6 +48,13 @@
 
 #include <acpi/acpi.h>
 #include "accommon.h"
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+#include <acpi/acpi.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* TBD: This entire module is apparently obsolete and should be removed */
 
@@ -55,9 +67,15 @@ ACPI_MODULE_NAME("nsdumpdv")
  *
  * FUNCTION:    acpi_ns_dump_one_device
  *
+<<<<<<< HEAD
  * PARAMETERS:  Handle              - Node to be dumped
  *              Level               - Nesting level of the handle
  *              Context             - Passed into walk_namespace
+=======
+ * PARAMETERS:  handle              - Node to be dumped
+ *              level               - Nesting level of the handle
+ *              context             - Passed into walk_namespace
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              return_value        - Not used
  *
  * RETURN:      Status
@@ -70,6 +88,10 @@ static acpi_status
 acpi_ns_dump_one_device(acpi_handle obj_handle,
 			u32 level, void *context, void **return_value)
 {
+<<<<<<< HEAD
+=======
+	struct acpi_buffer buffer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct acpi_device_info *info;
 	acpi_status status;
 	u32 i;
@@ -79,17 +101,30 @@ acpi_ns_dump_one_device(acpi_handle obj_handle,
 	status =
 	    acpi_ns_dump_one_object(obj_handle, level, context, return_value);
 
+<<<<<<< HEAD
 	status = acpi_get_object_info(obj_handle, &info);
 	if (ACPI_SUCCESS(status)) {
+=======
+	buffer.length = ACPI_ALLOCATE_LOCAL_BUFFER;
+	status = acpi_get_object_info(obj_handle, &buffer);
+	if (ACPI_SUCCESS(status)) {
+		info = buffer.pointer;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < level; i++) {
 			ACPI_DEBUG_PRINT_RAW((ACPI_DB_TABLES, " "));
 		}
 
 		ACPI_DEBUG_PRINT_RAW((ACPI_DB_TABLES,
+<<<<<<< HEAD
 				      "    HID: %s, ADR: %8.8X%8.8X, Status: %X\n",
 				      info->hardware_id.string,
 				      ACPI_FORMAT_UINT64(info->address),
 				      info->current_status));
+=======
+				      "    HID: %s, ADR: %8.8X%8.8X\n",
+				      info->hardware_id.value,
+				      ACPI_FORMAT_UINT64(info->address)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ACPI_FREE(info);
 	}
 

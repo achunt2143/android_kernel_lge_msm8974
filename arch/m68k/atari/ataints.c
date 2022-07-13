@@ -41,6 +41,10 @@
 #include <linux/init.h>
 #include <linux/seq_file.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/traps.h>
 
@@ -49,7 +53,13 @@
 #include <asm/atari_stdma.h>
 #include <asm/irq.h>
 #include <asm/entry.h>
+<<<<<<< HEAD
 
+=======
+#include <asm/io.h>
+
+#include "atari.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Atari interrupt handling scheme:
@@ -79,8 +89,11 @@ __ALIGN_STR "\n\t"
 	"orw	#0x200,%sp@\n\t"	/* set saved ipl to 2 */
 	"rte");
 
+<<<<<<< HEAD
 extern void atari_microwire_cmd(int cmd);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static unsigned int atari_irq_startup(struct irq_data *data)
 {
 	unsigned int irq = data->irq;
@@ -122,6 +135,139 @@ static struct irq_chip atari_irq_chip = {
 };
 
 /*
+<<<<<<< HEAD
+=======
+ * ST-MFP timer D chained interrupts - each driver gets its own timer
+ * interrupt instance.
+ */
+
+struct mfptimerbase {
+	volatile struct MFP *mfp;
+	unsigned char mfp_mask, mfp_data;
+	unsigned short int_mask;
+	int handler_irq, mfptimer_irq, server_irq;
+	char *name;
+} stmfp_base = {
+	.mfp		= &st_mfp,
+	.int_mask	= 0x0,
+	.handler_irq	= IRQ_MFP_TIMD,
+	.mfptimer_irq	= IRQ_MFP_TIMER1,
+	.name		= "MFP Timer D"
+};
+
+static irqreturn_t mfp_timer_d_handler(int irq, void *dev_id)
+{
+	struct mfptimerbase *base = dev_id;
+	int mach_irq;
+	unsigned char ints;
+
+	mach_irq = base->mfptimer_irq;
+	ints = base->int_mask;
+	for (; ints; mach_irq++, ints >>= 1) {
+		if (ints & 1)
+			generic_handle_irq(mach_irq);
+	}
+	return IRQ_HANDLED;
+}
+
+
+static void atari_mfptimer_enable(struct irq_data *data)
+{
+	int mfp_num = data->irq - IRQ_MFP_TIMER1;
+	stmfp_base.int_mask |= 1 << mfp_num;
+	atari_enable_irq(IRQ_MFP_TIMD);
+}
+
+static void atari_mfptimer_disable(struct irq_data *data)
+{
+	int mfp_num = data->irq - IRQ_MFP_TIMER1;
+	stmfp_base.int_mask &= ~(1 << mfp_num);
+	if (!stmfp_base.int_mask)
+		atari_disable_irq(IRQ_MFP_TIMD);
+}
+
+static struct irq_chip atari_mfptimer_chip = {
+	.name		= "timer_d",
+	.irq_enable	= atari_mfptimer_enable,
+	.irq_disable	= atari_mfptimer_disable,
+};
+
+
+/*
+ * EtherNAT CPLD interrupt handling
+ * CPLD interrupt register is at phys. 0x80000023
+ * Need this mapped in at interrupt startup time
+ * Possibly need this mapped on demand anyway -
+ * EtherNAT USB driver needs to disable IRQ before
+ * startup!
+ */
+
+static unsigned char *enat_cpld;
+
+static unsigned int atari_ethernat_startup(struct irq_data *data)
+{
+	int enat_num = 140 - data->irq + 1;
+
+	m68k_irq_startup(data);
+	/*
+	* map CPLD interrupt register
+	*/
+	if (!enat_cpld)
+		enat_cpld = (unsigned char *)ioremap((ATARI_ETHERNAT_PHYS_ADDR+0x23), 0x2);
+	/*
+	 * do _not_ enable the USB chip interrupt here - causes interrupt storm
+	 * and triggers dead interrupt watchdog
+	 * Need to reset the USB chip to a sane state in early startup before
+	 * removing this hack
+	 */
+	if (enat_num == 1)
+		*enat_cpld |= 1 << enat_num;
+
+	return 0;
+}
+
+static void atari_ethernat_enable(struct irq_data *data)
+{
+	int enat_num = 140 - data->irq + 1;
+	/*
+	* map CPLD interrupt register
+	*/
+	if (!enat_cpld)
+		enat_cpld = (unsigned char *)ioremap((ATARI_ETHERNAT_PHYS_ADDR+0x23), 0x2);
+	*enat_cpld |= 1 << enat_num;
+}
+
+static void atari_ethernat_disable(struct irq_data *data)
+{
+	int enat_num = 140 - data->irq + 1;
+	/*
+	* map CPLD interrupt register
+	*/
+	if (!enat_cpld)
+		enat_cpld = (unsigned char *)ioremap((ATARI_ETHERNAT_PHYS_ADDR+0x23), 0x2);
+	*enat_cpld &= ~(1 << enat_num);
+}
+
+static void atari_ethernat_shutdown(struct irq_data *data)
+{
+	int enat_num = 140 - data->irq + 1;
+	if (enat_cpld) {
+		*enat_cpld &= ~(1 << enat_num);
+		iounmap(enat_cpld);
+		enat_cpld = NULL;
+	}
+}
+
+static struct irq_chip atari_ethernat_chip = {
+	.name		= "ethernat",
+	.irq_startup	= atari_ethernat_startup,
+	.irq_shutdown	= atari_ethernat_shutdown,
+	.irq_enable	= atari_ethernat_enable,
+	.irq_disable	= atari_ethernat_disable,
+};
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * void atari_init_IRQ (void)
  *
  * Parameters:	None
@@ -198,6 +344,33 @@ void __init atari_init_IRQ(void)
 	/* Initialize the PSG: all sounds off, both ports output */
 	sound_ym.rd_data_reg_sel = 7;
 	sound_ym.wd_data = 0xff;
+<<<<<<< HEAD
+=======
+
+	m68k_setup_irq_controller(&atari_mfptimer_chip, handle_simple_irq,
+				  IRQ_MFP_TIMER1, 8);
+
+	irq_set_status_flags(IRQ_MFP_TIMER1, IRQ_IS_POLLED);
+	irq_set_status_flags(IRQ_MFP_TIMER2, IRQ_IS_POLLED);
+
+	/* prepare timer D data for use as poll interrupt */
+	/* set Timer D data Register - needs to be > 0 */
+	st_mfp.tim_dt_d = 254;	/* < 100 Hz */
+	/* start timer D, div = 1:100 */
+	st_mfp.tim_ct_cd = (st_mfp.tim_ct_cd & 0xf0) | 0x6;
+
+	/* request timer D dispatch handler */
+	if (request_irq(IRQ_MFP_TIMD, mfp_timer_d_handler, IRQF_SHARED,
+			stmfp_base.name, &stmfp_base))
+		pr_err("Couldn't register %s interrupt\n", stmfp_base.name);
+
+	/*
+	 * EtherNAT ethernet / USB interrupt handlers
+	 */
+
+	m68k_setup_irq_controller(&atari_ethernat_chip, handle_simple_irq,
+				  139, 2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -206,7 +379,11 @@ void __init atari_init_IRQ(void)
  * hardware with a programmable int vector (probably a VME board).
  */
 
+<<<<<<< HEAD
 unsigned long atari_register_vme_int(void)
+=======
+unsigned int atari_register_vme_int(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 
@@ -223,7 +400,11 @@ unsigned long atari_register_vme_int(void)
 EXPORT_SYMBOL(atari_register_vme_int);
 
 
+<<<<<<< HEAD
 void atari_unregister_vme_int(unsigned long irq)
+=======
+void atari_unregister_vme_int(unsigned int irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (irq >= VME_SOURCE_BASE && irq < VME_SOURCE_BASE + VME_MAX_SOURCES) {
 		irq -= VME_SOURCE_BASE;

@@ -12,6 +12,7 @@
 #define pr_fmt(fmt) "tulip: " fmt
 
 #define DRV_NAME	"tulip"
+<<<<<<< HEAD
 #ifdef CONFIG_TULIP_NAPI
 #define DRV_VERSION    "1.1.15-NAPI" /* Keep at least for test */
 #else
@@ -19,6 +20,8 @@
 #endif
 #define DRV_RELDATE	"Feb 27, 2007"
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -31,15 +34,22 @@
 #include <linux/mii.h>
 #include <linux/crc32.h>
 #include <asm/unaligned.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SPARC
 #include <asm/prom.h>
 #endif
 
+<<<<<<< HEAD
 static char version[] __devinitdata =
 	"Linux Tulip driver version " DRV_VERSION " (" DRV_RELDATE ")\n";
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* A few user-configurable values. */
 
 /* Maximum events (Rx packets, etc.) to handle at each interrupt. */
@@ -98,8 +108,12 @@ static int csr0 = 0x01A00000 | 0x4800;
 #elif defined(__mips__)
 static int csr0 = 0x00200000 | 0x4000;
 #else
+<<<<<<< HEAD
 #warning Processor architecture undefined!
 static int csr0 = 0x00A00000 | 0x4800;
+=======
+static int csr0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /* Operational parameters that usually are not changed. */
@@ -110,7 +124,10 @@ static int csr0 = 0x00A00000 | 0x4800;
 MODULE_AUTHOR("The Linux Kernel Team");
 MODULE_DESCRIPTION("Digital 21*4* Tulip ethernet driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(tulip_debug, int, 0);
 module_param(max_interrupt_work, int, 0);
 module_param(rx_copybreak, int, 0);
@@ -124,10 +141,17 @@ int tulip_debug = TULIP_DEBUG;
 int tulip_debug = 1;
 #endif
 
+<<<<<<< HEAD
 static void tulip_timer(unsigned long data)
 {
 	struct net_device *dev = (struct net_device *)data;
 	struct tulip_private *tp = netdev_priv(dev);
+=======
+static void tulip_timer(struct timer_list *t)
+{
+	struct tulip_private *tp = from_timer(tp, t, timer);
+	struct net_device *dev = tp->dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (netif_running(dev))
 		schedule_work(&tp->media_work);
@@ -139,7 +163,11 @@ static void tulip_timer(unsigned long data)
  * It is indexed via the values in 'enum chips'
  */
 
+<<<<<<< HEAD
 struct tulip_chip_table tulip_tbl[] = {
+=======
+const struct tulip_chip_table tulip_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   { }, /* placeholder for array, slot unused currently */
   { }, /* placeholder for array, slot unused currently */
 
@@ -207,7 +235,11 @@ struct tulip_chip_table tulip_tbl[] = {
 };
 
 
+<<<<<<< HEAD
 static DEFINE_PCI_DEVICE_TABLE(tulip_pci_tbl) = {
+=======
+static const struct pci_device_id tulip_pci_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x1011, 0x0009, PCI_ANY_ID, PCI_ANY_ID, 0, 0, DC21140 },
 	{ 0x1011, 0x0019, PCI_ANY_ID, PCI_ANY_ID, 0, 0, DC21143 },
 	{ 0x11AD, 0x0002, PCI_ANY_ID, PCI_ANY_ID, 0, 0, LC82C168 },
@@ -256,7 +288,11 @@ MODULE_DEVICE_TABLE(pci, tulip_pci_tbl);
 const char tulip_media_cap[32] =
 {0,0,0,16,  3,19,16,24,  27,4,7,5, 0,20,23,20,  28,31,0,0, };
 
+<<<<<<< HEAD
 static void tulip_tx_timeout(struct net_device *dev);
+=======
+static void tulip_tx_timeout(struct net_device *dev, unsigned int txqueue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void tulip_init_ring(struct net_device *dev);
 static void tulip_free_ring(struct net_device *dev);
 static netdev_tx_t tulip_start_xmit(struct sk_buff *skb,
@@ -328,7 +364,11 @@ static void tulip_up(struct net_device *dev)
 	udelay(100);
 
 	if (tulip_debug > 1)
+<<<<<<< HEAD
 		netdev_dbg(dev, "tulip_up(), irq==%d\n", dev->irq);
+=======
+		netdev_dbg(dev, "tulip_up(), irq==%d\n", tp->pdev->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iowrite32(tp->rx_ring_dma, ioaddr + CSR3);
 	iowrite32(tp->tx_ring_dma, ioaddr + CSR4);
@@ -351,7 +391,11 @@ static void tulip_up(struct net_device *dev)
 		}
 	} else {
 		/* This is set_rx_mode(), but without starting the transmitter. */
+<<<<<<< HEAD
 		u16 *eaddrs = (u16 *)dev->dev_addr;
+=======
+		const u16 *eaddrs = (const u16 *)dev->dev_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		u16 *setup_frm = &tp->setup_frame[15*6];
 		dma_addr_t mapping;
 
@@ -362,9 +406,15 @@ static void tulip_up(struct net_device *dev)
 		*setup_frm++ = eaddrs[1]; *setup_frm++ = eaddrs[1];
 		*setup_frm++ = eaddrs[2]; *setup_frm++ = eaddrs[2];
 
+<<<<<<< HEAD
 		mapping = pci_map_single(tp->pdev, tp->setup_frame,
 					 sizeof(tp->setup_frame),
 					 PCI_DMA_TODEVICE);
+=======
+		mapping = dma_map_single(&tp->pdev->dev, tp->setup_frame,
+					 sizeof(tp->setup_frame),
+					 DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tp->tx_buffers[tp->cur_tx].skb = NULL;
 		tp->tx_buffers[tp->cur_tx].mapping = mapping;
 
@@ -506,20 +556,33 @@ media_picked:
 	tp->timer.expires = RUN_AT(next_tick);
 	add_timer(&tp->timer);
 #ifdef CONFIG_TULIP_NAPI
+<<<<<<< HEAD
 	init_timer(&tp->oom_timer);
         tp->oom_timer.data = (unsigned long)dev;
         tp->oom_timer.function = oom_timer;
+=======
+	timer_setup(&tp->oom_timer, oom_timer, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 
 static int
 tulip_open(struct net_device *dev)
 {
+<<<<<<< HEAD
+=======
+	struct tulip_private *tp = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int retval;
 
 	tulip_init_ring (dev);
 
+<<<<<<< HEAD
 	retval = request_irq(dev->irq, tulip_interrupt, IRQF_SHARED, dev->name, dev);
+=======
+	retval = request_irq(tp->pdev->irq, tulip_interrupt, IRQF_SHARED,
+			     dev->name, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (retval)
 		goto free_ring;
 
@@ -535,7 +598,11 @@ free_ring:
 }
 
 
+<<<<<<< HEAD
 static void tulip_tx_timeout(struct net_device *dev)
+=======
+static void tulip_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tulip_private *tp = netdev_priv(dev);
 	void __iomem *ioaddr = tp->base_addr;
@@ -587,7 +654,11 @@ static void tulip_tx_timeout(struct net_device *dev)
 			       (unsigned int)tp->rx_ring[i].buffer1,
 			       (unsigned int)tp->rx_ring[i].buffer2,
 			       buf[0], buf[1], buf[2]);
+<<<<<<< HEAD
 			for (j = 0; buf[j] != 0xee && j < 1600; j++)
+=======
+			for (j = 0; ((j < 1600) && buf[j] != 0xee); j++)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (j < 100)
 					pr_cont(" %02x", buf[j]);
 			pr_cont(" j=%d\n", j);
@@ -606,7 +677,11 @@ static void tulip_tx_timeout(struct net_device *dev)
 
 out_unlock:
 	spin_unlock_irqrestore (&tp->lock, flags);
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue (dev);
 }
 
@@ -642,8 +717,13 @@ static void tulip_init_ring(struct net_device *dev)
 		tp->rx_buffers[i].skb = skb;
 		if (skb == NULL)
 			break;
+<<<<<<< HEAD
 		mapping = pci_map_single(tp->pdev, skb->data,
 					 PKT_BUF_SZ, PCI_DMA_FROMDEVICE);
+=======
+		mapping = dma_map_single(&tp->pdev->dev, skb->data,
+					 PKT_BUF_SZ, DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tp->rx_buffers[i].mapping = mapping;
 		tp->rx_ring[i].status = cpu_to_le32(DescOwned);	/* Owned by Tulip chip */
 		tp->rx_ring[i].buffer1 = cpu_to_le32(mapping);
@@ -676,8 +756,13 @@ tulip_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	entry = tp->cur_tx % TX_RING_SIZE;
 
 	tp->tx_buffers[entry].skb = skb;
+<<<<<<< HEAD
 	mapping = pci_map_single(tp->pdev, skb->data,
 				 skb->len, PCI_DMA_TODEVICE);
+=======
+	mapping = dma_map_single(&tp->pdev->dev, skb->data, skb->len,
+				 DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tp->tx_buffers[entry].mapping = mapping;
 	tp->tx_ring[entry].buffer1 = cpu_to_le32(mapping);
 
@@ -728,6 +813,7 @@ static void tulip_clean_tx_ring(struct tulip_private *tp)
 		if (tp->tx_buffers[entry].skb == NULL) {
 			/* test because dummy frames not mapped */
 			if (tp->tx_buffers[entry].mapping)
+<<<<<<< HEAD
 				pci_unmap_single(tp->pdev,
 					tp->tx_buffers[entry].mapping,
 					sizeof(tp->setup_frame),
@@ -738,6 +824,19 @@ static void tulip_clean_tx_ring(struct tulip_private *tp)
 		pci_unmap_single(tp->pdev, tp->tx_buffers[entry].mapping,
 				tp->tx_buffers[entry].skb->len,
 				PCI_DMA_TODEVICE);
+=======
+				dma_unmap_single(&tp->pdev->dev,
+						 tp->tx_buffers[entry].mapping,
+						 sizeof(tp->setup_frame),
+						 DMA_TO_DEVICE);
+			continue;
+		}
+
+		dma_unmap_single(&tp->pdev->dev,
+				 tp->tx_buffers[entry].mapping,
+				 tp->tx_buffers[entry].skb->len,
+				 DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Free the original skb. */
 		dev_kfree_skb_irq(tp->tx_buffers[entry].skb);
@@ -781,9 +880,13 @@ static void tulip_down (struct net_device *dev)
 
 	spin_unlock_irqrestore (&tp->lock, flags);
 
+<<<<<<< HEAD
 	init_timer(&tp->timer);
 	tp->timer.data = (unsigned long)dev;
 	tp->timer.function = tulip_tbl[tp->chip_id].media_timer;
+=======
+	timer_setup(&tp->timer, tulip_tbl[tp->chip_id].media_timer, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->if_port = tp->saved_if_port;
 
@@ -809,8 +912,13 @@ static void tulip_free_ring (struct net_device *dev)
 		/* An invalid address. */
 		tp->rx_ring[i].buffer1 = cpu_to_le32(0xBADF00D0);
 		if (skb) {
+<<<<<<< HEAD
 			pci_unmap_single(tp->pdev, mapping, PKT_BUF_SZ,
 					 PCI_DMA_FROMDEVICE);
+=======
+			dma_unmap_single(&tp->pdev->dev, mapping, PKT_BUF_SZ,
+					 DMA_FROM_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb (skb);
 		}
 	}
@@ -819,8 +927,14 @@ static void tulip_free_ring (struct net_device *dev)
 		struct sk_buff *skb = tp->tx_buffers[i].skb;
 
 		if (skb != NULL) {
+<<<<<<< HEAD
 			pci_unmap_single(tp->pdev, tp->tx_buffers[i].mapping,
 					 skb->len, PCI_DMA_TODEVICE);
+=======
+			dma_unmap_single(&tp->pdev->dev,
+					 tp->tx_buffers[i].mapping, skb->len,
+					 DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dev_kfree_skb (skb);
 		}
 		tp->tx_buffers[i].skb = NULL;
@@ -841,7 +955,11 @@ static int tulip_close (struct net_device *dev)
 		netdev_dbg(dev, "Shutting down ethercard, status was %02x\n",
 			   ioread32 (ioaddr + CSR5));
 
+<<<<<<< HEAD
 	free_irq (dev->irq, dev);
+=======
+	free_irq (tp->pdev->irq, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tulip_free_ring (dev);
 
@@ -870,9 +988,14 @@ static struct net_device_stats *tulip_get_stats(struct net_device *dev)
 static void tulip_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
 	struct tulip_private *np = netdev_priv(dev);
+<<<<<<< HEAD
 	strlcpy(info->driver, DRV_NAME, sizeof(info->driver));
 	strlcpy(info->version, DRV_VERSION, sizeof(info->version));
 	strlcpy(info->bus_info, pci_name(np->pdev), sizeof(info->bus_info));
+=======
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	strscpy(info->bus_info, pci_name(np->pdev), sizeof(info->bus_info));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -926,6 +1049,10 @@ static int private_ioctl (struct net_device *dev, struct ifreq *rq, int cmd)
 			data->phy_id = 1;
 		else
 			return -ENODEV;
+<<<<<<< HEAD
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case SIOCGMIIREG:		/* Read MII PHY register. */
 		if (data->phy_id == 32 && (tp->flags & HAS_NWAY)) {
@@ -1008,24 +1135,39 @@ static int private_ioctl (struct net_device *dev, struct ifreq *rq, int cmd)
    new frame, not around filling tp->setup_frame.  This is non-deterministic
    when re-entered but still correct. */
 
+<<<<<<< HEAD
 #undef set_bit_le
 #define set_bit_le(i,p) do { ((char *)(p))[(i)/8] |= (1<<((i)%8)); } while(0)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void build_setup_frame_hash(u16 *setup_frm, struct net_device *dev)
 {
 	struct tulip_private *tp = netdev_priv(dev);
 	u16 hash_table[32];
 	struct netdev_hw_addr *ha;
+<<<<<<< HEAD
 	int i;
 	u16 *eaddrs;
 
 	memset(hash_table, 0, sizeof(hash_table));
 	set_bit_le(255, hash_table); 			/* Broadcast entry */
+=======
+	const u16 *eaddrs;
+	int i;
+
+	memset(hash_table, 0, sizeof(hash_table));
+	__set_bit_le(255, hash_table);			/* Broadcast entry */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* This should work on big-endian machines as well. */
 	netdev_for_each_mc_addr(ha, dev) {
 		int index = ether_crc_le(ETH_ALEN, ha->addr) & 0x1ff;
 
+<<<<<<< HEAD
 		set_bit_le(index, hash_table);
+=======
+		__set_bit_le(index, hash_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	for (i = 0; i < 32; i++) {
 		*setup_frm++ = hash_table[i];
@@ -1034,7 +1176,11 @@ static void build_setup_frame_hash(u16 *setup_frm, struct net_device *dev)
 	setup_frm = &tp->setup_frame[13*6];
 
 	/* Fill the final entry with our physical address. */
+<<<<<<< HEAD
 	eaddrs = (u16 *)dev->dev_addr;
+=======
+	eaddrs = (const u16 *)dev->dev_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*setup_frm++ = eaddrs[0]; *setup_frm++ = eaddrs[0];
 	*setup_frm++ = eaddrs[1]; *setup_frm++ = eaddrs[1];
 	*setup_frm++ = eaddrs[2]; *setup_frm++ = eaddrs[2];
@@ -1044,7 +1190,11 @@ static void build_setup_frame_perfect(u16 *setup_frm, struct net_device *dev)
 {
 	struct tulip_private *tp = netdev_priv(dev);
 	struct netdev_hw_addr *ha;
+<<<<<<< HEAD
 	u16 *eaddrs;
+=======
+	const u16 *eaddrs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We have <= 14 addresses so we can use the wonderful
 	   16 address perfect filtering of the Tulip. */
@@ -1059,7 +1209,11 @@ static void build_setup_frame_perfect(u16 *setup_frm, struct net_device *dev)
 	setup_frm = &tp->setup_frame[15*6];
 
 	/* Fill the final entry with our physical address. */
+<<<<<<< HEAD
 	eaddrs = (u16 *)dev->dev_addr;
+=======
+	eaddrs = (const u16 *)dev->dev_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*setup_frm++ = eaddrs[0]; *setup_frm++ = eaddrs[0];
 	*setup_frm++ = eaddrs[1]; *setup_frm++ = eaddrs[1];
 	*setup_frm++ = eaddrs[2]; *setup_frm++ = eaddrs[2];
@@ -1166,9 +1320,16 @@ static void set_rx_mode(struct net_device *dev)
 
 			tp->tx_buffers[entry].skb = NULL;
 			tp->tx_buffers[entry].mapping =
+<<<<<<< HEAD
 				pci_map_single(tp->pdev, tp->setup_frame,
 					       sizeof(tp->setup_frame),
 					       PCI_DMA_TODEVICE);
+=======
+				dma_map_single(&tp->pdev->dev,
+					       tp->setup_frame,
+					       sizeof(tp->setup_frame),
+					       DMA_TO_DEVICE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* Put the setup frame on the Tx list. */
 			if (entry == TX_RING_SIZE-1)
 				tx_flags |= DESC_RING_WRAP;		/* Wrap ring. */
@@ -1192,8 +1353,12 @@ static void set_rx_mode(struct net_device *dev)
 }
 
 #ifdef CONFIG_TULIP_MWI
+<<<<<<< HEAD
 static void __devinit tulip_mwi_config (struct pci_dev *pdev,
 					struct net_device *dev)
+=======
+static void tulip_mwi_config(struct pci_dev *pdev, struct net_device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct tulip_private *tp = netdev_priv(dev);
 	u8 cache;
@@ -1286,9 +1451,14 @@ static const struct net_device_ops tulip_netdev_ops = {
 	.ndo_tx_timeout		= tulip_tx_timeout,
 	.ndo_stop		= tulip_close,
 	.ndo_get_stats		= tulip_get_stats,
+<<<<<<< HEAD
 	.ndo_do_ioctl 		= private_ioctl,
 	.ndo_set_rx_mode	= set_rx_mode,
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+	.ndo_eth_ioctl		= private_ioctl,
+	.ndo_set_rx_mode	= set_rx_mode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -1296,12 +1466,17 @@ static const struct net_device_ops tulip_netdev_ops = {
 #endif
 };
 
+<<<<<<< HEAD
 DEFINE_PCI_DEVICE_TABLE(early_486_chipsets) = {
+=======
+static const struct pci_device_id early_486_chipsets[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ PCI_DEVICE(PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82424) },
 	{ PCI_DEVICE(PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_496) },
 	{ },
 };
 
+<<<<<<< HEAD
 static int __devinit tulip_init_one (struct pci_dev *pdev,
 				     const struct pci_device_id *ent)
 {
@@ -1310,6 +1485,18 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 	static unsigned char last_phys_addr[6] = {0x00, 'L', 'i', 'n', 'u', 'x'};
 	static int last_irq;
 	static int multiport_cnt;	/* For four-port boards w/one EEPROM */
+=======
+static int tulip_init_one(struct pci_dev *pdev, const struct pci_device_id *ent)
+{
+	struct tulip_private *tp;
+	/* See note below on the multiport cards. */
+	static unsigned char last_phys_addr[ETH_ALEN] = {
+		0x00, 'L', 'i', 'n', 'u', 'x'
+	};
+#if defined(__i386__) || defined(__x86_64__)	/* Patch up x86 BIOS bug. */
+	static int last_irq;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int i, irq;
 	unsigned short sum;
 	unsigned char *ee_data;
@@ -1319,6 +1506,7 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 	int chip_idx = ent->driver_data;
 	const char *chip_name = tulip_tbl[chip_idx].chip_name;
 	unsigned int eeprom_missing = 0;
+<<<<<<< HEAD
 	unsigned int force_csr0 = 0;
 
 #ifndef MODULE
@@ -1326,6 +1514,11 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 		printk_once(KERN_INFO "%s", version);
 #endif
 
+=======
+	u8 addr[ETH_ALEN] __aligned(2);
+	unsigned int force_csr0 = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	board_idx++;
 
 	/*
@@ -1407,12 +1600,17 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 	 *	And back to business
 	 */
 
+<<<<<<< HEAD
 	i = pci_enable_device(pdev);
+=======
+	i = pcim_enable_device(pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (i) {
 		pr_err("Cannot enable tulip board #%d, aborting\n", board_idx);
 		return i;
 	}
 
+<<<<<<< HEAD
 	/* The chip will fail to enter a low-power state later unless
 	 * first explicitly commanded into D0 */
 	if (pci_set_power_state(pdev, PCI_D0)) {
@@ -1423,6 +1621,12 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 
 	/* alloc_etherdev ensures aligned and zeroed private structures */
 	dev = alloc_etherdev (sizeof (*tp));
+=======
+	irq = pdev->irq;
+
+	/* alloc_etherdev ensures aligned and zeroed private structures */
+	dev = devm_alloc_etherdev(&pdev->dev, sizeof(*tp));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev)
 		return -ENOMEM;
 
@@ -1432,11 +1636,16 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 		       pci_name(pdev),
 		       (unsigned long long)pci_resource_len (pdev, 0),
 		       (unsigned long long)pci_resource_start (pdev, 0));
+<<<<<<< HEAD
 		goto err_out_free_netdev;
+=======
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* grab all resources from both PIO and MMIO regions, as we
 	 * don't want anyone else messing around with our hardware */
+<<<<<<< HEAD
 	if (pci_request_regions (pdev, DRV_NAME))
 		goto err_out_free_netdev;
 
@@ -1444,6 +1653,15 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 
 	if (!ioaddr)
 		goto err_out_free_res;
+=======
+	if (pci_request_regions(pdev, DRV_NAME))
+		return -ENODEV;
+
+	ioaddr = pcim_iomap(pdev, TULIP_BAR, tulip_tbl[chip_idx].io_size);
+
+	if (!ioaddr)
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * initialize private data structure 'tp'
@@ -1452,12 +1670,21 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 	tp = netdev_priv(dev);
 	tp->dev = dev;
 
+<<<<<<< HEAD
 	tp->rx_ring = pci_alloc_consistent(pdev,
 					   sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
 					   sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
 					   &tp->rx_ring_dma);
 	if (!tp->rx_ring)
 		goto err_out_mtable;
+=======
+	tp->rx_ring = dmam_alloc_coherent(&pdev->dev,
+					  sizeof(struct tulip_rx_desc) * RX_RING_SIZE +
+					  sizeof(struct tulip_tx_desc) * TX_RING_SIZE,
+					  &tp->rx_ring_dma, GFP_KERNEL);
+	if (!tp->rx_ring)
+		return -ENODEV;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tp->tx_ring = (struct tulip_tx_desc *)(tp->rx_ring + RX_RING_SIZE);
 	tp->tx_ring_dma = tp->rx_ring_dma + sizeof(struct tulip_rx_desc) * RX_RING_SIZE;
 
@@ -1483,6 +1710,7 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 	tp->csr0 = csr0;
 	spin_lock_init(&tp->lock);
 	spin_lock_init(&tp->mii_lock);
+<<<<<<< HEAD
 	init_timer(&tp->timer);
 	tp->timer.data = (unsigned long)dev;
 	tp->timer.function = tulip_tbl[tp->chip_id].media_timer;
@@ -1491,6 +1719,12 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 
 	dev->base_addr = (unsigned long)ioaddr;
 
+=======
+	timer_setup(&tp->timer, tulip_tbl[tp->chip_id].media_timer, 0);
+
+	INIT_WORK(&tp->media_work, tulip_tbl[tp->chip_id].media_task);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_TULIP_MWI
 	if (!force_csr0 && (tp->flags & HAS_PCI_MWI))
 		tulip_mwi_config (pdev, dev);
@@ -1535,6 +1769,7 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 			do {
 				value = ioread32(ioaddr + CSR9);
 			} while (value < 0  && --boguscnt > 0);
+<<<<<<< HEAD
 			put_unaligned_le16(value, ((__le16 *)dev->dev_addr) + i);
 			sum += value & 0xffff;
 		}
@@ -1542,6 +1777,17 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 		/* No need to read the EEPROM. */
 		put_unaligned_le32(ioread32(ioaddr + 0xA4), dev->dev_addr);
 		put_unaligned_le16(ioread32(ioaddr + 0xA8), dev->dev_addr + 4);
+=======
+			put_unaligned_le16(value, ((__le16 *)addr) + i);
+			sum += value & 0xffff;
+		}
+		eth_hw_addr_set(dev, addr);
+	} else if (chip_idx == COMET) {
+		/* No need to read the EEPROM. */
+		put_unaligned_le32(ioread32(ioaddr + 0xA4), addr);
+		put_unaligned_le16(ioread32(ioaddr + 0xA8), addr + 4);
+		eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < 6; i ++)
 			sum += dev->dev_addr[i];
 	} else {
@@ -1572,7 +1818,10 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 		} else if (ee_data[0] == 0xff  &&  ee_data[1] == 0xff &&
 				   ee_data[2] == 0) {
 			sa_offset = 2;		/* Grrr, damn Matrox boards. */
+<<<<<<< HEAD
 			multiport_cnt = 4;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 #ifdef CONFIG_MIPS_COBALT
                if ((pdev->bus->number == 0) &&
@@ -1605,20 +1854,38 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 #endif
 
 		for (i = 0; i < 6; i ++) {
+<<<<<<< HEAD
 			dev->dev_addr[i] = ee_data[i + sa_offset];
 			sum += ee_data[i + sa_offset];
 		}
+=======
+			addr[i] = ee_data[i + sa_offset];
+			sum += ee_data[i + sa_offset];
+		}
+		eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* Lite-On boards have the address byte-swapped. */
 	if ((dev->dev_addr[0] == 0xA0 ||
 	     dev->dev_addr[0] == 0xC0 ||
 	     dev->dev_addr[0] == 0x02) &&
+<<<<<<< HEAD
 	    dev->dev_addr[1] == 0x00)
 		for (i = 0; i < 6; i+=2) {
 			char tmp = dev->dev_addr[i];
 			dev->dev_addr[i] = dev->dev_addr[i+1];
 			dev->dev_addr[i+1] = tmp;
 		}
+=======
+	    dev->dev_addr[1] == 0x00) {
+		for (i = 0; i < 6; i+=2) {
+			addr[i] = dev->dev_addr[i+1];
+			addr[i+1] = dev->dev_addr[i];
+		}
+		eth_hw_addr_set(dev, addr);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* On the Zynx 315 Etherarray and other multiport boards only the
 	   first Tulip has an EEPROM.
 	   On Sparc systems the mac address is held in the OBP property
@@ -1629,17 +1896,31 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 	if (sum == 0  || sum == 6*0xff) {
 #if defined(CONFIG_SPARC)
 		struct device_node *dp = pci_device_to_OF_node(pdev);
+<<<<<<< HEAD
 		const unsigned char *addr;
+=======
+		const unsigned char *addr2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		int len;
 #endif
 		eeprom_missing = 1;
 		for (i = 0; i < 5; i++)
+<<<<<<< HEAD
 			dev->dev_addr[i] = last_phys_addr[i];
 		dev->dev_addr[i] = last_phys_addr[i] + 1;
 #if defined(CONFIG_SPARC)
 		addr = of_get_property(dp, "local-mac-address", &len);
 		if (addr && len == 6)
 			memcpy(dev->dev_addr, addr, 6);
+=======
+			addr[i] = last_phys_addr[i];
+		addr[i] = last_phys_addr[i] + 1;
+		eth_hw_addr_set(dev, addr);
+#if defined(CONFIG_SPARC)
+		addr2 = of_get_property(dp, "local-mac-address", &len);
+		if (addr2 && len == ETH_ALEN)
+			eth_hw_addr_set(dev, addr2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 #if defined(__i386__) || defined(__x86_64__)	/* Patch up x86 BIOS bug. */
 		if (last_irq)
@@ -1649,8 +1930,14 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 
 	for (i = 0; i < 6; i++)
 		last_phys_addr[i] = dev->dev_addr[i];
+<<<<<<< HEAD
 	last_irq = irq;
 	dev->irq = irq;
+=======
+#if defined(__i386__) || defined(__x86_64__)	/* Patch up x86 BIOS bug. */
+	last_irq = irq;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The lower four bits are the media type. */
 	if (board_idx >= 0  &&  board_idx < MAX_UNITS) {
@@ -1711,12 +1998,22 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 	dev->netdev_ops = &tulip_netdev_ops;
 	dev->watchdog_timeo = TX_TIMEOUT;
 #ifdef CONFIG_TULIP_NAPI
+<<<<<<< HEAD
 	netif_napi_add(dev, &tp->napi, tulip_poll, 16);
 #endif
 	SET_ETHTOOL_OPS(dev, &ops);
 
 	if (register_netdev(dev))
 		goto err_out_free_ring;
+=======
+	netif_napi_add_weight(dev, &tp->napi, tulip_poll, 16);
+#endif
+	dev->ethtool_ops = &ops;
+
+	i = register_netdev(dev);
+	if (i)
+		return i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci_set_drvdata(pdev, dev);
 
@@ -1791,6 +2088,7 @@ static int __devinit tulip_init_one (struct pci_dev *pdev,
 	tulip_set_power_state (tp, 0, 1);
 
 	return 0;
+<<<<<<< HEAD
 
 err_out_free_ring:
 	pci_free_consistent (pdev,
@@ -1808,6 +2106,8 @@ err_out_free_res:
 err_out_free_netdev:
 	free_netdev (dev);
 	return -ENODEV;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -1819,14 +2119,23 @@ static void tulip_set_wolopts (struct pci_dev *pdev, u32 wolopts)
 	void __iomem *ioaddr = tp->base_addr;
 
 	if (tp->flags & COMET_PM) {
+<<<<<<< HEAD
 	  
 		unsigned int tmp;
 			
+=======
+		unsigned int tmp;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp = ioread32(ioaddr + CSR18);
 		tmp &= ~(comet_csr18_pmes_sticky | comet_csr18_apm_mode | comet_csr18_d3a);
 		tmp |= comet_csr18_pm_mode;
 		iowrite32(tmp, ioaddr + CSR18);
+<<<<<<< HEAD
 			
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Set the Wake-up Control/Status Register to the given WOL options*/
 		tmp = ioread32(ioaddr + CSR13);
 		tmp &= ~(comet_csr13_linkoffe | comet_csr13_linkone | comet_csr13_wfre | comet_csr13_lsce | comet_csr13_mpre);
@@ -1840,6 +2149,7 @@ static void tulip_set_wolopts (struct pci_dev *pdev, u32 wolopts)
 	}
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 
 
@@ -1847,6 +2157,11 @@ static int tulip_suspend (struct pci_dev *pdev, pm_message_t state)
 {
 	pci_power_t pstate;
 	struct net_device *dev = pci_get_drvdata(pdev);
+=======
+static int __maybe_unused tulip_suspend(struct device *dev_d)
+{
+	struct net_device *dev = dev_get_drvdata(dev_d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tulip_private *tp = netdev_priv(dev);
 
 	if (!dev)
@@ -1858,6 +2173,7 @@ static int tulip_suspend (struct pci_dev *pdev, pm_message_t state)
 	tulip_down(dev);
 
 	netif_device_detach(dev);
+<<<<<<< HEAD
 	free_irq(dev->irq, dev);
 
 save_state:
@@ -1873,10 +2189,19 @@ save_state:
 			pr_err("pci_enable_wake failed (%d)\n", rc);
 	}
 	pci_set_power_state(pdev, pstate);
+=======
+	/* FIXME: it needlessly adds an error path. */
+	free_irq(tp->pdev->irq, dev);
+
+save_state:
+	tulip_set_wolopts(to_pci_dev(dev_d), tp->wolinfo.wolopts);
+	device_set_wakeup_enable(dev_d, !!tp->wolinfo.wolopts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 
 static int tulip_resume(struct pci_dev *pdev)
 {
@@ -1885,10 +2210,21 @@ static int tulip_resume(struct pci_dev *pdev)
 	void __iomem *ioaddr = tp->base_addr;
 	int retval;
 	unsigned int tmp;
+=======
+static int __maybe_unused tulip_resume(struct device *dev_d)
+{
+	struct pci_dev *pdev = to_pci_dev(dev_d);
+	struct net_device *dev = dev_get_drvdata(dev_d);
+	struct tulip_private *tp = netdev_priv(dev);
+	void __iomem *ioaddr = tp->base_addr;
+	unsigned int tmp;
+	int retval = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	pci_set_power_state(pdev, PCI_D0);
 	pci_restore_state(pdev);
 
@@ -1901,13 +2237,25 @@ static int tulip_resume(struct pci_dev *pdev)
 	}
 
 	if ((retval = request_irq(dev->irq, tulip_interrupt, IRQF_SHARED, dev->name, dev))) {
+=======
+	if (!netif_running(dev))
+		return 0;
+
+	retval = request_irq(pdev->irq, tulip_interrupt, IRQF_SHARED,
+			     dev->name, dev);
+	if (retval) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pr_err("request_irq failed in resume\n");
 		return retval;
 	}
 
 	if (tp->flags & COMET_PM) {
+<<<<<<< HEAD
 		pci_enable_wake(pdev, PCI_D3hot, 0);
 		pci_enable_wake(pdev, PCI_D3cold, 0);
+=======
+		device_set_wakeup_enable(dev_d, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Clear the PMES flag */
 		tmp = ioread32(ioaddr + CSR20);
@@ -1925,6 +2273,7 @@ static int tulip_resume(struct pci_dev *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 #endif /* CONFIG_PM */
 
 
@@ -1932,10 +2281,16 @@ static void __devexit tulip_remove_one (struct pci_dev *pdev)
 {
 	struct net_device *dev = pci_get_drvdata (pdev);
 	struct tulip_private *tp;
+=======
+static void tulip_remove_one(struct pci_dev *pdev)
+{
+	struct net_device *dev = pci_get_drvdata (pdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!dev)
 		return;
 
+<<<<<<< HEAD
 	tp = netdev_priv(dev);
 	unregister_netdev(dev);
 	pci_free_consistent (pdev,
@@ -1949,6 +2304,9 @@ static void __devexit tulip_remove_one (struct pci_dev *pdev)
 	pci_set_drvdata (pdev, NULL);
 
 	/* pci_power_off (pdev, -1); */
+=======
+	unregister_netdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_NET_POLL_CONTROLLER
@@ -1960,6 +2318,7 @@ static void __devexit tulip_remove_one (struct pci_dev *pdev)
 
 static void poll_tulip (struct net_device *dev)
 {
+<<<<<<< HEAD
 	/* disable_irq here is not very nice, but with the lockless
 	   interrupt handler we have no other choice. */
 	disable_irq(dev->irq);
@@ -1968,23 +2327,51 @@ static void poll_tulip (struct net_device *dev)
 }
 #endif
 
+=======
+	struct tulip_private *tp = netdev_priv(dev);
+	const int irq = tp->pdev->irq;
+
+	/* disable_irq here is not very nice, but with the lockless
+	   interrupt handler we have no other choice. */
+	disable_irq(irq);
+	tulip_interrupt (irq, dev);
+	enable_irq(irq);
+}
+#endif
+
+static SIMPLE_DEV_PM_OPS(tulip_pm_ops, tulip_suspend, tulip_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct pci_driver tulip_driver = {
 	.name		= DRV_NAME,
 	.id_table	= tulip_pci_tbl,
 	.probe		= tulip_init_one,
+<<<<<<< HEAD
 	.remove		= __devexit_p(tulip_remove_one),
 #ifdef CONFIG_PM
 	.suspend	= tulip_suspend,
 	.resume		= tulip_resume,
 #endif /* CONFIG_PM */
+=======
+	.remove		= tulip_remove_one,
+	.driver.pm	= &tulip_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
 static int __init tulip_init (void)
 {
+<<<<<<< HEAD
 #ifdef MODULE
 	pr_info("%s", version);
 #endif
+=======
+	if (!csr0) {
+		pr_warn("tulip: unknown CPU architecture, using default csr0\n");
+		/* default to 8 longword cache line alignment */
+		csr0 = 0x00A00000 | 0x4800;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* copy module parms into globals */
 	tulip_rx_copybreak = rx_copybreak;

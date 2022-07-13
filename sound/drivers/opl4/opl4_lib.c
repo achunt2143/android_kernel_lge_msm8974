@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Functions for accessing OPL4 devices
  * Copyright (c) 2003 by Clemens Ladisch <clemens@ladisch.de>
@@ -15,6 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Functions for accessing OPL4 devices
+ * Copyright (c) 2003 by Clemens Ladisch <clemens@ladisch.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "opl4_local.h"
@@ -23,13 +30,21 @@
 #include <linux/slab.h>
 #include <linux/init.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Clemens Ladisch <clemens@ladisch.de>");
 MODULE_DESCRIPTION("OPL4 driver");
 MODULE_LICENSE("GPL");
 
+<<<<<<< HEAD
 static void inline snd_opl4_wait(struct snd_opl4 *opl4)
+=======
+static inline void snd_opl4_wait(struct snd_opl4 *opl4)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int timeout = 10;
 	while ((inb(opl4->fm_port) & OPL4_STATUS_BUSY) && --timeout > 0)
@@ -153,7 +168,11 @@ static int snd_opl4_detect(struct snd_opl4 *opl4)
 	return 0;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_SND_SEQUENCER) || (defined(MODULE) && defined(CONFIG_SND_SEQUENCER_MODULE))
+=======
+#if IS_ENABLED(CONFIG_SND_SEQUENCER)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void snd_opl4_seq_dev_free(struct snd_seq_device *seq_dev)
 {
 	struct snd_opl4 *opl4 = seq_dev->private_data;
@@ -176,9 +195,13 @@ static int snd_opl4_create_seq_dev(struct snd_opl4 *opl4, int seq_device)
 
 static void snd_opl4_free(struct snd_opl4 *opl4)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
 	snd_opl4_free_proc(opl4);
 #endif
+=======
+	snd_opl4_free_proc(opl4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	release_and_free_resource(opl4->res_fm_port);
 	release_and_free_resource(opl4->res_pcm_port);
 	kfree(opl4);
@@ -199,7 +222,11 @@ int snd_opl4_create(struct snd_card *card,
 	struct snd_opl4 *opl4;
 	struct snd_opl3 *opl3;
 	int err;
+<<<<<<< HEAD
 	static struct snd_device_ops ops = {
+=======
+	static const struct snd_device_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.dev_free = snd_opl4_dev_free
 	};
 
@@ -249,11 +276,17 @@ int snd_opl4_create(struct snd_card *card,
 	snd_opl4_enable_opl4(opl4);
 
 	snd_opl4_create_mixer(opl4);
+<<<<<<< HEAD
 #ifdef CONFIG_PROC_FS
 	snd_opl4_create_proc(opl4);
 #endif
 
 #if defined(CONFIG_SND_SEQUENCER) || (defined(MODULE) && defined(CONFIG_SND_SEQUENCER_MODULE))
+=======
+	snd_opl4_create_proc(opl4);
+
+#if IS_ENABLED(CONFIG_SND_SEQUENCER)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	opl4->seq_client = -1;
 	if (opl4->hardware < OPL3_HW_OPL4_ML)
 		snd_opl4_create_seq_dev(opl4, seq_device);
@@ -267,6 +300,7 @@ int snd_opl4_create(struct snd_card *card,
 }
 
 EXPORT_SYMBOL(snd_opl4_create);
+<<<<<<< HEAD
 
 static int __init alsa_opl4_init(void)
 {
@@ -279,3 +313,5 @@ static void __exit alsa_opl4_exit(void)
 
 module_init(alsa_opl4_init)
 module_exit(alsa_opl4_exit)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

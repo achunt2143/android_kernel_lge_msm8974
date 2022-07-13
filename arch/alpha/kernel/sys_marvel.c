@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/alpha/kernel/sys_marvel.c
  *
@@ -17,12 +21,18 @@
 #include <asm/irq.h>
 #include <asm/mmu_context.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/core_marvel.h>
 #include <asm/hwrpb.h>
 #include <asm/tlbflush.h>
 #include <asm/vga.h>
+<<<<<<< HEAD
 #include <asm/rtc.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "proto.h"
 #include "err_impl.h"
@@ -116,11 +126,19 @@ io7_enable_irq(struct irq_data *d)
 		return;
 	}
 
+<<<<<<< HEAD
 	spin_lock(&io7->irq_lock);
 	*ctl |= 1UL << 24;
 	mb();
 	*ctl;
 	spin_unlock(&io7->irq_lock);
+=======
+	raw_spin_lock(&io7->irq_lock);
+	*ctl |= 1UL << 24;
+	mb();
+	*ctl;
+	raw_spin_unlock(&io7->irq_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -137,11 +155,19 @@ io7_disable_irq(struct irq_data *d)
 		return;
 	}
 
+<<<<<<< HEAD
 	spin_lock(&io7->irq_lock);
 	*ctl &= ~(1UL << 24);
 	mb();
 	*ctl;
 	spin_unlock(&io7->irq_lock);
+=======
+	raw_spin_lock(&io7->irq_lock);
+	*ctl &= ~(1UL << 24);
+	mb();
+	*ctl;
+	raw_spin_unlock(&io7->irq_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -264,7 +290,11 @@ init_io7_irqs(struct io7 *io7,
 	 */
 	printk("  Interrupts reported to CPU at PE %u\n", boot_cpuid);
 
+<<<<<<< HEAD
 	spin_lock(&io7->irq_lock);
+=======
+	raw_spin_lock(&io7->irq_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set up the error irqs */
 	io7_redirect_irq(io7, &io7->csrs->HLT_CTL.csr, boot_cpuid);
@@ -296,7 +326,11 @@ init_io7_irqs(struct io7 *io7,
 	for (i = 0; i < 16; ++i)
 		init_one_io7_msi(io7, i, boot_cpuid);
 
+<<<<<<< HEAD
 	spin_unlock(&io7->irq_lock);
+=======
+	raw_spin_unlock(&io7->irq_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __init
@@ -317,8 +351,14 @@ marvel_init_irq(void)
 }
 
 static int 
+<<<<<<< HEAD
 marvel_map_irq(struct pci_dev *dev, u8 slot, u8 pin)
 {
+=======
+marvel_map_irq(const struct pci_dev *cdev, u8 slot, u8 pin)
+{
+	struct pci_dev *dev = (struct pci_dev *)cdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pci_controller *hose = dev->sysdata;
 	struct io7_port *io7_port = hose->sysdata;
 	struct io7 *io7 = io7_port->io7;
@@ -331,7 +371,11 @@ marvel_map_irq(struct pci_dev *dev, u8 slot, u8 pin)
 	pci_read_config_byte(dev, PCI_INTERRUPT_LINE, &intline);
 	irq = intline;
 
+<<<<<<< HEAD
 	msi_loc = pci_find_capability(dev, PCI_CAP_ID_MSI);
+=======
+	msi_loc = dev->msi_cap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	msg_ctl = 0;
 	if (msi_loc) 
 		pci_read_config_word(dev, msi_loc + PCI_MSI_FLAGS, &msg_ctl);
@@ -396,6 +440,7 @@ marvel_init_pci(void)
 static void __init
 marvel_init_rtc(void)
 {
+<<<<<<< HEAD
 	init_rtc_irq();
 }
 
@@ -448,6 +493,9 @@ marvel_set_rtc_time(struct rtc_time *time)
 	}
 #endif
 	return __set_rtc_time(time);
+=======
+	init_rtc_irq(NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void
@@ -491,8 +539,12 @@ struct alpha_machine_vector marvel_ev7_mv __initmv = {
 	.vector_name		= "MARVEL/EV7",
 	DO_EV7_MMU,
 	.rtc_port		= 0x70,
+<<<<<<< HEAD
 	.rtc_get_time		= marvel_get_rtc_time,
 	.rtc_set_time		= marvel_set_rtc_time,
+=======
+	.rtc_boot_cpu_only	= 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	DO_MARVEL_IO,
 	.machine_check		= marvel_machine_check,
 	.max_isa_dma_address	= ALPHA_MAX_ISA_DMA_ADDRESS,
@@ -513,10 +565,13 @@ struct alpha_machine_vector marvel_ev7_mv __initmv = {
 	.kill_arch		= marvel_kill_arch,
 	.pci_map_irq		= marvel_map_irq,
 	.pci_swizzle		= common_swizzle,
+<<<<<<< HEAD
 
 	.pa_to_nid		= marvel_pa_to_nid,
 	.cpuid_to_nid		= marvel_cpuid_to_nid,
 	.node_mem_start		= marvel_node_mem_start,
 	.node_mem_size		= marvel_node_mem_size,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 ALIAS_MV(marvel_ev7)

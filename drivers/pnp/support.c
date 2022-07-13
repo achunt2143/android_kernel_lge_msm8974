@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * support.c - standard functions for the use of pnp protocol drivers
  *
@@ -29,7 +33,10 @@ int pnp_is_active(struct pnp_dev *dev)
 	else
 		return 1;
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(pnp_is_active);
 
 /*

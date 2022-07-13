@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* arch/sparc64/mm/tsb.c
  *
  * Copyright (C) 2006, 2008 David S. Miller <davem@davemloft.net>
@@ -6,9 +10,18 @@
 #include <linux/kernel.h>
 #include <linux/preempt.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 #include <asm/page.h>
 #include <asm/pgtable.h>
 #include <asm/mmu_context.h>
+=======
+#include <linux/mm_types.h>
+#include <linux/pgtable.h>
+
+#include <asm/page.h>
+#include <asm/mmu_context.h>
+#include <asm/setup.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/tsb.h>
 #include <asm/tlb.h>
 #include <asm/oplib.h>
@@ -26,6 +39,23 @@ static inline int tag_compare(unsigned long tag, unsigned long vaddr)
 	return (tag == (vaddr >> 22));
 }
 
+<<<<<<< HEAD
+=======
+static void flush_tsb_kernel_range_scan(unsigned long start, unsigned long end)
+{
+	unsigned long idx;
+
+	for (idx = 0; idx < KERNEL_TSB_NENTRIES; idx++) {
+		struct tsb *ent = &swapper_tsb[idx];
+		unsigned long match = idx << 13;
+
+		match |= (ent->tag << 22);
+		if (match >= start && match < end)
+			ent->tag = (1UL << TSB_TAG_INVALID_BIT);
+	}
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* TSB flushes need only occur on the processor initiating the address
  * space modification, not on each cpu the address space has run on.
  * Only the TLB flush needs that treatment.
@@ -35,6 +65,12 @@ void flush_tsb_kernel_range(unsigned long start, unsigned long end)
 {
 	unsigned long v;
 
+<<<<<<< HEAD
+=======
+	if ((end - start) >> PAGE_SHIFT >= 2 * KERNEL_TSB_NENTRIES)
+		return flush_tsb_kernel_range_scan(start, end);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (v = start; v < end; v += PAGE_SIZE) {
 		unsigned long hash = tsb_hash(v, PAGE_SHIFT,
 					      KERNEL_TSB_NENTRIES);
@@ -68,6 +104,36 @@ static void __flush_tsb_one(struct tlb_batch *tb, unsigned long hash_shift,
 		__flush_tsb_one_entry(tsb, tb->vaddrs[i], hash_shift, nentries);
 }
 
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+static void __flush_huge_tsb_one_entry(unsigned long tsb, unsigned long v,
+				       unsigned long hash_shift,
+				       unsigned long nentries,
+				       unsigned int hugepage_shift)
+{
+	unsigned int hpage_entries;
+	unsigned int i;
+
+	hpage_entries = 1 << (hugepage_shift - hash_shift);
+	for (i = 0; i < hpage_entries; i++)
+		__flush_tsb_one_entry(tsb, v + (i << hash_shift), hash_shift,
+				      nentries);
+}
+
+static void __flush_huge_tsb_one(struct tlb_batch *tb, unsigned long hash_shift,
+				 unsigned long tsb, unsigned long nentries,
+				 unsigned int hugepage_shift)
+{
+	unsigned long i;
+
+	for (i = 0; i < tb->tlb_nr; i++)
+		__flush_huge_tsb_one_entry(tsb, tb->vaddrs[i], hash_shift,
+					   nentries, hugepage_shift);
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void flush_tsb_user(struct tlb_batch *tb)
 {
 	struct mm_struct *mm = tb->mm;
@@ -75,6 +141,7 @@ void flush_tsb_user(struct tlb_batch *tb)
 
 	spin_lock_irqsave(&mm->context.lock, flags);
 
+<<<<<<< HEAD
 	base = (unsigned long) mm->context.tsb_block[MM_TSB_BASE].tsb;
 	nentries = mm->context.tsb_block[MM_TSB_BASE].tsb_nentries;
 	if (tlb_type == cheetah_plus || tlb_type == hypervisor)
@@ -83,22 +150,50 @@ void flush_tsb_user(struct tlb_batch *tb)
 
 #ifdef CONFIG_HUGETLB_PAGE
 	if (mm->context.tsb_block[MM_TSB_HUGE].tsb) {
+=======
+	if (tb->hugepage_shift < REAL_HPAGE_SHIFT) {
+		base = (unsigned long) mm->context.tsb_block[MM_TSB_BASE].tsb;
+		nentries = mm->context.tsb_block[MM_TSB_BASE].tsb_nentries;
+		if (tlb_type == cheetah_plus || tlb_type == hypervisor)
+			base = __pa(base);
+		if (tb->hugepage_shift == PAGE_SHIFT)
+			__flush_tsb_one(tb, PAGE_SHIFT, base, nentries);
+#if defined(CONFIG_HUGETLB_PAGE)
+		else
+			__flush_huge_tsb_one(tb, PAGE_SHIFT, base, nentries,
+					     tb->hugepage_shift);
+#endif
+	}
+#if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+	else if (mm->context.tsb_block[MM_TSB_HUGE].tsb) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		base = (unsigned long) mm->context.tsb_block[MM_TSB_HUGE].tsb;
 		nentries = mm->context.tsb_block[MM_TSB_HUGE].tsb_nentries;
 		if (tlb_type == cheetah_plus || tlb_type == hypervisor)
 			base = __pa(base);
+<<<<<<< HEAD
 		__flush_tsb_one(tb, HPAGE_SHIFT, base, nentries);
+=======
+		__flush_huge_tsb_one(tb, REAL_HPAGE_SHIFT, base, nentries,
+				     tb->hugepage_shift);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	spin_unlock_irqrestore(&mm->context.lock, flags);
 }
 
+<<<<<<< HEAD
 void flush_tsb_user_page(struct mm_struct *mm, unsigned long vaddr)
+=======
+void flush_tsb_user_page(struct mm_struct *mm, unsigned long vaddr,
+			 unsigned int hugepage_shift)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long nentries, base, flags;
 
 	spin_lock_irqsave(&mm->context.lock, flags);
 
+<<<<<<< HEAD
 	base = (unsigned long) mm->context.tsb_block[MM_TSB_BASE].tsb;
 	nentries = mm->context.tsb_block[MM_TSB_BASE].tsb_nentries;
 	if (tlb_type == cheetah_plus || tlb_type == hypervisor)
@@ -107,16 +202,40 @@ void flush_tsb_user_page(struct mm_struct *mm, unsigned long vaddr)
 
 #if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
 	if (mm->context.tsb_block[MM_TSB_HUGE].tsb) {
+=======
+	if (hugepage_shift < REAL_HPAGE_SHIFT) {
+		base = (unsigned long) mm->context.tsb_block[MM_TSB_BASE].tsb;
+		nentries = mm->context.tsb_block[MM_TSB_BASE].tsb_nentries;
+		if (tlb_type == cheetah_plus || tlb_type == hypervisor)
+			base = __pa(base);
+		if (hugepage_shift == PAGE_SHIFT)
+			__flush_tsb_one_entry(base, vaddr, PAGE_SHIFT,
+					      nentries);
+#if defined(CONFIG_HUGETLB_PAGE)
+		else
+			__flush_huge_tsb_one_entry(base, vaddr, PAGE_SHIFT,
+						   nentries, hugepage_shift);
+#endif
+	}
+#if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+	else if (mm->context.tsb_block[MM_TSB_HUGE].tsb) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		base = (unsigned long) mm->context.tsb_block[MM_TSB_HUGE].tsb;
 		nentries = mm->context.tsb_block[MM_TSB_HUGE].tsb_nentries;
 		if (tlb_type == cheetah_plus || tlb_type == hypervisor)
 			base = __pa(base);
+<<<<<<< HEAD
 		__flush_tsb_one_entry(base, vaddr, HPAGE_SHIFT, nentries);
+=======
+		__flush_huge_tsb_one_entry(base, vaddr, REAL_HPAGE_SHIFT,
+					   nentries, hugepage_shift);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	spin_unlock_irqrestore(&mm->context.lock, flags);
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_SPARC64_PAGE_SIZE_8KB)
 #define HV_PGSZ_IDX_BASE	HV_PGSZ_IDX_8K
 #define HV_PGSZ_MASK_BASE	HV_PGSZ_MASK_8K
@@ -140,6 +259,14 @@ void flush_tsb_user_page(struct mm_struct *mm, unsigned long vaddr)
 #else
 #error Broken huge page size setting...
 #endif
+=======
+#define HV_PGSZ_IDX_BASE	HV_PGSZ_IDX_8K
+#define HV_PGSZ_MASK_BASE	HV_PGSZ_MASK_8K
+
+#if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+#define HV_PGSZ_IDX_HUGE	HV_PGSZ_IDX_4MB
+#define HV_PGSZ_MASK_HUGE	HV_PGSZ_MASK_4MB
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static void setup_tsb_params(struct mm_struct *mm, unsigned long tsb_idx, unsigned long tsb_bytes)
@@ -217,7 +344,11 @@ static void setup_tsb_params(struct mm_struct *mm, unsigned long tsb_idx, unsign
 	default:
 		printk(KERN_ERR "TSB[%s:%d]: Impossible TSB size %lu, killing process.\n",
 		       current->comm, current->pid, tsb_bytes);
+<<<<<<< HEAD
 		do_exit(SIGSEGV);
+=======
+		BUG();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	tte |= pte_sz_bits(page_sz);
 
@@ -246,7 +377,11 @@ static void setup_tsb_params(struct mm_struct *mm, unsigned long tsb_idx, unsign
 		case MM_TSB_BASE:
 			hp->pgsz_idx = HV_PGSZ_IDX_BASE;
 			break;
+<<<<<<< HEAD
 #ifdef CONFIG_HUGETLB_PAGE
+=======
+#if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case MM_TSB_HUGE:
 			hp->pgsz_idx = HV_PGSZ_IDX_HUGE;
 			break;
@@ -261,7 +396,11 @@ static void setup_tsb_params(struct mm_struct *mm, unsigned long tsb_idx, unsign
 		case MM_TSB_BASE:
 			hp->pgsz_mask = HV_PGSZ_MASK_BASE;
 			break;
+<<<<<<< HEAD
 #ifdef CONFIG_HUGETLB_PAGE
+=======
+#if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case MM_TSB_HUGE:
 			hp->pgsz_mask = HV_PGSZ_MASK_HUGE;
 			break;
@@ -302,7 +441,11 @@ void __init pgtable_cache_init(void)
 		prom_halt();
 	}
 
+<<<<<<< HEAD
 	for (i = 0; i < 8; i++) {
+=======
+	for (i = 0; i < ARRAY_SIZE(tsb_cache_names); i++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long size = 8192 << i;
 		const char *name = tsb_cache_names[i];
 
@@ -336,7 +479,11 @@ static unsigned long tsb_size_to_rss_limit(unsigned long new_size)
  * will not trigger any longer.
  *
  * The TSB can be anywhere from 8K to 1MB in size, in increasing powers
+<<<<<<< HEAD
  * of two.  The TSB must be aligned to it's size, so f.e. a 512K TSB
+=======
+ * of two.  The TSB must be aligned to its size, so f.e. a 512K TSB
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * must be 512K aligned.  It also must be physically contiguous, so we
  * cannot use vmalloc().
  *
@@ -353,8 +500,13 @@ void tsb_grow(struct mm_struct *mm, unsigned long tsb_index, unsigned long rss)
 	unsigned long new_rss_limit;
 	gfp_t gfp_flags;
 
+<<<<<<< HEAD
 	if (max_tsb_size > (PAGE_SIZE << MAX_ORDER))
 		max_tsb_size = (PAGE_SIZE << MAX_ORDER);
+=======
+	if (max_tsb_size > PAGE_SIZE << MAX_PAGE_ORDER)
+		max_tsb_size = PAGE_SIZE << MAX_PAGE_ORDER;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	new_cache_index = 0;
 	for (new_size = 8192; new_size < max_tsb_size; new_size <<= 1UL) {
@@ -370,7 +522,11 @@ void tsb_grow(struct mm_struct *mm, unsigned long tsb_index, unsigned long rss)
 retry_tsb_alloc:
 	gfp_flags = GFP_KERNEL;
 	if (new_size > (PAGE_SIZE * 2))
+<<<<<<< HEAD
 		gfp_flags = __GFP_NOWARN | __GFP_NORETRY;
+=======
+		gfp_flags |= __GFP_NOWARN | __GFP_NORETRY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	new_tsb = kmem_cache_alloc_node(tsb_caches[new_cache_index],
 					gfp_flags, numa_node_id());
@@ -448,7 +604,12 @@ retry_tsb_alloc:
 		extern void copy_tsb(unsigned long old_tsb_base,
 				     unsigned long old_tsb_size,
 				     unsigned long new_tsb_base,
+<<<<<<< HEAD
 				     unsigned long new_tsb_size);
+=======
+				     unsigned long new_tsb_size,
+				     unsigned long page_size_shift);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned long old_tsb_base = (unsigned long) old_tsb;
 		unsigned long new_tsb_base = (unsigned long) new_tsb;
 
@@ -456,7 +617,13 @@ retry_tsb_alloc:
 			old_tsb_base = __pa(old_tsb_base);
 			new_tsb_base = __pa(new_tsb_base);
 		}
+<<<<<<< HEAD
 		copy_tsb(old_tsb_base, old_size, new_tsb_base, new_size);
+=======
+		copy_tsb(old_tsb_base, old_size, new_tsb_base, new_size,
+			tsb_index == MM_TSB_BASE ?
+			PAGE_SHIFT : REAL_HPAGE_SHIFT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mm->context.tsb_block[tsb_index].tsb = new_tsb;
@@ -483,8 +650,15 @@ retry_tsb_alloc:
 
 int init_new_context(struct task_struct *tsk, struct mm_struct *mm)
 {
+<<<<<<< HEAD
 #ifdef CONFIG_HUGETLB_PAGE
 	unsigned long huge_pte_count;
+=======
+	unsigned long mm_rss = get_mm_rss(mm);
+#if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+	unsigned long saved_hugetlb_pte_count;
+	unsigned long saved_thp_pte_count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	unsigned int i;
 
@@ -492,6 +666,7 @@ int init_new_context(struct task_struct *tsk, struct mm_struct *mm)
 
 	mm->context.sparc64_ctx_val = 0UL;
 
+<<<<<<< HEAD
 #ifdef CONFIG_HUGETLB_PAGE
 	/* We reset it to zero because the fork() page copying
 	 * will re-increment the counters as the parent PTEs are
@@ -499,6 +674,22 @@ int init_new_context(struct task_struct *tsk, struct mm_struct *mm)
 	 */
 	huge_pte_count = mm->context.huge_pte_count;
 	mm->context.huge_pte_count = 0;
+=======
+	mm->context.tag_store = NULL;
+	spin_lock_init(&mm->context.tag_lock);
+
+#if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+	/* We reset them to zero because the fork() page copying
+	 * will re-increment the counters as the parent PTEs are
+	 * copied into the child address space.
+	 */
+	saved_hugetlb_pte_count = mm->context.hugetlb_pte_count;
+	saved_thp_pte_count = mm->context.thp_pte_count;
+	mm->context.hugetlb_pte_count = 0;
+	mm->context.thp_pte_count = 0;
+
+	mm_rss -= saved_thp_pte_count * (HPAGE_SIZE / PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	/* copy_mm() copies over the parent's mm_struct before calling
@@ -511,11 +702,21 @@ int init_new_context(struct task_struct *tsk, struct mm_struct *mm)
 	/* If this is fork, inherit the parent's TSB size.  We would
 	 * grow it to that size on the first page fault anyways.
 	 */
+<<<<<<< HEAD
 	tsb_grow(mm, MM_TSB_BASE, get_mm_rss(mm));
 
 #ifdef CONFIG_HUGETLB_PAGE
 	if (unlikely(huge_pte_count))
 		tsb_grow(mm, MM_TSB_HUGE, huge_pte_count);
+=======
+	tsb_grow(mm, MM_TSB_BASE, mm_rss);
+
+#if defined(CONFIG_HUGETLB_PAGE) || defined(CONFIG_TRANSPARENT_HUGEPAGE)
+	if (unlikely(saved_hugetlb_pte_count + saved_thp_pte_count))
+		tsb_grow(mm, MM_TSB_HUGE,
+			 (saved_hugetlb_pte_count + saved_thp_pte_count) *
+			 REAL_HPAGE_PER_HPAGE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	if (unlikely(!mm->context.tsb_block[MM_TSB_BASE].tsb))
@@ -551,4 +752,25 @@ void destroy_context(struct mm_struct *mm)
 	}
 
 	spin_unlock_irqrestore(&ctx_alloc_lock, flags);
+<<<<<<< HEAD
+=======
+
+	/* If ADI tag storage was allocated for this task, free it */
+	if (mm->context.tag_store) {
+		tag_storage_desc_t *tag_desc;
+		unsigned long max_desc;
+		unsigned char *tags;
+
+		tag_desc = mm->context.tag_store;
+		max_desc = PAGE_SIZE/sizeof(tag_storage_desc_t);
+		for (i = 0; i < max_desc; i++) {
+			tags = tag_desc->tags;
+			tag_desc->tags = NULL;
+			kfree(tags);
+			tag_desc++;
+		}
+		kfree(mm->context.tag_store);
+		mm->context.tag_store = NULL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

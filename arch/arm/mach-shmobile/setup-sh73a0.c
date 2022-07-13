@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * sh73a0 processor support
  *
  * Copyright (C) 2010  Takashi Yoshii
  * Copyright (C) 2010  Magnus Damm
  * Copyright (C) 2008  Yoshihiro Shimoda
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,11 +22,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/delay.h>
 #include <linux/input.h>
@@ -35,10 +43,18 @@
 #include <mach/sh73a0.h>
 #include <mach/common.h>
 #include <asm/mach-types.h>
+=======
+#include <linux/delay.h>
+#include <linux/input.h>
+#include <linux/io.h>
+
+#include <asm/hardware/cache-l2x0.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/mach/map.h>
 #include <asm/mach/arch.h>
 #include <asm/mach/time.h>
 
+<<<<<<< HEAD
 static struct map_desc sh73a0_io_desc[] __initdata = {
 	/* create a 1:1 entity map for 0xe6xxxxxx
 	 * used by CPGA, INTC and PFC.
@@ -709,3 +725,27 @@ void __init sh73a0_add_early_devices(void)
 	/* override timer setup with soc-specific code */
 	shmobile_timer.init = sh73a0_earlytimer_init;
 }
+=======
+#include "common.h"
+#include "sh73a0.h"
+
+static void __init sh73a0_generic_init(void)
+{
+#ifdef CONFIG_CACHE_L2X0
+	/* Shared attribute override enable, 64K*8way */
+	l2x0_init(ioremap(0xf0100000, PAGE_SIZE), 0x00400000, 0xc20f0fff);
+#endif
+}
+
+static const char *const sh73a0_boards_compat_dt[] __initconst = {
+	"renesas,sh73a0",
+	NULL
+};
+
+DT_MACHINE_START(SH73A0_DT, "Generic SH73A0 (Flattened Device Tree)")
+	.smp		= smp_ops(sh73a0_smp_ops),
+	.init_machine	= sh73a0_generic_init,
+	.init_late	= shmobile_init_late,
+	.dt_compat	= sh73a0_boards_compat_dt,
+MACHINE_END
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

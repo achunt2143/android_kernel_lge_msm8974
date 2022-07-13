@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/err.h>
 #include <linux/scatterlist.h>
+<<<<<<< HEAD
 #include <linux/slab.h>
 #include <crypto/hash.h>
 #include <linux/key-type.h>
@@ -11,14 +16,83 @@
 #include <linux/ceph/decode.h>
 #include "crypto.h"
 
+=======
+#include <linux/sched.h>
+#include <linux/slab.h>
+#include <crypto/aes.h>
+#include <crypto/skcipher.h>
+#include <linux/key-type.h>
+#include <linux/sched/mm.h>
+
+#include <keys/ceph-type.h>
+#include <keys/user-type.h>
+#include <linux/ceph/decode.h>
+#include "crypto.h"
+
+/*
+ * Set ->key and ->tfm.  The rest of the key should be filled in before
+ * this function is called.
+ */
+static int set_secret(struct ceph_crypto_key *key, void *buf)
+{
+	unsigned int noio_flag;
+	int ret;
+
+	key->key = NULL;
+	key->tfm = NULL;
+
+	switch (key->type) {
+	case CEPH_CRYPTO_NONE:
+		return 0; /* nothing to do */
+	case CEPH_CRYPTO_AES:
+		break;
+	default:
+		return -ENOTSUPP;
+	}
+
+	if (!key->len)
+		return -EINVAL;
+
+	key->key = kmemdup(buf, key->len, GFP_NOIO);
+	if (!key->key) {
+		ret = -ENOMEM;
+		goto fail;
+	}
+
+	/* crypto_alloc_sync_skcipher() allocates with GFP_KERNEL */
+	noio_flag = memalloc_noio_save();
+	key->tfm = crypto_alloc_sync_skcipher("cbc(aes)", 0, 0);
+	memalloc_noio_restore(noio_flag);
+	if (IS_ERR(key->tfm)) {
+		ret = PTR_ERR(key->tfm);
+		key->tfm = NULL;
+		goto fail;
+	}
+
+	ret = crypto_sync_skcipher_setkey(key->tfm, key->key, key->len);
+	if (ret)
+		goto fail;
+
+	return 0;
+
+fail:
+	ceph_crypto_key_destroy(key);
+	return ret;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int ceph_crypto_key_clone(struct ceph_crypto_key *dst,
 			  const struct ceph_crypto_key *src)
 {
 	memcpy(dst, src, sizeof(struct ceph_crypto_key));
+<<<<<<< HEAD
 	dst->key = kmemdup(src->key, src->len, GFP_NOFS);
 	if (!dst->key)
 		return -ENOMEM;
 	return 0;
+=======
+	return set_secret(dst, src->key);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int ceph_crypto_key_encode(struct ceph_crypto_key *key, void **p, void *end)
@@ -35,16 +109,28 @@ int ceph_crypto_key_encode(struct ceph_crypto_key *key, void **p, void *end)
 
 int ceph_crypto_key_decode(struct ceph_crypto_key *key, void **p, void *end)
 {
+<<<<<<< HEAD
+=======
+	int ret;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ceph_decode_need(p, end, 2*sizeof(u16) + sizeof(key->created), bad);
 	key->type = ceph_decode_16(p);
 	ceph_decode_copy(p, &key->created, sizeof(key->created));
 	key->len = ceph_decode_16(p);
 	ceph_decode_need(p, end, key->len, bad);
+<<<<<<< HEAD
 	key->key = kmalloc(key->len, GFP_NOFS);
 	if (!key->key)
 		return -ENOMEM;
 	ceph_decode_copy(p, key->key, key->len);
 	return 0;
+=======
+	ret = set_secret(key, *p);
+	memzero_explicit(*p, key->len);
+	*p += key->len;
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 bad:
 	dout("failed to decode crypto key\n");
@@ -78,6 +164,7 @@ int ceph_crypto_key_unarmor(struct ceph_crypto_key *key, const char *inkey)
 	return 0;
 }
 
+<<<<<<< HEAD
 
 
 #define AES_KEY_SIZE 16
@@ -85,12 +172,28 @@ int ceph_crypto_key_unarmor(struct ceph_crypto_key *key, const char *inkey)
 static struct crypto_blkcipher *ceph_crypto_alloc_cipher(void)
 {
 	return crypto_alloc_blkcipher("cbc(aes)", 0, CRYPTO_ALG_ASYNC);
+=======
+void ceph_crypto_key_destroy(struct ceph_crypto_key *key)
+{
+	if (key) {
+		kfree_sensitive(key->key);
+		key->key = NULL;
+		if (key->tfm) {
+			crypto_free_sync_skcipher(key->tfm);
+			key->tfm = NULL;
+		}
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const u8 *aes_iv = (u8 *)CEPH_AES_IV;
 
 /*
+<<<<<<< HEAD
  * Should be used for buffers allocated with ceph_kvmalloc().
+=======
+ * Should be used for buffers allocated with kvmalloc().
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Currently these are encrypt out-buffer (ceph_buffer) and decrypt
  * in-buffer (msg front).
  *
@@ -159,6 +262,7 @@ static void teardown_sgtable(struct sg_table *sgt)
 		sg_free_table(sgt);
 }
 
+<<<<<<< HEAD
 static int ceph_aes_encrypt(const void *key, int key_len,
 			    void *dst, size_t *dst_len,
 			    const void *src, size_t src_len)
@@ -504,24 +608,43 @@ static int ceph_aes_crypt(const struct ceph_crypto_key *key, bool encrypt,
 	struct sg_table sgt;
 	struct scatterlist prealloc_sg;
 	char iv[AES_BLOCK_SIZE];
+=======
+static int ceph_aes_crypt(const struct ceph_crypto_key *key, bool encrypt,
+			  void *buf, int buf_len, int in_len, int *pout_len)
+{
+	SYNC_SKCIPHER_REQUEST_ON_STACK(req, key->tfm);
+	struct sg_table sgt;
+	struct scatterlist prealloc_sg;
+	char iv[AES_BLOCK_SIZE] __aligned(8);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pad_byte = AES_BLOCK_SIZE - (in_len & (AES_BLOCK_SIZE - 1));
 	int crypt_len = encrypt ? in_len + pad_byte : in_len;
 	int ret;
 
+<<<<<<< HEAD
 	if (IS_ERR(tfm))
 		return PTR_ERR(tfm);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	WARN_ON(crypt_len > buf_len);
 	if (encrypt)
 		memset(buf + in_len, pad_byte, pad_byte);
 	ret = setup_sgtable(&sgt, &prealloc_sg, buf, crypt_len);
 	if (ret)
+<<<<<<< HEAD
 		goto out_tfm;
 
 	crypto_skcipher_setkey((void *)tfm, key->key, key->len);
 	memcpy(iv, aes_iv, AES_BLOCK_SIZE);
 
 	skcipher_request_set_tfm(req, tfm);
+=======
+		return ret;
+
+	memcpy(iv, aes_iv, AES_BLOCK_SIZE);
+	skcipher_request_set_sync_tfm(req, key->tfm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	skcipher_request_set_callback(req, 0, NULL, NULL);
 	skcipher_request_set_crypt(req, sgt.sgl, sgt.sgl, crypt_len, iv);
 
@@ -563,8 +686,11 @@ static int ceph_aes_crypt(const struct ceph_crypto_key *key, bool encrypt,
 
 out_sgt:
 	teardown_sgtable(&sgt);
+<<<<<<< HEAD
 out_tfm:
 	crypto_free_skcipher(tfm);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -583,6 +709,7 @@ int ceph_crypt(const struct ceph_crypto_key *key, bool encrypt,
 	}
 }
 
+<<<<<<< HEAD
 int ceph_encrypt2(struct ceph_crypto_key *secret, void *dst, size_t *dst_len,
 		  const void *src1, size_t src1_len,
 		  const void *src2, size_t src2_len)
@@ -608,15 +735,25 @@ int ceph_encrypt2(struct ceph_crypto_key *secret, void *dst, size_t *dst_len,
 int ceph_key_instantiate(struct key *key, const void *data, size_t datalen)
 {
 	struct ceph_crypto_key *ckey;
+=======
+static int ceph_key_preparse(struct key_preparsed_payload *prep)
+{
+	struct ceph_crypto_key *ckey;
+	size_t datalen = prep->datalen;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret;
 	void *p;
 
 	ret = -EINVAL;
+<<<<<<< HEAD
 	if (datalen <= 0 || datalen > 32767 || !data)
 		goto err;
 
 	ret = key_payload_reserve(key, datalen);
 	if (ret < 0)
+=======
+	if (datalen <= 0 || datalen > 32767 || !prep->data)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 
 	ret = -ENOMEM;
@@ -625,12 +762,22 @@ int ceph_key_instantiate(struct key *key, const void *data, size_t datalen)
 		goto err;
 
 	/* TODO ceph_crypto_key_decode should really take const input */
+<<<<<<< HEAD
 	p = (void *)data;
 	ret = ceph_crypto_key_decode(ckey, &p, (char*)data+datalen);
 	if (ret < 0)
 		goto err_ckey;
 
 	key->payload.data = ckey;
+=======
+	p = (void *)prep->data;
+	ret = ceph_crypto_key_decode(ckey, &p, (char*)prep->data+datalen);
+	if (ret < 0)
+		goto err_ckey;
+
+	prep->payload.data[0] = ckey;
+	prep->quotalen = datalen;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 
 err_ckey:
@@ -639,6 +786,7 @@ err:
 	return ret;
 }
 
+<<<<<<< HEAD
 int ceph_key_match(const struct key *key, const void *description)
 {
 	return strcmp(key->description, description) == 0;
@@ -646,6 +794,18 @@ int ceph_key_match(const struct key *key, const void *description)
 
 void ceph_key_destroy(struct key *key) {
 	struct ceph_crypto_key *ckey = key->payload.data;
+=======
+static void ceph_key_free_preparse(struct key_preparsed_payload *prep)
+{
+	struct ceph_crypto_key *ckey = prep->payload.data[0];
+	ceph_crypto_key_destroy(ckey);
+	kfree(ckey);
+}
+
+static void ceph_key_destroy(struct key *key)
+{
+	struct ceph_crypto_key *ckey = key->payload.data[0];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ceph_crypto_key_destroy(ckey);
 	kfree(ckey);
@@ -653,6 +813,7 @@ void ceph_key_destroy(struct key *key) {
 
 struct key_type key_type_ceph = {
 	.name		= "ceph",
+<<<<<<< HEAD
 	.instantiate	= ceph_key_instantiate,
 	.match		= ceph_key_match,
 	.destroy	= ceph_key_destroy,
@@ -663,5 +824,20 @@ int ceph_crypto_init(void) {
 }
 
 void ceph_crypto_shutdown(void) {
+=======
+	.preparse	= ceph_key_preparse,
+	.free_preparse	= ceph_key_free_preparse,
+	.instantiate	= generic_key_instantiate,
+	.destroy	= ceph_key_destroy,
+};
+
+int __init ceph_crypto_init(void)
+{
+	return register_key_type(&key_type_ceph);
+}
+
+void ceph_crypto_shutdown(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unregister_key_type(&key_type_ceph);
 }

@@ -355,9 +355,18 @@
 #       define AVIVO_D1CRTC_V_BLANK                             (1 << 0)
 #define AVIVO_D1CRTC_STATUS_POSITION                            0x60a0
 #define AVIVO_D1CRTC_FRAME_COUNT                                0x60a4
+<<<<<<< HEAD
 #define AVIVO_D1CRTC_STEREO_CONTROL                             0x60c4
 
 #define AVIVO_D1MODE_MASTER_UPDATE_MODE                         0x60e4
+=======
+#define AVIVO_D1CRTC_STATUS_HV_COUNT                            0x60ac
+#define AVIVO_D1CRTC_STEREO_CONTROL                             0x60c4
+
+#define AVIVO_D1MODE_MASTER_UPDATE_LOCK                         0x60e0
+#define AVIVO_D1MODE_MASTER_UPDATE_MODE                         0x60e4
+#define AVIVO_D1CRTC_UPDATE_LOCK                                0x60e8
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* master controls */
 #define AVIVO_DC_CRTC_MASTER_EN                                 0x60f8
@@ -399,6 +408,10 @@
  * block and vice versa.  This applies to GRPH, CUR, etc.
  */
 #define AVIVO_D1GRPH_LUT_SEL                                    0x6108
+<<<<<<< HEAD
+=======
+#       define AVIVO_LUT_10BIT_BYPASS_EN                        (1 << 8)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AVIVO_D1GRPH_PRIMARY_SURFACE_ADDRESS                    0x6110
 #define R700_D1GRPH_PRIMARY_SURFACE_ADDRESS_HIGH                0x6914
 #define R700_D2GRPH_PRIMARY_SURFACE_ADDRESS_HIGH                0x6114

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
@@ -13,6 +14,16 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 /*
  * fcbuild.c - FC link service frame building and parsing routines
@@ -189,6 +200,7 @@ fc_els_rsp_build(struct fchs_s *fchs, u32 d_id, u32 s_id, __be16 ox_id)
 	fchs->ox_id = ox_id;
 }
 
+<<<<<<< HEAD
 enum fc_parse_status
 fc_els_rsp_parse(struct fchs_s *fchs, int len)
 {
@@ -210,6 +222,8 @@ fc_els_rsp_parse(struct fchs_s *fchs, int len)
 	return FC_PARSE_OK;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void
 fc_bls_rsp_build(struct fchs_s *fchs, u32 d_id, u32 s_id, __be16 ox_id)
 {
@@ -228,6 +242,13 @@ fc_plogi_x_build(struct fchs_s *fchs, void *pld, u32 d_id, u32 s_id,
 
 	memcpy(plogi, &plogi_tmpl, sizeof(struct fc_logi_s));
 
+<<<<<<< HEAD
+=======
+	/* For FC AL bb_cr is 0 and altbbcred is 1 */
+	if (!bb_cr)
+		plogi->csp.altbbcred = 1;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	plogi->els_cmd.els_code = els_code;
 	if (els_code == FC_ELS_PLOGI)
 		fc_els_req_build(fchs, d_id, s_id, ox_id);
@@ -826,6 +847,7 @@ fc_rpsc_acc_build(struct fchs_s *fchs, struct fc_rpsc_acc_s *rpsc_acc,
 }
 
 u16
+<<<<<<< HEAD
 fc_logo_rsp_parse(struct fchs_s *fchs, int len)
 {
 	struct fc_els_cmd_s *els_cmd = (struct fc_els_cmd_s *) (fchs + 1);
@@ -838,6 +860,8 @@ fc_logo_rsp_parse(struct fchs_s *fchs, int len)
 }
 
 u16
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fc_pdisc_build(struct fchs_s *fchs, u32 d_id, u32 s_id, u16 ox_id,
 	       wwn_t port_name, wwn_t node_name, u16 pdu_size)
 {
@@ -903,6 +927,7 @@ fc_prlo_build(struct fchs_s *fchs, u32 d_id, u32 s_id, u16 ox_id,
 }
 
 u16
+<<<<<<< HEAD
 fc_prlo_rsp_parse(struct fchs_s *fchs, int len)
 {
 	struct fc_prlo_acc_s *prlo = (struct fc_prlo_acc_s *) (fchs + 1);
@@ -937,6 +962,8 @@ fc_prlo_rsp_parse(struct fchs_s *fchs, int len)
 }
 
 u16
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fc_tprlo_build(struct fchs_s *fchs, u32 d_id, u32 s_id, u16 ox_id,
 	       int num_pages, enum fc_tprlo_type tprlo_type, u32 tpr_id)
 {
@@ -967,6 +994,7 @@ fc_tprlo_build(struct fchs_s *fchs, u32 d_id, u32 s_id, u16 ox_id,
 }
 
 u16
+<<<<<<< HEAD
 fc_tprlo_rsp_parse(struct fchs_s *fchs, int len)
 {
 	struct fc_tprlo_acc_s *tprlo = (struct fc_tprlo_acc_s *) (fchs + 1);
@@ -1008,6 +1036,8 @@ fc_rrq_rsp_parse(struct fchs_s *fchs, int len)
 }
 
 u16
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fc_ba_rjt_build(struct fchs_s *fchs, u32 d_id, u32 s_id, __be16 ox_id,
 		u32 reason_code, u32 reason_expl)
 {
@@ -1162,7 +1192,11 @@ fc_rscn_build(struct fchs_s *fchs, struct fc_rscn_pl_s *rscn,
 	rscn->event[0].format = FC_RSCN_FORMAT_PORTID;
 	rscn->event[0].portid = s_id;
 
+<<<<<<< HEAD
 	return sizeof(struct fc_rscn_pl_s);
+=======
+	return struct_size(rscn, event, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 u16
@@ -1245,13 +1279,42 @@ fc_rspnid_build(struct fchs_s *fchs, void *pyld, u32 s_id, u16 ox_id,
 	memset(rspnid, 0, sizeof(struct fcgs_rspnid_req_s));
 
 	rspnid->dap = s_id;
+<<<<<<< HEAD
 	rspnid->spn_len = (u8) strlen((char *)name);
 	strncpy((char *)rspnid->spn, (char *)name, rspnid->spn_len);
+=======
+	strscpy(rspnid->spn, name, sizeof(rspnid->spn));
+	rspnid->spn_len = (u8) strlen(rspnid->spn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sizeof(struct fcgs_rspnid_req_s) + sizeof(struct ct_hdr_s);
 }
 
 u16
+<<<<<<< HEAD
+=======
+fc_rsnn_nn_build(struct fchs_s *fchs, void *pyld, u32 s_id,
+			wwn_t node_name, u8 *name)
+{
+	struct ct_hdr_s *cthdr = (struct ct_hdr_s *) pyld;
+	struct fcgs_rsnn_nn_req_s *rsnn_nn =
+		(struct fcgs_rsnn_nn_req_s *) (cthdr + 1);
+	u32	d_id = bfa_hton3b(FC_NAME_SERVER);
+
+	fc_gs_fchdr_build(fchs, d_id, s_id, 0);
+	fc_gs_cthdr_build(cthdr, s_id, GS_RSNN_NN);
+
+	memset(rsnn_nn, 0, sizeof(struct fcgs_rsnn_nn_req_s));
+
+	rsnn_nn->node_name = node_name;
+	strscpy(rsnn_nn->snn, name, sizeof(rsnn_nn->snn));
+	rsnn_nn->snn_len = (u8) strlen(rsnn_nn->snn);
+
+	return sizeof(struct fcgs_rsnn_nn_req_s) + sizeof(struct ct_hdr_s);
+}
+
+u16
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fc_gid_ft_build(struct fchs_s *fchs, void *pyld, u32 s_id, u8 fc4_type)
 {
 

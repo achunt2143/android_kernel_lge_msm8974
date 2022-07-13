@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright 2009-2010 Pengutronix
  * Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>
  *
  * loosely based on an earlier driver that has
  * Copyright 2009 Pengutronix, Sascha Hauer <s.hauer@pengutronix.de>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it under
  * the terms of the GNU General Public License version 2 as published by the
@@ -121,6 +126,23 @@ struct mc13xxx {
 #define MC13783_IRQMASK1_HSLM		MC13783_IRQSTAT1_HSLI
 #define MC13783_IRQMASK1_ALSPTHM	MC13783_IRQSTAT1_ALSPTHI
 #define MC13783_IRQMASK1_AHSSHORTM	MC13783_IRQSTAT1_AHSSHORTI
+=======
+ */
+
+#include <linux/bitfield.h>
+#include <linux/module.h>
+#include <linux/of.h>
+#include <linux/of_device.h>
+#include <linux/platform_device.h>
+#include <linux/mfd/core.h>
+
+#include "mc13xxx.h"
+
+#define MC13XXX_IRQSTAT0	0
+#define MC13XXX_IRQMASK0	1
+#define MC13XXX_IRQSTAT1	3
+#define MC13XXX_IRQMASK1	4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define MC13XXX_REVISION	7
 #define MC13XXX_REVISION_REVMETAL	(0x07 <<  0)
@@ -130,6 +152,17 @@ struct mc13xxx {
 #define MC13XXX_REVISION_FAB		(0x03 << 11)
 #define MC13XXX_REVISION_ICIDCODE	(0x3f << 13)
 
+<<<<<<< HEAD
+=======
+#define MC34708_REVISION_REVMETAL	(0x07 <<  0)
+#define MC34708_REVISION_REVFULL	(0x07 <<  3)
+#define MC34708_REVISION_FIN		(0x07 <<  6)
+#define MC34708_REVISION_FAB		(0x07 <<  9)
+
+#define MC13XXX_PWRCTRL		15
+#define MC13XXX_PWRCTRL_WDIRESET	(1 << 12)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MC13XXX_ADC1		44
 #define MC13XXX_ADC1_ADEN		(1 << 0)
 #define MC13XXX_ADC1_RAND		(1 << 1)
@@ -139,29 +172,45 @@ struct mc13xxx {
 
 #define MC13XXX_ADC2		45
 
+<<<<<<< HEAD
 #define MC13XXX_NUMREGS 0x3f
 
 void mc13xxx_lock(struct mc13xxx *mc13xxx)
 {
 	if (!mutex_trylock(&mc13xxx->lock)) {
 		dev_dbg(&mc13xxx->spidev->dev, "wait for %s from %pf\n",
+=======
+void mc13xxx_lock(struct mc13xxx *mc13xxx)
+{
+	if (!mutex_trylock(&mc13xxx->lock)) {
+		dev_dbg(mc13xxx->dev, "wait for %s from %ps\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				__func__, __builtin_return_address(0));
 
 		mutex_lock(&mc13xxx->lock);
 	}
+<<<<<<< HEAD
 	dev_dbg(&mc13xxx->spidev->dev, "%s from %pf\n",
+=======
+	dev_dbg(mc13xxx->dev, "%s from %ps\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, __builtin_return_address(0));
 }
 EXPORT_SYMBOL(mc13xxx_lock);
 
 void mc13xxx_unlock(struct mc13xxx *mc13xxx)
 {
+<<<<<<< HEAD
 	dev_dbg(&mc13xxx->spidev->dev, "%s from %pf\n",
+=======
+	dev_dbg(mc13xxx->dev, "%s from %ps\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			__func__, __builtin_return_address(0));
 	mutex_unlock(&mc13xxx->lock);
 }
 EXPORT_SYMBOL(mc13xxx_unlock);
 
+<<<<<<< HEAD
 #define MC13XXX_REGOFFSET_SHIFT 25
 int mc13xxx_reg_read(struct mc13xxx *mc13xxx, unsigned int offset, u32 *val)
 {
@@ -198,11 +247,22 @@ int mc13xxx_reg_read(struct mc13xxx *mc13xxx, unsigned int offset, u32 *val)
 	dev_vdbg(&mc13xxx->spidev->dev, "[0x%02x] -> 0x%06x\n", offset, *val);
 
 	return 0;
+=======
+int mc13xxx_reg_read(struct mc13xxx *mc13xxx, unsigned int offset, u32 *val)
+{
+	int ret;
+
+	ret = regmap_read(mc13xxx->regmap, offset, val);
+	dev_vdbg(mc13xxx->dev, "[0x%02x] -> 0x%06x\n", offset, *val);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(mc13xxx_reg_read);
 
 int mc13xxx_reg_write(struct mc13xxx *mc13xxx, unsigned int offset, u32 val)
 {
+<<<<<<< HEAD
 	u32 buf;
 	struct spi_transfer t;
 	struct spi_message m;
@@ -234,12 +294,21 @@ int mc13xxx_reg_write(struct mc13xxx *mc13xxx, unsigned int offset, u32 val)
 		return ret;
 
 	return 0;
+=======
+	dev_vdbg(mc13xxx->dev, "[0x%02x] <- 0x%06x\n", offset, val);
+
+	if (val >= BIT(24))
+		return -EINVAL;
+
+	return regmap_write(mc13xxx->regmap, offset, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(mc13xxx_reg_write);
 
 int mc13xxx_reg_rmw(struct mc13xxx *mc13xxx, unsigned int offset,
 		u32 mask, u32 val)
 {
+<<<<<<< HEAD
 	int ret;
 	u32 valread;
 
@@ -252,11 +321,19 @@ int mc13xxx_reg_rmw(struct mc13xxx *mc13xxx, unsigned int offset,
 	valread = (valread & ~mask) | val;
 
 	return mc13xxx_reg_write(mc13xxx, offset, valread);
+=======
+	BUG_ON(val & ~mask);
+	dev_vdbg(mc13xxx->dev, "[0x%02x] <- 0x%06x (mask: 0x%06x)\n",
+			offset, val, mask);
+
+	return regmap_update_bits(mc13xxx->regmap, offset, mask, val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(mc13xxx_reg_rmw);
 
 int mc13xxx_irq_mask(struct mc13xxx *mc13xxx, int irq)
 {
+<<<<<<< HEAD
 	int ret;
 	unsigned int offmask = irq < 24 ? MC13XXX_IRQMASK0 : MC13XXX_IRQMASK1;
 	u32 irqbit = 1 << (irq < 24 ? irq : irq - 24);
@@ -274,11 +351,19 @@ int mc13xxx_irq_mask(struct mc13xxx *mc13xxx, int irq)
 		return 0;
 
 	return mc13xxx_reg_write(mc13xxx, offmask, mask | irqbit);
+=======
+	int virq = regmap_irq_get_virq(mc13xxx->irq_data, irq);
+
+	disable_irq_nosync(virq);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(mc13xxx_irq_mask);
 
 int mc13xxx_irq_unmask(struct mc13xxx *mc13xxx, int irq)
 {
+<<<<<<< HEAD
 	int ret;
 	unsigned int offmask = irq < 24 ? MC13XXX_IRQMASK0 : MC13XXX_IRQMASK1;
 	u32 irqbit = 1 << (irq < 24 ? irq : irq - 24);
@@ -296,6 +381,13 @@ int mc13xxx_irq_unmask(struct mc13xxx *mc13xxx, int irq)
 		return 0;
 
 	return mc13xxx_reg_write(mc13xxx, offmask, mask & ~irqbit);
+=======
+	int virq = regmap_irq_get_virq(mc13xxx->irq_data, irq);
+
+	enable_irq(virq);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(mc13xxx_irq_unmask);
 
@@ -307,7 +399,11 @@ int mc13xxx_irq_status(struct mc13xxx *mc13xxx, int irq,
 	unsigned int offstat = irq < 24 ? MC13XXX_IRQSTAT0 : MC13XXX_IRQSTAT1;
 	u32 irqbit = 1 << (irq < 24 ? irq : irq - 24);
 
+<<<<<<< HEAD
 	if (irq < 0 || irq >= MC13XXX_NUM_IRQ)
+=======
+	if (irq < 0 || irq >= ARRAY_SIZE(mc13xxx->irqs))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (enabled) {
@@ -334,6 +430,7 @@ int mc13xxx_irq_status(struct mc13xxx *mc13xxx, int irq,
 }
 EXPORT_SYMBOL(mc13xxx_irq_status);
 
+<<<<<<< HEAD
 int mc13xxx_irq_ack(struct mc13xxx *mc13xxx, int irq)
 {
 	unsigned int offstat = irq < 24 ? MC13XXX_IRQSTAT0 : MC13XXX_IRQSTAT1;
@@ -381,11 +478,21 @@ int mc13xxx_irq_request(struct mc13xxx *mc13xxx, int irq,
 	}
 
 	return 0;
+=======
+int mc13xxx_irq_request(struct mc13xxx *mc13xxx, int irq,
+		irq_handler_t handler, const char *name, void *dev)
+{
+	int virq = regmap_irq_get_virq(mc13xxx->irq_data, irq);
+
+	return devm_request_threaded_irq(mc13xxx->dev, virq, NULL, handler,
+					 IRQF_ONESHOT, name, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(mc13xxx_irq_request);
 
 int mc13xxx_irq_free(struct mc13xxx *mc13xxx, int irq, void *dev)
 {
+<<<<<<< HEAD
 	int ret;
 	BUG_ON(!mutex_is_locked(&mc13xxx->lock));
 
@@ -399,11 +506,17 @@ int mc13xxx_irq_free(struct mc13xxx *mc13xxx, int irq, void *dev)
 
 	mc13xxx->irqhandler[irq] = NULL;
 	mc13xxx->irqdata[irq] = NULL;
+=======
+	int virq = regmap_irq_get_virq(mc13xxx->irq_data, irq);
+
+	devm_free_irq(mc13xxx->dev, virq, dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 EXPORT_SYMBOL(mc13xxx_irq_free);
 
+<<<<<<< HEAD
 static inline irqreturn_t mc13xxx_irqhandler(struct mc13xxx *mc13xxx, int irq)
 {
 	return mc13xxx->irqhandler[irq](irq, mc13xxx->irqdata[irq]);
@@ -550,6 +663,53 @@ static const char *mc13xxx_get_chipname(struct mc13xxx *mc13xxx)
 		return NULL;
 
 	return mc13xxx_chipname[devid->driver_data];
+=======
+static void mc13xxx_print_revision(struct mc13xxx *mc13xxx, u32 revision)
+{
+	dev_info(mc13xxx->dev, "%s: rev: %d.%d, "
+			"fin: %d, fab: %d, icid: %d/%d\n",
+			mc13xxx->variant->name,
+			FIELD_GET(MC13XXX_REVISION_REVFULL, revision),
+			FIELD_GET(MC13XXX_REVISION_REVMETAL, revision),
+			FIELD_GET(MC13XXX_REVISION_FIN, revision),
+			FIELD_GET(MC13XXX_REVISION_FAB, revision),
+			FIELD_GET(MC13XXX_REVISION_ICID, revision),
+			FIELD_GET(MC13XXX_REVISION_ICIDCODE, revision));
+}
+
+static void mc34708_print_revision(struct mc13xxx *mc13xxx, u32 revision)
+{
+	dev_info(mc13xxx->dev, "%s: rev %d.%d, fin: %d, fab: %d\n",
+			mc13xxx->variant->name,
+			FIELD_GET(MC34708_REVISION_REVFULL, revision),
+			FIELD_GET(MC34708_REVISION_REVMETAL, revision),
+			FIELD_GET(MC34708_REVISION_FIN, revision),
+			FIELD_GET(MC34708_REVISION_FAB, revision));
+}
+
+/* These are only exported for mc13xxx-i2c and mc13xxx-spi */
+struct mc13xxx_variant mc13xxx_variant_mc13783 = {
+	.name = "mc13783",
+	.print_revision = mc13xxx_print_revision,
+};
+EXPORT_SYMBOL_GPL(mc13xxx_variant_mc13783);
+
+struct mc13xxx_variant mc13xxx_variant_mc13892 = {
+	.name = "mc13892",
+	.print_revision = mc13xxx_print_revision,
+};
+EXPORT_SYMBOL_GPL(mc13xxx_variant_mc13892);
+
+struct mc13xxx_variant mc13xxx_variant_mc34708 = {
+	.name = "mc34708",
+	.print_revision = mc34708_print_revision,
+};
+EXPORT_SYMBOL_GPL(mc13xxx_variant_mc34708);
+
+static const char *mc13xxx_get_chipname(struct mc13xxx *mc13xxx)
+{
+	return mc13xxx->variant->name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int mc13xxx_get_flags(struct mc13xxx *mc13xxx)
@@ -572,8 +732,11 @@ static irqreturn_t mc13xxx_handler_adcdone(int irq, void *data)
 {
 	struct mc13xxx_adcdone_data *adcdone_data = data;
 
+<<<<<<< HEAD
 	mc13xxx_irq_ack(adcdone_data->mc13xxx, irq);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	complete_all(&adcdone_data->done);
 
 	return IRQ_HANDLED;
@@ -592,7 +755,11 @@ int mc13xxx_adc_do_conversion(struct mc13xxx *mc13xxx, unsigned int mode,
 	};
 	init_completion(&adcdone_data.done);
 
+<<<<<<< HEAD
 	dev_dbg(&mc13xxx->spidev->dev, "%s\n", __func__);
+=======
+	dev_dbg(mc13xxx->dev, "%s\n", __func__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mc13xxx_lock(mc13xxx);
 
@@ -603,6 +770,7 @@ int mc13xxx_adc_do_conversion(struct mc13xxx *mc13xxx, unsigned int mode,
 
 	mc13xxx->adcflags |= MC13XXX_ADC_WORKING;
 
+<<<<<<< HEAD
 	mc13xxx_reg_read(mc13xxx, MC13XXX_ADC0, &old_adc0);
 
 	adc0 = MC13XXX_ADC0_ADINC1 | MC13XXX_ADC0_ADINC2;
@@ -610,6 +778,31 @@ int mc13xxx_adc_do_conversion(struct mc13xxx *mc13xxx, unsigned int mode,
 
 	if (channel > 7)
 		adc1 |= MC13XXX_ADC1_ADSEL;
+=======
+	ret = mc13xxx_reg_read(mc13xxx, MC13XXX_ADC0, &old_adc0);
+	if (ret)
+		goto out;
+
+	adc0 = MC13XXX_ADC0_ADINC1 | MC13XXX_ADC0_ADINC2 |
+	       MC13XXX_ADC0_CHRGRAWDIV;
+	adc1 = MC13XXX_ADC1_ADEN | MC13XXX_ADC1_ADTRIGIGN | MC13XXX_ADC1_ASC;
+
+	/*
+	 * Channels mapped through ADIN7:
+	 * 7  - General purpose ADIN7
+	 * 16 - UID
+	 * 17 - Die temperature
+	 */
+	if (channel > 7 && channel < 16) {
+		adc1 |= MC13XXX_ADC1_ADSEL;
+	} else if (channel == 16) {
+		adc0 |= MC13XXX_ADC0_ADIN7SEL_UID;
+		channel = 7;
+	} else if (channel == 17) {
+		adc0 |= MC13XXX_ADC0_ADIN7SEL_DIE;
+		channel = 7;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (mode) {
 	case MC13XXX_ADC_MODE_TS:
@@ -637,10 +830,19 @@ int mc13xxx_adc_do_conversion(struct mc13xxx *mc13xxx, unsigned int mode,
 	adc1 |= ato << MC13783_ADC1_ATO_SHIFT;
 	if (atox)
 		adc1 |= MC13783_ADC1_ATOX;
+<<<<<<< HEAD
 	dev_dbg(&mc13xxx->spidev->dev, "%s: request irq\n", __func__);
 	mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_ADCDONE,
 			mc13xxx_handler_adcdone, __func__, &adcdone_data);
 	mc13xxx_irq_ack(mc13xxx, MC13XXX_IRQ_ADCDONE);
+=======
+
+	dev_dbg(mc13xxx->dev, "%s: request irq\n", __func__);
+	ret = mc13xxx_irq_request(mc13xxx, MC13XXX_IRQ_ADCDONE,
+			mc13xxx_handler_adcdone, __func__, &adcdone_data);
+	if (ret)
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC0, adc0);
 	mc13xxx_reg_write(mc13xxx, MC13XXX_ADC1, adc1);
@@ -695,7 +897,12 @@ static int mc13xxx_add_subdevice_pdata(struct mc13xxx *mc13xxx,
 	if (!cell.name)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	return mfd_add_devices(&mc13xxx->spidev->dev, -1, &cell, 1, NULL, 0);
+=======
+	return mfd_add_devices(mc13xxx->dev, -1, &cell, 1, NULL, 0,
+			       regmap_irq_get_domain(mc13xxx->irq_data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int mc13xxx_add_subdevice(struct mc13xxx *mc13xxx, const char *format)
@@ -706,11 +913,16 @@ static int mc13xxx_add_subdevice(struct mc13xxx *mc13xxx, const char *format)
 #ifdef CONFIG_OF
 static int mc13xxx_probe_flags_dt(struct mc13xxx *mc13xxx)
 {
+<<<<<<< HEAD
 	struct device_node *np = mc13xxx->spidev->dev.of_node;
+=======
+	struct device_node *np = mc13xxx->dev->of_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!np)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (of_get_property(np, "fsl,mc13xxx-uses-adc", NULL))
 		mc13xxx->flags |= MC13XXX_USE_ADC;
 
@@ -721,6 +933,18 @@ static int mc13xxx_probe_flags_dt(struct mc13xxx *mc13xxx)
 		mc13xxx->flags |= MC13XXX_USE_RTC;
 
 	if (of_get_property(np, "fsl,mc13xxx-uses-touch", NULL))
+=======
+	if (of_property_read_bool(np, "fsl,mc13xxx-uses-adc"))
+		mc13xxx->flags |= MC13XXX_USE_ADC;
+
+	if (of_property_read_bool(np, "fsl,mc13xxx-uses-codec"))
+		mc13xxx->flags |= MC13XXX_USE_CODEC;
+
+	if (of_property_read_bool(np, "fsl,mc13xxx-uses-rtc"))
+		mc13xxx->flags |= MC13XXX_USE_RTC;
+
+	if (of_property_read_bool(np, "fsl,mc13xxx-uses-touch"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mc13xxx->flags |= MC13XXX_USE_TOUCHSCREEN;
 
 	return 0;
@@ -732,6 +956,7 @@ static inline int mc13xxx_probe_flags_dt(struct mc13xxx *mc13xxx)
 }
 #endif
 
+<<<<<<< HEAD
 static const struct spi_device_id mc13xxx_device_id[] = {
 	{
 		.name = "mc13783",
@@ -805,10 +1030,55 @@ err_revision:
 	}
 
 	mc13xxx_unlock(mc13xxx);
+=======
+int mc13xxx_common_init(struct device *dev)
+{
+	struct mc13xxx_platform_data *pdata = dev_get_platdata(dev);
+	struct mc13xxx *mc13xxx = dev_get_drvdata(dev);
+	u32 revision;
+	int i, ret;
+
+	mc13xxx->dev = dev;
+
+	ret = mc13xxx_reg_read(mc13xxx, MC13XXX_REVISION, &revision);
+	if (ret)
+		return ret;
+
+	mc13xxx->variant->print_revision(mc13xxx, revision);
+
+	ret = mc13xxx_reg_rmw(mc13xxx, MC13XXX_PWRCTRL,
+			MC13XXX_PWRCTRL_WDIRESET, MC13XXX_PWRCTRL_WDIRESET);
+	if (ret)
+		return ret;
+
+	for (i = 0; i < ARRAY_SIZE(mc13xxx->irqs); i++) {
+		mc13xxx->irqs[i].reg_offset = i / MC13XXX_IRQ_PER_REG;
+		mc13xxx->irqs[i].mask = BIT(i % MC13XXX_IRQ_PER_REG);
+	}
+
+	mc13xxx->irq_chip.name = dev_name(dev);
+	mc13xxx->irq_chip.status_base = MC13XXX_IRQSTAT0;
+	mc13xxx->irq_chip.mask_base = MC13XXX_IRQMASK0;
+	mc13xxx->irq_chip.ack_base = MC13XXX_IRQSTAT0;
+	mc13xxx->irq_chip.irq_reg_stride = MC13XXX_IRQSTAT1 - MC13XXX_IRQSTAT0;
+	mc13xxx->irq_chip.init_ack_masked = true;
+	mc13xxx->irq_chip.use_ack = true;
+	mc13xxx->irq_chip.num_regs = MC13XXX_IRQ_REG_CNT;
+	mc13xxx->irq_chip.irqs = mc13xxx->irqs;
+	mc13xxx->irq_chip.num_irqs = ARRAY_SIZE(mc13xxx->irqs);
+
+	ret = regmap_add_irq_chip(mc13xxx->regmap, mc13xxx->irq, IRQF_ONESHOT,
+				  0, &mc13xxx->irq_chip, &mc13xxx->irq_data);
+	if (ret)
+		return ret;
+
+	mutex_init(&mc13xxx->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mc13xxx_probe_flags_dt(mc13xxx) < 0 && pdata)
 		mc13xxx->flags = pdata->flags;
 
+<<<<<<< HEAD
 	if (mc13xxx->flags & MC13XXX_USE_ADC)
 		mc13xxx_add_subdevice(mc13xxx, "%s-adc");
 
@@ -822,6 +1092,8 @@ err_revision:
 		mc13xxx_add_subdevice_pdata(mc13xxx, "%s-ts",
 				&pdata->touch, sizeof(pdata->touch));
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pdata) {
 		mc13xxx_add_subdevice_pdata(mc13xxx, "%s-regulator",
 			&pdata->regulators, sizeof(pdata->regulators));
@@ -829,10 +1101,20 @@ err_revision:
 				pdata->leds, sizeof(*pdata->leds));
 		mc13xxx_add_subdevice_pdata(mc13xxx, "%s-pwrbutton",
 				pdata->buttons, sizeof(*pdata->buttons));
+<<<<<<< HEAD
+=======
+		if (mc13xxx->flags & MC13XXX_USE_CODEC)
+			mc13xxx_add_subdevice_pdata(mc13xxx, "%s-codec",
+				pdata->codec, sizeof(*pdata->codec));
+		if (mc13xxx->flags & MC13XXX_USE_TOUCHSCREEN)
+			mc13xxx_add_subdevice_pdata(mc13xxx, "%s-ts",
+				&pdata->touch, sizeof(pdata->touch));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		mc13xxx_add_subdevice(mc13xxx, "%s-regulator");
 		mc13xxx_add_subdevice(mc13xxx, "%s-led");
 		mc13xxx_add_subdevice(mc13xxx, "%s-pwrbutton");
+<<<<<<< HEAD
 	}
 
 	return 0;
@@ -873,6 +1155,33 @@ static void __exit mc13xxx_exit(void)
 	spi_unregister_driver(&mc13xxx_driver);
 }
 module_exit(mc13xxx_exit);
+=======
+		if (mc13xxx->flags & MC13XXX_USE_CODEC)
+			mc13xxx_add_subdevice(mc13xxx, "%s-codec");
+		if (mc13xxx->flags & MC13XXX_USE_TOUCHSCREEN)
+			mc13xxx_add_subdevice(mc13xxx, "%s-ts");
+	}
+
+	if (mc13xxx->flags & MC13XXX_USE_ADC)
+		mc13xxx_add_subdevice(mc13xxx, "%s-adc");
+
+	if (mc13xxx->flags & MC13XXX_USE_RTC)
+		mc13xxx_add_subdevice(mc13xxx, "%s-rtc");
+
+	return 0;
+}
+EXPORT_SYMBOL_GPL(mc13xxx_common_init);
+
+void mc13xxx_common_exit(struct device *dev)
+{
+	struct mc13xxx *mc13xxx = dev_get_drvdata(dev);
+
+	mfd_remove_devices(dev);
+	regmap_del_irq_chip(mc13xxx->irq, mc13xxx->irq_data);
+	mutex_destroy(&mc13xxx->lock);
+}
+EXPORT_SYMBOL_GPL(mc13xxx_common_exit);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_DESCRIPTION("Core driver for Freescale MC13XXX PMIC");
 MODULE_AUTHOR("Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>");

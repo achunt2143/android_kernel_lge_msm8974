@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/core_mcpcia.c
  *
@@ -363,9 +367,17 @@ mcpcia_startup_hose(struct pci_controller *hose)
 	 * Window 1 is scatter-gather (up to) 1GB at 1GB (for pci)
 	 * Window 2 is direct access 2GB at 2GB
 	 */
+<<<<<<< HEAD
 	hose->sg_isa = iommu_arena_new(hose, 0x00800000, 0x00800000, 0);
 	hose->sg_pci = iommu_arena_new(hose, 0x40000000,
 				       size_for_memory(0x40000000), 0);
+=======
+	hose->sg_isa = iommu_arena_new(hose, 0x00800000, 0x00800000,
+				       SMP_CACHE_BYTES);
+	hose->sg_pci = iommu_arena_new(hose, 0x40000000,
+				       size_for_memory(0x40000000),
+				       SMP_CACHE_BYTES);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__direct_map_base = 0x80000000;
 	__direct_map_size = 0x80000000;

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux/SPARC PROM Configuration Driver
  * Copyright (C) 1996 Thomas K. Dyas (tdyas@noc.rutgers.edu)
@@ -14,6 +18,7 @@
  * sanity's sake.
  */
 
+<<<<<<< HEAD
 /* This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
@@ -28,6 +33,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA. 
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -40,13 +47,21 @@
 #include <linux/fs.h>
 #include <asm/oplib.h>
 #include <asm/prom.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/openpromio.h>
 #ifdef CONFIG_PCI
 #include <linux/pci.h>
 #endif
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Thomas K. Dyas (tdyas@noc.rutgers.edu) and Eddie C. Dost  (ecd@skynet.be)");
+=======
+MODULE_AUTHOR("Thomas K. Dyas <tdyas@noc.rutgers.edu> and Eddie C. Dost <ecd@skynet.be>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("OPENPROM Configuration Driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("1.0");
@@ -222,7 +237,11 @@ static int opromnext(void __user *argp, unsigned int cmd, struct device_node *dp
 		case OPROMSETCUR:
 		default:
 			break;
+<<<<<<< HEAD
 		};
+=======
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		/* Sibling of node zero is the root node.  */
 		if (cmd != OPROMNEXT)
@@ -251,8 +270,14 @@ static int oprompci2node(void __user *argp, struct device_node *dp, struct openp
 		struct pci_dev *pdev;
 		struct device_node *dp;
 
+<<<<<<< HEAD
 		pdev = pci_get_bus_and_slot (((int *) op->oprom_array)[0],
 				      ((int *) op->oprom_array)[1]);
+=======
+		pdev = pci_get_domain_bus_and_slot(0,
+						((int *) op->oprom_array)[0],
+						((int *) op->oprom_array)[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		dp = pci_device_to_OF_node(pdev);
 		data->current_node = dp;
@@ -383,6 +408,7 @@ static struct device_node *get_node(phandle n, DATA *data)
 }
 
 /* Copy in a whole string from userspace into kernelspace. */
+<<<<<<< HEAD
 static int copyin_string(char __user *user, size_t len, char **ptr)
 {
 	char *tmp;
@@ -404,6 +430,14 @@ static int copyin_string(char __user *user, size_t len, char **ptr)
 	*ptr = tmp;
 
 	return 0;
+=======
+static char * copyin_string(char __user *user, size_t len)
+{
+	if ((ssize_t)len < 0 || (ssize_t)(len + 1) < 0)
+		return ERR_PTR(-EINVAL);
+
+	return memdup_user_nul(user, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -422,9 +456,15 @@ static int opiocget(void __user *argp, DATA *data)
 
 	dp = get_node(op.op_nodeid, data);
 
+<<<<<<< HEAD
 	err = copyin_string(op.op_name, op.op_namelen, &str);
 	if (err)
 		return err;
+=======
+	str = copyin_string(op.op_name, op.op_namelen);
+	if (IS_ERR(str))
+		return PTR_ERR(str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pval = of_get_property(dp, str, &len);
 	err = 0;
@@ -447,7 +487,11 @@ static int opiocnextprop(void __user *argp, DATA *data)
 	struct device_node *dp;
 	struct property *prop;
 	char *str;
+<<<<<<< HEAD
 	int err, len;
+=======
+	int len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (copy_from_user(&op, argp, sizeof(op)))
 		return -EFAULT;
@@ -456,9 +500,15 @@ static int opiocnextprop(void __user *argp, DATA *data)
 	if (!dp)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	err = copyin_string(op.op_name, op.op_namelen, &str);
 	if (err)
 		return err;
+=======
+	str = copyin_string(op.op_name, op.op_namelen);
+	if (IS_ERR(str))
+		return PTR_ERR(str);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (str[0] == '\0') {
 		prop = dp->properties;
@@ -501,6 +551,7 @@ static int opiocset(void __user *argp, DATA *data)
 	if (!dp)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	err = copyin_string(op.op_name, op.op_namelen, &str);
 	if (err)
 		return err;
@@ -509,6 +560,16 @@ static int opiocset(void __user *argp, DATA *data)
 	if (err) {
 		kfree(str);
 		return err;
+=======
+	str = copyin_string(op.op_name, op.op_namelen);
+	if (IS_ERR(str))
+		return PTR_ERR(str);
+
+	tmp = copyin_string(op.op_buf, op.op_buflen);
+	if (IS_ERR(tmp)) {
+		kfree(str);
+		return PTR_ERR(tmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = of_set_property(dp, str, tmp, op.op_buflen);
@@ -588,7 +649,11 @@ static int openprom_bsd_ioctl(struct file * file,
 	default:
 		err = -EINVAL;
 		break;
+<<<<<<< HEAD
 	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&openprom_mutex);
 
 	return err;
@@ -729,13 +794,17 @@ static struct miscdevice openprom_dev = {
 
 static int __init openprom_init(void)
 {
+<<<<<<< HEAD
 	struct device_node *dp;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	err = misc_register(&openprom_dev);
 	if (err)
 		return err;
 
+<<<<<<< HEAD
 	dp = of_find_node_by_path("/");
 	dp = dp->child;
 	while (dp) {
@@ -745,6 +814,9 @@ static int __init openprom_init(void)
 	}
 	options_node = dp;
 
+=======
+	options_node = of_get_child_by_name(of_find_node_by_path("/"), "options");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!options_node) {
 		misc_deregister(&openprom_dev);
 		return -EIO;

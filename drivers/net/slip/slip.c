@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * slip.c	This module implements the SLIP protocol for kernel-based
  *		devices like TTY.  It interfaces between a raw TTY, and the
@@ -61,12 +65,22 @@
  */
 
 #define SL_CHECK_TRANSMIT
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 
 #include <asm/uaccess.h>
 #include <linux/bitops.h>
 #include <linux/sched.h>
+=======
+#include <linux/compat.h>
+#include <linux/module.h>
+#include <linux/moduleparam.h>
+
+#include <linux/uaccess.h>
+#include <linux/bitops.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include <linux/mm.h>
 #include <linux/interrupt.h>
@@ -79,10 +93,17 @@
 #include <linux/rtnetlink.h>
 #include <linux/if_arp.h>
 #include <linux/if_slip.h>
+<<<<<<< HEAD
 #include <linux/compat.h>
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/slab.h>
+=======
+#include <linux/delay.h>
+#include <linux/init.h>
+#include <linux/slab.h>
+#include <linux/workqueue.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "slip.h"
 #ifdef CONFIG_INET
 #include <linux/ip.h>
@@ -105,9 +126,15 @@ static int slip_esc6(unsigned char *p, unsigned char *d, int len);
 static void slip_unesc6(struct slip *sl, unsigned char c);
 #endif
 #ifdef CONFIG_SLIP_SMART
+<<<<<<< HEAD
 static void sl_keepalive(unsigned long sls);
 static void sl_outfill(unsigned long sls);
 static int sl_ioctl(struct net_device *dev, struct ifreq *rq, int cmd);
+=======
+static void sl_keepalive(struct timer_list *t);
+static void sl_outfill(struct timer_list *t);
+static int sl_siocdevprivate(struct net_device *dev, struct ifreq *rq, void __user *data, int cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /********************************
@@ -363,10 +390,17 @@ static void sl_bump(struct slip *sl)
 		return;
 	}
 	skb->dev = dev;
+<<<<<<< HEAD
 	memcpy(skb_put(skb, count), sl->rbuff, count);
 	skb_reset_mac_header(skb);
 	skb->protocol = htons(ETH_P_IP);
 	netif_rx_ni(skb);
+=======
+	skb_put_data(skb, sl->rbuff, count);
+	skb_reset_mac_header(skb);
+	skb->protocol = htons(ETH_P_IP);
+	netif_rx(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->stats.rx_packets++;
 }
 
@@ -390,10 +424,17 @@ static void sl_encaps(struct slip *sl, unsigned char *icp, int len)
 #endif
 #ifdef CONFIG_SLIP_MODE_SLIP6
 	if (sl->mode & SL_MODE_SLIP6)
+<<<<<<< HEAD
 		count = slip_esc6(p, (unsigned char *) sl->xbuff, len);
 	else
 #endif
 		count = slip_esc(p, (unsigned char *) sl->xbuff, len);
+=======
+		count = slip_esc6(p, sl->xbuff, len);
+	else
+#endif
+		count = slip_esc(p, sl->xbuff, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Order of next two lines is *very* important.
 	 * When we are sending a little amount of data,
@@ -406,7 +447,11 @@ static void sl_encaps(struct slip *sl, unsigned char *icp, int len)
 	set_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
 	actual = sl->tty->ops->write(sl->tty, sl->xbuff, count);
 #ifdef SL_CHECK_TRANSMIT
+<<<<<<< HEAD
 	sl->dev->trans_start = jiffies;
+=======
+	netif_trans_update(sl->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	sl->xleft = count - actual;
 	sl->xhead = sl->xbuff + actual;
@@ -416,6 +461,7 @@ static void sl_encaps(struct slip *sl, unsigned char *icp, int len)
 #endif
 }
 
+<<<<<<< HEAD
 /*
  * Called by the driver when there's room for more data.  If we have
  * more packets to send, we send them here.
@@ -428,29 +474,77 @@ static void slip_write_wakeup(struct tty_struct *tty)
 	/* First make sure we're connected. */
 	if (!sl || sl->magic != SLIP_MAGIC || !netif_running(sl->dev))
 		return;
+=======
+/* Write out any remaining transmit buffer. Scheduled when tty is writable */
+static void slip_transmit(struct work_struct *work)
+{
+	struct slip *sl = container_of(work, struct slip, tx_work);
+	int actual;
+
+	spin_lock_bh(&sl->lock);
+	/* First make sure we're connected. */
+	if (!sl->tty || sl->magic != SLIP_MAGIC || !netif_running(sl->dev)) {
+		spin_unlock_bh(&sl->lock);
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (sl->xleft <= 0)  {
 		/* Now serial buffer is almost free & we can start
 		 * transmission of another packet */
 		sl->dev->stats.tx_packets++;
+<<<<<<< HEAD
 		clear_bit(TTY_DO_WRITE_WAKEUP, &tty->flags);
+=======
+		clear_bit(TTY_DO_WRITE_WAKEUP, &sl->tty->flags);
+		spin_unlock_bh(&sl->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sl_unlock(sl);
 		return;
 	}
 
+<<<<<<< HEAD
 	actual = tty->ops->write(tty, sl->xhead, sl->xleft);
 	sl->xleft -= actual;
 	sl->xhead += actual;
 }
 
 static void sl_tx_timeout(struct net_device *dev)
+=======
+	actual = sl->tty->ops->write(sl->tty, sl->xhead, sl->xleft);
+	sl->xleft -= actual;
+	sl->xhead += actual;
+	spin_unlock_bh(&sl->lock);
+}
+
+/*
+ * Called by the driver when there's room for more data.
+ * Schedule the transmit.
+ */
+static void slip_write_wakeup(struct tty_struct *tty)
+{
+	struct slip *sl;
+
+	rcu_read_lock();
+	sl = rcu_dereference(tty->disc_data);
+	if (sl)
+		schedule_work(&sl->tx_work);
+	rcu_read_unlock();
+}
+
+static void sl_tx_timeout(struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slip *sl = netdev_priv(dev);
 
 	spin_lock(&sl->lock);
 
 	if (netif_queue_stopped(dev)) {
+<<<<<<< HEAD
 		if (!netif_running(dev))
+=======
+		if (!netif_running(dev) || !sl->tty)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto out;
 
 		/* May be we must check transmitter timeout here ?
@@ -547,17 +641,25 @@ static int sl_change_mtu(struct net_device *dev, int new_mtu)
 {
 	struct slip *sl = netdev_priv(dev);
 
+<<<<<<< HEAD
 	if (new_mtu < 68 || new_mtu > 65534)
 		return -EINVAL;
 
 	if (new_mtu != dev->mtu)
 		return sl_realloc_bufs(sl, new_mtu);
 	return 0;
+=======
+	return sl_realloc_bufs(sl, new_mtu);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Netdevice get statistics request */
 
+<<<<<<< HEAD
 static struct rtnl_link_stats64 *
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sl_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
 {
 	struct net_device_stats *devstats = &dev->stats;
@@ -588,7 +690,10 @@ sl_get_stats64(struct net_device *dev, struct rtnl_link_stats64 *stats)
 		stats->collisions     += comp->sls_o_misses;
 	}
 #endif
+<<<<<<< HEAD
 	return stats;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Netdevice register callback */
@@ -621,7 +726,11 @@ static void sl_uninit(struct net_device *dev)
 static void sl_free_netdev(struct net_device *dev)
 {
 	int i = dev->base_addr;
+<<<<<<< HEAD
 	free_netdev(dev);
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	slip_devs[i] = NULL;
 }
 
@@ -635,7 +744,11 @@ static const struct net_device_ops sl_netdev_ops = {
 	.ndo_change_mtu		= sl_change_mtu,
 	.ndo_tx_timeout		= sl_tx_timeout,
 #ifdef CONFIG_SLIP_SMART
+<<<<<<< HEAD
 	.ndo_do_ioctl		= sl_ioctl,
+=======
+	.ndo_siocdevprivate	= sl_siocdevprivate,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 };
 
@@ -643,12 +756,24 @@ static const struct net_device_ops sl_netdev_ops = {
 static void sl_setup(struct net_device *dev)
 {
 	dev->netdev_ops		= &sl_netdev_ops;
+<<<<<<< HEAD
 	dev->destructor		= sl_free_netdev;
+=======
+	dev->needs_free_netdev	= true;
+	dev->priv_destructor	= sl_free_netdev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev->hard_header_len	= 0;
 	dev->addr_len		= 0;
 	dev->tx_queue_len	= 10;
 
+<<<<<<< HEAD
+=======
+	/* MTU range: 68 - 65534 */
+	dev->min_mtu = 68;
+	dev->max_mtu = 65534;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* New-style flags. */
 	dev->flags		= IFF_NOARP|IFF_POINTOPOINT|IFF_MULTICAST;
 }
@@ -667,8 +792,13 @@ static void sl_setup(struct net_device *dev)
  * in parallel
  */
 
+<<<<<<< HEAD
 static void slip_receive_buf(struct tty_struct *tty, const unsigned char *cp,
 							char *fp, int count)
+=======
+static void slip_receive_buf(struct tty_struct *tty, const u8 *cp, const u8 *fp,
+			     size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slip *sl = tty->disc_data;
 
@@ -718,7 +848,11 @@ static void sl_sync(void)
 
 
 /* Find a free SLIP channel, and link in this `tty' line. */
+<<<<<<< HEAD
 static struct slip *sl_alloc(dev_t line)
+=======
+static struct slip *sl_alloc(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	char name[IFNAMSIZ];
@@ -735,7 +869,11 @@ static struct slip *sl_alloc(dev_t line)
 		return NULL;
 
 	sprintf(name, "sl%d", i);
+<<<<<<< HEAD
 	dev = alloc_netdev(sizeof(*sl), name, sl_setup);
+=======
+	dev = alloc_netdev(sizeof(*sl), name, NET_NAME_UNKNOWN, sl_setup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!dev)
 		return NULL;
 
@@ -746,6 +884,7 @@ static struct slip *sl_alloc(dev_t line)
 	sl->magic       = SLIP_MAGIC;
 	sl->dev	      	= dev;
 	spin_lock_init(&sl->lock);
+<<<<<<< HEAD
 	sl->mode        = SL_MODE_DEFAULT;
 #ifdef CONFIG_SLIP_SMART
 	/* initialize timer_list struct */
@@ -755,6 +894,14 @@ static struct slip *sl_alloc(dev_t line)
 	init_timer(&sl->outfill_timer);
 	sl->outfill_timer.data = (unsigned long)sl;
 	sl->outfill_timer.function = sl_outfill;
+=======
+	INIT_WORK(&sl->tx_work, slip_transmit);
+	sl->mode        = SL_MODE_DEFAULT;
+#ifdef CONFIG_SLIP_SMART
+	/* initialize timer_list struct */
+	timer_setup(&sl->keepalive_timer, sl_keepalive, 0);
+	timer_setup(&sl->outfill_timer, sl_outfill, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 	slip_devs[i] = dev;
 	return sl;
@@ -799,7 +946,11 @@ static int slip_open(struct tty_struct *tty)
 
 	/* OK.  Find a free SLIP channel to use. */
 	err = -ENFILE;
+<<<<<<< HEAD
 	sl = sl_alloc(tty_devnum(tty));
+=======
+	sl = sl_alloc();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sl == NULL)
 		goto err_exit;
 
@@ -845,6 +996,14 @@ err_free_chan:
 	sl->tty = NULL;
 	tty->disc_data = NULL;
 	clear_bit(SLF_INUSE, &sl->flags);
+<<<<<<< HEAD
+=======
+	sl_free_netdev(sl->dev);
+	/* do not call free_netdev before rtnl_unlock */
+	rtnl_unlock();
+	free_netdev(sl->dev);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 err_exit:
 	rtnl_unlock();
@@ -869,8 +1028,18 @@ static void slip_close(struct tty_struct *tty)
 	if (!sl || sl->magic != SLIP_MAGIC || sl->tty != tty)
 		return;
 
+<<<<<<< HEAD
 	tty->disc_data = NULL;
 	sl->tty = NULL;
+=======
+	spin_lock_bh(&sl->lock);
+	rcu_assign_pointer(tty->disc_data, NULL);
+	sl->tty = NULL;
+	spin_unlock_bh(&sl->lock);
+
+	synchronize_rcu();
+	flush_work(&sl->tx_work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* VSV = very important to remove timers */
 #ifdef CONFIG_SLIP_SMART
@@ -882,10 +1051,16 @@ static void slip_close(struct tty_struct *tty)
 	/* This will complete via sl_free_netdev */
 }
 
+<<<<<<< HEAD
 static int slip_hangup(struct tty_struct *tty)
 {
 	slip_close(tty);
 	return 0;
+=======
+static void slip_hangup(struct tty_struct *tty)
+{
+	slip_close(tty);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
  /************************************************************************
   *			STANDARD SLIP ENCAPSULATION		  	 *
@@ -1048,8 +1223,13 @@ static void slip_unesc6(struct slip *sl, unsigned char s)
 #endif /* CONFIG_SLIP_MODE_SLIP6 */
 
 /* Perform I/O control on an active SLIP channel. */
+<<<<<<< HEAD
 static int slip_ioctl(struct tty_struct *tty, struct file *file,
 					unsigned int cmd, unsigned long arg)
+=======
+static int slip_ioctl(struct tty_struct *tty, unsigned int cmd,
+		unsigned long arg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slip *sl = tty->disc_data;
 	unsigned int tmp;
@@ -1149,6 +1329,7 @@ static int slip_ioctl(struct tty_struct *tty, struct file *file,
 	/* VSV changes end */
 #endif
 	default:
+<<<<<<< HEAD
 		return tty_mode_ioctl(tty, file, cmd, arg);
 	}
 }
@@ -1181,6 +1362,20 @@ static long slip_compat_ioctl(struct tty_struct *tty, struct file *file,
    by ifconfig                                 */
 
 static int sl_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
+=======
+		return tty_mode_ioctl(tty, cmd, arg);
+	}
+}
+
+/* VSV changes start here */
+#ifdef CONFIG_SLIP_SMART
+/* function sl_siocdevprivate called from net/core/dev.c
+   to allow get/set outfill/keepalive parameter
+   by ifconfig                                 */
+
+static int sl_siocdevprivate(struct net_device *dev, struct ifreq *rq,
+			     void __user *data, int cmd)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct slip *sl = netdev_priv(dev);
 	unsigned long *p = (unsigned long *)&rq->ifr_ifru;
@@ -1188,6 +1383,12 @@ static int sl_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 	if (sl == NULL)		/* Allocation failed ?? */
 		return -ENODEV;
 
+<<<<<<< HEAD
+=======
+	if (in_compat_syscall())
+		return -EOPNOTSUPP;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_bh(&sl->lock);
 
 	if (!sl->tty) {
@@ -1260,15 +1461,22 @@ static int sl_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 
 static struct tty_ldisc_ops sl_ldisc = {
 	.owner 		= THIS_MODULE,
+<<<<<<< HEAD
 	.magic 		= TTY_LDISC_MAGIC,
+=======
+	.num		= N_SLIP,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name 		= "slip",
 	.open 		= slip_open,
 	.close	 	= slip_close,
 	.hangup	 	= slip_hangup,
 	.ioctl		= slip_ioctl,
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= slip_compat_ioctl,
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.receive_buf	= slip_receive_buf,
 	.write_wakeup	= slip_write_wakeup,
 };
@@ -1293,13 +1501,21 @@ static int __init slip_init(void)
 	printk(KERN_INFO "SLIP linefill/keepalive option.\n");
 #endif
 
+<<<<<<< HEAD
 	slip_devs = kzalloc(sizeof(struct net_device *)*slip_maxdev,
+=======
+	slip_devs = kcalloc(slip_maxdev, sizeof(struct net_device *),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 								GFP_KERNEL);
 	if (!slip_devs)
 		return -ENOMEM;
 
 	/* Fill in our line protocol discipline, and register it */
+<<<<<<< HEAD
 	status = tty_register_ldisc(N_SLIP, &sl_ldisc);
+=======
+	status = tty_register_ldisc(&sl_ldisc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (status != 0) {
 		printk(KERN_ERR "SLIP: can't register line discipline (err = %d)\n", status);
 		kfree(slip_devs);
@@ -1352,8 +1568,11 @@ static void __exit slip_exit(void)
 		if (sl->tty) {
 			printk(KERN_ERR "%s: tty discipline still running\n",
 			       dev->name);
+<<<<<<< HEAD
 			/* Intentionally leak the control block. */
 			dev->destructor = NULL;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		unregister_netdev(dev);
@@ -1362,9 +1581,13 @@ static void __exit slip_exit(void)
 	kfree(slip_devs);
 	slip_devs = NULL;
 
+<<<<<<< HEAD
 	i = tty_unregister_ldisc(N_SLIP);
 	if (i != 0)
 		printk(KERN_ERR "SLIP: can't unregister line discipline (err = %d)\n", i);
+=======
+	tty_unregister_ldisc(&sl_ldisc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(slip_init);
@@ -1376,9 +1599,15 @@ module_exit(slip_exit);
  * added by Stanislav Voronyi. All changes before marked VSV
  */
 
+<<<<<<< HEAD
 static void sl_outfill(unsigned long sls)
 {
 	struct slip *sl = (struct slip *)sls;
+=======
+static void sl_outfill(struct timer_list *t)
+{
+	struct slip *sl = from_timer(sl, t, outfill_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&sl->lock);
 
@@ -1407,9 +1636,15 @@ out:
 	spin_unlock(&sl->lock);
 }
 
+<<<<<<< HEAD
 static void sl_keepalive(unsigned long sls)
 {
 	struct slip *sl = (struct slip *)sls;
+=======
+static void sl_keepalive(struct timer_list *t)
+{
+	struct slip *sl = from_timer(sl, t, keepalive_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&sl->lock);
 
@@ -1437,5 +1672,9 @@ out:
 }
 
 #endif
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("SLIP (serial line) protocol module");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 MODULE_ALIAS_LDISC(N_SLIP);

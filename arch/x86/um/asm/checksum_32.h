@@ -5,6 +5,7 @@
 #ifndef __UM_SYSDEP_CHECKSUM_H
 #define __UM_SYSDEP_CHECKSUM_H
 
+<<<<<<< HEAD
 #include "linux/in6.h"
 #include "linux/string.h"
 
@@ -144,6 +145,8 @@ static inline __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
  * in icmp.c
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline __sum16 ip_compute_csum(const void *buff, int len)
 {
     return csum_fold (csum_partial(buff, len, 0));
@@ -152,7 +155,11 @@ static inline __sum16 ip_compute_csum(const void *buff, int len)
 #define _HAVE_ARCH_IPV6_CSUM
 static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 					  const struct in6_addr *daddr,
+<<<<<<< HEAD
 					  __u32 len, unsigned short proto,
+=======
+					  __u32 len, __u8 proto,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					  __wsum sum)
 {
 	__asm__(
@@ -174,6 +181,7 @@ static __inline__ __sum16 csum_ipv6_magic(const struct in6_addr *saddr,
 	return csum_fold(sum);
 }
 
+<<<<<<< HEAD
 /*
  *	Copy and checksum to user
  */
@@ -199,3 +207,6 @@ static __inline__ __wsum csum_and_copy_to_user(const void *src,
 
 #endif
 
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

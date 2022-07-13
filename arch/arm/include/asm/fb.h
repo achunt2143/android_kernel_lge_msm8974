@@ -1,6 +1,7 @@
 #ifndef _ASM_FB_H_
 #define _ASM_FB_H_
 
+<<<<<<< HEAD
 #include <linux/fb.h>
 #include <linux/fs.h>
 #include <asm/page.h>
@@ -15,5 +16,8 @@ static inline int fb_is_primary_device(struct fb_info *info)
 {
 	return 0;
 }
+=======
+#include <asm-generic/fb.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _ASM_FB_H_ */

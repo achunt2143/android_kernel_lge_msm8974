@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * An I2C driver for Ricoh RS5C372, R2025S/D and RV5C38[67] RTCs
  *
  * Copyright (C) 2005 Pavel Mironchik <pmironchik@optifacio.net>
  * Copyright (C) 2006 Tower Technologies
  * Copyright (C) 2008 Paul Mundt
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/i2c.h>
@@ -15,9 +22,13 @@
 #include <linux/bcd.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
 #define DRV_VERSION "0.6"
 
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Ricoh has a family of I2C based RTCs, which differ only slightly from
@@ -33,8 +44,15 @@
 #define RS5C372_REG_MONTH	5
 #define RS5C372_REG_YEAR	6
 #define RS5C372_REG_TRIM	7
+<<<<<<< HEAD
 #	define RS5C372_TRIM_XSL		0x80
 #	define RS5C372_TRIM_MASK	0x7F
+=======
+#	define RS5C372_TRIM_XSL		0x80		/* only if RS5C372[a|b] */
+#	define RS5C372_TRIM_MASK	0x7F
+#	define R2221TL_TRIM_DEV		(1 << 7)	/* only if R2221TL */
+#	define RS5C372_TRIM_DECR	(1 << 6)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RS5C_REG_ALARM_A_MIN	8			/* or ALARM_W */
 #define RS5C_REG_ALARM_A_HOURS	9
@@ -54,8 +72,15 @@
 #	define RS5C_CTRL1_CT4		(4 << 0)	/* 1 Hz level irq */
 #define RS5C_REG_CTRL2		15
 #	define RS5C372_CTRL2_24		(1 << 5)
+<<<<<<< HEAD
 #	define R2025_CTRL2_XST		(1 << 5)
 #	define RS5C_CTRL2_XSTP		(1 << 4)	/* only if !R2025S/D */
+=======
+#	define RS5C_CTRL2_XSTP		(1 << 4)	/* only if !R2x2x */
+#	define R2x2x_CTRL2_VDET		(1 << 6)	/* only if  R2x2x */
+#	define R2x2x_CTRL2_XSTP		(1 << 5)	/* only if  R2x2x */
+#	define R2x2x_CTRL2_PON		(1 << 4)	/* only if  R2x2x */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #	define RS5C_CTRL2_CTFG		(1 << 2)
 #	define RS5C_CTRL2_AAFG		(1 << 1)	/* or WAFG */
 #	define RS5C_CTRL2_BAFG		(1 << 0)	/* or DAFG */
@@ -68,6 +93,10 @@
 enum rtc_type {
 	rtc_undef = 0,
 	rtc_r2025sd,
+<<<<<<< HEAD
+=======
+	rtc_r2221tl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rtc_rs5c372a,
 	rtc_rs5c372b,
 	rtc_rv5c386,
@@ -76,6 +105,10 @@ enum rtc_type {
 
 static const struct i2c_device_id rs5c372_id[] = {
 	{ "r2025sd", rtc_r2025sd },
+<<<<<<< HEAD
+=======
+	{ "r2221tl", rtc_r2221tl },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ "rs5c372a", rtc_rs5c372a },
 	{ "rs5c372b", rtc_rs5c372b },
 	{ "rv5c386", rtc_rv5c386 },
@@ -84,6 +117,38 @@ static const struct i2c_device_id rs5c372_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, rs5c372_id);
 
+<<<<<<< HEAD
+=======
+static const __maybe_unused struct of_device_id rs5c372_of_match[] = {
+	{
+		.compatible = "ricoh,r2025sd",
+		.data = (void *)rtc_r2025sd
+	},
+	{
+		.compatible = "ricoh,r2221tl",
+		.data = (void *)rtc_r2221tl
+	},
+	{
+		.compatible = "ricoh,rs5c372a",
+		.data = (void *)rtc_rs5c372a
+	},
+	{
+		.compatible = "ricoh,rs5c372b",
+		.data = (void *)rtc_rs5c372b
+	},
+	{
+		.compatible = "ricoh,rv5c386",
+		.data = (void *)rtc_rv5c386
+	},
+	{
+		.compatible = "ricoh,rv5c387a",
+		.data = (void *)rtc_rv5c387a
+	},
+	{ }
+};
+MODULE_DEVICE_TABLE(of, rs5c372_of_match);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* REVISIT:  this assumes that:
  *  - we're in the 21st century, so it's safe to ignore the century
  *    bit for rv5c38[67] (REG_MONTH bit 7);
@@ -104,7 +169,16 @@ static int rs5c_get_regs(struct rs5c372 *rs5c)
 {
 	struct i2c_client	*client = rs5c->client;
 	struct i2c_msg		msgs[] = {
+<<<<<<< HEAD
 		{ client->addr, I2C_M_RD, sizeof rs5c->buf, rs5c->buf },
+=======
+		{
+			.addr = client->addr,
+			.flags = I2C_M_RD,
+			.len = sizeof(rs5c->buf),
+			.buf = rs5c->buf
+		},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	/* This implements the third reading method from the datasheet, using
@@ -115,7 +189,11 @@ static int rs5c_get_regs(struct rs5c372 *rs5c)
 	 * least 80219 chips; this works around that bug.
 	 *
 	 * The third method on the other hand doesn't work for the SMBus-only
+<<<<<<< HEAD
 	 * configurations, so we use the the first method there, stripping off
+=======
+	 * configurations, so we use the first method there, stripping off
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * the extra register in the process.
 	 */
 	if (rs5c->smbus) {
@@ -135,12 +213,20 @@ static int rs5c_get_regs(struct rs5c372 *rs5c)
 	}
 
 	dev_dbg(&client->dev,
+<<<<<<< HEAD
 		"%02x %02x %02x (%02x) %02x %02x %02x (%02x), "
 		"%02x %02x %02x, %02x %02x %02x; %02x %02x\n",
 		rs5c->regs[0],  rs5c->regs[1],  rs5c->regs[2],  rs5c->regs[3],
 		rs5c->regs[4],  rs5c->regs[5],  rs5c->regs[6],  rs5c->regs[7],
 		rs5c->regs[8],  rs5c->regs[9],  rs5c->regs[10], rs5c->regs[11],
 		rs5c->regs[12], rs5c->regs[13], rs5c->regs[14], rs5c->regs[15]);
+=======
+		"%3ph (%02x) %3ph (%02x), %3ph, %3ph; %02x %02x\n",
+		rs5c->regs + 0, rs5c->regs[3],
+		rs5c->regs + 4, rs5c->regs[7],
+		rs5c->regs + 8, rs5c->regs + 11,
+		rs5c->regs[14], rs5c->regs[15]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -174,14 +260,42 @@ static unsigned rs5c_hr2reg(struct rs5c372 *rs5c, unsigned hour)
 	return bin2bcd(hour);
 }
 
+<<<<<<< HEAD
 static int rs5c372_get_datetime(struct i2c_client *client, struct rtc_time *tm)
 {
 	struct rs5c372	*rs5c = i2c_get_clientdata(client);
 	int		status = rs5c_get_regs(rs5c);
+=======
+static int rs5c372_rtc_read_time(struct device *dev, struct rtc_time *tm)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+	struct rs5c372	*rs5c = i2c_get_clientdata(client);
+	int		status = rs5c_get_regs(rs5c);
+	unsigned char ctrl2 = rs5c->regs[RS5C_REG_CTRL2];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (status < 0)
 		return status;
 
+<<<<<<< HEAD
+=======
+	switch (rs5c->type) {
+	case rtc_r2025sd:
+	case rtc_r2221tl:
+		if ((rs5c->type == rtc_r2025sd && !(ctrl2 & R2x2x_CTRL2_XSTP)) ||
+		    (rs5c->type == rtc_r2221tl &&  (ctrl2 & R2x2x_CTRL2_XSTP))) {
+			dev_warn(&client->dev, "rtc oscillator interruption detected. Please reset the rtc clock.\n");
+			return -EINVAL;
+		}
+		break;
+	default:
+		if (ctrl2 & RS5C_CTRL2_XSTP) {
+			dev_warn(&client->dev, "rtc oscillator interruption detected. Please reset the rtc clock.\n");
+			return -EINVAL;
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tm->tm_sec = bcd2bin(rs5c->regs[RS5C372_REG_SECS] & 0x7f);
 	tm->tm_min = bcd2bin(rs5c->regs[RS5C372_REG_MINS] & 0x7f);
 	tm->tm_hour = rs5c_reg2hr(rs5c, rs5c->regs[RS5C372_REG_HOURS]);
@@ -201,6 +315,7 @@ static int rs5c372_get_datetime(struct i2c_client *client, struct rtc_time *tm)
 		tm->tm_sec, tm->tm_min, tm->tm_hour,
 		tm->tm_mday, tm->tm_mon, tm->tm_year, tm->tm_wday);
 
+<<<<<<< HEAD
 	/* rtc might need initialization */
 	return rtc_valid_tm(tm);
 }
@@ -209,6 +324,17 @@ static int rs5c372_set_datetime(struct i2c_client *client, struct rtc_time *tm)
 {
 	struct rs5c372	*rs5c = i2c_get_clientdata(client);
 	unsigned char	buf[7];
+=======
+	return 0;
+}
+
+static int rs5c372_rtc_set_time(struct device *dev, struct rtc_time *tm)
+{
+	struct i2c_client *client = to_i2c_client(dev);
+	struct rs5c372	*rs5c = i2c_get_clientdata(client);
+	unsigned char	buf[7];
+	unsigned char	ctrl2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int		addr;
 
 	dev_dbg(&client->dev, "%s: tm is secs=%d, mins=%d, hours=%d "
@@ -227,18 +353,55 @@ static int rs5c372_set_datetime(struct i2c_client *client, struct rtc_time *tm)
 	buf[6] = bin2bcd(tm->tm_year - 100);
 
 	if (i2c_smbus_write_i2c_block_data(client, addr, sizeof(buf), buf) < 0) {
+<<<<<<< HEAD
 		dev_err(&client->dev, "%s: write error\n", __func__);
+=======
+		dev_dbg(&client->dev, "%s: write error in line %i\n",
+			__func__, __LINE__);
+		return -EIO;
+	}
+
+	addr = RS5C_ADDR(RS5C_REG_CTRL2);
+	ctrl2 = i2c_smbus_read_byte_data(client, addr);
+
+	/* clear rtc warning bits */
+	switch (rs5c->type) {
+	case rtc_r2025sd:
+	case rtc_r2221tl:
+		ctrl2 &= ~(R2x2x_CTRL2_VDET | R2x2x_CTRL2_PON);
+		if (rs5c->type == rtc_r2025sd)
+			ctrl2 |= R2x2x_CTRL2_XSTP;
+		else
+			ctrl2 &= ~R2x2x_CTRL2_XSTP;
+		break;
+	default:
+		ctrl2 &= ~RS5C_CTRL2_XSTP;
+		break;
+	}
+
+	if (i2c_smbus_write_byte_data(client, addr, ctrl2) < 0) {
+		dev_dbg(&client->dev, "%s: write error in line %i\n",
+			__func__, __LINE__);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_RTC_INTF_PROC) || defined(CONFIG_RTC_INTF_PROC_MODULE)
 #define	NEED_TRIM
 #endif
 
 #if defined(CONFIG_RTC_INTF_SYSFS) || defined(CONFIG_RTC_INTF_SYSFS_MODULE)
+=======
+#if IS_ENABLED(CONFIG_RTC_INTF_PROC)
+#define	NEED_TRIM
+#endif
+
+#if IS_ENABLED(CONFIG_RTC_INTF_SYSFS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define	NEED_TRIM
 #endif
 
@@ -248,8 +411,17 @@ static int rs5c372_get_trim(struct i2c_client *client, int *osc, int *trim)
 	struct rs5c372 *rs5c372 = i2c_get_clientdata(client);
 	u8 tmp = rs5c372->regs[RS5C372_REG_TRIM];
 
+<<<<<<< HEAD
 	if (osc)
 		*osc = (tmp & RS5C372_TRIM_XSL) ? 32000 : 32768;
+=======
+	if (osc) {
+		if (rs5c372->type == rtc_rs5c372a || rs5c372->type == rtc_rs5c372b)
+			*osc = (tmp & RS5C372_TRIM_XSL) ? 32000 : 32768;
+		else
+			*osc = 32768;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (trim) {
 		dev_dbg(&client->dev, "%s: raw trim=%x\n", __func__, tmp);
@@ -272,6 +444,7 @@ static int rs5c372_get_trim(struct i2c_client *client, int *osc, int *trim)
 }
 #endif
 
+<<<<<<< HEAD
 static int rs5c372_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	return rs5c372_get_datetime(to_i2c_client(dev), tm);
@@ -283,6 +456,8 @@ static int rs5c372_rtc_set_time(struct device *dev, struct rtc_time *tm)
 }
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int rs5c_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 {
 	struct i2c_client	*client = to_i2c_client(dev);
@@ -306,8 +481,12 @@ static int rs5c_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 		buf &= ~RS5C_CTRL1_AALE;
 
 	if (i2c_smbus_write_byte_data(client, addr, buf) < 0) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "%s: can't update alarm\n",
 			rs5c->rtc->name);
+=======
+		dev_warn(dev, "can't update alarm\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = -EIO;
 	} else
 		rs5c->regs[RS5C_REG_CTRL1] = buf;
@@ -339,12 +518,15 @@ static int rs5c_read_alarm(struct device *dev, struct rtc_wkalrm *t)
 	t->time.tm_sec = 0;
 	t->time.tm_min = bcd2bin(rs5c->regs[RS5C_REG_ALARM_A_MIN] & 0x7f);
 	t->time.tm_hour = rs5c_reg2hr(rs5c, rs5c->regs[RS5C_REG_ALARM_A_HOURS]);
+<<<<<<< HEAD
 	t->time.tm_mday = -1;
 	t->time.tm_mon = -1;
 	t->time.tm_year = -1;
 	t->time.tm_wday = -1;
 	t->time.tm_yday = -1;
 	t->time.tm_isdst = -1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* ... and status */
 	t->enabled = !!(rs5c->regs[RS5C_REG_CTRL1] & RS5C_CTRL1_AALE);
@@ -376,7 +558,11 @@ static int rs5c_set_alarm(struct device *dev, struct rtc_wkalrm *t)
 		addr = RS5C_ADDR(RS5C_REG_CTRL1);
 		buf[0] = rs5c->regs[RS5C_REG_CTRL1] & ~RS5C_CTRL1_AALE;
 		if (i2c_smbus_write_byte_data(client, addr, buf[0]) < 0) {
+<<<<<<< HEAD
 			pr_debug("%s: can't disable alarm\n", rs5c->rtc->name);
+=======
+			dev_dbg(dev, "can't disable alarm\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 		rs5c->regs[RS5C_REG_CTRL1] = buf[0];
@@ -390,7 +576,11 @@ static int rs5c_set_alarm(struct device *dev, struct rtc_wkalrm *t)
 	for (i = 0; i < sizeof(buf); i++) {
 		addr = RS5C_ADDR(RS5C_REG_ALARM_A_MIN + i);
 		if (i2c_smbus_write_byte_data(client, addr, buf[i]) < 0) {
+<<<<<<< HEAD
 			pr_debug("%s: can't set alarm time\n", rs5c->rtc->name);
+=======
+			dev_dbg(dev, "can't set alarm time\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 	}
@@ -400,15 +590,23 @@ static int rs5c_set_alarm(struct device *dev, struct rtc_wkalrm *t)
 		addr = RS5C_ADDR(RS5C_REG_CTRL1);
 		buf[0] = rs5c->regs[RS5C_REG_CTRL1] | RS5C_CTRL1_AALE;
 		if (i2c_smbus_write_byte_data(client, addr, buf[0]) < 0)
+<<<<<<< HEAD
 			printk(KERN_WARNING "%s: can't enable alarm\n",
 				rs5c->rtc->name);
+=======
+			dev_warn(dev, "can't enable alarm\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rs5c->regs[RS5C_REG_CTRL1] = buf[0];
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #if defined(CONFIG_RTC_INTF_PROC) || defined(CONFIG_RTC_INTF_PROC_MODULE)
+=======
+#if IS_ENABLED(CONFIG_RTC_INTF_PROC)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int rs5c372_rtc_proc(struct device *dev, struct seq_file *seq)
 {
@@ -428,6 +626,179 @@ static int rs5c372_rtc_proc(struct device *dev, struct seq_file *seq)
 #define	rs5c372_rtc_proc	NULL
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_RTC_INTF_DEV
+static int rs5c372_ioctl(struct device *dev, unsigned int cmd, unsigned long arg)
+{
+	struct rs5c372	*rs5c = i2c_get_clientdata(to_i2c_client(dev));
+	unsigned char	ctrl2;
+	int		addr;
+	unsigned int	flags;
+
+	dev_dbg(dev, "%s: cmd=%x\n", __func__, cmd);
+
+	addr = RS5C_ADDR(RS5C_REG_CTRL2);
+	ctrl2 = i2c_smbus_read_byte_data(rs5c->client, addr);
+
+	switch (cmd) {
+	case RTC_VL_READ:
+		flags = 0;
+
+		switch (rs5c->type) {
+		case rtc_r2025sd:
+		case rtc_r2221tl:
+			if ((rs5c->type == rtc_r2025sd && !(ctrl2 & R2x2x_CTRL2_XSTP)) ||
+				(rs5c->type == rtc_r2221tl &&  (ctrl2 & R2x2x_CTRL2_XSTP))) {
+				flags |= RTC_VL_DATA_INVALID;
+			}
+			if (ctrl2 & R2x2x_CTRL2_VDET)
+				flags |= RTC_VL_BACKUP_LOW;
+			break;
+		default:
+			if (ctrl2 & RS5C_CTRL2_XSTP)
+				flags |= RTC_VL_DATA_INVALID;
+			break;
+		}
+
+		return put_user(flags, (unsigned int __user *)arg);
+	case RTC_VL_CLR:
+		/* clear VDET bit */
+		if (rs5c->type == rtc_r2025sd || rs5c->type == rtc_r2221tl) {
+			ctrl2 &= ~R2x2x_CTRL2_VDET;
+			if (i2c_smbus_write_byte_data(rs5c->client, addr, ctrl2) < 0) {
+				dev_dbg(&rs5c->client->dev, "%s: write error in line %i\n",
+						__func__, __LINE__);
+				return -EIO;
+			}
+		}
+		return 0;
+	default:
+		return -ENOIOCTLCMD;
+	}
+	return 0;
+}
+#else
+#define rs5c372_ioctl	NULL
+#endif
+
+static int rs5c372_read_offset(struct device *dev, long *offset)
+{
+	struct rs5c372 *rs5c = i2c_get_clientdata(to_i2c_client(dev));
+	u8 val = rs5c->regs[RS5C372_REG_TRIM];
+	long ppb_per_step = 0;
+	bool decr = val & RS5C372_TRIM_DECR;
+
+	switch (rs5c->type) {
+	case rtc_r2221tl:
+		ppb_per_step = val & R2221TL_TRIM_DEV ? 1017 : 3051;
+		break;
+	case rtc_rs5c372a:
+	case rtc_rs5c372b:
+		ppb_per_step = val & RS5C372_TRIM_XSL ? 3125 : 3051;
+		break;
+	default:
+		ppb_per_step = 3051;
+		break;
+	}
+
+	/* Only bits[0:5] repsents the time counts */
+	val &= 0x3F;
+
+	/* If bits[1:5] are all 0, it means no increment or decrement */
+	if (!(val & 0x3E)) {
+		*offset = 0;
+	} else {
+		if (decr)
+			*offset = -(((~val) & 0x3F) + 1) * ppb_per_step;
+		else
+			*offset = (val - 1) * ppb_per_step;
+	}
+
+	return 0;
+}
+
+static int rs5c372_set_offset(struct device *dev, long offset)
+{
+	struct rs5c372 *rs5c = i2c_get_clientdata(to_i2c_client(dev));
+	int addr = RS5C_ADDR(RS5C372_REG_TRIM);
+	u8 val = 0;
+	u8 tmp = 0;
+	long ppb_per_step = 3051;
+	long steps = LONG_MIN;
+
+	switch (rs5c->type) {
+	case rtc_rs5c372a:
+	case rtc_rs5c372b:
+		tmp = rs5c->regs[RS5C372_REG_TRIM];
+		if (tmp & RS5C372_TRIM_XSL) {
+			ppb_per_step = 3125;
+			val |= RS5C372_TRIM_XSL;
+		}
+		break;
+	case rtc_r2221tl:
+		/*
+		 * Check if it is possible to use high resolution mode (DEV=1).
+		 * In this mode, the minimum resolution is 2 / (32768 * 20 * 3),
+		 * which is about 1017 ppb.
+		 */
+		steps = DIV_ROUND_CLOSEST(offset, 1017);
+		if (steps >= -0x3E && steps <= 0x3E) {
+			ppb_per_step = 1017;
+			val |= R2221TL_TRIM_DEV;
+		} else {
+			/*
+			 * offset is out of the range of high resolution mode.
+			 * Try to use low resolution mode (DEV=0). In this mode,
+			 * the minimum resolution is 2 / (32768 * 20), which is
+			 * about 3051 ppb.
+			 */
+			steps = LONG_MIN;
+		}
+		break;
+	default:
+		break;
+	}
+
+	if (steps == LONG_MIN) {
+		steps = DIV_ROUND_CLOSEST(offset, ppb_per_step);
+		if (steps > 0x3E || steps < -0x3E)
+			return -ERANGE;
+	}
+
+	if (steps > 0) {
+		val |= steps + 1;
+	} else {
+		val |= RS5C372_TRIM_DECR;
+		val |= (~(-steps - 1)) & 0x3F;
+	}
+
+	if (!steps || !(val & 0x3E)) {
+		/*
+		 * if offset is too small, set oscillation adjustment register
+		 * or time trimming register with its default value whic means
+		 * no increment or decrement. But for rs5c372[a|b], the XSL bit
+		 * should be kept unchanged.
+		 */
+		if (rs5c->type == rtc_rs5c372a || rs5c->type == rtc_rs5c372b)
+			val &= RS5C372_TRIM_XSL;
+		else
+			val = 0;
+	}
+
+	dev_dbg(&rs5c->client->dev, "write 0x%x for offset %ld\n", val, offset);
+
+	if (i2c_smbus_write_byte_data(rs5c->client, addr, val) < 0) {
+		dev_err(&rs5c->client->dev, "failed to write 0x%x to reg %d\n", val, addr);
+		return -EIO;
+	}
+
+	rs5c->regs[RS5C372_REG_TRIM] = val;
+
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct rtc_class_ops rs5c372_rtc_ops = {
 	.proc		= rs5c372_rtc_proc,
 	.read_time	= rs5c372_rtc_read_time,
@@ -435,9 +806,18 @@ static const struct rtc_class_ops rs5c372_rtc_ops = {
 	.read_alarm	= rs5c_read_alarm,
 	.set_alarm	= rs5c_set_alarm,
 	.alarm_irq_enable = rs5c_rtc_alarm_irq_enable,
+<<<<<<< HEAD
 };
 
 #if defined(CONFIG_RTC_INTF_SYSFS) || defined(CONFIG_RTC_INTF_SYSFS_MODULE)
+=======
+	.ioctl		= rs5c372_ioctl,
+	.read_offset    = rs5c372_read_offset,
+	.set_offset     = rs5c372_set_offset,
+};
+
+#if IS_ENABLED(CONFIG_RTC_INTF_SYSFS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static ssize_t rs5c372_sysfs_show_trim(struct device *dev,
 				struct device_attribute *attr, char *buf)
@@ -504,6 +884,7 @@ static int rs5c_oscillator_setup(struct rs5c372 *rs5c372)
 	unsigned char buf[2];
 	int addr, i, ret = 0;
 
+<<<<<<< HEAD
 	if (rs5c372->type == rtc_r2025sd) {
 		if (!(rs5c372->regs[RS5C_REG_CTRL2] & R2025_CTRL2_XST))
 			return ret;
@@ -514,10 +895,30 @@ static int rs5c_oscillator_setup(struct rs5c372 *rs5c372)
 		rs5c372->regs[RS5C_REG_CTRL2] &= ~RS5C_CTRL2_XSTP;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addr   = RS5C_ADDR(RS5C_REG_CTRL1);
 	buf[0] = rs5c372->regs[RS5C_REG_CTRL1];
 	buf[1] = rs5c372->regs[RS5C_REG_CTRL2];
 
+<<<<<<< HEAD
+=======
+	switch (rs5c372->type) {
+	case rtc_r2025sd:
+		if (buf[1] & R2x2x_CTRL2_XSTP)
+			return ret;
+		break;
+	case rtc_r2221tl:
+		if (!(buf[1] & R2x2x_CTRL2_XSTP))
+			return ret;
+		break;
+	default:
+		if (!(buf[1] & RS5C_CTRL2_XSTP))
+			return ret;
+		break;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* use 24hr mode */
 	switch (rs5c372->type) {
 	case rtc_rs5c372a:
@@ -526,6 +927,10 @@ static int rs5c_oscillator_setup(struct rs5c372 *rs5c372)
 		rs5c372->time24 = 1;
 		break;
 	case rtc_r2025sd:
+<<<<<<< HEAD
+=======
+	case rtc_r2221tl:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case rtc_rv5c386:
 	case rtc_rv5c387a:
 		buf[0] |= RV5C387_CTRL1_24;
@@ -549,13 +954,20 @@ static int rs5c_oscillator_setup(struct rs5c372 *rs5c372)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int rs5c372_probe(struct i2c_client *client,
 			 const struct i2c_device_id *id)
+=======
+static int rs5c372_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err = 0;
 	int smbus_mode = 0;
 	struct rs5c372 *rs5c372;
+<<<<<<< HEAD
 	struct rtc_time tm;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_dbg(&client->dev, "%s\n", __func__);
 
@@ -576,14 +988,29 @@ static int rs5c372_probe(struct i2c_client *client,
 		}
 	}
 
+<<<<<<< HEAD
 	if (!(rs5c372 = kzalloc(sizeof(struct rs5c372), GFP_KERNEL))) {
+=======
+	rs5c372 = devm_kzalloc(&client->dev, sizeof(struct rs5c372),
+				GFP_KERNEL);
+	if (!rs5c372) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		err = -ENOMEM;
 		goto exit;
 	}
 
 	rs5c372->client = client;
 	i2c_set_clientdata(client, rs5c372);
+<<<<<<< HEAD
 	rs5c372->type = id->driver_data;
+=======
+	if (client->dev.of_node) {
+		rs5c372->type = (uintptr_t)of_device_get_match_data(&client->dev);
+	} else {
+		const struct i2c_device_id *id = i2c_match_id(rs5c372_id, client);
+		rs5c372->type = id->driver_data;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* we read registers 0x0f then 0x00-0x0f; skip the first one */
 	rs5c372->regs = &rs5c372->buf[1];
@@ -591,7 +1018,11 @@ static int rs5c372_probe(struct i2c_client *client,
 
 	err = rs5c_get_regs(rs5c372);
 	if (err < 0)
+<<<<<<< HEAD
 		goto exit_kfree;
+=======
+		goto exit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* clock may be set for am/pm or 24 hr time */
 	switch (rs5c372->type) {
@@ -604,6 +1035,10 @@ static int rs5c372_probe(struct i2c_client *client,
 			rs5c372->time24 = 1;
 		break;
 	case rtc_r2025sd:
+<<<<<<< HEAD
+=======
+	case rtc_r2221tl:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case rtc_rv5c386:
 	case rtc_rv5c387a:
 		if (rs5c372->regs[RS5C_REG_CTRL1] & RV5C387_CTRL1_24)
@@ -614,7 +1049,11 @@ static int rs5c372_probe(struct i2c_client *client,
 		break;
 	default:
 		dev_err(&client->dev, "unknown RTC type\n");
+<<<<<<< HEAD
 		goto exit_kfree;
+=======
+		goto exit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* if the oscillator lost power and no other software (like
@@ -626,6 +1065,7 @@ static int rs5c372_probe(struct i2c_client *client,
 	err = rs5c_oscillator_setup(rs5c372);
 	if (unlikely(err < 0)) {
 		dev_err(&client->dev, "setup error\n");
+<<<<<<< HEAD
 		goto exit_kfree;
 	}
 
@@ -635,6 +1075,15 @@ static int rs5c372_probe(struct i2c_client *client,
 	dev_info(&client->dev, "%s found, %s, driver version " DRV_VERSION "\n",
 			({ char *s; switch (rs5c372->type) {
 			case rtc_r2025sd:	s = "r2025sd"; break;
+=======
+		goto exit;
+	}
+
+	dev_info(&client->dev, "%s found, %s\n",
+			({ char *s; switch (rs5c372->type) {
+			case rtc_r2025sd:	s = "r2025sd"; break;
+			case rtc_r2221tl:	s = "r2221tl"; break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			case rtc_rs5c372a:	s = "rs5c372a"; break;
 			case rtc_rs5c372b:	s = "rs5c372b"; break;
 			case rtc_rv5c386:	s = "rv5c386"; break;
@@ -645,6 +1094,7 @@ static int rs5c372_probe(struct i2c_client *client,
 			);
 
 	/* REVISIT use client->irq to register alarm irq ... */
+<<<<<<< HEAD
 
 	rs5c372->rtc = rtc_device_register(rs5c372_driver.driver.name,
 				&client->dev, &rs5c372_rtc_ops, THIS_MODULE);
@@ -652,10 +1102,20 @@ static int rs5c372_probe(struct i2c_client *client,
 	if (IS_ERR(rs5c372->rtc)) {
 		err = PTR_ERR(rs5c372->rtc);
 		goto exit_kfree;
+=======
+	rs5c372->rtc = devm_rtc_device_register(&client->dev,
+					rs5c372_driver.driver.name,
+					&rs5c372_rtc_ops, THIS_MODULE);
+
+	if (IS_ERR(rs5c372->rtc)) {
+		err = PTR_ERR(rs5c372->rtc);
+		goto exit;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	err = rs5c_sysfs_register(&client->dev);
 	if (err)
+<<<<<<< HEAD
 		goto exit_devreg;
 
 	return 0;
@@ -666,10 +1126,17 @@ exit_devreg:
 exit_kfree:
 	kfree(rs5c372);
 
+=======
+		goto exit;
+
+	return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 exit:
 	return err;
 }
 
+<<<<<<< HEAD
 static int rs5c372_remove(struct i2c_client *client)
 {
 	struct rs5c372 *rs5c372 = i2c_get_clientdata(client);
@@ -678,11 +1145,20 @@ static int rs5c372_remove(struct i2c_client *client)
 	rs5c_sysfs_unregister(&client->dev);
 	kfree(rs5c372);
 	return 0;
+=======
+static void rs5c372_remove(struct i2c_client *client)
+{
+	rs5c_sysfs_unregister(&client->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct i2c_driver rs5c372_driver = {
 	.driver		= {
 		.name	= "rtc-rs5c372",
+<<<<<<< HEAD
+=======
+		.of_match_table = of_match_ptr(rs5c372_of_match),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.probe		= rs5c372_probe,
 	.remove		= rs5c372_remove,
@@ -697,4 +1173,7 @@ MODULE_AUTHOR(
 		"Paul Mundt <lethal@linux-sh.org>");
 MODULE_DESCRIPTION("Ricoh RS5C372 RTC driver");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION(DRV_VERSION);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

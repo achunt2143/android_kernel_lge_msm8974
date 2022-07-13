@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Intel i82586 Ethernet definitions
  *
@@ -133,8 +137,13 @@ struct rfd_struct
   unsigned char  last;		/* Bit15,Last Frame on List / Bit14,suspend */
   unsigned short next;		/* linkoffset to next RFD */
   unsigned short rbd_offset;	/* pointeroffset to RBD-buffer */
+<<<<<<< HEAD
   unsigned char  dest[6];	/* ethernet-address, destination */
   unsigned char  source[6];	/* ethernet-address, source */
+=======
+  unsigned char  dest[ETH_ALEN];	/* ethernet-address, destination */
+  unsigned char  source[ETH_ALEN];	/* ethernet-address, source */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   unsigned short length;	/* 802.3 frame-length */
   unsigned short zero_dummy;	/* dummy */
 };
@@ -150,7 +159,11 @@ struct rfd_struct
 #define RFD_ERR_RNR  0x02     /* status: receiver out of resources */
 #define RFD_ERR_OVR  0x01     /* DMA Overrun! */
 
+<<<<<<< HEAD
 #define RFD_ERR_FTS  0x0080	/* Frame to short */
+=======
+#define RFD_ERR_FTS  0x0080	/* Frame too short */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RFD_ERR_NEOP 0x0040	/* No EOP flag (for bitstuffing only) */
 #define RFD_ERR_TRUN 0x0020	/* (82596 only/SF mode) indicates truncated frame */
 #define RFD_MATCHADD 0x0002     /* status: Destinationaddress !matches IA (only 82596) */
@@ -250,7 +263,11 @@ struct mcsetup_cmd_struct
   unsigned short cmd_cmd;
   unsigned short cmd_link;
   unsigned short mc_cnt;		/* number of bytes in the MC-List */
+<<<<<<< HEAD
   unsigned char  mc_list[0][6];  	/* pointer to 6 bytes entries */
+=======
+  unsigned char  mc_list[][6];  	/* pointer to 6 bytes entries */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * 32 bit compatibility code for System V IPC
  *
@@ -30,6 +34,7 @@
 #include <linux/ptrace.h>
 
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 
 #include "util.h"
@@ -742,4 +747,54 @@ long compat_sys_semtimedop(int semid, struct sembuf __user *tsems,
 			return -EFAULT;
 	}
 	return sys_semtimedop(semid, tsems, nsops, ts64);
+=======
+#include <linux/uaccess.h>
+
+#include "util.h"
+
+int get_compat_ipc64_perm(struct ipc64_perm *to,
+			  struct compat_ipc64_perm __user *from)
+{
+	struct compat_ipc64_perm v;
+	if (copy_from_user(&v, from, sizeof(v)))
+		return -EFAULT;
+	to->uid = v.uid;
+	to->gid = v.gid;
+	to->mode = v.mode;
+	return 0;
+}
+
+int get_compat_ipc_perm(struct ipc64_perm *to,
+			struct compat_ipc_perm __user *from)
+{
+	struct compat_ipc_perm v;
+	if (copy_from_user(&v, from, sizeof(v)))
+		return -EFAULT;
+	to->uid = v.uid;
+	to->gid = v.gid;
+	to->mode = v.mode;
+	return 0;
+}
+
+void to_compat_ipc64_perm(struct compat_ipc64_perm *to, struct ipc64_perm *from)
+{
+	to->key = from->key;
+	to->uid = from->uid;
+	to->gid = from->gid;
+	to->cuid = from->cuid;
+	to->cgid = from->cgid;
+	to->mode = from->mode;
+	to->seq = from->seq;
+}
+
+void to_compat_ipc_perm(struct compat_ipc_perm *to, struct ipc64_perm *from)
+{
+	to->key = from->key;
+	SET_UID(to->uid, from->uid);
+	SET_GID(to->gid, from->gid);
+	SET_UID(to->cuid, from->cuid);
+	SET_GID(to->cgid, from->cgid);
+	to->mode = from->mode;
+	to->seq = from->seq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.globl		utrap_trap
 	.type		utrap_trap,#function
 utrap_trap:		/* %g3=handler,%g4=level */
@@ -11,8 +15,12 @@ utrap_trap:		/* %g3=handler,%g4=level */
 	mov		%l4, %o1
         call		bad_trap
 	 add		%sp, PTREGS_OFF, %o0
+<<<<<<< HEAD
 	ba,pt		%xcc, rtrap
 	 nop
+=======
+	ba,a,pt		%xcc, rtrap
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 invoke_utrap:
 	sllx		%g3, 3, %g3

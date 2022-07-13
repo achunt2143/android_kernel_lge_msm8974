@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * core.h  --  Core Driver for Wolfson WM8350 PMIC
  *
  * Copyright 2007 Wolfson Microelectronics PLC
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MFD_WM8350_CORE_H_
@@ -17,6 +24,10 @@
 #include <linux/mutex.h>
 #include <linux/interrupt.h>
 #include <linux/completion.h>
+<<<<<<< HEAD
+=======
+#include <linux/regmap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/mfd/wm8350/audio.h>
 #include <linux/mfd/wm8350/gpio.h>
@@ -66,6 +77,12 @@
 
 #define WM8350_MAX_REGISTER                     0xFF
 
+<<<<<<< HEAD
+=======
+#define WM8350_UNLOCK_KEY		0x0013
+#define WM8350_LOCK_KEY			0x0000
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Field Definitions.
  */
@@ -582,6 +599,7 @@
 
 #define WM8350_NUM_IRQ_REGS 7
 
+<<<<<<< HEAD
 struct wm8350_reg_access {
 	u16 readable;		/* Mask of readable bits */
 	u16 writable;		/* Mask of writable bits */
@@ -600,6 +618,9 @@ extern const u16 wm8352_mode0_defaults[];
 extern const u16 wm8352_mode1_defaults[];
 extern const u16 wm8352_mode2_defaults[];
 extern const u16 wm8352_mode3_defaults[];
+=======
+extern const struct regmap_config wm8350_regmap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct wm8350;
 
@@ -612,6 +633,7 @@ struct wm8350 {
 	struct device *dev;
 
 	/* device IO */
+<<<<<<< HEAD
 	union {
 		struct i2c_client *i2c_client;
 		struct spi_device *spi_device;
@@ -620,6 +642,10 @@ struct wm8350 {
 	int (*write_dev)(struct wm8350 *wm8350, char reg, int size,
 			 void *src);
 	u16 *reg_cache;
+=======
+	struct regmap *regmap;
+	bool unlocked;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex auxadc_mutex;
 	struct completion auxadc_done;
@@ -662,7 +688,10 @@ struct wm8350_platform_data {
  */
 int wm8350_device_init(struct wm8350 *wm8350, int irq,
 		       struct wm8350_platform_data *pdata);
+<<<<<<< HEAD
 void wm8350_device_exit(struct wm8350 *wm8350);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * WM8350 device IO

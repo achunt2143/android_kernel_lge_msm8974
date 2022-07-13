@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
 
   Intel PRO/1000 Linux driver
@@ -25,6 +26,10 @@
   Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 
 *******************************************************************************/
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* Copyright(c) 1999 - 2018 Intel Corporation. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "e1000.h"
 
@@ -74,7 +79,11 @@ static void e1000_shift_out_eec_bits(struct e1000_hw *hw, u16 data, u16 count)
 	u32 eecd = er32(EECD);
 	u32 mask;
 
+<<<<<<< HEAD
 	mask = 0x01 << (count - 1);
+=======
+	mask = BIT(count - 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (nvm->type == e1000_nvm_eeprom_spi)
 		eecd |= E1000_EECD_DO;
 
@@ -117,7 +126,10 @@ static u16 e1000_shift_in_eec_bits(struct e1000_hw *hw, u16 count)
 	u16 data;
 
 	eecd = er32(EECD);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	eecd &= ~(E1000_EECD_DO | E1000_EECD_DI);
 	data = 0;
 
@@ -279,8 +291,12 @@ static s32 e1000_ready_nvm_eeprom(struct e1000_hw *hw)
 		e1e_flush();
 		udelay(1);
 
+<<<<<<< HEAD
 		/*
 		 * Read "Status Register" repeatedly until the LSB is cleared.
+=======
+		/* Read "Status Register" repeatedly until the LSB is cleared.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * The EEPROM will signal that the command has been completed
 		 * by clearing bit 0 of the internal status register.  If it's
 		 * not cleared within 'timeout', then error out.
@@ -321,8 +337,12 @@ s32 e1000e_read_nvm_eerd(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
 	u32 i, eerd = 0;
 	s32 ret_val = 0;
 
+<<<<<<< HEAD
 	/*
 	 * A check for invalid values:  offset too large, too many words,
+=======
+	/* A check for invalid values:  offset too large, too many words,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * too many words for the offset, and not enough words.
 	 */
 	if ((offset >= nvm->word_size) || (words > (nvm->word_size - offset)) ||
@@ -337,8 +357,15 @@ s32 e1000e_read_nvm_eerd(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
 
 		ew32(EERD, eerd);
 		ret_val = e1000e_poll_eerd_eewr_done(hw, E1000_NVM_POLL_READ);
+<<<<<<< HEAD
 		if (ret_val)
 			break;
+=======
+		if (ret_val) {
+			e_dbg("NVM read error: %d\n", ret_val);
+			break;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		data[i] = (er32(EERD) >> E1000_NVM_RW_REG_DATA);
 	}
@@ -361,11 +388,18 @@ s32 e1000e_read_nvm_eerd(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
 s32 e1000e_write_nvm_spi(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
 {
 	struct e1000_nvm_info *nvm = &hw->nvm;
+<<<<<<< HEAD
 	s32 ret_val;
 	u16 widx = 0;
 
 	/*
 	 * A check for invalid values:  offset too large, too many words,
+=======
+	s32 ret_val = -E1000_ERR_NVM;
+	u16 widx = 0;
+
+	/* A check for invalid values:  offset too large, too many words,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * and not enough words.
 	 */
 	if ((offset >= nvm->word_size) || (words > (nvm->word_size - offset)) ||
@@ -374,6 +408,7 @@ s32 e1000e_write_nvm_spi(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
 		return -E1000_ERR_NVM;
 	}
 
+<<<<<<< HEAD
 	ret_val = nvm->ops.acquire(hw);
 	if (ret_val)
 		return ret_val;
@@ -384,6 +419,20 @@ s32 e1000e_write_nvm_spi(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
 		ret_val = e1000_ready_nvm_eeprom(hw);
 		if (ret_val)
 			goto release;
+=======
+	while (widx < words) {
+		u8 write_opcode = NVM_WRITE_OPCODE_SPI;
+
+		ret_val = nvm->ops.acquire(hw);
+		if (ret_val)
+			return ret_val;
+
+		ret_val = e1000_ready_nvm_eeprom(hw);
+		if (ret_val) {
+			nvm->ops.release(hw);
+			return ret_val;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		e1000_standby_nvm(hw);
 
@@ -393,8 +442,12 @@ s32 e1000e_write_nvm_spi(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
 
 		e1000_standby_nvm(hw);
 
+<<<<<<< HEAD
 		/*
 		 * Some SPI eeproms use the 8th address bit embedded in the
+=======
+		/* Some SPI eeproms use the 8th address bit embedded in the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * opcode
 		 */
 		if ((nvm->address_bits == 8) && (offset >= 128))
@@ -408,6 +461,10 @@ s32 e1000e_write_nvm_spi(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
 		/* Loop to allow for up to whole page write of eeprom */
 		while (widx < words) {
 			u16 word_out = data[widx];
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			word_out = (word_out >> 8) | (word_out << 8);
 			e1000_shift_out_eec_bits(hw, word_out, 16);
 			widx++;
@@ -417,12 +474,19 @@ s32 e1000e_write_nvm_spi(struct e1000_hw *hw, u16 offset, u16 words, u16 *data)
 				break;
 			}
 		}
+<<<<<<< HEAD
 	}
 
 	usleep_range(10000, 20000);
 release:
 	nvm->ops.release(hw);
 
+=======
+		usleep_range(10000, 11000);
+		nvm->ops.release(hw);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret_val;
 }
 
@@ -461,16 +525,25 @@ s32 e1000_read_pba_string_generic(struct e1000_hw *hw, u8 *pba_num,
 		return ret_val;
 	}
 
+<<<<<<< HEAD
 	/*
 	 * if nvm_data is not ptr guard the PBA must be in legacy format which
+=======
+	/* if nvm_data is not ptr guard the PBA must be in legacy format which
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * means pba_ptr is actually our second data word for the PBA number
 	 * and we can decode it into an ascii string
 	 */
 	if (nvm_data != NVM_PBA_PTR_GUARD) {
 		e_dbg("NVM PBA number is not stored as string\n");
 
+<<<<<<< HEAD
 		/* we will need 11 characters to store the PBA */
 		if (pba_num_size < 11) {
+=======
+		/* make sure callers buffer is big enough to store the PBA */
+		if (pba_num_size < E1000_PBANUM_LENGTH) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			e_dbg("PBA string buffer too small\n");
 			return E1000_ERR_NO_SPACE;
 		}
@@ -635,7 +708,11 @@ void e1000e_reload_nvm_generic(struct e1000_hw *hw)
 {
 	u32 ctrl_ext;
 
+<<<<<<< HEAD
 	udelay(10);
+=======
+	usleep_range(10, 20);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ctrl_ext = er32(CTRL_EXT);
 	ctrl_ext |= E1000_CTRL_EXT_EE_RST;
 	ew32(CTRL_EXT, ctrl_ext);

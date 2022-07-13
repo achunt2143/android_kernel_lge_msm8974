@@ -91,6 +91,16 @@ enum radeon_family {
 	CHIP_TAHITI,
 	CHIP_PITCAIRN,
 	CHIP_VERDE,
+<<<<<<< HEAD
+=======
+	CHIP_OLAND,
+	CHIP_HAINAN,
+	CHIP_BONAIRE,
+	CHIP_KAVERI,
+	CHIP_KABINI,
+	CHIP_HAWAII,
+	CHIP_MULLINS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CHIP_LAST,
 };
 
@@ -109,6 +119,10 @@ enum radeon_chip_flags {
 	RADEON_NEW_MEMMAP = 0x00400000UL,
 	RADEON_IS_PCI = 0x00800000UL,
 	RADEON_IS_IGPGART = 0x01000000UL,
+<<<<<<< HEAD
+=======
+	RADEON_IS_PX = 0x02000000UL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif

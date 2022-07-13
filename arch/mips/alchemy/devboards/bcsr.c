@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * bcsr.h -- Db1xxx/Pb1xxx Devboard CPLD registers ("BCSR") abstraction.
  *
@@ -8,7 +12,13 @@
  */
 
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+#include <linux/irqchip/chained_irq.h>
+#include <linux/init.h>
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/spinlock.h>
 #include <linux/irq.h>
 #include <asm/addrspace.h>
@@ -20,7 +30,11 @@ static struct bcsr_reg {
 	spinlock_t lock;
 } bcsr_regs[BCSR_CNT];
 
+<<<<<<< HEAD
 static void __iomem *bcsr_virt;	/* KSEG1 addr of BCSR base */
+=======
+static void __iomem *bcsr_virt; /* KSEG1 addr of BCSR base */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int bcsr_csc_base;	/* linux-irq of first cascaded irq */
 
 void __init bcsr_init(unsigned long bcsr1_phys, unsigned long bcsr2_phys)
@@ -85,6 +99,7 @@ EXPORT_SYMBOL_GPL(bcsr_mod);
 /*
  * DB1200/PB1200 CPLD IRQ muxer
  */
+<<<<<<< HEAD
 static void bcsr_csc_handler(unsigned int irq, struct irq_desc *d)
 {
 	unsigned short bisr = __raw_readw(bcsr_virt + BCSR_REG_INTSTAT);
@@ -95,6 +110,16 @@ static void bcsr_csc_handler(unsigned int irq, struct irq_desc *d)
 		generic_handle_irq(bcsr_csc_base + __ffs(bisr));
 
 	enable_irq(irq);
+=======
+static void bcsr_csc_handler(struct irq_desc *d)
+{
+	unsigned short bisr = __raw_readw(bcsr_virt + BCSR_REG_INTSTAT);
+	struct irq_chip *chip = irq_desc_get_chip(d);
+
+	chained_irq_enter(chip, d);
+	generic_handle_irq(bcsr_csc_base + __ffs(bisr));
+	chained_irq_exit(chip, d);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void bcsr_irq_mask(struct irq_data *d)

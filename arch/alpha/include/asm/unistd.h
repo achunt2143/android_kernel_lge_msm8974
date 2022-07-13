@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ALPHA_UNISTD_H
 #define _ALPHA_UNISTD_H
 
@@ -465,11 +466,23 @@
 #define NR_SYSCALLS			504
 
 #define __ARCH_WANT_IPC_PARSE_VERSION
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ALPHA_UNISTD_H
+#define _ALPHA_UNISTD_H
+
+#include <uapi/asm/unistd.h>
+
+#define NR_syscalls	__NR_syscalls
+
+#define __ARCH_WANT_NEW_STAT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __ARCH_WANT_OLD_READDIR
 #define __ARCH_WANT_STAT64
 #define __ARCH_WANT_SYS_GETHOSTNAME
 #define __ARCH_WANT_SYS_FADVISE64
 #define __ARCH_WANT_SYS_GETPGRP
+<<<<<<< HEAD
 #define __ARCH_WANT_SYS_OLD_GETRLIMIT
 #define __ARCH_WANT_SYS_OLDUMOUNT
 #define __ARCH_WANT_SYS_SIGPENDING
@@ -488,4 +501,13 @@
 #define cond_syscall(x)  asm(".weak\t" #x "\n" #x " = sys_ni_syscall")
 
 #endif /* __KERNEL__ */
+=======
+#define __ARCH_WANT_SYS_OLDUMOUNT
+#define __ARCH_WANT_SYS_SIGPENDING
+#define __ARCH_WANT_SYS_UTIME
+#define __ARCH_WANT_SYS_FORK
+#define __ARCH_WANT_SYS_VFORK
+#define __ARCH_WANT_SYS_CLONE
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ALPHA_UNISTD_H */

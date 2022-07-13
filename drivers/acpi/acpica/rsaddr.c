@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Module Name: rsaddr - Address resource descriptors (16/32/64)
  *
  ******************************************************************************/
 
+<<<<<<< HEAD
 /*
  * Copyright (C) 2000 - 2012, Intel Corp.
  * All rights reserved.
@@ -41,6 +46,8 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acresrc.h"
@@ -74,7 +81,11 @@ struct acpi_rsconvert_info acpi_rs_convert_address16[5] = {
 	 * Address Translation Offset
 	 * Address Length
 	 */
+<<<<<<< HEAD
 	{ACPI_RSC_MOVE16, ACPI_RS_OFFSET(data.address16.granularity),
+=======
+	{ACPI_RSC_MOVE16, ACPI_RS_OFFSET(data.address16.address.granularity),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 AML_OFFSET(address16.granularity),
 	 5},
 
@@ -112,7 +123,11 @@ struct acpi_rsconvert_info acpi_rs_convert_address32[5] = {
 	 * Address Translation Offset
 	 * Address Length
 	 */
+<<<<<<< HEAD
 	{ACPI_RSC_MOVE32, ACPI_RS_OFFSET(data.address32.granularity),
+=======
+	{ACPI_RSC_MOVE32, ACPI_RS_OFFSET(data.address32.address.granularity),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 AML_OFFSET(address32.granularity),
 	 5},
 
@@ -150,7 +165,11 @@ struct acpi_rsconvert_info acpi_rs_convert_address64[5] = {
 	 * Address Translation Offset
 	 * Address Length
 	 */
+<<<<<<< HEAD
 	{ACPI_RSC_MOVE64, ACPI_RS_OFFSET(data.address64.granularity),
+=======
+	{ACPI_RSC_MOVE64, ACPI_RS_OFFSET(data.address64.address.granularity),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 AML_OFFSET(address64.granularity),
 	 5},
 
@@ -182,8 +201,13 @@ struct acpi_rsconvert_info acpi_rs_convert_ext_address64[5] = {
 
 	/* Revision ID */
 
+<<<<<<< HEAD
 	{ACPI_RSC_MOVE8, ACPI_RS_OFFSET(data.ext_address64.revision_iD),
 	 AML_OFFSET(ext_address64.revision_iD),
+=======
+	{ACPI_RSC_MOVE8, ACPI_RS_OFFSET(data.ext_address64.revision_ID),
+	 AML_OFFSET(ext_address64.revision_ID),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 1},
 	/*
 	 * These fields are contiguous in both the source and destination:
@@ -194,7 +218,12 @@ struct acpi_rsconvert_info acpi_rs_convert_ext_address64[5] = {
 	 * Address Length
 	 * Type-Specific Attribute
 	 */
+<<<<<<< HEAD
 	{ACPI_RSC_MOVE64, ACPI_RS_OFFSET(data.ext_address64.granularity),
+=======
+	{ACPI_RSC_MOVE64,
+	 ACPI_RS_OFFSET(data.ext_address64.address.granularity),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 AML_OFFSET(ext_address64.granularity),
 	 6}
 };
@@ -215,7 +244,11 @@ static struct acpi_rsconvert_info acpi_rs_convert_general_flags[6] = {
 	 AML_OFFSET(address.resource_type),
 	 1},
 
+<<<<<<< HEAD
 	/* General Flags - Consume, Decode, min_fixed, max_fixed */
+=======
+	/* General flags - Consume, Decode, min_fixed, max_fixed */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ACPI_RSC_1BITFLAG, ACPI_RS_OFFSET(data.address.producer_consumer),
 	 AML_OFFSET(address.flags),
@@ -293,8 +326,13 @@ static struct acpi_rsconvert_info acpi_rs_convert_io_flags[4] = {
  *
  * FUNCTION:    acpi_rs_get_address_common
  *
+<<<<<<< HEAD
  * PARAMETERS:  Resource            - Pointer to the internal resource struct
  *              Aml                 - Pointer to the AML resource descriptor
+=======
+ * PARAMETERS:  resource            - Pointer to the internal resource struct
+ *              aml                 - Pointer to the AML resource descriptor
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      TRUE if the resource_type field is OK, FALSE otherwise
  *
@@ -307,12 +345,26 @@ u8
 acpi_rs_get_address_common(struct acpi_resource *resource,
 			   union aml_resource *aml)
 {
+<<<<<<< HEAD
 	ACPI_FUNCTION_ENTRY();
 
 	/* Validate the Resource Type */
 
 	if ((aml->address.resource_type > 2)
 	    && (aml->address.resource_type < 0xC0)) {
+=======
+	struct aml_resource_address address;
+
+	ACPI_FUNCTION_ENTRY();
+
+	/* Avoid undefined behavior: member access within misaligned address */
+
+	memcpy(&address, aml, sizeof(address));
+
+	/* Validate the Resource Type */
+
+	if ((address.resource_type > 2) && (address.resource_type < 0xC0)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return (FALSE);
 	}
 
@@ -333,7 +385,11 @@ acpi_rs_get_address_common(struct acpi_resource *resource,
 		/* Generic resource type, just grab the type_specific byte */
 
 		resource->data.address.info.type_specific =
+<<<<<<< HEAD
 		    aml->address.specific_flags;
+=======
+		    address.specific_flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return (TRUE);
@@ -343,8 +399,13 @@ acpi_rs_get_address_common(struct acpi_resource *resource,
  *
  * FUNCTION:    acpi_rs_set_address_common
  *
+<<<<<<< HEAD
  * PARAMETERS:  Aml                 - Pointer to the AML resource descriptor
  *              Resource            - Pointer to the internal resource struct
+=======
+ * PARAMETERS:  aml                 - Pointer to the AML resource descriptor
+ *              resource            - Pointer to the internal resource struct
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      None
  *

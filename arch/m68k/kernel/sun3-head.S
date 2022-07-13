@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/linkage.h>
 #include <linux/init.h>
 
@@ -87,9 +91,12 @@ kpt:
         .long 0
 availmem:
         .long 0
+<<<<<<< HEAD
 | todo: remove next two. --m
 is_medusa:
         .long 0
 m68k_pgtable_cachemode:
         .long 0
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

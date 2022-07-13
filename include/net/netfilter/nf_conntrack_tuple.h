@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Definitions and Declarations for tuple.
  *
@@ -66,6 +70,12 @@ struct nf_conntrack_tuple {
 		/* The protocol. */
 		u_int8_t protonum;
 
+<<<<<<< HEAD
+=======
+		/* The direction must be ignored for the tuplehash */
+		struct { } __nfct_hash_offsetend;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* The direction (for tuplehash) */
 		u_int8_t dir;
 	} dst;
@@ -122,7 +132,11 @@ struct nf_conntrack_tuple_hash {
 
 static inline bool __nf_ct_tuple_src_equal(const struct nf_conntrack_tuple *t1,
 					   const struct nf_conntrack_tuple *t2)
+<<<<<<< HEAD
 { 
+=======
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return (nf_inet_addr_cmp(&t1->src.u3, &t2->src.u3) &&
 		t1->src.u.all == t2->src.u.all &&
 		t1->src.l3num == t2->src.l3num);

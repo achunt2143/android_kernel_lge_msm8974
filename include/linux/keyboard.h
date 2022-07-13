@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __LINUX_KEYBOARD_H
 #define __LINUX_KEYBOARD_H
 
@@ -23,6 +24,14 @@
 #define MAX_NR_OF_USER_KEYMAPS 256 	/* should be at least 7 */
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __LINUX_KEYBOARD_H
+#define __LINUX_KEYBOARD_H
+
+#include <uapi/linux/keyboard.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct notifier_block;
 extern unsigned short *key_maps[MAX_NR_KEYMAPS];
 extern unsigned short plain_map[NR_KEYS];
@@ -38,6 +47,7 @@ struct keyboard_notifier_param {
 extern int register_keyboard_notifier(struct notifier_block *nb);
 extern int unregister_keyboard_notifier(struct notifier_block *nb);
 #endif
+<<<<<<< HEAD
 
 #define MAX_NR_FUNC	256	/* max nr of strings assigned to keys */
 
@@ -457,3 +467,5 @@ extern int unregister_keyboard_notifier(struct notifier_block *nb);
 
 #define MAX_DIACR	256
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

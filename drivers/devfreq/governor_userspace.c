@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  linux/drivers/devfreq/governor_simpleondemand.c
  *
@@ -7,6 +8,14 @@
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ *  linux/drivers/devfreq/governor_userspace.c
+ *
+ *  Copyright (C) 2011 Samsung Electronics
+ *	MyungJoo Ham <myungjoo.ham@samsung.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -22,6 +31,7 @@ struct userspace_data {
 	bool valid;
 };
 
+<<<<<<< HEAD
 static int devfreq_userspace_func(struct devfreq *df, unsigned long *freq,
 					u32 *flag)
 {
@@ -45,15 +55,36 @@ static int devfreq_userspace_func(struct devfreq *df, unsigned long *freq,
 
 static ssize_t store_freq(struct device *dev, struct device_attribute *attr,
 			  const char *buf, size_t count)
+=======
+static int devfreq_userspace_func(struct devfreq *df, unsigned long *freq)
+{
+	struct userspace_data *data = df->governor_data;
+
+	if (data->valid)
+		*freq = data->user_frequency;
+	else
+		*freq = df->previous_freq; /* No user freq specified yet */
+
+	return 0;
+}
+
+static ssize_t set_freq_store(struct device *dev, struct device_attribute *attr,
+			      const char *buf, size_t count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct devfreq *devfreq = to_devfreq(dev);
 	struct userspace_data *data;
 	unsigned long wanted;
 	int err = 0;
 
+<<<<<<< HEAD
 
 	mutex_lock(&devfreq->lock);
 	data = devfreq->data;
+=======
+	mutex_lock(&devfreq->lock);
+	data = devfreq->governor_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sscanf(buf, "%lu", &wanted);
 	data->user_frequency = wanted;
@@ -65,15 +96,24 @@ static ssize_t store_freq(struct device *dev, struct device_attribute *attr,
 	return err;
 }
 
+<<<<<<< HEAD
 static ssize_t show_freq(struct device *dev, struct device_attribute *attr,
 			 char *buf)
+=======
+static ssize_t set_freq_show(struct device *dev,
+			     struct device_attribute *attr, char *buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct devfreq *devfreq = to_devfreq(dev);
 	struct userspace_data *data;
 	int err = 0;
 
 	mutex_lock(&devfreq->lock);
+<<<<<<< HEAD
 	data = devfreq->data;
+=======
+	data = devfreq->governor_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (data->valid)
 		err = sprintf(buf, "%lu\n", data->user_frequency);
@@ -83,13 +123,22 @@ static ssize_t show_freq(struct device *dev, struct device_attribute *attr,
 	return err;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(set_freq, 0644, show_freq, store_freq);
+=======
+static DEVICE_ATTR_RW(set_freq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute *dev_entries[] = {
 	&dev_attr_set_freq.attr,
 	NULL,
 };
+<<<<<<< HEAD
 static struct attribute_group dev_attr_group = {
 	.name	= "userspace",
+=======
+static const struct attribute_group dev_attr_group = {
+	.name	= DEVFREQ_GOV_USERSPACE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs	= dev_entries,
 };
 
@@ -104,7 +153,11 @@ static int userspace_init(struct devfreq *devfreq)
 		goto out;
 	}
 	data->valid = false;
+<<<<<<< HEAD
 	devfreq->data = data;
+=======
+	devfreq->governor_data = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = sysfs_create_group(&devfreq->dev.kobj, &dev_attr_group);
 out:
@@ -113,9 +166,21 @@ out:
 
 static void userspace_exit(struct devfreq *devfreq)
 {
+<<<<<<< HEAD
 	sysfs_remove_group(&devfreq->dev.kobj, &dev_attr_group);
 	kfree(devfreq->data);
 	devfreq->data = NULL;
+=======
+	/*
+	 * Remove the sysfs entry, unless this is being called after
+	 * device_del(), which should have done this already via kobject_del().
+	 */
+	if (devfreq->dev.kobj.sd)
+		sysfs_remove_group(&devfreq->dev.kobj, &dev_attr_group);
+
+	kfree(devfreq->governor_data);
+	devfreq->governor_data = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int devfreq_userspace_handler(struct devfreq *devfreq,
@@ -138,7 +203,11 @@ static int devfreq_userspace_handler(struct devfreq *devfreq,
 }
 
 static struct devfreq_governor devfreq_userspace = {
+<<<<<<< HEAD
 	.name = "userspace",
+=======
+	.name = DEVFREQ_GOV_USERSPACE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_target_freq = devfreq_userspace_func,
 	.event_handler = devfreq_userspace_handler,
 };

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Amiga Linux/m68k and Linux/PPC Zorro NS8390 Ethernet Driver
  *
@@ -9,12 +13,15 @@
  *
  *  ---------------------------------------------------------------------------
  *
+<<<<<<< HEAD
  *  This file is subject to the terms and conditions of the GNU General Public
  *  License.  See the file COPYING in the main directory of the Linux
  *  distribution for more details.
  *
  *  ---------------------------------------------------------------------------
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  The Ariadne II and X-Surf are Zorro-II boards containing Realtek RTL8019AS
  *  Ethernet Controllers.
  */
@@ -75,7 +82,11 @@ static struct card_info {
 	zorro_id id;
 	const char *name;
 	unsigned int offset;
+<<<<<<< HEAD
 } cards[] __devinitdata = {
+=======
+} cards[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ ZORRO_PROD_VILLAGE_TRONIC_ARIADNE2, "Ariadne II", 0x0600 },
 	{ ZORRO_PROD_INDIVIDUAL_COMPUTERS_X_SURF, "X-Surf", 0x8600 },
 };
@@ -86,9 +97,15 @@ static struct card_info {
 static void zorro8390_reset_8390(struct net_device *dev)
 {
 	unsigned long reset_start_time = jiffies;
+<<<<<<< HEAD
 
 	if (ei_debug > 1)
 		netdev_dbg(dev, "resetting - t=%ld...\n", jiffies);
+=======
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	netif_dbg(ei_local, hw, dev, "resetting - t=%ld...\n", jiffies);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	z_writeb(z_readb(NE_BASE + NE_RESET), NE_BASE + NE_RESET);
 
@@ -119,8 +136,14 @@ static void zorro8390_get_8390_hdr(struct net_device *dev,
 	 * If it does, it's the last thing you'll see
 	 */
 	if (ei_status.dmaing) {
+<<<<<<< HEAD
 		netdev_err(dev, "%s: DMAing conflict [DMAstat:%d][irqlock:%d]\n",
 			   __func__, ei_status.dmaing, ei_status.irqlock);
+=======
+		netdev_warn(dev,
+			    "%s: DMAing conflict [DMAstat:%d][irqlock:%d]\n",
+			    __func__, ei_status.dmaing, ei_status.irqlock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -230,7 +253,11 @@ static void zorro8390_block_output(struct net_device *dev, int count,
 	while ((z_readb(NE_BASE + NE_EN0_ISR) & ENISR_RDC) == 0)
 		if (time_after(jiffies, dma_start + 2 * HZ / 100)) {
 					/* 20ms */
+<<<<<<< HEAD
 			netdev_err(dev, "timeout waiting for Tx RDC\n");
+=======
+			netdev_warn(dev, "timeout waiting for Tx RDC\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			zorro8390_reset_8390(dev);
 			__NS8390_init(dev, 1);
 			break;
@@ -248,13 +275,23 @@ static int zorro8390_open(struct net_device *dev)
 
 static int zorro8390_close(struct net_device *dev)
 {
+<<<<<<< HEAD
 	if (ei_debug > 1)
 		netdev_dbg(dev, "Shutting down ethercard\n");
+=======
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	netif_dbg(ei_local, ifdown, dev, "Shutting down ethercard\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__ei_close(dev);
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devexit zorro8390_remove_one(struct zorro_dev *z)
+=======
+static void zorro8390_remove_one(struct zorro_dev *z)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = zorro_get_drvdata(z);
 
@@ -264,7 +301,11 @@ static void __devexit zorro8390_remove_one(struct zorro_dev *z)
 	free_netdev(dev);
 }
 
+<<<<<<< HEAD
 static struct zorro_device_id zorro8390_zorro_tbl[] __devinitdata = {
+=======
+static struct zorro_device_id zorro8390_zorro_tbl[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ ZORRO_PROD_VILLAGE_TRONIC_ARIADNE2, },
 	{ ZORRO_PROD_INDIVIDUAL_COMPUTERS_X_SURF, },
 	{ 0 }
@@ -280,15 +321,23 @@ static const struct net_device_ops zorro8390_netdev_ops = {
 	.ndo_set_rx_mode	= __ei_set_multicast_list,
 	.ndo_validate_addr	= eth_validate_addr,
 	.ndo_set_mac_address	= eth_mac_addr,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 	.ndo_poll_controller	= __ei_poll,
 #endif
 };
 
+<<<<<<< HEAD
 static int __devinit zorro8390_init(struct net_device *dev,
 				    unsigned long board, const char *name,
 				    unsigned long ioaddr)
+=======
+static int zorro8390_init(struct net_device *dev, unsigned long board,
+			  const char *name, void __iomem *ioaddr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	int err;
@@ -355,7 +404,11 @@ static int __devinit zorro8390_init(struct net_device *dev,
 	start_page = NESM_START_PG;
 	stop_page = NESM_STOP_PG;
 
+<<<<<<< HEAD
 	dev->base_addr = ioaddr;
+=======
+	dev->base_addr = (unsigned long)ioaddr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->irq = IRQ_AMIGA_PORTS;
 
 	/* Install the Interrupt handler */
@@ -364,8 +417,12 @@ static int __devinit zorro8390_init(struct net_device *dev,
 	if (i)
 		return i;
 
+<<<<<<< HEAD
 	for (i = 0; i < ETH_ALEN; i++)
 		dev->dev_addr[i] = SA_prom[i];
+=======
+	eth_hw_addr_set(dev, SA_prom);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pr_debug("Found ethernet address: %pM\n", dev->dev_addr);
 
@@ -384,6 +441,10 @@ static int __devinit zorro8390_init(struct net_device *dev,
 
 	dev->netdev_ops = &zorro8390_netdev_ops;
 	__NS8390_init(dev, 0);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = register_netdev(dev);
 	if (err) {
 		free_irq(IRQ_AMIGA_PORTS, dev);
@@ -396,8 +457,13 @@ static int __devinit zorro8390_init(struct net_device *dev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit zorro8390_init_one(struct zorro_dev *z,
 					const struct zorro_device_id *ent)
+=======
+static int zorro8390_init_one(struct zorro_dev *z,
+			      const struct zorro_device_id *ent)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	unsigned long board, ioaddr;
@@ -432,7 +498,11 @@ static struct zorro_driver zorro8390_driver = {
 	.name		= "zorro8390",
 	.id_table	= zorro8390_zorro_tbl,
 	.probe		= zorro8390_init_one,
+<<<<<<< HEAD
 	.remove		= __devexit_p(zorro8390_remove_one),
+=======
+	.remove		= zorro8390_remove_one,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init zorro8390_init_module(void)
@@ -448,4 +518,8 @@ static void __exit zorro8390_cleanup_module(void)
 module_init(zorro8390_init_module);
 module_exit(zorro8390_cleanup_module);
 
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("Zorro NS8390-based ethernet driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

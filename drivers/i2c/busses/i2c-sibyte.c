@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2004 Steven J. Hill
  * Copyright (C) 2001,2002,2003 Broadcom Corporation
  * Copyright (C) 1995-2000 Simon G. Vogl
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -155,7 +162,11 @@ static struct i2c_algo_sibyte_data sibyte_board_data[2] = {
 static struct i2c_adapter sibyte_board_adapter[2] = {
 	{
 		.owner		= THIS_MODULE,
+<<<<<<< HEAD
 		.class		= I2C_CLASS_HWMON | I2C_CLASS_SPD,
+=======
+		.class		= I2C_CLASS_HWMON,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.algo		= NULL,
 		.algo_data	= &sibyte_board_data[0],
 		.nr		= 0,
@@ -163,7 +174,11 @@ static struct i2c_adapter sibyte_board_adapter[2] = {
 	},
 	{
 		.owner		= THIS_MODULE,
+<<<<<<< HEAD
 		.class		= I2C_CLASS_HWMON | I2C_CLASS_SPD,
+=======
+		.class		= I2C_CLASS_HWMON,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.algo		= NULL,
 		.algo_data	= &sibyte_board_data[1],
 		.nr		= 1,
@@ -193,6 +208,11 @@ static void __exit i2c_sibyte_exit(void)
 module_init(i2c_sibyte_init);
 module_exit(i2c_sibyte_exit);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Kip Walker (Broadcom Corp.), Steven J. Hill <sjhill@realitydiluted.com>");
+=======
+MODULE_AUTHOR("Kip Walker (Broadcom Corp.)");
+MODULE_AUTHOR("Steven J. Hill <sjhill@realitydiluted.com>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("SMBus adapter routines for SiByte boards");
 MODULE_LICENSE("GPL");

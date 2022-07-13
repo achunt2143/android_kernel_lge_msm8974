@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2011 Pengutronix
  * Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>
@@ -10,10 +11,25 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 #include <linux/leds.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2011 Pengutronix
+ * Uwe Kleine-Koenig <u.kleine-koenig@pengutronix.de>
+ */
+#include <linux/err.h>
+#include <linux/leds.h>
+#include <linux/platform_device.h>
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  * gpio_led_register_device - register a gpio-led device
  * @pdata: the platform data used for the new device
+<<<<<<< HEAD
+=======
+ * @id: platform ID
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Makes a copy of pdata and pdata->leds and registers a new leds-gpio device
  * with the result. This allows to have pdata and pdata-leds in .init.rodata
@@ -28,6 +44,12 @@ struct platform_device *__init gpio_led_register_device(
 	struct platform_device *ret;
 	struct gpio_led_platform_data _pdata = *pdata;
 
+<<<<<<< HEAD
+=======
+	if (!pdata->num_leds)
+		return ERR_PTR(-EINVAL);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	_pdata.leds = kmemdup(pdata->leds,
 			pdata->num_leds * sizeof(*pdata->leds), GFP_KERNEL);
 	if (!_pdata.leds)

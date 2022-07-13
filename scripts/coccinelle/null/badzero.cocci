@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /// Compare pointer-typed values to NULL rather than 0
 ///
 //# This makes an effort to choose between !x and x == NULL.  !x is used
@@ -7,10 +11,17 @@
 //# include path.
 //
 // Confidence: High
+<<<<<<< HEAD
 // Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.  GPLv2.
 // Copyright: (C) 2012 Gilles Muller, INRIA/LiP6.  GPLv2.
 // URL: http://coccinelle.lip6.fr/
 // Comments:
+=======
+// Copyright: (C) 2012 Julia Lawall, INRIA/LIP6.
+// Copyright: (C) 2012 Gilles Muller, INRIA/LiP6.
+// URL: https://coccinelle.gitlabpages.inria.fr/website
+// Requires: 1.0.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 // Options:
 
 virtual patch
@@ -19,6 +30,10 @@ virtual org
 virtual report
 
 @initialize:ocaml@
+<<<<<<< HEAD
+=======
+@@
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 let negtable = Hashtbl.create 101
 
 @depends on patch@

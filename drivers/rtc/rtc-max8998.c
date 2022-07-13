@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * RTC driver for Maxim MAX8998
  *
@@ -11,11 +12,24 @@
  *  option) any later version.
  *
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+//
+// RTC driver for Maxim MAX8998
+//
+// Copyright (C) 2010 Samsung Electronics Co.Ltd
+// Author: Minkyu Kang <mk7.kang@samsung.com>
+// Author: Joonyoung Shim <jy0922.shim@samsung.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <linux/slab.h>
 #include <linux/bcd.h>
+<<<<<<< HEAD
+=======
+#include <linux/irqdomain.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/rtc.h>
 #include <linux/platform_device.h>
 #include <linux/mfd/max8998.h>
@@ -119,7 +133,11 @@ static int max8998_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	max8998_data_to_tm(data, tm);
 
+<<<<<<< HEAD
 	return rtc_valid_tm(tm);
+=======
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int max8998_rtc_set_time(struct device *dev, struct rtc_time *tm)
@@ -249,6 +267,7 @@ static const struct rtc_class_ops max8998_rtc_ops = {
 	.alarm_irq_enable = max8998_rtc_alarm_irq_enable,
 };
 
+<<<<<<< HEAD
 static int __devinit max8998_rtc_probe(struct platform_device *pdev)
 {
 	struct max8998_dev *max8998 = dev_get_drvdata(pdev->dev.parent);
@@ -257,40 +276,82 @@ static int __devinit max8998_rtc_probe(struct platform_device *pdev)
 	int ret;
 
 	info = kzalloc(sizeof(struct max8998_rtc_info), GFP_KERNEL);
+=======
+static int max8998_rtc_probe(struct platform_device *pdev)
+{
+	struct max8998_dev *max8998 = dev_get_drvdata(pdev->dev.parent);
+	struct max8998_platform_data *pdata = max8998->pdata;
+	struct max8998_rtc_info *info;
+	int ret;
+
+	info = devm_kzalloc(&pdev->dev, sizeof(struct max8998_rtc_info),
+			GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!info)
 		return -ENOMEM;
 
 	info->dev = &pdev->dev;
 	info->max8998 = max8998;
 	info->rtc = max8998->rtc;
+<<<<<<< HEAD
 	info->irq = max8998->irq_base + MAX8998_IRQ_ALARM0;
 
 	platform_set_drvdata(pdev, info);
 
 	info->rtc_dev = rtc_device_register("max8998-rtc", &pdev->dev,
+=======
+
+	platform_set_drvdata(pdev, info);
+
+	info->rtc_dev = devm_rtc_device_register(&pdev->dev, "max8998-rtc",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			&max8998_rtc_ops, THIS_MODULE);
 
 	if (IS_ERR(info->rtc_dev)) {
 		ret = PTR_ERR(info->rtc_dev);
 		dev_err(&pdev->dev, "Failed to register RTC device: %d\n", ret);
+<<<<<<< HEAD
 		goto out_rtc;
 	}
 
 	ret = request_threaded_irq(info->irq, NULL, max8998_rtc_alarm_irq, 0,
 			"rtc-alarm0", info);
+=======
+		return ret;
+	}
+
+	if (!max8998->irq_domain)
+		goto no_irq;
+
+	info->irq = irq_create_mapping(max8998->irq_domain, MAX8998_IRQ_ALARM0);
+	if (!info->irq) {
+		dev_warn(&pdev->dev, "Failed to map alarm IRQ\n");
+		goto no_irq;
+	}
+
+	ret = devm_request_threaded_irq(&pdev->dev, info->irq, NULL,
+				max8998_rtc_alarm_irq, 0, "rtc-alarm0", info);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (ret < 0)
 		dev_err(&pdev->dev, "Failed to request alarm IRQ: %d: %d\n",
 			info->irq, ret);
 
+<<<<<<< HEAD
 	dev_info(&pdev->dev, "RTC CHIP NAME: %s\n", pdev->id_entry->name);
 	if (pdata->rtc_delay) {
+=======
+no_irq:
+	dev_info(&pdev->dev, "RTC CHIP NAME: %s\n", pdev->id_entry->name);
+	if (pdata && pdata->rtc_delay) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		info->lp3974_bug_workaround = true;
 		dev_warn(&pdev->dev, "LP3974 with RTC REGERR option."
 				" RTC updates will be extremely slow.\n");
 	}
 
 	return 0;
+<<<<<<< HEAD
 
 out_rtc:
 	platform_set_drvdata(pdev, NULL);
@@ -309,6 +370,8 @@ static int __devexit max8998_rtc_remove(struct platform_device *pdev)
 	}
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct platform_device_id max8998_rtc_id[] = {
@@ -316,14 +379,23 @@ static const struct platform_device_id max8998_rtc_id[] = {
 	{ "lp3974-rtc", TYPE_LP3974 },
 	{ }
 };
+<<<<<<< HEAD
+=======
+MODULE_DEVICE_TABLE(platform, max8998_rtc_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver max8998_rtc_driver = {
 	.driver		= {
 		.name	= "max8998-rtc",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= max8998_rtc_probe,
 	.remove		= __devexit_p(max8998_rtc_remove),
+=======
+	},
+	.probe		= max8998_rtc_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= max8998_rtc_id,
 };
 

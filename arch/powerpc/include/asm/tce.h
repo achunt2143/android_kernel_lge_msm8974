@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2001 Mike Corrigan & Dave Engebretsen, IBM Corporation
  * Rewrite, cleanup:
  * Copyright (C) 2004 Olof Johansson <olof@lixom.net>, IBM Corporation
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_POWERPC_TCE_H
@@ -31,6 +38,7 @@
  */
 #define TCE_VB			0
 #define TCE_PCI			1
+<<<<<<< HEAD
 #define TCE_PCI_SWINV_CREATE	2
 #define TCE_PCI_SWINV_FREE	4
 #define TCE_PCI_SWINV_PAIR	8
@@ -44,6 +52,10 @@
 
 #define TCE_RPN_MASK		0xfffffffffful  /* 40-bit RPN (4K pages) */
 #define TCE_RPN_SHIFT		12
+=======
+
+#define TCE_ENTRY_SIZE		8		/* each TCE is 64 bits */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TCE_VALID		0x800		/* TCE valid */
 #define TCE_ALLIO		0x400		/* TCE valid for all lpars */
 #define TCE_PCI_WRITE		0x2		/* write from PCI allowed */

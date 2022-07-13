@@ -1,20 +1,32 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	LAPB release 002
  *
  *	This code REQUIRES 2.1.15 or higher/ NET3.038
  *
+<<<<<<< HEAD
  *	This module:
  *		This module is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	History
  *	LAPB 001	Jonathan Naylor	Started Coding
  *	LAPB 002	Jonathan Naylor	New timer architecture.
  *	2000-10-29	Henner Eisen	lapb_data_indication() return status.
  */
 
+<<<<<<< HEAD
+=======
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -31,7 +43,11 @@
 #include <linux/skbuff.h>
 #include <linux/slab.h>
 #include <net/sock.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fcntl.h>
 #include <linux/mm.h>
 #include <linux/interrupt.h>
@@ -52,12 +68,20 @@ static void lapb_free_cb(struct lapb_cb *lapb)
 
 static __inline__ void lapb_hold(struct lapb_cb *lapb)
 {
+<<<<<<< HEAD
 	atomic_inc(&lapb->refcnt);
+=======
+	refcount_inc(&lapb->refcnt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static __inline__ void lapb_put(struct lapb_cb *lapb)
 {
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&lapb->refcnt))
+=======
+	if (refcount_dec_and_test(&lapb->refcnt))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lapb_free_cb(lapb);
 }
 
@@ -83,11 +107,17 @@ static void __lapb_insert_cb(struct lapb_cb *lapb)
 
 static struct lapb_cb *__lapb_devtostruct(struct net_device *dev)
 {
+<<<<<<< HEAD
 	struct list_head *entry;
 	struct lapb_cb *lapb, *use = NULL;
 
 	list_for_each(entry, &lapb_list) {
 		lapb = list_entry(entry, struct lapb_cb, node);
+=======
+	struct lapb_cb *lapb, *use = NULL;
+
+	list_for_each_entry(lapb, &lapb_list, node) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (lapb->dev == dev) {
 			use = lapb;
 			break;
@@ -117,15 +147,25 @@ static struct lapb_cb *lapb_create_cb(void)
 {
 	struct lapb_cb *lapb = kzalloc(sizeof(*lapb), GFP_ATOMIC);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!lapb)
 		goto out;
 
 	skb_queue_head_init(&lapb->write_queue);
 	skb_queue_head_init(&lapb->ack_queue);
 
+<<<<<<< HEAD
 	init_timer(&lapb->t1timer);
 	init_timer(&lapb->t2timer);
+=======
+	timer_setup(&lapb->t1timer, NULL, 0);
+	timer_setup(&lapb->t2timer, NULL, 0);
+	lapb->t1timer_running = false;
+	lapb->t2timer_running = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lapb->t1      = LAPB_DEFAULT_T1;
 	lapb->t2      = LAPB_DEFAULT_T2;
@@ -133,7 +173,13 @@ static struct lapb_cb *lapb_create_cb(void)
 	lapb->mode    = LAPB_DEFAULT_MODE;
 	lapb->window  = LAPB_DEFAULT_WINDOW;
 	lapb->state   = LAPB_STATE_0;
+<<<<<<< HEAD
 	atomic_set(&lapb->refcnt, 1);
+=======
+
+	spin_lock_init(&lapb->lock);
+	refcount_set(&lapb->refcnt, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	return lapb;
 }
@@ -169,6 +215,10 @@ out:
 	write_unlock_bh(&lapb_list_lock);
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_register);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int lapb_unregister(struct net_device *dev)
 {
@@ -179,12 +229,31 @@ int lapb_unregister(struct net_device *dev)
 	lapb = __lapb_devtostruct(dev);
 	if (!lapb)
 		goto out;
+<<<<<<< HEAD
+=======
+	lapb_put(lapb);
+
+	/* Wait for other refs to "lapb" to drop */
+	while (refcount_read(&lapb->refcnt) > 2)
+		usleep_range(1, 10);
+
+	spin_lock_bh(&lapb->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lapb_stop_t1timer(lapb);
 	lapb_stop_t2timer(lapb);
 
 	lapb_clear_queues(lapb);
 
+<<<<<<< HEAD
+=======
+	spin_unlock_bh(&lapb->lock);
+
+	/* Wait for running timers to stop */
+	del_timer_sync(&lapb->t1timer);
+	del_timer_sync(&lapb->t2timer);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__lapb_remove_cb(lapb);
 
 	lapb_put(lapb);
@@ -193,6 +262,10 @@ out:
 	write_unlock_bh(&lapb_list_lock);
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_unregister);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int lapb_getparms(struct net_device *dev, struct lapb_parms_struct *parms)
 {
@@ -202,6 +275,11 @@ int lapb_getparms(struct net_device *dev, struct lapb_parms_struct *parms)
 	if (!lapb)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	spin_lock_bh(&lapb->lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	parms->t1      = lapb->t1 / HZ;
 	parms->t2      = lapb->t2 / HZ;
 	parms->n2      = lapb->n2;
@@ -220,11 +298,19 @@ int lapb_getparms(struct net_device *dev, struct lapb_parms_struct *parms)
 	else
 		parms->t2timer = (lapb->t2timer.expires - jiffies) / HZ;
 
+<<<<<<< HEAD
+=======
+	spin_unlock_bh(&lapb->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lapb_put(lapb);
 	rc = LAPB_OK;
 out:
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_getparms);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int lapb_setparms(struct net_device *dev, struct lapb_parms_struct *parms)
 {
@@ -234,6 +320,11 @@ int lapb_setparms(struct net_device *dev, struct lapb_parms_struct *parms)
 	if (!lapb)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	spin_lock_bh(&lapb->lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = LAPB_INVALUE;
 	if (parms->t1 < 1 || parms->t2 < 1 || parms->n2 < 1)
 		goto out_put;
@@ -256,10 +347,18 @@ int lapb_setparms(struct net_device *dev, struct lapb_parms_struct *parms)
 
 	rc = LAPB_OK;
 out_put:
+<<<<<<< HEAD
+=======
+	spin_unlock_bh(&lapb->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lapb_put(lapb);
 out:
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_setparms);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int lapb_connect_request(struct net_device *dev)
 {
@@ -269,6 +368,11 @@ int lapb_connect_request(struct net_device *dev)
 	if (!lapb)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	spin_lock_bh(&lapb->lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = LAPB_OK;
 	if (lapb->state == LAPB_STATE_1)
 		goto out_put;
@@ -279,17 +383,60 @@ int lapb_connect_request(struct net_device *dev)
 
 	lapb_establish_data_link(lapb);
 
+<<<<<<< HEAD
 #if LAPB_DEBUG > 0
 	printk(KERN_DEBUG "lapb: (%p) S0 -> S1\n", lapb->dev);
 #endif
+=======
+	lapb_dbg(0, "(%p) S0 -> S1\n", lapb->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lapb->state = LAPB_STATE_1;
 
 	rc = LAPB_OK;
 out_put:
+<<<<<<< HEAD
+=======
+	spin_unlock_bh(&lapb->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lapb_put(lapb);
 out:
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_connect_request);
+
+static int __lapb_disconnect_request(struct lapb_cb *lapb)
+{
+	switch (lapb->state) {
+	case LAPB_STATE_0:
+		return LAPB_NOTCONNECTED;
+
+	case LAPB_STATE_1:
+		lapb_dbg(1, "(%p) S1 TX DISC(1)\n", lapb->dev);
+		lapb_dbg(0, "(%p) S1 -> S0\n", lapb->dev);
+		lapb_send_control(lapb, LAPB_DISC, LAPB_POLLON, LAPB_COMMAND);
+		lapb->state = LAPB_STATE_0;
+		lapb_start_t1timer(lapb);
+		return LAPB_NOTCONNECTED;
+
+	case LAPB_STATE_2:
+		return LAPB_OK;
+	}
+
+	lapb_clear_queues(lapb);
+	lapb->n2count = 0;
+	lapb_send_control(lapb, LAPB_DISC, LAPB_POLLON, LAPB_COMMAND);
+	lapb_start_t1timer(lapb);
+	lapb_stop_t2timer(lapb);
+	lapb->state = LAPB_STATE_2;
+
+	lapb_dbg(1, "(%p) S3 DISC(1)\n", lapb->dev);
+	lapb_dbg(0, "(%p) S3 -> S2\n", lapb->dev);
+
+	return LAPB_OK;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int lapb_disconnect_request(struct net_device *dev)
 {
@@ -299,6 +446,7 @@ int lapb_disconnect_request(struct net_device *dev)
 	if (!lapb)
 		goto out;
 
+<<<<<<< HEAD
 	switch (lapb->state) {
 	case LAPB_STATE_0:
 		rc = LAPB_NOTCONNECTED;
@@ -338,10 +486,21 @@ int lapb_disconnect_request(struct net_device *dev)
 
 	rc = LAPB_OK;
 out_put:
+=======
+	spin_lock_bh(&lapb->lock);
+
+	rc = __lapb_disconnect_request(lapb);
+
+	spin_unlock_bh(&lapb->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lapb_put(lapb);
 out:
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_disconnect_request);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int lapb_data_request(struct net_device *dev, struct sk_buff *skb)
 {
@@ -351,6 +510,11 @@ int lapb_data_request(struct net_device *dev, struct sk_buff *skb)
 	if (!lapb)
 		goto out;
 
+<<<<<<< HEAD
+=======
+	spin_lock_bh(&lapb->lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rc = LAPB_NOTCONNECTED;
 	if (lapb->state != LAPB_STATE_3 && lapb->state != LAPB_STATE_4)
 		goto out_put;
@@ -359,10 +523,18 @@ int lapb_data_request(struct net_device *dev, struct sk_buff *skb)
 	lapb_kick(lapb);
 	rc = LAPB_OK;
 out_put:
+<<<<<<< HEAD
+=======
+	spin_unlock_bh(&lapb->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lapb_put(lapb);
 out:
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_data_request);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int lapb_data_received(struct net_device *dev, struct sk_buff *skb)
 {
@@ -370,13 +542,23 @@ int lapb_data_received(struct net_device *dev, struct sk_buff *skb)
 	int rc = LAPB_BADTOKEN;
 
 	if (lapb) {
+<<<<<<< HEAD
 		lapb_data_input(lapb, skb);
+=======
+		spin_lock_bh(&lapb->lock);
+		lapb_data_input(lapb, skb);
+		spin_unlock_bh(&lapb->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lapb_put(lapb);
 		rc = LAPB_OK;
 	}
 
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(lapb_data_received);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void lapb_connect_confirmation(struct lapb_cb *lapb, int reason)
 {
@@ -423,6 +605,7 @@ int lapb_data_transmit(struct lapb_cb *lapb, struct sk_buff *skb)
 	return used;
 }
 
+<<<<<<< HEAD
 EXPORT_SYMBOL(lapb_register);
 EXPORT_SYMBOL(lapb_unregister);
 EXPORT_SYMBOL(lapb_getparms);
@@ -435,11 +618,103 @@ EXPORT_SYMBOL(lapb_data_received);
 static int __init lapb_init(void)
 {
 	return 0;
+=======
+/* Handle device status changes. */
+static int lapb_device_event(struct notifier_block *this, unsigned long event,
+			     void *ptr)
+{
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+	struct lapb_cb *lapb;
+
+	if (!net_eq(dev_net(dev), &init_net))
+		return NOTIFY_DONE;
+
+	if (dev->type != ARPHRD_X25)
+		return NOTIFY_DONE;
+
+	lapb = lapb_devtostruct(dev);
+	if (!lapb)
+		return NOTIFY_DONE;
+
+	spin_lock_bh(&lapb->lock);
+
+	switch (event) {
+	case NETDEV_UP:
+		lapb_dbg(0, "(%p) Interface up: %s\n", dev, dev->name);
+
+		if (netif_carrier_ok(dev)) {
+			lapb_dbg(0, "(%p): Carrier is already up: %s\n", dev,
+				 dev->name);
+			if (lapb->mode & LAPB_DCE) {
+				lapb_start_t1timer(lapb);
+			} else {
+				if (lapb->state == LAPB_STATE_0) {
+					lapb->state = LAPB_STATE_1;
+					lapb_establish_data_link(lapb);
+				}
+			}
+		}
+		break;
+	case NETDEV_GOING_DOWN:
+		if (netif_carrier_ok(dev))
+			__lapb_disconnect_request(lapb);
+		break;
+	case NETDEV_DOWN:
+		lapb_dbg(0, "(%p) Interface down: %s\n", dev, dev->name);
+		lapb_dbg(0, "(%p) S%d -> S0\n", dev, lapb->state);
+		lapb_clear_queues(lapb);
+		lapb->state = LAPB_STATE_0;
+		lapb->n2count   = 0;
+		lapb_stop_t1timer(lapb);
+		lapb_stop_t2timer(lapb);
+		break;
+	case NETDEV_CHANGE:
+		if (netif_carrier_ok(dev)) {
+			lapb_dbg(0, "(%p): Carrier detected: %s\n", dev,
+				 dev->name);
+			if (lapb->mode & LAPB_DCE) {
+				lapb_start_t1timer(lapb);
+			} else {
+				if (lapb->state == LAPB_STATE_0) {
+					lapb->state = LAPB_STATE_1;
+					lapb_establish_data_link(lapb);
+				}
+			}
+		} else {
+			lapb_dbg(0, "(%p) Carrier lost: %s\n", dev, dev->name);
+			lapb_dbg(0, "(%p) S%d -> S0\n", dev, lapb->state);
+			lapb_clear_queues(lapb);
+			lapb->state = LAPB_STATE_0;
+			lapb->n2count   = 0;
+			lapb_stop_t1timer(lapb);
+			lapb_stop_t2timer(lapb);
+		}
+		break;
+	}
+
+	spin_unlock_bh(&lapb->lock);
+	lapb_put(lapb);
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block lapb_dev_notifier = {
+	.notifier_call = lapb_device_event,
+};
+
+static int __init lapb_init(void)
+{
+	return register_netdevice_notifier(&lapb_dev_notifier);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit lapb_exit(void)
 {
 	WARN_ON(!list_empty(&lapb_list));
+<<<<<<< HEAD
+=======
+
+	unregister_netdevice_notifier(&lapb_dev_notifier);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MODULE_AUTHOR("Jonathan Naylor <g4klx@g4klx.demon.co.uk>");

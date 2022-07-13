@@ -130,7 +130,11 @@ do_fscc=0
 	bfextu	%d2{#13,#3},%d0
 .endm
 
+<<<<<<< HEAD
 | decode the 8bit diplacement from the brief extension word
+=======
+| decode the 8bit displacement from the brief extension word
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 .macro	fp_decode_disp8
 	move.b	%d2,%d0
 	ext.w	%d0

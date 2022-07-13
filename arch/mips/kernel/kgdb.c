@@ -32,6 +32,10 @@
 #include <asm/cacheflush.h>
 #include <asm/processor.h>
 #include <asm/sigcontext.h>
+<<<<<<< HEAD
+=======
+#include <asm/irq_regs.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct hard_trap_info {
 	unsigned char tt;	/* Trap type code for MIPS R3xxx and R4xxx */
@@ -40,7 +44,11 @@ static struct hard_trap_info {
 	{ 6, SIGBUS },		/* instruction bus error */
 	{ 7, SIGBUS },		/* data bus error */
 	{ 9, SIGTRAP },		/* break */
+<<<<<<< HEAD
 /*	{ 11, SIGILL },	*/	/* CPU unusable */
+=======
+/*	{ 11, SIGILL }, */	/* CPU unusable */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 12, SIGFPE },		/* overflow */
 	{ 13, SIGTRAP },	/* trap */
 	{ 14, SIGSEGV },	/* virtual instruction cache coherency */
@@ -206,6 +214,7 @@ void arch_kgdb_breakpoint(void)
 		".set\treorder");
 }
 
+<<<<<<< HEAD
 static void kgdb_call_nmi_hook(void *ignored)
 {
 	kgdb_nmicallback(raw_smp_processor_id(), NULL);
@@ -218,6 +227,8 @@ void kgdb_roundup_cpus(unsigned long flags)
 	local_irq_disable();
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int compute_signal(int tt)
 {
 	struct hard_trap_info *ht;
@@ -236,9 +247,12 @@ static int compute_signal(int tt)
 void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *p)
 {
 	int reg;
+<<<<<<< HEAD
 	struct thread_info *ti = task_thread_info(p);
 	unsigned long ksp = (unsigned long)ti + THREAD_SIZE - 32;
 	struct pt_regs *regs = (struct pt_regs *)ksp - 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if (KGDB_GDB_REG_SIZE == 32)
 	u32 *ptr = (u32 *)gdb_regs;
 #else
@@ -246,16 +260,31 @@ void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *p)
 #endif
 
 	for (reg = 0; reg < 16; reg++)
+<<<<<<< HEAD
 		*(ptr++) = regs->regs[reg];
 
 	/* S0 - S7 */
 	for (reg = 16; reg < 24; reg++)
 		*(ptr++) = regs->regs[reg];
+=======
+		*(ptr++) = 0;
+
+	/* S0 - S7 */
+	*(ptr++) = p->thread.reg16;
+	*(ptr++) = p->thread.reg17;
+	*(ptr++) = p->thread.reg18;
+	*(ptr++) = p->thread.reg19;
+	*(ptr++) = p->thread.reg20;
+	*(ptr++) = p->thread.reg21;
+	*(ptr++) = p->thread.reg22;
+	*(ptr++) = p->thread.reg23;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (reg = 24; reg < 28; reg++)
 		*(ptr++) = 0;
 
 	/* GP, SP, FP, RA */
+<<<<<<< HEAD
 	for (reg = 28; reg < 32; reg++)
 		*(ptr++) = regs->regs[reg];
 
@@ -265,6 +294,32 @@ void sleeping_thread_to_gdb_regs(unsigned long *gdb_regs, struct task_struct *p)
 	*(ptr++) = regs->cp0_badvaddr;
 	*(ptr++) = regs->cp0_cause;
 	*(ptr++) = regs->cp0_epc;
+=======
+	*(ptr++) = (long)p;
+	*(ptr++) = p->thread.reg29;
+	*(ptr++) = p->thread.reg30;
+	*(ptr++) = p->thread.reg31;
+
+	*(ptr++) = p->thread.cp0_status;
+
+	/* lo, hi */
+	*(ptr++) = 0;
+	*(ptr++) = 0;
+
+	/*
+	 * BadVAddr, Cause
+	 * Ideally these would come from the last exception frame up the stack
+	 * but that requires unwinding, otherwise we can't know much for sure.
+	 */
+	*(ptr++) = 0;
+	*(ptr++) = 0;
+
+	/*
+	 * PC
+	 * use return address (RA), i.e. the moment after return from resume()
+	 */
+	*(ptr++) = p->thread.reg31;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void kgdb_arch_set_pc(struct pt_regs *regs, unsigned long pc)
@@ -321,7 +376,11 @@ int kgdb_ll_trap(int cmd, const char *str,
 		.regs	= regs,
 		.str	= str,
 		.err	= err,
+<<<<<<< HEAD
 		.trapnr	= trap,
+=======
+		.trapnr = trap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.signr	= sig,
 
 	};
@@ -360,6 +419,7 @@ int kgdb_arch_handle_exception(int vector, int signo, int err_code,
 	return -1;
 }
 
+<<<<<<< HEAD
 struct kgdb_arch arch_kgdb_ops;
 
 /*
@@ -376,6 +436,18 @@ int kgdb_arch_init(void)
 	};
 	memcpy(arch_kgdb_ops.gdb_bpt_instr, insn.byte, BREAK_INSTR_SIZE);
 
+=======
+const struct kgdb_arch arch_kgdb_ops = {
+#ifdef CONFIG_CPU_BIG_ENDIAN
+	.gdb_bpt_instr = { spec_op << 2, 0x00, 0x00, break_op },
+#else
+	.gdb_bpt_instr = { break_op, 0x00, 0x00, spec_op << 2 },
+#endif
+};
+
+int kgdb_arch_init(void)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	register_die_notifier(&kgdb_notifier);
 
 	return 0;

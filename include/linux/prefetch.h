@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Generic cache management functions. Everything is arch-specific,  
  *  but this header exists to make sure the defines/functions can be
@@ -14,6 +18,10 @@
 #include <asm/processor.h>
 #include <asm/cache.h>
 
+<<<<<<< HEAD
+=======
+struct page;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
 	prefetch(x) attempts to pre-emptively get the memory pointed to
 	by address "x" into the CPU L1 cache. 
@@ -23,11 +31,18 @@
 	prefetch() should be defined by the architecture, if not, the 
 	#define below provides a no-op define.	
 	
+<<<<<<< HEAD
 	There are 3 prefetch() macros:
 	
 	prefetch(x)  	- prefetches the cacheline at "x" for read
 	prefetchw(x)	- prefetches the cacheline at "x" for write
 	spin_lock_prefetch(x) - prefetches the spinlock *x for taking
+=======
+	There are 2 prefetch() macros:
+	
+	prefetch(x)  	- prefetches the cacheline at "x" for read
+	prefetchw(x)	- prefetches the cacheline at "x" for write
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	there is also PREFETCH_STRIDE which is the architecure-preferred 
 	"lookahead" size for prefetching streamed operations.
@@ -42,10 +57,13 @@
 #define prefetchw(x) __builtin_prefetch(x,1)
 #endif
 
+<<<<<<< HEAD
 #ifndef ARCH_HAS_SPINLOCK_PREFETCH
 #define spin_lock_prefetch(x) prefetchw(x)
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef PREFETCH_STRIDE
 #define PREFETCH_STRIDE (4*L1_CACHE_BYTES)
 #endif
@@ -61,4 +79,14 @@ static inline void prefetch_range(void *addr, size_t len)
 #endif
 }
 
+<<<<<<< HEAD
+=======
+static inline void prefetch_page_address(struct page *page)
+{
+#if defined(WANT_PAGE_VIRTUAL) || defined(HASHED_PAGE_VIRTUAL)
+	prefetch(page);
+#endif
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*******************************************************************************
  * This file contains iSCSI Target Portal Group related functions.
  *
@@ -23,6 +24,22 @@
 #include <target/target_core_configfs.h>
 
 #include "iscsi_target_core.h"
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*******************************************************************************
+ * This file contains iSCSI Target Portal Group related functions.
+ *
+ * (c) Copyright 2007-2013 Datera, Inc.
+ *
+ * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
+ *
+ ******************************************************************************/
+
+#include <linux/slab.h>
+#include <target/target_core_base.h>
+#include <target/target_core_fabric.h>
+#include <target/iscsi/iscsi_target_core.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iscsi_target_erl0.h"
 #include "iscsi_target_login.h"
 #include "iscsi_target_nodeattrib.h"
@@ -31,6 +48,11 @@
 #include "iscsi_target.h"
 #include "iscsi_target_parameters.h"
 
+<<<<<<< HEAD
+=======
+#include <target/iscsi/iscsi_transport.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct iscsi_portal_group *iscsit_alloc_portal_group(struct iscsi_tiqn *tiqn, u16 tpgt)
 {
 	struct iscsi_portal_group *tpg;
@@ -47,7 +69,11 @@ struct iscsi_portal_group *iscsit_alloc_portal_group(struct iscsi_tiqn *tiqn, u1
 	INIT_LIST_HEAD(&tpg->tpg_gnp_list);
 	INIT_LIST_HEAD(&tpg->tpg_list);
 	mutex_init(&tpg->tpg_access_lock);
+<<<<<<< HEAD
 	mutex_init(&tpg->np_login_lock);
+=======
+	sema_init(&tpg->np_login_sem, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_init(&tpg->tpg_state_lock);
 	spin_lock_init(&tpg->tpg_np_lock);
 
@@ -67,11 +93,20 @@ int iscsit_load_discovery_tpg(void)
 		pr_err("Unable to allocate struct iscsi_portal_group\n");
 		return -1;
 	}
+<<<<<<< HEAD
 
 	ret = core_tpg_register(
 			&lio_target_fabric_configfs->tf_ops,
 			NULL, &tpg->tpg_se_tpg, tpg,
 			TRANSPORT_TPG_TYPE_DISCOVERY);
+=======
+	/*
+	 * Save iscsi_ops pointer for special case discovery TPG that
+	 * doesn't exist as se_wwn->wwn_group within configfs.
+	 */
+	tpg->tpg_se_tpg.se_tpg_tfo = &iscsi_ops;
+	ret = core_tpg_register(NULL, &tpg->tpg_se_tpg, -1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret < 0) {
 		kfree(tpg);
 		return -1;
@@ -90,10 +125,17 @@ int iscsit_load_discovery_tpg(void)
 	 */
 	param = iscsi_find_param_from_key(AUTHMETHOD, tpg->param_list);
 	if (!param)
+<<<<<<< HEAD
 		goto out;
 
 	if (iscsi_update_param_value(param, "CHAP,None") < 0)
 		goto out;
+=======
+		goto free_pl_out;
+
+	if (iscsi_update_param_value(param, "CHAP,None") < 0)
+		goto free_pl_out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tpg->tpg_attrib.authentication = 0;
 
@@ -105,6 +147,11 @@ int iscsit_load_discovery_tpg(void)
 	pr_debug("CORE[0] - Allocated Discovery TPG\n");
 
 	return 0;
+<<<<<<< HEAD
+=======
+free_pl_out:
+	iscsi_release_param_list(tpg->param_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	if (tpg->sid == 1)
 		core_tpg_deregister(&tpg->tpg_se_tpg);
@@ -119,6 +166,10 @@ void iscsit_release_discovery_tpg(void)
 	if (!tpg)
 		return;
 
+<<<<<<< HEAD
+=======
+	iscsi_release_param_list(tpg->param_list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	core_tpg_deregister(&tpg->tpg_se_tpg);
 
 	kfree(tpg);
@@ -127,7 +178,12 @@ void iscsit_release_discovery_tpg(void)
 
 struct iscsi_portal_group *iscsit_get_tpg_from_np(
 	struct iscsi_tiqn *tiqn,
+<<<<<<< HEAD
 	struct iscsi_np *np)
+=======
+	struct iscsi_np *np,
+	struct iscsi_tpg_np **tpg_np_out)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_portal_group *tpg = NULL;
 	struct iscsi_tpg_np *tpg_np;
@@ -136,7 +192,11 @@ struct iscsi_portal_group *iscsit_get_tpg_from_np(
 	list_for_each_entry(tpg, &tiqn->tiqn_tpg_list, tpg_list) {
 
 		spin_lock(&tpg->tpg_state_lock);
+<<<<<<< HEAD
 		if (tpg->tpg_state == TPG_STATE_FREE) {
+=======
+		if (tpg->tpg_state != TPG_STATE_ACTIVE) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			spin_unlock(&tpg->tpg_state_lock);
 			continue;
 		}
@@ -145,6 +205,11 @@ struct iscsi_portal_group *iscsit_get_tpg_from_np(
 		spin_lock(&tpg->tpg_np_lock);
 		list_for_each_entry(tpg_np, &tpg->tpg_gnp_list, tpg_np_list) {
 			if (tpg_np->tpg_np == np) {
+<<<<<<< HEAD
+=======
+				*tpg_np_out = tpg_np;
+				kref_get(&tpg_np->tpg_np_kref);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				spin_unlock(&tpg->tpg_np_lock);
 				spin_unlock(&tiqn->tiqn_tpg_lock);
 				return tpg;
@@ -160,10 +225,14 @@ struct iscsi_portal_group *iscsit_get_tpg_from_np(
 int iscsit_get_tpg(
 	struct iscsi_portal_group *tpg)
 {
+<<<<<<< HEAD
 	int ret;
 
 	ret = mutex_lock_interruptible(&tpg->tpg_access_lock);
 	return ((ret != 0) || signal_pending(current)) ? -1 : 0;
+=======
+	return mutex_lock_interruptible(&tpg->tpg_access_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void iscsit_put_tpg(struct iscsi_portal_group *tpg)
@@ -173,18 +242,34 @@ void iscsit_put_tpg(struct iscsi_portal_group *tpg)
 
 static void iscsit_clear_tpg_np_login_thread(
 	struct iscsi_tpg_np *tpg_np,
+<<<<<<< HEAD
 	struct iscsi_portal_group *tpg)
+=======
+	struct iscsi_portal_group *tpg,
+	bool shutdown)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!tpg_np->tpg_np) {
 		pr_err("struct iscsi_tpg_np->tpg_np is NULL!\n");
 		return;
 	}
 
+<<<<<<< HEAD
 	iscsit_reset_np_thread(tpg_np->tpg_np, tpg_np, tpg);
 }
 
 void iscsit_clear_tpg_np_login_threads(
 	struct iscsi_portal_group *tpg)
+=======
+	if (shutdown)
+		tpg_np->tpg_np->enabled = false;
+	iscsit_reset_np_thread(tpg_np->tpg_np, tpg_np, tpg, shutdown);
+}
+
+static void iscsit_clear_tpg_np_login_threads(
+	struct iscsi_portal_group *tpg,
+	bool shutdown)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_tpg_np *tpg_np;
 
@@ -195,7 +280,11 @@ void iscsit_clear_tpg_np_login_threads(
 			continue;
 		}
 		spin_unlock(&tpg->tpg_np_lock);
+<<<<<<< HEAD
 		iscsit_clear_tpg_np_login_thread(tpg_np, tpg);
+=======
+		iscsit_clear_tpg_np_login_thread(tpg_np, tpg, shutdown);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_lock(&tpg->tpg_np_lock);
 	}
 	spin_unlock(&tpg->tpg_np_lock);
@@ -212,12 +301,24 @@ static void iscsit_set_default_tpg_attribs(struct iscsi_portal_group *tpg)
 
 	a->authentication = TA_AUTHENTICATION;
 	a->login_timeout = TA_LOGIN_TIMEOUT;
+<<<<<<< HEAD
 	a->netif_timeout = TA_NETIF_TIMEOUT;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	a->default_cmdsn_depth = TA_DEFAULT_CMDSN_DEPTH;
 	a->generate_node_acls = TA_GENERATE_NODE_ACLS;
 	a->cache_dynamic_acls = TA_CACHE_DYNAMIC_ACLS;
 	a->demo_mode_write_protect = TA_DEMO_MODE_WRITE_PROTECT;
 	a->prod_mode_write_protect = TA_PROD_MODE_WRITE_PROTECT;
+<<<<<<< HEAD
+=======
+	a->demo_mode_discovery = TA_DEMO_MODE_DISCOVERY;
+	a->default_erl = TA_DEFAULT_ERL;
+	a->t10_pi = TA_DEFAULT_T10_PI;
+	a->fabric_prot_type = TA_DEFAULT_FABRIC_PROT_TYPE;
+	a->tpg_enabled_sendtargets = TA_DEFAULT_TPG_ENABLED_SENDTARGETS;
+	a->login_keys_workaround = TA_DEFAULT_LOGIN_KEYS_WORKAROUND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int iscsit_tpg_add_portal_group(struct iscsi_tiqn *tiqn, struct iscsi_portal_group *tpg)
@@ -232,7 +333,11 @@ int iscsit_tpg_add_portal_group(struct iscsi_tiqn *tiqn, struct iscsi_portal_gro
 	if (iscsi_create_default_params(&tpg->param_list) < 0)
 		goto err_out;
 
+<<<<<<< HEAD
 	ISCSI_TPG_ATTRIB(tpg)->tpg = tpg;
+=======
+	tpg->tpg_attrib.tpg = tpg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock(&tpg->tpg_state_lock);
 	tpg->tpg_state	= TPG_STATE_INACTIVE;
@@ -251,7 +356,10 @@ err_out:
 		iscsi_release_param_list(tpg->param_list);
 		tpg->param_list = NULL;
 	}
+<<<<<<< HEAD
 	kfree(tpg);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return -ENOMEM;
 }
 
@@ -274,8 +382,11 @@ int iscsit_tpg_del_portal_group(
 		return -EPERM;
 	}
 
+<<<<<<< HEAD
 	core_tpg_clear_object_luns(&tpg->tpg_se_tpg);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (tpg->param_list) {
 		iscsi_release_param_list(tpg->param_list);
 		tpg->param_list = NULL;
@@ -303,12 +414,20 @@ int iscsit_tpg_enable_portal_group(struct iscsi_portal_group *tpg)
 {
 	struct iscsi_param *param;
 	struct iscsi_tiqn *tiqn = tpg->tpg_tiqn;
+<<<<<<< HEAD
 
 	spin_lock(&tpg->tpg_state_lock);
 	if (tpg->tpg_state == TPG_STATE_ACTIVE) {
 		pr_err("iSCSI target portal group: %hu is already"
 			" active, ignoring request.\n", tpg->tpgt);
 		spin_unlock(&tpg->tpg_state_lock);
+=======
+	int ret;
+
+	if (tpg->tpg_state == TPG_STATE_ACTIVE) {
+		pr_err("iSCSI target portal group: %hu is already"
+			" active, ignoring request.\n", tpg->tpgt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 	/*
@@ -317,6 +436,7 @@ int iscsit_tpg_enable_portal_group(struct iscsi_portal_group *tpg)
 	 * is enforced (as per default), and remove the NONE option.
 	 */
 	param = iscsi_find_param_from_key(AUTHMETHOD, tpg->param_list);
+<<<<<<< HEAD
 	if (!param) {
 		spin_unlock(&tpg->tpg_state_lock);
 		return -ENOMEM;
@@ -334,6 +454,24 @@ int iscsit_tpg_enable_portal_group(struct iscsi_portal_group *tpg)
 		}
 	}
 
+=======
+	if (!param)
+		return -EINVAL;
+
+	if (tpg->tpg_attrib.authentication) {
+		if (!strcmp(param->value, NONE)) {
+			ret = iscsi_update_param_value(param, CHAP);
+			if (ret)
+				goto err;
+		}
+
+		ret = iscsit_ta_authentication(tpg, 1);
+		if (ret < 0)
+			goto err;
+	}
+
+	spin_lock(&tpg->tpg_state_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tpg->tpg_state = TPG_STATE_ACTIVE;
 	spin_unlock(&tpg->tpg_state_lock);
 
@@ -344,6 +482,12 @@ int iscsit_tpg_enable_portal_group(struct iscsi_portal_group *tpg)
 	spin_unlock(&tiqn->tiqn_tpg_lock);
 
 	return 0;
+<<<<<<< HEAD
+=======
+
+err:
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int iscsit_tpg_disable_portal_group(struct iscsi_portal_group *tpg, int force)
@@ -361,7 +505,11 @@ int iscsit_tpg_disable_portal_group(struct iscsi_portal_group *tpg, int force)
 	tpg->tpg_state = TPG_STATE_INACTIVE;
 	spin_unlock(&tpg->tpg_state_lock);
 
+<<<<<<< HEAD
 	iscsit_clear_tpg_np_login_threads(tpg);
+=======
+	iscsit_clear_tpg_np_login_threads(tpg, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (iscsit_release_sessions_for_tpg(tpg, force) < 0) {
 		spin_lock(&tpg->tpg_state_lock);
@@ -387,12 +535,20 @@ int iscsit_tpg_disable_portal_group(struct iscsi_portal_group *tpg, int force)
 }
 
 struct iscsi_node_attrib *iscsit_tpg_get_node_attrib(
+<<<<<<< HEAD
 	struct iscsi_session *sess)
 {
 	struct se_session *se_sess = sess->se_sess;
 	struct se_node_acl *se_nacl = se_sess->se_node_acl;
 	struct iscsi_node_acl *acl = container_of(se_nacl, struct iscsi_node_acl,
 					se_node_acl);
+=======
+	struct iscsit_session *sess)
+{
+	struct se_session *se_sess = sess->se_sess;
+	struct se_node_acl *se_nacl = se_sess->se_node_acl;
+	struct iscsi_node_acl *acl = to_iscsi_nacl(se_nacl);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return &acl->node_attrib;
 }
@@ -417,16 +573,67 @@ struct iscsi_tpg_np *iscsit_tpg_locate_child_np(
 	return NULL;
 }
 
+<<<<<<< HEAD
 struct iscsi_tpg_np *iscsit_tpg_add_network_portal(
 	struct iscsi_portal_group *tpg,
 	struct __kernel_sockaddr_storage *sockaddr,
 	char *ip_str,
+=======
+static bool iscsit_tpg_check_network_portal(
+	struct iscsi_tiqn *tiqn,
+	struct sockaddr_storage *sockaddr,
+	int network_transport)
+{
+	struct iscsi_portal_group *tpg;
+	struct iscsi_tpg_np *tpg_np;
+	struct iscsi_np *np;
+	bool match = false;
+
+	spin_lock(&tiqn->tiqn_tpg_lock);
+	list_for_each_entry(tpg, &tiqn->tiqn_tpg_list, tpg_list) {
+
+		spin_lock(&tpg->tpg_np_lock);
+		list_for_each_entry(tpg_np, &tpg->tpg_gnp_list, tpg_np_list) {
+			np = tpg_np->tpg_np;
+
+			match = iscsit_check_np_match(sockaddr, np,
+						network_transport);
+			if (match)
+				break;
+		}
+		spin_unlock(&tpg->tpg_np_lock);
+
+		if (match)
+			break;
+	}
+	spin_unlock(&tiqn->tiqn_tpg_lock);
+
+	return match;
+}
+
+struct iscsi_tpg_np *iscsit_tpg_add_network_portal(
+	struct iscsi_portal_group *tpg,
+	struct sockaddr_storage *sockaddr,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_tpg_np *tpg_np_parent,
 	int network_transport)
 {
 	struct iscsi_np *np;
 	struct iscsi_tpg_np *tpg_np;
 
+<<<<<<< HEAD
+=======
+	if (!tpg_np_parent) {
+		if (iscsit_tpg_check_network_portal(tpg->tpg_tiqn, sockaddr,
+				network_transport)) {
+			pr_err("Network Portal: %pISc already exists on a"
+				" different TPG on %s\n", sockaddr,
+				tpg->tpg_tiqn->tiqn);
+			return ERR_PTR(-EEXIST);
+		}
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tpg_np = kzalloc(sizeof(struct iscsi_tpg_np), GFP_KERNEL);
 	if (!tpg_np) {
 		pr_err("Unable to allocate memory for"
@@ -434,7 +641,11 @@ struct iscsi_tpg_np *iscsit_tpg_add_network_portal(
 		return ERR_PTR(-ENOMEM);
 	}
 
+<<<<<<< HEAD
 	np = iscsit_add_np(sockaddr, ip_str, network_transport);
+=======
+	np = iscsit_add_np(sockaddr, network_transport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(np)) {
 		kfree(tpg_np);
 		return ERR_CAST(np);
@@ -444,6 +655,11 @@ struct iscsi_tpg_np *iscsit_tpg_add_network_portal(
 	INIT_LIST_HEAD(&tpg_np->tpg_np_child_list);
 	INIT_LIST_HEAD(&tpg_np->tpg_np_parent_list);
 	spin_lock_init(&tpg_np->tpg_np_parent_lock);
+<<<<<<< HEAD
+=======
+	init_completion(&tpg_np->tpg_np_comp);
+	kref_init(&tpg_np->tpg_np_kref);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	tpg_np->tpg_np		= np;
 	tpg_np->tpg		= tpg;
 
@@ -462,9 +678,15 @@ struct iscsi_tpg_np *iscsit_tpg_add_network_portal(
 		spin_unlock(&tpg_np_parent->tpg_np_parent_lock);
 	}
 
+<<<<<<< HEAD
 	pr_debug("CORE[%s] - Added Network Portal: %s:%hu,%hu on %s\n",
 		tpg->tpg_tiqn->tiqn, np->np_ip, np->np_port, tpg->tpgt,
 		(np->np_network_transport == ISCSI_TCP) ? "TCP" : "SCTP");
+=======
+	pr_debug("CORE[%s] - Added Network Portal: %pISpc,%hu on %s\n",
+		tpg->tpg_tiqn->tiqn, &np->np_sockaddr, tpg->tpgt,
+		np->np_transport->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return tpg_np;
 }
@@ -474,11 +696,19 @@ static int iscsit_tpg_release_np(
 	struct iscsi_portal_group *tpg,
 	struct iscsi_np *np)
 {
+<<<<<<< HEAD
 	iscsit_clear_tpg_np_login_thread(tpg_np, tpg);
 
 	pr_debug("CORE[%s] - Removed Network Portal: %s:%hu,%hu on %s\n",
 		tpg->tpg_tiqn->tiqn, np->np_ip, np->np_port, tpg->tpgt,
 		(np->np_network_transport == ISCSI_TCP) ? "TCP" : "SCTP");
+=======
+	iscsit_clear_tpg_np_login_thread(tpg_np, tpg, true);
+
+	pr_debug("CORE[%s] - Removed Network Portal: %pISpc,%hu on %s\n",
+		tpg->tpg_tiqn->tiqn, &np->np_sockaddr, tpg->tpgt,
+		np->np_transport->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	tpg_np->tpg_np = NULL;
 	tpg_np->tpg = NULL;
@@ -538,6 +768,7 @@ int iscsit_tpg_del_network_portal(
 	return iscsit_tpg_release_np(tpg_np, tpg, np);
 }
 
+<<<<<<< HEAD
 int iscsit_tpg_set_initiator_node_queue_depth(
 	struct iscsi_portal_group *tpg,
 	unsigned char *initiatorname,
@@ -548,6 +779,8 @@ int iscsit_tpg_set_initiator_node_queue_depth(
 		initiatorname, queue_depth, force);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int iscsit_ta_authentication(struct iscsi_portal_group *tpg, u32 authentication)
 {
 	unsigned char buf1[256], buf2[256], *none = NULL;
@@ -558,7 +791,11 @@ int iscsit_ta_authentication(struct iscsi_portal_group *tpg, u32 authentication)
 	if ((authentication != 1) && (authentication != 0)) {
 		pr_err("Illegal value for authentication parameter:"
 			" %u, ignoring request.\n", authentication);
+<<<<<<< HEAD
 		return -1;
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	memset(buf1, 0, sizeof(buf1));
@@ -593,10 +830,16 @@ int iscsit_ta_authentication(struct iscsi_portal_group *tpg, u32 authentication)
 	} else {
 		snprintf(buf1, sizeof(buf1), "%s", param->value);
 		none = strstr(buf1, NONE);
+<<<<<<< HEAD
 		if ((none))
 			goto out;
 		strncat(buf1, ",", strlen(","));
 		strncat(buf1, NONE, strlen(NONE));
+=======
+		if (none)
+			goto out;
+		strlcat(buf1, "," NONE, sizeof(buf1));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (iscsi_update_param_value(param, buf1) < 0)
 			return -EINVAL;
 	}
@@ -632,6 +875,7 @@ int iscsit_ta_login_timeout(
 	return 0;
 }
 
+<<<<<<< HEAD
 int iscsit_ta_netif_timeout(
 	struct iscsi_portal_group *tpg,
 	u32 netif_timeout)
@@ -657,6 +901,8 @@ int iscsit_ta_netif_timeout(
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int iscsit_ta_generate_node_acls(
 	struct iscsi_portal_group *tpg,
 	u32 flag)
@@ -767,3 +1013,115 @@ int iscsit_ta_prod_mode_write_protect(
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+
+int iscsit_ta_demo_mode_discovery(
+	struct iscsi_portal_group *tpg,
+	u32 flag)
+{
+	struct iscsi_tpg_attrib *a = &tpg->tpg_attrib;
+
+	if ((flag != 0) && (flag != 1)) {
+		pr_err("Illegal value %d\n", flag);
+		return -EINVAL;
+	}
+
+	a->demo_mode_discovery = flag;
+	pr_debug("iSCSI_TPG[%hu] - Demo Mode Discovery bit:"
+		" %s\n", tpg->tpgt, (a->demo_mode_discovery) ?
+		"ON" : "OFF");
+
+	return 0;
+}
+
+int iscsit_ta_default_erl(
+	struct iscsi_portal_group *tpg,
+	u32 default_erl)
+{
+	struct iscsi_tpg_attrib *a = &tpg->tpg_attrib;
+
+	if ((default_erl != 0) && (default_erl != 1) && (default_erl != 2)) {
+		pr_err("Illegal value for default_erl: %u\n", default_erl);
+		return -EINVAL;
+	}
+
+	a->default_erl = default_erl;
+	pr_debug("iSCSI_TPG[%hu] - DefaultERL: %u\n", tpg->tpgt, a->default_erl);
+
+	return 0;
+}
+
+int iscsit_ta_t10_pi(
+	struct iscsi_portal_group *tpg,
+	u32 flag)
+{
+	struct iscsi_tpg_attrib *a = &tpg->tpg_attrib;
+
+	if ((flag != 0) && (flag != 1)) {
+		pr_err("Illegal value %d\n", flag);
+		return -EINVAL;
+	}
+
+	a->t10_pi = flag;
+	pr_debug("iSCSI_TPG[%hu] - T10 Protection information bit:"
+		" %s\n", tpg->tpgt, (a->t10_pi) ?
+		"ON" : "OFF");
+
+	return 0;
+}
+
+int iscsit_ta_fabric_prot_type(
+	struct iscsi_portal_group *tpg,
+	u32 prot_type)
+{
+	struct iscsi_tpg_attrib *a = &tpg->tpg_attrib;
+
+	if ((prot_type != 0) && (prot_type != 1) && (prot_type != 3)) {
+		pr_err("Illegal value for fabric_prot_type: %u\n", prot_type);
+		return -EINVAL;
+	}
+
+	a->fabric_prot_type = prot_type;
+	pr_debug("iSCSI_TPG[%hu] - T10 Fabric Protection Type: %u\n",
+		 tpg->tpgt, prot_type);
+
+	return 0;
+}
+
+int iscsit_ta_tpg_enabled_sendtargets(
+	struct iscsi_portal_group *tpg,
+	u32 flag)
+{
+	struct iscsi_tpg_attrib *a = &tpg->tpg_attrib;
+
+	if ((flag != 0) && (flag != 1)) {
+		pr_err("Illegal value %d\n", flag);
+		return -EINVAL;
+	}
+
+	a->tpg_enabled_sendtargets = flag;
+	pr_debug("iSCSI_TPG[%hu] - TPG enabled bit required for SendTargets:"
+		" %s\n", tpg->tpgt, (a->tpg_enabled_sendtargets) ? "ON" : "OFF");
+
+	return 0;
+}
+
+int iscsit_ta_login_keys_workaround(
+	struct iscsi_portal_group *tpg,
+	u32 flag)
+{
+	struct iscsi_tpg_attrib *a = &tpg->tpg_attrib;
+
+	if ((flag != 0) && (flag != 1)) {
+		pr_err("Illegal value %d\n", flag);
+		return -EINVAL;
+	}
+
+	a->login_keys_workaround = flag;
+	pr_debug("iSCSI_TPG[%hu] - TPG enabled bit for login keys workaround: %s ",
+		tpg->tpgt, (a->login_keys_workaround) ? "ON" : "OFF");
+
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

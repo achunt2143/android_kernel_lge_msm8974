@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * nvec_power: power supply driver for a NVIDIA compliant embedded controller
  *
@@ -5,11 +9,14 @@
  *
  * Authors:  Ilya Petrov <ilya.muromec@gmail.com>
  *           Marc Dietrich <marvin24@gmx.de>
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -22,6 +29,11 @@
 
 #include "nvec.h"
 
+<<<<<<< HEAD
+=======
+#define GET_SYSTEM_STATUS 0x00
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct nvec_power {
 	struct notifier_block notifier;
 	struct delayed_work poller;
@@ -80,15 +92,24 @@ struct bat_response {
 	};
 };
 
+<<<<<<< HEAD
 static struct power_supply nvec_bat_psy;
 static struct power_supply nvec_psy;
+=======
+static struct power_supply *nvec_bat_psy;
+static struct power_supply *nvec_psy;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int nvec_power_notifier(struct notifier_block *nb,
 			       unsigned long event_type, void *data)
 {
 	struct nvec_power *power =
 	    container_of(nb, struct nvec_power, notifier);
+<<<<<<< HEAD
 	struct bat_response *res = (struct bat_response *)data;
+=======
+	struct bat_response *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (event_type != NVEC_SYS)
 		return NOTIFY_DONE;
@@ -96,7 +117,11 @@ static int nvec_power_notifier(struct notifier_block *nb,
 	if (res->sub_type == 0) {
 		if (power->on != res->plu) {
 			power->on = res->plu;
+<<<<<<< HEAD
 			power_supply_changed(&nvec_psy);
+=======
+			power_supply_changed(nvec_psy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		return NOTIFY_STOP;
 	}
@@ -111,7 +136,11 @@ static const int bat_init[] = {
 static void get_bat_mfg_data(struct nvec_power *power)
 {
 	int i;
+<<<<<<< HEAD
 	char buf[] = { '\x02', '\x00' };
+=======
+	char buf[] = { NVEC_BAT, SLOT_STATUS };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < ARRAY_SIZE(bat_init); i++) {
 		buf[1] = bat_init[i];
@@ -124,7 +153,11 @@ static int nvec_power_bat_notifier(struct notifier_block *nb,
 {
 	struct nvec_power *power =
 	    container_of(nb, struct nvec_power, notifier);
+<<<<<<< HEAD
 	struct bat_response *res = (struct bat_response *)data;
+=======
+	struct bat_response *res = data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status_changed = 0;
 
 	if (event_type != NVEC_BAT)
@@ -165,7 +198,11 @@ static int nvec_power_bat_notifier(struct notifier_block *nb,
 		}
 		power->bat_cap = res->plc[1];
 		if (status_changed)
+<<<<<<< HEAD
 			power_supply_changed(&nvec_bat_psy);
+=======
+			power_supply_changed(nvec_bat_psy);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case VOLTAGE:
 		power->bat_voltage_now = res->plu * 1000;
@@ -205,8 +242,15 @@ static int nvec_power_bat_notifier(struct notifier_block *nb,
 	case TYPE:
 		memcpy(power->bat_type, &res->plc, res->length - 2);
 		power->bat_type[res->length - 2] = '\0';
+<<<<<<< HEAD
 		/* this differs a little from the spec
 		   fill in more if you find some */
+=======
+		/*
+		 * This differs a little from the spec fill in more if you find
+		 * some.
+		 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!strncmp(power->bat_type, "Li", 30))
 			power->bat_type_enum = POWER_SUPPLY_TECHNOLOGY_LION;
 		else
@@ -223,7 +267,12 @@ static int nvec_power_get_property(struct power_supply *psy,
 				   enum power_supply_property psp,
 				   union power_supply_propval *val)
 {
+<<<<<<< HEAD
 	struct nvec_power *power = dev_get_drvdata(psy->dev->parent);
+=======
+	struct nvec_power *power = dev_get_drvdata(psy->dev.parent);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (psp) {
 	case POWER_SUPPLY_PROP_ONLINE:
 		val->intval = power->on;
@@ -238,7 +287,11 @@ static int nvec_battery_get_property(struct power_supply *psy,
 				     enum power_supply_property psp,
 				     union power_supply_propval *val)
 {
+<<<<<<< HEAD
 	struct nvec_power *power = dev_get_drvdata(psy->dev->parent);
+=======
+	struct nvec_power *power = dev_get_drvdata(psy->dev.parent);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_STATUS:
@@ -320,7 +373,11 @@ static char *nvec_power_supplied_to[] = {
 	"battery",
 };
 
+<<<<<<< HEAD
 static struct power_supply nvec_bat_psy = {
+=======
+static const struct power_supply_desc nvec_bat_psy_desc = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.name = "battery",
 	.type = POWER_SUPPLY_TYPE_BATTERY,
 	.properties = nvec_battery_props,
@@ -328,18 +385,28 @@ static struct power_supply nvec_bat_psy = {
 	.get_property = nvec_battery_get_property,
 };
 
+<<<<<<< HEAD
 static struct power_supply nvec_psy = {
 	.name = "ac",
 	.type = POWER_SUPPLY_TYPE_MAINS,
 	.supplied_to = nvec_power_supplied_to,
 	.num_supplicants = ARRAY_SIZE(nvec_power_supplied_to),
+=======
+static const struct power_supply_desc nvec_psy_desc = {
+	.name = "ac",
+	.type = POWER_SUPPLY_TYPE_MAINS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.properties = nvec_power_props,
 	.num_properties = ARRAY_SIZE(nvec_power_props),
 	.get_property = nvec_power_get_property,
 };
 
 static int counter;
+<<<<<<< HEAD
 static int const bat_iter[] = {
+=======
+static const int bat_iter[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SLOT_STATUS, VOLTAGE, CURRENT, CAPACITY_REMAINING,
 #ifdef EC_FULL_DIAG
 	AVERAGE_CURRENT, TEMPERATURE, TIME_REMAINING,
@@ -348,13 +415,18 @@ static int const bat_iter[] = {
 
 static void nvec_power_poll(struct work_struct *work)
 {
+<<<<<<< HEAD
 	char buf[] = { '\x01', '\x00' };
+=======
+	char buf[] = { NVEC_SYS, GET_SYSTEM_STATUS };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nvec_power *power = container_of(work, struct nvec_power,
 						poller.work);
 
 	if (counter >= ARRAY_SIZE(bat_iter))
 		counter = 0;
 
+<<<<<<< HEAD
 /* AC status via sys req */
 	nvec_write_async(power->nvec, buf, 2);
 	msleep(100);
@@ -362,18 +434,43 @@ static void nvec_power_poll(struct work_struct *work)
 /* select a battery request function via round robin
    doing it all at once seems to overload the power supply */
 	buf[0] = '\x02';	/* battery */
+=======
+	/* AC status via sys req */
+	nvec_write_async(power->nvec, buf, 2);
+	msleep(100);
+
+	/*
+	 * Select a battery request function via round robin doing it all at
+	 * once seems to overload the power supply.
+	 */
+	buf[0] = NVEC_BAT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	buf[1] = bat_iter[counter++];
 	nvec_write_async(power->nvec, buf, 2);
 
 	schedule_delayed_work(to_delayed_work(work), msecs_to_jiffies(5000));
 };
 
+<<<<<<< HEAD
 static int __devinit nvec_power_probe(struct platform_device *pdev)
 {
 	struct power_supply *psy;
 	struct nvec_power *power =
 	    kzalloc(sizeof(struct nvec_power), GFP_NOWAIT);
 	struct nvec_chip *nvec = dev_get_drvdata(pdev->dev.parent);
+=======
+static int nvec_power_probe(struct platform_device *pdev)
+{
+	struct power_supply **psy;
+	const struct power_supply_desc *psy_desc;
+	struct nvec_power *power;
+	struct nvec_chip *nvec = dev_get_drvdata(pdev->dev.parent);
+	struct power_supply_config psy_cfg = {};
+
+	power = devm_kzalloc(&pdev->dev, sizeof(struct nvec_power), GFP_NOWAIT);
+	if (!power)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_set_drvdata(&pdev->dev, power);
 	power->nvec = nvec;
@@ -381,6 +478,12 @@ static int __devinit nvec_power_probe(struct platform_device *pdev)
 	switch (pdev->id) {
 	case AC:
 		psy = &nvec_psy;
+<<<<<<< HEAD
+=======
+		psy_desc = &nvec_psy_desc;
+		psy_cfg.supplied_to = nvec_power_supplied_to;
+		psy_cfg.num_supplicants = ARRAY_SIZE(nvec_power_supplied_to);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		power->notifier.notifier_call = nvec_power_notifier;
 
@@ -389,11 +492,18 @@ static int __devinit nvec_power_probe(struct platform_device *pdev)
 		break;
 	case BAT:
 		psy = &nvec_bat_psy;
+<<<<<<< HEAD
+=======
+		psy_desc = &nvec_bat_psy_desc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		power->notifier.notifier_call = nvec_power_bat_notifier;
 		break;
 	default:
+<<<<<<< HEAD
 		kfree(power);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 	}
 
@@ -402,11 +512,33 @@ static int __devinit nvec_power_probe(struct platform_device *pdev)
 	if (pdev->id == BAT)
 		get_bat_mfg_data(power);
 
+<<<<<<< HEAD
 	return power_supply_register(&pdev->dev, psy);
+=======
+	*psy = power_supply_register(&pdev->dev, psy_desc, &psy_cfg);
+
+	return PTR_ERR_OR_ZERO(*psy);
+}
+
+static void nvec_power_remove(struct platform_device *pdev)
+{
+	struct nvec_power *power = platform_get_drvdata(pdev);
+
+	cancel_delayed_work_sync(&power->poller);
+	nvec_unregister_notifier(power->nvec, &power->notifier);
+	switch (pdev->id) {
+	case AC:
+		power_supply_unregister(nvec_psy);
+		break;
+	case BAT:
+		power_supply_unregister(nvec_bat_psy);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver nvec_power_driver = {
 	.probe = nvec_power_probe,
+<<<<<<< HEAD
 	.driver = {
 		   .name = "nvec-power",
 		   .owner = THIS_MODULE,
@@ -419,6 +551,15 @@ static int __init nvec_power_init(void)
 }
 
 module_init(nvec_power_init);
+=======
+	.remove_new = nvec_power_remove,
+	.driver = {
+		   .name = "nvec-power",
+	}
+};
+
+module_platform_driver(nvec_power_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Ilya Petrov <ilya.muromec@gmail.com>");
 MODULE_LICENSE("GPL");

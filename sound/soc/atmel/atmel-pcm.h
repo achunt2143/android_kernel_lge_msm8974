@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * at91-pcm.h - ALSA PCM interface for the Atmel AT91 SoC.
  *
@@ -15,6 +19,7 @@
  * Author:	Nicolas Pitre
  * Created:	Nov 30, 2004
  * Copyright:	(C) 2004 MontaVista Software, Inc.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,6 +34,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ATMEL_PCM_H
@@ -36,6 +43,11 @@
 
 #include <linux/atmel-ssc.h>
 
+<<<<<<< HEAD
+=======
+#define ATMEL_SSC_DMABUF_SIZE	(64 * 1024)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Registers and status bits that are required by the PCM driver.
  */
@@ -50,6 +62,10 @@ struct atmel_pdc_regs {
 struct atmel_ssc_mask {
 	u32	ssc_enable;		/* SSC recv/trans enable */
 	u32	ssc_disable;		/* SSC recv/trans disable */
+<<<<<<< HEAD
+=======
+	u32	ssc_error;		/* SSC error conditions */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	ssc_endx;		/* SSC ENDTX or ENDRX */
 	u32	ssc_endbuf;		/* SSC TXBUFE or RXBUFF */
 	u32	pdc_enable;		/* PDC recv/trans enable */
@@ -80,4 +96,25 @@ struct atmel_pcm_dma_params {
 #define ssc_readx(base, reg)            (__raw_readl((base) + (reg)))
 #define ssc_writex(base, reg, value)    __raw_writel((value), (base) + (reg))
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_SND_ATMEL_SOC_PDC)
+int atmel_pcm_pdc_platform_register(struct device *dev);
+#else
+static inline int atmel_pcm_pdc_platform_register(struct device *dev)
+{
+	return 0;
+}
+#endif
+
+#if IS_ENABLED(CONFIG_SND_ATMEL_SOC_DMA)
+int atmel_pcm_dma_platform_register(struct device *dev);
+#else
+static inline int atmel_pcm_dma_platform_register(struct device *dev)
+{
+	return 0;
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ATMEL_PCM_H */

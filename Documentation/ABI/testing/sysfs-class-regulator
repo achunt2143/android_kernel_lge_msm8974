@@ -35,6 +35,7 @@ Description:
 
 		This will be one of the following strings:
 
+<<<<<<< HEAD
 			off
 			on
 			error
@@ -42,6 +43,15 @@ Description:
 			normal
 			idle
 			standby
+=======
+			- off
+			- on
+			- error
+			- fast
+			- normal
+			- idle
+			- standby
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		"off" means the regulator is not supplying power to the
 		system.
@@ -74,9 +84,15 @@ Description:
 
 		This will be one of the following strings:
 
+<<<<<<< HEAD
 		'voltage'
 		'current'
 		'unknown'
+=======
+		- 'voltage'
+		- 'current'
+		- 'unknown'
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		'voltage' means the regulator output voltage can be controlled
 		by software.
@@ -129,11 +145,19 @@ Description:
 
 		The opmode value can be one of the following strings:
 
+<<<<<<< HEAD
 		'fast'
 		'normal'
 		'idle'
 		'standby'
 		'unknown'
+=======
+		- 'fast'
+		- 'normal'
+		- 'idle'
+		- 'standby'
+		- 'unknown'
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		The modes are described in include/linux/regulator/consumer.h
 
@@ -349,3 +373,108 @@ Description:
 
 		This will be one of the same strings reported by
 		the "state" attribute.
+<<<<<<< HEAD
+=======
+
+What:		/sys/class/regulator/.../bypass
+Date:		September 2012
+KernelVersion:	3.7
+Contact:	Mark Brown <broonie@opensource.wolfsonmicro.com>
+Description:
+		Some regulator directories will contain a field called
+		bypass.  This indicates if the device is in bypass mode.
+
+		This will be one of the following strings:
+
+		- 'enabled'
+		- 'disabled'
+		- 'unknown'
+
+		'enabled' means the regulator is in bypass mode.
+
+		'disabled' means that the regulator is regulating.
+
+		'unknown' means software cannot determine the state, or
+		the reported state is invalid.
+
+What:		/sys/class/regulator/.../under_voltage
+Date:		April 2022
+KernelVersion:	5.18
+Contact:	Zev Weiss <zev@bewilderbeest.net>
+Description:
+		Some regulator directories will contain a field called
+		under_voltage.  This indicates if the device reports an
+		under-voltage fault (1) or not (0).
+
+What:		/sys/class/regulator/.../over_current
+Date:		April 2022
+KernelVersion:	5.18
+Contact:	Zev Weiss <zev@bewilderbeest.net>
+Description:
+		Some regulator directories will contain a field called
+		over_current.  This indicates if the device reports an
+		over-current fault (1) or not (0).
+
+What:		/sys/class/regulator/.../regulation_out
+Date:		April 2022
+KernelVersion:	5.18
+Contact:	Zev Weiss <zev@bewilderbeest.net>
+Description:
+		Some regulator directories will contain a field called
+		regulation_out.  This indicates if the device reports an
+		out-of-regulation fault (1) or not (0).
+
+What:		/sys/class/regulator/.../fail
+Date:		April 2022
+KernelVersion:	5.18
+Contact:	Zev Weiss <zev@bewilderbeest.net>
+Description:
+		Some regulator directories will contain a field called
+		fail.  This indicates if the device reports an output failure
+		(1) or not (0).
+
+What:		/sys/class/regulator/.../over_temp
+Date:		April 2022
+KernelVersion:	5.18
+Contact:	Zev Weiss <zev@bewilderbeest.net>
+Description:
+		Some regulator directories will contain a field called
+		over_temp.  This indicates if the device reports an
+		over-temperature fault (1) or not (0).
+
+What:		/sys/class/regulator/.../under_voltage_warn
+Date:		April 2022
+KernelVersion:	5.18
+Contact:	Zev Weiss <zev@bewilderbeest.net>
+Description:
+		Some regulator directories will contain a field called
+		under_voltage_warn.  This indicates if the device reports an
+		under-voltage warning (1) or not (0).
+
+What:		/sys/class/regulator/.../over_current_warn
+Date:		April 2022
+KernelVersion:	5.18
+Contact:	Zev Weiss <zev@bewilderbeest.net>
+Description:
+		Some regulator directories will contain a field called
+		over_current_warn.  This indicates if the device reports an
+		over-current warning (1) or not (0).
+
+What:		/sys/class/regulator/.../over_voltage_warn
+Date:		April 2022
+KernelVersion:	5.18
+Contact:	Zev Weiss <zev@bewilderbeest.net>
+Description:
+		Some regulator directories will contain a field called
+		over_voltage_warn.  This indicates if the device reports an
+		over-voltage warning (1) or not (0).
+
+What:		/sys/class/regulator/.../over_temp_warn
+Date:		April 2022
+KernelVersion:	5.18
+Contact:	Zev Weiss <zev@bewilderbeest.net>
+Description:
+		Some regulator directories will contain a field called
+		over_temp_warn.  This indicates if the device reports an
+		over-temperature warning (1) or not (0).
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

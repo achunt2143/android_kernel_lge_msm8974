@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * wm9712.c  --  Codec driver for Wolfson WM9712 AC97 Codecs.
  *
@@ -6,12 +10,15 @@
  * Parts Copyright : Ian Molton <spyro@f2s.com>
  *                   Andrew Zabolotny <zap@homelink.ru>
  *                   Russell King <rmk@arm.linux.org.uk>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute  it and/or modify it
  *  under  the terms of  the GNU General  Public License as published by the
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -41,7 +48,11 @@
  */
 static int rpu = 8;
 module_param(rpu, int, 0);
+<<<<<<< HEAD
 MODULE_PARM_DESC(rpu, "Set internal pull up resitor for pen detect.");
+=======
+MODULE_PARM_DESC(rpu, "Set internal pull up resistor for pen detect.");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set current used for pressure measurement.
@@ -162,14 +173,22 @@ static void wm9712_phy_init(struct wm97xx *wm)
 	if (rpu) {
 		dig2 &= 0xffc0;
 		dig2 |= WM9712_RPU(rpu);
+<<<<<<< HEAD
 		dev_dbg(wm->dev, "setting pen detect pull-up to %d Ohms",
+=======
+		dev_dbg(wm->dev, "setting pen detect pull-up to %d Ohms\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			64000 / rpu);
 	}
 
 	/* WM9712 five wire */
 	if (five_wire) {
 		dig2 |= WM9712_45W;
+<<<<<<< HEAD
 		dev_dbg(wm->dev, "setting 5-wire touchscreen mode.");
+=======
+		dev_dbg(wm->dev, "setting 5-wire touchscreen mode.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (pil) {
 			dev_warn(wm->dev, "pressure measurement is not "
@@ -182,21 +201,36 @@ static void wm9712_phy_init(struct wm97xx *wm)
 	if (pil == 2) {
 		dig2 |= WM9712_PIL;
 		dev_dbg(wm->dev,
+<<<<<<< HEAD
 			"setting pressure measurement current to 400uA.");
 	} else if (pil)
 		dev_dbg(wm->dev,
 			"setting pressure measurement current to 200uA.");
+=======
+			"setting pressure measurement current to 400uA.\n");
+	} else if (pil)
+		dev_dbg(wm->dev,
+			"setting pressure measurement current to 200uA.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pil)
 		pressure = 0;
 
 	/* polling mode sample settling delay */
 	if (delay < 0 || delay > 15) {
+<<<<<<< HEAD
 		dev_dbg(wm->dev, "supplied delay out of range.");
+=======
+		dev_dbg(wm->dev, "supplied delay out of range.\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		delay = 4;
 	}
 	dig1 &= 0xff0f;
 	dig1 |= WM97XX_DELAY(delay);
+<<<<<<< HEAD
 	dev_dbg(wm->dev, "setting adc sample delay to %d u Secs.",
+=======
+	dev_dbg(wm->dev, "setting adc sample delay to %d u Secs.\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		delay_table[delay]);
 
 	/* mask */
@@ -285,7 +319,11 @@ static int wm9712_poll_sample(struct wm97xx *wm, int adcsel, int *sample)
 		if (is_pden(wm))
 			wm->pen_probably_down = 0;
 		else
+<<<<<<< HEAD
 			dev_dbg(wm->dev, "adc sample timeout");
+=======
+			dev_dbg(wm->dev, "adc sample timeout\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return RC_PENUP;
 	}
 
@@ -295,6 +333,7 @@ static int wm9712_poll_sample(struct wm97xx *wm, int adcsel, int *sample)
 
 	/* check we have correct sample */
 	if ((*sample ^ adcsel) & WM97XX_ADCSEL_MASK) {
+<<<<<<< HEAD
 		dev_dbg(wm->dev, "adc wrong sample, wanted %x got %x",
 			adcsel & WM97XX_ADCSEL_MASK,
 			*sample & WM97XX_ADCSEL_MASK);
@@ -304,6 +343,21 @@ static int wm9712_poll_sample(struct wm97xx *wm, int adcsel, int *sample)
 	if (wants_pen && !(*sample & WM97XX_PEN_DOWN)) {
 		wm->pen_probably_down = 0;
 		return RC_PENUP;
+=======
+		dev_dbg(wm->dev, "adc wrong sample, wanted %x got %x\n",
+			adcsel & WM97XX_ADCSEL_MASK,
+			*sample & WM97XX_ADCSEL_MASK);
+		return RC_AGAIN;
+	}
+
+	if (wants_pen && !(*sample & WM97XX_PEN_DOWN)) {
+		/* Sometimes it reads a wrong value the first time. */
+		*sample = wm97xx_reg_read(wm, AC97_WM97XX_DIGITISER_RD);
+		if (!(*sample & WM97XX_PEN_DOWN)) {
+			wm->pen_probably_down = 0;
+			return RC_PENUP;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return RC_VALID;
@@ -345,7 +399,11 @@ static int wm9712_poll_coord(struct wm97xx *wm, struct wm97xx_data *data)
 		if (is_pden(wm))
 			wm->pen_probably_down = 0;
 		else
+<<<<<<< HEAD
 			dev_dbg(wm->dev, "adc sample timeout");
+=======
+			dev_dbg(wm->dev, "adc sample timeout\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return RC_PENUP;
 	}
 

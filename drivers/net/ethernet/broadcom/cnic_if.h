@@ -1,6 +1,13 @@
+<<<<<<< HEAD
 /* cnic_if.h: Broadcom CNIC core network driver.
  *
  * Copyright (c) 2006-2012 Broadcom Corporation
+=======
+/* cnic_if.h: QLogic cnic core network driver.
+ *
+ * Copyright (c) 2006-2014 Broadcom Corporation
+ * Copyright (c) 2014-2015 QLogic Corporation
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -12,8 +19,15 @@
 #ifndef CNIC_IF_H
 #define CNIC_IF_H
 
+<<<<<<< HEAD
 #define CNIC_MODULE_VERSION	"2.5.10"
 #define CNIC_MODULE_RELDATE	"March 21, 2012"
+=======
+#include "bnx2x/bnx2x_mfw_req.h"
+
+#define CNIC_MODULE_VERSION	"2.5.22"
+#define CNIC_MODULE_RELDATE	"July 20, 2015"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define CNIC_ULP_RDMA		0
 #define CNIC_ULP_ISCSI		1
@@ -22,6 +36,19 @@
 #define MAX_CNIC_ULP_TYPE_EXT	3
 #define MAX_CNIC_ULP_TYPE	4
 
+<<<<<<< HEAD
+=======
+/* Use CPU native page size up to 16K for cnic ring sizes.  */
+#if (PAGE_SHIFT > 14)
+#define CNIC_PAGE_BITS	14
+#else
+#define CNIC_PAGE_BITS	PAGE_SHIFT
+#endif
+#define CNIC_PAGE_SIZE	(1 << (CNIC_PAGE_BITS))
+#define CNIC_PAGE_ALIGN(addr) ALIGN(addr, CNIC_PAGE_SIZE)
+#define CNIC_PAGE_MASK	(~((CNIC_PAGE_SIZE) - 1))
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct kwqe {
 	u32 kwqe_op_flag;
 
@@ -131,17 +158,48 @@ struct drv_ctl_l2_ring {
 	u32		cid;
 };
 
+<<<<<<< HEAD
 struct drv_ctl_info {
 	int	cmd;
+=======
+struct drv_ctl_register_data {
+	int ulp_type;
+	struct fcoe_capabilities fcoe_features;
+};
+
+struct drv_ctl_info {
+	int	cmd;
+	int     drv_state;
+#define DRV_NOP		0
+#define DRV_ACTIVE	1
+#define DRV_INACTIVE	2
+#define DRV_UNLOADED	3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	union {
 		struct drv_ctl_spq_credit credit;
 		struct drv_ctl_io io;
 		struct drv_ctl_l2_ring ring;
 		int ulp_type;
+<<<<<<< HEAD
+=======
+		struct drv_ctl_register_data register_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		char bytes[MAX_DRV_CTL_DATA];
 	} data;
 };
 
+<<<<<<< HEAD
+=======
+#define MAX_NPIV_ENTRIES 64
+#define FC_NPIV_WWN_SIZE 8
+
+struct cnic_fc_npiv_tbl {
+	u8 wwpn[MAX_NPIV_ENTRIES][FC_NPIV_WWN_SIZE];
+	u8 wwnn[MAX_NPIV_ENTRIES][FC_NPIV_WWN_SIZE];
+	u32 count;
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct cnic_ops {
 	struct module	*cnic_owner;
 	/* Calls to these functions are protected by RCU.  When
@@ -157,6 +215,10 @@ struct cnic_ops {
 struct cnic_irq {
 	unsigned int	vector;
 	void		*status_blk;
+<<<<<<< HEAD
+=======
+	dma_addr_t	status_blk_map;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		status_blk_num;
 	u32		status_blk_num2;
 	u32		irq_flags;
@@ -171,6 +233,10 @@ struct cnic_eth_dev {
 #define CNIC_DRV_STATE_NO_ISCSI_OOO	0x00000004
 #define CNIC_DRV_STATE_NO_ISCSI		0x00000008
 #define CNIC_DRV_STATE_NO_FCOE		0x00000010
+<<<<<<< HEAD
+=======
+#define CNIC_DRV_STATE_HANDLES_IRQ	0x00000020
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		chip_id;
 	u32		max_kwqe_pending;
 	struct pci_dev	*pdev;
@@ -186,6 +252,10 @@ struct cnic_eth_dev {
 	u32		max_fcoe_conn;
 	u32		max_rdma_conn;
 	u32		fcoe_init_cid;
+<<<<<<< HEAD
+=======
+	u32		max_fcoe_exchanges;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32		fcoe_wwn_port_name_hi;
 	u32		fcoe_wwn_port_name_lo;
 	u32		fcoe_wwn_node_name_hi;
@@ -205,6 +275,11 @@ struct cnic_eth_dev {
 	int		(*drv_submit_kwqes_16)(struct net_device *,
 					       struct kwqe_16 *[], u32);
 	int		(*drv_ctl)(struct net_device *, struct drv_ctl_info *);
+<<<<<<< HEAD
+=======
+	int		(*drv_get_fc_npiv_tbl)(struct net_device *,
+					       struct cnic_fc_npiv_tbl *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long	reserved1[2];
 	union drv_info_to_mcp	*addr_drv_info_to_mcp;
 };
@@ -228,8 +303,13 @@ struct cnic_sock {
 	u16	src_port;
 	u16	dst_port;
 	u16	vlan_id;
+<<<<<<< HEAD
 	unsigned char old_ha[6];
 	unsigned char ha[6];
+=======
+	unsigned char old_ha[ETH_ALEN];
+	unsigned char ha[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	mtu;
 	u32	cid;
 	u32	l5_cid;
@@ -293,18 +373,33 @@ struct cnic_dev {
 	struct cnic_dev *(*cm_select_dev)(struct sockaddr_in *, int ulp_type);
 	int (*iscsi_nl_msg_recv)(struct cnic_dev *dev, u32 msg_type,
 				 char *data, u16 data_size);
+<<<<<<< HEAD
+=======
+	int (*get_fc_npiv_tbl)(struct cnic_dev *, struct cnic_fc_npiv_tbl *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long	flags;
 #define CNIC_F_CNIC_UP		1
 #define CNIC_F_BNX2_CLASS	3
 #define CNIC_F_BNX2X_CLASS	4
 	atomic_t	ref_count;
+<<<<<<< HEAD
 	u8		mac_addr[6];
+=======
+	u8		mac_addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	int		max_iscsi_conn;
 	int		max_fcoe_conn;
 	int		max_rdma_conn;
 
+<<<<<<< HEAD
 	union drv_info_to_mcp	*stats_addr;
+=======
+	int		max_fcoe_exchanges;
+
+	union drv_info_to_mcp	*stats_addr;
+	struct fcoe_capabilities	*fcoe_cap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void		*cnic_priv;
 };
@@ -340,11 +435,17 @@ struct cnic_ulp_ops {
 	atomic_t ref_count;
 };
 
+<<<<<<< HEAD
 extern int cnic_register_driver(int ulp_type, struct cnic_ulp_ops *ulp_ops);
 
 extern int cnic_unregister_driver(int ulp_type);
 
 extern struct cnic_eth_dev *bnx2_cnic_probe(struct net_device *dev);
 extern struct cnic_eth_dev *bnx2x_cnic_probe(struct net_device *dev);
+=======
+int cnic_register_driver(int ulp_type, struct cnic_ulp_ops *ulp_ops);
+
+int cnic_unregister_driver(int ulp_type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

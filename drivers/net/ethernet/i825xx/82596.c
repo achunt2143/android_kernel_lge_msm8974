@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-1.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* 82596.c: A generic 82596 ethernet driver for linux. */
 /*
    Based on Apricot.c
@@ -31,9 +35,13 @@
    Driver skeleton
    Written 1993 by Donald Becker.
    Copyright 1993 United States Government as represented by the Director,
+<<<<<<< HEAD
    National Security Agency. This software may only be used and distributed
    according to the terms of the GNU General Public License as modified by SRC,
    incorporated herein by reference.
+=======
+   National Security Agency.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
    The author may be reached as becker@scyld.com, or C/O
    Scyld Computing Corporation, 410 Severn Ave., Suite 210, Annapolis MD 21403
@@ -53,10 +61,17 @@
 #include <linux/init.h>
 #include <linux/bitops.h>
 #include <linux/gfp.h>
+<<<<<<< HEAD
 
 #include <asm/io.h>
 #include <asm/dma.h>
 #include <asm/pgtable.h>
+=======
+#include <linux/pgtable.h>
+
+#include <asm/io.h>
+#include <asm/dma.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cacheflush.h>
 
 static char version[] __initdata =
@@ -89,6 +104,7 @@ static char version[] __initdata =
 #define DEB(x,y)	if (i596_debug & (x)) y
 
 
+<<<<<<< HEAD
 #if defined(CONFIG_MVME16x_NET) || defined(CONFIG_MVME16x_NET_MODULE)
 #define ENABLE_MVME16x_NET
 #endif
@@ -98,6 +114,14 @@ static char version[] __initdata =
 #if defined(CONFIG_APRICOT) || defined(CONFIG_APRICOT_MODULE)
 #define ENABLE_APRICOT
 #endif
+=======
+#if IS_ENABLED(CONFIG_MVME16x_NET)
+#define ENABLE_MVME16x_NET
+#endif
+#if IS_ENABLED(CONFIG_BVME6000_NET)
+#define ENABLE_BVME6000_NET
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef ENABLE_MVME16x_NET
 #include <asm/mvme16xhw.h>
@@ -120,8 +144,20 @@ static char version[] __initdata =
 #define WSWAPtbd(x)  ((struct i596_tbd *) (((u32)(x)<<16) | ((((u32)(x)))>>16)))
 #define WSWAPchar(x) ((char *)            (((u32)(x)<<16) | ((((u32)(x)))>>16)))
 #define ISCP_BUSY	0x00010000
+<<<<<<< HEAD
 #define MACH_IS_APRICOT	0
 #else
+=======
+#else
+#error 82596.c: unknown architecture
+#endif
+
+/*
+ * These were the intel versions, left here for reference. There
+ * are currently no x86 users of this legacy i82596 chip.
+ */
+#if 0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WSWAPrfd(x)     ((struct i596_rfd *)((long)x))
 #define WSWAPrbd(x)     ((struct i596_rbd *)((long)x))
 #define WSWAPiscp(x)    ((struct i596_iscp *)((long)x))
@@ -130,7 +166,10 @@ static char version[] __initdata =
 #define WSWAPtbd(x)     ((struct i596_tbd *)((long)x))
 #define WSWAPchar(x)    ((char *)((long)x))
 #define ISCP_BUSY	0x0001
+<<<<<<< HEAD
 #define MACH_IS_APRICOT	1
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 /*
@@ -360,7 +399,11 @@ static netdev_tx_t i596_start_xmit(struct sk_buff *skb, struct net_device *dev);
 static irqreturn_t i596_interrupt(int irq, void *dev_id);
 static int i596_close(struct net_device *dev);
 static void i596_add_cmd(struct net_device *dev, struct i596_cmd *cmd);
+<<<<<<< HEAD
 static void i596_tx_timeout (struct net_device *dev);
+=======
+static void i596_tx_timeout (struct net_device *dev, unsigned int txqueue);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void print_eth(unsigned char *buf, char *str);
 static void set_multicast_list(struct net_device *dev);
 
@@ -383,11 +426,14 @@ static inline void CA(struct net_device *dev)
 		i = *(volatile u32 *) (dev->base_addr);
 	}
 #endif
+<<<<<<< HEAD
 #ifdef ENABLE_APRICOT
 	if (MACH_IS_APRICOT) {
 		outw(0, (short) (dev->base_addr) + 4);
 	}
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -617,9 +663,12 @@ static void rebuild_rx_bufs(struct net_device *dev)
 static int init_i596_mem(struct net_device *dev)
 {
 	struct i596_private *lp = dev->ml_priv;
+<<<<<<< HEAD
 #if !defined(ENABLE_MVME16x_NET) && !defined(ENABLE_BVME6000_NET) || defined(ENABLE_APRICOT)
 	short ioaddr = dev->base_addr;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	MPU_PORT(dev, PORT_RESET, NULL);
@@ -653,6 +702,7 @@ static int init_i596_mem(struct net_device *dev)
 
 	MPU_PORT(dev, PORT_ALTSCP, (void *)virt_to_bus((void *)&lp->scp));
 
+<<<<<<< HEAD
 #elif defined(ENABLE_APRICOT)
 
 	{
@@ -665,6 +715,8 @@ static int init_i596_mem(struct net_device *dev)
 		outw(scp | 2, ioaddr);
 		outw(scp >> 16, ioaddr);
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	lp->last_cmd = jiffies;
@@ -677,10 +729,13 @@ static int init_i596_mem(struct net_device *dev)
 	if (MACH_IS_BVME6000)
 		lp->scp.sysbus = 0x0000004c;
 #endif
+<<<<<<< HEAD
 #ifdef ENABLE_APRICOT
 	if (MACH_IS_APRICOT)
 		lp->scp.sysbus = 0x00440000;
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	lp->scp.iscp = WSWAPiscp(virt_to_bus((void *)&lp->iscp));
 	lp->iscp.scb = WSWAPscb(virt_to_bus((void *)&lp->scb));
@@ -698,10 +753,13 @@ static int init_i596_mem(struct net_device *dev)
 
 	DEB(DEB_INIT,printk(KERN_DEBUG "%s: starting i82596.\n", dev->name));
 
+<<<<<<< HEAD
 #if defined(ENABLE_APRICOT)
 	(void) inb(ioaddr + 0x10);
 	outb(4, ioaddr + 0xf);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CA(dev);
 
 	if (wait_istat(dev,lp,1000,"initialization timed out"))
@@ -736,7 +794,11 @@ static int init_i596_mem(struct net_device *dev)
 	i596_add_cmd(dev, &lp->cf_cmd.cmd);
 
 	DEB(DEB_INIT,printk(KERN_DEBUG "%s: queuing CmdSASetup\n", dev->name));
+<<<<<<< HEAD
 	memcpy(lp->sa_cmd.eth_addr, dev->dev_addr, 6);
+=======
+	memcpy(lp->sa_cmd.eth_addr, dev->dev_addr, ETH_ALEN);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	lp->sa_cmd.cmd.command = CmdSASetup;
 	i596_add_cmd(dev, &lp->sa_cmd.cmd);
 
@@ -823,6 +885,7 @@ static inline int i596_rx(struct net_device *dev)
 #ifdef __mc68000__
 				cache_clear(virt_to_phys(newskb->data), PKT_BUF_SZ);
 #endif
+<<<<<<< HEAD
 			}
 			else
 				skb = netdev_alloc_skb(dev, pkt_len + 2);
@@ -837,6 +900,21 @@ memory_squeeze:
 					/* 16 byte align the data fields */
 					skb_reserve(skb, 2);
 					memcpy(skb_put(skb,pkt_len), rbd->v_data, pkt_len);
+=======
+			} else {
+				skb = netdev_alloc_skb(dev, pkt_len + 2);
+			}
+memory_squeeze:
+			if (skb == NULL) {
+				/* XXX tulip.c can defer packets here!! */
+				dev->stats.rx_dropped++;
+			} else {
+				if (!rx_in_place) {
+					/* 16 byte align the data fields */
+					skb_reserve(skb, 2);
+					skb_put_data(skb, rbd->v_data,
+						     pkt_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				}
 				skb->protocol=eth_type_trans(skb,dev);
 				skb->len = pkt_len;
@@ -1045,7 +1123,11 @@ err_irq_dev:
 	return res;
 }
 
+<<<<<<< HEAD
 static void i596_tx_timeout (struct net_device *dev)
+=======
+static void i596_tx_timeout (struct net_device *dev, unsigned int txqueue)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct i596_private *lp = dev->ml_priv;
 	int ioaddr = dev->base_addr;
@@ -1069,7 +1151,11 @@ static void i596_tx_timeout (struct net_device *dev)
 		lp->last_restart = dev->stats.tx_packets;
 	}
 
+<<<<<<< HEAD
 	dev->trans_start = jiffies; /* prevent tx timeout */
+=======
+	netif_trans_update(dev); /* prevent tx timeout */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	netif_wake_queue (dev);
 }
 
@@ -1136,21 +1222,31 @@ static void print_eth(unsigned char *add, char *str)
 	       add, add + 6, add, add[12], add[13], str);
 }
 
+<<<<<<< HEAD
 static int io = 0x300;
 static int irq = 10;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct net_device_ops i596_netdev_ops = {
 	.ndo_open 		= i596_open,
 	.ndo_stop		= i596_close,
 	.ndo_start_xmit		= i596_start_xmit,
 	.ndo_set_rx_mode	= set_multicast_list,
 	.ndo_tx_timeout		= i596_tx_timeout,
+<<<<<<< HEAD
 	.ndo_change_mtu		= eth_change_mtu,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.ndo_set_mac_address 	= eth_mac_addr,
 	.ndo_validate_addr	= eth_validate_addr,
 };
 
+<<<<<<< HEAD
 struct net_device * __init i82596_probe(int unit)
+=======
+static struct net_device * __init i82596_probe(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev;
 	int i;
@@ -1167,6 +1263,7 @@ struct net_device * __init i82596_probe(int unit)
 	if (!dev)
 		return ERR_PTR(-ENOMEM);
 
+<<<<<<< HEAD
 	if (unit >= 0) {
 		sprintf(dev->name, "eth%d", unit);
 		netdev_boot_setup_check(dev);
@@ -1175,6 +1272,8 @@ struct net_device * __init i82596_probe(int unit)
 		dev->irq = irq;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef ENABLE_MVME16x_NET
 	if (MACH_IS_MVME16x) {
 		if (mvme16x_config & MVME16x_CONFIG_NO_ETHERNET) {
@@ -1182,7 +1281,11 @@ struct net_device * __init i82596_probe(int unit)
 			err = -ENODEV;
 			goto out;
 		}
+<<<<<<< HEAD
 		memcpy(eth_addr, (void *) 0xfffc1f2c, 6);	/* YUCK! Get addr from NOVRAM */
+=======
+		memcpy(eth_addr, absolute_pointer(0xfffc1f2c), ETH_ALEN); /* YUCK! Get addr from NOVRAM */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev->base_addr = MVME_I596_BASE;
 		dev->irq = (unsigned) MVME16x_IRQ_I596;
 		goto found;
@@ -1203,6 +1306,7 @@ struct net_device * __init i82596_probe(int unit)
 		goto found;
 	}
 #endif
+<<<<<<< HEAD
 #ifdef ENABLE_APRICOT
 	{
 		int checksum = 0;
@@ -1240,6 +1344,8 @@ struct net_device * __init i82596_probe(int unit)
 		goto found;
 	}
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = -ENODEV;
 	goto out;
 
@@ -1253,7 +1359,12 @@ found:
 	DEB(DEB_PROBE,printk(KERN_INFO "%s: 82596 at %#3lx,", dev->name, dev->base_addr));
 
 	for (i = 0; i < 6; i++)
+<<<<<<< HEAD
 		DEB(DEB_PROBE,printk(" %2.2X", dev->dev_addr[i] = eth_addr[i]));
+=======
+		DEB(DEB_PROBE,printk(" %2.2X", eth_addr[i]));
+	eth_hw_addr_set(dev, eth_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	DEB(DEB_PROBE,printk(" IRQ %d.\n", dev->irq));
 
@@ -1296,9 +1407,12 @@ out2:
 #endif
 	free_page ((u32)(dev->mem_start));
 out1:
+<<<<<<< HEAD
 #ifdef ENABLE_APRICOT
 	release_region(dev->base_addr, I596_TOTAL_SIZE);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	free_netdev(dev);
 	return ERR_PTR(err);
@@ -1377,7 +1491,11 @@ static irqreturn_t i596_interrupt(int irq, void *dev_id)
 						dev->stats.tx_aborted_errors++;
 				}
 
+<<<<<<< HEAD
 				dev_kfree_skb_irq(skb);
+=======
+				dev_consume_skb_irq(skb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				tx_cmd->cmd.command = 0; /* Mark free */
 				break;
@@ -1455,10 +1573,13 @@ static irqreturn_t i596_interrupt(int irq, void *dev_id)
 		*ethirq = 3;
 	}
 #endif
+<<<<<<< HEAD
 #ifdef ENABLE_APRICOT
 	(void) inb(ioaddr + 0x10);
 	outb(4, ioaddr + 0xf);
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CA(dev);
 
 	DEB(DEB_INTS,printk(KERN_DEBUG "%s: exiting interrupt.\n", dev->name));
@@ -1586,6 +1707,7 @@ static void set_multicast_list(struct net_device *dev)
 	}
 }
 
+<<<<<<< HEAD
 #ifdef MODULE
 static struct net_device *dev_82596;
 
@@ -1594,10 +1716,15 @@ module_param(irq, int, 0);
 MODULE_PARM_DESC(irq, "Apricot IRQ number");
 #endif
 
+=======
+static struct net_device *dev_82596;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int debug = -1;
 module_param(debug, int, 0);
 MODULE_PARM_DESC(debug, "i82596 debug mask");
 
+<<<<<<< HEAD
 int __init init_module(void)
 {
 	if (debug >= 0)
@@ -1609,6 +1736,18 @@ int __init init_module(void)
 }
 
 void __exit cleanup_module(void)
+=======
+static int __init i82596_init(void)
+{
+	if (debug >= 0)
+		i596_debug = debug;
+	dev_82596 = i82596_probe();
+	return PTR_ERR_OR_ZERO(dev_82596);
+}
+module_init(i82596_init);
+
+static void __exit i82596_cleanup(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unregister_netdev(dev_82596);
 #ifdef __mc68000__
@@ -1620,6 +1759,7 @@ void __exit cleanup_module(void)
 			IOMAP_FULL_CACHING);
 #endif
 	free_page ((u32)(dev_82596->mem_start));
+<<<<<<< HEAD
 #ifdef ENABLE_APRICOT
 	/* If we don't do this, we can't re-insmod it later. */
 	release_region(dev_82596->base_addr, I596_TOTAL_SIZE);
@@ -1628,3 +1768,8 @@ void __exit cleanup_module(void)
 }
 
 #endif				/* MODULE */
+=======
+	free_netdev(dev_82596);
+}
+module_exit(i82596_cleanup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

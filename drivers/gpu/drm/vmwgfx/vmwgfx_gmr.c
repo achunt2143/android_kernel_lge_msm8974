@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /**************************************************************************
  *
  * Copyright © 2009-2011 VMware, Inc., Palo Alto, CA., USA
  * All Rights Reserved.
+=======
+// SPDX-License-Identifier: GPL-2.0 OR MIT
+/**************************************************************************
+ *
+ * Copyright 2009-2015 VMware, Inc., Palo Alto, CA., USA
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the
@@ -25,16 +32,29 @@
  *
  **************************************************************************/
 
+<<<<<<< HEAD
 #include "vmwgfx_drv.h"
 #include "drmP.h"
 #include "ttm/ttm_bo_driver.h"
+=======
+
+#include "vmwgfx_drv.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define VMW_PPN_SIZE (sizeof(unsigned long))
 /* A future safe maximum remap size. */
 #define VMW_PPN_PER_REMAP ((31 * 1024) / VMW_PPN_SIZE)
+<<<<<<< HEAD
 
 static int vmw_gmr2_bind(struct vmw_private *dev_priv,
 			 struct page *pages[],
+=======
+#define DMA_ADDR_INVALID ((dma_addr_t) 0)
+#define DMA_PAGE_INVALID 0UL
+
+static int vmw_gmr2_bind(struct vmw_private *dev_priv,
+			 struct vmw_piter *iter,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			 unsigned long num_pages,
 			 int gmr_id)
 {
@@ -49,7 +69,11 @@ static int vmw_gmr2_bind(struct vmw_private *dev_priv,
 	uint32_t cmd_size = define_size + remap_size;
 	uint32_t i;
 
+<<<<<<< HEAD
 	cmd_orig = cmd = vmw_fifo_reserve(dev_priv, cmd_size);
+=======
+	cmd_orig = cmd = VMW_CMD_RESERVE(dev_priv, cmd_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (unlikely(cmd == NULL))
 		return -ENOMEM;
 
@@ -70,7 +94,11 @@ static int vmw_gmr2_bind(struct vmw_private *dev_priv,
 		SVGA_REMAP_GMR2_PPN64 : SVGA_REMAP_GMR2_PPN32;
 
 	while (num_pages > 0) {
+<<<<<<< HEAD
 		unsigned long nr = min(num_pages, (unsigned long)VMW_PPN_PER_REMAP);
+=======
+		unsigned long nr = min_t(unsigned long, num_pages, VMW_PPN_PER_REMAP);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		remap_cmd.offsetPages = remap_pos;
 		remap_cmd.numPages = nr;
@@ -81,11 +109,21 @@ static int vmw_gmr2_bind(struct vmw_private *dev_priv,
 
 		for (i = 0; i < nr; ++i) {
 			if (VMW_PPN_SIZE <= 4)
+<<<<<<< HEAD
 				*cmd = page_to_pfn(*pages++);
 			else
 				*((uint64_t *)cmd) = page_to_pfn(*pages++);
 
 			cmd += VMW_PPN_SIZE / sizeof(*cmd);
+=======
+				*cmd = vmw_piter_dma_addr(iter) >> PAGE_SHIFT;
+			else
+				*((uint64_t *)cmd) = vmw_piter_dma_addr(iter) >>
+					PAGE_SHIFT;
+
+			cmd += VMW_PPN_SIZE / sizeof(*cmd);
+			vmw_piter_next(iter);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		num_pages -= nr;
@@ -94,7 +132,11 @@ static int vmw_gmr2_bind(struct vmw_private *dev_priv,
 
 	BUG_ON(cmd != cmd_orig + cmd_size / sizeof(*cmd));
 
+<<<<<<< HEAD
 	vmw_fifo_commit(dev_priv, cmd_size);
+=======
+	vmw_cmd_commit(dev_priv, cmd_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -106,17 +148,25 @@ static void vmw_gmr2_unbind(struct vmw_private *dev_priv,
 	uint32_t define_size = sizeof(define_cmd) + 4;
 	uint32_t *cmd;
 
+<<<<<<< HEAD
 	cmd = vmw_fifo_reserve(dev_priv, define_size);
 	if (unlikely(cmd == NULL)) {
 		DRM_ERROR("GMR2 unbind failed.\n");
 		return;
 	}
+=======
+	cmd = VMW_CMD_RESERVE(dev_priv, define_size);
+	if (unlikely(cmd == NULL))
+		return;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	define_cmd.gmrId = gmr_id;
 	define_cmd.numPages = 0;
 
 	*cmd++ = SVGA_CMD_DEFINE_GMR2;
 	memcpy(cmd, &define_cmd, sizeof(define_cmd));
 
+<<<<<<< HEAD
 	vmw_fifo_commit(dev_priv, define_size);
 }
 
@@ -281,11 +331,34 @@ int vmw_gmr_bind(struct vmw_private *dev_priv,
 	vmw_gmr_free_descriptors(&desc_pages);
 
 	return 0;
+=======
+	vmw_cmd_commit(dev_priv, define_size);
+}
+
+
+int vmw_gmr_bind(struct vmw_private *dev_priv,
+		 const struct vmw_sg_table *vsgt,
+		 unsigned long num_pages,
+		 int gmr_id)
+{
+	struct vmw_piter data_iter;
+
+	vmw_piter_start(&data_iter, vsgt, 0);
+
+	if (unlikely(!vmw_piter_next(&data_iter)))
+		return 0;
+
+	if (unlikely(!(dev_priv->capabilities & SVGA_CAP_GMR2)))
+		return -EINVAL;
+
+	return vmw_gmr2_bind(dev_priv, &data_iter, num_pages, gmr_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
 void vmw_gmr_unbind(struct vmw_private *dev_priv, int gmr_id)
 {
+<<<<<<< HEAD
 	if (likely(dev_priv->capabilities & SVGA_CAP_GMR2)) {
 		vmw_gmr2_unbind(dev_priv, gmr_id);
 		return;
@@ -297,4 +370,8 @@ void vmw_gmr_unbind(struct vmw_private *dev_priv, int gmr_id)
 	vmw_write(dev_priv, SVGA_REG_GMR_DESCRIPTOR, 0);
 	mb();
 	mutex_unlock(&dev_priv->hw_mutex);
+=======
+	if (likely(dev_priv->capabilities & SVGA_CAP_GMR2))
+		vmw_gmr2_unbind(dev_priv, gmr_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

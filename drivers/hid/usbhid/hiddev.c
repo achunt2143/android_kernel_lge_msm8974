@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2001 Paul Stewart
  *  Copyright (c) 2001 Vojtech Pavlik
  *
  *  HID char devices, giving access to raw HID device events.
+<<<<<<< HEAD
  *
  */
 
@@ -20,6 +25,11 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+ */
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Should you need to contact me, the author, you can do so either by
  * e-mail - mail your message to Paul Stewart <stewart@wetlogic.net>
@@ -27,6 +37,10 @@
 
 #include <linux/poll.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/input.h>
@@ -34,6 +48,11 @@
 #include <linux/hid.h>
 #include <linux/hiddev.h>
 #include <linux/compat.h>
+<<<<<<< HEAD
+=======
+#include <linux/vmalloc.h>
+#include <linux/nospec.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "usbhid.h"
 
 #ifdef CONFIG_USB_DYNAMIC_MINORS
@@ -45,6 +64,7 @@
 #endif
 #define HIDDEV_BUFFER_SIZE	2048
 
+<<<<<<< HEAD
 struct hiddev {
 	int exist;
 	int open;
@@ -55,6 +75,8 @@ struct hiddev {
 	spinlock_t list_lock;
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct hiddev_list {
 	struct hiddev_usage_ref buffer[HIDDEV_BUFFER_SIZE];
 	int head;
@@ -245,28 +267,87 @@ static int hiddev_release(struct inode * inode, struct file * file)
 	mutex_lock(&list->hiddev->existancelock);
 	if (!--list->hiddev->open) {
 		if (list->hiddev->exist) {
+<<<<<<< HEAD
 			usbhid_close(list->hiddev->hid);
 			usbhid_put_power(list->hiddev->hid);
 		} else {
 			mutex_unlock(&list->hiddev->existancelock);
 			kfree(list->hiddev);
 			kfree(list);
+=======
+			hid_hw_close(list->hiddev->hid);
+			hid_hw_power(list->hiddev->hid, PM_HINT_NORMAL);
+		} else {
+			mutex_unlock(&list->hiddev->existancelock);
+			kfree(list->hiddev);
+			vfree(list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return 0;
 		}
 	}
 
 	mutex_unlock(&list->hiddev->existancelock);
+<<<<<<< HEAD
 	kfree(list);
+=======
+	vfree(list);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static int __hiddev_open(struct hiddev *hiddev, struct file *file)
+{
+	struct hiddev_list *list;
+	int error;
+
+	lockdep_assert_held(&hiddev->existancelock);
+
+	list = vzalloc(sizeof(*list));
+	if (!list)
+		return -ENOMEM;
+
+	mutex_init(&list->thread_lock);
+	list->hiddev = hiddev;
+
+	if (!hiddev->open++) {
+		error = hid_hw_power(hiddev->hid, PM_HINT_FULLON);
+		if (error < 0)
+			goto err_drop_count;
+
+		error = hid_hw_open(hiddev->hid);
+		if (error < 0)
+			goto err_normal_power;
+	}
+
+	spin_lock_irq(&hiddev->list_lock);
+	list_add_tail(&list->node, &hiddev->list);
+	spin_unlock_irq(&hiddev->list_lock);
+
+	file->private_data = list;
+
+	return 0;
+
+err_normal_power:
+	hid_hw_power(hiddev->hid, PM_HINT_NORMAL);
+err_drop_count:
+	hiddev->open--;
+	vfree(list);
+	return error;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * open file op
  */
 static int hiddev_open(struct inode *inode, struct file *file)
 {
+<<<<<<< HEAD
 	struct hiddev_list *list;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_interface *intf;
 	struct hid_device *hid;
 	struct hiddev *hiddev;
@@ -275,6 +356,7 @@ static int hiddev_open(struct inode *inode, struct file *file)
 	intf = usbhid_find_interface(iminor(inode));
 	if (!intf)
 		return -ENODEV;
+<<<<<<< HEAD
 	hid = usb_get_intfdata(intf);
 	hiddev = hid->hiddev;
 
@@ -323,6 +405,16 @@ bail_unlock:
 bail:
 	file->private_data = NULL;
 	kfree(list);
+=======
+
+	hid = usb_get_intfdata(intf);
+	hiddev = hid->hiddev;
+
+	mutex_lock(&hiddev->existancelock);
+	res = hiddev->exist ? __hiddev_open(hiddev, file) : -ENODEV;
+	mutex_unlock(&hiddev->existancelock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return res;
 }
 
@@ -360,10 +452,13 @@ static ssize_t hiddev_read(struct file * file, char __user * buffer, size_t coun
 			prepare_to_wait(&list->hiddev->wait, &wait, TASK_INTERRUPTIBLE);
 
 			while (list->head == list->tail) {
+<<<<<<< HEAD
 				if (file->f_flags & O_NONBLOCK) {
 					retval = -EAGAIN;
 					break;
 				}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (signal_pending(current)) {
 					retval = -ERESTARTSYS;
 					break;
@@ -372,6 +467,13 @@ static ssize_t hiddev_read(struct file * file, char __user * buffer, size_t coun
 					retval = -EIO;
 					break;
 				}
+<<<<<<< HEAD
+=======
+				if (file->f_flags & O_NONBLOCK) {
+					retval = -EAGAIN;
+					break;
+				}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 				/* let O_NONBLOCK tasks run */
 				mutex_unlock(&list->thread_lock);
@@ -430,15 +532,25 @@ static ssize_t hiddev_read(struct file * file, char __user * buffer, size_t coun
  * "poll" file op
  * No kernel lock - fine
  */
+<<<<<<< HEAD
 static unsigned int hiddev_poll(struct file *file, poll_table *wait)
+=======
+static __poll_t hiddev_poll(struct file *file, poll_table *wait)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hiddev_list *list = file->private_data;
 
 	poll_wait(file, &list->hiddev->wait, wait);
 	if (list->head != list->tail)
+<<<<<<< HEAD
 		return POLLIN | POLLRDNORM;
 	if (!list->hiddev->exist)
 		return POLLERR | POLLHUP;
+=======
+		return EPOLLIN | EPOLLRDNORM | EPOLLOUT;
+	if (!list->hiddev->exist)
+		return EPOLLERR | EPOLLHUP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -477,10 +589,20 @@ static noinline int hiddev_ioctl_usage(struct hiddev *hiddev, unsigned int cmd, 
 
 		if (uref->field_index >= report->maxfield)
 			goto inval;
+<<<<<<< HEAD
+=======
+		uref->field_index = array_index_nospec(uref->field_index,
+						       report->maxfield);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		field = report->field[uref->field_index];
 		if (uref->usage_index >= field->maxusage)
 			goto inval;
+<<<<<<< HEAD
+=======
+		uref->usage_index = array_index_nospec(uref->usage_index,
+						       field->maxusage);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		uref->usage_code = field->usage[uref->usage_index].hid;
 
@@ -507,6 +629,7 @@ static noinline int hiddev_ioctl_usage(struct hiddev *hiddev, unsigned int cmd, 
 
 			if (uref->field_index >= report->maxfield)
 				goto inval;
+<<<<<<< HEAD
 
 			field = report->field[uref->field_index];
 		}
@@ -524,12 +647,50 @@ static noinline int hiddev_ioctl_usage(struct hiddev *hiddev, unsigned int cmd, 
 
 		switch (cmd) {
 		case HIDIOCGUSAGE:
+=======
+			uref->field_index = array_index_nospec(uref->field_index,
+							       report->maxfield);
+
+			field = report->field[uref->field_index];
+
+			if (cmd == HIDIOCGCOLLECTIONINDEX) {
+				if (uref->usage_index >= field->maxusage)
+					goto inval;
+				uref->usage_index =
+					array_index_nospec(uref->usage_index,
+							   field->maxusage);
+			} else if (uref->usage_index >= field->report_count)
+				goto inval;
+		}
+
+		if (cmd == HIDIOCGUSAGES || cmd == HIDIOCSUSAGES) {
+			if (uref_multi->num_values > HID_MAX_MULTI_USAGES ||
+			    uref->usage_index + uref_multi->num_values >
+			    field->report_count)
+				goto inval;
+
+			uref->usage_index =
+				array_index_nospec(uref->usage_index,
+						   field->report_count -
+						   uref_multi->num_values);
+		}
+
+		switch (cmd) {
+		case HIDIOCGUSAGE:
+			if (uref->usage_index >= field->report_count)
+				goto inval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			uref->value = field->value[uref->usage_index];
 			if (copy_to_user(user_arg, uref, sizeof(*uref)))
 				goto fault;
 			goto goodreturn;
 
 		case HIDIOCSUSAGE:
+<<<<<<< HEAD
+=======
+			if (uref->usage_index >= field->report_count)
+				goto inval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			field->value[uref->usage_index] = uref->value;
 			goto goodreturn;
 
@@ -624,7 +785,11 @@ static long hiddev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		break;
 
 	case HIDIOCAPPLICATION:
+<<<<<<< HEAD
 		if (arg < 0 || arg >= hid->maxapplication)
+=======
+		if (arg >= hid->maxapplication)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 
 		for (i = 0; i < hid->maxcollection; i++)
@@ -688,6 +853,10 @@ static long hiddev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 	case HIDIOCINITREPORT:
 		usbhid_init_reports(hid);
+<<<<<<< HEAD
+=======
+		hiddev->initialized = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = 0;
 		break;
 
@@ -704,8 +873,13 @@ static long hiddev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (report == NULL)
 			break;
 
+<<<<<<< HEAD
 		usbhid_submit_report(hid, report, USB_DIR_IN);
 		usbhid_wait_io(hid);
+=======
+		hid_hw_request(hid, report, HID_REQ_GET_REPORT);
+		hid_hw_wait(hid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		r = 0;
 		break;
@@ -723,8 +897,13 @@ static long hiddev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		if (report == NULL)
 			break;
 
+<<<<<<< HEAD
 		usbhid_submit_report(hid, report, USB_DIR_OUT);
 		usbhid_wait_io(hid);
+=======
+		hid_hw_request(hid, report, HID_REQ_SET_REPORT);
+		hid_hw_wait(hid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		r = 0;
 		break;
@@ -760,6 +939,11 @@ static long hiddev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		if (finfo.field_index >= report->maxfield)
 			break;
+<<<<<<< HEAD
+=======
+		finfo.field_index = array_index_nospec(finfo.field_index,
+						       report->maxfield);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		field = report->field[finfo.field_index];
 		memset(&finfo, 0, sizeof(finfo));
@@ -783,12 +967,22 @@ static long hiddev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		break;
 
 	case HIDIOCGUCODE:
+<<<<<<< HEAD
 		/* fall through */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case HIDIOCGUSAGE:
 	case HIDIOCSUSAGE:
 	case HIDIOCGUSAGES:
 	case HIDIOCSUSAGES:
 	case HIDIOCGCOLLECTIONINDEX:
+<<<<<<< HEAD
+=======
+		if (!hiddev->initialized) {
+			usbhid_init_reports(hid);
+			hiddev->initialized = true;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		r = hiddev_ioctl_usage(hiddev, cmd, user_arg);
 		break;
 
@@ -800,6 +994,11 @@ static long hiddev_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 
 		if (cinfo.index >= hid->maxcollection)
 			break;
+<<<<<<< HEAD
+=======
+		cinfo.index = array_index_nospec(cinfo.index,
+						 hid->maxcollection);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		cinfo.type = hid->collection[cinfo.index].type;
 		cinfo.usage = hid->collection[cinfo.index].usage;
@@ -837,6 +1036,7 @@ ret_unlock:
 	return r;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
 static long hiddev_compat_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 {
@@ -844,6 +1044,8 @@ static long hiddev_compat_ioctl(struct file *file, unsigned int cmd, unsigned lo
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct file_operations hiddev_fops = {
 	.owner =	THIS_MODULE,
 	.read =		hiddev_read,
@@ -853,6 +1055,7 @@ static const struct file_operations hiddev_fops = {
 	.release =	hiddev_release,
 	.unlocked_ioctl =	hiddev_ioctl,
 	.fasync =	hiddev_fasync,
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
 	.compat_ioctl	= hiddev_compat_ioctl,
 #endif
@@ -860,6 +1063,13 @@ static const struct file_operations hiddev_fops = {
 };
 
 static char *hiddev_devnode(struct device *dev, umode_t *mode)
+=======
+	.compat_ioctl	= compat_ptr_ioctl,
+	.llseek		= noop_llseek,
+};
+
+static char *hiddev_devnode(const struct device *dev, umode_t *mode)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return kasprintf(GFP_KERNEL, "usb/%s", dev_name(dev));
 }
@@ -889,11 +1099,19 @@ int hiddev_connect(struct hid_device *hid, unsigned int force)
 				break;
 
 		if (i == hid->maxcollection)
+<<<<<<< HEAD
 			return -1;
 	}
 
 	if (!(hiddev = kzalloc(sizeof(struct hiddev), GFP_KERNEL)))
 		return -1;
+=======
+			return -EINVAL;
+	}
+
+	if (!(hiddev = kzalloc(sizeof(struct hiddev), GFP_KERNEL)))
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_waitqueue_head(&hiddev->wait);
 	INIT_LIST_HEAD(&hiddev->list);
@@ -907,8 +1125,22 @@ int hiddev_connect(struct hid_device *hid, unsigned int force)
 		hid_err(hid, "Not able to get a minor for this device\n");
 		hid->hiddev = NULL;
 		kfree(hiddev);
+<<<<<<< HEAD
 		return -1;
 	}
+=======
+		return retval;
+	}
+
+	/*
+	 * If HID_QUIRK_NO_INIT_REPORTS is set, make sure we don't initialize
+	 * the reports.
+	 */
+	hiddev->initialized = hid->quirks & HID_QUIRK_NO_INIT_REPORTS;
+
+	hiddev->minor = usbhid->intf->minor;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -928,9 +1160,15 @@ void hiddev_disconnect(struct hid_device *hid)
 	hiddev->exist = 0;
 
 	if (hiddev->open) {
+<<<<<<< HEAD
 		mutex_unlock(&hiddev->existancelock);
 		usbhid_close(hiddev->hid);
 		wake_up_interruptible(&hiddev->wait);
+=======
+		hid_hw_close(hiddev->hid);
+		wake_up_interruptible(&hiddev->wait);
+		mutex_unlock(&hiddev->existancelock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		mutex_unlock(&hiddev->existancelock);
 		kfree(hiddev);

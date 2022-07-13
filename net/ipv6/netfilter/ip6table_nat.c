@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2011 Patrick McHardy <kaber@trash.net>
  *
@@ -5,6 +6,12 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2011 Patrick McHardy <kaber@trash.net>
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based on Rusty Russell's IPv4 NAT code. Development of IPv6 NAT
  * funded by Astaro.
  */
@@ -17,8 +24,17 @@
 #include <net/ipv6.h>
 
 #include <net/netfilter/nf_nat.h>
+<<<<<<< HEAD
 #include <net/netfilter/nf_nat_core.h>
 #include <net/netfilter/nf_nat_l3proto.h>
+=======
+
+struct ip6table_nat_pernet {
+	struct nf_hook_ops *nf_nat_ops;
+};
+
+static unsigned int ip6table_nat_net_id __read_mostly;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct xt_table nf_nat_ipv6_table = {
 	.name		= "nat",
@@ -30,6 +46,7 @@ static const struct xt_table nf_nat_ipv6_table = {
 	.af		= NFPROTO_IPV6,
 };
 
+<<<<<<< HEAD
 static unsigned int alloc_null_binding(struct nf_conn *ct, unsigned int hooknum)
 {
 	/* Force range to this IP; let proto decide mapping for
@@ -278,29 +295,142 @@ static struct nf_hook_ops nf_nat_ipv6_ops[] __read_mostly = {
 static int __net_init ip6table_nat_net_init(struct net *net)
 {
 	struct ip6t_replace *repl;
+=======
+static const struct nf_hook_ops nf_nat_ipv6_ops[] = {
+	{
+		.hook		= ip6t_do_table,
+		.pf		= NFPROTO_IPV6,
+		.hooknum	= NF_INET_PRE_ROUTING,
+		.priority	= NF_IP6_PRI_NAT_DST,
+	},
+	{
+		.hook		= ip6t_do_table,
+		.pf		= NFPROTO_IPV6,
+		.hooknum	= NF_INET_POST_ROUTING,
+		.priority	= NF_IP6_PRI_NAT_SRC,
+	},
+	{
+		.hook		= ip6t_do_table,
+		.pf		= NFPROTO_IPV6,
+		.hooknum	= NF_INET_LOCAL_OUT,
+		.priority	= NF_IP6_PRI_NAT_DST,
+	},
+	{
+		.hook		= ip6t_do_table,
+		.pf		= NFPROTO_IPV6,
+		.hooknum	= NF_INET_LOCAL_IN,
+		.priority	= NF_IP6_PRI_NAT_SRC,
+	},
+};
+
+static int ip6t_nat_register_lookups(struct net *net)
+{
+	struct ip6table_nat_pernet *xt_nat_net;
+	struct nf_hook_ops *ops;
+	struct xt_table *table;
+	int i, ret;
+
+	table = xt_find_table(net, NFPROTO_IPV6, "nat");
+	if (WARN_ON_ONCE(!table))
+		return -ENOENT;
+
+	xt_nat_net = net_generic(net, ip6table_nat_net_id);
+	ops = kmemdup(nf_nat_ipv6_ops, sizeof(nf_nat_ipv6_ops), GFP_KERNEL);
+	if (!ops)
+		return -ENOMEM;
+
+	for (i = 0; i < ARRAY_SIZE(nf_nat_ipv6_ops); i++) {
+		ops[i].priv = table;
+		ret = nf_nat_ipv6_register_fn(net, &ops[i]);
+		if (ret) {
+			while (i)
+				nf_nat_ipv6_unregister_fn(net, &ops[--i]);
+
+			kfree(ops);
+			return ret;
+		}
+	}
+
+	xt_nat_net->nf_nat_ops = ops;
+	return 0;
+}
+
+static void ip6t_nat_unregister_lookups(struct net *net)
+{
+	struct ip6table_nat_pernet *xt_nat_net = net_generic(net, ip6table_nat_net_id);
+	struct nf_hook_ops *ops = xt_nat_net->nf_nat_ops;
+	int i;
+
+	if (!ops)
+		return;
+
+	for (i = 0; i < ARRAY_SIZE(nf_nat_ipv6_ops); i++)
+		nf_nat_ipv6_unregister_fn(net, &ops[i]);
+
+	kfree(ops);
+}
+
+static int ip6table_nat_table_init(struct net *net)
+{
+	struct ip6t_replace *repl;
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	repl = ip6t_alloc_initial_table(&nf_nat_ipv6_table);
 	if (repl == NULL)
 		return -ENOMEM;
+<<<<<<< HEAD
 	net->ipv6.ip6table_nat = ip6t_register_table(net, &nf_nat_ipv6_table, repl);
 	kfree(repl);
 	if (IS_ERR(net->ipv6.ip6table_nat))
 		return PTR_ERR(net->ipv6.ip6table_nat);
 	return 0;
+=======
+	ret = ip6t_register_table(net, &nf_nat_ipv6_table, repl,
+				  NULL);
+	if (ret < 0) {
+		kfree(repl);
+		return ret;
+	}
+
+	ret = ip6t_nat_register_lookups(net);
+	if (ret < 0)
+		ip6t_unregister_table_exit(net, "nat");
+
+	kfree(repl);
+	return ret;
+}
+
+static void __net_exit ip6table_nat_net_pre_exit(struct net *net)
+{
+	ip6t_nat_unregister_lookups(net);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __net_exit ip6table_nat_net_exit(struct net *net)
 {
+<<<<<<< HEAD
 	ip6t_unregister_table(net, net->ipv6.ip6table_nat);
 }
 
 static struct pernet_operations ip6table_nat_net_ops = {
 	.init	= ip6table_nat_net_init,
 	.exit	= ip6table_nat_net_exit,
+=======
+	ip6t_unregister_table_exit(net, "nat");
+}
+
+static struct pernet_operations ip6table_nat_net_ops = {
+	.pre_exit = ip6table_nat_net_pre_exit,
+	.exit	= ip6table_nat_net_exit,
+	.id	= &ip6table_nat_net_id,
+	.size	= sizeof(struct ip6table_nat_pernet),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init ip6table_nat_init(void)
 {
+<<<<<<< HEAD
 	int err;
 
 	err = register_pernet_subsys(&ip6table_nat_net_ops);
@@ -316,15 +446,37 @@ err2:
 	unregister_pernet_subsys(&ip6table_nat_net_ops);
 err1:
 	return err;
+=======
+	int ret = xt_register_template(&nf_nat_ipv6_table,
+				       ip6table_nat_table_init);
+
+	if (ret < 0)
+		return ret;
+
+	ret = register_pernet_subsys(&ip6table_nat_net_ops);
+	if (ret)
+		xt_unregister_template(&nf_nat_ipv6_table);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit ip6table_nat_exit(void)
 {
+<<<<<<< HEAD
 	nf_unregister_hooks(nf_nat_ipv6_ops, ARRAY_SIZE(nf_nat_ipv6_ops));
 	unregister_pernet_subsys(&ip6table_nat_net_ops);
+=======
+	unregister_pernet_subsys(&ip6table_nat_net_ops);
+	xt_unregister_template(&nf_nat_ipv6_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(ip6table_nat_init);
 module_exit(ip6table_nat_exit);
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("Ip6tables legacy nat table");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

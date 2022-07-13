@@ -1,7 +1,15 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if !defined(_TRACE_SPUFS_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_SPUFS_H
 
 #include <linux/tracepoint.h>
+<<<<<<< HEAD
+=======
+#include <linux/stringify.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM spufs

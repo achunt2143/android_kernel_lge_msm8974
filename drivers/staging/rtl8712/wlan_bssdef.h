@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -32,11 +39,14 @@
 #define NDIS_802_11_LENGTH_RATES        8
 #define NDIS_802_11_LENGTH_RATES_EX     16
 
+<<<<<<< HEAD
 /* Set of 8 data rates*/
 typedef unsigned char   NDIS_802_11_RATES[NDIS_802_11_LENGTH_RATES];
 /* Set of 16 data rates */
 typedef unsigned char   NDIS_802_11_RATES_EX[NDIS_802_11_LENGTH_RATES_EX];
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct ndis_802_11_ssid {
 	u32 SsidLength;
 	u8  Ssid[32];
@@ -58,9 +68,15 @@ struct NDIS_802_11_CONFIGURATION_FH {
 };
 
 /*
+<<<<<<< HEAD
 	FW will only save the channel number in DSConfig.
 	ODI Handler will convert the channel number to freq. number.
 */
+=======
+ * FW will only save the channel number in DSConfig.
+ * ODI Handler will convert the channel number to freq. number.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct NDIS_802_11_CONFIGURATION {
 	u32 Length;             /* Length of structure */
 	u32 BeaconPeriod;       /* units are Kusec */
@@ -83,6 +99,7 @@ struct NDIS_802_11_FIXED_IEs {
 	u16 Capabilities;
 };
 
+<<<<<<< HEAD
 /*
  * Length is the 4 bytes multiples of the sume of
  * 6 * sizeof (unsigned char) + 2 + sizeof (ndis_802_11_ssid) + sizeof (u32)
@@ -95,16 +112,28 @@ struct NDIS_802_11_FIXED_IEs {
  */
 
 struct ndis_wlan_bssid_ex {
+=======
+struct wlan_bssid_ex {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 Length;
 	unsigned char  MacAddress[6];
 	u8  Reserved[2];
 	struct ndis_802_11_ssid  Ssid;
+<<<<<<< HEAD
 	u32 Privacy;
+=======
+	__le32 Privacy;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32 Rssi;
 	enum NDIS_802_11_NETWORK_TYPE  NetworkTypeInUse;
 	struct NDIS_802_11_CONFIGURATION  Configuration;
 	enum NDIS_802_11_NETWORK_INFRASTRUCTURE  InfrastructureMode;
+<<<<<<< HEAD
 	NDIS_802_11_RATES_EX  SupportedRates;
+=======
+	u8 rates[NDIS_802_11_LENGTH_RATES_EX];
+	/* number of content bytes in EIs, which varies */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 IELength;
 	/*(timestamp, beacon interval, and capability information) */
 	u8 IEs[MAX_IE_SZ];
@@ -186,7 +215,12 @@ struct NDIS_802_11_REMOVE_KEY {
 struct NDIS_802_11_WEP {
 	u32 Length;		  /* Length of this structure */
 	u32 KeyIndex;		  /* 0 is the per-client key,
+<<<<<<< HEAD
 				   * 1-N are the global keys */
+=======
+				   * 1-N are the global keys
+				   */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 KeyLength;		  /* length of key in bytes */
 	u8  KeyMaterial[16];      /* variable length depending on above field */
 };
@@ -202,18 +236,31 @@ struct NDIS_802_11_WEP {
 #define MIC_CHECK_TIME	60000000
 
 #ifndef Ndis802_11APMode
+<<<<<<< HEAD
 #define Ndis802_11APMode (Ndis802_11InfrastructureMax+1)
+=======
+#define Ndis802_11APMode (Ndis802_11InfrastructureMax + 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 struct	wlan_network {
 	struct list_head list;
 	int	network_type;	/*refer to ieee80211.h for WIRELESS_11A/B/G */
 	int	fixed;		/* set to fixed when not to be removed asi
+<<<<<<< HEAD
 				 * site-surveying */
 	unsigned int	last_scanned; /*timestamp for the network */
 	int	aid;		/*will only be valid when a BSS is joined. */
 	int	join_res;
 	struct ndis_wlan_bssid_ex network; /*must be the last item */
+=======
+				 * site-surveying
+				 */
+	unsigned int	last_scanned; /*timestamp for the network */
+	int	aid;		/*will only be valid when a BSS is joined. */
+	int	join_res;
+	struct wlan_bssid_ex network; /*must be the last item */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 enum VRTL_CARRIER_SENSE {
@@ -244,6 +291,7 @@ enum UAPSD_MAX_SP {
 #define NUM_PRE_AUTH_KEY 16
 #define NUM_PMKID_CACHE NUM_PRE_AUTH_KEY
 
+<<<<<<< HEAD
 /*
  *	WPA2
  */
@@ -263,5 +311,7 @@ struct wlan_bssid_ex {
 				 * information) */
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* #ifndef WLAN_BSSDEF_H_ */
 

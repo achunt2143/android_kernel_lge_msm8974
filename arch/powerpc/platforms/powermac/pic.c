@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Support for the interrupt controllers found on Power Macintosh,
  *  currently Apple's "Grand Central" interrupt controller in all
@@ -7,12 +11,15 @@
  *  Copyright (C) 1997 Paul Mackerras (paulus@samba.org)
  *  Copyright (C) 2005 Benjamin Herrenschmidt (benh@kernel.crashing.org)
  *                     IBM, Corp.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
  *  as published by the Free Software Foundation; either version
  *  2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/stddef.h>
@@ -23,12 +30,23 @@
 #include <linux/interrupt.h>
 #include <linux/syscore_ops.h>
 #include <linux/adb.h>
+<<<<<<< HEAD
 #include <linux/pmu.h>
+=======
+#include <linux/minmax.h>
+#include <linux/pmu.h>
+#include <linux/irqdomain.h>
+#include <linux/of_address.h>
+#include <linux/of_irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/sections.h>
 #include <asm/io.h>
 #include <asm/smp.h>
+<<<<<<< HEAD
 #include <asm/prom.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pci-bridge.h>
 #include <asm/time.h>
 #include <asm/pmac_feature.h>
@@ -251,6 +269,7 @@ static unsigned int pmac_pic_get_irq(void)
 	}
 	raw_spin_unlock_irqrestore(&pmac_pic_lock, flags);
 	if (unlikely(irq < 0))
+<<<<<<< HEAD
 		return NO_IRQ;
 	return irq_linear_revmap(pmac_pic_host, irq);
 }
@@ -269,6 +288,14 @@ static struct irqaction gatwick_cascade_action = {
 };
 
 static int pmac_pic_host_match(struct irq_domain *h, struct device_node *node)
+=======
+		return 0;
+	return irq_linear_revmap(pmac_pic_host, irq);
+}
+
+static int pmac_pic_host_match(struct irq_domain *h, struct device_node *node,
+			       enum irq_domain_bus_token bus_token)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* We match all, we don't always have a node anyway */
 	return 1;
@@ -321,15 +348,26 @@ static void __init pmac_pic_probe_oldstyle(void)
 		max_irqs = max_real_irqs = 64;
 
 		/* We might have a second cascaded heathrow */
+<<<<<<< HEAD
+=======
+
+		/* Compensate for of_node_put() in of_find_node_by_name() */
+		of_node_get(master);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		slave = of_find_node_by_name(master, "mac-io");
 
 		/* Check ordering of master & slave */
 		if (of_device_is_compatible(master, "gatwick")) {
+<<<<<<< HEAD
 			struct device_node *tmp;
 			BUG_ON(slave == NULL);
 			tmp = master;
 			master = slave;
 			slave = tmp;
+=======
+			BUG_ON(slave == NULL);
+			swap(master, slave);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		/* We found a slave */
@@ -359,8 +397,13 @@ static void __init pmac_pic_probe_oldstyle(void)
 			(addr + 0x10);
 	of_node_put(master);
 
+<<<<<<< HEAD
 	printk(KERN_INFO "irq: Found primary Apple PIC %s for %d irqs\n",
 	       master->full_name, max_real_irqs);
+=======
+	printk(KERN_INFO "irq: Found primary Apple PIC %pOF for %d irqs\n",
+	       master, max_real_irqs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Map interrupts of cascaded controller */
 	if (slave && !of_address_to_resource(slave, 0, &r)) {
@@ -373,8 +416,13 @@ static void __init pmac_pic_probe_oldstyle(void)
 				(addr + 0x10);
 		pmac_irq_cascade = irq_of_parse_and_map(slave, 0);
 
+<<<<<<< HEAD
 		printk(KERN_INFO "irq: Found slave Apple PIC %s for %d irqs"
 		       " cascade: %d\n", slave->full_name,
+=======
+		printk(KERN_INFO "irq: Found slave Apple PIC %pOF for %d irqs"
+		       " cascade: %d\n", slave,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       max_irqs - max_real_irqs, pmac_irq_cascade);
 	}
 	of_node_put(slave);
@@ -384,6 +432,7 @@ static void __init pmac_pic_probe_oldstyle(void)
 		out_le32(&pmac_irq_hw[i]->enable, 0);
 
 	/* Hookup cascade irq */
+<<<<<<< HEAD
 	if (slave && pmac_irq_cascade != NO_IRQ)
 		setup_irq(pmac_irq_cascade, &gatwick_cascade_action);
 
@@ -395,6 +444,24 @@ static void __init pmac_pic_probe_oldstyle(void)
 
 int of_irq_map_oldworld(struct device_node *device, int index,
 			struct of_irq *out_irq)
+=======
+	if (slave && pmac_irq_cascade) {
+		if (request_irq(pmac_irq_cascade, gatwick_action,
+				IRQF_NO_THREAD, "cascade", NULL))
+			pr_err("Failed to register cascade interrupt\n");
+	}
+
+	printk(KERN_INFO "irq: System has %d possible interrupts\n", max_irqs);
+#ifdef CONFIG_XMON
+	i = irq_create_mapping(NULL, 20);
+	if (request_irq(i, xmon_irq, IRQF_NO_THREAD, "NMI - XMON", NULL))
+		pr_err("Failed to register NMI-XMON interrupt\n");
+#endif
+}
+
+int of_irq_parse_oldworld(const struct device_node *device, int index,
+			struct of_phandle_args *out_irq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	const u32 *ints = NULL;
 	int intlen;
@@ -412,7 +479,11 @@ int of_irq_map_oldworld(struct device_node *device, int index,
 		if (ints != NULL)
 			break;
 		device = device->parent;
+<<<<<<< HEAD
 		if (device && strcmp(device->type, "pci") != 0)
+=======
+		if (!of_node_is_type(device, "pci"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 	if (ints == NULL)
@@ -422,9 +493,15 @@ int of_irq_map_oldworld(struct device_node *device, int index,
 	if (index >= intlen)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	out_irq->controller = NULL;
 	out_irq->specifier[0] = ints[index];
 	out_irq->size = 1;
+=======
+	out_irq->np = NULL;
+	out_irq->args[0] = ints[index];
+	out_irq->args_count = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -439,9 +516,17 @@ static void __init pmac_pic_setup_mpic_nmi(struct mpic *mpic)
 	pswitch = of_find_node_by_name(NULL, "programmer-switch");
 	if (pswitch) {
 		nmi_irq = irq_of_parse_and_map(pswitch, 0);
+<<<<<<< HEAD
 		if (nmi_irq != NO_IRQ) {
 			mpic_irq_set_priority(nmi_irq, 9);
 			setup_irq(nmi_irq, &xmon_action);
+=======
+		if (nmi_irq) {
+			mpic_irq_set_priority(nmi_irq, 9);
+			if (request_irq(nmi_irq, xmon_irq, IRQF_NO_THREAD,
+					"NMI - XMON", NULL))
+				pr_err("Failed to register NMI-XMON interrupt\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		of_node_put(pswitch);
 	}
@@ -457,7 +542,11 @@ static struct mpic * __init pmac_setup_one_mpic(struct device_node *np,
 
 	pmac_call_feature(PMAC_FTR_ENABLE_MPIC, np, 0, 0);
 
+<<<<<<< HEAD
 	if (of_get_property(np, "big-endian", NULL))
+=======
+	if (of_property_read_bool(np, "big-endian"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		flags |= MPIC_BIG_ENDIAN;
 
 	/* Primary Big Endian means HT interrupts. This is quite dodgy
@@ -481,6 +570,7 @@ static int __init pmac_pic_probe_mpic(void)
 	struct device_node *np, *master = NULL, *slave = NULL;
 
 	/* We can have up to 2 MPICs cascaded */
+<<<<<<< HEAD
 	for (np = NULL; (np = of_find_node_by_type(np, "open-pic"))
 		     != NULL;) {
 		if (master == NULL &&
@@ -490,6 +580,17 @@ static int __init pmac_pic_probe_mpic(void)
 			slave = of_node_get(np);
 		if (master && slave)
 			break;
+=======
+	for_each_node_by_type(np, "open-pic") {
+		if (master == NULL && !of_property_present(np, "interrupts"))
+			master = of_node_get(np);
+		else if (slave == NULL)
+			slave = of_node_get(np);
+		if (master && slave) {
+			of_node_put(np);
+			break;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Check for bogus setups */
@@ -529,12 +630,20 @@ static int __init pmac_pic_probe_mpic(void)
 void __init pmac_pic_init(void)
 {
 	/* We configure the OF parsing based on our oldworld vs. newworld
+<<<<<<< HEAD
 	 * platform type and wether we were booted by BootX.
+=======
+	 * platform type and whether we were booted by BootX.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 #ifdef CONFIG_PPC32
 	if (!pmac_newworld)
 		of_irq_workarounds |= OF_IMAP_OLDWORLD_MAC;
+<<<<<<< HEAD
 	if (of_get_property(of_chosen, "linux,bootx", NULL) != NULL)
+=======
+	if (of_property_read_bool(of_chosen, "linux,bootx"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		of_irq_workarounds |= OF_IMAP_NO_PHANDLE;
 
 	/* If we don't have phandles on a newworld, then try to locate a
@@ -547,13 +656,21 @@ void __init pmac_pic_init(void)
 
 		for_each_node_with_property(np, "interrupt-controller") {
 			/* Skip /chosen/interrupt-controller */
+<<<<<<< HEAD
 			if (strcmp(np->name, "chosen") == 0)
+=======
+			if (of_node_name_eq(np, "chosen"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			/* It seems like at least one person wants
 			 * to use BootX on a machine with an AppleKiwi
 			 * controller which happens to pretend to be an
 			 * interrupt controller too. */
+<<<<<<< HEAD
 			if (strcmp(np->name, "AppleKiwi") == 0)
+=======
+			if (of_node_name_eq(np, "AppleKiwi"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			/* I think we found one ! */
 			of_irq_dflt_pic = np;
@@ -599,6 +716,10 @@ static int pmacpic_find_viaint(void)
 	if (np == NULL)
 		goto not_found;
 	viaint = irq_of_parse_and_map(np, 0);
+<<<<<<< HEAD
+=======
+	of_node_put(np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 not_found:
 #endif /* CONFIG_ADB_PMU */

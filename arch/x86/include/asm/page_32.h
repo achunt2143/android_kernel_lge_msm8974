@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _ASM_X86_PAGE_32_H
 #define _ASM_X86_PAGE_32_H
 
@@ -5,16 +9,20 @@
 
 #ifndef __ASSEMBLY__
 
+<<<<<<< HEAD
 #ifdef CONFIG_HUGETLB_PAGE
 #define HAVE_ARCH_HUGETLB_UNMAPPED_AREA
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __phys_addr_nodebug(x)	((x) - PAGE_OFFSET)
 #ifdef CONFIG_DEBUG_VIRTUAL
 extern unsigned long __phys_addr(unsigned long);
 #else
 #define __phys_addr(x)		__phys_addr_nodebug(x)
 #endif
+<<<<<<< HEAD
 #define __phys_reloc_hide(x)	RELOC_HIDE((x), 0)
 
 #ifdef CONFIG_FLATMEM
@@ -34,6 +42,11 @@ static inline void copy_page(void *to, void *from)
 	mmx_copy_page(to, from);
 }
 #else  /* !CONFIG_X86_USE_3DNOW */
+=======
+#define __phys_addr_symbol(x)	__phys_addr(x)
+#define __phys_reloc_hide(x)	RELOC_HIDE((x), 0)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 
 static inline void clear_page(void *page)
@@ -45,7 +58,10 @@ static inline void copy_page(void *to, void *from)
 {
 	memcpy(to, from, PAGE_SIZE);
 }
+<<<<<<< HEAD
 #endif	/* CONFIG_X86_3DNOW */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* !__ASSEMBLY__ */
 
 #endif /* _ASM_X86_PAGE_32_H */

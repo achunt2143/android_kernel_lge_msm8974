@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Force feedback driver for USB HID PID compliant devices
  *
@@ -5,6 +9,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -18,6 +23,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* #define DEBUG */
@@ -263,8 +270,13 @@ static void pidff_set_envelope_report(struct pidff_device *pidff,
 		envelope->attack_level,
 		pidff->set_envelope[PID_ATTACK_LEVEL].value[0]);
 
+<<<<<<< HEAD
 	usbhid_submit_report(pidff->hid, pidff->reports[PID_SET_ENVELOPE],
 			  USB_DIR_OUT);
+=======
+	hid_hw_request(pidff->hid, pidff->reports[PID_SET_ENVELOPE],
+			HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -290,8 +302,13 @@ static void pidff_set_constant_force_report(struct pidff_device *pidff,
 	pidff_set_signed(&pidff->set_constant[PID_MAGNITUDE],
 			 effect->u.constant.level);
 
+<<<<<<< HEAD
 	usbhid_submit_report(pidff->hid, pidff->reports[PID_SET_CONSTANT],
 			  USB_DIR_OUT);
+=======
+	hid_hw_request(pidff->hid, pidff->reports[PID_SET_CONSTANT],
+			HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -325,8 +342,13 @@ static void pidff_set_effect_report(struct pidff_device *pidff,
 				pidff->effect_direction);
 	pidff->set_effect[PID_START_DELAY].value[0] = effect->replay.delay;
 
+<<<<<<< HEAD
 	usbhid_submit_report(pidff->hid, pidff->reports[PID_SET_EFFECT],
 			  USB_DIR_OUT);
+=======
+	hid_hw_request(pidff->hid, pidff->reports[PID_SET_EFFECT],
+			HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -357,8 +379,13 @@ static void pidff_set_periodic_report(struct pidff_device *pidff,
 	pidff_set(&pidff->set_periodic[PID_PHASE], effect->u.periodic.phase);
 	pidff->set_periodic[PID_PERIOD].value[0] = effect->u.periodic.period;
 
+<<<<<<< HEAD
 	usbhid_submit_report(pidff->hid, pidff->reports[PID_SET_PERIODIC],
 			  USB_DIR_OUT);
+=======
+	hid_hw_request(pidff->hid, pidff->reports[PID_SET_PERIODIC],
+			HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 }
 
@@ -399,8 +426,13 @@ static void pidff_set_condition_report(struct pidff_device *pidff,
 			  effect->u.condition[i].left_saturation);
 		pidff_set(&pidff->set_condition[PID_DEAD_BAND],
 			  effect->u.condition[i].deadband);
+<<<<<<< HEAD
 		usbhid_submit_report(pidff->hid, pidff->reports[PID_SET_CONDITION],
 				  USB_DIR_OUT);
+=======
+		hid_hw_request(pidff->hid, pidff->reports[PID_SET_CONDITION],
+				HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -440,8 +472,13 @@ static void pidff_set_ramp_force_report(struct pidff_device *pidff,
 			 effect->u.ramp.start_level);
 	pidff_set_signed(&pidff->set_ramp[PID_RAMP_END],
 			 effect->u.ramp.end_level);
+<<<<<<< HEAD
 	usbhid_submit_report(pidff->hid, pidff->reports[PID_SET_RAMP],
 			  USB_DIR_OUT);
+=======
+	hid_hw_request(pidff->hid, pidff->reports[PID_SET_RAMP],
+			HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -465,12 +502,18 @@ static int pidff_request_effect_upload(struct pidff_device *pidff, int efnum)
 	int j;
 
 	pidff->create_new_effect_type->value[0] = efnum;
+<<<<<<< HEAD
 	usbhid_submit_report(pidff->hid, pidff->reports[PID_CREATE_NEW_EFFECT],
 			  USB_DIR_OUT);
+=======
+	hid_hw_request(pidff->hid, pidff->reports[PID_CREATE_NEW_EFFECT],
+			HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hid_dbg(pidff->hid, "create_new_effect sent, type: %d\n", efnum);
 
 	pidff->block_load[PID_EFFECT_BLOCK_INDEX].value[0] = 0;
 	pidff->block_load_status->value[0] = 0;
+<<<<<<< HEAD
 	usbhid_wait_io(pidff->hid);
 
 	for (j = 0; j < 60; j++) {
@@ -478,6 +521,15 @@ static int pidff_request_effect_upload(struct pidff_device *pidff, int efnum)
 		usbhid_submit_report(pidff->hid, pidff->reports[PID_BLOCK_LOAD],
 				  USB_DIR_IN);
 		usbhid_wait_io(pidff->hid);
+=======
+	hid_hw_wait(pidff->hid);
+
+	for (j = 0; j < 60; j++) {
+		hid_dbg(pidff->hid, "pid_block_load requested\n");
+		hid_hw_request(pidff->hid, pidff->reports[PID_BLOCK_LOAD],
+				HID_REQ_GET_REPORT);
+		hid_hw_wait(pidff->hid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (pidff->block_load_status->value[0] ==
 		    pidff->status_id[PID_BLOCK_LOAD_SUCCESS]) {
 			hid_dbg(pidff->hid, "device reported free memory: %d bytes\n",
@@ -513,11 +565,19 @@ static void pidff_playback_pid(struct pidff_device *pidff, int pid_id, int n)
 		pidff->effect_operation[PID_LOOP_COUNT].value[0] = n;
 	}
 
+<<<<<<< HEAD
 	usbhid_submit_report(pidff->hid, pidff->reports[PID_EFFECT_OPERATION],
 			  USB_DIR_OUT);
 }
 
 /**
+=======
+	hid_hw_request(pidff->hid, pidff->reports[PID_EFFECT_OPERATION],
+			HID_REQ_SET_REPORT);
+}
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Play the effect with effect id @effect_id for @value times
  */
 static int pidff_playback(struct input_dev *dev, int effect_id, int value)
@@ -535,8 +595,13 @@ static int pidff_playback(struct input_dev *dev, int effect_id, int value)
 static void pidff_erase_pid(struct pidff_device *pidff, int pid_id)
 {
 	pidff->block_free[PID_EFFECT_BLOCK_INDEX].value[0] = pid_id;
+<<<<<<< HEAD
 	usbhid_submit_report(pidff->hid, pidff->reports[PID_BLOCK_FREE],
 			  USB_DIR_OUT);
+=======
+	hid_hw_request(pidff->hid, pidff->reports[PID_BLOCK_FREE],
+			HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -551,7 +616,11 @@ static int pidff_erase_effect(struct input_dev *dev, int effect_id)
 		effect_id, pidff->pid_id[effect_id]);
 	/* Wait for the queue to clear. We do not want a full fifo to
 	   prevent the effect removal. */
+<<<<<<< HEAD
 	usbhid_wait_io(pidff->hid);
+=======
+	hid_hw_wait(pidff->hid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pidff_playback_pid(pidff, pid_id, 0);
 	pidff_erase_pid(pidff, pid_id);
 
@@ -568,6 +637,15 @@ static int pidff_upload_effect(struct input_dev *dev, struct ff_effect *effect,
 	int type_id;
 	int error;
 
+<<<<<<< HEAD
+=======
+	pidff->block_load[PID_EFFECT_BLOCK_INDEX].value[0] = 0;
+	if (old) {
+		pidff->block_load[PID_EFFECT_BLOCK_INDEX].value[0] =
+			pidff->pid_id[effect->id];
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (effect->type) {
 	case FF_CONSTANT:
 		if (!old) {
@@ -718,8 +796,13 @@ static void pidff_set_gain(struct input_dev *dev, u16 gain)
 	struct pidff_device *pidff = dev->ff->private;
 
 	pidff_set(&pidff->device_gain[PID_DEVICE_GAIN_FIELD], gain);
+<<<<<<< HEAD
 	usbhid_submit_report(pidff->hid, pidff->reports[PID_DEVICE_GAIN],
 			  USB_DIR_OUT);
+=======
+	hid_hw_request(pidff->hid, pidff->reports[PID_DEVICE_GAIN],
+			HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pidff_autocenter(struct pidff_device *pidff, u16 magnitude)
@@ -744,8 +827,13 @@ static void pidff_autocenter(struct pidff_device *pidff, u16 magnitude)
 	pidff->set_effect[PID_DIRECTION_ENABLE].value[0] = 1;
 	pidff->set_effect[PID_START_DELAY].value[0] = 0;
 
+<<<<<<< HEAD
 	usbhid_submit_report(pidff->hid, pidff->reports[PID_SET_EFFECT],
 			  USB_DIR_OUT);
+=======
+	hid_hw_request(pidff->hid, pidff->reports[PID_SET_EFFECT],
+			HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -1003,7 +1091,11 @@ static int pidff_find_special_fields(struct pidff_device *pidff)
 	return 0;
 }
 
+<<<<<<< HEAD
 /**
+=======
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Find the implemented effect types
  */
 static int pidff_find_effects(struct pidff_device *pidff,
@@ -1158,6 +1250,7 @@ static void pidff_reset(struct pidff_device *pidff)
 
 	pidff->device_control->value[0] = pidff->control_id[PID_RESET];
 	/* We reset twice as sometimes hid_wait_io isn't waiting long enough */
+<<<<<<< HEAD
 	usbhid_submit_report(hid, pidff->reports[PID_DEVICE_CONTROL], USB_DIR_OUT);
 	usbhid_wait_io(hid);
 	usbhid_submit_report(hid, pidff->reports[PID_DEVICE_CONTROL], USB_DIR_OUT);
@@ -1171,6 +1264,21 @@ static void pidff_reset(struct pidff_device *pidff)
 	/* pool report is sometimes messed up, refetch it */
 	usbhid_submit_report(hid, pidff->reports[PID_POOL], USB_DIR_IN);
 	usbhid_wait_io(hid);
+=======
+	hid_hw_request(hid, pidff->reports[PID_DEVICE_CONTROL], HID_REQ_SET_REPORT);
+	hid_hw_wait(hid);
+	hid_hw_request(hid, pidff->reports[PID_DEVICE_CONTROL], HID_REQ_SET_REPORT);
+	hid_hw_wait(hid);
+
+	pidff->device_control->value[0] =
+		pidff->control_id[PID_ENABLE_ACTUATORS];
+	hid_hw_request(hid, pidff->reports[PID_DEVICE_CONTROL], HID_REQ_SET_REPORT);
+	hid_hw_wait(hid);
+
+	/* pool report is sometimes messed up, refetch it */
+	hid_hw_request(hid, pidff->reports[PID_POOL], HID_REQ_GET_REPORT);
+	hid_hw_wait(hid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (pidff->pool[PID_SIMULTANEOUS_MAX].value) {
 		while (pidff->pool[PID_SIMULTANEOUS_MAX].value[0] < 2) {
@@ -1181,9 +1289,15 @@ static void pidff_reset(struct pidff_device *pidff)
 				break;
 			}
 			hid_dbg(pidff->hid, "pid_pool requested again\n");
+<<<<<<< HEAD
 			usbhid_submit_report(hid, pidff->reports[PID_POOL],
 					  USB_DIR_IN);
 			usbhid_wait_io(hid);
+=======
+			hid_hw_request(hid, pidff->reports[PID_POOL],
+					  HID_REQ_GET_REPORT);
+			hid_hw_wait(hid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 }
@@ -1252,6 +1366,11 @@ int hid_pidff_init(struct hid_device *hid)
 
 	pidff->hid = hid;
 
+<<<<<<< HEAD
+=======
+	hid_device_io_start(hid);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pidff_find_reports(hid, HID_OUTPUT_REPORT, pidff);
 	pidff_find_reports(hid, HID_FEATURE_REPORT, pidff);
 
@@ -1269,8 +1388,13 @@ int hid_pidff_init(struct hid_device *hid)
 
 	if (test_bit(FF_GAIN, dev->ffbit)) {
 		pidff_set(&pidff->device_gain[PID_DEVICE_GAIN_FIELD], 0xffff);
+<<<<<<< HEAD
 		usbhid_submit_report(hid, pidff->reports[PID_DEVICE_GAIN],
 				     USB_DIR_OUT);
+=======
+		hid_hw_request(hid, pidff->reports[PID_DEVICE_GAIN],
+				     HID_REQ_SET_REPORT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = pidff_check_autocenter(pidff, dev);
@@ -1296,6 +1420,10 @@ int hid_pidff_init(struct hid_device *hid)
 
 	if (pidff->pool[PID_DEVICE_MANAGED_POOL].value &&
 	    pidff->pool[PID_DEVICE_MANAGED_POOL].value[0] == 0) {
+<<<<<<< HEAD
+=======
+		error = -EPERM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hid_notice(hid,
 			   "device does not support device managed pool\n");
 		goto fail;
@@ -1315,9 +1443,19 @@ int hid_pidff_init(struct hid_device *hid)
 
 	hid_info(dev, "Force feedback for USB HID PID devices by Anssi Hannula <anssi.hannula@gmail.com>\n");
 
+<<<<<<< HEAD
 	return 0;
 
  fail:
+=======
+	hid_device_io_stop(hid);
+
+	return 0;
+
+ fail:
+	hid_device_io_stop(hid);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(pidff);
 	return error;
 }

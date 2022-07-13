@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux performance counter support for MIPS.
  *
@@ -8,6 +12,7 @@
  * based on the sparc64 perf event code and the x86 code. Performance
  * counter access is based on the MIPS Oprofile code. And the callchain
  * support references the code of MIPS stacktrace.c.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
@@ -15,6 +20,12 @@
  */
 
 #include <linux/perf_event.h>
+=======
+ */
+
+#include <linux/perf_event.h>
+#include <linux/sched/task_stack.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/stacktrace.h>
 
@@ -25,8 +36,13 @@
  * the user stack callchains, we will add it here.
  */
 
+<<<<<<< HEAD
 static void save_raw_perf_callchain(struct perf_callchain_entry *entry,
 	unsigned long reg29)
+=======
+static void save_raw_perf_callchain(struct perf_callchain_entry_ctx *entry,
+				    unsigned long reg29)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long *sp = (unsigned long *)reg29;
 	unsigned long addr;
@@ -35,14 +51,23 @@ static void save_raw_perf_callchain(struct perf_callchain_entry *entry,
 		addr = *sp++;
 		if (__kernel_text_address(addr)) {
 			perf_callchain_store(entry, addr);
+<<<<<<< HEAD
 			if (entry->nr >= PERF_MAX_STACK_DEPTH)
+=======
+			if (entry->nr >= entry->max_stack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				break;
 		}
 	}
 }
 
+<<<<<<< HEAD
 void perf_callchain_kernel(struct perf_callchain_entry *entry,
 		      struct pt_regs *regs)
+=======
+void perf_callchain_kernel(struct perf_callchain_entry_ctx *entry,
+			   struct pt_regs *regs)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long sp = regs->regs[29];
 #ifdef CONFIG_KALLSYMS
@@ -59,7 +84,11 @@ void perf_callchain_kernel(struct perf_callchain_entry *entry,
 	}
 	do {
 		perf_callchain_store(entry, pc);
+<<<<<<< HEAD
 		if (entry->nr >= PERF_MAX_STACK_DEPTH)
+=======
+		if (entry->nr >= entry->max_stack)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		pc = unwind_stack(current, &sp, pc, &ra);
 	} while (pc);

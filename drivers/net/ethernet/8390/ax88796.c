@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* drivers/net/ethernet/8390/ax88796.c
  *
  * Copyright 2005,2007 Simtec Electronics
@@ -5,17 +9,23 @@
  *
  * Asix AX88796 10/100 Ethernet controller support
  *	Based on ne.c, by Donald Becker, et-al.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/isapnp.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/io.h>
 #include <linux/platform_device.h>
@@ -83,7 +93,10 @@ static unsigned char version[] = "ax88796.c: Copyright 2005,2007 Simtec Electron
 struct ax_device {
 	struct mii_bus *mii_bus;
 	struct mdiobb_ctrl bb_ctrl;
+<<<<<<< HEAD
 	struct phy_device *phy_dev;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *addr_memr;
 	u8 reg_memr;
 	int link;
@@ -106,10 +119,24 @@ static inline struct ax_device *to_ax_dev(struct net_device *dev)
 	return (struct ax_device *)(ei_local + 1);
 }
 
+<<<<<<< HEAD
 /*
  * ax_initial_check
  *
  * do an initial probe for the card to check wether it exists
+=======
+void ax_NS8390_reinit(struct net_device *dev)
+{
+	ax_NS8390_init(dev, 1);
+}
+
+EXPORT_SYMBOL_GPL(ax_NS8390_reinit);
+
+/*
+ * ax_initial_check
+ *
+ * do an initial probe for the card to check whether it exists
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * and is functional
  */
 static int ax_initial_check(struct net_device *dev)
@@ -147,8 +174,12 @@ static void ax_reset_8390(struct net_device *dev)
 	unsigned long reset_start_time = jiffies;
 	void __iomem *addr = (void __iomem *)dev->base_addr;
 
+<<<<<<< HEAD
 	if (ei_debug > 1)
 		netdev_dbg(dev, "resetting the 8390 t=%ld\n", jiffies);
+=======
+	netif_dbg(ei_local, hw, dev, "resetting the 8390 t=%ld...\n", jiffies);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ei_outb(ei_inb(addr + NE_RESET), addr + NE_RESET);
 
@@ -157,7 +188,11 @@ static void ax_reset_8390(struct net_device *dev)
 
 	/* This check _should_not_ be necessary, omit eventually. */
 	while ((ei_inb(addr + EN0_ISR) & ENISR_RESET) == 0) {
+<<<<<<< HEAD
 		if (jiffies - reset_start_time > 2 * HZ / 100) {
+=======
+		if (time_after(jiffies, reset_start_time + 2 * HZ / 100)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netdev_warn(dev, "%s: did not complete.\n", __func__);
 			break;
 		}
@@ -166,6 +201,24 @@ static void ax_reset_8390(struct net_device *dev)
 	ei_outb(ENISR_RESET, addr + EN0_ISR);	/* Ack intr. */
 }
 
+<<<<<<< HEAD
+=======
+/* Wrapper for __ei_interrupt for platforms that have a platform-specific
+ * way to find out whether the interrupt request might be caused by
+ * the ax88796 chip.
+ */
+static irqreturn_t ax_ei_interrupt_filtered(int irq, void *dev_id)
+{
+	struct net_device *dev = dev_id;
+	struct ax_device *ax = to_ax_dev(dev);
+	struct platform_device *pdev = to_platform_device(dev->dev.parent);
+
+	if (!ax->plat->check_irq(pdev))
+		return IRQ_NONE;
+
+	return ax_ei_interrupt(irq, dev_id);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ax_get_8390_hdr(struct net_device *dev, struct e8390_pkt_hdr *hdr,
 			    int ring_page)
@@ -191,11 +244,19 @@ static void ax_get_8390_hdr(struct net_device *dev, struct e8390_pkt_hdr *hdr,
 	ei_outb(E8390_RREAD+E8390_START, nic_base + NE_CMD);
 
 	if (ei_local->word16)
+<<<<<<< HEAD
 		readsw(nic_base + NE_DATAPORT, hdr,
 		       sizeof(struct e8390_pkt_hdr) >> 1);
 	else
 		readsb(nic_base + NE_DATAPORT, hdr,
 		       sizeof(struct e8390_pkt_hdr));
+=======
+		ioread16_rep(nic_base + NE_DATAPORT, hdr,
+			     sizeof(struct e8390_pkt_hdr) >> 1);
+	else
+		ioread8_rep(nic_base + NE_DATAPORT, hdr,
+			    sizeof(struct e8390_pkt_hdr));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ei_outb(ENISR_RDC, nic_base + EN0_ISR);	/* Ack intr. */
 	ei_local->dmaing &= ~0x01;
@@ -237,12 +298,20 @@ static void ax_block_input(struct net_device *dev, int count,
 	ei_outb(E8390_RREAD+E8390_START, nic_base + NE_CMD);
 
 	if (ei_local->word16) {
+<<<<<<< HEAD
 		readsw(nic_base + NE_DATAPORT, buf, count >> 1);
+=======
+		ioread16_rep(nic_base + NE_DATAPORT, buf, count >> 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (count & 0x01)
 			buf[count-1] = ei_inb(nic_base + NE_DATAPORT);
 
 	} else {
+<<<<<<< HEAD
 		readsb(nic_base + NE_DATAPORT, buf, count);
+=======
+		ioread8_rep(nic_base + NE_DATAPORT, buf, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	ei_local->dmaing &= ~1;
@@ -286,14 +355,24 @@ static void ax_block_output(struct net_device *dev, int count,
 
 	ei_outb(E8390_RWRITE+E8390_START, nic_base + NE_CMD);
 	if (ei_local->word16)
+<<<<<<< HEAD
 		writesw(nic_base + NE_DATAPORT, buf, count >> 1);
 	else
 		writesb(nic_base + NE_DATAPORT, buf, count);
+=======
+		iowrite16_rep(nic_base + NE_DATAPORT, buf, count >> 1);
+	else
+		iowrite8_rep(nic_base + NE_DATAPORT, buf, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dma_start = jiffies;
 
 	while ((ei_inb(nic_base + EN0_ISR) & ENISR_RDC) == 0) {
+<<<<<<< HEAD
 		if (jiffies - dma_start > 2 * HZ / 100) {		/* 20ms */
+=======
+		if (time_after(jiffies, dma_start + 2 * HZ / 100)) { /* 20ms */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			netdev_warn(dev, "timeout waiting for Tx RDC.\n");
 			ax_reset_8390(dev);
 			ax_NS8390_init(dev, 1);
@@ -320,7 +399,11 @@ static void ax_block_output(struct net_device *dev, int count,
 static void ax_handle_link_change(struct net_device *dev)
 {
 	struct ax_device  *ax = to_ax_dev(dev);
+<<<<<<< HEAD
 	struct phy_device *phy_dev = ax->phy_dev;
+=======
+	struct phy_device *phy_dev = dev->phydev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int status_change = 0;
 
 	if (phy_dev->link && ((ax->speed != phy_dev->speed) ||
@@ -358,13 +441,18 @@ static int ax_mii_probe(struct net_device *dev)
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	ret = phy_connect_direct(dev, phy_dev, ax_handle_link_change, 0,
+=======
+	ret = phy_connect_direct(dev, phy_dev, ax_handle_link_change,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				 PHY_INTERFACE_MODE_MII);
 	if (ret) {
 		netdev_err(dev, "Could not attach to PHY\n");
 		return ret;
 	}
 
+<<<<<<< HEAD
 	/* mask with MAC supported features */
 	phy_dev->supported &= PHY_BASIC_FEATURES;
 	phy_dev->advertising = phy_dev->supported;
@@ -373,6 +461,12 @@ static int ax_mii_probe(struct net_device *dev)
 
 	netdev_info(dev, "PHY driver [%s] (mii_bus:phy_addr=%s, irq=%d)\n",
 		    phy_dev->drv->name, dev_name(&phy_dev->dev), phy_dev->irq);
+=======
+	phy_set_max_speed(phy_dev, SPEED_100);
+
+	netdev_info(dev, "PHY driver [%s] (mii_bus:phy_addr=%s, irq=%d)\n",
+		    phy_dev->drv->name, phydev_name(phy_dev), phy_dev->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -392,6 +486,7 @@ static void ax_phy_switch(struct net_device *dev, int on)
 	ei_outb(reg_gpoc, ei_local->mem + EI_SHIFT(0x17));
 }
 
+<<<<<<< HEAD
 static int ax_open(struct net_device *dev)
 {
 	struct ax_device *ax = to_ax_dev(dev);
@@ -551,6 +646,8 @@ static const struct net_device_ops ax_netdev_ops = {
 #endif
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ax_bb_mdc(struct mdiobb_ctrl *ctrl, int level)
 {
 	struct ax_device *ax = container_of(ctrl, struct ax_device, bb_ctrl);
@@ -595,7 +692,11 @@ static int ax_bb_get_data(struct mdiobb_ctrl *ctrl)
 	return reg_memr & AX_MEMR_MDI ? 1 : 0;
 }
 
+<<<<<<< HEAD
 static struct mdiobb_ops bb_ops = {
+=======
+static const struct mdiobb_ops bb_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.owner = THIS_MODULE,
 	.set_mdc = ax_bb_mdc,
 	.set_mdio_dir = ax_bb_dir,
@@ -603,14 +704,21 @@ static struct mdiobb_ops bb_ops = {
 	.get_mdio_data = ax_bb_get_data,
 };
 
+<<<<<<< HEAD
 /* setup code */
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int ax_mii_init(struct net_device *dev)
 {
 	struct platform_device *pdev = to_platform_device(dev->dev.parent);
 	struct ei_device *ei_local = netdev_priv(dev);
 	struct ax_device *ax = to_ax_dev(dev);
+<<<<<<< HEAD
 	int err, i;
+=======
+	int err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ax->bb_ctrl.ops = &bb_ops;
 	ax->addr_memr = ei_local->mem + AX_MEMR;
@@ -623,6 +731,7 @@ static int ax_mii_init(struct net_device *dev)
 	ax->mii_bus->name = "ax88796_mii_bus";
 	ax->mii_bus->parent = dev->dev.parent;
 	snprintf(ax->mii_bus->id, MII_BUS_ID_SIZE, "%s-%x",
+<<<<<<< HEAD
 		pdev->name, pdev->id);
 
 	ax->mii_bus->irq = kmalloc(sizeof(int) * PHY_MAX_ADDR, GFP_KERNEL);
@@ -642,12 +751,194 @@ static int ax_mii_init(struct net_device *dev)
 
  out_free_irq:
 	kfree(ax->mii_bus->irq);
+=======
+		 pdev->name, pdev->id);
+
+	err = mdiobus_register(ax->mii_bus);
+	if (err)
+		goto out_free_mdio_bitbang;
+
+	return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  out_free_mdio_bitbang:
 	free_mdio_bitbang(ax->mii_bus);
  out:
 	return err;
 }
 
+<<<<<<< HEAD
+=======
+static int ax_open(struct net_device *dev)
+{
+	struct ax_device *ax = to_ax_dev(dev);
+	int ret;
+
+	netdev_dbg(dev, "open\n");
+
+	ret = ax_mii_init(dev);
+	if (ret)
+		goto failed_mii;
+
+	if (ax->plat->check_irq)
+		ret = request_irq(dev->irq, ax_ei_interrupt_filtered,
+				  ax->irqflags, dev->name, dev);
+	else
+		ret = request_irq(dev->irq, ax_ei_interrupt, ax->irqflags,
+				  dev->name, dev);
+	if (ret)
+		goto failed_request_irq;
+
+	/* turn the phy on (if turned off) */
+	ax_phy_switch(dev, 1);
+
+	ret = ax_mii_probe(dev);
+	if (ret)
+		goto failed_mii_probe;
+	phy_start(dev->phydev);
+
+	ret = ax_ei_open(dev);
+	if (ret)
+		goto failed_ax_ei_open;
+
+	ax->running = 1;
+
+	return 0;
+
+ failed_ax_ei_open:
+	phy_disconnect(dev->phydev);
+ failed_mii_probe:
+	ax_phy_switch(dev, 0);
+	free_irq(dev->irq, dev);
+ failed_request_irq:
+	/* unregister mdiobus */
+	mdiobus_unregister(ax->mii_bus);
+	free_mdio_bitbang(ax->mii_bus);
+ failed_mii:
+	return ret;
+}
+
+static int ax_close(struct net_device *dev)
+{
+	struct ax_device *ax = to_ax_dev(dev);
+
+	netdev_dbg(dev, "close\n");
+
+	ax->running = 0;
+	wmb();
+
+	ax_ei_close(dev);
+
+	/* turn the phy off */
+	ax_phy_switch(dev, 0);
+	phy_disconnect(dev->phydev);
+
+	free_irq(dev->irq, dev);
+
+	mdiobus_unregister(ax->mii_bus);
+	free_mdio_bitbang(ax->mii_bus);
+	return 0;
+}
+
+static int ax_ioctl(struct net_device *dev, struct ifreq *req, int cmd)
+{
+	struct phy_device *phy_dev = dev->phydev;
+
+	if (!netif_running(dev))
+		return -EINVAL;
+
+	if (!phy_dev)
+		return -ENODEV;
+
+	return phy_mii_ioctl(phy_dev, req, cmd);
+}
+
+/* ethtool ops */
+
+static void ax_get_drvinfo(struct net_device *dev,
+			   struct ethtool_drvinfo *info)
+{
+	struct platform_device *pdev = to_platform_device(dev->dev.parent);
+
+	strscpy(info->driver, DRV_NAME, sizeof(info->driver));
+	strscpy(info->version, DRV_VERSION, sizeof(info->version));
+	strscpy(info->bus_info, pdev->name, sizeof(info->bus_info));
+}
+
+static u32 ax_get_msglevel(struct net_device *dev)
+{
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	return ei_local->msg_enable;
+}
+
+static void ax_set_msglevel(struct net_device *dev, u32 v)
+{
+	struct ei_device *ei_local = netdev_priv(dev);
+
+	ei_local->msg_enable = v;
+}
+
+static const struct ethtool_ops ax_ethtool_ops = {
+	.get_drvinfo		= ax_get_drvinfo,
+	.get_link		= ethtool_op_get_link,
+	.get_ts_info		= ethtool_op_get_ts_info,
+	.get_msglevel		= ax_get_msglevel,
+	.set_msglevel		= ax_set_msglevel,
+	.get_link_ksettings	= phy_ethtool_get_link_ksettings,
+	.set_link_ksettings	= phy_ethtool_set_link_ksettings,
+};
+
+#ifdef CONFIG_AX88796_93CX6
+static void ax_eeprom_register_read(struct eeprom_93cx6 *eeprom)
+{
+	struct ei_device *ei_local = eeprom->data;
+	u8 reg = ei_inb(ei_local->mem + AX_MEMR);
+
+	eeprom->reg_data_in = reg & AX_MEMR_EEI;
+	eeprom->reg_data_out = reg & AX_MEMR_EEO; /* Input pin */
+	eeprom->reg_data_clock = reg & AX_MEMR_EECLK;
+	eeprom->reg_chip_select = reg & AX_MEMR_EECS;
+}
+
+static void ax_eeprom_register_write(struct eeprom_93cx6 *eeprom)
+{
+	struct ei_device *ei_local = eeprom->data;
+	u8 reg = ei_inb(ei_local->mem + AX_MEMR);
+
+	reg &= ~(AX_MEMR_EEI | AX_MEMR_EECLK | AX_MEMR_EECS);
+
+	if (eeprom->reg_data_in)
+		reg |= AX_MEMR_EEI;
+	if (eeprom->reg_data_clock)
+		reg |= AX_MEMR_EECLK;
+	if (eeprom->reg_chip_select)
+		reg |= AX_MEMR_EECS;
+
+	ei_outb(reg, ei_local->mem + AX_MEMR);
+	udelay(10);
+}
+#endif
+
+static const struct net_device_ops ax_netdev_ops = {
+	.ndo_open		= ax_open,
+	.ndo_stop		= ax_close,
+	.ndo_eth_ioctl		= ax_ioctl,
+
+	.ndo_start_xmit		= ax_ei_start_xmit,
+	.ndo_tx_timeout		= ax_ei_tx_timeout,
+	.ndo_get_stats		= ax_ei_get_stats,
+	.ndo_set_rx_mode	= ax_ei_set_multicast_list,
+	.ndo_validate_addr	= eth_validate_addr,
+	.ndo_set_mac_address	= eth_mac_addr,
+#ifdef CONFIG_NET_POLL_CONTROLLER
+	.ndo_poll_controller	= ax_ei_poll,
+#endif
+};
+
+/* setup code */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ax_initial_setup(struct net_device *dev, struct ei_device *ei_local)
 {
 	void __iomem *ioaddr = ei_local->mem;
@@ -692,21 +983,41 @@ static int ax_init_dev(struct net_device *dev)
 	if (ax->plat->flags & AXFLG_HAS_EEPROM) {
 		unsigned char SA_prom[32];
 
+<<<<<<< HEAD
+=======
+		ei_outb(6, ioaddr + EN0_RCNTLO);
+		ei_outb(0, ioaddr + EN0_RCNTHI);
+		ei_outb(0, ioaddr + EN0_RSARLO);
+		ei_outb(0, ioaddr + EN0_RSARHI);
+		ei_outb(E8390_RREAD + E8390_START, ioaddr + NE_CMD);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < sizeof(SA_prom); i += 2) {
 			SA_prom[i] = ei_inb(ioaddr + NE_DATAPORT);
 			SA_prom[i + 1] = ei_inb(ioaddr + NE_DATAPORT);
 		}
+<<<<<<< HEAD
+=======
+		ei_outb(ENISR_RDC, ioaddr + EN0_ISR);	/* Ack intr. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ax->plat->wordlength == 2)
 			for (i = 0; i < 16; i++)
 				SA_prom[i] = SA_prom[i+i];
 
+<<<<<<< HEAD
 		memcpy(dev->dev_addr, SA_prom, 6);
+=======
+		eth_hw_addr_set(dev, SA_prom);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 #ifdef CONFIG_AX88796_93CX6
 	if (ax->plat->flags & AXFLG_HAS_93CX6) {
+<<<<<<< HEAD
 		unsigned char mac_addr[6];
+=======
+		unsigned char mac_addr[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct eeprom_93cx6 eeprom;
 
 		eeprom.data = ei_local;
@@ -718,7 +1029,11 @@ static int ax_init_dev(struct net_device *dev)
 				       (__le16 __force *)mac_addr,
 				       sizeof(mac_addr) >> 1);
 
+<<<<<<< HEAD
 		memcpy(dev->dev_addr, mac_addr, 6);
+=======
+		eth_hw_addr_set(dev, mac_addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 #endif
 	if (ax->plat->wordlength == 2) {
@@ -733,16 +1048,36 @@ static int ax_init_dev(struct net_device *dev)
 
 	/* load the mac-address from the device */
 	if (ax->plat->flags & AXFLG_MAC_FROMDEV) {
+<<<<<<< HEAD
 		ei_outb(E8390_NODMA + E8390_PAGE1 + E8390_STOP,
 			ei_local->mem + E8390_CMD); /* 0x61 */
 		for (i = 0; i < ETH_ALEN; i++)
 			dev->dev_addr[i] =
 				ei_inb(ioaddr + EN1_PHYS_SHIFT(i));
+=======
+		u8 addr[ETH_ALEN];
+
+		ei_outb(E8390_NODMA + E8390_PAGE1 + E8390_STOP,
+			ei_local->mem + E8390_CMD); /* 0x61 */
+		for (i = 0; i < ETH_ALEN; i++)
+			addr[i] = ei_inb(ioaddr + EN1_PHYS_SHIFT(i));
+		eth_hw_addr_set(dev, addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if ((ax->plat->flags & AXFLG_MAC_FROMPLATFORM) &&
 	    ax->plat->mac_addr)
+<<<<<<< HEAD
 		memcpy(dev->dev_addr, ax->plat->mac_addr, ETH_ALEN);
+=======
+		eth_hw_addr_set(dev, ax->plat->mac_addr);
+
+	if (!is_valid_ether_addr(dev->dev_addr)) {
+		eth_hw_addr_random(dev);
+		dev_info(&dev->dev, "Using random MAC address: %pM\n",
+			 dev->dev_addr);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ax_reset_8390(dev);
 
@@ -758,23 +1093,41 @@ static int ax_init_dev(struct net_device *dev)
 #endif
 
 	ei_local->reset_8390 = &ax_reset_8390;
+<<<<<<< HEAD
 	ei_local->block_input = &ax_block_input;
 	ei_local->block_output = &ax_block_output;
+=======
+	if (ax->plat->block_input)
+		ei_local->block_input = ax->plat->block_input;
+	else
+		ei_local->block_input = &ax_block_input;
+	if (ax->plat->block_output)
+		ei_local->block_output = ax->plat->block_output;
+	else
+		ei_local->block_output = &ax_block_output;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ei_local->get_8390_hdr = &ax_get_8390_hdr;
 	ei_local->priv = 0;
 
 	dev->netdev_ops = &ax_netdev_ops;
 	dev->ethtool_ops = &ax_ethtool_ops;
 
+<<<<<<< HEAD
 	ret = ax_mii_init(dev);
 	if (ret)
 		goto out_irq;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ax_NS8390_init(dev, 0);
 
 	ret = register_netdev(dev);
 	if (ret)
+<<<<<<< HEAD
 		goto out_irq;
+=======
+		goto err_out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	netdev_info(dev, "%dbit, irq %d, %lx, MAC: %pM\n",
 		    ei_local->word16 ? 16 : 8, dev->irq, dev->base_addr,
@@ -782,14 +1135,21 @@ static int ax_init_dev(struct net_device *dev)
 
 	return 0;
 
+<<<<<<< HEAD
  out_irq:
 	/* cleanup irq */
 	free_irq(dev->irq, dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  err_out:
 	return ret;
 }
 
+<<<<<<< HEAD
 static int ax_remove(struct platform_device *pdev)
+=======
+static void ax_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct net_device *dev = platform_get_drvdata(pdev);
 	struct ei_device *ei_local = netdev_priv(dev);
@@ -797,7 +1157,10 @@ static int ax_remove(struct platform_device *pdev)
 	struct resource *mem;
 
 	unregister_netdev(dev);
+<<<<<<< HEAD
 	free_irq(dev->irq, dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iounmap(ei_local->mem);
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
@@ -809,9 +1172,14 @@ static int ax_remove(struct platform_device *pdev)
 		release_mem_region(mem->start, resource_size(mem));
 	}
 
+<<<<<<< HEAD
 	free_netdev(dev);
 
 	return 0;
+=======
+	platform_set_drvdata(pdev, NULL);
+	free_netdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -827,7 +1195,11 @@ static int ax_probe(struct platform_device *pdev)
 	struct ei_device *ei_local;
 	struct ax_device *ax;
 	struct resource *irq, *mem, *mem2;
+<<<<<<< HEAD
 	resource_size_t mem_size, mem2_size = 0;
+=======
+	unsigned long mem_size, mem2_size = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int ret = 0;
 
 	dev = ax__alloc_ei_netdev(sizeof(struct ax_device));
@@ -839,7 +1211,11 @@ static int ax_probe(struct platform_device *pdev)
 	ei_local = netdev_priv(dev);
 	ax = to_ax_dev(dev);
 
+<<<<<<< HEAD
 	ax->plat = pdev->dev.platform_data;
+=======
+	ax->plat = dev_get_platdata(&pdev->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_set_drvdata(pdev, dev);
 
 	ei_local->rxcr_base = ax->plat->rcr_val;
@@ -855,6 +1231,12 @@ static int ax_probe(struct platform_device *pdev)
 	dev->irq = irq->start;
 	ax->irqflags = irq->flags & IRQF_TRIGGER_MASK;
 
+<<<<<<< HEAD
+=======
+	if (irq->flags &  IORESOURCE_IRQ_SHAREABLE)
+		ax->irqflags |= IRQF_SHARED;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!mem) {
 		dev_err(&pdev->dev, "no MEM specified\n");
@@ -929,7 +1311,12 @@ static int ax_probe(struct platform_device *pdev)
 	iounmap(ax->map2);
 
  exit_mem2:
+<<<<<<< HEAD
 	release_mem_region(mem2->start, mem2_size);
+=======
+	if (mem2)
+		release_mem_region(mem2->start, mem2_size);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
  exit_mem1:
 	iounmap(ei_local->mem);
@@ -938,6 +1325,10 @@ static int ax_probe(struct platform_device *pdev)
 	release_mem_region(mem->start, mem_size);
 
  exit_mem:
+<<<<<<< HEAD
+=======
+	platform_set_drvdata(pdev, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	free_netdev(dev);
 
 	return ret;
@@ -982,10 +1373,16 @@ static int ax_resume(struct platform_device *pdev)
 static struct platform_driver axdrv = {
 	.driver	= {
 		.name		= "ax88796",
+<<<<<<< HEAD
 		.owner		= THIS_MODULE,
 	},
 	.probe		= ax_probe,
 	.remove		= ax_remove,
+=======
+	},
+	.probe		= ax_probe,
+	.remove_new	= ax_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ax_suspend,
 	.resume		= ax_resume,
 };

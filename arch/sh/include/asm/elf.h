@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASM_SH_ELF_H
 #define __ASM_SH_ELF_H
 
@@ -89,7 +93,10 @@ typedef struct user_fpu_struct elf_fpregset_t;
 #endif
 #define ELF_ARCH	EM_SH
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is used to ensure we don't load something for the wrong architecture.
  */
@@ -132,6 +139,7 @@ typedef struct user_fpu_struct elf_fpregset_t;
 
 #define ELF_PLATFORM	(utsname()->machine)
 
+<<<<<<< HEAD
 #ifdef __SH5__
 #define ELF_PLAT_INIT(_r, load_addr) \
   do { _r->regs[0]=0; _r->regs[1]=0; _r->regs[2]=0; _r->regs[3]=0; \
@@ -154,6 +162,8 @@ typedef struct user_fpu_struct elf_fpregset_t;
        _r->tregs[4]=0; _r->tregs[5]=0; _r->tregs[6]=0; _r->tregs[7]=0; \
        _r->sr = SR_FD | SR_MMU; } while (0)
 #else
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ELF_PLAT_INIT(_r, load_addr) \
   do { _r->regs[0]=0; _r->regs[1]=0; _r->regs[2]=0; _r->regs[3]=0; \
        _r->regs[4]=0; _r->regs[5]=0; _r->regs[6]=0; _r->regs[7]=0; \
@@ -181,9 +191,15 @@ do {									\
 	_r->regs[14]	= 0;						\
 	_r->sr		= SR_FD;					\
 } while (0)
+<<<<<<< HEAD
 #endif
 
 #define SET_PERSONALITY(ex) set_personality(PER_LINUX_32BIT)
+=======
+
+#define SET_PERSONALITY(ex) \
+	set_personality(PER_LINUX_32BIT | (current->personality & (~PER_MASK)))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_VSYSCALL
 /* vDSO has arch_setup_additional_pages */
@@ -230,5 +246,8 @@ do {								\
 	NEW_AUX_ENT(AT_L2_CACHESHAPE, l2_cache_shape);		\
 } while (0)
 
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASM_SH_ELF_H */

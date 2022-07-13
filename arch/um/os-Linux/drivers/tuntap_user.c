@@ -1,6 +1,12 @@
+<<<<<<< HEAD
 /* 
  * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
+=======
+// SPDX-License-Identifier: GPL-2.0
+/* 
+ * Copyright (C) 2001 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <stdio.h>
@@ -13,8 +19,13 @@
 #include <sys/socket.h>
 #include <sys/wait.h>
 #include <sys/uio.h>
+<<<<<<< HEAD
 #include "kern_util.h"
 #include "os.h"
+=======
+#include <kern_util.h>
+#include <os.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "tuntap.h"
 
 static int tuntap_user_init(void *data, void *dev)
@@ -47,7 +58,11 @@ static void tuntap_del_addr(unsigned char *addr, unsigned char *netmask,
 }
 
 struct tuntap_pre_exec_data {
+<<<<<<< HEAD
 	int stdout;
+=======
+	int stdout_fd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int close_me;
 };
 
@@ -55,7 +70,11 @@ static void tuntap_pre_exec(void *arg)
 {
 	struct tuntap_pre_exec_data *data = arg;
 
+<<<<<<< HEAD
 	dup2(data->stdout, 1);
+=======
+	dup2(data->stdout_fd, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	close(data->close_me);
 }
 
@@ -74,13 +93,21 @@ static int tuntap_open_tramp(char *gate, int *fd_out, int me, int remote,
 
 	sprintf(version_buf, "%d", UML_NET_VERSION);
 
+<<<<<<< HEAD
 	data.stdout = remote;
+=======
+	data.stdout_fd = remote;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data.close_me = me;
 
 	pid = run_helper(tuntap_pre_exec, &data, argv);
 
 	if (pid < 0)
+<<<<<<< HEAD
 		return -pid;
+=======
+		return pid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	close(remote);
 
@@ -146,7 +173,11 @@ static int tuntap_open(void *data)
 		}
 		memset(&ifr, 0, sizeof(ifr));
 		ifr.ifr_flags = IFF_TAP | IFF_NO_PI;
+<<<<<<< HEAD
 		strlcpy(ifr.ifr_name, pri->dev_name, sizeof(ifr.ifr_name));
+=======
+		strscpy(ifr.ifr_name, pri->dev_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ioctl(pri->fd, TUNSETIFF, &ifr) < 0) {
 			err = -errno;
 			printk(UM_KERN_ERR "TUNSETIFF failed, errno = %d\n",

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * INET		An implementation of the TCP/IP protocol suite for the LINUX
  *		operating system.  INET is implemented using the  BSD Socket
@@ -14,15 +18,19 @@
  *		Florian La Roche,
  *		Jonathan Layes <layes@loran.com>
  *		Arnaldo Carvalho de Melo <acme@conectiva.com.br> ARPHRD_HWX25
+<<<<<<< HEAD
  *
  *		This program is free software; you can redistribute it and/or
  *		modify it under the terms of the GNU General Public License
  *		as published by the Free Software Foundation; either version
  *		2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #ifndef _LINUX_IF_ARP_H
 #define _LINUX_IF_ARP_H
 
+<<<<<<< HEAD
 #include <linux/netdevice.h>
 
 /* ARP protocol HARDWARE identifiers. */
@@ -156,17 +164,59 @@ struct arphdr {
 
 #ifdef __KERNEL__
 #include <linux/skbuff.h>
+=======
+#include <linux/skbuff.h>
+#include <uapi/linux/if_arp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline struct arphdr *arp_hdr(const struct sk_buff *skb)
 {
 	return (struct arphdr *)skb_network_header(skb);
 }
 
+<<<<<<< HEAD
 static inline int arp_hdr_len(struct net_device *dev)
 {
 	/* ARP header, plus 2 device addresses, plus 2 IP addresses. */
 	return sizeof(struct arphdr) + (dev->addr_len + sizeof(u32)) * 2;
 }
 #endif
+=======
+static inline unsigned int arp_hdr_len(const struct net_device *dev)
+{
+	switch (dev->type) {
+#if IS_ENABLED(CONFIG_FIREWIRE_NET)
+	case ARPHRD_IEEE1394:
+		/* ARP header, device address and 2 IP addresses */
+		return sizeof(struct arphdr) + dev->addr_len + sizeof(u32) * 2;
+#endif
+	default:
+		/* ARP header, plus 2 device addresses, plus 2 IP addresses. */
+		return sizeof(struct arphdr) + (dev->addr_len + sizeof(u32)) * 2;
+	}
+}
+
+static inline bool dev_is_mac_header_xmit(const struct net_device *dev)
+{
+	switch (dev->type) {
+	case ARPHRD_TUNNEL:
+	case ARPHRD_TUNNEL6:
+	case ARPHRD_SIT:
+	case ARPHRD_IPGRE:
+	case ARPHRD_IP6GRE:
+	case ARPHRD_VOID:
+	case ARPHRD_NONE:
+	case ARPHRD_RAWIP:
+	case ARPHRD_PIMREG:
+	/* PPP adds its l2 header automatically in ppp_start_xmit().
+	 * This makes it look like an l3 device to __bpf_redirect() and tcf_mirred_init().
+	 */
+	case ARPHRD_PPP:
+		return false;
+	default:
+		return true;
+	}
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* _LINUX_IF_ARP_H */

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SPARC64_SWITCH_TO_64_H
 #define __SPARC64_SWITCH_TO_64_H
 
@@ -14,15 +18,24 @@ do {						\
 	 * for l0/l1.  It will use one for 'next' and the other to hold
 	 * the output value of 'last'.  'next' is not referenced again
 	 * past the invocation of switch_to in the scheduler, so we need
+<<<<<<< HEAD
 	 * not preserve it's value.  Hairy, but it lets us remove 2 loads
+=======
+	 * not preserve its value.  Hairy, but it lets us remove 2 loads
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * and 2 stores in this critical code path.  -DaveM
 	 */
 #define switch_to(prev, next, last)					\
 do {	save_and_clear_fpu();						\
+<<<<<<< HEAD
 	/* If you are tempted to conditionalize the following */	\
 	/* so that ASI is only written if it changes, think again. */	\
 	__asm__ __volatile__("wr %%g0, %0, %%asi"			\
 	: : "r" (__thread_flag_byte_ptr(task_thread_info(next))[TI_FLAG_BYTE_CURRENT_DS]));\
+=======
+	__asm__ __volatile__("wr %%g0, %0, %%asi"			\
+	: : "r" (ASI_AIUS));						\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	trap_block[current_thread_info()->cpu].thread =			\
 		task_thread_info(next);					\
 	__asm__ __volatile__(						\
@@ -48,8 +61,13 @@ do {	save_and_clear_fpu();						\
 	"wrpr	%%g0, 14, %%pil\n\t"					\
 	"brz,pt %%o7, switch_to_pc\n\t"					\
 	" mov	%%g7, %0\n\t"						\
+<<<<<<< HEAD
 	"sethi	%%hi(ret_from_syscall), %%g1\n\t"			\
 	"jmpl	%%g1 + %%lo(ret_from_syscall), %%g0\n\t"		\
+=======
+	"sethi	%%hi(ret_from_fork), %%g1\n\t"				\
+	"jmpl	%%g1 + %%lo(ret_from_fork), %%g0\n\t"			\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	" nop\n\t"							\
 	".globl switch_to_pc\n\t"					\
 	"switch_to_pc:\n\t"						\
@@ -65,7 +83,13 @@ do {	save_and_clear_fpu();						\
 	  "o0", "o1", "o2", "o3", "o4", "o5",       "o7");		\
 } while(0)
 
+<<<<<<< HEAD
 extern void synchronize_user_stack(void);
 extern void fault_in_user_windows(void);
+=======
+void synchronize_user_stack(void);
+struct pt_regs;
+void fault_in_user_windows(struct pt_regs *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* __SPARC64_SWITCH_TO_64_H */

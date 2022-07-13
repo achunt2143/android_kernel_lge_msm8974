@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _GENERIC_STATFS_H
 #define _GENERIC_STATFS_H
 
@@ -84,3 +85,13 @@ struct compat_statfs64 {
 } ARCH_PACK_COMPAT_STATFS64;
 
 #endif
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _GENERIC_STATFS_H
+#define _GENERIC_STATFS_H
+
+#include <uapi/asm-generic/statfs.h>
+
+typedef __kernel_fsid_t	fsid_t;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

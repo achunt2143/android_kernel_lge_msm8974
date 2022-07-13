@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: dsargs - Support for execution of dynamic arguments for static
  *                       objects (regions, fields, buffer fields, etc.)
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -42,6 +47,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acparser.h"
@@ -62,7 +73,11 @@ acpi_ds_execute_arguments(struct acpi_namespace_node *node,
  *
  * FUNCTION:    acpi_ds_execute_arguments
  *
+<<<<<<< HEAD
  * PARAMETERS:  Node                - Object NS node
+=======
+ * PARAMETERS:  node                - Object NS node
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              scope_node          - Parent NS node
  *              aml_length          - Length of executable AML
  *              aml_start           - Pointer to the AML
@@ -82,11 +97,19 @@ acpi_ds_execute_arguments(struct acpi_namespace_node *node,
 	union acpi_parse_object *op;
 	struct acpi_walk_state *walk_state;
 
+<<<<<<< HEAD
 	ACPI_FUNCTION_TRACE(ds_execute_arguments);
 
 	/* Allocate a new parser op to be the root of the parsed tree */
 
 	op = acpi_ps_alloc_op(AML_INT_EVAL_SUBTREE_OP);
+=======
+	ACPI_FUNCTION_TRACE_PTR(ds_execute_arguments, aml_start);
+
+	/* Allocate a new parser op to be the root of the parsed tree */
+
+	op = acpi_ps_alloc_op(AML_INT_EVAL_SUBTREE_OP, aml_start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!op) {
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
@@ -129,7 +152,11 @@ acpi_ds_execute_arguments(struct acpi_namespace_node *node,
 
 	/* Evaluate the deferred arguments */
 
+<<<<<<< HEAD
 	op = acpi_ps_alloc_op(AML_INT_EVAL_SUBTREE_OP);
+=======
+	op = acpi_ps_alloc_op(AML_INT_EVAL_SUBTREE_OP, aml_start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!op) {
 		return_ACPI_STATUS(AE_NO_MEMORY);
 	}
@@ -158,7 +185,11 @@ acpi_ds_execute_arguments(struct acpi_namespace_node *node,
 	walk_state->deferred_node = node;
 	status = acpi_ps_parse_aml(walk_state);
 
+<<<<<<< HEAD
       cleanup:
+=======
+cleanup:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	acpi_ps_delete_parse_tree(op);
 	return_ACPI_STATUS(status);
 }
@@ -194,8 +225,13 @@ acpi_ds_get_buffer_field_arguments(union acpi_operand_object *obj_desc)
 	extra_desc = acpi_ns_get_secondary_object(obj_desc);
 	node = obj_desc->buffer_field.node;
 
+<<<<<<< HEAD
 	ACPI_DEBUG_EXEC(acpi_ut_display_init_pathname(ACPI_TYPE_BUFFER_FIELD,
 						      node, NULL));
+=======
+	ACPI_DEBUG_EXEC(acpi_ut_display_init_pathname
+			(ACPI_TYPE_BUFFER_FIELD, node, NULL));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "[%4.4s] BufferField Arg Init\n",
 			  acpi_ut_get_node_name(node)));
@@ -338,13 +374,22 @@ acpi_status acpi_ds_get_package_arguments(union acpi_operand_object *obj_desc)
 		return_ACPI_STATUS(AE_AML_INTERNAL);
 	}
 
+<<<<<<< HEAD
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "Package Arg Init\n"));
+=======
+	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "Package Argument Init, AML Ptr: %p\n",
+			  obj_desc->package.aml_start));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Execute the AML code for the term_arg arguments */
 
 	status = acpi_ds_execute_arguments(node, node,
 					   obj_desc->package.aml_length,
 					   obj_desc->package.aml_start);
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 
@@ -385,7 +430,12 @@ acpi_status acpi_ds_get_region_arguments(union acpi_operand_object *obj_desc)
 	ACPI_DEBUG_EXEC(acpi_ut_display_init_pathname
 			(ACPI_TYPE_REGION, node, NULL));
 
+<<<<<<< HEAD
 	ACPI_DEBUG_PRINT((ACPI_DB_EXEC, "[%4.4s] OpRegion Arg Init at AML %p\n",
+=======
+	ACPI_DEBUG_PRINT((ACPI_DB_EXEC,
+			  "[%4.4s] OpRegion Arg Init at AML %p\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  acpi_ut_get_node_name(node),
 			  extra_desc->extra.aml_start));
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* msi-tvanywhere-plus.h - Keytable for msi_tvanywhere_plus Remote Controller
  *
  * keymap imported from ir-keymaps.c
@@ -9,6 +10,14 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+// msi-tvanywhere-plus.h - Keytable for msi_tvanywhere_plus Remote Controller
+//
+// keymap imported from ir-keymaps.c
+//
+// Copyright (c) 2010 by Mauro Carvalho Chehab
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -49,6 +58,7 @@ static struct rc_map_table msi_tvanywhere_plus[] = {
      <<      FUNC    >>     RESET
 */
 
+<<<<<<< HEAD
 	{ 0x01, KEY_1 },		/* 1 */
 	{ 0x0b, KEY_2 },		/* 2 */
 	{ 0x1b, KEY_3 },		/* 3 */
@@ -59,6 +69,18 @@ static struct rc_map_table msi_tvanywhere_plus[] = {
 	{ 0x0a, KEY_8 },		/* 8 */
 	{ 0x12, KEY_9 },		/* 9 */
 	{ 0x02, KEY_0 },		/* 0 */
+=======
+	{ 0x01, KEY_NUMERIC_1 },	/* 1 */
+	{ 0x0b, KEY_NUMERIC_2 },	/* 2 */
+	{ 0x1b, KEY_NUMERIC_3 },	/* 3 */
+	{ 0x05, KEY_NUMERIC_4 },	/* 4 */
+	{ 0x09, KEY_NUMERIC_5 },	/* 5 */
+	{ 0x15, KEY_NUMERIC_6 },	/* 6 */
+	{ 0x06, KEY_NUMERIC_7 },	/* 7 */
+	{ 0x0a, KEY_NUMERIC_8 },	/* 8 */
+	{ 0x12, KEY_NUMERIC_9 },	/* 9 */
+	{ 0x02, KEY_NUMERIC_0 },	/* 0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0x10, KEY_KPPLUS },		/* + */
 	{ 0x13, KEY_AGAIN },		/* Recall */
 
@@ -100,10 +122,17 @@ static struct rc_map_table msi_tvanywhere_plus[] = {
 
 static struct rc_map_list msi_tvanywhere_plus_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = msi_tvanywhere_plus,
 		.size    = ARRAY_SIZE(msi_tvanywhere_plus),
 		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
 		.name    = RC_MAP_MSI_TVANYWHERE_PLUS,
+=======
+		.scan     = msi_tvanywhere_plus,
+		.size     = ARRAY_SIZE(msi_tvanywhere_plus),
+		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.name     = RC_MAP_MSI_TVANYWHERE_PLUS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -121,4 +150,9 @@ module_init(init_rc_map_msi_tvanywhere_plus)
 module_exit(exit_rc_map_msi_tvanywhere_plus)
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+MODULE_DESCRIPTION("MSI TV@nywhere Plus remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

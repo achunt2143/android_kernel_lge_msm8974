@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * File: socket.c
  *
@@ -5,6 +9,7 @@
  *
  * Copyright (C) 2008 Nokia Corporation.
  *
+<<<<<<< HEAD
  * Contact: Remi Denis-Courmont <remi.denis-courmont@nokia.com>
  * Original author: Sakari Ailus <sakari.ailus@nokia.com>
  *
@@ -21,12 +26,21 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+ * Authors: Sakari Ailus <sakari.ailus@nokia.com>
+ *          Rémi Denis-Courmont
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/gfp.h>
 #include <linux/kernel.h>
 #include <linux/net.h>
 #include <linux/poll.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/sock.h>
 #include <net/tcp_states.h>
 
@@ -58,7 +72,11 @@ static struct  {
 
 void __init pn_sock_init(void)
 {
+<<<<<<< HEAD
 	unsigned i;
+=======
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < PN_HASHSIZE; i++)
 		INIT_HLIST_HEAD(pnsocks.hlist + i);
@@ -76,7 +94,10 @@ static struct hlist_head *pn_hash_list(u16 obj)
  */
 struct sock *pn_find_sock_by_sa(struct net *net, const struct sockaddr_pn *spn)
 {
+<<<<<<< HEAD
 	struct hlist_node *node;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct sock *sknode;
 	struct sock *rval = NULL;
 	u16 obj = pn_sockaddr_get_object(spn);
@@ -84,7 +105,11 @@ struct sock *pn_find_sock_by_sa(struct net *net, const struct sockaddr_pn *spn)
 	struct hlist_head *hlist = pn_hash_list(obj);
 
 	rcu_read_lock();
+<<<<<<< HEAD
 	sk_for_each_rcu(sknode, node, hlist) {
+=======
+	sk_for_each_rcu(sknode, hlist) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		struct pn_sock *pn = pn_sk(sknode);
 		BUG_ON(!pn->sobject); /* unbound socket */
 
@@ -116,6 +141,7 @@ struct sock *pn_find_sock_by_sa(struct net *net, const struct sockaddr_pn *spn)
 void pn_deliver_sock_broadcast(struct net *net, struct sk_buff *skb)
 {
 	struct hlist_head *hlist = pnsocks.hlist;
+<<<<<<< HEAD
 	unsigned h;
 
 	rcu_read_lock();
@@ -124,6 +150,15 @@ void pn_deliver_sock_broadcast(struct net *net, struct sk_buff *skb)
 		struct sock *sknode;
 
 		sk_for_each(sknode, node, hlist) {
+=======
+	unsigned int h;
+
+	rcu_read_lock();
+	for (h = 0; h < PN_HASHSIZE; h++) {
+		struct sock *sknode;
+
+		sk_for_each(sknode, hlist) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct sk_buff *clone;
 
 			if (!net_eq(sock_net(sknode), net))
@@ -142,13 +177,22 @@ void pn_deliver_sock_broadcast(struct net *net, struct sk_buff *skb)
 	rcu_read_unlock();
 }
 
+<<<<<<< HEAD
 void pn_sock_hash(struct sock *sk)
+=======
+int pn_sock_hash(struct sock *sk)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hlist_head *hlist = pn_hash_list(pn_sk(sk)->sobject);
 
 	mutex_lock(&pnsocks.lock);
 	sk_add_node_rcu(sk, hlist);
 	mutex_unlock(&pnsocks.lock);
+<<<<<<< HEAD
+=======
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(pn_sock_hash);
 
@@ -202,7 +246,11 @@ static int pn_socket_bind(struct socket *sock, struct sockaddr *addr, int len)
 	pn->resource = spn->spn_resource;
 
 	/* Enable RX on the socket */
+<<<<<<< HEAD
 	sk->sk_prot->hash(sk);
+=======
+	err = sk->sk_prot->hash(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out_port:
 	mutex_unlock(&port_mutex);
 out:
@@ -303,7 +351,11 @@ out:
 }
 
 static int pn_socket_accept(struct socket *sock, struct socket *newsock,
+<<<<<<< HEAD
 				int flags)
+=======
+			    int flags, bool kern)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct sock *newsk;
@@ -312,7 +364,11 @@ static int pn_socket_accept(struct socket *sock, struct socket *newsock,
 	if (unlikely(sk->sk_state != TCP_LISTEN))
 		return -EINVAL;
 
+<<<<<<< HEAD
 	newsk = sk->sk_prot->accept(sk, flags, &err);
+=======
+	newsk = sk->sk_prot->accept(sk, flags, &err, kern);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!newsk)
 		return err;
 
@@ -324,7 +380,11 @@ static int pn_socket_accept(struct socket *sock, struct socket *newsock,
 }
 
 static int pn_socket_getname(struct socket *sock, struct sockaddr *addr,
+<<<<<<< HEAD
 				int *sockaddr_len, int peer)
+=======
+				int peer)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 	struct pn_sock *pn = pn_sk(sk);
@@ -335,20 +395,32 @@ static int pn_socket_getname(struct socket *sock, struct sockaddr *addr,
 		pn_sockaddr_set_object((struct sockaddr_pn *)addr,
 					pn->sobject);
 
+<<<<<<< HEAD
 	*sockaddr_len = sizeof(struct sockaddr_pn);
 	return 0;
 }
 
 static unsigned int pn_socket_poll(struct file *file, struct socket *sock,
+=======
+	return sizeof(struct sockaddr_pn);
+}
+
+static __poll_t pn_socket_poll(struct file *file, struct socket *sock,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					poll_table *wait)
 {
 	struct sock *sk = sock->sk;
 	struct pep_sock *pn = pep_sk(sk);
+<<<<<<< HEAD
 	unsigned int mask = 0;
+=======
+	__poll_t mask = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	poll_wait(file, sk_sleep(sk), wait);
 
 	if (sk->sk_state == TCP_CLOSE)
+<<<<<<< HEAD
 		return POLLERR;
 	if (!skb_queue_empty(&sk->sk_receive_queue))
 		mask |= POLLIN | POLLRDNORM;
@@ -361,6 +433,20 @@ static unsigned int pn_socket_poll(struct file *file, struct socket *sock,
 		atomic_read(&sk->sk_wmem_alloc) < sk->sk_sndbuf &&
 		atomic_read(&pn->tx_credits))
 		mask |= POLLOUT | POLLWRNORM | POLLWRBAND;
+=======
+		return EPOLLERR;
+	if (!skb_queue_empty_lockless(&sk->sk_receive_queue))
+		mask |= EPOLLIN | EPOLLRDNORM;
+	if (!skb_queue_empty_lockless(&pn->ctrlreq_queue))
+		mask |= EPOLLPRI;
+	if (!mask && sk->sk_state == TCP_CLOSE_WAIT)
+		return EPOLLHUP;
+
+	if (sk->sk_state == TCP_ESTABLISHED &&
+		refcount_read(&sk->sk_wmem_alloc) < sk->sk_sndbuf &&
+		atomic_read(&pn->tx_credits))
+		mask |= EPOLLOUT | EPOLLWRNORM | EPOLLWRBAND;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return mask;
 }
@@ -391,8 +477,12 @@ static int pn_socket_ioctl(struct socket *sock, unsigned int cmd,
 			saddr = PN_NO_ADDR;
 		release_sock(sk);
 
+<<<<<<< HEAD
 		if (dev)
 			dev_put(dev);
+=======
+		dev_put(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (saddr == PN_NO_ADDR)
 			return -EHOSTUNREACH;
 
@@ -400,7 +490,11 @@ static int pn_socket_ioctl(struct socket *sock, unsigned int cmd,
 		return put_user(handle, (__u16 __user *)arg);
 	}
 
+<<<<<<< HEAD
 	return sk->sk_prot->ioctl(sk, cmd, arg);
+=======
+	return sk_ioctl(sk, cmd, (void __user *)arg);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int pn_socket_listen(struct socket *sock, int backlog)
@@ -427,15 +521,24 @@ out:
 	return err;
 }
 
+<<<<<<< HEAD
 static int pn_socket_sendmsg(struct kiocb *iocb, struct socket *sock,
 				struct msghdr *m, size_t total_len)
+=======
+static int pn_socket_sendmsg(struct socket *sock, struct msghdr *m,
+			     size_t total_len)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sock *sk = sock->sk;
 
 	if (pn_socket_autobind(sock))
 		return -EAGAIN;
 
+<<<<<<< HEAD
 	return sk->sk_prot->sendmsg(iocb, sk, m, total_len);
+=======
+	return sk->sk_prot->sendmsg(sk, m, total_len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct proto_ops phonet_dgram_ops = {
@@ -451,6 +554,7 @@ const struct proto_ops phonet_dgram_ops = {
 	.ioctl		= pn_socket_ioctl,
 	.listen		= sock_no_listen,
 	.shutdown	= sock_no_shutdown,
+<<<<<<< HEAD
 	.setsockopt	= sock_no_setsockopt,
 	.getsockopt	= sock_no_getsockopt,
 #ifdef CONFIG_COMPAT
@@ -461,6 +565,11 @@ const struct proto_ops phonet_dgram_ops = {
 	.recvmsg	= sock_common_recvmsg,
 	.mmap		= sock_no_mmap,
 	.sendpage	= sock_no_sendpage,
+=======
+	.sendmsg	= pn_socket_sendmsg,
+	.recvmsg	= sock_common_recvmsg,
+	.mmap		= sock_no_mmap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 const struct proto_ops phonet_stream_ops = {
@@ -478,6 +587,7 @@ const struct proto_ops phonet_stream_ops = {
 	.shutdown	= sock_no_shutdown,
 	.setsockopt	= sock_common_setsockopt,
 	.getsockopt	= sock_common_getsockopt,
+<<<<<<< HEAD
 #ifdef CONFIG_COMPAT
 	.compat_setsockopt = compat_sock_common_setsockopt,
 	.compat_getsockopt = compat_sock_common_getsockopt,
@@ -486,6 +596,11 @@ const struct proto_ops phonet_stream_ops = {
 	.recvmsg	= sock_common_recvmsg,
 	.mmap		= sock_no_mmap,
 	.sendpage	= sock_no_sendpage,
+=======
+	.sendmsg	= pn_socket_sendmsg,
+	.recvmsg	= sock_common_recvmsg,
+	.mmap		= sock_no_mmap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 EXPORT_SYMBOL(phonet_stream_ops);
 
@@ -543,12 +658,20 @@ static struct sock *pn_sock_get_idx(struct seq_file *seq, loff_t pos)
 {
 	struct net *net = seq_file_net(seq);
 	struct hlist_head *hlist = pnsocks.hlist;
+<<<<<<< HEAD
 	struct hlist_node *node;
 	struct sock *sknode;
 	unsigned h;
 
 	for (h = 0; h < PN_HASHSIZE; h++) {
 		sk_for_each_rcu(sknode, node, hlist) {
+=======
+	struct sock *sknode;
+	unsigned int h;
+
+	for (h = 0; h < PN_HASHSIZE; h++) {
+		sk_for_each_rcu(sknode, hlist) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (!net_eq(net, sock_net(sknode)))
 				continue;
 			if (!pos)
@@ -607,24 +730,39 @@ static int pn_sock_seq_show(struct seq_file *seq, void *v)
 		struct pn_sock *pn = pn_sk(sk);
 
 		seq_printf(seq, "%2d %04X:%04X:%02X %02X %08X:%08X %5d %lu "
+<<<<<<< HEAD
 			"%d %pK %d",
 			sk->sk_protocol, pn->sobject, pn->dobject,
 			pn->resource, sk->sk_state,
 			sk_wmem_alloc_get(sk), sk_rmem_alloc_get(sk),
 			sock_i_uid(sk), sock_i_ino(sk),
 			atomic_read(&sk->sk_refcnt), sk,
+=======
+			"%d %pK %u",
+			sk->sk_protocol, pn->sobject, pn->dobject,
+			pn->resource, sk->sk_state,
+			sk_wmem_alloc_get(sk), sk_rmem_alloc_get(sk),
+			from_kuid_munged(seq_user_ns(seq), sock_i_uid(sk)),
+			sock_i_ino(sk),
+			refcount_read(&sk->sk_refcnt), sk,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			atomic_read(&sk->sk_drops));
 	}
 	seq_pad(seq, '\n');
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct seq_operations pn_sock_seq_ops = {
+=======
+const struct seq_operations pn_sock_seq_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start = pn_sock_seq_start,
 	.next = pn_sock_seq_next,
 	.stop = pn_sock_seq_stop,
 	.show = pn_sock_seq_show,
 };
+<<<<<<< HEAD
 
 static int pn_sock_open(struct inode *inode, struct file *file)
 {
@@ -639,6 +777,8 @@ const struct file_operations pn_sock_seq_fops = {
 	.llseek = seq_lseek,
 	.release = seq_release_net,
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 static struct  {
@@ -709,7 +849,11 @@ int pn_sock_unbind_res(struct sock *sk, u8 res)
 
 void pn_sock_unbind_all_res(struct sock *sk)
 {
+<<<<<<< HEAD
 	unsigned res, match = 0;
+=======
+	unsigned int res, match = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&resource_mutex);
 	for (res = 0; res < 256; res++) {
@@ -731,7 +875,11 @@ void pn_sock_unbind_all_res(struct sock *sk)
 static struct sock **pn_res_get_idx(struct seq_file *seq, loff_t pos)
 {
 	struct net *net = seq_file_net(seq);
+<<<<<<< HEAD
 	unsigned i;
+=======
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!net_eq(net, &init_net))
 		return NULL;
@@ -749,7 +897,11 @@ static struct sock **pn_res_get_idx(struct seq_file *seq, loff_t pos)
 static struct sock **pn_res_get_next(struct seq_file *seq, struct sock **sk)
 {
 	struct net *net = seq_file_net(seq);
+<<<<<<< HEAD
 	unsigned i;
+=======
+	unsigned int i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(!net_eq(net, &init_net));
 
@@ -793,7 +945,11 @@ static int pn_res_seq_show(struct seq_file *seq, void *v)
 		struct sock **psk = v;
 		struct sock *sk = *psk;
 
+<<<<<<< HEAD
 		seq_printf(seq, "%02X %5d %lu",
+=======
+		seq_printf(seq, "%02X %5u %lu",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   (int) (psk - pnres.sk),
 			   from_kuid_munged(seq_user_ns(seq), sock_i_uid(sk)),
 			   sock_i_ino(sk));
@@ -802,12 +958,17 @@ static int pn_res_seq_show(struct seq_file *seq, void *v)
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct seq_operations pn_res_seq_ops = {
+=======
+const struct seq_operations pn_res_seq_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.start = pn_res_seq_start,
 	.next = pn_res_seq_next,
 	.stop = pn_res_seq_stop,
 	.show = pn_res_seq_show,
 };
+<<<<<<< HEAD
 
 static int pn_res_open(struct inode *inode, struct file *file)
 {
@@ -822,4 +983,6 @@ const struct file_operations pn_res_seq_fops = {
 	.llseek = seq_lseek,
 	.release = seq_release_net,
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

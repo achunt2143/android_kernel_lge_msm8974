@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
  * Copyright (C) 2002 Ralf Baechle DO1GRB (ralf@gnu.org)
@@ -23,22 +28,35 @@
 #include <linux/skbuff.h>
 #include <net/sock.h>
 #include <net/tcp_states.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fcntl.h>
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <net/netrom.h>
 
+<<<<<<< HEAD
 static void nr_heartbeat_expiry(unsigned long);
 static void nr_t1timer_expiry(unsigned long);
 static void nr_t2timer_expiry(unsigned long);
 static void nr_t4timer_expiry(unsigned long);
 static void nr_idletimer_expiry(unsigned long);
+=======
+static void nr_heartbeat_expiry(struct timer_list *);
+static void nr_t1timer_expiry(struct timer_list *);
+static void nr_t2timer_expiry(struct timer_list *);
+static void nr_t4timer_expiry(struct timer_list *);
+static void nr_idletimer_expiry(struct timer_list *);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void nr_init_timers(struct sock *sk)
 {
 	struct nr_sock *nr = nr_sk(sk);
 
+<<<<<<< HEAD
 	setup_timer(&nr->t1timer, nr_t1timer_expiry, (unsigned long)sk);
 	setup_timer(&nr->t2timer, nr_t2timer_expiry, (unsigned long)sk);
 	setup_timer(&nr->t4timer, nr_t4timer_expiry, (unsigned long)sk);
@@ -47,27 +65,48 @@ void nr_init_timers(struct sock *sk)
 	/* initialized by sock_init_data */
 	sk->sk_timer.data     = (unsigned long)sk;
 	sk->sk_timer.function = &nr_heartbeat_expiry;
+=======
+	timer_setup(&nr->t1timer, nr_t1timer_expiry, 0);
+	timer_setup(&nr->t2timer, nr_t2timer_expiry, 0);
+	timer_setup(&nr->t4timer, nr_t4timer_expiry, 0);
+	timer_setup(&nr->idletimer, nr_idletimer_expiry, 0);
+
+	/* initialized by sock_init_data */
+	sk->sk_timer.function = nr_heartbeat_expiry;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nr_start_t1timer(struct sock *sk)
 {
 	struct nr_sock *nr = nr_sk(sk);
 
+<<<<<<< HEAD
 	mod_timer(&nr->t1timer, jiffies + nr->t1);
+=======
+	sk_reset_timer(sk, &nr->t1timer, jiffies + nr->t1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nr_start_t2timer(struct sock *sk)
 {
 	struct nr_sock *nr = nr_sk(sk);
 
+<<<<<<< HEAD
 	mod_timer(&nr->t2timer, jiffies + nr->t2);
+=======
+	sk_reset_timer(sk, &nr->t2timer, jiffies + nr->t2);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nr_start_t4timer(struct sock *sk)
 {
 	struct nr_sock *nr = nr_sk(sk);
 
+<<<<<<< HEAD
 	mod_timer(&nr->t4timer, jiffies + nr->t4);
+=======
+	sk_reset_timer(sk, &nr->t4timer, jiffies + nr->t4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nr_start_idletimer(struct sock *sk)
@@ -75,37 +114,65 @@ void nr_start_idletimer(struct sock *sk)
 	struct nr_sock *nr = nr_sk(sk);
 
 	if (nr->idle > 0)
+<<<<<<< HEAD
 		mod_timer(&nr->idletimer, jiffies + nr->idle);
+=======
+		sk_reset_timer(sk, &nr->idletimer, jiffies + nr->idle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nr_start_heartbeat(struct sock *sk)
 {
+<<<<<<< HEAD
 	mod_timer(&sk->sk_timer, jiffies + 5 * HZ);
+=======
+	sk_reset_timer(sk, &sk->sk_timer, jiffies + 5 * HZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nr_stop_t1timer(struct sock *sk)
 {
+<<<<<<< HEAD
 	del_timer(&nr_sk(sk)->t1timer);
+=======
+	sk_stop_timer(sk, &nr_sk(sk)->t1timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nr_stop_t2timer(struct sock *sk)
 {
+<<<<<<< HEAD
 	del_timer(&nr_sk(sk)->t2timer);
+=======
+	sk_stop_timer(sk, &nr_sk(sk)->t2timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nr_stop_t4timer(struct sock *sk)
 {
+<<<<<<< HEAD
 	del_timer(&nr_sk(sk)->t4timer);
+=======
+	sk_stop_timer(sk, &nr_sk(sk)->t4timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nr_stop_idletimer(struct sock *sk)
 {
+<<<<<<< HEAD
 	del_timer(&nr_sk(sk)->idletimer);
+=======
+	sk_stop_timer(sk, &nr_sk(sk)->idletimer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void nr_stop_heartbeat(struct sock *sk)
 {
+<<<<<<< HEAD
 	del_timer(&sk->sk_timer);
+=======
+	sk_stop_timer(sk, &sk->sk_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int nr_t1timer_running(struct sock *sk)
@@ -113,9 +180,15 @@ int nr_t1timer_running(struct sock *sk)
 	return timer_pending(&nr_sk(sk)->t1timer);
 }
 
+<<<<<<< HEAD
 static void nr_heartbeat_expiry(unsigned long param)
 {
 	struct sock *sk = (struct sock *)param;
+=======
+static void nr_heartbeat_expiry(struct timer_list *t)
+{
+	struct sock *sk = from_timer(sk, t, sk_timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct nr_sock *nr = nr_sk(sk);
 
 	bh_lock_sock(sk);
@@ -128,8 +201,12 @@ static void nr_heartbeat_expiry(unsigned long param)
 			sock_hold(sk);
 			bh_unlock_sock(sk);
 			nr_destroy_socket(sk);
+<<<<<<< HEAD
 			sock_put(sk);
 			return;
+=======
+			goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 
@@ -150,12 +227,23 @@ static void nr_heartbeat_expiry(unsigned long param)
 
 	nr_start_heartbeat(sk);
 	bh_unlock_sock(sk);
+<<<<<<< HEAD
 }
 
 static void nr_t2timer_expiry(unsigned long param)
 {
 	struct sock *sk = (struct sock *)param;
 	struct nr_sock *nr = nr_sk(sk);
+=======
+out:
+	sock_put(sk);
+}
+
+static void nr_t2timer_expiry(struct timer_list *t)
+{
+	struct nr_sock *nr = from_timer(nr, t, t2timer);
+	struct sock *sk = &nr->sock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bh_lock_sock(sk);
 	if (nr->condition & NR_COND_ACK_PENDING) {
@@ -163,21 +251,41 @@ static void nr_t2timer_expiry(unsigned long param)
 		nr_enquiry_response(sk);
 	}
 	bh_unlock_sock(sk);
+<<<<<<< HEAD
 }
 
 static void nr_t4timer_expiry(unsigned long param)
 {
 	struct sock *sk = (struct sock *)param;
+=======
+	sock_put(sk);
+}
+
+static void nr_t4timer_expiry(struct timer_list *t)
+{
+	struct nr_sock *nr = from_timer(nr, t, t4timer);
+	struct sock *sk = &nr->sock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bh_lock_sock(sk);
 	nr_sk(sk)->condition &= ~NR_COND_PEER_RX_BUSY;
 	bh_unlock_sock(sk);
+<<<<<<< HEAD
 }
 
 static void nr_idletimer_expiry(unsigned long param)
 {
 	struct sock *sk = (struct sock *)param;
 	struct nr_sock *nr = nr_sk(sk);
+=======
+	sock_put(sk);
+}
+
+static void nr_idletimer_expiry(struct timer_list *t)
+{
+	struct nr_sock *nr = from_timer(nr, t, idletimer);
+	struct sock *sk = &nr->sock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bh_lock_sock(sk);
 
@@ -200,20 +308,34 @@ static void nr_idletimer_expiry(unsigned long param)
 		sock_set_flag(sk, SOCK_DEAD);
 	}
 	bh_unlock_sock(sk);
+<<<<<<< HEAD
 }
 
 static void nr_t1timer_expiry(unsigned long param)
 {
 	struct sock *sk = (struct sock *)param;
 	struct nr_sock *nr = nr_sk(sk);
+=======
+	sock_put(sk);
+}
+
+static void nr_t1timer_expiry(struct timer_list *t)
+{
+	struct nr_sock *nr = from_timer(nr, t, t1timer);
+	struct sock *sk = &nr->sock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	bh_lock_sock(sk);
 	switch (nr->state) {
 	case NR_STATE_1:
 		if (nr->n2count == nr->n2) {
 			nr_disconnect(sk, ETIMEDOUT);
+<<<<<<< HEAD
 			bh_unlock_sock(sk);
 			return;
+=======
+			goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			nr->n2count++;
 			nr_write_internal(sk, NR_CONNREQ);
@@ -223,8 +345,12 @@ static void nr_t1timer_expiry(unsigned long param)
 	case NR_STATE_2:
 		if (nr->n2count == nr->n2) {
 			nr_disconnect(sk, ETIMEDOUT);
+<<<<<<< HEAD
 			bh_unlock_sock(sk);
 			return;
+=======
+			goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			nr->n2count++;
 			nr_write_internal(sk, NR_DISCREQ);
@@ -234,8 +360,12 @@ static void nr_t1timer_expiry(unsigned long param)
 	case NR_STATE_3:
 		if (nr->n2count == nr->n2) {
 			nr_disconnect(sk, ETIMEDOUT);
+<<<<<<< HEAD
 			bh_unlock_sock(sk);
 			return;
+=======
+			goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		} else {
 			nr->n2count++;
 			nr_requeue_frames(sk);
@@ -244,5 +374,11 @@ static void nr_t1timer_expiry(unsigned long param)
 	}
 
 	nr_start_t1timer(sk);
+<<<<<<< HEAD
 	bh_unlock_sock(sk);
+=======
+out:
+	bh_unlock_sock(sk);
+	sock_put(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

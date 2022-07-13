@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Framework for ISA radio drivers.
  * This takes care of all the V4L2 scaffolding, allowing the ISA drivers
  * to concentrate on the actual hardware operation.
  *
  * Copyright (C) 2012 Hans Verkuil <hans.verkuil@cisco.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -18,12 +23,18 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA
  * 02110-1301 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _RADIO_ISA_H_
 #define _RADIO_ISA_H_
 
 #include <linux/isa.h>
+<<<<<<< HEAD
+=======
+#include <linux/pnp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/videodev2.h>
 #include <media/v4l2-device.h>
 #include <media/v4l2-ctrls.h>
@@ -76,6 +87,12 @@ struct radio_isa_ops {
 /* Top level structure needed to instantiate the cards */
 struct radio_isa_driver {
 	struct isa_driver driver;
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PNP
+	struct pnp_driver pnp_driver;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct radio_isa_ops *ops;
 	/* The module_param_array with the specified I/O ports */
 	int *io_params;
@@ -100,6 +117,15 @@ struct radio_isa_driver {
 
 int radio_isa_match(struct device *pdev, unsigned int dev);
 int radio_isa_probe(struct device *pdev, unsigned int dev);
+<<<<<<< HEAD
 int radio_isa_remove(struct device *pdev, unsigned int dev);
+=======
+void radio_isa_remove(struct device *pdev, unsigned int dev);
+#ifdef CONFIG_PNP
+int radio_isa_pnp_probe(struct pnp_dev *dev,
+			const struct pnp_device_id *dev_id);
+void radio_isa_pnp_remove(struct pnp_dev *dev);
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

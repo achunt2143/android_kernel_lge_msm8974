@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* winfast-usbii-deluxe.h - Keytable for winfast_usbii_deluxe Remote Controller
  *
  * keymap imported from ir-keymaps.c
@@ -9,6 +10,14 @@
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+// winfast-usbii-deluxe.h - Keytable for winfast_usbii_deluxe Remote Controller
+//
+// keymap imported from ir-keymaps.c
+//
+// Copyright (c) 2010 by Mauro Carvalho Chehab
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -18,6 +27,7 @@
  */
 
 static struct rc_map_table winfast_usbii_deluxe[] = {
+<<<<<<< HEAD
 	{ 0x62, KEY_0},
 	{ 0x75, KEY_1},
 	{ 0x76, KEY_2},
@@ -28,6 +38,18 @@ static struct rc_map_table winfast_usbii_deluxe[] = {
 	{ 0x7d, KEY_7},
 	{ 0x7e, KEY_8},
 	{ 0x7f, KEY_9},
+=======
+	{ 0x62, KEY_NUMERIC_0},
+	{ 0x75, KEY_NUMERIC_1},
+	{ 0x76, KEY_NUMERIC_2},
+	{ 0x77, KEY_NUMERIC_3},
+	{ 0x79, KEY_NUMERIC_4},
+	{ 0x7a, KEY_NUMERIC_5},
+	{ 0x7b, KEY_NUMERIC_6},
+	{ 0x7d, KEY_NUMERIC_7},
+	{ 0x7e, KEY_NUMERIC_8},
+	{ 0x7f, KEY_NUMERIC_9},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ 0x38, KEY_CAMERA},		/* SNAPSHOT */
 	{ 0x37, KEY_RECORD},		/* RECORD */
@@ -42,7 +64,11 @@ static struct rc_map_table winfast_usbii_deluxe[] = {
 	{ 0x60, KEY_CHANNELDOWN},	/* CHANNELDOWN */
 	{ 0x61, KEY_LAST},		/* LAST CHANNEL (RECALL) */
 
+<<<<<<< HEAD
 	{ 0x72, KEY_VIDEO}, 		/* INPUT MODES (TV/FM) */
+=======
+	{ 0x72, KEY_VIDEO},		/* INPUT MODES (TV/FM) */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	{ 0x70, KEY_POWER2},		/* TV ON/OFF */
 
@@ -59,10 +85,17 @@ static struct rc_map_table winfast_usbii_deluxe[] = {
 
 static struct rc_map_list winfast_usbii_deluxe_map = {
 	.map = {
+<<<<<<< HEAD
 		.scan    = winfast_usbii_deluxe,
 		.size    = ARRAY_SIZE(winfast_usbii_deluxe),
 		.rc_type = RC_TYPE_UNKNOWN,	/* Legacy IR type */
 		.name    = RC_MAP_WINFAST_USBII_DELUXE,
+=======
+		.scan     = winfast_usbii_deluxe,
+		.size     = ARRAY_SIZE(winfast_usbii_deluxe),
+		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.name     = RC_MAP_WINFAST_USBII_DELUXE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 
@@ -80,4 +113,9 @@ module_init(init_rc_map_winfast_usbii_deluxe)
 module_exit(exit_rc_map_winfast_usbii_deluxe)
 
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_AUTHOR("Mauro Carvalho Chehab <mchehab@redhat.com>");
+=======
+MODULE_AUTHOR("Mauro Carvalho Chehab");
+MODULE_DESCRIPTION("Leadtek Winfast TV USB II Deluxe remote controller keytable");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

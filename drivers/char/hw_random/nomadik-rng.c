@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Nomadik RNG support
  *  Copyright 2009 Alessandro Rubini
@@ -6,11 +7,20 @@
  *  it under the terms of the GNU General Public License as published by
  *  the Free Software Foundation; either version 2 of the License, or
  *  (at your option) any later version.
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * Nomadik RNG support
+ *  Copyright 2009 Alessandro Rubini
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/device.h>
 #include <linux/amba/bus.h>
 #include <linux/hw_random.h>
@@ -18,8 +28,11 @@
 #include <linux/clk.h>
 #include <linux/err.h>
 
+<<<<<<< HEAD
 static struct clk *rng_clk;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nmk_rng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 {
 	void __iomem *base = (void __iomem *)rng->priv;
@@ -41,6 +54,7 @@ static struct hwrng nmk_rng = {
 
 static int nmk_rng_probe(struct amba_device *dev, const struct amba_id *id)
 {
+<<<<<<< HEAD
 	void __iomem *base;
 	int ret;
 
@@ -88,6 +102,41 @@ static int nmk_rng_remove(struct amba_device *dev)
 }
 
 static struct amba_id nmk_rng_ids[] = {
+=======
+	struct clk *rng_clk;
+	void __iomem *base;
+	int ret;
+
+	rng_clk = devm_clk_get_enabled(&dev->dev, NULL);
+	if (IS_ERR(rng_clk))
+		return dev_err_probe(&dev->dev, PTR_ERR(rng_clk), "could not get rng clock\n");
+
+	ret = amba_request_regions(dev, dev->dev.init_name);
+	if (ret)
+		return ret;
+	ret = -ENOMEM;
+	base = devm_ioremap(&dev->dev, dev->res.start,
+			    resource_size(&dev->res));
+	if (!base)
+		goto out_release;
+	nmk_rng.priv = (unsigned long)base;
+	ret = devm_hwrng_register(&dev->dev, &nmk_rng);
+	if (ret)
+		goto out_release;
+	return 0;
+
+out_release:
+	amba_release_regions(dev);
+	return ret;
+}
+
+static void nmk_rng_remove(struct amba_device *dev)
+{
+	amba_release_regions(dev);
+}
+
+static const struct amba_id nmk_rng_ids[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.id	= 0x000805e1,
 		.mask	= 0x000fffff, /* top bits are rev and cfg: accept all */
@@ -109,4 +158,8 @@ static struct amba_driver nmk_rng_driver = {
 
 module_amba_driver(nmk_rng_driver);
 
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("ST-Ericsson Nomadik Random Number Generator");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

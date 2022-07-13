@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2011 Red Hat, Inc.
  *
@@ -38,6 +42,7 @@ struct dm_transaction_manager *dm_tm_create_non_blocking_clone(struct dm_transac
 /*
  * We use a 2-phase commit here.
  *
+<<<<<<< HEAD
  * i) In the first phase the block manager is told to start flushing, and
  * the changes to the space map are written to disk.  You should interrogate
  * your particular space map to get detail of its root node etc. to be
@@ -50,6 +55,19 @@ struct dm_transaction_manager *dm_tm_create_non_blocking_clone(struct dm_transac
  */
 int dm_tm_pre_commit(struct dm_transaction_manager *tm);
 int dm_tm_commit(struct dm_transaction_manager *tm, struct dm_block *root);
+=======
+ * i) Make all changes for the transaction *except* for the superblock.
+ * Then call dm_tm_pre_commit() to flush them to disk.
+ *
+ * ii) Lock your superblock.  Update.  Then call dm_tm_commit() which will
+ * unlock the superblock and flush it.  No other blocks should be updated
+ * during this period.  Care should be taken to never unlock a partially
+ * updated superblock; perform any operations that could fail *before* you
+ * take the superblock lock.
+ */
+int dm_tm_pre_commit(struct dm_transaction_manager *tm);
+int dm_tm_commit(struct dm_transaction_manager *tm, struct dm_block *superblock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * These methods are the only way to get hold of a writeable block.
@@ -95,26 +113,65 @@ int dm_tm_read_lock(struct dm_transaction_manager *tm, dm_block_t b,
 		    struct dm_block_validator *v,
 		    struct dm_block **result);
 
+<<<<<<< HEAD
 int dm_tm_unlock(struct dm_transaction_manager *tm, struct dm_block *b);
+=======
+void dm_tm_unlock(struct dm_transaction_manager *tm, struct dm_block *b);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Functions for altering the reference count of a block directly.
  */
 void dm_tm_inc(struct dm_transaction_manager *tm, dm_block_t b);
+<<<<<<< HEAD
 
 void dm_tm_dec(struct dm_transaction_manager *tm, dm_block_t b);
 
 int dm_tm_ref(struct dm_transaction_manager *tm, dm_block_t b,
 	      uint32_t *result);
+=======
+void dm_tm_inc_range(struct dm_transaction_manager *tm, dm_block_t b, dm_block_t e);
+void dm_tm_dec(struct dm_transaction_manager *tm, dm_block_t b);
+void dm_tm_dec_range(struct dm_transaction_manager *tm, dm_block_t b, dm_block_t e);
+
+/*
+ * Builds up runs of adjacent blocks, and then calls the given fn
+ * (typically dm_tm_inc/dec).  Very useful when you have to perform
+ * the same tm operation on all values in a btree leaf.
+ */
+typedef void (*dm_tm_run_fn)(struct dm_transaction_manager *, dm_block_t, dm_block_t);
+void dm_tm_with_runs(struct dm_transaction_manager *tm,
+		     const __le64 *value_le, unsigned int count, dm_tm_run_fn fn);
+
+int dm_tm_ref(struct dm_transaction_manager *tm, dm_block_t b, uint32_t *result);
+
+/*
+ * Finds out if a given block is shared (ie. has a reference count higher
+ * than one).
+ */
+int dm_tm_block_is_shared(struct dm_transaction_manager *tm, dm_block_t b,
+			  int *result);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct dm_block_manager *dm_tm_get_bm(struct dm_transaction_manager *tm);
 
 /*
+<<<<<<< HEAD
+=======
+ * If you're using a non-blocking clone the tm will build up a list of
+ * requested blocks that weren't in core.  This call will request those
+ * blocks to be prefetched.
+ */
+void dm_tm_issue_prefetches(struct dm_transaction_manager *tm);
+
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * A little utility that ties the knot by producing a transaction manager
  * that has a space map managed by the transaction manager...
  *
  * Returns a tm that has an open transaction to write the new disk sm.
  * Caller should store the new sm root and commit.
+<<<<<<< HEAD
  */
 int dm_tm_create_with_sm(struct dm_block_manager *bm, dm_block_t sb_location,
 			 struct dm_block_validator *sb_validator,
@@ -126,5 +183,19 @@ int dm_tm_open_with_sm(struct dm_block_manager *bm, dm_block_t sb_location,
 		       size_t root_offset, size_t root_max_len,
 		       struct dm_transaction_manager **tm,
 		       struct dm_space_map **sm, struct dm_block **sblock);
+=======
+ *
+ * The superblock location is passed so the metadata space map knows it
+ * shouldn't be used.
+ */
+int dm_tm_create_with_sm(struct dm_block_manager *bm, dm_block_t sb_location,
+			 struct dm_transaction_manager **tm,
+			 struct dm_space_map **sm);
+
+int dm_tm_open_with_sm(struct dm_block_manager *bm, dm_block_t sb_location,
+		       void *sm_root, size_t root_len,
+		       struct dm_transaction_manager **tm,
+		       struct dm_space_map **sm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* _LINUX_DM_TRANSACTION_MANAGER_H */

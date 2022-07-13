@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Copyright (C) 2006 Free Software Foundation, Inc.
 
 This file is free software; you can redistribute it and/or modify it
@@ -23,6 +24,12 @@ You should have received a copy of the GNU General Public License
 along with this program; see the file COPYING.  If not, write to
 the Free Software Foundation, 51 Franklin Street, Fifth Floor,
 Boston, MA 02110-1301, USA.  */
+=======
+/* SPDX-License-Identifier: GPL-2.0+ WITH GCC-exception-2.0
+ *
+ * Copyright (C) 2006 Free Software Foundation, Inc.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Moderately Space-optimized libgcc routines for the Renesas SH /
    STMicroelectronics ST40 CPUs.

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Standard Hot Plug Controller Driver
  *
@@ -8,6 +12,7 @@
  *
  * All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or (at
@@ -23,6 +28,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Send feedback to <greg@kroah.com>, <kristen.c.accardi@intel.com>
  *
  */
@@ -34,6 +41,7 @@
 #include "../pci.h"
 #include "shpchp.h"
 
+<<<<<<< HEAD
 int __ref shpchp_configure_device(struct slot *p_slot)
 {
 	struct pci_dev *dev;
@@ -48,11 +56,32 @@ int __ref shpchp_configure_device(struct slot *p_slot)
 			 pci_domain_nr(parent), p_slot->bus, p_slot->device);
 		pci_dev_put(dev);
 		return -EINVAL;
+=======
+int shpchp_configure_device(struct slot *p_slot)
+{
+	struct pci_dev *dev;
+	struct controller *ctrl = p_slot->ctrl;
+	struct pci_dev *bridge = ctrl->pci_dev;
+	struct pci_bus *parent = bridge->subordinate;
+	int num, ret = 0;
+
+	pci_lock_rescan_remove();
+
+	dev = pci_get_slot(parent, PCI_DEVFN(p_slot->device, 0));
+	if (dev) {
+		ctrl_err(ctrl, "Device %s already exists at %04x:%02x:%02x, cannot hot-add\n",
+			 pci_name(dev), pci_domain_nr(parent),
+			 p_slot->bus, p_slot->device);
+		pci_dev_put(dev);
+		ret = -EINVAL;
+		goto out;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	num = pci_scan_slot(parent, PCI_DEVFN(p_slot->device, 0));
 	if (num == 0) {
 		ctrl_err(ctrl, "No new device found\n");
+<<<<<<< HEAD
 		return -ENODEV;
 	}
 
@@ -103,11 +132,36 @@ int shpchp_unconfigure_device(struct slot *p_slot)
 	int j;
 	u8 bctl = 0;
 	struct pci_bus *parent = p_slot->ctrl->pci_dev->subordinate;
+=======
+		ret = -ENODEV;
+		goto out;
+	}
+
+	for_each_pci_bridge(dev, parent) {
+		if (PCI_SLOT(dev->devfn) == p_slot->device)
+			pci_hp_add_bridge(dev);
+	}
+
+	pci_assign_unassigned_bridge_resources(bridge);
+	pcie_bus_configure_settings(parent);
+	pci_bus_add_devices(parent);
+
+ out:
+	pci_unlock_rescan_remove();
+	return ret;
+}
+
+void shpchp_unconfigure_device(struct slot *p_slot)
+{
+	struct pci_bus *parent = p_slot->ctrl->pci_dev->subordinate;
+	struct pci_dev *dev, *temp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct controller *ctrl = p_slot->ctrl;
 
 	ctrl_dbg(ctrl, "%s: domain:bus:dev = %04x:%02x:%02x\n",
 		 __func__, pci_domain_nr(parent), p_slot->bus, p_slot->device);
 
+<<<<<<< HEAD
 	for (j = 0; j < 8 ; j++) {
 		struct pci_dev *temp = pci_get_slot(parent,
 				(p_slot->device << 3) | j);
@@ -130,3 +184,18 @@ int shpchp_unconfigure_device(struct slot *p_slot)
 	return rc;
 }
 
+=======
+	pci_lock_rescan_remove();
+
+	list_for_each_entry_safe(dev, temp, &parent->devices, bus_list) {
+		if (PCI_SLOT(dev->devfn) != p_slot->device)
+			continue;
+
+		pci_dev_get(dev);
+		pci_stop_and_remove_bus_device(dev);
+		pci_dev_put(dev);
+	}
+
+	pci_unlock_rescan_remove();
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

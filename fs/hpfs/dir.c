@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/hpfs/dir.c
  *
@@ -25,7 +29,11 @@ static loff_t hpfs_dir_lseek(struct file *filp, loff_t off, int whence)
 	loff_t new_off = off + (whence == 1 ? filp->f_pos : 0);
 	loff_t pos;
 	struct quad_buffer_head qbh;
+<<<<<<< HEAD
 	struct inode *i = filp->f_path.dentry->d_inode;
+=======
+	struct inode *i = file_inode(filp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hpfs_inode_info *hpfs_inode = hpfs_i(i);
 	struct super_block *s = i->i_sb;
 
@@ -33,10 +41,17 @@ static loff_t hpfs_dir_lseek(struct file *filp, loff_t off, int whence)
 	if (whence == SEEK_DATA || whence == SEEK_HOLE)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	mutex_lock(&i->i_mutex);
 	hpfs_lock(s);
 
 	/*printk("dir lseek\n");*/
+=======
+	inode_lock(i);
+	hpfs_lock(s);
+
+	/*pr_info("dir lseek\n");*/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (new_off == 0 || new_off == 1 || new_off == 11 || new_off == 12 || new_off == 13) goto ok;
 	pos = ((loff_t) hpfs_de_as_down_as_possible(s, hpfs_inode->i_dno) << 4) + 1;
 	while (pos != new_off) {
@@ -44,6 +59,7 @@ static loff_t hpfs_dir_lseek(struct file *filp, loff_t off, int whence)
 		else goto fail;
 		if (pos == 12) goto fail;
 	}
+<<<<<<< HEAD
 	hpfs_add_pos(i, &filp->f_pos);
 ok:
 	filp->f_pos = new_off;
@@ -60,11 +76,37 @@ fail:
 static int hpfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 {
 	struct inode *inode = filp->f_path.dentry->d_inode;
+=======
+	if (unlikely(hpfs_add_pos(i, &filp->f_pos) < 0)) {
+		hpfs_unlock(s);
+		inode_unlock(i);
+		return -ENOMEM;
+	}
+ok:
+	filp->f_pos = new_off;
+	hpfs_unlock(s);
+	inode_unlock(i);
+	return new_off;
+fail:
+	/*pr_warn("illegal lseek: %016llx\n", new_off);*/
+	hpfs_unlock(s);
+	inode_unlock(i);
+	return -ESPIPE;
+}
+
+static int hpfs_readdir(struct file *file, struct dir_context *ctx)
+{
+	struct inode *inode = file_inode(file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct hpfs_inode_info *hpfs_inode = hpfs_i(inode);
 	struct quad_buffer_head qbh;
 	struct hpfs_dirent *de;
 	int lc;
+<<<<<<< HEAD
 	long old_pos;
+=======
+	loff_t next_pos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *tempname;
 	int c1, c2 = 0;
 	int ret = 0;
@@ -89,7 +131,11 @@ static int hpfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 			ret = -EIOERROR;
 			goto out;
 		}
+<<<<<<< HEAD
 		if (!fno->dirflag) {
+=======
+		if (!fnode_is_dir(fno)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			e = 1;
 			hpfs_error(inode->i_sb, "not a directory, fnode %08lx",
 					(unsigned long)inode->i_ino);
@@ -105,11 +151,19 @@ static int hpfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		}
 	}
 	lc = hpfs_sb(inode->i_sb)->sb_lowercase;
+<<<<<<< HEAD
 	if (filp->f_pos == 12) { /* diff -r requires this (note, that diff -r */
 		filp->f_pos = 13; /* also fails on msdos filesystem in 2.0) */
 		goto out;
 	}
 	if (filp->f_pos == 13) {
+=======
+	if (ctx->pos == 12) { /* diff -r requires this (note, that diff -r */
+		ctx->pos = 13; /* also fails on msdos filesystem in 2.0) */
+		goto out;
+	}
+	if (ctx->pos == 13) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ret = -ENOENT;
 		goto out;
 	}
@@ -120,6 +174,7 @@ static int hpfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		   accepted by filldir, but what can I do?
 		   maybe killall -9 ls helps */
 		if (hpfs_sb(inode->i_sb)->sb_chk)
+<<<<<<< HEAD
 			if (hpfs_stop_cycles(inode->i_sb, filp->f_pos, &c1, &c2, "hpfs_readdir")) {
 				ret = -EFSERROR;
 				goto out;
@@ -147,6 +202,37 @@ static int hpfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		}
 		old_pos = filp->f_pos;
 		if (!(de = map_pos_dirent(inode, &filp->f_pos, &qbh))) {
+=======
+			if (hpfs_stop_cycles(inode->i_sb, ctx->pos, &c1, &c2, "hpfs_readdir")) {
+				ret = -EFSERROR;
+				goto out;
+			}
+		if (ctx->pos == 12)
+			goto out;
+		if (ctx->pos == 3 || ctx->pos == 4 || ctx->pos == 5) {
+			pr_err("pos==%d\n", (int)ctx->pos);
+			goto out;
+		}
+		if (ctx->pos == 0) {
+			if (!dir_emit_dot(file, ctx))
+				goto out;
+			ctx->pos = 11;
+		}
+		if (ctx->pos == 11) {
+			if (!dir_emit(ctx, "..", 2, hpfs_inode->i_parent_dir, DT_DIR))
+				goto out;
+			ctx->pos = 1;
+		}
+		if (ctx->pos == 1) {
+			ret = hpfs_add_pos(inode, &file->f_pos);
+			if (unlikely(ret < 0))
+				goto out;
+			ctx->pos = ((loff_t) hpfs_de_as_down_as_possible(inode->i_sb, hpfs_inode->i_dno) << 4) + 1;
+		}
+		next_pos = ctx->pos;
+		if (!(de = map_pos_dirent(inode, &next_pos, &qbh))) {
+			ctx->pos = next_pos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -EIOERROR;
 			goto out;
 		}
@@ -154,6 +240,7 @@ static int hpfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 			if (hpfs_sb(inode->i_sb)->sb_chk) {
 				if (de->first && !de->last && (de->namelen != 2
 				    || de ->name[0] != 1 || de->name[1] != 1))
+<<<<<<< HEAD
 					hpfs_error(inode->i_sb, "hpfs_readdir: bad ^A^A entry; pos = %08lx", old_pos);
 				if (de->last && (de->namelen != 1 || de ->name[0] != 255))
 					hpfs_error(inode->i_sb, "hpfs_readdir: bad \\377 entry; pos = %08lx", old_pos);
@@ -164,10 +251,26 @@ static int hpfs_readdir(struct file *filp, void *dirent, filldir_t filldir)
 		tempname = hpfs_translate_name(inode->i_sb, de->name, de->namelen, lc, de->not_8x3);
 		if (filldir(dirent, tempname, de->namelen, old_pos, le32_to_cpu(de->fnode), DT_UNKNOWN) < 0) {
 			filp->f_pos = old_pos;
+=======
+					hpfs_error(inode->i_sb, "hpfs_readdir: bad ^A^A entry; pos = %08lx", (unsigned long)ctx->pos);
+				if (de->last && (de->namelen != 1 || de ->name[0] != 255))
+					hpfs_error(inode->i_sb, "hpfs_readdir: bad \\377 entry; pos = %08lx", (unsigned long)ctx->pos);
+			}
+			hpfs_brelse4(&qbh);
+			ctx->pos = next_pos;
+			goto again;
+		}
+		tempname = hpfs_translate_name(inode->i_sb, de->name, de->namelen, lc, de->not_8x3);
+		if (!dir_emit(ctx, tempname, de->namelen, le32_to_cpu(de->fnode), DT_UNKNOWN)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (tempname != de->name) kfree(tempname);
 			hpfs_brelse4(&qbh);
 			goto out;
 		}
+<<<<<<< HEAD
+=======
+		ctx->pos = next_pos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (tempname != de->name) kfree(tempname);
 		hpfs_brelse4(&qbh);
 	}
@@ -236,6 +339,10 @@ struct dentry *hpfs_lookup(struct inode *dir, struct dentry *dentry, unsigned in
 	result = iget_locked(dir->i_sb, ino);
 	if (!result) {
 		hpfs_error(dir->i_sb, "hpfs_lookup: can't get inode");
+<<<<<<< HEAD
+=======
+		result = ERR_PTR(-ENOMEM);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail1;
 	}
 	if (result->i_state & I_NEW) {
@@ -256,8 +363,15 @@ struct dentry *hpfs_lookup(struct inode *dir, struct dentry *dentry, unsigned in
 	hpfs_result = hpfs_i(result);
 	if (!de->directory) hpfs_result->i_parent_dir = dir->i_ino;
 
+<<<<<<< HEAD
 	if (de->has_acl || de->has_xtd_perm) if (!(dir->i_sb->s_flags & MS_RDONLY)) {
 		hpfs_error(result->i_sb, "ACLs or XPERM found. This is probably HPFS386. This driver doesn't support it now. Send me some info on these structures");
+=======
+	if (de->has_acl || de->has_xtd_perm) if (!sb_rdonly(dir->i_sb)) {
+		hpfs_error(result->i_sb, "ACLs or XPERM found. This is probably HPFS386. This driver doesn't support it now. Send me some info on these structures");
+		iput(result);
+		result = ERR_PTR(-EINVAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto bail1;
 	}
 
@@ -266,6 +380,7 @@ struct dentry *hpfs_lookup(struct inode *dir, struct dentry *dentry, unsigned in
 	 * inode.
 	 */
 
+<<<<<<< HEAD
 	if (!result->i_ctime.tv_sec) {
 		if (!(result->i_ctime.tv_sec = local_to_gmt(dir->i_sb, le32_to_cpu(de->creation_date))))
 			result->i_ctime.tv_sec = 1;
@@ -274,6 +389,18 @@ struct dentry *hpfs_lookup(struct inode *dir, struct dentry *dentry, unsigned in
 		result->i_mtime.tv_nsec = 0;
 		result->i_atime.tv_sec = local_to_gmt(dir->i_sb, le32_to_cpu(de->read_date));
 		result->i_atime.tv_nsec = 0;
+=======
+	if (!inode_get_ctime_sec(result)) {
+		time64_t csec = local_to_gmt(dir->i_sb, le32_to_cpu(de->creation_date));
+
+		inode_set_ctime(result, csec ? csec : 1, 0);
+		inode_set_mtime(result,
+				local_to_gmt(dir->i_sb, le32_to_cpu(de->write_date)),
+				0);
+		inode_set_atime(result,
+				local_to_gmt(dir->i_sb, le32_to_cpu(de->read_date)),
+				0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hpfs_result->i_ea_size = le32_to_cpu(de->ea_size);
 		if (!hpfs_result->i_ea_mode && de->read_only)
 			result->i_mode &= ~0222;
@@ -293,12 +420,17 @@ struct dentry *hpfs_lookup(struct inode *dir, struct dentry *dentry, unsigned in
 		}
 	}
 
+<<<<<<< HEAD
+=======
+bail1:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hpfs_brelse4(&qbh);
 
 	/*
 	 * Made it.
 	 */
 
+<<<<<<< HEAD
 	end:
 	end_add:
 	hpfs_unlock(dir->i_sb);
@@ -316,13 +448,27 @@ struct dentry *hpfs_lookup(struct inode *dir, struct dentry *dentry, unsigned in
 
 	hpfs_unlock(dir->i_sb);
 	return ERR_PTR(-ENOENT);
+=======
+end:
+end_add:
+	hpfs_unlock(dir->i_sb);
+	return d_splice_alias(result, dentry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 const struct file_operations hpfs_dir_ops =
 {
 	.llseek		= hpfs_dir_lseek,
 	.read		= generic_read_dir,
+<<<<<<< HEAD
 	.readdir	= hpfs_readdir,
 	.release	= hpfs_dir_release,
 	.fsync		= hpfs_file_fsync,
+=======
+	.iterate_shared	= hpfs_readdir,
+	.release	= hpfs_dir_release,
+	.fsync		= hpfs_file_fsync,
+	.unlocked_ioctl	= hpfs_ioctl,
+	.compat_ioctl	= compat_ptr_ioctl,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

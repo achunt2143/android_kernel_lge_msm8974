@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*  Kernel module help for SH.
 
     SHcompact version by Kaz Kojima and Paul Mundt.
@@ -9,6 +13,7 @@
 
 	Based on the sh version, and on code from the sh64-specific parts of
 	modutils, originally written by Richard Curnow and Ben Gaster.
+<<<<<<< HEAD
 
     This program is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -23,6 +28,8 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 #include <linux/moduleloader.h>
 #include <linux/elf.h>
@@ -59,6 +66,7 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
 			+ ELF32_R_SYM(rel[i].r_info);
 		relocation = sym->st_value + rel[i].r_addend;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SUPERH64
 		/* For text addresses, bit2 of the st_other field indicates
 		 * whether the symbol is SHmedia (1) or SHcompact (0).  If
@@ -68,6 +76,8 @@ int apply_relocate_add(Elf32_Shdr *sechdrs,
 		relocation |= !!(sym->st_other & 4);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		switch (ELF32_R_TYPE(rel[i].r_info)) {
 		case R_SH_NONE:
 			break;

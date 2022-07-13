@@ -16,7 +16,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <scsi/scsi_host.h>
@@ -137,7 +140,11 @@ static int hpt3x3_atapi_dma(struct ata_queued_cmd *qc)
 
 #endif /* CONFIG_PATA_HPT3X3_DMA */
 
+<<<<<<< HEAD
 static struct scsi_host_template hpt3x3_sht = {
+=======
+static const struct scsi_host_template hpt3x3_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -222,10 +229,14 @@ static int hpt3x3_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (rc)
 		return rc;
 	host->iomap = pcim_iomap_table(pdev);
+<<<<<<< HEAD
 	rc = pci_set_dma_mask(pdev, ATA_DMA_MASK);
 	if (rc)
 		return rc;
 	rc = pci_set_consistent_dma_mask(pdev, ATA_DMA_MASK);
+=======
+	rc = dma_set_mask_and_coherent(&pdev->dev, ATA_DMA_MASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		return rc;
 
@@ -250,10 +261,17 @@ static int hpt3x3_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 				 IRQF_SHARED, &hpt3x3_sht);
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int hpt3x3_reinit_one(struct pci_dev *dev)
 {
 	struct ata_host *host = dev_get_drvdata(&dev->dev);
+=======
+#ifdef CONFIG_PM_SLEEP
+static int hpt3x3_reinit_one(struct pci_dev *dev)
+{
+	struct ata_host *host = pci_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rc = ata_pci_device_do_resume(dev);
@@ -278,12 +296,17 @@ static struct pci_driver hpt3x3_pci_driver = {
 	.id_table	= hpt3x3,
 	.probe 		= hpt3x3_init_one,
 	.remove		= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend	= ata_pci_device_suspend,
 	.resume		= hpt3x3_reinit_one,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init hpt3x3_init(void)
 {
 	return pci_register_driver(&hpt3x3_pci_driver);
@@ -295,12 +318,18 @@ static void __exit hpt3x3_exit(void)
 	pci_unregister_driver(&hpt3x3_pci_driver);
 }
 
+=======
+module_pci_driver(hpt3x3_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("low-level driver for the Highpoint HPT343/363");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, hpt3x3);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
 module_init(hpt3x3_init);
 module_exit(hpt3x3_exit);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

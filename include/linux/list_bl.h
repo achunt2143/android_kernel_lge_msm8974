@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef _LINUX_LIST_BL_H
 #define _LINUX_LIST_BL_H
 
@@ -48,7 +52,11 @@ static inline void INIT_HLIST_BL_NODE(struct hlist_bl_node *h)
 
 #define hlist_bl_entry(ptr, type, member) container_of(ptr,type,member)
 
+<<<<<<< HEAD
 static inline int hlist_bl_unhashed(const struct hlist_bl_node *h)
+=======
+static inline bool  hlist_bl_unhashed(const struct hlist_bl_node *h)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return !h->pprev;
 }
@@ -68,9 +76,15 @@ static inline void hlist_bl_set_first(struct hlist_bl_head *h,
 	h->first = (struct hlist_bl_node *)((unsigned long)n | LIST_BL_LOCKMASK);
 }
 
+<<<<<<< HEAD
 static inline int hlist_bl_empty(const struct hlist_bl_head *h)
 {
 	return !((unsigned long)h->first & ~LIST_BL_LOCKMASK);
+=======
+static inline bool hlist_bl_empty(const struct hlist_bl_head *h)
+{
+	return !((unsigned long)READ_ONCE(h->first) & ~LIST_BL_LOCKMASK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void hlist_bl_add_head(struct hlist_bl_node *n,
@@ -85,6 +99,35 @@ static inline void hlist_bl_add_head(struct hlist_bl_node *n,
 	hlist_bl_set_first(h, n);
 }
 
+<<<<<<< HEAD
+=======
+static inline void hlist_bl_add_before(struct hlist_bl_node *n,
+				       struct hlist_bl_node *next)
+{
+	struct hlist_bl_node **pprev = next->pprev;
+
+	n->pprev = pprev;
+	n->next = next;
+	next->pprev = &n->next;
+
+	/* pprev may be `first`, so be careful not to lose the lock bit */
+	WRITE_ONCE(*pprev,
+		   (struct hlist_bl_node *)
+			((uintptr_t)n | ((uintptr_t)*pprev & LIST_BL_LOCKMASK)));
+}
+
+static inline void hlist_bl_add_behind(struct hlist_bl_node *n,
+				       struct hlist_bl_node *prev)
+{
+	n->next = prev->next;
+	n->pprev = &prev->next;
+	prev->next = n;
+
+	if (n->next)
+		n->next->pprev = &n->next;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void __hlist_bl_del(struct hlist_bl_node *n)
 {
 	struct hlist_bl_node *next = n->next;
@@ -93,9 +136,16 @@ static inline void __hlist_bl_del(struct hlist_bl_node *n)
 	LIST_BL_BUG_ON((unsigned long)n & LIST_BL_LOCKMASK);
 
 	/* pprev may be `first`, so be careful not to lose the lock bit */
+<<<<<<< HEAD
 	*pprev = (struct hlist_bl_node *)
 			((unsigned long)next |
 			 ((unsigned long)*pprev & LIST_BL_LOCKMASK));
+=======
+	WRITE_ONCE(*pprev,
+		   (struct hlist_bl_node *)
+			((unsigned long)next |
+			 ((unsigned long)*pprev & LIST_BL_LOCKMASK)));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (next)
 		next->pprev = pprev;
 }
@@ -125,6 +175,14 @@ static inline void hlist_bl_unlock(struct hlist_bl_head *b)
 	__bit_spin_unlock(0, (unsigned long *)b);
 }
 
+<<<<<<< HEAD
+=======
+static inline bool hlist_bl_is_locked(struct hlist_bl_head *b)
+{
+	return bit_spin_is_locked(0, (unsigned long *)b);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * hlist_bl_for_each_entry	- iterate over list of given type
  * @tpos:	the type * to use as a loop cursor.

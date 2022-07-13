@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    pata_netcell.c - Netcell PATA driver
  *
@@ -7,7 +11,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -21,6 +28,7 @@
 /* No PIO or DMA methods needed for this device */
 
 static unsigned int netcell_read_id(struct ata_device *adev,
+<<<<<<< HEAD
 					struct ata_taskfile *tf, u16 *id)
 {
 	unsigned int err_mask = ata_do_dev_read_id(adev, tf, id);
@@ -31,6 +39,19 @@ static unsigned int netcell_read_id(struct ata_device *adev,
 }
 
 static struct scsi_host_template netcell_sht = {
+=======
+				    struct ata_taskfile *tf, __le16 *id)
+{
+	unsigned int err_mask = ata_do_dev_read_id(adev, tf, id);
+
+	/* Firmware forgets to mark words 85-87 valid */
+	if (err_mask == 0)
+		id[ATA_ID_CSF_DEFAULT] |= cpu_to_le16(0x4000);
+	return err_mask;
+}
+
+static const struct scsi_host_template netcell_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -93,12 +114,17 @@ static struct pci_driver netcell_pci_driver = {
 	.id_table		= netcell_pci_tbl,
 	.probe			= netcell_init_one,
 	.remove			= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ata_pci_device_resume,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init netcell_init(void)
 {
 	return pci_register_driver(&netcell_pci_driver);
@@ -111,10 +137,16 @@ static void __exit netcell_exit(void)
 
 module_init(netcell_init);
 module_exit(netcell_exit);
+=======
+module_pci_driver(netcell_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("SCSI low-level driver for Netcell PATA RAID");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, netcell_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

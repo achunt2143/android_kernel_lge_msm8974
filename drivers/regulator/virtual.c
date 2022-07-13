@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * reg-virtual-consumer.c
  *
  * Copyright 2008 Wolfson Microelectronics PLC.
  *
  * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
  * License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/err.h>
@@ -17,6 +24,10 @@
 #include <linux/regulator/consumer.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct virtual_consumer_data {
 	struct mutex lock;
@@ -121,7 +132,11 @@ static ssize_t set_min_uV(struct device *dev, struct device_attribute *attr,
 	struct virtual_consumer_data *data = dev_get_drvdata(dev);
 	long val;
 
+<<<<<<< HEAD
 	if (strict_strtol(buf, 10, &val) != 0)
+=======
+	if (kstrtol(buf, 10, &val) != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return count;
 
 	mutex_lock(&data->lock);
@@ -147,7 +162,11 @@ static ssize_t set_max_uV(struct device *dev, struct device_attribute *attr,
 	struct virtual_consumer_data *data = dev_get_drvdata(dev);
 	long val;
 
+<<<<<<< HEAD
 	if (strict_strtol(buf, 10, &val) != 0)
+=======
+	if (kstrtol(buf, 10, &val) != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return count;
 
 	mutex_lock(&data->lock);
@@ -173,7 +192,11 @@ static ssize_t set_min_uA(struct device *dev, struct device_attribute *attr,
 	struct virtual_consumer_data *data = dev_get_drvdata(dev);
 	long val;
 
+<<<<<<< HEAD
 	if (strict_strtol(buf, 10, &val) != 0)
+=======
+	if (kstrtol(buf, 10, &val) != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return count;
 
 	mutex_lock(&data->lock);
@@ -199,7 +222,11 @@ static ssize_t set_max_uA(struct device *dev, struct device_attribute *attr,
 	struct virtual_consumer_data *data = dev_get_drvdata(dev);
 	long val;
 
+<<<<<<< HEAD
 	if (strict_strtol(buf, 10, &val) != 0)
+=======
+	if (kstrtol(buf, 10, &val) != 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return count;
 
 	mutex_lock(&data->lock);
@@ -266,11 +293,19 @@ static ssize_t set_mode(struct device *dev, struct device_attribute *attr,
 	return count;
 }
 
+<<<<<<< HEAD
 static DEVICE_ATTR(min_microvolts, 0666, show_min_uV, set_min_uV);
 static DEVICE_ATTR(max_microvolts, 0666, show_max_uV, set_max_uV);
 static DEVICE_ATTR(min_microamps, 0666, show_min_uA, set_min_uA);
 static DEVICE_ATTR(max_microamps, 0666, show_max_uA, set_max_uA);
 static DEVICE_ATTR(mode, 0666, show_mode, set_mode);
+=======
+static DEVICE_ATTR(min_microvolts, 0664, show_min_uV, set_min_uV);
+static DEVICE_ATTR(max_microvolts, 0664, show_max_uV, set_max_uV);
+static DEVICE_ATTR(min_microamps, 0664, show_min_uA, set_min_uA);
+static DEVICE_ATTR(max_microamps, 0664, show_max_uA, set_max_uA);
+static DEVICE_ATTR(mode, 0664, show_mode, set_mode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct attribute *regulator_virtual_attributes[] = {
 	&dev_attr_min_microvolts.attr,
@@ -285,6 +320,7 @@ static const struct attribute_group regulator_virtual_attr_group = {
 	.attrs	= regulator_virtual_attributes,
 };
 
+<<<<<<< HEAD
 static int __devinit regulator_virtual_probe(struct platform_device *pdev)
 {
 	char *reg_id = pdev->dev.platform_data;
@@ -304,13 +340,66 @@ static int __devinit regulator_virtual_probe(struct platform_device *pdev)
 			reg_id, ret);
 		goto err;
 	}
+=======
+#ifdef CONFIG_OF
+static const struct of_device_id regulator_virtual_consumer_of_match[] = {
+	{ .compatible = "regulator-virtual-consumer" },
+	{},
+};
+MODULE_DEVICE_TABLE(of, regulator_virtual_consumer_of_match);
+#endif
+
+static int regulator_virtual_probe(struct platform_device *pdev)
+{
+	char *reg_id = dev_get_platdata(&pdev->dev);
+	struct virtual_consumer_data *drvdata;
+	static bool warned;
+	int ret;
+
+	if (!warned) {
+		warned = true;
+		pr_warn("**********************************************************\n");
+		pr_warn("**   NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   **\n");
+		pr_warn("**                                                      **\n");
+		pr_warn("** regulator-virtual-consumer is only for testing and   **\n");
+		pr_warn("** debugging.  Do not use it in a production kernel.    **\n");
+		pr_warn("**                                                      **\n");
+		pr_warn("**   NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE NOTICE   **\n");
+		pr_warn("**********************************************************\n");
+	}
+
+	drvdata = devm_kzalloc(&pdev->dev, sizeof(struct virtual_consumer_data),
+			       GFP_KERNEL);
+	if (drvdata == NULL)
+		return -ENOMEM;
+
+	/*
+	 * This virtual consumer does not have any hardware-defined supply
+	 * name, so just allow the regulator to be specified in a property
+	 * named "default-supply" when we're being probed from devicetree.
+	 */
+	if (!reg_id && pdev->dev.of_node)
+		reg_id = "default";
+
+	mutex_init(&drvdata->lock);
+
+	drvdata->regulator = devm_regulator_get(&pdev->dev, reg_id);
+	if (IS_ERR(drvdata->regulator))
+		return dev_err_probe(&pdev->dev, PTR_ERR(drvdata->regulator),
+				     "Failed to obtain supply '%s'\n",
+				     reg_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = sysfs_create_group(&pdev->dev.kobj,
 				 &regulator_virtual_attr_group);
 	if (ret != 0) {
 		dev_err(&pdev->dev,
 			"Failed to create attribute group: %d\n", ret);
+<<<<<<< HEAD
 		goto err_regulator;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	drvdata->mode = regulator_get_mode(drvdata->regulator);
@@ -318,6 +407,7 @@ static int __devinit regulator_virtual_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, drvdata);
 
 	return 0;
+<<<<<<< HEAD
 
 err_regulator:
 	regulator_put(drvdata->regulator);
@@ -327,6 +417,11 @@ err:
 }
 
 static int __devexit regulator_virtual_remove(struct platform_device *pdev)
+=======
+}
+
+static void regulator_virtual_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct virtual_consumer_data *drvdata = platform_get_drvdata(pdev);
 
@@ -334,6 +429,7 @@ static int __devexit regulator_virtual_remove(struct platform_device *pdev)
 
 	if (drvdata->enabled)
 		regulator_disable(drvdata->regulator);
+<<<<<<< HEAD
 	regulator_put(drvdata->regulator);
 
 	kfree(drvdata);
@@ -341,14 +437,24 @@ static int __devexit regulator_virtual_remove(struct platform_device *pdev)
 	platform_set_drvdata(pdev, NULL);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver regulator_virtual_consumer_driver = {
 	.probe		= regulator_virtual_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(regulator_virtual_remove),
 	.driver		= {
 		.name		= "reg-virt-consumer",
 		.owner		= THIS_MODULE,
+=======
+	.remove_new	= regulator_virtual_remove,
+	.driver		= {
+		.name		= "reg-virt-consumer",
+		.probe_type	= PROBE_PREFER_ASYNCHRONOUS,
+		.of_match_table = of_match_ptr(regulator_virtual_consumer_of_match),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

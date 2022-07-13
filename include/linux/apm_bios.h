@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _LINUX_APM_H
 #define _LINUX_APM_H
 
@@ -34,6 +35,18 @@ struct apm_bios_info {
 };
 
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+ * Include file for the interface to an APM BIOS
+ * Copyright 1994-2001 Stephen Rothwell (sfr@canb.auug.org.au)
+ */
+#ifndef _LINUX_APM_H
+#define _LINUX_APM_H
+
+#include <uapi/linux/apm_bios.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define APM_CS		(GDT_ENTRY_APMBIOS_BASE * 8)
 #define APM_CS_16	(APM_CS + 8)
@@ -110,6 +123,7 @@ struct apm_info {
  */
 extern struct apm_info	apm_info;
 
+<<<<<<< HEAD
 #endif	/* __KERNEL__ */
 
 /*
@@ -185,11 +199,14 @@ extern struct apm_info	apm_info;
 #define APM_DEVICE_MASK		0xff00
 
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This is the "All Devices" ID communicated to the BIOS
  */
 #define APM_DEVICE_BALL		((apm_info.connection_version > 0x0100) ? \
 				 APM_DEVICE_ALL : APM_DEVICE_OLD_ALL)
+<<<<<<< HEAD
 #endif
 
 /*
@@ -217,4 +234,6 @@ extern struct apm_info	apm_info;
 #define APM_IOC_STANDBY		_IO('A', 1)
 #define APM_IOC_SUSPEND		_IO('A', 2)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif	/* LINUX_APM_H */

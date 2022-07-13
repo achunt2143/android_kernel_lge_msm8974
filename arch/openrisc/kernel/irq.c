@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OpenRISC irq.c
  *
@@ -7,6 +11,7 @@
  *
  * Modifications for the OpenRISC architecture:
  * Copyright (C) 2010-2011 Jonas Bonn <jonas@southpole.se>
+<<<<<<< HEAD
  *
  *      This program is free software; you can redistribute it and/or
  *      modify it under the terms of the GNU General Public License
@@ -25,6 +30,16 @@
 #include <linux/kernel_stat.h>
 #include <linux/export.h>
 
+=======
+ */
+
+#include <linux/interrupt.h>
+#include <linux/init.h>
+#include <linux/ftrace.h>
+#include <linux/irq.h>
+#include <linux/irqchip.h>
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/irqflags.h>
 
 /* read interrupt enabled status */
@@ -41,6 +56,7 @@ void arch_local_irq_restore(unsigned long flags)
 }
 EXPORT_SYMBOL(arch_local_irq_restore);
 
+<<<<<<< HEAD
 
 /* OR1K PIC implementation */
 
@@ -171,3 +187,9 @@ unsigned int irq_create_of_mapping(struct device_node *controller,
 	return intspec[0];
 }
 EXPORT_SYMBOL_GPL(irq_create_of_mapping);
+=======
+void __init init_IRQ(void)
+{
+	irqchip_init();
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

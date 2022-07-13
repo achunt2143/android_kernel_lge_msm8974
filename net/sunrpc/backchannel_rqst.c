@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
 
 (c) 2007 Network Appliance, Inc.  All Rights Reserved.
 (c) 2009 NetApp.  All Rights Reserved.
 
+<<<<<<< HEAD
 NetApp provides this source code under the GPL v2 License.
 The GPL v2 license is available at
 http://opensource.org/licenses/gpl-license.php.
@@ -18,6 +23,8 @@ PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
 LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
 NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ******************************************************************************/
 
@@ -27,16 +34,31 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <linux/export.h>
 #include <linux/sunrpc/bc_xprt.h>
 
+<<<<<<< HEAD
 #ifdef RPC_DEBUG
 #define RPCDBG_FACILITY	RPCDBG_TRANS
 #endif
 
+=======
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+#define RPCDBG_FACILITY	RPCDBG_TRANS
+#endif
+
+#define BC_MAX_SLOTS	64U
+
+unsigned int xprt_bc_max_slots(struct rpc_xprt *xprt)
+{
+	return BC_MAX_SLOTS;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Helper routines that track the number of preallocation elements
  * on the transport.
  */
 static inline int xprt_need_to_requeue(struct rpc_xprt *xprt)
 {
+<<<<<<< HEAD
 	return xprt->bc_alloc_count > 0;
 }
 
@@ -48,6 +70,9 @@ static inline void xprt_inc_alloc_count(struct rpc_xprt *xprt, unsigned int n)
 static inline int xprt_dec_alloc_count(struct rpc_xprt *xprt, unsigned int n)
 {
 	return xprt->bc_alloc_count -= n;
+=======
+	return xprt->bc_alloc_count < xprt->bc_alloc_max;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -59,21 +84,87 @@ static void xprt_free_allocation(struct rpc_rqst *req)
 	struct xdr_buf *xbufp;
 
 	dprintk("RPC:        free allocations for req= %p\n", req);
+<<<<<<< HEAD
 	BUG_ON(test_bit(RPC_BC_PA_IN_USE, &req->rq_bc_pa_state));
+=======
+	WARN_ON_ONCE(test_bit(RPC_BC_PA_IN_USE, &req->rq_bc_pa_state));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	xbufp = &req->rq_rcv_buf;
 	free_page((unsigned long)xbufp->head[0].iov_base);
 	xbufp = &req->rq_snd_buf;
 	free_page((unsigned long)xbufp->head[0].iov_base);
+<<<<<<< HEAD
 	list_del(&req->rq_bc_pa_list);
 	kfree(req);
 }
 
+=======
+	kfree(req);
+}
+
+static void xprt_bc_reinit_xdr_buf(struct xdr_buf *buf)
+{
+	buf->head[0].iov_len = PAGE_SIZE;
+	buf->tail[0].iov_len = 0;
+	buf->pages = NULL;
+	buf->page_len = 0;
+	buf->flags = 0;
+	buf->len = 0;
+	buf->buflen = PAGE_SIZE;
+}
+
+static int xprt_alloc_xdr_buf(struct xdr_buf *buf, gfp_t gfp_flags)
+{
+	struct page *page;
+	/* Preallocate one XDR receive buffer */
+	page = alloc_page(gfp_flags);
+	if (page == NULL)
+		return -ENOMEM;
+	xdr_buf_init(buf, page_address(page), PAGE_SIZE);
+	return 0;
+}
+
+static struct rpc_rqst *xprt_alloc_bc_req(struct rpc_xprt *xprt)
+{
+	gfp_t gfp_flags = GFP_KERNEL | __GFP_NORETRY | __GFP_NOWARN;
+	struct rpc_rqst *req;
+
+	/* Pre-allocate one backchannel rpc_rqst */
+	req = kzalloc(sizeof(*req), gfp_flags);
+	if (req == NULL)
+		return NULL;
+
+	req->rq_xprt = xprt;
+
+	/* Preallocate one XDR receive buffer */
+	if (xprt_alloc_xdr_buf(&req->rq_rcv_buf, gfp_flags) < 0) {
+		printk(KERN_ERR "Failed to create bc receive xbuf\n");
+		goto out_free;
+	}
+	req->rq_rcv_buf.len = PAGE_SIZE;
+
+	/* Preallocate one XDR send buffer */
+	if (xprt_alloc_xdr_buf(&req->rq_snd_buf, gfp_flags) < 0) {
+		printk(KERN_ERR "Failed to create bc snd xbuf\n");
+		goto out_free;
+	}
+	return req;
+out_free:
+	xprt_free_allocation(req);
+	return NULL;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Preallocate up to min_reqs structures and related buffers for use
  * by the backchannel.  This function can be called multiple times
  * when creating new sessions that use the same rpc_xprt.  The
  * preallocated buffers are added to the pool of resources used by
+<<<<<<< HEAD
  * the rpc_xprt.  Anyone of these resources may be used used by an
+=======
+ * the rpc_xprt.  Any one of these resources may be used by an
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * incoming callback request.  It's up to the higher levels in the
  * stack to enforce that the maximum number of session slots is not
  * being exceeded.
@@ -88,14 +179,32 @@ static void xprt_free_allocation(struct rpc_rqst *req)
  */
 int xprt_setup_backchannel(struct rpc_xprt *xprt, unsigned int min_reqs)
 {
+<<<<<<< HEAD
 	struct page *page_rcv = NULL, *page_snd = NULL;
 	struct xdr_buf *xbufp = NULL;
 	struct rpc_rqst *req, *tmp;
+=======
+	if (!xprt->ops->bc_setup)
+		return 0;
+	return xprt->ops->bc_setup(xprt, min_reqs);
+}
+EXPORT_SYMBOL_GPL(xprt_setup_backchannel);
+
+int xprt_setup_bc(struct rpc_xprt *xprt, unsigned int min_reqs)
+{
+	struct rpc_rqst *req;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct list_head tmp_list;
 	int i;
 
 	dprintk("RPC:       setup backchannel transport\n");
 
+<<<<<<< HEAD
+=======
+	if (min_reqs > BC_MAX_SLOTS)
+		min_reqs = BC_MAX_SLOTS;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * We use a temporary list to keep track of the preallocated
 	 * buffers.  Once we're done building the list we splice it
@@ -107,7 +216,11 @@ int xprt_setup_backchannel(struct rpc_xprt *xprt, unsigned int min_reqs)
 	INIT_LIST_HEAD(&tmp_list);
 	for (i = 0; i < min_reqs; i++) {
 		/* Pre-allocate one backchannel rpc_rqst */
+<<<<<<< HEAD
 		req = kzalloc(sizeof(struct rpc_rqst), GFP_KERNEL);
+=======
+		req = xprt_alloc_bc_req(xprt);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (req == NULL) {
 			printk(KERN_ERR "Failed to create bc rpc_rqst\n");
 			goto out_free;
@@ -116,6 +229,7 @@ int xprt_setup_backchannel(struct rpc_xprt *xprt, unsigned int min_reqs)
 		/* Add the allocated buffer to the tmp list */
 		dprintk("RPC:       adding req= %p\n", req);
 		list_add(&req->rq_bc_pa_list, &tmp_list);
+<<<<<<< HEAD
 
 		req->rq_xprt = xprt;
 		INIT_LIST_HEAD(&req->rq_list);
@@ -151,15 +265,26 @@ int xprt_setup_backchannel(struct rpc_xprt *xprt, unsigned int min_reqs)
 		xbufp->page_len = 0;
 		xbufp->len = 0;
 		xbufp->buflen = PAGE_SIZE;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/*
 	 * Add the temporary list to the backchannel preallocation list
 	 */
+<<<<<<< HEAD
 	spin_lock_bh(&xprt->bc_pa_lock);
 	list_splice(&tmp_list, &xprt->bc_pa_list);
 	xprt_inc_alloc_count(xprt, min_reqs);
 	spin_unlock_bh(&xprt->bc_pa_lock);
+=======
+	spin_lock(&xprt->bc_pa_lock);
+	list_splice(&tmp_list, &xprt->bc_pa_list);
+	xprt->bc_alloc_count += min_reqs;
+	xprt->bc_alloc_max += min_reqs;
+	atomic_add(min_reqs, &xprt->bc_slot_count);
+	spin_unlock(&xprt->bc_pa_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dprintk("RPC:       setup backchannel transport done\n");
 	return 0;
@@ -168,6 +293,7 @@ out_free:
 	/*
 	 * Memory allocation failed, free the temporary list
 	 */
+<<<<<<< HEAD
 	list_for_each_entry_safe(req, tmp, &tmp_list, rq_bc_pa_list)
 		xprt_free_allocation(req);
 
@@ -186,25 +312,155 @@ EXPORT_SYMBOL_GPL(xprt_setup_backchannel);
  */
 void xprt_destroy_backchannel(struct rpc_xprt *xprt, unsigned int max_reqs)
 {
+=======
+	while (!list_empty(&tmp_list)) {
+		req = list_first_entry(&tmp_list,
+				struct rpc_rqst,
+				rq_bc_pa_list);
+		list_del(&req->rq_bc_pa_list);
+		xprt_free_allocation(req);
+	}
+
+	dprintk("RPC:       setup backchannel transport failed\n");
+	return -ENOMEM;
+}
+
+/**
+ * xprt_destroy_backchannel - Destroys the backchannel preallocated structures.
+ * @xprt:	the transport holding the preallocated strucures
+ * @max_reqs:	the maximum number of preallocated structures to destroy
+ *
+ * Since these structures may have been allocated by multiple calls
+ * to xprt_setup_backchannel, we only destroy up to the maximum number
+ * of reqs specified by the caller.
+ */
+void xprt_destroy_backchannel(struct rpc_xprt *xprt, unsigned int max_reqs)
+{
+	if (xprt->ops->bc_destroy)
+		xprt->ops->bc_destroy(xprt, max_reqs);
+}
+EXPORT_SYMBOL_GPL(xprt_destroy_backchannel);
+
+void xprt_destroy_bc(struct rpc_xprt *xprt, unsigned int max_reqs)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct rpc_rqst *req = NULL, *tmp = NULL;
 
 	dprintk("RPC:        destroy backchannel transport\n");
 
+<<<<<<< HEAD
 	BUG_ON(max_reqs == 0);
 	spin_lock_bh(&xprt->bc_pa_lock);
 	xprt_dec_alloc_count(xprt, max_reqs);
 	list_for_each_entry_safe(req, tmp, &xprt->bc_pa_list, rq_bc_pa_list) {
 		dprintk("RPC:        req=%p\n", req);
 		xprt_free_allocation(req);
+=======
+	if (max_reqs == 0)
+		goto out;
+
+	spin_lock_bh(&xprt->bc_pa_lock);
+	xprt->bc_alloc_max -= min(max_reqs, xprt->bc_alloc_max);
+	list_for_each_entry_safe(req, tmp, &xprt->bc_pa_list, rq_bc_pa_list) {
+		dprintk("RPC:        req=%p\n", req);
+		list_del(&req->rq_bc_pa_list);
+		xprt_free_allocation(req);
+		xprt->bc_alloc_count--;
+		atomic_dec(&xprt->bc_slot_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (--max_reqs == 0)
 			break;
 	}
 	spin_unlock_bh(&xprt->bc_pa_lock);
 
+<<<<<<< HEAD
 	dprintk("RPC:        backchannel list empty= %s\n",
 		list_empty(&xprt->bc_pa_list) ? "true" : "false");
 }
 EXPORT_SYMBOL_GPL(xprt_destroy_backchannel);
+=======
+out:
+	dprintk("RPC:        backchannel list empty= %s\n",
+		list_empty(&xprt->bc_pa_list) ? "true" : "false");
+}
+
+static struct rpc_rqst *xprt_get_bc_request(struct rpc_xprt *xprt, __be32 xid,
+		struct rpc_rqst *new)
+{
+	struct rpc_rqst *req = NULL;
+
+	dprintk("RPC:       allocate a backchannel request\n");
+	if (list_empty(&xprt->bc_pa_list)) {
+		if (!new)
+			goto not_found;
+		if (atomic_read(&xprt->bc_slot_count) >= BC_MAX_SLOTS)
+			goto not_found;
+		list_add_tail(&new->rq_bc_pa_list, &xprt->bc_pa_list);
+		xprt->bc_alloc_count++;
+		atomic_inc(&xprt->bc_slot_count);
+	}
+	req = list_first_entry(&xprt->bc_pa_list, struct rpc_rqst,
+				rq_bc_pa_list);
+	req->rq_reply_bytes_recvd = 0;
+	memcpy(&req->rq_private_buf, &req->rq_rcv_buf,
+			sizeof(req->rq_private_buf));
+	req->rq_xid = xid;
+	req->rq_connect_cookie = xprt->connect_cookie;
+	dprintk("RPC:       backchannel req=%p\n", req);
+not_found:
+	return req;
+}
+
+/*
+ * Return the preallocated rpc_rqst structure and XDR buffers
+ * associated with this rpc_task.
+ */
+void xprt_free_bc_request(struct rpc_rqst *req)
+{
+	struct rpc_xprt *xprt = req->rq_xprt;
+
+	xprt->ops->bc_free_rqst(req);
+}
+
+void xprt_free_bc_rqst(struct rpc_rqst *req)
+{
+	struct rpc_xprt *xprt = req->rq_xprt;
+
+	dprintk("RPC:       free backchannel req=%p\n", req);
+
+	req->rq_connect_cookie = xprt->connect_cookie - 1;
+	smp_mb__before_atomic();
+	clear_bit(RPC_BC_PA_IN_USE, &req->rq_bc_pa_state);
+	smp_mb__after_atomic();
+
+	/*
+	 * Return it to the list of preallocations so that it
+	 * may be reused by a new callback request.
+	 */
+	spin_lock_bh(&xprt->bc_pa_lock);
+	if (xprt_need_to_requeue(xprt)) {
+		xprt_bc_reinit_xdr_buf(&req->rq_snd_buf);
+		xprt_bc_reinit_xdr_buf(&req->rq_rcv_buf);
+		req->rq_rcv_buf.len = PAGE_SIZE;
+		list_add_tail(&req->rq_bc_pa_list, &xprt->bc_pa_list);
+		xprt->bc_alloc_count++;
+		atomic_inc(&xprt->bc_slot_count);
+		req = NULL;
+	}
+	spin_unlock_bh(&xprt->bc_pa_lock);
+	if (req != NULL) {
+		/*
+		 * The last remaining session was destroyed while this
+		 * entry was in use.  Free the entry and don't attempt
+		 * to add back to the list because there is no need to
+		 * have anymore preallocated entries.
+		 */
+		dprintk("RPC:       Last session removed req=%p\n", req);
+		xprt_free_allocation(req);
+	}
+	xprt_put(xprt);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * One or more rpc_rqst structure have been preallocated during the
@@ -217,6 +473,7 @@ EXPORT_SYMBOL_GPL(xprt_destroy_backchannel);
  *
  * Return an available rpc_rqst, otherwise NULL if non are available.
  */
+<<<<<<< HEAD
 struct rpc_rqst *xprt_alloc_bc_request(struct rpc_xprt *xprt)
 {
 	struct rpc_rqst *req;
@@ -240,10 +497,36 @@ struct rpc_rqst *xprt_alloc_bc_request(struct rpc_xprt *xprt)
 			sizeof(req->rq_private_buf));
 	}
 	dprintk("RPC:       backchannel req=%p\n", req);
+=======
+struct rpc_rqst *xprt_lookup_bc_request(struct rpc_xprt *xprt, __be32 xid)
+{
+	struct rpc_rqst *req, *new = NULL;
+
+	do {
+		spin_lock(&xprt->bc_pa_lock);
+		list_for_each_entry(req, &xprt->bc_pa_list, rq_bc_pa_list) {
+			if (req->rq_connect_cookie != xprt->connect_cookie)
+				continue;
+			if (req->rq_xid == xid)
+				goto found;
+		}
+		req = xprt_get_bc_request(xprt, xid, new);
+found:
+		spin_unlock(&xprt->bc_pa_lock);
+		if (new) {
+			if (req != new)
+				xprt_free_allocation(new);
+			break;
+		} else if (req)
+			break;
+		new = xprt_alloc_bc_req(xprt);
+	} while (new);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return req;
 }
 
 /*
+<<<<<<< HEAD
  * Return the preallocated rpc_rqst structure and XDR buffers
  * associated with this rpc_task.
  */
@@ -279,3 +562,26 @@ void xprt_free_bc_request(struct rpc_rqst *req)
 	spin_unlock_bh(&xprt->bc_pa_lock);
 }
 
+=======
+ * Add callback request to callback list.  Wake a thread
+ * on the first pool (usually the only pool) to handle it.
+ */
+void xprt_complete_bc_request(struct rpc_rqst *req, uint32_t copied)
+{
+	struct rpc_xprt *xprt = req->rq_xprt;
+	struct svc_serv *bc_serv = xprt->bc_serv;
+
+	spin_lock(&xprt->bc_pa_lock);
+	list_del(&req->rq_bc_pa_list);
+	xprt->bc_alloc_count--;
+	spin_unlock(&xprt->bc_pa_lock);
+
+	req->rq_private_buf.len = copied;
+	set_bit(RPC_BC_PA_IN_USE, &req->rq_bc_pa_state);
+
+	dprintk("RPC:       add callback request to list\n");
+	xprt_get(xprt);
+	lwq_enqueue(&req->rq_bc_list, &bc_serv->sv_cb_list);
+	svc_pool_wake_idle_thread(&bc_serv->sv_pools[0]);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

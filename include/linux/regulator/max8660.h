@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * max8660.h  --  Voltage regulation for the Maxim 8660/8661
  *
  * Copyright (C) 2009 Wolfram Sang, Pengutronix e.K.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,6 +20,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_REGULATOR_MAX8660_H
@@ -39,7 +46,11 @@ enum {
  */
 struct max8660_subdev_data {
 	int				id;
+<<<<<<< HEAD
 	char				*name;
+=======
+	const char			*name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct regulator_init_data	*platform_data;
 };
 

@@ -2,7 +2,11 @@
  * Branch/Call/Jump (BCJ) filter decoders
  *
  * Authors: Lasse Collin <lasse.collin@tukaani.org>
+<<<<<<< HEAD
  *          Igor Pavlov <http://7-zip.org/>
+=======
+ *          Igor Pavlov <https://7-zip.org/>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file has been put into the public domain.
  * You can do whatever you want with this file.
@@ -422,7 +426,11 @@ XZ_EXTERN enum xz_ret xz_dec_bcj_run(struct xz_dec_bcj *s,
 
 	/*
 	 * Flush pending already filtered data to the output buffer. Return
+<<<<<<< HEAD
 	 * immediatelly if we couldn't flush everything, or if the next
+=======
+	 * immediately if we couldn't flush everything, or if the next
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * filter in the chain had already returned XZ_STREAM_END.
 	 */
 	if (s->temp.filtered > 0) {

@@ -1,11 +1,18 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Copyright (C) by Paul Barton-Davis 1998-1999
  *
  * Some portions of this file are taken from work that is
  * copyright (C) by Hannu Savolainen 1993-1996
+<<<<<<< HEAD
  *
  * This program is distributed under the GNU GENERAL PUBLIC LICENSE (GPL)
  * Version 2 (June 1991). See the "COPYING" file distributed with this software
  * for more info.  
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*  
@@ -20,12 +27,20 @@
  *
  */
 
+<<<<<<< HEAD
 #include <asm/io.h>
+=======
+#include <linux/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/time.h>
 #include <linux/wait.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/firmware.h>
 #include <linux/moduleparam.h>
 #include <linux/slab.h>
@@ -341,7 +356,12 @@ snd_wavefront_cmd (snd_wavefront_t *dev,
 	int c;
 	struct wavefront_command *wfcmd;
 
+<<<<<<< HEAD
 	if ((wfcmd = wavefront_get_command (cmd)) == NULL) {
+=======
+	wfcmd = wavefront_get_command(cmd);
+	if (!wfcmd) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk ("command 0x%x not supported.\n",
 			cmd);
 		return 1;
@@ -393,7 +413,12 @@ snd_wavefront_cmd (snd_wavefront_t *dev,
 
 		for (i = 0; i < wfcmd->read_cnt; i++) {
 
+<<<<<<< HEAD
 			if ((c = wavefront_read (dev)) == -1) {
+=======
+			c = wavefront_read(dev);
+			if (c == -1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				DPRINT (WF_DEBUG_IO, "bad read for byte "
 						      "%d of 0x%x [%s].\n",
 						      i, cmd, wfcmd->action);
@@ -403,7 +428,12 @@ snd_wavefront_cmd (snd_wavefront_t *dev,
 			/* Now handle errors. Lots of special cases here */
 	    
 			if (c == 0xff) { 
+<<<<<<< HEAD
 				if ((c = wavefront_read (dev)) == -1) {
+=======
+				c = wavefront_read(dev);
+				if (c == -1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					DPRINT (WF_DEBUG_IO, "bad read for "
 							      "error byte at "
 							      "read byte %d "
@@ -461,9 +491,15 @@ snd_wavefront_cmd (snd_wavefront_t *dev,
 		   of the standard value.
 		*/
 	    
+<<<<<<< HEAD
 		if ((ack = wavefront_read (dev)) == 0) {
 			ack = WF_ACK;
 		}
+=======
+		ack = wavefront_read(dev);
+		if (ack == 0)
+			ack = WF_ACK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 		if (ack != WF_ACK) {
 			if (ack == -1) {
@@ -477,7 +513,12 @@ snd_wavefront_cmd (snd_wavefront_t *dev,
 
 				if (ack == 0xff) { /* explicit error */
 		    
+<<<<<<< HEAD
 					if ((err = wavefront_read (dev)) == -1) {
+=======
+					err = wavefront_read(dev);
+					if (err == -1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						DPRINT (WF_DEBUG_DATA,
 							"cannot read err "
 							"for 0x%x [%s].\n",
@@ -538,7 +579,11 @@ munge_int32 (unsigned int src,
 	                            /* Note: we leave the upper bits in place */ 
 
 		dst++;
+<<<<<<< HEAD
  	};
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return dst;
 };
 
@@ -579,8 +624,11 @@ demunge_buf (unsigned char *src, unsigned char *dst, unsigned int src_bytes)
 	int i;
 	unsigned char *end = src + src_bytes;
     
+<<<<<<< HEAD
 	end = src + src_bytes;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* NOTE: src and dst *CAN* point to the same address */
 
 	for (i = 0; src != end; i++) {
@@ -605,9 +653,15 @@ wavefront_delete_sample (snd_wavefront_t *dev, int sample_num)
 	wbuf[0] = sample_num & 0x7f;
 	wbuf[1] = sample_num >> 7;
 
+<<<<<<< HEAD
 	if ((x = snd_wavefront_cmd (dev, WFC_DELETE_SAMPLE, NULL, wbuf)) == 0) {
 		dev->sample_status[sample_num] = WF_ST_EMPTY;
 	}
+=======
+	x = snd_wavefront_cmd(dev, WFC_DELETE_SAMPLE, NULL, wbuf);
+	if (!x)
+		dev->sample_status[sample_num] = WF_ST_EMPTY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return x;
 }
@@ -693,8 +747,14 @@ wavefront_get_patch_status (snd_wavefront_t *dev)
 		patchnum[0] = i & 0x7f;
 		patchnum[1] = i >> 7;
 
+<<<<<<< HEAD
 		if ((x = snd_wavefront_cmd (dev, WFC_UPLOAD_PATCH, patchbuf,
 					patchnum)) == 0) {
+=======
+		x = snd_wavefront_cmd(dev, WFC_UPLOAD_PATCH, patchbuf,
+				      patchnum);
+		if (x == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			dev->patch_status[i] |= WF_SLOT_FILLED;
 			p = (wavefront_patch *) patchbuf;
@@ -740,8 +800,14 @@ wavefront_get_program_status (snd_wavefront_t *dev)
 	for (i = 0; i < WF_MAX_PROGRAM; i++) {
 		prognum = i;
 
+<<<<<<< HEAD
 		if ((x = snd_wavefront_cmd (dev, WFC_UPLOAD_PROGRAM, progbuf,
 					&prognum)) == 0) {
+=======
+		x = snd_wavefront_cmd(dev, WFC_UPLOAD_PROGRAM, progbuf,
+				      &prognum);
+		if (x == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			dev->prog_status[i] |= WF_SLOT_USED;
 
@@ -785,15 +851,27 @@ wavefront_send_patch (snd_wavefront_t *dev, wavefront_patch_info *header)
 	DPRINT (WF_DEBUG_LOAD_PATCH, "downloading patch %d\n",
 				      header->number);
 
+<<<<<<< HEAD
 	dev->patch_status[header->number] |= WF_SLOT_FILLED;
 
 	bptr = buf;
+=======
+	if (header->number >= ARRAY_SIZE(dev->patch_status))
+		return -EINVAL;
+
+	dev->patch_status[header->number] |= WF_SLOT_FILLED;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	bptr = munge_int32 (header->number, buf, 2);
 	munge_buf ((unsigned char *)&header->hdr.p, bptr, WF_PATCH_BYTES);
     
 	if (snd_wavefront_cmd (dev, WFC_DOWNLOAD_PATCH, NULL, buf)) {
 		snd_printk ("download patch failed\n");
+<<<<<<< HEAD
 		return -(EIO);
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return (0);
@@ -809,6 +887,12 @@ wavefront_send_program (snd_wavefront_t *dev, wavefront_patch_info *header)
 	DPRINT (WF_DEBUG_LOAD_PATCH, "downloading program %d\n",
 		header->number);
 
+<<<<<<< HEAD
+=======
+	if (header->number >= ARRAY_SIZE(dev->prog_status))
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->prog_status[header->number] = WF_SLOT_USED;
 
 	/* XXX need to zero existing SLOT_USED bit for program_status[i]
@@ -831,7 +915,11 @@ wavefront_send_program (snd_wavefront_t *dev, wavefront_patch_info *header)
     
 	if (snd_wavefront_cmd (dev, WFC_DOWNLOAD_PROGRAM, NULL, buf)) {
 		snd_printk ("download patch failed\n");	
+<<<<<<< HEAD
 		return -(EIO);
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return (0);
@@ -891,13 +979,25 @@ wavefront_send_sample (snd_wavefront_t *dev,
 	if (header->number == WAVEFRONT_FIND_FREE_SAMPLE_SLOT) {
 		int x;
 
+<<<<<<< HEAD
 		if ((x = wavefront_find_free_sample (dev)) < 0) {
 			return -ENOMEM;
 		}
+=======
+		x = wavefront_find_free_sample(dev);
+		if (x < 0)
+			return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk ("unspecified sample => %d\n", x);
 		header->number = x;
 	}
 
+<<<<<<< HEAD
+=======
+	if (header->number >= WF_MAX_SAMPLE)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (header->size) {
 
 		/* XXX it's a debatable point whether or not RDONLY semantics
@@ -952,7 +1052,11 @@ wavefront_send_sample (snd_wavefront_t *dev,
 	if (skip > 0 && header->hdr.s.SampleResolution != LINEAR_16BIT) {
 		snd_printk ("channel selection only "
 			    "possible on 16-bit samples");
+<<<<<<< HEAD
 		return -(EINVAL);
+=======
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	switch (skip) {
@@ -1049,7 +1153,11 @@ wavefront_send_sample (snd_wavefront_t *dev,
 			   NULL, sample_hdr)) {
 		snd_printk ("sample %sdownload refused.\n",
 			    header->size ? "" : "header ");
+<<<<<<< HEAD
 		return -(EIO);
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (header->size == 0) {
@@ -1075,14 +1183,23 @@ wavefront_send_sample (snd_wavefront_t *dev,
 		if (snd_wavefront_cmd (dev, WFC_DOWNLOAD_BLOCK, NULL, NULL)) {
 			snd_printk ("download block "
 				    "request refused.\n");
+<<<<<<< HEAD
 			return -(EIO);
+=======
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		for (i = 0; i < blocksize; i++) {
 
 			if (dataptr < data_end) {
 		
+<<<<<<< HEAD
 				__get_user (sample_short, dataptr);
+=======
+				if (get_user(sample_short, dataptr))
+					return -EFAULT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				dataptr += skip;
 		
 				if (data_is_unsigned) { /* GUS ? */
@@ -1131,16 +1248,29 @@ wavefront_send_sample (snd_wavefront_t *dev,
 		   nothing to do with DMA at all.
 		*/
 	
+<<<<<<< HEAD
 		if ((dma_ack = wavefront_read (dev)) != WF_DMA_ACK) {
 			if (dma_ack == -1) {
 				snd_printk ("upload sample "
 					    "DMA ack timeout\n");
 				return -(EIO);
+=======
+		dma_ack = wavefront_read(dev);
+		if (dma_ack != WF_DMA_ACK) {
+			if (dma_ack == -1) {
+				snd_printk ("upload sample "
+					    "DMA ack timeout\n");
+				return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			} else {
 				snd_printk ("upload sample "
 					    "DMA ack error 0x%x\n",
 					    dma_ack);
+<<<<<<< HEAD
 				return -(EIO);
+=======
+				return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 	}
@@ -1165,7 +1295,14 @@ wavefront_send_alias (snd_wavefront_t *dev, wavefront_patch_info *header)
 				      "alias for %d\n",
 				      header->number,
 				      header->hdr.a.OriginalSample);
+<<<<<<< HEAD
     
+=======
+
+	if (header->number >= WF_MAX_SAMPLE)
+		return -EINVAL;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	munge_int32 (header->number, &alias_hdr[0], 2);
 	munge_int32 (header->hdr.a.OriginalSample, &alias_hdr[2], 2);
 	munge_int32 (*((unsigned int *)&header->hdr.a.sampleStartOffset),
@@ -1181,7 +1318,11 @@ wavefront_send_alias (snd_wavefront_t *dev, wavefront_patch_info *header)
 
 	if (snd_wavefront_cmd (dev, WFC_DOWNLOAD_SAMPLE_ALIAS, NULL, alias_hdr)) {
 		snd_printk ("download alias failed.\n");
+<<<<<<< HEAD
 		return -(EIO);
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev->sample_status[header->number] = (WF_SLOT_FILLED|WF_ST_ALIAS);
@@ -1196,7 +1337,14 @@ wavefront_send_multisample (snd_wavefront_t *dev, wavefront_patch_info *header)
 	int num_samples;
 	unsigned char *msample_hdr;
 
+<<<<<<< HEAD
 	msample_hdr = kmalloc(sizeof(WF_MSAMPLE_BYTES), GFP_KERNEL);
+=======
+	if (header->number >= WF_MAX_SAMPLE)
+		return -EINVAL;
+
+	msample_hdr = kmalloc(WF_MSAMPLE_BYTES, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (! msample_hdr)
 		return -ENOMEM;
 
@@ -1232,7 +1380,11 @@ wavefront_send_multisample (snd_wavefront_t *dev, wavefront_patch_info *header)
 			   msample_hdr)) {
 		snd_printk ("download of multisample failed.\n");
 		kfree(msample_hdr);
+<<<<<<< HEAD
 		return -(EIO);
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	dev->sample_status[header->number] = (WF_SLOT_FILLED|WF_ST_MULTISAMPLE);
@@ -1254,7 +1406,11 @@ wavefront_fetch_multisample (snd_wavefront_t *dev,
     
 	if (snd_wavefront_cmd (dev, WFC_UPLOAD_MULTISAMPLE, log_ns, number)) {
 		snd_printk ("upload multisample failed.\n");
+<<<<<<< HEAD
 		return -(EIO);
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
     
 	DPRINT (WF_DEBUG_DATA, "msample %d has %d samples\n",
@@ -1270,6 +1426,7 @@ wavefront_fetch_multisample (snd_wavefront_t *dev,
 		char d[2];
 		int val;
 	
+<<<<<<< HEAD
 		if ((val = wavefront_read (dev)) == -1) {
 			snd_printk ("upload multisample failed "
 				    "during sample loop.\n");
@@ -1281,6 +1438,21 @@ wavefront_fetch_multisample (snd_wavefront_t *dev,
 			snd_printk ("upload multisample failed "
 				    "during sample loop.\n");
 			return -(EIO);
+=======
+		val = wavefront_read(dev);
+		if (val == -1) {
+			snd_printk ("upload multisample failed "
+				    "during sample loop.\n");
+			return -EIO;
+		}
+		d[0] = val;
+
+		val = wavefront_read(dev);
+		if (val == -1) {
+			snd_printk ("upload multisample failed "
+				    "during sample loop.\n");
+			return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		d[1] = val;
 	
@@ -1315,7 +1487,11 @@ wavefront_send_drum (snd_wavefront_t *dev, wavefront_patch_info *header)
 
 	if (snd_wavefront_cmd (dev, WFC_DOWNLOAD_EDRUM_PROGRAM, NULL, drumbuf)) {
 		snd_printk ("download drum failed.\n");
+<<<<<<< HEAD
 		return -(EIO);
+=======
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return (0);
@@ -1739,7 +1915,11 @@ snd_wavefront_internal_interrupt (snd_wavefront_card_t *card)
 7 Unused
 */
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_wavefront_interrupt_bits (int irq)
 
 {
@@ -1767,12 +1947,20 @@ snd_wavefront_interrupt_bits (int irq)
 	return bits;
 }
 
+<<<<<<< HEAD
 static void __devinit
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 wavefront_should_cause_interrupt (snd_wavefront_t *dev, 
 				  int val, int port, unsigned long timeout)
 
 {
+<<<<<<< HEAD
 	wait_queue_t wait;
+=======
+	wait_queue_entry_t wait;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	init_waitqueue_entry(&wait, current);
 	spin_lock_irq(&dev->irq_lock);
@@ -1786,7 +1974,11 @@ wavefront_should_cause_interrupt (snd_wavefront_t *dev,
 	}
 }
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 wavefront_reset_to_cleanliness (snd_wavefront_t *dev)
 
 {
@@ -1898,7 +2090,12 @@ wavefront_reset_to_cleanliness (snd_wavefront_t *dev)
 		goto gone_bad;
 	}
 	
+<<<<<<< HEAD
 	if ((hwv[0] = wavefront_read (dev)) == -1) {
+=======
+	hwv[0] = wavefront_read(dev);
+	if (hwv[0] == -1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk ("board not responding correctly.\n");
 		goto gone_bad;
 	}
@@ -1909,7 +2106,12 @@ wavefront_reset_to_cleanliness (snd_wavefront_t *dev)
 		   and tell us about it either way.
 		*/
 		
+<<<<<<< HEAD
 		if ((hwv[0] = wavefront_read (dev)) == -1) {
+=======
+		hwv[0] = wavefront_read(dev);
+		if (hwv[0] == -1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			snd_printk ("on-board RAM test failed "
 				    "(bad error code).\n");
 		} else {
@@ -1922,7 +2124,12 @@ wavefront_reset_to_cleanliness (snd_wavefront_t *dev)
 
 	/* We're OK, just get the next byte of the HW version response */
 
+<<<<<<< HEAD
 	if ((hwv[1] = wavefront_read (dev)) == -1) {
+=======
+	hwv[1] = wavefront_read(dev);
+	if (hwv[1] == -1) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_printk ("incorrect h/w response.\n");
 		goto gone_bad;
 	}
@@ -1937,7 +2144,11 @@ wavefront_reset_to_cleanliness (snd_wavefront_t *dev)
 	return (1);
 }
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 wavefront_download_firmware (snd_wavefront_t *dev, char *path)
 
 {
@@ -2010,7 +2221,11 @@ wavefront_download_firmware (snd_wavefront_t *dev, char *path)
 }
 
 
+<<<<<<< HEAD
 static int __devinit
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 wavefront_do_reset (snd_wavefront_t *dev)
 
 {
@@ -2067,9 +2282,15 @@ wavefront_do_reset (snd_wavefront_t *dev)
 	   about it.
 	*/
 	
+<<<<<<< HEAD
 	if ((dev->freemem = wavefront_freemem (dev)) < 0) {
 		goto gone_bad;
 	}
+=======
+	dev->freemem = wavefront_freemem(dev);
+	if (dev->freemem < 0)
+		goto gone_bad;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		
 	snd_printk ("available DRAM %dk\n", dev->freemem / 1024);
 
@@ -2099,7 +2320,11 @@ wavefront_do_reset (snd_wavefront_t *dev)
 	return 1;
 }
 
+<<<<<<< HEAD
 int __devinit
+=======
+int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_wavefront_start (snd_wavefront_t *dev)
 
 {
@@ -2141,7 +2366,11 @@ snd_wavefront_start (snd_wavefront_t *dev)
 	return (0);
 }
 
+<<<<<<< HEAD
 int __devinit
+=======
+int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 snd_wavefront_detect (snd_wavefront_card_t *card)
 
 {

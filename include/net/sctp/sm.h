@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* SCTP kernel implementation
  * (C) Copyright IBM Corp. 2001, 2004
  * Copyright (c) 1999-2000 Cisco, Inc.
@@ -8,6 +12,7 @@
  *
  * These are definitions needed by the state machine.
  *
+<<<<<<< HEAD
  * This SCTP implementation is free software;
  * you can redistribute it and/or modify it under the terms of
  * the GNU General Public License as published by
@@ -31,6 +36,11 @@
  *
  * Or submit a bug report through the following website:
  *    http://www.sf.net/projects/lksctp
+=======
+ * Please send any bug reports or fixes you make to the
+ * email addresses:
+ *    lksctp developers <linux-sctp@vger.kernel.org>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Written or modified by:
  *    La Monte H.P. Yarroll <piggy@acm.org>
@@ -42,9 +52,12 @@
  *    Daisy Chang <daisyc@us.ibm.com>
  *    Ardelle Fan <ardelle.fan@intel.com>
  *    Kevin Gao <kevin.gao@intel.com>
+<<<<<<< HEAD
  *
  * Any bugs reported given to us we will try to fix... any fixes shared will
  * be incorporated into the next SCTP release.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -60,7 +73,11 @@
 /*
  * Possible values for the disposition are:
  */
+<<<<<<< HEAD
 typedef enum {
+=======
+enum sctp_disposition {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SCTP_DISPOSITION_DISCARD,	 /* No further processing.  */
 	SCTP_DISPOSITION_CONSUME,	 /* Process return values normally.  */
 	SCTP_DISPOSITION_NOMEM,		 /* We ran out of memory--recover.  */
@@ -70,6 +87,7 @@ typedef enum {
 	SCTP_DISPOSITION_NOT_IMPL,	 /* This entry is not implemented.  */
 	SCTP_DISPOSITION_ERROR,		 /* This is plain old user error.  */
 	SCTP_DISPOSITION_BUG,		 /* This is a bug.  */
+<<<<<<< HEAD
 } sctp_disposition_t;
 
 typedef struct {
@@ -87,6 +105,22 @@ typedef struct {
 	sctp_state_fn_t *fn;
 	const char *name;
 } sctp_sm_table_entry_t;
+=======
+};
+
+typedef enum sctp_disposition (sctp_state_fn_t) (
+					struct net *net,
+					const struct sctp_endpoint *ep,
+					const struct sctp_association *asoc,
+					const union sctp_subtype type,
+					void *arg,
+					struct sctp_cmd_seq *commands);
+typedef void (sctp_timer_event_t) (struct timer_list *);
+struct sctp_sm_table_entry {
+	sctp_state_fn_t *fn;
+	const char *name;
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* A naming convention of "sctp_sf_xxx" applies to all the state functions
  * currently in use.
@@ -141,6 +175,10 @@ sctp_state_fn_t sctp_sf_do_8_5_1_E_sa;
 sctp_state_fn_t sctp_sf_cookie_echoed_err;
 sctp_state_fn_t sctp_sf_do_asconf;
 sctp_state_fn_t sctp_sf_do_asconf_ack;
+<<<<<<< HEAD
+=======
+sctp_state_fn_t sctp_sf_do_reconf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sctp_state_fn_t sctp_sf_do_9_2_reshutack;
 sctp_state_fn_t sctp_sf_eat_fwd_tsn;
 sctp_state_fn_t sctp_sf_eat_fwd_tsn_fast;
@@ -163,6 +201,10 @@ sctp_state_fn_t sctp_sf_error_shutdown;
 sctp_state_fn_t sctp_sf_ignore_primitive;
 sctp_state_fn_t sctp_sf_do_prm_requestheartbeat;
 sctp_state_fn_t sctp_sf_do_prm_asconf;
+<<<<<<< HEAD
+=======
+sctp_state_fn_t sctp_sf_do_prm_reconf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Prototypes for other event state functions.  */
 sctp_state_fn_t sctp_sf_do_no_pending_tsn;
@@ -173,18 +215,32 @@ sctp_state_fn_t sctp_sf_cookie_wait_icmp_abort;
 
 /* Prototypes for timeout event state functions.  */
 sctp_state_fn_t sctp_sf_do_6_3_3_rtx;
+<<<<<<< HEAD
+=======
+sctp_state_fn_t sctp_sf_send_reconf;
+sctp_state_fn_t sctp_sf_send_probe;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 sctp_state_fn_t sctp_sf_do_6_2_sack;
 sctp_state_fn_t sctp_sf_autoclose_timer_expire;
 
 /* Prototypes for utility support functions.  */
+<<<<<<< HEAD
 __u8 sctp_get_chunk_type(struct sctp_chunk *chunk);
 const sctp_sm_table_entry_t *sctp_sm_lookup_event(sctp_event_t,
 					    sctp_state_t,
 					    sctp_subtype_t);
+=======
+const struct sctp_sm_table_entry *sctp_sm_lookup_event(
+					struct net *net,
+					enum sctp_event_type event_type,
+					enum sctp_state state,
+					union sctp_subtype event_subtype);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int sctp_chunk_iif(const struct sctp_chunk *);
 struct sctp_association *sctp_make_temp_asoc(const struct sctp_endpoint *,
 					     struct sctp_chunk *,
 					     gfp_t gfp);
+<<<<<<< HEAD
 __u32 sctp_generate_verification_tag(void);
 void sctp_populate_tie_tags(__u8 *cookie, __u32 curTag, __u32 hisTag);
 
@@ -249,6 +305,82 @@ struct sctp_chunk *sctp_make_asconf_update_ip(struct sctp_association *,
 					      union sctp_addr *,
 					      struct sockaddr *,
 					      int, __be16);
+=======
+
+/* Prototypes for chunk-building functions.  */
+struct sctp_chunk *sctp_make_init(const struct sctp_association *asoc,
+				  const struct sctp_bind_addr *bp,
+				  gfp_t gfp, int vparam_len);
+struct sctp_chunk *sctp_make_init_ack(const struct sctp_association *asoc,
+				      const struct sctp_chunk *chunk,
+				      const gfp_t gfp, const int unkparam_len);
+struct sctp_chunk *sctp_make_cookie_echo(const struct sctp_association *asoc,
+					 const struct sctp_chunk *chunk);
+struct sctp_chunk *sctp_make_cookie_ack(const struct sctp_association *asoc,
+					const struct sctp_chunk *chunk);
+struct sctp_chunk *sctp_make_cwr(const struct sctp_association *asoc,
+				 const __u32 lowest_tsn,
+				 const struct sctp_chunk *chunk);
+struct sctp_chunk *sctp_make_idata(const struct sctp_association *asoc,
+				   __u8 flags, int paylen, gfp_t gfp);
+struct sctp_chunk *sctp_make_ifwdtsn(const struct sctp_association *asoc,
+				     __u32 new_cum_tsn, size_t nstreams,
+				     struct sctp_ifwdtsn_skip *skiplist);
+struct sctp_chunk *sctp_make_datafrag_empty(const struct sctp_association *asoc,
+					    const struct sctp_sndrcvinfo *sinfo,
+					    int len, __u8 flags, gfp_t gfp);
+struct sctp_chunk *sctp_make_ecne(const struct sctp_association *asoc,
+				  const __u32 lowest_tsn);
+struct sctp_chunk *sctp_make_sack(struct sctp_association *asoc);
+struct sctp_chunk *sctp_make_shutdown(const struct sctp_association *asoc,
+				      const struct sctp_chunk *chunk);
+struct sctp_chunk *sctp_make_shutdown_ack(const struct sctp_association *asoc,
+					  const struct sctp_chunk *chunk);
+struct sctp_chunk *sctp_make_shutdown_complete(
+					const struct sctp_association *asoc,
+					const struct sctp_chunk *chunk);
+int sctp_init_cause(struct sctp_chunk *chunk, __be16 cause, size_t paylen);
+struct sctp_chunk *sctp_make_abort(const struct sctp_association *asoc,
+				   const struct sctp_chunk *chunk,
+				   const size_t hint);
+struct sctp_chunk *sctp_make_abort_no_data(const struct sctp_association *asoc,
+					   const struct sctp_chunk *chunk,
+					   __u32 tsn);
+struct sctp_chunk *sctp_make_abort_user(const struct sctp_association *asoc,
+					struct msghdr *msg, size_t msg_len);
+struct sctp_chunk *sctp_make_abort_violation(
+					const struct sctp_association *asoc,
+					const struct sctp_chunk *chunk,
+					const __u8 *payload,
+					const size_t paylen);
+struct sctp_chunk *sctp_make_violation_paramlen(
+					const struct sctp_association *asoc,
+					const struct sctp_chunk *chunk,
+					struct sctp_paramhdr *param);
+struct sctp_chunk *sctp_make_violation_max_retrans(
+					const struct sctp_association *asoc,
+					const struct sctp_chunk *chunk);
+struct sctp_chunk *sctp_make_new_encap_port(
+					const struct sctp_association *asoc,
+					const struct sctp_chunk *chunk);
+struct sctp_chunk *sctp_make_heartbeat(const struct sctp_association *asoc,
+				       const struct sctp_transport *transport,
+				       __u32 probe_size);
+struct sctp_chunk *sctp_make_heartbeat_ack(const struct sctp_association *asoc,
+					   const struct sctp_chunk *chunk,
+					   const void *payload,
+					   const size_t paylen);
+struct sctp_chunk *sctp_make_pad(const struct sctp_association *asoc, int len);
+struct sctp_chunk *sctp_make_op_error(const struct sctp_association *asoc,
+				      const struct sctp_chunk *chunk,
+				      __be16 cause_code, const void *payload,
+				      size_t paylen, size_t reserve_tail);
+
+struct sctp_chunk *sctp_make_asconf_update_ip(struct sctp_association *asoc,
+					      union sctp_addr *laddr,
+					      struct sockaddr *addrs,
+					      int addrcnt, __be16 flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct sctp_chunk *sctp_make_asconf_set_prim(struct sctp_association *asoc,
 					     union sctp_addr *addr);
 bool sctp_verify_asconf(const struct sctp_association *asoc,
@@ -261,6 +393,7 @@ int sctp_process_asconf_ack(struct sctp_association *asoc,
 struct sctp_chunk *sctp_make_fwdtsn(const struct sctp_association *asoc,
 				    __u32 new_cum_tsn, size_t nstreams,
 				    struct sctp_fwdtsn_skip *skiplist);
+<<<<<<< HEAD
 struct sctp_chunk *sctp_make_auth(const struct sctp_association *asoc);
 
 void sctp_chunk_assign_tsn(struct sctp_chunk *);
@@ -293,6 +426,82 @@ int sctp_addip_addr_config(struct sctp_association *, sctp_param_t,
 /* 3rd level prototypes */
 __u32 sctp_generate_tag(const struct sctp_endpoint *);
 __u32 sctp_generate_tsn(const struct sctp_endpoint *);
+=======
+struct sctp_chunk *sctp_make_auth(const struct sctp_association *asoc,
+				  __u16 key_id);
+struct sctp_chunk *sctp_make_strreset_req(const struct sctp_association *asoc,
+					  __u16 stream_num, __be16 *stream_list,
+					  bool out, bool in);
+struct sctp_chunk *sctp_make_strreset_tsnreq(
+					const struct sctp_association *asoc);
+struct sctp_chunk *sctp_make_strreset_addstrm(
+					const struct sctp_association *asoc,
+					__u16 out, __u16 in);
+struct sctp_chunk *sctp_make_strreset_resp(const struct sctp_association *asoc,
+					   __u32 result, __u32 sn);
+struct sctp_chunk *sctp_make_strreset_tsnresp(struct sctp_association *asoc,
+					      __u32 result, __u32 sn,
+					      __u32 sender_tsn,
+					      __u32 receiver_tsn);
+bool sctp_verify_reconf(const struct sctp_association *asoc,
+			struct sctp_chunk *chunk,
+			struct sctp_paramhdr **errp);
+void sctp_chunk_assign_tsn(struct sctp_chunk *chunk);
+void sctp_chunk_assign_ssn(struct sctp_chunk *chunk);
+
+/* Prototypes for stream-processing functions.  */
+struct sctp_chunk *sctp_process_strreset_outreq(
+				struct sctp_association *asoc,
+				union sctp_params param,
+				struct sctp_ulpevent **evp);
+struct sctp_chunk *sctp_process_strreset_inreq(
+				struct sctp_association *asoc,
+				union sctp_params param,
+				struct sctp_ulpevent **evp);
+struct sctp_chunk *sctp_process_strreset_tsnreq(
+				struct sctp_association *asoc,
+				union sctp_params param,
+				struct sctp_ulpevent **evp);
+struct sctp_chunk *sctp_process_strreset_addstrm_out(
+				struct sctp_association *asoc,
+				union sctp_params param,
+				struct sctp_ulpevent **evp);
+struct sctp_chunk *sctp_process_strreset_addstrm_in(
+				struct sctp_association *asoc,
+				union sctp_params param,
+				struct sctp_ulpevent **evp);
+struct sctp_chunk *sctp_process_strreset_resp(
+				struct sctp_association *asoc,
+				union sctp_params param,
+				struct sctp_ulpevent **evp);
+
+/* Prototypes for statetable processing. */
+
+int sctp_do_sm(struct net *net, enum sctp_event_type event_type,
+	       union sctp_subtype subtype, enum sctp_state state,
+	       struct sctp_endpoint *ep, struct sctp_association *asoc,
+	       void *event_arg, gfp_t gfp);
+
+/* 2nd level prototypes */
+void sctp_generate_t3_rtx_event(struct timer_list *t);
+void sctp_generate_heartbeat_event(struct timer_list *t);
+void sctp_generate_reconf_event(struct timer_list *t);
+void sctp_generate_probe_event(struct timer_list *t);
+void sctp_generate_proto_unreach_event(struct timer_list *t);
+
+void sctp_ootb_pkt_free(struct sctp_packet *packet);
+
+struct sctp_association *sctp_unpack_cookie(
+					const struct sctp_endpoint *ep,
+					const struct sctp_association *asoc,
+					struct sctp_chunk *chunk,
+					gfp_t gfp, int *err,
+					struct sctp_chunk **err_chk_p);
+
+/* 3rd level prototypes */
+__u32 sctp_generate_tag(const struct sctp_endpoint *ep);
+__u32 sctp_generate_tsn(const struct sctp_endpoint *ep);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Extern declarations for major data structures.  */
 extern sctp_timer_event_t *sctp_timer_events[SCTP_NUM_TIMEOUT_TYPES];
@@ -304,12 +513,17 @@ static inline __u16 sctp_data_size(struct sctp_chunk *chunk)
 	__u16 size;
 
 	size = ntohs(chunk->chunk_hdr->length);
+<<<<<<< HEAD
 	size -= sizeof(sctp_data_chunk_t);
+=======
+	size -= sctp_datachk_len(&chunk->asoc->stream);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return size;
 }
 
 /* Compare two TSNs */
+<<<<<<< HEAD
 
 /* RFC 1982 - Serial Number Arithmetic
  *
@@ -389,6 +603,35 @@ static inline int ADDIP_SERIAL_gte(__u16 s, __u16 t)
 {
 	return ((s) == (t)) || (((t) - (s)) & ADDIP_SERIAL_SIGN_BIT);
 }
+=======
+#define TSN_lt(a,b)	\
+	(typecheck(__u32, a) && \
+	 typecheck(__u32, b) && \
+	 ((__s32)((a) - (b)) < 0))
+
+#define TSN_lte(a,b)	\
+	(typecheck(__u32, a) && \
+	 typecheck(__u32, b) && \
+	 ((__s32)((a) - (b)) <= 0))
+
+/* Compare two MIDs */
+#define MID_lt(a, b)	\
+	(typecheck(__u32, a) && \
+	 typecheck(__u32, b) && \
+	 ((__s32)((a) - (b)) < 0))
+
+/* Compare two SSNs */
+#define SSN_lt(a,b)		\
+	(typecheck(__u16, a) && \
+	 typecheck(__u16, b) && \
+	 ((__s16)((a) - (b)) < 0))
+
+/* ADDIP 3.1.1 */
+#define ADDIP_SERIAL_gte(a,b)	\
+	(typecheck(__u32, a) && \
+	 typecheck(__u32, b) && \
+	 ((__s32)((b) - (a)) <= 0))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Check VTAG of the packet matches the sender's own tag. */
 static inline int
@@ -401,10 +644,18 @@ sctp_vtag_verify(const struct sctp_chunk *chunk,
 	 * Verification Tag value does not match the receiver's own
 	 * tag value, the receiver shall silently discard the packet...
 	 */
+<<<<<<< HEAD
         if (ntohl(chunk->sctp_hdr->vtag) == asoc->c.my_vtag)
                 return 1;
 
 	return 0;
+=======
+	if (ntohl(chunk->sctp_hdr->vtag) != asoc->c.my_vtag)
+		return 0;
+
+	chunk->transport->encap_port = SCTP_INPUT_CB(chunk->skb)->encap_port;
+	return 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Check VTAG of the packet matches the sender's own tag and the T bit is

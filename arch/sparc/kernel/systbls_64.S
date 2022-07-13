@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* systbls.S: System call entry point tables for OS compatibility.
  *            The native Linux system call table lives here also.
  *
@@ -9,6 +13,7 @@
  * Copyright (C) 1995 Adrian M. Rodriguez (adrian@remus.rutgers.edu)
  */
 
+<<<<<<< HEAD
 
 	.text
 	.align	4
@@ -91,10 +96,24 @@ sys_call_table32:
 
 	/* Now the 64-bit native Linux syscall table. */
 
+=======
+#define __SYSCALL(nr, entry) .word entry
+	.text
+	.align	4
+#ifdef CONFIG_COMPAT
+	.globl sys_call_table32
+sys_call_table32:
+#define __SYSCALL_WITH_COMPAT(nr, native, compat)	__SYSCALL(nr, compat)
+#include <asm/syscall_table_32.h>	/* Compat syscalls */
+#undef __SYSCALL_WITH_COMPAT
+#endif /* CONFIG_COMPAT */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.align	4
 	.globl sys_call_table64, sys_call_table
 sys_call_table64:
 sys_call_table:
+<<<<<<< HEAD
 /*0*/	.word sys_restart_syscall, sparc_exit, sys_fork, sys_read, sys_write
 /*5*/	.word sys_open, sys_close, sys_wait4, sys_creat, sys_link
 /*10*/  .word sys_unlink, sys_nis_syscall, sys_chdir, sys_chown, sys_mknod
@@ -163,3 +182,7 @@ sys_call_table:
 	.word sys_pwritev, sys_rt_tgsigqueueinfo, sys_perf_event_open, sys_recvmmsg, sys_fanotify_init
 /*330*/	.word sys_fanotify_mark, sys_prlimit64, sys_name_to_handle_at, sys_open_by_handle_at, sys_clock_adjtime
 	.word sys_syncfs, sys_sendmmsg, sys_setns, sys_process_vm_readv, sys_process_vm_writev
+=======
+#define __SYSCALL_WITH_COMPAT(nr, native, compat)	__SYSCALL(nr, native)
+#include <asm/syscall_table_64.h>	/* 64-bit native syscalls */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

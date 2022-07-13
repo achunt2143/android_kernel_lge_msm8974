@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * latencytop.h: Infrastructure for displaying latency
  *
@@ -35,7 +39,11 @@ account_scheduler_latency(struct task_struct *task, int usecs, int inter)
 		__account_scheduler_latency(task, usecs, inter);
 }
 
+<<<<<<< HEAD
 void clear_all_latency_tracing(struct task_struct *p);
+=======
+void clear_tsk_latency_tracing(struct task_struct *p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #else
 
@@ -44,7 +52,11 @@ account_scheduler_latency(struct task_struct *task, int usecs, int inter)
 {
 }
 
+<<<<<<< HEAD
 static inline void clear_all_latency_tracing(struct task_struct *p)
+=======
+static inline void clear_tsk_latency_tracing(struct task_struct *p)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }
 

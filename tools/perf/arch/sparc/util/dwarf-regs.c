@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Mapping of DWARF debug register numbers into register names.
  *
  * Copyright (C) 2010 David S. Miller <davem@davemloft.net>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
@@ -10,6 +15,11 @@
  */
 
 #include <libio.h>
+=======
+ */
+
+#include <stddef.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <dwarf-regs.h>
 
 #define SPARC_MAX_REGS	96
@@ -39,5 +49,9 @@ const char *sparc_regs_table[SPARC_MAX_REGS] = {
  */
 const char *get_arch_regstr(unsigned int n)
 {
+<<<<<<< HEAD
 	return (n <= SPARC_MAX_REGS) ? sparc_regs_table[n] : NULL;
+=======
+	return (n < SPARC_MAX_REGS) ? sparc_regs_table[n] : NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /***************************************************************************
  *
  * Copyright (C) 2004-2008 SMSC
  * Copyright (C) 2005-2008 ARM
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version 2
@@ -17,11 +22,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  ***************************************************************************/
 #ifndef __LINUX_SMSC911X_H__
 #define __LINUX_SMSC911X_H__
 
 #include <linux/phy.h>
+<<<<<<< HEAD
 
 /* platform_device configuration data, should be assigned to
  * the platform_device's dev.platform_data
@@ -32,15 +40,25 @@
  * Default would be zero if its not being assigned any value.
  * Both values would need to set in the appropriate board file
  */
+=======
+#include <linux/if_ether.h>
+
+/* platform_device configuration data, should be assigned to
+ * the platform_device's dev.platform_data */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct smsc911x_platform_config {
 	unsigned int irq_polarity;
 	unsigned int irq_type;
 	unsigned int flags;
 	unsigned int shift;
 	phy_interface_t phy_interface;
+<<<<<<< HEAD
 	unsigned char mac[6];
 	unsigned char has_reset_gpio;
 	unsigned int reset_gpio;
+=======
+	unsigned char mac[ETH_ALEN];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Constants for platform_device irq polarity configuration */

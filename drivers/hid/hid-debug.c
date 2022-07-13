@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  (c) 1999 Andreas Gal		<gal@cs.uni-magdeburg.de>
  *  (c) 2000-2001 Vojtech Pavlik	<vojtech@ucw.cz>
@@ -7,6 +11,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -20,6 +25,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Should you need to contact me, the author, you can do so either by
  * e-mail - mail your message to <vojtech@ucw.cz>, or by paper mail:
@@ -30,7 +37,12 @@
 
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
+=======
+#include <linux/kfifo.h>
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/export.h>
 #include <linux/slab.h>
 #include <linux/uaccess.h>
@@ -133,6 +145,10 @@ static const struct hid_usage_entry hid_usage_table[] = {
   {  9, 0, "Button" },
   { 10, 0, "Ordinal" },
   { 12, 0, "Consumer" },
+<<<<<<< HEAD
+=======
+      {0, 0x003, "ProgrammableButtons"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
       {0, 0x238, "HorizontalWheel"},
   { 13, 0, "Digitizers" },
     {0, 0x01, "Digitizer"},
@@ -140,17 +156,32 @@ static const struct hid_usage_entry hid_usage_table[] = {
     {0, 0x03, "LightPen"},
     {0, 0x04, "TouchScreen"},
     {0, 0x05, "TouchPad"},
+<<<<<<< HEAD
     {0, 0x20, "Stylus"},
     {0, 0x21, "Puck"},
     {0, 0x22, "Finger"},
+=======
+    {0, 0x0e, "DeviceConfiguration"},
+    {0, 0x20, "Stylus"},
+    {0, 0x21, "Puck"},
+    {0, 0x22, "Finger"},
+    {0, 0x23, "DeviceSettings"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     {0, 0x30, "TipPressure"},
     {0, 0x31, "BarrelPressure"},
     {0, 0x32, "InRange"},
     {0, 0x33, "Touch"},
     {0, 0x34, "UnTouch"},
     {0, 0x35, "Tap"},
+<<<<<<< HEAD
     {0, 0x39, "TabletFunctionKey"},
     {0, 0x3a, "ProgramChangeKey"},
+=======
+    {0, 0x38, "Transducer Index"},
+    {0, 0x39, "TabletFunctionKey"},
+    {0, 0x3a, "ProgramChangeKey"},
+    {0, 0x3B, "Battery Strength"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     {0, 0x3c, "Invert"},
     {0, 0x42, "TipSwitch"},
     {0, 0x43, "SecondaryTipSwitch"},
@@ -165,6 +196,46 @@ static const struct hid_usage_entry hid_usage_table[] = {
     {0, 0x53, "DeviceIndex"},
     {0, 0x54, "ContactCount"},
     {0, 0x55, "ContactMaximumNumber"},
+<<<<<<< HEAD
+=======
+    {0, 0x59, "ButtonType"},
+    {0, 0x5A, "SecondaryBarrelSwitch"},
+    {0, 0x5B, "TransducerSerialNumber"},
+    {0, 0x5C, "Preferred Color"},
+    {0, 0x5D, "Preferred Color is Locked"},
+    {0, 0x5E, "Preferred Line Width"},
+    {0, 0x5F, "Preferred Line Width is Locked"},
+    {0, 0x6e, "TransducerSerialNumber2"},
+    {0, 0x70, "Preferred Line Style"},
+      {0, 0x71, "Preferred Line Style is Locked"},
+      {0, 0x72, "Ink"},
+      {0, 0x73, "Pencil"},
+      {0, 0x74, "Highlighter"},
+      {0, 0x75, "Chisel Marker"},
+      {0, 0x76, "Brush"},
+      {0, 0x77, "No Preference"},
+    {0, 0x80, "Digitizer Diagnostic"},
+    {0, 0x81, "Digitizer Error"},
+      {0, 0x82, "Err Normal Status"},
+      {0, 0x83, "Err Transducers Exceeded"},
+      {0, 0x84, "Err Full Trans Features Unavailable"},
+      {0, 0x85, "Err Charge Low"},
+    {0, 0x90, "Transducer Software Info"},
+      {0, 0x91, "Transducer Vendor Id"},
+      {0, 0x92, "Transducer Product Id"},
+    {0, 0x93, "Device Supported Protocols"},
+    {0, 0x94, "Transducer Supported Protocols"},
+      {0, 0x95, "No Protocol"},
+      {0, 0x96, "Wacom AES Protocol"},
+      {0, 0x97, "USI Protocol"},
+      {0, 0x98, "Microsoft Pen Protocol"},
+    {0, 0xA0, "Supported Report Rates"},
+      {0, 0xA1, "Report Rate"},
+      {0, 0xA2, "Transducer Connected"},
+      {0, 0xA3, "Switch Disabled"},
+      {0, 0xA4, "Switch Unimplemented"},
+      {0, 0xA5, "Transducer Switches"},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   { 15, 0, "PhysicalInterfaceDevice" },
     {0, 0x00, "Undefined"},
     {0, 0x01, "Physical_Interface_Device"},
@@ -272,6 +343,88 @@ static const struct hid_usage_entry hid_usage_table[] = {
     {0, 0xAA, "Shared_Parameter_Blocks"},
     {0, 0xAB, "Create_New_Effect_Report"},
     {0, 0xAC, "RAM_Pool_Available"},
+<<<<<<< HEAD
+=======
+  {  0x20, 0, "Sensor" },
+    { 0x20, 0x01, "Sensor" },
+    { 0x20, 0x10, "Biometric" },
+      { 0x20, 0x11, "BiometricHumanPresence" },
+      { 0x20, 0x12, "BiometricHumanProximity" },
+      { 0x20, 0x13, "BiometricHumanTouch" },
+    { 0x20, 0x20, "Electrical" },
+      { 0x20, 0x21, "ElectricalCapacitance" },
+      { 0x20, 0x22, "ElectricalCurrent" },
+      { 0x20, 0x23, "ElectricalPower" },
+      { 0x20, 0x24, "ElectricalInductance" },
+      { 0x20, 0x25, "ElectricalResistance" },
+      { 0x20, 0x26, "ElectricalVoltage" },
+      { 0x20, 0x27, "ElectricalPoteniometer" },
+      { 0x20, 0x28, "ElectricalFrequency" },
+      { 0x20, 0x29, "ElectricalPeriod" },
+    { 0x20, 0x30, "Environmental" },
+      { 0x20, 0x31, "EnvironmentalAtmosphericPressure" },
+      { 0x20, 0x32, "EnvironmentalHumidity" },
+      { 0x20, 0x33, "EnvironmentalTemperature" },
+      { 0x20, 0x34, "EnvironmentalWindDirection" },
+      { 0x20, 0x35, "EnvironmentalWindSpeed" },
+    { 0x20, 0x40, "Light" },
+      { 0x20, 0x41, "LightAmbientLight" },
+      { 0x20, 0x42, "LightConsumerInfrared" },
+    { 0x20, 0x50, "Location" },
+      { 0x20, 0x51, "LocationBroadcast" },
+      { 0x20, 0x52, "LocationDeadReckoning" },
+      { 0x20, 0x53, "LocationGPS" },
+      { 0x20, 0x54, "LocationLookup" },
+      { 0x20, 0x55, "LocationOther" },
+      { 0x20, 0x56, "LocationStatic" },
+      { 0x20, 0x57, "LocationTriangulation" },
+    { 0x20, 0x60, "Mechanical" },
+      { 0x20, 0x61, "MechanicalBooleanSwitch" },
+      { 0x20, 0x62, "MechanicalBooleanSwitchArray" },
+      { 0x20, 0x63, "MechanicalMultivalueSwitch" },
+      { 0x20, 0x64, "MechanicalForce" },
+      { 0x20, 0x65, "MechanicalPressure" },
+      { 0x20, 0x66, "MechanicalStrain" },
+      { 0x20, 0x67, "MechanicalWeight" },
+      { 0x20, 0x68, "MechanicalHapticVibrator" },
+      { 0x20, 0x69, "MechanicalHallEffectSwitch" },
+    { 0x20, 0x70, "Motion" },
+      { 0x20, 0x71, "MotionAccelerometer1D" },
+      { 0x20, 0x72, "MotionAccelerometer2D" },
+      { 0x20, 0x73, "MotionAccelerometer3D" },
+      { 0x20, 0x74, "MotionGyrometer1D" },
+      { 0x20, 0x75, "MotionGyrometer2D" },
+      { 0x20, 0x76, "MotionGyrometer3D" },
+      { 0x20, 0x77, "MotionMotionDetector" },
+      { 0x20, 0x78, "MotionSpeedometer" },
+      { 0x20, 0x79, "MotionAccelerometer" },
+      { 0x20, 0x7A, "MotionGyrometer" },
+    { 0x20, 0x80, "Orientation" },
+      { 0x20, 0x81, "OrientationCompass1D" },
+      { 0x20, 0x82, "OrientationCompass2D" },
+      { 0x20, 0x83, "OrientationCompass3D" },
+      { 0x20, 0x84, "OrientationInclinometer1D" },
+      { 0x20, 0x85, "OrientationInclinometer2D" },
+      { 0x20, 0x86, "OrientationInclinometer3D" },
+      { 0x20, 0x87, "OrientationDistance1D" },
+      { 0x20, 0x88, "OrientationDistance2D" },
+      { 0x20, 0x89, "OrientationDistance3D" },
+      { 0x20, 0x8A, "OrientationDeviceOrientation" },
+      { 0x20, 0x8B, "OrientationCompass" },
+      { 0x20, 0x8C, "OrientationInclinometer" },
+      { 0x20, 0x8D, "OrientationDistance" },
+    { 0x20, 0x90, "Scanner" },
+      { 0x20, 0x91, "ScannerBarcode" },
+      { 0x20, 0x91, "ScannerRFID" },
+      { 0x20, 0x91, "ScannerNFC" },
+    { 0x20, 0xA0, "Time" },
+      { 0x20, 0xA1, "TimeAlarmTimer" },
+      { 0x20, 0xA2, "TimeRealTimeClock" },
+    { 0x20, 0xE0, "Other" },
+      { 0x20, 0xE1, "OtherCustom" },
+      { 0x20, 0xE2, "OtherGeneric" },
+      { 0x20, 0xE3, "OtherGenericEnumerator" },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
   { 0x84, 0, "Power Device" },
     { 0x84, 0x02, "PresentStatus" },
     { 0x84, 0x03, "ChangeStatus" },
@@ -344,6 +497,10 @@ static const struct hid_usage_entry hid_usage_table[] = {
     { 0x85, 0x44, "Charging" },
     { 0x85, 0x45, "Discharging" },
     { 0x85, 0x4b, "NeedReplacement" },
+<<<<<<< HEAD
+=======
+    { 0x85, 0x65, "AbsoluteStateOfCharge" },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
     { 0x85, 0x66, "RemainingCapacity" },
     { 0x85, 0x68, "RunTimeToEmpty" },
     { 0x85, 0x6a, "AverageTimeToFull" },
@@ -373,7 +530,11 @@ static char *resolv_usage_page(unsigned page, struct seq_file *f) {
 	char *buf = NULL;
 
 	if (!f) {
+<<<<<<< HEAD
 		buf = kzalloc(sizeof(char) * HID_DEBUG_BUFSIZE, GFP_ATOMIC);
+=======
+		buf = kzalloc(HID_DEBUG_BUFSIZE, GFP_ATOMIC);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!buf)
 			return ERR_PTR(-ENOMEM);
 	}
@@ -411,8 +572,12 @@ char *hid_resolv_usage(unsigned usage, struct seq_file *f) {
 
 	if (!f) {
 		len = strlen(buf);
+<<<<<<< HEAD
 		snprintf(buf+len, max(0, HID_DEBUG_BUFSIZE - len), ".");
 		len++;
+=======
+		len += scnprintf(buf + len, HID_DEBUG_BUFSIZE - len, ".");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	else {
 		seq_printf(f, ".");
@@ -423,7 +588,11 @@ char *hid_resolv_usage(unsigned usage, struct seq_file *f) {
 				if (p->usage == (usage & 0xffff)) {
 					if (!f)
 						snprintf(buf + len,
+<<<<<<< HEAD
 							max(0,HID_DEBUG_BUFSIZE - len - 1),
+=======
+							HID_DEBUG_BUFSIZE - len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							"%s", p->description);
 					else
 						seq_printf(f,
@@ -434,8 +603,13 @@ char *hid_resolv_usage(unsigned usage, struct seq_file *f) {
 			break;
 		}
 	if (!f)
+<<<<<<< HEAD
 		snprintf(buf + len, max(0, HID_DEBUG_BUFSIZE - len - 1),
 				"%04x", usage & 0xffff);
+=======
+		snprintf(buf + len, HID_DEBUG_BUFSIZE - len, "%04x",
+			 usage & 0xffff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		seq_printf(f, "%04x", usage & 0xffff);
 	return buf;
@@ -577,6 +751,7 @@ EXPORT_SYMBOL_GPL(hid_dump_device);
 /* enqueue string to 'events' ring buffer */
 void hid_debug_event(struct hid_device *hdev, char *buf)
 {
+<<<<<<< HEAD
 	int i;
 	struct hid_debug_list *list;
 
@@ -586,11 +761,53 @@ void hid_debug_event(struct hid_device *hdev, char *buf)
 				buf[i];
 		list->tail = (list->tail + i) % HID_DEBUG_BUFSIZE;
         }
+=======
+	struct hid_debug_list *list;
+	unsigned long flags;
+
+	spin_lock_irqsave(&hdev->debug_list_lock, flags);
+	list_for_each_entry(list, &hdev->debug_list, node)
+		kfifo_in(&list->hid_debug_fifo, buf, strlen(buf));
+	spin_unlock_irqrestore(&hdev->debug_list_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wake_up_interruptible(&hdev->debug_wait);
 }
 EXPORT_SYMBOL_GPL(hid_debug_event);
 
+<<<<<<< HEAD
+=======
+void hid_dump_report(struct hid_device *hid, int type, u8 *data,
+		int size)
+{
+	struct hid_report_enum *report_enum;
+	char *buf;
+	unsigned int i;
+
+	buf = kmalloc(HID_DEBUG_BUFSIZE, GFP_ATOMIC);
+
+	if (!buf)
+		return;
+
+	report_enum = hid->report_enum + type;
+
+	/* dump the report */
+	snprintf(buf, HID_DEBUG_BUFSIZE - 1,
+			"\nreport (size %u) (%snumbered) = ", size,
+			report_enum->numbered ? "" : "un");
+	hid_debug_event(hid, buf);
+
+	for (i = 0; i < size; i++) {
+		snprintf(buf, HID_DEBUG_BUFSIZE - 1,
+				" %02x", data[i]);
+		hid_debug_event(hid, buf);
+	}
+	hid_debug_event(hid, "\n");
+	kfree(buf);
+}
+EXPORT_SYMBOL_GPL(hid_dump_report);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 void hid_dump_input(struct hid_device *hdev, struct hid_usage *usage, __s32 value)
 {
 	char *buf;
@@ -605,8 +822,12 @@ void hid_dump_input(struct hid_device *hdev, struct hid_usage *usage, __s32 valu
 	hid_debug_event(hdev, buf);
 
 	kfree(buf);
+<<<<<<< HEAD
         wake_up_interruptible(&hdev->debug_wait);
 
+=======
+	wake_up_interruptible(&hdev->debug_wait);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(hid_dump_input);
 
@@ -700,7 +921,11 @@ static const char *keys[KEY_MAX + 1] = {
 	[KEY_DELETEFILE] = "DeleteFile",	[KEY_XFER] = "X-fer",
 	[KEY_PROG1] = "Prog1",			[KEY_PROG2] = "Prog2",
 	[KEY_WWW] = "WWW",			[KEY_MSDOS] = "MSDOS",
+<<<<<<< HEAD
 	[KEY_COFFEE] = "Coffee",		[KEY_DIRECTION] = "Direction",
+=======
+	[KEY_COFFEE] = "Coffee",		[KEY_ROTATE_DISPLAY] = "RotateDisplay",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[KEY_CYCLEWINDOWS] = "CycleWindows",	[KEY_MAIL] = "Mail",
 	[KEY_BOOKMARKS] = "Bookmarks",		[KEY_COMPUTER] = "Computer",
 	[KEY_BACK] = "Back",			[KEY_FORWARD] = "Forward",
@@ -723,7 +948,13 @@ static const char *keys[KEY_MAX + 1] = {
 	[KEY_F22] = "F22",			[KEY_F23] = "F23",
 	[KEY_F24] = "F24",			[KEY_PLAYCD] = "PlayCD",
 	[KEY_PAUSECD] = "PauseCD",		[KEY_PROG3] = "Prog3",
+<<<<<<< HEAD
 	[KEY_PROG4] = "Prog4",			[KEY_SUSPEND] = "Suspend",
+=======
+	[KEY_PROG4] = "Prog4",
+	[KEY_ALL_APPLICATIONS] = "AllApplications",
+	[KEY_SUSPEND] = "Suspend",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[KEY_CLOSE] = "Close",			[KEY_PLAY] = "Play",
 	[KEY_FASTFORWARD] = "FastForward",	[KEY_BASSBOOST] = "BassBoost",
 	[KEY_PRINT] = "Print",			[KEY_HP] = "HP",
@@ -735,6 +966,11 @@ static const char *keys[KEY_MAX + 1] = {
 	[KEY_ALTERASE] = "AlternateErase",	[KEY_CANCEL] = "Cancel",
 	[KEY_BRIGHTNESSDOWN] = "BrightnessDown", [KEY_BRIGHTNESSUP] = "BrightnessUp",
 	[KEY_MEDIA] = "Media",			[KEY_UNKNOWN] = "Unknown",
+<<<<<<< HEAD
+=======
+	[BTN_DPAD_UP] = "BtnDPadUp",		[BTN_DPAD_DOWN] = "BtnDPadDown",
+	[BTN_DPAD_LEFT] = "BtnDPadLeft",	[BTN_DPAD_RIGHT] = "BtnDPadRight",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[BTN_0] = "Btn0",			[BTN_1] = "Btn1",
 	[BTN_2] = "Btn2",			[BTN_3] = "Btn3",
 	[BTN_4] = "Btn4",			[BTN_5] = "Btn5",
@@ -764,7 +1000,12 @@ static const char *keys[KEY_MAX + 1] = {
 	[BTN_TOOL_MOUSE] = "ToolMouse",		[BTN_TOOL_LENS] = "ToolLens",
 	[BTN_TOUCH] = "Touch",			[BTN_STYLUS] = "Stylus",
 	[BTN_STYLUS2] = "Stylus2",		[BTN_TOOL_DOUBLETAP] = "ToolDoubleTap",
+<<<<<<< HEAD
 	[BTN_TOOL_TRIPLETAP] = "ToolTripleTap", [BTN_GEAR_DOWN] = "WheelBtn",
+=======
+	[BTN_TOOL_TRIPLETAP] = "ToolTripleTap",	[BTN_TOOL_QUADTAP] = "ToolQuadrupleTap",
+	[BTN_GEAR_DOWN] = "WheelBtn",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[BTN_GEAR_UP] = "Gear up",		[KEY_OK] = "Ok",
 	[KEY_SELECT] = "Select",		[KEY_GOTO] = "Goto",
 	[KEY_CLEAR] = "Clear",			[KEY_POWER2] = "Power2",
@@ -819,6 +1060,43 @@ static const char *keys[KEY_MAX + 1] = {
 	[KEY_KBDILLUMDOWN] = "KbdIlluminationDown",
 	[KEY_KBDILLUMUP] = "KbdIlluminationUp",
 	[KEY_SWITCHVIDEOMODE] = "SwitchVideoMode",
+<<<<<<< HEAD
+=======
+	[KEY_BUTTONCONFIG] = "ButtonConfig",
+	[KEY_TASKMANAGER] = "TaskManager",
+	[KEY_JOURNAL] = "Journal",
+	[KEY_CONTROLPANEL] = "ControlPanel",
+	[KEY_APPSELECT] = "AppSelect",
+	[KEY_SCREENSAVER] = "ScreenSaver",
+	[KEY_VOICECOMMAND] = "VoiceCommand",
+	[KEY_ASSISTANT] = "Assistant",
+	[KEY_KBD_LAYOUT_NEXT] = "KbdLayoutNext",
+	[KEY_EMOJI_PICKER] = "EmojiPicker",
+	[KEY_CAMERA_ACCESS_ENABLE] = "CameraAccessEnable",
+	[KEY_CAMERA_ACCESS_DISABLE] = "CameraAccessDisable",
+	[KEY_CAMERA_ACCESS_TOGGLE] = "CameraAccessToggle",
+	[KEY_DICTATE] = "Dictate",
+	[KEY_MICMUTE] = "MicrophoneMute",
+	[KEY_BRIGHTNESS_MIN] = "BrightnessMin",
+	[KEY_BRIGHTNESS_MAX] = "BrightnessMax",
+	[KEY_BRIGHTNESS_AUTO] = "BrightnessAuto",
+	[KEY_KBDINPUTASSIST_PREV] = "KbdInputAssistPrev",
+	[KEY_KBDINPUTASSIST_NEXT] = "KbdInputAssistNext",
+	[KEY_KBDINPUTASSIST_PREVGROUP] = "KbdInputAssistPrevGroup",
+	[KEY_KBDINPUTASSIST_NEXTGROUP] = "KbdInputAssistNextGroup",
+	[KEY_KBDINPUTASSIST_ACCEPT] = "KbdInputAssistAccept",
+	[KEY_KBDINPUTASSIST_CANCEL] = "KbdInputAssistCancel",
+	[KEY_MACRO1] = "Macro1", [KEY_MACRO2] = "Macro2", [KEY_MACRO3] = "Macro3",
+	[KEY_MACRO4] = "Macro4", [KEY_MACRO5] = "Macro5", [KEY_MACRO6] = "Macro6",
+	[KEY_MACRO7] = "Macro7", [KEY_MACRO8] = "Macro8", [KEY_MACRO9] = "Macro9",
+	[KEY_MACRO10] = "Macro10", [KEY_MACRO11] = "Macro11", [KEY_MACRO12] = "Macro12",
+	[KEY_MACRO13] = "Macro13", [KEY_MACRO14] = "Macro14", [KEY_MACRO15] = "Macro15",
+	[KEY_MACRO16] = "Macro16", [KEY_MACRO17] = "Macro17", [KEY_MACRO18] = "Macro18",
+	[KEY_MACRO19] = "Macro19", [KEY_MACRO20] = "Macro20", [KEY_MACRO21] = "Macro21",
+	[KEY_MACRO22] = "Macro22", [KEY_MACRO23] = "Macro23", [KEY_MACRO24] = "Macro24",
+	[KEY_MACRO25] = "Macro25", [KEY_MACRO26] = "Macro26", [KEY_MACRO27] = "Macro27",
+	[KEY_MACRO28] = "Macro28", [KEY_MACRO29] = "Macro29", [KEY_MACRO30] = "Macro30",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static const char *relatives[REL_MAX + 1] = {
@@ -842,7 +1120,12 @@ static const char *absolutes[ABS_CNT] = {
 	[ABS_HAT3Y] = "Hat 3Y",		[ABS_PRESSURE] = "Pressure",
 	[ABS_DISTANCE] = "Distance",	[ABS_TILT_X] = "XTilt",
 	[ABS_TILT_Y] = "YTilt",		[ABS_TOOL_WIDTH] = "ToolWidth",
+<<<<<<< HEAD
 	[ABS_VOLUME] = "Volume",	[ABS_MISC] = "Misc",
+=======
+	[ABS_VOLUME] = "Volume",	[ABS_PROFILE] = "Profile",
+	[ABS_MISC] = "Misc",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[ABS_MT_TOUCH_MAJOR] = "MTMajor",
 	[ABS_MT_TOUCH_MINOR] = "MTMinor",
 	[ABS_MT_WIDTH_MAJOR] = "MTMajorW",
@@ -911,6 +1194,7 @@ static void hid_dump_input_mapping(struct hid_device *hid, struct seq_file *f)
 
 }
 
+<<<<<<< HEAD
 
 static int hid_debug_rdesc_show(struct seq_file *f, void *p)
 {
@@ -923,38 +1207,86 @@ static int hid_debug_rdesc_show(struct seq_file *f, void *p)
 	seq_printf(f, "\n\n");
 
 	/* dump parsed data and input mappings */
+=======
+static int hid_debug_rdesc_show(struct seq_file *f, void *p)
+{
+	struct hid_device *hdev = f->private;
+	const __u8 *rdesc = hdev->rdesc;
+	unsigned rsize = hdev->rsize;
+	int i;
+
+	if (!rdesc) {
+		rdesc = hdev->dev_rdesc;
+		rsize = hdev->dev_rsize;
+	}
+
+	/* dump HID report descriptor */
+	for (i = 0; i < rsize; i++)
+		seq_printf(f, "%02x ", rdesc[i]);
+	seq_printf(f, "\n\n");
+
+	/* dump parsed data and input mappings */
+	if (down_interruptible(&hdev->driver_input_lock))
+		return 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hid_dump_device(hdev, f);
 	seq_printf(f, "\n");
 	hid_dump_input_mapping(hdev, f);
 
+<<<<<<< HEAD
 	return 0;
 }
 
 static int hid_debug_rdesc_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, hid_debug_rdesc_show, inode->i_private);
+=======
+	up(&hdev->driver_input_lock);
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int hid_debug_events_open(struct inode *inode, struct file *file)
 {
 	int err = 0;
 	struct hid_debug_list *list;
+<<<<<<< HEAD
+=======
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!(list = kzalloc(sizeof(struct hid_debug_list), GFP_KERNEL))) {
 		err = -ENOMEM;
 		goto out;
 	}
 
+<<<<<<< HEAD
 	if (!(list->hid_debug_buf = kzalloc(sizeof(char) * HID_DEBUG_BUFSIZE, GFP_KERNEL))) {
 		err = -ENOMEM;
+=======
+	err = kfifo_alloc(&list->hid_debug_fifo, HID_DEBUG_FIFOSIZE, GFP_KERNEL);
+	if (err) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(list);
 		goto out;
 	}
 	list->hdev = (struct hid_device *) inode->i_private;
+<<<<<<< HEAD
 	file->private_data = list;
 	mutex_init(&list->read_mutex);
 
 	list_add_tail(&list->node, &list->hdev->debug_list);
+=======
+	kref_get(&list->hdev->ref);
+	file->private_data = list;
+	mutex_init(&list->read_mutex);
+
+	spin_lock_irqsave(&list->hdev->debug_list_lock, flags);
+	list_add_tail(&list->node, &list->hdev->debug_list);
+	spin_unlock_irqrestore(&list->hdev->debug_list_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	return err;
@@ -964,6 +1296,7 @@ static ssize_t hid_debug_events_read(struct file *file, char __user *buffer,
 		size_t count, loff_t *ppos)
 {
 	struct hid_debug_list *list = file->private_data;
+<<<<<<< HEAD
 	int ret = 0, len;
 	DECLARE_WAITQUEUE(wait, current);
 
@@ -1034,40 +1367,119 @@ copy_rest:
 		}
 
 	}
+=======
+	int ret = 0, copied;
+	DECLARE_WAITQUEUE(wait, current);
+
+	mutex_lock(&list->read_mutex);
+	if (kfifo_is_empty(&list->hid_debug_fifo)) {
+		add_wait_queue(&list->hdev->debug_wait, &wait);
+		set_current_state(TASK_INTERRUPTIBLE);
+
+		while (kfifo_is_empty(&list->hid_debug_fifo)) {
+			if (signal_pending(current)) {
+				ret = -ERESTARTSYS;
+				break;
+			}
+
+			/* if list->hdev is NULL we cannot remove_wait_queue().
+			 * if list->hdev->debug is 0 then hid_debug_unregister()
+			 * was already called and list->hdev is being destroyed.
+			 * if we add remove_wait_queue() here we can hit a race.
+			 */
+			if (!list->hdev || !list->hdev->debug) {
+				ret = -EIO;
+				set_current_state(TASK_RUNNING);
+				goto out;
+			}
+
+			if (file->f_flags & O_NONBLOCK) {
+				ret = -EAGAIN;
+				break;
+			}
+
+			/* allow O_NONBLOCK from other threads */
+			mutex_unlock(&list->read_mutex);
+			schedule();
+			mutex_lock(&list->read_mutex);
+			set_current_state(TASK_INTERRUPTIBLE);
+		}
+
+		__set_current_state(TASK_RUNNING);
+		remove_wait_queue(&list->hdev->debug_wait, &wait);
+
+		if (ret)
+			goto out;
+	}
+
+	/* pass the fifo content to userspace, locking is not needed with only
+	 * one concurrent reader and one concurrent writer
+	 */
+	ret = kfifo_to_user(&list->hid_debug_fifo, buffer, count, &copied);
+	if (ret)
+		goto out;
+	ret = copied;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out:
 	mutex_unlock(&list->read_mutex);
 	return ret;
 }
 
+<<<<<<< HEAD
 static unsigned int hid_debug_events_poll(struct file *file, poll_table *wait)
+=======
+static __poll_t hid_debug_events_poll(struct file *file, poll_table *wait)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct hid_debug_list *list = file->private_data;
 
 	poll_wait(file, &list->hdev->debug_wait, wait);
+<<<<<<< HEAD
 	if (list->head != list->tail)
 		return POLLIN | POLLRDNORM;
 	if (!list->hdev->debug)
 		return POLLERR | POLLHUP;
+=======
+	if (!kfifo_is_empty(&list->hid_debug_fifo))
+		return EPOLLIN | EPOLLRDNORM;
+	if (!list->hdev->debug)
+		return EPOLLERR | EPOLLHUP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 static int hid_debug_events_release(struct inode *inode, struct file *file)
 {
 	struct hid_debug_list *list = file->private_data;
+<<<<<<< HEAD
 
 	list_del(&list->node);
 	kfree(list->hid_debug_buf);
+=======
+	unsigned long flags;
+
+	spin_lock_irqsave(&list->hdev->debug_list_lock, flags);
+	list_del(&list->node);
+	spin_unlock_irqrestore(&list->hdev->debug_list_lock, flags);
+	kfifo_free(&list->hid_debug_fifo);
+
+	kref_put(&list->hdev->ref, hiddev_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(list);
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static const struct file_operations hid_debug_rdesc_fops = {
 	.open           = hid_debug_rdesc_open,
 	.read           = seq_read,
 	.llseek         = seq_lseek,
 	.release        = single_release,
 };
+=======
+DEFINE_SHOW_ATTRIBUTE(hid_debug_rdesc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct file_operations hid_debug_events_fops = {
 	.owner =        THIS_MODULE,
@@ -1107,4 +1519,7 @@ void hid_debug_exit(void)
 {
 	debugfs_remove_recursive(hid_debug_root);
 }
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

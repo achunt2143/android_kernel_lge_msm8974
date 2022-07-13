@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Universal Interface for Intel High Definition Audio Codec
  *
@@ -5,6 +9,7 @@
  *
  *  (C) 2006-2009 VIA Technology, Inc.
  *  (C) 2006-2008 Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *  This driver is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /* * * * * * * * * * * * * * Release History * * * * * * * * * * * * * * * * */
@@ -52,9 +59,17 @@
 #include <linux/module.h>
 #include <sound/core.h>
 #include <sound/asoundef.h>
+<<<<<<< HEAD
 #include "hda_codec.h"
 #include "hda_local.h"
 #include "hda_jack.h"
+=======
+#include <sound/hda_codec.h>
+#include "hda_local.h"
+#include "hda_auto_parser.h"
+#include "hda_jack.h"
+#include "hda_generic.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Pin Widget NID */
 #define VT1708_HP_PIN_NID	0x20
@@ -75,6 +90,11 @@ enum VIA_HDA_CODEC {
 	VT2002P,
 	VT1812,
 	VT1802,
+<<<<<<< HEAD
+=======
+	VT1705CF,
+	VT1808,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	CODEC_TYPES,
 };
 
@@ -83,6 +103,7 @@ enum VIA_HDA_CODEC {
 	 (spec)->codec_type == VT1812 ||\
 	 (spec)->codec_type == VT1802)
 
+<<<<<<< HEAD
 #define MAX_NID_PATH_DEPTH	5
 
 /* output-path: DAC -> ... -> pin
@@ -197,11 +218,19 @@ struct via_spec {
 	unsigned int hp_independent_mode;
 	unsigned int dmic_enabled;
 	unsigned int no_pin_power_ctl;
+=======
+struct via_spec {
+	struct hda_gen_spec gen;
+
+	/* HP mode source */
+	unsigned int dmic_enabled;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	enum VIA_HDA_CODEC codec_type;
 
 	/* analog low-power control */
 	bool alc_mode;
 
+<<<<<<< HEAD
 	/* smart51 setup */
 	unsigned int smart51_nums;
 	hda_nid_t smart51_pins[2];
@@ -231,6 +260,22 @@ struct via_spec {
 
 static enum VIA_HDA_CODEC get_codec_type(struct hda_codec *codec);
 static struct via_spec * via_new_spec(struct hda_codec *codec)
+=======
+	/* work to check hp jack state */
+	int hp_work_active;
+	int vt1708_jack_detect;
+};
+
+static enum VIA_HDA_CODEC get_codec_type(struct hda_codec *codec);
+static void via_playback_pcm_hook(struct hda_pcm_stream *hinfo,
+				  struct hda_codec *codec,
+				  struct snd_pcm_substream *substream,
+				  int action);
+
+static const struct hda_codec_ops via_patch_ops; /* defined below */
+
+static struct via_spec *via_new_spec(struct hda_codec *codec)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct via_spec *spec;
 
@@ -238,19 +283,39 @@ static struct via_spec * via_new_spec(struct hda_codec *codec)
 	if (spec == NULL)
 		return NULL;
 
+<<<<<<< HEAD
 	mutex_init(&spec->config_mutex);
 	codec->spec = spec;
 	spec->codec = codec;
+=======
+	codec->spec = spec;
+	snd_hda_gen_spec_init(&spec->gen);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spec->codec_type = get_codec_type(codec);
 	/* VT1708BCE & VT1708S are almost same */
 	if (spec->codec_type == VT1708BCE)
 		spec->codec_type = VT1708S;
+<<<<<<< HEAD
+=======
+	spec->gen.indep_hp = 1;
+	spec->gen.keep_eapd_on = 1;
+	spec->gen.dac_min_mute = 1;
+	spec->gen.pcm_playback_hook = via_playback_pcm_hook;
+	spec->gen.add_stereo_mix_input = HDA_HINT_STEREO_MIX_AUTO;
+	codec->power_save_node = 1;
+	spec->gen.power_down_unused = 1;
+	codec->patch_ops = via_patch_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return spec;
 }
 
 static enum VIA_HDA_CODEC get_codec_type(struct hda_codec *codec)
 {
+<<<<<<< HEAD
 	u32 vendor_id = codec->vendor_id;
+=======
+	u32 vendor_id = codec->core.vendor_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 ven_id = vendor_id >> 16;
 	u16 dev_id = vendor_id & 0xffff;
 	enum VIA_HDA_CODEC codec_type;
@@ -291,11 +356,19 @@ static enum VIA_HDA_CODEC get_codec_type(struct hda_codec *codec)
 		codec_type = VT1708S;
 	else if ((dev_id & 0xfff) == 0x446)
 		codec_type = VT1802;
+<<<<<<< HEAD
+=======
+	else if (dev_id == 0x4760)
+		codec_type = VT1705CF;
+	else if (dev_id == 0x4761 || dev_id == 0x4762)
+		codec_type = VT1808;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		codec_type = UNKNOWN;
 	return codec_type;
 };
 
+<<<<<<< HEAD
 #define VIA_JACK_EVENT		0x20
 #define VIA_HP_EVENT		0x01
 #define VIA_GPIO_EVENT		0x02
@@ -307,6 +380,8 @@ enum {
 	VIA_CTL_WIDGET_ANALOG_MUTE,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void analog_low_current_mode(struct hda_codec *codec);
 static bool is_aa_path_mute(struct hda_codec *codec);
 
@@ -314,6 +389,7 @@ static bool is_aa_path_mute(struct hda_codec *codec);
 	(snd_hda_get_bool_hint(codec, "analog_loopback_hp_detect") == 1 && \
 	 !is_aa_path_mute(codec))
 
+<<<<<<< HEAD
 static void vt1708_stop_hp_work(struct via_spec *spec)
 {
 	if (spec->codec_type != VT1708 || spec->autocfg.hp_pins[0] == 0)
@@ -732,11 +808,41 @@ static void set_pin_power_state(struct hda_codec *codec, hda_nid_t nid,
 		parm = AC_PWRST_D3;
 
 	update_power_state(codec, nid, parm);
+=======
+static void vt1708_stop_hp_work(struct hda_codec *codec)
+{
+	struct via_spec *spec = codec->spec;
+	if (spec->codec_type != VT1708 || !spec->gen.autocfg.hp_outs)
+		return;
+	if (spec->hp_work_active) {
+		snd_hda_codec_write(codec, 0x1, 0, 0xf81, 1);
+		codec->jackpoll_interval = 0;
+		cancel_delayed_work_sync(&codec->jackpoll_work);
+		spec->hp_work_active = false;
+	}
+}
+
+static void vt1708_update_hp_work(struct hda_codec *codec)
+{
+	struct via_spec *spec = codec->spec;
+	if (spec->codec_type != VT1708 || !spec->gen.autocfg.hp_outs)
+		return;
+	if (spec->vt1708_jack_detect) {
+		if (!spec->hp_work_active) {
+			codec->jackpoll_interval = msecs_to_jiffies(100);
+			snd_hda_codec_write(codec, 0x1, 0, 0xf81, 0);
+			schedule_delayed_work(&codec->jackpoll_work, 0);
+			spec->hp_work_active = true;
+		}
+	} else if (!hp_detect_with_aa(codec))
+		vt1708_stop_hp_work(codec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int via_pin_power_ctl_info(struct snd_kcontrol *kcontrol,
 				  struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static const char * const texts[] = {
 		"Disabled", "Enabled"
 	};
@@ -749,6 +855,9 @@ static int via_pin_power_ctl_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	return snd_hda_enum_bool_helper_info(kcontrol, uinfo);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int via_pin_power_ctl_get(struct snd_kcontrol *kcontrol,
@@ -756,7 +865,12 @@ static int via_pin_power_ctl_get(struct snd_kcontrol *kcontrol,
 {
 	struct hda_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct via_spec *spec = codec->spec;
+<<<<<<< HEAD
 	ucontrol->value.enumerated.item[0] = !spec->no_pin_power_ctl;
+=======
+
+	ucontrol->value.enumerated.item[0] = spec->gen.power_down_unused;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -765,12 +879,21 @@ static int via_pin_power_ctl_put(struct snd_kcontrol *kcontrol,
 {
 	struct hda_codec *codec = snd_kcontrol_chip(kcontrol);
 	struct via_spec *spec = codec->spec;
+<<<<<<< HEAD
 	unsigned int val = !ucontrol->value.enumerated.item[0];
 
 	if (val == spec->no_pin_power_ctl)
 		return 0;
 	spec->no_pin_power_ctl = val;
 	set_widgets_power_state(codec);
+=======
+	bool val = !!ucontrol->value.enumerated.item[0];
+
+	if (val == spec->gen.power_down_unused)
+		return 0;
+	/* codec->power_save_node = val; */ /* widget PM seems yet broken */
+	spec->gen.power_down_unused = val;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	analog_low_current_mode(codec);
 	return 1;
 }
@@ -783,6 +906,7 @@ static const struct snd_kcontrol_new via_pin_power_ctl_enum = {
 	.put = via_pin_power_ctl_put,
 };
 
+<<<<<<< HEAD
 
 static int via_independent_hp_info(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_info *uinfo)
@@ -1038,16 +1162,65 @@ static int via_smart51_build(struct hda_codec *codec)
 		return -ENOMEM;
 	return 0;
 }
+=======
+#ifdef CONFIG_SND_HDA_INPUT_BEEP
+/* additional beep mixers; the actual parameters are overwritten at build */
+static const struct snd_kcontrol_new via_beep_mixer[] = {
+	HDA_CODEC_VOLUME_MONO("Beep Playback Volume", 0, 1, 0, HDA_OUTPUT),
+	HDA_CODEC_MUTE_BEEP_MONO("Beep Playback Switch", 0, 1, 0, HDA_OUTPUT),
+};
+
+static int set_beep_amp(struct via_spec *spec, hda_nid_t nid,
+			int idx, int dir)
+{
+	struct snd_kcontrol_new *knew;
+	unsigned int beep_amp = HDA_COMPOSE_AMP_VAL(nid, 1, idx, dir);
+	int i;
+
+	spec->gen.beep_nid = nid;
+	for (i = 0; i < ARRAY_SIZE(via_beep_mixer); i++) {
+		knew = snd_hda_gen_add_kctl(&spec->gen, NULL,
+					    &via_beep_mixer[i]);
+		if (!knew)
+			return -ENOMEM;
+		knew->private_value = beep_amp;
+	}
+	return 0;
+}
+
+static int auto_parse_beep(struct hda_codec *codec)
+{
+	struct via_spec *spec = codec->spec;
+	hda_nid_t nid;
+
+	for_each_hda_codec_node(nid, codec)
+		if (get_wcaps_type(get_wcaps(codec, nid)) == AC_WID_BEEP)
+			return set_beep_amp(spec, nid, 0, HDA_OUTPUT);
+	return 0;
+}
+#else
+#define auto_parse_beep(codec)	0
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* check AA path's mute status */
 static bool is_aa_path_mute(struct hda_codec *codec)
 {
 	struct via_spec *spec = codec->spec;
 	const struct hda_amp_list *p;
+<<<<<<< HEAD
 	int i, ch, v;
 
 	for (i = 0; i < spec->num_loopbacks; i++) {
 		p = &spec->loopback_list[i];
+=======
+	int ch, v;
+
+	p = spec->gen.loopback.amplist;
+	if (!p)
+		return true;
+	for (; p->nid; p++) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (ch = 0; ch < 2; ch++) {
 			v = snd_hda_codec_amp_read(codec, p->nid, ch, p->dir,
 						   p->idx);
@@ -1065,10 +1238,17 @@ static void __analog_low_current_mode(struct hda_codec *codec, bool force)
 	bool enable;
 	unsigned int verb, parm;
 
+<<<<<<< HEAD
 	if (spec->no_pin_power_ctl)
 		enable = false;
 	else
 		enable = is_aa_path_mute(codec) && !spec->opened_streams;
+=======
+	if (!codec->power_save_node)
+		enable = false;
+	else
+		enable = is_aa_path_mute(codec) && !spec->gen.active_streams;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (enable == spec->alc_mode && !force)
 		return;
 	spec->alc_mode = enable;
@@ -1096,11 +1276,23 @@ static void __analog_low_current_mode(struct hda_codec *codec, bool force)
 		verb = 0xf93;
 		parm = enable ? 0x00 : 0xe0; /* 0x00: 4/40x, 0xe0: 1x */
 		break;
+<<<<<<< HEAD
+=======
+	case VT1705CF:
+	case VT1808:
+		verb = 0xf82;
+		parm = enable ? 0x00 : 0xe0;  /* 0x00: 4/40x, 0xe0: 1x */
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return;		/* other codecs are not supported */
 	}
 	/* send verb */
+<<<<<<< HEAD
 	snd_hda_codec_write(codec, codec->afg, 0, verb, parm);
+=======
+	snd_hda_codec_write(codec, codec->core.afg, 0, verb, parm);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void analog_low_current_mode(struct hda_codec *codec)
@@ -1108,6 +1300,7 @@ static void analog_low_current_mode(struct hda_codec *codec)
 	return __analog_low_current_mode(codec, false);
 }
 
+<<<<<<< HEAD
 /*
  * generic initialization of ADC, input mixers and output mixers
  */
@@ -1617,10 +1810,20 @@ static int via_build_pcms(struct hda_codec *codec)
 		info++;
 	}
 	return 0;
+=======
+static void via_playback_pcm_hook(struct hda_pcm_stream *hinfo,
+				  struct hda_codec *codec,
+				  struct snd_pcm_substream *substream,
+				  int action)
+{
+	analog_low_current_mode(codec);
+	vt1708_update_hp_work(codec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void via_free(struct hda_codec *codec)
 {
+<<<<<<< HEAD
 	struct via_spec *spec = codec->spec;
 
 	if (!spec)
@@ -1758,15 +1961,50 @@ static int via_suspend(struct hda_codec *codec, pm_message_t state)
 {
 	struct via_spec *spec = codec->spec;
 	vt1708_stop_hp_work(spec);
+=======
+	vt1708_stop_hp_work(codec);
+	snd_hda_gen_free(codec);
+}
+
+#ifdef CONFIG_PM
+static int via_suspend(struct hda_codec *codec)
+{
+	struct via_spec *spec = codec->spec;
+	vt1708_stop_hp_work(codec);
+
+	/* Fix pop noise on headphones */
+	if (spec->codec_type == VT1802)
+		snd_hda_shutup_pins(codec);
+
+	return 0;
+}
+
+static int via_resume(struct hda_codec *codec)
+{
+	/* some delay here to make jack detection working (bko#98921) */
+	msleep(10);
+	codec->patch_ops.init(codec);
+	snd_hda_regmap_sync(codec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 #endif
 
+<<<<<<< HEAD
 #ifdef CONFIG_SND_HDA_POWER_SAVE
 static int via_check_power_status(struct hda_codec *codec, hda_nid_t nid)
 {
 	struct via_spec *spec = codec->spec;
 	return snd_hda_check_amp_list_power(codec, &spec->loopback, nid);
+=======
+#ifdef CONFIG_PM
+static int via_check_power_status(struct hda_codec *codec, hda_nid_t nid)
+{
+	struct via_spec *spec = codec->spec;
+	analog_low_current_mode(codec);
+	vt1708_update_hp_work(codec);
+	return snd_hda_check_amp_list_power(codec, &spec->gen.loopback, nid);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 #endif
 
@@ -1776,6 +2014,7 @@ static int via_check_power_status(struct hda_codec *codec, hda_nid_t nid)
 static int via_init(struct hda_codec *codec);
 
 static const struct hda_codec_ops via_patch_ops = {
+<<<<<<< HEAD
 	.build_controls = via_build_controls,
 	.build_pcms = via_build_pcms,
 	.init = via_init,
@@ -1785,10 +2024,21 @@ static const struct hda_codec_ops via_patch_ops = {
 	.suspend = via_suspend,
 #endif
 #ifdef CONFIG_SND_HDA_POWER_SAVE
+=======
+	.build_controls = snd_hda_gen_build_controls,
+	.build_pcms = snd_hda_gen_build_pcms,
+	.init = via_init,
+	.free = via_free,
+	.unsol_event = snd_hda_jack_unsol_event,
+#ifdef CONFIG_PM
+	.suspend = via_suspend,
+	.resume = via_resume,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.check_power_status = via_check_power_status,
 #endif
 };
 
+<<<<<<< HEAD
 static bool is_empty_dac(struct hda_codec *codec, hda_nid_t dac)
 {
 	struct via_spec *spec = codec->spec;
@@ -2623,6 +2873,14 @@ static int via_auto_create_analog_input_ctls(struct hda_codec *codec)
 	return 0;
 }
 
+=======
+
+static const struct hda_verb vt1708_init_verbs[] = {
+	/* power down jack detect function */
+	{0x1, 0xf81, 0x1},
+	{ }
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void vt1708_set_pinconfig_connect(struct hda_codec *codec, hda_nid_t nid)
 {
 	unsigned int def_conf;
@@ -2636,8 +2894,11 @@ static void vt1708_set_pinconfig_connect(struct hda_codec *codec, hda_nid_t nid)
 		def_conf = def_conf & (~(AC_JACK_PORT_BOTH << 30));
 		snd_hda_codec_set_pincfg(codec, nid, def_conf);
 	}
+<<<<<<< HEAD
 
 	return;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int vt1708_jack_detect_get(struct snd_kcontrol *kcontrol,
@@ -2665,6 +2926,7 @@ static int vt1708_jack_detect_put(struct snd_kcontrol *kcontrol,
 	if (spec->vt1708_jack_detect == val)
 		return 0;
 	spec->vt1708_jack_detect = val;
+<<<<<<< HEAD
 	if (spec->vt1708_jack_detect &&
 	    snd_hda_get_bool_hint(codec, "analog_loopback_hp_detect") != 1) {
 		mute_aa_path(codec, 1);
@@ -2672,6 +2934,9 @@ static int vt1708_jack_detect_put(struct snd_kcontrol *kcontrol,
 	}
 	via_hp_automute(codec);
 	vt1708_update_hp_work(spec);
+=======
+	vt1708_update_hp_work(codec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 1;
 }
 
@@ -2684,14 +2949,34 @@ static const struct snd_kcontrol_new vt1708_jack_detect_ctl = {
 	.put = vt1708_jack_detect_put,
 };
 
+<<<<<<< HEAD
 static void fill_dig_outs(struct hda_codec *codec);
 static void fill_dig_in(struct hda_codec *codec);
+=======
+static const struct badness_table via_main_out_badness = {
+	.no_primary_dac = 0x10000,
+	.no_dac = 0x4000,
+	.shared_primary = 0x10000,
+	.shared_surr = 0x20,
+	.shared_clfe = 0x20,
+	.shared_surr_main = 0x20,
+};
+static const struct badness_table via_extra_out_badness = {
+	.no_primary_dac = 0x4000,
+	.no_dac = 0x4000,
+	.shared_primary = 0x12,
+	.shared_surr = 0x20,
+	.shared_clfe = 0x20,
+	.shared_surr_main = 0x10,
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int via_parse_auto_config(struct hda_codec *codec)
 {
 	struct via_spec *spec = codec->spec;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_hda_parse_pin_def_config(codec, &spec->autocfg, NULL);
 	if (err < 0)
 		return err;
@@ -2786,10 +3071,35 @@ static void via_auto_init_unsol_event(struct hda_codec *codec)
 			snd_hda_jack_detect_enable(codec, cfg->inputs[i].pin,
 						   VIA_JACK_EVENT);
 	}
+=======
+	spec->gen.main_out_badness = &via_main_out_badness;
+	spec->gen.extra_out_badness = &via_extra_out_badness;
+
+	err = snd_hda_parse_pin_defcfg(codec, &spec->gen.autocfg, NULL, 0);
+	if (err < 0)
+		return err;
+
+	err = auto_parse_beep(codec);
+	if (err < 0)
+		return err;
+
+	err = snd_hda_gen_parse_auto_config(codec, &spec->gen.autocfg);
+	if (err < 0)
+		return err;
+
+	if (!snd_hda_gen_add_kctl(&spec->gen, NULL, &via_pin_power_ctl_enum))
+		return -ENOMEM;
+
+	/* disable widget PM at start for compatibility */
+	codec->power_save_node = 0;
+	spec->gen.power_down_unused = 0;
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int via_init(struct hda_codec *codec)
 {
+<<<<<<< HEAD
 	struct via_spec *spec = codec->spec;
 	int i;
 
@@ -2812,10 +3122,19 @@ static int via_init(struct hda_codec *codec)
 	via_hp_automute(codec);
 	vt1708_update_hp_work(spec);
 	snd_hda_jack_report_sync(codec);
+=======
+	/* init power states */
+	__analog_low_current_mode(codec, true);
+
+	snd_hda_gen_init(codec);
+
+	vt1708_update_hp_work(codec);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void vt1708_update_hp_jack_state(struct work_struct *work)
 {
 	struct via_spec *spec = container_of(work, struct via_spec,
@@ -2858,6 +3177,44 @@ static int get_mux_nids(struct hda_codec *codec)
 			nid = conn[0];
 		}
 	}
+=======
+static int vt1708_build_controls(struct hda_codec *codec)
+{
+	/* In order not to create "Phantom Jack" controls,
+	   temporary enable jackpoll */
+	int err;
+	int old_interval = codec->jackpoll_interval;
+	codec->jackpoll_interval = msecs_to_jiffies(100);
+	err = snd_hda_gen_build_controls(codec);
+	codec->jackpoll_interval = old_interval;
+	return err;
+}
+
+static int vt1708_build_pcms(struct hda_codec *codec)
+{
+	struct via_spec *spec = codec->spec;
+	int i, err;
+
+	err = snd_hda_gen_build_pcms(codec);
+	if (err < 0 || codec->core.vendor_id != 0x11061708)
+		return err;
+
+	/* We got noisy outputs on the right channel on VT1708 when
+	 * 24bit samples are used.  Until any workaround is found,
+	 * disable the 24bit format, so far.
+	 */
+	for (i = 0; i < ARRAY_SIZE(spec->gen.pcm_rec); i++) {
+		struct hda_pcm *info = spec->gen.pcm_rec[i];
+		if (!info)
+			continue;
+		if (!info->stream[SNDRV_PCM_STREAM_PLAYBACK].substreams ||
+		    info->pcm_type != HDA_PCM_TYPE_AUDIO)
+			continue;
+		info->stream[SNDRV_PCM_STREAM_PLAYBACK].formats =
+			SNDRV_PCM_FMTBIT_S16_LE;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -2871,12 +3228,30 @@ static int patch_vt1708(struct hda_codec *codec)
 	if (spec == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	spec->aa_mix_nid = 0x17;
+=======
+	/* override some patch_ops */
+	codec->patch_ops.build_controls = vt1708_build_controls;
+	codec->patch_ops.build_pcms = vt1708_build_pcms;
+	spec->gen.mixer_nid = 0x17;
+
+	/* set jackpoll_interval while parsing the codec */
+	codec->jackpoll_interval = msecs_to_jiffies(100);
+	spec->vt1708_jack_detect = 1;
+
+	/* don't support the input jack switching due to lack of unsol event */
+	/* (it may work with polling, though, but it needs testing) */
+	spec->gen.suppress_auto_mic = 1;
+	/* Some machines show the broken speaker mute */
+	spec->gen.auto_mute_via_amp = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Add HP and CD pin config connect bit re-config action */
 	vt1708_set_pinconfig_connect(codec, VT1708_HP_PIN_NID);
 	vt1708_set_pinconfig_connect(codec, VT1708_CD_PIN_NID);
 
+<<<<<<< HEAD
 	/* automatic parse from the BIOS config */
 	err = via_parse_auto_config(codec);
 	if (err < 0) {
@@ -2898,6 +3273,31 @@ static int patch_vt1708(struct hda_codec *codec)
 
 	INIT_DELAYED_WORK(&spec->vt1708_hp_work, vt1708_update_hp_jack_state);
 	return 0;
+=======
+	err = snd_hda_add_verbs(codec, vt1708_init_verbs);
+	if (err < 0)
+		goto error;
+
+	/* automatic parse from the BIOS config */
+	err = via_parse_auto_config(codec);
+	if (err < 0)
+		goto error;
+
+	/* add jack detect on/off control */
+	if (!snd_hda_gen_add_kctl(&spec->gen, NULL, &vt1708_jack_detect_ctl)) {
+		err = -ENOMEM;
+		goto error;
+	}
+
+	/* clear jackpoll_interval again; it's set dynamically */
+	codec->jackpoll_interval = 0;
+
+	return 0;
+
+ error:
+	via_free(codec);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int patch_vt1709(struct hda_codec *codec)
@@ -2910,6 +3310,7 @@ static int patch_vt1709(struct hda_codec *codec)
 	if (spec == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	spec->aa_mix_nid = 0x18;
 
 	err = via_parse_auto_config(codec);
@@ -2993,6 +3394,19 @@ static void set_widgets_power_state_vt1708B(struct hda_codec *codec)
 		update_power_state(codec, 0x27, parm);
 	} else if (codec->vendor_id == 0x11064397 && spec->hp_independent_mode)
 		update_power_state(codec, 0x25, parm);
+=======
+	spec->gen.mixer_nid = 0x18;
+
+	err = via_parse_auto_config(codec);
+	if (err < 0)
+		goto error;
+
+	return 0;
+
+ error:
+	via_free(codec);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int patch_vt1708S(struct hda_codec *codec);
@@ -3009,6 +3423,7 @@ static int patch_vt1708B(struct hda_codec *codec)
 	if (spec == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	spec->aa_mix_nid = 0x16;
 
 	/* automatic parse from the BIOS config */
@@ -3023,6 +3438,20 @@ static int patch_vt1708B(struct hda_codec *codec)
 	spec->set_widgets_power_state =  set_widgets_power_state_vt1708B;
 
 	return 0;
+=======
+	spec->gen.mixer_nid = 0x16;
+
+	/* automatic parse from the BIOS config */
+	err = via_parse_auto_config(codec);
+	if (err < 0)
+		goto error;
+
+	return 0;
+
+ error:
+	via_free(codec);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Patch for VT1708S */
@@ -3034,6 +3463,7 @@ static const struct hda_verb vt1708S_init_verbs[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 /* fill out digital output widgets; one for master and one for slave outputs */
 static void fill_dig_outs(struct hda_codec *codec)
 {
@@ -3089,6 +3519,13 @@ static void fill_dig_in(struct hda_codec *codec)
 static void override_mic_boost(struct hda_codec *codec, hda_nid_t pin,
 			       int offset, int num_steps, int step_size)
 {
+=======
+static void override_mic_boost(struct hda_codec *codec, hda_nid_t pin,
+			       int offset, int num_steps, int step_size)
+{
+	snd_hda_override_wcaps(codec, pin,
+			       get_wcaps(codec, pin) | AC_WCAP_IN_AMP);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_hda_override_amp_caps(codec, pin, HDA_INPUT,
 				  (offset << AC_AMPCAP_OFFSET_SHIFT) |
 				  (num_steps << AC_AMPCAP_NUM_STEPS_SHIFT) |
@@ -3106,6 +3543,7 @@ static int patch_vt1708S(struct hda_codec *codec)
 	if (spec == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	spec->aa_mix_nid = 0x16;
 	override_mic_boost(codec, 0x1a, 0, 3, 40);
 	override_mic_boost(codec, 0x1e, 0, 3, 40);
@@ -3139,6 +3577,33 @@ static int patch_vt1708S(struct hda_codec *codec)
 	}
 	spec->set_widgets_power_state =  set_widgets_power_state_vt1708B;
 	return 0;
+=======
+	spec->gen.mixer_nid = 0x16;
+	override_mic_boost(codec, 0x1a, 0, 3, 40);
+	override_mic_boost(codec, 0x1e, 0, 3, 40);
+
+	/* correct names for VT1708BCE */
+	if (get_codec_type(codec) == VT1708BCE)
+		snd_hda_codec_set_name(codec, "VT1708BCE");
+	/* correct names for VT1705 */
+	if (codec->core.vendor_id == 0x11064397)
+		snd_hda_codec_set_name(codec, "VT1705");
+
+	err = snd_hda_add_verbs(codec, vt1708S_init_verbs);
+	if (err < 0)
+		goto error;
+
+	/* automatic parse from the BIOS config */
+	err = via_parse_auto_config(codec);
+	if (err < 0)
+		goto error;
+
+	return 0;
+
+ error:
+	via_free(codec);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Patch for VT1702 */
@@ -3151,6 +3616,7 @@ static const struct hda_verb vt1702_init_verbs[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static void set_widgets_power_state_vt1702(struct hda_codec *codec)
 {
 	int imux_is_smixer =
@@ -3181,6 +3647,8 @@ static void set_widgets_power_state_vt1702(struct hda_codec *codec)
 	update_power_state(codec, 0x1d, parm);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int patch_vt1702(struct hda_codec *codec)
 {
 	struct via_spec *spec;
@@ -3191,7 +3659,11 @@ static int patch_vt1702(struct hda_codec *codec)
 	if (spec == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	spec->aa_mix_nid = 0x1a;
+=======
+	spec->gen.mixer_nid = 0x1a;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* limit AA path volume to 0 dB */
 	snd_hda_override_amp_caps(codec, 0x1A, HDA_INPUT,
@@ -3200,6 +3672,7 @@ static int patch_vt1702(struct hda_codec *codec)
 				  (0x5 << AC_AMPCAP_STEP_SIZE_SHIFT) |
 				  (1 << AC_AMPCAP_MUTE_SHIFT));
 
+<<<<<<< HEAD
 	/* automatic parse from the BIOS config */
 	err = via_parse_auto_config(codec);
 	if (err < 0) {
@@ -3213,6 +3686,22 @@ static int patch_vt1702(struct hda_codec *codec)
 
 	spec->set_widgets_power_state =  set_widgets_power_state_vt1702;
 	return 0;
+=======
+	err = snd_hda_add_verbs(codec, vt1702_init_verbs);
+	if (err < 0)
+		goto error;
+
+	/* automatic parse from the BIOS config */
+	err = via_parse_auto_config(codec);
+	if (err < 0)
+		goto error;
+
+	return 0;
+
+ error:
+	via_free(codec);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Patch for VT1718S */
@@ -3226,6 +3715,7 @@ static const struct hda_verb vt1718S_init_verbs[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static void set_widgets_power_state_vt1718S(struct hda_codec *codec)
 {
 	struct via_spec *spec = codec->spec;
@@ -3291,6 +3781,8 @@ static void set_widgets_power_state_vt1718S(struct hda_codec *codec)
 	}
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Add a connection to the primary DAC from AA-mixer for some codecs
  * This isn't listed from the raw info, but the chip has a secret connection.
  */
@@ -3301,24 +3793,42 @@ static int add_secret_dac_path(struct hda_codec *codec)
 	hda_nid_t conn[8];
 	hda_nid_t nid;
 
+<<<<<<< HEAD
 	if (!spec->aa_mix_nid)
 		return 0;
 	nums = snd_hda_get_connections(codec, spec->aa_mix_nid, conn,
 				       ARRAY_SIZE(conn) - 1);
+=======
+	if (!spec->gen.mixer_nid)
+		return 0;
+	nums = snd_hda_get_connections(codec, spec->gen.mixer_nid, conn,
+				       ARRAY_SIZE(conn) - 1);
+	if (nums < 0)
+		return nums;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for (i = 0; i < nums; i++) {
 		if (get_wcaps_type(get_wcaps(codec, conn[i])) == AC_WID_AUD_OUT)
 			return 0;
 	}
 
 	/* find the primary DAC and add to the connection list */
+<<<<<<< HEAD
 	nid = codec->start_nid;
 	for (i = 0; i < codec->num_nodes; i++, nid++) {
+=======
+	for_each_hda_codec_node(nid, codec) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		unsigned int caps = get_wcaps(codec, nid);
 		if (get_wcaps_type(caps) == AC_WID_AUD_OUT &&
 		    !(caps & AC_WCAP_DIGITAL)) {
 			conn[nums++] = nid;
 			return snd_hda_override_conn_list(codec,
+<<<<<<< HEAD
 							  spec->aa_mix_nid,
+=======
+							  spec->gen.mixer_nid,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 							  nums, conn);
 		}
 	}
@@ -3336,11 +3846,16 @@ static int patch_vt1718S(struct hda_codec *codec)
 	if (spec == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	spec->aa_mix_nid = 0x21;
+=======
+	spec->gen.mixer_nid = 0x21;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	override_mic_boost(codec, 0x2b, 0, 3, 40);
 	override_mic_boost(codec, 0x29, 0, 3, 40);
 	add_secret_dac_path(codec);
 
+<<<<<<< HEAD
 	/* automatic parse from the BIOS config */
 	err = via_parse_auto_config(codec);
 	if (err < 0) {
@@ -3355,6 +3870,22 @@ static int patch_vt1718S(struct hda_codec *codec)
 	spec->set_widgets_power_state =  set_widgets_power_state_vt1718S;
 
 	return 0;
+=======
+	err = snd_hda_add_verbs(codec, vt1718S_init_verbs);
+	if (err < 0)
+		goto error;
+
+	/* automatic parse from the BIOS config */
+	err = via_parse_auto_config(codec);
+	if (err < 0)
+		goto error;
+
+	return 0;
+
+ error:
+	via_free(codec);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* Patch for VT1716S */
@@ -3393,6 +3924,7 @@ static int vt1716s_dmic_put(struct snd_kcontrol *kcontrol,
 	snd_hda_codec_write(codec, 0x26, 0,
 					       AC_VERB_SET_CONNECT_SEL, index);
 	spec->dmic_enabled = index;
+<<<<<<< HEAD
 	set_widgets_power_state(codec);
 	return 1;
 }
@@ -3400,6 +3932,14 @@ static int vt1716s_dmic_put(struct snd_kcontrol *kcontrol,
 static const struct snd_kcontrol_new vt1716s_dmic_mixer[] = {
 	HDA_CODEC_VOLUME("Digital Mic Capture Volume", 0x22, 0x0, HDA_INPUT),
 	{
+=======
+	return 1;
+}
+
+static const struct snd_kcontrol_new vt1716s_dmic_mixer_vol =
+	HDA_CODEC_VOLUME("Digital Mic Capture Volume", 0x22, 0x0, HDA_INPUT);
+static const struct snd_kcontrol_new vt1716s_dmic_mixer_sw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 .iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	 .name = "Digital Mic Capture Switch",
 	 .subdevice = HDA_SUBDEV_NID_FLAG | 0x26,
@@ -3407,16 +3947,24 @@ static const struct snd_kcontrol_new vt1716s_dmic_mixer[] = {
 	 .info = vt1716s_dmic_info,
 	 .get = vt1716s_dmic_get,
 	 .put = vt1716s_dmic_put,
+<<<<<<< HEAD
 	 },
 	{}			/* end */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
 /* mono-out mixer elements */
+<<<<<<< HEAD
 static const struct snd_kcontrol_new vt1716S_mono_out_mixer[] = {
 	HDA_CODEC_MUTE("Mono Playback Switch", 0x2a, 0x0, HDA_OUTPUT),
 	{ } /* end */
 };
+=======
+static const struct snd_kcontrol_new vt1716S_mono_out_mixer =
+	HDA_CODEC_MUTE("Mono Playback Switch", 0x2a, 0x0, HDA_OUTPUT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct hda_verb vt1716S_init_verbs[] = {
 	/* Enable Boost Volume backdoor */
@@ -3428,6 +3976,7 @@ static const struct hda_verb vt1716S_init_verbs[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static void set_widgets_power_state_vt1716S(struct hda_codec *codec)
 {
 	struct via_spec *spec = codec->spec;
@@ -3517,6 +4066,8 @@ static void set_widgets_power_state_vt1716S(struct hda_codec *codec)
 	update_power_state(codec, 0x10, mono_out ? AC_PWRST_D0 : parm);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int patch_vt1716S(struct hda_codec *codec)
 {
 	struct via_spec *spec;
@@ -3527,6 +4078,7 @@ static int patch_vt1716S(struct hda_codec *codec)
 	if (spec == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	spec->aa_mix_nid = 0x16;
 	override_mic_boost(codec, 0x1a, 0, 3, 40);
 	override_mic_boost(codec, 0x1e, 0, 3, 40);
@@ -3549,6 +4101,33 @@ static int patch_vt1716S(struct hda_codec *codec)
 
 	spec->set_widgets_power_state = set_widgets_power_state_vt1716S;
 	return 0;
+=======
+	spec->gen.mixer_nid = 0x16;
+	override_mic_boost(codec, 0x1a, 0, 3, 40);
+	override_mic_boost(codec, 0x1e, 0, 3, 40);
+
+	err = snd_hda_add_verbs(codec, vt1716S_init_verbs);
+	if (err < 0)
+		goto error;
+
+	/* automatic parse from the BIOS config */
+	err = via_parse_auto_config(codec);
+	if (err < 0)
+		goto error;
+
+	if (!snd_hda_gen_add_kctl(&spec->gen, NULL, &vt1716s_dmic_mixer_vol) ||
+	    !snd_hda_gen_add_kctl(&spec->gen, NULL, &vt1716s_dmic_mixer_sw) ||
+	    !snd_hda_gen_add_kctl(&spec->gen, NULL, &vt1716S_mono_out_mixer)) {
+		err = -ENOMEM;
+		goto error;
+	}
+
+	return 0;
+
+ error:
+	via_free(codec);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* for vt2002P */
@@ -3573,6 +4152,7 @@ static const struct hda_verb vt1802_init_verbs[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static void set_widgets_power_state_vt2002P(struct hda_codec *codec)
 {
 	struct via_spec *spec = codec->spec;
@@ -3665,13 +4245,71 @@ static void set_widgets_power_state_vt2002P(struct hda_codec *codec)
 		update_power_state(codec, 0x21, AC_PWRST_D3);
 }
 
+=======
+/*
+ * pin fix-up
+ */
+enum {
+	VIA_FIXUP_INTMIC_BOOST,
+	VIA_FIXUP_ASUS_G75,
+	VIA_FIXUP_POWER_SAVE,
+};
+
+static void via_fixup_intmic_boost(struct hda_codec *codec,
+				  const struct hda_fixup *fix, int action)
+{
+	if (action == HDA_FIXUP_ACT_PRE_PROBE)
+		override_mic_boost(codec, 0x30, 0, 2, 40);
+}
+
+static void via_fixup_power_save(struct hda_codec *codec,
+				 const struct hda_fixup *fix, int action)
+{
+	if (action == HDA_FIXUP_ACT_PRE_PROBE)
+		codec->power_save_node = 0;
+}
+
+static const struct hda_fixup via_fixups[] = {
+	[VIA_FIXUP_INTMIC_BOOST] = {
+		.type = HDA_FIXUP_FUNC,
+		.v.func = via_fixup_intmic_boost,
+	},
+	[VIA_FIXUP_ASUS_G75] = {
+		.type = HDA_FIXUP_PINS,
+		.v.pins = (const struct hda_pintbl[]) {
+			/* set 0x24 and 0x33 as speakers */
+			{ 0x24, 0x991301f0 },
+			{ 0x33, 0x991301f1 }, /* subwoofer */
+			{ }
+		}
+	},
+	[VIA_FIXUP_POWER_SAVE] = {
+		.type = HDA_FIXUP_FUNC,
+		.v.func = via_fixup_power_save,
+	},
+};
+
+static const struct snd_pci_quirk vt2002p_fixups[] = {
+	SND_PCI_QUIRK(0x1043, 0x13f7, "Asus B23E", VIA_FIXUP_POWER_SAVE),
+	SND_PCI_QUIRK(0x1043, 0x1487, "Asus G75", VIA_FIXUP_ASUS_G75),
+	SND_PCI_QUIRK(0x1043, 0x8532, "Asus X202E", VIA_FIXUP_INTMIC_BOOST),
+	SND_PCI_QUIRK_VENDOR(0x1558, "Clevo", VIA_FIXUP_POWER_SAVE),
+	{}
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* NIDs 0x24 and 0x33 on VT1802 have connections to non-existing NID 0x3e
  * Replace this with mixer NID 0x1c
  */
 static void fix_vt1802_connections(struct hda_codec *codec)
 {
+<<<<<<< HEAD
 	static hda_nid_t conn_24[] = { 0x14, 0x1c };
 	static hda_nid_t conn_33[] = { 0x1c };
+=======
+	static const hda_nid_t conn_24[] = { 0x14, 0x1c };
+	static const hda_nid_t conn_33[] = { 0x1c };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	snd_hda_override_conn_list(codec, 0x24, ARRAY_SIZE(conn_24), conn_24);
 	snd_hda_override_conn_list(codec, 0x33, ARRAY_SIZE(conn_33), conn_33);
@@ -3688,13 +4326,18 @@ static int patch_vt2002P(struct hda_codec *codec)
 	if (spec == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	spec->aa_mix_nid = 0x21;
+=======
+	spec->gen.mixer_nid = 0x21;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	override_mic_boost(codec, 0x2b, 0, 3, 40);
 	override_mic_boost(codec, 0x29, 0, 3, 40);
 	if (spec->codec_type == VT1802)
 		fix_vt1802_connections(codec);
 	add_secret_dac_path(codec);
 
+<<<<<<< HEAD
 	/* automatic parse from the BIOS config */
 	err = via_parse_auto_config(codec);
 	if (err < 0) {
@@ -3711,6 +4354,28 @@ static int patch_vt2002P(struct hda_codec *codec)
 
 	spec->set_widgets_power_state =  set_widgets_power_state_vt2002P;
 	return 0;
+=======
+	snd_hda_pick_fixup(codec, NULL, vt2002p_fixups, via_fixups);
+	snd_hda_apply_fixup(codec, HDA_FIXUP_ACT_PRE_PROBE);
+
+	if (spec->codec_type == VT1802)
+		err = snd_hda_add_verbs(codec, vt1802_init_verbs);
+	else
+		err = snd_hda_add_verbs(codec, vt2002P_init_verbs);
+	if (err < 0)
+		goto error;
+
+	/* automatic parse from the BIOS config */
+	err = via_parse_auto_config(codec);
+	if (err < 0)
+		goto error;
+
+	return 0;
+
+ error:
+	via_free(codec);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* for vt1812 */
@@ -3723,6 +4388,7 @@ static const struct hda_verb vt1812_init_verbs[] = {
 	{ }
 };
 
+<<<<<<< HEAD
 static void set_widgets_power_state_vt1812(struct hda_codec *codec)
 {
 	struct via_spec *spec = codec->spec;
@@ -3798,6 +4464,8 @@ static void set_widgets_power_state_vt1812(struct hda_codec *codec)
 
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* patch for vt1812 */
 static int patch_vt1812(struct hda_codec *codec)
 {
@@ -3809,11 +4477,16 @@ static int patch_vt1812(struct hda_codec *codec)
 	if (spec == NULL)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	spec->aa_mix_nid = 0x21;
+=======
+	spec->gen.mixer_nid = 0x21;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	override_mic_boost(codec, 0x2b, 0, 3, 40);
 	override_mic_boost(codec, 0x29, 0, 3, 40);
 	add_secret_dac_path(codec);
 
+<<<<<<< HEAD
 	/* automatic parse from the BIOS config */
 	err = via_parse_auto_config(codec);
 	if (err < 0) {
@@ -3827,11 +4500,69 @@ static int patch_vt1812(struct hda_codec *codec)
 
 	spec->set_widgets_power_state =  set_widgets_power_state_vt1812;
 	return 0;
+=======
+	err = snd_hda_add_verbs(codec, vt1812_init_verbs);
+	if (err < 0)
+		goto error;
+
+	/* automatic parse from the BIOS config */
+	err = via_parse_auto_config(codec);
+	if (err < 0)
+		goto error;
+
+	return 0;
+
+ error:
+	via_free(codec);
+	return err;
+}
+
+/* patch for vt3476 */
+
+static const struct hda_verb vt3476_init_verbs[] = {
+	/* Enable DMic 8/16/32K */
+	{0x1, 0xF7B, 0x30},
+	/* Enable Boost Volume backdoor */
+	{0x1, 0xFB9, 0x20},
+	/* Enable AOW-MW9 path */
+	{0x1, 0xFB8, 0x10},
+	{ }
+};
+
+static int patch_vt3476(struct hda_codec *codec)
+{
+	struct via_spec *spec;
+	int err;
+
+	/* create a codec specific record */
+	spec = via_new_spec(codec);
+	if (spec == NULL)
+		return -ENOMEM;
+
+	spec->gen.mixer_nid = 0x3f;
+	add_secret_dac_path(codec);
+
+	err = snd_hda_add_verbs(codec, vt3476_init_verbs);
+	if (err < 0)
+		goto error;
+
+	/* automatic parse from the BIOS config */
+	err = via_parse_auto_config(codec);
+	if (err < 0)
+		goto error;
+
+	return 0;
+
+ error:
+	via_free(codec);
+	return err;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * patch entries
  */
+<<<<<<< HEAD
 static const struct hda_codec_preset snd_hda_preset_via[] = {
 	{ .id = 0x11061708, .name = "VT1708", .patch = patch_vt1708},
 	{ .id = 0x11061709, .name = "VT1708", .patch = patch_vt1708},
@@ -3930,11 +4661,72 @@ MODULE_ALIAS("snd-hda-codec-id:1106*");
 static struct hda_codec_preset_list via_list = {
 	.preset = snd_hda_preset_via,
 	.owner = THIS_MODULE,
+=======
+static const struct hda_device_id snd_hda_id_via[] = {
+	HDA_CODEC_ENTRY(0x11061708, "VT1708", patch_vt1708),
+	HDA_CODEC_ENTRY(0x11061709, "VT1708", patch_vt1708),
+	HDA_CODEC_ENTRY(0x1106170a, "VT1708", patch_vt1708),
+	HDA_CODEC_ENTRY(0x1106170b, "VT1708", patch_vt1708),
+	HDA_CODEC_ENTRY(0x1106e710, "VT1709 10-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e711, "VT1709 10-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e712, "VT1709 10-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e713, "VT1709 10-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e714, "VT1709 6-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e715, "VT1709 6-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e716, "VT1709 6-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e717, "VT1709 6-Ch", patch_vt1709),
+	HDA_CODEC_ENTRY(0x1106e720, "VT1708B 8-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e721, "VT1708B 8-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e722, "VT1708B 8-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e723, "VT1708B 8-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e724, "VT1708B 4-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e725, "VT1708B 4-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e726, "VT1708B 4-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x1106e727, "VT1708B 4-Ch", patch_vt1708B),
+	HDA_CODEC_ENTRY(0x11060397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11061397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11062397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11063397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11064397, "VT1705", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11065397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11066397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11067397, "VT1708S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11060398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11061398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11062398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11063398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11064398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11065398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11066398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11067398, "VT1702", patch_vt1702),
+	HDA_CODEC_ENTRY(0x11060428, "VT1718S", patch_vt1718S),
+	HDA_CODEC_ENTRY(0x11064428, "VT1718S", patch_vt1718S),
+	HDA_CODEC_ENTRY(0x11060441, "VT2020", patch_vt1718S),
+	HDA_CODEC_ENTRY(0x11064441, "VT1828S", patch_vt1718S),
+	HDA_CODEC_ENTRY(0x11060433, "VT1716S", patch_vt1716S),
+	HDA_CODEC_ENTRY(0x1106a721, "VT1716S", patch_vt1716S),
+	HDA_CODEC_ENTRY(0x11060438, "VT2002P", patch_vt2002P),
+	HDA_CODEC_ENTRY(0x11064438, "VT2002P", patch_vt2002P),
+	HDA_CODEC_ENTRY(0x11060448, "VT1812", patch_vt1812),
+	HDA_CODEC_ENTRY(0x11060440, "VT1818S", patch_vt1708S),
+	HDA_CODEC_ENTRY(0x11060446, "VT1802", patch_vt2002P),
+	HDA_CODEC_ENTRY(0x11068446, "VT1802", patch_vt2002P),
+	HDA_CODEC_ENTRY(0x11064760, "VT1705CF", patch_vt3476),
+	HDA_CODEC_ENTRY(0x11064761, "VT1708SCE", patch_vt3476),
+	HDA_CODEC_ENTRY(0x11064762, "VT1808", patch_vt3476),
+	{} /* terminator */
+};
+MODULE_DEVICE_TABLE(hdaudio, snd_hda_id_via);
+
+static struct hda_codec_driver via_driver = {
+	.id = snd_hda_id_via,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("VIA HD-audio codec");
 
+<<<<<<< HEAD
 static int __init patch_via_init(void)
 {
 	return snd_hda_add_codec_preset(&via_list);
@@ -3947,3 +4739,6 @@ static void __exit patch_via_exit(void)
 
 module_init(patch_via_init)
 module_exit(patch_via_exit)
+=======
+module_hda_codec_driver(via_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

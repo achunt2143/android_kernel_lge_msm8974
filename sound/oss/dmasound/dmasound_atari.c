@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/sound/oss/dmasound/dmasound_atari.c
  *
@@ -22,7 +26,11 @@
 #include <linux/spinlock.h>
 #include <linux/interrupt.h>
 
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/atariints.h>
 #include <asm/atari_stram.h>
 
@@ -851,7 +859,11 @@ static int __init AtaIrqInit(void)
 	st_mfp.tim_dt_a = 1;	/* Cause interrupt after first event. */
 	st_mfp.tim_ct_a = 8;	/* Turn on event counting. */
 	/* Register interrupt handler. */
+<<<<<<< HEAD
 	if (request_irq(IRQ_MFP_TIMA, AtaInterrupt, IRQ_TYPE_SLOW, "DMA sound",
+=======
+	if (request_irq(IRQ_MFP_TIMA, AtaInterrupt, 0, "DMA sound",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			AtaInterrupt))
 		return 0;
 	st_mfp.int_en_a |= 0x20;	/* Turn interrupt on. */
@@ -1431,6 +1443,7 @@ static int FalconMixerIoctl(u_int cmd, u_long arg)
 {
 	int data;
 	switch (cmd) {
+<<<<<<< HEAD
 	    case SOUND_MIXER_READ_RECMASK:
 		return IOCTL_OUT(arg, SOUND_MASK_MIC);
 	    case SOUND_MIXER_READ_DEVMASK:
@@ -1444,12 +1457,32 @@ static int FalconMixerIoctl(u_int cmd, u_long arg)
 	    case SOUND_MIXER_READ_CAPS:
 		return IOCTL_OUT(arg, SOUND_CAP_EXCL_INPUT);
 	    case SOUND_MIXER_WRITE_MIC:
+=======
+	case SOUND_MIXER_READ_RECMASK:
+		return IOCTL_OUT(arg, SOUND_MASK_MIC);
+	case SOUND_MIXER_READ_DEVMASK:
+		return IOCTL_OUT(arg, SOUND_MASK_VOLUME | SOUND_MASK_MIC | SOUND_MASK_SPEAKER);
+	case SOUND_MIXER_READ_STEREODEVS:
+		return IOCTL_OUT(arg, SOUND_MASK_VOLUME | SOUND_MASK_MIC);
+	case SOUND_MIXER_READ_VOLUME:
+		return IOCTL_OUT(arg,
+			VOLUME_ATT_TO_VOXWARE(dmasound.volume_left) |
+			VOLUME_ATT_TO_VOXWARE(dmasound.volume_right) << 8);
+	case SOUND_MIXER_READ_CAPS:
+		return IOCTL_OUT(arg, SOUND_CAP_EXCL_INPUT);
+	case SOUND_MIXER_WRITE_MIC:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		IOCTL_IN(arg, data);
 		tt_dmasnd.input_gain =
 			RECLEVEL_VOXWARE_TO_GAIN(data & 0xff) << 4 |
 			RECLEVEL_VOXWARE_TO_GAIN(data >> 8 & 0xff);
+<<<<<<< HEAD
 		/* fall thru, return set value */
 	    case SOUND_MIXER_READ_MIC:
+=======
+		fallthrough;	/* return set value */
+	case SOUND_MIXER_READ_MIC:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return IOCTL_OUT(arg,
 			RECLEVEL_GAIN_TO_VOXWARE(tt_dmasnd.input_gain >> 4 & 0xf) |
 			RECLEVEL_GAIN_TO_VOXWARE(tt_dmasnd.input_gain & 0xf) << 8);

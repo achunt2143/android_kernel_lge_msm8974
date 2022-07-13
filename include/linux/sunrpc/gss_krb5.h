@@ -1,6 +1,9 @@
 /*
+<<<<<<< HEAD
  *  linux/include/linux/sunrpc/gss_krb5_types.h
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Adapted from MIT Kerberos 5-1.2.1 lib/include/krb5.h,
  *  lib/gssapi/krb5/gssapiP_krb5.h, and others
  *
@@ -36,7 +39,14 @@
  *
  */
 
+<<<<<<< HEAD
 #include <linux/crypto.h>
+=======
+#ifndef _LINUX_SUNRPC_GSS_KRB5_H
+#define _LINUX_SUNRPC_GSS_KRB5_H
+
+#include <crypto/skcipher.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sunrpc/auth_gss.h>
 #include <linux/sunrpc/gss_err.h>
 #include <linux/sunrpc/gss_asn1.h>
@@ -44,15 +54,24 @@
 /* Length of constant used in key derivation */
 #define GSS_KRB5_K5CLENGTH (5)
 
+<<<<<<< HEAD
 /* Maximum key length (in bytes) for the supported crypto algorithms*/
 #define GSS_KRB5_MAX_KEYLEN (32)
 
 /* Maximum checksum function output for the supported crypto algorithms */
 #define GSS_KRB5_MAX_CKSUM_LEN  (20)
+=======
+/* Maximum key length (in bytes) for the supported crypto algorithms */
+#define GSS_KRB5_MAX_KEYLEN (32)
+
+/* Maximum checksum function output for the supported enctypes */
+#define GSS_KRB5_MAX_CKSUM_LEN  (24)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Maximum blocksize for the supported crypto algorithms */
 #define GSS_KRB5_MAX_BLOCKSIZE  (16)
 
+<<<<<<< HEAD
 struct krb5_ctx;
 
 struct gss_krb5_enctype {
@@ -120,6 +139,8 @@ struct krb5_ctx {
 
 extern spinlock_t krb5_seq_lock;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* The length of the Kerberos GSS token header */
 #define GSS_KRB5_TOK_HDR_LEN	(16)
 
@@ -143,17 +164,32 @@ enum sgn_alg {
 	SGN_ALG_MD2_5 = 0x0001,
 	SGN_ALG_DES_MAC = 0x0002,
 	SGN_ALG_3 = 0x0003,		/* not published */
+<<<<<<< HEAD
 	SGN_ALG_HMAC_MD5 = 0x0011,	/* microsoft w2k; no support */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SGN_ALG_HMAC_SHA1_DES3_KD = 0x0004
 };
 enum seal_alg {
 	SEAL_ALG_NONE = 0xffff,
 	SEAL_ALG_DES = 0x0000,
 	SEAL_ALG_1 = 0x0001,		/* not published */
+<<<<<<< HEAD
 	SEAL_ALG_MICROSOFT_RC4 = 0x0010,/* microsoft w2k; no support */
 	SEAL_ALG_DES3KD = 0x0002
 };
 
+=======
+	SEAL_ALG_DES3KD = 0x0002
+};
+
+/*
+ * These values are assigned by IANA and published via the
+ * subregistry at the link below:
+ *
+ * https://www.iana.org/assignments/kerberos-parameters/kerberos-parameters.xhtml#kerberos-parameters-2
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CKSUMTYPE_CRC32			0x0001
 #define CKSUMTYPE_RSA_MD4		0x0002
 #define CKSUMTYPE_RSA_MD4_DES		0x0003
@@ -164,6 +200,13 @@ enum seal_alg {
 #define CKSUMTYPE_HMAC_SHA1_DES3	0x000c
 #define CKSUMTYPE_HMAC_SHA1_96_AES128   0x000f
 #define CKSUMTYPE_HMAC_SHA1_96_AES256   0x0010
+<<<<<<< HEAD
+=======
+#define CKSUMTYPE_CMAC_CAMELLIA128	0x0011
+#define CKSUMTYPE_CMAC_CAMELLIA256	0x0012
+#define CKSUMTYPE_HMAC_SHA256_128_AES128	0x0013
+#define CKSUMTYPE_HMAC_SHA384_192_AES256	0x0014
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CKSUMTYPE_HMAC_MD5_ARCFOUR      -138 /* Microsoft md5 hmac cksumtype */
 
 /* from gssapi_err_krb5.h */
@@ -184,6 +227,14 @@ enum seal_alg {
 
 /* per Kerberos v5 protocol spec crypto types from the wire. 
  * these get mapped to linux kernel crypto routines.  
+<<<<<<< HEAD
+=======
+ *
+ * These values are assigned by IANA and published via the
+ * subregistry at the link below:
+ *
+ * https://www.iana.org/assignments/kerberos-parameters/kerberos-parameters.xhtml#kerberos-parameters-1
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define ENCTYPE_NULL            0x0000
 #define ENCTYPE_DES_CBC_CRC     0x0001	/* DES cbc mode with CRC-32 */
@@ -197,8 +248,17 @@ enum seal_alg {
 #define ENCTYPE_DES3_CBC_SHA1   0x0010
 #define ENCTYPE_AES128_CTS_HMAC_SHA1_96 0x0011
 #define ENCTYPE_AES256_CTS_HMAC_SHA1_96 0x0012
+<<<<<<< HEAD
 #define ENCTYPE_ARCFOUR_HMAC            0x0017
 #define ENCTYPE_ARCFOUR_HMAC_EXP        0x0018
+=======
+#define ENCTYPE_AES128_CTS_HMAC_SHA256_128	0x0013
+#define ENCTYPE_AES256_CTS_HMAC_SHA384_192	0x0014
+#define ENCTYPE_ARCFOUR_HMAC            0x0017
+#define ENCTYPE_ARCFOUR_HMAC_EXP        0x0018
+#define ENCTYPE_CAMELLIA128_CTS_CMAC	0x0019
+#define ENCTYPE_CAMELLIA256_CTS_CMAC	0x001A
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ENCTYPE_UNKNOWN         0x01ff
 
 /*
@@ -220,6 +280,7 @@ enum seal_alg {
 #define KG_USAGE_INITIATOR_SEAL (24)
 #define KG_USAGE_INITIATOR_SIGN (25)
 
+<<<<<<< HEAD
 /*
  * This compile-time check verifies that we will not exceed the
  * slack space allotted by the client and server auth_gss code
@@ -329,3 +390,6 @@ krb5_rc4_setup_enc_key(struct krb5_ctx *kctx,
 		       s32 seqnum);
 void
 gss_krb5_make_confounder(char *p, u32 conflen);
+=======
+#endif /* _LINUX_SUNRPC_GSS_KRB5_H */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

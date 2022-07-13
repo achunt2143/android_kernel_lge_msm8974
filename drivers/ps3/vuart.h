@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  PS3 virtual uart
  *
  *  Copyright (C) 2006 Sony Computer Entertainment Inc.
  *  Copyright 2006 Sony Corp.
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #if !defined(_PS3_VUART_H)
@@ -82,4 +89,23 @@ void ps3_vuart_cancel_async(struct ps3_system_bus_device *dev);
 void ps3_vuart_clear_rx_bytes(struct ps3_system_bus_device *dev,
 	unsigned int bytes);
 
+<<<<<<< HEAD
+=======
+struct vuart_triggers {
+	unsigned long rx;
+	unsigned long tx;
+};
+
+int ps3_vuart_get_triggers(struct ps3_system_bus_device *dev,
+	struct vuart_triggers *trig);
+int ps3_vuart_set_triggers(struct ps3_system_bus_device *dev, unsigned int tx,
+	unsigned int rx);
+int ps3_vuart_enable_interrupt_tx(struct ps3_system_bus_device *dev);
+int ps3_vuart_disable_interrupt_tx(struct ps3_system_bus_device *dev);
+int ps3_vuart_enable_interrupt_rx(struct ps3_system_bus_device *dev);
+int ps3_vuart_disable_interrupt_rx(struct ps3_system_bus_device *dev);
+int ps3_vuart_enable_interrupt_disconnect(struct ps3_system_bus_device *dev);
+int ps3_vuart_disable_interrupt_disconnect(struct ps3_system_bus_device *dev);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif

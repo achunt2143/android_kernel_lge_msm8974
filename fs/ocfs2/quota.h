@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * quota.h for OCFS2
  *
@@ -17,6 +21,12 @@
 
 #include "ocfs2.h"
 
+<<<<<<< HEAD
+=======
+/* Number of quota types we support */
+#define OCFS2_MAXQUOTAS 2
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * In-memory structures
  */
@@ -28,6 +38,10 @@ struct ocfs2_dquot {
 	unsigned int dq_use_count;	/* Number of nodes having reference to this entry in global quota file */
 	s64 dq_origspace;	/* Last globally synced space usage */
 	s64 dq_originodes;	/* Last globally synced inode usage */
+<<<<<<< HEAD
+=======
+	struct llist_node list;	/* Member of list of dquots to drop */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* Description of one chunk to recover in memory */
@@ -38,12 +52,20 @@ struct ocfs2_recovery_chunk {
 };
 
 struct ocfs2_quota_recovery {
+<<<<<<< HEAD
 	struct list_head r_list[MAXQUOTAS];	/* List of chunks to recover */
+=======
+	struct list_head r_list[OCFS2_MAXQUOTAS];	/* List of chunks to recover */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* In-memory structure with quota header information */
 struct ocfs2_mem_dqinfo {
 	unsigned int dqi_type;		/* Quota type this structure describes */
+<<<<<<< HEAD
+=======
+	unsigned int dqi_flags;		/* Flags OLQF_* */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int dqi_chunks;	/* Number of chunks in local quota file */
 	unsigned int dqi_blocks;	/* Number of blocks allocated for local quota file */
 	unsigned int dqi_syncms;	/* How often should we sync with other nodes */
@@ -77,7 +99,11 @@ struct ocfs2_quota_chunk {
 extern struct kmem_cache *ocfs2_dquot_cachep;
 extern struct kmem_cache *ocfs2_qf_chunk_cachep;
 
+<<<<<<< HEAD
 extern struct qtree_fmt_operations ocfs2_global_ops;
+=======
+extern const struct qtree_fmt_operations ocfs2_global_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct ocfs2_quota_recovery *ocfs2_begin_quota_recovery(
 				struct ocfs2_super *osb, int slot_num);
@@ -110,6 +136,10 @@ int ocfs2_read_quota_phys_block(struct inode *inode, u64 p_block,
 int ocfs2_create_local_dquot(struct dquot *dquot);
 int ocfs2_local_release_dquot(handle_t *handle, struct dquot *dquot);
 int ocfs2_local_write_dquot(struct dquot *dquot);
+<<<<<<< HEAD
+=======
+void ocfs2_drop_dquot_refs(struct work_struct *work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern const struct dquot_operations ocfs2_quota_operations;
 extern struct quota_format_type ocfs2_quota_format;

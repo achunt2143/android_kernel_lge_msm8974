@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/include/linux/mtd/onenand.h
  *
  *  Copyright © 2005-2009 Samsung Electronics
  *  Kyungmin Park <kyungmin.park@samsung.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_MTD_ONENAND_H
@@ -80,7 +87,10 @@ struct onenand_bufferram {
  * @page_buf:		[INTERN] page main data buffer
  * @oob_buf:		[INTERN] page oob data buffer
  * @subpagesize:	[INTERN] holds the subpagesize
+<<<<<<< HEAD
  * @ecclayout:		[REPLACEABLE] the default ecc placement scheme
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bbm:		[REPLACEABLE] pointer to Bad Block Management
  * @priv:		[OPTIONAL] pointer to private chip date
  */
@@ -95,6 +105,10 @@ struct onenand_chip {
 	unsigned int		technology;
 	unsigned int		density_mask;
 	unsigned int		options;
+<<<<<<< HEAD
+=======
+	unsigned int		badblockpos;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned int		erase_shift;
 	unsigned int		page_shift;
@@ -134,7 +148,10 @@ struct onenand_chip {
 #endif
 
 	int			subpagesize;
+<<<<<<< HEAD
 	struct nand_ecclayout	*ecclayout;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	void			*bbm;
 
@@ -190,6 +207,11 @@ struct onenand_chip {
 /* Check byte access in OneNAND */
 #define ONENAND_CHECK_BYTE_ACCESS(addr)		(addr & 0x1)
 
+<<<<<<< HEAD
+=======
+#define ONENAND_BADBLOCK_POS		0
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Options bits
  */

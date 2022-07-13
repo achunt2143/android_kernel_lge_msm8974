@@ -28,6 +28,7 @@
  * SUCH DAMAGES.
  */
 
+<<<<<<< HEAD
 #include <linux/types.h>
 #include <linux/jiffies.h>
 #include <linux/sunrpc/gss_krb5.h>
@@ -407,20 +408,99 @@ gss_wrap_kerberos_v2(struct krb5_ctx *kctx, u32 offset,
 	s32		now;
 	u8		flags = 0x00;
 	__be16		*be16ptr, ec = 0;
+=======
+#include <crypto/skcipher.h>
+#include <linux/types.h>
+#include <linux/jiffies.h>
+#include <linux/sunrpc/gss_krb5.h>
+#include <linux/pagemap.h>
+
+#include "gss_krb5_internal.h"
+
+#if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
+# define RPCDBG_FACILITY	RPCDBG_AUTH
+#endif
+
+/*
+ * We can shift data by up to LOCAL_BUF_LEN bytes in a pass.  If we need
+ * to do more than that, we shift repeatedly.  Kevin Coffman reports
+ * seeing 28 bytes as the value used by Microsoft clients and servers
+ * with AES, so this constant is chosen to allow handling 28 in one pass
+ * without using too much stack space.
+ *
+ * If that proves to a problem perhaps we could use a more clever
+ * algorithm.
+ */
+#define LOCAL_BUF_LEN 32u
+
+static void rotate_buf_a_little(struct xdr_buf *buf, unsigned int shift)
+{
+	char head[LOCAL_BUF_LEN];
+	char tmp[LOCAL_BUF_LEN];
+	unsigned int this_len, i;
+
+	BUG_ON(shift > LOCAL_BUF_LEN);
+
+	read_bytes_from_xdr_buf(buf, 0, head, shift);
+	for (i = 0; i + shift < buf->len; i += LOCAL_BUF_LEN) {
+		this_len = min(LOCAL_BUF_LEN, buf->len - (i + shift));
+		read_bytes_from_xdr_buf(buf, i+shift, tmp, this_len);
+		write_bytes_to_xdr_buf(buf, i, tmp, this_len);
+	}
+	write_bytes_to_xdr_buf(buf, buf->len - shift, head, shift);
+}
+
+static void _rotate_left(struct xdr_buf *buf, unsigned int shift)
+{
+	int shifted = 0;
+	int this_shift;
+
+	shift %= buf->len;
+	while (shifted < shift) {
+		this_shift = min(shift - shifted, LOCAL_BUF_LEN);
+		rotate_buf_a_little(buf, this_shift);
+		shifted += this_shift;
+	}
+}
+
+static void rotate_left(u32 base, struct xdr_buf *buf, unsigned int shift)
+{
+	struct xdr_buf subbuf;
+
+	xdr_buf_subsegment(buf, &subbuf, base, buf->len - base);
+	_rotate_left(&subbuf, shift);
+}
+
+u32
+gss_krb5_wrap_v2(struct krb5_ctx *kctx, int offset,
+		 struct xdr_buf *buf, struct page **pages)
+{
+	u8		*ptr;
+	time64_t	now;
+	u8		flags = 0x00;
+	__be16		*be16ptr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__be64		*be64ptr;
 	u32		err;
 
 	dprintk("RPC:       %s\n", __func__);
 
+<<<<<<< HEAD
 	if (kctx->gk5e->encrypt_v2 == NULL)
 		return GSS_S_FAILURE;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* make room for gss token header */
 	if (xdr_extend_head(buf, offset, GSS_KRB5_TOK_HDR_LEN))
 		return GSS_S_FAILURE;
 
 	/* construct gss token header */
+<<<<<<< HEAD
 	ptr = plainhdr = buf->head[0].iov_base + offset;
+=======
+	ptr = buf->head[0].iov_base + offset;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*ptr++ = (unsigned char) ((KG2_TOK_WRAP>>8) & 0xff);
 	*ptr++ = (unsigned char) (KG2_TOK_WRAP & 0xff);
 
@@ -435,6 +515,7 @@ gss_wrap_kerberos_v2(struct krb5_ctx *kctx, u32 offset,
 	*ptr++ = 0xff;
 	be16ptr = (__be16 *)ptr;
 
+<<<<<<< HEAD
 	blocksize = crypto_blkcipher_blocksize(kctx->acceptor_enc);
 	*be16ptr++ = cpu_to_be16(ec);
 	/* "inner" token header always uses 0 for RRC */
@@ -458,6 +539,29 @@ gss_unwrap_kerberos_v2(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
 {
 	s32		now;
 	u64		seqnum;
+=======
+	*be16ptr++ = 0;
+	/* "inner" token header always uses 0 for RRC */
+	*be16ptr++ = 0;
+
+	be64ptr = (__be64 *)be16ptr;
+	*be64ptr = cpu_to_be64(atomic64_fetch_inc(&kctx->seq_send64));
+
+	err = (*kctx->gk5e->encrypt)(kctx, offset, buf, pages);
+	if (err)
+		return err;
+
+	now = ktime_get_real_seconds();
+	return (kctx->endtime < now) ? GSS_S_CONTEXT_EXPIRED : GSS_S_COMPLETE;
+}
+
+u32
+gss_krb5_unwrap_v2(struct krb5_ctx *kctx, int offset, int len,
+		   struct xdr_buf *buf, unsigned int *slack,
+		   unsigned int *align)
+{
+	time64_t	now;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8		*ptr;
 	u8		flags = 0x00;
 	u16		ec, rrc;
@@ -469,9 +573,12 @@ gss_unwrap_kerberos_v2(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
 
 	dprintk("RPC:       %s\n", __func__);
 
+<<<<<<< HEAD
 	if (kctx->gk5e->decrypt_v2 == NULL)
 		return GSS_S_FAILURE;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ptr = buf->head[0].iov_base + offset;
 
 	if (be16_to_cpu(*((__be16 *)ptr)) != KG2_TOK_WRAP)
@@ -493,6 +600,7 @@ gss_unwrap_kerberos_v2(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
 	ec = be16_to_cpup((__be16 *)(ptr + 4));
 	rrc = be16_to_cpup((__be16 *)(ptr + 6));
 
+<<<<<<< HEAD
 	seqnum = be64_to_cpup((__be64 *)(ptr + 8));
 
 	if (rrc != 0) {
@@ -503,6 +611,18 @@ gss_unwrap_kerberos_v2(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
 
 	err = (*kctx->gk5e->decrypt_v2)(kctx, offset, buf,
 					&headskip, &tailskip);
+=======
+	/*
+	 * NOTE: the sequence number at ptr + 8 is skipped, rpcsec_gss
+	 * doesn't want it checked; see page 6 of rfc 2203.
+	 */
+
+	if (rrc != 0)
+		rotate_left(offset + 16, buf, rrc);
+
+	err = (*kctx->gk5e->decrypt)(kctx, offset, len, buf,
+				     &headskip, &tailskip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err)
 		return GSS_S_FAILURE;
 
@@ -511,7 +631,11 @@ gss_unwrap_kerberos_v2(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
 	 * it against the original
 	 */
 	err = read_bytes_from_xdr_buf(buf,
+<<<<<<< HEAD
 				buf->len - GSS_KRB5_TOK_HDR_LEN - tailskip,
+=======
+				len - GSS_KRB5_TOK_HDR_LEN - tailskip,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				decrypted_hdr, GSS_KRB5_TOK_HDR_LEN);
 	if (err) {
 		dprintk("%s: error %u getting decrypted_hdr\n", __func__, err);
@@ -526,7 +650,11 @@ gss_unwrap_kerberos_v2(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
 	/* do sequencing checks */
 
 	/* it got through unscathed.  Make sure the context is unexpired */
+<<<<<<< HEAD
 	now = get_seconds();
+=======
+	now = ktime_get_real_seconds();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (now > kctx->endtime)
 		return GSS_S_CONTEXT_EXPIRED;
 
@@ -537,12 +665,17 @@ gss_unwrap_kerberos_v2(struct krb5_ctx *kctx, int offset, struct xdr_buf *buf)
 	 * Note that buf->head[0].iov_len may indicate the available
 	 * head buffer space rather than that actually occupied.
 	 */
+<<<<<<< HEAD
 	movelen = min_t(unsigned int, buf->head[0].iov_len, buf->len);
+=======
+	movelen = min_t(unsigned int, buf->head[0].iov_len, len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movelen -= offset + GSS_KRB5_TOK_HDR_LEN + headskip;
 	BUG_ON(offset + GSS_KRB5_TOK_HDR_LEN + headskip + movelen >
 							buf->head[0].iov_len);
 	memmove(ptr, ptr + GSS_KRB5_TOK_HDR_LEN + headskip, movelen);
 	buf->head[0].iov_len -= GSS_KRB5_TOK_HDR_LEN + headskip;
+<<<<<<< HEAD
 	buf->len -= GSS_KRB5_TOK_HDR_LEN + headskip;
 
 	return GSS_S_COMPLETE;
@@ -585,3 +718,14 @@ gss_unwrap_kerberos(struct gss_ctx *gctx, int offset, struct xdr_buf *buf)
 	}
 }
 
+=======
+	buf->len = len - (GSS_KRB5_TOK_HDR_LEN + headskip);
+
+	/* Trim off the trailing "extra count" and checksum blob */
+	xdr_buf_trim(buf, ec + GSS_KRB5_TOK_HDR_LEN + tailskip);
+
+	*align = XDR_QUADLEN(GSS_KRB5_TOK_HDR_LEN + headskip);
+	*slack = *align + XDR_QUADLEN(ec + GSS_KRB5_TOK_HDR_LEN + tailskip);
+	return GSS_S_COMPLETE;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

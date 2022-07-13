@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: exconfig - Namespace reconfiguration (Load/Unload opcodes)
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -41,6 +46,12 @@
  * POSSIBILITY OF SUCH DAMAGES.
  */
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 #include "acinterp.h"
@@ -48,15 +59,23 @@
 #include "actables.h"
 #include "acdispat.h"
 #include "acevents.h"
+<<<<<<< HEAD
+=======
+#include "amlcode.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define _COMPONENT          ACPI_EXECUTER
 ACPI_MODULE_NAME("exconfig")
 
 /* Local prototypes */
 static acpi_status
+<<<<<<< HEAD
 acpi_ex_add_table(u32 table_index,
 		  struct acpi_namespace_node *parent_node,
 		  union acpi_operand_object **ddb_handle);
+=======
+acpi_ex_add_table(u32 table_index, union acpi_operand_object **ddb_handle);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static acpi_status
 acpi_ex_region_read(union acpi_operand_object *obj_desc,
@@ -66,7 +85,11 @@ acpi_ex_region_read(union acpi_operand_object *obj_desc,
  *
  * FUNCTION:    acpi_ex_add_table
  *
+<<<<<<< HEAD
  * PARAMETERS:  Table               - Pointer to raw table
+=======
+ * PARAMETERS:  table               - Pointer to raw table
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              parent_node         - Where to load the table (scope)
  *              ddb_handle          - Where to return the table handle.
  *
@@ -78,6 +101,7 @@ acpi_ex_region_read(union acpi_operand_object *obj_desc,
  ******************************************************************************/
 
 static acpi_status
+<<<<<<< HEAD
 acpi_ex_add_table(u32 table_index,
 		  struct acpi_namespace_node *parent_node,
 		  union acpi_operand_object **ddb_handle)
@@ -85,6 +109,11 @@ acpi_ex_add_table(u32 table_index,
 	union acpi_operand_object *obj_desc;
 	acpi_status status;
 	acpi_owner_id owner_id;
+=======
+acpi_ex_add_table(u32 table_index, union acpi_operand_object **ddb_handle)
+{
+	union acpi_operand_object *obj_desc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE(ex_add_table);
 
@@ -99,6 +128,7 @@ acpi_ex_add_table(u32 table_index,
 
 	obj_desc->common.flags |= AOPOBJ_DATA_VALID;
 	obj_desc->reference.class = ACPI_REFCLASS_TABLE;
+<<<<<<< HEAD
 	*ddb_handle = obj_desc;
 
 	/* Install the new table into the local data structures */
@@ -127,6 +157,10 @@ acpi_ex_add_table(u32 table_index,
 		acpi_ev_update_gpes(owner_id);
 	}
 
+=======
+	obj_desc->reference.value = table_index;
+	*ddb_handle = obj_desc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(AE_OK);
 }
 
@@ -152,12 +186,18 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 	struct acpi_namespace_node *parent_node;
 	struct acpi_namespace_node *start_node;
 	struct acpi_namespace_node *parameter_node = NULL;
+<<<<<<< HEAD
 	union acpi_operand_object *ddb_handle;
 	struct acpi_table_header *table;
+=======
+	union acpi_operand_object *return_obj;
+	union acpi_operand_object *ddb_handle;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 table_index;
 
 	ACPI_FUNCTION_TRACE(ex_load_table_op);
 
+<<<<<<< HEAD
 	/* Validate lengths for the signature_string, OEMIDString, OEMtable_iD */
 
 	if ((operand[0]->string.length > ACPI_NAME_SIZE) ||
@@ -171,6 +211,24 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 	status = acpi_tb_find_table(operand[0]->string.pointer,
 				    operand[1]->string.pointer,
 				    operand[2]->string.pointer, &table_index);
+=======
+	/* Create the return object */
+
+	return_obj = acpi_ut_create_integer_object((u64)0);
+	if (!return_obj) {
+		return_ACPI_STATUS(AE_NO_MEMORY);
+	}
+
+	*return_desc = return_obj;
+
+	/* Find the ACPI table in the RSDT/XSDT */
+
+	acpi_ex_exit_interpreter();
+	status = acpi_tb_find_table(operand[0]->string.pointer,
+				    operand[1]->string.pointer,
+				    operand[2]->string.pointer, &table_index);
+	acpi_ex_enter_interpreter();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		if (status != AE_NOT_FOUND) {
 			return_ACPI_STATUS(status);
@@ -178,12 +236,15 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 
 		/* Table not found, return an Integer=0 and AE_OK */
 
+<<<<<<< HEAD
 		ddb_handle = acpi_ut_create_integer_object((u64) 0);
 		if (!ddb_handle) {
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
 
 		*return_desc = ddb_handle;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_ACPI_STATUS(AE_OK);
 	}
 
@@ -199,9 +260,16 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 		 * Find the node referenced by the root_path_string. This is the
 		 * location within the namespace where the table will be loaded.
 		 */
+<<<<<<< HEAD
 		status =
 		    acpi_ns_get_node(start_node, operand[3]->string.pointer,
 				     ACPI_NS_SEARCH_PARENT, &parent_node);
+=======
+		status = acpi_ns_get_node_unlocked(start_node,
+						   operand[3]->string.pointer,
+						   ACPI_NS_SEARCH_PARENT,
+						   &parent_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}
@@ -210,8 +278,13 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 	/* parameter_path (optional parameter) */
 
 	if (operand[4]->string.length > 0) {
+<<<<<<< HEAD
 		if ((operand[4]->string.pointer[0] != '\\') &&
 		    (operand[4]->string.pointer[0] != '^')) {
+=======
+		if ((operand[4]->string.pointer[0] != AML_ROOT_PREFIX) &&
+		    (operand[4]->string.pointer[0] != AML_PARENT_PREFIX)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/*
 			 * Path is not absolute, so it will be relative to the node
 			 * referenced by the root_path_string (or the NS root if omitted)
@@ -221,9 +294,16 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 
 		/* Find the node referenced by the parameter_path_string */
 
+<<<<<<< HEAD
 		status =
 		    acpi_ns_get_node(start_node, operand[4]->string.pointer,
 				     ACPI_NS_SEARCH_PARENT, &parameter_node);
+=======
+		status = acpi_ns_get_node_unlocked(start_node,
+						   operand[4]->string.pointer,
+						   ACPI_NS_SEARCH_PARENT,
+						   &parameter_node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
 		}
@@ -231,11 +311,32 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 
 	/* Load the table into the namespace */
 
+<<<<<<< HEAD
 	status = acpi_ex_add_table(table_index, parent_node, &ddb_handle);
+=======
+	ACPI_INFO(("Dynamic OEM Table Load:"));
+	acpi_ex_exit_interpreter();
+	status = acpi_tb_load_table(table_index, parent_node);
+	acpi_ex_enter_interpreter();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 		return_ACPI_STATUS(status);
 	}
 
+<<<<<<< HEAD
+=======
+	status = acpi_ex_add_table(table_index, &ddb_handle);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+	/* Complete the initialization/resolution of new objects */
+
+	acpi_ex_exit_interpreter();
+	acpi_ns_initialize_objects();
+	acpi_ex_enter_interpreter();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Parameter Data (optional) */
 
 	if (parameter_node) {
@@ -254,6 +355,7 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 		}
 	}
 
+<<<<<<< HEAD
 	status = acpi_get_table_by_index(table_index, &table);
 	if (ACPI_SUCCESS(status)) {
 		ACPI_INFO((AE_INFO, "Dynamic OEM Table Load:"));
@@ -268,6 +370,15 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
 	}
 
 	*return_desc = ddb_handle;
+=======
+	/* Remove the reference to ddb_handle created by acpi_ex_add_table above */
+
+	acpi_ut_remove_reference(ddb_handle);
+
+	/* Return -1 (non-zero) indicates success */
+
+	return_obj->integer.value = 0xFFFFFFFFFFFFFFFF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 
@@ -276,8 +387,13 @@ acpi_ex_load_table_op(struct acpi_walk_state *walk_state,
  * FUNCTION:    acpi_ex_region_read
  *
  * PARAMETERS:  obj_desc        - Region descriptor
+<<<<<<< HEAD
  *              Length          - Number of bytes to read
  *              Buffer          - Pointer to where to put the data
+=======
+ *              length          - Number of bytes to read
+ *              buffer          - Pointer to where to put the data
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * RETURN:      Status
  *
@@ -301,7 +417,11 @@ acpi_ex_region_read(union acpi_operand_object *obj_desc, u32 length, u8 *buffer)
 		    acpi_ev_address_space_dispatch(obj_desc, NULL, ACPI_READ,
 						   region_offset, 8, &value);
 		if (ACPI_FAILURE(status)) {
+<<<<<<< HEAD
 			return status;
+=======
+			return (status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 
 		*buffer = (u8)value;
@@ -309,7 +429,11 @@ acpi_ex_region_read(union acpi_operand_object *obj_desc, u32 length, u8 *buffer)
 		region_offset++;
 	}
 
+<<<<<<< HEAD
 	return AE_OK;
+=======
+	return (AE_OK);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*******************************************************************************
@@ -318,7 +442,11 @@ acpi_ex_region_read(union acpi_operand_object *obj_desc, u32 length, u8 *buffer)
  *
  * PARAMETERS:  obj_desc        - Region or Buffer/Field where the table will be
  *                                obtained
+<<<<<<< HEAD
  *              Target          - Where a handle to the table will be stored
+=======
+ *              target          - Where the status of the load will be stored
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *              walk_state      - Current state
  *
  * RETURN:      Status
@@ -339,15 +467,36 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 		struct acpi_walk_state *walk_state)
 {
 	union acpi_operand_object *ddb_handle;
+<<<<<<< HEAD
 	struct acpi_table_header *table;
 	struct acpi_table_desc table_desc;
+=======
+	struct acpi_table_header *table_header;
+	struct acpi_table_header *table;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 table_index;
 	acpi_status status;
 	u32 length;
 
 	ACPI_FUNCTION_TRACE(ex_load_op);
 
+<<<<<<< HEAD
 	ACPI_MEMSET(&table_desc, 0, sizeof(struct acpi_table_desc));
+=======
+	if (target->common.descriptor_type == ACPI_DESC_TYPE_NAMED) {
+		target =
+		    acpi_ns_get_attached_object(ACPI_CAST_PTR
+						(struct acpi_namespace_node,
+						 target));
+	}
+	if (target->common.type != ACPI_TYPE_INTEGER) {
+		ACPI_ERROR((AE_INFO, "Type not integer: %X",
+			    target->common.type));
+		return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
+	}
+
+	target->integer.value = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Source Object can be either an op_region or a Buffer/Field */
 
@@ -364,8 +513,13 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 		}
 
 		/*
+<<<<<<< HEAD
 		 * If the Region Address and Length have not been previously evaluated,
 		 * evaluate them now and save the results.
+=======
+		 * If the Region Address and Length have not been previously
+		 * evaluated, evaluate them now and save the results.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 */
 		if (!(obj_desc->common.flags & AOPOBJ_DATA_VALID)) {
 			status = acpi_ds_get_region_arguments(obj_desc);
@@ -376,17 +530,28 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 
 		/* Get the table header first so we can get the table length */
 
+<<<<<<< HEAD
 		table = ACPI_ALLOCATE(sizeof(struct acpi_table_header));
 		if (!table) {
+=======
+		table_header = ACPI_ALLOCATE(sizeof(struct acpi_table_header));
+		if (!table_header) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
 
 		status =
 		    acpi_ex_region_read(obj_desc,
 					sizeof(struct acpi_table_header),
+<<<<<<< HEAD
 					ACPI_CAST_PTR(u8, table));
 		length = table->length;
 		ACPI_FREE(table);
+=======
+					ACPI_CAST_PTR(u8, table_header));
+		length = table_header->length;
+		ACPI_FREE(table_header);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (ACPI_FAILURE(status)) {
 			return_ACPI_STATUS(status);
@@ -416,14 +581,20 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 
 		/* Allocate a buffer for the table */
 
+<<<<<<< HEAD
 		table_desc.pointer = ACPI_ALLOCATE(length);
 		if (!table_desc.pointer) {
+=======
+		table = ACPI_ALLOCATE(length);
+		if (!table) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return_ACPI_STATUS(AE_NO_MEMORY);
 		}
 
 		/* Read the entire table */
 
 		status = acpi_ex_region_read(obj_desc, length,
+<<<<<<< HEAD
 					     ACPI_CAST_PTR(u8,
 							   table_desc.pointer));
 		if (ACPI_FAILURE(status)) {
@@ -432,6 +603,13 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 		}
 
 		table_desc.address = obj_desc->region.address;
+=======
+					     ACPI_CAST_PTR(u8, table));
+		if (ACPI_FAILURE(status)) {
+			ACPI_FREE(table);
+			return_ACPI_STATUS(status);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case ACPI_TYPE_BUFFER:	/* Buffer or resolved region_field */
@@ -448,10 +626,17 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 
 		/* Get the actual table length from the table header */
 
+<<<<<<< HEAD
 		table =
 		    ACPI_CAST_PTR(struct acpi_table_header,
 				  obj_desc->buffer.pointer);
 		length = table->length;
+=======
+		table_header =
+		    ACPI_CAST_PTR(struct acpi_table_header,
+				  obj_desc->buffer.pointer);
+		length = table_header->length;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		/* Table cannot extend beyond the buffer */
 
@@ -463,6 +648,7 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 		}
 
 		/*
+<<<<<<< HEAD
 		 * Copy the table from the buffer because the buffer could be modified
 		 * or even deleted in the future
 		 */
@@ -495,11 +681,41 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 	/* Install the new table into the local data structures */
 
 	status = acpi_tb_add_table(&table_desc, &table_index);
+=======
+		 * Copy the table from the buffer because the buffer could be
+		 * modified or even deleted in the future
+		 */
+		table = ACPI_ALLOCATE(length);
+		if (!table) {
+			return_ACPI_STATUS(AE_NO_MEMORY);
+		}
+
+		memcpy(table, table_header, length);
+		break;
+
+	default:
+
+		return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
+	}
+
+	/* Install the new table into the local data structures */
+
+	ACPI_INFO(("Dynamic OEM Table Load:"));
+	acpi_ex_exit_interpreter();
+	status = acpi_tb_install_and_load_table(ACPI_PTR_TO_PHYSADDR(table),
+						ACPI_TABLE_ORIGIN_INTERNAL_VIRTUAL,
+						table, TRUE, &table_index);
+	acpi_ex_enter_interpreter();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ACPI_FAILURE(status)) {
 
 		/* Delete allocated table buffer */
 
+<<<<<<< HEAD
 		acpi_tb_delete_table(&table_desc);
+=======
+		ACPI_FREE(table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return_ACPI_STATUS(status);
 	}
 
@@ -510,6 +726,7 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 	 * This appears to go against the ACPI specification, but we do it for
 	 * compatibility with other ACPI implementations.
 	 */
+<<<<<<< HEAD
 	status =
 	    acpi_ex_add_table(table_index, acpi_gbl_root_node, &ddb_handle);
 	if (ACPI_FAILURE(status)) {
@@ -546,6 +763,26 @@ acpi_ex_load_op(union acpi_operand_object *obj_desc,
 					     acpi_gbl_table_handler_context);
 	}
 
+=======
+	status = acpi_ex_add_table(table_index, &ddb_handle);
+	if (ACPI_FAILURE(status)) {
+		return_ACPI_STATUS(status);
+	}
+
+	/* Complete the initialization/resolution of new objects */
+
+	acpi_ex_exit_interpreter();
+	acpi_ns_initialize_objects();
+	acpi_ex_enter_interpreter();
+
+	/* Remove the reference to ddb_handle created by acpi_ex_add_table above */
+
+	acpi_ut_remove_reference(ddb_handle);
+
+	/* Return -1 (non-zero) indicates success */
+
+	target->integer.value = 0xFFFFFFFFFFFFFFFF;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return_ACPI_STATUS(status);
 }
 
@@ -566,11 +803,35 @@ acpi_status acpi_ex_unload_table(union acpi_operand_object *ddb_handle)
 	acpi_status status = AE_OK;
 	union acpi_operand_object *table_desc = ddb_handle;
 	u32 table_index;
+<<<<<<< HEAD
 	struct acpi_table_header *table;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ACPI_FUNCTION_TRACE(ex_unload_table);
 
 	/*
+<<<<<<< HEAD
+=======
+	 * Temporarily emit a warning so that the ASL for the machine can be
+	 * hopefully obtained. This is to say that the Unload() operator is
+	 * extremely rare if not completely unused.
+	 */
+	ACPI_WARNING((AE_INFO, "Received request to unload an ACPI table"));
+
+	/*
+	 * May 2018: Unload is no longer supported for the following reasons:
+	 * 1) A correct implementation on some hosts may not be possible.
+	 * 2) Other ACPI implementations do not correctly/fully support it.
+	 * 3) It requires host device driver support which does not exist.
+	 *    (To properly support namespace unload out from underneath.)
+	 * 4) This AML operator has never been seen in the field.
+	 */
+	ACPI_EXCEPTION((AE_INFO, AE_NOT_IMPLEMENTED,
+			"AML Unload operator is not supported"));
+
+	/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * Validate the handle
 	 * Although the handle is partially validated in acpi_ex_reconfiguration()
 	 * when it calls acpi_ex_resolve_operands(), the handle is more completely
@@ -584,13 +845,18 @@ acpi_status acpi_ex_unload_table(union acpi_operand_object *ddb_handle)
 	    (ACPI_GET_DESCRIPTOR_TYPE(ddb_handle) != ACPI_DESC_TYPE_OPERAND) ||
 	    (ddb_handle->common.type != ACPI_TYPE_LOCAL_REFERENCE) ||
 	    (!(ddb_handle->common.flags & AOPOBJ_DATA_VALID))) {
+<<<<<<< HEAD
 		return_ACPI_STATUS(AE_BAD_PARAMETER);
+=======
+		return_ACPI_STATUS(AE_AML_OPERAND_TYPE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	/* Get the table index from the ddb_handle */
 
 	table_index = table_desc->reference.value;
 
+<<<<<<< HEAD
 	/* Ensure the table is still loaded */
 
 	if (!acpi_tb_is_table_loaded(table_index)) {
@@ -617,11 +883,27 @@ acpi_status acpi_ex_unload_table(union acpi_operand_object *ddb_handle)
 
 	(void)acpi_tb_release_owner_id(table_index);
 	acpi_tb_set_table_loaded_flag(table_index, FALSE);
+=======
+	/*
+	 * Release the interpreter lock so that the table lock won't have
+	 * strict order requirement against it.
+	 */
+	acpi_ex_exit_interpreter();
+	status = acpi_tb_unload_table(table_index);
+	acpi_ex_enter_interpreter();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Invalidate the handle. We do this because the handle may be stored
 	 * in a named object and may not be actually deleted until much later.
 	 */
+<<<<<<< HEAD
 	ddb_handle->common.flags &= ~AOPOBJ_DATA_VALID;
 	return_ACPI_STATUS(AE_OK);
+=======
+	if (ACPI_SUCCESS(status)) {
+		ddb_handle->common.flags &= ~AOPOBJ_DATA_VALID;
+	}
+	return_ACPI_STATUS(status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

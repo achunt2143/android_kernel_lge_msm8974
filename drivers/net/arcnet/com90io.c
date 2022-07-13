@@ -1,6 +1,10 @@
 /*
  * Linux ARCnet driver - COM90xx chipset (IO-mapped buffers)
+<<<<<<< HEAD
  * 
+=======
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Written 1997 by David Woodhouse.
  * Written 1994-1999 by Avery Pennarun.
  * Written 1999-2000 by Martin Mares <mj@ucw.cz>.
@@ -25,12 +29,19 @@
  *
  * **********************
  */
+<<<<<<< HEAD
+=======
+
+#define pr_fmt(fmt) "arcnet:" KBUILD_MODNAME ": " fmt
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/ioport.h>
 #include <linux/delay.h>
 #include <linux/netdevice.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -40,6 +51,15 @@
 
 #define VERSION "arcnet: COM90xx IO-mapped mode support (by David Woodhouse et el.)\n"
 
+=======
+#include <linux/memblock.h>
+#include <linux/init.h>
+#include <linux/interrupt.h>
+#include <linux/io.h>
+
+#include "arcdevice.h"
+#include "com9026.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Internal function declarations */
 
@@ -50,15 +70,21 @@ static void com90io_setmask(struct net_device *dev, int mask);
 static int com90io_reset(struct net_device *dev, int really_reset);
 static void com90io_copy_to_card(struct net_device *dev, int bufnum, int offset,
 				 void *buf, int count);
+<<<<<<< HEAD
 static void com90io_copy_from_card(struct net_device *dev, int bufnum, int offset,
 				   void *buf, int count);
 
+=======
+static void com90io_copy_from_card(struct net_device *dev, int bufnum,
+				   int offset, void *buf, int count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Handy defines for ARCnet specific stuff */
 
 /* The number of low I/O ports used by the card. */
 #define ARCNET_TOTAL_SIZE 16
 
+<<<<<<< HEAD
 /* COM 9026 controller chip --> ARCnet register addresses */
 #define _INTMASK (ioaddr+0)	/* writable */
 #define _STATUS  (ioaddr+0)	/* readable */
@@ -79,6 +105,8 @@ static void com90io_copy_from_card(struct net_device *dev, int bufnum, int offse
 #define SETCONF() 	outb((lp->config),_CONFIG)
 
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /****************************************************************************
  *                                                                          *
  * IO-mapped operation routines                                             *
@@ -92,6 +120,7 @@ static u_char get_buffer_byte(struct net_device *dev, unsigned offset)
 {
 	int ioaddr = dev->base_addr;
 
+<<<<<<< HEAD
 	outb(offset >> 8, _ADDR_HI);
 	outb(offset & 0xff, _ADDR_LO);
 
@@ -107,10 +136,29 @@ static void put_buffer_byte(struct net_device *dev, unsigned offset, u_char datu
 	outb(offset & 0xff, _ADDR_LO);
 
 	outb(datum, _MEMDATA);
+=======
+	arcnet_outb(offset >> 8, ioaddr, COM9026_REG_W_ADDR_HI);
+	arcnet_outb(offset & 0xff, ioaddr, COM9026_REG_W_ADDR_LO);
+
+	return arcnet_inb(ioaddr, COM9026_REG_RW_MEMDATA);
+}
+
+#ifdef ONE_AT_A_TIME_TX
+static void put_buffer_byte(struct net_device *dev, unsigned offset,
+			    u_char datum)
+{
+	int ioaddr = dev->base_addr;
+
+	arcnet_outb(offset >> 8, ioaddr, COM9026_REG_W_ADDR_HI);
+	arcnet_outb(offset & 0xff, ioaddr, COM9026_REG_W_ADDR_LO);
+
+	arcnet_outb(datum, ioaddr, COM9026_REG_RW_MEMDATA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif
 
+<<<<<<< HEAD
 
 static void get_whole_buffer(struct net_device *dev, unsigned offset, unsigned length, char *dest)
 {
@@ -118,11 +166,21 @@ static void get_whole_buffer(struct net_device *dev, unsigned offset, unsigned l
 
 	outb((offset >> 8) | AUTOINCflag, _ADDR_HI);
 	outb(offset & 0xff, _ADDR_LO);
+=======
+static void get_whole_buffer(struct net_device *dev, unsigned offset,
+			     unsigned length, char *dest)
+{
+	int ioaddr = dev->base_addr;
+
+	arcnet_outb((offset >> 8) | AUTOINCflag, ioaddr, COM9026_REG_W_ADDR_HI);
+	arcnet_outb(offset & 0xff, ioaddr, COM9026_REG_W_ADDR_LO);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (length--)
 #ifdef ONE_AT_A_TIME_RX
 		*(dest++) = get_buffer_byte(dev, offset++);
 #else
+<<<<<<< HEAD
 		*(dest++) = inb(_MEMDATA);
 #endif
 }
@@ -133,17 +191,38 @@ static void put_whole_buffer(struct net_device *dev, unsigned offset, unsigned l
 
 	outb((offset >> 8) | AUTOINCflag, _ADDR_HI);
 	outb(offset & 0xff, _ADDR_LO);
+=======
+		*(dest++) = arcnet_inb(ioaddr, COM9026_REG_RW_MEMDATA);
+#endif
+}
+
+static void put_whole_buffer(struct net_device *dev, unsigned offset,
+			     unsigned length, char *dest)
+{
+	int ioaddr = dev->base_addr;
+
+	arcnet_outb((offset >> 8) | AUTOINCflag, ioaddr, COM9026_REG_W_ADDR_HI);
+	arcnet_outb(offset & 0xff, ioaddr,COM9026_REG_W_ADDR_LO);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (length--)
 #ifdef ONE_AT_A_TIME_TX
 		put_buffer_byte(dev, offset++, *(dest++));
 #else
+<<<<<<< HEAD
 		outb(*(dest++), _MEMDATA);
 #endif
 }
 
 /*
  * We cannot probe for an IO mapped card either, although we can check that
+=======
+		arcnet_outb(*(dest++), ioaddr, COM9026_REG_RW_MEMDATA);
+#endif
+}
+
+/* We cannot probe for an IO mapped card either, although we can check that
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * it's where we were told it was, and even autoirq
  */
 static int __init com90io_probe(struct net_device *dev)
@@ -151,6 +230,7 @@ static int __init com90io_probe(struct net_device *dev)
 	int ioaddr = dev->base_addr, status;
 	unsigned long airqmask;
 
+<<<<<<< HEAD
 	BUGLVL(D_NORMAL) printk(VERSION);
 	BUGLVL(D_NORMAL) printk("E-mail me if you actually test this driver, please!\n");
 
@@ -204,11 +284,74 @@ static int __init com90io_probe(struct net_device *dev)
 	if (!dev->irq) {
 		/*
 		 * if we do this, we're sure to get an IRQ since the
+=======
+	if (BUGLVL(D_NORMAL)) {
+		pr_info("%s\n", "COM90xx IO-mapped mode support (by David Woodhouse et el.)");
+		pr_info("E-mail me if you actually test this driver, please!\n");
+	}
+
+	if (!ioaddr) {
+		arc_printk(D_NORMAL, dev, "No autoprobe for IO mapped cards; you must specify the base address!\n");
+		return -ENODEV;
+	}
+	if (!request_region(ioaddr, ARCNET_TOTAL_SIZE, "com90io probe")) {
+		arc_printk(D_INIT_REASONS, dev, "IO request_region %x-%x failed\n",
+			   ioaddr, ioaddr + ARCNET_TOTAL_SIZE - 1);
+		return -ENXIO;
+	}
+	if (arcnet_inb(ioaddr, COM9026_REG_R_STATUS) == 0xFF) {
+		arc_printk(D_INIT_REASONS, dev, "IO address %x empty\n",
+			   ioaddr);
+		goto err_out;
+	}
+	arcnet_inb(ioaddr, COM9026_REG_R_RESET);
+	mdelay(RESETtime);
+
+	status = arcnet_inb(ioaddr, COM9026_REG_R_STATUS);
+
+	if ((status & 0x9D) != (NORXflag | RECONflag | TXFREEflag | RESETflag)) {
+		arc_printk(D_INIT_REASONS, dev, "Status invalid (%Xh)\n",
+			   status);
+		goto err_out;
+	}
+	arc_printk(D_INIT_REASONS, dev, "Status after reset: %X\n", status);
+
+	arcnet_outb(CFLAGScmd | RESETclear | CONFIGclear,
+		    ioaddr, COM9026_REG_W_COMMAND);
+
+	arc_printk(D_INIT_REASONS, dev, "Status after reset acknowledged: %X\n",
+		   status);
+
+	status = arcnet_inb(ioaddr, COM9026_REG_R_STATUS);
+
+	if (status & RESETflag) {
+		arc_printk(D_INIT_REASONS, dev, "Eternal reset (status=%Xh)\n",
+			   status);
+		goto err_out;
+	}
+	arcnet_outb((0x16 | IOMAPflag) & ~ENABLE16flag,
+		    ioaddr, COM9026_REG_RW_CONFIG);
+
+	/* Read first loc'n of memory */
+
+	arcnet_outb(AUTOINCflag, ioaddr, COM9026_REG_W_ADDR_HI);
+	arcnet_outb(0, ioaddr,  COM9026_REG_W_ADDR_LO);
+
+	status = arcnet_inb(ioaddr, COM9026_REG_RW_MEMDATA);
+	if (status != 0xd1) {
+		arc_printk(D_INIT_REASONS, dev, "Signature byte not found (%Xh instead).\n",
+			   status);
+		goto err_out;
+	}
+	if (!dev->irq) {
+		/* if we do this, we're sure to get an IRQ since the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		 * card has just reset and the NORXflag is on until
 		 * we tell it to start receiving.
 		 */
 
 		airqmask = probe_irq_on();
+<<<<<<< HEAD
 		outb(NORXflag, _INTMASK);
 		udelay(1);
 		outb(0, _INTMASK);
@@ -216,6 +359,15 @@ static int __init com90io_probe(struct net_device *dev)
 
 		if ((int)dev->irq <= 0) {
 			BUGMSG(D_INIT_REASONS, "Autoprobe IRQ failed\n");
+=======
+		arcnet_outb(NORXflag, ioaddr, COM9026_REG_W_INTMASK);
+		udelay(1);
+		arcnet_outb(0, ioaddr, COM9026_REG_W_INTMASK);
+		dev->irq = probe_irq_off(airqmask);
+
+		if ((int)dev->irq <= 0) {
+			arc_printk(D_INIT_REASONS, dev, "Autoprobe IRQ failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto err_out;
 		}
 	}
@@ -227,7 +379,10 @@ err_out:
 	return -ENODEV;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Set up the struct net_device associated with this card.  Called after
  * probing succeeds.
  */
@@ -238,12 +393,23 @@ static int __init com90io_found(struct net_device *dev)
 	int err;
 
 	/* Reserve the irq */
+<<<<<<< HEAD
 	if (request_irq(dev->irq, arcnet_interrupt, 0, "arcnet (COM90xx-IO)", dev)) {
 		BUGMSG(D_NORMAL, "Can't get IRQ %d!\n", dev->irq);
 		return -ENODEV;
 	}
 	/* Reserve the I/O region */
 	if (!request_region(dev->base_addr, ARCNET_TOTAL_SIZE, "arcnet (COM90xx-IO)")) {
+=======
+	if (request_irq(dev->irq, arcnet_interrupt, 0,
+			"arcnet (COM90xx-IO)", dev)) {
+		arc_printk(D_NORMAL, dev, "Can't get IRQ %d!\n", dev->irq);
+		return -ENODEV;
+	}
+	/* Reserve the I/O region */
+	if (!request_region(dev->base_addr, ARCNET_TOTAL_SIZE,
+			    "arcnet (COM90xx-IO)")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_irq(dev->irq, dev);
 		return -EBUSY;
 	}
@@ -259,6 +425,7 @@ static int __init com90io_found(struct net_device *dev)
 	lp->hw.copy_from_card = com90io_copy_from_card;
 
 	lp->config = (0x16 | IOMAPflag) & ~ENABLE16flag;
+<<<<<<< HEAD
 	SETCONF();
 
 	/* get and check the station ID from offset 1 in shmem */
@@ -268,20 +435,41 @@ static int __init com90io_found(struct net_device *dev)
 	err = register_netdev(dev);
 	if (err) {
 		outb((inb(_CONFIG) & ~IOMAPflag), _CONFIG);
+=======
+	arcnet_outb(lp->config, ioaddr, COM9026_REG_RW_CONFIG);
+
+	/* get and check the station ID from offset 1 in shmem */
+
+	arcnet_set_addr(dev, get_buffer_byte(dev, 1));
+
+	err = register_netdev(dev);
+	if (err) {
+		arcnet_outb(arcnet_inb(ioaddr, COM9026_REG_RW_CONFIG) & ~IOMAPflag,
+			    ioaddr, COM9026_REG_RW_CONFIG);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		free_irq(dev->irq, dev);
 		release_region(dev->base_addr, ARCNET_TOTAL_SIZE);
 		return err;
 	}
 
+<<<<<<< HEAD
 	BUGMSG(D_NORMAL, "COM90IO: station %02Xh found at %03lXh, IRQ %d.\n",
 	       dev->dev_addr[0], dev->base_addr, dev->irq);
+=======
+	arc_printk(D_NORMAL, dev, "COM90IO: station %02Xh found at %03lXh, IRQ %d.\n",
+		   dev->dev_addr[0], dev->base_addr, dev->irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 
 /*
  * Do a hardware reset on the card, and set up necessary registers.
+=======
+/* Do a hardware reset on the card, and set up necessary registers.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This should be called as little as possible, because it disrupts the
  * token on the network (causes a RECON) and requires a significant delay.
@@ -293,15 +481,25 @@ static int com90io_reset(struct net_device *dev, int really_reset)
 	struct arcnet_local *lp = netdev_priv(dev);
 	short ioaddr = dev->base_addr;
 
+<<<<<<< HEAD
 	BUGMSG(D_INIT, "Resetting %s (status=%02Xh)\n", dev->name, ASTATUS());
 
 	if (really_reset) {
 		/* reset the card */
 		inb(_RESET);
+=======
+	arc_printk(D_INIT, dev, "Resetting %s (status=%02Xh)\n",
+		   dev->name, arcnet_inb(ioaddr, COM9026_REG_R_STATUS));
+
+	if (really_reset) {
+		/* reset the card */
+		arcnet_inb(ioaddr, COM9026_REG_R_RESET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mdelay(RESETtime);
 	}
 	/* Set the thing to IO-mapped, 8-bit  mode */
 	lp->config = (0x1C | IOMAPflag) & ~ENABLE16flag;
+<<<<<<< HEAD
 	SETCONF();
 
 	ACOMMAND(CFLAGScmd | RESETclear);	/* clear flags & end reset */
@@ -315,31 +513,62 @@ static int com90io_reset(struct net_device *dev, int really_reset)
 	/* enable extended (512-byte) packets */
 	ACOMMAND(CONFIGcmd | EXTconf);
 
+=======
+	arcnet_outb(lp->config, ioaddr, COM9026_REG_RW_CONFIG);
+
+	arcnet_outb(CFLAGScmd | RESETclear, ioaddr, COM9026_REG_W_COMMAND);
+					/* clear flags & end reset */
+	arcnet_outb(CFLAGScmd | CONFIGclear, ioaddr, COM9026_REG_W_COMMAND);
+
+	/* verify that the ARCnet signature byte is present */
+	if (get_buffer_byte(dev, 0) != TESTvalue) {
+		arc_printk(D_NORMAL, dev, "reset failed: TESTvalue not present.\n");
+		return 1;
+	}
+	/* enable extended (512-byte) packets */
+	arcnet_outb(CONFIGcmd | EXTconf, ioaddr, COM9026_REG_W_COMMAND);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* done!  return success. */
 	return 0;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void com90io_command(struct net_device *dev, int cmd)
 {
 	short ioaddr = dev->base_addr;
 
+<<<<<<< HEAD
 	ACOMMAND(cmd);
 }
 
 
+=======
+	arcnet_outb(cmd, ioaddr, COM9026_REG_W_COMMAND);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int com90io_status(struct net_device *dev)
 {
 	short ioaddr = dev->base_addr;
 
+<<<<<<< HEAD
 	return ASTATUS();
 }
 
 
+=======
+	return arcnet_inb(ioaddr, COM9026_REG_R_STATUS);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void com90io_setmask(struct net_device *dev, int mask)
 {
 	short ioaddr = dev->base_addr;
 
+<<<<<<< HEAD
 	AINTMASK(mask);
 }
 
@@ -354,29 +583,65 @@ static void com90io_copy_from_card(struct net_device *dev, int bufnum, int offse
 				   void *buf, int count)
 {
 	TIME("get_whole_buffer", count, get_whole_buffer(dev, bufnum * 512 + offset, count, buf));
+=======
+	arcnet_outb(mask, ioaddr, COM9026_REG_W_INTMASK);
+}
+
+static void com90io_copy_to_card(struct net_device *dev, int bufnum,
+				 int offset, void *buf, int count)
+{
+	TIME(dev, "put_whole_buffer", count,
+	     put_whole_buffer(dev, bufnum * 512 + offset, count, buf));
+}
+
+static void com90io_copy_from_card(struct net_device *dev, int bufnum,
+				   int offset, void *buf, int count)
+{
+	TIME(dev, "get_whole_buffer", count,
+	     get_whole_buffer(dev, bufnum * 512 + offset, count, buf));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int io;			/* use the insmod io= irq= shmem= options */
 static int irq;
 static char device[9];		/* use eg. device=arc1 to change name */
 
+<<<<<<< HEAD
 module_param(io, int, 0);
 module_param(irq, int, 0);
 module_param_string(device, device, sizeof(device), 0);
+=======
+module_param_hw(io, int, ioport, 0);
+module_param_hw(irq, int, irq, 0);
+module_param_string(device, device, sizeof(device), 0);
+MODULE_DESCRIPTION("ARCnet COM90xx IO mapped chipset driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 
 #ifndef MODULE
 static int __init com90io_setup(char *s)
 {
 	int ints[4];
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s = get_options(s, 4, ints);
 	if (!ints[0])
 		return 0;
 	switch (ints[0]) {
 	default:		/* ERROR */
+<<<<<<< HEAD
 		printk("com90io: Too many arguments.\n");
 	case 2:		/* IRQ */
 		irq = ints[2];
+=======
+		pr_err("Too many arguments\n");
+		fallthrough;
+	case 2:		/* IRQ */
+		irq = ints[2];
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 1:		/* IO address */
 		io = ints[1];
 	}
@@ -406,7 +671,11 @@ static int __init com90io_init(void)
 	err = com90io_probe(dev);
 
 	if (err) {
+<<<<<<< HEAD
 		free_netdev(dev);
+=======
+		free_arcdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -421,12 +690,24 @@ static void __exit com90io_exit(void)
 
 	unregister_netdev(dev);
 
+<<<<<<< HEAD
 	/* Set the thing back to MMAP mode, in case the old driver is loaded later */
 	outb((inb(_CONFIG) & ~IOMAPflag), _CONFIG);
 
 	free_irq(dev->irq, dev);
 	release_region(dev->base_addr, ARCNET_TOTAL_SIZE);
 	free_netdev(dev);
+=======
+	/* In case the old driver is loaded later,
+	 * set the thing back to MMAP mode
+	 */
+	arcnet_outb(arcnet_inb(ioaddr, COM9026_REG_RW_CONFIG) & ~IOMAPflag,
+		    ioaddr, COM9026_REG_RW_CONFIG);
+
+	free_irq(dev->irq, dev);
+	release_region(dev->base_addr, ARCNET_TOTAL_SIZE);
+	free_arcdev(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 module_init(com90io_init)

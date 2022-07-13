@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _PARISC_TLB_H
 #define _PARISC_TLB_H
 
@@ -22,6 +23,17 @@ do {	if (!(tlb)->fullmm)	\
 #include <asm-generic/tlb.h>
 
 #define __pmd_free_tlb(tlb, pmd, addr)	pmd_free((tlb)->mm, pmd)
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _PARISC_TLB_H
+#define _PARISC_TLB_H
+
+#include <asm-generic/tlb.h>
+
+#if CONFIG_PGTABLE_LEVELS == 3
+#define __pmd_free_tlb(tlb, pmd, addr)	pmd_free((tlb)->mm, pmd)
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define __pte_free_tlb(tlb, pte, addr)	pte_free((tlb)->mm, pte)
 
 #endif

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Process/processor support for the Hexagon architecture
  *
@@ -16,6 +17,13 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Process/processor support for the Hexagon architecture
+ *
+ * Copyright (c) 2010-2012, The Linux Foundation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_PROCESSOR_H
@@ -27,6 +35,7 @@
 #include <asm/registers.h>
 #include <asm/hexagon_vm.h>
 
+<<<<<<< HEAD
 /*  must be a macro  */
 #define current_text_addr() ({ __label__ _l; _l: &&_l; })
 
@@ -37,6 +46,11 @@ struct task_struct;
 extern pid_t kernel_thread(int (*fn)(void *), void * arg, unsigned long flags);
 extern unsigned long thread_saved_pc(struct task_struct *tsk);
 
+=======
+/*  task_struct, defined elsewhere, is the "process descriptor" */
+struct task_struct;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern void start_thread(struct pt_regs *, unsigned long, unsigned long);
 
 /*
@@ -59,6 +73,7 @@ struct thread_struct {
 #define cpu_relax() __vmyield()
 
 /*
+<<<<<<< HEAD
  * "Unlazying all lazy status" occurs here.
  */
 static inline void prepare_to_copy(struct task_struct *tsk)
@@ -66,6 +81,8 @@ static inline void prepare_to_copy(struct task_struct *tsk)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Decides where the kernel will search for a free chunk of vm space during
  * mmaps.
  * See also arch_get_unmapped_area.
@@ -87,11 +104,15 @@ static inline void prepare_to_copy(struct task_struct *tsk)
 #define KSTK_EIP(tsk) (pt_elr(task_pt_regs(tsk)))
 #define KSTK_ESP(tsk) (pt_psp(task_pt_regs(tsk)))
 
+<<<<<<< HEAD
 /*  Free all resources held by a thread; defined in process.c  */
 extern void release_thread(struct task_struct *dead_task);
 
 /* Get wait channel for task P.  */
 extern unsigned long get_wchan(struct task_struct *p);
+=======
+extern unsigned long __get_wchan(struct task_struct *p);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*  The following stuff is pretty HEXAGON specific.  */
 
@@ -108,12 +129,58 @@ extern unsigned long get_wchan(struct task_struct *p);
  */
 
 struct hexagon_switch_stack {
+<<<<<<< HEAD
 	unsigned long long	r1716;
 	unsigned long long	r1918;
 	unsigned long long	r2120;
 	unsigned long long	r2322;
 	unsigned long long	r2524;
 	unsigned long long	r2726;
+=======
+	union {
+		struct {
+			unsigned long r16;
+			unsigned long r17;
+		};
+		unsigned long long	r1716;
+	};
+	union {
+		struct {
+			unsigned long r18;
+			unsigned long r19;
+		};
+		unsigned long long	r1918;
+	};
+	union {
+		struct {
+			unsigned long r20;
+			unsigned long r21;
+		};
+		unsigned long long	r2120;
+	};
+	union {
+		struct {
+			unsigned long r22;
+			unsigned long r23;
+		};
+		unsigned long long	r2322;
+	};
+	union {
+		struct {
+			unsigned long r24;
+			unsigned long r25;
+		};
+		unsigned long long	r2524;
+	};
+	union {
+		struct {
+			unsigned long r26;
+			unsigned long r27;
+		};
+		unsigned long long	r2726;
+	};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long		fp;
 	unsigned long		lr;
 };

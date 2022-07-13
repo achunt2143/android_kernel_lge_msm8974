@@ -1,6 +1,10 @@
 /*
  * Author: MontaVista Software, Inc.
+<<<<<<< HEAD
  *         source@mvista.com
+=======
+ *	   source@mvista.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright 2001-2002 MontaVista Software Inc.
  *
@@ -38,7 +42,11 @@
 #define RBTX4927_IMASK_ADDR	(IO_BASE + TXX9_CE(2) + 0x00002000)
 #define RBTX4927_IMSTAT_ADDR	(IO_BASE + TXX9_CE(2) + 0x00002006)
 #define RBTX4927_SOFTINT_ADDR	(IO_BASE + TXX9_CE(2) + 0x00003000)
+<<<<<<< HEAD
 #define RBTX4927_SOFTRESET_ADDR	(IO_BASE + TXX9_CE(2) + 0x0000f000)
+=======
+#define RBTX4927_SOFTRESET_ADDR (IO_BASE + TXX9_CE(2) + 0x0000f000)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define RBTX4927_SOFTRESETLOCK_ADDR	(IO_BASE + TXX9_CE(2) + 0x0000f002)
 #define RBTX4927_PCIRESET_ADDR	(IO_BASE + TXX9_CE(2) + 0x0000f006)
 #define RBTX4927_BRAMRTC_BASE	(IO_BASE + TXX9_CE(2) + 0x00010000)
@@ -50,7 +58,11 @@
 #define rbtx4927_imask_addr	((__u8 __iomem *)RBTX4927_IMASK_ADDR)
 #define rbtx4927_imstat_addr	((__u8 __iomem *)RBTX4927_IMSTAT_ADDR)
 #define rbtx4927_softint_addr	((__u8 __iomem *)RBTX4927_SOFTINT_ADDR)
+<<<<<<< HEAD
 #define rbtx4927_softreset_addr	((__u8 __iomem *)RBTX4927_SOFTRESET_ADDR)
+=======
+#define rbtx4927_softreset_addr ((__u8 __iomem *)RBTX4927_SOFTRESET_ADDR)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define rbtx4927_softresetlock_addr	\
 				((__u8 __iomem *)RBTX4927_SOFTRESETLOCK_ADDR)
 #define rbtx4927_pcireset_addr	((__u8 __iomem *)RBTX4927_PCIRESET_ADDR)

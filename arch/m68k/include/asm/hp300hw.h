@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _M68K_HP300HW_H
 #define _M68K_HP300HW_H
 
@@ -22,4 +23,15 @@ extern unsigned long hp300_model;
 #define HP_433T		(14)	/* 33MHz 68040 - model 433t */
 #define HP_433S		(15)	/* 33MHz 68040 - model 433s */
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _M68K_HP300HW_H
+#define _M68K_HP300HW_H
+
+#include <asm/bootinfo-hp300.h>
+
+
+extern unsigned long hp300_model;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _M68K_HP300HW_H */

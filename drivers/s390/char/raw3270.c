@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * IBM/3270 Driver - core functions.
  *
@@ -28,7 +32,14 @@
 #include <linux/device.h>
 #include <linux/mutex.h>
 
+<<<<<<< HEAD
 static struct class *class3270;
+=======
+const struct class class3270 = {
+	.name = "3270",
+};
+EXPORT_SYMBOL(class3270);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The main 3270 data structure. */
 struct raw3270 {
@@ -36,7 +47,13 @@ struct raw3270 {
 	struct ccw_device *cdev;
 	int minor;
 
+<<<<<<< HEAD
 	short model, rows, cols;
+=======
+	int model, rows, cols;
+	int old_model, old_rows, old_cols;
+	unsigned int state;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 
 	struct list_head req_queue;	/* Request queue. */
@@ -46,6 +63,7 @@ struct raw3270 {
 	struct timer_list timer;	/* Device timer. */
 
 	unsigned char *ascebc;		/* ascii -> ebcdic table */
+<<<<<<< HEAD
 	struct device *clttydev;	/* 3270-class tty device ptr */
 	struct device *cltubdev;	/* 3270-class tub device ptr */
 
@@ -60,6 +78,28 @@ struct raw3270 {
 #define RAW3270_FLAGS_READY	4	/* Device is useable by views */
 #define RAW3270_FLAGS_CONSOLE	8	/* Device is the console. */
 #define RAW3270_FLAGS_FROZEN	16	/* set if 3270 is frozen for suspend */
+=======
+
+	struct raw3270_view init_view;
+	struct raw3270_request init_reset;
+	struct raw3270_request init_readpart;
+	struct raw3270_request init_readmod;
+	unsigned char init_data[256];
+	struct work_struct resize_work;
+};
+
+/* raw3270->state */
+#define RAW3270_STATE_INIT	0	/* Initial state */
+#define RAW3270_STATE_RESET	1	/* Reset command is pending */
+#define RAW3270_STATE_W4ATTN	2	/* Wait for attention interrupt */
+#define RAW3270_STATE_READMOD	3	/* Read partition is pending */
+#define RAW3270_STATE_READY	4	/* Device is usable by views */
+
+/* raw3270->flags */
+#define RAW3270_FLAGS_14BITADDR	0	/* 14-bit buffer addresses */
+#define RAW3270_FLAGS_BUSY	1	/* Device busy, leave it alone */
+#define RAW3270_FLAGS_CONSOLE	2	/* Device is the console. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Semaphore to protect global data of raw3270 (devices, views, etc). */
 static DEFINE_MUTEX(raw3270_mutex);
@@ -75,13 +115,23 @@ static LIST_HEAD(raw3270_devices);
 static int raw3270_registered;
 
 /* Module parameters */
+<<<<<<< HEAD
 static bool tubxcorrect = 0;
+=======
+static bool tubxcorrect;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_param(tubxcorrect, bool, 0);
 
 /*
  * Wait queue for device init/delete, view delete.
  */
 DECLARE_WAIT_QUEUE_HEAD(raw3270_wait_queue);
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(raw3270_wait_queue);
+
+static void __raw3270_disconnect(struct raw3270 *rp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Encode array for 12 bit 3270 addresses.
@@ -97,9 +147,26 @@ static unsigned char raw3270_ebcgraf[64] =	{
 	0xf8, 0xf9, 0x7a, 0x7b, 0x7c, 0x7d, 0x7e, 0x7f
 };
 
+<<<<<<< HEAD
 void
 raw3270_buffer_address(struct raw3270 *rp, char *cp, unsigned short addr)
 {
+=======
+static inline int raw3270_state_ready(struct raw3270 *rp)
+{
+	return rp->state == RAW3270_STATE_READY;
+}
+
+void raw3270_buffer_address(struct raw3270 *rp, char *cp, int x, int y)
+{
+	int addr;
+
+	if (x < 0)
+		x = max_t(int, 0, rp->view->cols + x);
+	if (y < 0)
+		y = max_t(int, 0, rp->view->rows + y);
+	addr = (y * rp->view->cols) + x;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (test_bit(RAW3270_FLAGS_14BITADDR, &rp->flags)) {
 		cp[0] = (addr >> 8) & 0x3f;
 		cp[1] = addr & 0xff;
@@ -108,17 +175,29 @@ raw3270_buffer_address(struct raw3270 *rp, char *cp, unsigned short addr)
 		cp[1] = raw3270_ebcgraf[addr & 0x3f];
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(raw3270_buffer_address);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Allocate a new 3270 ccw request
  */
+<<<<<<< HEAD
 struct raw3270_request *
 raw3270_request_alloc(size_t size)
+=======
+struct raw3270_request *raw3270_request_alloc(size_t size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw3270_request *rq;
 
 	/* Allocate request structure */
+<<<<<<< HEAD
 	rq = kzalloc(sizeof(struct raw3270_request), GFP_KERNEL | GFP_DMA);
+=======
+	rq = kzalloc(sizeof(*rq), GFP_KERNEL | GFP_DMA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rq)
 		return ERR_PTR(-ENOMEM);
 
@@ -136,25 +215,43 @@ raw3270_request_alloc(size_t size)
 	/*
 	 * Setup ccw.
 	 */
+<<<<<<< HEAD
 	rq->ccw.cda = __pa(rq->buffer);
+=======
+	if (rq->buffer)
+		rq->ccw.cda = virt_to_dma32(rq->buffer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	rq->ccw.flags = CCW_FLAG_SLI;
 
 	return rq;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(raw3270_request_alloc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Free 3270 ccw request
  */
+<<<<<<< HEAD
 void
 raw3270_request_free (struct raw3270_request *rq)
+=======
+void raw3270_request_free(struct raw3270_request *rq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	kfree(rq->buffer);
 	kfree(rq);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(raw3270_request_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Reset request to initial state.
  */
+<<<<<<< HEAD
 void
 raw3270_request_reset(struct raw3270_request *rq)
 {
@@ -166,21 +263,49 @@ raw3270_request_reset(struct raw3270_request *rq)
 	rq->rescnt = 0;
 	rq->rc = 0;
 }
+=======
+int raw3270_request_reset(struct raw3270_request *rq)
+{
+	if (WARN_ON_ONCE(!list_empty(&rq->list)))
+		return -EBUSY;
+	rq->ccw.cmd_code = 0;
+	rq->ccw.count = 0;
+	if (rq->buffer)
+		rq->ccw.cda = virt_to_dma32(rq->buffer);
+	rq->ccw.flags = CCW_FLAG_SLI;
+	rq->rescnt = 0;
+	rq->rc = 0;
+	return 0;
+}
+EXPORT_SYMBOL(raw3270_request_reset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set command code to ccw of a request.
  */
+<<<<<<< HEAD
 void
 raw3270_request_set_cmd(struct raw3270_request *rq, u8 cmd)
 {
 	rq->ccw.cmd_code = cmd;
 }
+=======
+void raw3270_request_set_cmd(struct raw3270_request *rq, u8 cmd)
+{
+	rq->ccw.cmd_code = cmd;
+}
+EXPORT_SYMBOL(raw3270_request_set_cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Add data fragment to output buffer.
  */
+<<<<<<< HEAD
 int
 raw3270_request_add_data(struct raw3270_request *rq, void *data, size_t size)
+=======
+int raw3270_request_add_data(struct raw3270_request *rq, void *data, size_t size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (size + rq->ccw.count > rq->size)
 		return -E2BIG;
@@ -188,20 +313,34 @@ raw3270_request_add_data(struct raw3270_request *rq, void *data, size_t size)
 	rq->ccw.count += size;
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(raw3270_request_add_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set address/length pair to ccw of a request.
  */
+<<<<<<< HEAD
 void
 raw3270_request_set_data(struct raw3270_request *rq, void *data, size_t size)
 {
 	rq->ccw.cda = __pa(data);
 	rq->ccw.count = size;
 }
+=======
+void raw3270_request_set_data(struct raw3270_request *rq, void *data, size_t size)
+{
+	rq->ccw.cda = virt_to_dma32(data);
+	rq->ccw.count = size;
+}
+EXPORT_SYMBOL(raw3270_request_set_data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set idal buffer to ccw of a request.
  */
+<<<<<<< HEAD
 void
 raw3270_request_set_idal(struct raw3270_request *rq, struct idal_buffer *ib)
 {
@@ -244,14 +383,28 @@ raw3270_halt_io(struct raw3270 *rp, struct raw3270_request *rq)
 	spin_unlock_irqrestore(get_ccwdev_lock(rp->cdev), flags);
 	return rc;
 }
+=======
+void raw3270_request_set_idal(struct raw3270_request *rq, struct idal_buffer *ib)
+{
+	rq->ccw.cda = virt_to_dma32(ib->data);
+	rq->ccw.count = ib->size;
+	rq->ccw.flags |= CCW_FLAG_IDA;
+}
+EXPORT_SYMBOL(raw3270_request_set_idal);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Add the request to the request queue, try to start it if the
  * 3270 device is idle. Return without waiting for end of i/o.
  */
+<<<<<<< HEAD
 static int
 __raw3270_start(struct raw3270 *rp, struct raw3270_view *view,
 		struct raw3270_request *rq)
+=======
+static int __raw3270_start(struct raw3270 *rp, struct raw3270_view *view,
+			   struct raw3270_request *rq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	rq->view = view;
 	raw3270_get_view(view);
@@ -259,7 +412,11 @@ __raw3270_start(struct raw3270 *rp, struct raw3270_view *view,
 	    !test_bit(RAW3270_FLAGS_BUSY, &rp->flags)) {
 		/* No other requests are on the queue. Start this one. */
 		rq->rc = ccw_device_start(rp->cdev, &rq->ccw,
+<<<<<<< HEAD
 					       (unsigned long) rq, 0, 0);
+=======
+					  (unsigned long)rq, 0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rq->rc) {
 			raw3270_put_view(view);
 			return rq->rc;
@@ -269,8 +426,19 @@ __raw3270_start(struct raw3270 *rp, struct raw3270_view *view,
 	return 0;
 }
 
+<<<<<<< HEAD
 int
 raw3270_start(struct raw3270_view *view, struct raw3270_request *rq)
+=======
+int raw3270_view_active(struct raw3270_view *view)
+{
+	struct raw3270 *rp = view->dev;
+
+	return rp && rp->view == view;
+}
+
+int raw3270_start(struct raw3270_view *view, struct raw3270_request *rq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	struct raw3270 *rp;
@@ -278,36 +446,78 @@ raw3270_start(struct raw3270_view *view, struct raw3270_request *rq)
 
 	spin_lock_irqsave(get_ccwdev_lock(view->dev->cdev), flags);
 	rp = view->dev;
+<<<<<<< HEAD
 	if (!rp || rp->view != view ||
 	    test_bit(RAW3270_FLAGS_FROZEN, &rp->flags))
 		rc = -EACCES;
 	else if (!test_bit(RAW3270_FLAGS_READY, &rp->flags))
 		rc = -ENODEV;
+=======
+	if (!rp || rp->view != view)
+		rc = -EACCES;
+	else if (!raw3270_state_ready(rp))
+		rc = -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		rc =  __raw3270_start(rp, view, rq);
 	spin_unlock_irqrestore(get_ccwdev_lock(view->dev->cdev), flags);
 	return rc;
 }
+<<<<<<< HEAD
 
 int
 raw3270_start_locked(struct raw3270_view *view, struct raw3270_request *rq)
+=======
+EXPORT_SYMBOL(raw3270_start);
+
+int raw3270_start_request(struct raw3270_view *view, struct raw3270_request *rq,
+			  int cmd, void *data, size_t len)
+{
+	int rc;
+
+	rc = raw3270_request_reset(rq);
+	if (rc)
+		return rc;
+	raw3270_request_set_cmd(rq, cmd);
+	rc = raw3270_request_add_data(rq, data, len);
+	if (rc)
+		return rc;
+	return raw3270_start(view, rq);
+}
+EXPORT_SYMBOL(raw3270_start_request);
+
+int raw3270_start_locked(struct raw3270_view *view, struct raw3270_request *rq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw3270 *rp;
 	int rc;
 
 	rp = view->dev;
+<<<<<<< HEAD
 	if (!rp || rp->view != view ||
 	    test_bit(RAW3270_FLAGS_FROZEN, &rp->flags))
 		rc = -EACCES;
 	else if (!test_bit(RAW3270_FLAGS_READY, &rp->flags))
 		rc = -ENODEV;
+=======
+	if (!rp || rp->view != view)
+		rc = -EACCES;
+	else if (!raw3270_state_ready(rp))
+		rc = -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		rc =  __raw3270_start(rp, view, rq);
 	return rc;
 }
+<<<<<<< HEAD
 
 int
 raw3270_start_irq(struct raw3270_view *view, struct raw3270_request *rq)
+=======
+EXPORT_SYMBOL(raw3270_start_locked);
+
+int raw3270_start_irq(struct raw3270_view *view, struct raw3270_request *rq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw3270 *rp;
 
@@ -317,21 +527,33 @@ raw3270_start_irq(struct raw3270_view *view, struct raw3270_request *rq)
 	list_add_tail(&rq->list, &rp->req_queue);
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(raw3270_start_irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * 3270 interrupt routine, called from the ccw_device layer
  */
+<<<<<<< HEAD
 static void
 raw3270_irq (struct ccw_device *cdev, unsigned long intparm, struct irb *irb)
+=======
+static void raw3270_irq(struct ccw_device *cdev, unsigned long intparm, struct irb *irb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw3270 *rp;
 	struct raw3270_view *view;
 	struct raw3270_request *rq;
+<<<<<<< HEAD
 	int rc;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rp = dev_get_drvdata(&cdev->dev);
 	if (!rp)
 		return;
+<<<<<<< HEAD
 	rq = (struct raw3270_request *) intparm;
 	view = rq ? rq->view : rp->view;
 
@@ -386,6 +608,36 @@ raw3270_irq (struct ccw_device *cdev, unsigned long intparm, struct irb *irb)
 	}
 	if (rq) {
 		BUG_ON(list_empty(&rq->list));
+=======
+	rq = (struct raw3270_request *)intparm;
+	view = rq ? rq->view : rp->view;
+
+	if (!IS_ERR(irb)) {
+		/* Handle CE-DE-UE and subsequent UDE */
+		if (irb->scsw.cmd.dstat & DEV_STAT_DEV_END)
+			clear_bit(RAW3270_FLAGS_BUSY, &rp->flags);
+		if (irb->scsw.cmd.dstat == (DEV_STAT_CHN_END |
+					    DEV_STAT_DEV_END |
+					    DEV_STAT_UNIT_EXCEP))
+			set_bit(RAW3270_FLAGS_BUSY, &rp->flags);
+		/* Handle disconnected devices */
+		if ((irb->scsw.cmd.dstat & DEV_STAT_UNIT_CHECK) &&
+		    (irb->ecw[0] & SNS0_INTERVENTION_REQ)) {
+			set_bit(RAW3270_FLAGS_BUSY, &rp->flags);
+			if (rp->state > RAW3270_STATE_RESET)
+				__raw3270_disconnect(rp);
+		}
+		/* Call interrupt handler of the view */
+		if (view)
+			view->fn->intv(view, rq, irb);
+	}
+
+	if (test_bit(RAW3270_FLAGS_BUSY, &rp->flags))
+		/* Device busy, do not start I/O */
+		return;
+
+	if (rq && !list_empty(&rq->list)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* The request completed, remove from queue and do callback. */
 		list_del_init(&rq->list);
 		if (rq->callback)
@@ -393,14 +645,24 @@ raw3270_irq (struct ccw_device *cdev, unsigned long intparm, struct irb *irb)
 		/* Do put_device for get_device in raw3270_start. */
 		raw3270_put_view(view);
 	}
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Try to start each request on request queue until one is
 	 * started successful.
 	 */
 	while (!list_empty(&rp->req_queue)) {
+<<<<<<< HEAD
 		rq = list_entry(rp->req_queue.next,struct raw3270_request,list);
 		rq->rc = ccw_device_start(rp->cdev, &rq->ccw,
 					  (unsigned long) rq, 0, 0);
+=======
+		rq = list_entry(rp->req_queue.next, struct raw3270_request, list);
+		rq->rc = ccw_device_start(rp->cdev, &rq->ccw,
+					  (unsigned long)rq, 0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (rq->rc == 0)
 			break;
 		/* Start failed. Remove request and do callback. */
@@ -413,9 +675,20 @@ raw3270_irq (struct ccw_device *cdev, unsigned long intparm, struct irb *irb)
 }
 
 /*
+<<<<<<< HEAD
  * Size sensing.
  */
 
+=======
+ * To determine the size of the 3270 device we need to do:
+ * 1) send a 'read partition' data stream to the device
+ * 2) wait for the attn interrupt that precedes the query reply
+ * 3) do a read modified to get the query reply
+ * To make things worse we have to cope with intervention
+ * required (3270 device switched to 'stand-by') and command
+ * rejects (old devices that can't do 'read partition').
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct raw3270_ua {	/* Query Reply structure for Usable Area */
 	struct {	/* Usable Area Query Reply Base */
 		short l;	/* Length of this structured field */
@@ -435,7 +708,11 @@ struct raw3270_ua {	/* Query Reply structure for Usable Area */
 		char  ymin;
 		char  xmax;
 		char  ymax;
+<<<<<<< HEAD
 	} __attribute__ ((packed)) uab;
+=======
+	} __packed uab;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct {	/* Alternate Usable Area Self-Defining Parameter */
 		char  l;	/* Length of this Self-Defining Parm */
 		char  sdpid;	/* 0x02 if Alternate Usable Area */
@@ -448,6 +725,7 @@ struct raw3270_ua {	/* Query Reply structure for Usable Area */
 		int   auayr;
 		char  awauai;
 		char  ahauai;
+<<<<<<< HEAD
 	} __attribute__ ((packed)) aua;
 } __attribute__ ((packed));
 
@@ -562,6 +840,36 @@ __raw3270_size_device_vm(struct raw3270 *rp)
 	if (rc)
 		return rc;
 	model = raw3270_init_diag210.vrdccrmd;
+=======
+	} __packed aua;
+} __packed;
+
+static void raw3270_size_device_vm(struct raw3270 *rp)
+{
+	int rc, model;
+	struct ccw_dev_id dev_id;
+	struct diag210 diag_data;
+	struct diag8c diag8c_data;
+
+	ccw_device_get_id(rp->cdev, &dev_id);
+	rc = diag8c(&diag8c_data, &dev_id);
+	if (!rc) {
+		rp->model = 2;
+		rp->rows = diag8c_data.height;
+		rp->cols = diag8c_data.width;
+		if (diag8c_data.flags & 1)
+			set_bit(RAW3270_FLAGS_14BITADDR, &rp->flags);
+		return;
+	}
+
+	diag_data.vrdcdvno = dev_id.devno;
+	diag_data.vrdclen = sizeof(struct diag210);
+	rc = diag210(&diag_data);
+	model = diag_data.vrdccrmd;
+	/* Use default model 2 if the size could not be detected */
+	if (rc || model < 2 || model > 5)
+		model = 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (model) {
 	case 2:
 		rp->model = model;
@@ -583,6 +891,7 @@ __raw3270_size_device_vm(struct raw3270 *rp)
 		rp->rows = 27;
 		rp->cols = 132;
 		break;
+<<<<<<< HEAD
 	default:
 		rc = -EOPNOTSUPP;
 		break;
@@ -654,6 +963,25 @@ __raw3270_size_device(struct raw3270 *rp)
 	/* Paranoia check. */
 	if (rp->init_data[0] != 0x88 || uap->uab.qcode != 0x81)
 		return -EOPNOTSUPP;
+=======
+	}
+}
+
+static void raw3270_size_device(struct raw3270 *rp, char *init_data)
+{
+	struct raw3270_ua *uap;
+
+	/* Got a Query Reply */
+	uap = (struct raw3270_ua *)(init_data + 1);
+	/* Paranoia check. */
+	if (init_data[0] != 0x88 || uap->uab.qcode != 0x81) {
+		/* Couldn't detect size. Use default model 2. */
+		rp->model = 2;
+		rp->rows = 24;
+		rp->cols = 80;
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Copy rows/columns of default Usable Area */
 	rp->rows = uap->uab.h;
 	rp->cols = uap->uab.w;
@@ -666,6 +994,7 @@ __raw3270_size_device(struct raw3270 *rp)
 		rp->rows = uap->aua.hauai;
 		rp->cols = uap->aua.wauai;
 	}
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -731,26 +1060,228 @@ raw3270_reset_device(struct raw3270 *rp)
 
 int
 raw3270_reset(struct raw3270_view *view)
+=======
+	/* Try to find a model. */
+	rp->model = 0;
+	if (rp->rows == 24 && rp->cols == 80)
+		rp->model = 2;
+	if (rp->rows == 32 && rp->cols == 80)
+		rp->model = 3;
+	if (rp->rows == 43 && rp->cols == 80)
+		rp->model = 4;
+	if (rp->rows == 27 && rp->cols == 132)
+		rp->model = 5;
+}
+
+static void raw3270_resize_work(struct work_struct *work)
+{
+	struct raw3270 *rp = container_of(work, struct raw3270, resize_work);
+	struct raw3270_view *view;
+
+	/* Notify views about new size */
+	list_for_each_entry(view, &rp->view_list, list) {
+		if (view->fn->resize)
+			view->fn->resize(view, rp->model, rp->rows, rp->cols,
+					 rp->old_model, rp->old_rows, rp->old_cols);
+	}
+	rp->old_cols = rp->cols;
+	rp->old_rows = rp->rows;
+	rp->old_model = rp->model;
+	/* Setup processing done, now activate a view */
+	list_for_each_entry(view, &rp->view_list, list) {
+		rp->view = view;
+		if (view->fn->activate(view) == 0)
+			break;
+		rp->view = NULL;
+	}
+}
+
+static void raw3270_size_device_done(struct raw3270 *rp)
+{
+	rp->view = NULL;
+	rp->state = RAW3270_STATE_READY;
+	schedule_work(&rp->resize_work);
+}
+
+void raw3270_read_modified_cb(struct raw3270_request *rq, void *data)
+{
+	struct raw3270 *rp = rq->view->dev;
+
+	raw3270_size_device(rp, data);
+	raw3270_size_device_done(rp);
+}
+EXPORT_SYMBOL(raw3270_read_modified_cb);
+
+static void raw3270_read_modified(struct raw3270 *rp)
+{
+	if (rp->state != RAW3270_STATE_W4ATTN)
+		return;
+	/* Use 'read modified' to get the result of a read partition. */
+	memset(&rp->init_readmod, 0, sizeof(rp->init_readmod));
+	memset(&rp->init_data, 0, sizeof(rp->init_data));
+	rp->init_readmod.ccw.cmd_code = TC_READMOD;
+	rp->init_readmod.ccw.flags = CCW_FLAG_SLI;
+	rp->init_readmod.ccw.count = sizeof(rp->init_data);
+	rp->init_readmod.ccw.cda = virt_to_dma32(rp->init_data);
+	rp->init_readmod.callback = raw3270_read_modified_cb;
+	rp->init_readmod.callback_data = rp->init_data;
+	rp->state = RAW3270_STATE_READMOD;
+	raw3270_start_irq(&rp->init_view, &rp->init_readmod);
+}
+
+static void raw3270_writesf_readpart(struct raw3270 *rp)
+{
+	static const unsigned char wbuf[] = {
+		0x00, 0x07, 0x01, 0xff, 0x03, 0x00, 0x81
+	};
+
+	/* Store 'read partition' data stream to init_data */
+	memset(&rp->init_readpart, 0, sizeof(rp->init_readpart));
+	memset(&rp->init_data, 0, sizeof(rp->init_data));
+	memcpy(&rp->init_data, wbuf, sizeof(wbuf));
+	rp->init_readpart.ccw.cmd_code = TC_WRITESF;
+	rp->init_readpart.ccw.flags = CCW_FLAG_SLI;
+	rp->init_readpart.ccw.count = sizeof(wbuf);
+	rp->init_readpart.ccw.cda = virt_to_dma32(&rp->init_data);
+	rp->state = RAW3270_STATE_W4ATTN;
+	raw3270_start_irq(&rp->init_view, &rp->init_readpart);
+}
+
+/*
+ * Device reset
+ */
+static void raw3270_reset_device_cb(struct raw3270_request *rq, void *data)
+{
+	struct raw3270 *rp = rq->view->dev;
+
+	if (rp->state != RAW3270_STATE_RESET)
+		return;
+	if (rq->rc) {
+		/* Reset command failed. */
+		rp->state = RAW3270_STATE_INIT;
+	} else if (MACHINE_IS_VM) {
+		raw3270_size_device_vm(rp);
+		raw3270_size_device_done(rp);
+	} else {
+		raw3270_writesf_readpart(rp);
+	}
+	memset(&rp->init_reset, 0, sizeof(rp->init_reset));
+}
+
+static int __raw3270_reset_device(struct raw3270 *rp)
+{
+	int rc;
+
+	/* Check if reset is already pending */
+	if (rp->init_reset.view)
+		return -EBUSY;
+	/* Store reset data stream to init_data/init_reset */
+	rp->init_data[0] = TW_KR;
+	rp->init_reset.ccw.cmd_code = TC_EWRITEA;
+	rp->init_reset.ccw.flags = CCW_FLAG_SLI;
+	rp->init_reset.ccw.count = 1;
+	rp->init_reset.ccw.cda = virt_to_dma32(rp->init_data);
+	rp->init_reset.callback = raw3270_reset_device_cb;
+	rc = __raw3270_start(rp, &rp->init_view, &rp->init_reset);
+	if (rc == 0 && rp->state == RAW3270_STATE_INIT)
+		rp->state = RAW3270_STATE_RESET;
+	return rc;
+}
+
+static int raw3270_reset_device(struct raw3270 *rp)
+{
+	unsigned long flags;
+	int rc;
+
+	spin_lock_irqsave(get_ccwdev_lock(rp->cdev), flags);
+	rc = __raw3270_reset_device(rp);
+	spin_unlock_irqrestore(get_ccwdev_lock(rp->cdev), flags);
+	return rc;
+}
+
+int raw3270_reset(struct raw3270_view *view)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw3270 *rp;
 	int rc;
 
 	rp = view->dev;
+<<<<<<< HEAD
 	if (!rp || rp->view != view ||
 	    test_bit(RAW3270_FLAGS_FROZEN, &rp->flags))
 		rc = -EACCES;
 	else if (!test_bit(RAW3270_FLAGS_READY, &rp->flags))
 		rc = -ENODEV;
+=======
+	if (!rp || rp->view != view)
+		rc = -EACCES;
+	else if (!raw3270_state_ready(rp))
+		rc = -EBUSY;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	else
 		rc = raw3270_reset_device(view->dev);
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(raw3270_reset);
+
+static void __raw3270_disconnect(struct raw3270 *rp)
+{
+	struct raw3270_request *rq;
+	struct raw3270_view *view;
+
+	rp->state = RAW3270_STATE_INIT;
+	rp->view = &rp->init_view;
+	/* Cancel all queued requests */
+	while (!list_empty(&rp->req_queue)) {
+		rq = list_entry(rp->req_queue.next, struct raw3270_request, list);
+		view = rq->view;
+		rq->rc = -EACCES;
+		list_del_init(&rq->list);
+		if (rq->callback)
+			rq->callback(rq, rq->callback_data);
+		raw3270_put_view(view);
+	}
+	/* Start from scratch */
+	__raw3270_reset_device(rp);
+}
+
+static void raw3270_init_irq(struct raw3270_view *view, struct raw3270_request *rq,
+			     struct irb *irb)
+{
+	struct raw3270 *rp;
+
+	if (rq) {
+		if (irb->scsw.cmd.dstat & DEV_STAT_UNIT_CHECK) {
+			if (irb->ecw[0] & SNS0_CMD_REJECT)
+				rq->rc = -EOPNOTSUPP;
+			else
+				rq->rc = -EIO;
+		}
+	}
+	if (irb->scsw.cmd.dstat & DEV_STAT_ATTENTION) {
+		/* Queue read modified after attention interrupt */
+		rp = view->dev;
+		raw3270_read_modified(rp);
+	}
+}
+
+static struct raw3270_fn raw3270_init_fn = {
+	.intv = raw3270_init_irq
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Setup new 3270 device.
  */
+<<<<<<< HEAD
 static int
 raw3270_setup_device(struct ccw_device *cdev, struct raw3270 *rp, char *ascebc)
+=======
+static int raw3270_setup_device(struct ccw_device *cdev, struct raw3270 *rp,
+				char *ascebc)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct list_head *l;
 	struct raw3270 *tmp;
@@ -770,10 +1301,23 @@ raw3270_setup_device(struct ccw_device *cdev, struct raw3270 *rp, char *ascebc)
 	/* Set defaults. */
 	rp->rows = 24;
 	rp->cols = 80;
+<<<<<<< HEAD
+=======
+	rp->old_rows = rp->rows;
+	rp->old_cols = rp->cols;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&rp->req_queue);
 	INIT_LIST_HEAD(&rp->view_list);
 
+<<<<<<< HEAD
+=======
+	rp->init_view.dev = rp;
+	rp->init_view.fn = &raw3270_init_fn;
+	rp->view = &rp->init_view;
+	INIT_WORK(&rp->resize_work, raw3270_resize_work);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Add device to list and find the smallest unused minor
 	 * number for it. Note: there is no device with minor 0,
@@ -807,21 +1351,49 @@ raw3270_setup_device(struct ccw_device *cdev, struct raw3270 *rp, char *ascebc)
 }
 
 #ifdef CONFIG_TN3270_CONSOLE
+<<<<<<< HEAD
 /*
  * Setup 3270 device configured as console.
  */
 struct raw3270 __init *raw3270_setup_console(struct ccw_device *cdev)
 {
+=======
+/* Tentative definition - see below for actual definition. */
+static struct ccw_driver raw3270_ccw_driver;
+
+static inline int raw3270_state_final(struct raw3270 *rp)
+{
+	return rp->state == RAW3270_STATE_INIT ||
+		rp->state == RAW3270_STATE_READY;
+}
+
+/*
+ * Setup 3270 device configured as console.
+ */
+struct raw3270 __init *raw3270_setup_console(void)
+{
+	struct ccw_device *cdev;
+	unsigned long flags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct raw3270 *rp;
 	char *ascebc;
 	int rc;
 
+<<<<<<< HEAD
 	rp = kzalloc(sizeof(struct raw3270), GFP_KERNEL | GFP_DMA);
+=======
+	cdev = ccw_device_create_console(&raw3270_ccw_driver);
+	if (IS_ERR(cdev))
+		return ERR_CAST(cdev);
+
+	rp = kzalloc(sizeof(*rp), GFP_KERNEL | GFP_DMA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ascebc = kzalloc(256, GFP_KERNEL);
 	rc = raw3270_setup_device(cdev, rp, ascebc);
 	if (rc)
 		return ERR_PTR(rc);
 	set_bit(RAW3270_FLAGS_CONSOLE, &rp->flags);
+<<<<<<< HEAD
 	rc = raw3270_reset_device(rp);
 	if (rc)
 		return ERR_PTR(rc);
@@ -837,11 +1409,37 @@ struct raw3270 __init *raw3270_setup_console(struct ccw_device *cdev)
 
 void
 raw3270_wait_cons_dev(struct raw3270 *rp)
+=======
+
+	rc = ccw_device_enable_console(cdev);
+	if (rc) {
+		ccw_device_destroy_console(cdev);
+		return ERR_PTR(rc);
+	}
+
+	spin_lock_irqsave(get_ccwdev_lock(rp->cdev), flags);
+	do {
+		__raw3270_reset_device(rp);
+		while (!raw3270_state_final(rp)) {
+			ccw_device_wait_idle(rp->cdev);
+			barrier();
+		}
+	} while (rp->state != RAW3270_STATE_READY);
+	spin_unlock_irqrestore(get_ccwdev_lock(rp->cdev), flags);
+	return rp;
+}
+
+void raw3270_wait_cons_dev(struct raw3270 *rp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
 	spin_lock_irqsave(get_ccwdev_lock(rp->cdev), flags);
+<<<<<<< HEAD
 	wait_cons_dev();
+=======
+	ccw_device_wait_idle(rp->cdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(get_ccwdev_lock(rp->cdev), flags);
 }
 
@@ -850,14 +1448,22 @@ raw3270_wait_cons_dev(struct raw3270 *rp)
 /*
  * Create a 3270 device structure.
  */
+<<<<<<< HEAD
 static struct raw3270 *
 raw3270_create_device(struct ccw_device *cdev)
+=======
+static struct raw3270 *raw3270_create_device(struct ccw_device *cdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw3270 *rp;
 	char *ascebc;
 	int rc;
 
+<<<<<<< HEAD
 	rp = kmalloc(sizeof(struct raw3270), GFP_KERNEL | GFP_DMA);
+=======
+	rp = kzalloc(sizeof(*rp), GFP_KERNEL | GFP_DMA);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!rp)
 		return ERR_PTR(-ENOMEM);
 	ascebc = kmalloc(256, GFP_KERNEL);
@@ -877,6 +1483,7 @@ raw3270_create_device(struct ccw_device *cdev)
 }
 
 /*
+<<<<<<< HEAD
  * Activate a view.
  */
 int
@@ -884,6 +1491,73 @@ raw3270_activate_view(struct raw3270_view *view)
 {
 	struct raw3270 *rp;
 	struct raw3270_view *oldview, *nv;
+=======
+ * This helper just validates that it is safe to activate a
+ * view in the panic() context, due to locking restrictions.
+ */
+int raw3270_view_lock_unavailable(struct raw3270_view *view)
+{
+	struct raw3270 *rp = view->dev;
+
+	if (!rp)
+		return -ENODEV;
+	if (spin_is_locked(get_ccwdev_lock(rp->cdev)))
+		return -EBUSY;
+	return 0;
+}
+
+static int raw3270_assign_activate_view(struct raw3270 *rp, struct raw3270_view *view)
+{
+	rp->view = view;
+	return view->fn->activate(view);
+}
+
+static int __raw3270_activate_view(struct raw3270 *rp, struct raw3270_view *view)
+{
+	struct raw3270_view *oldview = NULL, *nv;
+	int rc;
+
+	if (rp->view == view)
+		return 0;
+
+	if (!raw3270_state_ready(rp))
+		return -EBUSY;
+
+	if (rp->view && rp->view->fn->deactivate) {
+		oldview = rp->view;
+		oldview->fn->deactivate(oldview);
+	}
+
+	rc = raw3270_assign_activate_view(rp, view);
+	if (!rc)
+		return 0;
+
+	/* Didn't work. Try to reactivate the old view. */
+	if (oldview) {
+		rc = raw3270_assign_activate_view(rp, oldview);
+		if (!rc)
+			return 0;
+	}
+
+	/* Didn't work as well. Try any other view. */
+	list_for_each_entry(nv, &rp->view_list, list) {
+		if (nv == view || nv == oldview)
+			continue;
+		rc = raw3270_assign_activate_view(rp, nv);
+		if (!rc)
+			break;
+		rp->view = NULL;
+	}
+	return rc;
+}
+
+/*
+ * Activate a view.
+ */
+int raw3270_activate_view(struct raw3270_view *view)
+{
+	struct raw3270 *rp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long flags;
 	int rc;
 
@@ -891,6 +1565,7 @@ raw3270_activate_view(struct raw3270_view *view)
 	if (!rp)
 		return -ENODEV;
 	spin_lock_irqsave(get_ccwdev_lock(rp->cdev), flags);
+<<<<<<< HEAD
 	if (rp->view == view)
 		rc = 0;
 	else if (!test_bit(RAW3270_FLAGS_READY, &rp->flags))
@@ -923,12 +1598,23 @@ raw3270_activate_view(struct raw3270_view *view)
 	spin_unlock_irqrestore(get_ccwdev_lock(rp->cdev), flags);
 	return rc;
 }
+=======
+	rc = __raw3270_activate_view(rp, view);
+	spin_unlock_irqrestore(get_ccwdev_lock(rp->cdev), flags);
+	return rc;
+}
+EXPORT_SYMBOL(raw3270_activate_view);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Deactivate current view.
  */
+<<<<<<< HEAD
 void
 raw3270_deactivate_view(struct raw3270_view *view)
+=======
+void raw3270_deactivate_view(struct raw3270_view *view)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	struct raw3270 *rp;
@@ -944,8 +1630,12 @@ raw3270_deactivate_view(struct raw3270_view *view)
 		list_del_init(&view->list);
 		list_add_tail(&view->list, &rp->view_list);
 		/* Try to activate another view. */
+<<<<<<< HEAD
 		if (test_bit(RAW3270_FLAGS_READY, &rp->flags) &&
 		    !test_bit(RAW3270_FLAGS_FROZEN, &rp->flags)) {
+=======
+		if (raw3270_state_ready(rp)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			list_for_each_entry(view, &rp->view_list, list) {
 				rp->view = view;
 				if (view->fn->activate(view) == 0)
@@ -956,12 +1646,21 @@ raw3270_deactivate_view(struct raw3270_view *view)
 	}
 	spin_unlock_irqrestore(get_ccwdev_lock(rp->cdev), flags);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(raw3270_deactivate_view);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Add view to device with minor "minor".
  */
+<<<<<<< HEAD
 int
 raw3270_add_view(struct raw3270_view *view, struct raw3270_fn *fn, int minor)
+=======
+int raw3270_add_view(struct raw3270_view *view, struct raw3270_fn *fn,
+		     int minor, int subclass)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	struct raw3270 *rp;
@@ -975,6 +1674,7 @@ raw3270_add_view(struct raw3270_view *view, struct raw3270_fn *fn, int minor)
 		if (rp->minor != minor)
 			continue;
 		spin_lock_irqsave(get_ccwdev_lock(rp->cdev), flags);
+<<<<<<< HEAD
 		if (test_bit(RAW3270_FLAGS_READY, &rp->flags)) {
 			atomic_set(&view->ref_count, 2);
 			view->dev = rp;
@@ -987,18 +1687,39 @@ raw3270_add_view(struct raw3270_view *view, struct raw3270_fn *fn, int minor)
 			list_add(&view->list, &rp->view_list);
 			rc = 0;
 		}
+=======
+		atomic_set(&view->ref_count, 2);
+		view->dev = rp;
+		view->fn = fn;
+		view->model = rp->model;
+		view->rows = rp->rows;
+		view->cols = rp->cols;
+		view->ascebc = rp->ascebc;
+		spin_lock_init(&view->lock);
+		lockdep_set_subclass(&view->lock, subclass);
+		list_add(&view->list, &rp->view_list);
+		rc = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		spin_unlock_irqrestore(get_ccwdev_lock(rp->cdev), flags);
 		break;
 	}
 	mutex_unlock(&raw3270_mutex);
 	return rc;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(raw3270_add_view);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Find specific view of device with minor "minor".
  */
+<<<<<<< HEAD
 struct raw3270_view *
 raw3270_find_view(struct raw3270_fn *fn, int minor)
+=======
+struct raw3270_view *raw3270_find_view(struct raw3270_fn *fn, int minor)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw3270 *rp;
 	struct raw3270_view *view, *tmp;
@@ -1010,6 +1731,7 @@ raw3270_find_view(struct raw3270_fn *fn, int minor)
 		if (rp->minor != minor)
 			continue;
 		spin_lock_irqsave(get_ccwdev_lock(rp->cdev), flags);
+<<<<<<< HEAD
 		if (test_bit(RAW3270_FLAGS_READY, &rp->flags)) {
 			view = ERR_PTR(-ENOENT);
 			list_for_each_entry(tmp, &rp->view_list, list) {
@@ -1018,6 +1740,13 @@ raw3270_find_view(struct raw3270_fn *fn, int minor)
 					view = tmp;
 					break;
 				}
+=======
+		list_for_each_entry(tmp, &rp->view_list, list) {
+			if (tmp->fn == fn) {
+				raw3270_get_view(tmp);
+				view = tmp;
+				break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			}
 		}
 		spin_unlock_irqrestore(get_ccwdev_lock(rp->cdev), flags);
@@ -1026,12 +1755,20 @@ raw3270_find_view(struct raw3270_fn *fn, int minor)
 	mutex_unlock(&raw3270_mutex);
 	return view;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(raw3270_find_view);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Remove view from device and free view structure via call to view->fn->free.
  */
+<<<<<<< HEAD
 void
 raw3270_del_view(struct raw3270_view *view)
+=======
+void raw3270_del_view(struct raw3270_view *view)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	struct raw3270 *rp;
@@ -1044,8 +1781,12 @@ raw3270_del_view(struct raw3270_view *view)
 		rp->view = NULL;
 	}
 	list_del_init(&view->list);
+<<<<<<< HEAD
 	if (!rp->view && test_bit(RAW3270_FLAGS_READY, &rp->flags) &&
 	    !test_bit(RAW3270_FLAGS_FROZEN, &rp->flags)) {
+=======
+	if (!rp->view && raw3270_state_ready(rp)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Try to activate another view. */
 		list_for_each_entry(nv, &rp->view_list, list) {
 			if (nv->fn->activate(nv) == 0) {
@@ -1061,21 +1802,32 @@ raw3270_del_view(struct raw3270_view *view)
 	if (view->fn->free)
 		view->fn->free(view);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(raw3270_del_view);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Remove a 3270 device structure.
  */
+<<<<<<< HEAD
 static void
 raw3270_delete_device(struct raw3270 *rp)
+=======
+static void raw3270_delete_device(struct raw3270 *rp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ccw_device *cdev;
 
 	/* Remove from device chain. */
 	mutex_lock(&raw3270_mutex);
+<<<<<<< HEAD
 	if (rp->clttydev && !IS_ERR(rp->clttydev))
 		device_destroy(class3270, MKDEV(IBM_TTY3270_MAJOR, rp->minor));
 	if (rp->cltubdev && !IS_ERR(rp->cltubdev))
 		device_destroy(class3270, MKDEV(IBM_FS3270_MAJOR, rp->minor));
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	list_del_init(&rp->list);
 	mutex_unlock(&raw3270_mutex);
 
@@ -1093,8 +1845,12 @@ raw3270_delete_device(struct raw3270 *rp)
 	kfree(rp);
 }
 
+<<<<<<< HEAD
 static int
 raw3270_probe (struct ccw_device *cdev)
+=======
+static int raw3270_probe(struct ccw_device *cdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return 0;
 }
@@ -1102,6 +1858,7 @@ raw3270_probe (struct ccw_device *cdev)
 /*
  * Additional attributes for a 3270 device
  */
+<<<<<<< HEAD
 static ssize_t
 raw3270_model_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -1127,18 +1884,51 @@ raw3270_columns_show(struct device *dev, struct device_attribute *attr, char *bu
 static DEVICE_ATTR(columns, 0444, raw3270_columns_show, NULL);
 
 static struct attribute * raw3270_attrs[] = {
+=======
+static ssize_t model_show(struct device *dev, struct device_attribute *attr,
+			  char *buf)
+{
+	return sysfs_emit(buf, "%i\n",
+			  ((struct raw3270 *)dev_get_drvdata(dev))->model);
+}
+static DEVICE_ATTR_RO(model);
+
+static ssize_t rows_show(struct device *dev, struct device_attribute *attr,
+			 char *buf)
+{
+	return sysfs_emit(buf, "%i\n",
+			  ((struct raw3270 *)dev_get_drvdata(dev))->rows);
+}
+static DEVICE_ATTR_RO(rows);
+
+static ssize_t
+columns_show(struct device *dev, struct device_attribute *attr,
+	     char *buf)
+{
+	return sysfs_emit(buf, "%i\n",
+			  ((struct raw3270 *)dev_get_drvdata(dev))->cols);
+}
+static DEVICE_ATTR_RO(columns);
+
+static struct attribute *raw3270_attrs[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	&dev_attr_model.attr,
 	&dev_attr_rows.attr,
 	&dev_attr_columns.attr,
 	NULL,
 };
 
+<<<<<<< HEAD
 static struct attribute_group raw3270_attr_group = {
+=======
+static const struct attribute_group raw3270_attr_group = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.attrs = raw3270_attrs,
 };
 
 static int raw3270_create_attributes(struct raw3270 *rp)
 {
+<<<<<<< HEAD
 	int rc;
 
 	rc = sysfs_create_group(&rp->cdev->dev.kobj, &raw3270_attr_group);
@@ -1166,11 +1956,15 @@ out_ttydev:
 	sysfs_remove_group(&rp->cdev->dev.kobj, &raw3270_attr_group);
 out:
 	return rc;
+=======
+	return sysfs_create_group(&rp->cdev->dev.kobj, &raw3270_attr_group);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Notifier for device addition/removal
  */
+<<<<<<< HEAD
 struct raw3270_notifier {
 	struct list_head list;
 	void (*notifier)(int, int);
@@ -1210,20 +2004,56 @@ void raw3270_unregister_notifier(void (*notifier)(int, int))
 		}
 	mutex_unlock(&raw3270_mutex);
 }
+=======
+static LIST_HEAD(raw3270_notifier);
+
+int raw3270_register_notifier(struct raw3270_notifier *notifier)
+{
+	struct raw3270 *rp;
+
+	mutex_lock(&raw3270_mutex);
+	list_add_tail(&notifier->list, &raw3270_notifier);
+	list_for_each_entry(rp, &raw3270_devices, list)
+		notifier->create(rp->minor);
+	mutex_unlock(&raw3270_mutex);
+	return 0;
+}
+EXPORT_SYMBOL(raw3270_register_notifier);
+
+void raw3270_unregister_notifier(struct raw3270_notifier *notifier)
+{
+	struct raw3270 *rp;
+
+	mutex_lock(&raw3270_mutex);
+	list_for_each_entry(rp, &raw3270_devices, list)
+		notifier->destroy(rp->minor);
+	list_del(&notifier->list);
+	mutex_unlock(&raw3270_mutex);
+}
+EXPORT_SYMBOL(raw3270_unregister_notifier);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Set 3270 device online.
  */
+<<<<<<< HEAD
 static int
 raw3270_set_online (struct ccw_device *cdev)
 {
 	struct raw3270 *rp;
 	struct raw3270_notifier *np;
+=======
+static int raw3270_set_online(struct ccw_device *cdev)
+{
+	struct raw3270_notifier *np;
+	struct raw3270 *rp;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rc;
 
 	rp = raw3270_create_device(cdev);
 	if (IS_ERR(rp))
 		return PTR_ERR(rp);
+<<<<<<< HEAD
 	rc = raw3270_reset_device(rp);
 	if (rc)
 		goto failure;
@@ -1240,6 +2070,15 @@ raw3270_set_online (struct ccw_device *cdev)
 	mutex_lock(&raw3270_mutex);
 	list_for_each_entry(np, &raw3270_notifier, list)
 		np->notifier(rp->minor, 1);
+=======
+	rc = raw3270_create_attributes(rp);
+	if (rc)
+		goto failure;
+	raw3270_reset_device(rp);
+	mutex_lock(&raw3270_mutex);
+	list_for_each_entry(np, &raw3270_notifier, list)
+		np->create(rp->minor);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&raw3270_mutex);
 	return 0;
 
@@ -1251,8 +2090,12 @@ failure:
 /*
  * Remove 3270 device structure.
  */
+<<<<<<< HEAD
 static void
 raw3270_remove (struct ccw_device *cdev)
+=======
+static void raw3270_remove(struct ccw_device *cdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 	struct raw3270 *rp;
@@ -1266,16 +2109,26 @@ raw3270_remove (struct ccw_device *cdev)
 	 * devices even if they haven't been varied online.
 	 * Thus, rp may validly be NULL here.
 	 */
+<<<<<<< HEAD
 	if (rp == NULL)
 		return;
 	clear_bit(RAW3270_FLAGS_READY, &rp->flags);
+=======
+	if (!rp)
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	sysfs_remove_group(&cdev->dev.kobj, &raw3270_attr_group);
 
 	/* Deactivate current view and remove all views. */
 	spin_lock_irqsave(get_ccwdev_lock(cdev), flags);
 	if (rp->view) {
+<<<<<<< HEAD
 		rp->view->fn->deactivate(rp->view);
+=======
+		if (rp->view->fn->deactivate)
+			rp->view->fn->deactivate(rp->view);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		rp->view = NULL;
 	}
 	while (!list_empty(&rp->view_list)) {
@@ -1290,7 +2143,11 @@ raw3270_remove (struct ccw_device *cdev)
 
 	mutex_lock(&raw3270_mutex);
 	list_for_each_entry(np, &raw3270_notifier, list)
+<<<<<<< HEAD
 		np->notifier(rp->minor, 0);
+=======
+		np->destroy(rp->minor);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&raw3270_mutex);
 
 	/* Reset 3270 device. */
@@ -1302,8 +2159,12 @@ raw3270_remove (struct ccw_device *cdev)
 /*
  * Set 3270 device offline.
  */
+<<<<<<< HEAD
 static int
 raw3270_set_offline (struct ccw_device *cdev)
+=======
+static int raw3270_set_offline(struct ccw_device *cdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw3270 *rp;
 
@@ -1314,6 +2175,7 @@ raw3270_set_offline (struct ccw_device *cdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int raw3270_pm_stop(struct ccw_device *cdev)
 {
 	struct raw3270 *rp;
@@ -1368,6 +2230,8 @@ void raw3270_pm_unfreeze(struct raw3270_view *view)
 #endif
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct ccw_device_id raw3270_id[] = {
 	{ CCW_DEVICE(0x3270, 0) },
 	{ CCW_DEVICE(0x3271, 0) },
@@ -1393,6 +2257,7 @@ static struct ccw_driver raw3270_ccw_driver = {
 	.remove		= &raw3270_remove,
 	.set_online	= &raw3270_set_online,
 	.set_offline	= &raw3270_set_offline,
+<<<<<<< HEAD
 	.freeze		= &raw3270_pm_stop,
 	.thaw		= &raw3270_pm_start,
 	.restore	= &raw3270_pm_start,
@@ -1401,6 +2266,12 @@ static struct ccw_driver raw3270_ccw_driver = {
 
 static int
 raw3270_init(void)
+=======
+	.int_class	= IRQIO_C70,
+};
+
+static int raw3270_init(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct raw3270 *rp;
 	int rc;
@@ -1409,6 +2280,7 @@ raw3270_init(void)
 		return 0;
 	raw3270_registered = 1;
 	rc = ccw_driver_register(&raw3270_ccw_driver);
+<<<<<<< HEAD
 	if (rc == 0) {
 		/* Create attributes for early (= console) device. */
 		mutex_lock(&raw3270_mutex);
@@ -1427,12 +2299,34 @@ raw3270_exit(void)
 {
 	ccw_driver_unregister(&raw3270_ccw_driver);
 	class_destroy(class3270);
+=======
+	if (rc)
+		return rc;
+	rc = class_register(&class3270);
+	if (rc)
+		return rc;
+	/* Create attributes for early (= console) device. */
+	mutex_lock(&raw3270_mutex);
+	list_for_each_entry(rp, &raw3270_devices, list) {
+		get_device(&rp->cdev->dev);
+		raw3270_create_attributes(rp);
+	}
+	mutex_unlock(&raw3270_mutex);
+	return 0;
+}
+
+static void raw3270_exit(void)
+{
+	ccw_driver_unregister(&raw3270_ccw_driver);
+	class_unregister(&class3270);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 MODULE_LICENSE("GPL");
 
 module_init(raw3270_init);
 module_exit(raw3270_exit);
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(raw3270_request_alloc);
 EXPORT_SYMBOL(raw3270_request_free);
@@ -1454,3 +2348,5 @@ EXPORT_SYMBOL(raw3270_reset);
 EXPORT_SYMBOL(raw3270_register_notifier);
 EXPORT_SYMBOL(raw3270_unregister_notifier);
 EXPORT_SYMBOL(raw3270_wait_queue);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

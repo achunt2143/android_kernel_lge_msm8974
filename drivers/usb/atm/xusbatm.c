@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *  xusbatm.c -	dumb usbatm-based driver for modems initialized in userspace
  *
  *  Copyright (C) 2005 Duncan Sands, Roman Kagan (rkagan % mail ! ru)
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify it
  *  under the terms of the GNU General Public License as published by the Free
@@ -21,6 +26,12 @@
 
 #include <linux/module.h>
 #include <linux/etherdevice.h>		/* for random_ether_addr() */
+=======
+ ******************************************************************************/
+
+#include <linux/module.h>
+#include <linux/etherdevice.h>		/* for eth_random_addr() */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "usbatm.h"
 
@@ -73,7 +84,12 @@ static int xusbatm_capture_intf(struct usbatm_data *usbatm, struct usb_device *u
 		usb_err(usbatm, "%s: failed to claim interface %2d (%d)!\n", __func__, ifnum, ret);
 		return ret;
 	}
+<<<<<<< HEAD
 	if ((ret = usb_set_interface(usb_dev, ifnum, altsetting))) {
+=======
+	ret = usb_set_interface(usb_dev, ifnum, altsetting);
+	if (ret) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_err(usbatm, "%s: altsetting %2d for interface %2d failed (%d)!\n", __func__, altsetting, ifnum, ret);
 		return ret;
 	}
@@ -128,7 +144,12 @@ static int xusbatm_bind(struct usbatm_data *usbatm,
 			rx_intf->altsetting->desc.bInterfaceNumber,
 			tx_intf->altsetting->desc.bInterfaceNumber);
 
+<<<<<<< HEAD
 	if ((ret = xusbatm_capture_intf(usbatm, usb_dev, rx_intf, rx_alt, rx_intf != intf)))
+=======
+	ret = xusbatm_capture_intf(usbatm, usb_dev, rx_intf, rx_alt, rx_intf != intf);
+	if (ret)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ret;
 
 	if ((tx_intf != rx_intf) && (ret = xusbatm_capture_intf(usbatm, usb_dev, tx_intf, tx_alt, tx_intf != intf))) {
@@ -163,7 +184,11 @@ static int xusbatm_atm_start(struct usbatm_data *usbatm,
 	atm_dbg(usbatm, "%s entered\n", __func__);
 
 	/* use random MAC as we've no way to get it from the device */
+<<<<<<< HEAD
 	random_ether_addr(atm_dev->esi);
+=======
+	eth_random_addr(atm_dev->esi);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -187,13 +212,20 @@ static int __init xusbatm_init(void)
 {
 	int i;
 
+<<<<<<< HEAD
 	dbg("xusbatm_init");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!num_vendor ||
 	    num_vendor != num_product ||
 	    num_vendor != num_rx_endpoint ||
 	    num_vendor != num_tx_endpoint) {
+<<<<<<< HEAD
 		printk(KERN_WARNING "xusbatm: malformed module parameters\n");
+=======
+		pr_warn("xusbatm: malformed module parameters\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 	}
 
@@ -221,8 +253,11 @@ module_init(xusbatm_init);
 
 static void __exit xusbatm_exit(void)
 {
+<<<<<<< HEAD
 	dbg("xusbatm_exit entered");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_deregister(&xusbatm_usb_driver);
 }
 module_exit(xusbatm_exit);
@@ -230,4 +265,7 @@ module_exit(xusbatm_exit);
 MODULE_AUTHOR("Roman Kagan, Duncan Sands");
 MODULE_DESCRIPTION("Driver for USB ADSL modems initialized in userspace");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_VERSION("0.1");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

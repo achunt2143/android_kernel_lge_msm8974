@@ -1,7 +1,14 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2001 Lennert Buytenhek (buytenh@gnu.org)
  * Copyright (C) 2001 - 2008 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2001 Lennert Buytenhek (buytenh@gnu.org)
+ * Copyright (C) 2001 - 2008 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/console.h>
@@ -12,7 +19,13 @@
 #include <linux/mm.h>
 #include <linux/module.h>
 #include <linux/notifier.h>
+<<<<<<< HEAD
 #include <linux/reboot.h>
+=======
+#include <linux/panic_notifier.h>
+#include <linux/reboot.h>
+#include <linux/sched/debug.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/proc_fs.h>
 #include <linux/slab.h>
 #include <linux/syscalls.h>
@@ -21,6 +34,7 @@
 #include <linux/un.h>
 #include <linux/workqueue.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
 #include <asm/switch_to.h>
 
@@ -31,6 +45,23 @@
 #include "mconsole.h"
 #include "mconsole_kern.h"
 #include "os.h"
+=======
+#include <linux/fs.h>
+#include <linux/mount.h>
+#include <linux/file.h>
+#include <linux/uaccess.h>
+#include <asm/switch_to.h>
+
+#include <init.h>
+#include <irq_kern.h>
+#include <irq_user.h>
+#include <kern_util.h>
+#include "mconsole.h"
+#include "mconsole_kern.h"
+#include <os.h>
+
+static struct vfsmount *proc_mnt = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int do_unlink_socket(struct notifier_block *notifier,
 			    unsigned long what, void *data)
@@ -92,7 +123,10 @@ static irqreturn_t mconsole_interrupt(int irq, void *dev_id)
 	}
 	if (!list_empty(&mc_requests))
 		schedule_work(&mconsole_work);
+<<<<<<< HEAD
 	reactivate_fd(fd, MCONSOLE_IRQ);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return IRQ_HANDLED;
 }
 
@@ -118,6 +152,7 @@ void mconsole_log(struct mc_request *req)
 	mconsole_reply(req, "", 0, 0);
 }
 
+<<<<<<< HEAD
 /* This is a more convoluted version of mconsole_proc, which has some stability
  * problems; however, we need it fixed, because it is expected that UML users
  * mount HPPFS instead of procfs on /proc. And we want mconsole_proc to still
@@ -130,13 +165,35 @@ void mconsole_proc(struct mc_request *req)
 	int n;
 	char *ptr = req->request.data, *buf;
 	mm_segment_t old_fs = get_fs();
+=======
+void mconsole_proc(struct mc_request *req)
+{
+	struct vfsmount *mnt = proc_mnt;
+	char *buf;
+	int len;
+	struct file *file;
+	int first_chunk = 1;
+	char *ptr = req->request.data;
+	loff_t pos = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ptr += strlen("proc");
 	ptr = skip_spaces(ptr);
 
+<<<<<<< HEAD
 	file = file_open_root(mnt->mnt_root, mnt, ptr, O_RDONLY);
 	if (IS_ERR(file)) {
 		mconsole_reply(req, "Failed to open file", 1, 0);
+=======
+	if (!mnt) {
+		mconsole_reply(req, "Proc not available", 1, 0);
+		goto out;
+	}
+	file = file_open_root_mnt(mnt, ptr, O_RDONLY, 0);
+	if (IS_ERR(file)) {
+		mconsole_reply(req, "Failed to open file", 1, 0);
+		printk(KERN_ERR "open /proc/%s: %ld\n", ptr, PTR_ERR(file));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -146,6 +203,7 @@ void mconsole_proc(struct mc_request *req)
 		goto out_fput;
 	}
 
+<<<<<<< HEAD
 	if (file->f_op->read) {
 		do {
 			loff_t pos;
@@ -202,6 +260,10 @@ void mconsole_proc(struct mc_request *req)
 
 	for (;;) {
 		len = sys_read(fd, buf, PAGE_SIZE-1);
+=======
+	do {
+		len = kernel_read(file, buf, PAGE_SIZE - 1, &pos);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (len < 0) {
 			mconsole_reply(req, "Read of file failed", 1, 0);
 			goto out_free;
@@ -211,6 +273,7 @@ void mconsole_proc(struct mc_request *req)
 			mconsole_reply(req, "\n", 0, 1);
 			first_chunk = 0;
 		}
+<<<<<<< HEAD
 		if (len == PAGE_SIZE-1) {
 			buf[len] = '\0';
 			mconsole_reply(req, buf, 0, 1);
@@ -227,6 +290,16 @@ void mconsole_proc(struct mc_request *req)
 	sys_close(fd);
  out:
 	/* nothing */;
+=======
+		buf[len] = '\0';
+		mconsole_reply(req, buf, 0, (len > 0));
+	} while (len > 0);
+ out_free:
+	kfree(buf);
+ out_fput:
+	fput(file);
+ out: ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #define UML_MCONSOLE_HELPTEXT \
@@ -278,7 +351,11 @@ void mconsole_go(struct mc_request *req)
 
 void mconsole_stop(struct mc_request *req)
 {
+<<<<<<< HEAD
 	deactivate_fd(req->originating_fd, MCONSOLE_IRQ);
+=======
+	block_signals();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	os_set_fd_block(req->originating_fd, 1);
 	mconsole_reply(req, "stopped", 0, 0);
 	for (;;) {
@@ -300,8 +377,13 @@ void mconsole_stop(struct mc_request *req)
 		(*req->cmd->handler)(req);
 	}
 	os_set_fd_block(req->originating_fd, 0);
+<<<<<<< HEAD
 	reactivate_fd(req->originating_fd, MCONSOLE_IRQ);
 	mconsole_reply(req, "", 0, 0);
+=======
+	mconsole_reply(req, "", 0, 0);
+	unblock_signals();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static DEFINE_SPINLOCK(mc_devices_lock);
@@ -337,7 +419,11 @@ struct unplugged_pages {
 };
 
 static DEFINE_MUTEX(plug_mem_mutex);
+<<<<<<< HEAD
 static unsigned long long unplugged_pages_count = 0;
+=======
+static unsigned long long unplugged_pages_count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static LIST_HEAD(unplugged_pages);
 static int unplug_index = UNPLUGGED_PER_PAGE;
 
@@ -608,7 +694,11 @@ struct mconsole_output {
 
 static DEFINE_SPINLOCK(client_lock);
 static LIST_HEAD(clients);
+<<<<<<< HEAD
 static char console_buf[MCONSOLE_MAX_DATA];
+=======
+static char console_buf[MCONSOLE_MAX_DATA] __nonstring;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void console_write(struct console *console, const char *string,
 			  unsigned int len)
@@ -621,7 +711,11 @@ static void console_write(struct console *console, const char *string,
 
 	while (len > 0) {
 		n = min((size_t) len, ARRAY_SIZE(console_buf));
+<<<<<<< HEAD
 		strncpy(console_buf, string, n);
+=======
+		memcpy(console_buf, string, n);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		string += n;
 		len -= n;
 
@@ -702,10 +796,16 @@ void mconsole_sysrq(struct mc_request *req)
 
 static void stack_proc(void *arg)
 {
+<<<<<<< HEAD
 	struct task_struct *from = current, *to = arg;
 
 	to->thread.saved_task = from;
 	switch_to(from, to, from);
+=======
+	struct task_struct *task = arg;
+
+	show_stack(task, NULL, KERN_INFO);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -746,6 +846,27 @@ void mconsole_stack(struct mc_request *req)
 	with_console(req, stack_proc, to);
 }
 
+<<<<<<< HEAD
+=======
+static int __init mount_proc(void)
+{
+	struct file_system_type *proc_fs_type;
+	struct vfsmount *mnt;
+
+	proc_fs_type = get_fs_type("proc");
+	if (!proc_fs_type)
+		return -ENODEV;
+
+	mnt = kern_mount(proc_fs_type);
+	put_filesystem(proc_fs_type);
+	if (IS_ERR(mnt))
+		return PTR_ERR(mnt);
+
+	proc_mnt = mnt;
+	return 0;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Changed by mconsole_setup, which is __setup, and called before SMP is
  * active.
@@ -759,6 +880,11 @@ static int __init mconsole_init(void)
 	int err;
 	char file[UNIX_PATH_MAX];
 
+<<<<<<< HEAD
+=======
+	mount_proc();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (umid_file_name("mconsole", file, sizeof(file)))
 		return -1;
 	snprintf(mconsole_socket_name, sizeof(file), "%s", file);
@@ -774,9 +900,14 @@ static int __init mconsole_init(void)
 	register_reboot_notifier(&reboot_notifier);
 
 	err = um_request_irq(MCONSOLE_IRQ, sock, IRQ_READ, mconsole_interrupt,
+<<<<<<< HEAD
 			     IRQF_SHARED | IRQF_SAMPLE_RANDOM,
 			     "mconsole", (void *)sock);
 	if (err) {
+=======
+			     IRQF_SHARED, "mconsole", (void *)sock);
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		printk(KERN_ERR "Failed to get IRQ for management console\n");
 		goto out;
 	}
@@ -807,6 +938,7 @@ static ssize_t mconsole_proc_write(struct file *file,
 {
 	char *buf;
 
+<<<<<<< HEAD
 	buf = kmalloc(count + 1, GFP_KERNEL);
 	if (buf == NULL)
 		return -ENOMEM;
@@ -820,14 +952,27 @@ static ssize_t mconsole_proc_write(struct file *file,
 
 	mconsole_notify(notify_socket, MCONSOLE_USER_NOTIFY, buf, count);
  out:
+=======
+	buf = memdup_user_nul(buffer, count);
+	if (IS_ERR(buf))
+		return PTR_ERR(buf);
+
+	mconsole_notify(notify_socket, MCONSOLE_USER_NOTIFY, buf, count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree(buf);
 	return count;
 }
 
+<<<<<<< HEAD
 static const struct file_operations mconsole_proc_fops = {
 	.owner		= THIS_MODULE,
 	.write		= mconsole_proc_write,
 	.llseek		= noop_llseek,
+=======
+static const struct proc_ops mconsole_proc_ops = {
+	.proc_write	= mconsole_proc_write,
+	.proc_lseek	= noop_llseek,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int create_proc_mconsole(void)
@@ -837,10 +982,16 @@ static int create_proc_mconsole(void)
 	if (notify_socket == NULL)
 		return 0;
 
+<<<<<<< HEAD
 	ent = proc_create("mconsole", 0200, NULL, &mconsole_proc_fops);
 	if (ent == NULL) {
 		printk(KERN_INFO "create_proc_mconsole : create_proc_entry "
 		       "failed\n");
+=======
+	ent = proc_create("mconsole", 0200, NULL, &mconsole_proc_ops);
+	if (ent == NULL) {
+		printk(KERN_INFO "create_proc_mconsole : proc_create failed\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 	return 0;
@@ -892,6 +1043,7 @@ static int notify_panic(struct notifier_block *self, unsigned long unused1,
 
 	mconsole_notify(notify_socket, MCONSOLE_PANIC, message,
 			strlen(message) + 1);
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -899,6 +1051,14 @@ static struct notifier_block panic_exit_notifier = {
 	.notifier_call 		= notify_panic,
 	.next 			= NULL,
 	.priority 		= 1
+=======
+	return NOTIFY_DONE;
+}
+
+static struct notifier_block panic_exit_notifier = {
+	.notifier_call	= notify_panic,
+	.priority	= INT_MAX, /* run as soon as possible */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int add_notifier(void)

@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Regulators driver for Maxim max8649
  *
  * Copyright (C) 2009-2010 Marvell International Ltd.
  *      Haojian Zhuang <haojian.zhuang@marvell.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -49,11 +56,17 @@
 #define MAX8649_RAMP_DOWN	(1 << 1)
 
 struct max8649_regulator_info {
+<<<<<<< HEAD
 	struct regulator_dev	*regulator;
 	struct device		*dev;
 	struct regmap		*regmap;
 
 	int		vol_reg;
+=======
+	struct device		*dev;
+	struct regmap		*regmap;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned	mode:2;	/* bit[1:0] = VID1, VID0 */
 	unsigned	extclk_freq:2;
 	unsigned	extclk:1;
@@ -61,6 +74,7 @@ struct max8649_regulator_info {
 	unsigned	ramp_down:1;
 };
 
+<<<<<<< HEAD
 /* I2C operations */
 
 static inline int check_range(int min_uV, int max_uV)
@@ -138,6 +152,8 @@ static int max8649_is_enabled(struct regulator_dev *rdev)
 	return !((unsigned char)val & MAX8649_EN_PD);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int max8649_enable_time(struct regulator_dev *rdev)
 {
 	struct max8649_regulator_info *info = rdev_get_drvdata(rdev);
@@ -145,11 +161,19 @@ static int max8649_enable_time(struct regulator_dev *rdev)
 	unsigned int val;
 
 	/* get voltage */
+<<<<<<< HEAD
 	ret = regmap_read(info->regmap, info->vol_reg, &val);
 	if (ret != 0)
 		return ret;
 	val &= MAX8649_VOL_MASK;
 	voltage = max8649_list_voltage(rdev, (unsigned char)val); /* uV */
+=======
+	ret = regmap_read(info->regmap, rdev->desc->vsel_reg, &val);
+	if (ret != 0)
+		return ret;
+	val &= MAX8649_VOL_MASK;
+	voltage = regulator_list_voltage_linear(rdev, (unsigned char)val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* get rate */
 	ret = regmap_read(info->regmap, MAX8649_RAMP, &val);
@@ -167,11 +191,19 @@ static int max8649_set_mode(struct regulator_dev *rdev, unsigned int mode)
 
 	switch (mode) {
 	case REGULATOR_MODE_FAST:
+<<<<<<< HEAD
 		regmap_update_bits(info->regmap, info->vol_reg, MAX8649_FORCE_PWM,
 				   MAX8649_FORCE_PWM);
 		break;
 	case REGULATOR_MODE_NORMAL:
 		regmap_update_bits(info->regmap, info->vol_reg,
+=======
+		regmap_update_bits(info->regmap, rdev->desc->vsel_reg,
+				   MAX8649_FORCE_PWM, MAX8649_FORCE_PWM);
+		break;
+	case REGULATOR_MODE_NORMAL:
+		regmap_update_bits(info->regmap, rdev->desc->vsel_reg,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				   MAX8649_FORCE_PWM, 0);
 		break;
 	default:
@@ -186,7 +218,11 @@ static unsigned int max8649_get_mode(struct regulator_dev *rdev)
 	unsigned int val;
 	int ret;
 
+<<<<<<< HEAD
 	ret = regmap_read(info->regmap, info->vol_reg, &val);
+=======
+	ret = regmap_read(info->regmap, rdev->desc->vsel_reg, &val);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ret != 0)
 		return ret;
 	if (val & MAX8649_FORCE_PWM)
@@ -194,6 +230,7 @@ static unsigned int max8649_get_mode(struct regulator_dev *rdev)
 	return REGULATOR_MODE_NORMAL;
 }
 
+<<<<<<< HEAD
 static struct regulator_ops max8649_dcdc_ops = {
 	.set_voltage	= max8649_set_voltage,
 	.get_voltage	= max8649_get_voltage,
@@ -201,6 +238,16 @@ static struct regulator_ops max8649_dcdc_ops = {
 	.enable		= max8649_enable,
 	.disable	= max8649_disable,
 	.is_enabled	= max8649_is_enabled,
+=======
+static const struct regulator_ops max8649_dcdc_ops = {
+	.set_voltage_sel = regulator_set_voltage_sel_regmap,
+	.get_voltage_sel = regulator_get_voltage_sel_regmap,
+	.list_voltage	= regulator_list_voltage_linear,
+	.map_voltage	= regulator_map_voltage_linear,
+	.enable		= regulator_enable_regmap,
+	.disable	= regulator_disable_regmap,
+	.is_enabled	= regulator_is_enabled_regmap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable_time	= max8649_enable_time,
 	.set_mode	= max8649_set_mode,
 	.get_mode	= max8649_get_mode,
@@ -213,22 +260,44 @@ static struct regulator_desc dcdc_desc = {
 	.type		= REGULATOR_VOLTAGE,
 	.n_voltages	= 1 << 6,
 	.owner		= THIS_MODULE,
+<<<<<<< HEAD
 };
 
 static struct regmap_config max8649_regmap_config = {
+=======
+	.vsel_mask	= MAX8649_VOL_MASK,
+	.min_uV		= MAX8649_DCDC_VMIN,
+	.uV_step	= MAX8649_DCDC_STEP,
+	.enable_reg	= MAX8649_CONTROL,
+	.enable_mask	= MAX8649_EN_PD,
+	.enable_is_inverted = true,
+};
+
+static const struct regmap_config max8649_regmap_config = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.reg_bits = 8,
 	.val_bits = 8,
 };
 
+<<<<<<< HEAD
 static int __devinit max8649_regulator_probe(struct i2c_client *client,
 					     const struct i2c_device_id *id)
 {
 	struct max8649_platform_data *pdata = client->dev.platform_data;
 	struct max8649_regulator_info *info = NULL;
+=======
+static int max8649_regulator_probe(struct i2c_client *client)
+{
+	struct max8649_platform_data *pdata = dev_get_platdata(&client->dev);
+	struct max8649_regulator_info *info = NULL;
+	struct regulator_dev *regulator;
+	struct regulator_config config = { };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int val;
 	unsigned char data;
 	int ret;
 
+<<<<<<< HEAD
 	info = kzalloc(sizeof(struct max8649_regulator_info), GFP_KERNEL);
 	if (!info) {
 		dev_err(&client->dev, "No enough memory\n");
@@ -240,6 +309,18 @@ static int __devinit max8649_regulator_probe(struct i2c_client *client,
 		ret = PTR_ERR(info->regmap);
 		dev_err(&client->dev, "Failed to allocate register map: %d\n", ret);
 		goto fail;
+=======
+	info = devm_kzalloc(&client->dev, sizeof(struct max8649_regulator_info),
+			    GFP_KERNEL);
+	if (!info)
+		return -ENOMEM;
+
+	info->regmap = devm_regmap_init_i2c(client, &max8649_regmap_config);
+	if (IS_ERR(info->regmap)) {
+		ret = PTR_ERR(info->regmap);
+		dev_err(&client->dev, "Failed to allocate register map: %d\n", ret);
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	info->dev = &client->dev;
@@ -248,6 +329,7 @@ static int __devinit max8649_regulator_probe(struct i2c_client *client,
 	info->mode = pdata->mode;
 	switch (info->mode) {
 	case 0:
+<<<<<<< HEAD
 		info->vol_reg = MAX8649_MODE0;
 		break;
 	case 1:
@@ -258,6 +340,18 @@ static int __devinit max8649_regulator_probe(struct i2c_client *client,
 		break;
 	case 3:
 		info->vol_reg = MAX8649_MODE3;
+=======
+		dcdc_desc.vsel_reg = MAX8649_MODE0;
+		break;
+	case 1:
+		dcdc_desc.vsel_reg = MAX8649_MODE1;
+		break;
+	case 2:
+		dcdc_desc.vsel_reg = MAX8649_MODE2;
+		break;
+	case 3:
+		dcdc_desc.vsel_reg = MAX8649_MODE3;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
@@ -267,7 +361,11 @@ static int __devinit max8649_regulator_probe(struct i2c_client *client,
 	if (ret != 0) {
 		dev_err(info->dev, "Failed to detect ID of MAX8649:%d\n",
 			ret);
+<<<<<<< HEAD
 		goto out;
+=======
+		return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	dev_info(info->dev, "Detected MAX8649 (ID:%x)\n", val);
 
@@ -277,7 +375,12 @@ static int __devinit max8649_regulator_probe(struct i2c_client *client,
 	/* enable/disable external clock synchronization */
 	info->extclk = pdata->extclk;
 	data = (info->extclk) ? MAX8649_SYNC_EXTCLK : 0;
+<<<<<<< HEAD
 	regmap_update_bits(info->regmap, info->vol_reg, MAX8649_SYNC_EXTCLK, data);
+=======
+	regmap_update_bits(info->regmap, dcdc_desc.vsel_reg,
+			   MAX8649_SYNC_EXTCLK, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (info->extclk) {
 		/* set external clock frequency */
 		info->extclk_freq = pdata->extclk_freq;
@@ -297,6 +400,7 @@ static int __devinit max8649_regulator_probe(struct i2c_client *client,
 				   MAX8649_RAMP_DOWN);
 	}
 
+<<<<<<< HEAD
 	info->regulator = regulator_register(&dcdc_desc, &client->dev,
 					     pdata->regulator, info, NULL);
 	if (IS_ERR(info->regulator)) {
@@ -324,6 +428,19 @@ static int __devexit max8649_regulator_remove(struct i2c_client *client)
 			regulator_unregister(info->regulator);
 		regmap_exit(info->regmap);
 		kfree(info);
+=======
+	config.dev = &client->dev;
+	config.init_data = pdata->regulator;
+	config.driver_data = info;
+	config.regmap = info->regmap;
+
+	regulator = devm_regulator_register(&client->dev, &dcdc_desc,
+						  &config);
+	if (IS_ERR(regulator)) {
+		dev_err(info->dev, "failed to register regulator %s\n",
+			dcdc_desc.name);
+		return PTR_ERR(regulator);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return 0;
@@ -337,9 +454,15 @@ MODULE_DEVICE_TABLE(i2c, max8649_id);
 
 static struct i2c_driver max8649_driver = {
 	.probe		= max8649_regulator_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(max8649_regulator_remove),
 	.driver		= {
 		.name	= "max8649",
+=======
+	.driver		= {
+		.name	= "max8649",
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.id_table	= max8649_id,
 };
@@ -360,4 +483,7 @@ module_exit(max8649_exit);
 MODULE_DESCRIPTION("MAXIM 8649 voltage regulator driver");
 MODULE_AUTHOR("Haojian Zhuang <haojian.zhuang@marvell.com>");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

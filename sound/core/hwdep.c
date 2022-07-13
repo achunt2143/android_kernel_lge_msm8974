@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  *  Hardware dependent layer
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
@@ -17,6 +18,12 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ *  Hardware dependent layer
+ *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/major.h>
@@ -25,6 +32,10 @@
 #include <linux/time.h>
 #include <linux/mutex.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/signal.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <sound/core.h>
 #include <sound/control.h>
 #include <sound/minors.h>
@@ -38,7 +49,10 @@ MODULE_LICENSE("GPL");
 static LIST_HEAD(snd_hwdep_devices);
 static DEFINE_MUTEX(register_mutex);
 
+<<<<<<< HEAD
 static int snd_hwdep_free(struct snd_hwdep *hwdep);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int snd_hwdep_dev_free(struct snd_device *device);
 static int snd_hwdep_dev_register(struct snd_device *device);
 static int snd_hwdep_dev_disconnect(struct snd_device *device);
@@ -85,7 +99,11 @@ static int snd_hwdep_open(struct inode *inode, struct file * file)
 	int major = imajor(inode);
 	struct snd_hwdep *hw;
 	int err;
+<<<<<<< HEAD
 	wait_queue_t wait;
+=======
+	wait_queue_entry_t wait;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (major == snd_major) {
 		hw = snd_lookup_minor_data(iminor(inode),
@@ -164,12 +182,21 @@ static int snd_hwdep_release(struct inode *inode, struct file * file)
 	struct snd_hwdep *hw = file->private_data;
 	struct module *mod = hw->card->module;
 
+<<<<<<< HEAD
 	mutex_lock(&hw->open_mutex);
 	if (hw->ops.release)
 		err = hw->ops.release(hw, file);
 	if (hw->used > 0)
 		hw->used--;
 	mutex_unlock(&hw->open_mutex);
+=======
+	scoped_guard(mutex, &hw->open_mutex) {
+		if (hw->ops.release)
+			err = hw->ops.release(hw, file);
+		if (hw->used > 0)
+			hw->used--;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up(&hw->open_wait);
 
 	snd_card_file_remove(hw->card, file);
@@ -177,7 +204,11 @@ static int snd_hwdep_release(struct inode *inode, struct file * file)
 	return err;
 }
 
+<<<<<<< HEAD
 static unsigned int snd_hwdep_poll(struct file * file, poll_table * wait)
+=======
+static __poll_t snd_hwdep_poll(struct file * file, poll_table * wait)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_hwdep *hw = file->private_data;
 	if (hw->ops.poll)
@@ -192,8 +223,13 @@ static int snd_hwdep_info(struct snd_hwdep *hw,
 	
 	memset(&info, 0, sizeof(info));
 	info.card = hw->card->number;
+<<<<<<< HEAD
 	strlcpy(info.id, hw->id, sizeof(info.id));	
 	strlcpy(info.name, hw->name, sizeof(info.name));
+=======
+	strscpy(info.id, hw->id, sizeof(info.id));
+	strscpy(info.name, hw->name, sizeof(info.name));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	info.iface = hw->iface;
 	if (copy_to_user(_info, &info, sizeof(info)))
 		return -EFAULT;
@@ -210,7 +246,12 @@ static int snd_hwdep_dsp_status(struct snd_hwdep *hw,
 		return -ENXIO;
 	memset(&info, 0, sizeof(info));
 	info.dsp_loaded = hw->dsp_loaded;
+<<<<<<< HEAD
 	if ((err = hw->ops.dsp_status(hw, &info)) < 0)
+=======
+	err = hw->ops.dsp_status(hw, &info);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	if (copy_to_user(_info, &info, sizeof(info)))
 		return -EFAULT;
@@ -218,13 +259,19 @@ static int snd_hwdep_dsp_status(struct snd_hwdep *hw,
 }
 
 static int snd_hwdep_dsp_load(struct snd_hwdep *hw,
+<<<<<<< HEAD
 			      struct snd_hwdep_dsp_image __user *_info)
 {
 	struct snd_hwdep_dsp_image info;
+=======
+			      struct snd_hwdep_dsp_image *info)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 	
 	if (! hw->ops.dsp_load)
 		return -ENXIO;
+<<<<<<< HEAD
 	memset(&info, 0, sizeof(info));
 	if (copy_from_user(&info, _info, sizeof(info)))
 		return -EFAULT;
@@ -240,6 +287,31 @@ static int snd_hwdep_dsp_load(struct snd_hwdep *hw,
 	return 0;
 }
 
+=======
+	if (info->index >= 32)
+		return -EINVAL;
+	/* check whether the dsp was already loaded */
+	if (hw->dsp_loaded & (1u << info->index))
+		return -EBUSY;
+	err = hw->ops.dsp_load(hw, info);
+	if (err < 0)
+		return err;
+	hw->dsp_loaded |= (1u << info->index);
+	return 0;
+}
+
+static int snd_hwdep_dsp_load_user(struct snd_hwdep *hw,
+				   struct snd_hwdep_dsp_image __user *_info)
+{
+	struct snd_hwdep_dsp_image info = {};
+
+	if (copy_from_user(&info, _info, sizeof(info)))
+		return -EFAULT;
+	return snd_hwdep_dsp_load(hw, &info);
+}
+
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static long snd_hwdep_ioctl(struct file * file, unsigned int cmd,
 			    unsigned long arg)
 {
@@ -253,7 +325,11 @@ static long snd_hwdep_ioctl(struct file * file, unsigned int cmd,
 	case SNDRV_HWDEP_IOCTL_DSP_STATUS:
 		return snd_hwdep_dsp_status(hw, argp);
 	case SNDRV_HWDEP_IOCTL_DSP_LOAD:
+<<<<<<< HEAD
 		return snd_hwdep_dsp_load(hw, argp);
+=======
+		return snd_hwdep_dsp_load_user(hw, argp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (hw->ops.ioctl)
 		return hw->ops.ioctl(hw, file, cmd, arg);
@@ -279,6 +355,7 @@ static int snd_hwdep_control_ioctl(struct snd_card *card,
 
 			if (get_user(device, (int __user *)arg))
 				return -EFAULT;
+<<<<<<< HEAD
 			mutex_lock(&register_mutex);
 
 			if (device < 0)
@@ -296,6 +373,25 @@ static int snd_hwdep_control_ioctl(struct snd_card *card,
 			if (device >= SNDRV_MINOR_HWDEPS)
 				device = -1;
 			mutex_unlock(&register_mutex);
+=======
+
+			scoped_guard(mutex, &register_mutex) {
+				if (device < 0)
+					device = 0;
+				else if (device < SNDRV_MINOR_HWDEPS)
+					device++;
+				else
+					device = SNDRV_MINOR_HWDEPS;
+
+				while (device < SNDRV_MINOR_HWDEPS) {
+					if (snd_hwdep_search(card, device))
+						break;
+					device++;
+				}
+				if (device >= SNDRV_MINOR_HWDEPS)
+					device = -1;
+			}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (put_user(device, (int __user *)arg))
 				return -EFAULT;
 			return 0;
@@ -303,11 +399,16 @@ static int snd_hwdep_control_ioctl(struct snd_card *card,
 	case SNDRV_CTL_IOCTL_HWDEP_INFO:
 		{
 			struct snd_hwdep_info __user *info = (struct snd_hwdep_info __user *)arg;
+<<<<<<< HEAD
 			int device, err;
+=======
+			int device;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct snd_hwdep *hwdep;
 
 			if (get_user(device, &info->device))
 				return -EFAULT;
+<<<<<<< HEAD
 			mutex_lock(&register_mutex);
 			hwdep = snd_hwdep_search(card, device);
 			if (hwdep)
@@ -316,6 +417,15 @@ static int snd_hwdep_control_ioctl(struct snd_card *card,
 				err = -ENXIO;
 			mutex_unlock(&register_mutex);
 			return err;
+=======
+			scoped_guard(mutex, &register_mutex) {
+				hwdep = snd_hwdep_search(card, device);
+				if (!hwdep)
+					return -ENXIO;
+				return snd_hwdep_info(hwdep, info);
+			}
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 	return -ENOIOCTLCMD;
@@ -345,6 +455,19 @@ static const struct file_operations snd_hwdep_f_ops =
 	.mmap =		snd_hwdep_mmap,
 };
 
+<<<<<<< HEAD
+=======
+static void snd_hwdep_free(struct snd_hwdep *hwdep)
+{
+	if (!hwdep)
+		return;
+	if (hwdep->private_free)
+		hwdep->private_free(hwdep);
+	put_device(hwdep->dev);
+	kfree(hwdep);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * snd_hwdep_new - create a new hwdep instance
  * @card: the card instance
@@ -356,14 +479,22 @@ static const struct file_operations snd_hwdep_f_ops =
  * The callbacks (hwdep->ops) must be set on the returned instance
  * after this call manually by the caller.
  *
+<<<<<<< HEAD
  * Returns zero if successful, or a negative error code on failure.
+=======
+ * Return: Zero if successful, or a negative error code on failure.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 int snd_hwdep_new(struct snd_card *card, char *id, int device,
 		  struct snd_hwdep **rhwdep)
 {
 	struct snd_hwdep *hwdep;
 	int err;
+<<<<<<< HEAD
 	static struct snd_device_ops ops = {
+=======
+	static const struct snd_device_ops ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.dev_free = snd_hwdep_dev_free,
 		.dev_register = snd_hwdep_dev_register,
 		.dev_disconnect = snd_hwdep_dev_disconnect,
@@ -374,6 +505,7 @@ int snd_hwdep_new(struct snd_card *card, char *id, int device,
 	if (rhwdep)
 		*rhwdep = NULL;
 	hwdep = kzalloc(sizeof(*hwdep), GFP_KERNEL);
+<<<<<<< HEAD
 	if (hwdep == NULL) {
 		snd_printk(KERN_ERR "hwdep: cannot allocate\n");
 		return -ENOMEM;
@@ -391,10 +523,40 @@ int snd_hwdep_new(struct snd_card *card, char *id, int device,
 	}
 	init_waitqueue_head(&hwdep->open_wait);
 	mutex_init(&hwdep->open_mutex);
+=======
+	if (!hwdep)
+		return -ENOMEM;
+
+	init_waitqueue_head(&hwdep->open_wait);
+	mutex_init(&hwdep->open_mutex);
+	hwdep->card = card;
+	hwdep->device = device;
+	if (id)
+		strscpy(hwdep->id, id, sizeof(hwdep->id));
+
+	err = snd_device_alloc(&hwdep->dev, card);
+	if (err < 0) {
+		snd_hwdep_free(hwdep);
+		return err;
+	}
+
+	dev_set_name(hwdep->dev, "hwC%iD%i", card->number, device);
+#ifdef CONFIG_SND_OSSEMUL
+	hwdep->oss_type = -1;
+#endif
+
+	err = snd_device_new(card, SNDRV_DEV_HWDEP, hwdep, &ops);
+	if (err < 0) {
+		snd_hwdep_free(hwdep);
+		return err;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rhwdep)
 		*rhwdep = hwdep;
 	return 0;
 }
+<<<<<<< HEAD
 
 static int snd_hwdep_free(struct snd_hwdep *hwdep)
 {
@@ -410,11 +572,20 @@ static int snd_hwdep_dev_free(struct snd_device *device)
 {
 	struct snd_hwdep *hwdep = device->device_data;
 	return snd_hwdep_free(hwdep);
+=======
+EXPORT_SYMBOL(snd_hwdep_new);
+
+static int snd_hwdep_dev_free(struct snd_device *device)
+{
+	snd_hwdep_free(device->device_data);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int snd_hwdep_dev_register(struct snd_device *device)
 {
 	struct snd_hwdep *hwdep = device->device_data;
+<<<<<<< HEAD
 	int err;
 	char name[32];
 
@@ -452,6 +623,40 @@ static int snd_hwdep_dev_register(struct snd_device *device)
 	}
 #endif
 	mutex_unlock(&register_mutex);
+=======
+	struct snd_card *card = hwdep->card;
+	int err;
+
+	guard(mutex)(&register_mutex);
+	if (snd_hwdep_search(card, hwdep->device))
+		return -EBUSY;
+	list_add_tail(&hwdep->list, &snd_hwdep_devices);
+	err = snd_register_device(SNDRV_DEVICE_TYPE_HWDEP,
+				  hwdep->card, hwdep->device,
+				  &snd_hwdep_f_ops, hwdep, hwdep->dev);
+	if (err < 0) {
+		dev_err(hwdep->dev, "unable to register\n");
+		list_del(&hwdep->list);
+		return err;
+	}
+
+#ifdef CONFIG_SND_OSSEMUL
+	hwdep->ossreg = 0;
+	if (hwdep->oss_type >= 0) {
+		if (hwdep->oss_type == SNDRV_OSS_DEVICE_TYPE_DMFM &&
+		    hwdep->device)
+			dev_warn(hwdep->dev,
+				 "only hwdep device 0 can be registered as OSS direct FM device!\n");
+		else if (snd_register_oss_device(hwdep->oss_type,
+						 card, hwdep->device,
+						 &snd_hwdep_f_ops, hwdep) < 0)
+			dev_warn(hwdep->dev,
+				 "unable to register OSS compatibility device\n");
+		else
+			hwdep->ossreg = 1;
+	}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -461,17 +666,25 @@ static int snd_hwdep_dev_disconnect(struct snd_device *device)
 
 	if (snd_BUG_ON(!hwdep))
 		return -ENXIO;
+<<<<<<< HEAD
 	mutex_lock(&register_mutex);
 	if (snd_hwdep_search(hwdep->card, hwdep->device) != hwdep) {
 		mutex_unlock(&register_mutex);
 		return -EINVAL;
 	}
 	mutex_lock(&hwdep->open_mutex);
+=======
+	guard(mutex)(&register_mutex);
+	if (snd_hwdep_search(hwdep->card, hwdep->device) != hwdep)
+		return -EINVAL;
+	guard(mutex)(&hwdep->open_mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	wake_up(&hwdep->open_wait);
 #ifdef CONFIG_SND_OSSEMUL
 	if (hwdep->ossreg)
 		snd_unregister_oss_device(hwdep->oss_type, hwdep->card, hwdep->device);
 #endif
+<<<<<<< HEAD
 	snd_unregister_device(SNDRV_DEVICE_TYPE_HWDEP, hwdep->card, hwdep->device);
 	list_del_init(&hwdep->list);
 	mutex_unlock(&hwdep->open_mutex);
@@ -480,6 +693,14 @@ static int snd_hwdep_dev_disconnect(struct snd_device *device)
 }
 
 #ifdef CONFIG_PROC_FS
+=======
+	snd_unregister_device(hwdep->dev);
+	list_del_init(&hwdep->list);
+	return 0;
+}
+
+#ifdef CONFIG_SND_PROC_FS
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Info interface
  */
@@ -489,11 +710,18 @@ static void snd_hwdep_proc_read(struct snd_info_entry *entry,
 {
 	struct snd_hwdep *hwdep;
 
+<<<<<<< HEAD
 	mutex_lock(&register_mutex);
 	list_for_each_entry(hwdep, &snd_hwdep_devices, list)
 		snd_iprintf(buffer, "%02i-%02i: %s\n",
 			    hwdep->card->number, hwdep->device, hwdep->name);
 	mutex_unlock(&register_mutex);
+=======
+	guard(mutex)(&register_mutex);
+	list_for_each_entry(hwdep, &snd_hwdep_devices, list)
+		snd_iprintf(buffer, "%02i-%02i: %s\n",
+			    hwdep->card->number, hwdep->device, hwdep->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct snd_info_entry *snd_hwdep_proc_entry;
@@ -502,7 +730,12 @@ static void __init snd_hwdep_proc_init(void)
 {
 	struct snd_info_entry *entry;
 
+<<<<<<< HEAD
 	if ((entry = snd_info_create_module_entry(THIS_MODULE, "hwdep", NULL)) != NULL) {
+=======
+	entry = snd_info_create_module_entry(THIS_MODULE, "hwdep", NULL);
+	if (entry) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		entry->c.text.read = snd_hwdep_proc_read;
 		if (snd_info_register(entry) < 0) {
 			snd_info_free_entry(entry);
@@ -516,10 +749,17 @@ static void __exit snd_hwdep_proc_done(void)
 {
 	snd_info_free_entry(snd_hwdep_proc_entry);
 }
+<<<<<<< HEAD
 #else /* !CONFIG_PROC_FS */
 #define snd_hwdep_proc_init()
 #define snd_hwdep_proc_done()
 #endif /* CONFIG_PROC_FS */
+=======
+#else /* !CONFIG_SND_PROC_FS */
+#define snd_hwdep_proc_init()
+#define snd_hwdep_proc_done()
+#endif /* CONFIG_SND_PROC_FS */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /*
@@ -543,5 +783,8 @@ static void __exit alsa_hwdep_exit(void)
 
 module_init(alsa_hwdep_init)
 module_exit(alsa_hwdep_exit)
+<<<<<<< HEAD
 
 EXPORT_SYMBOL(snd_hwdep_new);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

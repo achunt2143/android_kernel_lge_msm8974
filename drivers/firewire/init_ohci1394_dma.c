@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * init_ohci1394_dma.c - Initializes physical DMA on all OHCI 1394 controllers
  *
@@ -16,6 +20,7 @@
  * To use physical DMA after the initialization of the firewire stack,
  * be sure that the stack enables it and (re-)attach after the bus reset
  * which may be caused by the firewire stack initialization.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +35,8 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/delay.h>
@@ -149,10 +156,17 @@ static inline void __init init_ohci1394_initialize(struct ohci *ohci)
 	reg_write(ohci, OHCI1394_IsoXmitIntMaskClear, 0xffffffff);
 	reg_write(ohci, OHCI1394_IsoXmitIntEventClear, 0xffffffff);
 
+<<<<<<< HEAD
 	/* Accept asyncronous transfer requests from all nodes for now */
 	reg_write(ohci, OHCI1394_AsReqFilterHiSet, 0x80000000);
 
 	/* Specify asyncronous transfer retries */
+=======
+	/* Accept asynchronous transfer requests from all nodes for now */
+	reg_write(ohci, OHCI1394_AsReqFilterHiSet, 0x80000000);
+
+	/* Specify asynchronous transfer retries */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	reg_write(ohci, OHCI1394_ATRetries,
 		  OHCI1394_MAX_AT_REQ_RETRIES |
 		  (OHCI1394_MAX_AT_RESP_RETRIES<<4) |
@@ -264,7 +278,11 @@ static inline void __init init_ohci1394_controller(int num, int slot, int func)
 }
 
 /**
+<<<<<<< HEAD
  * debug_init_ohci1394_dma - scan for OHCI1394 controllers and init DMA on them
+=======
+ * init_ohci1394_dma_on_all_controllers - scan for OHCI1394 controllers and init DMA on them
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Scans the whole PCI space for OHCI1394 controllers and inits DMA on them
  */
 void __init init_ohci1394_dma_on_all_controllers(void)
@@ -296,7 +314,11 @@ void __init init_ohci1394_dma_on_all_controllers(void)
 }
 
 /**
+<<<<<<< HEAD
  * setup_init_ohci1394_early - enables early OHCI1394 DMA initialization
+=======
+ * setup_ohci1394_dma - enables early OHCI1394 DMA initialization
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static int __init setup_ohci1394_dma(char *opt)
 {

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) by Uros Bizjak <uros@kss-loka.si>
  *
@@ -5,6 +9,7 @@
  *
  *  OPL2/3 FM instrument loader:
  *   alsa-tools/seq/sbiload/
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include "opl3_voice.h"
@@ -106,7 +113,12 @@ static int snd_opl3_synth_use(void *private_data, struct snd_seq_port_subscribe 
 	struct snd_opl3 *opl3 = private_data;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = snd_opl3_synth_setup(opl3)) < 0)
+=======
+	err = snd_opl3_synth_setup(opl3);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	if (use_internal_drums) {
@@ -121,7 +133,12 @@ static int snd_opl3_synth_use(void *private_data, struct snd_seq_port_subscribe 
 	}
 
 	if (info->sender.client != SNDRV_SEQ_CLIENT_SYSTEM) {
+<<<<<<< HEAD
 		if ((err = snd_opl3_synth_use_inc(opl3)) < 0)
+=======
+		err = snd_opl3_synth_use_inc(opl3);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 	}
 	opl3->synth_mode = SNDRV_OPL3_MODE_SEQ;
@@ -142,7 +159,11 @@ static int snd_opl3_synth_unuse(void *private_data, struct snd_seq_port_subscrib
 /*
  * MIDI emulation operators
  */
+<<<<<<< HEAD
 struct snd_midi_op opl3_ops = {
+=======
+const struct snd_midi_op opl3_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.note_on =		snd_opl3_note_on,
 	.note_off =		snd_opl3_note_off,
 	.key_press =		snd_opl3_key_press,
@@ -216,8 +237,14 @@ static int snd_opl3_synth_create_port(struct snd_opl3 * opl3)
 
 /* ------------------------------ */
 
+<<<<<<< HEAD
 static int snd_opl3_seq_new_device(struct snd_seq_device *dev)
 {
+=======
+static int snd_opl3_seq_probe(struct device *_dev)
+{
+	struct snd_seq_device *dev = to_seq_dev(_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_opl3 *opl3;
 	int client, err;
 	char name[32];
@@ -240,13 +267,19 @@ static int snd_opl3_seq_new_device(struct snd_seq_device *dev)
 	if (client < 0)
 		return client;
 
+<<<<<<< HEAD
 	if ((err = snd_opl3_synth_create_port(opl3)) < 0) {
+=======
+	err = snd_opl3_synth_create_port(opl3);
+	if (err < 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		snd_seq_delete_kernel_client(client);
 		opl3->seq_client = -1;
 		return err;
 	}
 
 	/* setup system timer */
+<<<<<<< HEAD
 	init_timer(&opl3->tlist);
 	opl3->tlist.function = snd_opl3_timer_func;
 	opl3->tlist.data = (unsigned long) opl3;
@@ -254,20 +287,37 @@ static int snd_opl3_seq_new_device(struct snd_seq_device *dev)
 	opl3->sys_timer_status = 0;
 
 #ifdef CONFIG_SND_SEQUENCER_OSS
+=======
+	timer_setup(&opl3->tlist, snd_opl3_timer_func, 0);
+	spin_lock_init(&opl3->sys_timer_lock);
+	opl3->sys_timer_status = 0;
+
+#if IS_ENABLED(CONFIG_SND_SEQUENCER_OSS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_opl3_init_seq_oss(opl3, name);
 #endif
 	return 0;
 }
 
+<<<<<<< HEAD
 static int snd_opl3_seq_delete_device(struct snd_seq_device *dev)
 {
+=======
+static int snd_opl3_seq_remove(struct device *_dev)
+{
+	struct snd_seq_device *dev = to_seq_dev(_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct snd_opl3 *opl3;
 
 	opl3 = *(struct snd_opl3 **)SNDRV_SEQ_DEVICE_ARGPTR(dev);
 	if (opl3 == NULL)
 		return -EINVAL;
 
+<<<<<<< HEAD
 #ifdef CONFIG_SND_SEQUENCER_OSS
+=======
+#if IS_ENABLED(CONFIG_SND_SEQUENCER_OSS)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	snd_opl3_free_seq_oss(opl3);
 #endif
 	if (opl3->seq_client >= 0) {
@@ -277,6 +327,7 @@ static int snd_opl3_seq_delete_device(struct snd_seq_device *dev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __init alsa_opl3_seq_init(void)
 {
 	static struct snd_seq_dev_ops ops =
@@ -296,3 +347,16 @@ static void __exit alsa_opl3_seq_exit(void)
 
 module_init(alsa_opl3_seq_init)
 module_exit(alsa_opl3_seq_exit)
+=======
+static struct snd_seq_driver opl3_seq_driver = {
+	.driver = {
+		.name = KBUILD_MODNAME,
+		.probe = snd_opl3_seq_probe,
+		.remove = snd_opl3_seq_remove,
+	},
+	.id = SNDRV_SEQ_DEV_ID_OPL3,
+	.argsize = sizeof(struct snd_opl3 *),
+};
+
+module_snd_seq_driver(opl3_seq_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

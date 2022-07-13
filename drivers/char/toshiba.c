@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* toshiba.c -- Linux driver for accessing the SMM on Toshiba laptops
  *
  * Copyright (c) 1996-2001  Jonathan A. Buzzard (jonathan@buzzard.org.uk)
@@ -35,6 +39,7 @@
  *       *any* time. It is up to any program to be aware of this eventuality
  *       and take appropriate steps.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the
  * Free Software Foundation; either version 2, or (at your option) any
@@ -45,12 +50,17 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * The information used to write this driver has been obtained by reverse
  * engineering the software supplied by Toshiba for their portable computers in
  * strict accordance with the European Council Directive 92/250/EEC on the legal
  * protection of computer programs, and it's implementation into English Law by
  * the Copyright (Computer Programs) Regulations 1992 (S.I. 1992 No.3233).
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define TOSH_VERSION "1.11 26/9/2001"
@@ -63,7 +73,11 @@
 #include <linux/miscdevice.h>
 #include <linux/ioport.h>
 #include <asm/io.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/stat.h>
 #include <linux/proc_fs.h>
@@ -71,12 +85,18 @@
 #include <linux/mutex.h>
 #include <linux/toshiba.h>
 
+<<<<<<< HEAD
 #define TOSH_MINOR_DEV 181
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jonathan Buzzard <jonathan@buzzard.org.uk>");
 MODULE_DESCRIPTION("Toshiba laptop SMM driver");
 MODULE_SUPPORTED_DEVICE("toshiba");
+=======
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Jonathan Buzzard <jonathan@buzzard.org.uk>");
+MODULE_DESCRIPTION("Toshiba laptop SMM driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_MUTEX(tosh_mutex);
 static int tosh_fn;
@@ -326,6 +346,7 @@ static int proc_toshiba_show(struct seq_file *m, void *v)
 		key);
 	return 0;
 }
+<<<<<<< HEAD
 
 static int proc_toshiba_open(struct inode *inode, struct file *file)
 {
@@ -339,6 +360,8 @@ static const struct file_operations proc_toshiba_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 
@@ -396,7 +419,11 @@ static int tosh_get_machine_id(void __iomem *bios)
 		   value. This has been verified on a Satellite Pro 430CDT,
 		   Tecra 750CDT, Tecra 780DVD and Satellite 310CDT. */
 #if TOSH_DEBUG
+<<<<<<< HEAD
 		printk("toshiba: debugging ID ebx=0x%04x\n", regs.ebx);
+=======
+		pr_debug("toshiba: debugging ID ebx=0x%04x\n", regs.ebx);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 		bx = 0xe6f5;
 
@@ -430,7 +457,11 @@ static int tosh_probe(void)
 	int i,major,minor,day,year,month,flag;
 	unsigned char signature[7] = { 0x54,0x4f,0x53,0x48,0x49,0x42,0x41 };
 	SMMRegisters regs;
+<<<<<<< HEAD
 	void __iomem *bios = ioremap_cache(0xf0000, 0x10000);
+=======
+	void __iomem *bios = ioremap(0xf0000, 0x10000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!bios)
 		return -ENOMEM;
@@ -440,7 +471,11 @@ static int tosh_probe(void)
 
 	for (i=0;i<7;i++) {
 		if (readb(bios+0xe010+i)!=signature[i]) {
+<<<<<<< HEAD
 			printk("toshiba: not a supported Toshiba laptop\n");
+=======
+			pr_err("toshiba: not a supported Toshiba laptop\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			iounmap(bios);
 			return -ENODEV;
 		}
@@ -456,7 +491,11 @@ static int tosh_probe(void)
 	/* if this is not a Toshiba laptop carry flag is set and ah=0x86 */
 
 	if ((flag==1) || ((regs.eax & 0xff00)==0x8600)) {
+<<<<<<< HEAD
 		printk("toshiba: not a supported Toshiba laptop\n");
+=======
+		pr_err("toshiba: not a supported Toshiba laptop\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		iounmap(bios);
 		return -ENODEV;
 	}
@@ -509,7 +548,11 @@ static int __init toshiba_init(void)
 	if (tosh_probe())
 		return -ENODEV;
 
+<<<<<<< HEAD
 	printk(KERN_INFO "Toshiba System Management Mode driver v" TOSH_VERSION "\n");
+=======
+	pr_info("Toshiba System Management Mode driver v" TOSH_VERSION "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* set the port to use for Fn status if not specified as a parameter */
 	if (tosh_fn==0x00)
@@ -524,7 +567,11 @@ static int __init toshiba_init(void)
 	{
 		struct proc_dir_entry *pde;
 
+<<<<<<< HEAD
 		pde = proc_create("toshiba", 0, NULL, &proc_toshiba_fops);
+=======
+		pde = proc_create_single("toshiba", 0, NULL, proc_toshiba_show);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!pde) {
 			misc_deregister(&tosh_device);
 			return -ENOMEM;

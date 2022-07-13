@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /// Find nested lock+irqsave functions that use the same flags variables
 ///
 // Confidence: High
@@ -7,6 +8,18 @@
 // URL: http://coccinelle.lip6.fr/
 // Comments:
 // Options: -no_includes -include_headers
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/// Find nested lock+irqsave functions that use the same flags variables
+///
+// Confidence: High
+// Copyright: (C) 2010-2012 Nicolas Palix.
+// Copyright: (C) 2010-2012 Julia Lawall, INRIA/LIP6.
+// Copyright: (C) 2010-2012 Gilles Muller, INRIA/LiP6.
+// URL: https://coccinelle.gitlabpages.inria.fr/website
+// Comments:
+// Options: --no-includes --include-headers
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 virtual context
 virtual org

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to
@@ -17,16 +18,24 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  */
+=======
+/* SPDX-License-Identifier: MIT */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef __XEN_PUBLIC_HVM_PARAMS_H__
 #define __XEN_PUBLIC_HVM_PARAMS_H__
 
+<<<<<<< HEAD
 #include "hvm_op.h"
+=======
+#include <xen/interface/hvm/hvm_op.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Parameter space for HVMOP_{set,get}_param.
  */
 
+<<<<<<< HEAD
 /*
  * How should CPU0 event-channel notifications be delivered?
  * val[63:56] == 0: val[55:0] is a delivery GSI (Global System Interrupt).
@@ -37,6 +46,46 @@
  * If val == 0 then CPU0 event-channel notifications are not delivered.
  */
 #define HVM_PARAM_CALLBACK_IRQ 0
+=======
+#define HVM_PARAM_CALLBACK_IRQ 0
+/*
+ * How should CPU0 event-channel notifications be delivered?
+ *
+ * If val == 0 then CPU0 event-channel notifications are not delivered.
+ * If val != 0, val[63:56] encodes the type, as follows:
+ */
+
+#define HVM_PARAM_CALLBACK_TYPE_GSI      0
+/*
+ * val[55:0] is a delivery GSI.  GSI 0 cannot be used, as it aliases val == 0,
+ * and disables all notifications.
+ */
+
+#define HVM_PARAM_CALLBACK_TYPE_PCI_INTX 1
+/*
+ * val[55:0] is a delivery PCI INTx line:
+ * Domain = val[47:32], Bus = val[31:16] DevFn = val[15:8], IntX = val[1:0]
+ */
+
+#if defined(__i386__) || defined(__x86_64__)
+#define HVM_PARAM_CALLBACK_TYPE_VECTOR   2
+/*
+ * val[7:0] is a vector number.  Check for XENFEAT_hvm_callback_vector to know
+ * if this delivery method is available.
+ */
+#elif defined(__arm__) || defined(__aarch64__)
+#define HVM_PARAM_CALLBACK_TYPE_PPI      2
+/*
+ * val[55:16] needs to be zero.
+ * val[15:8] is interrupt flag of the PPI used by event-channel:
+ *  bit 8: the PPI is edge(1) or level(0) triggered
+ *  bit 9: the PPI is active low(1) or high(0)
+ * val[7:0] is a PPI number used by event-channel.
+ * This is only used by ARM/ARM64 and masking/eoi the interrupt associated to
+ * the notification is handled by the interrupt controller.
+ */
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define HVM_PARAM_STORE_PFN    1
 #define HVM_PARAM_STORE_EVTCHN 2

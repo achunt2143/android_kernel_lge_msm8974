@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/arch/arm/kernel/fiq.c
  *
@@ -39,12 +43,19 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <linux/irq.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/seq_file.h>
 
 #include <asm/cacheflush.h>
 #include <asm/cp15.h>
 #include <asm/fiq.h>
+<<<<<<< HEAD
+=======
+#include <asm/mach/irq.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/irq.h>
 #include <asm/traps.h>
 
@@ -53,7 +64,12 @@
 		(unsigned)&vector_fiq_offset;		\
 	})
 
+<<<<<<< HEAD
 static unsigned long no_fiq_insn;
+=======
+static unsigned long dfl_fiq_insn;
+static struct pt_regs dfl_fiq_regs;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Default reacquire function
  * - we always relinquish FIQ control
@@ -61,8 +77,20 @@ static unsigned long no_fiq_insn;
  */
 static int fiq_def_op(void *ref, int relinquish)
 {
+<<<<<<< HEAD
 	if (!relinquish)
 		set_fiq_handler(&no_fiq_insn, sizeof(no_fiq_insn));
+=======
+	if (!relinquish) {
+		/* Restore default handler and registers */
+		local_fiq_disable();
+		set_fiq_regs(&dfl_fiq_regs);
+		set_fiq_handler(&dfl_fiq_insn, sizeof(dfl_fiq_insn));
+		local_fiq_enable();
+
+		/* FIXME: notify irq controller to standard enable FIQs */
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -90,8 +118,13 @@ void set_fiq_handler(void *start, unsigned int length)
 
 	memcpy(base + offset, start, length);
 	if (!cache_is_vipt_nonaliasing())
+<<<<<<< HEAD
 		flush_icache_range((unsigned long)base + offset, offset +
 				   length);
+=======
+		flush_icache_range((unsigned long)base + offset,
+				   (unsigned long)base + offset + length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	flush_icache_range(0xffff0000 + offset, 0xffff0000 + offset + length);
 }
 
@@ -117,7 +150,11 @@ int claim_fiq(struct fiq_handler *f)
 void release_fiq(struct fiq_handler *f)
 {
 	if (current_fiq != f) {
+<<<<<<< HEAD
 		printk(KERN_ERR "%s FIQ trying to release %s FIQ\n",
+=======
+		pr_err("%s FIQ trying to release %s FIQ\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       f->name, current_fiq->name);
 		dump_stack();
 		return;
@@ -140,11 +177,14 @@ void disable_fiq(int fiq)
 	disable_irq(fiq + fiq_start);
 }
 
+<<<<<<< HEAD
 void fiq_set_type(int fiq, unsigned int type)
 {
 	irq_set_irq_type(fiq + FIQ_START, type);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 EXPORT_SYMBOL(set_fiq_handler);
 EXPORT_SYMBOL(__set_fiq_regs);	/* defined in fiqasm.S */
 EXPORT_SYMBOL(__get_fiq_regs);	/* defined in fiqasm.S */
@@ -152,11 +192,19 @@ EXPORT_SYMBOL(claim_fiq);
 EXPORT_SYMBOL(release_fiq);
 EXPORT_SYMBOL(enable_fiq);
 EXPORT_SYMBOL(disable_fiq);
+<<<<<<< HEAD
 EXPORT_SYMBOL(fiq_set_type);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void __init init_FIQ(int start)
 {
 	unsigned offset = FIQ_OFFSET;
+<<<<<<< HEAD
 	no_fiq_insn = *(unsigned long *)(0xffff0000 + offset);
+=======
+	dfl_fiq_insn = *(unsigned long *)(0xffff0000 + offset);
+	get_fiq_regs(&dfl_fiq_regs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fiq_start = start;
 }

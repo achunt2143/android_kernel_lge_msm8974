@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __SPARC_PTRACE_H
 #define __SPARC_PTRACE_H
 
@@ -164,6 +165,18 @@ struct sparc_stackf {
 
 #ifdef __KERNEL__
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __SPARC_PTRACE_H
+#define __SPARC_PTRACE_H
+
+#include <uapi/asm/ptrace.h>
+
+#if defined(__sparc__) && defined(__arch64__)
+#ifndef __ASSEMBLY__
+
+#include <linux/compiler.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/threads.h>
 #include <asm/switch_to.h>
 
@@ -182,14 +195,27 @@ static inline bool pt_regs_clear_syscall(struct pt_regs *regs)
 	return (regs->tstate &= ~TSTATE_SYSCALL);
 }
 
+<<<<<<< HEAD
 #define arch_ptrace_stop_needed(exit_code, info) \
+=======
+#define arch_ptrace_stop_needed() \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ({	flush_user_windows(); \
 	get_thread_wsaved() != 0; \
 })
 
+<<<<<<< HEAD
 #define arch_ptrace_stop(exit_code, info) \
 	synchronize_user_stack()
 
+=======
+#define arch_ptrace_stop() \
+	synchronize_user_stack()
+
+#define current_pt_regs() \
+	((struct pt_regs *)((unsigned long)current_thread_info() + THREAD_SIZE) - 1)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct global_reg_snapshot {
 	unsigned long		tstate;
 	unsigned long		tpc;
@@ -200,6 +226,7 @@ struct global_reg_snapshot {
 	struct thread_info	*thread;
 	unsigned long		pad1;
 };
+<<<<<<< HEAD
 extern struct global_reg_snapshot global_reg_snapshot[NR_CPUS];
 
 #define force_successful_syscall_return()	    \
@@ -208,6 +235,28 @@ do {	current_thread_info()->syscall_noerror = 1; \
 #define user_mode(regs) (!((regs)->tstate & TSTATE_PRIV))
 #define instruction_pointer(regs) ((regs)->tpc)
 #define instruction_pointer_set(regs, val) ((regs)->tpc = (val))
+=======
+
+struct global_pmu_snapshot {
+	unsigned long		pcr[4];
+	unsigned long		pic[4];
+};
+
+union global_cpu_snapshot {
+	struct global_reg_snapshot	reg;
+	struct global_pmu_snapshot	pmu;
+};
+
+extern union global_cpu_snapshot global_cpu_snapshot[NR_CPUS];
+
+#define force_successful_syscall_return() set_thread_noerror(1)
+#define user_mode(regs) (!((regs)->tstate & TSTATE_PRIV))
+#define instruction_pointer(regs) ((regs)->tpc)
+#define instruction_pointer_set(regs, val) do { \
+		(regs)->tpc = (val); \
+		(regs)->tnpc = (val)+4; \
+	} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define user_stack_pointer(regs) ((regs)->u_regs[UREG_FP])
 static inline int is_syscall_success(struct pt_regs *regs)
 {
@@ -219,6 +268,7 @@ static inline long regs_return_value(struct pt_regs *regs)
 	return regs->u_regs[UREG_I0];
 }
 #ifdef CONFIG_SMP
+<<<<<<< HEAD
 extern unsigned long profile_pc(struct pt_regs *);
 #else
 #define profile_pc(regs) instruction_pointer(regs)
@@ -241,6 +291,47 @@ extern unsigned long profile_pc(struct pt_regs *);
 #ifndef __ASSEMBLY__
 
 #ifdef __KERNEL__
+=======
+unsigned long profile_pc(struct pt_regs *);
+#else
+#define profile_pc(regs) instruction_pointer(regs)
+#endif
+
+#define MAX_REG_OFFSET (offsetof(struct pt_regs, magic))
+
+int regs_query_register_offset(const char *name);
+unsigned long regs_get_kernel_stack_nth(struct pt_regs *regs, unsigned int n);
+
+/**
+ * regs_get_register() - get register value from its offset
+ * @regs:	pt_regs from which register value is gotten
+ * @offset:	offset number of the register.
+ *
+ * regs_get_register returns the value of a register whose
+ * offset from @regs. The @offset is the offset of the register
+ * in struct pt_regs. If @offset is bigger than MAX_REG_OFFSET,
+ * this returns 0.
+ */
+static inline unsigned long regs_get_register(struct pt_regs *regs,
+					     unsigned long offset)
+{
+	if (unlikely(offset >= MAX_REG_OFFSET))
+		return 0;
+	if (offset == PT_V9_Y)
+		return *(unsigned int *)((unsigned long)regs + offset);
+	return *(unsigned long *)((unsigned long)regs + offset);
+}
+
+/* Valid only for Kernel mode traps. */
+static inline unsigned long kernel_stack_pointer(struct pt_regs *regs)
+{
+	return regs->u_regs[UREG_I6];
+}
+#else /* __ASSEMBLY__ */
+#endif /* __ASSEMBLY__ */
+#else /* (defined(__sparc__) && defined(__arch64__)) */
+#ifndef __ASSEMBLY__
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/switch_to.h>
 
 static inline bool pt_regs_is_syscall(struct pt_regs *regs)
@@ -253,18 +344,32 @@ static inline bool pt_regs_clear_syscall(struct pt_regs *regs)
 	return (regs->psr &= ~PSR_SYSCALL);
 }
 
+<<<<<<< HEAD
 #define arch_ptrace_stop_needed(exit_code, info) \
+=======
+#define arch_ptrace_stop_needed() \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ({	flush_user_windows(); \
 	current_thread_info()->w_saved != 0;	\
 })
 
+<<<<<<< HEAD
 #define arch_ptrace_stop(exit_code, info) \
 	synchronize_user_stack()
 
+=======
+#define arch_ptrace_stop() \
+	synchronize_user_stack()
+
+#define current_pt_regs() \
+	((struct pt_regs *)((unsigned long)current_thread_info() + THREAD_SIZE) - 1)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define user_mode(regs) (!((regs)->psr & PSR_PS))
 #define instruction_pointer(regs) ((regs)->pc)
 #define user_stack_pointer(regs) ((regs)->u_regs[UREG_FP])
 unsigned long profile_pc(struct pt_regs *);
+<<<<<<< HEAD
 #endif /* (__KERNEL__) */
 
 #else /* (!__ASSEMBLY__) */
@@ -417,6 +522,12 @@ unsigned long profile_pc(struct pt_regs *);
 #define SF_XXARG  0x5c
 
 #ifdef __KERNEL__
+=======
+#else /* (!__ASSEMBLY__) */
+#endif /* (!__ASSEMBLY__) */
+#endif /* (defined(__sparc__) && defined(__arch64__)) */
+#define STACK_BIAS		2047
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* global_reg_snapshot offsets */
 #define GR_SNAP_TSTATE	0x00
@@ -428,6 +539,7 @@ unsigned long profile_pc(struct pt_regs *);
 #define GR_SNAP_THREAD	0x30
 #define GR_SNAP_PAD1	0x38
 
+<<<<<<< HEAD
 #endif  /*  __KERNEL__  */
 
 /* Stuff for the ptrace system call */
@@ -453,4 +565,6 @@ unsigned long profile_pc(struct pt_regs *);
 #define PTRACE_GETFPREGS64	  25
 #define PTRACE_SETFPREGS64	  26
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(__SPARC_PTRACE_H) */

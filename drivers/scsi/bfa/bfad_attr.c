@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2005-2010 Brocade Communications Systems, Inc.
  * All rights reserved
@@ -13,6 +14,16 @@
  * WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
+ * Copyright (c) 2014- QLogic Corporation.
+ * All rights reserved
+ * www.qlogic.com
+ *
+ * Linux driver for QLogic BR-series Fibre Channel Host Bus Adapter.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -282,8 +293,15 @@ bfad_im_get_stats(struct Scsi_Host *shost)
 	rc = bfa_port_get_stats(BFA_FCPORT(&bfad->bfa),
 				fcstats, bfad_hcb_comp, &fcomp);
 	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+<<<<<<< HEAD
 	if (rc != BFA_STATUS_OK)
 		return NULL;
+=======
+	if (rc != BFA_STATUS_OK) {
+		kfree(fcstats);
+		return NULL;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	wait_for_completion(&fcomp.comp);
 
@@ -335,6 +353,7 @@ bfad_im_reset_stats(struct Scsi_Host *shost)
 }
 
 /*
+<<<<<<< HEAD
  * FC transport template entry, get rport loss timeout.
  */
 static void
@@ -352,6 +371,12 @@ bfad_im_get_rport_loss_tmo(struct fc_rport *rport)
 
 /*
  * FC transport template entry, set rport loss timeout.
+=======
+ * FC transport template entry, set rport loss timeout.
+ * Update dev_loss_tmo based on the value pushed down by the stack
+ * In case it is lesser than path_tov of driver, set it to path_tov + 1
+ * to ensure that the driver times out before the application
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void
 bfad_im_set_rport_loss_tmo(struct fc_rport *rport, u32 timeout)
@@ -359,6 +384,7 @@ bfad_im_set_rport_loss_tmo(struct fc_rport *rport, u32 timeout)
 	struct bfad_itnim_data_s *itnim_data = rport->dd_data;
 	struct bfad_itnim_s   *itnim = itnim_data->itnim;
 	struct bfad_s         *bfad = itnim->im->bfad;
+<<<<<<< HEAD
 	unsigned long   flags;
 
 	if (timeout > 0) {
@@ -368,6 +394,13 @@ bfad_im_set_rport_loss_tmo(struct fc_rport *rport, u32 timeout)
 		spin_unlock_irqrestore(&bfad->bfad_lock, flags);
 	}
 
+=======
+	uint16_t path_tov = bfa_fcpim_path_tov_get(&bfad->bfa);
+
+	rport->dev_loss_tmo = timeout;
+	if (timeout < path_tov)
+		rport->dev_loss_tmo = path_tov + 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int
@@ -426,6 +459,26 @@ bfad_im_vport_create(struct fc_vport *fc_vport, bool disable)
 		vshost = vport->drv_port.im_port->shost;
 		fc_host_node_name(vshost) = wwn_to_u64((u8 *)&port_cfg.nwwn);
 		fc_host_port_name(vshost) = wwn_to_u64((u8 *)&port_cfg.pwwn);
+<<<<<<< HEAD
+=======
+		fc_host_supported_classes(vshost) = FC_COS_CLASS3;
+
+		memset(fc_host_supported_fc4s(vshost), 0,
+			sizeof(fc_host_supported_fc4s(vshost)));
+
+		/* For FCP type 0x08 */
+		if (supported_fc4s & BFA_LPORT_ROLE_FCP_IM)
+			fc_host_supported_fc4s(vshost)[2] = 1;
+
+		/* For fibre channel services type 0x20 */
+		fc_host_supported_fc4s(vshost)[7] = 1;
+
+		fc_host_supported_speeds(vshost) =
+				bfad_im_supported_speeds(&bfad->bfa);
+		fc_host_maxframe_size(vshost) =
+				bfa_fcport_get_maxfrsize(&bfad->bfa);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		fc_vport->dd_data = vport;
 		vport->drv_port.im_port->fc_vport = fc_vport;
 	} else if (rc == BFA_STATUS_INVALID_WWN)
@@ -442,7 +495,11 @@ bfad_im_vport_create(struct fc_vport *fc_vport, bool disable)
 	return status;
 }
 
+<<<<<<< HEAD
 int
+=======
+static int
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 bfad_im_issue_fc_host_lip(struct Scsi_Host *shost)
 {
 	struct bfad_im_port_s *im_port =
@@ -486,7 +543,10 @@ bfad_im_vport_delete(struct fc_vport *fc_vport)
 	struct bfad_im_port_s *im_port =
 			(struct bfad_im_port_s *) vport->drv_port.im_port;
 	struct bfad_s *bfad = im_port->bfad;
+<<<<<<< HEAD
 	struct bfad_port_s *port;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bfa_fcs_vport_s *fcs_vport;
 	struct Scsi_Host *vshost;
 	wwn_t   pwwn;
@@ -497,11 +557,18 @@ bfad_im_vport_delete(struct fc_vport *fc_vport)
 	if (im_port->flags & BFAD_PORT_DELETE) {
 		bfad_scsi_host_free(bfad, im_port);
 		list_del(&vport->list_entry);
+<<<<<<< HEAD
 		return 0;
 	}
 
 	port = im_port->port;
 
+=======
+		kfree(vport);
+		return 0;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vshost = vport->drv_port.im_port->shost;
 	u64_to_wwn(fc_host_port_name(vshost), (u8 *)&pwwn);
 
@@ -569,6 +636,37 @@ bfad_im_vport_disable(struct fc_vport *fc_vport, bool disable)
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+static void
+bfad_im_vport_set_symbolic_name(struct fc_vport *fc_vport)
+{
+	struct bfad_vport_s *vport = (struct bfad_vport_s *)fc_vport->dd_data;
+	struct bfad_im_port_s *im_port =
+			(struct bfad_im_port_s *)vport->drv_port.im_port;
+	struct bfad_s *bfad = im_port->bfad;
+	struct Scsi_Host *vshost = vport->drv_port.im_port->shost;
+	char *sym_name = fc_vport->symbolic_name;
+	struct bfa_fcs_vport_s *fcs_vport;
+	wwn_t	pwwn;
+	unsigned long flags;
+
+	u64_to_wwn(fc_host_port_name(vshost), (u8 *)&pwwn);
+
+	spin_lock_irqsave(&bfad->bfad_lock, flags);
+	fcs_vport = bfa_fcs_vport_lookup(&bfad->bfa_fcs, 0, pwwn);
+	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+
+	if (fcs_vport == NULL)
+		return;
+
+	spin_lock_irqsave(&bfad->bfad_lock, flags);
+	if (strlen(sym_name) > 0)
+		bfa_fcs_lport_set_symname(&fcs_vport->lport, sym_name);
+	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct fc_function_template bfad_im_fc_function_template = {
 
 	/* Target dynamic attributes */
@@ -616,12 +714,19 @@ struct fc_function_template bfad_im_fc_function_template = {
 	.show_rport_maxframe_size = 1,
 	.show_rport_supported_classes = 1,
 	.show_rport_dev_loss_tmo = 1,
+<<<<<<< HEAD
 	.get_rport_dev_loss_tmo = bfad_im_get_rport_loss_tmo,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_rport_dev_loss_tmo = bfad_im_set_rport_loss_tmo,
 	.issue_fc_host_lip = bfad_im_issue_fc_host_lip,
 	.vport_create = bfad_im_vport_create,
 	.vport_delete = bfad_im_vport_delete,
 	.vport_disable = bfad_im_vport_disable,
+<<<<<<< HEAD
+=======
+	.set_vport_symbolic_name = bfad_im_vport_set_symbolic_name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bsg_request = bfad_im_bsg_request,
 	.bsg_timeout = bfad_im_bsg_timeout,
 };
@@ -673,7 +778,10 @@ struct fc_function_template bfad_im_vport_fc_function_template = {
 	.show_rport_maxframe_size = 1,
 	.show_rport_supported_classes = 1,
 	.show_rport_dev_loss_tmo = 1,
+<<<<<<< HEAD
 	.get_rport_dev_loss_tmo = bfad_im_get_rport_loss_tmo,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_rport_dev_loss_tmo = bfad_im_set_rport_loss_tmo,
 };
 
@@ -691,7 +799,11 @@ bfad_im_serial_num_show(struct device *dev, struct device_attribute *attr,
 	char serial_num[BFA_ADAPTER_SERIAL_NUM_LEN];
 
 	bfa_get_adapter_serial_num(&bfad->bfa, serial_num);
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n", serial_num);
+=======
+	return sysfs_emit(buf, "%s\n", serial_num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -705,7 +817,11 @@ bfad_im_model_show(struct device *dev, struct device_attribute *attr,
 	char model[BFA_ADAPTER_MODEL_NAME_LEN];
 
 	bfa_get_adapter_model(&bfad->bfa, model);
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n", model);
+=======
+	return sysfs_emit(buf, "%s\n", model);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -722,6 +838,7 @@ bfad_im_model_desc_show(struct device *dev, struct device_attribute *attr,
 
 	bfa_get_adapter_model(&bfad->bfa, model);
 	nports = bfa_get_nports(&bfad->bfa);
+<<<<<<< HEAD
 	if (!strcmp(model, "Brocade-425"))
 		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
 			"Brocade 4Gbps PCIe dual port FC HBA");
@@ -789,11 +906,76 @@ bfad_im_model_desc_show(struct device *dev, struct device_attribute *attr,
 		else if (nports == 2 && !bfa_ioc_is_cna(&bfad->bfa.ioc))
 			snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
 				"Brocade 16Gbps PCIe dual port FC HBA");
+=======
+	if (!strcmp(model, "QLogic-425"))
+		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+			"QLogic BR-series 4Gbps PCIe dual port FC HBA");
+	else if (!strcmp(model, "QLogic-825"))
+		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+			"QLogic BR-series 8Gbps PCIe dual port FC HBA");
+	else if (!strcmp(model, "QLogic-42B"))
+		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+			"QLogic BR-series 4Gbps PCIe dual port FC HBA for HP");
+	else if (!strcmp(model, "QLogic-82B"))
+		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+			"QLogic BR-series 8Gbps PCIe dual port FC HBA for HP");
+	else if (!strcmp(model, "QLogic-1010"))
+		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+			"QLogic BR-series 10Gbps single port CNA");
+	else if (!strcmp(model, "QLogic-1020"))
+		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+			"QLogic BR-series 10Gbps dual port CNA");
+	else if (!strcmp(model, "QLogic-1007"))
+		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+			"QLogic BR-series 10Gbps CNA for IBM Blade Center");
+	else if (!strcmp(model, "QLogic-415"))
+		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+			"QLogic BR-series 4Gbps PCIe single port FC HBA");
+	else if (!strcmp(model, "QLogic-815"))
+		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+			"QLogic BR-series 8Gbps PCIe single port FC HBA");
+	else if (!strcmp(model, "QLogic-41B"))
+		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+			"QLogic BR-series 4Gbps PCIe single port FC HBA for HP");
+	else if (!strcmp(model, "QLogic-81B"))
+		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+			"QLogic BR-series 8Gbps PCIe single port FC HBA for HP");
+	else if (!strcmp(model, "QLogic-804"))
+		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+			"QLogic BR-series 8Gbps FC HBA for HP Bladesystem C-class");
+	else if (!strcmp(model, "QLogic-1741"))
+		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+			"QLogic BR-series 10Gbps CNA for Dell M-Series Blade Servers");
+	else if (strstr(model, "QLogic-1860")) {
+		if (nports == 1 && bfa_ioc_is_cna(&bfad->bfa.ioc))
+			snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+				"QLogic BR-series 10Gbps single port CNA");
+		else if (nports == 1 && !bfa_ioc_is_cna(&bfad->bfa.ioc))
+			snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+				"QLogic BR-series 16Gbps PCIe single port FC HBA");
+		else if (nports == 2 && bfa_ioc_is_cna(&bfad->bfa.ioc))
+			snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+				"QLogic BR-series 10Gbps dual port CNA");
+		else if (nports == 2 && !bfa_ioc_is_cna(&bfad->bfa.ioc))
+			snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+				"QLogic BR-series 16Gbps PCIe dual port FC HBA");
+	} else if (!strcmp(model, "QLogic-1867")) {
+		if (nports == 1 && !bfa_ioc_is_cna(&bfad->bfa.ioc))
+			snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+				"QLogic BR-series 16Gbps PCIe single port FC HBA for IBM");
+		else if (nports == 2 && !bfa_ioc_is_cna(&bfad->bfa.ioc))
+			snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
+				"QLogic BR-series 16Gbps PCIe dual port FC HBA for IBM");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else
 		snprintf(model_descr, BFA_ADAPTER_MODEL_DESCR_LEN,
 			"Invalid Model");
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n", model_descr);
+=======
+	return sysfs_emit(buf, "%s\n", model_descr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -807,7 +989,11 @@ bfad_im_node_name_show(struct device *dev, struct device_attribute *attr,
 	u64        nwwn;
 
 	nwwn = bfa_fcs_lport_get_nwwn(port->fcs_port);
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "0x%llx\n", cpu_to_be64(nwwn));
+=======
+	return sysfs_emit(buf, "0x%llx\n", cpu_to_be64(nwwn));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -822,9 +1008,15 @@ bfad_im_symbolic_name_show(struct device *dev, struct device_attribute *attr,
 	char symname[BFA_SYMNAME_MAXLEN];
 
 	bfa_fcs_lport_get_attr(&bfad->bfa_fcs.fabric.bport, &port_attr);
+<<<<<<< HEAD
 	strncpy(symname, port_attr.port_cfg.sym_name.symname,
 			BFA_SYMNAME_MAXLEN);
 	return snprintf(buf, PAGE_SIZE, "%s\n", symname);
+=======
+	strscpy(symname, port_attr.port_cfg.sym_name.symname,
+			BFA_SYMNAME_MAXLEN);
+	return sysfs_emit(buf, "%s\n", symname);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -838,14 +1030,22 @@ bfad_im_hw_version_show(struct device *dev, struct device_attribute *attr,
 	char hw_ver[BFA_VERSION_LEN];
 
 	bfa_get_pci_chip_rev(&bfad->bfa, hw_ver);
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n", hw_ver);
+=======
+	return sysfs_emit(buf, "%s\n", hw_ver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
 bfad_im_drv_version_show(struct device *dev, struct device_attribute *attr,
 				char *buf)
 {
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_VERSION);
+=======
+	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_VERSION);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -859,7 +1059,11 @@ bfad_im_optionrom_version_show(struct device *dev,
 	char optrom_ver[BFA_VERSION_LEN];
 
 	bfa_get_adapter_optrom_ver(&bfad->bfa, optrom_ver);
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n", optrom_ver);
+=======
+	return sysfs_emit(buf, "%s\n", optrom_ver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -873,7 +1077,11 @@ bfad_im_fw_version_show(struct device *dev, struct device_attribute *attr,
 	char fw_ver[BFA_VERSION_LEN];
 
 	bfa_get_adapter_fw_ver(&bfad->bfa, fw_ver);
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n", fw_ver);
+=======
+	return sysfs_emit(buf, "%s\n", fw_ver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -885,7 +1093,11 @@ bfad_im_num_of_ports_show(struct device *dev, struct device_attribute *attr,
 			(struct bfad_im_port_s *) shost->hostdata[0];
 	struct bfad_s *bfad = im_port->bfad;
 
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%d\n",
+=======
+	return sysfs_emit(buf, "%d\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			bfa_get_nports(&bfad->bfa));
 }
 
@@ -893,7 +1105,11 @@ static ssize_t
 bfad_im_drv_name_show(struct device *dev, struct device_attribute *attr,
 				char *buf)
 {
+<<<<<<< HEAD
 	return snprintf(buf, PAGE_SIZE, "%s\n", BFAD_DRIVER_NAME);
+=======
+	return sysfs_emit(buf, "%s\n", BFAD_DRIVER_NAME);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static ssize_t
@@ -906,6 +1122,7 @@ bfad_im_num_of_discovered_ports_show(struct device *dev,
 	struct bfad_port_s    *port = im_port->port;
 	struct bfad_s         *bfad = im_port->bfad;
 	int        nrports = 2048;
+<<<<<<< HEAD
 	wwn_t          *rports = NULL;
 	unsigned long   flags;
 
@@ -919,6 +1136,22 @@ bfad_im_num_of_discovered_ports_show(struct device *dev,
 	kfree(rports);
 
 	return snprintf(buf, PAGE_SIZE, "%d\n", nrports);
+=======
+	struct bfa_rport_qualifier_s *rports = NULL;
+	unsigned long   flags;
+
+	rports = kcalloc(nrports, sizeof(struct bfa_rport_qualifier_s),
+			 GFP_ATOMIC);
+	if (rports == NULL)
+		return sysfs_emit(buf, "Failed\n");
+
+	spin_lock_irqsave(&bfad->bfad_lock, flags);
+	bfa_fcs_lport_get_rport_quals(port->fcs_port, rports, &nrports);
+	spin_unlock_irqrestore(&bfad->bfad_lock, flags);
+	kfree(rports);
+
+	return sysfs_emit(buf, "%d\n", nrports);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static          DEVICE_ATTR(serial_number, S_IRUGO,
@@ -943,6 +1176,7 @@ static          DEVICE_ATTR(driver_name, S_IRUGO, bfad_im_drv_name_show, NULL);
 static          DEVICE_ATTR(number_of_discovered_ports, S_IRUGO,
 				bfad_im_num_of_discovered_ports_show, NULL);
 
+<<<<<<< HEAD
 struct device_attribute *bfad_im_host_attrs[] = {
 	&dev_attr_serial_number,
 	&dev_attr_model,
@@ -976,3 +1210,54 @@ struct device_attribute *bfad_im_vport_attrs[] = {
 };
 
 
+=======
+static struct attribute *bfad_im_host_attrs[] = {
+	&dev_attr_serial_number.attr,
+	&dev_attr_model.attr,
+	&dev_attr_model_description.attr,
+	&dev_attr_node_name.attr,
+	&dev_attr_symbolic_name.attr,
+	&dev_attr_hardware_version.attr,
+	&dev_attr_driver_version.attr,
+	&dev_attr_option_rom_version.attr,
+	&dev_attr_firmware_version.attr,
+	&dev_attr_number_of_ports.attr,
+	&dev_attr_driver_name.attr,
+	&dev_attr_number_of_discovered_ports.attr,
+	NULL,
+};
+
+static const struct attribute_group bfad_im_host_attr_group = {
+	.attrs = bfad_im_host_attrs
+};
+
+const struct attribute_group *bfad_im_host_groups[] = {
+	&bfad_im_host_attr_group,
+	NULL
+};
+
+static struct attribute *bfad_im_vport_attrs[] = {
+	&dev_attr_serial_number.attr,
+	&dev_attr_model.attr,
+	&dev_attr_model_description.attr,
+	&dev_attr_node_name.attr,
+	&dev_attr_symbolic_name.attr,
+	&dev_attr_hardware_version.attr,
+	&dev_attr_driver_version.attr,
+	&dev_attr_option_rom_version.attr,
+	&dev_attr_firmware_version.attr,
+	&dev_attr_number_of_ports.attr,
+	&dev_attr_driver_name.attr,
+	&dev_attr_number_of_discovered_ports.attr,
+	NULL,
+};
+
+static const struct attribute_group bfad_im_vport_attr_group = {
+	.attrs = bfad_im_vport_attrs
+};
+
+const struct attribute_group *bfad_im_vport_groups[] = {
+	&bfad_im_vport_attr_group,
+	NULL
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

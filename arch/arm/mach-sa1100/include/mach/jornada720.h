@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/arm/mach-sa1100/include/mach/jornada720.h
  *
@@ -5,11 +9,14 @@
  *
  * Copyright 2007,2008 Kristoffer Ericson <Kristoffer.Ericson@gmail.com>
  *  Copyright 2000 John Ankcorn <jca@lcs.mit.edu>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
  /* HP Jornada 7xx microprocessor commands */

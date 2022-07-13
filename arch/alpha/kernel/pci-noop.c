@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *	linux/arch/alpha/kernel/pci-noop.c
  *
@@ -6,7 +10,11 @@
 
 #include <linux/pci.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+#include <linux/memblock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/gfp.h>
 #include <linux/capability.h>
 #include <linux/mm.h>
@@ -14,6 +22,10 @@
 #include <linux/sched.h>
 #include <linux/dma-mapping.h>
 #include <linux/scatterlist.h>
+<<<<<<< HEAD
+=======
+#include <linux/syscalls.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "proto.h"
 
@@ -31,7 +43,14 @@ alloc_pci_controller(void)
 {
 	struct pci_controller *hose;
 
+<<<<<<< HEAD
 	hose = alloc_bootmem(sizeof(*hose));
+=======
+	hose = memblock_alloc(sizeof(*hose), SMP_CACHE_BYTES);
+	if (!hose)
+		panic("%s: Failed to allocate %zu bytes\n", __func__,
+		      sizeof(*hose));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	*hose_tail = hose;
 	hose_tail = &hose->next;
@@ -42,6 +61,7 @@ alloc_pci_controller(void)
 struct resource * __init
 alloc_resource(void)
 {
+<<<<<<< HEAD
 	struct resource *res;
 
 	res = alloc_bootmem(sizeof(*res));
@@ -51,12 +71,29 @@ alloc_resource(void)
 
 asmlinkage long
 sys_pciconfig_iobase(long which, unsigned long bus, unsigned long dfn)
+=======
+	void *ptr = memblock_alloc(sizeof(struct resource), SMP_CACHE_BYTES);
+
+	if (!ptr)
+		panic("%s: Failed to allocate %zu bytes\n", __func__,
+		      sizeof(struct resource));
+
+	return ptr;
+}
+
+SYSCALL_DEFINE3(pciconfig_iobase, long, which, unsigned long, bus,
+		unsigned long, dfn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pci_controller *hose;
 
 	/* from hose or from bus.devfn */
 	if (which & IOBASE_FROM_HOSE) {
+<<<<<<< HEAD
 		for (hose = hose_head; hose; hose = hose->next) 
+=======
+		for (hose = hose_head; hose; hose = hose->next)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (hose->index == bus)
 				break;
 		if (!hose)
@@ -87,9 +124,14 @@ sys_pciconfig_iobase(long which, unsigned long bus, unsigned long dfn)
 	return -EOPNOTSUPP;
 }
 
+<<<<<<< HEAD
 asmlinkage long
 sys_pciconfig_read(unsigned long bus, unsigned long dfn,
 		   unsigned long off, unsigned long len, void *buf)
+=======
+SYSCALL_DEFINE5(pciconfig_read, unsigned long, bus, unsigned long, dfn,
+		unsigned long, off, unsigned long, len, void __user *, buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
@@ -97,15 +139,21 @@ sys_pciconfig_read(unsigned long bus, unsigned long dfn,
 		return -ENODEV;
 }
 
+<<<<<<< HEAD
 asmlinkage long
 sys_pciconfig_write(unsigned long bus, unsigned long dfn,
 		    unsigned long off, unsigned long len, void *buf)
+=======
+SYSCALL_DEFINE5(pciconfig_write, unsigned long, bus, unsigned long, dfn,
+		unsigned long, off, unsigned long, len, void __user *, buf)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!capable(CAP_SYS_ADMIN))
 		return -EPERM;
 	else
 		return -ENODEV;
 }
+<<<<<<< HEAD
 
 static void *alpha_noop_alloc_coherent(struct device *dev, size_t size,
 				       dma_addr_t *dma_handle, gfp_t gfp,
@@ -187,3 +235,5 @@ struct dma_map_ops alpha_noop_ops = {
 
 struct dma_map_ops *dma_ops = &alpha_noop_ops;
 EXPORT_SYMBOL(dma_ops);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

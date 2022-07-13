@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * core.c - contains all core device and protocol registration functions
  *
@@ -9,6 +13,10 @@
 #include <linux/list.h>
 #include <linux/device.h>
 #include <linux/module.h>
+<<<<<<< HEAD
+=======
+#include <linux/mutex.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/init.h>
 #include <linux/string.h>
 #include <linux/slab.h>
@@ -19,7 +27,11 @@
 
 static LIST_HEAD(pnp_protocols);
 LIST_HEAD(pnp_global);
+<<<<<<< HEAD
 DEFINE_SPINLOCK(pnp_lock);
+=======
+DEFINE_MUTEX(pnp_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ACPI or PNPBIOS should tell us about all platform devices, so we can
@@ -29,6 +41,7 @@ DEFINE_SPINLOCK(pnp_lock);
 int pnp_platform_devices;
 EXPORT_SYMBOL(pnp_platform_devices);
 
+<<<<<<< HEAD
 void *pnp_alloc(long size)
 {
 	void *result;
@@ -43,19 +56,40 @@ void *pnp_alloc(long size)
 
 /**
  * pnp_protocol_register - adds a pnp protocol to the pnp layer
+=======
+static void pnp_remove_protocol(struct pnp_protocol *protocol)
+{
+	mutex_lock(&pnp_lock);
+	list_del(&protocol->protocol_list);
+	mutex_unlock(&pnp_lock);
+}
+
+/**
+ * pnp_register_protocol - adds a pnp protocol to the pnp layer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @protocol: pointer to the corresponding pnp_protocol structure
  *
  *  Ex protocols: ISAPNP, PNPBIOS, etc
  */
 int pnp_register_protocol(struct pnp_protocol *protocol)
 {
+<<<<<<< HEAD
 	int nodenum;
 	struct list_head *pos;
+=======
+	struct list_head *pos;
+	int nodenum, ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	INIT_LIST_HEAD(&protocol->devices);
 	INIT_LIST_HEAD(&protocol->cards);
 	nodenum = 0;
+<<<<<<< HEAD
 	spin_lock(&pnp_lock);
+=======
+
+	mutex_lock(&pnp_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* assign the lowest unused number */
 	list_for_each(pos, &pnp_protocols) {
@@ -66,6 +100,7 @@ int pnp_register_protocol(struct pnp_protocol *protocol)
 		}
 	}
 
+<<<<<<< HEAD
 	list_add_tail(&protocol->protocol_list, &pnp_protocols);
 	spin_unlock(&pnp_lock);
 
@@ -76,13 +111,35 @@ int pnp_register_protocol(struct pnp_protocol *protocol)
 
 /**
  * pnp_protocol_unregister - removes a pnp protocol from the pnp layer
+=======
+	protocol->number = nodenum;
+	dev_set_name(&protocol->dev, "pnp%d", nodenum);
+
+	list_add_tail(&protocol->protocol_list, &pnp_protocols);
+
+	mutex_unlock(&pnp_lock);
+
+	ret = device_register(&protocol->dev);
+	if (ret)
+		pnp_remove_protocol(protocol);
+
+	return ret;
+}
+
+/**
+ * pnp_unregister_protocol - removes a pnp protocol from the pnp layer
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @protocol: pointer to the corresponding pnp_protocol structure
  */
 void pnp_unregister_protocol(struct pnp_protocol *protocol)
 {
+<<<<<<< HEAD
 	spin_lock(&pnp_lock);
 	list_del(&protocol->protocol_list);
 	spin_unlock(&pnp_lock);
+=======
+	pnp_remove_protocol(protocol);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_unregister(&protocol->dev);
 }
 
@@ -146,14 +203,18 @@ struct pnp_dev *pnp_alloc_dev(struct pnp_protocol *protocol, int id,
 	dev->dev.coherent_dma_mask = dev->dma_mask;
 	dev->dev.release = &pnp_release_device;
 
+<<<<<<< HEAD
 	dev_set_name(&dev->dev, "%02x:%02x", dev->protocol->number, dev->number);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_id = pnp_add_id(dev, pnpid);
 	if (!dev_id) {
 		kfree(dev);
 		return NULL;
 	}
 
+<<<<<<< HEAD
 	return dev;
 }
 
@@ -169,6 +230,43 @@ int __pnp_add_device(struct pnp_dev *dev)
 		device_set_wakeup_capable(&dev->dev,
 				dev->protocol->can_wakeup(dev));
 	return device_register(&dev->dev);
+=======
+	dev_set_name(&dev->dev, "%02x:%02x", dev->protocol->number, dev->number);
+
+	return dev;
+}
+
+static void pnp_delist_device(struct pnp_dev *dev)
+{
+	mutex_lock(&pnp_lock);
+	list_del(&dev->global_list);
+	list_del(&dev->protocol_list);
+	mutex_unlock(&pnp_lock);
+}
+
+int __pnp_add_device(struct pnp_dev *dev)
+{
+	int ret;
+
+	pnp_fixup_device(dev);
+	dev->status = PNP_READY;
+
+	mutex_lock(&pnp_lock);
+
+	list_add_tail(&dev->global_list, &pnp_global);
+	list_add_tail(&dev->protocol_list, &dev->protocol->devices);
+
+	mutex_unlock(&pnp_lock);
+
+	ret = device_register(&dev->dev);
+	if (ret)
+		pnp_delist_device(dev);
+	else if (dev->protocol->can_wakeup)
+		device_set_wakeup_capable(&dev->dev,
+				dev->protocol->can_wakeup(dev));
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -195,18 +293,27 @@ int pnp_add_device(struct pnp_dev *dev)
 	for (id = dev->id; id; id = id->next)
 		len += scnprintf(buf + len, sizeof(buf) - len, " %s", id->id);
 
+<<<<<<< HEAD
 	dev_printk(KERN_DEBUG, &dev->dev, "%s device, IDs%s (%s)\n",
 		   dev->protocol->name, buf,
 		   dev->active ? "active" : "disabled");
+=======
+	dev_dbg(&dev->dev, "%s device, IDs%s (%s)\n", dev->protocol->name, buf,
+		dev->active ? "active" : "disabled");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 void __pnp_remove_device(struct pnp_dev *dev)
 {
+<<<<<<< HEAD
 	spin_lock(&pnp_lock);
 	list_del(&dev->global_list);
 	list_del(&dev->protocol_list);
 	spin_unlock(&pnp_lock);
+=======
+	pnp_delist_device(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	device_unregister(&dev->dev);
 }
 

@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  w83795.c - Linux kernel driver for hardware monitoring
  *  Copyright (C) 2008 Nuvoton Technology Corp.
  *                Wei Song
+<<<<<<< HEAD
  *  Copyright (C) 2010 Jean Delvare <khali@linux-fr.org>
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -17,6 +22,9 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  *  02110-1301 USA.
+=======
+ *  Copyright (C) 2010 Jean Delvare <jdelvare@suse.de>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  Supports following chips:
  *
@@ -34,7 +42,12 @@
 #include <linux/hwmon-sysfs.h>
 #include <linux/err.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <linux/delay.h>
+=======
+#include <linux/jiffies.h>
+#include <linux/util_macros.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Addresses to scan */
 static const unsigned short normal_i2c[] = {
@@ -262,7 +275,11 @@ static inline u16 fan_to_reg(long rpm)
 {
 	if (rpm <= 0)
 		return 0x0fff;
+<<<<<<< HEAD
 	return SENSORS_LIMIT((1350000 + (rpm >> 1)) / rpm, 1, 0xffe);
+=======
+	return clamp_val((1350000 + (rpm >> 1)) / rpm, 1, 0xffe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline unsigned long time_from_reg(u8 reg)
@@ -272,7 +289,11 @@ static inline unsigned long time_from_reg(u8 reg)
 
 static inline u8 time_to_reg(unsigned long val)
 {
+<<<<<<< HEAD
 	return SENSORS_LIMIT((val + 50) / 100, 0, 0xff);
+=======
+	return clamp_val((val + 50) / 100, 0, 0xff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline long temp_from_reg(s8 reg)
@@ -282,7 +303,11 @@ static inline long temp_from_reg(s8 reg)
 
 static inline s8 temp_to_reg(long val, s8 min, s8 max)
 {
+<<<<<<< HEAD
 	return SENSORS_LIMIT(val / 1000, min, max);
+=======
+	return clamp_val(val / 1000, min, max);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const u16 pwm_freq_cksel0[16] = {
@@ -308,18 +333,27 @@ static u8 pwm_freq_to_reg(unsigned long val, u16 clkin)
 	unsigned long best0, best1;
 
 	/* Best fit for cksel = 0 */
+<<<<<<< HEAD
 	for (reg0 = 0; reg0 < ARRAY_SIZE(pwm_freq_cksel0) - 1; reg0++) {
 		if (val > (pwm_freq_cksel0[reg0] +
 			   pwm_freq_cksel0[reg0 + 1]) / 2)
 			break;
 	}
+=======
+	reg0 = find_closest_descending(val, pwm_freq_cksel0,
+				       ARRAY_SIZE(pwm_freq_cksel0));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (val < 375)	/* cksel = 1 can't beat this */
 		return reg0;
 	best0 = pwm_freq_cksel0[reg0];
 
 	/* Best fit for cksel = 1 */
 	base_clock = clkin * 1000 / ((clkin == 48000) ? 384 : 256);
+<<<<<<< HEAD
 	reg1 = SENSORS_LIMIT(DIV_ROUND_CLOSEST(base_clock, val), 1, 128);
+=======
+	reg1 = clamp_val(DIV_ROUND_CLOSEST(base_clock, val), 1, 128);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	best1 = base_clock / reg1;
 	reg1 = 0x80 | (reg1 - 1);
 
@@ -394,7 +428,11 @@ struct w83795_data {
 	u8 enable_beep;
 	u8 beeps[6];		/* Register value */
 
+<<<<<<< HEAD
 	char valid;
+=======
+	bool valid;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char valid_limits;
 	char valid_pwm_config;
 };
@@ -699,7 +737,11 @@ static struct w83795_data *w83795_update_device(struct device *dev)
 			     tmp & ~ALARM_CTRL_RTSACS);
 
 	data->last_updated = jiffies;
+<<<<<<< HEAD
 	data->valid = 1;
+=======
+	data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 END:
 	mutex_unlock(&data->update_lock);
@@ -779,7 +821,11 @@ store_chassis_clear(struct device *dev,
 
 	/* Clear status and force cache refresh */
 	w83795_read(client, W83795_REG_ALARM(5));
+<<<<<<< HEAD
 	data->valid = 0;
+=======
+	data->valid = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&data->update_lock);
 	return count;
 }
@@ -889,7 +935,11 @@ store_pwm(struct device *dev, struct device_attribute *attr,
 		val = pwm_freq_to_reg(val, data->clkin);
 		break;
 	default:
+<<<<<<< HEAD
 		val = SENSORS_LIMIT(val, 0, 0xff);
+=======
+		val = clamp_val(val, 0, 0xff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 	w83795_write(client, W83795_REG_PWM(index, nr), val);
@@ -1126,7 +1176,11 @@ store_temp_pwm_enable(struct device *dev, struct device_attribute *attr,
 		break;
 	case TEMP_PWM_FAN_MAP:
 		mutex_lock(&data->update_lock);
+<<<<<<< HEAD
 		tmp = SENSORS_LIMIT(tmp, 0, 0xff);
+=======
+		tmp = clamp_val(tmp, 0, 0xff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		w83795_write(client, W83795_REG_TFMR(index), tmp);
 		data->pwm_tfmr[index] = tmp;
 		mutex_unlock(&data->update_lock);
@@ -1177,13 +1231,21 @@ store_fanin(struct device *dev, struct device_attribute *attr,
 	mutex_lock(&data->update_lock);
 	switch (nr) {
 	case FANIN_TARGET:
+<<<<<<< HEAD
 		val = fan_to_reg(SENSORS_LIMIT(val, 0, 0xfff));
+=======
+		val = fan_to_reg(clamp_val(val, 0, 0xfff));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		w83795_write(client, W83795_REG_FTSH(index), val >> 4);
 		w83795_write(client, W83795_REG_FTSL(index), (val << 4) & 0xf0);
 		data->target_speed[index] = val;
 		break;
 	case FANIN_TOL:
+<<<<<<< HEAD
 		val = SENSORS_LIMIT(val, 0, 0x3f);
+=======
+		val = clamp_val(val, 0, 0x3f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		w83795_write(client, W83795_REG_TFTS, val);
 		data->tol_speed = val;
 		break;
@@ -1227,6 +1289,7 @@ store_temp_pwm(struct device *dev, struct device_attribute *attr,
 	mutex_lock(&data->update_lock);
 	switch (nr) {
 	case TEMP_PWM_TTTI:
+<<<<<<< HEAD
 		val = SENSORS_LIMIT(val, 0, 0x7f);
 		w83795_write(client, W83795_REG_TTTI(index), val);
 		break;
@@ -1236,13 +1299,28 @@ store_temp_pwm(struct device *dev, struct device_attribute *attr,
 		break;
 	case TEMP_PWM_HCT:
 		val = SENSORS_LIMIT(val, 0, 0x0f);
+=======
+		val = clamp_val(val, 0, 0x7f);
+		w83795_write(client, W83795_REG_TTTI(index), val);
+		break;
+	case TEMP_PWM_CTFS:
+		val = clamp_val(val, 0, 0x7f);
+		w83795_write(client, W83795_REG_CTFS(index), val);
+		break;
+	case TEMP_PWM_HCT:
+		val = clamp_val(val, 0, 0x0f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp = w83795_read(client, W83795_REG_HT(index));
 		tmp &= 0x0f;
 		tmp |= (val << 4) & 0xf0;
 		w83795_write(client, W83795_REG_HT(index), tmp);
 		break;
 	case TEMP_PWM_HOT:
+<<<<<<< HEAD
 		val = SENSORS_LIMIT(val, 0, 0x0f);
+=======
+		val = clamp_val(val, 0, 0x0f);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tmp = w83795_read(client, W83795_REG_HT(index));
 		tmp &= 0xf0;
 		tmp |= val & 0x0f;
@@ -1541,7 +1619,11 @@ store_in(struct device *dev, struct device_attribute *attr,
 	if ((index >= 17) &&
 	    !((data->has_gain >> (index - 17)) & 1))
 		val /= 8;
+<<<<<<< HEAD
 	val = SENSORS_LIMIT(val, 0, 0x3FF);
+=======
+	val = clamp_val(val, 0, 0x3FF);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&data->update_lock);
 
 	lsb_idx = IN_LSB_SHIFT_IDX[index][IN_LSB_IDX];
@@ -1596,7 +1678,11 @@ store_sf_setup(struct device *dev, struct device_attribute *attr,
 
 	switch (nr) {
 	case SETUP_PWM_DEFAULT:
+<<<<<<< HEAD
 		val = SENSORS_LIMIT(val, 0, 0xff);
+=======
+		val = clamp_val(val, 0, 0xff);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	case SETUP_PWM_UPTIME:
 	case SETUP_PWM_DOWNTIME:
@@ -1693,7 +1779,11 @@ store_sf_setup(struct device *dev, struct device_attribute *attr,
  * somewhere else in the code
  */
 #define SENSOR_ATTR_TEMP(index) {					\
+<<<<<<< HEAD
 	SENSOR_ATTR_2(temp##index##_type, S_IRUGO | (index < 4 ? S_IWUSR : 0), \
+=======
+	SENSOR_ATTR_2(temp##index##_type, S_IRUGO | (index < 5 ? S_IWUSR : 0), \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		show_temp_mode, store_temp_mode, NOT_USED, index - 1),	\
 	SENSOR_ATTR_2(temp##index##_input, S_IRUGO, show_temp,		\
 		NULL, TEMP_READ, index - 1),				\
@@ -1982,7 +2072,11 @@ static int w83795_detect(struct i2c_client *client,
 	else
 		chip_name = "w83795g";
 
+<<<<<<< HEAD
 	strlcpy(info->type, chip_name, I2C_NAME_SIZE);
+=======
+	strscpy(info->type, chip_name, I2C_NAME_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_info(&adapter->dev, "Found %s rev. %c at 0x%02hx\n", chip_name,
 		 'A' + (device_id & 0xf), address);
 
@@ -2120,11 +2214,20 @@ static void w83795_check_dynamic_in_limits(struct i2c_client *client)
 					   &w83795_in[i][3].dev_attr.attr,
 					   S_IRUGO);
 		if (err_max || err_min)
+<<<<<<< HEAD
 			dev_warn(&client->dev, "Failed to set in%d limits "
 				 "read-only (%d, %d)\n", i, err_max, err_min);
 		else
 			dev_info(&client->dev, "in%d limits set dynamically "
 				 "from VID\n", i);
+=======
+			dev_warn(&client->dev,
+				 "Failed to set in%d limits read-only (%d, %d)\n",
+				 i, err_max, err_min);
+		else
+			dev_info(&client->dev,
+				 "in%d limits set dynamically from VID\n", i);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -2141,15 +2244,25 @@ static void w83795_apply_temp_config(struct w83795_data *data, u8 config,
 		if (temp_chan >= 4)
 			break;
 		data->temp_mode |= 1 << temp_chan;
+<<<<<<< HEAD
 		/* fall through */
+=======
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 0x3: /* Thermistor */
 		data->has_temp |= 1 << temp_chan;
 		break;
 	}
 }
 
+<<<<<<< HEAD
 static int w83795_probe(struct i2c_client *client,
 			const struct i2c_device_id *id)
+=======
+static const struct i2c_device_id w83795_id[];
+
+static int w83795_probe(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i;
 	u8 tmp;
@@ -2157,6 +2270,7 @@ static int w83795_probe(struct i2c_client *client,
 	struct w83795_data *data;
 	int err;
 
+<<<<<<< HEAD
 	data = kzalloc(sizeof(struct w83795_data), GFP_KERNEL);
 	if (!data) {
 		err = -ENOMEM;
@@ -2165,6 +2279,14 @@ static int w83795_probe(struct i2c_client *client,
 
 	i2c_set_clientdata(client, data);
 	data->chip_type = id->driver_data;
+=======
+	data = devm_kzalloc(dev, sizeof(struct w83795_data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	i2c_set_clientdata(client, data);
+	data->chip_type = i2c_match_id(w83795_id, client)->driver_data;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	data->bank = i2c_smbus_read_byte_data(client, W83795_REG_BANKSEL);
 	mutex_init(&data->update_lock);
 
@@ -2247,20 +2369,30 @@ static int w83795_probe(struct i2c_client *client,
 
 exit_remove:
 	w83795_handle_files(dev, device_remove_file_wrapper);
+<<<<<<< HEAD
 	kfree(data);
 exit:
 	return err;
 }
 
 static int w83795_remove(struct i2c_client *client)
+=======
+	return err;
+}
+
+static void w83795_remove(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct w83795_data *data = i2c_get_clientdata(client);
 
 	hwmon_device_unregister(data->hwmon_dev);
 	w83795_handle_files(&client->dev, device_remove_file_wrapper);
+<<<<<<< HEAD
 	kfree(data);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -2286,6 +2418,10 @@ static struct i2c_driver w83795_driver = {
 
 module_i2c_driver(w83795_driver);
 
+<<<<<<< HEAD
 MODULE_AUTHOR("Wei Song, Jean Delvare <khali@linux-fr.org>");
+=======
+MODULE_AUTHOR("Wei Song, Jean Delvare <jdelvare@suse.de>");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DESCRIPTION("W83795G/ADG hardware monitoring driver");
 MODULE_LICENSE("GPL");

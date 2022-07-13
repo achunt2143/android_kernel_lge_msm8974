@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * wm8350.c  --  Voltage and current regulation for the Wolfson WM8350 PMIC
  *
@@ -11,6 +12,16 @@
  *  Free Software Foundation;  either version 2 of the  License, or (at your
  *  option) any later version.
  */
+=======
+// SPDX-License-Identifier: GPL-2.0+
+//
+// wm8350.c  --  Voltage and current regulation for the Wolfson WM8350 PMIC
+//
+// Copyright 2007, 2008 Wolfson Microelectronics PLC.
+//
+// Author: Liam Girdwood
+//         linux@wolfsonmicro.com
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -28,7 +39,11 @@
 #define WM8350_DCDC_MAX_VSEL 0x66
 
 /* Microamps */
+<<<<<<< HEAD
 static const int isink_cur[] = {
+=======
+static const unsigned int isink_cur[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	4,
 	5,
 	6,
@@ -95,6 +110,7 @@ static const int isink_cur[] = {
 	223191
 };
 
+<<<<<<< HEAD
 static int get_isink_val(int min_uA, int max_uA, u16 *setting)
 {
 	int i;
@@ -189,6 +205,8 @@ static int wm8350_isink_get_current(struct regulator_dev *rdev)
 	return isink_cur[val];
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* turn on ISINK followed by DCDC */
 static int wm8350_isink_enable(struct regulator_dev *rdev)
 {
@@ -359,6 +377,7 @@ int wm8350_isink_set_flash(struct wm8350 *wm8350, int isink, u16 mode,
 }
 EXPORT_SYMBOL_GPL(wm8350_isink_set_flash);
 
+<<<<<<< HEAD
 static int wm8350_dcdc_set_voltage(struct regulator_dev *rdev, int min_uV,
 				   int max_uV, unsigned *selector)
 {
@@ -457,6 +476,15 @@ static int wm8350_dcdc_set_suspend_voltage(struct regulator_dev *rdev, int uV)
 	}
 	if (mV == 0)
 		mV = 850;
+=======
+static int wm8350_dcdc_set_suspend_voltage(struct regulator_dev *rdev, int uV)
+{
+	struct wm8350 *wm8350 = rdev_get_drvdata(rdev);
+	int sel, volt_reg, dcdc = rdev_get_id(rdev);
+	u16 val;
+
+	dev_dbg(wm8350->dev, "%s %d mV %d\n", __func__, dcdc, uV / 1000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (dcdc) {
 	case WM8350_DCDC_1:
@@ -477,10 +505,20 @@ static int wm8350_dcdc_set_suspend_voltage(struct regulator_dev *rdev, int uV)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/* all DCDCs have same mV bits */
 	val = wm8350_reg_read(wm8350, volt_reg) & ~WM8350_DC1_VSEL_MASK;
 	wm8350_reg_write(wm8350, volt_reg,
 			 val | wm8350_dcdc_mvolts_to_val(mV));
+=======
+	sel = regulator_map_voltage_linear(rdev, uV, uV);
+	if (sel < 0)
+		return sel;
+
+	/* all DCDCs have same mV bits */
+	val = wm8350_reg_read(wm8350, volt_reg) & ~WM8350_DC1_VSEL_MASK;
+	wm8350_reg_write(wm8350, volt_reg, val | sel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -657,6 +695,7 @@ static int wm8350_dcdc_set_suspend_mode(struct regulator_dev *rdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8350_ldo_set_suspend_voltage(struct regulator_dev *rdev, int uV)
 {
 	struct wm8350 *wm8350 = rdev_get_drvdata(rdev);
@@ -670,6 +709,20 @@ static int wm8350_ldo_set_suspend_voltage(struct regulator_dev *rdev, int uV)
 			ldo, mV);
 		return -EINVAL;
 	}
+=======
+static const struct linear_range wm8350_ldo_ranges[] = {
+	REGULATOR_LINEAR_RANGE(900000, 0, 15, 50000),
+	REGULATOR_LINEAR_RANGE(1800000, 16, 31, 100000),
+};
+
+static int wm8350_ldo_set_suspend_voltage(struct regulator_dev *rdev, int uV)
+{
+	struct wm8350 *wm8350 = rdev_get_drvdata(rdev);
+	int sel, volt_reg, ldo = rdev_get_id(rdev);
+	u16 val;
+
+	dev_dbg(wm8350->dev, "%s %d mV %d\n", __func__, ldo, uV / 1000);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (ldo) {
 	case WM8350_LDO_1:
@@ -688,10 +741,20 @@ static int wm8350_ldo_set_suspend_voltage(struct regulator_dev *rdev, int uV)
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	/* all LDOs have same mV bits */
 	val = wm8350_reg_read(wm8350, volt_reg) & ~WM8350_LDO1_VSEL_MASK;
 	wm8350_reg_write(wm8350, volt_reg,
 			 val | wm8350_ldo_mvolts_to_val(mV));
+=======
+	sel = regulator_map_voltage_linear_range(rdev, uV, uV);
+	if (sel < 0)
+		return sel;
+
+	/* all LDOs have same mV bits */
+	val = wm8350_reg_read(wm8350, volt_reg) & ~WM8350_LDO1_VSEL_MASK;
+	wm8350_reg_write(wm8350, volt_reg, val | sel);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -753,6 +816,7 @@ static int wm8350_ldo_set_suspend_disable(struct regulator_dev *rdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8350_ldo_set_voltage(struct regulator_dev *rdev, int min_uV,
 				  int max_uV, unsigned *selector)
 {
@@ -839,6 +903,8 @@ static int wm8350_ldo_list_voltage(struct regulator_dev *rdev,
 	return wm8350_ldo_val_to_mvolts(selector) * 1000;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int wm8350_dcdc_set_slot(struct wm8350 *wm8350, int dcdc, u16 start,
 			 u16 stop, u16 fault)
 {
@@ -959,6 +1025,7 @@ int wm8350_dcdc25_set_mode(struct wm8350 *wm8350, int dcdc, u16 mode,
 }
 EXPORT_SYMBOL_GPL(wm8350_dcdc25_set_mode);
 
+<<<<<<< HEAD
 static int wm8350_dcdc_enable(struct regulator_dev *rdev)
 {
 	struct wm8350 *wm8350 = rdev_get_drvdata(rdev);
@@ -1016,6 +1083,8 @@ static int wm8350_ldo_disable(struct regulator_dev *rdev)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int force_continuous_enable(struct wm8350 *wm8350, int dcdc, int enable)
 {
 	int reg = 0, ret;
@@ -1167,6 +1236,10 @@ static unsigned int get_mode(int uA, const struct wm8350_dcdc_efficiency *eff)
 	while (eff[i].uA_load_min != -1) {
 		if (uA >= eff[i].uA_load_min && uA <= eff[i].uA_load_max)
 			return eff[i].mode;
+<<<<<<< HEAD
+=======
+		i++;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return REGULATOR_MODE_NORMAL;
 }
@@ -1197,6 +1270,7 @@ static unsigned int wm8350_dcdc_get_optimum_mode(struct regulator_dev *rdev,
 	return mode;
 }
 
+<<<<<<< HEAD
 static int wm8350_dcdc_is_enabled(struct regulator_dev *rdev)
 {
 	struct wm8350 *wm8350 = rdev_get_drvdata(rdev);
@@ -1233,20 +1307,41 @@ static struct regulator_ops wm8350_dcdc_ops = {
 	.set_mode = wm8350_dcdc_set_mode,
 	.get_optimum_mode = wm8350_dcdc_get_optimum_mode,
 	.is_enabled = wm8350_dcdc_is_enabled,
+=======
+static const struct regulator_ops wm8350_dcdc_ops = {
+	.set_voltage_sel = regulator_set_voltage_sel_regmap,
+	.get_voltage_sel = regulator_get_voltage_sel_regmap,
+	.list_voltage = regulator_list_voltage_linear,
+	.map_voltage = regulator_map_voltage_linear,
+	.enable = regulator_enable_regmap,
+	.disable = regulator_disable_regmap,
+	.is_enabled = regulator_is_enabled_regmap,
+	.get_mode = wm8350_dcdc_get_mode,
+	.set_mode = wm8350_dcdc_set_mode,
+	.get_optimum_mode = wm8350_dcdc_get_optimum_mode,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_suspend_voltage = wm8350_dcdc_set_suspend_voltage,
 	.set_suspend_enable = wm8350_dcdc_set_suspend_enable,
 	.set_suspend_disable = wm8350_dcdc_set_suspend_disable,
 	.set_suspend_mode = wm8350_dcdc_set_suspend_mode,
 };
 
+<<<<<<< HEAD
 static struct regulator_ops wm8350_dcdc2_5_ops = {
 	.enable = wm8350_dcdc_enable,
 	.disable = wm8350_dcdc_disable,
 	.is_enabled = wm8350_dcdc_is_enabled,
+=======
+static const struct regulator_ops wm8350_dcdc2_5_ops = {
+	.enable = regulator_enable_regmap,
+	.disable = regulator_disable_regmap,
+	.is_enabled = regulator_is_enabled_regmap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_suspend_enable = wm8350_dcdc25_set_suspend_enable,
 	.set_suspend_disable = wm8350_dcdc25_set_suspend_disable,
 };
 
+<<<<<<< HEAD
 static struct regulator_ops wm8350_ldo_ops = {
 	.set_voltage = wm8350_ldo_set_voltage,
 	.get_voltage_sel = wm8350_ldo_get_voltage_sel,
@@ -1254,22 +1349,42 @@ static struct regulator_ops wm8350_ldo_ops = {
 	.enable = wm8350_ldo_enable,
 	.disable = wm8350_ldo_disable,
 	.is_enabled = wm8350_ldo_is_enabled,
+=======
+static const struct regulator_ops wm8350_ldo_ops = {
+	.map_voltage = regulator_map_voltage_linear_range,
+	.set_voltage_sel = regulator_set_voltage_sel_regmap,
+	.get_voltage_sel = regulator_get_voltage_sel_regmap,
+	.list_voltage = regulator_list_voltage_linear_range,
+	.enable = regulator_enable_regmap,
+	.disable = regulator_disable_regmap,
+	.is_enabled = regulator_is_enabled_regmap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.get_mode = wm8350_ldo_get_mode,
 	.set_suspend_voltage = wm8350_ldo_set_suspend_voltage,
 	.set_suspend_enable = wm8350_ldo_set_suspend_enable,
 	.set_suspend_disable = wm8350_ldo_set_suspend_disable,
 };
 
+<<<<<<< HEAD
 static struct regulator_ops wm8350_isink_ops = {
 	.set_current_limit = wm8350_isink_set_current,
 	.get_current_limit = wm8350_isink_get_current,
+=======
+static const struct regulator_ops wm8350_isink_ops = {
+	.set_current_limit = regulator_set_current_limit_regmap,
+	.get_current_limit = regulator_get_current_limit_regmap,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.enable = wm8350_isink_enable,
 	.disable = wm8350_isink_disable,
 	.is_enabled = wm8350_isink_is_enabled,
 	.enable_time = wm8350_isink_enable_time,
 };
 
+<<<<<<< HEAD
 static struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
+=======
+static const struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name = "DCDC1",
 		.id = WM8350_DCDC_1,
@@ -1277,6 +1392,15 @@ static struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
 		.irq = WM8350_IRQ_UV_DC1,
 		.type = REGULATOR_VOLTAGE,
 		.n_voltages = WM8350_DCDC_MAX_VSEL + 1,
+<<<<<<< HEAD
+=======
+		.min_uV = 850000,
+		.uV_step = 25000,
+		.vsel_reg = WM8350_DCDC1_CONTROL,
+		.vsel_mask = WM8350_DC1_VSEL_MASK,
+		.enable_reg = WM8350_DCDC_LDO_REQUESTED,
+		.enable_mask = WM8350_DC1_ENA,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.owner = THIS_MODULE,
 	},
 	{
@@ -1285,6 +1409,11 @@ static struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
 		.ops = &wm8350_dcdc2_5_ops,
 		.irq = WM8350_IRQ_UV_DC2,
 		.type = REGULATOR_VOLTAGE,
+<<<<<<< HEAD
+=======
+		.enable_reg = WM8350_DCDC_LDO_REQUESTED,
+		.enable_mask = WM8350_DC2_ENA,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.owner = THIS_MODULE,
 	},
 	{
@@ -1294,6 +1423,15 @@ static struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
 		.irq = WM8350_IRQ_UV_DC3,
 		.type = REGULATOR_VOLTAGE,
 		.n_voltages = WM8350_DCDC_MAX_VSEL + 1,
+<<<<<<< HEAD
+=======
+		.min_uV = 850000,
+		.uV_step = 25000,
+		.vsel_reg = WM8350_DCDC3_CONTROL,
+		.vsel_mask = WM8350_DC3_VSEL_MASK,
+		.enable_reg = WM8350_DCDC_LDO_REQUESTED,
+		.enable_mask = WM8350_DC3_ENA,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.owner = THIS_MODULE,
 	},
 	{
@@ -1303,6 +1441,15 @@ static struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
 		.irq = WM8350_IRQ_UV_DC4,
 		.type = REGULATOR_VOLTAGE,
 		.n_voltages = WM8350_DCDC_MAX_VSEL + 1,
+<<<<<<< HEAD
+=======
+		.min_uV = 850000,
+		.uV_step = 25000,
+		.vsel_reg = WM8350_DCDC4_CONTROL,
+		.vsel_mask = WM8350_DC4_VSEL_MASK,
+		.enable_reg = WM8350_DCDC_LDO_REQUESTED,
+		.enable_mask = WM8350_DC4_ENA,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.owner = THIS_MODULE,
 	},
 	{
@@ -1311,6 +1458,11 @@ static struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
 		.ops = &wm8350_dcdc2_5_ops,
 		.irq = WM8350_IRQ_UV_DC5,
 		.type = REGULATOR_VOLTAGE,
+<<<<<<< HEAD
+=======
+		.enable_reg = WM8350_DCDC_LDO_REQUESTED,
+		.enable_mask = WM8350_DC5_ENA,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.owner = THIS_MODULE,
 	 },
 	{
@@ -1320,6 +1472,15 @@ static struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
 		.irq = WM8350_IRQ_UV_DC6,
 		.type = REGULATOR_VOLTAGE,
 		.n_voltages = WM8350_DCDC_MAX_VSEL + 1,
+<<<<<<< HEAD
+=======
+		.min_uV = 850000,
+		.uV_step = 25000,
+		.vsel_reg = WM8350_DCDC6_CONTROL,
+		.vsel_mask = WM8350_DC6_VSEL_MASK,
+		.enable_reg = WM8350_DCDC_LDO_REQUESTED,
+		.enable_mask = WM8350_DC6_ENA,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.owner = THIS_MODULE,
 	},
 	{
@@ -1329,6 +1490,15 @@ static struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
 		.irq = WM8350_IRQ_UV_LDO1,
 		.type = REGULATOR_VOLTAGE,
 		.n_voltages = WM8350_LDO1_VSEL_MASK + 1,
+<<<<<<< HEAD
+=======
+		.linear_ranges = wm8350_ldo_ranges,
+		.n_linear_ranges = ARRAY_SIZE(wm8350_ldo_ranges),
+		.vsel_reg = WM8350_LDO1_CONTROL,
+		.vsel_mask = WM8350_LDO1_VSEL_MASK,
+		.enable_reg = WM8350_DCDC_LDO_REQUESTED,
+		.enable_mask = WM8350_LDO1_ENA,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.owner = THIS_MODULE,
 	},
 	{
@@ -1338,6 +1508,15 @@ static struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
 		.irq = WM8350_IRQ_UV_LDO2,
 		.type = REGULATOR_VOLTAGE,
 		.n_voltages = WM8350_LDO2_VSEL_MASK + 1,
+<<<<<<< HEAD
+=======
+		.linear_ranges = wm8350_ldo_ranges,
+		.n_linear_ranges = ARRAY_SIZE(wm8350_ldo_ranges),
+		.vsel_reg = WM8350_LDO2_CONTROL,
+		.vsel_mask = WM8350_LDO2_VSEL_MASK,
+		.enable_reg = WM8350_DCDC_LDO_REQUESTED,
+		.enable_mask = WM8350_LDO2_ENA,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.owner = THIS_MODULE,
 	},
 	{
@@ -1347,6 +1526,15 @@ static struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
 		.irq = WM8350_IRQ_UV_LDO3,
 		.type = REGULATOR_VOLTAGE,
 		.n_voltages = WM8350_LDO3_VSEL_MASK + 1,
+<<<<<<< HEAD
+=======
+		.linear_ranges = wm8350_ldo_ranges,
+		.n_linear_ranges = ARRAY_SIZE(wm8350_ldo_ranges),
+		.vsel_reg = WM8350_LDO3_CONTROL,
+		.vsel_mask = WM8350_LDO3_VSEL_MASK,
+		.enable_reg = WM8350_DCDC_LDO_REQUESTED,
+		.enable_mask = WM8350_LDO3_ENA,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.owner = THIS_MODULE,
 	},
 	{
@@ -1356,6 +1544,15 @@ static struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
 		.irq = WM8350_IRQ_UV_LDO4,
 		.type = REGULATOR_VOLTAGE,
 		.n_voltages = WM8350_LDO4_VSEL_MASK + 1,
+<<<<<<< HEAD
+=======
+		.linear_ranges = wm8350_ldo_ranges,
+		.n_linear_ranges = ARRAY_SIZE(wm8350_ldo_ranges),
+		.vsel_reg = WM8350_LDO4_CONTROL,
+		.vsel_mask = WM8350_LDO4_VSEL_MASK,
+		.enable_reg = WM8350_DCDC_LDO_REQUESTED,
+		.enable_mask = WM8350_LDO4_ENA,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.owner = THIS_MODULE,
 	},
 	{
@@ -1365,6 +1562,13 @@ static struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
 		.irq = WM8350_IRQ_CS1,
 		.type = REGULATOR_CURRENT,
 		.owner = THIS_MODULE,
+<<<<<<< HEAD
+=======
+		.curr_table = isink_cur,
+		.n_current_limits = ARRAY_SIZE(isink_cur),
+		.csel_reg = WM8350_CURRENT_SINK_DRIVER_A,
+		.csel_mask = WM8350_CS1_ISEL_MASK,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 },
 	{
 		.name = "ISINKB",
@@ -1373,12 +1577,20 @@ static struct regulator_desc wm8350_reg[NUM_WM8350_REGULATORS] = {
 		.irq = WM8350_IRQ_CS2,
 		.type = REGULATOR_CURRENT,
 		.owner = THIS_MODULE,
+<<<<<<< HEAD
+=======
+		.curr_table = isink_cur,
+		.n_current_limits = ARRAY_SIZE(isink_cur),
+		.csel_reg = WM8350_CURRENT_SINK_DRIVER_B,
+		.csel_mask = WM8350_CS2_ISEL_MASK,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 },
 };
 
 static irqreturn_t pmic_uv_handler(int irq, void *data)
 {
 	struct regulator_dev *rdev = (struct regulator_dev *)data;
+<<<<<<< HEAD
 	struct wm8350 *wm8350 = rdev_get_drvdata(rdev);
 
 	mutex_lock(&rdev->mutex);
@@ -1391,6 +1603,17 @@ static irqreturn_t pmic_uv_handler(int irq, void *data)
 					      REGULATOR_EVENT_UNDER_VOLTAGE,
 					      wm8350);
 	mutex_unlock(&rdev->mutex);
+=======
+
+	if (irq == WM8350_IRQ_CS1 || irq == WM8350_IRQ_CS2)
+		regulator_notifier_call_chain(rdev,
+					      REGULATOR_EVENT_REGULATION_OUT,
+					      NULL);
+	else
+		regulator_notifier_call_chain(rdev,
+					      REGULATOR_EVENT_UNDER_VOLTAGE,
+					      NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -1398,6 +1621,10 @@ static irqreturn_t pmic_uv_handler(int irq, void *data)
 static int wm8350_regulator_probe(struct platform_device *pdev)
 {
 	struct wm8350 *wm8350 = dev_get_drvdata(&pdev->dev);
+<<<<<<< HEAD
+=======
+	struct regulator_config config = { };
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct regulator_dev *rdev;
 	int ret;
 	u16 val;
@@ -1405,7 +1632,11 @@ static int wm8350_regulator_probe(struct platform_device *pdev)
 	if (pdev->id < WM8350_DCDC_1 || pdev->id > WM8350_ISINK_B)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	/* do any regulatior specific init */
+=======
+	/* do any regulator specific init */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	switch (pdev->id) {
 	case WM8350_DCDC_1:
 		val = wm8350_reg_read(wm8350, WM8350_DCDC1_LOW_POWER);
@@ -1425,10 +1656,21 @@ static int wm8350_regulator_probe(struct platform_device *pdev)
 		break;
 	}
 
+<<<<<<< HEAD
 	/* register regulator */
 	rdev = regulator_register(&wm8350_reg[pdev->id], &pdev->dev,
 				  pdev->dev.platform_data,
 				  dev_get_drvdata(&pdev->dev), NULL);
+=======
+	config.dev = &pdev->dev;
+	config.init_data = dev_get_platdata(&pdev->dev);
+	config.driver_data = dev_get_drvdata(&pdev->dev);
+	config.regmap = wm8350->regmap;
+
+	/* register regulator */
+	rdev = devm_regulator_register(&pdev->dev, &wm8350_reg[pdev->id],
+				       &config);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(rdev)) {
 		dev_err(&pdev->dev, "failed to register %s\n",
 			wm8350_reg[pdev->id].name);
@@ -1439,7 +1681,10 @@ static int wm8350_regulator_probe(struct platform_device *pdev)
 	ret = wm8350_register_irq(wm8350, wm8350_reg[pdev->id].irq,
 				  pmic_uv_handler, 0, "UV", rdev);
 	if (ret < 0) {
+<<<<<<< HEAD
 		regulator_unregister(rdev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		dev_err(&pdev->dev, "failed to register regulator %s IRQ\n",
 			wm8350_reg[pdev->id].name);
 		return ret;
@@ -1448,16 +1693,23 @@ static int wm8350_regulator_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int wm8350_regulator_remove(struct platform_device *pdev)
+=======
+static void wm8350_regulator_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct regulator_dev *rdev = platform_get_drvdata(pdev);
 	struct wm8350 *wm8350 = rdev_get_drvdata(rdev);
 
 	wm8350_free_irq(wm8350, wm8350_reg[pdev->id].irq, rdev);
+<<<<<<< HEAD
 
 	regulator_unregister(rdev);
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int wm8350_register_regulator(struct wm8350 *wm8350, int reg,
@@ -1506,11 +1758,19 @@ EXPORT_SYMBOL_GPL(wm8350_register_regulator);
 /**
  * wm8350_register_led - Register a WM8350 LED output
  *
+<<<<<<< HEAD
  * @param wm8350 The WM8350 device to configure.
  * @param lednum LED device index to create.
  * @param dcdc The DCDC to use for the LED.
  * @param isink The ISINK to use for the LED.
  * @param pdata Configuration for the LED.
+=======
+ * @wm8350: The WM8350 device to configure.
+ * @lednum: LED device index to create.
+ * @dcdc: The DCDC to use for the LED.
+ * @isink: The ISINK to use for the LED.
+ * @pdata: Configuration for the LED.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * The WM8350 supports the use of an ISINK together with a DCDC to
  * provide a power-efficient LED driver.  This function registers the
@@ -1598,9 +1858,16 @@ EXPORT_SYMBOL_GPL(wm8350_register_led);
 
 static struct platform_driver wm8350_regulator_driver = {
 	.probe = wm8350_regulator_probe,
+<<<<<<< HEAD
 	.remove = wm8350_regulator_remove,
 	.driver		= {
 		.name	= "wm8350-regulator",
+=======
+	.remove_new = wm8350_regulator_remove,
+	.driver		= {
+		.name	= "wm8350-regulator",
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 };
 

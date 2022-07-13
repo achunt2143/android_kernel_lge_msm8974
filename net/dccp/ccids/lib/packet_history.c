@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Copyright (c) 2007   The University of Aberdeen, Scotland, UK
  *  Copyright (c) 2005-7 The University of Waikato, Hamilton, New Zealand.
@@ -5,7 +9,11 @@
  *  An implementation of the DCCP protocol
  *
  *  This code has been developed by the University of Waikato WAND
+<<<<<<< HEAD
  *  research group. For further information please see http://www.wand.net.nz/
+=======
+ *  research group. For further information please see https://www.wand.net.nz/
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  or e-mail Ian McDonald - ian.mcdonald@jandi.co.nz
  *
  *  This code also uses code from Lulea University, rereleased as GPL by its
@@ -17,6 +25,7 @@
  *  Arnaldo Carvalho de Melo <acme@conectiva.com.br>.
  *
  *  Copyright (c) 2005 Arnaldo Carvalho de Melo <acme@conectiva.com.br>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -31,6 +40,8 @@
  *  You should have received a copy of the GNU General Public License
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/string.h>
@@ -149,10 +160,15 @@ static void tfrc_rx_hist_swap(struct tfrc_rx_hist *h, const u8 a, const u8 b)
 {
 	const u8 idx_a = tfrc_rx_hist_index(h, a),
 		 idx_b = tfrc_rx_hist_index(h, b);
+<<<<<<< HEAD
 	struct tfrc_rx_hist_entry *tmp = h->ring[idx_a];
 
 	h->ring[idx_a] = h->ring[idx_b];
 	h->ring[idx_b] = tmp;
+=======
+
+	swap(h->ring[idx_a], h->ring[idx_b]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -315,6 +331,10 @@ static void __three_after_loss(struct tfrc_rx_hist *h)
  *  @ndp:	    The NDP count belonging to @skb
  *  @calc_first_li: Caller-dependent computation of first loss interval in @lh
  *  @sk:	    Used by @calc_first_li (see tfrc_lh_interval_add)
+<<<<<<< HEAD
+=======
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *  Chooses action according to pending loss, updates LI database when a new
  *  loss was detected, and does required post-processing. Returns 1 when caller
  *  should send feedback, 0 otherwise.
@@ -379,6 +399,10 @@ void tfrc_rx_hist_purge(struct tfrc_rx_hist *h)
 
 /**
  * tfrc_rx_hist_rtt_last_s - reference entry to compute RTT samples against
+<<<<<<< HEAD
+=======
+ * @h:	The non-empty RX history object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline struct tfrc_rx_hist_entry *
 			tfrc_rx_hist_rtt_last_s(const struct tfrc_rx_hist *h)
@@ -387,7 +411,12 @@ static inline struct tfrc_rx_hist_entry *
 }
 
 /**
+<<<<<<< HEAD
  * tfrc_rx_hist_rtt_prev_s: previously suitable (wrt rtt_last_s) RTT-sampling entry
+=======
+ * tfrc_rx_hist_rtt_prev_s - previously suitable (wrt rtt_last_s) RTT-sampling entry
+ * @h:	The non-empty RX history object
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static inline struct tfrc_rx_hist_entry *
 			tfrc_rx_hist_rtt_prev_s(const struct tfrc_rx_hist *h)
@@ -397,6 +426,12 @@ static inline struct tfrc_rx_hist_entry *
 
 /**
  * tfrc_rx_hist_sample_rtt  -  Sample RTT from timestamp / CCVal
+<<<<<<< HEAD
+=======
+ * @h: receive histogram
+ * @skb: packet containing timestamp.
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Based on ideas presented in RFC 4342, 8.1. Returns 0 if it was not able
  * to compute a sample with given data - calling function should check this.
  */

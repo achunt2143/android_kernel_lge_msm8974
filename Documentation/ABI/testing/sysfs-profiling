@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 What:		/sys/kernel/profile
 Date:		September 2008
 Contact:	Dave Hansen <dave@linux.vnet.ibm.com>
@@ -8,6 +9,18 @@ Description:
 		You can get the same effect running:
 
 			echo 2 > /sys/kernel/profile
+=======
+What:		/sys/kernel/profiling
+Date:		September 2008
+Contact:	Dave Hansen <dave@linux.vnet.ibm.com>
+Description:
+		/sys/kernel/profiling is the runtime equivalent
+		of the boot-time profile= option.
+
+		You can get the same effect running::
+
+			echo 2 > /sys/kernel/profiling
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		as you would by issuing profile=2 on the boot
 		command line.

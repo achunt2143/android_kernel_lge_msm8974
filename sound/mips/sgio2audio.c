@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *   Sound driver for Silicon Graphics O2 Workstations A/V board audio.
  *
@@ -5,6 +9,7 @@
  *   Copyright 2008 Thomas Bogendoerfer <tsbogend@alpha.franken.de>
  *   Mxier part taken from mace_audio.c:
  *   Copyright 2007 Thorben Jändling <tj.trevelyan@gmail.com>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -20,6 +25,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -46,7 +53,10 @@
 MODULE_AUTHOR("Vivien Chappelier <vivien.chappelier@linux-mips.org>");
 MODULE_DESCRIPTION("SGI O2 Audio");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Silicon Graphics, O2 Audio}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index = SNDRV_DEFAULT_IDX1;  /* Index 0-MAX */
 static char *id = SNDRV_DEFAULT_STR1;   /* ID for this card */
@@ -201,6 +211,7 @@ static int sgio2audio_gain_put(struct snd_kcontrol *kcontrol,
 static int sgio2audio_source_info(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_info *uinfo)
 {
+<<<<<<< HEAD
 	static const char *texts[3] = {
 		"Cam Mic", "Mic", "Line"
 	};
@@ -212,6 +223,12 @@ static int sgio2audio_source_info(struct snd_kcontrol *kcontrol,
 	strcpy(uinfo->value.enumerated.name,
 	       texts[uinfo->value.enumerated.item]);
 	return 0;
+=======
+	static const char * const texts[3] = {
+		"Cam Mic", "Mic", "Line"
+	};
+	return snd_ctl_enum_info(uinfo, 1, 3, texts);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int sgio2audio_source_get(struct snd_kcontrol *kcontrol,
@@ -237,7 +254,11 @@ static int sgio2audio_source_put(struct snd_kcontrol *kcontrol,
 }
 
 /* dac1/pcm0 mixer control */
+<<<<<<< HEAD
 static struct snd_kcontrol_new sgio2audio_ctrl_pcm0 __devinitdata = {
+=======
+static const struct snd_kcontrol_new sgio2audio_ctrl_pcm0 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface          = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name           = "PCM Playback Volume",
 	.index          = 0,
@@ -249,7 +270,11 @@ static struct snd_kcontrol_new sgio2audio_ctrl_pcm0 __devinitdata = {
 };
 
 /* dac2/pcm1 mixer control */
+<<<<<<< HEAD
 static struct snd_kcontrol_new sgio2audio_ctrl_pcm1 __devinitdata = {
+=======
+static const struct snd_kcontrol_new sgio2audio_ctrl_pcm1 = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface          = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name           = "PCM Playback Volume",
 	.index          = 1,
@@ -261,7 +286,11 @@ static struct snd_kcontrol_new sgio2audio_ctrl_pcm1 __devinitdata = {
 };
 
 /* record level mixer control */
+<<<<<<< HEAD
 static struct snd_kcontrol_new sgio2audio_ctrl_reclevel __devinitdata = {
+=======
+static const struct snd_kcontrol_new sgio2audio_ctrl_reclevel = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface          = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name           = "Capture Volume",
 	.access         = SNDRV_CTL_ELEM_ACCESS_READWRITE,
@@ -272,7 +301,11 @@ static struct snd_kcontrol_new sgio2audio_ctrl_reclevel __devinitdata = {
 };
 
 /* record level source control */
+<<<<<<< HEAD
 static struct snd_kcontrol_new sgio2audio_ctrl_recsource __devinitdata = {
+=======
+static const struct snd_kcontrol_new sgio2audio_ctrl_recsource = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface          = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name           = "Capture Source",
 	.access         = SNDRV_CTL_ELEM_ACCESS_READWRITE,
@@ -282,7 +315,11 @@ static struct snd_kcontrol_new sgio2audio_ctrl_recsource __devinitdata = {
 };
 
 /* line mixer control */
+<<<<<<< HEAD
 static struct snd_kcontrol_new sgio2audio_ctrl_line __devinitdata = {
+=======
+static const struct snd_kcontrol_new sgio2audio_ctrl_line = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface          = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name           = "Line Playback Volume",
 	.index          = 0,
@@ -294,7 +331,11 @@ static struct snd_kcontrol_new sgio2audio_ctrl_line __devinitdata = {
 };
 
 /* cd mixer control */
+<<<<<<< HEAD
 static struct snd_kcontrol_new sgio2audio_ctrl_cd __devinitdata = {
+=======
+static const struct snd_kcontrol_new sgio2audio_ctrl_cd = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface          = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name           = "Line Playback Volume",
 	.index          = 1,
@@ -306,7 +347,11 @@ static struct snd_kcontrol_new sgio2audio_ctrl_cd __devinitdata = {
 };
 
 /* mic mixer control */
+<<<<<<< HEAD
 static struct snd_kcontrol_new sgio2audio_ctrl_mic __devinitdata = {
+=======
+static const struct snd_kcontrol_new sgio2audio_ctrl_mic = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.iface          = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name           = "Mic Playback Volume",
 	.access         = SNDRV_CTL_ELEM_ACCESS_READWRITE,
@@ -317,7 +362,11 @@ static struct snd_kcontrol_new sgio2audio_ctrl_mic __devinitdata = {
 };
 
 
+<<<<<<< HEAD
 static int __devinit snd_sgio2audio_new_mixer(struct snd_sgio2audio *chip)
+=======
+static int snd_sgio2audio_new_mixer(struct snd_sgio2audio *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int err;
 
@@ -539,7 +588,11 @@ static irqreturn_t snd_sgio2audio_error_isr(int irq, void *dev_id)
 
 /* PCM part */
 /* PCM hardware definition */
+<<<<<<< HEAD
 static struct snd_pcm_hardware snd_sgio2audio_pcm_hw = {
+=======
+static const struct snd_pcm_hardware snd_sgio2audio_pcm_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info = (SNDRV_PCM_INFO_MMAP |
 		 SNDRV_PCM_INFO_MMAP_VALID |
 		 SNDRV_PCM_INFO_INTERLEAVED |
@@ -598,6 +651,7 @@ static int snd_sgio2audio_pcm_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
+<<<<<<< HEAD
 
 /* hw_params callback */
 static int snd_sgio2audio_pcm_hw_params(struct snd_pcm_substream *substream,
@@ -613,6 +667,8 @@ static int snd_sgio2audio_pcm_hw_free(struct snd_pcm_substream *substream)
 	return snd_pcm_lib_free_vmalloc_buffer(substream);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* prepare callback */
 static int snd_sgio2audio_pcm_prepare(struct snd_pcm_substream *substream)
 {
@@ -682,6 +738,7 @@ snd_sgio2audio_pcm_pointer(struct snd_pcm_substream *substream)
 }
 
 /* operators */
+<<<<<<< HEAD
 static struct snd_pcm_ops snd_sgio2audio_playback1_ops = {
 	.open =        snd_sgio2audio_playback1_open,
 	.close =       snd_sgio2audio_pcm_close,
@@ -719,6 +776,30 @@ static struct snd_pcm_ops snd_sgio2audio_capture_ops = {
 	.pointer =     snd_sgio2audio_pcm_pointer,
 	.page =        snd_pcm_lib_get_vmalloc_page,
 	.mmap =        snd_pcm_lib_mmap_vmalloc,
+=======
+static const struct snd_pcm_ops snd_sgio2audio_playback1_ops = {
+	.open =        snd_sgio2audio_playback1_open,
+	.close =       snd_sgio2audio_pcm_close,
+	.prepare =     snd_sgio2audio_pcm_prepare,
+	.trigger =     snd_sgio2audio_pcm_trigger,
+	.pointer =     snd_sgio2audio_pcm_pointer,
+};
+
+static const struct snd_pcm_ops snd_sgio2audio_playback2_ops = {
+	.open =        snd_sgio2audio_playback2_open,
+	.close =       snd_sgio2audio_pcm_close,
+	.prepare =     snd_sgio2audio_pcm_prepare,
+	.trigger =     snd_sgio2audio_pcm_trigger,
+	.pointer =     snd_sgio2audio_pcm_pointer,
+};
+
+static const struct snd_pcm_ops snd_sgio2audio_capture_ops = {
+	.open =        snd_sgio2audio_capture_open,
+	.close =       snd_sgio2audio_pcm_close,
+	.prepare =     snd_sgio2audio_pcm_prepare,
+	.trigger =     snd_sgio2audio_pcm_trigger,
+	.pointer =     snd_sgio2audio_pcm_pointer,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -726,7 +807,11 @@ static struct snd_pcm_ops snd_sgio2audio_capture_ops = {
  */
 
 /* create a pcm device */
+<<<<<<< HEAD
 static int __devinit snd_sgio2audio_new_pcm(struct snd_sgio2audio *chip)
+=======
+static int snd_sgio2audio_new_pcm(struct snd_sgio2audio *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_pcm *pcm;
 	int err;
@@ -744,6 +829,10 @@ static int __devinit snd_sgio2audio_new_pcm(struct snd_sgio2audio *chip)
 			&snd_sgio2audio_playback1_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE,
 			&snd_sgio2audio_capture_ops);
+<<<<<<< HEAD
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_VMALLOC, NULL, 0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* create second  pcm device with one outputs and no input */
 	err = snd_pcm_new(chip->card, "SGI O2 Audio", 1, 1, 0, &pcm);
@@ -756,6 +845,10 @@ static int __devinit snd_sgio2audio_new_pcm(struct snd_sgio2audio *chip)
 	/* set operators */
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK,
 			&snd_sgio2audio_playback2_ops);
+<<<<<<< HEAD
+=======
+	snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_VMALLOC, NULL, 0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -815,7 +908,11 @@ static int snd_sgio2audio_free(struct snd_sgio2audio *chip)
 		free_irq(snd_sgio2_isr_table[i].irq,
 			 &chip->channel[snd_sgio2_isr_table[i].idx]);
 
+<<<<<<< HEAD
 	dma_free_coherent(NULL, MACEISA_RINGBUFFERS_SIZE,
+=======
+	dma_free_coherent(chip->card->dev, MACEISA_RINGBUFFERS_SIZE,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  chip->ring_base, chip->ring_base_dma);
 
 	/* release card data */
@@ -830,12 +927,21 @@ static int snd_sgio2audio_dev_free(struct snd_device *device)
 	return snd_sgio2audio_free(chip);
 }
 
+<<<<<<< HEAD
 static struct snd_device_ops ops = {
 	.dev_free = snd_sgio2audio_dev_free,
 };
 
 static int __devinit snd_sgio2audio_create(struct snd_card *card,
 					   struct snd_sgio2audio **rchip)
+=======
+static const struct snd_device_ops ops = {
+	.dev_free = snd_sgio2audio_dev_free,
+};
+
+static int snd_sgio2audio_create(struct snd_card *card,
+				 struct snd_sgio2audio **rchip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_sgio2audio *chip;
 	int i, err;
@@ -847,14 +953,24 @@ static int __devinit snd_sgio2audio_create(struct snd_card *card,
 	if (!(readq(&mace->perif.audio.control) & AUDIO_CONTROL_CODEC_PRESENT))
 		return -ENOENT;
 
+<<<<<<< HEAD
 	chip = kzalloc(sizeof(struct snd_sgio2audio), GFP_KERNEL);
+=======
+	chip = kzalloc(sizeof(*chip), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip == NULL)
 		return -ENOMEM;
 
 	chip->card = card;
 
+<<<<<<< HEAD
 	chip->ring_base = dma_alloc_coherent(NULL, MACEISA_RINGBUFFERS_SIZE,
 					     &chip->ring_base_dma, GFP_USER);
+=======
+	chip->ring_base = dma_alloc_coherent(card->dev,
+					     MACEISA_RINGBUFFERS_SIZE,
+					     &chip->ring_base_dma, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (chip->ring_base == NULL) {
 		printk(KERN_ERR
 		       "sgio2audio: could not allocate ring buffers\n");
@@ -914,13 +1030,21 @@ static int __devinit snd_sgio2audio_create(struct snd_card *card,
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_sgio2audio_probe(struct platform_device *pdev)
+=======
+static int snd_sgio2audio_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card;
 	struct snd_sgio2audio *chip;
 	int err;
 
+<<<<<<< HEAD
 	err = snd_card_create(index, id, THIS_MODULE, 0, &card);
+=======
+	err = snd_card_new(&pdev->dev, index, id, THIS_MODULE, 0, &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err < 0)
 		return err;
 
@@ -929,7 +1053,10 @@ static int __devinit snd_sgio2audio_probe(struct platform_device *pdev)
 		snd_card_free(card);
 		return err;
 	}
+<<<<<<< HEAD
 	snd_card_set_dev(card, &pdev->dev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = snd_sgio2audio_new_pcm(chip);
 	if (err < 0) {
@@ -958,21 +1085,34 @@ static int __devinit snd_sgio2audio_probe(struct platform_device *pdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit snd_sgio2audio_remove(struct platform_device *pdev)
+=======
+static void snd_sgio2audio_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct snd_card *card = platform_get_drvdata(pdev);
 
 	snd_card_free(card);
+<<<<<<< HEAD
 	platform_set_drvdata(pdev, NULL);
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver sgio2audio_driver = {
 	.probe	= snd_sgio2audio_probe,
+<<<<<<< HEAD
 	.remove	= __devexit_p(snd_sgio2audio_remove),
 	.driver = {
 		.name	= "sgio2audio",
 		.owner	= THIS_MODULE,
+=======
+	.remove_new = snd_sgio2audio_remove,
+	.driver = {
+		.name	= "sgio2audio",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 };
 

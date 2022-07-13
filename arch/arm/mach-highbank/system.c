@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright 2011 Calxeda, Inc.
  *
@@ -16,10 +17,20 @@
 #include <linux/io.h>
 #include <asm/smp_scu.h>
 #include <asm/proc-fns.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright 2011 Calxeda, Inc.
+ */
+#include <linux/io.h>
+#include <asm/proc-fns.h>
+#include <linux/reboot.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "core.h"
 #include "sysregs.h"
 
+<<<<<<< HEAD
 void highbank_restart(char mode, const char *cmd)
 {
 	if (mode == 'h')
@@ -29,5 +40,16 @@ void highbank_restart(char mode, const char *cmd)
 
 	scu_power_mode(scu_base_addr, SCU_PM_POWEROFF);
 	cpu_do_idle();
+=======
+void highbank_restart(enum reboot_mode mode, const char *cmd)
+{
+	if (mode == REBOOT_HARD)
+		highbank_set_pwr_hard_reset();
+	else
+		highbank_set_pwr_soft_reset();
+
+	while (1)
+		cpu_do_idle();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 

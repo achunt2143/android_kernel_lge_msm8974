@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/alpha/lib/checksum.c
  *
@@ -42,19 +46,30 @@ static inline unsigned short from64to16(unsigned long x)
  * returns a 16-bit checksum, already complemented.
  */
 __sum16 csum_tcpudp_magic(__be32 saddr, __be32 daddr,
+<<<<<<< HEAD
 				   unsigned short len,
 				   unsigned short proto,
 				   __wsum sum)
+=======
+			  __u32 len, __u8 proto, __wsum sum)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (__force __sum16)~from64to16(
 		(__force u64)saddr + (__force u64)daddr +
 		(__force u64)sum + ((len + proto) << 8));
 }
+<<<<<<< HEAD
 
 __wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
 				   unsigned short len,
 				   unsigned short proto,
 				   __wsum sum)
+=======
+EXPORT_SYMBOL(csum_tcpudp_magic);
+
+__wsum csum_tcpudp_nofold(__be32 saddr, __be32 daddr,
+			  __u32 len, __u8 proto, __wsum sum)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long result;
 
@@ -148,6 +163,10 @@ __sum16 ip_fast_csum(const void *iph, unsigned int ihl)
 {
 	return (__force __sum16)~do_csum(iph,ihl*4);
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ip_fast_csum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * computes the checksum of a memory block at buff, length len,
@@ -182,3 +201,7 @@ __sum16 ip_compute_csum(const void *buff, int len)
 {
 	return (__force __sum16)~from64to16(do_csum(buff,len));
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(ip_compute_csum);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

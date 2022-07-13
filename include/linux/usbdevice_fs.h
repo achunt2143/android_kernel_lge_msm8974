@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*****************************************************************************/
 
 /*
@@ -25,6 +29,7 @@
  */
 
 /*****************************************************************************/
+<<<<<<< HEAD
 
 #ifndef _LINUX_USBDEVICE_FS_H
 #define _LINUX_USBDEVICE_FS_H
@@ -126,6 +131,13 @@ struct usbdevfs_hub_portinfo {
 };
 
 #ifdef __KERNEL__
+=======
+#ifndef _LINUX_USBDEVICE_FS_H
+#define _LINUX_USBDEVICE_FS_H
+
+#include <uapi/linux/usbdevice_fs.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_COMPAT
 #include <linux/compat.h>
 
@@ -164,7 +176,11 @@ struct usbdevfs_urb32 {
 	compat_int_t error_count;
 	compat_uint_t signr;
 	compat_caddr_t usercontext; /* unused */
+<<<<<<< HEAD
 	struct usbdevfs_iso_packet_desc iso_frame_desc[0];
+=======
+	struct usbdevfs_iso_packet_desc iso_frame_desc[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct usbdevfs_ioctl32 {
@@ -173,6 +189,7 @@ struct usbdevfs_ioctl32 {
 	compat_caddr_t data;
 };
 #endif
+<<<<<<< HEAD
 #endif /* __KERNEL__ */
 
 #define USBDEVFS_CONTROL           _IOWR('U', 0, struct usbdevfs_ctrltransfer)
@@ -204,4 +221,6 @@ struct usbdevfs_ioctl32 {
 #define USBDEVFS_CONNECT           _IO('U', 23)
 #define USBDEVFS_CLAIM_PORT        _IOR('U', 24, unsigned int)
 #define USBDEVFS_RELEASE_PORT      _IOR('U', 25, unsigned int)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _LINUX_USBDEVICE_FS_H */

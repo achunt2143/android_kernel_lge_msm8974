@@ -1,14 +1,22 @@
+<<<<<<< HEAD
 /* $Id: head.S,v 1.7 2003/09/01 17:58:19 lethal Exp $
+=======
+/* SPDX-License-Identifier: GPL-2.0
+ * $Id: head.S,v 1.7 2003/09/01 17:58:19 lethal Exp $
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *  arch/sh/kernel/head.S
  *
  *  Copyright (C) 1999, 2000  Niibe Yutaka & Kaz Kojima
  *  Copyright (C) 2010  Matt Fleming
  *
+<<<<<<< HEAD
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Head.S contains the SH exception handlers and startup code.
  */
 #include <linux/init.h>
@@ -66,6 +74,13 @@ ENTRY(_stext)
 	mov	#0, r0
 	ldc	r0, r6_bank
 #endif
+<<<<<<< HEAD
+=======
+
+#ifdef CONFIG_OF_EARLY_FLATTREE
+	mov	r4, r12		! Store device tree blob pointer in r12
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	
 	/*
 	 * Prefetch if possible to reduce cache miss penalty.
@@ -314,6 +329,15 @@ ENTRY(_stext)
 10:		
 #endif
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_OF_EARLY_FLATTREE
+	mov.l	8f, r0		! Make flat device tree available early.
+	jsr	@r0
+	 mov	r12, r4
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	!			Additional CPU initialization
 	mov.l	6f, r0
 	jsr	@r0
@@ -339,6 +363,12 @@ ENTRY(stack_start)
 5:	.long	start_kernel
 6:	.long	cpu_init
 7:	.long	init_thread_union
+<<<<<<< HEAD
+=======
+#if defined(CONFIG_OF_EARLY_FLATTREE)
+8:	.long	sh_fdt_init
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_PMB
 .LPMB_ADDR:		.long	PMB_ADDR

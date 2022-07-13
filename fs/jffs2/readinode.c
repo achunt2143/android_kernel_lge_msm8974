@@ -224,7 +224,11 @@ static int jffs2_add_tn_to_tree(struct jffs2_sb_info *c,
 
 	dbg_readinode("insert fragment %#04x-%#04x, ver %u at %08x\n", tn->fn->ofs, fn_end, tn->version, ref_offset(tn->fn->raw));
 
+<<<<<<< HEAD
 	/* If a node has zero dsize, we only have to keep if it if it might be the
+=======
+	/* If a node has zero dsize, we only have to keep it if it might be the
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	   node with highest version -- i.e. the one which will end up as f->metadata.
 	   Note that such nodes won't be REF_UNCHECKED since there are no data to
 	   check anyway. */
@@ -394,8 +398,16 @@ static int jffs2_add_tn_to_tree(struct jffs2_sb_info *c,
 }
 
 /* Trivial function to remove the last node in the tree. Which by definition
+<<<<<<< HEAD
    has no right-hand -- so can be removed just by making its only child (if
    any) take its place under its parent. */
+=======
+   has no right-hand child — so can be removed just by making its left-hand
+   child (if any) take its place under its parent. Since this is only done
+   when we're consuming the whole tree, there's no need to use rb_erase()
+   and let it worry about adjusting colours and balancing the tree. That
+   would just be a waste of time. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void eat_last(struct rb_root *root, struct rb_node *node)
 {
 	struct rb_node *parent = rb_parent(node);
@@ -412,12 +424,21 @@ static void eat_last(struct rb_root *root, struct rb_node *node)
 		link = &parent->rb_right;
 
 	*link = node->rb_left;
+<<<<<<< HEAD
 	/* Colour doesn't matter now. Only the parent pointer. */
 	if (node->rb_left)
 		node->rb_left->rb_parent_color = node->rb_parent_color;
 }
 
 /* We put this in reverse order, so we can just use eat_last */
+=======
+	if (node->rb_left)
+		node->rb_left->__rb_parent_color = node->__rb_parent_color;
+}
+
+/* We put the version tree in reverse order, so we can use the same eat_last()
+   function that we use to consume the tmpnode tree (tn_root). */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void ver_insert(struct rb_root *ver_root, struct jffs2_tmp_dnode_info *tn)
 {
 	struct rb_node **link = &ver_root->rb_node;
@@ -540,6 +561,7 @@ static int jffs2_build_inode_fragtree(struct jffs2_sb_info *c,
 
 static void jffs2_free_tmp_dnode_info_list(struct rb_root *list)
 {
+<<<<<<< HEAD
 	struct rb_node *this;
 	struct jffs2_tmp_dnode_info *tn;
 
@@ -567,6 +589,15 @@ static void jffs2_free_tmp_dnode_info_list(struct rb_root *list)
 			else BUG();
 		}
 	}
+=======
+	struct jffs2_tmp_dnode_info *tn, *next;
+
+	rbtree_postorder_for_each_entry_safe(tn, next, list, rb) {
+			jffs2_free_full_dnode(tn->fn);
+			jffs2_free_tmp_dnode_info(tn);
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	*list = RB_ROOT;
 }
 
@@ -677,17 +708,48 @@ static inline int read_direntry(struct jffs2_sb_info *c, struct jffs2_raw_node_r
 
 		err = jffs2_flash_read(c, (ref_offset(ref)) + read,
 				rd->nsize - already, &read, &fd->name[already]);
+<<<<<<< HEAD
 		if (unlikely(read != rd->nsize - already) && likely(!err))
 			return -EIO;
+=======
+		if (unlikely(read != rd->nsize - already) && likely(!err)) {
+			jffs2_free_full_dirent(fd);
+			JFFS2_ERROR("short read: wanted %d bytes, got %zd\n",
+				    rd->nsize - already, read);
+			return -EIO;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (unlikely(err)) {
 			JFFS2_ERROR("read remainder of name: error %d\n", err);
 			jffs2_free_full_dirent(fd);
 			return -EIO;
 		}
+<<<<<<< HEAD
 	}
 
 	fd->nhash = full_name_hash(fd->name, rd->nsize);
+=======
+
+#ifdef CONFIG_JFFS2_SUMMARY
+		/*
+		 * we use CONFIG_JFFS2_SUMMARY because without it, we
+		 * have checked it while mounting
+		 */
+		crc = crc32(0, fd->name, rd->nsize);
+		if (unlikely(crc != je32_to_cpu(rd->name_crc))) {
+			JFFS2_NOTICE("name CRC failed on dirent node at"
+			   "%#08x: read %#08x,calculated %#08x\n",
+			   ref_offset(ref), je32_to_cpu(rd->node_crc), crc);
+			jffs2_mark_node_obsolete(c, ref);
+			jffs2_free_full_dirent(fd);
+			return 0;
+		}
+#endif
+	}
+
+	fd->nhash = full_name_hash(NULL, fd->name, rd->nsize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fd->next = NULL;
 	fd->name[rd->nsize] = '\0';
 
@@ -1220,17 +1282,24 @@ static int jffs2_do_read_inode_internal(struct jffs2_sb_info *c,
 		JFFS2_ERROR("failed to read from flash: error %d, %zd of %zd bytes read\n",
 			ret, retlen, sizeof(*latest_node));
 		/* FIXME: If this fails, there seems to be a memory leak. Find it. */
+<<<<<<< HEAD
 		mutex_unlock(&f->sem);
 		jffs2_do_clear_inode(c, f);
 		return ret?ret:-EIO;
+=======
+		return ret ? ret : -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	crc = crc32(0, latest_node, sizeof(*latest_node)-8);
 	if (crc != je32_to_cpu(latest_node->node_crc)) {
 		JFFS2_ERROR("CRC failed for read_inode of inode %u at physical location 0x%x\n",
 			f->inocache->ino, ref_offset(rii.latest_ref));
+<<<<<<< HEAD
 		mutex_unlock(&f->sem);
 		jffs2_do_clear_inode(c, f);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EIO;
 	}
 
@@ -1266,15 +1335,25 @@ static int jffs2_do_read_inode_internal(struct jffs2_sb_info *c,
 			/* Symlink's inode data is the target path. Read it and
 			 * keep in RAM to facilitate quick follow symlink
 			 * operation. */
+<<<<<<< HEAD
 			f->target = kmalloc(je32_to_cpu(latest_node->csize) + 1, GFP_KERNEL);
 			if (!f->target) {
 				JFFS2_ERROR("can't allocate %d bytes of memory for the symlink target path cache\n", je32_to_cpu(latest_node->csize));
 				mutex_unlock(&f->sem);
 				jffs2_do_clear_inode(c, f);
+=======
+			uint32_t csize = je32_to_cpu(latest_node->csize);
+			if (csize > JFFS2_MAX_NAME_LEN)
+				return -ENAMETOOLONG;
+			f->target = kmalloc(csize + 1, GFP_KERNEL);
+			if (!f->target) {
+				JFFS2_ERROR("can't allocate %u bytes of memory for the symlink target path cache\n", csize);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				return -ENOMEM;
 			}
 
 			ret = jffs2_flash_read(c, ref_offset(rii.latest_ref) + sizeof(*latest_node),
+<<<<<<< HEAD
 						je32_to_cpu(latest_node->csize), &retlen, (char *)f->target);
 
 			if (ret  || retlen != je32_to_cpu(latest_node->csize)) {
@@ -1292,6 +1371,23 @@ static int jffs2_do_read_inode_internal(struct jffs2_sb_info *c,
 		}
 
 		/* fall through... */
+=======
+					       csize, &retlen, (char *)f->target);
+
+			if (ret || retlen != csize) {
+				if (retlen != csize)
+					ret = -EIO;
+				kfree(f->target);
+				f->target = NULL;
+				return ret;
+			}
+
+			f->target[csize] = '\0';
+			dbg_readinode("symlink's target '%s' cached\n", f->target);
+		}
+
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	case S_IFBLK:
 	case S_IFCHR:
@@ -1300,15 +1396,21 @@ static int jffs2_do_read_inode_internal(struct jffs2_sb_info *c,
 		if (f->metadata) {
 			JFFS2_ERROR("Argh. Special inode #%u with mode 0%o had metadata node\n",
 			       f->inocache->ino, jemode_to_cpu(latest_node->mode));
+<<<<<<< HEAD
 			mutex_unlock(&f->sem);
 			jffs2_do_clear_inode(c, f);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 		if (!frag_first(&f->fragtree)) {
 			JFFS2_ERROR("Argh. Special inode #%u with mode 0%o has no fragments\n",
 			       f->inocache->ino, jemode_to_cpu(latest_node->mode));
+<<<<<<< HEAD
 			mutex_unlock(&f->sem);
 			jffs2_do_clear_inode(c, f);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 		/* ASSERT: f->fraglist != NULL */
@@ -1316,8 +1418,11 @@ static int jffs2_do_read_inode_internal(struct jffs2_sb_info *c,
 			JFFS2_ERROR("Argh. Special inode #%u with mode 0x%x had more than one node\n",
 			       f->inocache->ino, jemode_to_cpu(latest_node->mode));
 			/* FIXME: Deal with it - check crc32, check for duplicate node, check times and discard the older one */
+<<<<<<< HEAD
 			mutex_unlock(&f->sem);
 			jffs2_do_clear_inode(c, f);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return -EIO;
 		}
 		/* OK. We're happy */
@@ -1390,7 +1495,11 @@ int jffs2_do_read_inode(struct jffs2_sb_info *c, struct jffs2_inode_info *f,
 		jffs2_add_ino_cache(c, f->inocache);
 	}
 	if (!f->inocache) {
+<<<<<<< HEAD
 		JFFS2_ERROR("requestied to read an nonexistent ino %u\n", ino);
+=======
+		JFFS2_ERROR("requested to read a nonexistent ino %u\n", ino);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENOENT;
 	}
 
@@ -1411,10 +1520,16 @@ int jffs2_do_crccheck_inode(struct jffs2_sb_info *c, struct jffs2_inode_cache *i
 	f->inocache = ic;
 
 	ret = jffs2_do_read_inode_internal(c, f, &n);
+<<<<<<< HEAD
 	if (!ret) {
 		mutex_unlock(&f->sem);
 		jffs2_do_clear_inode(c, f);
 	}
+=======
+	mutex_unlock(&f->sem);
+	jffs2_do_clear_inode(c, f);
+	jffs2_xattr_do_crccheck_inode(c, ic);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	kfree (f);
 	return ret;
 }
@@ -1439,11 +1554,14 @@ void jffs2_do_clear_inode(struct jffs2_sb_info *c, struct jffs2_inode_info *f)
 
 	jffs2_kill_fragtree(&f->fragtree, deleted?c:NULL);
 
+<<<<<<< HEAD
 	if (f->target) {
 		kfree(f->target);
 		f->target = NULL;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	fds = f->dents;
 	while(fds) {
 		fd = fds;

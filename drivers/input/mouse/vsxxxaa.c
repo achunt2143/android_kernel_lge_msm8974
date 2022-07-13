@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for	DEC VSXXX-AA mouse (hockey-puck mouse, ball or two rollers)
  *		DEC VSXXX-GA mouse (rectangular mouse, with ball)
@@ -12,6 +16,7 @@
  */
 
 /*
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -28,6 +33,8 @@
  */
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Building an adaptor to DE9 / DB25 RS232
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -82,7 +89,10 @@
 #include <linux/interrupt.h>
 #include <linux/input.h>
 #include <linux/serio.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DRIVER_DESC "Driver for DEC VSXXX-AA and -GA mice and VSXXX-AB tablet"
 
@@ -129,7 +139,11 @@ static void vsxxxaa_drop_bytes(struct vsxxxaa *mouse, int num)
 	if (num >= mouse->count) {
 		mouse->count = 0;
 	} else {
+<<<<<<< HEAD
 		memmove(mouse->buf, mouse->buf + num - 1, BUFLEN - num);
+=======
+		memmove(mouse->buf, mouse->buf + num, BUFLEN - num);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		mouse->count -= num;
 	}
 }
@@ -151,12 +165,20 @@ static void vsxxxaa_detection_done(struct vsxxxaa *mouse)
 {
 	switch (mouse->type) {
 	case 0x02:
+<<<<<<< HEAD
 		strlcpy(mouse->name, "DEC VSXXX-AA/-GA mouse",
+=======
+		strscpy(mouse->name, "DEC VSXXX-AA/-GA mouse",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(mouse->name));
 		break;
 
 	case 0x04:
+<<<<<<< HEAD
 		strlcpy(mouse->name, "DEC VSXXX-AB digitizer",
+=======
+		strscpy(mouse->name, "DEC VSXXX-AB digitizer",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			sizeof(mouse->name));
 		break;
 
@@ -548,6 +570,7 @@ static struct serio_driver vsxxxaa_drv = {
 	.disconnect	= vsxxxaa_disconnect,
 };
 
+<<<<<<< HEAD
 static int __init vsxxxaa_init(void)
 {
 	return serio_register_driver(&vsxxxaa_drv);
@@ -561,3 +584,6 @@ static void __exit vsxxxaa_exit(void)
 module_init(vsxxxaa_init);
 module_exit(vsxxxaa_exit);
 
+=======
+module_serio_driver(vsxxxaa_drv);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*-
  * Finger Sensing Pad PS/2 mouse driver.
  *
  * Copyright (C) 2005-2007 Asia Vital Components Co., Ltd.
  * Copyright (C) 2005-2012 Tai-hwa Liang, Sentelic Corporation.
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or
  *   modify it under the terms of the GNU General Public License
@@ -17,6 +22,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef	__SENTELIC_H
@@ -65,6 +72,17 @@
 #define	FSP_BIT_SWC1_GST_GRP1	BIT(6)
 #define	FSP_BIT_SWC1_BX_COMPAT	BIT(7)
 
+<<<<<<< HEAD
+=======
+#define	FSP_PAGE_0B		(0x0b)
+#define	FSP_PAGE_82		(0x82)
+#define	FSP_PAGE_DEFAULT	FSP_PAGE_82
+
+#define	FSP_REG_SN0		(0x40)
+#define	FSP_REG_SN1		(0x41)
+#define	FSP_REG_SN2		(0x42)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Finger-sensing Pad packet formating related definitions */
 
 /* absolute packet type */
@@ -111,6 +129,7 @@ struct fsp_data {
 	unsigned int	last_mt_fgr;	/* Last seen finger(multitouch) */
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_MOUSE_PS2_SENTELIC
 extern int fsp_detect(struct psmouse *psmouse, bool set_properties);
 extern int fsp_init(struct psmouse *psmouse);
@@ -124,6 +143,10 @@ inline int fsp_init(struct psmouse *psmouse)
 	return -ENOSYS;
 }
 #endif
+=======
+extern int fsp_detect(struct psmouse *psmouse, bool set_properties);
+extern int fsp_init(struct psmouse *psmouse);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __KERNEL__ */
 

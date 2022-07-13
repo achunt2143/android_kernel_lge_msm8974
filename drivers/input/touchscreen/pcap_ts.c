@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Motorola PCAP2 touchscreen as found in the EZX phone platform.
  *
  *  Copyright (C) 2006 Harald Welte <laforge@openezx.org>
  *  Copyright (C) 2009 Daniel Ribeiro <drwyrm@gmail.com>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License version 2 as
@@ -12,6 +17,11 @@
 
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+ */
+
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <linux/string.h>
 #include <linux/slab.h>
@@ -88,7 +98,11 @@ static void pcap_ts_read_xy(void *data, u16 res[2])
 
 static void pcap_ts_work(struct work_struct *work)
 {
+<<<<<<< HEAD
 	struct delayed_work *dw = container_of(work, struct delayed_work, work);
+=======
+	struct delayed_work *dw = to_delayed_work(work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct pcap_ts *pcap_ts = container_of(dw, struct pcap_ts, work);
 	u8 ch[2];
 
@@ -137,7 +151,11 @@ static void pcap_ts_close(struct input_dev *dev)
 				pcap_ts->read_state << PCAP_ADC_TS_M_SHIFT);
 }
 
+<<<<<<< HEAD
 static int __devinit pcap_ts_probe(struct platform_device *pdev)
+=======
+static int pcap_ts_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct input_dev *input_dev;
 	struct pcap_ts *pcap_ts;
@@ -202,7 +220,11 @@ fail:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit pcap_ts_remove(struct platform_device *pdev)
+=======
+static void pcap_ts_remove(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct pcap_ts *pcap_ts = platform_get_drvdata(pdev);
 
@@ -212,8 +234,11 @@ static int __devexit pcap_ts_remove(struct platform_device *pdev)
 	input_unregister_device(pcap_ts->input);
 
 	kfree(pcap_ts);
+<<<<<<< HEAD
 
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -245,10 +270,16 @@ static const struct dev_pm_ops pcap_ts_pm_ops = {
 
 static struct platform_driver pcap_ts_driver = {
 	.probe		= pcap_ts_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(pcap_ts_remove),
 	.driver		= {
 		.name	= "pcap-ts",
 		.owner	= THIS_MODULE,
+=======
+	.remove_new	= pcap_ts_remove,
+	.driver		= {
+		.name	= "pcap-ts",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.pm	= PCAP_TS_PM_OPS,
 	},
 };

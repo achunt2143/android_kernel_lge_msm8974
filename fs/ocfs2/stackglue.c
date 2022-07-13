@@ -1,12 +1,18 @@
+<<<<<<< HEAD
 /* -*- mode: c; c-basic-offset: 8; -*-
  * vim: noexpandtab sw=8 ts=8 sts=0:
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * stackglue.c
  *
  * Code which implements an OCFS2 specific interface to underlying
  * cluster stacks.
  *
  * Copyright (C) 2007, 2009 Oracle.  All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public
@@ -16,6 +22,8 @@
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * General Public License for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/list.h>
@@ -309,6 +317,11 @@ int ocfs2_plock(struct ocfs2_cluster_connection *conn, u64 ino,
 EXPORT_SYMBOL_GPL(ocfs2_plock);
 
 int ocfs2_cluster_connect(const char *stack_name,
+<<<<<<< HEAD
+=======
+			  const char *cluster_name,
+			  int cluster_name_len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  const char *group,
 			  int grouplen,
 			  struct ocfs2_locking_protocol *lproto,
@@ -342,8 +355,17 @@ int ocfs2_cluster_connect(const char *stack_name,
 		goto out;
 	}
 
+<<<<<<< HEAD
 	memcpy(new_conn->cc_name, group, grouplen);
 	new_conn->cc_namelen = grouplen;
+=======
+	strscpy(new_conn->cc_name, group, GROUP_NAME_MAX + 1);
+	new_conn->cc_namelen = grouplen;
+	if (cluster_name_len)
+		strscpy(new_conn->cc_cluster_name, cluster_name,
+			CLUSTER_NAME_MAX + 1);
+	new_conn->cc_cluster_name_len = cluster_name_len;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	new_conn->cc_recovery_handler = recovery_handler;
 	new_conn->cc_recovery_data = recovery_data;
 
@@ -386,8 +408,14 @@ int ocfs2_cluster_connect_agnostic(const char *group,
 
 	if (cluster_stack_name[0])
 		stack_name = cluster_stack_name;
+<<<<<<< HEAD
 	return ocfs2_cluster_connect(stack_name, group, grouplen, lproto,
 				     recovery_handler, recovery_data, conn);
+=======
+	return ocfs2_cluster_connect(stack_name, NULL, 0, group, grouplen,
+				     lproto, recovery_handler, recovery_data,
+				     conn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ocfs2_cluster_connect_agnostic);
 
@@ -460,9 +488,16 @@ void ocfs2_cluster_hangup(const char *group, int grouplen)
 }
 EXPORT_SYMBOL_GPL(ocfs2_cluster_hangup);
 
+<<<<<<< HEAD
 int ocfs2_cluster_this_node(unsigned int *node)
 {
 	return active_stack->sp_ops->this_node(node);
+=======
+int ocfs2_cluster_this_node(struct ocfs2_cluster_connection *conn,
+			    unsigned int *node)
+{
+	return active_stack->sp_ops->this_node(conn, node);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL_GPL(ocfs2_cluster_this_node);
 
@@ -488,7 +523,11 @@ static ssize_t ocfs2_max_locking_protocol_show(struct kobject *kobj,
 }
 
 static struct kobj_attribute ocfs2_attr_max_locking_protocol =
+<<<<<<< HEAD
 	__ATTR(max_locking_protocol, S_IFREG | S_IRUGO,
+=======
+	__ATTR(max_locking_protocol, S_IRUGO,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       ocfs2_max_locking_protocol_show, NULL);
 
 static ssize_t ocfs2_loaded_cluster_plugins_show(struct kobject *kobj,
@@ -502,11 +541,15 @@ static ssize_t ocfs2_loaded_cluster_plugins_show(struct kobject *kobj,
 	list_for_each_entry(p, &ocfs2_stack_list, sp_list) {
 		ret = snprintf(buf, remain, "%s\n",
 			       p->sp_name);
+<<<<<<< HEAD
 		if (ret < 0) {
 			total = ret;
 			break;
 		}
 		if (ret == remain) {
+=======
+		if (ret >= remain) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			/* snprintf() didn't fit */
 			total = -E2BIG;
 			break;
@@ -520,7 +563,11 @@ static ssize_t ocfs2_loaded_cluster_plugins_show(struct kobject *kobj,
 }
 
 static struct kobj_attribute ocfs2_attr_loaded_cluster_plugins =
+<<<<<<< HEAD
 	__ATTR(loaded_cluster_plugins, S_IFREG | S_IRUGO,
+=======
+	__ATTR(loaded_cluster_plugins, S_IRUGO,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       ocfs2_loaded_cluster_plugins_show, NULL);
 
 static ssize_t ocfs2_active_cluster_plugin_show(struct kobject *kobj,
@@ -533,7 +580,11 @@ static ssize_t ocfs2_active_cluster_plugin_show(struct kobject *kobj,
 	if (active_stack) {
 		ret = snprintf(buf, PAGE_SIZE, "%s\n",
 			       active_stack->sp_name);
+<<<<<<< HEAD
 		if (ret == PAGE_SIZE)
+=======
+		if (ret >= PAGE_SIZE)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			ret = -E2BIG;
 	}
 	spin_unlock(&ocfs2_stack_lock);
@@ -542,7 +593,11 @@ static ssize_t ocfs2_active_cluster_plugin_show(struct kobject *kobj,
 }
 
 static struct kobj_attribute ocfs2_attr_active_cluster_plugin =
+<<<<<<< HEAD
 	__ATTR(active_cluster_plugin, S_IFREG | S_IRUGO,
+=======
+	__ATTR(active_cluster_plugin, S_IRUGO,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       ocfs2_active_cluster_plugin_show, NULL);
 
 static ssize_t ocfs2_cluster_stack_show(struct kobject *kobj,
@@ -591,15 +646,36 @@ static ssize_t ocfs2_cluster_stack_store(struct kobject *kobj,
 
 
 static struct kobj_attribute ocfs2_attr_cluster_stack =
+<<<<<<< HEAD
 	__ATTR(cluster_stack, S_IFREG | S_IRUGO | S_IWUSR,
 	       ocfs2_cluster_stack_show,
 	       ocfs2_cluster_stack_store);
 
+=======
+	__ATTR(cluster_stack, S_IRUGO | S_IWUSR,
+	       ocfs2_cluster_stack_show,
+	       ocfs2_cluster_stack_store);
+
+
+
+static ssize_t ocfs2_dlm_recover_show(struct kobject *kobj,
+					struct kobj_attribute *attr,
+					char *buf)
+{
+	return snprintf(buf, PAGE_SIZE, "1\n");
+}
+
+static struct kobj_attribute ocfs2_attr_dlm_recover_support =
+	__ATTR(dlm_recover_callback_support, S_IRUGO,
+	       ocfs2_dlm_recover_show, NULL);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct attribute *ocfs2_attrs[] = {
 	&ocfs2_attr_max_locking_protocol.attr,
 	&ocfs2_attr_loaded_cluster_plugins.attr,
 	&ocfs2_attr_active_cluster_plugin.attr,
 	&ocfs2_attr_cluster_stack.attr,
+<<<<<<< HEAD
 	NULL,
 };
 
@@ -608,6 +684,18 @@ static struct attribute_group ocfs2_attr_group = {
 };
 
 static struct kset *ocfs2_kset;
+=======
+	&ocfs2_attr_dlm_recover_support.attr,
+	NULL,
+};
+
+static const struct attribute_group ocfs2_attr_group = {
+	.attrs = ocfs2_attrs,
+};
+
+struct kset *ocfs2_kset;
+EXPORT_SYMBOL_GPL(ocfs2_kset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void ocfs2_sysfs_exit(void)
 {
@@ -641,9 +729,13 @@ error:
  * and easier to preserve the name.
  */
 
+<<<<<<< HEAD
 #define FS_OCFS2_NM		1
 
 static ctl_table ocfs2_nm_table[] = {
+=======
+static struct ctl_table ocfs2_nm_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.procname	= "hb_ctl_path",
 		.data		= ocfs2_hb_ctl_path,
@@ -651,6 +743,7 @@ static ctl_table ocfs2_nm_table[] = {
 		.mode		= 0644,
 		.proc_handler	= proc_dostring,
 	},
+<<<<<<< HEAD
 	{ }
 };
 
@@ -689,6 +782,11 @@ static ctl_table ocfs2_root_table[] = {
 
 static struct ctl_table_header *ocfs2_table_header = NULL;
 
+=======
+};
+
+static struct ctl_table_header *ocfs2_table_header;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Initialization
@@ -696,31 +794,54 @@ static struct ctl_table_header *ocfs2_table_header = NULL;
 
 static int __init ocfs2_stack_glue_init(void)
 {
+<<<<<<< HEAD
 	strcpy(cluster_stack_name, OCFS2_STACK_PLUGIN_O2CB);
 
 	ocfs2_table_header = register_sysctl_table(ocfs2_root_table);
+=======
+	int ret;
+
+	strcpy(cluster_stack_name, OCFS2_STACK_PLUGIN_O2CB);
+
+	ocfs2_table_header = register_sysctl("fs/ocfs2/nm", ocfs2_nm_table);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!ocfs2_table_header) {
 		printk(KERN_ERR
 		       "ocfs2 stack glue: unable to register sysctl\n");
 		return -ENOMEM; /* or something. */
 	}
 
+<<<<<<< HEAD
 	return ocfs2_sysfs_init();
+=======
+	ret = ocfs2_sysfs_init();
+	if (ret)
+		unregister_sysctl_table(ocfs2_table_header);
+
+	return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void __exit ocfs2_stack_glue_exit(void)
 {
 	memset(&locking_max_version, 0,
 	       sizeof(struct ocfs2_protocol_version));
+<<<<<<< HEAD
 	locking_max_version.pv_major = 0;
 	locking_max_version.pv_minor = 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ocfs2_sysfs_exit();
 	if (ocfs2_table_header)
 		unregister_sysctl_table(ocfs2_table_header);
 }
 
 MODULE_AUTHOR("Oracle");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("ocfs2 cluter stack glue layer");
+=======
+MODULE_DESCRIPTION("ocfs2 cluster stack glue layer");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");
 module_init(ocfs2_stack_glue_init);
 module_exit(ocfs2_stack_glue_exit);

@@ -1,9 +1,17 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # HSI driver configuration
 #
 menuconfig HSI
 	tristate "HSI support"
+<<<<<<< HEAD
 	---help---
+=======
+	help
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	  The "High speed synchronous Serial Interface" is
 	  synchronous serial interface used mainly to connect
 	  application engines and cellular modems.
@@ -14,6 +22,10 @@ config HSI_BOARDINFO
 	bool
 	default y
 
+<<<<<<< HEAD
+=======
+source "drivers/hsi/controllers/Kconfig"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 source "drivers/hsi/clients/Kconfig"
 
 endif # HSI

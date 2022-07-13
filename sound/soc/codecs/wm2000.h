@@ -1,15 +1,27 @@
+<<<<<<< HEAD
 /*
  * wm2000.h  --  WM2000 Soc Audio driver
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * wm2000.h  --  WM2000 Soc Audio driver
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _WM2000_H
 #define _WM2000_H
 
 #define WM2000_REG_SYS_START	    0x8000
+<<<<<<< HEAD
+=======
+#define WM2000_REG_ANC_GAIN_CTRL    0x8fa2
+#define WM2000_REG_MSE_TH2          0x8fdf
+#define WM2000_REG_MSE_TH1          0x8fe0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define WM2000_REG_SPEECH_CLARITY   0x8fef
 #define WM2000_REG_SYS_WATCHDOG     0x8ff6
 #define WM2000_REG_ANA_VMID_PD_TIME 0x8ff7
@@ -27,6 +39,11 @@
 #define WM2000_REG_SYS_CTL2         0xf004
 #define WM2000_REG_ANC_STAT         0xf005
 #define WM2000_REG_IF_CTL           0xf006
+<<<<<<< HEAD
+=======
+#define WM2000_REG_ANA_MIC_CTL      0xf028
+#define WM2000_REG_SPK_CTL          0xf034
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* SPEECH_CLARITY */
 #define WM2000_SPEECH_CLARITY   0x01

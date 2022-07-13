@@ -1,6 +1,23 @@
+<<<<<<< HEAD
 #ifndef __SMC91X_H__
 #define __SMC91X_H__
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __SMC91X_H__
+#define __SMC91X_H__
+
+/*
+ * These bits define which access sizes a platform can support, rather
+ * than the maximal access size.  So, if your platform can do 16-bit
+ * and 32-bit accesses to the SMC91x device, but not 8-bit, set both
+ * SMC91X_USE_16BIT and SMC91X_USE_32BIT.
+ *
+ * The SMC91x driver requires at least one of SMC91X_USE_8BIT or
+ * SMC91X_USE_16BIT to be supported - just setting SMC91X_USE_32BIT is
+ * an invalid configuration.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SMC91X_USE_8BIT (1 << 0)
 #define SMC91X_USE_16BIT (1 << 1)
 #define SMC91X_USE_32BIT (1 << 2)
@@ -29,6 +46,10 @@ struct smc91x_platdata {
 	unsigned long flags;
 	unsigned char leda;
 	unsigned char ledb;
+<<<<<<< HEAD
+=======
+	bool pxa_u16_align4;	/* PXA buggy u16 writes on 4*n+2 addresses */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #endif /* __SMC91X_H__ */

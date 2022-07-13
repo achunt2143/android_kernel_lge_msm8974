@@ -1,24 +1,34 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Preliminary support for HW exception handing for Microblaze
  *
  * Copyright (C) 2008-2009 Michal Simek <monstr@monstr.eu>
  * Copyright (C) 2008-2009 PetaLogix
  * Copyright (C) 2005 John Williams <jwilliams@itee.uq.edu.au>
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General
  * Public License. See the file COPYING in the main directory of this
  * archive for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ASM_MICROBLAZE_EXCEPTIONS_H
 #define _ASM_MICROBLAZE_EXCEPTIONS_H
 
 #ifdef __KERNEL__
+<<<<<<< HEAD
 
 #ifndef CONFIG_MMU
 #define EX_HANDLER_STACK_SIZ	(4*19)
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __ASSEMBLY__
 
 /* Macros to enable and disable HW exceptions in the MSR */

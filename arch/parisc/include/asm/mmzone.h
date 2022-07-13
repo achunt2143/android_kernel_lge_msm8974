@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _PARISC_MMZONE_H
 #define _PARISC_MMZONE_H
 
@@ -63,4 +64,12 @@ static inline int pfn_valid(int pfn)
 #else /* !CONFIG_DISCONTIGMEM */
 #define MAX_PHYSMEM_RANGES 	1 
 #endif
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _PARISC_MMZONE_H
+#define _PARISC_MMZONE_H
+
+#define MAX_PHYSMEM_RANGES 4 /* Fix the size for now (current known max is 3) */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _PARISC_MMZONE_H */

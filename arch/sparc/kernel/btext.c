@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Procedures for drawing on the screen early on in the boot process.
  *
@@ -7,6 +11,10 @@
 #include <linux/string.h>
 #include <linux/init.h>
 #include <linux/console.h>
+<<<<<<< HEAD
+=======
+#include <linux/font.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/btext.h>
 #include <asm/oplib.h>
@@ -19,11 +27,19 @@ static void scrollscreen(void);
 #endif
 
 static void draw_byte(unsigned char c, long locX, long locY);
+<<<<<<< HEAD
 static void draw_byte_32(unsigned char *bits, unsigned int *base, int rb);
 static void draw_byte_16(unsigned char *bits, unsigned int *base, int rb);
 static void draw_byte_8(unsigned char *bits, unsigned int *base, int rb);
 
 #define __force_data __attribute__((__section__(".data")))
+=======
+static void draw_byte_32(const unsigned char *bits, unsigned int *base, int rb);
+static void draw_byte_16(const unsigned char *bits, unsigned int *base, int rb);
+static void draw_byte_8(const unsigned char *bits, unsigned int *base, int rb);
+
+#define __force_data __section(".data")
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int g_loc_X __force_data;
 static int g_loc_Y __force_data;
@@ -35,10 +51,13 @@ static int dispDeviceDepth  __force_data;
 static int dispDeviceRect[4] __force_data;
 static unsigned char *dispDeviceBase __force_data;
 
+<<<<<<< HEAD
 #define cmapsz	(16*256)
 
 static unsigned char vga_font[cmapsz];
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init btext_initialize(phandle node)
 {
 	unsigned int width, height, depth, pitch;
@@ -137,7 +156,11 @@ static void scrollscreen(void)
 }
 #endif /* ndef NO_SCROLL */
 
+<<<<<<< HEAD
 void btext_drawchar(char c)
+=======
+static void btext_drawchar(char c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cline = 0;
 #ifdef NO_SCROLL
@@ -193,7 +216,12 @@ static void btext_drawtext(const char *c, unsigned int len)
 static void draw_byte(unsigned char c, long locX, long locY)
 {
 	unsigned char *base	= calc_base(locX << 3, locY << 4);
+<<<<<<< HEAD
 	unsigned char *font	= &vga_font[((unsigned int)c) * 16];
+=======
+	unsigned int font_index = c * 16;
+	const unsigned char *font	= font_sun_8x16.data + font_index;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int rb			= dispDeviceRowBytes;
 
 	switch(dispDeviceDepth) {
@@ -238,7 +266,11 @@ static unsigned int expand_bits_16[4] = {
 };
 
 
+<<<<<<< HEAD
 static void draw_byte_32(unsigned char *font, unsigned int *base, int rb)
+=======
+static void draw_byte_32(const unsigned char *font, unsigned int *base, int rb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int l, bits;
 	int fg = 0xFFFFFFFFUL;
@@ -259,7 +291,11 @@ static void draw_byte_32(unsigned char *font, unsigned int *base, int rb)
 	}
 }
 
+<<<<<<< HEAD
 static void draw_byte_16(unsigned char *font, unsigned int *base, int rb)
+=======
+static void draw_byte_16(const unsigned char *font, unsigned int *base, int rb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int l, bits;
 	int fg = 0xFFFFFFFFUL;
@@ -277,7 +313,11 @@ static void draw_byte_16(unsigned char *font, unsigned int *base, int rb)
 	}
 }
 
+<<<<<<< HEAD
 static void draw_byte_8(unsigned char *font, unsigned int *base, int rb)
+=======
+static void draw_byte_8(const unsigned char *font, unsigned int *base, int rb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int l, bits;
 	int fg = 0x0F0F0F0FUL;
@@ -325,6 +365,7 @@ int __init btext_find_display(void)
 	}
 	return ret;
 }
+<<<<<<< HEAD
 
 static unsigned char vga_font[cmapsz] = {
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -670,3 +711,5 @@ static unsigned char vga_font[cmapsz] = {
 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 0x00, 0x00, 0x00, 0x00,
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

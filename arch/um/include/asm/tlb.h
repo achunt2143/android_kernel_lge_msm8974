@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef __UM_TLB_H
 #define __UM_TLB_H
 
@@ -116,5 +117,16 @@ static inline void tlb_remove_page(struct mmu_gather *tlb, struct page *page)
 #define pmd_free_tlb(tlb, pmdp, addr) __pmd_free_tlb(tlb, pmdp, addr)
 
 #define tlb_migrate_finish(mm) do {} while (0)
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef __UM_TLB_H
+#define __UM_TLB_H
+
+#include <linux/mm.h>
+
+#include <asm/tlbflush.h>
+#include <asm/cacheflush.h>
+#include <asm-generic/tlb.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

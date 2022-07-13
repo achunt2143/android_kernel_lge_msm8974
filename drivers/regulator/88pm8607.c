@@ -1,17 +1,30 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Regulators driver for Marvell 88PM8607
  *
  * Copyright (C) 2009 Marvell International Ltd.
+<<<<<<< HEAD
  * 	Haojian Zhuang <haojian.zhuang@marvell.com>
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+ *	Haojian Zhuang <haojian.zhuang@marvell.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/err.h>
+<<<<<<< HEAD
 #include <linux/i2c.h>
+=======
+#include <linux/of.h>
+#include <linux/regulator/of_regulator.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/platform_device.h>
 #include <linux/regulator/driver.h>
 #include <linux/regulator/machine.h>
@@ -20,6 +33,7 @@
 
 struct pm8607_regulator_info {
 	struct regulator_desc	desc;
+<<<<<<< HEAD
 	struct pm860x_chip	*chip;
 	struct regulator_dev	*regulator;
 	struct i2c_client	*i2c;
@@ -34,6 +48,11 @@ struct pm8607_regulator_info {
 	int	update_bit;
 	int	enable_reg;
 	int	enable_bit;
+=======
+
+	unsigned int	*vol_suspend;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int	slope_double;
 };
 
@@ -82,7 +101,11 @@ static const unsigned int BUCK2_suspend_table[] = {
 };
 
 static const unsigned int BUCK3_table[] = {
+<<<<<<< HEAD
               0,   25000,   50000,   75000,  100000,  125000,  150000,  175000,
+=======
+	      0,   25000,   50000,   75000,  100000,  125000,  150000,  175000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 200000,  225000,  250000,  275000,  300000,  325000,  350000,  375000,
 	 400000,  425000,  450000,  475000,  500000,  525000,  550000,  575000,
 	 600000,  625000,  650000,  675000,  700000,  725000,  750000,  775000,
@@ -93,7 +116,11 @@ static const unsigned int BUCK3_table[] = {
 };
 
 static const unsigned int BUCK3_suspend_table[] = {
+<<<<<<< HEAD
               0,   25000,   50000,   75000,  100000,  125000,  150000,  175000,
+=======
+	      0,   25000,   50000,   75000,  100000,  125000,  150000,  175000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 200000,  225000,  250000,  275000,  300000,  325000,  350000,  375000,
 	 400000,  425000,  450000,  475000,  500000,  525000,  550000,  575000,
 	 600000,  625000,  650000,  675000,  700000,  725000,  750000,  775000,
@@ -214,6 +241,7 @@ static const unsigned int LDO14_suspend_table[] = {
 static int pm8607_list_voltage(struct regulator_dev *rdev, unsigned index)
 {
 	struct pm8607_regulator_info *info = rdev_get_drvdata(rdev);
+<<<<<<< HEAD
 	int ret = -EINVAL;
 
 	if (info->vol_table && (index < (1 << info->vol_nbits))) {
@@ -339,10 +367,62 @@ static struct regulator_ops pm8607_regulator_ops = {
 {									\
 	.desc	= {							\
 		.name	= #vreg,					\
+=======
+	int ret;
+
+	ret = regulator_list_voltage_table(rdev, index);
+	if (ret < 0)
+		return ret;
+
+	if (info->slope_double)
+		ret <<= 1;
+
+	return ret;
+}
+
+static const struct regulator_ops pm8607_regulator_ops = {
+	.list_voltage	= pm8607_list_voltage,
+	.set_voltage_sel = regulator_set_voltage_sel_regmap,
+	.get_voltage_sel = regulator_get_voltage_sel_regmap,
+	.enable = regulator_enable_regmap,
+	.disable = regulator_disable_regmap,
+	.is_enabled = regulator_is_enabled_regmap,
+};
+
+static const struct regulator_ops pm8606_preg_ops = {
+	.enable		= regulator_enable_regmap,
+	.disable	= regulator_disable_regmap,
+	.is_enabled	= regulator_is_enabled_regmap,
+};
+
+#define PM8606_PREG(ereg, ebit)						\
+{									\
+	.desc	= {							\
+		.name	= "PREG",					\
+		.of_match = of_match_ptr("PREG"),			\
+		.regulators_node = of_match_ptr("regulators"),		\
+		.ops	= &pm8606_preg_ops,				\
+		.type	= REGULATOR_CURRENT,				\
+		.id	= PM8606_ID_PREG,				\
+		.owner	= THIS_MODULE,					\
+		.enable_reg = PM8606_##ereg,				\
+		.enable_mask = (ebit),					\
+		.enable_is_inverted = true,				\
+	},								\
+}
+
+#define PM8607_DVC(vreg, ureg, ubit, ereg, ebit)			\
+{									\
+	.desc	= {							\
+		.name	= #vreg,					\
+		.of_match = of_match_ptr(#vreg),			\
+		.regulators_node = of_match_ptr("regulators"),		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.ops	= &pm8607_regulator_ops,			\
 		.type	= REGULATOR_VOLTAGE,				\
 		.id	= PM8607_ID_##vreg,				\
 		.owner	= THIS_MODULE,					\
+<<<<<<< HEAD
 	},								\
 	.vol_reg	= PM8607_##vreg,				\
 	.vol_shift	= (0),						\
@@ -360,10 +440,32 @@ static struct regulator_ops pm8607_regulator_ops = {
 {									\
 	.desc	= {							\
 		.name	= "LDO" #_id,					\
+=======
+		.volt_table = vreg##_table,				\
+		.n_voltages = ARRAY_SIZE(vreg##_table),			\
+		.vsel_reg = PM8607_##vreg,				\
+		.vsel_mask = ARRAY_SIZE(vreg##_table) - 1,		\
+		.apply_reg = PM8607_##ureg,				\
+		.apply_bit = (ubit),					\
+		.enable_reg = PM8607_##ereg,				\
+		.enable_mask = 1 << (ebit),				\
+	},								\
+	.slope_double	= (0),						\
+	.vol_suspend	= (unsigned int *)&vreg##_suspend_table,	\
+}
+
+#define PM8607_LDO(_id, vreg, shift, ereg, ebit)			\
+{									\
+	.desc	= {							\
+		.name	= "LDO" #_id,					\
+		.of_match = of_match_ptr("LDO" #_id),			\
+		.regulators_node = of_match_ptr("regulators"),		\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.ops	= &pm8607_regulator_ops,			\
 		.type	= REGULATOR_VOLTAGE,				\
 		.id	= PM8607_ID_LDO##_id,				\
 		.owner	= THIS_MODULE,					\
+<<<<<<< HEAD
 	},								\
 	.vol_reg	= PM8607_##vreg,				\
 	.vol_shift	= (shift),					\
@@ -372,10 +474,21 @@ static struct regulator_ops pm8607_regulator_ops = {
 	.enable_bit	= (ebit),					\
 	.slope_double	= (0),						\
 	.vol_table	= (unsigned int *)&LDO##_id##_table,		\
+=======
+		.volt_table = LDO##_id##_table,				\
+		.n_voltages = ARRAY_SIZE(LDO##_id##_table),		\
+		.vsel_reg = PM8607_##vreg,				\
+		.vsel_mask = (ARRAY_SIZE(LDO##_id##_table) - 1) << (shift), \
+		.enable_reg = PM8607_##ereg,				\
+		.enable_mask = 1 << (ebit),				\
+	},								\
+	.slope_double	= (0),						\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.vol_suspend	= (unsigned int *)&LDO##_id##_suspend_table,	\
 }
 
 static struct pm8607_regulator_info pm8607_regulator_info[] = {
+<<<<<<< HEAD
 	PM8607_DVC(BUCK1, 6, GO, 0, SUPPLIES_EN11, 0),
 	PM8607_DVC(BUCK2, 6, GO, 1, SUPPLIES_EN11, 1),
 	PM8607_DVC(BUCK3, 6, GO, 2, SUPPLIES_EN11, 2),
@@ -432,12 +545,88 @@ static int __devinit pm8607_regulator_probe(struct platform_device *pdev)
 		dev_err(&pdev->dev, "failed to register regulator %s\n",
 			info->desc.name);
 		return PTR_ERR(info->regulator);
+=======
+	PM8607_DVC(BUCK1, GO, BIT(0), SUPPLIES_EN11, 0),
+	PM8607_DVC(BUCK2, GO, BIT(1), SUPPLIES_EN11, 1),
+	PM8607_DVC(BUCK3, GO, BIT(2), SUPPLIES_EN11, 2),
+
+	PM8607_LDO(1,         LDO1, 0, SUPPLIES_EN11, 3),
+	PM8607_LDO(2,         LDO2, 0, SUPPLIES_EN11, 4),
+	PM8607_LDO(3,         LDO3, 0, SUPPLIES_EN11, 5),
+	PM8607_LDO(4,         LDO4, 0, SUPPLIES_EN11, 6),
+	PM8607_LDO(5,         LDO5, 0, SUPPLIES_EN11, 7),
+	PM8607_LDO(6,         LDO6, 0, SUPPLIES_EN12, 0),
+	PM8607_LDO(7,         LDO7, 0, SUPPLIES_EN12, 1),
+	PM8607_LDO(8,         LDO8, 0, SUPPLIES_EN12, 2),
+	PM8607_LDO(9,         LDO9, 0, SUPPLIES_EN12, 3),
+	PM8607_LDO(10,        LDO10, 0, SUPPLIES_EN12, 4),
+	PM8607_LDO(12,        LDO12, 0, SUPPLIES_EN12, 5),
+	PM8607_LDO(13, VIBRATOR_SET, 1, VIBRATOR_SET, 0),
+	PM8607_LDO(14,        LDO14, 0, SUPPLIES_EN12, 6),
+};
+
+static struct pm8607_regulator_info pm8606_regulator_info[] = {
+	PM8606_PREG(PREREGULATORB, 5),
+};
+
+static int pm8607_regulator_probe(struct platform_device *pdev)
+{
+	struct pm860x_chip *chip = dev_get_drvdata(pdev->dev.parent);
+	struct pm8607_regulator_info *info = NULL;
+	struct regulator_init_data *pdata = dev_get_platdata(&pdev->dev);
+	struct regulator_config config = { };
+	struct regulator_dev *rdev;
+	struct resource *res;
+	int i;
+
+	res = platform_get_resource(pdev, IORESOURCE_REG, 0);
+	if (res) {
+		/* There're resources in 88PM8607 regulator driver */
+		for (i = 0; i < ARRAY_SIZE(pm8607_regulator_info); i++) {
+			info = &pm8607_regulator_info[i];
+			if (info->desc.vsel_reg == res->start)
+				break;
+		}
+		if (i == ARRAY_SIZE(pm8607_regulator_info)) {
+			dev_err(&pdev->dev, "Failed to find regulator %llu\n",
+				(unsigned long long)res->start);
+			return -EINVAL;
+		}
+	} else {
+		/* There's no resource in 88PM8606 PREG regulator driver */
+		info = &pm8606_regulator_info[0];
+		/* i is used to check regulator ID */
+		i = -1;
+	}
+
+	/* check DVC ramp slope double */
+	if ((i == PM8607_ID_BUCK3) && chip->buck3_double)
+		info->slope_double = 1;
+
+	config.dev = chip->dev;
+	config.driver_data = info;
+
+	if (pdata)
+		config.init_data = pdata;
+
+	if (chip->id == CHIP_PM8607)
+		config.regmap = chip->regmap;
+	else
+		config.regmap = chip->regmap_companion;
+
+	rdev = devm_regulator_register(&pdev->dev, &info->desc, &config);
+	if (IS_ERR(rdev)) {
+		dev_err(&pdev->dev, "failed to register regulator %s\n",
+			info->desc.name);
+		return PTR_ERR(rdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	platform_set_drvdata(pdev, info);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devexit pm8607_regulator_remove(struct platform_device *pdev)
 {
 	struct pm8607_regulator_info *info = platform_get_drvdata(pdev);
@@ -446,14 +635,34 @@ static int __devexit pm8607_regulator_remove(struct platform_device *pdev)
 	regulator_unregister(info->regulator);
 	return 0;
 }
+=======
+static const struct platform_device_id pm8607_regulator_driver_ids[] = {
+	{
+		.name	= "88pm860x-regulator",
+		.driver_data	= 0,
+	}, {
+		.name	= "88pm860x-preg",
+		.driver_data	= 0,
+	},
+	{ },
+};
+MODULE_DEVICE_TABLE(platform, pm8607_regulator_driver_ids);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver pm8607_regulator_driver = {
 	.driver		= {
 		.name	= "88pm860x-regulator",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 	},
 	.probe		= pm8607_regulator_probe,
 	.remove		= __devexit_p(pm8607_regulator_remove),
+=======
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+	},
+	.probe		= pm8607_regulator_probe,
+	.id_table	= pm8607_regulator_driver_ids,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init pm8607_regulator_init(void)

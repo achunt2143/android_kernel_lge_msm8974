@@ -1,27 +1,40 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OF helpers for the GPIO API
  *
  * Copyright (c) 2007-2008  MontaVista Software, Inc.
  *
  * Author: Anton Vorontsov <avorontsov@ru.mvista.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __LINUX_OF_GPIO_H
 #define __LINUX_OF_GPIO_H
 
 #include <linux/compiler.h>
+<<<<<<< HEAD
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/gpio.h>
+=======
+#include <linux/gpio/driver.h>
+#include <linux/gpio.h>		/* FIXME: Shouldn't be here */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/of.h>
 
 struct device_node;
 
+<<<<<<< HEAD
 /*
  * This is Linux-specific flags. By default controllers' and Linux' mapping
  * match, but GPIO controllers are free to translate their own flags to
@@ -68,10 +81,25 @@ extern int of_gpio_simple_xlate(struct gpio_chip *gc,
 /* Drivers may not strictly depend on the GPIO support, so let them link. */
 static inline int of_get_named_gpio_flags(struct device_node *np,
 		const char *list_name, int index, enum of_gpio_flags *flags)
+=======
+#ifdef CONFIG_OF_GPIO
+
+extern int of_get_named_gpio(const struct device_node *np,
+			     const char *list_name, int index);
+
+#else /* CONFIG_OF_GPIO */
+
+#include <linux/errno.h>
+
+/* Drivers may not strictly depend on the GPIO support, so let them link. */
+static inline int of_get_named_gpio(const struct device_node *np,
+                                   const char *propname, int index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return -ENOSYS;
 }
 
+<<<<<<< HEAD
 static inline unsigned int of_gpio_named_count(struct device_node *np,
 					const char* propname)
 {
@@ -155,4 +183,8 @@ static inline int of_get_gpio(struct device_node *np, int index)
 	return of_get_gpio_flags(np, index, NULL);
 }
 
+=======
+#endif /* CONFIG_OF_GPIO */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __LINUX_OF_GPIO_H */

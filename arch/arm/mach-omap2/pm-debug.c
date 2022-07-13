@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OMAP Power Management debug routines
  *
@@ -13,20 +17,28 @@
  * Jouni Hogander
  *
  * Based on pm.c for omap2
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/clock.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/module.h>
 #include <linux/slab.h>
 
+<<<<<<< HEAD
 #include <plat/clock.h>
 #include <plat/board.h>
 #include "powerdomain.h"
@@ -34,12 +46,22 @@
 #include <plat/dmtimer.h>
 #include <plat/omap-pm.h>
 
+=======
+#include "clock.h"
+#include "powerdomain.h"
+#include "clockdomain.h"
+
+#include "soc.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "cm2xxx_3xxx.h"
 #include "prm2xxx_3xxx.h"
 #include "pm.h"
 
+<<<<<<< HEAD
 u32 enable_off_mode;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_DEBUG_FS
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
@@ -48,11 +70,14 @@ static int pm_dbg_init_done;
 
 static int pm_dbg_init(void);
 
+<<<<<<< HEAD
 enum {
 	DEBUG_FILE_COUNTERS = 0,
 	DEBUG_FILE_TIMERS,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const char pwrdm_state_names[][PWRDM_MAX_PWRSTS] = {
 	"OFF",
 	"RET",
@@ -84,10 +109,15 @@ static int clkdm_dbg_show_counter(struct clockdomain *clkdm, void *user)
 		strncmp(clkdm->name, "dpll", 4) == 0)
 		return 0;
 
+<<<<<<< HEAD
 	seq_printf(s, "%s->%s (%d)", clkdm->name,
 			clkdm->pwrdm.ptr->name,
 			atomic_read(&clkdm->usecount));
 	seq_printf(s, "\n");
+=======
+	seq_printf(s, "%s->%s (%d)\n", clkdm->name, clkdm->pwrdm.ptr->name,
+		   clkdm->usecount);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -117,8 +147,12 @@ static int pwrdm_dbg_show_counter(struct powerdomain *pwrdm, void *user)
 		seq_printf(s, ",RET-MEMBANK%d-OFF:%d", i + 1,
 				pwrdm->ret_mem_off_counter[i]);
 
+<<<<<<< HEAD
 	seq_printf(s, "\n");
 
+=======
+	seq_putc(s, '\n');
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -141,23 +175,38 @@ static int pwrdm_dbg_show_timer(struct powerdomain *pwrdm, void *user)
 		seq_printf(s, ",%s:%lld", pwrdm_state_names[i],
 			pwrdm->state_timer[i]);
 
+<<<<<<< HEAD
 	seq_printf(s, "\n");
 	return 0;
 }
 
 static int pm_dbg_show_counters(struct seq_file *s, void *unused)
+=======
+	seq_putc(s, '\n');
+	return 0;
+}
+
+static int pm_dbg_counters_show(struct seq_file *s, void *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pwrdm_for_each(pwrdm_dbg_show_counter, s);
 	clkdm_for_each(clkdm_dbg_show_counter, s);
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static int pm_dbg_show_timers(struct seq_file *s, void *unused)
+=======
+DEFINE_SHOW_ATTRIBUTE(pm_dbg_counters);
+
+static int pm_dbg_timers_show(struct seq_file *s, void *unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pwrdm_for_each(pwrdm_dbg_show_timer, s);
 	return 0;
 }
+<<<<<<< HEAD
 
 static int pm_dbg_open(struct inode *inode, struct file *file)
 {
@@ -178,6 +227,9 @@ static const struct file_operations debug_fops = {
 	.llseek         = seq_lseek,
 	.release        = single_release,
 };
+=======
+DEFINE_SHOW_ATTRIBUTE(pm_dbg_timers);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int pwrdm_suspend_get(void *data, u64 *val)
 {
@@ -200,8 +252,13 @@ static int pwrdm_suspend_set(void *data, u64 val)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 DEFINE_SIMPLE_ATTRIBUTE(pwrdm_suspend_fops, pwrdm_suspend_get,
 			pwrdm_suspend_set, "%llu\n");
+=======
+DEFINE_DEBUGFS_ATTRIBUTE(pwrdm_suspend_fops, pwrdm_suspend_get,
+			  pwrdm_suspend_set, "%llu\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init pwrdms_setup(struct powerdomain *pwrdm, void *dir)
 {
@@ -220,9 +277,14 @@ static int __init pwrdms_setup(struct powerdomain *pwrdm, void *dir)
 		return 0;
 
 	d = debugfs_create_dir(pwrdm->name, (struct dentry *)dir);
+<<<<<<< HEAD
 	if (!(IS_ERR_OR_NULL(d)))
 		(void) debugfs_create_file("suspend", S_IRUGO|S_IWUSR, d,
 			(void *)pwrdm, &pwrdm_suspend_fops);
+=======
+	debugfs_create_file("suspend", S_IRUGO|S_IWUSR, d, pwrdm,
+			    &pwrdm_suspend_fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -243,10 +305,13 @@ static int option_set(void *data, u64 val)
 	*option = val;
 
 	if (option == &enable_off_mode) {
+<<<<<<< HEAD
 		if (val)
 			omap_pm_enable_off_mode();
 		else
 			omap_pm_disable_off_mode();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (cpu_is_omap34xx())
 			omap3_pm_off_mode_enable(val);
 	}
@@ -264,6 +329,7 @@ static int __init pm_dbg_init(void)
 		return 0;
 
 	d = debugfs_create_dir("pm_debug", NULL);
+<<<<<<< HEAD
 	if (IS_ERR_OR_NULL(d))
 		return PTR_ERR(d);
 
@@ -276,10 +342,24 @@ static int __init pm_dbg_init(void)
 
 	(void) debugfs_create_file("enable_off_mode", S_IRUGO | S_IWUSR, d,
 				   &enable_off_mode, &pm_dbg_option_fops);
+=======
+
+	debugfs_create_file("count", 0444, d, NULL, &pm_dbg_counters_fops);
+	debugfs_create_file("time", 0444, d, NULL, &pm_dbg_timers_fops);
+
+	pwrdm_for_each(pwrdms_setup, (void *)d);
+
+	debugfs_create_file("enable_off_mode", S_IRUGO | S_IWUSR, d,
+			    &enable_off_mode, &pm_dbg_option_fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pm_dbg_init_done = 1;
 
 	return 0;
 }
+<<<<<<< HEAD
 arch_initcall(pm_dbg_init);
+=======
+omap_arch_initcall(pm_dbg_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

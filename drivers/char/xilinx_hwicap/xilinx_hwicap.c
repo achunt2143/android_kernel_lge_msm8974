@@ -84,6 +84,7 @@
 #include <linux/sysctl.h>
 #include <linux/fs.h>
 #include <linux/cdev.h>
+<<<<<<< HEAD
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
@@ -96,6 +97,14 @@
 #include <linux/of_device.h>
 #include <linux/of_platform.h>
 #endif
+=======
+#include <linux/of.h>
+#include <linux/platform_device.h>
+#include <linux/property.h>
+#include <linux/slab.h>
+#include <linux/io.h>
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "xilinx_hwicap.h"
 #include "buffer_icap.h"
@@ -114,7 +123,13 @@ static DEFINE_MUTEX(hwicap_mutex);
 static bool probed_devices[HWICAP_DEVICES];
 static struct mutex icap_sem;
 
+<<<<<<< HEAD
 static struct class *icap_class;
+=======
+static const struct class icap_class = {
+	.name = "xilinx_config",
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define UNIMPLEMENTED 0xFFFF
 
@@ -167,6 +182,10 @@ static const struct config_registers v4_config_registers = {
 	.BOOTSTS = UNIMPLEMENTED,
 	.CTL_1 = UNIMPLEMENTED,
 };
+<<<<<<< HEAD
+=======
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct config_registers v5_config_registers = {
 	.CRC = 0,
 	.FAR = 1,
@@ -192,10 +211,43 @@ static const struct config_registers v5_config_registers = {
 	.CTL_1 = 19,
 };
 
+<<<<<<< HEAD
+=======
+static const struct config_registers v6_config_registers = {
+	.CRC = 0,
+	.FAR = 1,
+	.FDRI = 2,
+	.FDRO = 3,
+	.CMD = 4,
+	.CTL = 5,
+	.MASK = 6,
+	.STAT = 7,
+	.LOUT = 8,
+	.COR = 9,
+	.MFWR = 10,
+	.FLR = UNIMPLEMENTED,
+	.KEY = UNIMPLEMENTED,
+	.CBC = 11,
+	.IDCODE = 12,
+	.AXSS = 13,
+	.C0R_1 = 14,
+	.CSOB = 15,
+	.WBSTAR = 16,
+	.TIMER = 17,
+	.BOOTSTS = 22,
+	.CTL_1 = 24,
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * hwicap_command_desync - Send a DESYNC command to the ICAP port.
  * @drvdata: a pointer to the drvdata.
  *
+<<<<<<< HEAD
+=======
+ * Returns: '0' on success and failure value on error
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This command desynchronizes the ICAP After this command, a
  * bitstream containing a NULL packet, followed by a SYNCH packet is
  * required before the ICAP will recognize commands.
@@ -214,7 +266,11 @@ static int hwicap_command_desync(struct hwicap_drvdata *drvdata)
 	buffer[index++] = XHI_NOOP_PACKET;
 
 	/*
+<<<<<<< HEAD
 	 * Write the data to the FIFO and intiate the transfer of data present
+=======
+	 * Write the data to the FIFO and initiate the transfer of data present
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * in the FIFO to the ICAP device.
 	 */
 	return drvdata->config->set_configuration(drvdata,
@@ -225,10 +281,19 @@ static int hwicap_command_desync(struct hwicap_drvdata *drvdata)
  * hwicap_get_configuration_register - Query a configuration register.
  * @drvdata: a pointer to the drvdata.
  * @reg: a constant which represents the configuration
+<<<<<<< HEAD
  *		register value to be returned.
  * 		Examples:  XHI_IDCODE, XHI_FLR.
  * @reg_data: returns the value of the register.
  *
+=======
+ * register value to be returned.
+ * Examples: XHI_IDCODE, XHI_FLR.
+ * @reg_data: returns the value of the register.
+ *
+ * Returns: '0' on success and failure value on error
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Sends a query packet to the ICAP and then receives the response.
  * The icap is left in Synched state.
  */
@@ -268,7 +333,11 @@ static int hwicap_get_configuration_register(struct hwicap_drvdata *drvdata,
 	buffer[index++] = XHI_NOOP_PACKET;
 
 	/*
+<<<<<<< HEAD
 	 * Write the data to the FIFO and intiate the transfer of data present
+=======
+	 * Write the data to the FIFO and initiate the transfer of data present
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * in the FIFO to the ICAP device.
 	 */
 	status = drvdata->config->set_configuration(drvdata,
@@ -294,7 +363,12 @@ static int hwicap_initialize_hwicap(struct hwicap_drvdata *drvdata)
 	dev_dbg(drvdata->dev, "initializing\n");
 
 	/* Abort any current transaction, to make sure we have the
+<<<<<<< HEAD
 	 * ICAP in a good state. */
+=======
+	 * ICAP in a good state.
+	 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev_dbg(drvdata->dev, "Reset...\n");
 	drvdata->config->reset(drvdata);
 
@@ -354,7 +428,11 @@ hwicap_read(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 		       drvdata->read_buffer + bytes_to_read,
 		       4 - bytes_to_read);
 	} else {
+<<<<<<< HEAD
 		/* Get new data from the ICAP, and return was was requested. */
+=======
+		/* Get new data from the ICAP, and return what was requested. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kbuf = (u32 *) get_zeroed_page(GFP_KERNEL);
 		if (!kbuf) {
 			status = -ENOMEM;
@@ -569,14 +647,23 @@ static const struct file_operations hwicap_fops = {
 	.llseek = noop_llseek,
 };
 
+<<<<<<< HEAD
 static int __devinit hwicap_setup(struct device *dev, int id,
 		const struct resource *regs_res,
+=======
+static int hwicap_setup(struct platform_device *pdev, int id,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		const struct hwicap_driver_config *config,
 		const struct config_registers *config_regs)
 {
 	dev_t devt;
 	struct hwicap_drvdata *drvdata = NULL;
+<<<<<<< HEAD
 	int retval = 0;
+=======
+	struct device *dev = &pdev->dev;
+	int retval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	dev_info(dev, "Xilinx icap port driver\n");
 
@@ -604,6 +691,7 @@ static int __devinit hwicap_setup(struct device *dev, int id,
 
 	devt = MKDEV(XHWICAP_MAJOR, XHWICAP_MINOR + id);
 
+<<<<<<< HEAD
 	drvdata = kzalloc(sizeof(struct hwicap_drvdata), GFP_KERNEL);
 	if (!drvdata) {
 		dev_err(dev, "Couldn't allocate device private record\n");
@@ -628,32 +716,52 @@ static int __devinit hwicap_setup(struct device *dev, int id,
 			(unsigned long long) regs_res->start);
 		retval = -EBUSY;
 		goto failed1;
+=======
+	drvdata = devm_kzalloc(dev, sizeof(struct hwicap_drvdata), GFP_KERNEL);
+	if (!drvdata) {
+		retval = -ENOMEM;
+		goto failed;
+	}
+	dev_set_drvdata(dev, drvdata);
+
+	drvdata->base_address = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(drvdata->base_address)) {
+		retval = PTR_ERR(drvdata->base_address);
+		goto failed;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	drvdata->devt = devt;
 	drvdata->dev = dev;
+<<<<<<< HEAD
 	drvdata->base_address = ioremap(drvdata->mem_start, drvdata->mem_size);
 	if (!drvdata->base_address) {
 		dev_err(dev, "ioremap() failed\n");
 		goto failed2;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	drvdata->config = config;
 	drvdata->config_regs = config_regs;
 
 	mutex_init(&drvdata->sem);
 	drvdata->is_open = 0;
 
+<<<<<<< HEAD
 	dev_info(dev, "ioremap %llx to %p with size %llx\n",
 		 (unsigned long long) drvdata->mem_start,
 		 drvdata->base_address,
 		 (unsigned long long) drvdata->mem_size);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cdev_init(&drvdata->cdev, &hwicap_fops);
 	drvdata->cdev.owner = THIS_MODULE;
 	retval = cdev_add(&drvdata->cdev, devt, 1);
 	if (retval) {
 		dev_err(dev, "cdev_add() failed\n");
+<<<<<<< HEAD
 		goto failed3;
 	}
 
@@ -670,6 +778,15 @@ static int __devinit hwicap_setup(struct device *dev, int id,
 	kfree(drvdata);
 
  failed0:
+=======
+		goto failed;
+	}
+
+	device_create(&icap_class, dev, devt, NULL, "%s%d", DRIVER_NAME, id);
+	return 0;		/* success */
+
+ failed:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_lock(&icap_sem);
 	probed_devices[id] = 0;
 	mutex_unlock(&icap_sem);
@@ -691,6 +808,7 @@ static struct hwicap_driver_config fifo_icap_config = {
 	.reset = fifo_icap_reset,
 };
 
+<<<<<<< HEAD
 static int __devexit hwicap_remove(struct device *dev)
 {
 	struct hwicap_drvdata *drvdata;
@@ -706,10 +824,50 @@ static int __devexit hwicap_remove(struct device *dev)
 	release_mem_region(drvdata->mem_start, drvdata->mem_size);
 	kfree(drvdata);
 	dev_set_drvdata(dev, NULL);
+=======
+static int hwicap_drv_probe(struct platform_device *pdev)
+{
+	const struct config_registers *regs;
+	const struct hwicap_driver_config *config;
+	const char *family;
+	int id = -1;
+
+	config = device_get_match_data(&pdev->dev);
+
+	of_property_read_u32(pdev->dev.of_node, "port-number", &id);
+
+	/* It's most likely that we're using V4, if the family is not
+	 * specified
+	 */
+	regs = &v4_config_registers;
+	if (!of_property_read_string(pdev->dev.of_node, "xlnx,family", &family)) {
+		if (!strcmp(family, "virtex2p"))
+			regs = &v2_config_registers;
+		else if (!strcmp(family, "virtex4"))
+			regs = &v4_config_registers;
+		else if (!strcmp(family, "virtex5"))
+			regs = &v5_config_registers;
+		else if (!strcmp(family, "virtex6"))
+			regs = &v6_config_registers;
+	}
+	return hwicap_setup(pdev, id, config, regs);
+}
+
+static void hwicap_drv_remove(struct platform_device *pdev)
+{
+	struct device *dev = &pdev->dev;
+	struct hwicap_drvdata *drvdata;
+
+	drvdata = dev_get_drvdata(dev);
+
+	device_destroy(&icap_class, drvdata->devt);
+	cdev_del(&drvdata->cdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&icap_sem);
 	probed_devices[MINOR(dev->devt)-XHWICAP_MINOR] = 0;
 	mutex_unlock(&icap_sem);
+<<<<<<< HEAD
 	return 0;		/* success */
 }
 
@@ -800,11 +958,18 @@ static int __devexit hwicap_drv_remove(struct platform_device *pdev)
 #ifdef CONFIG_OF
 /* Match table for device tree binding */
 static const struct of_device_id __devinitconst hwicap_of_match[] = {
+=======
+}
+
+/* Match table for device tree binding */
+static const struct of_device_id hwicap_of_match[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ .compatible = "xlnx,opb-hwicap-1.00.b", .data = &buffer_icap_config},
 	{ .compatible = "xlnx,xps-hwicap-1.00.a", .data = &fifo_icap_config},
 	{},
 };
 MODULE_DEVICE_TABLE(of, hwicap_of_match);
+<<<<<<< HEAD
 #else
 #define hwicap_of_match NULL
 #endif
@@ -814,6 +979,13 @@ static struct platform_driver hwicap_platform_driver = {
 	.remove = hwicap_drv_remove,
 	.driver = {
 		.owner = THIS_MODULE,
+=======
+
+static struct platform_driver hwicap_platform_driver = {
+	.probe = hwicap_drv_probe,
+	.remove_new = hwicap_drv_remove,
+	.driver = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.name = DRIVER_NAME,
 		.of_match_table = hwicap_of_match,
 	},
@@ -824,7 +996,13 @@ static int __init hwicap_module_init(void)
 	dev_t devt;
 	int retval;
 
+<<<<<<< HEAD
 	icap_class = class_create(THIS_MODULE, "xilinx_config");
+=======
+	retval = class_register(&icap_class);
+	if (retval)
+		return retval;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&icap_sem);
 
 	devt = MKDEV(XHWICAP_MAJOR, XHWICAP_MINOR);
@@ -850,7 +1028,11 @@ static void __exit hwicap_module_cleanup(void)
 {
 	dev_t devt = MKDEV(XHWICAP_MAJOR, XHWICAP_MINOR);
 
+<<<<<<< HEAD
 	class_destroy(icap_class);
+=======
+	class_unregister(&icap_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	platform_driver_unregister(&hwicap_platform_driver);
 

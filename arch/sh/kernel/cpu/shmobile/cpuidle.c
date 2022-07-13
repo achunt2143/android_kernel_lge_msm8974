@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/kernel/cpu/shmobile/cpuidle.c
  *
  * Cpuidle support code for SuperH Mobile
  *
  *  Copyright (C) 2009 Magnus Damm
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -16,7 +23,11 @@
 #include <linux/cpuidle.h>
 #include <linux/export.h>
 #include <asm/suspend.h>
+<<<<<<< HEAD
 #include <asm/uaccess.h>
+=======
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned long cpuidle_mode[] = {
 	SUSP_SH_SLEEP, /* regular sleep mode */
@@ -51,6 +62,7 @@ static int cpuidle_sleep_enter(struct cpuidle_device *dev,
 	return k;
 }
 
+<<<<<<< HEAD
 static struct cpuidle_device cpuidle_dev;
 static struct cpuidle_driver cpuidle_driver = {
 	.name			= "sh_idle",
@@ -117,4 +129,50 @@ void sh_mobile_setup_cpuidle(void)
 	cpuidle_register_driver(&cpuidle_driver);
 
 	cpuidle_register_device(dev);
+=======
+static struct cpuidle_driver cpuidle_driver = {
+	.name   = "sh_idle",
+	.owner  = THIS_MODULE,
+	.states = {
+		{
+			.exit_latency = 1,
+			.target_residency = 1 * 2,
+			.power_usage = 3,
+			.enter = cpuidle_sleep_enter,
+			.name = "C1",
+			.desc = "SuperH Sleep Mode",
+		},
+		{
+			.exit_latency = 100,
+			.target_residency = 1 * 2,
+			.power_usage = 1,
+			.enter = cpuidle_sleep_enter,
+			.name = "C2",
+			.desc = "SuperH Sleep Mode [SF]",
+			.flags = CPUIDLE_FLAG_UNUSABLE,
+		},
+		{
+			.exit_latency = 2300,
+			.target_residency = 1 * 2,
+			.power_usage = 1,
+			.enter = cpuidle_sleep_enter,
+			.name = "C3",
+			.desc = "SuperH Mobile Standby Mode [SF]",
+			.flags = CPUIDLE_FLAG_UNUSABLE,
+		},
+	},
+	.safe_state_index = 0,
+	.state_count = 3,
+};
+
+int __init sh_mobile_setup_cpuidle(void)
+{
+	if (sh_mobile_sleep_supported & SUSP_SH_SF)
+		cpuidle_driver.states[1].flags = CPUIDLE_FLAG_NONE;
+
+	if (sh_mobile_sleep_supported & SUSP_SH_STANDBY)
+		cpuidle_driver.states[2].flags = CPUIDLE_FLAG_NONE;
+
+	return cpuidle_register(&cpuidle_driver, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

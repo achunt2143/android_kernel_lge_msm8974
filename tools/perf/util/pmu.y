@@ -1,16 +1,36 @@
+<<<<<<< HEAD
 
 %parse-param {struct list_head *format}
 %parse-param {char *name}
 
 %{
 
+=======
+%define api.pure full
+%parse-param {void *format}
+%parse-param {void *scanner}
+%lex-param {void* scanner}
+
+%{
+
+#ifndef NDEBUG
+#define YYDEBUG 1
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/compiler.h>
 #include <linux/list.h>
 #include <linux/bitmap.h>
 #include <string.h>
 #include "pmu.h"
+<<<<<<< HEAD
 
 extern int perf_pmu_lex (void);
+=======
+#include "pmu-bison.h"
+
+int perf_pmu_lex(YYSTYPE * yylval_param , void *yyscanner);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define ABORT_ON(val) \
 do { \
@@ -18,9 +38,29 @@ do { \
                 YYABORT; \
 } while (0)
 
+<<<<<<< HEAD
 %}
 
 %token PP_CONFIG PP_CONFIG1 PP_CONFIG2
+=======
+static void perf_pmu_error(void *format, void *scanner, const char *msg);
+
+static void perf_pmu__set_format(unsigned long *bits, long from, long to)
+{
+	long b;
+
+	if (!to)
+		to = from;
+
+	memset(bits, 0, BITS_TO_BYTES(PERF_PMU_FORMAT_BITS));
+	for (b = from; b <= to; b++)
+		__set_bit(b, bits);
+}
+
+%}
+
+%token PP_CONFIG
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 %token PP_VALUE PP_ERROR
 %type <num> PP_VALUE
 %type <bits> bit_term
@@ -42,6 +82,7 @@ format_term
 format_term:
 PP_CONFIG ':' bits
 {
+<<<<<<< HEAD
 	ABORT_ON(perf_pmu__new_format(format, name,
 				      PERF_PMU_FORMAT_VALUE_CONFIG,
 				      $3));
@@ -59,6 +100,14 @@ PP_CONFIG2 ':' bits
 	ABORT_ON(perf_pmu__new_format(format, name,
 				      PERF_PMU_FORMAT_VALUE_CONFIG2,
 				      $3));
+=======
+	perf_pmu_format__set_value(format, PERF_PMU_FORMAT_VALUE_CONFIG, $3);
+}
+|
+PP_CONFIG PP_VALUE ':' bits
+{
+	perf_pmu_format__set_value(format, $2, $4);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 bits:
@@ -85,8 +134,14 @@ PP_VALUE
 
 %%
 
+<<<<<<< HEAD
 void perf_pmu_error(struct list_head *list __used,
 		    char *name __used,
 		    char const *msg __used)
+=======
+static void perf_pmu_error(void *format __maybe_unused,
+			   void *scanner __maybe_unused,
+			   const char *msg __maybe_unused)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 }

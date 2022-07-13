@@ -35,6 +35,58 @@
 
 #include "iw_cxgb4.h"
 
+<<<<<<< HEAD
+=======
+static void print_tpte(struct c4iw_dev *dev, u32 stag)
+{
+	int ret;
+	struct fw_ri_tpte tpte;
+
+	ret = cxgb4_read_tpte(dev->rdev.lldi.ports[0], stag,
+			      (__be32 *)&tpte);
+	if (ret) {
+		dev_err(&dev->rdev.lldi.pdev->dev,
+			"%s cxgb4_read_tpte err %d\n", __func__, ret);
+		return;
+	}
+	pr_debug("stag idx 0x%x valid %d key 0x%x state %d pdid %d perm 0x%x ps %d len 0x%llx va 0x%llx\n",
+		 stag & 0xffffff00,
+		 FW_RI_TPTE_VALID_G(ntohl(tpte.valid_to_pdid)),
+		 FW_RI_TPTE_STAGKEY_G(ntohl(tpte.valid_to_pdid)),
+		 FW_RI_TPTE_STAGSTATE_G(ntohl(tpte.valid_to_pdid)),
+		 FW_RI_TPTE_PDID_G(ntohl(tpte.valid_to_pdid)),
+		 FW_RI_TPTE_PERM_G(ntohl(tpte.locread_to_qpid)),
+		 FW_RI_TPTE_PS_G(ntohl(tpte.locread_to_qpid)),
+		 ((u64)ntohl(tpte.len_hi) << 32) | ntohl(tpte.len_lo),
+		 ((u64)ntohl(tpte.va_hi) << 32) | ntohl(tpte.va_lo_fbo));
+}
+
+static void dump_err_cqe(struct c4iw_dev *dev, struct t4_cqe *err_cqe)
+{
+	__be64 *p = (void *)err_cqe;
+
+	dev_err(&dev->rdev.lldi.pdev->dev,
+		"AE qpid %d opcode %d status 0x%x "
+		"type %d len 0x%x wrid.hi 0x%x wrid.lo 0x%x\n",
+		CQE_QPID(err_cqe), CQE_OPCODE(err_cqe),
+		CQE_STATUS(err_cqe), CQE_TYPE(err_cqe), ntohl(err_cqe->len),
+		CQE_WRID_HI(err_cqe), CQE_WRID_LOW(err_cqe));
+
+	pr_debug("%016llx %016llx %016llx %016llx - %016llx %016llx %016llx %016llx\n",
+		 be64_to_cpu(p[0]), be64_to_cpu(p[1]), be64_to_cpu(p[2]),
+		 be64_to_cpu(p[3]), be64_to_cpu(p[4]), be64_to_cpu(p[5]),
+		 be64_to_cpu(p[6]), be64_to_cpu(p[7]));
+
+	/*
+	 * Ingress WRITE and READ_RESP errors provide
+	 * the offending stag, so parse and log it.
+	 */
+	if (RQ_TYPE(err_cqe) && (CQE_OPCODE(err_cqe) == FW_RI_RDMA_WRITE ||
+				 CQE_OPCODE(err_cqe) == FW_RI_READ_RESP))
+		print_tpte(dev, CQE_WRID_STAG(err_cqe));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void post_qp_event(struct c4iw_dev *dev, struct c4iw_cq *chp,
 			  struct c4iw_qp *qhp,
 			  struct t4_cqe *err_cqe,
@@ -44,6 +96,7 @@ static void post_qp_event(struct c4iw_dev *dev, struct c4iw_cq *chp,
 	struct c4iw_qp_attributes attrs;
 	unsigned long flag;
 
+<<<<<<< HEAD
 	if ((qhp->attr.state == C4IW_QP_STATE_ERROR) ||
 	    (qhp->attr.state == C4IW_QP_STATE_TERMINATE)) {
 		PDBG("%s AE received after RTS - "
@@ -57,6 +110,9 @@ static void post_qp_event(struct c4iw_dev *dev, struct c4iw_cq *chp,
 	       CQE_QPID(err_cqe), CQE_OPCODE(err_cqe),
 	       CQE_STATUS(err_cqe), CQE_TYPE(err_cqe),
 	       CQE_WRID_HI(err_cqe), CQE_WRID_LOW(err_cqe));
+=======
+	dump_err_cqe(dev, err_cqe);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (qhp->attr.state == C4IW_QP_STATE_RTS) {
 		attrs.next_state = C4IW_QP_STATE_TERMINATE;
@@ -73,9 +129,17 @@ static void post_qp_event(struct c4iw_dev *dev, struct c4iw_cq *chp,
 	if (qhp->ibqp.event_handler)
 		(*qhp->ibqp.event_handler)(&event, qhp->ibqp.qp_context);
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&chp->comp_handler_lock, flag);
 	(*chp->ibcq.comp_handler)(&chp->ibcq, chp->ibcq.cq_context);
 	spin_unlock_irqrestore(&chp->comp_handler_lock, flag);
+=======
+	if (t4_clear_cq_armed(&chp->cq)) {
+		spin_lock_irqsave(&chp->comp_handler_lock, flag);
+		(*chp->ibcq.comp_handler)(&chp->ibcq, chp->ibcq.cq_context);
+		spin_unlock_irqrestore(&chp->comp_handler_lock, flag);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 void c4iw_ev_dispatch(struct c4iw_dev *dev, struct t4_cqe *err_cqe)
@@ -84,16 +148,27 @@ void c4iw_ev_dispatch(struct c4iw_dev *dev, struct t4_cqe *err_cqe)
 	struct c4iw_qp *qhp;
 	u32 cqid;
 
+<<<<<<< HEAD
 	spin_lock(&dev->lock);
 	qhp = get_qhp(dev, CQE_QPID(err_cqe));
 	if (!qhp) {
 		printk(KERN_ERR MOD "BAD AE qpid 0x%x opcode %d "
 		       "status 0x%x type %d wrid.hi 0x%x wrid.lo 0x%x\n",
+=======
+	xa_lock_irq(&dev->qps);
+	qhp = xa_load(&dev->qps, CQE_QPID(err_cqe));
+	if (!qhp) {
+		pr_err("BAD AE qpid 0x%x opcode %d status 0x%x type %d wrid.hi 0x%x wrid.lo 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       CQE_QPID(err_cqe),
 		       CQE_OPCODE(err_cqe), CQE_STATUS(err_cqe),
 		       CQE_TYPE(err_cqe), CQE_WRID_HI(err_cqe),
 		       CQE_WRID_LOW(err_cqe));
+<<<<<<< HEAD
 		spin_unlock(&dev->lock);
+=======
+		xa_unlock_irq(&dev->qps);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -103,19 +178,32 @@ void c4iw_ev_dispatch(struct c4iw_dev *dev, struct t4_cqe *err_cqe)
 		cqid = qhp->attr.rcq;
 	chp = get_chp(dev, cqid);
 	if (!chp) {
+<<<<<<< HEAD
 		printk(KERN_ERR MOD "BAD AE cqid 0x%x qpid 0x%x opcode %d "
 		       "status 0x%x type %d wrid.hi 0x%x wrid.lo 0x%x\n",
+=======
+		pr_err("BAD AE cqid 0x%x qpid 0x%x opcode %d status 0x%x type %d wrid.hi 0x%x wrid.lo 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       cqid, CQE_QPID(err_cqe),
 		       CQE_OPCODE(err_cqe), CQE_STATUS(err_cqe),
 		       CQE_TYPE(err_cqe), CQE_WRID_HI(err_cqe),
 		       CQE_WRID_LOW(err_cqe));
+<<<<<<< HEAD
 		spin_unlock(&dev->lock);
+=======
+		xa_unlock_irq(&dev->qps);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
 	c4iw_qp_add_ref(&qhp->ibqp);
+<<<<<<< HEAD
 	atomic_inc(&chp->refcnt);
 	spin_unlock(&dev->lock);
+=======
+	refcount_inc(&chp->refcnt);
+	xa_unlock_irq(&dev->qps);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Bad incoming write */
 	if (RQ_TYPE(err_cqe) &&
@@ -128,7 +216,11 @@ void c4iw_ev_dispatch(struct c4iw_dev *dev, struct t4_cqe *err_cqe)
 
 	/* Completion Events */
 	case T4_ERR_SUCCESS:
+<<<<<<< HEAD
 		printk(KERN_ERR MOD "AE with status 0!\n");
+=======
+		pr_err("AE with status 0!\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 
 	case T4_ERR_STAG:
@@ -170,14 +262,22 @@ void c4iw_ev_dispatch(struct c4iw_dev *dev, struct t4_cqe *err_cqe)
 		break;
 
 	default:
+<<<<<<< HEAD
 		printk(KERN_ERR MOD "Unknown T4 status 0x%x QPID 0x%x\n",
+=======
+		pr_err("Unknown T4 status 0x%x QPID 0x%x\n",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		       CQE_STATUS(err_cqe), qhp->wq.sq.qid);
 		post_qp_event(dev, chp, qhp, err_cqe, IB_EVENT_QP_FATAL);
 		break;
 	}
 done:
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&chp->refcnt))
 		wake_up(&chp->wait);
+=======
+	c4iw_cq_rem_ref(chp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	c4iw_qp_rem_ref(&qhp->ibqp);
 out:
 	return;
@@ -188,6 +288,7 @@ int c4iw_ev_handler(struct c4iw_dev *dev, u32 qid)
 	struct c4iw_cq *chp;
 	unsigned long flag;
 
+<<<<<<< HEAD
 	chp = get_chp(dev, qid);
 	if (chp) {
 		spin_lock_irqsave(&chp->comp_handler_lock, flag);
@@ -195,5 +296,21 @@ int c4iw_ev_handler(struct c4iw_dev *dev, u32 qid)
 		spin_unlock_irqrestore(&chp->comp_handler_lock, flag);
 	} else
 		PDBG("%s unknown cqid 0x%x\n", __func__, qid);
+=======
+	xa_lock_irqsave(&dev->cqs, flag);
+	chp = xa_load(&dev->cqs, qid);
+	if (chp) {
+		refcount_inc(&chp->refcnt);
+		xa_unlock_irqrestore(&dev->cqs, flag);
+		t4_clear_cq_armed(&chp->cq);
+		spin_lock_irqsave(&chp->comp_handler_lock, flag);
+		(*chp->ibcq.comp_handler)(&chp->ibcq, chp->ibcq.cq_context);
+		spin_unlock_irqrestore(&chp->comp_handler_lock, flag);
+		c4iw_cq_rem_ref(chp);
+	} else {
+		pr_debug("unknown cqid 0x%x\n", qid);
+		xa_unlock_irqrestore(&dev->cqs, flag);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }

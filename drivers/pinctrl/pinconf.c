@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Core driver for the pin config portions of the pin control subsystem
  *
@@ -5,6 +9,7 @@
  * Written on behalf of Linaro for ST-Ericsson
  *
  * Author: Linus Walleij <linus.walleij@linaro.org>
+<<<<<<< HEAD
  *
  * License terms: GNU General Public License (GPL) version 2
  */
@@ -20,6 +25,23 @@
 #include <linux/pinctrl/machine.h>
 #include <linux/pinctrl/pinctrl.h>
 #include <linux/pinctrl/pinconf.h>
+=======
+ */
+#define pr_fmt(fmt) "pinconfig core: " fmt
+
+#include <linux/array_size.h>
+#include <linux/debugfs.h>
+#include <linux/device.h>
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/seq_file.h>
+#include <linux/slab.h>
+
+#include <linux/pinctrl/machine.h>
+#include <linux/pinctrl/pinconf.h>
+#include <linux/pinctrl/pinctrl.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "core.h"
 #include "pinconf.h"
 
@@ -27,12 +49,15 @@ int pinconf_check_ops(struct pinctrl_dev *pctldev)
 {
 	const struct pinconf_ops *ops = pctldev->desc->confops;
 
+<<<<<<< HEAD
 	/* We must be able to read out pin status */
 	if (!ops->pin_config_get && !ops->pin_config_group_get) {
 		dev_err(pctldev->dev,
 			"pinconf must be able to read out pin status\n");
 		return -EINVAL;
 	}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* We have to be able to config the pins in SOME way */
 	if (!ops->pin_config_set && !ops->pin_config_group_set) {
 		dev_err(pctldev->dev,
@@ -42,7 +67,11 @@ int pinconf_check_ops(struct pinctrl_dev *pctldev)
 	return 0;
 }
 
+<<<<<<< HEAD
 int pinconf_validate_map(struct pinctrl_map const *map, int i)
+=======
+int pinconf_validate_map(const struct pinctrl_map *map, int i)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!map->data.configs.group_or_pin) {
 		pr_err("failed to register map %s (%d): no group/pin given\n",
@@ -60,20 +89,31 @@ int pinconf_validate_map(struct pinctrl_map const *map, int i)
 	return 0;
 }
 
+<<<<<<< HEAD
 int pin_config_get_for_pin(struct pinctrl_dev *pctldev, unsigned pin,
+=======
+int pin_config_get_for_pin(struct pinctrl_dev *pctldev, unsigned int pin,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   unsigned long *config)
 {
 	const struct pinconf_ops *ops = pctldev->desc->confops;
 
 	if (!ops || !ops->pin_config_get) {
+<<<<<<< HEAD
 		dev_err(pctldev->dev, "cannot get pin configuration, missing "
 			"pin_config_get() function in driver\n");
 		return -EINVAL;
+=======
+		dev_dbg(pctldev->dev,
+			"cannot get pin configuration, .pin_config_get missing in driver\n");
+		return -ENOTSUPP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return ops->pin_config_get(pctldev, pin, config);
 }
 
+<<<<<<< HEAD
 /**
  * pin_config_get() - get the configuration of a single pin parameter
  * @dev_name: name of the pin controller device for this pin
@@ -166,6 +206,8 @@ unlock:
 }
 EXPORT_SYMBOL(pin_config_set);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int pin_config_group_get(const char *dev_name, const char *pin_group,
 			 unsigned long *config)
 {
@@ -173,6 +215,7 @@ int pin_config_group_get(const char *dev_name, const char *pin_group,
 	const struct pinconf_ops *ops;
 	int selector, ret;
 
+<<<<<<< HEAD
 	mutex_lock(&pinctrl_mutex);
 
 	pctldev = get_pinctrl_dev_from_devname(dev_name);
@@ -187,6 +230,22 @@ int pin_config_group_get(const char *dev_name, const char *pin_group,
 			"group, missing group config get function in "
 			"driver\n");
 		ret = -EINVAL;
+=======
+	pctldev = get_pinctrl_dev_from_devname(dev_name);
+	if (!pctldev) {
+		ret = -EINVAL;
+		return ret;
+	}
+
+	mutex_lock(&pctldev->mutex);
+
+	ops = pctldev->desc->confops;
+
+	if (!ops || !ops->pin_config_group_get) {
+		dev_dbg(pctldev->dev,
+			"cannot get configuration for pin group, missing group config get function in driver\n");
+		ret = -ENOTSUPP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto unlock;
 	}
 
@@ -199,6 +258,7 @@ int pin_config_group_get(const char *dev_name, const char *pin_group,
 	ret = ops->pin_config_group_get(pctldev, selector, config);
 
 unlock:
+<<<<<<< HEAD
 	mutex_unlock(&pinctrl_mutex);
 	return ret;
 }
@@ -285,6 +345,13 @@ unlock:
 EXPORT_SYMBOL(pin_config_group_set);
 
 int pinconf_map_to_setting(struct pinctrl_map const *map,
+=======
+	mutex_unlock(&pctldev->mutex);
+	return ret;
+}
+
+int pinconf_map_to_setting(const struct pinctrl_map *map,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			  struct pinctrl_setting *setting)
 {
 	struct pinctrl_dev *pctldev = setting->pctldev;
@@ -321,6 +388,7 @@ int pinconf_map_to_setting(struct pinctrl_map const *map,
 	return 0;
 }
 
+<<<<<<< HEAD
 void pinconf_free_setting(struct pinctrl_setting const *setting)
 {
 }
@@ -330,6 +398,17 @@ int pinconf_apply_setting(struct pinctrl_setting const *setting)
 	struct pinctrl_dev *pctldev = setting->pctldev;
 	const struct pinconf_ops *ops = pctldev->desc->confops;
 	int i, ret;
+=======
+void pinconf_free_setting(const struct pinctrl_setting *setting)
+{
+}
+
+int pinconf_apply_setting(const struct pinctrl_setting *setting)
+{
+	struct pinctrl_dev *pctldev = setting->pctldev;
+	const struct pinconf_ops *ops = pctldev->desc->confops;
+	int ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!ops) {
 		dev_err(pctldev->dev, "missing confops\n");
@@ -342,6 +421,7 @@ int pinconf_apply_setting(struct pinctrl_setting const *setting)
 			dev_err(pctldev->dev, "missing pin_config_set op\n");
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		for (i = 0; i < setting->data.configs.num_configs; i++) {
 			ret = ops->pin_config_set(pctldev,
 					setting->data.configs.group_or_pin,
@@ -353,6 +433,17 @@ int pinconf_apply_setting(struct pinctrl_setting const *setting)
 					setting->data.configs.configs[i]);
 				return ret;
 			}
+=======
+		ret = ops->pin_config_set(pctldev,
+				setting->data.configs.group_or_pin,
+				setting->data.configs.configs,
+				setting->data.configs.num_configs);
+		if (ret < 0) {
+			dev_err(pctldev->dev,
+				"pin_config_set op failed for pin %d\n",
+				setting->data.configs.group_or_pin);
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	case PIN_MAP_TYPE_CONFIGS_GROUP:
@@ -361,6 +452,7 @@ int pinconf_apply_setting(struct pinctrl_setting const *setting)
 				"missing pin_config_group_set op\n");
 			return -EINVAL;
 		}
+<<<<<<< HEAD
 		for (i = 0; i < setting->data.configs.num_configs; i++) {
 			ret = ops->pin_config_group_set(pctldev,
 					setting->data.configs.group_or_pin,
@@ -372,6 +464,17 @@ int pinconf_apply_setting(struct pinctrl_setting const *setting)
 					setting->data.configs.configs[i]);
 				return ret;
 			}
+=======
+		ret = ops->pin_config_group_set(pctldev,
+				setting->data.configs.group_or_pin,
+				setting->data.configs.configs,
+				setting->data.configs.num_configs);
+		if (ret < 0) {
+			dev_err(pctldev->dev,
+				"pin_config_group_set op failed for group %d\n",
+				setting->data.configs.group_or_pin);
+			return ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		break;
 	default:
@@ -381,6 +484,7 @@ int pinconf_apply_setting(struct pinctrl_setting const *setting)
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_DEBUG_FS
 
 void pinconf_show_map(struct seq_file *s, struct pinctrl_map const *map)
@@ -390,17 +494,65 @@ void pinconf_show_map(struct seq_file *s, struct pinctrl_map const *map)
 	int i;
 
 	pctldev = get_pinctrl_dev_from_devname(map->ctrl_dev_name);
+=======
+int pinconf_set_config(struct pinctrl_dev *pctldev, unsigned int pin,
+		       unsigned long *configs, size_t nconfigs)
+{
+	const struct pinconf_ops *ops;
+
+	ops = pctldev->desc->confops;
+	if (!ops || !ops->pin_config_set)
+		return -ENOTSUPP;
+
+	return ops->pin_config_set(pctldev, pin, configs, nconfigs);
+}
+
+#ifdef CONFIG_DEBUG_FS
+
+static void pinconf_show_config(struct seq_file *s, struct pinctrl_dev *pctldev,
+				unsigned long *configs, unsigned int num_configs)
+{
+	const struct pinconf_ops *confops;
+	int i;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (pctldev)
 		confops = pctldev->desc->confops;
 	else
 		confops = NULL;
 
+<<<<<<< HEAD
 	switch (map->type) {
 	case PIN_MAP_TYPE_CONFIGS_PIN:
 		seq_printf(s, "pin ");
 		break;
 	case PIN_MAP_TYPE_CONFIGS_GROUP:
 		seq_printf(s, "group ");
+=======
+	for (i = 0; i < num_configs; i++) {
+		seq_puts(s, "config ");
+		if (confops && confops->pin_config_config_dbg_show)
+			confops->pin_config_config_dbg_show(pctldev, s,
+							    configs[i]);
+		else
+			seq_printf(s, "%08lx", configs[i]);
+		seq_putc(s, '\n');
+	}
+}
+
+void pinconf_show_map(struct seq_file *s, const struct pinctrl_map *map)
+{
+	struct pinctrl_dev *pctldev;
+
+	pctldev = get_pinctrl_dev_from_devname(map->ctrl_dev_name);
+
+	switch (map->type) {
+	case PIN_MAP_TYPE_CONFIGS_PIN:
+		seq_puts(s, "pin ");
+		break;
+	case PIN_MAP_TYPE_CONFIGS_GROUP:
+		seq_puts(s, "group ");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	default:
 		break;
@@ -408,6 +560,7 @@ void pinconf_show_map(struct seq_file *s, struct pinctrl_map const *map)
 
 	seq_printf(s, "%s\n", map->data.configs.group_or_pin);
 
+<<<<<<< HEAD
 	for (i = 0; i < map->data.configs.num_configs; i++) {
 		seq_printf(s, "config ");
 		if (confops && confops->pin_config_config_dbg_show)
@@ -427,13 +580,29 @@ void pinconf_show_setting(struct seq_file *s,
 	const struct pinconf_ops *confops = pctldev->desc->confops;
 	struct pin_desc *desc;
 	int i;
+=======
+	pinconf_show_config(s, pctldev, map->data.configs.configs,
+			    map->data.configs.num_configs);
+}
+
+void pinconf_show_setting(struct seq_file *s,
+			  const struct pinctrl_setting *setting)
+{
+	struct pinctrl_dev *pctldev = setting->pctldev;
+	const struct pinctrl_ops *pctlops = pctldev->desc->pctlops;
+	struct pin_desc *desc;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (setting->type) {
 	case PIN_MAP_TYPE_CONFIGS_PIN:
 		desc = pin_desc_get(setting->pctldev,
 				    setting->data.configs.group_or_pin);
+<<<<<<< HEAD
 		seq_printf(s, "pin %s (%d)",
 			   desc->name ? desc->name : "unnamed",
+=======
+		seq_printf(s, "pin %s (%d)", desc->name,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			   setting->data.configs.group_or_pin);
 		break;
 	case PIN_MAP_TYPE_CONFIGS_GROUP:
@@ -447,6 +616,7 @@ void pinconf_show_setting(struct seq_file *s,
 	}
 
 	/*
+<<<<<<< HEAD
 	 * FIXME: We should really get the pin controler to dump the config
 	 * values, so they can be decoded to something meaningful.
 	 */
@@ -461,6 +631,13 @@ void pinconf_show_setting(struct seq_file *s,
 	}
 
 	seq_printf(s, "\n");
+=======
+	 * FIXME: We should really get the pin controller to dump the config
+	 * values, so they can be decoded to something meaningful.
+	 */
+	pinconf_show_config(s, pctldev, setting->data.configs.configs,
+			    setting->data.configs.num_configs);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void pinconf_dump_pin(struct pinctrl_dev *pctldev,
@@ -469,7 +646,11 @@ static void pinconf_dump_pin(struct pinctrl_dev *pctldev,
 	const struct pinconf_ops *ops = pctldev->desc->confops;
 
 	/* no-op when not using generic pin config */
+<<<<<<< HEAD
 	pinconf_generic_dump_pin(pctldev, s, pin);
+=======
+	pinconf_generic_dump_pins(pctldev, s, NULL, pin);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ops && ops->pin_config_dbg_show)
 		ops->pin_config_dbg_show(pctldev, s, pin);
 }
@@ -477,16 +658,24 @@ static void pinconf_dump_pin(struct pinctrl_dev *pctldev,
 static int pinconf_pins_show(struct seq_file *s, void *what)
 {
 	struct pinctrl_dev *pctldev = s->private;
+<<<<<<< HEAD
 	const struct pinconf_ops *ops = pctldev->desc->confops;
 	unsigned i, pin;
 
 	if (!ops || !ops->pin_config_get)
 		return 0;
+=======
+	unsigned int i, pin;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	seq_puts(s, "Pin config settings per pin\n");
 	seq_puts(s, "Format: pin (name): configs\n");
 
+<<<<<<< HEAD
 	mutex_lock(&pinctrl_mutex);
+=======
+	mutex_lock(&pctldev->mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* The pin number can be retrived from the pin controller descriptor */
 	for (i = 0; i < pctldev->desc->npins; i++) {
@@ -495,6 +684,7 @@ static int pinconf_pins_show(struct seq_file *s, void *what)
 		pin = pctldev->desc->pins[i].number;
 		desc = pin_desc_get(pctldev, pin);
 		/* Skip if we cannot search the pin */
+<<<<<<< HEAD
 		if (desc == NULL)
 			continue;
 
@@ -507,18 +697,38 @@ static int pinconf_pins_show(struct seq_file *s, void *what)
 	}
 
 	mutex_unlock(&pinctrl_mutex);
+=======
+		if (!desc)
+			continue;
+
+		seq_printf(s, "pin %d (%s): ", pin, desc->name);
+
+		pinconf_dump_pin(pctldev, s, pin);
+		seq_putc(s, '\n');
+	}
+
+	mutex_unlock(&pctldev->mutex);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 static void pinconf_dump_group(struct pinctrl_dev *pctldev,
+<<<<<<< HEAD
 			       struct seq_file *s, unsigned selector,
+=======
+			       struct seq_file *s, unsigned int selector,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			       const char *gname)
 {
 	const struct pinconf_ops *ops = pctldev->desc->confops;
 
 	/* no-op when not using generic pin config */
+<<<<<<< HEAD
 	pinconf_generic_dump_group(pctldev, s, gname);
+=======
+	pinconf_generic_dump_pins(pctldev, s, gname, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ops && ops->pin_config_group_dbg_show)
 		ops->pin_config_group_dbg_show(pctldev, s, selector);
 }
@@ -527,12 +737,17 @@ static int pinconf_groups_show(struct seq_file *s, void *what)
 {
 	struct pinctrl_dev *pctldev = s->private;
 	const struct pinctrl_ops *pctlops = pctldev->desc->pctlops;
+<<<<<<< HEAD
 	const struct pinconf_ops *ops = pctldev->desc->confops;
 	unsigned ngroups = pctlops->get_groups_count(pctldev);
 	unsigned selector = 0;
 
 	if (!ops || !ops->pin_config_group_get)
 		return 0;
+=======
+	unsigned int ngroups = pctlops->get_groups_count(pctldev);
+	unsigned int selector = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	seq_puts(s, "Pin config settings per pin group\n");
 	seq_puts(s, "Format: group (name): configs\n");
@@ -540,16 +755,23 @@ static int pinconf_groups_show(struct seq_file *s, void *what)
 	while (selector < ngroups) {
 		const char *gname = pctlops->get_group_name(pctldev, selector);
 
+<<<<<<< HEAD
 		seq_printf(s, "%u (%s):", selector, gname);
 		pinconf_dump_group(pctldev, s, selector, gname);
 		seq_printf(s, "\n");
 
+=======
+		seq_printf(s, "%u (%s): ", selector, gname);
+		pinconf_dump_group(pctldev, s, selector, gname);
+		seq_putc(s, '\n');
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		selector++;
 	}
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static int pinconf_pins_open(struct inode *inode, struct file *file)
 {
 	return single_open(file, pinconf_pins_show, inode->i_private);
@@ -774,10 +996,15 @@ static const struct file_operations pinconf_dbg_pinconfig_fops = {
 	.release = single_release,
 	.owner = THIS_MODULE,
 };
+=======
+DEFINE_SHOW_ATTRIBUTE(pinconf_pins);
+DEFINE_SHOW_ATTRIBUTE(pinconf_groups);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void pinconf_init_device_debugfs(struct dentry *devroot,
 			 struct pinctrl_dev *pctldev)
 {
+<<<<<<< HEAD
 	debugfs_create_file("pinconf-pins", S_IFREG | S_IRUGO,
 			    devroot, pctldev, &pinconf_pins_ops);
 	debugfs_create_file("pinconf-groups", S_IFREG | S_IRUGO,
@@ -788,6 +1015,12 @@ void pinconf_init_device_debugfs(struct dentry *devroot,
 			    devroot, pctldev, &pinconf_dbg_pinstate_fops);
 	debugfs_create_file("pinconf-config",  (S_IRUGO | S_IWUSR | S_IWGRP),
 			    devroot, pctldev, &pinconf_dbg_pinconfig_fops);
+=======
+	debugfs_create_file("pinconf-pins", 0444,
+			    devroot, pctldev, &pinconf_pins_fops);
+	debugfs_create_file("pinconf-groups", 0444,
+			    devroot, pctldev, &pinconf_groups_fops);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif

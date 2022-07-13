@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2009  Matt Fleming
  *
@@ -11,8 +15,11 @@
 
 struct stacktrace_ops {
 	void (*address)(void *data, unsigned long address, int reliable);
+<<<<<<< HEAD
 	/* On negative return stop dumping */
 	int (*stack)(void *data, char *name);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 void dump_trace(struct task_struct *tsk, struct pt_regs *regs,

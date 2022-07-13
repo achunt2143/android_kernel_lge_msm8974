@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/drivers/pci/fixups-landisk.c
  *
@@ -5,15 +9,22 @@
  *
  * Copyright (C) 2006 kogiidena
  * Copyright (C) 2010 Nobuhiro Iwamatsu
+<<<<<<< HEAD
  *
  * May be copied or modified under the terms of the GNU General Public
  * License.  See linux/COPYING for more information.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/init.h>
 #include <linux/delay.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
+=======
+#include <linux/sh_intc.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "pci-sh4.h"
 
 #define PCIMCR_MRSET_OFF	0xBFFFFFFF
@@ -27,7 +38,11 @@ int pcibios_map_platform_irq(const struct pci_dev *pdev, u8 slot, u8 pin)
 	 * slot2: pin1-4 = irq7,8,5,6
 	 * slot3: pin1-4 = irq8,5,6,7
 	 */
+<<<<<<< HEAD
 	int irq = ((slot + pin - 1) & 0x3) + 5;
+=======
+	int irq = ((slot + pin - 1) & 0x3) + evt2irq(0x2a0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((slot | (pin - 1)) > 0x3) {
 		printk(KERN_WARNING "PCI: Bad IRQ mapping request for slot %d pin %c\n",

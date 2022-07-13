@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  linux/fs/sysv/itree.c
  *
@@ -7,6 +11,10 @@
 
 #include <linux/buffer_head.h>
 #include <linux/mount.h>
+<<<<<<< HEAD
+=======
+#include <linux/mpage.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/string.h>
 #include "sysv.h"
 
@@ -81,9 +89,12 @@ static inline sysv_zone_t *block_end(struct buffer_head *bh)
 	return (sysv_zone_t*)((char*)bh->b_data + bh->b_size);
 }
 
+<<<<<<< HEAD
 /*
  * Requires read_lock(&pointers_lock) or write_lock(&pointers_lock)
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static Indirect *get_branch(struct inode *inode,
 			    int depth,
 			    int offsets[],
@@ -103,15 +114,27 @@ static Indirect *get_branch(struct inode *inode,
 		bh = sb_bread(sb, block);
 		if (!bh)
 			goto failure;
+<<<<<<< HEAD
 		if (!verify_chain(chain, p))
 			goto changed;
 		add_chain(++p, bh, (sysv_zone_t*)bh->b_data + *++offsets);
+=======
+		read_lock(&pointers_lock);
+		if (!verify_chain(chain, p))
+			goto changed;
+		add_chain(++p, bh, (sysv_zone_t*)bh->b_data + *++offsets);
+		read_unlock(&pointers_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!p->key)
 			goto no_block;
 	}
 	return NULL;
 
 changed:
+<<<<<<< HEAD
+=======
+	read_unlock(&pointers_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	brelse(bh);
 	*err = -EAGAIN;
 	goto no_block;
@@ -144,6 +167,13 @@ static int alloc_branch(struct inode *inode,
 		 */
 		parent = block_to_cpu(SYSV_SB(inode->i_sb), branch[n-1].key);
 		bh = sb_getblk(inode->i_sb, parent);
+<<<<<<< HEAD
+=======
+		if (!bh) {
+			sysv_free_block(inode->i_sb, branch[n].key);
+			break;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		lock_buffer(bh);
 		memset(bh->b_data, 0, blocksize);
 		branch[n].bh = bh;
@@ -178,7 +208,11 @@ static inline int splice_branch(struct inode *inode,
 	*where->p = where->key;
 	write_unlock(&pointers_lock);
 
+<<<<<<< HEAD
 	inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode_set_ctime_current(inode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* had we spliced it onto indirect block? */
 	if (where->bh)
@@ -213,9 +247,13 @@ static int get_block(struct inode *inode, sector_t iblock, struct buffer_head *b
 		goto out;
 
 reread:
+<<<<<<< HEAD
 	read_lock(&pointers_lock);
 	partial = get_branch(inode, depth, offsets, chain, &err);
 	read_unlock(&pointers_lock);
+=======
+	partial = get_branch(inode, depth, offsets, chain, &err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Simplest case - block found, no allocation needed */
 	if (!partial) {
@@ -285,9 +323,15 @@ static Indirect *find_shared(struct inode *inode,
 	*top = 0;
 	for (k = depth; k > 1 && !offsets[k-1]; k--)
 		;
+<<<<<<< HEAD
 
 	write_lock(&pointers_lock);
 	partial = get_branch(inode, k, offsets, chain, &err);
+=======
+	partial = get_branch(inode, k, offsets, chain, &err);
+
+	write_lock(&pointers_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!partial)
 		partial = chain + k-1;
 	/*
@@ -418,7 +462,11 @@ do_indirects:
 		}
 		n++;
 	}
+<<<<<<< HEAD
 	inode->i_mtime = inode->i_ctime = CURRENT_TIME_SEC;
+=======
+	inode_set_mtime_to_ts(inode, inode_set_ctime_current(inode));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_SYNC(inode))
 		sysv_sync_inode (inode);
 	else
@@ -437,6 +485,7 @@ static unsigned sysv_nblocks(struct super_block *s, loff_t size)
 		res += blocks;
 		direct = 1;
 	}
+<<<<<<< HEAD
 	return blocks;
 }
 
@@ -444,11 +493,23 @@ int sysv_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat
 {
 	struct super_block *s = dentry->d_sb;
 	generic_fillattr(dentry->d_inode, stat);
+=======
+	return res;
+}
+
+int sysv_getattr(struct mnt_idmap *idmap, const struct path *path,
+		 struct kstat *stat, u32 request_mask, unsigned int flags)
+{
+	struct super_block *s = path->dentry->d_sb;
+	generic_fillattr(&nop_mnt_idmap, request_mask, d_inode(path->dentry),
+			 stat);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	stat->blocks = (s->s_blocksize / 512) * sysv_nblocks(s, stat->size);
 	stat->blksize = s->s_blocksize;
 	return 0;
 }
 
+<<<<<<< HEAD
 static int sysv_writepage(struct page *page, struct writeback_control *wbc)
 {
 	return block_write_full_page(page,get_block,wbc);
@@ -457,6 +518,17 @@ static int sysv_writepage(struct page *page, struct writeback_control *wbc)
 static int sysv_readpage(struct file *file, struct page *page)
 {
 	return block_read_full_page(page,get_block);
+=======
+static int sysv_writepages(struct address_space *mapping,
+		struct writeback_control *wbc)
+{
+	return mpage_writepages(mapping, wbc, get_block);
+}
+
+static int sysv_read_folio(struct file *file, struct folio *folio)
+{
+	return block_read_full_folio(folio, get_block);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int sysv_prepare_chunk(struct page *page, loff_t pos, unsigned len)
@@ -464,18 +536,39 @@ int sysv_prepare_chunk(struct page *page, loff_t pos, unsigned len)
 	return __block_write_begin(page, pos, len, get_block);
 }
 
+<<<<<<< HEAD
 static int sysv_write_begin(struct file *file, struct address_space *mapping,
 			loff_t pos, unsigned len, unsigned flags,
+=======
+static void sysv_write_failed(struct address_space *mapping, loff_t to)
+{
+	struct inode *inode = mapping->host;
+
+	if (to > inode->i_size) {
+		truncate_pagecache(inode, inode->i_size);
+		sysv_truncate(inode);
+	}
+}
+
+static int sysv_write_begin(struct file *file, struct address_space *mapping,
+			loff_t pos, unsigned len,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			struct page **pagep, void **fsdata)
 {
 	int ret;
 
+<<<<<<< HEAD
 	ret = block_write_begin(mapping, pos, len, flags, pagep, get_block);
 	if (unlikely(ret)) {
 		loff_t isize = mapping->host->i_size;
 		if (pos + len > isize)
 			vmtruncate(mapping->host, isize);
 	}
+=======
+	ret = block_write_begin(mapping, pos, len, pagep, get_block);
+	if (unlikely(ret))
+		sysv_write_failed(mapping, pos + len);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
@@ -486,9 +579,19 @@ static sector_t sysv_bmap(struct address_space *mapping, sector_t block)
 }
 
 const struct address_space_operations sysv_aops = {
+<<<<<<< HEAD
 	.readpage = sysv_readpage,
 	.writepage = sysv_writepage,
 	.write_begin = sysv_write_begin,
 	.write_end = generic_write_end,
+=======
+	.dirty_folio = block_dirty_folio,
+	.invalidate_folio = block_invalidate_folio,
+	.read_folio = sysv_read_folio,
+	.writepages = sysv_writepages,
+	.write_begin = sysv_write_begin,
+	.write_end = generic_write_end,
+	.migrate_folio = buffer_migrate_folio,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.bmap = sysv_bmap
 };

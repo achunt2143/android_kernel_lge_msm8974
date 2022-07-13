@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _CONNTRACK_PROTO_GRE_H
 #define _CONNTRACK_PROTO_GRE_H
 #include <asm/byteorder.h>
@@ -63,13 +64,24 @@ struct gre_hdr_pptp {
 	__be32 ack;		/* seq number of highest packet received by */
 				/*  sender in this session */
 };
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _CONNTRACK_PROTO_GRE_H
+#define _CONNTRACK_PROTO_GRE_H
+#include <asm/byteorder.h>
+#include <net/gre.h>
+#include <net/pptp.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 struct nf_ct_gre {
 	unsigned int stream_timeout;
 	unsigned int timeout;
 };
 
+<<<<<<< HEAD
 #ifdef __KERNEL__
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/netfilter/nf_conntrack_tuple.h>
 
 struct nf_conn;
@@ -78,6 +90,10 @@ struct nf_conn;
 struct nf_ct_gre_keymap {
 	struct list_head list;
 	struct nf_conntrack_tuple tuple;
+<<<<<<< HEAD
+=======
+	struct rcu_head rcu;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* add new tuple->key_reply pair to keymap */
@@ -87,8 +103,13 @@ int nf_ct_gre_keymap_add(struct nf_conn *ct, enum ip_conntrack_dir dir,
 /* delete keymap entries */
 void nf_ct_gre_keymap_destroy(struct nf_conn *ct);
 
+<<<<<<< HEAD
 extern void nf_ct_gre_keymap_flush(struct net *net);
 extern void nf_nat_need_gre(void);
 
 #endif /* __KERNEL__ */
+=======
+bool gre_pkt_to_tuple(const struct sk_buff *skb, unsigned int dataoff,
+		      struct net *net, struct nf_conntrack_tuple *tuple);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _CONNTRACK_PROTO_GRE_H */

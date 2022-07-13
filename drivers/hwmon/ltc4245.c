@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Linear Technology LTC4245 I2C Multiple Supply Hot Swap Controller
  *
  * Copyright (C) 2008 Ira W. Snyder <iws@ovro.caltech.edu>
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; version 2 of the License.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This driver is based on the ds1621 and ina209 drivers.
  *
  * Datasheet:
@@ -16,12 +23,21 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
+<<<<<<< HEAD
+=======
+#include <linux/bitops.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/err.h>
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
+<<<<<<< HEAD
 #include <linux/i2c/ltc4245.h>
+=======
+#include <linux/jiffies.h>
+#include <linux/platform_data/ltc4245.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Here are names of the chip's registers (a.k.a. commands) */
 enum ltc4245_cmd {
@@ -50,7 +66,11 @@ enum ltc4245_cmd {
 };
 
 struct ltc4245_data {
+<<<<<<< HEAD
 	struct device *hwmon_dev;
+=======
+	struct i2c_client *client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	struct mutex update_lock;
 	bool valid;
@@ -76,8 +96,13 @@ struct ltc4245_data {
  */
 static void ltc4245_update_gpios(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ltc4245_data *data = i2c_get_clientdata(client);
+=======
+	struct ltc4245_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8 gpio_curr, gpio_next, gpio_reg;
 	int i;
 
@@ -92,7 +117,10 @@ static void ltc4245_update_gpios(struct device *dev)
 	 * readings as stale by setting them to -EAGAIN
 	 */
 	if (time_after(jiffies, data->last_updated + 5 * HZ)) {
+<<<<<<< HEAD
 		dev_dbg(&client->dev, "Marking GPIOs invalid\n");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		for (i = 0; i < ARRAY_SIZE(data->gpios); i++)
 			data->gpios[i] = -EAGAIN;
 	}
@@ -129,8 +157,13 @@ static void ltc4245_update_gpios(struct device *dev)
 
 static struct ltc4245_data *ltc4245_update_device(struct device *dev)
 {
+<<<<<<< HEAD
 	struct i2c_client *client = to_i2c_client(dev);
 	struct ltc4245_data *data = i2c_get_clientdata(client);
+=======
+	struct ltc4245_data *data = dev_get_drvdata(dev);
+	struct i2c_client *client = data->client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	s32 val;
 	int i;
 
@@ -138,8 +171,11 @@ static struct ltc4245_data *ltc4245_update_device(struct device *dev)
 
 	if (time_after(jiffies, data->last_updated + HZ) || !data->valid) {
 
+<<<<<<< HEAD
 		dev_dbg(&client->dev, "Starting ltc4245 update\n");
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* Read control registers -- 0x00 to 0x07 */
 		for (i = 0; i < ARRAY_SIZE(data->cregs); i++) {
 			val = i2c_smbus_read_byte_data(client, i);
@@ -162,7 +198,11 @@ static struct ltc4245_data *ltc4245_update_device(struct device *dev)
 		ltc4245_update_gpios(dev);
 
 		data->last_updated = jiffies;
+<<<<<<< HEAD
 		data->valid = 1;
+=======
+		data->valid = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_unlock(&data->update_lock);
@@ -256,6 +296,7 @@ static unsigned int ltc4245_get_current(struct device *dev, u8 reg)
 	return curr;
 }
 
+<<<<<<< HEAD
 static ssize_t ltc4245_show_voltage(struct device *dev,
 				    struct device_attribute *da,
 				    char *buf)
@@ -495,30 +536,223 @@ static bool ltc4245_use_extra_gpios(struct i2c_client *client)
 #ifdef CONFIG_OF
 	struct device_node *np = client->dev.of_node;
 #endif
+=======
+/* Map from voltage channel index to voltage register */
+
+static const s8 ltc4245_in_regs[] = {
+	LTC4245_12VIN, LTC4245_5VIN, LTC4245_3VIN, LTC4245_VEEIN,
+	LTC4245_12VOUT, LTC4245_5VOUT, LTC4245_3VOUT, LTC4245_VEEOUT,
+};
+
+/* Map from current channel index to current register */
+
+static const s8 ltc4245_curr_regs[] = {
+	LTC4245_12VSENSE, LTC4245_5VSENSE, LTC4245_3VSENSE, LTC4245_VEESENSE,
+};
+
+static int ltc4245_read_curr(struct device *dev, u32 attr, int channel,
+			     long *val)
+{
+	struct ltc4245_data *data = ltc4245_update_device(dev);
+
+	switch (attr) {
+	case hwmon_curr_input:
+		*val = ltc4245_get_current(dev, ltc4245_curr_regs[channel]);
+		return 0;
+	case hwmon_curr_max_alarm:
+		*val = !!(data->cregs[LTC4245_FAULT1] & BIT(channel + 4));
+		return 0;
+	default:
+		return -EOPNOTSUPP;
+	}
+}
+
+static int ltc4245_read_in(struct device *dev, u32 attr, int channel, long *val)
+{
+	struct ltc4245_data *data = ltc4245_update_device(dev);
+
+	switch (attr) {
+	case hwmon_in_input:
+		if (channel < 8) {
+			*val = ltc4245_get_voltage(dev,
+						ltc4245_in_regs[channel]);
+		} else {
+			int regval = data->gpios[channel - 8];
+
+			if (regval < 0)
+				return regval;
+			*val = regval * 10;
+		}
+		return 0;
+	case hwmon_in_min_alarm:
+		if (channel < 4)
+			*val = !!(data->cregs[LTC4245_FAULT1] & BIT(channel));
+		else
+			*val = !!(data->cregs[LTC4245_FAULT2] &
+				  BIT(channel - 4));
+		return 0;
+	default:
+		return -EOPNOTSUPP;
+	}
+}
+
+static int ltc4245_read_power(struct device *dev, u32 attr, int channel,
+			      long *val)
+{
+	unsigned long curr;
+	long voltage;
+
+	switch (attr) {
+	case hwmon_power_input:
+		(void)ltc4245_update_device(dev);
+		curr = ltc4245_get_current(dev, ltc4245_curr_regs[channel]);
+		voltage = ltc4245_get_voltage(dev, ltc4245_in_regs[channel]);
+		*val = abs(curr * voltage);
+		return 0;
+	default:
+		return -EOPNOTSUPP;
+	}
+}
+
+static int ltc4245_read(struct device *dev, enum hwmon_sensor_types type,
+			u32 attr, int channel, long *val)
+{
+
+	switch (type) {
+	case hwmon_curr:
+		return ltc4245_read_curr(dev, attr, channel, val);
+	case hwmon_power:
+		return ltc4245_read_power(dev, attr, channel, val);
+	case hwmon_in:
+		return ltc4245_read_in(dev, attr, channel - 1, val);
+	default:
+		return -EOPNOTSUPP;
+	}
+}
+
+static umode_t ltc4245_is_visible(const void *_data,
+				  enum hwmon_sensor_types type,
+				  u32 attr, int channel)
+{
+	const struct ltc4245_data *data = _data;
+
+	switch (type) {
+	case hwmon_in:
+		if (channel == 0)
+			return 0;
+		switch (attr) {
+		case hwmon_in_input:
+			if (channel > 9 && !data->use_extra_gpios)
+				return 0;
+			return 0444;
+		case hwmon_in_min_alarm:
+			if (channel > 8)
+				return 0;
+			return 0444;
+		default:
+			return 0;
+		}
+	case hwmon_curr:
+		switch (attr) {
+		case hwmon_curr_input:
+		case hwmon_curr_max_alarm:
+			return 0444;
+		default:
+			return 0;
+		}
+	case hwmon_power:
+		switch (attr) {
+		case hwmon_power_input:
+			return 0444;
+		default:
+			return 0;
+		}
+	default:
+		return 0;
+	}
+}
+
+static const struct hwmon_channel_info * const ltc4245_info[] = {
+	HWMON_CHANNEL_INFO(in,
+			   HWMON_I_INPUT,
+			   HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+			   HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+			   HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+			   HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+			   HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+			   HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+			   HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+			   HWMON_I_INPUT | HWMON_I_MIN_ALARM,
+			   HWMON_I_INPUT,
+			   HWMON_I_INPUT,
+			   HWMON_I_INPUT),
+	HWMON_CHANNEL_INFO(curr,
+			   HWMON_C_INPUT | HWMON_C_MAX_ALARM,
+			   HWMON_C_INPUT | HWMON_C_MAX_ALARM,
+			   HWMON_C_INPUT | HWMON_C_MAX_ALARM,
+			   HWMON_C_INPUT | HWMON_C_MAX_ALARM),
+	HWMON_CHANNEL_INFO(power,
+			   HWMON_P_INPUT,
+			   HWMON_P_INPUT,
+			   HWMON_P_INPUT,
+			   HWMON_P_INPUT),
+	NULL
+};
+
+static const struct hwmon_ops ltc4245_hwmon_ops = {
+	.is_visible = ltc4245_is_visible,
+	.read = ltc4245_read,
+};
+
+static const struct hwmon_chip_info ltc4245_chip_info = {
+	.ops = &ltc4245_hwmon_ops,
+	.info = ltc4245_info,
+};
+
+static bool ltc4245_use_extra_gpios(struct i2c_client *client)
+{
+	struct ltc4245_platform_data *pdata = dev_get_platdata(&client->dev);
+	struct device_node *np = client->dev.of_node;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* prefer platform data */
 	if (pdata)
 		return pdata->use_extra_gpios;
 
+<<<<<<< HEAD
 #ifdef CONFIG_OF
 	/* fallback on OF */
 	if (of_find_property(np, "ltc4245,use-extra-gpios", NULL))
 		return true;
 #endif
+=======
+	/* fallback on OF */
+	if (of_property_read_bool(np, "ltc4245,use-extra-gpios"))
+		return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return false;
 }
 
+<<<<<<< HEAD
 static int ltc4245_probe(struct i2c_client *client,
 			 const struct i2c_device_id *id)
 {
 	struct i2c_adapter *adapter = client->adapter;
 	struct ltc4245_data *data;
 	int ret;
+=======
+static int ltc4245_probe(struct i2c_client *client)
+{
+	struct i2c_adapter *adapter = client->adapter;
+	struct ltc4245_data *data;
+	struct device *hwmon_dev;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
+<<<<<<< HEAD
 	data = kzalloc(sizeof(*data), GFP_KERNEL);
 	if (!data) {
 		ret = -ENOMEM;
@@ -526,6 +760,13 @@ static int ltc4245_probe(struct i2c_client *client,
 	}
 
 	i2c_set_clientdata(client, data);
+=======
+	data = devm_kzalloc(&client->dev, sizeof(*data), GFP_KERNEL);
+	if (!data)
+		return -ENOMEM;
+
+	data->client = client;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_init(&data->update_lock);
 	data->use_extra_gpios = ltc4245_use_extra_gpios(client);
 
@@ -533,6 +774,7 @@ static int ltc4245_probe(struct i2c_client *client,
 	i2c_smbus_write_byte_data(client, LTC4245_FAULT1, 0x00);
 	i2c_smbus_write_byte_data(client, LTC4245_FAULT2, 0x00);
 
+<<<<<<< HEAD
 	/* Register sysfs hooks */
 	ret = ltc4245_sysfs_create_groups(client);
 	if (ret)
@@ -563,6 +805,13 @@ static int ltc4245_remove(struct i2c_client *client)
 	kfree(data);
 
 	return 0;
+=======
+	hwmon_dev = devm_hwmon_device_register_with_info(&client->dev,
+							 client->name, data,
+							 &ltc4245_chip_info,
+							 NULL);
+	return PTR_ERR_OR_ZERO(hwmon_dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct i2c_device_id ltc4245_id[] = {
@@ -577,7 +826,10 @@ static struct i2c_driver ltc4245_driver = {
 		.name	= "ltc4245",
 	},
 	.probe		= ltc4245_probe,
+<<<<<<< HEAD
 	.remove		= ltc4245_remove,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= ltc4245_id,
 };
 

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file is part of UBIFS.
  *
  * Copyright (C) 2006-2008 Nokia Corporation.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License version 2 as published by
  * the Free Software Foundation.
@@ -16,6 +21,8 @@
  * this program; if not, write to the Free Software Foundation, Inc., 51
  * Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Authors: Artem Bityutskiy (Битюцкий Артём)
  *          Adrian Hunter
  */
@@ -29,8 +36,11 @@ typedef int (*dbg_leaf_callback)(struct ubifs_info *c,
 typedef int (*dbg_znode_callback)(struct ubifs_info *c,
 				  struct ubifs_znode *znode, void *priv);
 
+<<<<<<< HEAD
 #ifdef CONFIG_UBIFS_FS_DEBUG
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * The UBIFS debugfs directory name pattern and maximum name length (3 for "ubi"
  * + 1 for "_" and plus 2x2 for 2 UBI numbers and 1 for the trailing zero byte.
@@ -81,6 +91,13 @@ typedef int (*dbg_znode_callback)(struct ubifs_info *c,
  * @dfs_chk_lprops: debugfs knob to enable UBIFS LEP properties extra checks
  * @dfs_chk_fs: debugfs knob to enable UBIFS contents extra checks
  * @dfs_tst_rcvry: debugfs knob to enable UBIFS recovery testing
+<<<<<<< HEAD
+=======
+ * @dfs_ro_error: debugfs knob to switch UBIFS to R/O mode (different to
+ *                re-mounting to R/O mode because it does not flush any buffers
+ *                and UBIFS just starts returning -EROFS on all write
+ *               operations)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct ubifs_debug_info {
 	struct ubifs_zbranch old_zroot;
@@ -124,6 +141,10 @@ struct ubifs_debug_info {
 	struct dentry *dfs_chk_lprops;
 	struct dentry *dfs_chk_fs;
 	struct dentry *dfs_tst_rcvry;
+<<<<<<< HEAD
+=======
+	struct dentry *dfs_ro_error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -145,17 +166,28 @@ struct ubifs_global_debug_info {
 	unsigned int tst_rcvry:1;
 };
 
+<<<<<<< HEAD
 #define ubifs_assert(expr) do {                                                \
 	if (unlikely(!(expr))) {                                               \
 		printk(KERN_CRIT "UBIFS assert failed in %s at %u (pid %d)\n", \
 		       __func__, __LINE__, current->pid);                      \
 		dbg_dump_stack();                                              \
+=======
+void ubifs_assert_failed(struct ubifs_info *c, const char *expr,
+	const char *file, int line);
+
+#define ubifs_assert(c, expr) do {                                             \
+	if (unlikely(!(expr))) {                                               \
+		ubifs_assert_failed((struct ubifs_info *)c, #expr, __FILE__,   \
+		 __LINE__);                                                    \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}                                                                      \
 } while (0)
 
 #define ubifs_assert_cmt_locked(c) do {                                        \
 	if (unlikely(down_write_trylock(&(c)->commit_sem))) {                  \
 		up_write(&(c)->commit_sem);                                    \
+<<<<<<< HEAD
 		printk(KERN_CRIT "commit lock is not locked!\n");              \
 		ubifs_assert(0);                                               \
 	}                                                                      \
@@ -169,10 +201,21 @@ struct ubifs_global_debug_info {
 
 #define ubifs_dbg_msg(type, fmt, ...) \
 	pr_debug("UBIFS DBG " type ": " fmt "\n", ##__VA_ARGS__)
+=======
+		ubifs_err(c, "commit lock is not locked!\n");                  \
+		ubifs_assert(c, 0);                                            \
+	}                                                                      \
+} while (0)
+
+#define ubifs_dbg_msg(type, fmt, ...) \
+	pr_debug("UBIFS DBG " type " (pid %d): " fmt "\n", current->pid,       \
+		 ##__VA_ARGS__)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define DBG_KEY_BUF_LEN 48
 #define ubifs_dbg_msg_key(type, key, fmt, ...) do {                            \
 	char __tmp_key_buf[DBG_KEY_BUF_LEN];                                   \
+<<<<<<< HEAD
 	pr_debug("UBIFS DBG " type ": " fmt "%s\n", ##__VA_ARGS__,             \
 		 dbg_snprintf_key(c, key, __tmp_key_buf, DBG_KEY_BUF_LEN));    \
 } while (0)
@@ -182,6 +225,13 @@ struct ubifs_global_debug_info {
 	printk(KERN_DEBUG "UBIFS DBG (pid %d): %s: " fmt "\n", current->pid,   \
 	       __func__, ##__VA_ARGS__)
 
+=======
+	pr_debug("UBIFS DBG " type " (pid %d): " fmt "%s\n", current->pid,     \
+		 ##__VA_ARGS__,                                                \
+		 dbg_snprintf_key(c, key, __tmp_key_buf, DBG_KEY_BUF_LEN));    \
+} while (0)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* General messages */
 #define dbg_gen(fmt, ...)   ubifs_dbg_msg("gen", fmt, ##__VA_ARGS__)
 /* Additional journal messages */
@@ -257,6 +307,7 @@ const char *dbg_get_key_dump(const struct ubifs_info *c,
 			     const union ubifs_key *key);
 const char *dbg_snprintf_key(const struct ubifs_info *c,
 			     const union ubifs_key *key, char *buffer, int len);
+<<<<<<< HEAD
 void dbg_dump_inode(struct ubifs_info *c, const struct inode *inode);
 void dbg_dump_node(const struct ubifs_info *c, const void *node);
 void dbg_dump_lpt_node(const struct ubifs_info *c, void *node, int lnum,
@@ -278,6 +329,28 @@ void dbg_dump_pnode(struct ubifs_info *c, struct ubifs_pnode *pnode,
 void dbg_dump_tnc(struct ubifs_info *c);
 void dbg_dump_index(struct ubifs_info *c);
 void dbg_dump_lpt_lebs(const struct ubifs_info *c);
+=======
+void ubifs_dump_inode(struct ubifs_info *c, const struct inode *inode);
+void ubifs_dump_node(const struct ubifs_info *c, const void *node,
+		     int node_len);
+void ubifs_dump_budget_req(const struct ubifs_budget_req *req);
+void ubifs_dump_lstats(const struct ubifs_lp_stats *lst);
+void ubifs_dump_budg(struct ubifs_info *c, const struct ubifs_budg_info *bi);
+void ubifs_dump_lprop(const struct ubifs_info *c,
+		      const struct ubifs_lprops *lp);
+void ubifs_dump_lprops(struct ubifs_info *c);
+void ubifs_dump_lpt_info(struct ubifs_info *c);
+void ubifs_dump_leb(const struct ubifs_info *c, int lnum);
+void ubifs_dump_znode(const struct ubifs_info *c,
+		      const struct ubifs_znode *znode);
+void ubifs_dump_heap(struct ubifs_info *c, struct ubifs_lpt_heap *heap,
+		     int cat);
+void ubifs_dump_pnode(struct ubifs_info *c, struct ubifs_pnode *pnode,
+		      struct ubifs_nnode *parent, int iip);
+void ubifs_dump_tnc(struct ubifs_info *c);
+void ubifs_dump_index(struct ubifs_info *c);
+void ubifs_dump_lpt_lebs(const struct ubifs_info *c);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 int dbg_walk_index(struct ubifs_info *c, dbg_leaf_callback leaf_cb,
 		   dbg_znode_callback znode_cb, void *priv);
@@ -307,6 +380,7 @@ int dbg_check_data_nodes_order(struct ubifs_info *c, struct list_head *head);
 int dbg_check_nondata_nodes_order(struct ubifs_info *c, struct list_head *head);
 
 int dbg_leb_write(struct ubifs_info *c, int lnum, const void *buf, int offs,
+<<<<<<< HEAD
 		  int len, int dtype);
 int dbg_leb_change(struct ubifs_info *c, int lnum, const void *buf, int len,
 		   int dtype);
@@ -477,4 +551,17 @@ static inline int dbg_debugfs_init_fs(struct ubifs_info *c)       { return 0; }
 static inline int dbg_debugfs_exit_fs(struct ubifs_info *c)       { return 0; }
 
 #endif /* !CONFIG_UBIFS_FS_DEBUG */
+=======
+		  int len);
+int dbg_leb_change(struct ubifs_info *c, int lnum, const void *buf, int len);
+int dbg_leb_unmap(struct ubifs_info *c, int lnum);
+int dbg_leb_map(struct ubifs_info *c, int lnum);
+
+/* Debugfs-related stuff */
+void dbg_debugfs_init(void);
+void dbg_debugfs_exit(void);
+void dbg_debugfs_init_fs(struct ubifs_info *c);
+void dbg_debugfs_exit_fs(struct ubifs_info *c);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !__UBIFS_DEBUG_H__ */

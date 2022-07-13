@@ -3,7 +3,11 @@
 cpupower\-set \- Set processor power related kernel or hardware configurations
 .SH SYNOPSIS
 .ft B
+<<<<<<< HEAD
 .B cpupower set [ \-b VAL ] [ \-s VAL ] [ \-m VAL ]
+=======
+.B cpupower set [ \-b VAL ]
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 .SH DESCRIPTION
@@ -55,6 +59,7 @@ Use \fBcpupower -c all info -b\fP to verify.
 
 This options needs the msr kernel driver (CONFIG_X86_MSR) loaded.
 .RE
+<<<<<<< HEAD
 .PP
 \-\-sched\-mc,  \-m [ VAL ]
 .RE
@@ -93,6 +98,8 @@ is itself architecture dependent.
 
 The two files are independent of each other. It is possible
 that one file may be present without the other.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 .SH "SEE ALSO"
 cpupower-info(1), cpupower-monitor(1), powertop(1)

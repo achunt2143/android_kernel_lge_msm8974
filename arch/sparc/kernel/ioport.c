@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ioport.c:  Simple io mapping allocator.
  *
@@ -37,7 +41,12 @@
 #include <linux/proc_fs.h>
 #include <linux/seq_file.h>
 #include <linux/scatterlist.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
+=======
+#include <linux/dma-map-ops.h>
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/io.h>
 #include <asm/vaddrs.h>
@@ -50,6 +59,7 @@
 #include <asm/io-unit.h>
 #include <asm/leon.h>
 
+<<<<<<< HEAD
 /* This function must make sure that caches and memory are coherent after DMA
  * On LEON systems without cache snooping it flushes the entire D-CACHE.
  */
@@ -65,6 +75,8 @@ static inline void dma_make_coherent(unsigned long pa, unsigned long len)
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void __iomem *_sparc_ioremap(struct resource *res, u32 bus, u32 pa, int sz);
 static void __iomem *_sparc_alloc_io(unsigned int busno, unsigned long phys,
     unsigned long size, char *name);
@@ -123,17 +135,29 @@ static void xres_free(struct xresource *xrp) {
  *
  * Bus type is always zero on IIep.
  */
+<<<<<<< HEAD
 void __iomem *ioremap(unsigned long offset, unsigned long size)
+=======
+void __iomem *ioremap(phys_addr_t offset, size_t size)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	char name[14];
 
 	sprintf(name, "phys_%08x", (u32)offset);
+<<<<<<< HEAD
 	return _sparc_alloc_io(0, offset, size, name);
+=======
+	return _sparc_alloc_io(0, (unsigned long)offset, size, name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 EXPORT_SYMBOL(ioremap);
 
 /*
+<<<<<<< HEAD
  * Comlimentary to ioremap().
+=======
+ * Complementary to ioremap().
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 void iounmap(volatile void __iomem *virtual)
 {
@@ -188,7 +212,11 @@ static void __iomem *_sparc_alloc_io(unsigned int busno, unsigned long phys,
 
 	if (name == NULL) name = "???";
 
+<<<<<<< HEAD
 	if ((xres = xres_alloc()) != 0) {
+=======
+	if ((xres = xres_alloc()) != NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		tack = xres->xname;
 		res = &xres->xres;
 	} else {
@@ -204,7 +232,11 @@ static void __iomem *_sparc_alloc_io(unsigned int busno, unsigned long phys,
 		tack += sizeof (struct resource);
 	}
 
+<<<<<<< HEAD
 	strlcpy(tack, name, XNMLN+1);
+=======
+	strscpy(tack, name, XNMLN+1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	res->name = tack;
 
 	va = _sparc_ioremap(res, busno, phys, size);
@@ -229,13 +261,21 @@ _sparc_ioremap(struct resource *res, u32 bus, u32 pa, int sz)
 	}
 
 	pa &= PAGE_MASK;
+<<<<<<< HEAD
 	sparc_mapiorange(bus, pa, res->start, resource_size(res));
+=======
+	srmmu_mapiorange(bus, pa, res->start, resource_size(res));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return (void __iomem *)(unsigned long)(res->start + offset);
 }
 
 /*
+<<<<<<< HEAD
  * Comlimentary to _sparc_ioremap().
+=======
+ * Complementary to _sparc_ioremap().
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 static void _sparc_free_io(struct resource *res)
 {
@@ -243,10 +283,64 @@ static void _sparc_free_io(struct resource *res)
 
 	plen = resource_size(res);
 	BUG_ON((plen & (PAGE_SIZE-1)) != 0);
+<<<<<<< HEAD
 	sparc_unmapiorange(res->start, plen);
 	release_resource(res);
 }
 
+=======
+	srmmu_unmapiorange(res->start, plen);
+	release_resource(res);
+}
+
+unsigned long sparc_dma_alloc_resource(struct device *dev, size_t len)
+{
+	struct resource *res;
+
+	res = kzalloc(sizeof(*res), GFP_KERNEL);
+	if (!res)
+		return 0;
+	res->name = dev->of_node->full_name;
+
+	if (allocate_resource(&_sparc_dvma, res, len, _sparc_dvma.start,
+			      _sparc_dvma.end, PAGE_SIZE, NULL, NULL) != 0) {
+		printk("%s: cannot occupy 0x%zx", __func__, len);
+		kfree(res);
+		return 0;
+	}
+
+	return res->start;
+}
+
+bool sparc_dma_free_resource(void *cpu_addr, size_t size)
+{
+	unsigned long addr = (unsigned long)cpu_addr;
+	struct resource *res;
+
+	res = lookup_resource(&_sparc_dvma, addr);
+	if (!res) {
+		printk("%s: cannot free %p\n", __func__, cpu_addr);
+		return false;
+	}
+
+	if ((addr & (PAGE_SIZE - 1)) != 0) {
+		printk("%s: unaligned va %p\n", __func__, cpu_addr);
+		return false;
+	}
+
+	size = PAGE_ALIGN(size);
+	if (resource_size(res) != size) {
+		printk("%s: region 0x%lx asked 0x%zx\n",
+			__func__, (long)resource_size(res), size);
+		return false;
+	}
+
+	release_resource(res);
+	kfree(res);
+	return true;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_SBUS
 
 void sbus_set_sbus64(struct device *dev, int x)
@@ -255,6 +349,7 @@ void sbus_set_sbus64(struct device *dev, int x)
 }
 EXPORT_SYMBOL(sbus_set_sbus64);
 
+<<<<<<< HEAD
 /*
  * Allocate a chunk of memory suitable for DMA.
  * Typically devices use them for control blocks.
@@ -418,6 +513,8 @@ struct dma_map_ops sbus_dma_ops = {
 	.sync_sg_for_device	= sbus_sync_sg_for_device,
 };
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init sparc_register_ioport(void)
 {
 	register_proc_sparc_ioport();
@@ -429,6 +526,7 @@ arch_initcall(sparc_register_ioport);
 
 #endif /* CONFIG_SBUS */
 
+<<<<<<< HEAD
 
 /* LEON reuses PCI DMA ops */
 #if defined(CONFIG_PCI) || defined(CONFIG_SPARC_LEON)
@@ -687,6 +785,23 @@ int dma_supported(struct device *dev, u64 mask)
 }
 EXPORT_SYMBOL(dma_supported);
 
+=======
+/*
+ * IIep is write-through, not flushing on cpu to device transfer.
+ *
+ * On LEON systems without cache snooping, the entire D-CACHE must be flushed to
+ * make DMA to cacheable memory coherent.
+ */
+void arch_sync_dma_for_cpu(phys_addr_t paddr, size_t size,
+		enum dma_data_direction dir)
+{
+	if (dir != DMA_TO_DEVICE &&
+	    sparc_cpu_model == sparc_leon &&
+	    !sparc_leon3_snooping_enabled())
+		leon_flush_dcache_all();
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PROC_FS
 
 static int sparc_io_proc_show(struct seq_file *m, void *v)
@@ -695,7 +810,11 @@ static int sparc_io_proc_show(struct seq_file *m, void *v)
 	const char *nm;
 
 	for (r = root->child; r != NULL; r = r->sibling) {
+<<<<<<< HEAD
 		if ((nm = r->name) == 0) nm = "???";
+=======
+		if ((nm = r->name) == NULL) nm = "???";
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		seq_printf(m, "%016llx-%016llx: %s\n",
 				(unsigned long long)r->start,
 				(unsigned long long)r->end, nm);
@@ -703,6 +822,7 @@ static int sparc_io_proc_show(struct seq_file *m, void *v)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 static int sparc_io_proc_open(struct inode *inode, struct file *file)
 {
@@ -716,12 +836,21 @@ static const struct file_operations sparc_io_proc_fops = {
 	.llseek		= seq_lseek,
 	.release	= single_release,
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_PROC_FS */
 
 static void register_proc_sparc_ioport(void)
 {
 #ifdef CONFIG_PROC_FS
+<<<<<<< HEAD
 	proc_create_data("io_map", 0, NULL, &sparc_io_proc_fops, &sparc_iomap);
 	proc_create_data("dvma_map", 0, NULL, &sparc_io_proc_fops, &_sparc_dvma);
+=======
+	proc_create_single_data("io_map", 0, NULL, sparc_io_proc_show,
+			&sparc_iomap);
+	proc_create_single_data("dvma_map", 0, NULL, sparc_io_proc_show,
+			&_sparc_dvma);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * APIC driver for "bigsmp" xAPIC machines with more than 8 virtual CPUs.
  *
  * Drives the local APIC in "clustered mode".
  */
+<<<<<<< HEAD
 #include <linux/threads.h>
 #include <linux/cpumask.h>
 #include <linux/kernel.h>
@@ -17,10 +22,23 @@
 #include <asm/ipi.h>
 
 static unsigned bigsmp_get_apic_id(unsigned long x)
+=======
+#include <linux/cpumask.h>
+#include <linux/dmi.h>
+#include <linux/smp.h>
+
+#include <asm/apic.h>
+#include <asm/io_apic.h>
+
+#include "local.h"
+
+static u32 bigsmp_get_apic_id(u32 x)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return (x >> 24) & 0xFF;
 }
 
+<<<<<<< HEAD
 static int bigsmp_apic_id_registered(void)
 {
 	return 1;
@@ -141,6 +159,8 @@ static inline void bigsmp_send_IPI_mask(const struct cpumask *mask, int vector)
 	default_send_IPI_mask_sequence_phys(mask, vector);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void bigsmp_send_IPI_allbutself(int vector)
 {
 	default_send_IPI_mask_allbutself_phys(cpu_online_mask, vector);
@@ -148,7 +168,11 @@ static void bigsmp_send_IPI_allbutself(int vector)
 
 static void bigsmp_send_IPI_all(int vector)
 {
+<<<<<<< HEAD
 	bigsmp_send_IPI_mask(cpu_online_mask, vector);
+=======
+	default_send_IPI_mask_sequence_phys(cpu_online_mask, vector);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int dmi_bigsmp; /* can be set by dmi scanners */
@@ -177,6 +201,7 @@ static const struct dmi_system_id bigsmp_dmi_table[] = {
 	{ } /* NULL entry stops DMI scanning */
 };
 
+<<<<<<< HEAD
 static void bigsmp_vector_allocation_domain(int cpu, struct cpumask *retmask)
 {
 	cpumask_clear(retmask);
@@ -233,11 +258,37 @@ static struct apic apic_bigsmp = {
 	.cpu_mask_to_apicid_and		= bigsmp_cpu_mask_to_apicid_and,
 
 	.send_IPI_mask			= bigsmp_send_IPI_mask,
+=======
+static int probe_bigsmp(void)
+{
+	return dmi_check_system(bigsmp_dmi_table);
+}
+
+static struct apic apic_bigsmp __ro_after_init = {
+
+	.name				= "bigsmp",
+	.probe				= probe_bigsmp,
+
+	.dest_mode_logical		= false,
+
+	.disable_esr			= 1,
+
+	.cpu_present_to_apicid		= default_cpu_present_to_apicid,
+
+	.max_apic_id			= 0xFE,
+	.get_apic_id			= bigsmp_get_apic_id,
+
+	.calc_dest_apicid		= apic_default_calc_apicid,
+
+	.send_IPI			= default_send_IPI_single_phys,
+	.send_IPI_mask			= default_send_IPI_mask_sequence_phys,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.send_IPI_mask_allbutself	= NULL,
 	.send_IPI_allbutself		= bigsmp_send_IPI_allbutself,
 	.send_IPI_all			= bigsmp_send_IPI_all,
 	.send_IPI_self			= default_send_IPI_self,
 
+<<<<<<< HEAD
 	.trampoline_phys_low		= DEFAULT_TRAMPOLINE_PHYS_LOW,
 	.trampoline_phys_high		= DEFAULT_TRAMPOLINE_PHYS_HIGH,
 
@@ -274,6 +325,26 @@ void __init generic_bigsmp_probe(void)
 	}
 
 	pr_info("Overriding APIC driver with %s\n", apic_bigsmp.name);
+=======
+	.read				= native_apic_mem_read,
+	.write				= native_apic_mem_write,
+	.eoi				= native_apic_mem_eoi,
+	.icr_read			= native_apic_icr_read,
+	.icr_write			= native_apic_icr_write,
+	.wait_icr_idle			= apic_mem_wait_icr_idle,
+	.safe_wait_icr_idle		= apic_mem_wait_icr_idle_timeout,
+};
+
+bool __init apic_bigsmp_possible(bool cmdline_override)
+{
+	return apic == &apic_bigsmp || !cmdline_override;
+}
+
+void __init apic_bigsmp_force(void)
+{
+	if (apic != &apic_bigsmp)
+		apic_install_driver(&apic_bigsmp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 apic_driver(apic_bigsmp);

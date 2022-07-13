@@ -1,18 +1,30 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Freescale Media5200 board Device Tree Source
  *
  * Copyright 2009 Secret Lab Technologies Ltd.
  * Grant Likely <grant.likely@secretlab.ca>
  * Steven Cavanagh <scavanagh@secretlab.ca>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /include/ "mpc5200b.dtsi"
 
+<<<<<<< HEAD
+=======
+&gpt0 { fsl,has-wdt; };
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 / {
 	model = "fsl,media5200";
 	compatible = "fsl,media5200";
@@ -23,7 +35,11 @@
 	};
 
 	chosen {
+<<<<<<< HEAD
 		linux,stdout-path = &console;
+=======
+		stdout-path = &console;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 
 	cpus {
@@ -34,17 +50,24 @@
 		};
 	};
 
+<<<<<<< HEAD
 	memory {
+=======
+	memory@0 {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		reg = <0x00000000 0x08000000>;	// 128MB RAM
 	};
 
 	soc5200@f0000000 {
 		bus-frequency = <132000000>;// 132 MHz
 
+<<<<<<< HEAD
 		timer@600 {	// General Purpose Timer
 			fsl,has-wdt;
 		};
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		psc@2000 {	// PSC1
 			status = "disabled";
 		};
@@ -102,9 +125,15 @@
 
 				 0xe000 0 0 1 &media5200_fpga 0 5 // CoralIP
 				>;
+<<<<<<< HEAD
 		ranges = <0x42000000 0 0x80000000 0x80000000 0 0x20000000
 			  0x02000000 0 0xa0000000 0xa0000000 0 0x10000000
 			  0x01000000 0 0x00000000 0xb0000000 0 0x01000000>;
+=======
+		ranges = <0x42000000 0 0x80000000 0x80000000 0 0x20000000>,
+			 <0x02000000 0 0xa0000000 0xa0000000 0 0x10000000>,
+			 <0x01000000 0 0x00000000 0xb0000000 0 0x01000000>;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		interrupt-parent = <&mpc5200_pic>;
 	};
 

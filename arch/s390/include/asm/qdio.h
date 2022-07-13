@@ -1,7 +1,13 @@
+<<<<<<< HEAD
 /*
  * linux/include/asm-s390/qdio.h
  *
  * Copyright 2000,2008 IBM Corp.
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * Copyright IBM Corp. 2000, 2008
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author(s): Utz Bacher <utz.bacher@de.ibm.com>
  *	      Jan Glauber <jang@linux.vnet.ibm.com>
  *
@@ -10,15 +16,26 @@
 #define __QDIO_H__
 
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <asm/cio.h>
 #include <asm/ccwdev.h>
+=======
+#include <asm/dma-types.h>
+#include <asm/ccwdev.h>
+#include <asm/cio.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* only use 4 queues to save some cachelines */
 #define QDIO_MAX_QUEUES_PER_IRQ		4
 #define QDIO_MAX_BUFFERS_PER_Q		128
 #define QDIO_MAX_BUFFERS_MASK		(QDIO_MAX_BUFFERS_PER_Q - 1)
+<<<<<<< HEAD
 #define QDIO_MAX_ELEMENTS_PER_BUFFER	16
 #define QDIO_SBAL_SIZE			256
+=======
+#define QDIO_BUFNR(num)			((num) & QDIO_MAX_BUFFERS_MASK)
+#define QDIO_MAX_ELEMENTS_PER_BUFFER	16
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define QDIO_QETH_QFMT			0
 #define QDIO_ZFCP_QFMT			1
@@ -26,18 +43,31 @@
 
 /**
  * struct qdesfmt0 - queue descriptor, format 0
+<<<<<<< HEAD
  * @sliba: storage list information block address
  * @sla: storage list address
  * @slsba: storage list state block address
  * @akey: access key for DLIB
+=======
+ * @sliba: absolute address of storage list information block
+ * @sla: absolute address of storage list
+ * @slsba: absolute address of storage list state block
+ * @akey: access key for SLIB
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @bkey: access key for SL
  * @ckey: access key for SBALs
  * @dkey: access key for SLSB
  */
 struct qdesfmt0 {
+<<<<<<< HEAD
 	u64 sliba;
 	u64 sla;
 	u64 slsba;
+=======
+	dma64_t sliba;
+	dma64_t sla;
+	dma64_t slsba;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	 : 32;
 	u32 akey : 4;
 	u32 bkey : 4;
@@ -51,6 +81,7 @@ struct qdesfmt0 {
 /**
  * struct qdr - queue description record (QDR)
  * @qfmt: queue format
+<<<<<<< HEAD
  * @pfmt: implementation dependent parameter format
  * @ac: adapter characteristics
  * @iqdcnt: input queue descriptor count
@@ -58,13 +89,25 @@ struct qdesfmt0 {
  * @iqdsz: inpout queue descriptor size
  * @oqdsz: output queue descriptor size
  * @qiba: queue information block address
+=======
+ * @ac: adapter characteristics
+ * @iqdcnt: input queue descriptor count
+ * @oqdcnt: output queue descriptor count
+ * @iqdsz: input queue descriptor size
+ * @oqdsz: output queue descriptor size
+ * @qiba: absolute address of queue information block
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @qkey: queue information block key
  * @qdf0: queue descriptions
  */
 struct qdr {
 	u32 qfmt   : 8;
+<<<<<<< HEAD
 	u32 pfmt   : 8;
 	u32	   : 8;
+=======
+	u32	   : 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 ac	   : 8;
 	u32	   : 8;
 	u32 iqdcnt : 8;
@@ -77,12 +120,20 @@ struct qdr {
 	/* private: */
 	u32 res[9];
 	/* public: */
+<<<<<<< HEAD
 	u64 qiba;
+=======
+	dma64_t qiba;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32	   : 32;
 	u32 qkey   : 4;
 	u32	   : 28;
 	struct qdesfmt0 qdf0[126];
+<<<<<<< HEAD
 } __attribute__ ((packed, aligned(4096)));
+=======
+} __packed __aligned(PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define QIB_AC_OUTBOUND_PCI_SUPPORTED	0x40
 #define QIB_RFLAGS_ENABLE_QEBSM		0x80
@@ -94,8 +145,13 @@ struct qdr {
  * @pfmt: implementation dependent parameter format
  * @rflags: QEBSM
  * @ac: adapter characteristics
+<<<<<<< HEAD
  * @isliba: absolute address of first input SLIB
  * @osliba: absolute address of first output SLIB
+=======
+ * @isliba: logical address of first input SLIB
+ * @osliba: logical address of first output SLIB
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ebcnam: adapter identifier in EBCDIC
  * @parm: implementation dependent parameters
  */
@@ -113,7 +169,11 @@ struct qib {
 	/* private: */
 	u8 res[88];
 	/* public: */
+<<<<<<< HEAD
 	u8 parm[QDIO_MAX_BUFFERS_PER_Q];
+=======
+	u8 parm[128];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed, aligned(256)));
 
 /**
@@ -136,10 +196,16 @@ struct slibe {
  * @sb_count: number of storage blocks
  * @sba: storage block element addresses
  * @dcount: size of storage block elements
+<<<<<<< HEAD
  * @user0: user defineable value
  * @res4: reserved paramater
  * @user1: user defineable value
  * @user2: user defineable value
+=======
+ * @user0: user definable value
+ * @res4: reserved parameter
+ * @user1: user definable value
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct qaob {
 	u64 res0[6];
@@ -150,12 +216,20 @@ struct qaob {
 	u8 flags;
 	u16 cbtbs;
 	u8 sb_count;
+<<<<<<< HEAD
 	u64 sba[QDIO_MAX_ELEMENTS_PER_BUFFER];
 	u16 dcount[QDIO_MAX_ELEMENTS_PER_BUFFER];
 	u64 user0;
 	u64 res4[2];
 	u64 user1;
 	u64 user2;
+=======
+	dma64_t sba[QDIO_MAX_ELEMENTS_PER_BUFFER];
+	u16 dcount[QDIO_MAX_ELEMENTS_PER_BUFFER];
+	u64 user0;
+	u64 res4[2];
+	u8 user1[16];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed, aligned(256)));
 
 /**
@@ -203,7 +277,11 @@ struct slib {
  * @scount: SBAL count
  * @sflags: whole SBAL flags
  * @length: length
+<<<<<<< HEAD
  * @addr: address
+=======
+ * @addr: absolute data address
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 */
 struct qdio_buffer_element {
 	u8 eflags;
@@ -213,12 +291,16 @@ struct qdio_buffer_element {
 	u8 scount;
 	u8 sflags;
 	u32 length;
+<<<<<<< HEAD
 #ifdef CONFIG_32BIT
 	/* private: */
 	void *res2;
 	/* public: */
 #endif
 	void *addr;
+=======
+	dma64_t addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed, aligned(16)));
 
 /**
@@ -234,12 +316,16 @@ struct qdio_buffer {
  * @sbal: absolute SBAL address
  */
 struct sl_element {
+<<<<<<< HEAD
 #ifdef CONFIG_32BIT
 	/* private: */
 	unsigned long reserved;
 	/* public: */
 #endif
 	unsigned long sbal;
+=======
+	dma64_t sbal;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__ ((packed));
 
 /**
@@ -258,6 +344,7 @@ struct slsb {
 	u8 val[QDIO_MAX_BUFFERS_PER_Q];
 } __attribute__ ((packed, aligned(256)));
 
+<<<<<<< HEAD
 #define CHSC_AC2_MULTI_BUFFER_AVAILABLE	0x0080
 #define CHSC_AC2_MULTI_BUFFER_ENABLED	0x0040
 #define CHSC_AC2_DATA_DIV_AVAILABLE	0x0010
@@ -285,6 +372,10 @@ struct qdio_outbuf_state {
 
 
 /* qdio adapter-characteristics-1 flag */
+=======
+/* qdio adapter-characteristics-1 flag */
+#define CHSC_AC1_INITIATE_INPUTQ	0x80
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AC1_SIGA_INPUT_NEEDED		0x40	/* process input queues */
 #define AC1_SIGA_OUTPUT_NEEDED		0x20	/* process output queues */
 #define AC1_SIGA_SYNC_NEEDED		0x10	/* ask hypervisor to sync */
@@ -293,7 +384,14 @@ struct qdio_outbuf_state {
 #define AC1_SC_QEBSM_AVAILABLE		0x02	/* available for subchannel */
 #define AC1_SC_QEBSM_ENABLED		0x01	/* enabled for subchannel */
 
+<<<<<<< HEAD
 #define CHSC_AC2_DATA_DIV_AVAILABLE	0x0010
+=======
+#define CHSC_AC2_MULTI_BUFFER_AVAILABLE	0x0080
+#define CHSC_AC2_MULTI_BUFFER_ENABLED	0x0040
+#define CHSC_AC2_DATA_DIV_AVAILABLE	0x0010
+#define CHSC_AC2_SNIFFER_AVAILABLE	0x0008
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CHSC_AC2_DATA_DIV_ENABLED	0x0002
 
 #define CHSC_AC3_FORMAT2_CQ_AVAILABLE	0x8000
@@ -327,18 +425,30 @@ struct qdio_ssqd_desc {
 typedef void qdio_handler_t(struct ccw_device *, unsigned int, int,
 			    int, int, unsigned long);
 
+<<<<<<< HEAD
 /* qdio errors reported to the upper-layer program */
 #define QDIO_ERROR_SIGA_TARGET			0x02
 #define QDIO_ERROR_SIGA_ACCESS_EXCEPTION	0x10
 #define QDIO_ERROR_SIGA_BUSY			0x20
 #define QDIO_ERROR_ACTIVATE_CHECK_CONDITION	0x40
 #define QDIO_ERROR_SLSB_STATE			0x80
+=======
+/* qdio errors reported through the queue handlers: */
+#define QDIO_ERROR_ACTIVATE			0x0001
+#define QDIO_ERROR_GET_BUF_STATE		0x0002
+#define QDIO_ERROR_SET_BUF_STATE		0x0004
+
+/* extra info for completed SBALs: */
+#define QDIO_ERROR_SLSB_STATE			0x0100
+#define QDIO_ERROR_SLSB_PENDING			0x0200
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* for qdio_cleanup */
 #define QDIO_FLAG_CLEANUP_USING_CLEAR		0x01
 #define QDIO_FLAG_CLEANUP_USING_HALT		0x02
 
 /**
+<<<<<<< HEAD
  * struct qdio_initialize - qdio initalization data
  * @cdev: associated ccw device
  * @q_format: queue format
@@ -368,10 +478,35 @@ struct qdio_initialize {
 	unsigned char qib_rflags;
 	unsigned long *input_slib_elements;
 	unsigned long *output_slib_elements;
+=======
+ * struct qdio_initialize - qdio initialization data
+ * @q_format: queue format
+ * @qdr_ac: feature flags to set
+ * @qib_param_field_format: format for qib_parm_field
+ * @qib_param_field: pointer to 128 bytes or NULL, if no param field
+ * @qib_rflags: rflags to set
+ * @no_input_qs: number of input queues
+ * @no_output_qs: number of output queues
+ * @input_handler: handler to be called for input queues, and device-wide errors
+ * @output_handler: handler to be called for output queues
+ * @irq_poll: Data IRQ polling handler
+ * @scan_threshold: # of in-use buffers that triggers scan on output queue
+ * @int_parm: interruption parameter
+ * @input_sbal_addr_array:  per-queue array, each element points to 128 SBALs
+ * @output_sbal_addr_array: per-queue array, each element points to 128 SBALs
+ */
+struct qdio_initialize {
+	unsigned char q_format;
+	unsigned char qdr_ac;
+	unsigned int qib_param_field_format;
+	unsigned char *qib_param_field;
+	unsigned char qib_rflags;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int no_input_qs;
 	unsigned int no_output_qs;
 	qdio_handler_t *input_handler;
 	qdio_handler_t *output_handler;
+<<<<<<< HEAD
 	void (**queue_start_poll_array) (struct ccw_device *, int,
 					  unsigned long);
 	int scan_threshold;
@@ -399,6 +534,35 @@ extern int do_QDIO(struct ccw_device *, unsigned int, int, unsigned int,
 extern int qdio_start_irq(struct ccw_device *, int);
 extern int qdio_stop_irq(struct ccw_device *, int);
 extern int qdio_get_next_buffers(struct ccw_device *, int, int *, int *);
+=======
+	void (*irq_poll)(struct ccw_device *cdev, unsigned long data);
+	unsigned long int_parm;
+	struct qdio_buffer ***input_sbal_addr_array;
+	struct qdio_buffer ***output_sbal_addr_array;
+};
+
+int qdio_alloc_buffers(struct qdio_buffer **buf, unsigned int count);
+void qdio_free_buffers(struct qdio_buffer **buf, unsigned int count);
+void qdio_reset_buffers(struct qdio_buffer **buf, unsigned int count);
+
+extern int qdio_allocate(struct ccw_device *cdev, unsigned int no_input_qs,
+			 unsigned int no_output_qs);
+extern int qdio_establish(struct ccw_device *cdev,
+			  struct qdio_initialize *init_data);
+extern int qdio_activate(struct ccw_device *);
+extern int qdio_start_irq(struct ccw_device *cdev);
+extern int qdio_stop_irq(struct ccw_device *cdev);
+extern int qdio_inspect_input_queue(struct ccw_device *cdev, unsigned int nr,
+				    unsigned int *bufnr, unsigned int *error);
+extern int qdio_inspect_output_queue(struct ccw_device *cdev, unsigned int nr,
+				     unsigned int *bufnr, unsigned int *error);
+extern int qdio_add_bufs_to_input_queue(struct ccw_device *cdev,
+					unsigned int q_nr, unsigned int bufnr,
+					unsigned int count);
+extern int qdio_add_bufs_to_output_queue(struct ccw_device *cdev,
+					 unsigned int q_nr, unsigned int bufnr,
+					 unsigned int count, struct qaob *aob);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int qdio_shutdown(struct ccw_device *, int);
 extern int qdio_free(struct ccw_device *);
 extern int qdio_get_ssqd_desc(struct ccw_device *, struct qdio_ssqd_desc *);

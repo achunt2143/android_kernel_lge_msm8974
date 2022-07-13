@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * arch/s390/appldata/appldata_os.c
  *
@@ -5,6 +6,14 @@
  * Collects misc. OS related data (CPU utilization, running processes).
  *
  * Copyright (C) 2003,2006 IBM Corporation, IBM Deutschland Entwicklung GmbH.
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Data gathering module for Linux-VM Monitor Stream, Stage 1.
+ * Collects misc. OS related data (CPU utilization, running processes).
+ *
+ * Copyright IBM Corp. 2003, 2006
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Author: Gerald Schaefer <gerald.schaefer@de.ibm.com>
  */
@@ -19,15 +28,23 @@
 #include <linux/kernel_stat.h>
 #include <linux/netdevice.h>
 #include <linux/sched.h>
+<<<<<<< HEAD
+=======
+#include <linux/sched/loadavg.h>
+#include <linux/sched/stat.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/appldata.h>
 #include <asm/smp.h>
 
 #include "appldata.h"
 
+<<<<<<< HEAD
 
 #define LOAD_INT(x) ((x) >> FSHIFT)
 #define LOAD_FRAC(x) LOAD_INT(((x) & (FIXED_1-1)) * 100)
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * OS data
  *
@@ -35,10 +52,13 @@
  * the structure version (product ID, see appldata_base.c) needs to be changed
  * as well and all documentation and z/VM applications using it must be
  * updated.
+<<<<<<< HEAD
  *
  * The record layout is documented in the Linux for zSeries Device Drivers
  * book:
  * http://oss.software.ibm.com/developerworks/opensource/linux390/index.shtml
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct appldata_os_per_cpu {
 	u32 per_cpu_user;	/* timer ticks spent in user mode   */
@@ -78,7 +98,11 @@ struct appldata_os_data {
 				   (waiting for I/O)               */
 
 	/* per cpu data */
+<<<<<<< HEAD
 	struct appldata_os_per_cpu os_cpu[0];
+=======
+	struct appldata_os_per_cpu os_cpu[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } __attribute__((packed));
 
 static struct appldata_os_data *appldata_os_data;
@@ -115,6 +139,7 @@ static void appldata_get_os_data(void *data)
 	j = 0;
 	for_each_online_cpu(i) {
 		os_data->os_cpu[j].per_cpu_user =
+<<<<<<< HEAD
 			cputime_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_USER]);
 		os_data->os_cpu[j].per_cpu_nice =
 			cputime_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_NICE]);
@@ -130,14 +155,35 @@ static void appldata_get_os_data(void *data)
 			cputime_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_IOWAIT]);
 		os_data->os_cpu[j].per_cpu_steal =
 			cputime_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_STEAL]);
+=======
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_USER]);
+		os_data->os_cpu[j].per_cpu_nice =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_NICE]);
+		os_data->os_cpu[j].per_cpu_system =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_SYSTEM]);
+		os_data->os_cpu[j].per_cpu_idle =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_IDLE]);
+		os_data->os_cpu[j].per_cpu_irq =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_IRQ]);
+		os_data->os_cpu[j].per_cpu_softirq =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_SOFTIRQ]);
+		os_data->os_cpu[j].per_cpu_iowait =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_IOWAIT]);
+		os_data->os_cpu[j].per_cpu_steal =
+			nsecs_to_jiffies(kcpustat_cpu(i).cpustat[CPUTIME_STEAL]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		os_data->os_cpu[j].cpu_id = i;
 		j++;
 	}
 
 	os_data->nr_cpus = j;
 
+<<<<<<< HEAD
 	new_size = sizeof(struct appldata_os_data) +
 		   (os_data->nr_cpus * sizeof(struct appldata_os_per_cpu));
+=======
+	new_size = struct_size(os_data, os_cpu, os_data->nr_cpus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (ops.size != new_size) {
 		if (ops.active) {
 			rc = appldata_diag(APPLDATA_RECORD_OS_ID,
@@ -158,7 +204,11 @@ static void appldata_get_os_data(void *data)
 		}
 		ops.size = new_size;
 	}
+<<<<<<< HEAD
 	os_data->timestamp = get_clock();
+=======
+	os_data->timestamp = get_tod_clock();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	os_data->sync_count_2++;
 }
 
@@ -172,8 +222,12 @@ static int __init appldata_os_init(void)
 {
 	int rc, max_size;
 
+<<<<<<< HEAD
 	max_size = sizeof(struct appldata_os_data) +
 		   (NR_CPUS * sizeof(struct appldata_os_per_cpu));
+=======
+	max_size = struct_size(appldata_os_data, os_cpu, num_possible_cpus());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (max_size > APPLDATA_MAX_REC_SIZE) {
 		pr_err("Maximum OS record size %i exceeds the maximum "
 		       "record size %i\n", max_size, APPLDATA_MAX_REC_SIZE);

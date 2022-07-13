@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+# SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Kernel configuration file for aic94xx SAS/SATA driver.
 #
 # Copyright (c) 2005 Adaptec, Inc.  All rights reserved.
 # Copyright (c) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
 #
+<<<<<<< HEAD
 # This file is licensed under GPLv2.
 #
 # This file is part of the aic94xx driver.
@@ -27,6 +32,12 @@
 config SCSI_AIC94XX
 	tristate "Adaptec AIC94xx SAS/SATA support"
 	depends on PCI
+=======
+
+config SCSI_AIC94XX
+	tristate "Adaptec AIC94xx SAS/SATA support"
+	depends on PCI && HAS_IOPORT
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	select SCSI_SAS_LIBSAS
 	select FW_LOADER
 	help

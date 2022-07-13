@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ################################################################################
 #
 # Intel PRO/1000 Linux driver
@@ -25,14 +26,28 @@
 # Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
 #
 ################################################################################
+=======
+# SPDX-License-Identifier: GPL-2.0
+# Copyright(c) 1999 - 2018 Intel Corporation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #
 # Makefile for the Intel(R) PRO/1000 ethernet driver
 #
 
+<<<<<<< HEAD
+=======
+ccflags-y += -I$(src)
+subdir-ccflags-y += -I$(src)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 obj-$(CONFIG_E1000E) += e1000e.o
 
 e1000e-objs := 82571.o ich8lan.o 80003es2lan.o \
 	       mac.o manage.o nvm.o phy.o \
+<<<<<<< HEAD
 	       param.o ethtool.o netdev.o
+=======
+	       param.o ethtool.o netdev.o ptp.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 

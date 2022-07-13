@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This file contains miscellaneous low-level functions.
  *    Copyright (C) 1995-1996 Gary Thomas (gdt@linuxppc.org)
@@ -5,6 +9,7 @@
  * Largely rewritten by Cort Dougan (cort@cs.nmt.edu)
  * and Paul Mackerras.
  *
+<<<<<<< HEAD
  * kexec bits:
  * Copyright (C) 2002-2003 Eric Biederman  <ebiederm@xmission.com>
  * GameCube/ppc32 port Copyright (C) 2004 Albert Herranz
@@ -18,6 +23,11 @@
  *
  */
 
+=======
+ */
+
+#include <linux/export.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/sys.h>
 #include <asm/unistd.h>
 #include <asm/errno.h>
@@ -30,6 +40,7 @@
 #include <asm/thread_info.h>
 #include <asm/asm-offsets.h>
 #include <asm/processor.h>
+<<<<<<< HEAD
 #include <asm/kexec.h>
 #include <asm/bug.h>
 #include <asm/ptrace.h>
@@ -59,6 +70,14 @@ _GLOBAL(call_handle_irq)
 	mtlr	r0
 	blr
 
+=======
+#include <asm/bug.h>
+#include <asm/ptrace.h>
+#include <asm/feature-fixups.h>
+
+	.text
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * This returns the high 64 bits of the product of two 64-bit numbers.
  */
@@ -73,6 +92,7 @@ _GLOBAL(mulhdu)
 	addc	r7,r0,r7
 	addze	r4,r4
 1:	beqlr	cr1		/* all done if high part of A is 0 */
+<<<<<<< HEAD
 	mr	r10,r3
 	mullw	r9,r3,r5
 	mulhwu	r3,r3,r5
@@ -98,6 +118,18 @@ _GLOBAL(sub_reloc_offset)
 	subf	r5,r4,r5
 	subf	r3,r5,r3
 	mtlr	r0
+=======
+	mullw	r9,r3,r5
+	mulhwu	r10,r3,r5
+	beq	2f
+	mullw	r0,r3,r6
+	mulhwu	r8,r3,r6
+	addc	r7,r0,r7
+	adde	r4,r4,r8
+	addze	r10,r10
+2:	addc	r4,r4,r9
+	addze	r3,r10
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	blr
 
 /*
@@ -114,7 +146,11 @@ _GLOBAL(reloc_got2)
 	srwi.	r8,r8,2
 	beqlr
 	mtctr	r8
+<<<<<<< HEAD
 	bl	1f
+=======
+	bcl	20,31,$+4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 1:	mflr	r0
 	lis	r4,1b@ha
 	addi	r4,r4,1b@l
@@ -148,7 +184,11 @@ _GLOBAL(call_setup_cpu)
 	mtctr	r5
 	bctr
 
+<<<<<<< HEAD
 #if defined(CONFIG_CPU_FREQ_PMAC) && defined(CONFIG_6xx)
+=======
+#if defined(CONFIG_CPU_FREQ_PMAC) && defined(CONFIG_PPC_BOOK3S_32)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* This gets called by via-pmu.c to switch the PLL selection
  * on 750fx CPU. This function should really be moved to some
@@ -178,10 +218,20 @@ _GLOBAL(low_choose_750fx_pll)
 	or	r4,r4,r5
 	mtspr	SPRN_HID1,r4
 
+<<<<<<< HEAD
 	/* Store new HID1 image */
 	rlwinm	r6,r1,0,0,(31-THREAD_SHIFT)
 	lwz	r6,TI_CPU(r6)
 	slwi	r6,r6,2
+=======
+#ifdef CONFIG_SMP
+	/* Store new HID1 image */
+	lwz	r6,TASK_CPU(r2)
+	slwi	r6,r6,2
+#else
+	li	r6, 0
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addis	r6,r6,nap_save_hid1@ha
 	stw	r4,nap_save_hid1@l(r6)
 
@@ -218,6 +268,7 @@ _GLOBAL(low_choose_7447a_dfs)
 	mtmsr	r7
 	blr
 
+<<<<<<< HEAD
 #endif /* CONFIG_CPU_FREQ_PMAC && CONFIG_6xx */
 
 /*
@@ -232,6 +283,9 @@ _GLOBAL(_nmask_and_or_msr)
 	mtmsr	r0		/* Update machine state */
 	isync
 	blr			/* Done */
+=======
+#endif /* CONFIG_CPU_FREQ_PMAC && CONFIG_PPC_BOOK3S_32 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_40x
 
@@ -240,8 +294,12 @@ _GLOBAL(_nmask_and_or_msr)
  */
 _GLOBAL(real_readb)
 	mfmsr	r7
+<<<<<<< HEAD
 	ori	r0,r7,MSR_DR
 	xori	r0,r0,MSR_DR
+=======
+	rlwinm	r0,r7,0,~MSR_DR
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sync
 	mtmsr	r0
 	sync
@@ -252,14 +310,22 @@ _GLOBAL(real_readb)
 	sync
 	isync
 	blr
+<<<<<<< HEAD
+=======
+_ASM_NOKPROBE_SYMBOL(real_readb)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
  * Do an IO access in real mode
  */
 _GLOBAL(real_writeb)
 	mfmsr	r7
+<<<<<<< HEAD
 	ori	r0,r7,MSR_DR
 	xori	r0,r0,MSR_DR
+=======
+	rlwinm	r0,r7,0,~MSR_DR
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	sync
 	mtmsr	r0
 	sync
@@ -270,6 +336,7 @@ _GLOBAL(real_writeb)
 	sync
 	isync
 	blr
+<<<<<<< HEAD
 
 #endif /* CONFIG_40x */
 
@@ -513,6 +580,12 @@ _GLOBAL(clear_pages)
 	bdnz	1b
 	blr
 
+=======
+_ASM_NOKPROBE_SYMBOL(real_writeb)
+
+#endif /* CONFIG_40x */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copy a whole page.  We use the dcbz instruction on the destination
  * to reduce memory traffic (it eliminates the unnecessary reads of
@@ -530,7 +603,16 @@ _GLOBAL(clear_pages)
 	stwu	r9,16(r3)
 
 _GLOBAL(copy_page)
+<<<<<<< HEAD
 	addi	r3,r3,-4
+=======
+	rlwinm	r5, r3, 0, L1_CACHE_BYTES - 1
+	addi	r3,r3,-4
+
+0:	twnei	r5, 0	/* WARN if r3 is not cache aligned */
+	EMIT_WARN_ENTRY 0b,__FILE__,__LINE__, BUGFLAG_WARNING
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	addi	r4,r4,-4
 
 	li	r5,4
@@ -573,6 +655,7 @@ _GLOBAL(copy_page)
 	li	r0,MAX_COPY_PREFETCH
 	li	r11,4
 	b	2b
+<<<<<<< HEAD
 
 /*
  * void atomic_clear_mask(atomic_t mask, atomic_t *addr)
@@ -592,6 +675,9 @@ _GLOBAL(atomic_set_mask)
 	stwcx.	r5,0,r4
 	bne-	10b
 	blr
+=======
+EXPORT_SYMBOL(copy_page)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * Extended precision shifts.
@@ -619,6 +705,10 @@ _GLOBAL(__ashrdi3)
 	sraw	r3,r3,r5	# MSW = MSW >> count
 	or	r4,r4,r7	# LSW |= t2
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__ashrdi3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 _GLOBAL(__ashldi3)
 	subfic	r6,r5,32
@@ -630,6 +720,10 @@ _GLOBAL(__ashldi3)
 	slw	r4,r4,r5	# LSW = LSW << count
 	or	r3,r3,r7	# MSW |= t2
 	blr
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__ashldi3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 _GLOBAL(__lshrdi3)
 	subfic	r6,r5,32
@@ -641,8 +735,29 @@ _GLOBAL(__lshrdi3)
 	srw	r3,r3,r5	# MSW = MSW >> count
 	or	r4,r4,r7	# LSW |= t2
 	blr
+<<<<<<< HEAD
 
 /*
+=======
+EXPORT_SYMBOL(__lshrdi3)
+
+/*
+ * 64-bit comparison: __cmpdi2(s64 a, s64 b)
+ * Returns 0 if a < b, 1 if a == b, 2 if a > b.
+ */
+_GLOBAL(__cmpdi2)
+	cmpw	r3,r5
+	li	r3,1
+	bne	1f
+	cmplw	r4,r6
+	beqlr
+1:	li	r3,0
+	bltlr
+	li	r3,2
+	blr
+EXPORT_SYMBOL(__cmpdi2)
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * 64-bit comparison: __ucmpdi2(u64 a, u64 b)
  * Returns 0 if a < b, 1 if a == b, 2 if a > b.
  */
@@ -656,6 +771,7 @@ _GLOBAL(__ucmpdi2)
 	bltlr
 	li	r3,2
 	blr
+<<<<<<< HEAD
 
 _GLOBAL(abs)
 	srawi	r4,r3,31
@@ -695,17 +811,38 @@ _GLOBAL(kernel_thread)
 	lwz	r31,12(r1)
 	addi	r1,r1,16
 	blr
+=======
+EXPORT_SYMBOL(__ucmpdi2)
+
+_GLOBAL(__bswapdi2)
+	rotlwi  r9,r4,8
+	rotlwi  r10,r3,8
+	rlwimi  r9,r4,24,0,7
+	rlwimi  r10,r3,24,0,7
+	rlwimi  r9,r4,24,16,23
+	rlwimi  r10,r3,24,16,23
+	mr      r3,r9
+	mr      r4,r10
+	blr
+EXPORT_SYMBOL(__bswapdi2)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifdef CONFIG_SMP
 _GLOBAL(start_secondary_resume)
 	/* Reset stack */
+<<<<<<< HEAD
 	rlwinm	r1,r1,0,0,(31-THREAD_SHIFT)	/* current_thread_info() */
 	addi	r1,r1,THREAD_SIZE-STACK_FRAME_OVERHEAD
+=======
+	rlwinm	r1, r1, 0, 0, 31 - THREAD_SHIFT
+	addi	r1,r1,THREAD_SIZE-STACK_FRAME_MIN_SIZE
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	li	r3,0
 	stw	r3,0(r1)		/* Zero the stack frame pointer	*/
 	bl	start_secondary
 	b	.
 #endif /* CONFIG_SMP */
+<<<<<<< HEAD
 	
 /*
  * This routine is just here to keep GCC happy - sigh...
@@ -1008,3 +1145,5 @@ relocate_new_kernel_end:
 relocate_new_kernel_size:
 	.long relocate_new_kernel_end - relocate_new_kernel
 #endif
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

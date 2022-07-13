@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
  *
@@ -15,6 +16,11 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA
  * 02110-1301, USA.
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/*
+ * Copyright (c) 2010-2011, The Linux Foundation. All rights reserved.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 /*
@@ -39,7 +45,11 @@
  *   DJH 10/14/09 Version 1.3 added special loop for aligned case, was
  *                            overreading bloated codesize back up to 892
  *   DJH  4/20/10 Version 1.4 fixed Ldword_loop_epilog loop to prevent loads
+<<<<<<< HEAD
  *                            occuring if only 1 left outstanding, fixes bug
+=======
+ *                            occurring if only 1 left outstanding, fixes bug
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *                            # 3888, corrected for all alignments. Peeled off
  *                            1 32byte chunk from kernel loop and extended 8byte
  *                            loop at end to solve all combinations and prevent

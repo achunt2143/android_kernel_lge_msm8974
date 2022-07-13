@@ -1,5 +1,11 @@
+<<<<<<< HEAD
 /**
  * OMAP and TWL PMIC specific intializations.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * OMAP and TWL PMIC specific initializations.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright (C) 2010 Texas Instruments Incorporated.
  * Thara Gopinath
@@ -7,17 +13,26 @@
  * Nishanth Menon
  * Copyright (C) 2009 Nokia Corporation
  * Paul Walmsley
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/err.h>
 #include <linux/io.h>
 #include <linux/kernel.h>
+<<<<<<< HEAD
 #include <linux/i2c/twl.h>
 
+=======
+#include <linux/mfd/twl.h>
+
+#include "soc.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "voltage.h"
 
 #include "pm.h"
@@ -30,6 +45,7 @@
 #define OMAP3_VP_VSTEPMAX_VSTEPMAX	0x04
 #define OMAP3_VP_VLIMITTO_TIMEOUT_US	200
 
+<<<<<<< HEAD
 #define OMAP3430_VP1_VLIMITTO_VDDMIN	0x14
 #define OMAP3430_VP1_VLIMITTO_VDDMAX	0x42
 #define OMAP3430_VP2_VLIMITTO_VDDMIN	0x18
@@ -40,6 +56,8 @@
 #define OMAP3630_VP2_VLIMITTO_VDDMIN	0x18
 #define OMAP3630_VP2_VLIMITTO_VDDMAX	0x30
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define OMAP4_SRI2C_SLAVE_ADDR		0x12
 #define OMAP4_VDD_MPU_SR_VOLT_REG	0x55
 #define OMAP4_VDD_MPU_SR_CMD_REG	0x56
@@ -48,6 +66,7 @@
 #define OMAP4_VDD_CORE_SR_VOLT_REG	0x61
 #define OMAP4_VDD_CORE_SR_CMD_REG	0x62
 
+<<<<<<< HEAD
 #define OMAP4_VP_CONFIG_ERROROFFSET	0x00
 #define OMAP4_VP_VSTEPMIN_VSTEPMIN	0x01
 #define OMAP4_VP_VSTEPMAX_VSTEPMAX	0x04
@@ -71,6 +90,12 @@ static bool __initdata twl_sr_enable_autoinit;
 #define TWL4030_DCDC_GLOBAL_CFG        0x06
 #define REG_SMPS_OFFSET         0xE0
 #define SMARTREFLEX_ENABLE     BIT(3)
+=======
+static bool is_offset_valid;
+static u8 smps_offset;
+
+#define REG_SMPS_OFFSET         0xE0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static unsigned long twl4030_vsel_to_uv(const u8 vsel)
 {
@@ -158,6 +183,7 @@ static u8 twl6030_uv_to_vsel(unsigned long uv)
 static struct omap_voltdm_pmic omap3_mpu_pmic = {
 	.slew_rate		= 4000,
 	.step_size		= 12500,
+<<<<<<< HEAD
 	.on_volt		= 1200000,
 	.onlp_volt		= 1000000,
 	.ret_volt		= 975000,
@@ -168,6 +194,13 @@ static struct omap_voltdm_pmic omap3_mpu_pmic = {
 	.vp_vstepmax		= OMAP3_VP_VSTEPMAX_VSTEPMAX,
 	.vp_vddmin		= OMAP3430_VP1_VLIMITTO_VDDMIN,
 	.vp_vddmax		= OMAP3430_VP1_VLIMITTO_VDDMAX,
+=======
+	.vp_erroroffset		= OMAP3_VP_CONFIG_ERROROFFSET,
+	.vp_vstepmin		= OMAP3_VP_VSTEPMIN_VSTEPMIN,
+	.vp_vstepmax		= OMAP3_VP_VSTEPMAX_VSTEPMAX,
+	.vddmin			= 600000,
+	.vddmax			= 1450000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.vp_timeout_us		= OMAP3_VP_VLIMITTO_TIMEOUT_US,
 	.i2c_slave_addr		= OMAP3_SRI2C_SLAVE_ADDR,
 	.volt_reg_addr		= OMAP3_VDD_MPU_SR_CONTROL_REG,
@@ -179,6 +212,7 @@ static struct omap_voltdm_pmic omap3_mpu_pmic = {
 static struct omap_voltdm_pmic omap3_core_pmic = {
 	.slew_rate		= 4000,
 	.step_size		= 12500,
+<<<<<<< HEAD
 	.on_volt                = 1200000,
 	.onlp_volt              = 1000000,
 	.ret_volt               = 975000,
@@ -189,6 +223,13 @@ static struct omap_voltdm_pmic omap3_core_pmic = {
 	.vp_vstepmax		= OMAP3_VP_VSTEPMAX_VSTEPMAX,
 	.vp_vddmin		= OMAP3430_VP2_VLIMITTO_VDDMIN,
 	.vp_vddmax		= OMAP3430_VP2_VLIMITTO_VDDMAX,
+=======
+	.vp_erroroffset		= OMAP3_VP_CONFIG_ERROROFFSET,
+	.vp_vstepmin		= OMAP3_VP_VSTEPMIN_VSTEPMIN,
+	.vp_vstepmax		= OMAP3_VP_VSTEPMAX_VSTEPMAX,
+	.vddmin			= 600000,
+	.vddmax			= 1450000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.vp_timeout_us		= OMAP3_VP_VLIMITTO_TIMEOUT_US,
 	.i2c_slave_addr		= OMAP3_SRI2C_SLAVE_ADDR,
 	.volt_reg_addr		= OMAP3_VDD_CORE_SR_CONTROL_REG,
@@ -200,6 +241,7 @@ static struct omap_voltdm_pmic omap3_core_pmic = {
 static struct omap_voltdm_pmic omap4_mpu_pmic = {
 	.slew_rate		= 4000,
 	.step_size		= 12660,
+<<<<<<< HEAD
 	.on_volt		= 1375000,
 	.onlp_volt		= 1375000,
 	.ret_volt		= 830000,
@@ -210,11 +252,22 @@ static struct omap_voltdm_pmic omap4_mpu_pmic = {
 	.vp_vstepmax		= OMAP4_VP_VSTEPMAX_VSTEPMAX,
 	.vp_vddmin		= OMAP4_VP_MPU_VLIMITTO_VDDMIN,
 	.vp_vddmax		= OMAP4_VP_MPU_VLIMITTO_VDDMAX,
+=======
+	.vp_erroroffset		= OMAP4_VP_CONFIG_ERROROFFSET,
+	.vp_vstepmin		= OMAP4_VP_VSTEPMIN_VSTEPMIN,
+	.vp_vstepmax		= OMAP4_VP_VSTEPMAX_VSTEPMAX,
+	.vddmin			= 0,
+	.vddmax			= 2100000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.vp_timeout_us		= OMAP4_VP_VLIMITTO_TIMEOUT_US,
 	.i2c_slave_addr		= OMAP4_SRI2C_SLAVE_ADDR,
 	.volt_reg_addr		= OMAP4_VDD_MPU_SR_VOLT_REG,
 	.cmd_reg_addr		= OMAP4_VDD_MPU_SR_CMD_REG,
 	.i2c_high_speed		= true,
+<<<<<<< HEAD
+=======
+	.i2c_pad_load		= 3,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.vsel_to_uv		= twl6030_vsel_to_uv,
 	.uv_to_vsel		= twl6030_uv_to_vsel,
 };
@@ -222,6 +275,7 @@ static struct omap_voltdm_pmic omap4_mpu_pmic = {
 static struct omap_voltdm_pmic omap4_iva_pmic = {
 	.slew_rate		= 4000,
 	.step_size		= 12660,
+<<<<<<< HEAD
 	.on_volt		= 1188000,
 	.onlp_volt		= 1188000,
 	.ret_volt		= 830000,
@@ -232,11 +286,22 @@ static struct omap_voltdm_pmic omap4_iva_pmic = {
 	.vp_vstepmax		= OMAP4_VP_VSTEPMAX_VSTEPMAX,
 	.vp_vddmin		= OMAP4_VP_IVA_VLIMITTO_VDDMIN,
 	.vp_vddmax		= OMAP4_VP_IVA_VLIMITTO_VDDMAX,
+=======
+	.vp_erroroffset		= OMAP4_VP_CONFIG_ERROROFFSET,
+	.vp_vstepmin		= OMAP4_VP_VSTEPMIN_VSTEPMIN,
+	.vp_vstepmax		= OMAP4_VP_VSTEPMAX_VSTEPMAX,
+	.vddmin			= 0,
+	.vddmax			= 2100000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.vp_timeout_us		= OMAP4_VP_VLIMITTO_TIMEOUT_US,
 	.i2c_slave_addr		= OMAP4_SRI2C_SLAVE_ADDR,
 	.volt_reg_addr		= OMAP4_VDD_IVA_SR_VOLT_REG,
 	.cmd_reg_addr		= OMAP4_VDD_IVA_SR_CMD_REG,
 	.i2c_high_speed		= true,
+<<<<<<< HEAD
+=======
+	.i2c_pad_load		= 3,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.vsel_to_uv		= twl6030_vsel_to_uv,
 	.uv_to_vsel		= twl6030_uv_to_vsel,
 };
@@ -244,6 +309,7 @@ static struct omap_voltdm_pmic omap4_iva_pmic = {
 static struct omap_voltdm_pmic omap4_core_pmic = {
 	.slew_rate		= 4000,
 	.step_size		= 12660,
+<<<<<<< HEAD
 	.on_volt		= 1200000,
 	.onlp_volt		= 1200000,
 	.ret_volt		= 830000,
@@ -254,10 +320,22 @@ static struct omap_voltdm_pmic omap4_core_pmic = {
 	.vp_vstepmax		= OMAP4_VP_VSTEPMAX_VSTEPMAX,
 	.vp_vddmin		= OMAP4_VP_CORE_VLIMITTO_VDDMIN,
 	.vp_vddmax		= OMAP4_VP_CORE_VLIMITTO_VDDMAX,
+=======
+	.vp_erroroffset		= OMAP4_VP_CONFIG_ERROROFFSET,
+	.vp_vstepmin		= OMAP4_VP_VSTEPMIN_VSTEPMIN,
+	.vp_vstepmax		= OMAP4_VP_VSTEPMAX_VSTEPMAX,
+	.vddmin			= 0,
+	.vddmax			= 2100000,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.vp_timeout_us		= OMAP4_VP_VLIMITTO_TIMEOUT_US,
 	.i2c_slave_addr		= OMAP4_SRI2C_SLAVE_ADDR,
 	.volt_reg_addr		= OMAP4_VDD_CORE_SR_VOLT_REG,
 	.cmd_reg_addr		= OMAP4_VDD_CORE_SR_CMD_REG,
+<<<<<<< HEAD
+=======
+	.i2c_high_speed		= true,
+	.i2c_pad_load		= 3,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.vsel_to_uv		= twl6030_vsel_to_uv,
 	.uv_to_vsel		= twl6030_uv_to_vsel,
 };
@@ -266,7 +344,12 @@ int __init omap4_twl_init(void)
 {
 	struct voltagedomain *voltdm;
 
+<<<<<<< HEAD
 	if (!cpu_is_omap44xx())
+=======
+	if (!cpu_is_omap44xx() ||
+	    of_find_compatible_node(NULL, NULL, "motorola,cpcap"))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -ENODEV;
 
 	voltdm = voltdm_lookup("mpu");
@@ -288,6 +371,7 @@ int __init omap3_twl_init(void)
 	if (!cpu_is_omap34xx())
 		return -ENODEV;
 
+<<<<<<< HEAD
 	if (cpu_is_omap3630()) {
 		omap3_mpu_pmic.vp_vddmin = OMAP3630_VP1_VLIMITTO_VDDMIN;
 		omap3_mpu_pmic.vp_vddmax = OMAP3630_VP1_VLIMITTO_VDDMAX;
@@ -307,6 +391,8 @@ int __init omap3_twl_init(void)
 	if (!twl_sr_enable_autoinit)
 		omap3_twl_set_sr_bit(true);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	voltdm = voltdm_lookup("mpu_iva");
 	omap_voltage_register_pmic(voltdm, &omap3_mpu_pmic);
 
@@ -315,6 +401,7 @@ int __init omap3_twl_init(void)
 
 	return 0;
 }
+<<<<<<< HEAD
 
 /**
  * omap3_twl_set_sr_bit() - Set/Clear SR bit on TWL
@@ -356,3 +443,5 @@ err:
 	pr_err("%s: Error access to TWL4030 (%d)\n", __func__, ret);
 	return ret;
 }
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

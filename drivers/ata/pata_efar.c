@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *    pata_efar.c - EFAR PIIX clone controller driver
  *
@@ -14,7 +18,10 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/blkdev.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -234,7 +241,11 @@ static void efar_set_dmamode (struct ata_port *ap, struct ata_device *adev)
 	spin_unlock_irqrestore(&efar_lock, flags);
 }
 
+<<<<<<< HEAD
 static struct scsi_host_template efar_sht = {
+=======
+static const struct scsi_host_template efar_sht = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	ATA_BMDMA_SHT(DRV_NAME),
 };
 
@@ -289,12 +300,17 @@ static struct pci_driver efar_pci_driver = {
 	.id_table		= efar_pci_tbl,
 	.probe			= efar_init_one,
 	.remove			= ata_pci_remove_one,
+<<<<<<< HEAD
 #ifdef CONFIG_PM
+=======
+#ifdef CONFIG_PM_SLEEP
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.suspend		= ata_pci_device_suspend,
 	.resume			= ata_pci_device_resume,
 #endif
 };
 
+<<<<<<< HEAD
 static int __init efar_init(void)
 {
 	return pci_register_driver(&efar_pci_driver);
@@ -307,10 +323,16 @@ static void __exit efar_exit(void)
 
 module_init(efar_init);
 module_exit(efar_exit);
+=======
+module_pci_driver(efar_pci_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Alan Cox");
 MODULE_DESCRIPTION("SCSI low-level driver for EFAR PIIX clones");
 MODULE_LICENSE("GPL");
 MODULE_DEVICE_TABLE(pci, efar_pci_tbl);
 MODULE_VERSION(DRV_VERSION);
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* n2-asm.S: Niagara2 RNG hypervisor call assembler.
  *
  * Copyright (C) 2008 David S. Miller <davem@davemloft.net>

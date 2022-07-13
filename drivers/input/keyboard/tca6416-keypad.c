@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for keys on TCA6416 I2C IO expander
  *
  * Copyright (C) 2010 Texas Instruments
  *
  * Author : Sriramakrishnan.A.G. <srk@ti.com>
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/types.h>
@@ -17,7 +24,10 @@
 #include <linux/slab.h>
 #include <linux/interrupt.h>
 #include <linux/workqueue.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/i2c.h>
 #include <linux/input.h>
 #include <linux/tca6416_keypad.h>
@@ -27,6 +37,11 @@
 #define TCA6416_INVERT         2
 #define TCA6416_DIRECTION      3
 
+<<<<<<< HEAD
+=======
+#define TCA6416_POLL_INTERVAL	100 /* msec */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct i2c_device_id tca6416_id[] = {
 	{ "tca6416-keys", 16, },
 	{ "tca6408-keys", 8, },
@@ -36,7 +51,11 @@ MODULE_DEVICE_TABLE(i2c, tca6416_id);
 
 struct tca6416_drv_data {
 	struct input_dev *input;
+<<<<<<< HEAD
 	struct tca6416_button data[0];
+=======
+	struct tca6416_button data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct tca6416_keypad_chip {
@@ -46,12 +65,19 @@ struct tca6416_keypad_chip {
 
 	struct i2c_client *client;
 	struct input_dev *input;
+<<<<<<< HEAD
 	struct delayed_work dwork;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int io_size;
 	int irqnum;
 	u16 pinmask;
 	bool use_polling;
+<<<<<<< HEAD
 	struct tca6416_button buttons[0];
+=======
+	struct tca6416_button buttons[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int tca6416_write_reg(struct tca6416_keypad_chip *chip, int reg, u16 val)
@@ -88,9 +114,15 @@ static int tca6416_read_reg(struct tca6416_keypad_chip *chip, int reg, u16 *val)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void tca6416_keys_scan(struct tca6416_keypad_chip *chip)
 {
 	struct input_dev *input = chip->input;
+=======
+static void tca6416_keys_scan(struct input_dev *input)
+{
+	struct tca6416_keypad_chip *chip = input_get_drvdata(input);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 reg_val, val;
 	int error, i, pin_index;
 
@@ -125,13 +157,18 @@ static void tca6416_keys_scan(struct tca6416_keypad_chip *chip)
  */
 static irqreturn_t tca6416_keys_isr(int irq, void *dev_id)
 {
+<<<<<<< HEAD
 	struct tca6416_keypad_chip *chip = dev_id;
 
 	tca6416_keys_scan(chip);
+=======
+	tca6416_keys_scan(dev_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static void tca6416_keys_work_func(struct work_struct *work)
 {
 	struct tca6416_keypad_chip *chip =
@@ -141,10 +178,13 @@ static void tca6416_keys_work_func(struct work_struct *work)
 	schedule_delayed_work(&chip->dwork, msecs_to_jiffies(100));
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int tca6416_keys_open(struct input_dev *dev)
 {
 	struct tca6416_keypad_chip *chip = input_get_drvdata(dev);
 
+<<<<<<< HEAD
 	/* Get initial device state in case it has switches */
 	tca6416_keys_scan(chip);
 
@@ -152,6 +192,13 @@ static int tca6416_keys_open(struct input_dev *dev)
 		schedule_delayed_work(&chip->dwork, msecs_to_jiffies(100));
 	else
 		enable_irq(chip->irqnum);
+=======
+	if (!chip->use_polling) {
+		/* Get initial device state in case it has switches */
+		tca6416_keys_scan(dev);
+		enable_irq(chip->client->irq);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -160,6 +207,7 @@ static void tca6416_keys_close(struct input_dev *dev)
 {
 	struct tca6416_keypad_chip *chip = input_get_drvdata(dev);
 
+<<<<<<< HEAD
 	if (chip->use_polling)
 		cancel_delayed_work_sync(&chip->dwork);
 	else
@@ -167,6 +215,13 @@ static void tca6416_keys_close(struct input_dev *dev)
 }
 
 static int __devinit tca6416_setup_registers(struct tca6416_keypad_chip *chip)
+=======
+	if (!chip->use_polling)
+		disable_irq(chip->client->irq);
+}
+
+static int tca6416_setup_registers(struct tca6416_keypad_chip *chip)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int error;
 
@@ -197,9 +252,15 @@ static int __devinit tca6416_setup_registers(struct tca6416_keypad_chip *chip)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int __devinit tca6416_keypad_probe(struct i2c_client *client,
 				   const struct i2c_device_id *id)
 {
+=======
+static int tca6416_keypad_probe(struct i2c_client *client)
+{
+	const struct i2c_device_id *id = i2c_client_get_device_id(client);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tca6416_keys_platform_data *pdata;
 	struct tca6416_keypad_chip *chip;
 	struct input_dev *input;
@@ -213,12 +274,17 @@ static int __devinit tca6416_keypad_probe(struct i2c_client *client,
 		return -ENODEV;
 	}
 
+<<<<<<< HEAD
 	pdata = client->dev.platform_data;
+=======
+	pdata = dev_get_platdata(&client->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pdata) {
 		dev_dbg(&client->dev, "no platform data\n");
 		return -EINVAL;
 	}
 
+<<<<<<< HEAD
 	chip = kzalloc(sizeof(struct tca6416_keypad_chip) +
 		       pdata->nbuttons * sizeof(struct tca6416_button),
 		       GFP_KERNEL);
@@ -227,6 +293,17 @@ static int __devinit tca6416_keypad_probe(struct i2c_client *client,
 		error = -ENOMEM;
 		goto fail1;
 	}
+=======
+	chip = devm_kzalloc(&client->dev,
+			    struct_size(chip, buttons, pdata->nbuttons),
+			    GFP_KERNEL);
+	if (!chip)
+		return -ENOMEM;
+
+	input = devm_input_allocate_device(&client->dev);
+	if (!input)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	chip->client = client;
 	chip->input = input;
@@ -234,11 +311,16 @@ static int __devinit tca6416_keypad_probe(struct i2c_client *client,
 	chip->pinmask = pdata->pinmask;
 	chip->use_polling = pdata->use_polling;
 
+<<<<<<< HEAD
 	INIT_DELAYED_WORK(&chip->dwork, tca6416_keys_work_func);
 
 	input->phys = "tca6416-keys/input0";
 	input->name = client->name;
 	input->dev.parent = &client->dev;
+=======
+	input->phys = "tca6416-keys/input0";
+	input->name = client->name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	input->open = tca6416_keys_open;
 	input->close = tca6416_keys_close;
@@ -268,6 +350,7 @@ static int __devinit tca6416_keypad_probe(struct i2c_client *client,
 	 */
 	error = tca6416_setup_registers(chip);
 	if (error)
+<<<<<<< HEAD
 		goto fail1;
 
 	if (!chip->use_polling) {
@@ -287,12 +370,38 @@ static int __devinit tca6416_keypad_probe(struct i2c_client *client,
 			goto fail1;
 		}
 		disable_irq(chip->irqnum);
+=======
+		return error;
+
+	if (chip->use_polling) {
+		error = input_setup_polling(input, tca6416_keys_scan);
+		if (error) {
+			dev_err(&client->dev, "Failed to setup polling\n");
+			return error;
+		}
+
+		input_set_poll_interval(input, TCA6416_POLL_INTERVAL);
+	} else {
+		error = devm_request_threaded_irq(&client->dev, client->irq,
+						  NULL, tca6416_keys_isr,
+						  IRQF_TRIGGER_FALLING |
+							IRQF_ONESHOT |
+							IRQF_NO_AUTOEN,
+						  "tca6416-keypad", input);
+		if (error) {
+			dev_dbg(&client->dev,
+				"Unable to claim irq %d; error %d\n",
+				client->irq, error);
+			return error;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = input_register_device(input);
 	if (error) {
 		dev_dbg(&client->dev,
 			"Unable to register input device, error: %d\n", error);
+<<<<<<< HEAD
 		goto fail2;
 	}
 
@@ -323,10 +432,17 @@ static int __devexit tca6416_keypad_remove(struct i2c_client *client)
 
 	input_unregister_device(chip->input);
 	kfree(chip);
+=======
+		return error;
+	}
+
+	i2c_set_clientdata(client, chip);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM_SLEEP
 static int tca6416_keypad_suspend(struct device *dev)
 {
@@ -361,6 +477,13 @@ static struct i2c_driver tca6416_keypad_driver = {
 	},
 	.probe		= tca6416_keypad_probe,
 	.remove		= __devexit_p(tca6416_keypad_remove),
+=======
+static struct i2c_driver tca6416_keypad_driver = {
+	.driver = {
+		.name	= "tca6416-keypad",
+	},
+	.probe		= tca6416_keypad_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table	= tca6416_id,
 };
 
@@ -378,5 +501,9 @@ static void __exit tca6416_keypad_exit(void)
 module_exit(tca6416_keypad_exit);
 
 MODULE_AUTHOR("Sriramakrishnan <srk@ti.com>");
+<<<<<<< HEAD
 MODULE_DESCRIPTION("Keypad driver over tca6146 IO expander");
+=======
+MODULE_DESCRIPTION("Keypad driver over tca6416 IO expander");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL");

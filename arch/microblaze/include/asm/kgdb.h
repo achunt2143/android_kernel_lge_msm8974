@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef __KERNEL__
 #ifndef __MICROBLAZE_KGDB_H__
 #define __MICROBLAZE_KGDB_H__
@@ -23,6 +27,12 @@ static inline void arch_kgdb_breakpoint(void)
 	__asm__ __volatile__("brki r16, 0x18;");
 }
 
+<<<<<<< HEAD
+=======
+struct pt_regs;
+asmlinkage void microblaze_kgdb_break(struct pt_regs *regs);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* __ASSEMBLY__ */
 #endif /* __MICROBLAZE_KGDB_H__ */
 #endif /* __KERNEL__ */

@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* sunhv.c: Serial driver for SUN4V hypervisor console.
  *
  * Copyright (C) 2006, 2007 David S. Miller (davem@davemloft.net)
  */
 
+<<<<<<< HEAD
 #include <linux/module.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/errno.h>
 #include <linux/tty.h>
@@ -17,6 +24,7 @@
 #include <linux/slab.h>
 #include <linux/delay.h>
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/of_device.h>
 
 #include <asm/hypervisor.h>
@@ -29,6 +37,16 @@
 #define SUPPORT_SYSRQ
 #endif
 
+=======
+#include <linux/of.h>
+#include <linux/platform_device.h>
+
+#include <asm/hypervisor.h>
+#include <asm/spitfire.h>
+#include <asm/irq.h>
+#include <asm/setup.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/serial_core.h>
 #include <linux/sunserialcore.h>
 
@@ -51,8 +69,12 @@ static void transmit_chars_putchar(struct uart_port *port, struct circ_buf *xmit
 		if (status != HV_EOK)
 			break;
 
+<<<<<<< HEAD
 		xmit->tail = (xmit->tail + 1) & (UART_XMIT_SIZE - 1);
 		port->icount.tx++;
+=======
+		uart_xmit_advance(port, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -67,12 +89,20 @@ static void transmit_chars_write(struct uart_port *port, struct circ_buf *xmit)
 		status = sun4v_con_write(ra, len, &sent);
 		if (status != HV_EOK)
 			break;
+<<<<<<< HEAD
 		xmit->tail = (xmit->tail + sent) & (UART_XMIT_SIZE - 1);
 		port->icount.tx += sent;
 	}
 }
 
 static int receive_chars_getchar(struct uart_port *port, struct tty_struct *tty)
+=======
+		uart_xmit_advance(port, sent);
+	}
+}
+
+static int receive_chars_getchar(struct uart_port *port)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int saw_console_brk = 0;
 	int limit = 10000;
@@ -93,6 +123,7 @@ static int receive_chars_getchar(struct uart_port *port, struct tty_struct *tty)
 
 		if (c == CON_HUP) {
 			hung_up = 1;
+<<<<<<< HEAD
 			uart_handle_dcd_change(port, 0);
 		} else if (hung_up) {
 			hung_up = 0;
@@ -100,6 +131,15 @@ static int receive_chars_getchar(struct uart_port *port, struct tty_struct *tty)
 		}
 
 		if (tty == NULL) {
+=======
+			uart_handle_dcd_change(port, false);
+		} else if (hung_up) {
+			hung_up = 0;
+			uart_handle_dcd_change(port, true);
+		}
+
+		if (port->state == NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			uart_handle_sysrq_char(port, c);
 			continue;
 		}
@@ -109,15 +149,25 @@ static int receive_chars_getchar(struct uart_port *port, struct tty_struct *tty)
 		if (uart_handle_sysrq_char(port, c))
 			continue;
 
+<<<<<<< HEAD
 		tty_insert_flip_char(tty, c, TTY_NORMAL);
+=======
+		tty_insert_flip_char(&port->state->port, c, TTY_NORMAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return saw_console_brk;
 }
 
+<<<<<<< HEAD
 static int receive_chars_read(struct uart_port *port, struct tty_struct *tty)
 {
 	int saw_console_brk = 0;
+=======
+static int receive_chars_read(struct uart_port *port)
+{
+	static int saw_console_brk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int limit = 10000;
 
 	while (limit-- > 0) {
@@ -129,6 +179,12 @@ static int receive_chars_read(struct uart_port *port, struct tty_struct *tty)
 			bytes_read = 0;
 
 			if (stat == CON_BREAK) {
+<<<<<<< HEAD
+=======
+				if (saw_console_brk)
+					sun_do_break();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				if (uart_handle_break(port))
 					continue;
 				saw_console_brk = 1;
@@ -136,7 +192,11 @@ static int receive_chars_read(struct uart_port *port, struct tty_struct *tty)
 				bytes_read = 1;
 			} else if (stat == CON_HUP) {
 				hung_up = 1;
+<<<<<<< HEAD
 				uart_handle_dcd_change(port, 0);
+=======
+				uart_handle_dcd_change(port, false);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				continue;
 			} else {
 				/* HV_EWOULDBLOCK, etc.  */
@@ -146,6 +206,7 @@ static int receive_chars_read(struct uart_port *port, struct tty_struct *tty)
 
 		if (hung_up) {
 			hung_up = 0;
+<<<<<<< HEAD
 			uart_handle_dcd_change(port, 1);
 		}
 
@@ -153,11 +214,28 @@ static int receive_chars_read(struct uart_port *port, struct tty_struct *tty)
 			uart_handle_sysrq_char(port, con_read_page[i]);
 
 		if (tty == NULL)
+=======
+			uart_handle_dcd_change(port, true);
+		}
+
+		if (port->sysrq != 0 &&  *con_read_page) {
+			for (i = 0; i < bytes_read; i++)
+				uart_handle_sysrq_char(port, con_read_page[i]);
+			saw_console_brk = 0;
+		}
+
+		if (port->state == NULL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			continue;
 
 		port->icount.rx += bytes_read;
 
+<<<<<<< HEAD
 		tty_insert_flip_string(tty, con_read_page, bytes_read);
+=======
+		tty_insert_flip_string(&port->state->port, con_read_page,
+				bytes_read);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	return saw_console_brk;
@@ -165,19 +243,31 @@ static int receive_chars_read(struct uart_port *port, struct tty_struct *tty)
 
 struct sunhv_ops {
 	void (*transmit_chars)(struct uart_port *port, struct circ_buf *xmit);
+<<<<<<< HEAD
 	int (*receive_chars)(struct uart_port *port, struct tty_struct *tty);
 };
 
 static struct sunhv_ops bychar_ops = {
+=======
+	int (*receive_chars)(struct uart_port *port);
+};
+
+static const struct sunhv_ops bychar_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.transmit_chars = transmit_chars_putchar,
 	.receive_chars = receive_chars_getchar,
 };
 
+<<<<<<< HEAD
 static struct sunhv_ops bywrite_ops = {
+=======
+static const struct sunhv_ops bywrite_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.transmit_chars = transmit_chars_write,
 	.receive_chars = receive_chars_read,
 };
 
+<<<<<<< HEAD
 static struct sunhv_ops *sunhv_ops = &bychar_ops;
 
 static struct tty_struct *receive_chars(struct uart_port *port)
@@ -191,6 +281,21 @@ static struct tty_struct *receive_chars(struct uart_port *port)
 		sun_do_break();
 
 	return tty;
+=======
+static const struct sunhv_ops *sunhv_ops = &bychar_ops;
+
+static struct tty_port *receive_chars(struct uart_port *port)
+{
+	struct tty_port *tport = NULL;
+
+	if (port->state != NULL)		/* Unopened serial console */
+		tport = &port->state->port;
+
+	if (sunhv_ops->receive_chars(port))
+		sun_do_break();
+
+	return tport;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void transmit_chars(struct uart_port *port)
@@ -213,6 +318,7 @@ static void transmit_chars(struct uart_port *port)
 static irqreturn_t sunhv_interrupt(int irq, void *dev_id)
 {
 	struct uart_port *port = dev_id;
+<<<<<<< HEAD
 	struct tty_struct *tty;
 	unsigned long flags;
 
@@ -223,6 +329,18 @@ static irqreturn_t sunhv_interrupt(int irq, void *dev_id)
 
 	if (tty)
 		tty_flip_buffer_push(tty);
+=======
+	struct tty_port *tport;
+	unsigned long flags;
+
+	uart_port_lock_irqsave(port, &flags);
+	tport = receive_chars(port);
+	transmit_chars(port);
+	uart_port_unlock_irqrestore(port, flags);
+
+	if (tport)
+		tty_flip_buffer_push(tport);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return IRQ_HANDLED;
 }
@@ -267,7 +385,14 @@ static void sunhv_send_xchar(struct uart_port *port, char ch)
 	unsigned long flags;
 	int limit = 10000;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
+=======
+	if (ch == __DISABLED_CHAR)
+		return;
+
+	uart_port_lock_irqsave(port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (limit-- > 0) {
 		long status = sun4v_con_putchar(ch);
@@ -276,7 +401,11 @@ static void sunhv_send_xchar(struct uart_port *port, char ch)
 		udelay(1);
 	}
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* port->lock held by caller.  */
@@ -284,11 +413,14 @@ static void sunhv_stop_rx(struct uart_port *port)
 {
 }
 
+<<<<<<< HEAD
 /* port->lock held by caller.  */
 static void sunhv_enable_ms(struct uart_port *port)
 {
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* port->lock is not held.  */
 static void sunhv_break_ctl(struct uart_port *port, int break_state)
 {
@@ -296,7 +428,11 @@ static void sunhv_break_ctl(struct uart_port *port, int break_state)
 		unsigned long flags;
 		int limit = 10000;
 
+<<<<<<< HEAD
 		spin_lock_irqsave(&port->lock, flags);
+=======
+		uart_port_lock_irqsave(port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		while (limit-- > 0) {
 			long status = sun4v_con_putchar(CON_BREAK);
@@ -305,7 +441,11 @@ static void sunhv_break_ctl(struct uart_port *port, int break_state)
 			udelay(1);
 		}
 
+<<<<<<< HEAD
 		spin_unlock_irqrestore(&port->lock, flags);
+=======
+		uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -322,14 +462,22 @@ static void sunhv_shutdown(struct uart_port *port)
 
 /* port->lock is not held.  */
 static void sunhv_set_termios(struct uart_port *port, struct ktermios *termios,
+<<<<<<< HEAD
 			      struct ktermios *old)
+=======
+			      const struct ktermios *old)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int baud = uart_get_baud_rate(port, termios, old, 0, 4000000);
 	unsigned int quot = uart_get_divisor(port, baud);
 	unsigned int iflag, cflag;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&port->lock, flags);
+=======
+	uart_port_lock_irqsave(port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	iflag = termios->c_iflag;
 	cflag = termios->c_cflag;
@@ -344,7 +492,11 @@ static void sunhv_set_termios(struct uart_port *port, struct ktermios *termios,
 	uart_update_timeout(port, cflag,
 			    (port->uartclk / (16 * quot)));
 
+<<<<<<< HEAD
 	spin_unlock_irqrestore(&port->lock, flags);
+=======
+	uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const char *sunhv_type(struct uart_port *port)
@@ -370,7 +522,11 @@ static int sunhv_verify_port(struct uart_port *port, struct serial_struct *ser)
 	return -EINVAL;
 }
 
+<<<<<<< HEAD
 static struct uart_ops sunhv_pops = {
+=======
+static const struct uart_ops sunhv_pops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.tx_empty	= sunhv_tx_empty,
 	.set_mctrl	= sunhv_set_mctrl,
 	.get_mctrl	= sunhv_get_mctrl,
@@ -378,7 +534,10 @@ static struct uart_ops sunhv_pops = {
 	.start_tx	= sunhv_start_tx,
 	.send_xchar	= sunhv_send_xchar,
 	.stop_rx	= sunhv_stop_rx,
+<<<<<<< HEAD
 	.enable_ms	= sunhv_enable_ms,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.break_ctl	= sunhv_break_ctl,
 	.startup	= sunhv_startup,
 	.shutdown	= sunhv_shutdown,
@@ -393,12 +552,25 @@ static struct uart_ops sunhv_pops = {
 static struct uart_driver sunhv_reg = {
 	.owner			= THIS_MODULE,
 	.driver_name		= "sunhv",
+<<<<<<< HEAD
 	.dev_name		= "ttyS",
+=======
+	.dev_name		= "ttyHV",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.major			= TTY_MAJOR,
 };
 
 static struct uart_port *sunhv_port;
 
+<<<<<<< HEAD
+=======
+void sunhv_migrate_hvcons_irq(int cpu)
+{
+	/* Migrate hvcons irq to param cpu */
+	irq_force_affinity(sunhv_port->irq, cpumask_of(cpu));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Copy 's' into the con_write_page, decoding "\n" into
  * "\r\n" along the way.  We have to return two lengths
  * because the caller needs to know how much to advance
@@ -432,6 +604,7 @@ static void sunhv_console_write_paged(struct console *con, const char *s, unsign
 	unsigned long flags;
 	int locked = 1;
 
+<<<<<<< HEAD
 	local_irq_save(flags);
 	if (port->sysrq) {
 		locked = 0;
@@ -439,6 +612,12 @@ static void sunhv_console_write_paged(struct console *con, const char *s, unsign
 		locked = spin_trylock(&port->lock);
 	} else
 		spin_lock(&port->lock);
+=======
+	if (port->sysrq || oops_in_progress)
+		locked = uart_port_trylock_irqsave(port, &flags);
+	else
+		uart_port_lock_irqsave(port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	while (n > 0) {
 		unsigned long ra = __pa(con_write_page);
@@ -469,8 +648,12 @@ static void sunhv_console_write_paged(struct console *con, const char *s, unsign
 	}
 
 	if (locked)
+<<<<<<< HEAD
 		spin_unlock(&port->lock);
 	local_irq_restore(flags);
+=======
+		uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static inline void sunhv_console_putchar(struct uart_port *port, char c)
@@ -491,6 +674,7 @@ static void sunhv_console_write_bychar(struct console *con, const char *s, unsig
 	unsigned long flags;
 	int i, locked = 1;
 
+<<<<<<< HEAD
 	local_irq_save(flags);
 	if (port->sysrq) {
 		locked = 0;
@@ -498,6 +682,12 @@ static void sunhv_console_write_bychar(struct console *con, const char *s, unsig
 		locked = spin_trylock(&port->lock);
 	} else
 		spin_lock(&port->lock);
+=======
+	if (port->sysrq || oops_in_progress)
+		locked = uart_port_trylock_irqsave(port, &flags);
+	else
+		uart_port_lock_irqsave(port, &flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < n; i++) {
 		if (*s == '\n')
@@ -506,8 +696,12 @@ static void sunhv_console_write_bychar(struct console *con, const char *s, unsig
 	}
 
 	if (locked)
+<<<<<<< HEAD
 		spin_unlock(&port->lock);
 	local_irq_restore(flags);
+=======
+		uart_port_unlock_irqrestore(port, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct console sunhv_console = {
@@ -519,7 +713,11 @@ static struct console sunhv_console = {
 	.data	=	&sunhv_reg,
 };
 
+<<<<<<< HEAD
 static int __devinit hv_probe(struct platform_device *op)
+=======
+static int hv_probe(struct platform_device *op)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct uart_port *port;
 	unsigned long minor;
@@ -550,6 +748,10 @@ static int __devinit hv_probe(struct platform_device *op)
 
 	sunhv_port = port;
 
+<<<<<<< HEAD
+=======
+	port->has_sysrq = 1;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	port->line = 0;
 	port->ops = &sunhv_pops;
 	port->type = PORT_SUNHV;
@@ -576,7 +778,11 @@ static int __devinit hv_probe(struct platform_device *op)
 	if (err)
 		goto out_remove_port;
 
+<<<<<<< HEAD
 	dev_set_drvdata(&op->dev, port);
+=======
+	platform_set_drvdata(op, port);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 
@@ -598,15 +804,22 @@ out_free_port:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit hv_remove(struct platform_device *dev)
 {
 	struct uart_port *port = dev_get_drvdata(&dev->dev);
+=======
+static void hv_remove(struct platform_device *dev)
+{
+	struct uart_port *port = platform_get_drvdata(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	free_irq(port->irq, port);
 
 	uart_remove_one_port(&sunhv_reg, port);
 
 	sunserial_unregister_minors(&sunhv_reg, 1);
+<<<<<<< HEAD
 
 	kfree(port);
 	sunhv_port = NULL;
@@ -614,6 +827,12 @@ static int __devexit hv_remove(struct platform_device *dev)
 	dev_set_drvdata(&dev->dev, NULL);
 
 	return 0;
+=======
+	kfree(con_read_page);
+	kfree(con_write_page);
+	kfree(port);
+	sunhv_port = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct of_device_id hv_match[] = {
@@ -627,16 +846,26 @@ static const struct of_device_id hv_match[] = {
 	},
 	{},
 };
+<<<<<<< HEAD
 MODULE_DEVICE_TABLE(of, hv_match);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct platform_driver hv_driver = {
 	.driver = {
 		.name = "hv",
+<<<<<<< HEAD
 		.owner = THIS_MODULE,
 		.of_match_table = hv_match,
 	},
 	.probe		= hv_probe,
 	.remove		= __devexit_p(hv_remove),
+=======
+		.of_match_table = hv_match,
+	},
+	.probe		= hv_probe,
+	.remove_new	= hv_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init sunhv_init(void)
@@ -646,6 +875,7 @@ static int __init sunhv_init(void)
 
 	return platform_driver_register(&hv_driver);
 }
+<<<<<<< HEAD
 
 static void __exit sunhv_exit(void)
 {
@@ -655,7 +885,16 @@ static void __exit sunhv_exit(void)
 module_init(sunhv_init);
 module_exit(sunhv_exit);
 
+=======
+device_initcall(sunhv_init);
+
+#if 0 /* ...def MODULE ; never supported as such */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("David S. Miller");
 MODULE_DESCRIPTION("SUN4V Hypervisor console driver");
 MODULE_VERSION("2.0");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

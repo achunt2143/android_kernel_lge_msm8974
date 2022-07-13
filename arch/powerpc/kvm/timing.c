@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, version 2, as
@@ -11,6 +12,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Copyright IBM Corp. 2008
  *
@@ -110,7 +115,10 @@ void kvmppc_update_timing_stats(struct kvm_vcpu *vcpu)
 
 static const char *kvm_exit_names[__NUMBER_OF_KVM_EXIT_TYPES] = {
 	[MMIO_EXITS] =              "MMIO",
+<<<<<<< HEAD
 	[DCR_EXITS] =               "DCR",
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	[SIGNAL_EXITS] =            "SIGNAL",
 	[ITLB_REAL_MISS_EXITS] =    "ITLBREAL",
 	[ITLB_VIRT_MISS_EXITS] =    "ITLBVIRT",
@@ -144,8 +152,12 @@ static int kvmppc_exit_timing_show(struct seq_file *m, void *private)
 	int i;
 	u64 min, max, sum, sum_quad;
 
+<<<<<<< HEAD
 	seq_printf(m, "%s", "type	count	min	max	sum	sum_squared\n");
 
+=======
+	seq_puts(m, "type	count	min	max	sum	sum_squared\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < __NUMBER_OF_KVM_EXIT_TYPES; i++) {
 
@@ -217,6 +229,7 @@ static const struct file_operations kvmppc_exit_timing_fops = {
 	.release = single_release,
 };
 
+<<<<<<< HEAD
 void kvmppc_create_vcpu_debugfs(struct kvm_vcpu *vcpu, unsigned int id)
 {
 	static char dbg_fname[50];
@@ -243,4 +256,12 @@ void kvmppc_remove_vcpu_debugfs(struct kvm_vcpu *vcpu)
 		debugfs_remove(vcpu->arch.debugfs_exit_timing);
 		vcpu->arch.debugfs_exit_timing = NULL;
 	}
+=======
+int kvmppc_create_vcpu_debugfs_e500(struct kvm_vcpu *vcpu,
+				    struct dentry *debugfs_dentry)
+{
+	debugfs_create_file("timing", 0666, debugfs_dentry,
+			    vcpu, &kvmppc_exit_timing_fops);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

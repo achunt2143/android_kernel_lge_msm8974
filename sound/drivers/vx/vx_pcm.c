@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram VX soundcards
  *
@@ -5,6 +9,7 @@
  *
  * Copyright (c) 2002,2003 by Takashi Iwai <tiwai@suse.de>
  *
+<<<<<<< HEAD
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
  *   the Free Software Foundation; either version 2 of the License, or
@@ -20,6 +25,8 @@
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * STRATEGY
  *  for playback, we send series of "chunks", which size is equal with the
  *  IBL size, typically 126 samples.  at each end of chunk, the end-of-buffer
@@ -39,7 +46,10 @@
  *  the current point of read buffer is kept in pipe->hw_ptr.  note that
  *  this is in bytes.
  *
+<<<<<<< HEAD
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * TODO
  *  - linked trigger for full-duplex mode.
  *  - scheduled action on the stream.
@@ -75,7 +85,10 @@ static void vx_pcm_read_per_bytes(struct vx_core *chip, struct snd_pcm_runtime *
 	*buf++ = vx_inb(chip, RXL);
 	if (++offset >= pipe->buffer_bytes) {
 		offset = 0;
+<<<<<<< HEAD
 		buf = (unsigned char *)runtime->dma_area;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	pipe->hw_ptr = offset;
 }
@@ -184,7 +197,11 @@ static int vx_set_format(struct vx_core *chip, struct vx_pipe *pipe,
 	default : 
 		snd_BUG();
 		return -EINVAL;
+<<<<<<< HEAD
         };
+=======
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return vx_set_stream_format(chip, pipe, header);
 }
@@ -229,7 +246,11 @@ static int vx_get_pipe_state(struct vx_core *chip, struct vx_pipe *pipe, int *st
 
 	vx_init_rmh(&rmh, CMD_PIPE_STATE);
 	vx_set_pipe_cmd_params(&rmh, pipe->is_capture, pipe->number, 0);
+<<<<<<< HEAD
 	err = vx_send_msg_nolock(chip, &rmh); /* no lock needed for trigger */ 
+=======
+	err = vx_send_msg(chip, &rmh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (! err)
 		*state = (rmh.Stat[0] & (1 << pipe->number)) ? 1 : 0;
 	return err;
@@ -280,7 +301,11 @@ static int vx_pipe_can_start(struct vx_core *chip, struct vx_pipe *pipe)
 	vx_set_pipe_cmd_params(&rmh, pipe->is_capture, pipe->number, 0);
 	rmh.Cmd[0] |= 1;
 
+<<<<<<< HEAD
 	err = vx_send_msg_nolock(chip, &rmh); /* no lock needed for trigger */ 
+=======
+	err = vx_send_msg(chip, &rmh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (! err) {
 		if (rmh.Stat[0])
 			err = 1;
@@ -300,7 +325,11 @@ static int vx_conf_pipe(struct vx_core *chip, struct vx_pipe *pipe)
 	if (pipe->is_capture)
 		rmh.Cmd[0] |= COMMAND_RECORD_MASK;
 	rmh.Cmd[1] = 1 << pipe->number;
+<<<<<<< HEAD
 	return vx_send_msg_nolock(chip, &rmh); /* no lock needed for trigger */
+=======
+	return vx_send_msg(chip, &rmh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
@@ -311,7 +340,11 @@ static int vx_send_irqa(struct vx_core *chip)
 	struct vx_rmh rmh;
 
 	vx_init_rmh(&rmh, CMD_SEND_IRQA);
+<<<<<<< HEAD
 	return vx_send_msg_nolock(chip, &rmh); /* no lock needed for trigger */ 
+=======
+	return vx_send_msg(chip, &rmh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -357,10 +390,19 @@ static int vx_toggle_pipe(struct vx_core *chip, struct vx_pipe *pipe, int state)
 		}
 	}
     
+<<<<<<< HEAD
 	if ((err = vx_conf_pipe(chip, pipe)) < 0)
 		return err;
 
 	if ((err = vx_send_irqa(chip)) < 0)
+=======
+	err = vx_conf_pipe(chip, pipe);
+	if (err < 0)
+		return err;
+
+	err = vx_send_irqa(chip);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
     
 	/* If it completes successfully, wait for the pipes
@@ -389,7 +431,11 @@ static int vx_stop_pipe(struct vx_core *chip, struct vx_pipe *pipe)
 	struct vx_rmh rmh;
 	vx_init_rmh(&rmh, CMD_STOP_PIPE);
 	vx_set_pipe_cmd_params(&rmh, pipe->is_capture, pipe->number, 0);
+<<<<<<< HEAD
 	return vx_send_msg_nolock(chip, &rmh); /* no lock needed for trigger */ 
+=======
+	return vx_send_msg(chip, &rmh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -477,7 +523,11 @@ static int vx_start_stream(struct vx_core *chip, struct vx_pipe *pipe)
 	vx_init_rmh(&rmh, CMD_START_ONE_STREAM);
 	vx_set_stream_cmd_params(&rmh, pipe->is_capture, pipe->number);
 	vx_set_differed_time(chip, &rmh, pipe);
+<<<<<<< HEAD
 	return vx_send_msg_nolock(chip, &rmh); /* no lock needed for trigger */ 
+=======
+	return vx_send_msg(chip, &rmh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -492,7 +542,11 @@ static int vx_stop_stream(struct vx_core *chip, struct vx_pipe *pipe)
 
 	vx_init_rmh(&rmh, CMD_STOP_STREAM);
 	vx_set_stream_cmd_params(&rmh, pipe->is_capture, pipe->number);
+<<<<<<< HEAD
 	return vx_send_msg_nolock(chip, &rmh); /* no lock needed for trigger */ 
+=======
+	return vx_send_msg(chip, &rmh);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -500,7 +554,11 @@ static int vx_stop_stream(struct vx_core *chip, struct vx_pipe *pipe)
  * playback hw information
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware vx_pcm_playback_hw = {
+=======
+static const struct snd_pcm_hardware vx_pcm_playback_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_MMAP_VALID /*|*/
 				 /*SNDRV_PCM_INFO_RESUME*/),
@@ -520,8 +578,11 @@ static struct snd_pcm_hardware vx_pcm_playback_hw = {
 };
 
 
+<<<<<<< HEAD
 static void vx_pcm_delayed_start(unsigned long arg);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * vx_pcm_playback_open - open callback for playback
  */
@@ -547,13 +608,19 @@ static int vx_pcm_playback_open(struct snd_pcm_substream *subs)
 		err = vx_alloc_pipe(chip, 0, audio, 2, &pipe); /* stereo playback */
 		if (err < 0)
 			return err;
+<<<<<<< HEAD
 		chip->playback_pipes[audio] = pipe;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* open for playback */
 	pipe->references++;
 
 	pipe->substream = subs;
+<<<<<<< HEAD
 	tasklet_init(&pipe->start_tq, vx_pcm_delayed_start, (unsigned long)subs);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->playback_pipes[audio] = pipe;
 
 	runtime->hw = vx_pcm_playback_hw;
@@ -646,12 +713,20 @@ static int vx_pcm_playback_transfer_chunk(struct vx_core *chip,
 	/* we don't need irqsave here, because this function
 	 * is called from either trigger callback or irq handler
 	 */
+<<<<<<< HEAD
 	spin_lock(&chip->lock); 
+=======
+	mutex_lock(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	vx_pseudo_dma_write(chip, runtime, pipe, size);
 	err = vx_notify_end_of_buffer(chip, pipe);
 	/* disconnect the host, SIZE_HBUF command always switches to the stream mode */
 	vx_send_rih_nolock(chip, IRQ_CONNECT_STREAM_NEXT);
+<<<<<<< HEAD
 	spin_unlock(&chip->lock);
+=======
+	mutex_unlock(&chip->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -700,8 +775,14 @@ static void vx_pcm_playback_transfer(struct vx_core *chip,
 	if (! pipe->prepared || (chip->chip_status & VX_STAT_IS_STALE))
 		return;
 	for (i = 0; i < nchunks; i++) {
+<<<<<<< HEAD
 		if ((err = vx_pcm_playback_transfer_chunk(chip, runtime, pipe,
 							  chip->ibl.size)) < 0)
+=======
+		err = vx_pcm_playback_transfer_chunk(chip, runtime, pipe,
+						     chip->ibl.size);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 	}
 }
@@ -718,7 +799,12 @@ static void vx_pcm_playback_update(struct vx_core *chip,
 	struct snd_pcm_runtime *runtime = subs->runtime;
 
 	if (pipe->running && ! (chip->chip_status & VX_STAT_IS_STALE)) {
+<<<<<<< HEAD
 		if ((err = vx_update_pipe_position(chip, runtime, pipe)) < 0)
+=======
+		err = vx_update_pipe_position(chip, runtime, pipe);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		if (pipe->transferred >= (int)runtime->period_size) {
 			pipe->transferred %= runtime->period_size;
@@ -728,6 +814,7 @@ static void vx_pcm_playback_update(struct vx_core *chip,
 }
 
 /*
+<<<<<<< HEAD
  * start the stream and pipe.
  * this function is called from tasklet, which is invoked by the trigger
  * START callback.
@@ -753,6 +840,8 @@ static void vx_pcm_delayed_start(unsigned long arg)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * vx_pcm_playback_trigger - trigger callback for playback
  */
 static int vx_pcm_trigger(struct snd_pcm_substream *subs, int cmd)
@@ -769,11 +858,25 @@ static int vx_pcm_trigger(struct snd_pcm_substream *subs, int cmd)
 	case SNDRV_PCM_TRIGGER_RESUME:
 		if (! pipe->is_capture)
 			vx_pcm_playback_transfer(chip, subs, pipe, 2);
+<<<<<<< HEAD
 		/* FIXME:
 		 * we trigger the pipe using tasklet, so that the interrupts are
 		 * issued surely after the trigger is completed.
 		 */ 
 		tasklet_schedule(&pipe->start_tq);
+=======
+		err = vx_start_stream(chip, pipe);
+		if (err < 0) {
+			pr_debug("vx: cannot start stream\n");
+			return err;
+		}
+		err = vx_toggle_pipe(chip, pipe, 1);
+		if (err < 0) {
+			pr_debug("vx: cannot start pipe\n");
+			vx_stop_stream(chip, pipe);
+			return err;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		chip->pcm_running++;
 		pipe->running = 1;
 		break;
@@ -786,11 +889,21 @@ static int vx_pcm_trigger(struct snd_pcm_substream *subs, int cmd)
 		pipe->running = 0;
 		break;
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
+<<<<<<< HEAD
 		if ((err = vx_toggle_pipe(chip, pipe, 0)) < 0)
 			return err;
 		break;
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
 		if ((err = vx_toggle_pipe(chip, pipe, 1)) < 0)
+=======
+		err = vx_toggle_pipe(chip, pipe, 0);
+		if (err < 0)
+			return err;
+		break;
+	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
+		err = vx_toggle_pipe(chip, pipe, 1);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		break;
 	default:
@@ -810,6 +923,7 @@ static snd_pcm_uframes_t vx_pcm_playback_pointer(struct snd_pcm_substream *subs)
 }
 
 /*
+<<<<<<< HEAD
  * vx_pcm_hw_params - hw_params callback for playback and capture
  */
 static int vx_pcm_hw_params(struct snd_pcm_substream *subs,
@@ -828,6 +942,8 @@ static int vx_pcm_hw_free(struct snd_pcm_substream *subs)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * vx_pcm_prepare - prepare callback for playback and capture
  */
 static int vx_pcm_prepare(struct snd_pcm_substream *subs)
@@ -849,13 +965,23 @@ static int vx_pcm_prepare(struct snd_pcm_substream *subs)
 		snd_printdd(KERN_DEBUG "reopen the pipe with data_mode = %d\n", data_mode);
 		vx_init_rmh(&rmh, CMD_FREE_PIPE);
 		vx_set_pipe_cmd_params(&rmh, 0, pipe->number, 0);
+<<<<<<< HEAD
 		if ((err = vx_send_msg(chip, &rmh)) < 0)
+=======
+		err = vx_send_msg(chip, &rmh);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		vx_init_rmh(&rmh, CMD_RES_PIPE);
 		vx_set_pipe_cmd_params(&rmh, 0, pipe->number, pipe->channels);
 		if (data_mode)
 			rmh.Cmd[0] |= BIT_DATA_MODE;
+<<<<<<< HEAD
 		if ((err = vx_send_msg(chip, &rmh)) < 0)
+=======
+		err = vx_send_msg(chip, &rmh);
+		if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return err;
 		pipe->data_mode = data_mode;
 	}
@@ -867,7 +993,12 @@ static int vx_pcm_prepare(struct snd_pcm_substream *subs)
 	}
 	vx_set_clock(chip, runtime->rate);
 
+<<<<<<< HEAD
 	if ((err = vx_set_format(chip, pipe, runtime)) < 0)
+=======
+	err = vx_set_format(chip, pipe, runtime);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	if (vx_is_pcmcia(chip)) {
@@ -895,6 +1026,7 @@ static int vx_pcm_prepare(struct snd_pcm_substream *subs)
 /*
  * operators for PCM playback
  */
+<<<<<<< HEAD
 static struct snd_pcm_ops vx_pcm_playback_ops = {
 	.open =		vx_pcm_playback_open,
 	.close =	vx_pcm_playback_close,
@@ -906,6 +1038,14 @@ static struct snd_pcm_ops vx_pcm_playback_ops = {
 	.pointer =	vx_pcm_playback_pointer,
 	.page =		snd_pcm_lib_get_vmalloc_page,
 	.mmap =		snd_pcm_lib_mmap_vmalloc,
+=======
+static const struct snd_pcm_ops vx_pcm_playback_ops = {
+	.open =		vx_pcm_playback_open,
+	.close =	vx_pcm_playback_close,
+	.prepare =	vx_pcm_prepare,
+	.trigger =	vx_pcm_trigger,
+	.pointer =	vx_pcm_playback_pointer,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -913,7 +1053,11 @@ static struct snd_pcm_ops vx_pcm_playback_ops = {
  * playback hw information
  */
 
+<<<<<<< HEAD
 static struct snd_pcm_hardware vx_pcm_capture_hw = {
+=======
+static const struct snd_pcm_hardware vx_pcm_capture_hw = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
 				 SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_MMAP_VALID /*|*/
 				 /*SNDRV_PCM_INFO_RESUME*/),
@@ -955,7 +1099,10 @@ static int vx_pcm_capture_open(struct snd_pcm_substream *subs)
 	if (err < 0)
 		return err;
 	pipe->substream = subs;
+<<<<<<< HEAD
 	tasklet_init(&pipe->start_tq, vx_pcm_delayed_start, (unsigned long)subs);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	chip->capture_pipes[audio] = pipe;
 
 	/* check if monitoring is needed */
@@ -1038,7 +1185,11 @@ static void vx_pcm_capture_update(struct vx_core *chip, struct snd_pcm_substream
 	int size, space, count;
 	struct snd_pcm_runtime *runtime = subs->runtime;
 
+<<<<<<< HEAD
 	if (! pipe->prepared || (chip->chip_status & VX_STAT_IS_STALE))
+=======
+	if (!pipe->running || (chip->chip_status & VX_STAT_IS_STALE))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 
 	size = runtime->buffer_size - snd_pcm_capture_avail(runtime);
@@ -1071,8 +1222,15 @@ static void vx_pcm_capture_update(struct vx_core *chip, struct snd_pcm_substream
 		/* ok, let's accelerate! */
 		int align = pipe->align * 3;
 		space = (count / align) * align;
+<<<<<<< HEAD
 		vx_pseudo_dma_read(chip, runtime, pipe, space);
 		count -= space;
+=======
+		if (space > 0) {
+			vx_pseudo_dma_read(chip, runtime, pipe, space);
+			count -= space;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	/* read the rest of bytes */
 	while (count > 0) {
@@ -1082,7 +1240,11 @@ static void vx_pcm_capture_update(struct vx_core *chip, struct snd_pcm_substream
 		count -= 3;
 	}
 	/* disconnect the host, SIZE_HBUF command always switches to the stream mode */
+<<<<<<< HEAD
 	vx_send_rih_nolock(chip, IRQ_CONNECT_STREAM_NEXT);
+=======
+	vx_send_rih(chip, IRQ_CONNECT_STREAM_NEXT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* read the last pending 6 bytes */
 	count = DMA_READ_ALIGN;
 	while (count > 0) {
@@ -1099,7 +1261,11 @@ static void vx_pcm_capture_update(struct vx_core *chip, struct snd_pcm_substream
 
  _error:
 	/* disconnect the host, SIZE_HBUF command always switches to the stream mode */
+<<<<<<< HEAD
 	vx_send_rih_nolock(chip, IRQ_CONNECT_STREAM_NEXT);
+=======
+	vx_send_rih(chip, IRQ_CONNECT_STREAM_NEXT);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -1116,6 +1282,7 @@ static snd_pcm_uframes_t vx_pcm_capture_pointer(struct snd_pcm_substream *subs)
 /*
  * operators for PCM capture
  */
+<<<<<<< HEAD
 static struct snd_pcm_ops vx_pcm_capture_ops = {
 	.open =		vx_pcm_capture_open,
 	.close =	vx_pcm_capture_close,
@@ -1127,6 +1294,14 @@ static struct snd_pcm_ops vx_pcm_capture_ops = {
 	.pointer =	vx_pcm_capture_pointer,
 	.page =		snd_pcm_lib_get_vmalloc_page,
 	.mmap =		snd_pcm_lib_mmap_vmalloc,
+=======
+static const struct snd_pcm_ops vx_pcm_capture_ops = {
+	.open =		vx_pcm_capture_open,
+	.close =	vx_pcm_capture_close,
+	.prepare =	vx_pcm_prepare,
+	.trigger =	vx_pcm_trigger,
+	.pointer =	vx_pcm_capture_pointer,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 
@@ -1220,8 +1395,12 @@ static int vx_init_audio_io(struct vx_core *chip)
 	chip->ibl.size = 0;
 	vx_set_ibl(chip, &chip->ibl); /* query the info */
 	if (preferred > 0) {
+<<<<<<< HEAD
 		chip->ibl.size = ((preferred + chip->ibl.granularity - 1) /
 				  chip->ibl.granularity) * chip->ibl.granularity;
+=======
+		chip->ibl.size = roundup(preferred, chip->ibl.granularity);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (chip->ibl.size > chip->ibl.max_size)
 			chip->ibl.size = chip->ibl.max_size;
 	} else
@@ -1254,7 +1433,12 @@ int snd_vx_pcm_new(struct vx_core *chip)
 	unsigned int i;
 	int err;
 
+<<<<<<< HEAD
 	if ((err = vx_init_audio_io(chip)) < 0)
+=======
+	err = vx_init_audio_io(chip);
+	if (err < 0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 
 	for (i = 0; i < chip->hw->num_codecs; i++) {
@@ -1271,10 +1455,19 @@ int snd_vx_pcm_new(struct vx_core *chip)
 			snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &vx_pcm_playback_ops);
 		if (ins)
 			snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &vx_pcm_capture_ops);
+<<<<<<< HEAD
+=======
+		snd_pcm_set_managed_buffer_all(pcm, SNDRV_DMA_TYPE_VMALLOC,
+					       NULL, 0, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		pcm->private_data = chip;
 		pcm->private_free = snd_vx_pcm_free;
 		pcm->info_flags = 0;
+<<<<<<< HEAD
+=======
+		pcm->nonatomic = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		strcpy(pcm->name, chip->card->shortname);
 		chip->pcm[i] = pcm;
 	}

@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* net/atm/atm_misc.c - Various functions for use by ATM drivers */
 
 /* Written 1995-2000 by Werner Almesberger, EPFL ICA */

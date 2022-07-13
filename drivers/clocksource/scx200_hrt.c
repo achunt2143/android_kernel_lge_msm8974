@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright (C) 2006 Jim Cromie
  *
@@ -9,11 +13,14 @@
  * over timekeeping duties.
  *
  * Based on work by John Stultz, and Ted Phelps (in a 2.6.12-rc6 patch)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
  * published by the Free Software Foundation; either version 2 of the
  * License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/clocksource.h>
@@ -43,10 +50,17 @@ MODULE_PARM_DESC(ppm, "+-adjust to actual XO freq (ppm)");
 /* The base timer frequency, * 27 if selected */
 #define HRT_FREQ   1000000
 
+<<<<<<< HEAD
 static cycle_t read_hrt(struct clocksource *cs)
 {
 	/* Read the timer value */
 	return (cycle_t) inl(scx200_cb_base + SCx200_TIMER_OFFSET);
+=======
+static u64 read_hrt(struct clocksource *cs)
+{
+	/* Read the timer value */
+	return (u64) inl(scx200_cb_base + SCx200_TIMER_OFFSET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct clocksource cs_hrt = {

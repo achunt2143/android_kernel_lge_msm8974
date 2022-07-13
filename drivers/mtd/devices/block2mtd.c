@@ -6,9 +6,27 @@
  *
  * Licence: GPL
  */
+<<<<<<< HEAD
 #include <linux/module.h>
 #include <linux/fs.h>
 #include <linux/blkdev.h>
+=======
+
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+/*
+ * When the first attempt at device initialization fails, we may need to
+ * wait a little bit and retry. This timeout, by default 3 seconds, gives
+ * device time to start up. Required on BCM2708 and a few other chipsets.
+ */
+#define MTD_DEFAULT_TIMEOUT	3
+
+#include <linux/module.h>
+#include <linux/delay.h>
+#include <linux/fs.h>
+#include <linux/blkdev.h>
+#include <linux/backing-dev.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bio.h>
 #include <linux/pagemap.h>
 #include <linux/list.h>
@@ -17,15 +35,26 @@
 #include <linux/mutex.h>
 #include <linux/mount.h>
 #include <linux/slab.h>
+<<<<<<< HEAD
 
 #define ERROR(fmt, args...) printk(KERN_ERR "block2mtd: " fmt "\n" , ## args)
 #define INFO(fmt, args...) printk(KERN_INFO "block2mtd: " fmt "\n" , ## args)
 
+=======
+#include <linux/major.h>
+
+/* Maximum number of comma-separated items in the 'block2mtd=' parameter */
+#define BLOCK2MTD_PARAM_MAX_COUNT 3
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Info for the block device */
 struct block2mtd_dev {
 	struct list_head list;
+<<<<<<< HEAD
 	struct block_device *blkdev;
+=======
+	struct file *bdev_file;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct mtd_info mtd;
 	struct mutex write_mutex;
 };
@@ -35,7 +64,11 @@ struct block2mtd_dev {
 static LIST_HEAD(blkmtd_device_list);
 
 
+<<<<<<< HEAD
 static struct page *page_read(struct address_space *mapping, int index)
+=======
+static struct page *page_read(struct address_space *mapping, pgoff_t index)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return read_mapping_page(mapping, index, NULL);
 }
@@ -43,17 +76,26 @@ static struct page *page_read(struct address_space *mapping, int index)
 /* erase a specified part of the device */
 static int _block2mtd_erase(struct block2mtd_dev *dev, loff_t to, size_t len)
 {
+<<<<<<< HEAD
 	struct address_space *mapping = dev->blkdev->bd_inode->i_mapping;
 	struct page *page;
 	int index = to >> PAGE_SHIFT;	// page index
+=======
+	struct address_space *mapping = dev->bdev_file->f_mapping;
+	struct page *page;
+	pgoff_t index = to >> PAGE_SHIFT;	// page index
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int pages = len >> PAGE_SHIFT;
 	u_long *p;
 	u_long *max;
 
 	while (pages) {
 		page = page_read(mapping, index);
+<<<<<<< HEAD
 		if (!page)
 			return -ENOMEM;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(page))
 			return PTR_ERR(page);
 
@@ -64,10 +106,18 @@ static int _block2mtd_erase(struct block2mtd_dev *dev, loff_t to, size_t len)
 				memset(page_address(page), 0xff, PAGE_SIZE);
 				set_page_dirty(page);
 				unlock_page(page);
+<<<<<<< HEAD
 				break;
 			}
 
 		page_cache_release(page);
+=======
+				balance_dirty_pages_ratelimited(mapping);
+				break;
+			}
+
+		put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		pages--;
 		index++;
 	}
@@ -80,6 +130,7 @@ static int block2mtd_erase(struct mtd_info *mtd, struct erase_info *instr)
 	size_t len = instr->len;
 	int err;
 
+<<<<<<< HEAD
 	instr->state = MTD_ERASING;
 	mutex_lock(&dev->write_mutex);
 	err = _block2mtd_erase(dev, from, len);
@@ -91,6 +142,14 @@ static int block2mtd_erase(struct mtd_info *mtd, struct erase_info *instr)
 		instr->state = MTD_ERASE_DONE;
 
 	mtd_erase_callback(instr);
+=======
+	mutex_lock(&dev->write_mutex);
+	err = _block2mtd_erase(dev, from, len);
+	mutex_unlock(&dev->write_mutex);
+	if (err)
+		pr_err("erase failed err = %d\n", err);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
@@ -99,8 +158,14 @@ static int block2mtd_read(struct mtd_info *mtd, loff_t from, size_t len,
 		size_t *retlen, u_char *buf)
 {
 	struct block2mtd_dev *dev = mtd->priv;
+<<<<<<< HEAD
 	struct page *page;
 	int index = from >> PAGE_SHIFT;
+=======
+	struct address_space *mapping = dev->bdev_file->f_mapping;
+	struct page *page;
+	pgoff_t index = from >> PAGE_SHIFT;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int offset = from & (PAGE_SIZE-1);
 	int cpylen;
 
@@ -111,14 +176,22 @@ static int block2mtd_read(struct mtd_info *mtd, loff_t from, size_t len,
 			cpylen = len;	// this page
 		len = len - cpylen;
 
+<<<<<<< HEAD
 		page = page_read(dev->blkdev->bd_inode->i_mapping, index);
 		if (!page)
 			return -ENOMEM;
+=======
+		page = page_read(mapping, index);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(page))
 			return PTR_ERR(page);
 
 		memcpy(buf, page_address(page) + offset, cpylen);
+<<<<<<< HEAD
 		page_cache_release(page);
+=======
+		put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (retlen)
 			*retlen += cpylen;
@@ -135,8 +208,13 @@ static int _block2mtd_write(struct block2mtd_dev *dev, const u_char *buf,
 		loff_t to, size_t len, size_t *retlen)
 {
 	struct page *page;
+<<<<<<< HEAD
 	struct address_space *mapping = dev->blkdev->bd_inode->i_mapping;
 	int index = to >> PAGE_SHIFT;	// page index
+=======
+	struct address_space *mapping = dev->bdev_file->f_mapping;
+	pgoff_t index = to >> PAGE_SHIFT;	// page index
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int offset = to & ~PAGE_MASK;	// page offset
 	int cpylen;
 
@@ -148,8 +226,11 @@ static int _block2mtd_write(struct block2mtd_dev *dev, const u_char *buf,
 		len = len - cpylen;
 
 		page = page_read(mapping, index);
+<<<<<<< HEAD
 		if (!page)
 			return -ENOMEM;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (IS_ERR(page))
 			return PTR_ERR(page);
 
@@ -158,8 +239,14 @@ static int _block2mtd_write(struct block2mtd_dev *dev, const u_char *buf,
 			memcpy(page_address(page) + offset, buf, cpylen);
 			set_page_dirty(page);
 			unlock_page(page);
+<<<<<<< HEAD
 		}
 		page_cache_release(page);
+=======
+			balance_dirty_pages_ratelimited(mapping);
+		}
+		put_page(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (retlen)
 			*retlen += cpylen;
@@ -191,7 +278,11 @@ static int block2mtd_write(struct mtd_info *mtd, loff_t to, size_t len,
 static void block2mtd_sync(struct mtd_info *mtd)
 {
 	struct block2mtd_dev *dev = mtd->priv;
+<<<<<<< HEAD
 	sync_blockdev(dev->blkdev);
+=======
+	sync_blockdev(file_bdev(dev->bdev_file));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return;
 }
 
@@ -203,20 +294,77 @@ static void block2mtd_free_device(struct block2mtd_dev *dev)
 
 	kfree(dev->mtd.name);
 
+<<<<<<< HEAD
 	if (dev->blkdev) {
 		invalidate_mapping_pages(dev->blkdev->bd_inode->i_mapping,
 					0, -1);
 		blkdev_put(dev->blkdev, FMODE_READ|FMODE_WRITE|FMODE_EXCL);
+=======
+	if (dev->bdev_file) {
+		invalidate_mapping_pages(dev->bdev_file->f_mapping, 0, -1);
+		bdev_fput(dev->bdev_file);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	kfree(dev);
 }
 
+<<<<<<< HEAD
 
 /* FIXME: ensure that mtd->size % erase_size == 0 */
 static struct block2mtd_dev *add_device(char *devname, int erase_size)
 {
 	const fmode_t mode = FMODE_READ | FMODE_WRITE | FMODE_EXCL;
+=======
+/*
+ * This function is marked __ref because it calls the __init marked
+ * early_lookup_bdev when called from the early boot code.
+ */
+static struct file __ref *mdtblock_early_get_bdev(const char *devname,
+		blk_mode_t mode, int timeout, struct block2mtd_dev *dev)
+{
+	struct file *bdev_file = ERR_PTR(-ENODEV);
+#ifndef MODULE
+	int i;
+
+	/*
+	 * We can't use early_lookup_bdev from a running system.
+	 */
+	if (system_state >= SYSTEM_RUNNING)
+		return bdev_file;
+
+	/*
+	 * We might not have the root device mounted at this point.
+	 * Try to resolve the device name by other means.
+	 */
+	for (i = 0; i <= timeout; i++) {
+		dev_t devt;
+
+		if (i)
+			/*
+			 * Calling wait_for_device_probe in the first loop
+			 * was not enough, sleep for a bit in subsequent
+			 * go-arounds.
+			 */
+			msleep(1000);
+		wait_for_device_probe();
+
+		if (!early_lookup_bdev(devname, &devt)) {
+			bdev_file = bdev_file_open_by_dev(devt, mode, dev, NULL);
+			if (!IS_ERR(bdev_file))
+				break;
+		}
+	}
+#endif
+	return bdev_file;
+}
+
+static struct block2mtd_dev *add_device(char *devname, int erase_size,
+		char *label, int timeout)
+{
+	const blk_mode_t mode = BLK_OPEN_READ | BLK_OPEN_WRITE;
+	struct file *bdev_file;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct block_device *bdev;
 	struct block2mtd_dev *dev;
 	char *name;
@@ -229,6 +377,7 @@ static struct block2mtd_dev *add_device(char *devname, int erase_size)
 		return NULL;
 
 	/* Get a handle on the device */
+<<<<<<< HEAD
 	bdev = blkdev_get_by_path(devname, mode, dev);
 #ifndef MODULE
 	if (IS_ERR(bdev)) {
@@ -251,12 +400,34 @@ static struct block2mtd_dev *add_device(char *devname, int erase_size)
 	if (MAJOR(bdev->bd_dev) == MTD_BLOCK_MAJOR) {
 		ERROR("attempting to use an MTD device as a block device");
 		goto devinit_err;
+=======
+	bdev_file = bdev_file_open_by_path(devname, mode, dev, NULL);
+	if (IS_ERR(bdev_file))
+		bdev_file = mdtblock_early_get_bdev(devname, mode, timeout,
+						      dev);
+	if (IS_ERR(bdev_file)) {
+		pr_err("error: cannot open device %s\n", devname);
+		goto err_free_block2mtd;
+	}
+	dev->bdev_file = bdev_file;
+	bdev = file_bdev(bdev_file);
+
+	if (MAJOR(bdev->bd_dev) == MTD_BLOCK_MAJOR) {
+		pr_err("attempting to use an MTD device as a block device\n");
+		goto err_free_block2mtd;
+	}
+
+	if ((long)bdev->bd_inode->i_size % erase_size) {
+		pr_err("erasesize must be a divisor of device size\n");
+		goto err_free_block2mtd;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	mutex_init(&dev->write_mutex);
 
 	/* Setup the MTD structure */
 	/* make the name contain the block device in */
+<<<<<<< HEAD
 	name = kasprintf(GFP_KERNEL, "block2mtd: %s", devname);
 	if (!name)
 		goto devinit_err;
@@ -264,6 +435,18 @@ static struct block2mtd_dev *add_device(char *devname, int erase_size)
 	dev->mtd.name = name;
 
 	dev->mtd.size = dev->blkdev->bd_inode->i_size & PAGE_MASK;
+=======
+	if (!label)
+		name = kasprintf(GFP_KERNEL, "block2mtd: %s", devname);
+	else
+		name = kstrdup(label, GFP_KERNEL);
+	if (!name)
+		goto err_destroy_mutex;
+
+	dev->mtd.name = name;
+
+	dev->mtd.size = bdev->bd_inode->i_size & PAGE_MASK;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	dev->mtd.erasesize = erase_size;
 	dev->mtd.writesize = 1;
 	dev->mtd.writebufsize = PAGE_SIZE;
@@ -278,6 +461,7 @@ static struct block2mtd_dev *add_device(char *devname, int erase_size)
 
 	if (mtd_device_register(&dev->mtd, NULL, 0)) {
 		/* Device didn't get added, so free the entry */
+<<<<<<< HEAD
 		goto devinit_err;
 	}
 	list_add(&dev->list, &blkmtd_device_list);
@@ -287,6 +471,21 @@ static struct block2mtd_dev *add_device(char *devname, int erase_size)
 	return dev;
 
 devinit_err:
+=======
+		goto err_destroy_mutex;
+	}
+
+	list_add(&dev->list, &blkmtd_device_list);
+	pr_info("mtd%d: [%s] erase_size = %dKiB [%d]\n",
+		dev->mtd.index,
+		label ? label : dev->mtd.name + strlen("block2mtd: "),
+		dev->mtd.erasesize >> 10, dev->mtd.erasesize);
+	return dev;
+
+err_destroy_mutex:
+	mutex_destroy(&dev->write_mutex);
+err_free_block2mtd:
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	block2mtd_free_device(dev);
 	return NULL;
 }
@@ -304,8 +503,15 @@ static int ustrtoul(const char *cp, char **endp, unsigned int base)
 	switch (**endp) {
 	case 'G' :
 		result *= 1024;
+<<<<<<< HEAD
 	case 'M':
 		result *= 1024;
+=======
+		fallthrough;
+	case 'M':
+		result *= 1024;
+		fallthrough;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	case 'K':
 	case 'k':
 		result *= 1024;
@@ -343,6 +549,7 @@ static inline void kill_final_newline(char *str)
 }
 
 
+<<<<<<< HEAD
 #define parse_err(fmt, args...) do {	\
 	ERROR(fmt, ## args);		\
 	return 0;			\
@@ -365,10 +572,35 @@ static int block2mtd_setup2(const char *val)
 
 	if (strnlen(val, sizeof(buf)) >= sizeof(buf))
 		parse_err("parameter too long");
+=======
+#ifndef MODULE
+static int block2mtd_init_called = 0;
+/* 80 for device, 12 for erase size */
+static char block2mtd_paramline[80 + 12];
+#endif
+
+static int block2mtd_setup2(const char *val)
+{
+	/* 80 for device, 12 for erase size, 80 for name, 8 for timeout */
+	char buf[80 + 12 + 80 + 8];
+	char *str = buf;
+	char *token[BLOCK2MTD_PARAM_MAX_COUNT];
+	char *name;
+	char *label = NULL;
+	size_t erase_size = PAGE_SIZE;
+	unsigned long timeout = MTD_DEFAULT_TIMEOUT;
+	int i, ret;
+
+	if (strnlen(val, sizeof(buf)) >= sizeof(buf)) {
+		pr_err("parameter too long\n");
+		return 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	strcpy(str, val);
 	kill_final_newline(str);
 
+<<<<<<< HEAD
 	for (i = 0; i < 2; i++)
 		token[i] = strsep(&str, ",");
 
@@ -390,12 +622,52 @@ static int block2mtd_setup2(const char *val)
 	}
 
 	add_device(name, erase_size);
+=======
+	for (i = 0; i < BLOCK2MTD_PARAM_MAX_COUNT; i++)
+		token[i] = strsep(&str, ",");
+
+	if (str) {
+		pr_err("too many arguments\n");
+		return 0;
+	}
+
+	if (!token[0]) {
+		pr_err("no argument\n");
+		return 0;
+	}
+
+	name = token[0];
+	if (strlen(name) + 1 > 80) {
+		pr_err("device name too long\n");
+		return 0;
+	}
+
+	/* Optional argument when custom label is used */
+	if (token[1] && strlen(token[1])) {
+		ret = parse_num(&erase_size, token[1]);
+		if (ret) {
+			pr_err("illegal erase size\n");
+			return 0;
+		}
+	}
+
+	if (token[2]) {
+		label = token[2];
+		pr_info("Using custom MTD label '%s' for dev %s\n", label, name);
+	}
+
+	add_device(name, erase_size, label, timeout);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
 
+<<<<<<< HEAD
 static int block2mtd_setup(const char *val, struct kernel_param *kp)
+=======
+static int block2mtd_setup(const char *val, const struct kernel_param *kp)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 #ifdef MODULE
 	return block2mtd_setup2(val);
@@ -415,7 +687,11 @@ static int block2mtd_setup(const char *val, struct kernel_param *kp)
 	   the device (even kmalloc() fails). Deter that work to
 	   block2mtd_setup2(). */
 
+<<<<<<< HEAD
 	strlcpy(block2mtd_paramline, val, sizeof(block2mtd_paramline));
+=======
+	strscpy(block2mtd_paramline, val, sizeof(block2mtd_paramline));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 #endif
@@ -423,7 +699,11 @@ static int block2mtd_setup(const char *val, struct kernel_param *kp)
 
 
 module_param_call(block2mtd, block2mtd_setup, NULL, NULL, 0200);
+<<<<<<< HEAD
 MODULE_PARM_DESC(block2mtd, "Device to use. \"block2mtd=<dev>[,<erasesize>]\"");
+=======
+MODULE_PARM_DESC(block2mtd, "Device to use. \"block2mtd=<dev>[,[<erasesize>][,<label>]]\"");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int __init block2mtd_init(void)
 {
@@ -439,7 +719,11 @@ static int __init block2mtd_init(void)
 }
 
 
+<<<<<<< HEAD
 static void __devexit block2mtd_exit(void)
+=======
+static void block2mtd_exit(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct list_head *pos, *next;
 
@@ -448,15 +732,26 @@ static void __devexit block2mtd_exit(void)
 		struct block2mtd_dev *dev = list_entry(pos, typeof(*dev), list);
 		block2mtd_sync(&dev->mtd);
 		mtd_device_unregister(&dev->mtd);
+<<<<<<< HEAD
 		INFO("mtd%d: [%s] removed", dev->mtd.index,
 				dev->mtd.name + strlen("block2mtd: "));
+=======
+		mutex_destroy(&dev->write_mutex);
+		pr_info("mtd%d: [%s] removed\n",
+			dev->mtd.index,
+			dev->mtd.name + strlen("block2mtd: "));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		list_del(&dev->list);
 		block2mtd_free_device(dev);
 	}
 }
 
+<<<<<<< HEAD
 
 module_init(block2mtd_init);
+=======
+late_initcall(block2mtd_init);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 module_exit(block2mtd_exit);
 
 MODULE_LICENSE("GPL");

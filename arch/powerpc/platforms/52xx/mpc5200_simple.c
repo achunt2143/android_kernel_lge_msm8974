@@ -1,14 +1,21 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Support for 'mpc5200-simple-platform' compatible boards.
  *
  * Written by Marian Balakowicz <m8@semihalf.com>
  * Copyright (C) 2007 Semihalf
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute  it and/or modify it
  * under  the terms of  the GNU General  Public License as published by the
  * Free Software Foundation;  either version 2 of the  License, or (at your
  * option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Description:
  * This code implements support for a simple MPC52xx based boards which
  * do not need a custom platform specific setup. Such boards are
@@ -26,8 +33,13 @@
  */
 
 #undef DEBUG
+<<<<<<< HEAD
 #include <asm/time.h>
 #include <asm/prom.h>
+=======
+#include <linux/of.h>
+#include <asm/time.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/machdep.h>
 #include <asm/mpc52xx.h>
 
@@ -44,14 +56,24 @@ static void __init mpc5200_simple_setup_arch(void)
 
 	/* Some mpc5200 & mpc5200b related configuration */
 	mpc5200_setup_xlb_arbiter();
+<<<<<<< HEAD
 
 	mpc52xx_setup_pci();
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /* list of the supported boards */
 static const char *board[] __initdata = {
+<<<<<<< HEAD
 	"anonymous,a4m072",
 	"anon,charon",
+=======
+	"anonymous,a3m071",
+	"anonymous,a4m072",
+	"anon,charon",
+	"ifm,o2d",
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	"intercontrol,digsy-mtc",
 	"manroland,mucmc52",
 	"manroland,uc101",
@@ -63,6 +85,7 @@ static const char *board[] __initdata = {
 	NULL
 };
 
+<<<<<<< HEAD
 /*
  * Called very early, MMU is off, device-tree isn't unflattened
  */
@@ -75,9 +98,19 @@ define_machine(mpc5200_simple_platform) {
 	.name		= "mpc5200-simple-platform",
 	.probe		= mpc5200_simple_probe,
 	.setup_arch	= mpc5200_simple_setup_arch,
+=======
+define_machine(mpc5200_simple_platform) {
+	.name		= "mpc5200-simple-platform",
+	.compatibles	= board,
+	.setup_arch	= mpc5200_simple_setup_arch,
+	.discover_phbs	= mpc52xx_setup_pci,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.init		= mpc52xx_declare_of_platform_devices,
 	.init_IRQ	= mpc52xx_init_irq,
 	.get_irq	= mpc52xx_get_irq,
 	.restart	= mpc52xx_restart,
+<<<<<<< HEAD
 	.calibrate_decr	= generic_calibrate_decr,
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };

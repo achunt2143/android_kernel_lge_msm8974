@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  *  Digianswer Bluetooth USB driver
  *
  *  Copyright (C) 2004-2007  Marcel Holtmann <marcel@holtmann.org>
+<<<<<<< HEAD
  *
  *
  *  This program is free software; you can redistribute it and/or modify
@@ -19,6 +24,8 @@
  *  along with this program; if not, write to the Free Software
  *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/kernel.h>
@@ -35,9 +42,17 @@
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
 
+<<<<<<< HEAD
 #define VERSION "0.10"
 
 static struct usb_device_id bpa10x_table[] = {
+=======
+#include "h4_recv.h"
+
+#define VERSION "0.11"
+
+static const struct usb_device_id bpa10x_table[] = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Tektronix BPA 100/105 (Digianswer) */
 	{ USB_DEVICE(0x08fd, 0x0002) },
 
@@ -56,6 +71,7 @@ struct bpa10x_data {
 	struct sk_buff *rx_skb[2];
 };
 
+<<<<<<< HEAD
 #define HCI_VENDOR_HDR_SIZE 5
 
 struct hci_vendor_hdr {
@@ -164,6 +180,8 @@ static int bpa10x_recv(struct hci_dev *hdev, int queue, void *buf, int count)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void bpa10x_tx_complete(struct urb *urb)
 {
 	struct sk_buff *skb = urb->context;
@@ -186,10 +204,33 @@ done:
 	kfree_skb(skb);
 }
 
+<<<<<<< HEAD
 static void bpa10x_rx_complete(struct urb *urb)
 {
 	struct hci_dev *hdev = urb->context;
 	struct bpa10x_data *data = hdev->driver_data;
+=======
+#define HCI_VENDOR_HDR_SIZE 5
+
+#define HCI_RECV_VENDOR \
+	.type = HCI_VENDOR_PKT, \
+	.hlen = HCI_VENDOR_HDR_SIZE, \
+	.loff = 3, \
+	.lsize = 2, \
+	.maxlen = HCI_MAX_FRAME_SIZE
+
+static const struct h4_recv_pkt bpa10x_recv_pkts[] = {
+	{ H4_RECV_ACL,     .recv = hci_recv_frame },
+	{ H4_RECV_SCO,     .recv = hci_recv_frame },
+	{ H4_RECV_EVENT,   .recv = hci_recv_frame },
+	{ HCI_RECV_VENDOR, .recv = hci_recv_diag  },
+};
+
+static void bpa10x_rx_complete(struct urb *urb)
+{
+	struct hci_dev *hdev = urb->context;
+	struct bpa10x_data *data = hci_get_drvdata(hdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	BT_DBG("%s urb %p status %d count %d", hdev->name,
@@ -199,11 +240,25 @@ static void bpa10x_rx_complete(struct urb *urb)
 		return;
 
 	if (urb->status == 0) {
+<<<<<<< HEAD
 		if (bpa10x_recv(hdev, usb_pipebulk(urb->pipe),
 						urb->transfer_buffer,
 						urb->actual_length) < 0) {
 			BT_ERR("%s corrupted event packet", hdev->name);
 			hdev->stat.err_rx++;
+=======
+		bool idx = usb_pipebulk(urb->pipe);
+
+		data->rx_skb[idx] = h4_recv_buf(hdev, data->rx_skb[idx],
+						urb->transfer_buffer,
+						urb->actual_length,
+						bpa10x_recv_pkts,
+						ARRAY_SIZE(bpa10x_recv_pkts));
+		if (IS_ERR(data->rx_skb[idx])) {
+			bt_dev_err(hdev, "corrupted event packet");
+			hdev->stat.err_rx++;
+			data->rx_skb[idx] = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 	}
 
@@ -211,15 +266,23 @@ static void bpa10x_rx_complete(struct urb *urb)
 
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err < 0) {
+<<<<<<< HEAD
 		BT_ERR("%s urb %p failed to resubmit (%d)",
 						hdev->name, urb, -err);
+=======
+		bt_dev_err(hdev, "urb %p failed to resubmit (%d)", urb, -err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_unanchor_urb(urb);
 	}
 }
 
 static inline int bpa10x_submit_intr_urb(struct hci_dev *hdev)
 {
+<<<<<<< HEAD
 	struct bpa10x_data *data = hdev->driver_data;
+=======
+	struct bpa10x_data *data = hci_get_drvdata(hdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct urb *urb;
 	unsigned char *buf;
 	unsigned int pipe;
@@ -248,8 +311,12 @@ static inline int bpa10x_submit_intr_urb(struct hci_dev *hdev)
 
 	err = usb_submit_urb(urb, GFP_KERNEL);
 	if (err < 0) {
+<<<<<<< HEAD
 		BT_ERR("%s urb %p submission failed (%d)",
 						hdev->name, urb, -err);
+=======
+		bt_dev_err(hdev, "urb %p submission failed (%d)", urb, -err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_unanchor_urb(urb);
 	}
 
@@ -260,7 +327,11 @@ static inline int bpa10x_submit_intr_urb(struct hci_dev *hdev)
 
 static inline int bpa10x_submit_bulk_urb(struct hci_dev *hdev)
 {
+<<<<<<< HEAD
 	struct bpa10x_data *data = hdev->driver_data;
+=======
+	struct bpa10x_data *data = hci_get_drvdata(hdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct urb *urb;
 	unsigned char *buf;
 	unsigned int pipe;
@@ -289,8 +360,12 @@ static inline int bpa10x_submit_bulk_urb(struct hci_dev *hdev)
 
 	err = usb_submit_urb(urb, GFP_KERNEL);
 	if (err < 0) {
+<<<<<<< HEAD
 		BT_ERR("%s urb %p submission failed (%d)",
 						hdev->name, urb, -err);
+=======
+		bt_dev_err(hdev, "urb %p submission failed (%d)", urb, -err);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		usb_unanchor_urb(urb);
 	}
 
@@ -301,14 +376,21 @@ static inline int bpa10x_submit_bulk_urb(struct hci_dev *hdev)
 
 static int bpa10x_open(struct hci_dev *hdev)
 {
+<<<<<<< HEAD
 	struct bpa10x_data *data = hdev->driver_data;
+=======
+	struct bpa10x_data *data = hci_get_drvdata(hdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	int err;
 
 	BT_DBG("%s", hdev->name);
 
+<<<<<<< HEAD
 	if (test_and_set_bit(HCI_RUNNING, &hdev->flags))
 		return 0;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	err = bpa10x_submit_intr_urb(hdev);
 	if (err < 0)
 		goto error;
@@ -322,13 +404,17 @@ static int bpa10x_open(struct hci_dev *hdev)
 error:
 	usb_kill_anchored_urbs(&data->rx_anchor);
 
+<<<<<<< HEAD
 	clear_bit(HCI_RUNNING, &hdev->flags);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return err;
 }
 
 static int bpa10x_close(struct hci_dev *hdev)
 {
+<<<<<<< HEAD
 	struct bpa10x_data *data = hdev->driver_data;
 
 	BT_DBG("%s", hdev->name);
@@ -336,6 +422,12 @@ static int bpa10x_close(struct hci_dev *hdev)
 	if (!test_and_clear_bit(HCI_RUNNING, &hdev->flags))
 		return 0;
 
+=======
+	struct bpa10x_data *data = hci_get_drvdata(hdev);
+
+	BT_DBG("%s", hdev->name);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	usb_kill_anchored_urbs(&data->rx_anchor);
 
 	return 0;
@@ -343,7 +435,11 @@ static int bpa10x_close(struct hci_dev *hdev)
 
 static int bpa10x_flush(struct hci_dev *hdev)
 {
+<<<<<<< HEAD
 	struct bpa10x_data *data = hdev->driver_data;
+=======
+	struct bpa10x_data *data = hci_get_drvdata(hdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BT_DBG("%s", hdev->name);
 
@@ -352,10 +448,36 @@ static int bpa10x_flush(struct hci_dev *hdev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int bpa10x_send_frame(struct sk_buff *skb)
 {
 	struct hci_dev *hdev = (struct hci_dev *) skb->dev;
 	struct bpa10x_data *data = hdev->driver_data;
+=======
+static int bpa10x_setup(struct hci_dev *hdev)
+{
+	static const u8 req[] = { 0x07 };
+	struct sk_buff *skb;
+
+	BT_DBG("%s", hdev->name);
+
+	/* Read revision string */
+	skb = __hci_cmd_sync(hdev, 0xfc0e, sizeof(req), req, HCI_INIT_TIMEOUT);
+	if (IS_ERR(skb))
+		return PTR_ERR(skb);
+
+	bt_dev_info(hdev, "%s", (char *)(skb->data + 1));
+
+	hci_set_fw_info(hdev, "%s", skb->data + 1);
+
+	kfree_skb(skb);
+	return 0;
+}
+
+static int bpa10x_send_frame(struct hci_dev *hdev, struct sk_buff *skb)
+{
+	struct bpa10x_data *data = hci_get_drvdata(hdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct usb_ctrlrequest *dr;
 	struct urb *urb;
 	unsigned int pipe;
@@ -363,19 +485,33 @@ static int bpa10x_send_frame(struct sk_buff *skb)
 
 	BT_DBG("%s", hdev->name);
 
+<<<<<<< HEAD
 	if (!test_bit(HCI_RUNNING, &hdev->flags))
 		return -EBUSY;
 
 	urb = usb_alloc_urb(0, GFP_ATOMIC);
+=======
+	skb->dev = (void *) hdev;
+
+	urb = usb_alloc_urb(0, GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!urb)
 		return -ENOMEM;
 
 	/* Prepend skb with frame type */
+<<<<<<< HEAD
 	*skb_push(skb, 1) = bt_cb(skb)->pkt_type;
 
 	switch (bt_cb(skb)->pkt_type) {
 	case HCI_COMMAND_PKT:
 		dr = kmalloc(sizeof(*dr), GFP_ATOMIC);
+=======
+	*(u8 *)skb_push(skb, 1) = hci_skb_pkt_type(skb);
+
+	switch (hci_skb_pkt_type(skb)) {
+	case HCI_COMMAND_PKT:
+		dr = kmalloc(sizeof(*dr), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!dr) {
 			usb_free_urb(urb);
 			return -ENOMEM;
@@ -420,15 +556,22 @@ static int bpa10x_send_frame(struct sk_buff *skb)
 
 	usb_anchor_urb(urb, &data->tx_anchor);
 
+<<<<<<< HEAD
 	err = usb_submit_urb(urb, GFP_ATOMIC);
 	if (err < 0) {
 		BT_ERR("%s urb %p submission failed", hdev->name, urb);
+=======
+	err = usb_submit_urb(urb, GFP_KERNEL);
+	if (err < 0) {
+		bt_dev_err(hdev, "urb %p submission failed", urb);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		kfree(urb->setup_packet);
 		usb_unanchor_urb(urb);
 	}
 
 	usb_free_urb(urb);
 
+<<<<<<< HEAD
 	return 0;
 }
 
@@ -444,6 +587,32 @@ static void bpa10x_destruct(struct hci_dev *hdev)
 }
 
 static int bpa10x_probe(struct usb_interface *intf, const struct usb_device_id *id)
+=======
+	return err;
+}
+
+static int bpa10x_set_diag(struct hci_dev *hdev, bool enable)
+{
+	const u8 req[] = { 0x00, enable };
+	struct sk_buff *skb;
+
+	BT_DBG("%s", hdev->name);
+
+	if (!test_bit(HCI_RUNNING, &hdev->flags))
+		return -ENETDOWN;
+
+	/* Enable sniffer operation */
+	skb = __hci_cmd_sync(hdev, 0xfc0e, sizeof(req), req, HCI_INIT_TIMEOUT);
+	if (IS_ERR(skb))
+		return PTR_ERR(skb);
+
+	kfree_skb(skb);
+	return 0;
+}
+
+static int bpa10x_probe(struct usb_interface *intf,
+			const struct usb_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct bpa10x_data *data;
 	struct hci_dev *hdev;
@@ -454,7 +623,11 @@ static int bpa10x_probe(struct usb_interface *intf, const struct usb_device_id *
 	if (intf->cur_altsetting->desc.bInterfaceNumber != 0)
 		return -ENODEV;
 
+<<<<<<< HEAD
 	data = kzalloc(sizeof(*data), GFP_KERNEL);
+=======
+	data = devm_kzalloc(&intf->dev, sizeof(*data), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!data)
 		return -ENOMEM;
 
@@ -464,6 +637,7 @@ static int bpa10x_probe(struct usb_interface *intf, const struct usb_device_id *
 	init_usb_anchor(&data->rx_anchor);
 
 	hdev = hci_alloc_dev();
+<<<<<<< HEAD
 	if (!hdev) {
 		kfree(data);
 		return -ENOMEM;
@@ -471,6 +645,13 @@ static int bpa10x_probe(struct usb_interface *intf, const struct usb_device_id *
 
 	hdev->bus = HCI_USB;
 	hdev->driver_data = data;
+=======
+	if (!hdev)
+		return -ENOMEM;
+
+	hdev->bus = HCI_USB;
+	hci_set_drvdata(hdev, data);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	data->hdev = hdev;
 
@@ -479,17 +660,28 @@ static int bpa10x_probe(struct usb_interface *intf, const struct usb_device_id *
 	hdev->open     = bpa10x_open;
 	hdev->close    = bpa10x_close;
 	hdev->flush    = bpa10x_flush;
+<<<<<<< HEAD
 	hdev->send     = bpa10x_send_frame;
 	hdev->destruct = bpa10x_destruct;
 
 	hdev->owner = THIS_MODULE;
 
 	set_bit(HCI_QUIRK_NO_RESET, &hdev->quirks);
+=======
+	hdev->setup    = bpa10x_setup;
+	hdev->send     = bpa10x_send_frame;
+	hdev->set_diag = bpa10x_set_diag;
+
+	set_bit(HCI_QUIRK_RESET_ON_CLOSE, &hdev->quirks);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	err = hci_register_dev(hdev);
 	if (err < 0) {
 		hci_free_dev(hdev);
+<<<<<<< HEAD
 		kfree(data);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return err;
 	}
 
@@ -512,6 +704,11 @@ static void bpa10x_disconnect(struct usb_interface *intf)
 	hci_unregister_dev(data->hdev);
 
 	hci_free_dev(data->hdev);
+<<<<<<< HEAD
+=======
+	kfree_skb(data->rx_skb[0]);
+	kfree_skb(data->rx_skb[1]);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct usb_driver bpa10x_driver = {
@@ -519,6 +716,7 @@ static struct usb_driver bpa10x_driver = {
 	.probe		= bpa10x_probe,
 	.disconnect	= bpa10x_disconnect,
 	.id_table	= bpa10x_table,
+<<<<<<< HEAD
 };
 
 static int __init bpa10x_init(void)
@@ -535,6 +733,12 @@ static void __exit bpa10x_exit(void)
 
 module_init(bpa10x_init);
 module_exit(bpa10x_exit);
+=======
+	.disable_hub_initiated_lpm = 1,
+};
+
+module_usb_driver(bpa10x_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 MODULE_AUTHOR("Marcel Holtmann <marcel@holtmann.org>");
 MODULE_DESCRIPTION("Digianswer Bluetooth USB driver ver " VERSION);

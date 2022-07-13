@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * SMP support for power macintosh.
  *
@@ -15,6 +19,7 @@
  *
  * Support for DayStar quad CPU cards
  * Copyright (C) XLR8, Inc. 1994-2000
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or
  *  modify it under the terms of the GNU General Public License
@@ -25,6 +30,15 @@
 #include <linux/sched.h>
 #include <linux/smp.h>
 #include <linux/interrupt.h>
+=======
+ */
+#include <linux/kernel.h>
+#include <linux/sched.h>
+#include <linux/sched/hotplug.h>
+#include <linux/smp.h>
+#include <linux/interrupt.h>
+#include <linux/irqdomain.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel_stat.h>
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -33,16 +47,25 @@
 #include <linux/hardirq.h>
 #include <linux/cpu.h>
 #include <linux/compiler.h>
+<<<<<<< HEAD
+=======
+#include <linux/pgtable.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include <asm/ptrace.h>
 #include <linux/atomic.h>
 #include <asm/code-patching.h>
 #include <asm/irq.h>
 #include <asm/page.h>
+<<<<<<< HEAD
 #include <asm/pgtable.h>
 #include <asm/sections.h>
 #include <asm/io.h>
 #include <asm/prom.h>
+=======
+#include <asm/sections.h>
+#include <asm/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/smp.h>
 #include <asm/machdep.h>
 #include <asm/pmac_feature.h>
@@ -52,6 +75,10 @@
 #include <asm/keylargo.h>
 #include <asm/pmac_low_i2c.h>
 #include <asm/pmac_pfunc.h>
+<<<<<<< HEAD
+=======
+#include <asm/inst.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "pmac.h"
 
@@ -64,7 +91,10 @@
 #endif
 
 extern void __secondary_start_pmac_0(void);
+<<<<<<< HEAD
 extern int pmac_pfunc_base_install(void);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void (*pmac_tb_freeze)(int freeze);
 static u64 timebase;
@@ -149,6 +179,10 @@ static inline void psurge_clr_ipi(int cpu)
 		switch(psurge_type) {
 		case PSURGE_DUAL:
 			out_8(psurge_sec_intr, ~0);
+<<<<<<< HEAD
+=======
+			break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		case PSURGE_NONE:
 			break;
 		default:
@@ -171,7 +205,11 @@ static irqreturn_t psurge_ipi_intr(int irq, void *d)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static void smp_psurge_cause_ipi(int cpu, unsigned long data)
+=======
+static void smp_psurge_cause_ipi(int cpu)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	psurge_set_ipi(cpu);
 }
@@ -188,11 +226,19 @@ static const struct irq_domain_ops psurge_host_ops = {
 	.map	= psurge_host_map,
 };
 
+<<<<<<< HEAD
 static int psurge_secondary_ipi_init(void)
 {
 	int rc = -ENOMEM;
 
 	psurge_host = irq_domain_add_nomap(NULL, 0, &psurge_host_ops, NULL);
+=======
+static int __init psurge_secondary_ipi_init(void)
+{
+	int rc = -ENOMEM;
+
+	psurge_host = irq_domain_add_nomap(NULL, ~0, &psurge_host_ops, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (psurge_host)
 		psurge_secondary_virq = irq_create_direct_mapping(psurge_host);
@@ -268,15 +314,22 @@ static void __init psurge_quad_init(void)
 	mdelay(33);
 }
 
+<<<<<<< HEAD
 static int __init smp_psurge_probe(void)
+=======
+static void __init smp_psurge_probe(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, ncpus;
 	struct device_node *dn;
 
+<<<<<<< HEAD
 	/* We don't do SMP on the PPC601 -- paulus */
 	if (PVR_VER(mfspr(SPRN_PVR)) == 1)
 		return 1;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * The powersurge cpu board can be used in the generation
 	 * of powermacs that have a socket for an upgradeable cpu card,
@@ -289,7 +342,11 @@ static int __init smp_psurge_probe(void)
 	 */
 	dn = of_find_node_by_name(NULL, "hammerhead");
 	if (dn == NULL)
+<<<<<<< HEAD
 		return 1;
+=======
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	of_node_put(dn);
 
 	hhead_base = ioremap(HAMMERHEAD_BASE, 0x800);
@@ -310,13 +367,21 @@ static int __init smp_psurge_probe(void)
 			/* not a dual-cpu card */
 			iounmap(hhead_base);
 			psurge_type = PSURGE_NONE;
+<<<<<<< HEAD
 			return 1;
+=======
+			return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}
 		ncpus = 2;
 	}
 
 	if (psurge_secondary_ipi_init())
+<<<<<<< HEAD
 		return 1;
+=======
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	psurge_start = ioremap(PSURGE_START, 4);
 	psurge_pri_intr = ioremap(PSURGE_PRI_INTR, 4);
@@ -332,8 +397,11 @@ static int __init smp_psurge_probe(void)
 		set_cpu_present(i, true);
 
 	if (ppc_md.progress) ppc_md.progress("smp_psurge_probe - done", 0x352);
+<<<<<<< HEAD
 
 	return ncpus;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int __init smp_psurge_kick_cpu(int nr)
@@ -405,6 +473,7 @@ static int __init smp_psurge_kick_cpu(int nr)
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct irqaction psurge_irqaction = {
 	.handler = psurge_ipi_intr,
 	.flags = IRQF_PERCPU | IRQF_NO_THREAD,
@@ -413,17 +482,33 @@ static struct irqaction psurge_irqaction = {
 
 static void __init smp_psurge_setup_cpu(int cpu_nr)
 {
+=======
+static void __init smp_psurge_setup_cpu(int cpu_nr)
+{
+	unsigned long flags = IRQF_PERCPU | IRQF_NO_THREAD;
+	int irq;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (cpu_nr != 0 || !psurge_start)
 		return;
 
 	/* reset the entry point so if we get another intr we won't
 	 * try to startup again */
 	out_be32(psurge_start, 0x100);
+<<<<<<< HEAD
 	if (setup_irq(irq_create_mapping(NULL, 30), &psurge_irqaction))
 		printk(KERN_ERR "Couldn't get primary IPI interrupt");
 }
 
 void __init smp_psurge_take_timebase(void)
+=======
+	irq = irq_create_mapping(NULL, 30);
+	if (request_irq(irq, psurge_ipi_intr, flags, "primary IPI", NULL))
+		printk(KERN_ERR "Couldn't get primary IPI interrupt");
+}
+
+static void __init smp_psurge_take_timebase(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (psurge_type != PSURGE_DUAL)
 		return;
@@ -439,7 +524,11 @@ void __init smp_psurge_take_timebase(void)
 	set_dec(tb_ticks_per_jiffy/2);
 }
 
+<<<<<<< HEAD
 void __init smp_psurge_give_timebase(void)
+=======
+static void __init smp_psurge_give_timebase(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Nothing to do here */
 }
@@ -448,6 +537,10 @@ void __init smp_psurge_give_timebase(void)
 struct smp_ops_t psurge_smp_ops = {
 	.message_pass	= NULL,	/* Use smp_muxed_ipi_message_pass */
 	.cause_ipi	= smp_psurge_cause_ipi,
+<<<<<<< HEAD
+=======
+	.cause_nmi_ipi	= NULL,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.probe		= smp_psurge_probe,
 	.kick_cpu	= smp_psurge_kick_cpu,
 	.setup_cpu	= smp_psurge_setup_cpu,
@@ -484,7 +577,11 @@ static void smp_core99_give_timebase(void)
 }
 
 
+<<<<<<< HEAD
 static void __devinit smp_core99_take_timebase(void)
+=======
+static void smp_core99_take_timebase(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -577,7 +674,11 @@ static void __init smp_core99_setup_i2c_hwsync(int ncpus)
 	int ok;
 
 	/* Look for the clock chip */
+<<<<<<< HEAD
 	while ((cc = of_find_node_by_name(cc, "i2c-hwclock")) != NULL) {
+=======
+	for_each_node_by_name(cc, "i2c-hwclock") {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		p = of_get_parent(cc);
 		ok = p && of_device_is_compatible(p, "uni-n-i2c");
 		of_node_put(p);
@@ -607,8 +708,15 @@ static void __init smp_core99_setup_i2c_hwsync(int ncpus)
 			name = "Pulsar";
 			break;
 		}
+<<<<<<< HEAD
 		if (pmac_tb_freeze != NULL)
 			break;
+=======
+		if (pmac_tb_freeze != NULL) {
+			of_node_put(cc);
+			break;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	if (pmac_tb_freeze != NULL) {
 		/* Open i2c bus for synchronous access */
@@ -665,6 +773,7 @@ static void smp_core99_gpio_tb_freeze(int freeze)
 
 #endif /* !CONFIG_PPC64 */
 
+<<<<<<< HEAD
 /* L2 and L3 cache settings to pass from CPU0 to CPU1 on G4 cpus */
 volatile static long int core99_l2_cache;
 volatile static long int core99_l3_cache;
@@ -672,6 +781,15 @@ volatile static long int core99_l3_cache;
 static void __devinit core99_init_caches(int cpu)
 {
 #ifndef CONFIG_PPC64
+=======
+static void core99_init_caches(int cpu)
+{
+#ifndef CONFIG_PPC64
+	/* L2 and L3 cache settings to pass from CPU0 to CPU1 on G4 cpus */
+	static long int core99_l2_cache;
+	static long int core99_l3_cache;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!cpu_has_feature(CPU_FTR_L2CR))
 		return;
 
@@ -715,11 +833,19 @@ static void __init smp_core99_setup(int ncpus)
 		struct device_node *cpus =
 			of_find_node_by_path("/cpus");
 		if (cpus &&
+<<<<<<< HEAD
 		    of_get_property(cpus, "platform-cpu-timebase", NULL)) {
+=======
+		    of_property_read_bool(cpus, "platform-cpu-timebase")) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			pmac_tb_freeze = smp_core99_pfunc_tb_freeze;
 			printk(KERN_INFO "Processor timebase sync using"
 			       " platform function\n");
 		}
+<<<<<<< HEAD
+=======
+		of_node_put(cpus);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 #else /* CONFIG_PPC64 */
@@ -766,7 +892,11 @@ static void __init smp_core99_setup(int ncpus)
 		powersave_nap = 0;
 }
 
+<<<<<<< HEAD
 static int __init smp_core99_probe(void)
+=======
+static void __init smp_core99_probe(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct device_node *cpus;
 	int ncpus = 0;
@@ -774,14 +904,23 @@ static int __init smp_core99_probe(void)
 	if (ppc_md.progress) ppc_md.progress("smp_core99_probe", 0x345);
 
 	/* Count CPUs in the device-tree */
+<<<<<<< HEAD
        	for (cpus = NULL; (cpus = of_find_node_by_type(cpus, "cpu")) != NULL;)
 	       	++ncpus;
+=======
+	for_each_node_by_type(cpus, "cpu")
+		++ncpus;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	printk(KERN_INFO "PowerMac SMP probe found %d cpus\n", ncpus);
 
 	/* Nothing more to do if less than 2 of them */
 	if (ncpus <= 1)
+<<<<<<< HEAD
 		return 1;
+=======
+		return;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* We need to perform some early initialisations before we can start
 	 * setting up SMP as we are running before initcalls
@@ -797,11 +936,17 @@ static int __init smp_core99_probe(void)
 
 	/* Collect l2cr and l3cr values from CPU 0 */
 	core99_init_caches(0);
+<<<<<<< HEAD
 
 	return ncpus;
 }
 
 static int __devinit smp_core99_kick_cpu(int nr)
+=======
+}
+
+static int smp_core99_kick_cpu(int nr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int save_vector;
 	unsigned long target, flags;
@@ -835,8 +980,12 @@ static int __devinit smp_core99_kick_cpu(int nr)
 	mdelay(1);
 
 	/* Restore our exception vector */
+<<<<<<< HEAD
 	*vector = save_vector;
 	flush_icache_range((unsigned long) vector, (unsigned long) vector + 4);
+=======
+	patch_instruction(vector, ppc_inst(save_vector));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	local_irq_restore(flags);
 	if (ppc_md.progress) ppc_md.progress("smp_core99_kick_cpu done", 0x347);
@@ -844,7 +993,11 @@ static int __devinit smp_core99_kick_cpu(int nr)
 	return 0;
 }
 
+<<<<<<< HEAD
 static void __devinit smp_core99_setup_cpu(int cpu_nr)
+=======
+static void smp_core99_setup_cpu(int cpu_nr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	/* Setup L2/L3 */
 	if (cpu_nr != 0)
@@ -856,6 +1009,7 @@ static void __devinit smp_core99_setup_cpu(int cpu_nr)
 
 #ifdef CONFIG_PPC64
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 static int smp_core99_cpu_notify(struct notifier_block *self,
 				 unsigned long action, void *hcpu)
 {
@@ -888,12 +1042,44 @@ static int smp_core99_cpu_notify(struct notifier_block *self,
 static struct notifier_block __cpuinitdata smp_core99_cpu_nb = {
 	.notifier_call	= smp_core99_cpu_notify,
 };
+=======
+static unsigned int smp_core99_host_open;
+
+static int smp_core99_cpu_prepare(unsigned int cpu)
+{
+	int rc;
+
+	/* Open i2c bus if it was used for tb sync */
+	if (pmac_tb_clock_chip_host && !smp_core99_host_open) {
+		rc = pmac_i2c_open(pmac_tb_clock_chip_host, 1);
+		if (rc) {
+			pr_err("Failed to open i2c bus for time sync\n");
+			return notifier_from_errno(rc);
+		}
+		smp_core99_host_open = 1;
+	}
+	return 0;
+}
+
+static int smp_core99_cpu_online(unsigned int cpu)
+{
+	/* Close i2c bus if it was used for tb sync */
+	if (pmac_tb_clock_chip_host && smp_core99_host_open) {
+		pmac_i2c_close(pmac_tb_clock_chip_host);
+		smp_core99_host_open = 0;
+	}
+	return 0;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* CONFIG_HOTPLUG_CPU */
 
 static void __init smp_core99_bringup_done(void)
 {
+<<<<<<< HEAD
 	extern void g5_phy_disable_cpu1(void);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* Close i2c bus if it was used for tb sync */
 	if (pmac_tb_clock_chip_host)
 		pmac_i2c_close(pmac_tb_clock_chip_host);
@@ -907,7 +1093,15 @@ static void __init smp_core99_bringup_done(void)
 		g5_phy_disable_cpu1();
 	}
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 	register_cpu_notifier(&smp_core99_cpu_nb);
+=======
+	cpuhp_setup_state_nocalls(CPUHP_POWERPC_PMAC_PREPARE,
+				  "powerpc/pmac:prepare", smp_core99_cpu_prepare,
+				  NULL);
+	cpuhp_setup_state_nocalls(CPUHP_AP_ONLINE_DYN, "powerpc/pmac:online",
+				  smp_core99_cpu_online, NULL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 
 	if (ppc_md.progress)
@@ -925,12 +1119,21 @@ static int smp_core99_cpu_disable(void)
 
 	mpic_cpu_set_priority(0xf);
 
+<<<<<<< HEAD
+=======
+	cleanup_cpu_mmu_context();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
 #ifdef CONFIG_PPC32
 
+<<<<<<< HEAD
 static void pmac_cpu_die(void)
+=======
+static void pmac_cpu_offline_self(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cpu = smp_processor_id();
 
@@ -940,12 +1143,20 @@ static void pmac_cpu_die(void)
 	generic_set_cpu_dead(cpu);
 	smp_wmb();
 	mb();
+<<<<<<< HEAD
 	low_cpu_die();
+=======
+	low_cpu_offline_self();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #else /* CONFIG_PPC32 */
 
+<<<<<<< HEAD
 static void pmac_cpu_die(void)
+=======
+static void pmac_cpu_offline_self(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int cpu = smp_processor_id();
 
@@ -984,7 +1195,11 @@ static void pmac_cpu_die(void)
 #endif /* CONFIG_HOTPLUG_CPU */
 
 /* Core99 Macs (dual G4s and G5s) */
+<<<<<<< HEAD
 struct smp_ops_t core99_smp_ops = {
+=======
+static struct smp_ops_t core99_smp_ops = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.message_pass	= smp_mpic_message_pass,
 	.probe		= smp_core99_probe,
 #ifdef CONFIG_PPC64
@@ -1030,7 +1245,11 @@ void __init pmac_setup_smp(void)
 #endif /* CONFIG_PPC_PMAC32_PSURGE */
 
 #ifdef CONFIG_HOTPLUG_CPU
+<<<<<<< HEAD
 	ppc_md.cpu_die = pmac_cpu_die;
+=======
+	smp_ops->cpu_offline_self = pmac_cpu_offline_self;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif
 }
 

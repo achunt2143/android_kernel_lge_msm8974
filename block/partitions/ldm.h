@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * ldm - Part of the Linux-NTFS project.
  *
@@ -6,6 +10,7 @@
  * Copyright (C) 2001,2002 Jakob Kemi <jakob.kemi@telia.com>
  *
  * Documentation is available at http://www.linux-ntfs.org/doku.php?id=downloads 
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -21,6 +26,8 @@
  * along with this program (in the main directory of the Linux-NTFS source
  * in the file COPYING); if not, write to the Free Software Foundation,
  * Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _FS_PT_LDM_H_
@@ -28,7 +35,10 @@
 
 #include <linux/types.h>
 #include <linux/list.h>
+<<<<<<< HEAD
 #include <linux/genhd.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/fs.h>
 #include <asm/unaligned.h>
 #include <asm/byteorder.h>
@@ -98,22 +108,32 @@ struct parsed_partitions;
 #define TOC_BITMAP1		"config"	/* Names of the two defined */
 #define TOC_BITMAP2		"log"		/* bitmaps in the TOCBLOCK. */
 
+<<<<<<< HEAD
 /* Borrowed from msdos.c */
 #define SYS_IND(p)		(get_unaligned(&(p)->sys_ind))
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct frag {				/* VBLK Fragment handling */
 	struct list_head list;
 	u32		group;
 	u8		num;		/* Total number of records */
 	u8		rec;		/* This is record number n */
 	u8		map;		/* Which portions are in use */
+<<<<<<< HEAD
 	u8		data[0];
+=======
+	u8		data[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* In memory LDM database structures. */
 
+<<<<<<< HEAD
 #define GUID_SIZE		16
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct privhead {			/* Offsets and sizes are in sectors. */
 	u16	ver_major;
 	u16	ver_minor;
@@ -121,7 +141,11 @@ struct privhead {			/* Offsets and sizes are in sectors. */
 	u64	logical_disk_size;
 	u64	config_start;
 	u64	config_size;
+<<<<<<< HEAD
 	u8	disk_id[GUID_SIZE];
+=======
+	uuid_t	disk_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct tocblock {			/* We have exactly two bitmaps. */
@@ -154,7 +178,11 @@ struct vblk_dgrp {			/* VBLK Disk Group */
 };
 
 struct vblk_disk {			/* VBLK Disk */
+<<<<<<< HEAD
 	u8	disk_id[GUID_SIZE];
+=======
+	uuid_t	disk_id;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u8	alt_name[128];
 };
 
@@ -209,7 +237,10 @@ struct ldmdb {				/* Cache of the database */
 	struct list_head v_part;
 };
 
+<<<<<<< HEAD
 int ldm_partition(struct parsed_partitions *state);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _FS_PT_LDM_H_ */
 

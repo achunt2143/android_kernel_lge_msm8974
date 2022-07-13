@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Module Name: utglobal - Global variables for the ACPI subsystem
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -44,6 +49,15 @@
 #define DEFINE_ACPI_GLOBALS
 
 #include <linux/export.h>
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+#define EXPORT_ACPI_INTERFACES
+#define DEFINE_ACPI_GLOBALS
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <acpi/acpi.h>
 #include "accommon.h"
 
@@ -55,6 +69,7 @@ ACPI_MODULE_NAME("utglobal")
  * Static global variable initialization.
  *
  ******************************************************************************/
+<<<<<<< HEAD
 /*
  * We want the debug switches statically initialized so they
  * are already set when the debugger is entered.
@@ -81,6 +96,9 @@ u32 acpi_gbl_startup_flags = 0;
 
 u8 acpi_gbl_shutdown = TRUE;
 
+=======
+/* Various state name strings */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 const char *acpi_gbl_sleep_state_names[ACPI_S_STATE_COUNT] = {
 	"\\_S0_",
 	"\\_S1_",
@@ -105,6 +123,14 @@ const char *acpi_gbl_highest_dstate_names[ACPI_NUM_sx_d_METHODS] = {
 	"_S4D"
 };
 
+<<<<<<< HEAD
+=======
+/* Hex-to-ascii */
+
+const char acpi_gbl_lower_hex_digits[] = "0123456789abcdef";
+const char acpi_gbl_upper_hex_digits[] = "0123456789ABCDEF";
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*******************************************************************************
  *
  * Namespace globals
@@ -127,6 +153,7 @@ const struct acpi_predefined_names acpi_gbl_pre_defined_names[] = {
 	{"_SB_", ACPI_TYPE_DEVICE, NULL},
 	{"_SI_", ACPI_TYPE_LOCAL_SCOPE, NULL},
 	{"_TZ_", ACPI_TYPE_DEVICE, NULL},
+<<<<<<< HEAD
 	{"_REV", ACPI_TYPE_INTEGER, (char *)ACPI_CA_SUPPORT_LEVEL},
 	{"_OS_", ACPI_TYPE_STRING, ACPI_OS_NAME},
 	{"_GL_", ACPI_TYPE_MUTEX, (char *)1},
@@ -134,6 +161,19 @@ const struct acpi_predefined_names acpi_gbl_pre_defined_names[] = {
 #if !defined (ACPI_NO_METHOD_EXECUTION) || defined (ACPI_CONSTANT_EVAL_ONLY)
 	{"_OSI", ACPI_TYPE_METHOD, (char *)1},
 #endif
+=======
+	/*
+	 * March, 2015:
+	 * The _REV object is in the process of being deprecated, because
+	 * other ACPI implementations permanently return 2. Thus, it
+	 * has little or no value. Return 2 for compatibility with
+	 * other ACPI implementations.
+	 */
+	{"_REV", ACPI_TYPE_INTEGER, ACPI_CAST_PTR(char, 2)},
+	{"_OS_", ACPI_TYPE_STRING, ACPI_OS_NAME},
+	{"_GL_", ACPI_TYPE_MUTEX, ACPI_CAST_PTR(char, 1)},
+	{"_OSI", ACPI_TYPE_METHOD, ACPI_CAST_PTR(char, 1)},
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Table terminator */
 
@@ -239,6 +279,7 @@ struct acpi_fixed_event_info acpi_gbl_fixed_event_info[ACPI_NUM_FIXED_EVENTS] = 
 };
 #endif				/* !ACPI_REDUCED_HARDWARE */
 
+<<<<<<< HEAD
 /*******************************************************************************
  *
  * FUNCTION:    acpi_ut_init_globals
@@ -366,8 +407,58 @@ acpi_status acpi_ut_init_globals(void)
 
 	return_ACPI_STATUS(AE_OK);
 }
+=======
+#if defined (ACPI_DISASSEMBLER) || defined (ACPI_ASL_COMPILER)
+
+/* to_pld macro: compile/disassemble strings */
+
+const char *acpi_gbl_pld_panel_list[] = {
+	"TOP",
+	"BOTTOM",
+	"LEFT",
+	"RIGHT",
+	"FRONT",
+	"BACK",
+	"UNKNOWN",
+	NULL
+};
+
+const char *acpi_gbl_pld_vertical_position_list[] = {
+	"UPPER",
+	"CENTER",
+	"LOWER",
+	NULL
+};
+
+const char *acpi_gbl_pld_horizontal_position_list[] = {
+	"LEFT",
+	"CENTER",
+	"RIGHT",
+	NULL
+};
+
+const char *acpi_gbl_pld_shape_list[] = {
+	"ROUND",
+	"OVAL",
+	"SQUARE",
+	"VERTICALRECTANGLE",
+	"HORIZONTALRECTANGLE",
+	"VERTICALTRAPEZOID",
+	"HORIZONTALTRAPEZOID",
+	"UNKNOWN",
+	"CHAMFERED",
+	NULL
+};
+#endif
+
+/* Public globals */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 ACPI_EXPORT_SYMBOL(acpi_gbl_FADT)
 ACPI_EXPORT_SYMBOL(acpi_dbg_level)
 ACPI_EXPORT_SYMBOL(acpi_dbg_layer)
+<<<<<<< HEAD
+=======
+ACPI_EXPORT_SYMBOL(acpi_gpe_count)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 ACPI_EXPORT_SYMBOL(acpi_current_gpe_count)

@@ -1,18 +1,29 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * arch/sh/drivers/dma/dma-api.c
  *
  * SuperH-specific DMA management API
  *
  * Copyright (C) 2003, 2004, 2005  Paul Mundt
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/spinlock.h>
 #include <linux/proc_fs.h>
+<<<<<<< HEAD
+=======
+#include <linux/seq_file.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/list.h>
 #include <linux/platform_device.h>
 #include <linux/mm.h>
@@ -200,7 +211,11 @@ int request_dma(unsigned int chan, const char *dev_id)
 	if (atomic_xchg(&channel->busy, 1))
 		return -EBUSY;
 
+<<<<<<< HEAD
 	strlcpy(channel->dev_id, dev_id, sizeof(channel->dev_id));
+=======
+	strscpy(channel->dev_id, dev_id, sizeof(channel->dev_id));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (info->ops->request) {
 		result = info->ops->request(channel);
@@ -308,11 +323,17 @@ int dma_extend(unsigned int chan, unsigned long op, void *param)
 }
 EXPORT_SYMBOL(dma_extend);
 
+<<<<<<< HEAD
 static int dma_read_proc(char *buf, char **start, off_t off,
 			 int len, int *eof, void *data)
 {
 	struct dma_info *info;
 	char *p = buf;
+=======
+static int dma_proc_show(struct seq_file *m, void *v)
+{
+	struct dma_info *info = v;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (list_empty(&registered_dmac_list))
 		return 0;
@@ -332,12 +353,21 @@ static int dma_read_proc(char *buf, char **start, off_t off,
 			if (!(channel->flags & DMA_CONFIGURED))
 				continue;
 
+<<<<<<< HEAD
 			p += sprintf(p, "%2d: %14s    %s\n", i,
 				     info->name, channel->dev_id);
 		}
 	}
 
 	return p - buf;
+=======
+			seq_printf(m, "%2d: %14s    %s\n", i,
+				   info->name, channel->dev_id);
+		}
+	}
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 int register_dmac(struct dma_info *info)
@@ -412,11 +442,19 @@ EXPORT_SYMBOL(unregister_dmac);
 static int __init dma_api_init(void)
 {
 	printk(KERN_NOTICE "DMA: Registering DMA API.\n");
+<<<<<<< HEAD
 	return create_proc_read_entry("dma", 0, 0, dma_read_proc, 0)
 		    ? 0 : -ENOMEM;
+=======
+	return proc_create_single("dma", 0, NULL, dma_proc_show) ? 0 : -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 subsys_initcall(dma_api_init);
 
 MODULE_AUTHOR("Paul Mundt <lethal@linux-sh.org>");
 MODULE_DESCRIPTION("DMA API for SuperH");
+<<<<<<< HEAD
 MODULE_LICENSE("GPL");
+=======
+MODULE_LICENSE("GPL v2");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

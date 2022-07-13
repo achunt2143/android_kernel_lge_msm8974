@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* Copyright (C) 1989, 1992, 1993, 1994, 1995 Free Software Foundation, Inc.
 
 This file is part of GNU CC.
 
+<<<<<<< HEAD
 GNU CC is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation; either version 2, or (at your option)
@@ -20,6 +25,13 @@ Boston, MA 02111-1307, USA.  */
 	.text
 	.align 4
 	.global .udiv
+=======
+ */
+
+#include <linux/export.h>
+	.text
+	.align 4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.globl __divdi3
 __divdi3:
 	save %sp,-104,%sp
@@ -83,8 +95,14 @@ __divdi3:
 	bne .LL85
 	mov %i0,%o2
 	mov 1,%o0
+<<<<<<< HEAD
 	call .udiv,0
 	mov 0,%o1
+=======
+	mov 0,%o1
+	wr %g0, 0, %y
+	udiv %o0, %o1, %o0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mov %o0,%o4
 	mov %i0,%o2
 .LL85:
@@ -279,3 +297,7 @@ __divdi3:
 .LL81:
 	ret
 	restore
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(__divdi3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

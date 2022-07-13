@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Transparent proxy support for Linux/iptables
  *
  * Copyright (C) 2007-2008 BalaBit IT Ltd.
  * Author: Krisztian Kovacs
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
@@ -19,6 +26,7 @@
 #include <net/icmp.h>
 #include <net/sock.h>
 #include <net/inet_sock.h>
+<<<<<<< HEAD
 #include <net/netfilter/nf_tproxy_core.h>
 #include <net/netfilter/ipv4/nf_defrag_ipv4.h>
 
@@ -167,10 +175,43 @@ xt_socket_get4_sk(const struct sk_buff *skb, struct xt_action_param *par)
 }
 EXPORT_SYMBOL(xt_socket_get4_sk);
 
+=======
+#include <net/netfilter/ipv4/nf_defrag_ipv4.h>
+
+#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
+#include <linux/netfilter_ipv6/ip6_tables.h>
+#include <net/inet6_hashtables.h>
+#include <net/netfilter/ipv6/nf_defrag_ipv6.h>
+#endif
+
+#include <net/netfilter/nf_socket.h>
+#include <linux/netfilter/xt_socket.h>
+
+/* "socket" match based redirection (no specific rule)
+ * ===================================================
+ *
+ * There are connections with dynamic endpoints (e.g. FTP data
+ * connection) that the user is unable to add explicit rules
+ * for. These are taken care of by a generic "socket" rule. It is
+ * assumed that the proxy application is trusted to open such
+ * connections without explicit iptables rule (except of course the
+ * generic 'socket' rule). In this case the following sockets are
+ * matched in preference order:
+ *
+ *   - match: if there's a fully established connection matching the
+ *     _packet_ tuple
+ *
+ *   - match: if there's a non-zero bound listener (possibly with a
+ *     non-local address) We don't accept zero-bound listeners, since
+ *     then local services could intercept traffic going through the
+ *     box.
+ */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static bool
 socket_match(const struct sk_buff *skb, struct xt_action_param *par,
 	     const struct xt_socket_mtinfo1 *info)
 {
+<<<<<<< HEAD
 	struct sock *sk;
 
 	sk = xt_socket_get4_sk(skb, par);
@@ -191,26 +232,77 @@ socket_match(const struct sk_buff *skb, struct xt_action_param *par,
 					inet_twsk(sk)->tw_transparent));
 
 		xt_socket_put_sk(sk);
+=======
+	struct sk_buff *pskb = (struct sk_buff *)skb;
+	struct sock *sk = skb->sk;
+
+	if (sk && !net_eq(xt_net(par), sock_net(sk)))
+		sk = NULL;
+
+	if (!sk)
+		sk = nf_sk_lookup_slow_v4(xt_net(par), skb, xt_in(par));
+
+	if (sk) {
+		bool wildcard;
+		bool transparent = true;
+
+		/* Ignore sockets listening on INADDR_ANY,
+		 * unless XT_SOCKET_NOWILDCARD is set
+		 */
+		wildcard = (!(info->flags & XT_SOCKET_NOWILDCARD) &&
+			    sk_fullsock(sk) &&
+			    inet_sk(sk)->inet_rcv_saddr == 0);
+
+		/* Ignore non-transparent sockets,
+		 * if XT_SOCKET_TRANSPARENT is used
+		 */
+		if (info->flags & XT_SOCKET_TRANSPARENT)
+			transparent = inet_sk_transparent(sk);
+
+		if (info->flags & XT_SOCKET_RESTORESKMARK && !wildcard &&
+		    transparent && sk_fullsock(sk))
+			pskb->mark = READ_ONCE(sk->sk_mark);
+
+		if (sk != skb->sk)
+			sock_gen_put(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (wildcard || !transparent)
 			sk = NULL;
 	}
 
+<<<<<<< HEAD
 	return (sk != NULL);
+=======
+	return sk != NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static bool
 socket_mt4_v0(const struct sk_buff *skb, struct xt_action_param *par)
 {
+<<<<<<< HEAD
 	return socket_match(skb, par, NULL);
 }
 
 static bool
 socket_mt4_v1(const struct sk_buff *skb, struct xt_action_param *par)
+=======
+	static struct xt_socket_mtinfo1 xt_info_v0 = {
+		.flags = 0,
+	};
+
+	return socket_match(skb, par, &xt_info_v0);
+}
+
+static bool
+socket_mt4_v1_v2_v3(const struct sk_buff *skb, struct xt_action_param *par)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	return socket_match(skb, par, par->matchinfo);
 }
 
+<<<<<<< HEAD
 #ifdef XT_SOCKET_HAVE_IPV6
 
 static int
@@ -341,15 +433,136 @@ socket_mt6_v1(const struct sk_buff *skb, struct xt_action_param *par)
 					inet_twsk(sk)->tw_transparent));
 
 		xt_socket_put_sk(sk);
+=======
+#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
+static bool
+socket_mt6_v1_v2_v3(const struct sk_buff *skb, struct xt_action_param *par)
+{
+	const struct xt_socket_mtinfo1 *info = (struct xt_socket_mtinfo1 *) par->matchinfo;
+	struct sk_buff *pskb = (struct sk_buff *)skb;
+	struct sock *sk = skb->sk;
+
+	if (sk && !net_eq(xt_net(par), sock_net(sk)))
+		sk = NULL;
+
+	if (!sk)
+		sk = nf_sk_lookup_slow_v6(xt_net(par), skb, xt_in(par));
+
+	if (sk) {
+		bool wildcard;
+		bool transparent = true;
+
+		/* Ignore sockets listening on INADDR_ANY
+		 * unless XT_SOCKET_NOWILDCARD is set
+		 */
+		wildcard = (!(info->flags & XT_SOCKET_NOWILDCARD) &&
+			    sk_fullsock(sk) &&
+			    ipv6_addr_any(&sk->sk_v6_rcv_saddr));
+
+		/* Ignore non-transparent sockets,
+		 * if XT_SOCKET_TRANSPARENT is used
+		 */
+		if (info->flags & XT_SOCKET_TRANSPARENT)
+			transparent = inet_sk_transparent(sk);
+
+		if (info->flags & XT_SOCKET_RESTORESKMARK && !wildcard &&
+		    transparent && sk_fullsock(sk))
+			pskb->mark = READ_ONCE(sk->sk_mark);
+
+		if (sk != skb->sk)
+			sock_gen_put(sk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		if (wildcard || !transparent)
 			sk = NULL;
 	}
 
+<<<<<<< HEAD
 	return (sk != NULL);
 }
 #endif
 
+=======
+	return sk != NULL;
+}
+#endif
+
+static int socket_mt_enable_defrag(struct net *net, int family)
+{
+	switch (family) {
+	case NFPROTO_IPV4:
+		return nf_defrag_ipv4_enable(net);
+#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
+	case NFPROTO_IPV6:
+		return nf_defrag_ipv6_enable(net);
+#endif
+	}
+	WARN_ONCE(1, "Unknown family %d\n", family);
+	return 0;
+}
+
+static int socket_mt_v1_check(const struct xt_mtchk_param *par)
+{
+	const struct xt_socket_mtinfo1 *info = (struct xt_socket_mtinfo1 *) par->matchinfo;
+	int err;
+
+	err = socket_mt_enable_defrag(par->net, par->family);
+	if (err)
+		return err;
+
+	if (info->flags & ~XT_SOCKET_FLAGS_V1) {
+		pr_info_ratelimited("unknown flags 0x%x\n",
+				    info->flags & ~XT_SOCKET_FLAGS_V1);
+		return -EINVAL;
+	}
+	return 0;
+}
+
+static int socket_mt_v2_check(const struct xt_mtchk_param *par)
+{
+	const struct xt_socket_mtinfo2 *info = (struct xt_socket_mtinfo2 *) par->matchinfo;
+	int err;
+
+	err = socket_mt_enable_defrag(par->net, par->family);
+	if (err)
+		return err;
+
+	if (info->flags & ~XT_SOCKET_FLAGS_V2) {
+		pr_info_ratelimited("unknown flags 0x%x\n",
+				    info->flags & ~XT_SOCKET_FLAGS_V2);
+		return -EINVAL;
+	}
+	return 0;
+}
+
+static int socket_mt_v3_check(const struct xt_mtchk_param *par)
+{
+	const struct xt_socket_mtinfo3 *info =
+				    (struct xt_socket_mtinfo3 *)par->matchinfo;
+	int err;
+
+	err = socket_mt_enable_defrag(par->net, par->family);
+	if (err)
+		return err;
+	if (info->flags & ~XT_SOCKET_FLAGS_V3) {
+		pr_info_ratelimited("unknown flags 0x%x\n",
+				    info->flags & ~XT_SOCKET_FLAGS_V3);
+		return -EINVAL;
+	}
+	return 0;
+}
+
+static void socket_mt_destroy(const struct xt_mtdtor_param *par)
+{
+	if (par->family == NFPROTO_IPV4)
+		nf_defrag_ipv4_disable(par->net);
+#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
+	else if (par->family == NFPROTO_IPV6)
+		nf_defrag_ipv6_disable(par->net);
+#endif
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct xt_match socket_mt_reg[] __read_mostly = {
 	{
 		.name		= "socket",
@@ -364,18 +577,86 @@ static struct xt_match socket_mt_reg[] __read_mostly = {
 		.name		= "socket",
 		.revision	= 1,
 		.family		= NFPROTO_IPV4,
+<<<<<<< HEAD
 		.match		= socket_mt4_v1,
+=======
+		.match		= socket_mt4_v1_v2_v3,
+		.destroy	= socket_mt_destroy,
+		.checkentry	= socket_mt_v1_check,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.matchsize	= sizeof(struct xt_socket_mtinfo1),
 		.hooks		= (1 << NF_INET_PRE_ROUTING) |
 				  (1 << NF_INET_LOCAL_IN),
 		.me		= THIS_MODULE,
 	},
+<<<<<<< HEAD
 #ifdef XT_SOCKET_HAVE_IPV6
+=======
+#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{
 		.name		= "socket",
 		.revision	= 1,
 		.family		= NFPROTO_IPV6,
+<<<<<<< HEAD
 		.match		= socket_mt6_v1,
+=======
+		.match		= socket_mt6_v1_v2_v3,
+		.checkentry	= socket_mt_v1_check,
+		.matchsize	= sizeof(struct xt_socket_mtinfo1),
+		.destroy	= socket_mt_destroy,
+		.hooks		= (1 << NF_INET_PRE_ROUTING) |
+				  (1 << NF_INET_LOCAL_IN),
+		.me		= THIS_MODULE,
+	},
+#endif
+	{
+		.name		= "socket",
+		.revision	= 2,
+		.family		= NFPROTO_IPV4,
+		.match		= socket_mt4_v1_v2_v3,
+		.checkentry	= socket_mt_v2_check,
+		.destroy	= socket_mt_destroy,
+		.matchsize	= sizeof(struct xt_socket_mtinfo1),
+		.hooks		= (1 << NF_INET_PRE_ROUTING) |
+				  (1 << NF_INET_LOCAL_IN),
+		.me		= THIS_MODULE,
+	},
+#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
+	{
+		.name		= "socket",
+		.revision	= 2,
+		.family		= NFPROTO_IPV6,
+		.match		= socket_mt6_v1_v2_v3,
+		.checkentry	= socket_mt_v2_check,
+		.destroy	= socket_mt_destroy,
+		.matchsize	= sizeof(struct xt_socket_mtinfo1),
+		.hooks		= (1 << NF_INET_PRE_ROUTING) |
+				  (1 << NF_INET_LOCAL_IN),
+		.me		= THIS_MODULE,
+	},
+#endif
+	{
+		.name		= "socket",
+		.revision	= 3,
+		.family		= NFPROTO_IPV4,
+		.match		= socket_mt4_v1_v2_v3,
+		.checkentry	= socket_mt_v3_check,
+		.destroy	= socket_mt_destroy,
+		.matchsize	= sizeof(struct xt_socket_mtinfo1),
+		.hooks		= (1 << NF_INET_PRE_ROUTING) |
+				  (1 << NF_INET_LOCAL_IN),
+		.me		= THIS_MODULE,
+	},
+#if IS_ENABLED(CONFIG_IP6_NF_IPTABLES)
+	{
+		.name		= "socket",
+		.revision	= 3,
+		.family		= NFPROTO_IPV6,
+		.match		= socket_mt6_v1_v2_v3,
+		.checkentry	= socket_mt_v3_check,
+		.destroy	= socket_mt_destroy,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		.matchsize	= sizeof(struct xt_socket_mtinfo1),
 		.hooks		= (1 << NF_INET_PRE_ROUTING) |
 				  (1 << NF_INET_LOCAL_IN),
@@ -386,11 +667,14 @@ static struct xt_match socket_mt_reg[] __read_mostly = {
 
 static int __init socket_mt_init(void)
 {
+<<<<<<< HEAD
 	nf_defrag_ipv4_enable();
 #ifdef XT_SOCKET_HAVE_IPV6
 	nf_defrag_ipv6_enable();
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return xt_register_matches(socket_mt_reg, ARRAY_SIZE(socket_mt_reg));
 }
 

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* Copyright 2002 Andi Kleen */
 
 #include <linux/linkage.h>
@@ -5,6 +6,19 @@
 #include <asm/cpufeature.h>
 #include <asm/dwarf2.h>
 #include <asm/alternative-asm.h>
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+/* Copyright 2002 Andi Kleen */
+
+#include <linux/export.h>
+#include <linux/linkage.h>
+#include <linux/cfi_types.h>
+#include <asm/errno.h>
+#include <asm/cpufeatures.h>
+#include <asm/alternative.h>
+
+.section .noinstr.text, "ax"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * memcpy - Copy a memory block.
@@ -16,6 +30,7 @@
  *
  * Output:
  * rax original destination
+<<<<<<< HEAD
  */
 
 /*
@@ -56,6 +71,32 @@
 ENTRY(__memcpy)
 ENTRY(memcpy)
 	CFI_STARTPROC
+=======
+ *
+ * The FSRM alternative should be done inline (avoiding the call and
+ * the disgusting return handling), but that would require some help
+ * from the compiler for better calling conventions.
+ *
+ * The 'rep movsb' itself is small enough to replace the call, but the
+ * two register moves blow up the code. And one of them is "needed"
+ * only for the return value that is the same as the source input,
+ * which the compiler could/should do much better anyway.
+ */
+SYM_TYPED_FUNC_START(__memcpy)
+	ALTERNATIVE "jmp memcpy_orig", "", X86_FEATURE_FSRM
+
+	movq %rdi, %rax
+	movq %rdx, %rcx
+	rep movsb
+	RET
+SYM_FUNC_END(__memcpy)
+EXPORT_SYMBOL(__memcpy)
+
+SYM_FUNC_ALIAS_MEMFUNC(memcpy, __memcpy)
+EXPORT_SYMBOL(memcpy)
+
+SYM_FUNC_START_LOCAL(memcpy_orig)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	movq %rdi, %rax
 
 	cmpq $0x20, %rdx
@@ -98,7 +139,11 @@ ENTRY(memcpy)
 	subq $0x20,	%rdx
 	/*
 	 * At most 3 ALU operations in one cycle,
+<<<<<<< HEAD
 	 * so append NOPS in the same 16bytes trunk.
+=======
+	 * so append NOPS in the same 16 bytes trunk.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	.p2align 4
 .Lcopy_backward_loop:
@@ -136,7 +181,11 @@ ENTRY(memcpy)
 	movq %r9,	1*8(%rdi)
 	movq %r10,	-2*8(%rdi, %rdx)
 	movq %r11,	-1*8(%rdi, %rdx)
+<<<<<<< HEAD
 	retq
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.p2align 4
 .Lless_16bytes:
 	cmpl $8,	%edx
@@ -148,7 +197,11 @@ ENTRY(memcpy)
 	movq -1*8(%rsi, %rdx),	%r9
 	movq %r8,	0*8(%rdi)
 	movq %r9,	-1*8(%rdi, %rdx)
+<<<<<<< HEAD
 	retq
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.p2align 4
 .Lless_8bytes:
 	cmpl $4,	%edx
@@ -161,7 +214,11 @@ ENTRY(memcpy)
 	movl -4(%rsi, %rdx), %r8d
 	movl %ecx, (%rdi)
 	movl %r8d, -4(%rdi, %rdx)
+<<<<<<< HEAD
 	retq
+=======
+	RET
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.p2align 4
 .Lless_3bytes:
 	subl $1, %edx
@@ -179,6 +236,7 @@ ENTRY(memcpy)
 	movb %cl, (%rdi)
 
 .Lend:
+<<<<<<< HEAD
 	retq
 	CFI_ENDPROC
 ENDPROC(memcpy)
@@ -204,3 +262,8 @@ ENDPROC(__memcpy)
 	altinstruction_entry memcpy,.Lmemcpy_c_e,X86_FEATURE_ERMS, \
 			     .Lmemcpy_e_e-.Lmemcpy_c_e,.Lmemcpy_e_e-.Lmemcpy_c_e
 	.previous
+=======
+	RET
+SYM_FUNC_END(memcpy_orig)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

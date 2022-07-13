@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for Digigram VXpocket soundcards
  *
  * Copyright (c) 2002 by Takashi Iwai <tiwai@suse.de>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef __VXPOCKET_H
@@ -43,7 +50,13 @@ struct snd_vxpocket {
 	struct pcmcia_device	*p_dev;
 };
 
+<<<<<<< HEAD
 extern struct snd_vx_ops snd_vxpocket_ops;
+=======
+#define to_vxpocket(x)	container_of(x, struct snd_vxpocket, core)
+
+extern const struct snd_vx_ops snd_vxpocket_ops;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void vx_set_mic_boost(struct vx_core *chip, int boost);
 void vx_set_mic_level(struct vx_core *chip, int level);

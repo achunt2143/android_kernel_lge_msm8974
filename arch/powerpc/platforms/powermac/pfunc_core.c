@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *
  * FIXME: Properly make this race free with refcounting etc...
@@ -5,15 +9,23 @@
  * FIXME: LOCKING !!!
  */
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <linux/kernel.h>
 #include <linux/spinlock.h>
 #include <linux/slab.h>
 #include <linux/module.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 
 #include <asm/prom.h>
+=======
+#include <linux/of.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pmac_pfunc.h>
 
 /* Debug */
@@ -644,7 +656,11 @@ static int pmf_add_function_prop(struct pmf_device *dev, void *driverdata,
 
 	while (length >= 12) {
 		/* Allocate a structure */
+<<<<<<< HEAD
 		func = kzalloc(sizeof(struct pmf_function), GFP_KERNEL);
+=======
+		func = kzalloc(sizeof(*func), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (func == NULL)
 			goto bail;
 		kref_init(&func->ref);
@@ -685,8 +701,13 @@ static int pmf_add_functions(struct pmf_device *dev, void *driverdata)
 	const int plen = strlen(PP_PREFIX);
 	int count = 0;
 
+<<<<<<< HEAD
 	for (pp = dev->node->properties; pp != 0; pp = pp->next) {
 		char *name;
+=======
+	for_each_property_of_node(dev->node, pp) {
+		const char *name;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (strncmp(pp->name, PP_PREFIX, plen) != 0)
 			continue;
 		name = pp->name + plen;
@@ -709,7 +730,11 @@ int pmf_register_driver(struct device_node *np,
 	if (handlers == NULL)
 		return -EINVAL;
 
+<<<<<<< HEAD
 	DBG("pmf: registering driver for node %s\n", np->full_name);
+=======
+	DBG("pmf: registering driver for node %pOF\n", np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&pmf_lock, flags);
 	dev = pmf_find_device(np);
@@ -720,7 +745,11 @@ int pmf_register_driver(struct device_node *np,
 		return -EBUSY;
 	}
 
+<<<<<<< HEAD
 	dev = kzalloc(sizeof(struct pmf_device), GFP_KERNEL);
+=======
+	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (dev == NULL) {
 		DBG("pmf: no memory !\n");
 		return -ENOMEM;
@@ -782,7 +811,11 @@ void pmf_unregister_driver(struct device_node *np)
 	struct pmf_device *dev;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	DBG("pmf: unregistering driver for node %s\n", np->full_name);
+=======
+	DBG("pmf: unregistering driver for node %pOF\n", np);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(&pmf_lock, flags);
 	dev = pmf_find_device(np);
@@ -805,7 +838,11 @@ void pmf_unregister_driver(struct device_node *np)
 }
 EXPORT_SYMBOL_GPL(pmf_unregister_driver);
 
+<<<<<<< HEAD
 struct pmf_function *__pmf_find_function(struct device_node *target,
+=======
+static struct pmf_function *__pmf_find_function(struct device_node *target,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					 const char *name, u32 flags)
 {
 	struct device_node *actor = of_node_get(target);
@@ -941,7 +978,11 @@ int pmf_call_one(struct pmf_function *func, struct pmf_args *args)
 	void *instdata = NULL;
 	int rc = 0;
 
+<<<<<<< HEAD
 	DBG(" ** pmf_call_one(%s/%s) **\n", dev->node->full_name, func->name);
+=======
+	DBG(" ** pmf_call_one(%pOF/%s) **\n", dev->node, func->name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->handlers->begin)
 		instdata = dev->handlers->begin(func, args);

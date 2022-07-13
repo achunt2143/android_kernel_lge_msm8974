@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Marvell MMC/SD/SDIO driver
  *
  * Authors: Maen Suleiman, Nicolas Pitre
  * Copyright (C) 2008-2009 Marvell Ltd.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/module.h>
@@ -19,18 +26,32 @@
 #include <linux/dma-mapping.h>
 #include <linux/scatterlist.h>
 #include <linux/irq.h>
+<<<<<<< HEAD
 #include <linux/gpio.h>
 #include <linux/mmc/host.h>
 
 #include <asm/sizes.h>
 #include <asm/unaligned.h>
 #include <plat/mvsdio.h>
+=======
+#include <linux/clk.h>
+#include <linux/of_irq.h>
+#include <linux/mmc/host.h>
+#include <linux/mmc/slot-gpio.h>
+
+#include <linux/sizes.h>
+#include <asm/unaligned.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "mvsdio.h"
 
 #define DRIVER_NAME	"mvsdio"
 
+<<<<<<< HEAD
 static int maxfreq = MVSD_CLOCKRATE_MAX;
+=======
+static int maxfreq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int nodma;
 
 struct mvsd_host {
@@ -40,8 +61,14 @@ struct mvsd_host {
 	unsigned int xfer_mode;
 	unsigned int intr_en;
 	unsigned int ctrl;
+<<<<<<< HEAD
 	unsigned int pio_size;
 	void *pio_ptr;
+=======
+	bool use_pio;
+	struct sg_mapping_iter sg_miter;
+	unsigned int pio_size;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int sg_frags;
 	unsigned int ns_per_clk;
 	unsigned int clock;
@@ -49,10 +76,14 @@ struct mvsd_host {
 	struct timer_list timer;
 	struct mmc_host *mmc;
 	struct device *dev;
+<<<<<<< HEAD
 	struct resource *res;
 	int irq;
 	int gpio_card_detect;
 	int gpio_write_protect;
+=======
+	struct clk *clk;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define mvsd_write(offs, val)	writel(val, iobase + (offs))
@@ -77,11 +108,18 @@ static int mvsd_setup_data(struct mvsd_host *host, struct mmc_data *data)
 		unsigned long t = jiffies + HZ;
 		unsigned int hw_state,  count = 0;
 		do {
+<<<<<<< HEAD
+=======
+			hw_state = mvsd_read(MVSD_HW_STATE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (time_after(jiffies, t)) {
 				dev_warn(host->dev, "FIFO_EMPTY bit missing\n");
 				break;
 			}
+<<<<<<< HEAD
 			hw_state = mvsd_read(MVSD_HW_STATE);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			count++;
 		} while (!(hw_state & (1 << 13)));
 		dev_dbg(host->dev, "*** wait for FIFO_EMPTY bit "
@@ -109,6 +147,7 @@ static int mvsd_setup_data(struct mvsd_host *host, struct mmc_data *data)
 	mvsd_write(MVSD_BLK_COUNT, data->blocks);
 	mvsd_write(MVSD_BLK_SIZE, data->blksz);
 
+<<<<<<< HEAD
 	if (nodma || (data->blksz | data->sg->offset) & 3) {
 		/*
 		 * We cannot do DMA on a buffer which offset or size
@@ -131,6 +170,41 @@ static int mvsd_setup_data(struct mvsd_host *host, struct mmc_data *data)
 		phys_addr = sg_dma_address(data->sg);
 		mvsd_write(MVSD_SYS_ADDR_LOW, (u32)phys_addr & 0xffff);
 		mvsd_write(MVSD_SYS_ADDR_HI,  (u32)phys_addr >> 16);
+=======
+	if (nodma || (data->blksz | data->sg->offset) & 3 ||
+	    ((!(data->flags & MMC_DATA_READ) && data->sg->offset & 0x3f))) {
+		/*
+		 * We cannot do DMA on a buffer which offset or size
+		 * is not aligned on a 4-byte boundary.
+		 *
+		 * It also appears the host to card DMA can corrupt
+		 * data when the buffer is not aligned on a 64 byte
+		 * boundary.
+		 */
+		unsigned int miter_flags = SG_MITER_ATOMIC; /* Used from IRQ */
+
+		if (data->flags & MMC_DATA_READ)
+			miter_flags |= SG_MITER_TO_SG;
+		else
+			miter_flags |= SG_MITER_FROM_SG;
+
+		host->pio_size = data->blocks * data->blksz;
+		sg_miter_start(&host->sg_miter, data->sg, data->sg_len, miter_flags);
+		if (!nodma)
+			dev_dbg(host->dev, "fallback to PIO for data\n");
+		host->use_pio = true;
+		return 1;
+	} else {
+		dma_addr_t phys_addr;
+
+		host->sg_frags = dma_map_sg(mmc_dev(host->mmc),
+					    data->sg, data->sg_len,
+					    mmc_get_dma_dir(data));
+		phys_addr = sg_dma_address(data->sg);
+		mvsd_write(MVSD_SYS_ADDR_LOW, (u32)phys_addr & 0xffff);
+		mvsd_write(MVSD_SYS_ADDR_HI,  (u32)phys_addr >> 16);
+		host->use_pio = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return 0;
 	}
 }
@@ -142,6 +216,10 @@ static void mvsd_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	struct mmc_command *cmd = mrq->cmd;
 	u32 cmdreg = 0, xfer = 0, intr = 0;
 	unsigned long flags;
+<<<<<<< HEAD
+=======
+	unsigned int timeout;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	BUG_ON(host->mrq != NULL);
 	host->mrq = mrq;
@@ -233,7 +311,12 @@ static void mvsd_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	mvsd_write(MVSD_NOR_INTR_EN, host->intr_en);
 	mvsd_write(MVSD_ERR_INTR_EN, 0xffff);
 
+<<<<<<< HEAD
 	mod_timer(&host->timer, jiffies + 5 * HZ);
+=======
+	timeout = cmd->busy_timeout ? cmd->busy_timeout : 5000;
+	mod_timer(&host->timer, jiffies + msecs_to_jiffies(timeout));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_unlock_irqrestore(&host->lock, flags);
 }
@@ -288,6 +371,7 @@ static u32 mvsd_finish_data(struct mvsd_host *host, struct mmc_data *data,
 {
 	void __iomem *iobase = host->base;
 
+<<<<<<< HEAD
 	if (host->pio_ptr) {
 		host->pio_ptr = NULL;
 		host->pio_size = 0;
@@ -295,6 +379,14 @@ static u32 mvsd_finish_data(struct mvsd_host *host, struct mmc_data *data,
 		dma_unmap_sg(mmc_dev(host->mmc), data->sg, host->sg_frags,
 			     (data->flags & MMC_DATA_READ) ?
 				DMA_FROM_DEVICE : DMA_TO_DEVICE);
+=======
+	if (host->use_pio) {
+		sg_miter_stop(&host->sg_miter);
+		host->pio_size = 0;
+	} else {
+		dma_unmap_sg(mmc_dev(host->mmc), data->sg, host->sg_frags,
+			     mmc_get_dma_dir(data));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	if (err_status & MVSD_ERR_DATA_TIMEOUT)
@@ -345,15 +437,25 @@ static u32 mvsd_finish_data(struct mvsd_host *host, struct mmc_data *data,
 static irqreturn_t mvsd_irq(int irq, void *dev)
 {
 	struct mvsd_host *host = dev;
+<<<<<<< HEAD
 	void __iomem *iobase = host->base;
 	u32 intr_status, intr_done_mask;
 	int irq_handled = 0;
+=======
+	struct sg_mapping_iter *sgm = &host->sg_miter;
+	void __iomem *iobase = host->base;
+	u32 intr_status, intr_done_mask;
+	int irq_handled = 0;
+	u16 *p;
+	int s;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	intr_status = mvsd_read(MVSD_NOR_INTR_STATUS);
 	dev_dbg(host->dev, "intr 0x%04x intr_en 0x%04x hw_state 0x%04x\n",
 		intr_status, mvsd_read(MVSD_NOR_INTR_EN),
 		mvsd_read(MVSD_HW_STATE));
 
+<<<<<<< HEAD
 	spin_lock(&host->lock);
 
 	/* PIO handling, if needed. Messy business... */
@@ -362,10 +464,58 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 	     (MVSD_NOR_RX_READY | MVSD_NOR_RX_FIFO_8W))) {
 		u16 *p = host->pio_ptr;
 		int s = host->pio_size;
+=======
+	/*
+	 * It looks like, SDIO IP can issue one late, spurious irq
+	 * although all irqs should be disabled. To work around this,
+	 * bail out early, if we didn't expect any irqs to occur.
+	 */
+	if (!mvsd_read(MVSD_NOR_INTR_EN) && !mvsd_read(MVSD_ERR_INTR_EN)) {
+		dev_dbg(host->dev, "spurious irq detected intr 0x%04x intr_en 0x%04x erri 0x%04x erri_en 0x%04x\n",
+			mvsd_read(MVSD_NOR_INTR_STATUS),
+			mvsd_read(MVSD_NOR_INTR_EN),
+			mvsd_read(MVSD_ERR_INTR_STATUS),
+			mvsd_read(MVSD_ERR_INTR_EN));
+		return IRQ_HANDLED;
+	}
+
+	spin_lock(&host->lock);
+
+	/* PIO handling, if needed. Messy business... */
+	if (host->use_pio) {
+		/*
+		 * As we set sgm->consumed this always gives a valid buffer
+		 * position.
+		 */
+		if (!sg_miter_next(sgm)) {
+			/* This should not happen */
+			dev_err(host->dev, "ran out of scatter segments\n");
+			spin_unlock(&host->lock);
+			host->intr_en &=
+				~(MVSD_NOR_RX_READY | MVSD_NOR_RX_FIFO_8W |
+				  MVSD_NOR_TX_AVAIL | MVSD_NOR_TX_FIFO_8W);
+			mvsd_write(MVSD_NOR_INTR_EN, host->intr_en);
+			return IRQ_HANDLED;
+		}
+		p = sgm->addr;
+		s = sgm->length;
+		if (s > host->pio_size)
+			s = host->pio_size;
+	}
+
+	if (host->use_pio &&
+	    (intr_status & host->intr_en &
+	     (MVSD_NOR_RX_READY | MVSD_NOR_RX_FIFO_8W))) {
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		while (s >= 32 && (intr_status & MVSD_NOR_RX_FIFO_8W)) {
 			readsw(iobase + MVSD_FIFO, p, 16);
 			p += 16;
 			s -= 32;
+<<<<<<< HEAD
+=======
+			sgm->consumed += 32;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			intr_status = mvsd_read(MVSD_NOR_INTR_STATUS);
 		}
 		/*
@@ -378,6 +528,10 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 				put_unaligned(mvsd_read(MVSD_FIFO), p++);
 				put_unaligned(mvsd_read(MVSD_FIFO), p++);
 				s -= 4;
+<<<<<<< HEAD
+=======
+				sgm->consumed += 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				intr_status = mvsd_read(MVSD_NOR_INTR_STATUS);
 			}
 			if (s && s < 4 && (intr_status & MVSD_NOR_RX_READY)) {
@@ -385,10 +539,20 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 				val[0] = mvsd_read(MVSD_FIFO);
 				val[1] = mvsd_read(MVSD_FIFO);
 				memcpy(p, ((void *)&val) + 4 - s, s);
+<<<<<<< HEAD
 				s = 0;
 				intr_status = mvsd_read(MVSD_NOR_INTR_STATUS);
 			}
 			if (s == 0) {
+=======
+				sgm->consumed += s;
+				s = 0;
+				intr_status = mvsd_read(MVSD_NOR_INTR_STATUS);
+			}
+			/* PIO transfer done */
+			host->pio_size -= sgm->consumed;
+			if (host->pio_size == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				host->intr_en &=
 				     ~(MVSD_NOR_RX_READY | MVSD_NOR_RX_FIFO_8W);
 				mvsd_write(MVSD_NOR_INTR_EN, host->intr_en);
@@ -400,6 +564,7 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 		}
 		dev_dbg(host->dev, "pio %d intr 0x%04x hw_state 0x%04x\n",
 			s, intr_status, mvsd_read(MVSD_HW_STATE));
+<<<<<<< HEAD
 		host->pio_ptr = p;
 		host->pio_size = s;
 		irq_handled = 1;
@@ -408,6 +573,12 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 		    (MVSD_NOR_TX_AVAIL | MVSD_NOR_TX_FIFO_8W))) {
 		u16 *p = host->pio_ptr;
 		int s = host->pio_size;
+=======
+		irq_handled = 1;
+	} else if (host->use_pio &&
+		   (intr_status & host->intr_en &
+		    (MVSD_NOR_TX_AVAIL | MVSD_NOR_TX_FIFO_8W))) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/*
 		 * The TX_FIFO_8W bit is unreliable. When set, bursting
 		 * 16 halfwords all at once in the FIFO drops data. Actually
@@ -418,6 +589,10 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 			mvsd_write(MVSD_FIFO, get_unaligned(p++));
 			mvsd_write(MVSD_FIFO, get_unaligned(p++));
 			s -= 4;
+<<<<<<< HEAD
+=======
+			sgm->consumed += 4;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			intr_status = mvsd_read(MVSD_NOR_INTR_STATUS);
 		}
 		if (s < 4) {
@@ -426,10 +601,20 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 				memcpy(((void *)&val) + 4 - s, p, s);
 				mvsd_write(MVSD_FIFO, val[0]);
 				mvsd_write(MVSD_FIFO, val[1]);
+<<<<<<< HEAD
 				s = 0;
 				intr_status = mvsd_read(MVSD_NOR_INTR_STATUS);
 			}
 			if (s == 0) {
+=======
+				sgm->consumed += s;
+				s = 0;
+				intr_status = mvsd_read(MVSD_NOR_INTR_STATUS);
+			}
+			/* PIO transfer done */
+			host->pio_size -= sgm->consumed;
+			if (host->pio_size == 0) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				host->intr_en &=
 				     ~(MVSD_NOR_TX_AVAIL | MVSD_NOR_TX_FIFO_8W);
 				mvsd_write(MVSD_NOR_INTR_EN, host->intr_en);
@@ -437,8 +622,11 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 		}
 		dev_dbg(host->dev, "pio %d intr 0x%04x hw_state 0x%04x\n",
 			s, intr_status, mvsd_read(MVSD_HW_STATE));
+<<<<<<< HEAD
 		host->pio_ptr = p;
 		host->pio_size = s;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		irq_handled = 1;
 	}
 
@@ -471,8 +659,13 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 		if (mrq->data)
 			err_status = mvsd_finish_data(host, mrq->data, err_status);
 		if (err_status) {
+<<<<<<< HEAD
 			pr_err("%s: unhandled error status %#04x\n",
 					mmc_hostname(host->mmc), err_status);
+=======
+			dev_err(host->dev, "unhandled error status %#04x\n",
+				err_status);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cmd->error = -ENOMSG;
 		}
 
@@ -489,6 +682,7 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 	if (irq_handled)
 		return IRQ_HANDLED;
 
+<<<<<<< HEAD
 	pr_err("%s: unhandled interrupt status=0x%04x en=0x%04x "
 			"pio=%d\n", mmc_hostname(host->mmc), intr_status,
 			host->intr_en, host->pio_size);
@@ -498,6 +692,16 @@ static irqreturn_t mvsd_irq(int irq, void *dev)
 static void mvsd_timeout_timer(unsigned long data)
 {
 	struct mvsd_host *host = (struct mvsd_host *)data;
+=======
+	dev_err(host->dev, "unhandled interrupt status=0x%04x en=0x%04x pio=%d\n",
+		intr_status, host->intr_en, host->pio_size);
+	return IRQ_NONE;
+}
+
+static void mvsd_timeout_timer(struct timer_list *t)
+{
+	struct mvsd_host *host = from_timer(host, t, timer);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *iobase = host->base;
 	struct mmc_request *mrq;
 	unsigned long flags;
@@ -505,6 +709,7 @@ static void mvsd_timeout_timer(unsigned long data)
 	spin_lock_irqsave(&host->lock, flags);
 	mrq = host->mrq;
 	if (mrq) {
+<<<<<<< HEAD
 		pr_err("%s: Timeout waiting for hardware interrupt.\n",
 				mmc_hostname(host->mmc));
 		pr_err("%s: hw_state=0x%04x, intr_status=0x%04x "
@@ -512,6 +717,13 @@ static void mvsd_timeout_timer(unsigned long data)
 				mvsd_read(MVSD_HW_STATE),
 				mvsd_read(MVSD_NOR_INTR_STATUS),
 				mvsd_read(MVSD_NOR_INTR_EN));
+=======
+		dev_err(host->dev, "Timeout waiting for hardware interrupt.\n");
+		dev_err(host->dev, "hw_state=0x%04x, intr_status=0x%04x intr_en=0x%04x\n",
+			mvsd_read(MVSD_HW_STATE),
+			mvsd_read(MVSD_NOR_INTR_STATUS),
+			mvsd_read(MVSD_NOR_INTR_EN));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 		host->mrq = NULL;
 
@@ -538,6 +750,7 @@ static void mvsd_timeout_timer(unsigned long data)
 		mmc_request_done(host->mmc, mrq);
 }
 
+<<<<<<< HEAD
 static irqreturn_t mvsd_card_detect_irq(int irq, void *dev)
 {
 	struct mvsd_host *host = dev;
@@ -545,6 +758,8 @@ static irqreturn_t mvsd_card_detect_irq(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mvsd_enable_sdio_irq(struct mmc_host *mmc, int enable)
 {
 	struct mvsd_host *host = mmc_priv(mmc);
@@ -564,6 +779,7 @@ static void mvsd_enable_sdio_irq(struct mmc_host *mmc, int enable)
 	spin_unlock_irqrestore(&host->lock, flags);
 }
 
+<<<<<<< HEAD
 static int mvsd_get_ro(struct mmc_host *mmc)
 {
 	struct mvsd_host *host = mmc_priv(mmc);
@@ -578,6 +794,8 @@ static int mvsd_get_ro(struct mmc_host *mmc)
 	return -ENOSYS;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static void mvsd_power_up(struct mvsd_host *host)
 {
 	void __iomem *iobase = host->base;
@@ -674,12 +892,20 @@ static void mvsd_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 
 static const struct mmc_host_ops mvsd_ops = {
 	.request		= mvsd_request,
+<<<<<<< HEAD
 	.get_ro			= mvsd_get_ro,
+=======
+	.get_ro			= mmc_gpio_get_ro,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.set_ios		= mvsd_set_ios,
 	.enable_sdio_irq	= mvsd_enable_sdio_irq,
 };
 
+<<<<<<< HEAD
 static void __init
+=======
+static void
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 mv_conf_mbus_windows(struct mvsd_host *host,
 		     const struct mbus_dram_target_info *dram)
 {
@@ -701,6 +927,7 @@ mv_conf_mbus_windows(struct mvsd_host *host,
 	}
 }
 
+<<<<<<< HEAD
 static int __init mvsd_probe(struct platform_device *pdev)
 {
 	struct mmc_host *mmc = NULL;
@@ -719,6 +946,23 @@ static int __init mvsd_probe(struct platform_device *pdev)
 	r = request_mem_region(r->start, SZ_1K, DRIVER_NAME);
 	if (!r)
 		return -EBUSY;
+=======
+static int mvsd_probe(struct platform_device *pdev)
+{
+	struct device_node *np = pdev->dev.of_node;
+	struct mmc_host *mmc = NULL;
+	struct mvsd_host *host = NULL;
+	const struct mbus_dram_target_info *dram;
+	int ret, irq;
+
+	if (!np) {
+		dev_err(&pdev->dev, "no DT node\n");
+		return -ENODEV;
+	}
+	irq = platform_get_irq(pdev, 0);
+	if (irq < 0)
+		return irq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmc = mmc_alloc_host(sizeof(struct mvsd_host), &pdev->dev);
 	if (!mmc) {
@@ -729,17 +973,41 @@ static int __init mvsd_probe(struct platform_device *pdev)
 	host = mmc_priv(mmc);
 	host->mmc = mmc;
 	host->dev = &pdev->dev;
+<<<<<<< HEAD
 	host->res = r;
 	host->base_clock = mvsd_data->clock / 2;
+=======
+
+	/*
+	 * Some non-DT platforms do not pass a clock, and the clock
+	 * frequency is passed through platform_data. On DT platforms,
+	 * a clock must always be passed, even if there is no gatable
+	 * clock associated to the SDIO interface (it can simply be a
+	 * fixed rate clock).
+	 */
+	host->clk = devm_clk_get(&pdev->dev, NULL);
+	if (IS_ERR(host->clk)) {
+		dev_err(&pdev->dev, "no clock associated\n");
+		ret = -EINVAL;
+		goto out;
+	}
+	clk_prepare_enable(host->clk);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmc->ops = &mvsd_ops;
 
 	mmc->ocr_avail = MMC_VDD_32_33 | MMC_VDD_33_34;
+<<<<<<< HEAD
 	mmc->caps = MMC_CAP_4_BIT_DATA | MMC_CAP_SDIO_IRQ |
 		    MMC_CAP_SD_HIGHSPEED | MMC_CAP_MMC_HIGHSPEED;
 
 	mmc->f_min = DIV_ROUND_UP(host->base_clock, MVSD_BASE_DIV_MAX);
 	mmc->f_max = maxfreq;
+=======
+
+	mmc->f_min = DIV_ROUND_UP(host->base_clock, MVSD_BASE_DIV_MAX);
+	mmc->f_max = MVSD_CLOCKRATE_MAX;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mmc->max_blk_size = 2048;
 	mmc->max_blk_count = 65535;
@@ -748,11 +1016,26 @@ static int __init mvsd_probe(struct platform_device *pdev)
 	mmc->max_seg_size = mmc->max_blk_size * mmc->max_blk_count;
 	mmc->max_req_size = mmc->max_blk_size * mmc->max_blk_count;
 
+<<<<<<< HEAD
 	spin_lock_init(&host->lock);
 
 	host->base = ioremap(r->start, SZ_4K);
 	if (!host->base) {
 		ret = -ENOMEM;
+=======
+	host->base_clock = clk_get_rate(host->clk) / 2;
+	ret = mmc_of_parse(mmc);
+	if (ret < 0)
+		goto out;
+	if (maxfreq)
+		mmc->f_max = maxfreq;
+
+	spin_lock_init(&host->lock);
+
+	host->base = devm_platform_ioremap_resource(pdev, 0);
+	if (IS_ERR(host->base)) {
+		ret = PTR_ERR(host->base);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out;
 	}
 
@@ -763,6 +1046,7 @@ static int __init mvsd_probe(struct platform_device *pdev)
 
 	mvsd_power_down(host);
 
+<<<<<<< HEAD
 	ret = request_irq(irq, mvsd_irq, 0, DRIVER_NAME, host);
 	if (ret) {
 		pr_err("%s: cannot assign irq %d\n", DRIVER_NAME, irq);
@@ -800,11 +1084,21 @@ static int __init mvsd_probe(struct platform_device *pdev)
 	}
 
 	setup_timer(&host->timer, mvsd_timeout_timer, (unsigned long)host);
+=======
+	ret = devm_request_irq(&pdev->dev, irq, mvsd_irq, 0, DRIVER_NAME, host);
+	if (ret) {
+		dev_err(&pdev->dev, "cannot assign irq %d\n", irq);
+		goto out;
+	}
+
+	timer_setup(&host->timer, mvsd_timeout_timer, 0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	platform_set_drvdata(pdev, mmc);
 	ret = mmc_add_host(mmc);
 	if (ret)
 		goto out;
 
+<<<<<<< HEAD
 	pr_notice("%s: %s driver initialized, ",
 			   mmc_hostname(mmc), DRIVER_NAME);
 	if (host->gpio_card_detect)
@@ -831,10 +1125,26 @@ out:
 		release_resource(r);
 	if (mmc)
 		mmc_free_host(mmc);
+=======
+	if (!(mmc->caps & MMC_CAP_NEEDS_POLL))
+		dev_dbg(&pdev->dev, "using GPIO for card detection\n");
+	else
+		dev_dbg(&pdev->dev, "lacking card detect (fall back to polling)\n");
+
+	return 0;
+
+out:
+	if (mmc) {
+		if (!IS_ERR(host->clk))
+			clk_disable_unprepare(host->clk);
+		mmc_free_host(mmc);
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ret;
 }
 
+<<<<<<< HEAD
 static int __exit mvsd_remove(struct platform_device *pdev)
 {
 	struct mmc_host *mmc = platform_get_drvdata(pdev);
@@ -908,6 +1218,40 @@ static void __exit mvsd_exit(void)
 
 module_init(mvsd_init);
 module_exit(mvsd_exit);
+=======
+static void mvsd_remove(struct platform_device *pdev)
+{
+	struct mmc_host *mmc = platform_get_drvdata(pdev);
+
+	struct mvsd_host *host = mmc_priv(mmc);
+
+	mmc_remove_host(mmc);
+	del_timer_sync(&host->timer);
+	mvsd_power_down(host);
+
+	if (!IS_ERR(host->clk))
+		clk_disable_unprepare(host->clk);
+	mmc_free_host(mmc);
+}
+
+static const struct of_device_id mvsdio_dt_ids[] = {
+	{ .compatible = "marvell,orion-sdio" },
+	{ /* sentinel */ }
+};
+MODULE_DEVICE_TABLE(of, mvsdio_dt_ids);
+
+static struct platform_driver mvsd_driver = {
+	.probe		= mvsd_probe,
+	.remove_new	= mvsd_remove,
+	.driver		= {
+		.name	= DRIVER_NAME,
+		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
+		.of_match_table = mvsdio_dt_ids,
+	},
+};
+
+module_platform_driver(mvsd_driver);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* maximum card clock frequency (default 50MHz) */
 module_param(maxfreq, int, 0);

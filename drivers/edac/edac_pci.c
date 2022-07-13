@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * EDAC PCI component
  *
  * Author: Dave Jiang <djiang@mvista.com>
  *
+<<<<<<< HEAD
  * 2007 (c) MontaVista Software, Inc. This file is licensed under
  * the terms of the GNU General Public License version 2. This program
  * is licensed "as is" without any warranty of any kind, whether express
@@ -25,12 +30,30 @@
 #include <asm/page.h>
 
 #include "edac_core.h"
+=======
+ * 2007 (c) MontaVista Software, Inc.
+ */
+#include <asm/page.h>
+#include <linux/uaccess.h>
+#include <linux/ctype.h>
+#include <linux/highmem.h>
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/slab.h>
+#include <linux/smp.h>
+#include <linux/spinlock.h>
+#include <linux/sysctl.h>
+#include <linux/timer.h>
+
+#include "edac_pci.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "edac_module.h"
 
 static DEFINE_MUTEX(edac_pci_ctls_mutex);
 static LIST_HEAD(edac_pci_list);
 static atomic_t pci_indexes = ATOMIC_INIT(0);
 
+<<<<<<< HEAD
 /*
  * edac_pci_alloc_ctl_info
  *
@@ -60,11 +83,31 @@ struct edac_pci_ctl_info *edac_pci_alloc_ctl_info(unsigned int sz_pvt,
 	pvt = sz_pvt ? ((char *)pci) + ((unsigned long)pvt) : NULL;
 
 	pci->pvt_info = pvt;
+=======
+struct edac_pci_ctl_info *edac_pci_alloc_ctl_info(unsigned int sz_pvt,
+						  const char *edac_pci_name)
+{
+	struct edac_pci_ctl_info *pci;
+
+	edac_dbg(1, "\n");
+
+	pci = kzalloc(sizeof(struct edac_pci_ctl_info), GFP_KERNEL);
+	if (!pci)
+		return NULL;
+
+	if (sz_pvt) {
+		pci->pvt_info = kzalloc(sz_pvt, GFP_KERNEL);
+		if (!pci->pvt_info)
+			goto free;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci->op_state = OP_ALLOC;
 
 	snprintf(pci->name, strlen(edac_pci_name) + 1, "%s", edac_pci_name);
 
 	return pci;
+<<<<<<< HEAD
 }
 EXPORT_SYMBOL_GPL(edac_pci_alloc_ctl_info);
 
@@ -81,6 +124,18 @@ EXPORT_SYMBOL_GPL(edac_pci_alloc_ctl_info);
 void edac_pci_free_ctl_info(struct edac_pci_ctl_info *pci)
 {
 	debugf1("%s()\n", __func__);
+=======
+
+free:
+	kfree(pci);
+	return NULL;
+}
+EXPORT_SYMBOL_GPL(edac_pci_alloc_ctl_info);
+
+void edac_pci_free_ctl_info(struct edac_pci_ctl_info *pci)
+{
+	edac_dbg(1, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	edac_pci_remove_sysfs(pci);
 }
@@ -97,7 +152,11 @@ static struct edac_pci_ctl_info *find_edac_pci_by_dev(struct device *dev)
 	struct edac_pci_ctl_info *pci;
 	struct list_head *item;
 
+<<<<<<< HEAD
 	debugf1("%s()\n", __func__);
+=======
+	edac_dbg(1, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	list_for_each(item, &edac_pci_list) {
 		pci = list_entry(item, struct edac_pci_ctl_info, link);
@@ -122,7 +181,11 @@ static int add_edac_pci_to_global_list(struct edac_pci_ctl_info *pci)
 	struct list_head *item, *insert_before;
 	struct edac_pci_ctl_info *rover;
 
+<<<<<<< HEAD
 	debugf1("%s()\n", __func__);
+=======
+	edac_dbg(1, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	insert_before = &edac_pci_list;
 
@@ -178,6 +241,7 @@ static void del_edac_pci_from_global_list(struct edac_pci_ctl_info *pci)
 	INIT_LIST_HEAD(&pci->link);
 }
 
+<<<<<<< HEAD
 #if 0
 /* Older code, but might use in the future */
 
@@ -213,6 +277,8 @@ struct edac_pci_ctl_info *edac_pci_find(int idx)
 EXPORT_SYMBOL_GPL(edac_pci_find);
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * edac_pci_workq_function()
  *
@@ -226,6 +292,7 @@ static void edac_pci_workq_function(struct work_struct *work_req)
 	int msec;
 	unsigned long delay;
 
+<<<<<<< HEAD
 	debugf3("%s() checking\n", __func__);
 
 	mutex_lock(&edac_pci_ctls_mutex);
@@ -313,12 +380,39 @@ EXPORT_SYMBOL_GPL(edac_pci_reset_delay_period);
  *      allocated index number
  *
  */
+=======
+	edac_dbg(3, "checking\n");
+
+	mutex_lock(&edac_pci_ctls_mutex);
+
+	if (pci->op_state != OP_RUNNING_POLL) {
+		mutex_unlock(&edac_pci_ctls_mutex);
+		return;
+	}
+
+	if (edac_pci_get_check_errors())
+		pci->edac_check(pci);
+
+	/* if we are on a one second period, then use round */
+	msec = edac_pci_get_poll_msec();
+	if (msec == 1000)
+		delay = round_jiffies_relative(msecs_to_jiffies(msec));
+	else
+		delay = msecs_to_jiffies(msec);
+
+	edac_queue_work(&pci->work, delay);
+
+	mutex_unlock(&edac_pci_ctls_mutex);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int edac_pci_alloc_index(void)
 {
 	return atomic_inc_return(&pci_indexes) - 1;
 }
 EXPORT_SYMBOL_GPL(edac_pci_alloc_index);
 
+<<<<<<< HEAD
 /*
  * edac_pci_add_device: Insert the 'edac_dev' structure into the
  * edac_pci global list and create sysfs entries associated with
@@ -334,6 +428,11 @@ EXPORT_SYMBOL_GPL(edac_pci_alloc_index);
 int edac_pci_add_device(struct edac_pci_ctl_info *pci, int edac_idx)
 {
 	debugf0("%s()\n", __func__);
+=======
+int edac_pci_add_device(struct edac_pci_ctl_info *pci, int edac_idx)
+{
+	edac_dbg(0, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pci->pci_idx = edac_idx;
 	pci->start_time = jiffies;
@@ -349,20 +448,35 @@ int edac_pci_add_device(struct edac_pci_ctl_info *pci, int edac_idx)
 		goto fail1;
 	}
 
+<<<<<<< HEAD
 	if (pci->edac_check != NULL) {
 		pci->op_state = OP_RUNNING_POLL;
 
 		edac_pci_workq_setup(pci, 1000);
+=======
+	if (pci->edac_check) {
+		pci->op_state = OP_RUNNING_POLL;
+
+		INIT_DELAYED_WORK(&pci->work, edac_pci_workq_function);
+		edac_queue_work(&pci->work, msecs_to_jiffies(edac_pci_get_poll_msec()));
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		pci->op_state = OP_RUNNING_INTERRUPT;
 	}
 
 	edac_pci_printk(pci, KERN_INFO,
+<<<<<<< HEAD
 			"Giving out device to module '%s' controller '%s':"
 			" DEV '%s' (%s)\n",
 			pci->mod_name,
 			pci->ctl_name,
 			edac_dev_name(pci), edac_op_state_to_string(pci->op_state));
+=======
+		"Giving out device to module %s controller %s: DEV %s (%s)\n",
+		pci->mod_name, pci->ctl_name, pci->dev_name,
+		edac_op_state_to_string(pci->op_state));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_unlock(&edac_pci_ctls_mutex);
 	return 0;
@@ -376,6 +490,7 @@ fail0:
 }
 EXPORT_SYMBOL_GPL(edac_pci_add_device);
 
+<<<<<<< HEAD
 /*
  * edac_pci_del_device()
  * 	Remove sysfs entries for specified edac_pci structure and
@@ -389,11 +504,17 @@ EXPORT_SYMBOL_GPL(edac_pci_add_device);
  * 	Pointer to removed edac_pci structure,
  * 	or NULL if device not found
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct edac_pci_ctl_info *edac_pci_del_device(struct device *dev)
 {
 	struct edac_pci_ctl_info *pci;
 
+<<<<<<< HEAD
 	debugf0("%s()\n", __func__);
+=======
+	edac_dbg(0, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	mutex_lock(&edac_pci_ctls_mutex);
 
@@ -412,8 +533,13 @@ struct edac_pci_ctl_info *edac_pci_del_device(struct device *dev)
 
 	mutex_unlock(&edac_pci_ctls_mutex);
 
+<<<<<<< HEAD
 	/* stop the workq timer */
 	edac_pci_workq_teardown(pci);
+=======
+	if (pci->edac_check)
+		edac_stop_work(&pci->work);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	edac_printk(KERN_INFO, EDAC_PCI,
 		"Removed device %d for %s %s: DEV %s\n",
@@ -430,7 +556,11 @@ EXPORT_SYMBOL_GPL(edac_pci_del_device);
  */
 static void edac_pci_generic_check(struct edac_pci_ctl_info *pci)
 {
+<<<<<<< HEAD
 	debugf4("%s()\n", __func__);
+=======
+	edac_dbg(4, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	edac_pci_do_parity_check();
 }
 
@@ -442,6 +572,7 @@ struct edac_pci_gen_data {
 	int edac_idx;
 };
 
+<<<<<<< HEAD
 /*
  * edac_pci_create_generic_ctl
  *
@@ -453,6 +584,8 @@ struct edac_pci_gen_data {
  *	This routine calls the edac_pci_alloc_ctl_info() for
  *	the generic device, with default values
  */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct edac_pci_ctl_info *edac_pci_create_generic_ctl(struct device *dev,
 						const char *mod_name)
 {
@@ -470,12 +603,21 @@ struct edac_pci_ctl_info *edac_pci_create_generic_ctl(struct device *dev,
 
 	pci->mod_name = mod_name;
 	pci->ctl_name = EDAC_PCI_GENCTL_NAME;
+<<<<<<< HEAD
 	pci->edac_check = edac_pci_generic_check;
+=======
+	if (edac_op_state == EDAC_OPSTATE_POLL)
+		pci->edac_check = edac_pci_generic_check;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	pdata->edac_idx = edac_pci_idx++;
 
 	if (edac_pci_add_device(pci, pdata->edac_idx) > 0) {
+<<<<<<< HEAD
 		debugf3("%s(): failed edac_pci_add_device()\n", __func__);
+=======
+		edac_dbg(3, "failed edac_pci_add_device()\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		edac_pci_free_ctl_info(pci);
 		return NULL;
 	}
@@ -484,6 +626,7 @@ struct edac_pci_ctl_info *edac_pci_create_generic_ctl(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(edac_pci_create_generic_ctl);
 
+<<<<<<< HEAD
 /*
  * edac_pci_release_generic_ctl
  *
@@ -492,6 +635,11 @@ EXPORT_SYMBOL_GPL(edac_pci_create_generic_ctl);
 void edac_pci_release_generic_ctl(struct edac_pci_ctl_info *pci)
 {
 	debugf0("%s() pci mod=%s\n", __func__, pci->mod_name);
+=======
+void edac_pci_release_generic_ctl(struct edac_pci_ctl_info *pci)
+{
+	edac_dbg(0, "pci mod=%s\n", pci->mod_name);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	edac_pci_del_device(pci->dev);
 	edac_pci_free_ctl_info(pci);

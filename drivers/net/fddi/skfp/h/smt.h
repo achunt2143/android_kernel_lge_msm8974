@@ -1,13 +1,20 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  *	(C)Copyright 1998,1999 SysKonnect,
  *	a business unit of Schneider & Koch & Co. Datensysteme GmbH.
  *
+<<<<<<< HEAD
  *	This program is free software; you can redistribute it and/or modify
  *	it under the terms of the GNU General Public License as published by
  *	the Free Software Foundation; either version 2 of the License, or
  *	(at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	The information in this file is provided "AS IS" without warranty.
  *
  ******************************************************************************/
@@ -415,7 +422,11 @@ struct smt_p_reason {
 #define SMT_RDF_ILLEGAL 0x00000005	/* read only (PMF) */
 #define SMT_RDF_NOPARAM	0x6		/* parameter not supported (PMF) */
 #define SMT_RDF_RANGE	0x8		/* out of range */
+<<<<<<< HEAD
 #define SMT_RDF_AUTHOR	0x9		/* not autohorized */
+=======
+#define SMT_RDF_AUTHOR	0x9		/* not authorized */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define SMT_RDF_LENGTH	0x0a		/* length error */
 #define SMT_RDF_TOOLONG	0x0b		/* length error */
 #define SMT_RDF_SBA	0x0d		/* SBA denied */
@@ -454,7 +465,11 @@ struct smt_p_version {
 
 struct smt_p_0015 {
 	struct smt_para	para ;		/* generic parameter header */
+<<<<<<< HEAD
 	u_int		res_type ;	/* recsource type */
+=======
+	u_int		res_type ;	/* resource type */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } ;
 
 #define	SYNC_BW		0x00000001L	/* Synchronous Bandwidth */
@@ -493,7 +508,11 @@ struct smt_p_0017 {
 struct smt_p_0018 {
 	struct smt_para	para ;		/* generic parameter header */
 	int		sba_ov_req ;	/* total sync bandwidth req for overhead*/
+<<<<<<< HEAD
 } ;					/* measuered in bytes per T_Neg */
+=======
+} ;					/* measured in bytes per T_Neg */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * P19 : SBA Allocation Address
@@ -566,7 +585,11 @@ struct smt_p_fsc {
 #define FSC_TYPE2	2		/* Special A/C indicator forwarding */
 
 /*
+<<<<<<< HEAD
  * P00 21 : user defined authoriziation (see pmf.c)
+=======
+ * P00 21 : user defined authorization (see pmf.c)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #define SMT_P_AUTHOR	0x0021
 
@@ -768,10 +791,15 @@ struct smt_sif_operation {
 	struct smt_p_setcount	setcount ;	 /* Set Count mandatory */
 #endif
 	/* must be last */
+<<<<<<< HEAD
 	struct smt_p_lem	lem[1] ;	/* phy lem status */
 } ;
 #define SIZEOF_SMT_SIF_OPERATION	(sizeof(struct smt_sif_operation)- \
 					 sizeof(struct smt_p_lem))
+=======
+	struct smt_p_lem	lem[];		/* phy lem status */
+} ;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * ECF : echo frame

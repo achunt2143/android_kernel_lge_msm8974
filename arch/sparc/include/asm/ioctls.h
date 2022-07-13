@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #ifndef _ASM_SPARC_IOCTLS_H
 #define _ASM_SPARC_IOCTLS_H
 
@@ -118,6 +119,14 @@
 
 /* Kernel definitions */
 #ifdef __KERNEL__
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+#ifndef _ASM_SPARC_IOCTLS_H
+#define _ASM_SPARC_IOCTLS_H
+
+#include <uapi/asm/ioctls.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define TIOCGETC __TIOCGETC
 #define TIOCGETP __TIOCGETP
 #define TIOCGLTC __TIOCGLTC
@@ -125,6 +134,7 @@
 #define TIOCSETP __TIOCSETP
 #define TIOCSETN __TIOCSETN
 #define TIOCSETC __TIOCSETC
+<<<<<<< HEAD
 #endif
 
 /* Used for packet mode */
@@ -137,4 +147,6 @@
 #define TIOCPKT_DOSTOP		32
 #define TIOCPKT_IOCTL		64
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* !(_ASM_SPARC_IOCTLS_H) */

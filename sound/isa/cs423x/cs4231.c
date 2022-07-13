@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Generic driver for CS4231 chips
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
  *  Originally the CS4232/CS4232A driver, modified for use on CS4231 by
  *  Tugrul Galatali <galatalt@stuy.edu>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -18,6 +23,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -37,7 +44,10 @@
 MODULE_DESCRIPTION(CRD_NAME);
 MODULE_AUTHOR("Jaroslav Kysela <perex@perex.cz>");
 MODULE_LICENSE("GPL");
+<<<<<<< HEAD
 MODULE_SUPPORTED_DEVICE("{{Crystal Semiconductors,CS4231}}");
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
@@ -55,6 +65,7 @@ module_param_array(id, charp, NULL, 0444);
 MODULE_PARM_DESC(id, "ID string for " CRD_NAME " soundcard.");
 module_param_array(enable, bool, NULL, 0444);
 MODULE_PARM_DESC(enable, "Enable " CRD_NAME " soundcard.");
+<<<<<<< HEAD
 module_param_array(port, long, NULL, 0444);
 MODULE_PARM_DESC(port, "Port # for " CRD_NAME " driver.");
 module_param_array(mpu_port, long, NULL, 0444);
@@ -69,6 +80,22 @@ module_param_array(dma2, int, NULL, 0444);
 MODULE_PARM_DESC(dma2, "DMA2 # for " CRD_NAME " driver.");
 
 static int __devinit snd_cs4231_match(struct device *dev, unsigned int n)
+=======
+module_param_hw_array(port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(port, "Port # for " CRD_NAME " driver.");
+module_param_hw_array(mpu_port, long, ioport, NULL, 0444);
+MODULE_PARM_DESC(mpu_port, "MPU-401 port # for " CRD_NAME " driver.");
+module_param_hw_array(irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(irq, "IRQ # for " CRD_NAME " driver.");
+module_param_hw_array(mpu_irq, int, irq, NULL, 0444);
+MODULE_PARM_DESC(mpu_irq, "MPU-401 IRQ # for " CRD_NAME " driver.");
+module_param_hw_array(dma1, int, dma, NULL, 0444);
+MODULE_PARM_DESC(dma1, "DMA1 # for " CRD_NAME " driver.");
+module_param_hw_array(dma2, int, dma, NULL, 0444);
+MODULE_PARM_DESC(dma2, "DMA2 # for " CRD_NAME " driver.");
+
+static int snd_cs4231_match(struct device *dev, unsigned int n)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (!enable[n])
 		return 0;
@@ -88,6 +115,7 @@ static int __devinit snd_cs4231_match(struct device *dev, unsigned int n)
 	return 1;
 }
 
+<<<<<<< HEAD
 static int __devinit snd_cs4231_probe(struct device *dev, unsigned int n)
 {
 	struct snd_card *card;
@@ -96,12 +124,22 @@ static int __devinit snd_cs4231_probe(struct device *dev, unsigned int n)
 	int error;
 
 	error = snd_card_create(index[n], id[n], THIS_MODULE, 0, &card);
+=======
+static int snd_cs4231_probe(struct device *dev, unsigned int n)
+{
+	struct snd_card *card;
+	struct snd_wss *chip;
+	int error;
+
+	error = snd_devm_card_new(dev, index[n], id[n], THIS_MODULE, 0, &card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (error < 0)
 		return error;
 
 	error = snd_wss_create(card, port[n], -1, irq[n], dma1[n], dma2[n],
 			WSS_HW_DETECT, 0, &chip);
 	if (error < 0)
+<<<<<<< HEAD
 		goto out;
 
 	card->private_data = chip;
@@ -125,6 +163,35 @@ static int __devinit snd_cs4231_probe(struct device *dev, unsigned int n)
 	error = snd_wss_timer(chip, 0, NULL);
 	if (error < 0)
 		goto out;
+=======
+		return error;
+
+	card->private_data = chip;
+
+	error = snd_wss_pcm(chip, 0);
+	if (error < 0)
+		return error;
+
+	strscpy(card->driver, "CS4231", sizeof(card->driver));
+	strscpy(card->shortname, chip->pcm->name, sizeof(card->shortname));
+
+	if (dma2[n] < 0)
+		scnprintf(card->longname, sizeof(card->longname),
+			  "%s at 0x%lx, irq %d, dma %d",
+			  chip->pcm->name, chip->port, irq[n], dma1[n]);
+	else
+		scnprintf(card->longname, sizeof(card->longname),
+			  "%s at 0x%lx, irq %d, dma %d&%d",
+			  chip->pcm->name, chip->port, irq[n], dma1[n], dma2[n]);
+
+	error = snd_wss_mixer(chip);
+	if (error < 0)
+		return error;
+
+	error = snd_wss_timer(chip, 0);
+	if (error < 0)
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (mpu_port[n] > 0 && mpu_port[n] != SNDRV_AUTO_PORT) {
 		if (mpu_irq[n] == SNDRV_AUTO_IRQ)
@@ -135,6 +202,7 @@ static int __devinit snd_cs4231_probe(struct device *dev, unsigned int n)
 			dev_warn(dev, "MPU401 not detected\n");
 	}
 
+<<<<<<< HEAD
 	snd_card_set_dev(card, dev);
 
 	error = snd_card_register(card);
@@ -153,6 +221,14 @@ static int __devexit snd_cs4231_remove(struct device *dev, unsigned int n)
 	snd_card_free(dev_get_drvdata(dev));
 	dev_set_drvdata(dev, NULL);
 	return 0;
+=======
+	error = snd_card_register(card);
+	if (error < 0)
+		return error;
+
+	dev_set_drvdata(dev, card);
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #ifdef CONFIG_PM
@@ -180,7 +256,10 @@ static int snd_cs4231_resume(struct device *dev, unsigned int n)
 static struct isa_driver snd_cs4231_driver = {
 	.match		= snd_cs4231_match,
 	.probe		= snd_cs4231_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(snd_cs4231_remove),
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_PM
 	.suspend	= snd_cs4231_suspend,
 	.resume		= snd_cs4231_resume,
@@ -190,6 +269,7 @@ static struct isa_driver snd_cs4231_driver = {
 	}
 };
 
+<<<<<<< HEAD
 static int __init alsa_card_cs4231_init(void)
 {
 	return isa_register_driver(&snd_cs4231_driver, SNDRV_CARDS);
@@ -202,3 +282,6 @@ static void __exit alsa_card_cs4231_exit(void)
 
 module_init(alsa_card_cs4231_init);
 module_exit(alsa_card_cs4231_exit);
+=======
+module_isa_driver(snd_cs4231_driver, SNDRV_CARDS);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

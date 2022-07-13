@@ -31,7 +31,13 @@
 #define _PSB_POWERMGMT_H_
 
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <drm/drmP.h>
+=======
+
+struct device;
+struct drm_device;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void gma_power_init(struct drm_device *dev);
 void gma_power_uninit(struct drm_device *dev);
@@ -49,6 +55,7 @@ int gma_power_resume(struct device *dev);
 bool gma_power_begin(struct drm_device *dev, bool force);
 void gma_power_end(struct drm_device *dev);
 
+<<<<<<< HEAD
 /*
  * Use this function to do an instantaneous check for if the hw is on.
  * Only use this in cases where you know the mutex is already held such
@@ -64,4 +71,6 @@ int psb_runtime_suspend(struct device *dev);
 int psb_runtime_resume(struct device *dev);
 int psb_runtime_idle(struct device *dev);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /*_PSB_POWERMGMT_H_*/

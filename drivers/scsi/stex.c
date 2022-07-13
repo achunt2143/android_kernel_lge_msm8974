@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * SuperTrak EX Series Storage Controller driver for Linux
  *
@@ -11,6 +12,16 @@
  *	Written By:
  *		Ed Lin <promise_linux@promise.com>
  *
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+/*
+ * SuperTrak EX Series Storage Controller driver for Linux
+ *
+ *	Copyright (C) 2005-2015 Promise Technology Inc.
+ *
+ *	Written By:
+ *		Ed Lin <promise_linux@promise.com>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/init.h>
@@ -25,6 +36,11 @@
 #include <linux/types.h>
 #include <linux/module.h>
 #include <linux/spinlock.h>
+<<<<<<< HEAD
+=======
+#include <linux/ktime.h>
+#include <linux/reboot.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/io.h>
 #include <asm/irq.h>
 #include <asm/byteorder.h>
@@ -37,11 +53,19 @@
 #include <scsi/scsi_eh.h>
 
 #define DRV_NAME "stex"
+<<<<<<< HEAD
 #define ST_DRIVER_VERSION "4.6.0000.4"
 #define ST_VER_MAJOR		4
 #define ST_VER_MINOR		6
 #define ST_OEM			0
 #define ST_BUILD_VER		4
+=======
+#define ST_DRIVER_VERSION	"6.02.0000.01"
+#define ST_VER_MAJOR		6
+#define ST_VER_MINOR		02
+#define ST_OEM				0000
+#define ST_BUILD_VER		01
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum {
 	/* MU register offset */
@@ -63,6 +87,16 @@ enum {
 	YI2H_INT_C				= 0xa0,
 	YH2I_REQ				= 0xc0,
 	YH2I_REQ_HI				= 0xc4,
+<<<<<<< HEAD
+=======
+	PSCRATCH0				= 0xb0,
+	PSCRATCH1				= 0xb4,
+	PSCRATCH2				= 0xb8,
+	PSCRATCH3				= 0xbc,
+	PSCRATCH4				= 0xc8,
+	MAILBOX_BASE			= 0x1000,
+	MAILBOX_HNDSHK_STS		= 0x0,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* MU register value */
 	MU_INBOUND_DOORBELL_HANDSHAKE		= (1 << 0),
@@ -83,8 +117,15 @@ enum {
 	MU_STATE_STARTED			= 2,
 	MU_STATE_RESETTING			= 3,
 	MU_STATE_FAILED				= 4,
+<<<<<<< HEAD
 
 	MU_MAX_DELAY				= 120,
+=======
+	MU_STATE_STOP				= 5,
+	MU_STATE_NOCONNECT			= 6,
+
+	MU_MAX_DELAY				= 50,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	MU_HANDSHAKE_SIGNATURE			= 0x55aaaa55,
 	MU_HANDSHAKE_SIGNATURE_HALF		= 0x5a5a0000,
 	MU_HARD_RESET_WAIT			= 30000,
@@ -103,7 +144,13 @@ enum {
 	TASK_ATTRIBUTE_HEADOFQUEUE		= 0x1,
 	TASK_ATTRIBUTE_ORDERED			= 0x2,
 	TASK_ATTRIBUTE_ACA			= 0x4,
+<<<<<<< HEAD
 
+=======
+};
+
+enum {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	SS_STS_NORMAL				= 0x80000000,
 	SS_STS_DONE				= 0x40000000,
 	SS_STS_HANDSHAKE			= 0x20000000,
@@ -115,7 +162,13 @@ enum {
 	SS_I2H_REQUEST_RESET			= 0x2000,
 
 	SS_MU_OPERATIONAL			= 0x80000000,
+<<<<<<< HEAD
 
+=======
+};
+
+enum {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	STEX_CDB_LENGTH				= 16,
 	STATUS_VAR_LEN				= 128,
 
@@ -132,6 +185,10 @@ enum {
 	st_yosemite				= 2,
 	st_seq					= 3,
 	st_yel					= 4,
+<<<<<<< HEAD
+=======
+	st_P3					= 5,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	PASSTHRU_REQ_TYPE			= 0x00000001,
 	PASSTHRU_REQ_NO_WAKEUP			= 0x00000100,
@@ -164,6 +221,17 @@ enum {
 
 	ST_ADDITIONAL_MEM			= 0x200000,
 	ST_ADDITIONAL_MEM_MIN			= 0x80000,
+<<<<<<< HEAD
+=======
+	PMIC_SHUTDOWN				= 0x0D,
+	PMIC_REUMSE					= 0x10,
+	ST_IGNORED					= -1,
+	ST_NOTHANDLED				= 7,
+	ST_S3						= 3,
+	ST_S4						= 4,
+	ST_S5						= 5,
+	ST_S6						= 6,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct st_sgitem {
@@ -221,7 +289,11 @@ struct req_msg {
 	u8 data_dir;
 	u8 payload_sz;		/* payload size in 4-byte, not used */
 	u8 cdb[STEX_CDB_LENGTH];
+<<<<<<< HEAD
 	u32 variable[0];
+=======
+	u32 variable[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct status_msg {
@@ -327,6 +399,11 @@ struct st_hba {
 	u16 rq_count;
 	u16 rq_size;
 	u16 sts_count;
+<<<<<<< HEAD
+=======
+	u8  supports_pm;
+	int msi_lock;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct st_card_info {
@@ -341,6 +418,15 @@ struct st_card_info {
 	u16 sts_count;
 };
 
+<<<<<<< HEAD
+=======
+static int S6flag;
+static int stex_halt(struct notifier_block *nb, ulong event, void *buf);
+static struct notifier_block stex_notifier = {
+	stex_halt, NULL, 0
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int msi;
 module_param(msi, int, 0);
 MODULE_PARM_DESC(msi, "Enable Message Signaled Interrupts(0=off, 1=on)");
@@ -362,6 +448,7 @@ MODULE_DESCRIPTION("Promise Technology SuperTrak EX Controllers");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(ST_DRIVER_VERSION);
 
+<<<<<<< HEAD
 static void stex_gettime(__le64 *time)
 {
 	struct timeval tv;
@@ -370,6 +457,8 @@ static void stex_gettime(__le64 *time)
 	*time = cpu_to_le64(tv.tv_sec);
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct status_msg *stex_get_status(struct st_hba *hba)
 {
 	struct status_msg *status = hba->status_buffer + hba->status_tail;
@@ -383,11 +472,16 @@ static struct status_msg *stex_get_status(struct st_hba *hba)
 static void stex_invalid_field(struct scsi_cmnd *cmd,
 			       void (*done)(struct scsi_cmnd *))
 {
+<<<<<<< HEAD
 	cmd->result = (DRIVER_SENSE << 24) | SAM_STAT_CHECK_CONDITION;
 
 	/* "Invalid field in cdb" */
 	scsi_build_sense_buffer(0, cmd->sense_buffer, ILLEGAL_REQUEST, 0x24,
 				0x0);
+=======
+	/* "Invalid field in cdb" */
+	scsi_build_sense(cmd, 0, ILLEGAL_REQUEST, 0x24, 0x0);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	done(cmd);
 }
 
@@ -528,7 +622,11 @@ stex_ss_send_cmd(struct st_hba *hba, struct req_msg *req, u16 tag)
 	msg_h = (struct st_msg_header *)req - 1;
 	if (likely(cmd)) {
 		msg_h->channel = (u8)cmd->device->channel;
+<<<<<<< HEAD
 		msg_h->timeout = cpu_to_le16(cmd->request->timeout/HZ);
+=======
+		msg_h->timeout = cpu_to_le16(scsi_cmd_to_rq(cmd)->timeout / HZ);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	addr = hba->dma_handle + hba->req_head * hba->rq_size;
 	addr += (hba->ccb[tag].sg_count+4)/11;
@@ -536,6 +634,7 @@ stex_ss_send_cmd(struct st_hba *hba, struct req_msg *req, u16 tag)
 
 	++hba->req_head;
 	hba->req_head %= hba->rq_count+1;
+<<<<<<< HEAD
 
 	writel((addr >> 16) >> 16, hba->mmio_base + YH2I_REQ_HI);
 	readl(hba->mmio_base + YH2I_REQ_HI); /* flush */
@@ -554,17 +653,55 @@ stex_slave_alloc(struct scsi_device *sdev)
 	return 0;
 }
 
+=======
+	if (hba->cardtype == st_P3) {
+		writel((addr >> 16) >> 16, hba->mmio_base + YH2I_REQ_HI);
+		writel(addr, hba->mmio_base + YH2I_REQ);
+	} else {
+		writel((addr >> 16) >> 16, hba->mmio_base + YH2I_REQ_HI);
+		readl(hba->mmio_base + YH2I_REQ_HI); /* flush */
+		writel(addr, hba->mmio_base + YH2I_REQ);
+		readl(hba->mmio_base + YH2I_REQ); /* flush */
+	}
+}
+
+static void return_abnormal_state(struct st_hba *hba, int status)
+{
+	struct st_ccb *ccb;
+	unsigned long flags;
+	u16 tag;
+
+	spin_lock_irqsave(hba->host->host_lock, flags);
+	for (tag = 0; tag < hba->host->can_queue; tag++) {
+		ccb = &hba->ccb[tag];
+		if (ccb->req == NULL)
+			continue;
+		ccb->req = NULL;
+		if (ccb->cmd) {
+			scsi_dma_unmap(ccb->cmd);
+			ccb->cmd->result = status << 16;
+			scsi_done(ccb->cmd);
+			ccb->cmd = NULL;
+		}
+	}
+	spin_unlock_irqrestore(hba->host->host_lock, flags);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int
 stex_slave_config(struct scsi_device *sdev)
 {
 	sdev->use_10_for_rw = 1;
 	sdev->use_10_for_ms = 1;
 	blk_queue_rq_timeout(sdev->request_queue, 60 * HZ);
+<<<<<<< HEAD
 	sdev->tagged_supported = 1;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
 static void
 stex_slave_destroy(struct scsi_device *sdev)
 {
@@ -574,6 +711,11 @@ stex_slave_destroy(struct scsi_device *sdev)
 static int
 stex_queuecommand_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd *))
 {
+=======
+static int stex_queuecommand_lck(struct scsi_cmnd *cmd)
+{
+	void (*done)(struct scsi_cmnd *) = scsi_done;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct st_hba *hba;
 	struct Scsi_Host *host;
 	unsigned int id, lun;
@@ -584,8 +726,17 @@ stex_queuecommand_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd *))
 	id = cmd->device->id;
 	lun = cmd->device->lun;
 	hba = (struct st_hba *) &host->hostdata[0];
+<<<<<<< HEAD
 
 	if (unlikely(hba->mu_status == MU_STATE_RESETTING))
+=======
+	if (hba->mu_status == MU_STATE_NOCONNECT) {
+		cmd->result = DID_NO_CONNECT;
+		done(cmd);
+		return 0;
+	}
+	if (unlikely(hba->mu_status != MU_STATE_STARTED))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return SCSI_MLQUEUE_HOST_BUSY;
 
 	switch (cmd->cmnd[0]) {
@@ -599,7 +750,11 @@ stex_queuecommand_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd *))
 		if (page == 0x8 || page == 0x3f) {
 			scsi_sg_copy_from_buffer(cmd, ms10_caching_page,
 						 sizeof(ms10_caching_page));
+<<<<<<< HEAD
 			cmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8;
+=======
+			cmd->result = DID_OK << 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			done(cmd);
 		} else
 			stex_invalid_field(cmd, done);
@@ -618,7 +773,11 @@ stex_queuecommand_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd *))
 		break;
 	case TEST_UNIT_READY:
 		if (id == host->max_id - 1) {
+<<<<<<< HEAD
 			cmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8;
+=======
+			cmd->result = DID_OK << 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			done(cmd);
 			return 0;
 		}
@@ -635,13 +794,18 @@ stex_queuecommand_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd *))
 			(cmd->cmnd[1] & INQUIRY_EVPD) == 0) {
 			scsi_sg_copy_from_buffer(cmd, (void *)console_inq_page,
 						 sizeof(console_inq_page));
+<<<<<<< HEAD
 			cmd->result = DID_OK << 16 | COMMAND_COMPLETE << 8;
+=======
+			cmd->result = DID_OK << 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			done(cmd);
 		} else
 			stex_invalid_field(cmd, done);
 		return 0;
 	case PASSTHRU_CMD:
 		if (cmd->cmnd[1] == PASSTHRU_GET_DRVVER) {
+<<<<<<< HEAD
 			struct st_drvver ver;
 			size_t cp_len = sizeof(ver);
 
@@ -659,13 +823,39 @@ stex_queuecommand_lck(struct scsi_cmnd *cmd, void (*done)(struct scsi_cmnd *))
 			done(cmd);
 			return 0;
 		}
+=======
+			const struct st_drvver ver = {
+				.major = ST_VER_MAJOR,
+				.minor = ST_VER_MINOR,
+				.oem = ST_OEM,
+				.build = ST_BUILD_VER,
+				.signature[0] = PASSTHRU_SIGNATURE,
+				.console_id = host->max_id - 1,
+				.host_no = hba->host->host_no,
+			};
+			size_t cp_len = sizeof(ver);
+
+			cp_len = scsi_sg_copy_from_buffer(cmd, &ver, cp_len);
+			if (sizeof(ver) == cp_len)
+				cmd->result = DID_OK << 16;
+			else
+				cmd->result = DID_ERROR << 16;
+			done(cmd);
+			return 0;
+		}
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		break;
 	}
 
+<<<<<<< HEAD
 	cmd->scsi_done = done;
 
 	tag = cmd->request->tag;
+=======
+	tag = scsi_cmd_to_rq(cmd)->tag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (unlikely(tag >= host->can_queue))
 		return SCSI_MLQUEUE_HOST_BUSY;
@@ -709,6 +899,7 @@ static void stex_scsi_done(struct st_ccb *ccb)
 		result = ccb->scsi_status;
 		switch (ccb->scsi_status) {
 		case SAM_STAT_GOOD:
+<<<<<<< HEAD
 			result |= DID_OK << 16 | COMMAND_COMPLETE << 8;
 			break;
 		case SAM_STAT_CHECK_CONDITION:
@@ -719,10 +910,23 @@ static void stex_scsi_done(struct st_ccb *ccb)
 			break;
 		default:
 			result |= DID_ERROR << 16 | COMMAND_COMPLETE << 8;
+=======
+			result |= DID_OK << 16;
+			break;
+		case SAM_STAT_CHECK_CONDITION:
+			result |= DID_OK << 16;
+			break;
+		case SAM_STAT_BUSY:
+			result |= DID_BUS_BUSY << 16;
+			break;
+		default:
+			result |= DID_ERROR << 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		}
 	}
 	else if (ccb->srb_status & SRB_SEE_SENSE)
+<<<<<<< HEAD
 		result = DRIVER_SENSE << 24 | SAM_STAT_CHECK_CONDITION;
 	else switch (ccb->srb_status) {
 		case SRB_STATUS_SELECTION_TIMEOUT:
@@ -730,16 +934,33 @@ static void stex_scsi_done(struct st_ccb *ccb)
 			break;
 		case SRB_STATUS_BUSY:
 			result = DID_BUS_BUSY << 16 | COMMAND_COMPLETE << 8;
+=======
+		result = SAM_STAT_CHECK_CONDITION;
+	else switch (ccb->srb_status) {
+		case SRB_STATUS_SELECTION_TIMEOUT:
+			result = DID_NO_CONNECT << 16;
+			break;
+		case SRB_STATUS_BUSY:
+			result = DID_BUS_BUSY << 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 		case SRB_STATUS_INVALID_REQUEST:
 		case SRB_STATUS_ERROR:
 		default:
+<<<<<<< HEAD
 			result = DID_ERROR << 16 | COMMAND_COMPLETE << 8;
+=======
+			result = DID_ERROR << 16;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			break;
 	}
 
 	cmd->result = result;
+<<<<<<< HEAD
 	cmd->scsi_done(cmd);
+=======
+	scsi_done(cmd);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void stex_copy_data(struct st_ccb *ccb,
@@ -963,6 +1184,7 @@ static irqreturn_t stex_ss_intr(int irq, void *__hba)
 
 	spin_lock_irqsave(hba->host->host_lock, flags);
 
+<<<<<<< HEAD
 	data = readl(base + YI2H_INT);
 	if (data && data != 0xffffffff) {
 		/* clear the interrupt */
@@ -972,6 +1194,33 @@ static irqreturn_t stex_ss_intr(int irq, void *__hba)
 		if (unlikely(data & SS_I2H_REQUEST_RESET))
 			queue_work(hba->work_q, &hba->reset_work);
 		return IRQ_HANDLED;
+=======
+	if (hba->cardtype == st_yel) {
+		data = readl(base + YI2H_INT);
+		if (data && data != 0xffffffff) {
+			/* clear the interrupt */
+			writel(data, base + YI2H_INT_C);
+			stex_ss_mu_intr(hba);
+			spin_unlock_irqrestore(hba->host->host_lock, flags);
+			if (unlikely(data & SS_I2H_REQUEST_RESET))
+				queue_work(hba->work_q, &hba->reset_work);
+			return IRQ_HANDLED;
+		}
+	} else {
+		data = readl(base + PSCRATCH4);
+		if (data != 0xffffffff) {
+			if (data != 0) {
+				/* clear the interrupt */
+				writel(data, base + PSCRATCH1);
+				writel((1 << 22), base + YH2I_INT);
+			}
+			stex_ss_mu_intr(hba);
+			spin_unlock_irqrestore(hba->host->host_lock, flags);
+			if (unlikely(data & SS_I2H_REQUEST_RESET))
+				queue_work(hba->work_q, &hba->reset_work);
+			return IRQ_HANDLED;
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	spin_unlock_irqrestore(hba->host->host_lock, flags);
@@ -1020,7 +1269,11 @@ static int stex_common_handshake(struct st_hba *hba)
 	h->req_cnt = cpu_to_le16(hba->rq_count+1);
 	h->status_sz = cpu_to_le16(sizeof(struct status_msg));
 	h->status_cnt = cpu_to_le16(hba->sts_count+1);
+<<<<<<< HEAD
 	stex_gettime(&h->hosttime);
+=======
+	h->hosttime = cpu_to_le64(ktime_get_real_seconds());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h->partner_type = HMU_PARTNER_TYPE;
 	if (hba->extra_offset) {
 		h->extra_offset = cpu_to_le32(hba->extra_offset);
@@ -1069,11 +1322,16 @@ static int stex_ss_handshake(struct st_hba *hba)
 	struct st_msg_header *msg_h;
 	struct handshake_frame *h;
 	__le32 *scratch;
+<<<<<<< HEAD
 	u32 data, scratch_size;
+=======
+	u32 data, scratch_size, mailboxdata, operationaldata;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned long before;
 	int ret = 0;
 
 	before = jiffies;
+<<<<<<< HEAD
 	while ((readl(base + YIOA_STATUS) & SS_MU_OPERATIONAL) == 0) {
 		if (time_after(jiffies, before + MU_MAX_DELAY * HZ)) {
 			printk(KERN_ERR DRV_NAME
@@ -1082,6 +1340,33 @@ static int stex_ss_handshake(struct st_hba *hba)
 			return -1;
 		}
 		msleep(1);
+=======
+
+	if (hba->cardtype == st_yel) {
+		operationaldata = readl(base + YIOA_STATUS);
+		while (operationaldata != SS_MU_OPERATIONAL) {
+			if (time_after(jiffies, before + MU_MAX_DELAY * HZ)) {
+				printk(KERN_ERR DRV_NAME
+					"(%s): firmware not operational\n",
+					pci_name(hba->pdev));
+				return -1;
+			}
+			msleep(1);
+			operationaldata = readl(base + YIOA_STATUS);
+		}
+	} else {
+		operationaldata = readl(base + PSCRATCH3);
+		while (operationaldata != SS_MU_OPERATIONAL) {
+			if (time_after(jiffies, before + MU_MAX_DELAY * HZ)) {
+				printk(KERN_ERR DRV_NAME
+					"(%s): firmware not operational\n",
+					pci_name(hba->pdev));
+				return -1;
+			}
+			msleep(1);
+			operationaldata = readl(base + PSCRATCH3);
+		}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	msg_h = (struct st_msg_header *)hba->dma_mem;
@@ -1094,12 +1379,17 @@ static int stex_ss_handshake(struct st_hba *hba)
 	h->req_cnt = cpu_to_le16(hba->rq_count+1);
 	h->status_sz = cpu_to_le16(sizeof(struct status_msg));
 	h->status_cnt = cpu_to_le16(hba->sts_count+1);
+<<<<<<< HEAD
 	stex_gettime(&h->hosttime);
+=======
+	h->hosttime = cpu_to_le64(ktime_get_real_seconds());
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	h->partner_type = HMU_PARTNER_TYPE;
 	h->extra_offset = h->extra_size = 0;
 	scratch_size = (hba->sts_count+1)*sizeof(u32);
 	h->scratch_size = cpu_to_le32(scratch_size);
 
+<<<<<<< HEAD
 	data = readl(base + YINT_EN);
 	data &= ~4;
 	writel(data, base + YINT_EN);
@@ -1124,6 +1414,62 @@ static int stex_ss_handshake(struct st_hba *hba)
 
 	memset(scratch, 0, scratch_size);
 	msg_h->flag = 0;
+=======
+	if (hba->cardtype == st_yel) {
+		data = readl(base + YINT_EN);
+		data &= ~4;
+		writel(data, base + YINT_EN);
+		writel((hba->dma_handle >> 16) >> 16, base + YH2I_REQ_HI);
+		readl(base + YH2I_REQ_HI);
+		writel(hba->dma_handle, base + YH2I_REQ);
+		readl(base + YH2I_REQ); /* flush */
+	} else {
+		data = readl(base + YINT_EN);
+		data &= ~(1 << 0);
+		data &= ~(1 << 2);
+		writel(data, base + YINT_EN);
+		if (hba->msi_lock == 0) {
+			/* P3 MSI Register cannot access twice */
+			writel((1 << 6), base + YH2I_INT);
+			hba->msi_lock  = 1;
+		}
+		writel((hba->dma_handle >> 16) >> 16, base + YH2I_REQ_HI);
+		writel(hba->dma_handle, base + YH2I_REQ);
+	}
+
+	before = jiffies;
+	scratch = hba->scratch;
+	if (hba->cardtype == st_yel) {
+		while (!(le32_to_cpu(*scratch) & SS_STS_HANDSHAKE)) {
+			if (time_after(jiffies, before + MU_MAX_DELAY * HZ)) {
+				printk(KERN_ERR DRV_NAME
+					"(%s): no signature after handshake frame\n",
+					pci_name(hba->pdev));
+				ret = -1;
+				break;
+			}
+			rmb();
+			msleep(1);
+		}
+	} else {
+		mailboxdata = readl(base + MAILBOX_BASE + MAILBOX_HNDSHK_STS);
+		while (mailboxdata != SS_STS_HANDSHAKE) {
+			if (time_after(jiffies, before + MU_MAX_DELAY * HZ)) {
+				printk(KERN_ERR DRV_NAME
+					"(%s): no signature after handshake frame\n",
+					pci_name(hba->pdev));
+				ret = -1;
+				break;
+			}
+			rmb();
+			msleep(1);
+			mailboxdata = readl(base + MAILBOX_BASE + MAILBOX_HNDSHK_STS);
+		}
+	}
+	memset(scratch, 0, scratch_size);
+	msg_h->flag = 0;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
@@ -1133,8 +1479,15 @@ static int stex_handshake(struct st_hba *hba)
 	unsigned long flags;
 	unsigned int mu_status;
 
+<<<<<<< HEAD
 	err = (hba->cardtype == st_yel) ?
 		stex_ss_handshake(hba) : stex_common_handshake(hba);
+=======
+	if (hba->cardtype == st_yel || hba->cardtype == st_P3)
+		err = stex_ss_handshake(hba);
+	else
+		err = stex_common_handshake(hba);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_irqsave(hba->host->host_lock, flags);
 	mu_status = hba->mu_status;
 	if (err == 0) {
@@ -1156,15 +1509,23 @@ static int stex_abort(struct scsi_cmnd *cmd)
 {
 	struct Scsi_Host *host = cmd->device->host;
 	struct st_hba *hba = (struct st_hba *)host->hostdata;
+<<<<<<< HEAD
 	u16 tag = cmd->request->tag;
+=======
+	u16 tag = scsi_cmd_to_rq(cmd)->tag;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	void __iomem *base;
 	u32 data;
 	int result = SUCCESS;
 	unsigned long flags;
 
+<<<<<<< HEAD
 	printk(KERN_INFO DRV_NAME
 		"(%s): aborting command\n", pci_name(hba->pdev));
 	scsi_print_command(cmd);
+=======
+	scmd_printk(KERN_INFO, cmd, "aborting command\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	base = hba->mmio_base;
 	spin_lock_irqsave(host->host_lock, flags);
@@ -1181,6 +1542,18 @@ static int stex_abort(struct scsi_cmnd *cmd)
 
 		writel(data, base + YI2H_INT_C);
 		stex_ss_mu_intr(hba);
+<<<<<<< HEAD
+=======
+	} else if (hba->cardtype == st_P3) {
+		data = readl(base + PSCRATCH4);
+		if (data == 0xffffffff)
+			goto fail_out;
+		if (data != 0) {
+			writel(data, base + PSCRATCH1);
+			writel((1 << 22), base + YH2I_INT);
+		}
+		stex_ss_mu_intr(hba);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		data = readl(base + ODBL);
 		if (data == 0 || data == 0xffffffff)
@@ -1188,7 +1561,10 @@ static int stex_abort(struct scsi_cmnd *cmd)
 
 		writel(data, base + ODBL);
 		readl(base + ODBL); /* flush */
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stex_mu_intr(hba, data);
 	}
 	if (hba->wait_ccb == NULL) {
@@ -1284,12 +1660,25 @@ static void stex_ss_reset(struct st_hba *hba)
 	ssleep(5);
 }
 
+<<<<<<< HEAD
 static int stex_do_reset(struct st_hba *hba)
 {
 	struct st_ccb *ccb;
 	unsigned long flags;
 	unsigned int mu_status = MU_STATE_RESETTING;
 	u16 tag;
+=======
+static void stex_p3_reset(struct st_hba *hba)
+{
+	writel(SS_H2I_INT_RESET, hba->mmio_base + YH2I_INT);
+	ssleep(5);
+}
+
+static int stex_do_reset(struct st_hba *hba)
+{
+	unsigned long flags;
+	unsigned int mu_status = MU_STATE_RESETTING;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	spin_lock_irqsave(hba->host->host_lock, flags);
 	if (hba->mu_status == MU_STATE_STARTING) {
@@ -1322,6 +1711,7 @@ static int stex_do_reset(struct st_hba *hba)
 		stex_hard_reset(hba);
 	else if (hba->cardtype == st_yel)
 		stex_ss_reset(hba);
+<<<<<<< HEAD
 
 	spin_lock_irqsave(hba->host->host_lock, flags);
 	for (tag = 0; tag < hba->host->can_queue; tag++) {
@@ -1337,6 +1727,12 @@ static int stex_do_reset(struct st_hba *hba)
 		}
 	}
 	spin_unlock_irqrestore(hba->host->host_lock, flags);
+=======
+	else if (hba->cardtype == st_P3)
+		stex_p3_reset(hba);
+
+	return_abnormal_state(hba, DID_RESET);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (stex_handshake(hba) == 0)
 		return 0;
@@ -1352,9 +1748,14 @@ static int stex_reset(struct scsi_cmnd *cmd)
 
 	hba = (struct st_hba *) &cmd->device->host->hostdata[0];
 
+<<<<<<< HEAD
 	printk(KERN_INFO DRV_NAME
 		"(%s): resetting host\n", pci_name(hba->pdev));
 	scsi_print_command(cmd);
+=======
+	shost_printk(KERN_INFO, cmd->device->host,
+		     "resetting host\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return stex_do_reset(hba) ? FAILED : SUCCESS;
 }
@@ -1385,18 +1786,30 @@ static int stex_biosparam(struct scsi_device *sdev,
 	return 0;
 }
 
+<<<<<<< HEAD
 static struct scsi_host_template driver_template = {
+=======
+static const struct scsi_host_template driver_template = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.module				= THIS_MODULE,
 	.name				= DRV_NAME,
 	.proc_name			= DRV_NAME,
 	.bios_param			= stex_biosparam,
 	.queuecommand			= stex_queuecommand,
+<<<<<<< HEAD
 	.slave_alloc			= stex_slave_alloc,
 	.slave_configure		= stex_slave_config,
 	.slave_destroy			= stex_slave_destroy,
 	.eh_abort_handler		= stex_abort,
 	.eh_host_reset_handler		= stex_reset,
 	.this_id			= -1,
+=======
+	.slave_configure		= stex_slave_config,
+	.eh_abort_handler		= stex_abort,
+	.eh_host_reset_handler		= stex_reset,
+	.this_id			= -1,
+	.dma_boundary			= PAGE_SIZE - 1,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct pci_device_id stex_pci_tbl[] = {
@@ -1422,6 +1835,29 @@ static struct pci_device_id stex_pci_tbl[] = {
 	/* st_yel */
 	{ 0x105a, 0x8650, 0x1033, PCI_ANY_ID, 0, 0, st_yel },
 	{ 0x105a, 0x8760, PCI_ANY_ID, PCI_ANY_ID, 0, 0, st_yel },
+<<<<<<< HEAD
+=======
+
+	/* st_P3, pluto */
+	{ PCI_VENDOR_ID_PROMISE, 0x8870, PCI_VENDOR_ID_PROMISE,
+		0x8870, 0, 0, st_P3 },
+	/* st_P3, p3 */
+	{ PCI_VENDOR_ID_PROMISE, 0x8870, PCI_VENDOR_ID_PROMISE,
+		0x4300, 0, 0, st_P3 },
+
+	/* st_P3, SymplyStor4E */
+	{ PCI_VENDOR_ID_PROMISE, 0x8871, PCI_VENDOR_ID_PROMISE,
+		0x4311, 0, 0, st_P3 },
+	/* st_P3, SymplyStor8E */
+	{ PCI_VENDOR_ID_PROMISE, 0x8871, PCI_VENDOR_ID_PROMISE,
+		0x4312, 0, 0, st_P3 },
+	/* st_P3, SymplyStor4 */
+	{ PCI_VENDOR_ID_PROMISE, 0x8871, PCI_VENDOR_ID_PROMISE,
+		0x4321, 0, 0, st_P3 },
+	/* st_P3, SymplyStor8 */
+	{ PCI_VENDOR_ID_PROMISE, 0x8871, PCI_VENDOR_ID_PROMISE,
+		0x4322, 0, 0, st_P3 },
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ }	/* terminate list */
 };
 
@@ -1490,6 +1926,7 @@ static struct st_card_info stex_card_info[] = {
 		.map_sg		= stex_ss_map_sg,
 		.send		= stex_ss_send_cmd,
 	},
+<<<<<<< HEAD
 };
 
 static int stex_set_dma_mask(struct pci_dev * pdev)
@@ -1505,12 +1942,33 @@ static int stex_set_dma_mask(struct pci_dev * pdev)
 	return ret;
 }
 
+=======
+
+	/* st_P3 */
+	{
+		.max_id		= 129,
+		.max_lun	= 256,
+		.max_channel	= 0,
+		.rq_count	= 801,
+		.rq_size	= 512,
+		.sts_count	= 801,
+		.alloc_rq	= stex_ss_alloc_req,
+		.map_sg		= stex_ss_map_sg,
+		.send		= stex_ss_send_cmd,
+	},
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int stex_request_irq(struct st_hba *hba)
 {
 	struct pci_dev *pdev = hba->pdev;
 	int status;
 
+<<<<<<< HEAD
 	if (msi) {
+=======
+	if (msi || hba->cardtype == st_P3) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		status = pci_enable_msi(pdev);
 		if (status != 0)
 			printk(KERN_ERR DRV_NAME
@@ -1521,7 +1979,12 @@ static int stex_request_irq(struct st_hba *hba)
 	} else
 		hba->msi_enabled = 0;
 
+<<<<<<< HEAD
 	status = request_irq(pdev->irq, hba->cardtype == st_yel ?
+=======
+	status = request_irq(pdev->irq,
+		(hba->cardtype == st_yel || hba->cardtype == st_P3) ?
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		stex_ss_intr : stex_intr, IRQF_SHARED, DRV_NAME, hba);
 
 	if (status != 0) {
@@ -1540,8 +2003,12 @@ static void stex_free_irq(struct st_hba *hba)
 		pci_disable_msi(pdev);
 }
 
+<<<<<<< HEAD
 static int __devinit
 stex_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+=======
+static int stex_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct st_hba *hba;
 	struct Scsi_Host *host;
@@ -1555,6 +2022,12 @@ stex_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	pci_set_master(pdev);
 
+<<<<<<< HEAD
+=======
+	S6flag = 0;
+	register_reboot_notifier(&stex_notifier);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	host = scsi_host_alloc(&driver_template, sizeof(struct st_hba));
 
 	if (!host) {
@@ -1582,7 +2055,13 @@ stex_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto out_release_regions;
 	}
 
+<<<<<<< HEAD
 	err = stex_set_dma_mask(pdev);
+=======
+	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
+	if (err)
+		err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (err) {
 		printk(KERN_ERR DRV_NAME "(%s): set dma mask failed\n",
 			pci_name(pdev));
@@ -1591,8 +2070,32 @@ stex_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	hba->cardtype = (unsigned int) id->driver_data;
 	ci = &stex_card_info[hba->cardtype];
+<<<<<<< HEAD
 	sts_offset = scratch_offset = (ci->rq_count+1) * ci->rq_size;
 	if (hba->cardtype == st_yel)
+=======
+	switch (id->subdevice) {
+	case 0x4221:
+	case 0x4222:
+	case 0x4223:
+	case 0x4224:
+	case 0x4225:
+	case 0x4226:
+	case 0x4227:
+	case 0x4261:
+	case 0x4262:
+	case 0x4263:
+	case 0x4264:
+	case 0x4265:
+		break;
+	default:
+		if (hba->cardtype == st_yel || hba->cardtype == st_P3)
+			hba->supports_pm = 1;
+	}
+
+	sts_offset = scratch_offset = (ci->rq_count+1) * ci->rq_size;
+	if (hba->cardtype == st_yel || hba->cardtype == st_P3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		sts_offset += (ci->sts_count+1) * sizeof(u32);
 	cp_offset = sts_offset + (ci->sts_count+1) * sizeof(struct status_msg);
 	hba->dma_size = cp_offset + sizeof(struct st_frame);
@@ -1632,7 +2135,11 @@ stex_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto out_pci_free;
 	}
 
+<<<<<<< HEAD
 	if (hba->cardtype == st_yel)
+=======
+	if (hba->cardtype == st_yel || hba->cardtype == st_P3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		hba->scratch = (__le32 *)(hba->dma_mem + scratch_offset);
 	hba->status_buffer = (struct status_msg *)(hba->dma_mem + sts_offset);
 	hba->copy_buffer = hba->dma_mem + cp_offset;
@@ -1643,8 +2150,14 @@ stex_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	hba->map_sg = ci->map_sg;
 	hba->send = ci->send;
 	hba->mu_status = MU_STATE_STARTING;
+<<<<<<< HEAD
 
 	if (hba->cardtype == st_yel)
+=======
+	hba->msi_lock = 0;
+
+	if (hba->cardtype == st_yel || hba->cardtype == st_P3)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		host->sg_tablesize = 38;
 	else
 		host->sg_tablesize = 32;
@@ -1682,6 +2195,7 @@ stex_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (err)
 		goto out_free_irq;
 
+<<<<<<< HEAD
 	err = scsi_init_shared_tag_map(host, host->can_queue);
 	if (err) {
 		printk(KERN_ERR DRV_NAME "(%s): init shared queue failed\n",
@@ -1689,6 +2203,8 @@ stex_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		goto out_free_irq;
 	}
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	pci_set_drvdata(pdev, hba);
 
 	err = scsi_add_host(host, &pdev->dev);
@@ -1723,7 +2239,11 @@ out_disable:
 	return err;
 }
 
+<<<<<<< HEAD
 static void stex_hba_stop(struct st_hba *hba)
+=======
+static void stex_hba_stop(struct st_hba *hba, int st_sleep_mic)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct req_msg *req;
 	struct st_msg_header *msg_h;
@@ -1732,41 +2252,86 @@ static void stex_hba_stop(struct st_hba *hba)
 	u16 tag = 0;
 
 	spin_lock_irqsave(hba->host->host_lock, flags);
+<<<<<<< HEAD
 	req = hba->alloc_rq(hba);
 	if (hba->cardtype == st_yel) {
+=======
+
+	if ((hba->cardtype == st_yel || hba->cardtype == st_P3) &&
+		hba->supports_pm == 1) {
+		if (st_sleep_mic == ST_NOTHANDLED) {
+			spin_unlock_irqrestore(hba->host->host_lock, flags);
+			return;
+		}
+	}
+	req = hba->alloc_rq(hba);
+	if (hba->cardtype == st_yel || hba->cardtype == st_P3) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		msg_h = (struct st_msg_header *)req - 1;
 		memset(msg_h, 0, hba->rq_size);
 	} else
 		memset(req, 0, hba->rq_size);
 
+<<<<<<< HEAD
 	if (hba->cardtype == st_yosemite || hba->cardtype == st_yel) {
+=======
+	if ((hba->cardtype == st_yosemite || hba->cardtype == st_yel
+		|| hba->cardtype == st_P3)
+		&& st_sleep_mic == ST_IGNORED) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		req->cdb[0] = MGT_CMD;
 		req->cdb[1] = MGT_CMD_SIGNATURE;
 		req->cdb[2] = CTLR_CONFIG_CMD;
 		req->cdb[3] = CTLR_SHUTDOWN;
+<<<<<<< HEAD
+=======
+	} else if ((hba->cardtype == st_yel || hba->cardtype == st_P3)
+		&& st_sleep_mic != ST_IGNORED) {
+		req->cdb[0] = MGT_CMD;
+		req->cdb[1] = MGT_CMD_SIGNATURE;
+		req->cdb[2] = CTLR_CONFIG_CMD;
+		req->cdb[3] = PMIC_SHUTDOWN;
+		req->cdb[4] = st_sleep_mic;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		req->cdb[0] = CONTROLLER_CMD;
 		req->cdb[1] = CTLR_POWER_STATE_CHANGE;
 		req->cdb[2] = CTLR_POWER_SAVING;
 	}
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	hba->ccb[tag].cmd = NULL;
 	hba->ccb[tag].sg_count = 0;
 	hba->ccb[tag].sense_bufflen = 0;
 	hba->ccb[tag].sense_buffer = NULL;
 	hba->ccb[tag].req_type = PASSTHRU_REQ_TYPE;
+<<<<<<< HEAD
 
 	hba->send(hba, req, tag);
 	spin_unlock_irqrestore(hba->host->host_lock, flags);
 
+=======
+	hba->send(hba, req, tag);
+	spin_unlock_irqrestore(hba->host->host_lock, flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	before = jiffies;
 	while (hba->ccb[tag].req_type & PASSTHRU_REQ_TYPE) {
 		if (time_after(jiffies, before + ST_INTERNAL_TIMEOUT * HZ)) {
 			hba->ccb[tag].req_type = 0;
+<<<<<<< HEAD
+=======
+			hba->mu_status = MU_STATE_STOP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return;
 		}
 		msleep(1);
 	}
+<<<<<<< HEAD
+=======
+	hba->mu_status = MU_STATE_STOP;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void stex_hba_free(struct st_hba *hba)
@@ -1789,34 +2354,105 @@ static void stex_remove(struct pci_dev *pdev)
 {
 	struct st_hba *hba = pci_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	scsi_remove_host(hba->host);
 
 	pci_set_drvdata(pdev, NULL);
 
 	stex_hba_stop(hba);
+=======
+	hba->mu_status = MU_STATE_NOCONNECT;
+	return_abnormal_state(hba, DID_NO_CONNECT);
+	scsi_remove_host(hba->host);
+
+	scsi_block_requests(hba->host);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	stex_hba_free(hba);
 
 	scsi_host_put(hba->host);
 
 	pci_disable_device(pdev);
+<<<<<<< HEAD
+=======
+
+	unregister_reboot_notifier(&stex_notifier);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void stex_shutdown(struct pci_dev *pdev)
 {
 	struct st_hba *hba = pci_get_drvdata(pdev);
 
+<<<<<<< HEAD
 	stex_hba_stop(hba);
 }
 
+=======
+	if (hba->supports_pm == 0) {
+		stex_hba_stop(hba, ST_IGNORED);
+	} else if (hba->supports_pm == 1 && S6flag) {
+		unregister_reboot_notifier(&stex_notifier);
+		stex_hba_stop(hba, ST_S6);
+	} else
+		stex_hba_stop(hba, ST_S5);
+}
+
+static int stex_choice_sleep_mic(struct st_hba *hba, pm_message_t state)
+{
+	switch (state.event) {
+	case PM_EVENT_SUSPEND:
+		return ST_S3;
+	case PM_EVENT_HIBERNATE:
+		hba->msi_lock = 0;
+		return ST_S4;
+	default:
+		return ST_NOTHANDLED;
+	}
+}
+
+static int stex_suspend(struct pci_dev *pdev, pm_message_t state)
+{
+	struct st_hba *hba = pci_get_drvdata(pdev);
+
+	if ((hba->cardtype == st_yel || hba->cardtype == st_P3)
+		&& hba->supports_pm == 1)
+		stex_hba_stop(hba, stex_choice_sleep_mic(hba, state));
+	else
+		stex_hba_stop(hba, ST_IGNORED);
+	return 0;
+}
+
+static int stex_resume(struct pci_dev *pdev)
+{
+	struct st_hba *hba = pci_get_drvdata(pdev);
+
+	hba->mu_status = MU_STATE_STARTING;
+	stex_handshake(hba);
+	return 0;
+}
+
+static int stex_halt(struct notifier_block *nb, unsigned long event, void *buf)
+{
+	S6flag = 1;
+	return NOTIFY_OK;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_DEVICE_TABLE(pci, stex_pci_tbl);
 
 static struct pci_driver stex_pci_driver = {
 	.name		= DRV_NAME,
 	.id_table	= stex_pci_tbl,
 	.probe		= stex_probe,
+<<<<<<< HEAD
 	.remove		= __devexit_p(stex_remove),
 	.shutdown	= stex_shutdown,
+=======
+	.remove		= stex_remove,
+	.shutdown	= stex_shutdown,
+	.suspend	= stex_suspend,
+	.resume		= stex_resume,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static int __init stex_init(void)

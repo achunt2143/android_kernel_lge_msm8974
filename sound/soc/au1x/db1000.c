@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * DB1000/DB1500/DB1100 ASoC audio fabric support code.
  *
@@ -18,6 +22,7 @@
 
 #include "psc.h"
 
+<<<<<<< HEAD
 static struct snd_soc_dai_link db1000_ac97_dai = {
 	.name		= "AC97",
 	.stream_name	= "AC97 HiFi",
@@ -25,6 +30,17 @@ static struct snd_soc_dai_link db1000_ac97_dai = {
 	.cpu_dai_name	= "alchemy-ac97c",
 	.platform_name	= "alchemy-pcm-dma.0",
 	.codec_name	= "ac97-codec",
+=======
+SND_SOC_DAILINK_DEFS(hifi,
+	DAILINK_COMP_ARRAY(COMP_CPU("alchemy-ac97c")),
+	DAILINK_COMP_ARRAY(COMP_CODEC("ac97-codec", "ac97-hifi")),
+	DAILINK_COMP_ARRAY(COMP_PLATFORM("alchemy-pcm-dma.0")));
+
+static struct snd_soc_dai_link db1000_ac97_dai = {
+	.name		= "AC97",
+	.stream_name	= "AC97 HiFi",
+	SND_SOC_DAILINK_REG(hifi),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static struct snd_soc_card db1000_ac97 = {
@@ -34,6 +50,7 @@ static struct snd_soc_card db1000_ac97 = {
 	.num_links	= 1,
 };
 
+<<<<<<< HEAD
 static int __devinit db1000_audio_probe(struct platform_device *pdev)
 {
 	struct snd_soc_card *card = &db1000_ac97;
@@ -46,16 +63,29 @@ static int __devexit db1000_audio_remove(struct platform_device *pdev)
 	struct snd_soc_card *card = platform_get_drvdata(pdev);
 	snd_soc_unregister_card(card);
 	return 0;
+=======
+static int db1000_audio_probe(struct platform_device *pdev)
+{
+	struct snd_soc_card *card = &db1000_ac97;
+	card->dev = &pdev->dev;
+	return devm_snd_soc_register_card(&pdev->dev, card);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct platform_driver db1000_audio_driver = {
 	.driver	= {
 		.name	= "db1000-audio",
+<<<<<<< HEAD
 		.owner	= THIS_MODULE,
 		.pm	= &snd_soc_pm_ops,
 	},
 	.probe		= db1000_audio_probe,
 	.remove		= __devexit_p(db1000_audio_remove),
+=======
+		.pm	= &snd_soc_pm_ops,
+	},
+	.probe		= db1000_audio_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 module_platform_driver(db1000_audio_driver);

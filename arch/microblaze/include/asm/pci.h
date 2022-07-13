@@ -1,8 +1,13 @@
+<<<<<<< HEAD
 /*
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+/*
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * Based on powerpc version
  */
@@ -16,15 +21,22 @@
 #include <linux/string.h>
 #include <linux/dma-mapping.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 
 #include <asm/scatterlist.h>
 #include <asm/io.h>
 #include <asm/prom.h>
+=======
+#include <linux/scatterlist.h>
+
+#include <asm/io.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/pci-bridge.h>
 
 #define PCIBIOS_MIN_IO		0x1000
 #define PCIBIOS_MIN_MEM		0x10000000
 
+<<<<<<< HEAD
 struct pci_dev;
 
 /* Values for the `which' argument to sys_pciconfig_iobase syscall.  */
@@ -36,12 +48,15 @@ struct pci_dev;
 
 #define pcibios_scan_all_fns(a, b)	0
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Set this to 1 if you want the kernel to re-assign all PCI
  * bus numbers (don't do that on ppc64 yet !)
  */
 #define pcibios_assign_all_busses()	0
 
+<<<<<<< HEAD
 static inline void pcibios_penalize_isa_irq(int irq, int active)
 {
 	/* We don't do dynamic PCI IRQ allocation */
@@ -65,11 +80,14 @@ static inline void pci_dma_burst_advice(struct pci_dev *pdev,
 }
 #endif
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 extern int pci_domain_nr(struct pci_bus *bus);
 
 /* Decide whether to display the domain number in /proc */
 extern int pci_proc_domain(struct pci_bus *bus);
 
+<<<<<<< HEAD
 struct vm_area_struct;
 /* Map a range of PCI memory or I/O space for a device into user space */
 int pci_mmap_page_range(struct pci_dev *pdev, struct vm_area_struct *vma,
@@ -152,6 +170,15 @@ static inline void __init xilinx_pci_init(void) { return; }
 #endif
 
 #include <asm-generic/pci-dma-compat.h>
+=======
+/* Tell PCI code what kind of PCI resource mappings we support */
+#define HAVE_PCI_MMAP			1
+#define ARCH_GENERIC_PCI_MMAP_RESOURCE	1
+
+struct file;
+
+static inline void __init xilinx_pci_init(void) { return; }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif	/* __KERNEL__ */
 #endif /* __ASM_MICROBLAZE_PCI_H */

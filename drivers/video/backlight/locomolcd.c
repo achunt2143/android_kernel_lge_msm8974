@@ -1,9 +1,16 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Backlight control code for Sharp Zaurus SL-5500
  *
  * Copyright 2005 John Lenz <lenz@cs.wisc.edu>
  * Maintainer: Pavel Machek <pavel@ucw.cz> (unless John wants to :-)
+<<<<<<< HEAD
  * GPL v2
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This driver assumes single CPU. That's okay, because collie is
  * slightly old hardware, and no one is going to retrofit second CPU to
@@ -95,8 +102,11 @@ void locomolcd_power(int on)
 	/* read comadj */
 	if (comadj == -1 && machine_is_collie())
 		comadj = 128;
+<<<<<<< HEAD
 	if (comadj == -1 && machine_is_poodle())
 		comadj = 118;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (on)
 		locomolcd_on(comadj);
@@ -107,21 +117,30 @@ void locomolcd_power(int on)
 }
 EXPORT_SYMBOL(locomolcd_power);
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int current_intensity;
 
 static int locomolcd_set_intensity(struct backlight_device *bd)
 {
+<<<<<<< HEAD
 	int intensity = bd->props.brightness;
 
 	if (bd->props.power != FB_BLANK_UNBLANK)
 		intensity = 0;
 	if (bd->props.fb_blank != FB_BLANK_UNBLANK)
 		intensity = 0;
+=======
+	int intensity = backlight_get_brightness(bd);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (locomolcd_flags & LOCOMOLCD_SUSPENDED)
 		intensity = 0;
 
 	switch (intensity) {
+<<<<<<< HEAD
 	/* AC and non-AC are handled differently, but produce same results in sharp code? */
 	case 0: locomo_frontlight_set(locomolcd_dev, 0, 0, 161); break;
 	case 1: locomo_frontlight_set(locomolcd_dev, 117, 0, 161); break;
@@ -129,6 +148,27 @@ static int locomolcd_set_intensity(struct backlight_device *bd)
 	case 3: locomo_frontlight_set(locomolcd_dev, 194, 0, 161); break;
 	case 4: locomo_frontlight_set(locomolcd_dev, 194, 1, 161); break;
 
+=======
+	/*
+	 * AC and non-AC are handled differently,
+	 * but produce same results in sharp code?
+	 */
+	case 0:
+		locomo_frontlight_set(locomolcd_dev, 0, 0, 161);
+		break;
+	case 1:
+		locomo_frontlight_set(locomolcd_dev, 117, 0, 161);
+		break;
+	case 2:
+		locomo_frontlight_set(locomolcd_dev, 163, 0, 148);
+		break;
+	case 3:
+		locomo_frontlight_set(locomolcd_dev, 194, 0, 161);
+		break;
+	case 4:
+		locomo_frontlight_set(locomolcd_dev, 194, 1, 161);
+		break;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	default:
 		return -ENODEV;
 	}
@@ -146,25 +186,41 @@ static const struct backlight_ops locomobl_data = {
 	.update_status  = locomolcd_set_intensity,
 };
 
+<<<<<<< HEAD
 #ifdef CONFIG_PM
 static int locomolcd_suspend(struct locomo_dev *dev, pm_message_t state)
+=======
+#ifdef CONFIG_PM_SLEEP
+static int locomolcd_suspend(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	locomolcd_flags |= LOCOMOLCD_SUSPENDED;
 	locomolcd_set_intensity(locomolcd_bl_device);
 	return 0;
 }
 
+<<<<<<< HEAD
 static int locomolcd_resume(struct locomo_dev *dev)
+=======
+static int locomolcd_resume(struct device *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	locomolcd_flags &= ~LOCOMOLCD_SUSPENDED;
 	locomolcd_set_intensity(locomolcd_bl_device);
 	return 0;
 }
+<<<<<<< HEAD
 #else
 #define locomolcd_suspend	NULL
 #define locomolcd_resume	NULL
 #endif
 
+=======
+#endif
+
+static SIMPLE_DEV_PM_OPS(locomolcd_pm_ops, locomolcd_suspend, locomolcd_resume);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int locomolcd_probe(struct locomo_dev *ldev)
 {
 	struct backlight_properties props;
@@ -175,12 +231,15 @@ static int locomolcd_probe(struct locomo_dev *ldev)
 
 	locomo_gpio_set_dir(ldev->dev.parent, LOCOMO_GPIO_FL_VR, 0);
 
+<<<<<<< HEAD
 	/* the poodle_lcd_power function is called for the first time
 	 * from fs_initcall, which is before locomo is activated.
 	 * We need to recall poodle_lcd_power here*/
 	if (machine_is_poodle())
 		locomolcd_power(1);
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	local_irq_restore(flags);
 
 	memset(&props, 0, sizeof(struct backlight_properties));
@@ -190,8 +249,13 @@ static int locomolcd_probe(struct locomo_dev *ldev)
 							&ldev->dev, NULL,
 							&locomobl_data, &props);
 
+<<<<<<< HEAD
 	if (IS_ERR (locomolcd_bl_device))
 		return PTR_ERR (locomolcd_bl_device);
+=======
+	if (IS_ERR(locomolcd_bl_device))
+		return PTR_ERR(locomolcd_bl_device);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* Set up frontlight so that screen is readable */
 	locomolcd_bl_device->props.brightness = 2;
@@ -200,7 +264,11 @@ static int locomolcd_probe(struct locomo_dev *ldev)
 	return 0;
 }
 
+<<<<<<< HEAD
 static int locomolcd_remove(struct locomo_dev *dev)
+=======
+static void locomolcd_remove(struct locomo_dev *dev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned long flags;
 
@@ -212,21 +280,34 @@ static int locomolcd_remove(struct locomo_dev *dev)
 	local_irq_save(flags);
 	locomolcd_dev = NULL;
 	local_irq_restore(flags);
+<<<<<<< HEAD
 	return 0;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct locomo_driver poodle_lcd_driver = {
 	.drv = {
+<<<<<<< HEAD
 		.name = "locomo-backlight",
+=======
+		.name	= "locomo-backlight",
+		.pm	= &locomolcd_pm_ops,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	},
 	.devid	= LOCOMO_DEVID_BACKLIGHT,
 	.probe	= locomolcd_probe,
 	.remove	= locomolcd_remove,
+<<<<<<< HEAD
 	.suspend = locomolcd_suspend,
 	.resume = locomolcd_resume,
 };
 
 
+=======
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int __init locomolcd_init(void)
 {
 	return locomo_driver_register(&poodle_lcd_driver);

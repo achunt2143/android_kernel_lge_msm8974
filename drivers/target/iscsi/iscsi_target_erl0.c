@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  * This file contains error recovery level zero functions used by
  * the iSCSI Target driver.
  *
+<<<<<<< HEAD
  * \u00a9 Copyright 2007-2011 RisingTide Systems LLC.
  *
  * Licensed to the Linux Foundation under the General Public License (GPL) version 2.
@@ -19,13 +24,28 @@
  * GNU General Public License for more details.
  ******************************************************************************/
 
+=======
+ * (c) Copyright 2007-2013 Datera, Inc.
+ *
+ * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
+ *
+ ******************************************************************************/
+
+#include <linux/sched/signal.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <scsi/iscsi_proto.h>
 #include <target/target_core_base.h>
 #include <target/target_core_fabric.h>
 
+<<<<<<< HEAD
 #include "iscsi_target_core.h"
 #include "iscsi_target_seq_pdu_list.h"
 #include "iscsi_target_tq.h"
+=======
+#include <target/iscsi/iscsi_target_core.h>
+#include "iscsi_target_seq_pdu_list.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include "iscsi_target_erl0.h"
 #include "iscsi_target_erl1.h"
 #include "iscsi_target_erl2.h"
@@ -33,24 +53,39 @@
 #include "iscsi_target.h"
 
 /*
+<<<<<<< HEAD
  *	Used to set values in struct iscsi_cmd that iscsit_dataout_check_sequence()
+=======
+ *	Used to set values in struct iscsit_cmd that iscsit_dataout_check_sequence()
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	checks against to determine a PDU's Offset+Length is within the current
  *	DataOUT Sequence.  Used for DataSequenceInOrder=Yes only.
  */
 void iscsit_set_dataout_sequence_values(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd)
 {
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd)
+{
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/*
 	 * Still set seq_start_offset and seq_end_offset for Unsolicited
 	 * DataOUT, even if DataSequenceInOrder=No.
 	 */
 	if (cmd->unsolicited_data) {
 		cmd->seq_start_offset = cmd->write_data_done;
+<<<<<<< HEAD
 		cmd->seq_end_offset = (cmd->write_data_done +
 			(cmd->data_length >
 			 conn->sess->sess_ops->FirstBurstLength) ?
 			conn->sess->sess_ops->FirstBurstLength : cmd->data_length);
+=======
+		cmd->seq_end_offset = min(cmd->se_cmd.data_length,
+					conn->sess->sess_ops->FirstBurstLength);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -59,25 +94,43 @@ void iscsit_set_dataout_sequence_values(
 
 	if (!cmd->seq_start_offset && !cmd->seq_end_offset) {
 		cmd->seq_start_offset = cmd->write_data_done;
+<<<<<<< HEAD
 		cmd->seq_end_offset = (cmd->data_length >
 			conn->sess->sess_ops->MaxBurstLength) ?
 			(cmd->write_data_done +
 			conn->sess->sess_ops->MaxBurstLength) : cmd->data_length;
+=======
+		cmd->seq_end_offset = (cmd->se_cmd.data_length >
+			conn->sess->sess_ops->MaxBurstLength) ?
+			(cmd->write_data_done +
+			conn->sess->sess_ops->MaxBurstLength) : cmd->se_cmd.data_length;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		cmd->seq_start_offset = cmd->seq_end_offset;
 		cmd->seq_end_offset = ((cmd->seq_end_offset +
 			conn->sess->sess_ops->MaxBurstLength) >=
+<<<<<<< HEAD
 			cmd->data_length) ? cmd->data_length :
+=======
+			cmd->se_cmd.data_length) ? cmd->se_cmd.data_length :
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			(cmd->seq_end_offset +
 			 conn->sess->sess_ops->MaxBurstLength);
 	}
 }
 
 static int iscsit_dataout_within_command_recovery_check(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	unsigned char *buf)
 {
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd,
+	unsigned char *buf)
+{
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_data *hdr = (struct iscsi_data *) buf;
 	u32 payload_length = ntoh24(hdr->dlength);
 
@@ -95,14 +148,23 @@ static int iscsit_dataout_within_command_recovery_check(
 	 */
 	if (conn->sess->sess_ops->DataSequenceInOrder) {
 		if ((cmd->cmd_flags & ICF_WITHIN_COMMAND_RECOVERY) &&
+<<<<<<< HEAD
 		    (cmd->write_data_done != hdr->offset))
+=======
+		    cmd->write_data_done != be32_to_cpu(hdr->offset))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			goto dump;
 
 		cmd->cmd_flags &= ~ICF_WITHIN_COMMAND_RECOVERY;
 	} else {
 		struct iscsi_seq *seq;
 
+<<<<<<< HEAD
 		seq = iscsit_get_seq_holder(cmd, hdr->offset, payload_length);
+=======
+		seq = iscsit_get_seq_holder(cmd, be32_to_cpu(hdr->offset),
+					    payload_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!seq)
 			return DATAOUT_CANNOT_RECOVER;
 		/*
@@ -111,6 +173,7 @@ static int iscsit_dataout_within_command_recovery_check(
 		cmd->seq_ptr = seq;
 
 		if (conn->sess->sess_ops->DataPDUInOrder) {
+<<<<<<< HEAD
 			if ((seq->status ==
 			     DATAOUT_SEQUENCE_WITHIN_COMMAND_RECOVERY) &&
 			   ((seq->offset != hdr->offset) ||
@@ -120,6 +183,17 @@ static int iscsit_dataout_within_command_recovery_check(
 			if ((seq->status ==
 			     DATAOUT_SEQUENCE_WITHIN_COMMAND_RECOVERY) &&
 			    (seq->data_sn != hdr->datasn))
+=======
+			if (seq->status ==
+			    DATAOUT_SEQUENCE_WITHIN_COMMAND_RECOVERY &&
+			   (seq->offset != be32_to_cpu(hdr->offset) ||
+			    seq->data_sn != be32_to_cpu(hdr->datasn)))
+				goto dump;
+		} else {
+			if (seq->status ==
+			     DATAOUT_SEQUENCE_WITHIN_COMMAND_RECOVERY &&
+			    seq->data_sn != be32_to_cpu(hdr->datasn))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				goto dump;
 		}
 
@@ -139,21 +213,38 @@ dump:
 }
 
 static int iscsit_dataout_check_unsolicited_sequence(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	unsigned char *buf)
 {
 	u32 first_burst_len;
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd,
+	unsigned char *buf)
+{
+	u32 first_burst_len;
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_data *hdr = (struct iscsi_data *) buf;
 	u32 payload_length = ntoh24(hdr->dlength);
 
 
+<<<<<<< HEAD
 	if ((hdr->offset < cmd->seq_start_offset) ||
 	   ((hdr->offset + payload_length) > cmd->seq_end_offset)) {
 		pr_err("Command ITT: 0x%08x with Offset: %u,"
 		" Length: %u outside of Unsolicited Sequence %u:%u while"
 		" DataSequenceInOrder=Yes.\n", cmd->init_task_tag,
 		hdr->offset, payload_length, cmd->seq_start_offset,
+=======
+	if ((be32_to_cpu(hdr->offset) < cmd->seq_start_offset) ||
+	   ((be32_to_cpu(hdr->offset) + payload_length) > cmd->seq_end_offset)) {
+		pr_err("Command ITT: 0x%08x with Offset: %u,"
+		" Length: %u outside of Unsolicited Sequence %u:%u while"
+		" DataSequenceInOrder=Yes.\n", cmd->init_task_tag,
+		be32_to_cpu(hdr->offset), payload_length, cmd->seq_start_offset,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			cmd->seq_end_offset);
 		return DATAOUT_CANNOT_RECOVER;
 	}
@@ -182,13 +273,21 @@ static int iscsit_dataout_check_unsolicited_sequence(
 		if (!conn->sess->sess_ops->DataPDUInOrder)
 			goto out;
 
+<<<<<<< HEAD
 		if ((first_burst_len != cmd->data_length) &&
+=======
+		if ((first_burst_len != cmd->se_cmd.data_length) &&
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		    (first_burst_len != conn->sess->sess_ops->FirstBurstLength)) {
 			pr_err("Unsolicited non-immediate data"
 			" received %u does not equal FirstBurstLength: %u, and"
 			" does not equal ExpXferLen %u.\n", first_burst_len,
 				conn->sess->sess_ops->FirstBurstLength,
+<<<<<<< HEAD
 				cmd->data_length);
+=======
+				cmd->se_cmd.data_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			transport_send_check_condition_and_sense(&cmd->se_cmd,
 					TCM_INCORRECT_AMOUNT_OF_DATA, 0);
 			return DATAOUT_CANNOT_RECOVER;
@@ -201,10 +300,17 @@ static int iscsit_dataout_check_unsolicited_sequence(
 				conn->sess->sess_ops->FirstBurstLength);
 			return DATAOUT_CANNOT_RECOVER;
 		}
+<<<<<<< HEAD
 		if (first_burst_len == cmd->data_length) {
 			pr_err("Command ITT: 0x%08x reached"
 			" ExpXferLen: %u, but ISCSI_FLAG_CMD_FINAL is not set. protocol"
 			" error.\n", cmd->init_task_tag, cmd->data_length);
+=======
+		if (first_burst_len == cmd->se_cmd.data_length) {
+			pr_err("Command ITT: 0x%08x reached"
+			" ExpXferLen: %u, but ISCSI_FLAG_CMD_FINAL is not set. protocol"
+			" error.\n", cmd->init_task_tag, cmd->se_cmd.data_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			return DATAOUT_CANNOT_RECOVER;
 		}
 	}
@@ -214,11 +320,19 @@ out:
 }
 
 static int iscsit_dataout_check_sequence(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	unsigned char *buf)
 {
 	u32 next_burst_len;
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd,
+	unsigned char *buf)
+{
+	u32 next_burst_len;
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_seq *seq = NULL;
 	struct iscsi_data *hdr = (struct iscsi_data *) buf;
 	u32 payload_length = ntoh24(hdr->dlength);
@@ -236,12 +350,21 @@ static int iscsit_dataout_check_sequence(
 		 * fullfilling an Recovery R2T, it's best to just dump the
 		 * payload here, instead of erroring out.
 		 */
+<<<<<<< HEAD
 		if ((hdr->offset < cmd->seq_start_offset) ||
 		   ((hdr->offset + payload_length) > cmd->seq_end_offset)) {
 			pr_err("Command ITT: 0x%08x with Offset: %u,"
 			" Length: %u outside of Sequence %u:%u while"
 			" DataSequenceInOrder=Yes.\n", cmd->init_task_tag,
 			hdr->offset, payload_length, cmd->seq_start_offset,
+=======
+		if ((be32_to_cpu(hdr->offset) < cmd->seq_start_offset) ||
+		   ((be32_to_cpu(hdr->offset) + payload_length) > cmd->seq_end_offset)) {
+			pr_err("Command ITT: 0x%08x with Offset: %u,"
+			" Length: %u outside of Sequence %u:%u while"
+			" DataSequenceInOrder=Yes.\n", cmd->init_task_tag,
+			be32_to_cpu(hdr->offset), payload_length, cmd->seq_start_offset,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				cmd->seq_end_offset);
 
 			if (iscsit_dump_data_payload(conn, payload_length, 1) < 0)
@@ -251,7 +374,12 @@ static int iscsit_dataout_check_sequence(
 
 		next_burst_len = (cmd->next_burst_len + payload_length);
 	} else {
+<<<<<<< HEAD
 		seq = iscsit_get_seq_holder(cmd, hdr->offset, payload_length);
+=======
+		seq = iscsit_get_seq_holder(cmd, be32_to_cpu(hdr->offset),
+					    payload_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (!seq)
 			return DATAOUT_CANNOT_RECOVER;
 		/*
@@ -294,7 +422,11 @@ static int iscsit_dataout_check_sequence(
 			if ((next_burst_len <
 			     conn->sess->sess_ops->MaxBurstLength) &&
 			   ((cmd->write_data_done + payload_length) <
+<<<<<<< HEAD
 			     cmd->data_length)) {
+=======
+			     cmd->se_cmd.data_length)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pr_err("Command ITT: 0x%08x set ISCSI_FLAG_CMD_FINAL"
 				" before end of DataOUT sequence, protocol"
 				" error.\n", cmd->init_task_tag);
@@ -319,7 +451,11 @@ static int iscsit_dataout_check_sequence(
 				return DATAOUT_CANNOT_RECOVER;
 			}
 			if ((cmd->write_data_done + payload_length) ==
+<<<<<<< HEAD
 					cmd->data_length) {
+=======
+					cmd->se_cmd.data_length) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				pr_err("Command ITT: 0x%08x reached"
 				" last DataOUT PDU in sequence but ISCSI_FLAG_"
 				"CMD_FINAL is not set, protocol error.\n",
@@ -342,12 +478,20 @@ out:
 }
 
 static int iscsit_dataout_check_datasn(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	unsigned char *buf)
 {
 	int dump = 0, recovery = 0;
 	u32 data_sn = 0;
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd,
+	unsigned char *buf)
+{
+	u32 data_sn = 0;
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_data *hdr = (struct iscsi_data *) buf;
 	u32 payload_length = ntoh24(hdr->dlength);
 
@@ -366,6 +510,7 @@ static int iscsit_dataout_check_datasn(
 		data_sn = seq->data_sn;
 	}
 
+<<<<<<< HEAD
 	if (hdr->datasn > data_sn) {
 		pr_err("Command ITT: 0x%08x, received DataSN: 0x%08x"
 			" higher than expected 0x%08x.\n", cmd->init_task_tag,
@@ -377,6 +522,17 @@ static int iscsit_dataout_check_datasn(
 			" lower than expected 0x%08x, discarding payload.\n",
 			cmd->init_task_tag, hdr->datasn, data_sn);
 		dump = 1;
+=======
+	if (be32_to_cpu(hdr->datasn) > data_sn) {
+		pr_err("Command ITT: 0x%08x, received DataSN: 0x%08x"
+			" higher than expected 0x%08x.\n", cmd->init_task_tag,
+				be32_to_cpu(hdr->datasn), data_sn);
+		goto recover;
+	} else if (be32_to_cpu(hdr->datasn) < data_sn) {
+		pr_err("Command ITT: 0x%08x, received DataSN: 0x%08x"
+			" lower than expected 0x%08x, discarding payload.\n",
+			cmd->init_task_tag, be32_to_cpu(hdr->datasn), data_sn);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto dump;
 	}
 
@@ -392,6 +548,7 @@ dump:
 	if (iscsit_dump_data_payload(conn, payload_length, 1) < 0)
 		return DATAOUT_CANNOT_RECOVER;
 
+<<<<<<< HEAD
 	return (recovery || dump) ? DATAOUT_WITHIN_COMMAND_RECOVERY :
 				DATAOUT_NORMAL;
 }
@@ -402,11 +559,23 @@ static int iscsit_dataout_pre_datapduinorder_yes(
 {
 	int dump = 0, recovery = 0;
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	return DATAOUT_WITHIN_COMMAND_RECOVERY;
+}
+
+static int iscsit_dataout_pre_datapduinorder_yes(
+	struct iscsit_cmd *cmd,
+	unsigned char *buf)
+{
+	int dump = 0, recovery = 0;
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_data *hdr = (struct iscsi_data *) buf;
 	u32 payload_length = ntoh24(hdr->dlength);
 
 	/*
 	 * For DataSequenceInOrder=Yes: If the offset is greater than the global
+<<<<<<< HEAD
 	 * DataPDUInOrder=Yes offset counter in struct iscsi_cmd a protcol error has
 	 * occured and fail the connection.
 	 *
@@ -419,12 +588,27 @@ static int iscsit_dataout_pre_datapduinorder_yes(
 			pr_err("Command ITT: 0x%08x, received offset"
 			" %u different than expected %u.\n", cmd->init_task_tag,
 				hdr->offset, cmd->write_data_done);
+=======
+	 * DataPDUInOrder=Yes offset counter in struct iscsit_cmd a protcol error has
+	 * occurred and fail the connection.
+	 *
+	 * For DataSequenceInOrder=No: If the offset is greater than the per
+	 * sequence DataPDUInOrder=Yes offset counter in struct iscsi_seq a protocol
+	 * error has occurred and fail the connection.
+	 */
+	if (conn->sess->sess_ops->DataSequenceInOrder) {
+		if (be32_to_cpu(hdr->offset) != cmd->write_data_done) {
+			pr_err("Command ITT: 0x%08x, received offset"
+			" %u different than expected %u.\n", cmd->init_task_tag,
+				be32_to_cpu(hdr->offset), cmd->write_data_done);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			recovery = 1;
 			goto recover;
 		}
 	} else {
 		struct iscsi_seq *seq = cmd->seq_ptr;
 
+<<<<<<< HEAD
 		if (hdr->offset > seq->offset) {
 			pr_err("Command ITT: 0x%08x, received offset"
 			" %u greater than expected %u.\n", cmd->init_task_tag,
@@ -435,6 +619,19 @@ static int iscsit_dataout_pre_datapduinorder_yes(
 			pr_err("Command ITT: 0x%08x, received offset"
 			" %u less than expected %u, discarding payload.\n",
 				cmd->init_task_tag, hdr->offset, seq->offset);
+=======
+		if (be32_to_cpu(hdr->offset) > seq->offset) {
+			pr_err("Command ITT: 0x%08x, received offset"
+			" %u greater than expected %u.\n", cmd->init_task_tag,
+				be32_to_cpu(hdr->offset), seq->offset);
+			recovery = 1;
+			goto recover;
+		} else if (be32_to_cpu(hdr->offset) < seq->offset) {
+			pr_err("Command ITT: 0x%08x, received offset"
+			" %u less than expected %u, discarding payload.\n",
+				cmd->init_task_tag, be32_to_cpu(hdr->offset),
+				seq->offset);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			dump = 1;
 			goto dump;
 		}
@@ -453,19 +650,32 @@ dump:
 		return DATAOUT_CANNOT_RECOVER;
 
 	return (recovery) ? iscsit_recover_dataout_sequence(cmd,
+<<<<<<< HEAD
 		hdr->offset, payload_length) :
+=======
+		be32_to_cpu(hdr->offset), payload_length) :
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	       (dump) ? DATAOUT_WITHIN_COMMAND_RECOVERY : DATAOUT_NORMAL;
 }
 
 static int iscsit_dataout_pre_datapduinorder_no(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
+=======
+	struct iscsit_cmd *cmd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned char *buf)
 {
 	struct iscsi_pdu *pdu;
 	struct iscsi_data *hdr = (struct iscsi_data *) buf;
 	u32 payload_length = ntoh24(hdr->dlength);
 
+<<<<<<< HEAD
 	pdu = iscsit_get_pdu_holder(cmd, hdr->offset, payload_length);
+=======
+	pdu = iscsit_get_pdu_holder(cmd, be32_to_cpu(hdr->offset),
+				    payload_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!pdu)
 		return DATAOUT_CANNOT_RECOVER;
 
@@ -479,7 +689,11 @@ static int iscsit_dataout_pre_datapduinorder_no(
 	case ISCSI_PDU_RECEIVED_OK:
 		pr_err("Command ITT: 0x%08x received already gotten"
 			" Offset: %u, Length: %u\n", cmd->init_task_tag,
+<<<<<<< HEAD
 				hdr->offset, payload_length);
+=======
+				be32_to_cpu(hdr->offset), payload_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return iscsit_dump_data_payload(cmd->conn, payload_length, 1);
 	default:
 		return DATAOUT_CANNOT_RECOVER;
@@ -488,7 +702,11 @@ static int iscsit_dataout_pre_datapduinorder_no(
 	return DATAOUT_NORMAL;
 }
 
+<<<<<<< HEAD
 static int iscsit_dataout_update_r2t(struct iscsi_cmd *cmd, u32 offset, u32 length)
+=======
+static int iscsit_dataout_update_r2t(struct iscsit_cmd *cmd, u32 offset, u32 length)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct iscsi_r2t *r2t;
 
@@ -508,7 +726,11 @@ static int iscsit_dataout_update_r2t(struct iscsi_cmd *cmd, u32 offset, u32 leng
 }
 
 static int iscsit_dataout_update_datapduinorder_no(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
+=======
+	struct iscsit_cmd *cmd,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 data_sn,
 	int f_bit)
 {
@@ -541,11 +763,19 @@ static int iscsit_dataout_update_datapduinorder_no(
 }
 
 static int iscsit_dataout_post_crc_passed(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	unsigned char *buf)
 {
 	int ret, send_r2t = 0;
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd,
+	unsigned char *buf)
+{
+	int ret, send_r2t = 0;
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_seq *seq = NULL;
 	struct iscsi_data *hdr = (struct iscsi_data *) buf;
 	u32 payload_length = ntoh24(hdr->dlength);
@@ -553,7 +783,11 @@ static int iscsit_dataout_post_crc_passed(
 	if (cmd->unsolicited_data) {
 		if ((cmd->first_burst_len + payload_length) ==
 		     conn->sess->sess_ops->FirstBurstLength) {
+<<<<<<< HEAD
 			if (iscsit_dataout_update_r2t(cmd, hdr->offset,
+=======
+			if (iscsit_dataout_update_r2t(cmd, be32_to_cpu(hdr->offset),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 					payload_length) < 0)
 				return DATAOUT_CANNOT_RECOVER;
 			send_r2t = 1;
@@ -561,7 +795,12 @@ static int iscsit_dataout_post_crc_passed(
 
 		if (!conn->sess->sess_ops->DataPDUInOrder) {
 			ret = iscsit_dataout_update_datapduinorder_no(cmd,
+<<<<<<< HEAD
 				hdr->datasn, (hdr->flags & ISCSI_FLAG_CMD_FINAL));
+=======
+				be32_to_cpu(hdr->datasn),
+				(hdr->flags & ISCSI_FLAG_CMD_FINAL));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			if (ret == DATAOUT_CANNOT_RECOVER)
 				return ret;
 		}
@@ -586,7 +825,12 @@ static int iscsit_dataout_post_crc_passed(
 		if (conn->sess->sess_ops->DataSequenceInOrder) {
 			if ((cmd->next_burst_len + payload_length) ==
 			     conn->sess->sess_ops->MaxBurstLength) {
+<<<<<<< HEAD
 				if (iscsit_dataout_update_r2t(cmd, hdr->offset,
+=======
+				if (iscsit_dataout_update_r2t(cmd,
+						be32_to_cpu(hdr->offset),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						payload_length) < 0)
 					return DATAOUT_CANNOT_RECOVER;
 				send_r2t = 1;
@@ -594,7 +838,11 @@ static int iscsit_dataout_post_crc_passed(
 
 			if (!conn->sess->sess_ops->DataPDUInOrder) {
 				ret = iscsit_dataout_update_datapduinorder_no(
+<<<<<<< HEAD
 						cmd, hdr->datasn,
+=======
+						cmd, be32_to_cpu(hdr->datasn),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						(hdr->flags & ISCSI_FLAG_CMD_FINAL));
 				if (ret == DATAOUT_CANNOT_RECOVER)
 					return ret;
@@ -610,7 +858,12 @@ static int iscsit_dataout_post_crc_passed(
 
 			if ((seq->next_burst_len + payload_length) ==
 			     seq->xfer_len) {
+<<<<<<< HEAD
 				if (iscsit_dataout_update_r2t(cmd, hdr->offset,
+=======
+				if (iscsit_dataout_update_r2t(cmd,
+						be32_to_cpu(hdr->offset),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						payload_length) < 0)
 					return DATAOUT_CANNOT_RECOVER;
 				send_r2t = 1;
@@ -618,7 +871,11 @@ static int iscsit_dataout_post_crc_passed(
 
 			if (!conn->sess->sess_ops->DataPDUInOrder) {
 				ret = iscsit_dataout_update_datapduinorder_no(
+<<<<<<< HEAD
 						cmd, hdr->datasn,
+=======
+						cmd, be32_to_cpu(hdr->datasn),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 						(hdr->flags & ISCSI_FLAG_CMD_FINAL));
 				if (ret == DATAOUT_CANNOT_RECOVER)
 					return ret;
@@ -640,6 +897,7 @@ static int iscsit_dataout_post_crc_passed(
 
 	cmd->write_data_done += payload_length;
 
+<<<<<<< HEAD
 	return (cmd->write_data_done == cmd->data_length) ?
 		DATAOUT_SEND_TO_TRANSPORT : (send_r2t) ?
 		DATAOUT_SEND_R2T : DATAOUT_NORMAL;
@@ -650,6 +908,21 @@ static int iscsit_dataout_post_crc_failed(
 	unsigned char *buf)
 {
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	if (cmd->write_data_done == cmd->se_cmd.data_length)
+		return DATAOUT_SEND_TO_TRANSPORT;
+	else if (send_r2t)
+		return DATAOUT_SEND_R2T;
+	else
+		return DATAOUT_NORMAL;
+}
+
+static int iscsit_dataout_post_crc_failed(
+	struct iscsit_cmd *cmd,
+	unsigned char *buf)
+{
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct iscsi_pdu *pdu;
 	struct iscsi_data *hdr = (struct iscsi_data *) buf;
 	u32 payload_length = ntoh24(hdr->dlength);
@@ -675,19 +948,33 @@ static int iscsit_dataout_post_crc_failed(
 	}
 
 recover:
+<<<<<<< HEAD
 	return iscsit_recover_dataout_sequence(cmd, hdr->offset, payload_length);
+=======
+	return iscsit_recover_dataout_sequence(cmd, be32_to_cpu(hdr->offset),
+						payload_length);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  *	Called from iscsit_handle_data_out() before DataOUT Payload is received
  *	and CRC computed.
  */
+<<<<<<< HEAD
 extern int iscsit_check_pre_dataout(
 	struct iscsi_cmd *cmd,
 	unsigned char *buf)
 {
 	int ret;
 	struct iscsi_conn *conn = cmd->conn;
+=======
+int iscsit_check_pre_dataout(
+	struct iscsit_cmd *cmd,
+	unsigned char *buf)
+{
+	int ret;
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = iscsit_dataout_within_command_recovery_check(cmd, buf);
 	if ((ret == DATAOUT_WITHIN_COMMAND_RECOVERY) ||
@@ -721,11 +1008,19 @@ extern int iscsit_check_pre_dataout(
  *	and CRC computed.
  */
 int iscsit_check_post_dataout(
+<<<<<<< HEAD
 	struct iscsi_cmd *cmd,
 	unsigned char *buf,
 	u8 data_crc_failed)
 {
 	struct iscsi_conn *conn = cmd->conn;
+=======
+	struct iscsit_cmd *cmd,
+	unsigned char *buf,
+	u8 data_crc_failed)
+{
+	struct iscsit_conn *conn = cmd->conn;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	cmd->dataout_timeout_retries = 0;
 
@@ -735,6 +1030,7 @@ int iscsit_check_post_dataout(
 		if (!conn->sess->sess_ops->ErrorRecoveryLevel) {
 			pr_err("Unable to recover from DataOUT CRC"
 				" failure while ERL=0, closing session.\n");
+<<<<<<< HEAD
 			iscsit_add_reject_from_cmd(ISCSI_REASON_DATA_DIGEST_ERROR,
 					1, 0, buf, cmd);
 			return DATAOUT_CANNOT_RECOVER;
@@ -742,14 +1038,29 @@ int iscsit_check_post_dataout(
 
 		iscsit_add_reject_from_cmd(ISCSI_REASON_DATA_DIGEST_ERROR,
 				0, 0, buf, cmd);
+=======
+			iscsit_reject_cmd(cmd, ISCSI_REASON_DATA_DIGEST_ERROR,
+					  buf);
+			return DATAOUT_CANNOT_RECOVER;
+		}
+
+		iscsit_reject_cmd(cmd, ISCSI_REASON_DATA_DIGEST_ERROR, buf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return iscsit_dataout_post_crc_failed(cmd, buf);
 	}
 }
 
+<<<<<<< HEAD
 static void iscsit_handle_time2retain_timeout(unsigned long data)
 {
 	struct iscsi_session *sess = (struct iscsi_session *) data;
 	struct iscsi_portal_group *tpg = ISCSI_TPG_S(sess);
+=======
+void iscsit_handle_time2retain_timeout(struct timer_list *t)
+{
+	struct iscsit_session *sess = from_timer(sess, t, time2retain_timer);
+	struct iscsi_portal_group *tpg = sess->tpg;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct se_portal_group *se_tpg = &tpg->tpg_se_tpg;
 
 	spin_lock_bh(&se_tpg->session_lock);
@@ -767,6 +1078,7 @@ static void iscsit_handle_time2retain_timeout(unsigned long data)
 
 	pr_err("Time2Retain timer expired for SID: %u, cleaning up"
 			" iSCSI session.\n", sess->sid);
+<<<<<<< HEAD
 	{
 	struct iscsi_tiqn *tiqn = tpg->tpg_tiqn;
 
@@ -796,6 +1108,24 @@ extern void iscsit_start_time2retain_handler(struct iscsi_session *sess)
 	spin_lock(&ISCSI_TPG_S(sess)->tpg_state_lock);
 	tpg_active = (ISCSI_TPG_S(sess)->tpg_state == TPG_STATE_ACTIVE);
 	spin_unlock(&ISCSI_TPG_S(sess)->tpg_state_lock);
+=======
+
+	iscsit_fill_cxn_timeout_err_stats(sess);
+	spin_unlock_bh(&se_tpg->session_lock);
+	iscsit_close_session(sess, false);
+}
+
+void iscsit_start_time2retain_handler(struct iscsit_session *sess)
+{
+	int tpg_active;
+	/*
+	 * Only start Time2Retain timer when the associated TPG is still in
+	 * an ACTIVE (eg: not disabled or shutdown) state.
+	 */
+	spin_lock(&sess->tpg->tpg_state_lock);
+	tpg_active = (sess->tpg->tpg_state == TPG_STATE_ACTIVE);
+	spin_unlock(&sess->tpg->tpg_state_lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (!tpg_active)
 		return;
@@ -806,6 +1136,7 @@ extern void iscsit_start_time2retain_handler(struct iscsi_session *sess)
 	pr_debug("Starting Time2Retain timer for %u seconds on"
 		" SID: %u\n", sess->sess_ops->DefaultTime2Retain, sess->sid);
 
+<<<<<<< HEAD
 	init_timer(&sess->time2retain_timer);
 	sess->time2retain_timer.expires =
 		(get_jiffies_64() + sess->sess_ops->DefaultTime2Retain * HZ);
@@ -824,6 +1155,21 @@ extern int iscsit_stop_time2retain_timer(struct iscsi_session *sess)
 	struct iscsi_portal_group *tpg = ISCSI_TPG_S(sess);
 	struct se_portal_group *se_tpg = &tpg->tpg_se_tpg;
 
+=======
+	sess->time2retain_timer_flags &= ~ISCSI_TF_STOP;
+	sess->time2retain_timer_flags |= ISCSI_TF_RUNNING;
+	mod_timer(&sess->time2retain_timer,
+		  jiffies + sess->sess_ops->DefaultTime2Retain * HZ);
+}
+
+int iscsit_stop_time2retain_timer(struct iscsit_session *sess)
+{
+	struct iscsi_portal_group *tpg = sess->tpg;
+	struct se_portal_group *se_tpg = &tpg->tpg_se_tpg;
+
+	lockdep_assert_held(&se_tpg->session_lock);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (sess->time2retain_timer_flags & ISCSI_TF_EXPIRED)
 		return -1;
 
@@ -842,7 +1188,11 @@ extern int iscsit_stop_time2retain_timer(struct iscsi_session *sess)
 	return 0;
 }
 
+<<<<<<< HEAD
 void iscsit_connection_reinstatement_rcfr(struct iscsi_conn *conn)
+=======
+void iscsit_connection_reinstatement_rcfr(struct iscsit_conn *conn)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_bh(&conn->state_lock);
 	if (atomic_read(&conn->connection_exit)) {
@@ -856,14 +1206,25 @@ void iscsit_connection_reinstatement_rcfr(struct iscsi_conn *conn)
 	}
 	spin_unlock_bh(&conn->state_lock);
 
+<<<<<<< HEAD
 	iscsi_thread_set_force_reinstatement(conn);
+=======
+	if (conn->tx_thread && conn->tx_thread_active)
+		send_sig(SIGINT, conn->tx_thread, 1);
+	if (conn->rx_thread && conn->rx_thread_active)
+		send_sig(SIGINT, conn->rx_thread, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 sleep:
 	wait_for_completion(&conn->conn_wait_rcfr_comp);
 	complete(&conn->conn_post_wait_comp);
 }
 
+<<<<<<< HEAD
 void iscsit_cause_connection_reinstatement(struct iscsi_conn *conn, int sleep)
+=======
+void iscsit_cause_connection_reinstatement(struct iscsit_conn *conn, int sleep)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	spin_lock_bh(&conn->state_lock);
 	if (atomic_read(&conn->connection_exit)) {
@@ -881,10 +1242,17 @@ void iscsit_cause_connection_reinstatement(struct iscsi_conn *conn, int sleep)
 		return;
 	}
 
+<<<<<<< HEAD
 	if (iscsi_thread_set_force_reinstatement(conn) < 0) {
 		spin_unlock_bh(&conn->state_lock);
 		return;
 	}
+=======
+	if (conn->tx_thread && conn->tx_thread_active)
+		send_sig(SIGINT, conn->tx_thread, 1);
+	if (conn->rx_thread && conn->rx_thread_active)
+		send_sig(SIGINT, conn->rx_thread, 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	atomic_set(&conn->connection_reinstatement, 1);
 	if (!sleep) {
@@ -898,8 +1266,14 @@ void iscsit_cause_connection_reinstatement(struct iscsi_conn *conn, int sleep)
 	wait_for_completion(&conn->conn_wait_comp);
 	complete(&conn->conn_post_wait_comp);
 }
+<<<<<<< HEAD
 
 void iscsit_fall_back_to_erl0(struct iscsi_session *sess)
+=======
+EXPORT_SYMBOL(iscsit_cause_connection_reinstatement);
+
+void iscsit_fall_back_to_erl0(struct iscsit_session *sess)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	pr_debug("Falling back to ErrorRecoveryLevel=0 for SID:"
 			" %u\n", sess->sid);
@@ -907,9 +1281,15 @@ void iscsit_fall_back_to_erl0(struct iscsi_session *sess)
 	atomic_set(&sess->session_fall_back_to_erl0, 1);
 }
 
+<<<<<<< HEAD
 static void iscsit_handle_connection_cleanup(struct iscsi_conn *conn)
 {
 	struct iscsi_session *sess = conn->sess;
+=======
+static void iscsit_handle_connection_cleanup(struct iscsit_conn *conn)
+{
+	struct iscsit_session *sess = conn->sess;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((sess->sess_ops->ErrorRecoveryLevel == 2) &&
 	    !atomic_read(&sess->session_reinstatement) &&
@@ -923,8 +1303,15 @@ static void iscsit_handle_connection_cleanup(struct iscsi_conn *conn)
 	}
 }
 
+<<<<<<< HEAD
 extern void iscsit_take_action_for_connection_exit(struct iscsi_conn *conn)
 {
+=======
+void iscsit_take_action_for_connection_exit(struct iscsit_conn *conn, bool *conn_freed)
+{
+	*conn_freed = false;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_lock_bh(&conn->state_lock);
 	if (atomic_read(&conn->connection_exit)) {
 		spin_unlock_bh(&conn->state_lock);
@@ -935,6 +1322,10 @@ extern void iscsit_take_action_for_connection_exit(struct iscsi_conn *conn)
 	if (conn->conn_state == TARG_CONN_STATE_IN_LOGOUT) {
 		spin_unlock_bh(&conn->state_lock);
 		iscsit_close_connection(conn);
+<<<<<<< HEAD
+=======
+		*conn_freed = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return;
 	}
 
@@ -948,6 +1339,7 @@ extern void iscsit_take_action_for_connection_exit(struct iscsi_conn *conn)
 	spin_unlock_bh(&conn->state_lock);
 
 	iscsit_handle_connection_cleanup(conn);
+<<<<<<< HEAD
 }
 
 /*
@@ -1001,4 +1393,7 @@ int iscsit_recover_from_unknown_opcode(struct iscsi_conn *conn)
 		return -1;
 
 	return 0;
+=======
+	*conn_freed = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }

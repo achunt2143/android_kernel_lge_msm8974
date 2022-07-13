@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  tsl2550.c - Linux kernel modules for ambient light sensor
  *
  *  Copyright (C) 2007 Rodolfo Giometti <giometti@linux.it>
  *  Copyright (C) 2007 Eurotech S.p.A. <info@eurotech.it>
+<<<<<<< HEAD
  *
  *  This program is free software; you can redistribute it and/or modify
  *  it under the terms of the GNU General Public License as published by
@@ -21,6 +26,11 @@
 
 #include <linux/module.h>
 #include <linux/init.h>
+=======
+ */
+
+#include <linux/module.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 #include <linux/i2c.h>
 #include <linux/mutex.h>
@@ -162,6 +172,7 @@ static int tsl2550_calculate_lux(u8 ch0, u8 ch1)
 	u16 c0 = count_lut[ch0];
 	u16 c1 = count_lut[ch1];
 
+<<<<<<< HEAD
 	/*
 	 * Calculate ratio.
 	 * Note: the "128" is a scaling factor
@@ -172,13 +183,27 @@ static int tsl2550_calculate_lux(u8 ch0, u8 ch1)
 	if (c1 <= c0)
 		if (c0) {
 			r = c1 * 128 / c0;
+=======
+	/* Avoid division by 0 and count 1 cannot be greater than count 0 */
+	if (c1 <= c0)
+		if (c0) {
+			/*
+			 * Calculate ratio.
+			 * Note: the "128" is a scaling factor
+			 */
+			u8 r = c1 * 128 / c0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 			/* Calculate LUX */
 			lux = ((c0 - c1) * ratio_lut[r]) / 256;
 		} else
 			lux = 0;
 	else
+<<<<<<< HEAD
 		return -EAGAIN;
+=======
+		return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* LUX range check */
 	return lux > TSL2550_MAX_LUX ? TSL2550_MAX_LUX : lux;
@@ -204,7 +229,11 @@ static ssize_t tsl2550_store_power_state(struct device *dev,
 	unsigned long val = simple_strtoul(buf, NULL, 10);
 	int ret;
 
+<<<<<<< HEAD
 	if (val < 0 || val > 1)
+=======
+	if (val > 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	mutex_lock(&data->update_lock);
@@ -236,7 +265,11 @@ static ssize_t tsl2550_store_operating_mode(struct device *dev,
 	unsigned long val = simple_strtoul(buf, NULL, 10);
 	int ret;
 
+<<<<<<< HEAD
 	if (val < 0 || val > 1)
+=======
+	if (val > 1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EINVAL;
 
 	if (data->power_state == 0)
@@ -347,10 +380,16 @@ static int tsl2550_init_client(struct i2c_client *client)
  */
 
 static struct i2c_driver tsl2550_driver;
+<<<<<<< HEAD
 static int __devinit tsl2550_probe(struct i2c_client *client,
 				   const struct i2c_device_id *id)
 {
 	struct i2c_adapter *adapter = to_i2c_adapter(client->dev.parent);
+=======
+static int tsl2550_probe(struct i2c_client *client)
+{
+	struct i2c_adapter *adapter = client->adapter;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct tsl2550_data *data;
 	int *opmode, err = 0;
 
@@ -405,7 +444,11 @@ exit:
 	return err;
 }
 
+<<<<<<< HEAD
 static int __devexit tsl2550_remove(struct i2c_client *client)
+=======
+static void tsl2550_remove(struct i2c_client *client)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	sysfs_remove_group(&client->dev.kobj, &tsl2550_attr_group);
 
@@ -413,6 +456,7 @@ static int __devexit tsl2550_remove(struct i2c_client *client)
 	tsl2550_set_power_state(client, 0);
 
 	kfree(i2c_get_clientdata(client));
+<<<<<<< HEAD
 
 	return 0;
 }
@@ -435,6 +479,30 @@ static int tsl2550_resume(struct i2c_client *client)
 #define tsl2550_resume		NULL
 
 #endif /* CONFIG_PM */
+=======
+}
+
+#ifdef CONFIG_PM_SLEEP
+
+static int tsl2550_suspend(struct device *dev)
+{
+	return tsl2550_set_power_state(to_i2c_client(dev), 0);
+}
+
+static int tsl2550_resume(struct device *dev)
+{
+	return tsl2550_set_power_state(to_i2c_client(dev), 1);
+}
+
+static SIMPLE_DEV_PM_OPS(tsl2550_pm_ops, tsl2550_suspend, tsl2550_resume);
+#define TSL2550_PM_OPS (&tsl2550_pm_ops)
+
+#else
+
+#define TSL2550_PM_OPS NULL
+
+#endif /* CONFIG_PM_SLEEP */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct i2c_device_id tsl2550_id[] = {
 	{ "tsl2550", 0 },
@@ -442,6 +510,7 @@ static const struct i2c_device_id tsl2550_id[] = {
 };
 MODULE_DEVICE_TABLE(i2c, tsl2550_id);
 
+<<<<<<< HEAD
 static struct i2c_driver tsl2550_driver = {
 	.driver = {
 		.name	= TSL2550_DRV_NAME,
@@ -451,6 +520,22 @@ static struct i2c_driver tsl2550_driver = {
 	.resume	= tsl2550_resume,
 	.probe	= tsl2550_probe,
 	.remove	= __devexit_p(tsl2550_remove),
+=======
+static const struct of_device_id tsl2550_of_match[] = {
+	{ .compatible = "taos,tsl2550" },
+	{ }
+};
+MODULE_DEVICE_TABLE(of, tsl2550_of_match);
+
+static struct i2c_driver tsl2550_driver = {
+	.driver = {
+		.name	= TSL2550_DRV_NAME,
+		.of_match_table = tsl2550_of_match,
+		.pm	= TSL2550_PM_OPS,
+	},
+	.probe = tsl2550_probe,
+	.remove	= tsl2550_remove,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.id_table = tsl2550_id,
 };
 

@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Copyright(c) 2008 - 2009 Atheros Corporation. All rights reserved.
  *
  * Derived from Intel e1000 driver
  * Copyright(c) 1999 - 2005 Intel Corporation. All rights reserved.
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of the GNU General Public License as published by the Free
@@ -17,12 +22,17 @@
  * You should have received a copy of the GNU General Public License along with
  * this program; if not, write to the Free Software Foundation, Inc., 59
  * Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _ATL1C_H_
 #define _ATL1C_H_
 
+<<<<<<< HEAD
 #include <linux/init.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/interrupt.h>
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -74,12 +84,19 @@
 
 #define AT_RX_BUF_SIZE		(ETH_FRAME_LEN + VLAN_HLEN + ETH_FCS_LEN)
 #define MAX_JUMBO_FRAME_SIZE	(6*1024)
+<<<<<<< HEAD
 #define MAX_TSO_FRAME_SIZE      (7*1024)
 #define MAX_TX_OFFLOAD_THRESH	(9*1024)
 
 #define AT_MAX_RECEIVE_QUEUE    4
 #define AT_DEF_RECEIVE_QUEUE	1
 #define AT_MAX_TRANSMIT_QUEUE	2
+=======
+
+#define AT_MAX_RECEIVE_QUEUE    4
+#define AT_DEF_RECEIVE_QUEUE	1
+#define AT_MAX_TRANSMIT_QUEUE  4
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AT_DMA_HI_ADDR_MASK     0xffffffff00000000ULL
 #define AT_DMA_LO_ADDR_MASK     0x00000000ffffffffULL
@@ -100,7 +117,11 @@
 #define ATL1C_ASPM_L0s_ENABLE		0x0001
 #define ATL1C_ASPM_L1_ENABLE		0x0002
 
+<<<<<<< HEAD
 #define AT_REGS_LEN	(75 * sizeof(u32))
+=======
+#define AT_REGS_LEN	(74 * sizeof(u32))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define AT_EEPROM_LEN 	512
 
 #define ATL1C_GET_DESC(R, i, type)	(&(((type *)((R)->desc))[i]))
@@ -257,6 +278,11 @@ struct atl1c_tpd_ext_desc {
 #define RRS_PACKET_PROT_IS_IPV6_ONLY(word) \
 	((((word) >> RRS_PROT_ID_SHIFT) & RRS_PROT_ID_MASK) == 6)
 
+<<<<<<< HEAD
+=======
+#define RRS_MT_PROT_ID_TCPUDP	BIT(19)
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct atl1c_recv_ret_status {
 	__le32  word0;
 	__le32	rss_hash;
@@ -297,6 +323,7 @@ enum atl1c_dma_req_block {
 	atl1c_dma_req_4096 = 5
 };
 
+<<<<<<< HEAD
 enum atl1c_rss_mode {
 	atl1c_rss_mode_disable = 0,
 	atl1c_rss_sig_que = 1,
@@ -311,6 +338,8 @@ enum atl1c_rss_type {
 	atl1c_rss_ipv6 = 4,
 	atl1c_rss_ipv6_tcp = 8
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum atl1c_nic_type {
 	athr_l1c = 0,
@@ -319,11 +348,15 @@ enum atl1c_nic_type {
 	athr_l2c_b2,
 	athr_l1d,
 	athr_l1d_2,
+<<<<<<< HEAD
 };
 
 enum atl1c_trans_queue {
 	atl1c_trans_normal = 0,
 	atl1c_trans_high = 1
+=======
+	athr_mt,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 struct atl1c_hw_stats {
@@ -388,7 +421,10 @@ struct atl1c_hw {
 	enum atl1c_dma_order dma_order;
 	enum atl1c_dma_rcb   rcb_value;
 	enum atl1c_dma_req_block dmar_block;
+<<<<<<< HEAD
 	enum atl1c_dma_req_block dmaw_block;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u16 device_id;
 	u16 vendor_id;
@@ -398,9 +434,14 @@ struct atl1c_hw {
 	u16 phy_id1;
 	u16 phy_id2;
 
+<<<<<<< HEAD
 	u32 intr_mask;
 	u8 dmaw_dly_cnt;
 	u8 dmar_dly_cnt;
+=======
+	spinlock_t intr_mask_lock;	/* protect the intr_mask */
+	u32 intr_mask;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	u8 preamble_len;
 	u16 max_frame_size;
@@ -440,10 +481,13 @@ struct atl1c_hw {
 #define ATL1C_FPGA_VERSION              0x8000
 	u16 link_cap_flags;
 #define ATL1C_LINK_CAP_1000M		0x0001
+<<<<<<< HEAD
 	u16 cmb_tpd;
 	u16 cmb_rrd;
 	u16 cmb_rx_timer; /* 2us resolution */
 	u16 cmb_tx_timer;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 smb_timer;
 
 	u16 rrd_thresh; /* Threshold of number of RRD produced to trigger
@@ -451,9 +495,12 @@ struct atl1c_hw {
 	u16 tpd_thresh;
 	u8 tpd_burst;   /* Number of TPD to prefetch in cache-aligned burst. */
 	u8 rfd_burst;
+<<<<<<< HEAD
 	enum atl1c_rss_type rss_type;
 	enum atl1c_rss_mode rss_mode;
 	u8 rss_hash_bits;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 base_cpu;
 	u32 indirect_tab;
 	u8 mac_addr[ETH_ALEN];
@@ -462,12 +509,20 @@ struct atl1c_hw {
 	bool phy_configured;
 	bool re_autoneg;
 	bool emi_ca;
+<<<<<<< HEAD
+=======
+	bool msi_lnkpatch;	/* link patch for specific platforms */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * atl1c_ring_header represents a single, contiguous block of DMA space
+<<<<<<< HEAD
  * mapped for the three descriptor rings (tpd, rfd, rrd) and the two
  * message blocks (cmb, smb) described below
+=======
+ * mapped for the three descriptor rings (tpd, rfd, rrd) described below
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct atl1c_ring_header {
 	void *desc;		/* virtual address */
@@ -511,6 +566,7 @@ struct atl1c_buffer {
 
 /* transimit packet descriptor (tpd) ring */
 struct atl1c_tpd_ring {
+<<<<<<< HEAD
 	void *desc;		/* descriptor ring virtual address */
 	dma_addr_t dma;		/* descriptor ring physical address */
 	u16 size;		/* descriptor ring length in bytes */
@@ -518,6 +574,18 @@ struct atl1c_tpd_ring {
 	u16 next_to_use; 	/* this is protectd by adapter->tx_lock */
 	atomic_t next_to_clean;
 	struct atl1c_buffer *buffer_info;
+=======
+	struct atl1c_adapter *adapter;
+	void *desc;		/* descriptor ring virtual address */
+	dma_addr_t dma;		/* descriptor ring physical address */
+	u16 num;
+	u16 size;		/* descriptor ring length in bytes */
+	u16 count;		/* number of descriptors in the ring */
+	u16 next_to_use;
+	atomic_t next_to_clean;
+	struct atl1c_buffer *buffer_info;
+	struct napi_struct napi;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* receive free descriptor (rfd) ring */
@@ -533,12 +601,20 @@ struct atl1c_rfd_ring {
 
 /* receive return descriptor (rrd) ring */
 struct atl1c_rrd_ring {
+<<<<<<< HEAD
 	void *desc;		/* descriptor ring virtual address */
 	dma_addr_t dma;		/* descriptor ring physical address */
+=======
+	struct atl1c_adapter *adapter;
+	void *desc;		/* descriptor ring virtual address */
+	dma_addr_t dma;		/* descriptor ring physical address */
+	u16 num;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u16 size;		/* descriptor ring length in bytes */
 	u16 count;		/* number of descriptors in the ring */
 	u16 next_to_use;
 	u16 next_to_clean;
+<<<<<<< HEAD
 };
 
 struct atl1c_cmb {
@@ -549,17 +625,28 @@ struct atl1c_cmb {
 struct atl1c_smb {
 	void *smb;
 	dma_addr_t dma;
+=======
+	struct napi_struct napi;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* board specific private data structure */
 struct atl1c_adapter {
 	struct net_device   *netdev;
 	struct pci_dev      *pdev;
+<<<<<<< HEAD
 	struct napi_struct  napi;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct atl1c_hw        hw;
 	struct atl1c_hw_stats  hw_stats;
 	struct mii_if_info  mii;    /* MII interface info */
 	u16 rx_buffer_len;
+<<<<<<< HEAD
+=======
+	unsigned int tx_queue_count;
+	unsigned int rx_queue_count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	unsigned long flags;
 #define __AT_TESTING        0x0001
@@ -576,7 +663,10 @@ struct atl1c_adapter {
 	u16 link_duplex;
 
 	spinlock_t mdio_lock;
+<<<<<<< HEAD
 	spinlock_t tx_lock;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_t irq_sem;
 
 	struct work_struct common_task;
@@ -588,9 +678,12 @@ struct atl1c_adapter {
 	struct atl1c_tpd_ring tpd_ring[AT_MAX_TRANSMIT_QUEUE];
 	struct atl1c_rfd_ring rfd_ring[AT_MAX_RECEIVE_QUEUE];
 	struct atl1c_rrd_ring rrd_ring[AT_MAX_RECEIVE_QUEUE];
+<<<<<<< HEAD
 	struct atl1c_cmb cmb;
 	struct atl1c_smb smb;
 	int num_rx_queues;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 bd_number;     /* board number;*/
 };
 
@@ -618,8 +711,19 @@ struct atl1c_adapter {
 #define AT_WRITE_REGW(a, reg, value) (\
 		writew((value), ((a)->hw_addr + reg)))
 
+<<<<<<< HEAD
 #define AT_READ_REGW(a, reg) (\
 		readw((a)->hw_addr + reg))
+=======
+#define AT_READ_REGW(a, reg, pdata) do {				\
+		if (unlikely((a)->hibernate)) {				\
+			readw((a)->hw_addr + reg);			\
+			*(u16 *)pdata = readw((a)->hw_addr + reg);	\
+		} else {						\
+			*(u16 *)pdata = readw((a)->hw_addr + reg);	\
+		}							\
+	} while (0)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define AT_WRITE_REG_ARRAY(a, reg, offset, value) ( \
 		writel((value), (((a)->hw_addr + reg) + ((offset) << 2))))
@@ -628,9 +732,16 @@ struct atl1c_adapter {
 		readl(((a)->hw_addr + reg) + ((offset) << 2)))
 
 extern char atl1c_driver_name[];
+<<<<<<< HEAD
 extern char atl1c_driver_version[];
 
 extern void atl1c_reinit_locked(struct atl1c_adapter *adapter);
 extern s32 atl1c_reset_hw(struct atl1c_hw *hw);
 extern void atl1c_set_ethtool_ops(struct net_device *netdev);
+=======
+
+void atl1c_reinit_locked(struct atl1c_adapter *adapter);
+s32 atl1c_reset_hw(struct atl1c_hw *hw);
+void atl1c_set_ethtool_ops(struct net_device *netdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* _ATL1C_H_ */

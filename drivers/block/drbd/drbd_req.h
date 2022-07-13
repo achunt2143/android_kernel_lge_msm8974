@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-only */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
    drbd_req.h
 
@@ -7,6 +11,7 @@
    Copyright (C) 2006-2008, Lars Ellenberg <lars.ellenberg@linbit.com>.
    Copyright (C) 2006-2008, Philipp Reisner <philipp.reisner@linbit.com>.
 
+<<<<<<< HEAD
    DRBD is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2, or (at your option)
@@ -20,6 +25,8 @@
    You should have received a copy of the GNU General Public License
    along with drbd; see the file COPYING.  If not, write to
    the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _DRBD_REQ_H
@@ -30,7 +37,10 @@
 #include <linux/slab.h>
 #include <linux/drbd.h>
 #include "drbd_int.h"
+<<<<<<< HEAD
 #include "drbd_wrappers.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* The request callbacks will be called in irq context by the IDE drivers,
    and in Softirqs/Tasklets/BH context by the SCSI drivers,
@@ -77,13 +87,20 @@
  */
 
 enum drbd_req_event {
+<<<<<<< HEAD
 	created,
 	to_be_send,
 	to_be_submitted,
+=======
+	CREATED,
+	TO_BE_SENT,
+	TO_BE_SUBMITTED,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* XXX yes, now I am inconsistent...
 	 * these are not "events" but "actions"
 	 * oh, well... */
+<<<<<<< HEAD
 	queue_for_net_write,
 	queue_for_net_read,
 	queue_for_send_oos,
@@ -110,6 +127,47 @@ enum drbd_req_event {
 	fail_frozen_disk_io,
 	restart_frozen_disk_io,
 	nothing, /* for tracing only */
+=======
+	QUEUE_FOR_NET_WRITE,
+	QUEUE_FOR_NET_READ,
+	QUEUE_FOR_SEND_OOS,
+
+	/* An empty flush is queued as P_BARRIER,
+	 * which will cause it to complete "successfully",
+	 * even if the local disk flush failed.
+	 *
+	 * Just like "real" requests, empty flushes (blkdev_issue_flush()) will
+	 * only see an error if neither local nor remote data is reachable. */
+	QUEUE_AS_DRBD_BARRIER,
+
+	SEND_CANCELED,
+	SEND_FAILED,
+	HANDED_OVER_TO_NETWORK,
+	OOS_HANDED_TO_NETWORK,
+	CONNECTION_LOST_WHILE_PENDING,
+	READ_RETRY_REMOTE_CANCELED,
+	RECV_ACKED_BY_PEER,
+	WRITE_ACKED_BY_PEER,
+	WRITE_ACKED_BY_PEER_AND_SIS, /* and set_in_sync */
+	CONFLICT_RESOLVED,
+	POSTPONE_WRITE,
+	NEG_ACKED,
+	BARRIER_ACKED, /* in protocol A and B */
+	DATA_RECEIVED, /* (remote read) */
+
+	COMPLETED_OK,
+	READ_COMPLETED_WITH_ERROR,
+	READ_AHEAD_COMPLETED_WITH_ERROR,
+	WRITE_COMPLETED_WITH_ERROR,
+	DISCARD_COMPLETED_NOTSUPP,
+	DISCARD_COMPLETED_WITH_ERROR,
+
+	ABORT_DISK_IO,
+	RESEND,
+	FAIL_FROZEN_DISK_IO,
+	RESTART_FROZEN_DISK_IO,
+	NOTHING,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /* encoding of request states for now.  we don't actually need that many bits.
@@ -118,18 +176,35 @@ enum drbd_req_event {
  * same time, so we should hold the request lock anyways.
  */
 enum drbd_req_state_bits {
+<<<<<<< HEAD
 	/* 210
 	 * 000: no local possible
 	 * 001: to be submitted
 	 *    UNUSED, we could map: 011: submitted, completion still pending
 	 * 110: completed ok
 	 * 010: completed with error
+=======
+	/* 3210
+	 * 0000: no local possible
+	 * 0001: to be submitted
+	 *    UNUSED, we could map: 011: submitted, completion still pending
+	 * 0110: completed ok
+	 * 0010: completed with error
+	 * 1001: Aborted (before completion)
+	 * 1x10: Aborted and completed -> free
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 */
 	__RQ_LOCAL_PENDING,
 	__RQ_LOCAL_COMPLETED,
 	__RQ_LOCAL_OK,
+<<<<<<< HEAD
 
 	/* 76543
+=======
+	__RQ_LOCAL_ABORTED,
+
+	/* 87654
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 * 00000: no network possible
 	 * 00001: to be send
 	 * 00011: to be send, on worker queue
@@ -138,8 +213,13 @@ enum drbd_req_state_bits {
 	 *        recv_ack (B) or implicit "ack" (A),
 	 *        still waiting for the barrier ack.
 	 *        master_bio may already be completed and invalidated.
+<<<<<<< HEAD
 	 * 11100: write_acked (C),
 	 *        data_received (for remote read, any protocol)
+=======
+	 * 11100: write acked (C),
+	 *        data received (for remote read, any protocol)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	 *        or finally the barrier ack has arrived (B,A)...
 	 *        request can be freed
 	 * 01100: neg-acked (write, protocol C)
@@ -191,16 +271,52 @@ enum drbd_req_state_bits {
 
 	/* Set when this is a write, clear for a read */
 	__RQ_WRITE,
+<<<<<<< HEAD
 
 	/* Should call drbd_al_complete_io() for this request... */
 	__RQ_IN_ACT_LOG,
+=======
+	__RQ_WSAME,
+	__RQ_UNMAP,
+	__RQ_ZEROES,
+
+	/* Should call drbd_al_complete_io() for this request... */
+	__RQ_IN_ACT_LOG,
+
+	/* This was the most recent request during some blk_finish_plug()
+	 * or its implicit from-schedule equivalent.
+	 * We may use it as hint to send a P_UNPLUG_REMOTE */
+	__RQ_UNPLUG,
+
+	/* The peer has sent a retry ACK */
+	__RQ_POSTPONED,
+
+	/* would have been completed,
+	 * but was not, because of drbd_suspended() */
+	__RQ_COMPLETION_SUSP,
+
+	/* We expect a receive ACK (wire proto B) */
+	__RQ_EXP_RECEIVE_ACK,
+
+	/* We expect a write ACK (wite proto C) */
+	__RQ_EXP_WRITE_ACK,
+
+	/* waiting for a barrier ack, did an extra kref_get */
+	__RQ_EXP_BARR_ACK,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 #define RQ_LOCAL_PENDING   (1UL << __RQ_LOCAL_PENDING)
 #define RQ_LOCAL_COMPLETED (1UL << __RQ_LOCAL_COMPLETED)
 #define RQ_LOCAL_OK        (1UL << __RQ_LOCAL_OK)
+<<<<<<< HEAD
 
 #define RQ_LOCAL_MASK      ((RQ_LOCAL_OK << 1)-1) /* 0x07 */
+=======
+#define RQ_LOCAL_ABORTED   (1UL << __RQ_LOCAL_ABORTED)
+
+#define RQ_LOCAL_MASK      ((RQ_LOCAL_ABORTED << 1)-1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define RQ_NET_PENDING     (1UL << __RQ_NET_PENDING)
 #define RQ_NET_QUEUED      (1UL << __RQ_NET_QUEUED)
@@ -209,6 +325,7 @@ enum drbd_req_state_bits {
 #define RQ_NET_OK          (1UL << __RQ_NET_OK)
 #define RQ_NET_SIS         (1UL << __RQ_NET_SIS)
 
+<<<<<<< HEAD
 /* 0x1f8 */
 #define RQ_NET_MASK        (((1UL << __RQ_NET_MAX)-1) & ~RQ_LOCAL_MASK)
 
@@ -311,11 +428,36 @@ static inline int overlaps(sector_t s1, int l1, sector_t s2, int l2)
 /* Short lived temporary struct on the stack.
  * We could squirrel the error to be returned into
  * bio->bi_size, or similar. But that would be too ugly. */
+=======
+#define RQ_NET_MASK        (((1UL << __RQ_NET_MAX)-1) & ~RQ_LOCAL_MASK)
+
+#define RQ_WRITE           (1UL << __RQ_WRITE)
+#define RQ_WSAME           (1UL << __RQ_WSAME)
+#define RQ_UNMAP           (1UL << __RQ_UNMAP)
+#define RQ_ZEROES          (1UL << __RQ_ZEROES)
+#define RQ_IN_ACT_LOG      (1UL << __RQ_IN_ACT_LOG)
+#define RQ_UNPLUG          (1UL << __RQ_UNPLUG)
+#define RQ_POSTPONED	   (1UL << __RQ_POSTPONED)
+#define RQ_COMPLETION_SUSP (1UL << __RQ_COMPLETION_SUSP)
+#define RQ_EXP_RECEIVE_ACK (1UL << __RQ_EXP_RECEIVE_ACK)
+#define RQ_EXP_WRITE_ACK   (1UL << __RQ_EXP_WRITE_ACK)
+#define RQ_EXP_BARR_ACK    (1UL << __RQ_EXP_BARR_ACK)
+
+/* For waking up the frozen transfer log mod_req() has to return if the request
+   should be counted in the epoch object*/
+#define MR_WRITE       1
+#define MR_READ        2
+
+/* Short lived temporary struct on the stack.
+ * We could squirrel the error to be returned into
+ * bio->bi_iter.bi_size, or similar. But that would be too ugly. */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct bio_and_error {
 	struct bio *bio;
 	int error;
 };
 
+<<<<<<< HEAD
 extern void _req_may_be_done(struct drbd_request *req,
 		struct bio_and_error *m);
 extern int __req_mod(struct drbd_request *req, enum drbd_req_event what,
@@ -330,13 +472,42 @@ extern void tl_restart(struct drbd_conf *mdev, enum drbd_req_event what);
 static inline int _req_mod(struct drbd_request *req, enum drbd_req_event what)
 {
 	struct drbd_conf *mdev = req->mdev;
+=======
+extern void start_new_tl_epoch(struct drbd_connection *connection);
+extern void drbd_req_destroy(struct kref *kref);
+extern int __req_mod(struct drbd_request *req, enum drbd_req_event what,
+		struct drbd_peer_device *peer_device,
+		struct bio_and_error *m);
+extern void complete_master_bio(struct drbd_device *device,
+		struct bio_and_error *m);
+extern void request_timer_fn(struct timer_list *t);
+extern void tl_restart(struct drbd_connection *connection, enum drbd_req_event what);
+extern void _tl_restart(struct drbd_connection *connection, enum drbd_req_event what);
+extern void tl_abort_disk_io(struct drbd_device *device);
+
+/* this is in drbd_main.c */
+extern void drbd_restart_request(struct drbd_request *req);
+
+/* use this if you don't want to deal with calling complete_master_bio()
+ * outside the spinlock, e.g. when walking some list on cleanup. */
+static inline int _req_mod(struct drbd_request *req, enum drbd_req_event what,
+		struct drbd_peer_device *peer_device)
+{
+	struct drbd_device *device = req->device;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct bio_and_error m;
 	int rv;
 
 	/* __req_mod possibly frees req, do not touch req after that! */
+<<<<<<< HEAD
 	rv = __req_mod(req, what, &m);
 	if (m.bio)
 		complete_master_bio(mdev, &m);
+=======
+	rv = __req_mod(req, what, peer_device, &m);
+	if (m.bio)
+		complete_master_bio(device, &m);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rv;
 }
@@ -346,6 +517,7 @@ static inline int _req_mod(struct drbd_request *req, enum drbd_req_event what)
  * of the lower level driver completion callback, so we need to
  * spin_lock_irqsave here. */
 static inline int req_mod(struct drbd_request *req,
+<<<<<<< HEAD
 		enum drbd_req_event what)
 {
 	unsigned long flags;
@@ -359,10 +531,27 @@ static inline int req_mod(struct drbd_request *req,
 
 	if (m.bio)
 		complete_master_bio(mdev, &m);
+=======
+		enum drbd_req_event what,
+		struct drbd_peer_device *peer_device)
+{
+	unsigned long flags;
+	struct drbd_device *device = req->device;
+	struct bio_and_error m;
+	int rv;
+
+	spin_lock_irqsave(&device->resource->req_lock, flags);
+	rv = __req_mod(req, what, peer_device, &m);
+	spin_unlock_irqrestore(&device->resource->req_lock, flags);
+
+	if (m.bio)
+		complete_master_bio(device, &m);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return rv;
 }
 
+<<<<<<< HEAD
 static inline bool drbd_should_do_remote(union drbd_state s)
 {
 	return s.pdsk == D_UP_TO_DATE ||
@@ -379,5 +568,8 @@ static inline bool drbd_should_send_oos(union drbd_state s)
 	/* pdsk = D_INCONSISTENT as a consequence. Protocol 96 check not necessary
 	   since we enter state C_AHEAD only if proto >= 96 */
 }
+=======
+extern bool drbd_should_do_remote(union drbd_dev_state);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif

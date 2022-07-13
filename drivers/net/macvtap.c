@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 #include <linux/etherdevice.h>
 #include <linux/if_macvlan.h>
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+#include <linux/etherdevice.h>
+#include <linux/if_macvlan.h>
+#include <linux/if_tap.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/if_vlan.h>
 #include <linux/interrupt.h>
 #include <linux/nsproxy.h>
@@ -8,20 +15,32 @@
 #include <linux/module.h>
 #include <linux/skbuff.h>
 #include <linux/cache.h>
+<<<<<<< HEAD
 #include <linux/sched.h>
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/init.h>
+=======
+#include <linux/sched/signal.h>
+#include <linux/types.h>
+#include <linux/slab.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/wait.h>
 #include <linux/cdev.h>
 #include <linux/idr.h>
 #include <linux/fs.h>
+<<<<<<< HEAD
 
 #include <net/ipv6.h>
+=======
+#include <linux/uio.h>
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <net/net_namespace.h>
 #include <net/rtnetlink.h>
 #include <net/sock.h>
 #include <linux/virtio_net.h>
+<<<<<<< HEAD
 
 /*
  * A macvtap queue is the central object of this driver, it connects
@@ -51,12 +70,20 @@ static struct proto macvtap_proto = {
 	.name = "macvtap",
 	.owner = THIS_MODULE,
 	.obj_size = sizeof (struct macvtap_queue),
+=======
+#include <linux/skb_array.h>
+
+struct macvtap_dev {
+	struct macvlan_dev vlan;
+	struct tap_dev    tap;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
  * Variables for dealing with macvtaps device numbers.
  */
 static dev_t macvtap_major;
+<<<<<<< HEAD
 #define MACVTAP_NUM_DEVS (1U << MINORBITS)
 static DEFINE_MUTEX(minor_lock);
 static DEFINE_IDR(minor_idr);
@@ -338,12 +365,101 @@ static int macvtap_newlink(struct net *src_net,
 	 */
 	return macvlan_common_newlink(src_net, dev, tb, data,
 				      macvtap_receive, macvtap_forward);
+=======
+
+static const void *macvtap_net_namespace(const struct device *d)
+{
+	const struct net_device *dev = to_net_dev(d->parent);
+	return dev_net(dev);
+}
+
+static struct class macvtap_class = {
+	.name = "macvtap",
+	.ns_type = &net_ns_type_operations,
+	.namespace = macvtap_net_namespace,
+};
+static struct cdev macvtap_cdev;
+
+#define TUN_OFFLOADS (NETIF_F_HW_CSUM | NETIF_F_TSO_ECN | NETIF_F_TSO | \
+		      NETIF_F_TSO6)
+
+static void macvtap_count_tx_dropped(struct tap_dev *tap)
+{
+	struct macvtap_dev *vlantap = container_of(tap, struct macvtap_dev, tap);
+	struct macvlan_dev *vlan = &vlantap->vlan;
+
+	this_cpu_inc(vlan->pcpu_stats->tx_dropped);
+}
+
+static void macvtap_count_rx_dropped(struct tap_dev *tap)
+{
+	struct macvtap_dev *vlantap = container_of(tap, struct macvtap_dev, tap);
+	struct macvlan_dev *vlan = &vlantap->vlan;
+
+	macvlan_count_rx(vlan, 0, 0, 0);
+}
+
+static void macvtap_update_features(struct tap_dev *tap,
+				    netdev_features_t features)
+{
+	struct macvtap_dev *vlantap = container_of(tap, struct macvtap_dev, tap);
+	struct macvlan_dev *vlan = &vlantap->vlan;
+
+	vlan->set_features = features;
+	netdev_update_features(vlan->dev);
+}
+
+static int macvtap_newlink(struct net *src_net, struct net_device *dev,
+			   struct nlattr *tb[], struct nlattr *data[],
+			   struct netlink_ext_ack *extack)
+{
+	struct macvtap_dev *vlantap = netdev_priv(dev);
+	int err;
+
+	INIT_LIST_HEAD(&vlantap->tap.queue_list);
+
+	/* Since macvlan supports all offloads by default, make
+	 * tap support all offloads also.
+	 */
+	vlantap->tap.tap_features = TUN_OFFLOADS;
+
+	/* Register callbacks for rx/tx drops accounting and updating
+	 * net_device features
+	 */
+	vlantap->tap.count_tx_dropped = macvtap_count_tx_dropped;
+	vlantap->tap.count_rx_dropped = macvtap_count_rx_dropped;
+	vlantap->tap.update_features  = macvtap_update_features;
+
+	err = netdev_rx_handler_register(dev, tap_handle_frame, &vlantap->tap);
+	if (err)
+		return err;
+
+	/* Don't put anything that may fail after macvlan_common_newlink
+	 * because we can't undo what it does.
+	 */
+	err = macvlan_common_newlink(src_net, dev, tb, data, extack);
+	if (err) {
+		netdev_rx_handler_unregister(dev);
+		return err;
+	}
+
+	vlantap->tap.dev = vlantap->vlan.dev;
+
+	return 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static void macvtap_dellink(struct net_device *dev,
 			    struct list_head *head)
 {
+<<<<<<< HEAD
 	macvtap_del_queues(dev);
+=======
+	struct macvtap_dev *vlantap = netdev_priv(dev);
+
+	netdev_rx_handler_unregister(dev);
+	tap_del_queues(&vlantap->tap);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	macvlan_dellink(dev, head);
 }
 
@@ -353,11 +469,20 @@ static void macvtap_setup(struct net_device *dev)
 	dev->tx_queue_len = TUN_READQ_SIZE;
 }
 
+<<<<<<< HEAD
+=======
+static struct net *macvtap_link_net(const struct net_device *dev)
+{
+	return dev_net(macvlan_dev_real_dev(dev));
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct rtnl_link_ops macvtap_link_ops __read_mostly = {
 	.kind		= "macvtap",
 	.setup		= macvtap_setup,
 	.newlink	= macvtap_newlink,
 	.dellink	= macvtap_dellink,
+<<<<<<< HEAD
 };
 
 
@@ -1085,11 +1210,31 @@ static int macvtap_device_event(struct notifier_block *unused,
 	struct device *classdev;
 	dev_t devt;
 	int err;
+=======
+	.get_link_net	= macvtap_link_net,
+	.priv_size      = sizeof(struct macvtap_dev),
+};
+
+static int macvtap_device_event(struct notifier_block *unused,
+				unsigned long event, void *ptr)
+{
+	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+	struct macvtap_dev *vlantap;
+	struct device *classdev;
+	dev_t devt;
+	int err;
+	char tap_name[IFNAMSIZ];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (dev->rtnl_link_ops != &macvtap_link_ops)
 		return NOTIFY_DONE;
 
+<<<<<<< HEAD
 	vlan = netdev_priv(dev);
+=======
+	snprintf(tap_name, IFNAMSIZ, "tap%d", dev->ifindex);
+	vlantap = netdev_priv(dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	switch (event) {
 	case NETDEV_REGISTER:
@@ -1097,6 +1242,7 @@ static int macvtap_device_event(struct notifier_block *unused,
 		 * been registered but before register_netdevice has
 		 * finished running.
 		 */
+<<<<<<< HEAD
 		err = macvtap_get_minor(vlan);
 		if (err)
 			return notifier_from_errno(err);
@@ -1113,6 +1259,36 @@ static int macvtap_device_event(struct notifier_block *unused,
 		devt = MKDEV(MAJOR(macvtap_major), vlan->minor);
 		device_destroy(macvtap_class, devt);
 		macvtap_free_minor(vlan);
+=======
+		err = tap_get_minor(macvtap_major, &vlantap->tap);
+		if (err)
+			return notifier_from_errno(err);
+
+		devt = MKDEV(MAJOR(macvtap_major), vlantap->tap.minor);
+		classdev = device_create(&macvtap_class, &dev->dev, devt,
+					 dev, "%s", tap_name);
+		if (IS_ERR(classdev)) {
+			tap_free_minor(macvtap_major, &vlantap->tap);
+			return notifier_from_errno(PTR_ERR(classdev));
+		}
+		err = sysfs_create_link(&dev->dev.kobj, &classdev->kobj,
+					tap_name);
+		if (err)
+			return notifier_from_errno(err);
+		break;
+	case NETDEV_UNREGISTER:
+		/* vlan->minor == 0 if NETDEV_REGISTER above failed */
+		if (vlantap->tap.minor == 0)
+			break;
+		sysfs_remove_link(&dev->dev.kobj, tap_name);
+		devt = MKDEV(MAJOR(macvtap_major), vlantap->tap.minor);
+		device_destroy(&macvtap_class, devt);
+		tap_free_minor(macvtap_major, &vlantap->tap);
+		break;
+	case NETDEV_CHANGE_TX_QUEUE_LEN:
+		if (tap_queue_resize(&vlantap->tap))
+			return NOTIFY_BAD;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		break;
 	}
 
@@ -1123,6 +1299,7 @@ static struct notifier_block macvtap_notifier_block __read_mostly = {
 	.notifier_call	= macvtap_device_event,
 };
 
+<<<<<<< HEAD
 static int macvtap_init(void)
 {
 	int err;
@@ -1161,11 +1338,43 @@ out3:
 	cdev_del(&macvtap_cdev);
 out2:
 	unregister_chrdev_region(macvtap_major, MACVTAP_NUM_DEVS);
+=======
+static int __init macvtap_init(void)
+{
+	int err;
+
+	err = tap_create_cdev(&macvtap_cdev, &macvtap_major, "macvtap",
+			      THIS_MODULE);
+	if (err)
+		goto out1;
+
+	err = class_register(&macvtap_class);
+	if (err)
+		goto out2;
+
+	err = register_netdevice_notifier(&macvtap_notifier_block);
+	if (err)
+		goto out3;
+
+	err = macvlan_link_register(&macvtap_link_ops);
+	if (err)
+		goto out4;
+
+	return 0;
+
+out4:
+	unregister_netdevice_notifier(&macvtap_notifier_block);
+out3:
+	class_unregister(&macvtap_class);
+out2:
+	tap_destroy_cdev(macvtap_major, &macvtap_cdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 out1:
 	return err;
 }
 module_init(macvtap_init);
 
+<<<<<<< HEAD
 static void macvtap_exit(void)
 {
 	rtnl_link_unregister(&macvtap_link_ops);
@@ -1173,9 +1382,21 @@ static void macvtap_exit(void)
 	class_unregister(macvtap_class);
 	cdev_del(&macvtap_cdev);
 	unregister_chrdev_region(macvtap_major, MACVTAP_NUM_DEVS);
+=======
+static void __exit macvtap_exit(void)
+{
+	rtnl_link_unregister(&macvtap_link_ops);
+	unregister_netdevice_notifier(&macvtap_notifier_block);
+	class_unregister(&macvtap_class);
+	tap_destroy_cdev(macvtap_major, &macvtap_cdev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 module_exit(macvtap_exit);
 
 MODULE_ALIAS_RTNL_LINK("macvtap");
+<<<<<<< HEAD
+=======
+MODULE_DESCRIPTION("MAC-VLAN based tap driver");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_AUTHOR("Arnd Bergmann <arnd@arndb.de>");
 MODULE_LICENSE("GPL");

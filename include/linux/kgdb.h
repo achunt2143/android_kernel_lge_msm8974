@@ -13,10 +13,17 @@
 #ifndef _KGDB_H_
 #define _KGDB_H_
 
+<<<<<<< HEAD
 #include <linux/serial_8250.h>
 #include <linux/linkage.h>
 #include <linux/init.h>
 #include <linux/atomic.h>
+=======
+#include <linux/linkage.h>
+#include <linux/init.h>
+#include <linux/atomic.h>
+#include <linux/kprobes.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef CONFIG_HAVE_ARCH_KGDB
 #include <asm/kgdb.h>
 #endif
@@ -105,9 +112,15 @@ extern int dbg_set_reg(int regno, void *mem, struct pt_regs *regs);
  */
 
 /**
+<<<<<<< HEAD
  *	kgdb_arch_init - Perform any architecture specific initalization.
  *
  *	This function will handle the initalization of any architecture
+=======
+ *	kgdb_arch_init - Perform any architecture specific initialization.
+ *
+ *	This function will handle the initialization of any architecture
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	specific callbacks.
  */
 extern int kgdb_arch_init(void);
@@ -178,12 +191,39 @@ kgdb_arch_handle_exception(int vector, int signo, int err_code,
 			   struct pt_regs *regs);
 
 /**
+<<<<<<< HEAD
  *	kgdb_roundup_cpus - Get other CPUs into a holding pattern
  *	@flags: Current IRQ state
+=======
+ *	kgdb_arch_handle_qxfer_pkt - Handle architecture specific GDB XML
+ *				     packets.
+ *	@remcom_in_buffer: The buffer of the packet we have read.
+ *	@remcom_out_buffer: The buffer of %BUFMAX bytes to write a packet into.
+ */
+
+extern void
+kgdb_arch_handle_qxfer_pkt(char *remcom_in_buffer,
+			   char *remcom_out_buffer);
+
+/**
+ *	kgdb_call_nmi_hook - Call kgdb_nmicallback() on the current CPU
+ *	@ignored: This parameter is only here to match the prototype.
+ *
+ *	If you're using the default implementation of kgdb_roundup_cpus()
+ *	this function will be called per CPU.  If you don't implement
+ *	kgdb_call_nmi_hook() a default will be used.
+ */
+
+extern void kgdb_call_nmi_hook(void *ignored);
+
+/**
+ *	kgdb_roundup_cpus - Get other CPUs into a holding pattern
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  *	On SMP systems, we need to get the attention of the other CPUs
  *	and get them into a known state.  This should do what is needed
  *	to get the other CPUs to call kgdb_wait(). Note that on some arches,
+<<<<<<< HEAD
  *	the NMI approach is not used for rounding up all the CPUs. For example,
  *	in case of MIPS, smp_call_function() is used to roundup CPUs. In
  *	this case, we have to make sure that interrupts are enabled before
@@ -194,6 +234,14 @@ kgdb_arch_handle_exception(int vector, int signo, int err_code,
  *	On non-SMP systems, this is not called.
  */
 extern void kgdb_roundup_cpus(unsigned long flags);
+=======
+ *	the NMI approach is not used for rounding up all the CPUs.  Normally
+ *	those architectures can just not implement this and get the default.
+ *
+ *	On non-SMP systems, this is not called.
+ */
+extern void kgdb_roundup_cpus(void);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /**
  *	kgdb_arch_set_pc - Generic call back to the program counter
@@ -212,9 +260,15 @@ extern int kgdb_arch_set_breakpoint(struct kgdb_bkpt *bpt);
 extern int kgdb_arch_remove_breakpoint(struct kgdb_bkpt *bpt);
 
 /**
+<<<<<<< HEAD
  *	kgdb_arch_late - Perform any architecture specific initalization.
  *
  *	This function will handle the late initalization of any
+=======
+ *	kgdb_arch_late - Perform any architecture specific initialization.
+ *
+ *	This function will handle the late initialization of any
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *	architecture specific callbacks.  This is an optional function for
  *	handling things like late initialization of hw breakpoints.  The
  *	default implementation does nothing.
@@ -240,6 +294,10 @@ extern void kgdb_arch_late(void);
  * hardware breakpoints.
  * @correct_hw_break: Allow an architecture to specify how to correct the
  * hardware debug registers.
+<<<<<<< HEAD
+=======
+ * @enable_nmi: Manage NMI-triggered entry to KGDB
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct kgdb_arch {
 	unsigned char		gdb_bpt_instr[BREAK_INSTR_SIZE];
@@ -252,6 +310,11 @@ struct kgdb_arch {
 	void	(*disable_hw_break)(struct pt_regs *regs);
 	void	(*remove_all_hw_break)(void);
 	void	(*correct_hw_break)(void);
+<<<<<<< HEAD
+=======
+
+	void	(*enable_nmi)(bool on);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /**
@@ -261,12 +324,22 @@ struct kgdb_arch {
  * @write_char: Pointer to a function that will write one char.
  * @flush: Pointer to a function that will flush any pending writes.
  * @init: Pointer to a function that will initialize the device.
+<<<<<<< HEAD
+=======
+ * @deinit: Pointer to a function that will deinit the device. Implies that
+ * this I/O driver is temporary and expects to be replaced. Called when
+ * an I/O driver is replaced or explicitly unregistered.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @pre_exception: Pointer to a function that will do any prep work for
  * the I/O driver.
  * @post_exception: Pointer to a function that will do any cleanup work
  * for the I/O driver.
+<<<<<<< HEAD
  * @is_console: 1 if the end device is a console 0 if the I/O device is
  * not a console
+=======
+ * @cons: valid if the I/O device is a console; else NULL.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 struct kgdb_io {
 	const char		*name;
@@ -274,6 +347,7 @@ struct kgdb_io {
 	void			(*write_char) (u8);
 	void			(*flush) (void);
 	int			(*init) (void);
+<<<<<<< HEAD
 	void			(*pre_exception) (void);
 	void			(*post_exception) (void);
 	int			is_console;
@@ -282,6 +356,27 @@ struct kgdb_io {
 extern struct kgdb_arch		arch_kgdb_ops;
 
 extern unsigned long __weak kgdb_arch_pc(int exception, struct pt_regs *regs);
+=======
+	void			(*deinit) (void);
+	void			(*pre_exception) (void);
+	void			(*post_exception) (void);
+	struct console		*cons;
+};
+
+extern const struct kgdb_arch		arch_kgdb_ops;
+
+extern unsigned long kgdb_arch_pc(int exception, struct pt_regs *regs);
+
+#ifdef CONFIG_SERIAL_KGDB_NMI
+extern int kgdb_register_nmi_console(void);
+extern int kgdb_unregister_nmi_console(void);
+extern bool kgdb_nmi_poll_knock(void);
+#else
+static inline int kgdb_register_nmi_console(void) { return 0; }
+static inline int kgdb_unregister_nmi_console(void) { return 0; }
+static inline bool kgdb_nmi_poll_knock(void) { return true; }
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int kgdb_register_io_module(struct kgdb_io *local_kgdb_io_ops);
 extern void kgdb_unregister_io_module(struct kgdb_io *local_kgdb_io_ops);
@@ -292,12 +387,17 @@ extern char *kgdb_mem2hex(char *mem, char *buf, int count);
 extern int kgdb_hex2mem(char *buf, char *mem, int count);
 
 extern int kgdb_isremovedbreak(unsigned long addr);
+<<<<<<< HEAD
 extern void kgdb_schedule_breakpoint(void);
+=======
+extern int kgdb_has_hit_break(unsigned long addr);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 extern int
 kgdb_handle_exception(int ex_vector, int signo, int err_code,
 		      struct pt_regs *regs);
 extern int kgdb_nmicallback(int cpu, void *regs);
+<<<<<<< HEAD
 extern void gdbstub_exit(int status);
 
 extern int			kgdb_single_step;
@@ -309,5 +409,42 @@ extern void __init dbg_late_init(void);
 #else /* ! CONFIG_KGDB */
 #define in_dbg_master() (0)
 #define dbg_late_init()
+=======
+extern int kgdb_nmicallin(int cpu, int trapnr, void *regs, int err_code,
+			  atomic_t *snd_rdy);
+extern void gdbstub_exit(int status);
+
+/*
+ * kgdb and kprobes both use the same (kprobe) blocklist (which makes sense
+ * given they are both typically hooked up to the same trap meaning on most
+ * architectures one cannot be used to debug the other)
+ *
+ * However on architectures where kprobes is not (yet) implemented we permit
+ * breakpoints everywhere rather than blocking everything by default.
+ */
+static inline bool kgdb_within_blocklist(unsigned long addr)
+{
+#ifdef CONFIG_KGDB_HONOUR_BLOCKLIST
+	return within_kprobe_blacklist(addr);
+#else
+	return false;
+#endif
+}
+
+extern int			kgdb_single_step;
+extern atomic_t			kgdb_active;
+#define in_dbg_master() \
+	(irqs_disabled() && (smp_processor_id() == atomic_read(&kgdb_active)))
+extern bool dbg_is_early;
+extern void __init dbg_late_init(void);
+extern void kgdb_panic(const char *msg);
+extern void kgdb_free_init_mem(void);
+#else /* ! CONFIG_KGDB */
+#define in_dbg_master() (0)
+#define dbg_late_init()
+static inline void kgdb_panic(const char *msg) {}
+static inline void kgdb_free_init_mem(void) { }
+static inline int kgdb_nmicallback(int cpu, void *regs) { return 1; }
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif /* ! CONFIG_KGDB */
 #endif /* _KGDB_H_ */

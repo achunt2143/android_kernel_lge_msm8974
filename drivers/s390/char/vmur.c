@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Linux driver for System z and s390 unit record devices
  * (z/VM virtual punch, reader, printer)
@@ -14,12 +18,22 @@
 #include <linux/cdev.h>
 #include <linux/slab.h>
 #include <linux/module.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
+=======
+#include <linux/kobject.h>
+
+#include <linux/uaccess.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/cio.h>
 #include <asm/ccwdev.h>
 #include <asm/debug.h>
 #include <asm/diag.h>
+<<<<<<< HEAD
+=======
+#include <asm/scsw.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #include "vmur.h"
 
@@ -45,7 +59,13 @@ MODULE_DESCRIPTION("s390 z/VM virtual unit record device driver");
 MODULE_LICENSE("GPL");
 
 static dev_t ur_first_dev_maj_min;
+<<<<<<< HEAD
 static struct class *vmur_class;
+=======
+static const struct class vmur_class = {
+	.name = "vmur",
+};
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static struct debug_info *vmur_dbf;
 
 /* We put the device's record length (for writes) in the driver_info field */
@@ -61,7 +81,10 @@ static int ur_probe(struct ccw_device *cdev);
 static void ur_remove(struct ccw_device *cdev);
 static int ur_set_online(struct ccw_device *cdev);
 static int ur_set_offline(struct ccw_device *cdev);
+<<<<<<< HEAD
 static int ur_pm_suspend(struct ccw_device *cdev);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static struct ccw_driver ur_driver = {
 	.driver = {
@@ -73,12 +96,21 @@ static struct ccw_driver ur_driver = {
 	.remove		= ur_remove,
 	.set_online	= ur_set_online,
 	.set_offline	= ur_set_offline,
+<<<<<<< HEAD
 	.freeze		= ur_pm_suspend,
 	.int_class	= IOINT_VMR,
+=======
+	.int_class	= IRQIO_VMR,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 static DEFINE_MUTEX(vmur_mutex);
 
+<<<<<<< HEAD
+=======
+static void ur_uevent(struct work_struct *ws);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Allocation, freeing, getting and putting of urdev structures
  *
@@ -89,7 +121,11 @@ static DEFINE_MUTEX(vmur_mutex);
  * urd references:
  * - ur_probe gets a urd reference, ur_remove drops the reference
  *   dev_get_drvdata(&cdev->dev)
+<<<<<<< HEAD
  * - ur_open gets a urd reference, ur_relase drops the reference
+=======
+ * - ur_open gets a urd reference, ur_release drops the reference
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *   (urf->urd)
  *
  * cdev references:
@@ -109,8 +145,14 @@ static struct urdev *urdev_alloc(struct ccw_device *cdev)
 	ccw_device_get_id(cdev, &urd->dev_id);
 	mutex_init(&urd->io_mutex);
 	init_waitqueue_head(&urd->wait);
+<<<<<<< HEAD
 	spin_lock_init(&urd->open_lock);
 	atomic_set(&urd->ref_count,  1);
+=======
+	INIT_WORK(&urd->uevent_work, ur_uevent);
+	spin_lock_init(&urd->open_lock);
+	refcount_set(&urd->ref_count,  1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	urd->cdev = cdev;
 	get_device(&cdev->dev);
 	return urd;
@@ -126,7 +168,11 @@ static void urdev_free(struct urdev *urd)
 
 static void urdev_get(struct urdev *urd)
 {
+<<<<<<< HEAD
 	atomic_inc(&urd->ref_count);
+=======
+	refcount_inc(&urd->ref_count);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static struct urdev *urdev_get_from_cdev(struct ccw_device *cdev)
@@ -159,11 +205,16 @@ static struct urdev *urdev_get_from_devno(u16 devno)
 
 static void urdev_put(struct urdev *urd)
 {
+<<<<<<< HEAD
 	if (atomic_dec_and_test(&urd->ref_count))
+=======
+	if (refcount_dec_and_test(&urd->ref_count))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		urdev_free(urd);
 }
 
 /*
+<<<<<<< HEAD
  * State and contents of ur devices can be changed by class D users issuing
  * CP commands such as PURGE or TRANSFER, while the Linux guest is suspended.
  * Also the Linux guest might be logged off, which causes all active spool
@@ -186,6 +237,8 @@ static int ur_pm_suspend(struct ccw_device *cdev)
 }
 
 /*
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Low-level functions to do I/O to a ur device.
  *     alloc_chan_prog
  *     free_chan_prog
@@ -213,7 +266,11 @@ static void free_chan_prog(struct ccw1 *cpa)
 	struct ccw1 *ptr = cpa;
 
 	while (ptr->cda) {
+<<<<<<< HEAD
 		kfree((void *)(addr_t) ptr->cda);
+=======
+		kfree(dma32_to_virt(ptr->cda));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		ptr++;
 	}
 	kfree(cpa);
@@ -241,7 +298,11 @@ static struct ccw1 *alloc_chan_prog(const char __user *ubuf, int rec_count,
 	 * That means we allocate room for CCWs to cover count/reclen
 	 * records plus a NOP.
 	 */
+<<<<<<< HEAD
 	cpa = kzalloc((rec_count + 1) * sizeof(struct ccw1),
+=======
+	cpa = kcalloc(rec_count + 1, sizeof(struct ccw1),
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		      GFP_KERNEL | GFP_DMA);
 	if (!cpa)
 		return ERR_PTR(-ENOMEM);
@@ -255,7 +316,11 @@ static struct ccw1 *alloc_chan_prog(const char __user *ubuf, int rec_count,
 			free_chan_prog(cpa);
 			return ERR_PTR(-ENOMEM);
 		}
+<<<<<<< HEAD
 		cpa[i].cda = (u32)(addr_t) kbuf;
+=======
+		cpa[i].cda = virt_to_dma32(kbuf);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (copy_from_user(kbuf, ubuf, reclen)) {
 			free_chan_prog(cpa);
 			return ERR_PTR(-EFAULT);
@@ -298,6 +363,21 @@ out:
 	return rc;
 }
 
+<<<<<<< HEAD
+=======
+static void ur_uevent(struct work_struct *ws)
+{
+	struct urdev *urd = container_of(ws, struct urdev, uevent_work);
+	char *envp[] = {
+		"EVENT=unsol_de",	/* Unsolicited device-end interrupt */
+		NULL
+	};
+
+	kobject_uevent_env(&urd->cdev->dev.kobj, KOBJ_CHANGE, envp);
+	urdev_put(urd);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * ur interrupt handler, called from the ccw_device layer
  */
@@ -306,6 +386,7 @@ static void ur_int_handler(struct ccw_device *cdev, unsigned long intparm,
 {
 	struct urdev *urd;
 
+<<<<<<< HEAD
 	TRACE("ur_int_handler: intparm=0x%lx cstat=%02x dstat=%02x res=%u\n",
 	      intparm, irb->scsw.cmd.cstat, irb->scsw.cmd.dstat,
 	      irb->scsw.cmd.count);
@@ -316,6 +397,28 @@ static void ur_int_handler(struct ccw_device *cdev, unsigned long intparm,
 	}
 	urd = dev_get_drvdata(&cdev->dev);
 	BUG_ON(!urd);
+=======
+	if (!IS_ERR(irb)) {
+		TRACE("ur_int_handler: intparm=0x%lx cstat=%02x dstat=%02x res=%u\n",
+		      intparm, irb->scsw.cmd.cstat, irb->scsw.cmd.dstat,
+		      irb->scsw.cmd.count);
+	}
+	urd = dev_get_drvdata(&cdev->dev);
+	if (!intparm) {
+		TRACE("ur_int_handler: unsolicited interrupt\n");
+
+		if (scsw_dstat(&irb->scsw) & DEV_STAT_DEV_END) {
+			/*
+			 * Userspace might be interested in a transition to
+			 * device-ready state.
+			 */
+			urdev_get(urd);
+			schedule_work(&urd->uevent_work);
+		}
+
+		return;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	/* On special conditions irb is an error pointer */
 	if (IS_ERR(irb))
 		urd->io_request_rc = PTR_ERR(irb);
@@ -703,7 +806,11 @@ static int ur_open(struct inode *inode, struct file *file)
 	 * We treat the minor number as the devno of the ur device
 	 * to find in the driver tree.
 	 */
+<<<<<<< HEAD
 	devno = MINOR(file->f_dentry->d_inode->i_rdev);
+=======
+	devno = iminor(file_inode(file));
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	urd = urdev_get_from_devno(devno);
 	if (!urd) {
@@ -782,12 +889,16 @@ static int ur_release(struct inode *inode, struct file *file)
 
 static loff_t ur_llseek(struct file *file, loff_t offset, int whence)
 {
+<<<<<<< HEAD
 	loff_t newpos;
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((file->f_flags & O_ACCMODE) != O_RDONLY)
 		return -ESPIPE; /* seek allowed only for reader */
 	if (offset % PAGE_SIZE)
 		return -ESPIPE; /* only multiples of 4K allowed */
+<<<<<<< HEAD
 	switch (whence) {
 	case 0: /* SEEK_SET */
 		newpos = offset;
@@ -800,6 +911,9 @@ static loff_t ur_llseek(struct file *file, loff_t offset, int whence)
 	}
 	file->f_pos = newpos;
 	return newpos;
+=======
+	return no_seek_end_llseek(file, offset, whence);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static const struct file_operations ur_fops = {
@@ -844,7 +958,10 @@ static int ur_probe(struct ccw_device *cdev)
 		rc = -ENOMEM;
 		goto fail_urdev_put;
 	}
+<<<<<<< HEAD
 	cdev->handler = ur_int_handler;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* validate virtual unit record device */
 	urd->class = get_urd_class(urd);
@@ -858,6 +975,10 @@ static int ur_probe(struct ccw_device *cdev)
 	}
 	spin_lock_irq(get_ccwdev_lock(cdev));
 	dev_set_drvdata(&cdev->dev, urd);
+<<<<<<< HEAD
+=======
+	cdev->handler = ur_int_handler;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irq(get_ccwdev_lock(cdev));
 
 	mutex_unlock(&vmur_mutex);
@@ -904,10 +1025,16 @@ static int ur_set_online(struct ccw_device *cdev)
 	}
 
 	urd->char_device->ops = &ur_fops;
+<<<<<<< HEAD
 	urd->char_device->dev = MKDEV(major, minor);
 	urd->char_device->owner = ur_fops.owner;
 
 	rc = cdev_add(urd->char_device, urd->char_device->dev, 1);
+=======
+	urd->char_device->owner = ur_fops.owner;
+
+	rc = cdev_add(urd->char_device, MKDEV(major, minor), 1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (rc)
 		goto fail_free_cdev;
 	if (urd->cdev->id.cu_type == READER_PUNCH_DEVTYPE) {
@@ -922,8 +1049,13 @@ static int ur_set_online(struct ccw_device *cdev)
 		goto fail_free_cdev;
 	}
 
+<<<<<<< HEAD
 	urd->device = device_create(vmur_class, NULL, urd->char_device->dev,
 				    NULL, "%s", node_id);
+=======
+	urd->device = device_create(&vmur_class, &cdev->dev,
+				    urd->char_device->dev, NULL, "%s", node_id);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (IS_ERR(urd->device)) {
 		rc = PTR_ERR(urd->device);
 		TRACE("ur_set_online: device_create rc=%d\n", rc);
@@ -958,13 +1090,25 @@ static int ur_set_offline_force(struct ccw_device *cdev, int force)
 		rc = -EBUSY;
 		goto fail_urdev_put;
 	}
+<<<<<<< HEAD
 	if (!force && (atomic_read(&urd->ref_count) > 2)) {
+=======
+	if (!force && (refcount_read(&urd->ref_count) > 2)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		/* There is still a user of urd (e.g. ur_open) */
 		TRACE("ur_set_offline: BUSY\n");
 		rc = -EBUSY;
 		goto fail_urdev_put;
 	}
+<<<<<<< HEAD
 	device_destroy(vmur_class, urd->char_device->dev);
+=======
+	if (cancel_work_sync(&urd->uevent_work)) {
+		/* Work not run yet - need to release reference here */
+		urdev_put(urd);
+	}
+	device_destroy(&vmur_class, urd->char_device->dev);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	cdev_del(urd->char_device);
 	urd->char_device = NULL;
 	rc = 0;
@@ -999,6 +1143,10 @@ static void ur_remove(struct ccw_device *cdev)
 	spin_lock_irqsave(get_ccwdev_lock(cdev), flags);
 	urdev_put(dev_get_drvdata(&cdev->dev));
 	dev_set_drvdata(&cdev->dev, NULL);
+<<<<<<< HEAD
+=======
+	cdev->handler = NULL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	spin_unlock_irqrestore(get_ccwdev_lock(cdev), flags);
 
 	mutex_unlock(&vmur_mutex);
@@ -1027,11 +1175,17 @@ static int __init ur_init(void)
 
 	debug_set_level(vmur_dbf, 6);
 
+<<<<<<< HEAD
 	vmur_class = class_create(THIS_MODULE, "vmur");
 	if (IS_ERR(vmur_class)) {
 		rc = PTR_ERR(vmur_class);
 		goto fail_free_dbf;
 	}
+=======
+	rc = class_register(&vmur_class);
+	if (rc)
+		goto fail_free_dbf;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	rc = ccw_driver_register(&ur_driver);
 	if (rc)
@@ -1051,7 +1205,11 @@ static int __init ur_init(void)
 fail_unregister_driver:
 	ccw_driver_unregister(&ur_driver);
 fail_class_destroy:
+<<<<<<< HEAD
 	class_destroy(vmur_class);
+=======
+	class_unregister(&vmur_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 fail_free_dbf:
 	debug_unregister(vmur_dbf);
 	return rc;
@@ -1061,7 +1219,11 @@ static void __exit ur_exit(void)
 {
 	unregister_chrdev_region(ur_first_dev_maj_min, NUM_MINORS);
 	ccw_driver_unregister(&ur_driver);
+<<<<<<< HEAD
 	class_destroy(vmur_class);
+=======
+	class_unregister(&vmur_class);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	debug_unregister(vmur_dbf);
 	pr_info("%s unloaded.\n", ur_banner);
 }

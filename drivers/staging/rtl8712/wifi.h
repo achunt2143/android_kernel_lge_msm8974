@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or modify it
  * under the terms of version 2 of the GNU General Public License as
  * published by the Free Software Foundation.
@@ -15,6 +20,8 @@
  * this program; if not, write to the Free Software Foundation, Inc.,
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110, USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Modifications for inclusion into the Linux staging tree are
  * Copyright(c) 2010 Larry Finger. All rights reserved.
  *
@@ -26,6 +33,7 @@
 #ifndef _WIFI_H_
 #define _WIFI_H_
 
+<<<<<<< HEAD
 #include "rtl871x_byteorder.h"
 #include <linux/compiler.h>
 
@@ -259,21 +267,121 @@ enum WIFI_REG_DOMAIN {
 			le16_to_cpu(_ORDER_)) != 0)
 
 #define GetFrameType(pbuf)	(le16_to_cpu(*(unsigned short *)(pbuf)) & \
+=======
+#include <linux/compiler.h>
+#include <linux/ieee80211.h>
+
+#define WLAN_HDR_A3_LEN		24
+#define WLAN_HDR_A3_QOS_LEN	26
+
+enum WIFI_FRAME_TYPE {
+	WIFI_QOS_DATA_TYPE	= (BIT(7) | BIT(3)),	/*!< QoS Data */
+};
+
+#define SetToDs(pbuf) ({ \
+	*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_TODS); \
+})
+
+#define GetToDs(pbuf)	(((*(__le16 *)(pbuf)) & cpu_to_le16(IEEE80211_FCTL_TODS)) != 0)
+
+#define ClearToDs(pbuf)	({ \
+	*(__le16 *)(pbuf) &= (~cpu_to_le16(IEEE80211_FCTL_TODS)); \
+})
+
+#define SetFrDs(pbuf) ({ \
+	*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_FROMDS); \
+})
+
+#define GetFrDs(pbuf)	(((*(__le16 *)(pbuf)) & cpu_to_le16(IEEE80211_FCTL_FROMDS)) != 0)
+
+#define ClearFrDs(pbuf)	({ \
+	*(__le16 *)(pbuf) &= (~cpu_to_le16(IEEE80211_FCTL_FROMDS)); \
+})
+
+static inline unsigned char get_tofr_ds(unsigned char *pframe)
+{
+	return ((GetToDs(pframe) << 1) | GetFrDs(pframe));
+}
+
+#define SetMFrag(pbuf) ({ \
+	*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_MOREFRAGS); \
+})
+
+#define GetMFrag(pbuf)	(((*(__le16 *)(pbuf)) & cpu_to_le16(IEEE80211_FCTL_MOREFRAGS)) != 0)
+
+#define ClearMFrag(pbuf) ({ \
+	*(__le16 *)(pbuf) &= (~cpu_to_le16(IEEE80211_FCTL_MOREFRAGS)); \
+})
+
+#define SetRetry(pbuf) ({ \
+	*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_RETRY); \
+})
+
+#define GetRetry(pbuf)	(((*(__le16 *)(pbuf)) & cpu_to_le16(IEEE80211_FCTL_RETRY)) != 0)
+
+#define ClearRetry(pbuf) ({ \
+	*(__le16 *)(pbuf) &= (~cpu_to_le16(IEEE80211_FCTL_RETRY)); \
+})
+
+#define SetPwrMgt(pbuf) ({ \
+	*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_PM); \
+})
+
+#define GetPwrMgt(pbuf)	(((*(__le16 *)(pbuf)) & \
+			cpu_to_le16(IEEE80211_FCTL_PM)) != 0)
+
+#define ClearPwrMgt(pbuf) ({ \
+	*(__le16 *)(pbuf) &= (~cpu_to_le16(IEEE80211_FCTL_PM)); \
+})
+
+#define SetMData(pbuf) ({ \
+	*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_MOREDATA); \
+})
+
+#define GetMData(pbuf)	(((*(__le16 *)(pbuf)) & \
+			cpu_to_le16(IEEE80211_FCTL_MOREDATA)) != 0)
+
+#define ClearMData(pbuf) ({ \
+	*(__le16 *)(pbuf) &= (~cpu_to_le16(IEEE80211_FCTL_MOREDATA)); \
+})
+
+#define SetPrivacy(pbuf) ({ \
+	*(__le16 *)(pbuf) |= cpu_to_le16(IEEE80211_FCTL_PROTECTED); \
+})
+
+#define GetPrivacy(pbuf)	(((*(__le16 *)(pbuf)) & \
+				cpu_to_le16(IEEE80211_FCTL_PROTECTED)) != 0)
+
+#define GetOrder(pbuf)	(((*(__le16 *)(pbuf)) & \
+			cpu_to_le16(IEEE80211_FCTL_ORDER)) != 0)
+
+#define GetFrameType(pbuf)	(le16_to_cpu(*(__le16 *)(pbuf)) & \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(BIT(3) | BIT(2)))
 
 #define SetFrameType(pbuf, type)	\
 	do {	\
+<<<<<<< HEAD
 		*(unsigned short *)(pbuf) &= __constant_cpu_to_le16(~(BIT(3) | \
 		BIT(2))); \
 		*(unsigned short *)(pbuf) |= __constant_cpu_to_le16(type); \
 	} while (0)
 
 #define GetFrameSubType(pbuf)	(cpu_to_le16(*(unsigned short *)(pbuf)) & \
+=======
+		*(__le16 *)(pbuf) &= cpu_to_le16(~(BIT(3) | \
+		BIT(2))); \
+		*(__le16 *)(pbuf) |= cpu_to_le16(type); \
+	} while (0)
+
+#define GetFrameSubType(pbuf)	(le16_to_cpu(*(__le16 *)(pbuf)) & \
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				(BIT(7) | BIT(6) | BIT(5) | BIT(4) | BIT(3) | \
 				BIT(2)))
 
 #define SetFrameSubType(pbuf, type) \
 	do {    \
+<<<<<<< HEAD
 		*(unsigned short *)(pbuf) &= cpu_to_le16(~(BIT(7) | BIT(6) | \
 		BIT(5) | BIT(4) | BIT(3) | BIT(2))); \
 		*(unsigned short *)(pbuf) |= cpu_to_le16(type); \
@@ -337,6 +445,38 @@ enum WIFI_REG_DOMAIN {
 #define GetTid(pbuf)	(cpu_to_le16(*(unsigned short *)((addr_t)(pbuf) + \
 			(((GetToDs(pbuf) << 1)|GetFrDs(pbuf)) == 3 ? \
 			30 : 24))) & 0x000f)
+=======
+		*(__le16 *)(pbuf) &= cpu_to_le16(~(BIT(7) | BIT(6) | \
+		BIT(5) | BIT(4) | BIT(3) | BIT(2))); \
+		*(__le16 *)(pbuf) |= cpu_to_le16(type); \
+	} while (0)
+
+#define GetSequence(pbuf)	(le16_to_cpu(*(__le16 *)\
+				((addr_t)(pbuf) + 22)) >> 4)
+
+#define GetFragNum(pbuf)	(le16_to_cpu(*(__le16 *)((addr_t)\
+				(pbuf) + 22)) & 0x0f)
+
+#define SetSeqNum(pbuf, num) ({ \
+	*(__le16 *)((addr_t)(pbuf) + 22) = \
+	cpu_to_le16((le16_to_cpu(*(__le16 *)((addr_t)(pbuf) + 22)) & \
+	0x000f) | (0xfff0 & (num << 4))); \
+})
+
+#define SetPriority(pbuf, tid) ({ \
+	*(__le16 *)(pbuf) |= cpu_to_le16(tid & 0xf); \
+})
+
+#define GetPriority(pbuf)	((le16_to_cpu(*(__le16 *)(pbuf))) & 0xf)
+
+#define SetAckpolicy(pbuf, ack) ({ \
+	*(__le16 *)(pbuf) |= cpu_to_le16((ack & 3) << 5); \
+})
+
+#define GetAckpolicy(pbuf) (((le16_to_cpu(*(__le16 *)pbuf)) >> 5) & 0x3)
+
+#define GetAMsdu(pbuf) (((le16_to_cpu(*(__le16 *)pbuf)) >> 7) & 0x1)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define GetAddr1Ptr(pbuf)	((unsigned char *)((addr_t)(pbuf) + 4))
 
@@ -346,6 +486,7 @@ enum WIFI_REG_DOMAIN {
 
 #define GetAddr4Ptr(pbuf)	((unsigned char *)((addr_t)(pbuf) + 24))
 
+<<<<<<< HEAD
 
 
 static inline int IS_MCAST(unsigned char *da)
@@ -403,6 +544,8 @@ static inline unsigned char *get_sa(unsigned char *pframe)
 	return sa;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline unsigned char *get_hdr_bssid(unsigned char *pframe)
 {
 	unsigned char	*sa;
@@ -425,6 +568,7 @@ static inline unsigned char *get_hdr_bssid(unsigned char *pframe)
 	return sa;
 }
 
+<<<<<<< HEAD
 
 
 /*-----------------------------------------------------------------------------
@@ -638,6 +782,21 @@ struct ieee80211_ht_addt_info {
 #define WLAN_HT_CAP_SM_PS_DYNAMIC	1
 #define WLAN_HT_CAP_SM_PS_INVALID	2
 #define WLAN_HT_CAP_SM_PS_DISABLED	3
+=======
+/* ---------------------------------------------------------------------------
+ *			Below is the fixed elements...
+ * ---------------------------------------------------------------------------
+ */
+#define _BEACON_ITERVAL_		2
+#define _CAPABILITY_			2
+#define _TIMESTAMP_				8
+
+/*-----------------------------------------------------------------------------
+ *			Below is the definition for WMM
+ *------------------------------------------------------------------------------
+ */
+#define _WMM_IE_Length_				7  /* for WMM STA */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _WIFI_H_ */
 

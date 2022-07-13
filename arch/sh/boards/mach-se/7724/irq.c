@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * linux/arch/sh/boards/se/7724/irq.c
  *
@@ -9,16 +13,26 @@
  * Copyright (C) 2007  Nobuhiro Iwamatsu
  *
  * Hitachi UL SolutionEngine 7724 Support.
+<<<<<<< HEAD
  *
  * This file is subject to the terms and conditions of the GNU General Public
  * License.  See the file "COPYING" in the main directory of this archive
  * for more details.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 #include <linux/init.h>
 #include <linux/irq.h>
 #include <linux/interrupt.h>
+<<<<<<< HEAD
 #include <asm/irq.h>
 #include <asm/io.h>
+=======
+#include <linux/export.h>
+#include <linux/topology.h>
+#include <linux/io.h>
+#include <linux/err.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <mach-se/mach/se7724.h>
 
 struct fpga_irq {
@@ -90,8 +104,14 @@ static struct irq_chip se7724_irq_chip __read_mostly = {
 	.irq_unmask	= enable_se7724_irq,
 };
 
+<<<<<<< HEAD
 static void se7724_irq_demux(unsigned int irq, struct irq_desc *desc)
 {
+=======
+static void se7724_irq_demux(struct irq_desc *desc)
+{
+	unsigned int irq = irq_desc_get_irq(desc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	struct fpga_irq set = get_fpga_irq(irq);
 	unsigned short intv = __raw_readw(set.sraddr);
 	unsigned int ext_irq = set.base;
@@ -111,7 +131,11 @@ static void se7724_irq_demux(unsigned int irq, struct irq_desc *desc)
  */
 void __init init_se7724_IRQ(void)
 {
+<<<<<<< HEAD
 	int i, nid = cpu_to_node(boot_cpu_data);
+=======
+	int irq_base, i;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	__raw_writew(0xffff, IRQ0_MR);  /* mask all */
 	__raw_writew(0xffff, IRQ1_MR);  /* mask all */
@@ -121,6 +145,7 @@ void __init init_se7724_IRQ(void)
 	__raw_writew(0x0000, IRQ2_SR);  /* clear irq */
 	__raw_writew(0x002a, IRQ_MODE); /* set irq type */
 
+<<<<<<< HEAD
 	for (i = 0; i < SE7724_FPGA_IRQ_NR; i++) {
 		int irq, wanted;
 
@@ -144,6 +169,19 @@ void __init init_se7724_IRQ(void)
 					      handle_level_irq, "level");
 	}
 
+=======
+	irq_base = irq_alloc_descs(SE7724_FPGA_IRQ_BASE, SE7724_FPGA_IRQ_BASE,
+				   SE7724_FPGA_IRQ_NR, numa_node_id());
+	if (IS_ERR_VALUE(irq_base)) {
+		pr_err("%s: failed hooking irqs for FPGA\n", __func__);
+		return;
+	}
+
+	for (i = 0; i < SE7724_FPGA_IRQ_NR; i++)
+		irq_set_chip_and_handler_name(irq_base + i, &se7724_irq_chip,
+					      handle_level_irq, "level");
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	irq_set_chained_handler(IRQ0_IRQ, se7724_irq_demux);
 	irq_set_irq_type(IRQ0_IRQ, IRQ_TYPE_LEVEL_LOW);
 

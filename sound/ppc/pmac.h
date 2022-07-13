@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  * Driver for PowerMac onboard soundchips
  * Copyright (c) 2001 by Takashi Iwai <tiwai@suse.de>
  *   based on dmasound.c.
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -16,6 +21,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 
@@ -39,6 +46,10 @@
 #include <asm/dbdma.h>
 #include <asm/prom.h>
 #include <asm/machdep.h>
+<<<<<<< HEAD
+=======
+#include <asm/pmac_feature.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* maximum number of fragments */
 #define PMAC_MAX_FRAGS		32
@@ -117,7 +128,11 @@ struct snd_pmac {
 	struct resource rsrc[3];
 
 	int num_freqs;
+<<<<<<< HEAD
 	int *freq_table;
+=======
+	const int *freq_table;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int freqs_ok;		/* bit flags */
 	unsigned int formats_ok;	/* pcm hwinfo */
 	int active;

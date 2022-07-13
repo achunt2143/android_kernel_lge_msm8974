@@ -1,8 +1,13 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  MIDI byte <-> sequencer event coder
  *
  *  Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>,
  *                        Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -17,6 +22,8 @@
  *   You should have received a copy of the GNU General Public License
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <linux/slab.h>
@@ -134,6 +141,10 @@ int snd_midi_event_new(int bufsize, struct snd_midi_event **rdev)
 	*rdev = dev;
 	return 0;
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_midi_event_new);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void snd_midi_event_free(struct snd_midi_event *dev)
 {
@@ -142,6 +153,10 @@ void snd_midi_event_free(struct snd_midi_event *dev)
 		kfree(dev);
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_midi_event_free);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * initialize record
@@ -155,6 +170,7 @@ static inline void reset_encode(struct snd_midi_event *dev)
 
 void snd_midi_event_reset_encode(struct snd_midi_event *dev)
 {
+<<<<<<< HEAD
 	unsigned long flags;
 
 	spin_lock_irqsave(&dev->lock, flags);
@@ -178,11 +194,25 @@ void snd_midi_event_init(struct snd_midi_event *dev)
 	snd_midi_event_reset_decode(dev);
 }
 #endif  /*  0  */
+=======
+	guard(spinlock_irqsave)(&dev->lock);
+	reset_encode(dev);
+}
+EXPORT_SYMBOL(snd_midi_event_reset_encode);
+
+void snd_midi_event_reset_decode(struct snd_midi_event *dev)
+{
+	guard(spinlock_irqsave)(&dev->lock);
+	dev->lastcmd = 0xff;
+}
+EXPORT_SYMBOL(snd_midi_event_reset_decode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 void snd_midi_event_no_status(struct snd_midi_event *dev, int on)
 {
 	dev->nostat = on ? 1 : 0;
 }
+<<<<<<< HEAD
 
 /*
  * resize buffer
@@ -246,6 +276,19 @@ int snd_midi_event_encode_byte(struct snd_midi_event *dev, int c,
 	unsigned long flags;
 
 	c &= 0xff;
+=======
+EXPORT_SYMBOL(snd_midi_event_no_status);
+
+/*
+ *  read one byte and encode to sequencer event:
+ *  return true if MIDI bytes are encoded to an event
+ *         false data is not finished
+ */
+bool snd_midi_event_encode_byte(struct snd_midi_event *dev, unsigned char c,
+				struct snd_seq_event *ev)
+{
+	bool rc = false;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (c >= MIDI_CMD_COMMON_CLOCK) {
 		/* real-time event */
@@ -255,7 +298,11 @@ int snd_midi_event_encode_byte(struct snd_midi_event *dev, int c,
 		return ev->type != SNDRV_SEQ_EVENT_NONE;
 	}
 
+<<<<<<< HEAD
 	spin_lock_irqsave(&dev->lock, flags);
+=======
+	guard(spinlock_irqsave)(&dev->lock);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if ((c & 0x80) &&
 	    (c != MIDI_CMD_COMMON_SYSEX_END || dev->type != ST_SYSEX)) {
 		/* new command */
@@ -287,7 +334,11 @@ int snd_midi_event_encode_byte(struct snd_midi_event *dev, int c,
 			status_event[dev->type].encode(dev, ev);
 		if (dev->type >= ST_SPECIAL)
 			dev->type = ST_INVALID;
+<<<<<<< HEAD
 		rc = 1;
+=======
+		rc = true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else 	if (dev->type == ST_SYSEX) {
 		if (c == MIDI_CMD_COMMON_SYSEX_END ||
 		    dev->read >= dev->bufsize) {
@@ -300,6 +351,7 @@ int snd_midi_event_encode_byte(struct snd_midi_event *dev, int c,
 				dev->read = 0; /* continue to parse */
 			else
 				reset_encode(dev); /* all parsed */
+<<<<<<< HEAD
 			rc = 1;
 		}
 	}
@@ -307,6 +359,15 @@ int snd_midi_event_encode_byte(struct snd_midi_event *dev, int c,
 	spin_unlock_irqrestore(&dev->lock, flags);
 	return rc;
 }
+=======
+			rc = true;
+		}
+	}
+
+	return rc;
+}
+EXPORT_SYMBOL(snd_midi_event_encode_byte);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* encode note event */
 static void note_event(struct snd_midi_event *dev, struct snd_seq_event *ev)
@@ -408,6 +469,10 @@ long snd_midi_event_decode(struct snd_midi_event *dev, unsigned char *buf, long 
 		return qlen;
 	}
 }
+<<<<<<< HEAD
+=======
+EXPORT_SYMBOL(snd_midi_event_decode);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 
 /* decode note event */
@@ -488,12 +553,21 @@ static int extra_decode_xrpn(struct snd_midi_event *dev, unsigned char *buf,
 			     int count, struct snd_seq_event *ev)
 {
 	unsigned char cmd;
+<<<<<<< HEAD
 	char *cbytes;
 	static char cbytes_nrpn[4] = { MIDI_CTL_NONREG_PARM_NUM_MSB,
 				       MIDI_CTL_NONREG_PARM_NUM_LSB,
 				       MIDI_CTL_MSB_DATA_ENTRY,
 				       MIDI_CTL_LSB_DATA_ENTRY };
 	static char cbytes_rpn[4] =  { MIDI_CTL_REGIST_PARM_NUM_MSB,
+=======
+	const char *cbytes;
+	static const char cbytes_nrpn[4] = { MIDI_CTL_NONREG_PARM_NUM_MSB,
+				       MIDI_CTL_NONREG_PARM_NUM_LSB,
+				       MIDI_CTL_MSB_DATA_ENTRY,
+				       MIDI_CTL_LSB_DATA_ENTRY };
+	static const char cbytes_rpn[4] =  { MIDI_CTL_REGIST_PARM_NUM_MSB,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 				       MIDI_CTL_REGIST_PARM_NUM_LSB,
 				       MIDI_CTL_MSB_DATA_ENTRY,
 				       MIDI_CTL_LSB_DATA_ENTRY };
@@ -523,6 +597,7 @@ static int extra_decode_xrpn(struct snd_midi_event *dev, unsigned char *buf,
 	}
 	return idx;
 }
+<<<<<<< HEAD
 
 /*
  *  exports
@@ -548,3 +623,5 @@ static void __exit alsa_seq_midi_event_exit(void)
 
 module_init(alsa_seq_midi_event_init)
 module_exit(alsa_seq_midi_event_exit)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

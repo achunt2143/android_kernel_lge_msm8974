@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ################################################################################
 #
 # Intel 82599 Virtual Function driver
@@ -25,6 +26,10 @@
 #
 ################################################################################
 
+=======
+# SPDX-License-Identifier: GPL-2.0
+# Copyright(c) 1999 - 2018 Intel Corporation.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #
 # Makefile for the Intel(R) 82599 VF ethernet driver
 #
@@ -35,4 +40,8 @@ ixgbevf-objs := vf.o \
                 mbx.o \
                 ethtool.o \
                 ixgbevf_main.o
+<<<<<<< HEAD
+=======
+ixgbevf-$(CONFIG_IXGBEVF_IPSEC) += ipsec.o
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 

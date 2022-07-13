@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Block device elevator/IO-scheduler.
  *
@@ -25,7 +29,10 @@
 #include <linux/kernel.h>
 #include <linux/fs.h>
 #include <linux/blkdev.h>
+<<<<<<< HEAD
 #include <linux/elevator.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/bio.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -38,7 +45,16 @@
 
 #include <trace/events/block.h>
 
+<<<<<<< HEAD
 #include "blk.h"
+=======
+#include "elevator.h"
+#include "blk.h"
+#include "blk-mq-sched.h"
+#include "blk-pm.h"
+#include "blk-wbt.h"
+#include "blk-cgroup.h"
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static DEFINE_SPINLOCK(elv_list_lock);
 static LIST_HEAD(elv_list);
@@ -46,31 +62,46 @@ static LIST_HEAD(elv_list);
 /*
  * Merge hash stuff.
  */
+<<<<<<< HEAD
 static const int elv_hash_shift = 6;
 #define ELV_HASH_BLOCK(sec)	((sec) >> 3)
 #define ELV_HASH_FN(sec)	\
 		(hash_long(ELV_HASH_BLOCK((sec)), elv_hash_shift))
 #define ELV_HASH_ENTRIES	(1 << elv_hash_shift)
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define rq_hash_key(rq)		(blk_rq_pos(rq) + blk_rq_sectors(rq))
 
 /*
  * Query io scheduler to see if the current process issuing bio may be
  * merged with rq.
  */
+<<<<<<< HEAD
 static int elv_iosched_allow_merge(struct request *rq, struct bio *bio)
+=======
+static bool elv_iosched_allow_bio_merge(struct request *rq, struct bio *bio)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct request_queue *q = rq->q;
 	struct elevator_queue *e = q->elevator;
 
+<<<<<<< HEAD
 	if (e->type->ops.elevator_allow_merge_fn)
 		return e->type->ops.elevator_allow_merge_fn(q, rq, bio);
 
 	return 1;
+=======
+	if (e->type->ops.allow_merge)
+		return e->type->ops.allow_merge(q, rq, bio);
+
+	return true;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * can we safely merge with this request?
  */
+<<<<<<< HEAD
 bool elv_rq_merge_ok(struct request *rq, struct bio *bio)
 {
 	if (!rq_mergeable(rq))
@@ -137,10 +168,57 @@ static void elevator_put(struct elevator_type *e)
 }
 
 static struct elevator_type *elevator_get(const char *name)
+=======
+bool elv_bio_merge_ok(struct request *rq, struct bio *bio)
+{
+	if (!blk_rq_merge_ok(rq, bio))
+		return false;
+
+	if (!elv_iosched_allow_bio_merge(rq, bio))
+		return false;
+
+	return true;
+}
+EXPORT_SYMBOL(elv_bio_merge_ok);
+
+static inline bool elv_support_features(struct request_queue *q,
+		const struct elevator_type *e)
+{
+	return (q->required_elevator_features & e->elevator_features) ==
+		q->required_elevator_features;
+}
+
+/**
+ * elevator_match - Check whether @e's name or alias matches @name
+ * @e: Scheduler to test
+ * @name: Elevator name to test
+ *
+ * Return true if the elevator @e's name or alias matches @name.
+ */
+static bool elevator_match(const struct elevator_type *e, const char *name)
+{
+	return !strcmp(e->elevator_name, name) ||
+		(e->elevator_alias && !strcmp(e->elevator_alias, name));
+}
+
+static struct elevator_type *__elevator_find(const char *name)
+{
+	struct elevator_type *e;
+
+	list_for_each_entry(e, &elv_list, list)
+		if (elevator_match(e, name))
+			return e;
+	return NULL;
+}
+
+static struct elevator_type *elevator_find_get(struct request_queue *q,
+		const char *name)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct elevator_type *e;
 
 	spin_lock(&elv_list_lock);
+<<<<<<< HEAD
 
 	e = elevator_find(name);
 	if (!e) {
@@ -211,6 +289,35 @@ err:
 	elevator_put(e);
 	return NULL;
 }
+=======
+	e = __elevator_find(name);
+	if (e && (!elv_support_features(q, e) || !elevator_tryget(e)))
+		e = NULL;
+	spin_unlock(&elv_list_lock);
+	return e;
+}
+
+static const struct kobj_type elv_ktype;
+
+struct elevator_queue *elevator_alloc(struct request_queue *q,
+				  struct elevator_type *e)
+{
+	struct elevator_queue *eq;
+
+	eq = kzalloc_node(sizeof(*eq), GFP_KERNEL, q->node);
+	if (unlikely(!eq))
+		return NULL;
+
+	__elevator_get(e);
+	eq->type = e;
+	kobject_init(&eq->kobj, &elv_ktype);
+	mutex_init(&eq->sysfs_lock);
+	hash_init(eq->hash);
+
+	return eq;
+}
+EXPORT_SYMBOL(elevator_alloc);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void elevator_release(struct kobject *kobj)
 {
@@ -218,6 +325,7 @@ static void elevator_release(struct kobject *kobj)
 
 	e = container_of(kobj, struct elevator_queue, kobj);
 	elevator_put(e->type);
+<<<<<<< HEAD
 	kfree(e->hash);
 	kfree(e);
 }
@@ -279,10 +387,25 @@ void elevator_exit(struct elevator_queue *e)
 	mutex_lock(&e->sysfs_lock);
 	if (e->type->ops.elevator_exit_fn)
 		e->type->ops.elevator_exit_fn(e);
+=======
+	kfree(e);
+}
+
+void elevator_exit(struct request_queue *q)
+{
+	struct elevator_queue *e = q->elevator;
+
+	ioc_clear_queue(q);
+	blk_mq_sched_free_rqs(q);
+
+	mutex_lock(&e->sysfs_lock);
+	blk_mq_exit_sched(q, e);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	mutex_unlock(&e->sysfs_lock);
 
 	kobject_put(&e->kobj);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(elevator_exit);
 
 static inline void __elv_rqhash_del(struct request *rq)
@@ -291,25 +414,51 @@ static inline void __elv_rqhash_del(struct request *rq)
 }
 
 static void elv_rqhash_del(struct request_queue *q, struct request *rq)
+=======
+
+static inline void __elv_rqhash_del(struct request *rq)
+{
+	hash_del(&rq->hash);
+	rq->rq_flags &= ~RQF_HASHED;
+}
+
+void elv_rqhash_del(struct request_queue *q, struct request *rq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (ELV_ON_HASH(rq))
 		__elv_rqhash_del(rq);
 }
+<<<<<<< HEAD
 
 static void elv_rqhash_add(struct request_queue *q, struct request *rq)
+=======
+EXPORT_SYMBOL_GPL(elv_rqhash_del);
+
+void elv_rqhash_add(struct request_queue *q, struct request *rq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct elevator_queue *e = q->elevator;
 
 	BUG_ON(ELV_ON_HASH(rq));
+<<<<<<< HEAD
 	hlist_add_head(&rq->hash, &e->hash[ELV_HASH_FN(rq_hash_key(rq))]);
 }
 
 static void elv_rqhash_reposition(struct request_queue *q, struct request *rq)
+=======
+	hash_add(e->hash, &rq->hash, rq_hash_key(rq));
+	rq->rq_flags |= RQF_HASHED;
+}
+EXPORT_SYMBOL_GPL(elv_rqhash_add);
+
+void elv_rqhash_reposition(struct request_queue *q, struct request *rq)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	__elv_rqhash_del(rq);
 	elv_rqhash_add(q, rq);
 }
 
+<<<<<<< HEAD
 static struct request *elv_rqhash_find(struct request_queue *q, sector_t offset)
 {
 	struct elevator_queue *e = q->elevator;
@@ -318,6 +467,15 @@ static struct request *elv_rqhash_find(struct request_queue *q, sector_t offset)
 	struct request *rq;
 
 	hlist_for_each_entry_safe(rq, entry, next, hash_list, hash) {
+=======
+struct request *elv_rqhash_find(struct request_queue *q, sector_t offset)
+{
+	struct elevator_queue *e = q->elevator;
+	struct hlist_node *next;
+	struct request *rq;
+
+	hash_for_each_possible_safe(e->hash, rq, next, hash, offset) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		BUG_ON(!ELV_ON_HASH(rq));
 
 		if (unlikely(!rq_mergeable(rq))) {
@@ -385,6 +543,7 @@ struct request *elv_rb_find(struct rb_root *root, sector_t sector)
 }
 EXPORT_SYMBOL(elv_rb_find);
 
+<<<<<<< HEAD
 /*
  * Insert rq into dispatch queue of q.  Queue lock must be held on
  * entry.  rq is sort instead into the dispatch queue. To be used by
@@ -455,6 +614,13 @@ int elv_merge(struct request_queue *q, struct request **req, struct bio *bio)
 	struct elevator_queue *e = q->elevator;
 	struct request *__rq;
 	int ret;
+=======
+enum elv_merge elv_merge(struct request_queue *q, struct request **req,
+		struct bio *bio)
+{
+	struct elevator_queue *e = q->elevator;
+	struct request *__rq;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Levels of merges:
@@ -462,14 +628,24 @@ int elv_merge(struct request_queue *q, struct request **req, struct bio *bio)
 	 * 	noxmerges: Only simple one-hit cache try
 	 * 	merges:	   All merge tries attempted
 	 */
+<<<<<<< HEAD
 	if (blk_queue_nomerges(q))
+=======
+	if (blk_queue_nomerges(q) || !bio_mergeable(bio))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return ELEVATOR_NO_MERGE;
 
 	/*
 	 * First try one-hit cache.
 	 */
+<<<<<<< HEAD
 	if (q->last_merge && elv_rq_merge_ok(q->last_merge, bio)) {
 		ret = blk_try_merge(q->last_merge, bio);
+=======
+	if (q->last_merge && elv_bio_merge_ok(q->last_merge, bio)) {
+		enum elv_merge ret = blk_try_merge(q->last_merge, bio);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		if (ret != ELEVATOR_NO_MERGE) {
 			*req = q->last_merge;
 			return ret;
@@ -482,6 +658,7 @@ int elv_merge(struct request_queue *q, struct request **req, struct bio *bio)
 	/*
 	 * See if our hash lookup can find a potential backmerge.
 	 */
+<<<<<<< HEAD
 	__rq = elv_rqhash_find(q, bio->bi_sector);
 	if (__rq && elv_rq_merge_ok(__rq, bio)) {
 		*req = __rq;
@@ -490,6 +667,19 @@ int elv_merge(struct request_queue *q, struct request **req, struct bio *bio)
 
 	if (e->type->ops.elevator_merge_fn)
 		return e->type->ops.elevator_merge_fn(q, req, bio);
+=======
+	__rq = elv_rqhash_find(q, bio->bi_iter.bi_sector);
+	if (__rq && elv_bio_merge_ok(__rq, bio)) {
+		*req = __rq;
+
+		if (blk_discard_mergable(__rq))
+			return ELEVATOR_DISCARD_MERGE;
+		return ELEVATOR_BACK_MERGE;
+	}
+
+	if (e->type->ops.request_merge)
+		return e->type->ops.request_merge(q, req, bio);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return ELEVATOR_NO_MERGE;
 }
@@ -499,12 +689,23 @@ int elv_merge(struct request_queue *q, struct request **req, struct bio *bio)
  * we can append 'rq' to an existing request, so we can throw 'rq' away
  * afterwards.
  *
+<<<<<<< HEAD
  * Returns true if we merged, false otherwise
  */
 static bool elv_attempt_insert_merge(struct request_queue *q,
 				     struct request *rq)
 {
 	struct request *__rq;
+=======
+ * Returns true if we merged, false otherwise. 'free' will contain all
+ * requests that need to be freed.
+ */
+bool elv_attempt_insert_merge(struct request_queue *q, struct request *rq,
+			      struct list_head *free)
+{
+	struct request *__rq;
+	bool ret;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (blk_queue_nomerges(q))
 		return false;
@@ -512,12 +713,20 @@ static bool elv_attempt_insert_merge(struct request_queue *q,
 	/*
 	 * First try one-hit cache.
 	 */
+<<<<<<< HEAD
 	if (q->last_merge && blk_attempt_req_merge(q, q->last_merge, rq))
 		return true;
+=======
+	if (q->last_merge && blk_attempt_req_merge(q, q->last_merge, rq)) {
+		list_add(&rq->queuelist, free);
+		return true;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (blk_queue_noxmerges(q))
 		return false;
 
+<<<<<<< HEAD
 	/*
 	 * See if our hash lookup can find a potential backmerge.
 	 */
@@ -534,6 +743,33 @@ void elv_merged_request(struct request_queue *q, struct request *rq, int type)
 
 	if (e->type->ops.elevator_merged_fn)
 		e->type->ops.elevator_merged_fn(q, rq, type);
+=======
+	ret = false;
+	/*
+	 * See if our hash lookup can find a potential backmerge.
+	 */
+	while (1) {
+		__rq = elv_rqhash_find(q, blk_rq_pos(rq));
+		if (!__rq || !blk_attempt_req_merge(q, __rq, rq))
+			break;
+
+		list_add(&rq->queuelist, free);
+		/* The merged request could be merged with others, try again */
+		ret = true;
+		rq = __rq;
+	}
+
+	return ret;
+}
+
+void elv_merged_request(struct request_queue *q, struct request *rq,
+		enum elv_merge type)
+{
+	struct elevator_queue *e = q->elevator;
+
+	if (e->type->ops.request_merged)
+		e->type->ops.request_merged(q, rq, type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (type == ELEVATOR_BACK_MERGE)
 		elv_rqhash_reposition(q, rq);
@@ -545,6 +781,7 @@ void elv_merge_requests(struct request_queue *q, struct request *rq,
 			     struct request *next)
 {
 	struct elevator_queue *e = q->elevator;
+<<<<<<< HEAD
 	const int next_sorted = next->cmd_flags & REQ_SORTED;
 
 	if (next_sorted && e->type->ops.elevator_merge_req_fn)
@@ -771,12 +1008,28 @@ void elv_add_request(struct request_queue *q, struct request *rq, int where)
 }
 EXPORT_SYMBOL(elv_add_request);
 
+=======
+
+	if (e->type->ops.requests_merged)
+		e->type->ops.requests_merged(q, rq, next);
+
+	elv_rqhash_reposition(q, rq);
+	q->last_merge = rq;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 struct request *elv_latter_request(struct request_queue *q, struct request *rq)
 {
 	struct elevator_queue *e = q->elevator;
 
+<<<<<<< HEAD
 	if (e->type->ops.elevator_latter_req_fn)
 		return e->type->ops.elevator_latter_req_fn(q, rq);
+=======
+	if (e->type->ops.next_request)
+		return e->type->ops.next_request(q, rq);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return NULL;
 }
 
@@ -784,6 +1037,7 @@ struct request *elv_former_request(struct request_queue *q, struct request *rq)
 {
 	struct elevator_queue *e = q->elevator;
 
+<<<<<<< HEAD
 	if (e->type->ops.elevator_former_req_fn)
 		return e->type->ops.elevator_former_req_fn(q, rq);
 	return NULL;
@@ -856,6 +1110,14 @@ void elv_completed_request(struct request_queue *q, struct request *rq)
 	}
 }
 
+=======
+	if (e->type->ops.former_request)
+		return e->type->ops.former_request(q, rq);
+
+	return NULL;
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define to_elv(atr) container_of((atr), struct elv_fs_entry, attr)
 
 static ssize_t
@@ -898,16 +1160,31 @@ static const struct sysfs_ops elv_sysfs_ops = {
 	.store	= elv_attr_store,
 };
 
+<<<<<<< HEAD
 static struct kobj_type elv_ktype = {
+=======
+static const struct kobj_type elv_ktype = {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	.sysfs_ops	= &elv_sysfs_ops,
 	.release	= elevator_release,
 };
 
+<<<<<<< HEAD
 int __elv_register_queue(struct request_queue *q, struct elevator_queue *e)
 {
 	int error;
 
 	error = kobject_add(&e->kobj, &q->kobj, "%s", "iosched");
+=======
+int elv_register_queue(struct request_queue *q, bool uevent)
+{
+	struct elevator_queue *e = q->elevator;
+	int error;
+
+	lockdep_assert_held(&q->sysfs_lock);
+
+	error = kobject_add(&e->kobj, &q->disk->queue_kobj, "iosched");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!error) {
 		struct elv_fs_entry *attr = e->type->elevator_attrs;
 		if (attr) {
@@ -917,12 +1194,20 @@ int __elv_register_queue(struct request_queue *q, struct elevator_queue *e)
 				attr++;
 			}
 		}
+<<<<<<< HEAD
 		kobject_uevent(&e->kobj, KOBJ_ADD);
 		e->registered = 1;
+=======
+		if (uevent)
+			kobject_uevent(&e->kobj, KOBJ_ADD);
+
+		set_bit(ELEVATOR_FLAG_REGISTERED, &e->flags);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 	return error;
 }
 
+<<<<<<< HEAD
 int elv_register_queue(struct request_queue *q)
 {
 	return __elv_register_queue(q, q->elevator);
@@ -944,6 +1229,28 @@ EXPORT_SYMBOL(elv_unregister_queue);
 int elv_register(struct elevator_type *e)
 {
 	char *def = "";
+=======
+void elv_unregister_queue(struct request_queue *q)
+{
+	struct elevator_queue *e = q->elevator;
+
+	lockdep_assert_held(&q->sysfs_lock);
+
+	if (e && test_and_clear_bit(ELEVATOR_FLAG_REGISTERED, &e->flags)) {
+		kobject_uevent(&e->kobj, KOBJ_REMOVE);
+		kobject_del(&e->kobj);
+	}
+}
+
+int elv_register(struct elevator_type *e)
+{
+	/* finish request is mandatory */
+	if (WARN_ON_ONCE(!e->ops.finish_request))
+		return -EINVAL;
+	/* insert_requests and dispatch_request are mandatory */
+	if (WARN_ON_ONCE(!e->ops.insert_requests || !e->ops.dispatch_request))
+		return -EINVAL;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* create icq_cache if requested */
 	if (e->icq_size) {
@@ -961,15 +1268,22 @@ int elv_register(struct elevator_type *e)
 
 	/* register, don't allow duplicate names */
 	spin_lock(&elv_list_lock);
+<<<<<<< HEAD
 	if (elevator_find(e->elevator_name)) {
 		spin_unlock(&elv_list_lock);
 		if (e->icq_cache)
 			kmem_cache_destroy(e->icq_cache);
+=======
+	if (__elevator_find(e->elevator_name)) {
+		spin_unlock(&elv_list_lock);
+		kmem_cache_destroy(e->icq_cache);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return -EBUSY;
 	}
 	list_add_tail(&e->list, &elv_list);
 	spin_unlock(&elv_list_lock);
 
+<<<<<<< HEAD
 	/* print pretty message */
 	if (!strcmp(e->elevator_name, chosen_elevator) ||
 			(!*chosen_elevator &&
@@ -978,6 +1292,10 @@ int elv_register(struct elevator_type *e)
 
 	printk(KERN_INFO "io scheduler %s registered%s\n", e->elevator_name,
 								def);
+=======
+	printk(KERN_INFO "io scheduler %s registered\n", e->elevator_name);
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 EXPORT_SYMBOL_GPL(elv_register);
@@ -1001,6 +1319,7 @@ void elv_unregister(struct elevator_type *e)
 }
 EXPORT_SYMBOL_GPL(elv_unregister);
 
+<<<<<<< HEAD
 /*
  * switch to new_e io scheduler. be careful not to introduce deadlocks -
  * we don't free the old io scheduler, before we have allocated what we
@@ -1058,11 +1377,169 @@ fail_register:
 	elv_quiesce_end(q);
 
 	return err;
+=======
+static inline bool elv_support_iosched(struct request_queue *q)
+{
+	if (!queue_is_mq(q) ||
+	    (q->tag_set && (q->tag_set->flags & BLK_MQ_F_NO_SCHED)))
+		return false;
+	return true;
+}
+
+/*
+ * For single queue devices, default to using mq-deadline. If we have multiple
+ * queues or mq-deadline is not available, default to "none".
+ */
+static struct elevator_type *elevator_get_default(struct request_queue *q)
+{
+	if (q->tag_set && q->tag_set->flags & BLK_MQ_F_NO_SCHED_BY_DEFAULT)
+		return NULL;
+
+	if (q->nr_hw_queues != 1 &&
+	    !blk_mq_is_shared_tags(q->tag_set->flags))
+		return NULL;
+
+	return elevator_find_get(q, "mq-deadline");
+}
+
+/*
+ * Get the first elevator providing the features required by the request queue.
+ * Default to "none" if no matching elevator is found.
+ */
+static struct elevator_type *elevator_get_by_features(struct request_queue *q)
+{
+	struct elevator_type *e, *found = NULL;
+
+	spin_lock(&elv_list_lock);
+
+	list_for_each_entry(e, &elv_list, list) {
+		if (elv_support_features(q, e)) {
+			found = e;
+			break;
+		}
+	}
+
+	if (found && !elevator_tryget(found))
+		found = NULL;
+
+	spin_unlock(&elv_list_lock);
+	return found;
+}
+
+/*
+ * For a device queue that has no required features, use the default elevator
+ * settings. Otherwise, use the first elevator available matching the required
+ * features. If no suitable elevator is find or if the chosen elevator
+ * initialization fails, fall back to the "none" elevator (no elevator).
+ */
+void elevator_init_mq(struct request_queue *q)
+{
+	struct elevator_type *e;
+	int err;
+
+	if (!elv_support_iosched(q))
+		return;
+
+	WARN_ON_ONCE(blk_queue_registered(q));
+
+	if (unlikely(q->elevator))
+		return;
+
+	if (!q->required_elevator_features)
+		e = elevator_get_default(q);
+	else
+		e = elevator_get_by_features(q);
+	if (!e)
+		return;
+
+	/*
+	 * We are called before adding disk, when there isn't any FS I/O,
+	 * so freezing queue plus canceling dispatch work is enough to
+	 * drain any dispatch activities originated from passthrough
+	 * requests, then no need to quiesce queue which may add long boot
+	 * latency, especially when lots of disks are involved.
+	 */
+	blk_mq_freeze_queue(q);
+	blk_mq_cancel_work_sync(q);
+
+	err = blk_mq_init_sched(q, e);
+
+	blk_mq_unfreeze_queue(q);
+
+	if (err) {
+		pr_warn("\"%s\" elevator initialization failed, "
+			"falling back to \"none\"\n", e->elevator_name);
+	}
+
+	elevator_put(e);
+}
+
+/*
+ * Switch to new_e io scheduler.
+ *
+ * If switching fails, we are most likely running out of memory and not able
+ * to restore the old io scheduler, so leaving the io scheduler being none.
+ */
+int elevator_switch(struct request_queue *q, struct elevator_type *new_e)
+{
+	int ret;
+
+	lockdep_assert_held(&q->sysfs_lock);
+
+	blk_mq_freeze_queue(q);
+	blk_mq_quiesce_queue(q);
+
+	if (q->elevator) {
+		elv_unregister_queue(q);
+		elevator_exit(q);
+	}
+
+	ret = blk_mq_init_sched(q, new_e);
+	if (ret)
+		goto out_unfreeze;
+
+	ret = elv_register_queue(q, true);
+	if (ret) {
+		elevator_exit(q);
+		goto out_unfreeze;
+	}
+	blk_add_trace_msg(q, "elv switch: %s", new_e->elevator_name);
+
+out_unfreeze:
+	blk_mq_unquiesce_queue(q);
+	blk_mq_unfreeze_queue(q);
+
+	if (ret) {
+		pr_warn("elv: switch to \"%s\" failed, falling back to \"none\"\n",
+			new_e->elevator_name);
+	}
+
+	return ret;
+}
+
+void elevator_disable(struct request_queue *q)
+{
+	lockdep_assert_held(&q->sysfs_lock);
+
+	blk_mq_freeze_queue(q);
+	blk_mq_quiesce_queue(q);
+
+	elv_unregister_queue(q);
+	elevator_exit(q);
+	blk_queue_flag_clear(QUEUE_FLAG_SQ_SCHED, q);
+	q->elevator = NULL;
+	q->nr_requests = q->tag_set->queue_depth;
+	blk_add_trace_msg(q, "elv switch: none");
+
+	blk_mq_unquiesce_queue(q);
+	blk_mq_unfreeze_queue(q);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 /*
  * Switch this queue to the given IO scheduler.
  */
+<<<<<<< HEAD
 static int __elevator_change(struct request_queue *q, const char *name)
 {
 	char elevator_name[ELV_NAME_MAX];
@@ -1112,11 +1589,57 @@ ssize_t elv_iosched_store(struct request_queue *q, const char *name,
 		return count;
 
 	printk(KERN_ERR "elevator: switch to %s failed\n", name);
+=======
+static int elevator_change(struct request_queue *q, const char *elevator_name)
+{
+	struct elevator_type *e;
+	int ret;
+
+	/* Make sure queue is not in the middle of being removed */
+	if (!blk_queue_registered(q))
+		return -ENOENT;
+
+	if (!strncmp(elevator_name, "none", 4)) {
+		if (q->elevator)
+			elevator_disable(q);
+		return 0;
+	}
+
+	if (q->elevator && elevator_match(q->elevator->type, elevator_name))
+		return 0;
+
+	e = elevator_find_get(q, elevator_name);
+	if (!e) {
+		request_module("%s-iosched", elevator_name);
+		e = elevator_find_get(q, elevator_name);
+		if (!e)
+			return -EINVAL;
+	}
+	ret = elevator_switch(q, e);
+	elevator_put(e);
+	return ret;
+}
+
+ssize_t elv_iosched_store(struct request_queue *q, const char *buf,
+			  size_t count)
+{
+	char elevator_name[ELV_NAME_MAX];
+	int ret;
+
+	if (!elv_support_iosched(q))
+		return count;
+
+	strscpy(elevator_name, buf, sizeof(elevator_name));
+	ret = elevator_change(q, strstrip(elevator_name));
+	if (!ret)
+		return count;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return ret;
 }
 
 ssize_t elv_iosched_show(struct request_queue *q, char *name)
 {
+<<<<<<< HEAD
 	struct elevator_queue *e = q->elevator;
 	struct elevator_type *elv;
 	struct elevator_type *__e;
@@ -1137,6 +1660,32 @@ ssize_t elv_iosched_show(struct request_queue *q, char *name)
 	spin_unlock(&elv_list_lock);
 
 	len += sprintf(len+name, "\n");
+=======
+	struct elevator_queue *eq = q->elevator;
+	struct elevator_type *cur = NULL, *e;
+	int len = 0;
+
+	if (!elv_support_iosched(q))
+		return sprintf(name, "none\n");
+
+	if (!q->elevator) {
+		len += sprintf(name+len, "[none] ");
+	} else {
+		len += sprintf(name+len, "none ");
+		cur = eq->type;
+	}
+
+	spin_lock(&elv_list_lock);
+	list_for_each_entry(e, &elv_list, list) {
+		if (e == cur)
+			len += sprintf(name+len, "[%s] ", e->elevator_name);
+		else if (elv_support_features(q, e))
+			len += sprintf(name+len, "%s ", e->elevator_name);
+	}
+	spin_unlock(&elv_list_lock);
+
+	len += sprintf(name+len, "\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return len;
 }
 
@@ -1163,3 +1712,15 @@ struct request *elv_rb_latter_request(struct request_queue *q,
 	return NULL;
 }
 EXPORT_SYMBOL(elv_rb_latter_request);
+<<<<<<< HEAD
+=======
+
+static int __init elevator_setup(char *str)
+{
+	pr_warn("Kernel parameter elevator= does not have any effect anymore.\n"
+		"Please use sysfs to set IO scheduler for individual devices.\n");
+	return 1;
+}
+
+__setup("elevator=", elevator_setup);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

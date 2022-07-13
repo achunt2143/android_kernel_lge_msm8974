@@ -1,9 +1,14 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifndef __SOUND_INITVAL_H
 #define __SOUND_INITVAL_H
 
 /*
  *  Init values for soundcard modules
  *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
+<<<<<<< HEAD
  *
  *   This program is free software; you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License as published by
@@ -19,6 +24,8 @@
  *   along with this program; if not, write to the Free Software
  *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #define SNDRV_AUTO_PORT		1
@@ -50,6 +57,23 @@
 #define SNDRV_DEFAULT_DMA_SIZE	{ [0 ... (SNDRV_CARDS-1)] = SNDRV_AUTO_DMA_SIZE }
 #define SNDRV_DEFAULT_PTR	SNDRV_DEFAULT_STR
 
+<<<<<<< HEAD
+=======
+#ifdef SNDRV_LEGACY_FIND_FREE_IOPORT
+static long snd_legacy_find_free_ioport(const long *port_table, long size)
+{
+	while (*port_table != -1) {
+		if (request_region(*port_table, size, "ALSA test")) {
+			release_region(*port_table, size);
+			return *port_table;
+		}
+		port_table++;
+	}
+	return -1;
+}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #ifdef SNDRV_LEGACY_FIND_FREE_IRQ
 #include <linux/interrupt.h>
 
@@ -58,7 +82,11 @@ static irqreturn_t snd_legacy_empty_irq_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int snd_legacy_find_free_irq(int *irq_table)
+=======
+static int snd_legacy_find_free_irq(const int *irq_table)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (*irq_table != -1) {
 		if (!request_irq(*irq_table, snd_legacy_empty_irq_handler,
@@ -74,7 +102,11 @@ static int snd_legacy_find_free_irq(int *irq_table)
 #endif
 
 #ifdef SNDRV_LEGACY_FIND_FREE_DMA
+<<<<<<< HEAD
 static int snd_legacy_find_free_dma(int *dma_table)
+=======
+static int snd_legacy_find_free_dma(const int *dma_table)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	while (*dma_table != -1) {
 		if (!request_dma(*dma_table, "ALSA Test DMA")) {

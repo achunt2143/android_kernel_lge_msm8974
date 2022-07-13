@@ -17,15 +17,26 @@
 
 #include <linux/module.h>
 #include <linux/pci.h>
+<<<<<<< HEAD
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/pagemap.h>
 #include <linux/agp_backend.h>
+=======
+#include <linux/kernel.h>
+#include <linux/pagemap.h>
+#include <linux/agp_backend.h>
+#include <linux/iommu.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/delay.h>
 #include <asm/smp.h>
 #include "agp.h"
 #include "intel-agp.h"
 #include <drm/intel-gtt.h>
+<<<<<<< HEAD
+=======
+#include <asm/set_memory.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * If we have Intel graphics, we're not going to have anything other than
@@ -60,13 +71,20 @@ struct intel_gtt_driver {
 };
 
 static struct _intel_private {
+<<<<<<< HEAD
 	struct intel_gtt base;
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	const struct intel_gtt_driver *driver;
 	struct pci_dev *pcidev;	/* device one */
 	struct pci_dev *bridge_dev;
 	u8 __iomem *registers;
+<<<<<<< HEAD
 	phys_addr_t gtt_bus_addr;
 	phys_addr_t gma_bus_addr;
+=======
+	phys_addr_t gtt_phys_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	u32 PGETBL_save;
 	u32 __iomem *gtt;		/* I915G */
 	bool clear_fake_agp; /* on first access via agp, fill with scratch */
@@ -76,6 +94,21 @@ static struct _intel_private {
 	struct resource ifp_resource;
 	int resource_valid;
 	struct page *scratch_page;
+<<<<<<< HEAD
+=======
+	phys_addr_t scratch_page_dma;
+	int refcount;
+	/* Whether i915 needs to use the dmar apis or not. */
+	unsigned int needs_dmar : 1;
+	phys_addr_t gma_bus_addr;
+	/*  Size of memory reserved for graphics by the BIOS */
+	resource_size_t stolen_size;
+	/* Total number of gtt entries. */
+	unsigned int gtt_total_entries;
+	/* Part of the gtt that is mappable by the cpu, for those chips where
+	 * this is not the full gtt. */
+	unsigned int gtt_mappable_entries;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 } intel_private;
 
 #define INTEL_GTT_GEN	intel_private.driver->gen
@@ -84,6 +117,7 @@ static struct _intel_private {
 #define IS_IRONLAKE	intel_private.driver->is_ironlake
 #define HAS_PGTBL_EN	intel_private.driver->has_pgtbl_enable
 
+<<<<<<< HEAD
 int intel_gtt_map_memory(struct page **pages, unsigned int num_entries,
 			 struct scatterlist **sg_list, int *num_sg)
 {
@@ -107,30 +141,66 @@ int intel_gtt_map_memory(struct page **pages, unsigned int num_entries,
 	*num_sg = pci_map_sg(intel_private.pcidev, *sg_list,
 				 num_entries, PCI_DMA_BIDIRECTIONAL);
 	if (unlikely(!*num_sg))
+=======
+#if IS_ENABLED(CONFIG_AGP_INTEL)
+static int intel_gtt_map_memory(struct page **pages,
+				unsigned int num_entries,
+				struct sg_table *st)
+{
+	struct scatterlist *sg;
+	int i;
+
+	DBG("try mapping %lu pages\n", (unsigned long)num_entries);
+
+	if (sg_alloc_table(st, num_entries, GFP_KERNEL))
+		goto err;
+
+	for_each_sg(st->sgl, sg, num_entries, i)
+		sg_set_page(sg, pages[i], PAGE_SIZE, 0);
+
+	if (!dma_map_sg(&intel_private.pcidev->dev, st->sgl, st->nents,
+			DMA_BIDIRECTIONAL))
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto err;
 
 	return 0;
 
 err:
+<<<<<<< HEAD
 	sg_free_table(&st);
 	return -ENOMEM;
 }
 EXPORT_SYMBOL(intel_gtt_map_memory);
 
 void intel_gtt_unmap_memory(struct scatterlist *sg_list, int num_sg)
+=======
+	sg_free_table(st);
+	return -ENOMEM;
+}
+
+static void intel_gtt_unmap_memory(struct scatterlist *sg_list, int num_sg)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct sg_table st;
 	DBG("try unmapping %lu pages\n", (unsigned long)mem->page_count);
 
+<<<<<<< HEAD
 	pci_unmap_sg(intel_private.pcidev, sg_list,
 		     num_sg, PCI_DMA_BIDIRECTIONAL);
+=======
+	dma_unmap_sg(&intel_private.pcidev->dev, sg_list, num_sg,
+		     DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	st.sgl = sg_list;
 	st.orig_nents = st.nents = num_sg;
 
 	sg_free_table(&st);
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(intel_gtt_unmap_memory);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void intel_fake_agp_enable(struct agp_bridge_data *bridge, u32 mode)
 {
@@ -151,7 +221,10 @@ static struct page *i8xx_alloc_pages(void)
 		__free_pages(page, 2);
 		return NULL;
 	}
+<<<<<<< HEAD
 	get_page(page);
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	atomic_inc(&agp_bridge->current_memory_agp);
 	return page;
 }
@@ -162,15 +235,26 @@ static void i8xx_destroy_pages(struct page *page)
 		return;
 
 	set_pages_wb(page, 4);
+<<<<<<< HEAD
 	put_page(page);
 	__free_pages(page, 2);
 	atomic_dec(&agp_bridge->current_memory_agp);
 }
+=======
+	__free_pages(page, 2);
+	atomic_dec(&agp_bridge->current_memory_agp);
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #define I810_GTT_ORDER 4
 static int i810_setup(void)
 {
+<<<<<<< HEAD
 	u32 reg_addr;
+=======
+	phys_addr_t reg_addr;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	char *gtt_table;
 
 	/* i81x does not preallocate the gtt. It's always 64kb in size. */
@@ -179,8 +263,12 @@ static int i810_setup(void)
 		return -ENOMEM;
 	intel_private.i81x_gtt_table = gtt_table;
 
+<<<<<<< HEAD
 	pci_read_config_dword(intel_private.pcidev, I810_MMADDR, &reg_addr);
 	reg_addr &= 0xfff80000;
+=======
+	reg_addr = pci_resource_start(intel_private.pcidev, I810_MMADR_BAR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	intel_private.registers = ioremap(reg_addr, KB(64));
 	if (!intel_private.registers)
@@ -189,7 +277,11 @@ static int i810_setup(void)
 	writel(virt_to_phys(gtt_table) | I810_PGETBL_ENABLED,
 	       intel_private.registers+I810_PGETBL_CTL);
 
+<<<<<<< HEAD
 	intel_private.gtt_bus_addr = reg_addr + I810_PTE_BASE;
+=======
+	intel_private.gtt_phys_addr = reg_addr + I810_PTE_BASE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if ((readl(intel_private.registers+I810_DRAM_CTL)
 		& I810_DRAM_ROW_0) == I810_DRAM_ROW_0_SDRAM) {
@@ -207,6 +299,10 @@ static void i810_cleanup(void)
 	free_gatt_pages(intel_private.i81x_gtt_table, I810_GTT_ORDER);
 }
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_AGP_INTEL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int i810_insert_dcache_entries(struct agp_memory *mem, off_t pg_start,
 				      int type)
 {
@@ -224,7 +320,11 @@ static int i810_insert_dcache_entries(struct agp_memory *mem, off_t pg_start,
 		intel_private.driver->write_entry(addr,
 						  i, type);
 	}
+<<<<<<< HEAD
 	readl(intel_private.gtt+i-1);
+=======
+	wmb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
@@ -287,6 +387,10 @@ static void intel_i810_free_by_type(struct agp_memory *curr)
 	}
 	kfree(curr);
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int intel_gtt_setup_scratch_page(void)
 {
@@ -296,6 +400,7 @@ static int intel_gtt_setup_scratch_page(void)
 	page = alloc_page(GFP_KERNEL | GFP_DMA32 | __GFP_ZERO);
 	if (page == NULL)
 		return -ENOMEM;
+<<<<<<< HEAD
 	get_page(page);
 	set_pages_uc(page, 1);
 
@@ -308,6 +413,21 @@ static int intel_gtt_setup_scratch_page(void)
 		intel_private.base.scratch_page_dma = dma_addr;
 	} else
 		intel_private.base.scratch_page_dma = page_to_phys(page);
+=======
+	set_pages_uc(page, 1);
+
+	if (intel_private.needs_dmar) {
+		dma_addr = dma_map_page(&intel_private.pcidev->dev, page, 0,
+					PAGE_SIZE, DMA_BIDIRECTIONAL);
+		if (dma_mapping_error(&intel_private.pcidev->dev, dma_addr)) {
+			__free_page(page);
+			return -EINVAL;
+		}
+
+		intel_private.scratch_page_dma = dma_addr;
+	} else
+		intel_private.scratch_page_dma = page_to_phys(page);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	intel_private.scratch_page = page;
 
@@ -328,6 +448,7 @@ static void i810_write_entry(dma_addr_t addr, unsigned int entry,
 		break;
 	}
 
+<<<<<<< HEAD
 	writel(addr | pte_flags, intel_private.gtt + entry);
 }
 
@@ -340,12 +461,22 @@ static const struct aper_size_info_fixed intel_fake_agp_sizes[] = {
 };
 
 static unsigned int intel_gtt_stolen_size(void)
+=======
+	writel_relaxed(addr | pte_flags, intel_private.gtt + entry);
+}
+
+static resource_size_t intel_gtt_stolen_size(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	u16 gmch_ctrl;
 	u8 rdct;
 	int local = 0;
 	static const int ddt[4] = { 0, 16, 32, 64 };
+<<<<<<< HEAD
 	unsigned int stolen_size = 0;
+=======
+	resource_size_t stolen_size = 0;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	if (INTEL_GTT_GEN == 1)
 		return 0; /* no stolen mem on i81x */
@@ -375,6 +506,7 @@ static unsigned int intel_gtt_stolen_size(void)
 			stolen_size = 0;
 			break;
 		}
+<<<<<<< HEAD
 	} else if (INTEL_GTT_GEN == 6) {
 		/*
 		 * SandyBridge has new memory control reg at 0x50.w
@@ -431,6 +563,8 @@ static unsigned int intel_gtt_stolen_size(void)
 			stolen_size = MB(512);
 			break;
 		}
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		switch (gmch_ctrl & I855_GMCH_GMS_MASK) {
 		case I855_GMCH_GMS_STOLEN_1M:
@@ -479,8 +613,13 @@ static unsigned int intel_gtt_stolen_size(void)
 	}
 
 	if (stolen_size > 0) {
+<<<<<<< HEAD
 		dev_info(&intel_private.bridge_dev->dev, "detected %dK %s memory\n",
 		       stolen_size / KB(1), local ? "local" : "stolen");
+=======
+		dev_info(&intel_private.bridge_dev->dev, "detected %lluK %s memory\n",
+		       (u64)stolen_size / KB(1), local ? "local" : "stolen");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	} else {
 		dev_info(&intel_private.bridge_dev->dev,
 		       "no pre-allocated video memory detected\n");
@@ -564,6 +703,7 @@ static unsigned int i965_gtt_total_entries(void)
 
 static unsigned int intel_gtt_total_entries(void)
 {
+<<<<<<< HEAD
 	int size;
 
 	if (IS_G33 || INTEL_GTT_GEN == 4 || INTEL_GTT_GEN == 5)
@@ -591,6 +731,15 @@ static unsigned int intel_gtt_total_entries(void)
 		 * required to map the aperture.
 		 */
 		return intel_private.base.gtt_mappable_entries;
+=======
+	if (IS_G33 || INTEL_GTT_GEN == 4 || INTEL_GTT_GEN == 5)
+		return i965_gtt_total_entries();
+	else {
+		/* On previous hardware, the GTT size was just what was
+		 * required to map the aperture.
+		 */
+		return intel_private.gtt_mappable_entries;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 }
 
@@ -630,9 +779,16 @@ static unsigned int intel_gtt_mappable_entries(void)
 static void intel_gtt_teardown_scratch_page(void)
 {
 	set_pages_wb(intel_private.scratch_page, 1);
+<<<<<<< HEAD
 	pci_unmap_page(intel_private.pcidev, intel_private.base.scratch_page_dma,
 		       PAGE_SIZE, PCI_DMA_BIDIRECTIONAL);
 	put_page(intel_private.scratch_page);
+=======
+	if (intel_private.needs_dmar)
+		dma_unmap_page(&intel_private.pcidev->dev,
+			       intel_private.scratch_page_dma, PAGE_SIZE,
+			       DMA_BIDIRECTIONAL);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	__free_page(intel_private.scratch_page);
 }
 
@@ -646,17 +802,60 @@ static void intel_gtt_cleanup(void)
 	intel_gtt_teardown_scratch_page();
 }
 
+<<<<<<< HEAD
 static int intel_gtt_init(void)
 {
 	u32 gtt_map_size;
 	int ret;
+=======
+/* Certain Gen5 chipsets require require idling the GPU before
+ * unmapping anything from the GTT when VT-d is enabled.
+ */
+static inline int needs_ilk_vtd_wa(void)
+{
+	const unsigned short gpu_devid = intel_private.pcidev->device;
+
+	/*
+	 * Query iommu subsystem to see if we need the workaround. Presumably
+	 * that was loaded first.
+	 */
+	return ((gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_D_IG ||
+		 gpu_devid == PCI_DEVICE_ID_INTEL_IRONLAKE_M_IG) &&
+		device_iommu_mapped(&intel_private.pcidev->dev));
+}
+
+static bool intel_gtt_can_wc(void)
+{
+	if (INTEL_GTT_GEN <= 2)
+		return false;
+
+	if (INTEL_GTT_GEN >= 6)
+		return false;
+
+	/* Reports of major corruption with ILK vt'd enabled */
+	if (needs_ilk_vtd_wa())
+		return false;
+
+	return true;
+}
+
+static int intel_gtt_init(void)
+{
+	u32 gtt_map_size;
+	int ret, bar;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = intel_private.driver->setup();
 	if (ret != 0)
 		return ret;
 
+<<<<<<< HEAD
 	intel_private.base.gtt_mappable_entries = intel_gtt_mappable_entries();
 	intel_private.base.gtt_total_entries = intel_gtt_total_entries();
+=======
+	intel_private.gtt_mappable_entries = intel_gtt_mappable_entries();
+	intel_private.gtt_total_entries = intel_gtt_total_entries();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/* save the PGETBL reg for resume */
 	intel_private.PGETBL_save =
@@ -668,6 +867,7 @@ static int intel_gtt_init(void)
 
 	dev_info(&intel_private.bridge_dev->dev,
 			"detected gtt size: %dK total, %dK mappable\n",
+<<<<<<< HEAD
 			intel_private.base.gtt_total_entries * 4,
 			intel_private.base.gtt_mappable_entries * 4);
 
@@ -676,10 +876,26 @@ static int intel_gtt_init(void)
 	intel_private.gtt = ioremap(intel_private.gtt_bus_addr,
 				    gtt_map_size);
 	if (!intel_private.gtt) {
+=======
+			intel_private.gtt_total_entries * 4,
+			intel_private.gtt_mappable_entries * 4);
+
+	gtt_map_size = intel_private.gtt_total_entries * 4;
+
+	intel_private.gtt = NULL;
+	if (intel_gtt_can_wc())
+		intel_private.gtt = ioremap_wc(intel_private.gtt_phys_addr,
+					       gtt_map_size);
+	if (intel_private.gtt == NULL)
+		intel_private.gtt = ioremap(intel_private.gtt_phys_addr,
+					    gtt_map_size);
+	if (intel_private.gtt == NULL) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		intel_private.driver->cleanup();
 		iounmap(intel_private.registers);
 		return -ENOMEM;
 	}
+<<<<<<< HEAD
 	intel_private.base.gtt = intel_private.gtt;
 
 	global_cache_flush();   /* FIXME: ? */
@@ -687,6 +903,16 @@ static int intel_gtt_init(void)
 	intel_private.base.stolen_size = intel_gtt_stolen_size();
 
 	intel_private.base.needs_dmar = USE_PCI_DMA_API && INTEL_GTT_GEN > 2;
+=======
+
+#if IS_ENABLED(CONFIG_AGP_INTEL)
+	global_cache_flush();   /* FIXME: ? */
+#endif
+
+	intel_private.stolen_size = intel_gtt_stolen_size();
+
+	intel_private.needs_dmar = USE_PCI_DMA_API && INTEL_GTT_GEN > 2;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ret = intel_gtt_setup_scratch_page();
 	if (ret != 0) {
@@ -694,17 +920,42 @@ static int intel_gtt_init(void)
 		return ret;
 	}
 
+<<<<<<< HEAD
 	return 0;
 }
 
+=======
+	if (INTEL_GTT_GEN <= 2)
+		bar = I810_GMADR_BAR;
+	else
+		bar = I915_GMADR_BAR;
+
+	intel_private.gma_bus_addr = pci_bus_address(intel_private.pcidev, bar);
+	return 0;
+}
+
+#if IS_ENABLED(CONFIG_AGP_INTEL)
+static const struct aper_size_info_fixed intel_fake_agp_sizes[] = {
+	{32, 8192, 3},
+	{64, 16384, 4},
+	{128, 32768, 5},
+	{256, 65536, 6},
+	{512, 131072, 7},
+};
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int intel_fake_agp_fetch_size(void)
 {
 	int num_sizes = ARRAY_SIZE(intel_fake_agp_sizes);
 	unsigned int aper_size;
 	int i;
 
+<<<<<<< HEAD
 	aper_size = (intel_private.base.gtt_mappable_entries << PAGE_SHIFT)
 		    / MB(1);
+=======
+	aper_size = (intel_private.gtt_mappable_entries << PAGE_SHIFT) / MB(1);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	for (i = 0; i < num_sizes; i++) {
 		if (aper_size == intel_fake_agp_sizes[i].size) {
@@ -716,6 +967,10 @@ static int intel_fake_agp_fetch_size(void)
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static void i830_cleanup(void)
 {
@@ -764,6 +1019,7 @@ static void i830_write_entry(dma_addr_t addr, unsigned int entry,
 	if (flags ==  AGP_USER_CACHED_MEMORY)
 		pte_flags |= I830_PTE_SYSTEM_CACHED;
 
+<<<<<<< HEAD
 	writel(addr | pte_flags, intel_private.gtt + entry);
 }
 
@@ -784,6 +1040,15 @@ static bool intel_enable_gtt(void)
 	if (INTEL_GTT_GEN >= 6)
 	    return true;
 
+=======
+	writel_relaxed(addr | pte_flags, intel_private.gtt + entry);
+}
+
+bool intel_gmch_enable_gtt(void)
+{
+	u8 __iomem *reg;
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (INTEL_GTT_GEN == 2) {
 		u16 gmch_ctrl;
 
@@ -823,6 +1088,7 @@ static bool intel_enable_gtt(void)
 
 	return true;
 }
+<<<<<<< HEAD
 
 static int i830_setup(void)
 {
@@ -830,16 +1096,33 @@ static int i830_setup(void)
 
 	pci_read_config_dword(intel_private.pcidev, I810_MMADDR, &reg_addr);
 	reg_addr &= 0xfff80000;
+=======
+EXPORT_SYMBOL(intel_gmch_enable_gtt);
+
+static int i830_setup(void)
+{
+	phys_addr_t reg_addr;
+
+	reg_addr = pci_resource_start(intel_private.pcidev, I810_MMADR_BAR);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	intel_private.registers = ioremap(reg_addr, KB(64));
 	if (!intel_private.registers)
 		return -ENOMEM;
 
+<<<<<<< HEAD
 	intel_private.gtt_bus_addr = reg_addr + I810_PTE_BASE;
+=======
+	intel_private.gtt_phys_addr = reg_addr + I810_PTE_BASE;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_AGP_INTEL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int intel_fake_agp_create_gatt_table(struct agp_bridge_data *bridge)
 {
 	agp_bridge->gatt_table_real = NULL;
@@ -856,14 +1139,23 @@ static int intel_fake_agp_free_gatt_table(struct agp_bridge_data *bridge)
 
 static int intel_fake_agp_configure(void)
 {
+<<<<<<< HEAD
 	if (!intel_enable_gtt())
 	    return -EIO;
+=======
+	if (!intel_gmch_enable_gtt())
+		return -EIO;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	intel_private.clear_fake_agp = true;
 	agp_bridge->gart_bus_addr = intel_private.gma_bus_addr;
 
 	return 0;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static bool i830_check_flags(unsigned int flags)
 {
@@ -878,10 +1170,27 @@ static bool i830_check_flags(unsigned int flags)
 	return false;
 }
 
+<<<<<<< HEAD
 void intel_gtt_insert_sg_entries(struct scatterlist *sg_list,
 				 unsigned int sg_len,
 				 unsigned int pg_start,
 				 unsigned int flags)
+=======
+void intel_gmch_gtt_insert_page(dma_addr_t addr,
+				unsigned int pg,
+				unsigned int flags)
+{
+	intel_private.driver->write_entry(addr, pg, flags);
+	readl(intel_private.gtt + pg);
+	if (intel_private.driver->chipset_flush)
+		intel_private.driver->chipset_flush();
+}
+EXPORT_SYMBOL(intel_gmch_gtt_insert_page);
+
+void intel_gmch_gtt_insert_sg_entries(struct sg_table *st,
+				      unsigned int pg_start,
+				      unsigned int flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct scatterlist *sg;
 	unsigned int len, m;
@@ -891,6 +1200,7 @@ void intel_gtt_insert_sg_entries(struct scatterlist *sg_list,
 
 	/* sg may merge pages, but we have to separate
 	 * per-page addr for GTT */
+<<<<<<< HEAD
 	for_each_sg(sg_list, sg, sg_len, i) {
 		len = sg_dma_len(sg) >> PAGE_SHIFT;
 		for (m = 0; m < len; m++) {
@@ -906,6 +1216,27 @@ EXPORT_SYMBOL(intel_gtt_insert_sg_entries);
 
 void intel_gtt_insert_pages(unsigned int first_entry, unsigned int num_entries,
 			    struct page **pages, unsigned int flags)
+=======
+	for_each_sg(st->sgl, sg, st->nents, i) {
+		len = sg_dma_len(sg) >> PAGE_SHIFT;
+		for (m = 0; m < len; m++) {
+			dma_addr_t addr = sg_dma_address(sg) + (m << PAGE_SHIFT);
+			intel_private.driver->write_entry(addr, j, flags);
+			j++;
+		}
+	}
+	readl(intel_private.gtt + j - 1);
+	if (intel_private.driver->chipset_flush)
+		intel_private.driver->chipset_flush();
+}
+EXPORT_SYMBOL(intel_gmch_gtt_insert_sg_entries);
+
+#if IS_ENABLED(CONFIG_AGP_INTEL)
+static void intel_gmch_gtt_insert_pages(unsigned int first_entry,
+					unsigned int num_entries,
+					struct page **pages,
+					unsigned int flags)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	int i, j;
 
@@ -914,15 +1245,21 @@ void intel_gtt_insert_pages(unsigned int first_entry, unsigned int num_entries,
 		intel_private.driver->write_entry(addr,
 						  j, flags);
 	}
+<<<<<<< HEAD
 	readl(intel_private.gtt+j-1);
 }
 EXPORT_SYMBOL(intel_gtt_insert_pages);
+=======
+	wmb();
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int intel_fake_agp_insert_entries(struct agp_memory *mem,
 					 off_t pg_start, int type)
 {
 	int ret = -EINVAL;
 
+<<<<<<< HEAD
 	if (intel_private.base.do_idle_maps)
 		return -ENODEV;
 
@@ -930,6 +1267,12 @@ static int intel_fake_agp_insert_entries(struct agp_memory *mem,
 		int start = intel_private.base.stolen_size / PAGE_SIZE;
 		int end = intel_private.base.gtt_mappable_entries;
 		intel_gtt_clear_range(start, end - start);
+=======
+	if (intel_private.clear_fake_agp) {
+		int start = intel_private.stolen_size / PAGE_SIZE;
+		int end = intel_private.gtt_mappable_entries;
+		intel_gmch_gtt_clear_range(start, end - start);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		intel_private.clear_fake_agp = false;
 	}
 
@@ -939,7 +1282,11 @@ static int intel_fake_agp_insert_entries(struct agp_memory *mem,
 	if (mem->page_count == 0)
 		goto out;
 
+<<<<<<< HEAD
 	if (pg_start + mem->page_count > intel_private.base.gtt_total_entries)
+=======
+	if (pg_start + mem->page_count > intel_private.gtt_total_entries)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		goto out_err;
 
 	if (type != mem->type)
@@ -951,6 +1298,7 @@ static int intel_fake_agp_insert_entries(struct agp_memory *mem,
 	if (!mem->is_flushed)
 		global_cache_flush();
 
+<<<<<<< HEAD
 	if (intel_private.base.needs_dmar) {
 		ret = intel_gtt_map_memory(mem->pages, mem->page_count,
 					   &mem->sg_list, &mem->num_sg);
@@ -962,6 +1310,21 @@ static int intel_fake_agp_insert_entries(struct agp_memory *mem,
 	} else
 		intel_gtt_insert_pages(pg_start, mem->page_count, mem->pages,
 				       type);
+=======
+	if (intel_private.needs_dmar) {
+		struct sg_table st;
+
+		ret = intel_gtt_map_memory(mem->pages, mem->page_count, &st);
+		if (ret != 0)
+			return ret;
+
+		intel_gmch_gtt_insert_sg_entries(&st, pg_start, type);
+		mem->sg_list = st.sgl;
+		mem->num_sg = st.nents;
+	} else
+		intel_gmch_gtt_insert_pages(pg_start, mem->page_count, mem->pages,
+					    type);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 out:
 	ret = 0;
@@ -969,12 +1332,19 @@ out_err:
 	mem->is_flushed = true;
 	return ret;
 }
+<<<<<<< HEAD
 
 void intel_gtt_clear_range(unsigned int first_entry, unsigned int num_entries)
+=======
+#endif
+
+void intel_gmch_gtt_clear_range(unsigned int first_entry, unsigned int num_entries)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	unsigned int i;
 
 	for (i = first_entry; i < (first_entry + num_entries); i++) {
+<<<<<<< HEAD
 		intel_private.driver->write_entry(intel_private.base.scratch_page_dma,
 						  i, 0);
 	}
@@ -982,18 +1352,34 @@ void intel_gtt_clear_range(unsigned int first_entry, unsigned int num_entries)
 }
 EXPORT_SYMBOL(intel_gtt_clear_range);
 
+=======
+		intel_private.driver->write_entry(intel_private.scratch_page_dma,
+						  i, 0);
+	}
+	wmb();
+}
+EXPORT_SYMBOL(intel_gmch_gtt_clear_range);
+
+#if IS_ENABLED(CONFIG_AGP_INTEL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static int intel_fake_agp_remove_entries(struct agp_memory *mem,
 					 off_t pg_start, int type)
 {
 	if (mem->page_count == 0)
 		return 0;
 
+<<<<<<< HEAD
 	if (intel_private.base.do_idle_maps)
 		return -ENODEV;
 
 	intel_gtt_clear_range(pg_start, mem->page_count);
 
 	if (intel_private.base.needs_dmar) {
+=======
+	intel_gmch_gtt_clear_range(pg_start, mem->page_count);
+
+	if (intel_private.needs_dmar) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		intel_gtt_unmap_memory(mem->sg_list, mem->num_sg);
 		mem->sg_list = NULL;
 		mem->num_sg = 0;
@@ -1026,6 +1412,10 @@ static struct agp_memory *intel_fake_agp_alloc_by_type(size_t pg_count,
 	/* always return NULL for other allocation types for now */
 	return NULL;
 }
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static int intel_alloc_chipset_flush_resource(void)
 {
@@ -1113,7 +1503,11 @@ static void intel_i9xx_setup_flush(void)
 	}
 
 	if (intel_private.ifp_resource.start)
+<<<<<<< HEAD
 		intel_private.i9xx_flush_page = ioremap_nocache(intel_private.ifp_resource.start, PAGE_SIZE);
+=======
+		intel_private.i9xx_flush_page = ioremap(intel_private.ifp_resource.start, PAGE_SIZE);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (!intel_private.i9xx_flush_page)
 		dev_err(&intel_private.pcidev->dev,
 			"can't ioremap flush page - no chipset flushing\n");
@@ -1131,6 +1525,10 @@ static void i9xx_cleanup(void)
 
 static void i9xx_chipset_flush(void)
 {
+<<<<<<< HEAD
+=======
+	wmb();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (intel_private.i9xx_flush_page)
 		writel(1, intel_private.i9xx_flush_page);
 }
@@ -1147,6 +1545,7 @@ static void i965_write_entry(dma_addr_t addr,
 
 	/* Shift high bits down */
 	addr |= (addr >> 28) & 0xf0;
+<<<<<<< HEAD
 	writel(addr | pte_flags, intel_private.gtt + entry);
 }
 
@@ -1200,10 +1599,14 @@ static inline int needs_idle_maps(void)
 		return 1;
 #endif
 	return 0;
+=======
+	writel_relaxed(addr | pte_flags, intel_private.gtt + entry);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 static int i9xx_setup(void)
 {
+<<<<<<< HEAD
 	u32 reg_addr;
 
 	pci_read_config_dword(intel_private.pcidev, I915_MMADDR, &reg_addr);
@@ -1239,11 +1642,39 @@ static int i9xx_setup(void)
 	if (needs_idle_maps())
 		intel_private.base.do_idle_maps = 1;
 
+=======
+	phys_addr_t reg_addr;
+	int size = KB(512);
+
+	reg_addr = pci_resource_start(intel_private.pcidev, I915_MMADR_BAR);
+
+	intel_private.registers = ioremap(reg_addr, size);
+	if (!intel_private.registers)
+		return -ENOMEM;
+
+	switch (INTEL_GTT_GEN) {
+	case 3:
+		intel_private.gtt_phys_addr =
+			pci_resource_start(intel_private.pcidev, I915_PTE_BAR);
+		break;
+	case 5:
+		intel_private.gtt_phys_addr = reg_addr + MB(2);
+		break;
+	default:
+		intel_private.gtt_phys_addr = reg_addr + KB(512);
+		break;
+	}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	intel_i9xx_setup_flush();
 
 	return 0;
 }
 
+<<<<<<< HEAD
+=======
+#if IS_ENABLED(CONFIG_AGP_INTEL)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static const struct agp_bridge_driver intel_fake_agp_driver = {
 	.owner			= THIS_MODULE,
 	.size_type		= FIXED_APER_SIZE,
@@ -1265,6 +1696,10 @@ static const struct agp_bridge_driver intel_fake_agp_driver = {
 	.agp_destroy_page	= agp_generic_destroy_page,
 	.agp_destroy_pages      = agp_generic_destroy_pages,
 };
+<<<<<<< HEAD
+=======
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static const struct intel_gtt_driver i81x_gtt_driver = {
 	.gen = 1,
@@ -1345,6 +1780,7 @@ static const struct intel_gtt_driver ironlake_gtt_driver = {
 	.check_flags = i830_check_flags,
 	.chipset_flush = i9xx_chipset_flush,
 };
+<<<<<<< HEAD
 static const struct intel_gtt_driver sandybridge_gtt_driver = {
 	.gen = 6,
 	.setup = i9xx_setup,
@@ -1354,6 +1790,8 @@ static const struct intel_gtt_driver sandybridge_gtt_driver = {
 	.check_flags = gen6_check_flags,
 	.chipset_flush = i9xx_chipset_flush,
 };
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /* Table to describe Intel GMCH and AGP/PCIE GART drivers.  At least one of
  * driver and gmch_driver must be non-null, and find_gmch will determine
@@ -1434,6 +1872,7 @@ static const struct intel_gtt_driver_description {
 	    "HD Graphics", &ironlake_gtt_driver },
 	{ PCI_DEVICE_ID_INTEL_IRONLAKE_M_IG,
 	    "HD Graphics", &ironlake_gtt_driver },
+<<<<<<< HEAD
 	{ PCI_DEVICE_ID_INTEL_SANDYBRIDGE_GT1_IG,
 	    "Sandybridge", &sandybridge_gtt_driver },
 	{ PCI_DEVICE_ID_INTEL_SANDYBRIDGE_GT2_IG,
@@ -1460,6 +1899,8 @@ static const struct intel_gtt_driver_description {
 	    "Ivybridge", &sandybridge_gtt_driver },
 	{ PCI_DEVICE_ID_INTEL_IVYBRIDGE_S_GT2_IG,
 	    "Ivybridge", &sandybridge_gtt_driver },
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	{ 0, NULL, NULL }
 };
 
@@ -1480,6 +1921,7 @@ static int find_gmch(u16 device)
 	return 1;
 }
 
+<<<<<<< HEAD
 int intel_gmch_probe(struct pci_dev *pdev,
 				      struct agp_bridge_data *bridge)
 {
@@ -1488,6 +1930,24 @@ int intel_gmch_probe(struct pci_dev *pdev,
 
 	for (i = 0; intel_gtt_chipsets[i].name != NULL; i++) {
 		if (find_gmch(intel_gtt_chipsets[i].gmch_chip_id)) {
+=======
+int intel_gmch_probe(struct pci_dev *bridge_pdev, struct pci_dev *gpu_pdev,
+		     struct agp_bridge_data *bridge)
+{
+	int i, mask;
+
+	for (i = 0; intel_gtt_chipsets[i].name != NULL; i++) {
+		if (gpu_pdev) {
+			if (gpu_pdev->device ==
+			    intel_gtt_chipsets[i].gmch_chip_id) {
+				intel_private.pcidev = pci_dev_get(gpu_pdev);
+				intel_private.driver =
+					intel_gtt_chipsets[i].gtt_driver;
+
+				break;
+			}
+		} else if (find_gmch(intel_gtt_chipsets[i].gmch_chip_id)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 			intel_private.driver =
 				intel_gtt_chipsets[i].gtt_driver;
 			break;
@@ -1497,6 +1957,7 @@ int intel_gmch_probe(struct pci_dev *pdev,
 	if (!intel_private.driver)
 		return 0;
 
+<<<<<<< HEAD
 	bridge->driver = &intel_fake_agp_driver;
 	bridge->dev_private_data = &intel_private;
 	bridge->dev = pdev;
@@ -1518,11 +1979,54 @@ int intel_gmch_probe(struct pci_dev *pdev,
 
 	if (intel_gtt_init() != 0)
 		return 0;
+=======
+#if IS_ENABLED(CONFIG_AGP_INTEL)
+	if (bridge) {
+		if (INTEL_GTT_GEN > 1)
+			return 0;
+
+		bridge->driver = &intel_fake_agp_driver;
+		bridge->dev_private_data = &intel_private;
+		bridge->dev = bridge_pdev;
+	}
+#endif
+
+
+	/*
+	 * Can be called from the fake agp driver but also directly from
+	 * drm/i915.ko. Hence we need to check whether everything is set up
+	 * already.
+	 */
+	if (intel_private.refcount++)
+		return 1;
+
+	intel_private.bridge_dev = pci_dev_get(bridge_pdev);
+
+	dev_info(&bridge_pdev->dev, "Intel %s Chipset\n", intel_gtt_chipsets[i].name);
+
+	if (bridge) {
+		mask = intel_private.driver->dma_mask_size;
+		if (dma_set_mask(&intel_private.pcidev->dev, DMA_BIT_MASK(mask)))
+			dev_err(&intel_private.pcidev->dev,
+				"set gfx device dma mask %d-bit failed!\n",
+				mask);
+		else
+			dma_set_coherent_mask(&intel_private.pcidev->dev,
+					      DMA_BIT_MASK(mask));
+	}
+
+	if (intel_gtt_init() != 0) {
+		intel_gmch_remove();
+
+		return 0;
+	}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return 1;
 }
 EXPORT_SYMBOL(intel_gmch_probe);
 
+<<<<<<< HEAD
 const struct intel_gtt *intel_gtt_get(void)
 {
 	return &intel_private.base;
@@ -1530,20 +2034,53 @@ const struct intel_gtt *intel_gtt_get(void)
 EXPORT_SYMBOL(intel_gtt_get);
 
 void intel_gtt_chipset_flush(void)
+=======
+void intel_gmch_gtt_get(u64 *gtt_total,
+			phys_addr_t *mappable_base,
+			resource_size_t *mappable_end)
+{
+	*gtt_total = intel_private.gtt_total_entries << PAGE_SHIFT;
+	*mappable_base = intel_private.gma_bus_addr;
+	*mappable_end = intel_private.gtt_mappable_entries << PAGE_SHIFT;
+}
+EXPORT_SYMBOL(intel_gmch_gtt_get);
+
+void intel_gmch_gtt_flush(void)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (intel_private.driver->chipset_flush)
 		intel_private.driver->chipset_flush();
 }
+<<<<<<< HEAD
 EXPORT_SYMBOL(intel_gtt_chipset_flush);
 
 void intel_gmch_remove(struct pci_dev *pdev)
 {
+=======
+EXPORT_SYMBOL(intel_gmch_gtt_flush);
+
+void intel_gmch_remove(void)
+{
+	if (--intel_private.refcount)
+		return;
+
+	if (intel_private.scratch_page)
+		intel_gtt_teardown_scratch_page();
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	if (intel_private.pcidev)
 		pci_dev_put(intel_private.pcidev);
 	if (intel_private.bridge_dev)
 		pci_dev_put(intel_private.bridge_dev);
+<<<<<<< HEAD
 }
 EXPORT_SYMBOL(intel_gmch_remove);
 
 MODULE_AUTHOR("Dave Jones <davej@redhat.com>");
+=======
+	intel_private.driver = NULL;
+}
+EXPORT_SYMBOL(intel_gmch_remove);
+
+MODULE_AUTHOR("Dave Jones, Various @Intel");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 MODULE_LICENSE("GPL and additional rights");

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /*
  * btree.h
  * 
@@ -11,3 +12,17 @@ int befs_btree_read(struct super_block *sb, befs_data_stream * ds,
 		    loff_t key_no, size_t bufsize, char *keybuf,
 		    size_t * keysize, befs_off_t * value);
 
+=======
+/* SPDX-License-Identifier: GPL-2.0 */
+/*
+ * btree.h
+ *
+ */
+
+int befs_btree_find(struct super_block *sb, const befs_data_stream *ds,
+		    const char *key, befs_off_t *value);
+
+int befs_btree_read(struct super_block *sb, const befs_data_stream *ds,
+		    loff_t key_no, size_t bufsize, char *keybuf,
+		    size_t *keysize, befs_off_t *value);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

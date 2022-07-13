@@ -8,6 +8,7 @@
  */
 
 #include <linux/init.h>
+<<<<<<< HEAD
 #include <linux/of_platform.h>
 #include <asm/prom.h>
 
@@ -82,20 +83,48 @@ void machine_restart(char *cmd)
 void machine_shutdown(void)
 {
 	printk(KERN_NOTICE "Machine shutdown...\n");
+=======
+#include <linux/delay.h>
+#include <linux/reboot.h>
+
+void machine_shutdown(void)
+{
+	pr_notice("Machine shutdown...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (1)
 		;
 }
 
 void machine_halt(void)
 {
+<<<<<<< HEAD
 	printk(KERN_NOTICE "Machine halt...\n");
+=======
+	pr_notice("Machine halt...\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	while (1)
 		;
 }
 
 void machine_power_off(void)
 {
+<<<<<<< HEAD
 	printk(KERN_NOTICE "Machine power off...\n");
 	while (1)
 		;
 }
+=======
+	pr_notice("Machine power off...\n");
+	while (1)
+		;
+}
+
+void machine_restart(char *cmd)
+{
+	do_kernel_restart(cmd);
+	/* Give the restart hook 1 s to take us down */
+	mdelay(1000);
+	pr_emerg("Reboot failed -- System halted\n");
+	while (1);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

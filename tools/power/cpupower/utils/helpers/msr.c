@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #if defined(__i386__) || defined(__x86_64__)
 
 #include <fcntl.h>
@@ -10,7 +14,10 @@
 /* Intel specific MSRs */
 #define MSR_IA32_PERF_STATUS		0x198
 #define MSR_IA32_MISC_ENABLES		0x1a0
+<<<<<<< HEAD
 #define MSR_IA32_ENERGY_PERF_BIAS	0x1b0
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define MSR_NEHALEM_TURBO_RATIO_LIMIT	0x1ad
 
 /*
@@ -72,6 +79,7 @@ int write_msr(int cpu, unsigned int idx, unsigned long long val)
 	return -1;
 }
 
+<<<<<<< HEAD
 int msr_intel_get_perf_bias(unsigned int cpu)
 {
 	unsigned long long val;
@@ -99,6 +107,8 @@ int msr_intel_set_perf_bias(unsigned int cpu, unsigned int val)
 	return 0;
 }
 
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 unsigned long long msr_intel_get_turbo_ratio(unsigned int cpu)
 {
 	unsigned long long val;

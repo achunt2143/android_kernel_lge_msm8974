@@ -1,12 +1,19 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: GPL-2.0-or-later */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /* RxRPC key type
  *
  * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
  * Written by David Howells (dhowells@redhat.com)
+<<<<<<< HEAD
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #ifndef _KEYS_RXRPC_TYPE_H
@@ -32,6 +39,7 @@ struct rxkad_key {
 	u8	primary_flag;		/* T if key for primary cell for this user */
 	u16	ticket_len;		/* length of ticket[] */
 	u8	session_key[8];		/* DES session key */
+<<<<<<< HEAD
 	u8	ticket[0];		/* the encrypted ticket */
 };
 
@@ -81,6 +89,9 @@ struct rxk5_key {
 	u8			*ticket2;	/* second krb5 ticket, if related to ticket (via
 						 * DUPLICATE-SKEY or ENC-TKT-IN-SKEY) */
 	struct krb5_tagged_data *authdata;	/* authorisation data */
+=======
+	u8	ticket[];		/* the encrypted ticket */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -88,10 +99,17 @@ struct rxk5_key {
  */
 struct rxrpc_key_token {
 	u16	security_index;		/* RxRPC header security index */
+<<<<<<< HEAD
 	struct rxrpc_key_token *next;	/* the next token in the list */
 	union {
 		struct rxkad_key *kad;
 		struct rxk5_key *k5;
+=======
+	bool	no_leak_key;		/* Don't copy the key to userspace */
+	struct rxrpc_key_token *next;	/* the next token in the list */
+	union {
+		struct rxkad_key *kad;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	};
 };
 
@@ -104,7 +122,11 @@ struct rxrpc_key_data_v1 {
 	u32		expiry;			/* time_t */
 	u32		kvno;
 	u8		session_key[8];
+<<<<<<< HEAD
 	u8		ticket[0];
+=======
+	u8		ticket[];
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 
 /*
@@ -120,11 +142,37 @@ struct rxrpc_key_data_v1 {
 #define AFSTOKEN_RK_TIX_MAX		12000	/* max RxKAD ticket size */
 #define AFSTOKEN_GK_KEY_MAX		64	/* max GSSAPI key size */
 #define AFSTOKEN_GK_TOKEN_MAX		16384	/* max GSSAPI token size */
+<<<<<<< HEAD
 #define AFSTOKEN_K5_COMPONENTS_MAX	16	/* max K5 components */
 #define AFSTOKEN_K5_NAME_MAX		128	/* max K5 name length */
 #define AFSTOKEN_K5_REALM_MAX		64	/* max K5 realm name length */
 #define AFSTOKEN_K5_TIX_MAX		16384	/* max K5 ticket size */
 #define AFSTOKEN_K5_ADDRESSES_MAX	16	/* max K5 addresses */
 #define AFSTOKEN_K5_AUTHDATA_MAX	16	/* max K5 pieces of auth data */
+=======
+
+/*
+ * Truncate a time64_t to the range from 1970 to 2106 as in the network
+ * protocol.
+ */
+static inline u32 rxrpc_time64_to_u32(time64_t time)
+{
+	if (time < 0)
+		return 0;
+
+	if (time > UINT_MAX)
+		return UINT_MAX;
+
+	return (u32)time;
+}
+
+/*
+ * Extend u32 back to time64_t using the same 1970-2106 range.
+ */
+static inline time64_t rxrpc_u32_to_time64(u32 time)
+{
+	return (time64_t)time;
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #endif /* _KEYS_RXRPC_TYPE_H */

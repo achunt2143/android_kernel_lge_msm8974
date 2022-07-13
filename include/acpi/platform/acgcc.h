@@ -1,7 +1,12 @@
+<<<<<<< HEAD
+=======
+/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /******************************************************************************
  *
  * Name: acgcc.h - GCC specific defines, etc.
  *
+<<<<<<< HEAD
  *****************************************************************************/
 
 /*
@@ -44,6 +49,23 @@
 #ifndef __ACGCC_H__
 #define __ACGCC_H__
 
+=======
+ * Copyright (C) 2000 - 2023, Intel Corp.
+ *
+ *****************************************************************************/
+
+#ifndef __ACGCC_H__
+#define __ACGCC_H__
+
+#ifndef va_arg
+#ifdef __KERNEL__
+#include <linux/stdarg.h>
+#else
+#include <stdarg.h>
+#endif /* __KERNEL__ */
+#endif /* ! va_arg */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define ACPI_INLINE             __inline__
 
 /* Function name is used for debug output. Non-ANSI, compiler-dependent */
@@ -64,8 +86,45 @@
  */
 #define ACPI_UNUSED_VAR __attribute__ ((unused))
 
+<<<<<<< HEAD
 #ifdef _ANSI
 #define inline
 #endif
 
+=======
+/* GCC supports __VA_ARGS__ in macros */
+
+#define COMPILER_VA_MACRO               1
+
+/* GCC supports native multiply/shift on 32-bit platforms */
+
+#define ACPI_USE_NATIVE_MATH64
+
+/* GCC did not support __has_attribute until 5.1. */
+
+#ifndef __has_attribute
+#define __has_attribute(x) 0
+#endif
+
+/*
+ * Explicitly mark intentional explicit fallthrough to silence
+ * -Wimplicit-fallthrough in GCC 7.1+.
+ */
+
+#if __has_attribute(__fallthrough__)
+#define ACPI_FALLTHROUGH __attribute__((__fallthrough__))
+#endif
+
+/*
+ * Flexible array members are not allowed to be part of a union under
+ * C99, but this is not for any technical reason. Work around the
+ * limitation.
+ */
+#define ACPI_FLEX_ARRAY(TYPE, NAME)             \
+        struct {                                \
+                struct { } __Empty_ ## NAME;    \
+                TYPE NAME[];                    \
+        }
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #endif				/* __ACGCC_H__ */

@@ -1,23 +1,42 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) ST-Ericsson SA 2010
  *
  * License Terms: GNU General Public License v2
+=======
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) ST-Ericsson SA 2010
+ *
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Author: Sundar Iyer <sundar.iyer@stericsson.com> for ST-Ericsson
  *
  * AB8500 Power-On Key handler
  */
 
+<<<<<<< HEAD
+=======
+#include <linux/device.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/input.h>
 #include <linux/interrupt.h>
 #include <linux/mfd/abx500/ab8500.h>
+<<<<<<< HEAD
+=======
+#include <linux/of.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/slab.h>
 
 /**
  * struct ab8500_ponkey - ab8500 ponkey information
+<<<<<<< HEAD
  * @input_dev: pointer to input device
+=======
+ * @idev: pointer to input device
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * @ab8500: ab8500 parent
  * @irq_dbf: irq number for falling transition
  * @irq_dbr: irq number for rising transition
@@ -44,7 +63,11 @@ static irqreturn_t ab8500_ponkey_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
+<<<<<<< HEAD
 static int __devinit ab8500_ponkey_probe(struct platform_device *pdev)
+=======
+static int ab8500_ponkey_probe(struct platform_device *pdev)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	struct ab8500 *ab8500 = dev_get_drvdata(pdev->dev.parent);
 	struct ab8500_ponkey *ponkey;
@@ -53,6 +76,7 @@ static int __devinit ab8500_ponkey_probe(struct platform_device *pdev)
 	int error;
 
 	irq_dbf = platform_get_irq_byname(pdev, "ONKEY_DBF");
+<<<<<<< HEAD
 	if (irq_dbf < 0) {
 		dev_err(&pdev->dev, "No IRQ for ONKEY_DBF, error=%d\n", irq_dbf);
 		return irq_dbf;
@@ -70,6 +94,23 @@ static int __devinit ab8500_ponkey_probe(struct platform_device *pdev)
 		error = -ENOMEM;
 		goto err_free_mem;
 	}
+=======
+	if (irq_dbf < 0)
+		return irq_dbf;
+
+	irq_dbr = platform_get_irq_byname(pdev, "ONKEY_DBR");
+	if (irq_dbr < 0)
+		return irq_dbr;
+
+	ponkey = devm_kzalloc(&pdev->dev, sizeof(struct ab8500_ponkey),
+			      GFP_KERNEL);
+	if (!ponkey)
+		return -ENOMEM;
+
+	input = devm_input_allocate_device(&pdev->dev);
+	if (!input)
+		return -ENOMEM;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	ponkey->idev = input;
 	ponkey->ab8500 = ab8500;
@@ -81,6 +122,7 @@ static int __devinit ab8500_ponkey_probe(struct platform_device *pdev)
 
 	input_set_capability(input, EV_KEY, KEY_POWER);
 
+<<<<<<< HEAD
 	error = request_any_context_irq(ponkey->irq_dbf, ab8500_ponkey_handler,
 					0, "ab8500-ponkey-dbf", ponkey);
 	if (error < 0) {
@@ -95,11 +137,30 @@ static int __devinit ab8500_ponkey_probe(struct platform_device *pdev)
 		dev_err(ab8500->dev, "Failed to request dbr IRQ#%d: %d\n",
 			ponkey->irq_dbr, error);
 		goto err_free_dbf_irq;
+=======
+	error = devm_request_any_context_irq(&pdev->dev, ponkey->irq_dbf,
+					     ab8500_ponkey_handler, 0,
+					     "ab8500-ponkey-dbf", ponkey);
+	if (error < 0) {
+		dev_err(ab8500->dev, "Failed to request dbf IRQ#%d: %d\n",
+			ponkey->irq_dbf, error);
+		return error;
+	}
+
+	error = devm_request_any_context_irq(&pdev->dev, ponkey->irq_dbr,
+					     ab8500_ponkey_handler, 0,
+					     "ab8500-ponkey-dbr", ponkey);
+	if (error < 0) {
+		dev_err(ab8500->dev, "Failed to request dbr IRQ#%d: %d\n",
+			ponkey->irq_dbr, error);
+		return error;
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	}
 
 	error = input_register_device(ponkey->idev);
 	if (error) {
 		dev_err(ab8500->dev, "Can't register input device: %d\n", error);
+<<<<<<< HEAD
 		goto err_free_dbr_irq;
 	}
 
@@ -138,6 +199,28 @@ static struct platform_driver ab8500_ponkey_driver = {
 	},
 	.probe		= ab8500_ponkey_probe,
 	.remove		= __devexit_p(ab8500_ponkey_remove),
+=======
+		return error;
+	}
+
+	return 0;
+}
+
+#ifdef CONFIG_OF
+static const struct of_device_id ab8500_ponkey_match[] = {
+	{ .compatible = "stericsson,ab8500-ponkey", },
+	{}
+};
+MODULE_DEVICE_TABLE(of, ab8500_ponkey_match);
+#endif
+
+static struct platform_driver ab8500_ponkey_driver = {
+	.driver		= {
+		.name	= "ab8500-poweron-key",
+		.of_match_table = of_match_ptr(ab8500_ponkey_match),
+	},
+	.probe		= ab8500_ponkey_probe,
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 };
 module_platform_driver(ab8500_ponkey_driver);
 

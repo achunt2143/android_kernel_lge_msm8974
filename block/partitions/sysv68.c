@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  fs/partitions/sysv68.c
  *
@@ -5,7 +9,10 @@
  */
 
 #include "check.h"
+<<<<<<< HEAD
 #include "sysv68.h"
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  *	Volume ID structure: on first 256-bytes sector of disk

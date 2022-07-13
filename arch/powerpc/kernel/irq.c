@@ -1,3 +1,7 @@
+<<<<<<< HEAD
+=======
+// SPDX-License-Identifier: GPL-2.0-or-later
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /*
  *  Derived from arch/i386/kernel/irq.c
  *    Copyright (C) 1992 Linus Torvalds
@@ -8,11 +12,14 @@
  *  Adapted for Power Macintosh by Paul Mackerras
  *    Copyright (C) 1996 Paul Mackerras (paulus@cs.anu.edu.au)
  *
+<<<<<<< HEAD
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License
  * as published by the Free Software Foundation; either version
  * 2 of the License, or (at your option) any later version.
  *
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This file contains the code used by various IRQ handling routines:
  * asking for different IRQ's should be done through these routines
  * instead of just grabbing them. Thus setups with different IRQ numbers
@@ -24,7 +31,11 @@
  * mask register (of which only 16 are defined), hence the weird shifting
  * and complement of the cached_irq_mask.  I want to be able to stuff
  * this right into the SIU SMASK register.
+<<<<<<< HEAD
  * Many of the prep/chrp functions are conditional compiled on CONFIG_8xx
+=======
+ * Many of the prep/chrp functions are conditional compiled on CONFIG_PPC_8xx
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * to reduce code space and undefined function references.
  */
 
@@ -50,11 +61,15 @@
 #include <linux/list.h>
 #include <linux/radix-tree.h>
 #include <linux/mutex.h>
+<<<<<<< HEAD
 #include <linux/bootmem.h>
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <linux/pci.h>
 #include <linux/debugfs.h>
 #include <linux/of.h>
 #include <linux/of_irq.h>
+<<<<<<< HEAD
 
 #include <asm/uaccess.h>
 #include <asm/io.h>
@@ -62,10 +77,22 @@
 #include <asm/irq.h>
 #include <asm/cache.h>
 #include <asm/prom.h>
+=======
+#include <linux/vmalloc.h>
+#include <linux/pgtable.h>
+#include <linux/static_call.h>
+
+#include <linux/uaccess.h>
+#include <asm/interrupt.h>
+#include <asm/io.h>
+#include <asm/irq.h>
+#include <asm/cache.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #include <asm/ptrace.h>
 #include <asm/machdep.h>
 #include <asm/udbg.h>
 #include <asm/smp.h>
+<<<<<<< HEAD
 #include <asm/debug.h>
 
 #ifdef CONFIG_PPC64
@@ -75,18 +102,32 @@
 #endif
 #define CREATE_TRACE_POINTS
 #include <asm/trace.h>
+=======
+#include <asm/hw_irq.h>
+#include <asm/softirq_stack.h>
+#include <asm/ppc_asm.h>
+
+#define CREATE_TRACE_POINTS
+#include <asm/trace.h>
+#include <asm/cpu_has_feature.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 DEFINE_PER_CPU_SHARED_ALIGNED(irq_cpustat_t, irq_stat);
 EXPORT_PER_CPU_SYMBOL(irq_stat);
 
+<<<<<<< HEAD
 int __irq_offset_value;
 
 #ifdef CONFIG_PPC32
 EXPORT_SYMBOL(__irq_offset_value);
+=======
+#ifdef CONFIG_PPC32
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 atomic_t ppc_n_lost_interrupts;
 
 #ifdef CONFIG_TAU_INT
 extern int tau_initialized;
+<<<<<<< HEAD
 extern int tau_interrupts(int);
 #endif
 #endif /* CONFIG_PPC32 */
@@ -334,6 +375,12 @@ bool prep_irq_for_idle(void)
 
 #endif /* CONFIG_PPC64 */
 
+=======
+u32 tau_interrupts(unsigned long cpu);
+#endif
+#endif /* CONFIG_PPC32 */
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 int arch_show_interrupts(struct seq_file *p, int prec)
 {
 	int j;
@@ -349,15 +396,34 @@ int arch_show_interrupts(struct seq_file *p, int prec)
 
 	seq_printf(p, "%*s: ", prec, "LOC");
 	for_each_online_cpu(j)
+<<<<<<< HEAD
 		seq_printf(p, "%10u ", per_cpu(irq_stat, j).timer_irqs);
         seq_printf(p, "  Local timer interrupts\n");
+=======
+		seq_printf(p, "%10u ", per_cpu(irq_stat, j).timer_irqs_event);
+        seq_printf(p, "  Local timer interrupts for timer event device\n");
+
+	seq_printf(p, "%*s: ", prec, "BCT");
+	for_each_online_cpu(j)
+		seq_printf(p, "%10u ", per_cpu(irq_stat, j).broadcast_irqs_event);
+	seq_printf(p, "  Broadcast timer interrupts for timer event device\n");
+
+	seq_printf(p, "%*s: ", prec, "LOC");
+	for_each_online_cpu(j)
+		seq_printf(p, "%10u ", per_cpu(irq_stat, j).timer_irqs_others);
+        seq_printf(p, "  Local timer interrupts for others\n");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	seq_printf(p, "%*s: ", prec, "SPU");
 	for_each_online_cpu(j)
 		seq_printf(p, "%10u ", per_cpu(irq_stat, j).spurious_irqs);
 	seq_printf(p, "  Spurious interrupts\n");
 
+<<<<<<< HEAD
 	seq_printf(p, "%*s: ", prec, "CNT");
+=======
+	seq_printf(p, "%*s: ", prec, "PMI");
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	for_each_online_cpu(j)
 		seq_printf(p, "%10u ", per_cpu(irq_stat, j).pmu_irqs);
 	seq_printf(p, "  Performance monitoring interrupts\n");
@@ -367,6 +433,39 @@ int arch_show_interrupts(struct seq_file *p, int prec)
 		seq_printf(p, "%10u ", per_cpu(irq_stat, j).mce_exceptions);
 	seq_printf(p, "  Machine check exceptions\n");
 
+<<<<<<< HEAD
+=======
+#ifdef CONFIG_PPC_BOOK3S_64
+	if (cpu_has_feature(CPU_FTR_HVMODE)) {
+		seq_printf(p, "%*s: ", prec, "HMI");
+		for_each_online_cpu(j)
+			seq_printf(p, "%10u ", paca_ptrs[j]->hmi_irqs);
+		seq_printf(p, "  Hypervisor Maintenance Interrupts\n");
+	}
+#endif
+
+	seq_printf(p, "%*s: ", prec, "NMI");
+	for_each_online_cpu(j)
+		seq_printf(p, "%10u ", per_cpu(irq_stat, j).sreset_irqs);
+	seq_printf(p, "  System Reset interrupts\n");
+
+#ifdef CONFIG_PPC_WATCHDOG
+	seq_printf(p, "%*s: ", prec, "WDG");
+	for_each_online_cpu(j)
+		seq_printf(p, "%10u ", per_cpu(irq_stat, j).soft_nmi_irqs);
+	seq_printf(p, "  Watchdog soft-NMI interrupts\n");
+#endif
+
+#ifdef CONFIG_PPC_DOORBELL
+	if (cpu_has_feature(CPU_FTR_DBELL)) {
+		seq_printf(p, "%*s: ", prec, "DBL");
+		for_each_online_cpu(j)
+			seq_printf(p, "%10u ", per_cpu(irq_stat, j).doorbell_irqs);
+		seq_printf(p, "  Doorbell interrupts\n");
+	}
+#endif
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return 0;
 }
 
@@ -375,15 +474,36 @@ int arch_show_interrupts(struct seq_file *p, int prec)
  */
 u64 arch_irq_stat_cpu(unsigned int cpu)
 {
+<<<<<<< HEAD
 	u64 sum = per_cpu(irq_stat, cpu).timer_irqs;
 
 	sum += per_cpu(irq_stat, cpu).pmu_irqs;
 	sum += per_cpu(irq_stat, cpu).mce_exceptions;
 	sum += per_cpu(irq_stat, cpu).spurious_irqs;
+=======
+	u64 sum = per_cpu(irq_stat, cpu).timer_irqs_event;
+
+	sum += per_cpu(irq_stat, cpu).broadcast_irqs_event;
+	sum += per_cpu(irq_stat, cpu).pmu_irqs;
+	sum += per_cpu(irq_stat, cpu).mce_exceptions;
+	sum += per_cpu(irq_stat, cpu).spurious_irqs;
+	sum += per_cpu(irq_stat, cpu).timer_irqs_others;
+#ifdef CONFIG_PPC_BOOK3S_64
+	sum += paca_ptrs[cpu]->hmi_irqs;
+#endif
+	sum += per_cpu(irq_stat, cpu).sreset_irqs;
+#ifdef CONFIG_PPC_WATCHDOG
+	sum += per_cpu(irq_stat, cpu).soft_nmi_irqs;
+#endif
+#ifdef CONFIG_PPC_DOORBELL
+	sum += per_cpu(irq_stat, cpu).doorbell_irqs;
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	return sum;
 }
 
+<<<<<<< HEAD
 #ifdef CONFIG_HOTPLUG_CPU
 void migrate_irqs(void)
 {
@@ -487,19 +607,69 @@ static inline void check_stack_overflow(void)
 void do_IRQ(struct pt_regs *regs)
 {
 	struct pt_regs *old_regs = set_irq_regs(regs);
+=======
+static inline void check_stack_overflow(unsigned long sp)
+{
+	if (!IS_ENABLED(CONFIG_DEBUG_STACKOVERFLOW))
+		return;
+
+	sp &= THREAD_SIZE - 1;
+
+	/* check for stack overflow: is there less than 1/4th free? */
+	if (unlikely(sp < THREAD_SIZE / 4)) {
+		pr_err("do_IRQ: stack overflow: %ld\n", sp);
+		dump_stack();
+	}
+}
+
+#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+static __always_inline void call_do_softirq(const void *sp)
+{
+	/* Temporarily switch r1 to sp, call __do_softirq() then restore r1. */
+	asm volatile (
+		 PPC_STLU "	%%r1, %[offset](%[sp])	;"
+		"mr		%%r1, %[sp]		;"
+#ifdef CONFIG_PPC_KERNEL_PCREL
+		"bl		%[callee]@notoc		;"
+#else
+		"bl		%[callee]		;"
+#endif
+		 PPC_LL "	%%r1, 0(%%r1)		;"
+		 : // Outputs
+		 : // Inputs
+		   [sp] "b" (sp), [offset] "i" (THREAD_SIZE - STACK_FRAME_MIN_SIZE),
+		   [callee] "i" (__do_softirq)
+		 : // Clobbers
+		   "lr", "xer", "ctr", "memory", "cr0", "cr1", "cr5", "cr6",
+		   "cr7", "r0", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r10",
+		   "r11", "r12"
+	);
+}
+#endif
+
+DEFINE_STATIC_CALL_RET0(ppc_get_irq, *ppc_md.get_irq);
+
+static void __do_irq(struct pt_regs *regs, unsigned long oldsp)
+{
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	unsigned int irq;
 
 	trace_irq_entry(regs);
 
+<<<<<<< HEAD
 	irq_enter();
 
 	check_stack_overflow();
+=======
+	check_stack_overflow(oldsp);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	/*
 	 * Query the platform PIC for the interrupt & ack it.
 	 *
 	 * This will typically lower the interrupt line to the CPU
 	 */
+<<<<<<< HEAD
 	irq = ppc_md.get_irq();
 
 	/* We can hard enable interrupts now */
@@ -513,10 +683,24 @@ void do_IRQ(struct pt_regs *regs)
 
 	irq_exit();
 	set_irq_regs(old_regs);
+=======
+	irq = static_call(ppc_get_irq)();
+
+	/* We can hard enable interrupts now to allow perf interrupts */
+	if (should_hard_irq_enable(regs))
+		do_hard_irq_enable();
+
+	/* And finally process it */
+	if (unlikely(!irq))
+		__this_cpu_inc(irq_stat.spurious_irqs);
+	else
+		generic_handle_irq(irq);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 	trace_irq_exit(regs);
 }
 
+<<<<<<< HEAD
 void __init init_IRQ(void)
 {
 	if (ppc_md.init_IRQ)
@@ -620,6 +804,102 @@ void do_softirq(void)
 
 	local_irq_restore(flags);
 }
+=======
+static __always_inline void call_do_irq(struct pt_regs *regs, void *sp)
+{
+	register unsigned long r3 asm("r3") = (unsigned long)regs;
+
+	/* Temporarily switch r1 to sp, call __do_irq() then restore r1. */
+	asm volatile (
+		 PPC_STLU "	%%r1, %[offset](%[sp])	;"
+		"mr		%%r4, %%r1		;"
+		"mr		%%r1, %[sp]		;"
+#ifdef CONFIG_PPC_KERNEL_PCREL
+		"bl		%[callee]@notoc		;"
+#else
+		"bl		%[callee]		;"
+#endif
+		 PPC_LL "	%%r1, 0(%%r1)		;"
+		 : // Outputs
+		   "+r" (r3)
+		 : // Inputs
+		   [sp] "b" (sp), [offset] "i" (THREAD_SIZE - STACK_FRAME_MIN_SIZE),
+		   [callee] "i" (__do_irq)
+		 : // Clobbers
+		   "lr", "xer", "ctr", "memory", "cr0", "cr1", "cr5", "cr6",
+		   "cr7", "r0", "r4", "r5", "r6", "r7", "r8", "r9", "r10",
+		   "r11", "r12"
+	);
+}
+
+void __do_IRQ(struct pt_regs *regs)
+{
+	struct pt_regs *old_regs = set_irq_regs(regs);
+	void *cursp, *irqsp;
+
+	/* Switch to the irq stack to handle this */
+	cursp = (void *)(current_stack_pointer & ~(THREAD_SIZE - 1));
+	irqsp = hardirq_ctx[raw_smp_processor_id()];
+
+	/* Already there ? If not switch stack and call */
+	if (unlikely(cursp == irqsp))
+		__do_irq(regs, current_stack_pointer);
+	else
+		call_do_irq(regs, irqsp);
+
+	set_irq_regs(old_regs);
+}
+
+DEFINE_INTERRUPT_HANDLER_ASYNC(do_IRQ)
+{
+	__do_IRQ(regs);
+}
+
+static void *__init alloc_vm_stack(void)
+{
+	return __vmalloc_node(THREAD_SIZE, THREAD_ALIGN, THREADINFO_GFP,
+			      NUMA_NO_NODE, (void *)_RET_IP_);
+}
+
+static void __init vmap_irqstack_init(void)
+{
+	int i;
+
+	for_each_possible_cpu(i) {
+		softirq_ctx[i] = alloc_vm_stack();
+		hardirq_ctx[i] = alloc_vm_stack();
+	}
+}
+
+
+void __init init_IRQ(void)
+{
+	if (IS_ENABLED(CONFIG_VMAP_STACK))
+		vmap_irqstack_init();
+
+	if (ppc_md.init_IRQ)
+		ppc_md.init_IRQ();
+
+	if (!WARN_ON(!ppc_md.get_irq))
+		static_call_update(ppc_get_irq, ppc_md.get_irq);
+}
+
+#ifdef CONFIG_BOOKE_OR_40x
+void   *critirq_ctx[NR_CPUS] __read_mostly;
+void    *dbgirq_ctx[NR_CPUS] __read_mostly;
+void *mcheckirq_ctx[NR_CPUS] __read_mostly;
+#endif
+
+void *softirq_ctx[NR_CPUS] __read_mostly;
+void *hardirq_ctx[NR_CPUS] __read_mostly;
+
+#ifdef CONFIG_SOFTIRQ_ON_OWN_STACK
+void do_softirq_own_stack(void)
+{
+	call_do_softirq(softirq_ctx[smp_processor_id()]);
+}
+#endif
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 irq_hw_number_t virq_to_hw(unsigned int virq)
 {
@@ -633,7 +913,11 @@ int irq_choose_cpu(const struct cpumask *mask)
 {
 	int cpuid;
 
+<<<<<<< HEAD
 	if (cpumask_equal(mask, cpu_all_mask)) {
+=======
+	if (cpumask_equal(mask, cpu_online_mask)) {
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		static int irq_rover;
 		static DEFINE_RAW_SPINLOCK(irq_rover_lock);
 		unsigned long flags;
@@ -663,6 +947,7 @@ int irq_choose_cpu(const struct cpumask *mask)
 	return hard_smp_processor_id();
 }
 #endif
+<<<<<<< HEAD
 
 int arch_early_irq_init(void)
 {
@@ -678,3 +963,5 @@ static int __init setup_noirqdistrib(char *str)
 
 __setup("noirqdistrib", setup_noirqdistrib);
 #endif /* CONFIG_PPC64 */
+=======
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)

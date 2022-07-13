@@ -4,7 +4,11 @@
  * Contact: support@caviumnetworks.com
  * This file is part of the OCTEON SDK
  *
+<<<<<<< HEAD
  * Copyright (c) 2003-2008 Cavium Networks
+=======
+ * Copyright (c) 2003-2017 Cavium, Inc.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  *
  * This file is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License, Version 2, as
@@ -30,6 +34,10 @@
 
 #include <linux/kernel.h>
 #include <linux/string.h>
+<<<<<<< HEAD
+=======
+#include <linux/delay.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 enum cvmx_mips_space {
 	CVMX_MIPS_SPACE_XKSEG = 3LL,
@@ -52,6 +60,7 @@ enum cvmx_mips_space {
 #define CVMX_ADD_IO_SEG(add) CVMX_ADD_SEG(CVMX_IO_SEG, (add))
 #endif
 
+<<<<<<< HEAD
 #include "cvmx-asm.h"
 #include "cvmx-packet.h"
 #include "cvmx-sysinfo.h"
@@ -70,20 +79,51 @@ enum cvmx_mips_space {
 #include "cvmx-bootinfo.h"
 #include "cvmx-bootmem.h"
 #include "cvmx-l2c.h"
+=======
+#include <asm/octeon/cvmx-asm.h>
+#include <asm/octeon/cvmx-packet.h>
+#include <asm/octeon/cvmx-sysinfo.h>
+
+#include <asm/octeon/cvmx-ciu-defs.h>
+#include <asm/octeon/cvmx-ciu3-defs.h>
+#include <asm/octeon/cvmx-gpio-defs.h>
+#include <asm/octeon/cvmx-iob-defs.h>
+#include <asm/octeon/cvmx-ipd-defs.h>
+#include <asm/octeon/cvmx-l2c-defs.h>
+#include <asm/octeon/cvmx-l2d-defs.h>
+#include <asm/octeon/cvmx-l2t-defs.h>
+#include <asm/octeon/cvmx-led-defs.h>
+#include <asm/octeon/cvmx-mio-defs.h>
+#include <asm/octeon/cvmx-pow-defs.h>
+
+#include <asm/octeon/cvmx-bootinfo.h>
+#include <asm/octeon/cvmx-bootmem.h>
+#include <asm/octeon/cvmx-l2c.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 #ifndef CVMX_ENABLE_DEBUG_PRINTS
 #define CVMX_ENABLE_DEBUG_PRINTS 1
 #endif
 
 #if CVMX_ENABLE_DEBUG_PRINTS
+<<<<<<< HEAD
 #define cvmx_dprintf        printk
+=======
+#define cvmx_dprintf	    printk
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #else
 #define cvmx_dprintf(...)   {}
 #endif
 
+<<<<<<< HEAD
 #define CVMX_MAX_CORES          (16)
 #define CVMX_CACHE_LINE_SIZE    (128)	/* In bytes */
 #define CVMX_CACHE_LINE_MASK    (CVMX_CACHE_LINE_SIZE - 1)	/* In bytes */
+=======
+#define CVMX_MAX_CORES		(16)
+#define CVMX_CACHE_LINE_SIZE	(128)	/* In bytes */
+#define CVMX_CACHE_LINE_MASK	(CVMX_CACHE_LINE_SIZE - 1)	/* In bytes */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 #define CVMX_CACHE_LINE_ALIGNED __attribute__ ((aligned(CVMX_CACHE_LINE_SIZE)))
 #define CAST64(v) ((long long)(long)(v))
 #define CASTPTR(type, v) ((type *)(long)(v))
@@ -133,8 +173,13 @@ static inline uint64_t cvmx_build_io_address(uint64_t major_did,
  *
  * Example: cvmx_build_bits(39,24,value)
  * <pre>
+<<<<<<< HEAD
  * 6       5       4       3       3       2       1
  * 3       5       7       9       1       3       5       7      0
+=======
+ * 6	   5	   4	   3	   3	   2	   1
+ * 3	   5	   7	   9	   1	   3	   5	   7	  0
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * +-------+-------+-------+-------+-------+-------+-------+------+
  * 000000000000000000000000___________value000000000000000000000000
  * </pre>
@@ -152,13 +197,21 @@ static inline uint64_t cvmx_build_bits(uint64_t high_bit,
 
 /**
  * Convert a memory pointer (void*) into a hardware compatible
+<<<<<<< HEAD
  * memory address (uint64_t). Octeon hardware widgets don't
+=======
+ * memory address (phys_addr_t). Octeon hardware widgets don't
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * understand logical addresses.
  *
  * @ptr:    C style memory pointer
  * Returns Hardware physical address
  */
+<<<<<<< HEAD
 static inline uint64_t cvmx_ptr_to_phys(void *ptr)
+=======
+static inline phys_addr_t cvmx_ptr_to_phys(void *ptr)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 {
 	if (sizeof(void *) == 8) {
 		/*
@@ -183,13 +236,21 @@ static inline uint64_t cvmx_ptr_to_phys(void *ptr)
  * memory pointer (void *).
  *
  * @physical_address:
+<<<<<<< HEAD
  *               Hardware physical address to memory
+=======
+ *		 Hardware physical address to memory
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * Returns Pointer to memory
  */
 static inline void *cvmx_phys_to_ptr(uint64_t physical_address)
 {
 	if (sizeof(void *) == 8) {
+<<<<<<< HEAD
 		/* Just set the top bit, avoiding any TLB uglyness */
+=======
+		/* Just set the top bit, avoiding any TLB ugliness */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		return CASTPTR(void,
 			       CVMX_ADD_SEG(CVMX_MIPS_SPACE_XKPHYS,
 					    physical_address));
@@ -207,10 +268,17 @@ static inline void *cvmx_phys_to_ptr(uint64_t physical_address)
 
 /* We have a full 64bit ABI. Writing to a 64bit address can be done with
     a simple volatile pointer */
+<<<<<<< HEAD
 #define CVMX_BUILD_WRITE64(TYPE, ST)                                    \
 static inline void cvmx_write64_##TYPE(uint64_t addr, TYPE##_t val)     \
 {                                                                       \
     *CASTPTR(volatile TYPE##_t, addr) = val;                            \
+=======
+#define CVMX_BUILD_WRITE64(TYPE, ST)					\
+static inline void cvmx_write64_##TYPE(uint64_t addr, TYPE##_t val)	\
+{									\
+    *CASTPTR(volatile TYPE##_t, addr) = val;				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 
@@ -221,19 +289,32 @@ static inline void cvmx_write64_##TYPE(uint64_t addr, TYPE##_t val)     \
 
 /* We have a full 64bit ABI. Writing to a 64bit address can be done with
     a simple volatile pointer */
+<<<<<<< HEAD
 #define CVMX_BUILD_READ64(TYPE, LT)                                     \
 static inline TYPE##_t cvmx_read64_##TYPE(uint64_t addr)                \
 {                                                                       \
+=======
+#define CVMX_BUILD_READ64(TYPE, LT)					\
+static inline TYPE##_t cvmx_read64_##TYPE(uint64_t addr)		\
+{									\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 	return *CASTPTR(volatile TYPE##_t, addr);			\
 }
 
 
 /* The following defines 8 functions for writing to a 64bit address. Each
     takes two arguments, the address and the value to write.
+<<<<<<< HEAD
     cvmx_write64_int64      cvmx_write64_uint64
     cvmx_write64_int32      cvmx_write64_uint32
     cvmx_write64_int16      cvmx_write64_uint16
     cvmx_write64_int8       cvmx_write64_uint8 */
+=======
+    cvmx_write64_int64	    cvmx_write64_uint64
+    cvmx_write64_int32	    cvmx_write64_uint32
+    cvmx_write64_int16	    cvmx_write64_uint16
+    cvmx_write64_int8	    cvmx_write64_uint8 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CVMX_BUILD_WRITE64(int64, "sd");
 CVMX_BUILD_WRITE64(int32, "sw");
 CVMX_BUILD_WRITE64(int16, "sh");
@@ -246,10 +327,17 @@ CVMX_BUILD_WRITE64(uint8, "sb");
 
 /* The following defines 8 functions for reading from a 64bit address. Each
     takes the address as the only argument
+<<<<<<< HEAD
     cvmx_read64_int64       cvmx_read64_uint64
     cvmx_read64_int32       cvmx_read64_uint32
     cvmx_read64_int16       cvmx_read64_uint16
     cvmx_read64_int8        cvmx_read64_uint8 */
+=======
+    cvmx_read64_int64	    cvmx_read64_uint64
+    cvmx_read64_int32	    cvmx_read64_uint32
+    cvmx_read64_int16	    cvmx_read64_uint16
+    cvmx_read64_int8	    cvmx_read64_uint8 */
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 CVMX_BUILD_READ64(int64, "ld");
 CVMX_BUILD_READ64(int32, "lw");
 CVMX_BUILD_READ64(int16, "lh");
@@ -275,6 +363,14 @@ static inline void cvmx_write_csr(uint64_t csr_addr, uint64_t val)
 		cvmx_read64(CVMX_MIO_BOOT_BIST_STAT);
 }
 
+<<<<<<< HEAD
+=======
+static inline void cvmx_writeq_csr(void __iomem *csr_addr, uint64_t val)
+{
+	cvmx_write_csr((__force uint64_t)csr_addr, val);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 static inline void cvmx_write_io(uint64_t io_addr, uint64_t val)
 {
 	cvmx_write64(io_addr, val);
@@ -287,6 +383,13 @@ static inline uint64_t cvmx_read_csr(uint64_t csr_addr)
 	return val;
 }
 
+<<<<<<< HEAD
+=======
+static inline uint64_t cvmx_readq_csr(void __iomem *csr_addr)
+{
+	return cvmx_read_csr((__force uint64_t) csr_addr);
+}
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 static inline void cvmx_send_single(uint64_t data)
 {
@@ -332,6 +435,52 @@ static inline unsigned int cvmx_get_core_num(void)
 	return core_num;
 }
 
+<<<<<<< HEAD
+=======
+/* Maximum # of bits to define core in node */
+#define CVMX_NODE_NO_SHIFT	7
+#define CVMX_NODE_MASK		0x3
+static inline unsigned int cvmx_get_node_num(void)
+{
+	unsigned int core_num = cvmx_get_core_num();
+
+	return (core_num >> CVMX_NODE_NO_SHIFT) & CVMX_NODE_MASK;
+}
+
+static inline unsigned int cvmx_get_local_core_num(void)
+{
+	return cvmx_get_core_num() & ((1 << CVMX_NODE_NO_SHIFT) - 1);
+}
+
+#define CVMX_NODE_BITS         (2)     /* Number of bits to define a node */
+#define CVMX_MAX_NODES         (1 << CVMX_NODE_BITS)
+#define CVMX_NODE_IO_SHIFT     (36)
+#define CVMX_NODE_MEM_SHIFT    (40)
+#define CVMX_NODE_IO_MASK      ((uint64_t)CVMX_NODE_MASK << CVMX_NODE_IO_SHIFT)
+
+static inline void cvmx_write_csr_node(uint64_t node, uint64_t csr_addr,
+				       uint64_t val)
+{
+	uint64_t composite_csr_addr, node_addr;
+
+	node_addr = (node & CVMX_NODE_MASK) << CVMX_NODE_IO_SHIFT;
+	composite_csr_addr = (csr_addr & ~CVMX_NODE_IO_MASK) | node_addr;
+
+	cvmx_write64_uint64(composite_csr_addr, val);
+	if (((csr_addr >> 40) & 0x7ffff) == (0x118))
+		cvmx_read64_uint64(CVMX_MIO_BOOT_BIST_STAT | node_addr);
+}
+
+static inline uint64_t cvmx_read_csr_node(uint64_t node, uint64_t csr_addr)
+{
+	uint64_t node_addr;
+
+	node_addr = (csr_addr & ~CVMX_NODE_IO_MASK) |
+		    (node & CVMX_NODE_MASK) << CVMX_NODE_IO_SHIFT;
+	return cvmx_read_csr(node_addr);
+}
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 /**
  * Returns the number of bits set in the provided value.
  * Simple wrapper for POP instruction.
@@ -376,6 +525,7 @@ static inline uint64_t cvmx_get_cycle(void)
 }
 
 /**
+<<<<<<< HEAD
  * Wait for the specified number of cycle
  *
  */
@@ -390,6 +540,10 @@ static inline void cvmx_wait(uint64_t cycles)
 /**
  * Reads a chip global cycle counter.  This counts CPU cycles since
  * chip reset.  The counter is 64 bit.
+=======
+ * Reads a chip global cycle counter.  This counts CPU cycles since
+ * chip reset.	The counter is 64 bit.
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  * This register does not exist on CN38XX pass 1 silicion
  *
  * Returns Global chip cycle count since chip reset.
@@ -428,7 +582,11 @@ static inline uint64_t cvmx_get_cycle_global(void)
 				result = -1;				\
 				break;					\
 			} else						\
+<<<<<<< HEAD
 				cvmx_wait(100);				\
+=======
+				__delay(100);				\
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 		}							\
 	} while (0);							\
 	result;								\
@@ -436,6 +594,7 @@ static inline uint64_t cvmx_get_cycle_global(void)
 
 /***************************************************************************/
 
+<<<<<<< HEAD
 static inline void cvmx_reset_octeon(void)
 {
 	union cvmx_ciu_soft_rst ciu_soft_rst;
@@ -512,6 +671,20 @@ static inline int cvmx_octeon_dfa_present(void)
 static inline int cvmx_octeon_crypto_present(void)
 {
 	return octeon_has_feature(OCTEON_FEATURE_CRYPTO);
+=======
+/* Return the number of cores available in the chip */
+static inline uint32_t cvmx_octeon_num_cores(void)
+{
+	u64 ciu_fuse_reg;
+	u64 ciu_fuse;
+
+	if (OCTEON_IS_OCTEON3() && !OCTEON_IS_MODEL(OCTEON_CN70XX))
+		ciu_fuse_reg = CVMX_CIU3_FUSE;
+	else
+		ciu_fuse_reg = CVMX_CIU_FUSE;
+	ciu_fuse = cvmx_read_csr(ciu_fuse_reg);
+	return cvmx_dpop(ciu_fuse);
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 }
 
 #endif /*  __CVMX_H__  */

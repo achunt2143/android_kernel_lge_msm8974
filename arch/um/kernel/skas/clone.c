@@ -1,16 +1,30 @@
+<<<<<<< HEAD
 /*
  * Copyright (C) 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
  * Licensed under the GPL
+=======
+// SPDX-License-Identifier: GPL-2.0
+/*
+ * Copyright (C) 2015 Thomas Meyer (thomas@m3y3r.de)
+ * Copyright (C) 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  */
 
 #include <signal.h>
 #include <sched.h>
 #include <asm/unistd.h>
 #include <sys/time.h>
+<<<<<<< HEAD
 #include "as-layout.h"
 #include "ptrace_user.h"
 #include "stub-data.h"
 #include "sysdep/stub.h"
+=======
+#include <as-layout.h>
+#include <ptrace_user.h>
+#include <stub-data.h>
+#include <sysdep/stub.h>
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
 
 /*
  * This is in a separate file because it needs to be compiled with any
@@ -23,6 +37,7 @@
 void __attribute__ ((__section__ (".__syscall_stub")))
 stub_clone_handler(void)
 {
+<<<<<<< HEAD
 	struct stub_data *data = (struct stub_data *) STUB_DATA;
 	long err;
 
@@ -51,6 +66,27 @@ stub_clone_handler(void)
 	 * assignment
 	 */
 	data->err = err;
+=======
+	struct stub_data *data = get_stub_data();
+	long err;
+
+	err = stub_syscall2(__NR_clone, CLONE_PARENT | CLONE_FILES | SIGCHLD,
+			    (unsigned long)data +
+				STUB_DATA_PAGES * UM_KERN_PAGE_SIZE / 2);
+	if (err) {
+		data->parent_err = err;
+		goto done;
+	}
+
+	err = stub_syscall4(__NR_ptrace, PTRACE_TRACEME, 0, 0, 0);
+	if (err) {
+		data->child_err = err;
+		goto done;
+	}
+
+	remap_stack_and_trap();
+
+>>>>>>> 26f1d324c6e (tools: use basename to identify file in gen-mach-types)
  done:
 	trap_myself();
 }
